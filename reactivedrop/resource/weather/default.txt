@@ -1,0 +1,16 @@
+"Weather" {
+	"TemperatureFormat"		"#asw_weather_temp_r"
+	"Temperature"		"257.15"
+	"WindFormat"		"#asw_weather_wind_r"
+	"Wind"		"8.00"
+	"PressureFormat"		"#asw_weather_pressure_r"
+	"Pressure"		"1004"
+	"HumidityFormat"		"#asw_weather_humidity_r"
+	"Humidity"		"68.70"
+	"CloudsFormat"		"#asw_weather_broken_cloud_r"
+	"Clouds"		"675"
+	"VisibilityFormat"		"#asw_weather_vis_r"
+	"Visibility"		"6.60"
+	"Weather"		"#asw_weather_weather_light"
+	"Warning"		"#asw_weather_warning"
+}

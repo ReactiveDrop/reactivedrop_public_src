@@ -89,8 +89,10 @@ BEGIN_DATADESC( CASW_Computer_Area )
 	DEFINE_FIELD( m_bViewingMail, FIELD_BOOLEAN ),
 	DEFINE_FIELD(m_fAutoOverrideTime, FIELD_FLOAT),
 	DEFINE_FIELD(m_fLastButtonUseTime, FIELD_TIME),
+	DEFINE_FIELD( m_iReactorState, FIELD_CHARACTER ),
 	DEFINE_SOUNDPATCH( m_pDownloadingSound ),
 	DEFINE_SOUNDPATCH( m_pComputerInUseSound ),
+	DEFINE_INPUTFUNC( FIELD_BOOLEAN, "OverrideReactorState", InputOverrideReactorState ),
 	DEFINE_OUTPUT( m_OnFastHackFailed, "OnFastHackFailed" ),
 	DEFINE_OUTPUT( m_OnComputerHackStarted, "OnComputerHackStarted" ),
 	DEFINE_OUTPUT( m_OnComputerHackHalfway, "OnComputerHackHalfway" ),	
@@ -146,7 +148,9 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Computer_Area, DT_ASW_Computer_Area)
 	SendPropBool		(SENDINFO(m_bNewsFileLocked)),
 	SendPropBool		(SENDINFO(m_bStocksFileLocked)),
 	SendPropBool		(SENDINFO(m_bWeatherFileLocked)),
-	SendPropBool		(SENDINFO(m_bPlantFileLocked)),	
+	SendPropBool		(SENDINFO(m_bPlantFileLocked)),
+
+	SendPropInt( SENDINFO( m_iReactorState ) ),
 END_SEND_TABLE()
 
 CASW_Computer_Area::CASW_Computer_Area()
@@ -168,6 +172,8 @@ CASW_Computer_Area::CASW_Computer_Area()
 	m_pComputerInUseSound = NULL;
 	m_fLastPositiveSoundTime = 0;
 	m_iAliensKilledBeforeHack = 0;
+
+	m_iReactorState = -1;
 }
 
 //-----------------------------------------------------------------------------
@@ -258,6 +264,11 @@ void CASW_Computer_Area::Override( CASW_Marine *pMarine )
 	//  launch the hack puzzle by choosing the special hack option
 	GetCurrentHack()->SelectHackOption( ASW_HACK_OPTION_OVERRIDE );
 	m_OnComputerHackStarted.FireOutput( pMarine, this );
+}
+
+void CASW_Computer_Area::InputOverrideReactorState( inputdata_t &inputdata )
+{
+	m_iReactorState = inputdata.value.Bool() ? 1 : 0;
 }
 
 void CASW_Computer_Area::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )

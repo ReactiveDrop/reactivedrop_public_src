@@ -92,6 +92,10 @@ public:
 	CNetworkHandle( CASW_Remote_Turret, m_hTurret3 );
 
 	CNetworkVar( int, m_iActiveCam );
+	CNetworkVar( int8_t, m_iReactorState );
+
+	// inputs
+	void InputOverrideReactorState( inputdata_t &inputdata );
 
 	// outputs
 	COutputEvent m_OnFastHackFailed;

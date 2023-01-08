@@ -79,6 +79,8 @@ public:
 	CNetworkHandle( CASW_Remote_Turret, m_hTurret2 );
 	CNetworkHandle( CASW_Remote_Turret, m_hTurret3 );
 
+	CNetworkVar( int8_t, m_iReactorState );
+
 	// traditional Swarm hacking
 	float GetDownloadProgress() { return m_fDownloadProgress; }
 	CNetworkVar(bool, m_bIsInUse);
@@ -95,6 +97,7 @@ public:
 	void PlayNegativeSound(C_ASW_Player *pPlayer);
 	float m_fLastPositiveSoundTime;
 	C_ASW_PointCamera *GetActiveCam();
+	const char *GetPlantFileName();
 
 protected:
 	bool m_bIsLocked;
