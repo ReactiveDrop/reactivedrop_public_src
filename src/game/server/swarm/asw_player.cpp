@@ -66,7 +66,7 @@
 
 ConVar asw_client_chatter_enabled("asw_client_chatter_enabled", "1", FCVAR_NONE, "If zero cl_chatter is played only for the player who issued the command"); 
 ConVar asw_blend_test_scale("asw_blend_test_scale", "0.1f", FCVAR_CHEAT);
-ConVar asw_debug_pvs("asw_debug_pvs", "0", FCVAR_CHEAT);
+ConVar asw_debug_pvs( "asw_debug_pvs", "0", FCVAR_CHEAT );
 extern ConVar asw_rts_controls;
 extern ConVar asw_DebugAutoAim;
 extern ConVar asw_debug_marine_damage;
@@ -77,6 +77,7 @@ ConVar rm_welcome_message("rm_welcome_message", "", FCVAR_NONE, "This message is
 ConVar rm_welcome_message_delay("rm_welcome_message_delay", "10", FCVAR_NONE, "The number of seconds the welcome message is delayed.", true, 0, true, 30);
 ConVar rd_kick_inactive_players( "rd_kick_inactive_players", "0", FCVAR_NONE, "If positive, kick players who are inactive for this many seconds." );
 ConVar rd_kick_inactive_players_warning( "rd_kick_inactive_players_warning", "0.8", FCVAR_NONE, "Warn players that they will be kicked after this fraction of the inactive time.", true, 0, true, 1 );
+ConVar rd_force_all_marines_in_pvs( "rd_force_all_marines_in_pvs", "0", FCVAR_ARCHIVE, "Send information about objects near all marines to all players. Helps record more complete demos, but increases memory and bandwidth usage. 2=only for spectators" );
 
 static const char* s_pWelcomeMessageContext = "WelcomeMessageDelayedContext";
 
@@ -3085,112 +3086,124 @@ void CASW_Player::ActivateUseIcon( int iUseEntityIndex, int nHoldType )
 
 void CASW_Player::SetupVisibility( CBaseEntity *pViewEntity, unsigned char *pvs, int pvssize )
 {
-	if (asw_debug_pvs.GetBool())
+	if ( asw_debug_pvs.GetBool() )
 	{
-		Msg("Player:%d SetupVis\n", entindex());
+		Msg( "Player:%d SetupVis\n", entindex() );
 	}
-	if (m_bUsedFreeCam)
+
+	if ( m_bUsedFreeCam )
 	{
-		if (asw_debug_pvs.GetBool())
+		if ( asw_debug_pvs.GetBool() )
 		{
-			Msg("  freecam %s\n", VecToString(m_vecFreeCamOrigin));
+			Msg( "  freecam %s\n", VecToString( m_vecFreeCamOrigin ) );
 		}
-		engine->AddOriginToPVS(m_vecFreeCamOrigin);
+		engine->AddOriginToPVS( m_vecFreeCamOrigin );
 	}
+
 	CAlienSwarm *pGameRules = ASWGameRules();
 	if ( pGameRules && pGameRules->GetGameState() < ASW_GS_INGAME && pGameRules->m_hBriefingCamera )
 	{
 		engine->AddOriginToPVS( pGameRules->m_hBriefingCamera->GetAbsOrigin() );
 	}
-	CASW_Inhabitable_NPC *pNPC = GetSpectatingNPC();
-	bool bSpectating = true;
-	if (!pNPC)
-	{
-		pNPC = GetNPC();
-		bSpectating = false;
-	}
+
+	CASW_Inhabitable_NPC *pNPC = GetViewNPC();
 	if ( pNPC )
 	{
-		CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
-		// asw - add the marine as our PVS position (since we're using radius based, this will do the job)
-		if ( pMarine && pMarine->IsInVehicle() )
-		{
-	#ifdef CLIENT_DLL
-			if (pMarine->GetClientsideVehicle() && pMarine->GetClientsideVehicle()->GetEntity())
-				engine->AddOriginToPVS(pMarine->GetClientsideVehicle()->GetEntity()->GetAbsOrigin());
-	#else
-			if (pMarine->GetASWVehicle() && pMarine->GetASWVehicle()->GetEntity())
-				engine->AddOriginToPVS(pMarine->GetASWVehicle()->GetEntity()->GetAbsOrigin());
-	#endif
-		}
-		else
-		{
-			//if (asw_debug_pvs.GetBool()) Msg(" Marine %f,%f,%f\n", pMarine->GetAbsOrigin().x, pMarine->GetAbsOrigin().y, pMarine->GetAbsOrigin().z);
-			if ( asw_debug_pvs.GetBool() )
-			{
-				const Vector pos = pNPC->GetAbsOrigin();
-				Msg( "  Marine %f,%f,%f\n", pos.x, pos.y, pos.z );
-			}
-			engine->AddOriginToPVS( pNPC->GetAbsOrigin() );
-		}
-
-		// Check for mapper cameras
-		CPointCamera *pMapperCamera = GetPointCameraList();
-		bool bMapperCam = false;
-		for ( int cameraNum = 0; pMapperCamera != NULL; pMapperCamera = pMapperCamera->m_pNext )
-		{
-			if ( pMapperCamera->IsActive() && !ASW_IsSecurityCam( pMapperCamera ) )
-			{
-				engine->AddOriginToPVS( pMapperCamera->GetAbsOrigin() );
-				bMapperCam = true;
-				break;
-			}
-
-			++cameraNum;
-		}
-
-		CBaseEntity *pUsing = pNPC->m_hUsingEntity.Get();
-		if ( pUsing )
-		{
-			if ( pUsing->Classify() == CLASS_ASW_COMPUTER_AREA )
-			{
-				CASW_Computer_Area *pComputer = assert_cast< CASW_Computer_Area * >( pUsing );
-				CASW_PointCamera *pComputerCam = pComputer->GetActiveCam();
-
-				// check if any mapper set cameras are active, we shouldn't be on if they are
-				if ( pComputer->m_hSecurityCam1 && ( !bMapperCam || pComputer->m_hSecurityCam1 != pMapperCamera ) && pComputer->m_hSecurityCam1.Get() != pComputerCam )
-				{
-					pComputer->m_hSecurityCam1->SetActive( false );
-				}
-
-				if ( pComputer->m_hSecurityCam2 && ( !bMapperCam || pComputer->m_hSecurityCam2 != pMapperCamera ) && pComputer->m_hSecurityCam2.Get() != pComputerCam )
-				{
-					pComputer->m_hSecurityCam2->SetActive( false );
-				}
-
-				if ( pComputer->m_hSecurityCam3 && ( !bMapperCam || pComputer->m_hSecurityCam3 != pMapperCamera ) && pComputer->m_hSecurityCam3.Get() != pComputerCam )
-				{
-					pComputer->m_hSecurityCam3->SetActive( false );
-				}
-
-				if ( pComputerCam && ( !bMapperCam || pComputerCam != pMapperCamera ) )
-				{
-					// if we're here, a computer camera is active
-					engine->AddOriginToPVS( pComputerCam->GetAbsOrigin() );
-					pComputerCam->SetActive( true );
-				}
-			}
-		}
-
-		if ( pMarine && pMarine->IsControllingTurret() )
-		{
-			engine->AddOriginToPVS( pMarine->GetRemoteTurret()->GetAbsOrigin() );
-		}
+		SetupVisibilityForNPC( pViewEntity, pvs, pvssize, pNPC );
 	}
 	else
 	{
 		//if (asw_debug_pvs.GetBool()) Msg(" Base\n");
 		BaseClass::SetupVisibility( pViewEntity, pvs, pvssize );
+	}
+
+	CASW_Game_Resource *pGameResource = ASWGameResource();
+	if ( rd_force_all_marines_in_pvs.GetBool() && pGameResource )
+	{
+		if ( rd_force_all_marines_in_pvs.GetInt() != 2 || !GetNPC() )
+		{
+			for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
+			{
+				CASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
+				if ( pMR && pMR->GetMarineEntity() )
+				{
+					SetupVisibilityForNPC( pViewEntity, pvs, pvssize, pMR->GetMarineEntity() );
+				}
+			}
+		}
+	}
+}
+
+void CASW_Player::SetupVisibilityForNPC( CBaseEntity *pViewEntity, unsigned char *pvs, int pvssize, CASW_Inhabitable_NPC *pNPC )
+{
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
+	// asw - add the marine as our PVS position (since we're using radius based, this will do the job)
+	if ( pMarine && pMarine->IsInVehicle() )
+	{
+		if ( pMarine->GetASWVehicle() && pMarine->GetASWVehicle()->GetEntity() )
+			engine->AddOriginToPVS( pMarine->GetASWVehicle()->GetEntity()->GetAbsOrigin() );
+	}
+	else
+	{
+		if ( asw_debug_pvs.GetBool() )
+		{
+			const Vector pos = pNPC->GetAbsOrigin();
+			Msg( "  Marine %f,%f,%f\n", pos.x, pos.y, pos.z );
+		}
+		engine->AddOriginToPVS( pNPC->GetAbsOrigin() );
+	}
+
+	// Check for mapper cameras
+	CPointCamera *pMapperCamera = GetPointCameraList();
+	bool bMapperCam = false;
+	for ( int cameraNum = 0; pMapperCamera != NULL; pMapperCamera = pMapperCamera->m_pNext )
+	{
+		if ( pMapperCamera->IsActive() && !ASW_IsSecurityCam( pMapperCamera ) )
+		{
+			engine->AddOriginToPVS( pMapperCamera->GetAbsOrigin() );
+			bMapperCam = true;
+			break;
+		}
+
+		++cameraNum;
+	}
+
+	CBaseEntity *pUsing = pNPC->m_hUsingEntity.Get();
+	if ( pUsing )
+	{
+		if ( pUsing->Classify() == CLASS_ASW_COMPUTER_AREA )
+		{
+			CASW_Computer_Area *pComputer = assert_cast< CASW_Computer_Area * >( pUsing );
+			CASW_PointCamera *pComputerCam = pComputer->GetActiveCam();
+
+			// check if any mapper set cameras are active, we shouldn't be on if they are
+			if ( pComputer->m_hSecurityCam1 && ( !bMapperCam || pComputer->m_hSecurityCam1 != pMapperCamera ) && pComputer->m_hSecurityCam1.Get() != pComputerCam )
+			{
+				pComputer->m_hSecurityCam1->SetActive( false );
+			}
+
+			if ( pComputer->m_hSecurityCam2 && ( !bMapperCam || pComputer->m_hSecurityCam2 != pMapperCamera ) && pComputer->m_hSecurityCam2.Get() != pComputerCam )
+			{
+				pComputer->m_hSecurityCam2->SetActive( false );
+			}
+
+			if ( pComputer->m_hSecurityCam3 && ( !bMapperCam || pComputer->m_hSecurityCam3 != pMapperCamera ) && pComputer->m_hSecurityCam3.Get() != pComputerCam )
+			{
+				pComputer->m_hSecurityCam3->SetActive( false );
+			}
+
+			if ( pComputerCam && ( !bMapperCam || pComputerCam != pMapperCamera ) )
+			{
+				// if we're here, a computer camera is active
+				engine->AddOriginToPVS( pComputerCam->GetAbsOrigin() );
+				pComputerCam->SetActive( true );
+			}
+		}
+	}
+
+	if ( pMarine && pMarine->IsControllingTurret() )
+	{
+		engine->AddOriginToPVS( pMarine->GetRemoteTurret()->GetAbsOrigin() );
 	}
 }
 

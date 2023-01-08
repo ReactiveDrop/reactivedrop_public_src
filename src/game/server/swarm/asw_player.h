@@ -68,6 +68,7 @@ public:
 	const Vector& GetCrosshairTracePos();
 	void SetCrosshairTracePos( const Vector &vecPos ) { m_vecCrosshairTracePos = vecPos; }
 	virtual void SetupVisibility( CBaseEntity *pViewEntity, unsigned char *pvs, int pvssize );
+	void SetupVisibilityForNPC( CBaseEntity *pViewEntity, unsigned char *pvs, int pvssize, CASW_Inhabitable_NPC *pNPC );
 
 	virtual void  HandleSpeedChanges( void );
 	virtual bool CanBeSeenBy( CAI_BaseNPC *pNPC ) { return false; } // Players are never seen by NPCs
