@@ -77,7 +77,7 @@ ConVar rm_welcome_message("rm_welcome_message", "", FCVAR_NONE, "This message is
 ConVar rm_welcome_message_delay("rm_welcome_message_delay", "10", FCVAR_NONE, "The number of seconds the welcome message is delayed.", true, 0, true, 30);
 ConVar rd_kick_inactive_players( "rd_kick_inactive_players", "0", FCVAR_NONE, "If positive, kick players who are inactive for this many seconds." );
 ConVar rd_kick_inactive_players_warning( "rd_kick_inactive_players_warning", "0.8", FCVAR_NONE, "Warn players that they will be kicked after this fraction of the inactive time.", true, 0, true, 1 );
-ConVar rd_force_all_marines_in_pvs( "rd_force_all_marines_in_pvs", "0", FCVAR_ARCHIVE, "Send information about objects near all marines to all players. Helps record more complete demos, but increases memory and bandwidth usage. 2=only for spectators" );
+ConVar rd_force_all_marines_in_pvs( "rd_force_all_marines_in_pvs", "3", FCVAR_ARCHIVE, "Send information about objects near all marines to all players. Helps record more complete demos, but increases memory and bandwidth usage. 2=only for spectators, 3=only for players with rd_auto_record_lobbies enabled" );
 
 static const char* s_pWelcomeMessageContext = "WelcomeMessageDelayedContext";
 
@@ -3120,7 +3120,8 @@ void CASW_Player::SetupVisibility( CBaseEntity *pViewEntity, unsigned char *pvs,
 	CASW_Game_Resource *pGameResource = ASWGameResource();
 	if ( rd_force_all_marines_in_pvs.GetBool() && pGameResource )
 	{
-		if ( rd_force_all_marines_in_pvs.GetInt() != 2 || !GetNPC() )
+		if ( ( rd_force_all_marines_in_pvs.GetInt() != 2 || !GetNPC() ) &&
+			( rd_force_all_marines_in_pvs.GetInt() != 3 || V_atoi( engine->GetClientConVarValue( entindex(), "rd_auto_record_lobbies" ) ) ) )
 		{
 			for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
 			{

@@ -54,7 +54,7 @@
 #include "c_gib.h"
 #include "asw_hud_chat.h"
 #include "game_timescale_shared.h"
-
+#include "rd_demo_utils.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -93,6 +93,7 @@ ConVar fov_desired( "fov_desired", "75", FCVAR_USERINFO, "Sets the base field-of
 
 ConVar asw_instant_restart_cleanup( "asw_instant_restart_cleanup", "1", FCVAR_NONE, "remove corpses, gibs, and decals when performing an instant restart" );
 ConVar cl_auto_restart_mission( "cl_auto_restart_mission", "0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "After failed mission, if you are the leader will auto restart on the client side." );
+extern ConVar rd_auto_record_stop_on_retry;
 
 vgui::HScheme g_hVGuiCombineScheme = 0;
 
@@ -780,6 +781,11 @@ void ClientModeASW::FireGameEvent( IGameEvent *event )
 
 		// re-init some systems
 		GameTimescale()->LevelInitPostEntity();
+		if ( rd_auto_record_stop_on_retry.GetBool() )
+		{
+			g_RD_Auto_Record_System.LevelShutdownPostEntity();
+			g_RD_Auto_Record_System.LevelInitPostEntity();
+		}
 
 		m_aAchievementsEarned.Purge();
 		m_aAwardedExperience.Purge();
