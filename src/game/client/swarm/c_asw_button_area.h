@@ -22,13 +22,13 @@ public:
 	
 	// accessors for icons
 	int GetLockedIconTextureID();
-	const char* GetLockedIconText() { return "#asw_requires_tech"; }
+	const char* GetLockedIconText();
 	int GetOpenIconTextureID();
 	const char* GetOpenIconText() { return "#asw_open"; }
 	int GetCloseIconTextureID();
 	const char* GetCloseIconText() { return "#asw_close"; }
 	int GetUseIconTextureID();
-	const char* GetUseIconText() { return "#asw_use_panel"; }
+	const char* GetUseIconText();
 	int GetHackIconTextureID();
 	const char* GetHackIconText(C_ASW_Inhabitable_NPC *pUser);
 	int GetNoPowerIconTextureID();
@@ -44,8 +44,13 @@ public:
 	CNetworkVar(float, m_fHackProgress);
 	CNetworkVar(float, m_flHoldTime);
 	
-	virtual const char* GetNoPowerMessage() { return m_NoPowerMessage; }
-	char		m_NoPowerMessage[255];	
+	char		m_NoPowerMessage[255];
+	char		m_UsePanelMessage[255];	
+	char		m_OpenMessage[255];	
+	char		m_CloseMessage[255];	
+	char		m_NeedTechMessage[255];	
+	char		m_ExitPanelMessage[255];
+	char		m_HackPanelMessage[255];	
 
 	bool HasPower() { return !m_bNoPower; }
 	bool IsWaitingForInput( void ) const { return m_bWaitingForInput; }

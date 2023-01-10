@@ -90,7 +90,8 @@ class CASW_Powerup;
 #define FACTION_BAIT				( LAST_SHARED_FACTION + 3 )
 #define FACTION_NEUTRAL				( LAST_SHARED_FACTION + 4 )
 #define FACTION_COMBINE				( LAST_SHARED_FACTION + 5 )
-#define LAST_ASW_FACTION			(FACTION_COMBINE)
+#define FACTION_ROBOTS				( LAST_SHARED_FACTION + 6 )
+#define LAST_ASW_FACTION			(FACTION_ROBOTS)
 #define NUM_ASW_FACTIONS			(LAST_ASW_FACTION + 1)
 
 class CAlienSwarm : public CSingleplayRules
@@ -413,11 +414,13 @@ public:
 	Vector m_vMarineDeathPosDeathmatch;
 	int m_nMarineForDeathCamDeathmatch;
 #endif
+	CNetworkString( m_szDeathmatchWinnerName, MAX_PLAYER_NAME_LENGTH );
 
 	// voting
 	CNetworkString(m_szCurrentVoteDescription, 128);
 	CNetworkString(m_szCurrentVoteMapName, 128);
 	CNetworkString(m_szCurrentVoteCampaignName, 128);
+	CNetworkString( m_szCycleNextMap, MAX_MAP_NAME );
 	CNetworkVar(int, m_iCurrentVoteYes);
 	CNetworkVar(int, m_iCurrentVoteNo);
 	CNetworkVar(int, m_iCurrentVoteType);

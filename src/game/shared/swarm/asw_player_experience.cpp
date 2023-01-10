@@ -424,6 +424,18 @@ void CASW_Player::RequestExperience()
 
 #ifdef CLIENT_DLL
 
+	if ( engine->IsPlayingDemo() && SteamFriends() )
+	{
+		player_info_t pi;
+		if ( engine->GetPlayerInfo( entindex(), &pi ) && pi.friendsID )
+		{
+			CSteamID steamID( pi.friendsID, 1, SteamUtils()->GetConnectedUniverse(), k_EAccountTypeIndividual );
+
+			// grab the player's avatar (otherwise we'll only have it if they're friends with us)
+			SteamFriends()->RequestUserInformation( steamID, false );
+		}
+	}
+
 #if !defined(USE_XP_FROM_STEAM)
 	// if we're not pulling XP from Steam stats, then we don't request it for other players
 	//  (instead we wait for the server to network their XP)

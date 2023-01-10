@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "209"
+	"mapversion" "210"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -20,13 +20,13 @@ viewsettings
 	"bSnapToGrid" "1"
 	"bShowGrid" "1"
 	"bShowLogicalGrid" "0"
-	"nGridSpacing" "1"
+	"nGridSpacing" "16"
 	"bShow3DGrid" "0"
 }
 world
 {
 	"id" "1"
-	"mapversion" "209"
+	"mapversion" "210"
 	"classname" "worldspawn"
 	"comment" "Decompiled by BSPSource v1.3.6 from road_to_dawn.bsp"
 	"detailmaterial" "detail/detailsprites"
@@ -44237,6 +44237,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"dentamount" "0"
 	"disableshadows" "1"
 	"distance" "125"
@@ -45866,6 +45867,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "5"
+	"CustomMaxHealth" "1800"
 	"dentamount" "4"
 	"disableshadows" "1"
 	"distance" "125"
@@ -46060,6 +46062,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"disableshadows" "1"
 	"distance" "125"
 	"DoBreachedShout" "1"
@@ -46407,6 +46410,7 @@ entity
 	"CanCloseToWeld" "0"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"disableshadows" "1"
 	"distance" "125"
 	"DoBreachedShout" "1"
@@ -46536,6 +46540,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"disableshadows" "1"
 	"distance" "125"
 	"DoBreachedShout" "1"
@@ -133262,7 +133267,7 @@ entity
 	"HoldAnimation" "0"
 	"MaxAnimTime" "10"
 	"MinAnimTime" "5"
-	"model" "models/props/techdeco/buttonpanel/panel02.mdl"
+	"model" "models/env/ryberg/outside/outsidepowerbox/outsidepowerbox.mdl"
 	"PerformanceMode" "0"
 	"pressuredelay" "0"
 	"RandomAnimation" "0"
@@ -133271,12 +133276,12 @@ entity
 	"renderfx" "0"
 	"rendermode" "0"
 	"SetBodyGroup" "0"
-	"skin" "2"
+	"skin" "0"
 	"solid" "6"
 	"spawnflags" "0"
 	"StartDisabled" "0"
 	"targetname" "room1_button01"
-	"origin" "512 1789 157.895"
+	"origin" "512 1792 96"
 	editor
 	{
 		"color" "220 30 220"
@@ -133303,6 +133308,7 @@ entity
 	"spawnflags" "16"
 	"StartDisabled" "0"
 	"useafterhack" "1"
+	"usepanelmessage" "#asw_flip_switch"
 	"wait" "1"
 	"wirecolumns" "5"
 	"wirerows" "2"
@@ -146735,8 +146741,8 @@ cameras
 	"activecamera" "0"
 	camera
 	{
-		"position" "[-487.027 6936.99 302.018]"
-		"look" "[-545.854 7168.29 183.702]"
+		"position" "[400.926 1749.48 194.582]"
+		"look" "[620.092 1872.21 105.926]"
 	}
 	camera
 	{

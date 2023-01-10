@@ -26,6 +26,7 @@
 	#include "engine/ivdebugoverlay.h"
 	#include "c_asw_game_resource.h"
 	#include "c_asw_marine_resource.h"
+	#include "c_asw_aoegrenade_projectile.h"
 #else
 	#include "asw_player.h"
 	#include "asw_marine.h"
@@ -393,6 +394,14 @@ bool CASWPlayerAnimState::DoAnimationEventForMiscLayer( PlayerAnimEvent_t event 
 
 	if ( event == PLAYERANIMEVENT_WEAPON_SWITCH )
 	{
+#ifdef CLIENT_DLL
+		// force AOE grenade projectiles to update attachments ASAP
+		FOR_EACH_VEC( IASW_AOEGrenade_Projectile_List::AutoList(), i )
+		{
+			assert_cast< C_ASW_AOEGrenade_Projectile * >( IASW_AOEGrenade_Projectile_List::AutoList()[i]->GetEntity() )->m_fUpdateAttachFXTime = 0;
+		}
+#endif
+
 		// weapon change actually interrupts flare throws, so we allow cancelling this special anim
 		if (m_bPlayingMisc && m_iMiscSequence == m_pOuter->LookupSequence( "grenade_roll_trim" ))
 			m_bMiscNoOverride = false;

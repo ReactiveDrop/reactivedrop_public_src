@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "17"
+	"mapversion" "18"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -20,7 +20,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "17"
+	"mapversion" "18"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -1972,6 +1972,7 @@ entity
 	"playersrequired" "1"
 	"spawnflags" "2"
 	"useafterhack" "1"
+	"usepanelmessage" "#asw_place_explosives"
 	"wait" "1"
 	"wirecolumns" "5"
 	"wirerows" "2"

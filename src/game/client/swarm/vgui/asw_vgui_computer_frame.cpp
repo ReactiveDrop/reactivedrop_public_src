@@ -86,9 +86,10 @@ void CASW_VGUI_Computer_Frame::SetBackdrop(int iBackdropType)
 
 void CASW_VGUI_Computer_Frame::SplashFinished()
 {
-	if ( m_pMenuPanel && !m_pMenuPanel->IsHacking() )
+	if ( m_bPlayingSplash && m_pMenuPanel && !m_pMenuPanel->IsHacking() )
 	{
-		m_pMenuPanel->ShowMenu();
+		if ( !m_pMenuPanel->m_hCurrentPage )
+			m_pMenuPanel->ShowMenu();
 		m_bPlayingSplash = false;
 	}
 }
@@ -258,6 +259,17 @@ void CASW_VGUI_Computer_Frame::OnThink()
 		m_pLogoffLabel->SetFgColor( Color( 255, 255, 255, 255 ) );
 	}
 
+	if ( m_bPlayingSplash )
+	{
+		// If an override happened, kill the splash screen.
+		C_ASW_Computer_Area *pArea = m_pHackComputer ? m_pHackComputer->GetComputerArea() : NULL;
+		if ( pArea && pArea->IsLoggedIn() && !pArea->IsLocked() )
+		{
+			SetTitleHidden( true );
+			SplashFinished();
+		}
+	}
+
 	m_fLastThinkTime = gpGlobals->curtime;
 }
 
@@ -321,6 +333,8 @@ void CASW_VGUI_Computer_Frame::SetTitleHidden(bool bHidden)
 
 void CASW_VGUI_Computer_Frame::SetHackOption(int iOption)
 {
+	if ( iOption == ASW_HACK_OPTION_OVERRIDE )
+		SetBackdrop( 1 );
 	if (m_pMenuPanel)
 		m_pMenuPanel->SetHackOption(iOption);
 }

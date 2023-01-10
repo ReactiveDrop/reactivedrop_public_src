@@ -1,0 +1,23 @@
+"ReactorStatus" {
+	"LabelOnline"		"#asw_SynTekReactorOnlineLabel"
+	"EfficiencyOnline"		"78%"
+	"EnergyOnline"		"36,734,738 MW"
+	"Coolant1Online"		"74%"
+	"Coolant2Online"		"82%"
+	"Coolant3Online"		"99%"
+	"Temperature1Online"		"1010344K"
+	"Temperature2Online"		"936K"
+	"Temperature3Online"		"210K"
+	"Temperature4Online"		"298K"
+
+	"LabelOffline"		"#asw_SynTekReactorOfflineLabel"
+	"EfficiencyOffline"		"0%"
+	"EnergyOffline"		"0 MW"
+	"Coolant1Offline"		"74%"
+	"Coolant2Offline"		"82%"
+	"Coolant3Offline"		"99%"
+	"Temperature1Offline"		"295K"
+	"Temperature2Offline"		"295K"
+	"Temperature3Offline"		"110K"
+	"Temperature4Offline"		"295K"
+}

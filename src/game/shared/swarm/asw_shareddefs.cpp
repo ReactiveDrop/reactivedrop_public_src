@@ -135,7 +135,14 @@ bool IsBulletBasedWeaponClass( Class_T weapon_class )
 		weapon_class == CLASS_ASW_PRIFLE ||
 		weapon_class == CLASS_ASW_PISTOL ||
 		weapon_class == CLASS_ASW_AUTOGUN ||
-		weapon_class == CLASS_ASW_ASSAULT_SHOTGUN);
+		weapon_class == CLASS_ASW_ASSAULT_SHOTGUN ||
+		weapon_class == CLASS_ASW_DEAGLE ||
+		weapon_class == CLASS_ASW_DEVASTATOR ||
+		weapon_class == CLASS_ASW_COMBAT_RIFLE ||
+		weapon_class == CLASS_ASW_COMBAT_RIFLE_SHOTGUN ||
+		weapon_class == CLASS_ASW_50CALMG ||
+		weapon_class == CLASS_ASW_HEAVY_RIFLE ||
+		weapon_class == CLASS_ASW_MEDRIFLE );
 }
 
 bool IsSentryClass( Class_T entity_class )

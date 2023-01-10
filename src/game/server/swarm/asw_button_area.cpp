@@ -58,7 +58,7 @@ BEGIN_DATADESC( CASW_Button_Area )
 	DEFINE_OUTPUT( m_OnButtonActivated, "OnButtonActivated" ),
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST(CASW_Button_Area, DT_ASW_Button_Area)	
+IMPLEMENT_SERVERCLASS_ST(CASW_Button_Area, DT_ASW_Button_Area)
 	SendPropInt			(SENDINFO(m_iHackLevel)),
 	SendPropBool		(SENDINFO(m_bIsLocked)),
 	SendPropBool		(SENDINFO(m_bIsDoorButton)),
@@ -66,7 +66,13 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Button_Area, DT_ASW_Button_Area)
 	SendPropFloat		(SENDINFO(m_fHackProgress)),
 	SendPropBool		(SENDINFO(m_bNoPower)),	
 	SendPropBool		(SENDINFO(m_bWaitingForInput)),	
+
 	SendPropString		(SENDINFO( m_NoPowerMessage ) ),
+	SendPropString		(SENDINFO(m_UsePanelMessage)),
+	SendPropString		(SENDINFO(m_NeedTechMessage)),
+	SendPropString		(SENDINFO(m_ExitPanelMessage)),
+	SendPropString		(SENDINFO(m_HackPanelMessage)),
+
 	SendPropBool		(SENDINFO(m_bNeedsTech)),
 	SendPropFloat		(SENDINFO(m_flHoldTime)),
 END_SEND_TABLE()
@@ -90,6 +96,11 @@ CASW_Button_Area::CASW_Button_Area()
 
 	m_flHoldTime = -1;
 	m_bDestroyHeldObject = false;
+
+	m_UsePanelMessage.GetForModify()[0] = '\0';
+	m_NeedTechMessage.GetForModify()[0] = '\0';
+	m_ExitPanelMessage.GetForModify()[0] = '\0';
+	m_HackPanelMessage.GetForModify()[0] = '\0';
 }
 
 CASW_Button_Area::~CASW_Button_Area()
@@ -613,6 +624,26 @@ bool CASW_Button_Area::KeyValue( const char *szKeyName, const char *szValue )
 	if ( FStrEq( szKeyName, "nopowermessage" ) )
 	{
 		Q_strncpy( m_NoPowerMessage.GetForModify(), szValue, 255 );
+		return true;
+	}	
+	else if ( FStrEq( szKeyName, "usepanelmessage" ) )
+	{
+		Q_strncpy( m_UsePanelMessage.GetForModify(), szValue, 255 );
+		return true;
+	}	
+	else if ( FStrEq( szKeyName, "needtechmessage" ) )
+	{
+		Q_strncpy( m_NeedTechMessage.GetForModify(), szValue, 255 );
+		return true;
+	}	
+	else if ( FStrEq( szKeyName, "exitpanelmessage" ) )
+	{
+		Q_strncpy( m_ExitPanelMessage.GetForModify(), szValue, 255 );
+		return true;
+	}	
+	else if ( FStrEq( szKeyName, "hackpanelmessage" ) )
+	{
+		Q_strncpy( m_HackPanelMessage.GetForModify(), szValue, 255 );
 		return true;
 	}	
 	return BaseClass::KeyValue( szKeyName, szValue );

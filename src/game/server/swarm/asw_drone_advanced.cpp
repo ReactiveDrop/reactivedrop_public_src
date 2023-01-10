@@ -797,6 +797,9 @@ int CASW_Drone_Advanced::MeleeAttack1Conditions( float flDot, float flDist )
 	if ( flPrDot < 0 )	// try generous way
 		return COND_NOT_FACING_ATTACK;
 
+	if ( GetNextAttack() > gpGlobals->curtime )
+		return COND_TOO_FAR_TO_ATTACK;
+
 #else
 
 	if ( flDot < 0.5f )
@@ -955,6 +958,9 @@ void CASW_Drone_Advanced::MeleeAttack( float distance, float damage, QAngle &vie
 	Vector vecForceDir;
 
 	m_bHasAttacked = true;
+
+	// Prevent drone from attacking again before this animation would have finished.
+	SetNextAttack( gpGlobals->curtime + SequenceDuration() / GetPlaybackRate() - GetCycle() );
 
 	// Always hurt bullseyes for now
 	if ( ( GetEnemy() != NULL ) && ( GetEnemy()->Classify() == CLASS_BULLSEYE ) )

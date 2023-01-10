@@ -480,28 +480,7 @@ void InGameMainMenu::OnThink()
 		}
 	}
 
-	bool bCanGoIdle = ( !Q_stricmp( "campaign", szGameMode ) || !Q_stricmp( "single_mission", szGameMode ) ) && gpGlobals->maxClients > 1 && ConVarRef("rd_allow_afk").GetBool();
-
-	// TODO: determine if player can go idle
-#if 0
-	if ( bCanGoIdle )
-	{
-		int iLocalPlayerTeam;
-		if ( !GameClientExports()->GetPlayerTeamIdByUserId( -1, iLocalPlayerTeam ) || iLocalPlayerTeam != GameClientExports()->GetTeamId_Survivor() )
-		{
-			bCanGoIdle = false;
-		}
-		else
-		{
-			int iNumAliveHumanPlayersOnTeam = GameClientExports()->GetNumPlayersAliveHumanPlayersOnTeam( iLocalPlayerTeam );
-
-			if ( iNumAliveHumanPlayersOnTeam <= 1 )
-			{
-				bCanGoIdle = false;
-			}
-		}
-	}
-#endif
+	bool bCanGoIdle = !engine->IsPlayingDemo() && gpGlobals->maxClients > 1 && ConVarRef( "rd_allow_afk" ).GetBool();
 
 	SetControlEnabled( "BtnGoIdle", bCanGoIdle );
 
@@ -574,30 +553,8 @@ void InGameMainMenu::PerformLayout( void )
 	{
 		bPlayOffline = true;
 		SetControlEnabled("BtnInviteFriends", false);
-		bCanVote = false;
+		bCanVote = true;
 	}
-
-	/*	// this block used to restrict IDLE players from starting a vote
-	else
-	{
-		int iSlot = GetGameUIActiveSplitScreenPlayerSlot();
-
-		int iOldSplitSlot = engine->GetActiveSplitScreenPlayerSlot();
-
-		engine->SetActiveSplitScreenPlayerSlot( iSlot );
-
-		int iLocalPlayerTeam;
-		if ( GameClientExports()->GetPlayerTeamIdByUserId( -1, iLocalPlayerTeam ) )
-		{
-			if ( iLocalPlayerTeam != GameClientExports()->GetTeamId_Survivor() &&
-				 iLocalPlayerTeam != GameClientExports()->GetTeamId_Infected() )
-			{
-				bCanVote = false;
-			}
-		}
-
-		engine->SetActiveSplitScreenPlayerSlot( iOldSplitSlot );
-	}*/
 
 	vgui::Button *pVoteButton = dynamic_cast< vgui::Button* >( FindChildByName( "BtnCallAVote" ) );
 	if ( pVoteButton )
@@ -612,7 +569,6 @@ void InGameMainMenu::PerformLayout( void )
 		}
 		SetControlEnabled( "BtnCallAvote", true );
 	}
-	//SetControlEnabled( "BtnCallAVote", bCanVote );
 
 	BaseModUI::FlyoutMenu *flyout = dynamic_cast< FlyoutMenu* >( FindChildByName( "FlmOptionsFlyout" ) );
 	if ( flyout )

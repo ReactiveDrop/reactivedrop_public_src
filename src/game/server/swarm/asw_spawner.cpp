@@ -192,6 +192,16 @@ void CASW_Spawner::AlienKilled( CBaseEntity *pVictim )
 	}
 }
 
+static bool IgnoreBasePropHelper( IHandleEntity *pHandleEntity, int contentsMask )
+{
+	if ( dynamic_cast< CBaseProp * >( pHandleEntity ) )
+	{
+		return false;
+	}
+
+	return true;
+}
+
 // mission started
 void CASW_Spawner::MissionStart()
 {
@@ -214,15 +224,20 @@ void CASW_Spawner::MissionStart()
 
 	if ( developer.GetBool() )
 	{
-		int nHull = g_Aliens[m_AlienClassNum].m_nHullType;
-		const Vector &hullMins = NAI_Hull::Mins( nHull );
-		const Vector &hullMaxs = NAI_Hull::Maxs( nHull );
+		const Vector &hullMins = g_Aliens[m_AlienClassNum].m_vecRealHullMins;
+		const Vector &hullMaxs = g_Aliens[m_AlienClassNum].m_vecRealHullMaxs;
 		Vector traceStart = GetAbsOrigin() + Vector( 0, 0, 16.0f );
 		Vector traceEnd = GetAbsOrigin() + Vector( 0, 0, 1.0f / 16.0f );
+		CTraceFilterSimple filter( this, ASW_COLLISION_GROUP_ALIEN, &IgnoreBasePropHelper );
 		trace_t tr;
-		UTIL_TraceHull( traceStart, traceEnd, hullMins, hullMaxs, MASK_NPCSOLID, NULL, &tr );
+		UTIL_TraceHull( traceStart, traceEnd, hullMins, hullMaxs, MASK_NPCSOLID, &filter, &tr );
 		if ( tr.fraction < 1.0f )
 		{
+			if ( developer.GetInt() >= 3 )
+			{
+				debugoverlay->AddBoxOverlay2( GetAbsOrigin(), hullMins, hullMaxs, vec3_angle, Color{32, 64, 32, 64}, Color{128, 255, 128, 255}, 300.0f);
+				debugoverlay->AddBoxOverlay2( tr.endpos, hullMins, hullMaxs, vec3_angle, Color{ 64, 32, 32, 64 }, Color{ 255, 128, 128, 255 }, 300.0f );
+			}
 			DevWarning( "Spawner %s at %f %f %f will spawn %s inside floor (%s). Recommendation: Raise spawner by %d units.\n", GetEntityName() == NULL_STRING ? "(unnamed)" : GetEntityNameAsCStr(), VectorExpand( GetAbsOrigin() ), STRING( m_AlienClassName ), tr.m_pEnt ? tr.m_pEnt->GetDebugName() : "no ent", Ceil2Int( tr.endpos.z - traceEnd.z ) );
 		}
 	}

@@ -1705,6 +1705,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="swarm\rd_collections_inventory.cpp" />
     <ClCompile Include="swarm\rd_collections_swarmopedia.cpp" />
     <ClCompile Include="swarm\rd_convar_hacks.cpp" />
+    <ClCompile Include="swarm\rd_demo_utils.cpp" />
     <ClCompile Include="swarm\rd_font_hack.cpp" />
     <ClCompile Include="swarm\rd_fps_max_hack.cpp" />
     <ClCompile Include="swarm\rd_hud_boss_bar.cpp" />
@@ -2797,6 +2798,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="swarm\iasw_fade_list.h" />
     <ClInclude Include="swarm\ibriefing.h" />
     <ClInclude Include="swarm\rd_collections.h" />
+    <ClInclude Include="swarm\rd_demo_utils.h" />
     <ClInclude Include="swarm\rd_font_hack.h" />
     <ClInclude Include="swarm\rd_hud_boss_bar.h" />
     <ClInclude Include="swarm\rd_rich_presence.h" />

@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "341"
+	"mapversion" "342"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -44,7 +44,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "341"
+	"mapversion" "342"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -159682,6 +159682,7 @@ entity
 	"StartDisabled" "0"
 	"targetname" "valve_button"
 	"useafterhack" "1"
+	"usepanelmessage" "#asw_turn_valve"
 	"usetargetname" "gordon_prop_panel"
 	"wait" "1"
 	"wirecolumns" "8"
@@ -163807,6 +163808,7 @@ entity
 	"StartDisabled" "0"
 	"targetname" "valve_button1"
 	"useafterhack" "1"
+	"usepanelmessage" "#asw_turn_valve"
 	"usetargetname" "gordon_prop_panel1"
 	"wait" "1"
 	"wirecolumns" "8"
@@ -168814,8 +168816,8 @@ cameras
 	"activecamera" "0"
 	camera
 	{
-		"position" "[-3667.06 -1266.87 194.34]"
-		"look" "[-3588.35 -1573.9 -78.7647]"
+		"position" "[-4672 -3076.5 19.5]"
+		"look" "[-4672 -2658.11 19.5]"
 	}
 }
 cordons

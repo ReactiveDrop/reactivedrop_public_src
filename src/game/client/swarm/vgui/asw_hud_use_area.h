@@ -51,7 +51,7 @@ public:
 
 	int m_iNumUseIcons;
 	int m_iFrameWidth, m_iFrameHeight;
-	//int m_iProgressBarTexture;
+	int m_iDeathmatchTexture;
 	void LoadUseTextures();
 	int GetUseIconAlpha();
 

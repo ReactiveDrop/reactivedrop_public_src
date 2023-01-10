@@ -832,8 +832,7 @@ void CASWHudCrosshair::GetCurrentPos( int &x, int &y )
 
 int CASWHudCrosshair::GetCurrentCrosshair( int x, int y )
 {
-	CRadialMenu *pRadialMenu = GET_HUDELEMENT( CRadialMenu );
-	if ( !pRadialMenu->IsFading() && pRadialMenu->GetAlpha() > 0 )
+	if ( IsRadialMenuOpen( NULL, false ) )
 	{
 		return m_nHackActiveCrosshairTexture;
 	}

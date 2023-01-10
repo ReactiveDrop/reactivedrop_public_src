@@ -101,6 +101,7 @@ ConVar rd_pvp_marine_take_damage_from_bots("rd_pvp_marine_take_damage_from_bots"
 ConVar rd_bot_strong( "rd_bot_strong", "1", FCVAR_CHEAT, "If 1, bots take only 25% of damage in a co-op game" );
 ConVar rd_medgun_medkit_refill_amount( "rd_medgun_medkit_refill_amount", "0", FCVAR_CHEAT, "Amount of ammo given to refill a healgun from a medkit" );
 ConVar rd_marine_take_damage_from_ai_grenade( "rd_marine_take_damage_from_ai_grenade", "1", FCVAR_CHEAT, "Players take damage from bots' grenade launchers" );
+ConVar rd_stuck_teleport_distance( "rd_stuck_teleport_distance", "256", FCVAR_CHEAT, "Maximum distance to teleport a stuck marine to a node" );
 static ConVar rd_notify_about_out_of_ammo( "rd_notify_about_out_of_ammo", "1", FCVAR_CHEAT, "Chatter and print a yellow message when marine is out of ammo" );
 static ConVar rd_gas_grenade_ff_dmg( "rd_gas_grenade_ff_dmg", "10", FCVAR_CHEAT, "Fixed friendly fire damage of gas grenade, marine to marine, done in asw_gas_grenade_damage_interval. " );
 
@@ -1389,7 +1390,7 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	}
 	
 	// don't allow FF from melee attacks
-	bool bFriendlyFire = pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE;
+	bool bFriendlyFire = pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE && IRelationType( pAttacker ) == D_LI;
 	if ( bFriendlyFire )
 	{
 		CASW_Marine *pOtherMarine = assert_cast<CASW_Marine*>(pAttacker);
@@ -3983,7 +3984,7 @@ void CASW_Marine::Event_Killed( const CTakeDamageInfo &info )
 		CASW_Player *pPlayer = GetCommander();
 		if ( pPlayer && pPlayer->GetNPC() == this )
 		{
-			if ( UTIL_ASW_NumCommandedMarines( pPlayer ) >= 1 )
+			if ( !ASWDeathmatchMode() && UTIL_ASW_NumCommandedMarines( pPlayer ) >= 1 )
 			{
 				IGameEvent *event = gameeventmanager->CreateEvent( "player_should_switch" );
 				if ( event )
@@ -5422,7 +5423,7 @@ void CASW_Marine::Stumble( CBaseEntity *pSource, const Vector &vecStumbleDir, bo
 	if ( pSource->Classify() == CLASS_ASW_SHIELDBUG )		// don't stumble from shieldbugs, they do knockdowns instead
 		return;
 
-	if ( pSource->Classify() == CLASS_ANTLION )		// don't stumble from npc_antlionguard, they do knockdowns instead
+	if ( pSource->Classify() == CLASS_ASW_ANTLIONGUARD )		// don't stumble from npc_antlionguard, they do knockdowns instead
 		return;
 
 	// reactivedrop: the reason we use ClassMatches() here is because uber drones do
@@ -5636,10 +5637,10 @@ bool CASW_Marine::TeleportStuckMarine()
 	VectorNormalize( vToPrev );
 
 	Vector vOldPos = GetAbsOrigin();
-	bool bSuccess = UTIL_FindClosestPassableSpace( this, vToPrev, MASK_PLAYERSOLID, NULL, FL_AXIS_DIRECTION_NZ );
-	if ( bSuccess )
+	if ( UTIL_FindClosestPassableSpace( this, vToPrev, MASK_PLAYERSOLID, NULL, FL_AXIS_DIRECTION_NZ ) )
 	{
 		DevMsg( "Unstuck marine from (%.2f %.2f %.2f) to (%.2f %.2f %.2f).\n", vOldPos.x, vOldPos.y, vOldPos.z, GetAbsOrigin().x, GetAbsOrigin().y, GetAbsOrigin().z );
+		return true;
 	}
 
 	trace_t tr;
@@ -5649,10 +5650,10 @@ bool CASW_Marine::TeleportStuckMarine()
 	if ( ( tr.contents & MASK_PLAYERSOLID ) && tr.m_pEnt )
 	{
 		// still stuck
-		return TeleportToFreeNode();
+		return TeleportToFreeNode( NULL, rd_stuck_teleport_distance.GetFloat() );
 	}
 
-	return bSuccess;
+	return false;
 }
 
 bool CASW_Marine::TeleportToFreeNode( CASW_Marine *pTarget, float fNearestDist )

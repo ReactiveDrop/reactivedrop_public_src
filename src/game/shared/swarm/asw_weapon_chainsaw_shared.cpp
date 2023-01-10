@@ -102,6 +102,7 @@ CASW_Weapon_Chainsaw::CASW_Weapon_Chainsaw( void )
 #endif
 
 	m_fMaxRange1 = ASW_CHAINSAW_RANGE;
+	m_fMaxRange2 = ASW_CHAINSAW_RANGE;
 }
 
 CASW_Weapon_Chainsaw::~CASW_Weapon_Chainsaw()

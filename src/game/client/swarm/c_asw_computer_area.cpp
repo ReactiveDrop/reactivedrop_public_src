@@ -56,6 +56,8 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_Computer_Area, DT_ASW_Computer_Area, CASW_Comput
 	RecvPropBool		(RECVINFO(m_bStocksFileLocked)),
 	RecvPropBool		(RECVINFO(m_bWeatherFileLocked)),
 	RecvPropBool		(RECVINFO(m_bPlantFileLocked)),
+
+	RecvPropInt( RECVINFO( m_iReactorState ) ),
 END_RECV_TABLE()
 
 bool C_ASW_Computer_Area::s_bLoadedLockedIconTexture = false;
@@ -301,4 +303,15 @@ C_ASW_PointCamera *C_ASW_Computer_Area::GetActiveCam()
 	default:
 		return NULL;
 	}
+}
+
+const char *C_ASW_Computer_Area::GetPlantFileName()
+{
+	if ( m_PlantFile.Get()[0] == '\0' )
+		return NULL;
+
+	if ( StringHasPrefix( m_PlantFile, "resource/plant/" ) )
+		return m_PlantFile;
+
+	return "resource/plant/default.txt";
 }

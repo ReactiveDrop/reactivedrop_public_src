@@ -21,6 +21,7 @@
 #include "logicentities.h"
 #include "team.h"
 #include "team_spawnpoint.h"
+#include "SoundEmitterSystem/isoundemittersystembase.h"
 #else
 #include "c_asw_marine_resource.h"
 #include "c_asw_game_resource.h"
@@ -51,6 +52,8 @@ LINK_ENTITY_TO_CLASS( asw_deathmatch_mode, CASW_Deathmatch_Mode );
 BEGIN_DATADESC( CASW_Deathmatch_Mode )
 	DEFINE_THINKFUNC( DeathmatchThink ),
 END_DATADESC()
+
+extern ISoundEmitterSystemBase *soundemitterbase;
 #endif
 
 CASW_Deathmatch_Mode *g_pDeathmatchMode = NULL;
@@ -354,7 +357,7 @@ void CASW_Deathmatch_Mode::OnMarineKilled( const CTakeDamageInfo &info, CASW_Mar
 		{
 		case 0:
 			ASWGameRules()->FinishDeathmatchRound( pOtherMR );
-			ASWGameRules()->BroadcastSound( "rd_song.round_end_music" );
+			PlayRoundEndMusic();
 			break;
 		case 1:
 			if ( !s_bPlayedFragLimitSound[1] )
@@ -903,6 +906,23 @@ void CASW_Deathmatch_Mode::BroadcastLoadoutScreen()
 	UserMessageBegin( filter, "BroadcastClientCmd" );
 		WRITE_STRING( "cl_select_loadout_noclose" );
 	MessageEnd();
+}
+
+void CASW_Deathmatch_Mode::PlayRoundEndMusic()
+{
+	// Pick random wav on server so every client gets the same song.
+	const char *szDefaultMusic = soundemitterbase->GetWavFileForSound( "rd_song.round_end_music", GENDER_NONE );
+
+	IGameEvent *event = gameeventmanager->CreateEvent( "jukebox_play_random" );
+	if ( event )
+	{
+		event->SetFloat( "fadeintime", 0 );
+		event->SetString( "defaulttrack", szDefaultMusic );
+		gameeventmanager->FireEvent( event );
+
+		// Stop adrenaline music if it's playing
+		ASWGameRules()->m_fPreventStimMusicTime = 5.0f;
+	}
 }
 
 void CASW_Deathmatch_Mode::ResetScores()

@@ -36,6 +36,7 @@ public:
 	// == MANAGED_MEMBER_POINTERS_END ==
 
 	CampaignMissionHandle m_pCurrentMission;
+	MissionHandle m_pNonCampaignMission;
 };
 
 #endif // _INCLUDED_NB_CAMPAIGN_MISSION_DETAILS_H

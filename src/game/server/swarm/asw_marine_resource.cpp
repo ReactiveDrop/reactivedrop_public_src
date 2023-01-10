@@ -10,6 +10,7 @@
 #include "asw_director.h"
 #include "asw_gamestats.h"
 #include "asw_gamerules.h"
+#include "vgui/ILocalize.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -241,7 +242,15 @@ CASW_Player* CASW_Marine_Resource::GetCommander()
 	return m_Commander;
 }
 
-void CASW_Marine_Resource::GetDisplayName( char *pwchDisplayName, int nMaxBytes )
+void CASW_Marine_Resource::GetDisplayName( char *pchDisplayName, int nMaxBytes )
+{
+	wchar_t wszDisplayName[256];
+	GetDisplayName( wszDisplayName, sizeof( wszDisplayName ) );
+
+	V_UnicodeToUTF8( wszDisplayName, pchDisplayName, nMaxBytes );
+}
+
+void CASW_Marine_Resource::GetDisplayName( wchar_t *pwchDisplayName, int nMaxBytes )
 {
 	bool bPlayerName = false;
 	const char *pchName = NULL;
@@ -253,11 +262,8 @@ void CASW_Marine_Resource::GetDisplayName( char *pwchDisplayName, int nMaxBytes 
 	}
 	else
 	{
-		bool bIsInhabited = IsInhabited();
-
-		CBasePlayer *pPlayer = UTIL_PlayerByIndex( m_iCommanderIndex );
-
-		if ( bIsInhabited && GetCommander() && pPlayer && pPlayer->IsConnected() )
+		CASW_Player *pPlayer = GetCommander();
+		if ( IsInhabited() && pPlayer && pPlayer->IsConnected() && pPlayer->GetNPC() == m_MarineEntity )
 		{
 			// Use the player name
 			pchName = pPlayer->GetPlayerName();
@@ -270,8 +276,24 @@ void CASW_Marine_Resource::GetDisplayName( char *pwchDisplayName, int nMaxBytes 
 		}
 	}
 
-	// Copy the name
-	V_strncpy( pwchDisplayName, pchName, nMaxBytes );
+	const wchar_t *pwchLocalizedMarineName = NULL;
+
+	if ( !bPlayerName )
+	{
+		// Find the localized character name
+		pwchLocalizedMarineName = g_pVGuiLocalize->Find( pchName );
+	}
+
+	if ( pwchLocalizedMarineName )
+	{
+		// Copy the localized name
+		V_wcsncpy( pwchDisplayName, pwchLocalizedMarineName, nMaxBytes );
+	}
+	else
+	{
+		// Copy the name
+		g_pVGuiLocalize->ConvertANSIToUnicode( pchName, pwchDisplayName, nMaxBytes );
+	}
 }
 
 void CASW_Marine_Resource::SetMarineEntity(CASW_Marine* marine)

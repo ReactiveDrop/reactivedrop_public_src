@@ -3339,6 +3339,8 @@ void CASW_Buzzer::UpdateSleepState(bool bInPVS)
 				Assert( VPhysicsGetObject() );
 				if ( VPhysicsGetObject() )
 					VPhysicsGetObject()->Wake();
+
+				SetMoveType( MOVETYPE_VPHYSICS );
 			}
 		}
 	}
@@ -3363,6 +3365,8 @@ void CASW_Buzzer::UpdateSleepState(bool bInPVS)
 					Assert( VPhysicsGetObject() );
 					if ( VPhysicsGetObject() )
 						VPhysicsGetObject()->Sleep();
+					SetLocalVelocity( vec3_origin );
+					SetMoveType( MOVETYPE_NONE );
 					if (m_bVisibleWhenAsleep)
 						RemoveEffects(EF_NODRAW);
 				}

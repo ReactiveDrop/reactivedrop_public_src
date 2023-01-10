@@ -78,7 +78,7 @@ public:
 	int GetAwakeDrones() { return m_nAwakeDrones; }
 
 	int GetNumAlienClasses();
-	ASW_Alien_Class_Entry* GetAlienClass( int i );
+	const ASW_Alien_Class_Entry* GetAlienClass( int i );
 
 private:
 	template <typename Alien> int SpawnAlienBatch(Alien szAlienClass, int iNumAliens, const Vector &vecPosition, const QAngle &angFacing, float flMarinesBeyondDist, const Vector & vecMins, const Vector & vecMaxs);

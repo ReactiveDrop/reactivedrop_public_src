@@ -20,11 +20,20 @@ BEGIN_DATADESC( CASW_Radiation_Volume )
 	DEFINE_FIELD(m_flBoxWidth, FIELD_FLOAT),
 END_DATADESC()
 
+CUtlVector<CASW_Radiation_Volume *> g_aRadiationVolumes;
+
 CASW_Radiation_Volume::CASW_Radiation_Volume()
 {
 	m_flDamage = ASW_RAD_DAMAGE;
 	m_flDmgInterval = RAD_DAMAGE_INTERVAL;
 	m_flBoxWidth = 100.0f;
+
+	g_aRadiationVolumes.AddToTail( this );
+}
+
+CASW_Radiation_Volume::~CASW_Radiation_Volume()
+{
+	g_aRadiationVolumes.FindAndRemove( this );
 }
 
 void CASW_Radiation_Volume::Spawn( void )

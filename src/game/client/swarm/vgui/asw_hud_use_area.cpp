@@ -16,6 +16,7 @@
 #include "c_asw_player.h"
 #include "c_asw_marine.h"
 #include "asw_marine_profile.h"
+#include "c_asw_game_resource.h"
 #include "c_asw_marine_resource.h"
 #include "vguimatsurface/imatsystemsurface.h"
 #include "iasw_client_usable_entity.h"
@@ -60,6 +61,8 @@ PRECACHE_REGISTER_END()
 
 extern ConVar asw_draw_hud;
 extern ConVar asw_debug_hud;
+extern ConVar rd_respawn_time;
+ConVar rd_deathmatch_respawn_hints( "rd_deathmatch_respawn_hints", "1", FCVAR_ARCHIVE, "Show keybind hints for spawning in Deathmatch mode." );
 extern int g_asw_iGUIWindowsOpen;
 
 using namespace vgui;
@@ -103,7 +106,6 @@ DECLARE_HUDELEMENT( CASWHudUseArea );
 
 CASWHudUseArea::CASWHudUseArea( const char *pElementName ) : vgui::Panel(GetClientMode()->GetViewport(), "ASWHudUseArea"), CASW_HudElement( pElementName )
 {
-	SetHiddenBits( HIDEHUD_PLAYERDEAD );
 	vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFile("resource/SwarmSchemeNew.res", "SwarmSchemeNew");
 	SetScheme(scheme);
 	LoadUseTextures();
@@ -194,6 +196,63 @@ void CASWHudUseArea::Paint()
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	if (!pPlayer)
 		return;
+
+	if ( ASWDeathmatchMode() && ASWGameResource() && m_pUseIcon && ASWGameRules() && ASWGameRules()->m_szDeathmatchWinnerName[0] == '\0' && ASWGameRules()->GetGameState() == ASW_GS_INGAME && rd_deathmatch_respawn_hints.GetBool() )
+	{
+		C_ASW_Marine_Resource *pMR = NULL;
+		for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
+		{
+			pMR = ASWGameResource()->GetMarineResource( i );
+			if ( pMR && pMR->IsInhabited() && pMR->GetCommander() == pPlayer )
+			{
+				break;
+			}
+
+			pMR = NULL;
+		}
+
+		ASWUseAction DeathmatchRespawnHint{};
+		DeathmatchRespawnHint.iUseIconTexture = m_iDeathmatchTexture;
+		DeathmatchRespawnHint.UseTarget = pPlayer;
+		DeathmatchRespawnHint.bNoFadeIfSameUseTarget = true;
+
+		if ( !pMR )
+		{
+			V_wcsncpy( DeathmatchRespawnHint.wszText, g_pVGuiLocalize->Find( "#asw_button_selectm" ), sizeof( DeathmatchRespawnHint.wszText ) );
+			V_strncpy( DeathmatchRespawnHint.szCommand, "cl_select_loadout", sizeof( DeathmatchRespawnHint.szCommand ) );
+
+			m_pUseIcon->SetUseAction( DeathmatchRespawnHint );
+			return;
+		}
+
+		if ( !pMR->GetMarineEntity() || !pMR->GetMarineEntity()->IsAlive() )
+		{
+			if ( gpGlobals->curtime > pPlayer->m_fMarineDeathTime + rd_respawn_time.GetInt() )
+			{
+				V_wcsncpy( DeathmatchRespawnHint.wszText, g_pVGuiLocalize->Find( "#rd_str_press_jump_to_respawn" ), sizeof( DeathmatchRespawnHint.wszText ) );
+				V_strncpy( DeathmatchRespawnHint.szCommand, "+jump", sizeof( DeathmatchRespawnHint.szCommand ) );
+
+				m_pUseIcon->SetUseAction( DeathmatchRespawnHint );
+				return;
+			}
+
+			int sec_left = pPlayer->m_fMarineDeathTime + rd_respawn_time.GetInt() - gpGlobals->curtime;
+			if ( sec_left < 0 )
+				sec_left = 0;
+
+			char sec_left_str[32];
+			itoa( sec_left, sec_left_str, 10 );
+
+			wchar_t sec_left_wstr[32];
+			g_pVGuiLocalize->ConvertANSIToUnicode( sec_left_str, sec_left_wstr, sizeof( sec_left_wstr ) );
+
+			DeathmatchRespawnHint.bShowUseKey = false;
+			g_pVGuiLocalize->ConstructString( DeathmatchRespawnHint.wszText, sizeof( DeathmatchRespawnHint.wszText ), g_pVGuiLocalize->Find( "#rd_str_respawning_in" ), 1, sec_left_wstr );
+
+			m_pUseIcon->SetUseAction( DeathmatchRespawnHint );
+			return;
+		}
+	}
 
 	C_ASW_Inhabitable_NPC *pNPC = pPlayer->GetViewNPC();
 	if (!pNPC)
@@ -349,8 +408,8 @@ void CASWHudUseArea::AddUseIcon(int iUseIconTexture, const char *pText,
 
 void CASWHudUseArea::LoadUseTextures()
 {
-	//m_iProgressBarTexture = vgui::surface()->CreateNewTextureID();
-	//vgui::surface()->DrawSetTextureFile( m_iProgressBarTexture, "vgui/swarm/UseIcons/UseIconProgressBar", true, false);
+	m_iDeathmatchTexture = vgui::surface()->CreateNewTextureID();
+	vgui::surface()->DrawSetTextureFile( m_iDeathmatchTexture, "vgui/campaignpic/deathmatch_icon", true, false );
 }
 
 int CASWHudUseArea::GetUseIconAlpha()

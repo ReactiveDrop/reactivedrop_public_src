@@ -178,9 +178,19 @@ void CASW_Hack_Computer::SelectHackOption(int i)
 				Msg("Fast hack time is %f, starting at %f\n", ideal_time, gpGlobals->curtime);
 			m_fFastFinishTime = gpGlobals->curtime + ideal_time;
 		}
-	}
-	else if (i == ASW_HACK_OPTION_OVERRIDE)	// can't do an override if the computer isn't locked
+
+		m_iShowOption = i;
+		pArea->m_bLoggedIn = true;
+
 		return;
+	}
+	
+	if ( i == ASW_HACK_OPTION_OVERRIDE )
+	{
+		pArea->m_bLoggedIn = true;
+
+		return;
+	}
 
 	m_iShowOption = i;
 
