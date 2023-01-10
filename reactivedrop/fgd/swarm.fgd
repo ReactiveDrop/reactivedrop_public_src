@@ -3748,7 +3748,7 @@
 	DownloadObjectiveName(target_destination) : "Download Objective Name" : "" : "Name of the objective to trigger as complete when a marine downloads the documents from this computer."
 	DownloadTime(float) : "Download Time" : "10.0" : "How many seconds it takes to download the critical files from this computer.  NOTE: This number may be adjusted ingame by the marine's hack skill."
 
-	input OverrideReactorState(boolean) : "Set the reactor's status (0=offline, 1=online). If this is not used, the legacy method to set the reactor state is having an objective with the icon set to ObReactor2."
+	input OverrideReactorState(bool) : "Set the reactor's status (0=offline, 1=online). If this is not used, the legacy method to set the reactor state is having an objective with the icon set to ObReactor2."
 
 	output OnFastHackFailed(void) : "Fired when the fast hack timer elapses during a hack."
 	output OnComputerHackStarted(void) : "Fired whenever a marine starts hacking this computer."
