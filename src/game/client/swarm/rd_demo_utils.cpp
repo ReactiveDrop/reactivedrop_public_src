@@ -123,35 +123,93 @@ void CRD_Auto_Record_System::Update( float frametime )
 	}
 }
 
-struct AutoRecording_t
+int __cdecl RD_Auto_Recording_t::Compare( const RD_Auto_Recording_t *a, const RD_Auto_Recording_t *b )
 {
-	int year, month, day;
-	int hour, minute, second;
-	char map[MAX_MAP_NAME];
+	if ( a->year != b->year )
+		return a->year - b->year;
 
-	static int __cdecl Compare( const AutoRecording_t *a, const AutoRecording_t *b )
+	if ( a->month != b->month )
+		return a->month - b->month;
+
+	if ( a->day != b->day )
+		return a->day - b->day;
+
+	if ( a->hour != b->hour )
+		return a->hour - b->hour;
+
+	if ( a->minute != b->minute )
+		return a->minute - b->minute;
+
+	if ( a->second != b->second )
+		return a->second - b->second;
+
+	return 0;
+}
+
+bool RD_Auto_Recording_t::Parse( const char *szName )
+{
+	szName = V_UnqualifiedFileName( szName );
+	int len = V_strlen( szName );
+	if ( len <= 28 )
 	{
-		if ( a->year != b->year )
-			return a->year - b->year;
-
-		if ( a->month != b->month )
-			return a->month - b->month;
-
-		if ( a->day != b->day )
-			return a->day - b->day;
-
-		if ( a->hour != b->hour )
-			return a->hour - b->hour;
-
-		if ( a->minute != b->minute )
-			return a->minute - b->minute;
-
-		if ( a->second != b->second )
-			return a->second - b->second;
-
-		return 0;
+		// Too short to be an auto-generated demo name.
+		return false;
 	}
-};
+
+	if ( V_strncmp( szName, "rd-auto-", 8 ) )
+	{
+		// Wrong prefix.
+		return false;
+	}
+
+	if ( V_strcmp( &szName[len - 4], ".dem" ) )
+	{
+		// Wrong suffix.
+		return false;
+	}
+
+	if ( szName[16] != '-' )
+	{
+#ifdef DBGFLAG_ASSERT
+		// FIXME: this code stops working after the year 9999. you know, just in case we're still playing AS:RD then.
+		struct tm time;
+		Plat_GetLocalTime( &time );
+		Assert( time.tm_year < 8100 );
+#endif
+		return false;
+	}
+
+	if ( szName[23] != '-' )
+	{
+		return false;
+	}
+
+	V_strncpy( map, &szName[24], MIN( sizeof( map ), len - 27 ) );
+
+	char stamp[16];
+	V_strncpy( stamp, &szName[8], sizeof( stamp ) );
+	stamp[8] = '\0';
+
+	second = V_atoi( &stamp[13] );
+	stamp[13] = '\0';
+	minute = V_atoi( &stamp[11] );
+	stamp[11] = '\0';
+	hour = V_atoi( &stamp[9] );
+
+	day = V_atoi( &stamp[6] );
+	stamp[6] = '\0';
+	month = V_atoi( &stamp[4] );
+	stamp[4] = '\0';
+	year = V_atoi( stamp );
+
+	return true;
+}
+
+void RD_Auto_Recording_t::Format( char *buf, int nBufSize ) const
+{
+	V_snprintf( buf, nBufSize, "recordings/rd-auto-%04d%02d%02d-%02d%02d%02d-%s.dem",
+		year, month, day, hour, minute, second, map );
+}
 
 void CRD_Auto_Record_System::CleanRecordingsFolder( bool bLeaveEmptySlot )
 {
@@ -168,59 +226,16 @@ void CRD_Auto_Record_System::CleanRecordingsFolder( bool bLeaveEmptySlot )
 	if ( rd_auto_record_debug.GetBool() )
 		Msg( "[Auto Record] Cleaning recordings folder...\n" );
 
-	CUtlVector<AutoRecording_t> recordings;
+	CUtlVector<RD_Auto_Recording_t> recordings;
 
 	FileFindHandle_t hFind;
 	for ( const char *szName = g_pFullFileSystem->FindFirstEx( "recordings/rd-auto-*.dem", "MOD", &hFind ); szName; szName = g_pFullFileSystem->FindNext( hFind ) )
 	{
-		if ( V_strlen( szName ) <= 28 )
-		{
-			// Too short to be an auto-generated demo name.
-			continue;
-		}
-
-		char num[5];
-		AutoRecording_t rec;
-
-		if ( szName[16] != '-' )
-		{
-#ifdef DBGFLAG_ASSERT
-			// FIXME: this code stops working after the year 9999. you know, just in case we're still playing AS:RD then.
-			struct tm time;
-			Plat_GetLocalTime( &time );
-			Assert( time.tm_year < 8100 );
-#endif
-			continue;
-		}
-
-		if ( szName[23] != '-' )
+		RD_Auto_Recording_t rec;
+		if ( !rec.Parse( szName ) )
 		{
 			continue;
 		}
-
-		num[0] = szName[8];
-		num[1] = szName[9];
-		num[2] = szName[10];
-		num[3] = szName[11];
-		num[4] = '\0';
-		rec.year = V_atoi( num );
-
-		num[2] = '\0';
-
-#define TWO_DIGITS( var, offset ) \
-		num[0] = szName[offset]; \
-		num[1] = szName[offset + 1]; \
-		rec.var = V_atoi( num )
-
-		TWO_DIGITS( month, 12 );
-		TWO_DIGITS( day, 14 );
-		TWO_DIGITS( hour, 17 );
-		TWO_DIGITS( minute, 19 );
-		TWO_DIGITS( second, 21 );
-
-		char szMap[MAX_MAP_NAME + 4];
-		V_strncpy( szMap, szName + 24, sizeof( szMap ) );
-		V_StripExtension( szMap, rec.map, sizeof( rec.map ) );
 
 		recordings.AddToTail( rec );
 	}
@@ -237,17 +252,17 @@ void CRD_Auto_Record_System::CleanRecordingsFolder( bool bLeaveEmptySlot )
 		return;
 	}
 
-	recordings.Sort( &AutoRecording_t::Compare );
+	recordings.Sort( &RD_Auto_Recording_t::Compare );
 
 	if ( rd_auto_record_debug.GetBool() )
 		Msg( "[Auto Record] Deleting %d oldest auto-recordings.\n", nToRemove );
 
 	for ( int i = 0; i < nToRemove; i++ )
 	{
-		const AutoRecording_t &rec = recordings[i];
+		const RD_Auto_Recording_t &rec = recordings[i];
 
 		char szName[MAX_PATH];
-		V_snprintf( szName, sizeof( szName ), "recordings/rd-auto-%04d%02d%02d-%02d%02d%02d-%s.dem", rec.year, rec.month, rec.day, rec.hour, rec.minute, rec.second, rec.map );
+		rec.Format( szName, sizeof( szName ) );
 
 		if ( rd_auto_record_debug.GetBool() )
 			Msg( "[Auto Record] Deleting recording %s.\n", szName );
@@ -264,6 +279,8 @@ float CRD_Auto_Record_System::RecomputeDemoDuration( const char *szName, bool bF
 		Warning( "[Auto Record] Failed to open file %s\n", szName );
 		return -1;
 	}
+
+	int nFileSize = g_pFullFileSystem->Size( hFile );
 
 #define READ( var ) \
 	if ( g_pFullFileSystem->Read( &var, sizeof( var ), hFile ) != sizeof( var ) ) \
@@ -299,12 +316,33 @@ float CRD_Auto_Record_System::RecomputeDemoDuration( const char *szName, bool bF
 
 	int nTickRate = header.playback_time == 0 ? 60 : RoundFloatToInt( header.playback_ticks / header.playback_time );
 
-	g_pFullFileSystem->Seek( hFile, header.signonlength, FILESYSTEM_SEEK_CURRENT );
-
+	int skip = header.signonlength;
 	bool bFoundStopCmd = false;
 	int nMaxTick = 0;
 	while ( !bFoundStopCmd )
 	{
+		if ( skip )
+		{
+			if ( skip < 0 )
+			{
+				g_pFullFileSystem->Close( hFile );
+				Warning( "[Auto Record] Negative data length %d in %s\n", skip, szName );
+				return -1;
+			}
+
+			int iTarget = g_pFullFileSystem->Tell( hFile ) + skip;
+			if ( iTarget > nFileSize )
+			{
+				g_pFullFileSystem->Close( hFile );
+				Warning( "[Auto Record] Data length %d passes end of file %s - did the game crash while recording this?\n", skip, szName );
+				return -1;
+			}
+
+			g_pFullFileSystem->Seek( hFile, skip, FILESYSTEM_SEEK_CURRENT );
+
+			skip = 0;
+		}
+
 #pragma pack(push, 1)
 		struct
 		{
@@ -329,10 +367,11 @@ float CRD_Auto_Record_System::RecomputeDemoDuration( const char *szName, bool bF
 		if ( nRead != sizeof( cmdheader ) )
 		{
 			g_pFullFileSystem->Close( hFile );
-			Warning( "[Auto Record] Failed to read file %s\n", szName );
+			Warning( "[Auto Record] Incomplete command header read in file %s - did the game crash while recording this?\n", szName );
 			return -1;
 		}
 
+		Assert( nMaxTick <= cmdheader.tick ); // this is just an assumption, not required for actual correctness hopefully
 		nMaxTick = MAX( nMaxTick, cmdheader.tick );
 
 		switch ( cmdheader.cmd )
@@ -344,42 +383,40 @@ float CRD_Auto_Record_System::RecomputeDemoDuration( const char *szName, bool bF
 		case dem_signon:
 		case dem_packet:
 		{
-			democmdinfo_t cmdinfo;
+			struct
+			{
+				democmdinfo_t cmdinfo;
+				int sequence0;
+				int sequence1;
+				int size;
+			} packetheader;
 
-			READ( cmdinfo );
+			READ( packetheader );
 
-			int sequence[2];
-
-			READ( sequence );
-
-			int size;
-
-			READ( size );
-
-			g_pFullFileSystem->Seek( hFile, size, FILESYSTEM_SEEK_CURRENT );
+			skip = packetheader.size;
 
 			break;
 		}
 		case dem_consolecmd:
 		case dem_datatables:
-		case dem_customdata:
 		case dem_stringtables:
 		{
-			int size;
+			READ( skip );
 
-			READ( size );
-
-			g_pFullFileSystem->Seek( hFile, size, FILESYSTEM_SEEK_CURRENT );
 			break;
 		}
 		case dem_usercmd:
+		case dem_customdata:
 		{
-			int cmdnum, size;
+			struct
+			{
+				int cmdnum;
+				int size;
+			} usercmdheader;
 
-			READ( cmdnum );
-			READ( size );
+			READ( usercmdheader );
 
-			g_pFullFileSystem->Seek( hFile, size, FILESYSTEM_SEEK_CURRENT );
+			skip = usercmdheader.size;
 			break;
 		}
 		case dem_stop:

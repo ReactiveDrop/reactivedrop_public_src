@@ -12,6 +12,22 @@ struct RD_Demo_Info_t
 	wchar_t wszCantWatchReason[256];
 };
 
+struct RD_Auto_Recording_t
+{
+	int year, month, day;
+	int hour, minute, second;
+	char map[MAX_MAP_NAME];
+
+	static int __cdecl Compare( const RD_Auto_Recording_t *a, const RD_Auto_Recording_t *b );
+	inline bool operator<( const RD_Auto_Recording_t &other ) const { return Compare( this, &other ) < 0; }
+	inline bool operator<=( const RD_Auto_Recording_t &other ) const { return Compare( this, &other ) <= 0; }
+	inline bool operator>( const RD_Auto_Recording_t &other ) const { return Compare( this, &other ) > 0; }
+	inline bool operator>=( const RD_Auto_Recording_t &other ) const { return Compare( this, &other ) >= 0; }
+
+	bool Parse( const char *szName );
+	void Format( char *buf, int nBufSize ) const;
+};
+
 class CRD_Auto_Record_System final : public CAutoGameSystemPerFrame
 {
 public:

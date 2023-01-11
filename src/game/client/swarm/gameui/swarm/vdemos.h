@@ -6,6 +6,7 @@ class CNB_Header_Footer;
 
 namespace BaseModUI
 {
+class DropDownMenu;
 class GenericPanelList;
 
 class Demos : public CBaseModFrame
@@ -16,6 +17,7 @@ public:
 	~Demos();
 
 	void Activate() override;
+	void UpdateWarnings();
 	void OnCommand( const char *command ) override;
 	void OnMessage( const KeyValues *params, vgui::VPANEL ifromPanel ) override;
 	void OnThink() override;
@@ -25,5 +27,6 @@ public:
 	CNB_Header_Footer *m_pHeaderFooter;
 	vgui::Label *m_LblNoRecordings;
 	GenericPanelList *m_GplRecordingList;
+	DropDownMenu *m_DrpAutoRecord;
 };
 }

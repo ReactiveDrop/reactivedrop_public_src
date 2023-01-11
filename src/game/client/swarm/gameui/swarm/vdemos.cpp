@@ -2,6 +2,7 @@
 #include "vdemos.h"
 #include "nb_header_footer.h"
 #include "vfooterpanel.h"
+#include "vdropdownmenu.h"
 #include "vgenericpanellist.h"
 #include "rd_demo_utils.h"
 #include "rd_missions_shared.h"
@@ -14,6 +15,8 @@
 #include "tier0/memdbgon.h"
 
 using namespace BaseModUI;
+
+extern ConVar rd_auto_record_lobbies;
 
 class DemoInfoPanel final : public vgui::EditablePanel, public IGenericPanelListItem
 {
@@ -79,7 +82,7 @@ public:
 			unsigned short nindex;
 			if ( pGenericList && pGenericList->GetPanelItemIndex( this, nindex ) )
 			{
-				pGenericList->SelectPanelItem( nindex, GenericPanelList::SD_DOWN );
+				pGenericList->SelectPanelItem( nindex );
 			}
 		}
 
@@ -218,6 +221,8 @@ Demos::Demos( vgui::Panel *parent, const char *panelName ) :
 	m_GplRecordingList = new GenericPanelList( this, "GplRecordingList", GenericPanelList::ISM_PERITEM );
 	m_GplRecordingList->SetScrollBarVisible( true );
 
+	m_DrpAutoRecord = new DropDownMenu( this, "DrpAutoRecord" );
+
 	SetLowerGarnishEnabled( true );
 	m_ActiveControl = m_GplRecordingList;
 
@@ -255,6 +260,17 @@ void Demos::Activate()
 	}
 
 	m_GplRecordingList->InvalidateLayout();
+
+	m_DrpAutoRecord->SetCurrentSelection( VarArgs( "#rd_demo_auto_setting_%d", rd_auto_record_lobbies.GetInt() ) );
+
+	UpdateWarnings();
+}
+
+void Demos::UpdateWarnings()
+{
+	// TODO
+	int debug = 3;
+	debug = debug;
 }
 
 void Demos::OnCommand( const char *command )
@@ -263,6 +279,12 @@ void Demos::OnCommand( const char *command )
 	{
 		// Act as though 360 back button was pressed
 		OnKeyCodePressed( KEY_XBUTTON_B );
+	}
+	else if ( const char *szValue = StringAfterPrefix( command, "!rd_auto_record_lobbies " ) )
+	{
+		rd_auto_record_lobbies.SetValue( szValue );
+		engine->ExecuteClientCmd( "host_writeconfig\n" );
+		UpdateWarnings();
 	}
 	else
 	{

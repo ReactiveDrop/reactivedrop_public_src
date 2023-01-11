@@ -53,6 +53,45 @@
 		"textAlignment"		"center"
 	}
 
+	"DrpAutoRecord" {
+		"ControlName"		"DropDownMenu"
+		"fieldName"		"DrpAutoRecord"
+		"xpos"		"c-226"
+		"ypos"		"395"
+		"zpos"		"1"
+		"wide"		"300"
+		"tall"		"15"
+		"navUp"		"GplRecordingList"
+		"navDown"		"BtnCancel"
+
+		"BtnDropButton" {
+			"ControlName"		"BaseModHybridButton"
+			"fieldName"		"BtnDropButton"
+			"xpos"		"0"
+			"ypos"		"0"
+			"zpos"		"2"
+			"wide"		"300"
+			"wideatopen"		"270"
+			"tall"		"15"
+			"autoResize"		"1"
+			"pinCorner"		"0"
+			"tabPosition"		"0"
+			"labelText"		"#rd_demo_auto_setting_name"
+			"style"		"DropDownButton"
+			"command"		"FlmAutoRecord"
+			"allcaps"		"1"
+		}
+	}
+
+	"FlmAutoRecord" {
+		"ControlName"		"FlyoutMenu"
+		"fieldName"		"FlmAutoRecord"
+		"zpos"		"4"
+		"ExpandUp"		"1"
+		"visible"		"0"
+		"ResourceFile"		"resource/UI/BaseModUI/DropDownAutoRecord.res"
+	}
+
 	"BtnCancel" {
 		"ControlName"		"CNB_Button"
 		"fieldName"		"BtnCancel"
