@@ -37,6 +37,7 @@
 #include "VControllerOptions.h"
 #include "VControllerOptionsButtons.h"
 #include "VControllerOptionsSticks.h"
+#include "VDemos.h"
 #include "VDownloads.h"
 #include "VFoundGames.h"
 #include "VFoundGroupGames.h"
@@ -539,6 +540,10 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 
 		case WT_AUDIOADVANCEDMIXERS:
 			m_Frames[wt] = new AudioAdvancedMixers( this, "AudioAdvancedMixers" );
+			break;
+
+		case WT_DEMOS:
+			m_Frames[wt] = new Demos( this, "Demos" );
 			break;
 
 		default:

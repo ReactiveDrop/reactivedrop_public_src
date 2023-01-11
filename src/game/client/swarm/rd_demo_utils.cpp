@@ -2,16 +2,21 @@
 #include "rd_demo_utils.h"
 #include "filesystem.h"
 #include "matchmaking/imatchframework.h"
-#include "demofile/demoformat.h"
+#include "rd_missions_shared.h"
+#include "asw_util_shared.h"
+#include "vgui/ILocalize.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+extern const char *COM_GetModDirectory( void );
+
+ConVar rd_auto_record_debug( "rd_auto_record_debug", "0", FCVAR_NONE );
 // this is FCVAR_USERINFO so that rd_force_all_marines_in_pvs can check its value server-side
 ConVar rd_auto_record_lobbies( "rd_auto_record_lobbies", "0", FCVAR_ARCHIVE | FCVAR_USERINFO, "Automatically keep this many lobby recordings. Executes the record and stop commands automatically." );
 ConVar rd_auto_record_stop_on_retry( "rd_auto_record_stop_on_retry", "1", FCVAR_ARCHIVE, "Treat an instant restart the same way as a loading screen for auto recordings." );
-ConVar rd_auto_record_debug( "rd_auto_record_debug", "0", FCVAR_NONE );
 ConVar rd_auto_record_auto_fix_times( "rd_auto_record_auto_fix_times", "1", FCVAR_NONE, "If a demo has a negative duration, automatically fix the file's header." );
+ConVar rd_auto_record_demo_search_paths( "rd_auto_record_demo_search_paths", "*.dem recordings/*.dem", FCVAR_NONE, "Space-separated list of wildcards used to find demo files." );
 
 CRD_Auto_Record_System g_RD_Auto_Record_System;
 
@@ -30,6 +35,9 @@ void CRD_Auto_Record_System::LevelInitPostEntity()
 
 void CRD_Auto_Record_System::LevelShutdownPreEntity()
 {
+	Assert( !m_bJustConnected );
+	m_bJustConnected = false;
+
 	if ( m_bStartedRecording )
 	{
 		if ( engine->IsRecordingDemo() )
@@ -248,13 +256,13 @@ void CRD_Auto_Record_System::CleanRecordingsFolder( bool bLeaveEmptySlot )
 	}
 }
 
-void CRD_Auto_Record_System::RecomputeDemoDuration( const char *szName, bool bForce )
+float CRD_Auto_Record_System::RecomputeDemoDuration( const char *szName, bool bForce )
 {
 	FileHandle_t hFile = g_pFullFileSystem->Open( szName, "r+b", "MOD" );
 	if ( !hFile )
 	{
 		Warning( "[Auto Record] Failed to open file %s\n", szName );
-		return;
+		return -1;
 	}
 
 #define READ( var ) \
@@ -262,36 +270,34 @@ void CRD_Auto_Record_System::RecomputeDemoDuration( const char *szName, bool bFo
 	{ \
 		g_pFullFileSystem->Close( hFile ); \
 		Warning( "[Auto Record] Failed to read file %s\n", szName ); \
-		return; \
+		return -1; \
 	}
 
 	demoheader_t header;
 	READ( header );
 
-	ByteSwap_demoheader_t( header );
-
-	if ( memcmp( header.demofilestamp, DEMO_HEADER_ID, 8 ) )
+	if ( V_memcmp( header.demofilestamp, DEMO_HEADER_ID, 8 ) )
 	{
 		g_pFullFileSystem->Close( hFile );
 		Warning( "[Auto Record] File %s is not a demo.\n", szName );
-		return;
+		return -1;
 	}
 
 	if ( header.demoprotocol != DEMO_PROTOCOL )
 	{
 		g_pFullFileSystem->Close( hFile );
 		Warning( "[Auto Record] Unsupported demo version %d in file %s.\n", header.demoprotocol, szName );
-		return;
+		return -1;
 	}
 
-	if ( header.playback_time >= 0 && !bForce )
+	if ( header.playback_time > 0 && !bForce )
 	{
 		g_pFullFileSystem->Close( hFile );
 		Msg( "[Auto Record] File %s already has positive duration %f.\n", szName, header.playback_time );
-		return;
+		return header.playback_time;
 	}
 
-	int nTickRate = RoundFloatToInt( header.playback_ticks / header.playback_time );
+	int nTickRate = header.playback_time == 0 ? 60 : RoundFloatToInt( header.playback_ticks / header.playback_time );
 
 	g_pFullFileSystem->Seek( hFile, header.signonlength, FILESYSTEM_SEEK_CURRENT );
 
@@ -324,7 +330,7 @@ void CRD_Auto_Record_System::RecomputeDemoDuration( const char *szName, bool bFo
 		{
 			g_pFullFileSystem->Close( hFile );
 			Warning( "[Auto Record] Failed to read file %s\n", szName );
-			return;
+			return -1;
 		}
 
 		nMaxTick = MAX( nMaxTick, cmdheader.tick );
@@ -385,7 +391,7 @@ void CRD_Auto_Record_System::RecomputeDemoDuration( const char *szName, bool bFo
 		{
 			g_pFullFileSystem->Close( hFile );
 			Warning( "[Auto Record] Unhandled demo command number %d in %s\n", cmdheader.cmd, szName );
-			return;
+			return -1;
 		}
 		}
 	}
@@ -398,6 +404,100 @@ void CRD_Auto_Record_System::RecomputeDemoDuration( const char *szName, bool bFo
 	g_pFullFileSystem->Write( &header, sizeof( header ), hFile );
 
 	g_pFullFileSystem->Close( hFile );
+
+	return header.playback_time;
+}
+
+void CRD_Auto_Record_System::ReadDemoList( CUtlVector<RD_Demo_Info_t> &demos )
+{
+	CSplitString wildcards( rd_auto_record_demo_search_paths.GetString(), " " );
+	FOR_EACH_VEC( wildcards, i )
+	{
+		char szDir[MAX_PATH];
+		V_strncpy( szDir, wildcards[i], sizeof( szDir ) );
+		V_StripLastDir( szDir, sizeof( szDir ) );
+
+		FileFindHandle_t hFind;
+		for ( const char *szName = g_pFullFileSystem->FindFirstEx( wildcards[i], "MOD", &hFind ); szName; szName = g_pFullFileSystem->FindNext( hFind ) )
+		{
+			RD_Demo_Info_t &info = demos[demos.AddToTail()];
+			V_memset( &info, 0, sizeof( info ) );
+			V_ComposeFileName( szDir, szName, info.szFileName, sizeof( info.szFileName ) );
+			V_FixSlashes( info.szFileName, '/' );
+
+			FileHandle_t hFile = g_pFullFileSystem->Open( info.szFileName, "rb", "MOD" );
+			if ( !hFile )
+			{
+				TryLocalize( "#rd_demo_cant_play_failed_open", info.wszCantWatchReason, sizeof( info.wszCantWatchReason ) );
+				continue;
+			}
+
+			info.nFileSize = g_pFullFileSystem->Size( hFile );
+
+			if ( g_pFullFileSystem->Read( &info.Header, sizeof( info.Header ), hFile ) != sizeof( info.Header ) )
+			{
+				g_pFullFileSystem->Close( hFile );
+				TryLocalize( "#rd_demo_cant_play_failed_open", info.wszCantWatchReason, sizeof( info.wszCantWatchReason ) );
+				continue;
+			}
+
+			g_pFullFileSystem->Close( hFile );
+
+			if ( V_memcmp( info.Header.demofilestamp, DEMO_HEADER_ID, 8 ) )
+			{
+				TryLocalize( "#rd_demo_cant_play_failed_open", info.wszCantWatchReason, sizeof( info.wszCantWatchReason ) );
+				continue;
+			}
+
+			if ( info.Header.demoprotocol != DEMO_PROTOCOL )
+			{
+				TryLocalize( "#rd_demo_cant_play_failed_open", info.wszCantWatchReason, sizeof( info.wszCantWatchReason ) );
+				continue;
+			}
+
+			if ( info.Header.playback_time <= 0 && rd_auto_record_auto_fix_times.GetBool() )
+			{
+				float flRealDuration = g_RD_Auto_Record_System.RecomputeDemoDuration( info.szFileName, false );
+				int nTicksPerSecond = info.Header.playback_time == 0 ? 60 : RoundFloatToInt( info.Header.playback_ticks / info.Header.playback_time );
+				info.Header.playback_ticks = RoundFloatToInt( nTicksPerSecond * flRealDuration );
+				info.Header.playback_time = flRealDuration;
+			}
+
+			if ( info.Header.playback_time <= 0 )
+			{
+				TryLocalize( "#rd_demo_cant_play_failed_open", info.wszCantWatchReason, sizeof( info.wszCantWatchReason ) );
+			}
+			else if ( V_strcmp( COM_GetModDirectory(), info.Header.gamedirectory ) )
+			{
+				wchar_t wszOtherGame[MAX_OSPATH];
+				V_UTF8ToUnicode( info.Header.gamedirectory, wszOtherGame, sizeof( wszOtherGame ) );
+
+				g_pVGuiLocalize->ConstructString( info.wszCantWatchReason, sizeof( info.wszCantWatchReason ),
+					g_pVGuiLocalize->Find( "#rd_demo_cant_play_other_game" ), 1, wszOtherGame );
+			}
+			else if ( ( info.pMission = ReactiveDropMissions::GetMission( info.Header.mapname ) ) == NULL )
+			{
+				wchar_t wszMapName[MAX_MAP_NAME];
+				V_UTF8ToUnicode( info.Header.mapname, wszMapName, sizeof( wszMapName ) );
+
+				g_pVGuiLocalize->ConstructString( info.wszCantWatchReason, sizeof( info.wszCantWatchReason ),
+					g_pVGuiLocalize->Find( "#rd_demo_cant_play_missing_map" ), 1, wszMapName );
+			}
+			else if ( info.Header.networkprotocol != ( int )engine->GetEngineBuildNumber() )
+			{
+				wchar_t wszGameVersion[64], wszFileVersion[64];
+				V_UTF8ToUnicode( engine->GetProductVersionString(), wszGameVersion, sizeof( wszGameVersion ) );
+				V_snwprintf( wszFileVersion, NELEMS( wszFileVersion ), L"%d.%d.%d.%d",
+					info.Header.networkprotocol / 1000, ( info.Header.networkprotocol / 100 ) % 10,
+					( info.Header.networkprotocol / 10 ) % 10, info.Header.networkprotocol % 10 );
+
+				g_pVGuiLocalize->ConstructString( info.wszCantWatchReason, sizeof( info.wszCantWatchReason ),
+					g_pVGuiLocalize->Find( "#rd_demo_cant_play_old_version" ), 2, wszGameVersion, wszFileVersion );
+			}
+		}
+
+		g_pFullFileSystem->FindClose( hFind );
+	}
 }
 
 CON_COMMAND( rd_auto_record_force_clean, "Force a cleanup of the recordings directory" )
