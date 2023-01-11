@@ -512,6 +512,9 @@ public:
 	virtual int		Damage_GetNoPhysicsForce( void );
 	virtual int		Damage_GetShouldNotBleed( void );
 
+	// player muted
+	bool IsPlayerMuted(CASW_Player *pPlayer);
+	
 	// campaign related
 	int IsCampaignGame();	// -1 = unknown, 0 = single mission, 1 = campaign game
 	int CampaignMissionsLeft();
@@ -571,6 +574,9 @@ private:
 #ifndef CLIENT_DLL
 	IASW_Map_Builder *m_pMapBuilder;
 	STEAM_CALLBACK( CAlienSwarm, OnSteamRelayNetworkStatusChanged, SteamRelayNetworkStatus_t );
+
+	KeyValues* playersMuted;
+#else
 #endif
 };
 

@@ -1460,6 +1460,25 @@ CAlienSwarm::CAlienSwarm() : m_ActorSpeakingUntil( DefLessFunc( string_t ) )
 		mod_dont_load_vertices.SetValue( 1 );
 	}
 
+	// initialize the player mute config
+	const char* szFilename = "cfg/muted_users_kv.txt";
+
+	playersMuted = new KeyValues("muted_players");
+
+	// if it doesn't exist, create it
+	if (!g_pFullFileSystem->FileExists(szFilename, "MOD")) {
+		CUtlBuffer buf(0, 0, CUtlBuffer::TEXT_BUFFER);
+		g_pFullFileSystem->WriteFile(szFilename, "MOD", buf);
+	}
+
+	playersMuted->LoadFromFile(g_pFullFileSystem, szFilename, "MOD");
+
+
+	ConMsg("Loading muted player kv..\n");
+	for (KeyValues* sub = playersMuted->GetFirstSubKey(); sub; sub = sub->GetNextKey()) {
+		ConMsg("Muted player: %s\n", sub->GetName());
+	}
+
 	V_strncpy( m_szGameDescription, "Alien Swarm: Reactive Drop", sizeof( m_szGameDescription ) );
 
 	// create the profile list for the server
@@ -9782,3 +9801,26 @@ void CAlienSwarm::SetPingLocation( const SteamNetworkPingLocation_t & location )
 	}
 }
 #endif
+
+bool CAlienSwarm::IsPlayerMuted(CASW_Player* pPlayer)
+{
+	// get steamid of player
+	IPlayerInfo* pInfo = pPlayer->GetPlayerInfo();
+	int slot = pInfo->GetUserID();
+
+	CSteamID steamIDForPlayer(pInfo->GetUserID(), 1, SteamUtils()->GetConnectedUniverse(), k_EAccountTypeIndividual);
+
+	ConMsg("steamid: %d\n", steamIDForPlayer.ConvertToUint64());
+
+	// check against the list
+	for (KeyValues* sub = playersMuted->GetFirstSubKey(); sub; sub = sub->GetNextKey()) {
+
+		CSteamID steamID(sub->GetName(), SteamUtils()->GetConnectedUniverse());
+
+		DevMsg("Check player mute: %s / %d\n", sub->GetName(), steamID.ConvertToUint64());
+
+		if (steamID.ConvertToUint64() == steamIDForPlayer.ConvertToUint64()) return true;
+	}
+
+	return false;
+}

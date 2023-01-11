@@ -9522,3 +9522,8 @@ void CBasePlayer::UpdateFXVolume( void )
 	}
 }
 
+bool CBasePlayer::CanSpeak(void) {
+	ConMsg("can he speak?\n");
+	return true;
+}
+

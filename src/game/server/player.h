@@ -621,7 +621,7 @@ public:
 
 	// say/sayteam allowed?
 	virtual bool		CanHearAndReadChatFrom( CBasePlayer *pPlayer ) { return true; }
-	virtual bool		CanSpeak( void ) { return true; }
+	bool				CanSpeak(void);
 
 	audioparams_t			&GetAudioParams() { return m_Local.m_audio; }
 
