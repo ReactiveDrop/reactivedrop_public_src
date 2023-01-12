@@ -203,6 +203,8 @@
 		"Paragraph" "#rd_so_paragraph_shieldbug_2"
 		"Paragraph" "#rd_so_paragraph_shieldbug_3"
 		"Paragraph" "#rd_so_paragraph_shieldbug_4"
+		"Paragraph" "#rd_so_paragraph_shieldbug_5"
+		"Paragraph" "#rd_so_paragraph_shieldbug_6"
 	}
 	"ALIEN" {
 		"ID" "asw_boomer"
