@@ -1473,7 +1473,7 @@ void C_ASW_Player::OnDataChanged( DataUpdateType_t updateType )
 			// This shows a panel where player can select a marine. 
 			// Called after player have joined the game 
 			// TODO check if this is correct
-			if ( ASWGameRules()->GetGameState() == ASW_GS_INGAME )
+			if ( !engine->IsPlayingDemo() && ASWGameRules()->GetGameState() == ASW_GS_INGAME )
 			{
 				engine->ClientCmd( "cl_select_loadout" );
 			}
