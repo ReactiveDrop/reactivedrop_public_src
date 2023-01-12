@@ -79,4 +79,16 @@
 		"tall"		"36"
 		"scaleImage"		"1"
 	}
+
+	"LblAutoDeletionWarning" {
+		"ControlName"		"Label"
+		"fieldName"		"LblAutoDeletionWarning"
+		"xpos"		"200"
+		"ypos"		"16"
+		"wide"		"220"
+		"tall"		"20"
+		"wrap"		"1"
+		"font"		"DefaultSmall"
+		"labelText"		"#rd_demo_auto_warning_deletion"
+	}
 }

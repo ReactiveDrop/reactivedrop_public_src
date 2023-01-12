@@ -5,6 +5,7 @@
 #include "rd_missions_shared.h"
 #include "asw_util_shared.h"
 #include "vgui/ILocalize.h"
+#include "winlite.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -24,6 +25,49 @@ CRD_Auto_Record_System::CRD_Auto_Record_System() : CAutoGameSystemPerFrame( "CRD
 {
 	m_bStartedRecording = false;
 	m_bJustConnected = false;
+}
+
+void CRD_Auto_Record_System::PostInit()
+{
+	// Unfortunately, this doesn't actually allow the game to load old demos.
+	// It just fails to load slightly later than it would without this hack,
+	// and shows a loading screen for a few frames.
+#if 0
+	// BenLubar: Hello again! Today, we're going to do surgery on the DEM
+	// file loader to make it ignore network protocol version mismatches.
+	//
+	// First thing we need to do is find the file loader with the usual method.
+	ConCommand *pListDemo = g_pCVar->FindCommand( "listdemo" );
+	const byte *pCallback = *reinterpret_cast< const byte *const * >( reinterpret_cast< const byte * >( pListDemo ) + sizeof( ConCommandBase ) );
+
+	Assert( pCallback[181] == 0xe8 );
+
+	byte *pLoader = reinterpret_cast< byte * >( uintptr_t( pCallback ) + 186 + *reinterpret_cast< const uintptr_t * >( pCallback + 182 ) );
+
+#ifdef DBGFLAG_ASSERT
+	// Some checks to make sure this code doesn't unexpectedly break.
+	Assert( pLoader[177] == 0x68 );
+	const char *szError = *reinterpret_cast< const char *const * >( pLoader + 178 );
+	AssertValidStringPtr( szError );
+	Assert( !V_strcmp( szError, "ERROR: demo network protocol %i outdated, engine version is %i \n" ) );
+	Assert( pLoader[182] == 0xff );
+	Assert( pLoader[183] == 0x15 );
+	Assert( pLoader[191] == 0x5f );
+	Assert( pLoader[192] == 0x33 );
+	Assert( pLoader[193] == 0xc0 );
+	Assert( pLoader[194] == 0x5e );
+	Assert( pLoader[195] == 0xc3 );
+#endif
+
+	// Fiddle with the return value so the demo is allowed to load.
+	DWORD oldProtect{};
+	VirtualProtect( pLoader + 191, 3, PAGE_EXECUTE_READWRITE, &oldProtect );
+	pLoader[191] = 0x8b;
+	pLoader[192] = 0xc7;
+	pLoader[193] = 0x5f;
+	VirtualProtect( pLoader + 191, 3, oldProtect, &oldProtect );
+	FlushInstructionCache( GetCurrentProcess(), pLoader, 194 );
+#endif
 }
 
 void CRD_Auto_Record_System::LevelInitPostEntity()
@@ -146,9 +190,22 @@ int __cdecl RD_Auto_Recording_t::Compare( const RD_Auto_Recording_t *a, const RD
 	return 0;
 }
 
-bool RD_Auto_Recording_t::Parse( const char *szName )
+bool RD_Auto_Recording_t::Parse( const char *szName, bool bCheckDirectory )
 {
-	szName = V_UnqualifiedFileName( szName );
+	if ( bCheckDirectory )
+	{
+		if ( V_strncmp( szName, "recordings", 10 ) || ( szName[10] != '/' && szName[10] != '\\' ) )
+		{
+			return false;
+		}
+
+		szName = szName + 11;
+	}
+	else
+	{
+		szName = V_UnqualifiedFileName( szName );
+	}
+
 	int len = V_strlen( szName );
 	if ( len <= 28 )
 	{

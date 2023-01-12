@@ -1,8 +1,10 @@
 #include "cbase.h"
 #include "vdemos.h"
+#include "nb_button.h"
 #include "nb_header_footer.h"
 #include "vfooterpanel.h"
 #include "vdropdownmenu.h"
+#include "vgenericconfirmation.h"
 #include "vgenericpanellist.h"
 #include "rd_demo_utils.h"
 #include "rd_missions_shared.h"
@@ -45,6 +47,8 @@ public:
 		m_LblMissionName->SetMouseInputEnabled( false );
 		m_ImgMissionIcon = new vgui::ImagePanel( this, "ImgMissionIcon" );
 		m_ImgMissionIcon->SetMouseInputEnabled( false );
+		m_LblAutoDeletionWarning = new vgui::Label( this, "LblAutoDeletionWarning", "" );
+		m_LblAutoDeletionWarning->SetMouseInputEnabled( false );
 	}
 
 	bool IsLabel() override { return false; }
@@ -150,13 +154,25 @@ public:
 		m_LblMissionName->SetTall( t );
 	}
 
-	void SetDemoInfo( const RD_Demo_Info_t &info )
+	void SetDemoInfo( const RD_Demo_Info_t &info, bool bJustBaseName )
 	{
+		static RD_Auto_Recording_t s_AutoRecordTest;
+		m_bAutoRecording = s_AutoRecordTest.Parse( info.szFileName, true );
+
 		V_strncpy( m_szFileName, info.szFileName, sizeof( m_szFileName ) );
 
 		wchar_t buf[255];
 
-		V_UTF8ToUnicode( info.szFileName, buf, sizeof( buf ) );
+		if ( bJustBaseName )
+		{
+			char szBaseName[MAX_PATH];
+			V_FileBase( info.szFileName, szBaseName, sizeof( szBaseName ) );
+			V_UTF8ToUnicode( szBaseName, buf, sizeof( buf ) );
+		}
+		else
+		{
+			V_UTF8ToUnicode( info.szFileName, buf, sizeof( buf ) );
+		}
 		m_LblName->SetText( buf );
 
 		wchar_t wszSize[64];
@@ -192,6 +208,7 @@ public:
 	char m_szFileName[MAX_PATH];
 	bool m_bWatchable;
 	bool m_bCurrentlySelected;
+	bool m_bAutoRecording;
 
 	vgui::Label *m_LblName;
 	vgui::Label *m_LblFileSize;
@@ -200,6 +217,7 @@ public:
 	vgui::Label *m_LblRecordedBy;
 	vgui::Label *m_LblMissionName;
 	vgui::ImagePanel *m_ImgMissionIcon;
+	vgui::Label *m_LblAutoDeletionWarning;
 };
 
 Demos::Demos( vgui::Panel *parent, const char *panelName ) :
@@ -222,6 +240,16 @@ Demos::Demos( vgui::Panel *parent, const char *panelName ) :
 	m_GplRecordingList->SetScrollBarVisible( true );
 
 	m_DrpAutoRecord = new DropDownMenu( this, "DrpAutoRecord" );
+	m_LblAutoRecordWarning = new vgui::Label( this, "LblAutoRecordWarning", "" );
+
+	m_BtnWatch = new CNB_Button( this, "BtnWatch", "#rd_demo_action_watch" );
+	m_BtnWatch->SetControllerButton( KEY_XBUTTON_A );
+	m_BtnCancel = new CNB_Button( this, "BtnCancel", "#nb_back" );
+	m_BtnCancel->SetControllerButton( KEY_XBUTTON_B );
+	m_BtnDelete = new CNB_Button( this, "BtnDelete", "#rd_demo_action_delete" );
+	m_BtnDelete->SetControllerButton( KEY_XBUTTON_X );
+	m_BtnRename = new CNB_Button( this, "BtnRename", "#rd_demo_action_rename" );
+	m_BtnRename->SetControllerButton( KEY_XBUTTON_Y );
 
 	SetLowerGarnishEnabled( true );
 	m_ActiveControl = m_GplRecordingList;
@@ -243,20 +271,37 @@ void Demos::Activate()
 	CUtlVector<RD_Demo_Info_t> DemoList;
 	g_RD_Auto_Record_System.ReadDemoList( DemoList );
 
+	bool bJustBaseName = true;
+	FOR_EACH_VEC( DemoList, i )
+	{
+		const char *szSuffix = StringAfterPrefix( DemoList[i].szFileName, "recordings/" );
+		if ( !szSuffix || strchr( szSuffix, '/' ) )
+		{
+			bJustBaseName = false;
+			break;
+		}
+	}
+
 	m_GplRecordingList->RemoveAllPanelItems();
 	FOR_EACH_VEC( DemoList, i )
 	{
-		m_GplRecordingList->AddPanelItem<DemoInfoPanel>( "DemoListItem" )->SetDemoInfo( DemoList[i] );
+		m_GplRecordingList->AddPanelItem<DemoInfoPanel>( "DemoListItem" )->SetDemoInfo( DemoList[i], bJustBaseName );
 	}
 
 	if ( DemoList.Count() > 0 )
 	{
 		m_GplRecordingList->NavigateTo();
+		m_GplRecordingList->SelectPanelItem( 0 );
 		m_LblNoRecordings->SetVisible( false );
+		m_BtnRename->SetVisible( true );
+		m_BtnDelete->SetVisible( true );
 	}
 	else
 	{
 		m_LblNoRecordings->SetVisible( true );
+		m_BtnWatch->SetEnabled( false );
+		m_BtnRename->SetVisible( false );
+		m_BtnDelete->SetVisible( false );
 	}
 
 	m_GplRecordingList->InvalidateLayout();
@@ -268,9 +313,106 @@ void Demos::Activate()
 
 void Demos::UpdateWarnings()
 {
-	// TODO
-	int debug = 3;
-	debug = debug;
+	bool bWillAutoDelete = false;
+	if ( rd_auto_record_lobbies.GetInt() < 0 )
+	{
+		m_LblAutoRecordWarning->SetText( "#rd_demo_auto_warning_unlimited" );
+	}
+	else if ( rd_auto_record_lobbies.GetInt() > 0 )
+	{
+		m_LblAutoRecordWarning->SetText( "#rd_demo_auto_warning_generic" );
+		bWillAutoDelete = true;
+	}
+	else
+	{
+		m_LblAutoRecordWarning->SetText( "" );
+	}
+
+	for ( unsigned short i = 0; i < m_GplRecordingList->GetPanelItemCount(); i++ )
+	{
+		DemoInfoPanel *pEntry = assert_cast<DemoInfoPanel *>( m_GplRecordingList->GetPanelItem( i ) );
+		pEntry->m_LblAutoDeletionWarning->SetVisible( bWillAutoDelete && pEntry->m_bAutoRecording );
+	}
+}
+
+static char s_szRecordingToDelete[MAX_PATH];
+static void DeleteRecordingCallback()
+{
+	g_pFullFileSystem->RemoveFile( s_szRecordingToDelete, "MOD" );
+	s_szRecordingToDelete[0] = '\0';
+
+	if ( CBaseModFrame *pFrame = CBaseModPanel::GetSingleton().GetWindow( WT_DEMOS ) )
+		pFrame->Activate();
+
+	CBaseModPanel::GetSingleton().PlayUISound( UISOUND_ACCEPT );
+}
+
+void Demos::OnKeyCodePressed( vgui::KeyCode keycode )
+{
+	int lastUser = GetJoystickForCode( keycode );
+	CBaseModPanel::GetSingleton().SetLastActiveUserId( lastUser );
+
+	DemoInfoPanel *pEntry = assert_cast< DemoInfoPanel * >( m_GplRecordingList->GetSelectedPanelItem() );
+
+	vgui::KeyCode code = GetBaseButtonCode( keycode );
+	switch ( code )
+	{
+	case KEY_XBUTTON_A:
+		if ( !pEntry || !pEntry->m_bWatchable )
+		{
+			CBaseModPanel::GetSingleton().PlayUISound( UISOUND_DENY );
+			break;
+		}
+
+		engine->ClientCmd_Unrestricted( VarArgs( "playdemo \"%s\"\n", pEntry->m_szFileName ) );
+		MarkForDeletion();
+
+		break;
+	case KEY_XBUTTON_X:
+		if ( !pEntry )
+		{
+			CBaseModPanel::GetSingleton().PlayUISound( UISOUND_DENY );
+			break;
+		}
+
+		{
+			V_strncpy( s_szRecordingToDelete, pEntry->m_szFileName, sizeof( s_szRecordingToDelete ) );
+
+			GenericConfirmation *pConfirmation = assert_cast< GenericConfirmation * >( CBaseModPanel::GetSingleton().OpenWindow( WT_GENERICCONFIRMATION, this, true ) );
+
+			GenericConfirmation::Data_t data;
+
+			wchar_t wszFileName[MAX_PATH];
+			V_UTF8ToUnicode( pEntry->m_szFileName, wszFileName, sizeof( wszFileName ) );
+
+			static wchar_t s_wszMessage[1024];
+			g_pVGuiLocalize->ConstructString( s_wszMessage, sizeof( s_wszMessage ),
+				g_pVGuiLocalize->Find( "#rd_demo_confirm_delete_message" ), 1, wszFileName );
+
+			data.bOkButtonEnabled = true;
+			data.bCancelButtonEnabled = true;
+			data.pWindowTitle = "#rd_demo_confirm_delete_title";
+			data.pMessageTextW = s_wszMessage;
+			data.pfnOkCallback = &DeleteRecordingCallback;
+
+			pConfirmation->SetUsageData( data );
+		}
+
+		break;
+	case KEY_XBUTTON_Y:
+		if ( !pEntry )
+		{
+			CBaseModPanel::GetSingleton().PlayUISound( UISOUND_DENY );
+			break;
+		}
+
+		// TODO
+
+		break;
+	default:
+		BaseClass::OnKeyCodePressed( keycode );
+		break;
+	}
 }
 
 void Demos::OnCommand( const char *command )
@@ -279,6 +421,18 @@ void Demos::OnCommand( const char *command )
 	{
 		// Act as though 360 back button was pressed
 		OnKeyCodePressed( KEY_XBUTTON_B );
+	}
+	else if ( FStrEq( command, "Watch" ) )
+	{
+		OnKeyCodePressed( KEY_XBUTTON_A );
+	}
+	else if ( FStrEq( command, "Delete" ) )
+	{
+		OnKeyCodePressed( KEY_XBUTTON_X );
+	}
+	else if ( FStrEq( command, "Rename" ) )
+	{
+		OnKeyCodePressed( KEY_XBUTTON_Y );
 	}
 	else if ( const char *szValue = StringAfterPrefix( command, "!rd_auto_record_lobbies " ) )
 	{
@@ -299,8 +453,9 @@ void Demos::OnMessage( const KeyValues *params, vgui::VPANEL ifromPanel )
 	if ( !V_strcmp( params->GetName(), "OnItemSelected" ) )
 	{
 		int index = const_cast< KeyValues * >( params )->GetInt( "index" );
+		DemoInfoPanel *pEntry = assert_cast< DemoInfoPanel * >( m_GplRecordingList->GetPanelItem( index ) );
 
-		// TODO
+		m_BtnWatch->SetEnabled( pEntry->m_bWatchable );
 	}
 }
 
@@ -324,5 +479,5 @@ void Demos::PerformLayout()
 
 CON_COMMAND_F( rd_auto_record_ui, "Displays demo list.", FCVAR_NOT_CONNECTED )
 {
-	CBaseModPanel::GetSingleton().OpenWindow( WT_DEMOS, CBaseModPanel::GetSingleton().GetWindow( WT_MAINMENU ) );
+	CBaseModPanel::GetSingleton().OpenWindow( WT_DEMOS, CBaseModPanel::GetSingleton().GetWindow( CBaseModPanel::GetSingleton().GetActiveWindowType() ) );
 }

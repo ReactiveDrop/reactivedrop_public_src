@@ -24,7 +24,7 @@ struct RD_Auto_Recording_t
 	inline bool operator>( const RD_Auto_Recording_t &other ) const { return Compare( this, &other ) > 0; }
 	inline bool operator>=( const RD_Auto_Recording_t &other ) const { return Compare( this, &other ) >= 0; }
 
-	bool Parse( const char *szName );
+	bool Parse( const char *szName, bool bCheckDirectory = false );
 	void Format( char *buf, int nBufSize ) const;
 };
 
@@ -33,8 +33,9 @@ class CRD_Auto_Record_System final : public CAutoGameSystemPerFrame
 public:
 	CRD_Auto_Record_System();
 
-	void LevelInitPostEntity();
-	void LevelShutdownPreEntity();
+	void PostInit() override;
+	void LevelInitPostEntity() override;
+	void LevelShutdownPreEntity() override;
 	void Update( float frametime ) override;
 
 	void CleanRecordingsFolder( bool bLeaveEmptySlot );
