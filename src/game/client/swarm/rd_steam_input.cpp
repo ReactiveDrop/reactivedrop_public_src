@@ -3,6 +3,8 @@
 #include "steam/steam_api.h"
 #include "filesystem.h"
 #include "vgui_controls/Controls.h"
+#include "vgui_controls/TextEntry.h"
+#include "vgui/IInput.h"
 #include "vgui/IScheme.h"
 #include "vgui/ISurface.h"
 #include "lodepng.h"
@@ -18,6 +20,7 @@
 #define RD_INPUT_GLYPH_SIZE k_ESteamInputGlyphSize_Medium
 #define RD_INPUT_GLYPH_STYLE ESteamInputGlyphStyle_Light
 
+ConVar rd_gamepad_soft_keyboard( "rd_gamepad_soft_keyboard", "1", FCVAR_NONE, "Automatically open Steam Deck style keyboard when focusing a text field." );
 ConVar rd_force_power_of_two_controller_glyphs( "rd_force_power_of_two_controller_glyphs", "0", FCVAR_NONE, "Shrink controller glyphs until they are a power-of-two size to avoid scaling artifacts." );
 ConVar rd_force_controller_glyph_set( "rd_force_controller_glyph_set", "-1", FCVAR_ARCHIVE, "Use a specific controller button set for UI hints. 3=xbox, 10=switch, 13=ps5, 14=steam deck", true, -1, true, k_ESteamInputType_Count - 1 );
 
@@ -139,6 +142,34 @@ void CRD_Steam_Input::Shutdown()
 
 void CRD_Steam_Input::Update( float frametime )
 {
+	if ( rd_gamepad_soft_keyboard.GetBool() )
+	{
+		// Check for text input focus even if we're not using Steam Input.
+		static vgui::DHANDLE<vgui::TextEntry> s_hTextEntryFocus;
+		vgui::TextEntry *pTextEntry = dynamic_cast< vgui::TextEntry * >( vgui::ipanel()->GetPanel( vgui::input()->GetFocus(), vgui::GetControlsModuleName() ) );
+		if ( s_hTextEntryFocus != pTextEntry )
+		{
+			s_hTextEntryFocus = pTextEntry;
+
+			ISteamUtils *pSteamUtils = SteamUtils();
+			Assert( pSteamUtils );
+			if ( pSteamUtils )
+			{
+				if ( pTextEntry )
+				{
+					int x, y, w, t;
+					vgui::ipanel()->GetAbsPos( pTextEntry->GetVPanel(), x, y );
+					pTextEntry->GetSize( w, t );
+					pSteamUtils->ShowFloatingGamepadTextInput( pTextEntry->IsMultiline() ? k_EFloatingGamepadTextInputModeModeMultipleLines : k_EFloatingGamepadTextInputModeModeSingleLine, x, y, w, t );
+				}
+				else
+				{
+					pSteamUtils->DismissFloatingGamepadTextInput();
+				}
+			}
+		}
+	}
+
 	if ( !m_bInitialized )
 		return;
 
