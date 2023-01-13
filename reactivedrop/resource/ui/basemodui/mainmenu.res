@@ -167,7 +167,7 @@
 		"enabled"				"1"
 		"tabPosition"			"0"
 		"navUp"					"BtnOptions"
-		"navDown"				"BtnIafRanks"
+		"navDown"				"BtnDemoList"
 		"labelText"				"#rd_mainmenu_collections"
 		"tooltiptext"			""
 		"style"					"AlienSwarmMenuButtonSmall"
@@ -175,10 +175,10 @@
 		"ActivationType"		"1"
 	}
 	
-	"BtnIafRanks"
+	"BtnDemoList"
 	{
 		"ControlName"			"BaseModHybridButton"
-		"fieldName"				"BtnIafRanks"
+		"fieldName"				"BtnDemoList"
 		"xpos"					"100"
 		"ypos"					"300"
 		"wide"					"180"
@@ -189,6 +189,28 @@
 		"enabled"				"1"
 		"tabPosition"			"0"
 		"navUp"					"BtnCollections"
+		"navDown"				"BtnIafRanks"
+		"labelText"				"#rd_demo_list_title"
+		"tooltiptext"			""
+		"style"					"AlienSwarmMenuButtonSmall"
+		"command"				"#rd_auto_record_ui"
+		"ActivationType"		"1"
+	}
+	
+	"BtnIafRanks"
+	{
+		"ControlName"			"BaseModHybridButton"
+		"fieldName"				"BtnIafRanks"
+		"xpos"					"100"
+		"ypos"					"315"
+		"wide"					"180"
+		"tall"					"13"
+		"autoResize"			"1"
+		"pinCorner"				"0"
+		"visible"				"1"
+		"enabled"				"1"
+		"tabPosition"			"0"
+		"navUp"					"BtnDemoList"
 		"navDown"				"BtnQuit"
 		"labelText"				"#asw_iafranks"
 		"tooltiptext"			""
@@ -203,7 +225,7 @@
 		"fieldName"				"BtnQuit"
 		"xpos"					"100"
 		"ypos"					"325"   [$X360]
-		"ypos"					"330"	[$WIN32]
+		"ypos"					"345"	[$WIN32]
 		"wide"					"180"
 		"tall"					"13"
 		"autoResize"			"1"
