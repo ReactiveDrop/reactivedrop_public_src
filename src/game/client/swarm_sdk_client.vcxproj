@@ -1715,6 +1715,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="swarm\rd_steam_input_binds.cpp" />
     <ClCompile Include="swarm\rd_swarmopedia.cpp" />
     <ClCompile Include="swarm\rd_text_filtering.cpp" />
+    <ClCompile Include="swarm\rd_tooltip_fix.cpp" />
     <ClCompile Include="swarm\vgui\asw_build_map_frame.cpp" />
     <ClCompile Include="swarm\vgui\asw_circularprogressbar.cpp" />
     <ClCompile Include="swarm\vgui\asw_hudelement.cpp" />
