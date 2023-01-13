@@ -26,10 +26,15 @@ public:
 		// There's only one method in the vtable, so let's just grab it.
 		auto pApplySchemeSettings = **reinterpret_cast< void( vgui::Tooltip:: *const *const * )( vgui::IScheme * ) >( pTooltip );
 
+#ifdef _DEBUG
 		// This is a thunk, so we need to grab the real one.
 		byte *pThunk = *reinterpret_cast< byte *const * >( &pApplySchemeSettings );
 		Assert( *pThunk == 0xE9 );
 		byte *pRealFunc = pThunk + 5 + *reinterpret_cast< const intptr_t * >( pThunk + 1 );
+#else
+		// ...except in release builds, where it's not a thunk.
+		byte *pRealFunc = *reinterpret_cast< byte *const * >( &pApplySchemeSettings );
+#endif
 		Assert( *pRealFunc == 0xB9 );
 
 		// Grab the TextEntry handle that is read at the start of the method.
