@@ -38,6 +38,7 @@ namespace BaseModUI {
 			bool        bCancelButtonEnabled;
 			Callback_t	pfnCancelCallback;
 
+			bool        bShowPassword;
 			CUtlString	m_szCurrentPW;
 
 			Data_t();

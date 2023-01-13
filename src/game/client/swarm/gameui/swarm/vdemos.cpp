@@ -6,6 +6,7 @@
 #include "vdropdownmenu.h"
 #include "vgenericconfirmation.h"
 #include "vgenericpanellist.h"
+#include "vpasswordentry.h"
 #include "rd_demo_utils.h"
 #include "rd_missions_shared.h"
 #include "vgui/ILocalize.h"
@@ -335,11 +336,33 @@ void Demos::UpdateWarnings()
 	}
 }
 
-static char s_szRecordingToDelete[MAX_PATH];
+static char s_szRecordingToRenameOrDelete[MAX_PATH];
 static void DeleteRecordingCallback()
 {
-	g_pFullFileSystem->RemoveFile( s_szRecordingToDelete, "MOD" );
-	s_szRecordingToDelete[0] = '\0';
+	g_pFullFileSystem->RemoveFile( s_szRecordingToRenameOrDelete, "MOD" );
+	s_szRecordingToRenameOrDelete[0] = '\0';
+
+	if ( CBaseModFrame *pFrame = CBaseModPanel::GetSingleton().GetWindow( WT_DEMOS ) )
+		pFrame->Activate();
+
+	CBaseModPanel::GetSingleton().PlayUISound( UISOUND_ACCEPT );
+}
+
+static void RenameRecordingCallback()
+{
+	PasswordEntry *pEntry = assert_cast< PasswordEntry * >( CBaseModPanel::GetSingleton().GetWindow( WT_PASSWORDENTRY ) );
+	Assert( pEntry );
+
+	char szNewBase[MAX_PATH];
+	pEntry->GetPassword( szNewBase, sizeof( szNewBase ) );
+
+	// replace slashes with a safe character
+	V_FixSlashes( szNewBase, '_' );
+
+	CUtlString szNewName = CUtlString::PathJoin( "recordings", szNewBase ) + ".dem";
+
+	g_pFullFileSystem->RenameFile( s_szRecordingToRenameOrDelete, szNewName, "MOD" );
+	s_szRecordingToRenameOrDelete[0] = '\0';
 
 	if ( CBaseModFrame *pFrame = CBaseModPanel::GetSingleton().GetWindow( WT_DEMOS ) )
 		pFrame->Activate();
@@ -376,7 +399,7 @@ void Demos::OnKeyCodePressed( vgui::KeyCode keycode )
 		}
 
 		{
-			V_strncpy( s_szRecordingToDelete, pEntry->m_szFileName, sizeof( s_szRecordingToDelete ) );
+			V_strncpy( s_szRecordingToRenameOrDelete, pEntry->m_szFileName, sizeof( s_szRecordingToRenameOrDelete ) );
 
 			GenericConfirmation *pConfirmation = assert_cast< GenericConfirmation * >( CBaseModPanel::GetSingleton().OpenWindow( WT_GENERICCONFIRMATION, this, true ) );
 
@@ -396,6 +419,8 @@ void Demos::OnKeyCodePressed( vgui::KeyCode keycode )
 			data.pfnOkCallback = &DeleteRecordingCallback;
 
 			pConfirmation->SetUsageData( data );
+
+			CBaseModPanel::GetSingleton().PlayUISound( UISOUND_FOCUS );
 		}
 
 		break;
@@ -406,7 +431,28 @@ void Demos::OnKeyCodePressed( vgui::KeyCode keycode )
 			break;
 		}
 
-		// TODO
+		{
+			V_strncpy( s_szRecordingToRenameOrDelete, pEntry->m_szFileName, sizeof( s_szRecordingToRenameOrDelete ) );
+
+			PasswordEntry *pTextEntry = assert_cast< PasswordEntry * >( CBaseModPanel::GetSingleton().OpenWindow( WT_PASSWORDENTRY, this, true ) );
+
+			PasswordEntry::Data_t data;
+
+			char szBaseName[MAX_PATH];
+			V_FileBase( pEntry->m_szFileName, szBaseName, sizeof( szBaseName ) );
+
+			data.pWindowTitle = "#rd_demo_rename_title";
+			data.pMessageText = "#rd_demo_rename_message";
+			data.bOkButtonEnabled = true;
+			data.pfnOkCallback = &RenameRecordingCallback;
+			data.bCancelButtonEnabled = true;
+			data.bShowPassword = true;
+			data.m_szCurrentPW = szBaseName;
+
+			pTextEntry->SetUsageData( data );
+
+			CBaseModPanel::GetSingleton().PlayUISound( UISOUND_FOCUS );
+		}
 
 		break;
 	default:
