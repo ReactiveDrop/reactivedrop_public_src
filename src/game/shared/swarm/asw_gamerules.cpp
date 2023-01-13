@@ -5257,7 +5257,7 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 		if ( pMR )
 		{
 			CASW_Game_Resource *pGameResource = ASWGameResource();
-			if ( pGameResource )
+			if ( pGameResource && ( !pAlien || pAlien->Classify() != CLASS_ASW_GRUB ) )
 			{
 				if ( pMR->GetCommander() && pMR->IsInhabited() && pGameResource->GetNumMarines( NULL, true ) > 3 )
 				{
@@ -5303,7 +5303,7 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 			//}
 
 			// count rad volume kills
-			if (pAlien && pAlien->Classify() != CLASS_EARTH_FAUNA)
+			if (pAlien && pAlien->Classify() != CLASS_EARTH_FAUNA && pAlien->Classify() != CLASS_ASW_GRUB)
 			{
 				int nOldBarrelKills = pMR->m_iBarrelKills;
 				CASW_Radiation_Volume *pRad = dynamic_cast<CASW_Radiation_Volume*>(info.GetInflictor());
@@ -5506,8 +5506,7 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 	gameeventmanager->FireEvent( pEvent );
 
 	// riflemod: added frags counter
-	if ( !ASWDeathmatchMode() && pMarine &&
-		pMarine->GetCommander() ) 
+	if ( !ASWDeathmatchMode() && pMarine && pMarine->GetCommander() && ( !pAlien || pAlien->Classify() != CLASS_ASW_GRUB ) )
 	{
 		CASW_Marine_Resource *pMR = pMarine->GetMarineResource();
 		if (pMR)
