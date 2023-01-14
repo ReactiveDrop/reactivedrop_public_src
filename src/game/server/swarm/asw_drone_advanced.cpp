@@ -60,6 +60,7 @@ ConVar asw_drone_health("asw_drone_health", "40", FCVAR_CHEAT, "How much health 
 ConVar asw_drone_yaw_speed("asw_drone_yaw_speed", "32.0", FCVAR_CHEAT, "How fast the swarm drone can turn");
 ConVar asw_drone_yaw_speed_attackprep("asw_drone_yaw_speed_attackprep", "64.0", FCVAR_CHEAT, "How fast the swarm drone can turn while starting his melee attack");
 ConVar asw_drone_yaw_speed_attacking("asw_drone_yaw_speed_attacking", "8.0", FCVAR_CHEAT, "How fast the swarm drone can turn while doing a melee attack");
+ConVar asw_drone_run_speed( "asw_drone_run_speed", "1.25", FCVAR_CHEAT );
 ConVar asw_drone_attack_speed( "asw_drone_attack_speed", "1.25", FCVAR_CHEAT );
 ConVar asw_drone_attack_speed_on_fire( "asw_drone_attack_speed_on_fire", "1.75", FCVAR_CHEAT );
 ConVar asw_drone_acceleration("asw_drone_acceleration", "5", FCVAR_CHEAT, "How fast the swarm drone accelerates, as a multiplier on his ideal speed");
@@ -1306,7 +1307,11 @@ void CASW_Drone_Advanced::RunTask( const Task_t *pTask )
 		}
 	}
 
-	if ( GetActivity() == ACT_RUN || GetActivity() == ACT_DRONE_RUN_ATTACKING || GetActivity() == ACT_MELEE_ATTACK1 )
+	if ( GetActivity() == ACT_RUN )
+	{
+		SetPlaybackRate( asw_drone_run_speed.GetFloat() );
+	}
+	else if ( GetActivity() == ACT_DRONE_RUN_ATTACKING || GetActivity() == ACT_MELEE_ATTACK1 )
 	{
 		SetPlaybackRate( m_bOnFire ? asw_drone_attack_speed_on_fire.GetFloat() : asw_drone_attack_speed.GetFloat() );
 	}
