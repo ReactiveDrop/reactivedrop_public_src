@@ -776,7 +776,9 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="hl2\env_headcrabcanister.cpp" />
+    <ClCompile Include="hl2\grenade_frag.cpp" />
     <ClCompile Include="hl2\npc_crow.cpp" />
+    <ClCompile Include="hl2\npc_zombine.cpp" />
     <ClCompile Include="hl2\script_intro.cpp" />
     <ClCompile Include="serverhelper.cpp" />
     <ClCompile Include="gameinterface.cpp" />
@@ -1729,6 +1731,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="func_breakablesurf.h" />
     <ClInclude Include="func_movelinear.h" />
     <ClInclude Include="game.h" />
+    <ClInclude Include="hl2\grenade_frag.h" />
     <ClInclude Include="hl2\npc_crow.h" />
     <ClInclude Include="hl2\script_intro.h" />
     <ClInclude Include="serverhelper.h" />

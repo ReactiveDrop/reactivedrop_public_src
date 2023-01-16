@@ -872,6 +872,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="hl2\c_env_headcrabcanister.cpp" />
     <ClCompile Include="hl2\C_Func_Monitor.cpp" />
     <ClCompile Include="hl2\c_npc_antlionguard.cpp" />
+    <ClCompile Include="hl2\c_npc_zombine.cpp" />
     <ClCompile Include="hl2\c_rotorwash.cpp" />
     <ClCompile Include="hl2\c_script_intro.cpp" />
     <ClCompile Include="hl2\c_waterbullet.cpp" />
