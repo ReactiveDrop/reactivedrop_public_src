@@ -417,6 +417,11 @@
 		}
 		TOGGLE
 		{
+			title "#RD_AdvancedSettings_VisualEffects_AlienShadows"
+			cvar "asw_alien_shadows"
+		}
+		TOGGLE
+		{
 			title "#RD_AdvancedSettings_VisualEffects_OtherEffects"
 			cvar "rd_info_particle_system_enabled"
 		}
