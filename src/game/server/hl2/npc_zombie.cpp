@@ -296,9 +296,6 @@ void CZombie::Spawn( void )
 
 	BaseClass::Spawn();
 
-	// reactivedrop: 
-	ChangeFaction(FACTION_ALIENS);
-
 	m_flNextMoanSound = gpGlobals->curtime + random->RandomFloat( 1.0, 4.0 );
 }
 

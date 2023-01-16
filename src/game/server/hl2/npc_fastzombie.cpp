@@ -720,9 +720,6 @@ void CFastZombie::Spawn( void )
 	m_flDistFactor = 1.0;
 
 	BaseClass::Spawn();
-
-	// reactivedrop: 
-	ChangeFaction(FACTION_ALIENS);
 }
 
 //-----------------------------------------------------------------------------

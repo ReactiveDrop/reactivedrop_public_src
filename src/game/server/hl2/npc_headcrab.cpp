@@ -2966,6 +2966,13 @@ void CBlackHeadcrab::TelegraphSound( void )
 	EmitSound( "NPC_BlackHeadcrab.Telegraph" );
 }
 
+void CBlackHeadcrab::Spawn( void )
+{
+	BaseClass::Spawn();
+
+	// collapse both classnames to one to simplify stats
+	SetClassname( "npc_headcrab_poison" );
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: 

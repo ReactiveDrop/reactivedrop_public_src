@@ -222,7 +222,7 @@
 @NPCClass base(BaseHeadcrab) studio("models/Headcrab.mdl") = npc_headcrab_fast : "Fast Headcrab"
 [
 ]
-@NPCClass base(BaseHeadcrab) studio("models/Headcrabblack.mdl") = npc_headcrab_black : "Black Headcrab"
+@NPCClass base(BaseHeadcrab) studio("models/Headcrabblack.mdl") = npc_headcrab_poison : "Poison Headcrab"
 [
 ]
 

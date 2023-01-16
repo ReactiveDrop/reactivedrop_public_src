@@ -342,6 +342,7 @@ public:
 	//
 	// CBaseEntity implementation.
 	//
+	virtual void Spawn( void );
 	virtual void Precache( void );
 
 	DEFINE_CUSTOM_AI;

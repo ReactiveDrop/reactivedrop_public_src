@@ -1683,15 +1683,7 @@ void CNPC_BaseZombie::HandleAnimEvent( animevent_t *pEvent )
 //-----------------------------------------------------------------------------
 void CNPC_BaseZombie::Spawn( void )
 {
-	SetSolid( SOLID_BBOX );
-	SetMoveType( MOVETYPE_STEP );
-
-#ifdef _XBOX
-	// Always fade the corpse
-	AddSpawnFlags( SF_NPC_FADE_CORPSE );
-#endif // _XBOX
-
-	m_NPCState			= NPC_STATE_NONE;
+	BaseClass::Spawn();
 
 	CapabilitiesAdd( bits_CAP_MOVE_GROUND | bits_CAP_INNATE_MELEE_ATTACK1 );
 	CapabilitiesAdd( bits_CAP_SQUAD );

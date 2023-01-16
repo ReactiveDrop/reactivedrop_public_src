@@ -355,9 +355,6 @@ void CNPC_PoisonZombie::Spawn( void )
 	{
 		EnableCrab( i, ( nBitMask & ( 1 << i ) ) != 0 );
 	}
-
-	// reactivedrop: 
-	ChangeFaction(FACTION_ALIENS);
 }
 
 
