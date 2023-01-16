@@ -31,7 +31,7 @@ const ASW_Alien_Class_Entry g_Aliens[] =
 	ASW_Alien_Class_Entry( "asw_drone_jumper", HULL_MEDIUMBIG, Vector( -17, -17, 0 ), Vector( 17, 17, 69 ) ),
 	ASW_Alien_Class_Entry( "asw_harvester", HULL_WIDE_SHORT, Vector( -23, -23, 0 ), Vector( 23, 23, 69 ) ),
 	ASW_Alien_Class_Entry( "asw_parasite_defanged", HULL_TINY, Vector( -12, -12, 0 ), Vector( 12, 12, 12 ) ),
-	ASW_Alien_Class_Entry( "asw_queen", HULL_LARGE_CENTERED, Vector( -120, -120, 0 ), Vector( 120, 120, 160 ) ),
+	ASW_Alien_Class_Entry( "asw_queen", HULL_HUGE, Vector( -120, -120, 0 ), Vector( 120, 120, 160 ) ),
 	ASW_Alien_Class_Entry( "asw_boomer", HULL_LARGE, Vector( -30, -30, 0 ), Vector( 30, 30, 110 ) ),
 	ASW_Alien_Class_Entry( "asw_ranger", HULL_MEDIUMBIG, Vector( -20, -20, 0 ), Vector( 20, 20, 69 ) ),
 	ASW_Alien_Class_Entry( "asw_mortarbug", HULL_WIDE_SHORT, Vector( -23, -23, 0 ), Vector( 23, 23, 69 ) ),
@@ -72,14 +72,14 @@ int GetAlienClassIndex( CBaseEntity *pAlien )
 const int g_nDroneClassEntry = 0;
 const int g_nDroneJumperClassEntry = 5;
 
-class CASW_Alien_Class_Strings : public CAutoGameSystem
+static class CASW_Alien_Class_Strings final : public CAutoGameSystem
 {
 public:
 	CASW_Alien_Class_Strings() : CAutoGameSystem( "CASW_Alien_Class_Strings" )
 	{
 	}
 
-	virtual void LevelInitPreEntity()
+	void LevelInitPreEntity() override
 	{
 		for ( int i = 0; i < NELEMS( g_Aliens ); i++ )
 		{

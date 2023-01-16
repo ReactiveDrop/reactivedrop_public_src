@@ -37,10 +37,11 @@ ai_hull_t  Wide_Short_Hull		(bits_WIDE_SHORT_HULL,		"WIDE_SHORT_HULL",		Vector(-
 ai_hull_t  Medium_Hull			(bits_MEDIUM_HULL,			"MEDIUM_HULL",			Vector(-16,-16,   0),	Vector(16, 16, 64),		Vector(-8,-8, 0),	    Vector(8, 8, 64) );				// -
 ai_hull_t  Tiny_Centered_Hull	(bits_TINY_CENTERED_HULL,	"TINY_CENTERED_HULL",	Vector(-10,	-10, -10),	Vector(10, 10, 10),		Vector(-10,	-10, -10),	Vector(10, 10, 10) );			// Buzzer
 ai_hull_t  Large_Hull			(bits_LARGE_HULL,			"LARGE_HULL",			Vector(-30,-30,   0),	Vector(30, 30, 110),	Vector(-30,-30, 0),		Vector(30, 30, 110) );			// Boomer
-ai_hull_t  Large_Centered_Hull	(bits_LARGE_CENTERED_HULL,	"LARGE_CENTERED_HULL",	Vector(-120,-120, 0),	Vector(120, 120, 160),	Vector(-80,-80,0),		Vector(80, 80, 200) );			// Queen
+ai_hull_t  Large_Centered_Hull	(bits_LARGE_CENTERED_HULL,	"LARGE_CENTERED_HULL",	Vector(-38,-38, -38),	Vector(38, 38, 38),		Vector(-30,-30,-30),	Vector(30, 30, 30) );			// Strider
 ai_hull_t  Medium_Tall_Hull		(bits_MEDIUM_TALL_HULL,		"MEDIUM_TALL_HULL",		Vector(-22,-22,   0),	Vector(22, 22, 100),	Vector(-22,-22, 0),	    Vector(22, 22, 100) );			// Hunter/Meatbug
 ai_hull_t  Tiny_Fluid_Hull		(bits_TINY_FLUID_HULL,		"TINY_FLUID_HULL",		Vector(-8,-8,   0),		Vector(8, 8, 16),		Vector(-8,-8, 0),	    Vector(8, 8, 16),	MASK_NPCWORLDSTATIC_FLUID );		// Blob?
 ai_hull_t  MediumBig_Hull		(bits_MEDIUMBIG_HULL,		"MEDIUMBIG_HULL",		Vector(-20,-20,   0),	Vector(20, 20, 69),		Vector(-20,-20, 0),	Vector(20, 20, 69) );				// Drones
+ai_hull_t  Huge_Hull			(bits_HUGE_HULL,			"HUGE_HULL",			Vector(-120,-120, 0),	Vector(120, 120, 160),	Vector(-80,-80,0),		Vector(80, 80, 200) );			// Queen
 
 #else
 
@@ -75,6 +76,7 @@ ai_hull_t*	hull[NUM_HULLS] =
 	&Medium_Tall_Hull,
 	&Tiny_Fluid_Hull,
 	&MediumBig_Hull,
+	&Huge_Hull,
 };
 
 

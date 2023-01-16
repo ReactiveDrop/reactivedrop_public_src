@@ -26,6 +26,7 @@ enum Hull_t
 	HULL_MEDIUM_TALL,		// Hunter
 	HULL_TINY_FLUID,		// Blob
 	HULL_MEDIUMBIG,			// Infested drone
+	HULL_HUGE,				// Queen
 //--------------------------------------------
 	NUM_HULLS,
 	HULL_NONE				// No Hull (appears after num hulls as we don't want to count it)
@@ -46,7 +47,8 @@ enum Hull_Bits_t
 	bits_MEDIUM_TALL_HULL		=	0x00000400,
 	bits_TINY_FLUID_HULL		=	0x00000800,
 	bits_MEDIUMBIG_HULL			=   0x00001000,
-	bits_HULL_BITS_MASK			=	0x00001fff,		// infested change from 1ff to fff
+	bits_HUGE_HULL				=   0x00001000,
+	bits_HULL_BITS_MASK			=	0x00003fff,		// infested change from 1ff to fff
 };
 
 inline int HullToBit( Hull_t hull )

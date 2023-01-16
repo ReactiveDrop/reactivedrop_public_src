@@ -140,11 +140,11 @@ CASW_Queen::~CASW_Queen()
 
 void CASW_Queen::Spawn( void )
 {
-	SetHullType(HULL_LARGE_CENTERED);
+	SetHullType(HULL_HUGE);
 
 	BaseClass::Spawn();
 	
-	SetHullType(HULL_LARGE_CENTERED);
+	SetHullType(HULL_HUGE);
 	//UTIL_SetSize(this, Vector(-23,-23,0), Vector(23,23,69));
 	//UTIL_SetSize(this,	Vector(-140, -140, 0), Vector(140, 140, 200) );
 #ifdef ASW_QUEEN_STATIONARY

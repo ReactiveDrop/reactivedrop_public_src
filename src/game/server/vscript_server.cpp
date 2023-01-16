@@ -1792,6 +1792,7 @@ bool VScriptServerInit()
 				g_pScriptVM->SetValue( "HULL_MEDIUM_TALL", 9 );
 				g_pScriptVM->SetValue( "HULL_TINY_FLUID", 10 );
 				g_pScriptVM->SetValue( "HULL_MEDIUMBIG", 11 );
+				g_pScriptVM->SetValue( "HULL_HUGE", 12 );
 
 				// AI_ZoneIds_t enums for CAI_Node::GetZone and CAI_Node::SetZone
 				g_pScriptVM->SetValue( "AI_NODE_ZONE_UNKNOWN", 0 );
