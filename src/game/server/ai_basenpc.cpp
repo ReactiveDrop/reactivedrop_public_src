@@ -12127,7 +12127,11 @@ bool CAI_BaseNPC::CineCleanup()
 			{
 				SetLocalOrigin( origin );
 
+#ifdef INFESTED_DLL
+				int drop = UTIL_DropToFloor( this, GetAITraceMask() );
+#else
 				int drop = UTIL_DropToFloor( this, GetAITraceMask(), UTIL_GetLocalPlayer() );
+#endif
 
 				// Origin in solid?  Set to org at the end of the sequence
 				if ( ( drop < 0 ) || sv_test_scripted_sequences.GetBool() )

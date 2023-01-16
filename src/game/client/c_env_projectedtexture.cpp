@@ -230,21 +230,9 @@ void C_EnvProjectedTexture::UpdateLight( void )
 			}
 			else
 			{
-				vForward = m_hTargetEntity->GetAbsOrigin() - GetAbsOrigin();
-				VectorNormalize( vForward );
-
-				// JasonM - unimplemented
-				Assert (0);
-
-				//Quaternion q = DirectionToOrientation( dir );
-
-
-				//
-				// JasonM - set up vRight, vUp
-				//
-
-				//			VectorNormalize( vRight );
-				//			VectorNormalize( vUp );
+				QAngle angles;
+				VectorAngles( m_hTargetEntity->GetAbsOrigin() - GetAbsOrigin(), angles );
+				AngleVectors( angles, &vForward, &vRight, &vUp );
 			}
 		}
 		else
