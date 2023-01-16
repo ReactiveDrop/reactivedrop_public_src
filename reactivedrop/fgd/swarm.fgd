@@ -2456,6 +2456,17 @@
 		20 : "npc_poisonzombie"
 		21 : "npc_fastzombie"
 		22 : "npc_fastzombie_torso"
+		23 : "npc_headcrab"
+		24 : "npc_headcrab_fast"
+		25 : "npc_headcrab_poison"
+		26 : "npc_zombine"
+		27 : "npc_combine_s"
+		28 : "npc_combine_shotgun"
+		29 : "npc_combine_elite"
+		30 : "npc_strider"
+		31 : "npc_hunter"
+		32 : "npc_combinedropship"
+		33 : "npc_combinegunship"
 	]
 
 	AllowDirectorSpawns(choices) : "Allow director spawns" : 0 : "Should the director be allowed to spawn aliens from this spawner? Director spawns do not count towards the limit of this spawner." =
@@ -2569,6 +2580,17 @@
 		20 : "npc_poisonzombie"
 		21 : "npc_fastzombie"
 		22 : "npc_fastzombie_torso"
+		23 : "npc_headcrab"
+		24 : "npc_headcrab_fast"
+		25 : "npc_headcrab_poison"
+		26 : "npc_zombine"
+		27 : "npc_combine_s"
+		28 : "npc_combine_shotgun"
+		29 : "npc_combine_elite"
+		30 : "npc_strider"
+		31 : "npc_hunter"
+		32 : "npc_combinedropship"
+		33 : "npc_combinegunship"
 	]
 	AlienOrders(choices) : "Alien Orders" : 2 : "Orders given to nearby aliens." =
 	[
@@ -3865,6 +3887,17 @@
 		20 : "npc_poisonzombie"
 		21 : "npc_fastzombie"
 		22 : "npc_fastzombie_torso"
+		23 : "npc_headcrab"
+		24 : "npc_headcrab_fast"
+		25 : "npc_headcrab_poison"
+		26 : "npc_zombine"
+		27 : "npc_combine_s"
+		28 : "npc_combine_shotgun"
+		29 : "npc_combine_elite"
+		30 : "npc_strider"
+		31 : "npc_hunter"
+		32 : "npc_combinedropship"
+		33 : "npc_combinegunship"
 	]
 ]
 

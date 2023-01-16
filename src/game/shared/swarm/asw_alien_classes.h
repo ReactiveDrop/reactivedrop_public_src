@@ -12,7 +12,7 @@ public:
 	Vector m_vecRealHullMaxs;
 };
 
-extern const ASW_Alien_Class_Entry g_Aliens[23];
+extern const ASW_Alien_Class_Entry g_Aliens[34];
 int GetAlienClassIndex( CBaseEntity *pAlien );
 extern const int g_nDroneClassEntry;
 extern const int g_nDroneJumperClassEntry;

@@ -46,6 +46,17 @@ const ASW_Alien_Class_Entry g_Aliens[] =
 	ASW_Alien_Class_Entry( "npc_poisonzombie", HULL_HUMAN, Vector( -13, -13, 0 ), Vector( 13, 13, 72 ) ),
 	ASW_Alien_Class_Entry( "npc_fastzombie", HULL_HUMAN, Vector( -13, -13, 0 ), Vector( 13, 13, 72 ) ),
 	ASW_Alien_Class_Entry( "npc_fastzombie_torso", HULL_HUMAN, Vector( -13, -13, 0 ), Vector( 13, 13, 72 ) ),
+	ASW_Alien_Class_Entry( "npc_headcrab", HULL_TINY, Vector( -12, -12, 0 ), Vector( 12, 12, 12 ) ),
+	ASW_Alien_Class_Entry( "npc_headcrab_fast", HULL_TINY, Vector( -12, -12, 0 ), Vector( 12, 12, 12 ) ),
+	ASW_Alien_Class_Entry( "npc_headcrab_poison", HULL_TINY, Vector( -12, -12, 0 ), Vector( 12, 12, 12 ) ),
+	ASW_Alien_Class_Entry( "npc_zombine", HULL_HUMAN, Vector( -13, -13, 0 ), Vector( 13, 13, 72 ) ),
+	ASW_Alien_Class_Entry( "npc_combine_s", HULL_HUMAN, Vector( -13, -13, 0 ), Vector( 13, 13, 72 ) ),
+	ASW_Alien_Class_Entry( "npc_combine_shotgun", HULL_HUMAN, Vector( -13, -13, 0 ), Vector( 13, 13, 72 ) ),
+	ASW_Alien_Class_Entry( "npc_combine_elite", HULL_HUMAN, Vector( -13, -13, 0 ), Vector( 13, 13, 72 ) ),
+	ASW_Alien_Class_Entry( "npc_strider", HULL_LARGE_CENTERED, Vector( -38, -38, -38 ), Vector( 38, 38, 38 ) ),
+	ASW_Alien_Class_Entry( "npc_hunter", HULL_MEDIUM_TALL, Vector( -18, -18, 0 ), Vector( 18, 18, 100 ) ),
+	ASW_Alien_Class_Entry( "npc_combinedropship", HULL_LARGE_CENTERED, Vector( -38, -38, -38 ), Vector( 38, 38, 38 ) ),
+	ASW_Alien_Class_Entry( "npc_combinegunship", HULL_LARGE_CENTERED, Vector( -38, -38, -38 ), Vector( 38, 38, 38 ) ),
 };
 
 int GetAlienClassIndex( CBaseEntity *pAlien )
