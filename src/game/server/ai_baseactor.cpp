@@ -781,10 +781,14 @@ void CAI_BaseActor::UpdateLatchedValues( )
 // Purpose: Returns true position of the eyeballs
 //-----------------------------------------------------------------------------
 Vector CAI_BaseActor::EyePosition( )
-{ 
+{
+#ifdef INFESTED_DLL
+	return BaseClass::EyePosition();
+#else
 	UpdateLatchedValues();
 
 	return m_latchedEyeOrigin;
+#endif
 }
 
 

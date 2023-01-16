@@ -228,7 +228,8 @@ void CASWHud3DMarineNames::PaintAutoaimCrosshairOn(C_BaseEntity *pEnt)
 	if (!pEnt)
 		return;
 
-	Vector pos = (pEnt->WorldSpaceCenter() - pEnt->GetAbsOrigin()) + pEnt->GetRenderOrigin();
+	IASW_Client_Aim_Target *pAimTarget = dynamic_cast< IASW_Client_Aim_Target * >( pEnt );
+	Vector pos = ( ( pAimTarget ? pAimTarget->GetAimTargetPos(vec3_origin, false ) : pEnt->WorldSpaceCenter() ) - pEnt->GetAbsOrigin() ) + pEnt->GetRenderOrigin();
 	Vector screenPos;
 	debugoverlay->ScreenPosition( pos, screenPos );
 

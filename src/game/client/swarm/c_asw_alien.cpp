@@ -30,15 +30,15 @@
 
 #define ASW_GIB_ASAP 0.175f
 
-ConVar asw_alien_object_motion_blur_scale( "asw_alien_object_motion_blur_scale", "0.2" );
-ConVar asw_drone_gib_time_min("asw_drone_gib_time_min", "0.2", 0, "Minimum time a Swarm Drone ragdoll will stay around before gibbing");
-ConVar asw_drone_gib_time_max("asw_drone_gib_time_max", "0.2", 0, "Maximum time a Swarm Drone ragdoll will stay around before gibbing");
-ConVar asw_drone_fade_time_min("asw_drone_fade_time_min", "2.0", 0, "Minimum time a Swarm Drone ragdoll will stay around before fading");
-ConVar asw_drone_fade_time_max("asw_drone_fade_time_max", "4.0", 0, "Maximum time a Swarm Drone ragdoll will stay around before fading");
-ConVar asw_directional_shadows("asw_directional_shadows", "1", 0, "Whether aliens should have flashlight directional shadows");
-ConVar asw_alien_shadows("asw_alien_shadows", "0", 0, "If set to one, aliens will always have shadows (WARNING: Big fps cost when lots of aliens are active)");
+ConVar asw_alien_object_motion_blur_scale( "asw_alien_object_motion_blur_scale", "0.2", FCVAR_NONE );
+ConVar asw_drone_gib_time_min("asw_drone_gib_time_min", "0.2", FCVAR_NONE, "Minimum time a Swarm Drone ragdoll will stay around before gibbing");
+ConVar asw_drone_gib_time_max("asw_drone_gib_time_max", "0.2", FCVAR_NONE, "Maximum time a Swarm Drone ragdoll will stay around before gibbing");
+ConVar asw_drone_fade_time_min("asw_drone_fade_time_min", "2.0", FCVAR_NONE, "Minimum time a Swarm Drone ragdoll will stay around before fading");
+ConVar asw_drone_fade_time_max("asw_drone_fade_time_max", "4.0", FCVAR_NONE, "Maximum time a Swarm Drone ragdoll will stay around before fading");
+ConVar asw_directional_shadows("asw_directional_shadows", "1", FCVAR_ARCHIVE, "Whether aliens should have flashlight directional shadows");
+ConVar asw_alien_shadows("asw_alien_shadows", "0", FCVAR_ARCHIVE, "If set to one, aliens will always have shadows (WARNING: Big fps cost when lots of aliens are active)");
 ConVar asw_alien_footstep_interval( "asw_alien_footstep_interval", "0.25", 0, "Minimum interval between alien footstep sounds. Used to keep them from piling up and preventing others from playing." );
-ConVar asw_breakable_aliens( "asw_breakable_aliens", "1", 0, "If set, aliens can break into ragdoll gibs" );
+ConVar asw_breakable_aliens( "asw_breakable_aliens", "1", FCVAR_NONE, "If set, aliens can break into ragdoll gibs" );
 ConVar rd_max_drone_death_particles( "rd_max_drone_death_particles", "25", FCVAR_ARCHIVE, "Maximum number of drone blood particle being created per 1 frame" );
 ConVar glow_outline_color_alien( "glow_outline_color_alien", "77 153 26", FCVAR_NONE );
 extern ConVar asw_override_footstep_volume;
