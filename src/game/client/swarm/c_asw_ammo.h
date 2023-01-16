@@ -147,4 +147,17 @@ public:
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_AMMO_PDW; }
 };
 
+class C_ASW_Ammo_AR2 : public C_ASW_Ammo
+{
+public:
+	DECLARE_CLASS( C_ASW_Ammo_AR2, C_ASW_Ammo );
+	DECLARE_CLIENTCLASS();
+
+	virtual int GetUseIconTextureID() { BaseClass::GetUseIconTextureID(); return s_nUseIconTake; }
+	C_ASW_Ammo_AR2();
+
+	// Classification
+	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_AMMO_AR2; }
+};
+
 #endif /* _DEFINED_C_ASW_AMMO_H */

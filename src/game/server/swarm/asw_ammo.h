@@ -189,4 +189,26 @@ public:
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_AMMO_PDW; }
 };
 
+class CASW_Ammo_AR2 : public CASW_Ammo
+{
+public:
+	DECLARE_CLASS( CASW_Ammo_AR2, CASW_Ammo );
+	DECLARE_SERVERCLASS();
+	DECLARE_DATADESC();
+
+	CASW_Ammo_AR2()
+	{
+		m_bAddSecondary = true;
+	}
+
+	virtual void Spawn( void );
+	virtual void Precache( void );
+	virtual void ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType );	// player has used this item
+
+	bool m_bAddSecondary;
+
+	// Classification
+	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_AMMO_AR2; }
+};
+
 #endif /* _DEFINED_ASW_AMMO_H */

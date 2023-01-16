@@ -370,8 +370,87 @@ asw_pickup_50calmg : "50cal Machine Gun"
 		"asw_boomer_blob" : "Boomer Blob"
 	]
 	GrenadeFuseLength(float) : "Fuse Length" : "3.5"
-	GrenadeClusters(integer) : "Grenade Clusters" : "0"
+	GrenadeClusters(integer) : "Grenade Clusters" : 0
 
 	input StartSprint(void) : "Forces the zombine to sprint."
 	input PullGrenade(void) : "Forces the zombine to pull a grenade."
+]
+
+@PointClass base(ASWPickup) studio("models/weapons/w_irifle.mdl") = asw_weapon_ar2 : "Assault Rifle 2"
+[
+	BulletsInGun(integer) : "Bullets In Gun" : 30
+	Clips(integer) : "Clips" : 6
+	SecondaryBullets(integer) : "Secondary Bullets" : 3
+]
+
+@PointClass base(ASWPickup) studio("models/swarm/ammo/ammoar2.mdl") = asw_ammo_ar2 : "Pulse Rifle ammo refill"
+[
+	AddSecondary(choices) : "Add secondary item" : 1 : "If set this pickup adds secondary fire charge" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+]
+
+@FilterClass base(BaseFilter) iconsprite("editor/filter_class.vmt") = filter_combineball_type : "A filter that filters by combine ball type."
+[
+	balltype(choices) : "Ball Type" : 1 =
+	[
+		0 : "Not Thrown (in combine ball field, etc)"
+		2 : "Thrown/Launched by the player's physcannon"
+		3 : "Launched by point_combine_ball_launcher"
+	]	
+]
+
+@BaseClass base(Targetname, Origin, Angles, Global) = CombineBallSpawners
+[
+	spawnflags(Flags) = 
+	[
+		4096 : "Start inactive" : 1
+		8192 : "Combine power supply" : 0
+	]
+
+	ballcount(integer) : "Ball count" : 3 : "This is how many balls will be bouncing around inside the spawner"
+	minspeed(float) : "Min ball speed" : "300.0" : "The minimum speed of balls that fly in the spawner"
+	maxspeed(float) : "Max ball speed" : "600.0" : "The maximum speed of balls that fly in the spawner"
+	ballradius(float) : "Ball radius" : "20.0" : "The radius of the energy balls"
+	ballrespawntime(float) : "Ball Respawn Time" : "4.0f" : "The energy balls respawn time"
+
+	input Enable(void) : "Enable spawning of combine balls"
+	input Disable(void) : "Disable spawning of combine balls"
+
+	output OnBallGrabbed(void) : "Fired when a combine ball is grabbed from the field by a mega physcannon"
+	output OnBallReinserted(void) : "Fired when a combine ball is reinserted into the field (only gets triggered when Combine Power supply is checked)"
+	output OnBallHitTopSide(void) : "Fired when a combine ball in hits the top side of the field (only gets triggered when Combine Power supply is checked)"
+	output OnBallHitBottomSide(void) : "Fired when a combine ball in hits the bottom side of the field (only gets triggered when Combine Power supply is checked)"
+	output OnLastBallGrabbed(void) : "Fired when the last combine ball is grabbed from the field by a mega physcannon"
+	output OnFirstBallReinserted(void) : "Fired when the first combine ball is reinserted into the field (only gets triggered when Combine Power supply is checked)"
+]
+
+@PointClass base(BasePropPhysics) studioprop("models/effects/combineball.mdl") = prop_combine_ball : "Combine Ball"
+[
+	// Inputs
+	input Explode(void) : "Explode"
+]
+
+@SolidClass base(CombineBallSpawners) = func_combine_ball_spawner : "Spawns Combine balls."
+[
+	output OnBallReinserted(void) : "Fired when a combine ball is reinserted into the field (only gets triggered when Combine Power supply is checked)"
+	output OnLastBallGrabbed(void) : "Fired when the last combine ball is grabbed from the field by a mega physcannon"
+]
+
+@PointClass base(CombineBallSpawners) = point_combine_ball_launcher : "Launches Combine balls."
+[
+	launchconenoise(float) : "Noise to launch direction" : "0.0" : "Noise in degrees added to the launch direction."
+	bullseyename(string) : "Name of bullseye" : "" : "If you select the Attach Bullseye spawnflag, you may specify a name here which will be given to the bullseye."
+	maxballbounces(integer) : "Max number of bounces" : 8 : "Maximum number of bounces the balls are allowed to do before they are removed."
+
+	spawnflags(Flags) =
+	[
+		1 : "Attach Bullseye" : 0
+		2 : "Balls should collide against player" : 0
+	]
+
+    // Inputs
+	input LaunchBall(void) : "Launch a ball from the spawner."
 ]

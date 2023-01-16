@@ -15,6 +15,7 @@
 // Includes
 //-----------------------------------------------------------------------------
 #include "player_pickup.h"	// for combine ball inheritance
+#include "asw_shareddefs.h"
 
 //-----------------------------------------------------------------------------
 // Forward declarations
@@ -32,6 +33,7 @@ public:
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
 
+	Class_T Classify( void ) override { return ( Class_T )CLASS_ASW_COMBINE_BALL; }
 	virtual void Precache();
 	virtual void Spawn();
 	virtual void UpdateOnRemove();
@@ -115,8 +117,6 @@ public:
 	void SetOriginalOwner( CBaseEntity *pEntity ) { m_hOriginalOwner = pEntity; }
 	CBaseEntity *GetOriginalOwner() { return m_hOriginalOwner; }
 
-private:
-
 	void SetPlayerLaunched( CBasePlayer *pOwner );
 
 	float GetBallHoldDissolveTime();
@@ -161,8 +161,6 @@ private:
 		return ( m_nState == STATE_LAUNCHED && m_nMaxBounces != 0 && m_nBounceCount >= m_nMaxBounces );
 	}
 
-private:
-
 	int		m_nBounceCount;
 	int		m_nMaxBounces;
 	bool	m_bBounceDie;
@@ -186,6 +184,7 @@ private:
 	float	m_flLastCaptureTime;
 
 	CHandle < CFuncCombineBallSpawner > m_hSpawner;
+	CHandle < CBaseCombatWeapon > m_hWeapon;
 
 	EHANDLE m_hOriginalOwner;
 
@@ -289,7 +288,7 @@ private:
 };
 
 // Creates a combine ball
-CBaseEntity *CreateCombineBall( const Vector &origin, const Vector &velocity, float radius, float mass, float lifetime, CBaseEntity *pOwner );
+CBaseEntity *CreateCombineBall( const Vector &origin, const Vector &velocity, float radius, float mass, float lifetime, CBaseEntity *pOwner, CBaseCombatWeapon *pWeapon );
 
 // Query function to find out if a physics object is a combine ball (used for collision checks)
 bool UTIL_IsCombineBall( CBaseEntity *pEntity );

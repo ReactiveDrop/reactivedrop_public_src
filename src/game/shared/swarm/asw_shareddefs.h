@@ -276,6 +276,7 @@ enum
 	ASW_COLLISION_GROUP_PLAYER_MISSILE,				// collides with aliens, not players
 	ASW_COLLISION_GROUP_SENTRY,						// collides with aliens
 	ASW_COLLISION_GROUP_SENTRY_PROJECTILE,			// collides with aliens, marines and doors - nothing else (this is used for the sentry particles)
+	HL2COLLISION_GROUP_COMBINE_BALL,
 
 	ASW_COLLISION_GROUP_BLOCK_ALIENS,				// asw
 	ASW_COLLISION_GROUP_IGNORE_NPCS,		// asw (fire walls spreading, collides with everything but aliens, marines) NOTE: Has to be after any NPC collision groups
@@ -284,8 +285,6 @@ enum
 	ASW_COLLISION_GROUP_BOTS,			// reactivedrop: collision group for bots
 	ASW_COLLISION_GROUP_CEILINGS,
 	ASW_COLLISION_GROUP_PASSABLE,		// asw (stuff you can walk through) NOTE: Has to be LAST!
-
-	HL2COLLISION_GROUP_COMBINE_BALL_NPC,
 };
 
 
@@ -331,12 +330,7 @@ enum PowerUpTypes
 #define HL2COLLISION_GROUP_FIRST_NPC ASW_COLLISION_GROUP_GRUBS
 #define HL2COLLISION_GROUP_LAST_NPC ASW_COLLISION_GROUP_ALIEN
 
-bool IsAlienCollisionGroup(	int iCollisionGroup );
-#define IN_ASW_STOP		(1 << 26)	// asw: this button will stop the marine's x/y motion immediately (used to hold him still while he plays stationary animations, also may be need for clientside avoidance)
-
 bool IsAlienClass( Class_T npc_class );
-bool IsDamagingWeaponClass( Class_T entity_class );
-bool IsWeaponClass( Class_T entity_class );
 bool IsBulletBasedWeaponClass( Class_T entity_class );
 bool IsSentryClass( Class_T entity_class );
 bool CanMarineGetStuckOnProp( const char *szModelName );
@@ -593,6 +587,9 @@ enum
 	CLASS_ASW_MEDRIFLE,
 	CLASS_RD_WEAPON_GENERIC_OBJECT,
 	CLASS_ASW_ANTLIONGUARD,
+	CLASS_ASW_AR2,
+	CLASS_ASW_COMBINE_BALL,
+	CLASS_ASW_AMMO_AR2,
 
 	// Add new classes here ^^^^
 	CLASS_FUNC_TRACKTRAIN,

@@ -377,7 +377,7 @@ C_ASW_Pickup_Weapon_Ricochet::C_ASW_Pickup_Weapon_Ricochet()
 // Flechette
 //---------
 
-IMPLEMENT_CLIENTCLASS_DT(C_ASW_Pickup_Weapon_Flechette, DT_ASW_Pickup_Weapon_Flechette, CASW_Pickup_Weapon_Flechette)
+IMPLEMENT_CLIENTCLASS_DT( C_ASW_Pickup_Weapon_Flechette, DT_ASW_Pickup_Weapon_Flechette, CASW_Pickup_Weapon_Flechette )
 END_RECV_TABLE()
 
 C_ASW_Pickup_Weapon_Flechette::C_ASW_Pickup_Weapon_Flechette()

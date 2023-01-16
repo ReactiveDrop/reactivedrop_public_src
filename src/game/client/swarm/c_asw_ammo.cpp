@@ -163,3 +163,17 @@ C_ASW_Ammo_PDW::C_ASW_Ammo_PDW()
 	Q_snprintf(m_szAmmoFullText, sizeof(m_szAmmoFullText), "#asw_ammo_pdw_full");	
 	m_iAmmoIndex = GetAmmoDef()->Index("ASW_PDW");
 }
+//------------
+// AR2 Ammo
+//------------
+
+IMPLEMENT_CLIENTCLASS_DT( C_ASW_Ammo_AR2, DT_ASW_Ammo_AR2, CASW_Ammo_AR2 )
+END_RECV_TABLE()
+
+C_ASW_Ammo_AR2::C_ASW_Ammo_AR2()
+{
+	Q_snprintf( m_szUseIconText, sizeof( m_szUseIconText ), "#asw_take_ammo_ar2" );
+	Q_snprintf( m_szNoGunText, sizeof( m_szNoGunText ), "#asw_ammo_ar2" );
+	Q_snprintf( m_szAmmoFullText, sizeof( m_szAmmoFullText ), "#asw_ammo_ar2_full" );
+	m_iAmmoIndex = GetAmmoDef()->Index( "AR2" );
+}

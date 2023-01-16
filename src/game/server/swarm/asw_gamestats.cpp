@@ -88,6 +88,13 @@ static Class_T GetWeaponClassFromDamageInfo( const CTakeDamageInfo & info, CBase
 		// this says a lot about our society
 		return (Class_T)CLASS_ASW_GAS_GRENADES;
 	}
+	else if ( weaponClass == CLASS_ASW_AR2 )
+	{
+		if ( info.GetDamageType() & DMG_DISSOLVE )
+		{
+			return (Class_T)CLASS_ASW_COMBINE_BALL;
+		}
+	}
 	return weaponClass;
 }
 
@@ -432,9 +439,14 @@ void CASWGameStats::Event_MarineWeaponFired( const CBaseEntity *pWeapon, const C
 		{
 			weaponClass = (Class_T)CLASS_ASW_COMBAT_RIFLE_SHOTGUN;
 		}
+		else if ( weaponClass == CLASS_ASW_AR2 )
+		{
+			weaponClass = (Class_T)CLASS_ASW_COMBINE_BALL;
+		}
 		else
 		{
-			weaponClass = (Class_T)(255 - weaponClass);
+			Assert( 0 );
+			weaponClass = (Class_T)(1024 - weaponClass);
 		}
 	}
 

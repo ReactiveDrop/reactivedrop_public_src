@@ -368,6 +368,8 @@ Class_T GetDamagingWeaponClassFromName( const char *szClassName )
 		return (Class_T) CLASS_ASW_HEAVY_RIFLE;
 	else if ( FStrEq( szClassName, "asw_weapon_medrifle" ) )
 		return (Class_T) CLASS_ASW_MEDRIFLE;
+	else if ( FStrEq( szClassName, "asw_weapon_ar2" ) )
+		return (Class_T) CLASS_ASW_AR2;
 
 	else if( FStrEq( szClassName, "asw_weapon_laser_mines") )
 		return (Class_T)CLASS_ASW_LASER_MINES;
@@ -394,6 +396,8 @@ Class_T GetDamagingWeaponClassFromName( const char *szClassName )
 		return (Class_T)CLASS_ASW_GRENADE_VINDICATOR;
 	else if( FStrEq( szClassName, "asw_combat_rifle_shotgun") )
 		return (Class_T)CLASS_ASW_COMBAT_RIFLE_SHOTGUN;
+	else if( FStrEq( szClassName, "prop_combine_ball" ) )
+		return (Class_T)CLASS_ASW_COMBINE_BALL;
 
 	else
 		return (Class_T)CLASS_ASW_UNKNOWN;

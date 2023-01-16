@@ -587,6 +587,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="..\shared\swarm\asw_weapon_50calmg_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_ammo_bag_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_ammo_satchel_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_ar2_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_assault_shotgun_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_autogun_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_bait.cpp" />
@@ -873,6 +874,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="hl2\C_Func_Monitor.cpp" />
     <ClCompile Include="hl2\c_npc_antlionguard.cpp" />
     <ClCompile Include="hl2\c_npc_zombine.cpp" />
+    <ClCompile Include="hl2\c_prop_combine_ball.cpp" />
     <ClCompile Include="hl2\c_rotorwash.cpp" />
     <ClCompile Include="hl2\c_script_intro.cpp" />
     <ClCompile Include="hl2\c_waterbullet.cpp" />
@@ -2304,6 +2306,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="..\shared\swarm\asw_weapon_50calmg_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_ammo_bag_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_ammo_satchel_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_ar2_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_assault_shotgun_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_autogun_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_bait.h" />
@@ -2505,6 +2508,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="glow_outline_effect.h" />
     <ClInclude Include="glow_overlay.h" />
     <ClInclude Include="history_resource.h" />
+    <ClInclude Include="hl2\c_prop_combine_ball.h" />
     <ClInclude Include="hltvcamera.h" />
     <ClInclude Include="hud.h" />
     <ClInclude Include="hudelement.h" />

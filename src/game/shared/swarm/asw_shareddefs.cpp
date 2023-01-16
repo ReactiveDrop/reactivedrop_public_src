@@ -22,106 +22,6 @@ bool IsAlienClass( Class_T npc_class )
 		);
 }
 
-// 		npc_class == CLASS_ASW_ZOMBIE ||
-// 		npc_class == CLASS_ASW_HYDRA ||
-// 		npc_class == CLASS_BLOB ||
-// 		npc_class == CLASS_ASW_BOOMERMINI ||
-// 		npc_class == CLASS_ASW_MEATBUG ||
-// 		npc_class == CLASS_ASW_RUNNER ||
-// 		npc_class == CLASS_ASW_FLOCK ||
-// 		);
-//}
-
-bool IsDamagingWeaponClass( Class_T weapon_class )
-{
-	return ( weapon_class == CLASS_ASW_RIFLE ||
-		weapon_class == CLASS_ASW_MINIGUN ||
-		weapon_class == CLASS_ASW_PDW ||
-		weapon_class == CLASS_ASW_FLECHETTE ||
-		weapon_class == CLASS_ASW_TESLA_TRAP ||
-		weapon_class == CLASS_ASW_SHOTGUN ||
-		weapon_class == CLASS_ASW_SENTRY_FLAMER ||
-		weapon_class == CLASS_ASW_SENTRY_CANNON ||
-		weapon_class == CLASS_ASW_SENTRY_FREEZE ||
-		weapon_class == CLASS_ASW_RICOCHET ||
-		weapon_class == CLASS_ASW_RAILGUN ||
-		weapon_class == CLASS_ASW_PRIFLE ||
-		weapon_class == CLASS_ASW_PISTOL ||
-		weapon_class == CLASS_ASW_MINING_LASER ||
-		weapon_class == CLASS_ASW_MINES ||
-		weapon_class == CLASS_ASW_LASER_MINES ||
-		weapon_class == CLASS_ASW_HORNET_BARRAGE ||
-		weapon_class == CLASS_ASW_HEALGRENADE ||
-		weapon_class == CLASS_ASW_GRENADES ||
-		weapon_class == CLASS_ASW_GRENADE_LAUNCHER ||
-		weapon_class == CLASS_ASW_FREEZE_GRENADES ||
-		weapon_class == CLASS_ASW_FLAMER ||
-		weapon_class == CLASS_ASW_ELECTRIFIED_ARMOR ||
-		weapon_class == CLASS_ASW_CHAINSAW ||
-		weapon_class == CLASS_ASW_AUTOGUN ||
-		weapon_class == CLASS_ASW_ASSAULT_SHOTGUN ||
-		weapon_class == CLASS_ASW_SENTRY_GUN ||
-		weapon_class == CLASS_ASW_T75 ||
-		weapon_class == CLASS_ASW_RIFLE_GRENADE ||
-		weapon_class == CLASS_ASW_GRENADE_VINDICATOR ||
-		weapon_class == CLASS_ASW_GRENADE_CLUSER ||
-		weapon_class == CLASS_MISSILE ||
-		weapon_class == CLASS_ASW_FLAMER_PROJECTILE ||
-		weapon_class == CLASS_ASW_GRENADE_PRIFLE);
-}
-
-bool IsWeaponClass( Class_T entity_class )
-{
-	return ( entity_class == CLASS_ASW_RIFLE ||
-		entity_class == CLASS_ASW_SNIPER_RIFLE ||
-		entity_class == CLASS_ASW_MINIGUN ||
-		entity_class == CLASS_ASW_PDW ||
-		entity_class == CLASS_ASW_FLECHETTE ||
-		entity_class == CLASS_ASW_FIRE_EXTINGUISHER ||
-		entity_class == CLASS_ASW_WELDER ||
-		entity_class == CLASS_ASW_TESLA_TRAP ||
-		entity_class == CLASS_ASW_STIM ||
-		entity_class == CLASS_ASW_SHOTGUN ||
-		entity_class == CLASS_ASW_SENTRY_FLAMER ||
-		entity_class == CLASS_ASW_SENTRY_CANNON ||
-		entity_class == CLASS_ASW_SENTRY_FREEZE ||
-		entity_class == CLASS_ASW_RICOCHET ||
-		entity_class == CLASS_ASW_RAILGUN ||
-		entity_class == CLASS_ASW_PRIFLE ||
-		entity_class == CLASS_ASW_PISTOL ||
-		entity_class == CLASS_ASW_MINING_LASER ||
-		entity_class == CLASS_ASW_MINES ||
-		entity_class == CLASS_ASW_MEDKIT ||
-		entity_class == CLASS_ASW_MEDICAL_SATCHEL ||
-		entity_class == CLASS_ASW_HEAL_GUN ||
-		entity_class == CLASS_ASW_HEALAMP_GUN ||
-		entity_class == CLASS_ASW_LASER_MINES ||
-		entity_class == CLASS_ASW_HORNET_BARRAGE ||
-		entity_class == CLASS_ASW_HEALGRENADE ||
-		entity_class == CLASS_ASW_GRENADES ||
-		entity_class == CLASS_ASW_GRENADE_LAUNCHER ||
-		entity_class == CLASS_ASW_FREEZE_GRENADES ||
-		entity_class == CLASS_ASW_FLASHLIGHT ||
-		entity_class == CLASS_ASW_FLARES ||
-		entity_class == CLASS_ASW_FLAMER ||
-		entity_class == CLASS_ASW_ELECTRIFIED_ARMOR ||
-		entity_class == CLASS_ASW_NORMAL_ARMOR ||
-		entity_class == CLASS_ASW_CHAINSAW ||
-		entity_class == CLASS_ASW_BUFF_GRENADE ||
-		entity_class == CLASS_ASW_AUTOGUN ||
-		entity_class == CLASS_ASW_ASSAULT_SHOTGUN ||
-		entity_class == CLASS_ASW_AMMO_BAG ||
-		entity_class == CLASS_ASW_SENTRY_GUN ||
-		entity_class == CLASS_ASW_T75 ||
-		entity_class == CLASS_ASW_RIFLE_GRENADE ||
-		entity_class == CLASS_ASW_GRENADE_VINDICATOR ||
-		entity_class == CLASS_ASW_GRENADE_CLUSER ||
-		entity_class == CLASS_MISSILE ||
-		entity_class == CLASS_ASW_FLAMER_PROJECTILE ||
-		entity_class == CLASS_ASW_TESLA_GUN ||
-		entity_class == CLASS_ASW_SMART_BOMB );
-}
-
 // used by powerups
 bool IsBulletBasedWeaponClass( Class_T weapon_class )
 {
@@ -142,7 +42,8 @@ bool IsBulletBasedWeaponClass( Class_T weapon_class )
 		weapon_class == CLASS_ASW_COMBAT_RIFLE_SHOTGUN ||
 		weapon_class == CLASS_ASW_50CALMG ||
 		weapon_class == CLASS_ASW_HEAVY_RIFLE ||
-		weapon_class == CLASS_ASW_MEDRIFLE );
+		weapon_class == CLASS_ASW_MEDRIFLE ||
+		weapon_class == CLASS_ASW_AR2 );
 }
 
 bool IsSentryClass( Class_T entity_class )

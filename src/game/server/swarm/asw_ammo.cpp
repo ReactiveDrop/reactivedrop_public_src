@@ -538,3 +538,70 @@ void CASW_Ammo_PDW::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
 		UTIL_Remove( this );
 	}
 }
+
+//-------------
+// AR2 Ammo
+//-------------
+
+IMPLEMENT_SERVERCLASS_ST( CASW_Ammo_AR2, DT_ASW_Ammo_AR2 )
+END_SEND_TABLE()
+
+BEGIN_DATADESC( CASW_Ammo_AR2 )
+DEFINE_KEYFIELD( m_bAddSecondary, FIELD_BOOLEAN, "AddSecondary" ),
+END_DATADESC()
+
+LINK_ENTITY_TO_CLASS( asw_ammo_ar2, CASW_Ammo_AR2 );
+
+void CASW_Ammo_AR2::Spawn( void )
+{
+	Precache();
+	SetModel( "models/swarm/ammo/ammoar2.mdl" );
+	BaseClass::Spawn();
+	m_iAmmoIndex = GetAmmoDef()->Index( "AR2" );
+}
+
+
+void CASW_Ammo_AR2::Precache( void )
+{
+	PrecacheModel( "models/swarm/ammo/ammoar2.mdl" );
+}
+
+void CASW_Ammo_AR2::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
+{
+	if ( nHoldType == ASW_USE_HOLD_START )
+		return;
+
+	// give two reloads rather than just one like other ammo types
+	if ( ASW_GiveAmmo( pNPC, 60, "AR2", this ) )
+	{
+		if ( m_bAddSecondary )
+		{
+			bool bFilledActive = false;
+			CBaseCombatWeapon *pActive = pNPC->GetActiveWeapon();
+			if ( pActive && pActive->Classify() == CLASS_ASW_AR2 )
+			{
+				if ( pActive->Clip2() < pActive->GetMaxClip2() )
+				{
+					pActive->m_iClip2++;
+					bFilledActive = true;
+				}
+			}
+
+			if ( !bFilledActive )
+			{
+				CBaseCombatWeapon *pWeapon;
+				for ( int i = 0; i < ASW_MAX_MARINE_WEAPONS; i++ )
+				{
+					pWeapon = pNPC->GetWeapon( i );
+					if ( pWeapon == pActive )
+						continue;
+					if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AR2 )
+						if ( pWeapon->Clip2() < pWeapon->GetMaxClip2() )
+							pWeapon->m_iClip2++;
+				}
+			}
+		}
+		UTIL_Remove( this );
+	}
+}
+

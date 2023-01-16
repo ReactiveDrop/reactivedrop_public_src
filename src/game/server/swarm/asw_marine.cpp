@@ -3158,7 +3158,7 @@ bool CASW_Marine::RefillHealGun(CBaseEntity *pWeaponPickup)
 bool CASW_Marine::DropWeapon(int iWeaponIndex, bool bNoSwap)
 {
 	CASW_Weapon* pWeapon = GetASWWeapon(iWeaponIndex);
-	if (!pWeapon)
+	if ( !pWeapon || !pWeapon->CanHolster() )
 		return false;
 
 	RemoveWeaponPowerup( pWeapon );

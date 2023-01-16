@@ -552,6 +552,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClCompile Include="..\shared\swarm\asw_weapon_50calmg_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_ammo_bag_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_ammo_satchel_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_ar2_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_assault_shotgun_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_autogun_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_bait.cpp" />
@@ -779,6 +780,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClCompile Include="hl2\grenade_frag.cpp" />
     <ClCompile Include="hl2\npc_crow.cpp" />
     <ClCompile Include="hl2\npc_zombine.cpp" />
+    <ClCompile Include="hl2\prop_combine_ball.cpp" />
     <ClCompile Include="hl2\script_intro.cpp" />
     <ClCompile Include="serverhelper.cpp" />
     <ClCompile Include="gameinterface.cpp" />
@@ -1530,6 +1532,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="..\shared\swarm\asw_weapon_50calmg_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_ammo_bag_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_ammo_satchel_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_ar2_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_assault_shotgun_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_autogun_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_bait.h" />
@@ -1733,6 +1736,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="game.h" />
     <ClInclude Include="hl2\grenade_frag.h" />
     <ClInclude Include="hl2\npc_crow.h" />
+    <ClInclude Include="hl2\prop_combine_ball.h" />
     <ClInclude Include="hl2\script_intro.h" />
     <ClInclude Include="serverhelper.h" />
     <ClInclude Include="gameinterface.h" />

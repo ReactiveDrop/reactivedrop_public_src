@@ -77,4 +77,5 @@
 	"RegularOther"			"asw_weapon_ricochet"
 	"RegularOther"			"asw_weapon_ammo_bag"
 	"RegularOther"			"asw_weapon_medical_satchel"
+	"RegularOther"			"asw_weapon_ar2"
 }
