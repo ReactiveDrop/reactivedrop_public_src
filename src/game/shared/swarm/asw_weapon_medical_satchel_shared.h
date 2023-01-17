@@ -43,8 +43,6 @@ public:
 		virtual bool Holster( CBaseCombatWeapon *pSwitchingTo );
 		virtual float GetInfestationCureAmount();
 		void Drop( const Vector &vecVelocity );
-
-		virtual const char* GetPickupClass() { return "asw_pickup_medical_satchel"; }		
 	#else
 		virtual void MouseOverEntity(C_BaseEntity *pEnt, Vector vecWorldCursor);
 	#endif

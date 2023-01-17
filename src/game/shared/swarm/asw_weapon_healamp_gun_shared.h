@@ -30,7 +30,6 @@ public:
 	virtual void MouseOverEntity(C_BaseEntity *pEnt, Vector vecWorldCursor);
 	virtual void UpdateEffects();
 #else
-	virtual const char* GetPickupClass() { return "asw_pickup_healamp_gun"; }
 #endif
 
 protected:

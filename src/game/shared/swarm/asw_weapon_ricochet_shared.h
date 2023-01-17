@@ -41,8 +41,6 @@ public:
 	CASW_Bouncing_Pellet*  CreatePellet(Vector vecSrc, Vector newVel, CASW_Marine *pMarine);
 
 	#ifndef CLIENT_DLL
-		virtual const char* GetPickupClass() { return "asw_pickup_ricochet"; }
-		
 	#else
 		virtual bool HasSecondaryExplosive( void ) const { return false; }
 		virtual int DrawModel( int flags, const RenderableInstance_t &instance );

@@ -47,8 +47,6 @@ public:
 	virtual void ItemPostFrame();
 	virtual bool ShouldShowLaserPointer() { return false; }
 
-	virtual const char* GetPickupClass() { return "asw_pickup_Chainsaw"; }
-
 	// check if this weapon wants to perform a sync kill
 	virtual bool CheckSyncKill( byte &forced_action, short &sync_kill_ent );
 

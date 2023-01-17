@@ -39,7 +39,6 @@ public:
 
 		int		CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
 
-		virtual const char* GetPickupClass() { return "asw_pickup_ammo_bag"; }
 		void GiveClipTo(CASW_Marine *pTargetMarine, int iAmmoType, bool bSuppressSound=false);
 		virtual void OnMarineDamage(const CTakeDamageInfo &info);	// marine was hurt when holding this weapon
 		float m_fBurnDamage;

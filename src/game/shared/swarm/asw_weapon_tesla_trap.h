@@ -47,8 +47,6 @@ public:
 		DECLARE_DATADESC();
 
 		int		CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
-
-		virtual const char* GetPickupClass() { return "asw_pickup_tesla_trap"; }		
 	#else
 	
 	#endif

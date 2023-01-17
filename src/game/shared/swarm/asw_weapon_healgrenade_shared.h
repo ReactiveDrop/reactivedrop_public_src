@@ -111,8 +111,6 @@ public:
 
 		virtual CASW_AOEGrenade_Projectile* CreateProjectile( const Vector &vecSrc, const QAngle &angles, const Vector &vecVel, 
 							const AngularImpulse &rotSpeed, CBaseEntity *pOwner );
-
-		virtual const char* GetPickupClass() { return "asw_pickup_heal_grenade"; }	
 	#else
 	
 	#endif

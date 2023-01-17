@@ -66,8 +66,6 @@ public:
 	virtual bool ShouldMarineMoveSlow();
 	virtual void UpdateOnRemove();
 
-	virtual const char* GetPickupClass() { return "asw_pickup_mining_laser"; }
-
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_MINING_LASER; }
 

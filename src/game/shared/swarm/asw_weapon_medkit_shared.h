@@ -28,8 +28,6 @@ public:
 
 #ifndef CLIENT_DLL
 	DECLARE_DATADESC();
-
-	virtual const char* GetPickupClass() { return "asw_pickup_medkit"; }
 #endif
 
 	// Classification

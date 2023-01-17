@@ -47,8 +47,6 @@ public:
 	int		GetSentryAmmo() { return m_nSentryAmmo; }
 	void	SetSentryAmmo( int nAmmo ) { m_nSentryAmmo = nAmmo; }
 
-	virtual const char* GetPickupClass() { return "asw_pickup_sentry"; }
-
 #else
 	virtual void OnDataChanged( DataUpdateType_t type );
 	virtual void UpdateOnRemove();
@@ -90,10 +88,6 @@ public:
 
 	CASW_Weapon_Sentry_Flamer();
 
-#ifndef CLIENT_DLL
-	virtual const char* GetPickupClass() { return "asw_pickup_sentry_flamer"; }
-#endif
-
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_SENTRY_FLAMER_CASE; }
 };
@@ -106,10 +100,6 @@ public:
 	DECLARE_PREDICTABLE();
 
 	CASW_Weapon_Sentry_Cannon();
-
-#ifndef CLIENT_DLL
-	virtual const char* GetPickupClass() { return "asw_pickup_sentry_cannon"; }
-#endif
 
 	virtual int GetWeaponSkillId();
 	virtual int GetWeaponSubSkillId();
@@ -126,10 +116,6 @@ public:
 	DECLARE_PREDICTABLE();
 
 	CASW_Weapon_Sentry_Freeze();
-
-#ifndef CLIENT_DLL
-	virtual const char* GetPickupClass() { return "asw_pickup_sentry_freeze"; }
-#endif
 
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_SENTRY_FREEZE_CASE; }

@@ -58,8 +58,6 @@ public:
 
 		int		CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
 
-		virtual const char* GetPickupClass() { return "asw_pickup_sniper_rifle"; }
-
 		virtual bool IsRapidFire() { return false; }
 		virtual float GetMadFiringBias() { return 0.2f; }	// scales the rate at which the mad firing counter goes up when we shoot aliens with this weapon
 	#else

@@ -5278,17 +5278,6 @@ bool CASW_Marine::IsOutOfAmmo()
 
 void CASW_Marine::OnWeaponOutOfAmmo(bool bChatter)
 {
-//	CASW_Weapon *cur_weapon = GetActiveASWWeapon();
-// 	if ( cur_weapon )
-// 	{
-// 		if ( !stricmp(cur_weapon->GetPickupClass(), "asw_pickup_rifle") ||
-// 			!stricmp(cur_weapon->GetPickupClass(), "asw_pickup_prifle") )
-// 		{
-// 			this->GiveAmmo( 1000, cur_weapon->GetPrimaryAmmoType() );
-// 			return;
-// 		}
-// 	}
-
 	if ( bChatter && GetMarineSpeech() && rd_notify_about_out_of_ammo.GetBool() )
 	{
 		GetMarineSpeech()->Chatter(CHATTER_NO_AMMO);

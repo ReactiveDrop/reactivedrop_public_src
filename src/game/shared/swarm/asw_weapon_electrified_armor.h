@@ -37,7 +37,6 @@ public:
 
 		int		CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
 
-		virtual const char* GetPickupClass() { return "asw_pickup_electrified_armor"; }		
 		void ShockNearbyAliens();
 	#endif
 	virtual bool IsOffensiveWeapon() { return false; }

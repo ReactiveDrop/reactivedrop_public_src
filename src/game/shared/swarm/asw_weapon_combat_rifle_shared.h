@@ -40,8 +40,6 @@ public:
 
 #ifndef CLIENT_DLL
 	DECLARE_DATADESC();
-
-	virtual const char* GetPickupClass() { return "asw_pickup_combat_rifle"; }
 #else 
 	virtual bool HasSecondaryExplosive(void) const { return false; }
 	virtual bool GroundSecondary() { return false; }

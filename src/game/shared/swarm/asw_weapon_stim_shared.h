@@ -38,8 +38,6 @@ public:
 		DECLARE_DATADESC();
 
 		int		CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
-
-		virtual const char* GetPickupClass() { return "asw_pickup_stim"; }		
 	#endif
 	virtual bool IsOffensiveWeapon() { return false; }
 

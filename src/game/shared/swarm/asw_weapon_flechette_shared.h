@@ -31,8 +31,6 @@ public:
 	virtual bool ShouldFlareAutoaim() { return true; }
 
 	#ifndef CLIENT_DLL
-
-		virtual const char* GetPickupClass() { return "asw_pickup_flechette"; }
 	#else
 		virtual bool HasSecondaryExplosive( void ) const { return false; }
 	#endif

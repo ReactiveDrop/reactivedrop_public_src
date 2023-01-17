@@ -53,8 +53,6 @@ public:
 
 	int		CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
 
-	virtual const char* GetPickupClass() { return "asw_pickup_grenades"; }	
-	
 	// Get the damage and radius that a grenade thrown by a given marine should 
 	// explode with:
 	static float GetBoomDamage( CASW_Marine *pMarine );

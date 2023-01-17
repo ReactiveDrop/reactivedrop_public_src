@@ -48,7 +48,6 @@ public:
 	#ifndef CLIENT_DLL
 		DECLARE_DATADESC();
 
-		virtual const char* GetPickupClass() { return "asw_pickup_railgun"; }
 		virtual bool IsRapidFire() { return false; }
 		virtual float GetMadFiringBias() { return 2.0f; }	// scales the rate at which the mad firing counter goes up when we shoot aliens with this weapon
 				// NOTE: Railgun isn't really meant to do killing sprees, since it fires so slowly

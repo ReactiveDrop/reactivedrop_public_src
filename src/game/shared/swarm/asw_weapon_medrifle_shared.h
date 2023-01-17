@@ -50,8 +50,6 @@ public:
 
 	#ifndef CLIENT_DLL
 		DECLARE_DATADESC();
-
-		virtual const char* GetPickupClass() { return "asw_pickup_medrifle"; }
 		virtual void GetButtons(bool& bAttack1, bool& bAttack2, bool& bReload, bool& bOldReload, bool& bOldAttack1 );
 	#else
 		virtual void MouseOverEntity(C_BaseEntity *pEnt, Vector vecWorldCursor);

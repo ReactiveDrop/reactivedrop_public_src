@@ -27,7 +27,6 @@ public:
 
 	virtual void ItemPostFrame(void);
 	virtual void ItemBusyFrame(void);
-	virtual const char* GetPickupClass() { return "asw_pickup_rifle"; }
 
 	virtual void SetClip1(int i) { m_iClip1 = i; }
 	virtual void SetClip2(int i) { m_iClip2 = i; }

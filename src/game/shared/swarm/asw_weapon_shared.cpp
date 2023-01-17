@@ -851,18 +851,6 @@ bool CASW_Weapon::Reload( void )
 				pMR->m_TimelineAmmo.RecordValue( pMarine->GetAllAmmoCount() );
 			}
 		}
-
-		// riflemod: infinite ammo for rifle, protorifle and flamer
-		/*if ( !stricmp(this->GetPickupClass(), "asw_pickup_rifle")  ||
-			 !stricmp(this->GetPickupClass(), "asw_pickup_prifle") ||
-			 !stricmp(this->GetPickupClass(), "asw_pickup_flamer") )
-		{
-			CASW_Marine *m = this->GetMarine();
-			if (m)
-			{
-				m->GiveAmmo( 1000, this->GetPrimaryAmmoType() );
-			}
-		}//*/
 #endif
 	}
 	return bReloaded;

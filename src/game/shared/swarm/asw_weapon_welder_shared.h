@@ -34,8 +34,6 @@ public:
 
 	#ifndef CLIENT_DLL
 		DECLARE_DATADESC();
-
-		virtual const char* GetPickupClass() { return "asw_pickup_welder"; }
 	#else
 		virtual bool HasSecondaryExplosive( void ) const { return false; }
 		void ProcessMuzzleFlashEvent();		

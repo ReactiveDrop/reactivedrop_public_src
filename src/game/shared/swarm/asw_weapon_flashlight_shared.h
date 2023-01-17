@@ -56,8 +56,6 @@ public:
 		// todo: stop AI attacking with this?
 		int		CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
 
-		virtual const char* GetPickupClass() { return "asw_pickup_flashlight"; }
-
 		// for toggling the flashlight effect when we take/drop this weapon
 		virtual void MarineDropped(CASW_Marine* pMarine);
 		virtual void Equip( CBaseCombatCharacter *pOwner );		
