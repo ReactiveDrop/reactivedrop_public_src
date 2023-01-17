@@ -172,6 +172,15 @@ void CASW_Weapon_AR2::DelayedAttack( void )
 		this );
 #endif
 
+	if ( UsesClipsForAmmo2() )
+	{
+		m_iClip2 -= 1;
+	}
+	else
+	{
+		pOwner->RemoveAmmo( 1, m_iSecondaryAmmoType );
+	}
+
 	// Can shoot again immediately
 	m_flNextPrimaryAttack = gpGlobals->curtime + 0.5f;
 
