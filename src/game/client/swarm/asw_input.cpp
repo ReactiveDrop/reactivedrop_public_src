@@ -375,14 +375,23 @@ C_BaseEntity* HUDToWorld(float screenx, float screeny,
 	Vector X, Y, Z;	
 	Vector CamResult;
 
-	float fRatio = float( ScreenHeight() ) / float( ScreenWidth() );
-	AngleVectors(cameraAngle, &X, &Y, &Z);
-	float FOVAngle = pPlayer->GetFOV();
-	vWorldSpaceCameraToCursor = X 
-		- tanf(FOVAngle*M_PI/180*0.5) * 2 * Y * (screenx) * ( 0.75f / fRatio )
-		+ tanf(FOVAngle*M_PI/180*0.5) * 2 * Z * (screeny) *  0.75f;
+	if ( pPlayer->GetASWControls() == ASWC_TOPDOWN )
+	{
+		float fRatio = float( ScreenHeight() ) / float( ScreenWidth() );
+		AngleVectors( cameraAngle, &X, &Y, &Z );
+		float FOVAngle = pPlayer->GetFOV();
+		vWorldSpaceCameraToCursor = X
+			- tanf( FOVAngle * M_PI / 180 * 0.5 ) * 2 * Y * ( screenx ) * ( 0.75f / fRatio )
+			+ tanf( FOVAngle * M_PI / 180 * 0.5 ) * 2 * Z * ( screeny ) * 0.75f;
+		vWorldSpaceCameraToCursor.NormalizeInPlace();
+	}
+	else
+	{
+		engine->GetViewAngles( cameraAngle );
+		AngleVectors( cameraAngle, &X, &Y, &Z );
+		vWorldSpaceCameraToCursor = X;
+	}
 
-	vWorldSpaceCameraToCursor.NormalizeInPlace();
 	vTraceEnd = vCameraLocation + vWorldSpaceCameraToCursor * ASW_MAX_AIM_TRACE;
 
 	// BenLubar(sd2-ceiling-ents): use CASW_Trace_Filter to handle *_asw_fade properly
