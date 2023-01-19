@@ -10,6 +10,8 @@ class CASW_Weapon;
 class CEnvTonemapController;
 class CTonemapTrigger;
 
+#define ASW_ALIEN_HEALTH_BITS 14
+
 class CASW_Inhabitable_NPC : public CAI_PlayerAlly
 {
 public:

@@ -39,7 +39,7 @@ class CASW_Melee_Attack;
 /*  We inherit C_ASW_Marine from IASW_Client_Aim_Target to allow autoaiming
 	on marines for deathmatch
 */
-class C_ASW_Marine : public C_ASW_VPhysics_NPC, public IASWPlayerAnimStateHelpers, public IASW_Client_Aim_Target, public IASW_Client_Usable_Entity
+class C_ASW_Marine : public C_ASW_VPhysics_NPC, public IASWPlayerAnimStateHelpers, public IASW_Client_Usable_Entity
 {
 public:
 	DECLARE_CLASS( C_ASW_Marine, C_ASW_VPhysics_NPC );
@@ -51,11 +51,7 @@ public:
 
 	// aim target interface, allows autoaiming onto marines 
 	IMPLEMENT_AUTO_LIST_GET();
-	virtual float GetRadius() { return 23; }
 	virtual bool IsAimTarget();
-	virtual const Vector& GetAimTargetPos(const Vector &vecFiringSrc, bool bWeaponPrefersFlatAiming) { return WorldSpaceCenter(); }
-	virtual const Vector& GetAimTargetRadiusPos(const Vector &vecFiringSrc) { return WorldSpaceCenter(); }
-
 
 	virtual void	ClientThink();
 	void			PostThink();	// called after moving when the marine is being inhabited

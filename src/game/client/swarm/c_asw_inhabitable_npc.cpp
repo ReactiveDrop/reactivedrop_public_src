@@ -19,6 +19,7 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_Inhabitable_NPC, DT_ASW_Inhabitable_NPC, CASW_In
 	RecvPropBool( RECVINFO( m_bInhabited ) ),
 	RecvPropBool( RECVINFO( m_bWalking ) ),
 	RecvPropIntWithMinusOneFlag( RECVINFO( m_iControlsOverride ) ),
+	RecvPropInt( RECVINFO( m_iHealth ) ),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_ASW_Inhabitable_NPC )
@@ -106,6 +107,8 @@ void C_ASW_Inhabitable_NPC::PostDataUpdate( DataUpdateType_t updateType )
 		MDLCACHE_CRITICAL_SECTION();
 		ShutdownPredictable();
 	}
+
+	SetNextClientThink( CLIENT_THINK_ALWAYS );
 }
 
 bool C_ASW_Inhabitable_NPC::ShouldPredict()
@@ -127,6 +130,9 @@ void C_ASW_Inhabitable_NPC::InitPredictable( C_BasePlayer *pOwner )
 void C_ASW_Inhabitable_NPC::ClientThink()
 {
 	BaseClass::ClientThink();
+
+	m_vecLastRenderedPos = WorldSpaceCenter();
+	m_vecAutoTargetRadiusPos = GetLocalAutoTargetRadiusPos();
 
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	if ( rd_highlight_active_character.GetBool() && pPlayer && pPlayer->GetViewNPC() == this )

@@ -19,6 +19,7 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Inhabitable_NPC, DT_ASW_Inhabitable_NPC )
 	SendPropBool( SENDINFO( m_bInhabited ) ),
 	SendPropBool( SENDINFO( m_bWalking ) ),
 	SendPropIntWithMinusOneFlag( SENDINFO( m_iControlsOverride ) ),
+	SendPropInt( SENDINFO( m_iHealth ), ASW_ALIEN_HEALTH_BITS ),
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Inhabitable_NPC )

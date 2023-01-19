@@ -29,6 +29,12 @@ public:
 
 	#ifndef CLIENT_DLL
 		DECLARE_DATADESC();
+		DECLARE_ACTTABLE();
+
+		void	FireNPCPrimaryAttack( CBaseCombatCharacter *pOperator, bool bUseWeaponAngles );
+		void	FireNPCSecondaryAttack( CBaseCombatCharacter *pOperator, bool bUseWeaponAngles );
+		void	Operator_ForceNPCFire( CBaseCombatCharacter *pOperator, bool bSecondary, CBaseEntity *pTarget = NULL );
+		void	Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
 	#else
 		bool HasSecondaryExplosive( void ) const override { return false; }
 

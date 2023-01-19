@@ -3,12 +3,11 @@
 
 #include "asw_alien_shared.h"
 #include "c_asw_inhabitable_npc.h"
-#include "iasw_client_aim_target.h"
 #include "asw_shareddefs.h"
 
 class CNewParticleEffect;
 
-class C_ASW_Alien : public C_ASW_Inhabitable_NPC, public IASW_Client_Aim_Target
+class C_ASW_Alien : public C_ASW_Inhabitable_NPC
 {
 public:
 	DECLARE_CLASS( C_ASW_Alien, C_ASW_Inhabitable_NPC );
@@ -61,15 +60,6 @@ public:
 	virtual void UpdateFireEmitters();
 	virtual void UpdateOnRemove();
 
-	// aim target interface
-	IMPLEMENT_AUTO_LIST_GET();
-	
-	virtual float GetRadius() { return 23; }
-	virtual bool IsAimTarget() { return GetHealth() > 0; }
-	virtual const Vector& GetAimTargetPos(const Vector &vecFiringSrc, bool bWeaponPrefersFlatAiming) { return m_vecLastRenderedPos; }
-	virtual const Vector& GetAimTargetRadiusPos(const Vector &vecFiringSrc) { return m_vecAutoTargetRadiusPos; }
-	virtual Vector GetLocalAutoTargetRadiusPos();
-
 	// custom shadow
 	virtual bool GetShadowCastDirection( Vector *pDirection, ShadowType_t shadowType ) const;
 	ShadowType_t ShadowCastType();
@@ -81,15 +71,6 @@ public:
 	int m_nLastSetModel;
 	virtual void ASWUpdateClientSideAnimation();
 	virtual void ClientThink();
-
-	// storing our location for autoaim
-	Vector m_vecLastRenderedPos;
-	Vector m_vecAutoTargetRadiusPos;
-
-	// health
-	virtual int	GetHealth() const { return m_iHealth; }
-	int GetMaxHealth( void ) const { return m_iMaxHealth; }
-	int  m_iMaxHealth;
 
 	virtual float	GetInterpolationAmount( int flags );
 

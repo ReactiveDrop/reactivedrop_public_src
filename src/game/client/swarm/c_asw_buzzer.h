@@ -8,7 +8,7 @@ class CNewParticleEffect;
 
 // Buzzer is our flying poisoning alien (based on the hl2 manhack code)
 
-class C_ASW_Buzzer : public C_ASW_Inhabitable_NPC, public IASW_Client_Aim_Target
+class C_ASW_Buzzer : public C_ASW_Inhabitable_NPC
 {
 public:
 	C_ASW_Buzzer();
@@ -25,11 +25,7 @@ public:
 	Class_T		Classify( void ) { return (Class_T) CLASS_ASW_BUZZER; }
 	virtual bool IsAlien( void ) const { return true; }
 
-	IMPLEMENT_AUTO_LIST_GET();
 	virtual float GetRadius() { return 18; }
-	virtual bool IsAimTarget() { return true; }
-	virtual const Vector& GetAimTargetPos(const Vector &vecFiringSrc, bool bWeaponPrefersFlatAiming) { return m_vecLastRenderedPos; }
-	virtual const Vector& GetAimTargetRadiusPos(const Vector &vecFiringSrc) { return m_vecLastRenderedPos; }
 
 	CNetworkVar(bool, m_bOnFire);
 	bool m_bClientOnFire;
@@ -39,10 +35,6 @@ public:
 	CNetworkVar(bool, m_bElectroStunned);
 	float m_fNextElectroStunEffect;
 	virtual void ClientThink();
-
-	// storing our location for autoaim
-	virtual int DrawModel( int flags, const RenderableInstance_t &instance );
-	Vector m_vecLastRenderedPos;
 
 private:
 	C_ASW_Buzzer( const C_ASW_Buzzer & );

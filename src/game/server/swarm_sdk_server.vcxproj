@@ -778,6 +778,8 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     </ClCompile>
     <ClCompile Include="hl2\env_headcrabcanister.cpp" />
     <ClCompile Include="hl2\grenade_frag.cpp" />
+    <ClCompile Include="hl2\npc_combine.cpp" />
+    <ClCompile Include="hl2\npc_combines.cpp" />
     <ClCompile Include="hl2\npc_crow.cpp" />
     <ClCompile Include="hl2\npc_zombine.cpp" />
     <ClCompile Include="hl2\prop_combine_ball.cpp" />
@@ -1735,6 +1737,8 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="func_movelinear.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="hl2\grenade_frag.h" />
+    <ClInclude Include="hl2\npc_combine.h" />
+    <ClInclude Include="hl2\npc_combines.h" />
     <ClInclude Include="hl2\npc_crow.h" />
     <ClInclude Include="hl2\prop_combine_ball.h" />
     <ClInclude Include="hl2\script_intro.h" />

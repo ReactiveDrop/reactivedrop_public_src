@@ -59,7 +59,6 @@ BEGIN_NETWORK_TABLE( CASW_Alien, DT_ASW_Alien )
 	//RecvPropBool( RECVINFO( m_bElectroShockBig ) ),
 	RecvPropBool( RECVINFO( m_bOnFire ) ),
 	RecvPropInt( RECVINFO( m_nDeathStyle ), SPROP_UNSIGNED ),
-	RecvPropInt			( RECVINFO( m_iHealth) ),
 	RecvPropFloat( RECVINFO( m_flAlienWalkSpeed ) ),
 	RecvPropBool( RECVINFO( m_bInhabitedMovementAllowed ) ),
 END_RECV_TABLE()
@@ -615,21 +614,12 @@ void C_ASW_Alien::PostDataUpdate( DataUpdateType_t updateType )
 	}
 }
 
-Vector C_ASW_Alien::GetLocalAutoTargetRadiusPos()
-{
-	// drone overrides this
-	return m_vecLastRenderedPos;
-}
-
 void C_ASW_Alien::ClientThink()
 {
 	BaseClass::ClientThink();
 
 	// asw temp fix demo playback 
 	//ASWUpdateClientSideAnimation();
-
-	m_vecLastRenderedPos = WorldSpaceCenter();
-	m_vecAutoTargetRadiusPos = GetLocalAutoTargetRadiusPos();
 
 	if ( GetHealth() > 0 && m_bElectroStunned && m_fNextElectroStunEffect <= gpGlobals->curtime)
 	{

@@ -20,7 +20,8 @@
 #include "ai_behavior_rappel.h"
 #include "ai_behavior_actbusy.h"
 #include "ai_sentence.h"
-#include "ai_baseactor.h"
+#include "asw_inhabitable_npc.h"
+#include "iasw_spawnable_npc.h"
 
 
 // Used when only what combine to react to what the spotlight sees
@@ -31,13 +32,11 @@
 //=========================================================
 //	>> CNPC_Combine
 //=========================================================
-class CNPC_Combine :
-	public CAI_BaseActor
-
+class CNPC_Combine : public CASW_Inhabitable_NPC, public IASW_Spawnable_NPC
 {
 	DECLARE_DATADESC();
 	DEFINE_CUSTOM_AI;
-	DECLARE_CLASS( CNPC_Combine, CAI_BaseActor );
+	DECLARE_CLASS( CNPC_Combine, CASW_Inhabitable_NPC );
 
 public:
 	CNPC_Combine();
@@ -49,10 +48,6 @@ public:
 	bool			CheckCanThrowGrenade( const Vector &vecTarget );
 	virtual	bool	CanGrenadeEnemy( bool bUseFreeKnowledge = true );
 	virtual bool	CanAltFireEnemy( bool bUseFreeKnowledge );
-	virtual bool	CanTeleportFromEnemy( bool bUseFreeKnowledge = true );
-	virtual bool	CanTeleportToLOF( bool bUseFreeKnowledge = true );
-	virtual bool	CanTossTeleportGrenade( Vector const &posTarget );
-	int				GetGrenadeConditions( float flDot, float flDist );
 	int				RangeAttack2Conditions( float flDot, float flDist ); // For innate grenade attack
 	int				MeleeAttack1Conditions( float flDot, float flDist ); // For kick/punch
 	bool			FVisible( CBaseEntity *pEntity, int traceMask = MASK_BLOCKLOS, CBaseEntity **ppBlocker = NULL );
@@ -63,7 +58,7 @@ public:
 	virtual Vector  GetCrouchEyeOffset( void );
 
 	void Event_Killed( const CTakeDamageInfo &info );
-
+	bool ShouldDropActiveWeaponWhenKilled() override { return false; }
 
 	void SetActivity( Activity NewActivity );
 	NPC_STATE		SelectIdealState ( void );
@@ -76,7 +71,6 @@ public:
 	void InputAssault( inputdata_t &inputdata );
 	void InputHitByBugbait( inputdata_t &inputdata );
 	void InputThrowGrenadeAtTarget( inputdata_t &inputdata );
-	void InputThrowTeleportGrenadeAtTarget( inputdata_t &inputdata );
 
 	bool			UpdateEnemyMemory( CBaseEntity *pEnemy, const Vector &position, CBaseEntity *pInformer = NULL );
 
@@ -101,7 +95,6 @@ public:
 
 	void			StartTask( const Task_t *pTask );
 	void			RunTask( const Task_t *pTask );
-	void			PostNPCInit();
 	void			GatherConditions();
 	virtual void	PrescheduleThink();
 
@@ -155,20 +148,6 @@ public:
 	void			OnStartSchedule( int scheduleType );
 
 	virtual bool	ShouldPickADeathPose( void );
-
-	virtual bool	PassesDamageFilter( const CTakeDamageInfo &info );
-
-protected:
-	virtual bool	ComputeTeleportToss(
-		bool bUseFreeKnowledge, bool bPreferCoverPos,
-		float flAngMin, float flAngMax, float flAngPreference,
-		float flDistMin, float flDistMax, float flDistPreference,
-		float flTravelMinDist, float flTravelMaxDist, float flTravelDistPreference );
-
-	virtual void Advisor_OnStartedLevitating();
-	virtual void Advisor_OnFinishedLevitating();
-	virtual void VPhysicsUpdate( IPhysicsObject *pPhysics );
-	virtual void UpdateOnRemove();
 
 protected:
 	void			SetKickDamage( int nDamage ) { m_nKickDamage = nDamage; }
@@ -283,12 +262,6 @@ private:
 	void BeginRappel() { m_RappelBehavior.BeginRappel(); }
 
 private:
-	void OnTossedTeleportProjectile( CBaseEntity *pProjectile );
-	void OnTeleportProjectileAction( CBaseEntity *pProjectile, bool bTeleport );
-
-	void FullyLoadWeaponClips();
-
-private:
 	int				m_nKickDamage;
 	Vector			m_vecTossVelocity;
 	EHANDLE			m_hForcedGrenadeTarget;
@@ -308,19 +281,13 @@ private:
 	float			m_flStopMoveShootTime;
 
 	CAI_Sentence< CNPC_Combine > m_Sentences;
-
-	int			m_iNumGrenades;
-	
-	int			m_iTeleportGrenades;
-	float		m_flLastTeleportGrenadeTime;
-	float		m_flNextTeleportGrenadeTime;
-	EHANDLE		m_hTeleportProjectile;
-	EHANDLE		m_hTeleportProjectileForcedTarget;
 	
 	CAI_AssaultBehavior			m_AssaultBehavior;
 	CCombineStandoffBehavior	m_StandoffBehavior;
 	CAI_FollowBehavior			m_FollowBehavior;
+#ifndef INFESTED_DLL
 	CAI_FuncTankBehavior		m_FuncTankBehavior;
+#endif
 	CAI_RappelBehavior			m_RappelBehavior;
 	CAI_ActBusyBehavior			m_ActBusyBehavior;
 
@@ -331,6 +298,37 @@ public:
 
 	int				m_iTacticalVariant;
 	int				m_iPathfindingVariant;
+	int				m_iNumGrenades;
+
+	// IASW_Spawnable_NPC implementation
+	virtual void SetSpawner( CASW_Base_Spawner *spawner );
+	virtual CAI_BaseNPC *GetNPC() { return this; }
+	virtual bool CanStartBurrowed() { return false; } // for now, unless there's a good way to get rappelling looking good
+	virtual void StartBurrowed() {}
+	virtual void SetUnburrowActivity( string_t iszActivityName ) {}
+	virtual void SetUnburrowIdleActivity( string_t iszActivityName ) {}
+	virtual void SetAlienOrders( AlienOrder_t Orders, Vector vecOrderSpot, CBaseEntity *pOrderObject );
+	virtual AlienOrder_t GetAlienOrders();
+	virtual void MoveAside();
+	virtual void ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon = NULL );
+	virtual void ElectroStun( float flStuntime );
+	virtual void OnSwarmSensed( int iDistance ) {}
+	virtual void OnSwarmSenseEntity( CBaseEntity *pEnt ) {}
+	virtual void SetHealthByDifficultyLevel();
+	virtual void SetHoldoutAlien();
+	virtual bool IsHoldoutAlien();
+
+	CHandle<CASW_Base_Spawner> m_hSpawner;
+	bool m_bIsHoldout;
+	// TODO:
+	bool m_bFlammable;
+	bool m_bTeslable;
+	bool m_bFreezable;
+	bool m_bFlinchable;
+	bool m_bGrenadeReflector;
+	int m_iHealthBonus;
+	float m_fSizeScale;
+	float m_fSpeedScale;
 };
 
 

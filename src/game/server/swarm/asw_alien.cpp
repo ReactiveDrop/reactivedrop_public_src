@@ -113,7 +113,6 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Alien, DT_ASW_Alien)
 	//SendPropBool( SENDINFO(m_bElectroShockBig) ),
 	SendPropBool( SENDINFO(m_bOnFire) ),
 	SendPropInt( SENDINFO(m_nDeathStyle), CASW_Alien::kDEATHSTYLE_NUM_TRANSMIT_BITS , SPROP_UNSIGNED ),
-	SendPropInt		(SENDINFO(m_iHealth), ASW_ALIEN_HEALTH_BITS ),
 	//SendPropBool(SENDINFO(m_bGibber)),
 	SendPropFloat( SENDINFO( m_flAlienWalkSpeed ) ),
 	SendPropBool( SENDINFO( m_bInhabitedMovementAllowed ) ),

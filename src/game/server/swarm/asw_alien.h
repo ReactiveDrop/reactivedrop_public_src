@@ -23,7 +23,6 @@ enum BehaviorEvent_t;
 
 // Keep track of recent damage events for use in asw_ai_behavior_combat_stun.cpp
 static const int ASW_NUM_RECENT_DAMAGE = 8;
-#define ASW_ALIEN_HEALTH_BITS 14
 
 // Combat Data.
 struct CombatConditionData_t 

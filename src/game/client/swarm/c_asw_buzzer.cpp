@@ -175,10 +175,3 @@ void C_ASW_Buzzer::ClientThink()
 		m_fNextElectroStunEffect = gpGlobals->curtime + RandomFloat( 0.2, 0.7 );
 	}
 }
-
-int C_ASW_Buzzer::DrawModel( int flags, const RenderableInstance_t &instance )
-{
-	m_vecLastRenderedPos = WorldSpaceCenter();
-
-	return BaseClass::DrawModel( flags, instance );
-}

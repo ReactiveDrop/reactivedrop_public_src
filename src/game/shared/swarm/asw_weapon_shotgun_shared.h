@@ -61,9 +61,12 @@ public:
 
 	#ifndef CLIENT_DLL
 		DECLARE_DATADESC();
+		DECLARE_ACTTABLE();
 
 		int		CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
 
+		void	FireNPCPrimaryAttack( CBaseCombatCharacter *pOperator, bool bUseWeaponAngles );
+		void	Operator_ForceNPCFire( CBaseCombatCharacter *pOperator, bool bSecondary, CBaseEntity *pTarget = NULL );
 		virtual bool IsRapidFire() { return false; }
 		virtual float GetMadFiringBias() { return 1.0f; }	// scales the rate at which the mad firing counter goes up when we shoot aliens with this weapon
 	#else
