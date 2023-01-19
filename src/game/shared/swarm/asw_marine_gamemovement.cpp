@@ -433,14 +433,6 @@ static bool CanMarineGetStuckInEntity( IHandleEntity *pHandleEntity, int content
 	if ( !pEntity )
 		return true;
 
-	// If we can hurt it, we're not stuck.
-	if ( pEntity->Classify() != CLASS_ASW_MARINE && pEntity->GetHealth() > 0 && pEntity->m_takedamage == DAMAGE_YES )
-		return false;
-
-	// If it can move, we're not stuck.
-	if ( pEntity->GetMoveType() != MOVETYPE_NONE && pEntity->GetMoveType() != MOVETYPE_PUSH )
-		return false;
-
 	// These die if they touch something, so it's impossible for us to be stuck in them.
 	if ( pEntity->GetCollisionGroup() == ASW_COLLISION_GROUP_EXTINGUISHER_PELLETS )
 		return false;
