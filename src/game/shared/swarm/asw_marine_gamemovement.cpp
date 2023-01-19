@@ -35,6 +35,7 @@
 #include "asw_gamerules.h"
 #include "particle_parse.h"
 #include "asw_movedata.h"
+#include "util_shared.h"
 #ifdef GAME_DLL
 #include "te_effect_dispatch.h"
 #else
@@ -425,11 +426,37 @@ inline void CASW_MarineGameMovement::TraceMarineBBox( const Vector& start, const
 }
 #endif
 
+static bool CanMarineGetStuckInEntity( IHandleEntity *pHandleEntity, int contentsMask )
+{
+	CBaseEntity *pEntity = EntityFromEntityHandle( pHandleEntity );
+	// If it's a static prop, etc, we can get stuck on it.
+	if ( !pEntity )
+		return true;
+
+	// If we can hurt it, we're not stuck.
+	if ( pEntity->Classify() != CLASS_ASW_MARINE && pEntity->GetHealth() > 0 && pEntity->m_takedamage == DAMAGE_YES )
+		return false;
+
+	// If it can move, we're not stuck.
+	if ( pEntity->GetMoveType() != MOVETYPE_NONE && pEntity->GetMoveType() != MOVETYPE_PUSH )
+		return false;
+
+	// These die if they touch something, so it's impossible for us to be stuck in them.
+	if ( pEntity->GetCollisionGroup() == ASW_COLLISION_GROUP_EXTINGUISHER_PELLETS )
+		return false;
+
+	return true;
+}
+
 inline CBaseHandle CASW_MarineGameMovement::TestPlayerPosition( const Vector& pos, int collisionGroup, trace_t& pm )
 {
+	// Account for the ability to step up (this helps against hitting displacements)
 	Ray_t ray;
-	ray.Init( pos, pos, GetPlayerMins(), GetPlayerMaxs() );
-	UTIL_TraceRay( ray, MASK_PLAYERSOLID, marine, collisionGroup, &pm );
+	ray.Init( pos, pos, GetPlayerMins() + Vector( 0, 0, 24 ), GetPlayerMaxs() );
+
+	CTraceFilterSimple filter( marine, collisionGroup, &CanMarineGetStuckInEntity );
+	UTIL_TraceRay( ray, MASK_PLAYERSOLID, &filter, &pm );
+
 #ifdef GAME_DLL
 
 	if ( asw_debug_steps.GetInt() == 2 )
