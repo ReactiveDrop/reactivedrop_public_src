@@ -20,10 +20,12 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_Inhabitable_NPC, DT_ASW_Inhabitable_NPC, CASW_In
 	RecvPropBool( RECVINFO( m_bWalking ) ),
 	RecvPropIntWithMinusOneFlag( RECVINFO( m_iControlsOverride ) ),
 	RecvPropInt( RECVINFO( m_iHealth ) ),
+	RecvPropVector( RECVINFO( m_vecBaseVelocity ) ),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_ASW_Inhabitable_NPC )
 	DEFINE_FIELD( m_nOldButtons, FIELD_INTEGER ),
+	DEFINE_PRED_FIELD_TOL( m_vecBaseVelocity, FIELD_VECTOR, FTYPEDESC_INSENDTABLE, 0.05 ),
 END_PREDICTION_DATA()
 
 C_ASW_Inhabitable_NPC::C_ASW_Inhabitable_NPC() :

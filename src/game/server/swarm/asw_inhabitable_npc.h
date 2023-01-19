@@ -62,6 +62,8 @@ public:
 	CNetworkVar( int, m_iControlsOverride );
 	void ScriptSetControls( int iControls );
 
+	IMPLEMENT_NETWORK_VAR_FOR_DERIVED( m_vecBaseVelocity );
+
 	// Texture names and surface data, used by CASW_MarineGameMovement
 	int				m_surfaceProps;
 	surfacedata_t *m_pSurfaceData;

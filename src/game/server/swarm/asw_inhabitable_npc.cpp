@@ -20,6 +20,11 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Inhabitable_NPC, DT_ASW_Inhabitable_NPC )
 	SendPropBool( SENDINFO( m_bWalking ) ),
 	SendPropIntWithMinusOneFlag( SENDINFO( m_iControlsOverride ) ),
 	SendPropInt( SENDINFO( m_iHealth ), ASW_ALIEN_HEALTH_BITS ),
+#if PREDICTION_ERROR_CHECK_LEVEL > 1
+	SendPropVector( SENDINFO( m_vecBaseVelocity ), -1, SPROP_COORD ),
+#else
+	SendPropVector( SENDINFO( m_vecBaseVelocity ), 20, 0, -1000, 1000 ),
+#endif
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Inhabitable_NPC )
