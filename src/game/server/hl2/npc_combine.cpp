@@ -2330,10 +2330,6 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 		{
 		case COMBINE_AE_AIM:	
 			{
-				if ( GetActiveWeapon() )
-				{
-					GetActiveWeapon()->Operator_ForceNPCFire( this, atoi( pEvent->options ) != 0 );
-				}
 				handledEvent = true;
 				break;
 			}
