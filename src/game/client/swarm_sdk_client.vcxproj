@@ -2204,7 +2204,6 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="..\shared\hintsystem.h" />
     <ClInclude Include="..\shared\hl2\basehlcombatweapon_shared.h" />
     <ClInclude Include="..\shared\hl2\env_headcrabcanister_shared.h" />
-    <ClInclude Include="..\shared\hl2\hl2_player_shared.h" />
     <ClInclude Include="..\shared\hl2\hl_movedata.h" />
     <ClInclude Include="..\shared\ichoreoeventcallback.h" />
     <ClInclude Include="..\shared\IEffects.h" />
