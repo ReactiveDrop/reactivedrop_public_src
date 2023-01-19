@@ -435,6 +435,11 @@ void CASWGameStats::Event_MarineWeaponFired( const CBaseEntity *pWeapon, const C
 		{
 			weaponClass = (Class_T)CLASS_ASW_GRENADE_VINDICATOR;
 		}
+		else if ( weaponClass == CLASS_ASW_FLAMER )
+		{
+			// extinguisher doesn't have stats
+			weaponClass = CLASS_NONE;
+		}
 		else if ( weaponClass == CLASS_ASW_COMBAT_RIFLE )
 		{
 			weaponClass = (Class_T)CLASS_ASW_COMBAT_RIFLE_SHOTGUN;

@@ -648,6 +648,8 @@ bool CASW_Marine_Resource::IsReloading()
 void CASW_Marine_Resource::IncrementWeaponStats( Class_T weaponClass, int32 nDamage, int32 nFFDamage, int32 nShotsFired, int32 nShotsHit, int32 nKills )
 {
 	extern ConVar asw_stats_verbose;
+	if ( !weaponClass )
+		return;
 
 	FOR_EACH_VEC( m_WeaponStats, i )
 	{
