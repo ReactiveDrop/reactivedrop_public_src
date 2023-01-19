@@ -135,7 +135,7 @@ void CNPC_CombineS::Precache()
 			{
 				// Put us in a squad if there's no squad specified, just to make sure we get to do our cool AI stuff.
 				char szSquadName[256];
-				V_snprintf( szSquadName, sizeof( szSquadName ), "CombineSquadAuto%d", g_pBigAINet->NearestNodeToPoint( this, GetAbsOrigin(), false ) );
+				V_snprintf( szSquadName, sizeof( szSquadName ), "CombineSquadAuto%d", g_pBigAINet->NearestNodeToPoint( GetAbsOrigin(), false ) );
 				m_SquadName = AllocPooledString( szSquadName );
 			}
 		}
