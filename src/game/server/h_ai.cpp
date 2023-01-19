@@ -8,6 +8,7 @@
 #include "game.h"
 #include "vstdlib/random.h"
 #include "movevars_shared.h"
+#include "asw_shareddefs.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -201,7 +202,7 @@ Vector VecCheckToss( CBaseEntity *pEntity, ITraceFilter *pFilter, Vector vecSpot
 Vector VecCheckToss( CBaseEntity *pEntity, Vector vecSpot1, Vector vecSpot2, float flHeightMaxRatio, float flGravityAdj, bool bRandomize, Vector *vecMins, Vector *vecMaxs )
 {
 	// construct a filter and call through to the other version of this function.
-	CTraceFilterSimple traceFilter( pEntity, COLLISION_GROUP_NONE );
+	CTraceFilterSimple traceFilter( pEntity, ASW_COLLISION_GROUP_GRENADES );
 	return VecCheckToss( pEntity, &traceFilter, vecSpot1, vecSpot2, 
 						 flHeightMaxRatio, flGravityAdj, bRandomize, 
 						 vecMins, vecMaxs );
@@ -229,7 +230,7 @@ Vector VecCheckThrow ( CBaseEntity *pEdict, const Vector &vecSpot1, Vector vecSp
 
 	
 	trace_t tr;
-	UTIL_TraceLine(vecSpot1, vecApex, MASK_SOLID, pEdict, COLLISION_GROUP_NONE, &tr);
+	UTIL_TraceLine(vecSpot1, vecApex, MASK_SOLID, pEdict, ASW_COLLISION_GROUP_GRENADES, &tr);
 	if (tr.fraction != 1.0)
 	{
 		// fail!
@@ -239,7 +240,7 @@ Vector VecCheckThrow ( CBaseEntity *pEdict, const Vector &vecSpot1, Vector vecSp
 
 	//NDebugOverlay::Line( vecSpot1, vecApex, 0, 255, 0, true, 5.0 );
 
-	UTIL_TraceLine(vecSpot2, vecApex, MASK_SOLID_BRUSHONLY, pEdict, COLLISION_GROUP_NONE, &tr);
+	UTIL_TraceLine(vecSpot2, vecApex, MASK_SOLID_BRUSHONLY, pEdict, ASW_COLLISION_GROUP_GRENADES, &tr);
 	if (tr.fraction != 1.0)
 	{
 		// fail!
@@ -252,7 +253,7 @@ Vector VecCheckThrow ( CBaseEntity *pEdict, const Vector &vecSpot1, Vector vecSp
 	if ( vecMins && vecMaxs )
 	{
 		// Check to ensure the entity's hull can travel the first half of the grenade throw
-		UTIL_TraceHull( vecSpot1, vecApex, *vecMins, *vecMaxs, MASK_SOLID, pEdict, COLLISION_GROUP_NONE, &tr);		
+		UTIL_TraceHull( vecSpot1, vecApex, *vecMins, *vecMaxs, MASK_SOLID, pEdict, ASW_COLLISION_GROUP_GRENADES, &tr);
 		if ( tr.fraction < 1.0 )
 		{
 			//NDebugOverlay::SweptBox( vecSpot1, tr.endpos, *vecMins, *vecMaxs, vec3_angle, 255, 0, 0, 64, 5.0 );
