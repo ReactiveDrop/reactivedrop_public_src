@@ -148,7 +148,7 @@ void CASW_Weapon_PDW::SecondaryAttack( void )
 
 void CASW_Weapon_PDW::Precache()
 {
-	// precache the weapon model here?
+	PrecacheModel( "models/weapons/pdw/pdw_single.mdl" );
 
 	BaseClass::Precache();
 }
@@ -365,5 +365,22 @@ void CASW_Weapon_PDW::Operator_ForceNPCFire( CBaseCombatCharacter *pOperator, bo
 	GetAttachment( LookupAttachment( "muzzle" ), vecShootOrigin, angShootDir );
 	AngleVectors( angShootDir, &vecShootDir );
 	FireNPCPrimaryAttack( pOperator, vecShootOrigin, vecShootDir );
+}
+
+// Combine soldiers don't have animations for akimbo-style weapons, so only give them one PDW.
+const char *CASW_Weapon_PDW::GetViewModel( int viewmodelindex ) const
+{
+	if ( GetOwner() && GetOwner()->Classify() == CLASS_COMBINE )
+		return "models/weapons/pdw/pdw_single.mdl";
+
+	return BaseClass::GetViewModel( viewmodelindex );
+}
+
+const char *CASW_Weapon_PDW::GetWorldModel( void ) const
+{
+	if ( GetOwner() && GetOwner()->Classify() == CLASS_COMBINE )
+		return "models/weapons/pdw/pdw_single.mdl";
+
+	return BaseClass::GetWorldModel();
 }
 #endif
