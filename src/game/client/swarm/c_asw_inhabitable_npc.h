@@ -47,6 +47,7 @@ public:
 
 	C_ASW_Weapon *GetActiveASWWeapon( void ) const;
 	C_ASW_Weapon *GetASWWeapon( int index ) const;
+	int m_iDamageAttributeEffects;
 
 	void TickRedName( float delta );
 	float m_fRedNamePulse;	// from 0 to 1, how red the marine's name should appear on the HUD for medics
@@ -73,6 +74,9 @@ public:
 	// Glows are enabled when the sniper scope is used
 	CGlowObject m_GlowObject;
 	CMotionBlurObject m_MotionBlurObject;
+
+	virtual void MakeTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType );
+	virtual void MakeUnattachedTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType );
 
 private:
 	C_ASW_Inhabitable_NPC( const C_ASW_Inhabitable_NPC & ) = delete; // not defined, not accessible

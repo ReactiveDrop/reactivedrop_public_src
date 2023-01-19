@@ -545,7 +545,6 @@ public:
 	void SetMarineRolls( bool bRolls );
 
 	void DoDamagePowerupEffects( CBaseEntity *pTarget, CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr );
-	int m_iDamageAttributeEffects;
 	virtual void FireBullets( const FireBulletsInfo_t &info );
 	virtual void FireRegularBullets( const FireBulletsInfo_t &info );
 	virtual void FirePenetratingBullets( const FireBulletsInfo_t &info, int iMaxPenetrate, float fPenetrateChance, int iSeedPlus, bool bAllowChange=true, Vector *pPiercingTracerEnd=NULL, bool bSegmentTracer = true );
@@ -557,10 +556,6 @@ public:
 	virtual void AimGun();
 	float m_fLastShotAlienTime;
 	float m_fLastShotJunkTime;
-	virtual void DoMuzzleFlash();
-	virtual void DoImpactEffect( trace_t &tr, int nDamageType );
-	void MakeTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType );
-	void MakeUnattachedTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType );
 	void OnWeaponFired( const CBaseEntity *pWeapon, int nShotsFired, bool bIsSecondary = false );
 	float m_flLastAttributeExplosionSound;
 	int m_nFastReloadsInARow;

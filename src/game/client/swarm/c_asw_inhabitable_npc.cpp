@@ -3,6 +3,7 @@
 #include "c_asw_player.h"
 #include "c_asw_weapon.h"
 #include "game_timescale_shared.h"
+#include "c_te_effect_dispatch.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -229,4 +230,30 @@ ASW_Controls_t C_ASW_Inhabitable_NPC::GetASWControls()
 	}
 
 	return ( ASW_Controls_t )asw_controls.GetInt();
+}
+
+void C_ASW_Inhabitable_NPC::MakeTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType )
+{
+	const char *tracer = "ASWUTracer";
+	if ( GetActiveASWWeapon() )
+		tracer = GetActiveASWWeapon()->GetUTracerType();
+
+	CEffectData data;
+	data.m_vOrigin = tr.endpos;
+	data.m_hEntity = this;
+	data.m_nMaterial = m_iDamageAttributeEffects;
+
+	DispatchEffect( tracer, data );
+}
+
+void C_ASW_Inhabitable_NPC::MakeUnattachedTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType )
+{
+	const char *tracer = "ASWUTracerUnattached";
+
+	CEffectData data;
+	data.m_vOrigin = tr.endpos;
+	data.m_hEntity = this;
+	data.m_vStart = vecTracerSrc;
+
+	DispatchEffect( tracer, data );
 }

@@ -1995,68 +1995,6 @@ bool CASW_Marine::TestHitboxes( const Ray_t &ray, unsigned int fContentsMask, tr
 	return BaseClass::TestHitboxes(ray, fContentsMask, tr);
 }
 
-void CASW_Marine::MakeTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType )
-{
-	const char* tracer = "ASWUTracer";
-	if (GetActiveASWWeapon())
-		tracer = GetActiveASWWeapon()->GetUTracerType();
-#ifdef CLIENT_DLL
-	CEffectData data;
-	data.m_vOrigin = tr.endpos;
-	data.m_hEntity = this;
-	data.m_nMaterial = m_iDamageAttributeEffects;
-
-	DispatchEffect( tracer, data );
-#else
-	CRecipientFilter filter;
-	filter.AddAllPlayers();
-	if (gpGlobals->maxClients > 1 && IsInhabited() && GetCommander())
-	{ 
-		filter.RemoveRecipient(GetCommander());
-	}
-
-	UserMessageBegin( filter, tracer );
-		WRITE_SHORT( entindex() );
-		WRITE_FLOAT( tr.endpos.x );
-		WRITE_FLOAT( tr.endpos.y );
-		WRITE_FLOAT( tr.endpos.z );
-		WRITE_SHORT( m_iDamageAttributeEffects );
-	MessageEnd();
-#endif
-}
-
-void CASW_Marine::MakeUnattachedTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType )
-{
-	const char* tracer = "ASWUTracerUnattached";	
-#ifdef CLIENT_DLL
-
-	CEffectData data;
-	data.m_vOrigin = tr.endpos;
-	data.m_hEntity = this;
-	data.m_vStart = vecTracerSrc;
-
-	DispatchEffect( tracer, data );
-#else
-	CRecipientFilter filter;
-	filter.AddAllPlayers();
-	if (gpGlobals->maxClients > 1 && IsInhabited() && GetCommander())
-	{ 
-		filter.RemoveRecipient(GetCommander());
-	}
-
-	UserMessageBegin( filter, tracer );
-		WRITE_SHORT( entindex() );
-		WRITE_FLOAT( tr.endpos.x );
-		WRITE_FLOAT( tr.endpos.y );
-		WRITE_FLOAT( tr.endpos.z );
-		WRITE_FLOAT( vecTracerSrc.x );
-		WRITE_FLOAT( vecTracerSrc.y );
-		WRITE_FLOAT( vecTracerSrc.z );
-		WRITE_SHORT( m_iDamageAttributeEffects );
-	MessageEnd();
-#endif
-}
-
 // returns which slot in the m_hWeapons array this pickup should go in
 int CASW_Marine::GetWeaponPositionForPickup( const char* szWeaponClass, bool bIsTemporary )
 {	

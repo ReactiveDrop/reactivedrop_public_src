@@ -200,8 +200,6 @@ public:
 	void CreateWeaponEmitters();
 	void DoMuzzleFlash();
 	void DoImpactEffect( trace_t &tr, int nDamageType );
-	void MakeTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType );
-	void MakeUnattachedTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType );
 
 	float GetDamageBuffEndTime() { return m_flDamageBuffEndTime.Get(); }
 	CNetworkVar( float, m_flDamageBuffEndTime );

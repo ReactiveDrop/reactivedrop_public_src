@@ -1203,17 +1203,6 @@ void CASW_Marine::SetMarineResource(CASW_Marine_Resource *pMR)
 	}
 }
 
-
-void CASW_Marine::DoImpactEffect( trace_t &tr, int nDamageType )
-{
-	// don't do impact effects, they're simulated clientside by the tracer usermessage
-}
-
-void CASW_Marine::DoMuzzleFlash()
-{
-	// asw - muzzle flashes are triggered by tracer usermessages instead to save bandwidth
-}
-
 extern ConVar rd_marine_ff_fist;
 int CASW_Marine::OnTakeDamage( const CTakeDamageInfo &info )
 {
