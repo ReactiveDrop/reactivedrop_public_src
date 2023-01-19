@@ -552,7 +552,7 @@ void CNPC_Zombine::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDi
 	BaseClass::TraceAttack( info, vecDir, ptr );
 
 	// Only knock grenades off their hands if it's a player or a bot doing the damage.
-	if ( info.GetAttacker() && ( !dynamic_cast< CASW_Inhabitable_NPC * >( info.GetAttacker() ) || !dynamic_cast< CASW_Inhabitable_NPC * >( info.GetAttacker() )->GetCommander() ) )
+	if ( info.GetAttacker() && info.GetAttacker()->Classify() != CLASS_ASW_MARINE )
 		return;
 
 	if ( info.GetDamageType() & ( DMG_BULLET | DMG_CLUB ) )

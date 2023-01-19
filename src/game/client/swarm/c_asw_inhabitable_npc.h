@@ -22,6 +22,8 @@ public:
 	C_ASW_Inhabitable_NPC();
 	virtual ~C_ASW_Inhabitable_NPC();
 
+	bool IsInhabitableNPC() const override { return true; }
+
 	virtual bool IsInhabited();
 	C_ASW_Player *GetCommander() const;
 	CNetworkHandle( C_ASW_Player, m_Commander );

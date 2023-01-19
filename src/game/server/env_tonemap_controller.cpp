@@ -284,11 +284,10 @@ void CTonemapTrigger::StartTouch( CBaseEntity *other )
 
 	player->OnTonemapTriggerStartTouch( this );
 #else
-	CASW_Inhabitable_NPC *pNPC = dynamic_cast< CASW_Inhabitable_NPC * >( other );
-	if ( !pNPC )
+	if ( !other->IsInhabitableNPC() )
 		return;
 
-	pNPC->OnTonemapTriggerStartTouch( this );
+	assert_cast< CASW_Inhabitable_NPC * >( other )->OnTonemapTriggerStartTouch( this );
 #endif
 }
 
@@ -308,11 +307,10 @@ void CTonemapTrigger::EndTouch( CBaseEntity *other )
 
 	player->OnTonemapTriggerEndTouch( this );
 #else
-	CASW_Inhabitable_NPC *pNPC = dynamic_cast< CASW_Inhabitable_NPC * >( other );
-	if ( !pNPC )
+	if ( !other->IsInhabitableNPC() )
 		return;
 
-	pNPC->OnTonemapTriggerEndTouch( this );
+	assert_cast< CASW_Inhabitable_NPC * >( other )->OnTonemapTriggerEndTouch( this );
 #endif
 }
 

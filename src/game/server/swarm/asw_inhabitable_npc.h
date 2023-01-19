@@ -21,6 +21,8 @@ public:
 	CASW_Inhabitable_NPC();
 	virtual ~CASW_Inhabitable_NPC();
 
+	bool IsInhabitableNPC() const override { return true; }
+
 	void SetCommander( CASW_Player *player );
 	CASW_Player *GetCommander() const;
 	HSCRIPT ScriptGetCommander() const;

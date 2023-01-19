@@ -2122,14 +2122,13 @@ CON_COMMAND_F( asw_inhabit_npc, "inhabit targeted NPC", FCVAR_CHEAT )
 		return;
 	}
 
-	CASW_Inhabitable_NPC *pNPC = dynamic_cast< CASW_Inhabitable_NPC * >( pTarget );
-	if ( !pNPC )
+	if ( !pTarget->IsInhabitableNPC() )
 	{
 		Warning( "Target '%s' (%d:%s) is not an inhabitable NPC.\n", pTarget->GetDebugName(), pTarget->entindex(), pTarget->GetClassname() );
 		return;
 	}
 
-	pPlayer->SwitchInhabiting( pNPC );
+	pPlayer->SwitchInhabiting( assert_cast< CASW_Inhabitable_NPC * >( pTarget ) );
 }
 
 CON_COMMAND_F( asw_spectate_npc, "spectate targeted NPC", FCVAR_CHEAT )
@@ -2148,12 +2147,11 @@ CON_COMMAND_F( asw_spectate_npc, "spectate targeted NPC", FCVAR_CHEAT )
 		return;
 	}
 
-	CASW_Inhabitable_NPC *pNPC = dynamic_cast< CASW_Inhabitable_NPC * >( pTarget );
-	if ( !pNPC )
+	if ( !pTarget->IsInhabitableNPC() )
 	{
 		Warning( "Target '%s' (%d:%s) is not an inhabitable NPC.\n", pTarget->GetDebugName(), pTarget->entindex(), pTarget->GetClassname() );
 		return;
 	}
 
-	pPlayer->SetSpectatingNPC( pNPC );
+	pPlayer->SetSpectatingNPC( assert_cast< CASW_Inhabitable_NPC * >( pTarget ) );
 }

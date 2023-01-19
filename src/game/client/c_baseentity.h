@@ -1838,6 +1838,9 @@ protected:
 
 private:
 	bool							m_bIsBlurred;
+
+public:
+	virtual bool IsInhabitableNPC() const { return false; }
 };
 
 EXTERN_RECV_TABLE(DT_BaseEntity);

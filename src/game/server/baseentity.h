@@ -1899,8 +1899,7 @@ public:
 	}
 
 public:
-
-
+	virtual bool IsInhabitableNPC() const { return false; }
 };
 
 // Send tables exposed in this module.
