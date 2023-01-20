@@ -442,9 +442,8 @@ static bool CanMarineGetStuckInEntity( IHandleEntity *pHandleEntity, int content
 
 inline CBaseHandle CASW_MarineGameMovement::TestPlayerPosition( const Vector& pos, int collisionGroup, trace_t& pm )
 {
-	// Account for the ability to step up (this helps against hitting displacements)
 	Ray_t ray;
-	ray.Init( pos, pos, GetPlayerMins() + Vector( 0, 0, 24 ), GetPlayerMaxs() );
+	ray.Init( pos, pos + Vector( 0, 0, 1 ), GetPlayerMins(), GetPlayerMaxs() );
 
 	CTraceFilterSimple filter( marine, collisionGroup, &CanMarineGetStuckInEntity );
 	UTIL_TraceRay( ray, MASK_PLAYERSOLID, &filter, &pm );
@@ -462,8 +461,8 @@ inline CBaseHandle CASW_MarineGameMovement::TestPlayerPosition( const Vector& po
 	}
 
 #endif
-	if ( (pm.contents & MASK_PLAYERSOLID) && pm.m_pEnt )
-	{				
+	if ( pm.startsolid && ( pm.contents & MASK_PLAYERSOLID ) && pm.m_pEnt && !( pm.m_pEnt->GetSolidFlags() & FSOLID_NOT_STANDABLE ) )
+	{
 		return pm.m_pEnt->GetRefEHandle();
 	}
 	else
