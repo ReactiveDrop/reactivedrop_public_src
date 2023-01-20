@@ -607,6 +607,9 @@ void CNPC_Zombine::HandleAnimEvent( animevent_t *pEvent )
 			{
 				// special case for if we pulled out a buzzer or a parasite or something
 				pNPC->SetHealthByDifficultyLevel();
+				angles.x = 0;
+				angles.z = 0;
+				pGrenade->SetAbsAngles( angles );
 			}
 				
 			EmitSound( "Zombine.ReadyGrenade" );
