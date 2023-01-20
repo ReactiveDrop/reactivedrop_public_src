@@ -1,9 +1,6 @@
 #include "cbase.h"
 #include "asw_burning.h"
-#include "asw_marine.h"
-#include "asw_alien.h"
-#include "asw_zombie.h"
-#include "asw_buzzer.h"
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -184,36 +181,3 @@ void CASW_Burning::ExtendBurning(CBaseEntity *pEntity, float fFireDuration)
 		}
 	}
 }
-
-/*
-void CASW_Burning::OnEntityExtinguished(CBaseEntity *pEntity)
-{
-	if (!pEntity)
-		return;
-
-	CASW_Marine *pMarine = CASW_Marine::AsMarine( pEntity );
-	if (pMarine)
-	{
-		pMarine->m_bOnFire = false;
-	}
-	else
-	{
-		CASW_Alien *pAlien = dynamic_cast<CASW_Alien*>(pEntity);
-		if (pAlien)
-		{
-			pAlien->m_bOnFire = false;
-		}
-		CASW_Buzzer *pBuzzer = dynamic_cast<CASW_Buzzer*>(pEntity);
-		if (pBuzzer)
-		{
-			pBuzzer->m_bOnFire = false;
-		}
-		CASW_Zombie *pZombie = dynamic_cast<CASW_Zombie*>(pEntity);
-		if (pZombie)
-		{
-			pZombie->m_bOnFire = false;
-		}
-	}
-	pEntity->RemoveFlag( FL_ONFIRE );
-}
-*/
