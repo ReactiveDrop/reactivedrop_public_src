@@ -870,13 +870,17 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="history_resource.cpp" />
     <ClCompile Include="hl2\c_antlion_dust.cpp" />
     <ClCompile Include="hl2\c_ar2_explosion.cpp" />
+    <ClCompile Include="hl2\c_basehelicopter.cpp" />
     <ClCompile Include="hl2\c_env_headcrabcanister.cpp" />
     <ClCompile Include="hl2\C_Func_Monitor.cpp" />
     <ClCompile Include="hl2\c_npc_antlionguard.cpp" />
+    <ClCompile Include="hl2\c_npc_combinegunship.cpp" />
     <ClCompile Include="hl2\c_npc_zombine.cpp" />
     <ClCompile Include="hl2\c_prop_combine_ball.cpp" />
     <ClCompile Include="hl2\c_rotorwash.cpp" />
     <ClCompile Include="hl2\c_script_intro.cpp" />
+    <ClCompile Include="hl2\c_strider.cpp" />
+    <ClCompile Include="hl2\c_te_concussiveexplosion.cpp" />
     <ClCompile Include="hl2\c_waterbullet.cpp" />
     <ClCompile Include="hltvcamera.cpp" />
     <ClCompile Include="hud.cpp" />
@@ -2507,6 +2511,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="glow_outline_effect.h" />
     <ClInclude Include="glow_overlay.h" />
     <ClInclude Include="history_resource.h" />
+    <ClInclude Include="hl2\c_basehelicopter.h" />
     <ClInclude Include="hl2\c_prop_combine_ball.h" />
     <ClInclude Include="hltvcamera.h" />
     <ClInclude Include="hud.h" />

@@ -745,6 +745,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClCompile Include="env_texturetoggle.cpp" />
     <ClCompile Include="env_tonemap_controller.cpp" />
     <ClCompile Include="env_zoom.cpp" />
+    <ClCompile Include="episodic\npc_hunter.cpp" />
     <ClCompile Include="EventLog.cpp" />
     <ClCompile Include="event_tempentity_tester.cpp" />
     <ClCompile Include="explode.cpp" />
@@ -776,14 +777,20 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="hl2\cbasehelicopter.cpp" />
     <ClCompile Include="hl2\env_headcrabcanister.cpp" />
     <ClCompile Include="hl2\grenade_frag.cpp" />
+    <ClCompile Include="hl2\npc_attackchopper.cpp" />
     <ClCompile Include="hl2\npc_combine.cpp" />
+    <ClCompile Include="hl2\npc_combinedropship.cpp" />
+    <ClCompile Include="hl2\npc_combinegunship.cpp" />
     <ClCompile Include="hl2\npc_combines.cpp" />
     <ClCompile Include="hl2\npc_crow.cpp" />
+    <ClCompile Include="hl2\npc_strider.cpp" />
     <ClCompile Include="hl2\npc_zombine.cpp" />
     <ClCompile Include="hl2\prop_combine_ball.cpp" />
     <ClCompile Include="hl2\script_intro.cpp" />
+    <ClCompile Include="hl2\weapon_cguard.cpp" />
     <ClCompile Include="serverhelper.cpp" />
     <ClCompile Include="gameinterface.cpp" />
     <ClCompile Include="GameStats_BasicStatsFunctions.cpp">
@@ -1719,6 +1726,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="env_projectedtexture.h" />
     <ClInclude Include="env_tonemap_controller.h" />
     <ClInclude Include="env_zoom.h" />
+    <ClInclude Include="episodic\npc_hunter.h" />
     <ClInclude Include="EventLog.h" />
     <ClInclude Include="eventqueue.h" />
     <ClInclude Include="event_tempentity_tester.h" />
@@ -1736,10 +1744,13 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="func_breakablesurf.h" />
     <ClInclude Include="func_movelinear.h" />
     <ClInclude Include="game.h" />
+    <ClInclude Include="hl2\cbasehelicopter.h" />
     <ClInclude Include="hl2\grenade_frag.h" />
+    <ClInclude Include="hl2\npc_attackchopper.h" />
     <ClInclude Include="hl2\npc_combine.h" />
     <ClInclude Include="hl2\npc_combines.h" />
     <ClInclude Include="hl2\npc_crow.h" />
+    <ClInclude Include="hl2\npc_strider.h" />
     <ClInclude Include="hl2\prop_combine_ball.h" />
     <ClInclude Include="hl2\script_intro.h" />
     <ClInclude Include="serverhelper.h" />

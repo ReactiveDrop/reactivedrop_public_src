@@ -55,6 +55,8 @@ particles_manifest
 	"file"		"particles/antlion_gib_01.pcf"
 	"file"		"particles/antlion_gib_02.pcf"
 	"file"		"particles/antlion_worker.pcf"
+	"file"		"particles/hunter_flechette.pcf"
+	"file"		"particles/hunter_projectile.pcf"
 	"file"		"particles/skybox_smoke.pcf"
 
 	"file"		"particles/rd-tarnor_fx.pcf"

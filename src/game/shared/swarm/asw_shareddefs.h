@@ -277,6 +277,7 @@ enum
 	ASW_COLLISION_GROUP_SENTRY,						// collides with aliens
 	ASW_COLLISION_GROUP_SENTRY_PROJECTILE,			// collides with aliens, marines and doors - nothing else (this is used for the sentry particles)
 	HL2COLLISION_GROUP_COMBINE_BALL,
+	HL2COLLISION_GROUP_GUNSHIP,
 
 	ASW_COLLISION_GROUP_BLOCK_ALIENS,				// asw
 	ASW_COLLISION_GROUP_IGNORE_NPCS,		// asw (fire walls spreading, collides with everything but aliens, marines) NOTE: Has to be after any NPC collision groups

@@ -1,4 +1,4 @@
-//========= Copyright (c) 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -38,15 +38,15 @@
 #include "physics_prop_ragdoll.h"
 #include "iservervehicle.h"
 #include "soundent.h"
-#include "npc_citizen17.h"
 #include "physics_saverestore.h"
-#include "hl2_shareddefs.h"
+#include "asw_shareddefs.h"
 #include "props.h"
 #include "npc_attackchopper.h"
 #include "citadel_effects_shared.h"
 #include "eventqueue.h"
 #include "beam_flags.h"
 #include "ai_eventresponse.h"
+#include "asw_gamerules.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -71,7 +71,7 @@ ConVar sk_gunship_burst_min( "sk_gunship_burst_min", "800", FCVAR_CHEAT );
 ConVar sk_gunship_burst_dist( "sk_gunship_burst_dist", "768", FCVAR_CHEAT );
 
 // Number of times the gunship must be struck by explosive damage
-ConVar	sk_gunship_health_increments( "sk_gunship_health_increments", "5", FCVAR_CHEAT );
+ConVar sk_gunship_health_increments( "sk_gunship_health_increments", "5", FCVAR_CHEAT );
 
 /*
 
@@ -364,8 +364,6 @@ private:
 
 	CBaseEntity		*m_pRotorWashModel;
 	QAngle			m_vecAngAcceleration;
-	float			m_fMaxAngAcceleration;
-	Vector			m_vMaxAngVelocity;
 
 	float			m_flEndDestructTime;
 
@@ -431,8 +429,6 @@ BEGIN_DATADESC( CNPC_CombineGunship )
 	DEFINE_SOUNDPATCH( m_pAirBlastSound ),
 	DEFINE_SOUNDPATCH( m_pCannonSound ),
 	DEFINE_FIELD( m_vecAngAcceleration,FIELD_VECTOR ),
-	DEFINE_KEYFIELD( m_fMaxAngAcceleration, FIELD_FLOAT, "MaxAngAccel" ),
-	DEFINE_KEYFIELD( m_vMaxAngVelocity, FIELD_VECTOR, "MaxAngVelocity" ),
 	DEFINE_FIELD( m_flDeltaT,			FIELD_FLOAT ),
 	DEFINE_FIELD( m_flTimeNextAttack,	FIELD_TIME ),
 	DEFINE_FIELD( m_flNextSeeEnemySound,	FIELD_TIME ),
@@ -498,9 +494,6 @@ CNPC_CombineGunship::CNPC_CombineGunship( void )
 	m_pCrashingController = NULL;
 	m_hRagdoll = NULL;
 	m_hCrashTarget = NULL;
-
-	m_fMaxAngAcceleration = 1000.0f;
-	m_vMaxAngVelocity = Vector( 300.0f, 120.0f, 300.0f );
 }
 
 
@@ -549,6 +542,8 @@ void CNPC_CombineGunship::Spawn( void )
 	ExtractBbox( SelectHeaviestSequence( ACT_GUNSHIP_PATROL ), m_cullBoxMins, m_cullBoxMaxs ); 
 	BaseClass::Spawn();
 
+	ChangeFaction( FACTION_COMBINE );
+
 	InitPathingData( GUNSHIP_ARRIVE_DIST, GUNSHIP_MIN_CHASE_DIST_DIFF, sk_gunship_burst_min.GetFloat() );
 	AddEFlags( EFL_NO_DISSOLVE | EFL_NO_MEGAPHYSCANNON_RAGDOLL | EFL_NO_PHYSCANNON_INTERACTION );
 
@@ -558,8 +553,6 @@ void CNPC_CombineGunship::Spawn( void )
 	SetHullSizeNormal();
 
 	m_iMaxHealth = m_iHealth = 100;
-
-	m_flFrozenMax = 0.0f;
 
 	m_flFieldOfView = -0.707; // 270 degrees
 
@@ -595,8 +588,10 @@ void CNPC_CombineGunship::Spawn( void )
 	// This tricks the AI code that constantly complains that the gunship has no schedule.
 	SetSchedule( SCHED_IDLE_STAND );
 
+#ifndef INFESTED_DLL
 	AddRelationship( "env_flare D_LI 9",	NULL );
 	AddRelationship( "rpg_missile D_HT 99", NULL );
+#endif
 
 	m_flTimeNextPing = gpGlobals->curtime + 2;
 
@@ -1724,7 +1719,7 @@ void CNPC_CombineGunship::FireCannonRound( void )
 		{
 			if ( random->RandomInt( 0, 1 ) == 0 )
 			{
-				CTakeDamageInfo info( this, this, 200, DMG_MISSILEDEFENSE );
+				CTakeDamageInfo info( this, this, 200, DMG_GENERIC ); // was DMG_MISSILEDEFENSE
 				CalculateBulletDamageForce( &info, m_iAmmoType, -threatDir, WorldSpaceCenter() );
 				GetEnemy()->TakeDamage( info );
 			}
@@ -1748,7 +1743,7 @@ void CNPC_CombineGunship::FireCannonRound( void )
 		// player multiple times during a single burst.
 		if ( m_iBurstHits >= GUNSHIP_MAX_HITS_PER_BURST )
 		{
-			info.m_flPlayerDamage = 1.0f;
+			info.m_flPlayerDamage = 1;
 		}
 
 		FireBullets( info );
@@ -2208,6 +2203,7 @@ void CNPC_CombineGunship::Flight( void )
 	goalAngAccel.z = 2.0 * (AngleDiff( goalRoll, AngleNormalize( GetLocalAngles().z ) ) - GetLocalAngularVelocity().z * dt) / (dt * dt);
 
 	goalAngAccel.x = clamp( goalAngAccel.x, -300, 300 );
+	//goalAngAccel.y = clamp( goalAngAccel.y, -60, 60 );
 	goalAngAccel.y = clamp( goalAngAccel.y, -120, 120 );
 	goalAngAccel.z = clamp( goalAngAccel.z, -300, 300 );
 
@@ -2218,9 +2214,9 @@ void CNPC_CombineGunship::Flight( void )
 	angAccelAccel.y = (goalAngAccel.y - m_vecAngAcceleration.y) / dt;
 	angAccelAccel.z = (goalAngAccel.z - m_vecAngAcceleration.z) / dt;
 
-	angAccelAccel.x = clamp( angAccelAccel.x, -m_fMaxAngAcceleration, m_fMaxAngAcceleration );
-	angAccelAccel.y = clamp( angAccelAccel.y, -m_fMaxAngAcceleration, m_fMaxAngAcceleration );
-	angAccelAccel.z = clamp( angAccelAccel.z, -m_fMaxAngAcceleration, m_fMaxAngAcceleration );
+	angAccelAccel.x = clamp( angAccelAccel.x, -1000, 1000 );
+	angAccelAccel.y = clamp( angAccelAccel.y, -1000, 1000 );
+	angAccelAccel.z = clamp( angAccelAccel.z, -1000, 1000 );
 
 	m_vecAngAcceleration += angAccelAccel * 0.1;
 
@@ -2235,9 +2231,9 @@ void CNPC_CombineGunship::Flight( void )
 	QAngle angVel = GetLocalAngularVelocity();
 	angVel += m_vecAngAcceleration * 0.1;
 
-	angVel.x = clamp( angVel.x, -m_vMaxAngVelocity.x, m_vMaxAngVelocity.x );
-	angVel.y = clamp( angVel.y, -m_vMaxAngVelocity.y, m_vMaxAngVelocity.y );
-	angVel.z = clamp( angVel.z, -m_vMaxAngVelocity.z, m_vMaxAngVelocity.z );
+	//angVel.y = clamp( angVel.y, -60, 60 );
+	//angVel.y = clamp( angVel.y, -120, 120 );
+	angVel.y = clamp( angVel.y, -120, 120 );
 
 	SetLocalAngularVelocity( angVel );
 
