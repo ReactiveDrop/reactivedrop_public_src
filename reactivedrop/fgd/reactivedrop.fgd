@@ -454,3 +454,335 @@ asw_pickup_50calmg : "50cal Machine Gun"
     // Inputs
 	input LaunchBall(void) : "Launch a ball from the spawner."
 ]
+
+@BaseClass base(BaseNPC, Studiomodel) = BaseCombine
+[
+	spawnflags(Flags) = 
+	[
+		65536 :  "Start LookOff" : 0
+		//131072	: "Don't drop grenades" : 0
+		//262144  : "Don't drop ar2 alt fire (elite only) " : 0
+	]
+
+	NumGrenades(choices) : "Number of Grenades" : "1" =
+	[
+		"0" : "None"
+		"1" : "1"
+		"2" : "2"
+		"3" : "3"
+		"4" : "4"
+		"5" : "5"
+		"999999" : "Unlimited"
+	]
+
+	tacticalvariant(choices) : "Tactical Variant" : "0" =
+	[
+		"0" : "Normal Tactics"
+		"1" : "Pressure the enemy (Keep advancing)"
+		"2" : "Pressure until within 30ft, then normal"
+	]
+	
+	usemarch(choices) : "Walk Easy" : "0" : "When true, will use a variety of more casual walking animations instead of the standard walk. For use in crowds. WARNING: this animation only has a north component. For use under very special circumstances only." =
+	[
+		"0" : "No"
+		"2" : "Yes"
+	]
+
+	// Inputs
+	input LookOn(void) : "Look normally"	
+	input LookOff(void) : "Don't look for myself, use other squad member's eyes"
+	input StartPatrolling(void) : "Patrol whenever I'm idle or alert."
+	input StopPatrolling(void) : "Stop patrolling when I'm idle or alert."
+	input ThrowGrenadeAtTarget(target_destination) : "Throw a grenade at the specified target."
+	input Assault(string) : "Start an assault. Parameter passed in should be the name of the rally point."
+]
+
+@NPCClass base(BaseCombine) studio("models/Combine_Soldier.mdl") = npc_combine_s : "Combine Soldier (SMG)"
+[
+]
+
+@NPCClass base(BaseCombine) studio("models/Combine_Soldier.mdl") = npc_combine_shotgun : "Combine Soldier (Shotgun)"
+[
+]
+
+@NPCClass base(BaseCombine) studio("models/Combine_Super_Soldier.mdl") = npc_combine_elite : "Combine Elite Soldier (AR2)"
+[
+]
+
+@NPCClass base(BaseNPC, Studiomodel) studio("models/hunter.mdl") = npc_hunter :
+	"A smaller, faster, strider that can pursue the player into buildings."
+[
+	FollowTarget(target_destination) : "Strider to Follow" : "" : "The name of the strider that this hunter should follow."
+	
+    // Inputs
+    input FollowStrider(target_destination) : "Sets the name of the strider that this hunter should follow."
+    
+	input SetMinigunTime(float) : "Time to shoot at any set minigun target."
+	input SetMinigunTarget(string) : "Hunter will shoot minigun at the named target."
+
+	input DisableShooting(void) : "Forces the hunter to be melee-only."
+	input EnableShooting(void) : "Allows the hunter to use range attacks or melee attacks."
+
+	input DisableSquadShootDelay(void) : "Disables the delay between range attacks for squads of hunters, allowing them to shoot as frequently as they wish."
+	input EnableSquadShootDelay(void) : "Enables the delay between range attacks for squads of hunters."
+	
+	input EnableUnplantedShooting(void) : "Used mainly for scripted attacks against bullseyes. Enables the hunter to shoot without having to plant first."
+	input DisableUnplantedShooting(void) : "Returns the hunter to normal after a call to EnableUnplantedShooting."
+
+	input DoPhysicsBlast(void) : "Hunter will instantly do the defensive physics blast."
+
+	input Crouch(void) : "Crouch down."
+	input Stand(void) : "Stand up from crouch."
+	input DisableCrouchWalk(void) : "UNUSED: Prevents the hunter from crouch walking."
+	input EnableCrouchWalk(void) : "UNUSED: Allows the hunter to crouch walk."
+
+	input UseSiegeTargets(string) : "Pass in the name of info_targets to shoot at when I can't shoot at the player."
+]
+
+@NPCClass base(BaseNPC, Studiomodel) studio("models/combine_strider.mdl") = npc_strider : "Strider"
+[
+	spawnflags(Flags) = 
+	[
+		65536 :  "Can Stomp Player" : 0		
+		131072 :  "Minimal damage taken from NPCs (1 point per missile)" : 0
+	]
+
+	//Inputs
+	input SetMinigunTime(float) : "Time to shoot at any set minigun target"
+	input SetMinigunTarget(string) : "Strider will shoot minigun at this"
+	input DisableMinigun(void) : "Disables the minigun until further notice by the EnableMinigun input."
+	input EnableMinigun(void) : "Enables the minigun if it was disabled by the DisableMinigun input."
+	input SetCannonTarget(string) : "Strider will shoot cannon at this"
+	input FlickRagdoll(void) : "Strider will flick anyone he's skewered"
+
+	input StartPatrol(void) : "Start patrolling back and forth along the current track."
+	input StopPatrol(void) : "Stop patrolling back and forth along the track. This will cause the helicopter to come to rest at the track which he's currently flying toward."
+	input ChooseFarthestPathPoint(void) : "When tracking an enemy, choose the point on the path furthest from the enemy, but still in firing range"
+	input ChooseNearestPathPoint(void) : "When tracking an enemy, choose the point on the path nearest from the enemy"
+	input Crouch(void) : "Crouch down"
+	input CrouchInstantly(void) : "Crouch instantly. This makes the Strider pop to a crouch. Do not do this where players can observe."
+	input Stand(void) : "Stand up from crouch"
+	input DisableCrouchWalk(void)
+	input EnableCrouchWalk(void)
+	
+	input SetTargetPath(string) : "Set a path for the strider to patrol. The strider will first move to the closest point on the path"
+	input ClearTargetPath(void) : "Clear the strider patrol path"
+
+	input EnableAggressiveBehavior(void) : "Use aggressive behavior. Fire faster, more frequently"
+	input DisableAggressiveBehavior(void) : "Stop using aggressive behavior. (Revert to normal)"
+
+	input StopShootingMinigunForSeconds(float) : "Stop shooting the minigun for a period of time (specify seconds as parameter)"
+
+	input DisableCrouch(void) : "Prevent the Strider from crouching"
+	input DisableMoveToLOS(void) : "Prevent the Strider from seeking Line of Sight to target. (Hold position)"
+	
+	input DisableCollisionWith(string) : "Disable collision with a given object."
+	input EnableCollisionWith(string) : "Reenable collision with a given object."
+	
+	input ScaleGroundSpeed(float) : "Scale the movement speed of the strider"
+
+	disablephysics(choices) : "Disable physics (reduce CPU)" : 0 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+]
+
+@NPCClass base(BaseHelicopter) studio("models/gunship.mdl" ) = npc_combinegunship : "Combine Gunship"
+[
+
+	// Inputs
+	input OmniscientOn(void) : "Gunship knows target's location even when target is out of sight or behind cover"
+	input OmniscientOff(void) : "Gunship relies on normal sight functions to locate target"
+	input BlindfireOn(void ) : "Gunship will fire at an unseen target, attempting to punch through to them"
+	input BlindfireOff(void ) : "Gunship only fires at viusible target"
+	input SetPenetrationDepth( float ) : "Set penetration depth of bullets"
+
+	input SetDockingBBox( void ) : "Shrink Bounding Box"
+	input SetNormalBBox( void ) : "Set Bounding Box to normal size"
+
+	input EnableGroundAttack( void ) : "Allow the gunship to use its ground attack"
+	input DisableGroundAttack( void ) : "Don't allow the gunship to use its ground attack"
+	input DoGroundAttack( string ) : "Causes the gunship to execute its ground attack"
+
+	input BecomeInvulnerable( void ): "Stops the gunship from taking damage, but still makes sounds effects"
+	input BecomeVulnerable( void ): "Makes the gunship act normally to damage"
+
+	input EnableRotorSound(void) : "Turns on rotor sounds"
+	input DisableRotorSound(void) : "Turns off rotor sounds"
+
+	// Outputs
+	output OnFireCannon(void)  : "Fires when the gunship fires a cannon round"
+	output OnFirstDamage( void ) : "Fired when the first damage is done to the gunship."
+	output OnSecondDamage( void ) : "Fired when the second damage is done to the gunship."
+	output OnThirdDamage( void ) : "Fired when the third damage is done to the gunship."
+	output OnFourthDamage( void ) : "Fired when the fourth damage is done to the gunship."
+
+	spawnflags(Flags) =
+	[
+		4096 : "No ground attack" : 0
+	]
+]
+
+@PointClass base(Targetname, Parentname) iconsprite("editor/info_target.vmt")  = info_target_helicopter_crash : "Helicopter Crash Target"
+[
+]
+
+@PointClass base(Targetname, Parentname) iconsprite("editor/info_target.vmt")  = info_target_gunshipcrash : "Gunship Crash Target"
+[
+	input Enable(void) : "Enable the crash target."
+	input Disable(void) : "Disable the crash target."
+]
+
+@NPCClass base(BaseHelicopter) studio("models/combine_dropship.mdl" ) = npc_combinedropship : "Combine Dropship"
+[
+	spawnflags(Flags) =
+	[
+		32768 : "Wait for input before dropoff" : 0
+	]
+
+	LandTarget(target_destination) : "Land target name"
+	GunRange(float) : "Crate Gun Range" : 2048 : "If the dropship's carrying a crate with a gun on it, it'll only shoot targets within this range."
+
+	//RollermineTemplate(target_destination) : "Name of Rollermine Template" : "" : "If this dropship drops any rollermines due to the 'DropMines' input being fired, it will use this template for the rollermines it creates. If left blank, ordinary rollermines will be dropped."
+
+	NPCTemplate(target_destination) : "Name of Template NPC 1"
+	NPCTemplate2(target_destination) : "Name of Template NPC 2"
+	NPCTemplate3(target_destination) : "Name of Template NPC 3"
+	NPCTemplate4(target_destination) : "Name of Template NPC 4"
+	NPCTemplate5(target_destination) : "Name of Template NPC 5"
+	NPCTemplate6(target_destination) : "Name of Template NPC 6"
+
+	Dustoff1(target_destination) : "Name of dustoff point for NPC 1"
+	Dustoff2(target_destination) : "Name of dustoff point for NPC 2"
+	Dustoff3(target_destination) : "Name of dustoff point for NPC 3"
+	Dustoff4(target_destination) : "Name of dustoff point for NPC 4"
+	Dustoff5(target_destination) : "Name of dustoff point for NPC 5"
+	Dustoff6(target_destination) : "Name of dustoff point for NPC 6"
+
+	//APCVehicleName(target_destination) : "Name of the APC to drop"
+	Invulnerable(Choices) : "Invulnerable" : 0 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	CrateType(Choices) : "Crate Type" : 2 =
+	[
+		//-3 : "Jeep (No crate)"
+		//-2 : "APC (No crate)"
+		-1 : "Strider (No crate)"
+		//0 : "Roller Hopper"
+		1 : "Soldier Crate"
+		2 : "None"
+	]
+
+	// Inputs
+	input LandLeaveCrate(integer) : "Land, drop soldiers, and leave the crate behind. Specify the number of troops to drop off in the parameter."
+	input LandTakeCrate(integer) : "Land, drop soldiers, but don't leave the crate behind. Specify the number of troops to drop off in the parameter."
+	//input DropMines(integer) : "Drop Rollermines. Specify the number of mines to drop in the parameter."
+	input DropStrider(void) : "Drop the Strider you're carrying. Now."
+	//input DropAPC(void) : "Drop the APC you're carrying. Now."
+	input Hover(target_destination) : "Hover over a named target entity until told to fly to a path."
+	input Pickup(string) : "Pickup an entity."
+	input SetLandTarget(string) : "Set my land target name."
+	input SetGunRange(float) : "Set my crate gun's range."
+
+	input EnableRotorSound(void) : "Turns on rotor sounds"
+	input DisableRotorSound(void) : "Turns off rotor sounds"
+
+	input StopWaitingForDropoff(void) : "Stop waiting for the dropoff. Dropoff as soon as possible."
+
+
+	// Outputs
+	output OnFinishedDropoff(void)  : "Fires when the dropship has finished a dropoff."
+	output OnFinishedPickup(void) : "Fires when the dropship has finished a pickup."
+
+	output OnCrateShotDownBeforeDropoff(float) : "Fires when the container was shot down before it dropped off soldiers. The parameter contains the number of soldiers that weren't successfully dropped off."
+	output OnCrateShotDownAfterDropoff(void) : "Fires when the container was shot down after it dropped off soldiers."
+
+]
+
+@NPCClass base(BaseHelicopter) studio("models/combine_helicopter.mdl" ) = npc_helicopter : "Helicopter"
+[
+	spawnflags(Flags) = 
+	[
+		65536 :  "Loud rotor wash sound" : 0
+		131072 : "Electrical drone" : 0
+		262144 : "Helicopter lights" : 0
+		524288 : "Ignore avoid spheres+boxes" : 0
+		1048576 : "More aggressive attacks" : 0
+		2097152 : "Cast long shadow" : 0
+	]
+
+	InitialSpeed(string) : "Initial Speed" : "0"
+	GracePeriod(float) : "Grace Period" : "2.0" : "Time in seconds the helicopter has to see the player before he starts shooting"
+	PatrolSpeed(float) : "Patrol Speed" : "0" : "Speed at which the helicopter moves if he has no enemy."
+
+	noncombat(choices) : "Non-combat (Do not precache gibs)" : "No" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	// Inputs
+	input GunOn(void) : "GunOn"
+	input GunOff(void) : "GunOff"
+	input MissileOn(void) : "MissileOn"
+	input MissileOff(void) : "MissileOff"
+	input EnableRotorWash(void) : "Turns on rotor wash effects"
+	input DisableRotorWash(void) : "Turns off rotor wash effects"
+	input EnableRotorSound(void) : "Turns on rotor sounds"
+	input DisableRotorSound(void) : "Turns off rotor sounds"
+	input StartBombingVehicle(void) : "Starts the chopper leading enemy vehicles and dropping bombs on them."
+	input StartTrailingVehicle(void) : "Starts the chopper trailing enemy vehicles and shooting at them."
+	input StartDefaultBehavior(void) : "Starts the chopper in the mode where he always stops at nav points instead of stopping anywhere in between nav points."
+	input StartAlwaysLeadingVehicle(void) : "Starts the chopper *always* leading enemy vehicles (regardless of how they are moving w/respect to the path) and dropping bombs on them. This mode is different from StartBombingVehicle in that it never uses the machine gun."
+	input StartSprinkleBehavior(void) : "Starts the chopper dropping bombs randomly + shooting at the player."
+	input StartBullrushBehavior(void) : "Starts the chopper bullrushing the player."
+	input SetHealthFraction(float) : "Sets the chopper health as a percentage of max health"
+
+	input EnableDeadlyShooting(void) : "Starts the chopper being deadly to on-foot players"
+	input DisableDeadlyShooting(void) : "Stops the chopper being deadly to on-foot players"
+
+	input StartNormalShooting(void) : "The chopper will fire in short bursts. Good for on-foot experiences"
+	input StartLongCycleShooting(void) : "The chopper fires in long bursts"
+	input StartContinuousShooting(void) : "The chopper fires continuously."
+	input StartFastShooting(void) : "The chopper fires normal bursts, but does not 'charge up' the gun. Fires immediately."
+
+	input ResetIdleTime(void) : "Allows the helicopter to fire immediately if he's not in the middle of charging or firing"
+	input SetAngles(string) : "Instantly snaps the orientation of the helicopter (Pitch Yaw Roll)"
+	input DropBomb(void) : "Immediately drops a bomb based on normal bomb dropping rules"
+	input DropBombStraightDown(void) : "Immediately drops a bomb directly downwards"
+	input DropBombAtTarget(target_destination) : "Immediately drops a bomb directly at the target destination, but only if the player isn't right there"
+	input DropBombAtTargetAlways(target_destination) : "Immediately drops a bomb directly at the target destination, no matter whether it's fair or not."
+	input DropBombDelay(float) : "Add a delay before the next bomb is dropped"
+	input BecomeIndestructible(void) : "Makes the helicopter take no more damage"
+
+	input DisablePathVisibilityTests(void) : "When the helicopter moves, he will not check for visibility from the path_track to the enemy to cull out path_tracks"
+	input EnablePathVisibilityTests(void) : "When the helicopter moves, he will only move to path_tracks that have line-of-sight to the enemy"
+
+	input StartCarpetBombing(void) : "Starts the helicopter constantly dropping megabombs until StopCarpetBombing input"
+	input StopCarpetBombing(void) : "Stop the carpet bombing behavior"
+
+	// Outputs
+	output OnHealthChanged(integer) : "Fires when the helicopter health changes. The integer is the percentage of health the chopper has from 0-100."
+	output OnShotDown(void) : "Fires the instant the helicopter is killed"
+]
+
+@PointClass base(Targetname, Parentname) iconsprite("editor/env_firesource") color(255 255 0) sphere(radius) = npc_heli_avoidsphere : "Helicopter avoidance sphere"
+[
+	spawnflags(Flags) = 
+	[
+		65536 :  "Avoid the sphere above and below" : 0
+	]
+	radius(float) : "Radius" : 128
+]
+
+@SolidClass base(Origin, Angles, Parentname) color(255 255 0) = npc_heli_avoidbox : "Helicopter avoidance box"
+[
+	spawnflags(Flags) = 
+	[
+		65536 :  "Avoid the box above and below" : 0
+	]
+]
