@@ -177,6 +177,15 @@ C_ASW_Weapon *C_ASW_Inhabitable_NPC::GetASWWeapon( int i ) const
 	return assert_cast< C_ASW_Weapon * >( GetWeapon( i ) );
 }
 
+Vector C_ASW_Inhabitable_NPC::Weapon_ShootPosition()
+{
+	Vector right;
+	GetVectors( NULL, &right, NULL );
+
+	// TODO
+	return GetAbsOrigin() + Vector( 0, 0, 34 ) + 8 * right;
+}
+
 // when marine's health falls below this, name starts to blink red
 #define MARINE_NAME_PULSE_THRESHOLD 0.5f
 void C_ASW_Inhabitable_NPC::TickRedName( float delta )

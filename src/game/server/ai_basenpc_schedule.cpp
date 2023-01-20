@@ -4670,7 +4670,7 @@ int CAI_BaseNPC::SelectCombatSchedule()
 	// we can see the enemy
 	if ( HasCondition(COND_CAN_RANGE_ATTACK1) )
 	{
-		if ( !UseAttackSquadSlots() || OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) )
+		if ( !UseAttackSquadSlots() || OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, GetMaxAttackSquadSlot() ) )
 			return SCHED_RANGE_ATTACK1;
 		return SCHED_COMBAT_FACE;
 	}

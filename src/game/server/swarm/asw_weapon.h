@@ -47,7 +47,9 @@ public:
 	virtual bool IsPredicted( void ) const;
 	void PlaySoundDirectlyToOwner( const char *szSoundName );
 	void PlaySoundToOthers( const char *szSoundName );
-	
+
+	int GetMinBurst() override { return IsRapidFire() ? 2 : 1; }
+	int GetMaxBurst() override { return IsRapidFire() ? 5 : 1; }
 	virtual float	GetFireRate( void );
 	virtual bool HasAmmo();
 	virtual bool PrimaryAmmoLoaded( void );

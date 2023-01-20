@@ -20,7 +20,7 @@ public:
 	virtual void Precache();
 
 	virtual void SecondaryAttack();
-	virtual void FireShotgunPellet( CASW_Marine *pMarine, const FireBulletsInfo_t &info, int iSeed );	// shotgun specific, used to add piercing only for Devastator
+	virtual void FireShotgunPellet( CASW_Inhabitable_NPC *pNPC, const FireBulletsInfo_t &info, int iSeed ) override;	// shotgun specific, used to add piercing only for Devastator
 
 	virtual float GetWeaponDamage();
 	virtual float GetMovementScale();

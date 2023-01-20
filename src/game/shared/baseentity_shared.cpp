@@ -1850,9 +1850,11 @@ void CBaseEntity::FireBullets( const FireBulletsInfo_t &info )
 		}
 		else
 		{
-
 			// Don't run the biasing code for the player at the moment.
-			vecDir = Manipulator.ApplySpread( info.m_vecSpread );
+			if ( info.m_nFlags & FIRE_BULLETS_ANGULAR_SPREAD )
+				vecDir = Manipulator.ApplyAngularSpread( info.m_vecSpread );
+			else
+				vecDir = Manipulator.ApplySpread( info.m_vecSpread );
 		}
 
 		vecEnd = info.m_vecSrc + vecDir * info.m_flDistance;

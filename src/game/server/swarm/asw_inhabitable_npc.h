@@ -45,6 +45,10 @@ public:
 	CASW_Weapon *GetActiveASWWeapon() const;
 	int m_iDamageAttributeEffects;
 
+	virtual bool AIWantsToFire() { return false; }
+	virtual bool AIWantsToFire2() { return false; }
+	virtual bool AIWantsToReload() { return false; }
+
 	virtual bool StartUsing( CBaseEntity *pEntity );
 	virtual void StopUsing();
 	inline CBaseEntity *GetUsingEntity() const { return m_hUsingEntity.Get(); }
@@ -87,6 +91,9 @@ public:
 	virtual void DoMuzzleFlash();
 	virtual void MakeTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType );
 	virtual void MakeUnattachedTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType );
+
+	virtual void InhabitedPhysicsSimulate() {}
+	virtual void PhysicsSimulate() override;
 };
 
 #endif /* ASW_INHABITABLE_NPC_H */

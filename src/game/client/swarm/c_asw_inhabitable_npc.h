@@ -51,6 +51,7 @@ public:
 
 	C_ASW_Weapon *GetActiveASWWeapon( void ) const;
 	C_ASW_Weapon *GetASWWeapon( int index ) const;
+	virtual Vector Weapon_ShootPosition();
 	int m_iDamageAttributeEffects;
 
 	void TickRedName( float delta );

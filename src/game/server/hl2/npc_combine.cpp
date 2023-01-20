@@ -400,7 +400,7 @@ void CNPC_Combine::GatherConditions()
 			// occupy a vacant attack slot, they do so. This holds the slot until their
 			// schedule breaks and schedule selection runs again, essentially reserving this
 			// slot. If they do not select an attack schedule, then they'll release the slot.
-			if( OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) )
+			if( OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, GetMaxAttackSquadSlot() ) )
 			{
 				SetCondition( COND_COMBINE_ATTACK_SLOT_AVAILABLE );
 			}
@@ -595,6 +595,13 @@ bool CNPC_Combine::IsCurTaskContinuousMove()
 		return true;
 
 	return BaseClass::IsCurTaskContinuousMove();
+}
+
+bool CNPC_Combine::AIWantsToFire()
+{
+	const Task_t *pTask = GetTask();
+
+	return pTask && pTask->iTask == TASK_RANGE_ATTACK1;
 }
 
 
@@ -1493,12 +1500,12 @@ int CNPC_Combine::SelectCombatSchedule()
 			{
 				// I'm the leader, but I didn't get the job suppressing the enemy. We know this because
 				// This code only runs if the code above didn't assign me SCHED_COMBINE_SUPPRESS.
-				if ( HasCondition( COND_CAN_RANGE_ATTACK1 ) && OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) )
+				if ( HasCondition( COND_CAN_RANGE_ATTACK1 ) && OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, GetMaxAttackSquadSlot() ) )
 				{
 					return SCHED_RANGE_ATTACK1;
 				}
 
-				if( HasCondition(COND_WEAPON_HAS_LOS) && IsStrategySlotRangeOccupied( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) )
+				if( HasCondition(COND_WEAPON_HAS_LOS) && IsStrategySlotRangeOccupied( SQUAD_SLOT_ATTACK1, GetMaxAttackSquadSlot() ) )
 				{
 					// If everyone else is attacking and I have line of fire, wait for a chance to cover someone.
 					if( OccupyStrategySlot( SQUAD_SLOT_OVERWATCH ) )
@@ -1523,7 +1530,7 @@ int CNPC_Combine::SelectCombatSchedule()
 					}
 				}
 
-				if( !bFirstContact && OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) )
+				if( !bFirstContact && OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, GetMaxAttackSquadSlot() ) )
 				{
 					if( random->RandomInt(0, 100) < 60 )
 					{
@@ -1617,7 +1624,7 @@ int CNPC_Combine::SelectCombatSchedule()
 		Stand();
 		DesireStand();
 
-		if( GetEnemy() && !(GetEnemy()->GetFlags() & FL_NOTARGET) && OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) )
+		if( GetEnemy() && !(GetEnemy()->GetFlags() & FL_NOTARGET) && OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, GetMaxAttackSquadSlot() ) )
 		{
 			// Charge in and break the enemy's cover!
 			return SCHED_ESTABLISH_LINE_OF_FIRE;
@@ -1639,7 +1646,7 @@ int CNPC_Combine::SelectCombatSchedule()
 	// --------------------------------------------------------------
 	if ( HasCondition( COND_SEE_ENEMY ) && !HasCondition( COND_CAN_RANGE_ATTACK1 ) )
 	{
-		if ( (HasCondition( COND_TOO_FAR_TO_ATTACK ) || IsUsingTacticalVariant(TACTICAL_VARIANT_PRESSURE_ENEMY) ) && OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ))
+		if ( (HasCondition( COND_TOO_FAR_TO_ATTACK ) || IsUsingTacticalVariant(TACTICAL_VARIANT_PRESSURE_ENEMY) ) && OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, GetMaxAttackSquadSlot() ))
 		{
 			return SCHED_COMBINE_PRESS_ATTACK;
 		}
@@ -1855,7 +1862,7 @@ int CNPC_Combine::SelectFailSchedule( int failedSchedule, int failedTask, AI_Tas
 {
 	if( failedSchedule == SCHED_COMBINE_TAKE_COVER1 )
 	{
-		if( IsInSquad() && IsStrategySlotRangeOccupied(SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2) && HasCondition(COND_SEE_ENEMY) )
+		if( IsInSquad() && IsStrategySlotRangeOccupied(SQUAD_SLOT_ATTACK1, GetMaxAttackSquadSlot()) && HasCondition(COND_SEE_ENEMY) )
 		{
 			// This eases the effects of an unfortunate bug that usually plagues shotgunners. Since their rate of fire is low,
 			// they spend relatively long periods of time without an attack squad slot. If you corner a shotgunner, usually 
@@ -1932,12 +1939,12 @@ int CNPC_Combine::SelectScheduleAttack()
 		{
 			if( HasCondition(COND_SEE_ENEMY) )
 			{
-				if ( OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) )
+				if ( OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, GetMaxAttackSquadSlot() ) )
 					return SCHED_RANGE_ATTACK1;
 			}
 			else
 			{
-				if ( OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) )
+				if ( OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, GetMaxAttackSquadSlot() ) )
 					return SCHED_COMBINE_PRESS_ATTACK;
 			}
 		}
@@ -1968,7 +1975,7 @@ int CNPC_Combine::SelectScheduleAttack()
 #endif
 
 		// Engage if allowed
-		if ( OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) )
+		if ( OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, GetMaxAttackSquadSlot() ) )
 		{
 			return SCHED_RANGE_ATTACK1;
 		}
@@ -2070,7 +2077,7 @@ int CNPC_Combine::TranslateSchedule( int scheduleType )
 		break;
 	case SCHED_COMBINE_TAKECOVER_FAILED:
 		{
-			if ( HasCondition( COND_CAN_RANGE_ATTACK1 ) && OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) )
+			if ( HasCondition( COND_CAN_RANGE_ATTACK1 ) && OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, GetMaxAttackSquadSlot() ) )
 			{
 				return TranslateSchedule( SCHED_RANGE_ATTACK1 );
 			}
@@ -2142,7 +2149,7 @@ int CNPC_Combine::TranslateSchedule( int scheduleType )
 
 			if( IsUsingTacticalVariant( TACTICAL_VARIANT_PRESSURE_ENEMY ) && !IsRunningBehavior() )
 			{
-				if( OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) )
+				if( OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, GetMaxAttackSquadSlot() ) )
 				{
 					return SCHED_COMBINE_PRESS_ATTACK;
 				}
@@ -3091,10 +3098,10 @@ bool CNPC_Combine::OnBeginMoveAndShoot()
 {
 	if ( BaseClass::OnBeginMoveAndShoot() )
 	{
-		if( HasStrategySlotRange( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) )
+		if( HasStrategySlotRange( SQUAD_SLOT_ATTACK1, GetMaxAttackSquadSlot() ) )
 			return true; // already have the slot I need
 
-		if( !HasStrategySlotRange( SQUAD_SLOT_GRENADE1, SQUAD_SLOT_ATTACK_OCCLUDER ) && OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) )
+		if( !HasStrategySlotRange( SQUAD_SLOT_GRENADE1, SQUAD_SLOT_ATTACK_OCCLUDER ) && OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, GetMaxAttackSquadSlot() ) )
 			return true;
 	}
 	return false;

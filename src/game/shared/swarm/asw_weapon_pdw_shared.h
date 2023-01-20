@@ -44,8 +44,6 @@ public:
 		virtual void Spawn();
 		virtual void SecondaryAttack();
 
-		void	FireNPCPrimaryAttack( CBaseCombatCharacter *pOperator, Vector &vecShootOrigin, Vector &vecShootDir );
-		void	Operator_ForceNPCFire( CBaseCombatCharacter *pOperator, bool bSecondary, CBaseEntity *pTarget = NULL );
 		virtual float GetMadFiringBias() { return 2.5f; }	// scales the rate at which the mad firing counter goes up when we shoot aliens with this weapon
 		virtual const char *GetViewModel( int viewmodelindex = 0 ) const;
 		virtual const char *GetWorldModel( void ) const;

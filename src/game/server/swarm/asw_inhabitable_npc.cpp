@@ -287,3 +287,25 @@ void CASW_Inhabitable_NPC::MakeUnattachedTracer( const Vector &vecTracerSrc, con
 	WRITE_SHORT( m_iDamageAttributeEffects );
 	MessageEnd();
 }
+
+void CASW_Inhabitable_NPC::PhysicsSimulate()
+{
+	if ( IsInhabited() )
+	{
+		InhabitedPhysicsSimulate();
+		return;
+	}
+
+	BaseClass::PhysicsSimulate();
+
+	CASW_Weapon *pWeapon = GetActiveASWWeapon();
+	if ( pWeapon )
+		pWeapon->ItemPostFrame();
+
+	// check if offhand weapon needs postframe
+	CASW_Weapon *pExtra = GetASWWeapon( ASW_INVENTORY_SLOT_EXTRA );
+	if ( pExtra && pExtra != pWeapon && pExtra->m_bShotDelayed )
+	{
+		pExtra->ItemPostFrame();
+	}
+}

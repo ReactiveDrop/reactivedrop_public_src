@@ -1221,10 +1221,6 @@ void CASWPlayerAnimState::GetOuterAbsVelocity( Vector& vel ) const
 	else
 	{
 		GetOuter()->EstimateAbsVelocity( vel );
-		if ( pMarine )
-		{
-			vel -= pMarine->m_vecGroundVelocity;
-		}
 	}
 #else
 	vel = GetOuter()->GetAbsVelocity();

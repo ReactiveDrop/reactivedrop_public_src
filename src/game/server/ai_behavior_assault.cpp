@@ -1337,7 +1337,7 @@ int CAI_AssaultBehavior::TranslateSchedule( int scheduleType )
 	case SCHED_RANGE_ATTACK1:
 		if ( GetOuter()->GetShotRegulator()->IsInRestInterval() )				
 		{
-			if ( GetOuter()->HasStrategySlotRange( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) )
+			if ( GetOuter()->HasStrategySlotRange( SQUAD_SLOT_ATTACK1, GetMaxAttackSquadSlot() ) )
 				GetOuter()->VacateStrategySlot();
 			return SCHED_COMBAT_FACE; // @TODO (toml 07-02-03): Should do something more tactically sensible
 		}

@@ -4,6 +4,7 @@
 #ifdef CLIENT_DLL
 	#define CASW_Weapon C_ASW_Weapon
 	#define CASW_Marine C_ASW_Marine
+	#define CASW_Inhabitable_NPC C_ASW_Inhabitable_NPC
 	#define CBasePlayer C_BasePlayer
 	#include "c_asw_weapon.h"
 	#include "c_asw_marine.h"
@@ -107,11 +108,11 @@ CASW_Player* CASW_Weapon::GetCommander()
 	return pOwner;
 }
 
-CASW_Marine* CASW_Weapon::GetMarine()
+CASW_Marine *CASW_Weapon::GetMarine()
 {
-	CBaseEntity* pOwner = GetOwner();
+	CBaseEntity *pOwner = GetOwner();
 	if ( pOwner && pOwner->Classify() == CLASS_ASW_MARINE )
-		return assert_cast<CASW_Marine*>(pOwner);
+		return assert_cast< CASW_Marine * >( pOwner );
 	return NULL;
 }
 
@@ -140,9 +141,10 @@ void CASW_Weapon::DiffPrint(char const *fmt, ...)
 
 void CASW_Weapon::ItemBusyFrame( void )
 {
-	CASW_Marine* pMarine = GetMarine();
-	if ( !pMarine )
+	CBaseCombatCharacter *pOwner = GetOwner();
+	if ( !pOwner || !pOwner->IsInhabitableNPC() )
 		return;
+	CASW_Inhabitable_NPC *pNPC = assert_cast< CASW_Inhabitable_NPC * >( pOwner );
 
 	bool bAttack1, bAttack2, bReload, bOldReload, bOldAttack1;
 	GetButtons(bAttack1, bAttack2, bReload, bOldReload, bOldAttack1 );
@@ -159,25 +161,22 @@ void CASW_Weapon::ItemBusyFrame( void )
 		ClearIsFiring();
 	}
 
-	if ( (bReload && !bOldReload) && UsesClipsForAmmo1() && asw_fast_reload_enabled.GetBool() )
+	if ( ( bReload && !bOldReload ) && UsesClipsForAmmo1() && asw_fast_reload_enabled.GetBool() )
 	{
-		if ( m_bInReload ) 
+		CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
+		if ( pMarine && m_bInReload )
 		{
 			// check for a fast reload
 			//Msg("%f Check for fast reload while busy\n", gpGlobals->curtime);
-			if (gpGlobals->curtime >= m_fFastReloadStart && gpGlobals->curtime <= m_fFastReloadEnd)
+			if ( gpGlobals->curtime >= m_fFastReloadStart && gpGlobals->curtime <= m_fFastReloadEnd )
 			{
 				// todo: reduce next attack time
 				m_fFastReloadEnd = 0;
 				m_fFastReloadStart = 0;
 
-				CBaseCombatCharacter *pOwner = GetOwner();
-				if ( pOwner )
-				{
-					float flSucceedDelay = gpGlobals->curtime + 0.5f;
-					pOwner->SetNextAttack( flSucceedDelay );
-					m_flNextPrimaryAttack = m_flNextSecondaryAttack = flSucceedDelay;
-				}
+				float flSucceedDelay = gpGlobals->curtime + 0.5f;
+				pOwner->SetNextAttack( flSucceedDelay );
+				m_flNextPrimaryAttack = m_flNextSecondaryAttack = flSucceedDelay;
 
 				// TODO: hook up anim
 				//pMarine->DoAnimationEvent( PLAYERANIMEVENT_RELOAD_SUCCEED );
@@ -188,7 +187,7 @@ void CASW_Weapon::ItemBusyFrame( void )
 #ifdef GAME_DLL
 				pMarine->m_nFastReloadsInARow++;
 
-				IGameEvent * event = gameeventmanager->CreateEvent( "fast_reload" );
+				IGameEvent *event = gameeventmanager->CreateEvent( "fast_reload" );
 				if ( event )
 				{
 					event->SetInt( "marine", pMarine->entindex() );
@@ -213,7 +212,7 @@ void CASW_Weapon::ItemBusyFrame( void )
 				if ( !GetParametersForSound( "FastReload.Success", params, NULL ) )
 					return;
 
-				EmitSound_t playparams(params);
+				EmitSound_t playparams( params );
 				playparams.m_nPitch = params.pitch;
 
 				CBroadcastRecipientFilter filter;
@@ -221,23 +220,23 @@ void CASW_Weapon::ItemBusyFrame( void )
 				{
 					filter.UsePredictionRules();
 				}
-				EmitSound(filter, entindex(), playparams);
-				
+				EmitSound( filter, entindex(), playparams );
+
 				//Msg("%f RELOAD SUCCESS! - bAttack1 = %d, bOldAttack1 = %d\n", gpGlobals->curtime, bAttack1, bOldAttack1 );
 				//Msg( "S: %f - %f - %f RELOAD SUCCESS! -- Progress = %f\n", gpGlobals->curtime, fFastStart, fFastEnd, flProgress );
 #ifdef GAME_DLL				
-				pMarine->GetMarineSpeech()->PersonalChatter(CHATTER_SELECTION);
+				pMarine->GetMarineSpeech()->PersonalChatter( CHATTER_SELECTION );
 #endif
 				m_bFastReloadSuccess = true;
 				m_bFastReloadFailure = false;
 			}
-			else if (m_fFastReloadStart != 0)
+			else if ( m_fFastReloadStart != 0 )
 			{
 				CSoundParameters params;
 				if ( !GetParametersForSound( "FastReload.Miss", params, NULL ) )
 					return;
 
-				EmitSound_t playparams(params);
+				EmitSound_t playparams( params );
 				playparams.m_nPitch = params.pitch;
 
 				CBroadcastRecipientFilter filter;
@@ -245,13 +244,13 @@ void CASW_Weapon::ItemBusyFrame( void )
 				{
 					filter.UsePredictionRules();
 				}
-				EmitSound(filter, entindex(), playparams);
+				EmitSound( filter, entindex(), playparams );
 
 				//Msg("%f RELOAD MISSED! - bAttack1 = %d, bOldAttack1 = %d\n", gpGlobals->curtime, bAttack1, bOldAttack1 );
 				//Msg( "S: %f - %f - %f RELOAD MISSED! -- Progress = %f\n", gpGlobals->curtime, fFastStart, fFastEnd, flProgress );
 				m_fFastReloadEnd = 0;
 				m_fFastReloadStart = 0;
-				
+
 				CBaseCombatCharacter *pOwner = GetOwner();
 				if ( pOwner )
 				{
@@ -265,16 +264,16 @@ void CASW_Weapon::ItemBusyFrame( void )
 				//pMarine->DoAnimationEvent( PLAYERANIMEVENT_RELOAD_FAIL );
 
 #ifdef GAME_DLL
-				IGameEvent * event = gameeventmanager->CreateEvent( "fast_reload_fail" );
+				IGameEvent *event = gameeventmanager->CreateEvent( "fast_reload_fail" );
 				if ( event )
 				{
 					event->SetInt( "marine", pMarine->entindex() );
 					gameeventmanager->FireEvent( event, true );
 				}
-				
+
 				pMarine->m_nFastReloadsInARow = 0;
 
-				if (rd_fast_reload_explode_chance.GetFloat() > 0)
+				if ( rd_fast_reload_explode_chance.GetFloat() > 0 )
 				{
 					float flStartFraction = random->RandomFloat( 0.0f, 1.0f );
 					if ( rd_fast_reload_explode_chance.GetFloat() > flStartFraction )
@@ -293,7 +292,7 @@ void CASW_Weapon::ItemBusyFrame( void )
 				DispatchParticleEffect( "reload_fail", PATTACH_POINT_FOLLOW, this, "muzzle" );
 
 #ifdef GAME_DLL	
-				pMarine->GetMarineSpeech()->PersonalChatter(CHATTER_PAIN_SMALL);
+				pMarine->GetMarineSpeech()->PersonalChatter( CHATTER_PAIN_SMALL );
 #endif
 				m_bFastReloadSuccess = false;
 				m_bFastReloadFailure = true;
@@ -302,16 +301,16 @@ void CASW_Weapon::ItemBusyFrame( void )
 		}
 	}
 
-#ifdef CLIENT_DLL	
-	if ( m_bInReload ) 
+#ifdef CLIENT_DLL
+	if ( m_bInReload )
 	{
 		float fStart = m_fReloadStart;
-		float fNext = MAX( m_flNextPrimaryAttack, GetOwner() ? GetOwner()->GetNextAttack() : 0 );
+		float fNext = MAX( m_flNextPrimaryAttack, pOwner->GetNextAttack() );
 		float fTotalTime = fNext - fStart;
-		if (fTotalTime <= 0)
+		if ( fTotalTime <= 0 )
 			fTotalTime = 0.1f;
 
-		m_fReloadProgress = (gpGlobals->curtime - fStart) / fTotalTime;
+		m_fReloadProgress = ( gpGlobals->curtime - fStart ) / fTotalTime;
 	}
 	else
 	{
@@ -324,29 +323,30 @@ void CASW_Weapon::ItemBusyFrame( void )
 // check player or marine commander's buttons for firing/reload/etc
 void CASW_Weapon::ItemPostFrame( void )
 {
-	//CBasePlayer *pOwner = GetCommander();
-	CASW_Marine* pOwner = GetMarine();
-	if (!pOwner)
+	CBaseCombatCharacter *pOwner = GetOwner();
+	if ( !pOwner || !pOwner->IsInhabitableNPC() )
 		return;
+	CASW_Inhabitable_NPC *pNPC = assert_cast< CASW_Inhabitable_NPC * >( pOwner );
 
-	bool bThisActive = ( pOwner->GetActiveWeapon() == this );
+	bool bThisActive = ( pNPC->GetActiveWeapon() == this );
 
 	bool bAttack1, bAttack2, bReload, bOldReload, bOldAttack1;
-	GetButtons(bAttack1, bAttack2, bReload, bOldReload, bOldAttack1 );
+	GetButtons( bAttack1, bAttack2, bReload, bOldReload, bOldAttack1 );
 
-	if ( pOwner->IsHacking() || pOwner->GetForcedActionRequest() )
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
+	if ( pMarine && ( pMarine->IsHacking() || pMarine->GetForcedActionRequest() ) )
 	{
 		bThisActive = bAttack1 = bAttack2 = bReload = false;
 	}
 
 	// check for clearing our weapon switching bool
-	if (m_bSwitchingWeapons && gpGlobals->curtime > m_flNextPrimaryAttack)
+	if ( m_bSwitchingWeapons && gpGlobals->curtime > m_flNextPrimaryAttack )
 	{
 		m_bSwitchingWeapons = false;
 	}
 
 	// check for clearing our firing bool from reloading
-	if (m_bInReload && gpGlobals->curtime > m_fReloadClearFiringTime)
+	if ( m_bInReload && gpGlobals->curtime > m_fReloadClearFiringTime )
 	{
 		ClearIsFiring();
 	}
@@ -369,12 +369,12 @@ void CASW_Weapon::ItemPostFrame( void )
 		//FIXME: What if we're calling ItemBusyFrame?
 		m_fFireDuration = bAttack1 ? ( m_fFireDuration + gpGlobals->frametime ) : 0.0f;
 
-		if (bAttack2 && (m_flNextSecondaryAttack <= gpGlobals->curtime) && gpGlobals->curtime > pOwner->m_fFFGuardTime)
+		if ( bAttack2 && ( m_flNextSecondaryAttack <= gpGlobals->curtime ) && ( !pMarine || gpGlobals->curtime > pMarine->m_fFFGuardTime ) )
 		{
 			if ( SecondaryAttackUsesPrimaryAmmo() )
 			{
-				if ( !IsMeleeWeapon() &&  
-					(( UsesClipsForAmmo1() && !(this->PrimaryAmmoLoaded())) || ( !UsesClipsForAmmo1() && pOwner->GetAmmoCount(m_iPrimaryAmmoType)<=0 )) )
+				if ( !IsMeleeWeapon() &&
+					( ( UsesClipsForAmmo1() && !( this->PrimaryAmmoLoaded() ) ) || ( !UsesClipsForAmmo1() && pNPC->GetAmmoCount( m_iPrimaryAmmoType ) <= 0 ) ) )
 				{
 					HandleFireOnEmpty();
 				}
@@ -384,12 +384,12 @@ void CASW_Weapon::ItemPostFrame( void )
 					SecondaryAttack();
 
 #ifndef CLIENT_DLL
-					if ( pOwner->IsInhabited() )
+					if ( pNPC->IsInhabited() )
 					{
-						IGameEvent * event = gameeventmanager->CreateEvent( "player_alt_fire" );
+						IGameEvent *event = gameeventmanager->CreateEvent( "player_alt_fire" );
 						if ( event )
 						{
-							CASW_Player *pPlayer = pOwner->GetCommander();
+							CASW_Player *pPlayer = pNPC->GetCommander();
 							event->SetInt( "userid", ( pPlayer ? pPlayer->GetUserID() : 0 ) );
 							gameeventmanager->FireEvent( event );
 						}
@@ -397,28 +397,28 @@ void CASW_Weapon::ItemPostFrame( void )
 #endif
 				}
 			}
-			else if ( UsesSecondaryAmmo() &&  
-				 ( ( UsesClipsForAmmo2() && m_iClip2 <= 0 ) ||
-				   ( !UsesClipsForAmmo2() && pOwner->GetAmmoCount( m_iSecondaryAmmoType ) <= 0 ) ) )
+			else if ( UsesSecondaryAmmo() &&
+				( ( UsesClipsForAmmo2() && m_iClip2 <= 0 ) ||
+					( !UsesClipsForAmmo2() && pNPC->GetAmmoCount( m_iSecondaryAmmoType ) <= 0 ) ) )
 			{
 				if ( m_flNextEmptySoundTime < gpGlobals->curtime )
 				{
 					WeaponSound( EMPTY );
 					m_flNextSecondaryAttack = m_flNextEmptySoundTime = gpGlobals->curtime + 0.5;
 				}
-			}		
+			}
 			else
 			{
 				bFired = true;
 				SecondaryAttack();
 
 #ifndef CLIENT_DLL
-				if ( pOwner->IsInhabited() )
+				if ( pNPC->IsInhabited() )
 				{
-					IGameEvent * event = gameeventmanager->CreateEvent( "player_alt_fire" );
+					IGameEvent *event = gameeventmanager->CreateEvent( "player_alt_fire" );
 					if ( event )
 					{
-						CASW_Player *pPlayer = pOwner->GetCommander();
+						CASW_Player *pPlayer = pNPC->GetCommander();
 						event->SetInt( "userid", ( pPlayer ? pPlayer->GetUserID() : 0 ) );
 						gameeventmanager->FireEvent( event );
 					}
@@ -439,19 +439,19 @@ void CASW_Weapon::ItemPostFrame( void )
 				}*/
 			}
 		}
-		
-		if ( !bFired && bAttack1 && (m_flNextPrimaryAttack <= gpGlobals->curtime) && gpGlobals->curtime > pOwner->m_fFFGuardTime)
+
+		if ( !bFired && bAttack1 && ( m_flNextPrimaryAttack <= gpGlobals->curtime ) && ( !pMarine || gpGlobals->curtime > pMarine->m_fFFGuardTime ) )
 		{
 			// Clip empty? Or out of ammo on a no-clip weapon?
-			if ( !IsMeleeWeapon() &&  
-				(( UsesClipsForAmmo1() && !(this->PrimaryAmmoLoaded())) || ( !UsesClipsForAmmo1() && pOwner->GetAmmoCount(m_iPrimaryAmmoType)<=0 )) )
+			if ( !IsMeleeWeapon() &&
+				( ( UsesClipsForAmmo1() && !( this->PrimaryAmmoLoaded() ) ) || ( !UsesClipsForAmmo1() && pNPC->GetAmmoCount( m_iPrimaryAmmoType ) <= 0 ) ) )
 			{
 				HandleFireOnEmpty();
 			}
-			else if (pOwner->GetWaterLevel() == 3 && m_bFiresUnderwater == false)
+			else if ( pNPC->GetWaterLevel() == 3 && m_bFiresUnderwater == false )
 			{
 				// This weapon doesn't fire underwater
-				WeaponSound(EMPTY);
+				WeaponSound( EMPTY );
 				m_flNextPrimaryAttack = gpGlobals->curtime + 0.2;
 				return;
 			}
@@ -462,30 +462,29 @@ void CASW_Weapon::ItemPostFrame( void )
 				//			However, because the player can also be doing a secondary attack, the edge trigger may be missed.
 				//			We really need to hold onto the edge trigger and only clear the condition when the gun has fired its
 				//			first shot.  Right now that's too much of an architecture change -- jdw
-				
+
 				// If the firing button was just pressed, reset the firing time
 				if ( bAttack1 )
 				{
-	#ifdef CLIENT_DLL
+#ifdef CLIENT_DLL
 					//Msg("[Client] setting nextprimaryattack to now %f\n", gpGlobals->curtime);
-	#else
+#else
 					//Msg("[Server] setting nextprimaryattack to now %f\n", gpGlobals->curtime);
 
 					// Fire event when a player fires a weapon
-					IGameEvent * event = gameeventmanager->CreateEvent( "weapon_fire" );
+					IGameEvent *event = gameeventmanager->CreateEvent( "weapon_fire" );
 					if ( event )
 					{
-						CASW_Player *pPlayer = NULL;
-						pPlayer = pOwner->GetCommander();
+						CASW_Player *pPlayer = pNPC->GetCommander();
 
 						event->SetInt( "userid", ( pPlayer ? pPlayer->GetUserID() : 0 ) );
-						event->SetInt( "marine", pOwner->entindex() );
+						event->SetInt( "marine", pNPC->entindex() );
 						event->SetInt( "weapon", entindex() );
 
 						gameeventmanager->FireEvent( event, true );
 					}
-	#endif
-					 m_flNextPrimaryAttack = gpGlobals->curtime;
+#endif
+					m_flNextPrimaryAttack = gpGlobals->curtime;
 				}
 				PrimaryAttack();
 			}
@@ -506,7 +505,7 @@ void CASW_Weapon::ItemPostFrame( void )
 				}
 				*/
 				m_bIsFiring = false;
-				if ( bOldAttack1 /* || bOldAttack2 */)
+				if ( bOldAttack1 /* || bOldAttack2 */ )
 				{
 					OnStoppedFiring();
 				}
@@ -525,9 +524,9 @@ void CASW_Weapon::ItemPostFrame( void )
 	// -----------------------
 	//  Reload pressed / Clip Empty
 	// -----------------------
-	if ( bReload && UsesClipsForAmmo1())	
+	if ( bReload && UsesClipsForAmmo1() )
 	{
-		if ( m_bInReload ) 
+		if ( m_bInReload )
 		{
 			// todo: check for a fast reload
 			//Msg("Check for fast reload\n");
@@ -543,7 +542,7 @@ void CASW_Weapon::ItemPostFrame( void )
 	// -----------------------
 	//  No buttons down
 	// -----------------------
-	if (!(bAttack1 || bAttack2 || bReload))
+	if ( !( bAttack1 || bAttack2 || bReload ) )
 	{
 		// no fire buttons down or reloading
 		if ( !ReloadOrSwitchWeapons() && ( m_bInReload == false ) )
@@ -555,24 +554,20 @@ void CASW_Weapon::ItemPostFrame( void )
 #if !defined( CLIENT_DLL )
 	extern ConVar rd_infinite_ammo;
 
-	if (rd_infinite_ammo.GetBool() && (pOwner->GetActiveWeapon() != NULL))
+	CASW_Weapon *pWeapon = pNPC->GetActiveASWWeapon();
+	if ( rd_infinite_ammo.GetBool() && pWeapon && pWeapon->Classify() != CLASS_ASW_HEAL_GUN && pWeapon->Classify() != CLASS_ASW_FIRE_EXTINGUISHER && pWeapon->Classify() != CLASS_ASW_HEALGRENADE )
 	{
-		CBaseCombatWeapon *pWeapon = pOwner->GetActiveWeapon();
-		
-		if ( !dynamic_cast< CASW_Weapon_Heal_Gun* >( pWeapon ) && !dynamic_cast< CASW_Weapon_FireExtinguisher* >( pWeapon ) && !dynamic_cast< CASW_Weapon_HealGrenade* >( pWeapon ) )
+		pWeapon->m_iClip1 = pWeapon->GetMaxClip1();
+		int iPrimaryAmmoType = pWeapon->GetPrimaryAmmoType();
+		if ( iPrimaryAmmoType >= 0 )
+			pNPC->SetAmmoCount( GetAmmoDef()->MaxCarry( iPrimaryAmmoType, pNPC ), iPrimaryAmmoType );
+
+		if ( pWeapon->Classify() != CLASS_ASW_MEDRIFLE )
 		{
-			pWeapon->m_iClip1 = pWeapon->GetMaxClip1();
-			int iPrimaryAmmoType = pWeapon->GetPrimaryAmmoType();
-			if( iPrimaryAmmoType >= 0 )
-				pOwner->SetAmmoCount( GetAmmoDef()->MaxCarry( iPrimaryAmmoType, pOwner ), iPrimaryAmmoType );
-		
-			if ( !dynamic_cast< CASW_Weapon_MedRifle* >( pWeapon ) )
-			{
-				pWeapon->m_iClip2 = pWeapon->GetMaxClip2();
-				int iSecondaryAmmoType = pWeapon->GetSecondaryAmmoType();
-				if ( iSecondaryAmmoType >= 0 )
-					pOwner->SetAmmoCount( GetAmmoDef()->MaxCarry( iSecondaryAmmoType, pOwner ), iSecondaryAmmoType );
-			}
+			pWeapon->m_iClip2 = pWeapon->GetMaxClip2();
+			int iSecondaryAmmoType = pWeapon->GetSecondaryAmmoType();
+			if ( iSecondaryAmmoType >= 0 )
+				pNPC->SetAmmoCount( GetAmmoDef()->MaxCarry( iSecondaryAmmoType, pNPC ), iSecondaryAmmoType );
 		}
 	}
 #endif
@@ -581,15 +576,6 @@ void CASW_Weapon::ItemPostFrame( void )
 // just dry fire by default
 void CASW_Weapon::SecondaryAttack( void )
 {
-	// Only the player fires this way so we can cast
-	CASW_Player *pPlayer = GetCommander();
-	if (!pPlayer)
-		return;
-
-	CASW_Marine *pMarine = GetMarine();
-	if (!pMarine)
-		return;
-
 	SendWeaponAnim( ACT_VM_DRYFIRE );
 	BaseClass::WeaponSound( EMPTY );
 	m_flNextSecondaryAttack = gpGlobals->curtime + 0.5f;
@@ -668,28 +654,29 @@ bool CASW_Weapon::PrimaryAmmoLoaded( void )
 void CASW_Weapon::PrimaryAttack( void )
 {
 	// If my clip is empty (and I use clips) start reload
-	if ( UsesClipsForAmmo1() && !m_iClip1 ) 
-	{		
+	if ( UsesClipsForAmmo1() && !m_iClip1 )
+	{
 		Reload();
 		return;
 	}
 
-	CASW_Player *pPlayer = GetCommander();
-	CASW_Marine *pMarine = GetMarine();
-	if ( !pMarine )
+	CBaseCombatCharacter *pOwner = GetOwner();
+	if ( !pOwner || !pOwner->IsInhabitableNPC() )
 		return;
+	CASW_Inhabitable_NPC *pNPC = assert_cast< CASW_Inhabitable_NPC * >( pOwner );
+	CASW_Player *pPlayer = GetCommander();
 
 	m_bIsFiring = true;
 	// MUST call sound before removing a round from the clip of a CMachineGun
-	WeaponSound(SINGLE);
+	WeaponSound( SINGLE );
 
-	if (m_iClip1 <= AmmoClickPoint())
+	if ( m_iClip1 <= AmmoClickPoint() )
 	{
 		LowAmmoSound();
 	}
 
 	// tell the marine to tell its weapon to draw the muzzle flash
-	pMarine->DoMuzzleFlash();
+	pNPC->DoMuzzleFlash();
 
 	// sets the animation on the weapon model itself
 	SendWeaponAnim( GetPrimaryAttackActivity() );
@@ -698,24 +685,25 @@ void CASW_Weapon::PrimaryAttack( void )
 	//pMarine->SetAnimation( PLAYER_ATTACK1 );
 
 #ifdef GAME_DLL	// check for turning on lag compensation
-	if (pPlayer && pMarine->IsInhabited())
+	if ( pPlayer && pNPC->IsInhabited() )
 	{
 		CASW_Lag_Compensation::RequestLagCompensation( pPlayer, pPlayer->GetCurrentUserCommand() );
 	}
 #endif
 
 	FireBulletsInfo_t info;
-	info.m_vecSrc = pMarine->Weapon_ShootPosition( );
-	if ( pPlayer && pMarine->IsInhabited() )
+	info.m_vecSrc = pNPC->Weapon_ShootPosition();
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
+	if ( pPlayer && pMarine && pMarine->IsInhabited() )
 	{
-		info.m_vecDirShooting = pPlayer->GetAutoaimVectorForMarine(pMarine, GetAutoAimAmount(), GetVerticalAdjustOnlyAutoAimAmount());	// 45 degrees = 0.707106781187
+		info.m_vecDirShooting = pPlayer->GetAutoaimVectorForMarine( pMarine, GetAutoAimAmount(), GetVerticalAdjustOnlyAutoAimAmount() );	// 45 degrees = 0.707106781187
 	}
 	else
 	{
 #ifdef CLIENT_DLL
-		Msg("Error, clientside firing of a weapon that's being controlled by an AI marine\n");
+		Msg( "Error, clientside firing of a weapon that's being controlled by an AI marine\n" );
 #else
-		info.m_vecDirShooting = pMarine->GetActualShootTrajectory( info.m_vecSrc );
+		info.m_vecDirShooting = pNPC->GetActualShootTrajectory( info.m_vecSrc );
 #endif
 	}
 
@@ -738,55 +726,56 @@ void CASW_Weapon::PrimaryAttack( void )
 		m_iClip1 -= info.m_iShots;
 
 #ifdef GAME_DLL
-		if ( m_iClip1 <= 0 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0 )
+		if ( m_iClip1 <= 0 && pMarine && pMarine->GetAmmoCount( m_iPrimaryAmmoType ) <= 0 )
 		{
 			// check he doesn't have ammo in an ammo bay
-			CASW_Weapon_Ammo_Bag* pAmmoBag = NULL;
-			CASW_Weapon* pWeapon = pMarine->GetASWWeapon(0);
+			CASW_Weapon_Ammo_Bag *pAmmoBag = NULL;
+			CASW_Weapon *pWeapon = pMarine->GetASWWeapon( 0 );
 			if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
-				pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
+				pAmmoBag = assert_cast< CASW_Weapon_Ammo_Bag * >( pWeapon );
 
-			if (!pAmmoBag)
+			if ( !pAmmoBag )
 			{
-				pWeapon = pMarine->GetASWWeapon(1);
+				pWeapon = pMarine->GetASWWeapon( 1 );
 				if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
-					pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
+					pAmmoBag = assert_cast< CASW_Weapon_Ammo_Bag * >( pWeapon );
 			}
-			if ( !pAmmoBag || !pAmmoBag->CanGiveAmmoToWeapon(this) )
-				pMarine->OnWeaponOutOfAmmo(true);
+			if ( !pAmmoBag || !pAmmoBag->CanGiveAmmoToWeapon( this ) )
+				pMarine->OnWeaponOutOfAmmo( true );
 		}
 #endif
 	}
 	else
 	{
-		info.m_iShots = MIN( info.m_iShots, pMarine->GetAmmoCount( m_iPrimaryAmmoType ) );
-		pMarine->RemoveAmmo( info.m_iShots, m_iPrimaryAmmoType );
+		info.m_iShots = MIN( info.m_iShots, pNPC->GetAmmoCount( m_iPrimaryAmmoType ) );
+		pNPC->RemoveAmmo( info.m_iShots, m_iPrimaryAmmoType );
 	}
 
 	info.m_flDistance = asw_weapon_max_shooting_distance.GetFloat();
 	info.m_iAmmoType = m_iPrimaryAmmoType;
-	info.m_iTracerFreq = 1;  // asw tracer test everytime
+	info.m_iTracerFreq = 1; // asw tracer test everytime
 	info.m_flDamageForceScale = asw_weapon_force_scale.GetFloat();
 
 	info.m_vecSpread = GetBulletSpread();
 	info.m_flDamage = GetWeaponDamage();
 #ifndef CLIENT_DLL
-	if (asw_debug_marine_damage.GetBool())
-		Msg("Weapon dmg = %f\n", info.m_flDamage);
-	info.m_flDamage *= pMarine->GetMarineResource()->OnFired_GetDamageScale();
-	if (asw_DebugAutoAim.GetBool())
+	if ( asw_debug_marine_damage.GetBool() )
+		Msg( "Weapon dmg = %f\n", info.m_flDamage );
+	if ( pMarine && pMarine->GetMarineResource() )
+		info.m_flDamage *= pMarine->GetMarineResource()->OnFired_GetDamageScale();
+	if ( asw_DebugAutoAim.GetBool() )
 	{
-		NDebugOverlay::Line(info.m_vecSrc, info.m_vecSrc + info.m_vecDirShooting * info.m_flDistance, 64, 0, 64, true, 1.0);
+		NDebugOverlay::Line( info.m_vecSrc, info.m_vecSrc + info.m_vecDirShooting * info.m_flDistance, 64, 0, 64, true, 1.0 );
 	}
 #endif
 
-	pMarine->FireBullets( info );
+	pNPC->FireBullets( info );
 
 	// increment shooting stats
 #ifndef CLIENT_DLL
-	if (pMarine->GetMarineResource())
+	if ( pMarine && pMarine->GetMarineResource() )
 	{
-		pMarine->GetMarineResource()->UsedWeapon(this, info.m_iShots);
+		pMarine->GetMarineResource()->UsedWeapon( this, info.m_iShots );
 		pMarine->OnWeaponFired( this, info.m_iShots );
 	}
 #endif
@@ -1074,18 +1063,17 @@ float CASW_Weapon::GetFireRate()
 	return flRate;
 }
 
-void CASW_Weapon::GetButtons(bool& bAttack1, bool& bAttack2, bool& bReload, bool& bOldReload, bool& bOldAttack1 )
+void CASW_Weapon::GetButtons( bool &bAttack1, bool &bAttack2, bool &bReload, bool &bOldReload, bool &bOldAttack1 )
 {
-	CASW_Marine *pMarine = GetMarine();
-
-	if (!pMarine)
+	CBaseCombatCharacter *pOwner = GetOwner();
+	if ( !pOwner || !pOwner->IsInhabitableNPC() )
 	{
-		CBasePlayer *pOwner = ToBasePlayer(GetOwner());
-		if (pOwner)
+		CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
+		if ( pOwner )
 		{
-			bAttack1 = !!(pOwner->m_nButtons & IN_ATTACK);
-			bAttack2 = !!(pOwner->m_nButtons & IN_ATTACK2);
-			bReload = !!(pOwner->m_nButtons & IN_RELOAD);
+			bAttack1 = !!( pOwner->m_nButtons & IN_ATTACK );
+			bAttack2 = !!( pOwner->m_nButtons & IN_ATTACK2 );
+			bReload = !!( pOwner->m_nButtons & IN_RELOAD );
 			bOldReload = false;
 			bOldAttack1 = false;
 			return;
@@ -1098,9 +1086,11 @@ void CASW_Weapon::GetButtons(bool& bAttack1, bool& bAttack2, bool& bReload, bool
 		return;
 	}
 
+	CASW_Inhabitable_NPC *pNPC = assert_cast< CASW_Inhabitable_NPC * >( pOwner );
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
 	// don't allow firing when frozen/stopped from a pickup/kick
-	if ( pMarine->IsControllingTurret() || ( pMarine->GetFlags() & FL_FROZEN )
-			|| ( gpGlobals->curtime < pMarine->GetStopTime() ) || pMarine->GetCurrentMeleeAttack() )	
+	if ( ( pMarine && pMarine->IsControllingTurret() ) || ( pNPC->GetFlags() & FL_FROZEN )
+		|| ( pMarine && gpGlobals->curtime < pMarine->GetStopTime() ) || ( pMarine && pMarine->GetCurrentMeleeAttack() ) )
 	{
 		bAttack1 = false;
 		bAttack2 = false;
@@ -1110,31 +1100,30 @@ void CASW_Weapon::GetButtons(bool& bAttack1, bool& bAttack2, bool& bReload, bool
 		return;
 	}
 
-	if (pMarine->IsInhabited() && pMarine->GetCommander())
+	if ( pNPC->IsInhabited() && pNPC->GetCommander() )
 	{
-		bAttack1 = !!(pMarine->GetCommander()->m_nButtons & IN_ATTACK);
-		bAttack2 = !!(pMarine->GetCommander()->m_nButtons & IN_ATTACK2);
-		bReload = !!(pMarine->GetCommander()->m_nButtons & IN_RELOAD);
-		bOldReload = !!(pMarine->m_nOldButtons & IN_RELOAD);
-		bOldAttack1 = !!(pMarine->m_nOldButtons & IN_ATTACK);
+		bAttack1 = !!( pNPC->GetCommander()->m_nButtons & IN_ATTACK );
+		bAttack2 = !!( pNPC->GetCommander()->m_nButtons & IN_ATTACK2 );
+		bReload = !!( pNPC->GetCommander()->m_nButtons & IN_RELOAD );
+		bOldReload = !!( pNPC->m_nOldButtons & IN_RELOAD );
+		bOldAttack1 = !!( pNPC->m_nOldButtons & IN_ATTACK );
 		return;
 	}
+
 	// does our uninhabited marine want to fire?
 #ifdef GAME_DLL
-	bAttack1 = pMarine->AIWantsToFire();
-	bAttack2 = pMarine->AIWantsToFire2();
-	bReload = pMarine->AIWantsToReload();
+	bAttack1 = pNPC->AIWantsToFire();
+	bAttack2 = pNPC->AIWantsToFire2();
+	bReload = pNPC->AIWantsToReload();
 	bOldReload = false;
 	bOldAttack1 = false;
-	return;
-#endif
-
+#else
 	bAttack1 = false;
 	bAttack2 = false;
 	bReload = false;
 	bOldReload = false;
 	bOldAttack1 = false;
-	return;
+#endif
 }
 
 bool CASW_Weapon::ShouldMarineMoveSlow()

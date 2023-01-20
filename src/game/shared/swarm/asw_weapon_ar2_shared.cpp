@@ -9,6 +9,7 @@
 #define CASW_Marine C_ASW_Marine
 #else
 #include "asw_marine.h"
+#include "asw_marine_speech.h"
 #include "asw_player.h"
 #include "asw_weapon.h"
 #include "npcevent.h"
@@ -223,6 +224,13 @@ void CASW_Weapon_AR2::DelayedAttack( void )
 		sk_weapon_ar2_alt_fire_duration.GetFloat(),
 		pOwner,
 		this );
+
+	if ( CASW_Marine *pMarine = GetMarine() )
+	{
+		pMarine->GetMarineSpeech()->Chatter( CHATTER_GRENADE );
+		pMarine->OnWeaponFired( this, 1, true );
+		ASWFailAdvice()->OnMarineUsedSecondary();
+	}
 #endif
 
 	if ( UsesClipsForAmmo2() )
@@ -250,41 +258,6 @@ bool CASW_Weapon_AR2::CanHolster()
 }
 
 #ifdef GAME_DLL
-//-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pOperator - 
-//-----------------------------------------------------------------------------
-void CASW_Weapon_AR2::FireNPCPrimaryAttack( CBaseCombatCharacter *pOperator, bool bUseWeaponAngles )
-{
-	Vector vecShootOrigin, vecShootDir;
-
-	CAI_BaseNPC *npc = pOperator->MyNPCPointer();
-	ASSERT( npc != NULL );
-
-	if ( bUseWeaponAngles )
-	{
-		QAngle	angShootDir;
-		GetAttachment( LookupAttachment( "muzzle" ), vecShootOrigin, angShootDir );
-		AngleVectors( angShootDir, &vecShootDir );
-	}
-	else 
-	{
-		vecShootOrigin = pOperator->Weapon_ShootPosition();
-		vecShootDir = npc->GetActualShootTrajectory( vecShootOrigin );
-	}
-
-	WeaponSound( SINGLE_NPC );
-
-	CSoundEnt::InsertSound( SOUND_COMBAT|SOUND_CONTEXT_GUNFIRE, pOperator->GetAbsOrigin(), SOUNDENT_VOLUME_MACHINEGUN, 0.2, pOperator, SOUNDENT_CHANNEL_WEAPON, pOperator->GetEnemy() );
-
-	pOperator->FireBullets( 1, vecShootOrigin, vecShootDir, VECTOR_CONE_PRECALCULATED, MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 1 );
-
-	// NOTENOTE: This is overriden on the client-side
-	// pOperator->DoMuzzleFlash();
-
-	m_iClip1 = m_iClip1 - 1;
-}
-
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -356,24 +329,6 @@ void CASW_Weapon_AR2::FireNPCSecondaryAttack( CBaseCombatCharacter *pOperator, b
 
 //-----------------------------------------------------------------------------
 // Purpose: 
-//-----------------------------------------------------------------------------
-void CASW_Weapon_AR2::Operator_ForceNPCFire( CBaseCombatCharacter *pOperator, bool bSecondary, CBaseEntity *pTarget )
-{
-	if ( bSecondary )
-	{
-		FireNPCSecondaryAttack( pOperator, true );
-	}
-	else
-	{
-		// Ensure we have enough rounds in the clip
-		m_iClip1++;
-
-		FireNPCPrimaryAttack( pOperator, true );
-	}
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: 
 // Input  : *pEvent - 
 //			*pOperator - 
 //-----------------------------------------------------------------------------
@@ -381,12 +336,6 @@ void CASW_Weapon_AR2::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombat
 {
 	switch( pEvent->Event() )
 	{ 
-		case EVENT_WEAPON_AR2:
-			{
-				FireNPCPrimaryAttack( pOperator, false );
-			}
-			break;
-
 		case EVENT_WEAPON_AR2_ALTFIRE:
 			{
 				FireNPCSecondaryAttack( pOperator, false );

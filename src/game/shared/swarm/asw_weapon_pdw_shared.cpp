@@ -11,6 +11,7 @@
 #include "fx.h"
 #include "c_asw_fx.h"
 #define CASW_Marine C_ASW_Marine
+#define CASW_Inhabitable_NPC C_ASW_Inhabitable_NPC
 #else
 #include "asw_lag_compensation.h"
 #include "asw_marine.h"
@@ -163,22 +164,23 @@ void CASW_Weapon_PDW::PrimaryAttack()
 	}
 
 	CASW_Player *pPlayer = GetCommander();
-	CASW_Marine *pMarine = GetMarine();
+	CBaseCombatCharacter *pOwner = GetOwner();
+	CASW_Inhabitable_NPC *pNPC = pOwner && pOwner->IsInhabitableNPC() ? assert_cast< CASW_Inhabitable_NPC * >( pOwner ) : NULL;
 
-	if (pMarine)		// firing from a marine
+	if ( pNPC )
 	{
 		m_bIsFiring = true;
 
 		// MUST call sound before removing a round from the clip of a CMachineGun
-		WeaponSound(SINGLE);
+		WeaponSound( SINGLE );
 
-		if (m_iClip1 <= AmmoClickPoint())
+		if ( m_iClip1 <= AmmoClickPoint() )
 		{
 			LowAmmoSound();
 		}
 
 		// tell the marine to tell its weapon to draw the muzzle flash
-		pMarine->DoMuzzleFlash();
+		pNPC->DoMuzzleFlash();
 
 		// sets the animation on the weapon model iteself
 		SendWeaponAnim( GetPrimaryAttackActivity() );
@@ -187,31 +189,32 @@ void CASW_Weapon_PDW::PrimaryAttack()
 		//pMarine->SetAnimation( PLAYER_ATTACK1 );
 
 #ifdef GAME_DLL	// check for turning on lag compensation
-		if (pPlayer && pMarine->IsInhabited())
+		if ( pPlayer && pNPC->IsInhabited() )
 		{
 			CASW_Lag_Compensation::RequestLagCompensation( pPlayer, pPlayer->GetCurrentUserCommand() );
 		}
 #endif
 
 		FireBulletsInfo_t info;
-		info.m_vecSrc = pMarine->Weapon_ShootPosition( );
-		if ( pPlayer && pMarine->IsInhabited() )
+		info.m_vecSrc = pNPC->Weapon_ShootPosition();
+		CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
+		if ( pPlayer && pMarine && pMarine->IsInhabited() )
 		{
-			info.m_vecDirShooting = pPlayer->GetAutoaimVectorForMarine(pMarine, GetAutoAimAmount(), GetVerticalAdjustOnlyAutoAimAmount());	// 45 degrees = 0.707106781187
+			info.m_vecDirShooting = pPlayer->GetAutoaimVectorForMarine( pMarine, GetAutoAimAmount(), GetVerticalAdjustOnlyAutoAimAmount() );	// 45 degrees = 0.707106781187
 		}
 		else
 		{
 #ifdef CLIENT_DLL
-			Msg("Error, clientside firing of a weapon that's being controlled by an AI marine\n");
+			Msg( "Error, clientside firing of a weapon that's being controlled by an AI marine\n" );
 #else
-			info.m_vecDirShooting = pMarine->GetActualShootTrajectory( info.m_vecSrc );
+			info.m_vecDirShooting = pNPC->GetActualShootTrajectory( info.m_vecSrc );
 #endif
-		}
+	}
 
 		// To make the firing framerate independent, we may have to fire more than one bullet here on low-framerate systems, 
 		// especially if the weapon we're firing has a really fast rate of fire.
 		info.m_iShots = 0;
-		float fireRate = GetFireRate();		
+		float fireRate = GetFireRate();
 		while ( m_flNextPrimaryAttack <= gpGlobals->curtime )
 		{
 			m_flNextPrimaryAttack = m_flNextPrimaryAttack + fireRate;
@@ -219,64 +222,65 @@ void CASW_Weapon_PDW::PrimaryAttack()
 			if ( !fireRate )
 				break;
 		}
-		
+
 		// Make sure we don't fire more than the amount in the clip
 		if ( UsesClipsForAmmo1() )
 		{
 			info.m_iShots = MIN( info.m_iShots, m_iClip1 );
 
-			for (int k=0;k<info.m_iShots;k++)
+			for ( int k = 0; k < info.m_iShots; k++ )
 			{
 				m_iClip1 -= 1;
 #ifdef GAME_DLL
-				if ( m_iClip1 <= 0 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0 )
+				if ( m_iClip1 <= 0 && pMarine && pMarine->GetAmmoCount( m_iPrimaryAmmoType ) <= 0 )
 				{
 					// check he doesn't have ammo in an ammo bay
-					CASW_Weapon_Ammo_Bag* pAmmoBag = NULL;
-					CASW_Weapon* pWeapon = pMarine->GetASWWeapon(0);
+					CASW_Weapon_Ammo_Bag *pAmmoBag = NULL;
+					CASW_Weapon *pWeapon = pMarine->GetASWWeapon( 0 );
 					if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
-						pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
+						pAmmoBag = assert_cast< CASW_Weapon_Ammo_Bag * >( pWeapon );
 
-					if (!pAmmoBag)
+					if ( !pAmmoBag )
 					{
-						pWeapon = pMarine->GetASWWeapon(1);
+						pWeapon = pMarine->GetASWWeapon( 1 );
 						if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
-							pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
+							pAmmoBag = assert_cast< CASW_Weapon_Ammo_Bag * >( pWeapon );
 					}
-					if ( !pAmmoBag || !pAmmoBag->CanGiveAmmoToWeapon(this) )
-						pMarine->OnWeaponOutOfAmmo(true);
+					if ( !pAmmoBag || !pAmmoBag->CanGiveAmmoToWeapon( this ) )
+						pMarine->OnWeaponOutOfAmmo( true );
 				}
 #endif
 			}
 		}
 		else
 		{
-			info.m_iShots = MIN( info.m_iShots, pMarine->GetAmmoCount( m_iPrimaryAmmoType ) );
+			info.m_iShots = MIN( info.m_iShots, pNPC->GetAmmoCount( m_iPrimaryAmmoType ) );
 			for ( int k = 0; k < info.m_iShots; k++ )
 			{
-				pMarine->RemoveAmmo( info.m_iShots, m_iPrimaryAmmoType );;
+				pNPC->RemoveAmmo( info.m_iShots, m_iPrimaryAmmoType );;
 			}
 		}
 
 		info.m_flDistance = asw_weapon_max_shooting_distance.GetFloat();
 		info.m_iAmmoType = m_iPrimaryAmmoType;
-		info.m_iTracerFreq = 1;   // asw tracer test everytime
+		info.m_iTracerFreq = 1; // asw tracer test everytime
 		info.m_vecSpread = GetBulletSpread();
 		info.m_flDamage = GetWeaponDamage();
 		info.m_flDamageForceScale = asw_weapon_force_scale.GetFloat();
 #ifndef CLIENT_DLL
-		if (asw_debug_marine_damage.GetBool())
-			Msg("Weapon dmg = %f\n", info.m_flDamage);
-		info.m_flDamage *= pMarine->GetMarineResource()->OnFired_GetDamageScale();
+		if ( asw_debug_marine_damage.GetBool() )
+			Msg( "Weapon dmg = %f\n", info.m_flDamage );
+		if ( pMarine && pMarine->GetMarineResource() )
+			info.m_flDamage *= pMarine->GetMarineResource()->OnFired_GetDamageScale();
 #endif
 
-		pMarine->FireBullets( info );
+		pNPC->FireBullets( info );
 
 		// increment shooting stats
 #ifndef CLIENT_DLL
-		if (pMarine->GetMarineResource())
-		{		
-			pMarine->GetMarineResource()->UsedWeapon(this, info.m_iShots);
+		if ( pMarine && pMarine->GetMarineResource() )
+		{
+			pMarine->GetMarineResource()->UsedWeapon( this, info.m_iShots );
 			pMarine->OnWeaponFired( this, info.m_iShots );
 		}
 #endif
@@ -342,31 +346,6 @@ float CASW_Weapon_PDW::GetFireRate()
 }
 
 #ifdef GAME_DLL
-void CASW_Weapon_PDW::FireNPCPrimaryAttack( CBaseCombatCharacter *pOperator, Vector &vecShootOrigin, Vector &vecShootDir )
-{
-	// FIXME: use the returned number of bullets to account for >10hz firerate
-	WeaponSound( SINGLE_NPC );
-
-	CSoundEnt::InsertSound( SOUND_COMBAT | SOUND_CONTEXT_GUNFIRE, pOperator->GetAbsOrigin(), SOUNDENT_VOLUME_MACHINEGUN, 0.2, pOperator, SOUNDENT_CHANNEL_WEAPON, pOperator->GetEnemy() );
-	pOperator->FireBullets( 1, vecShootOrigin, vecShootDir, VECTOR_CONE_PRECALCULATED,
-		MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 1, entindex(), 1 );
-
-	pOperator->DoMuzzleFlash();
-	m_iClip1 = m_iClip1 - 1;
-}
-
-void CASW_Weapon_PDW::Operator_ForceNPCFire( CBaseCombatCharacter *pOperator, bool bSecondary, CBaseEntity *pTarget )
-{
-	// Ensure we have enough rounds in the clip
-	m_iClip1++;
-
-	Vector vecShootOrigin, vecShootDir;
-	QAngle	angShootDir;
-	GetAttachment( LookupAttachment( "muzzle" ), vecShootOrigin, angShootDir );
-	AngleVectors( angShootDir, &vecShootDir );
-	FireNPCPrimaryAttack( pOperator, vecShootOrigin, vecShootDir );
-}
-
 // Combine soldiers don't have animations for akimbo-style weapons, so only give them one PDW.
 const char *CASW_Weapon_PDW::GetViewModel( int viewmodelindex ) const
 {

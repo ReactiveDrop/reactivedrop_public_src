@@ -2614,7 +2614,7 @@ int	CFastHeadcrab::SelectSchedule( void )
 
 	if ( HasCondition(COND_CAN_RANGE_ATTACK1) && IsHangingFromCeiling() == false )
 	{
-		if ( OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) )
+		if ( OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, GetMaxAttackSquadSlot() ) )
 			return SCHED_RANGE_ATTACK1;
 		ClearCondition(COND_CAN_RANGE_ATTACK1);
 	}

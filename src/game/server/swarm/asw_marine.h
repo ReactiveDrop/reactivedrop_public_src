@@ -169,7 +169,6 @@ public:
 	virtual bool ASWAnim_CanMove();
 	virtual float MaxSpeed();
 	void AvoidPhysicsProps( CUserCmd *pCmd );
-	void    PhysicsSimulate( void );		
 	virtual void InhabitedPhysicsSimulate();
 	virtual bool ShouldPlayerAvoid( void );
 	virtual float GetIdealSpeed() const;
@@ -562,9 +561,9 @@ public:
 	CNetworkVar( float, m_flPreventLaserSightTime );
 
 	// AI control of firing
-	bool AIWantsToFire();
-	bool AIWantsToFire2();
-	bool AIWantsToReload();
+	virtual bool AIWantsToFire();
+	virtual bool AIWantsToFire2();
+	virtual bool AIWantsToReload();
 	bool m_bWantsToFire, m_bWantsToFire2;
 	float m_fMarineAimError;
 	CNetworkVar(float, m_fAIPitch);	// pitch aim of the AI, so it can be shown by the clientside anims

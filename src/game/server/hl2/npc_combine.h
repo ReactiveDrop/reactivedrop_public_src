@@ -52,6 +52,7 @@ public:
 	int				MeleeAttack1Conditions( float flDot, float flDist ); // For kick/punch
 	bool			FVisible( CBaseEntity *pEntity, int traceMask = MASK_BLOCKLOS, CBaseEntity **ppBlocker = NULL );
 	virtual bool	IsCurTaskContinuousMove();
+	virtual bool	AIWantsToFire() override;
 
 	virtual float	GetDefaultJumpGravity() const		{ return 1.8f; }
 

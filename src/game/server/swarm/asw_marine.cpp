@@ -182,12 +182,6 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Marine, DT_ASW_Marine)
 	SendPropFloat		( SENDINFO_VECTORELEM(m_vecVelocity, 1), 32, SPROP_NOSCALE|SPROP_CHANGES_OFTEN ),
 	SendPropFloat		( SENDINFO_VECTORELEM(m_vecVelocity, 2), 32, SPROP_NOSCALE|SPROP_CHANGES_OFTEN ),
 
-#if PREDICTION_ERROR_CHECK_LEVEL > 1
-	SendPropVector		( SENDINFO( m_vecGroundVelocity ), -1, SPROP_COORD ),
-#else
-	SendPropVector		( SENDINFO( m_vecGroundVelocity ), 20, 0, -1000, 1000 ),
-#endif
-
 #if PREDICTION_ERROR_CHECK_LEVEL > 1 
 	SendPropAngle( SENDINFO_VECTORELEM(m_angRotation, 0), 13, SPROP_NOSCALE|SPROP_CHANGES_OFTEN, CBaseEntity::SendProxy_AnglesX ),
 	SendPropAngle( SENDINFO_VECTORELEM(m_angRotation, 1), 13, SPROP_NOSCALE|SPROP_CHANGES_OFTEN, CBaseEntity::SendProxy_AnglesY ),
@@ -984,35 +978,6 @@ void CASW_Marine::PrecacheSpeech()
 {
 	if (m_MarineSpeech && GetMarineResource())
 		m_MarineSpeech->Precache();
-}
-
-void CASW_Marine::PhysicsSimulate( void )
-{
-	m_vecGroundVelocity = GetGroundEntity() ? GetGroundEntity()->GetAbsVelocity() : vec3_origin;
-
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
-	{
-		CASW_Player *player = ToASW_Player( UTIL_PlayerByIndex( i ) );
-
-		if ( player && player->GetNPC() == this)
-		{
-			InhabitedPhysicsSimulate();
-			return;
-		}
-	}
-	
-	BaseClass::PhysicsSimulate();
-
-	CASW_Weapon *pWeapon = GetActiveASWWeapon();
-	if (pWeapon)
-		pWeapon->ItemPostFrame();
-
-	// check if offhand weapon needs postframe
-	CASW_Weapon *pExtra = GetASWWeapon(2);
-	if (pExtra && pExtra != pWeapon && pExtra->m_bShotDelayed)
-	{
-		pExtra->ItemPostFrame();
-	}
 }
 
 #define ASW_BREADCRUMB_INTERVAL 4.0f

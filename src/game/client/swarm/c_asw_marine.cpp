@@ -114,7 +114,6 @@ BEGIN_NETWORK_TABLE( CASW_Marine, DT_ASW_Marine )
 	RecvPropFloat		( RECVINFO( m_vecVelocity[0] ), 0, RecvProxy_Marine_LocalVelocityX ),
 	RecvPropFloat		( RECVINFO( m_vecVelocity[1] ), 0, RecvProxy_Marine_LocalVelocityY ),
 	RecvPropFloat		( RECVINFO( m_vecVelocity[2] ), 0, RecvProxy_Marine_LocalVelocityZ ),
-	RecvPropVector		( RECVINFO( m_vecGroundVelocity ) ),
 
 	RecvPropFloat( RECVINFO_NAME( m_angNetworkAngles[0], m_angRotation[0] ) ),
 	RecvPropFloat( RECVINFO_NAME( m_angNetworkAngles[1], m_angRotation[1] ) ),
@@ -204,7 +203,6 @@ BEGIN_PREDICTION_DATA( C_ASW_Marine )
 	DEFINE_PRED_FIELD( m_nNewSequenceParity, FIELD_INTEGER, FTYPEDESC_OVERRIDE | FTYPEDESC_PRIVATE | FTYPEDESC_NOERRORCHECK ),
 	DEFINE_PRED_FIELD( m_nResetEventsParity, FIELD_INTEGER, FTYPEDESC_OVERRIDE | FTYPEDESC_PRIVATE | FTYPEDESC_NOERRORCHECK ),
 	DEFINE_PRED_FIELD( m_hGroundEntity, FIELD_EHANDLE, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD_TOL( m_vecGroundVelocity, FIELD_VECTOR, FTYPEDESC_INSENDTABLE, 0.05 ),
 	DEFINE_PRED_FIELD_TOL( m_fStopMarineTime, FIELD_FLOAT, FTYPEDESC_INSENDTABLE, TD_MSECTOLERANCE ),	
 	DEFINE_PRED_FIELD_TOL( m_fNextMeleeTime, FIELD_FLOAT, FTYPEDESC_INSENDTABLE, TD_MSECTOLERANCE ),	
 	DEFINE_PRED_FIELD_TOL( m_flNextAttack, FIELD_FLOAT, FTYPEDESC_INSENDTABLE, TD_MSECTOLERANCE ),		

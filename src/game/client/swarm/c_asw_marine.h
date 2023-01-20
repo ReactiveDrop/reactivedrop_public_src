@@ -170,7 +170,6 @@ public:
 	virtual void					EstimateAbsVelocity( Vector& vel );	// asw made virtual
 	CNetworkVar(bool, m_bPreventMovement);
 	CNetworkVar( bool, m_bForceWalking );
-	CNetworkVector( m_vecGroundVelocity );
 	CNetworkVar( bool, m_bRolls );
 
 	// orders

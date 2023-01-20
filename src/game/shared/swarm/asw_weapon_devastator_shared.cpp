@@ -107,8 +107,15 @@ bool CASW_Weapon_Devastator::ShouldMarineMoveSlow()
 	return ( BaseClass::ShouldMarineMoveSlow() || bAttack1 );
 }
 
-void CASW_Weapon_Devastator::FireShotgunPellet( CASW_Marine *pMarine, const FireBulletsInfo_t &info, int iSeed )
+void CASW_Weapon_Devastator::FireShotgunPellet( CASW_Inhabitable_NPC *pNPC, const FireBulletsInfo_t &info, int iSeed )
 {
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
+	if ( !pMarine )
+	{
+		BaseClass::FireShotgunPellet( pNPC, info, iSeed );
+		return;
+	}
+
 	float fPiercingChance = 0;
 	if (pMarine->GetMarineResource() && pMarine->GetMarineProfile() && pMarine->GetMarineProfile()->GetMarineClass() == MARINE_CLASS_SPECIAL_WEAPONS)
 		fPiercingChance = MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_PIERCING);
