@@ -461,7 +461,7 @@ inline CBaseHandle CASW_MarineGameMovement::TestPlayerPosition( const Vector& po
 	}
 
 #endif
-	if ( pm.startsolid && ( pm.contents & MASK_PLAYERSOLID ) && pm.m_pEnt && !( pm.m_pEnt->GetSolidFlags() & FSOLID_NOT_STANDABLE ) )
+	if ( pm.startsolid && ( pm.contents & MASK_PLAYERSOLID ) && pm.m_pEnt )
 	{
 		return pm.m_pEnt->GetRefEHandle();
 	}
