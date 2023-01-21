@@ -3959,7 +3959,7 @@
 	output OnHealthChanged(float) : "Fired when the health of this breakable changes, passing the new value of health as a percentage of max health, from [0..1]."
 ]
 
-@NPCClass base(InhabitableBaseNPC, Parentname, TalkNPC, PlayerCompanion ) studio("models/swarm/Colonist/Male/MaleColonist.mdl") = asw_colonist : "Colonist"
+@NPCClass base(InhabitableNPC, Parentname, TalkNPC, PlayerCompanion ) studio("models/swarm/Colonist/Male/MaleColonist.mdl") = asw_colonist : "Colonist"
 [	
 	notifynavfailblocked(choices) : "Fire output when Nav is blocked?" : 0 =
 	[
