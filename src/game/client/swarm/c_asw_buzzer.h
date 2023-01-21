@@ -27,15 +27,6 @@ public:
 
 	virtual float GetRadius() { return 18; }
 
-	CNetworkVar(bool, m_bOnFire);
-	bool m_bClientOnFire;
-	CNewParticleEffect	*m_pBurningEffect;
-	virtual void UpdateFireEmitters();
-
-	CNetworkVar(bool, m_bElectroStunned);
-	float m_fNextElectroStunEffect;
-	virtual void ClientThink();
-
 private:
 	C_ASW_Buzzer( const C_ASW_Buzzer & );
 

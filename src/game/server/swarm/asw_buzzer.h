@@ -54,9 +54,6 @@ public:
 	void			ASWTraceBleed( float flDamage, const Vector &vecDir, trace_t *ptr, int bitsDamageType );
 	void			TranslateNavGoal( CBaseEntity *pEnemy, Vector &chasePosition );
 	float			GetDefaultNavGoalTolerance();
-	virtual void	Freeze( float flFreezeAmount, CBaseEntity *pFreezer, Ray_t *pFreezeRay );
-	virtual void	ScriptFreeze( float flFreezeAmount );
-	virtual bool	ShouldBecomeStatue( void );
 
 	void			OnStateChange( NPC_STATE OldState, NPC_STATE NewState );
 
@@ -120,10 +117,8 @@ public:
 	void			VPhysicsCollision( int index, gamevcollisionevent_t *pEvent );
 	void			HitPhysicsObject( CBaseEntity *pOther );
 	virtual void	ClampMotorForces( Vector &linear, AngularImpulse &angular );
-	
-	void			InputDisableSwarm( inputdata_t &inputdata );	
 
-	virtual	bool		AllowedToIgnite( void ) { return m_bFlammable; }
+	void			InputDisableSwarm( inputdata_t &inputdata );	
 
 	float GetMaxEnginePower();
 
@@ -162,68 +157,33 @@ public:
 	DEFINE_CUSTOM_AI;
 
 	DECLARE_DATADESC();
-	DECLARE_ENT_SCRIPTDESC();
 
 	// IASW_Spawnable_NPC implementation
-	CHandle<CASW_Base_Spawner> m_hSpawner;
-	virtual void SetAlienOrders(AlienOrder_t Orders, Vector vecOrderSpot, CBaseEntity* pOrderObject);
-	AlienOrder_t GetAlienOrders();
-	virtual void ClearAlienOrders();
-	void ScriptOrderMoveTo( HSCRIPT hOrderObject, bool bIgnoreMarines );
-	void ScriptChaseNearestMarine();
 	virtual int SelectAlienOrdersSchedule();
 	virtual void OnMovementComplete();
 	virtual int SelectSchedule();
 	virtual void IgnoreMarines(bool bIgnoreMarines);
 
-	AlienOrder_t m_AlienOrders;
-	Vector m_vecAlienOrderSpot;
-	EHANDLE m_AlienOrderObject;
 	bool m_bIgnoreMarines;
 	bool m_bFailedMoveTo;
-
-	bool m_bWasOnFireForStats;
-	bool m_bFlammable;
-	bool m_bTeslable;
-	bool m_bFreezable;
-	bool m_bFlinchable;
-	bool m_bGrenadeReflector;
-	int  m_iHealthBonus;
-	float m_fSizeScale;
-	float m_fSpeedScale;
 
 	virtual int GetBaseHealth() override;
 
 	virtual bool IsAlien(void) const { return true; }
 
-	void SetSpawner(CASW_Base_Spawner* spawner);
-	CAI_BaseNPC* GetNPC() { return this; }
-	virtual bool CanStartBurrowed() { return false; }
-	virtual void StartBurrowed() { }
-	virtual void SetUnburrowActivity( string_t iszActivityName ) { }
-	virtual void SetUnburrowIdleActivity( string_t iszActivityName ) { }
 	virtual void MoveAside() { }
 	virtual void ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon = NULL );
-	virtual void ElectroStun( float flStunTime );
-	virtual void ScriptElectroStun( float flStunTime );
 	virtual void Extinguish();
-	CNetworkVar(bool, m_bOnFire);
 	virtual void OnSwarmSensed(int iDistance);
-	virtual void OnSwarmSenseEntity(CBaseEntity* pEnt) { }
-	virtual void SetHoldoutAlien() { m_bHoldoutAlien = true; }
-	virtual bool IsHoldoutAlien() { return m_bHoldoutAlien; }
 
 	void NPCInit();
 	CAI_Senses* CreateSenses();
 	CASW_AI_Senses* GetASWSenses();
 	void SetDistSwarmSense( float flDistSense );
 
-	virtual void ScriptIgnite( float flFlameLifetime );
-	virtual void Ignite( float flFlameLifetime, bool bNPCOnly = true, float flSize = 0.0f, bool bCalledByLevelDesigner = false );
 	void MoanSound( envelopePoint_t *pEnvelope, int iEnvelopeSize );
 
 	virtual void NPCThink();
-	CASW_Lag_Compensation m_LagCompensation;
 
 	//stuff related to sleep state
 	bool MarineCanSee(int padding, float interval);// can a marine see us? //copy from asw_alien
@@ -317,13 +277,8 @@ private:
 	float m_flNextMoanSound;
 	bool m_bHoldoutAlien;
 
-	CNetworkVar( int,	m_nEnginePitch1 );	
-	CNetworkVar( float,	m_flEnginePitch1Time );	
-
-	// moving slow from stun grenades
-	float m_fHurtSlowMoveTime;
-	float m_flElectroStunSlowMoveTime;
-	CNetworkVar(bool, m_bElectroStunned);
+	CNetworkVar( int,	m_nEnginePitch1 );
+	CNetworkVar( float,	m_flEnginePitch1Time );
 };
 
 #endif	//_INLCUDED_ASW_BUZZER_H

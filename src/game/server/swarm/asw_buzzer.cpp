@@ -189,20 +189,7 @@ LINK_ENTITY_TO_CLASS( asw_buzzer, CASW_Buzzer );
 IMPLEMENT_SERVERCLASS_ST(CASW_Buzzer, DT_ASW_Buzzer)
 	SendPropIntWithMinusOneFlag	(SENDINFO(m_nEnginePitch1), 8 ),
 	SendPropFloat(SENDINFO(m_flEnginePitch1Time), 0, SPROP_NOSCALE),	
-	SendPropBool(SENDINFO(m_bOnFire)),
-	SendPropBool(SENDINFO(m_bElectroStunned)),
 END_SEND_TABLE()
-
-BEGIN_ENT_SCRIPTDESC( CASW_Buzzer, CASW_Inhabitable_NPC, "Alien Swarm buzzer" )
-	DEFINE_SCRIPTFUNC_NAMED( ClearAlienOrders, "ClearOrders", "clear the buzzer's orders" )
-	DEFINE_SCRIPTFUNC_NAMED( ScriptOrderMoveTo, "OrderMoveTo", "order the buzzer to move to an entity handle, second parameter ignore marines" )
-	DEFINE_SCRIPTFUNC_NAMED( ScriptChaseNearestMarine, "ChaseNearestMarine", "order the buzzer to chase the nearest marine" )
-	DEFINE_SCRIPTFUNC( Extinguish, "Extinguish a burning buzzer." )
-	DEFINE_SCRIPTFUNC_NAMED( ScriptIgnite, "Ignite", "Ignites the buzzer into flames." )
-	DEFINE_SCRIPTFUNC_NAMED( ScriptFreeze, "Freeze", "Freezes the buzzer." )
-	DEFINE_SCRIPTFUNC_NAMED( ScriptElectroStun, "ElectroStun", "Stuns the buzzer." )
-	DEFINE_SCRIPTFUNC( Wake, "Wake up the buzzer." )
-END_SCRIPTDESC()
 
 CASW_Buzzer::CASW_Buzzer()
 {
@@ -219,17 +206,7 @@ CASW_Buzzer::CASW_Buzzer()
 	m_flEnginePitch1Time = 0;
 	m_bDoSwarmBehavior = true;
 	m_fNextPainSound = 0;
-	m_bHoldoutAlien = false;
 	m_flLastMarineDamageTime = 0;
-	m_bWasOnFireForStats = false;
-	m_bFlammable = true;
-	m_bTeslable = true;
-	m_bFreezable = true;
-	m_bFlinchable = true;
-	m_bGrenadeReflector = false;
-	m_iHealthBonus = 0;
-	m_fSizeScale = 1.0f;
-	m_fSpeedScale = 1.0f;
 }
 
 CASW_Buzzer::~CASW_Buzzer()
@@ -679,24 +656,12 @@ int	CASW_Buzzer::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	// Hafta make a copy of info cause we might need to scale damage.(sjb)
 	CTakeDamageInfo tdInfo = info;
 
-	// undo lag compensation if we're getting hurt			- TODO: this is incorrect if multiple rounds were meant to hit us within this player command - would happen with the shotguns if they were hitscan?
-	m_LagCompensation.UndoLaggedPosition();
-
 	// scale damage based on weapons that specifically shoot flyers
 	CASW_Marine* pMarine = NULL;
 	CBaseEntity* pAttacker = info.GetAttacker();
 	if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
 	{
 		pMarine = assert_cast<CASW_Marine*>(pAttacker);
-		/*
-		CASW_Weapon *pWeapon = pMarine->GetActiveASWWeapon();
-		if ( pWeapon )
-		{
-			float damage = tdInfo.GetDamage();
-			//CALL_ATTRIB_HOOK_FLOAT_ON_OTHER( pWeapon, damage, mod_damage_flyers );
-			tdInfo.SetDamage( damage );
-		}
-		*/
 	}
 
 	m_flWingFlapSpeed = 20.0;
@@ -731,18 +696,6 @@ int	CASW_Buzzer::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 			)
 			ASW_Ignite(30.0f, 0, pAttacker, info.GetWeapon() );
 	}
-
-	// make the alien move slower for 0.5 seconds
-	if (info.GetDamageType() & DMG_SHOCK && m_bTeslable)
-	{
-		ElectroStun( asw_stun_grenade_time.GetFloat() );
-	}
-
-	if (pMarine)
-		pMarine->HurtAlien(this, info);
-
-	// Notify gamestats of the damage
-	CASW_GameStats.Event_AlienTookDamage( this, info );
 
 	return nRetVal;
 }
@@ -2158,6 +2111,7 @@ void CASW_Buzzer::Spawn(void)
 		SetNavType(NAV_GROUND);
 	}
 
+	BaseClass::Spawn();
 	ChangeFaction( FACTION_ALIENS );
 		 
 	AddEFlags( EFL_NO_DISSOLVE | EFL_NO_MEGAPHYSCANNON_RAGDOLL );
@@ -2209,7 +2163,6 @@ void CASW_Buzzer::Spawn(void)
 
 	m_bHeld = false;
 	StopLoitering();
-	SetModelScale( m_fSizeScale );
 
 	IGameEvent * event = gameeventmanager->CreateEvent( "buzzer_spawn" );
 	if ( event )
@@ -2258,7 +2211,6 @@ void CASW_Buzzer::NPCInit()
 
 	CASW_GameStats.Event_AlienSpawned( this );
 
-	m_LagCompensation.Init(this);
 	SetDistSwarmSense(576.0f);
 }
 
@@ -2269,9 +2221,6 @@ void CASW_Buzzer::NPCThink( void )
 	// stop electro stunning if we're slowed
 	if (m_bElectroStunned && m_flElectroStunSlowMoveTime < gpGlobals->curtime)
 		m_bElectroStunned = false;
-
-	if (gpGlobals->maxClients > 1)
-		m_LagCompensation.StorePositionHistory();
 }
 
 void CASW_Buzzer::SetDistSwarmSense( float flDistSense )
@@ -2718,39 +2667,6 @@ float CASW_Buzzer::GetDefaultNavGoalTolerance()
 }
 
 //-----------------------------------------------------------------------------
-// Freezes this NPC in place for a period of time.
-//-----------------------------------------------------------------------------
-void CASW_Buzzer::Freeze( float flFreezeAmount, CBaseEntity *pFreezer, Ray_t *pFreezeRay ) 
-{
-	if ( !m_bFreezable )
-        return;
-
-	BaseClass::Freeze( flFreezeAmount, pFreezer, pFreezeRay );
-	
-	if ( GetMoveType() != MOVETYPE_NONE && GetFrozenAmount() > 0.0f )
-	{
-		// Freeze makes us hate life!
-		m_flFrozen = 1.0f;
-		m_flFrozenThawRate = 0.0f;
-
-		m_iHealth = 0;
-	}
-}
-
-//-----------------------------------------------------------------------------
-// VScript: Freezes this NPC in place for a period of time.
-//-----------------------------------------------------------------------------
-void CASW_Buzzer::ScriptFreeze( float flFreezeAmount )
-{
-    Freeze( flFreezeAmount, NULL, NULL );
-}
-
-bool CASW_Buzzer::ShouldBecomeStatue( void )
-{
-	return false;
-}
-
-//-----------------------------------------------------------------------------
 // Purpose: Input that disables the buzzer's swarm behavior
 //-----------------------------------------------------------------------------
 void CASW_Buzzer::InputDisableSwarm( inputdata_t &inputdata )
@@ -2853,12 +2769,6 @@ bool CASW_Buzzer::CreateVPhysics( void )
 	return BaseClass::CreateVPhysics();
 }
 
-
-void CASW_Buzzer::SetSpawner(CASW_Base_Spawner* spawner)
-{
-	m_hSpawner = spawner;
-}
-
 // Updates our memory about the enemies we Swarm Sensed
 // todo: add various swarm sense conditions?
 void CASW_Buzzer::OnSwarmSensed( int iDistance )
@@ -2933,52 +2843,6 @@ CAI_Senses *CASW_Buzzer::CreateSenses()
 CASW_AI_Senses *CASW_Buzzer::GetASWSenses()
 {
 	return assert_cast< CASW_AI_Senses * >( GetSenses() );
-}
-
-// set orders for our alien
-//   select schedule should activate the appropriate orders
-void CASW_Buzzer::SetAlienOrders(AlienOrder_t Orders, Vector vecOrderSpot, CBaseEntity* pOrderObject)
-{
-	m_AlienOrders = Orders;
-	m_vecAlienOrderSpot = vecOrderSpot;	// unused currently
-	m_AlienOrderObject = pOrderObject;
-
-	Wake(); // Make sure we at least consider following the orders.
-
-	if (Orders == AOT_None)
-	{
-		ClearAlienOrders();
-		return;
-	}
-
-	ForceDecisionThink();	// todo: stagger the decision time if at start of mission?
-
-	//Msg("Buzzer recieved orders\n");
-}
-
-AlienOrder_t CASW_Buzzer::GetAlienOrders()
-{
-	return m_AlienOrders;
-}
-
-void CASW_Buzzer::ClearAlienOrders()
-{
-	//Msg("Buzzer orders cleared\n");
-	m_AlienOrders = AOT_None;
-	m_vecAlienOrderSpot = vec3_origin;
-	m_AlienOrderObject = NULL;
-	m_bIgnoreMarines = false;
-	m_bFailedMoveTo = false;
-}
-
-void CASW_Buzzer::ScriptOrderMoveTo( HSCRIPT hOrderObject, bool bIgnoreMarines )
-{
-	SetAlienOrders( bIgnoreMarines ? AOT_MoveToIgnoringMarines : AOT_MoveTo, vec3_origin, ToEnt( hOrderObject ) );
-}
-
-void CASW_Buzzer::ScriptChaseNearestMarine()
-{
-	SetAlienOrders( AOT_MoveToNearestMarine, vec3_origin, NULL );
 }
 
 void CASW_Buzzer::GatherConditions()
@@ -3144,15 +3008,6 @@ int CASW_Buzzer::SelectSchedule( void )
 	return BaseClass::SelectSchedule();
 }
 
-void CASW_Buzzer::ScriptIgnite( float flFlameLifetime )
-{
-	ASW_Ignite( flFlameLifetime, 0, NULL, NULL );
-}
-
-void CASW_Buzzer::Ignite( float flFlameLifetime, bool bNPCOnly, float flSize, bool bCalledByLevelDesigner )
-{
-	return;		// use ASW_Ignite instead
-}
 void CASW_Buzzer::ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon /*= NULL */ )
 {
 	if (AllowedToIgnite())
@@ -3234,27 +3089,6 @@ void CASW_Buzzer::MoanSound( envelopePoint_t *pEnvelope, int iEnvelopeSize )
 int CASW_Buzzer::GetBaseHealth()
 {	
 	return sk_asw_buzzer_health.GetFloat();
-}
-
-void CASW_Buzzer::ElectroStun( float flStunTime )
-{
-	if (m_flElectroStunSlowMoveTime < gpGlobals->curtime + flStunTime)
-		m_flElectroStunSlowMoveTime = gpGlobals->curtime + flStunTime;
-
-	m_bElectroStunned = true;
-
-	if ( ASWGameResource() )
-	{
-		ASWGameResource()->m_iElectroStunnedAliens++;
-	}
-
-	// can't jump after being elecrostunned
-	CapabilitiesRemove( bits_CAP_MOVE_JUMP );
-}
-
-void CASW_Buzzer::ScriptElectroStun( float flStunTime )
-{
-	ElectroStun( flStunTime );
 }
 
 // checks if a marine can see us

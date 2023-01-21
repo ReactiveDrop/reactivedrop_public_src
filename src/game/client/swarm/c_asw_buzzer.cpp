@@ -20,18 +20,11 @@ extern ConVar glow_outline_color_alien;
 IMPLEMENT_CLIENTCLASS_DT(C_ASW_Buzzer, DT_ASW_Buzzer, CASW_Buzzer)
 	RecvPropIntWithMinusOneFlag(RECVINFO(m_nEnginePitch1)),
 	RecvPropFloat(RECVINFO(m_flEnginePitch1Time)),
-	RecvPropBool(RECVINFO(m_bOnFire)),
-	RecvPropBool(RECVINFO(m_bElectroStunned)),
 END_RECV_TABLE()
 
 
 C_ASW_Buzzer::C_ASW_Buzzer()
 {
-	//m_fAmbientLight = 0.02f;
-	m_bClientOnFire = false;
-	m_fNextElectroStunEffect = 0;
-	m_pBurningEffect = NULL;
-
 	m_GlowObject.SetColor( glow_outline_color_alien.GetColorAsVector() );
 	m_GlowObject.SetAlpha( 0.55f );
 	m_GlowObject.SetRenderFlags( false, false );
@@ -42,9 +35,6 @@ C_ASW_Buzzer::C_ASW_Buzzer()
 
 C_ASW_Buzzer::~C_ASW_Buzzer()
 {
-	m_bOnFire = false;
-	UpdateFireEmitters();
-
 	if ( m_pTrailEffect )
 	{
 		ParticleProp()->StopEmissionAndDestroyImmediately( m_pTrailEffect );
@@ -65,18 +55,14 @@ void C_ASW_Buzzer::OnDataChanged( DataUpdateType_t type )
 	}
 	else
 	{
-		SoundInit();		
+		SoundInit();
 	}
-	UpdateFireEmitters();
 
 	if ( type == DATA_UPDATE_CREATED )
 	{
-		// We want to think every frame.
-		SetNextClientThink( CLIENT_THINK_ALWAYS );
-
 		if ( !m_pTrailEffect )
 		{
-			m_pTrailEffect = this->ParticleProp()->Create( "buzzer_trail", PATTACH_ABSORIGIN_FOLLOW );
+			m_pTrailEffect = ParticleProp()->Create( "buzzer_trail", PATTACH_ABSORIGIN_FOLLOW );
 		}
 	}
 }
@@ -95,8 +81,6 @@ void C_ASW_Buzzer::UpdateOnRemove( void )
 {
 	BaseClass::UpdateOnRemove();
 	SoundShutdown();
-	m_bOnFire = false;
-	UpdateFireEmitters();
 
 	if ( m_pTrailEffect )
 	{
@@ -132,46 +116,5 @@ void C_ASW_Buzzer::SoundShutdown(void)
 	{
 		CSoundEnvelopeController::GetController().SoundDestroy( m_pEngineSound1 );
 		m_pEngineSound1 = NULL;
-	}
-}
-
-
-void C_ASW_Buzzer::UpdateFireEmitters()
-{
-	bool bOnFire = (m_bOnFire && !IsEffectActive(EF_NODRAW));
-	if (bOnFire != m_bClientOnFire)
-	{
-		m_bClientOnFire = bOnFire;
-		if (m_bClientOnFire)
-		{
-			if ( !m_pBurningEffect )
-			{
-				m_pBurningEffect = UTIL_ASW_CreateFireEffect( this );
-			}
-			EmitSound( "ASWFire.BurningFlesh" );
-		}
-		else
-		{
-			if ( m_pBurningEffect )
-			{
-				ParticleProp()->StopEmission( m_pBurningEffect );
-				m_pBurningEffect = NULL;
-			}
-			StopSound("ASWFire.BurningFlesh");
-			if ( C_BaseEntity::IsAbsQueriesValid() )
-				EmitSound("ASWFire.StopBurning");
-		}
-	}
-}
-
-void C_ASW_Buzzer::ClientThink()
-{
-	BaseClass::ClientThink();
-
-	if (m_bElectroStunned && m_fNextElectroStunEffect <= gpGlobals->curtime)
-	{
-		// apply electro stun effect
-		FX_ElectroStun(this);
-		m_fNextElectroStunEffect = gpGlobals->curtime + RandomFloat( 0.2, 0.7 );
 	}
 }
