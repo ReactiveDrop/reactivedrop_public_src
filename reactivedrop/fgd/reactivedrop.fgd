@@ -354,28 +354,6 @@ asw_pickup_50calmg : "50cal Machine Gun"
 	TonemapName(target_destination) : "Tonemap Name" : : "Name of an env_tonemap_controller entity to make active."
 ]
 
-@NPCClass base(BaseNPC) studio("models/Zombie/zombie_soldier.mdl") = npc_zombine : "Combine Soldier Zombie"
-[
-	NumGrenades(choices) : "Has Grenade?" : "1" =
-	[
-		"0" : "No"
-		"1" : "Yes"
-	]
-	GrenadeClass(choices) : "Grenade Type" : "npc_grenade_frag" =
-	[
-		"npc_grenade_frag" : "Half-Life 2 style"
-		"asw_grenade_cluster" : "Cluster"
-		"asw_grenade_vindicator" : "Incendiary"
-		"asw_grenade_freeze" : "Freeze"
-		"asw_boomer_blob" : "Boomer Blob"
-	]
-	GrenadeFuseLength(float) : "Fuse Length" : "3.5"
-	GrenadeClusters(integer) : "Grenade Clusters" : 0
-
-	input StartSprint(void) : "Forces the zombine to sprint."
-	input PullGrenade(void) : "Forces the zombine to pull a grenade."
-]
-
 @PointClass base(ASWPickup) studio("models/weapons/w_irifle.mdl") = asw_weapon_ar2 : "Assault Rifle 2"
 [
 	BulletsInGun(integer) : "Bullets In Gun" : 30
@@ -455,7 +433,7 @@ asw_pickup_50calmg : "50cal Machine Gun"
 	input LaunchBall(void) : "Launch a ball from the spawner."
 ]
 
-@BaseClass base(BaseNPC, Studiomodel) = BaseCombine
+@BaseClass base(InhabitableNPC) = BaseCombine
 [
 	spawnflags(Flags) = 
 	[
@@ -509,14 +487,14 @@ asw_pickup_50calmg : "50cal Machine Gun"
 [
 ]
 
-@NPCClass base(BaseNPC, Studiomodel) studio("models/hunter.mdl") = npc_hunter :
+@NPCClass base(InhabitableNPC) studio("models/hunter.mdl") = npc_hunter :
 	"A smaller, faster, strider that can pursue the player into buildings."
 [
 	FollowTarget(target_destination) : "Strider to Follow" : "" : "The name of the strider that this hunter should follow."
-	
-    // Inputs
-    input FollowStrider(target_destination) : "Sets the name of the strider that this hunter should follow."
-    
+
+	// Inputs
+	input FollowStrider(target_destination) : "Sets the name of the strider that this hunter should follow."
+
 	input SetMinigunTime(float) : "Time to shoot at any set minigun target."
 	input SetMinigunTarget(string) : "Hunter will shoot minigun at the named target."
 

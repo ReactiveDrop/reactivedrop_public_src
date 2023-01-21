@@ -11,6 +11,38 @@
 // NPCs
 //
 //-------------------------------------------------------------------------
+@BaseClass base(BaseNPC, Studiomodel) = InhabitableNPC
+[
+	flammable(choices) : "Can be ignited by fire" : 1 : "If false, this alien will not be ignited by fire" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	teslable(choices) : "Can be electro stunned by tesla gun" : 1 : "If true, this alien can be electro stunned by tesla gun" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	freezable(choices) : "Can be frozen" : 1 : "If true, this alien can be frozen by freeze grenade or turret" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	flinchable(choices) : "Can flinch" : 1 : "If true, this alien works as usual. If false, the alien doesn't flinch on taken damage. " =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	reflector(choices) : "Alien reflects grenades" : 0 : "If false, this alien works as usual. If true, grenades that hit the alien bounce off. " =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	healthbonus(integer) : "Health bonus" : 0 : "The ammount of health to add to an alien"
+	sizescale(float) : "Size scale" : "1.0" : "The factor used to scale alien size. Don't use 0"
+	speedscale(float) : "Run speed scale" : "1.0" : "The factor used to scale alien run speed. Don't use 0"
+]
+
 @BaseClass base(BaseNPC) = TalkNPC
 [
 	UseSentence(string) : "Use Sentence"
@@ -96,7 +128,7 @@
 [
 ]
 
-@NPCClass base(BaseNPC) studio("models/antlion.mdl") sphere() = npc_antlion :
+@NPCClass base(InhabitableNPC) studio("models/antlion.mdl") sphere() = npc_antlion :
 	"Antlions will run away from ai_sound, type: Thumper."
 [
 	startburrowed(choices) : "Start Burrowed" : "No" =
@@ -141,7 +173,7 @@
 
 ]
 
-@NPCClass base(BaseNPC) studio("models/antlion_guard.mdl") = npc_antlionguard : "Antlion Guard"
+@NPCClass base(InhabitableNPC) studio("models/antlion_guard.mdl") = npc_antlionguard_normal : "Antlion Guard"
 [
 	spawnflags(Flags) =
 	[
@@ -156,18 +188,6 @@
 	]
 
 	allowbark(choices) : "Allow Bark" : "No" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-
-	cavernbreed(choices) : "Cavern Guard Model and Texture" : "No" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-	
-	incavern(choices) : "Use inside-Cavern Behavior" : "No" =
 	[
 		0 : "No"
 		1 : "Yes"
@@ -197,7 +217,11 @@
 	output OnSummon(void) : "Antlion guard is attempting to summon antlions"
 ]
 
-@BaseClass base(BaseNPC) = BaseHeadcrab
+@NPCClass base(npc_antlionguard_normal) studio("models/antlion_guard.mdl") = npc_antlionguard_cavern : "Antlion Guardian"
+[
+]
+
+@BaseClass base(InhabitableNPC) = BaseHeadcrab
 [
 	startburrowed(choices) : "Start burrowed" : "No" =
 	[
@@ -356,30 +380,47 @@
 	]
 ]
 
-@NPCClass base(BaseNPC) studio("models/Zombie/fast.mdl") = npc_fastzombie : "Fast Zombie"
+@NPCClass base(InhabitableNPC) studio("models/Zombie/fast.mdl") = npc_fastzombie : "Fast Zombie"
 [
 	input AttachToVehicle(string) : "Attach to a specified vehicle entity"
 ]
 
-@NPCClass base(BaseNPC) studio("models/Zombie/Fast_torso.mdl") = npc_fastzombie_torso : "Fast Zombie Torso"
+@NPCClass base(InhabitableNPC) studio("models/Zombie/Fast_torso.mdl") = npc_fastzombie_torso : "Fast Zombie Torso"
 [
 
 ]
 
-@NPCClass base(BaseNPC) studio("models/Zombie/Classic.mdl") = npc_zombie : "Zombie"
+@NPCClass base(InhabitableNPC) studio("models/Zombie/Classic.mdl") = npc_zombie : "Zombie"
 [
 ]
 
-@NPCClass base(BaseNPC) studio("models/Zombie/Classic_torso.mdl") = npc_zombie_torso : "Zombie Torso"
+@NPCClass base(InhabitableNPC) studio("models/Zombie/Classic_torso.mdl") = npc_zombie_torso : "Zombie Torso"
 [
 ]
 
 @NPCClass base(BaseNPC) studio("models/Zombie/zombie_soldier.mdl") = npc_zombine : "Combine Soldier Zombie"
 [
+	NumGrenades(choices) : "Has Grenade?" : "1" =
+	[
+		"0" : "No"
+		"1" : "Yes"
+	]
+	GrenadeClass(choices) : "Grenade Type" : "npc_grenade_frag" =
+	[
+		"npc_grenade_frag" : "Half-Life 2 style"
+		"asw_grenade_cluster" : "Cluster"
+		"asw_grenade_vindicator" : "Incendiary"
+		"asw_grenade_freeze" : "Freeze"
+		"asw_boomer_blob" : "Boomer Blob"
+	]
+	GrenadeFuseLength(float) : "Fuse Length" : "3.5"
+	GrenadeClusters(integer) : "Grenade Clusters" : 0
+
 	input StartSprint(void) : "Forces the zombine to sprint."
 	input PullGrenade(void) : "Forces the zombine to pull a grenade."
 ]
-@NPCClass base(BaseNPC) studio("models/Zombie/Poison.mdl") = npc_poisonzombie :
+
+@NPCClass base(InhabitableNPC) studio("models/Zombie/Poison.mdl") = npc_poisonzombie :
 	"A bloated, disgusting, fluid-spurting zombie created by a poison headcrab."
 [
 	crabcount(choices) : "Crabs in nest" : 3 =
@@ -2621,7 +2662,7 @@
 
 ]
 
-@NPCClass base(BaseNPC) studio("models/aliens/drone/drone.mdl") sphere() = asw_drone :
+@NPCClass base(InhabitableNPC) studio("models/aliens/drone/drone.mdl") sphere() = asw_drone :
 	"A vicious killing machine with bladed limbs and sharp teeth, easily able to tear a man to pieces, even an armoured IAF marine."
 [
 	MoveClone(target_destination) : "Move Clone" : : "If set to an entity name, this alien will match movement with that entity."
@@ -2638,48 +2679,12 @@
 		0 : "No"
 		1 : "Yes"
 	]
-  
-  flammable(choices) : "Can be ignited by fire" : 1 : "If false, this alien will not be ignited by fire" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-  teslable(choices) : "Can be electro stunned by tesla gun" : 1 : "If true, this alien can be electro stunned by tesla gun" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-  freezable(choices) : "Can be frozen" : 1 : "If true, this alien can be frozen by freeze grenade or turret" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-	
-  flinchable(choices) : "Can flinch" : 1 : "If true, this alien works as usual. If false, the alien doesn't flinch on taken damage. " =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
 
-  reflector(choices) : "Alien reflects grenades" : 0 : "If false, this alien works as usual. If true, grenades that hit the alien bounce off. " =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-  healthbonus(integer) : "Health bonus" : 0 : "The ammount of health to add to an alien"
-  
-  sizescale(float) : "Size scale" : "1.0" : "The factor used to scale alien size. Don't use 0"
-  
-  speedscale(float) : "Run speed scale" : "1.0" : "The factor used to scale alien run speed. Don't use 0"
-	
 	spawnflags(Flags) =
 	[
 		131072 : "Use Ground Checks" : 0
 	]
-		
+
 	//input FightToPosition(string) : "Fight to position"
 	//input EnableJump(void) : "Allow non-navigational jumping"
 	//input DisableJump(void) : "Disallow non-navigational jumping"
@@ -2689,7 +2694,7 @@
 	output	OnReachedFightGoal(void) : "Fires when the drone reaches his specified fight-to location"
 ]
 
-@NPCClass base(BaseNPC) studio("models/swarm/drone/uberdrone.mdl") sphere() = asw_drone_uber :
+@NPCClass base(InhabitableNPC) studio("models/swarm/drone/uberdrone.mdl") sphere() = asw_drone_uber :
 	"Larger, stronger version of the asw_drone"
 [
 	sleepstate(choices) : "Sleep State" : 1 : "Holds the NPC in stasis until specified condition. See also 'Wake Radius' and 'Wake Squad'." =
@@ -2704,37 +2709,7 @@
 		0 : "No"
 		1 : "Yes"
 	]
-	
-	flammable(choices) : "Can be ignited by fire" : 1 : "If false, this alien will not be ignited by fire" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-	teslable(choices) : "Can be electro stunned by tesla gun" : 1 : "If true, this alien can be electro stunned by tesla gun" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-	freezable(choices) : "Can be frozen" : 1 : "If true, this alien can be frozen by freeze grenade or turret" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-	
-	flinchable(choices) : "Can flinch" : 1 : "If true, this alien works as usual. If false, the alien doesn't flinch on taken damage. " =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-	healthbonus(integer) : "Health bonus" : 0 : "The ammount of health to add to an alien"
-  
-	sizescale(float) : "Size scale" : "1.0" : "The factor used to scale alien size. Don't use 0"
-  
-	speedscale(float) : "Run speed scale" : "1.0" : "The factor used to scale alien run speed. Don't use 0"
-	
+
 	spawnflags(Flags) =
 	[
 		131072 : "Use Ground Checks" : 0
@@ -2745,10 +2720,10 @@
 	//input DisableJump(void) : "Disallow non-navigational jumping"
 	input BreakWaitForScript(void) : "Wakes the alien up if his Wait For Script flag was set"
 	
-	output	OnReachedFightGoal(void) : "Fires when the drone reaches his specified fight-to location"
+	//output	OnReachedFightGoal(void) : "Fires when the drone reaches his specified fight-to location"
 ]
 
-@NPCClass base(BaseNPC) studio("models/swarm/drone/drone.mdl") sphere() = asw_drone_jumper :
+@NPCClass base(InhabitableNPC) studio("models/swarm/drone/drone.mdl") sphere() = asw_drone_jumper :
 	"A vicious killing machine with bladed limbs and sharp teeth, easily able to tear a man to pieces, even an armoured IAF marine.  This jumping variation can leap over large distances."
 [
 	sleepstate(choices) : "Sleep State" : 1 : "Holds the NPC in stasis until specified condition. See also 'Wake Radius' and 'Wake Squad'." =
@@ -2763,37 +2738,7 @@
 		0 : "No"
 		1 : "Yes"
 	]
-	
-	flammable(choices) : "Can be ignited by fire" : 1 : "If false, this alien will not be ignited by fire" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-	teslable(choices) : "Can be electro stunned by tesla gun" : 1 : "If true, this alien can be electro stunned by tesla gun" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-	freezable(choices) : "Can be frozen" : 1 : "If true, this alien can be frozen by freeze grenade or turret" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-	
-	flinchable(choices) : "Can flinch" : 1 : "If true, this alien works as usual. If false, the alien doesn't flinch on taken damage. " =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-	healthbonus(integer) : "Health bonus" : 0 : "The ammount of health to add to an alien"
-  
-	sizescale(float) : "Size scale" : "1.0" : "The factor used to scale alien size. Don't use 0"
-  
-	speedscale(float) : "Run speed scale" : "1.0" : "The factor used to scale alien run speed. Don't use 0"
-	
+
 	spawnflags(Flags) =
 	[
 		131072 : "Use Ground Checks" : 0
@@ -2801,10 +2746,10 @@
 
 	input BreakWaitForScript(void) : "Wakes the alien up if his Wait For Script flag was set"
 	
-	output	OnReachedFightGoal(void) : "Fires when the drone reaches his specified fight-to location"
+	//output	OnReachedFightGoal(void) : "Fires when the drone reaches his specified fight-to location"
 ]
 
-@NPCClass base(BaseNPC) studio("models/aliens/parasite/parasite.mdl") sphere() = asw_parasite :
+@NPCClass base(InhabitableNPC) studio("models/aliens/parasite/parasite.mdl") sphere() = asw_parasite :
 	"A lethal parasite Swarm alien, capable of burrowing through an IAF marine's armour and flesh.  Once safely inside the host's body, the parasite will quickly consume the internal organs and multiply at a fanstastic rate, with many more parasites bursting out of the victim shortly after."
 [
 	sleepstate(choices) : "Sleep State" : 1 : "Holds the NPC in stasis until specified condition. See also 'Wake Radius' and 'Wake Squad'." =
@@ -2819,37 +2764,7 @@
 		0 : "No"
 		1 : "Yes"
 	]
-	
-	flammable(choices) : "Can be ignited by fire" : 1 : "If false, this alien will not be ignited by fire" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-	teslable(choices) : "Can be electro stunned by tesla gun" : 1 : "If true, this alien can be electro stunned by tesla gun" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-	freezable(choices) : "Can be frozen" : 1 : "If true, this alien can be frozen by freeze grenade or turret" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-	
-	flinchable(choices) : "Can flinch" : 1 : "If true, this alien works as usual. If false, the alien doesn't flinch on taken damage. " =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-	healthbonus(integer) : "Health bonus" : 0 : "The ammount of health to add to an alien"
-  
-	sizescale(float) : "Size scale" : "1.0" : "The factor used to scale alien size. Don't use 0"
-  
-	speedscale(float) : "Run speed scale" : "1.0" : "The factor used to scale alien run speed. Don't use 0"
-	
+
 	spawnflags(Flags) =
 	[
 		131072 : "Use Ground Checks" : 0
@@ -2860,10 +2775,10 @@
 	//input DisableJump(void) : "Disallow non-navigational jumping"
 	input BreakWaitForScript(void) : "Wakes the alien up if his Wait For Script flag was set"
 	
-	output	OnReachedFightGoal(void) : "Fires when the parasite reaches his specified fight-to location"
+	//output	OnReachedFightGoal(void) : "Fires when the parasite reaches his specified fight-to location"
 ]
 
-@NPCClass base(BaseNPC) studio("models/aliens/parasite/parasite.mdl") sphere() = asw_parasite_defanged :
+@NPCClass base(InhabitableNPC) studio("models/aliens/parasite/parasite.mdl") sphere() = asw_parasite_defanged :
 	"A small, red and white insectoid that attacks by leaping towards a marine and exploding to shower its target in a corrosive substance."
 [
 	sleepstate(choices) : "Sleep State" : 1 : "Holds the NPC in stasis until specified condition. See also 'Wake Radius' and 'Wake Squad'." =
@@ -2878,51 +2793,22 @@
 		0 : "No"
 		1 : "Yes"
 	]
-	
-	flammable(choices) : "Can be ignited by fire" : 1 : "If false, this alien will not be ignited by fire" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-	teslable(choices) : "Can be electro stunned by tesla gun" : 1 : "If true, this alien can be electro stunned by tesla gun" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-	freezable(choices) : "Can be frozen" : 1 : "If true, this alien can be frozen by freeze grenade or turret" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-	
-	flinchable(choices) : "Can flinch" : 1 : "If true, this alien works as usual. If false, the alien doesn't flinch on taken damage. " =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-	healthbonus(integer) : "Health bonus" : 0 : "The ammount of health to add to an alien"
-  
-	sizescale(float) : "Size scale" : "1.0" : "The factor used to scale alien size. Don't use 0"
-  
-	speedscale(float) : "Run speed scale" : "1.0" : "The factor used to scale alien run speed. Don't use 0"
-	
+
+
 	spawnflags(Flags) =
 	[
 		131072 : "Use Ground Checks" : 0
 	]
-		
+
 	//input FightToPosition(string) : "Fight to position"
 	//input EnableJump(void) : "Allow non-navigational jumping"
 	//input DisableJump(void) : "Disallow non-navigational jumping"
 	input BreakWaitForScript(void) : "Wakes the alien up if his Wait For Script flag was set"
 	
-	output	OnReachedFightGoal(void) : "Fires when the parasite reaches his specified fight-to location"
+	//output	OnReachedFightGoal(void) : "Fires when the parasite reaches his specified fight-to location"
 ]
 
-@NPCClass base(BaseNPC) studio("models/aliens/shaman/shaman.mdl") sphere() = asw_shaman :
+@NPCClass base(InhabitableNPC) studio("models/aliens/shaman/shaman.mdl") sphere() = asw_shaman :
 	"The Shaman uses a healing beam, like a medic. It will follow other aliens around and switch targets based on whichever has taken the most damage."
 [
 	sleepstate(choices) : "Sleep State" : 1 : "Holds the NPC in stasis until specified condition. See also 'Wake Radius' and 'Wake Squad'." =
@@ -2937,39 +2823,9 @@
 		0 : "No"
 		1 : "Yes"
 	]
-	
-	flammable(choices) : "Can be ignited by fire" : 1 : "If false, this alien will not be ignited by fire" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-	teslable(choices) : "Can be electro stunned by tesla gun" : 1 : "If true, this alien can be electro stunned by tesla gun" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-	freezable(choices) : "Can be frozen" : 1 : "If true, this alien can be frozen by freeze grenade or turret" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-	
-	flinchable(choices) : "Can flinch" : 1 : "If true, this alien works as usual. If false, the alien doesn't flinch on taken damage. " =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-	healthbonus(integer) : "Health bonus" : 0 : "The ammount of health to add to an alien"
-  
-	sizescale(float) : "Size scale" : "1.0" : "The factor used to scale alien size. Don't use 0"
-  
-	speedscale(float) : "Run speed scale" : "1.0" : "The factor used to scale alien run speed. Don't use 0"
 ]
 
-@NPCClass base(BaseNPC) studio("models/aliens/shieldbug/shieldbug.mdl") sphere() = asw_shieldbug :
+@NPCClass base(InhabitableNPC) studio("models/aliens/shieldbug/shieldbug.mdl") sphere() = asw_shieldbug :
 	"A large, heavily armoured Swarm alien."
 [
 	sleepstate(choices) : "Sleep State" : 1 : "Holds the NPC in stasis until specified condition. See also 'Wake Radius' and 'Wake Squad'." =
@@ -2984,53 +2840,23 @@
 		0 : "No"
 		1 : "Yes"
 	]
-	
-	flammable(choices) : "Can be ignited by fire" : 1 : "If false, this alien will not be ignited by fire" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-	teslable(choices) : "Can be electro stunned by tesla gun" : 1 : "If true, this alien can be electro stunned by tesla gun" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-	freezable(choices) : "Can be frozen" : 1 : "If true, this alien can be frozen by freeze grenade or turret" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-	
-	flinchable(choices) : "Can flinch" : 1 : "If true, this alien works as usual. If false, the alien doesn't flinch on taken damage. " =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-	//healthbonus(integer) : "Health bonus" : 0 : "The ammount of health to add to an alien"
-  
-	sizescale(float) : "Size scale" : "1.0" : "The factor used to scale alien size. Don't use 0"
-  
-	speedscale(float) : "Run speed scale" : "1.0" : "The factor used to scale alien run speed. Don't use 0"
-	
-	extrahealth(integer) : "Extra Health" : 0 : "Additional health added to the normal starting amount."
-	
+
+	extrahealth(integer) : "Extra Health" : 0 : "Additional health added to the normal starting amount. Scales with mission difficulty, unlike Health Bonus"
+
 	spawnflags(Flags) =
 	[
 		131072 : "Use Ground Checks" : 0
 	]
-		
+
 	input BreakWaitForScript(void) : "Wakes the alien up if his Wait For Script flag was set"
-	
-	output	OnReachedFightGoal(void) : "Fires when the Shieldbug reaches his specified fight-to location"
+
+	//output	OnReachedFightGoal(void) : "Fires when the Shieldbug reaches his specified fight-to location"
 ]
 
-@NPCClass base(BaseNPC) studio("models/aliens/harvester/harvester.mdl") sphere() = asw_harvester :
+@NPCClass base(InhabitableNPC) studio("models/aliens/harvester/harvester.mdl") sphere() = asw_harvester :
 	"Swarm Harvester"
 [
-    sleepstate(choices) : "Sleep State" : 1 : "Holds the NPC in stasis until specified condition. See also 'Wake Radius' and 'Wake Squad'." =
+	sleepstate(choices) : "Sleep State" : 1 : "Holds the NPC in stasis until specified condition. See also 'Wake Radius' and 'Wake Squad'." =
 	[
 		0 : "None"
 		1 : "Waiting for threat"
@@ -3042,37 +2868,7 @@
 		0 : "No"
 		1 : "Yes"
 	]
-	
-	flammable(choices) : "Can be ignited by fire" : 1 : "If false, this alien will not be ignited by fire" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-	teslable(choices) : "Can be electro stunned by tesla gun" : 1 : "If true, this alien can be electro stunned by tesla gun" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-	freezable(choices) : "Can be frozen" : 1 : "If true, this alien can be frozen by freeze grenade or turret" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-	
-	flinchable(choices) : "Can flinch" : 1 : "If true, this alien works as usual. If false, the alien doesn't flinch on taken damage. " =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-	healthbonus(integer) : "Health bonus" : 0 : "The ammount of health to add to an alien"
-  
-	sizescale(float) : "Size scale" : "1.0" : "The factor used to scale alien size. Don't use 0"
-  
-	speedscale(float) : "Run speed scale" : "1.0" : "The factor used to scale alien run speed. Don't use 0"
-	
+
 	spawnflags(Flags) =
 	[
 		131072 : "Use Ground Checks" : 0
@@ -3082,10 +2878,10 @@
 	input BreakWaitForScript(void) : "Wakes the alien up if his Wait For Script flag was set"
 ]
 
-@NPCClass base(BaseNPC) studio("models/aliens/mortar/mortar.mdl") sphere() = asw_mortarbug :
+@NPCClass base(InhabitableNPC) studio("models/aliens/mortar/mortar.mdl") sphere() = asw_mortarbug :
 	"Swarm Mortarbug"
 [
-    sleepstate(choices) : "Sleep State" : 1 : "Holds the NPC in stasis until specified condition. See also 'Wake Radius' and 'Wake Squad'." =
+	sleepstate(choices) : "Sleep State" : 1 : "Holds the NPC in stasis until specified condition. See also 'Wake Radius' and 'Wake Squad'." =
 	[
 		0 : "None"
 		1 : "Waiting for threat"
@@ -3097,50 +2893,20 @@
 		0 : "No"
 		1 : "Yes"
 	]
-	
-	flammable(choices) : "Can be ignited by fire" : 1 : "If false, this alien will not be ignited by fire" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-	teslable(choices) : "Can be electro stunned by tesla gun" : 1 : "If true, this alien can be electro stunned by tesla gun" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-	freezable(choices) : "Can be frozen" : 1 : "If true, this alien can be frozen by freeze grenade or turret" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-	
-	flinchable(choices) : "Can flinch" : 1 : "If true, this alien works as usual. If false, the alien doesn't flinch on taken damage. " =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-	healthbonus(integer) : "Health bonus" : 0 : "The ammount of health to add to an alien"
-  
-	sizescale(float) : "Size scale" : "1.0" : "The factor used to scale alien size. Don't use 0"
-  
-	speedscale(float) : "Run speed scale" : "1.0" : "The factor used to scale alien run speed. Don't use 0"
-	
+
 	spawnflags(Flags) =
 	[
 		131072 : "Use Ground Checks" : 0
 	]
-	radius(integer) : "Alert Radius" : 256
-	eludedist(integer) : "Distance until eluded" : 1024 : "Only available when Burrow When Eluded is flagged"
+	//radius(integer) : "Alert Radius" : 256
+	//eludedist(integer) : "Distance until eluded" : 1024 : "Only available when Burrow When Eluded is flagged"
 	input BreakWaitForScript(void) : "Wakes the alien up if his Wait For Script flag was set"
 ]
 
-@NPCClass base(BaseNPC, Studiomodel) studio("models/swarm/Queen/queen.mdl") sphere() = asw_queen :
+@NPCClass base(InhabitableNPC) studio("models/swarm/Queen/queen.mdl") sphere() = asw_queen :
 	"Swarm Queen"
 [
-    sleepstate(choices) : "Sleep State" : 1 : "Holds the NPC in stasis until specified condition. See also 'Wake Radius' and 'Wake Squad'." =
+	sleepstate(choices) : "Sleep State" : 1 : "Holds the NPC in stasis until specified condition. See also 'Wake Radius' and 'Wake Squad'." =
 	[
 		0 : "None"
 		1 : "Waiting for threat"
@@ -3152,45 +2918,14 @@
 		0 : "No"
 		1 : "Yes"
 	]
-	
-	flammable(choices) : "Can be ignited by fire" : 1 : "If false, this alien will not be ignited by fire" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-	teslable(choices) : "Can be electro stunned by tesla gun" : 1 : "If true, this alien can be electro stunned by tesla gun" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-	freezable(choices) : "Can be frozen" : 1 : "If true, this alien can be frozen by freeze grenade or turret" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-	
-	flinchable(choices) : "Can flinch" : 1 : "If true, this alien works as usual. If false, the alien doesn't flinch on taken damage. " =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-	healthbonus(integer) : "Health bonus" : 0 : "The ammount of health to add to an alien"
-  
-	sizescale(float) : "Size scale" : "1.0" : "The factor used to scale alien size. Don't use 0"
-  
-	speedscale(float) : "Run speed scale" : "1.0" : "The factor used to scale alien run speed. Don't use 0"
-	
+
 	spawnflags(Flags) =
 	[
 		131072 : "Use Ground Checks" : 0
 	]
-	radius(integer) : "Alert Radius" : 256
-	eludedist(integer) : "Distance until eluded" : 1024 : "Only available when Burrow When Eluded is flagged"
-	
-	
+	//radius(integer) : "Alert Radius" : 256
+	//eludedist(integer) : "Distance until eluded" : 1024 : "Only available when Burrow When Eluded is flagged"
+
 	output	OnSummonWave1(void) : "Fired out when the queen is at 80% health, to call the first attack wave"
 	output	OnSummonWave2(void) : "Fired out when the queen is at 60% health, to call the second attack wave"
 	output	OnSummonWave3(void) : "Fired out when the queen is at 40% health, to call the third attack wave"
@@ -3198,10 +2933,10 @@
 	output	OnQueenKilled(void) : "Fired when the queen is killed."
 ]
 
-@NPCClass base(BaseNPC) studio("models/aliens/mortar3/mortar3.mdl") sphere() = asw_ranger :
+@NPCClass base(InhabitableNPC) studio("models/aliens/mortar3/mortar3.mdl") sphere() = asw_ranger :
 	"Swarm Ranger"
 [
-    sleepstate(choices) : "Sleep State" : 1 : "Holds the NPC in stasis until specified condition. See also 'Wake Radius' and 'Wake Squad'." =
+	sleepstate(choices) : "Sleep State" : 1 : "Holds the NPC in stasis until specified condition. See also 'Wake Radius' and 'Wake Squad'." =
 	[
 		0 : "None"
 		1 : "Waiting for threat"
@@ -3213,50 +2948,20 @@
 		0 : "No"
 		1 : "Yes"
 	]
-	
-	flammable(choices) : "Can be ignited by fire" : 1 : "If false, this alien will not be ignited by fire" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-	teslable(choices) : "Can be electro stunned by tesla gun" : 1 : "If true, this alien can be electro stunned by tesla gun" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-	freezable(choices) : "Can be frozen" : 1 : "If true, this alien can be frozen by freeze grenade or turret" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-	
-	flinchable(choices) : "Can flinch" : 1 : "If true, this alien works as usual. If false, the alien doesn't flinch on taken damage. " =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-	healthbonus(integer) : "Health bonus" : 0 : "The ammount of health to add to an alien"
-  
-	sizescale(float) : "Size scale" : "1.0" : "The factor used to scale alien size. Don't use 0"
-  
-	speedscale(float) : "Run speed scale" : "1.0" : "The factor used to scale alien run speed. Don't use 0"
-	
+
 	spawnflags(Flags) =
 	[
 		131072 : "Use Ground Checks" : 0
 	]
-	radius(integer) : "Alert Radius" : 256
-	eludedist(integer) : "Distance until eluded" : 1024 : "Only available when Burrow When Eluded is flagged"
+	//radius(integer) : "Alert Radius" : 256
+	//eludedist(integer) : "Distance until eluded" : 1024 : "Only available when Burrow When Eluded is flagged"
 	input BreakWaitForScript(void) : "Wakes the alien up if his Wait For Script flag was set"
 ]
 
-@NPCClass base(BaseNPC) studio("models/aliens/boomer/boomer.mdl") sphere() = asw_boomer :
+@NPCClass base(InhabitableNPC) studio("models/aliens/boomer/boomer.mdl") sphere() = asw_boomer :
 	"Swarm Boomer"
 [
-    sleepstate(choices) : "Sleep State" : 1 : "Holds the NPC in stasis until specified condition. See also 'Wake Radius' and 'Wake Squad'." =
+	sleepstate(choices) : "Sleep State" : 1 : "Holds the NPC in stasis until specified condition. See also 'Wake Radius' and 'Wake Squad'." =
 	[
 		0 : "None"
 		1 : "Waiting for threat"
@@ -3268,43 +2973,13 @@
 		0 : "No"
 		1 : "Yes"
 	]
-	
-	flammable(choices) : "Can be ignited by fire" : 1 : "If false, this alien will not be ignited by fire" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-	teslable(choices) : "Can be electro stunned by tesla gun" : 1 : "If true, this alien can be electro stunned by tesla gun" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-	freezable(choices) : "Can be frozen" : 1 : "If true, this alien can be frozen by freeze grenade or turret" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-	
-	flinchable(choices) : "Can flinch" : 1 : "If true, this alien works as usual. If false, the alien doesn't flinch on taken damage. " =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-	healthbonus(integer) : "Health bonus" : 0 : "The ammount of health to add to an alien"
-  
-	sizescale(float) : "Size scale" : "1.0" : "The factor used to scale alien size. Don't use 0"
-  
-	speedscale(float) : "Run speed scale" : "1.0" : "The factor used to scale alien run speed. Don't use 0"
-	
+
 	spawnflags(Flags) =
 	[
 		131072 : "Use Ground Checks" : 0
 	]
-	radius(integer) : "Alert Radius" : 256
-	eludedist(integer) : "Distance until eluded" : 1024 : "Only available when Burrow When Eluded is flagged"
+	//radius(integer) : "Alert Radius" : 256
+	//eludedist(integer) : "Distance until eluded" : 1024 : "Only available when Burrow When Eluded is flagged"
 	input BreakWaitForScript(void) : "Wakes the alien up if his Wait For Script flag was set"
 ]
 
@@ -3322,9 +2997,9 @@
 	]
 ]
 
-@PointClass base(Targetname, Parentname, Angles) studio("models/items/Ammobag/AmmoBag.mdl") = asw_ammo_drop : "Generic ammo pile"
+@PointClass base(Targetname, Parentname, Angles) studio("models/items/Ammobag/AmmoBag.mdl") = asw_ammo_drop : "Generic ammo stash"
 [
-	percent_remaining(integer) : "Percent Remaining" : 100 : "Percent of ammo remaining in box"
+	percent_remaining(integer) : "Percent Remaining" : 100 : "Percent of ammo remaining in stash"
 ]
 
 @PointClass base(ASWPickup) studio("models/swarm/ammo/ammoassaultrifle.mdl")= asw_ammo_rifle : "Box of Rifle ammo"
@@ -3974,7 +3649,7 @@
 	equipclass3(string) : "Equipment class 3" : "" : "Third equipment class that needs to be selected before mission can begin."
 ]
 
-@NPCClass base(BaseNPC) studio("models/swarm/Buzzer/buzzer.mdl") = asw_buzzer : "Buzzer"
+@NPCClass base(InhabitableNPC) studio("models/swarm/Buzzer/buzzer.mdl") = asw_buzzer : "Buzzer"
 [
 	spawnflags(Flags) = 
 	[
@@ -3983,44 +3658,14 @@
 		262144 : "Use Air Nodes" : 0
 		1048576 : "No Danger Sounds" : 0
 	]
-	
-	flammable(choices) : "Can be ignited by fire" : 1 : "If false, this alien will not be ignited by fire" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-	teslable(choices) : "Can be electro stunned by tesla gun" : 1 : "If true, this alien can be electro stunned by tesla gun" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-	freezable(choices) : "Can be frozen" : 1 : "If true, this alien can be frozen by freeze grenade or turret" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-	
-	flinchable(choices) : "Can flinch" : 1 : "If true, this alien works as usual. If false, the alien doesn't flinch on taken damage. " =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-  
-	healthbonus(integer) : "Health bonus" : 0 : "The ammount of health to add to an alien"
-  
-	sizescale(float) : "Size scale" : "1.0" : "The factor used to scale alien size. Don't use 0"
-  
-	speedscale(float) : "Fly speed scale" : "1.0" : "The factor used to scale alien fly speed. Don't use 0"
-	
+
 	input DisableSwarm(void) : "Disable the buzzer swarm behavior."
 	//input Unpack(void) : "Causes the buzzer to stop being packed up."
 ]
 
-@PointClass base(Targetname, Angles, Studiomodel, Origin) studioprop() = asw_alien_goo
+@PointClass base(Targetname, Angles, Studiomodel, Origin) studioprop() = asw_alien_goo : "Biomass"
 [
-	model(studio) : "World model" : "models/swarm/AlienGoo/TendrilFat.mdl"
+	model(studio) : "World model" : "models/aliens/biomass/biomasshelix.mdl"
 	PulseStrength(float) : "Pulse Strength" : "0.8" : "Controls the amplitude of the pulsating goo (ranges from 0 to 1.0)."
 	PulseSpeed(float) : "Pulse Speed" : "1.0" : "Controls how quickly the goo pulsates (1.0 is normal, can be set higher or lower)."
 	BurningLinkName(string) : "Burning Link Name" : "" : "Alien goo/Grub sacs that share the same Burning Link Name will all be set on fire when one of those alien goo's is set on fire."
@@ -4083,13 +3728,6 @@
 	//input StartRemoveTauCannon(void) : "Start the tau removal sequence."
 	//input FinishRemoveTauCannon(void) : "Finish the tau removal sequence."
 ]
-
-//@PointClass base(Targetname, Parentname, Angles, Global, Studiomodel, Origin) studioprop("models/buggy.mdl") = asw_dummy_vehicle
-//[
-	//sequence(integer) : "Sequence" : 0
-	//cycle(float) : "Cycle" : 0
-	//playbackrate(float) : "Playback rate" : 0
-//]
 
 @SolidClass base(Trigger) = trigger_asw_chance :
 	"A trigger volume that can be triggered multiple times and has a random chance of firing each time."
@@ -4199,18 +3837,6 @@
 @NPCClass base(BaseNPC) studio("models/swarm/Grubs/Grub.mdl") sphere() = asw_grub :
 	"A harmless Swarm grub, that crawls about looking icky."
 [
-	//sleepstate(choices) : "Sleep State" : 1 : "Holds the NPC in stasis until specified condition. See also 'Wake Radius' and 'Wake Squad'." =
-	//[
-//		0 : "None"
-		//1 : "Waiting for threat"
-		//2 : "Waiting for PVS"
-		//3 : "Waiting for input"
-	//]
-//	
-//	spawnflags(Flags) =
-//	[
-		//131072 : "Use Ground Checks" : 0
-	//]
 ]
 
 @SolidClass base(Trigger) = trigger_asw_jump :
@@ -4252,14 +3878,6 @@
 	output OnTrigger(void) : "Fired whenever the trigger is activated."
 ]
 
-
-
-@PointClass base(Targetname,Angles) size(-8 -8 -8, 8 8 8) = asw_menu_flashlight : 
-	"A flashlight for the main menu that will aim in the direction of the mouse cursor.  Not to be used for normal levels!" 
-[
-	
-]
-
 @SolidClass base(Targetname, Origin) = asw_camera_control :
 	"The camera will change when marines are inside this volume."
 [
@@ -4288,7 +3906,7 @@
 ]
 
 @PointClass base(RenderFields, DXLevelChoice) size(-2 -2 -2, 2 2 2) sprite() color(20 140 20) = env_sprite_clientside : 
-	"An entity that controls the drawing of a sprite in the world, created clientside so cannot be parented to moving things and will use up no network bandwidth or CPU." 
+	"An entity that controls the drawing of a sprite in the world, created clientside so cannot be parented to moving things and will use up no network bandwidth or server CPU." 
 [
 	framerate(string) : "Framerate" : "10.0" : "Rate at which the sprite should animate, if at all."
 	model(sprite) : "Sprite Name" : "sprites/glow01.spr" : "Material of the sprite to be drawn."
@@ -4341,14 +3959,7 @@
 	output OnHealthChanged(float) : "Fired when the health of this breakable changes, passing the new value of health as a percentage of max health, from [0..1]."
 ]
 
-//@PointClass base(Angles, Studiomodel) studioprop() = asw_prop_clientside : 
-	//"Detail Prop"
-//[
-//	model(studio) : "World model"
-//	DefaultAnim(string) : "Default Animation" : "" : "The name of the idle animation that this prop will revert to whenever it finishes a random or forced animation."
-//]
-
-@NPCClass base(BaseNPC, Parentname, TalkNPC, PlayerCompanion ) studio("models/swarm/Colonist/Male/MaleColonist.mdl") = asw_colonist : "Colonist"
+@NPCClass base(InhabitableBaseNPC, Parentname, TalkNPC, PlayerCompanion ) studio("models/swarm/Colonist/Male/MaleColonist.mdl") = asw_colonist : "Colonist"
 [	
 	notifynavfailblocked(choices) : "Fire output when Nav is blocked?" : 0 =
 	[
@@ -4456,12 +4067,6 @@
 	input StopSlomo(void) : "Stop the slomo."
 ]
 
-@PointClass base(Angles) studio("models/swarmprops/Vehicles/BloodhoundMesh.mdl") sphere() = asw_bloodhound :
-	"Dropship used to deploy marines in Landing Bay mission."
-[
-	
-]
-
 @PointClass base(Targetname,Angles,Parentname) studioprop("models/editor/camera.mdl") = asw_broadcast_camera : 
 	"A camera entity that controls all players views. While it's active, all players will see out of the camera." 
 [
@@ -4507,12 +4112,6 @@
 
 	// Inputs
 	input Ignite(void) : "Ignite, burst into flames."
-]
-
-@SolidClass base(DXLevelChoice) color(0 180 0) = func_subtract : 
-	"Subtracts geometry from other brushes (use vmf_subtract.exe)"
-[
-
 ]
 
 @SolidClass base(Targetname, Parentname) = func_precipitation : 
@@ -4634,7 +4233,7 @@
 	"Alien Swarm Director Control"
 [
 	targetname(target_source) : "Name" : "@director" : "The name that other entities refer to this entity by."
-	wanderers(choices) : "Wandering Aliens" : 0 : "Whether to spawn random drones around the players." =
+	wanderers(choices) : "Wandering Aliens" : 1 : "Whether to spawn random drones around the players." =
 	[
 		0 : "No"
 		1 : "Yes"
