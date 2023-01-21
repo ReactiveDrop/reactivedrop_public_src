@@ -2463,10 +2463,7 @@
 		27 : "npc_combine_s"
 		28 : "npc_combine_shotgun"
 		29 : "npc_combine_elite"
-		30 : "npc_strider"
-		31 : "npc_hunter"
-		32 : "npc_combinedropship"
-		33 : "npc_combinegunship"
+		30 : "npc_hunter"
 	]
 
 	AllowDirectorSpawns(choices) : "Allow director spawns" : 0 : "Should the director be allowed to spawn aliens from this spawner? Director spawns do not count towards the limit of this spawner." =
@@ -2587,10 +2584,7 @@
 		27 : "npc_combine_s"
 		28 : "npc_combine_shotgun"
 		29 : "npc_combine_elite"
-		30 : "npc_strider"
-		31 : "npc_hunter"
-		32 : "npc_combinedropship"
-		33 : "npc_combinegunship"
+		30 : "npc_hunter"
 	]
 	AlienOrders(choices) : "Alien Orders" : 2 : "Orders given to nearby aliens." =
 	[
@@ -3894,10 +3888,7 @@
 		27 : "npc_combine_s"
 		28 : "npc_combine_shotgun"
 		29 : "npc_combine_elite"
-		30 : "npc_strider"
-		31 : "npc_hunter"
-		32 : "npc_combinedropship"
-		33 : "npc_combinegunship"
+		30 : "npc_hunter"
 	]
 ]
 

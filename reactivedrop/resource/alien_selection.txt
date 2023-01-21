@@ -58,10 +58,7 @@
 // - npc_combine_s
 // - npc_combine_shotgun
 // - npc_combine_elite
-// - npc_strider
 // - npc_hunter
-// - npc_combinedropship
-// - npc_combinegunship
 //
 // The following KeyValues are also accepted in the NPC block:
 //
