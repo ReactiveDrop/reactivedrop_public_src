@@ -29,7 +29,7 @@ public:
 	virtual void		Spawn();
 	virtual void		Precache();
 
-	virtual void		SetHealthByDifficultyLevel();
+	virtual int			GetBaseHealth() override;
 
 	virtual float		MaxYawSpeed( void );
 

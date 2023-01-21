@@ -220,8 +220,6 @@ void CASW_Drone_Advanced::Spawn( void )
 	UTIL_SetSize(this, Vector(-17,-17,0), Vector(17,17,69));
 
 	//UseClientSideAnimation();	
-		
-	SetHealthByDifficultyLevel();	
 	
 	CapabilitiesAdd( bits_CAP_MOVE_CLIMB | bits_CAP_MOVE_GROUND | bits_CAP_INNATE_MELEE_ATTACK1 | bits_CAP_INNATE_MELEE_ATTACK2 );	// removed: bits_CAP_MOVE_JUMP
 	CapabilitiesAdd( bits_CAP_MOVE_SHOOT );
@@ -2408,14 +2406,9 @@ void CASW_Drone_Advanced::SetDoorBashYaw()
 	}
 }
 
-void CASW_Drone_Advanced::SetHealthByDifficultyLevel()
+int CASW_Drone_Advanced::GetBaseHealth()
 {
-	int iHealth = MAX(25, ASWGameRules()->ModifyAlienHealthBySkillLevel(asw_drone_health.GetInt()));
-	if (asw_debug_alien_damage.GetBool())
-		Msg("Setting drone's initial health to %d\n", iHealth + m_iHealthBonus);
-	SetHealth(iHealth + m_iHealthBonus);
-	SetMaxHealth(iHealth + m_iHealthBonus);
-	SetHitboxSet(0);
+	return asw_drone_health.GetInt();
 }
 
 // if we arrive at our destination, clear our orders

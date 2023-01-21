@@ -90,7 +90,6 @@ public:
 	virtual void PrecacheSpeech();
 	
 	virtual void	Spawn( void );
-	virtual void	NPCInit();
 	virtual void	UpdateOnRemove();
 	void	SelectModelFromProfile();
 	void	SelectModel();
@@ -98,6 +97,8 @@ public:
 	CAI_Senses *CreateSenses();
 
 	void SetHeightLook( float flHeightLook );
+	int GetBaseHealth() { return 100; }
+	void SetHealthByDifficultyLevel() {}
 
 	// Thinking
 	virtual void Think(void);
@@ -185,8 +186,6 @@ public:
 	CNetworkVar( bool, m_bForceWalking );
 	CNetworkVector( m_vecGroundVelocity );
 	CNetworkVar( bool, m_bRolls );
-
-	CASW_Lag_Compensation m_LagCompensation;
 
 	// melee
 	void PhysicsShove();

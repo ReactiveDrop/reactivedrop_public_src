@@ -1794,15 +1794,14 @@ void CFire::ASWFireTouch( CBaseEntity *pOther )
 
 			CBaseEntity* pOwner = m_hOwner.Get();
 
-			CASW_Marine *pMarine = CASW_Marine::AsMarine( pOther );
-			if ( pMarine )
+			if ( CASW_Marine *pMarine = CASW_Marine::AsMarine( pOther ) )
 			{
-				if (pOwner && pOwner->Classify() == CLASS_ASW_MARINE)
+				if ( pOwner && pOwner->Classify() == CLASS_ASW_MARINE )
 				{
-					CASW_Marine* pFireStarterMarine = assert_cast< CASW_Marine* >( pOwner );
-					if (m_nFireType == FIRE_WALL_MINE && !pMarine->IsOnFire() && pFireStarterMarine->GetMarineResource() && pFireStarterMarine->IRelationType(pMarine) != D_LI)
+					CASW_Marine *pFireStarterMarine = assert_cast< CASW_Marine * >( pOwner );
+					if ( m_nFireType == FIRE_WALL_MINE && !pMarine->IsOnFire() && pFireStarterMarine->GetMarineResource() && pFireStarterMarine->IRelationType( pMarine ) != D_LI )
 					{
-						pFireStarterMarine->GetMarineResource()->IncrementWeaponStats((Class_T)CLASS_ASW_MINES, 0, 0, 0, 1, 0);
+						pFireStarterMarine->GetMarineResource()->IncrementWeaponStats( ( Class_T )CLASS_ASW_MINES, 0, 0, 0, 1, 0 );
 					}
 				}
 
@@ -1810,21 +1809,13 @@ void CFire::ASWFireTouch( CBaseEntity *pOther )
 				pMarine->ASW_Ignite( ( m_nFireType == FIRE_WALL_MINE ) ? 0.5f : 1.0f, 0, pOwner ? pOwner : this, m_hCreatorWeapon );
 				//Msg("OUCH OUCH BURNING MARINE\n");
 			}
-
-			if ( pOther->Classify() == CLASS_ASW_COLONIST )
+			else if ( pOther->Classify() == CLASS_ASW_COLONIST )
 			{
 				CASW_Colonist *pColonist = assert_cast<CASW_Colonist*>(pOther);
 				pColonist->ASW_Ignite( ( m_nFireType == FIRE_WALL_MINE ) ? 5 : 10, pOwner ? pOwner : this, m_hCreatorWeapon );
 			}
-
-			IASW_Spawnable_NPC *pSpawnable = dynamic_cast< IASW_Spawnable_NPC* >(pOther);
-			if ( pSpawnable )
+			else if ( IASW_Spawnable_NPC *pSpawnable = dynamic_cast< IASW_Spawnable_NPC * >( pOther ) )
 			{
-				//Msg("  it's a spawnable alien\n");
-				//if (m_hOwner.Get())
-					//Msg("  our owner is %d\n", m_hOwner->entindex());
-				//else
-					//Msg("  our owner is null\n");				
 				if ( pSpawnable->GetNPC() && !pSpawnable->GetNPC()->IsOnFire() && m_nFireType == FIRE_WALL_MINE )
 				{
 					if ( pOwner && pOwner->Classify() == CLASS_ASW_MARINE )

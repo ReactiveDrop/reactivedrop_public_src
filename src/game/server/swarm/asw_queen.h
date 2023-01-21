@@ -104,16 +104,16 @@ public:
 	int m_iSummonWave;
 	Vector m_vecLastClawPos;
 
-	virtual void SetHealthByDifficultyLevel();
+	virtual int GetBaseHealth() override;
 
-	// various states of the digger attack	
+	// various states of the digger attack
 	int m_iDiverState;
 	float m_fNextDiverState;
 	float m_fLastDiverAttack;
 	void UpdateDiver();
 	void AdvanceDiverState();
 	void SetDiverState(int iNewState);
-	CHandle<CASW_Queen_Divers> m_hDiver;	
+	CHandle<CASW_Queen_Divers> m_hDiver;
 	void NotifyGrabberKilled(CASW_Queen_Grabber* pGrabber);
 	int m_iLiveGrabbers;
 	CHandle<CASW_Marine> m_hPreventMovementMarine;

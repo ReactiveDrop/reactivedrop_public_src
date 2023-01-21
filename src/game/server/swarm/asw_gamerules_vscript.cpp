@@ -1,6 +1,7 @@
 #include "cbase.h"
 #include "asw_gamerules.h"
 #include "asw_spawn_manager.h"
+#include "asw_spawn_selection.h"
 #include "asw_director.h"
 #include "asw_grenade_cluster.h"
 #include "asw_grenade_freeze.h"
@@ -56,8 +57,9 @@ public:
 		}
 
 		QAngle angle( VectorExpand( vecAngle ) );
+		CASW_Spawn_NPC npc( szAlienClass );
 
-		return ToHScript( ASWSpawnManager()->SpawnAlienAt( szAlienClass, vecPos, angle ) );
+		return ToHScript( ASWSpawnManager()->SpawnAlienAt( &npc, vecPos, angle ) );
 	}
 
 	int SpawnAlienBatch( const char *szAlienClass, int iNumAliens, const Vector & vecPos, const Vector & vecAngle )

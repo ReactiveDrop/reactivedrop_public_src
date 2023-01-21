@@ -345,7 +345,7 @@ void CASW_Simple_Grub::Event_Killed( const CTakeDamageInfo &info )
 void CASW_Simple_Grub::SetHealthByDifficultyLevel()
 {
 	if ( asw_debug_alien_damage.GetBool() )
-		Msg( "Setting shaman's initial health to %d\n", rd_grub_health.GetInt() );
+		Msg( "Setting grub's initial health to %d\n", rd_grub_health.GetInt() );
 	SetHealth( rd_grub_health.GetInt() );
 	SetMaxHealth( rd_grub_health.GetInt() );
 }

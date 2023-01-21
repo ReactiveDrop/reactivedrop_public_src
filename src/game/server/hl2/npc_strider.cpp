@@ -567,6 +567,11 @@ void CNPC_Strider::Spawn()
 	m_flTimeNextHuntSound = gpGlobals->curtime - 1.0f;
 }
 
+int CNPC_Strider::GetBaseHealth()
+{
+	return sk_strider_health.GetFloat();
+}
+
 void CNPC_Strider::SetupGlobalModelData()
 {
 	gm_BodyHeightPoseParam = LookupPoseParameter( "body_height" );

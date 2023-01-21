@@ -82,7 +82,6 @@ void CASW_Ranger::Spawn( void )
 	BaseClass::Spawn();
 
 	SetHullType( HULL_MEDIUMBIG );
-	SetHealthByDifficultyLevel();
 	SetBloodColor( BLOOD_COLOR_GREEN );
 	CapabilitiesAdd( bits_CAP_MOVE_GROUND | bits_CAP_INNATE_MELEE_ATTACK1 | bits_CAP_INNATE_RANGE_ATTACK1 );
 
@@ -149,13 +148,9 @@ void CASW_Ranger::Precache( void )
 // Input:	
 // Output:	
 //-----------------------------------------------------------------------------
-void CASW_Ranger::SetHealthByDifficultyLevel()
+int CASW_Ranger::GetBaseHealth()
 {
-	int iHealth = MAX( 25, ASWGameRules()->ModifyAlienHealthBySkillLevel( asw_ranger_health.GetInt() ) );
-	if ( asw_debug_alien_damage.GetBool() )
-		Msg( "Setting ranger's initial health to %d\n", iHealth + m_iHealthBonus );
-	SetHealth( iHealth + m_iHealthBonus );
-	SetMaxHealth( iHealth + m_iHealthBonus );
+	return asw_ranger_health.GetInt();
 }
 
 

@@ -830,6 +830,35 @@ void CASW_Spawn_Definition::Dump( float flTotalWeight )
 	}
 }
 
+CASW_Spawn_NPC::CASW_Spawn_NPC( const char *szAlienClass ) : m_Requirement( NULL )
+{
+	m_pAlienClass = NULL;
+	for ( int i = 0; i < ASWSpawnManager()->GetNumAlienClasses(); i++ )
+	{
+		const ASW_Alien_Class_Entry *pAlienClass = ASWSpawnManager()->GetAlienClass( i );
+		if ( !Q_stricmp( szAlienClass, pAlienClass->m_pszAlienClass ) )
+		{
+			m_pAlienClass = pAlienClass;
+			break;
+		}
+	}
+	if ( !m_pAlienClass )
+	{
+		Warning( "Invalid alien class in spawn definitions: %s\n", szAlienClass );
+	}
+
+	m_iHealthBonus = 0;
+	m_flSpeedScale = 1;
+	m_flSizeScale = 1;
+	m_bFlammable = true;
+	m_bFreezable = true;
+	m_bTeslable = true;
+	m_bFlinches = true;
+	m_bGrenadeReflector = false;
+	m_iszVScript = NULL_STRING;
+	m_flSpawnChance = 1;
+}
+
 CASW_Spawn_NPC::CASW_Spawn_NPC( KeyValues *pKV ) : m_Requirement( pKV )
 {
 	m_pAlienClass = NULL;

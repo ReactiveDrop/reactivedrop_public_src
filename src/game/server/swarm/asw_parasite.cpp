@@ -84,8 +84,7 @@ BEGIN_DATADESC( CASW_Parasite )
 	DEFINE_ENTITYFUNC( LeapTouch ),
 	DEFINE_ENTITYFUNC( NormalTouch ),
 END_DATADESC()
-// BenLubar(key-values-director)
-BEGIN_ENT_SCRIPTDESC( CASW_Parasite, CASW_Alien, "Alien Swarm parasite" )
+BEGIN_ENT_SCRIPTDESC( CASW_Parasite, CASW_Inhabitable_NPC, "Alien Swarm parasite" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptJumpAttack, "JumpAttack", "jump and attack something" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptJumpUp, "JumpUp", "Jump up, like defanged parasites jump from dead harvester" )
 END_SCRIPTDESC()
@@ -1295,22 +1294,16 @@ void CASW_Parasite::UpdateSleepState(bool bInPVS)
 	BaseClass::UpdateSleepState(bInPVS);
 }
 
-void CASW_Parasite::SetHealthByDifficultyLevel()
+int CASW_Parasite::GetBaseHealth()
 {
 	if ( FClassnameIs( this, "asw_parasite_defanged" ))
 	{
-		SetHealth( ASWGameRules()->ModifyAlienHealthBySkillLevel( rd_parasite_defanged_health.GetInt() ) + m_iHealthBonus );
-		if ( asw_debug_alien_damage.GetBool() )
-			Msg( "Setting defanged parasite's initial health to %d\n", GetHealth() );
+		return rd_parasite_defanged_health.GetInt();
 	}
 	else
 	{
-		SetHealth( ASWGameRules()->ModifyAlienHealthBySkillLevel( rd_parasite_health.GetInt() ) + m_iHealthBonus );
-		if ( asw_debug_alien_damage.GetBool() )
-			Msg( "Setting parasite's initial health to %d\n", GetHealth() );
+		return rd_parasite_health.GetInt();
 	}
-
-	SetMaxHealth( GetHealth() );
 }
 
 void CASW_Parasite::NPCThink()

@@ -9,7 +9,7 @@
 class CASW_Drone_Uber : public CASW_Drone_Advanced
 {
 public:
-	DECLARE_CLASS( CASW_Drone_Uber, CASW_Drone_Advanced  );	
+	DECLARE_CLASS( CASW_Drone_Uber, CASW_Drone_Advanced );
 	DECLARE_DATADESC();
 
 	CASW_Drone_Uber( void );
@@ -17,7 +17,7 @@ public:
 
 	virtual void Spawn();
 	virtual void Precache();
-	virtual void SetHealthByDifficultyLevel();
+	virtual int GetBaseHealth() override;
 	virtual float GetIdealSpeed() const;
 	virtual int OnTakeDamage_Alive( const CTakeDamageInfo &info );
 	virtual bool ModifyAutoMovement( Vector &vecNewPos );

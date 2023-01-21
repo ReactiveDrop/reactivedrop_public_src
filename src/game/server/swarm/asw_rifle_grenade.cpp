@@ -6,7 +6,6 @@
 #include "te_effect_dispatch.h"
 #include "IEffects.h"
 #include "asw_gamerules.h"
-#include "iasw_spawnable_npc.h"
 #include "world.h"
 #include "asw_util_shared.h"
 #include "asw_marine.h"

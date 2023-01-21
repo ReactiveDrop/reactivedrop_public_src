@@ -16,8 +16,6 @@ public:
 
 					C_ASW_Alien();
 	virtual			~C_ASW_Alien();
-		
-	virtual void PostDataUpdate( DataUpdateType_t updateType );
 
 	virtual bool IsAlien( void ) const { return true; }
 	virtual bool IsAlienClassType( void ) const { return true; }
@@ -46,20 +44,6 @@ public:
 	virtual void DoAlienFootstep( Vector &vecOrigin, float fvol );	
 	bool m_bStepSideLeft;
 
-	// stun
-	CNetworkVar(bool, m_bElectroStunned);
-	float m_fNextElectroStunEffect;
-
-	// electro shocked
-	//CNetworkVar(bool, m_bElectroShockSmall);
-	//CNetworkVar(bool, m_bElectroShockBig);
-	// fire
-	CNetworkVar(bool, m_bOnFire);
-	bool m_bClientOnFire;
-	CUtlReference<CNewParticleEffect> m_pBurningEffect;
-	virtual void UpdateFireEmitters();
-	virtual void UpdateOnRemove();
-
 	// custom shadow
 	virtual bool GetShadowCastDirection( Vector *pDirection, ShadowType_t shadowType ) const;
 	ShadowType_t ShadowCastType();
@@ -69,8 +53,6 @@ public:
 	int m_iLastCustomFrame;
 
 	int m_nLastSetModel;
-	virtual void ASWUpdateClientSideAnimation();
-	virtual void ClientThink();
 
 	virtual float	GetInterpolationAmount( int flags );
 

@@ -1147,6 +1147,7 @@ public:
 
 	void			Precache();
 	void			Spawn();
+	int				GetBaseHealth() override;
 	void			PostNPCInit();
 	void			Activate();
 	void			UpdateOnRemove();
@@ -1803,6 +1804,10 @@ void CNPC_Hunter::Spawn()
 	//}
 }
 
+int CNPC_Hunter::GetBaseHealth()
+{
+	return sk_hunter_health.GetInt();
+}
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------

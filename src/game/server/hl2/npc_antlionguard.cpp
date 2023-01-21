@@ -255,7 +255,7 @@ public:
 	
 	virtual void	Precache( void );
 	virtual void	Spawn( void );
-	virtual void	SetHealthByDifficultyLevel( void );
+	virtual int		GetBaseHealth( void ) override;
 	virtual void	Activate( void );
 	virtual void	HandleAnimEvent( animevent_t *pEvent );
 	virtual void	UpdateEfficiency( bool bInPVS )	{ SetEfficiency( ( GetSleepState() != AISS_AWAKE ) ? AIE_DORMANT : AIE_NORMAL ); SetMoveEfficiency( AIME_NORMAL ); }
@@ -901,8 +901,6 @@ void CNPC_AntlionGuard::Spawn( void )
 
 	SetViewOffset(Vector(6, 0, 11));		// Position of the eyes relative to NPC's origin.
 
-	SetHealthByDifficultyLevel();
-
 	CapabilitiesRemove(bits_CAP_MOVE_JUMP);
 	// reactivedrop: end of TODO 
 
@@ -939,14 +937,9 @@ void CNPC_AntlionGuard::Spawn( void )
 	CollisionProp()->SetSurroundingBoundsType( USE_SPECIFIED_BOUNDS, &absMin, &absMax );
 }
 
-void CNPC_AntlionGuard::SetHealthByDifficultyLevel()
+int CNPC_AntlionGuard::GetBaseHealth()
 {
-	int iHealth = MAX( 1, ASWGameRules()->ModifyAlienHealthBySkillLevel( sk_antlionguard_health.GetInt() ) );
-	extern ConVar asw_debug_alien_damage;
-	if ( asw_debug_alien_damage.GetBool() )
-		Msg( "Setting antlion guard's initial health to %d\n", iHealth + m_iHealthBonus );
-	SetHealth( iHealth + m_iHealthBonus );
-	SetMaxHealth( iHealth + m_iHealthBonus );
+	return sk_antlionguard_health.GetInt();
 }
 
 //-----------------------------------------------------------------------------

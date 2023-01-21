@@ -13,7 +13,6 @@
 #define CASW_Marine C_ASW_Marine
 #else
 #include "asw_marine.h"
-#include "iasw_spawnable_npc.h"
 #include "IEffects.h"
 #include "te_effect_dispatch.h"
 #endif

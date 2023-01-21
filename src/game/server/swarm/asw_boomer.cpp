@@ -69,7 +69,6 @@ void CASW_Boomer::Spawn( void )
 	BaseClass::Spawn();
 
 	SetHullType( HULL_LARGE );
-	SetHealthByDifficultyLevel();
 	CapabilitiesAdd( bits_CAP_MOVE_GROUND | bits_CAP_INNATE_MELEE_ATTACK1 | bits_CAP_INNATE_MELEE_ATTACK2 );
 	
 // 			"Health"	"435"
@@ -82,13 +81,9 @@ void CASW_Boomer::Spawn( void )
 }
 
 
-void CASW_Boomer::SetHealthByDifficultyLevel()
+int CASW_Boomer::GetBaseHealth()
 {
-	int iHealth = MAX( 25, ASWGameRules()->ModifyAlienHealthBySkillLevel( asw_boomer_health.GetInt() ) );
-	if ( asw_debug_alien_damage.GetBool() )
-		Msg( "Setting boomer's initial health to %d\n", iHealth + m_iHealthBonus );
-	SetHealth( iHealth + m_iHealthBonus );
-	SetMaxHealth( iHealth + m_iHealthBonus );
+	return asw_boomer_health.GetInt();
 }
 
 //-----------------------------------------------------------------------------

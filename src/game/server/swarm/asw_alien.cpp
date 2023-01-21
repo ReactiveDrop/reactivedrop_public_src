@@ -44,28 +44,21 @@ extern ConVar ai_efficiency_override;
 extern ConVar ai_use_think_optimizations;
 extern ConVar ai_use_efficiency;
 extern ConVar showhitlocation;
-extern ConVar asw_stun_grenade_time;
 extern ConVar asw_drone_zig_zagging;
 extern ConVar asw_draw_awake_ai;
 extern ConVar asw_alien_debug_death_style;
 extern CServerGameDLL g_ServerGameDLL;
 
-// asw - how much extra damage to do to burning aliens
-ConVar asw_fire_alien_damage_scale("asw_fire_alien_damage_scale", "3.0", FCVAR_CHEAT );
 ConVar asw_alien_speed_scale_easy("asw_alien_speed_scale_easy", "0.7", FCVAR_CHEAT );
 ConVar asw_alien_speed_scale_normal("asw_alien_speed_scale_normal", "1.0", FCVAR_CHEAT );
 ConVar asw_alien_speed_scale_hard("asw_alien_speed_scale_hard", "1.1", FCVAR_CHEAT );
 ConVar asw_alien_speed_scale_insane("asw_alien_speed_scale_insane", "1.2", FCVAR_CHEAT );
-ConVar asw_alien_hurt_speed( "asw_alien_hurt_speed", "0.5", FCVAR_CHEAT, "Fraction of speed to use when the alien is hurt after being shot" );
-ConVar asw_alien_stunned_speed( "asw_alien_stunned_speed", "0.3", FCVAR_CHEAT, "Fraction of speed to use when the alien is electrostunned" );
 ConVar asw_drop_money("asw_drop_money", "1", FCVAR_CHEAT, "Do aliens drop money?");
 ConVar asw_alien_money_chance("asw_alien_money_chance", "1.0", FCVAR_CHEAT, "Chance of base aliens dropping money");
 ConVar asw_drone_hurl_chance( "asw_drone_hurl_chance", "0.66666666666666", FCVAR_NONE, "Chance that an alien killed by explosives will hurl towards the camera." );
 ConVar asw_drone_hurl_interval( "asw_drone_hurl_interval", "10", FCVAR_NONE, "Minimum number of seconds that must pass between alien bodies flung at camera." );
 ConVar asw_alien_break_chance ( "asw_alien_break_chance", "0.5", FCVAR_NONE, "chance the alien will break into ragdoll pieces instead of gib");
 ConVar asw_alien_fancy_death_chance ( "asw_alien_fancy_death_chance", "0.5", FCVAR_NONE, "If a drone doesn't instagib, this is the chance the alien plays a death anim before ragdolling" );
-ConVar asw_debug_npcs( "asw_debug_npcs", "0", FCVAR_CHEAT, "Enables debug overlays for various NPCs" );
-ConVar asw_alien_burn_duration( "asw_alien_burn_duration", "5.0f", FCVAR_CHEAT, "Alien burn time" );
 extern ConVar asw_money;
 
 // soft alien collision
@@ -96,81 +89,42 @@ int ACT_BURROW_OUT;
 
 LINK_ENTITY_TO_CLASS( asw_alien, CASW_Alien );
 
-IMPLEMENT_SERVERCLASS_ST(CASW_Alien, DT_ASW_Alien)
-	SendPropExclude ( "DT_BaseEntity", "m_vecOrigin" ),
-	SendPropVectorXY( SENDINFO( m_vecOrigin ), 				 CELL_BASEENTITY_ORIGIN_CELL_BITS, SPROP_CELL_COORD_LOWPRECISION | SPROP_CHANGES_OFTEN, 0.0f, HIGH_DEFAULT, CBaseEntity::SendProxy_CellOriginXY, SENDPROP_NONLOCALPLAYER_ORIGINXY_PRIORITY ),
-	SendPropFloat   ( SENDINFO_VECTORELEM( m_vecOrigin, 2 ), CELL_BASEENTITY_ORIGIN_CELL_BITS, SPROP_CELL_COORD_LOWPRECISION | SPROP_CHANGES_OFTEN, 0.0f, HIGH_DEFAULT, CBaseEntity::SendProxy_CellOriginZ, SENDPROP_NONLOCALPLAYER_ORIGINZ_PRIORITY ),
+IMPLEMENT_SERVERCLASS_ST( CASW_Alien, DT_ASW_Alien )
+	SendPropExclude( "DT_BaseEntity", "m_vecOrigin" ),
+	SendPropVectorXY( SENDINFO( m_vecOrigin ), CELL_BASEENTITY_ORIGIN_CELL_BITS, SPROP_CELL_COORD_LOWPRECISION | SPROP_CHANGES_OFTEN, 0.0f, HIGH_DEFAULT, CBaseEntity::SendProxy_CellOriginXY, SENDPROP_NONLOCALPLAYER_ORIGINXY_PRIORITY ),
+	SendPropFloat( SENDINFO_VECTORELEM( m_vecOrigin, 2 ), CELL_BASEENTITY_ORIGIN_CELL_BITS, SPROP_CELL_COORD_LOWPRECISION | SPROP_CHANGES_OFTEN, 0.0f, HIGH_DEFAULT, CBaseEntity::SendProxy_CellOriginZ, SENDPROP_NONLOCALPLAYER_ORIGINZ_PRIORITY ),
 
 	SendPropExclude( "DT_BaseEntity", "m_angRotation" ),
-	SendPropAngle( SENDINFO_VECTORELEM(m_angRotation, 0), 10, SPROP_CHANGES_OFTEN, CBaseEntity::SendProxy_AnglesX ),
-	SendPropAngle( SENDINFO_VECTORELEM(m_angRotation, 1), 10, SPROP_CHANGES_OFTEN, CBaseEntity::SendProxy_AnglesY ),
-	SendPropAngle( SENDINFO_VECTORELEM(m_angRotation, 2), 10, SPROP_CHANGES_OFTEN, CBaseEntity::SendProxy_AnglesZ ),
+	SendPropAngle( SENDINFO_VECTORELEM( m_angRotation, 0 ), 10, SPROP_CHANGES_OFTEN, CBaseEntity::SendProxy_AnglesX ),
+	SendPropAngle( SENDINFO_VECTORELEM( m_angRotation, 1 ), 10, SPROP_CHANGES_OFTEN, CBaseEntity::SendProxy_AnglesY ),
+	SendPropAngle( SENDINFO_VECTORELEM( m_angRotation, 2 ), 10, SPROP_CHANGES_OFTEN, CBaseEntity::SendProxy_AnglesZ ),
 
-	// test
-	//SendPropExclude( "DT_ServerAnimationData" , "m_flCycle" ),
-	SendPropBool( SENDINFO(m_bElectroStunned) ),// not using ElectroStunned
-	//SendPropBool( SENDINFO(m_bElectroShockSmall) ),
-	//SendPropBool( SENDINFO(m_bElectroShockBig) ),
-	SendPropBool( SENDINFO(m_bOnFire) ),
-	SendPropInt( SENDINFO(m_nDeathStyle), CASW_Alien::kDEATHSTYLE_NUM_TRANSMIT_BITS , SPROP_UNSIGNED ),
-	//SendPropBool(SENDINFO(m_bGibber)),
+	SendPropInt( SENDINFO( m_nDeathStyle ), CASW_Alien::kDEATHSTYLE_NUM_TRANSMIT_BITS, SPROP_UNSIGNED ),
 	SendPropFloat( SENDINFO( m_flAlienWalkSpeed ) ),
 	SendPropBool( SENDINFO( m_bInhabitedMovementAllowed ) ),
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Alien )
 	DEFINE_KEYFIELD( m_bVisibleWhenAsleep, FIELD_BOOLEAN, "visiblewhenasleep" ),
-    DEFINE_KEYFIELD( m_bFlammable, FIELD_BOOLEAN, "flammable" ),
-    DEFINE_KEYFIELD( m_bTeslable, FIELD_BOOLEAN, "teslable" ),
-    DEFINE_KEYFIELD( m_bFreezable, FIELD_BOOLEAN, "freezable" ),
-    DEFINE_KEYFIELD( m_bFlinchable, FIELD_BOOLEAN, "flinchable" ), 
-	DEFINE_KEYFIELD( m_bGrenadeReflector, FIELD_BOOLEAN, "reflector" ),
-	DEFINE_KEYFIELD (m_iHealthBonus, FIELD_INTEGER, "healthbonus"),
-    DEFINE_KEYFIELD( m_fSizeScale, FIELD_FLOAT, "sizescale" ), 
-    DEFINE_KEYFIELD( m_fSpeedScale, FIELD_FLOAT, "speedscale" ), 
 	DEFINE_KEYFIELD( m_iMoveCloneName, FIELD_STRING, "MoveClone" ),
-	DEFINE_KEYFIELD( m_bStartBurrowed,		FIELD_BOOLEAN,	"startburrowed" ),
-	DEFINE_INPUTFUNC( FIELD_VOID,	"BreakWaitForScript", InputBreakWaitForScript ),
+	DEFINE_KEYFIELD( m_bStartBurrowed, FIELD_BOOLEAN, "startburrowed" ),
+	DEFINE_INPUTFUNC( FIELD_VOID, "BreakWaitForScript", InputBreakWaitForScript ),
 	DEFINE_INPUTFUNC( FIELD_STRING, "SetMoveClone", InputSetMoveClone ),
 	DEFINE_FIELD( m_flBurrowTime, FIELD_TIME ),
-	DEFINE_FIELD(m_bIgnoreMarines, FIELD_BOOLEAN),
-	DEFINE_FIELD(m_bFailedMoveTo, FIELD_BOOLEAN),
-	DEFINE_FIELD(m_bElectroStunned, FIELD_BOOLEAN),
-	
+	DEFINE_FIELD( m_bFailedMoveTo, FIELD_BOOLEAN ),
+
 	//DEFINE_FIELD(m_bPerformingZigZag, FIELD_BOOLEAN),	// don't store this, let the zig zag be cleared each time	
+	DEFINE_FIELD( m_fNextPainSound, FIELD_FLOAT ),
 	//DEFINE_FIELD(m_bRunAtChasingPathEnds, FIELD_BOOLEAN), // no need to store currently, it's always true form constructor
-	DEFINE_FIELD(m_fNextPainSound, FIELD_FLOAT),
-	DEFINE_FIELD(m_fNextStunSound, FIELD_FLOAT),
-	DEFINE_FIELD(m_fHurtSlowMoveTime, FIELD_TIME),
-	DEFINE_FIELD(m_flElectroStunSlowMoveTime, FIELD_TIME),
-	//								m_ActBusyBehavior (auto saved by AI)	
-	DEFINE_FIELD( m_hSpawner, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_AlienOrders, FIELD_INTEGER ),
-	DEFINE_FIELD( m_vecAlienOrderSpot, FIELD_POSITION_VECTOR ),
-	DEFINE_FIELD( m_AlienOrderObject, FIELD_EHANDLE ),
+	// m_ActBusyBehavior (auto saved by AI)	
 	DEFINE_FIELD( m_fLastSleepCheckTime, FIELD_FLOAT ),
-	DEFINE_FIELD( m_bOnFire, FIELD_BOOLEAN ),	
 	DEFINE_FIELD( m_iNumASWOrderRetries, FIELD_INTEGER ),
-	DEFINE_FIELD( m_flFreezeResistance, FIELD_FLOAT ),
-	DEFINE_FIELD( m_flFrozenTime, FIELD_TIME ),
 
 	// soft alien collision
 	DEFINE_FIELD( m_vecLastPushAwayOrigin, FIELD_VECTOR ),
 	DEFINE_FIELD( m_vecLastPush, FIELD_VECTOR ),
 	DEFINE_FIELD( m_bPushed, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bHoldoutAlien, FIELD_BOOLEAN ),
 END_DATADESC()
-// BenLubar(key-values-director)
-BEGIN_ENT_SCRIPTDESC( CASW_Alien, CASW_Inhabitable_NPC, "Alien Swarm alien" )
-	DEFINE_SCRIPTFUNC_NAMED( ClearAlienOrders, "ClearOrders", "clear the alien's orders" )
-	DEFINE_SCRIPTFUNC_NAMED( ScriptOrderMoveTo, "OrderMoveTo", "order the alien to move to an entity handle, second parameter ignore marines" )
-	DEFINE_SCRIPTFUNC_NAMED( ScriptChaseNearestMarine, "ChaseNearestMarine", "order the alien to chase the nearest marine" )
-	DEFINE_SCRIPTFUNC( Extinguish, "Extinguish a burning alien." )
-	DEFINE_SCRIPTFUNC_NAMED( ScriptIgnite, "Ignite", "Ignites the alien into flames." )
-	DEFINE_SCRIPTFUNC_NAMED( ScriptFreeze, "Freeze", "Freezes the alien." )
-	DEFINE_SCRIPTFUNC_NAMED( ScriptElectroStun, "ElectroStun", "Stuns the alien." )
-	DEFINE_SCRIPTFUNC( Wake, "Wake up the alien." )
-END_SCRIPTDESC()
 
 IMPLEMENT_AUTO_LIST( IAlienAutoList );
 
@@ -184,26 +138,9 @@ CASW_Alien::CASW_Alien( void ) :
 	m_bRunAtChasingPathEnds = true;	
 	m_bPerformingZigZag = false;
 	m_fNextPainSound = 0;
-	m_fNextStunSound = 0;
 
-	m_fHurtSlowMoveTime = 0;
-	m_flElectroStunSlowMoveTime = 0;
-	m_hSpawner = NULL;
-	m_AlienOrders = AOT_None;
-	m_vecAlienOrderSpot = vec3_origin;
-	m_AlienOrderObject = NULL;
-	m_bIgnoreMarines = false;
 	m_fLastSleepCheckTime = 0;
 	m_bVisibleWhenAsleep = false;
-	m_bWasOnFireForStats = false;
-	m_bFlammable = true;
-	m_bTeslable = true;
-	m_bFreezable = true;
-	m_bFlinchable = true;
-	m_bGrenadeReflector = false;
-	m_iHealthBonus = 0;
-	m_fSizeScale = 1.0f;
-	m_fSpeedScale = 1.0f;
 
 	m_fLastMarineCanSeeTime = -100;
 	m_bLastMarineCanSee = false;
@@ -213,8 +150,6 @@ CASW_Alien::CASW_Alien( void ) :
 	m_bNeverRagdoll = false;
 	m_bNeverInstagib = false;
 	m_nDeathStyle = kDIE_RAGDOLLFADE;
-	m_flBaseThawRate = 0.5f;
-	m_flFrozenTime = 0.0f;
 	m_flAlienWalkSpeed = 0.0f;
 	m_bInhabitedMovementAllowed = false;
 	m_bNoTranslateNextSchedule = false;
@@ -262,11 +197,6 @@ CASW_Alien::~CASW_Alien()
 //-----------------------------------------------------------------------------
 void CASW_Alien::Spawn()
 {
-	if ( asw_debug_npcs.GetBool() )
-	{
-		m_debugOverlays |= OVERLAY_NPC_ROUTE_BIT | OVERLAY_BBOX_BIT | OVERLAY_PIVOT_BIT | OVERLAY_TASK_TEXT_BIT | OVERLAY_TEXT_BIT;
-	}
-
 	ChangeFaction( FACTION_ALIENS );
 
 	// get pointers to behaviors
@@ -304,7 +234,7 @@ void CASW_Alien::Spawn()
 
 	if ( m_SquadName != NULL_STRING )
 	{
-		CapabilitiesAdd( bits_CAP_SQUAD );																			 
+		CapabilitiesAdd( bits_CAP_SQUAD );
 	}
 
 	if ( HasSpawnFlags( SF_ANTLION_USE_GROUNDCHECKS ) == false )
@@ -360,8 +290,6 @@ void CASW_Alien::Spawn()
 		SetMoveClone( m_iMoveCloneName, NULL );
 	}
 
-    SetModelScale( m_fSizeScale );
-
 	IGameEvent * event = gameeventmanager->CreateEvent( "alien_spawn" );
 	if ( event )
 	{
@@ -381,7 +309,7 @@ void CASW_Alien::Precache()
 	}
 
 	PrecacheModel( szModel );
-	
+
 	//pre-cache any models used by particle gib effects
 	int modelIndex = modelinfo->GetModelIndex( szModel );
 	const model_t *model = modelinfo->GetModel( modelIndex );
@@ -408,7 +336,6 @@ void CASW_Alien::Precache()
 		modelKeyValues->deleteThis();
 	}
 
-
 	PrecacheParticleSystem( "drone_death" );	// death
 	PrecacheParticleSystem( "drone_shot" );		// shot
 	PrecacheParticleSystem( "freeze_statue_shatter" );
@@ -416,23 +343,15 @@ void CASW_Alien::Precache()
 
 // Updates our memory about the enemies we Swarm Sensed
 // todo: add various swarm sense conditions?
-void CASW_Alien::OnSwarmSensed(int iDistance)
+void CASW_Alien::OnSwarmSensed( int iDistance )
 {
 	AISightIter_t iter;
 	CBaseEntity *pSenseEnt;
 
 	pSenseEnt = GetASWSenses()->GetFirstSwarmSenseEntity( &iter );
 
-	while( pSenseEnt )
+	while ( pSenseEnt )
 	{
-		/*
-		if ( pSenseEnt->IsPlayer() )
-		{
-			// if we see a client, remember that (mostly for scripted AI)
-			//SetCondition(COND_SEE_PLAYER);
-		}
-		*/
-
 		Disposition_t relation = IRelationType( pSenseEnt );
 
 		// the looker will want to consider this entity
@@ -450,26 +369,26 @@ void CASW_Alien::OnSwarmSensed(int iDistance)
 			switch ( relation )
 			{
 			case D_HT:
+			{
+				int priority = IRelationPriority( pSenseEnt );
+				if ( priority < 0 )
 				{
-					int priority = IRelationPriority( pSenseEnt );
-					if (priority < 0)
-					{
-						//SetCondition(COND_SEE_DISLIKE);
-					}
-					else if (priority > 10)
-					{
-						//SetCondition(COND_SEE_NEMESIS);
-					}
-					else
-					{
-						//SetCondition(COND_SEE_HATE);
-					}
-					UpdateEnemyMemory(pSenseEnt,pSenseEnt->GetAbsOrigin());
-					break;
-
+					//SetCondition(COND_SEE_DISLIKE);
 				}
+				else if ( priority > 10 )
+				{
+					//SetCondition(COND_SEE_NEMESIS);
+				}
+				else
+				{
+					//SetCondition(COND_SEE_HATE);
+				}
+				UpdateEnemyMemory( pSenseEnt, pSenseEnt->GetAbsOrigin() );
+				break;
+
+			}
 			case D_FR:
-				UpdateEnemyMemory(pSenseEnt,pSenseEnt->GetAbsOrigin());
+				UpdateEnemyMemory( pSenseEnt, pSenseEnt->GetAbsOrigin() );
 				//SetCondition(COND_SEE_FEAR);
 				break;
 			case D_LI:
@@ -486,16 +405,16 @@ void CASW_Alien::OnSwarmSensed(int iDistance)
 }
 
 // create our custom senses class
-CAI_Senses* CASW_Alien::CreateSenses()
+CAI_Senses *CASW_Alien::CreateSenses()
 {
 	CAI_Senses *pSenses = new CASW_AI_Senses;
 	pSenses->SetOuter( this );
 	return pSenses;
 }
 
-CASW_AI_Senses* CASW_Alien::GetASWSenses()
+CASW_AI_Senses *CASW_Alien::GetASWSenses()
 {
-	return dynamic_cast<CASW_AI_Senses*>(GetSenses());
+	return assert_cast< CASW_AI_Senses * >( GetSenses() );
 }
 
 bool CASW_Alien::QuerySeeEntity( CBaseEntity *pEntity, bool bOnlyHateOrFearIfNPC )
@@ -621,8 +540,6 @@ void CASW_Alien::NPCInit()
 	SetCollisionBounds( GetHullMins(), GetHullMaxs() );
 
 	CASW_GameStats.Event_AlienSpawned( this );
-	
-	m_LagCompensation.Init(this);
 }
 
 void CASW_Alien::CallBehaviorThink()
@@ -642,31 +559,10 @@ void CASW_Alien::NPCThink( void )
 	{
 		PerformPushaway();
 	}
-	// stop electro stunning if we're slowed
-	if ( m_bElectroStunned && m_lifeState != LIFE_DYING )
-	{
-		if ( m_flElectroStunSlowMoveTime < gpGlobals->curtime )
-		{
-			m_bElectroStunned = false;
-		}
-		else
-		{
-			if ( gpGlobals->curtime >= m_fNextStunSound )
-			{
-				m_fNextStunSound = gpGlobals->curtime + RandomFloat( 0.2f, 0.5f );
 
-				EmitSound( "ASW_Tesla_Laser.Damage" );
-			}
-		}
-	}
-
-	if (gpGlobals->maxClients > 1)
-		m_LagCompensation.StorePositionHistory();
 	// Update range attack
 	if ( m_nVolleyType >= 0 )
 		UpdateRangedAttack();
-
-	UpdateThawRate();
 
 	m_flLastThinkTime = gpGlobals->curtime;
 }
@@ -732,74 +628,6 @@ void CASW_Alien::MeleeBleed(CTakeDamageInfo* info)
 		Vector vecDir = -info->GetDamageForce();
 		vecDir.NormalizeInPlace();
 		UTIL_ASW_DroneBleed( info->GetDamagePosition() + m_LagCompensation.GetLagCompensationOffset(), vecDir, 4 );
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-// Freezes this NPC in place for a period of time.
-//-----------------------------------------------------------------------------
-void CASW_Alien::Freeze( float flFreezeAmount, CBaseEntity *pFreezer, Ray_t *pFreezeRay ) 
-{
-    if (!m_bFreezable)
-        return;
-
-	if ( flFreezeAmount <= 0.0f )
-	{
-		SetCondition(COND_NPC_FREEZE);
-		SetMoveType(MOVETYPE_NONE);
-		SetGravity(0);
-		SetLocalAngularVelocity(vec3_angle);
-		SetAbsVelocity( vec3_origin );
-		return;
-	}
-
-	if ( flFreezeAmount > 1.0f )
-	{
-		float flFreezeDuration = flFreezeAmount - 1.0f;
-
-		// if freezing permanently, then reduce freeze duration by freeze resistance
-		flFreezeDuration *= ( 1.0f - m_flFreezeResistance );
-
-		BaseClass::Freeze( 1.0f, pFreezer, pFreezeRay );			// make alien fully frozen
-
-		m_flFrozenTime = gpGlobals->curtime + flFreezeDuration;
-	}
-	else
-	{
-		// if doing a partial freeze, then freeze resistance reduces that
-		flFreezeAmount *= ( 1.0f - m_flFreezeResistance );
-
-		BaseClass::Freeze( flFreezeAmount, pFreezer, pFreezeRay );
-	}
-
-	UpdateThawRate();
-}
-
-//-----------------------------------------------------------------------------
-// VScript: Freezes this NPC in place for a period of time.
-//-----------------------------------------------------------------------------
-void CASW_Alien::ScriptFreeze( float flFreezeAmount )
-{
-    Freeze( flFreezeAmount, NULL, NULL );
-}
-
-bool CASW_Alien::ShouldBecomeStatue()
-{
-	// Prevents parent classes from turning this NPC into a statue
-	// We handle that ourselves if the alien dies while iced up
-	return false;
-}
-
-void CASW_Alien::UpdateThawRate()
-{
-	if ( m_flFrozenTime > gpGlobals->curtime )
-	{
-		m_flFrozenThawRate = 0.0f;
-	}
-	else
-	{
-		m_flFrozenThawRate = m_flBaseThawRate * (1.5f - m_flFrozen);
 	}
 }
 
@@ -986,67 +814,10 @@ bool CASW_Alien::ShouldPlayerAvoid( void )
 	return true;
 }
 
-// catching on fire
 int CASW_Alien::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 {
-	int result = 0;	
+	int result = BaseClass::OnTakeDamage_Alive( info );
 
-	CASW_Burning* pBurning = NULL;
-	CBaseEntity* pAttacker = info.GetAttacker();
-	CBaseEntity* pInflictor = info.GetInflictor();
-	if ( pInflictor && pInflictor->Classify() == CLASS_ASW_BURNING )
-		pBurning = assert_cast<CASW_Burning*>(pInflictor);
-
-	// scale burning damage up
-	//if (dynamic_cast<CEntityFlame*>(info.GetAttacker()))
-	if ( pBurning )
-	{
-		CTakeDamageInfo newDamage = info;		
-		newDamage.ScaleDamage(asw_fire_alien_damage_scale.GetFloat());
-		if (asw_debug_alien_damage.GetBool())
-		{
-			Msg("%d %s hurt by %f dmg (scaled up by asw_fire_alien_damage_scale)\n", entindex(), GetClassname(), newDamage.GetDamage());
-		}
-		result = BaseClass::OnTakeDamage_Alive(newDamage);
-	}
-	else
-	{
-		if (asw_debug_alien_damage.GetBool())
-		{
-			Msg("%d %s hurt by %f dmg\n", entindex(), GetClassname(), info.GetDamage());
-		}
-		result = BaseClass::OnTakeDamage_Alive(info);
-	}
-
-	// if we take fire damage, catch on fire
-	if (result > 0 && (info.GetDamageType() & DMG_BURN) && m_bFlammable && info.GetWeapon() && !pBurning )
-	{
-		ASW_Ignite( asw_alien_burn_duration.GetFloat(), 0, pAttacker, info.GetWeapon() );
-	}
-
-	// make the alien move slower for 0.5 seconds
-	if (info.GetDamageType() & DMG_SHOCK && m_bTeslable)
-	{
-		ElectroStun( asw_stun_grenade_time.GetFloat() );		
-
-		m_fNoDamageDecal = true;
-	}
-	else
-	{
-		if (m_fHurtSlowMoveTime < gpGlobals->curtime + 0.5f)
-			m_fHurtSlowMoveTime = gpGlobals->curtime + 0.5f;
-	}
-
-	CASW_Marine* pMarine = NULL;
-	if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
-	{
-		pMarine = static_cast<CASW_Marine*>( pAttacker );
-		pMarine->HurtAlien(this, info);
-	}
-
-	// Notify gamestats of the damage
-	CASW_GameStats.Event_AlienTookDamage( this, info );
-		
 	if ( m_RecentDamage.Count() == ASW_NUM_RECENT_DAMAGE )
 	{
 		m_RecentDamage.RemoveAtHead();
@@ -2335,67 +2106,12 @@ void CASW_Alien::Event_Killed( const CTakeDamageInfo &info )
 	BaseClass::Event_Killed(info);
 }
 
-void CASW_Alien::SetSpawner(CASW_Base_Spawner* spawner)
-{
-	m_hSpawner = spawner;
-}
-
 void CASW_Alien::InputBreakWaitForScript(inputdata_t &inputdata)
 {
 	if (IsCurSchedule( SCHED_WAIT_FOR_SCRIPT ))
 	{
 		SetSchedule(SCHED_IDLE_STAND);
 	}
-}
-
-// set orders for our alien
-//   select schedule should activate the appropriate orders
-void CASW_Alien::SetAlienOrders(AlienOrder_t Orders, Vector vecOrderSpot, CBaseEntity* pOrderObject)
-{
-	m_AlienOrders = Orders;
-	m_vecAlienOrderSpot = vecOrderSpot;	// unused currently
-	m_AlienOrderObject = pOrderObject;
-
-	Wake(); // Make sure we at least consider following the orders.
-
-	if (Orders == AOT_None)
-	{
-		ClearAlienOrders();
-		return;
-	}
-
-	ForceDecisionThink();	// todo: stagger the decision time if at start of mission?
-
-	//Msg("Drone recieved orders\n");
-}
-
-AlienOrder_t CASW_Alien::GetAlienOrders()
-{
-	return m_AlienOrders;
-}
-
-void CASW_Alien::ClearAlienOrders()
-{
-	//Msg("Drone orders cleared\n");
-	m_AlienOrders = AOT_None;
-	m_vecAlienOrderSpot = vec3_origin;
-	m_AlienOrderObject = NULL;
-	m_bIgnoreMarines = false;
-	m_bFailedMoveTo = false;
-}
-
-void CASW_Alien::ScriptOrderMoveTo( HSCRIPT hOrderObject, bool bIgnoreMarines )
-{
-	SetAlienOrders( bIgnoreMarines ? AOT_MoveToIgnoringMarines : AOT_MoveTo, vec3_origin, ToEnt( hOrderObject ) );
-}
-
-void CASW_Alien::ScriptChaseNearestMarine()
-{
-	if ( GetSleepState() > AISS_AWAKE )		// alien is asleep, wake
-	{
-		Wake( false );
-	}
-	SetAlienOrders( AOT_MoveToNearestMarine, vec3_origin, NULL );
 }
 
 void CASW_Alien::GatherConditions()
@@ -2522,58 +2238,6 @@ void CASW_Alien::IgnoreMarines(bool bIgnoreMarines)
 	}
 }
 
-// we're blocking a fellow alien from spawning, let's move a short distance
-void CASW_Alien::MoveAside()
-{
-	if (!GetEnemy() && !IsMoving())
-	{
-		// random nearby position
-		if ( !GetNavigator()->SetWanderGoal( 90, 200 ) )
-		{
-			if ( !GetNavigator()->SetRandomGoal( 150.0f ) )
-			{
-				return;	// couldn't find a wander spot
-			}
-		}
-		//SetSchedule(SCHED_IDLE_WALK);
-	}
-}
-
-void CASW_Alien::ScriptIgnite( float flFlameLifetime )
-{
-	ASW_Ignite( flFlameLifetime, 0, NULL, NULL );
-}
-
-void CASW_Alien::ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon )
-{
-	if (AllowedToIgnite())
-	{
-		if (IsOnFire())
-		{
-			// reactivedrop
-			if (ASWBurning())
-				ASWBurning()->ExtendBurning(this, flFlameLifetime);	// 2.5 dps, applied every 0.4 seconds
-			//
-			return;
-		}
-
-		AddFlag( FL_ONFIRE );
-		m_bOnFire = true;
-		if (ASWBurning())
-			ASWBurning()->BurnEntity(this, pAttacker, flFlameLifetime, 0.4f, 2.5f * 0.4f, pDamagingWeapon );	// 2.5 dps, applied every 0.4 seconds
-
-		m_OnIgnite.FireOutput( this, this );
-	}
-}
-
-void CASW_Alien::Extinguish()
-{
-	m_bOnFire = false;
-	if (ASWBurning())
-		ASWBurning()->Extinguish(this);
-	RemoveFlag( FL_ONFIRE );
-}
-
 bool CASW_Alien::IsMeleeAttacking()
 {
 	return (GetTask() && (GetTask()->iTask == TASK_MELEE_ATTACK1));
@@ -2665,12 +2329,6 @@ void CASW_Alien::UpdateEfficiency( bool bInPVS )
 	SetEfficiency( ( bFramerateOk ) ? AIE_EFFICIENT : AIE_VERY_EFFICIENT );
 }
 
-void CASW_Alien::OnRestore()
-{
-	BaseClass::OnRestore();
-	m_LagCompensation.Init(this);
-}
-
 // checks if a marine can see us
 //  caches the results and won't recheck unless the specified interval has passed since the last check
 bool CASW_Alien::MarineCanSee(int padding, float interval)
@@ -2682,61 +2340,6 @@ bool CASW_Alien::MarineCanSee(int padding, float interval)
 		m_fLastMarineCanSeeTime = gpGlobals->curtime;
 	}
 	return m_bLastMarineCanSee;
-}
-
-void CASW_Alien::SetHealthByDifficultyLevel()
-{
-	// filled in by subclasses
-}
-
-void CASW_Alien::Ignite( float flFlameLifetime, bool bNPCOnly, float flSize, bool bCalledByLevelDesigner )
-{
-	return;	// use ASW_Ignite instead
-}
-
-bool CASW_Alien::ShouldMoveSlow() const
-{
-	return (gpGlobals->curtime < m_fHurtSlowMoveTime);
-}
-
-bool CASW_Alien::ModifyAutoMovement( Vector &vecNewPos )
-{
-	// melee auto movement on the drones seems way too fast
-	float fFactor = 1.0f;
-	if ( ShouldMoveSlow() )
-	{
-		if ( m_bElectroStunned.Get() )
-		{
-			fFactor *= asw_alien_stunned_speed.GetFloat() * 0.1f;
-		}
-		else
-		{
-			fFactor *= asw_alien_hurt_speed.GetFloat() * 0.1f;
-		}
-		Vector vecRelPos = vecNewPos - GetAbsOrigin();
-		vecRelPos *= fFactor;
-		vecNewPos = GetAbsOrigin() + vecRelPos;
-		return true;
-	}
-	return false;
-}
-
-float CASW_Alien::GetIdealSpeed() const
-{
-	// if the alien is hurt, move slower	
-	if ( ShouldMoveSlow() )
-	{
-		if ( m_bElectroStunned.Get() )
-		{
-			return BaseClass::GetIdealSpeed() * m_fSpeedScale * asw_alien_stunned_speed.GetFloat();
-		}
-		else
-		{
-			return BaseClass::GetIdealSpeed() * m_fSpeedScale * asw_alien_hurt_speed.GetFloat();
-		}
-	}
-
-	return BaseClass::GetIdealSpeed() * m_fSpeedScale;
 }
 
 void CASW_Alien::DropMoney( const CTakeDamageInfo &info )
@@ -2770,29 +2373,6 @@ int CASW_Alien::GetMoneyCount( const CTakeDamageInfo &info )
 		return 1;
 	}
 	return 0;
-}
-
-void CASW_Alien::ElectroStun( float flStunTime )
-{
-	if (m_fHurtSlowMoveTime < gpGlobals->curtime + flStunTime)
-		m_fHurtSlowMoveTime = gpGlobals->curtime + flStunTime;
-	if (m_flElectroStunSlowMoveTime < gpGlobals->curtime + flStunTime)
-		m_flElectroStunSlowMoveTime = gpGlobals->curtime + flStunTime;
-
-	m_bElectroStunned = true;
-
-	if ( ASWGameResource() )
-	{
-		ASWGameResource()->m_iElectroStunnedAliens++;
-	}
-
-	// can't jump after being elecrostunned
-	CapabilitiesRemove( bits_CAP_MOVE_JUMP );
-}
-
-void CASW_Alien::ScriptElectroStun( float flStunTime )
-{
-	ElectroStun( flStunTime );
 }
 
 void CASW_Alien::ForceFlinch( const Vector &vecSrc )
@@ -3149,20 +2729,6 @@ void CASW_Alien::HandleAnimEvent( animevent_t *pEvent )
 		return;
 
 	BaseClass::HandleAnimEvent( pEvent );
-}
-
-int	CASW_Alien::DrawDebugTextOverlays()
-{
-	int text_offset = BaseClass::DrawDebugTextOverlays();
-
-	if (m_debugOverlays & OVERLAY_TEXT_BIT)
-	{
-		NDebugOverlay::EntityText( entindex(),text_offset,CFmtStr( "Freeze amt.: %f", m_flFrozen.Get() ),0 );
-		text_offset++;
-		NDebugOverlay::EntityText( entindex(),text_offset,CFmtStr( "Freeze time: %f", m_flFrozenTime - gpGlobals->curtime ),0 );
-		text_offset++;
-	}
-	return text_offset;
 }
 
 void CASW_Alien::InputSetMoveClone( inputdata_t &inputdata )

@@ -21,7 +21,6 @@
 #include "ai_behavior_actbusy.h"
 #include "ai_sentence.h"
 #include "asw_inhabitable_npc.h"
-#include "iasw_spawnable_npc.h"
 
 
 // Used when only what combine to react to what the spotlight sees
@@ -32,7 +31,7 @@
 //=========================================================
 //	>> CNPC_Combine
 //=========================================================
-class CNPC_Combine : public CASW_Inhabitable_NPC, public IASW_Spawnable_NPC
+class CNPC_Combine : public CASW_Inhabitable_NPC
 {
 	DECLARE_DATADESC();
 	DEFINE_CUSTOM_AI;
@@ -300,36 +299,6 @@ public:
 	int				m_iTacticalVariant;
 	int				m_iPathfindingVariant;
 	int				m_iNumGrenades;
-
-	// IASW_Spawnable_NPC implementation
-	virtual void SetSpawner( CASW_Base_Spawner *spawner );
-	virtual CAI_BaseNPC *GetNPC() { return this; }
-	virtual bool CanStartBurrowed() { return false; } // for now, unless there's a good way to get rappelling looking good
-	virtual void StartBurrowed() {}
-	virtual void SetUnburrowActivity( string_t iszActivityName ) {}
-	virtual void SetUnburrowIdleActivity( string_t iszActivityName ) {}
-	virtual void SetAlienOrders( AlienOrder_t Orders, Vector vecOrderSpot, CBaseEntity *pOrderObject );
-	virtual AlienOrder_t GetAlienOrders();
-	virtual void MoveAside();
-	virtual void ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon = NULL );
-	virtual void ElectroStun( float flStuntime );
-	virtual void OnSwarmSensed( int iDistance ) {}
-	virtual void OnSwarmSenseEntity( CBaseEntity *pEnt ) {}
-	virtual void SetHealthByDifficultyLevel();
-	virtual void SetHoldoutAlien();
-	virtual bool IsHoldoutAlien();
-
-	CHandle<CASW_Base_Spawner> m_hSpawner;
-	bool m_bIsHoldout;
-	// TODO:
-	bool m_bFlammable;
-	bool m_bTeslable;
-	bool m_bFreezable;
-	bool m_bFlinchable;
-	bool m_bGrenadeReflector;
-	int m_iHealthBonus;
-	float m_fSizeScale;
-	float m_fSpeedScale;
 };
 
 

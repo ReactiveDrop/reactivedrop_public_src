@@ -120,6 +120,7 @@ public:
 class CASW_Spawn_NPC
 {
 public:
+	explicit CASW_Spawn_NPC( const char *szAlienClass );
 	CASW_Spawn_NPC( KeyValues *pKV );
 	CASW_Spawn_NPC( const CASW_Spawn_NPC & npc );
 	void Dump();

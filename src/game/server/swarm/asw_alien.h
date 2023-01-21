@@ -55,11 +55,10 @@ struct CombatConditionData_t
 
 DECLARE_AUTO_LIST( IAlienAutoList );
 
-class CASW_Alien : public CASW_Inhabitable_NPC, public IASW_Spawnable_NPC, public IAlienAutoList
+class CASW_Alien : public CASW_Inhabitable_NPC, public IAlienAutoList
 {
 	DECLARE_CLASS( CASW_Alien, CASW_Inhabitable_NPC );
 	DECLARE_SERVERCLASS();
-	DECLARE_ENT_SCRIPTDESC();	// BenLubar(key-values-director)
 
 	// shared class members
 #include "asw_alien_shared_classmembers.h"
@@ -67,7 +66,6 @@ class CASW_Alien : public CASW_Inhabitable_NPC, public IASW_Spawnable_NPC, publi
 public:
 	virtual void NPCInit();
 	virtual void NPCThink();
-	virtual void OnRestore();
 	virtual void CallBehaviorThink();
 	virtual void StartTouch( CBaseEntity *pOther );
 	virtual void Spawn();
@@ -77,7 +75,6 @@ public:
 
 	// custom sensing through walls
 	virtual void OnSwarmSensed( int iDistance );
-	virtual void OnSwarmSenseEntity( CBaseEntity *pEnt ) { }
 	CAI_Senses *CreateSenses();
 	CASW_AI_Senses *GetASWSenses();
 	virtual bool QuerySeeEntity( CBaseEntity *pEntity, bool bOnlyHateOrFearIfNPC );
@@ -85,7 +82,6 @@ public:
 	bool MarineNearby( float radius, bool bCheck3D = false );
 	bool FInViewCone( const Vector &vecSpot );
 	bool Knockback( Vector vecForce );
-	virtual int DrawDebugTextOverlays();
 	virtual void SetDefaultEyeOffset();
 
 	// make the aliens wake up when a marine gets within a certain distance
@@ -95,16 +91,6 @@ public:
 	bool m_bRegisteredAsAwake;
 	float m_fLastSleepCheckTime;
 	bool m_bVisibleWhenAsleep;
-
-	bool m_bWasOnFireForStats;
-	bool m_bFlammable;
-	bool m_bTeslable;
-	bool m_bFreezable;
-	bool m_bFlinchable;
-	bool m_bGrenadeReflector;
-	int  m_iHealthBonus;
-	float m_fSizeScale;
-	float m_fSpeedScale;
 
 	DECLARE_DATADESC();
 	CASW_Alien();
@@ -132,11 +118,6 @@ public:
 	float GetGoalRepathTolerance( CBaseEntity *pGoalEnt, GoalType_t type, const Vector &curGoal, const Vector &curTargetPos );
 
 	bool m_bRunAtChasingPathEnds;
-
-	// movement
-	virtual bool ShouldMoveSlow() const;	// has this alien been hurt and so should move slow?
-	virtual bool ModifyAutoMovement( Vector &vecNewPos );
-	virtual float GetIdealSpeed() const;
 
 	virtual bool ShouldPlayerAvoid( void );
 
@@ -180,13 +161,9 @@ public:
 	virtual void BreakAlien( const CTakeDamageInfo &info );
 	int OnTakeDamage_Alive( const CTakeDamageInfo &info );
 	virtual Vector CalcDeathForceVector( const CTakeDamageInfo &info );
-	virtual	bool		AllowedToIgnite( void ) { return m_bFlammable; }
 	float	m_fNextPainSound;
-	float	m_fNextStunSound;
 	void Event_Killed( const CTakeDamageInfo &info );
 	float m_fHurtSlowMoveTime;
-	float m_flElectroStunSlowMoveTime;
-	CNetworkVar( bool, m_bElectroStunned );
 	//CNetworkVar(bool, m_bGibber);
 	CNetworkVar( DeathStyle_t, m_nDeathStyle );
 	CUtlQueueFixed< CTakeDamageInfo, ASW_NUM_RECENT_DAMAGE >	m_RecentDamage;
@@ -216,37 +193,11 @@ public:
 	//void PlayStepSound( Vector &vecOrigin, surfacedata_t *psurface, float fvol, bool force );
 	//surfacedata_t* GetGroundSurface();
 
-	// IASW_Spawnable_NPC implementation
-	CHandle<CASW_Base_Spawner> m_hSpawner;
-	virtual void SetSpawner( CASW_Base_Spawner *spawner );
-	virtual CAI_BaseNPC *GetNPC() { return this; }
-	virtual void SetAlienOrders( AlienOrder_t Orders, Vector vecOrderSpot, CBaseEntity *pOrderObject );
-	virtual AlienOrder_t GetAlienOrders();
-	virtual void ClearAlienOrders();
-	void ScriptOrderMoveTo( HSCRIPT hOrderObject, bool bIgnoreMarines );
-	void ScriptChaseNearestMarine();
-	virtual int SelectAlienOrdersSchedule();
 	virtual void OnMovementComplete();
-	virtual bool ShouldClearOrdersOnMovementComplete();
 	virtual void GatherConditions();
+	virtual int SelectAlienOrdersSchedule();
+	virtual bool ShouldClearOrdersOnMovementComplete();
 	virtual void IgnoreMarines( bool bIgnoreMarines );
-	virtual void MoveAside();
-	virtual void ScriptIgnite( float flFlameLifetime );
-	virtual void ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon = NULL );
-	virtual void Ignite( float flFlameLifetime, bool bNPCOnly = true, float flSize = 0.0f, bool bCalledByLevelDesigner = false );
-	virtual void Extinguish();
-	virtual void ElectroStun( float flStunTime );
-	virtual void ScriptElectroStun( float flStunTime );
-	bool IsElectroStunned() { return m_bElectroStunned.Get(); }
-	CNetworkVar( bool, m_bOnFire );
-	virtual void SetHoldoutAlien() { m_bHoldoutAlien = true; }
-	virtual bool IsHoldoutAlien() { return m_bHoldoutAlien; }
-
-	AlienOrder_t m_AlienOrders;
-	Vector m_vecAlienOrderSpot;
-	EHANDLE m_AlienOrderObject;
-	bool m_bIgnoreMarines;
-	bool m_bFailedMoveTo;
 
 	// burrowing
 	bool		m_bStartBurrowed;
@@ -283,21 +234,6 @@ public:
 	string_t m_iMoveCloneName;
 	matrix3x4_t m_moveCloneOffset;
 
-	virtual void	SetHealth( int amt ) { Assert( amt < ( pow( 2.0f, ASW_ALIEN_HEALTH_BITS ) ) ); m_iHealth = amt; }
-	virtual void SetHealthByDifficultyLevel();
-
-	// freezeing
-	virtual void Freeze( float flFreezeAmount, CBaseEntity *pFreezer, Ray_t *pFreezeRay );
-	virtual void ScriptFreeze( float flFreezeAmount );
-	virtual bool ShouldBecomeStatue( void );
-	virtual bool IsMovementFrozen( void ) { return GetFrozenAmount() > 0.5f; }
-	void UpdateThawRate();
-	float m_flFreezeResistance;
-	float m_flFrozenTime;
-	float m_flBaseThawRate;
-
-	CASW_Lag_Compensation m_LagCompensation;
-
 	// can a marine see us?
 	bool MarineCanSee( int padding, float interval );
 	float m_fLastMarineCanSeeTime;
@@ -313,8 +249,6 @@ public:
 	// dropping money
 	virtual void DropMoney( const CTakeDamageInfo &info );
 	virtual int GetMoneyCount( const CTakeDamageInfo &info );
-
-	IMPLEMENT_NETWORK_VAR_FOR_DERIVED( m_iHealth );
 
 	CASW_AlienVolley *GetVolley( const char *pszVolleyName );
 	int				GetVolleyIndex( const char *pszVolleyName );
@@ -382,9 +316,8 @@ protected:
 	static float sm_flLastHurlTime;
 
 	const char *m_pszAlienModelName;
-	bool m_bHoldoutAlien;
 	bool m_bBehaviorParameterChanged;
-	CUtlMap< CUtlSymbol, int >		m_BehaviorParms;	
+	CUtlMap< CUtlSymbol, int >		m_BehaviorParms;
 	CAI_ASW_FlinchBehavior* m_pFlinchBehavior;
 	CAI_BehaviorBase	*m_pPreviousBehavior;
 	CUtlVector<CASW_AlienVolley>	m_volleys;

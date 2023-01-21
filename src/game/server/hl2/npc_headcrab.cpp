@@ -168,7 +168,6 @@ END_DATADESC()
 void CBaseHeadcrab::Spawn( void )
 {
 	SetHullType( HULL_TINY );
-	SetHealthByDifficultyLevel();
 
 	SetViewOffset( Vector( 6, 0, 11 ) ); // Position of the eyes relative to NPC's origin.
 
@@ -205,28 +204,20 @@ void CBaseHeadcrab::Spawn( void )
 }
 
 
-void CBaseHeadcrab::SetHealthByDifficultyLevel( void )
+int CBaseHeadcrab::GetBaseHealth()
 {
 	if ( FClassnameIs( this, "npc_headcrab" ) )
 	{
-		SetHealth( ASWGameRules()->ModifyAlienHealthBySkillLevel( sk_headcrab_health.GetInt() ) + m_iHealthBonus );
-		if ( asw_debug_alien_damage.GetBool() )
-			Msg( "Setting headcrab's initial health to %d\n", GetHealth() );
+		return sk_headcrab_health.GetInt();
 	}
 	else if ( FClassnameIs( this, "npc_headcrab_fast" ) )
 	{
-		SetHealth( ASWGameRules()->ModifyAlienHealthBySkillLevel( sk_headcrab_fast_health.GetInt() ) + m_iHealthBonus );
-		if ( asw_debug_alien_damage.GetBool() )
-			Msg( "Setting fast headcrab's initial health to %d\n", GetHealth() );
+		return sk_headcrab_fast_health.GetInt();
 	}
 	else
 	{
-		SetHealth( ASWGameRules()->ModifyAlienHealthBySkillLevel( sk_headcrab_poison_health.GetInt() ) + m_iHealthBonus );
-		if ( asw_debug_alien_damage.GetBool() )
-			Msg( "Setting poison headcrab's initial health to %d\n", GetHealth() );
+		return sk_headcrab_poison_health.GetInt();
 	}
-
-	SetMaxHealth( GetHealth() );
 }
 
 

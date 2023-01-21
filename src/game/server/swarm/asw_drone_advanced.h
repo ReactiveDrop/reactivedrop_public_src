@@ -119,7 +119,7 @@ public:
 
 	virtual int DrawDebugTextOverlays();
 
-	virtual void SetHealthByDifficultyLevel();
+	virtual int GetBaseHealth() override;
 
 	static float s_fNextTooCloseChatterTime;
 

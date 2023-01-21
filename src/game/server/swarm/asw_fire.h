@@ -18,15 +18,7 @@
 
 #ifdef INFESTED_DLL
 // asw
-//#include "asw_marine.h"
-//#include "asw_marine_resource.h"
-//#include "asw_alien.h"
-//#include "asw_extinguisher_projectile.h"
-//#include "asw_generic_emitter_entity.h"
 #include "asw_dynamic_light.h"
-//#include "asw_flamer_projectile.h"
-//#include "iasw_spawnable_npc.h"
-//#include "asw_shareddefs.h"
 #endif
 
 //Spawnflags

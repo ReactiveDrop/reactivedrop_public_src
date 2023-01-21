@@ -1088,7 +1088,7 @@ CNewParticleEffect *UTIL_ASW_CreateFireEffect( C_BaseEntity *pEntity )
 	return pBurningEffect;
 }
 
-ConVar asw_floating_number_type( "asw_floating_number_type", "0", FCVAR_NONE, "1 = vgui, 2 = particles" );
+ConVar asw_floating_number_type( "asw_floating_number_type", "0", FCVAR_ARCHIVE, "1 = vgui, 2 = particles" );
 
 void UTIL_ASW_ClientFloatingDamageNumber( const CTakeDamageInfo &info )
 {
@@ -1139,6 +1139,11 @@ void UTIL_ASW_ClientFloatingDamageNumber( const CTakeDamageInfo &info )
 		}
 	}
 }
+
+PRECACHE_REGISTER_BEGIN( GLOBAL, ParticleDamageNumbers )
+	PRECACHE( PARTICLE_SYSTEM, "damage_numbers" )
+	PRECACHE( PARTICLE_SYSTEM, "floating_numbers" )
+PRECACHE_REGISTER_END()
 
 void UTIL_ASW_ParticleDamageNumber( C_BaseEntity *pEnt, Vector vecPos, int iDamage, int iDmgCustom, float flScale, bool bRandomVelocity )
 {

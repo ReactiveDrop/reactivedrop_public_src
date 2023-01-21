@@ -28,7 +28,7 @@ public:
 	float GetIdealAccel( ) const;
 	float MaxYawSpeed( void );
 
-	virtual void SetHealthByDifficultyLevel();
+	virtual int GetBaseHealth() override;
 	//virtual float GetSequenceGroundSpeed( int iSequence );	
 	//virtual void NPCThink();
 	Class_T		Classify( void ) { return (Class_T) CLASS_ASW_HARVESTER; }

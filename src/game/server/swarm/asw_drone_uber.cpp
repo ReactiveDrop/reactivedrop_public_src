@@ -59,18 +59,9 @@ void CASW_Drone_Uber::Precache( void )
 	BaseClass::Precache();
 }
 
-
-void CASW_Drone_Uber::SetHealthByDifficultyLevel()
+int CASW_Drone_Uber::GetBaseHealth()
 {
-	SetHealth(ASWGameRules()->ModifyAlienHealthBySkillLevel(asw_drone_uber_health.GetInt()) + m_iHealthBonus);
-	SetMaxHealth(GetHealth());
-	//if (ASWGameRules()->GetSkillLevel() <= 1)	// on easy we use the bigger hitbox set
-		SetHitboxSet(0);
-	//else
-		//SetHitboxSet(2);
-	extern ConVar asw_debug_alien_damage;
-	if ( asw_debug_alien_damage.GetBool() )
-		Msg( "Setting uber's initial health to %d\n", GetHealth() );
+	return asw_drone_uber_health.GetInt();
 }
 
 float CASW_Drone_Uber::GetIdealSpeed() const

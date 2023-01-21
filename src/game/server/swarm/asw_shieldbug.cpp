@@ -125,7 +125,6 @@ void CASW_Shieldbug::Spawn( void )
 
 	SetViewOffset( Vector(6, 0, 11) ) ;		// Position of the eyes relative to NPC's origin.
 
-	SetHealthByDifficultyLevel();	
 	m_bDefending = false;
 
 	CapabilitiesAdd( bits_CAP_MOVE_GROUND | bits_CAP_INNATE_MELEE_ATTACK1 | bits_CAP_INNATE_MELEE_ATTACK2);	// | bits_CAP_MOVE_JUMP
@@ -940,12 +939,9 @@ bool CASW_Shieldbug::CanFlinch( void )
 	return false;
 }
 
-void CASW_Shieldbug::SetHealthByDifficultyLevel()
+int CASW_Shieldbug::GetBaseHealth()
 {
-	SetHealth( ASWGameRules()->ModifyAlienHealthBySkillLevel( rd_shieldbug_health.GetInt() ) + m_nExtraHeath + m_iHealthBonus );
-	SetMaxHealth( GetHealth() );
-	if ( asw_debug_alien_damage.GetBool() )
-		Msg( "Setting shieldbug's initial health to %d\n", GetHealth() );
+	return rd_shieldbug_health.GetInt() + m_nExtraHeath;
 }
 
 void CASW_Shieldbug::ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon /*= NULL */ )

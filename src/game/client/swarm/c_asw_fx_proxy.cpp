@@ -5,12 +5,10 @@
 // $NoKeywords: $
 //=============================================================================//
 #include "cbase.h"
-#include "c_asw_alien.h"
+#include "c_asw_inhabitable_npc.h"
 #include "c_asw_physics_prop_statue.h"
 #include "c_asw_mesh_emitter_entity.h"
 #include "c_asw_egg.h"
-#include "c_asw_buzzer.h"
-#include "c_asw_marine.h"
 #include "c_asw_clientragdoll.h"
 
 #include "ProxyEntity.h"
@@ -23,10 +21,20 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+
+PRECACHE_REGISTER_BEGIN( GLOBAL, ASW_Model_FX )
+	PRECACHE( MATERIAL, "effects/TiledFire/fire_tiled_precache" )
+	PRECACHE( MATERIAL, "effects/model_layer_shock_1_precache" )
+	PRECACHE( MATERIAL, "effects/model_layer_ice_1_precache" )
+	PRECACHE( MATERIAL, "effects/model_layer_shockfire_1_precache" )
+	PRECACHE( MATERIAL, "effects/model_layer_shockice_1_precache" )
+	PRECACHE( MATERIAL, "effects/model_layer_icefire_1_precache" )
+	PRECACHE( MATERIAL, "effects/model_layer_ohgod_1_precache" )
+PRECACHE_REGISTER_END()
+
 //-----------------------------------------------------------------------------
 // Material proxy for changing the material of aliens
 //-----------------------------------------------------------------------------
-
 class CASW_Model_FX_Proxy : public CEntityMaterialProxy
 {
 public:
@@ -42,9 +50,9 @@ public:
 private:
 	ITexture*	m_pFXTexture;
 
-	//	"$detailscale" "5"
-	//"$detailblendfactor" 1.0
-	//	"$detailblendmode" 6
+	// "$detailscale" "5"
+	// "$detailblendfactor" 1.0
+	// "$detailblendmode" 6
 	IMaterialVar		*m_pDetailMaterial;
 	IMaterialVar		*m_pDetailScale;
 	IMaterialVar		*m_pDetailBlendFactor;
@@ -118,60 +126,21 @@ void CASW_Model_FX_Proxy::OnBind( void *pC_BaseEntity )
 
 void CASW_Model_FX_Proxy::OnBind( C_BaseEntity *pEnt )
 {
-	// crashing here because pC_BaseEntity is passed as null?
 	if ( !pEnt )
 		return;
 
-	C_ASW_Mesh_Emitter *pGib = dynamic_cast<C_ASW_Mesh_Emitter*>( pEnt );
-	if ( pGib && pGib->m_bFrozen )
+	bool bShockBig = false;
+	bool bOnFire = false;
+	float flFrozen = 0;
+
+	if ( pEnt->IsInhabitableNPC() )
 	{
-		m_pFXTexture = materials->FindTexture( "effects/model_layer_ice_1", TEXTURE_GROUP_MODEL );//
-		if ( m_pFXTexture )
-		{
-			m_pDetailMaterial->SetTextureValue( m_pFXTexture );
-		}
-		m_pDetailBlendFactor->SetFloatValue( 0.4f );
-		TextureTransform( 0 /*speed*/, 5.0f );
-		return;
-	}
+		C_ASW_Inhabitable_NPC *pNPC = assert_cast< C_ASW_Inhabitable_NPC * >( pEnt );
 
-	C_ASWStatueProp *pStatue = dynamic_cast<C_ASWStatueProp*>( pEnt );
-	if ( pStatue )
-	{
-		m_pFXTexture = materials->FindTexture( "effects/model_layer_ice_1", TEXTURE_GROUP_MODEL );//
-		if ( m_pFXTexture )
-		{
-			m_pDetailMaterial->SetTextureValue( m_pFXTexture );
-		}
-		m_pDetailBlendFactor->SetFloatValue( 0.4f );
-		TextureTransform( 0, 5.0f );
-		return;
-	}
-
-	bool	bShockBig	= false;
-	bool	bOnFire		= false;
-	float	flFrozen	= 0;
-
-	//C_ASW_ClientRagdoll
-	if ( pEnt->IsAlienClassType() )
-	{
-		C_ASW_Alien* pAlien = assert_cast<C_ASW_Alien*>( pEnt );
-
-		bShockBig = pAlien->m_bElectroStunned;
-		bOnFire = pAlien->m_bOnFire;
-		flFrozen = pAlien->GetMoveType() == MOVETYPE_NONE ? 0.0f : pAlien->GetFrozenAmount();
-		//Msg( " alien %d shock = %d fire = %d frozen = %f\n", pAlien->entindex(), bShockBig, bOnFire, flFrozen );
-		UpdateEffects(bShockBig, bOnFire, flFrozen);
-		return;
-	}
-
-	C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pEnt );
-	if ( pMarine )
-	{
-		//bShockBig	= pMarine->m_bElectroStunned;
-		bOnFire		= pMarine->m_bOnFire;
-		flFrozen	= pMarine->GetFrozenAmount();
-		UpdateEffects( false, bOnFire, flFrozen );
+		bShockBig = pNPC->m_bElectroStunned;
+		bOnFire = pNPC->m_bOnFire;
+		flFrozen = pNPC->GetMoveType() == MOVETYPE_NONE ? 0.0f : pNPC->GetFrozenAmount();
+		UpdateEffects( bShockBig, bOnFire, flFrozen );
 		return;
 	}
 
@@ -185,35 +154,40 @@ void CASW_Model_FX_Proxy::OnBind( C_BaseEntity *pEnt )
 		return;
 	}
 
-	if ( pEnt->Classify() == CLASS_ASW_BUZZER )
-	{
-		C_ASW_Buzzer* pBuzzer = assert_cast<C_ASW_Buzzer*>(pEnt);
-
-		bShockBig = pBuzzer->m_bElectroStunned;
-		bOnFire = pBuzzer->m_bOnFire;
-		flFrozen = pBuzzer->GetMoveType() == MOVETYPE_NONE ? 0.0f : pBuzzer->GetFrozenAmount();
-		UpdateEffects(bShockBig, bOnFire, flFrozen);
-		return;
-	}
-
-	C_ASW_ClientRagdoll *pRagDoll = dynamic_cast<C_ASW_ClientRagdoll*>( pEnt );
+	C_ASW_ClientRagdoll *pRagDoll = dynamic_cast< C_ASW_ClientRagdoll * >( pEnt );
 	if ( pRagDoll )
 	{
-		bShockBig	= pRagDoll->m_bElectroShock;
-		bOnFire		= !!(pRagDoll->GetFlags() & FL_ONFIRE);
+		bShockBig = pRagDoll->m_bElectroShock;
+		bOnFire = !!( pRagDoll->GetFlags() & FL_ONFIRE );
 		UpdateEffects( bShockBig, bOnFire, 0.0f );
 		return;
 	}
 
-	/*
-	C_BaseAnimating *pBaseAnimating = dynamic_cast<C_BaseAnimating*>( pEnt );
-	if ( pBaseAnimating )
+	C_ASW_Mesh_Emitter *pGib = dynamic_cast< C_ASW_Mesh_Emitter * >( pEnt );
+	if ( pGib && pGib->m_bFrozen )
 	{
-		flFrozen	= pBaseAnimating->GetFrozenAmount();
-		UpdateEffects( false, false, flFrozen );
+		m_pFXTexture = materials->FindTexture( "effects/model_layer_ice_1", TEXTURE_GROUP_MODEL );
+		if ( m_pFXTexture )
+		{
+			m_pDetailMaterial->SetTextureValue( m_pFXTexture );
+		}
+		m_pDetailBlendFactor->SetFloatValue( 0.4f );
+		TextureTransform( 0, 5.0f );
 		return;
 	}
-	*/
+
+	C_ASWStatueProp *pStatue = dynamic_cast< C_ASWStatueProp * >( pEnt );
+	if ( pStatue )
+	{
+		m_pFXTexture = materials->FindTexture( "effects/model_layer_ice_1", TEXTURE_GROUP_MODEL );
+		if ( m_pFXTexture )
+		{
+			m_pDetailMaterial->SetTextureValue( m_pFXTexture );
+		}
+		m_pDetailBlendFactor->SetFloatValue( 0.4f );
+		TextureTransform( 0, 5.0f );
+		return;
+	}
 
 	m_pDetailBlendFactor->SetFloatValue( 0.0f );
 }
@@ -224,7 +198,7 @@ void CASW_Model_FX_Proxy::UpdateEffects( bool bShockBig, bool bOnFire, float flF
 	{
 		if ( bShockBig && bOnFire && flFrozen > 0 )
 		{
-			m_pFXTexture = materials->FindTexture( "effects/model_layer_ohgod_1", TEXTURE_GROUP_MODEL );//
+			m_pFXTexture = materials->FindTexture( "effects/model_layer_ohgod_1", TEXTURE_GROUP_MODEL );
 			if ( m_pFXTexture )
 			{
 				m_pDetailBlendFactor->SetFloatValue( 0.3f );
@@ -234,7 +208,7 @@ void CASW_Model_FX_Proxy::UpdateEffects( bool bShockBig, bool bOnFire, float flF
 		}
 		else if ( bShockBig && bOnFire )
 		{
-			m_pFXTexture = materials->FindTexture( "effects/model_layer_shockfire_1", TEXTURE_GROUP_MODEL );//
+			m_pFXTexture = materials->FindTexture( "effects/model_layer_shockfire_1", TEXTURE_GROUP_MODEL );
 			if ( m_pFXTexture )
 			{
 				m_pDetailBlendFactor->SetFloatValue( 0.2f );
@@ -244,7 +218,7 @@ void CASW_Model_FX_Proxy::UpdateEffects( bool bShockBig, bool bOnFire, float flF
 		}
 		else if ( bShockBig && flFrozen > 0 )
 		{
-			m_pFXTexture = materials->FindTexture( "effects/model_layer_shockice_1", TEXTURE_GROUP_MODEL );//
+			m_pFXTexture = materials->FindTexture( "effects/model_layer_shockice_1", TEXTURE_GROUP_MODEL );
 			if ( m_pFXTexture )
 			{
 				m_pDetailBlendFactor->SetFloatValue( 0.4f );
@@ -254,7 +228,7 @@ void CASW_Model_FX_Proxy::UpdateEffects( bool bShockBig, bool bOnFire, float flF
 		}
 		else if ( bOnFire && flFrozen > 0 )
 		{
-			m_pFXTexture = materials->FindTexture( "effects/model_layer_icefire_1", TEXTURE_GROUP_MODEL );//
+			m_pFXTexture = materials->FindTexture( "effects/model_layer_icefire_1", TEXTURE_GROUP_MODEL );
 			if ( m_pFXTexture )
 			{
 				m_pDetailBlendFactor->SetFloatValue( 0.2f );
@@ -264,7 +238,7 @@ void CASW_Model_FX_Proxy::UpdateEffects( bool bShockBig, bool bOnFire, float flF
 		}
 		else if ( bShockBig )
 		{
-			m_pFXTexture = materials->FindTexture( "effects/model_layer_shock_1", TEXTURE_GROUP_MODEL );//
+			m_pFXTexture = materials->FindTexture( "effects/model_layer_shock_1", TEXTURE_GROUP_MODEL );
 			if ( m_pFXTexture )
 			{
 				m_pDetailBlendFactor->SetFloatValue( 0.75f );
@@ -274,7 +248,7 @@ void CASW_Model_FX_Proxy::UpdateEffects( bool bShockBig, bool bOnFire, float flF
 		}
 		else if ( flFrozen > 0 )
 		{
-			m_pFXTexture = materials->FindTexture( "effects/model_layer_ice_1", TEXTURE_GROUP_MODEL );//
+			m_pFXTexture = materials->FindTexture( "effects/model_layer_ice_1", TEXTURE_GROUP_MODEL );
 			if ( m_pFXTexture )
 			{
 				m_pDetailBlendFactor->SetFloatValue( MIN( 0.4f, flFrozen/4) );
@@ -284,7 +258,7 @@ void CASW_Model_FX_Proxy::UpdateEffects( bool bShockBig, bool bOnFire, float flF
 		}
 		else if ( bOnFire )
 		{
-			m_pFXTexture = materials->FindTexture( "effects/TiledFire/fire_tiled", TEXTURE_GROUP_MODEL );//
+			m_pFXTexture = materials->FindTexture( "effects/TiledFire/fire_tiled", TEXTURE_GROUP_MODEL );
 			if ( m_pFXTexture )
 			{
 				m_pDetailBlendFactor->SetFloatValue( 0.3f );

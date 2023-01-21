@@ -71,7 +71,7 @@ public:
 	void SetIgnoreCollisionTime(float f) { m_flIgnoreWorldCollisionTime = f; }
 	float	m_flIgnoreWorldCollisionTime;
 
-	virtual void SetHealthByDifficultyLevel();
+	virtual int GetBaseHealth() override;
 	void RunAnimation ( void );
 	// sounds
 	virtual void AlertSound();

@@ -86,10 +86,7 @@ int AE_QUEEN_SLASH_HIT;
 int AE_QUEEN_R_SLASH_HIT;
 int AE_QUEEN_START_SLASH;
 
-ConVar asw_queen_health_easy("asw_queen_health_easy", "2500", FCVAR_CHEAT, "Initial health of the Swarm Queen");
 ConVar asw_queen_health_normal("asw_queen_health_normal", "3500", FCVAR_CHEAT, "Initial health of the Swarm Queen");
-ConVar asw_queen_health_hard("asw_queen_health_hard", "5000", FCVAR_CHEAT, "Initial health of the Swarm Queen");
-ConVar asw_queen_health_insane("asw_queen_health_insane", "6000", FCVAR_CHEAT, "Initial health of the Swarm Queen");
 ConVar asw_queen_slash_damage("asw_queen_slash_damage", "5", FCVAR_CHEAT, "Damage caused by the Swarm Queen's slash attack");
 ConVar asw_queen_slash_size("asw_queen_slash_size", "100", FCVAR_CHEAT, "Padding around the Swarm Queen's claw when calculating melee attack collision");
 ConVar asw_queen_slash_debug("asw_queen_slash_debug", "0", FCVAR_CHEAT, "Visualize Swarm Queen slash collision");
@@ -152,8 +149,6 @@ void CASW_Queen::Spawn( void )
 #else
 	SetHullSizeNormal();
 #endif
-
-	SetHealthByDifficultyLevel();	
 
 	CapabilitiesAdd( bits_CAP_MOVE_GROUND | bits_CAP_INNATE_RANGE_ATTACK1 //| bits_CAP_INNATE_RANGE_ATTACK2
 		| bits_CAP_INNATE_MELEE_ATTACK1 | bits_CAP_INNATE_MELEE_ATTACK2);
@@ -1446,25 +1441,9 @@ bool CASW_Queen::PassesDamageFilter( const CTakeDamageInfo &info )
 	return BaseClass::PassesDamageFilter(info);
 }
 
-void CASW_Queen::SetHealthByDifficultyLevel()
+int CASW_Queen::GetBaseHealth()
 {
-	int health = 5000;
-	if (ASWGameRules())
-	{
-		switch (ASWGameRules()->GetSkillLevel())
-		{
-		case 1: health = asw_queen_health_easy.GetInt(); break;
-		case 2: health = asw_queen_health_normal.GetInt(); break;
-		case 3: health = asw_queen_health_hard.GetInt(); break;
-		case 4: health = asw_queen_health_insane.GetInt(); break;
-		case 5: health = asw_queen_health_insane.GetInt(); break;
-		default: 5000;
-		}
-	}
-	SetHealth(health + m_iHealthBonus);
-	SetMaxHealth(health + m_iHealthBonus);
-	if ( asw_debug_alien_damage.GetBool() )
-		Msg( "Setting queen's initial health to %d\n", GetHealth() );
+	return asw_queen_health_normal.GetInt();
 }
 
 int	CASW_Queen::DrawDebugTextOverlays()
@@ -1599,8 +1578,8 @@ CAI_BaseNPC* CASW_Queen::SpawnParasite()
 	angles.y += random->RandomFloat(-30, 30);
 	pNPC->SetAbsAngles( angles );
 
-	IASW_Spawnable_NPC* pSpawnable = dynamic_cast<IASW_Spawnable_NPC*>(pNPC);
-	ASSERT(pSpawnable);	
+	IASW_Spawnable_NPC *pSpawnable = dynamic_cast< IASW_Spawnable_NPC * >( pNPC );
+	Assert( pSpawnable );
 	if ( !pSpawnable )
 	{
 		Warning("NULL Spawnable Ent in CASW_Queen!\n");
@@ -1614,8 +1593,7 @@ CAI_BaseNPC* CASW_Queen::SpawnParasite()
 
 	if ( pNPC->Classify() == CLASS_ASW_PARASITE )
 	{
-		CASW_Parasite* pParasite = assert_cast<CASW_Parasite*>(pNPC);
-
+		CASW_Parasite *pParasite = assert_cast< CASW_Parasite * >( pNPC );
 		m_iCrittersAlive++;
 		pParasite->SetMother(this);
 		//pParasite->DoJumpFromEgg();

@@ -88,7 +88,7 @@ public:
 	}
 
 	virtual void PlayerHasIlluminatedNPC( CBasePlayer *pPlayer, float flDot );
-	virtual void SetHealthByDifficultyLevel( void );
+	virtual int GetBaseHealth( void ) override;
 
 	void DropFromCeiling( void );
 

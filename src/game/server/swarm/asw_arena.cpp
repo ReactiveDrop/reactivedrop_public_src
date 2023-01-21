@@ -29,7 +29,6 @@ CASW_Arena::CASW_Arena( void ) : CAutoGameSystemPerFrame( "CASW_Arena" )
 
 CASW_Arena::~CASW_Arena()
 {
-	m_ArenaAliens.PurgeAndDeleteElements();
 }
 
 bool CASW_Arena::Init()
@@ -83,10 +82,6 @@ void CASW_Arena::UpdateArena()
 	// has arena mode just been turned on?
 	if ( !m_bStartedArenaMode )
 	{
-		for ( int i=0; i< m_ArenaAliens.Count(); i++ )
-		{
-			UTIL_PrecacheOther( m_ArenaAliens[i]->m_szAlienClass );
-		}
 		m_bStartedArenaMode = true;
 		m_ArenaRestTimer.Start( 3.0f );
 	}
@@ -229,7 +224,7 @@ void CASW_Arena::SpawnArenaWave()
 				if ( !pSpawnPoint )
 					continue;
 
-				if ( ASWSpawnManager()->SpawnAlienAt( m_ArenaAliens[iAlienType]->m_szAlienClass, pSpawnPoint->GetAbsOrigin(), pSpawnPoint->GetAbsAngles() ) )
+				if ( ASWSpawnManager()->SpawnAlienAt( &m_ArenaAliens[iAlienType]->m_SpawnNPC, pSpawnPoint->GetAbsOrigin(), pSpawnPoint->GetAbsAngles() ) )
 				{
 					arenaSpawnsUsed[iDirection]++;
 				}

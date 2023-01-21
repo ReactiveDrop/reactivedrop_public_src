@@ -181,15 +181,6 @@ DEFINE_FIELD( m_vecAltFireTarget, FIELD_VECTOR ),
 DEFINE_KEYFIELD( m_iTacticalVariant, FIELD_INTEGER, "tacticalvariant" ),
 DEFINE_KEYFIELD( m_iPathfindingVariant, FIELD_INTEGER, "pathfindingvariant" ),
 
-DEFINE_KEYFIELD( m_bFlammable, FIELD_BOOLEAN, "flammable" ),
-DEFINE_KEYFIELD( m_bTeslable, FIELD_BOOLEAN, "teslable" ),
-DEFINE_KEYFIELD( m_bFreezable, FIELD_BOOLEAN, "freezable" ),
-DEFINE_KEYFIELD( m_bFlinchable, FIELD_BOOLEAN, "flinchable" ),
-DEFINE_KEYFIELD( m_bGrenadeReflector, FIELD_BOOLEAN, "reflector" ),
-DEFINE_KEYFIELD( m_iHealthBonus, FIELD_INTEGER, "healthbonus" ),
-DEFINE_KEYFIELD( m_fSizeScale, FIELD_FLOAT, "sizescale" ),
-DEFINE_KEYFIELD( m_fSpeedScale, FIELD_FLOAT, "speedscale" ),
-
 END_DATADESC()
 
 
@@ -3260,51 +3251,6 @@ bool CNPC_Combine::IsRunningApproachEnemySchedule()
 bool CNPC_Combine::ShouldPickADeathPose( void ) 
 { 
 	return !IsCrouching(); 
-}
-
-void CNPC_Combine::SetSpawner( CASW_Base_Spawner *pSpawner )
-{
-	m_hSpawner = pSpawner;
-}
-void CNPC_Combine::SetAlienOrders( AlienOrder_t Orders, Vector vecOrderSpot, CBaseEntity *pOrderObject )
-{
-	Assert( !"TODO" );
-}
-AlienOrder_t CNPC_Combine::GetAlienOrders()
-{
-	Assert( !"TODO" );
-	return AOT_None;
-}
-void CNPC_Combine::MoveAside()
-{
-	Assert( !"TODO" );
-}
-void CNPC_Combine::ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon )
-{
-	Assert( !"TODO" );
-}
-void CNPC_Combine::ElectroStun( float flStuntime )
-{
-	Assert( !"TODO" );
-}
-void CNPC_Combine::SetHealthByDifficultyLevel()
-{
-	extern ConVar sk_combine_s_health;
-	extern ConVar sk_combine_guard_health;
-	int iHealth = MAX( 1, ASWGameRules()->ModifyAlienHealthBySkillLevel( IsElite() ? sk_combine_guard_health.GetFloat() : sk_combine_s_health.GetFloat() ) );
-	extern ConVar asw_debug_alien_damage;
-	if ( asw_debug_alien_damage.GetBool() )
-		Msg( "Setting %s's initial health to %d\n", GetClassname(), iHealth + m_iHealthBonus );
-	SetHealth( iHealth + m_iHealthBonus );
-	SetMaxHealth( iHealth + m_iHealthBonus );
-}
-void CNPC_Combine::SetHoldoutAlien()
-{
-	m_bIsHoldout = true;
-}
-bool CNPC_Combine::IsHoldoutAlien()
-{
-	return m_bIsHoldout;
 }
 
 //-----------------------------------------------------------------------------

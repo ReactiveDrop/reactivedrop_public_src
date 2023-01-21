@@ -624,22 +624,6 @@ void CASW_Marine::DoDamagePowerupEffects( CBaseEntity *pTarget, CTakeDamageInfo 
 		IASW_Spawnable_NPC *pSpawnableNPC = dynamic_cast<IASW_Spawnable_NPC*>( pTarget );
 		if ( pSpawnableNPC )
 		{
-			//CASW_Weapon *pWeapon = GetActiveASWWeapon();
-			//int iLevel = 1; //GetMarineProfile()->GetLevel();
-			//if ( pWeapon && pWeapon->GetAttributeContainer() && pWeapon->GetAttributeContainer()->GetItem() )
-			//{
-			//	iLevel = pWeapon->GetAttributeContainer()->GetItem()->GetItemLevel();
-			//}
-			/*
-			static float flBaseFireDamage = 10.0f;
-			static float flDamageChangePerLevel = 0.15f;
-			static float flFireDuration = 3.0f;
-			float flDamagePerSecond = ( ( iLevel - 1 ) * flDamageChangePerLevel * flBaseFireDamage + flBaseFireDamage ) / flFireDuration;
-			
-
-			// TODO: merge over the new ASW_Ignite to account for DPS?
-			pSpawnableNPC->ASW_Ignite( flFireDuration, flDamagePerSecond, info.GetAttacker() );
-			*/
 			pSpawnableNPC->ASW_Ignite( 2.0f, 0, info.GetAttacker(), info.GetWeapon() );
 		}
 	}

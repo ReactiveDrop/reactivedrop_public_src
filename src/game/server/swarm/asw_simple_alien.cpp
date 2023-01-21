@@ -1372,5 +1372,5 @@ void CASW_Simple_Alien::HandleAnimEvent( animevent_t *pEvent )
 
 void CASW_Simple_Alien::SetHealthByDifficultyLevel()
 {
-	SetHealth(ASWGameRules()->ModifyAlienHealthBySkillLevel(asw_drone_health.GetInt()));
+	SetHealth( ASWGameRules()->ModifyAlienHealthBySkillLevel( asw_drone_health.GetInt() ) );
 }

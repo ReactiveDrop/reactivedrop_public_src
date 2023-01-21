@@ -157,17 +157,9 @@ void CASW_Grenade_Cluster::CheckNearbyDrones()
 		CBaseEntity *pEntity = NULL;
 		for ( CEntitySphereQuery sphere( vecSrc, flRadius ); (pEntity = sphere.GetCurrentEntity()) != NULL; sphere.NextEntity() )
 		{
-			//if (!pEntity->IsNPC())
-			//	continue;
-
-			//IASW_Spawnable_NPC *pSpawnable = dynamic_cast<IASW_Spawnable_NPC*>(pEntity);
-			//if (!pSpawnable)
-			//	continue;
-			
-			//Simplify checks. We lose only CASW_Simple_Drone/CASW_Simple_Alien and unimplemented CASW_Zombie with no even files in project
 			if (!pEntity->IsAlien())
 				continue;
-		
+
 			Detonate();
 			return;
 		}

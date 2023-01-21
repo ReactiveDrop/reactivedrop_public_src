@@ -3,7 +3,6 @@
 #include "asw_gamerules.h"
 #include "world.h"
 #include "asw_util_shared.h"
-#include "iasw_spawnable_npc.h"
 #include "asw_marine.h"
 #include "asw_marine_resource.h"
 #include "particle_parse.h"

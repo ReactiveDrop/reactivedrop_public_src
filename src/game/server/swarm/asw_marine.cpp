@@ -871,13 +871,6 @@ void CASW_Marine::Spawn( void )
 	UTIL_SetSize( this, GetHullMins(), GetHullMaxs() );
 }
 
-void CASW_Marine::NPCInit()
-{
-	BaseClass::NPCInit();
-
-	m_LagCompensation.Init(this);
-}
-
 unsigned int CASW_Marine::PhysicsSolidMaskForEntity( void ) const 
 { 
 	return MASK_PLAYERSOLID;
@@ -1955,31 +1948,6 @@ void CASW_Marine::HurtAlien(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 	m_flLastHurtAlienTime = gpGlobals->curtime;
 	
 	CASW_Weapon *pWeapon = GetActiveASWWeapon();
-	/*
-	if ( pWeapon && pAlien )
-	{
-		IASW_Spawnable_NPC *pNPC = dynamic_cast<IASW_Spawnable_NPC*>(pAlien);
-		if ( pNPC && !(info.GetDamageType() & (DMG_BURN | DMG_BLAST | DMG_SHOCK | DMG_DIRECT) ) )
-		{
-			// TODO: Make sure flamer and stun grenades still work
-			/*
-			float flIgniteChance = 0;
-			CALL_ATTRIB_HOOK_FLOAT_ON_OTHER( pWeapon, flIgniteChance, mod_ignite );
-			if ( RandomFloat() < flIgniteChance )
-			{
-				pNPC->ASW_Ignite(5.0f, 0, info.GetAttacker());
-			}
-
-			float flElectroChance = 0;
-			CALL_ATTRIB_HOOK_FLOAT_ON_OTHER( pWeapon, flElectroChance, mod_electro_stun );
-			if ( RandomFloat() < flElectroChance )
-			{
-				pNPC->ElectroStun( 5.0f );
-			}
-			//
-		}
-	}
-	*/
 	// don't do any chatter effects if this alien is being hurt by a burn DoT
 	CBaseEntity* pInflictor = info.GetInflictor();
 	if ( pInflictor && pInflictor->Classify() == CLASS_ASW_BURNING )

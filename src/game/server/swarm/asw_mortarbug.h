@@ -26,7 +26,7 @@ public:
 	float GetIdealAccel( ) const;
 	float MaxYawSpeed( void );
 
-	virtual void SetHealthByDifficultyLevel();
+	virtual int GetBaseHealth() override;
 
 	Class_T		Classify( void ) { return (Class_T) CLASS_ASW_MORTAR_BUG; }
 	virtual bool OverrideMoveFacing( const AILocalMoveGoal_t &move, float flInterval );

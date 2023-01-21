@@ -23,7 +23,7 @@ public:
 	CASW_Boomer();
 
 	virtual void		Spawn();
-	virtual void		SetHealthByDifficultyLevel();
+	virtual int			GetBaseHealth() override;
 	virtual void		Precache();
 
 	virtual float		MaxYawSpeed( void );

@@ -91,6 +91,7 @@ public:
 
 	void			Precache();
 	void			Spawn();
+	int				GetBaseHealth() override;
 	bool			CreateVPhysics();
 	void			InitBoneFollowers( void );
 	void			PostNPCInit();

@@ -34,7 +34,7 @@ class CSoundPatch;
 class CASW_AI_Senses;
 struct envelopePoint_t;
 
-class CASW_Buzzer : public CAI_BasePhysicsFlyingBot, public IASW_Spawnable_NPC
+class CASW_Buzzer : public CAI_BasePhysicsFlyingBot
 {
 DECLARE_CLASS( CASW_Buzzer, CAI_BasePhysicsFlyingBot );
 DECLARE_SERVERCLASS();
@@ -192,7 +192,7 @@ public:
 	float m_fSizeScale;
 	float m_fSpeedScale;
 
-	virtual void SetHealthByDifficultyLevel();
+	virtual int GetBaseHealth() override;
 
 	virtual bool IsAlien(void) const { return true; }
 

@@ -92,7 +92,7 @@ public:
 	void Precache( void );
 
 	void SetZombieModel( void );
-	void SetHealthByDifficultyLevel( void );
+	int GetBaseHealth( void ) override;
 
 	virtual void PrescheduleThink( void );
 	virtual int SelectSchedule( void );
@@ -291,14 +291,9 @@ void CNPC_Zombine::SetZombieModel( void )
 	SetActivity( ACT_IDLE );
 }
 
-void CNPC_Zombine::SetHealthByDifficultyLevel()
+int CNPC_Zombine::GetBaseHealth()
 {
-	int iHealth = MAX( 1, ASWGameRules()->ModifyAlienHealthBySkillLevel( sk_zombie_soldier_health.GetInt() ) );
-	extern ConVar asw_debug_alien_damage;
-	if ( asw_debug_alien_damage.GetBool() )
-		Msg( "Setting zombine's initial health to %d\n", iHealth + m_iHealthBonus );
-	SetHealth( iHealth + m_iHealthBonus );
-	SetMaxHealth( iHealth + m_iHealthBonus );
+	return sk_zombie_soldier_health.GetInt();
 }
 
 void CNPC_Zombine::PrescheduleThink( void )

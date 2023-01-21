@@ -173,26 +173,10 @@ BEGIN_DATADESC( CASW_Buzzer )
 	DEFINE_FIELD( m_vecBurstDirection,	FIELD_VECTOR ),
 	DEFINE_FIELD( m_bShowingHostile,	FIELD_BOOLEAN ),
 
-	DEFINE_FIELD( m_hSpawner, FIELD_EHANDLE ),
-
 	DEFINE_FIELD(m_fNextPainSound, FIELD_FLOAT),
 	DEFINE_SOUNDPATCH( m_pMoanSound ),
 	DEFINE_FIELD( m_flMoanPitch, FIELD_FLOAT ),
 	DEFINE_FIELD( m_flNextMoanSound, FIELD_TIME ),
-	DEFINE_FIELD( m_bOnFire, FIELD_BOOLEAN ),
-	DEFINE_FIELD(m_fHurtSlowMoveTime, FIELD_TIME),
-	DEFINE_FIELD(m_flElectroStunSlowMoveTime, FIELD_TIME),
-	DEFINE_FIELD(m_bElectroStunned, FIELD_BOOLEAN),
-	DEFINE_FIELD( m_bHoldoutAlien, FIELD_BOOLEAN ),
-
-	DEFINE_KEYFIELD( m_bFlammable, FIELD_BOOLEAN, "flammable" ),
-    DEFINE_KEYFIELD( m_bTeslable, FIELD_BOOLEAN, "teslable" ),
-    DEFINE_KEYFIELD( m_bFreezable, FIELD_BOOLEAN, "freezable" ),
-    DEFINE_KEYFIELD( m_bFlinchable, FIELD_BOOLEAN, "flinchable" ),
-	DEFINE_KEYFIELD( m_bGrenadeReflector, FIELD_BOOLEAN, "reflector" ),
-	DEFINE_KEYFIELD( m_iHealthBonus, FIELD_INTEGER, "healthbonus" ),
-    DEFINE_KEYFIELD( m_fSizeScale, FIELD_FLOAT, "sizescale" ),
-    DEFINE_KEYFIELD( m_fSpeedScale, FIELD_FLOAT, "speedscale" ),
 
 	// Function Pointers
 	DEFINE_INPUTFUNC( FIELD_VOID,	"DisableSwarm", InputDisableSwarm ),
@@ -2161,7 +2145,6 @@ void CASW_Buzzer::Spawn(void)
 	
 	SetMoveType( MOVETYPE_VPHYSICS );
 
-	SetHealthByDifficultyLevel();
 	SetViewOffset( Vector(0, 0, 10) );		// Position of the eyes relative to NPC's origin.
 	m_flFieldOfView		= VIEW_FIELD_FULL;
 	m_NPCState			= NPC_STATE_NONE;
@@ -2878,35 +2861,15 @@ void CASW_Buzzer::SetSpawner(CASW_Base_Spawner* spawner)
 
 // Updates our memory about the enemies we Swarm Sensed
 // todo: add various swarm sense conditions?
-void CASW_Buzzer::OnSwarmSensed(int iDistance)
+void CASW_Buzzer::OnSwarmSensed( int iDistance )
 {
-	// DON'T let visibility information from last frame sit around!
-	//static int conditionsToClear[] =
-	//{
-		//COND_SEE_HATE,
-		//COND_SEE_DISLIKE,
-		//COND_SEE_ENEMY,
-		//COND_SEE_FEAR,
-		//COND_SEE_NEMESIS,
-		//COND_SEE_PLAYER,
-	//};
-
-	//ClearConditions( conditionsToClear, ARRAYSIZE( conditionsToClear ) );
-
 	AISightIter_t iter;
 	CBaseEntity *pSenseEnt;
 
 	pSenseEnt = GetASWSenses()->GetFirstSwarmSenseEntity( &iter );
 
-	while( pSenseEnt )
+	while ( pSenseEnt )
 	{
-#if PLAYER_CHECKS
-		if ( pSenseEnt->IsPlayer() )
-		{
-			// if we see a client, remember that (mostly for scripted AI)
-			//SetCondition(COND_SEE_PLAYER);
-		}
-#endif
 		Disposition_t relation = IRelationType( pSenseEnt );
 
 		// the looker will want to consider this entity
@@ -2924,26 +2887,26 @@ void CASW_Buzzer::OnSwarmSensed(int iDistance)
 			switch ( relation )
 			{
 			case D_HT:
+			{
+				int priority = IRelationPriority( pSenseEnt );
+				if ( priority < 0 )
 				{
-					int priority = IRelationPriority( pSenseEnt );
-					if (priority < 0)
-					{
-						//SetCondition(COND_SEE_DISLIKE);
-					}
-					else if (priority > 10)
-					{
-						//SetCondition(COND_SEE_NEMESIS);
-					}
-					else
-					{
-						//SetCondition(COND_SEE_HATE);
-					}
-					UpdateEnemyMemory(pSenseEnt,pSenseEnt->GetAbsOrigin());
-					break;
-
+					//SetCondition(COND_SEE_DISLIKE);
 				}
+				else if ( priority > 10 )
+				{
+					//SetCondition(COND_SEE_NEMESIS);
+				}
+				else
+				{
+					//SetCondition(COND_SEE_HATE);
+				}
+				UpdateEnemyMemory( pSenseEnt, pSenseEnt->GetAbsOrigin() );
+				break;
+
+			}
 			case D_FR:
-				UpdateEnemyMemory(pSenseEnt,pSenseEnt->GetAbsOrigin());
+				UpdateEnemyMemory( pSenseEnt, pSenseEnt->GetAbsOrigin() );
 				//SetCondition(COND_SEE_FEAR);
 				break;
 			case D_LI:
@@ -2960,16 +2923,16 @@ void CASW_Buzzer::OnSwarmSensed(int iDistance)
 }
 
 // create our custom senses class
-CAI_Senses* CASW_Buzzer::CreateSenses()
+CAI_Senses *CASW_Buzzer::CreateSenses()
 {
 	CAI_Senses *pSenses = new CASW_AI_Senses;
 	pSenses->SetOuter( this );
 	return pSenses;
 }
 
-CASW_AI_Senses* CASW_Buzzer::GetASWSenses()
+CASW_AI_Senses *CASW_Buzzer::GetASWSenses()
 {
-	return dynamic_cast<CASW_AI_Senses*>(GetSenses());
+	return assert_cast< CASW_AI_Senses * >( GetSenses() );
 }
 
 // set orders for our alien
@@ -3268,11 +3231,9 @@ void CASW_Buzzer::MoanSound( envelopePoint_t *pEnvelope, int iEnvelopeSize )
 }
 
 
-void CASW_Buzzer::SetHealthByDifficultyLevel()
+int CASW_Buzzer::GetBaseHealth()
 {	
-	SetHealth(ASWGameRules()->ModifyAlienHealthBySkillLevel(sk_asw_buzzer_health.GetFloat()) + m_iHealthBonus);
-	if ( asw_debug_alien_damage.GetBool() )
-		Msg( "Setting buzzer's initial health to %d\n", GetHealth() );
+	return sk_asw_buzzer_health.GetFloat();
 }
 
 void CASW_Buzzer::ElectroStun( float flStunTime )

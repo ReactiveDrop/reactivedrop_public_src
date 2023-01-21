@@ -64,7 +64,6 @@ void CASW_Shaman::Spawn( void )
 	BaseClass::Spawn();
 
 	SetHullType( HULL_MEDIUM );
-	SetHealthByDifficultyLevel();
 	SetBloodColor( BLOOD_COLOR_GREEN );
 	CapabilitiesAdd( bits_CAP_MOVE_GROUND | bits_CAP_AUTO_DOORS );
 
@@ -73,7 +72,6 @@ void CASW_Shaman::Spawn( void )
 	SetIdealState( NPC_STATE_ALERT );
 	m_bNeverRagdoll = true;
 }
-	   
 
 //-----------------------------------------------------------------------------
 // Purpose:	
@@ -94,13 +92,9 @@ void CASW_Shaman::Precache( void )
 // Input:	
 // Output:	
 //-----------------------------------------------------------------------------
-void CASW_Shaman::SetHealthByDifficultyLevel()
+int CASW_Shaman::GetBaseHealth()
 {
-	int iHealth = MAX( 25, ASWGameRules()->ModifyAlienHealthBySkillLevel( asw_shaman_health.GetInt() ) );
-	if ( asw_debug_alien_damage.GetBool() )
-		Msg( "Setting shaman's initial health to %d\n", iHealth + m_iHealthBonus );
-	SetHealth( iHealth + m_iHealthBonus );
-	SetMaxHealth( iHealth + m_iHealthBonus );
+	return asw_shaman_health.GetInt();
 }
 
 

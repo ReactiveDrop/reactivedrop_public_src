@@ -6646,16 +6646,16 @@ void CAlienSwarm::FreezeAliensInRadius( CBaseEntity *pInflictor, float flFreezeA
 				}
 			}
 #endif
-			continue;
+			if ( !ASWDeathmatchMode() )
+				continue;
 		}
 
-		if ( !pEntity->IsAlienClassType() )
+		if ( !pEntity->IsInhabitableNPC() )
 			continue;
 
 		// Check that the explosion can 'see' this entity.
 		vecSpot = pEntity->BodyTarget( vecSrc, false );
 		UTIL_TraceLine( vecSrc, vecSpot, MASK_RADIUS_DAMAGE, pInflictor, COLLISION_GROUP_NONE, &tr );
-
 
 		if ( tr.fraction != 1.0 )
 		{
@@ -6718,7 +6718,7 @@ void CAlienSwarm::FreezeAliensInRadius( CBaseEntity *pInflictor, float flFreezeA
 			}
 		}
 #ifdef GAME_DLL
-		CASW_Alien* pAlien = assert_cast<CASW_Alien*>(pEntity);
+		CASW_Inhabitable_NPC *pAlien = assert_cast< CASW_Inhabitable_NPC * >( pEntity );
 		CBaseAnimating *pAnim = pAlien;
 		if ( pAnim->IsOnFire() )
 		{
@@ -7156,16 +7156,17 @@ void CAlienSwarm::OnSkillLevelChanged( int iNewLevel )
 	m_iSkillLevel = iNewLevel;
 }
 
-void CAlienSwarm::FindAndModifyAlienHealth(const char *szClass)
+void CAlienSwarm::FindAndModifyAlienHealth( const char *szClass )
 {
 	if ( !szClass || szClass[0] == 0 )
 		return;
 
-	CBaseEntity* pEntity = NULL;
-	while ((pEntity = gEntList.FindEntityByClassname( pEntity, szClass )) != NULL)
+	CBaseEntity *pEntity = NULL;
+	while ( ( pEntity = gEntList.FindEntityByClassname( pEntity, szClass ) ) != NULL )
 	{
-		IASW_Spawnable_NPC* pNPC = dynamic_cast<IASW_Spawnable_NPC*>(pEntity);			
-		if (pNPC)
+		IASW_Spawnable_NPC *pNPC = dynamic_cast< IASW_Spawnable_NPC * >( pEntity );
+		Assert( pNPC );
+		if ( pNPC )
 		{
 			pNPC->SetHealthByDifficultyLevel();
 		}

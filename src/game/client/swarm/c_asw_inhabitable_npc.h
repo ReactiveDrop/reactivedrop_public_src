@@ -31,6 +31,7 @@ public:
 	const char *GetPlayerName() const;
 
 	virtual void PostDataUpdate( DataUpdateType_t updateType ) override;
+	virtual void UpdateOnRemove( void ) override;
 	virtual bool ShouldPredict( void ) override;
 	virtual C_BasePlayer *GetPredictionOwner() override;
 	virtual void InitPredictable( C_BasePlayer *pOwner ) override;
@@ -95,6 +96,13 @@ public:
 	// storing our location for autoaim
 	Vector m_vecLastRenderedPos;
 	Vector m_vecAutoTargetRadiusPos;
+
+	CNetworkVar( bool, m_bOnFire );
+	CNetworkVar( bool, m_bElectroStunned );
+	float m_fNextElectroStunEffect;
+	CUtlReference<CNewParticleEffect> m_pBurningEffect;
+	void UpdateFireEmitters( void );
+	bool m_bClientOnFire;
 
 private:
 	C_ASW_Inhabitable_NPC( const C_ASW_Inhabitable_NPC & ) = delete; // not defined, not accessible

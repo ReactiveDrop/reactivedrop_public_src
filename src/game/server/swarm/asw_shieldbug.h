@@ -76,7 +76,7 @@ public:
 
 	virtual float GetMaxShoverObjectMass() { return 200.0f; }
 
-	virtual void SetHealthByDifficultyLevel();
+	virtual int GetBaseHealth() override;
 
 	virtual int GetMoneyCount( const CTakeDamageInfo &info );
 

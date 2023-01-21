@@ -3,12 +3,46 @@
 #include "asw_player.h"
 #include "asw_weapon.h"
 #include "env_tonemap_controller.h"
+#include "asw_burning.h"
+#include "asw_gamerules.h"
+#include "asw_marine.h"
+#include "asw_gamestats.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 
+#define NPC_DEBUG_OVERLAY_FLAGS (OVERLAY_NPC_ROUTE_BIT | OVERLAY_BBOX_BIT | OVERLAY_PIVOT_BIT | OVERLAY_TASK_TEXT_BIT | OVERLAY_TEXT_BIT)
+
+static void DebugNPCsChanged( IConVar *var, const char *pOldValue, float flOldValue );
+ConVar asw_debug_npcs( "asw_debug_npcs", "0", FCVAR_CHEAT, "Enables debug overlays for various NPCs", DebugNPCsChanged );
+ConVar asw_alien_hurt_speed( "asw_alien_hurt_speed", "0.5", FCVAR_CHEAT, "Fraction of speed to use when the alien is hurt after being shot" );
+ConVar asw_alien_stunned_speed( "asw_alien_stunned_speed", "0.3", FCVAR_CHEAT, "Fraction of speed to use when the alien is electrostunned" );
+ConVar asw_fire_alien_damage_scale( "asw_fire_alien_damage_scale", "3.0", FCVAR_CHEAT );
+ConVar asw_alien_burn_duration( "asw_alien_burn_duration", "5.0f", FCVAR_CHEAT, "Alien burn time" );
+extern ConVar asw_stun_grenade_time;
 extern ConVar asw_controls;
+extern ConVar asw_debug_alien_damage;
+
+static void DebugNPCsChanged( IConVar *var, const char *pOldValue, float flOldValue )
+{
+	// don't do anything if sv_cheats isn't on
+	if ( !ConVarRef( "sv_cheats" ).GetBool() )
+		return;
+
+	bool bSetOverlays = asw_debug_npcs.GetBool();
+	for ( CBaseEntity *pEnt = gEntList.FirstEnt(); pEnt; pEnt = gEntList.NextEnt( pEnt ) )
+	{
+		if ( !pEnt->IsInhabitableNPC() )
+			continue;
+
+		if ( bSetOverlays )
+			pEnt->m_debugOverlays |= NPC_DEBUG_OVERLAY_FLAGS;
+		else
+			pEnt->m_debugOverlays &= ~NPC_DEBUG_OVERLAY_FLAGS;
+	}
+}
+
 
 LINK_ENTITY_TO_CLASS( funCASW_Inhabitable_NPC, CASW_Inhabitable_NPC );
 
@@ -25,6 +59,8 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Inhabitable_NPC, DT_ASW_Inhabitable_NPC )
 #else
 	SendPropVector( SENDINFO( m_vecBaseVelocity ), 20, 0, -1000, 1000 ),
 #endif
+	SendPropBool( SENDINFO( m_bElectroStunned ) ),
+	SendPropBool( SENDINFO( m_bOnFire ) ),
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Inhabitable_NPC )
@@ -36,7 +72,30 @@ BEGIN_DATADESC( CASW_Inhabitable_NPC )
 	DEFINE_FIELD( m_hPostProcessController, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_hColorCorrection, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_hTonemapController, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_iControlsOverride, FIELD_INTEGER )
+	DEFINE_FIELD( m_iControlsOverride, FIELD_INTEGER ),
+
+	DEFINE_FIELD( m_hSpawner, FIELD_EHANDLE ),
+	DEFINE_FIELD( m_bOnFire, FIELD_BOOLEAN ),
+	DEFINE_FIELD( m_fHurtSlowMoveTime, FIELD_TIME ),
+	DEFINE_FIELD( m_flElectroStunSlowMoveTime, FIELD_TIME ),
+	DEFINE_FIELD( m_bElectroStunned, FIELD_BOOLEAN ),
+	DEFINE_FIELD( m_fNextStunSound, FIELD_FLOAT ),
+	DEFINE_FIELD( m_bIgnoreMarines, FIELD_BOOLEAN ),
+	DEFINE_FIELD( m_AlienOrders, FIELD_INTEGER ),
+	DEFINE_FIELD( m_vecAlienOrderSpot, FIELD_POSITION_VECTOR ),
+	DEFINE_FIELD( m_AlienOrderObject, FIELD_EHANDLE ),
+	DEFINE_FIELD( m_bHoldoutAlien, FIELD_BOOLEAN ),
+	DEFINE_FIELD( m_flFreezeResistance, FIELD_FLOAT ),
+	DEFINE_FIELD( m_flFrozenTime, FIELD_TIME ),
+
+	DEFINE_KEYFIELD( m_bFlammable, FIELD_BOOLEAN, "flammable" ),
+	DEFINE_KEYFIELD( m_bTeslable, FIELD_BOOLEAN, "teslable" ),
+	DEFINE_KEYFIELD( m_bFreezable, FIELD_BOOLEAN, "freezable" ),
+	DEFINE_KEYFIELD( m_bFlinchable, FIELD_BOOLEAN, "flinchable" ),
+	DEFINE_KEYFIELD( m_bGrenadeReflector, FIELD_BOOLEAN, "reflector" ),
+	DEFINE_KEYFIELD( m_iHealthBonus, FIELD_INTEGER, "healthbonus" ),
+	DEFINE_KEYFIELD( m_fSizeScale, FIELD_FLOAT, "sizescale" ),
+	DEFINE_KEYFIELD( m_fSpeedScale, FIELD_FLOAT, "speedscale" ),
 END_DATADESC()
 
 BEGIN_ENT_SCRIPTDESC( CASW_Inhabitable_NPC, CBaseCombatCharacter, "Alien Swarm Inhabitable NPC" )
@@ -47,16 +106,122 @@ BEGIN_ENT_SCRIPTDESC( CASW_Inhabitable_NPC, CBaseCombatCharacter, "Alien Swarm I
 	DEFINE_SCRIPTFUNC_NAMED( ScriptSetPostProcessController, "SetPostProcessController", "Force this character to use a specific postprocess_controller." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptSetColorCorrection, "SetColorCorrection", "Force this character to use a specific color_correction." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptSetTonemapController, "SetTonemapController", "Force this character to use a specific env_tonemap_controller." )
+
+	DEFINE_SCRIPTFUNC_NAMED( ClearAlienOrders, "ClearOrders", "clear the alien's orders" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptOrderMoveTo, "OrderMoveTo", "order the alien to move to an entity handle, second parameter ignore marines" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptChaseNearestMarine, "ChaseNearestMarine", "order the alien to chase the nearest marine" )
+	DEFINE_SCRIPTFUNC( Extinguish, "Extinguish a burning alien." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptIgnite, "Ignite", "Ignites the alien into flames." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptFreeze, "Freeze", "Freezes the alien." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptElectroStun, "ElectroStun", "Stuns the alien." )
+	DEFINE_SCRIPTFUNC( Wake, "Wake up the alien." )
 END_SCRIPTDESC()
 
 CASW_Inhabitable_NPC::CASW_Inhabitable_NPC()
 {
 	m_nOldButtons = 0;
 	m_iControlsOverride = -1;
+
+	m_bWasOnFireForStats = false;
+	m_bFlammable = true;
+	m_bTeslable = true;
+	m_bFreezable = true;
+	m_bFlinchable = true;
+	m_bGrenadeReflector = false;
+	m_iHealthBonus = 0;
+	m_fSizeScale = 1.0f;
+	m_fSpeedScale = 1.0f;
+
+	m_fHurtSlowMoveTime = 0;
+	m_flElectroStunSlowMoveTime = 0;
+	m_hSpawner = NULL;
+	m_AlienOrders = AOT_None;
+	m_vecAlienOrderSpot = vec3_origin;
+	m_AlienOrderObject = NULL;
+	m_bIgnoreMarines = false;
+
+	m_flBaseThawRate = 0.5f;
+	m_flFrozenTime = 0.0f;
 }
 
 CASW_Inhabitable_NPC::~CASW_Inhabitable_NPC()
 {
+}
+
+void CASW_Inhabitable_NPC::Precache()
+{
+	BaseClass::Precache();
+
+	PrecacheScriptSound( "ASW_Tesla_Laser.Damage" );
+}
+
+void CASW_Inhabitable_NPC::Spawn()
+{
+	if ( asw_debug_npcs.GetBool() )
+	{
+		m_debugOverlays |= NPC_DEBUG_OVERLAY_FLAGS;
+	}
+
+	BaseClass::Spawn();
+
+	SetModelScale( m_fSizeScale );
+	SetHealthByDifficultyLevel();
+}
+
+void CASW_Inhabitable_NPC::OnRestore()
+{
+	BaseClass::OnRestore();
+
+	m_LagCompensation.Init( this );
+}
+
+void CASW_Inhabitable_NPC::NPCInit()
+{
+	BaseClass::NPCInit();
+
+	m_LagCompensation.Init( this );
+}
+
+void CASW_Inhabitable_NPC::NPCThink()
+{
+	BaseClass::NPCThink();
+
+	// stop electro stunning if we're slowed
+	if ( m_bElectroStunned && m_lifeState != LIFE_DYING )
+	{
+		if ( m_flElectroStunSlowMoveTime < gpGlobals->curtime )
+		{
+			m_bElectroStunned = false;
+		}
+		else
+		{
+			if ( gpGlobals->curtime >= m_fNextStunSound )
+			{
+				m_fNextStunSound = gpGlobals->curtime + RandomFloat( 0.2f, 0.5f );
+
+				EmitSound( "ASW_Tesla_Laser.Damage" );
+			}
+		}
+	}
+
+	if ( gpGlobals->maxClients > 1 )
+		m_LagCompensation.StorePositionHistory();
+
+	UpdateThawRate();
+}
+
+int	CASW_Inhabitable_NPC::DrawDebugTextOverlays()
+{
+	int text_offset = BaseClass::DrawDebugTextOverlays();
+
+	if ( m_debugOverlays & OVERLAY_TEXT_BIT )
+	{
+		NDebugOverlay::EntityText( entindex(), text_offset, CFmtStr( "Freeze amt.: %f", m_flFrozen.Get() ), 0 );
+		text_offset++;
+		NDebugOverlay::EntityText( entindex(), text_offset, CFmtStr( "Freeze time: %f", m_flFrozenTime - gpGlobals->curtime ), 0 );
+		text_offset++;
+	}
+	return text_offset;
 }
 
 // sets which player commands this marine
@@ -171,12 +336,58 @@ void CASW_Inhabitable_NPC::SetFacingPoint( const Vector &vec, float fDuration )
 int CASW_Inhabitable_NPC::TranslateSchedule( int scheduleType )
 {
 	// skip CAI_PlayerAlly as it makes enemies back up when they hit an obstacle
-	return BaseClass::BaseClass::TranslateSchedule( scheduleType );
+	return CAI_BaseActor::TranslateSchedule( scheduleType );
 }
 
 float CASW_Inhabitable_NPC::MaxSpeed()
 {
 	return 300;
+}
+
+bool CASW_Inhabitable_NPC::ShouldMoveSlow() const
+{
+	return ( gpGlobals->curtime < m_fHurtSlowMoveTime );
+}
+
+float CASW_Inhabitable_NPC::GetIdealSpeed() const
+{
+	float flBaseSpeed = BaseClass::GetIdealSpeed() * m_fSpeedScale;
+
+	// if the alien is hurt, move slower
+	if ( ShouldMoveSlow() )
+	{
+		if ( m_bElectroStunned.Get() )
+		{
+			return flBaseSpeed * asw_alien_stunned_speed.GetFloat();
+		}
+		else
+		{
+			return flBaseSpeed * asw_alien_hurt_speed.GetFloat();
+		}
+	}
+
+	return flBaseSpeed;
+}
+
+bool CASW_Inhabitable_NPC::ModifyAutoMovement( Vector &vecNewPos )
+{
+	float fFactor = 1.0f;
+	if ( ShouldMoveSlow() )
+	{
+		if ( m_bElectroStunned.Get() )
+		{
+			fFactor *= asw_alien_stunned_speed.GetFloat() * 0.1f;
+		}
+		else
+		{
+			fFactor *= asw_alien_hurt_speed.GetFloat() * 0.1f;
+		}
+		Vector vecRelPos = vecNewPos - GetAbsOrigin();
+		vecRelPos *= fFactor;
+		vecNewPos = GetAbsOrigin() + vecRelPos;
+		return true;
+	}
+	return false;
 }
 
 ASW_Controls_t CASW_Inhabitable_NPC::GetASWControls()
@@ -257,11 +468,11 @@ void CASW_Inhabitable_NPC::MakeTracer( const Vector &vecTracerSrc, const trace_t
 	}
 
 	UserMessageBegin( filter, tracer );
-	WRITE_SHORT( entindex() );
-	WRITE_FLOAT( tr.endpos.x );
-	WRITE_FLOAT( tr.endpos.y );
-	WRITE_FLOAT( tr.endpos.z );
-	WRITE_SHORT( m_iDamageAttributeEffects );
+		WRITE_SHORT( entindex() );
+		WRITE_FLOAT( tr.endpos.x );
+		WRITE_FLOAT( tr.endpos.y );
+		WRITE_FLOAT( tr.endpos.z );
+		WRITE_SHORT( m_iDamageAttributeEffects );
 	MessageEnd();
 }
 
@@ -277,14 +488,14 @@ void CASW_Inhabitable_NPC::MakeUnattachedTracer( const Vector &vecTracerSrc, con
 	}
 
 	UserMessageBegin( filter, tracer );
-	WRITE_SHORT( entindex() );
-	WRITE_FLOAT( tr.endpos.x );
-	WRITE_FLOAT( tr.endpos.y );
-	WRITE_FLOAT( tr.endpos.z );
-	WRITE_FLOAT( vecTracerSrc.x );
-	WRITE_FLOAT( vecTracerSrc.y );
-	WRITE_FLOAT( vecTracerSrc.z );
-	WRITE_SHORT( m_iDamageAttributeEffects );
+		WRITE_SHORT( entindex() );
+		WRITE_FLOAT( tr.endpos.x );
+		WRITE_FLOAT( tr.endpos.y );
+		WRITE_FLOAT( tr.endpos.z );
+		WRITE_FLOAT( vecTracerSrc.x );
+		WRITE_FLOAT( vecTracerSrc.y );
+		WRITE_FLOAT( vecTracerSrc.z );
+		WRITE_SHORT( m_iDamageAttributeEffects );
 	MessageEnd();
 }
 
@@ -308,4 +519,261 @@ void CASW_Inhabitable_NPC::PhysicsSimulate()
 	{
 		pExtra->ItemPostFrame();
 	}
+}
+
+void CASW_Inhabitable_NPC::SetHealth( int amt )
+{
+	Assert( amt < ( 1 << ASW_ALIEN_HEALTH_BITS ) );
+	BaseClass::SetHealth( amt );
+}
+
+void CASW_Inhabitable_NPC::SetHealthByDifficultyLevel()
+{
+	Assert( ASWGameRules() );
+	int iHealth = GetBaseHealth();
+	iHealth = MAX( 1, ASWGameRules()->ModifyAlienHealthBySkillLevel( iHealth ) );
+	if ( asw_debug_alien_damage.GetBool() )
+		Msg( "Setting %s's initial health to %d\n", GetClassname(), iHealth + m_iHealthBonus );
+	SetHealth( iHealth + m_iHealthBonus );
+	SetMaxHealth( iHealth + m_iHealthBonus );
+}
+
+int CASW_Inhabitable_NPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
+{
+	int result = 0;
+
+	CASW_Burning *pBurning = NULL;
+	CBaseEntity *pAttacker = info.GetAttacker();
+	CBaseEntity *pInflictor = info.GetInflictor();
+	if ( pInflictor && pInflictor->Classify() == CLASS_ASW_BURNING )
+		pBurning = assert_cast< CASW_Burning * >( pInflictor );
+
+	// scale burning damage up
+	if ( pBurning && IsAlien() )
+	{
+		CTakeDamageInfo newDamage = info;
+		newDamage.ScaleDamage( asw_fire_alien_damage_scale.GetFloat() );
+		if ( asw_debug_alien_damage.GetBool() )
+		{
+			Msg( "%d %s hurt by %f dmg (scaled up by asw_fire_alien_damage_scale)\n", entindex(), GetClassname(), newDamage.GetDamage() );
+		}
+		result = BaseClass::OnTakeDamage_Alive( newDamage );
+	}
+	else
+	{
+		if ( asw_debug_alien_damage.GetBool() )
+		{
+			Msg( "%d %s hurt by %f dmg\n", entindex(), GetClassname(), info.GetDamage() );
+		}
+		result = BaseClass::OnTakeDamage_Alive( info );
+	}
+
+	// if we take fire damage, catch on fire
+	if ( result > 0 && ( info.GetDamageType() & DMG_BURN ) && m_bFlammable && Classify() != CLASS_ASW_MARINE && info.GetWeapon() && !pBurning )
+	{
+		ASW_Ignite( asw_alien_burn_duration.GetFloat(), 0, pAttacker, info.GetWeapon() );
+	}
+
+	// make the alien move slower for 0.5 seconds
+	if ( info.GetDamageType() & DMG_SHOCK && m_bTeslable )
+	{
+		ElectroStun( asw_stun_grenade_time.GetFloat() );
+
+		m_fNoDamageDecal = true;
+	}
+	else
+	{
+		if ( m_fHurtSlowMoveTime < gpGlobals->curtime + 0.5f )
+			m_fHurtSlowMoveTime = gpGlobals->curtime + 0.5f;
+	}
+
+	if ( IsAlien() )
+	{
+		if ( CASW_Marine *pMarine = CASW_Marine::AsMarine( pAttacker ) )
+		{
+			pMarine->HurtAlien( this, info );
+		}
+
+		// Notify gamestats of the damage
+		CASW_GameStats.Event_AlienTookDamage( this, info );
+	}
+
+	return result;
+}
+
+void CASW_Inhabitable_NPC::ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon )
+{
+	if ( AllowedToIgnite() )
+	{
+		if ( IsOnFire() )
+		{
+			// reactivedrop
+			if ( ASWBurning() )
+				ASWBurning()->ExtendBurning( this, flFlameLifetime );	// 2.5 dps, applied every 0.4 seconds
+			//
+			return;
+		}
+
+		AddFlag( FL_ONFIRE );
+		m_bOnFire = true;
+		if ( ASWBurning() )
+			ASWBurning()->BurnEntity( this, pAttacker, flFlameLifetime, 0.4f, 2.5f * 0.4f, pDamagingWeapon );	// 2.5 dps, applied every 0.4 seconds
+
+		m_OnIgnite.FireOutput( this, this );
+	}
+}
+
+void CASW_Inhabitable_NPC::Ignite( float flFlameLifetime, bool bNPCOnly, float flSize, bool bCalledByLevelDesigner )
+{
+	Assert( 0 ); // use ASW_Ignite instead
+}
+
+void CASW_Inhabitable_NPC::ScriptIgnite( float flFlameLifetime )
+{
+	ASW_Ignite( flFlameLifetime, 0, NULL, NULL );
+}
+
+void CASW_Inhabitable_NPC::Extinguish()
+{
+	m_bOnFire = false;
+	if ( ASWBurning() )
+		ASWBurning()->Extinguish( this );
+	RemoveFlag( FL_ONFIRE );
+}
+
+void CASW_Inhabitable_NPC::ElectroStun( float flStunTime )
+{
+	if ( m_fHurtSlowMoveTime < gpGlobals->curtime + flStunTime )
+		m_fHurtSlowMoveTime = gpGlobals->curtime + flStunTime;
+	if ( m_flElectroStunSlowMoveTime < gpGlobals->curtime + flStunTime )
+		m_flElectroStunSlowMoveTime = gpGlobals->curtime + flStunTime;
+
+	m_bElectroStunned = true;
+
+	if ( ASWGameResource() && IsAlien() )
+	{
+		ASWGameResource()->m_iElectroStunnedAliens++;
+	}
+
+	// can't jump after being elecrostunned
+	CapabilitiesRemove( bits_CAP_MOVE_JUMP );
+}
+
+void CASW_Inhabitable_NPC::ScriptElectroStun( float flStunTime )
+{
+	ElectroStun( flStunTime );
+}
+
+//-----------------------------------------------------------------------------
+// Freezes this NPC in place for a period of time.
+//-----------------------------------------------------------------------------
+void CASW_Inhabitable_NPC::Freeze( float flFreezeAmount, CBaseEntity *pFreezer, Ray_t *pFreezeRay )
+{
+	if ( !m_bFreezable )
+		return;
+
+	if ( flFreezeAmount <= 0.0f )
+	{
+		SetCondition( COND_NPC_FREEZE );
+		SetMoveType( MOVETYPE_NONE );
+		SetGravity( 0 );
+		SetLocalAngularVelocity( vec3_angle );
+		SetAbsVelocity( vec3_origin );
+		return;
+	}
+
+	if ( flFreezeAmount > 1.0f )
+	{
+		float flFreezeDuration = flFreezeAmount - 1.0f;
+
+		// if freezing permanently, then reduce freeze duration by freeze resistance
+		flFreezeDuration *= ( 1.0f - m_flFreezeResistance );
+
+		BaseClass::Freeze( 1.0f, pFreezer, pFreezeRay );			// make alien fully frozen
+
+		m_flFrozenTime = gpGlobals->curtime + flFreezeDuration;
+	}
+	else
+	{
+		// if doing a partial freeze, then freeze resistance reduces that
+		flFreezeAmount *= ( 1.0f - m_flFreezeResistance );
+
+		BaseClass::Freeze( flFreezeAmount, pFreezer, pFreezeRay );
+	}
+
+	UpdateThawRate();
+}
+
+//-----------------------------------------------------------------------------
+// VScript: Freezes this NPC in place for a period of time.
+//-----------------------------------------------------------------------------
+void CASW_Inhabitable_NPC::ScriptFreeze( float flFreezeAmount )
+{
+	Freeze( flFreezeAmount, NULL, NULL );
+}
+
+void CASW_Inhabitable_NPC::UpdateThawRate()
+{
+	if ( m_flFrozenTime > gpGlobals->curtime )
+	{
+		m_flFrozenThawRate = 0.0f;
+	}
+	else
+	{
+		m_flFrozenThawRate = m_flBaseThawRate * ( 1.5f - m_flFrozen );
+	}
+}
+
+// set orders for our alien
+//   select schedule should activate the appropriate orders
+void CASW_Inhabitable_NPC::SetAlienOrders( AlienOrder_t Orders, Vector vecOrderSpot, CBaseEntity *pOrderObject )
+{
+	m_AlienOrders = Orders;
+	m_vecAlienOrderSpot = vecOrderSpot;	// unused currently
+	m_AlienOrderObject = pOrderObject;
+
+	Wake(); // Make sure we at least consider following the orders.
+
+	if ( Orders == AOT_None )
+	{
+		ClearAlienOrders();
+		return;
+	}
+
+	ForceDecisionThink();
+}
+
+void CASW_Inhabitable_NPC::ClearAlienOrders()
+{
+	m_AlienOrders = AOT_None;
+	m_vecAlienOrderSpot = vec3_origin;
+	m_AlienOrderObject = NULL;
+	m_bIgnoreMarines = false;
+	m_bFailedMoveTo = false;
+}
+
+// we're blocking a fellow alien from spawning, let's move a short distance
+void CASW_Inhabitable_NPC::MoveAside()
+{
+	if ( !GetEnemy() && !IsMoving() )
+	{
+		// random nearby position
+		if ( !GetNavigator()->SetWanderGoal( 90, 200 ) )
+		{
+			if ( !GetNavigator()->SetRandomGoal( 150.0f ) )
+			{
+				return;	// couldn't find a wander spot
+			}
+		}
+	}
+}
+
+void CASW_Inhabitable_NPC::ScriptOrderMoveTo( HSCRIPT hOrderObject, bool bIgnoreMarines )
+{
+	SetAlienOrders( bIgnoreMarines ? AOT_MoveToIgnoringMarines : AOT_MoveTo, vec3_origin, ToEnt( hOrderObject ) );
+}
+
+void CASW_Inhabitable_NPC::ScriptChaseNearestMarine()
+{
+	SetAlienOrders( AOT_MoveToNearestMarine, vec3_origin, NULL );
 }

@@ -104,12 +104,9 @@ void CASW_Harvester::Precache( void )
 	BaseClass::Precache();
 }
 
-void CASW_Harvester::SetHealthByDifficultyLevel()
+int CASW_Harvester::GetBaseHealth()
 {
-	SetHealth( ASWGameRules()->ModifyAlienHealthBySkillLevel( rd_harvester_health.GetInt() ) + m_iHealthBonus );
-	SetMaxHealth( GetHealth() );
-	if ( asw_debug_alien_damage.GetBool() )
-		Msg( "Adjusting harvester's health to %d\n", GetHealth() );
+	return rd_harvester_health.GetInt();
 }
 
 float CASW_Harvester::GetIdealSpeed() const
@@ -454,8 +451,8 @@ CAI_BaseNPC* CASW_Harvester::SpawnAlien()
 	angles.z = 0.0;
 	pNPC->SetAbsAngles( angles );
 
-	IASW_Spawnable_NPC* pSpawnable = dynamic_cast<IASW_Spawnable_NPC*>(pNPC);
-	ASSERT(pSpawnable);	
+	IASW_Spawnable_NPC *pSpawnable = dynamic_cast< IASW_Spawnable_NPC * >( pNPC );
+	Assert( pSpawnable );
 	if ( !pSpawnable )
 	{
 		Warning("NULL Spawnable Ent in CASW_Harvester!\n");
@@ -469,9 +466,9 @@ CAI_BaseNPC* CASW_Harvester::SpawnAlien()
 
 	if ( pNPC->Classify() == CLASS_ASW_PARASITE )
 	{
-		CASW_Parasite* pParasite = assert_cast<CASW_Parasite*>(pNPC);
+		CASW_Parasite *pParasite = assert_cast< CASW_Parasite * >( pNPC );
 		m_iCrittersAlive++;
-		pParasite->SetMother(this);
+		pParasite->SetMother( this );
 	}
 	return pNPC;
 }

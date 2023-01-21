@@ -26,7 +26,7 @@ public:
 	CASW_Shaman();
 
 	virtual	void		Spawn();
-	virtual void		SetHealthByDifficultyLevel();
+	virtual int			GetBaseHealth() override;
 	virtual void		Precache();
 	virtual void		NPCThink();
 

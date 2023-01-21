@@ -5,17 +5,18 @@
 #endif
 
 #include "igamesystem.h"
+#include "asw_spawn_selection.h"
 
 struct CASW_ArenaAlien
 {
 public:
-	CASW_ArenaAlien( const char *szAlienClass, int iQuantityMin, int iQuantityMax )
+	CASW_ArenaAlien( const char *szAlienClass, int iQuantityMin, int iQuantityMax ) :
+		m_SpawnNPC( szAlienClass )
 	{
-		Q_strcpy( m_szAlienClass, szAlienClass );
 		m_iQuantityMin = iQuantityMin;
 		m_iQuantityMax = iQuantityMax;
 	}
-	char m_szAlienClass[128];
+	CASW_Spawn_NPC m_SpawnNPC;
 	int m_iQuantityMin;
 	int m_iQuantityMax;
 };
@@ -45,7 +46,7 @@ protected:
 	void TeleportPlayersToSpawn();
 
 private:
-	CUtlVector<CASW_ArenaAlien*> m_ArenaAliens;
+	CUtlVectorAutoPurge<CASW_ArenaAlien*> m_ArenaAliens;
 	CountdownTimer m_ArenaCheckTimer;
 	CountdownTimer m_ArenaRestTimer;
 	CountdownTimer m_ArenaShuffleWallsTimer;

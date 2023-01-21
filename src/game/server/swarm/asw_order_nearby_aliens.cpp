@@ -57,18 +57,19 @@ void CASW_Order_Nearby_Aliens::Spawn( void )
 void CASW_Order_Nearby_Aliens::InputOrderAliens( inputdata_t &inputdata )
 {
 	// find all aliens within our radius
-	const char* szAlienClass = GetAlienClass();
-	CBaseEntity* pEntity = NULL;
-	while ((pEntity = gEntList.FindEntityByClassname( pEntity, szAlienClass )) != NULL)
+	const char *szAlienClass = GetAlienClass();
+	CBaseEntity *pEntity = NULL;
+	while ( ( pEntity = gEntList.FindEntityByClassname( pEntity, szAlienClass ) ) != NULL )
 	{
-		float dist = (GetAbsOrigin() - pEntity->GetAbsOrigin()).Length2D();
-		if (dist <= m_fRadius)
+		float dist = ( GetAbsOrigin() - pEntity->GetAbsOrigin() ).Length2D();
+		if ( dist <= m_fRadius )
 		{
-			IASW_Spawnable_NPC* pAlien = dynamic_cast<IASW_Spawnable_NPC*>(pEntity);			
-			if (pAlien)
+			IASW_Spawnable_NPC *pAlien = dynamic_cast< IASW_Spawnable_NPC * >( pEntity );
+			Assert( pAlien );
+			if ( pAlien )
 			{
 				// give the orders
-				pAlien->SetAlienOrders(m_AlienOrders, vec3_origin, GetOrderTarget());
+				pAlien->SetAlienOrders( m_AlienOrders, vec3_origin, GetOrderTarget() );
 			}
 		}
 	}
