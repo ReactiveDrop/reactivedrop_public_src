@@ -94,6 +94,7 @@
 #define ASW_DEFAULT_MARINE_MODEL "models/swarm/marine/marine.mdl"
 
 extern ConVar asw_stats_verbose;
+extern ConVar asw_stun_grenade_time;
 ConVar rd_frags_limit( "rd_frags_limit", "20",  FCVAR_REPLICATED, "Number of frags a player must reach to win the round");
 ConVar rd_chatter_about_ff( "rd_chatter_about_ff", "1",  FCVAR_REPLICATED, "If 1 marines will shout about friendly fire done to them");
 ConVar rd_chatter_about_marine_death( "rd_chatter_about_marine_death", "1",  FCVAR_REPLICATED, "If 1 marines will shout Marine Down if marine dies");
@@ -1486,13 +1487,13 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		ApplyPassiveArmorEffects( newInfo );
 
 		// reduce damage and shock alien if we have electrified armour on
-		if ( newInfo.GetDamageType() & DMG_SLASH )
+		if ( newInfo.GetDamageType() & ( DMG_SLASH | DMG_CLUB ) )
 		{
 			if ( IsElectrifiedArmorActive() )
 			{
-				if ( pAttacker->IsAlienClassType() )
+				if ( pAttacker->IsInhabitableNPC() )
 				{
-					CASW_Alien* pAlien = assert_cast<CASW_Alien*>(pAttacker);
+					CASW_Inhabitable_NPC *pAlien = assert_cast< CASW_Inhabitable_NPC * >( pAttacker );
 
 					const float flDamageReturn = 20.0f;
 					Vector vecToTarget = pAlien->WorldSpaceCenter() - WorldSpaceCenter();
@@ -1579,7 +1580,7 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 
 	int iPreDamageHealth = GetHealth();
 	CASW_GameStats.Event_MarineTookDamage( this, newInfo );
-	int result = BaseClass::OnTakeDamage_Alive(newInfo);
+	int result = CAI_PlayerAlly::OnTakeDamage_Alive( newInfo ); // skip inhabitable NPC
 	int iDamageTaken = MAX( iPreDamageHealth, 0 ) - MAX( GetHealth(), 0 );
 
 	if (asw_debug_marine_damage.GetBool() && result > 0)
@@ -1688,6 +1689,12 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 				WRITE_BOOL( false );
 			}
 			MessageEnd();
+		}
+		if ( ( ASWDeathmatchMode() || !bFriendlyFire ) && ( info.GetDamageType() & DMG_SHOCK ) && m_bTeslable )
+		{
+			ElectroStun( asw_stun_grenade_time.GetFloat() );
+
+			m_fNoDamageDecal = true;
 		}
 		if (info.GetDamageType() & DMG_BLURPOISON)
 		{
@@ -2066,8 +2073,29 @@ void CASW_Marine::PostThink()
 	{
 		StudioFrameAdvance();
 	}
-		
+
 	ASWThinkEffects();
+
+
+	// stop electro stunning if we're slowed
+	if ( m_bElectroStunned && m_lifeState != LIFE_DYING )
+	{
+		if ( m_flElectroStunSlowMoveTime < gpGlobals->curtime )
+		{
+			m_bElectroStunned = false;
+		}
+		else
+		{
+			if ( gpGlobals->curtime >= m_fNextStunSound )
+			{
+				m_fNextStunSound = gpGlobals->curtime + RandomFloat( 0.2f, 0.5f );
+
+				EmitSound( "ASW_Tesla_Laser.Damage" );
+			}
+		}
+	}
+
+	UpdateThawRate();
 
 	if ( NeedToUpdateSquad() )
 	{

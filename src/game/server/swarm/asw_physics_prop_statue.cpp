@@ -47,9 +47,9 @@ void CASWStatueProp::Spawn( void )
 	CBaseAnimating* pInitAnim = m_hInitBaseAnimating.Get();
 	if ( pInitAnim )
 	{
-		if ( pInitAnim->IsAlienClassType() )
+		if ( pInitAnim->IsInhabitableNPC() )
 		{
-			CASW_Alien* pAlien = assert_cast<CASW_Alien*>( pInitAnim );
+			CASW_Inhabitable_NPC *pAlien = assert_cast< CASW_Inhabitable_NPC * >( pInitAnim );
 			m_pszSourceClass = pAlien->GetClassname();
 		}
 		SetModelScale( pInitAnim->GetModelScale() );
@@ -96,12 +96,12 @@ void CASWStatueProp::Freeze( float flFreezeAmount, CBaseEntity *pFreezer, Ray_t 
 	TakeDamage( CTakeDamageInfo( pFreezer, pFreezer, 1, DMG_GENERIC ) );
 }
 
-void CASWStatueProp::EnableAutoShatter( const CTakeDamageInfo &dmgInfo )
+void CASWStatueProp::EnableAutoShatter( const CTakeDamageInfo &dmgInfo, float flShatterDelay )
 {
-	m_ShatterDamageInfo = dmgInfo; 
+	m_ShatterDamageInfo = dmgInfo;
 
 	SetThink( &CASWStatueProp::AutoShatterThink );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->curtime + flShatterDelay );
 }
 
 void CASWStatueProp::AutoShatterThink()
@@ -123,7 +123,7 @@ void CASWStatueProp::BreakThink( void )
 	Break( m_ShatterDamageInfo.GetInflictor(), m_ShatterDamageInfo );
 }
 
-CBaseEntity *CreateASWServerStatue( CBaseAnimating *pAnimating, int collisionGroup, const CTakeDamageInfo &dmgInfo, bool bAutoShatter )
+CBaseEntity *CreateASWServerStatue( CBaseAnimating *pAnimating, int collisionGroup, const CTakeDamageInfo &dmgInfo, bool bAutoShatter, float flShatterDelay )
 {
 	CASWStatueProp *pStatue = static_cast<CASWStatueProp *>( CreateEntityByName( "asw_physics_prop_statue" ) );
 
@@ -137,7 +137,7 @@ CBaseEntity *CreateASWServerStatue( CBaseAnimating *pAnimating, int collisionGro
 		pStatue->Activate();
 		if ( bAutoShatter )
 		{
-			pStatue->EnableAutoShatter( dmgInfo );
+			pStatue->EnableAutoShatter( dmgInfo, flShatterDelay );
 		}
 	}
 

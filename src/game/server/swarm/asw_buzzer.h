@@ -111,6 +111,10 @@ public:
 	void			Slice( CBaseEntity *pHitEntity, float flInterval, trace_t &tr );
 	void			Bump( CBaseEntity *pHitEntity, float flInterval, trace_t &tr );
 	void			Splash( const Vector &vecSplashPos );
+	void			Freeze( float flFreezeAmount, CBaseEntity *pFreezer, Ray_t *pFreezeRay ) override;
+	void			Unfreeze() override;
+	float			IceStatueChance() override { return 0.0f; }
+	float			StatueShatterDelay() override { return 0.25f; }
 
 	float			ManhackMaxSpeed( void );
 	virtual void	VPhysicsShadowCollision( int index, gamevcollisionevent_t *pEvent );

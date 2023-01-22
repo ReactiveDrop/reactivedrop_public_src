@@ -45,6 +45,7 @@
 #include "asw_game_resource.h"
 #include "asw_spawn_manager.h"
 #include "gameinterface.h"
+#include "asw_physics_prop_statue.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -488,24 +489,13 @@ bool CASW_Buzzer::ShouldGib( const CTakeDamageInfo &info )
 
 void CASW_Buzzer::Event_Killed( const CTakeDamageInfo &info )
 {
-	if (ASWGameRules())
-	{
-		ASWGameRules()->AlienKilled(this, info);
-	}	
-
-	CASW_GameStats.Event_AlienKilled( this, info );
-
-	if ( ASWDirector() )
-		ASWDirector()->Event_AlienKilled( this, info );
-
-	// notify our spawner, so it can spit out more buzzers if need be
-	if (m_hSpawner.Get())
-		m_hSpawner->AlienKilled(this);
-
 	// turn off the blur!
 	SetBodygroup( ASW_BUZZER_BODYGROUP_BLUR, ASW_BUZZER_BODYGROUP_OFF );
 
-	UTIL_ASW_BuzzerDeath( GetAbsOrigin() );
+	if ( !IsFrozen() )
+	{
+		UTIL_ASW_BuzzerDeath( GetAbsOrigin() );
+	}
 
 	if ( m_nEnginePitch1 <= 0 )
 	{
@@ -525,8 +515,6 @@ void CASW_Buzzer::Event_Killed( const CTakeDamageInfo &info )
 	}
 
 	BaseClass::Event_Killed( info );
-
-	UTIL_Remove( this );
 }
 
 void CASW_Buzzer::HitPhysicsObject( CBaseEntity *pOther )
@@ -1237,6 +1225,24 @@ void CASW_Buzzer::Splash( const Vector &vecSplashPos )
 	}
 
 	DispatchEffect( "watersplash", data );
+}
+
+void CASW_Buzzer::Freeze( float flFreezeAmount, CBaseEntity *pFreezer, Ray_t *pFreezeRay )
+{
+	BaseClass::Freeze( flFreezeAmount, pFreezer, pFreezeRay );
+
+	if ( IsFrozen() )
+	{
+		SetHealth( 1 );
+		CTakeDamageInfo info( pFreezer, pFreezer, 10.0f, DMG_GENERIC );
+		TakeDamage( info );
+	}
+}
+
+void CASW_Buzzer::Unfreeze()
+{
+	// skip NPC freeze logic
+	CBaseAnimating::Unfreeze();
 }
 
 //-----------------------------------------------------------------------------
@@ -2095,7 +2101,7 @@ void CASW_Buzzer::Spawn(void)
 
 	SetSolid( SOLID_BBOX );
 	AddSolidFlags( FSOLID_NOT_STANDABLE );
-	
+
 	SetMoveType( MOVETYPE_VPHYSICS );
 
 	SetViewOffset( Vector(0, 0, 10) );		// Position of the eyes relative to NPC's origin.

@@ -12,6 +12,8 @@ public:
 	DECLARE_CLASS( CASW_Grenade_Freeze, CASW_Grenade_Cluster );
 	DECLARE_DATADESC();
 
+	CASW_Grenade_Freeze();
+
 	virtual void Precache();
 	virtual void Spawn();
 	virtual void DoExplosion();

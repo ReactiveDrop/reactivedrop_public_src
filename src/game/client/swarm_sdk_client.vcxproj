@@ -556,6 +556,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="..\shared\swarm\asw_holdout_wave.cpp" />
     <ClCompile Include="..\shared\swarm\asw_holo_sentry_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_info_message_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_inhabitable_npc_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_laser_mine_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_marine_command.cpp" />
     <ClCompile Include="..\shared\swarm\asw_marine_gamemovement.cpp" />

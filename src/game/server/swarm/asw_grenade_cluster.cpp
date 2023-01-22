@@ -152,16 +152,19 @@ void CASW_Grenade_Cluster::CheckNearbyDrones()
 	// see if an alien is nearby
 	if (gpGlobals->curtime >= m_fEarliestAOEDetonationTime)
 	{
-		float flRadius = asw_cluster_grenade_radius_check_scale.GetFloat() * m_DmgRadius;
-		Vector vecSrc = GetAbsOrigin();
-		CBaseEntity *pEntity = NULL;
-		for ( CEntitySphereQuery sphere( vecSrc, flRadius ); (pEntity = sphere.GetCurrentEntity()) != NULL; sphere.NextEntity() )
+		if ( !GetOwnerEntity() || !GetOwnerEntity()->IsAlien() )
 		{
-			if (!pEntity->IsAlien())
-				continue;
+			float flRadius = asw_cluster_grenade_radius_check_scale.GetFloat() * m_DmgRadius;
+			Vector vecSrc = GetAbsOrigin();
+			CBaseEntity *pEntity = NULL;
+			for ( CEntitySphereQuery sphere( vecSrc, flRadius ); ( pEntity = sphere.GetCurrentEntity() ) != NULL; sphere.NextEntity() )
+			{
+				if ( !pEntity->IsAlien() )
+					continue;
 
-			Detonate();
-			return;
+				Detonate();
+				return;
+			}
 		}
 
 		if (gpGlobals->curtime >= m_fDetonateTime)

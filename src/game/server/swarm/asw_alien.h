@@ -163,7 +163,6 @@ public:
 	virtual Vector CalcDeathForceVector( const CTakeDamageInfo &info );
 	float	m_fNextPainSound;
 	void Event_Killed( const CTakeDamageInfo &info );
-	float m_fHurtSlowMoveTime;
 	//CNetworkVar(bool, m_bGibber);
 	CNetworkVar( DeathStyle_t, m_nDeathStyle );
 	CUtlQueueFixed< CTakeDamageInfo, ASW_NUM_RECENT_DAMAGE >	m_RecentDamage;

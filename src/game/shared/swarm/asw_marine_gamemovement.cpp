@@ -770,7 +770,8 @@ void CASW_MarineGameMovement::CheckParameters( void )
 	marine->m_bWalking = ( mv->m_nButtons & IN_WALK ) != 0;
 
 	if ( marine->GetFlags() & FL_FROZEN ||
-		 marine->GetFlags() & FL_ONTRAIN || 
+		 marine->IsMovementFrozen() ||
+		 marine->GetFlags() & FL_ONTRAIN ||
 		 IsDead() )
 	{
 		mv->m_flForwardMove = 0;
@@ -2754,7 +2755,7 @@ bool CASW_MarineGameMovement::CheckJumpButton( void )
 	if ( mv->m_nOldButtons & IN_JUMP && !sv_autobunnyhopping.GetBool() )
 		return false;		// don't pogo stick
 
-	if (marine->GetFlags() & FL_FROZEN)	// no jumping when frozen
+	if ( marine->GetFlags() & FL_FROZEN || marine->IsMovementFrozen() )	// no jumping when frozen
 		return false;
 
 	// Cannot jump will in the unduck transition.

@@ -21,7 +21,6 @@ public:
 	int Restore( IRestore &restore );
 	virtual void InhabitedPhysicsSimulate();
 	virtual void UpdateVPhysicsAfterMove();
-	virtual float MaxSpeed();
 
 	void PostThink();
 	// physics stuff

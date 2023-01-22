@@ -63,12 +63,16 @@ public:
 	float m_fLastTurningYaw;
 
 	virtual float MaxSpeed();
+	virtual bool IsMovementFrozen();
+	virtual bool ShouldMoveSlow() const;
 	virtual float GetBasePlayerYawRate();
 	int m_nOldButtons;
 	CNetworkVar( bool, m_bWalking );
 	CNetworkVar( bool, m_bInhabited );
 	ASW_Controls_t GetASWControls();
 	CNetworkVar( int, m_iControlsOverride );
+	CNetworkVar( float, m_fSpeedScale );
+	CNetworkVar( float, m_fHurtSlowMoveTime );
 
 	// Texture names and surface data, used by CASW_MarineGameMovement
 	int				m_surfaceProps;

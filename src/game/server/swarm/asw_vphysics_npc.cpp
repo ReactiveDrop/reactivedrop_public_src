@@ -697,5 +697,3 @@ void CASW_VPhysics_NPC::Touch( CBaseEntity *pOther )
 	SetTouchedPhysics( true );
 #endif
 }
-
-float CASW_VPhysics_NPC::MaxSpeed() { return 300.0f; }

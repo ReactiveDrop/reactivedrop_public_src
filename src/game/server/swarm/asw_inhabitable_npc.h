@@ -40,7 +40,7 @@ public:
 	HSCRIPT ScriptGetCommander() const;
 	CNetworkHandle( CASW_Player, m_Commander );
 
-	virtual bool IsInhabited() { return m_bInhabited; }
+	virtual bool IsInhabited();
 	virtual void SetInhabited( bool bInhabited ) { m_bInhabited = bInhabited; }
 	virtual void InhabitedBy( CASW_Player *player ) { }
 	virtual void UninhabitedBy( CASW_Player *player ) { }
@@ -79,6 +79,7 @@ public:
 	virtual bool ShouldMoveSlow() const;
 	virtual float GetIdealSpeed( void ) const override;
 	virtual bool ModifyAutoMovement( Vector &vecNewPos );
+	virtual bool OverrideMove( float flInterval ) override;
 	int m_nOldButtons;
 	CNetworkVar( bool, m_bWalking );
 	CNetworkVar( bool, m_bInhabited );
@@ -116,7 +117,8 @@ public:
 	virtual void SetHealth( int amt ) override;
 	virtual void SetHealthByDifficultyLevel() override;
 	virtual int GetBaseHealth() { Assert( 0 ); return 100; } // should be overridden
-	int OnTakeDamage_Alive( const CTakeDamageInfo &info );
+	virtual int OnTakeDamage_Alive( const CTakeDamageInfo &info ) override;
+	virtual void Event_Killed( const CTakeDamageInfo &info ) override;
 
 	// burning
 	virtual	bool AllowedToIgnite( void ) override { return m_bFlammable; }
@@ -130,15 +132,18 @@ public:
 	virtual void ScriptElectroStun( float flStunTime );
 	bool IsElectroStunned() { return m_bElectroStunned.Get(); }
 	float m_fNextStunSound;
-	float m_fHurtSlowMoveTime;
+	CNetworkVar( float, m_fHurtSlowMoveTime );
 	float m_flElectroStunSlowMoveTime;
 
 	// freezeing
 	virtual void Freeze( float flFreezeAmount, CBaseEntity *pFreezer, Ray_t *pFreezeRay ) override;
+	virtual void Unfreeze() override;
 	virtual void ScriptFreeze( float flFreezeAmount );
 	virtual bool ShouldBecomeStatue( void ) override { return false; }
-	virtual bool IsMovementFrozen( void ) override { return GetFrozenAmount() > 0.5f; }
+	virtual bool IsMovementFrozen( void ) override;
 	virtual void UpdateThawRate();
+	virtual float IceStatueChance() { return 0.01f; } // chance ice statue does not immediately shatter
+	virtual float StatueShatterDelay() { return 0.0f; } // if the statue does shatter, how long does it wait before doing so?
 	float m_flFreezeResistance;
 	float m_flFrozenTime;
 	float m_flBaseThawRate;
@@ -179,7 +184,7 @@ public:
 	CNetworkVar( bool, m_bElectroStunned );
 	int  m_iHealthBonus;
 	float m_fSizeScale;
-	float m_fSpeedScale;
+	CNetworkVar( float, m_fSpeedScale );
 };
 
 #endif /* ASW_INHABITABLE_NPC_H */

@@ -2011,18 +2011,6 @@ void CASW_Alien::Event_Killed( const CTakeDamageInfo &info )
 {
 	if (asw_debug_alien_damage.GetBool())
 		Msg("%f alien killed\n", gpGlobals->curtime);
-	if (ASWGameRules())
-	{
-		ASWGameRules()->AlienKilled(this, info);
-	}
-
-	CASW_GameStats.Event_AlienKilled( this, info );
-
-	if ( ASWDirector() )
-		ASWDirector()->Event_AlienKilled( this, info );
-
-	if (m_hSpawner.Get())
-		m_hSpawner->AlienKilled(this);
 
 	//bool bRagdollCreated = Dissolve( NULL, gpGlobals->curtime, false, ENTITY_DISSOLVE_ELECTRICAL );
 
@@ -2030,15 +2018,6 @@ void CASW_Alien::Event_Killed( const CTakeDamageInfo &info )
 	if ( HasDeadBodyGroup() && !m_bOnFire && !m_bElectroStunned )
 	{
 		SetBodygroup( 0, m_iDeadBodyGroup );
-	}
-
-	if ( m_flFrozen >= 0.1f )
-	{
-		bool bShatter = ( RandomFloat() > 0.01f );
-		CreateASWServerStatue( this, COLLISION_GROUP_NONE, info, bShatter );
-		BaseClass::Event_Killed( CTakeDamageInfo( info.GetAttacker(), info.GetAttacker(), info.GetDamage(), DMG_GENERIC | DMG_REMOVENORAGDOLL | DMG_PREVENT_PHYSICS_FORCE ) );
-		RemoveDeferred();
-		return;
 	}
 
 	// if we died from an explosion, instagib

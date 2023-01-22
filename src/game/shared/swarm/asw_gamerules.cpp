@@ -6613,6 +6613,8 @@ void CAlienSwarm::FreezeAliensInRadius( CBaseEntity *pInflictor, float flFreezeA
 	float flHalfRadiusSqr = Square( flRadius / 2.0f );
 	//float flMarineHalfRadiusSqr = flHalfRadiusSqr * asw_marine_explosion_protection.GetFloat();
 
+	CASW_Marine *pInflictorMarine = CASW_Marine::AsMarine( pInflictor );
+
 	// iterate on all entities in the vicinity.
 	for ( CEntitySphereQuery sphere( vecSrc, flRadius ); (pEntity = sphere.GetCurrentEntity()) != NULL; sphere.NextEntity() )
 	{
@@ -6646,7 +6648,7 @@ void CAlienSwarm::FreezeAliensInRadius( CBaseEntity *pInflictor, float flFreezeA
 				}
 			}
 #endif
-			if ( !ASWDeathmatchMode() )
+			if ( !ASWDeathmatchMode() && ( !pInflictor || ( pInflictorMarine && pInflictorMarine->IRelationType( pEntity ) == D_LI ) ) )
 				continue;
 		}
 
@@ -6740,7 +6742,6 @@ void CAlienSwarm::FreezeAliensInRadius( CBaseEntity *pInflictor, float flFreezeA
 #endif
 	}
 #ifdef GAME_DLL
-	CASW_Marine *pInflictorMarine = CASW_Marine::AsMarine( pInflictor );
 	CASW_Marine_Resource *pMR = pInflictorMarine ? pInflictorMarine->GetMarineResource() : NULL;
 	if ( pMR && nFrozenStat )
 	{

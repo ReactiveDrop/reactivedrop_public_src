@@ -380,7 +380,7 @@ Vector CASW_Marine::Weapon_ShootPosition( )
 
 float CASW_Marine::MaxSpeed()
 {
-	float speed = 300;
+	float speed = BaseClass::MaxSpeed();
 	if (GetMarineResource())
 	{
 		speed = MarineSkills()->GetSkillBasedValueByMarine(this, ASW_MARINE_SKILL_AGILITY);

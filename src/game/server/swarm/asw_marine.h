@@ -643,8 +643,6 @@ public:
 	virtual void TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr );
 	virtual void Bleed( const CTakeDamageInfo &info, const Vector &vecPos, const Vector &vecDir, trace_t *ptr );
 	void PerformResurrectionEffect( void );		///< issue any special effects or sounds on resurrection
-	// we want to no part of this freezing business!
-	void Freeze( float flFreezeAmount, CBaseEntity *pFreezer, Ray_t *pFreezeRay ) { }
 	int m_iPoisonHeal;
 	float m_flNextPoisonHeal;
 

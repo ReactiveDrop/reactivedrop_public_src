@@ -242,6 +242,7 @@ bool CStatueProp::CreateVPhysicsFromHitBoxes( CBaseAnimating *pInitBaseAnimating
 
 	float flTotalVolume = 0.0f;
 	float flTotalSurfaceArea = 0.0f;
+	int iConvex = 0;
 
 	for ( int i = 0; i < set->numhitboxes; i++ )
 	{
@@ -250,9 +251,11 @@ bool CStatueProp::CreateVPhysicsFromHitBoxes( CBaseAnimating *pInitBaseAnimating
 		GetBonePosition( pbox->bone, position, angles );
 
 		// Accumulate volume and area
-		Vector flDimentions = pbox->bbmax - pbox->bbmin;
-		flTotalVolume += flDimentions.x * flDimentions.y * flDimentions.z;
-		flTotalSurfaceArea += 2.0f * ( flDimentions.x * flDimentions.y + flDimentions.x * flDimentions.z + flDimentions.y * flDimentions.z );
+		Vector flDimensions = pbox->bbmax - pbox->bbmin;
+		if ( flDimensions.x == 0 || flDimensions.y == 0 || flDimensions.z == 0 )
+			continue;
+		flTotalVolume += flDimensions.x * flDimensions.y * flDimensions.z;
+		flTotalSurfaceArea += 2.0f * ( flDimensions.x * flDimensions.y + flDimensions.x * flDimensions.z + flDimensions.y * flDimensions.z );
 
 		// Get angled min and max extents
 		Vector vecMins, vecMaxs;
@@ -300,11 +303,11 @@ bool CStatueProp::CreateVPhysicsFromHitBoxes( CBaseAnimating *pInitBaseAnimating
 		}
 
 		// Create convex from the intersection of these planes
-		ppConvex[ i ] = physcollision->ConvexFromPlanes( pPlanes, 6, 0.0f );
+		ppConvex[ iConvex++ ] = physcollision->ConvexFromPlanes( pPlanes, 6, 0.0f );
 	}
 
 	// Make a single collide out of the group of convex boxes
-	CPhysCollide *pPhysCollide = physcollision->ConvertConvexToCollide( ppConvex, set->numhitboxes );
+	CPhysCollide *pPhysCollide = physcollision->ConvertConvexToCollide( ppConvex, iConvex );
 
 	delete[] ppConvex;
 

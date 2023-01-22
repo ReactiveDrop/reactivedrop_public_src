@@ -7,6 +7,9 @@
 #include "asw_gamerules.h"
 #include "asw_marine.h"
 #include "asw_gamestats.h"
+#include "asw_director.h"
+#include "asw_base_spawner.h"
+#include "asw_physics_prop_statue.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -16,10 +19,10 @@
 
 static void DebugNPCsChanged( IConVar *var, const char *pOldValue, float flOldValue );
 ConVar asw_debug_npcs( "asw_debug_npcs", "0", FCVAR_CHEAT, "Enables debug overlays for various NPCs", DebugNPCsChanged );
-ConVar asw_alien_hurt_speed( "asw_alien_hurt_speed", "0.5", FCVAR_CHEAT, "Fraction of speed to use when the alien is hurt after being shot" );
-ConVar asw_alien_stunned_speed( "asw_alien_stunned_speed", "0.3", FCVAR_CHEAT, "Fraction of speed to use when the alien is electrostunned" );
 ConVar asw_fire_alien_damage_scale( "asw_fire_alien_damage_scale", "3.0", FCVAR_CHEAT );
 ConVar asw_alien_burn_duration( "asw_alien_burn_duration", "5.0f", FCVAR_CHEAT, "Alien burn time" );
+extern ConVar asw_alien_stunned_speed;
+extern ConVar asw_alien_hurt_speed;
 extern ConVar asw_stun_grenade_time;
 extern ConVar asw_controls;
 extern ConVar asw_debug_alien_damage;
@@ -61,6 +64,8 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Inhabitable_NPC, DT_ASW_Inhabitable_NPC )
 #endif
 	SendPropBool( SENDINFO( m_bElectroStunned ) ),
 	SendPropBool( SENDINFO( m_bOnFire ) ),
+	SendPropFloat( SENDINFO( m_fSpeedScale ) ),
+	SendPropTime( SENDINFO( m_fHurtSlowMoveTime ) ),
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Inhabitable_NPC )
@@ -157,11 +162,6 @@ void CASW_Inhabitable_NPC::Precache()
 
 void CASW_Inhabitable_NPC::Spawn()
 {
-	if ( asw_debug_npcs.GetBool() )
-	{
-		m_debugOverlays |= NPC_DEBUG_OVERLAY_FLAGS;
-	}
-
 	BaseClass::Spawn();
 
 	SetModelScale( m_fSizeScale );
@@ -178,6 +178,11 @@ void CASW_Inhabitable_NPC::OnRestore()
 void CASW_Inhabitable_NPC::NPCInit()
 {
 	BaseClass::NPCInit();
+
+	if ( asw_debug_npcs.GetBool() )
+	{
+		m_debugOverlays |= NPC_DEBUG_OVERLAY_FLAGS;
+	}
 
 	m_LagCompensation.Init( this );
 }
@@ -240,11 +245,6 @@ void CASW_Inhabitable_NPC::SetCommander( CASW_Player *player )
 	}
 }
 
-CASW_Player *CASW_Inhabitable_NPC::GetCommander() const
-{
-	return m_Commander.Get();
-}
-
 HSCRIPT CASW_Inhabitable_NPC::ScriptGetCommander() const
 {
 	return ToHScript( GetCommander() );
@@ -277,16 +277,6 @@ void CASW_Inhabitable_NPC::Suicide()
 
 	CTakeDamageInfo info( this, this, Vector( 0, 0, 0 ), GetAbsOrigin(), 100, DMG_NEVERGIB );
 	TakeDamage( info );
-}
-
-CASW_Weapon *CASW_Inhabitable_NPC::GetASWWeapon( int index ) const
-{
-	return assert_cast< CASW_Weapon * >( GetWeapon( index ) );
-}
-
-CASW_Weapon *CASW_Inhabitable_NPC::GetActiveASWWeapon( void ) const
-{
-	return assert_cast< CASW_Weapon * >( GetActiveWeapon() );
 }
 
 // using entities over time
@@ -339,16 +329,6 @@ int CASW_Inhabitable_NPC::TranslateSchedule( int scheduleType )
 	return CAI_BaseActor::TranslateSchedule( scheduleType );
 }
 
-float CASW_Inhabitable_NPC::MaxSpeed()
-{
-	return 300;
-}
-
-bool CASW_Inhabitable_NPC::ShouldMoveSlow() const
-{
-	return ( gpGlobals->curtime < m_fHurtSlowMoveTime );
-}
-
 float CASW_Inhabitable_NPC::GetIdealSpeed() const
 {
 	float flBaseSpeed = BaseClass::GetIdealSpeed() * m_fSpeedScale;
@@ -390,14 +370,16 @@ bool CASW_Inhabitable_NPC::ModifyAutoMovement( Vector &vecNewPos )
 	return false;
 }
 
-ASW_Controls_t CASW_Inhabitable_NPC::GetASWControls()
+bool CASW_Inhabitable_NPC::OverrideMove( float flInterval )
 {
-	if ( m_iControlsOverride >= 0 )
+	if ( IsMovementFrozen() )
 	{
-		return ( ASW_Controls_t )m_iControlsOverride.Get();
+		SetAbsVelocity( vec3_origin );
+		GetMotor()->SetMoveVel( vec3_origin );
+		return true;
 	}
 
-	return ( ASW_Controls_t )asw_controls.GetInt();
+	return BaseClass::OverrideMove( flInterval );
 }
 
 void CASW_Inhabitable_NPC::ScriptSetControls( int iControls )
@@ -549,7 +531,7 @@ int CASW_Inhabitable_NPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		pBurning = assert_cast< CASW_Burning * >( pInflictor );
 
 	// scale burning damage up
-	if ( pBurning && IsAlien() )
+	if ( pBurning )
 	{
 		CTakeDamageInfo newDamage = info;
 		newDamage.ScaleDamage( asw_fire_alien_damage_scale.GetFloat() );
@@ -569,13 +551,13 @@ int CASW_Inhabitable_NPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	}
 
 	// if we take fire damage, catch on fire
-	if ( result > 0 && ( info.GetDamageType() & DMG_BURN ) && m_bFlammable && Classify() != CLASS_ASW_MARINE && info.GetWeapon() && !pBurning )
+	if ( result > 0 && ( info.GetDamageType() & DMG_BURN ) && m_bFlammable && info.GetWeapon() && !pBurning )
 	{
 		ASW_Ignite( asw_alien_burn_duration.GetFloat(), 0, pAttacker, info.GetWeapon() );
 	}
 
 	// make the alien move slower for 0.5 seconds
-	if ( info.GetDamageType() & DMG_SHOCK && m_bTeslable )
+	if ( ( info.GetDamageType() & DMG_SHOCK ) && m_bTeslable )
 	{
 		ElectroStun( asw_stun_grenade_time.GetFloat() );
 
@@ -587,18 +569,49 @@ int CASW_Inhabitable_NPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 			m_fHurtSlowMoveTime = gpGlobals->curtime + 0.5f;
 	}
 
-	if ( IsAlien() )
+	if ( CASW_Marine *pMarine = CASW_Marine::AsMarine( pAttacker ) )
 	{
-		if ( CASW_Marine *pMarine = CASW_Marine::AsMarine( pAttacker ) )
-		{
-			pMarine->HurtAlien( this, info );
-		}
-
-		// Notify gamestats of the damage
-		CASW_GameStats.Event_AlienTookDamage( this, info );
+		pMarine->HurtAlien( this, info );
 	}
 
+	// Notify gamestats of the damage
+	CASW_GameStats.Event_AlienTookDamage( this, info );
+
 	return result;
+}
+
+void CASW_Inhabitable_NPC::Event_Killed( const CTakeDamageInfo &info )
+{
+	if ( Classify() != CLASS_ASW_MARINE )
+	{
+		if ( ASWGameRules() )
+		{
+			ASWGameRules()->AlienKilled( this, info );
+		}
+
+		CASW_GameStats.Event_AlienKilled( this, info );
+
+		if ( ASWDirector() )
+		{
+			ASWDirector()->Event_AlienKilled( this, info );
+		}
+
+		if ( m_hSpawner.Get() )
+		{
+			m_hSpawner->AlienKilled( this );
+		}
+	}
+
+	if ( m_flFrozen >= 0.1f )
+	{
+		bool bShatter = ( RandomFloat() >= IceStatueChance() );
+		CreateASWServerStatue( this, COLLISION_GROUP_NONE, info, bShatter, StatueShatterDelay() );
+		BaseClass::Event_Killed( CTakeDamageInfo( info.GetAttacker(), info.GetAttacker(), info.GetDamage(), DMG_GENERIC | DMG_REMOVENORAGDOLL | DMG_PREVENT_PHYSICS_FORCE ) );
+		RemoveDeferred();
+		return;
+	}
+
+	BaseClass::Event_Killed( info );
 }
 
 void CASW_Inhabitable_NPC::ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon )
@@ -650,7 +663,7 @@ void CASW_Inhabitable_NPC::ElectroStun( float flStunTime )
 
 	m_bElectroStunned = true;
 
-	if ( ASWGameResource() && IsAlien() )
+	if ( ASWGameResource() && Classify() != CLASS_ASW_MARINE )
 	{
 		ASWGameResource()->m_iElectroStunnedAliens++;
 	}
@@ -702,6 +715,17 @@ void CASW_Inhabitable_NPC::Freeze( float flFreezeAmount, CBaseEntity *pFreezer, 
 	}
 
 	UpdateThawRate();
+}
+
+void CASW_Inhabitable_NPC::Unfreeze()
+{
+	BaseClass::Unfreeze();
+
+	// fix up movement type
+	if ( IsInhabited() )
+	{
+		SetMoveType( MOVETYPE_WALK );
+	}
 }
 
 //-----------------------------------------------------------------------------

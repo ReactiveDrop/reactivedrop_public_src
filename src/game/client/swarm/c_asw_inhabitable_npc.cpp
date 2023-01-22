@@ -25,6 +25,8 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_Inhabitable_NPC, DT_ASW_Inhabitable_NPC, CASW_In
 	RecvPropVector( RECVINFO( m_vecBaseVelocity ) ),
 	RecvPropBool( RECVINFO( m_bElectroStunned ) ),
 	RecvPropBool( RECVINFO( m_bOnFire ) ),
+	RecvPropFloat( RECVINFO( m_fSpeedScale ) ),
+	RecvPropTime( RECVINFO( m_fHurtSlowMoveTime ) ),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_ASW_Inhabitable_NPC )
@@ -58,16 +60,6 @@ C_ASW_Inhabitable_NPC::~C_ASW_Inhabitable_NPC()
 {
 	m_bOnFire = false;
 	UpdateFireEmitters();
-}
-
-bool C_ASW_Inhabitable_NPC::IsInhabited()
-{
-	return m_bInhabited;
-}
-
-C_ASW_Player *C_ASW_Inhabitable_NPC::GetCommander() const
-{
-	return m_Commander.Get();
 }
 
 const char *C_ASW_Inhabitable_NPC::GetPlayerName() const
@@ -201,16 +193,6 @@ void C_ASW_Inhabitable_NPC::SetFacingPoint( const Vector & vec, float fDuration 
 	m_fStopFacingPointTime = gpGlobals->curtime + fDuration;
 }
 
-C_ASW_Weapon *C_ASW_Inhabitable_NPC::GetActiveASWWeapon( void ) const
-{
-	return assert_cast< C_ASW_Weapon * >( GetActiveWeapon() );
-}
-
-C_ASW_Weapon *C_ASW_Inhabitable_NPC::GetASWWeapon( int i ) const
-{
-	return assert_cast< C_ASW_Weapon * >( GetWeapon( i ) );
-}
-
 Vector C_ASW_Inhabitable_NPC::Weapon_ShootPosition()
 {
 	Vector right;
@@ -262,25 +244,10 @@ void C_ASW_Inhabitable_NPC::TickRedName( float delta )
 	}
 }
 
-float C_ASW_Inhabitable_NPC::MaxSpeed()
-{
-	return 300;
-}
-
 float C_ASW_Inhabitable_NPC::GetBasePlayerYawRate()
 {
 	extern ConVar asw_marine_linear_turn_rate;
 	return asw_marine_linear_turn_rate.GetFloat();
-}
-
-ASW_Controls_t C_ASW_Inhabitable_NPC::GetASWControls()
-{
-	if ( m_iControlsOverride >= 0 )
-	{
-		return ( ASW_Controls_t )m_iControlsOverride.Get();
-	}
-
-	return ( ASW_Controls_t )asw_controls.GetInt();
 }
 
 void C_ASW_Inhabitable_NPC::MakeTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType )

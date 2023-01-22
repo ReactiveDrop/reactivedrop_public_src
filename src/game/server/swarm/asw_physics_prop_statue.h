@@ -34,7 +34,7 @@ public:
 
 	virtual void	Freeze( float flFreezeAmount = -1.0f, CBaseEntity *pFreezer = NULL, Ray_t *pFreezeRay = NULL );
 
-	void EnableAutoShatter( const CTakeDamageInfo &dmgInfo );
+	void EnableAutoShatter( const CTakeDamageInfo &dmgInfo, float flShatterDelay );
 	void AutoShatterThink();
 	void BreakThink();
 
@@ -46,7 +46,7 @@ public:
 };
 
 
-CBaseEntity *CreateASWServerStatue( CBaseAnimating *pAnimating, int collisionGroup, const CTakeDamageInfo &dmgInfo, bool bAutoShatter );
+CBaseEntity *CreateASWServerStatue( CBaseAnimating *pAnimating, int collisionGroup, const CTakeDamageInfo &dmgInfo, bool bAutoShatter, float flShatterDelay );
 CBaseEntity *CreateASWServerStatueFromOBBs( const CUtlVector<outer_collision_obb_t> &vecSphereOrigins, CBaseAnimating *pChildEntity );
 
 
