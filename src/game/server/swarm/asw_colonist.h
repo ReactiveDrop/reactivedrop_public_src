@@ -18,20 +18,25 @@ public:
 	CASW_Colonist();
 	virtual ~CASW_Colonist();
 
-	void			Precache();	
+	void			Precache();
 	void			Spawn();
+	void			SetHealthByDifficultyLevel();
+	int				GetBaseHealth();
 	
 	Class_T 		Classify() { return (Class_T) CLASS_ASW_COLONIST; }
 	Activity		NPC_TranslateActivity( Activity eNewActivity );
 	int 			OnTakeDamage_Alive( const CTakeDamageInfo &info );
+	void ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon );
 	virtual void MeleeBleed(CTakeDamageInfo* info);
 	bool			IsPlayerAlly( CBasePlayer *pPlayer = NULL );
+	void PainSound( const CTakeDamageInfo &info );
 	void DeathSound( const CTakeDamageInfo &info );
 	void TaskFail( AI_TaskFailureCode_t code );
 
 	void NPCThink();
 	void ASWThinkEffects();
 	float m_fLastASWThink;
+	void HandleAnimEvent( animevent_t *pEvent );
 
 	// healing
 	void AddSlowHeal(int iHealAmount, CASW_Marine *pMedic);
@@ -57,22 +62,15 @@ public:
 	virtual void RunTask( const Task_t *pTask );
 	virtual void StartTask(const Task_t *pTask);
 	virtual int SelectFlinchSchedule_ASW();
-	Activity GetFlinchActivity( bool bHeavyDamage, bool bGesture );
 
 	bool					m_bNotifyNavFailBlocked;
 	COutputEvent		m_OnNavFailBlocked;
 
-
-	void ScriptIgnite( float flFlameLifetime );
-	void ASW_Ignite( float flFlameLifetime, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon );
-
 	int selectedBy;
 	bool isSelectedBy(CASW_Marine* marine);
 	static void ASW_Colonist_GoTo(CASW_Player *pPlayer, CASW_Marine *pMarine, const Vector &targetPos, const Vector &traceDir);
-	void Extinguish();
 	const Vector GetFollowPos();
 
-	bool isFemale;
 	int m_Gender;
 
 	void ScriptGiveWeapon( const char *pszName );
@@ -81,7 +79,6 @@ public:
 	void InputGiveWeapon( inputdata_t &inputdata );
 	void OnRangeAttack1();
 	Vector Weapon_ShootPosition();
-
 
 	// IASW_Server_Usable_Entity implementation
 	virtual CBaseEntity *GetEntity() { return this; }
@@ -95,11 +92,9 @@ public:
 private:
 	DECLARE_DATADESC();
 	DECLARE_ENT_SCRIPTDESC();
-#ifdef _XBOX
-protected:
-#endif
 
-	enum {
+	enum
+	{
 		SCHED_SA_FOLLOW_MOVE = BaseClass::NEXT_SCHEDULE,
 		SCHED_SA_FOLLOW_WAIT,
 		NEXT_SCHEDULE,
@@ -107,9 +102,8 @@ protected:
 		TASK_SA_GET_PATH_TO_FOLLOW_TARGET= BaseClass::NEXT_TASK,
 		TASK_SA_WAIT_FOR_FOLLOW_MOVEMENT,
 		TASK_SA_FACE_FOLLOW_WAIT,
-		NEXT_TASK
+		NEXT_TASK,
 	};
-
 
 	DEFINE_CUSTOM_AI;
 };

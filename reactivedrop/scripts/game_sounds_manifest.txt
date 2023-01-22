@@ -80,4 +80,5 @@ game_sounds_manifest
 	"precache_file"		"scripts/npc_sounds_rollermine.txt"
 	"precache_file"		"scripts/npc_sounds_soldier.txt"
 	"precache_file"		"scripts/npc_sounds_strider.txt"
+	"precache_file"		"scripts/npc_sounds_citizen.txt"
 }

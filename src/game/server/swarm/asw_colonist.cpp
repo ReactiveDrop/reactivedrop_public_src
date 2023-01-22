@@ -18,13 +18,12 @@
 
 const int MAX_PLAYER_SQUAD = 4;
 
-ConVar	asw_colonist_health				( "asw_colonist_health",				"90");
-ConVar	asw_colonist_tom_health				( "asw_colonist_tom_health",				"30");	// tutorial guy who gets eaten
+ConVar asw_colonist_health( "asw_colonist_health", "40", FCVAR_CHEAT );
 extern ConVar asw_god;
+extern ConVar asw_debug_alien_damage;
 
-#define SWARM_COLONIST_MODEL_MALE "models/swarm/Colonist/Male/MaleColonist.mdl"
-#define SWARM_COLONIST_MODEL_FEMALE "models/humans/group01/female_01.mdl"
-
+#define NUM_FEMALE_COLONIST_MODELS 7
+#define NUM_MALE_COLONIST_MODELS 9
 
 LINK_ENTITY_TO_CLASS( asw_colonist, CASW_Colonist );
 
@@ -44,8 +43,6 @@ BEGIN_DATADESC( CASW_Colonist )
 END_DATADESC()
 
 BEGIN_ENT_SCRIPTDESC( CASW_Colonist, CASW_Inhabitable_NPC, "Colonist" )
-	DEFINE_SCRIPTFUNC( Extinguish, "Extinguish a burning colonist." )
-	DEFINE_SCRIPTFUNC_NAMED( ScriptIgnite, "Ignite", "Ignites the colonist into flames." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptBecomeInfested, "BecomeInfested", "Infests the colonist." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptCureInfestation, "CureInfestation", "Cures an infestation." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGiveWeapon, "GiveWeapon", "Gives the colonist a weapon." )
@@ -146,25 +143,58 @@ CASW_Colonist::CASW_Colonist()
 
 CASW_Colonist::~CASW_Colonist()
 {
-	
 }
 
 void CASW_Colonist::Precache()
 {
-	PrecacheModel( SWARM_COLONIST_MODEL_MALE );	
-	PrecacheModel( SWARM_COLONIST_MODEL_FEMALE );	
-	
-	// reactivedrop: commented because it's missing
-	//PrecacheScriptSound( "NPC_Citizen.FootstepLeft" );
-	//PrecacheScriptSound( "NPC_Citizen.FootstepRight" );
-	PrecacheScriptSound( "Crash.Dead0" );
-	PrecacheScriptSound( "Crash.SmallPain0" );
-	PrecacheScriptSound( "Faith.Dead0" );
-	PrecacheScriptSound( "Faith.SmallPain0" );
+	if ( GetModelName() != NULL_STRING )
+	{
+		if ( m_Gender == GENDER_NONE )
+		{
+			m_Gender = V_stristr( STRING( GetModelName() ), "female" ) ? GENDER_FEMALE : GENDER_MALE;
+		}
+	}
+	else
+	{
+		if ( m_Gender != GENDER_FEMALE && m_Gender != GENDER_MALE )
+		{
+			m_Gender = RandomInt( 0, 1 ) ? GENDER_FEMALE : GENDER_MALE;
+		}
 
-	PrecacheEffect("MuzzleFlash");
-	// reactivedrop: commented because it's missing
-	//PrecacheParticleSystem( "asw_tracer_fx" ); // missing
+		char szModelName[MAX_PATH];
+		if ( m_Gender == GENDER_FEMALE )
+		{
+			V_snprintf( szModelName, sizeof( szModelName ), "models/humans/group00/female_%02d.mdl", RandomInt( 1, NUM_FEMALE_COLONIST_MODELS ) );
+		}
+		else
+		{
+			V_snprintf( szModelName, sizeof( szModelName ), "models/humans/group00/male_%02d.mdl", RandomInt( 1, NUM_MALE_COLONIST_MODELS ) );
+		}
+
+		SetModelName( AllocPooledString( szModelName ) );
+	}
+
+	PrecacheModel( STRING( GetModelName() ) );
+
+	// always precache all random colonist model options at the start of the level to avoid hitches
+	for ( int i = 1; i <= NUM_FEMALE_COLONIST_MODELS; i++ )
+	{
+		char szModelName[MAX_PATH];
+		V_snprintf( szModelName, sizeof( szModelName ), "models/humans/group00/female_%02d.mdl", i );
+		PrecacheModel( szModelName );
+	}
+	for ( int i = 1; i <= NUM_MALE_COLONIST_MODELS; i++ )
+	{
+		char szModelName[MAX_PATH];
+		V_snprintf( szModelName, sizeof( szModelName ), "models/humans/group00/male_%02d.mdl", i );
+		PrecacheModel( szModelName );
+	}
+
+	PrecacheScriptSound( "NPC_Citizen.FootstepLeft" );
+	PrecacheScriptSound( "NPC_Citizen.FootstepRight" );
+	PrecacheScriptSound( "NPC_Citizen.Die" );
+
+	PrecacheEffect( "MuzzleFlash" );
 
 	BaseClass::Precache();
 }
@@ -172,20 +202,11 @@ void CASW_Colonist::Precache()
 void CASW_Colonist::Spawn()
 {
 	Precache();
-	
-	if ( m_Gender > 0 && m_Gender < 3 )
-		isFemale = m_Gender==2;
-	else
-		isFemale = RandomInt(0,1)==0;
 
-	if (isFemale)
-		SetModel( SWARM_COLONIST_MODEL_FEMALE );
-	else
-		SetModel( SWARM_COLONIST_MODEL_MALE );
+	SetModel( STRING( GetModelName() ) );
 
-	SetRenderMode(kRenderNormal);
-	SetRenderColor(180,180,180);
-
+	SetRenderMode( kRenderNormal );
+	SetRenderColor( 180, 180, 180 );
 
 	SetHullType(HULL_HUMAN);
 	SetHullSizeNormal();
@@ -195,8 +216,8 @@ void CASW_Colonist::Spawn()
 	SetSolid( SOLID_BBOX );
 	AddSolidFlags( FSOLID_NOT_STANDABLE );
 	SetBloodColor( BLOOD_COLOR_RED );
-	m_flFieldOfView		= 0.02;
-	m_NPCState		= NPC_STATE_NONE;
+	m_flFieldOfView = 0.02;
+	m_NPCState = NPC_STATE_NONE;
 
 	CapabilitiesClear();
 	CapabilitiesAdd( bits_CAP_SQUAD );
@@ -216,18 +237,10 @@ void CASW_Colonist::Spawn()
 
 	BaseClass::Spawn();
 
-	m_iHealth = asw_colonist_health.GetFloat();
+	AddEFlags( EFL_NO_MEGAPHYSCANNON_RAGDOLL | EFL_NO_PHYSCANNON_INTERACTION );
 
-	const char* szName = STRING(GetEntityName());
-	if (!Q_strcmp(szName, "Tom"))
-	{
-		m_iHealth = asw_colonist_tom_health.GetFloat();
-	}
-
-	AddEFlags( EFL_NO_DISSOLVE | EFL_NO_MEGAPHYSCANNON_RAGDOLL | EFL_NO_PHYSCANNON_INTERACTION );
-	
 	NPCInit();
-	SetActiveWeapon(NULL);
+	SetActiveWeapon( NULL );
 
 	IGameEvent * event = gameeventmanager->CreateEvent( "colonist_spawn" );
 	if ( event )
@@ -236,22 +249,35 @@ void CASW_Colonist::Spawn()
 		gameeventmanager->FireEvent( event );
 	}
 }
-//void OnChangeActiveWeapon( CBaseCombatWeapon *pOldWeapon, CBaseCombatWeapon *pNewWeapon ) {}
+
+void CASW_Colonist::SetHealthByDifficultyLevel()
+{
+	// colonist health is not affected by difficulty level
+	int iHealth = GetBaseHealth();
+	if ( asw_debug_alien_damage.GetBool() )
+		Msg( "Setting %s's initial health to %d\n", GetClassname(), iHealth + m_iHealthBonus );
+	SetHealth( iHealth + m_iHealthBonus );
+	SetMaxHealth( iHealth + m_iHealthBonus );
+}
+
+int CASW_Colonist::GetBaseHealth()
+{
+	return asw_colonist_health.GetInt();
+}
 
 void CASW_Colonist::OnRangeAttack1()
 {
 	BaseClass::OnRangeAttack1();
 
-
-	CASW_Weapon* weapon = dynamic_cast<CASW_Weapon*>(GetActiveWeapon());
-	if (weapon) {
+	CASW_Weapon *weapon = GetActiveASWWeapon();
+	if (weapon)
+	{
 		CEffectData data;
 
 		data.m_vOrigin = Weapon_ShootPosition();
 		data.m_nEntIndex = weapon->entindex();
 		data.m_fFlags = MUZZLEFLASH_SMG1;
 		DispatchEffect( "MuzzleFlash", data );
-		//"asw_muzzle_fx"
 
 		Vector vecSrc = Weapon_ShootPosition();
 
@@ -265,16 +291,11 @@ void CASW_Colonist::OnRangeAttack1()
 		trace_t tr;
 		UTIL_TraceLine(vecSrc, vecEnd, MASK_SHOT, this, COLLISION_GROUP_PROJECTILE, &tr);
 
-		// reactivedrop: commented because it's missing
-		//UTIL_ParticleTracer("asw_tracer_fx", vecSrc, tr.endpos, weapon->entindex(), weapon->LookupAttachment("muzzle"), true);
-
 		//FIXME find out what was actually hit
 		if (GetEnemy() && UTIL_DistApprox(GetEnemy()->GetAbsOrigin(), tr.endpos) < 200) {
 			CTakeDamageInfo	info(weapon, this, weapon->GetWeaponDamage(), weapon->GetDamageType());
 			GetEnemy()->TakeDamage(info);
 		}
-
-
 
 		int pitch = 100;
 		const char *shootsound = weapon->GetASWShootSound( SINGLE, pitch );
@@ -285,8 +306,6 @@ void CASW_Colonist::OnRangeAttack1()
 
 		CPASAttenuationFilter filter( this, params.soundlevel );
 		EmitSound(filter, this->entindex(), shootsound);
-
-
 
 		//TODO ammo
 		GetShotRegulator()->SetBurstShotCountRange(1, weapon->Clip1());
@@ -323,13 +342,13 @@ Activity CASW_Colonist::NPC_TranslateActivity( Activity activity )
 	if (activity == ACT_RANGE_ATTACK1)
 		return ACT_RANGE_ATTACK_SMG1;
 
-	if (GetActiveWeapon()) {
+	if (GetActiveWeapon())
+	{
 		if (activity == ACT_IDLE)
 			return ACT_IDLE_SMG1_RELAXED;
 		if (activity == ACT_RUN)
 			return ACT_RUN_AIM_RIFLE;
 	}
-		
 
 	// !!!HACK - Citizens don't have the required animations for shotguns, 
 	// so trick them into using the rifle counterparts for now (sjb)
@@ -345,19 +364,6 @@ Activity CASW_Colonist::NPC_TranslateActivity( Activity activity )
 	return BaseClass::NPC_TranslateActivity( activity );
 }
 
-void CASW_Colonist::ScriptIgnite( float flFlameLifetime )
-{
-	ASW_Ignite( flFlameLifetime, NULL, NULL );
-}
-
-void CASW_Colonist::ASW_Ignite( float flFlameLifetime, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon ) {
-	Ignite( flFlameLifetime, false, 3, true );
-
-	if ( ASWBurning() ) {
-		ASWBurning()->BurnEntity(this, pAttacker, flFlameLifetime, 0.4f, 10.0f * 0.4f, pDamagingWeapon );	// 10 dps, applied every 0.4 seconds
-	}
-}
-
 int CASW_Colonist::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 {
 	if ( asw_god.GetBool() )
@@ -367,7 +373,7 @@ int CASW_Colonist::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 
 	if( info.GetDamageType() & DMG_BURN ) {
 		if (!IsOnFire()) {
-			ASW_Ignite(10, info.GetAttacker(), info.GetWeapon());
+			ASW_Ignite( 10, 0, info.GetAttacker(), info.GetWeapon());
 		}
 	} else if (info.GetDamage() > 0) {
 		Vector vecDir = vec3_origin;
@@ -385,14 +391,45 @@ int CASW_Colonist::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		UTIL_ASW_BloodDrips( GetAbsOrigin()+offset, vecDir, BloodColor(), MAX(1, info.GetDamage()/10) );
 	}
 
-	CTakeDamageInfo newInfo = info;
-
-	return BaseClass::OnTakeDamage_Alive( newInfo );
+	return BaseClass::OnTakeDamage_Alive( info );
 }
 
-bool CASW_Colonist::IsPlayerAlly( CBasePlayer *pPlayer )											
+void CASW_Colonist::ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon )
+{
+	if ( AllowedToIgnite() )
+	{
+		if ( IsOnFire() )
+		{
+			if ( ASWBurning() )
+				ASWBurning()->ExtendBurning( this, flFlameLifetime ); // 10 dps, applied every 0.4 seconds
+			return;
+		}
+
+		AddFlag( FL_ONFIRE );
+		m_bOnFire = true;
+		if ( ASWBurning() )
+			ASWBurning()->BurnEntity( this, pAttacker, flFlameLifetime, 0.4f, 10.0f * 0.4f, pDamagingWeapon ); // 10 dps, applied every 0.4 seconds
+
+		m_OnIgnite.FireOutput( this, this );
+	}
+}
+
+bool CASW_Colonist::IsPlayerAlly( CBasePlayer *pPlayer )
 { 
 	return true;
+}
+
+void CASW_Colonist::PainSound( const CTakeDamageInfo &info )
+{
+	BaseClass::PainSound( info );
+
+	if ( GetExpresser() && GetExpresser()->SemaphoreIsAvailable( this ) )
+	{
+		float flDuration;
+		EmitSound( "NPC_Citizen.Die", 0, &flDuration );
+
+		GetExpresser()->NoteSpeaking( flDuration + 2.0f );
+	}
 }
 
 void CASW_Colonist::DeathSound( const CTakeDamageInfo &info )
@@ -400,10 +437,7 @@ void CASW_Colonist::DeathSound( const CTakeDamageInfo &info )
 	// Sentences don't play on dead NPCs
 	SentenceStop();
 
-	if (isFemale)
-		EmitSound( "Faith.Dead0" );
-	else 
-		EmitSound( "Crash.Dead0" );
+	EmitSound( "NPC_Citizen.Die" );
 }
 
 bool CASW_Colonist::IsHeavyDamage( const CTakeDamageInfo &info )
@@ -434,10 +468,7 @@ void CASW_Colonist::BecomeInfested(CASW_Alien* pAlien)
 		DMG_INFEST);
 	TakeDamage(info);
 
-	if (isFemale)
-		EmitSound( "Faith.SmallPain0" );
-	else 
-		EmitSound( "Crash.SmallPain0" );
+	EmitSound( "NPC_Citizen.Die" );
 }
 
 void CASW_Colonist::CureInfestation(CASW_Marine *pHealer, float fCureFraction)
@@ -611,6 +642,28 @@ void CASW_Colonist::NPCThink()
 	BaseClass::NPCThink();
 }
 
+void CASW_Colonist::HandleAnimEvent( animevent_t *pEvent )
+{
+	switch ( pEvent->Event() )
+	{
+	case NPC_EVENT_LEFTFOOT:
+	{
+		EmitSound( "NPC_Citizen.FootstepLeft", pEvent->eventtime );
+	}
+	break;
+
+	case NPC_EVENT_RIGHTFOOT:
+	{
+		EmitSound( "NPC_Citizen.FootstepRight", pEvent->eventtime );
+	}
+	break;
+
+	default:
+		BaseClass::HandleAnimEvent( pEvent );
+		break;
+	}
+}
+
 // healing
 void CASW_Colonist::AddSlowHeal(int iHealAmount, CASW_Marine *pMedic)
 {
@@ -633,20 +686,6 @@ void CASW_Colonist::AddSlowHeal(int iHealAmount, CASW_Marine *pMedic)
 	}
 }	
 
-void CASW_Colonist::Extinguish(){
-	CEntityFlame *pFireChild = dynamic_cast<CEntityFlame *>( GetEffectEntity() );
-	if ( pFireChild )
-	{
-		SetEffectEntity( NULL );
-		UTIL_Remove( pFireChild );
-	}
-
-	if (ASWBurning()) {
-		ASWBurning()->Extinguish(this);
-	}
-	BaseClass::Extinguish();
-}
-
 int CASW_Colonist::SelectFlinchSchedule_ASW()
 {
 	if ( IsCurSchedule( SCHED_BIG_FLINCH ) )
@@ -662,8 +701,10 @@ int CASW_Colonist::SelectFlinchSchedule_ASW()
 	return SCHED_BIG_FLINCH;
 }
 
-const Vector CASW_Colonist::GetFollowPos() {
-	if (!GetTarget()) {
+const Vector CASW_Colonist::GetFollowPos()
+{
+	if (!GetTarget())
+	{
 		selectedBy = -1;
 		SetSchedule(SCHED_IDLE_STAND);
 		SetRenderColor(180,180,180);
@@ -683,9 +724,12 @@ const Vector CASW_Colonist::GetFollowPos() {
 
 
 	Vector followPos;
-	if (tr.fraction < 1) {
+	if (tr.fraction < 1)
+	{
 		followPos = GetTarget()->GetAbsOrigin() - marineForward*(MAX(0, 100*tr.fraction-10));
-	} else {
+	}
+	else
+	{
 		followPos = GetTarget()->GetAbsOrigin() - offset;
 	}
 	
@@ -696,7 +740,8 @@ const Vector CASW_Colonist::GetFollowPos() {
 
 
 void CASW_Colonist::RunTask( const Task_t *pTask ) {
-	switch (pTask->iTask) {
+	switch (pTask->iTask)
+	{
 		case TASK_SA_FACE_FOLLOW_WAIT:
 		{
 			//UpdateFacing();
@@ -762,7 +807,8 @@ void CASW_Colonist::RunTask( const Task_t *pTask ) {
 
 void CASW_Colonist::StartTask( const Task_t *pTask )
 {
-	switch( pTask->iTask ) {
+	switch( pTask->iTask )
+	{
 		case TASK_SA_GET_PATH_TO_FOLLOW_TARGET:
 		{
 			AI_NavGoal_t goal( GetFollowPos(), ACT_RUN, 60 ); // AIN_HULL_TOLERANCE
@@ -806,38 +852,26 @@ int CASW_Colonist::SelectSchedule( void )
 	if ( nSched != SCHED_NONE )
 		return nSched;
 
-	if (selectedBy != -1) {
+	if (selectedBy != -1)
+	{
 		return SCHED_SA_FOLLOW_MOVE;
 	}
-	if (!GetActiveWeapon()) {
+	if (!GetActiveWeapon())
+	{
 		if (HasCondition(COND_SEE_ENEMY))
 			return SCHED_COMBAT_FACE;
 
 		return BaseClass::SelectIdleSchedule();
 	}
-	else {
+	else
+	{
 		int schedule = BaseClass::SelectSchedule();
 		return schedule;
 	}
 }
 
-Activity CASW_Colonist::GetFlinchActivity( bool bHeavyDamage, bool bGesture )
-{
-	if (isFemale) 
-		EmitSound("Faith.SmallPain0");
-	else 
-		EmitSound("Crash.SmallPain0");
-
-
-	if (isFemale)
-		return (Activity) ACT_COWER;
-	else
-		return (Activity) ACT_BIG_FLINCH;
-}
-
 void CASW_Colonist::MeleeBleed(CTakeDamageInfo* info)
 {
-
 	Vector vecDir = vec3_origin;
 	if (info->GetAttacker())
 	{
@@ -848,7 +882,7 @@ void CASW_Colonist::MeleeBleed(CTakeDamageInfo* info)
 	{
 		vecDir = RandomVector(-1, 1);
 	}
-		
+
 	UTIL_ASW_BloodDrips( GetAbsOrigin()+Vector(0,0,60)+vecDir*3, vecDir, BloodColor(), 5 );
 	SetSchedule(SCHED_BIG_FLINCH);
 }
@@ -863,11 +897,12 @@ AI_BEGIN_CUSTOM_NPC( asw_colonist, CASW_Colonist )
 		SCHED_SA_FOLLOW_MOVE,
 
 		"	Tasks"
-		"		 TASK_SET_FAIL_SCHEDULE			SCHEDULE:SCHED_SA_FOLLOW_WAIT"
-		"		 TASK_SA_GET_PATH_TO_FOLLOW_TARGET			0"
-		"		 TASK_RUN_PATH								0"
-		"		 TASK_SA_WAIT_FOR_FOLLOW_MOVEMENT			0"
-		"		 TASK_STOP_MOVING							1"
+		"		TASK_SET_FAIL_SCHEDULE			SCHEDULE:SCHED_SA_FOLLOW_WAIT"
+		"		TASK_WAIT_RANDOM							1.0"
+		"		TASK_SA_GET_PATH_TO_FOLLOW_TARGET			0"
+		"		TASK_RUN_PATH								0"
+		"		TASK_SA_WAIT_FOR_FOLLOW_MOVEMENT			0"
+		"		TASK_STOP_MOVING							1"
 		"	"
 		"	Interrupts"
 		"		COND_TASK_FAILED"
@@ -887,7 +922,7 @@ AI_BEGIN_CUSTOM_NPC( asw_colonist, CASW_Colonist )
 		"		COND_LIGHT_DAMAGE"
 		"		COND_HEAVY_DAMAGE"
 		"		COND_IDLE_INTERRUPT"
-		"       COND_ASW_NEW_ORDERS"
+		"		COND_ASW_NEW_ORDERS"
 		"		COND_GIVE_WAY"
 	)
 AI_END_CUSTOM_NPC()
@@ -907,10 +942,7 @@ void CC_ASW_NPC_Go( void )
 	QAngle angAiming = pPlayer->EyeAnglesWithCursorRoll();
 	float dist = tan(DEG2RAD(90 - angAiming.z)) * 60.0f;
 	AngleVectors( pPlayer->EyeAngles(), &forward );
-	
-	//AI_TraceLine( vecSrc,
-		//vecSrc + forward * dist,  MASK_NPCSOLID,
-		//pPlayer->GetMarine(), COLLISION_GROUP_NONE, &tr );
+
 	CAI_BaseNPC::ForceSelectedGo(pPlayer, vecSrc + forward * dist, forward, asw_npc_go_do_run.GetBool());
 }
 static ConCommand asw_npc_go("asw_npc_go", CC_ASW_NPC_Go, "Selected NPC(s) will go to the location that the player is looking (shown with a purple box)\n\tArguments:	-none-", FCVAR_CHEAT);

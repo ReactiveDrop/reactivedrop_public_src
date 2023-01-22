@@ -1812,7 +1812,7 @@ void CFire::ASWFireTouch( CBaseEntity *pOther )
 			else if ( pOther->Classify() == CLASS_ASW_COLONIST )
 			{
 				CASW_Colonist *pColonist = assert_cast<CASW_Colonist*>(pOther);
-				pColonist->ASW_Ignite( ( m_nFireType == FIRE_WALL_MINE ) ? 5 : 10, pOwner ? pOwner : this, m_hCreatorWeapon );
+				pColonist->ASW_Ignite( ( m_nFireType == FIRE_WALL_MINE ) ? 5 : 10, 0, pOwner ? pOwner : this, m_hCreatorWeapon );
 			}
 			else if ( IASW_Spawnable_NPC *pSpawnable = dynamic_cast< IASW_Spawnable_NPC * >( pOther ) )
 			{
