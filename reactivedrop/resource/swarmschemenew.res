@@ -22,7 +22,7 @@ Scheme
 		"OffWhite"			"221 221 221 255"
 		"DullWhite"			"211 211 211 255"
 		"Gray"				"64 64 64 255"
-		"MediumGray"        "145 145 145 255"
+		"MediumGray"		"145 145 145 255"
 		"DarkGrey"			"128 128 128 255"
 		"AshGray"			"16 16 16 255"
 		"AshGrayHighAlpha"	"16 16 16 192"
@@ -51,8 +51,8 @@ Scheme
 		"ScrollBarDark"		"38 38 38 255"
 		
 		"BrightYellow"		"242 237 0 255"
-		"DarkYellow"		    "136 133 0 255"
-		"TextYellow"        "110 110 84 255"
+		"DarkYellow"		"136 133 0 255"
+		"TextYellow"		"110 110 84 255"
 	}
 
 	///////////////////// BASE SETTINGS ////////////////////////
@@ -82,8 +82,8 @@ Scheme
 		CheckButton.TextColor			"LightBlue"
 		CheckButton.SelectedTextColor	"White"
 		CheckButton.BgColor				"TransparentBlack"
-		CheckButton.Border1  			"Border.Dark" 		// the left checkbutton border
-		CheckButton.Border2  			"Border.Bright"		// the right checkbutton border
+		CheckButton.Border1				"Border.Dark"		// the left checkbutton border
+		CheckButton.Border2				"Border.Bright"		// the right checkbutton border
 		CheckButton.Check				"White"				// color of the check itself
 
 		ComboBoxButton.ArrowColor		"DullWhite"
@@ -328,15 +328,6 @@ Scheme
 			"1"
 			{
 				"name"		"Neo Sans"
-				"tall"		"20"
-				"weight"	"100"
-				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
-				"yres"		"1 960"
-				"antialias"	"1"
-			}
-			"2"
-			{
-				"name"		"Neo Sans"
 				"tall"		"10"
 				"weight"	"100"
 				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
@@ -360,16 +351,6 @@ Scheme
 			"1"
 			{
 				"name"		"Neo Sans"
-				"tall"		"20"
-				"weight"	"100"
-				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
-				"yres"		"1 960"
-				"antialias"	"1"
-				"blur"		"2"
-			}
-			"2"
-			{
-				"name"		"Neo Sans"
 				"tall"		"10"
 				"weight"	"100"
 				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
@@ -382,16 +363,6 @@ Scheme
 			"1"
 			{
 				"name"		"Neo Sans"
-				"tall"		"20"
-				"weight"	"100"
-				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
-				"yres"		"1 960"
-				"antialias"	"1"
-				"dropshadow"	"2"
-			}
-			"2"
-			{
-				"name"		"Neo Sans"
 				"tall"		"10"
 				"weight"	"100"
 				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
@@ -402,16 +373,6 @@ Scheme
 		"DefaultUnderline"
 		{
 			"1"
-			{
-				"name"		"Neo Sans"
-				"tall"		"20"
-				"weight"	"100"
-				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
-				"yres"		"1 960"
-				"antialias"	"1"
-				"underline"	"1"
-			}
-			"2"
 			{
 				"name"		"Neo Sans"
 				"tall"		"10"
@@ -441,7 +402,7 @@ Scheme
 				"weight"	"100"
 				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
 				//"antialias"	"1"
-				"blur"      "5"
+				"blur"		"5"
 			}
 		}
 		"DefaultSmall"
