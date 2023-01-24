@@ -448,19 +448,31 @@
 		1 : "Yes"
 	]
 
+	IsClawScanner(choices) : "Scanner Type" : 0 =
+	[
+		0 : "City Scanner"
+		1 : "Claw Scanner"
+	]
+
+	IsNeutralScanner(choices) : "Scanner Faction" : 0 =
+	[
+		0 : "Combine (attackable)"
+		1 : "Neutral (invulnerable)"
+	]
+
 	ShouldInspect(choices) : "Should inspect" : 1 =
 	[
 		0 : "No"
 		1 : "Yes"
 	]
 
-	OnlyInspectPlayers(choices) : "Only Inspect Players" : 0 =
+	OnlyInspectPlayers(choices) : "Only Inspect Marines" : 0 =
 	[
 		0 : "No"
 		1 : "Yes"
 	]
 
-	NeverInspectPlayers(choices) : "Never Inspect Players" : 0 =
+	NeverInspectPlayers(choices) : "Never Inspect Marines" : 0 =
 	[
 		0 : "No"
 		1 : "Yes"
@@ -479,7 +491,7 @@
 	input EquipMine(void) : "Equip with landmine"
 	
 	// Outputs
-	output OnPhotographPlayer(void) : "Fired any time the scanner takes a picture of the player."
+	output OnPhotographPlayer(void) : "Fired any time the scanner takes a picture of a marine."
 	output OnPhotographNPC(void) : "Fired any time the scanner takes a picture of an NPC."
 ]
 

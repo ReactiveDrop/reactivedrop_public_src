@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "41"
+	"mapversion" "42"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -38,7 +38,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "41"
+	"mapversion" "42"
 	"classname" "worldspawn"
 	"comment" "Decompiled by BSPSource v1.3.13 from as_paranoia2"
 	"detailmaterial" "detail/detailsprites"
@@ -135593,6 +135593,7 @@ entity
 	"id" "1467342"
 	"classname" "npc_cscanner"
 	"angles" "0 0 0"
+	"IsNeutralScanner" "1"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -136095,8 +136096,8 @@ cameras
 	"activecamera" "0"
 	camera
 	{
-		"position" "[1005.27 -3238.18 1141.94]"
-		"look" "[1017.7 -3103.96 912.186]"
+		"position" "[-2954.24 -2287.18 1675.69]"
+		"look" "[-2943.63 -2164.1 1439.69]"
 	}
 	camera
 	{

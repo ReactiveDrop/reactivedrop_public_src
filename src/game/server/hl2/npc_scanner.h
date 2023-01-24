@@ -148,6 +148,7 @@ private:
 	virtual float	GetGoalDistance( void );
 
 	bool m_bIsClawScanner;	// Formerly the shield scanner.
+	bool m_bIsNeutralScanner;
 	bool m_bIsOpen;			// Only for claw scanner
 
 	COutputEvent		m_OnPhotographPlayer;

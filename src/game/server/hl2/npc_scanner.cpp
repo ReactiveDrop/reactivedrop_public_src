@@ -13,7 +13,6 @@
 #include "beam_shared.h"
 #include "globalstate.h"
 #include "soundent.h"
-#include "npc_citizen17.h"
 #include "gib.h"
 #include "spotlightend.h"
 #include "IEffects.h"
@@ -21,10 +20,12 @@
 #include "ai_route.h"
 #include "player_pickup.h"
 #include "weapon_physcannon.h"
-#include "hl2_player.h"
 #include "npc_scanner.h"
 #include "materialsystem/imaterialsystemhardwareconfig.h"
 #include "asw_gamerules.h"
+#include "asw_game_resource.h"
+#include "asw_marine_resource.h"
+#include "asw_marine.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -169,6 +170,8 @@ BEGIN_DATADESC( CNPC_CScanner )
 	DEFINE_FIELD( m_flLastPhysicsInfluenceTime, FIELD_TIME ),
 
 	DEFINE_KEYFIELD( m_bNoLight, FIELD_BOOLEAN, "SpotlightDisabled" ),
+	DEFINE_KEYFIELD( m_bIsNeutralScanner, FIELD_BOOLEAN, "NeutralScanner" ),
+	DEFINE_KEYFIELD( m_bIsClawScanner, FIELD_BOOLEAN, "ClawScanner" ),
 
 	DEFINE_INPUTFUNC( FIELD_VOID, "DisableSpotlight", InputDisableSpotlight ),
 	DEFINE_INPUTFUNC( FIELD_STRING, "InspectTargetPhoto", InputInspectTargetPhoto ),
@@ -204,20 +207,9 @@ CNPC_CScanner::CNPC_CScanner()
 	m_bShouldInspect = true;
 	m_bOnlyInspectPlayers = false;
 	m_bNeverInspectPlayers = false;
-
-	char szMapName[256];
-	Q_strncpy(szMapName, STRING(gpGlobals->mapname), sizeof(szMapName) );
-	Q_strlower(szMapName);
-
-	if( !Q_strnicmp( szMapName, "d3_c17", 6 ) )
-	{
-		// Streetwar scanners are claw scanners
-		m_bIsClawScanner = true;
-	}
-	else
-	{
-		m_bIsClawScanner = false;
-	}
+	m_bIsNeutralScanner = false;
+	m_bIsClawScanner = false;
+	m_bNoLight = true;
 }
 
 //-----------------------------------------------------------------------------
@@ -303,15 +295,21 @@ void CNPC_CScanner::Spawn(void)
 		Warning( "ERROR: Scanner set to never and always inspect players!\n" );
 	}
 
-	m_bNoLight = true;
-	ChangeFaction( FACTION_NEUTRAL );
-	//AddSolidFlags( FSOLID_NOT_SOLID );	
-	m_takedamage = DAMAGE_NO;
-	DevMsg("SleepState=%i\n", GetSleepState());
-	//GetAbsOrigin();
 
-	// reactivedrop: make scanner not collide with players and grenade launcher's grenades
-	SetCollisionGroup( ASW_COLLISION_GROUP_PASSABLE );
+	if ( m_bIsNeutralScanner )
+	{
+		ChangeFaction( FACTION_NEUTRAL );
+		m_takedamage = DAMAGE_NO;
+
+		// reactivedrop: make scanner not collide with players and grenade launcher's grenades
+		SetCollisionGroup( ASW_COLLISION_GROUP_PASSABLE );
+	}
+	else
+	{
+		ChangeFaction( FACTION_COMBINE );
+
+		SetCollisionGroup( ASW_COLLISION_GROUP_BUZZER );
+	}
 }
 
 
@@ -631,32 +629,14 @@ void CNPC_CScanner::RequestInspectSupport(void)
 //------------------------------------------------------------------------------
 bool CNPC_CScanner::IsValidInspectTarget(CBaseEntity *pEntity)
 {
-	if ( pEntity->Classify() == CLASS_ASW_MARINE )
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-
-	// If a citizen, make sure he can be inspected again
-	if (pEntity->Classify() == CLASS_CITIZEN_PASSIVE)
-	{
-		if (((CNPC_Citizen*)pEntity)->GetNextScannerInspectTime() > gpGlobals->curtime)
-		{
-			return false;
-		}
-	}
-
 	// Make sure no other squad member has already chosen to 
 	// inspect this entity
-	if (m_pSquad)
+	if ( m_pSquad )
 	{
 		AISquadIter_t iter;
-		for (CAI_BaseNPC *pSquadMember = m_pSquad->GetFirstMember( &iter ); pSquadMember; pSquadMember = m_pSquad->GetNextMember( &iter ) )
+		for ( CAI_BaseNPC *pSquadMember = m_pSquad->GetFirstMember( &iter ); pSquadMember; pSquadMember = m_pSquad->GetNextMember( &iter ) )
 		{
-			if (pSquadMember->GetTarget() == pEntity)
+			if ( pSquadMember->GetTarget() == pEntity )
 			{
 				return false;
 			}
@@ -700,64 +680,49 @@ CBaseEntity* CNPC_CScanner::BestInspectTarget(void)
 		fSearchDist		= SCANNER_CIT_INSPECT_FLY_DIST;
 	}
 
-	pEntity = gEntList.FindEntityByClassname( pEntity, "asw_marine" );
-	if (pEntity)
-		return pEntity;
-	else
-		return NULL;
-
-	if ( m_bOnlyInspectPlayers )
-	{
-		CBasePlayer *pPlayer = AI_GetSinglePlayer();
-		if ( !pPlayer )
-			return NULL;
-
-		if ( !pPlayer->IsAlive() || (pPlayer->GetFlags() & FL_NOTARGET) )
-			return NULL;
-
-		return WorldSpaceCenter().DistToSqr( pPlayer->EyePosition() ) <= (fSearchDist * fSearchDist) ? pPlayer : NULL;
-	}
-
 	CUtlVector<CBaseEntity *> candidates;
 	float fSearchDistSq = fSearchDist * fSearchDist;
 	int i;
 
+	if ( !ASWGameResource() )
+		return NULL;
+
 	// Inspect players unless told otherwise
-	if ( m_bNeverInspectPlayers == false )
+	if ( !m_bNeverInspectPlayers )
 	{
 		// Players
-		for ( i = 1; i <= gpGlobals->maxClients; i++ )
+		for ( i = 0; i < ASWGameResource()->GetMaxMarineResources(); i++ )
 		{
-			CBaseEntity *pPlayer = UTIL_PlayerByIndex( i );
-
-			if ( pPlayer )
+			CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( i );
+			CASW_Marine *pMarine = pMR ? pMR->GetMarineEntity() : NULL;
+			if ( pMarine && vSearchOrigin.DistToSqr( pMarine->GetAbsOrigin() ) < fSearchDistSq )
 			{
-				if ( vSearchOrigin.DistToSqr(pPlayer->GetAbsOrigin()) < fSearchDistSq )
-				{
-					candidates.AddToTail( pPlayer );
-				}
+				candidates.AddToTail( pMarine );
 			}
 		}
 	}
 	
-	// NPCs
-	CAI_BaseNPC **ppAIs = g_AI_Manager.AccessAIs();
-	
-	for ( i = 0; i < g_AI_Manager.NumAIs(); i++ )
+	if ( !m_bOnlyInspectPlayers )
 	{
-		if ( ppAIs[i] != this && vSearchOrigin.DistToSqr(ppAIs[i]->GetAbsOrigin()) < fSearchDistSq )
+		// NPCs
+		CAI_BaseNPC **ppAIs = g_AI_Manager.AccessAIs();
+
+		for ( i = 0; i < g_AI_Manager.NumAIs(); i++ )
 		{
-			candidates.AddToTail( ppAIs[i] );
+			if ( ppAIs[i] != this && ppAIs[i]->Classify() != CLASS_ASW_MARINE && vSearchOrigin.DistToSqr(ppAIs[i]->GetAbsOrigin()) < fSearchDistSq )
+			{
+				candidates.AddToTail( ppAIs[i] );
+			}
 		}
 	}
 
 	for ( i = 0; i < candidates.Count(); i++ )
 	{
 		pEntity = candidates[i];
-		Assert( pEntity != this && (pEntity->MyNPCPointer() || pEntity->IsPlayer() ) );
+		Assert( pEntity != this && pEntity->MyNPCPointer() );
 
 		CAI_BaseNPC *pNPC = pEntity->MyNPCPointer();
-		if ( ( pNPC && pNPC->Classify() == CLASS_CITIZEN_PASSIVE ) || pEntity->IsPlayer() )
+		if ( pNPC && ( IRelationType( pNPC ) == D_HT || pNPC->Classify() == CLASS_ASW_MARINE ) )
 		{
 			if ( pEntity->GetFlags() & FL_NOTARGET )
 				continue;
@@ -774,8 +739,8 @@ CBaseEntity* CNPC_CScanner::BestInspectTarget(void)
 			{
 				if ( IsValidInspectTarget( pEntity ) )
 				{
-					fBestDist	= fTestDist;
-					pBestEntity	= pEntity; 
+					fBestDist = fTestDist;
+					pBestEntity = pEntity;
 				}
 			}
 		}
@@ -1906,7 +1871,7 @@ void CNPC_CScanner::TakePhoto(void)
 	// If taking picture of entity, aim at feet
 	if ( GetTarget() )
 	{
-		if ( GetTarget()->IsPlayer() )
+		if ( GetTarget()->Classify() == CLASS_ASW_MARINE )
 		{
 			m_OnPhotographPlayer.FireOutput( GetTarget(), this );
 			BlindFlashTarget( GetTarget() );
@@ -2106,13 +2071,6 @@ void CNPC_CScanner::StartTask( const Task_t *pTask )
 					TaskComplete();
 					return;
 				}
-			}
-
-			// Don't try and inspect this target again for a few seconds
-			CNPC_Citizen *pCitizen = dynamic_cast<CNPC_Citizen *>( GetTarget() );
-			if ( pCitizen )
-			{
-				pCitizen->SetNextScannerInspectTime( gpGlobals->curtime + 5.0 );
 			}
 
 			TaskFail("No route to inspection target!\n");
