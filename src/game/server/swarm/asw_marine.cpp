@@ -449,6 +449,7 @@ extern ConVar rd_allow_revive;
 extern ConVar rd_revive_health;
 ConVar rd_marine_poison_recover_delay( "rd_marine_poison_recover_delay", "2", FCVAR_CHEAT, "time after being poisoned before suit antitoxin begins to act" );
 ConVar rd_marine_poison_recover_tick( "rd_marine_poison_recover_tick", "0.5", FCVAR_CHEAT, "time between hitpoints restored by antitoxin" );
+ConVar asw_leadership_resist_scale( "asw_leadership_resist_scale", "0.5", FCVAR_CHEAT, "Incoming damage scale for leadership bonus." );
 
 float CASW_Marine::s_fNextMadFiringChatter = 0;
 float CASW_Marine::s_fNextIdleChatterTime = 0;
@@ -951,6 +952,8 @@ void CASW_Marine::Precache()
 	PrecacheScriptSound( "ASW_Blink.Blink" );
 	PrecacheScriptSound( "ASW_Blink.Teleport" );
 	PrecacheScriptSound( "ASW_XP.LevelUp" );
+	PrecacheScriptSound( "ASW_Leadership.Accuracy" );
+	PrecacheScriptSound( "ASW_Leadership.Resist" );
 
 	PrecacheScriptSound( "ASW_Weapon.InvalidDestination" );
 	PrecacheParticleSystem( "smallsplat" );						// shot
@@ -966,6 +969,8 @@ void CASW_Marine::Precache()
 	PrecacheParticleSystem( "jj_ground_pound" );
 	PrecacheParticleSystem( "invalid_destination" );
 	PrecacheParticleSystem( "Blink" );
+	PrecacheParticleSystem( "leadership_proc_accuracy" );
+	PrecacheParticleSystem( "leadership_proc_resist" );
 }
 
 void CASW_Marine::PrecacheSpeech()
@@ -1440,25 +1445,18 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 
 	// reduce damage thanks to leadership
 	// see if we pass the chance
-	float fChance = MarineSkills()->GetHighestSkillValueNearby(GetAbsOrigin(),
+	CASW_Marine *pLeader = MarineSkills()->CheckSkillChanceNearby( this, GetAbsOrigin(),
 		asw_leadership_radius.GetFloat(),
 		ASW_MARINE_SKILL_LEADERSHIP, ASW_MARINE_SUBSKILL_LEADERSHIP_DAMAGE_RESIST );
-	static int iLeadershipResCount = 0;
-	if (random->RandomFloat() < fChance)
+	if ( pLeader )
 	{
-		// TODO: leadership particle effect?
+		DispatchParticleEffectLink( "leadership_proc_resist", PATTACH_POINT_FOLLOW, pLeader, this, pLeader->LookupAttachment( "backpack" ) );
+		EmitSound( "ASW_Leadership.Resist" );
 
-		float fNewDamage = newInfo.GetDamage() * 0.5f;
-		if (fNewDamage <= 0)
+		float fNewDamage = newInfo.GetDamage() * asw_leadership_resist_scale.GetFloat();
+		if ( fNewDamage <= 0 )
 			return 0;
-		newInfo.SetDamage(fNewDamage);
-		
-		iLeadershipResCount++;
-
-		if (asw_debug_marine_damage.GetBool())
-		{			
-			Msg("  Damage reduced by nearby leadership to %f (leadership resistance applied %d times so far)\n", fNewDamage, iLeadershipResCount);
-		}
+		newInfo.SetDamage( fNewDamage );
 	}
 
 	if ( pAttacker )

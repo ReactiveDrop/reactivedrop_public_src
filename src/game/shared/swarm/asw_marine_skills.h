@@ -158,9 +158,11 @@ public:
 	float GetBestSkillValue( ASW_Skill iSkillIndex, int iSubSkill = 0 );
 	float GetHighestSkillValueNearby( const Vector &pos, float MaxDistance, ASW_Skill iSkillIndex, int iSubSkill = 0 );
 	float GetLowestSkillValueNearby( const Vector &pos, float MaxDistance, ASW_Skill iSkillIndex, int iSubSkill = 0 );
+
 	// get the value based on the current skills of that marine, or based on some specified number of points in that skill
 	float GetSkillBasedValue( CASW_Marine_Profile *pProfile, ASW_Skill iSkillIndex, int iSubSkill = 0, int iSkillPoints = -1 );
 #ifndef CLIENT_DLL
+	CASW_Marine *CheckSkillChanceNearby( CBaseEntity *pAlly, const Vector &pos, float MaxDistance, ASW_Skill iSkillIndex, int iSubSkill = 0 );
 	// returns the marine last used by the GetHighest/Lowest functions
 	CASW_Marine *GetLastSkillMarine() { return m_hLastSkillMarine.Get(); }
 	CHandle<CASW_Marine> m_hLastSkillMarine;

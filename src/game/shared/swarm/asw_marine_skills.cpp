@@ -541,6 +541,43 @@ float CASW_Marine_Skills::GetLowestSkillValueNearby( const Vector &pos, float Ma
 	return fBestSkill;
 }
 
+#ifdef GAME_DLL
+CASW_Marine *CASW_Marine_Skills::CheckSkillChanceNearby( CBaseEntity *pAlly, const Vector &pos, float MaxDistance, ASW_Skill iSkillIndex, int iSubSkill )
+{
+	CASW_Game_Resource *pGameResource = ASWGameResource();
+	Assert( pGameResource );
+	Assert( MarineProfileList() );
+	if ( !pGameResource || !MarineProfileList() )
+		return NULL;
+
+	MaxDistance = Square( MaxDistance );
+
+	// find the live marine with the highest value for this skill
+	for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
+	{
+		CASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
+		if ( pMR && pMR->GetHealthPercent() > 0 && pMR->IsAlive() && pMR->GetProfile() && pMR->GetMarineEntity() )
+		{
+			if ( pAlly && pMR->GetMarineEntity()->IRelationType( pAlly ) != D_LI )
+				continue;
+
+			// check he's near enough
+			float dist = pMR->GetMarineEntity()->GetAbsOrigin().DistToSqr( pos );
+			if ( dist > MaxDistance )
+				continue;
+
+			float skill = GetSkillBasedValueByMarineResource( pMR, iSkillIndex, iSubSkill );
+			if ( skill > 0 && skill > RandomFloat() )
+			{
+				return pMR->GetMarineEntity();
+			}
+		}
+	}
+
+	return NULL;
+}
+#endif
+
 static const char *const s_szSkillImageName[ASW_NUM_MARINE_SKILLS] =
 {
 #define ENUM_ITEM( name, icon, title, desc, max ) icon,

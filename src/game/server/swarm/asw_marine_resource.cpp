@@ -11,6 +11,7 @@
 #include "asw_gamestats.h"
 #include "asw_gamerules.h"
 #include "vgui/ILocalize.h"
+#include "particle_parse.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -124,6 +125,7 @@ END_SEND_TABLE()
 extern ConVar asw_leadership_radius;
 extern ConVar asw_debug_marine_damage;
 extern ConVar asw_debug_medals;
+ConVar asw_leadership_accuracy_scale( "asw_leadership_accuracy_scale", "2.0", FCVAR_CHEAT, "Damage scale from leadership bonus" );
 ConVar rd_damage_buff_scale( "rd_damage_buff_scale", "2.0", FCVAR_CHEAT, "Damage amplifier's damage factor. 2.0 by default" );
 
 CASW_Marine_Resource::CASW_Marine_Resource()
@@ -398,30 +400,18 @@ float CASW_Marine_Resource::OnFired_GetDamageScale()
 		flDamageScale *= rd_damage_buff_scale.GetFloat();// 2.0f;
 	}
 
-	//m_iLeadershipCount++;
-
-	// find the shortest leadership interval of our nearby leaders
-	if ( pMarine )	// BenLubar(deathmatch-improvements): fixes a crash when a marine dies on the same tick they fired a bullet
+	if ( pMarine )
 	{
-		float fChance = MarineSkills()->GetHighestSkillValueNearby( pMarine->GetAbsOrigin(),
+		CASW_Marine *pLeader = MarineSkills()->CheckSkillChanceNearby( pMarine, pMarine->GetAbsOrigin(),
 			asw_leadership_radius.GetFloat(),
 			ASW_MARINE_SKILL_LEADERSHIP, ASW_MARINE_SUBSKILL_LEADERSHIP_ACCURACY_CHANCE );
-		float f = random->RandomFloat();
-		static int iLeadershipAccCount = 0;
-		if ( f < fChance )
+		if ( pLeader )
 		{
-			// TODO: leadership particle effect?
+			CBaseEntity *pActiveWeapon = pMarine->GetActiveASWWeapon();
+			DispatchParticleEffectLink( "leadership_proc_accuracy", PATTACH_POINT_FOLLOW, pLeader, pActiveWeapon ? pActiveWeapon : pMarine, pLeader->LookupAttachment( "backpack" ) );
+			EmitSound( "ASW_Leadership.Accuracy" );
 
-			iLeadershipAccCount++;
-
-			flDamageScale *= 2.0f;
-		}
-
-		if ( asw_debug_marine_damage.GetBool() )
-		{
-			Msg("Doing leadership accuracy test.  Chance is %f random float is %f\n", fChance, f);
-			Msg("  Leadership accuracy applied %d times so far\n", iLeadershipAccCount);
-			Msg( "   OnFired_GetDamageScale returning scale of %f\n", flDamageScale );
+			flDamageScale *= asw_leadership_accuracy_scale.GetFloat();
 		}
 	}
 
