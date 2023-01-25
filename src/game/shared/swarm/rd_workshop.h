@@ -47,8 +47,9 @@ public:
 #else
 		m_bWorkshopSetupCompleted( false ),
 #endif
-		m_hEnabledAddonsQuery( k_UGCQueryHandleInvalid ),
-		m_hFavoritedAddonsQuery( k_UGCQueryHandleInvalid ) {}
+		m_hEnabledAddonsQuery( k_UGCQueryHandleInvalid )
+	{
+	}
 
 	virtual bool Init();
 	void InitNonWorkshopAddons();
@@ -137,9 +138,6 @@ private:
 	CUtlVector<WorkshopItem_t> m_EnabledAddons;
 	UGCQueryHandle_t m_hEnabledAddonsQuery;
 	CUtlVector<PublishedFileId_t> m_EnabledAddonsForQuery;
-	int m_iFavoritedAddonsPage;
-	void RequestNextFavoritedAddonsPage();
-	UGCQueryHandle_t m_hFavoritedAddonsQuery;
 	int m_iPublishedAddonsPage;
 	bool m_bHaveAllPublishedAddons;
 	void RequestNextPublishedAddonsPage();
