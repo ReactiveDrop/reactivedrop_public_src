@@ -2522,6 +2522,55 @@
 			"Secondary" {}
 		}
 	}
+	"WEAPON" {
+		"ClassName" "asw_weapon_ar2"
+		"Builtin" "1"
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_ar2.shots_fired"
+			"Caption" "#rd_so_stat_shots_fired"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_ar2.shots_hit"
+			"Caption" "#rd_so_stat_shots_hit"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_ar2.damage"
+			"Caption" "#rd_so_stat_damage_dealt"
+		}
+		"GlobalStat" {
+			"StatName" "equips.asw_weapon_ar2.ff_damage"
+			"Caption" "#rd_so_stat_friendly_fire_damage"
+		}
+		"Facts" {
+			"DamagePerShot" {
+				"CVar" "rd_ar2_dmg_base"
+				"Skill" "ASW_MARINE_SKILL_ACCURACY"
+				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_AR2_DMG"
+			}
+			"BulletSpread" {
+				"Base" "3"
+			}
+			"FireRate" {}
+			"Ammo" {}
+			"Secondary" {
+				"DamagePerShot" {
+					"UseWeaponInfo" "0"
+					"CVar" "sk_npc_dmg_combineball"
+					"Icon" "swarm/swarmopedia/fact/damage_blast"
+					"Caption" "#rd_weapon_fact_damage_per_shot_dissolve"
+				}
+				"Ammo" {
+					"Icon" "swarm/swarmopedia/fact/ammo_blast"
+					"Caption" "#rd_weapon_fact_ammo_dissolve"
+				}
+				"HammerUnits" {
+					"Icon" "swarm/swarmopedia/fact/projectile_speed"
+					"Caption" "#rd_weapon_fact_projectile_speed"
+					"Base" "1000"
+				}
+			}
+		}
+	}
 
 	"WEAPON" {
 		"ClassName" "asw_weapon_medkit"
