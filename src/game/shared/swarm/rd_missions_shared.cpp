@@ -695,8 +695,8 @@ const RD_Mission_t *ReactiveDropMissions::GetMission( int index )
 	KeyValues::AutoDelete pKV( "GAME" );
 	if ( !ReadMissionData( pKV, index ) )
 	{
-		pMission->Material = MAKE_STRING( "../tools/toolsblack" );
-		pMission->BriefingMaterial = MAKE_STRING( "../tools/toolsblack" );
+		pMission->Material = MAKE_STRING( "tools/toolsblack" );
+		pMission->BriefingMaterial = MAKE_STRING( "tools/toolsblack" );
 
 		pMission->MissionTitle = AllocMissionsPooledString( pMission->BaseName );
 		pMission->Description = MAKE_STRING( "" );
