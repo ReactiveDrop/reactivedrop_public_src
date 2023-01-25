@@ -319,7 +319,8 @@ static void UpdateMatchmakingTagsCallback( IConVar *pConVar, const char *pOldVal
 		sv_tags.SetValue( buffer );
 	}
 #else
-	if ( !ASWGameRules() || !UTIL_RD_IsLobbyOwner() )
+	C_AlienSwarm *pAlienSwarm = ASWGameRules();
+	if ( !pAlienSwarm || !UTIL_RD_IsLobbyOwner() )
 	{
 		return;
 	}
@@ -338,7 +339,7 @@ static void UpdateMatchmakingTagsCallback( IConVar *pConVar, const char *pOldVal
 	SteamMatchmaking()->SetLobbyMemberLimit( UTIL_RD_GetCurrentLobbyID(), gpGlobals->maxClients );
 	UTIL_RD_UpdateCurrentLobbyData( "members:numSlots", gpGlobals->maxClients );
 
-	PublishedFileId_t missionAddonID = ASWGameRules()->m_iMissionWorkshopID.Get();
+	PublishedFileId_t missionAddonID = pAlienSwarm->m_iMissionWorkshopID.Get();
 	if ( missionAddonID == k_PublishedFileIdInvalid )
 	{
 		UTIL_RD_RemoveCurrentLobbyData( "game:missioninfo:workshop" );
@@ -361,12 +362,19 @@ static void UpdateMatchmakingTagsCallback( IConVar *pConVar, const char *pOldVal
 
 	UTIL_RD_UpdateCurrentLobbyData( "system:game_version", engine->GetProductVersionString() );
 	UTIL_RD_UpdateCurrentLobbyData( "system:map_version", GetClientWorldEntity()->m_nMapVersion );
-	if ( SteamApps() )
+	if ( ISteamApps *pSteamApps = SteamApps() )
 	{
-		UTIL_RD_UpdateCurrentLobbyData( "system:game_build", SteamApps()->GetAppBuildId() );
+		UTIL_RD_UpdateCurrentLobbyData( "system:game_build", pSteamApps->GetAppBuildId() );
 		char szBranch[256]{};
-		SteamApps()->GetCurrentBetaName( szBranch, sizeof( szBranch ) );
+		pSteamApps->GetCurrentBetaName( szBranch, sizeof( szBranch ) );
 		UTIL_RD_UpdateCurrentLobbyData( "system:game_branch", szBranch );
+
+		KeyValues::AutoDelete pUpdate( "update" );
+		pUpdate->SetString( "update/system/game_version", engine->GetProductVersionString() );
+		pUpdate->SetInt( "update/system/map_version", GetClientWorldEntity()->m_nMapVersion );
+		pUpdate->SetInt( "update/system/game_build", pSteamApps->GetAppBuildId() );
+		pUpdate->SetString( "update/system/game_branch", szBranch );
+		g_pMatchFramework->GetMatchSession()->UpdateSessionSettings( pUpdate );
 	}
 	else
 	{
@@ -374,9 +382,9 @@ static void UpdateMatchmakingTagsCallback( IConVar *pConVar, const char *pOldVal
 		UTIL_RD_RemoveCurrentLobbyData( "system:game_branch" );
 	}
 
-	if ( ASWDeathmatchMode() )
+	if ( C_ASW_Deathmatch_Mode *pDeathmatch = ASWDeathmatchMode() )
 	{
-		switch ( ASWDeathmatchMode()->GetGameMode() )
+		switch ( pDeathmatch->GetGameMode() )
 		{
 		case GAMEMODE_DEATHMATCH:
 			UTIL_RD_UpdateCurrentLobbyData( "game:deathmatch", "deathmatch" );
@@ -392,7 +400,7 @@ static void UpdateMatchmakingTagsCallback( IConVar *pConVar, const char *pOldVal
 			break;
 		default:
 			AssertOnce( !"Unhandled deathmatch mode" );
-			UTIL_RD_UpdateCurrentLobbyData( "game:deathmatch", CFmtStr( "unknown_%d", ASWDeathmatchMode()->GetGameMode() ) );
+			UTIL_RD_UpdateCurrentLobbyData( "game:deathmatch", CFmtStr( "unknown_%d", pDeathmatch->GetGameMode() ) );
 			break;
 		}
 	}
@@ -403,13 +411,7 @@ static void UpdateMatchmakingTagsCallback( IConVar *pConVar, const char *pOldVal
 
 	extern ConVar rd_challenge;
 
-	if ( ASWDeathmatchMode() )
-	{
-		UTIL_RD_RemoveCurrentLobbyData( "game:challenge" );
-		UTIL_RD_RemoveCurrentLobbyData( "game:challengeinfo:workshop" );
-		UTIL_RD_RemoveCurrentLobbyData( "game:challengeinfo:displaytitle" );
-	}
-	else if ( !V_strcmp( rd_challenge.GetString(), "0" ) )
+	if ( !V_strcmp( rd_challenge.GetString(), "0" ) )
 	{
 		UTIL_RD_UpdateCurrentLobbyData( "game:challenge", "0" );
 		UTIL_RD_RemoveCurrentLobbyData( "game:challengeinfo:workshop" );
@@ -429,8 +431,8 @@ static void UpdateMatchmakingTagsCallback( IConVar *pConVar, const char *pOldVal
 		}
 		UTIL_RD_UpdateCurrentLobbyData( "game:challengeinfo:displaytitle", ReactiveDropChallenges::DisplayName( rd_challenge.GetString() ) );
 	}
-	UTIL_RD_UpdateCurrentLobbyData( "game:onslaught", ASWGameRules()->IsOnslaught() ? "1" : "0" );
-	UTIL_RD_UpdateCurrentLobbyData( "game:hardcoreFF", ASWGameRules()->IsHardcoreFF() ? "1" : "0" );
+	UTIL_RD_UpdateCurrentLobbyData( "game:onslaught", pAlienSwarm->IsOnslaught() ? "1" : "0" );
+	UTIL_RD_UpdateCurrentLobbyData( "game:hardcoreFF", pAlienSwarm->IsHardcoreFF() ? "1" : "0" );
 #endif
 }
 
