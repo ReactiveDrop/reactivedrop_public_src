@@ -407,9 +407,14 @@ float CASW_Marine_Resource::OnFired_GetDamageScale()
 			ASW_MARINE_SKILL_LEADERSHIP, ASW_MARINE_SUBSKILL_LEADERSHIP_ACCURACY_CHANCE );
 		if ( pLeader )
 		{
+			CBaseEntity *pHelpHelpImBeingSupressed = ( CBaseEntity * )te->GetSuppressHost();
+			te->SetSuppressHost( NULL );
+
 			CBaseEntity *pActiveWeapon = pMarine->GetActiveASWWeapon();
 			DispatchParticleEffectLink( "leadership_proc_accuracy", PATTACH_POINT_FOLLOW, pLeader, pActiveWeapon ? pActiveWeapon : pMarine, pLeader->LookupAttachment( "backpack" ) );
 			EmitSound( "ASW_Leadership.Accuracy" );
+
+			te->SetSuppressHost( pHelpHelpImBeingSupressed );
 
 			flDamageScale *= asw_leadership_accuracy_scale.GetFloat();
 		}

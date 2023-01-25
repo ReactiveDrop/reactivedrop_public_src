@@ -1450,8 +1450,13 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		ASW_MARINE_SKILL_LEADERSHIP, ASW_MARINE_SUBSKILL_LEADERSHIP_DAMAGE_RESIST );
 	if ( pLeader )
 	{
+		CBaseEntity *pHelpHelpImBeingSupressed = ( CBaseEntity * )te->GetSuppressHost();
+		te->SetSuppressHost( NULL );
+
 		DispatchParticleEffectLink( "leadership_proc_resist", PATTACH_POINT_FOLLOW, pLeader, this, pLeader->LookupAttachment( "backpack" ) );
 		EmitSound( "ASW_Leadership.Resist" );
+
+		te->SetSuppressHost( pHelpHelpImBeingSupressed );
 
 		float fNewDamage = newInfo.GetDamage() * asw_leadership_resist_scale.GetFloat();
 		if ( fNewDamage <= 0 )
