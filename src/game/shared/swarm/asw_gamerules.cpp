@@ -9065,6 +9065,8 @@ void CAlienSwarm::LevelInitPostEntity()
 	if ( sv_cheats )
 	{
 		m_bCheated = sv_cheats->GetBool();
+		if ( !scriptmanager )
+			m_bCheated = true;
 		static bool s_bInstalledCheatsChangeCallback = false;
 		if ( !s_bInstalledCheatsChangeCallback )
 		{

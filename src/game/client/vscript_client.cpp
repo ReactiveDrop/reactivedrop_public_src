@@ -30,7 +30,7 @@ extern ScriptClassDesc_t * GetScriptDesc( CBaseEntity * );
 #else // !VMPROFILE
 
 #define VMPROF_START
-#define VMPROF_SHOW
+#define VMPROF_SHOW( funcname, funcdesc )
 
 #endif // VMPROFILE
 
@@ -75,6 +75,7 @@ bool VScriptClientInit()
 	{
 		ScriptLanguage_t scriptLanguage = SL_DEFAULT;
 
+#ifndef INFESTED_DLL
 		char const *pszScriptLanguage;
 		if ( CommandLine()->CheckParm( "-scriptlang", &pszScriptLanguage ) )
 		{
@@ -95,8 +96,8 @@ bool VScriptClientInit()
 				DevWarning("-scriptlang does not recognize a language named '%s'. virtual machine did NOT start.\n", pszScriptLanguage );
 				scriptLanguage = SL_NONE;
 			}
-
 		}
+#endif
 		if( scriptLanguage != SL_NONE )
 		{
 			if ( g_pScriptVM == NULL )
@@ -126,7 +127,7 @@ bool VScriptClientInit()
 					VScriptRunScript( "mapspawn", false );
 				}
 
-				VMPROF_SHOW( pszScriptLanguage, "virtual machine startup" );
+				VMPROF_SHOW( VScriptClientInit, "virtual machine startup" );
 
 				return true;
 			}
