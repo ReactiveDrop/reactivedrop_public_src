@@ -16,8 +16,8 @@ struct RD_Challenge_t
 	bool IsHardcore : 1;
 	bool AllowCoop : 1;
 	bool AllowDeathmatch : 1;
+	bool RequiredOnClient : 1;
 	bool _Reserved1 : 1;
-	bool _Reserved2 : 1;
 	// Title must be last in this struct
 	char Title[255];
 };

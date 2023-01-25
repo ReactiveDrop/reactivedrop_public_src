@@ -60,6 +60,8 @@ static bool FillChallengeSummary( RD_Challenge_t &summary, const char *szKVFileN
 		}
 	}
 
+	summary.RequiredOnClient = pKV->GetBool( "required_on_client" );
+
 	if ( KeyValues *pConVars = pKV->FindKey( "convars" ) )
 	{
 		KeyValues *pFF1 = pConVars->FindKey( "asw_marine_ff_absorption" );
