@@ -319,6 +319,8 @@ static void UpdateMatchmakingTagsCallback( IConVar *pConVar, const char *pOldVal
 		sv_tags.SetValue( buffer );
 	}
 #else
+	g_ReactiveDropWorkshop.CheckForRequiredAddons();
+
 	C_AlienSwarm *pAlienSwarm = ASWGameRules();
 	if ( !pAlienSwarm || !UTIL_RD_IsLobbyOwner() )
 	{
