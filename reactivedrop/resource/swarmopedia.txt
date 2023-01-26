@@ -436,6 +436,7 @@
 		"Paragraph" "#rd_so_paragraph_harvester_2"
 		"Paragraph" "#rd_so_paragraph_harvester_3"
 		"Paragraph" "#rd_so_paragraph_harvester_4"
+		"Paragraph" "#rd_so_paragraph_harvester_5"
 	}
 	"ALIEN" {
 		"ID" "asw_xenomite"
