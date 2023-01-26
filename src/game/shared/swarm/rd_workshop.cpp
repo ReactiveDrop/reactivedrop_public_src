@@ -101,6 +101,14 @@ bool CReactiveDropWorkshop::Init()
 		nSubscribed = pSteamUGC->GetSubscribedItems( m_EnabledAddonsForQuery.Base() + iStart, nSubscribed );
 		m_EnabledAddonsForQuery.SetCountNonDestructively( iStart + nSubscribed );
 
+#ifdef DBGFLAG_ASSERT
+		for ( uint32 i = 0; i < nSubscribed; i++ )
+		{
+			uint32 iState = pSteamUGC->GetItemState( m_EnabledAddonsForQuery[i + iStart] );
+			Assert( iState & k_EItemStateSubscribed );
+		}
+#endif
+
 		KeyValues::AutoDelete pKV( "WorkshopAddons" );
 		ConVarRef cl_cloud_settings( "cl_cloud_settings" );
 		bool bLoaded = false;
@@ -151,7 +159,8 @@ bool CReactiveDropWorkshop::Init()
 	}
 
 #ifdef CLIENT_DLL
-	ClearCaches( "initializing" );
+	if ( m_hEnabledAddonsQuery == k_UGCQueryHandleInvalid )
+		ClearCaches( "initializing" );
 
 	m_iPublishedAddonsPage = 0;
 	RequestNextPublishedAddonsPage();
@@ -282,6 +291,16 @@ bool CReactiveDropWorkshop::DedicatedServerWorkshopSetup()
 	return true;
 }
 
+void CReactiveDropWorkshop::EnableServerWorkshopItem( PublishedFileId_t id )
+{
+	if ( !m_ServerWorkshopAddons.IsValidIndex( m_ServerWorkshopAddons.Find( id ) ) )
+	{
+		m_ServerWorkshopAddons.AddToTail( id );
+	}
+
+	UpdateAndLoadAddon( id, false, true );
+}
+
 CON_COMMAND( rd_enable_workshop_item, "(dedicated servers only) enable a workshop addon by ID" )
 {
 	if ( !engine->IsDedicatedServer() )
@@ -304,12 +323,7 @@ CON_COMMAND( rd_enable_workshop_item, "(dedicated servers only) enable a worksho
 			continue;
 		}
 
-		if ( !g_ReactiveDropWorkshop.m_ServerWorkshopAddons.IsValidIndex( g_ReactiveDropWorkshop.m_ServerWorkshopAddons.Find( id ) ) )
-		{
-			g_ReactiveDropWorkshop.m_ServerWorkshopAddons.AddToTail( id );
-		}
-
-		g_ReactiveDropWorkshop.UpdateAndLoadAddon( id, false, true );
+		g_ReactiveDropWorkshop.EnableServerWorkshopItem( id );
 	}
 }
 #endif
@@ -444,6 +458,11 @@ void CReactiveDropWorkshop::OnSubscribed( RemoteStoragePublishedFileSubscribed_t
 		return;
 	}
 
+	if ( CommandLine()->FindParm( "-skiploadingworkshopaddons" ) )
+	{
+		return;
+	}
+
 	Msg( "Subscribed to workshop item %llu. Downloading with high priority.\n", pSubscribed->m_nPublishedFileId );
 
 	UpdateAndLoadAddon( pSubscribed->m_nPublishedFileId, true );
@@ -455,6 +474,11 @@ void CReactiveDropWorkshop::OnSubscribed( RemoteStoragePublishedFileSubscribed_t
 void CReactiveDropWorkshop::OnUnsubscribed( RemoteStoragePublishedFileUnsubscribed_t *pUnsubscribed )
 {
 	if ( pUnsubscribed->m_nAppID != SteamUtils()->GetAppID() )
+	{
+		return;
+	}
+
+	if ( CommandLine()->FindParm( "-skiploadingworkshopaddons" ) )
 	{
 		return;
 	}
@@ -513,17 +537,24 @@ void CReactiveDropWorkshop::LevelShutdownPreEntity()
 
 	ClearOldPreviewRequests();
 
-	FOR_EACH_VEC( m_DelayedLoadAddons, i )
+	if ( m_DelayedLoadAddons.Count() || m_DelayedUnloadAddons.Count() )
 	{
-		RealLoadAddon( m_DelayedLoadAddons[i] );
-	}
-	m_DelayedLoadAddons.RemoveAll();
+		Assert( !m_bStartingUp );
+		m_bStartingUp = true;
+		FOR_EACH_VEC( m_DelayedLoadAddons, i )
+		{
+			RealLoadAddon( m_DelayedLoadAddons[i] );
+		}
+		m_DelayedLoadAddons.RemoveAll();
 
-	FOR_EACH_VEC( m_DelayedUnloadAddons, i )
-	{
-		RealUnloadAddon( m_DelayedUnloadAddons[i] );
+		FOR_EACH_VEC( m_DelayedUnloadAddons, i )
+		{
+			RealUnloadAddon( m_DelayedUnloadAddons[i] );
+		}
+		m_DelayedUnloadAddons.RemoveAll();
+		m_bStartingUp = false;
+		ClearCaches( "delayed load/unload" );
 	}
-	m_DelayedUnloadAddons.RemoveAll();
 #endif
 }
 
@@ -703,14 +734,27 @@ void CReactiveDropWorkshop::ScreenshotReadyCallback( ScreenshotReady_t *pReady )
 }
 #endif
 
-bool CReactiveDropWorkshop::IsSubscribedToFile( PublishedFileId_t nPublishedFileId )
+bool CReactiveDropWorkshop::IsSubscribedToFile( PublishedFileId_t nPublishedFileId, bool bIncludeTemporary )
 {
 #ifdef GAME_DLL
 	if ( engine->IsDedicatedServer() )
 	{
 		return true;
 	}
+#else
+	if ( bIncludeTemporary )
+	{
+		if ( m_TemporaryAddons.IsValidIndex( m_TemporaryAddons.Find( nPublishedFileId ) ) )
+		{
+			return true;
+		}
+	}
 #endif
+
+	if ( CommandLine()->FindParm( "-skiploadingworkshopaddons" ) )
+	{
+		return false;
+	}
 
 	return ( SteamUGC()->GetItemState( nPublishedFileId ) & k_EItemStateSubscribed ) != 0;
 }
@@ -823,7 +867,7 @@ PublishedFileId_t CReactiveDropWorkshop::AddonForFileSystemPath( const char *szP
 	return PublishedFileId_t( -1 );
 }
 
-void CReactiveDropWorkshop::GetRequiredAddons( CUtlVector<PublishedFileId_t> &addons )
+void CReactiveDropWorkshop::GetRequiredAddons( CUtlVector<PublishedFileId_t> &addons, bool bHighPriorityOnly )
 {
 	if ( CAlienSwarm *pAlienSwarm = ASWGameRules() )
 	{
@@ -850,19 +894,144 @@ void CReactiveDropWorkshop::GetRequiredAddons( CUtlVector<PublishedFileId_t> &ad
 			addons.AddToTail( pChallenge->WorkshopID );
 		}
 	}
+
+#ifdef CLIENT_DLL
+	if ( !bHighPriorityOnly && rd_workshop_temp_subscribe.GetInt() == 2 )
+#else
+	if ( !bHighPriorityOnly )
+#endif
+	{
+		for ( int i = 0; i < ReactiveDropMissions::CountCampaigns(); i++ )
+		{
+			const RD_Campaign_t *pCampaign = ReactiveDropMissions::GetCampaign( i );
+			if ( pCampaign && pCampaign->WorkshopID && addons.Find( pCampaign->WorkshopID ) == -1 )
+			{
+				addons.AddToTail( pCampaign->WorkshopID );
+			}
+		}
+
+		for ( int i = 0; i < ReactiveDropMissions::CountMissions(); i++ )
+		{
+			const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( i );
+			if ( pMission && pMission->WorkshopID && addons.Find( pMission->WorkshopID ) == -1 )
+			{
+				addons.AddToTail( pMission->WorkshopID );
+			}
+		}
+
+		for ( int i = 0; i < ReactiveDropChallenges::Count(); i++ )
+		{
+			const RD_Challenge_t *pChallenge = ReactiveDropChallenges::GetSummary( i );
+			if ( pChallenge && pChallenge->RequiredOnClient && pChallenge->WorkshopID && addons.Find( pChallenge->WorkshopID ) == -1 )
+			{
+				addons.AddToTail( pChallenge->WorkshopID );
+			}
+		}
+	}
 }
 
 #ifdef CLIENT_DLL
 void CReactiveDropWorkshop::CheckForRequiredAddons()
 {
-	Assert( !"TODO" );
+	CUtlVector<PublishedFileId_t> required, optional;
+	GetRequiredAddons( required, true );
+	GetRequiredAddons( optional, false );
+
+	if ( rd_workshop_temp_subscribe.GetInt() != 0 )
+	{
+		// request all the metadata now so we don't fire off a hundred requests later
+		Assert( !m_bStartingUp );
+		m_bStartingUp = true;
+		FOR_EACH_VEC( required, i )
+		{
+			TryQueryAddon( required[i] );
+		}
+		FOR_EACH_VEC( optional, i )
+		{
+			TryQueryAddon( optional[i] );
+		}
+		m_bStartingUp = false;
+		RestartEnabledAddonsQuery();
+	}
+
+	Assert( !m_bStartingUp );
+	m_bStartingUp = true;
+
+	bool bAnyChange = false;
+
+	FOR_EACH_VEC( required, i )
+	{
+		if ( MaybeAddTemporaryAddon( required[i], true ) )
+		{
+			bAnyChange = true;
+		}
+	}
+	FOR_EACH_VEC( optional, i )
+	{
+		if ( MaybeAddTemporaryAddon( optional[i], false ) )
+		{
+			bAnyChange = true;
+		}
+	}
+
+	m_bStartingUp = false;
+
+	if ( bAnyChange )
+	{
+		ClearCaches( "loading temporary addons" );
+	}
+}
+
+bool CReactiveDropWorkshop::MaybeAddTemporaryAddon( PublishedFileId_t id, bool bHighPriority )
+{
+	if ( IsSubscribedToFile( id, false ) )
+	{
+		// if we're subscribed to it, we don't need to do anything here
+		return false;
+	}
+
+	if ( m_TemporaryAddons.Find( id ) == -1 )
+	{
+		m_TemporaryAddons.AddToTail( id );
+	}
+
+	if ( rd_workshop_temp_subscribe.GetInt() == 0 )
+	{
+		// we still do all the normal setup, but we pretend the download failed
+	}
+	else
+	{
+		UpdateAndLoadAddon( id, bHighPriority );
+	}
 }
 
 void CReactiveDropWorkshop::UnloadTemporaryAddons()
 {
 	Assert( !engine->IsConnected() );
 
-	Assert( !"TODO" );
+	if ( !m_TemporaryAddons.Count() )
+		return;
+
+	Assert( !m_bStartingUp );
+	m_bStartingUp = true;
+
+	FOR_EACH_VEC( m_TemporaryAddons, i )
+	{
+		if ( IsSubscribedToFile( m_TemporaryAddons[i], false ) )
+		{
+			// we subscribed to this during the session; keep it loaded
+			continue;
+		}
+
+		UnloadAddon( m_TemporaryAddons[i] );
+	}
+
+	m_TemporaryAddons.Purge();
+
+	m_bStartingUp = false;
+
+	PrepareForUnloadCacheClear();
+	ClearCaches( "unloaded temporary addons" );
 }
 #endif
 
@@ -1576,6 +1745,20 @@ CON_COMMAND( rd_dump_workshop_conflicts_server, "" )
 	g_ReactiveDropWorkshop.DumpWorkshopConflicts();
 }
 
+void CReactiveDropWorkshop::PrepareForUnloadCacheClear()
+{
+	m_AddonAllowOverride.Purge();
+	m_FileNameToAddon.Purge();
+	m_FileNameToCRC.Purge();
+	m_FileConflicts.PurgeAndDeleteElements();
+	InitNonWorkshopAddons();
+	FOR_EACH_VEC( m_LoadedAddonPaths, i )
+	{
+		CPackedStore vpk( m_LoadedAddonPaths[i].Path, filesystem );
+		AddToFileNameAddonMapping( m_LoadedAddonPaths[i].ID, vpk );
+	}
+}
+
 void CReactiveDropWorkshop::ClearCaches( const char *szReason )
 {
 	if ( m_bStartingUp )
@@ -1657,7 +1840,7 @@ static bool ShouldUnconditionalDownload( PublishedFileId_t id )
 	return false;
 }
 
-void CReactiveDropWorkshop::UpdateAndLoadAddon( PublishedFileId_t id, bool bHighPriority, bool bUnload )
+bool CReactiveDropWorkshop::UpdateAndLoadAddon( PublishedFileId_t id, bool bHighPriority, bool bUnload )
 {
 	ISteamUGC *pWorkshop = SteamUGC();
 #ifdef GAME_DLL
@@ -1669,7 +1852,7 @@ void CReactiveDropWorkshop::UpdateAndLoadAddon( PublishedFileId_t id, bool bHigh
 	if ( !pWorkshop )
 	{
 		Warning( "Cannot install addon %llu: no access to the Steam Workshop API!\n", id );
-		return;
+		return false;
 	}
 
 	// make sure we know the metadata (for admin override tags, mostly)
@@ -1690,8 +1873,7 @@ void CReactiveDropWorkshop::UpdateAndLoadAddon( PublishedFileId_t id, bool bHigh
 				Msg( "  size: %llu bytes; timestamp: %u; folder: %s\n", sizeOnDisk, timeStamp, szFolder );
 			}
 		}
-		LoadAddon( id, false );
-		return;
+		return LoadAddon( id, false );
 	}
 	if ( bUnload )
 	{
@@ -1705,6 +1887,7 @@ void CReactiveDropWorkshop::UpdateAndLoadAddon( PublishedFileId_t id, bool bHigh
 	{
 		Warning( "Download request for addon %llu failed!\n", id );
 	}
+	return false;
 }
 
 #ifdef GAME_DLL
@@ -1760,12 +1943,7 @@ public:
 
 		for ( uint32_t i = 0; i < details.m_unNumChildren; i++ )
 		{
-			if ( !g_ReactiveDropWorkshop.m_ServerWorkshopAddons.IsValidIndex( g_ReactiveDropWorkshop.m_ServerWorkshopAddons.Find( children[i] ) ) )
-			{
-				g_ReactiveDropWorkshop.m_ServerWorkshopAddons.AddToTail( children[i] );
-			}
-
-			g_ReactiveDropWorkshop.UpdateAndLoadAddon( children[i], false, true );
+			g_ReactiveDropWorkshop.EnableServerWorkshopItem( children[i] );
 		}
 
 		SteamGameServerUGC()->ReleaseQueryUGCRequest( pResult->m_handle );
@@ -1775,6 +1953,16 @@ public:
 
 void CReactiveDropWorkshop::RealLoadAddon( PublishedFileId_t id )
 {
+#ifdef CLIENT_DLL
+	if ( m_TemporaryAddons.IsValidIndex( m_TemporaryAddons.Find( id ) ) )
+	{
+		if ( rd_workshop_debug.GetBool() )
+		{
+			Msg( "Loading addon %llu: required by server\n", id );
+		}
+	}
+	else
+#endif
 	if ( m_DisabledAddons.IsValidIndex( m_DisabledAddons.Find( id ) ) )
 	{
 		if ( rd_workshop_debug.GetBool() )
@@ -1839,7 +2027,7 @@ void CReactiveDropWorkshop::RealLoadAddon( PublishedFileId_t id )
 		Msg( "Loading addon %llu\n", id );
 	}
 
-	bool bDontClearCache = false;
+	bool bDontClearCache = m_bStartingUp;
 
 	LoadedAddonPath_t path;
 	path.ID = id;
@@ -1880,7 +2068,7 @@ void CReactiveDropWorkshop::RealLoadAddon( PublishedFileId_t id )
 #endif
 }
 
-void CReactiveDropWorkshop::LoadAddon( PublishedFileId_t id, bool bFromDownload )
+bool CReactiveDropWorkshop::LoadAddon( PublishedFileId_t id, bool bFromDownload )
 {
 #ifdef CLIENT_DLL
 	if ( engine->IsConnected() && ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME )
@@ -1891,16 +2079,17 @@ void CReactiveDropWorkshop::LoadAddon( PublishedFileId_t id, bool bFromDownload 
 			Msg( "Queued addon %llu for loading at the end of the level.\n", id );
 			m_DelayedLoadAddons.AddToTail( id );
 		}
-		return;
+		return false;
 	}
 #else
 	if ( bFromDownload && !engine->IsDedicatedServer() )
 	{
-		return;
+		return false;
 	}
 #endif
 
 	RealLoadAddon( id );
+	return true;
 }
 
 void CReactiveDropWorkshop::RealUnloadAddon( PublishedFileId_t id )
@@ -1923,26 +2112,25 @@ void CReactiveDropWorkshop::RealUnloadAddon( PublishedFileId_t id )
 	}
 
 #ifdef CLIENT_DLL
-	// kill currently-playing sounds so the sound system doesn't try to load from a VPK we're removing asynchronously.
-	engine->ClientCmd_Unrestricted( "snd_restart" );
+	static int s_iLastSndRestartFrame = -1;
+	if ( s_iLastSndRestartFrame != gpGlobals->framecount )
+	{
+		s_iLastSndRestartFrame = gpGlobals->framecount;
+		// kill currently-playing sounds so the sound system doesn't try to load from a VPK we're removing asynchronously.
+		engine->ExecuteClientCmd( "snd_restart" );
+	}
 #endif
 
 	Msg( "Unloading addon %llu\n", id );
 
+	filesystem->AsyncFinishAll();
 	filesystem->RemoveVPKFile( path.Path );
 
-	m_AddonAllowOverride.Purge();
-	m_FileNameToAddon.Purge();
-	m_FileNameToCRC.Purge();
-	m_FileConflicts.PurgeAndDeleteElements();
-	InitNonWorkshopAddons();
-	FOR_EACH_VEC( m_LoadedAddonPaths, i )
+	if ( !m_bStartingUp )
 	{
-		CPackedStore vpk( m_LoadedAddonPaths[i].Path, filesystem );
-		AddToFileNameAddonMapping( m_LoadedAddonPaths[i].ID, vpk );
+		PrepareForUnloadCacheClear();
+		ClearCaches( CFmtStr( "unloaded addon %llu", id ) );
 	}
-
-	ClearCaches( CFmtStr( "unloaded addon %llu", id ) );
 }
 
 void CReactiveDropWorkshop::UnloadAddon( PublishedFileId_t id )
@@ -1993,12 +2181,17 @@ bool CReactiveDropWorkshop::LoadAddonEarly( PublishedFileId_t nPublishedFileID )
 		return false;
 	}
 
+	Assert( !m_bStartingUp );
+	m_bStartingUp = true;
 	Msg( "Forcing addons to load early!\n" );
 	FOR_EACH_VEC( m_DelayedLoadAddons, i )
 	{
 		RealLoadAddon( m_DelayedLoadAddons[i] );
 	}
 	m_DelayedLoadAddons.RemoveAll();
+	m_bStartingUp = false;
+
+	ClearCaches( "loaded addons early" );
 
 	return true;
 }
@@ -2546,7 +2739,7 @@ void CReactiveDropWorkshop::CreateItemResultCallback( CreateItemResult_t *pResul
 
 	if ( pResult->m_bUserNeedsToAcceptWorkshopLegalAgreement )
 	{
-		Warning( "Your addon will not be visible until you accept the Steam Workshop legal agreement. https://steamcommunity.com/sharedfiles/workshoplegalagreement\n" );
+		Warning( "Your addon will not be visible until you accept the Steam Workshop legal agreement. https://steamcommunity.com/sharedfiles/workshoplegalagreement?appid=563560\n" );
 	}
 
 	m_nLastPublishedFileID = pResult->m_nPublishedFileId;
@@ -2826,7 +3019,7 @@ void CReactiveDropWorkshop::CreateItemResultCallbackCurated( CreateItemResult_t 
 
 	if ( pResult->m_bUserNeedsToAcceptWorkshopLegalAgreement )
 	{
-		Warning( "You need to accept the Steam Workshop legal agreement. https://steamcommunity.com/sharedfiles/workshoplegalagreement\n" );
+		Warning( "You need to accept the Steam Workshop legal agreement. https://steamcommunity.com/sharedfiles/workshoplegalagreement?appid=563560\n" );
 	}
 
 	Msg( "Workshop assigned published file ID: %llu\n", pResult->m_nPublishedFileId );

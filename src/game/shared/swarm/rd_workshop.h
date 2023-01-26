@@ -59,11 +59,12 @@ public:
 	virtual void LevelInitPostEntity();
 	virtual void LevelShutdownPreEntity();
 
+	void PrepareForUnloadCacheClear();
 	void ClearCaches( const char *szReason );
 	void GetActiveAddons( CUtlVector<PublishedFileId_t> &active );
-	void UpdateAndLoadAddon( PublishedFileId_t id, bool bHighPriority = false, bool bUnload = false );
+	bool UpdateAndLoadAddon( PublishedFileId_t id, bool bHighPriority = false, bool bUnload = false );
 	void RealLoadAddon( PublishedFileId_t id );
-	void LoadAddon( PublishedFileId_t id, bool bFromDownload );
+	bool LoadAddon( PublishedFileId_t id, bool bFromDownload );
 	void RealUnloadAddon( PublishedFileId_t id );
 	void UnloadAddon( PublishedFileId_t id );
 	void AddToFileNameAddonMapping( PublishedFileId_t id, const char *szFileName, CRC32_t nFileHash );
@@ -77,6 +78,7 @@ public:
 #ifdef GAME_DLL
 	void SetupThink();
 	bool DedicatedServerWorkshopSetup();
+	void EnableServerWorkshopItem( PublishedFileId_t id );
 	bool m_bWorkshopSetupCompleted;
 #endif
 
@@ -162,7 +164,7 @@ private:
 	void RequestNextPublishedAddonsPage();
 	UGCQueryHandle_t m_hPublishedAddonsQuery;
 public:
-	bool IsSubscribedToFile( PublishedFileId_t nPublishedFileId );
+	bool IsSubscribedToFile( PublishedFileId_t nPublishedFileId, bool bIncludeTemporary = true );
 	void SetSubscribedToFile( PublishedFileId_t nPublishedFileId, bool bSubscribe );
 	bool IsAddonEnabled( PublishedFileId_t nPublishedFileId );
 	void SetAddonEnabled( PublishedFileId_t nPublishedFileId, bool bEnabled );
@@ -183,9 +185,11 @@ public:
 	int FindAddonConflicts( PublishedFileId_t nPublishedFileId, CUtlVector<const AddonFileConflict_t *> *pConflicts );
 
 	PublishedFileId_t AddonForFileSystemPath( const char *szPath );
-	void GetRequiredAddons( CUtlVector<PublishedFileId_t> &addons );
+	void GetRequiredAddons( CUtlVector<PublishedFileId_t> &addons, bool bHighPriorityOnly = true );
 #ifdef CLIENT_DLL
+	CUtlVector<PublishedFileId_t> m_TemporaryAddons;
 	void CheckForRequiredAddons();
+	bool MaybeAddTemporaryAddon( PublishedFileId_t id, bool bHighPriority );
 	void UnloadTemporaryAddons();
 #endif
 	const wchar_t *AddonName( PublishedFileId_t nPublishedFileId );
@@ -220,10 +224,6 @@ private:
 	friend class BaseModUI::ReactiveDropWorkshop;
 	friend class BaseModUI::ReactiveDropWorkshopListItem;
 	friend class CRD_VGUI_Workshop_Download_Progress;
-#ifdef GAME_DLL
-	friend class LoadWorkshopCollection_t;
-	friend void rd_enable_workshop_item( const CCommand & );
-#endif
 
 	bool m_bStartingUp;
 	CUtlStringList m_NonWorkshopAddons;

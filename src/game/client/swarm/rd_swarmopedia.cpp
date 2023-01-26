@@ -791,6 +791,9 @@ static void PostProcessBuiltin( WeaponFact *pFact, CASW_WeaponInfo *pWeaponInfo,
 		case DMG_NERVEGAS:
 			szSuffix = "_gas";
 			break;
+		case DMG_DISSOLVE:
+			szSuffix = "_dissolve";
+			break;
 		case DMG_BULLET | DMG_BUCKSHOT:
 			szSuffix = "_buckshot";
 			break;
