@@ -1417,7 +1417,8 @@ float CAlienSwarm::GetMarineDeathCamInterp( bool bIgnoreCvar )
 
 void CAlienSwarm::OnDataChanged( DataUpdateType_t updateType )
 {
-	if ( m_iPreviousGameState != GetGameState() )
+	bool bGameStateChanged = m_iPreviousGameState != GetGameState();
+	if ( bGameStateChanged )
 	{
 		m_iPreviousGameState = GetGameState();
 
@@ -1433,9 +1434,11 @@ void CAlienSwarm::OnDataChanged( DataUpdateType_t updateType )
 			g_ReactiveDropWorkshop.OnMissionStart();
 		}
 
+		g_ReactiveDropWorkshop.CheckForRequiredAddons();
+
 		g_RD_Rich_Presence.UpdatePresence();
 	}
-	if ( m_iPreviousMissionWorkshopID != m_iMissionWorkshopID || updateType == DATA_UPDATE_CREATED )
+	if ( bGameStateChanged || m_iPreviousMissionWorkshopID != m_iMissionWorkshopID || updateType == DATA_UPDATE_CREATED )
 	{
 		m_iPreviousMissionWorkshopID = m_iMissionWorkshopID;
 
@@ -4600,10 +4603,6 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 			gameeventmanager->FireEvent( event );
 		}
 	}
-	SetGameState( ASW_GS_DEBRIEF );
-
-	// Clear out any force ready state if we fail or succeed in the middle so that we always give a chance to award XP
-	SetForceReady( ASW_FR_NONE );
 
 	Assert( m_szCycleNextMap.Get()[0] == '\0' ); // shouldn't be initialized yet
 	if ( IsCampaignGame() == 0 )
@@ -4754,6 +4753,11 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 			}
 		}
 	}
+
+	SetGameState( ASW_GS_DEBRIEF );
+
+	// Clear out any force ready state if we fail or succeed in the middle so that we always give a chance to award XP
+	SetForceReady( ASW_FR_NONE );
 
 	bool bSinglePlayer = false;
 

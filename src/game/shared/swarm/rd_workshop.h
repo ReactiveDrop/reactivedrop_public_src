@@ -76,6 +76,7 @@ public:
 
 #ifdef GAME_DLL
 	void SetupThink();
+	bool DedicatedServerWorkshopSetup();
 	bool m_bWorkshopSetupCompleted;
 #endif
 
@@ -183,6 +184,10 @@ public:
 
 	PublishedFileId_t AddonForFileSystemPath( const char *szPath );
 	void GetRequiredAddons( CUtlVector<PublishedFileId_t> &addons );
+#ifdef CLIENT_DLL
+	void CheckForRequiredAddons();
+	void UnloadTemporaryAddons();
+#endif
 	const wchar_t *AddonName( PublishedFileId_t nPublishedFileId );
 
 	struct PublishedFileIdPair
@@ -215,6 +220,10 @@ private:
 	friend class BaseModUI::ReactiveDropWorkshop;
 	friend class BaseModUI::ReactiveDropWorkshopListItem;
 	friend class CRD_VGUI_Workshop_Download_Progress;
+#ifdef GAME_DLL
+	friend class LoadWorkshopCollection_t;
+	friend void rd_enable_workshop_item( const CCommand & );
+#endif
 
 	bool m_bStartingUp;
 	CUtlStringList m_NonWorkshopAddons;

@@ -45,6 +45,7 @@
 #ifdef CLIENT_DLL
 ConVar rd_download_workshop_previews( "rd_download_workshop_previews", "1", FCVAR_ARCHIVE, "If 0 game will not download preview images for workshop add-ons, improving performance at startup" );
 ConVar cl_workshop_debug( "cl_workshop_debug", "0", FCVAR_NONE, "If 1 workshop debugging messages will be printed in console" );
+ConVar rd_workshop_temp_subscribe( "rd_workshop_temp_subscribe", "1", FCVAR_ARCHIVE, "Should the client download and load workshop addons the server needs?" );
 #define rd_workshop_debug cl_workshop_debug
 #else
 ConVar rd_workshop_update_every_round( "rd_workshop_update_every_round", "1", FCVAR_HIDDEN, "If 1 dedicated server will check for workshop items during each mission restart(workshop.cfg will be executed). If 0, workshop items will only update once during server startup" );
@@ -238,7 +239,7 @@ void CReactiveDropWorkshop::SaveDisabledAddons()
 }
 
 #ifdef GAME_DLL
-static bool DedicatedServerWorkshopSetup()
+bool CReactiveDropWorkshop::DedicatedServerWorkshopSetup()
 {
 	if ( !SteamGameServer() || !SteamGameServer()->BLoggedOn() )
 	{
@@ -265,15 +266,15 @@ static bool DedicatedServerWorkshopSetup()
 		}
 	}
 
-	s_bAnyServerUpdates = false;
-	s_bStartingUp = true;
+	m_bAnyServerUpdates = false;
+	m_bStartingUp = true;
 	if ( rd_workshop_official_addons.GetInt() != 1 )
 	{
 		engine->ServerCommand( "exec workshop.cfg\n" );
 		engine->ServerExecute();
 	}
-	s_bStartingUp = false;
-	if ( s_bAnyServerUpdates )
+	m_bStartingUp = false;
+	if ( m_bAnyServerUpdates )
 	{
 		ClearCaches( "dedicated server workshop setup found update" );
 	}
@@ -303,12 +304,12 @@ CON_COMMAND( rd_enable_workshop_item, "(dedicated servers only) enable a worksho
 			continue;
 		}
 
-		if ( !m_ServerWorkshopAddons.IsValidIndex( m_ServerWorkshopAddons.Find( id ) ) )
+		if ( !g_ReactiveDropWorkshop.m_ServerWorkshopAddons.IsValidIndex( g_ReactiveDropWorkshop.m_ServerWorkshopAddons.Find( id ) ) )
 		{
-			m_ServerWorkshopAddons.AddToTail( id );
+			g_ReactiveDropWorkshop.m_ServerWorkshopAddons.AddToTail( id );
 		}
 
-		UpdateAndLoadAddon( id, false, true );
+		g_ReactiveDropWorkshop.UpdateAndLoadAddon( id, false, true );
 	}
 }
 #endif
@@ -553,9 +554,9 @@ void CReactiveDropWorkshop::SetupThink()
 
 	bool bWaitingForAny = false;
 	int nPending = 0;
-	FOR_EACH_VEC( s_ServerWorkshopAddons, i )
+	FOR_EACH_VEC( m_ServerWorkshopAddons, i )
 	{
-		PublishedFileId_t id = s_ServerWorkshopAddons[i];
+		PublishedFileId_t id = m_ServerWorkshopAddons[i];
 		uint32 iItemState = SteamGameServerUGC()->GetItemState( id );
 		if ( iItemState & k_EItemStateDownloading )
 		{
@@ -824,20 +825,46 @@ PublishedFileId_t CReactiveDropWorkshop::AddonForFileSystemPath( const char *szP
 
 void CReactiveDropWorkshop::GetRequiredAddons( CUtlVector<PublishedFileId_t> &addons )
 {
-	if ( ASWGameRules() && ASWGameRules()->m_iMissionWorkshopID )
+	if ( CAlienSwarm *pAlienSwarm = ASWGameRules() )
 	{
-		addons.AddToTail( ASWGameRules()->m_iMissionWorkshopID );
+		if ( pAlienSwarm->m_iMissionWorkshopID.Get() && addons.Find( pAlienSwarm->m_iMissionWorkshopID.Get() ) == -1 )
+		{
+			addons.AddToTail( pAlienSwarm->m_iMissionWorkshopID.Get() );
+		}
+
+		if ( pAlienSwarm->m_szCycleNextMap.Get()[0] != '\0' )
+		{
+			const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( pAlienSwarm->m_szCycleNextMap.Get() );
+			if ( pMission && pMission->WorkshopID && addons.Find( pMission->WorkshopID ) == -1 )
+			{
+				addons.AddToTail( pMission->WorkshopID );
+			}
+		}
 	}
 
 	if ( V_strcmp( rd_challenge.GetString(), "0" ) )
 	{
 		const RD_Challenge_t *pChallenge = ReactiveDropChallenges::GetSummary( rd_challenge.GetString() );
-		if ( pChallenge && pChallenge->RequiredOnClient )
+		if ( pChallenge && pChallenge->RequiredOnClient && pChallenge->WorkshopID && addons.Find( pChallenge->WorkshopID ) == -1 )
 		{
 			addons.AddToTail( pChallenge->WorkshopID );
 		}
 	}
 }
+
+#ifdef CLIENT_DLL
+void CReactiveDropWorkshop::CheckForRequiredAddons()
+{
+	Assert( !"TODO" );
+}
+
+void CReactiveDropWorkshop::UnloadTemporaryAddons()
+{
+	Assert( !engine->IsConnected() );
+
+	Assert( !"TODO" );
+}
+#endif
 
 const wchar_t *CReactiveDropWorkshop::AddonName( PublishedFileId_t nPublishedFileId )
 {
@@ -1186,7 +1213,7 @@ static void MaybeAddAddonByFile( CUtlVector<PublishedFileId_t> & addons, const c
 	}
 }
 
-static void GetActiveAddons( CUtlVector<PublishedFileId_t> & active )
+void CReactiveDropWorkshop::GetActiveAddons( CUtlVector<PublishedFileId_t> & active )
 {
 	if ( !ASWGameRules() )
 	{
@@ -1579,12 +1606,12 @@ void CReactiveDropWorkshop::ClearCaches( const char *szReason )
 	if ( engine->IsDedicatedServer() && g_ServerGameDLL.m_bIsHibernating )
 	{
 		bool bCanReload = true;
-		FOR_EACH_VEC( s_ServerWorkshopAddons, i )
+		FOR_EACH_VEC( m_ServerWorkshopAddons, i )
 		{
-			uint32 iItemState = SteamGameServerUGC()->GetItemState( s_ServerWorkshopAddons[i] );
+			uint32 iItemState = SteamGameServerUGC()->GetItemState( m_ServerWorkshopAddons[i] );
 			if ( iItemState & k_EItemStateDownloadPending )
 			{
-				Msg( "Not restarting server: waiting for download of addon %llu\n", s_ServerWorkshopAddons[i] );
+				Msg( "Not restarting server: waiting for download of addon %llu\n", m_ServerWorkshopAddons[i] );
 				bCanReload = false;
 				break;
 			}
@@ -1733,12 +1760,12 @@ public:
 
 		for ( uint32_t i = 0; i < details.m_unNumChildren; i++ )
 		{
-			if ( !s_ServerWorkshopAddons.IsValidIndex( s_ServerWorkshopAddons.Find( children[i] ) ) )
+			if ( !g_ReactiveDropWorkshop.m_ServerWorkshopAddons.IsValidIndex( g_ReactiveDropWorkshop.m_ServerWorkshopAddons.Find( children[i] ) ) )
 			{
-				s_ServerWorkshopAddons.AddToTail( children[i] );
+				g_ReactiveDropWorkshop.m_ServerWorkshopAddons.AddToTail( children[i] );
 			}
 
-			UpdateAndLoadAddon( children[i], false, true );
+			g_ReactiveDropWorkshop.UpdateAndLoadAddon( children[i], false, true );
 		}
 
 		SteamGameServerUGC()->ReleaseQueryUGCRequest( pResult->m_handle );

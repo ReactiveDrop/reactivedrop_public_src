@@ -45,6 +45,7 @@
 #include "asw_util_shared.h"
 #include "matchmaking/swarm/imatchext_swarm.h"
 #include "rd_steam_input.h"
+#include "rd_workshop.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -983,6 +984,9 @@ void MainMenu::Activate()
 	// reactivedrop: reset the value each time we go in main menu
 	// for us to be able to browse lobbies with up to 32 slots
 	mm_max_players.Revert();
+
+	// we've left whatever server we were on; get rid of the stuff we borrowed
+	g_ReactiveDropWorkshop.UnloadTemporaryAddons();
 
 	static bool bRunOnce = true;
 	if ( bRunOnce )
