@@ -72,6 +72,7 @@ static ConVar asw_sv_maxspeed( "asw_sv_maxspeed", "500", FCVAR_CHEAT | FCVAR_NOT
 static ConVar asw_debug_steps("asw_debug_steps", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "Gives debug info on moving up/down steps");
 static ConVar asw_debug_air_move("asw_debug_air_move", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "Gives debug info on air moving");
 static ConVar rd_marine_jump_height( "rd_marine_jump_height", "70.0", FCVAR_CHEAT | FCVAR_REPLICATED, "Sets marine jump height." );
+static ConVar rd_marine_stuck_in_extinguisher_pellets( "rd_marine_stuck_in_extinguisher_pellets", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "If set, marines get stuck in extinguisher pellets and slightly teleport up." );
 ConVar sv_autobunnyhopping( "sv_autobunnyhopping", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "Marines automatically re-jump while holding jump button" );
 ConVar sv_enablebunnyhopping( "sv_enablebunnyhopping", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "Allow marine speed to exceed maximum running speed" );
 
@@ -434,7 +435,7 @@ static bool CanMarineGetStuckInEntity( IHandleEntity *pHandleEntity, int content
 		return true;
 
 	// These die if they touch something, so it's impossible for us to be stuck in them.
-	if ( pEntity->GetCollisionGroup() == ASW_COLLISION_GROUP_EXTINGUISHER_PELLETS )
+	if ( pEntity->GetCollisionGroup() == ASW_COLLISION_GROUP_EXTINGUISHER_PELLETS && !rd_marine_stuck_in_extinguisher_pellets.GetBool() )
 		return false;
 
 	return true;
