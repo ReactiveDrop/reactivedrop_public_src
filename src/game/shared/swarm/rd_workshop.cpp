@@ -998,11 +998,10 @@ bool CReactiveDropWorkshop::MaybeAddTemporaryAddon( PublishedFileId_t id, bool b
 	if ( rd_workshop_temp_subscribe.GetInt() == 0 )
 	{
 		// we still do all the normal setup, but we pretend the download failed
+		return false;
 	}
-	else
-	{
-		UpdateAndLoadAddon( id, bHighPriority );
-	}
+
+	return UpdateAndLoadAddon( id, bHighPriority );
 }
 
 void CReactiveDropWorkshop::UnloadTemporaryAddons()
