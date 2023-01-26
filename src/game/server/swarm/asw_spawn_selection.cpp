@@ -13,26 +13,6 @@
 extern ConVar rd_challenge;
 ConVar rd_override_alien_selection_challenge( "rd_override_alien_selection_challenge", "", FCVAR_CHEAT | FCVAR_NOTIFY );
 
-static void CmdMsg( const char *pszFormat, ... )
-{
-	char szString[1024];
-
-	va_list args;
-	va_start( args, pszFormat );
-	Q_vsnprintf( szString, sizeof( szString ), pszFormat, args );
-	va_end( args );
-
-	CBasePlayer *pPlayer = UTIL_GetCommandClient();
-	if ( pPlayer )
-	{
-		ClientPrint( pPlayer, HUD_PRINTCONSOLE, szString );
-	}
-	else
-	{
-		Msg( szString );
-	}
-}
-
 static CASW_Spawn_Selection g_ASW_Spawn_Selection;
 CASW_Spawn_Selection *ASWSpawnSelection() { return &g_ASW_Spawn_Selection; }
 

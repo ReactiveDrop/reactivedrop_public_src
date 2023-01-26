@@ -36,7 +36,7 @@
 #include "tier0/memdbgon.h"
 
 // 0 is "download right now". each number downloads at the same time as other downloads with the same number. higher numbers wait for lower numbers.
-#define WORKSHOP_PREVIEW_IMAGE_PRIORITY 0
+#define WORKSHOP_PREVIEW_IMAGE_PRIORITY 10
 
 #define WORKSHOP_DISABLED_ADDONS_FILENAME "addonlist_workshop.txt"
 #define ADDONLIST_FILENAME			"addonlist.txt"
@@ -55,13 +55,15 @@ ConVar sv_workshop_debug( "sv_workshop_debug", "0", FCVAR_NONE, "If 1 workshop d
 ConVar rd_workshop_official_addons( "rd_workshop_official_addons", "2", FCVAR_NONE, "0 = load workshop.cfg on official dedicated servers, 1 = load official addon list, 2 = load both" );
 #endif
 
+extern ConVar rd_challenge;
+
 #if RD_NUM_WORKSHOP_CAMPAIGN_TAGS
-const char *const g_RDWorkshopCampaignTags[] =
+const char *const CReactiveDropWorkshop::s_RDWorkshopCampaignTags[] =
 {
 };
 #endif
 
-const char *const g_RDWorkshopMissionTags[] =
+const char *const CReactiveDropWorkshop::s_RDWorkshopMissionTags[] =
 {
 	"bonus", // browsable
 	"deathmatch", // browsable
@@ -71,53 +73,6 @@ const char *const g_RDWorkshopMissionTags[] =
 };
 
 CReactiveDropWorkshop g_ReactiveDropWorkshop;
-
-struct PublishedFileIdPair
-{
-	PublishedFileId_t First;
-	PublishedFileId_t Second;
-
-	bool operator==( const PublishedFileIdPair &other ) const
-	{
-		return First == other.First && Second == other.Second;
-	}
-};
-
-struct LoadedAddonPath_t
-{
-	PublishedFileId_t ID;
-	CUtlString Path;
-
-	bool operator==( const LoadedAddonPath_t &other ) const
-	{
-		return ID == other.ID && Path == other.Path;
-	}
-};
-
-static void ClearCaches( const char *szReason );
-static void GetActiveAddons( CUtlVector<PublishedFileId_t> & active );
-static void UpdateAndLoadAddon( PublishedFileId_t id, bool bHighPriority = false, bool bUnload = false );
-static void RealLoadAddon( PublishedFileId_t id );
-static void LoadAddon( PublishedFileId_t id, bool bFromDownload );
-static void RealUnloadAddon( PublishedFileId_t id );
-static void UnloadAddon( PublishedFileId_t id );
-static void AddToFileNameAddonMapping( PublishedFileId_t id, CPackedStore &vpk );
-static void AddToFileNameAddonMapping( PublishedFileId_t id, const char *szDirName, IFileSystem *pFileSystem );
-static bool s_bStartingUp = false;
-static CUtlStringList s_NonWorkshopAddons;
-static CUtlVector<LoadedAddonPath_t> s_LoadedAddonPaths;
-static CUtlStringMap<PublishedFileId_t> s_FileNameToAddon;
-static CUtlStringMap<CRC32_t> s_FileNameToCRC;
-static CUtlVectorAutoPurge<CReactiveDropWorkshop::AddonFileConflict_t *> s_FileConflicts;
-static CUtlVector<PublishedFileIdPair> s_AddonAllowOverride;
-#ifdef CLIENT_DLL
-static CUtlVector<PublishedFileId_t> s_DelayedLoadAddons;
-static CUtlVector<PublishedFileId_t> s_DelayedUnloadAddons;
-#else
-static CUtlVector<PublishedFileId_t> s_ServerWorkshopAddons;
-static bool s_bAnyServerUpdates = false;
-#endif
-static CUtlVector<PublishedFileId_t> s_DisabledAddons;
 
 bool CReactiveDropWorkshop::Init()
 {
@@ -130,28 +85,30 @@ bool CReactiveDropWorkshop::Init()
 
 	InitNonWorkshopAddons();
 
-	if ( !SteamUGC() )
+	ISteamUGC *pSteamUGC = SteamUGC();
+	if ( !pSteamUGC )
 	{
 		Warning( "No Steam connection. Skipping workshop.\n" );
 		return true;
 	}
 
-	uint32 nSubscribed = SteamUGC()->GetNumSubscribedItems();
+	uint32 nSubscribed = pSteamUGC->GetNumSubscribedItems();
 	if ( nSubscribed != 0 && !CommandLine()->FindParm( "-skiploadingworkshopaddons" ) )
 	{
 		int iStart = m_EnabledAddonsForQuery.AddMultipleToTail( nSubscribed );
 
-		nSubscribed = SteamUGC()->GetSubscribedItems( m_EnabledAddonsForQuery.Base() + iStart, nSubscribed );
+		nSubscribed = pSteamUGC->GetSubscribedItems( m_EnabledAddonsForQuery.Base() + iStart, nSubscribed );
 		m_EnabledAddonsForQuery.SetCountNonDestructively( iStart + nSubscribed );
 
 		KeyValues::AutoDelete pKV( "WorkshopAddons" );
 		ConVarRef cl_cloud_settings( "cl_cloud_settings" );
 		bool bLoaded = false;
-		if ( cl_cloud_settings.GetInt() != -1 && ( cl_cloud_settings.GetInt() & STEAMREMOTESTORAGE_CLOUD_DISABLED_WORKSHOP_ITEMS ) && SteamRemoteStorage() && SteamRemoteStorage()->FileExists( WORKSHOP_DISABLED_ADDONS_FILENAME ) )
+		ISteamRemoteStorage *pSteamRemoteStorage = SteamRemoteStorage();
+		if ( cl_cloud_settings.GetInt() != -1 && ( cl_cloud_settings.GetInt() & STEAMREMOTESTORAGE_CLOUD_DISABLED_WORKSHOP_ITEMS ) && pSteamRemoteStorage && pSteamRemoteStorage->FileExists( WORKSHOP_DISABLED_ADDONS_FILENAME ) )
 		{
 			CUtlBuffer buf;
-			int32 iSize = SteamRemoteStorage()->GetFileSize( WORKSHOP_DISABLED_ADDONS_FILENAME );
-			SteamRemoteStorage()->FileRead( WORKSHOP_DISABLED_ADDONS_FILENAME, buf.AccessForDirectRead( iSize ), iSize );
+			int32 iSize = pSteamRemoteStorage->GetFileSize( WORKSHOP_DISABLED_ADDONS_FILENAME );
+			pSteamRemoteStorage->FileRead( WORKSHOP_DISABLED_ADDONS_FILENAME, buf.AccessForDirectRead( iSize ), iSize );
 			buf.SeekPut( CUtlBuffer::SEEK_HEAD, iSize );
 			filesystem->WriteFile( WORKSHOP_DISABLED_ADDONS_FILENAME, "MOD", buf );
 			buf.SetBufferType( true, true );
@@ -174,20 +131,20 @@ bool CReactiveDropWorkshop::Init()
 					{
 						continue;
 					}
-					if ( !s_DisabledAddons.IsValidIndex( s_DisabledAddons.Find( id ) ) && m_EnabledAddonsForQuery.IsValidIndex( m_EnabledAddonsForQuery.Find( id ) ) && m_EnabledAddonsForQuery.Find(id) >= iStart )
+					if ( !m_DisabledAddons.IsValidIndex( m_DisabledAddons.Find( id ) ) && m_EnabledAddonsForQuery.IsValidIndex( m_EnabledAddonsForQuery.Find( id ) ) && m_EnabledAddonsForQuery.Find(id) >= iStart )
 					{
-						s_DisabledAddons.AddToTail( id );
+						m_DisabledAddons.AddToTail( id );
 					}
 				}
 			}
 		}
 
-		s_bStartingUp = true;
+		m_bStartingUp = true;
 		for ( int i = iStart; i < m_EnabledAddonsForQuery.Count(); i++ )
 		{
 			UpdateAndLoadAddon( m_EnabledAddonsForQuery[i] );
 		}
-		s_bStartingUp = false;
+		m_bStartingUp = false;
 
 		RestartEnabledAddonsQuery();
 	}
@@ -212,7 +169,7 @@ void CReactiveDropWorkshop::InitNonWorkshopAddons()
 		return;
 	}
 
-	s_NonWorkshopAddons.PurgeAndDeleteElements();
+	m_NonWorkshopAddons.PurgeAndDeleteElements();
 
 	PublishedFileId_t nFakePublishedFileId = 0;
 
@@ -227,8 +184,8 @@ void CReactiveDropWorkshop::InitNonWorkshopAddons()
 
 		char szAddonName[MAX_PATH];
 		V_snprintf( szAddonName, sizeof( szAddonName ), "%s%c%s", ADDONS_DIRNAME, CORRECT_PATH_SEPARATOR, pAddonName->GetName() );
-		s_NonWorkshopAddons.CopyAndAddToTail( szAddonName );
-		Assert( nFakePublishedFileId == s_NonWorkshopAddons.Count() );
+		m_NonWorkshopAddons.CopyAndAddToTail( szAddonName );
+		Assert( nFakePublishedFileId == m_NonWorkshopAddons.Count() );
 
 		const char *szExtension = V_strrchr( szAddonName, '.' );
 		if ( szExtension && !V_strcmp( szExtension, ".vpk" ) )
@@ -243,13 +200,13 @@ void CReactiveDropWorkshop::InitNonWorkshopAddons()
 	}
 }
 
-static void SaveDisabledAddons()
+void CReactiveDropWorkshop::SaveDisabledAddons()
 {
 	KeyValues::AutoDelete pKV( "WorkshopAddons" );
-	FOR_EACH_VEC( s_DisabledAddons, i )
+	FOR_EACH_VEC( m_DisabledAddons, i )
 	{
 		char szID[21];
-		V_snprintf( szID, sizeof( szID ), "%llu", s_DisabledAddons[i] );
+		V_snprintf( szID, sizeof( szID ), "%llu", m_DisabledAddons[i] );
 		pKV->SetBool( szID, true );
 	}
 	if ( !pKV->SaveToFile( filesystem, WORKSHOP_DISABLED_ADDONS_FILENAME, "MOD" ) )
@@ -346,9 +303,9 @@ CON_COMMAND( rd_enable_workshop_item, "(dedicated servers only) enable a worksho
 			continue;
 		}
 
-		if ( !s_ServerWorkshopAddons.IsValidIndex( s_ServerWorkshopAddons.Find( id ) ) )
+		if ( !m_ServerWorkshopAddons.IsValidIndex( m_ServerWorkshopAddons.Find( id ) ) )
 		{
-			s_ServerWorkshopAddons.AddToTail( id );
+			m_ServerWorkshopAddons.AddToTail( id );
 		}
 
 		UpdateAndLoadAddon( id, false, true );
@@ -414,7 +371,7 @@ void CReactiveDropWorkshop::RestartEnabledAddonsQuery()
 	ClearOldPreviewRequests();
 #endif
 
-	if ( s_bStartingUp || m_EnabledAddonsForQuery.Count() == 0 )
+	if ( m_bStartingUp || m_EnabledAddonsForQuery.Count() == 0 )
 	{
 		return;
 	}
@@ -555,17 +512,17 @@ void CReactiveDropWorkshop::LevelShutdownPreEntity()
 
 	ClearOldPreviewRequests();
 
-	FOR_EACH_VEC( s_DelayedLoadAddons, i )
+	FOR_EACH_VEC( m_DelayedLoadAddons, i )
 	{
-		RealLoadAddon( s_DelayedLoadAddons[i] );
+		RealLoadAddon( m_DelayedLoadAddons[i] );
 	}
-	s_DelayedLoadAddons.RemoveAll();
+	m_DelayedLoadAddons.RemoveAll();
 
-	FOR_EACH_VEC( s_DelayedUnloadAddons, i )
+	FOR_EACH_VEC( m_DelayedUnloadAddons, i )
 	{
-		RealUnloadAddon( s_DelayedUnloadAddons[i] );
+		RealUnloadAddon( m_DelayedUnloadAddons[i] );
 	}
-	s_DelayedUnloadAddons.RemoveAll();
+	m_DelayedUnloadAddons.RemoveAll();
 #endif
 }
 
@@ -771,14 +728,14 @@ void CReactiveDropWorkshop::SetSubscribedToFile( PublishedFileId_t nPublishedFil
 
 bool CReactiveDropWorkshop::IsAddonEnabled( PublishedFileId_t nPublishedFileId )
 {
-	return nPublishedFileId <= s_NonWorkshopAddons.Count() || ( IsSubscribedToFile( nPublishedFileId ) && !s_DisabledAddons.IsValidIndex( s_DisabledAddons.Find( nPublishedFileId ) ) );
+	return nPublishedFileId <= m_NonWorkshopAddons.Count() || ( IsSubscribedToFile( nPublishedFileId ) && !m_DisabledAddons.IsValidIndex( m_DisabledAddons.Find( nPublishedFileId ) ) );
 }
 
 void CReactiveDropWorkshop::SetAddonEnabled( PublishedFileId_t nPublishedFileId, bool bEnabled )
 {
 	if ( bEnabled )
 	{
-		if ( s_DisabledAddons.FindAndRemove( nPublishedFileId ) )
+		if ( m_DisabledAddons.FindAndRemove( nPublishedFileId ) )
 		{
 			SaveDisabledAddons();
 		}
@@ -792,12 +749,12 @@ void CReactiveDropWorkshop::SetAddonEnabled( PublishedFileId_t nPublishedFileId,
 		return;
 	}
 
-	if ( s_DisabledAddons.IsValidIndex( s_DisabledAddons.Find( nPublishedFileId ) ) )
+	if ( m_DisabledAddons.IsValidIndex( m_DisabledAddons.Find( nPublishedFileId ) ) )
 	{
 		return;
 	}
 
-	s_DisabledAddons.AddToTail( nPublishedFileId );
+	m_DisabledAddons.AddToTail( nPublishedFileId );
 	SaveDisabledAddons();
 	UnloadAddon( nPublishedFileId );
 }
@@ -806,9 +763,9 @@ int CReactiveDropWorkshop::FindAddonConflicts( PublishedFileId_t nPublishedFileI
 {
 	int nConflictCount = 0;
 
-	FOR_EACH_VEC( s_FileConflicts, i )
+	FOR_EACH_VEC( m_FileConflicts, i )
 	{
-		AddonFileConflict_t *pConflict = s_FileConflicts[i];
+		AddonFileConflict_t *pConflict = m_FileConflicts[i];
 		if ( pConflict->HiddenAddon == nPublishedFileId || pConflict->ReplacingAddon == nPublishedFileId )
 		{
 			nConflictCount++;
@@ -824,11 +781,11 @@ int CReactiveDropWorkshop::FindAddonConflicts( PublishedFileId_t nPublishedFileI
 
 PublishedFileId_t CReactiveDropWorkshop::AddonForFileSystemPath( const char *szPath )
 {
-	FOR_EACH_VEC( s_LoadedAddonPaths, i )
+	FOR_EACH_VEC( m_LoadedAddonPaths, i )
 	{
-		if ( s_LoadedAddonPaths[i].Path == szPath )
+		if ( m_LoadedAddonPaths[i].Path == szPath )
 		{
-			return s_LoadedAddonPaths[i].ID;
+			return m_LoadedAddonPaths[i].ID;
 		}
 	}
 
@@ -842,10 +799,10 @@ PublishedFileId_t CReactiveDropWorkshop::AddonForFileSystemPath( const char *szP
 			return 0;
 		}
 
-		FOR_EACH_VEC( s_NonWorkshopAddons, j )
+		FOR_EACH_VEC( m_NonWorkshopAddons, j )
 		{
 			CUtlString szAddonPath = modPaths[i];
-			szAddonPath += s_NonWorkshopAddons[j];
+			szAddonPath += m_NonWorkshopAddons[j];
 
 			if ( szAddonPath == szPath )
 			{
@@ -865,6 +822,23 @@ PublishedFileId_t CReactiveDropWorkshop::AddonForFileSystemPath( const char *szP
 	return PublishedFileId_t( -1 );
 }
 
+void CReactiveDropWorkshop::GetRequiredAddons( CUtlVector<PublishedFileId_t> &addons )
+{
+	if ( ASWGameRules() && ASWGameRules()->m_iMissionWorkshopID )
+	{
+		addons.AddToTail( ASWGameRules()->m_iMissionWorkshopID );
+	}
+
+	if ( V_strcmp( rd_challenge.GetString(), "0" ) )
+	{
+		const RD_Challenge_t *pChallenge = ReactiveDropChallenges::GetSummary( rd_challenge.GetString() );
+		if ( pChallenge && pChallenge->RequiredOnClient )
+		{
+			addons.AddToTail( pChallenge->WorkshopID );
+		}
+	}
+}
+
 const wchar_t *CReactiveDropWorkshop::AddonName( PublishedFileId_t nPublishedFileId )
 {
 	if ( nPublishedFileId == 0 )
@@ -874,9 +848,9 @@ const wchar_t *CReactiveDropWorkshop::AddonName( PublishedFileId_t nPublishedFil
 
 	static wchar_t wszName[256];
 
-	if ( nPublishedFileId <= s_NonWorkshopAddons.Count() )
+	if ( nPublishedFileId <= m_NonWorkshopAddons.Count() )
 	{
-		const char *szPath = s_NonWorkshopAddons[nPublishedFileId - 1];
+		const char *szPath = m_NonWorkshopAddons[nPublishedFileId - 1];
 		CFmtStr szAddonInfoPath( "%s%c%s", szPath, CORRECT_PATH_SEPARATOR, "addoninfo.txt" );
 
 		V_UTF8ToUnicode( szPath + V_strlen( ADDONS_DIRNAME ) + 1, wszName, sizeof( wszName ) );
@@ -1239,18 +1213,18 @@ static void GetActiveAddons( CUtlVector<PublishedFileId_t> & active )
 
 PublishedFileId_t CReactiveDropWorkshop::FindAddonProvidingFile( const char *pszFileName )
 {
-	UtlSymId_t sym = s_FileNameToAddon.Find( pszFileName );
+	UtlSymId_t sym = m_FileNameToAddon.Find( pszFileName );
 	if ( sym == UTL_INVAL_SYMBOL )
 	{
 		return k_PublishedFileIdInvalid;
 	}
 
-	return s_FileNameToAddon[sym];
+	return m_FileNameToAddon[sym];
 }
 
 const char *CReactiveDropWorkshop::GetNativeFileSystemFile( const char *pszFileName )
 {
-	UtlSymId_t sym = s_FileNameToAddon.Find( pszFileName );
+	UtlSymId_t sym = m_FileNameToAddon.Find( pszFileName );
 	if ( sym == UTL_INVAL_SYMBOL )
 	{
 #ifdef DBGFLAG_ASSERT
@@ -1265,10 +1239,10 @@ const char *CReactiveDropWorkshop::GetNativeFileSystemFile( const char *pszFileN
 	static CUtlSymbolTable s_CopiedThisSession;
 	static char s_szMappedFileName[MAX_PATH];
 
-	PublishedFileId_t id = s_FileNameToAddon[sym];
-	if ( id <= s_NonWorkshopAddons.Count() )
+	PublishedFileId_t id = m_FileNameToAddon[sym];
+	if ( id <= m_NonWorkshopAddons.Count() )
 	{
-		const char *szAddonPath = s_NonWorkshopAddons[id - 1];
+		const char *szAddonPath = m_NonWorkshopAddons[id - 1];
 		const char *szVPKExtension = V_strrchr( szAddonPath, '.' );
 		if ( !szVPKExtension || V_strcmp( szVPKExtension, ".vpk" ) )
 		{
@@ -1383,24 +1357,24 @@ static bool AddonPathCanConflict( const char *szPath )
 	return true;
 }
 
-static void AddToFileNameAddonMapping( PublishedFileId_t id, const char *szFileName, CRC32_t nFileHash )
+void CReactiveDropWorkshop::AddToFileNameAddonMapping( PublishedFileId_t id, const char *szFileName, CRC32_t nFileHash )
 {
 	if ( AddonPathCanConflict( szFileName ) )
 	{
-		PublishedFileId_t nExistingAddon = s_FileNameToAddon.Defined( szFileName ) ? s_FileNameToAddon[szFileName] : k_PublishedFileIdInvalid;
+		PublishedFileId_t nExistingAddon = m_FileNameToAddon.Defined( szFileName ) ? m_FileNameToAddon[szFileName] : k_PublishedFileIdInvalid;
 		if ( nExistingAddon == k_PublishedFileIdInvalid )
 		{
-			s_FileNameToAddon[szFileName] = id;
-			s_FileNameToCRC[szFileName] = nFileHash;
+			m_FileNameToAddon[szFileName] = id;
+			m_FileNameToCRC[szFileName] = nFileHash;
 		}
-		else if ( s_FileNameToCRC[szFileName] != nFileHash && s_AddonAllowOverride.Find( PublishedFileIdPair{ nExistingAddon, id } ) == s_AddonAllowOverride.InvalidIndex() )
+		else if ( m_FileNameToCRC[szFileName] != nFileHash && m_AddonAllowOverride.Find( PublishedFileIdPair{ nExistingAddon, id } ) == m_AddonAllowOverride.InvalidIndex() )
 		{
-			s_FileConflicts.AddToTail( new CReactiveDropWorkshop::AddonFileConflict_t( szFileName, nExistingAddon, id, s_FileNameToCRC[szFileName], nFileHash ) );
+			m_FileConflicts.AddToTail( new AddonFileConflict_t( szFileName, nExistingAddon, id, m_FileNameToCRC[szFileName], nFileHash ) );
 		}
 	}
 }
 
-static void AddToFileNameAddonMapping( PublishedFileId_t id, CPackedStore & vpk )
+void CReactiveDropWorkshop::AddToFileNameAddonMapping( PublishedFileId_t id, CPackedStore &vpk )
 {
 	if ( CPackedStoreFileHandle hAddonInfo = vpk.OpenFile( "addoninfo.txt" ) )
 	{
@@ -1415,7 +1389,7 @@ static void AddToFileNameAddonMapping( PublishedFileId_t id, CPackedStore & vpk 
 			{
 				if ( FStrEq( pValue->GetName(), "overrideaddon" ) )
 				{
-					s_AddonAllowOverride.AddToTail( PublishedFileIdPair{ id, pValue->GetUint64() } );
+					m_AddonAllowOverride.AddToTail( PublishedFileIdPair{ id, pValue->GetUint64() } );
 				}
 			}
 		}
@@ -1462,7 +1436,7 @@ static void AddToFileNameAddonMapping( PublishedFileId_t id, CPackedStore & vpk 
 	}
 }
 
-static void AddToFileNameAddonMapping( PublishedFileId_t id, const char *szDirName, IFileSystem *pFileSystem, const char *szPrefix, CUtlBuffer &buf )
+void CReactiveDropWorkshop::AddToFileNameAddonMapping( PublishedFileId_t id, const char *szDirName, IFileSystem *pFileSystem, const char *szPrefix, CUtlBuffer &buf )
 {
 	char szDirPrefix[MAX_PATH];
 	if ( szPrefix[0] != '\0' )
@@ -1523,11 +1497,23 @@ static void AddToFileNameAddonMapping( PublishedFileId_t id, const char *szDirNa
 	pFileSystem->FindClose( handle );
 }
 
-static void AddToFileNameAddonMapping( PublishedFileId_t id, const char *szDirName, IFileSystem *pFileSystem )
+void CReactiveDropWorkshop::AddToFileNameAddonMapping( PublishedFileId_t id, const char *szDirName, IFileSystem *pFileSystem )
 {
 	CUtlBuffer buf;
 
 	AddToFileNameAddonMapping( id, szDirName, pFileSystem, "", buf );
+}
+
+void CReactiveDropWorkshop::DumpWorkshopMapping( const char *szPrefix )
+{
+	for ( int i = 0; i < m_FileNameToAddon.GetNumStrings(); i++ )
+	{
+		const char *szName = m_FileNameToAddon.String( i );
+		if ( StringHasPrefix( szName, szPrefix ) )
+		{
+			CmdMsg( "  %s -> %llu\n", szName, m_FileNameToAddon[i] );
+		}
+	}
 }
 
 #ifdef CLIENT_DLL
@@ -1538,13 +1524,19 @@ CON_COMMAND( rd_dump_workshop_mapping_server, "" )
 {
 	const char *szPrefix = args.Arg( 1 );
 
-	for ( int i = 0; i < s_FileNameToAddon.GetNumStrings(); i++ )
+	g_ReactiveDropWorkshop.DumpWorkshopMapping( szPrefix );
+}
+
+void CReactiveDropWorkshop::DumpWorkshopConflicts()
+{
+	FOR_EACH_VEC( m_FileConflicts, i )
 	{
-		const char *szName = s_FileNameToAddon.String( i );
-		if ( StringHasPrefix( szName, szPrefix ) )
-		{
-			Msg( "  %s -> %llu\n", szName, s_FileNameToAddon[i] );
-		}
+		CmdMsg( "CONFLICT: %s\n", m_FileConflicts[i]->FileName.Get() );
+		CmdMsg( "Addon %llu \"%s\" overrides %llu \"%s\"\n",
+			m_FileConflicts[i]->ReplacingAddon, TryQueryAddon( m_FileConflicts[i]->ReplacingAddon ).details.m_rgchTitle,
+			m_FileConflicts[i]->HiddenAddon, TryQueryAddon( m_FileConflicts[i]->HiddenAddon ).details.m_rgchTitle );
+		CmdMsg( "CRC %08x overrides %08x\n", m_FileConflicts[i]->ReplacingCRC, m_FileConflicts[i]->HiddenCRC );
+		CmdMsg( "\n" );
 	}
 }
 
@@ -1554,20 +1546,12 @@ CON_COMMAND( rd_dump_workshop_conflicts_client, "" )
 CON_COMMAND( rd_dump_workshop_conflicts_server, "" )
 #endif
 {
-	FOR_EACH_VEC( s_FileConflicts, i )
-	{
-		Msg( "CONFLICT: %s\n", s_FileConflicts[i]->FileName.Get() );
-		Msg( "Addon %llu \"%s\" overrides %llu \"%s\"\n",
-			s_FileConflicts[i]->ReplacingAddon, g_ReactiveDropWorkshop.TryQueryAddon( s_FileConflicts[i]->ReplacingAddon ).details.m_rgchTitle,
-			s_FileConflicts[i]->HiddenAddon, g_ReactiveDropWorkshop.TryQueryAddon( s_FileConflicts[i]->HiddenAddon ).details.m_rgchTitle );
-		Msg( "CRC %08x overrides %08x\n", s_FileConflicts[i]->ReplacingCRC, s_FileConflicts[i]->HiddenCRC );
-		Msg( "\n" );
-	}
+	g_ReactiveDropWorkshop.DumpWorkshopConflicts();
 }
 
-static void ClearCaches( const char *szReason )
+void CReactiveDropWorkshop::ClearCaches( const char *szReason )
 {
-	if ( s_bStartingUp )
+	if ( m_bStartingUp )
 	{
 		return;
 	}
@@ -1578,13 +1562,11 @@ static void ClearCaches( const char *szReason )
 	ReactiveDropChallenges::ClearClientCache();
 	ReactiveDropMissions::ClearClientCache();
 
-	// #iss-speaker-reset 
 	// calling snd_restart during game launch causes snd_surround_speakers to reset to default
-	// prevent snd_restart to be called during game launch be call it when loading\unloading add-ons
-	static bool bRestartSoundEngine = false;
-	if ( bRestartSoundEngine )
+	// prevent snd_restart to be called during game launch be call it when loading/unloading add-ons
+	if ( m_bRestartSoundEngine )
 		engine->ClientCmd_Unrestricted( "snd_restart; update_addon_paths; mission_reload; rd_loc_reload; snd_updateaudiocache; snd_restart" );
-	bRestartSoundEngine = true;
+	m_bRestartSoundEngine = true;
 	//
 #else
 	ReactiveDropChallenges::ClearServerCache();
@@ -1648,7 +1630,7 @@ static bool ShouldUnconditionalDownload( PublishedFileId_t id )
 	return false;
 }
 
-static void UpdateAndLoadAddon( PublishedFileId_t id, bool bHighPriority, bool bUnload )
+void CReactiveDropWorkshop::UpdateAndLoadAddon( PublishedFileId_t id, bool bHighPriority, bool bUnload )
 {
 	ISteamUGC *pWorkshop = SteamUGC();
 #ifdef GAME_DLL
@@ -1764,9 +1746,9 @@ public:
 };
 #endif
 
-static void RealLoadAddon( PublishedFileId_t id )
+void CReactiveDropWorkshop::RealLoadAddon( PublishedFileId_t id )
 {
-	if ( s_DisabledAddons.IsValidIndex( s_DisabledAddons.Find( id ) ) )
+	if ( m_DisabledAddons.IsValidIndex( m_DisabledAddons.Find( id ) ) )
 	{
 		if ( rd_workshop_debug.GetBool() )
 		{
@@ -1835,7 +1817,7 @@ static void RealLoadAddon( PublishedFileId_t id )
 	LoadedAddonPath_t path;
 	path.ID = id;
 	path.Path = vpkname;
-	if ( s_LoadedAddonPaths.FindAndRemove( path ) )
+	if ( m_LoadedAddonPaths.FindAndRemove( path ) )
 	{
 		filesystem->RemoveVPKFile( vpkname );
 #ifdef GAME_DLL
@@ -1846,10 +1828,10 @@ static void RealLoadAddon( PublishedFileId_t id )
 	}
 	else if ( engine->IsDedicatedServer() )
 	{
-		s_bAnyServerUpdates = true;
+		m_bAnyServerUpdates = true;
 #endif
 	}
-	s_LoadedAddonPaths.AddToTail( path );
+	m_LoadedAddonPaths.AddToTail( path );
 
 	CPackedStore vpk( vpkname, filesystem );
 	AddToFileNameAddonMapping( id, vpk );
@@ -1871,16 +1853,16 @@ static void RealLoadAddon( PublishedFileId_t id )
 #endif
 }
 
-static void LoadAddon( PublishedFileId_t id, bool bFromDownload )
+void CReactiveDropWorkshop::LoadAddon( PublishedFileId_t id, bool bFromDownload )
 {
 #ifdef CLIENT_DLL
 	if ( engine->IsConnected() && ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME )
 	{
-		s_DelayedUnloadAddons.FindAndRemove( id );
-		if ( !s_DelayedLoadAddons.IsValidIndex( s_DelayedLoadAddons.Find( id ) ) )
+		m_DelayedUnloadAddons.FindAndRemove( id );
+		if ( !m_DelayedLoadAddons.IsValidIndex( m_DelayedLoadAddons.Find( id ) ) )
 		{
 			Msg( "Queued addon %llu for loading at the end of the level.\n", id );
-			s_DelayedLoadAddons.AddToTail( id );
+			m_DelayedLoadAddons.AddToTail( id );
 		}
 		return;
 	}
@@ -1894,16 +1876,16 @@ static void LoadAddon( PublishedFileId_t id, bool bFromDownload )
 	RealLoadAddon( id );
 }
 
-static void RealUnloadAddon( PublishedFileId_t id )
+void CReactiveDropWorkshop::RealUnloadAddon( PublishedFileId_t id )
 {
 	LoadedAddonPath_t path;
 	bool bFound = false;
-	FOR_EACH_VEC( s_LoadedAddonPaths, i )
+	FOR_EACH_VEC( m_LoadedAddonPaths, i )
 	{
-		if ( s_LoadedAddonPaths[i].ID == id )
+		if ( m_LoadedAddonPaths[i].ID == id )
 		{
-			path = s_LoadedAddonPaths[i];
-			s_LoadedAddonPaths.Remove( i );
+			path = m_LoadedAddonPaths[i];
+			m_LoadedAddonPaths.Remove( i );
 			bFound = true;
 			break;
 		}
@@ -1922,30 +1904,30 @@ static void RealUnloadAddon( PublishedFileId_t id )
 
 	filesystem->RemoveVPKFile( path.Path );
 
-	s_AddonAllowOverride.Purge();
-	s_FileNameToAddon.Purge();
-	s_FileNameToCRC.Purge();
-	s_FileConflicts.PurgeAndDeleteElements();
-	g_ReactiveDropWorkshop.InitNonWorkshopAddons();
-	FOR_EACH_VEC( s_LoadedAddonPaths, i )
+	m_AddonAllowOverride.Purge();
+	m_FileNameToAddon.Purge();
+	m_FileNameToCRC.Purge();
+	m_FileConflicts.PurgeAndDeleteElements();
+	InitNonWorkshopAddons();
+	FOR_EACH_VEC( m_LoadedAddonPaths, i )
 	{
-		CPackedStore vpk( s_LoadedAddonPaths[i].Path, filesystem );
-		AddToFileNameAddonMapping( s_LoadedAddonPaths[i].ID, vpk );
+		CPackedStore vpk( m_LoadedAddonPaths[i].Path, filesystem );
+		AddToFileNameAddonMapping( m_LoadedAddonPaths[i].ID, vpk );
 	}
 
 	ClearCaches( CFmtStr( "unloaded addon %llu", id ) );
 }
 
-static void UnloadAddon( PublishedFileId_t id )
+void CReactiveDropWorkshop::UnloadAddon( PublishedFileId_t id )
 {
 #ifdef CLIENT_DLL
 	if ( engine->IsConnected() )
 	{
-		s_DelayedLoadAddons.FindAndRemove( id );
-		if ( !s_DelayedUnloadAddons.IsValidIndex( s_DelayedUnloadAddons.Find( id ) ) )
+		m_DelayedLoadAddons.FindAndRemove( id );
+		if ( !m_DelayedUnloadAddons.IsValidIndex( m_DelayedUnloadAddons.Find( id ) ) )
 		{
 			Msg( "Queued addon %llu for unloading at the end of the level.\n", id );
-			s_DelayedUnloadAddons.AddToTail( id );
+			m_DelayedUnloadAddons.AddToTail( id );
 		}
 		return;
 	}
@@ -1972,11 +1954,11 @@ bool CReactiveDropWorkshop::LoadAddonEarly( PublishedFileId_t nPublishedFileID )
 		SetAddonEnabled( nPublishedFileID, true );
 	}
 
-	if ( !s_DelayedLoadAddons.IsValidIndex( s_DelayedLoadAddons.Find( nPublishedFileID ) ) )
+	if ( !m_DelayedLoadAddons.IsValidIndex( m_DelayedLoadAddons.Find( nPublishedFileID ) ) )
 	{
-		FOR_EACH_VEC( s_LoadedAddonPaths, i )
+		FOR_EACH_VEC( m_LoadedAddonPaths, i )
 		{
-			if ( s_LoadedAddonPaths[i].ID == nPublishedFileID )
+			if ( m_LoadedAddonPaths[i].ID == nPublishedFileID )
 			{
 				return true;
 			}
@@ -1985,11 +1967,11 @@ bool CReactiveDropWorkshop::LoadAddonEarly( PublishedFileId_t nPublishedFileID )
 	}
 
 	Msg( "Forcing addons to load early!\n" );
-	FOR_EACH_VEC( s_DelayedLoadAddons, i )
+	FOR_EACH_VEC( m_DelayedLoadAddons, i )
 	{
-		RealLoadAddon( s_DelayedLoadAddons[i] );
+		RealLoadAddon( m_DelayedLoadAddons[i] );
 	}
-	s_DelayedLoadAddons.RemoveAll();
+	m_DelayedLoadAddons.RemoveAll();
 
 	return true;
 }
@@ -2185,14 +2167,14 @@ bool CReactiveDropWorkshop::PrepareWorkshopVPK( const char *pszContentPath, CUtl
 						if ( V_stricmp( pValue->GetName(), "tag" ) )
 							continue;
 
-						if ( V_stricmp( pValue->GetString(), g_RDWorkshopMissionTags[j] ) )
+						if ( V_stricmp( pValue->GetString(), s_RDWorkshopMissionTags[j] ) )
 							continue;
 
 						m_aszIncludedTaggedMissions[j].CopyAndAddToTail( szFileName );
 
 						for ( int k = 0; k < NELEMS( s_AutoTags ); k++ )
 						{
-							if ( !V_stricmp( g_RDWorkshopMissionTags[j], s_AutoTags[k] ) )
+							if ( !V_stricmp( s_RDWorkshopMissionTags[j], s_AutoTags[k] ) )
 							{
 								bHaveAutoTag = true;
 								m_aszTags.CopyAndAddToTail( s_AutoTags[k] );
@@ -2346,9 +2328,9 @@ void CReactiveDropWorkshop::SetWorkshopKeyValues( UGCUpdateHandle_t hUpdate )
 	pUGC->RemoveItemKeyValueTags( hUpdate, "missions" );
 	pUGC->RemoveItemKeyValueTags( hUpdate, "challenges" );
 
-	for ( int i = 0; i < NELEMS( g_RDWorkshopMissionTags ); i++ )
+	for ( int i = 0; i < NELEMS( s_RDWorkshopMissionTags ); i++ )
 	{
-		pUGC->RemoveItemKeyValueTags( hUpdate, g_RDWorkshopMissionTags[i] );
+		pUGC->RemoveItemKeyValueTags( hUpdate, s_RDWorkshopMissionTags[i] );
 	}
 
 	pUGC->RemoveItemKeyValueTags( hUpdate, "campaign_name" );
@@ -2397,9 +2379,9 @@ void CReactiveDropWorkshop::SetWorkshopKeyValues( UGCUpdateHandle_t hUpdate )
 	{
 		FOR_EACH_VEC( m_aszIncludedTaggedMissions[i], j )
 		{
-			if ( !pUGC->AddItemKeyValueTag( hUpdate, g_RDWorkshopMissionTags[i], m_aszIncludedTaggedMissions[i][j] ) )
+			if ( !pUGC->AddItemKeyValueTag( hUpdate, s_RDWorkshopMissionTags[i], m_aszIncludedTaggedMissions[i][j] ) )
 			{
-				Warning( "Adding %s %s failed!\n", g_RDWorkshopMissionTags[i], m_aszIncludedTaggedMissions[i][j] );
+				Warning( "Adding %s %s failed!\n", s_RDWorkshopMissionTags[i], m_aszIncludedTaggedMissions[i][j] );
 			}
 		}
 	}

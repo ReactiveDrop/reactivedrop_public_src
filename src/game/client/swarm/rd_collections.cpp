@@ -47,7 +47,7 @@ CON_COMMAND_F_COMPLETION( rd_collections, "open collections view", FCVAR_CLIENTC
 {
 	if ( args.ArgC() > 1 )
 	{
-		ConMsg( "Usage: rd_collections\n" );
+		CmdMsg( "Usage: rd_collections\n" );
 		return;
 	}
 

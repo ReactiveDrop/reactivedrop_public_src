@@ -96,11 +96,11 @@ ConVar asw_DebugAutoAim( "asw_DebugAutoAim", "0", FCVAR_REPLICATED | FCVAR_CHEAT
 ConVar asw_marine_nearby_angle( "asw_marine_nearby_angle", "-75", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_vehicle_cam_shift_2_enable( "asw_vehicle_cam_shift_2_enable", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_rts_controls( "asw_rts_controls", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_controls( "asw_controls", "1", FCVAR_REPLICATED | FCVAR_CHEAT, "Disable to get normal FPS controls (affects all players on the server)", ASWControlsChanged );
+ConVar asw_controls( "asw_controls", "1", FCVAR_REPLICATED | FCVAR_CHEAT | FCVAR_DEMO, "Disable to get normal FPS controls (affects all players on the server)", ASWControlsChanged );
 ConVar asw_controls_vehicle( "asw_controls_vehicle", "2", FCVAR_REPLICATED | FCVAR_CHEAT, "Disable to get normal FPS controls (affects all players on the server)", ASWControlsChanged );
 ConVar asw_hl2_camera( "asw_hl2_camera", "0", FCVAR_REPLICATED | FCVAR_DONTRECORD | FCVAR_CHEAT );
 #ifdef CLIENT_DLL
-ConVar asw_controls_spectator_override( "asw_controls_spectator_override", "-1", FCVAR_NONE, "Force a value for asw_controls while spectating.", ASWControlsChanged );
+ConVar asw_controls_spectator_override( "asw_controls_spectator_override", "-1", FCVAR_DONTRECORD, "Force a value for asw_controls while spectating.", ASWControlsChanged );
 #endif
 
 

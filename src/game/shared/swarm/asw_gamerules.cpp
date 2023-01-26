@@ -433,6 +433,20 @@ static void UpdateMatchmakingTagsCallback( IConVar *pConVar, const char *pOldVal
 	}
 	UTIL_RD_UpdateCurrentLobbyData( "game:onslaught", pAlienSwarm->IsOnslaught() ? "1" : "0" );
 	UTIL_RD_UpdateCurrentLobbyData( "game:hardcoreFF", pAlienSwarm->IsHardcoreFF() ? "1" : "0" );
+
+	CUtlVector<PublishedFileId_t> RequiredAddons;
+	g_ReactiveDropWorkshop.GetRequiredAddons( RequiredAddons );
+
+	char szRequiredAddons[1024]{};
+	FOR_EACH_VEC( RequiredAddons, i )
+	{
+		if ( i )
+			V_snprintf( szRequiredAddons, sizeof( szRequiredAddons ), "%s,%llX", szRequiredAddons, RequiredAddons[i] );
+		else
+			V_snprintf( szRequiredAddons, sizeof( szRequiredAddons ), "%llX", RequiredAddons[i] );
+	}
+
+	UTIL_RD_UpdateCurrentLobbyData( "game:required_workshop_items", szRequiredAddons );
 #endif
 }
 

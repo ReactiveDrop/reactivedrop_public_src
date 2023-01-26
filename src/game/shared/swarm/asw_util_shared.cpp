@@ -2571,3 +2571,25 @@ int UTIL_RD_BitToIndex( unsigned bits, int n )
 {
 	return UTIL_CountNumBitsSet( bits & ( ( 1 << n ) - 1 ) );
 }
+
+void CmdMsg( _Printf_format_string_ const char *pszFormat, ... )
+{
+	char szString[1024];
+
+	va_list args;
+	va_start( args, pszFormat );
+	Q_vsnprintf( szString, sizeof( szString ), pszFormat, args );
+	va_end( args );
+
+#ifdef GAME_DLL
+	CBasePlayer *pPlayer = UTIL_GetCommandClient();
+	if ( pPlayer )
+	{
+		ClientPrint( pPlayer, HUD_PRINTCONSOLE, "%s", szString);
+	}
+	else
+#endif
+	{
+		Msg( "%s", szString );
+	}
+}
