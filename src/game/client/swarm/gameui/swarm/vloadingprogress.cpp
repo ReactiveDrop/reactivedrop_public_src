@@ -678,43 +678,32 @@ void LoadingProgress::SetupPoster( void )
 {
 	int i;
 	
-	//bool bNamesVisible = false;
 	vgui::ImagePanel *pPoster = dynamic_cast< vgui::ImagePanel* >( FindChildByName( "Poster" ) );
 	if ( pPoster )
 	{ 
-#if !defined( _X360 )
 		int screenWide, screenTall;
 		surface()->GetScreenSize( screenWide, screenTall );
-		float aspectRatio = (float)screenWide/(float)screenTall;
-		bool bIsWidescreen = aspectRatio >= 1.5999f;
-#else
-		static ConVarRef mat_xbox_iswidescreen( "mat_xbox_iswidescreen" );
-		bool bIsWidescreen = mat_xbox_iswidescreen.GetBool();
-#endif
-		const char *pszPosterImage;
-		//int nChosenLoadingImage = RandomInt( 1, 4 );
-		//switch( nChosenLoadingImage )
-		//{
-			//case 1: pszPosterImage = ( m_bFullscreenPoster && bIsWidescreen ) ? "swarm/loading/BGFX01_wide" : "swarm/loading/BGFX01"; break;
-			//case 2: pszPosterImage = ( m_bFullscreenPoster && bIsWidescreen ) ? "swarm/loading/BGFX02_wide" : "swarm/loading/BGFX02"; break;
-			//case 3: pszPosterImage = ( m_bFullscreenPoster && bIsWidescreen ) ? "swarm/loading/BGFX03_wide" : "swarm/loading/BGFX03"; break;
-			//case 4:
-			//default: pszPosterImage = ( m_bFullscreenPoster && bIsWidescreen ) ? "swarm/loading/RD_BGFX04_wide" : "swarm/loading/RD_BGFX04"; break;
-		//}
-		pszPosterImage = ( m_bFullscreenPoster && bIsWidescreen ) ? "swarm/loading/RD_BGFX04_wide" : "swarm/loading/RD_BGFX04";
+		float aspectRatio = ( float )screenWide / ( float )screenTall;
+		if ( aspectRatio >= 16.0f / 9.0f )
+		{
+			// pillarbox the loading screen
+			int posterWide = screenTall * 16 / 9;
+			pPoster->SetBounds( ( screenWide - posterWide ) / 2, 0, posterWide, screenTall );
+		}
+		else
+		{
+			// letterbox the loading screen
+			int posterTall = screenWide * 9 / 16;
+			pPoster->SetBounds( 0, ( screenTall - posterTall ) / 2, screenWide, posterTall );
+		}
 
+		const char *pszPosterImage = "swarm/loading/RD_BGFX04_wide";
 		if ( rd_loading_image_per_map.GetInt() == 1 && m_szLevelName[0] != 0 )
 		{
-			CFmtStr szMapLoadingImageVmt( "materials/vgui/swarm/loading/%s.vmt", m_szLevelName );
-			CFmtStr szMapLoadingImageVmtWide( "materials/vgui/swarm/loading/%s_wide.vmt", m_szLevelName );
-			CFmtStr szMapLoadingImage( "swarm/loading/%s", m_szLevelName );
-			CFmtStr szMapLoadingImageWide( "swarm/loading/%s_wide", m_szLevelName );
+			CFmtStr szMapLoadingImageVmt( "materials/vgui/swarm/loading/%s_wide.vmt", m_szLevelName );
+			CFmtStr szMapLoadingImage( "swarm/loading/%s_wide", m_szLevelName );
 
-			if ( m_bFullscreenPoster && bIsWidescreen && filesystem->FileExists( szMapLoadingImageVmtWide ) )
-			{
-				pPoster->SetImage( szMapLoadingImageWide );
-			}
-			else if ( filesystem->FileExists( szMapLoadingImageVmt ) )
+			if ( m_bFullscreenPoster && filesystem->FileExists( szMapLoadingImageVmt ) )
 			{
 				pPoster->SetImage( szMapLoadingImage );
 			}
@@ -726,12 +715,8 @@ void LoadingProgress::SetupPoster( void )
 		else
 		{
 			// if the image was cached this will just hook it up, otherwise it will load it
-			pPoster->SetImage( pszPosterImage) ;
+			pPoster->SetImage( pszPosterImage );
 		}
-		//if ( pPoster->GetImage() )
-		//{
-		//	bNamesVisible = true;
-		//}
 	}
 
 	if ( m_pChapterInfo && m_pChapterInfo->GetString( "image", NULL ) )
@@ -755,59 +740,12 @@ void LoadingProgress::SetupPoster( void )
 	SetControlVisible( "LocalizedCampaignName", false );
 	SetControlVisible( "LocalizedCampaignTagline", false );
 
-	wchar_t szPlayerNames[MAX_PATH];
-	Q_memset( szPlayerNames, 0, sizeof( szPlayerNames ) );
-
-	int nNumNames = 0;
-	for ( i=0;i<NUM_LOADING_CHARACTERS;i++ )
-	{
-		if ( !m_PlayerNames[i] || !m_PlayerNames[i][0] )
-		{
-			continue;
-		}
-
-		if ( nNumNames != 0 )
-		{
-			wcsncat( szPlayerNames, L", ", MAX_PATH - wcslen(szPlayerNames) - 1 );
-		}
-		wchar_t szName[64];
-
-		if ( m_PlayerNames[i] && m_PlayerNames[i][0] == '#' )
-		{
-			wchar_t *pName = g_pVGuiLocalize->Find( m_PlayerNames[i] );
-
-			if ( pName == NULL )
-			{
-				g_pVGuiLocalize->ConvertANSIToUnicode( m_PlayerNames[i], szName, sizeof( szPlayerNames ) );
-			}
-			else
-			{
-				Q_wcsncpy( szName, pName, sizeof( szName ) );
-			}
-			nNumNames++;
-		}
-		else
-		{
-			g_pVGuiLocalize->ConvertANSIToUnicode( m_PlayerNames[i], szName, sizeof( szPlayerNames ) );
-			nNumNames++;
-		}
-
-		wcsncat( szPlayerNames, szName, MAX_PATH - wcslen(szPlayerNames) - 1 );
-	}
-
-	if ( nNumNames != 0 )
-	{
-		wcsncat( szPlayerNames, L".", MAX_PATH - wcslen(szPlayerNames) - 1 );
-	}
-
 	SetControlString( "GameModeLabel", m_szGameMode );
 
-	SetControlVisible( "PlayerNames", ( nNumNames > 1 ) );
+	SetControlVisible( "PlayerNames", false );
 
-	SetControlVisible( "StarringLabel", ( nNumNames > 1 ) );
+	SetControlVisible( "StarringLabel", false );
 	SetControlVisible( "GameModeLabel", false );
-
-	SetControlString( "playernames", szPlayerNames );
 
 	SetControlEnabled( "LoadingTipPanel", false );
 }
