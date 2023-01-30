@@ -15,6 +15,7 @@ g_strAlienClassnames <- [
 	"npc_antlion_worker",
 	"grenade_spit",			// when antlion_worker dies this becomes the attacker
 	"npc_antlionguard",
+	"npc_antlionguard_normal",
 	"npc_antlionguard_cavern",
 	"npc_zombie",
 	//"npc_zombie_torso",	// doesnt attack, marines only take damage when stepping on it
