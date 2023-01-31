@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "310"
+	"mapversion" "311"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -14,13 +14,13 @@ viewsettings
 	"bSnapToGrid" "1"
 	"bShowGrid" "1"
 	"bShowLogicalGrid" "0"
-	"nGridSpacing" "1"
+	"nGridSpacing" "4"
 	"bShow3DGrid" "0"
 }
 world
 {
 	"id" "1"
-	"mapversion" "310"
+	"mapversion" "311"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -19292,7 +19292,7 @@ world
 		{
 			"id" "37721"
 			"plane" "(9132 2515 -747) (9132 2563 -747) (9340 2563 -747)"
-			"material" "TOOLS/TOOLSCLIP"
+			"material" "TOOLS/TOOLSNPCCLIP"
 			"uaxis" "[1 0 0 16] 0.25"
 			"vaxis" "[0 -1 0 -20] 0.25"
 			"rotation" "0"
@@ -19303,7 +19303,7 @@ world
 		{
 			"id" "37720"
 			"plane" "(9132 2563 -859) (9132 2515 -859) (9340 2515 -859)"
-			"material" "TOOLS/TOOLSCLIP"
+			"material" "TOOLS/TOOLSNPCCLIP"
 			"uaxis" "[1 0 0 16] 0.25"
 			"vaxis" "[0 -1 0 -20] 0.25"
 			"rotation" "0"
@@ -19314,7 +19314,7 @@ world
 		{
 			"id" "37719"
 			"plane" "(9132 2515 -859) (9132 2563 -859) (9132 2563 -747)"
-			"material" "TOOLS/TOOLSCLIP"
+			"material" "TOOLS/TOOLSNPCCLIP"
 			"uaxis" "[0 1 0 20] 0.25"
 			"vaxis" "[0 0 -1 -43.9981] 0.25"
 			"rotation" "0"
@@ -19325,7 +19325,7 @@ world
 		{
 			"id" "37718"
 			"plane" "(9340 2563 -859) (9340 2515 -859) (9340 2515 -747)"
-			"material" "TOOLS/TOOLSCLIP"
+			"material" "TOOLS/TOOLSNPCCLIP"
 			"uaxis" "[0 1 0 20] 0.25"
 			"vaxis" "[0 0 -1 -43.9981] 0.25"
 			"rotation" "0"
@@ -19336,7 +19336,7 @@ world
 		{
 			"id" "37717"
 			"plane" "(9132 2563 -859) (9340 2563 -859) (9340 2563 -747)"
-			"material" "TOOLS/TOOLSCLIP"
+			"material" "TOOLS/TOOLSNPCCLIP"
 			"uaxis" "[1 0 0 16] 0.25"
 			"vaxis" "[0 0 -1 -43.9981] 0.25"
 			"rotation" "0"
@@ -19347,7 +19347,7 @@ world
 		{
 			"id" "37716"
 			"plane" "(9340 2515 -859) (9132 2515 -859) (9132 2515 -747)"
-			"material" "TOOLS/TOOLSCLIP"
+			"material" "TOOLS/TOOLSNPCCLIP"
 			"uaxis" "[1 0 0 16] 0.25"
 			"vaxis" "[0 0 -1 -43.9981] 0.25"
 			"rotation" "0"
@@ -88899,7 +88899,8 @@ entity
 	"model" "models/swarm/marine/marine.mdl"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
-	"skin" "0"
+	"SetBodyGroup" "2"
+	"skin" "2"
 	"origin" "10079 2258 -855"
 	editor
 	{
@@ -88921,6 +88922,7 @@ entity
 	"model" "models/swarm/marine/marine.mdl"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
+	"SetBodyGroup" "1"
 	"skin" "1"
 	"origin" "10099 2117 -836"
 	editor
@@ -126674,13 +126676,58 @@ entity
 		"logicalpos" "[0 0]"
 	}
 }
+entity
+{
+	"id" "418319"
+	"classname" "point_toilet_flushable"
+	"cooldown" "10"
+	"flushsound" "d1_trainstation.toiletflush"
+	"origin" "9168 2548 -844"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "418338"
+	"classname" "point_toilet_flushable"
+	"cooldown" "10"
+	"flushsound" "d1_trainstation.toiletflush"
+	"origin" "9216 2548 -844"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "418340"
+	"classname" "point_toilet_flushable"
+	"cooldown" "10"
+	"flushsound" "d1_trainstation.toiletflush"
+	"origin" "9264 2548 -844"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
 cameras
 {
 	"activecamera" "0"
 	camera
 	{
-		"position" "[8066 3154 -824]"
-		"look" "[8066 3462.68 -824]"
+		"position" "[8977.65 1850.25 -470.545]"
+		"look" "[8801.49 1935.35 -709.309]"
 	}
 }
 cordons

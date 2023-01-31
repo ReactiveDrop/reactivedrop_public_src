@@ -157,7 +157,10 @@ for i, mapinfo in enumerate(VMFs):
 # footer of the cfg file
 with open(build_all_maps_cfg, "a") as myfile:
 	myfile.write("sv_cheats 1\ndeveloper 1\nsv_allow_wait_command 1\nasw_instant_restart 0\n")
-	myfile.write("build_map0\n")
+	if len(VMFs) == 0:
+		myfile.write("exit\n")
+	else:
+		myfile.write("build_map0\n")
 
 # run the game and execute the cfg file
 # game will load each map and execute these commands using 

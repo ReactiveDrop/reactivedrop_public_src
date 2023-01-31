@@ -179,3 +179,122 @@ void UTIL_ASW_EnvExplosionFX( const Vector &vecPos, float flRadius, bool bOnGrou
 	MessageEnd();
 #endif
 }
+
+#ifdef CLIENT_DLL
+#define CPointToiletFlushable C_PointToiletFlushable
+#endif
+
+class CPointToiletFlushable : public CBaseEntity,
+#ifdef GAME_DLL
+	public IASW_Server_Usable_Entity
+#else
+	public IASW_Client_Usable_Entity
+#endif
+{
+	DECLARE_CLASS( CPointToiletFlushable, CBaseEntity );
+public:
+	CPointToiletFlushable()
+	{
+#ifdef GAME_DLL
+		m_iszFlushSound = MAKE_STRING( "d1_trainstation.toiletflush" );
+		m_flCooldown = 10;
+#endif
+		m_flNextUse = 0;
+	}
+
+#ifdef GAME_DLL
+	DECLARE_DATADESC();
+	DECLARE_SERVERCLASS();
+
+	void Precache() override
+	{
+		BaseClass::Precache();
+
+		PrecacheScriptSound( STRING( m_iszFlushSound ) );
+		PrecacheEffect( "watersplashquiet" );
+	}
+	int UpdateTransmitState() override
+	{
+		// we don't have a model, so we can't transmit based on PVS
+		return SetTransmitState( FL_EDICT_ALWAYS );
+	}
+
+	CBaseEntity *GetEntity() override { return this; }
+	bool IsUsable( CBaseEntity *pUser ) override { return m_flNextUse <= gpGlobals->curtime && pUser->GetAbsOrigin().DistToSqr( GetAbsOrigin() ) < Square( 64 ); }
+	bool RequirementsMet( CBaseEntity *pUser ) override { return true; }
+	void ActivateUseIcon( CASW_Inhabitable_NPC *pUser, int nHoldType ) override
+	{
+		if ( nHoldType == ASW_USE_HOLD_START )
+			return;
+
+		if ( m_flNextUse > gpGlobals->curtime )
+			return;
+
+		m_flNextUse = gpGlobals->curtime + m_flCooldown;
+
+		CEffectData data;
+		data.m_vOrigin = GetAbsOrigin();
+		data.m_flScale = 1;
+
+		CBaseEntity *pHelpHelpImBeingSupressed = ( CBaseEntity * )te->GetSuppressHost();
+		te->SetSuppressHost( NULL );
+
+		DispatchEffect( "watersplashquiet", data );
+		EmitSound( STRING( m_iszFlushSound ) );
+
+		te->SetSuppressHost( pHelpHelpImBeingSupressed );
+
+		m_OnPlayerUse.FireOutput( pUser, this );
+	}
+	void NPCStartedUsing( CASW_Inhabitable_NPC *pUser ) override {}
+	void NPCStoppedUsing( CASW_Inhabitable_NPC *pUser ) override {}
+	void NPCUsing( CASW_Inhabitable_NPC *pUser, float fDeltaTime ) override {}
+	bool NeedsLOSCheck() override { return false; }
+#else
+	DECLARE_CLIENTCLASS();
+
+	C_BaseEntity *GetEntity() override { return this; }
+	bool IsUsable( C_BaseEntity *pUser ) override { return m_flNextUse <= gpGlobals->curtime && pUser->GetAbsOrigin().DistToSqr( GetAbsOrigin() ) < Square( 64 ); }
+	bool GetUseAction( ASWUseAction &action, C_ASW_Inhabitable_NPC *pUser ) override
+	{
+		action.wszText[0] = L'\0';
+		action.bShowUseKey = false;
+		action.UseTarget = this;
+
+		return true;
+	}
+	void CustomPaint( int ix, int iy, int alpha, vgui::Panel *pUseIcon ) override {}
+	bool ShouldPaintBoxAround() override { return false; }
+	bool NeedsLOSCheck() override { return false; }
+#endif
+
+	CNetworkVar( float, m_flNextUse );
+#ifdef GAME_DLL
+	string_t m_iszFlushSound;
+	float m_flCooldown;
+
+	COutputEvent m_OnPlayerUse;
+#endif
+};
+
+LINK_ENTITY_TO_CLASS( point_toilet_flushable, CPointToiletFlushable );
+IMPLEMENT_NETWORKCLASS_ALIASED( PointToiletFlushable, DT_PointToiletFlushable );
+
+#ifdef GAME_DLL
+BEGIN_DATADESC( CPointToiletFlushable )
+	DEFINE_KEYFIELD( m_iszFlushSound, FIELD_SOUNDNAME, "flushsound" ),
+	DEFINE_KEYFIELD( m_flCooldown, FIELD_FLOAT, "cooldown" ),
+	DEFINE_FIELD( m_flNextUse, FIELD_TIME ),
+	DEFINE_OUTPUT( m_OnPlayerUse, "OnPlayerUse" ),
+END_DATADESC()
+#endif
+
+BEGIN_NETWORK_TABLE( CPointToiletFlushable, DT_PointToiletFlushable )
+#ifdef GAME_DLL
+	SendPropTime( SENDINFO( m_flNextUse ) ),
+#else
+	RecvPropTime( RECVINFO( m_flNextUse ) ),
+#endif
+END_NETWORK_TABLE()
+
+

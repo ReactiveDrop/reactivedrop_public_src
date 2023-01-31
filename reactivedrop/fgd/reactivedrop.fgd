@@ -176,6 +176,14 @@ asw_pickup_50calmg : "50cal Machine Gun"
 	BulletsInGun(integer) : "Bullets In Gun" : 200
 ]
 
+@PointClass base(Targetname) size(-2 -2 -2, 2 2 2) = point_toilet_flushable
+[
+	flushsound(sound) report : "Flush Sound" : "d1_trainstation.toiletflush"
+	cooldown(float) : "Cooldown" : 10
+
+	output OnPlayerUse(void) : ""
+]
+
 @SolidClass base(Targetname, EnableDisable) = func_rd_no_director_aliens : "A volume that prevents the director from spawning aliens on nodes within its bounds."
 [
 ]
