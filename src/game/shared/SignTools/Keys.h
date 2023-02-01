@@ -24,6 +24,8 @@ extern "C" {
 }
 #endif
 
+std::vector<std::vector<unsigned char>> get_public_key_list();
+
 std::string char_array_to_hex_string(unsigned char* str_in, unsigned long long len);
 std::vector<unsigned char> hex_string_to_char_array(std::string hex_string);
 
