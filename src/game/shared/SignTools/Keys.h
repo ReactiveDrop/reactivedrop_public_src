@@ -1,0 +1,35 @@
+#ifndef _KEYS_H_
+#define _KEYS_H_
+
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <iomanip>
+#include <vector>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+#include "./qTESLA/random/random.h"
+#include "./qTESLA/api.h"
+#include "./qTESLA/poly.h"
+#include "./qTESLA/pack.h"
+#include "./qTESLA/sample.h"
+#include "./qTESLA/params.h"
+#include "./qTESLA/gauss.h"
+#include "./qTESLA/sha3/fips202.h"
+#ifdef __cplusplus
+}
+#endif
+
+std::string char_array_to_hex_string(unsigned char* str_in, unsigned long long len);
+std::vector<unsigned char> hex_string_to_char_array(std::string hex_string);
+
+void write_public_key(std::string filepath, unsigned char* uchar, unsigned long long len);
+
+void write_secret_key(std::string filepath, unsigned char* uchar, unsigned long long len);
+
+int load_secret_key(std::string filepath, unsigned char* uchar, unsigned long long len);
+
+#endif

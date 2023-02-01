@@ -1416,6 +1416,12 @@ void CASW_Steamstats::LeaderboardFindResultCallback( LeaderboardFindResult_t *pR
 
 	SteamAPICall_t hAPICall = SteamUserStats()->UploadLeaderboardScore( pResult->m_hSteamLeaderboard, k_ELeaderboardUploadScoreMethodKeepBest,
 		m_iLeaderboardScore, reinterpret_cast<const int32 *>( &m_LeaderboardScoreDetails ), sizeof( m_LeaderboardScoreDetails ) / sizeof( int32 ) );
+
+	//Output identification string to console
+	//std::vector<unsigned char> idStr;
+	//idStr.resize();
+	//DevMsg("Sending leaderboard entry to leaderboard ID: %llu\n", pResult->m_hSteamLeaderboard);
+
 	m_LeaderboardScoreUploadedCallback.Set( hAPICall, this, &CASW_Steamstats::LeaderboardScoreUploadedCallback );
 }
 
