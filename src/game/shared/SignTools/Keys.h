@@ -7,6 +7,7 @@
 #include <sstream>
 #include <iomanip>
 #include <vector>
+#include "./PicoSHA2/picosha2.h"
 
 #ifdef __cplusplus
 extern "C" {
