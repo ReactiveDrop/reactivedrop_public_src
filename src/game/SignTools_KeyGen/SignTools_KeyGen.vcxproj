@@ -73,10 +73,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>.\Debug_swarm\SignTools\</OutDir>
     <IntDir>.\Debug_swarm\SignTools\</IntDir>
+    <LibraryPath>$(SolutionDir)game\shared\SignTools\qTESLA\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>.\Release_swarm\SignTools\</OutDir>
     <IntDir>.\Release_swarm\SignTools\</IntDir>
+    <LibraryPath>$(SolutionDir)game\shared\SignTools\qTESLA\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -89,6 +91,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>qTESLA.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>if EXIST "..\..\..\reactivedrop\bin\SignTools\.\$(TargetFileName)" for /f "delims=" %25%25A in (%27attrib "..\..\..\reactivedrop\bin\SigTools\.\$(TargetFileName)"%27) do set valveTmpIsReadOnly="%25%25A"
@@ -112,6 +115,7 @@ if exist ..\..\devtools\bin\vpccrccheck.exe ..\..\devtools\bin\vpccrccheck.exe -
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>qTESLA.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>if EXIST "..\..\..\reactivedrop\bin\SignTools\.\$(TargetFileName)" for /f "delims=" %25%25A in (%27attrib "..\..\..\reactivedrop\bin\SigTools\.\$(TargetFileName)"%27) do set valveTmpIsReadOnly="%25%25A"
@@ -150,28 +154,12 @@ if exist ..\..\devtools\bin\vpccrccheck.exe ..\..\devtools\bin\vpccrccheck.exe -
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\shared\SignTools\Keys.cpp" />
-    <ClCompile Include="..\shared\SignTools\qTESLA\consts.c" />
-    <ClCompile Include="..\shared\SignTools\qTESLA\gauss.c" />
-    <ClCompile Include="..\shared\SignTools\qTESLA\pack.c" />
-    <ClCompile Include="..\shared\SignTools\qTESLA\poly.c" />
-    <ClCompile Include="..\shared\SignTools\qTESLA\random\random.c" />
-    <ClCompile Include="..\shared\SignTools\qTESLA\sample.c" />
-    <ClCompile Include="..\shared\SignTools\qTESLA\sha3\fips202.c" />
-    <ClCompile Include="..\shared\SignTools\qTESLA\sign.c" />
     <ClCompile Include="SignatureTools-KeyGen.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\SignTools\Keys.h" />
     <ClInclude Include="..\shared\SignTools\qTESLA\api.h" />
-    <ClInclude Include="..\shared\SignTools\qTESLA\CDT32.h" />
-    <ClInclude Include="..\shared\SignTools\qTESLA\config.h" />
-    <ClInclude Include="..\shared\SignTools\qTESLA\gauss.h" />
-    <ClInclude Include="..\shared\SignTools\qTESLA\pack.h" />
     <ClInclude Include="..\shared\SignTools\qTESLA\params.h" />
-    <ClInclude Include="..\shared\SignTools\qTESLA\poly.h" />
-    <ClInclude Include="..\shared\SignTools\qTESLA\random\random.h" />
-    <ClInclude Include="..\shared\SignTools\qTESLA\sample.h" />
-    <ClInclude Include="..\shared\SignTools\qTESLA\sha3\fips202.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -7,14 +7,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#include "../shared/SignTools/qTESLA/random/random.h"
 #include "../shared/SignTools/qTESLA/api.h"
-#include "../shared/SignTools/qTESLA/poly.h"
-#include "../shared/SignTools/qTESLA/pack.h"
-#include "../shared/SignTools/qTESLA/sample.h"
-#include "../shared/SignTools/qTESLA/params.h"
-#include "../shared/SignTools/qTESLA/gauss.h"
-#include "../shared/SignTools/qTESLA/sha3/fips202.h"
 #ifdef __cplusplus
 }
 #endif

@@ -960,30 +960,6 @@
     <ClCompile Include="..\shared\SignTools\Keys.cpp">
       <Filter>SignTools-source</Filter>
     </ClCompile>
-    <ClCompile Include="..\shared\SignTools\qTESLA\consts.c">
-      <Filter>SignTools-source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\shared\SignTools\qTESLA\gauss.c">
-      <Filter>SignTools-source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\shared\SignTools\qTESLA\pack.c">
-      <Filter>SignTools-source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\shared\SignTools\qTESLA\poly.c">
-      <Filter>SignTools-source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\shared\SignTools\qTESLA\sample.c">
-      <Filter>SignTools-source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\shared\SignTools\qTESLA\sign.c">
-      <Filter>SignTools-source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\shared\SignTools\qTESLA\sha3\fips202.c">
-      <Filter>SignTools-source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\shared\SignTools\qTESLA\random\random.c">
-      <Filter>SignTools-source</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\blackbox_helper.h" />
@@ -2068,31 +2044,7 @@
     <ClInclude Include="..\shared\SignTools\qTESLA\api.h">
       <Filter>SignTools-header</Filter>
     </ClInclude>
-    <ClInclude Include="..\shared\SignTools\qTESLA\CDT32.h">
-      <Filter>SignTools-header</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\SignTools\qTESLA\config.h">
-      <Filter>SignTools-header</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\SignTools\qTESLA\gauss.h">
-      <Filter>SignTools-header</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\SignTools\qTESLA\pack.h">
-      <Filter>SignTools-header</Filter>
-    </ClInclude>
     <ClInclude Include="..\shared\SignTools\qTESLA\params.h">
-      <Filter>SignTools-header</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\SignTools\qTESLA\poly.h">
-      <Filter>SignTools-header</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\SignTools\qTESLA\sample.h">
-      <Filter>SignTools-header</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\SignTools\qTESLA\sha3\fips202.h">
-      <Filter>SignTools-header</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\SignTools\qTESLA\random\random.h">
       <Filter>SignTools-header</Filter>
     </ClInclude>
   </ItemGroup>

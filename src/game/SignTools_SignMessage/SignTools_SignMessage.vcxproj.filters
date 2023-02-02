@@ -21,30 +21,6 @@
     <ClCompile Include="..\shared\SignTools\Keys.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\shared\SignTools\qTESLA\consts.c">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\shared\SignTools\qTESLA\gauss.c">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\shared\SignTools\qTESLA\pack.c">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\shared\SignTools\qTESLA\poly.c">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\shared\SignTools\qTESLA\sample.c">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\shared\SignTools\qTESLA\sign.c">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\shared\SignTools\qTESLA\random\random.c">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\shared\SignTools\qTESLA\sha3\fips202.c">
-      <Filter>源文件</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\SignTools\Keys.h">
@@ -53,31 +29,7 @@
     <ClInclude Include="..\shared\SignTools\qTESLA\api.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\shared\SignTools\qTESLA\CDT32.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\SignTools\qTESLA\config.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\SignTools\qTESLA\gauss.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\SignTools\qTESLA\pack.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\shared\SignTools\qTESLA\params.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\SignTools\qTESLA\poly.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\SignTools\qTESLA\sample.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\SignTools\qTESLA\random\random.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\SignTools\qTESLA\sha3\fips202.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
