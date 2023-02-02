@@ -12,14 +12,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#include "./qTESLA/random/random.h"
 #include "./qTESLA/api.h"
-#include "./qTESLA/poly.h"
-#include "./qTESLA/pack.h"
-#include "./qTESLA/sample.h"
-#include "./qTESLA/params.h"
-#include "./qTESLA/gauss.h"
-#include "./qTESLA/sha3/fips202.h"
 #ifdef __cplusplus
 }
 #endif

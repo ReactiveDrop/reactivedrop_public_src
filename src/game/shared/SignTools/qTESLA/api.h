@@ -26,33 +26,21 @@
 // Contains seed_a and polynomials t
 #define CRYPTO_PUBLICKEYBYTES ((PARAM_K*PARAM_Q_LOG*PARAM_N+7)/8 + CRYPTO_SEEDBYTES)
 
+int crypto_sign_keypair(
+    unsigned char *,
+    unsigned char *
+    );
 
-/// <summary>
-/// generates a public and private key pair
-/// </summary>
-/// <param name="unsigned char* pk">---OUT, public key</param>
-/// <param name="unsigned char* sk">---OUT, secret key</param>
-/// <returns>0 for successful execution</returns>
-int crypto_sign_keypair(unsigned char* pk, unsigned char* sk);
+int crypto_sign(
+    unsigned char *,unsigned long long *,
+    const unsigned char *,unsigned long long,
+    const unsigned char *
+    );
 
-/// <summary>
-/// outputs a signature for a given message m
-/// </summary>
-/// <param name="const unsigned char *m">---IN, message to be signed</param>
-/// <param name="unsigned long long mlen">---IN, message length</param>
-/// <param name="const unsigned char* sk">---IN, secret key</param>
-/// <param name="unsigned long long *smlen">---OUT, signature</param>
-/// <param name="unsigned char *sm">---OUT, signature length*</param>
-/// <returns>0 for successful execution</returns>
-int crypto_sign(unsigned char* sm, unsigned long long* smlen, const unsigned char* m, unsigned long long mlen, const unsigned char* sk);
+int crypto_sign_open(
+    unsigned char *,unsigned long long *,
+    const unsigned char *,unsigned long long,
+    const unsigned char *
+    );
 
-/// <summary>
-/// verification of a signature sm
-/// </summary>
-/// <param name="const unsigned char *sm">---IN, signature</param>
-/// <param name="unsigned long long smlen">---IN, signature length</param>
-/// <param name="const unsigned char* pk">---IN, public Key</param>
-/// <param name="unsigned char *m">---OUT, original (signed) message</param>
-/// <param name="unsigned long long *mlen">---OUT, const unsigned char *sm</param>
-/// <returns>0 for valid signature, negative for invalid signature</returns>
-int crypto_sign_open(unsigned char* m, unsigned long long* mlen, const unsigned char* sm, unsigned long long smlen, const unsigned char* pk);
+
