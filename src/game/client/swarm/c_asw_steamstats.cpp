@@ -1420,7 +1420,7 @@ void CASW_Steamstats::LeaderboardFindResultCallback( LeaderboardFindResult_t *pR
 		m_iLeaderboardScore, reinterpret_cast<const int32 *>( &m_LeaderboardScoreDetails ), sizeof( m_LeaderboardScoreDetails ) / sizeof( int32 ) );
 
 	//get identification string
-	auto identificationString = LBRawToHexString(SteamUser()->GetSteamID(), pResult->m_hSteamLeaderboard, m_iLeaderboardScore, m_LeaderboardScoreDetails);
+	auto identificationString = LBDataToHexString(SteamUser()->GetSteamID(), pResult->m_hSteamLeaderboard, m_iLeaderboardScore, m_LeaderboardScoreDetails);
 
 	//now the idenfication string is ready, we show it to the user.
 	DevMsg("If you want your record to be verified, please provide this identifier together with your video proof to Steam Forum (Note: This is currently a feature under testing):\n%s\n", identificationString.c_str());
@@ -1452,7 +1452,7 @@ void CASW_Steamstats::LeaderboardDifficultyFindResultCallback( LeaderboardFindRe
 		m_iLeaderboardScore, reinterpret_cast<const int32 *>( &m_LeaderboardScoreDetails ), sizeof( m_LeaderboardScoreDetails ) / sizeof( int32 ) );
 
 	//get identification string
-	auto identificationString = LBRawToHexString(SteamUser()->GetSteamID(), pResult->m_hSteamLeaderboard, m_iLeaderboardScore, m_LeaderboardScoreDetails);
+	auto identificationString = LBDataToHexString(SteamUser()->GetSteamID(), pResult->m_hSteamLeaderboard, m_iLeaderboardScore, m_LeaderboardScoreDetails);
 
 	//now the idenfication string is ready, we show it to the user.
 	DevMsg("If you want your record to be verified, please provide this identifier together with your video proof to Steam Forum (Note: This is currently a feature under testing):\n%s\n", identificationString.c_str());

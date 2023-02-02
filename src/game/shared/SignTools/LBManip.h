@@ -41,19 +41,23 @@ extern "C" {
 #include "c_user_message_register.h"
 #include "asw_alien_classes.h"
 
-struct LBRawData {
-	int32 m_iLeaderboardScore;
-	LeaderboardScoreDetails_v2_t m_LeaderboardScoreDetails;
-	unsigned char userIDHash[picosha2::k_digest_size];
-	SteamLeaderboard_t m_hSteamLeaderboard;
+struct LBData {
+	CSteamID userID;
+	int32 score;
+	LeaderboardScoreDetails_v2_t details;
+	SteamLeaderboard_t hLeaderboard;
 	unsigned char SHA256[picosha2::k_digest_size];
 };
 
 union LBDataUnion {
-	struct LBRawData rawData;
-	unsigned char byteData[sizeof(struct LBRawData)];
+	struct LBData data;
+	unsigned char rawBytes[sizeof(struct LBData)];
 };
 
-std::string LBRawToHexString(CSteamID userID, SteamLeaderboard_t m_hSteamLeaderboard, int32 m_iLeaderboardScore, LeaderboardScoreDetails_v2_t m_LeaderboardScoreDetails);
+std::string LBDataToHexString(CSteamID userID, SteamLeaderboard_t hSteamLeaderboard, int32 iLeaderboardScore, LeaderboardScoreDetails_v2_t LeaderboardScoreDetails);
+
+bool SignHexStringToLBData(CSteamID userID, std::string signHexStr, LBDataUnion& outLBData);
+
+std::vector<int32> PrepareVerifiedLBDetails(LBDataUnion LBData, std::string signStr);
 
 #endif //_LBMANIP_H_

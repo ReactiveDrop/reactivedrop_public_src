@@ -1,6 +1,6 @@
 #include "Keys.h"
 
-std::vector<std::vector<unsigned char>> get_public_key_list()
+std::vector<std::vector<unsigned char>> GetPublicKeyList()
 {
     const int pub_key_len = CRYPTO_PUBLICKEYBYTES;
     auto public_keys = std::vector<std::vector<unsigned char>>();
@@ -19,7 +19,7 @@ std::vector<std::vector<unsigned char>> get_public_key_list()
     return public_keys;
 }
 
-std::string char_array_to_hex_string(unsigned char* str_in, unsigned long long len)
+std::string CharArrayToHexStr(unsigned char* str_in, unsigned long long len)
 {
     std::stringstream ss;
     for (int i = 0; i < len; i++)
@@ -32,7 +32,7 @@ std::string char_array_to_hex_string(unsigned char* str_in, unsigned long long l
     return str;
 }
 
-std::vector<unsigned char> hex_string_to_char_array(std::string hex_string)
+std::vector<unsigned char> HexStrToCharArray(std::string hex_string)
 {
     std::string temp;
     for (unsigned int i = 0; i < hex_string.length(); i += 2)
