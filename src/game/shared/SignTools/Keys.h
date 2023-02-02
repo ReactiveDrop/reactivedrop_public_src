@@ -17,16 +17,16 @@ extern "C" {
 }
 #endif
 
-std::vector<std::vector<unsigned char>> GetPublicKeyList();
+std::vector<std::vector<unsigned char>> get_public_key_list();
 
-std::string CharArrayToHexString(unsigned char* array, unsigned long long len);
-std::vector<unsigned char> HexStringToCharArray(std::string hexStr);
+std::string char_array_to_hex_string(unsigned char* str_in, unsigned long long len);
+std::vector<unsigned char> hex_string_to_char_array(std::string hex_string);
 
-void WritePublicKey(std::string filePath, unsigned char* pKey, unsigned long long len);
+void write_public_key(std::string filepath, unsigned char* uchar, unsigned long long len);
 
-void WriteSecretKey(std::string filePath, unsigned char* sKey, unsigned long long len);
+void write_secret_key(std::string filepath, unsigned char* uchar, unsigned long long len);
 
-int LoadSecretKey(std::string filePath, unsigned char* sKey, unsigned long long len);
+int load_secret_key(std::string filepath, unsigned char* uchar, unsigned long long len);
 
 
 
