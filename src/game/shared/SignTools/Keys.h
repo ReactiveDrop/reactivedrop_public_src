@@ -28,4 +28,6 @@ void write_secret_key(std::string filepath, unsigned char* uchar, unsigned long 
 
 int load_secret_key(std::string filepath, unsigned char* uchar, unsigned long long len);
 
+
+
 #endif

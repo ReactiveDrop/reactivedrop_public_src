@@ -960,6 +960,9 @@
     <ClCompile Include="..\shared\SignTools\Keys.cpp">
       <Filter>SignTools-source</Filter>
     </ClCompile>
+    <ClCompile Include="..\shared\SignTools\LBManip.cpp">
+      <Filter>SignTools-source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\blackbox_helper.h" />
@@ -2045,6 +2048,9 @@
       <Filter>SignTools-header</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\SignTools\qTESLA\params.h">
+      <Filter>SignTools-header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\SignTools\LBManip.h">
       <Filter>SignTools-header</Filter>
     </ClInclude>
   </ItemGroup>

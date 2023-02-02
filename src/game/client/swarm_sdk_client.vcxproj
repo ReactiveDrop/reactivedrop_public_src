@@ -532,6 +532,10 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="..\shared\SignTools\LBManip.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\shared\simtimer.cpp" />
     <ClCompile Include="..\shared\singleplay_gamerules.cpp" />
     <ClCompile Include="..\shared\SoundEmitterSystem.cpp" />
@@ -2266,6 +2270,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="..\shared\sheetsimulator.h" />
     <ClInclude Include="..\shared\shot_manipulator.h" />
     <ClInclude Include="..\shared\SignTools\Keys.h" />
+    <ClInclude Include="..\shared\SignTools\LBManip.h" />
     <ClInclude Include="..\shared\SignTools\PicoSHA2\picosha2.h" />
     <ClInclude Include="..\shared\SignTools\qTESLA\api.h" />
     <ClInclude Include="..\shared\SignTools\qTESLA\params.h" />

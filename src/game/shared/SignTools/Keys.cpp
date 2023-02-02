@@ -98,5 +98,3 @@ int load_secret_key(std::string filepath, unsigned char* uchar, unsigned long lo
     std::cout << "Successfully load secret key!" << std::endl;
     return 1;
 }
-
-

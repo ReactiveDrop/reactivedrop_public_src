@@ -22,6 +22,7 @@
 #include "c_user_message_register.h"
 #include "asw_alien_classes.h"
 #include "../shared/SignTools/Keys.h"
+#include "../shared/SignTools/LBManip.h"
 
 CASW_Steamstats g_ASW_Steamstats;
 
@@ -1418,27 +1419,14 @@ void CASW_Steamstats::LeaderboardFindResultCallback( LeaderboardFindResult_t *pR
 	SteamAPICall_t hAPICall = SteamUserStats()->UploadLeaderboardScore( pResult->m_hSteamLeaderboard, k_ELeaderboardUploadScoreMethodKeepBest,
 		m_iLeaderboardScore, reinterpret_cast<const int32 *>( &m_LeaderboardScoreDetails ), sizeof( m_LeaderboardScoreDetails ) / sizeof( int32 ) );
 
-	//Output identification string to console
-	auto userID = SteamUser()->GetSteamID();
-	std::vector<unsigned char> identificationVec = std::vector<unsigned char>();
-	identificationVec.resize(sizeof(CSteamID) + sizeof(m_iLeaderboardScore) + sizeof(m_LeaderboardScoreDetails) + sizeof(pResult->m_hSteamLeaderboard));
-	//copy raw data to identificationVec
-	unsigned int offset = 0;
-	memcpy((char*)(identificationVec.data()) + offset, &userID, sizeof(CSteamID));
-	offset += sizeof(CSteamID);
-	memcpy((char*)(identificationVec.data()) + offset, &m_iLeaderboardScore, sizeof(m_iLeaderboardScore));
-	offset += sizeof(m_iLeaderboardScore);
-	memcpy((char*)(identificationVec.data()) + offset, &m_LeaderboardScoreDetails, sizeof(m_LeaderboardScoreDetails));
-	offset += sizeof(m_LeaderboardScoreDetails);
-	memcpy((char*)(identificationVec.data()) + offset, &(pResult->m_hSteamLeaderboard), sizeof(pResult->m_hSteamLeaderboard));
-	//generating sha256 hex string. SteamID is hashed into the result, so that we can check the owner of the record later when uploading and displaying.
-	std::string hashHexStr = picosha2::hash256_hex_string(identificationVec);
-	//after hashing, we remove the SteamID from the record to protect the user privacy.
-	identificationVec.erase(identificationVec.begin(), identificationVec.begin() + sizeof(CSteamID));
-	//now we convert the vector to hex string and append sha256 string to it.
-	auto identificationStr = char_array_to_hex_string(identificationVec.data(), identificationVec.size()) + hashHexStr;
+	//get identification string
+	auto identificationString = LBRawToHexString(SteamUser()->GetSteamID(), pResult->m_hSteamLeaderboard, m_iLeaderboardScore, m_LeaderboardScoreDetails);
+
 	//now the idenfication string is ready, we show it to the user.
-	DevMsg("If you want your record to be verified, please provide this identifier together with your video proof to Steam Forum (Note: This is currently a feature under testing):\n%s\n", identificationStr.c_str());
+	DevMsg("If you want your record to be verified, please provide this identifier together with your video proof to Steam Forum (Note: This is currently a feature under testing):\n%s\n", identificationString.c_str());
+	
+	//Don't know if this is rignt
+	//ClientPrint(NULL, ASW_HUD_PRINTTALKANDCONSOLE, UTIL_VarArgs("If you want your record to be verified, please provide this identifier together with your video proof to Steam Forum (Note: This is currently a feature under testing):\n%s\n", identificationStr.c_str()));
 	
 
 	m_LeaderboardScoreUploadedCallback.Set( hAPICall, this, &CASW_Steamstats::LeaderboardScoreUploadedCallback );
@@ -1463,27 +1451,15 @@ void CASW_Steamstats::LeaderboardDifficultyFindResultCallback( LeaderboardFindRe
 	SteamAPICall_t hAPICall = SteamUserStats()->UploadLeaderboardScore( pResult->m_hSteamLeaderboard, k_ELeaderboardUploadScoreMethodKeepBest,
 		m_iLeaderboardScore, reinterpret_cast<const int32 *>( &m_LeaderboardScoreDetails ), sizeof( m_LeaderboardScoreDetails ) / sizeof( int32 ) );
 
-	//Output identification string to console
-	auto userID = SteamUser()->GetSteamID();
-	std::vector<unsigned char> identificationVec = std::vector<unsigned char>();
-	identificationVec.resize(sizeof(CSteamID) + sizeof(m_iLeaderboardScore) + sizeof(m_LeaderboardScoreDetails) + sizeof(pResult->m_hSteamLeaderboard));
-	//copy raw data to identificationVec
-	unsigned int offset = 0;
-	memcpy((char*)(identificationVec.data()) + offset, &userID, sizeof(CSteamID));
-	offset += sizeof(CSteamID);
-	memcpy((char*)(identificationVec.data()) + offset, &m_iLeaderboardScore, sizeof(m_iLeaderboardScore));
-	offset += sizeof(m_iLeaderboardScore);
-	memcpy((char*)(identificationVec.data()) + offset, &m_LeaderboardScoreDetails, sizeof(m_LeaderboardScoreDetails));
-	offset += sizeof(m_LeaderboardScoreDetails);
-	memcpy((char*)(identificationVec.data()) + offset, &(pResult->m_hSteamLeaderboard), sizeof(pResult->m_hSteamLeaderboard));
-	//generating sha256 hex string. SteamID is hashed into the result, so that we can check the owner of the record later when uploading and displaying.
-	std::string hashHexStr = picosha2::hash256_hex_string(identificationVec);
-	//after hashing, we remove the SteamID from the record to protect the user privacy.
-	identificationVec.erase(identificationVec.begin(), identificationVec.begin() + sizeof(CSteamID));
-	//now we convert the vector to hex string and append sha256 string to it.
-	auto identificationStr = char_array_to_hex_string(identificationVec.data(), identificationVec.size()) + hashHexStr;
+	//get identification string
+	auto identificationString = LBRawToHexString(SteamUser()->GetSteamID(), pResult->m_hSteamLeaderboard, m_iLeaderboardScore, m_LeaderboardScoreDetails);
+
 	//now the idenfication string is ready, we show it to the user.
-	DevMsg("If you want your record to be verified, please provide this identifier together with your video proof to Steam Forum (Note: This is currently a feature under testing):\n%s\n", identificationStr.c_str());
+	DevMsg("If you want your record to be verified, please provide this identifier together with your video proof to Steam Forum (Note: This is currently a feature under testing):\n%s\n", identificationString.c_str());
+
+	//Don't know if this is rignt
+	//ClientPrint(NULL, ASW_HUD_PRINTTALKANDCONSOLE, UTIL_VarArgs("If you want your record to be verified, please provide this identifier together with your video proof to Steam Forum (Note: This is currently a feature under testing):\n%s\n", identificationStr.c_str()));
+
 
 	m_LeaderboardDifficultyScoreUploadedCallback.Set( hAPICall, this, &CASW_Steamstats::LeaderboardDifficultyScoreUploadedCallback );
 }
