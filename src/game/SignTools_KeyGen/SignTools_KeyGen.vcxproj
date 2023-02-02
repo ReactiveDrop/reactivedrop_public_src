@@ -91,7 +91,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>qTESLA.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>qTESLA_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>if EXIST "..\..\..\reactivedrop\bin\SignTools\.\$(TargetFileName)" for /f "delims=" %25%25A in (%27attrib "..\..\..\reactivedrop\bin\SigTools\.\$(TargetFileName)"%27) do set valveTmpIsReadOnly="%25%25A"
