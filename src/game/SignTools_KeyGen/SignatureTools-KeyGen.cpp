@@ -22,8 +22,8 @@ int main()
 
     std::string file_path = ".\\";
 
-    write_public_key(file_path, public_key, CRYPTO_PUBLICKEYBYTES);
-    write_secret_key(file_path, secret_key, CRYPTO_SECRETKEYBYTES);
+    WritePublicKey(file_path, public_key, CRYPTO_PUBLICKEYBYTES);
+    WriteSecretKey(file_path, secret_key, CRYPTO_SECRETKEYBYTES);
 
     std::cout << "Press any key to exit...";
     std::cin.get();

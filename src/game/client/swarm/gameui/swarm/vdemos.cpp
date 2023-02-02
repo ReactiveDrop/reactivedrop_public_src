@@ -15,6 +15,7 @@
 #include "vgui_controls/ImagePanel.h"
 #include "filesystem.h"
 #include "../SignTools/Keys.h"
+#include "../SignTools/LBManip.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -364,85 +365,19 @@ static void RenameRecordingCallback()
 
 	CUtlString szTemp = CUtlString::PathJoin(szNewBase, "");
 
+	//this seems to be a signature string, the signature string is at least CRYPTO_BYTES*2 bytes long. actually it should be (sizeof(union LBDataUnion) - sizeof(CSteamID) + CRYPTO_BYTES)*2
 	if (szTemp.Length() > MAX_PATH)
-	{//this seems to be a signature string, the signature string is at least 2592 bytes long
-		//converts it back to raw bytes
-		auto signed_hex_string = std::string(szNewBase);
-		auto temp_raw_signed_message = hex_string_to_char_array(signed_hex_string);
-		
-		//now we need to verify the signature, currently the public key is hard coded into Keys.h. ther is no need to read it from file cause not much public keys needed.
-		auto key_list = get_public_key_list();
-		
-		//the signature may come from different moderators, so we need to verify all possiblilities
-		for each (auto key in key_list)
+	{
+		LBDataUnion lbData = {};
+		std::string(szNewBase);
+		if (SignatureStringToLBRaw(SteamUser()->GetSteamID(), std::string(szNewBase), lbData))
 		{
-			//ensure the string is long enough to store the message
-			std::string message_hex_string = std::string();
-			message_hex_string.resize(temp_raw_signed_message.size());
-			unsigned long long int mlen;
 
-			if (crypto_sign_open((unsigned char*)(message_hex_string.data()), &mlen, temp_raw_signed_message.data(), temp_raw_signed_message.size(), key.data()) == 0)
-			{//this is a valid message in hex string
-				//resize message_hex_string to its real length and converts it back to raw bytes
-				message_hex_string.resize(mlen);
-				auto temp_raw_data = hex_string_to_char_array(message_hex_string);
-
-				//the message in raw bytes should have the length of score+details+leaderboardhandle+sha256
-				if (temp_raw_data.size() != sizeof(int32) + sizeof(LeaderboardScoreDetails_v2_t) + sizeof(SteamLeaderboard_t) + 32);
-				{
-					continue;
-				}
-				
-				//now we need to check if this record belongs to the user.
-				//reconstruct identificationVec
-				auto userID = SteamUser()->GetSteamID();
-				std::vector<unsigned char> identificationVec = std::vector<unsigned char>();
-				identificationVec.resize(sizeof(CSteamID) + sizeof(int32) + sizeof(LeaderboardScoreDetails_v2_t) + sizeof(SteamLeaderboard_t));
-				//copy raw steamID data and other details info to identificationVec
-				unsigned int offset = 0;
-				memcpy((char*)(identificationVec.data()) + offset, &userID, sizeof(CSteamID));
-				offset += sizeof(CSteamID);
-				memcpy((char*)(identificationVec.data()) + offset, temp_raw_data.data(), temp_raw_data.size() - 32);
-				
-				//restore orighal has in bytes
-				std::vector<unsigned char> hash_original = std::vector<unsigned char>(32, 0);
-				memcpy((unsigned char*)(hash_original.data()), (char*)(identificationVec.data()) + sizeof(LeaderboardScoreDetails_v2_t) + sizeof(SteamLeaderboard_t), 32);
-
-				//calc sha256 bytes
-				std::vector<unsigned char> hash_result(picosha2::k_digest_size);
-				picosha2::hash256(identificationVec, hash_result);
-
-				//now check the hash
-				bool hash_check_passed = true;
-				for (int i = 0; i < 32; i++)
-				{
-					if (hash_result[i] != hash_original[i])
-					{
-						hash_check_passed = false;
-						break;
-					}
-				}
-				if (hash_check_passed)//the record belongs to current user
-				{
-					//resotre info from temp_raw_data
-					int32 m_iLeaderboardScore = *((int32*)(temp_raw_data.data()));
-					LeaderboardScoreDetails_v2_t m_LeaderboardScoreDetails = *((LeaderboardScoreDetails_v2_t*)(temp_raw_data.data() + sizeof(int32)));
-					SteamLeaderboard_t m_hSteamLeaderboard = *((SteamLeaderboard_t*)(temp_raw_data.data() + sizeof(int32) + sizeof(LeaderboardScoreDetails_v2_t)));
-					//for compatibility, we append signed message after m_LeaderboardScoreDetails
-					std::vector<unsigned int*> vec_LeaderboardScoreDetails = std::vector<unsigned int*>((sizeof(m_LeaderboardScoreDetails) + signed_hex_string.length() + sizeof(int32) - 1) / sizeof(int32), 0);
-					memcpy(vec_LeaderboardScoreDetails.data(), &m_LeaderboardScoreDetails, sizeof(m_LeaderboardScoreDetails));
-					memcpy(vec_LeaderboardScoreDetails.data() + sizeof(m_LeaderboardScoreDetails) / sizeof(int32), signed_hex_string.data(), signed_hex_string.length());
-
-
-
-					//TODO:
-					//
-					//SteamAPICall_t hAPICall = SteamUserStats()->UploadLeaderboardScore(m_hSteamLeaderboard, k_ELeaderboardUploadScoreMethodForceUpdate, m_iLeaderboardScore, reinterpret_cast<const int32*>(vec_LeaderboardScoreDetails.data()), vec_LeaderboardScoreDetails.size());
-				}
-
-				break;//no need to test other keys
-			}
+			//TODO:
+			//if the 
+			//SteamAPICall_t hAPICall = SteamUserStats()->UploadLeaderboardScore(m_hSteamLeaderboard, k_ELeaderboardUploadScoreMethodForceUpdate, m_iLeaderboardScore, reinterpret_cast<const int32*>(vec_LeaderboardScoreDetails.data()), vec_LeaderboardScoreDetails.size());
 		}
+
 	}
 	else
 	{//this is a rename action

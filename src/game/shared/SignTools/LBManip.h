@@ -42,9 +42,9 @@ extern "C" {
 #include "asw_alien_classes.h"
 
 struct LBRawData {
+	CSteamID userID;
 	int32 m_iLeaderboardScore;
 	LeaderboardScoreDetails_v2_t m_LeaderboardScoreDetails;
-	unsigned char userIDHash[picosha2::k_digest_size];
 	SteamLeaderboard_t m_hSteamLeaderboard;
 	unsigned char SHA256[picosha2::k_digest_size];
 };
@@ -55,5 +55,7 @@ union LBDataUnion {
 };
 
 std::string LBRawToHexString(CSteamID userID, SteamLeaderboard_t m_hSteamLeaderboard, int32 m_iLeaderboardScore, LeaderboardScoreDetails_v2_t m_LeaderboardScoreDetails);
+
+bool SignatureStringToLBRaw(CSteamID userID, std::string inSignHexStr, LBDataUnion& outLBData);
 
 #endif //_LBMANIP_H_
