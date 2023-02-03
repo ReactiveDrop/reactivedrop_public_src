@@ -51,7 +51,7 @@ extern ConVar hl2_episodic;
 #else
 #include "baseentity.h"
 
-#ifdef HL2_EPISODIC
+#if !defined( INFESTED_DLL ) && defined( HL2_EPISODIC )
 	#include "info_darknessmode_lightsource.h"
 #endif // HL2_EPISODIC
 
@@ -186,7 +186,7 @@ inline int CBaseEntity::GetEffects( void ) const
 
 inline void CBaseEntity::RemoveEffects( int nEffects ) 
 { 
-#if !defined( CLIENT_DLL )
+#if !defined( CLIENT_DLL ) && !defined( INFESTED_DLL )
 #ifdef HL2_EPISODIC
 	if ( nEffects & (EF_BRIGHTLIGHT|EF_DIMLIGHT) )
 	{
@@ -213,7 +213,7 @@ inline void CBaseEntity::RemoveEffects( int nEffects )
 
 inline void CBaseEntity::ClearEffects( void ) 
 { 
-#if !defined( CLIENT_DLL )
+#if !defined( CLIENT_DLL ) && !defined( INFESTED_DLL )
 #ifdef HL2_EPISODIC
 	if ( m_fEffects & (EF_BRIGHTLIGHT|EF_DIMLIGHT) )
 	{

@@ -8,10 +8,6 @@
 #include "logic_playerproxy.h"
 #include "filters.h"
 
-#if defined HL2_EPISODIC
-#include "hl2_player.h"
-#endif // HL2_EPISODIC
-
 LINK_ENTITY_TO_CLASS( logic_playerproxy, CLogicPlayerProxy);
 
 BEGIN_DATADESC( CLogicPlayerProxy )
@@ -24,7 +20,7 @@ DEFINE_FIELD( m_hPlayer, FIELD_EHANDLE ),
 
 
 // HL2 / Episodic
-#if defined HL2_EPISODIC
+#if !defined( INFESTED_DLL ) && defined( HL2_EPISODIC )
 DEFINE_OUTPUT( m_OnFlashlightOn,			"OnFlashlightOn" ),
 DEFINE_OUTPUT( m_OnFlashlightOff,			"OnFlashlightOff" ),
 DEFINE_OUTPUT( m_PlayerMissedAR2AltFire,	"PlayerMissedAR2AltFire" ),
@@ -82,7 +78,7 @@ void CLogicPlayerProxy::InputRequestPlayerHealth( inputdata_t &inputdata )
 	m_RequestedPlayerHealth.Set( m_hPlayer->GetHealth(), inputdata.pActivator, inputdata.pCaller );
 }
 
-#if defined HL2_EPISODIC
+#if !defined( INFESTED_DLL ) && defined( HL2_EPISODIC )
 
 extern ConVar hl2_darkness_flashlight_factor;
 

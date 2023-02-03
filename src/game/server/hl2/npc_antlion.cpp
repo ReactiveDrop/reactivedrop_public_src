@@ -5,10 +5,6 @@
 //=============================================================================//
 
 #include "cbase.h"
-
-// reactivedrop: TODO remove this 
-#define HL2_EPISODIC 1
-
 #include "ai_hint.h"
 #include "ai_squad.h"
 #include "ai_moveprobe.h"
@@ -52,7 +48,6 @@ ConVar	sk_antlion_health( "sk_antlion_health", "24", FCVAR_CHEAT ); // was 30 in
 ConVar	sk_antlion_swipe_damage( "sk_antlion_swipe_damage", "10", FCVAR_CHEAT ); // was 5 in HL2
 ConVar	sk_antlion_jump_damage( "sk_antlion_jump_damage", "15", FCVAR_CHEAT ); // was 5 in HL2
 ConVar  sk_antlion_air_attack_dmg( "sk_antlion_air_attack_dmg", "10", FCVAR_CHEAT );
-
 
 #ifdef HL2_EPISODIC
 
@@ -5136,5 +5131,3 @@ float AntlionWorkerBurstRadius( void )
 	return sk_antlion_worker_burst_radius.GetFloat();
 }
 #endif // HL2_EPISODIC
-// reactivedrop: TODO: remove 
-#undef HL2_EPISODIC

@@ -33,8 +33,6 @@ ConVar g_debug_vehicleexit( "g_debug_vehicleexit", "0", FCVAR_CHEAT );
 
 ConVar sv_vehicle_autoaim_scale("sv_vehicle_autoaim_scale", "8");
 
-bool ShouldVehicleIgnoreEntity( CBaseEntity *pVehicle, CBaseEntity *pCollide );
-
 #define HITBOX_SET	2
 
 //-----------------------------------------------------------------------------
@@ -1380,7 +1378,7 @@ int CBaseServerVehicle::GetExitAnimToUse( Vector &vecEyeExitEndpoint, bool &bAll
 
 		if ( tr.fraction != 1.0 )
 		{
-#ifdef HL2_EPISODIC
+#if !defined( INFESTED_DLL ) && defined( HL2_EPISODIC )
 			if ( ShouldVehicleIgnoreEntity( GetVehicleEnt(), tr.m_pEnt ) == false )
 #endif //HL2_EPISODIC
 			{

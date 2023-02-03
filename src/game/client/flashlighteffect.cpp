@@ -422,7 +422,7 @@ bool CFlashlightEffect::UpdateDefaultFlashlightState( FlashlightState_t& state, 
 
 	bool bFlicker = false;
 
-#ifdef HL2_EPISODIC
+#if !defined( INFESTED_DLL ) && defined( HL2_EPISODIC )
 	C_BaseHLPlayer *pPlayer = (C_BaseHLPlayer *)C_BasePlayer::GetLocalPlayer();
 	if ( pPlayer )
 	{

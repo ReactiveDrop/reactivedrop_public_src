@@ -529,9 +529,9 @@ ShadowType_t C_ASW_Alien::ShadowCastType()
 {	
 	if (asw_alien_shadows.GetBool())
 		return BaseClass::ShadowCastType();
+
 	// reactivedrop: disabling shadows from flashlight dlight
-	else
-		return SHADOWS_NONE;
+	return SHADOWS_NONE;
 
 	float fContribution = 0;
 	Vector vecDir = vec3_origin;

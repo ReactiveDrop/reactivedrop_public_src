@@ -85,7 +85,7 @@ ConVar sv_turbophysics( "sv_turbophysics", "0", FCVAR_REPLICATED, "Turns on turb
 
 
 
-#ifdef HL2_EPISODIC
+#if !defined( INFESTED_DLL ) && defined( HL2_EPISODIC )
 	#define PROP_FLARE_LIFETIME 30.0f
 	#define PROP_FLARE_IGNITE_SUBSTRACT 5.0f
 	CBaseEntity *CreateFlare( Vector vOrigin, QAngle Angles, CBaseEntity *pOwner, float flDuration );
@@ -273,7 +273,7 @@ void CBaseProp::Precache( void )
 	PrecacheScriptSound( "Metal.SawbladeStick" );
 	PrecacheScriptSound( "PropaneTank.Burst" );
 
-#ifdef HL2_EPISODIC
+#if !defined( INFESTED_DLL ) && defined( HL2_EPISODIC )
 	UTIL_PrecacheOther( "env_flare" );
 #endif
 
@@ -1038,7 +1038,7 @@ void CBreakableProp::BreakablePropTouch( CBaseEntity *pOther )
 		}
 	}
 
-#ifdef HL2_EPISODIC
+#if !defined( INFESTED_DLL ) && defined( HL2_EPISODIC )
 	if ( m_hFlareEnt )
 	{
 		CAI_BaseNPC *pNPC = pOther->MyNPCPointer();
@@ -1518,7 +1518,7 @@ void CBreakableProp::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t
 	m_bOriginalBlockLOS = BlocksLOS();
 	SetBlocksLOS( false );
 
-#ifdef HL2_EPISODIC
+#if !defined( INFESTED_DLL ) && defined( HL2_EPISODIC )
 	if ( HasInteraction( PROPINTER_PHYSGUN_CREATE_FLARE ) )
 	{
 		CreateFlare( PROP_FLARE_LIFETIME );
@@ -1527,7 +1527,7 @@ void CBreakableProp::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t
 }
 
 
-#ifdef HL2_EPISODIC
+#if !defined( INFESTED_DLL ) && defined( HL2_EPISODIC )
 //-----------------------------------------------------------------------------
 // Purpose: Create a flare at the attachment point
 //-----------------------------------------------------------------------------
@@ -1556,7 +1556,9 @@ void CBreakableProp::CreateFlare( float flLifetime )
 
 		m_nSkin = 1;
 
+#ifndef INFESTED_DLL
 		AddEntityToDarknessCheck( pFlare );
+#endif
 
 		AddEffects( EF_NOSHADOW );
 	}

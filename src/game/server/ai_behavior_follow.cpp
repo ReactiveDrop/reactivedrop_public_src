@@ -18,7 +18,7 @@
 #include "ndebugoverlay.h"
 #include "ai_senses.h"
 
-#ifdef HL2_EPISODIC
+#if !defined( INFESTED_DLL ) && defined( HL2_EPISODIC )
 	#include "info_darknessmode_lightsource.h"
 #endif
 
@@ -763,7 +763,7 @@ void CAI_FollowBehavior::GatherConditions( void )
 	}
 #endif
 
-#ifdef HL2_EPISODIC
+#if !defined( INFESTED_DLL ) && defined( HL2_EPISODIC )
 	// Let followers know if the player is lit in the darkness
 	if ( GetFollowTarget()->IsPlayer() && HL2GameRules()->IsAlyxInDarknessMode() )
 	{
@@ -848,7 +848,7 @@ bool CAI_FollowBehavior::ShouldMoveToFollowTarget()
 	if( m_bTargetUnreachable )
 		return false;
 
-#ifdef HL2_EPISODIC
+#if !defined( INFESTED_DLL ) && defined( HL2_EPISODIC )
 	if ( HL2GameRules()->IsAlyxInDarknessMode() )
 	{
 		// If we're in darkness mode, the player needs to be lit by
@@ -1967,7 +1967,7 @@ void CAI_FollowBehavior::BuildScheduleTestBits()
 			GetOuter()->SetCustomInterruptCondition( COND_CAN_RANGE_ATTACK1 );
 		}
 
-#ifdef HL2_EPISODIC
+#if !defined( INFESTED_DLL ) && defined( HL2_EPISODIC )
 		// In Alyx darkness mode, break on the player turning their flashlight off
 		if ( HL2GameRules()->IsAlyxInDarknessMode() )
 		{

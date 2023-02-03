@@ -482,10 +482,11 @@
 		"Paragraph" "#rd_so_paragraph_xenomite_2"
 		"Paragraph" "#rd_so_paragraph_xenomite_3"
 		"Paragraph" "#rd_so_paragraph_xenomite_4"
+		"Paragraph" "#rd_so_paragraph_xenomite_5"
 	}
 	"ALIEN" {
 		"ID" "asw_shaman"
-		"Name" "#rd_so_alien_shaman"
+		"Name" "#rd_so_alien_mender"
 		"Icon" "swarm/swarmopedia/alien/asw_shaman"
 		"SteamStatLoreRequirement" {
 			"Caption" "#rd_so_requirement_kill_this_alien"
@@ -510,18 +511,18 @@
 			"Color" "255 255 255 255"
 		}
 		"Paragraph" {
-			"Text" "#rd_so_tips_shaman"
+			"Text" "#rd_so_tips_mender"
 			"Color" "255 255 255 255"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_author_bur_nable"
 			"Color" "169 213 255 255"
 		}
-		"Paragraph" "#rd_so_paragraph_shaman_0"
-		"Paragraph" "#rd_so_paragraph_shaman_1"
-		"Paragraph" "#rd_so_paragraph_shaman_2"
-		"Paragraph" "#rd_so_paragraph_shaman_3"
-		"Paragraph" "#rd_so_paragraph_shaman_4"
+		"Paragraph" "#rd_so_paragraph_mender_0"
+		"Paragraph" "#rd_so_paragraph_mender_1"
+		"Paragraph" "#rd_so_paragraph_mender_2"
+		"Paragraph" "#rd_so_paragraph_mender_3"
+		"Paragraph" "#rd_so_paragraph_mender_4"
 	}
 	"ALIEN" {
 		"ID" "asw_biomass"

@@ -8,11 +8,12 @@
 #include "npcevent.h"
 #include "ai_basenpc_physicsflyer.h"
 #include "weapon_physcannon.h"
-#include "hl2_player.h"
+#include "soundenvelope.h"
 #include "npc_scanner.h"
 #include "IEffects.h"
 #include "explode.h"
 #include "ai_route.h"
+#include "asw_shareddefs.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1300,6 +1301,9 @@ void CNPC_BaseScanner::MoveToDivebomb(float flInterval)
 //-----------------------------------------------------------------------------
 bool CNPC_BaseScanner::IsEnemyPlayerInSuit()
 {
+#ifdef INFESTED_DLL
+	return GetEnemy() && GetEnemy()->Classify() == CLASS_ASW_MARINE;
+#else
 	if( GetEnemy() && GetEnemy()->IsPlayer() )
 	{
 		CHL2_Player *pPlayer = NULL;
@@ -1312,6 +1316,7 @@ bool CNPC_BaseScanner::IsEnemyPlayerInSuit()
 	}
 
 	return false;
+#endif
 }
 
 //-----------------------------------------------------------------------------

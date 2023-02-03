@@ -30,9 +30,12 @@
 #include "asw_shareddefs.h"
 #include "asw_gamerules.h"
 
+#define RD_ZOMBIE_PASSENGER 0 // TODO
+#if RD_ZOMBIE_PASSENGER
 #ifdef HL2_EPISODIC
 #include "episodic/ai_behavior_passenger_zombie.h"
 #endif	// HL2_EPISODIC
+#endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -312,6 +315,7 @@ public:
 	virtual const char *GetTorsoModel( void );
 
 //=============================================================================
+#if RD_ZOMBIE_PASSENGER
 #ifdef HL2_EPISODIC
 
 public:
@@ -329,6 +333,7 @@ private:
 	CAI_PassengerBehaviorZombie		m_PassengerBehavior;
 
 #endif	// HL2_EPISODIC
+#endif
 //=============================================================================
 
 protected:
@@ -381,10 +386,12 @@ BEGIN_DATADESC( CFastZombie )
 	DEFINE_ENTITYFUNC( ClimbTouch ),
 	DEFINE_SOUNDPATCH( m_pLayer2 ),
 
+#if RD_ZOMBIE_PASSENGER
 #ifdef HL2_EPISODIC
 	DEFINE_ENTITYFUNC( VehicleLeapAttackTouch ),
 	DEFINE_INPUTFUNC( FIELD_STRING, "AttachToVehicle", InputAttachToVehicle ),
 #endif	// HL2_EPISODIC
+#endif
 
 END_DATADESC()
 
@@ -473,6 +480,7 @@ int CFastZombie::SelectSchedule ( void )
 {
 
 // ========================================================
+#if RD_ZOMBIE_PASSENGER
 #ifdef HL2_EPISODIC
 
 	// Defer all decisions to the behavior if it's running
@@ -483,6 +491,7 @@ int CFastZombie::SelectSchedule ( void )
 	}
 
 #endif //HL2_EPISODIC
+#endif
 // ========================================================
 
 	if ( HasCondition( COND_ZOMBIE_RELEASECRAB ) )
@@ -1128,6 +1137,7 @@ void CFastZombie::HandleAnimEvent( animevent_t *pEvent )
 	}
 
 //=============================================================================
+#if RD_ZOMBIE_PASSENGER
 #ifdef HL2_EPISODIC
 
 	// Do the leap attack
@@ -1167,6 +1177,7 @@ void CFastZombie::HandleAnimEvent( animevent_t *pEvent )
 	}
 
 #endif // HL2_EPISODIC
+#endif
 //=============================================================================
 
 	BaseClass::HandleAnimEvent( pEvent );
@@ -1901,6 +1912,7 @@ bool CFastZombie::ShouldBecomeTorso( const CTakeDamageInfo &info, float flDamage
 }
 
 //=============================================================================
+#if RD_ZOMBIE_PASSENGER
 #ifdef HL2_EPISODIC
 
 //-----------------------------------------------------------------------------
@@ -2056,6 +2068,7 @@ void CFastZombie::UpdateEfficiency( bool bInPVS )
 }
 
 #endif	// HL2_EPISODIC
+#endif
 //=============================================================================
 
 //-----------------------------------------------------------------------------

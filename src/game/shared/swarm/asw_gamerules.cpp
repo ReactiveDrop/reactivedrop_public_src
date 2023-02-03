@@ -4571,9 +4571,6 @@ static void ClearHouse()
 	DeleteAllEntities("asw_grub_sac");
 	DeleteAllEntities("asw_spawner");
 	DeleteAllEntities("asw_egg");
-	DeleteAllEntities("asw_drone_uber");
-	DeleteAllEntities("npc_antlionguard_normal");
-	DeleteAllEntities("npc_antlionguard_cavern");
 }
 
 void CAlienSwarm::MissionComplete( bool bSuccess )

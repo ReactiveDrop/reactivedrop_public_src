@@ -14,8 +14,6 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-#define HL2_EPISODIC 1
-
 #if HL2_EPISODIC
 // When enabled, add code to have the antlion bleed profusely as it is badly injured.
 #define ANTLIONGUARD_BLOOD_EFFECTS 2

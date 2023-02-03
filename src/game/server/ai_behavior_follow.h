@@ -13,12 +13,6 @@
 #include "ai_utils.h"
 #include "ai_moveshoot.h"
 
-#ifdef HL2_EPISODIC
-// reactivedrop: commented because of errors, seems like we don't
-// need this at all 
-//	#include "hl2_gamerules.h"
-#endif
-
 #if defined( _WIN32 )
 #pragma once
 #endif

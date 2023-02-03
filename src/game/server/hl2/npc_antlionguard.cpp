@@ -51,10 +51,6 @@ ConVar	g_debug_antlionguard( "g_debug_antlionguard", "0", FCVAR_CHEAT );
 ConVar	sk_antlionguard_dmg_charge( "sk_antlionguard_dmg_charge", "23", FCVAR_CHEAT ); // was 20 in HL2
 ConVar	sk_antlionguard_dmg_shove( "sk_antlionguard_dmg_shove", "23", FCVAR_CHEAT ); // was 10 in HL2
 ConVar	rd_antlionguard_incavern("rd_antlionguard_incavern", "1", FCVAR_CHEAT, "If 1 antlionguard behavior changes, more agile for tight places");
-ConVar  rd_episodic("rd_episodic", "1", FCVAR_CHEAT, "Internal cvar for overriding hl2_episodic in specific places");
-#define hl2_episodic rd_episodic
-
-#define HL2_EPISODIC 1
 
 #if HL2_EPISODIC
 // When enabled, add code to have the antlion bleed profusely as it is badly injured.
@@ -703,6 +699,7 @@ void CNPC_AntlionGuard::Precache( void )
 {
 	PrecacheModel( ANTLIONGUARD_MODEL );
 
+#if 0
 	// reactivedrop: gibs' models 
 	PrecacheModel( "models/gib_antlionguard_torso.mdl" );
 	PrecacheModel( "models/gib_antlionguard_head.mdl" );
@@ -714,6 +711,7 @@ void CNPC_AntlionGuard::Precache( void )
 	PrecacheModel( "models/gib_antlionguard_leg1_p2.mdl" );
 	PrecacheModel( "models/gib_antlionguard_leg2_p1.mdl" );
 	PrecacheModel( "models/gib_antlionguard_leg2_p2.mdl" );
+#endif
 
 	PrecacheScriptSound( "NPC_AntlionGuard.Shove" );
 	PrecacheScriptSound( "NPC_AntlionGuard.HitHard" );
@@ -896,13 +894,11 @@ void CNPC_AntlionGuard::Spawn( void )
 
 	BaseClass::Spawn();
 
-	// reactivedrop: TODO investigate this
-	SetHullType(HULL_MEDIUMBIG);
+	SetHullType( HULL_LARGE );
 
 	SetViewOffset(Vector(6, 0, 11));		// Position of the eyes relative to NPC's origin.
 
 	CapabilitiesRemove(bits_CAP_MOVE_JUMP);
-	// reactivedrop: end of TODO 
 
 	//See if we're supposed to start burrowed
 	if ( m_bIsBurrowed )
@@ -935,6 +931,12 @@ void CNPC_AntlionGuard::Spawn( void )
 	Vector absMax = Vector(100,100,128);
 
 	CollisionProp()->SetSurroundingBoundsType( USE_SPECIFIED_BOUNDS, &absMin, &absMax );
+
+	if ( ClassMatches( "npc_antlionguard" ) )
+	{
+		// swap our classname for stats
+		SetClassname( m_bCavernBreed ? "npc_antlionguard_cavern" : "npc_antlionguard_normal" );
+	}
 }
 
 int CNPC_AntlionGuard::GetBaseHealth()

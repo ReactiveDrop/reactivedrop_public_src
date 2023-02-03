@@ -89,7 +89,7 @@
 #include "datacache/imdlcache.h"
 #include "vstdlib/jobthread.h"
 
-#ifdef HL2_EPISODIC
+#if !defined( INFESTED_DLL ) && defined( HL2_EPISODIC )
 #include "npc_alyx_episodic.h"
 #endif
 
@@ -743,7 +743,7 @@ void CAI_BaseNPC::Ignite( float flFlameLifetime, bool bNPCOnly, float flSize, bo
 {
 	BaseClass::Ignite( flFlameLifetime, bNPCOnly, flSize, bCalledByLevelDesigner );
 
-#ifdef HL2_EPISODIC
+#if !defined( INFESTED_DLL ) && defined( HL2_EPISODIC )
 	CBasePlayer *pPlayer = AI_GetSinglePlayer();
 	if ( pPlayer && pPlayer->IRelationType( this ) != D_LI )
 	{
@@ -765,7 +765,7 @@ bool CAI_BaseNPC::PassesDamageFilter( const CTakeDamageInfo &info )
 {
 	if ( ai_block_damage.GetBool() )
 		return false;
-#if PLAYER_VELICLE_CHECKS
+#if PLAYER_VEHICLE_CHECKS
 	// FIXME: hook a friendly damage filter to the npc instead?
 	if ( (CapabilitiesGet() & bits_CAP_FRIENDLY_DMG_IMMUNE) && info.GetAttacker() && info.GetAttacker() != this )
 	{
@@ -14196,7 +14196,7 @@ void CAI_BaseNPC::CalculateForcedInteractionPosition( void )
 //-----------------------------------------------------------------------------
 void CAI_BaseNPC::PlayerHasIlluminatedNPC( CBasePlayer *pPlayer, float flDot )
 {
-#ifdef HL2_EPISODIC
+#if !defined( INFESTED_DLL ) && defined( HL2_EPISODIC )
 	if ( IsActiveDynamicInteraction() )
 	{
 		ScriptedNPCInteraction_t *pInteraction = GetRunningDynamicInteraction();

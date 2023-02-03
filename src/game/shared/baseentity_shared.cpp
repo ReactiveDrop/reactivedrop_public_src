@@ -37,9 +37,9 @@
 #endif
 
 #ifdef HL2_EPISODIC
-ConVar hl2_episodic( "hl2_episodic", "1", FCVAR_REPLICATED );
+ConVar hl2_episodic( "hl2_episodic", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
 #else
-ConVar hl2_episodic( "hl2_episodic", "0", FCVAR_REPLICATED );
+ConVar hl2_episodic( "hl2_episodic", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 #endif//HL2_EPISODIC
 
 
@@ -201,7 +201,7 @@ void CBaseEntity::SetEffects( int nEffects )
 {
 	if ( nEffects != m_fEffects )
 	{
-#if !defined( CLIENT_DLL )
+#if !defined( CLIENT_DLL ) && !defined( INFESTED_DLL )
 #ifdef HL2_EPISODIC
 		// Hack for now, to avoid player emitting radius with his flashlight
 		if ( !IsPlayer() )
@@ -242,7 +242,7 @@ void CBaseEntity::SetEffects( int nEffects )
 
 void CBaseEntity::AddEffects( int nEffects ) 
 { 
-#if !defined( CLIENT_DLL )
+#if !defined( CLIENT_DLL ) && !defined( INFESTED_DLL )
 #ifdef HL2_EPISODIC
 	if ( (nEffects & (EF_BRIGHTLIGHT|EF_DIMLIGHT)) && !(m_fEffects & (EF_BRIGHTLIGHT|EF_DIMLIGHT)) )
 	{

@@ -190,28 +190,7 @@ void C_ASW_Sentry_Top_Flamer::OnStartFiring()
 
 	if ( !m_hFiringEffect )
 	{
-		// reactivedrop: commented, as it is not needed 
-//		if ( GetSentryBase() )
-		{	
-			m_hFiringEffect = ParticleProp()->Create( m_szParticleEffectFireName, PATTACH_POINT_FOLLOW, "muzzle" );
-			/*
-			if ( m_hFiringEffect )
-			{
-				//GetSentryBase()->ParticleProp()->AddControlPoint( m_hFiringEffect, 0, this, PATTACH_POINT_FOLLOW, "muzzle" );
-				m_hFiringEffect->SetControlPointEntity( 0, GetSentryBase() );
-				m_hFiringEffect->SetOwner( GetSentryBase() );
-			}
-			//GetMuzzleAttachment()
-			*/
-		}
-
-		/*
-		m_hFiringEffect = ParticleProp()->Create( m_szParticleEffectFireName, PATTACH_POINT_FOLLOW ); 
-		if ( GetSentryBase() && m_hFiringEffect )
-		{
-			m_hFiringEffect->SetControlPointEntity( 0, GetSentryBase() );
-		}
-		*/
+		m_hFiringEffect = ParticleProp()->Create( m_szParticleEffectFireName, PATTACH_POINT_FOLLOW, "muzzle" );
 	}
 }
 

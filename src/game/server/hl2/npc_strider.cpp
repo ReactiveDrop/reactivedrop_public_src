@@ -6,9 +6,7 @@
 //=============================================================================//
 
 #include "cbase.h"
-
 #include "npc_strider.h"
-
 #include "ai_senses.h"
 #include "ai_task.h"
 #include "ai_default.h"

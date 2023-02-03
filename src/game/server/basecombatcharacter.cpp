@@ -1379,7 +1379,7 @@ bool CBaseCombatCharacter::BecomeRagdoll( const CTakeDamageInfo &info, const Vec
 	CTakeDamageInfo newinfo = info;
 	newinfo.SetDamageForce( forceVector );
 
-#ifdef HL2_EPISODIC
+#if !defined( INFESTED_DLL ) && defined( HL2_EPISODIC )
 	// Burning corpses are server-side in episodic, if we're in darkness mode
 	if ( IsOnFire() && HL2GameRules()->IsAlyxInDarknessMode() )
 	{

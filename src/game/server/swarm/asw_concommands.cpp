@@ -188,10 +188,6 @@ void asw_ClearHousef()
 	engine->ClientCommand(pPlayer->edict(), "ent_remove_all asw_grub_sac");
 	engine->ClientCommand(pPlayer->edict(), "ent_remove_all asw_spawner");
 	engine->ClientCommand(pPlayer->edict(), "ent_remove_all asw_egg");
-	engine->ClientCommand(pPlayer->edict(), "ent_remove_all asw_drone_uber");
-	engine->ClientCommand(pPlayer->edict(), "ent_remove_all npc_antlionguard");
-	engine->ClientCommand(pPlayer->edict(), "ent_remove_all npc_antlionguard_normal");
-	engine->ClientCommand(pPlayer->edict(), "ent_remove_all npc_antlionguard_cavern");
 }
 ConCommand ClearHouse( "asw_ClearHouse", asw_ClearHousef, "Removes all Swarm from the map", FCVAR_CHEAT );
 

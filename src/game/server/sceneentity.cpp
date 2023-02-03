@@ -39,7 +39,7 @@
 #include "team.h"
 #include "triggers.h"
 
-#ifdef HL2_EPISODIC
+#if !defined( INFESTED_DLL ) && defined( HL2_EPISODIC )
 #include "npc_alyx_episodic.h"
 #endif // HL2_EPISODIC
 
@@ -2381,7 +2381,7 @@ bool CSceneEntity::CheckActors()
 						bShouldWait = true;
 					}
 					
-#ifdef HL2_EPISODIC
+#if !defined( INFESTED_DLL ) && defined( HL2_EPISODIC )
 					// HACK: Alyx cannot play scenes when she's in the middle of transitioning					
 					if ( pActor->IsInAVehicle() )
 					{

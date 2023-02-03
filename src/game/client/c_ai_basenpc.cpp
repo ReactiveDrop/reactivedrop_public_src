@@ -8,7 +8,7 @@
 #include "c_AI_BaseNPC.h"
 #include "engine/IVDebugOverlay.h"
 
-#if defined( HL2_DLL ) || defined( HL2_EPISODIC )
+#if !defined( INFESTED_DLL ) && ( defined( HL2_DLL ) || defined( HL2_EPISODIC ) )
 #include "c_basehlplayer.h"
 #endif
 
@@ -66,6 +66,7 @@ void C_AI_BaseNPC::ClientThink( void )
 {
 	BaseClass::ClientThink();
 
+#ifndef INFESTED_DLL
 #ifdef HL2_DLL
 	C_BaseHLPlayer *pPlayer = dynamic_cast<C_BaseHLPlayer*>( C_BasePlayer::GetLocalPlayer() );
 
@@ -139,6 +140,7 @@ void C_AI_BaseNPC::ClientThink( void )
 			debugoverlay->AddLineOverlay( p3, p1, r, g, b, true, 0.05f );
 		}
 	}
+#endif
 #endif
 }
 

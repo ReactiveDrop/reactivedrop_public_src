@@ -205,7 +205,7 @@ public:
 	void SetPhysicsAttacker( CBasePlayer *pEntity, float flTime );
 
 
-#ifdef HL2_EPISODIC
+#if !defined( INFESTED_DLL ) && defined( HL2_EPISODIC )
 	void CreateFlare( float flLifetime );
 #endif //HL2_EPISODIC
 

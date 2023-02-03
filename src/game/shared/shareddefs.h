@@ -460,13 +460,11 @@ enum
 	BLOOD_COLOR_GREEN,
 	BLOOD_COLOR_MECH,
 
-// reactivedrop: commented HL2_EPISODIC guard
-// BLOOD_COLOR_ANTLION_WORKER is needed for antlion code 
-//#if defined( HL2_EPISODIC )
+#if defined( HL2_EPISODIC )
 	BLOOD_COLOR_ANTLION,		// FIXME: Move to Base HL2
 	BLOOD_COLOR_ZOMBIE,			// FIXME: Move to Base HL2
 	BLOOD_COLOR_ANTLION_WORKER,
-//#endif // HL2_EPISODIC
+#endif // HL2_EPISODIC
 
 #if defined( INFESTED_DLL )
 	BLOOD_COLOR_BLOB,

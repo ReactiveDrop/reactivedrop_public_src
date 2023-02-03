@@ -17,8 +17,6 @@
 #include "ai_moveprobe.h"
 #include "ai_memory.h"
 #include "bitstring.h"
-// reactivedrop: commented 
-//#include "hl2_shareddefs.h"
 #include "npcevent.h"
 #include "soundent.h"
 #include "npc_headcrab.h"
@@ -31,8 +29,6 @@
 #include "world.h"
 #include "npc_bullseye.h"
 #include "physics_npc_solver.h"
-// reactivedrop: commented 
-//#include "hl2_gamerules.h"
 #include "decals.h"
 
 #include "asw_shareddefs.h"
@@ -745,7 +741,7 @@ void CBaseHeadcrab::RunTask( const Task_t *pTask )
 
 		case TASK_HEADCRAB_CEILING_WAIT:
 			{	
-#ifdef HL2_EPISODIC
+#if !defined( INFESTED_DLL ) && defined( HL2_EPISODIC )
 				if ( DarknessLightSourceWithinRadius( this, DARKNESS_LIGHTSOURCE_SIZE ) )
 				{
 					DropFromCeiling();
@@ -1219,7 +1215,7 @@ void CBaseHeadcrab::JumpFromCanister()
 
 void CBaseHeadcrab::DropFromCeiling( void )
 {
-#ifdef HL2_EPISODIC
+#if !defined( INFESTED_DLL ) && defined( HL2_EPISODIC )
 	if ( HL2GameRules()->IsAlyxInDarknessMode() )
 	{
 		if ( IsHangingFromCeiling() )
@@ -1797,7 +1793,7 @@ int CBaseHeadcrab::SelectSchedule( void )
 	if ( IsHangingFromCeiling() )
 	{
 		bool bIsAlyxInDarknessMode = false;
-#ifdef HL2_EPISODIC
+#if !defined( INFESTED_DLL ) && defined( HL2_EPISODIC )
 		bIsAlyxInDarknessMode = HL2GameRules()->IsAlyxInDarknessMode();
 #endif // HL2_EPISODIC
 
@@ -1979,7 +1975,7 @@ void CBaseHeadcrab::Ignite( float flFlameLifetime, bool bNPCOnly, float flSize, 
 
 	if( !bWasOnFire )
 	{
-#ifdef HL2_EPISODIC
+#if !defined( INFESTED_DLL ) && defined( HL2_EPISODIC )
 		if ( HL2GameRules()->IsAlyxInDarknessMode() == true )
 		{
 			GetEffectEntity()->AddEffects( EF_DIMLIGHT );
@@ -3248,7 +3244,7 @@ void CBlackHeadcrab::Panic( float flDuration )
 }
 
 
-#if HL2_EPISODIC
+#if !defined( INFESTED_DLL ) && defined( HL2_EPISODIC )
 //-----------------------------------------------------------------------------
 // Purpose: Black headcrabs have 360-degree vision when they are in the ambush
 //			schedule. This is because they ignore sounds when in ambush, and
