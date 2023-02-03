@@ -24,6 +24,7 @@ particles_manifest
 	"file"		"particles/impact_fx.pcf"
 	"file"		"!particles/asw_weapon_fx.pcf"
 	"file"		"!particles/asw_weapon_fx_ext.pcf"
+	"file"		"!particles/asw_laser_sight_fx.pcf"
 	"file"		"!particles/asw_leadership_fx.pcf"
 	"file"		"!particles/sentry_fx.pcf"
 	"file"		"particles/rain_fx.pcf"
