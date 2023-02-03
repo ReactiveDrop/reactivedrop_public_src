@@ -42,7 +42,7 @@ jobs:
       # store artifacts
       # make sure retention is low, this can become huge otherwise
       - name: Store build
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Release
           path: |
@@ -80,7 +80,7 @@ jobs:
       # store artifacts
       # make sure retention is low, this can become huge otherwise
       - name: Store build
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Debug
           path: |
