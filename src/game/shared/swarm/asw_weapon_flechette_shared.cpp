@@ -124,7 +124,7 @@ void CASW_Weapon_Flechette::PrimaryAttack()
 			vecDir = pMarine->GetActualShootTrajectory( vecSrc );
 #endif
 		}
-		
+
 		int iShots = 1;
 
 		// Make sure we don't fire more than the amount in the clip
@@ -169,14 +169,17 @@ void CASW_Weapon_Flechette::PrimaryAttack()
 #ifndef CLIENT_DLL
 		float fGrenadeDamage = MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_FLECHETTE_DMG);
 
+		CShotManipulator manipulator( vecDir );
+		Vector vecShoot = manipulator.ApplySpread( GetBulletSpread() );
+
 		QAngle vecRocketAngle;
-		VectorAngles(vecDir, vecRocketAngle);
+		VectorAngles(vecShoot, vecRocketAngle);
 		vecRocketAngle[YAW] += random->RandomFloat(-10, 10);
 		CHunterFlechette *pFlechette = CHunterFlechette::FlechetteCreate( fGrenadeDamage / sk_hunter_dmg_flechette.GetFloat(), vecSrc, vecRocketAngle, GetMarine());
 		if ( pFlechette )
 		{
 			pFlechette->SetupMarineFlechette( this );
-			Vector vecShoot = vecDir * rd_flechette_speed.GetFloat();
+			vecShoot *= rd_flechette_speed.GetFloat();
 			pFlechette->Shoot( vecShoot, true );
 		}
 
