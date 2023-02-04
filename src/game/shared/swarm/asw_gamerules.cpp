@@ -565,6 +565,7 @@ ConVar rd_points_decay_tick( "rd_points_decay_tick", "0.01", FCVAR_REPLICATED, "
 
 #ifdef CLIENT_DLL
 ConVar rd_skip_all_dialogue( "rd_skip_all_dialogue", "0", FCVAR_ARCHIVE | FCVAR_USERINFO, "Tell the server not to send audio from asw_voiceover_dialogue." );
+ConVar rd_write_config_on_mission_start( "rd_write_config_on_mission_start", "1", FCVAR_ARCHIVE, "Update config.cfg when entering the in-game mission state. Useful for saving loadouts." );
 #endif
 
 // ASW Weapons
@@ -1433,6 +1434,10 @@ void CAlienSwarm::OnDataChanged( DataUpdateType_t updateType )
 
 		if ( GetGameState() == ASW_GS_INGAME )
 		{
+			if ( rd_write_config_on_mission_start.GetBool() )
+			{
+				engine->ClientCmd_Unrestricted( "host_writeconfig" );
+			}
 			g_ReactiveDropWorkshop.OnMissionStart();
 		}
 
