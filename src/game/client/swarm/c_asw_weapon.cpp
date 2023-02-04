@@ -903,7 +903,7 @@ void C_ASW_Weapon::CreateLaserPointerEffect( bool bLocalPlayer, int iAttachment 
 	if ( !m_pLaserPointerEffect )
 	{
 		if ( bLocalPlayer )
-			m_pLaserPointerEffect = ParticleProp()->Create( "weapon_laser_sight", PATTACH_POINT_FOLLOW, iAttachment );
+			m_pLaserPointerEffect = ParticleProp()->Create( GetLaserPointerEffectName(), PATTACH_POINT_FOLLOW, iAttachment);
 		else
 			m_pLaserPointerEffect = ParticleProp()->Create( "weapon_laser_sight_other", PATTACH_POINT_FOLLOW, iAttachment );
 

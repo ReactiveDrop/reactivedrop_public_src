@@ -197,6 +197,7 @@ public:
 	// laser pointer
 	virtual bool ShouldShowLaserPointer();
 	virtual bool ShouldAlignWeaponToLaserPointer();
+	virtual const char *GetLaserPointerEffectName() const { return "weapon_laser_sight"; }
 	void SimulateLaserPointer();
 	void CreateLaserPointerEffect( bool bLocalPlayer, int iAttachment );
 	void RemoveLaserPointerEffect();
