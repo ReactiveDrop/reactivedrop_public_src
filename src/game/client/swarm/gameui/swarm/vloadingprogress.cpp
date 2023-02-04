@@ -26,7 +26,8 @@ using namespace vgui;
 using namespace BaseModUI;
 
 ConVar rd_show_leaderboard_loading( "rd_show_leaderboard_loading", "1", FCVAR_ARCHIVE, "show friends' leaderboard entries on the loading screen" );
-ConVar rd_show_mission_icon_loading( "rd_show_mission_icon_loading", "0", FCVAR_ARCHIVE, "show mission icon on the loading screen" );
+ConVar rd_show_mission_icon_loading( "rd_show_mission_icon_loading", "1", FCVAR_ARCHIVE, "show mission icon on the loading screen" );
+ConVar rd_auto_hide_mission_icon_loading( "rd_auto_hide_mission_icon_loading", "1", FCVAR_ARCHIVE, "hide the mission icon if the mission has a custom loading background" );
 ConVar rd_leaderboard_by_difficulty( "rd_leaderboard_by_difficulty", "1", FCVAR_NONE, "Only show the leaderboard by current difficulty level, rather than all difficulties mixed together" );
 ConVar rd_loading_image_per_map( "rd_loading_image_per_map", "1", FCVAR_ARCHIVE, "If set to 1 each map can have its own background image during loading screen, 0 means same image for every map" );
 ConVar rd_loading_status_text_visible( "rd_loading_status_text_visible", "1", FCVAR_ARCHIVE, "If set to 1 status text is visible on the loading screen." );
@@ -676,7 +677,7 @@ bool LoadingProgress::ShouldShowPosterForLevel( KeyValues *pMissionInfo, KeyValu
 //=============================================================================
 void LoadingProgress::SetupPoster( void )
 {
-	int i;
+	bool bUsingCustomBackground = false;
 	
 	vgui::ImagePanel *pPoster = dynamic_cast< vgui::ImagePanel* >( FindChildByName( "Poster" ) );
 	if ( pPoster )
@@ -706,6 +707,7 @@ void LoadingProgress::SetupPoster( void )
 			if ( m_bFullscreenPoster && filesystem->FileExists( szMapLoadingImageVmt ) )
 			{
 				pPoster->SetImage( szMapLoadingImage );
+				bUsingCustomBackground = true;
 			}
 			else
 			{
@@ -722,7 +724,7 @@ void LoadingProgress::SetupPoster( void )
 	if ( m_pChapterInfo && m_pChapterInfo->GetString( "image", NULL ) )
 	{
 		m_pMissionPic->SetImage( m_pChapterInfo->GetString( "image" ) );
-		m_pMissionPic->SetVisible( rd_show_mission_icon_loading.GetBool() );
+		m_pMissionPic->SetVisible( rd_show_mission_icon_loading.GetBool() && ( !rd_auto_hide_mission_icon_loading.GetBool() || !bUsingCustomBackground ) );
 	}
 
 	bool bIsLocalized = false;
