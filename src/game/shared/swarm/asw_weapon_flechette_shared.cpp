@@ -55,6 +55,7 @@ extern ConVar asw_weapon_max_shooting_distance;
 
 #ifndef CLIENT_DLL
 extern ConVar asw_debug_marine_damage;
+extern ConVar sk_hunter_dmg_flechette;
 ConVar rd_flechette_speed( "rd_flechette_speed", "2000", FCVAR_CHEAT );
 #endif
 
@@ -72,7 +73,9 @@ void CASW_Weapon_Flechette::Precache()
 {	
 	BaseClass::Precache();
 
+#ifdef GAME_DLL
 	UTIL_PrecacheOther( "hunter_flechette" );
+#endif
 }
 
 void CASW_Weapon_Flechette::PrimaryAttack()
@@ -106,12 +109,12 @@ void CASW_Weapon_Flechette::PrimaryAttack()
 		SendWeaponAnim( GetPrimaryAttackActivity() );
 
 		Vector vecDir;
-#ifndef CLIENT_DLL
 		Vector vecSrc = pMarine->Weapon_ShootPosition( );
-#endif
 		if ( pPlayer && pMarine->IsInhabited() )
 		{
-			vecDir = pPlayer->GetAutoaimVectorForMarine(pMarine, GetAutoAimAmount(), GetVerticalAdjustOnlyAutoAimAmount());	// 45 degrees = 0.707106781187
+			// Aim directly at crosshair (so we hit the floor if we miss)
+			vecDir = pPlayer->GetCrosshairTracePos() - vecSrc;
+			vecDir.NormalizeInPlace();
 		}
 		else
 		{
@@ -169,11 +172,12 @@ void CASW_Weapon_Flechette::PrimaryAttack()
 		QAngle vecRocketAngle;
 		VectorAngles(vecDir, vecRocketAngle);
 		vecRocketAngle[YAW] += random->RandomFloat(-10, 10);
-		CHunterFlechette *pFlechette = CHunterFlechette::FlechetteCreate( fGrenadeDamage, vecSrc, vecRocketAngle, GetMarine() );
+		CHunterFlechette *pFlechette = CHunterFlechette::FlechetteCreate( fGrenadeDamage / sk_hunter_dmg_flechette.GetFloat(), vecSrc, vecRocketAngle, GetMarine());
 		if ( pFlechette )
 		{
+			pFlechette->SetupMarineFlechette( this );
 			Vector vecShoot = vecDir * rd_flechette_speed.GetFloat();
-			pFlechette->Shoot( vecShoot, false );
+			pFlechette->Shoot( vecShoot, true );
 		}
 
 		if (pMarine->GetMarineResource())

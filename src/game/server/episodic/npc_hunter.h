@@ -32,8 +32,7 @@ public:
 	CHunterFlechette();
 	~CHunterFlechette();
 
-	// this class is both the hidden gun that shoots flechettes and flechettes shot by any source
-	Class_T Classify() { return ( Class_T )CLASS_ASW_FLECHETTE; }
+	Class_T Classify() { return CLASS_NONE; }
 
 	bool WasThrownBack()
 	{
@@ -52,7 +51,8 @@ public:
 	bool CreateVPhysics();
 
 	unsigned int PhysicsSolidMaskForEntity() const;
-	static CHunterFlechette *FlechetteCreate( float flDamage, const Vector &vecOrigin, const QAngle &angAngles, CBaseEntity *pentOwner = NULL );
+	static CHunterFlechette *FlechetteCreate( float flDamageScale, const Vector &vecOrigin, const QAngle &angAngles, CBaseEntity *pentOwner = NULL );
+	void SetupMarineFlechette( CBaseEntity *pWeapon );
 
 	// IParentPropInteraction
 	void OnParentCollisionInteraction( parentCollisionInteraction_t eType, int index, gamevcollisionevent_t *pEvent );
@@ -76,7 +76,8 @@ protected:
 
 	Vector m_vecShootPosition;
 	EHANDLE m_hSeekTarget;
-	float m_flDamage;
+	EHANDLE m_hCreatorWeapon;
+	float m_flDamageScale;
 	bool m_bThrownBack;
 
 	DECLARE_DATADESC();

@@ -353,6 +353,12 @@ CHunterFlechette *CHunterFlechette::FlechetteCreate( float flDamage, const Vecto
 	return pFlechette;
 }
 
+void CHunterFlechette::SetupMarineFlechette( CBaseEntity *pWeapon )
+{
+	m_bThrownBack = true;
+	m_hCreatorWeapon = pWeapon;
+}
+
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -366,7 +372,7 @@ void CC_Hunter_Shoot_Flechette( const CCommand& args )
 	CBasePlayer *pPlayer = UTIL_GetCommandClient();
 
 	QAngle angEye = pPlayer->EyeAngles();
-	CHunterFlechette *entity = CHunterFlechette::FlechetteCreate( sk_hunter_flechette_explode_dmg.GetFloat(), pPlayer->EyePosition(), angEye, pPlayer );
+	CHunterFlechette *entity = CHunterFlechette::FlechetteCreate( 1.0f, pPlayer->EyePosition(), angEye, pPlayer );
 	if ( entity )
 	{
 		entity->Precache();
@@ -630,7 +636,7 @@ void CHunterFlechette::FlechetteTouch( CBaseEntity *pOther )
 		ClearMultiDamage();
 		VectorNormalize( vecNormalizedVel );
 
-		float flDamage = sk_hunter_dmg_flechette.GetFloat();
+		float flDamage = m_flDamageScale * sk_hunter_dmg_flechette.GetFloat();
 		CBreakable *pBreak = dynamic_cast <CBreakable *>(pOther);
 		if ( pBreak && ( pBreak->GetMaterialType() == matGlass ) )
 		{
@@ -638,6 +644,7 @@ void CHunterFlechette::FlechetteTouch( CBaseEntity *pOther )
 		}
 
 		CTakeDamageInfo	dmgInfo( this, GetOwnerEntity(), flDamage, DMG_DISSOLVE | DMG_NEVERGIB );
+		dmgInfo.SetWeapon( m_hCreatorWeapon );
 		CalculateMeleeDamageForce( &dmgInfo, vecNormalizedVel, tr.endpos, 0.7f );
 		dmgInfo.SetDamagePosition( tr.endpos );
 		pOther->DispatchTraceAttack( dmgInfo, vecNormalizedVel, &tr );
@@ -866,9 +873,11 @@ void CHunterFlechette::Explode()
 		nDamageType |= DMG_PREVENT_PHYSICS_FORCE;
 	}
 
-	RadiusDamage( CTakeDamageInfo( this, GetOwnerEntity(), m_flDamage, nDamageType ), GetAbsOrigin(), sk_hunter_flechette_explode_radius.GetFloat(), CLASS_NONE, NULL );
-		
-    AddEffects( EF_NODRAW );
+	CTakeDamageInfo info( this, GetOwnerEntity(), m_flDamageScale * sk_hunter_flechette_explode_dmg.GetFloat(), nDamageType);
+	info.SetWeapon( m_hCreatorWeapon );
+	RadiusDamage( info, GetAbsOrigin(), sk_hunter_flechette_explode_radius.GetFloat(), CLASS_NONE, NULL );
+
+	AddEffects( EF_NODRAW );
 
 	SetThink( &CBaseEntity::SUB_Remove );
 	SetNextThink( gpGlobals->curtime + 0.1f );
@@ -6208,7 +6217,7 @@ bool CNPC_Hunter::ShootFlechette( CBaseEntity *pTargetEntity, bool bSingleShot )
 	QAngle angShoot;
 	VectorAngles( vecShoot, angShoot );
 
-	CHunterFlechette *pFlechette = CHunterFlechette::FlechetteCreate( sk_hunter_flechette_explode_dmg.GetFloat(), vecSrc, angShoot, this );
+	CHunterFlechette *pFlechette = CHunterFlechette::FlechetteCreate( 1.0f, vecSrc, angShoot, this );
 
 	pFlechette->AddEffects( EF_NOSHADOW );
 

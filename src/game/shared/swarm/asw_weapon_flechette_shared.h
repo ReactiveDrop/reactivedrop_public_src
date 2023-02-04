@@ -34,9 +34,6 @@ public:
 	#else
 		virtual bool HasSecondaryExplosive( void ) const { return false; }
 	#endif
-	
-	// aiming grenades at the ground
-	virtual bool SupportsGroundShooting() { return false; }
 
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_FLECHETTE; }
