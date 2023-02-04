@@ -6664,7 +6664,6 @@ void CAlienSwarm::FreezeAliensInRadius( CBaseEntity *pInflictor, float flFreezeA
 				}			
 				pAnim->Extinguish();
 
-				CASW_Marine *pInflictorMarine = CASW_Marine::AsMarine( pInflictor );
 				CASW_Marine_Resource *pMR = pInflictorMarine ? pInflictorMarine->GetMarineResource() : NULL;
 				if ( pMR )
 				{
