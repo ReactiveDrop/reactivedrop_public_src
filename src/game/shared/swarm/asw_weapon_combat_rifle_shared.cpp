@@ -87,11 +87,6 @@ void CASW_Weapon_CombatRifle::Precache()
 	BaseClass::Precache();
 }
 
-// float CASW_Weapon_CombatRifle::GetMovementScale()
-// {
-// 	return ShouldMarineMoveSlow() ? 0.5f : 0.8f;
-// }
-
 float CASW_Weapon_CombatRifle::GetWeaponDamage()
 {
 	//float flDamage = 18.0f;
@@ -186,31 +181,20 @@ void CASW_Weapon_CombatRifle::SecondaryAttack()
 	// We can't use num_pellets field from asw_weapon_combat_rifle.txt
 	// because it changes the "Damage" UI value. E.g. instead of 5 it shows 
 	// 35 if we set num_pellets 7
-	// so we harcode the value here for now 
-	//int iPellets = GetNumPellets();		
-	for (int i = 0; i < NUM_SHOTGUN_PELLETS; i++)
-	{
-		FireBulletsInfo_t info( 1, vecSrc, vecAiming, GetAngularBulletSpread(), asw_weapon_max_shooting_distance.GetFloat(), m_iSecondaryAmmoType, false );
-		info.m_pAttacker = pMarine;
-		info.m_iTracerFreq = 1;
-		info.m_nFlags = FIRE_BULLETS_NO_PIERCING_SPARK | FIRE_BULLETS_HULL | FIRE_BULLETS_ANGULAR_SPREAD;
-		info.m_flDamage = GetWeaponDamage() * 6;
-		info.m_flDamageForceScale = asw_weapon_force_scale.GetFloat();
+	// so we harcode the value here for now
+	FireBulletsInfo_t info( NUM_SHOTGUN_PELLETS, vecSrc, vecAiming, GetAngularBulletSpread(), asw_weapon_max_shooting_distance.GetFloat(), m_iSecondaryAmmoType, false );
+	info.m_pAttacker = pMarine;
+	info.m_iTracerFreq = 1;
+	info.m_nFlags = FIRE_BULLETS_NO_PIERCING_SPARK | FIRE_BULLETS_HULL | FIRE_BULLETS_ANGULAR_SPREAD;
+	info.m_flDamage = GetWeaponDamage() * 6;
+	info.m_flDamageForceScale = asw_weapon_force_scale.GetFloat();
 #ifndef CLIENT_DLL
-		if (asw_debug_marine_damage.GetBool())
-			Msg("Weapon dmg = %f\n", info.m_flDamage);
-		info.m_flDamage *= pMarine->GetMarineResource()->OnFired_GetDamageScale();
+	if (asw_debug_marine_damage.GetBool())
+		Msg("Weapon dmg = %f\n", info.m_flDamage);
+	info.m_flDamage *= pMarine->GetMarineResource()->OnFired_GetDamageScale();
 #endif
-		// shotgun bullets have a base 50% chance of piercing
-		//float fPiercingChance = 0.5f;
-		//if (pMarine->GetMarineResource() && pMarine->GetMarineProfile() && pMarine->GetMarineProfile()->GetMarineClass() == MARINE_CLASS_SPECIAL_WEAPONS)
-		//fPiercingChance += MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_PIERCING);
 
-		//pMarine->FirePenetratingBullets(info, 5, fPiercingChance);
-
-		//pMarine->FirePenetratingBullets(info, 5, 1.0f, i, false );
-		pMarine->FirePenetratingBullets(info, 0, 1, i, false);
-	}
+	pMarine->FirePenetratingBullets(info, 0, 1, 0, false);
 
 	// increment shooting stats
 #ifndef CLIENT_DLL

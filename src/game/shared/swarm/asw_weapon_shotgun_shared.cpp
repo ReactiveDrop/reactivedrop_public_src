@@ -217,23 +217,20 @@ void CASW_Weapon_Shotgun::PrimaryAttack( void )
 		}
 #endif
 		int iPellets = GetNumPellets();
-		for ( int i = 0; i < iPellets; i++ )
-		{
-			FireBulletsInfo_t info( 1, vecSrc, vecAiming, GetAngularBulletSpread(), asw_weapon_max_shooting_distance.GetFloat(), m_iPrimaryAmmoType );
-			info.m_pAttacker = pNPC;
-			info.m_iTracerFreq = 1;
-			info.m_nFlags = FIRE_BULLETS_NO_PIERCING_SPARK | FIRE_BULLETS_HULL | FIRE_BULLETS_ANGULAR_SPREAD;
-			info.m_flDamage = GetWeaponDamage();
-			info.m_flDamageForceScale = asw_weapon_force_scale.GetFloat();
+		FireBulletsInfo_t info( iPellets, vecSrc, vecAiming, GetAngularBulletSpread(), asw_weapon_max_shooting_distance.GetFloat(), m_iPrimaryAmmoType );
+		info.m_pAttacker = pNPC;
+		info.m_iTracerFreq = 1;
+		info.m_nFlags = FIRE_BULLETS_NO_PIERCING_SPARK | FIRE_BULLETS_HULL | FIRE_BULLETS_ANGULAR_SPREAD;
+		info.m_flDamage = GetWeaponDamage();
+		info.m_flDamageForceScale = asw_weapon_force_scale.GetFloat();
 #ifndef CLIENT_DLL
-			if ( asw_debug_marine_damage.GetBool() )
-				Msg( "Weapon dmg = %f\n", info.m_flDamage );
-			if ( pMarine && pMarine->GetMarineResource() )
-				info.m_flDamage *= pMarine->GetMarineResource()->OnFired_GetDamageScale();
+		if ( asw_debug_marine_damage.GetBool() )
+			Msg( "Weapon dmg = %f\n", info.m_flDamage );
+		if ( pMarine && pMarine->GetMarineResource() )
+			info.m_flDamage *= pMarine->GetMarineResource()->OnFired_GetDamageScale();
 #endif
 
-			FireShotgunPellet( pNPC, info, i );
-		}
+		FireShotgunPellet( pNPC, info, 0 );
 
 		// increment shooting stats
 #ifndef CLIENT_DLL
