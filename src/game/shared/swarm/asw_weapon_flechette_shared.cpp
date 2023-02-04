@@ -24,7 +24,7 @@
 #include "decals.h"
 #include "ammodef.h"
 #include "asw_weapon_ammo_bag_shared.h"
-#include "asw_rocket.h"
+#include "episodic/npc_hunter.h"
 #include "asw_gamerules.h"
 #endif
 #include "asw_marine_skills.h"
@@ -55,7 +55,7 @@ extern ConVar asw_weapon_max_shooting_distance;
 
 #ifndef CLIENT_DLL
 extern ConVar asw_debug_marine_damage;
-
+ConVar rd_flechette_speed( "rd_flechette_speed", "2000", FCVAR_CHEAT );
 #endif
 
 CASW_Weapon_Flechette::CASW_Weapon_Flechette()
@@ -71,8 +71,8 @@ CASW_Weapon_Flechette::~CASW_Weapon_Flechette()
 void CASW_Weapon_Flechette::Precache()
 {	
 	BaseClass::Precache();
-	PrecacheScriptSound( "ASWRocket.Explosion" );
-	PrecacheParticleSystem( "small_fire_burst" );
+
+	UTIL_PrecacheOther( "hunter_flechette" );
 }
 
 void CASW_Weapon_Flechette::PrimaryAttack()
@@ -149,8 +149,6 @@ void CASW_Weapon_Flechette::PrimaryAttack()
 					pMarine->OnWeaponOutOfAmmo(true);
 			}
 #endif
-			
-
 		}
 		else
 		{
@@ -171,7 +169,12 @@ void CASW_Weapon_Flechette::PrimaryAttack()
 		QAngle vecRocketAngle;
 		VectorAngles(vecDir, vecRocketAngle);
 		vecRocketAngle[YAW] += random->RandomFloat(-10, 10);
-		CASW_Rocket::Create(fGrenadeDamage, vecSrc, vecRocketAngle, GetMarine());
+		CHunterFlechette *pFlechette = CHunterFlechette::FlechetteCreate( fGrenadeDamage, vecSrc, vecRocketAngle, GetMarine() );
+		if ( pFlechette )
+		{
+			Vector vecShoot = vecDir * rd_flechette_speed.GetFloat();
+			pFlechette->Shoot( vecShoot, false );
+		}
 
 		if (pMarine->GetMarineResource())
 		{
