@@ -339,7 +339,7 @@ END_DATADESC()
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-CHunterFlechette *CHunterFlechette::FlechetteCreate( float flDamage, const Vector &vecOrigin, const QAngle &angAngles, CBaseEntity *pentOwner )
+CHunterFlechette *CHunterFlechette::FlechetteCreate( float flDamageScale, const Vector &vecOrigin, const QAngle &angAngles, CBaseEntity *pentOwner )
 {
 	// Create a new entity with CHunterFlechette private data
 	CHunterFlechette *pFlechette = (CHunterFlechette *)CreateEntityByName( "hunter_flechette" );
@@ -348,7 +348,7 @@ CHunterFlechette *CHunterFlechette::FlechetteCreate( float flDamage, const Vecto
 	pFlechette->Spawn();
 	pFlechette->Activate();
 	pFlechette->SetOwnerEntity( pentOwner );
-	pFlechette->m_flDamage = flDamage;
+	pFlechette->m_flDamageScale = flDamageScale;
 
 	return pFlechette;
 }
