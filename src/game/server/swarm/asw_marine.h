@@ -546,7 +546,7 @@ public:
 	virtual void FireBullets( const FireBulletsInfo_t &info );
 	virtual void FireRegularBullets( const FireBulletsInfo_t &info );
 	virtual void FirePenetratingBullets( const FireBulletsInfo_t &info, int iMaxPenetrate, float fPenetrateChance, int iSeedPlus, bool bAllowChange=true, Vector *pPiercingTracerEnd=NULL, bool bSegmentTracer = true );
-	virtual void FireBouncingBullets( const FireBulletsInfo_t &info, int iMaxBounce, int iSeedPlus=0 );
+	virtual void FireBouncingBullets( const FireBulletsInfo_t &info, int iMaxBounce, int iSeedPlus = 0, bool bAllowHittingAttacker = false );
 	CBaseCombatWeapon* GetLastWeaponSwitchedTo();
 	EHANDLE m_hLastWeaponSwitchedTo;
 	bool m_bLastWeaponBeforeTempWasSecondary;

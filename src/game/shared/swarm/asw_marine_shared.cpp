@@ -1510,19 +1510,20 @@ void CASW_Marine::FirePenetratingBullets( const FireBulletsInfo_t &info, int iMa
 						}
 					}
 
+					int iNextMaxPenetrate = iMaxPenetrate;
 					if ( !tr.DidHitWorld() )
 					{
 						behindNPCInfo.m_pAdditionalIgnoreEnt = tr.m_pEnt;
+						iNextMaxPenetrate--;
 					}
 					else
 					{
 						// Penetrate past the solid
 						behindNPCInfo.m_vecSrc = behindNPCInfo.m_vecSrc + behindNPCInfo.m_vecDirShooting * 28.0f;
-						iMaxPenetrate++;
 						behindNPCInfo.m_pAdditionalIgnoreEnt = NULL;
 					}
 
-					FirePenetratingBullets( behindNPCInfo, --iMaxPenetrate, fPenetrateChance, iSeedPlus, bAllowChange, &vecPiercingTracerEnd, bSegmentTracer );
+					FirePenetratingBullets( behindNPCInfo, iNextMaxPenetrate, fPenetrateChance, iSeedPlus, bAllowChange, &vecPiercingTracerEnd, bSegmentTracer );
 						// this function returns with vecPiercingTracerEnd set to the end of the tracer
 				}
 			}
@@ -1622,9 +1623,9 @@ void CASW_Marine::FirePenetratingBullets( const FireBulletsInfo_t &info, int iMa
 #endif
 }
 
-void CASW_Marine::FireBouncingBullets( const FireBulletsInfo_t &info, int iMaxBounce, int iSeedPlus/*=0 */ )
+void CASW_Marine::FireBouncingBullets( const FireBulletsInfo_t &info, int iMaxBounce, int iSeedPlus, bool bAllowHittingAttacker )
 {
-	if (iMaxBounce < 0)
+	if ( iMaxBounce < 0 )
 		return;
 
 #ifdef GAME_DLL
@@ -1691,7 +1692,7 @@ void CASW_Marine::FireBouncingBullets( const FireBulletsInfo_t &info, int iMaxBo
 	Vector vecEnd;
 	Vector vecFinalDir;	// bullet's final direction can be changed by passing through a portal
 	
-	CASWTraceFilterShot traceFilter( this, info.m_pAdditionalIgnoreEnt, COLLISION_GROUP_NONE );
+	CASWTraceFilterShot traceFilter( bAllowHittingAttacker ? NULL : this, info.m_pAdditionalIgnoreEnt, COLLISION_GROUP_NONE );
 	traceFilter.SetSkipMarines( false );
 	traceFilter.SetSkipRollingMarines( true );
 
@@ -1883,7 +1884,7 @@ void CASW_Marine::FireBouncingBullets( const FireBulletsInfo_t &info, int iMaxBo
 		{
 			if ( bDoServerEffects == true )
 			{
-				if (iMaxBounce == 5) // bad hardcoded number for ricochet gun
+				if ( !bAllowHittingAttacker )
 				{
 					Vector vecTracerSrc = vec3_origin;
 					ComputeTracerStartPosition( info.m_vecSrc, &vecTracerSrc );
@@ -1892,7 +1893,7 @@ void CASW_Marine::FireBouncingBullets( const FireBulletsInfo_t &info, int iMaxBo
 					Tracer = tr;
 					Tracer.endpos = vecTracerDest;
 
-					MakeTracer( vecTracerSrc, Tracer, pAmmoDef->TracerType(info.m_iAmmoType) );
+					MakeTracer( vecTracerSrc, Tracer, pAmmoDef->TracerType( info.m_iAmmoType ) );
 				}
 				else
 				{
@@ -1901,7 +1902,7 @@ void CASW_Marine::FireBouncingBullets( const FireBulletsInfo_t &info, int iMaxBo
 					Tracer = tr;
 					Tracer.endpos = vecTracerDest;
 
-					MakeUnattachedTracer( vecTracerSrc, Tracer, pAmmoDef->TracerType(info.m_iAmmoType) );
+					MakeUnattachedTracer( vecTracerSrc, Tracer, pAmmoDef->TracerType( info.m_iAmmoType ) );
 				}
 			}
 			else
@@ -1936,8 +1937,8 @@ void CASW_Marine::FireBouncingBullets( const FireBulletsInfo_t &info, int iMaxBo
 #ifdef GAME_DLL
 			ApplyMultiDamage();		// apply the previous damage, since it'll get cleared when we refire
 			int iAliensKilledBeforeBounce = GetMarineResource() ? GetMarineResource()->m_iAliensKilled.Get() : 0;
-#endif			
-			FireBouncingBullets( BouncingShotInfo, --iMaxBounce );
+#endif
+			FireBouncingBullets( BouncingShotInfo, iMaxBounce - 1, 0, true );
 
 #ifdef GAME_DLL
 			if (GetMarineResource())
