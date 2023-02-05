@@ -1,10 +1,20 @@
 "Resource/UI/CollectionStatLine.res"
 {
+	"TimeLine"
+	{
+		"fieldName"			"TimeLine"
+		"xpos"				"0"
+		"ypos"				"0"
+		"wide"				"165"
+		"tall"				"12"
+		"ControlName"		"Panel"
+	}
+	
 	"StatLine"
 	{
 		"fieldName"			"StatLine"
 		"xpos"				"0"
-		"ypos"				"0"
+		"ypos"				"12"
 		"wide"				"165"
 		"tall"				"12"
 		"ControlName"		"Panel"
