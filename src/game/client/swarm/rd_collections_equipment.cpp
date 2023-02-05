@@ -292,12 +292,12 @@ void CRD_Collection_Details_Equipment::DisplayEntry( TGD_Entry *pEntry )
 			wchar_t wszDays[4]{};
 			V_snwprintf( wszDays, ARRAYSIZE( wszDays ), L"%d", m_nStatsDays );
 
-			wchar_t buf_timeline[256]{};
-			g_pVGuiLocalize->ConstructString( buf_timeline, sizeof( buf_timeline ),
+			g_pVGuiLocalize->ConstructString( buf, sizeof( buf ),
 				g_pVGuiLocalize->FindSafe( m_nStatsDays ? "#rd_so_global_stat_days" : "#rd_so_global_stat_total" ), 1, wszDays );
 
-			CRD_Collection_StatLine *pTimeLine = m_pGplStats->AddPanelItem<CRD_Collection_StatLine>( "TimeLine" );
-			pTimeLine->SetLabel( buf_timeline );
+			vgui::Label *pDaysLabel = m_pGplStats->AddPanelItem<vgui::Label>( "DaysLabel", "" );
+			pDaysLabel->SetContentAlignment( vgui::Label::a_east );
+			pDaysLabel->SetText( buf );
 
 			FOR_EACH_VEC( pEquip->m_pWeapon->GlobalStats, i )
 			{
@@ -317,11 +317,8 @@ void CRD_Collection_Details_Equipment::DisplayEntry( TGD_Entry *pEntry )
 					nStat[0] += nStat[j];
 				}
 
-				g_pVGuiLocalize->ConstructString( buf, sizeof( buf ), L"%s1", 1, 
-					g_pVGuiLocalize->FindSafe( pEquip->m_pWeapon->GlobalStats[i]->Caption ) );
-
 				CRD_Collection_StatLine *pStatLine = m_pGplStats->AddPanelItem<CRD_Collection_StatLine>( "StatLine" );
-				pStatLine->SetLabel( buf );
+				pStatLine->SetLabel( g_pVGuiLocalize->FindSafe( pEquip->m_pWeapon->GlobalStats[i]->Caption ) );
 				pStatLine->SetValue( nStat[0] );
 			}
 		}
