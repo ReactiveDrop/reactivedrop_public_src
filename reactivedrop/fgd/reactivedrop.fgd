@@ -772,3 +772,20 @@ asw_pickup_50calmg : "50cal Machine Gun"
 		65536 :  "Avoid the box above and below" : 0
 	]
 ]
+
+@PointClass base(ASWPickup) studio("models/swarm/ammo/ammogrenadelauncher.mdl") = asw_ammo_grenade_launcher : "Grenade Launcher ammo refill"
+[
+]
+
+@PointClass base(ASWPickup) studio("models/swarm/ammo/ammosniperrifle.mdl") = asw_ammo_sniper_rifle : "Sniper Rifle ammo refill"
+[
+]
+
+@PointClass base(ASWPickup) studio("models/swarm/ammo/ammohvyrifle.mdl") = asw_ammo_heavy_rifle : "Heavy Rifle ammo refill"
+[
+	AddSecondary(choices) : "Add secondary item" : 1 : "If set this pickup adds secondary fire charge" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+]

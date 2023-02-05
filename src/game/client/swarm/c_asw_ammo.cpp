@@ -163,6 +163,7 @@ C_ASW_Ammo_PDW::C_ASW_Ammo_PDW()
 	Q_snprintf(m_szAmmoFullText, sizeof(m_szAmmoFullText), "#asw_ammo_pdw_full");	
 	m_iAmmoIndex = GetAmmoDef()->Index("ASW_PDW");
 }
+
 //------------
 // AR2 Ammo
 //------------
@@ -176,4 +177,49 @@ C_ASW_Ammo_AR2::C_ASW_Ammo_AR2()
 	Q_snprintf( m_szNoGunText, sizeof( m_szNoGunText ), "#asw_ammo_ar2" );
 	Q_snprintf( m_szAmmoFullText, sizeof( m_szAmmoFullText ), "#asw_ammo_ar2_full" );
 	m_iAmmoIndex = GetAmmoDef()->Index( "AR2" );
+}
+
+//------------
+// Grenade Launcher Ammo
+//------------
+
+IMPLEMENT_CLIENTCLASS_DT( C_ASW_Ammo_Grenade_Launcher, DT_ASW_Ammo_Grenade_Launcher, CASW_Ammo_Grenade_Launcher )
+END_RECV_TABLE()
+
+C_ASW_Ammo_Grenade_Launcher::C_ASW_Ammo_Grenade_Launcher()
+{
+	Q_snprintf( m_szUseIconText, sizeof( m_szUseIconText ), "#asw_take_ammo_grenade_launcher" );
+	Q_snprintf( m_szNoGunText, sizeof( m_szNoGunText ), "#asw_ammo_grenade_launcher" );
+	Q_snprintf( m_szAmmoFullText, sizeof( m_szAmmoFullText ), "#asw_ammo_grenade_launcher_full" );
+	m_iAmmoIndex = GetAmmoDef()->Index( "ASW_GL" );
+}
+
+//------------
+// Sniper Rifle Ammo
+//------------
+
+IMPLEMENT_CLIENTCLASS_DT( C_ASW_Ammo_Sniper_Rifle, DT_ASW_Ammo_Sniper_Rifle, CASW_Ammo_Sniper_Rifle )
+END_RECV_TABLE()
+
+C_ASW_Ammo_Sniper_Rifle::C_ASW_Ammo_Sniper_Rifle()
+{
+	Q_snprintf( m_szUseIconText, sizeof( m_szUseIconText ), "#asw_take_ammo_sniper_rifle" );
+	Q_snprintf( m_szNoGunText, sizeof( m_szNoGunText ), "#asw_ammo_sniper_rifle" );
+	Q_snprintf( m_szAmmoFullText, sizeof( m_szAmmoFullText ), "#asw_ammo_sniper_rifle_full" );
+	m_iAmmoIndex = GetAmmoDef()->Index( "ASW_SNIPER" );
+}
+
+//------------
+// Heavy Rifle Ammo
+//------------
+
+IMPLEMENT_CLIENTCLASS_DT( C_ASW_Ammo_Heavy_Rifle, DT_ASW_Ammo_Heavy_Rifle, CASW_Ammo_Heavy_Rifle )
+END_RECV_TABLE()
+
+C_ASW_Ammo_Heavy_Rifle::C_ASW_Ammo_Heavy_Rifle()
+{
+	Q_snprintf( m_szUseIconText, sizeof( m_szUseIconText ), "#asw_take_ammo_heavy_rifle" );
+	Q_snprintf( m_szNoGunText, sizeof( m_szNoGunText ), "#asw_ammo_heavy_rifle" );
+	Q_snprintf( m_szAmmoFullText, sizeof( m_szAmmoFullText ), "#asw_ammo_heavy_rifle_full" );
+	m_iAmmoIndex = GetAmmoDef()->Index( "ASW_HR" );
 }

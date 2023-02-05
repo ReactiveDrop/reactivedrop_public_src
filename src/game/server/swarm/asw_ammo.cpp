@@ -605,3 +605,142 @@ void CASW_Ammo_AR2::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
 	}
 }
 
+//-------------
+// Grenade Launcher Ammo
+//-------------
+
+IMPLEMENT_SERVERCLASS_ST( CASW_Ammo_Grenade_Launcher, DT_ASW_Ammo_Grenade_Launcher )
+END_SEND_TABLE()
+
+BEGIN_DATADESC( CASW_Ammo_Grenade_Launcher )
+END_DATADESC()
+
+LINK_ENTITY_TO_CLASS( asw_ammo_grenade_launcher, CASW_Ammo_Grenade_Launcher );
+
+void CASW_Ammo_Grenade_Launcher::Spawn( void )
+{
+	Precache();
+	SetModel( "models/swarm/ammo/ammogrenadelauncher.mdl" );
+	BaseClass::Spawn();
+	m_iAmmoIndex = GetAmmoDef()->Index( "ASW_GL" );
+}
+
+
+void CASW_Ammo_Grenade_Launcher::Precache( void )
+{
+	PrecacheModel( "models/swarm/ammo/ammogrenadelauncher.mdl" );
+}
+
+void CASW_Ammo_Grenade_Launcher::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
+{
+	if ( nHoldType == ASW_USE_HOLD_START )
+		return;
+
+	// give three reloads to match the ammo stash interaction
+	if ( ASW_GiveAmmo( pNPC, 18, "ASW_GL", this ) )
+	{
+		UTIL_Remove( this );
+	}
+}
+
+//-------------
+// Sniper Rifle Ammo
+//-------------
+
+IMPLEMENT_SERVERCLASS_ST( CASW_Ammo_Sniper_Rifle, DT_ASW_Ammo_Sniper_Rifle )
+END_SEND_TABLE()
+
+BEGIN_DATADESC( CASW_Ammo_Sniper_Rifle )
+END_DATADESC()
+
+LINK_ENTITY_TO_CLASS( asw_ammo_sniper_rifle, CASW_Ammo_Sniper_Rifle );
+
+void CASW_Ammo_Sniper_Rifle::Spawn( void )
+{
+	Precache();
+	SetModel( "models/swarm/ammo/ammosniperrifle.mdl" );
+	BaseClass::Spawn();
+	m_iAmmoIndex = GetAmmoDef()->Index( "ASW_SNIPER" );
+}
+
+
+void CASW_Ammo_Sniper_Rifle::Precache( void )
+{
+	PrecacheModel( "models/swarm/ammo/ammosniperrifle.mdl" );
+}
+
+void CASW_Ammo_Sniper_Rifle::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
+{
+	if ( nHoldType == ASW_USE_HOLD_START )
+		return;
+
+	if ( ASW_GiveAmmo( pNPC, 12, "ASW_SNIPER", this ) )
+	{
+		UTIL_Remove( this );
+	}
+}
+
+//-------------
+// Heavy Rifle Ammo
+//-------------
+
+IMPLEMENT_SERVERCLASS_ST( CASW_Ammo_Heavy_Rifle, DT_ASW_Ammo_Heavy_Rifle )
+END_SEND_TABLE()
+
+BEGIN_DATADESC( CASW_Ammo_Heavy_Rifle )
+DEFINE_KEYFIELD( m_bAddSecondary, FIELD_BOOLEAN, "AddSecondary" ),
+END_DATADESC()
+
+LINK_ENTITY_TO_CLASS( asw_ammo_heavy_rifle, CASW_Ammo_Heavy_Rifle );
+
+void CASW_Ammo_Heavy_Rifle::Spawn( void )
+{
+	Precache();
+	SetModel( "models/swarm/ammo/ammohvyrifle.mdl" );
+	BaseClass::Spawn();
+	m_iAmmoIndex = GetAmmoDef()->Index( "ASW_HR" );
+}
+
+
+void CASW_Ammo_Heavy_Rifle::Precache( void )
+{
+	PrecacheModel( "models/swarm/ammo/ammohvyrifle.mdl" );
+}
+
+void CASW_Ammo_Heavy_Rifle::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
+{
+	if ( nHoldType == ASW_USE_HOLD_START )
+		return;
+
+	if ( ASW_GiveAmmo( pNPC, 98, "ASW_HR", this ) )
+	{
+		if ( m_bAddSecondary )
+		{
+			bool bFilledActive = false;
+			CBaseCombatWeapon *pActive = pNPC->GetActiveWeapon();
+			if ( pActive && pActive->Classify() == CLASS_ASW_HEAVY_RIFLE )
+			{
+				if ( pActive->Clip2() < pActive->GetMaxClip2() )
+				{
+					pActive->m_iClip2++;
+					bFilledActive = true;
+				}
+			}
+
+			if ( !bFilledActive )
+			{
+				CBaseCombatWeapon *pWeapon;
+				for ( int i = 0; i < ASW_MAX_MARINE_WEAPONS; i++ )
+				{
+					pWeapon = pNPC->GetWeapon( i );
+					if ( pWeapon == pActive )
+						continue;
+					if ( pWeapon && pWeapon->Classify() == CLASS_ASW_HEAVY_RIFLE )
+						if ( pWeapon->Clip2() < pWeapon->GetMaxClip2() )
+							pWeapon->m_iClip2++;
+				}
+			}
+		}
+		UTIL_Remove( this );
+	}
+}

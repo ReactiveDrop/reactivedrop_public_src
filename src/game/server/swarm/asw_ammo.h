@@ -208,7 +208,59 @@ public:
 	bool m_bAddSecondary;
 
 	// Classification
-	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_AMMO_AR2; }
+	virtual Class_T		Classify( void ) { return ( Class_T )CLASS_ASW_AMMO_AR2; }
+};
+
+class CASW_Ammo_Grenade_Launcher : public CASW_Ammo
+{
+public:
+	DECLARE_CLASS( CASW_Ammo_Grenade_Launcher, CASW_Ammo );
+	DECLARE_SERVERCLASS();
+	DECLARE_DATADESC();
+
+	virtual void Spawn( void );
+	virtual void Precache( void );
+	virtual void ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType );	// player has used this item
+
+	// Classification
+	virtual Class_T		Classify( void ) { return ( Class_T )CLASS_ASW_AMMO_GRENADE_LAUNCHER; }
+};
+
+class CASW_Ammo_Sniper_Rifle : public CASW_Ammo
+{
+public:
+	DECLARE_CLASS( CASW_Ammo_Sniper_Rifle, CASW_Ammo );
+	DECLARE_SERVERCLASS();
+	DECLARE_DATADESC();
+
+	virtual void Spawn( void );
+	virtual void Precache( void );
+	virtual void ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType );	// player has used this item
+
+	// Classification
+	virtual Class_T		Classify( void ) { return ( Class_T )CLASS_ASW_AMMO_SNIPER_RIFLE; }
+};
+
+class CASW_Ammo_Heavy_Rifle : public CASW_Ammo
+{
+public:
+	DECLARE_CLASS( CASW_Ammo_Heavy_Rifle, CASW_Ammo );
+	DECLARE_SERVERCLASS();
+	DECLARE_DATADESC();
+
+	CASW_Ammo_Heavy_Rifle()
+	{
+		m_bAddSecondary = true;
+	}
+
+	virtual void Spawn( void );
+	virtual void Precache( void );
+	virtual void ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType );	// player has used this item
+
+	bool m_bAddSecondary;
+
+	// Classification
+	virtual Class_T		Classify( void ) { return ( Class_T )CLASS_ASW_AMMO_HEAVY_RIFLE; }
 };
 
 #endif /* _DEFINED_ASW_AMMO_H */

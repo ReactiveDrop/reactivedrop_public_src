@@ -153,11 +153,50 @@ public:
 	DECLARE_CLASS( C_ASW_Ammo_AR2, C_ASW_Ammo );
 	DECLARE_CLIENTCLASS();
 
-	virtual int GetUseIconTextureID() { BaseClass::GetUseIconTextureID(); return s_nUseIconTake; }
+	virtual int GetUseIconTextureID() { BaseClass::GetUseIconTextureID(); return s_nUseIconTakeRifleAmmo; }
 	C_ASW_Ammo_AR2();
 
 	// Classification
-	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_AMMO_AR2; }
+	virtual Class_T		Classify( void ) { return ( Class_T )CLASS_ASW_AMMO_AR2; }
+};
+
+class C_ASW_Ammo_Grenade_Launcher : public C_ASW_Ammo
+{
+public:
+	DECLARE_CLASS( C_ASW_Ammo_Grenade_Launcher, C_ASW_Ammo );
+	DECLARE_CLIENTCLASS();
+
+	virtual int GetUseIconTextureID() { BaseClass::GetUseIconTextureID(); return s_nUseIconTake; }
+	C_ASW_Ammo_Grenade_Launcher();
+
+	// Classification
+	virtual Class_T		Classify( void ) { return ( Class_T )CLASS_ASW_AMMO_GRENADE_LAUNCHER; }
+};
+
+class C_ASW_Ammo_Sniper_Rifle : public C_ASW_Ammo
+{
+public:
+	DECLARE_CLASS( C_ASW_Ammo_Sniper_Rifle, C_ASW_Ammo );
+	DECLARE_CLIENTCLASS();
+
+	virtual int GetUseIconTextureID() { BaseClass::GetUseIconTextureID(); return s_nUseIconTakeRifleAmmo; }
+	C_ASW_Ammo_Sniper_Rifle();
+
+	// Classification
+	virtual Class_T		Classify( void ) { return ( Class_T )CLASS_ASW_AMMO_SNIPER_RIFLE; }
+};
+
+class C_ASW_Ammo_Heavy_Rifle : public C_ASW_Ammo
+{
+public:
+	DECLARE_CLASS( C_ASW_Ammo_Heavy_Rifle, C_ASW_Ammo );
+	DECLARE_CLIENTCLASS();
+
+	virtual int GetUseIconTextureID() { BaseClass::GetUseIconTextureID(); return s_nUseIconTakeRifleAmmo; }
+	C_ASW_Ammo_Heavy_Rifle();
+
+	// Classification
+	virtual Class_T		Classify( void ) { return ( Class_T )CLASS_ASW_AMMO_HEAVY_RIFLE; }
 };
 
 #endif /* _DEFINED_C_ASW_AMMO_H */
