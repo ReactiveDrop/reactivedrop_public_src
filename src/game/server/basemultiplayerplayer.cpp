@@ -187,6 +187,7 @@ void CBaseMultiplayerPlayer::AwardAchievement( int iAchievement )
 	Assert( iAchievement >= 0 && iAchievement < 0xFFFF );		// must fit in short
 
 	CSingleUserRecipientFilter filter( this );
+	filter.MakeReliable();
 
 	UserMessageBegin( filter, "AchievementEvent" );
 		WRITE_SHORT( iAchievement );
