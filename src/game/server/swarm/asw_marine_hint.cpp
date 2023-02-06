@@ -30,6 +30,47 @@ void CASW_Marine_Hint_Ent::Spawn()
 	UTIL_RemoveImmediate( this );
 }
 
+// ========= Movable hint entity ============
+
+LINK_ENTITY_TO_CLASS( info_marine_hint_dynamic, CASW_Marine_Hint_Dynamic );
+
+BEGIN_DATADESC( CASW_Marine_Hint_Dynamic )
+
+END_DATADESC();
+
+void CASW_Marine_Hint_Dynamic::Spawn()
+{
+	Assert( MarineHintManager() );
+	m_pHintData = MarineHintManager()->AddHint( this );
+
+	Assert( m_pHintData );
+	if ( m_pHintData )
+		m_pHintData->m_Flags |= HintData_t::HINT_DYNAMIC;
+
+	BaseClass::Spawn();
+}
+
+void CASW_Marine_Hint_Dynamic::PhysicsSimulate()
+{
+	BaseClass::PhysicsSimulate();
+
+	Assert( m_pHintData );
+	if ( !m_pHintData )
+		return;
+
+	m_pHintData->m_vecPosition = GetAbsOrigin();
+	m_pHintData->m_flYaw = GetAbsAngles()[YAW];
+}
+
+void CASW_Marine_Hint_Dynamic::UpdateOnRemove()
+{
+	BaseClass::UpdateOnRemove();
+
+	// we can't change the indices at runtime, so we just mark the hint data as unusable
+	if ( m_pHintData )
+		m_pHintData->m_Flags |= HintData_t::HINT_DELETED;
+}
+
 // ========= Temporary hint entity that's also an info_node ============
 
 LINK_ENTITY_TO_CLASS( info_node_marine_hint, CASW_Marine_Hint_Node_Ent );
@@ -42,7 +83,11 @@ END_DATADESC();
 void CASW_Marine_Hint_Node_Ent::UpdateOnRemove()
 {
 	Assert( MarineHintManager() );
-	MarineHintManager()->AddHint( this );
+	HintData_t *pHintData = MarineHintManager()->AddHint( this );
+
+	Assert( pHintData );
+	if ( pHintData )
+		pHintData->m_Flags |= HintData_t::HINT_NODE;
 
 	BaseClass::UpdateOnRemove();
 }
@@ -50,28 +95,19 @@ void CASW_Marine_Hint_Node_Ent::UpdateOnRemove()
 // =============== Hint Manager ===============
 
 CASW_Marine_Hint_Manager g_Marine_Hint_Manager;
-CASW_Marine_Hint_Manager* MarineHintManager() { return &g_Marine_Hint_Manager; }
+CASW_Marine_Hint_Manager *MarineHintManager() { return &g_Marine_Hint_Manager; }
 
 CASW_Marine_Hint_Manager::CASW_Marine_Hint_Manager()
 {
-	
 }
 
 CASW_Marine_Hint_Manager::~CASW_Marine_Hint_Manager()
 {
-
 }
 
 void CASW_Marine_Hint_Manager::LevelInitPreEntity()
 {
-	BaseClass::LevelInitPreEntity();
-
 	Reset();
-}
-
-void CASW_Marine_Hint_Manager::LevelInitPostEntity()
-{
-
 }
 
 void CASW_Marine_Hint_Manager::LevelShutdownPostEntity()
@@ -91,12 +127,16 @@ int CASW_Marine_Hint_Manager::FindHints( const Vector &position, const float flM
 	int nCount = m_Hints.Count();
 	for ( int i = 0; i < nCount; i++ )
 	{
-		float flDistSqr = position.DistToSqr( m_Hints[ i ]->m_vecPosition );
+		if ( m_Hints[i]->m_Flags & HintData_t::HINT_DELETED )
+			continue;
+
+		float flDistSqr = position.DistToSqr( m_Hints[i]->m_vecPosition );
 		if ( flDistSqr < flMinDistSqr || flDistSqr > flMaxDistSqr )
 			continue;
 
-		pResult->AddToTail( m_Hints[ i ] );
+		pResult->AddToTail( m_Hints[i] );
 	}
+
 	return pResult->Count();
 }
 
@@ -105,29 +145,36 @@ int CASW_Marine_Hint_Manager::FindHints( const CBaseTrigger &volume, CUtlVector<
 	int nCount = m_Hints.Count();
 	for ( int i = 0; i < nCount; i++ )
 	{
-		if (volume.CollisionProp()->IsPointInBounds(m_Hints[i]->GetAbsOrigin()))
-			pResult->AddToTail(m_Hints[i]);		
+		if ( m_Hints[i]->m_Flags & HintData_t::HINT_DELETED )
+			continue;
+
+		if ( volume.CollisionProp()->IsPointInBounds( m_Hints[i]->GetAbsOrigin() ) )
+			pResult->AddToTail( m_Hints[i] );
 	}
 	return pResult->Count();
 }
 
-void CASW_Marine_Hint_Manager::AddHint( CBaseEntity *pEnt )
+HintData_t *CASW_Marine_Hint_Manager::AddHint( CBaseEntity *pEnt )
 {
 	HintData_t *pHintData = new HintData_t;
+	pHintData->m_Flags = 0;
 	pHintData->m_vecPosition = pEnt->GetAbsOrigin();
-	pHintData->m_flYaw = pEnt->GetAbsAngles()[ YAW ];
+	pHintData->m_flYaw = pEnt->GetAbsAngles()[YAW];
 	pHintData->m_nHintIndex = m_Hints.AddToTail( pHintData );
+	return pHintData;
 }
 
-void CASW_Marine_Hint_Manager::AddInfoNode(CAI_Node *pNode)
+HintData_t *CASW_Marine_Hint_Manager::AddInfoNode( CAI_Node *pNode )
 {
-	if (!pNode)
-		return;
+	if ( !pNode )
+		return NULL;
 
 	HintData_t *pHintData = new HintData_t;
-	pHintData->m_vecPosition = pNode->GetPosition(HULL_HUMAN);
+	pHintData->m_Flags = HintData_t::HINT_NODE;
+	pHintData->m_vecPosition = pNode->GetPosition( HULL_HUMAN );
 	pHintData->m_flYaw = pNode->GetYaw();
-	pHintData->m_nHintIndex = m_Hints.AddToTail(pHintData);
+	pHintData->m_nHintIndex = m_Hints.AddToTail( pHintData );
+	return pHintData;
 }
 
 CON_COMMAND( asw_show_marine_hints, "Show hint manager spots" )
@@ -135,9 +182,13 @@ CON_COMMAND( asw_show_marine_hints, "Show hint manager spots" )
 	int nCount = MarineHintManager()->GetHintCount();
 	for ( int i = 0; i < nCount; i++ )
 	{
+		int iFlags = MarineHintManager()->GetHintFlags( i );
+		if ( iFlags & HintData_t::HINT_DELETED )
+			continue;
+
 		Vector vecPos = MarineHintManager()->GetHintPosition( i );
 		float flYaw = MarineHintManager()->GetHintYaw( i );
 
-		NDebugOverlay::YawArrow( vecPos, flYaw, 64, 16, 255, 255, 255, 0, true, 3.0f );
+		NDebugOverlay::YawArrow( vecPos, flYaw, 64, 16, 255, ( iFlags & HintData_t::HINT_DYNAMIC ) ? 127 : 255, ( iFlags & HintData_t::HINT_NODE ) ? 127 : 255, 0, true, 3.0f );
 	}
 }

@@ -655,6 +655,9 @@ void CASW_SquadFormation::FindFollowHintNodes()
 			pEscapeVolume = pStickTogetherVolume;
 		}
 
+		if ( !bNeedNewNode && m_bLevelHasFollowHints && m_nMarineHintIndex[slotnum] != INVALID_HINT_INDEX && ( MarineHintManager()->GetHintFlags( m_nMarineHintIndex[slotnum] ) & HintData_t::HINT_DELETED ) )
+			bNeedNewNode = true;
+
 		// find shield bug (if any) nearest each marine
 		const float flShieldbugScanRangeSqr = Square( rd_follow_hint_max_search_range_danger.GetFloat() );
 		CASW_Shieldbug *pClosestShieldbug = NULL;

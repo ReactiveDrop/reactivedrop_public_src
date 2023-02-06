@@ -789,3 +789,8 @@ asw_pickup_50calmg : "50cal Machine Gun"
 		1 : "Yes"
 	]
 ]
+
+@PointClass base(Targetname, Parentname, Angles) studio("models/editor/marine_hint_dynamic.mdl") color(8 64 232) = info_marine_hint_dynamic :
+	"Movable follow hint node for marines"
+[
+]
