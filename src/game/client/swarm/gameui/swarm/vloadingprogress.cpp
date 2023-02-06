@@ -28,7 +28,6 @@ using namespace BaseModUI;
 ConVar rd_show_leaderboard_loading( "rd_show_leaderboard_loading", "1", FCVAR_ARCHIVE, "show friends' leaderboard entries on the loading screen" );
 ConVar rd_show_mission_icon_loading( "rd_show_mission_icon_loading", "1", FCVAR_ARCHIVE, "show mission icon on the loading screen" );
 ConVar rd_auto_hide_mission_icon_loading( "rd_auto_hide_mission_icon_loading", "1", FCVAR_ARCHIVE, "hide the mission icon if the mission has a custom loading background" );
-ConVar rd_leaderboard_by_difficulty( "rd_leaderboard_by_difficulty", "1", FCVAR_NONE, "Only show the leaderboard by current difficulty level, rather than all difficulties mixed together" );
 ConVar rd_loading_image_per_map( "rd_loading_image_per_map", "1", FCVAR_ARCHIVE, "If set to 1 each map can have its own background image during loading screen, 0 means same image for every map" );
 ConVar rd_loading_status_text_visible( "rd_loading_status_text_visible", "1", FCVAR_ARCHIVE, "If set to 1 status text is visible on the loading screen." );
 
@@ -557,14 +556,7 @@ void LoadingProgress::SetLeaderboardData( const char *pszLevelName, PublishedFil
 
 	int iSkillLevel = ASWGameRules() ? ASWGameRules()->GetSkillLevel() : asw_skill.GetInt();
 	char szLeaderboardName[k_cchLeaderboardNameMax]{};
-	if ( rd_leaderboard_by_difficulty.GetBool() && iSkillLevel > 2 )
-	{
-		g_ASW_Steamstats.DifficultySpeedRunLeaderboardName( szLeaderboardName, sizeof( szLeaderboardName ), iSkillLevel, pszLevelName, nLevelAddon, pszChallengeName, nChallengeAddon );
-	}
-	if ( !szLeaderboardName[0] || !g_ASW_Steamstats.IsLBWhitelisted( szLeaderboardName ) )
-	{
-		g_ASW_Steamstats.SpeedRunLeaderboardName( szLeaderboardName, sizeof( szLeaderboardName ), pszLevelName, nLevelAddon, pszChallengeName, nChallengeAddon );
-	}
+	g_ASW_Steamstats.SpeedRunLeaderboardName( szLeaderboardName, sizeof( szLeaderboardName ), pszLevelName, nLevelAddon, pszChallengeName, nChallengeAddon );
 	if ( !g_ASW_Steamstats.IsLBWhitelisted( szLeaderboardName ) )
 	{
 		g_ASW_Steamstats.SpeedRunLeaderboardName( szLeaderboardName, sizeof( szLeaderboardName ), pszLevelName, nLevelAddon, "0", k_PublishedFileIdInvalid );

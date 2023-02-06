@@ -11,8 +11,6 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-extern ConVar rd_leaderboard_by_difficulty;
-
 CNB_Leaderboard_Panel::CNB_Leaderboard_Panel( vgui::Panel *parent, const char *name ) : BaseClass( parent, name )
 {
 	m_pHeaderFooter = new CNB_Header_Footer( this, "HeaderFooter" );
@@ -69,14 +67,7 @@ CNB_Leaderboard_Panel::CNB_Leaderboard_Panel( vgui::Panel *parent, const char *n
 	}
 
 	char szLeaderboardName[k_cchLeaderboardNameMax]{};
-	if ( rd_leaderboard_by_difficulty.GetBool() && ASWGameRules()->GetSkillLevel() > 2 )
-	{
-		g_ASW_Steamstats.DifficultySpeedRunLeaderboardName( szLeaderboardName, sizeof( szLeaderboardName ), ASWGameRules()->GetSkillLevel(), szMap, nMapID, szChallenge, nChallengeID );
-	}
-	if ( !szLeaderboardName[0] || !g_ASW_Steamstats.IsLBWhitelisted( szLeaderboardName ) )
-	{
-		g_ASW_Steamstats.SpeedRunLeaderboardName( szLeaderboardName, sizeof( szLeaderboardName ), szMap, nMapID, szChallenge, nChallengeID );
-	}
+	g_ASW_Steamstats.SpeedRunLeaderboardName( szLeaderboardName, sizeof( szLeaderboardName ), szMap, nMapID, szChallenge, nChallengeID );
 	if ( !g_ASW_Steamstats.IsLBWhitelisted( szLeaderboardName ) )
 	{
 		g_ASW_Steamstats.SpeedRunLeaderboardName( szLeaderboardName, sizeof( szLeaderboardName ), szMap, nMapID, "0", k_PublishedFileIdInvalid );
