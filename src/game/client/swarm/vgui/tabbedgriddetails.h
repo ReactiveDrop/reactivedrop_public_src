@@ -123,6 +123,7 @@ public:
 	explicit TGD_Details( TGD_Tab *pTab );
 
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+	virtual void PerformLayout() override;
 
 	TGD_Entry *GetCurrentEntry();
 

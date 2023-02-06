@@ -79,6 +79,13 @@ void TabbedGridDetails::PerformLayout()
 	m_pTabLeftHint->GetPos( hx, hy );
 	m_pTabStrip->GetPos( x, y );
 
+	if ( hx < 0 )
+	{
+		x -= hx;
+		hx = 0;
+		m_pTabLeftHint->SetPos( hx, hy );
+	}
+
 	hx = x - ( hx + m_pTabLeftHint->GetWide() );
 
 	FOR_EACH_VEC( m_Tabs, i )
@@ -499,6 +506,14 @@ void TGD_Grid::PerformLayout()
 {
 	BaseClass::PerformLayout();
 
+	int x, y;
+	GetPos( x, y );
+	if ( x < 0 )
+	{
+		SetWide( GetWide() + x * 2 );
+		SetPos( 0, y );
+	}
+
 	if ( m_Entries.Count() == 0 )
 	{
 		m_pScrollBar->SetVisible( false );
@@ -822,6 +837,20 @@ void TGD_Details::ApplySchemeSettings( vgui::IScheme *pScheme )
 	LoadControlSettings( "Resource/UI/TGD_Details.res" );
 
 	BaseClass::ApplySchemeSettings( pScheme );
+}
+
+void TGD_Details::PerformLayout()
+{
+	BaseClass::PerformLayout();
+
+	int x, y;
+	GetPos( x, y );
+	int overhang = x + GetWide() - ScreenWidth();
+	if ( overhang > 0 )
+	{
+		x -= overhang;
+		SetPos( x, y );
+	}
 }
 
 TGD_Entry *TGD_Details::GetCurrentEntry()
