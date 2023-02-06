@@ -213,6 +213,12 @@ public:
 		PrecacheScriptSound( STRING( m_iszFlushSound ) );
 		PrecacheEffect( "watersplashquiet" );
 	}
+	void Spawn() override
+	{
+		Precache();
+
+		BaseClass::Spawn();
+	}
 	int UpdateTransmitState() override
 	{
 		// we don't have a model, so we can't transmit based on PVS
