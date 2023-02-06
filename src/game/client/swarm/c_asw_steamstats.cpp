@@ -565,6 +565,13 @@ bool CASW_Steamstats::FetchStats( CSteamID playerSteamID, CASW_Player *pPlayer )
 	m_WeaponStats[weaponIndex].m_bIsExtra = false;
 	m_WeaponStats[weaponIndex].m_szClassName = szClassname;
 
+	weaponIndex = m_WeaponStats.AddToTail();
+	szClassname = "prop_combine_ball";
+	m_WeaponStats[weaponIndex].FetchWeaponStats( playerSteamID, szClassname );
+	m_WeaponStats[weaponIndex].m_iWeaponIndex = GetDamagingWeaponClassFromName( szClassname );
+	m_WeaponStats[weaponIndex].m_bIsExtra = false;
+	m_WeaponStats[weaponIndex].m_szClassName = szClassname;
+
 
 	// Fetch marine counts
 	i = 0;
