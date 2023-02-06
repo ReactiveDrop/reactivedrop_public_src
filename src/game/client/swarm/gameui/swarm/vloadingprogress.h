@@ -106,14 +106,15 @@ private:
 	float				m_flLastEngineTime;
 
 	char				m_szGameMode[MAX_PATH];
-	wchar_t             m_wszLeaderboardTitle[MAX_PATH];
+	wchar_t				m_wszLeaderboardTitle[MAX_PATH];
 	char				m_szLevelName[MAX_PATH];
 
-	CLoadingTipPanel			*m_pTipPanel;
+	CLoadingTipPanel	*m_pTipPanel;
 
-	vgui::Panel *m_pLeaderboardBackground;
+	vgui::Panel			*m_pLeaderboardBackground;
 	CReactiveDrop_VGUI_Leaderboard_Panel *m_pLeaderboardPanel;
-	vgui::ImagePanel *m_pMissionPic;
+	vgui::ImagePanel	*m_pMissionPic;
+	Color				m_PosterReflectionColor;
 };
 
 };
