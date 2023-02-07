@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "3605"
+	"mapversion" "3606"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -50,7 +50,7 @@ viewsettings
 world
 {
 	"id" "394754"
-	"mapversion" "3605"
+	"mapversion" "3606"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -40198,6 +40198,7 @@ entity
 	"origin" "-5416 5126 692"
 	"spawnflags" "2"
 	"StartDisabled" "0"
+	"targetname" "hurt_gaspit"
 	solid
 	{
 		"id" "144921"
@@ -73279,6 +73280,7 @@ entity
 	"autoopen" "0"
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
+	"CustomMaxHealth" "1800"
 	"disableshadows" "1"
 	"distance" "125"
 	"DoBreachedShout" "1"
@@ -80186,6 +80188,7 @@ entity
 	"autoopen" "0"
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
+	"CustomMaxHealth" "1800"
 	"disableshadows" "1"
 	"distance" "125"
 	"DoBreachedShout" "1"
@@ -80943,6 +80946,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"disableshadows" "1"
 	"distance" "125"
 	"DoBreachedShout" "1"
@@ -85775,8 +85779,8 @@ cameras
 	"activecamera" "0"
 	camera
 	{
-		"position" "[19.5671 -47.1953 38.2505]"
-		"look" "[-1870.91 4450.4 -3940.77]"
+		"position" "[-5345.85 5023.4 867.599]"
+		"look" "[-6770.78 8774.88 -3983.26]"
 	}
 }
 cordons
