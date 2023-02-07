@@ -199,6 +199,7 @@ private:
 	StatList_Int_t m_SecondaryEquipCounts;
 	StatList_Int_t m_ExtraEquipCounts;
 	StatList_Int_t m_MarineSelectionCounts;
+	StatList_Int_t m_MissionPlayerCounts;
 	StatList_Int_t m_DifficultyCounts;
 
 	DifficultyStats_t m_DifficultyStats[5];

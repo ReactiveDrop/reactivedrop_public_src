@@ -442,6 +442,7 @@ bool CASW_Steamstats::FetchStats( CSteamID playerSteamID, CASW_Player *pPlayer )
 	m_SecondaryEquipCounts.Purge();
 	m_ExtraEquipCounts.Purge();
 	m_MarineSelectionCounts.Purge();
+	m_MissionPlayerCounts.Purge();
 	m_DifficultyCounts.Purge();
 	m_WeaponStats.Purge();
 
@@ -580,6 +581,8 @@ bool CASW_Steamstats::FetchStats( CSteamID playerSteamID, CASW_Player *pPlayer )
 		int32 iTempCount;
 		FETCH_STEAM_STATS( CFmtStr( "marines.%i.total", i++ ), iTempCount );
 		m_MarineSelectionCounts.AddToTail( iTempCount );
+		FETCH_STEAM_STATS( CFmtStr( "player_count.%d.missions", i ), iTempCount );
+		m_MissionPlayerCounts.AddToTail( iTempCount );
 	}
 
 	// Get difficulty counts
@@ -619,10 +622,11 @@ void CASW_Steamstats::PrepStatsForSend( CASW_Player *pPlayer )
 
 	PrepStatsForSend_Leaderboard( pPlayer, !IsOfficialCampaign() );
 
-	if( m_MarineSelectionCounts.Count() == 0 || 
-		m_DifficultyCounts.Count() == 0 || 
-		m_PrimaryEquipCounts.Count() == 0 || 
-		m_SecondaryEquipCounts.Count() == 0 || 
+	if ( m_MarineSelectionCounts.Count() == 0 ||
+		m_MissionPlayerCounts.Count() == 0 ||
+		m_DifficultyCounts.Count() == 0 ||
+		m_PrimaryEquipCounts.Count() == 0 ||
+		m_SecondaryEquipCounts.Count() == 0 ||
 		m_ExtraEquipCounts.Count() == 0 )
 		return;
 
@@ -636,6 +640,16 @@ void CASW_Steamstats::PrepStatsForSend( CASW_Player *pPlayer )
 
 	int iMarineProfileIndex = pMR->m_MarineProfileIndex;
 
+	int iPlayersWithMarines = 0;
+	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+	{
+		C_ASW_Player *pOtherPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
+		if ( pOtherPlayer && ASWGameResource()->GetFirstMarineResourceForPlayer( pOtherPlayer ) )
+		{
+			iPlayersWithMarines++;
+		}
+	}
+
 	m_iTotalKills += GetDebriefStats()->GetKills( iMarineIndex );
 	m_iFriendlyFire += GetDebriefStats()->GetFriendlyFire( iMarineIndex );
 	m_iDamage += GetDebriefStats()->GetDamageTaken( iMarineIndex );
@@ -647,12 +661,14 @@ void CASW_Steamstats::PrepStatsForSend( CASW_Player *pPlayer )
 	m_iHealing += GetDebriefStats()->GetHealthHealed( iMarineIndex );
 	m_iFastHacks += GetDebriefStats()->GetFastHacks( iMarineIndex );
 	m_iGamesTotal++;
-	if( m_DifficultyCounts.IsValidIndex( ASWGameRules()->GetSkillLevel() - 1 ) )
-		m_DifficultyCounts[ ASWGameRules()->GetSkillLevel() - 1 ] += 1;
+	if ( m_DifficultyCounts.IsValidIndex( ASWGameRules()->GetSkillLevel() - 1 ) )
+		m_DifficultyCounts[ASWGameRules()->GetSkillLevel() - 1] += 1;
 	m_iGamesSuccess += ASWGameRules()->GetMissionSuccess() ? 1 : 0;
 	m_fGamesSuccessPercent = m_iGamesSuccess / m_iGamesTotal * 100.0f;
-	if( m_MarineSelectionCounts.IsValidIndex( iMarineProfileIndex ) )
+	if ( m_MarineSelectionCounts.IsValidIndex( iMarineProfileIndex ) )
 		m_MarineSelectionCounts[iMarineProfileIndex] += 1;
+	if ( m_MissionPlayerCounts.IsValidIndex( iPlayersWithMarines - 1 ) )
+		m_MissionPlayerCounts[iPlayersWithMarines - 1] += 1;
 	m_iAmmoDeployed += GetDebriefStats()->GetAmmoDeployed( iMarineIndex );
 	m_iSentryGunsDeployed += GetDebriefStats()->GetSentrygunsDeployed( iMarineIndex );
 	m_iSentryFlamerDeployed += GetDebriefStats()->GetSentryFlamersDeployed( iMarineIndex );
@@ -739,12 +755,22 @@ void CASW_Steamstats::PrepStatsForSend( CASW_Player *pPlayer )
 	SEND_STEAM_STATS( "healampgun_heals", m_iHealAmpGunHeals );
 	SEND_STEAM_STATS( "healampgun_amps", m_iHealAmpGunAmps );
 	SEND_STEAM_STATS( "medrifle_heals", m_iMedRifleHeals );
+	SEND_STEAM_STATS( "leadership.procs.accuracy", m_iLeadershipProcsAccuracy );
+	SEND_STEAM_STATS( "leadership.procs.resist", m_iLeadershipProcsResist );
+	SEND_STEAM_STATS( "leadership.damage.accuracy", m_iLeadershipDamageAccuracy );
+	SEND_STEAM_STATS( "leadership.damage.resist", m_iLeadershipDamageResist );
 	SEND_STEAM_STATS( "playtime.total", m_iTotalPlayTime );
 
-	SEND_STEAM_STATS( CFmtStr( "equips.%s.primary", pPrimary->m_EquipClass), m_PrimaryEquipCounts[iPrimaryIndex] );
-	SEND_STEAM_STATS( CFmtStr( "equips.%s.secondary", pSecondary->m_EquipClass), m_SecondaryEquipCounts[iSecondaryIndex] );
-	SEND_STEAM_STATS( CFmtStr( "equips.%s.total", pExtra->m_EquipClass), m_ExtraEquipCounts[iExtraIndex] );
-	SEND_STEAM_STATS( CFmtStr( "marines.%i.total", iMarineProfileIndex ), m_MarineSelectionCounts[iMarineProfileIndex] );
+	if ( pPrimary && m_PrimaryEquipCounts.IsValidIndex( iPrimaryIndex ) )
+		SEND_STEAM_STATS( CFmtStr( "equips.%s.primary", pPrimary->m_EquipClass ), m_PrimaryEquipCounts[iPrimaryIndex] );
+	if ( pSecondary && m_SecondaryEquipCounts.IsValidIndex( iSecondaryIndex ) )
+		SEND_STEAM_STATS( CFmtStr( "equips.%s.secondary", pSecondary->m_EquipClass ), m_SecondaryEquipCounts[iSecondaryIndex] );
+	if ( pExtra && m_ExtraEquipCounts.IsValidIndex( iExtraIndex ) )
+		SEND_STEAM_STATS( CFmtStr( "equips.%s.total", pExtra->m_EquipClass ), m_ExtraEquipCounts[iExtraIndex] );
+	if ( m_MarineSelectionCounts.IsValidIndex( iMarineProfileIndex ) )
+		SEND_STEAM_STATS( CFmtStr( "marines.%i.total", iMarineProfileIndex ), m_MarineSelectionCounts[iMarineProfileIndex] );
+	if ( m_MissionPlayerCounts.IsValidIndex( iPlayersWithMarines - 1 ) )
+		SEND_STEAM_STATS( CFmtStr( "player_count.%i.missions", iPlayersWithMarines ), m_MissionPlayerCounts[iPlayersWithMarines - 1] );
 	int iLevel = pPlayer->GetLevel();
 	SEND_STEAM_STATS( "level", iLevel );
 	int iPromotion = pPlayer->GetPromotion();
