@@ -266,8 +266,8 @@ void CASW_Weapon_Minigun::PrimaryAttack()
 	if (asw_debug_marine_damage.GetBool())
 		Msg("Weapon dmg = %f\n", info.m_flDamage);
 	CASW_Marine_Resource* pPMR = pMarine->GetMarineResource();
-	if (pPMR)
-		info.m_flDamage *= pPMR->OnFired_GetDamageScale();
+	if ( pPMR )
+		pPMR->OnFired_ScaleDamage( info );
 	if (asw_DebugAutoAim.GetBool())
 	{
 		NDebugOverlay::Line(info.m_vecSrc, info.m_vecSrc + info.m_vecDirShooting * info.m_flDistance, 64, 0, 64, true, 1.0);

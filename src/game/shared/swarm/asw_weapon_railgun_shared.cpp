@@ -237,7 +237,7 @@ void CASW_Weapon_Railgun::PrimaryAttack()
 #ifndef CLIENT_DLL
 	if (asw_debug_marine_damage.GetBool())
 		Msg("Weapon dmg = %f\n", info.m_flDamage);
-	info.m_flDamage *= pMarine->GetMarineResource()->OnFired_GetDamageScale();
+	pMarine->GetMarineResource()->OnFired_ScaleDamage( info );
 #endif
 
 	info.m_vecSpread = GetBulletSpread();

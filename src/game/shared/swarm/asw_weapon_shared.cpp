@@ -762,7 +762,7 @@ void CASW_Weapon::PrimaryAttack( void )
 	if ( asw_debug_marine_damage.GetBool() )
 		Msg( "Weapon dmg = %f\n", info.m_flDamage );
 	if ( pMarine && pMarine->GetMarineResource() )
-		info.m_flDamage *= pMarine->GetMarineResource()->OnFired_GetDamageScale();
+		pMarine->GetMarineResource()->OnFired_ScaleDamage( info );
 	if ( asw_DebugAutoAim.GetBool() )
 	{
 		NDebugOverlay::Line( info.m_vecSrc, info.m_vecSrc + info.m_vecDirShooting * info.m_flDistance, 64, 0, 64, true, 1.0 );

@@ -159,12 +159,6 @@ void CASW_Weapon_Flechette::PrimaryAttack()
 			pMarine->RemoveAmmo( iShots, m_iPrimaryAmmoType );
 		}
 
-/*#ifndef CLIENT_DLL
-		if (asw_debug_marine_damage.GetBool())
-			Msg("Weapon dmg = %d\n", info.m_flDamage);
-		info.m_flDamage *= pMarine->GetMarineResource()->OnFired_GetDamageScale();
-#endif*/
-				
 		// increment shooting stats
 #ifndef CLIENT_DLL
 		float fGrenadeDamage = MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_FLECHETTE_DMG);
