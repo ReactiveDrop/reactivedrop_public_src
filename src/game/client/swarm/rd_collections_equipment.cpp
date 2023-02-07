@@ -1083,7 +1083,10 @@ void CRD_Collection_Panel_Equipment::OnKeyCodePressed( vgui::KeyCode keycode )
 	switch ( code )
 	{
 	case KEY_XBUTTON_A:
-		OnCommand( "AcceptEquip" );
+		if ( m_pTab->m_pBriefing )
+			OnCommand( "AcceptEquip" );
+		else
+			BaseClass::OnKeyCodePressed( keycode );
 		break;
 	default:
 		BaseClass::OnKeyCodePressed( keycode );
