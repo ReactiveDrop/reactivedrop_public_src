@@ -73,6 +73,7 @@
 #include "videocfg/videocfg.h"
 #ifdef INFESTED_DLL
 #include "asw_trace_filter.h"
+#include "rd_cause_of_death.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -1899,6 +1900,10 @@ void CBaseEntity::TakeDamage( const CTakeDamageInfo &inputInfo )
 			}
 		}
 	}
+
+#if defined( DBGFLAG_ASSERT ) && defined( INFESTED_DLL )
+	( void )GetCauseOfDeath( this, inputInfo );
+#endif
 
 	// Make sure our damage filter allows the damage.
 	if ( !PassesDamageFilter( inputInfo ))

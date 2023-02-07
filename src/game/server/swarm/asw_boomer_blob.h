@@ -31,6 +31,8 @@ public:
 	virtual void	CreateEffects();
 	void			InputCreateEffects( inputdata_t &data );
 
+	virtual Class_T Classify( void ) { return ( Class_T )CLASS_ASW_BOOMER_BLOB; }
+
 private:
 			void			Touch( CBaseEntity *pOther );
 			void			CheckNearbyTargets( );

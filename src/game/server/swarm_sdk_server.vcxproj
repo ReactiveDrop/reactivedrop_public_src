@@ -605,6 +605,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClCompile Include="..\shared\swarm\asw_weapon_tesla_gun_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_tesla_trap.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_welder_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\rd_cause_of_death.cpp" />
     <ClCompile Include="..\shared\swarm\rd_challenges_shared.cpp" />
     <ClCompile Include="..\shared\swarm\rd_lobby_utils.cpp" />
     <ClCompile Include="..\shared\swarm\rd_missions_shared.cpp" />
@@ -1595,6 +1596,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="..\shared\swarm\asw_weapon_tesla_trap.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_welder_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_boss_bar_shared.h" />
+    <ClInclude Include="..\shared\swarm\rd_cause_of_death.h" />
     <ClInclude Include="..\shared\swarm\rd_challenges_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_lobby_utils.h" />
     <ClInclude Include="..\shared\swarm\rd_missions_shared.h" />

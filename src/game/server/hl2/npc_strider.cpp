@@ -756,7 +756,7 @@ Class_T CNPC_Strider::Classify()
 	if( CarriedByDropship() )
 		return CLASS_NONE;
 
-	return CLASS_COMBINE;
+	return ( Class_T )CLASS_COMBINE_STRIDER;
 }
 
 //---------------------------------------------------------

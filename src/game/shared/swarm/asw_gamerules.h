@@ -352,7 +352,7 @@ public:
 	CBaseEntity* m_pSpawningSpot;
 
 	// misc
-	void ExplodedLevel();
+	void ExplodedLevel( CBaseEntity *pExploder );
 	void GrubSpawned(CBaseEntity *pGrub) { m_iNumGrubs++; }	
 	float m_fLastFireTime;	// last time a marine fired a gun (used for avoiding casual chatter in a battle)
 	void BroadcastSound( const char *sound );

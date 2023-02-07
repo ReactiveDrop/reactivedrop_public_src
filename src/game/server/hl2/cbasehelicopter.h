@@ -14,6 +14,7 @@
 
 #include "ai_basenpc.h"
 #include "ai_trackpather.h"
+#include "asw_shareddefs.h"
 
 
 //---------------------------------------------------------
@@ -87,8 +88,8 @@ public:
 	int  BloodColor( void ) { return DONT_BLEED; }
 	void GibMonster( void );
 
-	Class_T Classify ( void ) { return CLASS_COMBINE; }
-			 
+	Class_T Classify( void ) { return ( Class_T )CLASS_HELICOPTER; }
+
 	void CallDyingThink( void ) { DyingThink(); }
 
 	bool HasEnemy( void ) { return GetEnemy() != NULL; }

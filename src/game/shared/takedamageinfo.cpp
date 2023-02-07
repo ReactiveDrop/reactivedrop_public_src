@@ -404,13 +404,20 @@ static const char * const s_DamageTypeToStrTable[] =
 	"REMOVENORAGDOLL",
 	"PHYSGUN",
 	"PLASMA",
+#ifdef INFESTED_DLL
+	"INFEST",
+#else
 	"AIRBOAT",
+#endif
 	"DISSOLVE",
 	"BLAST_SURFACE",
 	"DIRECT",
-	"BUCKSHOT"
+	"BUCKSHOT",
+#ifdef INFESTED_DLL
+	"BLURPOISON",
+#endif
 };
-#define DAMAGE_TYPE_STR_TABLE_ENTRIES 31 // number of entries in table above
+#define DAMAGE_TYPE_STR_TABLE_ENTRIES NELEMS(s_DamageTypeToStrTable) // number of entries in table above
 
 void CTakeDamageInfo::DebugGetDamageTypeString(unsigned int damageType, char *outbuf, int outbuflength )
 {

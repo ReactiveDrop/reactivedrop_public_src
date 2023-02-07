@@ -97,4 +97,5 @@ void RegisterUserMessages( void )
 	usermessages->Register( "RDPlayerPromoted", 1 );
 	usermessages->Register( "RDLeaderboardReady", 0 );
 	usermessages->Register( "RDAlienKillStat", 2 );
+	usermessages->Register( "RDCauseOfDeath", 2 );
 }

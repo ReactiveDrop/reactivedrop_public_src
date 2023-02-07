@@ -21,6 +21,7 @@
 #include "rd_missions_shared.h"
 #include "c_user_message_register.h"
 #include "asw_alien_classes.h"
+#include "rd_cause_of_death.h"
 
 CASW_Steamstats g_ASW_Steamstats;
 
@@ -433,6 +434,27 @@ static void __MsgFunc_RDAlienKillStat( bf_read &msg )
 	}
 }
 USER_MESSAGE_REGISTER( RDAlienKillStat );
+
+static void __MsgFunc_RDCauseOfDeath( bf_read &msg )
+{
+	RD_Cause_of_Death_t iCause = ( RD_Cause_of_Death_t )msg.ReadShort();
+	Assert( iCause >= DEATHCAUSE_UNKNOWN && iCause < DEATHCAUSE_COUNT );
+	if ( iCause < DEATHCAUSE_UNKNOWN || iCause >= DEATHCAUSE_COUNT )
+		return;
+
+	const char *szApiName = g_szDeathCauseStatName[iCause];
+
+	int32_t nCount = 0;
+	if ( SteamUserStats() && SteamUserStats()->GetStat( szApiName, &nCount ) )
+	{
+		SteamUserStats()->SetStat( szApiName, nCount + 1 );
+	}
+	else
+	{
+		DevMsg( "STEAMSTATS: Failed to retrieve stat %s.\n", szApiName );
+	}
+}
+USER_MESSAGE_REGISTER( RDCauseOfDeath );
 
 bool CASW_Steamstats::FetchStats( CSteamID playerSteamID, CASW_Player *pPlayer )
 {

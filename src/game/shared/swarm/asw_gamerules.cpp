@@ -7358,7 +7358,7 @@ void CAlienSwarm::ClientSettingsChanged( CBasePlayer *pPlayer )
 }
 
 // something big in the level has exploded and failed the mission for us
-void CAlienSwarm::ExplodedLevel()
+void CAlienSwarm::ExplodedLevel( CBaseEntity *pExploder )
 {
 	if (GetGameState() == ASW_GS_INGAME)
 	{
@@ -7384,7 +7384,7 @@ void CAlienSwarm::ExplodedLevel()
 				//if (pMarine->m_iHealth > 0)
 				//{
 					pMarine->m_iHealth = 0;
-					pMarine->Event_Killed( CTakeDamageInfo( pMarine, pMarine, 0, DMG_NEVERGIB ) );
+					pMarine->Event_Killed( CTakeDamageInfo( pExploder, pExploder, 0, DMG_NEVERGIB ) );
 					pMarine->Event_Dying();
 				//}
 			}

@@ -87,6 +87,7 @@
 #include "triggers.h"
 #include "EnvLaser.h"
 #include "iservervehicle.h"
+#include "rd_cause_of_death.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1310,7 +1311,7 @@ void CASW_Marine::Event_Dying( void )
 int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 {
 	// make marines immune to crush damage
-	if ( info.GetDamageType() & DMG_CRUSH || asw_god.GetBool() )
+	if ( ( ( info.GetDamageType() & DMG_CRUSH ) && !( info.GetDamageType() & DMG_VEHICLE ) ) || asw_god.GetBool() )
 	{
 		return 0;
 	}
@@ -3908,6 +3909,15 @@ CRagdollProp* CASW_Marine::GetRagdollProp()
 
 void CASW_Marine::Event_Killed( const CTakeDamageInfo &info )
 {
+	if ( IsInhabited() )
+	{
+		CSingleUserRecipientFilter filter( GetCommander() );
+		filter.MakeReliable();
+		UserMessageBegin( filter, "RDCauseOfDeath" );
+			WRITE_SHORT( GetCauseOfDeath( this, info ) );
+		MessageEnd();
+	}
+
 	bool bAllDead = false;
 
 	if ( ASWGameRules() && ASWGameRules()->GetMissionManager() )

@@ -142,5 +142,5 @@ void CASW_Objective_Countdown::ExplodeLevel()
 
 void CASW_Objective_Countdown::FailMission()
 {
-	ASWGameRules()->ExplodedLevel();
+	ASWGameRules()->ExplodedLevel( this );
 }
