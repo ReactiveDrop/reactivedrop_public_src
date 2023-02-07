@@ -4950,6 +4950,10 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 			m_hDebriefStats->m_iHealAmpGunAmps.Set( i, pMR->m_iHealAmpGunAmps );
 			m_hDebriefStats->m_iMedRifleHeals.Set( i, pMR->m_iMedRifleHeals );
 			m_hDebriefStats->m_iBiomassIgnited.Set( i, pMR->m_iBiomassIgnited );
+			m_hDebriefStats->m_iLeadershipProcsAccuracy.Set( i, pMR->m_iLeadershipProcsAccuracy );
+			m_hDebriefStats->m_iLeadershipProcsResist.Set( i, pMR->m_iLeadershipProcsResist );
+			m_hDebriefStats->m_iLeadershipDamageAccuracy.Set( i, pMR->m_iLeadershipDamageAccuracy );
+			m_hDebriefStats->m_iLeadershipDamageResist.Set( i, pMR->m_iLeadershipDamageResist );
 
 			// Set starting equips for the marine
 			m_hDebriefStats->m_iStartingEquip0.Set( i, pMR->m_iInitialWeaponsInSlots[0] );

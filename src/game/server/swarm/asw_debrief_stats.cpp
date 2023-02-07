@@ -54,6 +54,10 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Debrief_Stats, DT_ASW_Debrief_Stats)
 	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iHealAmpGunAmps) ), m_iHealAmpGunAmps ),
 	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iMedRifleHeals) ), m_iMedRifleHeals ),
 	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iBiomassIgnited) ), m_iBiomassIgnited ),
+	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iLeadershipProcsAccuracy) ), m_iLeadershipProcsAccuracy ),
+	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iLeadershipProcsResist) ), m_iLeadershipProcsResist ),
+	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iLeadershipDamageAccuracy) ), m_iLeadershipDamageAccuracy ),
+	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iLeadershipDamageResist) ), m_iLeadershipDamageResist ),
 
 	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iWeaponClassAndKills0) ), m_iWeaponClassAndKills0 ),
 	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iDamageAndFF0) ), m_iDamageAndFF0 ),

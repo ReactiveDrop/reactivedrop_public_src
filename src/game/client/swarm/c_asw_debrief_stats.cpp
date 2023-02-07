@@ -54,6 +54,10 @@ IMPLEMENT_CLIENTCLASS_DT(C_ASW_Debrief_Stats, DT_ASW_Debrief_Stats, CASW_Debrief
 	RecvPropArray( RecvPropInt( RECVINFO(m_iHealAmpGunHeals[0]) ), m_iHealAmpGunAmps ),
 	RecvPropArray( RecvPropInt( RECVINFO(m_iMedRifleHeals[0]) ), m_iMedRifleHeals ),
 	RecvPropArray( RecvPropInt( RECVINFO(m_iBiomassIgnited[0]) ), m_iBiomassIgnited ),
+	RecvPropArray( RecvPropInt( RECVINFO(m_iLeadershipProcsAccuracy[0]) ), m_iLeadershipProcsAccuracy ),
+	RecvPropArray( RecvPropInt( RECVINFO(m_iLeadershipProcsResist[0]) ), m_iLeadershipProcsResist ),
+	RecvPropArray( RecvPropInt( RECVINFO(m_iLeadershipDamageAccuracy[0]) ), m_iLeadershipDamageAccuracy ),
+	RecvPropArray( RecvPropInt( RECVINFO(m_iLeadershipDamageResist[0]) ), m_iLeadershipDamageResist ),
 
 	RecvPropArray( RecvPropInt( RECVINFO(m_iWeaponClassAndKills0[0]) ), m_iWeaponClassAndKills0 ),
 	RecvPropArray( RecvPropInt( RECVINFO(m_iDamageAndFF0[0]) ), m_iDamageAndFF0 ),

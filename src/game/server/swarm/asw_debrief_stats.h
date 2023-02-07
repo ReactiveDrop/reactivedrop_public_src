@@ -89,6 +89,10 @@ public:
 	CNetworkArray( int,		m_iHealAmpGunAmps,			ASW_MAX_MARINE_RESOURCES );
 	CNetworkArray( int,		m_iMedRifleHeals,			ASW_MAX_MARINE_RESOURCES );
 	CNetworkArray( int,		m_iBiomassIgnited,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iLeadershipProcsAccuracy,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iLeadershipProcsResist,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iLeadershipDamageAccuracy,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iLeadershipDamageResist,			ASW_MAX_MARINE_RESOURCES );
 
 	// Weapon stats for the marine (8 weapons max)
 	CNetworkArray( unsigned int,		m_iWeaponClassAndKills0,		ASW_MAX_MARINE_RESOURCES );

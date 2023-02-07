@@ -59,6 +59,10 @@ public:
 	int	GetHealampgunHeals( int iMarineIndex ) { return m_iHealAmpGunHeals[iMarineIndex]; }
 	int	GetHealampgunAmps( int iMarineIndex ) { return m_iHealAmpGunAmps[iMarineIndex]; }
 	int	GetMedRifleHeals( int iMarineIndex ) { return m_iMedRifleHeals[iMarineIndex]; }
+	int	GetLeadershipProcsAccuracy( int iMarineIndex ) { return m_iLeadershipProcsAccuracy[iMarineIndex]; }
+	int	GetLeadershipProcsResist( int iMarineIndex ) { return m_iLeadershipProcsResist[iMarineIndex]; }
+	int	GetLeadershipDamageAccuracy( int iMarineIndex ) { return m_iLeadershipDamageAccuracy[iMarineIndex]; }
+	int	GetLeadershipDamageResist( int iMarineIndex ) { return m_iLeadershipDamageResist[iMarineIndex]; }
 
 	int GetHighestKills();
 	float GetHighestAccuracy();
@@ -123,6 +127,10 @@ public:
 	CNetworkArray( int,		m_iHealAmpGunAmps,			ASW_MAX_MARINE_RESOURCES );
 	CNetworkArray( int,		m_iMedRifleHeals,			ASW_MAX_MARINE_RESOURCES );
 	CNetworkArray( int,		m_iBiomassIgnited,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iLeadershipProcsAccuracy,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iLeadershipProcsResist,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iLeadershipDamageAccuracy,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iLeadershipDamageResist,			ASW_MAX_MARINE_RESOURCES );
 
 	// Weapon stats for the marine (8 weapons max)
 	CNetworkArray( unsigned int,		m_iWeaponClassAndKills0,		ASW_MAX_MARINE_RESOURCES );

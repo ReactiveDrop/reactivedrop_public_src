@@ -1450,6 +1450,9 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		ASW_MARINE_SKILL_LEADERSHIP, ASW_MARINE_SUBSKILL_LEADERSHIP_DAMAGE_RESIST );
 	if ( pLeader )
 	{
+		CASW_Marine_Resource *pLeaderMR = pLeader->GetMarineResource();
+		Assert( pLeaderMR );
+
 		CBaseEntity *pHelpHelpImBeingSupressed = ( CBaseEntity * )te->GetSuppressHost();
 		te->SetSuppressHost( NULL );
 
@@ -1459,6 +1462,13 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		te->SetSuppressHost( pHelpHelpImBeingSupressed );
 
 		float fNewDamage = newInfo.GetDamage() * asw_leadership_resist_scale.GetFloat();
+
+		if ( pLeaderMR )
+		{
+			pLeaderMR->m_iLeadershipProcsResist++;
+			pLeaderMR->m_iLeadershipDamageResist += newInfo.GetDamage() - MAX( fNewDamage, 0 );
+		}
+
 		if ( fNewDamage <= 0 )
 			return 0;
 		newInfo.SetDamage( fNewDamage );

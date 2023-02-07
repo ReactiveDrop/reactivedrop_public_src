@@ -175,6 +175,10 @@ CASW_Marine_Resource::CASW_Marine_Resource()
 	m_iHealAmpGunAmps = 0;
 	m_iMedRifleHeals = 0;
 	m_iBiomassIgnited = 0;
+	m_iLeadershipProcsAccuracy = 0;
+	m_iLeadershipProcsResist = 0;
+	m_iLeadershipDamageAccuracy = 0;
+	m_iLeadershipDamageResist = 0;
 	m_iScore = -1;
 	m_flFinishedMissionTime = -1;
 
@@ -406,6 +410,14 @@ void CASW_Marine_Resource::OnFired_ScaleDamage( FireBulletsInfo_t & info )
 		if ( pLeader )
 		{
 			float flNewDamage = info.m_flDamage * asw_leadership_accuracy_scale.GetFloat();
+
+			CASW_Marine_Resource *pLeaderMR = pLeader->GetMarineResource();
+			Assert( pLeaderMR );
+			if ( pLeaderMR )
+			{
+				pLeaderMR->m_iLeadershipProcsAccuracy++;
+				pLeaderMR->m_iLeadershipDamageAccuracy += flNewDamage - info.m_flDamage;
+			}
 
 			info.m_flDamage = flNewDamage;
 

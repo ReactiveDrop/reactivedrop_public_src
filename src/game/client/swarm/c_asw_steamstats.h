@@ -190,6 +190,10 @@ private:
 	int32	m_iHealAmpGunHeals;
 	int32	m_iHealAmpGunAmps;
 	int32	m_iMedRifleHeals;
+	int32	m_iLeadershipProcsAccuracy;
+	int32	m_iLeadershipProcsResist;
+	int32	m_iLeadershipDamageAccuracy;
+	int32	m_iLeadershipDamageResist;
 	int32	m_iTotalPlayTime;
 	
 	typedef CUtlVector<int32> StatList_Int_t;

@@ -490,6 +490,10 @@ bool CASW_Steamstats::FetchStats( CSteamID playerSteamID, CASW_Player *pPlayer )
 	FETCH_STEAM_STATS( "healampgun_heals", m_iHealAmpGunHeals );
 	FETCH_STEAM_STATS( "healampgun_amps", m_iHealAmpGunAmps );
 	FETCH_STEAM_STATS( "medrifle_heals", m_iMedRifleHeals );
+	FETCH_STEAM_STATS( "leadership.procs.accuracy", m_iLeadershipProcsAccuracy );
+	FETCH_STEAM_STATS( "leadership.procs.resist", m_iLeadershipProcsResist );
+	FETCH_STEAM_STATS( "leadership.damage.accuracy", m_iLeadershipDamageAccuracy );
+	FETCH_STEAM_STATS( "leadership.damage.resist", m_iLeadershipDamageResist );
 	FETCH_STEAM_STATS( "playtime.total", m_iTotalPlayTime );
 
 	// Fetch starting equip information
@@ -695,6 +699,10 @@ void CASW_Steamstats::PrepStatsForSend( CASW_Player *pPlayer )
 	m_iHealAmpGunHeals += GetDebriefStats()->GetHealampgunHeals( iMarineIndex );
 	m_iHealAmpGunAmps += GetDebriefStats()->GetHealampgunAmps( iMarineIndex );
 	m_iMedRifleHeals += GetDebriefStats()->GetMedRifleHeals( iMarineIndex );
+	m_iLeadershipProcsAccuracy += GetDebriefStats()->GetLeadershipProcsAccuracy( iMarineIndex );
+	m_iLeadershipProcsResist += GetDebriefStats()->GetLeadershipProcsResist( iMarineIndex );
+	m_iLeadershipDamageAccuracy += GetDebriefStats()->GetLeadershipDamageAccuracy( iMarineIndex );
+	m_iLeadershipDamageResist += GetDebriefStats()->GetLeadershipDamageResist( iMarineIndex );
 	m_iTotalPlayTime += (int)GetDebriefStats()->m_fTimeTaken;
 
 	// Get starting equips
