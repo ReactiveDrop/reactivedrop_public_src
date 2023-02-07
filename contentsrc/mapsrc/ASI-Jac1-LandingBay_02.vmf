@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "3600"
+	"mapversion" "3601"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -50,7 +50,7 @@ viewsettings
 world
 {
 	"id" "394754"
-	"mapversion" "3600"
+	"mapversion" "3601"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -41121,6 +41121,7 @@ entity
 	"origin" "-5416 5126 692"
 	"spawnflags" "2"
 	"StartDisabled" "0"
+	"targetname" "hurt_gaspit"
 	solid
 	{
 		"id" "144921"
@@ -52447,6 +52448,7 @@ entity
 	"MaxLiveAliens" "4"
 	"maxoffset" "0 0 0"
 	"minoffset" "0 0 0"
+	"NearDistance" "740"
 	"NumAliens" "4"
 	"sizescalesp" "1.0"
 	"SpawnerState" "1"
@@ -52459,7 +52461,6 @@ entity
 	"StartBurrowed" "1"
 	"targetname" "SlomoSpawn1"
 	"teslablesp" "1"
-	"NearDistance" "740"
 	"origin" "-5456 4352 808"
 	editor
 	{
@@ -52506,6 +52507,7 @@ entity
 	"maxoffset" "0 0 0"
 	"minoffset" "0 0 0"
 	"MinSkillLevel" "2"
+	"NearDistance" "740"
 	"NumAliens" "4"
 	"sizescalesp" "1.0"
 	"SpawnerState" "1"
@@ -52518,7 +52520,6 @@ entity
 	"StartBurrowed" "1"
 	"targetname" "SlomoSpawn1"
 	"teslablesp" "1"
-	"NearDistance" "740"
 	"origin" "-5648 4017 841"
 	editor
 	{
@@ -73916,6 +73917,7 @@ entity
 	"autoopen" "0"
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
+	"CustomMaxHealth" "1800"
 	"disableshadows" "1"
 	"distance" "125"
 	"DoBreachedShout" "1"
@@ -76359,6 +76361,7 @@ entity
 	"autoopen" "0"
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
+	"CustomMaxHealth" "1800"
 	"disableshadows" "1"
 	"distance" "125"
 	"DoBreachedShout" "1"
@@ -81607,6 +81610,7 @@ entity
 	"MaxLiveAliens" "4"
 	"maxoffset" "0 0 0"
 	"minoffset" "0 0 0"
+	"NearDistance" "740"
 	"NumAliens" "4"
 	"sizescalesp" "1.0"
 	"SpawnerState" "1"
@@ -81619,7 +81623,6 @@ entity
 	"StartBurrowed" "1"
 	"targetname" "tankroom_03"
 	"teslablesp" "1"
-	"NearDistance" "740"
 	"origin" "-5488 800 832.999"
 	editor
 	{
@@ -82224,6 +82227,7 @@ entity
 	"MaxLiveAliens" "4"
 	"maxoffset" "0 0 0"
 	"minoffset" "0 0 0"
+	"NearDistance" "740"
 	"NumAliens" "4"
 	"sizescalesp" "1.0"
 	"SpawnerState" "1"
@@ -82236,7 +82240,6 @@ entity
 	"StartBurrowed" "1"
 	"targetname" "SlomoSpawn2"
 	"teslablesp" "1"
-	"NearDistance" "740"
 	"origin" "-5488 4352 808"
 	editor
 	{
@@ -82263,6 +82266,7 @@ entity
 	"maxoffset" "0 0 0"
 	"minoffset" "0 0 0"
 	"MinSkillLevel" "2"
+	"NearDistance" "740"
 	"NumAliens" "4"
 	"sizescalesp" "1.0"
 	"SpawnerState" "1"
@@ -82275,7 +82279,6 @@ entity
 	"StartBurrowed" "1"
 	"targetname" "SlomoSpawn2"
 	"teslablesp" "1"
-	"NearDistance" "740"
 	"origin" "-5648 3984 841"
 	editor
 	{
@@ -82301,6 +82304,7 @@ entity
 	"MaxLiveAliens" "4"
 	"maxoffset" "0 0 0"
 	"minoffset" "0 0 0"
+	"NearDistance" "740"
 	"NumAliens" "4"
 	"sizescalesp" "1.0"
 	"SpawnerState" "1"
@@ -82313,7 +82317,6 @@ entity
 	"StartBurrowed" "1"
 	"targetname" "SlomoSpawn3"
 	"teslablesp" "1"
-	"NearDistance" "740"
 	"origin" "-5520 4352 808"
 	editor
 	{
@@ -82340,6 +82343,7 @@ entity
 	"maxoffset" "0 0 0"
 	"minoffset" "0 0 0"
 	"MinSkillLevel" "2"
+	"NearDistance" "740"
 	"NumAliens" "4"
 	"sizescalesp" "1.0"
 	"SpawnerState" "1"
@@ -82352,7 +82356,6 @@ entity
 	"StartBurrowed" "1"
 	"targetname" "SlomoSpawn3"
 	"teslablesp" "1"
-	"NearDistance" "740"
 	"origin" "-5696 3962 841"
 	editor
 	{
@@ -82473,6 +82476,7 @@ entity
 	"MaxLiveAliens" "2"
 	"maxoffset" "0 0 0"
 	"minoffset" "0 0 0"
+	"NearDistance" "740"
 	"NumAliens" "4"
 	"sizescalesp" "1.0"
 	"SpawnerState" "1"
@@ -82485,7 +82489,6 @@ entity
 	"StartBurrowed" "1"
 	"targetname" "SlomoSpawn4"
 	"teslablesp" "1"
-	"NearDistance" "740"
 	"origin" "-5488 4560 808"
 	editor
 	{
@@ -82512,6 +82515,7 @@ entity
 	"maxoffset" "0 0 0"
 	"minoffset" "0 0 0"
 	"MinSkillLevel" "2"
+	"NearDistance" "740"
 	"NumAliens" "4"
 	"sizescalesp" "1.0"
 	"SpawnerState" "1"
@@ -82524,7 +82528,6 @@ entity
 	"StartBurrowed" "1"
 	"targetname" "SlomoSpawn4"
 	"teslablesp" "1"
-	"NearDistance" "740"
 	"origin" "-5752 4000 841"
 	editor
 	{
@@ -83265,6 +83268,7 @@ entity
 	"autoopen" "0"
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
+	"CustomMaxHealth" "1800"
 	"disableshadows" "1"
 	"distance" "125"
 	"DoBreachedShout" "1"
@@ -84022,6 +84026,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"disableshadows" "1"
 	"distance" "125"
 	"DoBreachedShout" "1"
@@ -87539,6 +87544,7 @@ entity
 	"maxoffset" "0 0 0"
 	"minoffset" "0 0 0"
 	"MinSkillLevel" "4"
+	"NearDistance" "740"
 	"NumAliens" "1"
 	"sizescalesp" "1.0"
 	"SpawnerState" "1"
@@ -87551,7 +87557,6 @@ entity
 	"StartBurrowed" "0"
 	"targetname" "ins_har_spawn"
 	"teslablesp" "1"
-	"NearDistance" "740"
 	"origin" "-5120 4032 832"
 	editor
 	{
@@ -87579,6 +87584,7 @@ entity
 	"maxoffset" "0 0 0"
 	"minoffset" "0 0 0"
 	"MinSkillLevel" "4"
+	"NearDistance" "740"
 	"NumAliens" "1"
 	"sizescalesp" "1.0"
 	"SpawnerState" "1"
@@ -87591,7 +87597,6 @@ entity
 	"StartBurrowed" "0"
 	"targetname" "ins_har_spawn"
 	"teslablesp" "1"
-	"NearDistance" "740"
 	"origin" "-5526.96 4056.14 834"
 	editor
 	{
@@ -88258,8 +88263,8 @@ cameras
 	"activecamera" "0"
 	camera
 	{
-		"position" "[-3466.56 6967.07 1227.7]"
-		"look" "[-2760.67 10073.7 -4202.35]"
+		"position" "[-5364.23 5011.16 915.05]"
+		"look" "[-6306.33 9769.68 -3097.91]"
 	}
 }
 cordons
