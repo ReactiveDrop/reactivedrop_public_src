@@ -10,6 +10,8 @@
 #include "asw_radiation_volume.h"
 #include "ai_network.h"
 #include "triggers.h"
+#include "asw_path_utils.h"
+#include "asw_trace_filter_doors.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -32,6 +34,7 @@ ConVar rd_bots_avoid_bombs( "rd_bots_avoid_bombs", "1", FCVAR_NONE, "If 1 AI mar
 ConVar rd_bots_avoid_gas( "rd_bots_avoid_gas", "1", FCVAR_NONE, "If 1 AI marines will try to find a safe place when they see gas grenades or ruptured radioactive barrels" );
 ConVar rd_bots_avoid_fire( "rd_bots_avoid_fire", "1", FCVAR_NONE, "If 1 AI marines will try to avoid standing near fires" );
 ConVar rd_use_info_nodes( "rd_use_info_nodes", "0", FCVAR_NONE, "If there are no info_marine_hint nodes, info_node will be used instead" );
+ConVar rd_follow_hint_pathfind( "rd_follow_hint_pathfind", "2.5", FCVAR_NONE, "Avoid directing marines to stand in places that cannot be walked to by the squad leader. Remember bad nodes for this many seconds." );
 
 bool FireSystem_IsValidFirePosition( const Vector &position, float testRadius );
 
@@ -826,6 +829,31 @@ void CASW_SquadFormation::FindFollowHintNodes()
 
 		g_pSortLeader = pLeader;
 		hints.Sort( CASW_SquadFormation::FollowHintSortFunc );
+
+		if ( rd_follow_hint_pathfind.GetFloat() != 0 )
+		{
+			FOR_EACH_VEC_BACK( hints, i )
+			{
+				AI_Waypoint_t *pRoute = ASWPathUtils()->BuildRouteForHull( pLeader->GetAbsOrigin(), hints[i]->GetAbsOrigin(),
+					NULL, 100, pLeader->GetHullType(), NAV_GROUND );
+				if ( pRoute && !UTIL_ASW_DoorBlockingRoute( pRoute, true ) &&
+					!UTIL_ASW_BrushBlockingRoute( pRoute, MASK_PLAYERSOLID_BRUSHONLY, COLLISION_GROUP_PLAYER_MOVEMENT ) &&
+					!UTIL_ASW_AirlockBlockingRoute( pRoute, CONTENTS_MOVEABLE, COLLISION_GROUP_PLAYER_MOVEMENT ) )
+				{
+					ASWPathUtils()->DeleteRoute( pRoute );
+					continue;
+				}
+
+				if ( asw_debug_marine_hints.GetBool() )
+				{
+					NDebugOverlay::Box( hints[i]->GetAbsOrigin(), -Vector( 5, 5, 0 ), Vector( 5, 5, 5 ), 255, 127, 127, 64, 0.35f );
+				}
+
+				hints[i]->m_flIgnoreUntil = gpGlobals->curtime + rd_follow_hint_pathfind.GetFloat();
+				hints.Remove( i );
+				nCount--;
+			}
+		}
 
 		// if this marine is close to a shield bug, grab a flanking node
 		if ( !pEscapeVolume && pClosestShieldbug && iClosestFlankingNode != INVALID_HINT_INDEX )

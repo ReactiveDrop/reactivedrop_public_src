@@ -156,6 +156,10 @@ CDynamicProp* UTIL_ASW_AirlockBlockingRoute( AI_Waypoint_t* pRoute, const int nC
 			{
 				return pAirlock;
 			}
+			if ( pAirlock && FStrEq( STRING( tr.m_pEnt->GetModelName() ), "models/props/doors/slow_heavy_door/slow_heavy_door_v2.mdl" ) )
+			{
+				return pAirlock;
+			}
 		}
 
 		pLastPoint = pRoute;

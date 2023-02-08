@@ -130,6 +130,9 @@ int CASW_Marine_Hint_Manager::FindHints( const Vector &position, const float flM
 		if ( m_Hints[i]->m_Flags & HintData_t::HINT_DELETED )
 			continue;
 
+		if ( m_Hints[i]->m_flIgnoreUntil > gpGlobals->curtime )
+			continue;
+
 		float flDistSqr = position.DistToSqr( m_Hints[i]->m_vecPosition );
 		if ( flDistSqr < flMinDistSqr || flDistSqr > flMaxDistSqr )
 			continue;
@@ -148,6 +151,9 @@ int CASW_Marine_Hint_Manager::FindHints( const CBaseTrigger &volume, CUtlVector<
 		if ( m_Hints[i]->m_Flags & HintData_t::HINT_DELETED )
 			continue;
 
+		if ( m_Hints[i]->m_flIgnoreUntil > gpGlobals->curtime )
+			continue;
+
 		if ( volume.CollisionProp()->IsPointInBounds( m_Hints[i]->GetAbsOrigin() ) )
 			pResult->AddToTail( m_Hints[i] );
 	}
@@ -161,6 +167,7 @@ HintData_t *CASW_Marine_Hint_Manager::AddHint( CBaseEntity *pEnt )
 	pHintData->m_vecPosition = pEnt->GetAbsOrigin();
 	pHintData->m_flYaw = pEnt->GetAbsAngles()[YAW];
 	pHintData->m_nHintIndex = m_Hints.AddToTail( pHintData );
+	pHintData->m_flIgnoreUntil = -1;
 	return pHintData;
 }
 
@@ -174,6 +181,7 @@ HintData_t *CASW_Marine_Hint_Manager::AddInfoNode( CAI_Node *pNode )
 	pHintData->m_vecPosition = pNode->GetPosition( HULL_HUMAN );
 	pHintData->m_flYaw = pNode->GetYaw();
 	pHintData->m_nHintIndex = m_Hints.AddToTail( pHintData );
+	pHintData->m_flIgnoreUntil = -1;
 	return pHintData;
 }
 

@@ -30,6 +30,7 @@ public:
 	Vector m_vecPosition;
 	float m_flYaw;
 	int m_nHintIndex;
+	float m_flIgnoreUntil;
 };
 
 class CASW_Marine_Hint_Ent : public CServerOnlyPointEntity
