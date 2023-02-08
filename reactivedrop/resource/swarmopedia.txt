@@ -648,11 +648,11 @@
 			"MinValue" "1"
 		}
 		"GlobalStat" {
-			"StatName" "lifetime_alien_kills.asw_antlionguard_normal"
+			"StatName" "lifetime_alien_kills.npc_antlionguard_normal"
 			"Caption" "#rd_so_stat_killed"
 		}
 		"GlobalStat" {
-			"StatName" "lifetime_alien_kills.asw_antlionguard_cavern"
+			"StatName" "lifetime_alien_kills.npc_antlionguard_cavern"
 			"Caption" "#rd_so_stat_killed_cavern"
 		}
 		"Ability" "#rd_so_ability_knocks_down_marines"
