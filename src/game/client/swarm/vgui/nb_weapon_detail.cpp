@@ -153,11 +153,11 @@ void CNB_Weapon_Detail::UpdateLabels( CASW_WeaponInfo *pWeaponData )
 			static wchar_t wszPowerLine[32];
 			int iDamValue = (pWeaponData->m_flBaseDamage*pWeaponData->m_iNumPellets)+flBaseSkillDmgShift;
 			int nTotalBonusDmg = (nBonusDmg*nPellets)-flBaseSkillDmgShift;
-			Q_snwprintf( wszPowerLine, ARRAYSIZE( wszPowerLine ), g_pVGuiLocalize->Find( "#asw_weapon_details_firepower" ) );
+			Q_snwprintf( wszPowerLine, ARRAYSIZE( wszPowerLine ), L"%s", g_pVGuiLocalize->Find( "#asw_weapon_details_firepower" ) );
 			wchar_t wzDamValue[10];
 			if ( iDamValue <= 0 )
 			{
-				Q_snwprintf( wzDamValue, ARRAYSIZE( wzDamValue ), g_pVGuiLocalize->Find( "#asw_weapon_altfire_NA" ) );
+				Q_snwprintf( wzDamValue, ARRAYSIZE( wzDamValue ), L"%s", g_pVGuiLocalize->Find( "#asw_weapon_altfire_NA" ) );
 			}
 			else if ( nTotalBonusDmg > 0 )
 			{
@@ -198,7 +198,7 @@ void CNB_Weapon_Detail::UpdateLabels( CASW_WeaponInfo *pWeaponData )
 		{
 			// fire rate
 			static wchar_t wszRateLine[32];
-			Q_snwprintf( wszRateLine, ARRAYSIZE( wszRateLine ), g_pVGuiLocalize->Find( "#asw_weapon_details_firerate" ) );
+			Q_snwprintf( wszRateLine, ARRAYSIZE( wszRateLine ), L"%s", g_pVGuiLocalize->Find( "#asw_weapon_details_firerate" ) );
 			m_pTitleLabel->SetText( wszRateLine );
 			m_pTitleLabel->SetVisible( true );
 
@@ -214,7 +214,7 @@ void CNB_Weapon_Detail::UpdateLabels( CASW_WeaponInfo *pWeaponData )
 			float flCurrent = 0.0f;
 			if ( flRate <= 0 )
 			{
-				Q_snwprintf( wzFireValue, ARRAYSIZE( wzFireValue ), g_pVGuiLocalize->Find( "#asw_weapon_altfire_NA" ) );
+				Q_snwprintf( wzFireValue, ARRAYSIZE( wzFireValue ), L"%s", g_pVGuiLocalize->Find( "#asw_weapon_altfire_NA" ) );
 			}
 			else
 			{
@@ -239,7 +239,7 @@ void CNB_Weapon_Detail::UpdateLabels( CASW_WeaponInfo *pWeaponData )
 			float flBaseSkillModifier = asw_skill_reloading_base.GetFloat();
 			// reload time
 			static wchar_t wszReloadLine[32];
-			Q_snwprintf( wszReloadLine, ARRAYSIZE( wszReloadLine ), g_pVGuiLocalize->Find( "#asw_weapon_details_reload" ) );
+			Q_snwprintf( wszReloadLine, ARRAYSIZE( wszReloadLine ), L"%s", g_pVGuiLocalize->Find( "#asw_weapon_details_reload" ) );
 			float flBaseReload = pWeaponData->flReloadTime;
 			if ( pWeaponData->m_flDisplayReloadTime >= 0 )
 				flBaseReload = pWeaponData->m_flDisplayReloadTime;
@@ -249,7 +249,7 @@ void CNB_Weapon_Detail::UpdateLabels( CASW_WeaponInfo *pWeaponData )
 			wchar_t wzReloadValue[32];
 			if ( flBaseReload <= 0 )
 			{
-				Q_snwprintf( wzReloadValue, ARRAYSIZE( wzReloadValue ), g_pVGuiLocalize->Find( "#asw_weapon_altfire_NA" ) );
+				Q_snwprintf( wzReloadValue, ARRAYSIZE( wzReloadValue ), L"%s", g_pVGuiLocalize->Find( "#asw_weapon_altfire_NA" ) );
 			}
 			else
 			{
@@ -287,7 +287,7 @@ void CNB_Weapon_Detail::UpdateLabels( CASW_WeaponInfo *pWeaponData )
 		{
 			// clip capacity
 			static wchar_t wszClipLine[32];
-			Q_snwprintf( wszClipLine, ARRAYSIZE( wszClipLine ), g_pVGuiLocalize->Find( "#asw_weapon_details_clipsize" ) );
+			Q_snwprintf( wszClipLine, ARRAYSIZE( wszClipLine ), L"%s", g_pVGuiLocalize->Find( "#asw_weapon_details_clipsize" ) );
 			int iClipValue = pWeaponData->iMaxClip1;
 			int nMaxBulletsPerGun = GetAmmoDef()->MaxCarry( pWeaponData->iAmmoType, NULL );
 			int iNumClips = ( nMaxBulletsPerGun / iClipValue ) + 1;
@@ -329,18 +329,18 @@ void CNB_Weapon_Detail::UpdateLabels( CASW_WeaponInfo *pWeaponData )
 		{
 			// alt fire
 			static wchar_t wszAltLine[32];
-			Q_snwprintf( wszAltLine, ARRAYSIZE( wszAltLine ), g_pVGuiLocalize->Find( "#asw_weapon_details_altfire" ) );
+			Q_snwprintf( wszAltLine, ARRAYSIZE( wszAltLine ), L"%s", g_pVGuiLocalize->Find( "#asw_weapon_details_altfire" ) );
 			wchar_t wzAltValue[64];
 			bool bHighlightText = false;
 			if ( !Q_stricmp( pWeaponData->szAltFireText, "" ) )
-				Q_snwprintf( wzAltValue, ARRAYSIZE( wzAltValue ), g_pVGuiLocalize->Find( "#asw_weapon_altfire_none" ) );
+				Q_snwprintf( wzAltValue, ARRAYSIZE( wzAltValue ), L"%s", g_pVGuiLocalize->Find( "#asw_weapon_altfire_none" ) );
 			else
 			{
 				int iAltFire = pWeaponData->iDefaultClip2;
 				if ( iAltFire > 0 )
 					Q_snwprintf( wzAltValue, ARRAYSIZE( wzAltValue ), L"%d %s", iAltFire, g_pVGuiLocalize->Find( pWeaponData->szAltFireText ) );
 				else
-					Q_snwprintf( wzAltValue, ARRAYSIZE( wzAltValue ), g_pVGuiLocalize->Find( pWeaponData->szAltFireText ) );
+					Q_snwprintf( wzAltValue, ARRAYSIZE( wzAltValue ), L"%s", g_pVGuiLocalize->Find( pWeaponData->szAltFireText ) );
 				bHighlightText = true;
 			}
 
@@ -356,7 +356,7 @@ void CNB_Weapon_Detail::UpdateLabels( CASW_WeaponInfo *pWeaponData )
 		{
 			// attributes
 			static wchar_t wszAttributesLine[32];
-			Q_snwprintf( wszAttributesLine, ARRAYSIZE( wszAttributesLine ), g_pVGuiLocalize->Find( "#asw_weapon_details_notes" ) );
+			Q_snwprintf( wszAttributesLine, ARRAYSIZE( wszAttributesLine ), L"%s", g_pVGuiLocalize->Find( "#asw_weapon_details_notes" ) );
 			//wchar_t wszAttributesTempNull[4];
 			//wchar_t wszAttributesTempText[64];
 			wchar_t wszAttributesValue[64];
@@ -377,7 +377,7 @@ void CNB_Weapon_Detail::UpdateLabels( CASW_WeaponInfo *pWeaponData )
 			}
 			else
 			{
-				Q_snwprintf( wszAttributesValue, ARRAYSIZE( wszAttributesValue ), g_pVGuiLocalize->Find( pWeaponData->szAttributesText ) );
+				Q_snwprintf( wszAttributesValue, ARRAYSIZE( wszAttributesValue ), L"%s", g_pVGuiLocalize->Find( pWeaponData->szAttributesText ) );
 				bHighlightText = true;
 				m_pTitleLabel->SetText( wszAttributesLine );
 				m_pTitleLabel->SetVisible( true );
@@ -403,7 +403,7 @@ void CNB_Weapon_Detail::UpdateLabels( CASW_WeaponInfo *pWeaponData )
 
 			// required level
 			static wchar_t wszAltLine[32];
-			Q_snwprintf( wszAltLine, ARRAYSIZE( wszAltLine ), g_pVGuiLocalize->Find( "#asw_weapon_details_required_level" ) );
+			Q_snwprintf( wszAltLine, ARRAYSIZE( wszAltLine ), L"%s", g_pVGuiLocalize->Find( "#asw_weapon_details_required_level" ) );
 
 			nRequiredLevel++;	// for display it's actually 1 higher (levels start from 0 in code)
 			wchar_t wzAltValue[64];
