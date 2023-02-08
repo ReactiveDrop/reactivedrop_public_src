@@ -129,6 +129,8 @@ const char *const g_szDeathCauseStatName[] =
 	"cause_of_death.env_fire",
 	"cause_of_death.env_laser",
 	"cause_of_death.burn_other",
+	"cause_of_death.grenade_launcher_self",
+	"cause_of_death.ricochet_bullet",
 };
 
 #ifndef CLIENT_DLL
@@ -267,6 +269,11 @@ RD_Cause_of_Death_t GetCauseOfDeath( CBaseEntity *pVictim, const CTakeDamageInfo
 	if ( pMarineAttacker && info.GetWeapon() && ( info.GetDamageType() & DMG_BUCKSHOT ) )
 	{
 		return DEATHCAUSE_MARINE_BUCKSHOT;
+	}
+
+	if ( info.GetWeapon() && info.GetWeapon()->Classify() == CLASS_ASW_RICOCHET )
+	{
+		return DEATHCAUSE_RICOCHET_BULLET;
 	}
 
 	if ( pMarineAttacker && info.GetWeapon() && ( info.GetDamageType() & DMG_BULLET ) )
@@ -509,7 +516,9 @@ RD_Cause_of_Death_t GetCauseOfDeath( CBaseEntity *pVictim, const CTakeDamageInfo
 
 	if ( info.GetWeapon() && ( info.GetDamageType() & DMG_BLAST ) )
 	{
-		return info.GetWeapon()->Classify() == CLASS_ASW_GRENADE_LAUNCHER ? DEATHCAUSE_GRENADE_LAUNCHER : DEATHCAUSE_GRENADE_OTHER;
+		if ( info.GetWeapon()->Classify() == CLASS_ASW_GRENADE_LAUNCHER )
+			return pVictim == info.GetAttacker() ? DEATHCAUSE_GRENADE_LAUNCHER_SELF : DEATHCAUSE_GRENADE_LAUNCHER;
+		return DEATHCAUSE_GRENADE_OTHER;
 	}
 
 	if ( info.GetAttacker() && info.GetAttacker()->ClassMatches( "env_laser" ) )
