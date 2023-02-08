@@ -177,6 +177,13 @@ void CRD_Collection_Details_Swarmopedia::DisplayEntry( TGD_Entry *pEntry )
 		wchar_t wszDays[4]{};
 		V_snwprintf( wszDays, ARRAYSIZE( wszDays ), L"%d", m_nStatsDays );
 
+		g_pVGuiLocalize->ConstructString( buf, sizeof( buf ),
+			g_pVGuiLocalize->FindSafe( m_nStatsDays ? "#rd_so_global_stat_days" : "#rd_so_global_stat_total" ), 1, wszDays );
+
+		vgui::Label *pDaysLabel = m_pGplStats->AddPanelItem<vgui::Label>( "DaysLabel", "" );
+		pDaysLabel->SetContentAlignment( vgui::Label::a_east );
+		pDaysLabel->SetText( buf );
+
 		FOR_EACH_VEC( pAlien->GlobalStats, i )
 		{
 			int nOK{};
@@ -195,12 +202,8 @@ void CRD_Collection_Details_Swarmopedia::DisplayEntry( TGD_Entry *pEntry )
 				nStat[0] += nStat[j];
 			}
 
-			g_pVGuiLocalize->ConstructString( buf, sizeof( buf ),
-				g_pVGuiLocalize->FindSafe( m_nStatsDays ? "#rd_so_global_stat_days" : "#rd_so_global_stat_total" ), 2,
-				g_pVGuiLocalize->FindSafe( pAlien->GlobalStats[i]->Caption ), wszDays );
-
 			CRD_Collection_StatLine *pStatLine = m_pGplStats->AddPanelItem<CRD_Collection_StatLine>( "StatLine" );
-			pStatLine->SetLabel( buf );
+			pStatLine->SetLabel( g_pVGuiLocalize->FindSafe( pAlien->GlobalStats[i]->Caption ) );
 			pStatLine->SetValue( nStat[0] );
 		}
 	}

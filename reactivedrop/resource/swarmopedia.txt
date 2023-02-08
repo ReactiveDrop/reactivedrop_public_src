@@ -98,15 +98,15 @@
 		}
 		"Paragraph" {
 			"Text" "#rd_so_damage_resistance_drone"
-			"Color" "255 255 255 255"
+			"Color" "83 148 192 255"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_tips_drone"
-			"Color" "255 255 255 255"
+			"Color" "83 148 192 255"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_author_julie_duval"
-			"Color" "169 213 255 255"
+			"Color" "179 203 207 255"
 		}
 		"Paragraph" "#rd_so_paragraph_drone_0"
 		"Paragraph" "#rd_so_paragraph_drone_1"
@@ -139,15 +139,15 @@
 		}
 		"Paragraph" {
 			"Text" "#rd_so_damage_resistance_101hp"
-			"Color" "255 255 255 255"
+			"Color" "83 148 192 255"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_tips_ranger"
-			"Color" "255 255 255 255"
+			"Color" "83 148 192 255"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_author_bur_nable"
-			"Color" "169 213 255 255"
+			"Color" "187 153 204 255"
 		}
 		"Paragraph" "#rd_so_paragraph_ranger_0"
 		"Paragraph" "#rd_so_paragraph_ranger_1"
@@ -188,15 +188,15 @@
 		}
 		"Paragraph" {
 			"Text" "#rd_so_damage_resistance_1000hp"
-			"Color" "255 255 255 255"
+			"Color" "83 148 192 255"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_tips_shieldbug"
-			"Color" "255 255 255 255"
+			"Color" "83 148 192 255"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_author_julie_duval"
-			"Color" "169 213 255 255"
+			"Color" "179 203 207 255"
 		}
 		"Paragraph" "#rd_so_paragraph_shieldbug_0"
 		"Paragraph" "#rd_so_paragraph_shieldbug_1"
@@ -240,15 +240,15 @@
 		}
 		"Paragraph" {
 			"Text" "#rd_so_damage_resistance_800hp"
-			"Color" "255 255 255 255"
+			"Color" "83 148 192 255"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_tips_boomer"
-			"Color" "255 255 255 255"
+			"Color" "83 148 192 255"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_author_brad_irwing"
-			"Color" "169 213 255 255"
+			"Color" "190 222 171 255"
 		}
 		"Paragraph" "#rd_so_paragraph_boomer_0"
 		"Paragraph" "#rd_so_paragraph_boomer_1"
@@ -281,15 +281,15 @@
 		}
 		"Paragraph" {
 			"Text" "#rd_so_damage_resistance_30hp"
-			"Color" "255 255 255 255"
+			"Color" "83 148 192 255"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_tips_buzzer"
-			"Color" "255 255 255 255"
+			"Color" "83 148 192 255"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_author_bur_nable"
-			"Color" "169 213 255 255"
+			"Color" "187 153 204 255"
 		}
 		"Paragraph" "#rd_so_paragraph_buzzer_0"
 		"Paragraph" "#rd_so_paragraph_buzzer_1"
@@ -328,15 +328,15 @@
 		}
 		"Paragraph" {
 			"Text" "#rd_so_damage_resistance_25hp"
-			"Color" "255 255 255 255"
+			"Color" "83 148 192 255"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_tips_parasite"
-			"Color" "255 255 255 255"
+			"Color" "83 148 192 255"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_author_shaun_ming"
-			"Color" "169 213 255 255"
+			"Color" "199 179 162 255"
 		}
 		"Paragraph" "#rd_so_paragraph_parasite_0"
 		"Paragraph" "#rd_so_paragraph_parasite_1"
@@ -380,15 +380,15 @@
 		}
 		"Paragraph" {
 			"Text" "#rd_so_damage_resistance_350hp"
-			"Color" "255 255 255 255"
+			"Color" "83 148 192 255"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_tips_mortarbug"
-			"Color" "255 255 255 255"
+			"Color" "83 148 192 255"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_author_bur_nable"
-			"Color" "169 213 255 255"
+			"Color" "187 153 204 255"
 		}
 		"Paragraph" "#rd_so_paragraph_mortarbug_0"
 		"Paragraph" "#rd_so_paragraph_mortarbug_1"
@@ -421,15 +421,15 @@
 		}
 		"Paragraph" {
 			"Text" "#rd_so_damage_resistance_200hp"
-			"Color" "255 255 255 255"
+			"Color" "83 148 192 255"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_tips_harvester"
-			"Color" "255 255 255 255"
+			"Color" "83 148 192 255"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_author_brad_irwing"
-			"Color" "169 213 255 255"
+			"Color" "190 222 171 255"
 		}
 		"Paragraph" "#rd_so_paragraph_harvester_0"
 		"Paragraph" "#rd_so_paragraph_harvester_1"
@@ -467,15 +467,15 @@
 		}
 		"Paragraph" {
 			"Text" "#rd_so_damage_resistance_10hp"
-			"Color" "255 255 255 255"
+			"Color" "83 148 192 255"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_tips_xenomite"
-			"Color" "255 255 255 255"
+			"Color" "83 148 192 255"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_author_brad_irwing"
-			"Color" "169 213 255 255"
+			"Color" "190 222 171 255"
 		}
 		"Paragraph" "#rd_so_paragraph_xenomite_0"
 		"Paragraph" "#rd_so_paragraph_xenomite_1"
@@ -508,15 +508,15 @@
 		}
 		"Paragraph" {
 			"Text" "#rd_so_damage_resistance_59hp"
-			"Color" "255 255 255 255"
+			"Color" "83 148 192 255"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_tips_mender"
-			"Color" "255 255 255 255"
+			"Color" "83 148 192 255"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_author_bur_nable"
-			"Color" "169 213 255 255"
+			"Color" "187 153 204 255"
 		}
 		"Paragraph" "#rd_so_paragraph_mender_0"
 		"Paragraph" "#rd_so_paragraph_mender_1"
@@ -572,15 +572,15 @@
 		}
 		"Paragraph" {
 			"Text" "#rd_so_damage_resistance_biomass"
-			"Color" "255 255 255 255"
+			"Color" "83 148 192 255"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_tips_biomass"
-			"Color" "255 255 255 255"
+			"Color" "83 148 192 255"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_author_shaun_ming"
-			"Color" "169 213 255 255"
+			"Color" "199 179 162 255"
 		}
 		"Paragraph" "#rd_so_paragraph_biomass_0"
 		"Paragraph" "#rd_so_paragraph_biomass_1"
@@ -621,15 +621,15 @@
 		}
 		"Paragraph" {
 			"Text" "#rd_so_damage_resistance_1hp"
-			"Color" "255 255 255 255"
+			"Color" "83 148 192 255"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_tips_grub"
-			"Color" "255 255 255 255"
+			"Color" "83 148 192 255"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_author_shaun_ming"
-			"Color" "169 213 255 255"
+			"Color" "199 179 162 255"
 		}
 		"Paragraph" "#rd_so_paragraph_grub_0"
 		"Paragraph" "#rd_so_paragraph_grub_1"
@@ -677,15 +677,15 @@
 		}
 		"Paragraph" {
 			"Text" "#rd_so_damage_resistance_500hp"
-			"Color" "255 255 255 255"
+			"Color" "83 148 192 255"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_tips_antlionguard"
-			"Color" "255 255 255 255"
+			"Color" "83 148 192 255"
 		}
 		"Paragraph" {
 			"Text" "#rd_so_author_isaac_kleiner"
-			"Color" "169 213 255 255"
+			"Color" "221 236 152 255"
 		}
 		"Paragraph" "#rd_so_paragraph_antlionguard_0"
 		"Paragraph" "#rd_so_paragraph_antlionguard_1"
