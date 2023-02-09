@@ -1,0 +1,9 @@
+$sequence flinch1		"flinch1"		fps 30 node "standing" activity ACT_SMALL_FLINCH 1 		weightlist upperbodyreplace
+$sequence flinch2		"flinch2"		fps 30 node "standing" activity ACT_BIG_FLINCH 1 		weightlist upperbodyreplace
+$sequence flinch_head1		"flinch_head1"		fps 30 node "standing" activity ACT_FLINCH_HEAD 1 		weightlist upperbodyreplace
+$sequence flinch_head2		"flinch_head2"		fps 30 node "standing" activity ACT_FLINCH_HEAD 1 		weightlist upperbodyreplace
+$sequence flinch_leftarm1	"flinch_leftarm1"	fps 30 node "standing" activity ACT_FLINCH_LEFTARM 1 		weightlist upperbodyreplace
+$sequence flinch_rightarm1	"flinch_rightarm1"	fps 30 node "standing" activity ACT_FLINCH_RIGHTARM 1 		weightlist upperbodyreplace
+//$sequence flinch_stomach1	"flinch_stomach1"	fps 30 node "standing" activity ACT_FLINCH_STOMACH 1 		weightlist upperbodyreplace
+$sequence flinch_stomach2	"flinch_stomach2"	fps 30 node "standing" activity ACT_FLINCH_STOMACH 1 		weightlist upperbodyreplace
+//$sequence flinch_back1		"flinch_back1"		fps 30 node "standing" activity ACT_METROPOLICE_FLINCH_BEHIND 1 	weightlist upperbodyreplace

@@ -1,0 +1,442 @@
+
+// controls for aiming up/down left/right
+
+$poseparameter "aim_pitch" -90 90 loop 360
+$poseparameter "aim_yaw" -90 90 loop 360
+
+// ============== crouch aiming stuff=======
+$animation a_aim_crouch_neutral Crouch_Aim_9_directions frame 1 1
+$animation a_aim_crouch_mid_left Crouch_Aim_9_directions frame 0 0 subtract a_aim_crouch_neutral 0
+$animation a_aim_crouch_mid_center Crouch_Aim_9_directions frame 1 1 subtract a_aim_crouch_neutral 0
+$animation a_aim_crouch_mid_right Crouch_Aim_9_directions frame 2 2 subtract a_aim_crouch_neutral 0
+$animation a_aim_crouch_up_left Crouch_Aim_9_directions frame 3 3 subtract a_aim_crouch_neutral 0
+$animation a_aim_crouch_up_center Crouch_Aim_9_directions frame 4 4 subtract a_aim_crouch_neutral 0
+$animation a_aim_crouch_up_right Crouch_Aim_9_directions frame 5 5 subtract a_aim_crouch_neutral 0
+$animation a_aim_crouch_straightup Crouch_Aim_9_directions frame 6 6 subtract a_aim_crouch_neutral 0
+
+//$sequence crouch_aim_neutral Crouch_Aim_9_directions frame 1 1
+//$sequence crouch_aim_mid_left Crouch_Aim_9_directions frame 0 0
+//$sequence crouch_aim_crouch_mid_center Crouch_Aim_9_directions frame 1 1
+//$sequence crouch_aim_crouch_mid_right Crouch_Aim_9_directions frame 2 2
+//$sequence crouch_aim_crouch_up_left Crouch_Aim_9_directions frame 3 3
+//$sequence crouch_aim_crouch_up_center Crouch_Aim_9_directions frame 4 4
+//$sequence crouch_aim_crouch_up_right Crouch_Aim_9_directions frame 5 5
+//$sequence crouch_aim_crouch_straightup Crouch_Aim_9_directions frame 6 6
+$sequence crouch_aim_frames Crouch_Aim_9_directions
+
+$attachment anim_attachment_RH "ValveBiped.Bip01_R_Hand" 0 0 0 rotate -90 0 -90
+$attachment anim_attachment_LH "ValveBiped.Bip01_L_Hand" 0 0 0 rotate -90 0 -90
+
+$sequence Aim_crouch_delta_all  {
+			a_aim_crouch_straightup a_aim_crouch_straightup a_aim_crouch_straightup
+			a_aim_crouch_up_right a_aim_crouch_up_center a_aim_crouch_up_left 
+		     a_aim_crouch_mid_right a_aim_crouch_mid_center a_aim_crouch_mid_left 			
+			blendwidth 3 blend aim_yaw -45 45 blend aim_pitch -90 0
+			hidden delta }
+
+// blendref a_aim_crouch_neutral 
+// blendcenter a_aim_crouch_mid_center
+// blendwidth 3 calcblend aim_yaw "anim_attachment_RH" ZR calcblend aim_pitch "anim_attachment_RH" YR			
+// blendwidth 3 blend aim_yaw -45 45 blend aim_pitch -90 45
+			
+$sequence CrouchIdle "Crouch_idle01" loop FPS 30 ACT_CROUCHIDLE 1 addlayer Aim_crouch_delta_all
+$sequence CrouchAim @CrouchIdle FPS 30 ACT_COVER  1 addlayer Aim_crouch_delta_all
+//=======================
+
+// Idle pose for the marine carrying a weapon
+//	-this is a nicely visible pose from above, with the gun pointing in the direction he's facing
+$sequence lowcover_aim_smg1 "dmx/animation/idle_to_match_run" loop addlayer layer_Aim_all node "shooting" activity ACT_IDLE_RIFLE 1
+
+// ==============run aiming stuff=======
+$animation a_lowcover "lowcover_aim_smg1" frame 0 0 weightlist HipsUpperbodyReplace
+$animation a_lowcover_allbody "lowcover_aim_smg1" frame 0 0
+
+$sequence idle_aiming_neutral a_lowcover_allbody;
+
+// Base neutral aiming position
+$animation a_aim_neutral "aim_9_directions" frame 4 4 weightlist upperbodyreplace  
+// offsets for each aim direction
+$animation a_run_aim_down_left Aim_9_directions frame 0 0 subtract a_aim_neutral 0 weightlist upperbodyreplace
+$animation a_run_aim_down_center Aim_9_directions frame 1 1 subtract a_aim_neutral 0 weightlist upperbodyreplace
+$animation a_run_aim_down_right Aim_9_directions frame 2 2 subtract a_aim_neutral 0 weightlist upperbodyreplace
+$animation a_run_aim_mid_left Aim_9_directions frame 3 3 subtract a_aim_neutral 0 weightlist upperbodyreplace
+$animation a_run_aim_mid_center Aim_9_directions frame 4 4 subtract a_aim_neutral 0 weightlist upperbodyreplace
+$animation a_run_aim_mid_right Aim_9_directions frame 5 5 subtract a_aim_neutral 0 weightlist upperbodyreplace
+$animation a_run_aim_up_left Aim_9_directions frame 6 6 subtract a_aim_neutral 0 weightlist upperbodyreplace 
+$animation a_run_aim_up_center Aim_9_directions frame 7 7 subtract a_aim_neutral 0 weightlist upperbodyreplace
+$animation a_run_aim_up_right Aim_9_directions frame 8 8 subtract a_aim_neutral 0 weightlist upperbodyreplace
+$animation a_run_aim_straight_up aim_straight_up frame 0 0 subtract a_aim_neutral 0 weightlist upperbodyreplace
+$sequence aimup aim_straight_up hidden
+
+// a layer which produces the delta needed to aim in a particular direction based on the pose parameters above
+$sequence layer_Aim_all  {
+			a_run_aim_straight_up a_run_aim_straight_up a_run_aim_straight_up
+			a_run_aim_up_right a_run_aim_up_center a_run_aim_up_left 
+		     	a_run_aim_mid_right a_run_aim_mid_center a_run_aim_mid_left 
+			a_run_aim_down_right a_run_aim_down_center a_run_aim_down_left 
+			blendwidth 3 blend aim_yaw -40 30 blend aim_pitch -90 45
+			delta hidden } iklock rfoot 1 0 iklock lfoot 1 0
+
+
+
+// the layer put on top of walking/running
+$sequence layer_run_aiming "dmx/animation/RunN_smg1_Aim" weightlist upperbodyreplace addlayer layer_Aim_all hidden 
+
+
+// 9 way blend between the runs and idle, with the aiming layer added  (a_Idle was original idle)
+$sequence run_aiming_all {
+	a_RunNW a_RunN a_RunNE 
+	a_RunW a_idle a_RunE 
+	a_RunSW a_RunS a_RunSE 
+	blendwidth 3 blend move_y -1 1 blend move_x 1 -1 loop addlayer layer_run_aiming
+	ACT_RUN_AIM_RIFLE 1
+	node "running"
+	{ event AE_MARINE_FOOTSTEP 6 }
+	{ event AE_MARINE_FOOTSTEP 15 }
+}
+//=======================
+
+//======walk aiming stuff==========
+// Base neutral aiming position
+$animation a_aim_walk_neutral "WalkN_SMG1_Alert_Aim_9_directions" frame 4 4 weightlist upperbodyreplace
+//HipsUpperbodyReplace
+$animation a_walk_aim_down_left WalkN_SMG1_Alert_Aim_9_directions frame 2 2 subtract a_aim_walk_neutral 0 weightlist upperbodyreplace
+$animation a_walk_aim_down_center WalkN_SMG1_Alert_Aim_9_directions frame 1 1 subtract a_aim_walk_neutral 0 weightlist upperbodyreplace
+$animation a_walk_aim_down_right WalkN_SMG1_Alert_Aim_9_directions frame 0 0 subtract a_aim_walk_neutral 0 weightlist upperbodyreplace
+$animation a_walk_aim_mid_left WalkN_SMG1_Alert_Aim_9_directions frame 5 5 subtract a_aim_walk_neutral 0 weightlist upperbodyreplace
+$animation a_walk_aim_mid_center WalkN_SMG1_Alert_Aim_9_directions frame 4 4 subtract a_aim_walk_neutral 0 weightlist upperbodyreplace
+$animation a_walk_aim_mid_right WalkN_SMG1_Alert_Aim_9_directions frame 3 3 subtract a_aim_walk_neutral 0 weightlist upperbodyreplace
+$animation a_walk_aim_up_left WalkN_SMG1_Alert_Aim_9_directions frame 8 8 subtract a_aim_walk_neutral 0 weightlist upperbodyreplace 
+$animation a_walk_aim_up_center WalkN_SMG1_Alert_Aim_9_directions frame 7 7 subtract a_aim_walk_neutral 0 weightlist upperbodyreplace
+$animation a_walk_aim_up_right WalkN_SMG1_Alert_Aim_9_directions frame 6 6 subtract a_aim_walk_neutral 0 weightlist upperbodyreplace
+$animation a_walk_aim_straight_up aim_straight_up frame 0 0 subtract a_aim_walk_neutral 0 weightlist upperbodyreplace
+
+// a layer which produces the delta needed to aim in a particular direction based on the pose parameters above
+$sequence layer_Aim_walk_all  {
+			a_walk_aim_straight_up a_walk_aim_straight_up a_walk_aim_straight_up
+			a_walk_aim_up_right a_walk_aim_up_center a_walk_aim_up_left 
+		     	a_walk_aim_mid_right a_walk_aim_mid_center a_walk_aim_mid_left 
+			a_walk_aim_down_right a_walk_aim_down_center a_walk_aim_down_left 
+			blendwidth 3 blend aim_yaw -26 64 blend aim_pitch -125 45 delta hidden } iklock rfoot 1 0 iklock lfoot 1 0
+
+$sequence layer_walk_aiming "WalkN_Aim" weightlist upperbodyreplace addlayer layer_Aim_all hidden
+
+$sequence walk_aiming_all {
+	a_walkNW a_WalkN a_walkNE 
+	a_walkW a_Idle a_walkE 
+	a_walkSW a_walkS a_walkSE 
+	blendwidth 3 blend move_y -1 1 blend move_x 1 -1 loop addlayer layer_walk_aiming
+	ACT_WALK_AIM_RIFLE 1
+	node "walking"
+	{ event AE_MARINE_FOOTSTEP 6 }
+	{ event AE_MARINE_FOOTSTEP 15 }
+	//{ event 2051 9 }
+	//{ event 2050 23 }
+}
+
+$sequence reload_smg1 {
+    "SMG1_reload" fps 48
+    node "standing"
+    { event AE_MARINE_RELOAD_SOUND_A 20 }
+    { event AE_MARINE_RELOAD_SOUND_B 59 }
+    { event AE_MARINE_RELOAD_SOUND_C 82 }
+    activity ACT_RELOAD 1    
+    weightlist upperbodyreplace
+}
+
+$sequence reload_rg {
+    "SMG1_reload" fps 48
+    frames 52 105
+    node "standing"
+    //{ event AE_MARINE_RELOAD_SOUND_A 20 }
+    { event AE_MARINE_RELOAD_SOUND_B 5 }
+    { event AE_MARINE_RELOAD_SOUND_C 30 }
+    activity ACT_RELOAD_LOW 1    
+    weightlist upperbodyreplace
+}
+$sequence WeaponSwitch_smg1 "WeaponSwitchSMG" fps 60 node "standing" activity ACT_WEAPON_SWITCH 1 weightlist upperbodyreplace
+
+//$sequence shoot_smg1 "shootSMG1" fps 25 addlayer layer_Aim_all node "shooting" activity ACT_RANGE_ATTACK1 1 weightlist upperbodyreplace
+$sequence gesture_shoot_smg1 "shootSMG1" fps 25 subtract gesture_shoot_smg1 0 delta activity ACT_RANGE_ATTACK1 1
+$sequence gesture_shoot_shotgun "shootShotgun" fps 30 subtract gesture_shoot_shotgun 0 delta activity ACT_GESTURE_RANGE_ATTACK_SHOTGUN 1
+
+//$skiptransition "standing" "shooting"
+
+// ========================== PISTOL =======================
+
+$sequence reloadpistol {
+    "pistol_reload" fps 38
+    { event AE_MARINE_RELOAD_SOUND_A 0 }
+    { event AE_MARINE_RELOAD_SOUND_B 25 }
+    { event AE_MARINE_RELOAD_SOUND_C 34 }    
+    node "standing"
+    activity ACT_RELOAD_PISTOL 1
+    weightlist upperbodyreplace
+}
+$animation a_aim_P_neutral "pistol_aim_matrix" frame 4 4 weightlist HipsUpperbodyReplace
+
+$animation a_run_aim_p_down_left pistol_aim_matrix frame 0 0 subtract a_aim_p_neutral 0 weightlist HipsUpperbodyReplace
+$animation a_run_aim_p_down_center pistol_aim_matrix frame 1 1 subtract a_aim_p_neutral 0 weightlist HipsUpperbodyReplace
+$animation a_run_aim_p_down_right pistol_aim_matrix frame 2 2 subtract a_aim_p_neutral 0 weightlist HipsUpperbodyReplace
+$animation a_run_aim_p_mid_left pistol_aim_matrix frame 3 3 subtract a_aim_p_neutral 0 weightlist HipsUpperbodyReplace
+$animation a_run_aim_p_mid_center pistol_aim_matrix frame 4 4 subtract a_aim_p_neutral 0 weightlist HipsUpperbodyReplace
+$animation a_run_aim_p_mid_right pistol_aim_matrix frame 5 5 subtract a_aim_p_neutral 0 weightlist HipsUpperbodyReplace
+$animation a_run_aim_p_up_left pistol_aim_matrix frame 6 6 subtract a_aim_p_neutral 0 weightlist HipsUpperbodyReplace
+$animation a_run_aim_p_up_center pistol_aim_matrix frame 7 7 subtract a_aim_p_neutral 0 weightlist HipsUpperbodyReplace
+$animation a_run_aim_p_up_right pistol_aim_matrix frame 8 8 subtract a_aim_p_neutral 0 weightlist HipsUpperbodyReplace
+$animation a_run_aim_p_straight_up pistol_aim_matrix frame 9 9 subtract a_aim_p_neutral 0 weightlist HipsUpperbodyReplace
+
+$sequence layer_Aim_p_all  {
+			a_run_aim_p_straight_up a_run_aim_p_straight_up a_run_aim_p_straight_up
+			a_run_aim_p_up_right a_run_aim_p_up_center a_run_aim_p_up_left
+			a_run_aim_p_mid_right a_run_aim_p_mid_center a_run_aim_p_mid_left
+			a_run_aim_p_down_right a_run_aim_p_down_center a_run_aim_p_down_left
+			blendref a_aim_P_neutral
+			blendcenter a_run_aim_p_mid_center			
+			blendwidth 3 blend aim_yaw -45 45 blend aim_pitch -90 45
+			delta			
+			hidden
+			}
+$origin 0 -3 0 0
+$sequence Pistol_idle_aim "pistol_shoot" frames 0 0 addlayer layer_Aim_p_all fps 30 loop activity ACT_IDLE_PISTOL 1
+//$sequence shootp1 "pistol_shoot" fps 25 addlayer layer_Aim_p_all activity ACT_RANGE_ATTACK_PISTOL 1 { event 3014 1 }
+$sequence gesture_shootp1 "pistol_shoot" fps 25 subtract gesture_shootp1 0 delta activity ACT_RANGE_ATTACK_PISTOL 1 { event 3014 1 }
+$origin 0 0 0 0			
+// Run N, aiming a pistol
+
+$sequence layer_run_p_aiming "RunN_pistol_Aim" weightlist upperbodyreplace addlayer layer_Aim_p_all hidden
+$sequence layer_walk_p_aiming "walkN_pistol_Aim" weightlist upperbodyreplace addlayer layer_Aim_p_all hidden
+
+$sequence pistol_run_n_test "RunN_Pistol_Aim" walkframe 18 LX LY
+$sequence pistol_walk_n_test "WalkN_Pistol_Aim" walkframe 30 LX LY
+
+$sequence run_aiming_p_all {
+	a_RunNW a_RunN a_RunNE 
+	a_RunW a_Idle a_RunE 
+	a_RunSW a_RunS a_RunSE 
+	blendwidth 3 blend move_y -1 1 blend move_x 1 -1 loop addlayer layer_run_p_aiming node "running"
+	activity ACT_RUN_AIM_PISTOL 1
+	{ event AE_MARINE_FOOTSTEP 6 }
+	{ event AE_MARINE_FOOTSTEP 15 }
+}
+
+$sequence walk_aiming_p_all {
+    a_walkNW a_WalkN a_walkNE 
+	a_walkW a_Idle a_walkE 
+	a_walkSW a_walkS a_walkSE 
+	blendwidth 3 blend move_y -1 1 blend move_x 1 -1 loop addlayer layer_walk_p_aiming node "walking"
+	activity ACT_WALK_AIM_PISTOL 1
+	{ event AE_MARINE_FOOTSTEP 6 }
+	{ event AE_MARINE_FOOTSTEP 15 }
+}
+
+// ==============================================================
+
+
+// ========================== AKIMBO =======================
+
+//$sequence reloadpistol {
+    //"pistol_reload" fps 38
+    //{ event AE_MARINE_RELOAD_SOUND_A 0 }
+    //{ event AE_MARINE_RELOAD_SOUND_B 34 }
+    //node "standing"
+    //activity ACT_RELOAD_PISTOL 1
+    //weightlist upperbodyreplace
+//}
+$animation a_aim_ak_neutral "AkimboAimMatrix" frame 4 4 weightlist HipsUpperbodyReplace
+
+$animation a_run_aim_ak_down_left AkimboAimMatrix frame 0 0 subtract a_aim_ak_neutral 0 weightlist HipsUpperbodyReplace
+$animation a_run_aim_ak_down_center AkimboAimMatrix frame 1 1 subtract a_aim_ak_neutral 0 weightlist HipsUpperbodyReplace
+$animation a_run_aim_ak_down_right AkimboAimMatrix frame 2 2 subtract a_aim_ak_neutral 0 weightlist HipsUpperbodyReplace
+$animation a_run_aim_ak_mid_left AkimboAimMatrix frame 3 3 subtract a_aim_ak_neutral 0 weightlist HipsUpperbodyReplace
+$animation a_run_aim_ak_mid_center AkimboAimMatrix frame 4 4 subtract a_aim_ak_neutral 0 weightlist HipsUpperbodyReplace
+$animation a_run_aim_ak_mid_right AkimboAimMatrix frame 5 5 subtract a_aim_ak_neutral 0 weightlist HipsUpperbodyReplace
+$animation a_run_aim_ak_up_left AkimboAimMatrix frame 6 6 subtract a_aim_ak_neutral 0 weightlist HipsUpperbodyReplace
+$animation a_run_aim_ak_up_center AkimboAimMatrix frame 7 7 subtract a_aim_ak_neutral 0 weightlist HipsUpperbodyReplace
+$animation a_run_aim_ak_up_right AkimboAimMatrix frame 8 8 subtract a_aim_ak_neutral 0 weightlist HipsUpperbodyReplace
+$animation a_run_aim_ak_straight_up AkimboAimMatrix frame 9 9 subtract a_aim_ak_neutral 0 weightlist HipsUpperbodyReplace
+
+$sequence layer_Aim_ak_all  {
+			a_run_aim_ak_straight_up a_run_aim_ak_straight_up a_run_aim_ak_straight_up
+			a_run_aim_ak_up_right a_run_aim_ak_up_center a_run_aim_ak_up_left
+			a_run_aim_ak_mid_right a_run_aim_ak_mid_center a_run_aim_ak_mid_left
+			a_run_aim_ak_down_right a_run_aim_ak_down_center a_run_aim_ak_down_left
+			blendref a_aim_ak_neutral
+			blendcenter a_run_aim_ak_mid_center			
+			blendwidth 3 blend aim_yaw -45 45 blend aim_pitch -90 45
+			delta			
+			hidden
+			}
+//$origin 0 -3 0 0
+$sequence Akimbo_idle_aim "Idle_Akimbo_Pistols" frames 0 0 addlayer layer_Aim_ak_all fps 30 loop activity ACT_MP_STAND_ITEM1 1
+$sequence gesture_shootak "Shoot_Akimbo_Pistols" fps 25 subtract gesture_shootak 0 delta activity ACT_MP_ATTACK_STAND_ITEM1 1 { event 3014 1 }
+//$origin 0 0 0 0			
+// Run N, aiming a pistol
+$sequence layer_run_ak_aiming "RunN_Akimbo_Pistols" weightlist upperbodyreplace addlayer layer_Aim_ak_all
+$sequence layer_walk_ak_aiming "WalkN_Akimbo_Pistols" weightlist upperbodyreplace addlayer layer_Aim_walk_all
+
+$sequence akimbo_run_n_test "RunN_Akimbo_Pistols" walkframe 18 LX LY
+$sequence akimbo_walk_n_test "WalkN_Akimbo_Pistols" walkframe 30 LX LY
+
+$sequence run_aiming_ak_all {
+	a_RunNW a_RunN a_RunNE 
+	a_RunW a_Idle a_RunE 
+	a_RunSW a_RunS a_RunSE 
+	blendwidth 3 blend move_y -1 1 blend move_x 1 -1 loop addlayer layer_run_ak_aiming node "running"
+	activity ACT_MP_RUN_ITEM1 1
+	{ event AE_MARINE_FOOTSTEP 6 }
+	{ event AE_MARINE_FOOTSTEP 15 }
+}
+
+$sequence walk_aiming_ak_all {
+    a_walkNW a_WalkN a_walkNE 
+	a_walkW a_Idle a_walkE 
+	a_walkSW a_walkS a_walkSE 
+	blendwidth 3 blend move_y -1 1 blend move_x 1 -1 loop addlayer layer_walk_ak_aiming node "walking"
+	activity ACT_MP_WALK_ITEM1 1
+	{ event AE_MARINE_FOOTSTEP 6 }
+	{ event AE_MARINE_FOOTSTEP 15 }
+}
+
+$sequence Akimbo_Crouch "Crouch_Akimbo_Pistols" loop FPS 30 ACT_MP_CROUCHWALK_ITEM1 1 addlayer Aim_crouch_delta_all
+$sequence Akimbo_Jump {	
+	Jump_Akimbo_Pistols
+	ACT_MP_JUMP_ITEM1 1
+}
+
+// ==============================================================
+
+$sequence FlipLeft {
+	FlipLeft loop
+	node "standing"
+}
+
+$sequence FlipRight {
+	FlipRight loop
+	node "standing"
+}
+
+$sequence signal_advance_o {
+	signal_advance loop
+	node "standing"
+	weightlist upperbodyreplace
+}
+
+$sequence signal_advance_c {
+	signal_advance
+	node "standing"
+}
+
+$sequence signal_advance {
+	signal_advance_t
+	node "standing"
+	weightlist upperbodyreplace
+}
+
+$sequence signal_halt {
+	signal_halt	
+	weightlist upperbodyreplace
+}
+$sequence signal_group {
+	signal_group
+}
+
+$sequence signal_forward {
+	signal_forward
+}
+
+$sequence signal_left {
+	signal_left
+}
+
+$sequence signal_right {
+	signal_right	
+}
+
+$sequence grenade_roll {
+	Grenade_roll
+	weightlist upperbodyreplace
+}
+
+$sequence grenade_roll_trim {
+	Grenade_roll
+	frames 15 43
+	weightlist upperbodyreplace
+}
+
+$sequence pickup {
+	pickup fps 40
+	node "standing"
+}
+
+$sequence heal {
+	heal fps 40
+	node "standing"
+}
+
+$sequence jump {	
+	MarineJump
+	ACT_JUMP 1
+}
+// giving the marine this so the AI code doesn't complain
+$sequence jumpg {	
+	MarineJump
+	ACT_GLIDE 1
+}
+//ACT_HOP 1
+
+// melee
+$origin 0 0 0 0
+$sequence kick {
+	kick
+	fps 28
+	ACT_MELEE_ATTACK1 1
+	{ event AE_MELEE_DAMAGE 10 }
+}
+
+
+// Animations related to being knocked out
+
+// ============= Relaxed idle/walk/run ==============
+
+// Idle relaxed pose
+
+$sequence Idle_Angry_SMG1 "Idle_Angry_SMG1" loop node "StandingSMGRelaxed" activity ACT_IDLE_RELAXED 1
+// addlayer layer_Aim_all 
+
+// ==============run relaxed stuff=======
+
+$sequence layer_run_relaxed "RunN_SMG1_Relaxed" weightlist upperbodyreplace hidden
+$animation a_RunN_SMG1_Relaxed RunN_SMG1_Relaxed loop LX LY rotateto 0 alignto Idle_Angry_SMG1 {
+
+}
+
+// 9 way blend between the runs and idle, with the relaxed layer added  (a_Idle was original idle)
+$sequence run_relaxed_all {
+	a_RunNW a_RunN_SMG1_Relaxed a_RunNE 
+	a_RunW a_Idle a_RunE 
+	a_RunSW a_RunS a_RunSE 
+	blendwidth 3 blend move_y -1 1 blend move_x 1 -1 loop addlayer layer_run_relaxed
+	ACT_RUN_RELAXED 1
+	node "running"
+	{ event AE_MARINE_FOOTSTEP 6 }
+	{ event AE_MARINE_FOOTSTEP 15 }
+}
+//=======================
+
+//======walk relaxed stuff==========
+
+$sequence layer_walk_relaxed "WalkN_SMG1_Relaxed" weightlist upperbodyreplace hidden
+
+$sequence walk_relaxed_all {
+	a_walkNW a_WalkN a_walkNE 
+	a_walkW a_Idle a_walkE 
+	a_walkSW a_walkS a_walkSE 
+	blendwidth 3 blend move_y -1 1 blend move_x 1 -1 loop addlayer layer_walk_relaxed
+	ACT_WALK_RELAXED 1
+	node "walking"
+	{ event AE_MARINE_FOOTSTEP 6 }
+	{ event AE_MARINE_FOOTSTEP 15 }
+	//{ event 2051 9 }
+	//{ event 2050 23 }
+}

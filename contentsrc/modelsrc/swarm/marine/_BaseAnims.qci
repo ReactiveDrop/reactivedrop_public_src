@@ -1,0 +1,314 @@
+//===============================
+// Base Idle anim to align to
+//===============================
+
+$addsearchdir "dmx/animation/"
+
+$sequence idle01 {
+	idle01 loop frames 0 358 fixuploop -15 0	
+	node "standing"
+}
+
+//extra idles
+
+$sequence idle02 {
+	idle02 loop frames 0 279 fixuploop -15 0	
+	node "standing2"
+}
+
+//$sequence idle03 {
+//	idle03 loop frames 0 358 fixuploop -15 0	
+//	node "standing3"
+//}
+
+$sequence Idle_Angry {
+	Idle_Angry loop
+	activity ACT_IDLE 1
+	node "standing"
+}
+
+$sequence Idle_Angry2 {
+	Idle_Angry loop
+	activity ACT_IDLE_ANGRY 1
+	node "standing"
+}
+
+//===============================
+// Unarmed Walk Animations
+//===============================
+
+$animation a_Idle idle01 loop LX LY startloop 0 rotateto -180 {
+	alignto idle01	
+	//ikrule lfoot footstep range  5 11 25 30
+	//ikrule rfoot footstep range 22 28  6 11
+}
+
+$animation a_WalkS WalkS loop LX LY startloop 0 rotateto -180 {
+	alignto idle01	
+	//ikrule lfoot footstep range  5 11 25 30
+	//ikrule rfoot footstep range 22 28  6 11
+}
+$animation a_WalkSE WalkSE loop LX LY startloop 0 rotateto -135 {
+	alignto idle01
+	 //ikrule lfoot footstep range  5  8 22 27
+	 //ikrule rfoot footstep range 20 25 6 11
+}
+$animation a_WalkE WalkE loop LX LY startloop 0 rotateto -90 {
+	alignto idle01
+	 //ikrule lfoot footstep range  2  9 19 28
+	 //ikrule rfoot footstep range 19 24  4  8
+}
+$animation a_WalkNE WalkNE loop LX LY startloop 0 rotateto -45 {
+	alignto idle01
+	 //ikrule lfoot footstep range  4 11 23  0
+	 //ikrule rfoot footstep range 18 25  8 13
+}
+$animation a_WalkN WalkN loop LX LY startloop 0 rotateto 0 {
+	alignto idle01
+	 //ikrule lfoot footstep range  4 10 19 25
+	 //ikrule rfoot footstep range 18 26 3 10
+}
+$animation a_WalkNW WalkNW loop LX LY startloop 0 rotateto 45 {
+	alignto idle01
+	 //ikrule lfoot footstep range  2  9 21 27
+	 //ikrule rfoot footstep range 18 25  7 13
+}
+$animation a_WalkW WalkW loop LX LY startloop 0 rotateto 90 {
+	alignto idle01
+	 //ikrule lfoot footstep range  2 11 22 28
+	 //ikrule rfoot footstep range 18 27  6 13
+}
+$animation a_WalkSW WalkSW loop LX LY startloop 0 rotateto 135 {
+	alignto idle01
+	 //ikrule lfoot footstep range  2 10 18 25
+	 //ikrule rfoot footstep range 16 22  7 12
+}
+
+//===============================
+// Unarmed Run Animations
+//===============================
+
+$animation a_RunS RunS loop LX LY startloop 0 rotateto -180 fps 31 {
+	alignto idle01
+	 //ikrule lfoot footstep range .. 9 12 ..
+	 //ikrule rfoot footstep range .. 0 3 ..
+}
+$animation a_RunSE RunSE loop LX LY startloop 0 rotateto -135 fps 29 {
+	alignto idle01
+	 //ikrule lfoot footstep range .. 7 11 ..
+	 //ikrule rfoot footstep range .. 17 1 ..
+}
+$animation a_RunE RunE loop LX LY startloop 0 rotateto -90 fps 31 {
+	alignto idle01
+	 //ikrule lfoot footstep range .. 7 9 ..
+	 //ikrule rfoot footstep range .. 14 0 ..
+}
+$animation a_RunNE RunNE loop LX LY startloop 0 rotateto -45 fps 29 {
+	alignto idle01
+	 //ikrule lfoot footstep range .. 6 10 ..
+	 //ikrule rfoot footstep range .. 17 19 ..
+}
+$animation a_RunN RunN loop LX LY startloop 0 rotateto 0 {
+	alignto idle01
+	 //ikrule lfoot footstep range .. 8 10 ..
+	 //ikrule rfoot footstep range .. 17 1 ..
+}
+$animation a_RunNW RunNW loop LX LY startloop 0 rotateto 45 fps 28 {
+	alignto idle01
+	 //ikrule lfoot footstep range .. 9 11 ..
+	 //ikrule rfoot footstep range .. 18 1 ..
+}
+$animation a_RunW RunW loop LX LY startloop 0 rotateto 90 fps 32 {
+	alignto idle01
+	 //ikrule lfoot footstep range .. 7 9 ..
+	 //ikrule rfoot footstep range .. 16 0 ..
+}
+$animation a_RunSW RunSW loop LX LY startloop 0 rotateto 135 fps 31 {
+	alignto idle01
+	 //ikrule lfoot footstep range .. 8 11 ..
+	 //ikrule rfoot footstep range .. 16 1 ..
+}
+
+$animation a_test_idle "dmx\animation\RunN_smg1_Aim" frames 0 0 alignto idle01
+
+//========================================
+// Walk/Run 9-Way Blended Sequences
+//   - these are the standard, no gun walk/run anims
+//========================================
+
+
+$sequence walk_all {
+	a_walkNW a_walkN a_walkNE 
+	a_walkW a_Idle a_walkE 
+	a_walkSW a_walkS a_walkSE 
+	blendwidth 3 blend move_y -1 1 blend move_x 1 -1 loop
+	ACT_WALK 1
+	node "walking"
+	{ event 2051 9 }
+	{ event 2050 23 }
+}
+
+
+$sequence run_all {
+	a_RunNW a_RunN a_RunNE 
+	a_RunW a_idle a_RunE 
+	a_RunSW a_RunS a_RunSE 
+	blendwidth 3 blend move_y -1 1 blend move_x 1 -1 loop
+	ACT_RUN 1
+	{ event AE_MARINE_FOOTSTEP 6 }
+	{ event AE_MARINE_FOOTSTEP 15 }
+	node "running"
+}
+
+
+// test anims from infested
+//===============================
+//Shorter Stumbles
+//===============================
+
+$sequence stumble_short_backward {
+	"dmx/animation/stumble_short_backward.dmx"
+	alignto idle01
+	frame 2 17
+	walkframe 8 LX LY
+	walkalignto 15 idle01 LX LY
+	fps 40
+}
+$sequence stumble_short_forward {
+	"dmx/animation/stumble_short_forward.dmx"
+	alignto idle01
+	frame 1 16
+	walkframe 8 LX LY
+	walkalignto 15 idle01 LX LY
+	fps 40
+}
+$sequence stumble_short_leftward {
+	"dmx/animation/stumble_short_leftward.dmx"
+	align idle01 X 0 0
+	frame 2 17
+	walkalignto 8 idle01 LX LY
+	walkalignto 15 idle01 LX LY
+	fps 40
+}
+$sequence stumble_short_rightward {
+	"dmx/animation/stumble_short_rightward.dmx"
+	align idle01 X 0 0
+	frame  3 18
+	walkframe 8 LX LY
+	walkalignto 15 idle01 LX LY
+	fps 40
+}
+
+//===============================
+// Knockdowns
+//===============================
+
+$sequence knockdown_backward {
+	"dmx/animation/knockdown_backward.dmx" 
+	alignto idle01
+	fps 50
+	walkframe 26 LX
+	walkalignto 95 idle01 LX
+}
+
+$sequence knockdown_forward {
+	"dmx/animation/knockdown_forward.dmx" 
+	alignto idle01
+	fps 50
+	walkframe 32 LX
+	walkalignto 95 idle01 LX
+}
+
+// MELEE COMBO 2
+
+$sequence melee_combo_2a "dmx/animation/melee_combo_2a.dmx" LX LY {
+	walkframe 9 LX LY
+	walkframe 25 LX LY
+	{ event AE_CL_PLAYSOUND 2 "SuitServo.MeleePunch"  }
+	
+	{ event AE_CL_CREATE_PARTICLE_EFFECT 1 "melee_trail_1 follow_attachment melee_left_hand" }		
+	{ event AE_CL_STOP_PARTICLE_EFFECT 8 "melee_trail_1" }
+	
+	{ event AE_START_DETECTING_COMBO 4 }
+	{ event AE_MELEE_DAMAGE 5 }
+	{ event AE_COMBO_TRANSITION 9 }
+}
+
+$sequence melee_combo_2b "dmx/animation/melee_combo_2b.dmx" LX LY {
+	align melee_combo_2a X Y 9 0
+	walkframe 20 LX LY
+	walkframe 29 LX LY
+	{ event AE_CL_PLAYSOUND 4 "SuitServo.MeleeKick"  }	
+	
+	{ event AE_CL_CREATE_PARTICLE_EFFECT 	4 "melee_trail_1 follow_attachment melee_left_foot" }
+	{ event AE_CL_STOP_PARTICLE_EFFECT 		12 "melee_trail_1" }
+		
+	{ event AE_START_DETECTING_COMBO 3 }
+	{ event AE_MELEE_DAMAGE 8 }
+	{ event AE_COMBO_TRANSITION 20 }
+}
+
+$sequence melee_combo_2c "dmx/animation/melee_combo_2c.dmx" LX LY {
+	align melee_combo_2b X Y 20 0
+	walkframe 10 LX LY
+	walkframe 16 LX LY
+	walkframe 28 LX LY
+	{ event AE_CL_PLAYSOUND 0 "SuitServo.Leg" }
+//	{ event AE_ASW_FOOTSTEP 6 }	
+	{ event AE_CL_PLAYSOUND 8 "SuitServo.MeleePunch"  }
+		
+	
+	{ event AE_CL_CREATE_PARTICLE_EFFECT 	0 "melee_trail_1 follow_attachment melee_right_hand" }	
+	{ event AE_CL_CREATE_PARTICLE_EFFECT 	0 "melee_trail_1 follow_attachment melee_left_hand" }	
+	{ event AE_CL_CREATE_PARTICLE_EFFECT 	14 "melee_ground_pound start_at_attachment melee_right_hand" }
+	{ event AE_CL_STOP_PARTICLE_EFFECT 17 "melee_trail_1" }
+	{ event AE_CL_STOP_PARTICLE_EFFECT 17 "melee_trail_1" }	
+	
+	{ event AE_MELEE_DAMAGE 13 }
+	{ event AE_SCREEN_SHAKE 14 "5.0 100.0 1.75 0" }
+}
+
+
+//===============================
+//ROLL
+//===============================
+
+$sequence roll_N {
+	"dmx/animation/roll_N.dmx"
+	alignto idle01
+	frame 1 23
+        fps 30
+	LX LY
+	{ event AE_CL_PLAYSOUND 0 "ASW.Player.Evade" }
+}
+
+//===============================
+// blink/JJ
+//===============================
+
+$sequence jumpjet_pound "dmx/animation/jumpjet_pound.dmx" {	
+	{ event AE_SKILL_EVENT 2 "JumpJet" } 
+	walkalign 0 idle01 lx ly lz 0 0
+	walkframe 3 LX LY 
+	walkframe 4 LX LY LZ
+	walkframe 16 LX LY LZ
+	walkframe 30 LX LY LZ
+	walkframe 33 LX LY LZ
+	walkalignto 36 idle01 lx ly lz
+	walkalignto 39 idle01 lx ly 
+	walkalign 65 idle01 lx ly lz 0 65
+}  
+
+$sequence blink "dmx/animation/jumpjet_pound.dmx" {	
+	{ event AE_SKILL_EVENT 2 "Blink" } 
+	fps 45
+	walkalign 0 idle01 lx ly lz 0 0
+	walkframe 3 LX LY 
+	walkframe 4 LX LY LZ
+	walkframe 16 LX LY LZ
+	walkframe 30 LX LY LZ
+	walkframe 33 LX LY LZ
+	walkalignto 36 idle01 lx ly lz
+	walkalignto 39 idle01 lx ly 
+	walkalign 65 idle01 lx ly lz 0 65
+}
