@@ -55,7 +55,7 @@ public:
 	int		GetSentryAmmo() { return m_nSentryAmmo; }
 	void	SetSentryAmmo( int nAmmo ) { m_nSentryAmmo = nAmmo; }
 	int		DisplayClip1() { return GetSentryAmmo(); }
-	int		DisplayMaxClip1();
+	int		DisplayMaxClip1() { return m_nMaxSentryAmmo; }
 
 protected:
 #ifndef CLIENT_DLL
@@ -67,6 +67,7 @@ protected:
 
 	CNetworkVar( bool, m_bDisplayValid );
 	CNetworkVar( int, m_nSentryAmmo );
+	CNetworkVar( int, m_nMaxSentryAmmo );
 #ifdef CLIENT_DLL
 	float m_flNextDeployCheckThink;
 	bool m_bDisplayActive;
