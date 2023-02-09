@@ -24,7 +24,6 @@ public:
 	DECLARE_CLASS( CASW_Weapon_Sentry, CASW_Weapon );
 	DECLARE_NETWORKCLASS();
 	DECLARE_PREDICTABLE();
-	DECLARE_ENT_SCRIPTDESC();
 
 	CASW_Weapon_Sentry();
 	virtual ~CASW_Weapon_Sentry();
@@ -41,6 +40,7 @@ public:
 
 #ifndef CLIENT_DLL
 	DECLARE_DATADESC();
+	DECLARE_ENT_SCRIPTDESC();
 
 	int		CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
 #else
