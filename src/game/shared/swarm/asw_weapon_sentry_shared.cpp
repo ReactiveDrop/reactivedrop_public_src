@@ -27,6 +27,11 @@ extern ConVar rd_server_marine_backpacks;
 IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Weapon_Sentry, DT_ASW_Weapon_Sentry )
 
 BEGIN_NETWORK_TABLE( CASW_Weapon_Sentry, DT_ASW_Weapon_Sentry )
+#ifdef CLIENT_DLL
+	RecvPropInt( RECVINFO( m_nSentryAmmo ) ),
+#else
+	SendPropInt(	SENDINFO( m_nSentryAmmo ) ),
+#endif
 END_NETWORK_TABLE()
 
 BEGIN_PREDICTION_DATA( CASW_Weapon_Sentry )
@@ -36,19 +41,18 @@ LINK_ENTITY_TO_CLASS( asw_weapon_sentry, CASW_Weapon_Sentry );
 PRECACHE_WEAPON_REGISTER(asw_weapon_sentry);
 
 #ifndef CLIENT_DLL
-
 //---------------------------------------------------------
 // Save/Restore
 //---------------------------------------------------------
 BEGIN_DATADESC( CASW_Weapon_Sentry )
-
+	DEFINE_KEYFIELD( m_nSentryAmmo, FIELD_INTEGER, "SentryAmmo" ),
 END_DATADESC()
+#endif /* not client */
 
 BEGIN_ENT_SCRIPTDESC( CASW_Weapon_Sentry, CASW_Weapon, "sentry gun case" )
 	DEFINE_SCRIPTFUNC( GetSentryAmmo, "returns the amount of ammo for the contained sentry" )
 	DEFINE_SCRIPTFUNC( SetSentryAmmo, "changes the amount of ammo for the contained sentry" )
 END_SCRIPTDESC()
-#endif /* not client */
 
 CASW_Weapon_Sentry::CASW_Weapon_Sentry()
 {
@@ -180,6 +184,11 @@ void CASW_Weapon_Sentry::DestroySentryBuildDisplay( CASW_Marine *pMarine )
 }
 
 #endif //CLIENT_DLL
+
+int CASW_Weapon_Sentry::DisplayMaxClip1()
+{
+	return CASW_Sentry_Base::GetBaseAmmoForGunType( ( CASW_Sentry_Base::GunType_t )m_iSentryMunitionType );
+}
 
 void CASW_Weapon_Sentry::Drop( const Vector &vecVelocity )
 {

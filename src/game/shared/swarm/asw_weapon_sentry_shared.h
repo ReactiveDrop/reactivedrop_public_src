@@ -24,6 +24,7 @@ public:
 	DECLARE_CLASS( CASW_Weapon_Sentry, CASW_Weapon );
 	DECLARE_NETWORKCLASS();
 	DECLARE_PREDICTABLE();
+	DECLARE_ENT_SCRIPTDESC();
 
 	CASW_Weapon_Sentry();
 	virtual ~CASW_Weapon_Sentry();
@@ -40,13 +41,8 @@ public:
 
 #ifndef CLIENT_DLL
 	DECLARE_DATADESC();
-	DECLARE_ENT_SCRIPTDESC();
 
 	int		CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
-
-	int		GetSentryAmmo() { return m_nSentryAmmo; }
-	void	SetSentryAmmo( int nAmmo ) { m_nSentryAmmo = nAmmo; }
-
 #else
 	virtual void OnDataChanged( DataUpdateType_t type );
 	virtual void UpdateOnRemove();
@@ -56,6 +52,11 @@ public:
 
 	virtual bool IsOffensiveWeapon() { return false; }
 
+	int		GetSentryAmmo() { return m_nSentryAmmo; }
+	void	SetSentryAmmo( int nAmmo ) { m_nSentryAmmo = nAmmo; }
+	int		DisplayClip1() { return GetSentryAmmo(); }
+	int		DisplayMaxClip1();
+
 protected:
 #ifndef CLIENT_DLL
 	int m_iSentryMunitionType;
@@ -64,11 +65,9 @@ protected:
 	QAngle m_angValidSentryFacing;
 	EHANDLE m_hValidSentryParent;
 
-	CNetworkVar(bool, m_bDisplayValid);
-
-#ifndef CLIENT_DLL
-	int m_nSentryAmmo;
-#else
+	CNetworkVar( bool, m_bDisplayValid );
+	CNetworkVar( int, m_nSentryAmmo );
+#ifdef CLIENT_DLL
 	float m_flNextDeployCheckThink;
 	bool m_bDisplayActive;
 	EHANDLE m_hOwningMarine; // need to store this so we can destroy the effect on the marine
