@@ -435,6 +435,8 @@ static void __MsgFunc_RDAlienKillStat( bf_read &msg )
 }
 USER_MESSAGE_REGISTER( RDAlienKillStat );
 
+extern void CheckDeathTypeCount();
+
 static void __MsgFunc_RDCauseOfDeath( bf_read &msg )
 {
 	RD_Cause_of_Death_t iCause = ( RD_Cause_of_Death_t )msg.ReadShort();
@@ -453,6 +455,8 @@ static void __MsgFunc_RDCauseOfDeath( bf_read &msg )
 	{
 		DevMsg( "STEAMSTATS: Failed to retrieve stat %s.\n", szApiName );
 	}
+
+	CheckDeathTypeCount();
 }
 USER_MESSAGE_REGISTER( RDCauseOfDeath );
 
