@@ -612,7 +612,6 @@ void CASW_Medals::AwardMedalsTo(CASW_Marine_Resource *pMR)
 				AwardSingleMedalTo(MEDAL_SPEED_RUN_MINE, pMR);
 				pPlayer->AwardAchievement( ACHIEVEMENT_ASW_SPEEDRUN_TIMOR );
 			}
-#ifdef RD_BONUS_MISSION_ACHIEVEMENTS
 			else if ( !Q_stricmp( mapName, "rd-bonus_mission1" ) )
 			{
 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_BONUS_SPC );
@@ -625,6 +624,7 @@ void CASW_Medals::AwardMedalsTo(CASW_Marine_Resource *pMR)
 			{
 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_BONUS_BUNKER );
 			}
+#ifdef RD_BONUS_MISSION_ACHIEVEMENTS
 			else if ( !Q_stricmp( mapName, "rd-bonus_mission4" ) )
 			{
 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_UNSPLIT_JACOBS_1_2 );
