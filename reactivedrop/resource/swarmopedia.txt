@@ -523,6 +523,7 @@
 		"Paragraph" "#rd_so_paragraph_mender_2"
 		"Paragraph" "#rd_so_paragraph_mender_3"
 		"Paragraph" "#rd_so_paragraph_mender_4"
+		"Paragraph" "#rd_so_paragraph_mender_5"
 	}
 	"ALIEN" {
 		"ID" "asw_biomass"
@@ -584,8 +585,18 @@
 		}
 		"Paragraph" "#rd_so_paragraph_biomass_0"
 		"Paragraph" "#rd_so_paragraph_biomass_1"
-		"Paragraph" "#rd_so_paragraph_biomass_2"
-		"Paragraph" "#rd_so_paragraph_biomass_3"
+		"Paragraph" {
+			"Text" "#rd_so_author_helvetica_scenario"
+			"Color" "254 107 27 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_paragraph_biomass_2"
+			"Color" "236 86 23 255"
+		}
+		"Paragraph" {
+			"Text" "#rd_so_paragraph_biomass_3"
+			"Color" "236 86 23 255"
+		}
 		"Paragraph" "#rd_so_paragraph_biomass_4"
 	}
 	"ALIEN" {
