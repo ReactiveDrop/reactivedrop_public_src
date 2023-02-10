@@ -783,7 +783,7 @@ void ClientModeASW::FireGameEvent( IGameEvent *event )
 		GameTimescale()->LevelInitPostEntity();
 		if ( rd_auto_record_stop_on_retry.GetBool() )
 		{
-			g_RD_Auto_Record_System.LevelShutdownPostEntity();
+			g_RD_Auto_Record_System.LevelShutdownPreEntity();
 			g_RD_Auto_Record_System.LevelInitPostEntity();
 		}
 
