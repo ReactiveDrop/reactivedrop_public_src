@@ -1545,6 +1545,7 @@ void CAlienSwarm::FullReset()
 	m_flStimStartTime = 0.0f;
 	m_fPreventStimMusicTime = 0.0f;
 	m_bForceStylinCam = false;
+	m_bShowCommanderFace = false;
 
 	m_fMarineDeathTime = 0.0f;
 	m_vMarineDeathPos = vec3_origin;
