@@ -5651,6 +5651,19 @@ bool CAlienSwarm::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 		return false;
 	}
 
+	// don't let bots walk through players
+	if ( ( collisionGroup0 == ASW_COLLISION_GROUP_BOT_MOVEMENT && collisionGroup1 == COLLISION_GROUP_PLAYER ) ||
+		( collisionGroup0 == COLLISION_GROUP_PLAYER && collisionGroup1 == ASW_COLLISION_GROUP_BOT_MOVEMENT ) )
+	{
+		return true;
+	}
+
+	if ( collisionGroup0 == ASW_COLLISION_GROUP_BOT_MOVEMENT )
+		collisionGroup0 = ASW_COLLISION_GROUP_BOTS;
+
+	if ( collisionGroup1 == ASW_COLLISION_GROUP_BOT_MOVEMENT )
+		collisionGroup1 = ASW_COLLISION_GROUP_BOTS;
+
 	// reactivedrop: bots don't collide with one another
 	if ( collisionGroup0 == ASW_COLLISION_GROUP_BOTS && collisionGroup1 == ASW_COLLISION_GROUP_BOTS )
 	{

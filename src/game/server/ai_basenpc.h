@@ -36,6 +36,9 @@
 #include "soundent.h"
 #include "ai_navigator.h"
 #include "tier1/functors.h"
+#ifdef INFESTED_DLL
+#include "asw_shareddefs.h"
+#endif
 
 
 #define PLAYER_SQUADNAME "player_squad"
@@ -2927,6 +2930,12 @@ inline int CAI_Component::GetHullTraceMask() const
 
 inline int CAI_Component::GetCollisionGroup() const
 {
+#ifdef INFESTED_DLL
+	// HACK!
+	if ( const_cast< CAI_BaseNPC * >( GetOuter() )->Classify() == CLASS_ASW_MARINE )
+		return ASW_COLLISION_GROUP_BOT_MOVEMENT;
+#endif
+
 	return GetOuter()->GetCollisionGroup();
 }
 
