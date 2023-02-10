@@ -1,0 +1,57 @@
+//=======================================
+//  Base pose
+//=======================================
+
+$animation a_pose_neutral "body_poses_lean" frames 0 0 alignto idle01 
+
+
+//============================
+//  Head
+//============================
+
+// standard head position
+$animation a_head_rot "body_poses_lean" frame 0 0 alignto idle01 subtract a_pose_neutral 0 weightlist upperspine 
+
+// head roll
+$animation a_head_rot_lt "body_poses_lean" frame 97 97 alignto idle01 subtract a_pose_neutral 0 weightlist upperspine 
+$animation a_head_rot_rt "body_poses_lean" frame 98 98 alignto idle01 subtract a_pose_neutral 0 weightlist upperspine 
+$sequence head_rot_x { a_head_rot_lt a_head_rot a_head_rot_rt calcblend head_roll "eyes" XR } delta autoplay hidden
+
+// head pitch
+$animation a_head_rot_dwn "body_poses_lean" frame 101 101 alignto idle01 subtract a_pose_neutral 0 weightlist upperspine 
+$animation a_head_rot_up "body_poses_lean" frame 102 102 alignto idle01 subtract a_pose_neutral 0 weightlist upperspine 
+$sequence head_rot_y { a_head_rot_dwn a_head_rot a_head_rot_up calcblend head_pitch "eyes" YR } delta autoplay hidden
+
+// head yaw
+$animation a_head_rot_z_rt "body_poses_lean" frame 104 104 alignto idle01 subtract a_pose_neutral 0 weightlist upperspine 
+$animation a_head_rot_z_lt "body_poses_lean" frame 106 106 alignto idle01 subtract a_pose_neutral 0 weightlist upperspine 
+$sequence head_rot_z { a_head_rot_z_lt a_head_rot a_head_rot_z_rt calcblend head_yaw "eyes" ZR } delta autoplay hidden
+
+
+//========================
+//  Upper body
+//========================
+
+// standard upper body position
+$animation a_body_rot "body_poses_lean" frame 0 0 subtract a_pose_neutral 0 weightlist fullspinenohead 
+
+// body yaw
+$animation a_body_rot_z_rt "body_poses_lean" frame 58 58 subtract a_pose_neutral 0 weightlist fullspinenohead 
+$animation a_body_rot_z_lt "body_poses_lean" frame 67 67 subtract a_pose_neutral 0 weightlist fullspinenohead 
+$sequence body_rot_z { a_body_rot_z_lt a_body_rot a_body_rot_z_rt calcblend body_yaw "eyes" ZR } delta autoplay hidden
+
+// body pitch
+$animation a_body_rot_back "body_poses_lean" frame 38 38 subtract a_pose_neutral 0 weightlist fullspinenohead 
+$animation a_body_rot_fwd "body_poses_lean" frame 47 47 subtract a_pose_neutral 0 weightlist fullspinenohead 
+$sequence body_rot_y { a_body_rot_back a_body_rot a_body_rot_fwd calcblend body_pitch "eyes" YR } delta autoplay hidden
+
+// spine yaw
+$animation a_spine_rot "body_poses_lean" frame 0 0 subtract a_pose_neutral 0 weightlist upperspinenohead
+$animation a_spine_rot_z_rt "body_poses_lean" frame 88 88 subtract a_pose_neutral 0 weightlist upperspinenohead
+$animation a_spine_rot_z_lt "body_poses_lean" frame 96 96 subtract a_pose_neutral 0 weightlist upperspinenohead
+$sequence spine_rot_z { a_spine_rot_z_lt a_spine_rot a_spine_rot_z_rt calcblend spine_yaw "eyes" ZR } delta autoplay hidden
+
+// spine pitch
+$animation a_spine_rot_fwd "body_poses_lean" frame 68 68 subtract a_pose_neutral 0 weightlist upperspinenohead
+$animation a_spine_rot_back "body_poses_lean" frame 77 77 subtract a_pose_neutral 0 weightlist upperspinenohead
+$sequence spine_rot_y { a_spine_rot_fwd a_spine_rot a_spine_rot_back calcblend spine_pitch "eyes" YR } delta autoplay hidden

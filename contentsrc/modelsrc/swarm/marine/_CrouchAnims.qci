@@ -1,0 +1,108 @@
+//==================================
+// Unarmed Crouch Walk Animations
+//==================================
+
+$animation a_Crouch_walkS Crouch_walkS loop LX LY rotateto -180 {
+	alignto idle01
+}
+$animation a_Crouch_walkSE Crouch_walkSE loop LX LY rotateto -135 {
+	alignto idle01
+}
+$animation a_Crouch_walkE Crouch_walkE loop LX LY rotateto -90 {
+	alignto idle01
+}
+$animation a_Crouch_walkNE Crouch_walkNE loop LX LY rotateto -45 {
+	alignto idle01
+}
+$animation a_Crouch_walkN crouch_walkN loop LX LY rotateto 0 {
+	alignto idle01
+}
+$animation a_Crouch_walkNW Crouch_walkNW loop LX LY rotateto 45 {
+	alignto idle01
+}
+$animation a_Crouch_walkW Crouch_walkW loop LX LY rotateto 90 {
+	alignto idle01
+}
+$animation a_Crouch_walkSW Crouch_walkSW loop LX LY rotateto 135 {
+	alignto idle01
+}
+
+//==================================
+// Crouch Walk 8-way blend sequence
+//==================================
+
+$sequence Crouch_walk_all {
+	a_Crouch_walkS a_Crouch_walkSE a_Crouch_walkE 
+	a_Crouch_walkNE a_Crouch_walkN a_Crouch_walkNW 
+	a_Crouch_walkW a_Crouch_walkSW a_Crouch_walkS 
+	blendwidth 9 blend move_yaw -180 180
+	ACT_WALK_CROUCH 1
+	node "walk_crouching"
+}
+
+
+//===============================
+// Unarmed Crouch Run Animations
+//===============================
+
+$animation a_Crouch_runN crouch_runN loop LX LY fps 30 rotateto 0 {
+	alignto idle01
+}
+$animation a_crouch_runS_delta Crouch_runN frame 0 0 weightlist pelvisonly alignto a_runS subtract a_runS 0
+$animation a_crouch_runSE_delta Crouch_runN frame 0 0 weightlist pelvisonly alignto a_runSE subtract a_runSE 0
+$animation a_crouch_runE_delta Crouch_runN frame 0 0 weightlist pelvisonly alignto a_runE subtract a_runE 0
+$animation a_crouch_runNE_delta Crouch_runN frame 0 0 weightlist pelvisonly alignto a_runNE subtract a_runNE 0
+$animation a_crouch_runN_delta Crouch_runN frame 0 0 weightlist pelvisonly alignto a_crouch_runN subtract a_crouch_runN 0
+$animation a_crouch_runNW_delta Crouch_runN frame 0 0 weightlist pelvisonly alignto a_runNW subtract a_runNW 0
+$animation a_crouch_runW_delta Crouch_runN frame 0 0 weightlist pelvisonly alignto a_runW subtract a_runW 0
+$animation a_crouch_runSW_delta Crouch_runN frame 0 0 weightlist pelvisonly alignto a_runSW subtract a_runSW 0
+
+
+//================
+// To tidy:
+//================
+
+// crouch run N, holding a SMG
+$animation a_Crouch_runN_smg1 "Crouch_runN_smg1" loop LX LY fps 30 rotateto 0
+
+$sequence layer_crouch_run_holding "Crouch_runN_smg1" weightlist upperbodyreplace hidden
+
+// crouch walk, no weapon
+$sequence layer_crouch_walk_no_weapon "Crouch_walkN" weightlist upperbodyreplace hidden
+
+// crouch walk, holding an smg
+$sequence layer_crouch_walk_holding "Crouch_walkN_smg1" weightlist upperbodyreplace hidden
+
+// crouch run, no weapon
+$sequence layer_crouch_run_no_weapon "Crouch_runN" weightlist upperbodyreplace hidden
+
+// run N holding a SMG
+$sequence layer_run_holding "RunN_SMG1" weightlist upperbodyreplace hidden
+
+$animation a_RunN_SMG RunN_smg1 loop LX LY rotateto 0 {
+	alignto idle01
+	// ikrule lfoot footstep 0 range .. 8 10 ..
+	// ikrule rfoot footstep 1 range .. 17 1 ..
+}
+
+$sequence crouch_run_all_delta {
+	a_crouch_runS_delta a_crouch_runSE_delta a_crouch_runE_delta 
+	a_crouch_runNE_delta a_crouch_runN_delta a_crouch_runNW_delta 
+	a_crouch_runW_delta a_crouch_runSW_delta a_crouch_runS_delta 
+	weightlist pelvisonly
+	blendwidth 9 blend move_yaw -180 180
+	iklock lfoot 1 1 iklock rfoot 1 1
+	delta
+ 	hidden
+}
+
+$sequence crouchRUNALL1 {
+	a_runS a_runSE a_runE
+	a_runNE a_crouch_runN a_runNW
+	a_runW a_runSW a_runS
+	blendwidth 9 blend move_yaw -180 180
+	addlayer crouch_run_all_delta 
+	addlayer layer_crouch_run_no_weapon
+	ACT_RUN_CROUCH 1 
+	node "run_crouching"
+}

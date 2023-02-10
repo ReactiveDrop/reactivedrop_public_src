@@ -1,0 +1,47 @@
+//=============================================================
+//  Hierarchy
+//=============================================================
+$heirarchy "valvebiped.Bip01_Pelvis" ""
+$heirarchy "Valvebiped.bip01_Spine" "valvebiped.Bip01_Pelvis"
+$heirarchy "valvebiped.Bip01_L_Clavicle" "valvebiped.Bip01_Spine4" 
+$heirarchy "valvebiped.Bip01_R_Clavicle" "valvebiped.Bip01_Spine4" 
+$heirarchy "valvebiped.Bip01_L_Thigh" "valvebiped.Bip01_Pelvis" 
+$heirarchy "valvebiped.Bip01_R_Thigh" "valvebiped.Bip01_Pelvis"
+$root "valvebiped.Bip01_Pelvis"
+
+//=============================================================
+//  Collapses
+//=============================================================
+$alwayscollapse "Valvebiped.bip01"
+$alwayscollapse "MarineTest"
+$alwayscollapse "XSISceneRoot"
+
+
+//=============================================================
+//  IK Chain
+//=============================================================
+$ikchain rhand "valvebiped.Bip01_R_Hand" Z 0
+$ikchain lhand "valvebiped.Bip01_L_Hand" Z 0
+$ikchain rfoot "valvebiped.Bip01_R_Foot" Z 0
+$ikchain lfoot "valvebiped.Bip01_L_Foot" Z 0
+
+$attachment "UnderGun" "ValveBiped.Bip01_R_Hand" 15.00 -5.00 -5.00 rotate -0 90 180
+
+$ikautoplaylock rhand 0.5 0.8
+$ikautoplaylock lhand 0.5 0.8
+$ikautoplaylock rfoot 1.0 0.1
+$ikautoplaylock lfoot 1.0 0.1
+
+//=============================================================
+//  Weights
+//=============================================================
+$weightlist upperbodyreplace "Valvebiped.bip01_spine" 1.0
+$weightlist pelvisonly "Valvebiped.bip01_Pelvis" 1.0 "Valvebiped.bip01_Spine" 0.0 "ValveBiped.Bip01_L_Thigh" 0.0 "ValveBiped.Bip01_R_Thigh" 0.0 
+$weightlist fullbody "ValveBiped.Bip01_Pelvis" 1.0 "ValveBiped.Bip01_L_Clavicle" 0.0 "ValveBiped.Bip01_R_Clavicle" 0.0
+$weightlist fullspine "ValveBiped.Bip01_Pelvis" 1.0 "ValveBiped.Bip01_L_Clavicle" 0.0 "ValveBiped.Bip01_R_Clavicle" 0.0 "ValveBiped.Bip01_L_Thigh" 0.0 "ValveBiped.Bip01_R_Thigh" 0.0 
+$weightlist fullspinenohead "ValveBiped.Bip01_Pelvis" 1.0 "ValveBiped.Bip01_L_Clavicle" 0.0 "ValveBiped.Bip01_R_Clavicle" 0.0 "ValveBiped.Bip01_L_Thigh" 0.0 "ValveBiped.Bip01_R_Thigh" 0.0 "ValveBiped.Bip01_Head1" 0.0
+$weightlist upperspine "ValveBiped.Bip01_Pelvis" 1.0 "ValveBiped.Bip01_R_Thigh" 0.0 "ValveBiped.Bip01_L_Thigh" 0.0 "ValveBiped.Bip01_L_Clavicle" 0.0 "ValveBiped.Bip01_R_Clavicle" 0.0
+$weightlist upperspinenohead "ValveBiped.Bip01_Pelvis" 1.0 "ValveBiped.Bip01_R_Thigh" 0.0 "ValveBiped.Bip01_L_Thigh" 0.0 "ValveBiped.Bip01_L_Clavicle" 0.0 "ValveBiped.Bip01_R_Clavicle" 0.0 "ValveBiped.Bip01_Head1" 0.0
+$Weightlist HipsUpperbodyReplace "valvebiped.bip01_Pelvis" 1.0 "ValveBiped.Bip01_L_Thigh" 0.0 "ValveBiped.Bip01_R_Thigh" 0.0 
+$weightlist right_arm "ValveBiped.Bip01_Pelvis" 0.0 "ValveBiped.Bip01_R_Thigh" 0.0 "ValveBiped.Bip01_L_Thigh" 0.0 "ValveBiped.Bip01_L_Clavicle" 0.0 "ValveBiped.Bip01_R_Clavicle" 1.0
+$weightlist both_arms "ValveBiped.Bip01_Pelvis" 0.0 "ValveBiped.Bip01_R_Thigh" 0.0 "ValveBiped.Bip01_L_Thigh" 0.0 "ValveBiped.Bip01_L_Clavicle" 1.0 "ValveBiped.Bip01_R_Clavicle" 1.0

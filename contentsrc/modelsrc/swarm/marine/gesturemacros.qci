@@ -1,0 +1,338 @@
+$weightlist gesture_armsonly "ValveBiped.Bip01_Pelvis" 0.0 "ValveBiped.Bip01_L_Clavicle" 1.0 "ValveBiped.Bip01_R_Clavicle" 1.0 
+$weightlist gesture_armsnohands "ValveBiped.Bip01_Pelvis" 0.0 "ValveBiped.Bip01_L_Clavicle" 1.0 "ValveBiped.Bip01_R_Clavicle" 1.0 "ValveBiped.Bip01_L_Hand" 0.0 "ValveBiped.Bip01_R_Hand" 0.0
+$weightlist gesture_handsonly "ValveBiped.Bip01_Pelvis" 0.0 "ValveBiped.Bip01_L_Hand" 1.0 "ValveBiped.Bip01_R_Hand" 1.0
+$weightlist gesture_fullbody "ValveBiped.Bip01_Pelvis" 1.0 "ValveBiped.Bip01_L_Thigh" 0.0 "ValveBiped.Bip01_R_Thigh" 0.0
+$weightlist gesture_justspine "ValveBiped.Bip01_Pelvis" 1.0 "ValveBiped.Bip01_L_Thigh" 0.0 "ValveBiped.Bip01_R_Thigh" 0.0 "ValveBiped.Bip01_L_Clavicle" 0.0 "ValveBiped.Bip01_R_Clavicle" 0.0 
+
+$poseparameter gesture_height 1 -1
+$poseparameter gesture_width 1 -1
+
+$definemacro makeposedgesturelockgaze gesturename filename Apex Accent LoopStart LoopEnd LoopFPS NewLastFrame \\
+//$sequence raw$gesturename$ $filename$ counterrotate "ValveBiped.forward" \\
+$animation @$gesturename$zero $filename$ frame 0 0 weightlist gesture_justspine \\
+$sequence $gesturename$apexDelta $filename$ frame 0 $Apex$ weightlist gesture_fullbody splinedelta delta hidden \\
+$sequence $gesturename$loopDelta $filename$ frame $LoopStart$ $LoopEnd$ fps $LoopFPS$ loop fixuploop -2 2 subtract $gesturename$loopDelta 0 delta weightlist gesture_armsonly realtime hidden \\
+$sequence $gesturename$accentDelta $filename$ frame $Apex$ $LoopStart$ weightlist gesture_fullbody splinedelta delta hidden \\
+$sequence $gesturename$apexHands $filename$ frame $Apex$ $Apex$ weightlist gesture_handsonly hidden noautoik \\
+$sequence $gesturename$loopHands $filename$ frame $LoopStart$ $LoopStart$ weightlist gesture_handsonly hidden noautoik \\
+$animation a_$gesturename$apex00Arms $filename$_poses frame 0 0 weightlist gesture_armsnohands noautoik \\
+$animation a_$gesturename$apex01Arms $filename$_poses frame 1 1 weightlist gesture_armsnohands noautoik \\
+$animation a_$gesturename$apex02Arms $filename$_poses frame 2 2 weightlist gesture_armsnohands noautoik \\
+$animation a_$gesturename$apex10Arms $filename$_poses frame 3 3 weightlist gesture_armsnohands noautoik \\
+$animation a_$gesturename$apex11Arms $filename$_poses frame 4 4 weightlist gesture_armsnohands noautoik \\
+$animation a_$gesturename$apex12Arms $filename$_poses frame 5 5 weightlist gesture_armsnohands noautoik \\
+$animation a_$gesturename$apex20Arms $filename$_poses frame 6 6 weightlist gesture_armsnohands noautoik \\
+$animation a_$gesturename$apex21Arms $filename$_poses frame 7 7 weightlist gesture_armsnohands noautoik \\
+$animation a_$gesturename$apex22Arms $filename$_poses frame 8 8 weightlist gesture_armsnohands noautoik \\
+$animation a_$gesturename$apex00Spine $filename$_poses frame 0 0 weightlist gesture_justspine subtract @$gesturename$zero 0 \\
+$animation a_$gesturename$apex01Spine $filename$_poses frame 1 1 weightlist gesture_justspine subtract @$gesturename$zero 0 \\
+$animation a_$gesturename$apex02Spine $filename$_poses frame 2 2 weightlist gesture_justspine subtract @$gesturename$zero 0 \\
+$animation a_$gesturename$apex10Spine $filename$_poses frame 3 3 weightlist gesture_justspine subtract @$gesturename$zero 0 \\
+$animation a_$gesturename$apex11Spine $filename$_poses frame 4 4 weightlist gesture_justspine subtract @$gesturename$zero 0 \\
+$animation a_$gesturename$apex12Spine $filename$_poses frame 5 5 weightlist gesture_justspine subtract @$gesturename$zero 0 \\
+$animation a_$gesturename$apex20Spine $filename$_poses frame 6 6 weightlist gesture_justspine subtract @$gesturename$zero 0 \\
+$animation a_$gesturename$apex21Spine $filename$_poses frame 7 7 weightlist gesture_justspine subtract @$gesturename$zero 0 \\
+$animation a_$gesturename$apex22Spine $filename$_poses frame 8 8 weightlist gesture_justspine subtract @$gesturename$zero 0 \\
+$animation a_$gesturename$loop00Arms $filename$_poses frame 9 9 weightlist gesture_armsnohands noautoik \\
+$animation a_$gesturename$loop01Arms $filename$_poses frame 10 10 weightlist gesture_armsnohands noautoik \\
+$animation a_$gesturename$loop02Arms $filename$_poses frame 11 11 weightlist gesture_armsnohands noautoik \\
+$animation a_$gesturename$loop10Arms $filename$_poses frame 12 12 weightlist gesture_armsnohands noautoik \\
+$animation a_$gesturename$loop11Arms $filename$_poses frame 13 13 weightlist gesture_armsnohands noautoik \\
+$animation a_$gesturename$loop12Arms $filename$_poses frame 14 14 weightlist gesture_armsnohands noautoik \\
+$animation a_$gesturename$loop20Arms $filename$_poses frame 15 15 weightlist gesture_armsnohands noautoik \\
+$animation a_$gesturename$loop21Arms $filename$_poses frame 16 16 weightlist gesture_armsnohands noautoik \\
+$animation a_$gesturename$loop22Arms $filename$_poses frame 17 17 weightlist gesture_armsnohands noautoik \\
+$animation a_$gesturename$loop00Spine $filename$_poses frame 9 9 weightlist gesture_justspine subtract @$gesturename$zero 0 \\
+$animation a_$gesturename$loop01Spine $filename$_poses frame 10 10 weightlist gesture_justspine subtract @$gesturename$zero 0 \\
+$animation a_$gesturename$loop02Spine $filename$_poses frame 11 11 weightlist gesture_justspine subtract @$gesturename$zero 0 \\
+$animation a_$gesturename$loop10Spine $filename$_poses frame 12 12 weightlist gesture_justspine subtract @$gesturename$zero 0 \\
+$animation a_$gesturename$loop11Spine $filename$_poses frame 13 13 weightlist gesture_justspine subtract @$gesturename$zero 0 \\
+$animation a_$gesturename$loop12Spine $filename$_poses frame 14 14 weightlist gesture_justspine subtract @$gesturename$zero 0 \\
+$animation a_$gesturename$loop20Spine $filename$_poses frame 15 15 weightlist gesture_justspine subtract @$gesturename$zero 0 \\
+$animation a_$gesturename$loop21Spine $filename$_poses frame 16 16 weightlist gesture_justspine subtract @$gesturename$zero 0 \\
+$animation a_$gesturename$loop22Spine $filename$_poses frame 17 17 weightlist gesture_justspine subtract @$gesturename$zero 0 \\
+$sequence $gesturename$apexArms { \\
+	a_$gesturename$apex00Arms a_$gesturename$apex01Arms  a_$gesturename$apex02Arms \\
+	a_$gesturename$apex10Arms a_$gesturename$apex11Arms  a_$gesturename$apex12Arms \\
+	a_$gesturename$apex20Arms a_$gesturename$apex21Arms  a_$gesturename$apex22Arms \\
+	blend gesture_width 1 -1 blend gesture_height 1 -1 \\
+	weightlist gesture_armsnohands \\
+	hidden \\
+} \\
+$sequence $gesturename$apexSpine { \\
+	a_$gesturename$apex00Spine a_$gesturename$apex01Spine  a_$gesturename$apex02Spine \\
+	a_$gesturename$apex10Spine a_$gesturename$apex11Spine  a_$gesturename$apex12Spine \\
+	a_$gesturename$apex20Spine a_$gesturename$apex21Spine  a_$gesturename$apex22Spine \\
+	blend gesture_width 1 -1 blend gesture_height 1 -1 \\
+	weightlist gesture_justspine \\
+	delta \\
+	hidden \\
+} \\
+$sequence $gesturename$loopArms { \\
+	a_$gesturename$loop00Arms a_$gesturename$loop01Arms  a_$gesturename$loop02Arms \\
+	a_$gesturename$loop10Arms a_$gesturename$loop11Arms  a_$gesturename$loop12Arms \\
+	a_$gesturename$loop20Arms a_$gesturename$loop21Arms  a_$gesturename$loop22Arms \\
+	blend gesture_width 1 -1 blend gesture_height 1 -1 \\
+	weightlist gesture_armsnohands \\
+	hidden \\
+} \\
+$sequence $gesturename$loopSpine { \\
+	a_$gesturename$loop00Spine a_$gesturename$loop01Spine  a_$gesturename$loop02Spine \\
+	a_$gesturename$loop10Spine a_$gesturename$loop11Spine  a_$gesturename$loop12Spine \\
+	a_$gesturename$loop20Spine a_$gesturename$loop21Spine  a_$gesturename$loop22Spine \\
+	blend gesture_width 1 -1 blend gesture_height 1 -1 \\
+	weightlist gesture_justspine \\
+	delta \\
+	hidden \\
+} \\
+$sequence $gesturename$ { \\
+  $filename$ noanimation numframes $NewLastFrame$ \\
+  blendlayer $gesturename$apexArms 0 $Apex$ $LoopStart$ $LoopStart$ spline noblend \\
+  blendlayer $gesturename$apexSpine 0 $Apex$ $Apex$ $LoopStart$ spline noblend \\
+  blendlayer $gesturename$apexHands 0 $Apex$ $LoopStart$ $LoopStart$ spline noblend \\
+  blendlayer $gesturename$loopArms $Apex$ $LoopStart$ $LoopEnd$ $NewLastFrame$ spline noblend \\
+  blendlayer $gesturename$loopSpine $Apex$ $LoopStart$ $LoopEnd$ $NewLastFrame$ spline noblend \\
+  blendlayer $gesturename$loopHands $Apex$ $LoopStart$ $LoopEnd$ $NewLastFrame$ spline noblend \\
+  blendlayer $gesturename$loopDelta $LoopStart$ $LoopStart$ $LoopEnd$ $NewLastFrame$ \\
+  blendlayer $gesturename$apexDelta 0 0 $Apex$ $Apex$ \\
+  blendlayer $gesturename$accentDelta $Apex$ $Apex$ $LoopStart$ $LoopStart$ \\
+  keyvalues \\
+  { \\
+    faceposer \\
+    { \\
+      type "gesture" \\
+      tags \\
+      { \\
+	"apex" $Apex$ \\
+	"accent" $Accent$ \\
+	"loop" $LoopStart$ \\
+	"end" $LoopEnd$ \\
+      } \\
+      entrytag "apex" \\
+      thumbnail_frame $Accent$ \\
+    } \\
+  } \\
+  ikrule lhand release range 0 $Apex$ $LoopEnd$ $NewLastFrame$ \\
+  ikrule rhand release range 0 $Apex$ $LoopEnd$ $NewLastFrame$ \\
+  iklock rfoot 1 0 iklock lfoot 1 0 \\
+}
+
+
+$definemacro makeposedgesture gesturename filename Apex Accent LoopStart LoopEnd LoopFPS NewLastFrame \\
+$makeposedgesturelockgaze $gesturename$ $filename$ $Apex$ $Accent$ $LoopStart$ $LoopEnd$ $LoopFPS$ $NewLastFrame$ \\
+//$prepend @$gesturename$zero counterrotate "ValveBiped.forward" \\
+$prepend a_$gesturename$apex00Spine counterrotate "ValveBiped.forward" \\
+$prepend a_$gesturename$apex01Spine counterrotate "ValveBiped.forward" \\
+$prepend a_$gesturename$apex02Spine counterrotate "ValveBiped.forward" \\
+$prepend a_$gesturename$apex10Spine counterrotate "ValveBiped.forward" \\
+$prepend a_$gesturename$apex11Spine counterrotate "ValveBiped.forward" \\
+$prepend a_$gesturename$apex12Spine counterrotate "ValveBiped.forward" \\
+$prepend a_$gesturename$apex20Spine counterrotate "ValveBiped.forward" \\
+$prepend a_$gesturename$apex21Spine counterrotate "ValveBiped.forward" \\
+$prepend a_$gesturename$apex22Spine counterrotate "ValveBiped.forward" \\
+$prepend $gesturename$apexDelta counterrotate "ValveBiped.forward" \\
+$prepend a_$gesturename$loop00Spine counterrotate "ValveBiped.forward" \\
+$prepend a_$gesturename$loop01Spine counterrotate "ValveBiped.forward" \\
+$prepend a_$gesturename$loop02Spine counterrotate "ValveBiped.forward" \\
+$prepend a_$gesturename$loop10Spine counterrotate "ValveBiped.forward" \\
+$prepend a_$gesturename$loop11Spine counterrotate "ValveBiped.forward" \\
+$prepend a_$gesturename$loop12Spine counterrotate "ValveBiped.forward" \\
+$prepend a_$gesturename$loop20Spine counterrotate "ValveBiped.forward" \\
+$prepend a_$gesturename$loop21Spine counterrotate "ValveBiped.forward" \\
+$prepend a_$gesturename$loop22Spine counterrotate "ValveBiped.forward" \\
+$prepend $gesturename$accentDelta counterrotate "ValveBiped.forward"
+
+
+$definemacro makegesturelockgaze gesturename filename Apex Accent LoopStart LoopEnd LoopFPS NewLastFrame \\
+//$sequence raw$gesturename$ $filename$ counterrotate "ValveBiped.forward" \\
+$animation @$gesturename$zero $filename$ frame 0 0 weightlist gesture_justspine \\
+$sequence $gesturename$apexArms $filename$ frame $Apex$ $Apex$ weightlist gesture_armsonly hidden noautoik \\
+$sequence $gesturename$apexSpine $filename$ frame $Apex$ $Apex$ weightlist gesture_justspine subtract @$gesturename$zero 0 delta hidden \\
+$sequence $gesturename$apexDelta $filename$ frame 0 $Apex$ weightlist gesture_fullbody splinedelta delta hidden \\
+$sequence $gesturename$loopArms $filename$ frame $LoopStart$ $LoopEnd$ fps $LoopFPS$ loop fixuploop -2 2 weightlist gesture_armsonly realtime hidden noautoik \\
+$sequence $gesturename$loopSpine $filename$ frame $LoopStart$ $LoopEnd$ fps $LoopFPS$ loop fixuploop -2 2 weightlist gesture_justspine subtract @$gesturename$zero 0 delta realtime hidden \\
+$sequence $gesturename$accentDelta $filename$ frame $Apex$ $LoopStart$ weightlist gesture_fullbody splinedelta delta hidden \\
+\\
+$sequence $gesturename$ { \\
+  $filename$ noanimation numframes $NewLastFrame$ \\
+  blendlayer $gesturename$apexArms 0 $Apex$ $Apex$ $LoopStart$ spline xfade \\
+  blendlayer $gesturename$apexSpine 0 $Apex$ $Apex$ $LoopStart$ spline \\
+  blendlayer $gesturename$loopArms $Apex$ $LoopStart$ $LoopEnd$ $NewLastFrame$ spline \\
+  blendlayer $gesturename$loopSpine $Apex$ $LoopStart$ $LoopEnd$ $NewLastFrame$ spline \\
+  blendlayer $gesturename$apexDelta 0 0 $Apex$ $Apex$ \\
+  blendlayer $gesturename$accentDelta $Apex$ $Apex$ $LoopStart$ $LoopStart$ \\
+  keyvalues \\
+  { \\
+    faceposer \\
+    { \\
+      type "gesture" \\
+      tags \\
+      { \\
+	"apex" $Apex$ \\
+	"accent" $Accent$ \\
+	"loop" $LoopStart$ \\
+	"end" $LoopEnd$ \\
+      } \\
+      entrytag "apex" \\
+      thumbnail_frame $Accent$ \\
+    } \\
+  } \\
+  ikrule lhand release range 0 $Apex$ $LoopEnd$ $NewLastFrame$ \\
+  ikrule rhand release range 0 $Apex$ $LoopEnd$ $NewLastFrame$ \\
+  iklock rfoot 1 0 iklock lfoot 1 0 \\
+}
+
+
+$definemacro makegesture gesturename filename Apex Accent LoopStart LoopEnd LoopFPS NewLastFrame \\
+$makegesturelockgaze $gesturename$ $filename$ $Apex$ $Accent$ $LoopStart$ $LoopEnd$ $LoopFPS$ $NewLastFrame$ \\
+//$prepend @$gesturename$zero counterrotate "ValveBiped.forward" \\
+$prepend $gesturename$apexSpine counterrotate "ValveBiped.forward" \\
+$prepend $gesturename$apexDelta counterrotate "ValveBiped.forward" \\
+$prepend $gesturename$loopSpine counterrotate "ValveBiped.forward" \\
+$prepend $gesturename$accentDelta counterrotate "ValveBiped.forward"
+
+
+
+
+$weightlist headgesture_fullbody "ValveBiped.Bip01_Pelvis" 1.0 "ValveBiped.Bip01_L_Thigh" 0.0 "ValveBiped.Bip01_R_Thigh" 0.0
+$weightlist headgesture_headonly "ValveBiped.Bip01_Pelvis" 0.0 "ValveBiped.Bip01_L_Thigh" 0.0 "ValveBiped.Bip01_R_Thigh" 0.0
+
+
+$definemacro makeheadgesturelockgaze gesturename filename Apex Extreme LoopStart LoopEnd LoopFPS LastFrame \\
+$sequence $gesturename$default $filename$ frame 0 0 hidden \\
+$sequence $gesturename$apexDelta $filename$ frame 0 $LoopStart$ weightlist headgesture_fullbody splinedelta delta hidden \\
+$sequence $gesturename$loopDelta $filename$ frame $LoopStart$ $LoopEnd$ fps $LoopFPS$ loop fixuploop -2 2 subtract $gesturename$default 0 delta weightlist headgesture_fullbody realtime hidden \\
+\\
+$sequence $gesturename$ { \\
+  $filename$ noanimation numframes $LastFrame$ \\
+  blendlayer $gesturename$apexDelta 0 0 $LoopStart$ $LoopStart$ \\
+  blendlayer $gesturename$loopDelta 0 $LoopStart$ $LoopEnd$ $LastFrame$ spline \\
+  keyvalues \\
+  { \\
+    faceposer \\
+    { \\
+      type "gesture" \\
+      tags \\
+      { \\
+	"apex" $Apex$ \\
+	"extreme" $Extreme$ \\
+	"loop" $LoopStart$ \\
+	"end" $LoopEnd$ \\
+      } \\
+      entrytag "apex" \\
+      thumbnail_frame $Extreme$ \\
+    } \\
+  } \\
+  iklock rfoot 1 0 iklock lfoot 1 0 \\
+}
+
+
+$definemacro makeheadgesture gesturename filename Apex Extreme LoopStart LoopEnd LoopFPS LastFrame \\
+$makeheadgesturelockgaze $gesturename$ $filename$ $Apex$ $Extreme$ $LoopStart$ $LoopEnd$ $LoopFPS$ $LastFrame$ \\
+$prepend $gesturename$default counterrotate "ValveBiped.forward" \\
+$prepend $gesturename$apexDelta counterrotate "ValveBiped.forward" \\
+$prepend $gesturename$loopDelta counterrotate "ValveBiped.forward"
+
+
+
+$definemacro makeinoutgesturelockgaze gesturename filename InFrame LoopStart LoopEnd LoopFPS OutFrame LastFrame \\
+$animation @$gesturename$zero $filename$ frame 0 0 weightlist gesture_justspine \\
+$sequence $gesturename$inDelta $filename$ frame 0 $InFrame$ weightlist gesture_fullbody splinedelta delta hidden  \\
+$sequence $gesturename$inFrameArms $filename$ frame $InFrame$ $InFrame$ weightlist gesture_armsonly hidden noautoik \\
+$sequence $gesturename$inFrameSpine $filename$ frame $InFrame$ $InFrame$ weightlist gesture_justspine subtract @$gesturename$zero 0 delta hidden \\
+$sequence $gesturename$inLoopDelta $filename$ frame $InFrame$ $LoopStart$ weightlist gesture_fullbody splinedelta delta hidden  \\
+$sequence $gesturename$loopFrameArms $filename$ frame $LoopStart$ $LoopStart$ weightlist gesture_armsonly hidden noautoik \\
+$sequence $gesturename$loopFrameSpine $filename$ frame $LoopStart$ $LoopStart$ weightlist gesture_justspine subtract @$gesturename$zero 0 delta hidden  \\
+$sequence $gesturename$loopDelta $filename$ frame $LoopStart$ $LoopEnd$ fps $LoopFPS$ loop fixuploop 0 -4 weightlist gesture_fullbody splinedelta delta realtime hidden  \\
+$sequence $gesturename$outLoopDelta $filename$ frame $LoopEnd$ $OutFrame$ weightlist gesture_fullbody splinedelta delta hidden  \\
+$sequence $gesturename$OutFrameArms $filename$ frame $OutFrame$ $OutFrame$ weightlist gesture_armsonly hidden  noautoik \\
+$sequence $gesturename$OutFrameSpine $filename$ frame $OutFrame$ $OutFrame$ weightlist gesture_justspine subtract @$gesturename$zero 0 delta hidden  \\
+$sequence $gesturename$outDelta $filename$ frame $OutFrame$ $LastFrame$ weightlist gesture_fullbody splinedelta delta hidden  \\
+\\
+$sequence $gesturename$ { \\
+  $filename$ noanimation numframes $LastFrame$ \\
+  blendlayer $gesturename$inFrameArms 0 $InFrame$ $LoopStart$ $LoopStart$ spline noblend \\
+  blendlayer $gesturename$inFrameSpine 0 $InFrame$ $InFrame$ $LoopStart$ spline \\
+  blendlayer $gesturename$loopFrameArms $InFrame$ $LoopStart$ $OutFrame$ $OutFrame$ spline noblend \\
+  blendlayer $gesturename$loopFrameSpine $InFrame$ $LoopStart$ $LoopEnd$ $OutFrame$ spline \\
+  blendlayer $gesturename$OutFrameArms $LoopEnd$ $OutFrame$ $OutFrame$ $LastFrame$ spline noblend \\
+  blendlayer $gesturename$OutFrameSpine $LoopEnd$ $OutFrame$ $OutFrame$ $LastFrame$ spline \\
+  blendlayer $gesturename$inDelta 0 0 $InFrame$ $InFrame$ \\
+  blendlayer $gesturename$inLoopDelta $InFrame$ $InFrame$ $LoopStart$ $LoopStart$ \\
+  blendlayer $gesturename$loopDelta $InFrame$ $LoopStart$ $LoopEnd$ $OutFrame$ spline \\
+  blendlayer $gesturename$outLoopDelta $LoopEnd$ $LoopEnd$ $OutFrame$ $OutFrame$ \\
+  blendlayer $gesturename$outDelta $OutFrame$ $OutFrame$ $LastFrame$ $LastFrame$ \\
+  keyvalues \\
+  { \\
+    faceposer \\
+    { \\
+      type "gesture" \\
+      tags \\
+      { \\
+	"in" $InFrame$ \\
+	"loop" $LoopStart$ \\
+	"end" $LoopEnd$ \\
+	"out" $OutFrame$ \\
+      } \\
+      startloop "loop" \\
+      endloop "end" \\
+      entrytag "in" \\
+      exittag "out" \\
+      thumbnail_frame $LoopStart$ \\
+    } \\
+  } \\
+  ikrule lhand release range 0 $InFrame$ $OutFrame$ $LastFrame$ \\
+  ikrule rhand release range 0 $InFrame$ $OutFrame$ $LastFrame$ \\
+  iklock rfoot 1 0 iklock lfoot 1 0 \\
+}
+
+$definemacro makeinoutgesture gesturename filename InFrame LoopStart LoopEnd LoopFPS OutFrame LastFrame \\
+$makeinoutgesturelockgaze $gesturename$ $filename$ $InFrame$ $LoopStart$ $LoopEnd$ $LoopFPS$ $OutFrame$ $LastFrame$ \\
+$prepend $gesturename$inDelta counterrotate "ValveBiped.forward" \\
+$prepend $gesturename$inFrameSpine counterrotate "ValveBiped.forward" \\
+$prepend $gesturename$inLoopDelta counterrotate "ValveBiped.forward" \\
+$prepend $gesturename$loopFrameSpine counterrotate "ValveBiped.forward" \\
+$prepend $gesturename$loopDelta counterrotate "ValveBiped.forward" \\
+$prepend $gesturename$outLoopDelta counterrotate "ValveBiped.forward" \\
+$prepend $gesturename$OutFrameSpine counterrotate "ValveBiped.forward" \\
+$prepend $gesturename$outDelta counterrotate "ValveBiped.forward"
+
+
+$definemacro makenoloopgesture gesturename filename InFrame OutFrame LastFrame \\
+$animation @$gesturename$zero $filename$ frame 0 0 weightlist gesture_justspine \\
+$sequence $gesturename$inDelta $filename$ frame 0 $InFrame$ weightlist gesture_fullbody splinedelta delta hidden  \\
+$sequence $gesturename$inFrameArms $filename$ frame $InFrame$ $InFrame$ weightlist gesture_armsonly hidden noautoik\\
+$sequence $gesturename$inFrameSpine $filename$ frame $InFrame$ $InFrame$ weightlist gesture_justspine subtract @$gesturename$zero 0 delta hidden \\
+$sequence $gesturename$CoreDelta $filename$ frame $InFrame$ $OutFrame$ weightlist gesture_fullbody splinedelta delta hidden  \\
+$sequence $gesturename$OutFrameArms $filename$ frame $OutFrame$ $OutFrame$ weightlist gesture_armsonly hidden noautoik \\
+$sequence $gesturename$OutFrameSpine $filename$ frame $OutFrame$ $OutFrame$ weightlist gesture_justspine subtract @$gesturename$zero 0 delta hidden  \\
+$sequence $gesturename$outDelta $filename$ frame $OutFrame$ $LastFrame$ weightlist gesture_fullbody splinedelta delta hidden  \\
+\\
+$sequence $gesturename$ { \\
+  $filename$ noanimation numframes $LastFrame$ \\
+  blendlayer $gesturename$inFrameArms 0 $InFrame$ $OutFrame$ $OutFrame$ spline noblend \\
+  blendlayer $gesturename$inFrameSpine 0 $InFrame$ $InFrame$ $OutFrame$ spline \\
+  blendlayer $gesturename$OutFrameArms $InFrame$ $OutFrame$ $OutFrame$ $LastFrame$ spline noblend \\
+  blendlayer $gesturename$OutFrameSpine $InFrame$ $OutFrame$ $OutFrame$ $LastFrame$ spline \\
+  blendlayer $gesturename$inDelta 0 0 $InFrame$ $InFrame$ \\
+  blendlayer $gesturename$CoreDelta $InFrame$ $InFrame$ $OutFrame$ $OutFrame$ \\
+  blendlayer $gesturename$outDelta $OutFrame$ $OutFrame$ $LastFrame$ $LastFrame$ \\
+  keyvalues \\
+  { \\
+    faceposer \\
+    { \\
+      type "gesture" \\
+      tags \\
+      { \\
+	"in" $InFrame$ \\
+	"out" $OutFrame$ \\
+      } \\
+      entrytag "in" \\
+      exittag "out" \\
+      thumbnail_frame $InFrame$ \\
+    } \\
+  } \\
+  ikrule lhand release range 0 $InFrame$ $OutFrame$ $LastFrame$ \\
+  ikrule rhand release range 0 $InFrame$ $OutFrame$ $LastFrame$ \\
+  iklock rfoot 1 0 iklock lfoot 1 0 \\
+}
