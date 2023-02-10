@@ -134,7 +134,7 @@ void CASW_Extinguisher_Projectile::ProjectileTouch( CBaseEntity *pOther )
 			// Freeze faster the more frozen the object is
 			//flFreeze = (0.5f * pNPC->GetFrozenAmount()) + flFreeze;
 
-			if ( m_flFreezeAmount > 0 )
+			if ( m_flFreezeAmount > 0 && ( !m_hFirer || !m_hFirer->MyCombatCharacterPointer() || m_hFirer->MyCombatCharacterPointer()->IRelationType( pNPC ) != D_LI ) )
 			{
 				pNPC->Freeze( m_flFreezeAmount, this );
 				if ( pNPC->GetFrozenAmount() >= 0.9f )
