@@ -12,6 +12,7 @@
 #include "triggers.h"
 #include "asw_path_utils.h"
 #include "asw_trace_filter_doors.h"
+#include "ai_waypoint.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -22,8 +23,9 @@ ConVar asw_debug_marine_hints( "asw_debug_marine_hints", "0", FCVAR_NONE );
 ConVar asw_debug_squad_movement( "asw_debug_squad_movement", "0", FCVAR_NONE, "Draw debug overlays for squad movement" );
 
 ConVar asw_follow_hint_max_range( "asw_follow_hint_max_range", "300", FCVAR_NONE, "If bot is this far from leader it starts to move closer" );
-ConVar rd_follow_hint_max_search_range( "rd_follow_hint_max_search_range", "300", FCVAR_CHEAT, "A range around leader used to search for a node to move bot to" );
-ConVar rd_follow_hint_max_search_range_danger( "rd_follow_hint_max_search_range_danger", "400", FCVAR_CHEAT, "A range around leader used to search for a node to move bot to" );
+ConVar rd_follow_hint_max_path_bloat( "rd_follow_hint_max_path_bloat", "450", FCVAR_CHEAT, "Maximum additional pathing distance where a bot can try to pick a hint (due to non-optimal node connection choices)" );
+ConVar rd_follow_hint_max_search_range( "rd_follow_hint_max_search_range", "300", FCVAR_CHEAT, "A range around leader used to search for a hint to move bot to" );
+ConVar rd_follow_hint_max_search_range_danger( "rd_follow_hint_max_search_range_danger", "400", FCVAR_CHEAT, "A range around leader used to search for a hint to move bot to" );
 ConVar asw_follow_hint_max_z_dist( "asw_follow_hint_max_z_dist", "120", FCVAR_CHEAT );
 ConVar asw_follow_use_hints( "asw_follow_use_hints", "2", FCVAR_NONE, "0 = follow formation, 1 = use hints when in combat, 2 = always use hints" );
 ConVar rd_follow_hint_delay( "rd_follow_hint_delay", "5", FCVAR_NONE, "The number of seconds marines will ignore follow hints after being told to follow" );
@@ -608,6 +610,8 @@ int CASW_SquadFormation::FollowHintSortFunc( HintData_t* const *pHint1, HintData
 	return ( nDist1 - nDist2 );
 }
 
+float GetWaypointDistToEnd( const Vector &vStartPos, AI_Waypoint_t *way );
+
 //-----------------------------------------------------------------------------
 // Purpose: Finds the set of hint nodes to use when following during combat
 //-----------------------------------------------------------------------------
@@ -836,12 +840,18 @@ void CASW_SquadFormation::FindFollowHintNodes()
 			{
 				AI_Waypoint_t *pRoute = ASWPathUtils()->BuildRouteForHull( pLeader->GetAbsOrigin(), hints[i]->GetAbsOrigin(),
 					NULL, 100, pLeader->GetHullType(), NAV_GROUND );
-				if ( pRoute && !UTIL_ASW_DoorBlockingRoute( pRoute, true ) &&
-					!UTIL_ASW_BrushBlockingRoute( pRoute, MASK_PLAYERSOLID_BRUSHONLY, COLLISION_GROUP_PLAYER_MOVEMENT ) &&
-					!UTIL_ASW_AirlockBlockingRoute( pRoute, CONTENTS_MOVEABLE, COLLISION_GROUP_PLAYER_MOVEMENT ) )
+				if ( pRoute )
 				{
+					bool bBlocked = UTIL_ASW_DoorBlockingRoute( pRoute, true ) ||
+						UTIL_ASW_BrushBlockingRoute( pRoute, MASK_PLAYERSOLID_BRUSHONLY, ASW_COLLISION_GROUP_BOT_MOVEMENT ) ||
+						UTIL_ASW_AirlockBlockingRoute( pRoute, CONTENTS_MOVEABLE, ASW_COLLISION_GROUP_BOT_MOVEMENT );
+
+					float flLength = GetWaypointDistToEnd( pLeader->GetAbsOrigin(), pRoute );
+
 					ASWPathUtils()->DeleteRoute( pRoute );
-					continue;
+
+					if ( !bBlocked && flLength < ( m_flLastDangerTime > gpGlobals->curtime ? rd_follow_hint_max_search_range_danger.GetFloat() : rd_follow_hint_max_search_range.GetFloat() ) + rd_follow_hint_max_path_bloat.GetFloat() )
+						continue;
 				}
 
 				if ( asw_debug_marine_hints.GetBool() )

@@ -1180,7 +1180,7 @@ static void DebugWaypoint( AI_Waypoint_t * pWay, int r, int g, int b, float flDu
 }
 
 /// because AI_Waypoint_t::flPathDistGoal is broken
-static float GetWaypointDistToEnd( const Vector &vStartPos, AI_Waypoint_t *way ) 
+float GetWaypointDistToEnd( const Vector &vStartPos, AI_Waypoint_t *way )
 {
 	if ( !way ) return FLT_MAX;
 	float ret = way->GetPos().DistTo(vStartPos);
