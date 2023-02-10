@@ -256,6 +256,7 @@ CNB_Header_Footer::CNB_Header_Footer( vgui::Panel *parent, const char *name ) : 
 	m_bHeaderEnabled = true;
 	m_bFooterEnabled = true;
 	m_bMovieEnabled = true;
+	m_bBriefingCameraEnabled = false;
 	m_bGradientBarEnabled = 0;
 	m_nTitleStyle = NB_TITLE_MEDIUM;
 	m_nBackgroundStyle = NB_BACKGROUND_TRANSPARENT_BLUE;
@@ -405,11 +406,17 @@ void CNB_Header_Footer::SetMovieEnabled( bool bMovieEnabled )
 	InvalidateLayout( false, true );
 }
 
+void CNB_Header_Footer::SetBriefingCameraEnabled( bool bBriefingCameraEnabled )
+{
+	m_bBriefingCameraEnabled = bBriefingCameraEnabled;
+	InvalidateLayout( false, true );
+}
+
 void CNB_Header_Footer::PaintBackground()
 {
 	BaseClass::PaintBackground();
 
-	if ( m_bMovieEnabled && ASWBackgroundMovie() && !( engine->IsConnected() && ASWGameRules() && ASWGameRules()->GetGameState() < ASW_GS_INGAME && ASWGameRules()->m_hBriefingCamera ) )
+	if ( m_bMovieEnabled && ASWBackgroundMovie() && !( m_bBriefingCameraEnabled && engine->IsConnected() && ASWGameRules() && ASWGameRules()->GetGameState() < ASW_GS_INGAME && ASWGameRules()->m_hBriefingCamera ) )
 	{
 		ASWBackgroundMovie()->Update();
 		if ( ASWBackgroundMovie()->SetTextureMaterial() != -1 )
@@ -419,7 +426,7 @@ void CNB_Header_Footer::PaintBackground()
 			int x, y, w, t;
 			GetBounds( x, y, w, t );
 
-			// center, 16:10 aspect ratio
+			// center, 16:9 aspect ratio
 			int width_at_ratio = t * (16.0f / 9.0f);
 			x = ( w * 0.5f ) - ( width_at_ratio * 0.5f );
 			

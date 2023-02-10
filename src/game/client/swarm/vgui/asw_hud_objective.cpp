@@ -613,9 +613,15 @@ void CASWHudObjective::OnTick()
 	if ( bShowObjectives )
 	{
 		m_fLastVisibleTime = gpGlobals->curtime;
-	}		
+	}
 
-	if ( gpGlobals->curtime > (m_fLastVisibleTime + 6.0f) )
+	if ( ASWGameRules() && ASWGameRules()->GetGameState() < ASW_GS_INGAME )
+	{
+		// don't show in briefing camera
+		m_flCurrentAlpha = 0;
+		SetAlpha( 0 );
+	}
+	else if ( gpGlobals->curtime > (m_fLastVisibleTime + 6.0f) )
 	{
 		m_flCurrentAlpha = MAX( 0.0f, m_flCurrentAlpha - gpGlobals->frametime );
 		SetAlpha( m_flCurrentAlpha * 255.0f );

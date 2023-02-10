@@ -80,6 +80,7 @@ public:
 	void SetTitleStyle( NB_Title_Style nTitleStyle );
 	void SetBackgroundStyle( NB_Background_Style nBackgroundStyle );
 	void SetMovieEnabled( bool bMovieEnabled );
+	void SetBriefingCameraEnabled( bool bBriefingCameraenabled );
 	void SetGradientBarEnabled( bool bEnabled );
 	void SetGradientBarPos( int nY, int nHeight );
 	
@@ -98,6 +99,7 @@ public:
 	bool m_bHeaderEnabled;
 	bool m_bFooterEnabled;
 	bool m_bMovieEnabled;
+	bool m_bBriefingCameraEnabled;
 	bool m_bGradientBarEnabled;
 	int m_nGradientBarY;
 	int m_nGradientBarHeight;

@@ -116,6 +116,7 @@ CNB_Main_Panel::CNB_Main_Panel( vgui::Panel *parent, const char *name ) : BaseCl
     m_pTeamChangeButtonButton = new CNB_Button( this, "TeamChangeButton", "", this, "TeamChangeButton" );
 
 	m_pHeaderFooter->SetTitle( "#nb_mission_prep" );
+	m_pHeaderFooter->SetBriefingCameraEnabled( true );
 
 	m_bLocalLeader = false;
 
