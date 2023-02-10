@@ -15,6 +15,7 @@
 #include "ibriefing.h"
 #include "asw_medal_store.h"
 #include "asw_gamerules.h"
+#include "rd_steam_input.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -393,12 +394,16 @@ CRD_Collection_Entry_Equipment::CRD_Collection_Entry_Equipment( TGD_Grid *parent
 	m_pClassLabel = new vgui::Label( this, "ClassLabel", L"" );
 	m_pInfoButton = new CBitmapButton( this, "InfoButton", "" );
 	m_pInfoButton->AddActionSignalTarget( this );
+	m_hButtonFont = NULL;
+
+	SetPostChildPaintEnabled( true );
 }
 
 void CRD_Collection_Entry_Equipment::ApplySchemeSettings( vgui::IScheme *pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
+	m_hButtonFont = pScheme->GetFont( "GameUIButtonsTiny", true );
 	m_pInfoButton->SetVisible( false );
 
 	color32 white{ 255, 255, 255, 255 };
@@ -536,7 +541,19 @@ void CRD_Collection_Entry_Equipment::OnThink()
 {
 	BaseClass::OnThink();
 
-	m_pInfoButton->SetEnabled( IsCursorOver() );
+	m_pInfoButton->SetEnabled( IsCursorOver() || m_pFocusHolder->HasFocus() );
+}
+
+void CRD_Collection_Entry_Equipment::PostChildPaint()
+{
+	BaseClass::PostChildPaint();
+
+	if ( m_pInfoButton->IsVisible() && m_pInfoButton->IsEnabled() && g_RD_Steam_Input.GetJoystickCount() > 0 )
+	{
+		int x, y, w, t;
+		m_pInfoButton->GetBounds( x, y, w, t );
+		g_RD_Steam_Input.DrawLegacyControllerGlyph( "X_BUTTON", x, y + t, 2, 2, m_hButtonFont );
+	}
 }
 
 void CRD_Collection_Entry_Equipment::ApplyEntry()

@@ -110,6 +110,7 @@ public:
 	virtual void OnKeyCodePressed( vgui::KeyCode keycode ) override;
 	virtual void OnCommand( const char *command ) override;
 	virtual void OnThink() override;
+	virtual void PostChildPaint() override;
 	virtual void ApplyEntry() override;
 
 	const RD_Swarmopedia::Weapon *m_pWeapon;
@@ -123,6 +124,7 @@ public:
 	vgui::Label *m_pNewLabel;
 	vgui::ImagePanel *m_pClassIcon;
 	vgui::Label *m_pClassLabel;
+	vgui::HFont m_hButtonFont;
 	CBitmapButton *m_pInfoButton;
 };
 
