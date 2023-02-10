@@ -5288,7 +5288,11 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 			if ( iClassIndex >= 0 )
 			{
 				CSingleUserRecipientFilter filter( pCommander );
-				filter.MakeReliable();
+				// allow dropping packets for the most common alien types
+				if ( pAlien->Classify() != CLASS_ASW_DRONE && pAlien->Classify() != CLASS_ASW_RANGER &&
+					pAlien->Classify() != CLASS_ASW_BUZZER && pAlien->Classify() != CLASS_ASW_BOOMER &&
+					pAlien->Classify() != CLASS_ASW_PARASITE && pAlien->Classify() != CLASS_ASW_GRUB )
+					filter.MakeReliable();
 				UserMessageBegin( filter, "RDAlienKillStat" );
 					WRITE_SHORT( iClassIndex );
 				MessageEnd();
