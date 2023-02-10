@@ -1,0 +1,29 @@
+$jigglebone ValveBiped.back_unit_cables {
+	has_base_spring {
+		stiffness 100 
+		damping 1 
+		left_constraint -2 2
+		up_constraint -1 1
+		forward_constraint -2 2
+	}
+}
+
+$jigglebone ValveBiped.officer_antenna {
+	is_flexible {
+		length 30
+		yaw_stiffness 30
+		yaw_damping 3
+		pitch_stiffness 90
+		pitch_damping 3
+		angle_constraint 30
+	}
+}
+
+$jigglebone ValveBiped.medic_antenna {
+	is_flexible {
+		length 10
+		yaw_damping 2
+		pitch_damping 2
+		angle_constraint 20
+	}
+}

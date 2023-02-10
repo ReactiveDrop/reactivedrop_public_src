@@ -31,7 +31,7 @@ $bodygroup helmets
 	studio "dmx/marine_helmet.dmx"
 }
 
-$surfaceprop "armorflesh"
+$surfaceprop "flesh"
 $bbox -13 -13 0  13 13 72
 
 $texturegroup skinfamilies
@@ -59,3 +59,4 @@ $include "_WeaponAnims.qci"
 $include "_FlinchAnims.qci"
 $include "_Hitbox.qci"
 $include "_Ragdoll.qci"
+$include "_JiggleBones.qci"
