@@ -2,8 +2,6 @@
 // Base Idle anim to align to
 //===============================
 
-$addsearchdir "dmx/animation/"
-
 $sequence idle01 {
 	idle01 loop frames 0 358 fixuploop -15 0	
 	node "standing"

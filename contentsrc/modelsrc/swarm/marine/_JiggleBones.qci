@@ -15,7 +15,7 @@ $jigglebone ValveBiped.officer_antenna {
 		yaw_damping 3
 		pitch_stiffness 90
 		pitch_damping 3
-		angle_constraint 30
+		angle_constraint 15
 	}
 }
 

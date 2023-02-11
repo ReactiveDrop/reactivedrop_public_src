@@ -6,7 +6,7 @@ $attachment "Center" "ValveBiped.Bip01_Spine1" -6.20 2.09 0.00 rotate -0 97 90
 $attachment "LHand" "ValveBiped.Bip01_L_Hand" 3.00 -0.00 -0.00 rotate -0 0 -0
 $attachment "RHand" "ValveBiped.Bip01_R_Hand" 3.00 0.00 0.00 rotate 0 -0 -0
 $attachment "anim_attachment_head" "ValveBiped.Bip01_Head1" -0.00 0.00 0.00 rotate -90 -90 0
-$attachment "baton" "ValveBiped.baton_parent" 0.00 -0.00 0.00 rotate -0 -0 -0
+$attachment "baton" "ValveBiped.bip01_marine_baton_parent" 0.00 -0.00 0.00 rotate -0 -0 -0
 $attachment "manhack" "ValveBiped.Bip01_Spine" 18.00 -6.00 3.00 rotate -25 50 0
 $attachment "lefthand" "ValveBiped.Bip01_L_Hand" 0.00 -0.00 -0.00 rotate -0 0 -0
 $attachment "zipline" "ValveBiped.Bip01_Spine4" 3.00 -4.00 -0.00 rotate 0 -0 -0
@@ -21,9 +21,10 @@ $attachment "melee_left_hand" "ValveBiped.Bip01_L_Hand" 10.00 -5.00 -5.00 rotate
 $attachment "melee_right_hand" "ValveBiped.Bip01_R_Hand" 10.00 -5.00 -5.00 rotate 0 -0 -0
 $attachment "melee_left_foot" "ValveBiped.bip01_L_Foot" 3.00 -0.00 -0.00 rotate -0 0 -0
 $attachment "melee_right_foot" "ValveBiped.bip01_R_Foot" 3.00 -0.00 -0.00 rotate -0 0 -0
-$attachment "backpack" "ValveBiped.Bip01_Spine4" 6.00 -10.00 -0.00 rotate 0 -0 -0
-$attachment "jump_jet_l" "ValveBiped.Bip01_Spine4" -8.00 -10.00 5.00 rotate 0 -0 -0
-$attachment "jump_jet_r" "ValveBiped.Bip01_Spine4" -8.00 -10.00 -5.00 rotate 0 -0 -0
+$attachment "backpack" "ValveBiped.Bip01_Spine2" 16.00 -10.00 -0.00 rotate 0 -0 -0
+$attachment "jump_jet_l" "ValveBiped.Bip01_Spine2" 3.00 -10.00 5.00 rotate 0 -0 -0
+$attachment "jump_jet_r" "ValveBiped.Bip01_Spine2" 3.00 -10.00 -5.00 rotate 0 -0 -0
+$attachment "officer_antenna_end" "ValveBiped.officer_antenna" 0.00 34.00 -2.50 rotate 0 -0 -0
 $bonemerge "ValveBiped.Bip01_R_Hand"
 $bonemerge "ValveBiped.Bip01_L_Hand"
 $bonemerge "ValveBiped.Bip01_Spine2"

@@ -425,7 +425,7 @@ void CASW_Marine_Resource::OnFired_ScaleDamage( FireBulletsInfo_t & info )
 			te->SetSuppressHost( NULL );
 
 			CBaseEntity *pActiveWeapon = pMarine->GetActiveASWWeapon();
-			DispatchParticleEffectLink( "leadership_proc_accuracy", PATTACH_POINT_FOLLOW, pLeader, pActiveWeapon ? pActiveWeapon : pMarine, pLeader->LookupAttachment( "backpack" ) );
+			DispatchParticleEffectLink( "leadership_proc_accuracy", PATTACH_POINT_FOLLOW, pLeader, pActiveWeapon ? pActiveWeapon : pMarine, pLeader->LookupAttachment( "officer_antenna_end" ) );
 			EmitSound( "ASW_Leadership.Accuracy" );
 
 			te->SetSuppressHost( pHelpHelpImBeingSupressed );

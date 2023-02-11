@@ -14,10 +14,9 @@ $modelname swarm/marine/femalemarine.mdl
 $cdmaterials models/player/male
 $cdmaterials models/player/male/back_units
 $addsearchdir dmx/
+$addsearchdir dmx/animation/
 $eyeposition 0 0 70
-$model body "Marine.dmx" {
-	mouth 0 "mouth" "ValveBiped.Bip01_Head1" 0 1 0     // mouth illumination
-}
+$body body "Marine.dmx"
 
 $bodygroup back_units
 {
@@ -53,17 +52,13 @@ $renamematerial "models/player/male/back_unit/tech_back_unit" "models/player/mal
 //==============================================================================
 // includes
 //==============================================================================
-$include "_Attachments.qci"
+$include "_DefineBones.qci"
 $include "_HierarchyChainsWeights.qci"
 
-// idles/walk/run
-$include "_BaseAnims.qci"
+$includemodel swarm/marine/marine_anims.mdl
+$includemodel swarm/marine/marine_anims_extra.mdl
 
-// stop stand transition anim being inserted between these nodes
-$skiptransition "running" "walking"
-
-$include "_WeaponAnims.qci"
-$include "_FlinchAnims.qci"
+$include "_Attachments.qci"
 $include "_Hitbox.qci"
 $include "_Ragdoll.qci"
 $include "_JiggleBones.qci"
