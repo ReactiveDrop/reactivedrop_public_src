@@ -18,6 +18,7 @@ $addsearchdir dmx/animation/
 //==============================================================================
 $include "_DefineBones.qci"
 $include "_HierarchyChainsWeights.qci"
+$include "_BoneMerges.qci"
 
 // idles/walk/run
 $include "_BaseAnims.qci"

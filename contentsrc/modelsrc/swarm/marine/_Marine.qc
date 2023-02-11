@@ -28,6 +28,7 @@ $bodygroup back_units {
 $bodygroup helmets
 {
 	studio "dmx/marine_helmet.dmx"
+	blank
 }
 
 $surfaceprop "flesh"
@@ -47,6 +48,7 @@ $texturegroup skinfamilies
 //==============================================================================
 $include "_DefineBones.qci"
 $include "_HierarchyChainsWeights.qci"
+$include "_BoneMerges.qci"
 
 $includemodel swarm/marine/marine_anims.mdl
 $includemodel swarm/marine/marine_anims_extra.mdl

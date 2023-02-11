@@ -30,6 +30,7 @@ $bodygroup back_units
 $bodygroup helmets
 {
 	studio "dmx/marine_helmet.dmx"
+	blank
 }
 
 $surfaceprop "flesh"
@@ -54,6 +55,7 @@ $renamematerial "models/player/male/back_unit/tech_back_unit" "models/player/mal
 //==============================================================================
 $include "_DefineBones.qci"
 $include "_HierarchyChainsWeights.qci"
+$include "_BoneMerges.qci"
 
 $includemodel swarm/marine/marine_anims.mdl
 $includemodel swarm/marine/marine_anims_extra.mdl
