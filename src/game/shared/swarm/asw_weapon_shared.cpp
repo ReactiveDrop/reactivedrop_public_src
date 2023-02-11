@@ -1229,6 +1229,9 @@ void CASW_Weapon::SetWeaponVisible( bool visible )
 #else
 	//Msg("[S] %s SetWeaponVisible %d\n", GetClassname(), visible);
 #endif
+	if ( ViewModelIsMarineAttachment() && GetOwner() && GetOwner()->Classify() == CLASS_ASW_MARINE )
+		visible = true;
+
 	BaseClass::SetWeaponVisible(visible);
 	/*
 	if ( visible )
@@ -1303,9 +1306,9 @@ void CASW_Weapon::Precache()
 	}
 }
 
-const CASW_WeaponInfo* CASW_Weapon::GetWeaponInfo() const
+const CASW_WeaponInfo *CASW_Weapon::GetWeaponInfo() const
 {
-	return dynamic_cast<const CASW_WeaponInfo*>(&GetWpnData());
+	return assert_cast< const CASW_WeaponInfo * >( &GetWpnData() );
 }
 
 bool CASW_Weapon::SendWeaponAnim(int iActivity)
@@ -1319,6 +1322,11 @@ void CASW_Weapon::Equip(CBaseCombatCharacter *pOwner)
 	BaseClass::Equip(pOwner);
 
 	SetModel( GetViewModel() );
+
+	if ( ViewModelIsMarineAttachment() )
+	{
+		m_nSkin = pOwner->GetSkin();
+	}
 
 	//IHasAttributes *pOwnerAttribInterface = dynamic_cast<IHasAttributes *>( pOwner );
 	//if ( pOwnerAttribInterface )

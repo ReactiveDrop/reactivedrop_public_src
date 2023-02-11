@@ -21,7 +21,7 @@ void C_ASW_Weapon::CalcBoneMerge( CStudioHdr *hdr, int boneMask, CBoneBitList &b
 				m_pBoneMergeCache->Init( this );
 			}
 			CASW_Bone_Merge_Cache *pASWBoneMergeCache = static_cast<CASW_Bone_Merge_Cache*>( m_pBoneMergeCache );
-			pASWBoneMergeCache->MergeMatchingBones( boneMask, boneComputed, ShouldAlignWeaponToLaserPointer(), m_vecLaserPointerDirection );
+			pASWBoneMergeCache->MergeMatchingBones( boneMask, boneComputed, ShouldAlignWeaponToLaserPointer(), !ViewModelIsMarineAttachment(), m_vecLaserPointerDirection );
 
 			int iAttachment = GetMuzzleAttachment();
 			if ( iAttachment > 0 && m_pLaserPointerEffect )
@@ -49,7 +49,7 @@ CASW_Bone_Merge_Cache::CASW_Bone_Merge_Cache()
 }
 
 // apply custom pitch to bone merge
-void CASW_Bone_Merge_Cache::MergeMatchingBones( int boneMask, CBoneBitList &boneComputed, bool bOverrideDirection, const Vector &vecDir )
+void CASW_Bone_Merge_Cache::MergeMatchingBones( int boneMask, CBoneBitList &boneComputed, bool bOverrideDirection, bool bUseWeaponPitch, const Vector &vecDir )
 {
 	UpdateCache();
 
@@ -106,9 +106,13 @@ void CASW_Bone_Merge_Cache::MergeMatchingBones( int boneMask, CBoneBitList &bone
 
 			ConcatTransforms( m_pFollow->GetBone( iParentBone ), matCorrection, m_pOwner->GetBoneForWrite( iOwnerBone ) );
 		}
-		else
+		else if ( bUseWeaponPitch )
 		{
 			ConcatTransforms( m_pFollow->GetBone( iParentBone ), matPitchUp, m_pOwner->GetBoneForWrite( iOwnerBone ) );
+		}
+		else
+		{
+			MatrixCopy( m_pFollow->GetBone( iParentBone ), m_pOwner->GetBoneForWrite( iOwnerBone ) );
 		}
 
 		boneComputed.Set( i );

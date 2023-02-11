@@ -454,7 +454,7 @@ bool C_ASW_Weapon::ShouldDraw()
 		{
 			return false;
 		}
-		return (pMarine->GetActiveWeapon() == this);
+		return (pMarine->GetActiveWeapon() == this) || ( ViewModelIsMarineAttachment() && pMarine->GetRenderAlpha() > 0 );
 	}
 	if (!BaseClass::ShouldDraw())
 	{

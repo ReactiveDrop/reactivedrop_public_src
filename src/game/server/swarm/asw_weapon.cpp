@@ -338,6 +338,7 @@ void CASW_Weapon::Drop( const Vector &vecVelocity )
 	SetOwnerEntity( NULL );
 	SetOwner( NULL );
 	SetModel( GetWorldModel() );
+	m_nSkin = GetWeaponInfo()->m_iPlayerModelSkin;
 }
 
 

@@ -16,7 +16,7 @@ public:
 
 	// This copies the transform from all bones in the followed entity that have 
 	// names that match our bones.
-	virtual void MergeMatchingBones( int boneMask, CBoneBitList &boneComputed, bool bOverrideDirection, const Vector &vecDir );
+	void MergeMatchingBones( int boneMask, CBoneBitList &boneComputed, bool bOverrideDirection, bool bUseWeaponPitch, const Vector &vecDir );
 
 	int m_nRightHandBoneID;
 };

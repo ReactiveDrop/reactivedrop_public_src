@@ -45,6 +45,7 @@ public:
 	virtual bool SecondaryAttackUsesPrimaryAmmo() { return false; }
 	virtual bool SecondaryAttackEqualsPrimary() { return false; }
 	virtual bool IsPredicted( void ) const;
+	virtual bool ViewModelIsMarineAttachment() const { return false; }
 	void PlaySoundDirectlyToOwner( const char *szSoundName );
 	void PlaySoundToOthers( const char *szSoundName );
 
