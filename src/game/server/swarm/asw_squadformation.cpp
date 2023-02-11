@@ -11,7 +11,7 @@
 #include "ai_network.h"
 #include "triggers.h"
 #include "asw_path_utils.h"
-#include "asw_trace_filter_doors.h"
+#include "ai_pathfinder.h"
 #include "ai_waypoint.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -838,19 +838,19 @@ void CASW_SquadFormation::FindFollowHintNodes()
 		{
 			FOR_EACH_VEC_BACK( hints, i )
 			{
-				AI_Waypoint_t *pRoute = ASWPathUtils()->BuildRouteForHull( pLeader->GetAbsOrigin(), hints[i]->GetAbsOrigin(),
-					NULL, 100, pLeader->GetHullType(), NAV_GROUND );
+				AI_Waypoint_t *pRoute = pMarine->GetPathfinder()->BuildRoute( pLeader->GetAbsOrigin(), hints[i]->GetAbsOrigin(),
+					NULL, 100, NAV_GROUND );
 				if ( pRoute )
 				{
-					bool bBlocked = UTIL_ASW_DoorBlockingRoute( pRoute, true ) ||
-						UTIL_ASW_BrushBlockingRoute( pRoute, MASK_PLAYERSOLID_BRUSHONLY, ASW_COLLISION_GROUP_BOT_MOVEMENT ) ||
-						UTIL_ASW_AirlockBlockingRoute( pRoute, CONTENTS_MOVEABLE, ASW_COLLISION_GROUP_BOT_MOVEMENT );
-
 					float flLength = GetWaypointDistToEnd( pLeader->GetAbsOrigin(), pRoute );
+					bool bShortEnough = flLength < ( m_flLastDangerTime > gpGlobals->curtime ? rd_follow_hint_max_search_range_danger.GetFloat() : rd_follow_hint_max_search_range.GetFloat() ) + rd_follow_hint_max_path_bloat.GetFloat();
+
+					if ( !bShortEnough && asw_debug_marine_hints.GetBool() )
+						ASWPathUtils()->DebugDrawRoute( pLeader->GetAbsOrigin(), pRoute );
 
 					ASWPathUtils()->DeleteRoute( pRoute );
 
-					if ( !bBlocked && flLength < ( m_flLastDangerTime > gpGlobals->curtime ? rd_follow_hint_max_search_range_danger.GetFloat() : rd_follow_hint_max_search_range.GetFloat() ) + rd_follow_hint_max_path_bloat.GetFloat() )
+					if ( bShortEnough )
 						continue;
 				}
 
