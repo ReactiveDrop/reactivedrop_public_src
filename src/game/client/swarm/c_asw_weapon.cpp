@@ -99,6 +99,7 @@ ConVar asw_laser_sight_min_distance( "asw_laser_sight_min_distance", "9999", 0, 
 ConVar glow_outline_color_weapon( "glow_outline_color_weapon", "0 102 192", FCVAR_NONE );
 ConVar rd_tracer_tint_self( "rd_tracer_tint_self", "255 255 255", FCVAR_ARCHIVE, "Tint tracers and muzzle flashes from own marine" );
 ConVar rd_tracer_tint_other( "rd_tracer_tint_other", "255 255 255", FCVAR_ARCHIVE, "Tint tracers and muzzle flashes from other marines" );
+ConVar rd_marine_gear( "rd_marine_gear", "1", FCVAR_NONE, "Draw model overlays for marine gear items" );
 
 extern ConVar asw_use_particle_tracers;
 extern ConVar muzzleflash_light;
@@ -454,7 +455,7 @@ bool C_ASW_Weapon::ShouldDraw()
 		{
 			return false;
 		}
-		return (pMarine->GetActiveWeapon() == this) || ( ViewModelIsMarineAttachment() && pMarine->GetRenderAlpha() > 0 );
+		return (pMarine->GetActiveWeapon() == this) || ( rd_marine_gear.GetBool() && ViewModelIsMarineAttachment() && pMarine->GetRenderAlpha() > 0 );
 	}
 	if (!BaseClass::ShouldDraw())
 	{
