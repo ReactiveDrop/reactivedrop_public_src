@@ -394,6 +394,10 @@ $sequence kick {
 	{ event AE_MELEE_DAMAGE 10 }
 }
 
+$animation gesture_hide_left_hand_base "gesture_hide_left_hand" frames 0 0
+$animation gesture_hide_left_hand_a "gesture_hide_left_hand" frames 1 1 subtract gesture_hide_left_hand_base 0
+$sequence gesture_hide_left_hand { gesture_hide_left_hand_a loop snap delta }
+
 
 // Animations related to being knocked out
 

@@ -26,9 +26,9 @@ public:
 
 	CASW_Weapon_Fist();
 	virtual ~CASW_Weapon_Fist();
-	
+
 	void	PrimaryAttack();
-	
+
 	virtual bool ShouldMarineMoveSlow() { return false; }	// firing doesn't slow the marine down
 
 	#ifndef CLIENT_DLL
@@ -38,6 +38,7 @@ public:
 	#endif
 
 	virtual bool IsOffensiveWeapon() { return false; }
+	virtual bool ViewModelIsMarineAttachment() const { return true; }
 	virtual float GetPassiveMeleeDamageScale() { return asw_fist_passive_damage_scale.GetFloat(); }
 
 	// Classification

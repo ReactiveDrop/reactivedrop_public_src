@@ -60,7 +60,8 @@
 
 #define FIRESEQUENCE_LAYER		(AIMSEQUENCE_LAYER+NUM_AIMSEQUENCE_LAYERS)
 #define RELOADSEQUENCE_LAYER	(FIRESEQUENCE_LAYER + 1)
-#define NUM_LAYERS_WANTED		(RELOADSEQUENCE_LAYER + 1)
+#define EXTRAPOSE_LAYER	(RELOADSEQUENCE_LAYER + 1)
+#define NUM_LAYERS_WANTED		(EXTRAPOSE_LAYER + 1)
 
 ConVar asw_debuganimstate("asw_debuganimstate", "0", FCVAR_REPLICATED);
 ConVar asw_walk_speed("asw_walk_speed", "175", FCVAR_REPLICATED);
@@ -81,6 +82,9 @@ ConVar asw_fixed_movement_playback_rate("asw_fixed_movement_playback_rate", "0",
 ConVar asw_feetyawrate("asw_feetyawrate", "300",  FCVAR_REPLICATED, "How many degrees per second that we can turn our feet or upper body." );
 ConVar asw_facefronttime( "asw_facefronttime", "2.0", FCVAR_REPLICATED, "How many seconds before marine faces front when standing still." );
 ConVar asw_max_body_yaw( "asw_max_body_yaw", "30", FCVAR_REPLICATED, "Max angle body yaw can turn either side before feet snap." );
+#ifdef CLIENT_DLL
+extern ConVar rd_marine_gear;
+#endif
 extern ConVar asw_melee_debug;
 
 #define ASW_WALK_SPEED asw_walk_speed.GetFloat()
@@ -205,6 +209,7 @@ private:
 	int m_iFireSequence;				// (For any sequences in the fire layer, including grenade throw).
 	float m_flFireCycle;
 	bool m_bPlayingEmoteGesture;
+	int m_iExtraPoseSequence;
 
 	IASWPlayerAnimStateHelpers *m_pHelpers;
 
@@ -242,6 +247,7 @@ CASWPlayerAnimState::CASWPlayerAnimState()
 	m_fMiscPlaybackRate = 1.0f;
 	m_flMiscCycle = 0.0f;
 	m_bMiscCycleRewound = false;
+	m_iExtraPoseSequence = 0;
 }
 
 
@@ -817,6 +823,23 @@ void CASWPlayerAnimState::ComputeMiscSequence()
 	Assert( !m_bMiscCycleRewound );
 
 	UpdateLayerSequenceGeneric( RELOADSEQUENCE_LAYER, m_bPlayingMisc, m_flMiscCycle, m_iMiscSequence, bHoldAtEnd, m_flMiscBlendIn, m_flMiscBlendOut, m_bMiscOnlyWhenStill, m_fMiscPlaybackRate );	
+
+#ifdef CLIENT_DLL
+	int iExtraPoseSequence = 0;
+	if ( rd_marine_gear.GetBool() && pMarine && pMarine->HasPowerFist() )
+	{
+		iExtraPoseSequence = m_pOuter->LookupSequence( "gesture_hide_left_hand" );
+	}
+
+	if ( m_iExtraPoseSequence != iExtraPoseSequence )
+	{
+		CAnimationLayer *pLayer = pOuter->GetAnimOverlay( EXTRAPOSE_LAYER );
+		pLayer->SetSequence( iExtraPoseSequence );
+		pLayer->SetWeight( iExtraPoseSequence ? 1 : 0 );
+		pLayer->SetOrder( iExtraPoseSequence ? EXTRAPOSE_LAYER : CBaseAnimatingOverlay::MAX_OVERLAYS );
+		m_iExtraPoseSequence = iExtraPoseSequence;
+	}
+#endif
 }
 
 bool CASWPlayerAnimState::ShouldResetGroundSpeed( Activity oldActivity, Activity idealActivity )
