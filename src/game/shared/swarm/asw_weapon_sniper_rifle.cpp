@@ -235,8 +235,9 @@ void CASW_Weapon_Sniper_Rifle::Precache()
 {
 	PrecacheModel( "swarm/sprites/whiteglow1.vmt" );
 	PrecacheModel( "swarm/sprites/greylaser1.vmt" );
-	PrecacheScriptSound("ASW_Pistol.ReloadA");
-	PrecacheScriptSound("ASW_Pistol.ReloadB");
+	PrecacheScriptSound( "ASW_Weapon_Sniper_Rifle.ReloadA" );
+	PrecacheScriptSound( "ASW_Weapon_Sniper_Rifle.ReloadB" );
+	PrecacheScriptSound( "ASW_Weapon_Sniper_Rifle.ReloadC" );
 
 	BaseClass::Precache();
 }
@@ -437,5 +438,14 @@ void CASW_Weapon_Sniper_Rifle::OnMuzzleFlashed()
 	{
 		FX_ASW_ShotgunSmoke(attachOrigin, attachAngles);
 	}
+}
+
+const char *CASW_Weapon_Sniper_Rifle::GetPartialReloadSound( int iPart )
+{
+	if ( iPart == 1 )
+		return "ASW_Weapon_Sniper_Rifle.ReloadB";
+	if ( iPart == 2 )
+		return "ASW_Weapon_Sniper_Rifle.ReloadC";
+	return "ASW_Weapon_Sniper_Rifle.ReloadA";
 }
 #endif

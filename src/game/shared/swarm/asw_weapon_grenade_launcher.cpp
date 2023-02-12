@@ -68,6 +68,15 @@ CASW_Weapon_Grenade_Launcher::~CASW_Weapon_Grenade_Launcher()
 
 }
 
+void CASW_Weapon_Grenade_Launcher::Precache()
+{
+	BaseClass::Precache();
+
+	PrecacheScriptSound( "ASW_GrenadeLauncher.ReloadA" );
+	PrecacheScriptSound( "ASW_GrenadeLauncher.ReloadB" );
+	PrecacheScriptSound( "ASW_GrenadeLauncher.ReloadC" );
+}
+
 #ifdef GAME_DLL
 ConVar asw_grenade_launcher_speed( "asw_grenade_launcher_speed", "2.4f", FCVAR_CHEAT, "Scale speed of grenade launcher grenades" );
 ConVar rd_grenade_launcher_explode_on_contact( "rd_grenade_launcher_explode_on_contact", "1", FCVAR_CHEAT, "If set to 0 grenade will not explode on contact with rigid world" );
@@ -193,3 +202,14 @@ void CASW_Weapon_Grenade_Launcher::Preview()
 	}
 #endif
 }
+
+#ifdef CLIENT_DLL
+const char *CASW_Weapon_Grenade_Launcher::GetPartialReloadSound( int iPart )
+{
+	if ( iPart == 1 )
+		return "ASW_GrenadeLauncher.ReloadB";
+	if ( iPart == 2 )
+		return "ASW_GrenadeLauncher.ReloadC";
+	return "ASW_GrenadeLauncher.ReloadA";
+}
+#endif

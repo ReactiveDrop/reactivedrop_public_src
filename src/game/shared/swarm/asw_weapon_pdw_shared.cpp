@@ -151,6 +151,10 @@ void CASW_Weapon_PDW::Precache()
 {
 	PrecacheModel( "models/weapons/pdw/pdw_single.mdl" );
 
+	PrecacheScriptSound( "ASW_Weapon_PDW.ReloadA" );
+	PrecacheScriptSound( "ASW_Weapon_PDW.ReloadB" );
+	PrecacheScriptSound( "ASW_Weapon_PDW.ReloadC" );
+
 	BaseClass::Precache();
 }
 
@@ -361,5 +365,14 @@ const char *CASW_Weapon_PDW::GetWorldModel( void ) const
 		return "models/weapons/pdw/pdw_single.mdl";
 
 	return BaseClass::GetWorldModel();
+}
+#else
+const char *CASW_Weapon_PDW::GetPartialReloadSound( int iPart )
+{
+	if ( iPart == 1 )
+		return "ASW_Weapon_PDW.ReloadB";
+	if ( iPart == 2 )
+		return "ASW_Weapon_PDW.ReloadC";
+	return "ASW_Weapon_PDW.ReloadA";
 }
 #endif

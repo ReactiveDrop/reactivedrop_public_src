@@ -833,7 +833,7 @@
 	"volume"		"1.0"
 	"soundlevel"	"SNDLVL_85dB"
 
-	"wave"			"weapons\3D\turret\setupComplete.wav"
+	"wave"			"weapons\3D\turret\dismantled.wav"
 }
 
 "ASW_Sentry.OutOfAmmo"
@@ -1059,11 +1059,11 @@
 	"channel"		"CHAN_WEAPON"
 	"volume"		"1.0"
 	"soundlevel"	"SNDLVL_120dB"
-	"pitch"			"135, 150"
+	"pitch"			"95, 105"
 	"rndwave"
 		{
-			"wave"		"^explosions\grenade01.wav"
-			"wave"		"^explosions\grenade02.wav"
+			"wave"		"^explosions\mine01.wav"
+			"wave"		"^explosions\mine02.wav"
 		}
 }
 
@@ -1277,6 +1277,87 @@
 	"soundlevel"	"SNDLVL_NORM"
 
 	"wave"		"weapons\3D\reloads\vindicator_C.wav"
+}
+
+"ASW_GrenadeLauncher.ReloadA"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\grenade_launcher_A.wav"
+}
+
+"ASW_GrenadeLauncher.ReloadB"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\grenade_launcher_B.wav"
+}
+
+"ASW_GrenadeLauncher.ReloadC"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\grenade_launcher_C.wav"
+}
+
+"ASW_Weapon_PDW.ReloadA"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\smg_A.wav"
+}
+
+"ASW_Weapon_PDW.ReloadB"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\smg_B.wav"
+}
+
+"ASW_Weapon_PDW.ReloadC"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\smg_C.wav"
+}
+
+"ASW_Weapon_Sniper_Rifle.ReloadA"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\sniper_A.wav"
+}
+
+"ASW_Weapon_Sniper_Rifle.ReloadB"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\sniper_B.wav"
+}
+
+"ASW_Weapon_Sniper_Rifle.ReloadC"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\sniper_C.wav"
 }
 
 "ASW_Weapon.Reload1"

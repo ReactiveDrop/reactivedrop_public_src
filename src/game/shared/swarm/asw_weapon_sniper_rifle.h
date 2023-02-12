@@ -68,6 +68,7 @@ public:
 		virtual void ClientThink();
 		//virtual void UpdateDynamicLight();
 		virtual void OnMuzzleFlashed();
+		virtual const char *GetPartialReloadSound( int iPart );
 
 		//dlight_t* m_pSniperDynamicLight;
 		float m_flEjectBrassTime;

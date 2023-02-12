@@ -24,6 +24,7 @@ public:
 
 	CASW_Weapon_Grenade_Launcher();
 	virtual ~CASW_Weapon_Grenade_Launcher();
+	void Precache();
 
 	virtual bool ShouldMarineMoveSlow() { return false; }	// throwing grenades doesn't slow the marine down
 	
@@ -50,7 +51,7 @@ public:
 
 		int		CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
 	#else
-	
+		virtual const char *GetPartialReloadSound( int iPart );
 	#endif
 
 	virtual bool IsOffensiveWeapon() { return true; }

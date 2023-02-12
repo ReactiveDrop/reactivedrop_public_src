@@ -53,6 +53,7 @@ public:
 		virtual bool DisplayClipsDoubled() { return true; }    // dual weilded guns should show ammo doubled up to complete the illusion of holding two guns
 		virtual const char* GetTracerEffectName() { return "tracer_pdw"; }	// particle effect name
 		virtual const char* GetMuzzleEffectName() { return "muzzle_pdw"; }	// particle effect name
+		virtual const char *GetPartialReloadSound( int iPart );
 	#endif
 
 	virtual const char* GetUTracerType();
