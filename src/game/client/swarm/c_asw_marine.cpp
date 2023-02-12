@@ -1279,6 +1279,17 @@ void C_ASW_Marine::FireEvent( const Vector& origin, const QAngle& angles, int ev
 		// TODO: Fix
 		//ASW_ShakeAnimEvent( this, options );
 	}
+	else if ( event == AE_MELEE_SOUND )
+	{
+		const char *szSuffix = "";
+		if ( HasPowerFist() )
+		{
+			szSuffix = "PowerFist";
+		}
+
+		EmitSound( CFmtStr( "%s%s", options, szSuffix ) );
+		return;
+	}
 	BaseClass::FireEvent(origin, angles, event, options);
 }
 

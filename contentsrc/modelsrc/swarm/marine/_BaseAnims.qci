@@ -222,7 +222,7 @@ $sequence knockdown_forward {
 $sequence melee_combo_2a "dmx/animation/melee_combo_2a.dmx" LX LY {
 	walkframe 9 LX LY
 	walkframe 25 LX LY
-	{ event AE_CL_PLAYSOUND 2 "SuitServo.MeleePunch"  }
+	{ event AE_MELEE_SOUND 2 "SuitServo.MeleePunch"  }
 	
 	{ event AE_CL_CREATE_PARTICLE_EFFECT 1 "melee_trail_1 follow_attachment melee_left_hand" }		
 	{ event AE_CL_STOP_PARTICLE_EFFECT 8 "melee_trail_1" }
@@ -236,7 +236,7 @@ $sequence melee_combo_2b "dmx/animation/melee_combo_2b.dmx" LX LY {
 	align melee_combo_2a X Y 9 0
 	walkframe 20 LX LY
 	walkframe 29 LX LY
-	{ event AE_CL_PLAYSOUND 4 "SuitServo.MeleeKick"  }	
+	{ event AE_MELEE_SOUND 4 "SuitServo.MeleeKick"  }	
 	
 	{ event AE_CL_CREATE_PARTICLE_EFFECT 	4 "melee_trail_1 follow_attachment melee_left_foot" }
 	{ event AE_CL_STOP_PARTICLE_EFFECT 		12 "melee_trail_1" }
@@ -251,11 +251,9 @@ $sequence melee_combo_2c "dmx/animation/melee_combo_2c.dmx" LX LY {
 	walkframe 10 LX LY
 	walkframe 16 LX LY
 	walkframe 28 LX LY
-	{ event AE_CL_PLAYSOUND 0 "SuitServo.Leg" }
-//	{ event AE_ASW_FOOTSTEP 6 }	
-	{ event AE_CL_PLAYSOUND 8 "SuitServo.MeleePunch"  }
-		
-	
+	{ event AE_MELEE_SOUND 8 "SuitServo.MeleeSlam1" }
+	{ event AE_MELEE_SOUND 14 "SuitServo.MeleeSlam2" }
+
 	{ event AE_CL_CREATE_PARTICLE_EFFECT 	0 "melee_trail_1 follow_attachment melee_right_hand" }	
 	{ event AE_CL_CREATE_PARTICLE_EFFECT 	0 "melee_trail_1 follow_attachment melee_left_hand" }	
 	{ event AE_CL_CREATE_PARTICLE_EFFECT 	14 "melee_ground_pound start_at_attachment melee_right_hand" }

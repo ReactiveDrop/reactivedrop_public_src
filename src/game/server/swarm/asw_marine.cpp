@@ -903,6 +903,7 @@ void CASW_Marine::Precache()
 	PrecacheScriptSound( "ASW.MarineMeleeAttackFP" );
 	PrecacheScriptSound( "ASW.MarinePowerFistAttack" );
 	PrecacheScriptSound( "ASW.MarinePowerFistAttackFP" );
+	PrecacheScriptSound( "ASW.MarinePowerFistHitWorld" );
 	PrecacheScriptSound( "ASW_Weapon_Flamer.FlameLoop" );
 	PrecacheScriptSound( "ASW_Weapon_Flamer.FlameStop" );
 	PrecacheScriptSound( "ASW_Weapon_Minigun.MinigunLoop" );

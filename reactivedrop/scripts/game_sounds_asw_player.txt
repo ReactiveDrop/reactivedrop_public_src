@@ -1,0 +1,531 @@
+//
+// Suit Footsteps (shared) 
+// *****************
+// SURFACE MATERIALS
+// *****************
+
+"Concrete.StepLeft"
+{
+	"channel"	 "CHAN_BODY"
+	"soundlevel"		"SNDLVL_65db"
+	"pitch"			"97, 103"
+	"volume"			".8"
+	"rndwave"
+	{
+		"wave"		"physics/3D/footsteps/default01.wav"
+	}
+}
+
+"Concrete.StepRight"
+{
+	"channel"	 "CHAN_BODY"
+	"soundlevel"		"SNDLVL_65db"
+	"pitch"			"97, 103"
+	"volume"			".8"
+	"rndwave"
+	{
+	"wave"		"physics/3D/footsteps/default02.wav"
+	}
+}
+
+"Default.StepLeft"
+{
+	"channel"	 "CHAN_BODY"
+	"soundlevel"		"SNDLVL_65db"
+	"pitch"			"95, 100"
+	"volume"		".8"
+	"rndwave"
+	{
+	"wave"		"physics/3D/footsteps/default01.wav"
+	}
+}
+
+"Default.StepRight"
+{
+	"channel"	 "CHAN_BODY"
+	"soundlevel"		"SNDLVL_65db"
+	"pitch"			"95, 100"
+	"volume"			".8"
+	"rndwave"
+	{
+	"wave"		"physics/3D/footsteps/default02.wav"
+	}
+}
+
+
+"Tile.StepLeft"
+{
+	"channel"		"CHAN_BODY"
+	"soundlevel"		"SNDLVL_65db"
+	"pitch"			"95, 100"
+	"volume"			".8"
+	"rndwave"
+	{
+	"wave"		"physics/3D/footsteps/default01.wav"
+	}
+}
+
+"Tile.StepRight"
+{
+	"channel"		"CHAN_BODY"
+	"soundlevel"		"SNDLVL_65db"
+	"pitch"			"95, 100"
+	"volume"			".8"
+	"rndwave"
+	{
+	"wave"		"physics/3D/footsteps/default02.wav"
+	}
+}
+
+"SolidMetal.StepLeft"
+{
+	"channel"	 "CHAN_BODY"
+	"soundlevel"		"SNDLVL_65db"
+	"pitch"			"97, 103"
+	"volume"		".8"
+	"rndwave"
+	{
+	"wave"		"physics/3D/footsteps/metal01.wav"
+		
+	}
+}
+
+"SolidMetal.StepRight"
+{
+	"channel"		"CHAN_BODY"
+	"soundlevel"		"SNDLVL_65db"
+	"pitch"			"97, 103"
+	"volume"		".8"
+	"rndwave"
+	{
+	"wave"		"physics/3D/footsteps/metal02.wav"
+	}
+}
+
+"MetalGrate.StepLeft"
+{
+	"channel"		"CHAN_BODY"
+	"soundlevel"		"SNDLVL_68db"
+	"pitch"			"95, 100"
+	"volume"			".8, 1.0"
+	"rndwave"
+	{
+	"wave"		"physics/3D/footsteps/grate01.wav"
+	}
+}
+
+"MetalGrate.StepRight"
+{
+	"channel"		"CHAN_BODY"
+	"soundlevel"	"SNDLVL_68db"
+	"pitch"			"95, 100"
+	"volume"		".8, 1.0"
+	"rndwave"
+	{
+	"wave"		"physics/3D/footsteps/grate02.wav"
+	}
+}
+
+"Glass.StepLeft"
+{
+	"channel"		"CHAN_BODY"
+	"soundlevel"	"SNDLVL_65db"
+	"volume"		".8, 1.0"
+	"pitch"			"95, 100"
+	"rndwave"
+	{
+	"wave"		"physics/3D/footsteps/glass01.wav"
+	}
+}
+
+"Glass.StepRight"
+{
+	"channel"		"CHAN_BODY"
+	"soundlevel"	"SNDLVL_65db"
+	"volume"		".8"
+	"pitch"			"95, 100"
+	"rndwave"
+	{
+	"wave"		"physics/3D/footsteps/glass02.wav"
+	}
+}
+
+"Snow.StepLeft"
+{
+	"channel"		"CHAN_BODY"
+	"soundlevel"	"SNDLVL_65db"
+	"volume"		".8"
+	"pitch"			"95, 100"
+	"rndwave"
+	{
+		"wave"		"physics/3D/footsteps/sand1.wav"
+		"wave"		"physics/3D/footsteps/sand3.wav"
+	}
+}
+
+"Snow.StepRight"
+{
+	"channel"		"CHAN_BODY"
+	"soundlevel"	"SNDLVL_65db"
+	"volume"		".8"
+	"pitch"			"95, 100"
+	"rndwave"
+	{
+		"wave"		"physics/3D/footsteps/sand2.wav"
+		"wave"		"physics/3D/footsteps/sand4.wav"
+	}
+}
+
+
+"Water.StepLeft"
+{
+	"channel"		"CHAN_BODY"
+	"soundlevel"	"SNDLVL_65db"
+	"volume"		".8, 1.0"
+	"pitch"			"95, 100"
+	"rndwave"
+	{
+		"wave"		"physics/3D/footsteps/slosh2.wav"
+		"wave"		"physics/3D/footsteps/slosh4.wav"
+	}
+}
+
+"Water.StepRight"
+{
+	"channel"		"CHAN_BODY"
+	"soundlevel"	"SNDLVL_65db"
+	"volume"		".8, 1.0"
+	"pitch"			"95, 100"
+	"rndwave"
+	{
+		"wave"		"physics/3D/footsteps/slosh1.wav"
+		"wave"		"physics/3D/footsteps/slosh3.wav"
+	}
+}
+
+"SuitDamage.Sparks"
+{
+	"channel"		"CHAN_BODY"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"			"85, 115"
+	"volume"		"0.1, 0.6"
+	"rndwave"
+	{
+		"wave"		"physics/3D/effects/sparks01.wav"
+		"wave"		"physics/3D/effects/sparks02.wav"
+		"wave"		"physics/3D/effects/sparks03.wav"
+		"wave"		"physics/3D/effects/sparks04.wav"
+		"wave"		"physics/3D/effects/sparks05.wav"
+		"wave"		"physics/3D/effects/sparks06.wav"
+		"wave"		"physics/3D/effects/sparks07.wav"
+	}
+}
+
+"ASW.MarineImpactFP"
+{
+	"channel"		"CHAN_AUTO"
+	"volume"		"1.0"
+	"pitch"			"100, 110"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"rndwave"
+	{
+		"wave"	"@physics\2D\damage\droneHit_FP01.wav"
+		"wave"	"@physics\2D\damage\droneHit_FP02.wav"
+		"wave"	"@physics\2D\damage\droneHit_FP03.wav"
+		"wave"	"@physics\2D\damage\droneHit_FP04.wav"		
+	}
+}
+
+"ASW.MarineImpactFP_Dm"
+{
+	"channel"		"CHAN_AUTO"
+	"volume"		"0.1"
+	"pitch"			"100, 110"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"rndwave"
+	{
+		"wave"	"@physics\2D\damage\droneHit_FP01.wav"
+		"wave"	"@physics\2D\damage\droneHit_FP02.wav"
+		"wave"	"@physics\2D\damage\droneHit_FP03.wav"
+		"wave"	"@physics\2D\damage\droneHit_FP04.wav"		
+	}
+}
+
+"ASW.MarineImpact"
+{
+	"channel"		"CHAN_AUTO"
+	"volume"		".75, .85"
+	"pitch"			"90 , 100"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"rndwave"
+	{
+		"wave"	"physics\3D\damage\droneHit01.wav"
+		"wave"	"physics\3D\damage\droneHit02.wav"
+		"wave"	"physics\3D\damage\droneHit03.wav"
+		"wave"	"physics\3D\damage\droneHit04.wav"		
+	}
+}
+
+"ASW.MarineImpactHeavyFP"
+{
+	"channel"		"CHAN_AUTO"
+	"volume"		"1.0"
+	"pitch"			"100, 110"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"rndwave"
+	{
+		"wave"	"@physics\2D\damage\droneHitHeavy_FP01.wav"
+		"wave"	"@physics\2D\damage\droneHitHeavy_FP02.wav"
+
+	}
+}
+
+"ASW.MarineImpactHeavyFP_Dm"
+{
+	"channel"		"CHAN_AUTO"
+	"volume"		"0.1"
+	"pitch"			"100, 110"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"rndwave"
+	{
+		"wave"	"@physics\2D\damage\droneHitHeavy_FP01.wav"
+		"wave"	"@physics\2D\damage\droneHitHeavy_FP02.wav"
+
+	}
+}
+
+"ASW.MarineImpactHeavy"
+{
+	"channel"		"CHAN_AUTO"
+	"volume"		"0.75, 0.85"
+	"pitch"			"100, 110"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"rndwave"
+	{
+		"wave"	"physics\3D\damage\droneHitHeavy01.wav"
+		"wave"	"physics\3D\damage\droneHitHeavy02.wav"
+
+	}
+}
+
+"SuitServo.MeleeKick"
+{
+	"channel"		"CHAN_BODY"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"			"90, 110"
+	"volume"		"0.6, 0.9"
+	"wave"			"physics\3D\effects\marine_kick.wav"
+}
+
+"SuitServo.MeleePunch"
+{
+	"channel"		"CHAN_BODY"
+	"soundlevel"	"SNDLVL_80"
+	"pitch"			"90, 110"
+	"volume"		"0.6, 0.9"
+	"wave"			"physics\3D\effects\marine_punch.wav"
+}
+
+"SuitServo.MeleeSlam1"
+{
+	"channel"		"CHAN_BODY"
+	"soundlevel"	"SNDLVL_80"
+	"pitch"			"90, 110"
+	"volume"		"0.6, 0.9"
+	"wave"			"physics\3D\effects\marine_punch.wav"
+}
+
+"SuitServo.MeleeSlam2"
+{
+	"channel"		"CHAN_BODY"
+	"soundlevel"	"SNDLVL_80"
+	"pitch"			"90, 110"
+	"volume"		"0.6, 0.9"
+	"wave"			"physics\3D\effects\marine_slam.wav"
+}
+
+"SuitServo.MeleeKickPowerFist"
+{
+	"channel"		"CHAN_BODY"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"			"90, 110"
+	"volume"		"0.6, 0.9"
+	"wave"			"physics\3D\effects\powerfist_swing02.wav"
+}
+
+"SuitServo.MeleePunchPowerFist"
+{
+	"channel"		"CHAN_BODY"
+	"soundlevel"	"SNDLVL_80"
+	"pitch"			"90, 110"
+	"volume"		"0.6, 0.9"
+	"wave"			"physics\3D\effects\powerfist_swing01.wav"
+}
+
+"SuitServo.MeleeSlam1PowerFist"
+{
+	"channel"		"CHAN_BODY"
+	"soundlevel"	"SNDLVL_80"
+	"pitch"			"90, 110"
+	"volume"		"0.6, 0.9"
+	"rndwave"
+	{
+		"wave"	"physics\3D\effects\powerfist_swing01.wav"
+		"wave"	"physics\3D\effects\powerfist_swing02.wav"
+	}
+}
+
+"SuitServo.MeleeSlam2PowerFist"
+{
+	"channel"		"CHAN_BODY"
+	"soundlevel"	"SNDLVL_80"
+	"pitch"			"90, 110"
+	"volume"		"0.6, 0.9"
+	"rndwave"
+	{
+		"wave"	"physics\3D\effects\powerfist_groundpound01.wav"
+		"wave"	"physics\3D\effects\powerfist_groundpound02.wav"
+		"wave"	"physics\3D\effects\powerfist_groundpound03.wav"
+	}
+}
+
+// Marine melee'ing aliens
+
+"ASW.MarineMeleeAttackFP"
+{
+	"channel"		"CHAN_BODY"
+	"volume"		"1.0"
+	"pitch"			"90 , 110"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"rndwave"
+	{
+		"wave"	"@physics\2D\damage\hitAlien_FP01.wav"
+		"wave"	"@physics\2D\damage\hitAlien_FP02.wav"
+	}
+}
+
+"ASW.MarineMeleeAttack"
+{
+	"channel"		"CHAN_BODY"
+	"volume"		"1.0"
+	"pitch"			"90 , 110"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"rndwave"
+	{
+		"wave"	"physics\3D\damage\hitAlien01.wav"
+		"wave"	"physics\3D\damage\hitAlien02.wav"
+	}
+}
+
+// Marine melee'ing with power fist
+
+"ASW.MarinePowerFistAttackFP"
+{
+	"channel"		"CHAN_BODY"
+	"volume"		"1.0"
+	"pitch"			"90 , 110"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"rndwave"
+	{
+		"wave"	"@physics\2D\damage\powerfist_hitAlien_FP01.wav"
+		"wave"	"@physics\2D\damage\powerfist_hitAlien_FP02.wav"
+		"wave"	"@physics\2D\damage\powerfist_hitAlien_FP03.wav"
+	}
+}
+
+"ASW.MarinePowerFistAttack"
+{
+	"channel"		"CHAN_BODY"
+	"volume"		"1.0"
+	"pitch"			"90 , 110"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"rndwave"
+	{
+		"wave"	"physics\3D\damage\powerfist_hitAlien01.wav"
+		"wave"	"physics\3D\damage\powerfist_hitAlien02.wav"
+		"wave"	"physics\3D\damage\powerfist_hitAlien03.wav"
+	}
+}
+
+"ASW.MarinePowerFistHitWorld"
+{
+	"channel"		"CHAN_BODY"
+	"volume"		"1.0"
+	"pitch"			"90 , 110"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"rndwave"
+	{
+		"wave"	"physics\3D\damage\powerfist_hitWorld01.wav"
+		"wave"	"physics\3D\damage\powerfist_hitWorld02.wav"
+		"wave"	"physics\3D\damage\powerfist_hitWorld03.wav"
+	}
+}
+
+// this is the sound that plays when a marine is taking burn damage, but he's not igniting
+// when ignited, the burning sound plus big pains sounds play
+"ASW.MarineBurnPain_NoIgnite"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"0.5"
+	"soundlevel"  "SNDLVL_75dB"
+
+	"rndwave"
+	{
+			"wave"	"player/pl_burnpain1.wav"
+			"wave"	"player/pl_burnpain2.wav"
+			"wave"	"player/pl_burnpain3.wav"
+	}
+}
+
+"ASW.Player.Evade"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_75"
+	"pitch"			"95, 105"
+	"volume"		"1"
+	"rndwave"
+	{
+		"wave"			"physics\3D\footsteps\evade01.wav"
+		"wave"			"physics\3D\footsteps\evade02.wav"
+	}
+}
+
+"ASW_Leadership.Accuracy"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_GUNFIRE"
+	"pitch"			"95, 105"
+	"volume"		"0.9, 1.0"
+	"wave"			")weapons/leader_shot.wav"
+}
+
+"ASW_Leadership.Resist"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_GUNFIRE"
+	"pitch"			"85, 115"
+	"volume"		"0.6, 1.0"
+	"wave"			")weapons/leader_resist.wav"
+}

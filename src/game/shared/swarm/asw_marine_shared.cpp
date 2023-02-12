@@ -2168,6 +2168,11 @@ void CASW_Marine::ApplyMeleeDamage( CBaseEntity *pHitEntity, CTakeDamageInfo dmg
 #endif
 		m_bPlayedMeleeHitSound = true;
 	}
+	else if ( !m_bPlayedMeleeHitSound && HasPowerFist() )
+	{
+		EmitSound( "ASW.MarinePowerFistHitWorld" );
+		m_bPlayedMeleeHitSound = true;
+	}
 	m_RecentMeleeHits.AddToTail( pHitEntity );
 
 	ASW_WPN_MSG_CONVAR( asw_melee_debug, "%s(): [%.3f] Doing %f melee damage damage to %d:%s\n", __FUNCTION__, gpGlobals->curtime, dmgInfo.GetDamage(), pHitEntity->entindex(), pHitEntity->GetClassname() );

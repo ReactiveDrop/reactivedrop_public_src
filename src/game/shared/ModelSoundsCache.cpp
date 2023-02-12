@@ -206,6 +206,15 @@ void CModelSoundsCache::BuildAnimationEventSoundList( CStudioHdr *hdr, CUtlVecto
 					}
 				}
 				break;
+			case AE_MELEE_SOUND:
+				{
+					if ( !( pEvent->type & AE_TYPE_CLIENT ) )
+						break;
+
+					FindOrAddScriptSound( sounds, pEvent->pszOptions() );
+					FindOrAddScriptSound( sounds, UTIL_VarArgs( "%sPowerFist", pEvent->pszOptions() ) );
+				}
+				break;
 			case SCRIPT_EVENT_SOUND:
 				{
 					FindOrAddScriptSound( sounds, pEvent->pszOptions() );

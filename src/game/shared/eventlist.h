@@ -105,6 +105,7 @@ typedef enum
 	AE_COMBO_TRANSITION,
 	AE_ALLOW_MOVEMENT,
 	AE_SKILL_EVENT,				// marine skill event triggered (event options describes the skill)
+	AE_MELEE_SOUND,
 
 	AE_TUG_INCAP,
 
