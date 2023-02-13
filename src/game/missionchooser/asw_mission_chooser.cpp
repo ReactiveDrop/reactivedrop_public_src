@@ -149,8 +149,6 @@ InitReturnVal_t CASW_Mission_Chooser::Init()
 	//g_pFullFileSystem->AddSearchPath( tilegendir, "TILEGEN", PATH_ADD_TO_HEAD );
 
 	Q_snprintf( g_layoutsdir, sizeof(g_layoutsdir), "%stilegen\\layouts", g_gamedir );
-	
-	g_MissionTextDatabase.LoadKeyValuesFile( "tilegen/objective_text.txt" );
 
 	// Initialize the spawn selection.
 	g_SpawnSelection.Init();

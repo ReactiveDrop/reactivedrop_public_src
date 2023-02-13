@@ -3348,7 +3348,6 @@ bool CNPC_Strider::ShouldExplodeFromDamage( const CTakeDamageInfo &info )
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-ConVarRef mat_dxlevel( "mat_dxlevel" );
 bool CNPC_Strider::BecomeRagdoll( const CTakeDamageInfo &info, const Vector &forceVector ) 
 { 
 	// Combine balls make us explode
@@ -3358,66 +3357,9 @@ bool CNPC_Strider::BecomeRagdoll( const CTakeDamageInfo &info, const Vector &for
 	}
 	else
 	{
-		// Otherwise just keel over
-		CRagdollProp *pRagdoll = NULL;
-		CBasePlayer *pPlayer = AI_GetSinglePlayer();
-		if ( pPlayer && mat_dxlevel.GetInt() > 0 )
-		{
-			int dxlevel = mat_dxlevel.GetInt();
-			int maxRagdolls = ( dxlevel >= 90 ) ? 2 : ( dxlevel >= 80 ) ? 1 : 0;
-
-			if ( maxRagdolls > 0 )
-			{
-				CUtlVectorFixed<CRagdollProp *, 2> striderRagdolls;
-				while ( ( pRagdoll = gEntList.NextEntByClass( pRagdoll ) ) != NULL )
-				{
-					if ( pRagdoll->GetModelName() == GetModelName() && !pRagdoll->IsFading() )
-					{
-						Assert( striderRagdolls.Count() < striderRagdolls.NumAllocated() );
-						if ( striderRagdolls.Count() < striderRagdolls.NumAllocated() )
-							striderRagdolls.AddToTail( pRagdoll );
-					}
-				}
-
-				if ( striderRagdolls.Count() >= maxRagdolls )
-				{
-					float distSqrFurthest = FLT_MAX;
-					CRagdollProp *pFurthest = NULL;
-
-					for ( int i = 0; i < striderRagdolls.Count(); i++ )
-					{
-						float distSqrCur = CalcSqrDistanceToAABB( striderRagdolls[i]->WorldAlignMins(), striderRagdolls[i]->WorldAlignMaxs(), pPlayer->GetAbsOrigin() );
-						if ( distSqrCur < distSqrFurthest )
-						{
-							distSqrFurthest = distSqrCur;
-							pFurthest = striderRagdolls[i];
-						}
-					}
-
-					if ( pFurthest )
-						pFurthest->FadeOut( 0.75, 1.5 );
-				}
-			}
-
-			pRagdoll = assert_cast<CRagdollProp *>( CreateServerRagdoll( this, m_nForceBone, info, ASW_COLLISION_GROUP_BIG_ALIEN ) );
-			pRagdoll->DisableAutoFade();
-
-			if ( maxRagdolls == 0 )
-			{
-				pRagdoll->FadeOut( 6.0, .75 );
-				RagdollDeathEffect( pRagdoll, 6.0f );
-			}
-			else
-			{
-				RagdollDeathEffect( pRagdoll, 600.0f );
-			}
-		}
-		else
-		{
-			// Otherwise just keel over
-			pRagdoll = assert_cast<CRagdollProp *>( CreateServerRagdoll( this, m_nForceBone, info, ASW_COLLISION_GROUP_BIG_ALIEN ) );
-			pRagdoll->DisableAutoFade();
-		}
+		// just keel over
+		CRagdollProp *pRagdoll = assert_cast<CRagdollProp *>( CreateServerRagdoll( this, m_nForceBone, info, ASW_COLLISION_GROUP_BIG_ALIEN ) );
+		pRagdoll->DisableAutoFade();
 	}
 	
 	UTIL_Remove(this);
