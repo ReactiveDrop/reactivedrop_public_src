@@ -4,8 +4,8 @@ WeaponData
 {
 	// Weapon data is loaded by both the Game and Client DLLs.
 	"printname"				"#asw_weapon_flechette"
-	"viewmodel"				"models/weapons/railgun/railgun.mdl"
-	"playermodel"			"models/weapons/railgun/railgun.mdl"
+	"viewmodel"				"models/weapons/flechette/flechette.mdl"
+	"playermodel"			"models/weapons/flechette/flechette.mdl"
 	"anim_prefix"			"ar2"
 	"bucket"				"0"
 	"bucket_position"		"0"
@@ -25,7 +25,7 @@ WeaponData
 		
 	// asw properties
 	"reload_time"			"2.0"
-	"equipicon"				"swarm/EquipIcons/EquipRailgun"
+	"equipicon"				"swarm/EquipIcons/EquipFlechette"
 	"equiplongname"			"#asw_weapon_flechette"
 	"equipdescription1"		"#asw_wdesc_flechette"
 	"attributestext"		"#asw_weapon_flechette_attributes"

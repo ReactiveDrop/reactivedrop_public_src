@@ -1,11 +1,11 @@
-// Alien Swarm Coil Assisted Rail Rifle
+// Bouncy Bullet Gun
 
 WeaponData
 {
 	// Weapon data is loaded by both the Game and Client DLLs.
 	"printname"	"#asw_weapon_ricochet"
-	"viewmodel"			"models/weapons/railgun/railgun.mdl"
-	"playermodel"			"models/weapons/railgun/railgun.mdl"
+	"viewmodel"			"models/weapons/ricochet/ricochet.mdl"
+	"playermodel"			"models/weapons/ricochet/ricochet.mdl"
 	"anim_prefix"			"ar2"
 	"bucket"			"0"
 	"bucket_position"		"0"
@@ -26,9 +26,9 @@ WeaponData
 	//"reload_time"			"1.7"
 	"reload_time"			"1.3"
 	"fire_rate"				"0.07"
-	"equipicon"			"swarm/EquipIcons/EquipRailgun"
+	"equipicon"			"swarm/EquipIcons/EquipRicochet"
 	"equiplongname"			"#asw_weapon_ricochet"
-	"equipdescription1"		"Bouncy bullets test gun"
+	"equipdescription1"		"#asw_wdesc_ricochet"
 	"altfiretext"		"#asw_weapon_ricochet_attributes"
 	
 	// flinching
