@@ -168,6 +168,9 @@ public:
 	void ScriptOrderMoveTo( HSCRIPT hOrderObject, bool bIgnoreMarines );
 	void ScriptChaseNearestMarine();
 
+	void SetSpawnZombineOnMarineKill( bool bSpawn );
+	bool m_bSpawnZombineOnMarineKill;
+
 	AlienOrder_t m_AlienOrders;
 	Vector m_vecAlienOrderSpot;
 	EHANDLE m_AlienOrderObject;

@@ -142,9 +142,11 @@ public:
 	bool IsAlienNear();	// is an alien nearby? (used by speech to know if we should shout urgent lines)
 	void HurtAlien(CBaseEntity *pAlien, const CTakeDamageInfo &info);
 	void HurtJunkItem(CBaseEntity *pAlien, const CTakeDamageInfo &info);
+	void SetSpawnZombineOnDeath( bool bSpawn );
 	float m_fMadFiringCounter;
 	static float s_fNextMadFiringChatter;
 	float m_fNextAlienWalkDamage;	// timer for pain from walking on aliens
+	bool m_bSpawnZombineOnDeath;	// spawns a zombine in the place of a marine when dying from an alien
 
 	// Sound, speech
 	CASW_MarineSpeech* GetMarineSpeech() { return m_MarineSpeech; }		

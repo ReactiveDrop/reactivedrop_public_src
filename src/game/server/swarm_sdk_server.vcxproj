@@ -1754,6 +1754,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="hl2\npc_combines.h" />
     <ClInclude Include="hl2\npc_crow.h" />
     <ClInclude Include="hl2\npc_strider.h" />
+	<ClInclude Include="hl2\npc_zombine.h" />
     <ClInclude Include="hl2\prop_combine_ball.h" />
     <ClInclude Include="hl2\script_intro.h" />
     <ClInclude Include="serverhelper.h" />
