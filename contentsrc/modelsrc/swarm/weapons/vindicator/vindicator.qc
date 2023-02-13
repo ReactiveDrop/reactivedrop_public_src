@@ -23,6 +23,9 @@ $attachment "muzzle" "muzzle" 0 0 0 rotate 0 0 0
 $attachment "eject1" "eject1" 0 0 0 rotate 0 0 0
 
 $sequence "BindPose" "vindicator_model2.smd"
-$sequence "pull_bolt" "anims/pull_bolt.smd"
+$sequence "pull_bolt" {
+	"anims/pull_bolt.smd"
+	activity "ACT_VM_PRIMARYATTACK" 1
+}
 
 $collisionmodel "vindicator_physics.smd"
