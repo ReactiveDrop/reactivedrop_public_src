@@ -20,9 +20,8 @@ $bodygroup "sight"
 
 $surfaceprop "weapon"
 $contents "solid"
-$opaque
+$mostlyopaque
 
-$cdmaterials "swarm/models/ASDecorationSkins"
 $cdmaterials "models/weapons"
 $cdmaterials "models/weapons/flechette"
 

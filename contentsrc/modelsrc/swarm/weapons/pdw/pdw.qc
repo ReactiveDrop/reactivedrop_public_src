@@ -26,4 +26,4 @@ $attachment "eject2" "eject2" 0 0 0 rotate 0 0 0
 
 $sequence "BindPose" "pdw_model.smd"
 
-$collisionmodel "pdw_physics.smd" { $concave }
+$collisionjoints "pdw_physics.smd"

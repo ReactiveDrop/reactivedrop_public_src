@@ -5,7 +5,7 @@ $bodygroup "magazine"
 	studio "bulldog_reference.smd"
 	studio "bulldog_reference_unloaded.smd"
 }
-$bodygroup "sight"
+$bodygroup "laser"
 {
 	studio "bulldog_laser.smd"
 	blank
@@ -13,7 +13,7 @@ $bodygroup "sight"
 
 $surfaceprop "weapon"
 $contents "solid"
-$opaque
+$mostlyopaque
 
 $cdmaterials "swarm/models/ASDecorationSkins"
 $cdmaterials "models/weapons/deagle"
