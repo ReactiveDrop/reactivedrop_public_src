@@ -19,4 +19,4 @@ $attachment "muzzle_flash_l" "muzzle_flash_l" 0 0 0 rotate 0 0 0
 
 $sequence "BindPose" "pistol_model_loaded.smd"
 
-$collisionjoints "pistol_physics.smd"
+$collisionmodel "pistol_physics.smd"
