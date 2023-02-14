@@ -3,25 +3,7 @@
 #pragma once
 
 #include "npc_BaseZombie.h"
-
-enum
-{	
-	SQUAD_SLOT_ZOMBINE_SPRINT1 = LAST_SHARED_SQUADSLOT,
-	SQUAD_SLOT_ZOMBINE_SPRINT2,
-};
-
-#define MIN_SPRINT_TIME 3.5f
-#define MAX_SPRINT_TIME 5.5f
-
-#define MIN_SPRINT_DISTANCE 64.0f
-#define MAX_SPRINT_DISTANCE 1024.0f
-
-#define SPRINT_CHANCE_VALUE 10
-#define SPRINT_CHANCE_VALUE_DARKNESS 50
-
-#define GRENADE_PULL_MAX_DISTANCE 256.0f
-
-#define ZOMBINE_MAX_GRENADES 1
+#include "player_pickup.h"
 
 class CNPC_Zombine : public CNPC_BaseZombie, public CDefaultPlayerPickupVPhysics
 {

@@ -397,7 +397,7 @@ BEGIN_ENT_SCRIPTDESC( CASW_Marine, CASW_Inhabitable_NPC, "Marine" )
 	DEFINE_SCRIPTFUNC_NAMED( Script_Speak, "Speak", "Makes the marine speak a response rules concept." )
 	DEFINE_SCRIPTFUNC( SetMarineRolls, "Send true to make marine roll, send false to make marine jump" )
 	DEFINE_SCRIPTFUNC( SetKnockedOut, "Used to knock out and incapacitate a marine, or revive them." )
-	DEFINE_SCRIPTFUNC( SetSpawnZombineOnDeath, "Used to spawn a zombine in the place of a marine when dying from an alien." )
+	DEFINE_SCRIPTFUNC( SetSpawnZombineOnDeath, "Used to spawn a zombine in the place of a marine after death." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptKnockdown, "Knockdown", "Knocks down the marine with desired velocity." )
 END_SCRIPTDESC()
 
@@ -902,6 +902,8 @@ void CASW_Marine::Precache()
 	PrecacheModel("models/swarm/marine/gibs/marine_gib_leftleg.mdl");
 	PrecacheModel("models/swarm/marine/gibs/marine_gib_rightleg.mdl");
 	PrecacheModel("models/swarm/marine/gibs/marine_gib_pelvis.mdl");
+
+	UTIL_PrecacheOther( "npc_zombine" );
 
 	PrecacheModel( "cable/cable.vmt" );
 	PrecacheScriptSound( "ASW.MarineMeleeAttack" );
@@ -3766,6 +3768,9 @@ void CASW_Marine::ScriptCureInfestation()
 // if we died from infestation, then gib
 bool CASW_Marine::ShouldGib( const CTakeDamageInfo &info )
 {
+	if ( m_bSpawnZombineOnDeath )
+		return false;
+	
 	if (info.GetDamageType() & DMG_INFEST || info.GetDamageType() & DMG_BLAST)
 		return true;
 
@@ -4175,6 +4180,34 @@ void CASW_Marine::Event_Killed( const CTakeDamageInfo &info )
 			}
 		}
 	}
+
+	CBaseEntity *pAttacker = info.GetAttacker();
+	CASW_Inhabitable_NPC* pAttackerNPC = dynamic_cast< CASW_Inhabitable_NPC* >( pAttacker );
+	m_bSpawnZombineOnDeath = m_bSpawnZombineOnDeath ||
+							( pAttackerNPC && pAttackerNPC->m_bSpawnZombineOnMarineKill ) ||
+							( pAttackerNPC && pAttackerNPC->Classify() != CLASS_ASW_MARINE && rd_marine_spawn_zombine_on_death_chance.GetFloat() > RandomFloat() );
+
+	if ( m_bSpawnZombineOnDeath )
+	{
+		CNPC_Zombine* pZombine = dynamic_cast< CNPC_Zombine* >( CreateEntityByName( "npc_zombine" ) );
+
+		if ( !pZombine )
+		{
+			Warning( "Unable to create npc_zombine from dying marine.\n" );
+		}
+		else
+		{
+			pZombine->SetAbsOrigin( GetAbsOrigin() );
+			pZombine->SetAbsAngles( GetAbsAngles() );
+
+			pZombine->Spawn();
+
+			pZombine->SetModel( "models/zombie/fallen_marine.mdl" );
+			pZombine->m_nSkin = GetSkin();
+			pZombine->SetRenderColor( GetRenderColor().r, GetRenderColor().g, GetRenderColor().b );	
+		}
+	}
+
 	BaseClass::Event_Killed( info );
 
 	if ( asw_debug_marine_chatter.GetBool() )
@@ -4215,9 +4248,7 @@ void CASW_Marine::Event_Killed( const CTakeDamageInfo &info )
 	if ( ASWDeathmatchMode() )
 		ASWDeathmatchMode()->OnMarineKilled( info, this );
 
-
 	// print a message if marine was killed by another marine
-	CBaseEntity *pAttacker = info.GetAttacker();
 	if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
 	{
 		CASW_Marine *pOtherMarine = assert_cast< CASW_Marine * >( pAttacker );
@@ -4261,31 +4292,6 @@ void CASW_Marine::Event_Killed( const CTakeDamageInfo &info )
 	}
 
 	m_bSlowHeal = false;	// no healing if we're dead!
-
-	CASW_Inhabitable_NPC* pAttackerNPC = dynamic_cast< CASW_Inhabitable_NPC* >( pAttacker );
-	if ( pAttackerNPC && pAttackerNPC->Classify() != CLASS_ASW_MARINE )
-	{
-		if ( m_bSpawnZombineOnDeath || pAttackerNPC->m_bSpawnZombineOnMarineKill || rd_marine_spawn_zombine_on_death_chance.GetFloat() > RandomFloat() )
-		{
-			CNPC_Zombine* pZombine = dynamic_cast< CNPC_Zombine* >( CreateEntityByName( "npc_zombine" ) );
-
-			if ( !pZombine )
-			{
-				Warning( "Unable to create npc_zombine from dying marine." );
-			}
-			else
-			{
-				pZombine->SetAbsOrigin( GetAbsOrigin() + Vector( 0.0, 0.0, 4.0 ) );	// spawns inside the ground, add 4 to height
-
-				pZombine->Spawn();
-
-				pZombine->SetModel( "models/zombie/fallen_marine.mdl" );
-				pZombine->m_nSkin = GetSkin();
-				// todo: color the zombine in same color
-				//pZombine->SetRenderColor( GetRenderColor() );	
-			}
-		}
-	}
 }
 
 void CASW_Marine::AimGun()
@@ -4538,9 +4544,13 @@ void CASW_Marine::Suicide()
 	//SetNextThink(gpGlobals->curtime + 2.0f);
 }
 
+// called from BaseClass::Event_Killed
 bool CASW_Marine::BecomeRagdollOnClient( const Vector &force )
 {
 	if ( !CanBecomeRagdoll() ) 
+		return false;
+
+	if ( m_bSpawnZombineOnDeath )
 		return false;
 
 	// Become server-side ragdoll if we're flagged to do it

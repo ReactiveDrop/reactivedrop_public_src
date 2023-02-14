@@ -6,6 +6,7 @@
 //=============================================================================//
 
 #include "cbase.h"
+#include "npc_zombine.h"
 #include "ai_basenpc.h"
 #include "ai_default.h"
 #include "ai_schedule.h"
@@ -29,7 +30,6 @@
 #include "asw_grenade_cluster.h"
 #include "asw_util_shared.h"
 #include "asw_marine.h"
-#include "npc_zombine.h"
 
 #include "basecombatweapon.h"
 #include "asw_grenade_vindicator.h"
@@ -38,6 +38,25 @@
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
+enum
+{	
+	SQUAD_SLOT_ZOMBINE_SPRINT1 = LAST_SHARED_SQUADSLOT,
+	SQUAD_SLOT_ZOMBINE_SPRINT2,
+};
+
+#define MIN_SPRINT_TIME 3.5f
+#define MAX_SPRINT_TIME 5.5f
+
+#define MIN_SPRINT_DISTANCE 64.0f
+#define MAX_SPRINT_DISTANCE 1024.0f
+
+#define SPRINT_CHANCE_VALUE 10
+#define SPRINT_CHANCE_VALUE_DARKNESS 50
+
+#define GRENADE_PULL_MAX_DISTANCE 256.0f
+
+#define ZOMBINE_MAX_GRENADES 1
 
 int ACT_ZOMBINE_GRENADE_PULL;
 int ACT_ZOMBINE_GRENADE_WALK;

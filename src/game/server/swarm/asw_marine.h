@@ -146,7 +146,7 @@ public:
 	float m_fMadFiringCounter;
 	static float s_fNextMadFiringChatter;
 	float m_fNextAlienWalkDamage;	// timer for pain from walking on aliens
-	bool m_bSpawnZombineOnDeath;	// spawns a zombine in the place of a marine when dying from an alien
+	bool m_bSpawnZombineOnDeath;	// spawns a zombine in the place of a marine after death
 
 	// Sound, speech
 	CASW_MarineSpeech* GetMarineSpeech() { return m_MarineSpeech; }		
