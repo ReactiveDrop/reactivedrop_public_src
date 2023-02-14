@@ -405,7 +405,7 @@ void CASW_Computer_Area::NPCUsing(CASW_Inhabitable_NPC *pNPC, float deltatime)
 		if ( m_bIsInUse && ( m_bIsLocked || ( m_DownloadObjectiveName.Get()[0] != '\0' && GetDownloadProgress() < 1.0f ) ) )
 		{
 			float flOldHackProgress = m_fDownloadProgress;
-			float fTime = deltatime / ( MAX( m_bIsLocked ? m_iHackLevel : 1, 1 ) / asw_ai_computer_hacking_scale.GetFloat() + MAX( m_DownloadObjectiveName.Get()[0] != '\0' ? m_fDownloadTime : 0, 0 ) );
+			float fTime = deltatime / ( ( MAX( m_bIsLocked ? m_iHackLevel : 1, 1 ) + MAX( m_DownloadObjectiveName.Get()[0] != '\0' ? m_fDownloadTime / 5.0f : 0, 0 ) ) / asw_ai_computer_hacking_scale.GetFloat() );
 			// boost fTime by the marine's hack skill
 			fTime *= MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_HACKING, ASW_MARINE_SUBSKILL_HACKING_SPEED_SCALE);
 			m_fDownloadProgress += fTime;
