@@ -4197,7 +4197,7 @@ void CASW_Marine::Event_Killed( const CTakeDamageInfo &info )
 		}
 		else
 		{
-			pZombine->SetAbsOrigin( GetAbsOrigin() );
+			pZombine->SetAbsOrigin( GetAbsOrigin() + Vector( 0.0, 0.0, 10.0 ) ); // spawns in the ground, raise height by 10
 			pZombine->SetAbsAngles( GetAbsAngles() );
 
 			pZombine->Spawn();
