@@ -1363,10 +1363,12 @@ void CASW_Steamstats::PrepStatsForSend_Leaderboard( CASW_Player *pPlayer, bool b
 	ELeaderboardDisplayType eDisplayType;
 	char szLeaderboardName[k_cchLeaderboardNameMax];
 	SpeedRunLeaderboardName( szLeaderboardName, sizeof( szLeaderboardName ), IGameSystem::MapName(), nWorkshopFileID, rd_challenge.GetString(), nChallengeFileID, &eSortMethod, &eDisplayType );
+	char szDifficultyLeaderboardName[k_cchLeaderboardNameMax];
+	DifficultySpeedRunLeaderboardName( szDifficultyLeaderboardName, sizeof( szDifficultyLeaderboardName ), ASWGameRules()->GetSkillLevel(), IGameSystem::MapName(), nWorkshopFileID, rd_challenge.GetString(), nChallengeFileID );
 
 	if ( asw_stats_leaderboard_debug.GetBool() )
 	{
-		DevMsg( "Preparing leaderboard entry for leaderboard %s\n", szLeaderboardName );
+		DevMsg( "Preparing leaderboard entry for leaderboards %s and %s\n", szLeaderboardName, szDifficultyLeaderboardName );
 	}
 
 	m_iLeaderboardScore = GetDebriefStats()->m_iLeaderboardScore[iMR];
@@ -1441,6 +1443,16 @@ void CASW_Steamstats::PrepStatsForSend_Leaderboard( CASW_Player *pPlayer, bool b
 	{
 		DevMsg( "Not sending leaderboard entry: Not whitelisted %s\n", szLeaderboardName );
 	}
+
+	if ( IsLBWhitelisted( szDifficultyLeaderboardName ) )
+	{
+		SteamAPICall_t hAPICall = SteamUserStats()->FindOrCreateLeaderboard( szDifficultyLeaderboardName, eSortMethod, eDisplayType );
+		m_LeaderboardDifficultyFindResultCallback.Set( hAPICall, this, &CASW_Steamstats::LeaderboardDifficultyFindResultCallback );
+	}
+	else if ( asw_stats_leaderboard_debug.GetBool() )
+	{
+		DevMsg( "Not sending leaderboard entry: Not whitelisted %s\n", szDifficultyLeaderboardName );
+	}
 }
 
 void CASW_Steamstats::LeaderboardFindResultCallback( LeaderboardFindResult_t *pResult, bool bIOFailure )
@@ -1474,6 +1486,27 @@ void CASW_Steamstats::LeaderboardFindResultCallback( LeaderboardFindResult_t *pR
 	m_LeaderboardScoreUploadedCallback.Set( hAPICall, this, &CASW_Steamstats::LeaderboardScoreUploadedCallback );
 }
 
+void CASW_Steamstats::LeaderboardDifficultyFindResultCallback( LeaderboardFindResult_t *pResult, bool bIOFailure )
+{
+	if ( bIOFailure || !pResult->m_bLeaderboardFound )
+	{
+		if ( asw_stats_leaderboard_debug.GetBool() )
+		{
+			DevWarning( "Not sending leaderboard entry (difficulty): IO:%d Found:%d\n", bIOFailure, pResult->m_bLeaderboardFound );
+		}
+		return;
+	}
+
+	if ( asw_stats_leaderboard_debug.GetBool() )
+	{
+		DevMsg( "Sending leaderboard entry to (difficulty) leaderboard ID: %llu\n", pResult->m_hSteamLeaderboard );
+	}
+
+	SteamAPICall_t hAPICall = SteamUserStats()->UploadLeaderboardScore( pResult->m_hSteamLeaderboard, k_ELeaderboardUploadScoreMethodKeepBest,
+		m_iLeaderboardScore, reinterpret_cast<const int32 *>( &m_LeaderboardScoreDetails ), sizeof( m_LeaderboardScoreDetails ) / sizeof( int32 ) );
+	m_LeaderboardDifficultyScoreUploadedCallback.Set( hAPICall, this, &CASW_Steamstats::LeaderboardDifficultyScoreUploadedCallback );
+}
+
 void CASW_Steamstats::LeaderboardScoreUploadedCallback( LeaderboardScoreUploaded_t *pResult, bool bIOFailure )
 {
 	engine->ServerCmd( "cl_leaderboard_ready\n" );
@@ -1505,6 +1538,23 @@ void CASW_Steamstats::LeaderboardScoreUploadedCallback( LeaderboardScoreUploaded
 	if ( asw_stats_leaderboard_debug.GetBool() )
 	{
 		DevMsg( "Leaderboard score uploaded: Score:%d PersonalBest:%d LeaderboardID:%llu GlobalRank(Previous:%d New:%d)\n", pResult->m_nScore, pResult->m_bScoreChanged, pResult->m_hSteamLeaderboard, pResult->m_nGlobalRankPrevious, pResult->m_nGlobalRankNew );
+	}
+}
+
+void CASW_Steamstats::LeaderboardDifficultyScoreUploadedCallback( LeaderboardScoreUploaded_t *pResult, bool bIOFailure )
+{
+	if ( bIOFailure || !pResult->m_bSuccess )
+	{
+		if ( asw_stats_leaderboard_debug.GetBool() )
+		{
+			DevWarning( "Failed to send leaderboard entry (difficulty): IO:%d Success:%d\n", bIOFailure, pResult ? pResult->m_bSuccess : false );
+		}
+		return;
+	}
+
+	if ( asw_stats_leaderboard_debug.GetBool() )
+	{
+		DevMsg( "Leaderboard score uploaded (difficulty): Score:%d PersonalBest:%d LeaderboardID:%llu GlobalRank(Previous:%d New:%d)\n", pResult->m_nScore, pResult->m_bScoreChanged, pResult->m_hSteamLeaderboard, pResult->m_nGlobalRankPrevious, pResult->m_nGlobalRankNew );
 	}
 }
 
@@ -1547,6 +1597,30 @@ void CASW_Steamstats::SpeedRunLeaderboardName( char *szBuf, size_t bufSize, cons
 	Q_snprintf( szBuf, bufSize, "RD_%s_%s/%llu_%s", szCategory, szChallengeLeaderboardName, nMapID, szMap );
 }
 
+void CASW_Steamstats::DifficultySpeedRunLeaderboardName( char *szBuf, size_t bufSize, int iSkill, const char *szMap, PublishedFileId_t nMapID, const char *szChallenge, PublishedFileId_t nChallengeID )
+{
+	char szChallengeLeaderboardName[k_cchLeaderboardNameMax];
+	if ( !Q_strcmp( szChallenge, "0" ) )
+	{
+		Q_snprintf( szChallengeLeaderboardName, sizeof( szChallengeLeaderboardName ), "%llu", nChallengeID );
+	}
+	else
+	{
+		Q_snprintf( szChallengeLeaderboardName, sizeof( szChallengeLeaderboardName ), "%llu_%s", nChallengeID, szChallenge );
+	}
+
+	const char *szCategory = "SpeedRun";
+	if ( const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( szMap ) )
+	{
+		if ( pMission->HasTag( "points" ) )
+		{
+			szCategory = "MapPoints";
+		}
+	}
+
+	Q_snprintf( szBuf, bufSize, "RD_%s_%s_%s/%llu_%s", g_szDifficulties[iSkill - 1], szCategory, szChallengeLeaderboardName, nMapID, szMap );
+}
+
 void CASW_Steamstats::ReadDownloadedLeaderboard( CUtlVector<RD_LeaderboardEntry_t> & entries, SteamLeaderboardEntries_t hEntries, int nCount )
 {
 	entries.SetCount( nCount );
@@ -1572,62 +1646,153 @@ static const char *LB_whitelist[] =
 {
 	"RD_MapPoints_0/",
 	"RD_SpeedRun_0/",
+	"RD_Hard_SpeedRun_0/",
+	"RD_Insane_SpeedRun_0/",
+	"RD_imba_SpeedRun_0/",
 
 	"RD_SpeedRun_0_asbi/",
+	"RD_Hard_SpeedRun_0_asbi/",
+	"RD_Insane_SpeedRun_0_asbi/",
+	"RD_imba_SpeedRun_0_asbi/",
 
 	"RD_SpeedRun_0_difficulty_tier1/",
+	"RD_Easy_SpeedRun_0_difficulty_tier1/",
+	"RD_Normal_SpeedRun_0_difficulty_tier1/",
+	"RD_Hard_SpeedRun_0_difficulty_tier1/",
+	"RD_Insane_SpeedRun_0_difficulty_tier1/",
+	"RD_imba_SpeedRun_0_difficulty_tier1/",
 
 	"RD_SpeedRun_0_difficulty_tier2/",
+	"RD_Easy_SpeedRun_0_difficulty_tier2/",
+	"RD_Normal_SpeedRun_0_difficulty_tier2/",
+	"RD_Hard_SpeedRun_0_difficulty_tier2/",
+	"RD_Insane_SpeedRun_0_difficulty_tier2/",
+	"RD_imba_SpeedRun_0_difficulty_tier2/",
 
 	"RD_SpeedRun_0_energy_weapons/",
+	"RD_Hard_SpeedRun_0_energy_weapons/",
+	"RD_Insane_SpeedRun_0_energy_weapons/",
+	"RD_imba_SpeedRun_0_energy_weapons/",
 
 	"RD_SpeedRun_0_level_one/",
+	"RD_Hard_SpeedRun_0_level_one/",
+	"RD_Insane_SpeedRun_0_level_one/",
+	"RD_imba_SpeedRun_0_level_one/",
 
 	"RD_SpeedRun_0_one_hit/",
+	"RD_Hard_SpeedRun_0_one_hit/",
+	"RD_Insane_SpeedRun_0_one_hit/",
+	"RD_imba_SpeedRun_0_one_hit/",
 
 	"RD_SpeedRun_0_riflemod_classic/",
+	"RD_Hard_SpeedRun_0_riflemod_classic/",
+	"RD_Insane_SpeedRun_0_riflemod_classic/",
+	"RD_imba_SpeedRun_0_riflemod_classic/",
 
 	"RD_SpeedRun_1366599495_asbipro/",
+	"RD_Hard_SpeedRun_1366599495_asbipro/",
+	"RD_Insane_SpeedRun_1366599495_asbipro/",
+	"RD_imba_SpeedRun_1366599495_asbipro/",
 
 	"RD_SpeedRun_1374886583_asb2/",
+	"RD_Hard_SpeedRun_1374886583_asb2/",
+	"RD_Insane_SpeedRun_1374886583_asb2/",
+	"RD_imba_SpeedRun_1374886583_asb2/",
 
 	"RD_SpeedRun_1374886583_asb2_carnage/",
+	"RD_Hard_SpeedRun_1374886583_asb2_carnage/",
+	"RD_Insane_SpeedRun_1374886583_asb2_carnage/",
+	"RD_imba_SpeedRun_1374886583_asb2_carnage/",
 
 	"RD_SpeedRun_1568035792_asbisolo/",
+	"RD_Hard_SpeedRun_1568035792_asbisolo/",
+	"RD_Insane_SpeedRun_1568035792_asbisolo/",
+	"RD_imba_SpeedRun_1568035792_asbisolo/",
 
 	"RD_SpeedRun_1358596669_asbi_classic/",
+	"RD_Hard_SpeedRun_1358596669_asbi_classic/",
+	"RD_Insane_SpeedRun_1358596669_asbi_classic/",
+	"RD_imba_SpeedRun_1358596669_asbi_classic/",
 
 	"RD_SpeedRun_1098363725_vanasbi/",
+	"RD_Hard_SpeedRun_1098363725_vanasbi/",
+	"RD_Insane_SpeedRun_1098363725_vanasbi/",
+	"RD_imba_SpeedRun_1098363725_vanasbi/",
 
 	"RD_SpeedRun_1447743649_onehitasbi/",
+	"RD_Hard_SpeedRun_1447743649_onehitasbi/",
+	"RD_Insane_SpeedRun_1447743649_onehitasbi/",
+	"RD_imba_SpeedRun_1447743649_onehitasbi/",
 
 	"RD_SpeedRun_1125436820_single_player/",
+	"RD_Hard_SpeedRun_1125436820_single_player/",
+	"RD_Insane_SpeedRun_1125436820_single_player/",
+	"RD_imba_SpeedRun_1125436820_single_player/",
 
 	"RD_SpeedRun_1429436524_single_player_asbi/",
+	"RD_Hard_SpeedRun_1429436524_single_player_asbi/",
+	"RD_Insane_SpeedRun_1429436524_single_player_asbi/",
+	"RD_imba_SpeedRun_1429436524_single_player_asbi/",
 
 	"RD_SpeedRun_1274862258_minefield/",
+	"RD_Hard_SpeedRun_1274862258_minefield/",
+	"RD_Insane_SpeedRun_1274862258_minefield/",
+	"RD_imba_SpeedRun_1274862258_minefield/",
 
 	"RD_SpeedRun_1274862258_minefield_light/",
+	"RD_Hard_SpeedRun_1274862258_minefield_light/",
+	"RD_Insane_SpeedRun_1274862258_minefield_light/",
+	"RD_imba_SpeedRun_1274862258_minefield_light/",
 
 	"RD_SpeedRun_1274862258_minefield_asbi/",
+	"RD_Hard_SpeedRun_1274862258_minefield_asbi/",
+	"RD_Insane_SpeedRun_1274862258_minefield_asbi/",
+	"RD_imba_SpeedRun_1274862258_minefield_asbi/",
 
 	"RD_SpeedRun_1274862258_minefieldnotech_asbi/",
+	"RD_Hard_SpeedRun_1274862258_minefieldnotech_asbi/",
+	"RD_Insane_SpeedRun_1274862258_minefieldnotech_asbi/",
+	"RD_imba_SpeedRun_1274862258_minefieldnotech_asbi/",
 
 	"RD_SpeedRun_1274862258_minefieldnotech/",
+	"RD_Hard_SpeedRun_1274862258_minefieldnotech/",
+	"RD_Insane_SpeedRun_1274862258_minefieldnotech/",
+	"RD_imba_SpeedRun_1274862258_minefieldnotech/",
 
 	"RD_SpeedRun_1873361988_strafejumpsair/",
+	"RD_Hard_SpeedRun_1873361988_strafejumpsair/",
+	"RD_Insane_SpeedRun_1873361988_strafejumpsair/",
+	"RD_imba_SpeedRun_1873361988_strafejumpsair/",
 
 	"RD_SpeedRun_1873361988_strafejumps/",
+	"RD_Hard_SpeedRun_1873361988_strafejumps/",
+	"RD_Insane_SpeedRun_1873361988_strafejumps/",
+	"RD_imba_SpeedRun_1873361988_strafejumps/",
 
 	"RD_SpeedRun_1873361988_asbi_strafe_air/",
+	"RD_Hard_SpeedRun_1873361988_asbi_strafe_air/",
+	"RD_Insane_SpeedRun_1873361988_asbi_strafe_air/",
+	"RD_imba_SpeedRun_1873361988_asbi_strafe_air/",
 
 	"RD_SpeedRun_1873361988_asbi_strafe/",
+	"RD_Hard_SpeedRun_1873361988_asbi_strafe/",
+	"RD_Insane_SpeedRun_1873361988_asbi_strafe/",
+	"RD_imba_SpeedRun_1873361988_asbi_strafe/",
 
 	"RD_SpeedRun_1167497265_asbit1/",
+	"RD_Hard_SpeedRun_1167497265_asbit1/",
+	"RD_Insane_SpeedRun_1167497265_asbit1/",
+	"RD_imba_SpeedRun_1167497265_asbit1/",
 
 	"RD_SpeedRun_1167497265_asbit1x2/",
+	"RD_Hard_SpeedRun_1167497265_asbit1x2/",
+	"RD_Insane_SpeedRun_1167497265_asbit1x2/",
+	"RD_imba_SpeedRun_1167497265_asbit1x2/",
 
 	"RD_SpeedRun_935767408_asbicarnagex2/",
+	"RD_Hard_SpeedRun_935767408_asbicarnagex2/",
+	"RD_Insane_SpeedRun_935767408_asbicarnagex2/",
+	"RD_imba_SpeedRun_935767408_asbicarnagex2/",
 
 	"RD_SpeedRun_2082369328_asbi_weapons_balancing_rng/",
 	"RD_SpeedRun_2082369328_asbi_weapons_balancing_rng_c2/",

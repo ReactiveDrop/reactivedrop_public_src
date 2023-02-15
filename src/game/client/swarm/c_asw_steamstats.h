@@ -146,6 +146,7 @@ public:
 	void PrepStatsForSend_Leaderboard( CASW_Player *pPlayer, bool bUnofficial );
 
 	void SpeedRunLeaderboardName( char *szBuf, size_t bufSize, const char *szMap, PublishedFileId_t nMapID = 0, const char *szChallenge = "0", PublishedFileId_t nChallengeID = 0, ELeaderboardSortMethod *pESortMethod = NULL, ELeaderboardDisplayType *pEDisplayType = NULL );
+	void DifficultySpeedRunLeaderboardName( char *szBuf, size_t bufSize, int iSkill, const char *szMap, PublishedFileId_t nMapID = 0, const char *szChallenge = "0", PublishedFileId_t nChallengeID = 0 );
 
 	void ReadDownloadedLeaderboard( CUtlVector<RD_LeaderboardEntry_t> & entries, SteamLeaderboardEntries_t hEntries, int nCount );
 	void ReadDownloadedLeaderboard( CUtlVector<RD_LeaderboardEntry_Points_t> & entries, SteamLeaderboardEntries_t hEntries, int nCount );
@@ -222,8 +223,12 @@ private:
 
 	CCallResult<CASW_Steamstats, LeaderboardFindResult_t> m_LeaderboardFindResultCallback;
 	void LeaderboardFindResultCallback( LeaderboardFindResult_t *pResult, bool bIOFailure );
+	CCallResult<CASW_Steamstats, LeaderboardFindResult_t> m_LeaderboardDifficultyFindResultCallback;
+	void LeaderboardDifficultyFindResultCallback( LeaderboardFindResult_t *pResult, bool bIOFailure );
 	CCallResult<CASW_Steamstats, LeaderboardScoreUploaded_t> m_LeaderboardScoreUploadedCallback;
 	void LeaderboardScoreUploadedCallback( LeaderboardScoreUploaded_t *pResult, bool bIOFailure );
+	CCallResult<CASW_Steamstats, LeaderboardScoreUploaded_t> m_LeaderboardDifficultyScoreUploadedCallback;
+	void LeaderboardDifficultyScoreUploadedCallback( LeaderboardScoreUploaded_t *pResult, bool bIOFailure );
 
 	int32 m_iLeaderboardScore;
 	LeaderboardScoreDetails_v2_t m_LeaderboardScoreDetails;
