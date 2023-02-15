@@ -5426,19 +5426,6 @@ void CBaseEntity::PrecacheModelComponents( int nModelIndex )
 					PrecacheParticleSystem( pParticleEffectName );
 				}
 			}
-
-#ifdef INFESTED_DLL
-			static int keyDoor = KeyValuesSystem()->GetSymbolForString( "asw_door" );
-			static int keyHitSound = KeyValuesSystem()->GetSymbolForString( "hit_sound" );
-			static int keyDentSound = KeyValuesSystem()->GetSymbolForString( "dent_sound" );
-
-			KeyValues *pASWDoor = pModelKeyValues->FindKey( keyDoor );
-			if ( pASWDoor )
-			{
-				PrecacheSoundHelper( pASWDoor->GetString( keyHitSound, "ASW_Door.MeleeHit" ) );
-				PrecacheSoundHelper( pASWDoor->GetString( keyDentSound, "ASW_Door.Dented" ) );
-			}
-#endif
 		}
 	}
 

@@ -154,11 +154,25 @@ CASW_Door::~CASW_Door( void )
 
 void CASW_Door::Precache()
 {
-	PrecacheScriptSound( "ASW_Door.Dented" );
-	PrecacheScriptSound( "ASW_Door.MeleeHit" );
 	PrecacheScriptSound( "ASW_Welder.WeldDeny" );
+
 	BaseClass::Precache();
-	// alternate door hit/dent sounds are precached in CBaseEntity::PrecacheModelComponents
+
+	int iModelIndex = modelinfo->GetModelIndex( STRING( GetModelName() ) );
+	const model_t *pModel = modelinfo->GetModel( iModelIndex );
+
+	KeyValues::AutoDelete pKV( "" );
+	CUtlBuffer buf( 1024, 0, CUtlBuffer::TEXT_BUFFER );
+	if ( modelinfo->GetModelKeyValue( pModel, buf ) )
+	{
+		pKV->LoadFromBuffer( modelinfo->GetModelName( pModel ), buf );
+	}
+
+	m_iszDoorHitSound = AllocPooledString( pKV->GetString( "asw_door/hit_sound", "ASW_Door.MeleeHit" ) );
+	m_iszDoorDentSound = AllocPooledString( pKV->GetString( "asw_door/dent_sound", "ASW_Door.Dented" ) );
+
+	PrecacheScriptSound( STRING( m_iszDoorHitSound ) );
+	PrecacheScriptSound( STRING( m_iszDoorDentSound ) );
 }
 
 void CASW_Door::Spawn()
@@ -310,16 +324,6 @@ void CASW_Door::Spawn()
 	{
 		VisibilityMonitor_AddEntity( this, asw_visrange_generic.GetFloat() * 0.9f, &CASW_Door::DestroyVismonCallback, &CASW_Door::DestroyVismonEvaluator );
 	}
-
-	KeyValues::AutoDelete pKV( "" );
-	CUtlBuffer buf( 1024, 0, CUtlBuffer::TEXT_BUFFER );
-	if ( modelinfo->GetModelKeyValue( GetModel(), buf ) )
-	{
-		pKV->LoadFromBuffer( modelinfo->GetModelName( GetModel() ), buf );
-	}
-
-	m_iszDoorHitSound = AllocPooledString( pKV->GetString( "asw_door/hit_sound", "ASW_Door.MeleeHit" ) );
-	m_iszDoorDentSound = AllocPooledString( pKV->GetString( "asw_door/dent_sound", "ASW_Door.Dented" ) );
 }
 
 bool CASW_Door::DestroyVismonEvaluator( CBaseEntity *pVisibleEntity, CBasePlayer *pViewingPlayer )
