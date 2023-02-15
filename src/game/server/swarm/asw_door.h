@@ -197,6 +197,9 @@ private:
 	bool m_bDoneChatter;
 	float m_fChatterCounter;
 
+	string_t m_iszDoorHitSound;
+	string_t m_iszDoorDentSound;
+
 	CHandle<CEntityBlocker>	m_hDoorBlocker;
 	CHandle<CASW_Door_Padding> m_hDoorPadding;
 
