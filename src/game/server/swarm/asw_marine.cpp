@@ -4544,13 +4544,18 @@ void CASW_Marine::Suicide()
 	//SetNextThink(gpGlobals->curtime + 2.0f);
 }
 
+bool CASW_Marine::CanBecomeRagdoll()
+{
+	if ( m_bSpawnZombineOnDeath )
+		return false;
+
+	return BaseClass::CanBecomeRagdoll();
+}
+
 // called from BaseClass::Event_Killed
 bool CASW_Marine::BecomeRagdollOnClient( const Vector &force )
 {
 	if ( !CanBecomeRagdoll() ) 
-		return false;
-
-	if ( m_bSpawnZombineOnDeath )
 		return false;
 
 	// Become server-side ragdoll if we're flagged to do it
