@@ -903,6 +903,7 @@ void CASW_Marine::Precache()
 	PrecacheModel("models/swarm/marine/gibs/marine_gib_rightleg.mdl");
 	PrecacheModel("models/swarm/marine/gibs/marine_gib_pelvis.mdl");
 
+	PrecacheModel( "models/zombie/fallen_marine.mdl" );
 	UTIL_PrecacheOther( "npc_zombine" );
 
 	PrecacheModel( "cable/cable.vmt" );

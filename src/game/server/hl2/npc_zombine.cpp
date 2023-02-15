@@ -150,7 +150,6 @@ void CNPC_Zombine::Precache( void )
 	BaseClass::Precache();
 
 	PrecacheModel( "models/zombie/zombie_soldier.mdl" );
-	PrecacheModel( "models/zombie/fallen_marine.mdl" );
 
 	PrecacheScriptSound( "Zombie.FootstepRight" );
 	PrecacheScriptSound( "Zombie.FootstepLeft" );
