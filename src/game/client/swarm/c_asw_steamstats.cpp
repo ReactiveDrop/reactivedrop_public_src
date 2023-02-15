@@ -1333,7 +1333,7 @@ void CASW_Steamstats::PrepStatsForSend_Leaderboard( CASW_Player *pPlayer, bool b
 	char szMissionFileName[MAX_PATH];
 	Q_snprintf( szMissionFileName, sizeof( szMissionFileName ), "resource/overviews/%s.txt", IGameSystem::MapName() );
 	PublishedFileId_t nWorkshopFileID = g_ReactiveDropWorkshop.FindAddonProvidingFile( szMissionFileName );
-	if ( nWorkshopFileID == k_PublishedFileIdInvalid && bUnofficial )
+	if ( nWorkshopFileID == k_PublishedFileIdInvalid ? bUnofficial : nWorkshopFileID < 1000000 )
 	{
 		if ( asw_stats_leaderboard_debug.GetBool() )
 		{
@@ -1342,9 +1342,6 @@ void CASW_Steamstats::PrepStatsForSend_Leaderboard( CASW_Player *pPlayer, bool b
 		engine->ServerCmd( "cl_leaderboard_ready\n" );
 		return;
 	}
-
-	if ( !bUnofficial )	// if official
-		nWorkshopFileID = k_PublishedFileIdInvalid;	// #iss67 game considers workshop overview files as separate maps for leaderboards
 
 	extern ConVar rd_challenge;
 	char szChallengeFileName[MAX_PATH];
@@ -1646,152 +1643,90 @@ static const char *LB_whitelist[] =
 {
 	"RD_MapPoints_0/",
 	"RD_SpeedRun_0/",
-	"RD_Hard_SpeedRun_0/",
-	"RD_Insane_SpeedRun_0/",
 	"RD_imba_SpeedRun_0/",
 
 	"RD_SpeedRun_0_asbi/",
-	"RD_Hard_SpeedRun_0_asbi/",
-	"RD_Insane_SpeedRun_0_asbi/",
 	"RD_imba_SpeedRun_0_asbi/",
 
 	"RD_SpeedRun_0_difficulty_tier1/",
-	"RD_Easy_SpeedRun_0_difficulty_tier1/",
-	"RD_Normal_SpeedRun_0_difficulty_tier1/",
-	"RD_Hard_SpeedRun_0_difficulty_tier1/",
-	"RD_Insane_SpeedRun_0_difficulty_tier1/",
 	"RD_imba_SpeedRun_0_difficulty_tier1/",
 
 	"RD_SpeedRun_0_difficulty_tier2/",
-	"RD_Easy_SpeedRun_0_difficulty_tier2/",
-	"RD_Normal_SpeedRun_0_difficulty_tier2/",
-	"RD_Hard_SpeedRun_0_difficulty_tier2/",
-	"RD_Insane_SpeedRun_0_difficulty_tier2/",
 	"RD_imba_SpeedRun_0_difficulty_tier2/",
 
 	"RD_SpeedRun_0_energy_weapons/",
-	"RD_Hard_SpeedRun_0_energy_weapons/",
-	"RD_Insane_SpeedRun_0_energy_weapons/",
 	"RD_imba_SpeedRun_0_energy_weapons/",
 
 	"RD_SpeedRun_0_level_one/",
-	"RD_Hard_SpeedRun_0_level_one/",
-	"RD_Insane_SpeedRun_0_level_one/",
 	"RD_imba_SpeedRun_0_level_one/",
 
 	"RD_SpeedRun_0_one_hit/",
-	"RD_Hard_SpeedRun_0_one_hit/",
-	"RD_Insane_SpeedRun_0_one_hit/",
 	"RD_imba_SpeedRun_0_one_hit/",
 
 	"RD_SpeedRun_0_riflemod_classic/",
-	"RD_Hard_SpeedRun_0_riflemod_classic/",
-	"RD_Insane_SpeedRun_0_riflemod_classic/",
 	"RD_imba_SpeedRun_0_riflemod_classic/",
 
 	"RD_SpeedRun_1366599495_asbipro/",
-	"RD_Hard_SpeedRun_1366599495_asbipro/",
-	"RD_Insane_SpeedRun_1366599495_asbipro/",
 	"RD_imba_SpeedRun_1366599495_asbipro/",
 
 	"RD_SpeedRun_1374886583_asb2/",
-	"RD_Hard_SpeedRun_1374886583_asb2/",
-	"RD_Insane_SpeedRun_1374886583_asb2/",
 	"RD_imba_SpeedRun_1374886583_asb2/",
 
 	"RD_SpeedRun_1374886583_asb2_carnage/",
-	"RD_Hard_SpeedRun_1374886583_asb2_carnage/",
-	"RD_Insane_SpeedRun_1374886583_asb2_carnage/",
 	"RD_imba_SpeedRun_1374886583_asb2_carnage/",
 
 	"RD_SpeedRun_1568035792_asbisolo/",
-	"RD_Hard_SpeedRun_1568035792_asbisolo/",
-	"RD_Insane_SpeedRun_1568035792_asbisolo/",
 	"RD_imba_SpeedRun_1568035792_asbisolo/",
 
 	"RD_SpeedRun_1358596669_asbi_classic/",
-	"RD_Hard_SpeedRun_1358596669_asbi_classic/",
-	"RD_Insane_SpeedRun_1358596669_asbi_classic/",
 	"RD_imba_SpeedRun_1358596669_asbi_classic/",
 
 	"RD_SpeedRun_1098363725_vanasbi/",
-	"RD_Hard_SpeedRun_1098363725_vanasbi/",
-	"RD_Insane_SpeedRun_1098363725_vanasbi/",
 	"RD_imba_SpeedRun_1098363725_vanasbi/",
 
 	"RD_SpeedRun_1447743649_onehitasbi/",
-	"RD_Hard_SpeedRun_1447743649_onehitasbi/",
-	"RD_Insane_SpeedRun_1447743649_onehitasbi/",
 	"RD_imba_SpeedRun_1447743649_onehitasbi/",
 
 	"RD_SpeedRun_1125436820_single_player/",
-	"RD_Hard_SpeedRun_1125436820_single_player/",
-	"RD_Insane_SpeedRun_1125436820_single_player/",
 	"RD_imba_SpeedRun_1125436820_single_player/",
 
 	"RD_SpeedRun_1429436524_single_player_asbi/",
-	"RD_Hard_SpeedRun_1429436524_single_player_asbi/",
-	"RD_Insane_SpeedRun_1429436524_single_player_asbi/",
 	"RD_imba_SpeedRun_1429436524_single_player_asbi/",
 
 	"RD_SpeedRun_1274862258_minefield/",
-	"RD_Hard_SpeedRun_1274862258_minefield/",
-	"RD_Insane_SpeedRun_1274862258_minefield/",
 	"RD_imba_SpeedRun_1274862258_minefield/",
 
 	"RD_SpeedRun_1274862258_minefield_light/",
-	"RD_Hard_SpeedRun_1274862258_minefield_light/",
-	"RD_Insane_SpeedRun_1274862258_minefield_light/",
 	"RD_imba_SpeedRun_1274862258_minefield_light/",
 
 	"RD_SpeedRun_1274862258_minefield_asbi/",
-	"RD_Hard_SpeedRun_1274862258_minefield_asbi/",
-	"RD_Insane_SpeedRun_1274862258_minefield_asbi/",
 	"RD_imba_SpeedRun_1274862258_minefield_asbi/",
 
 	"RD_SpeedRun_1274862258_minefieldnotech_asbi/",
-	"RD_Hard_SpeedRun_1274862258_minefieldnotech_asbi/",
-	"RD_Insane_SpeedRun_1274862258_minefieldnotech_asbi/",
 	"RD_imba_SpeedRun_1274862258_minefieldnotech_asbi/",
 
 	"RD_SpeedRun_1274862258_minefieldnotech/",
-	"RD_Hard_SpeedRun_1274862258_minefieldnotech/",
-	"RD_Insane_SpeedRun_1274862258_minefieldnotech/",
 	"RD_imba_SpeedRun_1274862258_minefieldnotech/",
 
 	"RD_SpeedRun_1873361988_strafejumpsair/",
-	"RD_Hard_SpeedRun_1873361988_strafejumpsair/",
-	"RD_Insane_SpeedRun_1873361988_strafejumpsair/",
 	"RD_imba_SpeedRun_1873361988_strafejumpsair/",
 
 	"RD_SpeedRun_1873361988_strafejumps/",
-	"RD_Hard_SpeedRun_1873361988_strafejumps/",
-	"RD_Insane_SpeedRun_1873361988_strafejumps/",
 	"RD_imba_SpeedRun_1873361988_strafejumps/",
 
 	"RD_SpeedRun_1873361988_asbi_strafe_air/",
-	"RD_Hard_SpeedRun_1873361988_asbi_strafe_air/",
-	"RD_Insane_SpeedRun_1873361988_asbi_strafe_air/",
 	"RD_imba_SpeedRun_1873361988_asbi_strafe_air/",
 
 	"RD_SpeedRun_1873361988_asbi_strafe/",
-	"RD_Hard_SpeedRun_1873361988_asbi_strafe/",
-	"RD_Insane_SpeedRun_1873361988_asbi_strafe/",
 	"RD_imba_SpeedRun_1873361988_asbi_strafe/",
 
 	"RD_SpeedRun_1167497265_asbit1/",
-	"RD_Hard_SpeedRun_1167497265_asbit1/",
-	"RD_Insane_SpeedRun_1167497265_asbit1/",
 	"RD_imba_SpeedRun_1167497265_asbit1/",
 
 	"RD_SpeedRun_1167497265_asbit1x2/",
-	"RD_Hard_SpeedRun_1167497265_asbit1x2/",
-	"RD_Insane_SpeedRun_1167497265_asbit1x2/",
 	"RD_imba_SpeedRun_1167497265_asbit1x2/",
 
 	"RD_SpeedRun_935767408_asbicarnagex2/",
-	"RD_Hard_SpeedRun_935767408_asbicarnagex2/",
-	"RD_Insane_SpeedRun_935767408_asbicarnagex2/",
 	"RD_imba_SpeedRun_935767408_asbicarnagex2/",
 
 	"RD_SpeedRun_2082369328_asbi_weapons_balancing_rng/",
@@ -1811,19 +1746,19 @@ static const char *LB_whitelist[] =
 	"RD_SpeedRun_2178770089_turbo_asbi_wb_rng2_c2/",
 
 	"RD_SpeedRun_2381921032_asbi2077/",
-	
+
 	"RD_SpeedRun_2461568606_elite/",
-	
+
 	"RD_SpeedRun_2461568606_elite_c2/",
-	
+
 	"RD_SpeedRun_2461568606_asbi_elite/",
-	
+
 	"RD_SpeedRun_2461568606_asbi_elite_c2/",
-	
+
 	"RD_SpeedRun_1940930023_asbi_carnage2_classic/",
-	
+
 	"RD_SpeedRun_2647127742_asbi_ultimate/",
-	
+
 	"RD_SpeedRun_2811007850_campaignexecution/",
 	"RD_SpeedRun_2811007850_asbi_campaignexecution/",
 };
