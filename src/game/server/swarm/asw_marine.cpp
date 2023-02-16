@@ -88,6 +88,7 @@
 #include "EnvLaser.h"
 #include "iservervehicle.h"
 #include "rd_cause_of_death.h"
+#include "npc_zombine.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -396,6 +397,7 @@ BEGIN_ENT_SCRIPTDESC( CASW_Marine, CASW_Inhabitable_NPC, "Marine" )
 	DEFINE_SCRIPTFUNC_NAMED( Script_Speak, "Speak", "Makes the marine speak a response rules concept." )
 	DEFINE_SCRIPTFUNC( SetMarineRolls, "Send true to make marine roll, send false to make marine jump" )
 	DEFINE_SCRIPTFUNC( SetKnockedOut, "Used to knock out and incapacitate a marine, or revive them." )
+	DEFINE_SCRIPTFUNC( SetSpawnZombineOnDeath, "Used to spawn a zombine in the place of a marine after death." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptKnockdown, "Knockdown", "Knocks down the marine with desired velocity." )
 END_SCRIPTDESC()
 
@@ -451,6 +453,7 @@ extern ConVar rd_revive_health;
 ConVar rd_marine_poison_recover_delay( "rd_marine_poison_recover_delay", "2", FCVAR_CHEAT, "time after being poisoned before suit antitoxin begins to act" );
 ConVar rd_marine_poison_recover_tick( "rd_marine_poison_recover_tick", "0.5", FCVAR_CHEAT, "time between hitpoints restored by antitoxin" );
 ConVar asw_leadership_resist_scale( "asw_leadership_resist_scale", "0.5", FCVAR_CHEAT, "Incoming damage scale for leadership bonus." );
+ConVar rd_marine_spawn_zombine_on_death_chance( "rd_marine_spawn_zombine_on_death_chance", "0.0", FCVAR_CHEAT, "Chance to spawn a zombine when a marine dies from an alien" );
 
 float CASW_Marine::s_fNextMadFiringChatter = 0;
 float CASW_Marine::s_fNextIdleChatterTime = 0;
@@ -642,6 +645,8 @@ CASW_Marine::CASW_Marine() : m_RecentMeleeHits( 16, 16 )
 	m_bRolls = asw_marine_rolls.GetBool();
 
 	m_nMarineProfile = -1;
+
+	m_bSpawnZombineOnDeath = false;
 }
 
 
@@ -897,6 +902,9 @@ void CASW_Marine::Precache()
 	PrecacheModel("models/swarm/marine/gibs/marine_gib_leftleg.mdl");
 	PrecacheModel("models/swarm/marine/gibs/marine_gib_rightleg.mdl");
 	PrecacheModel("models/swarm/marine/gibs/marine_gib_pelvis.mdl");
+
+	PrecacheModel( "models/zombie/fallen_marine.mdl" );
+	UTIL_PrecacheOther( "npc_zombine" );
 
 	PrecacheModel( "cable/cable.vmt" );
 	PrecacheScriptSound( "ASW.MarineMeleeAttack" );
@@ -3535,6 +3543,11 @@ void CASW_Marine::SetMarineRolls( bool bRolls )
 	m_bRolls = bRolls;
 }
 
+void CASW_Marine::SetSpawnZombineOnDeath( bool bSpawn )
+{
+	m_bSpawnZombineOnDeath = bSpawn;
+}
+
 // healing
 void CASW_Marine::AddSlowHeal( int iHealAmount, float flHealRateScale, CASW_Marine *pMedic, CBaseEntity* pHealingWeapon /*= NULL */ )
 {
@@ -3756,6 +3769,9 @@ void CASW_Marine::ScriptCureInfestation()
 // if we died from infestation, then gib
 bool CASW_Marine::ShouldGib( const CTakeDamageInfo &info )
 {
+	if ( m_bSpawnZombineOnDeath )
+		return false;
+	
 	if (info.GetDamageType() & DMG_INFEST || info.GetDamageType() & DMG_BLAST)
 		return true;
 
@@ -4165,6 +4181,34 @@ void CASW_Marine::Event_Killed( const CTakeDamageInfo &info )
 			}
 		}
 	}
+
+	CBaseEntity *pAttacker = info.GetAttacker();
+	CASW_Inhabitable_NPC* pAttackerNPC = dynamic_cast< CASW_Inhabitable_NPC* >( pAttacker );
+	m_bSpawnZombineOnDeath = m_bSpawnZombineOnDeath ||
+							( pAttackerNPC && pAttackerNPC->m_bSpawnZombineOnMarineKill ) ||
+							( pAttackerNPC && pAttackerNPC->Classify() != CLASS_ASW_MARINE && rd_marine_spawn_zombine_on_death_chance.GetFloat() > RandomFloat() );
+
+	if ( m_bSpawnZombineOnDeath )
+	{
+		CNPC_Zombine* pZombine = dynamic_cast< CNPC_Zombine* >( CreateEntityByName( "npc_zombine" ) );
+
+		if ( !pZombine )
+		{
+			Warning( "Unable to create npc_zombine from dying marine.\n" );
+		}
+		else
+		{
+			pZombine->SetAbsOrigin( GetAbsOrigin() + Vector( 0.0, 0.0, 10.0 ) ); // spawns in the ground, raise height by 10
+			pZombine->SetAbsAngles( GetAbsAngles() );
+
+			pZombine->Spawn();
+
+			pZombine->SetModel( "models/zombie/fallen_marine.mdl" );
+			pZombine->m_nSkin = GetSkin();
+			pZombine->SetRenderColor( GetRenderColor().r, GetRenderColor().g, GetRenderColor().b );	
+		}
+	}
+
 	BaseClass::Event_Killed( info );
 
 	if ( asw_debug_marine_chatter.GetBool() )
@@ -4205,9 +4249,7 @@ void CASW_Marine::Event_Killed( const CTakeDamageInfo &info )
 	if ( ASWDeathmatchMode() )
 		ASWDeathmatchMode()->OnMarineKilled( info, this );
 
-
 	// print a message if marine was killed by another marine
-	CBaseEntity *pAttacker = info.GetAttacker();
 	if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
 	{
 		CASW_Marine *pOtherMarine = assert_cast< CASW_Marine * >( pAttacker );
@@ -4503,6 +4545,15 @@ void CASW_Marine::Suicide()
 	//SetNextThink(gpGlobals->curtime + 2.0f);
 }
 
+bool CASW_Marine::CanBecomeRagdoll()
+{
+	if ( m_bSpawnZombineOnDeath )
+		return false;
+
+	return BaseClass::CanBecomeRagdoll();
+}
+
+// called from BaseClass::Event_Killed
 bool CASW_Marine::BecomeRagdollOnClient( const Vector &force )
 {
 	if ( !CanBecomeRagdoll() ) 

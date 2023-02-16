@@ -120,6 +120,7 @@ BEGIN_ENT_SCRIPTDESC( CASW_Inhabitable_NPC, CBaseCombatCharacter, "Alien Swarm I
 	DEFINE_SCRIPTFUNC_NAMED( ScriptFreeze, "Freeze", "Freezes the alien." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptElectroStun, "ElectroStun", "Stuns the alien." )
 	DEFINE_SCRIPTFUNC( Wake, "Wake up the alien." )
+	DEFINE_SCRIPTFUNC( SetSpawnZombineOnMarineKill, "Used to spawn a zombine in the place of a killed marine." )
 END_SCRIPTDESC()
 
 CASW_Inhabitable_NPC::CASW_Inhabitable_NPC()
@@ -147,6 +148,8 @@ CASW_Inhabitable_NPC::CASW_Inhabitable_NPC()
 
 	m_flBaseThawRate = 0.5f;
 	m_flFrozenTime = 0.0f;
+
+	m_bSpawnZombineOnMarineKill = false;
 }
 
 CASW_Inhabitable_NPC::~CASW_Inhabitable_NPC()
@@ -805,4 +808,9 @@ void CASW_Inhabitable_NPC::ScriptOrderMoveTo( HSCRIPT hOrderObject, bool bIgnore
 void CASW_Inhabitable_NPC::ScriptChaseNearestMarine()
 {
 	SetAlienOrders( AOT_MoveToNearestMarine, vec3_origin, NULL );
+}
+
+void CASW_Inhabitable_NPC::SetSpawnZombineOnMarineKill( bool bSpawn )
+{
+	m_bSpawnZombineOnMarineKill = bSpawn;
 }
