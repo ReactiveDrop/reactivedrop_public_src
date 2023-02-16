@@ -133,7 +133,6 @@
 	{
 		"wave"	"physics\3D\damage\doormeleesheet1.wav"
 		"wave"	"physics\3D\damage\doormeleesheet2.wav"
-		"wave"	"physics\3D\damage\doormeleesheet3.wav"
 	}
 }
 
