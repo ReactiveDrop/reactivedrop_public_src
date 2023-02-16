@@ -595,6 +595,18 @@ void CNPC_CScanner::Precache(void)
 	m_nHaloSprite = PrecacheModel("sprites/light_glow03.vmt");
 	PrecacheModel( "sprites/glow_test02.vmt" );
 
+	if ( !m_bIsNeutralScanner && !m_SquadName )
+	{
+		Assert( g_pBigAINet );
+		if ( g_pBigAINet )
+		{
+			// Put us in a squad if there's no squad specified, just to make sure we get to do our cool AI stuff.
+			char szSquadName[256];
+			V_snprintf( szSquadName, sizeof( szSquadName ), "CombineSquadAuto%d", g_pBigAINet->NearestNodeToPoint( GetAbsOrigin(), false ) );
+			m_SquadName = AllocPooledString( szSquadName );
+		}
+	}
+
 	BaseClass::Precache();
 }
 
