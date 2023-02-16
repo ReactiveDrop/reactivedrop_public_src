@@ -208,7 +208,7 @@ void CASW_Door::Spawn()
 	if ( m_flTotalSealTime <= 0 )
 		m_flTotalSealTime = 10.0f;
 
-	// set door strength and skin according to breakable or not:
+	// set door strength according to breakable or not:
 	switch ( m_iDoorType )
 	{
 	case ASWDT_NORMAL:
@@ -216,7 +216,6 @@ void CASW_Door::Spawn()
 			m_bBashable = true;
 			m_bShootable = true;
 			m_iDoorStrength = asw_door_normal_health_base.GetInt();
-			m_nSkin = 0;
 
 			break;
 		}
@@ -225,7 +224,6 @@ void CASW_Door::Spawn()
 			m_bBashable = true;
 			m_bShootable = true;
 			m_iDoorStrength = asw_door_reinforced_health_base.GetInt();
-			m_nSkin = 1;
 
 			break;
 		}
@@ -234,7 +232,6 @@ void CASW_Door::Spawn()
 			m_bBashable = false;
 			m_bShootable = false;
 			m_iDoorStrength = 0;
-			m_nSkin = 2;
 
 			break;
 		}
@@ -243,7 +240,6 @@ void CASW_Door::Spawn()
 			m_bBashable = true;
 			m_bShootable = true;
 			m_iDoorStrength = m_iCustomMaxHealth <= 0 ? asw_door_normal_health_base.GetInt() : m_iCustomMaxHealth;
-			m_nSkin = 0;
 
 			break;
 		}
