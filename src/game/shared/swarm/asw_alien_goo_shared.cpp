@@ -9,7 +9,6 @@
 	#include "asw_util_shared.h"
 #else
 	#include "EntityFlame.h"
-	#include "asw_grub.h"
 	#include "asw_simple_grub.h"
 	#include "asw_marine.h"
 	#include "asw_marine_resource.h"

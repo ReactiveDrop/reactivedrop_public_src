@@ -1054,7 +1054,6 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClCompile Include="swarm\asw_grenade_freeze.cpp" />
     <ClCompile Include="swarm\asw_grenade_prifle.cpp" />
     <ClCompile Include="swarm\asw_grenade_vindicator.cpp" />
-    <ClCompile Include="swarm\asw_grub.cpp" />
     <ClCompile Include="swarm\asw_hack.cpp" />
     <ClCompile Include="swarm\asw_hack_computer.cpp" />
     <ClCompile Include="swarm\asw_hack_wire_tile.cpp" />
@@ -1947,7 +1946,6 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="swarm\asw_grenade_freeze.h" />
     <ClInclude Include="swarm\asw_grenade_prifle.h" />
     <ClInclude Include="swarm\asw_grenade_vindicator.h" />
-    <ClInclude Include="swarm\asw_grub.h" />
     <ClInclude Include="swarm\asw_hack.h" />
     <ClInclude Include="swarm\asw_hack_computer.h" />
     <ClInclude Include="swarm\asw_hack_wire_tile.h" />

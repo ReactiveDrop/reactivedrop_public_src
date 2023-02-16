@@ -489,6 +489,7 @@ asw_pickup_50calmg : "50cal Machine Gun"
 
 @NPCClass base(BaseCombine) studio("models/Combine_Soldier.mdl") = npc_combine_shotgun : "Combine Soldier (Shotgun)"
 [
+	skin(integer) : "Skin" : 1 : "Some models have multiple versions of their textures, called skins. Set this to a number other than 0 to use that skin instead of the default."
 ]
 
 @NPCClass base(BaseCombine) studio("models/Combine_Super_Soldier.mdl") = npc_combine_elite : "Combine Elite Soldier (AR2)"
