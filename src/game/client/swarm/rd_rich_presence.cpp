@@ -351,7 +351,11 @@ void RD_Rich_Presence::UpdatePresence()
 				}
 
 				static char szMissionName[128];
-				if ( wchar_t *pwszTranslatedMissionName = g_pLocalize->Find( STRING( pMission->MissionTitle ) ) )
+				if ( pMission->Builtin )
+				{
+					V_snprintf( szMissionName, sizeof( szMissionName ), "#official_mission_%s", pMission->BaseName );
+				}
+				else if ( wchar_t *pwszTranslatedMissionName = g_pLocalize->Find( STRING( pMission->MissionTitle ) ) )
 				{
 					V_UnicodeToUTF8( pwszTranslatedMissionName, szMissionName, sizeof( szMissionName ) );
 				}
@@ -383,7 +387,11 @@ void RD_Rich_Presence::UpdatePresence()
 					{
 						const char *pszDisplayName = ReactiveDropChallenges::DisplayName( rd_challenge.GetString() );
 						static char szChallengeName[128];
-						if ( wchar_t *pwszTranslatedChallengeName = g_pLocalize->Find( pszDisplayName ) )
+						if ( ReactiveDropChallenges::IsOfficial( rd_challenge.GetString() ) )
+						{
+							V_snprintf( szChallengeName, sizeof( szChallengeName ), "#official_challenge_%s", rd_challenge.GetString() );
+						}
+						else if ( wchar_t *pwszTranslatedChallengeName = g_pLocalize->Find( pszDisplayName ) )
 						{
 							V_UnicodeToUTF8( pwszTranslatedChallengeName, szChallengeName, sizeof( szChallengeName ) );
 						}
