@@ -2129,7 +2129,7 @@ void CASW_Buzzer::Spawn(void)
 
 	m_flNextBurstTime	= gpGlobals->curtime;
 
-	CapabilitiesAdd( bits_CAP_INNATE_MELEE_ATTACK1 | bits_CAP_MOVE_FLY | bits_CAP_SQUAD );
+	CapabilitiesAdd( bits_CAP_INNATE_MELEE_ATTACK1 | bits_CAP_MOVE_FLY );
 
 	m_flNextEngineSoundTime		= gpGlobals->curtime;
 	m_flWaterSuspendTime		= gpGlobals->curtime;

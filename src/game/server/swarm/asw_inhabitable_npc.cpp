@@ -164,6 +164,11 @@ void CASW_Inhabitable_NPC::Spawn()
 {
 	BaseClass::Spawn();
 
+	if ( m_SquadName != NULL_STRING )
+	{
+		CapabilitiesAdd( bits_CAP_SQUAD );
+	}
+
 	SetModelScale( m_fSizeScale );
 	SetHealthByDifficultyLevel();
 }

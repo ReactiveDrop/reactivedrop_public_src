@@ -232,11 +232,6 @@ void CASW_Alien::Spawn()
 	m_vecLastPushAwayOrigin = GetAbsOrigin();
 	m_fFancyDeathChance = RandomFloat();
 
-	if ( m_SquadName != NULL_STRING )
-	{
-		CapabilitiesAdd( bits_CAP_SQUAD );
-	}
-
 	if ( HasSpawnFlags( SF_ANTLION_USE_GROUNDCHECKS ) == false )
 	{
 		CapabilitiesAdd( bits_CAP_SKIP_NAV_GROUND_CHECK );
