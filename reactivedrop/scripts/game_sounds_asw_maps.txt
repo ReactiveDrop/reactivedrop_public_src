@@ -1,0 +1,1733 @@
+
+	
+"plats.elevator_large_stop1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.000"
+	
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"	"@ambient\animation\landingbay_elevator_stop.wav"
+}
+
+"plats.elevator_large_start1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.000"
+	
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"	"@ambient\animation\elevator_large_start1.wav"
+}
+
+"plats.elevator_move_loop1"
+{
+	"channel"	"CHAN_ITEM"
+	"volume"	"0.4"
+	
+
+	"soundlevel"	"SNDLVL_85dB"
+
+	"wave"	"@ambient\animation\elevator_move_loop1.wav"
+}
+
+"ambient.levels.canals.toxic_slime_loop1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"null.wav"
+}
+
+"ambient.wind.coldwind2_loop"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"null.wav"
+}
+
+"doors.handle_pushbar_open2"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"doors/handle_pushbar_open2.wav"
+}
+
+"swarm.swarmdoors.door1close"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/swarmdoors/door1close.wav"
+}
+
+"ambient.energy.electric_shoot"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/energy/electric_shoot.wav"
+}
+
+"swarm.swarmambient.hearing_the_outside_in"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/swarmambient/hearing_the_outside_in.wav"
+}
+
+"ambient.atmosphere.ambience2"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/atmosphere/ambience2.wav"
+}
+
+"ambient.atmosphere.ambience5"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/atmosphere/ambience5.wav"
+}
+
+"ambient.atmosphere.area2"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/atmosphere/area2.wav"
+}
+
+"ambient.atmosphere.cargo_hold1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/atmosphere/cargo_hold1.wav"
+}
+
+"swarm.swarmambient.electrichum"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/swarmambient/electrichum.wav"
+}
+
+"d1_trainstation.toiletflush"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.900000"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_80dB"
+
+	"wave"			"ambient/machines/usetoilet_flush1.wav"
+}
+
+"swarm.swarmambient.swarmswitch1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient\map\swarmswitch1.wav"
+}
+
+"swarm.gameeffects.elevatorshaftfiresound"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/gameeffects/elevatorshaftfiresound.wav"
+}
+
+"swarm.swarmambient.bloodhoundtakeoff"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.0"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_100dB"
+
+	"wave"	"swarm/swarmambient/bloodhoundtakeoff.wav"
+}
+
+"swarm.swarmambient.steamreleasesound"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/swarmambient/steamreleasesound.wav"
+}
+
+"swarm.gameeffects.bigelevatoractivate"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/gameeffects/bigelevatoractivate.wav"
+}
+
+"plats.elevator_start1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"plats/elevator_start1.wav"
+}
+
+"swarm.swarmambient.bigelevatormoveloop"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/swarmambient/bigelevatormoveloop.wav"
+}
+
+"swarm.swarmambient.bigelevatorstop"
+{
+	"channel"	"CHAN_ITEM"
+	
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"	"@ambient\animation\landingbay_elevator_stop.wav"
+}
+
+"swarm.swarmambient.smallgasgeneratoron"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/swarmambient/smallgasgeneratoron.wav"
+}
+
+"swarm.gameeffects.ropewhipping"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/gameeffects/ropewhipping.wav"
+}
+
+"fans.fan4"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient\map\fan4.wav"
+}
+
+"fans.large_fan_loop"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"scapes/3d/large_fan_loop.wav"
+}
+
+"fans.giant_fan"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.7"
+	"soundlevel"		"SNDLVL_75db"
+	"wave"			"ambient/machines/fan4.wav"
+}
+
+"World.LargeFanStart"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"		"SNDLVL_100dB"
+	"volume"		"1.0"
+	"wave"		"world/P2_large_fan_loop_Start.wav"
+}
+
+"World.LargeFanStop"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"		"SNDLVL_100dB"
+	"volume"		"1.0"
+	"wave"		"world/P2_large_fan_loop_Stop_01.wav"
+}
+
+"World.LargeFanLoop"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"		"SNDLVL_100dB"
+	"volume"		"1.0"
+	"wave"		"world/P2_large_fan_loop_01.wav"
+}
+
+"ambient.machines.wall_crash1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/machines/wall_crash1.wav"
+}
+
+"swarm.swarmambient.wallcrashmetal"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/swarmambient/wallcrashmetal.wav"
+}
+
+"doors.func_door.heavy_metal_stop1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"doors/func_door/heavy_metal_stop1.wav"
+}
+
+"swarm.swarmambient.generator1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/swarmambient/generator1.wav"
+}
+
+"swarm.swarmambient.generator2"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/swarmambient/generator2.wav"
+}
+
+"fans.fan1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/map/fan1.wav"
+}
+
+
+
+"ambient.machines.electric_machine"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/machines/electric_machine.wav"
+}
+
+"swarm.gameeffects.pistonmove"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/gameeffects/pistonmove.wav"
+}
+
+
+"swarm.swarmambient.dronedig_out"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/swarmambient/dronedig_out.wav"
+}
+
+"ambient.materials.metal_groan"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/materials/metal_groan.wav"
+}
+
+"ambient.materials.metal_stress1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/materials/metal_stress1.wav"
+}
+
+"ambient.gas.steam2"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/gas/steam2.wav"
+}
+
+"plats.rackmove1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"plats/rackmove1.wav"
+}
+
+"ambient.machines.wall_move2"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/machines/wall_move2.wav"
+}
+
+"ambient.machines.thumper_amb"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/machines/thumper_amb.wav"
+}
+
+"ambient.machines.thumper_startup1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/machines/thumper_startup1.wav"
+}
+
+"ambient.machines.machine6"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/machines/machine6.wav"
+}
+
+"swarm.swarmambient.bigelevatoractivate"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/swarmambient/bigelevatoractivate.wav"
+}
+
+"ambient.atmosphere.corridor2"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/atmosphere/corridor2.wav"
+}
+
+"swarm.swarmambient.projectorloop"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/swarmambient/projectorloop.wav"
+}
+
+"swarm.swarmambient.alienscum"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/swarmambient/alienscum.wav"
+}
+
+"swarm.swarmambient.almostdead"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/swarmambient/almostdead.wav"
+}
+
+"ambient.gas.steam1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.5"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient\map\steam1.wav"
+}
+
+"ambient.atmosphere.corridor"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/atmosphere/corridor.wav"
+}
+
+"plats.elevmove2"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"null.wav"
+}
+
+"ambient.machines.click1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"null.wav"
+}
+
+"npc.turret_wall.turret_stop1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"null.wav"
+}
+
+"ambient.atmosphere.city_beacon_loop2"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient\map\city_beacon_loop2.wav"
+}
+
+"swarm.drone.dronealert2"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/drone/dronealert2.wav"
+}
+
+"swarm.drone.dronealert1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/drone/dronealert1.wav"
+}
+
+"swarm.swarmdoors.door2open"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/swarmdoors/door2open.wav"
+}
+
+"swarm.swarmambient.swarmelevatorbell"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient\map\swarmelevatorbell.wav"
+}
+
+
+"swarm.swarmambient.smallgasgeneratoroff"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/swarmambient/smallgasgeneratoroff.wav"
+}
+
+"buttons.bell1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"buttons/bell1.wav"
+}
+
+"swarm.swarmambient.workingmetal"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/swarmambient/workingmetal.wav"
+}
+
+"impact.metal.metal_crash1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"impact/metal/metal_crash1.wav"
+}
+
+"swarm.swarmambient.serverreboot"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/swarmambient/serverreboot.wav"
+}
+
+"ambient.materials.metal_rattle2"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/materials/metal_rattle2.wav"
+}
+
+"ambient.atmosphere.tunnel1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/atmosphere/tunnel1.wav"
+}
+
+"ambient.atmosphere.cave_hit3"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/atmosphere/cave_hit3.wav"
+}
+
+"swarm.swarmambient.waterdrainstart"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/swarmambient/waterdrainstart.wav"
+}
+
+"swarm.swarmambient.waterdrainstop"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/swarmambient/waterdrainstop.wav"
+}
+
+"ambient.levels.citadel.citadel_drone_loop6"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/levels/citadel/citadel_drone_loop6.wav"
+}
+
+"swarm.swarmambient.swarmmetalscreech"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/swarmambient/swarmmetalscreech.wav"
+}
+
+"ambient.machines.train_wheels_loop1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/machines/train_wheels_loop1.wav"
+}
+
+"ambient.alarms.klaxon1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/alarms/klaxon1.wav"
+}
+
+"swarm.swarmambient.turbineloop"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"null.wav"
+}
+
+"ambient.water.storm1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/water/storm1.wav"
+}
+
+
+
+"impact.physics.metal.hit_hard1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"impact/physics/metal/hit_hard1.wav"
+}
+
+"vehicles.digger_stopengine1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"vehicles/digger_stopengine1.wav"
+}
+
+"hl1.ambience.steamburst1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"hl1/ambience/steamburst1.wav"
+}
+
+"ambient.explosions.exp1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/explosions/exp1.wav"
+}
+
+"ambient.water.corridor_water"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/water/corridor_water.wav"
+}
+
+"ambient.levels.canals.generator_ambience_loop1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/levels/canals/generator_ambience_loop1.wav"
+}
+
+"ambient.atmosphere.station_ambience_stereo_loop1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/atmosphere/station_ambience_stereo_loop1.wav"
+}
+
+"ambient.machines.engine1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/machines/engine1.wav"
+}
+
+"plats.tram_move"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"plats/tram_move.wav"
+}
+
+"doors.func_door.drawbridge_move1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"doors/func_door/drawbridge_move1.wav"
+}
+
+"ambient.levels.canals.floodgate_move_long1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/levels/canals/floodgate_move_long1.wav"
+}
+
+"swarm.swarmambient.swarm_chainlinkmove"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1"
+	
+	"soundlevel"	"SNDLVL_80dB"
+
+	"wave"	"ambient\animation\chainlinkmove.wav"
+}
+
+"doors.door_metal_large_chamber_open1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"null.wav"
+}
+
+"doors.door_metal_large_chamber_open2"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"null.wav"
+}
+
+"ambient.water.distant_drip2"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/water/distant_drip2.wav"
+}
+
+"ambient.machines.floodgate_stop1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/machines/floodgate_stop1.wav"
+}
+
+"swarm.swarmdoors.bulkheadstartandloop"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"null.wav"
+}
+
+"swarm.swarmdoors.bulkheadstop"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"null.wav"
+}
+
+"swarm.gameeffects.bigelevatormoveloop"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/gameeffects/bigelevatormoveloop.wav"
+}
+
+"swarm.gameeffects.bigelevatorstop"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/gameeffects/bigelevatorstop.wav"
+}
+
+"ambient.atmosphere.underground_hall_loop1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/atmosphere/underground_hall_loop1.wav"
+}
+
+"ambient.atmosphere.indoor2"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/atmosphere/indoor2.wav"
+}
+
+"ambient.atmosphere.cargo_hold2"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/atmosphere/cargo_hold2.wav"
+}
+
+"ambient.atmosphere.engine_room"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/atmosphere/engine_room.wav"
+}
+
+"ambient.atmosphere.cave_outdoor1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/atmosphere/cave_outdoor1.wav"
+}
+
+"swarm.swarmambient.minecrumble1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/swarmambient/minecrumble1.wav"
+}
+
+"swarm.swarmambient.minecrumble2"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/swarmambient/minecrumble2.wav"
+}
+
+"ambient.atmosphere.cave_hit2"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/atmosphere/cave_hit2.wav"
+}
+
+"ambient.atmosphere.cave_hit5"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/atmosphere/cave_hit5.wav"
+}
+
+"ambient.atmosphere.hole_hit1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/atmosphere/hole_hit1.wav"
+}
+
+"ambient.atmosphere.hole_hit5"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/atmosphere/hole_hit5.wav"
+}
+
+"swarm.swarmambient.rocketmoveloop"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"null.wav"
+}
+
+"swarm.gameeffects.swarmalarm"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/gameeffects/swarmalarm.wav"
+}
+
+"swarm.gameeffects.rocketmoverblocksound"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/gameeffects/rocketmoverblocksound.wav"
+}
+
+"swarm.swarmambient.powersubstationon"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"null.wav"
+}
+
+"swarm.swarmambient.caverns"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/swarmambient/caverns.wav"
+}
+
+"ambient.levels.canals.tunnel_wind_loop1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"null.wav"
+}
+
+"swarm.swarmambient.pulsing_ambience"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/swarmambient/pulsing_ambience.wav"
+}
+
+"swarm.swarmambient.queen_ambience"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/swarmambient/queen_ambience.wav"
+}
+
+"vehicles.actaeonflyby"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"vehicles/actaeonflyby.wav"
+}
+
+"vehicles.bloodhoundflyby2"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"vehicles/bloodhoundflyby2.wav"
+}
+
+"ambient.explosions.citadel_end_explosion1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/explosions/citadel_end_explosion1.wav"
+}
+
+"vehicles.bloodhoundflyby1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"vehicles/bloodhoundflyby1.wav"
+}
+
+"swarm.swarmambient.bulkheaddoorsound"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/swarmambient/bulkheaddoorsound.wav"
+}
+
+"swarm.swarmambient.introcountdown"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/swarmambient/introcountdown.wav"
+}
+
+"ambient.levels.citadel.citadel_drone_loop2"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/levels/citadel/citadel_drone_loop2.wav"
+}
+
+"swarm.swarmambient.cargovesselmovesound"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/swarmambient/cargovesselmovesound.wav"
+}
+
+"swarm.swarmambient.chainlink1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/swarmambient/chainlink1.wav"
+}
+
+"swarm.swarmambient.chainlink2"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/swarmambient/chainlink2.wav"
+}
+
+"swarm.gameeffects.muffledexplosion3"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/gameeffects/muffledexplosion3.wav"
+}
+
+"swarm.gameeffects.muffledexplosion1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/gameeffects/muffledexplosion1.wav"
+}
+
+"ambient.atmosphere.ambience6"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/atmosphere/ambience6.wav"
+}
+
+"swarm.gameeffects.steamfadeout"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"swarm/gameeffects/steamfadeout.wav"
+}
+
+"vo.npc.male01.gethellout"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"vo/npc/male01/gethellout.wav"
+}
+
+"ambient.materials.roust_crash1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.90, 1.000"
+	"pitch"	"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"	"ambient/materials/roust_crash1.wav"
+}
+
+
+
+"asw.landingbay02.platform.roll.01"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"soundlevel"  		"SNDLVL_90dB"
+	"pitch"			"PITCH_NORM"
+	"wave"			"ambient/animation/landingbay_platform_roll_01.wav"
+}
+
+"asw.landingbay02.platform.roll.02"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"soundlevel"  		"SNDLVL_90dB"
+	"pitch"			"PITCH_NORM"
+	"wave"			"ambient/animation/landingbay_platform_roll_02.wav"
+}
+
+"asw.landingbay02.platform.roll.03"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"soundlevel"  		"SNDLVL_90dB"
+	"pitch"			"PITCH_NORM"
+	"wave"			"ambient/animation/landingbay_platform_roll_03.wav"
+}
+
+
+"asw.landingbay02.platform.extend"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"soundlevel"  		"SNDLVL_90dB"
+	"pitch"			"PITCH_NORM"
+	"wave"			"ambient/animation/landingbay_elev_platform_extend.wav"
+}
+
+"asw.landingbay02.elevator.stop"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"soundlevel"  		"SNDLVL_NONE"
+	"pitch"			"PITCH_NORM"
+	"wave"			"ambient/animation/landingbay_elevator_stop.wav"
+}
+
+"asw.deima.foldingbridge.open"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"soundlevel"  		"SNDLVL_90db"
+	"pitch"			"PITCH_NORM"
+	"wave"			"ambient/animation/deima_folding_bridge_open.wav"
+}
+
+"asw.slow.heavydoor.open"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"soundlevel"  		"SNDLVL_90db"
+	"pitch"			"PITCH_NORM"
+	"wave"			"ambient/animation/slow_heavy_door.wav"
+}
+
+"asw.timor.drawbridge"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"soundlevel"  		"SNDLVL_100dB"
+	"pitch"			"PITCH_NORM"
+	"wave"			")ambient/animation/TImor_Bridge_Large.wav"
+}
+
+"asw.timor.boulder"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"soundlevel"  	"SNDLVL_NONE"
+	"pitch"			"60, 80"
+	"rndwave"
+	{
+		"wave"			"@explosions\timor\boulder01.wav"
+		"wave"			"@explosions\timor\boulder02.wav"
+		"wave"			"@explosions\timor\boulder03.wav"
+	}
+}
+
+"asw.timor.boulderExplode"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"soundlevel"  	"SNDLVL_90dB"
+	"pitch"			"100, 150"
+	"rndwave"
+	{
+		"wave"			")explosions\timor\boulder01.wav"
+		"wave"			")explosions\timor\boulder02.wav"
+		"wave"			")explosions\timor\boulder03.wav"
+	}
+}
+
+"asw.timor.explosion"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"soundlevel"  	"SNDLVL_NONE"
+	"pitch"			"60, 75"
+	"rndwave"
+	{
+		"wave"			"@explosions\timor\cave01.wav"
+		"wave"			"@explosions\timor\cave02.wav"
+		"wave"			"@explosions\timor\cave03.wav"
+	}
+}
+
+"asw.timor.explosionLFE"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"soundlevel"  	"SNDLVL_NONE"
+	"pitch"			"100, 125"
+	"rndwave"
+	{
+		"wave"			"#explosions\timor\cave_LF01.wav"
+		"wave"			"#explosions\timor\cave_LF02.wav"
+		"wave"			"#explosions\timor\cave_LF03.wav"
+	}
+}
+
+"asw.timor.platform"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"soundlevel"  		"SNDLVL_100dB"
+	"pitch"			"PITCH_NORM"
+	"wave"			"ambient/animation/Timor_plat_fall.wav"
+}
+
+"asw.reactor.start"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"soundlevel"  		"SNDLVL_100dB"
+	"pitch"			"PITCH_NORM"
+	"wave"			"@ambient/animation/Reactor_startup.wav"
+}
+
+"asw.shieldbug.reveal"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.9"
+	"soundlevel"  	"SNDLVL_140dB"
+	"pitch"			"100"
+	"wave"			")explosions\shield_reveal.wav"
+}
+
+"asw.shieldbug.impact"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"soundlevel"  	"SNDLVL_100dB"
+	"pitch"			"90, 110"
+	"wave"			"explosions\shield_impact.wav"
+}
+
+"ASW_T75.DeimaBridge"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_120dB"
+	"volume"		"1.0"
+	"pitch"			"70"
+	"rndwave"
+	{
+		"wave"				"^explosions\T7501.wav"
+		"wave"				"^explosions\T7502.wav"
+	}
+}
+
+"asw.sewers.meatgrinder"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.5"
+	"soundlevel"  	"SNDLVL_90dB"
+	"pitch"			"90, 100"
+	"wave"			"@ambient\animation\meat_grinder.wav"
+}
+
+"swarm.swarmambient.turbinestop"
+{
+	"channel"		"CHAN_STATIC"
+	"soundlevel"	"SNDLVL_90dB"
+	"volume"		"0.6"
+	"wave"			"@ambient\animation\meat_grinder_stop.wav"
+}
+
+"ASW.WarheadExplosion" 
+{
+	"channel"		"CHAN_STATIC"
+	"soundlevel"	"SNDLVL_NONE"
+	"volume"		"1.0"
+	"wave"			"#explosions\timor\warhead.wav"
+}
+
+"ASW.WarheadExplosionLF" 
+{
+	"channel"		"CHAN_STATIC"
+	"soundlevel"	"SNDLVL_NONE"
+	"volume"		"1.0"
+	"wave"			"#explosions\timor\warheadLF.wav"
+}
+
+"ambient.alarms.klaxon1_nopitch"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.9"
+	"pitch"			"100"
+
+	"soundlevel"		"SNDLVL_90dB"
+
+	"wave"			"*#ambient\alarms\klaxon1.wav"
+}
+
+"ambient.alarms.door_alarm"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.9"
+	"pitch"			"100"
+
+	"soundlevel"		"SNDLVL_90dB"
+
+	"wave"			"*#ambient\alarm\dooralarm.wav"
+}
+
+"tarnor.train_approaching"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"			"*#vo/oasis_colony_command/train_approaching.wav"
+}
+
+"tarnor.train_departing1"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"			"*#vo/oasis_colony_command/train_departing1.wav"
+}
+
+"tarnor.train_ending"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"			"*#vo/oasis_colony_command/train_ending.wav"
+}

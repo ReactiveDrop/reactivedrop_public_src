@@ -1,8 +1,8 @@
 versioninfo
 {
 	"editorversion" "400"
-	"editorbuild" "5032"
-	"mapversion" "18"
+	"editorbuild" "7397"
+	"mapversion" "19"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -20,7 +20,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "18"
+	"mapversion" "19"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -934,7 +934,7 @@ entity
 	"id" "15"
 	"classname" "ambient_generic"
 	"health" "10"
-	"message" "ambient/computer/alarm.wav"
+	"message" "ASWComputer.alarm"
 	"pitch" "100"
 	"pitchstart" "100"
 	"radius" "3250"
@@ -1100,7 +1100,7 @@ entity
 	"id" "1151"
 	"classname" "ambient_generic"
 	"health" "10"
-	"message" "ambient/computer/alarm.wav"
+	"message" "ASWComputer.alarm"
 	"pitch" "100"
 	"pitchstart" "100"
 	"radius" "3250"
