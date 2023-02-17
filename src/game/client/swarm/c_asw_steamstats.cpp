@@ -255,7 +255,7 @@ bool IsWorkshopCampaign()
 		return false;
 
 	CASW_Campaign_Save *pCampaign = ASWGameRules()->GetCampaignSave();
-	if ( pCampaign )
+	if ( pCampaign && ASWGameRules()->IsCampaignGame() )
 	{
 		const char *szCampaignName = pCampaign->GetCampaignName();
 

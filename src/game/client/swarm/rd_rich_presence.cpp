@@ -87,6 +87,8 @@ static void handleDiscordJoinRequest( const DiscordUser *pRequest )
 
 #endif
 
+bool IsOfficialCampaign();
+
 bool RD_Rich_Presence::Init()
 {
 #ifdef DISCORD_RICH_PRESENCE_ENABLED
@@ -351,7 +353,7 @@ void RD_Rich_Presence::UpdatePresence()
 				}
 
 				static char szMissionName[128];
-				if ( pMission->Builtin )
+				if ( IsOfficialCampaign() )
 				{
 					V_snprintf( szMissionName, sizeof( szMissionName ), "#official_mission_%s", pMission->BaseName );
 				}
