@@ -6,6 +6,7 @@
 #include "gamerules.h"
 #include "in_buttons.h"
 #include "soundenvelope.h"
+#include "particle_parse.h"
 
 #ifdef CLIENT_DLL
 #include "c_baseplayer.h"
@@ -45,26 +46,33 @@
 #define ASW_CHAINSAW_DISCHARGE_INTERVAL		0.1
 #define ASW_CHAINSAW_RANGE 30
 
-#define ASW_CHAINSAW_BEAM_SPRITE		"swarm/sprites/mlaserbeam.vmt"
-#define ASW_CHAINSAW_FLARE_SPRITE		"swarm/sprites/mlaserspark.vmt"
-
 extern ConVar sk_plr_dmg_asw_cs;
 extern int	g_sModelIndexSmoke;			// (in combatweapon.cpp) holds the index for the smoke cloud
 
 IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Weapon_Chainsaw, DT_ASW_Weapon_Chainsaw );
 
 BEGIN_NETWORK_TABLE( CASW_Weapon_Chainsaw, DT_ASW_Weapon_Chainsaw )
-END_NETWORK_TABLE()    
+#ifdef CLIENT_DLL
+	RecvPropInt( RECVINFO( m_fireState ) ),
+#else
+	SendPropInt( SENDINFO( m_fireState ), 2, SPROP_UNSIGNED ),
+#endif
+END_NETWORK_TABLE()
 
 #if defined( CLIENT_DLL )
 BEGIN_PREDICTION_DATA( CASW_Weapon_Chainsaw )
-	DEFINE_FIELD( m_fireState, FIELD_INTEGER ),
-	DEFINE_FIELD( m_flAmmoUseTime, FIELD_FLOAT ),
+	DEFINE_PRED_FIELD( m_fireState, FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
 	DEFINE_FIELD( m_flShakeTime, FIELD_FLOAT ),
 	DEFINE_FIELD( m_flStartFireTime, FIELD_FLOAT ),
 	DEFINE_FIELD( m_flDmgTime, FIELD_FLOAT ),
 	DEFINE_FIELD( m_flFireAnimTime, FIELD_FLOAT ),
 	DEFINE_FIELD( m_flLastHitTime, FIELD_FLOAT ),
+	DEFINE_PRED_FIELD( m_bShouldUpdateActivityClient, FIELD_BOOLEAN, FTYPEDESC_PRIVATE ),
+	DEFINE_PRED_FIELD( m_flPlaybackRate, FIELD_FLOAT, FTYPEDESC_OVERRIDE | FTYPEDESC_PRIVATE | FTYPEDESC_NOERRORCHECK ),
+	DEFINE_PRED_FIELD( m_flCycle, FIELD_FLOAT, FTYPEDESC_OVERRIDE | FTYPEDESC_PRIVATE | FTYPEDESC_NOERRORCHECK ),
+	DEFINE_PRED_FIELD( m_nSequence, FIELD_INTEGER, FTYPEDESC_OVERRIDE | FTYPEDESC_PRIVATE | FTYPEDESC_NOERRORCHECK ),
+	DEFINE_PRED_FIELD( m_nNewSequenceParity, FIELD_INTEGER, FTYPEDESC_OVERRIDE | FTYPEDESC_PRIVATE | FTYPEDESC_NOERRORCHECK ),
+	DEFINE_PRED_FIELD( m_nResetEventsParity, FIELD_INTEGER, FTYPEDESC_OVERRIDE | FTYPEDESC_PRIVATE | FTYPEDESC_NOERRORCHECK ),
 END_PREDICTION_DATA()
 #endif
 
@@ -74,13 +82,10 @@ PRECACHE_WEAPON_REGISTER( asw_weapon_chainsaw );
 #ifndef CLIENT_DLL
 BEGIN_DATADESC( CASW_Weapon_Chainsaw )
 	DEFINE_FIELD( m_fireState, FIELD_INTEGER ),
-	DEFINE_FIELD( m_flAmmoUseTime, FIELD_FLOAT ),
 	DEFINE_FIELD( m_flShakeTime, FIELD_FLOAT ),
 	DEFINE_FIELD( m_flStartFireTime, FIELD_FLOAT ),
 	DEFINE_FIELD( m_flDmgTime, FIELD_FLOAT ),
 	DEFINE_FIELD( m_flFireAnimTime, FIELD_FLOAT ),
-	DEFINE_FIELD( m_hBeam, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_hNoise, FIELD_EHANDLE ),
 END_DATADESC()
 #endif
 
@@ -99,6 +104,8 @@ CASW_Weapon_Chainsaw::CASW_Weapon_Chainsaw( void )
 	m_pChainsawAttackOffSound = NULL;
 #ifdef GAME_DLL
 	m_fLastForcedFireTime = 0;	// last time we forced an AI marine to push its fire button
+#else
+	m_bShouldUpdateActivityClient = false;
 #endif
 
 	m_fMaxRange1 = ASW_CHAINSAW_RANGE;
@@ -107,20 +114,7 @@ CASW_Weapon_Chainsaw::CASW_Weapon_Chainsaw( void )
 
 CASW_Weapon_Chainsaw::~CASW_Weapon_Chainsaw()
 {
-	if (m_fireState != FIRE_OFF)
-	{
-		EndAttack();
-	}
-	else
-	{
-		if (m_bPlayedIdleSound)
-		{
-			StopSound( "ASW_Chainsaw.Start" );
-			if ( CBaseEntity::IsAbsQueriesValid() )
-				EmitSound( "ASW_Chainsaw.Stop" );
-		}
-	}
-	StopChainsawSound();
+	StopChainsawSound( true );
 	StopAttackOffSound();
 }
 
@@ -129,16 +123,21 @@ CASW_Weapon_Chainsaw::~CASW_Weapon_Chainsaw()
 //-----------------------------------------------------------------------------
 void CASW_Weapon_Chainsaw::Precache( void )
 {
-    PrecacheScriptSound( "ASW_Chainsaw.Start" );
+	PrecacheScriptSound( "ASW_Chainsaw.Start" );
 	PrecacheScriptSound( "ASW_Chainsaw.Stop" );
 	PrecacheScriptSound( "ASW_Chainsaw.attackOn" );
 	PrecacheScriptSound( "ASW_Chainsaw.attackOff" );
 
-	PrecacheModel( ASW_CHAINSAW_BEAM_SPRITE );
-	PrecacheModel( ASW_CHAINSAW_FLARE_SPRITE );
 	PrecacheParticleSystem( "mining_laser_exhaust" );
 
 	BaseClass::Precache();
+}
+
+void CASW_Weapon_Chainsaw::Spawn( void )
+{
+	BaseClass::Spawn();
+
+	UseClientSideAnimation();
 }
 
 bool CASW_Weapon_Chainsaw::HasAmmo()
@@ -181,7 +180,7 @@ void CASW_Weapon_Chainsaw::PrimaryAttack( void )
 	// don't fire underwater
 	if ( pMarine->GetWaterLevel() == 3 )
 	{
-		if ( m_fireState != FIRE_OFF || m_hBeam )
+		if ( m_fireState != FIRE_OFF )
 		{
 			EndAttack();
 		}
@@ -225,24 +224,14 @@ void CASW_Weapon_Chainsaw::PrimaryAttack( void )
 	{
 		case FIRE_OFF:
 		{
-			//if ( !HasAmmo() )
-			//{
-				//m_flNextPrimaryAttack = gpGlobals->curtime + 0.25;
-				//m_flNextSecondaryAttack = gpGlobals->curtime + 0.25;
-				//WeaponSound( EMPTY );
-				//return;
-			//}
-
-			m_flAmmoUseTime = gpGlobals->curtime;// start using ammo ASAP.
-
 			SendWeaponAnim( ACT_VM_PRIMARYATTACK );
-						
+
 			m_flShakeTime = 0;
 			m_flStartFireTime = gpGlobals->curtime;
 
 			SetWeaponIdleTime( gpGlobals->curtime + 0.1 );
 
-			m_flDmgTime = gpGlobals->curtime + ASW_CHAINSAW_PULSE_INTERVAL;			
+			m_flDmgTime = gpGlobals->curtime + ASW_CHAINSAW_PULSE_INTERVAL;
 			SetFiringState(FIRE_STARTUP);
 		}
 		break;
@@ -256,8 +245,6 @@ void CASW_Weapon_Chainsaw::PrimaryAttack( void )
 		
 			if ( gpGlobals->curtime >= ( m_flStartFireTime + ASW_CHAINSAW_CHARGE_UP_TIME ) )
 			{
-                //EmitSound( "ASW_Chainsaw.AttackLoop" );
-				
 				SetFiringState(FIRE_CHARGE);
 			}
 
@@ -354,11 +341,6 @@ void CASW_Weapon_Chainsaw::Fire( const Vector &vecOrigSrc, const Vector &vecDir 
 				pEntity->DispatchTraceAttack( info, vecDir, &tr );
 				ApplyMultiDamage();
 			}
-
-			// radius damage a little more potent in multiplayer.
-#ifndef CLIENT_DLL
-			//RadiusDamage( CTakeDamageInfo( this, pMarine, sk_plr_dmg_asw_ml.GetFloat() * g_pGameRules->GetDamageMultiplier() / 4, DMG_ENERGYBEAM | DMG_BLAST | DMG_ALWAYSGIB ), tr.endpos, 128, CLASS_NONE, NULL );
-#endif		
 		}
 	}
 
@@ -377,32 +359,6 @@ void CASW_Weapon_Chainsaw::Fire( const Vector &vecOrigSrc, const Vector &vecDir 
 
 			if ( !pMarine->IsAlive() )
 				return;
-
-			// uses 5 ammo/second
-			if ( gpGlobals->curtime >= m_flAmmoUseTime )
-			{
-				// chainsaw no longer uses ammo
-
-				m_flAmmoUseTime = gpGlobals->curtime + 0.2;
-
-				/*
-				// decrement ammo
-				//m_iClip1 -= 1;	
-
-				#ifdef GAME_DLL
-				CASW_Marine *pMarine = GetMarine();
-				if (pMarine && m_iClip1 <= 0 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0 )
-				{
-				// check he doesn't have ammo in an ammo bay
-				CASW_Weapon_Ammo_Bag* pAmmoBag = dynamic_cast<CASW_Weapon_Ammo_Bag*>(pMarine->GetASWWeapon(0));
-				if (!pAmmoBag)
-				pAmmoBag = dynamic_cast<CASW_Weapon_Ammo_Bag*>(pMarine->GetASWWeapon(1));
-				if (!pAmmoBag || !pAmmoBag->CanGiveAmmoToWeapon(this))
-				pMarine->GetMarineSpeech()->Chatter(CHATTER_NO_AMMO);
-				}
-				#endif
-				*/
-			}
 
 			while ( m_flDmgTime + ASW_CHAINSAW_DISCHARGE_INTERVAL < gpGlobals->curtime )
 				m_flDmgTime += ASW_CHAINSAW_DISCHARGE_INTERVAL;
@@ -441,111 +397,15 @@ void CASW_Weapon_Chainsaw::Fire( const Vector &vecOrigSrc, const Vector &vecDir 
 
 void CASW_Weapon_Chainsaw::UpdateEffect( const Vector &startPoint, const Vector &endPoint )
 {
-	//if ( !m_hBeam )
-	//{
-		//CreateEffect();
-	//}
-
-	//if ( m_hBeam )
-	//{
-		//m_hBeam->SetStartPos( endPoint );
-	//}
-
-	CASW_Marine* pOwner = GetMarine();
-	
-	if (!pOwner)
-		return;
-
-	// make sparks come out at end point
-	Vector vecNormal = startPoint - endPoint;
-	vecNormal.NormalizeInPlace();
-#ifndef CLIENT_DLL
-	CEffectData data;
-	data.m_vOrigin = endPoint;	
-	data.m_vNormal = vecNormal;
-	CPASFilter filter( data.m_vOrigin );
-	filter.SetIgnorePredictionCull(true);
-	
-	if (gpGlobals->maxClients > 1 && pOwner->IsInhabited() && pOwner->GetCommander())
-	{
-		// multiplayer game, where this marine is currently being controlled by a client, who will spawn his own effect
-		// so just make the beam effect for all other clients		
-		filter.RemoveRecipient(pOwner->GetCommander());
-	}
-	
-	//DispatchEffect( filter, 0.0, "ASWWelderSparks", data );
-#else
-	//FX_Sparks( endPoint, 1, 2, vecNormal, 5, 32, 160 );
-#endif
-
-	if ( m_hNoise )
-	{
-		m_hNoise->SetStartPos( endPoint );
-	}
-}
-
-void CASW_Weapon_Chainsaw::CreateEffect( void )
-{
-#ifndef CLIENT_DLL    
-	CASW_Marine *pMarine = GetMarine();
-	if ( !pMarine )
-	{
-		return;
-	}
-
-	DestroyEffect();
-
-	m_hBeam = CBeam::BeamCreate( ASW_CHAINSAW_BEAM_SPRITE, 1.75 );
-	m_hBeam->PointEntInit( GetAbsOrigin(), this );
-	m_hBeam->SetBeamFlags( FBEAM_SINENOISE );
-	m_hBeam->SetEndAttachment( 1 );
-	m_hBeam->AddSpawnFlags( SF_BEAM_TEMPORARY );	// Flag these to be destroyed on save/restore or level transition
-	m_hBeam->SetOwnerEntity( pMarine );
-	m_hBeam->SetScrollRate( 10 );
-	m_hBeam->SetBrightness( 200 );
-	m_hBeam->SetColor( 255, 255, 255 );
-	m_hBeam->SetNoise( 0.025 );
-
-	m_hNoise = CBeam::BeamCreate( ASW_CHAINSAW_BEAM_SPRITE, 2.5 );
-	m_hNoise->PointEntInit( GetAbsOrigin(), this );
-	m_hNoise->SetEndAttachment( 1 );
-	m_hNoise->AddSpawnFlags( SF_BEAM_TEMPORARY );
-	m_hNoise->SetOwnerEntity( pMarine );
-	m_hNoise->SetScrollRate( 25 );
-	m_hNoise->SetBrightness( 200 );
-	m_hNoise->SetColor( 255, 255, 255 );
-	m_hNoise->SetNoise( 0.8 );
-#endif    
-}
-
-
-void CASW_Weapon_Chainsaw::DestroyEffect( void )
-{
-#ifndef CLIENT_DLL    
-	if ( m_hBeam )
-	{
-		UTIL_Remove( m_hBeam );
-		m_hBeam = NULL;
-	}
-	if ( m_hNoise )
-	{
-		UTIL_Remove( m_hNoise );
-		m_hNoise = NULL;
-	}
-#endif
 }
 
 void CASW_Weapon_Chainsaw::EndAttack( void )
 {
-	
-	
 	if ( m_fireState != FIRE_OFF )
 	{
 		StartAttackOffSound();
 
-#ifdef CLIENT_DLL
-		//DispatchParticleEffect( "mining_laser_exhaust", PATTACH_POINT_FOLLOW, this, "eject1" ); // Orange. This particle provides assert, disable it.
-#endif
+		DispatchParticleEffect( "mining_laser_exhaust", PATTACH_POINT_FOLLOW, this, "eject" );
 	}
 
 	StopChainsawSound();
@@ -557,8 +417,6 @@ void CASW_Weapon_Chainsaw::EndAttack( void )
 	SetFiringState(FIRE_OFF);
 
 	ClearIsFiring();
-
-	DestroyEffect();
 }
 
 void CASW_Weapon_Chainsaw::Drop( const Vector &vecVelocity )
@@ -595,50 +453,23 @@ void CASW_Weapon_Chainsaw::WeaponIdle( void )
 {
 	if ( !HasWeaponIdleTimeElapsed() )
 		return;
-	
-	//Msg("%f CASW_Weapon_Chainsaw::WeaponIdle\n", gpGlobals->curtime);
 
 	float flIdleTime;
 	if ( m_fireState != FIRE_OFF )
 	{
-		//Msg("  ending attack\n", gpGlobals->curtime);
 		EndAttack();
 		flIdleTime = gpGlobals->curtime + 1.4f;
 	}
 	else
 	{
-		//Msg("  idle looping\n", gpGlobals->curtime);
-		//EmitSound( "ASW_Chainsaw.IdleLoop" );
 		flIdleTime = gpGlobals->curtime + 1.7f;
 	}
-	
-	//int iAnim;
-
-	//float flRand = random->RandomFloat( 0,1 );
-	
-	//if ( flRand <= 0.5 )
-	//{
-		//iAnim = ACT_VM_IDLE;
-		//flIdleTime = gpGlobals->curtime + 1.4f;
-	//}
-	//else 
-	//{
-		//iAnim = ACT_VM_FIDGET;
-		//flIdleTime = gpGlobals->curtime + 3.0;
-	//}
-
-	//SendWeaponAnim( iAnim );
 
 	SetWeaponIdleTime( flIdleTime );
 }
 
-void CASW_Weapon_Chainsaw::SetFiringState(CHAINSAW_FIRE_STATE state)
+void CASW_Weapon_Chainsaw::SetFiringState( CHAINSAW_FIRE_STATE state )
 {
-#ifdef CLIENT_DLL
-	//Msg("[C] SetFiringState %d\n", state);
-#else
-	//Msg("[C] SetFiringState %d\n", state);
-#endif
 	m_fireState = state;
 }
 
@@ -646,26 +477,23 @@ ConVar rd_chainsaw_slows_down( "rd_chainsaw_slows_down", "1", FCVAR_CHEAT | FCVA
 
 bool CASW_Weapon_Chainsaw::ShouldMarineMoveSlow()
 {
-	if ( rd_chainsaw_slows_down.GetBool() )
-		return m_fireState != FIRE_OFF;
-	else 
-		return false;	// don't slow down marines for deathmatch
+	return rd_chainsaw_slows_down.GetBool() && m_fireState != FIRE_OFF;
 }
 
 #ifdef GAME_DLL
-void CASW_Weapon_Chainsaw::GetButtons(bool& bAttack1, bool& bAttack2, bool& bReload, bool& bOldReload, bool& bOldAttack1 )
+void CASW_Weapon_Chainsaw::GetButtons( bool &bAttack1, bool &bAttack2, bool &bReload, bool &bOldReload, bool &bOldAttack1 )
 {
 	CASW_Marine *pMarine = GetMarine();
 
 	// make AI fire this weapon whenever they have an enemy within a certain range
-	if (pMarine && !pMarine->IsInhabited())
+	if ( pMarine && !pMarine->IsInhabited() )
 	{
-		bool bHasEnemy = (pMarine->GetEnemy() && pMarine->GetEnemy()->GetAbsOrigin().DistTo(pMarine->GetAbsOrigin()) < 250.0f);
+		bool bHasEnemy = ( pMarine->GetEnemy() && pMarine->GetEnemy()->GetAbsOrigin().DistTo( pMarine->GetAbsOrigin() ) < 250.0f );
 
-		if (bHasEnemy)
+		if ( bHasEnemy )
 			m_fLastForcedFireTime = gpGlobals->curtime;
 
-		bAttack1 = (bHasEnemy || gpGlobals->curtime < m_fLastForcedFireTime + 1.0f);	// fire for 2 seconds after killing our enemy
+		bAttack1 = ( bHasEnemy || gpGlobals->curtime < m_fLastForcedFireTime + 1.0f );	// fire for 2 seconds after killing our enemy
 		bAttack2 = false;
 		bReload = false;
 		bOldReload = false;
@@ -719,13 +547,13 @@ void CASW_Weapon_Chainsaw::AdjustChainsawPitch()
 	// change the pitch value to randomly land between 85 and 90. (Pitch value 100 equals no change. Pitch value 50 is one octave lower.)
 	// The pitch down should happen over 100 milliseconds. 400 ms later (half as second after the impact triggered the pitch down) 
 	// reset to the original pitch value over 250 ms. 
-	
+
 	float flTransitionRate = 50.0f;
 
 	// check for returning to normal pitch
 	if ( ( gpGlobals->curtime - m_flLastHitTime ) > asw_chainsaw_pitch_return_delay.GetFloat() )
 	{
-		m_flTargetChainsawPitch = 100.0f;	
+		m_flTargetChainsawPitch = 100.0f;
 		flTransitionRate = asw_chainsaw_pitch_return_rate.GetFloat();
 	}
 	else if ( m_flTargetChainsawPitch == 0.0f )	// just started attacking something
@@ -750,10 +578,10 @@ void CASW_Weapon_Chainsaw::AdjustChainsawPitch()
 			HACK_GETLOCALPLAYER_GUARD( "ASW_AdjustChainsawPitch" );
 			GetViewEffects()->Shake( shake );
 
-			shake.command	= SHAKE_START;
+			shake.command = SHAKE_START;
 			shake.amplitude = asw_chainsaw_shake_amplitude.GetFloat();
 			shake.frequency = asw_chainsaw_shake_frequency.GetFloat();
-			shake.duration	= asw_chainsaw_shake_duration.GetFloat();
+			shake.duration = asw_chainsaw_shake_duration.GetFloat();
 
 			GetViewEffects()->Shake( shake );
 		}
@@ -810,7 +638,7 @@ void CASW_Weapon_Chainsaw::StopChainsawSound( bool bForce /*= false*/ )
 		float fVolume = bForce ? 0.0f : CSoundEnvelopeController::GetController().SoundGetVolume( m_pChainsawAttackSound );
 		if ( fVolume == 0.0f )
 		{
-			CSoundEnvelopeController::GetController().SoundDestroy( m_pChainsawAttackSound ); 
+			CSoundEnvelopeController::GetController().SoundDestroy( m_pChainsawAttackSound );
 			m_pChainsawAttackSound = NULL;
 		}
 		else
@@ -896,3 +724,32 @@ bool CASW_Weapon_Chainsaw::CheckSyncKill( byte &forced_action, short &sync_kill_
 	return false;
 	*/
 }
+
+#ifdef CLIENT_DLL
+void CASW_Weapon_Chainsaw::OnDataChanged( DataUpdateType_t updateType )
+{
+	BaseClass::OnDataChanged( updateType );
+
+	if ( updateType == DATA_UPDATE_CREATED )
+	{
+		SetNextClientThink( CLIENT_THINK_ALWAYS );
+	}
+}
+
+void CASW_Weapon_Chainsaw::ClientThink()
+{
+	BaseClass::ClientThink();
+
+	if ( m_fireState && GetSequenceActivity( GetSequence() ) != ACT_VM_PRIMARYATTACK )
+	{
+		SetActivity( ACT_VM_PRIMARYATTACK, 0 );
+		m_bShouldUpdateActivityClient = true;
+	}
+
+	if ( !m_fireState && m_flNextPrimaryAttack < gpGlobals->curtime && m_bShouldUpdateActivityClient )
+	{
+		SetActivity( ACT_VM_IDLE, 0 );
+		m_bShouldUpdateActivityClient = false;
+	}
+}
+#endif

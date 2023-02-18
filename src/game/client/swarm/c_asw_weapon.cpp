@@ -119,7 +119,7 @@ m_GlowObject( this, glow_outline_color_weapon.GetColorAsVector(), 1.0f, false, t
 	
 	m_bShotDelayed = 0;
 	m_flDelayedFire = 0;
-	bOldHidden = false;
+	m_bOldHidden = false;
 
 	m_flReloadFailTime = 1.0;
 	m_fReloadStart = 0;
@@ -133,6 +133,8 @@ m_GlowObject( this, glow_outline_color_weapon.GetColorAsVector(), 1.0f, false, t
 	m_bWeaponCreated = false;
 	m_nMuzzleAttachment = 0;
 	m_nLastMuzzleAttachment = 0;
+	m_nMagazineBodyGroup = -2;
+	m_nLaserBodyGroup = -2;
 	m_bLocalPlayerControlling = false;
 
 	m_fMuzzleFlashTime = 0.0f;
@@ -197,7 +199,7 @@ void C_ASW_Weapon::OnDataChanged( DataUpdateType_t type )
 		SetNextClientThink( CLIENT_THINK_ALWAYS );
 	}
 
-	if (IsEffectActive(EF_NODRAW) != bOldHidden)
+	if (IsEffectActive(EF_NODRAW) != m_bOldHidden)
 	{
 		if (m_hBayonet.Get())
 		{
@@ -215,7 +217,7 @@ void C_ASW_Weapon::OnDataChanged( DataUpdateType_t type )
 				m_hLaserSight->RemoveEffects( EF_NODRAW );
 		}
 	}
-	bOldHidden = IsEffectActive(EF_NODRAW);
+	m_bOldHidden = IsEffectActive(EF_NODRAW);
 }
 
 #define ASW_BAYONET_MODEL "models/swarm/Bayonet/bayonet.mdl"
@@ -441,6 +443,17 @@ void C_ASW_Weapon::ClientThink()
 	if ( m_GlowObject.IsRendering() )
 	{
 		m_GlowObject.SetAlpha( MIN( 0.7f, (1.0f - (flDistanceToMarineSqr / flWithinDistSqr)) * 1.0f) );
+	}
+
+	if ( m_nMagazineBodyGroup == -2 )
+	{
+		m_nMagazineBodyGroup = FindBodygroupByName( "magazine" );
+		Assert( m_nMagazineBodyGroup == -1 || GetBodygroupCount( m_nMagazineBodyGroup ) == 2 );
+	}
+
+	if ( m_nMagazineBodyGroup != -1 )
+	{
+		SetBodygroup( m_nMagazineBodyGroup, IsReloading() ? 1 : 0 );
 	}
 }
 
@@ -739,6 +752,17 @@ bool C_ASW_Weapon::ShouldAlignWeaponToLaserPointer()
 //--------------------------------------------------------------------------------------------------------
 void C_ASW_Weapon::SimulateLaserPointer()
 {
+	if ( m_nLaserBodyGroup == -2 )
+	{
+		m_nLaserBodyGroup = FindBodygroupByName( "laser" );
+		Assert( m_nLaserBodyGroup == -1 || GetBodygroupCount( m_nLaserBodyGroup ) == 2 );
+	}
+
+	if ( m_nLaserBodyGroup != -1 )
+	{
+		SetBodygroup( m_nLaserBodyGroup, asw_laser_sight.GetBool() ? 0 : 1 );
+	}
+
 	if ( !ShouldShowLaserPointer() )
 	{
 		RemoveLaserPointerEffect();

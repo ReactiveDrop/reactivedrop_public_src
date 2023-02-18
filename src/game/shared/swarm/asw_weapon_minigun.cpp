@@ -66,6 +66,7 @@ END_NETWORK_TABLE()
 BEGIN_PREDICTION_DATA( CASW_Weapon_Minigun )
 	DEFINE_PRED_FIELD_TOL( m_flSpinRate, FIELD_FLOAT, FTYPEDESC_INSENDTABLE, TD_MSECTOLERANCE ),
 	DEFINE_PRED_FIELD( m_bHalfShot, FIELD_BOOLEAN, FTYPEDESC_INSENDTABLE ),
+	DEFINE_PRED_FIELD( m_bShouldUpdateActivityClient, FIELD_BOOLEAN, FTYPEDESC_PRIVATE ),
 	DEFINE_PRED_FIELD( m_flCycle, FIELD_FLOAT, FTYPEDESC_OVERRIDE | FTYPEDESC_PRIVATE | FTYPEDESC_NOERRORCHECK ),
 	DEFINE_PRED_FIELD( m_nSequence, FIELD_INTEGER, FTYPEDESC_OVERRIDE | FTYPEDESC_PRIVATE | FTYPEDESC_NOERRORCHECK ),	
 	DEFINE_PRED_FIELD( m_nNewSequenceParity, FIELD_INTEGER, FTYPEDESC_OVERRIDE | FTYPEDESC_PRIVATE | FTYPEDESC_NOERRORCHECK ),
@@ -506,25 +507,15 @@ ConVar asw_minigun_pitch_max( "asw_minigun_pitch_max", "150", FCVAR_CHEAT | FCVA
 
 void CASW_Weapon_Minigun::UpdateSpinningBarrel()
 {
-	/*
-	if (GetSequenceActivity(GetSequence()) != ACT_VM_PRIMARYATTACK)
+	if ( GetSpinRate() > 0.1 && GetSequenceActivity( GetSequence() ) != ACT_VM_PRIMARYATTACK )
 	{
-		SetActivity(ACT_VM_PRIMARYATTACK, 0);
-	}
-	m_flPlaybackRate = GetSpinRate();
-	*/
-	//Mad Orange. Simple barrel spin rotation multiplayer fix. As for complex m_flPlaybackRate change does not seem to work without "updating" sequence\activity.
-	//So need to investigate what many sequence related functions do and make this "update" in a right way.
-	if (GetSpinRate() > 0.1 && GetSequenceActivity(GetSequence()) != ACT_VM_PRIMARYATTACK)
-	{
-		m_flPlaybackRate = 1;
-		SetActivity(ACT_VM_PRIMARYATTACK, 0);
+		SetActivity( ACT_VM_PRIMARYATTACK, 0 );
 		m_bShouldUpdateActivityClient = true;
 	}
 
-	if (GetSpinRate() < 0.1 && m_bShouldUpdateActivityClient)
+	if ( GetSpinRate() < 0.1 && m_bShouldUpdateActivityClient )
 	{
-		SetActivity(ACT_VM_IDLE, 0);
+		SetActivity( ACT_VM_IDLE, 0 );
 		m_flPlaybackRate = 0;
 		m_bShouldUpdateActivityClient = false;
 	}

@@ -20,14 +20,20 @@ $attachment "eject" "eject" 0 0 0 rotate 0 0 0
 $sequence "BindPose" "chainsaw_model.smd"
 
 $sequence "fire" {
-	"anim/fire.smd"
+	"anims/fire.smd"
 	activity "ACT_VM_PRIMARYATTACK" 1
-	fps 42
+	fps 420
 	loop
 }
 
-$animation gesture_vertical_blade_base "anim/gesture_vertical_blade.smd" frames 0 0
-$animation gesture_vertical_blade_a "anim/gesture_vertical_blade.smd" frames 1 1 subtract gesture_vertical_blade_base 0
+$sequence "stop" {
+	"anims/stop.smd"
+	activity "ACT_VM_IDLE" 1
+	fps 420
+}
+
+$animation gesture_vertical_blade_base "anims/gesture_vertical_blade.smd" frames 0 0
+$animation gesture_vertical_blade_a "anims/gesture_vertical_blade.smd" frames 1 1 subtract gesture_vertical_blade_base 0
 $sequence gesture_vertical_blade { gesture_vertical_blade_a loop delta }
 
 $collisionmodel "chainsaw_physics.smd"

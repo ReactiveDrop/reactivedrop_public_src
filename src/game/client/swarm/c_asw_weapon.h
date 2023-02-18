@@ -153,7 +153,7 @@ public:
 	virtual float GetThrowGravity() { return 1.0f; }
 	bool m_bShotDelayed;
 	float m_flDelayedFire;
-	bool bOldHidden;
+	bool m_bOldHidden;
 
 	// powerups
 	void MakePoweredUp( bool bPoweredUp ) { m_bPoweredUp = bPoweredUp; } 
@@ -170,6 +170,9 @@ public:
 	// attachments
 	int m_nMuzzleAttachment;
 	int m_nLastMuzzleAttachment;
+	// body groups
+	int m_nMagazineBodyGroup;
+	int m_nLaserBodyGroup;
 
 	// ground shooting (aiming at the ground)
 	virtual bool SupportsGroundShooting() { return rd_ground_shooting.GetBool(); } // was false

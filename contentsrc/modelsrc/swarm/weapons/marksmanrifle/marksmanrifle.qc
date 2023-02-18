@@ -19,8 +19,8 @@ $bodygroup "scope"
 }
 $bodygroup "laser"
 {
-	blank
 	studio "marksmanrifle_laser.smd"
+	blank
 }
 
 $surfaceprop "weapon"

@@ -17,8 +17,6 @@ $surfaceprop "weapon"
 $contents "solid"
 $opaque
 
-$illumposition 0.842 0.054 4.415
-
 $cdmaterials "models/weapons/ricochet"
 
 $attachment "muzzle" "muzzle" 0 0 0 rotate 0 0 0

@@ -26,17 +26,15 @@ public:
 	DECLARE_NETWORKCLASS(); 
 	DECLARE_PREDICTABLE();
 
-    CASW_Weapon_Chainsaw(void);
+	CASW_Weapon_Chainsaw( void );
 	~CASW_Weapon_Chainsaw(void);
 
 	virtual bool	Deploy( void );
+	virtual void	Precache( void );
+	virtual void	Spawn( void );
+
 	void	PrimaryAttack( void );
-    virtual void    Precache( void );
-    
-	void	SecondaryAttack( void )
-	{
-		PrimaryAttack();
-	}
+	void	SecondaryAttack( void ) { PrimaryAttack(); }
 	virtual bool SecondaryAttackEqualsPrimary() { return true; }
 
 	void	WeaponIdle( void );
@@ -56,28 +54,27 @@ public:
 	int		CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
 	virtual void GetButtons(bool& bAttack1, bool& bAttack2, bool& bReload, bool& bOldReload, bool& bOldAttack1 );
 	float m_fLastForcedFireTime;
+#else
+	virtual void OnDataChanged( DataUpdateType_t updateType );
+	virtual void ClientThink();
+
+	bool m_bShouldUpdateActivityClient;
 #endif
 
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_CHAINSAW; }
 private:
-	void	Attack( void );
 	void	EndAttack( void );
 	void	Fire( const Vector &vecOrigSrc, const Vector &vecDir );
 	void	UpdateEffect( const Vector &startPoint, const Vector &endPoint );
-	void	CreateEffect( void );
-	void	DestroyEffect( void );
 	void SetFiringState(CHAINSAW_FIRE_STATE state);
 
-	CHAINSAW_FIRE_STATE		m_fireState;
-	float				m_flAmmoUseTime;	// since we use < 1 point of ammo per update, we subtract ammo on a timer.
+	CNetworkVar( CHAINSAW_FIRE_STATE, m_fireState );
 	float				m_flShakeTime;
 	float				m_flStartFireTime;
 	float				m_flDmgTime;
 	float				m_flFireAnimTime;
 	bool				m_bPlayedIdleSound;
-	CHandle<CBeam>		m_hBeam;
-	CHandle<CBeam>		m_hNoise;
 
 	void				StartChainsawSound(); 
 	void				StopChainsawSound( bool bForce = false );
