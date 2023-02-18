@@ -88,40 +88,40 @@ function __DumpScope( depth, table )
 			print("   ");
 		}
 	}
-	
-    foreach(key, value in table)
-    {
+
+	foreach(key, value in table)
+	{
 		indent(depth);
 		print( key );
-        switch (type(value))
-        {
-            case "table":
+		switch (type(value))
+		{
+			case "table":
 				print("(TABLE)\n");
 				indent(depth);
-                print("{\n");
-                __DumpScope( depth + 1, value);
+				print("{\n");
+				__DumpScope( depth + 1, value);
 				indent(depth);
-                print("}");
-                break;
-            case "array":
+				print("}");
+				break;
+			case "array":
 				print("(ARRAY)\n");
 				indent(depth);
-                print("[\n")
-                __DumpScope( depth + 1, value);
+				print("[\n")
+				__DumpScope( depth + 1, value);
 				indent(depth);
-                print("]");
-                break;
-            case "string":
-                print(" = \"");
-                print(value);
-                print("\"");
-                break;
-            default:
-                print(" = ");
-                print(value);
-                break;
-        }
-        print("\n");  
+				print("]");
+				break;
+			case "string":
+				print(" = \"");
+				print(value);
+				print("\"");
+				break;
+			default:
+				print(" = ");
+				print(value);
+				break;
+		}
+		print("\n");
 	}
 }
 
@@ -268,3 +268,7 @@ function CASW_Marine_GetInvTableOverride( CASW_Marine )
 	return table;
 }
 
+function ClientPrint( player, target, message, param1 = "", param2 = "", param3 = "", param4 = "" )
+{
+	DoClientPrint( player, target, message, param1.tostring(), param2.tostring(), param3.tostring(), param4.tostring() );
+}

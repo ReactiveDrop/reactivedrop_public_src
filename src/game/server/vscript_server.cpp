@@ -1434,18 +1434,18 @@ static ScriptVariant_t Script_TextColorBlend3(int R1, int G1, int B1, int R2, in
 	return ScriptVariant_t(outputChars, true);
 }
 
-static void Script_ClientPrint( HSCRIPT hPlayer, int iDest, const char *pText )
+static void Script_DoClientPrint( HSCRIPT hPlayer, int iDest, const char *pText, const char *szParam1, const char *szParam2, const char *szParam3, const char *szParam4 )
 {
-	CBaseEntity *pBaseEntity = ToEnt(hPlayer);
+	CBaseEntity *pBaseEntity = ToEnt( hPlayer );
 	CBasePlayer *pPlayer = NULL;
 
 	if ( pBaseEntity )
-		pPlayer = dynamic_cast<CBasePlayer*>(pBaseEntity);
+		pPlayer = dynamic_cast< CBasePlayer * >( pBaseEntity );
 
 	if ( pPlayer )
-		ClientPrint( pPlayer, iDest, pText );
+		ClientPrint( pPlayer, iDest, pText, szParam1, szParam2, szParam3, szParam4 );
 	else
-		UTIL_ClientPrintAll( iDest, pText );
+		UTIL_ClientPrintAll( iDest, pText, szParam1, szParam2, szParam3, szParam4 );
 }
 
 static void Script_StringToFile( const char *pszFileName, const char *pszString )
@@ -1719,7 +1719,7 @@ bool VScriptServerInit()
 				ScriptRegisterFunction( g_pScriptVM, DoIncludeScript, "Execute a script (internal)" );
 				ScriptRegisterFunction( g_pScriptVM, CreateProp, "Create a physics prop" );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_Say, "Say", "Have player say string" );
-				ScriptRegisterFunctionNamed( g_pScriptVM, Script_ClientPrint, "ClientPrint", "Print a client message" );
+				ScriptRegisterFunctionNamed( g_pScriptVM, Script_DoClientPrint, "DoClientPrint", "Print a client message" );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_TextColor, "TextColor", "Gets the translated ASCII characters for an RGB input." );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_TextColorBlend, "TextColorBlend", "Gets the translated ASCII characters for an RGB blend input.");
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_TextColorBlendCycle, "TextColorBlendCycle", "Gets the translated ASCII characters for an RGB blend cycle input.");
