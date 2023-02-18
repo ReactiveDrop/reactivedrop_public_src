@@ -1719,7 +1719,7 @@ bool VScriptServerInit()
 				ScriptRegisterFunction( g_pScriptVM, DoIncludeScript, "Execute a script (internal)" );
 				ScriptRegisterFunction( g_pScriptVM, CreateProp, "Create a physics prop" );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_Say, "Say", "Have player say string" );
-				ScriptRegisterFunctionNamed( g_pScriptVM, Script_DoClientPrint, "DoClientPrint", "Print a client message" );
+				ScriptRegisterFunctionNamed( g_pScriptVM, Script_DoClientPrint, "DoClientPrint", SCRIPT_ALIAS( "ClientPrint", "Print a client message" ) );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_TextColor, "TextColor", "Gets the translated ASCII characters for an RGB input." );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_TextColorBlend, "TextColorBlend", "Gets the translated ASCII characters for an RGB blend input.");
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_TextColorBlendCycle, "TextColorBlendCycle", "Gets the translated ASCII characters for an RGB blend cycle input.");
