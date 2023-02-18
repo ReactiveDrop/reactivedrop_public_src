@@ -1265,6 +1265,12 @@ int CASW_Marine::OnTakeDamage( const CTakeDamageInfo &info )
 						}
 					}
 
+					CSingleUserRecipientFilter filter( GetCommander() );
+					filter.MakeReliable();
+					UserMessageBegin( filter, "RDCauseOfDeath" );
+						WRITE_SHORT( GetCauseOfDeath( this, info ) );
+					MessageEnd();
+
 					return retVal;
 				}
 				else 

@@ -131,6 +131,7 @@ const char *const g_szDeathCauseStatName[] =
 	"cause_of_death.burn_other",
 	"cause_of_death.grenade_launcher_self",
 	"cause_of_death.ricochet_bullet",
+	"cause_of_death.bleed_out",
 };
 
 #ifndef CLIENT_DLL
@@ -224,6 +225,11 @@ RD_Cause_of_Death_t GetCauseOfDeath( CBaseEntity *pVictim, const CTakeDamageInfo
 				return s_InterestingMapDeaths[i].iDeathCause;
 			}
 		}
+	}
+
+	if ( pMarineVictim && pMarineVictim->m_bPreventKnockedOut )
+	{
+		return DEATHCAUSE_BLEED_OUT;
 	}
 
 	if ( info.GetDamageType() & DMG_CRUSH )
