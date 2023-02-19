@@ -2309,6 +2309,7 @@ bool CReactiveDropWorkshop::PrepareWorkshopVPK( const char *pszContentPath, CUtl
 				CPackedStoreFileHandle hCampaign = vpk.OpenFile( szFileNameVerify );
 				CUtlBuffer buf;
 				hCampaign.Read( buf.AccessForDirectRead( hCampaign.m_nFileSize ), hCampaign.m_nFileSize );
+				buf.SeekPut( CUtlBuffer::SEEK_HEAD, hCampaign.m_nFileSize );
 				buf.SetBufferType( true, true );
 				UTIL_RD_LoadKeyValues( pKV, szFileNameVerify, buf );
 				m_IncludedCampaignNames[szFileName] = pKV->GetString( "CampaignName", "Invalid Campaign" );
@@ -2375,6 +2376,7 @@ bool CReactiveDropWorkshop::PrepareWorkshopVPK( const char *pszContentPath, CUtl
 				CPackedStoreFileHandle hMission = vpk.OpenFile( szFileNameVerify );
 				CUtlBuffer buf;
 				hMission.Read( buf.AccessForDirectRead( hMission.m_nFileSize ), hMission.m_nFileSize );
+				buf.SeekPut( CUtlBuffer::SEEK_HEAD, hMission.m_nFileSize );
 				buf.SetBufferType( true, true );
 				UTIL_RD_LoadKeyValues( pKV, szFileNameVerify, buf );
 				m_IncludedMissionNames[szFileName] = pKV->GetString( "missiontitle", "Invalid Mission" );
@@ -2423,6 +2425,7 @@ bool CReactiveDropWorkshop::PrepareWorkshopVPK( const char *pszContentPath, CUtl
 				CPackedStoreFileHandle hChallenge = vpk.OpenFile( szFileNameVerify );
 				CUtlBuffer buf;
 				hChallenge.Read( buf.AccessForDirectRead( hChallenge.m_nFileSize ), hChallenge.m_nFileSize );
+				buf.SeekPut( CUtlBuffer::SEEK_HEAD, hChallenge.m_nFileSize );
 				buf.SetBufferType( true, true );
 				UTIL_RD_LoadKeyValues( pKV, szFileNameVerify, buf );
 				m_IncludedChallengeNames[szFileName] = pKV->GetString( "name", "Invalid Challenge" );
