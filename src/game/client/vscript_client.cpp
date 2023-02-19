@@ -108,7 +108,8 @@ bool VScriptClientInit()
 				Log_Msg( LOG_VScript, "VSCRIPT: Started VScript virtual machine using script language '%s'\n", g_pScriptVM->GetLanguageName() );
 				ScriptRegisterFunction( g_pScriptVM, GetMapName, "Get the name of the map.");
 				ScriptRegisterFunction( g_pScriptVM, Time, "Get the current server time" );
-				ScriptRegisterFunction( g_pScriptVM, DoIncludeScript, "Execute a script (internal)" );
+				ScriptRegisterFunction( g_pScriptVM, DoUniqueString, SCRIPT_ALIAS( "UniqueString", "Generate a string guaranteed to be unique across the life of the script VM, with an optional root string. Useful for adding data to tables when not sure what keys are already in use in that table." ) );
+				ScriptRegisterFunction( g_pScriptVM, DoIncludeScript, SCRIPT_ALIAS( "IncludeScript", "Execute a script (internal)" ) );
 				
 				if ( GameRules() )
 				{

@@ -1716,7 +1716,7 @@ bool VScriptServerInit()
 				ScriptRegisterFunctionNamed( g_pScriptVM, ScriptCreateSceneEntity, "CreateSceneEntity", "Create a scene entity to play the specified scene." );
 				ScriptRegisterFunctionNamed( g_pScriptVM, NDebugOverlay::Box, "DebugDrawBox", "Draw a debug overlay box" );
 				ScriptRegisterFunctionNamed( g_pScriptVM, NDebugOverlay::Line, "DebugDrawLine", "Draw a debug overlay box" );
-				ScriptRegisterFunction( g_pScriptVM, DoIncludeScript, "Execute a script (internal)" );
+				ScriptRegisterFunction( g_pScriptVM, DoIncludeScript, SCRIPT_ALIAS( "IncludeScript", "Execute a script (internal)" ) );
 				ScriptRegisterFunction( g_pScriptVM, CreateProp, "Create a physics prop" );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_Say, "Say", "Have player say string" );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_DoClientPrint, "DoClientPrint", SCRIPT_ALIAS( "ClientPrint", "Print a client message" ) );
