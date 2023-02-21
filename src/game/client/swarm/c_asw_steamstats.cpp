@@ -80,10 +80,14 @@ namespace
 		"rd_research7",
 		"rd-area9800",
 		"rd-tarnorcampaign1",
+#ifdef RD__CAMPAIGNS_DEADCITY
 		"rd_deadcity",
+#endif
 		"tilarus5",
 		"rd_lanasescape_campaign",
+#ifdef RD__CAMPAIGNS_REDUCTION
 		"rd_reduction_campaign",
+#endif
 		"rd_paranoia",
 		"rd_nh_campaigns",
 		"rd_biogen_corporation",
@@ -121,9 +125,11 @@ namespace
 		"rd-tft1desertoutpost",
 		"rd-tft2abandonedmaintenance",
 		"rd-tft3spaceport",
+#ifdef RD__CAMPAIGNS_DEADCITY
 		"rd-dc1_omega_city",
 		"rd-dc2_breaking_an_entry",
 		"rd-dc3_search_and_rescue",
+#endif
 		"rd-til1midnightport",
 		"rd-til2roadtodawn",
 		"rd-til3arcticinfiltration",
@@ -138,12 +144,14 @@ namespace
 		"rd-lan3_maintenance",
 		"rd-lan4_vent",
 		"rd-lan5_complex",
+#ifdef RD__CAMPAIGNS_REDUCTION
 		"rd-reduction1",
 		"rd-reduction2",
 		"rd-reduction3",
 		"rd-reduction4",
 		"rd-reduction5",
 		"rd-reduction6",
+#endif
 		"rd-par1unexpected_encounter",
 		"rd-par2hostile_places",
 		"rd-par3close_contact",
