@@ -22,6 +22,7 @@ namespace ReactiveDropInventory
 		CUtlString Description;
 		CUtlString BeforeDescription;
 		CUtlString AfterDescription;
+		CUtlString AccessoryDescription;
 		bool AfterDescriptionOnlyMultiStack : 1;
 #ifdef CLIENT_DLL
 		vgui::IImage *Icon;
@@ -54,5 +55,6 @@ namespace ReactiveDropInventory
 #ifdef CLIENT_DLL
 	void AddPromoItem( SteamItemDef_t id );
 	void RequestGenericPromoItems();
+	void CheckPlaytimeItemGenerators( int iMarineClass );
 #endif
 }

@@ -860,6 +860,8 @@ void CASW_Steamstats::PrepStatsForSend( CASW_Player *pPlayer )
 		}
 	}
 
+	ReactiveDropInventory::CheckPlaytimeItemGenerators( MarineProfileList()->GetProfile( iMarineProfileIndex )->GetMarineClass() );
+
 	char szBetaBranch[256]{};
 	if ( SteamInventory() && SteamApps()->GetCurrentBetaName( szBetaBranch, sizeof( szBetaBranch ) ) && !V_stricmp( szBetaBranch, "beta" ) )
 	{

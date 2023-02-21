@@ -10,6 +10,10 @@
 #include <vgui/ISurface.h>
 #include <vgui_controls/Controls.h>
 #include "lodepng.h"
+#include "asw_gamerules.h"
+#include "rd_workshop.h"
+#include "rd_missions_shared.h"
+#include "asw_deathmatch_mode_light.h"
 #endif
 
 
@@ -37,6 +41,11 @@ public:
 #ifdef CLIENT_DLL
 			pInventory->DestroyResult( m_EquippedMedalResult );
 			pInventory->DestroyResult( m_PromotionalItemsResult );
+			for ( int i = 0; i < NELEMS( m_PlaytimeItemGeneratorResult ); i++ )
+			{
+				pInventory->DestroyResult( m_PlaytimeItemGeneratorResult[i] );
+			}
+			pInventory->DestroyResult( m_InspectItemResult );
 			pInventory->DestroyResult( m_DebugPrintInventoryResult );
 #endif
 		}
@@ -272,6 +281,24 @@ public:
 			return;
 		}
 
+		for ( int i = 0; i < NELEMS( m_PlaytimeItemGeneratorResult ); i++ )
+		{
+			if ( pParam->m_handle == m_PlaytimeItemGeneratorResult[i] )
+			{
+				HandleItemDropResult( m_PlaytimeItemGeneratorResult[i] );
+			}
+		}
+
+		if ( pParam->m_handle == m_InspectItemResult )
+		{
+			DebugPrintResult( m_InspectItemResult );
+			Assert( !"TODO: inspect item" );
+			SteamInventory()->DestroyResult( m_InspectItemResult );
+			m_InspectItemResult = k_SteamInventoryResultInvalid;
+
+			return;
+		}
+
 		if ( pParam->m_handle == m_DebugPrintInventoryResult )
 		{
 			DebugPrintResult( m_DebugPrintInventoryResult );
@@ -285,6 +312,8 @@ public:
 	SteamInventoryResult_t m_EquippedMedalResult{ k_SteamInventoryResultInvalid };
 	SteamInventoryResult_t m_PromotionalItemsResult{ k_SteamInventoryResultInvalid };
 	CUtlVector<SteamItemDef_t> m_PromotionalItemsNext{};
+	SteamInventoryResult_t m_PlaytimeItemGeneratorResult[3]{ k_SteamInventoryResultInvalid, k_SteamInventoryResultInvalid, k_SteamInventoryResultInvalid };
+	SteamInventoryResult_t m_InspectItemResult{ k_SteamInventoryResultInvalid };
 	SteamInventoryResult_t m_DebugPrintInventoryResult{ k_SteamInventoryResultInvalid };
 	float m_flDefsUpdateTime{ 0.0f };
 
@@ -314,6 +343,17 @@ ConVar rd_equipped_medal( "rd_equipped_medal", "0", FCVAR_ARCHIVE, "Steam invent
 CON_COMMAND_F( rd_debug_print_inventory, "", FCVAR_HIDDEN )
 {
 	SteamInventory()->GetAllItems( &s_RD_Inventory_Manager.m_DebugPrintInventoryResult );
+}
+
+CON_COMMAND_F( rd_econ_item_preview, "", FCVAR_HIDDEN )
+{
+	if ( args.ArgC() != 2 )
+	{
+		Msg( "missing or invalid inspect item code\n" );
+		return;
+	}
+
+	SteamInventory()->InspectItem( &s_RD_Inventory_Manager.m_InspectItemResult, args.Arg( 1 ) );
 }
 
 class CSteamItemIcon : public vgui::IImage
@@ -845,6 +885,13 @@ namespace ReactiveDropInventory
 		if ( *szBuf.Base() )
 			pItemDef->AfterDescription = szBuf.Base();
 
+		V_snprintf( szKey, sizeof( szKey ), "accessory_description_%s", szLang );
+		FETCH_PROPERTY( "accessory_description_english" );
+		pItemDef->AccessoryDescription = szBuf.Base();
+		FETCH_PROPERTY( szKey );
+		if ( *szBuf.Base() )
+			pItemDef->AccessoryDescription = szBuf.Base();
+
 		FETCH_PROPERTY( "after_description_only_multi_stack" );
 		Assert( !V_strcmp( szBuf.Base(), "" ) || !V_strcmp( szBuf.Base(), "true" ) || !V_strcmp( szBuf.Base(), "false" ) );
 		pItemDef->AfterDescriptionOnlyMultiStack = !V_strcmp( szBuf.Base(), "true" );
@@ -967,6 +1014,177 @@ namespace ReactiveDropInventory
 
 		pInventory->GrantPromoItems( &s_RD_Inventory_Manager.m_PromotionalItemsResult );
 	}
+
+#ifdef RD_CRAFTING_ENABLED
+	static const char *const s_RDWorkshopCompetitionTags[] =
+	{
+		"BossFight2023",
+	};
+
+	static const struct
+	{
+		const char *szMissionName;
+		SteamItemDef_t iGenerator;
+	} s_RDOfficialMissionGenerators[] =
+	{
+		{ "rd-bonus_mission1", 7006 },
+		{ "rd-bonus_mission2", 7006 },
+		{ "rd-bonus_mission3", 7006 },
+		{ "asi-jac1-landingbay_01", 7009 },
+		{ "asi-jac1-landingbay_02", 7009 },
+		{ "asi-jac1-landingbay_pract", 7009 },
+		{ "asi-jac2-deima", 7009 },
+		{ "asi-jac3-rydberg", 7009 },
+		{ "asi-jac4-residential", 7009 },
+		{ "asi-jac6-sewerjunction", 7009 },
+		{ "asi-jac7-timorstation", 7009 },
+		{ "rd-bonus_mission4", 7009 },
+		{ "rd-ocs1storagefacility", 7011 },
+		{ "rd-ocs2landingbay7", 7011 },
+		{ "rd-ocs3uscmedusa", 7011 },
+		{ "rd-res1forestentrance", 7012 },
+		{ "rd-res2research7", 7012 },
+		{ "rd-res3miningcamp", 7012 },
+		{ "rd-res4mines", 7012 },
+		{ "rd-area9800lz", 7010 },
+		{ "rd-area9800pp1", 7010 },
+		{ "rd-area9800pp2", 7010 },
+		{ "rd-area9800wl", 7010 },
+		{ "rd-bonus_mission7", 7010 },
+		{ "rd-tft1desertoutpost", 7013 },
+		{ "rd-tft2abandonedmaintenance", 7013 },
+		{ "rd-tft3spaceport", 7013 },
+		{ "rd-til1midnightport", 7014 },
+		{ "rd-til2roadtodawn", 7014 },
+		{ "rd-til3arcticinfiltration", 7014 },
+		{ "rd-til4area9800", 7014 },
+		{ "rd-til5coldcatwalks", 7014 },
+		{ "rd-til6yanaurusmine", 7014 },
+		{ "rd-til7factory", 7014 },
+		{ "rd-til8comcenter", 7014 },
+		{ "rd-til9syntekhospital", 7014 },
+		{ "rd-lan1_bridge", 7015 },
+		{ "rd-lan2_sewer", 7015 },
+		{ "rd-lan3_maintenance", 7015 },
+		{ "rd-lan4_vent", 7015 },
+		{ "rd-lan5_complex", 7015 },
+		{ "rd-par1unexpected_encounter", 7016 },
+		{ "rd-par2hostile_places", 7016 },
+		{ "rd-par3close_contact", 7016 },
+		{ "rd-par4high_tension", 7016 },
+		{ "rd-par5crucial_point", 7016 },
+		{ "rd-bonus_mission5", 7016 },
+		{ "rd-bonus_mission6", 7016 },
+		{ "rd-nh01_logisticsarea", 7017 },
+		{ "rd-nh02_platformxvii", 7017 },
+		{ "rd-nh03_groundworklabs", 7017 },
+		{ "rd-bio1operationx5", 7018 },
+		{ "rd-bio2invisiblethreat", 7018 },
+		{ "rd-bio3biogenlabs", 7018 },
+		{ "rd-acc1_infodep", 7019 },
+		{ "rd-acc2_powerhood", 7019 },
+		{ "rd-acc3_rescenter", 7019 },
+		{ "rd-acc4_confacility", 7019 },
+		{ "rd-acc5_j5connector", 7019 },
+		{ "rd-acc6_labruins", 7019 },
+		{ "rd-acc_complex", 7019 },
+		{ "rd-ada_sector_a9", 7020 },
+		{ "rd-ada_nexus_subnode", 7020 },
+		{ "rd-ada_neon_carnage", 7020 },
+		{ "rd-ada_fuel_junction", 7020 },
+		{ "rd-ada_dark_path", 7020 },
+		{ "rd-ada_forbidden_outpost", 7020 },
+		{ "rd-ada_new_beginning", 7020 },
+		{ "rd-ada_anomaly", 7020 },
+	};
+#endif
+
+	void CheckPlaytimeItemGenerators( int iMarineClass )
+	{
+#ifdef RD_CRAFTING_ENABLED
+		for ( int i = 0; i < NELEMS( s_RD_Inventory_Manager.m_PlaytimeItemGeneratorResult ); i++ )
+		{
+			if ( s_RD_Inventory_Manager.m_PlaytimeItemGeneratorResult[i] != k_SteamInventoryResultInvalid )
+			{
+				DevMsg( "Not checking playtime item generators: request already in-flight.\n" );
+				return;
+			}
+		}
+
+		GET_INVENTORY_OR_BAIL;
+
+		SteamItemDef_t iItemGenerator = 7000;
+
+		const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( engine->GetLevelNameShort() );
+		COMPILE_TIME_ASSERT( NUM_MARINE_CLASSES == 4 );
+		if ( iMarineClass != MARINE_CLASS_UNDEFINED && iMarineClass < NUM_MARINE_CLASSES && RandomInt( 0, 1 ) )
+		{
+			iItemGenerator = 7025 + iMarineClass;
+		}
+		else if ( ASWDeathmatchMode() )
+		{
+			iItemGenerator = 7008;
+		}
+		else if ( pMission && pMission->HasTag( "endless" ) )
+		{
+			iItemGenerator = 7007;
+		}
+		else if ( CAlienSwarm *pAlienSwarm = ASWGameRules() )
+		{
+			if ( pAlienSwarm->m_iMissionWorkshopID != k_PublishedFileIdInvalid )
+			{
+				const CReactiveDropWorkshop::WorkshopItem_t &item = g_ReactiveDropWorkshop.TryQueryAddon( pAlienSwarm->m_iMissionWorkshopID );
+				CSplitString tags( item.details.m_rgchTags, "," );
+				bool bIsCompetitionAddon = false;
+				FOR_EACH_VEC( tags, i )
+				{
+					for ( int j = 0; j < NELEMS( s_RDWorkshopCompetitionTags ); j++ )
+					{
+						if ( FStrEq( tags[i], s_RDWorkshopCompetitionTags[j] ) )
+						{
+							bIsCompetitionAddon = true;
+							break;
+						}
+					}
+
+					if ( bIsCompetitionAddon )
+					{
+						break;
+					}
+				}
+
+				if ( bIsCompetitionAddon )
+				{
+					iItemGenerator = 7001;
+				}
+				else if ( pAlienSwarm->IsCampaignGame() )
+				{
+					iItemGenerator = 7002 + ( pAlienSwarm->m_iMissionWorkshopID & 1 );
+				}
+				else
+				{
+					iItemGenerator = 7004 + ( pAlienSwarm->m_iMissionWorkshopID & 1 );
+				}
+			}
+			else if ( pMission )
+			{
+				for ( int i = 0; i < NELEMS( s_RDOfficialMissionGenerators ); i++ )
+				{
+					if ( FStrEq( pMission->BaseName, s_RDOfficialMissionGenerators[i].szMissionName ) )
+					{
+						iItemGenerator = s_RDOfficialMissionGenerators[i].iGenerator;
+						break;
+					}
+				}
+			}
+		}
+
+		pInventory->TriggerItemDrop( &s_RD_Inventory_Manager.m_PlaytimeItemGeneratorResult[0], iItemGenerator );
+		pInventory->TriggerItemDrop( &s_RD_Inventory_Manager.m_PlaytimeItemGeneratorResult[1], 7021 );
+		pInventory->TriggerItemDrop( &s_RD_Inventory_Manager.m_PlaytimeItemGeneratorResult[2], 7029 );
+#endif
+	}
+#endif
 
 #undef GET_INVENTORY_OR_BAIL
 }
