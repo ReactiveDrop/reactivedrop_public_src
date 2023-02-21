@@ -46,6 +46,7 @@
 #include "matchmaking/swarm/imatchext_swarm.h"
 #include "rd_steam_input.h"
 #include "rd_workshop.h"
+#include "rd_inventory_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -987,6 +988,9 @@ void MainMenu::Activate()
 
 	// we've left whatever server we were on; get rid of the stuff we borrowed
 	g_ReactiveDropWorkshop.UnloadTemporaryAddons();
+
+	// see if we earned any goodies since the last time we were on the main menu
+	ReactiveDropInventory::RequestGenericPromoItems();
 
 	static bool bRunOnce = true;
 	if ( bRunOnce )

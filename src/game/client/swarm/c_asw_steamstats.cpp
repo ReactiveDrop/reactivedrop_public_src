@@ -22,6 +22,7 @@
 #include "c_user_message_register.h"
 #include "asw_alien_classes.h"
 #include "rd_cause_of_death.h"
+#include "rd_inventory_shared.h"
 
 CASW_Steamstats g_ASW_Steamstats;
 
@@ -863,11 +864,7 @@ void CASW_Steamstats::PrepStatsForSend( CASW_Player *pPlayer )
 	if ( SteamInventory() && SteamApps()->GetCurrentBetaName( szBetaBranch, sizeof( szBetaBranch ) ) && !V_stricmp( szBetaBranch, "beta" ) )
 	{
 		// beta tester medal
-		SteamInventoryResult_t hResult{ k_SteamInventoryResultInvalid };
-		if ( SteamInventory()->AddPromoItem( &hResult, 13 ) )
-		{
-			SteamInventory()->DestroyResult( hResult );
-		}
+		ReactiveDropInventory::AddPromoItem( 13 );
 	}
 }
 

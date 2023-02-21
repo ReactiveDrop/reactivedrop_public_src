@@ -60,13 +60,6 @@ public:
 		{
 			Warning( "Failed to load inventory item definitions!\n" );
 		}
-
-#ifdef CLIENT_DLL
-		if ( !pInventory->GrantPromoItems( &m_PromotionalItemsResult ) )
-		{
-			Warning( "Failed to request automatic item rewards!\n" );
-		}
-#endif
 	}
 
 	virtual void LevelInitPreEntity()
@@ -174,11 +167,12 @@ public:
 		pMatchmaking->SetLobbyMemberData( currentLobby, "rd_equipped_medal:updates", VarArgs( "%d", nUpdateCount + 1 ) );
 	}
 
-	void HandlePromotionalItemsResult()
+	void HandleItemDropResult( SteamInventoryResult_t &hResult )
 	{
-		// don't do anything with the result for now.
-		SteamInventory()->DestroyResult( m_PromotionalItemsResult );
-		m_PromotionalItemsResult = k_SteamInventoryResultInvalid;
+		DebugPrintResult( hResult );
+		Assert( !"TODO: UI for item drops" );
+		SteamInventory()->DestroyResult( hResult );
+		hResult = k_SteamInventoryResultInvalid;
 	}
 
 	void DebugPrintResult( SteamInventoryResult_t hResult )
@@ -261,21 +255,35 @@ public:
 			( void )ReactiveDropInventory::GetItemDef( iMedalDef );
 
 			SendMedalBlob( UTIL_RD_GetCurrentLobbyID() );
+
+			return;
 		}
-		else if ( pParam->m_handle == m_PromotionalItemsResult )
+		
+		if ( pParam->m_handle == m_PromotionalItemsResult )
 		{
-			HandlePromotionalItemsResult();
+			HandleItemDropResult( m_PromotionalItemsResult );
+			if ( m_PromotionalItemsNext.Count() )
+			{
+				SteamInventory()->AddPromoItems( &m_PromotionalItemsResult, m_PromotionalItemsNext.Base(), m_PromotionalItemsNext.Count() );
+				m_PromotionalItemsNext.Purge();
+			}
+
+			return;
 		}
-		else if ( pParam->m_handle == m_DebugPrintInventoryResult )
+
+		if ( pParam->m_handle == m_DebugPrintInventoryResult )
 		{
 			DebugPrintResult( m_DebugPrintInventoryResult );
 			SteamInventory()->DestroyResult( m_DebugPrintInventoryResult );
 			m_DebugPrintInventoryResult = k_SteamInventoryResultInvalid;
+
+			return;
 		}
 	}
 
 	SteamInventoryResult_t m_EquippedMedalResult{ k_SteamInventoryResultInvalid };
 	SteamInventoryResult_t m_PromotionalItemsResult{ k_SteamInventoryResultInvalid };
+	CUtlVector<SteamItemDef_t> m_PromotionalItemsNext{};
 	SteamInventoryResult_t m_DebugPrintInventoryResult{ k_SteamInventoryResultInvalid };
 	float m_flDefsUpdateTime{ 0.0f };
 
@@ -439,7 +447,7 @@ private:
 		unsigned error = lodepng_decode32( &rgba, &m_nWide, &m_nTall, data.Base(), pParam->m_unBodySize );
 		if ( error )
 		{
-			Warning( "Decoding inventory item icon: lodepng error %d: %s", error, lodepng_error_text( error ) );
+			Warning( "Decoding inventory item icon: lodepng error %d: %s\n", error, lodepng_error_text( error ) );
 		}
 
 		m_iTextureID = vgui::surface()->CreateNewTextureID( true );
@@ -813,6 +821,34 @@ namespace ReactiveDropInventory
 		pInventory->GetResultItems( hResult, details.Base(), &count );
 
 		return details[index];
+	}
+
+#ifdef CLIENT_DLL
+	void AddPromoItem( SteamItemDef_t id )
+	{
+		if ( s_RD_Inventory_Manager.m_PromotionalItemsResult != k_SteamInventoryResultInvalid )
+		{
+			DevMsg( "Not requesting promo item %d: request already in-flight.\n", id );
+			s_RD_Inventory_Manager.m_PromotionalItemsNext.AddToTail( id );
+			return;
+		}
+
+		GET_INVENTORY_OR_BAIL;
+
+		pInventory->AddPromoItem( &s_RD_Inventory_Manager.m_PromotionalItemsResult, id );
+	}
+
+	void RequestGenericPromoItems()
+	{
+		if ( s_RD_Inventory_Manager.m_PromotionalItemsResult != k_SteamInventoryResultInvalid )
+		{
+			DevMsg( "Not requesting generic promo items: request already in-flight.\n" );
+			return;
+		}
+
+		GET_INVENTORY_OR_BAIL;
+
+		pInventory->GrantPromoItems( &s_RD_Inventory_Manager.m_PromotionalItemsResult );
 	}
 
 #undef GET_INVENTORY_OR_BAIL
