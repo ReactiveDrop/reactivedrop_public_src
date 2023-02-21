@@ -3,6 +3,7 @@
 #include "rd_lobby_utils.h"
 #include "asw_util_shared.h"
 #include "jsmn.h"
+#include <ctime>
 
 #ifdef CLIENT_DLL
 #include <vgui/IImage.h>
@@ -474,7 +475,7 @@ namespace ReactiveDropInventory
 		return
 #endif
 
-	static bool ParseDynamicProps( KeyValues *pKV, const char *szDynamicProps )
+	static bool ParseDynamicProps( CUtlStringMap<CUtlString> & props, const char *szDynamicProps )
 	{
 		jsmn_parser parser;
 		jsmntok_t tokens[256];
@@ -502,10 +503,234 @@ namespace ReactiveDropInventory
 			V_strncpy( szKey, &szDynamicProps[tokens[i].start], MIN( tokens[i].end - tokens[i].start + 1, sizeof( szKey ) ) );
 			V_strncpy( szValue, &szDynamicProps[tokens[i + 1].start], MIN( tokens[i + 1].end - tokens[i + 1].start + 1, sizeof( szValue ) ) );
 
-			pKV->SetString( szKey, szValue );
+			props[szKey] = szValue;
 		}
 
 		return true;
+	}
+
+	static void ParseTags( CUtlStringMap<CUtlStringList> & tags, const char *szTags )
+	{
+		if ( *szTags == '\0' )
+		{
+			return;
+		}
+
+		CSplitString tagsSplit( szTags, ";" );
+		FOR_EACH_VEC( tagsSplit, i )
+		{
+			char *szKey = tagsSplit[i];
+			char *szValue = strchr( tagsSplit[i], ':' );
+			*szValue++ = '\0';
+
+			tags[szKey].CopyAndAddToTail( szValue );
+		}
+	}
+
+	static uint32 ParseTimestamp( const char *szTimestamp )
+	{
+		// This is an attrocious way of parsing an ISO 8601 timestamp, but it's fast and we trust the input data.
+		Assert( V_strlen( szTimestamp ) == 16 && szTimestamp[8] == 'T' && szTimestamp[15] == 'Z' );
+
+		struct tm timestamp {};
+		Assert( V_isdigit( szTimestamp[0] ) && V_isdigit( szTimestamp[1] ) && V_isdigit( szTimestamp[2] ) && V_isdigit( szTimestamp[3] ) );
+		timestamp.tm_year = ( szTimestamp[0] - '0' ) * 1000 + ( szTimestamp[1] - '0' ) * 100 + ( szTimestamp[2] - '0' ) * 10 + ( szTimestamp[3] - '0' );
+		Assert( V_isdigit( szTimestamp[4] ) && V_isdigit( szTimestamp[5] ) );
+		timestamp.tm_mon = ( szTimestamp[4] - '0' ) * 10 + ( szTimestamp[5] - '0' );
+		Assert( V_isdigit( szTimestamp[6] ) && V_isdigit( szTimestamp[7] ) );
+		timestamp.tm_mday = ( szTimestamp[6] - '0' ) * 10 + ( szTimestamp[7] - '0' );
+		Assert( V_isdigit( szTimestamp[9] ) && V_isdigit( szTimestamp[10] ) );
+		timestamp.tm_hour = ( szTimestamp[9] - '0' ) * 10 + ( szTimestamp[10] - '0' );
+		Assert( V_isdigit( szTimestamp[11] ) && V_isdigit( szTimestamp[12] ) );
+		timestamp.tm_min = ( szTimestamp[11] - '0' ) * 10 + ( szTimestamp[12] - '0' );
+		Assert( V_isdigit( szTimestamp[13] ) && V_isdigit( szTimestamp[14] ) );
+		timestamp.tm_sec = ( szTimestamp[13] - '0' ) * 10 + ( szTimestamp[14] - '0' );
+
+		return std::mktime( &timestamp );
+	}
+
+	ItemInstance_t::ItemInstance_t( SteamInventoryResult_t hResult, uint32 index )
+	{
+		GET_INVENTORY_OR_BAIL;
+
+		char buf[1536]{};
+		uint32 len = sizeof( buf );
+		if ( pInventory->GetResultItemProperty( hResult, index, "accountid", buf, &len ) )
+		{
+			AccountID.SetFromUint64( strtoull( buf, NULL, 10 ) );
+		}
+		len = sizeof( buf );
+		if ( pInventory->GetResultItemProperty( hResult, index, "itemid", buf, &len ) )
+		{
+			ItemID = strtoull( buf, NULL, 10 );
+		}
+		len = sizeof( buf );
+		if ( pInventory->GetResultItemProperty( hResult, index, "originalitemid", buf, &len ) )
+		{
+			OriginalItemID = strtoull( buf, NULL, 10 );
+		}
+		len = sizeof( buf );
+		if ( pInventory->GetResultItemProperty( hResult, index, "itemdefid", buf, &len ) )
+		{
+			ItemDefID = strtol( buf, NULL, 10 );
+		}
+		len = sizeof( buf );
+		if ( pInventory->GetResultItemProperty( hResult, index, "quantity", buf, &len ) )
+		{
+			Quantity = strtol( buf, NULL, 10 );
+		}
+		len = sizeof( buf );
+		if ( pInventory->GetResultItemProperty( hResult, index, "acquired", buf, &len ) )
+		{
+			Acquired = ParseTimestamp( buf );
+		}
+		len = sizeof( buf );
+		if ( pInventory->GetResultItemProperty( hResult, index, "state_changed_timestamp", buf, &len ) )
+		{
+			StateChangedTimestamp = ParseTimestamp( buf );
+		}
+		len = sizeof( buf );
+		if ( pInventory->GetResultItemProperty( hResult, index, "state", buf, &len ) )
+		{
+			State = buf;
+		}
+		len = sizeof( buf );
+		if ( pInventory->GetResultItemProperty( hResult, index, "origin", buf, &len ) )
+		{
+			Origin = buf;
+		}
+		len = sizeof( buf );
+		if ( pInventory->GetResultItemProperty( hResult, index, "dynamic_props", buf, &len ) )
+		{
+			ParseDynamicProps( DynamicProps, buf );
+		}
+		len = sizeof( buf );
+		if ( pInventory->GetResultItemProperty( hResult, index, "tags", buf, &len ) )
+		{
+			ParseTags( Tags, buf );
+		}
+	}
+
+	static bool DynamicPropertyAllowsArbitraryValues( const char *szPropertyName )
+	{
+		if ( !V_strcmp( szPropertyName, "style" ) )
+			return true;
+
+		return false;
+	}
+
+	void ItemInstance_t::FormatDescription( wchar_t *wszBuf, size_t sizeOfBufferInBytes, const CUtlString &szDesc )
+	{
+		V_UTF8ToUnicode( szDesc, wszBuf, sizeOfBufferInBytes );
+
+		GET_INVENTORY_OR_BAIL;
+
+		char szToken[128]{};
+		wchar_t wszReplacement[1024]{};
+
+		for ( size_t i = 0; i < sizeOfBufferInBytes / sizeof( wchar_t ); i++ )
+		{
+			if ( wszBuf[i] == L'\0' )
+			{
+				return;
+			}
+
+			if ( wszBuf[i] != L'%' )
+			{
+				continue;
+			}
+
+			V_wcsncpy( wszReplacement, L"MISSING", sizeof( wszReplacement ) );
+
+			size_t tokenLength = 1;
+			while ( wszBuf[i + tokenLength] != L'%' && wszBuf[i + tokenLength] != L':' )
+			{
+				if ( wszBuf[i + tokenLength] == L'\0' )
+				{
+					return;
+				}
+
+				Assert( wszBuf[i + tokenLength] < 0x80 ); // assume ASCII
+				szToken[tokenLength - 1] = ( char )wszBuf[i + tokenLength];
+
+				tokenLength++;
+
+				Assert( tokenLength < sizeof( szToken ) );
+			}
+
+			szToken[tokenLength - 1] = '\0';
+
+			if ( wszBuf[i + tokenLength] == L':' )
+			{
+				size_t tokenReplacementLength = 0;
+				tokenLength++;
+
+				while ( wszBuf[i + tokenLength] != L'%' )
+				{
+					if ( wszBuf[i + tokenLength] == L'\0' )
+					{
+						return;
+					}
+
+					szToken[tokenReplacementLength] = wszBuf[i + tokenLength];
+
+					tokenReplacementLength++;
+					tokenLength++;
+
+					Assert( tokenReplacementLength < NELEMS( wszReplacement ) );
+				}
+
+				wszReplacement[tokenReplacementLength] = L'\0';
+			}
+
+			tokenLength++;
+
+			if ( tokenLength == 2 )
+			{
+				// special case: %% is just %
+				V_memmove( &wszBuf[i + 1], &wszBuf[i + 2], sizeOfBufferInBytes - ( i + 2 ) * sizeof( wchar_t ) );
+				i++;
+				continue;
+			}
+
+			if ( !V_stricmp( szToken, "m_unQuantity" ) )
+			{
+				// special case: m_unQuantity is not stored in dynamic_props
+				V_wcsncpy( wszReplacement, UTIL_RD_CommaNumber( Quantity ), sizeof( wszReplacement ) );
+			}
+
+			if ( !DynamicProps.Defined( szToken ) )
+			{
+				// use replacement value as-is
+			}
+			else if ( DynamicPropertyAllowsArbitraryValues( szToken ) )
+			{
+				V_UTF8ToUnicode( DynamicProps[szToken], wszReplacement, sizeof( wszReplacement ) );
+			}
+			else
+			{
+				int64_t nValue = strtoll( DynamicProps[szToken], NULL, 10 );
+				V_wcsncpy( wszReplacement, UTIL_RD_CommaNumber( nValue ), sizeof( wszReplacement ) );
+			}
+
+			size_t replacementLength = 0;
+			while ( wszReplacement[replacementLength] )
+			{
+				replacementLength++;
+			}
+
+			if ( i + replacementLength >= sizeOfBufferInBytes / sizeof( wchar_t ) )
+			{
+				replacementLength = ( sizeOfBufferInBytes - i - 1 ) / sizeof( wchar_t );
+			}
+
+			V_memmove( &wszBuf[i + replacementLength], &wszBuf[i + tokenLength], sizeOfBufferInBytes - ( i + MAX( replacementLength, tokenLength ) ) * sizeof( wchar_t ) );
+			V_memmove( &wszBuf[i], wszReplacement, replacementLength * sizeof( wchar_t ) );
+			if ( replacementLength > tokenLength )
+			{
+				wszBuf[sizeOfBufferInBytes / sizeof( wchar_t ) - 1] = L'\0';
+			}
+		}
 	}
 
 	const ItemDef_t *GetItemDef( SteamItemDef_t id )
@@ -560,7 +785,14 @@ namespace ReactiveDropInventory
 		FETCH_PROPERTY( "item_slot" );
 		pItemDef->ItemSlot = szBuf.Base();
 		FETCH_PROPERTY( "tags" );
-		pItemDef->Tags = szBuf.Base();
+		CSplitString tagsSplit( szBuf.Base(), ";" );
+		FOR_EACH_VEC( tagsSplit, i )
+		{
+			char *szKey = tagsSplit[i];
+			char *szValue = strchr( tagsSplit[i], ':' );
+			*szValue++ = '\0';
+			pItemDef->Tags[szKey].CopyAndAddToTail( szValue );
+		}
 
 		V_snprintf( szKey, sizeof( szKey ), "display_type_%s", szLang );
 		FETCH_PROPERTY( "display_type" );
@@ -621,121 +853,6 @@ namespace ReactiveDropInventory
 		s_ItemDefs.Insert( id, pItemDef );
 
 		return pItemDef;
-	}
-
-	void FormatDescription( wchar_t *wszBuf, size_t sizeOfBufferInBytes, const CUtlString &szDesc, SteamInventoryResult_t hResult, uint32_t index )
-	{
-		V_UTF8ToUnicode( szDesc, wszBuf, sizeOfBufferInBytes );
-
-		GET_INVENTORY_OR_BAIL;
-
-		char szDynamicProps[1500]{};
-		uint32_t count = sizeof( szDynamicProps );
-		if ( !pInventory->GetResultItemProperty( hResult, index, "dynamic_props", szDynamicProps, &count ) )
-		{
-			return;
-		}
-
-		KeyValues::AutoDelete pKV( "DynamicProps" );
-		if ( !ParseDynamicProps( pKV, szDynamicProps ) )
-		{
-			return;
-		}
-
-		char szToken[128]{};
-		wchar_t wszTokenReplacement[128]{};
-
-		for ( size_t i = 0; i < sizeOfBufferInBytes; i++ )
-		{
-			if ( wszBuf[i] == L'\0' )
-			{
-				return;
-			}
-
-			if ( wszBuf[i] != L'%' )
-			{
-				continue;
-			}
-
-			V_wcsncpy( wszTokenReplacement, L"MISSING", sizeof( wszTokenReplacement ) );
-
-			size_t tokenLength = 1;
-			while ( wszBuf[i + tokenLength] != L'%' && wszBuf[i + tokenLength] != L':' )
-			{
-				if ( wszBuf[i + tokenLength] == L'\0' )
-				{
-					return;
-				}
-
-				Assert( wszBuf[i + tokenLength] < 0x80 ); // assume ASCII
-				szToken[tokenLength - 1] = ( char )wszBuf[i + tokenLength];
-
-				tokenLength++;
-
-				Assert( tokenLength < sizeof( szToken ) );
-			}
-
-			szToken[tokenLength - 1] = '\0';
-
-			if ( wszBuf[i + tokenLength] == L':' )
-			{
-				size_t tokenReplacementLength = 0;
-				tokenLength++;
-
-				while ( wszBuf[i + tokenLength] != L'%' )
-				{
-					if ( wszBuf[i + tokenLength] == L'\0' )
-					{
-						return;
-					}
-
-					szToken[tokenReplacementLength] = wszBuf[i + tokenLength];
-
-					tokenReplacementLength++;
-					tokenLength++;
-
-					Assert( tokenReplacementLength < NELEMS( wszTokenReplacement ) );
-				}
-
-				wszTokenReplacement[tokenReplacementLength] = L'\0';
-			}
-
-			tokenLength++;
-
-			if ( tokenLength == 2 )
-			{
-				// special case: %% is just %
-				V_memmove( &wszBuf[i + 1], &wszBuf[i + 2], sizeOfBufferInBytes - ( i + 2 ) * sizeof( wchar_t ) );
-				i++;
-				continue;
-			}
-
-			if ( !V_stricmp( szToken, "m_unQuantity" ) )
-			{
-				// special case: m_unQuantity is not stored in dynamic_props
-				SteamItemDetails_t details = GetItemDetails( hResult, index );
-				V_snwprintf( wszTokenReplacement, ARRAYSIZE( wszTokenReplacement ), L"%d", details.m_unQuantity );
-			}
-
-			const wchar_t *wszReplacement = pKV->GetWString( szToken, wszTokenReplacement );
-			size_t replacementLength = 0;
-			while ( wszReplacement[replacementLength] )
-			{
-				replacementLength++;
-			}
-
-			if ( i + replacementLength >= sizeOfBufferInBytes / sizeof( wchar_t ) )
-			{
-				replacementLength = ( sizeOfBufferInBytes - i - 1 ) / sizeof( wchar_t );
-			}
-
-			V_memmove( &wszBuf[i + replacementLength], &wszBuf[i + tokenLength], sizeOfBufferInBytes - ( i + MAX( replacementLength, tokenLength ) ) * sizeof( wchar_t ) );
-			V_memmove( &wszBuf[i], wszReplacement, replacementLength * sizeof( wchar_t ) );
-			if ( replacementLength > tokenLength )
-			{
-				wszBuf[sizeOfBufferInBytes / sizeof( wchar_t ) - 1] = L'\0';
-			}
-		}
 	}
 
 	bool DecodeItemData( SteamInventoryResult_t &hResult, const char *szEncodedData )

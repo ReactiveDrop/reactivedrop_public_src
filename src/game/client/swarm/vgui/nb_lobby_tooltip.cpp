@@ -179,10 +179,10 @@ void CNB_Lobby_Tooltip::OnTick()
 	{
 		m_pTitle->SetVisible( true );
 
-		SteamItemDetails_t details = ReactiveDropInventory::GetItemDetails( m_hInventoryResult, 0 );
-		if ( details.m_itemId != m_nLastItemInstance )
+		ReactiveDropInventory::ItemInstance_t details{ m_hInventoryResult, 0 };
+		if ( details.ItemID != m_nLastItemInstance )
 		{
-			const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( details.m_iDefinition );
+			const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( details.ItemDefID );
 			if ( !pDef )
 			{
 				return;
@@ -200,7 +200,7 @@ void CNB_Lobby_Tooltip::OnTick()
 
 			m_pItemDescription->SetText( L"" );
 
-			ReactiveDropInventory::FormatDescription( wszBuf, sizeof( wszBuf ), pDef->BeforeDescription, m_hInventoryResult, 0 );
+			details.FormatDescription( wszBuf, sizeof( wszBuf ), pDef->BeforeDescription );
 			if ( wszBuf[0] )
 			{
 				m_pItemDescription->InsertColorChange( rd_briefing_item_details_color2.GetColor() );
@@ -212,9 +212,9 @@ void CNB_Lobby_Tooltip::OnTick()
 			m_pItemDescription->InsertColorChange( rd_briefing_item_details_color1.GetColor() );
 			m_pItemDescription->InsertString( wszBuf );
 
-			if ( !pDef->AfterDescriptionOnlyMultiStack || details.m_unQuantity > 1 )
+			if ( !pDef->AfterDescriptionOnlyMultiStack || details.Quantity > 1 )
 			{
-				ReactiveDropInventory::FormatDescription( wszBuf, sizeof( wszBuf ), pDef->AfterDescription, m_hInventoryResult, 0 );
+				details.FormatDescription( wszBuf, sizeof( wszBuf ), pDef->AfterDescription );
 				if ( wszBuf[0] )
 				{
 					m_pItemDescription->InsertColorChange( rd_briefing_item_details_color2.GetColor() );
@@ -228,7 +228,7 @@ void CNB_Lobby_Tooltip::OnTick()
 			else
 				m_flInventoryDetailsAfter = gpGlobals->realtime + rd_briefing_item_details_delay.GetFloat();
 
-			m_nLastItemInstance = details.m_itemId;
+			m_nLastItemInstance = details.ItemID;
 		}
 
 		if ( gpGlobals->realtime < m_flInventoryDetailsAfter )

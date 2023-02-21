@@ -109,7 +109,7 @@ void CRD_Collection_Tab_Inventory::OnThink()
 			continue;
 		}
 
-		m_pGrid->AddEntry( new CRD_Collection_Entry_Inventory( m_pGrid, "CollectionEntryInventory", i, details[i] ) );
+		m_pGrid->AddEntry( new CRD_Collection_Entry_Inventory( m_pGrid, "CollectionEntryInventory", m_hResult, i ) );
 	}
 
 	UpdateErrorMessage( m_pGrid );
@@ -200,7 +200,7 @@ void CRD_Collection_Details_Inventory::DisplayEntry( TGD_Entry *pEntry )
 		return;
 	}
 
-	const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( pInvEntry->m_Details.m_iDefinition );
+	const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( pInvEntry->m_Details.ItemDefID );
 	Assert( pDef );
 	if ( !pDef )
 	{
@@ -223,7 +223,7 @@ void CRD_Collection_Details_Inventory::DisplayEntry( TGD_Entry *pEntry )
 	m_pTitle->InsertColorChange( rd_briefing_item_details_color1.GetColor() );
 	m_pTitle->InsertString( wszBuf );
 
-	ReactiveDropInventory::FormatDescription( wszBuf, sizeof( wszBuf ), pDef->BeforeDescription, pTab->m_hResult, pInvEntry->m_Index );
+	pInvEntry->m_Details.FormatDescription( wszBuf, sizeof( wszBuf ), pDef->BeforeDescription );
 	if ( wszBuf[0] )
 	{
 		m_pDescription->InsertColorChange( rd_briefing_item_details_color2.GetColor() );
@@ -235,9 +235,9 @@ void CRD_Collection_Details_Inventory::DisplayEntry( TGD_Entry *pEntry )
 	m_pDescription->InsertColorChange( rd_briefing_item_details_color1.GetColor() );
 	m_pDescription->InsertString( wszBuf );
 
-	if ( !pDef->AfterDescriptionOnlyMultiStack || pInvEntry->m_Details.m_unQuantity > 1 )
+	if ( !pDef->AfterDescriptionOnlyMultiStack || pInvEntry->m_Details.Quantity > 1 )
 	{
-		ReactiveDropInventory::FormatDescription( wszBuf, sizeof( wszBuf ), pDef->AfterDescription, pTab->m_hResult, pInvEntry->m_Index );
+		pInvEntry->m_Details.FormatDescription( wszBuf, sizeof( wszBuf ), pDef->AfterDescription );
 		if ( wszBuf[0] )
 		{
 			m_pDescription->InsertColorChange( rd_briefing_item_details_color2.GetColor() );
@@ -247,7 +247,7 @@ void CRD_Collection_Details_Inventory::DisplayEntry( TGD_Entry *pEntry )
 	}
 
 	ConVarRef equipID( VarArgs( "rd_equipped_%s", pTab->m_szSlot ) );
-	if ( pInvEntry->m_Details.m_itemId == strtoull( equipID.GetString(), NULL, 10 ) )
+	if ( pInvEntry->m_Details.ItemID == strtoull( equipID.GetString(), NULL, 10 ) )
 	{
 		m_pDescription->InsertColorChange( Color( 255, 255, 255, 255 ) );
 		m_pDescription->InsertString( L"\n\n" );
@@ -257,25 +257,25 @@ void CRD_Collection_Details_Inventory::DisplayEntry( TGD_Entry *pEntry )
 	InvalidateLayout();
 }
 
-CRD_Collection_Entry_Inventory::CRD_Collection_Entry_Inventory( TGD_Grid *parent, const char *panelName, int index, SteamItemDetails_t details )
-	: BaseClass( parent, panelName )
+CRD_Collection_Entry_Inventory::CRD_Collection_Entry_Inventory( TGD_Grid *parent, const char *panelName, SteamInventoryResult_t hResult, int index )
+	: BaseClass( parent, panelName ),
+	m_Details{ hResult, index }
 {
 	m_pIcon = new vgui::ImagePanel( this, "Icon" );
 	m_pEquippedMarker = new vgui::ImagePanel( this, "EquippedMarker" );
 
 	m_Index = index;
-	m_Details = details;
 }
 
 void CRD_Collection_Entry_Inventory::ApplySchemeSettings( vgui::IScheme *pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
-	m_pIcon->SetImage( ReactiveDropInventory::GetItemDef( m_Details.m_iDefinition )->Icon );
+	m_pIcon->SetImage( ReactiveDropInventory::GetItemDef( m_Details.ItemDefID )->Icon );
 
 	ConVarRef equipID( VarArgs( "rd_equipped_%s", GetTab()->m_szSlot ) );
 	Assert( equipID.IsValid() );
-	m_pEquippedMarker->SetVisible( strtoull( equipID.GetString(), NULL, 10 ) == m_Details.m_itemId );
+	m_pEquippedMarker->SetVisible( strtoull( equipID.GetString(), NULL, 10 ) == m_Details.ItemID );
 }
 
 void CRD_Collection_Entry_Inventory::ApplyEntry()
@@ -283,7 +283,7 @@ void CRD_Collection_Entry_Inventory::ApplyEntry()
 	ConVarRef equipID( VarArgs( "rd_equipped_%s", GetTab()->m_szSlot ) );
 	Assert( equipID.IsValid() );
 
-	const char *szValue = VarArgs( "%llu", m_Details.m_itemId );
+	const char *szValue = VarArgs( "%llu", m_Details.ItemID );
 	equipID.SetValue( V_strcmp( equipID.GetString(), szValue ) ? szValue : "0" );
 	engine->ClientCmd( "host_writeconfig\n" );
 

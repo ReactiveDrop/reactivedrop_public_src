@@ -3,7 +3,7 @@
 #include "tabbedgriddetails.h"
 #include "asw_model_panel.h"
 #include "asw_marine_skills.h"
-#include "steam/steam_api.h"
+#include "rd_inventory_shared.h"
 
 class CASW_WeaponInfo;
 class CASW_Marine_Profile;
@@ -186,7 +186,7 @@ class CRD_Collection_Entry_Inventory : public TGD_Entry
 {
 	DECLARE_CLASS_SIMPLE( CRD_Collection_Entry_Inventory, TGD_Entry );
 public:
-	CRD_Collection_Entry_Inventory( TGD_Grid *parent, const char *panelName, int index, SteamItemDetails_t details );
+	CRD_Collection_Entry_Inventory( TGD_Grid *parent, const char *panelName, SteamInventoryResult_t hResult, int index );
 
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 	virtual void ApplyEntry() override;
@@ -197,7 +197,7 @@ public:
 	vgui::ImagePanel *m_pEquippedMarker;
 
 	int m_Index;
-	SteamItemDetails_t m_Details;
+	ReactiveDropInventory::ItemInstance_t m_Details;
 };
 
 class CRD_Collection_Tab_Swarmopedia : public TGD_Tab
