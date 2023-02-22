@@ -22,8 +22,6 @@
 #include "tier0/memdbgon.h"
 
 ConVar rd_briefing_item_details_delay( "rd_briefing_item_details_delay", "3.0", FCVAR_NONE );
-ConVar rd_briefing_item_details_color1( "rd_briefing_item_details_color1", "169 213 255 255", FCVAR_NONE );
-ConVar rd_briefing_item_details_color2( "rd_briefing_item_details_color2", "83 148 192 255", FCVAR_NONE );
 
 CNB_Lobby_Tooltip::CNB_Lobby_Tooltip( vgui::Panel *parent, const char *name ) : BaseClass( parent, name )
 {
@@ -57,8 +55,10 @@ CNB_Lobby_Tooltip::CNB_Lobby_Tooltip( vgui::Panel *parent, const char *name ) : 
 	m_nLobbySlot = -1;
 	m_nLastWeaponHash = -1;
 	m_nLastInventorySlot = -1;
-	m_nLastItemInstance = k_SteamItemInstanceIDInvalid;
+	m_bMarineTooltip = false;
 	m_bPromotionTooltip = false;
+	m_bMedalTooltip = false;
+	m_iLastMedal = 0;
 
 	vgui::ivgui()->AddTickSignal( GetVPanel() );
 }
@@ -102,7 +102,7 @@ void CNB_Lobby_Tooltip::ShowMarineTooltip( int nLobbySlot )
 	m_bMarineTooltip = true;
 	m_nLobbySlot = nLobbySlot;
 	m_bPromotionTooltip = false;
-	m_hInventoryResult = k_SteamInventoryResultInvalid;
+	m_bMedalTooltip = false;
 }
 
 void CNB_Lobby_Tooltip::ShowWeaponTooltip( int nLobbySlot, int nInventorySlot )
@@ -111,7 +111,7 @@ void CNB_Lobby_Tooltip::ShowWeaponTooltip( int nLobbySlot, int nInventorySlot )
 	m_nLobbySlot = nLobbySlot;
 	m_nInventorySlot = nInventorySlot;
 	m_bPromotionTooltip = false;
-	m_hInventoryResult = k_SteamInventoryResultInvalid;
+	m_bMedalTooltip = false;
 }
 
 void CNB_Lobby_Tooltip::ShowMarinePromotionTooltip( int nLobbySlot )
@@ -119,15 +119,19 @@ void CNB_Lobby_Tooltip::ShowMarinePromotionTooltip( int nLobbySlot )
 	m_bMarineTooltip = false;
 	m_nLobbySlot = nLobbySlot;
 	m_bPromotionTooltip = true;
-	m_hInventoryResult = k_SteamInventoryResultInvalid;
+	m_bMedalTooltip = false;
 }
 
-void CNB_Lobby_Tooltip::ShowMarineMedalTooltip( int nLobbySlot, SteamInventoryResult_t hResult )
+void CNB_Lobby_Tooltip::ShowMarineMedalTooltip( int nLobbySlot )
 {
+	// force reset (this handles cases like multiple players with HoIAF medals)
+	if ( m_nLobbySlot != nLobbySlot )
+		m_iLastMedal = -1;
+
 	m_bMarineTooltip = false;
 	m_nLobbySlot = nLobbySlot;
 	m_bPromotionTooltip = false;
-	m_hInventoryResult = hResult;
+	m_bMedalTooltip = true;
 }
 
 void CNB_Lobby_Tooltip::OnTick()
@@ -165,24 +169,19 @@ void CNB_Lobby_Tooltip::OnTick()
 		nPromotion = Briefing()->GetCommanderPromotion( m_nLobbySlot );
 	}
 
-	if ( m_hInventoryResult == k_SteamInventoryResultInvalid )
-	{
-		m_nLastItemInstance = k_SteamItemInstanceIDInvalid;
-	}
-
 	if ( m_nLobbySlot == -1 || !Briefing()->IsLobbySlotOccupied( m_nLobbySlot ) || ( m_bPromotionTooltip && nPromotion <= 0 ) )
 	{
 		return;
 	}
 
-	if ( m_hInventoryResult != k_SteamInventoryResultInvalid )
+	if ( m_bMedalTooltip )
 	{
 		m_pTitle->SetVisible( true );
 
-		ReactiveDropInventory::ItemInstance_t details{ m_hInventoryResult, 0 };
-		if ( details.ItemID != m_nLastItemInstance )
+		const CRD_ItemInstance &details = Briefing()->GetEquippedMedal( m_nLobbySlot );
+		if ( details.m_iItemDefID != m_iLastMedal )
 		{
-			const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( details.ItemDefID );
+			const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( details.m_iItemDefID );
 			if ( !pDef )
 			{
 				return;
@@ -198,37 +197,14 @@ void CNB_Lobby_Tooltip::OnTick()
 			V_UTF8ToUnicode( pDef->DisplayType, wszBuf, sizeof( wszBuf ) );
 			m_pPromotionLabel->SetText( wszBuf );
 
-			m_pItemDescription->SetText( L"" );
-
-			details.FormatDescription( wszBuf, sizeof( wszBuf ), pDef->BeforeDescription );
-			if ( wszBuf[0] )
-			{
-				m_pItemDescription->InsertColorChange( rd_briefing_item_details_color2.GetColor() );
-				m_pItemDescription->InsertString( wszBuf );
-				m_pItemDescription->InsertString( L"\n\n" );
-			}
-
-			V_UTF8ToUnicode( pDef->Description, wszBuf, sizeof( wszBuf ) );
-			m_pItemDescription->InsertColorChange( rd_briefing_item_details_color1.GetColor() );
-			m_pItemDescription->InsertString( wszBuf );
-
-			if ( !pDef->AfterDescriptionOnlyMultiStack || details.Quantity > 1 )
-			{
-				details.FormatDescription( wszBuf, sizeof( wszBuf ), pDef->AfterDescription );
-				if ( wszBuf[0] )
-				{
-					m_pItemDescription->InsertColorChange( rd_briefing_item_details_color2.GetColor() );
-					m_pItemDescription->InsertString( L"\n\n" );
-					m_pItemDescription->InsertString( wszBuf );
-				}
-			}
+			details.FormatDescription( m_pItemDescription );
 
 			if ( rd_briefing_item_details_delay.GetFloat() < 0 )
 				m_flInventoryDetailsAfter = FLT_MAX;
 			else
 				m_flInventoryDetailsAfter = gpGlobals->realtime + rd_briefing_item_details_delay.GetFloat();
 
-			m_nLastItemInstance = details.ItemID;
+			m_iLastMedal = details.m_iItemDefID;
 		}
 
 		if ( gpGlobals->realtime < m_flInventoryDetailsAfter )

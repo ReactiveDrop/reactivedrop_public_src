@@ -246,6 +246,7 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Player, DT_ASW_Player )
 	SendPropQAngles( SENDINFO( m_angMarineAutoAimFromClient ), 10, SPROP_CHANGES_OFTEN ),
 	SendPropBool( SENDINFO( m_bWantsSpectatorOnly ) ),
 	SendPropFloat( SENDINFO( m_flInactiveKickWarning ) ),
+	SendPropDataTable( SENDINFO_DT( m_EquippedMedal ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Player )
@@ -420,6 +421,11 @@ CASW_Player::CASW_Player()
 
 	m_flLastActiveTime = 0.0f;
 	m_flInactiveKickWarning = 0.0f;
+
+	for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS; i++ )
+	{
+		m_EquippedItems[i] = k_SteamInventoryResultInvalid;
+	}
 }
 
 
@@ -428,6 +434,11 @@ CASW_Player::~CASW_Player()
 	m_PlayerAnimState->Release();
 	if (ASWGameRules())
 		ASWGameRules()->SetMaxMarines(this);
+
+	for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS; i++ )
+	{
+		ReactiveDropInventory::DecodeItemData( m_EquippedItems[i], "" );
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -3367,4 +3378,19 @@ HSCRIPT CASW_Player::ScriptGetMarine()
 	}
 
 	return NULL;
+}
+
+void CASW_Player::OnEquippedItemLoaded( const char *szSlot, SteamInventoryResult_t hResult )
+{
+	if ( !V_strcmp( szSlot, "medal" ) )
+	{
+		if ( hResult == k_SteamInventoryResultInvalid )
+		{
+			m_EquippedMedal.GetForModify().Reset();
+		}
+		else
+		{
+			m_EquippedMedal.GetForModify().SetFromInstance( ReactiveDropInventory::ItemInstance_t{ hResult, 0 } );
+		}
+	}
 }

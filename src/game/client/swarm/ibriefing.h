@@ -7,6 +7,12 @@
 #include "asw_shareddefs.h"
 
 class CASW_Marine_Profile;
+#ifdef CLIENT_DLL
+#define IBriefing_ItemInstance C_RD_ItemInstance
+#else
+#define IBriefing_ItemInstance CRD_ItemInstance
+#endif
+class IBriefing_ItemInstance;
 
 // interface for getting briefing state
 abstract_class IBriefing
@@ -61,11 +67,7 @@ public:
 	virtual void AutoSelectFullSquadForSingleplayer( int nFirstSelectedProfileIndex ) = 0;
 
 	virtual void ResetLastChatterTime() = 0;
-
-#if !defined(NO_STEAM)
-	virtual int GetMedalUpdateCount( int nLobbySlot ) = 0;
-	virtual const char *GetEncodedMedalData( int nLobbySlot ) = 0;
-#endif
+	virtual const IBriefing_ItemInstance &GetEquippedMedal( int nLobbySlot ) = 0;
 };
 
 #define NUM_BRIEFING_LOBBY_SLOTS MAX( ASW_MAX_MARINE_RESOURCES, MAX_PLAYERS + ASW_NUM_MARINE_PROFILES - 1 ) // was 9, was 4

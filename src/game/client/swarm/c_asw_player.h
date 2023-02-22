@@ -13,6 +13,7 @@
 #include "asw_info_message_shared.h"
 #include "steam/steam_api.h"
 #include <vgui_controls/PHandle.h>
+#include "rd_inventory_shared.h"
 
 class C_ASW_Game_Resource;
 
@@ -317,6 +318,7 @@ public:
 	int32 m_iStatNumXP[ ASW_NUM_XP_TYPES ];
 	CNetworkVar( int, m_iNetworkedXP );
 	CNetworkVar( int, m_iNetworkedPromotion );
+	CNetworkVarEmbedded( CRD_ItemInstance, m_EquippedMedal );
 
 	bool m_bPendingSteamStats;
 	float m_flPendingSteamStatsStart;

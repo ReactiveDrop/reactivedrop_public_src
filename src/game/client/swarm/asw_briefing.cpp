@@ -17,6 +17,7 @@
 #include "voice_status.h"
 #include "asw_deathmatch_mode.h"
 #include "rd_lobby_utils.h"
+#include "rd_inventory_shared.h"
 
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -986,34 +987,12 @@ bool CASW_Briefing::IsCommanderSpeaking( int nLobbySlot )
 	return bTalking;
 }
 
-int CASW_Briefing::GetMedalUpdateCount( int nLobbySlot )
+const CRD_ItemInstance &CASW_Briefing::GetEquippedMedal( int nLobbySlot )
 {
-	ISteamMatchmaking *pMatchmaking = SteamMatchmaking();
-	CSteamID currentLobby = UTIL_RD_GetCurrentLobbyID();
-	if ( !pMatchmaking || !currentLobby.IsValid() )
-	{
-		return 0;
-	}
+	static const CRD_ItemInstance s_empty;
 
-	const char *sz = pMatchmaking->GetLobbyMemberData( currentLobby, GetCommanderSteamID( nLobbySlot ), "rd_equipped_medal:updates" );
-	if ( !sz || !*sz )
-	{
-		return 0;
-	}
+	UpdateLobbySlotMapping();
 
-	return atoi( sz );
-}
-
-const char *CASW_Briefing::GetEncodedMedalData( int nLobbySlot )
-{
-	ISteamMatchmaking *pMatchmaking = SteamMatchmaking();
-	CSteamID currentLobby = UTIL_RD_GetCurrentLobbyID();
-	if ( !pMatchmaking || !currentLobby.IsValid() )
-	{
-		return "";
-	}
-
-	const char *sz = pMatchmaking->GetLobbyMemberData( currentLobby, GetCommanderSteamID( nLobbySlot ), "rd_equipped_medal" );
-
-	return sz ? sz : "";
+	C_ASW_Player *pPlayer = m_LobbySlotMapping[nLobbySlot].m_hPlayer.Get();
+	return pPlayer ? pPlayer->m_EquippedMedal : s_empty;
 }

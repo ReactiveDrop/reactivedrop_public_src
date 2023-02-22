@@ -10,7 +10,6 @@
 
 
 extern ConVar rd_briefing_item_details_color1;
-extern ConVar rd_briefing_item_details_color2;
 
 CRD_Collection_Tab_Inventory::CRD_Collection_Tab_Inventory( TabbedGridDetails *parent, const char *szLabel, const char *szSlot )
 	: BaseClass( parent, szLabel )
@@ -223,28 +222,7 @@ void CRD_Collection_Details_Inventory::DisplayEntry( TGD_Entry *pEntry )
 	m_pTitle->InsertColorChange( rd_briefing_item_details_color1.GetColor() );
 	m_pTitle->InsertString( wszBuf );
 
-	pInvEntry->m_Details.FormatDescription( wszBuf, sizeof( wszBuf ), pDef->BeforeDescription );
-	if ( wszBuf[0] )
-	{
-		m_pDescription->InsertColorChange( rd_briefing_item_details_color2.GetColor() );
-		m_pDescription->InsertString( wszBuf );
-		m_pDescription->InsertString( L"\n\n" );
-	}
-
-	V_UTF8ToUnicode( pDef->Description, wszBuf, sizeof( wszBuf ) );
-	m_pDescription->InsertColorChange( rd_briefing_item_details_color1.GetColor() );
-	m_pDescription->InsertString( wszBuf );
-
-	if ( !pDef->AfterDescriptionOnlyMultiStack || pInvEntry->m_Details.Quantity > 1 )
-	{
-		pInvEntry->m_Details.FormatDescription( wszBuf, sizeof( wszBuf ), pDef->AfterDescription );
-		if ( wszBuf[0] )
-		{
-			m_pDescription->InsertColorChange( rd_briefing_item_details_color2.GetColor() );
-			m_pDescription->InsertString( L"\n\n" );
-			m_pDescription->InsertString( wszBuf );
-		}
-	}
+	pInvEntry->m_Details.FormatDescription( m_pDescription );
 
 	ConVarRef equipID( VarArgs( "rd_equipped_%s", pTab->m_szSlot ) );
 	if ( pInvEntry->m_Details.ItemID == strtoull( equipID.GetString(), NULL, 10 ) )

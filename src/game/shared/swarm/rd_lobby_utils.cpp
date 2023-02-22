@@ -201,14 +201,6 @@ static void DebugSpewLobby( CSteamID lobby )
 			{
 				CSteamID member = SteamMatchmaking()->GetLobbyMemberByIndex( lobby, i );
 				DevMsg( 3, "member %d: %llu \"%s\"\n", i, member.ConvertToUint64(), SteamFriends()->GetFriendPersonaName( member ) );
-
-				const char *szMemberData = SteamMatchmaking()->GetLobbyMemberData( lobby, member, "rd_equipped_medal" );
-				if ( szMemberData && *szMemberData )
-					DevMsg( 3, "rd_equipped_medal = %s\n", szMemberData );
-
-				szMemberData = SteamMatchmaking()->GetLobbyMemberData( lobby, member, "rd_equipped_medal:updates" );
-				if ( szMemberData && *szMemberData )
-					DevMsg( 3, "rd_equipped_medal:updates = %s\n", szMemberData );
 			}
 		}
 

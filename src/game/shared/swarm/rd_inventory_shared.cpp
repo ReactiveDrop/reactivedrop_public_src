@@ -12,15 +12,18 @@
 #include <vgui_controls/RichText.h>
 #include "lodepng.h"
 #include "asw_gamerules.h"
+#include "asw_equipment_list.h"
 #include "rd_workshop.h"
 #include "rd_missions_shared.h"
 #include "asw_deathmatch_mode_light.h"
 #include "gameui/swarm/vitemshowcase.h"
+#else
+#include "asw_player.h"
 #endif
-
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
 
 #ifdef GAME_DLL
 extern ConVar rd_dedicated_server_language;
@@ -28,14 +31,14 @@ extern ConVar rd_dedicated_server_language;
 
 static CUtlMap<SteamItemDef_t, ReactiveDropInventory::ItemDef_t *> s_ItemDefs( DefLessFunc( SteamItemDef_t ) );
 
-static class CRD_Inventory_Manager : public CAutoGameSystem
+static class CRD_Inventory_Manager final : public CAutoGameSystem
 {
 public:
 	CRD_Inventory_Manager() : CAutoGameSystem( "CRD_Inventory_Manager" )
 	{
 	}
 
-	virtual ~CRD_Inventory_Manager()
+	~CRD_Inventory_Manager()
 	{
 		ISteamInventory *pInventory = SteamInventory();
 #ifdef GAME_DLL
@@ -46,20 +49,31 @@ public:
 #endif
 		if ( pInventory )
 		{
+			pInventory->DestroyResult( m_DebugPrintInventoryResult );
 #ifdef CLIENT_DLL
-			pInventory->DestroyResult( m_EquippedMedalResult );
 			pInventory->DestroyResult( m_PromotionalItemsResult );
 			for ( int i = 0; i < NELEMS( m_PlaytimeItemGeneratorResult ); i++ )
 			{
 				pInventory->DestroyResult( m_PlaytimeItemGeneratorResult[i] );
 			}
 			pInventory->DestroyResult( m_InspectItemResult );
+			if ( m_pPreparingEquipNotification )
+			{
+				if ( KeyValues *pPending = m_pPreparingEquipNotification->FindKey( "pending" ) )
+				{
+					FOR_EACH_VALUE( pPending, pResult )
+					{
+						pInventory->DestroyResult( pResult->GetInt() );
+					}
+				}
+
+				m_pPreparingEquipNotification->deleteThis();
+			}
 #endif
-			pInventory->DestroyResult( m_DebugPrintInventoryResult );
 		}
 	}
 
-	virtual void PostInit()
+	void PostInit() override
 	{
 		ISteamInventory *pInventory = SteamInventory();
 #ifdef GAME_DLL
@@ -80,7 +94,7 @@ public:
 		}
 	}
 
-	virtual void LevelInitPreEntity()
+	void LevelInitPreEntity() override
 	{
 		ISteamInventory *pInventory = SteamInventory();
 #ifdef GAME_DLL
@@ -104,85 +118,111 @@ public:
 				Warning( "Failed to load inventory item definitions!\n" );
 			}
 		}
+
+#ifdef CLIENT_DLL
+		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS; i++ )
+		{
+			OnEquippedItemChanged( ReactiveDropInventory::g_InventorySlotNames[i], false );
+		}
+#endif
+	}
+
+	void LevelShutdownPreEntity() override
+	{
+		ISteamInventory *pInventory = SteamInventory();
+#ifdef GAME_DLL
+		if ( engine->IsDedicatedServer() )
+		{
+			pInventory = SteamGameServerInventory();
+		}
+#endif
+		if ( !pInventory )
+		{
+			DevWarning( "Cannot access ISteamInventory!\n" );
+			return;
+		}
+
+#ifdef CLIENT_DLL
+		if ( m_pPreparingEquipNotification )
+		{
+			if ( KeyValues *pPending = m_pPreparingEquipNotification->FindKey( "pending" ) )
+			{
+				FOR_EACH_VALUE( pPending, pResult )
+				{
+					pInventory->DestroyResult( pResult->GetInt() );
+				}
+			}
+
+			m_pPreparingEquipNotification->deleteThis();
+			m_pPreparingEquipNotification = NULL;
+		}
+#endif
 	}
 
 #ifdef CLIENT_DLL
-	void OnEquippedMedalIDChanged()
+	void OnEquippedItemChanged( const char *szSlot, bool bSendIfEmpty = true )
 	{
-		extern ConVar rd_equipped_medal;
-
 		ISteamInventory *pInventory = SteamInventory();
 
-		SteamItemInstanceID_t id = strtoull( rd_equipped_medal.GetString(), NULL, 10 );
+		ConVarRef cv{ CFmtStr{ "rd_equipped_%s", szSlot } };
+		if ( !pInventory || !cv.IsValid() || !engine->IsConnected() || engine->IsPlayingDemo() )
+			return;
 
-		if ( pInventory )
+		SteamItemInstanceID_t id = strtoull( cv.GetString(), NULL, 10 );
+
+		if ( m_pPreparingEquipNotification )
 		{
-			pInventory->DestroyResult( m_EquippedMedalResult );
+			KeyValues *pPending = m_pPreparingEquipNotification->FindKey( CFmtStr{ "pending/%s", szSlot } );
+			if ( pPending )
+			{
+				pInventory->DestroyResult( pPending->GetInt() );
+				m_pPreparingEquipNotification->FindKey( "pending" )->RemoveSubKey( pPending );
+				pPending->deleteThis();
+			}
 		}
-
-		m_EquippedMedalResult = k_SteamInventoryResultInvalid;
+		else
+		{
+			m_pPreparingEquipNotification = new KeyValues{ "EquippedItems" };
+		}
 
 		if ( id == 0 || id == k_SteamItemInstanceIDInvalid )
 		{
-			SendMedalBlob( UTIL_RD_GetCurrentLobbyID() );
+			if ( !bSendIfEmpty )
+				return;
+
+			m_pPreparingEquipNotification->SetString( szSlot, "" );
+			CheckSendEquipNotification();
 			return;
 		}
 
-		if ( !pInventory )
+		SteamInventoryResult_t hResult;
+		if ( pInventory->GetItemsByID( &hResult, &id, 1 ) )
 		{
-			Warning( "ISteamInventory unavailable! Unable to retrieve equipped medal.\n" );
-			SendMedalBlob( UTIL_RD_GetCurrentLobbyID() );
-			return;
+			m_pPreparingEquipNotification->SetInt( CFmtStr{ "pending/%s", szSlot }, hResult );
 		}
-
-		pInventory->GetItemsByID( &m_EquippedMedalResult, &id, 1 );
 	}
 
-	void SendMedalBlob( CSteamID currentLobby )
+	void CheckSendEquipNotification()
 	{
-		ISteamUser *pUser = SteamUser();
-		ISteamInventory *pInventory = SteamInventory();
-		ISteamMatchmaking *pMatchmaking = SteamMatchmaking();
-		if ( !pUser || !pInventory || !pMatchmaking || !currentLobby.IsValid() )
+		if ( !m_pPreparingEquipNotification )
 		{
-			// no lobby to send to
 			return;
 		}
 
-		char szEncoded[2048]{};
-		if ( m_EquippedMedalResult != k_SteamInventoryResultInvalid )
+		KeyValues *pPending = m_pPreparingEquipNotification->FindKey( "pending" );
+		if ( pPending && !pPending->GetFirstSubKey() )
 		{
-			if ( pInventory->GetResultStatus( m_EquippedMedalResult ) == k_EResultPending )
-			{
-				DevMsg( "Not sending equipped medal to lobby - inventory request in pending state!\n" );
-				return;
-			}
-
-			uint32_t count;
-			if ( !pInventory->GetResultItems( m_EquippedMedalResult, NULL, &count ) || !count )
-			{
-				DevWarning( "No equipped medal for ID (%s)\n", UTIL_RD_EResultToString( pInventory->GetResultStatus( m_EquippedMedalResult ) ) );
-			}
-			else
-			{
-				byte rawEncoded[1024];
-				count = NELEMS( rawEncoded );
-
-				if ( !pInventory->SerializeResult( m_EquippedMedalResult, rawEncoded, &count ) )
-				{
-					Warning( "Failed to serialize equipped medal!\n" );
-				}
-				else
-				{
-					V_binarytohex( rawEncoded, count, szEncoded, sizeof( szEncoded ) );
-				}
-			}
+			m_pPreparingEquipNotification->RemoveSubKey( pPending );
+			pPending->deleteThis();
+			pPending = NULL;
 		}
 
-		pMatchmaking->SetLobbyMemberData( currentLobby, "rd_equipped_medal", szEncoded );
-		const char *sz = pMatchmaking->GetLobbyMemberData( currentLobby, pUser->GetSteamID(), "rd_equipped_medal:updates" );
-		int nUpdateCount = sz ? atoi( sz ) : 0;
-		pMatchmaking->SetLobbyMemberData( currentLobby, "rd_equipped_medal:updates", VarArgs( "%d", nUpdateCount + 1 ) );
+		if ( !pPending )
+		{
+			engine->ServerCmdKeyValues( m_pPreparingEquipNotification );
+			m_pPreparingEquipNotification = NULL;
+			return;
+		}
 	}
 
 	void HandleItemDropResult( SteamInventoryResult_t &hResult )
@@ -209,6 +249,16 @@ public:
 		{
 			Msg( "Result %08x (%s, age %d sec) has %d items:\n", hResult, UTIL_RD_EResultToString( pInventory->GetResultStatus( hResult ) ), SteamUtils()->GetServerRealTime() - pInventory->GetResultTimestamp( hResult ), count );
 
+			uint32 nSerializedBufferSize{};
+			if ( pInventory->SerializeResult( hResult, NULL, &nSerializedBufferSize ) )
+			{
+				byte *pSerialized = ( byte * )stackalloc( nSerializedBufferSize );
+				pInventory->SerializeResult( hResult, pSerialized, &nSerializedBufferSize );
+				char *szSerialized = ( char * )stackalloc( nSerializedBufferSize * 2 + 1 );
+				V_binarytohex( pSerialized, nSerializedBufferSize, szSerialized, nSerializedBufferSize * 2 + 1 );
+				Msg( "Serialized (%d bytes): %s\n", nSerializedBufferSize, szSerialized );
+			}
+
 			CUtlMemory<SteamItemDetails_t> itemDetails( 0, count );
 			if ( !pInventory->GetResultItems( hResult, itemDetails.Base(), &count ) )
 			{
@@ -216,37 +266,21 @@ public:
 				count = 0;
 			}
 
+			CUtlMemory<char> szStringBuf( 0, 1024 );
+			uint32_t size{};
+
 			FOR_EACH_VEC( itemDetails, i )
 			{
 				Msg( "Item %llu (def %d qty %d flags %x)\n", itemDetails[i].m_itemId, itemDetails[i].m_iDefinition, itemDetails[i].m_unQuantity, itemDetails[i].m_unFlags );
 
-				uint32_t size{};
-				CUtlMemory<char> szStringBuf( 0, 1024 );
 				szStringBuf[0] = '\0';
-
-				{
-					pInventory->GetItemDefinitionProperty( itemDetails[i].m_iDefinition, NULL, NULL, &size );
-					szStringBuf.EnsureCapacity( size + 1 );
-					size = szStringBuf.Count();
-					pInventory->GetItemDefinitionProperty( itemDetails[i].m_iDefinition, NULL, szStringBuf.Base(), &size );
-					Msg( "Properties: %s\n", szStringBuf.Base() );
-					CSplitString propertyNames( szStringBuf.Base(), "," );
-					FOR_EACH_VEC( propertyNames, j )
-					{
-						pInventory->GetItemDefinitionProperty( itemDetails[i].m_iDefinition, propertyNames[j], NULL, &size );
-						szStringBuf.EnsureCapacity( size + 1 );
-						size = szStringBuf.Count();
-						pInventory->GetItemDefinitionProperty( itemDetails[i].m_iDefinition, propertyNames[j], szStringBuf.Base(), &size );
-						Msg( "Properties[%s] = %s\n", propertyNames[j], szStringBuf.Base() );
-					}
-				}
 
 				{
 					pInventory->GetResultItemProperty( hResult, i, NULL, NULL, &size );
 					szStringBuf.EnsureCapacity( size + 1 );
 					size = szStringBuf.Count();
 					pInventory->GetResultItemProperty( hResult, i, NULL, szStringBuf.Base(), &size );
-					Msg( "DynamicProperties: %s\n", szStringBuf.Base() );
+					Msg( "ResultProperties: %s\n", szStringBuf.Base() );
 					CSplitString propertyNames( szStringBuf.Base(), "," );
 					FOR_EACH_VEC( propertyNames, j )
 					{
@@ -254,7 +288,7 @@ public:
 						szStringBuf.EnsureCapacity( size + 1 );
 						size = szStringBuf.Count();
 						pInventory->GetResultItemProperty( hResult, i, propertyNames[j], szStringBuf.Base(), &size );
-						Msg( "DynamicProperties[%s] = %s\n", propertyNames[j], szStringBuf.Base() );
+						Msg( "ResultProperties[%s] = %s\n", propertyNames[j], szStringBuf.Base() );
 					}
 				}
 
@@ -265,20 +299,18 @@ public:
 
 	STEAM_CALLBACK( CRD_Inventory_Manager, OnSteamInventoryResultReady, SteamInventoryResultReady_t )
 	{
-		DevMsg( 2, "Steam Inventory result for %08x received: EResult %d (%s)\n", pParam->m_handle, pParam->m_result, UTIL_RD_EResultToString( pParam->m_result ) );
+		DevMsg( 2, "[%c] Steam Inventory result for %08x received: EResult %d (%s)\n", IsClientDll() ? 'C' : 'S', pParam->m_handle, pParam->m_result, UTIL_RD_EResultToString( pParam->m_result ) );
 
-#ifdef CLIENT_DLL
-		if ( pParam->m_handle == m_EquippedMedalResult )
+		if ( pParam->m_handle == m_DebugPrintInventoryResult )
 		{
-			// Pre-load our own equipped medal icon even if we're not in a lobby.
-			ReactiveDropInventory::ItemInstance_t MedalInstance{ m_EquippedMedalResult, 0 };
-			( void )ReactiveDropInventory::GetItemDef( MedalInstance.ItemDefID );
-
-			SendMedalBlob( UTIL_RD_GetCurrentLobbyID() );
+			DebugPrintResult( m_DebugPrintInventoryResult );
+			SteamInventory()->DestroyResult( m_DebugPrintInventoryResult );
+			m_DebugPrintInventoryResult = k_SteamInventoryResultInvalid;
 
 			return;
 		}
-		
+
+#ifdef CLIENT_DLL
 		if ( pParam->m_handle == m_PromotionalItemsResult )
 		{
 			HandleItemDropResult( m_PromotionalItemsResult );
@@ -308,36 +340,89 @@ public:
 
 			return;
 		}
-#endif
 
-		if ( pParam->m_handle == m_DebugPrintInventoryResult )
+		if ( m_pPreparingEquipNotification )
 		{
-			DebugPrintResult( m_DebugPrintInventoryResult );
-			SteamInventory()->DestroyResult( m_DebugPrintInventoryResult );
-			m_DebugPrintInventoryResult = k_SteamInventoryResultInvalid;
+			if ( KeyValues *pPending = m_pPreparingEquipNotification->FindKey( "pending" ) )
+			{
+				FOR_EACH_VALUE( pPending, pResult )
+				{
+					if ( pResult->GetInt() == pParam->m_handle )
+					{
+						ReactiveDropInventory::ItemInstance_t instance{ pParam->m_handle, 0 };
+						const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( instance.ItemDefID );
 
-			return;
+						if ( !pDef || pDef->ItemSlot != pResult->GetName() )
+						{
+							DevWarning( "Invalid item in slot %s\n", pResult->GetName() );
+						}
+						else
+						{
+							uint32 nEncodedSize{};
+							if ( SteamInventory()->SerializeResult( pParam->m_handle, NULL, &nEncodedSize ) )
+							{
+								CUtlMemory<byte> serializedBin{ 0, int( nEncodedSize ) };
+								if ( SteamInventory()->SerializeResult( pParam->m_handle, serializedBin.Base(), &nEncodedSize ) )
+								{
+									CUtlMemory<char> serializedHex{ 0, int( nEncodedSize * 2 + 1 ) };
+									V_binarytohex( serializedBin.Base(), serializedBin.Count(), serializedHex.Base(), serializedHex.Count() );
+
+									m_pPreparingEquipNotification->SetString( pResult->GetName(), serializedHex.Base() );
+								}
+							}
+						}
+
+						pPending->RemoveSubKey( pResult );
+						pResult->deleteThis();
+						CheckSendEquipNotification();
+						return;
+					}
+				}
+			}
 		}
+#else
+		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+		{
+			CASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
+			if ( !pPlayer )
+				continue;
+
+			for ( int j = 0; j < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS; j++ )
+			{
+				if ( pPlayer->m_EquippedItems[j] == pParam->m_handle )
+				{
+					bool bValid = false;
+					if ( !ReactiveDropInventory::ValidateItemData( bValid, pParam->m_handle, ReactiveDropInventory::g_InventorySlotNames[j], pPlayer->GetSteamIDAsUInt64(), true ) )
+					{
+						Assert( !"ValidateItemData failed for programmer-related reason" );
+					}
+
+					if ( bValid )
+					{
+						pPlayer->OnEquippedItemLoaded( ReactiveDropInventory::g_InventorySlotNames[j], pParam->m_handle );
+						return;
+					}
+
+					Warning( "Player %s item in slot %s is invalid.\n", pPlayer->GetASWNetworkID(), ReactiveDropInventory::g_InventorySlotNames[j] );
+					DebugPrintResult( pParam->m_handle );
+					ReactiveDropInventory::DecodeItemData( pPlayer->m_EquippedItems[j], "" );
+					pPlayer->OnEquippedItemLoaded( ReactiveDropInventory::g_InventorySlotNames[j], k_SteamInventoryResultInvalid );
+
+					return;
+				}
+			}
+		}
+#endif
 	}
 
+	float m_flDefsUpdateTime{ 0.0f };
+	SteamInventoryResult_t m_DebugPrintInventoryResult{ k_SteamInventoryResultInvalid };
 #ifdef CLIENT_DLL
-	SteamInventoryResult_t m_EquippedMedalResult{ k_SteamInventoryResultInvalid };
 	SteamInventoryResult_t m_PromotionalItemsResult{ k_SteamInventoryResultInvalid };
 	CUtlVector<SteamItemDef_t> m_PromotionalItemsNext{};
 	SteamInventoryResult_t m_PlaytimeItemGeneratorResult[3]{ k_SteamInventoryResultInvalid, k_SteamInventoryResultInvalid, k_SteamInventoryResultInvalid };
 	SteamInventoryResult_t m_InspectItemResult{ k_SteamInventoryResultInvalid };
-#endif
-	SteamInventoryResult_t m_DebugPrintInventoryResult{ k_SteamInventoryResultInvalid };
-	float m_flDefsUpdateTime{ 0.0f };
-
-#ifdef CLIENT_DLL
-	STEAM_CALLBACK( CRD_Inventory_Manager, OnLobbyEntered, LobbyEnter_t )
-	{
-		if ( pParam->m_EChatRoomEnterResponse == k_EChatRoomEnterResponseSuccess )
-		{
-			SendMedalBlob( pParam->m_ulSteamIDLobby );
-		}
-	}
+	KeyValues *m_pPreparingEquipNotification{};
 #endif
 
 	STEAM_CALLBACK( CRD_Inventory_Manager, OnSteamInventoryDefinitionUpdate, SteamInventoryDefinitionUpdate_t )
@@ -348,23 +433,92 @@ public:
 } s_RD_Inventory_Manager;
 
 #ifdef CLIENT_DLL
-static void RD_Equipped_Medal_Changed( IConVar *var, const char *pOldValue, float flOldValue )
+static void RD_Equipped_Item_Changed( IConVar *var, const char *pOldValue, float flOldValue )
 {
-	s_RD_Inventory_Manager.OnEquippedMedalIDChanged();
+	s_RD_Inventory_Manager.OnEquippedItemChanged( var->GetName() + strlen( "rd_equipped_" ) );
 }
-ConVar rd_equipped_medal( "rd_equipped_medal", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped medal.", RD_Equipped_Medal_Changed );
+ConVar rd_equipped_medal( "rd_equipped_medal", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped medal.", RD_Equipped_Item_Changed );
+ConVar rd_equipped_marine[ASW_NUM_MARINE_PROFILES]
+{
+	{ "rd_equipped_marine0", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for Sarge's suit.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_marine1", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for Wildcat's suit.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_marine2", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for Faith's suit.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_marine3", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for Crash's suit.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_marine4", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for Jaeger's suit.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_marine5", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for Wolfe's suit.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_marine6", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for Bastille's suit.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_marine7", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for Vegas's suit.", RD_Equipped_Item_Changed },
+};
+ConVar rd_equipped_weapon[ASW_FIRST_HIDDEN_EQUIP_REGULAR]
+{
+	{ "rd_equipped_weapon0", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for 22A3-1 Assault Rifle.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon1", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for 22A7-Z Prototype Assault Rifle.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon2", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for S23A SynTek Autogun.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon3", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for M42 Vindicator.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon4", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for M73 Twin Pistols.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon5", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for IAF Advanced Sentry Gun.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon6", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for IAF Heal Beacon.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon7", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for IAF Ammo Satchel.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon8", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for Model 35 Pump-action Shotgun.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon9", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for IAF Tesla Cannon.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon10", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for Precision Rail Rifle.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon11", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for IAF Medical Gun.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon12", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for K80 Personal Defense Weapon.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon13", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for M868 Flamer Unit.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon14", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for IAF Freeze Sentry Gun.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon15", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for IAF Minigun.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon16", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for AVK-36 Marksman Rifle.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon17", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for IAF Incendiary Sentry Gun.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon18", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for Chainsaw.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon19", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for IAF High Velocity Sentry Cannon.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon20", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for Grenade Launcher.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon21", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for PS50 Bulldog.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon22", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for IAF HAS42 Devastator.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon23", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for 22A4-2 Combat Rifle.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon24", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for IAF Medical Amplifier Gun.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon25", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for 22A5 Heavy Assault Rifle.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon26", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for IAF Medical SMG.", RD_Equipped_Item_Changed },
+};
+ConVar rd_equipped_extra[ASW_FIRST_HIDDEN_EQUIP_EXTRA]
+{
+	{ "rd_equipped_extra0", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for IAF Personal Healing Kit.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_extra1", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for Hand Welder.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_extra2", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for SM75 Combat Flares.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_extra3", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for ML30 Laser Trip Mine.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_extra4", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for l3a Tactical Heavy Armor.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_extra5", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for X33 Damage Amplifier.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_extra6", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for Hornet Barrage.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_extra7", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for CR18 Freeze Grenades.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_extra8", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for Adrenaline.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_extra9", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for IAF Tesla Sentry Coil.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_extra10", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for v45 Electric Charged Armor.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_extra11", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for M478 Proximity Incendiary Mines.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_extra12", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for Flashlight Attachment.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_extra13", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for IAF Power Fist Attachment.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_extra14", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for FG01 Hand Grenades.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_extra15", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for MNV34 Nightvision Goggles.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_extra16", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for MTD6 Smart Bomb.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_extra17", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for TG-05 Gas Grenades.", RD_Equipped_Item_Changed },
+};
 
-CON_COMMAND_F( rd_debug_print_inventory, "", FCVAR_HIDDEN )
+CON_COMMAND( rd_debug_print_inventory, "" )
 {
 	SteamInventory()->GetAllItems( &s_RD_Inventory_Manager.m_DebugPrintInventoryResult );
 }
 
-CON_COMMAND_F( rd_debug_fake_drop_entire_inventory, "", FCVAR_HIDDEN )
+CON_COMMAND( rd_debug_inspect_own_item, "inspect an item you own by ID" )
 {
-	SteamInventory()->GetAllItems( &s_RD_Inventory_Manager.m_PromotionalItemsResult );
+	SteamItemInstanceID_t id = strtoull( args.Arg( 1 ), NULL, 10 );
+	if ( !id )
+	{
+		Msg( "Usage: rd_debug_inspect_own_item [item instance ID]\n" );
+		return;
+	}
+
+	SteamInventory()->GetItemsByID( &s_RD_Inventory_Manager.m_InspectItemResult, &id, 1 );
 }
 
-CON_COMMAND_F( rd_econ_item_preview, "", FCVAR_HIDDEN )
+CON_COMMAND( rd_econ_item_preview, "inspect an item using a code from the Steam Community backpack" )
 {
 	if ( args.ArgC() != 2 )
 	{
@@ -675,7 +829,7 @@ namespace ReactiveDropInventory
 		return false;
 	}
 
-	void ItemInstance_t::FormatDescription( wchar_t *wszBuf, size_t sizeOfBufferInBytes, const CUtlString &szDesc )
+	void ItemInstance_t::FormatDescription( wchar_t *wszBuf, size_t sizeOfBufferInBytes, const CUtlString &szDesc ) const
 	{
 		V_UTF8ToUnicode( szDesc, wszBuf, sizeOfBufferInBytes );
 
@@ -688,7 +842,7 @@ namespace ReactiveDropInventory
 		{
 			if ( wszBuf[i] == L'\0' )
 			{
-				return;
+				break;
 			}
 
 			if ( wszBuf[i] != L'%' )
@@ -761,11 +915,11 @@ namespace ReactiveDropInventory
 			}
 			else if ( DynamicPropertyAllowsArbitraryValues( szToken ) )
 			{
-				V_UTF8ToUnicode( DynamicProps[szToken], wszReplacement, sizeof( wszReplacement ) );
+				V_UTF8ToUnicode( DynamicProps[DynamicProps.Find( szToken )], wszReplacement, sizeof( wszReplacement ) );
 			}
 			else
 			{
-				int64_t nValue = strtoll( DynamicProps[szToken], NULL, 10 );
+				int64_t nValue = strtoll( DynamicProps[DynamicProps.Find( szToken )], NULL, 10 );
 				V_wcsncpy( wszReplacement, UTIL_RD_CommaNumber( nValue ), sizeof( wszReplacement ) );
 			}
 
@@ -796,6 +950,14 @@ namespace ReactiveDropInventory
 		delete[] wszTemp;
 #endif
 	}
+
+#ifdef CLIENT_DLL
+	void ItemInstance_t::FormatDescription( vgui::RichText *pRichText ) const
+	{
+		CRD_ItemInstance reduced{ *this };
+		reduced.FormatDescription( pRichText );
+	}
+#endif
 
 	const ItemDef_t *GetItemDef( SteamItemDef_t id )
 	{
@@ -1208,12 +1370,10 @@ namespace ReactiveDropInventory
 BEGIN_NETWORK_TABLE_NOBASE( CRD_ItemInstance, DT_RD_ItemInstance )
 #ifdef CLIENT_DLL
 	RecvPropInt( RECVINFO( m_iItemDefID ) ),
-	RecvPropInt( RECVINFO( m_nQuantity ) ),
 	RecvPropArray( RecvPropInt( RECVINFO( m_iAccessory[0] ) ), m_iAccessory ),
 	RecvPropArray( RecvPropInt( RECVINFO( m_nCounter[0] ) ), m_nCounter ),
 #else
 	SendPropInt( SENDINFO( m_iItemDefID ), RD_ITEM_ID_BITS, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO( m_nQuantity ), 31, SPROP_UNSIGNED ),
 	SendPropArray( SendPropInt( SENDINFO_ARRAY( m_iAccessory ), RD_ITEM_ACCESSORY_BITS, SPROP_UNSIGNED ), m_iAccessory ),
 	SendPropArray( SendPropInt( SENDINFO_ARRAY( m_nCounter ), 63, SPROP_UNSIGNED ), m_nCounter ),
 #endif
@@ -1229,10 +1389,14 @@ CRD_ItemInstance::CRD_ItemInstance( const ReactiveDropInventory::ItemInstance_t 
 	SetFromInstance( instance );
 }
 
+CRD_ItemInstance::CRD_ItemInstance( SteamInventoryResult_t hResult, uint32 index )
+	: CRD_ItemInstance{ ReactiveDropInventory::ItemInstance_t{ hResult, index } }
+{
+}
+
 void CRD_ItemInstance::Reset()
 {
 	m_iItemDefID = 0;
-	m_nQuantity = 1;
 	for ( int i = 0; i < m_iAccessory.Count(); i++ )
 	{
 		m_iAccessory.Set( i, 0 );
@@ -1253,7 +1417,6 @@ void CRD_ItemInstance::SetFromInstance( const ReactiveDropInventory::ItemInstanc
 	Reset();
 
 	m_iItemDefID = instance.ItemDefID;
-	m_nQuantity = instance.Quantity;
 	const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( m_iItemDefID );
 	Assert( pDef );
 	if ( !pDef )
@@ -1426,8 +1589,8 @@ void CRD_ItemInstance::FormatDescription( wchar_t *wszBuf, size_t sizeOfBufferIn
 }
 
 #ifdef CLIENT_DLL
-extern ConVar rd_briefing_item_details_color1;
-extern ConVar rd_briefing_item_details_color2;
+ConVar rd_briefing_item_details_color1( "rd_briefing_item_details_color1", "169 213 255 255", FCVAR_NONE );
+ConVar rd_briefing_item_details_color2( "rd_briefing_item_details_color2", "83 148 192 255", FCVAR_NONE );
 ConVar rd_briefing_item_accessory_color( "rd_briefing_item_accessory_color", "191 191 191 255", FCVAR_NONE );
 
 void CRD_ItemInstance::FormatDescription( vgui::RichText *pRichText ) const
@@ -1468,7 +1631,23 @@ void CRD_ItemInstance::FormatDescription( vgui::RichText *pRichText ) const
 	pRichText->InsertColorChange( rd_briefing_item_details_color1.GetColor() );
 	pRichText->InsertString( wszBuf );
 
-	if ( !pDef->AfterDescriptionOnlyMultiStack || m_nQuantity > 1 )
+	bool bShowAfterDescription = !pDef->AfterDescriptionOnlyMultiStack;
+	if ( !bShowAfterDescription )
+	{
+		bool bFound = false;
+		FOR_EACH_VEC( pDef->CompressedDynamicProps, i )
+		{
+			if ( !V_stricmp( pDef->CompressedDynamicProps[i], "m_unQuantity" ) )
+			{
+				bFound = true;
+				bShowAfterDescription = m_nCounter[i] > 1;
+				break;
+			}
+		}
+		( void )bFound;
+		Assert( bFound );
+	}
+	if ( bShowAfterDescription )
 	{
 		FormatDescription( wszBuf, sizeof( wszBuf ), pDef->AfterDescription );
 		if ( wszBuf[0] )

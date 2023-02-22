@@ -6,6 +6,7 @@
 namespace vgui
 {
 	class IImage;
+	class RichText;
 }
 
 #define CRD_ItemInstance C_RD_ItemInstance
@@ -13,6 +14,24 @@ namespace vgui
 
 namespace ReactiveDropInventory
 {
+	constexpr const char *const g_InventorySlotNames[] =
+	{
+		"medal",
+		"marine0", "marine1", "marine2", "marine3",
+		"marine4", "marine5", "marine6", "marine7",
+		"weapon0", "weapon1", "weapon2", "weapon3", "weapon4",
+		"weapon5", "weapon6", "weapon7", "weapon8", "weapon9",
+		"weapon10", "weapon11", "weapon12", "weapon13", "weapon14",
+		"weapon15", "weapon16", "weapon17", "weapon18", "weapon19",
+		"weapon20", "weapon21", "weapon22", "weapon23", "weapon24",
+		"weapon25", "weapon26",
+		"extra0", "extra1", "extra2", "extra3", "extra4",
+		"extra5", "extra6", "extra7", "extra8", "extra9",
+		"extra10", "extra11", "extra12", "extra13", "extra14",
+		"extra15", "extra16", "extra17",
+	};
+#define RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS NELEMS( ReactiveDropInventory::g_InventorySlotNames )
+
 	// Data extracted from the Steam Inventory Service Schema.
 	struct ItemDef_t
 	{
@@ -52,7 +71,10 @@ namespace ReactiveDropInventory
 		CUtlStringMap<CUtlStringList> Tags{};
 
 		explicit ItemInstance_t( SteamInventoryResult_t hResult, uint32 index );
-		void FormatDescription( wchar_t *wszBuf, size_t sizeOfBufferInBytes, const CUtlString &szDesc );
+		void FormatDescription( wchar_t *wszBuf, size_t sizeOfBufferInBytes, const CUtlString &szDesc ) const;
+#ifdef CLIENT_DLL
+		void FormatDescription( vgui::RichText *pRichText ) const;
+#endif
 	};
 
 	const ItemDef_t *GetItemDef( SteamItemDef_t id );
@@ -89,6 +111,7 @@ public:
 
 	CRD_ItemInstance();
 	explicit CRD_ItemInstance( const ReactiveDropInventory::ItemInstance_t &instance );
+	explicit CRD_ItemInstance( SteamInventoryResult_t hResult, uint32 index );
 
 	void Reset();
 	bool IsSet() const;
@@ -99,7 +122,6 @@ public:
 #endif
 
 	CNetworkVar( SteamItemDef_t, m_iItemDefID );
-	CNetworkVar( int32, m_nQuantity );
 	CNetworkArray( SteamItemDef_t, m_iAccessory, RD_ITEM_MAX_ACCESSORIES );
 	CNetworkArray( int64, m_nCounter, RD_ITEM_MAX_COMPRESSED_DYNAMIC_PROPS );
 };

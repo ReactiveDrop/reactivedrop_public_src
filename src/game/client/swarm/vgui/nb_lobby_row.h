@@ -75,9 +75,7 @@ public:
 	char m_szLastPortraitImage[ 255 ];
 	CSteamID m_lastSteamID;
 	int m_nLastPromotion;
-	int m_nMedalUpdates;
-	SteamInventoryResult_t m_hMedalResult;
-	bool m_bWaitingForMedal;
+	SteamItemDef_t m_lastMedal;
 
 	int m_nLobbySlot;
 };

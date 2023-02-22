@@ -170,7 +170,18 @@ enum
 #define VPROF_BUDGETGROUP_ASW_CLIENT			_T("Swarm Client")
 
 // how many marine profiles there are (used by the campaign save system)
-#define ASW_NUM_MARINE_PROFILES 8
+enum
+{
+	ASW_MARINE_PROFILE_SARGE,
+	ASW_MARINE_PROFILE_WILDCAT,
+	ASW_MARINE_PROFILE_FAITH,
+	ASW_MARINE_PROFILE_CRASH,
+	ASW_MARINE_PROFILE_JAEGER,
+	ASW_MARINE_PROFILE_WOLFE,
+	ASW_MARINE_PROFILE_BASTILLE,
+	ASW_MARINE_PROFILE_VEGAS,
+	ASW_NUM_MARINE_PROFILES,
+};
 
 // !!NOTE!! - these numbers are hardcoded into engine's Host_cmd.cpp too :(
 #define ASW_MAX_PLAYERS_PER_SAVE 10

@@ -87,9 +87,7 @@ CNB_Lobby_Row::CNB_Lobby_Row( vgui::Panel *parent, const char *name ) : BaseClas
 	m_pXPBar->SetColors( Color( 255, 255, 255, 0 ), Color( 93,148,192,255 ), Color( 255, 255, 255, 255 ), Color( 17,37,57,255 ), Color( 35, 77, 111, 255 ) );
 	//m_pXPBar->m_bShowCumulativeTotal = true;
 	m_nLastPromotion = 0;
-	m_nMedalUpdates = 0;
-	m_hMedalResult = k_SteamInventoryResultInvalid;
-	m_bWaitingForMedal = false;
+	m_lastMedal = 0;
 
 	m_pXPBar->m_flBorder = 1.5f;
 	m_nLobbySlot = 0;
@@ -106,11 +104,6 @@ CNB_Lobby_Row::~CNB_Lobby_Row()
 	GetControllerFocus()->RemoveFromFocusList( m_pWeaponButton0 );
 	GetControllerFocus()->RemoveFromFocusList( m_pWeaponButton1 );
 	GetControllerFocus()->RemoveFromFocusList( m_pWeaponButton2 );
-
-	if ( ISteamInventory *pInventory = SteamInventory() )
-	{
-		pInventory->DestroyResult( m_hMedalResult );
-	}
 }
 
 void CNB_Lobby_Row::ApplySchemeSettings( vgui::IScheme *pScheme )
@@ -232,29 +225,24 @@ void CNB_Lobby_Row::UpdateDetails()
 			( ( CAvatarImage * )m_pAvatarImage->GetImage() )->SetAvatarSize( wide, tall );
 			( ( CAvatarImage * )m_pAvatarImage->GetImage() )->SetPos( -AVATAR_INDENT_X, -AVATAR_INDENT_Y );
 
-			m_nMedalUpdates = 0;
 			m_pMedalIcon->SetVisible( false );
-			m_bWaitingForMedal = ReactiveDropInventory::DecodeItemData( m_hMedalResult, "" );
+			m_lastMedal = 0;
 		}
 		m_lastSteamID = steamID;
 
-		int nMedalUpdates = Briefing()->GetMedalUpdateCount( m_nLobbySlot );
-		if ( m_nMedalUpdates != nMedalUpdates )
+		SteamItemDef_t iMedal = Briefing()->GetEquippedMedal( m_nLobbySlot ).m_iItemDefID;
+		if ( iMedal != m_lastMedal )
 		{
-			m_pMedalIcon->SetVisible( false );
-			m_bWaitingForMedal = ReactiveDropInventory::DecodeItemData( m_hMedalResult, Briefing()->GetEncodedMedalData( m_nLobbySlot ) );
-			m_nMedalUpdates = nMedalUpdates;
-		}
-		bool bMedalOK = false;
-		if ( m_bWaitingForMedal && ReactiveDropInventory::ValidateItemData( bMedalOK, m_hMedalResult, "medal", steamID ) )
-		{
-			m_bWaitingForMedal = false;
-			if ( bMedalOK )
+			if ( iMedal <= 0 )
 			{
-				ReactiveDropInventory::ItemInstance_t instance{ m_hMedalResult, 0 };
-				const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( instance.ItemDefID );
+				m_pMedalIcon->SetVisible( false );
+				m_lastMedal = iMedal;
+			}
+			else if ( const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( iMedal ) )
+			{
 				m_pMedalIcon->SetImage( pDef->IconSmall );
 				m_pMedalIcon->SetVisible( true );
+				m_lastMedal = iMedal;
 			}
 		}
 	}
@@ -465,7 +453,7 @@ void CNB_Lobby_Row::CheckTooltip( CNB_Lobby_Tooltip *pTooltip )
 	}
 	else if ( CControllerFocus::IsPanelReallyVisible( m_pMedalIcon ) && m_pMedalIcon->IsCursorOver() )
 	{
-		pTooltip->ShowMarineMedalTooltip( m_nLobbySlot, m_hMedalResult );
+		pTooltip->ShowMarineMedalTooltip( m_nLobbySlot );
 	}
 }
 

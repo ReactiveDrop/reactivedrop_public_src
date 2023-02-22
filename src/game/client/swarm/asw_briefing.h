@@ -73,8 +73,7 @@ public:
 
 	virtual void ResetLastChatterTime() { m_flLastSelectionChatterTime = 0.0f; }
 
-	virtual int GetMedalUpdateCount( int nLobbySlot );
-	virtual const char *GetEncodedMedalData( int nLobbySlot );
+	virtual const IBriefing_ItemInstance &GetEquippedMedal( int nLobbySlot );
 
 	int LobbySlotToMarineResourceIndex( int nLobbySlot );
 	void UpdateLobbySlotMapping();

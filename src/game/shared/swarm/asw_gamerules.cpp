@@ -6789,6 +6789,21 @@ void CAlienSwarm::ClientCommandKeyValues( edict_t *pEntity, KeyValues *pKeyValue
 		pPlayer->SetNetworkedExperience( pKeyValues->GetInt( "xp" ) );
 		pPlayer->SetNetworkedPromotion( pKeyValues->GetInt( "pro" ) );
 	}
+	else if ( FStrEq( szCommand, "EquippedItems" ) )
+	{
+		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS; i++ )
+		{
+			if ( KeyValues *pSlot = pKeyValues->FindKey( ReactiveDropInventory::g_InventorySlotNames[i] ) )
+			{
+				pPlayer->OnEquippedItemLoaded( ReactiveDropInventory::g_InventorySlotNames[i], k_SteamInventoryResultInvalid );
+
+				if ( !ReactiveDropInventory::DecodeItemData( pPlayer->m_EquippedItems[i], pSlot->GetString() ) && *pSlot->GetString() != '\0' )
+				{
+					Warning( "Failed to decode player %s item in slot %s.\n", pPlayer->GetASWNetworkID(), ReactiveDropInventory::g_InventorySlotNames[i] );
+				}
+			}
+		}
+	}
 #endif
 }
 
