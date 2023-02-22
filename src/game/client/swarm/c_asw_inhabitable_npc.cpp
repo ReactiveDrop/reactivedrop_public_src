@@ -12,7 +12,6 @@
 
 
 ConVar rd_highlight_active_character( "rd_highlight_active_character", "0", FCVAR_ARCHIVE );
-extern ConVar glow_outline_color_marine;
 extern ConVar glow_outline_color_alien;
 extern ConVar asw_controls;
 
@@ -256,7 +255,7 @@ void C_ASW_Inhabitable_NPC::UpdateGlowObject()
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	if ( rd_highlight_active_character.GetBool() && pPlayer && pPlayer->GetViewNPC() == this )
 	{
-		m_GlowObject.SetColor( glow_outline_color_marine.GetColorAsVector() );
+		m_GlowObject.SetColor( Vector{ 1, 1, 1 } );
 		m_GlowObject.SetAlpha( 1.0f );
 		m_GlowObject.SetRenderFlags( true, true );
 		m_GlowObject.SetFullBloomRender( false );

@@ -431,16 +431,10 @@ void CASWNightVisionSelfIllumProxy::OnBind( void *pC_BaseEntity )
 		return;
 	}
 
-	C_BaseCombatWeapon*	pExtraItem = pMarine->GetWeapon( 2 );
-	if ( pExtraItem && pExtraItem->Classify() == CLASS_ASW_NIGHT_VISION )
+	if ( pMarine->m_flVisionAlpha > 0 )
 	{
-		C_ASW_Weapon_Night_Vision *pVision = assert_cast<CASW_Weapon_Night_Vision*>( pExtraItem );
-		float flVisionAlpha = pVision->m_flVisionAlpha;
-		if ( flVisionAlpha != 0.0f )
-		{
-			SetFloatResult( flVisionAlpha / 255.0f * asw_night_vision_self_illum_multiplier.GetFloat() );
-			return;
-		}
+		SetFloatResult( pMarine->m_flVisionAlpha / 255.0f * asw_night_vision_self_illum_multiplier.GetFloat() );
+		return;
 	}
 
 	if ( pPlayer->IsSniperScopeActive() && g_bRenderingGlows )
@@ -465,15 +459,8 @@ void CASWViewRender::PerformNightVisionEffect( const CViewSetup &view )
 	if ( !pMarine )
 		return;
 
-	float flVisionAlpha = 0.0f;
-	float flFlashAlpha = 0.0f;
-	C_BaseCombatWeapon*	pExtraItem = pMarine->GetWeapon( 2 );
-	if ( pExtraItem && pExtraItem->Classify() == CLASS_ASW_NIGHT_VISION )
-	{
-		C_ASW_Weapon_Night_Vision *pVision = assert_cast<CASW_Weapon_Night_Vision*>( pExtraItem );
-		flVisionAlpha = pVision->UpdateVisionAlpha();
-		flFlashAlpha = pVision->UpdateFlashAlpha();
-	}
+	float flVisionAlpha = pMarine->UpdateVisionAlpha();
+	float flFlashAlpha = pMarine->UpdateFlashAlpha();
 
 	if ( flVisionAlpha > 0 )
 	{

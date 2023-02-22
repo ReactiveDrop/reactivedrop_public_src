@@ -57,13 +57,6 @@ public:
 
 	#ifndef CLIENT_DLL
 		DECLARE_DATADESC();
-	#else
-		float UpdateVisionAlpha();
-		float UpdateFlashAlpha();
-
-		float m_flVisionAlpha;
-		float m_flFlashAlpha;
-		bool m_bOldVisionActive;
 	#endif
 
 	virtual bool IsOffensiveWeapon() { return false; }

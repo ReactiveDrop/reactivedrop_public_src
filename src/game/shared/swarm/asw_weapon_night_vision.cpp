@@ -64,11 +64,6 @@ CASW_Weapon_Night_Vision::CASW_Weapon_Night_Vision()
 {
 	m_flSoonestPrimaryAttack = 0;
 	m_flPower = asw_night_vision_duration.GetFloat();
-#ifdef CLIENT_DLL
-	m_flVisionAlpha = 0.0f;
-	m_flFlashAlpha = 0.0f;
-	m_bOldVisionActive = false;
-#endif
 }
 
 
@@ -188,40 +183,6 @@ void CASW_Weapon_Night_Vision::UpdateVisionPower()
 		m_flPower = flNewPower;
 	}
 }
-
-#ifdef CLIENT_DLL
-float CASW_Weapon_Night_Vision::UpdateVisionAlpha()
-{
-	if ( IsVisionActive() )
-	{
-		m_flVisionAlpha = MIN( 255.0f, m_flVisionAlpha + gpGlobals->frametime * asw_night_vision_fade_in_speed.GetFloat() );
-	}
-	else
-	{
-		m_flVisionAlpha = MAX( 0.0f, m_flVisionAlpha - gpGlobals->frametime * asw_night_vision_fade_out_speed.GetFloat() );
-	}
-	return m_flVisionAlpha;
-}
-
-float CASW_Weapon_Night_Vision::UpdateFlashAlpha()
-{
-	if ( IsVisionActive() != m_bOldVisionActive )
-	{
-		//if ( IsVisionActive() )
-		{
-			m_flFlashAlpha = asw_night_vision_flash_max.GetFloat();
-		}
-		m_bOldVisionActive = IsVisionActive();
-	}
-	float flMin = 0.0f;
-	if ( IsVisionActive() )
-	{
-		flMin = asw_night_vision_flash_min.GetFloat();
-	}
-	m_flFlashAlpha = MAX( flMin, m_flFlashAlpha - gpGlobals->frametime * asw_night_vision_flash_speed.GetFloat() );
-	return m_flFlashAlpha;
-}
-#endif
 
 int CASW_Weapon_Night_Vision::ASW_SelectWeaponActivity(int idealActivity)
 {

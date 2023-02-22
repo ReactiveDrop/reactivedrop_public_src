@@ -273,6 +273,9 @@ public:
 	Class_T m_iLastDamageBuffType;
 	CHandle<CASW_Marine> m_hLastDamageBuffApplier;
 
+	void SetNightVision( bool bNightVision ) { m_bNightVision = bNightVision; }
+	CNetworkVar( bool, m_bNightVision );
+
 	void AddElectrifiedArmor( float flDuration ) { m_flElectrifiedArmorEndTime = MAX( GetElectrifiedArmorEndTime(), gpGlobals->curtime + flDuration ); }
 	float GetElectrifiedArmorEndTime() { return m_flElectrifiedArmorEndTime.Get(); }
 	bool IsElectrifiedArmorActive() { return GetElectrifiedArmorEndTime() > gpGlobals->curtime; }

@@ -445,6 +445,15 @@ void CASW_Inhabitable_NPC::OnTonemapTriggerEndTouch( CTonemapTrigger *pTonemapTr
 	m_hTriggerTonemapList.FindAndRemove( pTonemapTrigger );
 }
 
+void CASW_Inhabitable_NPC::ScriptSetGlow( Vector vecColor, float flAlpha, bool bGlowWhenOccluded, bool bGlowWhenUnoccluded, bool bFullBloom )
+{
+	m_vecGlowColor = vecColor;
+	m_flGlowAlpha = flAlpha;
+	m_bGlowWhenOccluded = bGlowWhenOccluded;
+	m_bGlowWhenUnoccluded = bGlowWhenUnoccluded;
+	m_bGlowFullBloom = bFullBloom;
+}
+
 void CASW_Inhabitable_NPC::DoImpactEffect( trace_t &tr, int nDamageType )
 {
 	// don't do impact effects, they're simulated clientside by the tracer usermessage

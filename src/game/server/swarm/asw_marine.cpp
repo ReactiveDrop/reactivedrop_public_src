@@ -270,6 +270,7 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Marine, DT_ASW_Marine)
 	SendPropBool	( SENDINFO( m_bForceWalking ) ),
 	SendPropBool	( SENDINFO( m_bRolls ) ),
 	SendPropInt		( SENDINFO( m_nMarineProfile ) ),
+	SendPropBool	( SENDINFO( m_bNightVision ) ),
 END_SEND_TABLE()
 
 //---------------------------------------------------------
@@ -398,6 +399,7 @@ BEGIN_ENT_SCRIPTDESC( CASW_Marine, CASW_Inhabitable_NPC, "Marine" )
 	DEFINE_SCRIPTFUNC( SetMarineRolls, "Send true to make marine roll, send false to make marine jump" )
 	DEFINE_SCRIPTFUNC( SetKnockedOut, "Used to knock out and incapacitate a marine, or revive them." )
 	DEFINE_SCRIPTFUNC( SetSpawnZombineOnDeath, "Used to spawn a zombine in the place of a marine after death." )
+	DEFINE_SCRIPTFUNC( SetNightVision, "Activate night vision on a marine without needing the equipment." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptKnockdown, "Knockdown", "Knocks down the marine with desired velocity." )
 END_SCRIPTDESC()
 
@@ -647,6 +649,7 @@ CASW_Marine::CASW_Marine() : m_RecentMeleeHits( 16, 16 )
 	m_nMarineProfile = -1;
 
 	m_bSpawnZombineOnDeath = false;
+	m_bNightVision = false;
 }
 
 
