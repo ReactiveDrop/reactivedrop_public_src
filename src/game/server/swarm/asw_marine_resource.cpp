@@ -336,16 +336,16 @@ CASW_Marine* CASW_Marine_Resource::GetMarineEntity()
 // updates our primary/secondary/extra indices into the equipment list with what we're currently carrying
 void CASW_Marine_Resource::UpdateWeaponIndices()
 {
-	if ( !m_MarineEntity || !ASWEquipmentList() )
+	if ( !m_MarineEntity )
 		return;
 
-	for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++ iWpnSlot )
+	for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++iWpnSlot )
 	{
 		int idx = -1;
-		if ( CBaseCombatWeapon* pWpn = m_MarineEntity->GetWeapon( iWpnSlot ) )
+		if ( CBaseCombatWeapon *pWpn = m_MarineEntity->GetWeapon( iWpnSlot ) )
 		{
 			const char *szClassName = pWpn->GetClassname();
-			idx = ASWEquipmentList()->GetIndexForSlot( iWpnSlot, szClassName );
+			idx = g_ASWEquipmentList.GetIndexForSlot( iWpnSlot, szClassName );
 
 			// updating current weapon into m_iWeaponsInSlots
 			if ( idx != m_iWeaponsInSlots.Get( iWpnSlot ) )

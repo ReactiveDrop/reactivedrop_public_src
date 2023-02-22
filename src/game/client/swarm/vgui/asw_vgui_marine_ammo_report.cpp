@@ -207,71 +207,70 @@ bool CASW_VGUI_Marine_Ammo_Report::MarineHasWeapon(C_ASW_Marine *pMarine, int iA
 }
 
 void CASW_VGUI_Marine_Ammo_Report::SetAmmoTypesVisible()
-{	
-	C_ASW_Marine* pMarine = GetMarine();
+{
+	C_ASW_Marine *pMarine = GetMarine();
 	// if no ammo to show, hide all labels
-	if (!pMarine)
+	if ( !pMarine )
 	{
-		for (int i=0;i<ASW_AMMO_REPORT_SLOTS;i++)
+		for ( int i = 0; i < ASW_AMMO_REPORT_SLOTS; i++ )
 		{
-			m_pAmmoName[i]->SetVisible(false);
-			m_pAmmoCount[i]->SetVisible(false);
-			m_pAmmoOverflow[i]->SetVisible(false);
-			m_pAmmoIcon[i]->SetVisible(false);
-			m_pClipsIcon[i]->SetVisible(false);
+			m_pAmmoName[i]->SetVisible( false );
+			m_pAmmoCount[i]->SetVisible( false );
+			m_pAmmoOverflow[i]->SetVisible( false );
+			m_pAmmoIcon[i]->SetVisible( false );
+			m_pClipsIcon[i]->SetVisible( false );
 		}
-		m_pGlowLabel->SetAlpha(0);
+		m_pGlowLabel->SetAlpha( 0 );
 		return;
 	}
 	bool bShowingGlowLabel = false;
-	for (int i=0;i<ASW_AMMO_REPORT_SLOTS;i++)
+	for ( int i = 0; i < ASW_AMMO_REPORT_SLOTS; i++ )
 	{
 		int ammo = 0;
 		int iAmmoType = -1;
-		switch (i)
-		{	
-			case 1: ammo = pMarine->GetTotalAmmoCount("ASW_AG"); iAmmoType = GetAmmoDef()->Index("ASW_AG"); break;
-			case 2: ammo = pMarine->GetTotalAmmoCount("ASW_SG"); iAmmoType = GetAmmoDef()->Index("ASW_SG"); break;
-			case 3: ammo = pMarine->GetTotalAmmoCount("ASW_ASG"); iAmmoType = GetAmmoDef()->Index("ASW_ASG"); break;			
-			case 4: ammo = pMarine->GetTotalAmmoCount("ASW_F"); iAmmoType = GetAmmoDef()->Index("ASW_F"); break;
+		switch ( i )
+		{
+		case 1: ammo = pMarine->GetTotalAmmoCount( "ASW_AG" ); iAmmoType = GetAmmoDef()->Index( "ASW_AG" ); break;
+		case 2: ammo = pMarine->GetTotalAmmoCount( "ASW_SG" ); iAmmoType = GetAmmoDef()->Index( "ASW_SG" ); break;
+		case 3: ammo = pMarine->GetTotalAmmoCount( "ASW_ASG" ); iAmmoType = GetAmmoDef()->Index( "ASW_ASG" ); break;
+		case 4: ammo = pMarine->GetTotalAmmoCount( "ASW_F" ); iAmmoType = GetAmmoDef()->Index( "ASW_F" ); break;
 			//case 5: ammo = pMarine->GetTotalAmmoCount("ASW_RG"); iAmmoType = GetAmmoDef()->Index("ASW_RG"); break;
-			case 5: ammo = pMarine->GetTotalAmmoCount("ASW_PDW"); iAmmoType = GetAmmoDef()->Index("ASW_PDW"); break;
-			case 6: ammo = pMarine->GetTotalAmmoCount("ASW_P"); iAmmoType = GetAmmoDef()->Index("ASW_P"); break;
-			case 7: ammo = pMarine->GetTotalAmmoCount("ASW_ML"); iAmmoType = GetAmmoDef()->Index("ASW_ML"); break;
-			default: ammo = pMarine->GetTotalAmmoCount("ASW_R"); iAmmoType = GetAmmoDef()->Index("ASW_R"); break;			
+		case 5: ammo = pMarine->GetTotalAmmoCount( "ASW_PDW" ); iAmmoType = GetAmmoDef()->Index( "ASW_PDW" ); break;
+		case 6: ammo = pMarine->GetTotalAmmoCount( "ASW_P" ); iAmmoType = GetAmmoDef()->Index( "ASW_P" ); break;
+		case 7: ammo = pMarine->GetTotalAmmoCount( "ASW_ML" ); iAmmoType = GetAmmoDef()->Index( "ASW_ML" ); break;
+		default: ammo = pMarine->GetTotalAmmoCount( "ASW_R" ); iAmmoType = GetAmmoDef()->Index( "ASW_R" ); break;
 		}
 		bool bShow = ammo > 0;
-		if (ammo <= 0)
+		if ( ammo <= 0 )
 		{
 			// check if the marine actually has this gun, just with no ammo in
-			if (MarineHasWeapon(pMarine, iAmmoType))
+			if ( MarineHasWeapon( pMarine, iAmmoType ) )
 				bShow = true;
 		}
-		if (bShow && ASWEquipmentList())
+		if ( bShow )
 		{
 			// find how many clips that many bullets is
-			CASW_WeaponInfo* pWeaponData = NULL;
-			switch (i)
-			{	
-				case 1: pWeaponData = ASWEquipmentList()->GetWeaponDataFor("asw_weapon_autogun"); break;
-				case 2: pWeaponData = ASWEquipmentList()->GetWeaponDataFor("asw_weapon_shotgun"); break;
-				case 3: pWeaponData = ASWEquipmentList()->GetWeaponDataFor("asw_weapon_vindicator"); break;				
-				case 4: pWeaponData = ASWEquipmentList()->GetWeaponDataFor("asw_weapon_flamer"); break;;
-				//case 5: pWeaponData = ASWEquipmentList()->GetWeaponDataFor("asw_weapon_railgun"); break;;
-				case 5: pWeaponData = ASWEquipmentList()->GetWeaponDataFor("asw_weapon_pdw"); break;
-				case 6: pWeaponData = ASWEquipmentList()->GetWeaponDataFor("asw_weapon_pistol"); break;
-				case 7: pWeaponData = ASWEquipmentList()->GetWeaponDataFor("asw_weapon_mining_laser"); break;
-				default: pWeaponData = ASWEquipmentList()->GetWeaponDataFor("asw_weapon_rifle"); break;		
+			CASW_WeaponInfo *pWeaponData = NULL;
+			switch ( i )
+			{
+			case 1: pWeaponData = g_ASWEquipmentList.GetWeaponDataFor( "asw_weapon_autogun" ); break;
+			case 2: pWeaponData = g_ASWEquipmentList.GetWeaponDataFor( "asw_weapon_shotgun" ); break;
+			case 3: pWeaponData = g_ASWEquipmentList.GetWeaponDataFor( "asw_weapon_vindicator" ); break;
+			case 4: pWeaponData = g_ASWEquipmentList.GetWeaponDataFor( "asw_weapon_flamer" ); break;
+			case 5: pWeaponData = g_ASWEquipmentList.GetWeaponDataFor( "asw_weapon_pdw" ); break;
+			case 6: pWeaponData = g_ASWEquipmentList.GetWeaponDataFor( "asw_weapon_pistol" ); break;
+			case 7: pWeaponData = g_ASWEquipmentList.GetWeaponDataFor( "asw_weapon_mining_laser" ); break;
+			default: pWeaponData = g_ASWEquipmentList.GetWeaponDataFor( "asw_weapon_rifle" ); break;
 			}
 			int overflow = ammo;
-			if (pWeaponData && pWeaponData->iMaxClip1 > 0)
+			if ( pWeaponData && pWeaponData->iMaxClip1 > 0 )
 			{
 				// overflow should actually be the current count in the guns marine holds using this ammo
 				overflow = 0;
-				for (int w=0;w<3;w++)
+				for ( int w = 0; w < 3; w++ )
 				{
-					CASW_Weapon *pWeapon = pMarine->GetASWWeapon(w);
-					if (pWeapon && pWeapon->GetPrimaryAmmoType() == iAmmoType)
+					CASW_Weapon *pWeapon = pMarine->GetASWWeapon( w );
+					if ( pWeapon && pWeapon->GetPrimaryAmmoType() == iAmmoType )
 						overflow += pWeapon->Clip1();
 				}
 
@@ -282,9 +281,9 @@ void CASW_VGUI_Marine_Ammo_Report::SetAmmoTypesVisible()
 				//int orig = ammo;
 				//
 				//overflow = orig - ammo * pWeaponData->iMaxClip1;
-				
+
 				// put a fresh clip as overflow if needed
-				if (overflow == 0 && ammo > 0)
+				if ( overflow == 0 && ammo > 0 )
 				{
 					ammo--;
 					overflow = pWeaponData->iMaxClip1;
@@ -294,163 +293,147 @@ void CASW_VGUI_Marine_Ammo_Report::SetAmmoTypesVisible()
 			{
 				ammo = 0;
 			}
-			m_pAmmoName[i]->SetVisible(true);
-			m_pAmmoCount[i]->SetVisible(true);
+			m_pAmmoName[i]->SetVisible( true );
+			m_pAmmoCount[i]->SetVisible( true );
 			//if (overflow > 0)
-				m_pAmmoOverflow[i]->SetVisible(true);
+			m_pAmmoOverflow[i]->SetVisible( true );
 			//else
 				//m_pAmmoOverflow[i]->SetVisible(false);
-			m_pAmmoIcon[i]->SetVisible(true);
-			m_pClipsIcon[i]->SetVisible(true);
+			m_pAmmoIcon[i]->SetVisible( true );
+			m_pClipsIcon[i]->SetVisible( true );
 			char buffer[32];
-			if (i == 5)	// PDW hack to show ammo doubled
-				Q_snprintf(buffer, sizeof(buffer), "%d", ammo * 2);
+			if ( i == 5 )	// PDW hack to show ammo doubled
+				Q_snprintf( buffer, sizeof( buffer ), "%d", ammo * 2 );
 			else
-				Q_snprintf(buffer, sizeof(buffer), "%d", ammo);
-			m_pAmmoCount[i]->SetText(buffer);
-			Q_snprintf(buffer, sizeof(buffer), "%d", overflow);
-			m_pAmmoOverflow[i]->SetText(buffer);
-			m_pAmmoName[i]->SetFgColor(Color(255,255,255,255));
-			m_pAmmoCount[i]->SetFgColor(Color(255,255,255,255));
-			m_pAmmoOverflow[i]->SetFgColor(Color(255,255,255,255));
+				Q_snprintf( buffer, sizeof( buffer ), "%d", ammo );
+			m_pAmmoCount[i]->SetText( buffer );
+			Q_snprintf( buffer, sizeof( buffer ), "%d", overflow );
+			m_pAmmoOverflow[i]->SetText( buffer );
+			m_pAmmoName[i]->SetFgColor( Color( 255, 255, 255, 255 ) );
+			m_pAmmoCount[i]->SetFgColor( Color( 255, 255, 255, 255 ) );
+			m_pAmmoOverflow[i]->SetFgColor( Color( 255, 255, 255, 255 ) );
 
 			// if we're ready to give this kind of ammo, position the glowlabel behind us
 			CASWHudCrosshair *pCrosshair = GET_HUDELEMENT( CASWHudCrosshair );
-			if (pCrosshair && pCrosshair->m_iShowGiveAmmoType != -1
-				&& pCrosshair->m_iShowGiveAmmoType == iAmmoType)
+			if ( pCrosshair && pCrosshair->m_iShowGiveAmmoType != -1
+				&& pCrosshair->m_iShowGiveAmmoType == iAmmoType )
 			{
-				m_pAmmoName[i]->GetText(buffer, sizeof(buffer));
-				m_pGlowLabel->SetText(buffer);
+				m_pAmmoName[i]->GetText( buffer, sizeof( buffer ) );
+				m_pGlowLabel->SetText( buffer );
 				int lx, ly, lw, lt;
-				m_pAmmoName[i]->GetBounds(lx, ly, lw, lt);
-				m_pGlowLabel->SetBounds(lx, ly, lw, lt);
-				//int alpha = m_pGlowLabel->GetAlpha();
-				//alpha += gpGlobals->frametime * 5.0f;
-				//if (alpha > 255)
-					//alpha = 255;
-				m_pGlowLabel->SetAlpha(255);
+				m_pAmmoName[i]->GetBounds( lx, ly, lw, lt );
+				m_pGlowLabel->SetBounds( lx, ly, lw, lt );
+				m_pGlowLabel->SetAlpha( 255 );
 				bShowingGlowLabel = true;
-				//Msg("matching ammotype %d buffer is %s\nbound are %d,%d %d,%d\n", iAmmoType, buffer, lx, ly, lw, lt);
 			}
 		}
 		else
 		{
-			m_pAmmoName[i]->SetVisible(false);
-			m_pAmmoCount[i]->SetVisible(false);
-			m_pAmmoIcon[i]->SetVisible(false);
-			m_pClipsIcon[i]->SetVisible(false);
-			m_pAmmoOverflow[i]->SetVisible(false);
+			m_pAmmoName[i]->SetVisible( false );
+			m_pAmmoCount[i]->SetVisible( false );
+			m_pAmmoIcon[i]->SetVisible( false );
+			m_pClipsIcon[i]->SetVisible( false );
+			m_pAmmoOverflow[i]->SetVisible( false );
 		}
 	}
-	if (!bShowingGlowLabel)
+	if ( !bShowingGlowLabel )
 	{
-		//int alpha = m_pGlowLabel->GetAlpha();
-		//if (alpha > 0)
-		//{
-			//alpha -= gpGlobals->frametime * 5.0f;
-			//if (alpha < 0)
-				//alpha = 0;
-			m_pGlowLabel->SetAlpha(0);
-		//}
+		m_pGlowLabel->SetAlpha( 0 );
 	}
 }
 
 void CASW_VGUI_Marine_Ammo_Report::OnThink()
 {
 	// make sure the colours are ok, they go grey sometimes, weirdly
-	m_pTitle->SetFgColor(Color(255,255,255,255));
-	for (int i=0;i<ASW_AMMO_REPORT_SLOTS;i++)
+	m_pTitle->SetFgColor( Color( 255, 255, 255, 255 ) );
+	for ( int i = 0; i < ASW_AMMO_REPORT_SLOTS; i++ )
 	{
-		m_pAmmoName[i]->SetFgColor(Color(255,255,255,255));
-		m_pAmmoCount[i]->SetFgColor(Color(255,255,255,255));
-		m_pAmmoOverflow[i]->SetFgColor(Color(255,255,255,255));
+		m_pAmmoName[i]->SetFgColor( Color( 255, 255, 255, 255 ) );
+		m_pAmmoCount[i]->SetFgColor( Color( 255, 255, 255, 255 ) );
+		m_pAmmoOverflow[i]->SetFgColor( Color( 255, 255, 255, 255 ) );
 	}
-	C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if (pPlayer)
+	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	if ( pPlayer )
 	{
-		if (pPlayer->GetNPC() && dynamic_cast<C_ASW_Weapon_Ammo_Bag*>(pPlayer->GetNPC()->GetActiveASWWeapon()))
-		{			
-			C_ASW_Marine* pAmmoMarine = dynamic_cast<C_ASW_Marine*>(pPlayer->GetHighlightEntity());
-			SetMarine(pAmmoMarine);
+		if ( pPlayer->GetNPC() && dynamic_cast< C_ASW_Weapon_Ammo_Bag * >( pPlayer->GetNPC()->GetActiveASWWeapon() ) )
+		{
+			C_ASW_Marine *pAmmoMarine = dynamic_cast< C_ASW_Marine * >( pPlayer->GetHighlightEntity() );
+			SetMarine( pAmmoMarine );
 		}
 		else
 		{
-			SetMarine(NULL);
-		}		
+			SetMarine( NULL );
+		}
 	}
 	// fade in/out as the marine changes
-	if (m_bQueuedMarine)
+	if ( m_bQueuedMarine )
 	{
-		if (GetAlpha() <= 0)
+		if ( GetAlpha() <= 0 )
 		{
-			m_hMarine = m_hQueuedMarine;			
+			m_hMarine = m_hQueuedMarine;
 			m_hQueuedMarine = NULL;
 			m_bQueuedMarine = false;
 			m_bDoingSlowFade = false;
 			m_fNextUpdateTime = gpGlobals->curtime;
-			if (GetMarine())
-				vgui::GetAnimationController()->RunAnimationCommand(this, "Alpha", 200, 0, ASW_AMMO_REPORT_FADE_TIME, vgui::AnimationController::INTERPOLATOR_LINEAR);
+			if ( GetMarine() )
+				vgui::GetAnimationController()->RunAnimationCommand( this, "Alpha", 200, 0, ASW_AMMO_REPORT_FADE_TIME, vgui::AnimationController::INTERPOLATOR_LINEAR );
 		}
-		else if (GetAlpha() >= 200)
+		else if ( GetAlpha() >= 200 )
 		{
-			if (m_hQueuedMarine.Get() == NULL)
+			if ( m_hQueuedMarine.Get() == NULL )
 			{
-				if (!m_bDoingSlowFade)
+				if ( !m_bDoingSlowFade )
 				{
 					m_bDoingSlowFade = true;
-					vgui::GetAnimationController()->RunAnimationCommand(this, "Alpha", 0, 1.5f, ASW_AMMO_REPORT_FADE_TIME * 3, vgui::AnimationController::INTERPOLATOR_LINEAR);
+					vgui::GetAnimationController()->RunAnimationCommand( this, "Alpha", 0, 1.5f, ASW_AMMO_REPORT_FADE_TIME * 3, vgui::AnimationController::INTERPOLATOR_LINEAR );
 				}
 			}
 			else
 			{
-				vgui::GetAnimationController()->RunAnimationCommand(this, "Alpha", 0, 0, ASW_AMMO_REPORT_FADE_TIME, vgui::AnimationController::INTERPOLATOR_LINEAR);
+				vgui::GetAnimationController()->RunAnimationCommand( this, "Alpha", 0, 0, ASW_AMMO_REPORT_FADE_TIME, vgui::AnimationController::INTERPOLATOR_LINEAR );
 				m_bDoingSlowFade = false;
 			}
 		}
 		// if we're doing a slow fade out but the player has now highlighted another marine, do the fade quickly
-		if (m_bDoingSlowFade && m_hQueuedMarine.Get() != NULL)
+		if ( m_bDoingSlowFade && m_hQueuedMarine.Get() != NULL )
 		{
-			vgui::GetAnimationController()->RunAnimationCommand(this, "Alpha", 0, 0, ASW_AMMO_REPORT_FADE_TIME, vgui::AnimationController::INTERPOLATOR_LINEAR);
+			vgui::GetAnimationController()->RunAnimationCommand( this, "Alpha", 0, 0, ASW_AMMO_REPORT_FADE_TIME, vgui::AnimationController::INTERPOLATOR_LINEAR );
 			m_bDoingSlowFade = false;
 		}
 	}
 	// check for updating ammo list
-	C_ASW_Marine* pMarine = GetMarine();
-	if (gpGlobals->curtime >= m_fNextUpdateTime && pMarine)
+	C_ASW_Marine *pMarine = GetMarine();
+	if ( gpGlobals->curtime >= m_fNextUpdateTime && pMarine )
 	{
 		// go through the marine's ammo and list it
-		if (pMarine->GetMarineProfile())
+		if ( pMarine->GetMarineProfile() )
 		{
 			char buffer[64];
-			Q_snprintf(buffer, sizeof(buffer), "%s's ammo:", pMarine->GetMarineProfile()->m_ShortName);
-			m_pTitle->SetText(buffer);
+			Q_snprintf( buffer, sizeof( buffer ), "%s's ammo:", pMarine->GetMarineProfile()->m_ShortName );
+			m_pTitle->SetText( buffer );
 		}
 		SetAmmoTypesVisible();
 		PerformLayout();
 		m_fNextUpdateTime = gpGlobals->curtime + 1.0f;
 	}
 	// set up a queue to empty if we're still being shown and we have no marine
-	if (!pMarine && GetAlpha() > 0 && !m_bQueuedMarine)
+	if ( !pMarine && GetAlpha() > 0 && !m_bQueuedMarine )
 	{
 		m_bQueuedMarine = true;
-		m_hQueuedMarine = NULL;		
+		m_hQueuedMarine = NULL;
 	}
 	// reposition	
-	if (pMarine)
+	if ( pMarine )
 	{
-		int mx,my;
+		int mx, my;
 		Vector vecScreenPos;
-		debugoverlay->ScreenPosition( pMarine->WorldSpaceCenter(), vecScreenPos );		
-		SetPos(vecScreenPos.x, vecScreenPos.y);
+		debugoverlay->ScreenPosition( pMarine->WorldSpaceCenter(), vecScreenPos );
+		SetPos( vecScreenPos.x, vecScreenPos.y );
 		mx = vecScreenPos.x;
 		my = vecScreenPos.y;
-		
+
 		// align the tooltip to the mous
-		vgui::input()->GetCursorPos(mx, my);
-		
-		// right and down abit
-		//mx += 64;
-		//my += 16;
+		vgui::input()->GetCursorPos( mx, my );
 
 		// below the mouse
 		my += 32;
@@ -460,29 +443,13 @@ void CASW_VGUI_Marine_Ammo_Report::OnThink()
 		// align it to his portrait
 		mx = ScreenWidth() - 135 * m_fScale - GetWide();
 		my = ScreenHeight() * 0.025f;
-		/*
-		my = 0;
-		C_ASW_Game_Resource* pGameResource = ASWGameResource();
-		if (pGameResource)
-		{
-			for (int k=0;k<pGameResource->GetMaxMarineResources();k++)
-			{
-				if (pGameResource->GetMarineResource(k) == pMarine->GetMarineResource())
-				{
-					my = ((k * 80) + 10) * m_fScale;
-					break;
-				}
-			}
-		}
-		*/
 
 		// check it's on the screen
-		mx = clamp(mx, 0, ScreenWidth() - GetWide());
-		my = clamp(my, 0, ScreenHeight() - GetTall());
-		
-		SetPos(mx, my);
+		mx = clamp( mx, 0, ScreenWidth() - GetWide() );
+		my = clamp( my, 0, ScreenHeight() - GetTall() );
+
+		SetPos( mx, my );
 	}
-	
 }
 
 void CASW_VGUI_Marine_Ammo_Report::Paint()

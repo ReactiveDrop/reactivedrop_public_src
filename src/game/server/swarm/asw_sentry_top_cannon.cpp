@@ -59,7 +59,7 @@ void CASW_Sentry_Top_Cannon::Fire()
 
 	Vector launchVector = diff * 1000.0f;
 
-	CASW_Marine * RESTRICT pMarineDeployer = GetSentryBase() ? GetSentryBase()->m_hDeployer.Get() : NULL;
+	CASW_Marine *RESTRICT pMarineDeployer = GetSentryBase() ? GetSentryBase()->m_hDeployer.Get() : NULL;
 
 	float fGrenadeDamage;
 	float fGrenadeRadius;
@@ -69,19 +69,19 @@ void CASW_Sentry_Top_Cannon::Fire()
 	{
 		fBaseGrenadeDamage = asw_sentry_top_cannon_dmg_override.GetFloat();
 	}
-	else if ( ASWEquipmentList() )
+	else
 	{
-		CASW_WeaponInfo* pWeaponInfo = ASWEquipmentList()->GetWeaponDataFor( "asw_weapon_sentry_cannon" );
+		CASW_WeaponInfo *pWeaponInfo = g_ASWEquipmentList.GetWeaponDataFor( "asw_weapon_sentry_cannon" );
 		if ( pWeaponInfo )
 			fBaseGrenadeDamage = pWeaponInfo->m_flBaseDamage;
 	}
 
-	if (pMarineDeployer)
+	if ( pMarineDeployer )
 	{
 		fGrenadeDamage = fBaseGrenadeDamage + MarineSkills()->GetSkillBasedValueByMarine( pMarineDeployer, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_CLUSTER_DMG ) * 0.5f;
-		fGrenadeRadius = CASW_Weapon_Grenades::GetBoomRadius(pMarineDeployer) * 0.5f;
+		fGrenadeRadius = CASW_Weapon_Grenades::GetBoomRadius( pMarineDeployer ) * 0.5f;
 	}
-	else 
+	else
 	{
 		extern ConVar asw_skill_grenades_cluster_dmg_base;
 		extern ConVar asw_skill_grenades_radius_base;
@@ -90,21 +90,21 @@ void CASW_Sentry_Top_Cannon::Fire()
 	}
 
 	CBaseEntity *owner;
-	if (pMarineDeployer)
+	if ( pMarineDeployer )
 		owner = pMarineDeployer;
 	else
 		owner = this;
 
-	CASW_Rifle_Grenade::Rifle_Grenade_Create( 
-		fGrenadeDamage,	fGrenadeRadius, 
-		GetFiringPosition() + (diff * ( WorldAlignSize().Length() * 0.5f ) ), 
-		GetAbsAngles(), launchVector, AngularImpulse(0,0,0), 
+	CASW_Rifle_Grenade::Rifle_Grenade_Create(
+		fGrenadeDamage, fGrenadeRadius,
+		GetFiringPosition() + ( diff * ( WorldAlignSize().Length() * 0.5f ) ),
+		GetAbsAngles(), launchVector, AngularImpulse( 0, 0, 0 ),
 		owner, this );
 
-	if( pMarineDeployer )
+	if ( pMarineDeployer )
 		pMarineDeployer->OnWeaponFired( this, 1 );
 
-	EmitSound("ASW_Sentry.CannonFire");
+	EmitSound( "ASW_Sentry.CannonFire" );
 
 	m_fNextFireTime = gpGlobals->curtime + m_flFireRate;
 

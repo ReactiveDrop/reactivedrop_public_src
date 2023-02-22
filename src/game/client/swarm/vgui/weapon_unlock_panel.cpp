@@ -62,7 +62,7 @@ void WeaponUnlockPanel::OnThink()
 		Vector vecPos = Vector( -275.0, 0.0, 170.0 );
 		QAngle angRot = QAngle( 32.0, 0.0, 0.0 );
 
-		CASW_WeaponInfo* pWeaponData = ASWEquipmentList()->GetWeaponDataFor( m_szWeaponClass );
+		CASW_WeaponInfo *pWeaponData = g_ASWEquipmentList.GetWeaponDataFor( m_szWeaponClass );
 		if ( pWeaponData )
 		{
 			vecPos.z += pWeaponData->m_flModelPanelZOffset;
@@ -73,10 +73,10 @@ void WeaponUnlockPanel::OnThink()
 		int iMaxBounds = -vecBoundsMins.x + vecBoundsMax.x;
 		iMaxBounds = MAX( iMaxBounds, -vecBoundsMins.y + vecBoundsMax.y );
 		iMaxBounds = MAX( iMaxBounds, -vecBoundsMins.z + vecBoundsMax.z );
-		vecPos *= (float)iMaxBounds/64.0f;
+		vecPos *= ( float )iMaxBounds / 64.0f;
 
 		m_pItemModelPanel->SetCameraPositionAndAngles( vecPos, angRot );
-		m_pItemModelPanel->SetModelAnglesAndPosition( QAngle( 0.0f, gpGlobals->curtime * 45.0f , 0.0f ), vec3_origin );
+		m_pItemModelPanel->SetModelAnglesAndPosition( QAngle( 0.0f, gpGlobals->curtime * 45.0f, 0.0f ), vec3_origin );
 	}
 }
 
@@ -91,9 +91,9 @@ void WeaponUnlockPanel::UpdateWeaponDetails()
 {
 	m_pItemModelPanel->ClearMergeMDLs();
 
-	CASW_WeaponInfo* pWeaponData = ASWEquipmentList()->GetWeaponDataFor( m_szWeaponClass );
+	CASW_WeaponInfo *pWeaponData = g_ASWEquipmentList.GetWeaponDataFor( m_szWeaponClass );
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if ( !pWeaponData || !pPlayer || !m_szWeaponClass[ 0 ] )
+	if ( !pWeaponData || !pPlayer || !m_szWeaponClass[0] )
 	{
 		m_pItemModelPanel->m_bShouldPaint = false;
 		m_pItemModelPanel->SetVisible( false );
@@ -131,7 +131,7 @@ void WeaponUnlockPanel::UpdateWeaponDetails()
 	m_pUnlockLabel->SetVisible( true );
 	m_pWeaponLabel->SetVisible( true );
 
-	
+
 	int iRequiredLevel = pPlayer->GetWeaponLevelRequirement( m_szWeaponClass );
 
 	if ( m_iPlayerLevel >= iRequiredLevel )
@@ -149,13 +149,13 @@ void WeaponUnlockPanel::UpdateWeaponDetails()
 		m_pLevelRequirementLabel->SetVisible( true );
 	}
 	m_pWeaponLabel->SetText( pWeaponData->szEquipLongName );
-	
+
 
 	wchar_t wnumber[8];
 	V_snwprintf( wnumber, ARRAYSIZE( wnumber ), L"%d", iRequiredLevel + 1 ); /// levels start from 0 in code, but show from 1 in the UI
 
 	wchar_t wbuffer[96];
-	g_pVGuiLocalize->ConstructString( wbuffer, sizeof(wbuffer),
+	g_pVGuiLocalize->ConstructString( wbuffer, sizeof( wbuffer ),
 		g_pVGuiLocalize->Find( "#asw_level_requirement" ), 1,
 		wnumber );
 	m_pLevelRequirementLabel->SetText( wbuffer );

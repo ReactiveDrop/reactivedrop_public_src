@@ -193,7 +193,7 @@ void CASW_Hud_Master::OnThink()
 
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 
-	if ( !pPlayer || !ASWGameResource() || !ASWEquipmentList() )
+	if ( !pPlayer || !ASWGameResource() )
 		return;
 
 	if ( ASWDeathmatchMode() )
@@ -693,8 +693,6 @@ bool CASW_Hud_Master::LookupElementBounds( const char *elementName, int &x, int 
 
 	if ( V_strcmp( elementName, "weapon1" ) == 0 )
 	{
-		Assert( ASWEquipmentList() );
-
 		CASW_Weapon *pWeapon = m_hLocalMarine->GetASWWeapon( ASW_INVENTORY_SLOT_SECONDARY );
 		if ( pWeapon )
 		{
@@ -707,8 +705,6 @@ bool CASW_Hud_Master::LookupElementBounds( const char *elementName, int &x, int 
 	}
 	else if ( V_strcmp( elementName, "squadpanel0" ) == 0 )
 	{
-		Assert( ASWEquipmentList() );
-
 		CASW_Weapon *pWeapon = m_hLocalMarine->GetASWWeapon( ASW_INVENTORY_SLOT_EXTRA );
 		if ( pWeapon )
 		{
@@ -1137,8 +1133,6 @@ void CASW_Hud_Master::PaintSquadMemberStatus( int nPosition )
 
 void CASW_Hud_Master::PaintLocalMarineInventory()
 {
-	Assert( ASWEquipmentList() );
-
 	if ( !m_pLocalMarine )
 		return;
 
@@ -1156,7 +1150,7 @@ void CASW_Hud_Master::PaintLocalMarineInventory()
 			{
 				surface()->DrawSetColor( 66, 142, 192, 255 );		// light blue
 			}
-			surface()->DrawSetTexture( ASWEquipmentList()->GetEquipIconTexture( !pInfo->m_bExtra, pWeapon->GetEquipmentListIndex() ) );
+			surface()->DrawSetTexture( g_ASWEquipmentList.GetEquipIconTexture( !pInfo->m_bExtra, pWeapon->GetEquipmentListIndex() ) );
 			int x = YRES( pInfo->m_iHUDIconOffsetX );
 			int y = YRES( pInfo->m_iHUDIconOffsetY );
 			int w = m_nWeapon_w;
@@ -1238,7 +1232,7 @@ void CASW_Hud_Master::PaintSquadMatesInventory()
 			int w = m_nSquadMate_ExtraItem_w;
 			int h = m_nSquadMate_ExtraItem_t;
 			
-			surface()->DrawSetTexture( ASWEquipmentList()->GetEquipIconTexture( !m_SquadMateInfo[ i ].pExtraItemInfo->m_bExtra, m_SquadMateInfo[ i ].nEquipmentListIndex ) );
+			surface()->DrawSetTexture( g_ASWEquipmentList.GetEquipIconTexture( !m_SquadMateInfo[ i ].pExtraItemInfo->m_bExtra, m_SquadMateInfo[ i ].nEquipmentListIndex ) );
 			if ( m_SquadMateInfo[ i ].pExtraItemInfo->m_bZoomHotbarIcon )
 			{
 				vgui::Vertex_t zoomed_hotbar_icon_points[4] = 
@@ -1679,7 +1673,7 @@ void CASW_Hud_Master::PaintDeathmatchFrags()
 		if ( ASWDeathmatchMode()->IsGunGameEnabled() )
 		{
 			surface()->DrawSetColor( textColor );
-			surface()->DrawSetTexture( ASWEquipmentList()->GetEquipIconTexture( true, ASWDeathmatchMode()->GetWeaponIndexByFragsCount( ASWDeathmatchMode()->GetFragCount( pMR ) ) ) );
+			surface()->DrawSetTexture( g_ASWEquipmentList.GetEquipIconTexture( true, ASWDeathmatchMode()->GetWeaponIndexByFragsCount( ASWDeathmatchMode()->GetFragCount( pMR ) ) ) );
 			surface()->DrawTexturedRect( x, YRES( 5 ), x + YRES( 15 * m_nWeapon_w / m_nWeapon_t ), YRES( 20 ) );
 		}
 		else

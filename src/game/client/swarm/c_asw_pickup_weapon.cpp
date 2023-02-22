@@ -18,8 +18,6 @@
 // Base weapon pickup
 //--------------------
 
-CUtlDict< int, int > g_WeaponUseIcons;
-
 IMPLEMENT_CLIENTCLASS_DT( C_ASW_Pickup_Weapon, DT_ASW_Pickup_Weapon, CASW_Pickup_Weapon )
 	RecvPropInt		(RECVINFO(m_iBulletsInGun)),
 	RecvPropInt		(RECVINFO(m_iClips)),
@@ -35,29 +33,16 @@ C_ASW_Pickup_Weapon::C_ASW_Pickup_Weapon()
 
 void C_ASW_Pickup_Weapon::InitPickup()
 {
-	if ( !ASWEquipmentList() )
-		return;
-
-	CASW_WeaponInfo* pInfo = ASWEquipmentList()->GetWeaponDataFor( GetWeaponClass() );
+	CASW_WeaponInfo *pInfo = g_ASWEquipmentList.GetWeaponDataFor( GetWeaponClass() );
 	if ( !pInfo )
 		return;
 
-	Q_snprintf(m_szUseIconText, sizeof(m_szUseIconText), "%s", pInfo->szPrintName );
+	V_snprintf( m_szUseIconText, sizeof( m_szUseIconText ), "%s", pInfo->szPrintName );
 
-	int nIndex = g_WeaponUseIcons.Find( GetWeaponClass() );
-	if ( nIndex == g_WeaponUseIcons.InvalidIndex() )
-	{
-		m_nUseIconTextureID = vgui::surface()->CreateNewTextureID();
-		char buffer[ 256 ];
-		Q_snprintf( buffer, sizeof( buffer ), "vgui/%s", pInfo->szEquipIcon );
-		vgui::surface()->DrawSetTextureFile( m_nUseIconTextureID, buffer, true, false);
-
-		nIndex = g_WeaponUseIcons.Insert( GetWeaponClass(), m_nUseIconTextureID );
-	}
-	else
-	{
-		m_nUseIconTextureID = g_WeaponUseIcons.Element( nIndex );
-	}
+	m_nUseIconTextureID = g_ASWEquipmentList.GetEquipIconTexture( !pInfo->m_bExtra,
+		pInfo->m_bExtra ?
+		g_ASWEquipmentList.GetExtraIndex( GetWeaponClass() ) :
+		g_ASWEquipmentList.GetRegularIndex( GetWeaponClass() ) );
 	m_bWideIcon = !pInfo->m_bExtra;
 }
 

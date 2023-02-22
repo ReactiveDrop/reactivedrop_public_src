@@ -1981,61 +1981,61 @@ bool CASW_Marine::TestHitboxes( const Ray_t &ray, unsigned int fContentsMask, tr
 }
 
 // returns which slot in the m_hWeapons array this pickup should go in
-int CASW_Marine::GetWeaponPositionForPickup( const char* szWeaponClass, bool bIsTemporary )
-{	
-	if (!szWeaponClass || !ASWEquipmentList())
+int CASW_Marine::GetWeaponPositionForPickup( const char *szWeaponClass, bool bIsTemporary )
+{
+	Assert( szWeaponClass );
+	if ( !szWeaponClass )
 	{
-		Assert(0);
 		return 0;
 	}
 
-	CASW_WeaponInfo *pWeaponData = ASWEquipmentList()->GetWeaponDataFor( szWeaponClass );
+	CASW_WeaponInfo *pWeaponData = g_ASWEquipmentList.GetWeaponDataFor( szWeaponClass );
 
 	// use the temporary slot unless we can put it in primary or secondary without dropping anything
-	if ( bIsTemporary && ( pWeaponData->m_bExtra || !V_stricmp( szWeaponClass, "rd_weapon_generic_object" ) || ( GetWeapon(0) && GetWeapon(1) ) ) )
+	if ( bIsTemporary && ( pWeaponData->m_bExtra || !V_stricmp( szWeaponClass, "rd_weapon_generic_object" ) || ( GetWeapon( 0 ) && GetWeapon( 1 ) ) ) )
 	{
 		return ASW_TEMPORARY_WEAPON_SLOT;
 	}
 
 	// if it's an extra type item, return the 3rd slot as that's the only place it'll fit
-	if (pWeaponData && pWeaponData->m_bExtra)
+	if ( pWeaponData && pWeaponData->m_bExtra )
 		return 2;
 
 	// if item is unique, then check if we're already carrying one
-	if (pWeaponData && pWeaponData->m_bUnique)
+	if ( pWeaponData && pWeaponData->m_bUnique )
 	{
-		CBaseCombatWeapon *pWeapon = GetWeapon(0);
-		if (pWeapon && !Q_strcmp(szWeaponClass, pWeapon->GetClassname()))
+		CBaseCombatWeapon *pWeapon = GetWeapon( 0 );
+		if ( pWeapon && !Q_strcmp( szWeaponClass, pWeapon->GetClassname() ) )
 			return 0;
 
-		pWeapon = GetWeapon(1);
-		if (pWeapon && !Q_strcmp(szWeaponClass, pWeapon->GetClassname()))
+		pWeapon = GetWeapon( 1 );
+		if ( pWeapon && !Q_strcmp( szWeaponClass, pWeapon->GetClassname() ) )
 			return 1;
 	}
 
-	if (GetWeapon(0) == NULL)		// primary slot is free
+	if ( GetWeapon( 0 ) == NULL )		// primary slot is free
 		return 0;
-	else if (GetWeapon(1) == NULL)	// secondary slot is free
+	else if ( GetWeapon( 1 ) == NULL )	// secondary slot is free
 		return 1;
 	// all slots are full
-	else if (GetActiveWeapon() == GetWeapon(0))		// we have primary currently selected, so exchange with that
+	else if ( GetActiveWeapon() == GetWeapon( 0 ) )		// we have primary currently selected, so exchange with that
 		return 0;
-	else if (GetActiveWeapon() == GetWeapon(1))		// we have primary currently selected, so exchange with that
+	else if ( GetActiveWeapon() == GetWeapon( 1 ) )		// we have primary currently selected, so exchange with that
 		return 1;
-	
+
 	return 0;		// otherwise, swap with the primary slot
 
-		/*
-	Potential better system?
+	/*
+		Potential better system?
 
-	for a weapon:  put in primary slot if free
-			if not, put in secondary slot, if free
-			if not, drop current weapon and put in that slot
+		for a weapon:  put in primary slot if free
+				if not, put in secondary slot, if free
+				if not, drop current weapon and put in that slot
 
-	for a pickup:  put in secondary slot, if free
-			if not, put in primary slot, if free
-			if not, drop secondary and put in secondary
-			*/
+		for a pickup:  put in secondary slot, if free
+				if not, put in primary slot, if free
+				if not, drop secondary and put in secondary
+	*/
 }
 
 int CASW_Marine::GetNumberOfWeaponsUsingAmmo(int iAmmoIndex)

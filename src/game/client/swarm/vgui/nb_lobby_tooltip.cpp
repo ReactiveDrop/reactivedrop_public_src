@@ -320,16 +320,16 @@ void CNB_Lobby_Tooltip::OnTick()
 	}
 
 	int nWeapon = Briefing()->GetMarineSelectedWeapon( m_nLobbySlot, m_nInventorySlot );
-	if ( nWeapon == -1 || !ASWEquipmentList() )
+	if ( nWeapon == -1 )
 	{
 		return;
 	}
 
-	CASW_EquipItem *pItem = ASWEquipmentList()->GetItemForSlot( m_nInventorySlot, nWeapon );
+	CASW_EquipItem *pItem = g_ASWEquipmentList.GetItemForSlot( m_nInventorySlot, nWeapon );
 	if ( !pItem )
 		return;
 
-	CASW_WeaponInfo* pWeaponInfo = ASWEquipmentList()->GetWeaponDataFor( STRING( pItem->m_EquipClass ) );
+	CASW_WeaponInfo *pWeaponInfo = g_ASWEquipmentList.GetWeaponDataFor( pItem->m_szEquipClass );
 	if ( !pWeaponInfo )
 		return;
 
@@ -376,7 +376,7 @@ void CNB_Lobby_Tooltip::OnTick()
 
 			m_pItemModelPanel->InvalidateLayout( true );
 			m_pItemModelPanel->SetAlpha( 0 );
-			vgui::GetAnimationController()->RunAnimationCommand( m_pItemModelPanel, "Alpha", 255, 0.01f, 0.5f, vgui::AnimationController::INTERPOLATOR_LINEAR);
+			vgui::GetAnimationController()->RunAnimationCommand( m_pItemModelPanel, "Alpha", 255, 0.01f, 0.5f, vgui::AnimationController::INTERPOLATOR_LINEAR );
 		}
 	}
 

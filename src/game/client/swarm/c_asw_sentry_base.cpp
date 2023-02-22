@@ -63,23 +63,9 @@ int C_ASW_Sentry_Base::DrawModel( int flags, const RenderableInstance_t &instanc
 
 int C_ASW_Sentry_Base::GetSentryIconTextureID()
 {
-	int nIndex = g_WeaponUseIcons.Find( GetWeaponClass() );
-	if ( nIndex == g_WeaponUseIcons.InvalidIndex() && ASWEquipmentList() )
+	if ( m_nUseIconTextureID == -1 )
 	{
-		CASW_WeaponInfo *pInfo = ASWEquipmentList()->GetWeaponDataFor( GetWeaponClass() );
-		if ( pInfo )
-		{
-			m_nUseIconTextureID = vgui::surface()->CreateNewTextureID();
-			char buffer[ 256 ];
-			Q_snprintf( buffer, sizeof( buffer ), "vgui/%s", pInfo->szEquipIcon );
-			vgui::surface()->DrawSetTextureFile( m_nUseIconTextureID, buffer, true, false);
-
-			nIndex = g_WeaponUseIcons.Insert( GetWeaponClass(), m_nUseIconTextureID );
-		}
-	}
-	else
-	{
-		m_nUseIconTextureID = g_WeaponUseIcons.Element( nIndex );
+		m_nUseIconTextureID = g_ASWEquipmentList.GetEquipIconTexture( true, g_ASWEquipmentList.GetRegularIndex( GetWeaponClass() ) );
 	}
 
 	return m_nUseIconTextureID;

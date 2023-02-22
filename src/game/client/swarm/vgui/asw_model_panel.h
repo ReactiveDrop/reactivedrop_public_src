@@ -25,6 +25,7 @@ public:
 
 	// function to set up scene sets
 	void SetupCustomLights( Color cAmbient, Color cKey, float fKeyBoost, Color cRim, float fRimBoost );
+	void SetLighting( const MaterialLightingState_t &lighting );
 
 	void SetBodygroup( int iGroup, int iValue );
 	int FindBodygroupByName( const char *name );

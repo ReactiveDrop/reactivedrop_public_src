@@ -219,7 +219,7 @@ extern ConVar old_radius_damage;
 		if ( rd_weapons_regular_class_unrestricted.GetInt() == -2 && rd_weapons_extra_class_unrestricted.GetInt() == -2 )
 			return;
 
-		if ( ASWGameRules() && ASWGameResource() && ASWEquipmentList() && ASWGameRules()->GetGameState() == ASW_GS_BRIEFING )
+		if ( ASWGameRules() && ASWGameResource() && ASWGameRules()->GetGameState() == ASW_GS_BRIEFING )
 		{
 			for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
 			{
@@ -235,7 +235,7 @@ extern ConVar old_radius_damage;
 				for ( int j = 0; j < ASW_MAX_EQUIP_SLOTS; j++ )
 				{
 					const char *szWeaponClass = pProfile->m_DefaultWeaponsInSlots[ j ];
-					int nWeaponIndex = ASWEquipmentList()->GetIndexForSlot( j, szWeaponClass );
+					int nWeaponIndex = g_ASWEquipmentList.GetIndexForSlot( j, szWeaponClass );
 					engine->ClientCommand( pPlayer->edict(), "cl_loadout %d %d %d", pProfile->m_ProfileIndex, j, nWeaponIndex );
 				}
 			}
@@ -1324,10 +1324,9 @@ CAmmoDef *GetAmmoDef()
 
 CAlienSwarm::CAlienSwarm()
 {
-	Msg("C_AlienSwarm created\n");
+	Msg( "C_AlienSwarm created\n" );
 
-	if (ASWEquipmentList())
-		ASWEquipmentList()->LoadTextures();
+	g_ASWEquipmentList.LoadTextures();
 
 	m_nOldMarineForDeathCam = -1;
 	m_fMarineDeathCamRealtime = 0.0f;
@@ -1335,7 +1334,7 @@ CAlienSwarm::CAlienSwarm()
 	m_hMarineDeathRagdoll = NULL;
 	m_fDeathCamYawAngleOffset = 0.0f;
 	m_iPreviousGameState = 200;
-	m_iPreviousMissionWorkshopID = 1; // impossible workshop ID
+	m_iPreviousMissionWorkshopID = 999999; // impossible workshop ID
 
 	engine->SetPitchScale( 1.0f );
 
@@ -1465,23 +1464,6 @@ ConVar asw_blip_speech_chance( "asw_blip_speech_chance", "0.8", FCVAR_CHEAT, "Ch
 ConVar asw_instant_restart( "asw_instant_restart", "1", FCVAR_NONE, "Whether the game should use the instant restart (if not, it'll do a full reload of the map)." );
 ConVar asw_instant_restart_debug( "asw_instant_restart_debug", "0", FCVAR_NONE, "Write a lot of developer messages to the console during an instant restart." );
 
-const char * GenerateNewSaveGameName()
-{
-	static char szNewSaveName[256];	
-	// count up save names until we find one that doesn't exist
-	for (int i=1;i<10000;i++)
-	{
-		Q_snprintf(szNewSaveName, sizeof(szNewSaveName), "save/save%d.campaignsave", i);
-		if (!filesystem->FileExists(szNewSaveName))
-		{
-			Q_snprintf(szNewSaveName, sizeof(szNewSaveName), "save%d.campaignsave", i);
-			return szNewSaveName;
-		}
-	}
-
-	return NULL;
-}
-
 const char* CAlienSwarm::GetGameDescription( void )
 { 
 	return m_szGameDescription; 
@@ -1505,8 +1487,6 @@ CAlienSwarm::CAlienSwarm() : m_ActorSpeakingUntil( DefLessFunc( string_t ) )
 	// create the profile list for the server
 	//  clients do this is in c_asw_player.cpp
 	MarineProfileList();
-
-	ASWEquipmentList();
 
 	// set which entities should stay around when we restart the mission
 	m_MapResetFilter.AddKeepEntity( "worldspawn" );
@@ -1768,7 +1748,7 @@ void CAlienSwarm::StartTutorial( CASW_Player *pPlayer )
 		pMR = ASWGameResource()->GetMarineResource( 0 );
 		if ( pMR )
 		{
-			pMR->m_iWeaponsInSlots.Set( 0, ASWEquipmentList()->GetIndexForSlot( 0, "asw_weapon_prifle" ) );
+			pMR->m_iWeaponsInSlots.Set( 0, ASW_EQUIP_PRIFLE );
 			pMR->m_iWeaponsInSlots.Set( 1, -1 );
 			pMR->m_iWeaponsInSlots.Set( 2, -1 );
 		}
@@ -1782,25 +1762,25 @@ void CAlienSwarm::StartTutorial( CASW_Player *pPlayer )
 		pMR = ASWGameResource()->GetMarineResource( 0 );
 		if ( pMR )
 		{
-			pMR->m_iWeaponsInSlots.Set( 0, ASWEquipmentList()->GetIndexForSlot( 0, "asw_weapon_prifle" ) );
-			pMR->m_iWeaponsInSlots.Set( 1, ASWEquipmentList()->GetIndexForSlot( 1, "asw_weapon_ammo_satchel" ) );
-			pMR->m_iWeaponsInSlots.Set( 2, ASWEquipmentList()->GetIndexForSlot( 2, "asw_weapon_welder" ) );
+			pMR->m_iWeaponsInSlots.Set( 0, ASW_EQUIP_PRIFLE );
+			pMR->m_iWeaponsInSlots.Set( 1, ASW_EQUIP_AMMO_SATCHEL );
+			pMR->m_iWeaponsInSlots.Set( 2, ASW_EQUIP_WELDER );
 		}
 
 		pMR = ASWGameResource()->GetMarineResource( 1 );
 		if ( pMR )
 		{
-			pMR->m_iWeaponsInSlots.Set( 0, ASWEquipmentList()->GetIndexForSlot( 0, "asw_weapon_vindicator" ) );
-			pMR->m_iWeaponsInSlots.Set( 1, ASWEquipmentList()->GetIndexForSlot( 1, "asw_weapon_sentry" ) );
-			pMR->m_iWeaponsInSlots.Set( 2, ASWEquipmentList()->GetIndexForSlot( 2, "asw_weapon_medkit" ) );
+			pMR->m_iWeaponsInSlots.Set( 0, ASW_EQUIP_VINDICATOR );
+			pMR->m_iWeaponsInSlots.Set( 1, ASW_EQUIP_SENTRY );
+			pMR->m_iWeaponsInSlots.Set( 2, ASW_EQUIP_MEDKIT );
 		}
 
 		pMR = ASWGameResource()->GetMarineResource( 2 );
 		if ( pMR )
 		{
-			pMR->m_iWeaponsInSlots.Set( 0, ASWEquipmentList()->GetIndexForSlot( 0, "asw_weapon_flamer" ) );
-			pMR->m_iWeaponsInSlots.Set( 1, ASWEquipmentList()->GetIndexForSlot( 1, "asw_weapon_heal_grenade" ) );
-			pMR->m_iWeaponsInSlots.Set( 2, ASWEquipmentList()->GetIndexForSlot( 2, "asw_weapon_flares" ) );
+			pMR->m_iWeaponsInSlots.Set( 0, ASW_EQUIP_FLAMER );
+			pMR->m_iWeaponsInSlots.Set( 1, ASW_EQUIP_HEAL_GRENADE );
+			pMR->m_iWeaponsInSlots.Set( 2, ASW_EQUIP_FLARES );
 		}
 	}
 
@@ -2230,42 +2210,41 @@ bool CAlienSwarm::RosterSelect( CASW_Player *pPlayer, int RosterIndex, int nPref
 			{
 				m->ChangeTeam( ASWDeathmatchMode()->GetSmallestTeamNumber() );
 			}
-			if ( ASWEquipmentList() )
+
+			for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++iWpnSlot )
 			{
-				for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++ iWpnSlot )
+				const char *szWeaponClass = m->GetProfile()->m_DefaultWeaponsInSlots[iWpnSlot];
+				int nWeaponIndex = g_ASWEquipmentList.GetIndexForSlot( iWpnSlot, szWeaponClass );
+				if ( nWeaponIndex < 0 )		// if there's a bad weapon here, then fall back to one of the starting weapons
 				{
-					const char *szWeaponClass = m->GetProfile()->m_DefaultWeaponsInSlots[ iWpnSlot ];
-					int nWeaponIndex = ASWEquipmentList()->GetIndexForSlot( iWpnSlot, szWeaponClass );
-					if ( nWeaponIndex < 0 )		// if there's a bad weapon here, then fall back to one of the starting weapons
+					if ( iWpnSlot == 2 )
 					{
-						if ( iWpnSlot == 2 )
-						{
-							nWeaponIndex = ASWEquipmentList()->GetIndexForSlot( iWpnSlot, "asw_weapon_medkit" );
-						}
-						else
-						{
-							nWeaponIndex = ASWEquipmentList()->GetIndexForSlot( iWpnSlot, "asw_weapon_rifle" );
-						}
-					}
-					nWeaponIndex = ApplyWeaponSelectionRules( iWpnSlot, nWeaponIndex );
-
-					if ( nWeaponIndex >= 0 )
-					{
-						m->m_iWeaponsInSlots.Set( iWpnSlot, nWeaponIndex );
-
-						// store also in initial array to disallow marines spawn 
-						// with picked up items 
-						if ( ASWDeathmatchMode() )
-						{
-							m->m_iInitialWeaponsInSlots[iWpnSlot] = nWeaponIndex;
-						}
+						nWeaponIndex = ASW_EQUIP_MEDKIT;
 					}
 					else
 					{
-						Warning( "Bad default weapon for %s in slot %d\n", m->GetProfile()->GetShortName(), iWpnSlot );
+						nWeaponIndex = ASW_EQUIP_RIFLE;
 					}
 				}
+				nWeaponIndex = ApplyWeaponSelectionRules( iWpnSlot, nWeaponIndex );
+
+				if ( nWeaponIndex >= 0 )
+				{
+					m->m_iWeaponsInSlots.Set( iWpnSlot, nWeaponIndex );
+
+					// store also in initial array to disallow marines spawn 
+					// with picked up items 
+					if ( ASWDeathmatchMode() )
+					{
+						m->m_iInitialWeaponsInSlots[iWpnSlot] = nWeaponIndex;
+					}
+				}
+				else
+				{
+					Warning( "Bad default weapon for %s in slot %d\n", m->GetProfile()->GetShortName(), iWpnSlot );
+				}
 			}
+
 			m->Spawn();	// asw needed?
 			if ( !ASWGameResource()->AddMarineResource( m, nPreferredSlot ) )
 			{
@@ -2548,12 +2527,12 @@ void CAlienSwarm::LoadoutSelect( CASW_Player *pPlayer, int iRosterIndex, int iIn
 	iEquipIndex = ApplyWeaponSelectionRules( iInvSlot, iEquipIndex );
 
 	// Figure out what item the marine is trying to equip
-	CASW_EquipItem *pNewItem = ASWEquipmentList()->GetItemForSlot( iInvSlot, iEquipIndex );
+	CASW_EquipItem *pNewItem = g_ASWEquipmentList.GetItemForSlot( iInvSlot, iEquipIndex );
 	if ( !pNewItem || ( !pNewItem->m_bSelectableInBriefing && !rd_weapons_show_hidden.GetBool() ) )
 		return;
 
 	// Figure out if the marine is already carrying an item in the slot
-	CASW_EquipItem *pOldItem = ASWEquipmentList()->GetItemForSlot( iInvSlot, pMarineResource->m_iWeaponsInSlots.Get( iInvSlot ) );
+	CASW_EquipItem *pOldItem = g_ASWEquipmentList.GetItemForSlot( iInvSlot, pMarineResource->m_iWeaponsInSlots.Get( iInvSlot ) );
 	// Can swap the old item for new one?
 	if ( !MarineCanSelectInLobby( pMarineResource,
 		pNewItem ? STRING(pNewItem->m_EquipClass) : NULL,
@@ -4272,22 +4251,22 @@ bool CAlienSwarm::CanHaveAmmo( CBaseCombatCharacter *pPlayer, int iAmmoIndex )
 	return false;
 }
 
-void CAlienSwarm::GiveStartingWeaponToMarine(CASW_Marine* pMarine, int iEquipIndex, int iSlot)
+void CAlienSwarm::GiveStartingWeaponToMarine( CASW_Marine *pMarine, int iEquipIndex, int iSlot )
 {
 	if ( !pMarine || iEquipIndex == -1 || iSlot < 0 || iSlot >= ASW_MAX_EQUIP_SLOTS )
 		return;
 
-	CASW_EquipItem *pEquip = ASWEquipmentList()->GetItemForSlot( iSlot, iEquipIndex );
+	CASW_EquipItem *pEquip = g_ASWEquipmentList.GetItemForSlot( iSlot, iEquipIndex );
 	Assert( pEquip );
 	if ( !pEquip )
 		return;
 
-	const char* szWeaponClass = STRING( pEquip->m_EquipClass );
+	const char *szWeaponClass = STRING( pEquip->m_EquipClass );
 	Assert( szWeaponClass );
 	if ( !szWeaponClass )
 		return;
-		
-	CASW_Weapon* pWeapon = dynamic_cast<CASW_Weapon*>(pMarine->Weapon_Create(szWeaponClass));
+
+	CASW_Weapon *pWeapon = dynamic_cast< CASW_Weapon * >( pMarine->Weapon_Create( szWeaponClass ) );
 	Assert( pWeapon );
 	if ( !pWeapon )
 		return;
@@ -4295,60 +4274,60 @@ void CAlienSwarm::GiveStartingWeaponToMarine(CASW_Marine* pMarine, int iEquipInd
 	// If I have a name, make my weapon match it with "_weapon" appended
 	if ( pMarine->GetEntityName() != NULL_STRING )
 	{
-		const char *pMarineName = STRING(pMarine->GetEntityName());
-		const char *pError = UTIL_VarArgs("%s_weapon", pMarineName);
-		string_t pooledName = AllocPooledString(pError);
+		const char *pMarineName = STRING( pMarine->GetEntityName() );
+		const char *pError = UTIL_VarArgs( "%s_weapon", pMarineName );
+		string_t pooledName = AllocPooledString( pError );
 		pWeapon->SetName( pooledName );
 	}
 
 	// set the amount of bullets in the gun
 	//Msg("Giving starting waepon to marine: %s ",szWeaponClass);
-	int iPrimaryAmmo = pWeapon->GetDefaultClip1();	
+	int iPrimaryAmmo = pWeapon->GetDefaultClip1();
 	int iSecondaryAmmo = pWeapon->GetDefaultClip2();
 	// adjust here for medical satchel charges if the marine has the skill for it
-	if ( !stricmp(szWeaponClass, "asw_weapon_medical_satchel") || !stricmp(szWeaponClass, "asw_weapon_heal_grenade") )
+	if ( !stricmp( szWeaponClass, "asw_weapon_medical_satchel" ) || !stricmp( szWeaponClass, "asw_weapon_heal_grenade" ) )
 	{
-		if (pMarine->GetMarineProfile() && pMarine->GetMarineProfile()->CanUseFirstAid())
+		if ( pMarine->GetMarineProfile() && pMarine->GetMarineProfile()->CanUseFirstAid() )
 		{
-			iPrimaryAmmo = MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_HEALING, ASW_MARINE_SUBSKILL_HEALING_CHARGES);
-			iSecondaryAmmo = MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_HEALING, ASW_MARINE_SUBSKILL_SELF_HEALING_CHARGES);
+			iPrimaryAmmo = MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_HEALING, ASW_MARINE_SUBSKILL_HEALING_CHARGES );
+			iSecondaryAmmo = MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_HEALING, ASW_MARINE_SUBSKILL_SELF_HEALING_CHARGES );
 		}
 	}
-	if ( !stricmp(szWeaponClass, "asw_weapon_heal_gun") )
+	if ( !stricmp( szWeaponClass, "asw_weapon_heal_gun" ) )
 	{
-		if (pMarine->GetMarineProfile() && pMarine->GetMarineProfile()->CanUseFirstAid())
+		if ( pMarine->GetMarineProfile() && pMarine->GetMarineProfile()->CanUseFirstAid() )
 		{
-			iPrimaryAmmo = MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_HEALING, ASW_MARINE_SUBSKILL_HEAL_GUN_CHARGES);
+			iPrimaryAmmo = MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_HEALING, ASW_MARINE_SUBSKILL_HEAL_GUN_CHARGES );
 		}
 	}
-	if (!stricmp(szWeaponClass, "asw_weapon_healamp_gun"))
+	if ( !stricmp( szWeaponClass, "asw_weapon_healamp_gun" ) )
 	{
-		if (pMarine->GetMarineProfile() && pMarine->GetMarineProfile()->CanUseFirstAid())
+		if ( pMarine->GetMarineProfile() && pMarine->GetMarineProfile()->CanUseFirstAid() )
 		{
 			iPrimaryAmmo = MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_HEALING, ASW_MARINE_SUBSKILL_HEALAMP_GUN_CHARGES );
 			iSecondaryAmmo = MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_DRUGS, ASW_MARINE_SUBSKILL_HEALAMP_GUN_AMP_CHARGES );
 		}
 	}
-	if ( !stricmp(szWeaponClass, "asw_weapon_flares") ||
-		 !stricmp(szWeaponClass, "asw_weapon_gas_grenades") || 
-		 !stricmp(szWeaponClass, "asw_weapon_grenades") || 
-		 !stricmp(szWeaponClass, "asw_weapon_mines") ||
-		 !stricmp(szWeaponClass, "asw_weapon_electrified_armor") ||
-		 !stricmp(szWeaponClass, "asw_weapon_buff_grenade") ||
-		 !stricmp(szWeaponClass, "asw_weapon_hornet_barrage") ||
-		 !stricmp(szWeaponClass, "asw_weapon_heal_grenade") ||
-		 !stricmp(szWeaponClass, "asw_weapon_t75") ||
-		 !stricmp(szWeaponClass, "asw_weapon_freeze_grenades") ||
-		 !stricmp(szWeaponClass, "asw_weapon_bait") ||
-		 !stricmp(szWeaponClass, "asw_weapon_smart_bomb") ||
-		 !stricmp(szWeaponClass, "asw_weapon_jump_jet") ||
-		 !stricmp(szWeaponClass, "asw_weapon_tesla_trap")
+	if ( !stricmp( szWeaponClass, "asw_weapon_flares" ) ||
+		!stricmp( szWeaponClass, "asw_weapon_gas_grenades" ) ||
+		!stricmp( szWeaponClass, "asw_weapon_grenades" ) ||
+		!stricmp( szWeaponClass, "asw_weapon_mines" ) ||
+		!stricmp( szWeaponClass, "asw_weapon_electrified_armor" ) ||
+		!stricmp( szWeaponClass, "asw_weapon_buff_grenade" ) ||
+		!stricmp( szWeaponClass, "asw_weapon_hornet_barrage" ) ||
+		!stricmp( szWeaponClass, "asw_weapon_heal_grenade" ) ||
+		!stricmp( szWeaponClass, "asw_weapon_t75" ) ||
+		!stricmp( szWeaponClass, "asw_weapon_freeze_grenades" ) ||
+		!stricmp( szWeaponClass, "asw_weapon_bait" ) ||
+		!stricmp( szWeaponClass, "asw_weapon_smart_bomb" ) ||
+		!stricmp( szWeaponClass, "asw_weapon_jump_jet" ) ||
+		!stricmp( szWeaponClass, "asw_weapon_tesla_trap" )
 		)
 	{
 		iPrimaryAmmo += asw_bonus_charges.GetInt();
 	}
 
-	if ( !stricmp(szWeaponClass, "asw_weapon_ammo_satchel" ) ) 
+	if ( !stricmp( szWeaponClass, "asw_weapon_ammo_satchel" ) )
 	{
 		iPrimaryAmmo += rd_ammo_bonus.GetInt();
 	}
@@ -4357,7 +4336,7 @@ void CAlienSwarm::GiveStartingWeaponToMarine(CASW_Marine* pMarine, int iEquipInd
 	// set secondary bullets in the gun
 	//Msg("Setting secondary bullets for %s to %d\n", szWeaponClass, iSecondaryAmmo);
 	pWeapon->SetClip2( iSecondaryAmmo );
-	
+
 	// equip the weapon
 	pMarine->Weapon_Equip_In_Index( pWeapon, iSlot );
 
@@ -4374,38 +4353,37 @@ void CAlienSwarm::GiveStartingWeaponToMarine(CASW_Marine* pMarine, int iEquipInd
 		//Msg("No clips as no primary ammo type\n");
 	}
 	// if it's primary, switch to it
-	if (iSlot == 0)
+	if ( iSlot == 0 )
 	{
 		// temp comment
 		pMarine->Weapon_Switch( pWeapon );
-		pWeapon->SetWeaponVisible(true);
+		pWeapon->SetWeaponVisible( true );
 	}
 	else
 	{
-		pWeapon->SetWeaponVisible(false);
+		pWeapon->SetWeaponVisible( false );
 	}
 
-	if (rd_server_marine_backpacks.GetBool() && iSlot == 1)
+	if ( rd_server_marine_backpacks.GetBool() && iSlot == 1 )
 	{
 		//pMarine->RemoveBackPackModel();
-		pMarine->CreateBackPackModel(pWeapon);
+		pMarine->CreateBackPackModel( pWeapon );
 	}
-
 }
 
 // find all pickups in the level and increment charges
 void CAlienSwarm::AddBonusChargesToPickups()
 {
 	CBaseEntity *ent = NULL;
-	while ( (ent = gEntList.NextEnt(ent)) != NULL )
+	while ( ( ent = gEntList.NextEnt( ent ) ) != NULL )
 	{
 		const char *szClass = ent->GetClassname();
-		if ( !stricmp(szClass, "asw_pickup_flares") ||
-			!stricmp(szClass, "asw_pickup_grenades") || 
-			!stricmp(szClass, "asw_pickup_mines")
+		if ( !stricmp( szClass, "asw_pickup_flares" ) ||
+			!stricmp( szClass, "asw_pickup_grenades" ) ||
+			!stricmp( szClass, "asw_pickup_mines" )
 			)
 		{
-			CASW_Pickup_Weapon *pPickup = dynamic_cast<CASW_Pickup_Weapon*>(ent);
+			CASW_Pickup_Weapon *pPickup = dynamic_cast< CASW_Pickup_Weapon * >( ent );
 			if ( pPickup )
 			{
 				pPickup->m_iBulletsInGun += asw_bonus_charges.GetInt();
@@ -5928,70 +5906,70 @@ static bool CanPickupUnrestrictedWeapon( int iWeaponIndex, const ConVar &unrestr
 	return false;
 }
 
-bool CAlienSwarm::MarineCanPickup(CASW_Marine_Resource* pMarineResource, const char* szWeaponClass, const char* szSwappingClass)
+bool CAlienSwarm::MarineCanPickup( CASW_Marine_Resource *pMarineResource, const char *szWeaponClass, const char *szSwappingClass )
 {
-	if (!ASWEquipmentList() || !pMarineResource)
+	if ( !pMarineResource )
 		return false;
 	// need to get the weapon data associated with this class
-	CASW_WeaponInfo* pWeaponData = ASWEquipmentList()->GetWeaponDataFor(szWeaponClass);
-	if (!pWeaponData)
+	CASW_WeaponInfo *pWeaponData = g_ASWEquipmentList.GetWeaponDataFor( szWeaponClass );
+	if ( !pWeaponData )
 		return false;
 
-	CASW_Marine_Profile* pProfile = pMarineResource->GetProfile();
-	if (!pProfile)
+	CASW_Marine_Profile *pProfile = pMarineResource->GetProfile();
+	if ( !pProfile )
 		return false;
 
 	bool bCheckRestriction = true;
 	if ( !pWeaponData->m_bExtra && rd_weapons_regular_class_unrestricted.GetInt() != -1 )
 	{
-		if ( rd_weapons_regular_class_unrestricted.GetInt() == -2 || CanPickupUnrestrictedWeapon( ASWEquipmentList()->GetRegularIndex( szWeaponClass ), rd_weapons_regular_class_unrestricted ) )
+		if ( rd_weapons_regular_class_unrestricted.GetInt() == -2 || CanPickupUnrestrictedWeapon( g_ASWEquipmentList.GetRegularIndex( szWeaponClass ), rd_weapons_regular_class_unrestricted ) )
 			bCheckRestriction = false;
 	}
 	else if ( pWeaponData->m_bExtra && rd_weapons_extra_class_unrestricted.GetInt() != -1 )
 	{
-		if ( rd_weapons_extra_class_unrestricted.GetInt() == -2 || CanPickupUnrestrictedWeapon( ASWEquipmentList()->GetExtraIndex( szWeaponClass ), rd_weapons_extra_class_unrestricted ) )
+		if ( rd_weapons_extra_class_unrestricted.GetInt() == -2 || CanPickupUnrestrictedWeapon( g_ASWEquipmentList.GetExtraIndex( szWeaponClass ), rd_weapons_extra_class_unrestricted ) )
 			bCheckRestriction = false;
 	}
 
 	if ( bCheckRestriction )
 	{
 		// check various class skills
-		if (pWeaponData->m_bTech && !pProfile->CanHack())
+		if ( pWeaponData->m_bTech && !pProfile->CanHack() )
 		{
-			Q_snprintf( m_szPickupDenial, sizeof(m_szPickupDenial), "#asw_requires_tech");
+			Q_snprintf( m_szPickupDenial, sizeof( m_szPickupDenial ), "#asw_requires_tech" );
 			return false;
 		}
 
-		if (pWeaponData->m_bFirstAid && !pProfile->CanUseFirstAid())
+		if ( pWeaponData->m_bFirstAid && !pProfile->CanUseFirstAid() )
 		{
-			Q_snprintf( m_szPickupDenial, sizeof(m_szPickupDenial), "#asw_requires_medic");
+			Q_snprintf( m_szPickupDenial, sizeof( m_szPickupDenial ), "#asw_requires_medic" );
 			return false;
 		}
 
-		if (pWeaponData->m_bSpecialWeapons && pProfile->GetMarineClass() != MARINE_CLASS_SPECIAL_WEAPONS)
+		if ( pWeaponData->m_bSpecialWeapons && pProfile->GetMarineClass() != MARINE_CLASS_SPECIAL_WEAPONS )
 		{
-			Q_snprintf( m_szPickupDenial, sizeof(m_szPickupDenial), "#asw_requires_sw");
+			Q_snprintf( m_szPickupDenial, sizeof( m_szPickupDenial ), "#asw_requires_sw" );
 			return false;
 		}
 
-		if (pWeaponData->m_bSapper && pProfile->GetMarineClass() != MARINE_CLASS_NCO)
+		if ( pWeaponData->m_bSapper && pProfile->GetMarineClass() != MARINE_CLASS_NCO )
 		{
-			Q_snprintf( m_szPickupDenial, sizeof(m_szPickupDenial), "#asw_requires_nco");
+			Q_snprintf( m_szPickupDenial, sizeof( m_szPickupDenial ), "#asw_requires_nco" );
 			return false;
 		}
 	}
 
-// 	if (pWeaponData->m_bSarge && !pProfile->m_bSarge)
-// 	{
-// 		Q_snprintf( m_szPickupDenial, sizeof(m_szPickupDenial), "#asw_sarge_only");
-// 		return false;
-// 	}
+	// 	if (pWeaponData->m_bSarge && !pProfile->m_bSarge)
+	// 	{
+	// 		Q_snprintf( m_szPickupDenial, sizeof(m_szPickupDenial), "#asw_sarge_only");
+	// 		return false;
+	// 	}
 
-	if (pWeaponData->m_bTracker && !pProfile->CanScanner())
+	if ( pWeaponData->m_bTracker && !pProfile->CanScanner() )
 	{
-		Q_snprintf( m_szPickupDenial, sizeof(m_szPickupDenial), "TRACKING ONLY");
+		Q_snprintf( m_szPickupDenial, sizeof( m_szPickupDenial ), "TRACKING ONLY" );
 		return false;
-	}	
+	}
 
 	// reactivedrop: this code doesn't work and is not needed 
 	// the pickup of unique weapons is handled correctly in 
@@ -6022,32 +6000,32 @@ bool CAlienSwarm::MarineCanPickup(CASW_Marine_Resource* pMarineResource, const c
 	return true;
 }
 
-bool CAlienSwarm::MarineCanSelectInLobby(CASW_Marine_Resource* pMarineResource, const char* szWeaponClass, const char* szSwappingClass)
+bool CAlienSwarm::MarineCanSelectInLobby( CASW_Marine_Resource *pMarineResource, const char *szWeaponClass, const char *szSwappingClass )
 {
-	if (MarineCanPickup(pMarineResource, szWeaponClass, szSwappingClass))
+	if ( MarineCanPickup( pMarineResource, szWeaponClass, szSwappingClass ) )
 	{
-		CASW_WeaponInfo* pWeaponData = ASWEquipmentList()->GetWeaponDataFor(szWeaponClass);
-		if (!pWeaponData)
+		CASW_WeaponInfo *pWeaponData = g_ASWEquipmentList.GetWeaponDataFor( szWeaponClass );
+		if ( !pWeaponData )
 			return false;
 
-		if (pWeaponData->m_bUnique)
+		if ( pWeaponData->m_bUnique )
 		{
 			// if we're swapping a unique item for the same unique item, allow the pickup
-			if (szSwappingClass && !Q_strcmp(szWeaponClass, szSwappingClass))
+			if ( szSwappingClass && !Q_strcmp( szWeaponClass, szSwappingClass ) )
 				return true;
-		
+
 			// check if we have one of these already
 			// todo: shouldn't use these vars when ingame, but should check the marine's inventory?
-			for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++ iWpnSlot )
+			for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++iWpnSlot )
 			{
-				CASW_EquipItem* pItem = ASWEquipmentList()->GetItemForSlot( iWpnSlot, pMarineResource->m_iWeaponsInSlots[ iWpnSlot ] );
+				CASW_EquipItem *pItem = g_ASWEquipmentList.GetItemForSlot( iWpnSlot, pMarineResource->m_iWeaponsInSlots[iWpnSlot] );
 				if ( !pItem )
 					continue;
 
-				const char* szItemClass = STRING(pItem->m_EquipClass);
-				if ( !Q_strcmp(szItemClass, szWeaponClass) )
+				const char *szItemClass = STRING( pItem->m_EquipClass );
+				if ( !Q_strcmp( szItemClass, szWeaponClass ) )
 				{
-					Q_snprintf( m_szPickupDenial, sizeof(m_szPickupDenial), "#asw_cannot_carry_two");
+					Q_snprintf( m_szPickupDenial, sizeof( m_szPickupDenial ), "#asw_cannot_carry_two" );
 					return false;
 				}
 			}
@@ -6057,24 +6035,19 @@ bool CAlienSwarm::MarineCanSelectInLobby(CASW_Marine_Resource* pMarineResource, 
 	return false;
 }
 
-
 void CAlienSwarm::CreateStandardEntities( void )
 {
-
 #ifndef CLIENT_DLL
 	// Create the entity that will send our data to the client.
 
 	BaseClass::CreateStandardEntities();
 
-#ifdef _DEBUG
-	CBaseEntity *pEnt = 
-#endif
-	CBaseEntity::Create( "asw_gamerules", vec3_origin, vec3_angle );
+	CBaseEntity *pEnt = CBaseEntity::Create( "asw_gamerules", vec3_origin, vec3_angle );
 	Assert( pEnt );
+	( void )pEnt;
 
-	// riflemod: create health and extra item regeneration entities 
-	CBaseEntity::Create("asw_health_regen", vec3_origin, vec3_angle);
-	//CBaseEntity::Create("asw_item_regen", vec3_origin, vec3_angle);
+	// riflemod: create health regeneration entity
+	CBaseEntity::Create( "asw_health_regen", vec3_origin, vec3_angle );
 #endif
 }
 
@@ -6170,7 +6143,6 @@ const RD_Campaign_t *CAlienSwarm::GetCampaignInfo()
 
 	return pGameResource->m_pCampaignInfo;
 }
-
 
 extern bool IsExplosionTraceBlocked( trace_t *ptr );
 
@@ -6806,8 +6778,7 @@ void CAlienSwarm::FreezeAliensInRadius( CBaseEntity *pInflictor, float flFreezeA
 void CAlienSwarm::ClientCommandKeyValues( edict_t *pEntity, KeyValues *pKeyValues )
 {
 #ifdef GAME_DLL
-
-	CASW_Player *pPlayer = ( CASW_Player * )CBaseEntity::Instance( pEntity );
+	CASW_Player *pPlayer = ToASW_Player( CBaseEntity::Instance( pEntity ) );
 	if ( !pPlayer )
 		return;
 
@@ -9661,13 +9632,13 @@ static int GetAllowedWeaponId( int iEquipSlot, int iWeaponIndex, const ConVar &a
 	{
 	case ASW_INVENTORY_SLOT_PRIMARY:
 	case ASW_INVENTORY_SLOT_SECONDARY:
-		nNumRegular = ASWEquipmentList()->GetNumRegular( true );
+		nNumRegular = g_ASWEquipmentList.GetNumRegular( true );
 		break;
 	case ASW_INVENTORY_SLOT_EXTRA:
-		nNumRegular = ASWEquipmentList()->GetNumExtra( true );
+		nNumRegular = g_ASWEquipmentList.GetNumExtra( true );
 		break;
 	default:
-		Assert( false && "Invalid iEquipSlot" );
+		Assert( !"Invalid iEquipSlot" );
 		return 0;
 	}
 
@@ -9736,7 +9707,7 @@ int CAlienSwarm::ApplyWeaponSelectionRules( int iEquipSlot, int iWeaponIndex )
 #ifdef CLIENT_DLL
 	if ( !rd_weapon_requirement_override.GetBool() )
 	{
-		if ( CASW_Equip_Req::ForceWeaponUnlocked( STRING( ASWEquipmentList()->GetItemForSlot( iEquipSlot, iWeaponIndex )->m_EquipClass ) ) )
+		if ( CASW_Equip_Req::ForceWeaponUnlocked( g_ASWEquipmentList.GetItemForSlot( iEquipSlot, iWeaponIndex )->m_szEquipClass ) )
 		{
 			return iWeaponIndex;
 		}
@@ -9747,8 +9718,8 @@ int CAlienSwarm::ApplyWeaponSelectionRules( int iEquipSlot, int iWeaponIndex )
 	{
 		for ( int i = 0; i < CASW_Equip_Req::ASW_MAX_EQUIP_REQ_CLASSES; i++ )
 		{
-			CASW_EquipItem* pItem = ASWEquipmentList()->GetItemForSlot(iEquipSlot, iWeaponIndex);
-			if ( pItem && !Q_stricmp( pEquipReq->GetEquipClass( i ), STRING( pItem->m_EquipClass ) ) )
+			CASW_EquipItem *pItem = g_ASWEquipmentList.GetItemForSlot( iEquipSlot, iWeaponIndex );
+			if ( pItem && !V_stricmp( pEquipReq->GetEquipClass( i ), pItem->m_szEquipClass ) )
 			{
 				return iWeaponIndex;
 			}

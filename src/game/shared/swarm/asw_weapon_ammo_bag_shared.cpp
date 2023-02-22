@@ -236,7 +236,7 @@ void CASW_Weapon_Ammo_Bag::GiveClipTo( CASW_Marine *pTargetMarine, int iAmmoType
 	if ( !pTargetMarine )
 		return;
 
-	int iBagIndex = FindBagIndexForAmmoType(iAmmoType);
+	int iBagIndex = FindBagIndexForAmmoType( iAmmoType );
 	if ( iBagIndex == -1 )
 		return;
 
@@ -245,16 +245,16 @@ void CASW_Weapon_Ammo_Bag::GiveClipTo( CASW_Marine *pTargetMarine, int iAmmoType
 		return;
 
 	// find how much ammo per clip for this type
-	CASW_WeaponInfo *pWeaponData = ASWEquipmentList()->GetWeaponDataFor(m_szWeaponClass[iBagIndex]);
-	if (!pWeaponData)
+	CASW_WeaponInfo *pWeaponData = g_ASWEquipmentList.GetWeaponDataFor( m_szWeaponClass[iBagIndex] );
+	if ( !pWeaponData )
 		return;
 
-	int iAmmoPerClip = pWeaponData->iMaxClip1;	
+	int iAmmoPerClip = pWeaponData->iMaxClip1;
 	//Msg(" ammo per clip %d\n", iAmmoPerClip);
-	if (iAmmoPerClip <= 0)
+	if ( iAmmoPerClip <= 0 )
 		return;
-	
-	
+
+
 	// give ammo to the target marine
 	if ( pTargetMarine->GiveAmmo( iAmmoPerClip, iAmmoType, bSuppressSound ) <= 0 )
 	{
@@ -262,7 +262,7 @@ void CASW_Weapon_Ammo_Bag::GiveClipTo( CASW_Marine *pTargetMarine, int iAmmoType
 			return;
 	}
 
-	IGameEvent * event = gameeventmanager->CreateEvent( "player_give_ammo" );
+	IGameEvent *event = gameeventmanager->CreateEvent( "player_give_ammo" );
 	if ( event )
 	{
 		CASW_Marine *pMarine = GetMarine();
@@ -279,7 +279,7 @@ void CASW_Weapon_Ammo_Bag::GiveClipTo( CASW_Marine *pTargetMarine, int iAmmoType
 		gameeventmanager->FireEvent( event );
 	}
 
-	m_AmmoCount.Set(iBagIndex, iCount - 1);
+	m_AmmoCount.Set( iBagIndex, iCount - 1 );
 }
 
 // marine was hurt when holding this weapon
@@ -352,128 +352,128 @@ void CASW_Weapon_Ammo_Bag::OnMarineDamage(const CTakeDamageInfo &info)
 	}
 }
 
-int CASW_Weapon_Ammo_Bag::AddAmmo(int iBullets, int iAmmoIndex)
+int CASW_Weapon_Ammo_Bag::AddAmmo( int iBullets, int iAmmoIndex )
 {
-	int iBagSlot = FindBagIndexForAmmoType(iAmmoIndex);
-	if (iBagSlot == -1)	// ammo type not carried by the ammo bag
+	int iBagSlot = FindBagIndexForAmmoType( iAmmoIndex );
+	if ( iBagSlot == -1 )	// ammo type not carried by the ammo bag
 		return 0;
 
-	if (!HasRoomForAmmo(iAmmoIndex))
+	if ( !HasRoomForAmmo( iAmmoIndex ) )
 		return 0;
 
-	CASW_WeaponInfo *pWeaponData = ASWEquipmentList()->GetWeaponDataFor(m_szWeaponClass[iBagSlot]);
-	if (!pWeaponData)
+	CASW_WeaponInfo *pWeaponData = g_ASWEquipmentList.GetWeaponDataFor( m_szWeaponClass[iBagSlot] );
+	if ( !pWeaponData )
 		return 0;
 
 	int iBulletsPerClip = pWeaponData->iMaxClip1;
 	int clips = iBullets / iBulletsPerClip;
 
-	m_AmmoCount.Set(iBagSlot, AmmoCount(iBagSlot) + clips);
+	m_AmmoCount.Set( iBagSlot, AmmoCount( iBagSlot ) + clips );
 	return clips * iBulletsPerClip;
 }
 
-bool CASW_Weapon_Ammo_Bag::DropAmmoPickup(int iBagSlot)
+bool CASW_Weapon_Ammo_Bag::DropAmmoPickup( int iBagSlot )
 {
-	CASW_Marine* pMarine = GetMarine();
-	if (!pMarine)
+	CASW_Marine *pMarine = GetMarine();
+	if ( !pMarine )
 		return false;
 
-	if (iBagSlot < 0 || iBagSlot >= ASW_AMMO_BAG_SLOTS)
+	if ( iBagSlot < 0 || iBagSlot >= ASW_AMMO_BAG_SLOTS )
 		return false;
 
 	int iDropped = 1;
-	if (iBagSlot == ASW_BAG_SLOT_SHOTGUN)
+	if ( iBagSlot == ASW_BAG_SLOT_SHOTGUN )
 	{
 		iDropped = 2;
 	}
 
-	if (AmmoCount(iBagSlot) < iDropped)
+	if ( AmmoCount( iBagSlot ) < iDropped )
 		return false;
 
 	// create a pickup of this ammo's class
-	CASW_Pickup* pPickup = static_cast<CASW_Pickup*>(
+	CASW_Pickup *pPickup = static_cast< CASW_Pickup * >(
 		Create( m_szAmmoClass[iBagSlot], pMarine->WorldSpaceCenter(), pMarine->GetAbsAngles(), pMarine ) );
-		
-	if (!pPickup)
-		return false;	
-		
-	Vector vecForward = pMarine->BodyDirection2D() * 100;
-	pPickup->SetAbsVelocity(vecForward);
-	if (pPickup->VPhysicsGetObject())
-		pPickup->VPhysicsGetObject()->SetVelocity( &vecForward, &vec3_origin );
-	pPickup->SetOwnerEntity(NULL);
 
-	
+	if ( !pPickup )
+		return false;
+
+	Vector vecForward = pMarine->BodyDirection2D() * 100;
+	pPickup->SetAbsVelocity( vecForward );
+	if ( pPickup->VPhysicsGetObject() )
+		pPickup->VPhysicsGetObject()->SetVelocity( &vecForward, &vec3_origin );
+	pPickup->SetOwnerEntity( NULL );
+
+
 	// for shotgun ammo we try to drop two
-	m_AmmoCount.Set(iBagSlot, AmmoCount(iBagSlot) - iDropped);
+	m_AmmoCount.Set( iBagSlot, AmmoCount( iBagSlot ) - iDropped );
 	return true;
 }
 #endif
 
-int CASW_Weapon_Ammo_Bag::AmmoCount(int i)
+int CASW_Weapon_Ammo_Bag::AmmoCount( int i )
 {
-	if (i < 0 || i >= ASW_AMMO_BAG_SLOTS)
+	if ( i < 0 || i >= ASW_AMMO_BAG_SLOTS )
 		return 0;
 
-	return m_AmmoCount.Get(i);
+	return m_AmmoCount.Get( i );
 }
 
-int CASW_Weapon_Ammo_Bag::MaxAmmoCount(int i)
+int CASW_Weapon_Ammo_Bag::MaxAmmoCount( int i )
 {
-	if (i < 0 || i >= ASW_AMMO_BAG_SLOTS)
+	if ( i < 0 || i >= ASW_AMMO_BAG_SLOTS )
 		return 0;
 
 	return m_MaxAmmoCount[i];
 }
 
-int CASW_Weapon_Ammo_Bag::FindBagIndexForAmmoType(int iAmmoType)
+int CASW_Weapon_Ammo_Bag::FindBagIndexForAmmoType( int iAmmoType )
 {
-	for (int i=0;i<ASW_AMMO_BAG_SLOTS;i++)
+	for ( int i = 0; i < ASW_AMMO_BAG_SLOTS; i++ )
 	{
-		if (m_iAmmoType[i] == iAmmoType)
+		if ( m_iAmmoType[i] == iAmmoType )
 			return i;
 	}
 	return -1;
 }
 
-int CASW_Weapon_Ammo_Bag::SelectAmmoTypeToGive(CASW_Marine *pOtherMarine)
+int CASW_Weapon_Ammo_Bag::SelectAmmoTypeToGive( CASW_Marine *pOtherMarine )
 {
 	CASW_Weapon *pCurrent = pOtherMarine->GetActiveASWWeapon();
 	int iType = -1;
-	if (pCurrent && CanGiveAmmoToWeapon(pCurrent))
+	if ( pCurrent && CanGiveAmmoToWeapon( pCurrent ) )
 		iType = pCurrent->GetPrimaryAmmoType();
 	else
 	{
 		// go through marine's inventory
-		for (int i=0;i<3;i++)
+		for ( int i = 0; i < 3; i++ )
 		{
-			CASW_Weapon *pWeapon = pOtherMarine->GetASWWeapon(i);
-			if (pWeapon != pCurrent && pWeapon && CanGiveAmmoToWeapon(pWeapon))
+			CASW_Weapon *pWeapon = pOtherMarine->GetASWWeapon( i );
+			if ( pWeapon != pCurrent && pWeapon && CanGiveAmmoToWeapon( pWeapon ) )
 			{
 				iType = pWeapon->GetPrimaryAmmoType();
 			}
 		}
 	}
 	// no weapons to give ammo to, so let's check for giving into an ammo bag
-	if (iType == -1)
+	if ( iType == -1 )
 	{
-		CASW_Weapon_Ammo_Bag* pBag = dynamic_cast<CASW_Weapon_Ammo_Bag*>(pOtherMarine->GetWeapon(0));
-		if (pBag)
+		CASW_Weapon_Ammo_Bag *pBag = dynamic_cast< CASW_Weapon_Ammo_Bag * >( pOtherMarine->GetWeapon( 0 ) );
+		if ( pBag )
 		{
-			for (int i=0;i<ASW_AMMO_BAG_SLOTS;i++)
+			for ( int i = 0; i < ASW_AMMO_BAG_SLOTS; i++ )
 			{
 				int iAmmoType = pBag->m_iAmmoType[i];
-				if (pBag->HasRoomForAmmo(iAmmoType) && BagHasAmmo(iAmmoType))
+				if ( pBag->HasRoomForAmmo( iAmmoType ) && BagHasAmmo( iAmmoType ) )
 					return iAmmoType;
 			}
 		}
-		pBag = dynamic_cast<CASW_Weapon_Ammo_Bag*>(pOtherMarine->GetWeapon(1));
-		if (pBag)
+		pBag = dynamic_cast< CASW_Weapon_Ammo_Bag * >( pOtherMarine->GetWeapon( 1 ) );
+		if ( pBag )
 		{
-			for (int i=0;i<ASW_AMMO_BAG_SLOTS;i++)
+			for ( int i = 0; i < ASW_AMMO_BAG_SLOTS; i++ )
 			{
 				int iAmmoType = pBag->m_iAmmoType[i];
-				if (pBag->HasRoomForAmmo(iAmmoType) && BagHasAmmo(iAmmoType))
+				if ( pBag->HasRoomForAmmo( iAmmoType ) && BagHasAmmo( iAmmoType ) )
 					return iAmmoType;
 			}
 		}

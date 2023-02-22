@@ -131,16 +131,16 @@ void CASWHudWeapons::ApplySchemeSettings(IScheme *pScheme)
 void CASWHudWeapons::Paint()
 {
 	VPROF_BUDGET( "CASWHudWeapons::Paint", VPROF_BUDGETGROUP_ASW_CLIENT );
-	GetSize(m_iFrameWidth,m_iFrameHeight);
+	GetSize( m_iFrameWidth, m_iFrameHeight );
 	BaseClass::Paint();
 
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if (!pPlayer)
+	if ( !pPlayer )
 		return;
 
 	C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pPlayer->GetViewNPC() );
-	if (!pMarine)
-		return;		
+	if ( !pMarine )
+		return;
 	char cbuffer[64];
 
 	if ( !m_hUseArea.Get() )
@@ -148,23 +148,23 @@ void CASWHudWeapons::Paint()
 		m_hUseArea = ( CASWHudUseArea * )GET_HUDELEMENT( CASWHudUseArea );
 	}
 
-	ASWUseAction* pUseAction = NULL;
+	ASWUseAction *pUseAction = NULL;
 	if ( m_hUseArea.Get() && m_hUseArea->m_pUseIcon )
 	{
 		pUseAction = m_hUseArea->m_pUseIcon->GetCurrentUseAction();
 	}
-	
+
 	int r, g, b;
-	
+
 	int tall = m_iFrameHeight * 0.25f * asw_hud_scale.GetFloat();	// how tall to draw the weapon icons
 	int spacing_y = tall * 0.7f;
 	int nWeaponsToShow = asw_hotbar_self.GetBool() ? ASW_NUM_INVENTORY_SLOTS - 1 : ASW_NUM_INVENTORY_SLOTS;
 	bool bPowOnWeapon = false;
 	for ( int k = 0; k < nWeaponsToShow; k++ )
 	{
-		C_ASW_Weapon* pWeapon = pMarine->GetASWWeapon(k);
+		C_ASW_Weapon *pWeapon = pMarine->GetASWWeapon( k );
 		// set draw color
-		bool bActiveWeapon = (pWeapon && pWeapon == pMarine->GetActiveWeapon());
+		bool bActiveWeapon = ( pWeapon && pWeapon == pMarine->GetActiveWeapon() );
 		if ( bActiveWeapon )
 		{
 			r = 255;
@@ -177,108 +177,80 @@ void CASWHudWeapons::Paint()
 			g = 142;
 			b = 192;
 		}
-		
-		if (asw_debug_hud.GetInt()!=0)
+
+		if ( asw_debug_hud.GetInt() != 0 )
 		{
-			if (pWeapon)
+			if ( pWeapon )
 			{
-				Q_snprintf(cbuffer, sizeof(cbuffer), "%d:%s %d(%d)", k, pWeapon->GetClassname(),
-					pWeapon->GetEffects(), pWeapon->IsEffectActive(EF_NODRAW));
+				Q_snprintf( cbuffer, sizeof( cbuffer ), "%d:%s %d(%d)", k, pWeapon->GetClassname(),
+					pWeapon->GetEffects(), pWeapon->IsEffectActive( EF_NODRAW ) );
 			}
 			else
 			{
 				b = 255;
-				Q_snprintf(cbuffer, sizeof(cbuffer), "%d:Empty", k);
-			}		
-			g_pMatSystemSurface->DrawColoredText(m_hWeaponHUDFont, 0, k*tall, r, g, 
-				b, 200, &cbuffer[0]);
+				Q_snprintf( cbuffer, sizeof( cbuffer ), "%d:Empty", k );
+			}
+			g_pMatSystemSurface->DrawColoredText( m_hWeaponHUDFont, 0, k * tall, r, g,
+				b, 200, &cbuffer[0] );
 		}
 
 		// draw icon
-		if (pWeapon && ASWEquipmentList())
+		if ( pWeapon )
 		{
 			int list_index = pWeapon->GetEquipmentListIndex();
-			int iTexture = ASWEquipmentList()->GetEquipIconTexture(!pWeapon->GetWeaponInfo()->m_bExtra, list_index);
-			if (iTexture != -1)
-			{				
-				surface()->DrawSetColor(Color(r,g,b,255));
-				surface()->DrawSetTexture(iTexture);
+			int iTexture = g_ASWEquipmentList.GetEquipIconTexture( !pWeapon->GetWeaponInfo()->m_bExtra, list_index );
+			if ( iTexture != -1 )
+			{
+				surface()->DrawSetColor( Color( r, g, b, 255 ) );
+				surface()->DrawSetTexture( iTexture );
 
-				int icon_x_offset = pWeapon->GetWeaponInfo()->m_iHUDIconOffsetX * (m_iFrameWidth / 160.0f) * asw_hud_scale.GetFloat();
-				int icon_y_offset = pWeapon->GetWeaponInfo()->m_iHUDIconOffsetY * (m_iFrameHeight / 160.0f) * asw_hud_scale.GetFloat();
-				int text_x_offset = pWeapon->GetWeaponInfo()->m_iHUDNumberOffsetX * (m_iFrameWidth / 160.0f) * asw_hud_scale.GetFloat();
-				int text_y_offset = pWeapon->GetWeaponInfo()->m_iHUDNumberOffsetY * (m_iFrameHeight / 160.0f) * asw_hud_scale.GetFloat();
+				int icon_x_offset = pWeapon->GetWeaponInfo()->m_iHUDIconOffsetX * ( m_iFrameWidth / 160.0f ) * asw_hud_scale.GetFloat();
+				int icon_y_offset = pWeapon->GetWeaponInfo()->m_iHUDIconOffsetY * ( m_iFrameHeight / 160.0f ) * asw_hud_scale.GetFloat();
+				int text_x_offset = pWeapon->GetWeaponInfo()->m_iHUDNumberOffsetX * ( m_iFrameWidth / 160.0f ) * asw_hud_scale.GetFloat();
+				int text_y_offset = pWeapon->GetWeaponInfo()->m_iHUDNumberOffsetY * ( m_iFrameHeight / 160.0f ) * asw_hud_scale.GetFloat();
 
-				// drop shadow
-				/*
-				surface()->DrawSetColor(Color(0,0,0,255));
-				if (pWeapon->GetWeaponInfo()->m_bExtra)
-					surface()->DrawTexturedRect(icon_x_offset + 1, k*spacing_y + 1 + icon_y_offset,
-												icon_x_offset + 1 + tall, k*spacing_y + tall + 1 + icon_y_offset);
-				else
-					surface()->DrawTexturedRect(icon_x_offset + 1, k*spacing_y + 1 + icon_y_offset,
-												icon_x_offset + 1 + tall * 2, k*spacing_y + tall + 1 + icon_y_offset);
-				*/
-
-				//todo: set glow vars to make the weapon glow when it's currently selected
-				/*
-				bool foundVar;
-				MaterialVar* pTextureVar = pMaterial->FindVar( "$basetexture", &foundVar, false );
-				if (foundVar)
-				{
-					if ( bActiveWeapon )
-					{
-
-					}
-					else
-					{
-
-					}
-				}
-				*/
-
-				surface()->DrawSetColor(Color(r,g,b,255));
+				surface()->DrawSetColor( Color( r, g, b, 255 ) );
 				if ( pWeapon->GetWeaponInfo()->m_bExtra )
 				{
-					surface()->DrawTexturedRect(icon_x_offset, k*spacing_y + icon_y_offset,
-												icon_x_offset + tall, k*spacing_y + tall + icon_y_offset);
+					surface()->DrawTexturedRect( icon_x_offset, k * spacing_y + icon_y_offset,
+						icon_x_offset + tall, k * spacing_y + tall + icon_y_offset );
 				}
 				else
 				{
-					surface()->DrawTexturedRect(icon_x_offset, k*spacing_y + icon_y_offset,
-												icon_x_offset + tall * 2, k*spacing_y + tall + icon_y_offset);
+					surface()->DrawTexturedRect( icon_x_offset, k * spacing_y + icon_y_offset,
+						icon_x_offset + tall * 2, k * spacing_y + tall + icon_y_offset );
 				}
 
-				pWeaponPos[ k ]->SetBounds( icon_x_offset, k * spacing_y + icon_y_offset, tall * 2, tall );
+				pWeaponPos[k]->SetBounds( icon_x_offset, k * spacing_y + icon_y_offset, tall * 2, tall );
 
 				if ( pWeapon->m_bPoweredUp )
 				{
-					int iPowBuffer = m_iFrameHeight/20;
-					m_pPowerups->SetBounds(icon_x_offset + (tall*2) + iPowBuffer, (k * spacing_y + icon_y_offset) + iPowBuffer, (tall*2), tall - (iPowBuffer*2));
+					int iPowBuffer = m_iFrameHeight / 20;
+					m_pPowerups->SetBounds( icon_x_offset + ( tall * 2 ) + iPowBuffer, ( k * spacing_y + icon_y_offset ) + iPowBuffer, ( tall * 2 ), tall - ( iPowBuffer * 2 ) );
 					bPowOnWeapon = true;
 				}
 
 				// show charges?
-				if (pWeapon->GetWeaponInfo()->m_bShowCharges)
+				if ( pWeapon->GetWeaponInfo()->m_bShowCharges )
 				{
-					Q_snprintf(cbuffer, sizeof(cbuffer), "%d", pWeapon->GetChargesForHUD() );
-					g_pMatSystemSurface->DrawColoredText(m_hWeaponHUDFont, text_x_offset, 
-						k*spacing_y + text_y_offset, r, g, 	b, 200, &cbuffer[0]); 
+					Q_snprintf( cbuffer, sizeof( cbuffer ), "%d", pWeapon->GetChargesForHUD() );
+					g_pMatSystemSurface->DrawColoredText( m_hWeaponHUDFont, text_x_offset,
+						k * spacing_y + text_y_offset, r, g, b, 200, &cbuffer[0] );
 				}
 				// show weapon swaps
 				if ( asw_hud_swaps.GetBool() && pUseAction && pUseAction->iInventorySlot == k )
 				{
-					const CASW_WeaponInfo* pWeaponData = NULL;
+					const CASW_WeaponInfo *pWeaponData = NULL;
 					const char *szWeaponClass = NULL;
-					C_ASW_Pickup_Weapon *pPickup = dynamic_cast<C_ASW_Pickup_Weapon*>( pUseAction->UseTarget.Get());
+					C_ASW_Pickup_Weapon *pPickup = dynamic_cast< C_ASW_Pickup_Weapon * >( pUseAction->UseTarget.Get() );
 					if ( pPickup )
 					{
-						pWeaponData = ASWEquipmentList()->GetWeaponDataFor( pPickup->GetWeaponClass() );
+						pWeaponData = g_ASWEquipmentList.GetWeaponDataFor( pPickup->GetWeaponClass() );
 						szWeaponClass = pPickup->GetWeaponClass();
 					}
 					else
 					{
-						C_ASW_Weapon *pPickupWeapon = dynamic_cast<C_ASW_Weapon*>( pUseAction->UseTarget.Get() );
+						C_ASW_Weapon *pPickupWeapon = dynamic_cast< C_ASW_Weapon * >( pUseAction->UseTarget.Get() );
 						if ( pPickupWeapon )
 						{
 							pWeaponData = pPickupWeapon->GetWeaponInfo();
@@ -287,35 +259,35 @@ void CASWHudWeapons::Paint()
 					}
 					if ( pWeaponData )
 					{
-						int iEquipListIndex = pWeaponData->m_bExtra ? ASWEquipmentList()->GetExtraIndex( szWeaponClass )
-							: ASWEquipmentList()->GetRegularIndex( szWeaponClass );
-						int iSwapWeaponTexture = ASWEquipmentList()->GetEquipIconTexture( !pWeaponData->m_bExtra, iEquipListIndex );
+						int iEquipListIndex = pWeaponData->m_bExtra ? g_ASWEquipmentList.GetExtraIndex( szWeaponClass )
+							: g_ASWEquipmentList.GetRegularIndex( szWeaponClass );
+						int iSwapWeaponTexture = g_ASWEquipmentList.GetEquipIconTexture( !pWeaponData->m_bExtra, iEquipListIndex );
 						if ( m_nSwapArrowTexture != -1 && iSwapWeaponTexture != -1 )
 						{
-							surface()->DrawSetColor( Color( r,g,b,m_hUseArea->m_pUseIcon->m_pUseText->GetAlpha() ) );	// fade in along with the use icon
+							surface()->DrawSetColor( Color( r, g, b, m_hUseArea->m_pUseIcon->m_pUseText->GetAlpha() ) );	// fade in along with the use icon
 							icon_x_offset = tall * 2.0f;
 							icon_y_offset = 0;
 							surface()->DrawSetTexture( m_nSwapArrowTexture );
-							surface()->DrawTexturedRect( icon_x_offset, k*spacing_y + icon_y_offset,
-								icon_x_offset + tall, k*spacing_y + tall + icon_y_offset );
+							surface()->DrawTexturedRect( icon_x_offset, k * spacing_y + icon_y_offset,
+								icon_x_offset + tall, k * spacing_y + tall + icon_y_offset );
 
 							icon_x_offset = tall * 3.0f + pWeaponData->m_iHUDIconOffsetX;
 							icon_y_offset = pWeaponData->m_iHUDIconOffsetY;
 							surface()->DrawSetTexture( iSwapWeaponTexture );
-							surface()->DrawTexturedRect( icon_x_offset, k*spacing_y + icon_y_offset,
-								icon_x_offset + ( pWeaponData->m_bExtra ? tall : tall * 2.0f ) , k*spacing_y + tall + icon_y_offset );
+							surface()->DrawTexturedRect( icon_x_offset, k * spacing_y + icon_y_offset,
+								icon_x_offset + ( pWeaponData->m_bExtra ? tall : tall * 2.0f ), k * spacing_y + tall + icon_y_offset );
 						}
 					}
 				}
 			}
-		}		
+		}
 	}
 
 	if ( !bPowOnWeapon )
 	{
 		//int iPowBuffer = m_iFrameHeight/20;
-		int xpos = 12 * (m_iFrameWidth / 160.0f) * asw_hud_scale.GetFloat();
+		int xpos = 12 * ( m_iFrameWidth / 160.0f ) * asw_hud_scale.GetFloat();
 		//int ypos = 2 * (m_iFrameWidth / 160.0f) * asw_hud_scale.GetFloat();
-		m_pPowerups->SetBounds(xpos, (spacing_y*nWeaponsToShow) + (spacing_y/3), tall, tall*0.75f );
+		m_pPowerups->SetBounds( xpos, ( spacing_y * nWeaponsToShow ) + ( spacing_y / 3 ), tall, tall * 0.75f );
 	}
 }

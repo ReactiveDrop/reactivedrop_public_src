@@ -585,22 +585,22 @@ int CASW_Briefing::GetMarineSelectedWeapon( int nLobbySlot, int nWeaponSlot )
 	return pMR->m_iWeaponsInSlots[ nWeaponSlot ];
 }
 
-const char* CASW_Briefing::GetMarineWeaponClass( int nLobbySlot, int nWeaponSlot )
+const char *CASW_Briefing::GetMarineWeaponClass( int nLobbySlot, int nWeaponSlot )
 {
 	int nMarineResourceIndex = LobbySlotToMarineResourceIndex( nLobbySlot );
 	C_ASW_Marine_Resource *pMR = ASWGameResource() ? ASWGameResource()->GetMarineResource( nMarineResourceIndex ) : NULL;
-	if ( !pMR || nWeaponSlot < 0 || nWeaponSlot >= ASW_NUM_INVENTORY_SLOTS || !ASWEquipmentList() )
+	if ( !pMR || nWeaponSlot < 0 || nWeaponSlot >= ASW_NUM_INVENTORY_SLOTS )
 	{
 		return "";
 	}
 
-	CASW_EquipItem *pItem = ASWEquipmentList()->GetItemForSlot( nWeaponSlot, pMR->m_iWeaponsInSlots[ nWeaponSlot ] );
+	CASW_EquipItem *pItem = g_ASWEquipmentList.GetItemForSlot( nWeaponSlot, pMR->m_iWeaponsInSlots[nWeaponSlot] );
 	if ( !pItem )
 	{
 		return "";
 	}
-	
-	return STRING( pItem->m_EquipClass );
+
+	return pItem->m_szEquipClass;
 }
 
 int CASW_Briefing::GetCommanderReady( int nLobbySlot )

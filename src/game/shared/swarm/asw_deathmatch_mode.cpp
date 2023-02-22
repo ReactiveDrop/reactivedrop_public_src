@@ -551,7 +551,7 @@ void CASW_Deathmatch_Mode::GunGameEnable()
 		for ( int i = 0; i < m_iGunGameWeaponCount; i++ )
 		{
 			int iWeaponID = atoi( WeaponIDs[i] );
-			Assert( ASWEquipmentList()->GetRegular( iWeaponID ) );
+			Assert( g_ASWEquipmentList.GetRegular( iWeaponID ) );
 			m_iGunGameWeapons.Set( i, iWeaponID );
 		}
 	}
@@ -823,16 +823,16 @@ void CASW_Deathmatch_Mode::RemoveAllWeaponsFromMap()
 	RemoveEntitiesByClassName( "asw_pickup_grenades" );
 	RemoveEntitiesByClassName( "asw_pickup_rifle" );
 
-	int iCount = ASWEquipmentList()->GetNumRegular( true );
+	int iCount = g_ASWEquipmentList.GetNumRegular( true );
 	for ( int i = 0; i < iCount; i++ )
 	{
-		RemoveEntitiesByClassName( STRING( ASWEquipmentList()->GetRegular( i )->m_EquipClass ) );
+		RemoveEntitiesByClassName( g_ASWEquipmentList.GetRegular( i )->m_szEquipClass );
 	}
 
-	iCount = ASWEquipmentList()->GetNumExtra( true );
+	iCount = g_ASWEquipmentList.GetNumExtra( true );
 	for ( int i = 0; i < iCount; i++ )
 	{
-		RemoveEntitiesByClassName( STRING( ASWEquipmentList()->GetExtra( i )->m_EquipClass ) );
+		RemoveEntitiesByClassName( g_ASWEquipmentList.GetExtra( i )->m_szEquipClass );
 	}
 }
 

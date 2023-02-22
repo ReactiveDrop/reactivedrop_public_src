@@ -11,312 +11,250 @@
 #include "asw_weapon_parse.h"
 #include "asw_gamerules.h"
 #include "asw_util_shared.h"
+#include "gamestringpool.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-// ------------------
-//      EquipItems
-// ------------------
-
-CASW_EquipItem::CASW_EquipItem()
-{
-	m_bSelectableInBriefing = true;
-}
-
-CASW_EquipItem::~CASW_EquipItem()
+CASW_EquipItem::CASW_EquipItem( int iItemIndex, const char *szEquipClass, bool bSelectableInBriefing )
+	: m_iItemIndex{ iItemIndex },
+	m_szEquipClass{ szEquipClass },
+	m_bSelectableInBriefing{ bSelectableInBriefing },
+	m_EquipClass{ NULL_STRING }
 {
 }
 
-bool CASW_EquipItem::SupportedInSingleplayer()
+static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 {
-	if ( !Q_strcmp( STRING( m_EquipClass ), "asw_weapon_medical_satchel" ) ||
-		!Q_strcmp( STRING( m_EquipClass ), "asw_weapon_t75" ) ||
-		!Q_strcmp( STRING( m_EquipClass ), "asw_weapon_laser_mines" ) )
-	{
-		//Msg( "Not supportedin singleplayer %s\n", STRING( m_EquipClass ) );
-		return false;
-	}
-	return true;
-}
+	{ ASW_EQUIP_RIFLE, "asw_weapon_rifle", true },
+	{ ASW_EQUIP_PRIFLE, "asw_weapon_prifle", true },
+	{ ASW_EQUIP_AUTOGUN, "asw_weapon_autogun", true },
+	{ ASW_EQUIP_VINDICATOR, "asw_weapon_vindicator", true },
+	{ ASW_EQUIP_PISTOL, "asw_weapon_pistol", true },
+	{ ASW_EQUIP_SENTRY, "asw_weapon_sentry", true },
+	{ ASW_EQUIP_HEAL_GRENADE, "asw_weapon_heal_grenade", true },
+	{ ASW_EQUIP_AMMO_SATCHEL, "asw_weapon_ammo_satchel", true },
 
-// ------------------
-//    EquipmentList
-// ------------------
+	{ ASW_EQUIP_SHOTGUN, "asw_weapon_shotgun", true },
+	{ ASW_EQUIP_TESLA_GUN, "asw_weapon_tesla_gun", true },
+	{ ASW_EQUIP_RAILGUN, "asw_weapon_railgun", true },
+	{ ASW_EQUIP_HEAL_GUN, "asw_weapon_heal_gun", true },
+	{ ASW_EQUIP_PDW, "asw_weapon_pdw", true },
+	{ ASW_EQUIP_FLAMER, "asw_weapon_flamer", true },
+	{ ASW_EQUIP_SENTRY_FREEZE, "asw_weapon_sentry_freeze", true },
+	{ ASW_EQUIP_MINIGUN, "asw_weapon_minigun", true },
+	{ ASW_EQUIP_SNIPER_RIFLE, "asw_weapon_sniper_rifle", true },
+	{ ASW_EQUIP_SENTRY_FLAMER, "asw_weapon_sentry_flamer", true },
+	{ ASW_EQUIP_CHAINSAW, "asw_weapon_chainsaw", true },
+	{ ASW_EQUIP_SENTRY_CANNON, "asw_weapon_sentry_cannon", true },
+	{ ASW_EQUIP_GRENADE_LAUNCHER, "asw_weapon_grenade_launcher", true },
+	{ ASW_EQUIP_DEAGLE, "asw_weapon_deagle", true },
+	{ ASW_EQUIP_DEVASTATOR, "asw_weapon_devastator", true },
+	{ ASW_EQUIP_COMBAT_RIFLE, "asw_weapon_combat_rifle", true },
+	{ ASW_EQUIP_HEALAMP_GUN, "asw_weapon_healamp_gun", true },
+	{ ASW_EQUIP_HEAVY_RIFLE, "asw_weapon_heavy_rifle", true },
+	{ ASW_EQUIP_MEDRIFLE, "asw_weapon_medrifle", true },
+
+	{ ASW_EQUIP_FIRE_EXTINGUISHER, "asw_weapon_fire_extinguisher", false },
+	{ ASW_EQUIP_MINING_LASER, "asw_weapon_mining_laser", false },
+	{ ASW_EQUIP_50CALMG, "asw_weapon_50calmg", false },
+	{ ASW_EQUIP_FLECHETTE, "asw_weapon_flechette", false },
+	{ ASW_EQUIP_RICOCHET, "asw_weapon_ricochet", false },
+	{ ASW_EQUIP_AMMO_BAG, "asw_weapon_ammo_bag", false },
+	{ ASW_EQUIP_MEDICAL_SATCHEL, "asw_weapon_medical_satchel", false },
+	{ ASW_EQUIP_AR2, "asw_weapon_ar2", false },
+	{ ASW_EQUIP_CRYOCANNON, "asw_weapon_cryocannon", false },
+};
+
+static CASW_EquipItem s_ExtraEquips[ASW_NUM_EQUIP_EXTRA] =
+{
+	{ ASW_EQUIP_MEDKIT, "asw_weapon_medkit", true },
+	{ ASW_EQUIP_WELDER, "asw_weapon_welder", true },
+	{ ASW_EQUIP_FLARES, "asw_weapon_flares", true },
+	{ ASW_EQUIP_LASER_MINES, "asw_weapon_laser_mines", true },
+
+	{ ASW_EQUIP_NORMAL_ARMOR, "asw_weapon_normal_armor", true },
+	{ ASW_EQUIP_BUFF_GRENADE, "asw_weapon_buff_grenade", true },
+	{ ASW_EQUIP_HORNET_BARRAGE, "asw_weapon_hornet_barrage", true },
+	{ ASW_EQUIP_FREEZE_GRENADES, "asw_weapon_freeze_grenades", true },
+	{ ASW_EQUIP_STIM, "asw_weapon_stim", true },
+	{ ASW_EQUIP_TESLA_TRAP, "asw_weapon_tesla_trap", true },
+	{ ASW_EQUIP_ELECTRIFIED_ARMOR, "asw_weapon_electrified_armor", true },
+	{ ASW_EQUIP_MINES, "asw_weapon_mines", true },
+	{ ASW_EQUIP_FLASHLIGHT, "asw_weapon_flashlight", true },
+	{ ASW_EQUIP_FIST, "asw_weapon_fist", true },
+	{ ASW_EQUIP_GRENADES, "asw_weapon_grenades", true },
+	{ ASW_EQUIP_NIGHT_VISION, "asw_weapon_night_vision", true },
+	{ ASW_EQUIP_SMART_BOMB, "asw_weapon_smart_bomb", true },
+	{ ASW_EQUIP_GAS_GRENADES, "asw_weapon_gas_grenades", true },
+
+	{ ASW_EQUIP_T75, "asw_weapon_t75", false },
+	{ ASW_EQUIP_BLINK, "asw_weapon_blink", false },
+	{ ASW_EQUIP_JUMP_JET, "asw_weapon_jump_jet", false },
+	{ ASW_EQUIP_BAIT, "asw_weapon_bait", false },
+};
 
 CASW_EquipmentList::CASW_EquipmentList()
+	: CAutoGameSystem{ "CASW_EquipmentList" }
 {
-	Assert( !g_pASWEquipmentList );
-	g_pASWEquipmentList = this;
-
-	m_bFoundWeaponData = false;
-	m_iNumRegular = 0;
-	m_iNumExtra = 0;
-	LoadEquipmentList();
-
 #ifdef CLIENT_DLL
 	m_bLoadedTextures = false;
 #endif
 }
 
-void CASW_EquipmentList::LoadEquipmentList()
+void CASW_EquipmentList::LevelInitPreEntity()
 {
-	m_iNumRegular = 0;
-	m_iNumExtra = 0;
-
-	KeyValues *kv = new KeyValues( "Equipment" );
-	// load equipment
-	if ( UTIL_RD_LoadKeyValuesFromFile( kv, filesystem, "resource/equipment.res" ) )
+	for ( int i = 0; i < NELEMS( s_RegularEquips ); i++ )
 	{
-		int iNumEquip = 0;
-		KeyValues *pKeys = kv;
-		while ( pKeys )
-		{
-			for ( KeyValues *details = pKeys->GetFirstSubKey(); details; details = details->GetNextKey() )
-			{
-				if ( FStrEq( details->GetName(), "Regular" ) )
-				{
-					//Msg("adding regular equip %s\n", MAKE_STRING( details->GetString() ));
-					CASW_EquipItem *equip = new CASW_EquipItem();
-					equip->m_EquipClass = MAKE_STRING( details->GetString() );
-					equip->m_iItemIndex = iNumEquip;
-					equip->m_bSelectableInBriefing = true;
-					m_Regular.AddToTail( equip );
-					m_iNumRegular++;
-					iNumEquip++;
-				}
-				else if ( FStrEq( details->GetName(), "Extra" ) )
-				{
-					//Msg("adding extra equip %s\n", MAKE_STRING( details->GetString() ));
-					CASW_EquipItem *equip = new CASW_EquipItem();
-					equip->m_EquipClass = MAKE_STRING( details->GetString() );
-					equip->m_iItemIndex = iNumEquip;
-					equip->m_bSelectableInBriefing = true;
-					m_Extra.AddToTail( equip );
-					m_iNumExtra++;
-					iNumEquip++;
-				}
-				// hidden equip
-				else if ( FStrEq( details->GetName(), "RegularOther" ) )
-				{
-					//Msg("adding regular equip %s\n", MAKE_STRING( details->GetString() ));
-					CASW_EquipItem *equip = new CASW_EquipItem();
-					equip->m_EquipClass = MAKE_STRING( details->GetString() );
-					equip->m_iItemIndex = iNumEquip;
-					equip->m_bSelectableInBriefing = false;
-					m_Regular.AddToTail( equip );
-					iNumEquip++;
-				}
-				else if ( FStrEq( details->GetName(), "ExtraOther" ) )
-				{
-					//Msg("adding extra equip %s\n", MAKE_STRING( details->GetString() ));
-					CASW_EquipItem *equip = new CASW_EquipItem();
-					equip->m_EquipClass = MAKE_STRING( details->GetString() );
-					equip->m_iItemIndex = iNumEquip;
-					equip->m_bSelectableInBriefing = false;
-					m_Extra.AddToTail( equip );
-					iNumEquip++;
-				}
-			}
-			pKeys = pKeys->GetNextKey();
-		}
+		s_RegularEquips[i].m_EquipClass = AllocPooledString( s_RegularEquips[i].m_szEquipClass );
 	}
-}
-
-void CASW_EquipmentList::FindWeaponData()
-{	
-	m_bFoundWeaponData = true;
-}
-
-CASW_EquipmentList::~CASW_EquipmentList()
-{
-	Assert( g_pASWEquipmentList == this );
-	g_pASWEquipmentList = NULL;
-
-	// delete all the equip items too
-	for (int i=0;i<m_Regular.Count();i++)
+	for ( int i = 0; i < NELEMS( s_ExtraEquips ); i++ )
 	{
-		delete m_Regular[i];
+		s_ExtraEquips[i].m_EquipClass = AllocPooledString( s_ExtraEquips[i].m_szEquipClass );
 	}
-	for (int i=0;i<m_Extra.Count();i++)
-	{
-		delete m_Extra[i];
-	}
-}
-
-CASW_EquipmentList *g_pASWEquipmentList = NULL;
-
-CASW_EquipmentList* ASWEquipmentList()
-{
-	if (g_pASWEquipmentList == NULL)
-	{
-		g_pASWEquipmentList = new CASW_EquipmentList();
-	}
-	return g_pASWEquipmentList;
 }
 
 // gets the weapondata for a particular class of weapon (assumes the weapon has been precached already)
-CASW_WeaponInfo* CASW_EquipmentList::GetWeaponDataFor(const char* szWeaponClass)
-{	
+CASW_WeaponInfo *CASW_EquipmentList::GetWeaponDataFor( const char *szWeaponClass )
+{
 	WEAPON_FILE_INFO_HANDLE hWeaponFileInfo;
 	ReadWeaponDataFromFileForSlot( filesystem, szWeaponClass, &hWeaponFileInfo, ASWGameRules() ? ASWGameRules()->GetEncryptionKey() : NULL );
-	return dynamic_cast<CASW_WeaponInfo*>(GetFileWeaponInfoFromHandle(hWeaponFileInfo));
+	return assert_cast< CASW_WeaponInfo * >( GetFileWeaponInfoFromHandle( hWeaponFileInfo ) );
 }
 
-CASW_EquipItem* CASW_EquipmentList::GetRegular(int index)
+CASW_EquipItem *CASW_EquipmentList::GetRegular( int index )
 {
-	if (index < 0 || index >= m_Regular.Count())
+	Assert( index >= 0 && index < NELEMS( s_RegularEquips ) );
+	if ( index < 0 || index >= NELEMS( s_RegularEquips ) )
 		return NULL;
-	return m_Regular[index];
+
+	return &s_RegularEquips[index];
 }
 
-int CASW_EquipmentList::GetNumRegular(bool bIncludeHidden)
+int CASW_EquipmentList::GetNumRegular( bool bIncludeHidden )
 {
-	if (bIncludeHidden)
-		return m_Regular.Count();
-
-	return m_iNumRegular;
+	return bIncludeHidden ? ASW_NUM_EQUIP_REGULAR : ASW_FIRST_HIDDEN_EQUIP_REGULAR;
 }
 
-CASW_EquipItem* CASW_EquipmentList::GetExtra(int index)
+CASW_EquipItem *CASW_EquipmentList::GetExtra( int index )
 {
-	if (index < 0 || index >= m_Extra.Count())
+	Assert( index >= 0 && index < NELEMS( s_ExtraEquips ) );
+	if ( index < 0 || index >= NELEMS( s_ExtraEquips ) )
 		return NULL;
-	return m_Extra[index];
+
+	return &s_ExtraEquips[index];
 }
 
-int CASW_EquipmentList::GetNumExtra(bool bIncludeHidden)
+int CASW_EquipmentList::GetNumExtra( bool bIncludeHidden )
 {
-	if (bIncludeHidden)
-		return m_Extra.Count();
-
-	return m_iNumExtra;
+	return bIncludeHidden ? ASW_NUM_EQUIP_EXTRA : ASW_FIRST_HIDDEN_EQUIP_EXTRA;
 }
 
-CASW_EquipItem* CASW_EquipmentList::GetItemForSlot( int iWpnSlot, int index )
+CASW_EquipItem *CASW_EquipmentList::GetItemForSlot( int iWpnSlot, int index )
 {
-	if ( iWpnSlot > 1 )
-		return GetExtra( index );
-	else
-		return GetRegular( index );
+	return ( iWpnSlot <= 1 ) ? GetRegular( index ) : GetExtra( index );
 }
 
-int CASW_EquipmentList::GetRegularIndex(const char* szWeaponClass)
+int CASW_EquipmentList::GetRegularIndex( const char *szWeaponClass )
 {
-	for (int i=0;i<m_Regular.Count();i++)
+	for ( int i = 0; i < NELEMS( s_RegularEquips ); i++ )
 	{
-		//Msg("GetRegularIndex  %d Comparing %s to %s\n", i, STRING(m_Regular[i]->m_EquipClass), szWeaponClass);
-		const char *szListClass = STRING( m_Regular[i]->m_EquipClass );
-		if ( !Q_stricmp( szListClass, szWeaponClass ) )
+		if ( !V_stricmp( s_RegularEquips[i].m_szEquipClass, szWeaponClass ) )
 			return i;
 	}
+
 	return -1;
 }
 
-int CASW_EquipmentList::GetExtraIndex(const char* szWeaponClass)
+int CASW_EquipmentList::GetExtraIndex( const char *szWeaponClass )
 {
-	for (int i=0;i<m_Extra.Count();i++)
+	for ( int i = 0; i < NELEMS( s_ExtraEquips ); i++ )
 	{
-		const char *szListClass = STRING( m_Extra[i]->m_EquipClass );
-		if ( !Q_stricmp( szListClass, szWeaponClass ) )
+		if ( !V_stricmp( s_ExtraEquips[i].m_szEquipClass, szWeaponClass ) )
 			return i;
 	}
+
 	return -1;
 }
 
-int CASW_EquipmentList::GetIndexForSlot( int iWpnSlot, const char* szWeaponClass )
+int CASW_EquipmentList::GetIndexForSlot( int iWpnSlot, const char *szWeaponClass )
 {
-	if ( iWpnSlot > 1 )
-		return GetExtraIndex( szWeaponClass );
-	else
-		return GetRegularIndex( szWeaponClass );
+	return ( iWpnSlot <= 1 ) ? GetRegularIndex( szWeaponClass ) : GetExtraIndex( szWeaponClass );
 }
 
 // loads the weapon icon textures for all our equipment
 #ifdef CLIENT_DLL
 void CASW_EquipmentList::LoadTextures()
 {
-	if (m_bLoadedTextures)
+	if ( m_bLoadedTextures )
 		return;
 
+	LoadTextures( m_iRegularTexture, s_RegularEquips, NELEMS( s_RegularEquips ) );
+	LoadTextures( m_iExtraTexture, s_ExtraEquips, NELEMS( s_ExtraEquips ) );
 	m_bLoadedTextures = true;
+}
+
+void CASW_EquipmentList::LoadTextures( CUtlVector<int> &TextureIDs, CASW_EquipItem *pEquipItems, int nEquipItems )
+{
 	char buffer[256];
-	for (int i=0;i<m_Regular.Count();i++)
+
+	TextureIDs.SetCount( nEquipItems );
+
+	for ( int i = 0; i < nEquipItems; i++ )
 	{
 		int t = vgui::surface()->CreateNewTextureID();
-		CASW_EquipItem* pItem = GetRegular(i);
-		if (pItem)
-		{
-			CASW_WeaponInfo* pWeaponData = GetWeaponDataFor(pItem->m_EquipClass);
-			gWR.LoadWeaponSprites(LookupWeaponInfoSlot(pItem->m_EquipClass));	// make sure we load in it's .txt + sprites now too
-			Q_snprintf(buffer, 256, "vgui/%s", pWeaponData->szEquipIcon);
-			vgui::surface()->DrawSetTextureFile( t, buffer, true, false);
-		}
-		else
-		{
-			// need to load an error texture?
-		}
-		m_iRegularTexture.AddToTail(t);
-	}
-	for (int i=0;i<m_Extra.Count();i++)
-	{
-		int t = vgui::surface()->CreateNewTextureID();
-		CASW_EquipItem* pItem = GetExtra(i);
-		if (pItem)
-		{
-			CASW_WeaponInfo* pWeaponData = GetWeaponDataFor(pItem->m_EquipClass);
-			gWR.LoadWeaponSprites(LookupWeaponInfoSlot(pItem->m_EquipClass));	// make sure we load in it's .txt + sprites now too
-			Q_snprintf(buffer, 256, "vgui/%s", pWeaponData->szEquipIcon);
-			vgui::surface()->DrawSetTextureFile( t, buffer, true, false);
-		}
-		else
-		{
-			// need to load an error texture?
-		}
-		m_iExtraTexture.AddToTail(t);
+		CASW_EquipItem *pItem = &pEquipItems[i];
+		CASW_WeaponInfo *pWeaponData = GetWeaponDataFor( pItem->m_szEquipClass );
+		gWR.LoadWeaponSprites( LookupWeaponInfoSlot( pItem->m_szEquipClass ) ); // make sure we load in its .txt + sprites now too
+		V_snprintf( buffer, sizeof( buffer ), "vgui/%s", pWeaponData->szEquipIcon );
+		vgui::surface()->DrawSetTextureFile( t, buffer, true, false );
+		TextureIDs[i] = t;
 	}
 }
 
-int CASW_EquipmentList::GetEquipIconTexture(bool bRegular, int iIndex)
+int CASW_EquipmentList::GetEquipIconTexture( bool bRegular, int iIndex )
 {
-	if (!m_bLoadedTextures)
+	if ( !m_bLoadedTextures )
 		LoadTextures();
-	if (iIndex < 0)
+
+	if ( iIndex < 0 )
 		return -1;
-	if (bRegular)
+
+	if ( bRegular )
 	{
-		if (iIndex > m_iRegularTexture.Count())
+		if ( iIndex > m_iRegularTexture.Count() )
 			return -1;
 		return m_iRegularTexture[iIndex];
 	}
-	else
-	{
-		if (iIndex > m_iExtraTexture.Count())
-			return -1;
-		return m_iExtraTexture[iIndex];
-	}
-}
 
+	if ( iIndex > m_iExtraTexture.Count() )
+		return -1;
+	return m_iExtraTexture[iIndex];
+}
+#endif
+
+CASW_EquipmentList g_ASWEquipmentList;
+
+#ifdef CLIENT_DLL
 CON_COMMAND( asw_list_equipment, "list weapons and their IDs" )
 {
-	Assert( ASWEquipmentList() );
-
 	Msg( "Regular\n");
-	int nRegular = ASWEquipmentList()->GetNumRegular( true );
+	int nRegular = g_ASWEquipmentList.GetNumRegular( true );
 	for ( int i = 0; i < nRegular; i++ )
 	{
-		CASW_EquipItem *pRegular = ASWEquipmentList()->GetRegular( i );
+		CASW_EquipItem *pRegular = g_ASWEquipmentList.GetRegular( i );
 		Assert( pRegular );
-		Msg( "%d: %s%s\n", i, STRING( pRegular->m_EquipClass ), pRegular->m_bSelectableInBriefing ? "" : " (hidden)" );
+		Msg( "%d: %s%s\n", i, pRegular->m_szEquipClass, pRegular->m_bSelectableInBriefing ? "" : " (hidden)" );
 	}
 	Msg( "\n" );
+
 	Msg( "Extra\n" );
-	int nExtra = ASWEquipmentList()->GetNumExtra( true );
+	int nExtra = g_ASWEquipmentList.GetNumExtra( true );
 	for ( int i = 0; i < nExtra; i++ )
 	{
-		CASW_EquipItem *pExtra = ASWEquipmentList()->GetExtra( i );
+		CASW_EquipItem *pExtra = g_ASWEquipmentList.GetExtra( i );
 		Assert( pExtra );
-		Msg( "%d: %s%s\n", i, STRING( pExtra->m_EquipClass ), pExtra->m_bSelectableInBriefing ? "" : " (hidden)" );
+		Msg( "%d: %s%s\n", i, pExtra->m_szEquipClass, pExtra->m_bSelectableInBriefing ? "" : " (hidden)" );
 	}
 }
 #endif

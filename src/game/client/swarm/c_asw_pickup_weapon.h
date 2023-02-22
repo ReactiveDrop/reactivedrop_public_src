@@ -29,9 +29,6 @@ public:
 	bool m_bSwappingWeapon;
 };
 
-extern CUtlDict< int, int > g_WeaponUseIcons;
-
-
 class C_ASW_Pickup_Weapon_Rifle : public C_ASW_Pickup_Weapon
 {
 public:

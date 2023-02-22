@@ -98,19 +98,19 @@ void CASW_Equip_Req::ReportMissingEquipment()
 {
 	if ( !ASWGameResource() )
 		return;
-	
+
 	// check status based on valid strings
-	int numEquippedClasses[ ASW_MAX_EQUIP_REQ_CLASSES ] = {0};
+	int numEquippedClasses[ASW_MAX_EQUIP_REQ_CLASSES] = { 0 };
 	if ( AreRequirementsMet( numEquippedClasses ) )
 		return;
 
-	for ( int k = 0; k < ASW_MAX_EQUIP_REQ_CLASSES; ++ k )
+	for ( int k = 0; k < ASW_MAX_EQUIP_REQ_CLASSES; ++k )
 	{
 		if ( numEquippedClasses[k] )
 			continue;
 
-		CASW_WeaponInfo* pWI = ASWEquipmentList()->GetWeaponDataFor(GetEquipClass(k));
-		if (pWI)
+		CASW_WeaponInfo *pWI = g_ASWEquipmentList.GetWeaponDataFor( GetEquipClass( k ) );
+		if ( pWI )
 		{
 			UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_need_equip", pWI->szPrintName );
 			return;
@@ -197,34 +197,34 @@ bool CASW_Equip_Req::AreRequirementsMet( int arrEquippedReqClasses[ASW_MAX_EQUIP
 		return true;
 
 	// Required classes to equip
-	int *numEquippedClasses = arrEquippedReqClasses ? arrEquippedReqClasses : ( int* ) stackalloc( sizeof( arrEquippedReqClasses[0] ) * ASW_MAX_EQUIP_REQ_CLASSES );
+	int *numEquippedClasses = arrEquippedReqClasses ? arrEquippedReqClasses : ( int * )stackalloc( sizeof( arrEquippedReqClasses[0] ) * ASW_MAX_EQUIP_REQ_CLASSES );
 	memset( numEquippedClasses, 0, sizeof( arrEquippedReqClasses[0] ) * ASW_MAX_EQUIP_REQ_CLASSES );
 
 	// check status based on valid strings
 	CASW_Game_Resource *pGameResource = ASWGameResource();
-	for ( int i = 0; i<pGameResource->GetMaxMarineResources(); ++i )
+	for ( int i = 0; i < pGameResource->GetMaxMarineResources(); ++i )
 	{
-		CASW_Marine_Resource *pMR = pGameResource->GetMarineResource(i);
-		if (!pMR)
+		CASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
+		if ( !pMR )
 			continue;
 
-		for ( int k = 0; k < ASW_MAX_EQUIP_SLOTS; ++ k )
+		for ( int k = 0; k < ASW_MAX_EQUIP_SLOTS; ++k )
 		{
-			CASW_EquipItem* pWpn = ASWEquipmentList()->GetItemForSlot( k, pMR->m_iWeaponsInSlots[k] );
+			CASW_EquipItem *pWpn = g_ASWEquipmentList.GetItemForSlot( k, pMR->m_iWeaponsInSlots[k] );
 			if ( !pWpn )
 				continue;
 
-			for ( int iReq = 0; iReq < ASW_MAX_EQUIP_REQ_CLASSES; ++ iReq )
+			for ( int iReq = 0; iReq < ASW_MAX_EQUIP_REQ_CLASSES; ++iReq )
 			{
 				char const *szReq = GetEquipClass( iReq );
 				if ( StringHasPrefix( STRING( pWpn->m_EquipClass ), szReq ) )
-					++ numEquippedClasses[ iReq ];
+					++numEquippedClasses[iReq];
 			}
 		}
 	}
 
 	// check if one of the required classes is not equipped
-	for ( int iReq = 0; iReq < ASW_MAX_EQUIP_REQ_CLASSES; ++ iReq )
+	for ( int iReq = 0; iReq < ASW_MAX_EQUIP_REQ_CLASSES; ++iReq )
 	{
 		if ( !numEquippedClasses[iReq] )
 			return false;

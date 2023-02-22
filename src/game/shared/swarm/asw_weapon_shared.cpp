@@ -1274,34 +1274,31 @@ const float CASW_Weapon::GetVerticalAdjustOnlyAutoAimAmount()
 
 void CASW_Weapon::Precache()
 {
-	BaseClass::Precache();	
+	BaseClass::Precache();
 
 	PrecacheModel( "models/swarm/Bayonet/bayonet.mdl" );
-	PrecacheScriptSound("ASW_Rifle.ReloadA");
-	PrecacheScriptSound("ASW_Rifle.ReloadB");
-	PrecacheScriptSound("ASW_Rifle.ReloadC");
-	PrecacheScriptSound("FastReload.Success");
-	PrecacheScriptSound("FastReload.Miss");
+	PrecacheScriptSound( "ASW_Rifle.ReloadA" );
+	PrecacheScriptSound( "ASW_Rifle.ReloadB" );
+	PrecacheScriptSound( "ASW_Rifle.ReloadC" );
+	PrecacheScriptSound( "FastReload.Success" );
+	PrecacheScriptSound( "FastReload.Miss" );
 
-	const CASW_WeaponInfo* pWeaponInfo = GetWeaponInfo();
-
+	const CASW_WeaponInfo *pWeaponInfo = GetWeaponInfo();
 	if ( pWeaponInfo )
 	{
 		// find equipment list index
-		if ( ASWEquipmentList() )
-		{
-			if ( pWeaponInfo->m_bExtra )
-				m_iEquipmentListIndex = ASWEquipmentList()->GetExtraIndex(GetClassname());	
-			else
-				m_iEquipmentListIndex = ASWEquipmentList()->GetRegularIndex(GetClassname());
-		}
+		if ( pWeaponInfo->m_bExtra )
+			m_iEquipmentListIndex = g_ASWEquipmentList.GetExtraIndex( GetClassname() );
+		else
+			m_iEquipmentListIndex = g_ASWEquipmentList.GetRegularIndex( GetClassname() );
+
 		if ( pWeaponInfo->szDisplayModel && pWeaponInfo->szDisplayModel[0] )
 		{
-			CBaseEntity::PrecacheModel( pWeaponInfo->szDisplayModel );
+			PrecacheModel( pWeaponInfo->szDisplayModel );
 		}
 		if ( pWeaponInfo->szDisplayModel2 && pWeaponInfo->szDisplayModel2[0] )
 		{
-			CBaseEntity::PrecacheModel( pWeaponInfo->szDisplayModel2 );
+			PrecacheModel( pWeaponInfo->szDisplayModel2 );
 		}
 	}
 }

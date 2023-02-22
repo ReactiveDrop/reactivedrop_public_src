@@ -23,7 +23,6 @@
 #include "nb_header_footer.h"
 #include "nb_button.h"
 #include "ForceReadyPanel.h"
-#include "nb_weapon_unlocked.h"
 #include "mission_complete_message.h"
 #include "clientmode_asw.h"
 #include "nb_vote_panel.h"
@@ -33,6 +32,7 @@
 #include "asw_hud_minimap.h"
 #include "c_user_message_register.h"
 #include "asw_deathmatch_mode_light.h"
+#include "gameui/swarm/vitemshowcase.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
@@ -662,15 +662,17 @@ void MissionCompletePanel::UpdateQueuedUnlocks()
 	if ( !m_bShowQueuedUnlocks )
 		return;
 
-	if ( m_aUnlockedWeapons.Count() > 0 && m_hSubScreen.Get() == NULL )
+	while ( m_aUnlockedWeapons.Count() > 0 )
 	{
-		CNB_Weapon_Unlocked *pPanel = new CNB_Weapon_Unlocked( this, "Weapon_Unlocked_Panel" );
-		pPanel->SetWeaponClass( m_aUnlockedWeapons[0] );
-		pPanel->MoveToFront();
-
-		m_hSubScreen = pPanel;
+		BaseModUI::ItemShowcase::ShowWeaponByClass( m_aUnlockedWeapons[0] );
 
 		m_aUnlockedWeapons.Remove( 0 );
+	}
+
+	if ( BaseModUI::CBaseModFrame *pShowcase = BaseModUI::CBaseModPanel::GetSingleton().GetWindow( BaseModUI::WT_ITEMSHOWCASE ) )
+	{
+		pShowcase->SetParent( this );
+		m_hSubScreen = pShowcase;
 	}
 }
 

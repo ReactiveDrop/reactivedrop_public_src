@@ -650,19 +650,17 @@ void C_ASW_Medal_Store::GetCounts(int &iMissions, int &iCampaigns, int &iKills, 
 
 void C_ASW_Medal_Store::OnUnlockedEquipment( const char *pszWeaponUnlockClass )
 {
-	if (!m_bLoaded)
+	if ( !m_bLoaded )
 	{
 		LoadMedalStore();
 	}
-	if ( !ASWEquipmentList() )
-		return;
 
-	int nEquipmentListIndex = ASWEquipmentList()->GetRegularIndex( pszWeaponUnlockClass );
+	int nEquipmentListIndex = g_ASWEquipmentList.GetRegularIndex( pszWeaponUnlockClass );
 	bool bExtraItem = false;
 	if ( nEquipmentListIndex == -1 )
 	{
 		bExtraItem = true;
-		nEquipmentListIndex = ASWEquipmentList()->GetExtraIndex( pszWeaponUnlockClass );
+		nEquipmentListIndex = g_ASWEquipmentList.GetExtraIndex( pszWeaponUnlockClass );
 		if ( nEquipmentListIndex == -1 )
 			return;
 	}

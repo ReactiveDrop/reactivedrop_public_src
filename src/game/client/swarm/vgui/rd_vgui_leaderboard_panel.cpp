@@ -146,7 +146,7 @@ void CReactiveDrop_VGUI_Leaderboard_Entry::ApplySchemeSettings( vgui::IScheme *s
 	LoadControlSettings( "resource/UI/RDLeaderboardEntry.res" );
 }
 
-void CReactiveDrop_VGUI_Leaderboard_Entry::SetEntry( const RD_LeaderboardEntry_t & entry )
+void CReactiveDrop_VGUI_Leaderboard_Entry::SetEntry( const RD_LeaderboardEntry_t &entry )
 {
 	m_nRank = entry.entry.m_nGlobalRank;
 	m_nScore = entry.entry.m_nScore;
@@ -159,10 +159,10 @@ void CReactiveDrop_VGUI_Leaderboard_Entry::SetEntry( const RD_LeaderboardEntry_t
 
 	int wide, tall;
 	m_imgAvatar->GetSize( wide, tall );
-	if ( ((CAvatarImage*)m_imgAvatar->GetImage()) )
+	if ( ( ( CAvatarImage * )m_imgAvatar->GetImage() ) )
 	{
-		((CAvatarImage*)m_imgAvatar->GetImage())->SetAvatarSize( wide, tall );
-		((CAvatarImage*)m_imgAvatar->GetImage())->SetPos( -AVATAR_INDENT_X, -AVATAR_INDENT_Y );
+		( ( CAvatarImage * )m_imgAvatar->GetImage() )->SetAvatarSize( wide, tall );
+		( ( CAvatarImage * )m_imgAvatar->GetImage() )->SetPos( -AVATAR_INDENT_X, -AVATAR_INDENT_Y );
 	}
 
 	wchar_t wszName[k_cwchPersonaNameMax];
@@ -204,7 +204,7 @@ void CReactiveDrop_VGUI_Leaderboard_Entry::SetEntry( const RD_LeaderboardEntry_t
 		m_lblScore->SetText( VarArgs( "%d", m_nScore ) );
 	}
 
-	if ( !MarineProfileList() || !ASWEquipmentList() )
+	if ( !MarineProfileList() )
 	{
 		return;
 	}
@@ -212,121 +212,121 @@ void CReactiveDrop_VGUI_Leaderboard_Entry::SetEntry( const RD_LeaderboardEntry_t
 	switch ( entry.details.version )
 	{
 	case 1:
+	{
+		if ( CASW_Marine_Profile *pMarine = MarineProfileList()->GetProfile( entry.details.v1.m_iMarine ) )
 		{
-			if ( CASW_Marine_Profile *pMarine = MarineProfileList()->GetProfile( entry.details.v1.m_iMarine ) )
-			{
-				m_imgMarine->SetImage( VarArgs( "briefing/face_%s", pMarine->m_PortraitName ) );
-			}
-			if ( CASW_EquipItem *pPrimaryWeapon = ASWEquipmentList()->GetRegular( entry.details.v1.m_iPrimaryWeapon ) )
-			{
-				if ( CASW_WeaponInfo *pWeaponInfo = ASWEquipmentList()->GetWeaponDataFor( STRING( pPrimaryWeapon->m_EquipClass ) ) )
-				{
-					m_imgPrimaryWeapon->SetImage( pWeaponInfo->szEquipIcon );
-				}
-			}
-			if ( CASW_EquipItem *pSecondaryWeapon = ASWEquipmentList()->GetRegular( entry.details.v1.m_iSecondaryWeapon ) )
-			{
-				if ( CASW_WeaponInfo *pWeaponInfo = ASWEquipmentList()->GetWeaponDataFor( STRING( pSecondaryWeapon->m_EquipClass ) ) )
-				{
-					m_imgSecondaryWeapon->SetImage( pWeaponInfo->szEquipIcon );
-				}
-			}
-			if ( CASW_EquipItem *pExtraWeapon = ASWEquipmentList()->GetExtra( entry.details.v1.m_iExtraWeapon ) )
-			{
-				if ( CASW_WeaponInfo *pWeaponInfo = ASWEquipmentList()->GetWeaponDataFor( STRING( pExtraWeapon->m_EquipClass ) ) )
-				{
-					m_imgExtraWeapon->SetImage( pWeaponInfo->szEquipIcon );
-				}
-			}
-			if ( entry.details.v1.m_iSquadSize > 1 )
-			{
-				m_lblSquadMembers->SetText( VarArgs( "+%d", entry.details.v1.m_iSquadSize - 1 ) );
-			}
-			wchar_t wszCountry[3] = { 0 };
-			wszCountry[0] = entry.details.v1.m_CountryCode[0];
-			wszCountry[1] = entry.details.v1.m_CountryCode[1];
-			m_lblCountry->SetText( wszCountry );
-			switch ( entry.details.v1.m_iDifficulty )
-			{
-			case 1:
-				m_lblDifficulty->SetText( "#L4D360UI_Difficulty_easy" );
-				break;
-			case 2:
-				m_lblDifficulty->SetText( "#L4D360UI_Difficulty_normal" );
-				break;
-			case 3:
-				m_lblDifficulty->SetText( "#L4D360UI_Difficulty_hard" );
-				break;
-			case 4:
-				m_lblDifficulty->SetText( "#L4D360UI_Difficulty_insane" );
-				break;
-			case 5:
-				m_lblDifficulty->SetText( "#L4D360UI_Difficulty_imba" );
-				break;
-			}
-			m_lblOnslaught->SetVisible( ( entry.details.v1.m_iModeFlags & 1 ) != 0 );
-			m_lblHardcoreFF->SetVisible( ( entry.details.v1.m_iModeFlags & 2 ) != 0 );
+			m_imgMarine->SetImage( VarArgs( "briefing/face_%s", pMarine->m_PortraitName ) );
 		}
-		break;
+		if ( CASW_EquipItem *pPrimaryWeapon = g_ASWEquipmentList.GetRegular( entry.details.v1.m_iPrimaryWeapon ) )
+		{
+			if ( CASW_WeaponInfo *pWeaponInfo = g_ASWEquipmentList.GetWeaponDataFor( pPrimaryWeapon->m_szEquipClass ) )
+			{
+				m_imgPrimaryWeapon->SetImage( pWeaponInfo->szEquipIcon );
+			}
+		}
+		if ( CASW_EquipItem *pSecondaryWeapon = g_ASWEquipmentList.GetRegular( entry.details.v1.m_iSecondaryWeapon ) )
+		{
+			if ( CASW_WeaponInfo *pWeaponInfo = g_ASWEquipmentList.GetWeaponDataFor( pSecondaryWeapon->m_szEquipClass ) )
+			{
+				m_imgSecondaryWeapon->SetImage( pWeaponInfo->szEquipIcon );
+			}
+		}
+		if ( CASW_EquipItem *pExtraWeapon = g_ASWEquipmentList.GetExtra( entry.details.v1.m_iExtraWeapon ) )
+		{
+			if ( CASW_WeaponInfo *pWeaponInfo = g_ASWEquipmentList.GetWeaponDataFor( pExtraWeapon->m_szEquipClass ) )
+			{
+				m_imgExtraWeapon->SetImage( pWeaponInfo->szEquipIcon );
+			}
+		}
+		if ( entry.details.v1.m_iSquadSize > 1 )
+		{
+			m_lblSquadMembers->SetText( VarArgs( "+%d", entry.details.v1.m_iSquadSize - 1 ) );
+		}
+		wchar_t wszCountry[3] = { 0 };
+		wszCountry[0] = entry.details.v1.m_CountryCode[0];
+		wszCountry[1] = entry.details.v1.m_CountryCode[1];
+		m_lblCountry->SetText( wszCountry );
+		switch ( entry.details.v1.m_iDifficulty )
+		{
+		case 1:
+			m_lblDifficulty->SetText( "#L4D360UI_Difficulty_easy" );
+			break;
+		case 2:
+			m_lblDifficulty->SetText( "#L4D360UI_Difficulty_normal" );
+			break;
+		case 3:
+			m_lblDifficulty->SetText( "#L4D360UI_Difficulty_hard" );
+			break;
+		case 4:
+			m_lblDifficulty->SetText( "#L4D360UI_Difficulty_insane" );
+			break;
+		case 5:
+			m_lblDifficulty->SetText( "#L4D360UI_Difficulty_imba" );
+			break;
+		}
+		m_lblOnslaught->SetVisible( ( entry.details.v1.m_iModeFlags & 1 ) != 0 );
+		m_lblHardcoreFF->SetVisible( ( entry.details.v1.m_iModeFlags & 2 ) != 0 );
+	}
+	break;
 
 	case 2:
+	{
+		if ( CASW_Marine_Profile *pMarine = MarineProfileList()->GetProfile( entry.details.v2.m_iMarine ) )
 		{
-			if ( CASW_Marine_Profile *pMarine = MarineProfileList()->GetProfile( entry.details.v2.m_iMarine ) )
-			{
-				m_imgMarine->SetImage( VarArgs( "briefing/face_%s", pMarine->m_PortraitName ) );
-			}
-			if ( CASW_EquipItem *pPrimaryWeapon = ASWEquipmentList()->GetRegular( entry.details.v2.m_iPrimaryWeapon ) )
-			{
-				if ( CASW_WeaponInfo *pWeaponInfo = ASWEquipmentList()->GetWeaponDataFor( STRING( pPrimaryWeapon->m_EquipClass ) ) )
-				{
-					m_imgPrimaryWeapon->SetImage( pWeaponInfo->szEquipIcon );
-				}
-			}
-			if ( CASW_EquipItem *pSecondaryWeapon = ASWEquipmentList()->GetRegular( entry.details.v2.m_iSecondaryWeapon ) )
-			{
-				if ( CASW_WeaponInfo *pWeaponInfo = ASWEquipmentList()->GetWeaponDataFor( STRING( pSecondaryWeapon->m_EquipClass ) ) )
-				{
-					m_imgSecondaryWeapon->SetImage( pWeaponInfo->szEquipIcon );
-				}
-			}
-			if ( CASW_EquipItem *pExtraWeapon = ASWEquipmentList()->GetExtra( entry.details.v2.m_iExtraWeapon ) )
-			{
-				if ( CASW_WeaponInfo *pWeaponInfo = ASWEquipmentList()->GetWeaponDataFor( STRING( pExtraWeapon->m_EquipClass ) ) )
-				{
-					m_imgExtraWeapon->SetImage( pWeaponInfo->szEquipIcon );
-				}
-			}
-			if ( entry.details.v2.m_iSquadSize > 1 )
-			{
-				m_lblSquadMembers->SetText( VarArgs( "+%d", entry.details.v2.m_iSquadSize - 1 ) );
-			}
-			wchar_t wszCountry[3] = { 0 };
-			wszCountry[0] = entry.details.v2.m_CountryCode[0];
-			wszCountry[1] = entry.details.v2.m_CountryCode[1];
-			m_lblCountry->SetText( wszCountry );
-			switch ( entry.details.v2.m_iDifficulty )
-			{
-			case 1:
-				m_lblDifficulty->SetText( "#L4D360UI_Difficulty_easy" );
-				break;
-			case 2:
-				m_lblDifficulty->SetText( "#L4D360UI_Difficulty_normal" );
-				break;
-			case 3:
-				m_lblDifficulty->SetText( "#L4D360UI_Difficulty_hard" );
-				break;
-			case 4:
-				m_lblDifficulty->SetText( "#L4D360UI_Difficulty_insane" );
-				break;
-			case 5:
-				m_lblDifficulty->SetText( "#L4D360UI_Difficulty_imba" );
-				break;
-			}
-			m_lblOnslaught->SetVisible( ( entry.details.v2.m_iModeFlags & 1 ) != 0 );
-			m_lblHardcoreFF->SetVisible( ( entry.details.v2.m_iModeFlags & 2 ) != 0 );
-			// TODO: do something if mission failed ( ( entry.details.v1.m_iModeFlags & 4 ) != 0 )
+			m_imgMarine->SetImage( VarArgs( "briefing/face_%s", pMarine->m_PortraitName ) );
 		}
-		break;
+		if ( CASW_EquipItem *pPrimaryWeapon = g_ASWEquipmentList.GetRegular( entry.details.v2.m_iPrimaryWeapon ) )
+		{
+			if ( CASW_WeaponInfo *pWeaponInfo = g_ASWEquipmentList.GetWeaponDataFor( pPrimaryWeapon->m_szEquipClass ) )
+			{
+				m_imgPrimaryWeapon->SetImage( pWeaponInfo->szEquipIcon );
+			}
+		}
+		if ( CASW_EquipItem *pSecondaryWeapon = g_ASWEquipmentList.GetRegular( entry.details.v2.m_iSecondaryWeapon ) )
+		{
+			if ( CASW_WeaponInfo *pWeaponInfo = g_ASWEquipmentList.GetWeaponDataFor( pSecondaryWeapon->m_szEquipClass ) )
+			{
+				m_imgSecondaryWeapon->SetImage( pWeaponInfo->szEquipIcon );
+			}
+		}
+		if ( CASW_EquipItem *pExtraWeapon = g_ASWEquipmentList.GetExtra( entry.details.v2.m_iExtraWeapon ) )
+		{
+			if ( CASW_WeaponInfo *pWeaponInfo = g_ASWEquipmentList.GetWeaponDataFor( pExtraWeapon->m_szEquipClass ) )
+			{
+				m_imgExtraWeapon->SetImage( pWeaponInfo->szEquipIcon );
+			}
+		}
+		if ( entry.details.v2.m_iSquadSize > 1 )
+		{
+			m_lblSquadMembers->SetText( VarArgs( "+%d", entry.details.v2.m_iSquadSize - 1 ) );
+		}
+		wchar_t wszCountry[3] = { 0 };
+		wszCountry[0] = entry.details.v2.m_CountryCode[0];
+		wszCountry[1] = entry.details.v2.m_CountryCode[1];
+		m_lblCountry->SetText( wszCountry );
+		switch ( entry.details.v2.m_iDifficulty )
+		{
+		case 1:
+			m_lblDifficulty->SetText( "#L4D360UI_Difficulty_easy" );
+			break;
+		case 2:
+			m_lblDifficulty->SetText( "#L4D360UI_Difficulty_normal" );
+			break;
+		case 3:
+			m_lblDifficulty->SetText( "#L4D360UI_Difficulty_hard" );
+			break;
+		case 4:
+			m_lblDifficulty->SetText( "#L4D360UI_Difficulty_insane" );
+			break;
+		case 5:
+			m_lblDifficulty->SetText( "#L4D360UI_Difficulty_imba" );
+			break;
+		}
+		m_lblOnslaught->SetVisible( ( entry.details.v2.m_iModeFlags & 1 ) != 0 );
+		m_lblHardcoreFF->SetVisible( ( entry.details.v2.m_iModeFlags & 2 ) != 0 );
+		// TODO: do something if mission failed ( ( entry.details.v1.m_iModeFlags & 4 ) != 0 )
+	}
+	break;
 	}
 }
 

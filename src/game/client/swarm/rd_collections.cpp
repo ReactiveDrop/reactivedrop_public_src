@@ -105,7 +105,7 @@ void CRD_Swarmopedia_Model_Panel::SetDisplay( const RD_Swarmopedia::Display *pDi
 	}
 
 	m_bDisplayChanged = true;
-	m_LightingState = pDisplay->LightingState;
+	SetLighting( pDisplay->LightingState );
 
 	ClearMergeMDLs();
 

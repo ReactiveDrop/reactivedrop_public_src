@@ -393,24 +393,24 @@ void CASW_Flamer_Projectile::CollideThink()
 
 void CASW_Flamer_Projectile::UpdateOnRemove()
 {
-	CASW_Marine* pMarine = NULL;
-	CBaseEntity* pOwnerEnt = GetOwnerEntity();
+	CASW_Marine *pMarine = NULL;
+	CBaseEntity *pOwnerEnt = GetOwnerEntity();
 	if ( pOwnerEnt && pOwnerEnt->Classify() == CLASS_ASW_MARINE )
 	{
-		pMarine = assert_cast<CASW_Marine*>( pOwnerEnt );
+		pMarine = assert_cast< CASW_Marine * >( pOwnerEnt );
 	}
-	if (pMarine && pMarine->GetMarineResource())
+	if ( pMarine && pMarine->GetMarineResource() )
 	{
 		// count as a shot fired
-		if (pMarine->GetMarineResource()->m_iOnlyWeaponEquipIndex == -1 && ASWEquipmentList())		// check if marine hasn't used any weapon yet
+		if ( pMarine->GetMarineResource()->m_iOnlyWeaponEquipIndex == -1 )		// check if marine hasn't used any weapon yet
 		{
 			// marine hasn't used any weapon, we need to pass the index of the flamethrower in, so it can be set
 			//  (we could do this everytime, but we only do it if no weapon is set to save doing this search needlessly every time you fire)
-			pMarine->GetMarineResource()->UsedWeapon(ASWEquipmentList()->GetRegularIndex("asw_weapon_flamer"), false, 1);
+			pMarine->GetMarineResource()->UsedWeapon( ASW_EQUIP_FLAMER, false, 1 );
 		}
 		else
 		{
-			pMarine->GetMarineResource()->UsedWeapon(NULL, 1);
+			pMarine->GetMarineResource()->UsedWeapon( NULL, 1 );
 		}
 	}
 	BaseClass::UpdateOnRemove();

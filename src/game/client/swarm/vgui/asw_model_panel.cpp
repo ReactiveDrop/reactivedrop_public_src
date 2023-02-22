@@ -96,6 +96,11 @@ void CASW_Model_Panel::SetupCustomLights( Color cAmbient, Color cKey, float fKey
 	m_LightingState.m_pLocalLightDesc[1].RecalculateDerivedValues();
 }
 
+void CASW_Model_Panel::SetLighting( const MaterialLightingState_t &lighting )
+{
+	m_LightingState = lighting;
+}
+
 void CASW_Model_Panel::SetBodygroup( int iGroup, int iValue )
 {
 	studiohdr_t *pStudioHdr = m_RootMDL.m_MDL.GetStudioHdr();

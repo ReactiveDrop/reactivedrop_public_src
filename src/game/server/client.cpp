@@ -350,27 +350,27 @@ void ClientPrecache( void )
 		char pBuf[MAX_PATH];
 		for ( int i = 0; i < CPU_LEVEL_PC_COUNT; ++i )
 		{
-			Q_snprintf( pBuf, sizeof(pBuf), "cfg/cpu_level_%d_pc.ekv", i );
+			Q_snprintf( pBuf, sizeof( pBuf ), "cfg/cpu_level_%d_pc.ekv", i );
 			engine->ForceExactFile( pBuf );
-			Q_snprintf( pBuf, sizeof(pBuf), "cfg/cpu_level_%d_pc_ss.ekv", i );
+			Q_snprintf( pBuf, sizeof( pBuf ), "cfg/cpu_level_%d_pc_ss.ekv", i );
 			engine->ForceExactFile( pBuf );
 		}
 
 		for ( int i = 0; i < GPU_LEVEL_PC_COUNT; ++i )
 		{
-			Q_snprintf( pBuf, sizeof(pBuf), "cfg/gpu_level_%d_pc.ekv", i );
+			Q_snprintf( pBuf, sizeof( pBuf ), "cfg/gpu_level_%d_pc.ekv", i );
 			engine->ForceExactFile( pBuf );
 		}
 
 		for ( int i = 0; i < MEM_LEVEL_PC_COUNT; ++i )
 		{
-			Q_snprintf( pBuf, sizeof(pBuf), "cfg/mem_level_%d_pc.ekv", i );
+			Q_snprintf( pBuf, sizeof( pBuf ), "cfg/mem_level_%d_pc.ekv", i );
 			engine->ForceExactFile( pBuf );
 		}
 
 		for ( int i = 0; i < GPU_MEM_LEVEL_PC_COUNT; ++i )
 		{
-			Q_snprintf( pBuf, sizeof(pBuf), "cfg/gpu_mem_level_%d_pc.ekv", i );
+			Q_snprintf( pBuf, sizeof( pBuf ), "cfg/gpu_mem_level_%d_pc.ekv", i );
 			engine->ForceExactFile( pBuf );
 		}
 	}
@@ -400,16 +400,15 @@ void ClientPrecache( void )
 		// ensure marines and weapons are the same on client and server
 		engine->ForceExactFile( "resource/profiles.res" );
 		engine->ForceExactFile( "resource/equipment.res" );
-		CASW_EquipmentList *pEquipmentList = ASWEquipmentList();
-		int nCount = pEquipmentList->GetNumRegular( true );
+		int nCount = g_ASWEquipmentList.GetNumRegular( true );
 		for ( int i = 0; i < nCount; i++ )
 		{
-			engine->ForceExactFile( CFmtStr( "scripts/%s.txt", STRING( pEquipmentList->GetRegular( i )->m_EquipClass ) ) );
+			engine->ForceExactFile( CFmtStr( "scripts/%s.txt", g_ASWEquipmentList.GetRegular( i )->m_szEquipClass ) );
 		}
-		nCount = pEquipmentList->GetNumExtra( true );
+		nCount = g_ASWEquipmentList.GetNumExtra( true );
 		for ( int i = 0; i < nCount; i++ )
 		{
-			engine->ForceExactFile( CFmtStr( "scripts/%s.txt", STRING( pEquipmentList->GetExtra( i )->m_EquipClass ) ) );
+			engine->ForceExactFile( CFmtStr( "scripts/%s.txt", g_ASWEquipmentList.GetExtra( i )->m_szEquipClass ) );
 		}
 	}
 }

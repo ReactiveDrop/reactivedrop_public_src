@@ -63,13 +63,13 @@ void CNB_Weapon_Detail::OnThink()
 		m_pStatsBar->SetVisible( false );
 		return;
 	}
-	
-	if ( m_nEquipIndex != -1 && ASWEquipmentList() )
+
+	if ( m_nEquipIndex != -1 )
 	{
-		CASW_EquipItem *pItem = ASWEquipmentList()->GetItemForSlot( m_nInventorySlot, m_nEquipIndex );
+		CASW_EquipItem *pItem = g_ASWEquipmentList.GetItemForSlot( m_nInventorySlot, m_nEquipIndex );
 		if ( pItem )
 		{
-			CASW_WeaponInfo* pWeaponInfo = ASWEquipmentList()->GetWeaponDataFor( STRING( pItem->m_EquipClass ) );
+			CASW_WeaponInfo *pWeaponInfo = g_ASWEquipmentList.GetWeaponDataFor( pItem->m_szEquipClass );
 			if ( pWeaponInfo )
 			{
 				UpdateLabels( pWeaponInfo );

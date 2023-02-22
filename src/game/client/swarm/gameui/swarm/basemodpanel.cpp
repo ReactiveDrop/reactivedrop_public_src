@@ -53,6 +53,7 @@
 #include "VInGameMainMenu.h"
 #include "VInGameChapterSelect.h"
 #include "VInGameKickPlayerList.h"
+#include "vitemshowcase.h"
 #include "VKeyboardMouse.h"
 #include "vkeyboard.h"
 #include "VVoteOptions.h"
@@ -295,6 +296,9 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 		break;
 	case WT_TRANSITIONSCREEN:
 		nWindowPriority = WPRI_TOPMOST;
+		break;
+	case WT_ITEMSHOWCASE:
+		nWindowPriority = WPRI_MESSAGE;
 		break;
 	}
 
@@ -544,6 +548,10 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 
 		case WT_DEMOS:
 			m_Frames[wt] = new Demos( this, "Demos" );
+			break;
+
+		case WT_ITEMSHOWCASE:
+			m_Frames[wt] = new ItemShowcase( this, "ItemShowcase" );
 			break;
 
 		default:
@@ -967,6 +975,7 @@ void CBaseModPanel::OnGameUIActivated()
 		case WT_NONE:
 		case WT_INGAMEMAINMENU:
 		case WT_GENERICCONFIRMATION:
+		case WT_ITEMSHOWCASE:
 			// bForceReturnToFrontScreen = !g_pMatchFramework->GetMatchmaking()->ShouldPreventOpenFrontScreen();
 			bForceReturnToFrontScreen = true; // this used to be some magic about mid-disconnecting-states on PC...
 			break;

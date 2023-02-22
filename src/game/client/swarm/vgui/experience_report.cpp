@@ -208,6 +208,11 @@ void CExperienceReport::OnThink()
 	// monitor local player's experience bar to see when it loops
 	float flBarMin = m_pExperienceBar[ 0 ]->m_pExperienceBar->GetBarMin();
 	bool bCapped = false;
+
+	if ( BaseModUI::CBaseModPanel::GetSingleton().GetWindow( BaseModUI::WT_ITEMSHOWCASE ) )
+	{
+		m_bPendingUnlockSequence = true;
+	}
 	
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	if ( pPlayer )
@@ -330,7 +335,6 @@ void CExperienceReport::OnThink()
 				m_iPlayerLevel++;
 				m_pWeaponUnlockPanel->SetDetails( m_pszWeaponUnlockClass, m_iPlayerLevel );
 
-				
 				if ( pComplete )
 				{
 					pComplete->ShowQueuedUnlockPanels();

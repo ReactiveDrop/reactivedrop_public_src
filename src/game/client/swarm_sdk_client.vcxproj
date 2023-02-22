@@ -1570,6 +1570,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vitemshowcase.cpp" />
     <ClCompile Include="swarm\gameui\swarm\vjukebox.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
@@ -1842,7 +1843,6 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="swarm\vgui\nb_suggest_difficulty.cpp" />
     <ClCompile Include="swarm\vgui\nb_vote_panel.cpp" />
     <ClCompile Include="swarm\vgui\nb_weapon_detail.cpp" />
-    <ClCompile Include="swarm\vgui\nb_weapon_unlocked.cpp" />
     <ClCompile Include="swarm\vgui\objectivedetailspanel.cpp" />
     <ClCompile Include="swarm\vgui\objectiveicons.cpp" />
     <ClCompile Include="swarm\vgui\objectivelistbox.cpp" />
@@ -2783,6 +2783,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="swarm\gameui\swarm\vingamedifficultyselect.h" />
     <ClInclude Include="swarm\gameui\swarm\vingamekickplayerlist.h" />
     <ClInclude Include="swarm\gameui\swarm\vingamemainmenu.h" />
+    <ClInclude Include="swarm\gameui\swarm\vitemshowcase.h" />
     <ClInclude Include="swarm\gameui\swarm\vjukebox.h" />
     <ClInclude Include="swarm\gameui\swarm\vkeyboard.h" />
     <ClInclude Include="swarm\gameui\swarm\vkeyboardmouse.h" />
@@ -2927,7 +2928,6 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="swarm\vgui\nb_suggest_difficulty.h" />
     <ClInclude Include="swarm\vgui\nb_vote_panel.h" />
     <ClInclude Include="swarm\vgui\nb_weapon_detail.h" />
-    <ClInclude Include="swarm\vgui\nb_weapon_unlocked.h" />
     <ClInclude Include="swarm\vgui\objectivedetailspanel.h" />
     <ClInclude Include="swarm\vgui\objectiveicons.h" />
     <ClInclude Include="swarm\vgui\objectivelistbox.h" />

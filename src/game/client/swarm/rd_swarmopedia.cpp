@@ -449,7 +449,7 @@ static void SetupLightAttenuation( const char *pszPath, LightDesc_t &light, KeyV
 	}
 }
 
-static const MaterialLightingState_t &SwarmopediaDefaultLightingState()
+const MaterialLightingState_t &SwarmopediaDefaultLightingState()
 {
 	static MaterialLightingState_t s_State{};
 	static bool s_bInit = false;
@@ -904,7 +904,7 @@ bool Weapon::ReadFromFile( const char *pszPath, KeyValues *pKV )
 	Builtin = pKV->GetBool( "Builtin" );
 	if ( Builtin )
 	{
-		CASW_WeaponInfo *pWeaponInfo = ASWEquipmentList()->GetWeaponDataFor( ClassName );
+		CASW_WeaponInfo *pWeaponInfo = g_ASWEquipmentList.GetWeaponDataFor( ClassName );
 		Assert( pWeaponInfo && pWeaponInfo->szClassName[0] != '\0' );
 		if ( !pWeaponInfo || pWeaponInfo->szClassName[0] == '\0' )
 		{
@@ -938,13 +938,13 @@ bool Weapon::ReadFromFile( const char *pszPath, KeyValues *pKV )
 
 		if ( Extra )
 		{
-			EquipIndex = ASWEquipmentList()->GetExtraIndex( ClassName );
-			Hidden = EquipIndex == -1 || !ASWEquipmentList()->GetExtra( EquipIndex )->m_bSelectableInBriefing;
+			EquipIndex = g_ASWEquipmentList.GetExtraIndex( ClassName );
+			Hidden = EquipIndex == -1 || !g_ASWEquipmentList.GetExtra( EquipIndex )->m_bSelectableInBriefing;
 		}
 		else
 		{
-			EquipIndex = ASWEquipmentList()->GetRegularIndex( ClassName );
-			Hidden = EquipIndex == -1 || !ASWEquipmentList()->GetRegular( EquipIndex )->m_bSelectableInBriefing;
+			EquipIndex = g_ASWEquipmentList.GetRegularIndex( ClassName );
+			Hidden = EquipIndex == -1 || !g_ASWEquipmentList.GetRegular( EquipIndex )->m_bSelectableInBriefing;
 		}
 
 		Assert( EquipIndex != -1 );
@@ -1058,7 +1058,7 @@ bool Weapon::ReadFromFile( const char *pszPath, KeyValues *pKV )
 
 	if ( Builtin )
 	{
-		CASW_WeaponInfo *pWeaponInfo = ASWEquipmentList()->GetWeaponDataFor( ClassName );
+		CASW_WeaponInfo *pWeaponInfo = g_ASWEquipmentList.GetWeaponDataFor( ClassName );
 		Assert( pWeaponInfo && pWeaponInfo->szClassName[0] != '\0' );
 
 		bool bWantAmmoFacts = !Extra && pWeaponInfo->iAmmoType > 1;

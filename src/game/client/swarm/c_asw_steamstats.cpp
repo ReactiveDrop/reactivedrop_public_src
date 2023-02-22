@@ -532,14 +532,13 @@ bool CASW_Steamstats::FetchStats( CSteamID playerSteamID, CASW_Player *pPlayer )
 	FETCH_STEAM_STATS( "playtime.total", m_iTotalPlayTime );
 
 	// Fetch starting equip information
-	int i = 0;
-	while ( ASWEquipmentList()->GetRegular( i ) )
+	for ( int i = 0; i < ASW_NUM_EQUIP_REGULAR; i++ )
 	{
 		// Get weapon information
-		if ( IsDamagingWeapon( ASWEquipmentList()->GetRegular( i )->m_EquipClass, false ) )
+		if ( IsDamagingWeapon( g_ASWEquipmentList.GetRegular( i )->m_EquipClass, false ) )
 		{
 			int weaponIndex = m_WeaponStats.AddToTail();
-			const char *szClassname = ASWEquipmentList()->GetRegular( i )->m_EquipClass;
+			const char *szClassname = g_ASWEquipmentList.GetRegular( i )->m_EquipClass;
 			m_WeaponStats[weaponIndex].FetchWeaponStats( playerSteamID, szClassname );
 			m_WeaponStats[weaponIndex].m_iWeaponIndex = GetDamagingWeaponClassFromName( szClassname );
 			m_WeaponStats[weaponIndex].m_bIsExtra = false;
@@ -548,23 +547,22 @@ bool CASW_Steamstats::FetchStats( CSteamID playerSteamID, CASW_Player *pPlayer )
 
 		// For primary equips
 		int32 iTempCount;
-		FETCH_STEAM_STATS( CFmtStr( "equips.%s.primary", ASWEquipmentList()->GetRegular( i )->m_EquipClass ), iTempCount );
+		FETCH_STEAM_STATS( CFmtStr( "equips.%s.primary", g_ASWEquipmentList.GetRegular( i )->m_EquipClass ), iTempCount );
 		m_PrimaryEquipCounts.AddToTail( iTempCount );
 
 		// For secondary equips
 		iTempCount;
-		FETCH_STEAM_STATS( CFmtStr( "equips.%s.secondary", ASWEquipmentList()->GetRegular( i++ )->m_EquipClass ), iTempCount );
+		FETCH_STEAM_STATS( CFmtStr( "equips.%s.secondary", g_ASWEquipmentList.GetRegular( i )->m_EquipClass ), iTempCount );
 		m_SecondaryEquipCounts.AddToTail( iTempCount );
 	}
 
-	i = 0;
-	while ( ASWEquipmentList()->GetExtra( i ) )
+	for ( int i = 0; i < ASW_NUM_EQUIP_EXTRA; i++ )
 	{
 		// Get weapon information
-		if ( IsDamagingWeapon( ASWEquipmentList()->GetExtra( i )->m_EquipClass, true ) )
+		if ( IsDamagingWeapon( g_ASWEquipmentList.GetExtra( i )->m_EquipClass, true ) )
 		{
 			int weaponIndex = m_WeaponStats.AddToTail();
-			const char *szClassname = ASWEquipmentList()->GetExtra( i )->m_EquipClass;
+			const char *szClassname = g_ASWEquipmentList.GetExtra( i )->m_EquipClass;
 			m_WeaponStats[weaponIndex].FetchWeaponStats( playerSteamID, szClassname );
 			m_WeaponStats[weaponIndex].m_iWeaponIndex = GetDamagingWeaponClassFromName( szClassname );
 			m_WeaponStats[weaponIndex].m_bIsExtra = true;
@@ -572,7 +570,7 @@ bool CASW_Steamstats::FetchStats( CSteamID playerSteamID, CASW_Player *pPlayer )
 		}
 
 		int32 iTempCount;
-		FETCH_STEAM_STATS( CFmtStr( "equips.%s.total", ASWEquipmentList()->GetExtra( i++ )->m_EquipClass ), iTempCount );
+		FETCH_STEAM_STATS( CFmtStr( "equips.%s.total", g_ASWEquipmentList.GetExtra( i )->m_EquipClass ), iTempCount );
 		m_ExtraEquipCounts.AddToTail( iTempCount );
 	}
 
@@ -614,18 +612,17 @@ bool CASW_Steamstats::FetchStats( CSteamID playerSteamID, CASW_Player *pPlayer )
 
 
 	// Fetch marine counts
-	i = 0;
-	while ( MarineProfileList()->GetProfile( i ) )
+	for ( int i = 0; i < ASW_NUM_MARINE_PROFILES; i++ )
 	{
 		int32 iTempCount;
-		FETCH_STEAM_STATS( CFmtStr( "marines.%i.total", i++ ), iTempCount );
+		FETCH_STEAM_STATS( CFmtStr( "marines.%i.total", i ), iTempCount );
 		m_MarineSelectionCounts.AddToTail( iTempCount );
-		FETCH_STEAM_STATS( CFmtStr( "player_count.%d.missions", i ), iTempCount );
+		FETCH_STEAM_STATS( CFmtStr( "player_count.%d.missions", i + 1 ), iTempCount );
 		m_MissionPlayerCounts.AddToTail( iTempCount );
 	}
 
 	// Get difficulty counts
-	for ( i = 0; i < 5; ++i )
+	for ( int i = 0; i < 5; i++ )
 	{
 		int32 iTempCount;
 		FETCH_STEAM_STATS( CFmtStr( "%s.games.total", g_szDifficulties[i] ), iTempCount );
@@ -744,9 +741,9 @@ void CASW_Steamstats::PrepStatsForSend( CASW_Player *pPlayer )
 	int iPrimaryIndex = GetDebriefStats()->GetStartingPrimaryEquip( iMarineIndex );
 	int iSecondaryIndex = GetDebriefStats()->GetStartingSecondaryEquip( iMarineIndex );
 	int iExtraIndex = GetDebriefStats()->GetStartingExtraEquip( iMarineIndex );
-	CASW_EquipItem *pPrimary = ASWEquipmentList()->GetRegular( iPrimaryIndex );
-	CASW_EquipItem *pSecondary = ASWEquipmentList()->GetRegular( iSecondaryIndex );
-	CASW_EquipItem *pExtra = ASWEquipmentList()->GetExtra( iExtraIndex );
+	CASW_EquipItem *pPrimary = g_ASWEquipmentList.GetRegular( iPrimaryIndex );
+	CASW_EquipItem *pSecondary = g_ASWEquipmentList.GetRegular( iSecondaryIndex );
+	CASW_EquipItem *pExtra = g_ASWEquipmentList.GetExtra( iExtraIndex );
 
 	Assert( pPrimary && pSecondary && pExtra );
 
@@ -1235,7 +1232,7 @@ bool WeaponStats_t::FetchWeaponStats( CSteamID playerSteamID, const char *szClas
 
 void WeaponStats_t::PrepStatsForSend( CASW_Player *pPlayer )
 {
-	if( !GetDebriefStats() || !ASWGameResource() || !ASWEquipmentList() )
+	if( !GetDebriefStats() || !ASWGameResource() )
 		return;
 
 	// Check to see if the weapon is in the debrief stats

@@ -332,7 +332,6 @@ C_ASW_Player::C_ASW_Player() :
 	// create the profile list for clients
 	//  (server creates it in the game rules constructor serverside)
 	MarineProfileList();
-	ASWEquipmentList();
 	m_pStimMusic = NULL;
 	m_bCheckedLevel = false;
 	m_vecLastMarineOrigin = vec3_origin;
@@ -554,28 +553,28 @@ void C_ASW_Player::SendRosterSelectCommand( const char *command, int i, int nPre
 		if ( pCVar )
 			default_extra = pCVar->GetInt();
 
-		CASW_EquipItem *pPrimary = ASWEquipmentList()->GetRegular( default_primary );
+		CASW_EquipItem *pPrimary = g_ASWEquipmentList.GetRegular( default_primary );
 		if ( pPrimary )
 		{
-			if ( !IsWeaponUnlocked( STRING( pPrimary->m_EquipClass ) ) )
+			if ( !IsWeaponUnlocked( pPrimary->m_szEquipClass ) )
 			{
-				default_primary = 0;
+				default_primary = ASW_EQUIP_RIFLE;
 			}
 		}
-		CASW_EquipItem *pSecondary = ASWEquipmentList()->GetRegular( default_secondary );
+		CASW_EquipItem *pSecondary = g_ASWEquipmentList.GetRegular( default_secondary );
 		if ( pSecondary )
 		{
-			if ( !IsWeaponUnlocked( STRING( pSecondary->m_EquipClass ) ) )
+			if ( !IsWeaponUnlocked( pSecondary->m_szEquipClass ) )
 			{
-				default_secondary = 0;
+				default_secondary = ASW_EQUIP_RIFLE;
 			}
 		}
-		CASW_EquipItem *pExtra = ASWEquipmentList()->GetExtra( default_extra );
+		CASW_EquipItem *pExtra = g_ASWEquipmentList.GetExtra( default_extra );
 		if ( pExtra )
 		{
-			if ( !IsWeaponUnlocked( STRING( pExtra->m_EquipClass ) ) )
+			if ( !IsWeaponUnlocked( pExtra->m_szEquipClass ) )
 			{
-				default_extra = ASWEquipmentList()->GetExtraIndex( "asw_weapon_medkit" );
+				default_extra = ASW_EQUIP_MEDKIT;
 			}
 		}
 		Q_snprintf( buffer, sizeof( buffer ), "%s %d %d %d %d %d", command, i, nPreferredSlot, default_primary, default_secondary, default_extra );
@@ -638,18 +637,18 @@ void C_ASW_Player::RosterSpendSkillPoint( int iProfileIndex, int nSkillSlot )
 
 void C_ASW_Player::LoadoutSelectEquip( int iMarineIndex, int iInvSlot, int iEquipIndex )
 {
-	CASW_EquipItem *pWeapon = ASWEquipmentList()->GetItemForSlot( iInvSlot, iEquipIndex );
+	CASW_EquipItem *pWeapon = g_ASWEquipmentList.GetItemForSlot( iInvSlot, iEquipIndex );
 	if ( pWeapon )
 	{
-		if ( !IsWeaponUnlocked( STRING( pWeapon->m_EquipClass ) ) )
+		if ( !IsWeaponUnlocked( pWeapon->m_szEquipClass ) )
 		{
 			if ( iInvSlot == ASW_INVENTORY_SLOT_EXTRA )
 			{
-				iEquipIndex = ASWEquipmentList()->GetExtraIndex( "asw_weapon_medkit" );
+				iEquipIndex = ASW_EQUIP_MEDKIT;
 			}
 			else
 			{
-				iEquipIndex = 0;
+				iEquipIndex = ASW_EQUIP_RIFLE;
 			}
 		}
 	}
@@ -733,28 +732,28 @@ void C_ASW_Player::LoadoutSendStored( C_ASW_Marine_Resource *pMR )
 	if ( pCVar )
 		iExtra = pCVar->GetInt();
 
-	CASW_EquipItem *pPrimary = ASWEquipmentList()->GetRegular( iPrimary );
+	CASW_EquipItem *pPrimary = g_ASWEquipmentList.GetRegular( iPrimary );
 	if ( pPrimary )
 	{
-		if ( !IsWeaponUnlocked( STRING( pPrimary->m_EquipClass ) ) )
+		if ( !IsWeaponUnlocked( pPrimary->m_szEquipClass ) )
 		{
-			iPrimary = 0;
+			iPrimary = ASW_EQUIP_RIFLE;
 		}
 	}
-	CASW_EquipItem *pSecondary = ASWEquipmentList()->GetRegular( iSecondary );
+	CASW_EquipItem *pSecondary = g_ASWEquipmentList.GetRegular( iSecondary );
 	if ( pSecondary )
 	{
-		if ( !IsWeaponUnlocked( STRING( pSecondary->m_EquipClass ) ) )
+		if ( !IsWeaponUnlocked( pSecondary->m_szEquipClass ) )
 		{
-			iSecondary = 0;
+			iSecondary = ASW_EQUIP_RIFLE;
 		}
 	}
-	CASW_EquipItem *pExtra = ASWEquipmentList()->GetExtra( iExtra );
+	CASW_EquipItem *pExtra = g_ASWEquipmentList.GetExtra( iExtra );
 	if ( pExtra )
 	{
-		if ( !IsWeaponUnlocked( STRING( pExtra->m_EquipClass ) ) )
+		if ( !IsWeaponUnlocked( pExtra->m_szEquipClass ) )
 		{
-			iExtra = ASWEquipmentList()->GetExtraIndex( "asw_weapon_medkit" );
+			iExtra = ASW_EQUIP_MEDKIT;
 		}
 	}
 

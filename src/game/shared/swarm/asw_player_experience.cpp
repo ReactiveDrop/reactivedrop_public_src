@@ -825,7 +825,7 @@ void CASW_Player::AcceptPromotion()
 	engine->ClientCmd( VarArgs( "cl_promoted %d", m_iPromotion ) );
 
 	// reset the player's selected equipment
-	if ( !ASWGameResource() || !ASWEquipmentList() )
+	if ( !ASWGameResource() )
 		return;
 
 	C_ASW_Marine_Resource *pMR = ASWGameResource()->GetFirstMarineResourceForPlayer( this );
@@ -839,7 +839,7 @@ void CASW_Player::AcceptPromotion()
 	for ( int i = 0; i < ASW_NUM_INVENTORY_SLOTS; i++ )
 	{
 		const char *szWeaponClass = pProfile->m_DefaultWeaponsInSlots[ i ];
-		int nWeaponIndex = ASWEquipmentList()->GetIndexForSlot( i, szWeaponClass );
+		int nWeaponIndex = g_ASWEquipmentList.GetIndexForSlot( i, szWeaponClass );
 		engine->ClientCmd( VarArgs( "cl_loadout %d %d %d", pProfile->m_ProfileIndex, i, nWeaponIndex ) );
 	}
 }

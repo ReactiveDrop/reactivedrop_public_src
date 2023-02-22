@@ -9,11 +9,13 @@
 #include <vgui/IImage.h>
 #include <vgui/ISurface.h>
 #include <vgui_controls/Controls.h>
+#include <vgui_controls/RichText.h>
 #include "lodepng.h"
 #include "asw_gamerules.h"
 #include "rd_workshop.h"
 #include "rd_missions_shared.h"
 #include "asw_deathmatch_mode_light.h"
+#include "gameui/swarm/vitemshowcase.h"
 #endif
 
 
@@ -36,6 +38,12 @@ public:
 	virtual ~CRD_Inventory_Manager()
 	{
 		ISteamInventory *pInventory = SteamInventory();
+#ifdef GAME_DLL
+		if ( engine->IsDedicatedServer() )
+		{
+			pInventory = SteamGameServerInventory();
+		}
+#endif
 		if ( pInventory )
 		{
 #ifdef CLIENT_DLL
@@ -46,8 +54,8 @@ public:
 				pInventory->DestroyResult( m_PlaytimeItemGeneratorResult[i] );
 			}
 			pInventory->DestroyResult( m_InspectItemResult );
-			pInventory->DestroyResult( m_DebugPrintInventoryResult );
 #endif
+			pInventory->DestroyResult( m_DebugPrintInventoryResult );
 		}
 	}
 
@@ -179,11 +187,12 @@ public:
 
 	void HandleItemDropResult( SteamInventoryResult_t &hResult )
 	{
-		DebugPrintResult( hResult );
-		Assert( !"TODO: UI for item drops" );
+		BaseModUI::ItemShowcase::ShowItems( hResult, 0, -1, BaseModUI::ItemShowcase::MODE_ITEM_DROP );
+
 		SteamInventory()->DestroyResult( hResult );
 		hResult = k_SteamInventoryResultInvalid;
 	}
+#endif
 
 	void DebugPrintResult( SteamInventoryResult_t hResult )
 	{
@@ -258,11 +267,12 @@ public:
 	{
 		DevMsg( 2, "Steam Inventory result for %08x received: EResult %d (%s)\n", pParam->m_handle, pParam->m_result, UTIL_RD_EResultToString( pParam->m_result ) );
 
+#ifdef CLIENT_DLL
 		if ( pParam->m_handle == m_EquippedMedalResult )
 		{
 			// Pre-load our own equipped medal icon even if we're not in a lobby.
-			SteamItemDef_t iMedalDef = ReactiveDropInventory::GetItemDetails( m_EquippedMedalResult, 0 ).m_iDefinition;
-			( void )ReactiveDropInventory::GetItemDef( iMedalDef );
+			ReactiveDropInventory::ItemInstance_t MedalInstance{ m_EquippedMedalResult, 0 };
+			( void )ReactiveDropInventory::GetItemDef( MedalInstance.ItemDefID );
 
 			SendMedalBlob( UTIL_RD_GetCurrentLobbyID() );
 
@@ -291,13 +301,14 @@ public:
 
 		if ( pParam->m_handle == m_InspectItemResult )
 		{
-			DebugPrintResult( m_InspectItemResult );
-			Assert( !"TODO: inspect item" );
+			BaseModUI::ItemShowcase::ShowItems( pParam->m_handle, 0, -1, BaseModUI::ItemShowcase::MODE_INSPECT );
+
 			SteamInventory()->DestroyResult( m_InspectItemResult );
 			m_InspectItemResult = k_SteamInventoryResultInvalid;
 
 			return;
 		}
+#endif
 
 		if ( pParam->m_handle == m_DebugPrintInventoryResult )
 		{
@@ -309,14 +320,17 @@ public:
 		}
 	}
 
+#ifdef CLIENT_DLL
 	SteamInventoryResult_t m_EquippedMedalResult{ k_SteamInventoryResultInvalid };
 	SteamInventoryResult_t m_PromotionalItemsResult{ k_SteamInventoryResultInvalid };
 	CUtlVector<SteamItemDef_t> m_PromotionalItemsNext{};
 	SteamInventoryResult_t m_PlaytimeItemGeneratorResult[3]{ k_SteamInventoryResultInvalid, k_SteamInventoryResultInvalid, k_SteamInventoryResultInvalid };
 	SteamInventoryResult_t m_InspectItemResult{ k_SteamInventoryResultInvalid };
+#endif
 	SteamInventoryResult_t m_DebugPrintInventoryResult{ k_SteamInventoryResultInvalid };
 	float m_flDefsUpdateTime{ 0.0f };
 
+#ifdef CLIENT_DLL
 	STEAM_CALLBACK( CRD_Inventory_Manager, OnLobbyEntered, LobbyEnter_t )
 	{
 		if ( pParam->m_EChatRoomEnterResponse == k_EChatRoomEnterResponseSuccess )
@@ -343,6 +357,11 @@ ConVar rd_equipped_medal( "rd_equipped_medal", "0", FCVAR_ARCHIVE, "Steam invent
 CON_COMMAND_F( rd_debug_print_inventory, "", FCVAR_HIDDEN )
 {
 	SteamInventory()->GetAllItems( &s_RD_Inventory_Manager.m_DebugPrintInventoryResult );
+}
+
+CON_COMMAND_F( rd_debug_fake_drop_entire_inventory, "", FCVAR_HIDDEN )
+{
+	SteamInventory()->GetAllItems( &s_RD_Inventory_Manager.m_PromotionalItemsResult );
 }
 
 CON_COMMAND_F( rd_econ_item_preview, "", FCVAR_HIDDEN )
@@ -653,9 +672,6 @@ namespace ReactiveDropInventory
 
 	static bool DynamicPropertyAllowsArbitraryValues( const char *szPropertyName )
 	{
-		if ( !V_strcmp( szPropertyName, "style" ) )
-			return true;
-
 		return false;
 	}
 
@@ -771,6 +787,14 @@ namespace ReactiveDropInventory
 				wszBuf[sizeOfBufferInBytes / sizeof( wchar_t ) - 1] = L'\0';
 			}
 		}
+
+#ifdef DBGFLAG_ASSERT
+		wchar_t *wszTemp = new wchar_t[sizeOfBufferInBytes / sizeof( wchar_t )];
+		CRD_ItemInstance reduced{ *this };
+		reduced.FormatDescription( wszTemp, sizeOfBufferInBytes, szDesc );
+		Assert( !V_wcscmp( wszBuf, wszTemp ) );
+		delete[] wszTemp;
+#endif
 	}
 
 	const ItemDef_t *GetItemDef( SteamItemDef_t id )
@@ -825,13 +849,19 @@ namespace ReactiveDropInventory
 		FETCH_PROPERTY( "item_slot" );
 		pItemDef->ItemSlot = szBuf.Base();
 		FETCH_PROPERTY( "tags" );
-		CSplitString tagsSplit( szBuf.Base(), ";" );
-		FOR_EACH_VEC( tagsSplit, i )
+		ParseTags( pItemDef->Tags, szBuf.Base() );
+		FETCH_PROPERTY( "allowed_tags_from_tools" );
+		ParseTags( pItemDef->AllowedTagsFromTools, szBuf.Base() );
+		FETCH_PROPERTY( "accessory_tag" );
+		pItemDef->AccessoryTag = szBuf.Base();
+		FETCH_PROPERTY( "compressed_dynamic_props" );
+		if ( *szBuf.Base() )
 		{
-			char *szKey = tagsSplit[i];
-			char *szValue = strchr( tagsSplit[i], ':' );
-			*szValue++ = '\0';
-			pItemDef->Tags[szKey].CopyAndAddToTail( szValue );
+			CSplitString CompressedDynamicProps{ szBuf.Base(), ";" };
+			FOR_EACH_VEC( CompressedDynamicProps, i )
+			{
+				pItemDef->CompressedDynamicProps.CopyAndAddToTail( CompressedDynamicProps[i] );
+			}
 		}
 
 		V_snprintf( szKey, sizeof( szKey ), "display_type_%s", szLang );
@@ -915,10 +945,10 @@ namespace ReactiveDropInventory
 			return false;
 		}
 
-		byte decodedData[1024]{};
-		V_hextobinary( szEncodedData, nEncodedChars, decodedData, sizeof( decodedData ) );
+		CUtlMemory<byte> decodedData{ 0, int( nEncodedChars / 2 ) };
+		V_hextobinary( szEncodedData, nEncodedChars, decodedData.Base(), decodedData.Count() );
 
-		if ( !pInventory->DeserializeResult( &hResult, decodedData, nEncodedChars / 2 ) )
+		if ( !pInventory->DeserializeResult( &hResult, decodedData.Base(), decodedData.Count() ) )
 		{
 			DevWarning( "ISteamInventory::DeserializeResult failed to create a result.\n" );
 			return false;
@@ -955,11 +985,11 @@ namespace ReactiveDropInventory
 
 		if ( szRequiredSlot )
 		{
-			char szSlot[256]{};
-			uint32_t count = sizeof( szSlot );
-			if ( !pInventory->GetItemDefinitionProperty( GetItemDetails( hResult, 0 ).m_iDefinition, "item_slot", szSlot, &count ) || V_strcmp( szSlot, szRequiredSlot ) )
+			ReactiveDropInventory::ItemInstance_t instance{ hResult, 0 };
+			const ReactiveDropInventory::ItemDef_t *pItemDef = GetItemDef( instance.ItemDefID );
+			if ( !pItemDef || pItemDef->ItemSlot != szRequiredSlot )
 			{
-				DevWarning( "ReactiveDropInventory::ValidateItemData: item fits in slot '%s', not '%s'\n", szSlot, szRequiredSlot );
+				DevWarning( "ReactiveDropInventory::ValidateItemData: item fits in slot '%s', not '%s'\n", pItemDef ? pItemDef->ItemSlot.Get() : "<NO DEF>", szRequiredSlot);
 
 				bValid = false;
 				return true;
@@ -968,23 +998,6 @@ namespace ReactiveDropInventory
 
 		bValid = true;
 		return true;
-	}
-
-	SteamItemDetails_t GetItemDetails( SteamInventoryResult_t hResult, uint32_t index )
-	{
-		GET_INVENTORY_OR_BAIL( SteamItemDetails_t{} );
-
-		uint32_t count{};
-		pInventory->GetResultItems( hResult, NULL, &count );
-		if ( index >= count )
-		{
-			return SteamItemDetails_t{};
-		}
-
-		CUtlMemory<SteamItemDetails_t> details( 0, count );
-		pInventory->GetResultItems( hResult, details.Base(), &count );
-
-		return details[index];
 	}
 
 #ifdef CLIENT_DLL
@@ -1188,3 +1201,282 @@ namespace ReactiveDropInventory
 
 #undef GET_INVENTORY_OR_BAIL
 }
+
+#define RD_ITEM_ID_BITS 30
+#define RD_ITEM_ACCESSORY_BITS 13
+
+BEGIN_NETWORK_TABLE_NOBASE( CRD_ItemInstance, DT_RD_ItemInstance )
+#ifdef CLIENT_DLL
+	RecvPropInt( RECVINFO( m_iItemDefID ) ),
+	RecvPropInt( RECVINFO( m_nQuantity ) ),
+	RecvPropArray( RecvPropInt( RECVINFO( m_iAccessory[0] ) ), m_iAccessory ),
+	RecvPropArray( RecvPropInt( RECVINFO( m_nCounter[0] ) ), m_nCounter ),
+#else
+	SendPropInt( SENDINFO( m_iItemDefID ), RD_ITEM_ID_BITS, SPROP_UNSIGNED ),
+	SendPropInt( SENDINFO( m_nQuantity ), 31, SPROP_UNSIGNED ),
+	SendPropArray( SendPropInt( SENDINFO_ARRAY( m_iAccessory ), RD_ITEM_ACCESSORY_BITS, SPROP_UNSIGNED ), m_iAccessory ),
+	SendPropArray( SendPropInt( SENDINFO_ARRAY( m_nCounter ), 63, SPROP_UNSIGNED ), m_nCounter ),
+#endif
+END_NETWORK_TABLE()
+
+CRD_ItemInstance::CRD_ItemInstance()
+{
+	Reset();
+}
+
+CRD_ItemInstance::CRD_ItemInstance( const ReactiveDropInventory::ItemInstance_t &instance )
+{
+	SetFromInstance( instance );
+}
+
+void CRD_ItemInstance::Reset()
+{
+	m_iItemDefID = 0;
+	m_nQuantity = 1;
+	for ( int i = 0; i < m_iAccessory.Count(); i++ )
+	{
+		m_iAccessory.Set( i, 0 );
+	}
+	for ( int i = 0; i < m_nCounter.Count(); i++ )
+	{
+		m_nCounter.Set( i, 0 );
+	}
+}
+
+bool CRD_ItemInstance::IsSet() const
+{
+	return m_iItemDefID != 0;
+}
+
+void CRD_ItemInstance::SetFromInstance( const ReactiveDropInventory::ItemInstance_t &instance )
+{
+	Reset();
+
+	m_iItemDefID = instance.ItemDefID;
+	m_nQuantity = instance.Quantity;
+	const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( m_iItemDefID );
+	Assert( pDef );
+	if ( !pDef )
+		return;
+
+	Assert( pDef->CompressedDynamicProps.Count() + ( pDef->AccessoryTag.IsEmpty() ? 0 : RD_ITEM_MAX_ACCESSORIES ) <= RD_ITEM_MAX_COMPRESSED_DYNAMIC_PROPS );
+
+	FOR_EACH_VEC( pDef->CompressedDynamicProps, i )
+	{
+		Assert( !ReactiveDropInventory::DynamicPropertyAllowsArbitraryValues( pDef->CompressedDynamicProps[i] ) );
+
+		if ( !V_stricmp( pDef->CompressedDynamicProps[i], "m_unQuantity" ) )
+		{
+			m_nCounter.Set( i, instance.Quantity );
+		}
+		else if ( instance.DynamicProps.Defined( pDef->CompressedDynamicProps[i] ) )
+		{
+			const char *szPropValue = instance.DynamicProps[instance.DynamicProps.Find( pDef->CompressedDynamicProps[i] )];
+			m_nCounter.Set( i + pDef->CompressedDynamicProps.Count(), strtoll( szPropValue, NULL, 10 ) );
+		}
+	}
+
+	if ( !pDef->AccessoryTag.IsEmpty() && instance.Tags.Defined( pDef->AccessoryTag ) )
+	{
+		const CUtlStringList &accessories = instance.Tags[instance.Tags.Find( pDef->AccessoryTag )];
+		Assert( accessories.Count() <= RD_ITEM_MAX_ACCESSORIES );
+
+		FOR_EACH_VEC( accessories, i )
+		{
+			if ( i >= RD_ITEM_MAX_ACCESSORIES )
+				break;
+
+			SteamItemDef_t iAccessoryID = strtol( accessories[i], NULL, 10 );
+			Assert( iAccessoryID < ( 1 << RD_ITEM_ACCESSORY_BITS ) );
+			m_iAccessory.Set( i, iAccessoryID );
+
+			char szProperty[255];
+			V_snprintf( szProperty, sizeof( szProperty ), "%s_%d", pDef->AccessoryTag.Get(), iAccessoryID );
+			Assert( !ReactiveDropInventory::DynamicPropertyAllowsArbitraryValues( szProperty ) );
+
+			if ( instance.DynamicProps.Defined( szProperty ) )
+			{
+				const char *szPropValue = instance.DynamicProps[instance.DynamicProps.Find( szProperty )];
+				m_nCounter.Set( i + pDef->CompressedDynamicProps.Count(), strtoll( szPropValue, NULL, 10 ) );
+			}
+		}
+	}
+}
+
+void CRD_ItemInstance::FormatDescription( wchar_t *wszBuf, size_t sizeOfBufferInBytes, const CUtlString &szDesc ) const
+{
+	const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( m_iItemDefID );
+
+	V_UTF8ToUnicode( szDesc, wszBuf, sizeOfBufferInBytes );
+
+	char szToken[128]{};
+	wchar_t wszReplacement[1024]{};
+
+	for ( size_t i = 0; i < sizeOfBufferInBytes / sizeof( wchar_t ); i++ )
+	{
+		if ( wszBuf[i] == L'\0' )
+		{
+			return;
+		}
+
+		if ( wszBuf[i] != L'%' )
+		{
+			continue;
+		}
+
+		V_wcsncpy( wszReplacement, L"MISSING", sizeof( wszReplacement ) );
+
+		size_t tokenLength = 1;
+		while ( wszBuf[i + tokenLength] != L'%' && wszBuf[i + tokenLength] != L':' )
+		{
+			if ( wszBuf[i + tokenLength] == L'\0' )
+			{
+				return;
+			}
+
+			Assert( wszBuf[i + tokenLength] < 0x80 ); // assume ASCII
+			szToken[tokenLength - 1] = ( char )wszBuf[i + tokenLength];
+
+			tokenLength++;
+
+			Assert( tokenLength < sizeof( szToken ) );
+		}
+
+		szToken[tokenLength - 1] = '\0';
+
+		Assert( wszBuf[i + tokenLength] != L':' );
+		if ( wszBuf[i + tokenLength] == L':' )
+		{
+			size_t tokenReplacementLength = 0;
+			tokenLength++;
+
+			while ( wszBuf[i + tokenLength] != L'%' )
+			{
+				if ( wszBuf[i + tokenLength] == L'\0' )
+				{
+					return;
+				}
+
+				szToken[tokenReplacementLength] = wszBuf[i + tokenLength];
+
+				tokenReplacementLength++;
+				tokenLength++;
+
+				Assert( tokenReplacementLength < NELEMS( wszReplacement ) );
+			}
+
+			wszReplacement[tokenReplacementLength] = L'\0';
+		}
+
+		tokenLength++;
+
+		if ( tokenLength == 2 )
+		{
+			// special case: %% is just %
+			V_memmove( &wszBuf[i + 1], &wszBuf[i + 2], sizeOfBufferInBytes - ( i + 2 ) * sizeof( wchar_t ) );
+			i++;
+			continue;
+		}
+
+		FOR_EACH_VEC( pDef->CompressedDynamicProps, j )
+		{
+			if ( !V_strcmp( pDef->CompressedDynamicProps[j], szToken ) )
+			{
+				V_wcsncpy( wszReplacement, UTIL_RD_CommaNumber( m_nCounter[j] ), sizeof( wszReplacement ) );
+				break;
+			}
+		}
+
+		if ( !pDef->AccessoryTag.IsEmpty() )
+		{
+			for ( int j = 0; j < RD_ITEM_MAX_ACCESSORIES; j++ )
+			{
+				if ( m_iAccessory[j] == 0 )
+					continue;
+
+				char szAccessoryProp[128]{};
+				V_snprintf( szAccessoryProp, sizeof( szAccessoryProp ), "%s_%d", pDef->AccessoryTag.Get(), m_iAccessory[j] );
+
+				if ( !V_strcmp( szToken, szAccessoryProp ) )
+				{
+					V_wcsncpy( wszReplacement, UTIL_RD_CommaNumber( m_nCounter[pDef->CompressedDynamicProps.Count() + j] ), sizeof( wszReplacement ) );
+					break;
+				}
+			}
+		}
+
+		size_t replacementLength = 0;
+		while ( wszReplacement[replacementLength] )
+		{
+			replacementLength++;
+		}
+
+		if ( i + replacementLength >= sizeOfBufferInBytes / sizeof( wchar_t ) )
+		{
+			replacementLength = ( sizeOfBufferInBytes - i - 1 ) / sizeof( wchar_t );
+		}
+
+		V_memmove( &wszBuf[i + replacementLength], &wszBuf[i + tokenLength], sizeOfBufferInBytes - ( i + MAX( replacementLength, tokenLength ) ) * sizeof( wchar_t ) );
+		V_memmove( &wszBuf[i], wszReplacement, replacementLength * sizeof( wchar_t ) );
+		if ( replacementLength > tokenLength )
+		{
+			wszBuf[sizeOfBufferInBytes / sizeof( wchar_t ) - 1] = L'\0';
+		}
+	}
+}
+
+#ifdef CLIENT_DLL
+extern ConVar rd_briefing_item_details_color1;
+extern ConVar rd_briefing_item_details_color2;
+ConVar rd_briefing_item_accessory_color( "rd_briefing_item_accessory_color", "191 191 191 255", FCVAR_NONE );
+
+void CRD_ItemInstance::FormatDescription( vgui::RichText *pRichText ) const
+{
+	const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( m_iItemDefID );
+	wchar_t wszBuf[2048];
+
+	pRichText->SetText( "" );
+
+	FormatDescription( wszBuf, sizeof( wszBuf ), pDef->BeforeDescription );
+	if ( wszBuf[0] )
+	{
+		pRichText->InsertColorChange( rd_briefing_item_details_color2.GetColor() );
+		pRichText->InsertString( wszBuf );
+		pRichText->InsertString( L"\n\n" );
+	}
+
+	bool bAnyAccessories = false;
+	for ( int i = 0; i < RD_ITEM_MAX_ACCESSORIES; i++ )
+	{
+		if ( m_iAccessory[i] == 0 )
+			continue;
+
+		bAnyAccessories = true;
+		FormatDescription( wszBuf, sizeof( wszBuf ), ReactiveDropInventory::GetItemDef( m_iAccessory[i] )->AccessoryDescription );
+		if ( wszBuf[0] )
+		{
+			pRichText->InsertColorChange( rd_briefing_item_accessory_color.GetColor() );
+			pRichText->InsertString( wszBuf );
+			pRichText->InsertString( L"\n" );
+		}
+	}
+
+	if ( bAnyAccessories )
+		pRichText->InsertString( L"\n" );
+
+	V_UTF8ToUnicode( pDef->Description, wszBuf, sizeof( wszBuf ) );
+	pRichText->InsertColorChange( rd_briefing_item_details_color1.GetColor() );
+	pRichText->InsertString( wszBuf );
+
+	if ( !pDef->AfterDescriptionOnlyMultiStack || m_nQuantity > 1 )
+	{
+		FormatDescription( wszBuf, sizeof( wszBuf ), pDef->AfterDescription );
+		if ( wszBuf[0] )
+		{
+			pRichText->InsertColorChange( rd_briefing_item_details_color2.GetColor() );
+			pRichText->InsertString( L"\n\n" );
+			pRichText->InsertString( wszBuf );
+		}
+	}
+}
+#endif
