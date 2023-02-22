@@ -88,6 +88,7 @@ ConVar rd_client_marine_backpacks( "rd_client_marine_backpacks", "0", FCVAR_NONE
 extern ConVar asw_DebugAutoAim;
 extern ConVar rd_revive_duration;
 extern ConVar rd_aim_marines;
+extern ConVar rd_highlight_active_character;
 extern float g_fMarinePoisonDuration;
 
 #define FLASHLIGHT_DISTANCE		1000
@@ -701,11 +702,11 @@ C_ASW_Marine_Resource *C_ASW_Marine::GetMarineResource()
 
 				if ( i >= 0 && i < NELEMS( g_rgbaStatsReportPlayerColors ) )
 				{
-					m_GlowObject.SetColor( Vector{
+					m_vecMarineColor.Init(
 						g_rgbaStatsReportPlayerColors[i].r() / 255.0f,
 						g_rgbaStatsReportPlayerColors[i].g() / 255.0f,
-						g_rgbaStatsReportPlayerColors[i].b() / 255.0f,
-					} );
+						g_rgbaStatsReportPlayerColors[i].b() / 255.0f
+					);
 				}
 				return pMR;
 			}
@@ -943,6 +944,12 @@ void C_ASW_Marine::ClientThink()
 	UpdateFireEmitters();
 	UpdateJumpJetEffects();
 	UpdateElectrifiedArmor();
+
+	C_ASW_Player *pLocalPlayer = C_ASW_Player::GetLocalASWPlayer();
+	if ( rd_highlight_active_character.GetBool() && pLocalPlayer && pLocalPlayer->GetViewNPC() == this )
+	{
+		m_GlowObject.SetColor( m_vecMarineColor );
+	}
 
 	extern ConVar asw_allow_detach;
 	if ( pViewMarine == this && pPlayer && pPlayer->GetASWControls() == ASWC_FIRSTPERSON && !asw_allow_detach.GetBool() )

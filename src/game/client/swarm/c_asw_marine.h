@@ -408,6 +408,8 @@ public:
 	static C_ASW_Marine* GetLocalMarine();
 	static C_ASW_Marine* GetViewMarine();
 
+	Vector m_vecMarineColor;
+
 private:
 	CMotionBlurObject m_MotionBlurObject;
 

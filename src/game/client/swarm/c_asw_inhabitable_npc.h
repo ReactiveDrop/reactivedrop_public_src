@@ -84,6 +84,12 @@ public:
 	// Glows are enabled when the sniper scope is used
 	CGlowObject m_GlowObject;
 	CMotionBlurObject m_MotionBlurObject;
+	virtual void UpdateGlowObject();
+	CNetworkVector( m_vecGlowColor );
+	CNetworkVar( float, m_flGlowAlpha );
+	CNetworkVar( bool, m_bGlowWhenOccluded );
+	CNetworkVar( bool, m_bGlowWhenUnoccluded );
+	CNetworkVar( bool, m_bGlowFullBloom );
 
 	virtual void MakeTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType );
 	virtual void MakeUnattachedTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType );

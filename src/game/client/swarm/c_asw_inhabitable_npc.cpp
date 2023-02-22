@@ -12,6 +12,8 @@
 
 
 ConVar rd_highlight_active_character( "rd_highlight_active_character", "0", FCVAR_ARCHIVE );
+extern ConVar glow_outline_color_marine;
+extern ConVar glow_outline_color_alien;
 extern ConVar asw_controls;
 
 IMPLEMENT_CLIENTCLASS_DT( C_ASW_Inhabitable_NPC, DT_ASW_Inhabitable_NPC, CASW_Inhabitable_NPC )
@@ -27,6 +29,11 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_Inhabitable_NPC, DT_ASW_Inhabitable_NPC, CASW_In
 	RecvPropBool( RECVINFO( m_bOnFire ) ),
 	RecvPropFloat( RECVINFO( m_fSpeedScale ) ),
 	RecvPropTime( RECVINFO( m_fHurtSlowMoveTime ) ),
+	RecvPropVector( RECVINFO( m_vecGlowColor ) ),
+	RecvPropFloat( RECVINFO( m_flGlowAlpha ) ),
+	RecvPropBool( RECVINFO( m_bGlowWhenOccluded ) ),
+	RecvPropBool( RECVINFO( m_bGlowWhenUnoccluded ) ),
+	RecvPropBool( RECVINFO( m_bGlowFullBloom ) ),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_ASW_Inhabitable_NPC )
@@ -49,6 +56,12 @@ C_ASW_Inhabitable_NPC::C_ASW_Inhabitable_NPC() :
 	m_pSurfaceData = NULL;
 	m_surfaceFriction = 1.0f;
 	m_chTextureType = m_chPreviousTextureType = 0;
+
+	m_vecGlowColor.Init( 1, 1, 1 );
+	m_flGlowAlpha = 1;
+	m_bGlowWhenOccluded = false;
+	m_bGlowWhenUnoccluded = false;
+	m_bGlowFullBloom = false;
 
 	m_bOnFire = false;
 	m_bElectroStunned = false;
@@ -151,19 +164,7 @@ void C_ASW_Inhabitable_NPC::ClientThink()
 	m_vecLastRenderedPos = WorldSpaceCenter();
 	m_vecAutoTargetRadiusPos = GetLocalAutoTargetRadiusPos();
 
-	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if ( rd_highlight_active_character.GetBool() && pPlayer && pPlayer->GetViewNPC() == this )
-	{
-		m_GlowObject.SetRenderFlags( true, true );
-	}
-	else if ( IsAlien() && pPlayer && pPlayer->IsSniperScopeActive() )
-	{
-		m_GlowObject.SetRenderFlags( true, true );
-	}
-	else
-	{
-		m_GlowObject.SetRenderFlags( false, false );
-	}
+	UpdateGlowObject();
 
 	if ( GetHealth() > 0 && m_bElectroStunned && m_fNextElectroStunEffect <= gpGlobals->curtime )
 	{
@@ -248,6 +249,32 @@ float C_ASW_Inhabitable_NPC::GetBasePlayerYawRate()
 {
 	extern ConVar asw_marine_linear_turn_rate;
 	return asw_marine_linear_turn_rate.GetFloat();
+}
+
+void C_ASW_Inhabitable_NPC::UpdateGlowObject()
+{
+	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	if ( rd_highlight_active_character.GetBool() && pPlayer && pPlayer->GetViewNPC() == this )
+	{
+		m_GlowObject.SetColor( glow_outline_color_marine.GetColorAsVector() );
+		m_GlowObject.SetAlpha( 1.0f );
+		m_GlowObject.SetRenderFlags( true, true );
+		m_GlowObject.SetFullBloomRender( false );
+	}
+	else if ( IsAlien() && pPlayer && pPlayer->IsSniperScopeActive() )
+	{
+		m_GlowObject.SetColor( glow_outline_color_alien.GetColorAsVector() );
+		m_GlowObject.SetAlpha( 0.55f );
+		m_GlowObject.SetRenderFlags( true, true );
+		m_GlowObject.SetFullBloomRender( true );
+	}
+	else
+	{
+		m_GlowObject.SetColor( m_vecGlowColor );
+		m_GlowObject.SetAlpha( m_flGlowAlpha );
+		m_GlowObject.SetRenderFlags( m_bGlowWhenOccluded, m_bGlowWhenUnoccluded );
+		m_GlowObject.SetFullBloomRender( m_bGlowFullBloom );
+	}
 }
 
 void C_ASW_Inhabitable_NPC::MakeTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType )

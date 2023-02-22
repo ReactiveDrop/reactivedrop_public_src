@@ -74,15 +74,10 @@ C_ASW_Alien::C_ASW_Alien()
 	m_flAlienWalkSpeed = 0.0f;
 	m_bInhabitedMovementAllowed = false;
 
-	m_GlowObject.SetColor( glow_outline_color_alien.GetColorAsVector() );
-	m_GlowObject.SetAlpha( 0.55f );
-	m_GlowObject.SetRenderFlags( false, false );
-	m_GlowObject.SetFullBloomRender( true );
-
 	// reactivedrop: workaround to fix aliens red blood
 	// m_bloodColor is not networked
 	// so setting SetBloodColor() on server doesn't affect client 
-	SetBloodColor(BLOOD_COLOR_GREEN);
+	SetBloodColor( BLOOD_COLOR_GREEN );
 }
 
 C_ASW_Alien::~C_ASW_Alien()

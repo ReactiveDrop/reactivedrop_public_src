@@ -66,6 +66,11 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Inhabitable_NPC, DT_ASW_Inhabitable_NPC )
 	SendPropBool( SENDINFO( m_bOnFire ) ),
 	SendPropFloat( SENDINFO( m_fSpeedScale ) ),
 	SendPropTime( SENDINFO( m_fHurtSlowMoveTime ) ),
+	SendPropVector( SENDINFO( m_vecGlowColor ), 10, 0, 0, 1 ),
+	SendPropFloat( SENDINFO( m_flGlowAlpha ), 8, 0, 0, 1 ),
+	SendPropBool( SENDINFO( m_bGlowWhenOccluded ) ),
+	SendPropBool( SENDINFO( m_bGlowWhenUnoccluded ) ),
+	SendPropBool( SENDINFO( m_bGlowFullBloom ) ),
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Inhabitable_NPC )
@@ -111,6 +116,7 @@ BEGIN_ENT_SCRIPTDESC( CASW_Inhabitable_NPC, CBaseCombatCharacter, "Alien Swarm I
 	DEFINE_SCRIPTFUNC_NAMED( ScriptSetPostProcessController, "SetPostProcessController", "Force this character to use a specific postprocess_controller." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptSetColorCorrection, "SetColorCorrection", "Force this character to use a specific color_correction." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptSetTonemapController, "SetTonemapController", "Force this character to use a specific env_tonemap_controller." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetGlow, "SetGlow", "Make this character glow when occluded or when unoccluded. Does not affect cases where the character would glow due to built-in game logic." )
 
 	DEFINE_SCRIPTFUNC_NAMED( ClearAlienOrders, "ClearOrders", "clear the alien's orders" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptOrderMoveTo, "OrderMoveTo", "order the alien to move to an entity handle, second parameter ignore marines" )
@@ -150,6 +156,11 @@ CASW_Inhabitable_NPC::CASW_Inhabitable_NPC()
 	m_flFrozenTime = 0.0f;
 
 	m_bSpawnZombineOnMarineKill = false;
+	m_vecGlowColor.Init( 1, 1, 1 );
+	m_flGlowAlpha = 1;
+	m_bGlowWhenOccluded = false;
+	m_bGlowWhenUnoccluded = false;
+	m_bGlowFullBloom = false;
 }
 
 CASW_Inhabitable_NPC::~CASW_Inhabitable_NPC()
