@@ -12,14 +12,16 @@
 #include "asw_weapon_parse.h"
 #include "asw_gamerules.h"
 
-
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
 
 using namespace vgui;
 using namespace BaseModUI;
 
 extern const MaterialLightingState_t &SwarmopediaDefaultLightingState();
+
+extern ConVar rd_reduce_motion;
 
 ItemShowcase::ItemShowcase( Panel *parent, const char *panelName )
 	: BaseClass( parent, panelName )
@@ -45,6 +47,8 @@ ItemShowcase::ItemShowcase( Panel *parent, const char *panelName )
 	m_pDescriptionArea->SetPanelInteractive( false );
 
 	m_iWeaponLabelX = 0;
+	m_iDescriptionAreaY = 0;
+	m_iRepositionDescription = 0;
 
 	SetTitle( "", false );
 	SetDeleteSelfOnClose( true );
@@ -202,6 +206,15 @@ void ItemShowcase::OnThink()
 		GetAnimationController()->RunAnimationCommand( m_pDescriptionArea, "alpha", 255, 0.75f, 0.25f, AnimationController::INTERPOLATOR_ACCEL );
 
 		m_bShowWeaponOnNextFrame = false;
+		m_iRepositionDescription = 3;
+	}
+
+	if ( m_iRepositionDescription > 0 && --m_iRepositionDescription == 0 )
+	{
+		m_pDescriptionArea->SetToFullHeight();
+		int x, y;
+		m_pDescriptionArea->GetPos( x, y );
+		m_pDescriptionArea->SetPos( x, m_iDescriptionAreaY - m_pDescriptionArea->GetTall() / 2 );
 	}
 
 	switch ( m_QueueType[0] )
@@ -233,7 +246,7 @@ void ItemShowcase::OnThink()
 		vecPos *= ( float )iMaxBounds / 64.0f;
 
 		m_pItemModelPanel->SetCameraPositionAndAngles( vecPos, angRot );
-		m_pItemModelPanel->SetModelAnglesAndPosition( QAngle( 0.0f, gpGlobals->curtime * 45.0f, 0.0f ), vec3_origin );
+		m_pItemModelPanel->SetModelAnglesAndPosition( QAngle( 0, rd_reduce_motion.GetBool() ? 0 : gpGlobals->curtime * 45, 0 ), vec3_origin );
 
 		break;
 	}
@@ -305,6 +318,13 @@ void ItemShowcase::PerformLayout()
 	{
 		int y;
 		m_pWeaponLabel->GetPos( m_iWeaponLabelX, y );
+	}
+
+	if ( m_iDescriptionAreaY == 0 )
+	{
+		int x;
+		m_pDescriptionArea->GetPos( x, m_iDescriptionAreaY );
+		m_iDescriptionAreaY += m_pDescriptionArea->GetTall() / 2;
 	}
 }
 

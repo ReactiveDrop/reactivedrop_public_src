@@ -87,8 +87,8 @@
 		"fieldName"		"DescriptionArea"
 		"xpos"			"c0"
 		"ypos"			"135"
-		"zpos"			"0"
+		"zpos"			"2"
 		"wide"			"200"
-		"tall"			"180"
+		"tall"			"170"
 	}
 }

@@ -52,6 +52,8 @@ public:
 	CASW_Model_Panel *m_pItemModelPanel;
 	vgui::RichText *m_pDescriptionArea;
 	int m_iWeaponLabelX;
+	int m_iDescriptionAreaY;
+	int m_iRepositionDescription;
 	bool m_bNeedsMoveToFront;
 	bool m_bShowWeaponOnNextFrame;
 };
