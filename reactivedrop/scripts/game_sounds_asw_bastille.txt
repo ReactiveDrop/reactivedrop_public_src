@@ -1,0 +1,2547 @@
+"bastille.SynUpReply0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"	"vo\bastille\bastille_youdontwannadrinkthatshitbelieveme.wav"
+}
+
+"bastille.CrashComplainReply0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"  "vo\bastille\bastille_maybeyoushouldreportanervousbreakdown.wav"
+}
+
+"bastille.MedicComplainReply0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"  "vo\bastille\bastille_ohcomeonyougetinjuredjustasmuchasido.wav"
+}
+
+"bastille.MedicComplain0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"  "vo\bastille\bastille_cantyounotgethurtforachange.wav"
+}
+
+"bastille.MedicComplain1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_nowwhydoyougetsoclosetothem.wav"
+}
+
+"bastille.HealingCrashReply0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_imsavingthemforwhenyoureallygethurt.wav"
+}
+
+"bastille.HealingCrash0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_steadynow.wav"
+}
+
+"bastille.TequilaReply0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_igaveupthatstuffalongtimeago.wav"
+}
+
+"bastille.CrashIdleReply0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_tryingtokeepyoursorryassalive.wav"
+}
+
+"bastille.InjuredSelection0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_areweleaving.wav"
+}
+
+"bastille.InjuredSelection1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_theyjustkeepcoming.wav"
+}
+
+"bastille.InjuredSelection2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_thiswholeplaceisgettingtohell1.wav"
+}
+
+"bastille.InjuredSelection3"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_thiswholeplaceisgettingtohell2.wav"
+}
+
+"bastille.InjuredSelection4"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_whatdoyouwantnow.wav"
+}
+
+"bastille.SeriousInjuryReply0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_alrightifyousayso.wav"
+}
+
+"bastille.SeriousInjuryFollowUp0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_idontwantanystuntsok.wav"
+}
+
+"bastille.SeriousInjuryFollowUp1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_justtakeiteasydoctorsorders.wav"
+}
+
+"bastille.SeriousInjury0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_becarefulthewoundmightstillopen.wav"
+}
+
+"bastille.SeriousInjury1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_goodnewsyoureoffthenextmission.wav"
+}
+
+"bastille.StillBreathingReply0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_youknowyoucangetcounselingforthatright.wav"
+}
+
+"bastille.Use0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_absolutely2.wav"
+}
+
+"bastille.Use1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_butofcourse.wav"
+}
+
+"bastille.Use2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_goodthinking.wav"
+}
+
+"bastille.Use3"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_immediatement.wav"
+}
+
+"bastille.Use4"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_oui.wav"
+}
+
+"bastille.Use5"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_oui1.wav"
+}
+
+"bastille.Use6"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_oui2.wav"
+}
+
+"bastille.Use7"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_understood.wav"
+}
+
+"bastille.Use8"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_yessir.wav"
+}
+
+"bastille.Use9"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_yessir1.wav"
+}
+
+"bastille.Use10"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_yessir3.wav"
+}
+
+"bastille.Idle0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_carefultheycouldbeanywhere.wav"
+}
+
+"bastille.Idle1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_didyouhearthatnoise.wav"
+}
+
+"bastille.Idle2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_french083_if_i_knew_i_wouldve_stayed_home.wav"
+}
+
+"bastille.Idle3"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_french097_keep_quiet.wav"
+}
+
+"bastille.Idle4"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_french106_now_its_quiet_open_bordeux.wav"
+}
+
+"bastille.Idle5"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_greatnowimhearingthings.wav"
+}
+
+"bastille.Idle6"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_idontlikeitdownhere.wav"
+}
+
+"bastille.Idle7"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_ifwereluckythewoundswillbehealedwhenwewakeupfromcryosleep.wav"
+}
+
+"bastille.Idle8"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_ignoretherumorsstimpacksarentthataddictive3.wav"
+}
+
+"bastille.Idle9"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_ihearsomethingmoving.wav"
+}
+
+"bastille.Idle10"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_ihopewesendeverylastoneofthesebastardsstraighttohell2.wav"
+}
+
+"bastille.Idle11"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_justhowmanymorebugsarethereonthisrock.wav"
+}
+
+"bastille.Idle12"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_lookslikenobodyshome.wav"
+}
+
+"bastille.Idle13"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_staysharpmesami5.wav"
+}
+
+"bastille.Idle14"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_theressomethinghereicanfeelit.wav"
+}
+
+"bastille.Idle15"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_whatwasthat.wav"
+}
+
+"bastille.Idle16"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_whatwasthat2.wav"
+}
+
+"bastille.Idle17"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_wherethehellaretheynow.wav"
+}
+
+"bastille.Idle18"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_wouldbegooddoalittlecleaninghere.wav"
+}
+
+"bastille.FF0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_friendlyfire.wav"
+}
+
+"bastille.FF1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_watchwhereyourepointingthatthing.wav"
+}
+
+"bastille.FF2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_watchyourtarget.wav"
+}
+
+"bastille.FiringAtAlien0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_comeandgetme.wav"
+}
+
+"bastille.FiringAtAlien1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_coveringfire.wav"
+}
+
+"bastille.FiringAtAlien2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_die.wav"
+}
+
+"bastille.FiringAtAlien3"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_incoming.wav"
+}
+
+"bastille.FiringAtAlien4"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_target.wav"
+}
+
+"bastille.FiringAtAlien5"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_thereshundredsofthem.wav"
+}
+
+"bastille.FiringAtAlien6"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_thisisit.wav"
+}
+
+"bastille.FiringAtAlien7"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_watchout.wav"
+}
+
+"bastille.FollowMe0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_followme.wav"
+}
+
+"bastille.FollowMe1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_getamoveon.wav"
+}
+
+"bastille.FollowMe2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_gogogo.wav"
+}
+
+"bastille.FollowMe3"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_hurry.wav"
+}
+
+"bastille.FollowMe4"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_hurryhurry2.wav"
+}
+
+"bastille.FollowMe5"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_hurryup4.wav"
+}
+
+"bastille.FollowMe6"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_letsmove.wav"
+}
+
+"bastille.FollowMe7"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_moveit.wav"
+}
+
+"bastille.FollowMe8"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_moveitmoveitthiswholeplaceisgettingtohell.wav"
+}
+
+"bastille.FollowMe9"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_moveitthiswholeplaceisgettingtohell.wav"
+}
+
+"bastille.FollowMe10"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_wegotajobtodo.wav"
+}
+
+"bastille.HoldPosition0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_holdposition.wav"
+}
+
+"bastille.HoldPosition1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_waithere.wav"
+}
+
+"bastille.NeedAmmo0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_ineedammo1.wav"
+}
+
+"bastille.NeedAmmo1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_ineedsomeammo.wav"
+}
+
+"bastille.NeedAmmo2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_needammo.wav"
+}
+
+"bastille.NoAmmo0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_damnnoammodamn.wav"
+}
+
+"bastille.NoAmmo1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_imoutofammo.wav"
+}
+
+"bastille.NoAmmo2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_noammo.wav"
+}
+
+"bastille.NoAmmo3"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_noammo2.wav"
+}
+
+"bastille.NoAmmo4"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_outofammo.wav"
+}
+
+"bastille.Medic0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_medic.wav"
+}
+
+"bastille.Medic1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_medicmedic.wav"
+}
+
+"bastille.Medic2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_needamedic.wav"
+}
+
+"bastille.Misc0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_doyouknowwhatifeelbetternow.wav"
+}
+
+"bastille.Misc1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_doyouknowwhatifeelbetternowwithoutthesebastardsonourback.wav"
+}
+
+"bastille.Misc2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_imhappyorimstartingtogetannoyed.wav"
+}
+
+"bastille.Misc3"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_sogetupgetsomerestyourenotdead.wav"
+}
+
+"bastille.Misc4"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_sostandupdidyouhaveaniceholidayyourenotdead.wav"
+}
+
+"bastille.Misc5"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_sotheyrealldeadifeellikethegoodprincewherestheprincess.wav"
+}
+
+"bastille.Misc6"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_sowhatdowedonowtheyrealldead.wav"
+}
+
+"bastille.Misc7"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_theyregettingcloser1.wav"
+}
+
+"bastille.Misc8"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_theyreinsidetheperimeter5.wav"
+}
+
+"bastille.Misc9"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_thisdoorsbeensealedshut3.wav"
+}
+
+"bastille.Misc10"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_wellthisplaceislikeacastlenow.wav"
+}
+
+"bastille.Misc11"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_yourestartingtobeannoying.wav"
+}
+
+"bastille.Reloading0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_lockandload.wav"
+}
+
+"bastille.Reloading1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_lockandload2.wav"
+}
+
+"bastille.Reloading2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_reload.wav"
+}
+
+"bastille.Reloading3"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_reload1.wav"
+}
+
+"bastille.Reloading4"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_reload2.wav"
+}
+
+"bastille.Reloading5"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_reload3.wav"
+}
+
+"bastille.Reloading6"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_reload4.wav"
+}
+
+"bastille.Reloading7"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_reloadcovermecoverme.wav"
+}
+
+"bastille.Reloading8"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_reloading.wav"
+}
+
+"bastille.Reloading9"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_reloadingreloading.wav"
+}
+
+"bastille.SentryInPlace0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_sentryassembled.wav"
+}
+
+"bastille.SentryInPlace1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_sentryinplace.wav"
+}
+
+"bastille.SentryInPlace2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_sentryonline.wav"
+}
+
+"bastille.Ammo0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_ammo.wav"
+}
+
+"bastille.Medkit0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\BastilleMeds1.wav"
+}
+
+"bastille.Thanks0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_merci.wav"
+}
+
+"bastille.Thanks1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_thanks.wav"
+}
+
+"bastille.Question0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_hehh.wav"
+}
+
+"bastille.Question1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_what.wav"
+}
+
+"bastille.Question2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_whatisit.wav"
+}
+
+"bastille.CallSarge0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_heysarge.wav"
+}
+
+"bastille.CallSarge1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_sarge.wav"
+}
+
+"bastille.CallJaeger0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_heyjaeger.wav"
+}
+
+"bastille.CallJaeger1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_jaeger.wav"
+}
+
+"bastille.CallJaeger2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_jaeger2.wav"
+}
+
+"bastille.CallWildcat0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_heywildcat.wav"
+}
+
+"bastille.CallWildcat1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_wildcat.wav"
+}
+
+"bastille.CallWolfe0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_heywolfe.wav"
+}
+
+"bastille.CallWolfe1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_wolfe.wav"
+}
+
+"bastille.CallFaith0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_faith.wav"
+}
+
+"bastille.CallFaith1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_heyfaith.wav"
+}
+
+"bastille.CallCrash0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_crash.wav"
+}
+
+"bastille.CallCrash1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_heycrash.wav"
+}
+
+"bastille.CallFlynn0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_flynn.wav"
+}
+
+"bastille.CallFlynn1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_heyflynn.wav"
+}
+
+"bastille.CallVegas0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_heyvegas.wav"
+}
+
+"bastille.CallVegas1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_vegas.wav"
+}
+
+"bastille.SuppliesAmmo0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_ahgoodsomeammo.wav"
+}
+
+"bastille.SuppliesAmmo1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_ahgoodsomesupplies.wav"
+}
+
+"bastille.SuppliesAmmo2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_ahsomesuppliesitfeelslikechristmas.wav"
+}
+
+"bastille.SuppliesAmmo3"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_hahjustwhatweneed02.wav"
+}
+
+"bastille.SuppliesAmmo4"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_thankgodasupplyroom03.wav"
+}
+
+"bastille.Supplies0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_ahgoodsomesupplies.wav"
+}
+
+"bastille.Supplies1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_ahsomesuppliesitfeelslikechristmas.wav"
+}
+
+"bastille.Supplies2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_hahjustwhatweneed02.wav"
+}
+
+"bastille.Supplies3"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_thankgodasupplyroom03.wav"
+}
+
+"bastille.LockedTerminalCrash0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_accessdeniedcrashcanyougetin.wav"
+}
+
+"bastille.LockedTerminalFlynn0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_accessdeniedflynncanyougetin.wav"
+}
+
+"bastille.LockedTerminalVegas0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_accessdeniedvegascanyougetin.wav"
+}
+
+"bastille.LockedTerminal0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_accessdenied.wav"
+}
+
+"bastille.LockedTerminal1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_hmmlockedterminal1.wav"
+}
+
+"bastille.LockedTerminal2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_itslocked.wav"
+}
+
+"bastille.LockedTerminal3"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_thisterminalissecure.wav"
+}
+
+"bastille.LockedTerminal4"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_thisterminalissecure4.wav"
+}
+
+"bastille.HoldingPosition0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_coveringarea.wav"
+}
+
+"bastille.HoldingPosition1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_holdingposition.wav"
+}
+
+"bastille.HoldingPosition2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_inposition.wav"
+}
+
+"bastille.HoldingPosition3"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_securingarea.wav"
+}
+
+"bastille.HoldingNorth0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_coveringnorth.wav"
+}
+
+"bastille.HoldingNorth1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_coveringnorthside.wav"
+}
+
+"bastille.HoldingNorth2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_ivegotthenorth.wav"
+}
+
+"bastille.HoldingNorth3"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_northsideinposition.wav"
+}
+
+"bastille.HoldingSouth0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_coveringsouth.wav"
+}
+
+"bastille.HoldingSouth1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_coveringsouthside.wav"
+}
+
+"bastille.HoldingSouth2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_ivegotthesouth.wav"
+}
+
+"bastille.HoldingSouth3"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_southsideinposition.wav"
+}
+
+"bastille.HoldingEast0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_coveringeast.wav"
+}
+
+"bastille.HoldingEast1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_coveringeastside.wav"
+}
+
+"bastille.HoldingEast2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_eastsideinposition.wav"
+}
+
+"bastille.HoldingEast3"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_ivegottheeast.wav"
+}
+
+"bastille.HoldingWest0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_coveringwest.wav"
+}
+
+"bastille.HoldingWest1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_coveringwestside.wav"
+}
+
+"bastille.HoldingWest2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_ivegotthewest.wav"
+}
+
+"bastille.HoldingWest3"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_westsideinposition.wav"
+}
+
+"bastille.GotPoint0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_bastilletakingpoint.wav"
+}
+
+"bastille.GotPoint1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_takingpoint.wav"
+}
+
+"bastille.GotRear0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_bastilletakingrearguard.wav"
+}
+
+"bastille.GotRear1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_illcovertheback.wav"
+}
+
+"bastille.GotRear2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_ivegottheback.wav"
+}
+
+"bastille.RequestSealDoor0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_quicksealitup.wav"
+}
+
+"bastille.RequestSealDoor1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_sealthedoor.wav"
+}
+
+"bastille.RequestSealDoor2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_securingdoor.wav"
+}
+
+"bastille.RequestSealDoor3"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_someonesecurethedoor.wav"
+}
+
+"bastille.RequestCutDoor0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_cutthedooropen.wav"
+}
+
+"bastille.RequestCutDoor1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_cutthrough.wav"
+}
+
+"bastille.RequestCutDoor2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_getthisdooropen.wav"
+}
+
+"bastille.RequestShootDoor0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_allweaponsblastitdown.wav"
+}
+
+"bastille.RequestShootDoor1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_getthisdooropen.wav"
+}
+
+"bastille.RequestShootDoor2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_shootthedoordown.wav"
+}
+
+"bastille.RequestShootDoor3"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_wecanblastitdown.wav"
+}
+
+"bastille.CuttingDoor0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_bastillecuttingdoor.wav"
+}
+
+"bastille.CuttingDoor1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_bastillecuttingthrough.wav"
+}
+
+"bastille.CuttingDoor2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_cuttingdoorisjustlikesurgery.wav"
+}
+
+"bastille.SealingDoor0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_bastillesealingdoor.wav"
+}
+
+"bastille.SealingDoor1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_sealingdoor.wav"
+}
+
+"bastille.Biomass0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_biomassihopeyoulikethesmellofburningalienflesh.wav"
+}
+
+"bastille.Biomass1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_swarmbiomassburnitout.wav"
+}
+
+"bastille.Biomass2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_swarmbiomassfascinating.wav"
+}
+
+"bastille.TimeToLeave0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_objectivescompleteletsgetoutofhere.wav"
+}
+
+"bastille.TimeToLeave1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_timetoleaveandnotamomenttoosoon.wav"
+}
+
+"bastille.TimeToLeave2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_timetomakeanexit.wav"
+}
+
+"bastille.WatchOut0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_careful.wav"
+}
+
+"bastille.WatchOut1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_lookout.wav"
+}
+
+"bastille.WatchOut2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_lookout2.wav"
+}
+
+"bastille.WatchOut3"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_watchout2.wav"
+}
+
+"bastille.Shieldbug0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_ashieldbug.wav"
+}
+
+"bastille.Shieldbug1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_putainashieldbug.wav"
+}
+
+"bastille.Shieldbug2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_wevegotabigone.wav"
+}
+
+"bastille.ShieldbugHint0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_getbehindit.wav"
+}
+
+"bastille.ShieldbugHint1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_readygrenades.wav"
+}
+
+"bastille.ShieldbugHint2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_shootitintheback.wav"
+}
+
+"bastille.Parasite0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_carefulaparasite.wav"
+}
+
+"bastille.Parasite1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_lookoutparasite.wav"
+}
+
+"bastille.Parasite2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_parasite.wav"
+}
+
+"bastille.BeenInfested0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_arghgetitoff.wav"
+}
+
+"bastille.BeenInfested1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_getitoff.wav"
+}
+
+"bastille.BeenInfested2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_parasiteonme.wav"
+}
+
+"bastille.SwarmEggs0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_carefulswarmeggs.wav"
+}
+
+"bastille.SwarmEggs1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_swarmeggs.wav"
+}
+
+"bastille.SwarmEggs2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_swarmeggstakethemout.wav"
+}
+
+"bastille.Grenade0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_clear.wav"
+}
+
+"bastille.Grenade1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_fireinthehole.wav"
+}
+
+"bastille.Grenade2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_grenade.wav"
+}
+
+"bastille.AlienTooClose0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_bastardpieceofshit.wav"
+}
+
+"bastille.AlienTooClose1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_damnthisisit3.wav"
+}
+
+"bastille.AlienTooClose2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_getitoff2.wav"
+}
+
+"bastille.AlienTooClose3"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_getitoffme.wav"
+}
+
+"bastille.AlienTooClose4"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_killit.wav"
+}
+
+"bastille.AlienTooClose5"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_onme.wav"
+}
+
+"bastille.MadFiring0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_bastillecussing.wav"
+}
+
+"bastille.MadFiring1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_eatthisalienscum.wav"
+}
+
+"bastille.MadFiring2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_howdyoulikeatasteofthis.wav"
+}
+
+"bastille.BreachedDoor0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_theyrethrough.wav"
+}
+
+"bastille.BreachedDoor1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_theyrethroughthedoor.wav"
+}
+
+"bastille.BreachedDoor2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_theyvebreachedthedoor.wav"
+}
+
+"bastille.BreachedDoor3"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_theyvebreachedthedoor2.wav"
+}
+
+"bastille.MarineDown0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_marinedown.wav"
+}
+
+"bastille.SmallPain0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_pain1.wav"
+}
+
+"bastille.SmallPain1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_pain2.wav"
+}
+
+"bastille.SmallPain2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_pain3.wav"
+}
+
+"bastille.SmallPain3"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_pain4.wav"
+}
+
+"bastille.SmallPain4"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_pain5.wav"
+}
+
+"bastille.LargePain0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_heavypain1.wav"
+}
+
+"bastille.LargePain1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_heavypain2.wav"
+}
+
+"bastille.LargePain2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_heavypain3.wav"
+}
+
+"bastille.LargePain3"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_heavypain4.wav"
+}
+
+"bastille.Dead0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_death1.wav"
+}
+
+"bastille.Dead1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_death1.wav"
+}
+
+"bastille.OnFire0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_bastilleonfire.wav"
+}
+
+"bastille.Healing0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_applypresurehereitllstopthebleeding.wav"
+}
+
+"bastille.Healing1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_bemorecarefulnexttime.wav"
+}
+
+"bastille.Healing2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_dontworrythisllhealjustfine.wav"
+}
+
+"bastille.Healing3"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_french003_get_up_youre_not_dead.wav"
+}
+
+"bastille.Healing4"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_french013_that_should_do_till_next_time.wav"
+}
+
+"bastille.Healing5"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_french014_get_going_keep_it_up_for_another_week.wav"
+}
+
+"bastille.Healing6"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_french016_ok_youre_not_dead_yet.wav"
+}
+
+"bastille.Healing7"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_french076_well_this_little_scratch_aint_that_bad.wav"
+}
+
+"bastille.Healing8"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_holdstill.wav"
+}
+
+"bastille.Healing9"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_maybeyouredeadbutsinceyouhearme.wav"
+}
+
+"bastille.Healing10"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_thatshouldhelp.wav"
+}
+
+"bastille.Healing11"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_there.wav"
+}
+
+"bastille.Healing12"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_thereyougomarine.wav"
+}
+
+"bastille.Healing13"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_whyyoushouldbedeadbutyourenot.wav"
+}
+
+"bastille.Healing14"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_youllliveprobably1.wav"
+}
+
+"bastille.Healing15"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_youllsurviveihope.wav"
+}
+
+"bastille.Healing16"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_yourenotdead.wav"
+}
+
+"bastille.Healing17"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_yourenotdeadbastard.wav"
+}
+
+"bastille.Healing18"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_yourestillalivewellithink.wav"
+}
+
+"bastille.LowOnMeds0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_imlowonmedicalsupplies4.wav"
+}
+
+"bastille.NoMeds0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_imoutofmeds.wav"
+}
+
+"bastille.NoMeds1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_nomoremeds4.wav"
+}
+
+"bastille.NoMeds2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_nomoremedsstaysharpmesami.wav"
+}
+
+"bastille.NoMeds3"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_outofmeds.wav"
+}
+
+"bastille.NoMeds4"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_outofmedswatchyourselves.wav"
+}
+
+"bastille.NoMeds5"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_thatsitnomoremeds.wav"
+}
+
+"bastille.NoMeds6"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_thatsitnomoremeds2.wav"
+}
+
+"bastille.ActivateStims0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_activatestims.wav"
+}
+
+"bastille.ActivateStims1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_stimnow.wav"
+}
+
+"bastille.Compliments0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_goodkillmonami.wav"
+}
+
+"bastille.Compliments1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_leavesomeformeeh.wav"
+}
+
+"bastille.Compliments2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_niceshot.wav"
+}
+
+"bastille.Selection0"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_bastilleready.wav"
+}
+
+"bastille.Selection1"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_commander1.wav"
+}
+
+"bastille.Selection2"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_commander4.wav"
+}
+
+"bastille.Selection3"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_medicreporting.wav"
+}
+
+"bastille.Selection4"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_95dB"
+	"wave"   "vo\bastille\bastille_reporting.wav"
+}
+
