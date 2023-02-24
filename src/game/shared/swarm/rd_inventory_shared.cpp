@@ -1447,7 +1447,7 @@ void CRD_ItemInstance::SetFromInstance( const ReactiveDropInventory::ItemInstanc
 	if ( !pDef )
 		return;
 
-	Assert( pDef->CompressedDynamicProps.Count() + ( pDef->AccessoryTag.IsEmpty() ? 0 : RD_ITEM_MAX_ACCESSORIES ) <= RD_ITEM_MAX_COMPRESSED_DYNAMIC_PROPS );
+	Assert( pDef->CompressedDynamicProps.Count() + ( pDef->AccessoryTag.IsEmpty() ? 0 : RD_ITEM_MAX_ACCESSORIES * RD_ITEM_MAX_COMPRESSED_DYNAMIC_PROPS_PER_ACCESSORY ) <= RD_ITEM_MAX_COMPRESSED_DYNAMIC_PROPS );
 
 	FOR_EACH_VEC( pDef->CompressedDynamicProps, i )
 	{
@@ -1469,6 +1469,7 @@ void CRD_ItemInstance::SetFromInstance( const ReactiveDropInventory::ItemInstanc
 		const CUtlStringList &accessories = instance.Tags[instance.Tags.Find( pDef->AccessoryTag )];
 		Assert( accessories.Count() <= RD_ITEM_MAX_ACCESSORIES );
 
+		int iCounterIndex = pDef->CompressedDynamicProps.Count();
 		FOR_EACH_VEC( accessories, i )
 		{
 			if ( i >= RD_ITEM_MAX_ACCESSORIES )
@@ -1478,14 +1479,16 @@ void CRD_ItemInstance::SetFromInstance( const ReactiveDropInventory::ItemInstanc
 			Assert( iAccessoryID < ( 1 << RD_ITEM_ACCESSORY_BITS ) );
 			m_iAccessory.Set( i, iAccessoryID );
 
-			char szProperty[255];
-			V_snprintf( szProperty, sizeof( szProperty ), "%s_%d", pDef->AccessoryTag.Get(), iAccessoryID );
-			Assert( !ReactiveDropInventory::DynamicPropertyAllowsArbitraryValues( szProperty ) );
-
-			if ( instance.DynamicProps.Defined( szProperty ) )
+			const ReactiveDropInventory::ItemDef_t *pAccessoryDef = ReactiveDropInventory::GetItemDef( iAccessoryID );
+			FOR_EACH_VEC( pAccessoryDef->CompressedDynamicProps, j )
 			{
-				const char *szPropValue = instance.DynamicProps[instance.DynamicProps.Find( szProperty )];
-				m_nCounter.Set( i + pDef->CompressedDynamicProps.Count(), strtoll( szPropValue, NULL, 10 ) );
+				Assert( !ReactiveDropInventory::DynamicPropertyAllowsArbitraryValues( pAccessoryDef->CompressedDynamicProps[j] ) );
+				if ( instance.DynamicProps.Defined( pAccessoryDef->CompressedDynamicProps[j] ) )
+				{
+					const char *szPropValue = instance.DynamicProps[instance.DynamicProps.Find( pAccessoryDef->CompressedDynamicProps[j] )];
+					m_nCounter.Set( i, strtoll( szPropValue, NULL, 10 ) );
+				}
+				iCounterIndex++;
 			}
 		}
 	}
@@ -1577,18 +1580,23 @@ void CRD_ItemInstance::FormatDescription( wchar_t *wszBuf, size_t sizeOfBufferIn
 
 		if ( !pDef->AccessoryTag.IsEmpty() )
 		{
+			int iCounterIndex = pDef->CompressedDynamicProps.Count();
 			for ( int j = 0; j < RD_ITEM_MAX_ACCESSORIES; j++ )
 			{
 				if ( m_iAccessory[j] == 0 )
 					continue;
 
-				char szAccessoryProp[128]{};
-				V_snprintf( szAccessoryProp, sizeof( szAccessoryProp ), "%s_%d", pDef->AccessoryTag.Get(), m_iAccessory[j] );
+				const ReactiveDropInventory::ItemDef_t *pAccessoryDef = ReactiveDropInventory::GetItemDef( m_iAccessory[j] );
 
-				if ( !V_strcmp( szToken, szAccessoryProp ) )
+				FOR_EACH_VEC( pAccessoryDef->CompressedDynamicProps, k )
 				{
-					V_wcsncpy( wszReplacement, UTIL_RD_CommaNumber( m_nCounter[pDef->CompressedDynamicProps.Count() + j] ), sizeof( wszReplacement ) );
-					break;
+					if ( !V_strcmp( pAccessoryDef->CompressedDynamicProps[k], szToken ) )
+					{
+						V_wcsncpy( wszReplacement, UTIL_RD_CommaNumber( m_nCounter[iCounterIndex] ), sizeof( wszReplacement ) );
+						break;
+					}
+
+					iCounterIndex++;
 				}
 			}
 		}
