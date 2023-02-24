@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "3807"
+	"mapversion" "3808"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -86,7 +86,7 @@ viewsettings
 world
 {
 	"id" "394754"
-	"mapversion" "3807"
+	"mapversion" "3808"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -42724,6 +42724,7 @@ entity
 	"autoopen" "0"
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
+	"CustomMaxHealth" "1800"
 	"disableshadows" "1"
 	"distance" "125"
 	"DoBreachedShout" "1"
@@ -53095,6 +53096,7 @@ entity
 		"OnComputerHackCompleted" "insane_ranger_spawnStopSpawning8-1"
 		"OnComputerHackStarted" "insane_ranger_spawnStartSpawning0-1"
 		"OnComputerHackCompleted" "marker_exitEnable14-1"
+		"OnComputerDataDownloaded" "relay_enableliftTrigger0-1"
 	}
 	solid
 	{
@@ -82149,6 +82151,7 @@ entity
 	"autoopen" "0"
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
+	"CustomMaxHealth" "1800"
 	"disableshadows" "1"
 	"distance" "125"
 	"DoBreachedShout" "1"
@@ -82294,6 +82297,7 @@ entity
 	"autoopen" "0"
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
+	"CustomMaxHealth" "1800"
 	"disableshadows" "1"
 	"distance" "125"
 	"DoBreachedShout" "1"
@@ -180369,13 +180373,54 @@ entity
 		"logicalpos" "[0 0]"
 	}
 }
+entity
+{
+	"id" "3459025"
+	"classname" "logic_auto"
+	"spawnflags" "1"
+	connections
+	{
+		"OnMapSpawn" "trigger_lift_buttonPowerOff0-1"
+		"OnMapSpawn" "lift_buttonpanelSkin00-1"
+		"OnMapSpawn" "trigger_lift_marine_checkRunScriptCodeself.SetOrigin( self.GetOrigin() + Vector( 0, 0, 1000 ) )0-1"
+	}
+	"origin" "-6468.29 1232.9 1038"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "3459027"
+	"classname" "logic_relay"
+	"StartDisabled" "0"
+	"targetname" "relay_enablelift"
+	connections
+	{
+		"OnTrigger" "trigger_lift_marine_checkRunScriptCodeself.SetOrigin( self.GetOrigin() + Vector( 0, 0, -1000 ) )01"
+		"OnTrigger" "lift_buttonpanelSkin101"
+		"OnTrigger" "trigger_lift_buttonPowerOn01"
+	}
+	"origin" "-6444.38 1233.4 1038"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
 cameras
 {
 	"activecamera" "0"
 	camera
 	{
-		"position" "[-7855.79 -9177.44 1252.05]"
-		"look" "[-7675.9 -9036.89 1111.61]"
+		"position" "[-6452.52 1206.05 1135.07]"
+		"look" "[-6469.8 1279.72 877.949]"
 	}
 }
 cordons
