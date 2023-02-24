@@ -56,10 +56,10 @@ public:
 	vgui::Panel	*m_pTitleBGLine;
 	CASW_Model_Panel	*m_pItemModelPanel;
 	// == MANAGED_MEMBER_POINTERS_END ==
+	vgui::Panel *m_pIconBackground;
 	vgui::ImagePanel *m_pPromotionIcon;
 	vgui::Label *m_pPromotionLabel;
 	vgui::RichText *m_pItemDescription;
-	Color m_DefaultBackgroundColor;
 	Color m_DefaultTitleColor;
 
 	bool m_bPromotionTooltip;

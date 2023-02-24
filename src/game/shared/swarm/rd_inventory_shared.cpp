@@ -1049,7 +1049,7 @@ namespace ReactiveDropInventory
 		}
 		else
 		{
-			pItemDef->BackgroundColor = Color( 16, 39, 63, 200 );
+			pItemDef->BackgroundColor = Color( 41, 41, 41, 0 );
 		}
 		FETCH_PROPERTY( "name_color" );
 		if ( *szBuf.Base() )
@@ -1057,10 +1057,12 @@ namespace ReactiveDropInventory
 			Assert( V_strlen( szBuf.Base() ) == 6 );
 			unsigned iColor = strtoul( szBuf.Base(), NULL, 16 );
 			pItemDef->NameColor = Color( iColor >> 16, ( iColor >> 8 ) & 255, iColor & 255, 255 );
+			pItemDef->HasBorder = true;
 		}
 		else
 		{
 			pItemDef->NameColor = Color( 178, 178, 178, 255 );
+			pItemDef->HasBorder = false;
 		}
 		
 		V_snprintf( szKey, sizeof( szKey ), "description_%s", szLang );

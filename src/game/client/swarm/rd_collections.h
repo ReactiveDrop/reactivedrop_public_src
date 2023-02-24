@@ -177,6 +177,7 @@ public:
 	virtual void OnThink() override;
 	virtual void DisplayEntry( TGD_Entry *pEntry ) override;
 
+	vgui::Panel *m_pIconBackground;
 	vgui::ImagePanel *m_pIcon;
 	vgui::RichText *m_pTitle;
 	vgui::RichText *m_pDescription;
@@ -193,6 +194,7 @@ public:
 
 	CRD_Collection_Tab_Inventory *GetTab();
 
+	vgui::Panel *m_pIconBackground;
 	vgui::ImagePanel *m_pIcon;
 	vgui::ImagePanel *m_pEquippedMarker;
 

@@ -155,6 +155,7 @@ CRD_Collection_Details_Inventory::CRD_Collection_Details_Inventory( CRD_Collecti
 {
 	m_pTitle = new vgui::RichText( this, "Title" );
 	m_pDescription = new vgui::RichText( this, "Description" );
+	m_pIconBackground = new vgui::Panel( this, "IconBackground" );
 	m_pIcon = new vgui::ImagePanel( this, "Icon" );
 
 	m_pTitle->SetCursor( vgui::dc_arrow );
@@ -207,16 +208,14 @@ void CRD_Collection_Details_Inventory::DisplayEntry( TGD_Entry *pEntry )
 		return;
 	}
 
-	CRD_Collection_Tab_Inventory *pTab = assert_cast< CRD_Collection_Tab_Inventory * >( m_pParent );
+	m_pIconBackground->SetBgColor( pDef->BackgroundColor );
+	m_pIconBackground->SetPaintBackgroundEnabled( true );
+	m_pIconBackground->SetPaintBackgroundType( 0 );
 
 	m_pIcon->SetVisible( true );
 	m_pIcon->SetImage( pDef->Icon );
 
 	wchar_t wszBuf[2048];
-
-	SetBgColor( pDef->BackgroundColor );
-	SetPaintBackgroundEnabled( true );
-	SetPaintBackgroundType( 2 );
 
 	V_UTF8ToUnicode( pDef->Name, wszBuf, sizeof( wszBuf ) );
 	m_pTitle->InsertColorChange( pDef->NameColor );
@@ -228,6 +227,8 @@ void CRD_Collection_Details_Inventory::DisplayEntry( TGD_Entry *pEntry )
 	m_pTitle->InsertString( wszBuf );
 
 	pInvEntry->m_Details.FormatDescription( m_pDescription );
+
+	CRD_Collection_Tab_Inventory *pTab = assert_cast< CRD_Collection_Tab_Inventory * >( m_pParent );
 
 	ConVarRef equipID( VarArgs( "rd_equipped_%s", pTab->m_szSlot ) );
 	if ( pInvEntry->m_Details.ItemID == strtoull( equipID.GetString(), NULL, 10 ) )
@@ -244,6 +245,7 @@ CRD_Collection_Entry_Inventory::CRD_Collection_Entry_Inventory( TGD_Grid *parent
 	: BaseClass( parent, panelName ),
 	m_Details{ hResult, index }
 {
+	m_pIconBackground = new vgui::Panel( this, "IconBackground" );
 	m_pIcon = new vgui::ImagePanel( this, "Icon" );
 	m_pEquippedMarker = new vgui::ImagePanel( this, "EquippedMarker" );
 
@@ -254,7 +256,12 @@ void CRD_Collection_Entry_Inventory::ApplySchemeSettings( vgui::IScheme *pScheme
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
-	m_pIcon->SetImage( ReactiveDropInventory::GetItemDef( m_Details.ItemDefID )->Icon );
+	const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( m_Details.ItemDefID );
+
+	m_pIconBackground->SetBgColor( pDef->BackgroundColor );
+	m_pIconBackground->SetPaintBackgroundEnabled( true );
+	m_pIconBackground->SetPaintBackgroundType( 2 );
+	m_pIcon->SetImage( pDef->Icon );
 
 	ConVarRef equipID( VarArgs( "rd_equipped_%s", GetTab()->m_szSlot ) );
 	Assert( equipID.IsValid() );

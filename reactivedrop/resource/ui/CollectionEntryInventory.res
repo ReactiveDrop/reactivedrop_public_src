@@ -46,6 +46,16 @@
 		"visible"		"0"
 	}
 
+	"IconBackground"
+	{
+		"fieldName"		"IconBackground"
+		"xpos"		"2"
+		"ypos"		"3"
+		"wide"		"86"
+		"tall"		"86"
+		"ControlName"		"Panel"
+	}
+
 	"Icon"
 	{
 		"fieldName"		"Icon"

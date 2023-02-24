@@ -45,6 +45,7 @@ CNB_Lobby_Tooltip::CNB_Lobby_Tooltip( vgui::Panel *parent, const char *name ) : 
 	m_pTitleBGLine = new vgui::Panel( this, "TitleBGLine" );
 	m_pItemModelPanel = new CASW_Model_Panel( this, "ItemModelPanel" );
 	// == MANAGED_MEMBER_CREATION_END ==
+	m_pIconBackground = new vgui::Panel( this, "IconBackground" );
 	m_pPromotionIcon = new vgui::ImagePanel( this, "PromotionIcon" );
 	m_pPromotionLabel = new vgui::Label( this, "PromotionLabel", "" );
 	m_pItemDescription = new vgui::RichText( this, "ItemDescription" );
@@ -76,7 +77,6 @@ void CNB_Lobby_Tooltip::ApplySchemeSettings( vgui::IScheme *pScheme )
 
 	m_pItemDescription->SetCursor( vgui::dc_arrow );
 
-	m_DefaultBackgroundColor = m_pBackgroundInner->GetBgColor();
 	m_DefaultTitleColor = m_pTitle->GetFgColor();
 }
 
@@ -188,12 +188,15 @@ void CNB_Lobby_Tooltip::OnTick()
 				return;
 			}
 
-			m_pBackgroundInner->SetBgColor( pDef->BackgroundColor );
 			m_pTitle->SetFgColor( pDef->NameColor );
 
 			wchar_t wszBuf[2048];
 			V_UTF8ToUnicode( pDef->BriefingName, wszBuf, sizeof( wszBuf ) );
 			m_pTitle->SetText( wszBuf );
+
+			m_pIconBackground->SetBgColor( pDef->BackgroundColor );
+			m_pIconBackground->SetPaintBackgroundEnabled( true );
+			m_pIconBackground->SetPaintBackgroundType( 2 );
 
 			m_pPromotionIcon->SetImage( "" );
 			m_pPromotionIcon->SetImage( pDef->Icon );
@@ -233,9 +236,9 @@ void CNB_Lobby_Tooltip::OnTick()
 
 	if ( m_bPromotionTooltip )
 	{
-		m_pBackgroundInner->SetBgColor( m_DefaultBackgroundColor );
 		m_pTitle->SetFgColor( m_DefaultTitleColor );
 		m_pTitle->SetVisible( true );
+		m_pIconBackground->SetPaintBackgroundEnabled( false );
 		m_pPromotionIcon->SetVisible( true );
 		m_pPromotionLabel->SetVisible( true );
 
@@ -279,7 +282,7 @@ void CNB_Lobby_Tooltip::OnTick()
 		CASW_Marine_Profile *pProfile = Briefing()->GetMarineProfile( m_nLobbySlot );
 		if ( pProfile )
 		{
-			m_pBackgroundInner->SetBgColor( m_DefaultBackgroundColor );
+			m_pIconBackground->SetPaintBackgroundEnabled( false );
 			m_pTitle->SetFgColor( m_DefaultTitleColor );
 			m_pTitle->SetVisible( true );
 			m_pSkillPanel0->SetVisible( true );
@@ -319,7 +322,7 @@ void CNB_Lobby_Tooltip::OnTick()
 	if ( !pWeaponInfo )
 		return;
 
-	m_pBackgroundInner->SetBgColor( m_DefaultBackgroundColor );
+	m_pIconBackground->SetPaintBackgroundEnabled( false );
 	m_pTitle->SetFgColor( m_DefaultTitleColor );
 	m_pTitle->SetVisible( true );
 

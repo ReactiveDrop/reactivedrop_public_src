@@ -51,6 +51,7 @@ namespace ReactiveDropInventory
 		Color BackgroundColor;
 		Color NameColor;
 		bool AfterDescriptionOnlyMultiStack : 1;
+		bool HasBorder : 1;
 #ifdef CLIENT_DLL
 		vgui::IImage *Icon{};
 		vgui::IImage *IconSmall{};
