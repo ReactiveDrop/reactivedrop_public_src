@@ -9,7 +9,7 @@
 #include "tier0/memdbgon.h"
 
 
-extern ConVar rd_briefing_item_details_color1;
+ConVar rd_briefing_item_details_displaytype( "rd_briefing_item_details_displaytype", "170 170 170 255" );
 
 CRD_Collection_Tab_Inventory::CRD_Collection_Tab_Inventory( TabbedGridDetails *parent, const char *szLabel, const char *szSlot )
 	: BaseClass( parent, szLabel )
@@ -189,6 +189,7 @@ void CRD_Collection_Details_Inventory::OnThink()
 
 void CRD_Collection_Details_Inventory::DisplayEntry( TGD_Entry *pEntry )
 {
+	SetPaintBackgroundEnabled( false );
 	m_pIcon->SetVisible( false );
 	m_pTitle->SetText( L"" );
 	m_pDescription->SetText( L"" );
@@ -213,13 +214,17 @@ void CRD_Collection_Details_Inventory::DisplayEntry( TGD_Entry *pEntry )
 
 	wchar_t wszBuf[2048];
 
+	SetBgColor( pDef->BackgroundColor );
+	SetPaintBackgroundEnabled( true );
+	SetPaintBackgroundType( 2 );
+
 	V_UTF8ToUnicode( pDef->Name, wszBuf, sizeof( wszBuf ) );
-	m_pTitle->InsertColorChange( Color( 255, 255, 255, 255 ) );
+	m_pTitle->InsertColorChange( pDef->NameColor );
 	m_pTitle->InsertString( wszBuf );
 	m_pTitle->InsertString( L"\n" );
 
 	V_UTF8ToUnicode( pDef->DisplayType, wszBuf, sizeof( wszBuf ) );
-	m_pTitle->InsertColorChange( rd_briefing_item_details_color1.GetColor() );
+	m_pTitle->InsertColorChange( rd_briefing_item_details_displaytype.GetColor() );
 	m_pTitle->InsertString( wszBuf );
 
 	pInvEntry->m_Details.FormatDescription( m_pDescription );

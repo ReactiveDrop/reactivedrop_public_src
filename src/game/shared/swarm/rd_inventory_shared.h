@@ -48,6 +48,8 @@ namespace ReactiveDropInventory
 		CUtlString BeforeDescription;
 		CUtlString AfterDescription;
 		CUtlString AccessoryDescription;
+		Color BackgroundColor;
+		Color NameColor;
 		bool AfterDescriptionOnlyMultiStack : 1;
 #ifdef CLIENT_DLL
 		vgui::IImage *Icon{};

@@ -59,6 +59,8 @@ public:
 	vgui::ImagePanel *m_pPromotionIcon;
 	vgui::Label *m_pPromotionLabel;
 	vgui::RichText *m_pItemDescription;
+	Color m_DefaultBackgroundColor;
+	Color m_DefaultTitleColor;
 
 	bool m_bPromotionTooltip;
 	bool m_bMarineTooltip;

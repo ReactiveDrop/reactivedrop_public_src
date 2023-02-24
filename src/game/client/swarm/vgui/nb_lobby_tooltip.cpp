@@ -75,6 +75,9 @@ void CNB_Lobby_Tooltip::ApplySchemeSettings( vgui::IScheme *pScheme )
 	LoadControlSettings( "resource/ui/nb_lobby_tooltip.res" );
 
 	m_pItemDescription->SetCursor( vgui::dc_arrow );
+
+	m_DefaultBackgroundColor = m_pBackgroundInner->GetBgColor();
+	m_DefaultTitleColor = m_pTitle->GetFgColor();
 }
 
 void CNB_Lobby_Tooltip::PerformLayout()
@@ -93,8 +96,6 @@ void CNB_Lobby_Tooltip::PerformLayout()
 void CNB_Lobby_Tooltip::OnThink()
 {
 	BaseClass::OnThink();
-
-
 }
 
 void CNB_Lobby_Tooltip::ShowMarineTooltip( int nLobbySlot )
@@ -187,6 +188,9 @@ void CNB_Lobby_Tooltip::OnTick()
 				return;
 			}
 
+			m_pBackgroundInner->SetBgColor( pDef->BackgroundColor );
+			m_pTitle->SetFgColor( pDef->NameColor );
+
 			wchar_t wszBuf[2048];
 			V_UTF8ToUnicode( pDef->BriefingName, wszBuf, sizeof( wszBuf ) );
 			m_pTitle->SetText( wszBuf );
@@ -225,8 +229,12 @@ void CNB_Lobby_Tooltip::OnTick()
 		return;
 	}
 
+	m_iLastMedal = -1;
+
 	if ( m_bPromotionTooltip )
 	{
+		m_pBackgroundInner->SetBgColor( m_DefaultBackgroundColor );
+		m_pTitle->SetFgColor( m_DefaultTitleColor );
 		m_pTitle->SetVisible( true );
 		m_pPromotionIcon->SetVisible( true );
 		m_pPromotionLabel->SetVisible( true );
@@ -271,6 +279,8 @@ void CNB_Lobby_Tooltip::OnTick()
 		CASW_Marine_Profile *pProfile = Briefing()->GetMarineProfile( m_nLobbySlot );
 		if ( pProfile )
 		{
+			m_pBackgroundInner->SetBgColor( m_DefaultBackgroundColor );
+			m_pTitle->SetFgColor( m_DefaultTitleColor );
 			m_pTitle->SetVisible( true );
 			m_pSkillPanel0->SetVisible( true );
 			m_pSkillPanel1->SetVisible( true );
@@ -309,6 +319,8 @@ void CNB_Lobby_Tooltip::OnTick()
 	if ( !pWeaponInfo )
 		return;
 
+	m_pBackgroundInner->SetBgColor( m_DefaultBackgroundColor );
+	m_pTitle->SetFgColor( m_DefaultTitleColor );
 	m_pTitle->SetVisible( true );
 
 	bool bShowDetails = ( m_nInventorySlot != ASW_INVENTORY_SLOT_EXTRA && pWeaponInfo->m_flBaseDamage > 0 );

@@ -745,7 +745,7 @@ namespace ReactiveDropInventory
 		// This is an attrocious way of parsing an ISO 8601 timestamp, but it's fast and we trust the input data.
 		Assert( V_strlen( szTimestamp ) == 16 && szTimestamp[8] == 'T' && szTimestamp[15] == 'Z' );
 
-		struct tm timestamp {};
+		std::tm timestamp{};
 		Assert( V_isdigit( szTimestamp[0] ) && V_isdigit( szTimestamp[1] ) && V_isdigit( szTimestamp[2] ) && V_isdigit( szTimestamp[3] ) );
 		timestamp.tm_year = ( szTimestamp[0] - '0' ) * 1000 + ( szTimestamp[1] - '0' ) * 100 + ( szTimestamp[2] - '0' ) * 10 + ( szTimestamp[3] - '0' );
 		Assert( V_isdigit( szTimestamp[4] ) && V_isdigit( szTimestamp[5] ) );
@@ -1039,6 +1039,29 @@ namespace ReactiveDropInventory
 		FETCH_PROPERTY( szKey );
 		if ( *szBuf.Base() )
 			pItemDef->Name = szBuf.Base();
+
+		FETCH_PROPERTY( "background_color" );
+		if ( *szBuf.Base() )
+		{
+			Assert( V_strlen( szBuf.Base() ) == 6 );
+			unsigned iColor = strtoul( szBuf.Base(), NULL, 16 );
+			pItemDef->BackgroundColor = Color( iColor >> 16, ( iColor >> 8 ) & 255, iColor & 255, 200 );
+		}
+		else
+		{
+			pItemDef->BackgroundColor = Color( 16, 39, 63, 200 );
+		}
+		FETCH_PROPERTY( "name_color" );
+		if ( *szBuf.Base() )
+		{
+			Assert( V_strlen( szBuf.Base() ) == 6 );
+			unsigned iColor = strtoul( szBuf.Base(), NULL, 16 );
+			pItemDef->NameColor = Color( iColor >> 16, ( iColor >> 8 ) & 255, iColor & 255, 255 );
+		}
+		else
+		{
+			pItemDef->NameColor = Color( 178, 178, 178, 255 );
+		}
 		
 		V_snprintf( szKey, sizeof( szKey ), "description_%s", szLang );
 		FETCH_PROPERTY( "description" );
@@ -1435,7 +1458,7 @@ void CRD_ItemInstance::SetFromInstance( const ReactiveDropInventory::ItemInstanc
 		else if ( instance.DynamicProps.Defined( pDef->CompressedDynamicProps[i] ) )
 		{
 			const char *szPropValue = instance.DynamicProps[instance.DynamicProps.Find( pDef->CompressedDynamicProps[i] )];
-			m_nCounter.Set( i + pDef->CompressedDynamicProps.Count(), strtoll( szPropValue, NULL, 10 ) );
+			m_nCounter.Set( i, strtoll( szPropValue, NULL, 10 ) );
 		}
 	}
 
