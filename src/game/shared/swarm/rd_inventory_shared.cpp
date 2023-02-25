@@ -325,7 +325,8 @@ public:
 
 		uint32 nItemDefs{};
 		pInventory->GetItemDefinitionIDs( NULL, &nItemDefs );
-		CUtlVector<SteamItemDef_t> ItemDefIDs{ 0, int( nItemDefs ) };
+		CUtlVector<SteamItemDef_t> ItemDefIDs;
+		ItemDefIDs.AddMultipleToTail( nItemDefs );
 		pInventory->GetItemDefinitionIDs( ItemDefIDs.Base(), &nItemDefs );
 
 		ItemDefIDs.AddVectorToTail( m_HighOwnedInventoryDefIDs );
