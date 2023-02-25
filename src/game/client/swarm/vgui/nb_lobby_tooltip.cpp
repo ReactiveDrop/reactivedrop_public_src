@@ -145,6 +145,7 @@ void CNB_Lobby_Tooltip::OnTick()
 	SetVisible( true );
 
 	m_bValidTooltip = false;
+	m_pIconBackground->SetPaintBackgroundEnabled( false );
 	m_pTitle->SetVisible( false );
 	m_pSkillPanel0->SetVisible( false );
 	m_pSkillPanel1->SetVisible( false );
@@ -238,7 +239,6 @@ void CNB_Lobby_Tooltip::OnTick()
 	{
 		m_pTitle->SetFgColor( m_DefaultTitleColor );
 		m_pTitle->SetVisible( true );
-		m_pIconBackground->SetPaintBackgroundEnabled( false );
 		m_pPromotionIcon->SetVisible( true );
 		m_pPromotionLabel->SetVisible( true );
 
@@ -282,7 +282,6 @@ void CNB_Lobby_Tooltip::OnTick()
 		CASW_Marine_Profile *pProfile = Briefing()->GetMarineProfile( m_nLobbySlot );
 		if ( pProfile )
 		{
-			m_pIconBackground->SetPaintBackgroundEnabled( false );
 			m_pTitle->SetFgColor( m_DefaultTitleColor );
 			m_pTitle->SetVisible( true );
 			m_pSkillPanel0->SetVisible( true );
@@ -322,7 +321,6 @@ void CNB_Lobby_Tooltip::OnTick()
 	if ( !pWeaponInfo )
 		return;
 
-	m_pIconBackground->SetPaintBackgroundEnabled( false );
 	m_pTitle->SetFgColor( m_DefaultTitleColor );
 	m_pTitle->SetVisible( true );
 
