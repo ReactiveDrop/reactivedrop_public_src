@@ -7,6 +7,7 @@
 #include "asw_marine.h"
 #include "asw_gamerules.h"
 #include "asw_sentry_top.h"
+#include "asw_sentry_base.h"
 #include "props.h"
 #endif
 
@@ -38,6 +39,7 @@ const char *const g_szDeathCauseStatName[] =
 	"cause_of_death.zapped",
 	"cause_of_death.sentry_placed",
 	"cause_of_death.sentry_mapper",
+	"cause_of_death.sentry_explosion",
 	"cause_of_death.door",
 	"cause_of_death.explosive_barrel_self",
 	"cause_of_death.explosive_barrel",
@@ -301,6 +303,12 @@ RD_Cause_of_Death_t GetCauseOfDeath( CBaseEntity *pVictim, const CTakeDamageInfo
 	if ( pSentryTopAttacker )
 	{
 		return pSentryTopAttacker->GetSentryBase() ? DEATHCAUSE_SENTRY_PLACED : DEATHCAUSE_SENTRY_MAPPER;
+	}
+
+	CASW_Sentry_Base *pSentryExploded = dynamic_cast< CASW_Sentry_Base * >( info.GetInflictor() );
+	if ( pSentryExploded )
+	{
+		return DEATHCAUSE_SENTRY_EXPLOSION;
 	}
 
 	if ( info.GetInflictor() && info.GetInflictor()->Classify() == CLASS_ASW_DOOR )
