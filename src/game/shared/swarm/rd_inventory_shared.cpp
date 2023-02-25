@@ -1281,7 +1281,7 @@ namespace ReactiveDropInventory
 
 			if ( !s_pItemDefCache )
 			{
-				s_pItemDefCache = new KeyValues{ "SC" };
+				s_pItemDefCache = new KeyValues{ "IS" };
 				CUtlBuffer buf;
 				if ( !g_pFullFileSystem->ReadFile( "cfg/item_schema_cache.dat", "MOD", buf ) )
 				{
