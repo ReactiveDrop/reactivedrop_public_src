@@ -4,6 +4,8 @@
 #include <vgui/ILocalize.h>
 #include <vgui_controls/ImagePanel.h>
 #include <vgui_controls/RichText.h>
+#include "fmtstr.h"
+#include "filesystem.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -132,6 +134,11 @@ void CRD_Collection_Tab_Inventory::UpdateErrorMessage( TGD_Grid *pGrid )
 		{
 			pGrid->SetMessage( "#rd_collection_inventory_error_generic" );
 		}
+
+		if ( m_bUnavailable )
+		{
+			LoadCachedInventory();
+		}
 	}
 	else
 	{
@@ -147,6 +154,43 @@ void CRD_Collection_Tab_Inventory::UpdateErrorMessage( TGD_Grid *pGrid )
 		}
 
 		pGrid->SetMessage( L"" );
+	}
+}
+
+void CRD_Collection_Tab_Inventory::LoadCachedInventory()
+{
+	if ( !m_pGrid || m_pGrid->m_Entries.Count() != 0 )
+		return;
+
+	// no (offline) Steam API means we can't even do this
+	if ( !SteamUser() )
+		return;
+
+	if ( !g_pFullFileSystem )
+		return;
+
+	CFmtStr szCacheFileName{ "cfg/clienti_%llu.dat", SteamUser()->GetSteamID().ConvertToUint64() };
+	CUtlBuffer buf;
+
+	if ( !g_pFullFileSystem->ReadFile( szCacheFileName, "MOD", buf ) )
+		return;
+
+	KeyValues::AutoDelete pCache{ "IC" };
+
+	if ( !pCache->ReadAsBinary( buf ) )
+		return;
+
+	m_pGrid->SetMouseInputEnabled( false );
+
+	int i = 0;
+	FOR_EACH_SUBKEY( pCache, pItem )
+	{
+		const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( pItem->GetInt( "d" ) );
+		if ( !pDef || pDef->ItemSlot != m_szSlot )
+			continue;
+
+		m_pGrid->AddEntry( new CRD_Collection_Entry_Inventory( m_pGrid, "CollectionEntryInventory", pItem, i ) );
+		i++;
 	}
 }
 
@@ -244,6 +288,17 @@ void CRD_Collection_Details_Inventory::DisplayEntry( TGD_Entry *pEntry )
 CRD_Collection_Entry_Inventory::CRD_Collection_Entry_Inventory( TGD_Grid *parent, const char *panelName, SteamInventoryResult_t hResult, int index )
 	: BaseClass( parent, panelName ),
 	m_Details{ hResult, index }
+{
+	m_pIconBackground = new vgui::Panel( this, "IconBackground" );
+	m_pIcon = new vgui::ImagePanel( this, "Icon" );
+	m_pEquippedMarker = new vgui::ImagePanel( this, "EquippedMarker" );
+
+	m_Index = index;
+}
+
+CRD_Collection_Entry_Inventory::CRD_Collection_Entry_Inventory( TGD_Grid *parent, const char *panelName, KeyValues *pCached, int index )
+	: BaseClass( parent, panelName ),
+	m_Details{ pCached }
 {
 	m_pIconBackground = new vgui::Panel( this, "IconBackground" );
 	m_pIcon = new vgui::ImagePanel( this, "Icon" );

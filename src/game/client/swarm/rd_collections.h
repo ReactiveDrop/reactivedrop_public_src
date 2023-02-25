@@ -160,6 +160,7 @@ public:
 	virtual void OnThink() override;
 
 	void UpdateErrorMessage( TGD_Grid *pGrid );
+	void LoadCachedInventory();
 
 	const char *m_szSlot;
 	SteamInventoryResult_t m_hResult;
@@ -188,6 +189,7 @@ class CRD_Collection_Entry_Inventory : public TGD_Entry
 	DECLARE_CLASS_SIMPLE( CRD_Collection_Entry_Inventory, TGD_Entry );
 public:
 	CRD_Collection_Entry_Inventory( TGD_Grid *parent, const char *panelName, SteamInventoryResult_t hResult, int index );
+	CRD_Collection_Entry_Inventory( TGD_Grid *parent, const char *panelName, KeyValues *pCached, int index );
 
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 	virtual void ApplyEntry() override;

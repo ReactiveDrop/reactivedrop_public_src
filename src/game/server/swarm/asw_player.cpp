@@ -3380,17 +3380,18 @@ HSCRIPT CASW_Player::ScriptGetMarine()
 	return NULL;
 }
 
-void CASW_Player::OnEquippedItemLoaded( const char *szSlot, SteamInventoryResult_t hResult )
+void CASW_Player::ClearEquippedItemForSlot( const char *szSlot )
 {
 	if ( !V_strcmp( szSlot, "medal" ) )
 	{
-		if ( hResult == k_SteamInventoryResultInvalid )
-		{
-			m_EquippedMedal.GetForModify().Reset();
-		}
-		else
-		{
-			m_EquippedMedal.GetForModify().SetFromInstance( ReactiveDropInventory::ItemInstance_t{ hResult, 0 } );
-		}
+		m_EquippedMedal.GetForModify().Reset();
+	}
+}
+
+void CASW_Player::SetEquippedItemForSlot( const char *szSlot, const ReactiveDropInventory::ItemInstance_t &instance )
+{
+	if ( !V_strcmp( szSlot, "medal" ) )
+	{
+		m_EquippedMedal.GetForModify().SetFromInstance( instance );
 	}
 }

@@ -74,10 +74,13 @@ namespace ReactiveDropInventory
 		CUtlStringMap<CUtlStringList> Tags{};
 
 		explicit ItemInstance_t( SteamInventoryResult_t hResult, uint32 index );
+		explicit ItemInstance_t( KeyValues *pKV );
 		void FormatDescription( wchar_t *wszBuf, size_t sizeOfBufferInBytes, const CUtlString &szDesc ) const;
 #ifdef CLIENT_DLL
 		void FormatDescription( vgui::RichText *pRichText ) const;
 #endif
+		KeyValues *ToKeyValues() const;
+		void FromKeyValues( KeyValues *pKV );
 	};
 
 	const ItemDef_t *GetItemDef( SteamItemDef_t id );

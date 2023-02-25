@@ -270,7 +270,8 @@ public:
 	CNetworkVar( int, m_iNetworkedPromotion );
 	SteamInventoryResult_t m_EquippedItems[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS];
 	CNetworkVarEmbedded( CRD_ItemInstance, m_EquippedMedal );
-	void OnEquippedItemLoaded( const char *szSlot, SteamInventoryResult_t hResult );
+	void ClearEquippedItemForSlot( const char *szSlot );
+	void SetEquippedItemForSlot( const char *szSlot, const ReactiveDropInventory::ItemInstance_t &instance );
 
 	bool m_bHasAwardedXP;
 	bool m_bPendingSteamStats;

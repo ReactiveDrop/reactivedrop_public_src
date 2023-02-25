@@ -6795,11 +6795,49 @@ void CAlienSwarm::ClientCommandKeyValues( edict_t *pEntity, KeyValues *pKeyValue
 		{
 			if ( KeyValues *pSlot = pKeyValues->FindKey( ReactiveDropInventory::g_InventorySlotNames[i] ) )
 			{
-				pPlayer->OnEquippedItemLoaded( ReactiveDropInventory::g_InventorySlotNames[i], k_SteamInventoryResultInvalid );
+				pPlayer->ClearEquippedItemForSlot( ReactiveDropInventory::g_InventorySlotNames[i] );
 
 				if ( !ReactiveDropInventory::DecodeItemData( pPlayer->m_EquippedItems[i], pSlot->GetString() ) && *pSlot->GetString() != '\0' )
 				{
 					Warning( "Failed to decode player %s item in slot %s.\n", pPlayer->GetASWNetworkID(), ReactiveDropInventory::g_InventorySlotNames[i] );
+				}
+			}
+		}
+	}
+	else if ( FStrEq( szCommand, "EquippedItemsCached" ) )
+	{
+		// This only works in singleplayer, and we need access to our own Steam ID.
+		if ( engine->IsDedicatedServer() || gpGlobals->maxClients != 0 || !SteamUser() )
+			return;
+
+		CFmtStr szCacheFileName{ "cfg/clienti_%llu.dat", SteamUser()->GetSteamID().ConvertToUint64() };
+		CUtlBuffer buf;
+
+		if ( !g_pFullFileSystem->ReadFile( szCacheFileName, "MOD", buf ) )
+			return;
+
+		KeyValues::AutoDelete pCache{ "IC" };
+
+		if ( !pCache->ReadAsBinary( buf ) )
+			return;
+
+		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS; i++ )
+		{
+			if ( KeyValues *pSlot = pKeyValues->FindKey( ReactiveDropInventory::g_InventorySlotNames[i] ) )
+			{
+				SteamItemInstanceID_t id = pSlot->GetUint64();
+				pPlayer->ClearEquippedItemForSlot( ReactiveDropInventory::g_InventorySlotNames[i] );
+
+				FOR_EACH_SUBKEY( pCache, pItem )
+				{
+					if ( pItem->GetUint64( "i" ) != id )
+					{
+						continue;
+					}
+
+					pPlayer->SetEquippedItemForSlot( ReactiveDropInventory::g_InventorySlotNames[i], ReactiveDropInventory::ItemInstance_t{ pItem } );
+
+					break;
 				}
 			}
 		}
