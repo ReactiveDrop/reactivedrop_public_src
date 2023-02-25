@@ -254,7 +254,7 @@ void CRD_Collection_Details_Inventory::DisplayEntry( TGD_Entry *pEntry )
 
 	m_pIconBackground->SetBgColor( pDef->BackgroundColor );
 	m_pIconBackground->SetPaintBackgroundEnabled( true );
-	m_pIconBackground->SetPaintBackgroundType( 0 );
+	m_pIconBackground->SetPaintBackgroundType( 2 );
 
 	m_pIcon->SetVisible( true );
 	m_pIcon->SetImage( pDef->Icon );
@@ -315,7 +315,7 @@ void CRD_Collection_Entry_Inventory::ApplySchemeSettings( vgui::IScheme *pScheme
 
 	m_pIconBackground->SetBgColor( pDef->BackgroundColor );
 	m_pIconBackground->SetPaintBackgroundEnabled( true );
-	m_pIconBackground->SetPaintBackgroundType( 2 );
+	m_pIconBackground->SetPaintBackgroundType( 0 );
 	m_pIcon->SetImage( pDef->Icon );
 
 	ConVarRef equipID( VarArgs( "rd_equipped_%s", GetTab()->m_szSlot ) );

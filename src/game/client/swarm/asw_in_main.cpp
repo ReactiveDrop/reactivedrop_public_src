@@ -19,6 +19,7 @@
 #include "in_buttons.h"
 #include "holdout_resupply_frame.h"
 #include "asw_trace_filter.h"
+#include "menu.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -60,78 +61,23 @@ ConVar asw_mouse_order_dist("asw_mouse_order_dist", "100", 0, "Minimum distance 
 void GetVGUICursorPos( int& x, int& y );
 void SetVGUICursorPos( int x, int y );
 
-void SelectMarineDown(int iMarine)
-{	
-	// number ordering disabled for now
-	/*
-	if (s_fMarineDownTime == 0)
-	{
-	s_fMarineDownTime = gpGlobals->curtime;
-	s_iMarineOrdering = iMarine;
-	GetVGUICursorPos(s_iMarineOrderingStartX, s_iMarineOrderingStartY);
-	int x, y;
-	engine->GetScreenSize( x, y );
-	x = x >> 1;
-	y = y >> 1;
-
-	float mx, my;
-	mx = s_iMarineOrderingStartX - x;
-	my = s_iMarineOrderingStartY - y;
-	float mx_ratio =((float) mx) / ((float) x);
-	float my_ratio =((float) my) / ((float) y);			
-	HUDTraceToWorld(-mx_ratio * 0.5f, -my_ratio * 0.5f, s_vecMarineOrderPos);	// store the spot we'll send a marine to
-	}
-	*/
-
+void SelectMarineDown( int iMarine )
+{
 	// if we change marines, clear any marine ordering we're about to give
-	if (s_hOrderTarget.Get())
+	if ( s_hOrderTarget.Get() )
 	{
 		s_hOrderTarget = NULL;
-		ASWInput()->ASW_SetOrderingMarine(0);
+		ASWInput()->ASW_SetOrderingMarine( 0 );
 	}
+
 	// send marine switch command
 	char buffer[64];
-	Q_snprintf(buffer, sizeof(buffer), "cl_switchm %d", iMarine+1);
-	engine->ServerCmd(buffer);
+	Q_snprintf( buffer, sizeof( buffer ), "cl_switchm %d", iMarine + 1 );
+	engine->ServerCmd( buffer );
 }
 
 void SelectMarineUp(int iMarine)
-{	
-	// number ordering disabled for now
-	/*
-	// check for
-	if (s_iMarineOrdering == iMarine)
-	{
-	// find how much the mouse has moved
-	int cx, cy;
-	GetVGUICursorPos(cx, cy);
-	int dx = cx - s_iMarineOrderingStartX;
-	int dy = cy - s_iMarineOrderingStartY;
-	float dist_sqr = dx * dx + dy * dy;
-	s_iMarineOrdering = 0;
-	s_fMarineDownTime = 0;
-	float fScreenScale = ScreenWidth() / 1024.0f;
-	int iMinPixels = asw_mouse_order_dist.GetFloat() * fScreenScale;
-	if (dist_sqr > iMinPixels)
-	{
-	// order that marine to face this way
-	Vector vecOrderDir(dx, dy, 0);
-	float fYaw = -UTIL_VecToYaw(vecOrderDir);
-	char buffer[64];
-
-	Q_snprintf(buffer, sizeof(buffer), "cl_marineface %d %f %d %d %d", iMarine, fYaw,
-	int(s_vecMarineOrderPos.x), int(s_vecMarineOrderPos.y), int(s_vecMarineOrderPos.z));
-	//Msg("Sending command %s\n", buffer);
-	engine->ClientCmd(buffer);
-	return;
-	}
-	}
-	// otherwise send the normal marine switch
-	char buffer[64];
-	Q_snprintf(buffer, sizeof(buffer), "cl_switchm %d", iMarine+1);
-	//Msg("Sending command %s\n", buffer);
-	engine->ClientCmd(buffer);
-	*/
+{
 }
 
 void IN_SelectMarine1Down(void) { SelectMarineDown(0); }
@@ -395,6 +341,14 @@ int CASWInput::KeyEvent( int down, ButtonCode_t code, const char *pszCurrentBind
 	// use key: if we have any info messages up, close them and leave as that's our keypress used
 	if (down && pszCurrentBinding && Q_strcmp( pszCurrentBinding, "+use" ) == 0 && CASW_VGUI_Info_Message::CloseInfoMessage())
 		return false;
+
+	CHudMenu *pMenu = GET_FULLSCREEN_HUDELEMENT( CHudMenu );
+	if ( pMenu && pMenu->IsMenuOpen() && code >= KEY_F1 && code <= KEY_F10 )
+	{
+		if ( down )
+			pMenu->SelectMenuItem( code - KEY_F1 + 1 );
+		return false;
+	}
 
 	return CInput::KeyEvent( down, code, pszCurrentBinding );
 }

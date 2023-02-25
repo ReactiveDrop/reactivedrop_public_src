@@ -63,7 +63,7 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 	{ ASW_EQUIP_AMMO_BAG, "asw_weapon_ammo_bag", false },
 	{ ASW_EQUIP_MEDICAL_SATCHEL, "asw_weapon_medical_satchel", false },
 	{ ASW_EQUIP_AR2, "asw_weapon_ar2", false },
-	{ ASW_EQUIP_CRYOCANNON, "asw_weapon_cryocannon", false },
+	//{ ASW_EQUIP_CRYOCANNON, "asw_weapon_cryocannon", false },
 };
 
 static CASW_EquipItem s_ExtraEquips[ASW_NUM_EQUIP_EXTRA] =

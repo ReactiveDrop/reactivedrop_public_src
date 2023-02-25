@@ -27,7 +27,7 @@
 #include "filesystem.h"
 #include "fmtstr.h"
 #include "cdll_util.h"
-
+#include "menu.h"
 #include "rd_rich_presence.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -230,6 +230,13 @@ void CBaseModFrame::OnKeyCodePressed(KeyCode keycode)
 	// HACK: Allow F key bindings to operate even here
 	if ( IsPC() && keycode >= KEY_F1 && keycode <= KEY_F12 )
 	{
+		CHudMenu *pMenu = GET_FULLSCREEN_HUDELEMENT( CHudMenu );
+		if ( pMenu && pMenu->IsMenuOpen() && code >= KEY_F1 && code <= KEY_F10 )
+		{
+			pMenu->SelectMenuItem( code - KEY_F1 + 1 );
+			return;
+		}
+
 		// See if there is a binding for the FKey
 		const char *binding = gameuifuncs->GetBindingForButtonCode( keycode );
 		if ( binding && binding[0] )

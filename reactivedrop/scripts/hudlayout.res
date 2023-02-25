@@ -165,11 +165,11 @@
 		"wide"	 "640"
 		"tall"	 "480"
 	}
-	
+
 	HudMenu
 	{
 		"fieldName" "HudMenu"
-		"visible" "0"
+		"visible" "1"
 		"enabled" "1"
 		"wide"	 "640"
 		"tall"	 "480"

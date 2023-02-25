@@ -14,7 +14,7 @@
 #include "text_message.h"
 #include "hud_macros.h"
 #include "iclientmode.h"
-#include "weapon_selection.h"
+#include "asw_gamerules.h"
 
 #include <vgui/vgui.h>
 #include <vgui/ISurface.h>
@@ -35,7 +35,7 @@ char g_szPrelocalisedMenuString[MAX_MENU_STRING];
 //-----------------------------------------------------
 //
 
-DECLARE_HUDELEMENT( CHudMenu );
+DECLARE_HUDELEMENT_FLAGS( CHudMenu, HUDELEMENT_SS_FULLSCREEN_ONLY );
 DECLARE_HUD_MESSAGE( CHudMenu, ShowMenu );
 
 //
@@ -59,10 +59,12 @@ CHudMenu::CHudMenu( const char *pElementName ) :
 {
 	m_nSelectedItem = -1;
 
-	vgui::Panel *pParent = GetClientMode()->GetViewport();
+	vgui::Panel *pParent = GetFullscreenClientMode()->GetViewport();
 	SetParent( pParent );
-	
+
 	SetHiddenBits( HIDEHUD_MISCSTATUS );
+	MakePopup();
+	SetKeyBoardInputEnabled( false );
 }
 
 //-----------------------------------------------------------------------------
@@ -181,7 +183,7 @@ void CHudMenu::Paint()
 	int wide = m_nMaxPixels + border;
 	int tall = m_nHeight + border;
 
-	int y = ( ScreenHeight() - tall ) * 0.5f;
+	int y = ( ScreenHeight() - tall ) * ( ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME ? 0.25f : 0.5f );
 
 	DrawBox( x - border/2, y - border/2, wide, tall, m_BoxColor, m_flSelectionAlphaOverride / 255.0f );
 
@@ -256,12 +258,12 @@ void CHudMenu::SelectMenuItem( int menu_item )
 
 		m_nSelectedItem = menu_item;
 		// Pulse the selection
-		GetClientMode()->GetViewportAnimationController()->StartAnimationSequence("MenuPulse");
+		GetFullscreenClientMode()->GetViewportAnimationController()->StartAnimationSequence("MenuPulse");
 
 		// remove the menu quickly
 		m_bMenuTakesInput = false;
 		m_flShutoffTime = gpGlobals->realtime + m_flOpenCloseTime;
-		GetClientMode()->GetViewportAnimationController()->StartAnimationSequence("MenuClose");
+		GetFullscreenClientMode()->GetViewportAnimationController()->StartAnimationSequence("MenuClose");
 	}
 }
 
@@ -285,8 +287,18 @@ void CHudMenu::ProcessText( void )
 		{
 			// Special handling for menu item specifiers
 			swscanf( &g_szMenuString[ i + 2 ], L"%d", &menuitem );
-			i += 2;
-			startpos += 2;
+			if ( menuitem )
+			{
+				g_szMenuString[i + 1] = L'F';
+				i++;
+				startpos++;
+			}
+			else
+			{
+				menuitem = 10;
+				g_szMenuString[i] = L'F';
+				g_szMenuString[i + 1] = L'1';
+			}
 
 			continue;
 		}
@@ -365,7 +377,7 @@ void CHudMenu::HideMenu( void )
 {
 	m_bMenuTakesInput = false;
 	m_flShutoffTime = gpGlobals->realtime + m_flOpenCloseTime;
-	GetClientMode()->GetViewportAnimationController()->StartAnimationSequence("MenuClose");
+	GetFullscreenClientMode()->GetViewportAnimationController()->StartAnimationSequence("MenuClose");
 }
 
 //-----------------------------------------------------------------------------
@@ -384,7 +396,7 @@ void CHudMenu::ShowMenu( const char * menuName, int validSlots )
 
 	Q_strncpy( g_szPrelocalisedMenuString, menuName, sizeof( g_szPrelocalisedMenuString ) );
 
-	GetClientMode()->GetViewportAnimationController()->StartAnimationSequence("MenuOpen");
+	GetFullscreenClientMode()->GetViewportAnimationController()->StartAnimationSequence("MenuOpen");
 	m_nSelectedItem = -1;
 
 	// we have the whole string, so we can localise it now
@@ -409,7 +421,7 @@ void CHudMenu::ShowMenu_KeyValueItems( KeyValues *pKV )
 	m_fWaitingForMore = 0;
 	m_bitsValidSlots = 0;
 
-	GetClientMode()->GetViewportAnimationController()->StartAnimationSequence("MenuOpen");
+	GetFullscreenClientMode()->GetViewportAnimationController()->StartAnimationSequence("MenuOpen");
 	m_nSelectedItem = -1;
 	
 	g_szMenuString[0] = '\0';
@@ -425,7 +437,7 @@ void CHudMenu::ShowMenu_KeyValueItems( KeyValues *pKV )
 		const char *pszItem = item->GetName();
 		const wchar_t *wLocalizedItem = g_pVGuiLocalize->Find( pszItem );
 
-		V_snwprintf( wItem, ARRAYSIZE( wItem ), L"%d. %ls\n", i+1, wLocalizedItem );
+		V_snwprintf( wItem, ARRAYSIZE( wItem ), L"F%d. %ls\n", i+1, wLocalizedItem );
 
 		V_snwprintf( g_szMenuString, ARRAYSIZE( g_szMenuString ), L"%ls%ls", g_szMenuString, wItem );
 
@@ -435,7 +447,7 @@ void CHudMenu::ShowMenu_KeyValueItems( KeyValues *pKV )
 	// put a cancel on the end
 	m_bitsValidSlots |= (1<<9);
 
-	V_snwprintf( wItem, ARRAYSIZE( wItem ), L"0. %ls", g_pVGuiLocalize->Find( "#Cancel" ) );
+	V_snwprintf( wItem, ARRAYSIZE( wItem ), L"F10. %ls", g_pVGuiLocalize->Find( "#Cancel" ) );
 
 	V_snwprintf( g_szMenuString, ARRAYSIZE( g_szMenuString ), L"%ls\n%ls", g_szMenuString, wItem );
 
@@ -488,7 +500,7 @@ void CHudMenu::MsgFunc_ShowMenu( bf_read &msg)
 
 		if ( !NeedMore )
 		{  
-			GetClientMode()->GetViewportAnimationController()->StartAnimationSequence("MenuOpen");
+			GetFullscreenClientMode()->GetViewportAnimationController()->StartAnimationSequence("MenuOpen");
 			m_nSelectedItem = -1;
 			
 			// we have the whole string, so we can localise it now
@@ -520,6 +532,15 @@ void CHudMenu::ApplySchemeSettings(vgui::IScheme *pScheme)
 	BaseClass::ApplySchemeSettings(pScheme);
 
 	SetPaintBackgroundEnabled( false );
+
+	vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFile( "resource/SwarmSchemeNew.res", "SwarmSchemeNew" );
+	vgui::IScheme *pScheme2 = vgui::scheme()->GetIScheme( scheme );
+	if ( pScheme2 )
+	{
+		m_hTextFont = pScheme2->GetFont( "Default", true );
+		m_hItemFont = pScheme2->GetFont( "Default", true );
+		m_hItemFontPulsing = pScheme2->GetFont( "DefaultBlur", true );
+	}
 
 	// set our size
 	int screenWide, screenTall;

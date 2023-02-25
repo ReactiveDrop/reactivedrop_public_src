@@ -5,8 +5,8 @@
 // $NoKeywords: $
 //=============================================================================//
 
-#ifndef MENU_H
-#define MENU_H
+#ifndef HUD_MENU_H
+#define HUD_MENU_H
 #ifdef _WIN32
 #pragma once
 #endif
@@ -37,7 +37,6 @@ public:
 	bool IsMenuOpen( void );
 	void SelectMenuItem( int menu_item );
 
-private:
 	virtual void OnThink();
 	virtual void Paint();
 	virtual void ApplySchemeSettings(vgui::IScheme *pScheme);
@@ -72,18 +71,18 @@ private:
 	CPanelAnimationVar( float, m_flOpenCloseTime, "OpenCloseTime", "1" );
 
 	CPanelAnimationVar( float, m_flBlur, "Blur", "0" );
-	CPanelAnimationVar( float, m_flTextScan, "TextScane", "1" );
+	CPanelAnimationVar( float, m_flTextScan, "TextScan", "1" );
 
 	CPanelAnimationVar( float, m_flAlphaOverride, "Alpha", "255.0" );
 	CPanelAnimationVar( float, m_flSelectionAlphaOverride, "SelectionAlpha", "255.0" );
 
-	CPanelAnimationVar( vgui::HFont, m_hTextFont, "TextFont", "MenuTextFont" );
-	CPanelAnimationVar( vgui::HFont, m_hItemFont, "ItemFont", "MenuItemFont" );
-	CPanelAnimationVar( vgui::HFont, m_hItemFontPulsing, "ItemFontPulsing", "MenuItemFontPulsing" );
+	vgui::HFont m_hTextFont;
+	vgui::HFont m_hItemFont;
+	vgui::HFont m_hItemFontPulsing;
 
-	CPanelAnimationVar( Color, m_MenuColor, "MenuColor", "MenuColor" );
-	CPanelAnimationVar( Color, m_ItemColor, "MenuItemColor", "ItemColor" );
-	CPanelAnimationVar( Color, m_BoxColor, "MenuBoxColor", "MenuBoxBg" );
+	CPanelAnimationVar( Color, m_MenuColor, "MenuColor", "173 208 233 255" );
+	CPanelAnimationVar( Color, m_ItemColor, "MenuItemColor", "42 167 255 200" );
+	CPanelAnimationVar( Color, m_BoxColor, "MenuBoxColor", "0 0 0 200" );
 };
 
-#endif // MENU_H
+#endif // HUD_MENU_H

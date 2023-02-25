@@ -1,0 +1,160 @@
+// sample animation script
+//
+//
+// commands:
+//	Animate <panel name> <variable> <target value> <interpolator> <start time> <duration>
+//		variables:
+//			FgColor
+//			BgColor
+//			Position
+//			Size
+//			Blur		(hud panels only)
+//			TextColor	(hud panels only)
+//			Ammo2Color	(hud panels only)
+//			Alpha		(hud weapon selection only)
+//			SelectionAlpha  (hud weapon selection only)
+//			TextScan	(hud weapon selection only)
+//
+//		interpolator:
+//			Linear
+//			Accel - starts moving slow, ends fast
+//			Deaccel - starts moving fast, ends slow
+//			Spline - simple ease in/out curve
+//			Pulse - < freq > over the duration, the value is pulsed (cosine) freq times ending at the dest value (assuming freq is integral)
+//			Flicker - < randomness factor 0.0 to 1.0 > over duration, each frame if random # is less than factor, use end value, otherwise use prev value
+//
+//	RunEvent <event name> <start time>
+//		starts another even running at the specified time
+//
+//	StopEvent <event name> <start time>
+//		stops another event that is current running at the specified time
+//
+//	StopAnimation <panel name> <variable> <start time>
+//		stops all animations refering to the specified variable in the specified panel
+//
+//	StopPanelAnimations <panel name> <start time>
+//		stops all active animations operating on the specified panel
+//
+//  SetFont <panel name> <fontparameter> <fontname from scheme> <set time> 
+//
+//	SetTexture <panel name> <textureidname> <texturefilename> <set time>
+//
+//  SetString <panel name> <string varname> <stringvalue> <set time>
+
+
+// =================================================
+// Holdout mode animations
+// =================================================
+event WaveAnnounce
+{
+	Animate WaveAnnounceLabel Position "150 0" Deaccel 0.0 0.3
+	Animate WaveAnnounceLabel FgColor "255 255 255 255" Linear 0.0 0.3
+	Animate WaveAnnounceLabel BgColor "0 0 0 128" Linear 0.0 0.3
+	Animate WaveAnnounceLabel Position "50 0" Accel 4.0 0.4
+	Animate WaveAnnounceLabel FgColor "255 255 255 0" Linear 4.0 0.4
+	Animate WaveAnnounceLabel BgColor "0 0 0 0" Linear 4.0 0.4
+}
+
+event GetReady
+{
+	Animate GetReadyLabel Position "165 30" Deaccel 0.4 0.3
+	Animate GetReadyLabel FgColor "255 255 255 255" Linear 0.4 0.3
+	Animate GetReadyLabel BgColor "0 0 0 128" Linear 0.4 0.3
+	Animate GetReadyLabel Position "50 30" Accel 4.0 0.4
+	Animate GetReadyLabel FgColor "255 255 255 0" Linear 4.0 0.4
+	Animate GetReadyLabel BgColor "0 0 0 0" Linear 4.0 0.4
+}
+
+event WaveComplete
+{
+	Animate WaveCompleteLabel Position "225 0" Deaccel 0.0 0.3
+	Animate WaveCompleteLabel FgColor "255 255 255 255" Linear 0.0 0.3
+	Animate WaveCompleteLabel BgColor "0 0 0 128" Linear 0.0 0.3
+	Animate WaveCompleteLabel Position "50 0" Accel 5.0 0.4
+	Animate WaveCompleteLabel FgColor "255 255 255 0" Linear 5.0 0.4
+	Animate WaveCompleteLabel BgColor "0 0 0 0" Linear 5.0 0.4
+}
+
+
+event MenuOpen
+{
+	StopEvent	MenuClose 0.0 
+
+	// fade in
+	Animate HudMenu Alpha 		"255"		Linear 0.0 0.1
+	Animate HudMenu SelectionAlpha 	"255"		Linear 0.0 0.1
+	Animate HudMenu FgColor		"FgColor"		Linear 0.0 0.1
+	Animate HudMenu MenuColor		"MenuColor"	Linear  0.0 0.1
+	Animate HudMenu ItemColor		"ItemColor"	Linear 0.0 0.1
+	Animate HudMenu TextScan		"1"		Linear 0.0 0.1
+
+	// Undo any blur
+	Animate HudMenu		Blur		"1"			Linear	0.0		0.01
+}
+
+event MenuClose
+{	
+	// Hide it
+	Animate HudMenu Alpha 		"0" Linear 0.0 1
+	Animate HudMenu SelectionAlpha 	"0" Linear 0.0 1
+	Animate HudMenu FgColor		"0 0 0 0" Linear 0.0 1
+	Animate HudMenu MenuColor		"0 0 0 0" Linear 0.0 1
+	Animate HudMenu ItemColor		"0 0 0 0" Linear 0.0 1
+}
+
+event MenuPulse
+{
+	Animate HudMenu		Blur		"7"			Linear	0.0		0.1
+	Animate HudMenu		Blur		"2"			Deaccel	0.1		0.1
+	Animate HudMenu		Blur		"7"			Linear	0.2		0.1
+	Animate HudMenu		Blur		"2"			Deaccel	0.3		0.1
+	Animate HudMenu		Blur		"7"			Linear	0.4		0.1
+	Animate HudMenu		Blur		"2"			Deaccel	0.5		0.1
+	Animate	HudMenu		Blur		"1"			Deaccel	0.6		0.4
+}
+
+
+event HintMessageShow
+{
+	Animate HudHintDisplay HintSize	"1"		Deaccel 0.0	0.3
+	Animate HudHintDisplay FgColor	"HintMessageFg" 	Linear 0.4      0.4
+
+	// flash text
+	Animate HudHintDisplay FgColor	"HintMessageFg" 	Linear 1.5 0.01
+	Animate HudHintDisplay FgColor	"255 220 0 255" Linear 2.0 0.2
+	Animate HudHintDisplay FgColor	"HintMessageFg" 	Linear 2.2 0.2
+	Animate HudHintDisplay FgColor	"255 220 0 255" Linear 3.0 0.2
+	Animate HudHintDisplay FgColor	"HintMessageFg" 	Linear 3.2 0.2
+
+	// hide the panel after a while	
+	Animate HudHintDisplay FgColor	"255 220 0 0"   Linear  10.0 	0.2
+	Animate HudHintDisplay HintSize	"0"		Deaccel 10.2	0.3
+}
+
+
+event HintMessageHide
+{
+	Animate HudHintDisplay FgColor	"255 220 0 0"   Linear  0.0 	0.2
+	Animate HudHintDisplay HintSize	"0"		Deaccel 0.2	0.3
+}
+
+event KeyHintMessageShow
+{
+	// show the hints
+	Animate HudHintKeyDisplay Alpha	255 Linear 0.0 0.5
+
+	// flash text
+	Animate HudHintKeyDisplay FgColor	"FgColor" 	Linear 0.0 0.01
+	Animate HudHintKeyDisplay FgColor	"255 220 0 255" Linear 0.5 0.2
+	Animate HudHintKeyDisplay FgColor	"FgColor" 	Linear 0.7 0.2
+	Animate HudHintKeyDisplay FgColor	"255 220 0 255" Linear 1.5 0.2
+	Animate HudHintKeyDisplay FgColor	"FgColor" 	Linear 1.7 0.2
+
+	// hide the panel after a while	
+	Animate HudHintKeyDisplay Alpha	0 Linear 12.0 1.0
+}
+
+event KeyHintMessageHide
+{
+	Animate HudHintKeyDisplay Alpha	0 Linear 0.0 0.5
+}
