@@ -51,6 +51,7 @@ namespace ReactiveDropInventory
 		Color BackgroundColor;
 		Color NameColor;
 		bool AfterDescriptionOnlyMultiStack : 1;
+		bool HasIngameDescription : 1;
 		bool HasBorder : 1;
 #ifdef CLIENT_DLL
 		vgui::IImage *Icon{};
@@ -125,6 +126,7 @@ public:
 	void SetFromInstance( const ReactiveDropInventory::ItemInstance_t &instance );
 	void FormatDescription( wchar_t *wszBuf, size_t sizeOfBufferInBytes, const CUtlString &szDesc ) const;
 #ifdef CLIENT_DLL
+	static void AppendBBCode( vgui::RichText *pRichText, const wchar_t *wszBuf, Color defaultColor );
 	void FormatDescription( vgui::RichText *pRichText ) const;
 #endif
 

@@ -1436,18 +1436,26 @@ namespace ReactiveDropInventory
 		}
 		
 		V_snprintf( szKey, sizeof( szKey ), "description_%s", szLang );
+		pItemDef->HasIngameDescription = false;
 		FETCH_PROPERTY( "description" );
 		pItemDef->Description = szValue;
 		FETCH_PROPERTY( szKey );
 		if ( *szValue )
 			pItemDef->Description = szValue;
+
 		FETCH_PROPERTY( "ingame_description_english" );
 		if ( *szValue )
+		{
 			pItemDef->Description = szValue;
+			pItemDef->HasIngameDescription = true;
+		}
 		V_snprintf( szKey, sizeof( szKey ), "ingame_description_%s", szLang );
 		FETCH_PROPERTY( szKey );
 		if ( *szValue )
+		{
 			pItemDef->Description = szValue;
+			pItemDef->HasIngameDescription = true;
+		}
 
 		V_snprintf( szKey, sizeof( szKey ), "briefing_name_%s", szLang );
 		pItemDef->BriefingName = pItemDef->Name;
@@ -1996,6 +2004,58 @@ ConVar rd_briefing_item_details_color1( "rd_briefing_item_details_color1", "169 
 ConVar rd_briefing_item_details_color2( "rd_briefing_item_details_color2", "83 148 192 255", FCVAR_NONE );
 ConVar rd_briefing_item_accessory_color( "rd_briefing_item_accessory_color", "191 191 191 255", FCVAR_NONE );
 
+void CRD_ItemInstance::AppendBBCode( vgui::RichText *pRichText, const wchar_t *wszBuf, Color defaultColor )
+{
+	CUtlVector<Color> colorStack;
+	colorStack.AddToTail( defaultColor );
+	pRichText->InsertColorChange( defaultColor );
+
+	for ( const wchar_t *pBuf = wszBuf; *pBuf; pBuf++ )
+	{
+		if ( *pBuf == L'[' )
+		{
+			if ( pBuf[1] == L'c' && pBuf[2] == L'o' && pBuf[3] == L'l' && pBuf[4] == L'o' && pBuf[5] == L'r' && pBuf[6] == L'=' && pBuf[7] == L'#' &&
+				pBuf[8] && pBuf[9] && pBuf[10] && pBuf[11] && pBuf[12] && pBuf[13] && pBuf[14] == L']' )
+			{
+				char szHex[6]
+				{
+					( char )pBuf[8],
+					( char )pBuf[9],
+					( char )pBuf[10],
+					( char )pBuf[11],
+					( char )pBuf[12],
+					( char )pBuf[13],
+				};
+				byte szBin[3]{};
+				V_hextobinary( szHex, 6, szBin, sizeof( szBin ) );
+
+				Color nextColor{ szBin[0], szBin[1], szBin[2], 255 };
+				colorStack.AddToTail( nextColor );
+				pRichText->InsertColorChange( nextColor );
+
+				pBuf += 15;
+				continue;
+			}
+
+			if ( pBuf[1] == L'/' && pBuf[2] == L'c' && pBuf[3] == L'o' && pBuf[4] == L'l' && pBuf[5] == L'o' && pBuf[6] == L'r' && pBuf[7] == L']' )
+			{
+				Assert( colorStack.Count() > 1 );
+
+				colorStack.RemoveMultipleFromTail( 1 );
+				pRichText->InsertColorChange( colorStack.Tail() );
+
+				pBuf += 8;
+
+				continue;
+			}
+		}
+
+		pRichText->InsertChar( *pBuf );
+	}
+
+	Assert( colorStack.Count() == 1 );
+}
+
 void CRD_ItemInstance::FormatDescription( vgui::RichText *pRichText ) const
 {
 	const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( m_iItemDefID );
@@ -2006,8 +2066,7 @@ void CRD_ItemInstance::FormatDescription( vgui::RichText *pRichText ) const
 	FormatDescription( wszBuf, sizeof( wszBuf ), pDef->BeforeDescription );
 	if ( wszBuf[0] )
 	{
-		pRichText->InsertColorChange( rd_briefing_item_details_color2.GetColor() );
-		pRichText->InsertString( wszBuf );
+		AppendBBCode( pRichText, wszBuf, rd_briefing_item_details_color2.GetColor() );
 		pRichText->InsertString( L"\n\n" );
 	}
 
@@ -2021,8 +2080,7 @@ void CRD_ItemInstance::FormatDescription( vgui::RichText *pRichText ) const
 		FormatDescription( wszBuf, sizeof( wszBuf ), ReactiveDropInventory::GetItemDef( m_iAccessory[i] )->AccessoryDescription );
 		if ( wszBuf[0] )
 		{
-			pRichText->InsertColorChange( rd_briefing_item_accessory_color.GetColor() );
-			pRichText->InsertString( wszBuf );
+			AppendBBCode( pRichText, wszBuf, rd_briefing_item_accessory_color.GetColor() );
 			pRichText->InsertString( L"\n" );
 		}
 	}
@@ -2030,9 +2088,11 @@ void CRD_ItemInstance::FormatDescription( vgui::RichText *pRichText ) const
 	if ( bAnyAccessories )
 		pRichText->InsertString( L"\n" );
 
-	V_UTF8ToUnicode( pDef->Description, wszBuf, sizeof( wszBuf ) );
-	pRichText->InsertColorChange( rd_briefing_item_details_color1.GetColor() );
-	pRichText->InsertString( wszBuf );
+	if ( pDef->HasIngameDescription )
+		FormatDescription( wszBuf, sizeof( wszBuf ), pDef->Description );
+	else
+		V_UTF8ToUnicode( pDef->Description, wszBuf, sizeof( wszBuf ) );
+	AppendBBCode( pRichText, wszBuf, rd_briefing_item_details_color1.GetColor() );
 
 	bool bShowAfterDescription = !pDef->AfterDescriptionOnlyMultiStack;
 	if ( !bShowAfterDescription )
@@ -2055,9 +2115,8 @@ void CRD_ItemInstance::FormatDescription( vgui::RichText *pRichText ) const
 		FormatDescription( wszBuf, sizeof( wszBuf ), pDef->AfterDescription );
 		if ( wszBuf[0] )
 		{
-			pRichText->InsertColorChange( rd_briefing_item_details_color2.GetColor() );
 			pRichText->InsertString( L"\n\n" );
-			pRichText->InsertString( wszBuf );
+			AppendBBCode( pRichText, wszBuf, rd_briefing_item_details_color2.GetColor() );
 		}
 	}
 }
