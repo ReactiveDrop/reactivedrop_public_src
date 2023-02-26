@@ -127,7 +127,7 @@ void __MsgFunc_RDHitConfirm( bf_read &msg )
 	else if ( asw_floating_number_type.GetInt() == 2 )
 	{
 		C_BaseEntity *pAttacker = ClientEntityList().GetBaseEntity( entindex );
-		C_ASW_Inhabitable_NPC *pTarget = assert_cast< C_ASW_Inhabitable_NPC * >( ClientEntityList().GetBaseEntity( targetent ) );
+		C_ASW_Inhabitable_NPC *pTarget = dynamic_cast< C_ASW_Inhabitable_NPC * >( ClientEntityList().GetBaseEntity( targetent ) );
 		if ( pTarget && !bBlastDamage && !bDamageOverTime )
 		{
 			if ( gpGlobals->curtime - pTarget->m_flLastDamageNumberTime < asw_floating_number_combine.GetFloat() )
