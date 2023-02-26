@@ -104,6 +104,7 @@ VMFs = [
 ##		MapInfo("rd-acc5_j5connector", "1200", "1", vrad=vrad_notextureshadows),
 ##		MapInfo("rd-acc6_labruins", "1500", "0", vrad=vrad_notextureshadows),
 ##		MapInfo("rd-acc_complex", "1500", "0", vrad=vrad_notextureshadows),
+##		MapInfo("rd-ht-marine_academy", "5000", "0"),
 ]
 
 game = os.environ["RD_STEAM"]
