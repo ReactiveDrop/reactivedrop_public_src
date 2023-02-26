@@ -25,7 +25,7 @@ void RegisterUserMessages( void )
 	usermessages->Register( "GameTitle", 0 );
 	usermessages->Register( "ItemPickup", -1 );
 	usermessages->Register( "ShowMenu", -1 );
-	usermessages->Register( "Shake", 13 );
+	usermessages->Register( "Shake", 15 );
 	usermessages->Register( "ShakeDir", -1 ); // directional shake
 	usermessages->Register( "Tilt", 22 );
 	usermessages->Register( "Fade", 10 );
@@ -49,8 +49,8 @@ void RegisterUserMessages( void )
 	usermessages->Register( "DesiredTimescale", 13 );	// Send timescale and some blending vars
 
 	// asw
-	usermessages->Register( "ASWMapLine", 10 ); // send 2 bytes payload
-	usermessages->Register( "ASWBlur", 2 ); // send 2 bytes payload
+	usermessages->Register( "ASWMapLine", 10 );
+	usermessages->Register( "ASWBlur", 4 );
 	usermessages->Register( "ASWCampaignCompleted", 2 );
 	usermessages->Register( "ASWUTracer", -1 );
 	usermessages->Register( "ASWUTracerless", -1 );

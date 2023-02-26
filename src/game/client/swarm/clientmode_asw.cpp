@@ -355,12 +355,11 @@ IClientMode *GetFullscreenClientMode( void )
 // gives the current marine some 'poison blur' (causes motion blur over his screen for the duration, making it harder to see)
 static void __MsgFunc_ASWBlur( bf_read &msg )
 {
-	float duration = msg.ReadShort() * 0.1f;
-	
-	C_ASW_Marine *marine = C_ASW_Marine::GetViewMarine();
-	if ( marine )
+	C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( ClientEntityList().GetBaseEntity( msg.ReadShort() ) );
+	float flDuration = msg.ReadShort() * 0.1f;
+	if ( pMarine )
 	{
-		marine->SetPoisoned( duration );
+		pMarine->SetPoisoned( flDuration );
 	}
 }
 

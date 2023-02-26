@@ -480,6 +480,7 @@ void CHudDamageIndicator::MsgFunc_Damage( bf_read &msg )
 {
 	damage_t damage;
 	damage.iScale = msg.ReadShort();
+	int entindex = msg.ReadShort();
 	damage.damagetype = msg.ReadLong();
 	if ( !msg.ReadOneBit() )
 		return;
@@ -491,6 +492,10 @@ void CHudDamageIndicator::MsgFunc_Damage( bf_read &msg )
 	Vector vecOrigin;
 	msg.ReadBitVec3Coord( vecOrigin );
 	damage.bFriendlyFire = msg.ReadOneBit() ? true : false;
+
+	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	if ( !pPlayer || !pPlayer->GetViewNPC() || pPlayer->GetViewNPC()->entindex() != entindex )
+		return;
 
 	damage.flStartTime = gpGlobals->curtime;
 	damage.flLifeTime = gpGlobals->curtime + RemapVal(damage.iScale, 0, m_iMaximumDamage, m_flMinimumTime, m_flMaximumTime);

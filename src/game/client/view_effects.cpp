@@ -16,6 +16,8 @@
 #include "saverestoretypes.h"
 #include "c_rumble.h"
 #include "prediction.h"
+#include "c_asw_player.h"
+#include "c_asw_inhabitable_npc.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -218,8 +220,11 @@ void __MsgFunc_Shake( bf_read &msg )
 	shake.amplitude = msg.ReadFloat();
 	shake.frequency = msg.ReadFloat();
 	shake.duration	= msg.ReadFloat();
+	int entindex = msg.ReadShort();
 
-	GetCViewEffects().Shake( shake );
+	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	if ( pPlayer && pPlayer->GetViewNPC() && pPlayer->GetViewNPC()->entindex() == entindex )
+		GetCViewEffects().Shake( shake );
 }
 
 
@@ -242,8 +247,11 @@ void __MsgFunc_ShakeDir( bf_read &msg )
 	shake.frequency = msg.ReadFloat();
 	shake.duration	= msg.ReadFloat();
 	msg.ReadBitVec3Normal( shake.direction );
+	int entindex = msg.ReadShort();
 
-	GetCViewEffects().Shake( shake );
+	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	if ( pPlayer && pPlayer->GetViewNPC() && pPlayer->GetViewNPC()->entindex() == entindex )
+		GetCViewEffects().Shake( shake );
 }
 
 

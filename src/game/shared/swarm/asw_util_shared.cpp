@@ -216,20 +216,22 @@ static void ASW_WriteScreenShakeToMessage( CASW_Inhabitable_NPC *pNPC, ShakeComm
 	if ( direction.IsZeroFast() ) // nondirectional shake
 	{
 		UserMessageBegin( user, "Shake" );
-		WRITE_BYTE( eCommand );				// shake command (SHAKE_START, STOP, FREQUENCY, AMPLITUDE)
-		WRITE_FLOAT( amplitude );			// shake magnitude/amplitude
-		WRITE_FLOAT( frequency );				// shake noise frequency
-		WRITE_FLOAT( duration );				// shake lasts this long
+			WRITE_BYTE( eCommand );				// shake command (SHAKE_START, STOP, FREQUENCY, AMPLITUDE)
+			WRITE_FLOAT( amplitude );			// shake magnitude/amplitude
+			WRITE_FLOAT( frequency );				// shake noise frequency
+			WRITE_FLOAT( duration );				// shake lasts this long
+			WRITE_ENTITY( pNPC->entindex() );
 		MessageEnd();
 	}
 	else // directional shake
 	{
 		UserMessageBegin( user, "ShakeDir" );
-		WRITE_BYTE( eCommand );				// shake command (SHAKE_START, STOP, FREQUENCY, AMPLITUDE)
-		WRITE_FLOAT( amplitude );			// shake magnitude/amplitude
-		WRITE_FLOAT( frequency );				// shake noise frequency
-		WRITE_FLOAT( duration );				// shake lasts this long
-		WRITE_VEC3NORMAL( direction );
+			WRITE_BYTE( eCommand );				// shake command (SHAKE_START, STOP, FREQUENCY, AMPLITUDE)
+			WRITE_FLOAT( amplitude );			// shake magnitude/amplitude
+			WRITE_FLOAT( frequency );				// shake noise frequency
+			WRITE_FLOAT( duration );				// shake lasts this long
+			WRITE_VEC3NORMAL( direction );
+			WRITE_ENTITY( pNPC->entindex() );
 		MessageEnd();
 	}
 }
@@ -569,7 +571,8 @@ void UTIL_ASW_PoisonBlur( CASW_Marine *pMarine, float duration )
 	CASW_ViewNPCRecipientFilter user( pMarine );
 	user.MakeReliable();
 
-	UserMessageBegin( user, "ASWBlur" );		// use the magic #1 for "one client"
+	UserMessageBegin( user, "ASWBlur" );
+		WRITE_ENTITY( pMarine->entindex() );
 		WRITE_SHORT( (int) (duration * 10.0f) );		// blur lasts this long / 10
 	MessageEnd();
 }
@@ -669,12 +672,12 @@ CASW_Marine* UTIL_ASW_Marine_Can_Chatter_Spot(CBaseEntity *pEntity, float fDist)
 	return NULL;
 }
 
-CASW_ViewNPCRecipientFilter::CASW_ViewNPCRecipientFilter( CASW_Inhabitable_NPC *pNPC )
+CASW_ViewNPCRecipientFilter::CASW_ViewNPCRecipientFilter( CASW_Inhabitable_NPC *pNPC, bool bSendToRecorders )
 {
 	for ( int i = 1; i <= MAX_PLAYERS; i++ )
 	{
 		CASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
-		if ( pPlayer && ( pPlayer->GetViewNPC() == pNPC || V_atoi( engine->GetClientConVarValue( pPlayer->entindex(), "rd_auto_record_lobbies" ) ) ) )
+		if ( pPlayer && ( pPlayer->GetViewNPC() == pNPC || ( bSendToRecorders && V_atoi( engine->GetClientConVarValue( pPlayer->entindex(), "rd_auto_record_lobbies" ) ) ) ) )
 		{
 			AddRecipient( pPlayer );
 		}
