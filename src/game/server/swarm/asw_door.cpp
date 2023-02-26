@@ -17,6 +17,7 @@
 #include "vcollide_parse.h"
 #include "cvisibilitymonitor.h"
 #include "soundent.h"
+#include "asw_util_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1242,8 +1243,25 @@ int CASW_Door::OnTakeDamage( const CTakeDamageInfo &info )
 
 		CheckForDoorShootChatter( newInfo );
 
+		int iHealthBefore = m_iHealth;
 		// do the damage
 		m_iHealth -= damage;
+
+		if ( pAttacker && pAttacker->IsInhabitableNPC() )
+		{
+			CASW_Inhabitable_NPC *pInhabitableAttacker = assert_cast< CASW_Inhabitable_NPC * >( pAttacker );
+			CASW_ViewNPCRecipientFilter filter{ pInhabitableAttacker };
+			UserMessageBegin( filter, "RDHitConfirm" );
+				WRITE_ENTITY( pAttacker->entindex() );
+				WRITE_ENTITY( entindex() );
+				WRITE_VEC3COORD( info.GetDamagePosition() );
+				WRITE_BOOL( m_iHealth <= 0 );
+				WRITE_BOOL( info.GetDamageType() & DMG_DIRECT );
+				WRITE_BOOL( info.GetDamageType() & DMG_BLAST );
+				WRITE_UBITLONG( pInhabitableAttacker->IRelationType( this ), 3 );
+				WRITE_FLOAT( MIN( info.GetDamage(), iHealthBefore ) );
+			MessageEnd();
+		}
 
 		//Msg("Door health now %d (%d) seq %d frame %f DoorOpen=%d DoorOpening=%d DoorClosed=%d DoorClosing=%d\n",
 			//m_iHealth, (int) m_DentAmount, GetSequence(), GetCycle(),

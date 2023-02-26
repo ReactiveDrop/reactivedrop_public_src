@@ -926,7 +926,25 @@ int CASW_Simple_Alien::OnTakeDamage( const CTakeDamageInfo &info )
 		Msg("%d %s hurt by %f dmg\n", entindex(), GetClassname(), info.GetDamage());
 	}
 
+	int iHealthBefore = GetHealth();
 	int iDamage = BaseClass::OnTakeDamage(info);
+
+	CBaseEntity *pAttacker = info.GetAttacker();
+	if ( pAttacker && pAttacker->IsInhabitableNPC() )
+	{
+		CASW_Inhabitable_NPC *pInhabitableAttacker = assert_cast< CASW_Inhabitable_NPC * >( pAttacker );
+		CASW_ViewNPCRecipientFilter filter{ pInhabitableAttacker };
+		UserMessageBegin( filter, "RDHitConfirm" );
+			WRITE_ENTITY( pAttacker->entindex() );
+			WRITE_ENTITY( entindex() );
+			WRITE_VEC3COORD( info.GetDamagePosition() );
+			WRITE_BOOL( GetHealth() <= 0 );
+			WRITE_BOOL( info.GetDamageType() & DMG_DIRECT );
+			WRITE_BOOL( info.GetDamageType() & DMG_BLAST );
+			WRITE_UBITLONG( pInhabitableAttacker->IRelationType( this ), 3 );
+			WRITE_FLOAT( MIN( info.GetDamage(), iHealthBefore ) );
+		MessageEnd();
+	}
 
 	if (iDamage > 0 && GetHealth() > 0)
 	{
