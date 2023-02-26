@@ -610,7 +610,8 @@ int CASW_Inhabitable_NPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 
 	if ( pAttacker && pAttacker->IsInhabitableNPC() )
 	{
-		CASW_ViewNPCRecipientFilter filter{ assert_cast< CASW_Inhabitable_NPC * >( pAttacker ) };
+		CASW_Inhabitable_NPC *pInhabitableAttacker = assert_cast< CASW_Inhabitable_NPC * >( pAttacker );
+		CASW_ViewNPCRecipientFilter filter{ pInhabitableAttacker };
 		UserMessageBegin( filter, "RDHitConfirm" );
 			WRITE_ENTITY( pAttacker->entindex() );
 			WRITE_ENTITY( entindex() );
@@ -618,7 +619,7 @@ int CASW_Inhabitable_NPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 			WRITE_BOOL( GetHealth() <= 0 );
 			WRITE_BOOL( info.GetDamageType() & DMG_DIRECT );
 			WRITE_BOOL( info.GetDamageType() & DMG_BLAST );
-			WRITE_UBITLONG( IRelationType( pAttacker ), 3 );
+			WRITE_UBITLONG( pInhabitableAttacker->IRelationType( this ), 3 );
 			WRITE_FLOAT( MIN( info.GetDamage(), iHealthBefore ) );
 		MessageEnd();
 	}

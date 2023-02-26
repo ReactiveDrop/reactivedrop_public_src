@@ -144,7 +144,7 @@ void __MsgFunc_RDHitConfirm( bf_read &msg )
 			pTarget->m_flAccumulatedDamage = flDamage;
 		}
 
-		HPARTICLEFFECT hParticle = UTIL_ASW_ParticleDamageNumber( pAttacker, vecDamagePosition, flDamage, 0, bDamageOverTime ? 0.5f : 1.0f, bBlastDamage || bDamageOverTime );
+		HPARTICLEFFECT hParticle = UTIL_ASW_ParticleDamageNumber( pAttacker, vecDamagePosition, flDamage, iDisposition == 3 /*D_LI*/ ? DAMAGE_FLAG_CRITICAL : 0, bDamageOverTime ? 0.5f : 1.0f, bBlastDamage || bDamageOverTime );
 		if ( pTarget && !bBlastDamage && !bDamageOverTime )
 		{
 			pTarget->m_hDamageNumberParticle = hParticle;
