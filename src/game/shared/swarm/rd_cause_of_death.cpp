@@ -134,6 +134,7 @@ const char *const g_szDeathCauseStatName[] =
 	"cause_of_death.grenade_launcher_self",
 	"cause_of_death.ricochet_bullet",
 	"cause_of_death.bleed_out",
+	"cause_of_death.marineacademy_lava",
 };
 
 #ifndef CLIENT_DLL
@@ -179,6 +180,7 @@ static const struct
 	{ "rd-acc6_labruins", "hurt_crusher_right", DEATHCAUSE_ACC32_CRUSHER },
 	{ "rd-acc6_labruins", "trigger_hurt_doorblock", DEATHCAUSE_ACC32_DOORS },
 	{ "rd-acc6_labruins", "fall_train", DEATHCAUSE_ACC32_TRAIN },
+	{ "rd-ht-marine_academy", "trigger_fall_volcano", DEATHCAUSE_MARINEACADEMY_LAVA },
 };
 
 static void WarnEntityHelper( const char *szPrefix, CBaseEntity *pEntity )

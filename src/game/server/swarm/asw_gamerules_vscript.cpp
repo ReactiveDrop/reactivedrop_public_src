@@ -20,6 +20,8 @@
 #include "asw_campaign_save.h"
 #include "rd_challenges_shared.h"
 #include "rd_missions_shared.h"
+#include "asw_achievements.h"
+#include "asw_player.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -28,6 +30,7 @@ extern ConVar rd_challenge;
 
 static ScriptVariant_t s_newArrayFunc;
 static ScriptVariant_t s_arrayPushFunc;
+static ScriptVariant_t s_arrayGetFunc;
 static void CreateArray( ScriptVariant_t &array )
 {
 	if ( !g_pScriptVM ) return;
@@ -40,6 +43,13 @@ static void ArrayPush( ScriptVariant_t &array, ScriptVariant_t item )
 {
 	if ( !g_pScriptVM ) return;
 	ScriptStatus_t status = g_pScriptVM->Call( s_arrayPushFunc, NULL, false, &array, array, item );
+	Assert( status == SCRIPT_DONE );
+	( void )status;
+}
+static void ArrayGet( ScriptVariant_t &result, ScriptVariant_t array, ScriptVariant_t index )
+{
+	if ( !g_pScriptVM ) return;
+	ScriptStatus_t status = g_pScriptVM->Call( s_arrayGetFunc, NULL, false, &result, array, index );
 	Assert( status == SCRIPT_DONE );
 	( void )status;
 }
@@ -797,6 +807,93 @@ HSCRIPT Script_StartFire( const Vector position, float duration, int flags )
 	return ToHScript( pFire );
 }
 
+void Script_CheckSpecialAchievementEligibility()
+{
+	CAlienSwarm *pAlienSwarm = ASWGameRules();
+	CASW_Game_Resource *pGameResource = ASWGameResource();
+	if ( !pAlienSwarm || !pGameResource || pAlienSwarm->m_iMissionWorkshopID.Get() || pAlienSwarm->m_bChallengeActiveThisMission )
+	{
+		return;
+	}
+
+	if ( FStrEq( STRING( gpGlobals->mapname ), "rd-ht-marine_academy" ) )
+	{
+		ScriptVariant_t element;
+		ScriptVariant_t CurrentArea;
+		if ( !g_pScriptVM->GetValue( "g_current_area", &CurrentArea ) )
+			return;
+		ScriptVariant_t AreaVisitCount;
+		if ( !g_pScriptVM->GetValue( "g_area_scores_t", &AreaVisitCount ) )
+			return;
+
+		// entering volcano
+		if ( CurrentArea.Get<int>() == 6 )
+		{
+			for ( int i = 1; i < 6; i++ )
+			{
+				ScriptVariant_t element;
+				ArrayGet( element, AreaVisitCount, i );
+
+				if ( element.Get<int>() != 1 )
+				{
+					return;
+				}
+			}
+
+			for ( int iMR = 0; iMR < pGameResource->GetMaxMarineResources(); iMR++ )
+			{
+				CASW_Marine_Resource *pMR = pGameResource->GetMarineResource( iMR );
+				if ( !pMR )
+					continue;
+
+				if ( pMR->GetHealthPercent() > 0 && pMR->IsInhabited() && pMR->GetCommander() )
+				{
+					pMR->GetCommander()->AwardAchievement( ACHIEVEMENT_RD_MA_VISIT_EACH_ZONE );
+				}
+			}
+
+			return;
+		}
+
+		// entering lobby
+		if ( CurrentArea.Get<int>() == 0 )
+		{
+			ArrayGet( element, AreaVisitCount, 6 );
+			if ( element.Get<int>() != 1 )
+			{
+				return;
+			}
+
+			for ( int iMR = 0; iMR < pGameResource->GetMaxMarineResources(); iMR++ )
+			{
+				CASW_Marine_Resource *pMR = pGameResource->GetMarineResource( iMR );
+				if ( !pMR )
+					continue;
+
+				if ( pMR->GetHealthPercent() <= 0 )
+					return;
+			}
+
+
+			for ( int iMR = 0; iMR < pGameResource->GetMaxMarineResources(); iMR++ )
+			{
+				CASW_Marine_Resource *pMR = pGameResource->GetMarineResource( iMR );
+				if ( !pMR )
+					continue;
+
+				if ( pMR->IsInhabited() && pMR->GetCommander() )
+				{
+					pMR->GetCommander()->AwardAchievement( ACHIEVEMENT_RD_MA_REACH_VOLCANO_ALIVE );
+				}
+			}
+
+			return;
+		}
+
+		return;
+	}
+}
+
 const Vector &Script_GetHullMins( int hull )
 {
 	if ( hull < 0 || hull > ( NUM_HULLS - 1 ) )
@@ -886,7 +983,7 @@ void CAlienSwarm::RegisterScriptFunctions()
 	if ( !g_pScriptVM ) return;
 
 	// The VScript API doesn't support arrays, but Squirrel does, and we want to use them. Make some helper functions that we can call later:
-	HSCRIPT arrayHelperScript = g_pScriptVM->CompileScript( "function newArray() { return [] }\nfunction arrayPush(a, v) { a.push(v); return a }\n" );
+	HSCRIPT arrayHelperScript = g_pScriptVM->CompileScript( "function newArray() { return [] }\nfunction arrayPush(a, v) { a.push(v); return a }\nfunction arrayGet(a, i) { return a[i] }\n" );
 	HSCRIPT arrayHelperScope = g_pScriptVM->CreateScope( "arrayhelpers" );
 	ScriptStatus_t status = g_pScriptVM->Run( arrayHelperScript, arrayHelperScope, false );
 	Assert( status == SCRIPT_DONE );
@@ -896,6 +993,9 @@ void CAlienSwarm::RegisterScriptFunctions()
 	Assert( bSuccess );
 	( void )bSuccess;
 	bSuccess = g_pScriptVM->GetValue( arrayHelperScope, "arrayPush", &s_arrayPushFunc );
+	Assert( bSuccess );
+	( void )bSuccess;
+	bSuccess = g_pScriptVM->GetValue( arrayHelperScope, "arrayGet", &s_arrayGetFunc );
 	Assert( bSuccess );
 	( void )bSuccess;
 	g_pScriptVM->ReleaseScope( arrayHelperScope );
@@ -916,6 +1016,7 @@ void CAlienSwarm::RegisterScriptFunctions()
 	ScriptRegisterFunctionNamed( g_pScriptVM, ScriptStartStim, "StartStim", "Activates a stim pack for desired duration" );
 	ScriptRegisterFunctionNamed( g_pScriptVM, ScriptStopStim, "StopStim", "Stops any active stim pack" );
 	ScriptRegisterFunctionNamed( g_pScriptVM, Script_StartFire, "StartFire", "Starts a fire (position, duration, flags)" );
+	ScriptRegisterFunctionNamed( g_pScriptVM, Script_CheckSpecialAchievementEligibility, "CheckSpecialAchievementEligibility", "Internal function for official missions with complex mid-mission achievement requirements" );
 	ScriptRegisterFunctionNamed( g_pScriptVM, Script_GetHullMins, "GetHullMins", "Returns a Vector for the hull mins (hullType)" );
 	ScriptRegisterFunctionNamed( g_pScriptVM, Script_GetHullMaxs, "GetHullMaxs", "Returns a Vector for the hull maxs (hullType)" );
 	ScriptRegisterFunctionNamed( g_pScriptVM, Script_FindNearestNPC, "FindNearestNPC", "Find nearest NPC to position (position, ZcoordCheck, radius)" );

@@ -42,6 +42,9 @@ struct MissionStats_t
 	int32 m_iTimeAvg;
 	int32 m_iHighestDifficulty;
 	int32 m_iBestSpeedrunTimes[5];
+	int32 m_iScoreTotal;
+	int32 m_iScoreSuccess;
+	int32 m_iBestHighScores[5];
 };
 
 struct WeaponStats_t

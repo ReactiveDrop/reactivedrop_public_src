@@ -370,6 +370,7 @@ static const char *g_szAchievementMapNamesAllCoop[] =
 	"rd-acc5_j5connector",
 	"rd-acc6_labruins",
 	"rd-acc_complex",
+	"rd-ht-marine_academy",
 #endif
 #ifdef RD_6A_CAMPAIGNS_ADANAXIS
 	"rd-ada_sector_a9",
@@ -1141,6 +1142,9 @@ class CAchievement_Hardcore : public CASW_Achievement
 DECLARE_ACHIEVEMENT_ORDER( CAchievement_Hardcore, ACHIEVEMENT_ASW_HARDCORE, "ASW_HARDCORE", 5, 3185 );
 
 DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_RD_NH_BONUS_OBJECTIVE, "RD_NH_BONUS_OBJECTIVE", 5, 3186 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_RD_MA_SCORE_POINTS, "RD_MA_SCORE_POINTS", 5, 3187 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_RD_MA_REACH_VOLCANO_ALIVE, "RD_MA_REACH_VOLCANO_ALIVE", 5, 3188 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Server_Triggered, ACHIEVEMENT_RD_MA_VISIT_EACH_ZONE, "RD_MA_VISIT_EACH_ZONE", 5, 3189 );
 
 class CAchievement_Die_In_Many_Ways : public CASW_Achievement
 {
@@ -1174,7 +1178,7 @@ class CAchievement_Die_In_Many_Ways : public CASW_Achievement
 
 	friend void CheckDeathTypeCount();
 };
-DECLARE_ACHIEVEMENT_ORDER( CAchievement_Die_In_Many_Ways, ACHIEVEMENT_RD_DIE_IN_MANY_WAYS, "RD_DIE_IN_MANY_WAYS", 5, 3187 );
+DECLARE_ACHIEVEMENT_ORDER( CAchievement_Die_In_Many_Ways, ACHIEVEMENT_RD_DIE_IN_MANY_WAYS, "RD_DIE_IN_MANY_WAYS", 5, 5000 );
 
 void CheckDeathTypeCount()
 {

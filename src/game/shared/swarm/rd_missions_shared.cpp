@@ -66,6 +66,7 @@ static const char *s_szMissionNamesFirst[] =
 	"rd-bonus_mission7",
 #ifdef RD_6A_CAMPAIGNS_ACCIDENT32
 	"rd-acc_complex",
+	"rd-ht-marine_academy",
 #endif
 #ifdef RD_6A_CAMPAIGNS_ADANAXIS
 	"rd-ada_new_beginning",

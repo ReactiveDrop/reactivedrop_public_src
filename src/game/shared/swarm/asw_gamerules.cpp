@@ -8938,6 +8938,10 @@ static void CreateCake( const char *mapname )
 	{
 		origin = Vector( -3925, -443, -20 );
 	}
+	else if ( FStrEq( mapname, "rd-ht-marine_academy" ) )
+	{
+		origin = Vector( -8196, 9568, 122 );
+	}
 #endif
 #ifdef RD_6A_CAMPAIGNS_ADANAXIS
 	else if ( FStrEq( mapname, "rd-ada_sector_a9" ) )

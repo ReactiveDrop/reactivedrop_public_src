@@ -543,14 +543,22 @@ void CASW_Medals::AwardMedalsTo(CASW_Marine_Resource *pMR)
 	// awarded for killing X aliens with barrels
 	if ( pMR->m_iBarrelKills >= asw_medal_barrel_kills.GetInt() )
 	{
-		AwardSingleMedalTo( MEDAL_COLLATERAL_DAMAGE, pMR );		
+		AwardSingleMedalTo( MEDAL_COLLATERAL_DAMAGE, pMR );
+	}
+
+	if ( !Q_stricmp( STRING( gpGlobals->mapname ), "rd-ht-marine_academy" ) )
+	{
+		if ( pMR->m_iScore >= 100 )
+		{
+			pPlayer->AwardAchievement( ACHIEVEMENT_RD_MA_SCORE_POINTS );
+		}
 	}
 	
 	if ( ASWGameRules()->GetMissionSuccess() )
 	{
-		if ( !Q_stricmp( STRING(gpGlobals->mapname), "rd-nh03_groundworklabs") )
+		if ( !Q_stricmp( STRING( gpGlobals->mapname ), "rd-nh03_groundworklabs" ) )
 		{
-			CASW_Objective *pOptional = assert_cast<CASW_Objective *>( gEntList.FindEntityByName( NULL, "Objectif_8" ) );
+			CASW_Objective *pOptional = assert_cast< CASW_Objective * >( gEntList.FindEntityByName( NULL, "Objectif_8" ) );
 			Assert( pOptional && pOptional->IsObjectiveOptional() );
 			if ( pOptional && pOptional->IsObjectiveComplete() )
 			{

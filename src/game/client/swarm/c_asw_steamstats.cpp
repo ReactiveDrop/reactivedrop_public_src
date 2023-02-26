@@ -63,6 +63,9 @@ namespace
 	const char* szBestDifficulty = ".difficulty.best";
 	const char* szBestTime = ".time.best";
 	const char* szBestSpeedrunDifficulty = ".time.best.difficulty";
+	const char* szScoreTotal = ".score.total";
+	const char* szScoreSuccess = ".score.success";
+	const char* szBestScore = ".score.best";
 
 	// difficulty names used when fetching steam stats
 	const char* g_szDifficulties[] =
@@ -172,6 +175,7 @@ namespace
 		"rd-acc5_j5connector",
 		"rd-acc6_labruins",
 		"rd-acc_complex",
+		"rd-ht-marine_academy",
 #endif
 #ifdef RD_6A_CAMPAIGNS_ADANAXIS
 		"rd-ada_sector_a9",
@@ -195,6 +199,7 @@ namespace
 	const char *const g_OfficialNonCampaignMaps[] =
 	{
 		"rd-acc_complex",
+		"rd-ht-marine_academy",
 		"rd-ada_new_beginning",
 		"rd-ada_anomaly",
 		"dm_desert",
@@ -208,6 +213,16 @@ namespace
 		"rd-bonus_mission5",
 		"rd-bonus_mission6",
 		"rd-bonus_mission7",
+	};
+
+	const char *const g_OfficialPointsMaps[] =
+	{
+		"rd-ht-marine_academy",
+	};
+
+	const char *const g_OfficialPointsMapsUploadOnFailure[] =
+	{
+		"rd-ht-marine_academy",
 	};
 }
 
@@ -252,6 +267,36 @@ bool IsOfficialCampaign()
 		if ( FStrEq( szMapName, g_OfficialMaps[i] ) )
 		{
 				return true;
+		}
+	}
+
+	return false;
+}
+
+bool IsOfficialPointsMission()
+{
+	const char *szMapName = engine->GetLevelNameShort();
+
+	for ( int i = 0; i < ARRAYSIZE( g_OfficialPointsMaps ); i++ )
+	{
+		if ( FStrEq( szMapName, g_OfficialPointsMaps[i] ) )
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool IsOfficialPointsMissionUploadOnFailure()
+{
+	const char *szMapName = engine->GetLevelNameShort();
+
+	for ( int i = 0; i < ARRAYSIZE( g_OfficialPointsMapsUploadOnFailure ); i++ )
+	{
+		if ( FStrEq( szMapName, g_OfficialPointsMapsUploadOnFailure[i] ) )
+		{
+			return true;
 		}
 	}
 
@@ -872,17 +917,17 @@ int CASW_Steamstats::GetFavoriteEquip( int iSlot )
 	Assert( iSlot < ASW_MAX_EQUIP_SLOTS );
 
 	StatList_Int_t *pList = NULL;
-	if( iSlot == 0 )
+	if ( iSlot == 0 )
 		pList = &m_PrimaryEquipCounts;
-	else if( iSlot == 1 )
+	else if ( iSlot == 1 )
 		pList = &m_SecondaryEquipCounts;
 	else
 		pList = &m_ExtraEquipCounts;
 
 	int iFav = 0;
-	for( int i=0; i<pList->Count(); ++i )
+	for ( int i = 0; i < pList->Count(); ++i )
 	{
-		if( pList->operator []( iFav ) < pList->operator [](i) )
+		if ( ( *pList )[iFav] < ( *pList )[i] )
 			iFav = i;
 	}
 
@@ -1132,6 +1177,15 @@ bool MissionStats_t::FetchMissionStats( CSteamID playerSteamID )
 		FETCH_STEAM_STATS( CFmtStr( "%s%s.%s", szLevelName, szBestTime, g_szDifficulties[i] ), m_iBestSpeedrunTimes[i] );
 	}
 
+	if ( IsOfficialPointsMission() )
+	{
+		FETCH_STEAM_STATS( CFmtStr( "%s%s", szLevelName, szScoreTotal ), m_iScoreTotal );
+		for ( int i = 0; i < 5; ++i )
+		{
+			FETCH_STEAM_STATS( CFmtStr( "%s%s.%s", szLevelName, szBestScore, g_szDifficulties[i] ), m_iBestHighScores[i] );
+		}
+	}
+
 	return bOK;
 }
 
@@ -1163,20 +1217,36 @@ void MissionStats_t::PrepStatsForSend( CASW_Player *pPlayer )
 			m_iGamesSuccess += ASWGameRules()->GetMissionSuccess() ? 1 : 0;
 			m_fGamesSuccessPercent = m_iGamesSuccess / (float)m_iGamesTotal * 100.0f;
 			m_iTimeTotal += GetDebriefStats()->m_fTimeTaken;
-			if( ASWGameRules()->GetMissionSuccess() )
+			m_iScoreTotal += pMR->m_iScore;
+			if ( ASWGameRules()->GetMissionSuccess() )
 			{
 				m_iTimeSuccess += GetDebriefStats()->m_fTimeTaken;
+				m_iScoreSuccess += pMR->m_iScore;
+			}
 
-				if( iDifficulty > m_iHighestDifficulty )
+			bool bPoints = IsOfficialPointsMission();
+			if ( ( bPoints && IsOfficialPointsMissionUploadOnFailure() ) || ASWGameRules()->GetMissionSuccess() )
+			{
+				if ( iDifficulty > m_iHighestDifficulty )
 					m_iHighestDifficulty = iDifficulty;
 
-				if( (unsigned int)m_iBestSpeedrunTimes[ iDifficulty - 1 ] > GetDebriefStats()->m_fTimeTaken )
+				if ( bPoints )
 				{
-					m_iBestSpeedrunTimes[ iDifficulty - 1 ] = GetDebriefStats()->m_fTimeTaken;
+					if ( m_iBestHighScores[iDifficulty - 1] < pMR->m_iScore )
+					{
+						m_iBestHighScores[iDifficulty - 1] = pMR->m_iScore;
+						m_iBestSpeedrunTimes[iDifficulty - 1] = GetDebriefStats()->m_fTimeTaken;
+					}
+				}
+				else
+				{
+					if ( ( unsigned int )m_iBestSpeedrunTimes[iDifficulty - 1] > GetDebriefStats()->m_fTimeTaken )
+					{
+						m_iBestSpeedrunTimes[iDifficulty - 1] = GetDebriefStats()->m_fTimeTaken;
+					}
 				}
 			}
-			
-			
+
 			// Safely compute averages
 			m_fKillsAvg = m_iKillsTotal / (float)m_iGamesTotal;
 			m_fFFAvg = m_iFFTotal / (float)m_iGamesTotal;
@@ -1208,6 +1278,13 @@ void MissionStats_t::PrepStatsForSend( CASW_Player *pPlayer )
 	SEND_STEAM_STATS( CFmtStr( "%s%s", szLevelName, szTimeAvg ), m_iTimeAvg );
 	SEND_STEAM_STATS( CFmtStr( "%s%s", szLevelName, szBestDifficulty ), m_iHighestDifficulty );
 	SEND_STEAM_STATS( CFmtStr( "%s%s.%s", szLevelName, szBestTime, g_szDifficulties[ iDifficulty - 1 ] ), m_iBestSpeedrunTimes[ iDifficulty - 1 ] );
+
+	if ( IsOfficialPointsMission() )
+	{
+		SEND_STEAM_STATS( CFmtStr( "%s%s", szLevelName, szScoreTotal ), m_iScoreTotal );
+		SEND_STEAM_STATS( CFmtStr( "%s%s", szLevelName, szScoreSuccess ), m_iScoreSuccess );
+		SEND_STEAM_STATS( CFmtStr( "%s%s.%s", szLevelName, szBestScore, g_szDifficulties[iDifficulty - 1] ), m_iBestHighScores[iDifficulty - 1] );
+	}
 }
 
 bool WeaponStats_t::FetchWeaponStats( CSteamID playerSteamID, const char *szClassName )
