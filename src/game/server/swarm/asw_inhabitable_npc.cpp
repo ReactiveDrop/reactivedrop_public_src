@@ -10,6 +10,7 @@
 #include "asw_director.h"
 #include "asw_base_spawner.h"
 #include "asw_physics_prop_statue.h"
+#include "asw_util_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -550,6 +551,8 @@ void CASW_Inhabitable_NPC::SetHealthByDifficultyLevel()
 
 int CASW_Inhabitable_NPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 {
+	int iHealthBefore = GetHealth();
+
 	int result = 0;
 
 	CASW_Burning *pBurning = NULL;
@@ -604,6 +607,21 @@ int CASW_Inhabitable_NPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 
 	// Notify gamestats of the damage
 	CASW_GameStats.Event_AlienTookDamage( this, info );
+
+	if ( pAttacker && pAttacker->IsInhabitableNPC() )
+	{
+		CASW_ViewNPCRecipientFilter filter{ assert_cast< CASW_Inhabitable_NPC * >( pAttacker ) };
+		UserMessageBegin( filter, "RDHitConfirm" );
+			WRITE_ENTITY( pAttacker->entindex() );
+			WRITE_ENTITY( entindex() );
+			WRITE_VEC3COORD( info.GetDamagePosition() );
+			WRITE_BOOL( GetHealth() <= 0 );
+			WRITE_BOOL( info.GetDamageType() & DMG_DIRECT );
+			WRITE_BOOL( info.GetDamageType() & DMG_BLAST );
+			WRITE_UBITLONG( IRelationType( pAttacker ), 3 );
+			WRITE_FLOAT( MIN( info.GetDamage(), iHealthBefore ) );
+		MessageEnd();
+	}
 
 	return result;
 }

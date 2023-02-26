@@ -81,4 +81,7 @@ game_sounds_manifest
 	"precache_file"		"scripts/npc_sounds_soldier.txt"
 	"precache_file"		"scripts/npc_sounds_strider.txt"
 	"precache_file"		"scripts/npc_sounds_citizen.txt"
+
+	// tf2
+	"precache_file"		"scripts/game_sounds_hitconfirm.txt" // extracted from game_sounds_weapons.txt in TF2
 }

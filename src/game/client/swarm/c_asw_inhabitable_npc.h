@@ -114,6 +114,10 @@ public:
 	void UpdateFireEmitters( void );
 	bool m_bClientOnFire;
 
+	float m_flAccumulatedDamage;
+	float m_flLastDamageNumberTime;
+	HPARTICLEFFECT m_hDamageNumberParticle;
+
 private:
 	C_ASW_Inhabitable_NPC( const C_ASW_Inhabitable_NPC & ) = delete; // not defined, not accessible
 };

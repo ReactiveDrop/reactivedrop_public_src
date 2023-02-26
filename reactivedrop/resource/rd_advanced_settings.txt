@@ -404,6 +404,103 @@
 
 	SECTION
 	{
+		title "#RD_AdvancedSettings_OnHit"
+		SELECT
+		{
+			title "#TF_CombatText"
+			cvar "asw_floating_number_type"
+			options
+			{
+				"0" "#RD_AdvancedSettings_Toggle_Off"
+				"2" "#RD_AdvancedSettings_Toggle_On"
+			}
+		}
+		TOGGLE
+		{
+			title "#TF_CombatTextBatching"
+			cvar "asw_floating_number_combine"
+			hide_unless "asw_floating_number_type"
+		}
+		TOGGLE
+		{
+			title "#TF_Hitbeeps"
+			cvar "tf_dingalingaling"
+		}
+		SELECT
+		{
+			title "#TF_Dingaling_Volume"
+			cvar "tf_dingaling_volume"
+			options
+			{
+				"0.1" "#RD_AdvancedSettings_Percent_10"
+				"0.3" "#RD_AdvancedSettings_Percent_30"
+				"0.5" "#RD_AdvancedSettings_Percent_50"
+				"0.75" "#RD_AdvancedSettings_Percent_75"
+				"0.9" "#RD_AdvancedSettings_Percent_90"
+				"1.0" "#RD_AdvancedSettings_Percent_100"
+			}
+			hide_unless "tf_dingalingaling"
+		}
+		SELECT
+		{
+			title "#tf_dingalingaling_effect"
+			cvar "tf_dingalingaling_effect"
+			options
+			{
+				"0" "#tf_dingalingaling_Default"
+				"1" "#tf_dingalingaling_Electro"
+				"2" "#tf_dingalingaling_Notes"
+				"3" "#tf_dingalingaling_Percussion"
+				"4" "#tf_dingalingaling_Retro"
+				"5" "#tf_dingalingaling_Space"
+				"6" "#tf_dingalingaling_Beepo"
+				"7" "#tf_dingalingaling_Vortex"
+				"8" "#tf_dingalingaling_Squasher"
+			}
+			hide_unless "tf_dingalingaling"
+		}
+		TOGGLE
+		{
+			title "#TF_LastHitbeeps"
+			cvar "tf_dingalingaling_lasthit"
+		}
+		SELECT
+		{
+			title "#TF_Dingaling_LastHit_Volume"
+			cvar "tf_dingaling_lasthit_volume"
+			options
+			{
+				"0.1" "#RD_AdvancedSettings_Percent_10"
+				"0.3" "#RD_AdvancedSettings_Percent_30"
+				"0.5" "#RD_AdvancedSettings_Percent_50"
+				"0.75" "#RD_AdvancedSettings_Percent_75"
+				"0.9" "#RD_AdvancedSettings_Percent_90"
+				"1.0" "#RD_AdvancedSettings_Percent_100"
+			}
+			hide_unless "tf_dingalingaling_lasthit"
+		}
+		SELECT
+		{
+			title "#tf_dingalingaling_last_effect"
+			cvar "tf_dingalingaling_last_effect"
+			options
+			{
+				"0" "#tf_dingalingaling_Default"
+				"1" "#tf_dingalingaling_Electro"
+				"2" "#tf_dingalingaling_Notes"
+				"3" "#tf_dingalingaling_Percussion"
+				"4" "#tf_dingalingaling_Retro"
+				"5" "#tf_dingalingaling_Space"
+				"6" "#tf_dingalingaling_Beepo"
+				"7" "#tf_dingalingaling_Vortex"
+				"8" "#tf_dingalingaling_Squasher"
+			}
+			hide_unless "tf_dingalingaling_lasthit"
+		}
+	}
+
+	SECTION
+	{
 		title "#RD_AdvancedSettings_VisualEffects"
 		TOGGLE
 		{

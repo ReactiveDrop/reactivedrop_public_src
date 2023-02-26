@@ -42,8 +42,6 @@ public:
 
 	virtual void	OnDataChanged( DataUpdateType_t updateType );
 
-	virtual void TakeDamage( const CTakeDamageInfo &info );		// called when entity is damaged by predicted attacks
-
 	Class_T		Classify( void ) { return (Class_T) CLASS_ASW_STATUE; }
 
 	bool m_bShattered;

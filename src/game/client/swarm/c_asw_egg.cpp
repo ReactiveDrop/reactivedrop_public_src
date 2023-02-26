@@ -183,7 +183,6 @@ void C_ASW_Egg::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, 
 	}
 
 	AddMultiDamage( subInfo, this );
-	UTIL_ASW_ClientFloatingDamageNumber( subInfo );
 }
 
 void C_ASW_Egg::Bleed( const CTakeDamageInfo &info, const Vector &vecPos, const Vector &vecDir, trace_t *ptr )

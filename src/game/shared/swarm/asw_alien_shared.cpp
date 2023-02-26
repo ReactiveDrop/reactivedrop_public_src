@@ -86,8 +86,6 @@ void CASW_Alien::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir,
 		event->SetInt( "amount", subInfo.GetDamage() );
 		gameeventmanager->FireEventClientSide( event );
 	}
-
-	UTIL_ASW_ClientFloatingDamageNumber( subInfo );
 #endif
 }
 

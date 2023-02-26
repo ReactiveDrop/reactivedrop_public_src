@@ -134,8 +134,3 @@ void C_ASWStatueProp::OnDataChanged( DataUpdateType_t updateType )
 		*/
 	}
 }
-
-void C_ASWStatueProp::TakeDamage( const CTakeDamageInfo &info )
-{
-	UTIL_ASW_ClientFloatingDamageNumber( info );
-}

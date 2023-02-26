@@ -662,7 +662,7 @@ CASW_Marine* UTIL_ASW_Marine_Can_Chatter_Spot(CBaseEntity *pEntity, float fDist)
 			{
 				if (iChosen <= 0)
 					return pMarine;
-				iChosen--;				
+				iChosen--;
 			}
 		}
 	}
@@ -674,7 +674,7 @@ CASW_ViewNPCRecipientFilter::CASW_ViewNPCRecipientFilter( CASW_Inhabitable_NPC *
 	for ( int i = 1; i <= MAX_PLAYERS; i++ )
 	{
 		CASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
-		if ( pPlayer && pPlayer->GetViewNPC() == pNPC )
+		if ( pPlayer && ( pPlayer->GetViewNPC() == pNPC || V_atoi( engine->GetClientConVarValue( pPlayer->entindex(), "rd_auto_record_lobbies" ) ) ) )
 		{
 			AddRecipient( pPlayer );
 		}
@@ -1145,13 +1145,13 @@ PRECACHE_REGISTER_BEGIN( GLOBAL, ParticleDamageNumbers )
 	PRECACHE( PARTICLE_SYSTEM, "floating_numbers" )
 PRECACHE_REGISTER_END()
 
-void UTIL_ASW_ParticleDamageNumber( C_BaseEntity *pEnt, Vector vecPos, int iDamage, int iDmgCustom, float flScale, bool bRandomVelocity )
+HPARTICLEFFECT UTIL_ASW_ParticleDamageNumber( C_BaseEntity *pEnt, Vector vecPos, int iDamage, int iDmgCustom, float flScale, bool bRandomVelocity )
 {
 	if ( asw_floating_number_type.GetInt() != 2 )
-		return;
+		return NULL;
 
 	if ( !pEnt )
-		return;
+		return NULL;
 
 	QAngle vecAngles;
 	vecAngles[PITCH] = 0.0f;
@@ -1206,6 +1206,7 @@ void UTIL_ASW_ParticleDamageNumber( C_BaseEntity *pEnt, Vector vecPos, int iDama
 	pEffect->SetControlPoint( 2, Vector( r, g, b ) );
 	pEffect->SetControlPoint( 3, Vector( flNewScale, flLifetime, 0 ) );
 	pEffect->SetControlPointOrientation( 5, vecForward, vecRight, vecUp );
+	return pEffect;
 }
 
 void __MsgFunc_ASWDamageNumber( bf_read &msg )

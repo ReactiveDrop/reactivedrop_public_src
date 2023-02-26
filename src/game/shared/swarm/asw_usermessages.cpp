@@ -98,4 +98,5 @@ void RegisterUserMessages( void )
 	usermessages->Register( "RDLeaderboardReady", 0 );
 	usermessages->Register( "RDAlienKillStat", 2 );
 	usermessages->Register( "RDCauseOfDeath", 2 );
+	usermessages->Register( "RDHitConfirm", -1 );
 }
