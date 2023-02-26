@@ -104,6 +104,14 @@ VMFs = [
 ##		MapInfo("rd-acc5_j5connector", "1200", "1", vrad=vrad_notextureshadows),
 ##		MapInfo("rd-acc6_labruins", "1500", "0", vrad=vrad_notextureshadows),
 ##		MapInfo("rd-acc_complex", "1500", "0", vrad=vrad_notextureshadows),
+##		MapInfo("rd-ada_sector_a9", "1152", "1"),
+##		MapInfo("rd-ada_nexus_subnode", "1152", "1"),
+##		MapInfo("rd-ada_neon_carnage", "768", "1"),
+##		MapInfo("rd-ada_fuel_junction", "1512", "1"),
+##		MapInfo("rd-ada_dark_path", "1152", "1"),
+##		MapInfo("rd-ada_forbidden_outpost", "2048", "1"),
+##		MapInfo("rd-ada_new_beginning", "1152", "1"),
+##		MapInfo("rd-ada_anomaly", "1152", "1"),
 ##		MapInfo("rd-ht-marine_academy", "5000", "0"),
 ]
 
