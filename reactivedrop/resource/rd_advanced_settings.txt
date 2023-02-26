@@ -625,5 +625,20 @@
 				"2" "#RD_AdvancedSettings_Misc_SwarmopediaUnits_Imperial"
 			}
 		}
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_Misc_HighlightActiveCharacter"
+			cvar "rd_highlight_active_character"
+		}
+		SELECT
+		{
+			title "#RD_AdvancedSettings_Misc_HighlightMyTracers"
+			cvar "rd_tracer_tint_other"
+			options
+			{
+				"255 255 255" "#RD_AdvancedSettings_Toggle_Off"
+				"64 64 64" "#RD_AdvancedSettings_Toggle_On"
+			}
+		}
 	}
 }
