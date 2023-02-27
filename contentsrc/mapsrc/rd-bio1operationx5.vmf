@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "673"
+	"mapversion" "674"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -32,7 +32,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "673"
+	"mapversion" "1114"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -187484,7 +187484,7 @@ entity
 	"classname" "asw_gamerules"
 	"allowcamerarotation" "0"
 	"jumpjettype" "0"
-	"speedruntime" "208"
+	"speedruntime" "215"
 	"speedruntimesp" "0"
 	"origin" "904 392 -112"
 	editor
@@ -197493,8 +197493,8 @@ cameras
 	"activecamera" "0"
 	camera
 	{
-		"position" "[-1169.66 1620.39 554.985]"
-		"look" "[-1407.84 1683.76 436.637]"
+		"position" "[920.778 388.802 -63.7185]"
+		"look" "[808.294 463.536 -301.445]"
 	}
 	camera
 	{
