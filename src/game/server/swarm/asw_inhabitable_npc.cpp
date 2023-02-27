@@ -552,61 +552,70 @@ void CASW_Inhabitable_NPC::SetHealthByDifficultyLevel()
 int CASW_Inhabitable_NPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 {
 	int iHealthBefore = GetHealth();
+	CTakeDamageInfo newInfo = info;
 
 	int result = 0;
 
-	CASW_Burning *pBurning = NULL;
 	CBaseEntity *pAttacker = info.GetAttacker();
-	CBaseEntity *pInflictor = info.GetInflictor();
-	if ( pInflictor && pInflictor->Classify() == CLASS_ASW_BURNING )
-		pBurning = assert_cast< CASW_Burning * >( pInflictor );
 
-	// scale burning damage up
-	if ( pBurning )
+	if ( Classify() == CLASS_ASW_MARINE )
 	{
-		CTakeDamageInfo newDamage = info;
-		newDamage.ScaleDamage( asw_fire_alien_damage_scale.GetFloat() );
-		if ( asw_debug_alien_damage.GetBool() )
-		{
-			Msg( "%d %s hurt by %f dmg (scaled up by asw_fire_alien_damage_scale)\n", entindex(), GetClassname(), newDamage.GetDamage() );
-		}
-		result = BaseClass::OnTakeDamage_Alive( newDamage );
-	}
-	else
-	{
-		if ( asw_debug_alien_damage.GetBool() )
-		{
-			Msg( "%d %s hurt by %f dmg\n", entindex(), GetClassname(), info.GetDamage() );
-		}
+		// marine doesn't want any of this handling, but does want hit confirms
 		result = BaseClass::OnTakeDamage_Alive( info );
 	}
-
-	// if we take fire damage, catch on fire
-	if ( result > 0 && ( info.GetDamageType() & DMG_BURN ) && m_bFlammable && info.GetWeapon() && !pBurning )
-	{
-		ASW_Ignite( asw_alien_burn_duration.GetFloat(), 0, pAttacker, info.GetWeapon() );
-	}
-
-	// make the alien move slower for 0.5 seconds
-	if ( ( info.GetDamageType() & DMG_SHOCK ) && m_bTeslable )
-	{
-		ElectroStun( asw_stun_grenade_time.GetFloat() );
-
-		m_fNoDamageDecal = true;
-	}
 	else
 	{
-		if ( m_fHurtSlowMoveTime < gpGlobals->curtime + 0.5f )
-			m_fHurtSlowMoveTime = gpGlobals->curtime + 0.5f;
-	}
+		CASW_Burning *pBurning = NULL;
+		CBaseEntity *pInflictor = info.GetInflictor();
+		if ( pInflictor && pInflictor->Classify() == CLASS_ASW_BURNING )
+			pBurning = assert_cast< CASW_Burning * >( pInflictor );
 
-	if ( CASW_Marine *pMarine = CASW_Marine::AsMarine( pAttacker ) )
-	{
-		pMarine->HurtAlien( this, info );
-	}
+		// scale burning damage up
+		if ( pBurning )
+		{
+			newInfo.ScaleDamage( asw_fire_alien_damage_scale.GetFloat() );
+			if ( asw_debug_alien_damage.GetBool() )
+			{
+				Msg( "%d %s hurt by %f dmg (scaled up by asw_fire_alien_damage_scale)\n", entindex(), GetClassname(), newInfo.GetDamage() );
+			}
+		}
+		else
+		{
+			if ( asw_debug_alien_damage.GetBool() )
+			{
+				Msg( "%d %s hurt by %f dmg\n", entindex(), GetClassname(), newInfo.GetDamage() );
+			}
+		}
 
-	// Notify gamestats of the damage
-	CASW_GameStats.Event_AlienTookDamage( this, info );
+		result = BaseClass::OnTakeDamage_Alive( newInfo );
+
+		// if we take fire damage, catch on fire
+		if ( result > 0 && ( newInfo.GetDamageType() & DMG_BURN ) && m_bFlammable && newInfo.GetWeapon() && !pBurning )
+		{
+			ASW_Ignite( asw_alien_burn_duration.GetFloat(), 0, pAttacker, newInfo.GetWeapon() );
+		}
+
+		// make the alien move slower for 0.5 seconds
+		if ( ( newInfo.GetDamageType() & DMG_SHOCK ) && m_bTeslable )
+		{
+			ElectroStun( asw_stun_grenade_time.GetFloat() );
+
+			m_fNoDamageDecal = true;
+		}
+		else
+		{
+			if ( m_fHurtSlowMoveTime < gpGlobals->curtime + 0.5f )
+				m_fHurtSlowMoveTime = gpGlobals->curtime + 0.5f;
+		}
+
+		if ( CASW_Marine *pMarine = CASW_Marine::AsMarine( pAttacker ) )
+		{
+			pMarine->HurtAlien( this, newInfo );
+		}
+
+		// Notify gamestats of the damage
+		CASW_GameStats.Event_AlienTookDamage( this, newInfo );
+	}
 
 	if ( pAttacker && pAttacker->IsInhabitableNPC() )
 	{
@@ -615,12 +624,12 @@ int CASW_Inhabitable_NPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		UserMessageBegin( filter, "RDHitConfirm" );
 			WRITE_ENTITY( pAttacker->entindex() );
 			WRITE_ENTITY( entindex() );
-			WRITE_VEC3COORD( info.GetDamagePosition() );
+			WRITE_VEC3COORD( newInfo.GetDamagePosition() );
 			WRITE_BOOL( GetHealth() <= 0 );
-			WRITE_BOOL( info.GetDamageType() & DMG_DIRECT );
-			WRITE_BOOL( info.GetDamageType() & DMG_BLAST );
+			WRITE_BOOL( newInfo.GetDamageType() & DMG_DIRECT );
+			WRITE_BOOL( newInfo.GetDamageType() & DMG_BLAST );
 			WRITE_UBITLONG( pInhabitableAttacker->IRelationType( this ), 3 );
-			WRITE_FLOAT( MIN( info.GetDamage(), iHealthBefore ) );
+			WRITE_FLOAT( MIN( newInfo.GetDamage(), iHealthBefore ) );
 		MessageEnd();
 	}
 

@@ -1612,7 +1612,7 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 
 	int iPreDamageHealth = GetHealth();
 	CASW_GameStats.Event_MarineTookDamage( this, newInfo );
-	int result = CAI_PlayerAlly::OnTakeDamage_Alive( newInfo ); // skip inhabitable NPC
+	int result = BaseClass::OnTakeDamage_Alive( newInfo );
 	int iDamageTaken = MAX( iPreDamageHealth, 0 ) - MAX( GetHealth(), 0 );
 
 	if (asw_debug_marine_damage.GetBool() && result > 0)
