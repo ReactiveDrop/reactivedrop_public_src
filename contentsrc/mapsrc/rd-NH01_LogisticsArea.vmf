@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "1347"
+	"mapversion" "1348"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -32,7 +32,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "1347"
+	"mapversion" "1348"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -41152,6 +41152,82 @@ world
 	}
 	solid
 	{
+		"id" "961574"
+		side
+		{
+			"id" "33441"
+			"plane" "(2512 1520 128) (3008 1520 128) (3008 1488 128)"
+			"material" "TOOLS/TOOLSNOLIGHT"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 -1 0 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "33442"
+			"plane" "(2512 1488 32) (3008 1488 32) (3008 1520 32)"
+			"material" "TOOLS/TOOLSNODRAW"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 -1 0 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "33443"
+			"plane" "(2512 1520 128) (2512 1488 128) (2512 1488 32)"
+			"material" "TOOLS/TOOLSNODRAW"
+			"uaxis" "[0 1 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "33444"
+			"plane" "(3008 1520 32) (3008 1488 32) (3008 1488 128)"
+			"material" "TOOLS/TOOLSNODRAW"
+			"uaxis" "[0 1 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "33445"
+			"plane" "(3008 1520 128) (2512 1520 128) (2512 1520 32)"
+			"material" "TOOLS/TOOLSNOLIGHT"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "33446"
+			"plane" "(3008 1488 32) (2512 1488 32) (2512 1488 128)"
+			"material" "TOOLS/TOOLSNODRAW"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		editor
+		{
+			"color" "0 197 250"
+			"visgroupshown" "1"
+			"visgroupautoshown" "1"
+		}
+	}
+	solid
+	{
 		"id" "27690"
 		side
 		{
@@ -49689,82 +49765,6 @@ world
 			"visgroupautoshown" "1"
 		}
 	}
-	solid
-	{
-		"id" "961574"
-		side
-		{
-			"id" "33441"
-			"plane" "(2512 1520 128) (3008 1520 128) (3008 1488 128)"
-			"material" "TOOLS/TOOLSNOLIGHT"
-			"uaxis" "[1 0 0 0] 0.25"
-			"vaxis" "[0 -1 0 0] 0.25"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		side
-		{
-			"id" "33442"
-			"plane" "(2512 1488 32) (3008 1488 32) (3008 1520 32)"
-			"material" "TOOLS/TOOLSNODRAW"
-			"uaxis" "[1 0 0 0] 0.25"
-			"vaxis" "[0 -1 0 0] 0.25"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		side
-		{
-			"id" "33443"
-			"plane" "(2512 1520 128) (2512 1488 128) (2512 1488 32)"
-			"material" "TOOLS/TOOLSNODRAW"
-			"uaxis" "[0 1 0 0] 0.25"
-			"vaxis" "[0 0 -1 0] 0.25"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		side
-		{
-			"id" "33444"
-			"plane" "(3008 1520 32) (3008 1488 32) (3008 1488 128)"
-			"material" "TOOLS/TOOLSNODRAW"
-			"uaxis" "[0 1 0 0] 0.25"
-			"vaxis" "[0 0 -1 0] 0.25"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		side
-		{
-			"id" "33445"
-			"plane" "(3008 1520 128) (2512 1520 128) (2512 1520 32)"
-			"material" "TOOLS/TOOLSNOLIGHT"
-			"uaxis" "[1 0 0 0] 0.25"
-			"vaxis" "[0 0 -1 0] 0.25"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		side
-		{
-			"id" "33446"
-			"plane" "(3008 1488 32) (2512 1488 32) (2512 1488 128)"
-			"material" "TOOLS/TOOLSNODRAW"
-			"uaxis" "[1 0 0 0] 0.25"
-			"vaxis" "[0 0 -1 0] 0.25"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		editor
-		{
-			"color" "0 197 250"
-			"visgroupshown" "1"
-			"visgroupautoshown" "1"
-		}
-	}
 	group
 	{
 		"id" "27951"
@@ -51843,6 +51843,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"dentamount" "0"
 	"disableshadows" "1"
 	"distance" "130"
@@ -51887,6 +51888,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"dentamount" "0"
 	"disableshadows" "1"
 	"distance" "130"
@@ -53728,6 +53730,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"dentamount" "1"
 	"disableshadows" "1"
 	"distance" "130"
@@ -53767,6 +53770,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"dentamount" "0"
 	"disableshadows" "1"
 	"distance" "130"
@@ -53806,6 +53810,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"dentamount" "0"
 	"disableshadows" "1"
 	"distance" "130"
@@ -53962,6 +53967,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"dentamount" "0"
 	"disableshadows" "1"
 	"distance" "130"
@@ -54453,6 +54459,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"dentamount" "0"
 	"disableshadows" "1"
 	"distance" "130"
@@ -59137,6 +59144,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"dentamount" "2"
 	"disableshadows" "1"
 	"distance" "130"
@@ -120597,7 +120605,7 @@ entity
 	"classname" "asw_gamerules"
 	"allowcamerarotation" "0"
 	"jumpjettype" "0"
-	"speedruntime" "70"
+	"speedruntime" "75"
 	"speedruntimesp" "0"
 	"origin" "-1040 -624 -312"
 	editor
@@ -120613,8 +120621,8 @@ cameras
 	"activecamera" "0"
 	camera
 	{
-		"position" "[2746.07 1734.88 270.39]"
-		"look" "[2752.96 1830.43 165.471]"
+		"position" "[-1027.72 -723.713 -248.181]"
+		"look" "[-1058.99 -620.136 -340.263]"
 	}
 }
 cordons
