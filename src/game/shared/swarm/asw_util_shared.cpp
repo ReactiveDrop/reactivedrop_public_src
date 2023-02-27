@@ -677,7 +677,7 @@ CASW_ViewNPCRecipientFilter::CASW_ViewNPCRecipientFilter( CASW_Inhabitable_NPC *
 	for ( int i = 1; i <= MAX_PLAYERS; i++ )
 	{
 		CASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
-		if ( pPlayer && ( pPlayer->GetViewNPC() == pNPC || ( bSendToRecorders && V_atoi( engine->GetClientConVarValue( pPlayer->entindex(), "rd_auto_record_lobbies" ) ) ) ) )
+		if ( pPlayer && ( pPlayer->GetViewNPC() == pNPC || ( bSendToRecorders && ( pPlayer->IsAnyBot() || V_atoi( engine->GetClientConVarValue( pPlayer->entindex(), "rd_auto_record_lobbies" ) ) ) ) ) )
 		{
 			AddRecipient( pPlayer );
 		}

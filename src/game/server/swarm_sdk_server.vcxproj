@@ -607,6 +607,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClCompile Include="..\shared\swarm\asw_weapon_welder_shared.cpp" />
     <ClCompile Include="..\shared\swarm\rd_cause_of_death.cpp" />
     <ClCompile Include="..\shared\swarm\rd_challenges_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\rd_hud_counter_shared.cpp" />
     <ClCompile Include="..\shared\swarm\rd_inventory_shared.cpp" />
     <ClCompile Include="..\shared\swarm\rd_lobby_utils.cpp" />
     <ClCompile Include="..\shared\swarm\rd_missions_shared.cpp" />

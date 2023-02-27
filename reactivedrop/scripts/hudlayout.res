@@ -312,9 +312,9 @@
 		"BgColor_override" "0 0 0 192"
 	}
 	
-	ASWHudMoney
+	ASWHudCounters
 	{
-		"fieldName"		"ASWHudMoney"
+		"fieldName"		"ASWHudCounters"
 		"xpos"	"r100"
 		"ypos"	"300"
 		"wide"	"90"

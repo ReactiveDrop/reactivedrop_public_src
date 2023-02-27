@@ -795,3 +795,21 @@ asw_pickup_50calmg : "50cal Machine Gun"
 	"Movable follow hint node for marines"
 [
 ]
+
+@PointClass base(Targetname, EnableDisable) = rd_hud_counter : "Heads-Up Display Counter"
+[
+	SetCount(integer) : "Starting Count" : 0 : "The initial value of this counter."
+	MinCount(integer) : "Minimum Count" : 0 : "The lowest value this counter can reach via the Add/Subtract inputs."
+	MaxCount(integer) : "Maximum Count" : 0 : "The highest value this counter can reach via the Add/Subtract inputs."
+	label(string) : "Label" : "" : "Text to show next to the number. Can be a translation key like #asw_stats_kills."
+	format(string) : "Number Format" : "%s1" : "How the number should be formatted. %s1 is replaced with the value of the counter."
+	order(integer) : "Order" : 0 : "Higher numbers are closer to the bottom of the list."
+	holdtime(float) : "Hold Time" : "0.5" : "Time between changing the value of the counter and the counter starting to animate."
+	interptime(float) : "Interpolate Time" : "0.5" : "Time between the counter starting to animate and the end of the animation."
+
+	input SetCount(integer) : "Set the value of the counter. Not limited by minimum and maximum count."
+	input Add(integer) : "Add to the value of the counter."
+	input Subtract(integer) : "Subtract from the value of the counter."
+	input SetLimitNPC(target_destination) : "Hide this counter from all players who are not viewing the specified NPC (eg. marine)."
+	input ClearLimitNPC(void) : "Make this counter visible to all players."
+]
