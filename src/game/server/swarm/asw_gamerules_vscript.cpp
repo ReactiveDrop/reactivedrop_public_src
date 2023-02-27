@@ -816,14 +816,44 @@ void Script_CheckSpecialAchievementEligibility()
 		return;
 	}
 
+	if ( FStrEq( STRING( gpGlobals->mapname ), "rd-acc6_labruins" ) )
+	{
+		CBaseEntity *pScriptEnt = gEntList.FindEntityByName( NULL, "script_doorlogic" );
+		if ( !pScriptEnt || !pScriptEnt->GetScriptScope() )
+			return;
+
+		ScriptVariant_t bBossBattleEnded, iHitCount;
+		if ( !g_pScriptVM->GetValue( pScriptEnt->GetScriptScope(), "bBossBattleEnded", &bBossBattleEnded ) )
+			return;
+		if ( !g_pScriptVM->GetValue( pScriptEnt->GetScriptScope(), "iHitCount", &iHitCount ) )
+			return;
+
+		if ( bBossBattleEnded.Get<bool>() && iHitCount.Get<int>() == 3 )
+		{
+			for ( int iMR = 0; iMR < pGameResource->GetMaxMarineResources(); iMR++ )
+			{
+				CASW_Marine_Resource *pMR = pGameResource->GetMarineResource( iMR );
+				if ( !pMR )
+					continue;
+
+				if ( pMR->GetHealthPercent() > 0 && pMR->IsInhabited() && pMR->GetCommander() )
+				{
+					pMR->GetCommander()->AwardAchievement( ACHIEVEMENT_RD_ACC_MUONGEM_KILL );
+				}
+			}
+		}
+	}
+
 	if ( FStrEq( STRING( gpGlobals->mapname ), "rd-ht-marine_academy" ) )
 	{
-		ScriptVariant_t element;
-		ScriptVariant_t CurrentArea;
-		if ( !g_pScriptVM->GetValue( "g_current_area", &CurrentArea ) )
+		CBaseEntity *pRulesProxy = gEntList.FindEntityByClassname( NULL, "asw_gamerules" );
+		if ( !pRulesProxy || !pRulesProxy->GetScriptScope() )
 			return;
-		ScriptVariant_t AreaVisitCount;
-		if ( !g_pScriptVM->GetValue( "g_area_scores_t", &AreaVisitCount ) )
+
+		ScriptVariant_t element, CurrentArea, AreaVisitCount;
+		if ( !g_pScriptVM->GetValue( pRulesProxy->GetScriptScope(), "g_current_area", &CurrentArea ) )
+			return;
+		if ( !g_pScriptVM->GetValue( pRulesProxy->GetScriptScope(), "g_area_scores_t", &AreaVisitCount ) )
 			return;
 
 		// entering volcano
