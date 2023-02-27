@@ -5,11 +5,12 @@
 // $NoKeywords: $
 //=============================================================================//
 #include "cbase.h"
-#include "c_asw_inhabitable_npc.h"
+#include "c_asw_marine.h"
 #include "c_asw_physics_prop_statue.h"
 #include "c_asw_mesh_emitter_entity.h"
 #include "c_asw_egg.h"
 #include "c_asw_clientragdoll.h"
+#include "c_asw_weapon.h"
 
 #include "ProxyEntity.h"
 #include "materialsystem/IMaterial.h"
@@ -187,6 +188,22 @@ void CASW_Model_FX_Proxy::OnBind( C_BaseEntity *pEnt )
 		m_pDetailBlendFactor->SetFloatValue( 0.4f );
 		TextureTransform( 0, 5.0f );
 		return;
+	}
+
+	C_ASW_Weapon *pWeapon = dynamic_cast< C_ASW_Weapon * >( pEnt );
+	if ( pWeapon && pWeapon->GetOwner() && pWeapon->GetOwner()->IsInhabitableNPC() )
+	{
+		C_ASW_Inhabitable_NPC *pNPC = assert_cast< C_ASW_Inhabitable_NPC * >( pWeapon->GetOwner() );
+
+		bShockBig = pNPC->m_bElectroStunned;
+		if ( !bShockBig && pWeapon->Classify() == CLASS_ASW_ELECTRIFIED_ARMOR )
+		{
+			C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pNPC );
+			bShockBig = pMarine && pMarine->IsElectrifiedArmorActive();
+		}
+		bOnFire = pNPC->m_bOnFire;
+		flFrozen = pNPC->GetMoveType() == MOVETYPE_NONE ? 0.0f : pNPC->GetFrozenAmount();
+		UpdateEffects( bShockBig, bOnFire, flFrozen );
 	}
 
 	m_pDetailBlendFactor->SetFloatValue( 0.0f );
