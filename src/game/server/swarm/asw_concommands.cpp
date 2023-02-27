@@ -1705,7 +1705,7 @@ static ConCommand asw_set_solid( "asw_set_solid", asw_set_solid_f, "Sets solid s
 //------------------------------------------------------------------------------
 // Purpose: Create an NPC of the given type
 //------------------------------------------------------------------------------
-void CC_ASW_Ent_Create( const CCommand& args )
+void CC_ASW_Ent_Create( const CCommand &args )
 {
 	MDLCACHE_CRITICAL_SECTION();
 
@@ -1713,34 +1713,42 @@ void CC_ASW_Ent_Create( const CCommand& args )
 	CBaseEntity::SetAllowPrecache( true );
 
 	// Try to create entity
-	CBaseEntity *entity = dynamic_cast< CBaseEntity * >( CreateEntityByName(args[1]) );
-	if (entity)
+	CBaseEntity *entity = CreateEntityByName( args[1] );
+	if ( entity )
 	{
-		entity->Precache();		
+		for ( int i = 2; i + 1 < args.ArgC(); i += 2 )
+		{
+			entity->KeyValue( args[i], args[i + 1] );
+		}
+
+		entity->Precache();
 
 		// Now attempt to drop into the world
-		CASW_Player* pPlayer = ToASW_Player( UTIL_GetCommandClient() );
-		if (!pPlayer)
+		CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
+		if ( !pPlayer )
+		{
+			UTIL_Remove( entity );
+			CBaseEntity::SetAllowPrecache( allowPrecache );
 			return;
+		}
 
 		trace_t tr;
 		UTIL_TraceLine( pPlayer->GetCrosshairTracePos() + Vector( 0, 0, 30 ),
-			pPlayer->GetCrosshairTracePos(), MASK_SOLID, 
+			pPlayer->GetCrosshairTracePos(), MASK_SOLID,
 			pPlayer, COLLISION_GROUP_NONE, &tr );
 
 		if ( tr.fraction != 0.0 )
 		{
-			// Raise the end position a little up off the floor, place the npc and drop him down
+			// Raise the end position a little up off the floor
 			tr.endpos.z += 12;
 			entity->Teleport( &tr.endpos, NULL, NULL );
-			// this was causing aliens to spawn under ground 
-			//UTIL_DropToFloor( entity, MASK_SOLID );
 		}
-		DispatchSpawn(entity);
+		DispatchSpawn( entity );
 	}
+
 	CBaseEntity::SetAllowPrecache( allowPrecache );
 }
-static ConCommand asw_ent_create("asw_ent_create", CC_ASW_Ent_Create, "Creates an entity of the given type in front of the current marine.", FCVAR_GAMEDLL | FCVAR_CHEAT);
+static ConCommand asw_ent_create( "asw_ent_create", CC_ASW_Ent_Create, "Creates an entity of the given type in front of the current marine.", FCVAR_GAMEDLL | FCVAR_CHEAT );
 
 
 // This is used by the PlayerListPanel when the player clicks the restart mission button
