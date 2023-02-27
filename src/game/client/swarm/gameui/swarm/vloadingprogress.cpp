@@ -476,7 +476,7 @@ void LoadingProgress::SetupControlStates()
 			int screenWide, screenTall;
 			surface()->GetScreenSize( screenWide, screenTall );
 			char filename[MAX_PATH];
-			V_snprintf( filename, sizeof( filename ), "console/background01rd" ); // TODO: engine->GetStartupImage( filename, sizeof( filename ), screenWide, screenTall );
+			V_snprintf( filename, sizeof( filename ), "console/background01rd_widescreen" ); // TODO: engine->GetStartupImage( filename, sizeof( filename ), screenWide, screenTall );
 			m_pBGImage->SetImage( CFmtStr( "../%s", filename ) );
 		}
 
@@ -575,7 +575,6 @@ void LoadingProgress::SetLeaderboardData( const char *pszLevelName, PublishedFil
 		Q_snwprintf( m_wszLeaderboardTitle, ARRAYSIZE( m_wszLeaderboardTitle ), L"%s", wszLevelDisplayName );
 	}
 
-	int iSkillLevel = ASWGameRules() ? ASWGameRules()->GetSkillLevel() : asw_skill.GetInt();
 	char szLeaderboardName[k_cchLeaderboardNameMax]{};
 	g_ASW_Steamstats.SpeedRunLeaderboardName( szLeaderboardName, sizeof( szLeaderboardName ), pszLevelName, nLevelAddon, pszChallengeName, nChallengeAddon );
 	if ( !g_ASW_Steamstats.IsLBWhitelisted( szLeaderboardName ) )
