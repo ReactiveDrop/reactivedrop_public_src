@@ -569,9 +569,9 @@ public:
 						ReactiveDropInventory::ItemInstance_t instance{ pParam->m_handle, 0 };
 						const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( instance.ItemDefID );
 
-						if ( !pDef || pDef->ItemSlot != pResult->GetName() )
+						if ( !pDef || !pDef->ItemSlotMatches( pResult->GetName() ) )
 						{
-							DevWarning( "Invalid item in slot %s\n", pResult->GetName() );
+							DevWarning( "Invalid item in slot %s; ignoring\n", pResult->GetName() );
 						}
 						else
 						{
@@ -922,6 +922,26 @@ namespace ReactiveDropInventory
 	if ( !pInventory ) \
 		return
 #endif
+
+	bool ItemDef_t::ItemSlotMatches( const char *szRequiredSlot ) const
+	{
+		Assert( szRequiredSlot );
+		if ( !szRequiredSlot )
+			return false;
+
+		if ( ItemSlot == szRequiredSlot )
+			return true;
+
+		for ( int i = 0; i < NELEMS( g_InventorySlotAliases ); i++ )
+		{
+			if ( !V_strcmp( g_InventorySlotAliases[i][0], szRequiredSlot ) && ItemSlot == g_InventorySlotAliases[i][1] )
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
 
 	static bool ParseDynamicProps( CUtlStringMap<CUtlString> & props, const char *szDynamicProps )
 	{
@@ -1565,9 +1585,9 @@ namespace ReactiveDropInventory
 		{
 			ReactiveDropInventory::ItemInstance_t instance{ hResult, 0 };
 			const ReactiveDropInventory::ItemDef_t *pItemDef = GetItemDef( instance.ItemDefID );
-			if ( !pItemDef || pItemDef->ItemSlot != szRequiredSlot )
+			if ( !pItemDef || !pItemDef->ItemSlotMatches( szRequiredSlot ) )
 			{
-				DevWarning( "ReactiveDropInventory::ValidateItemData: item fits in slot '%s', not '%s'\n", pItemDef ? pItemDef->ItemSlot.Get() : "<NO DEF>", szRequiredSlot);
+				DevWarning( "ReactiveDropInventory::ValidateItemData: item fits in slot '%s', not '%s'\n", pItemDef ? pItemDef->ItemSlot.Get() : "<NO DEF>", szRequiredSlot );
 
 				bValid = false;
 				return true;

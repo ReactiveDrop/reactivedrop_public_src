@@ -105,7 +105,7 @@ void CRD_Collection_Tab_Inventory::OnThink()
 	for ( uint32_t i = 0; i < nResults; i++ )
 	{
 		const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( details[i].m_iDefinition );
-		if ( !pDef || pDef->ItemSlot != m_szSlot )
+		if ( !pDef || !pDef->ItemSlotMatches( m_szSlot ) )
 		{
 			continue;
 		}
@@ -186,7 +186,7 @@ void CRD_Collection_Tab_Inventory::LoadCachedInventory()
 	FOR_EACH_SUBKEY( pCache, pItem )
 	{
 		const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( pItem->GetInt( "d" ) );
-		if ( !pDef || pDef->ItemSlot != m_szSlot )
+		if ( !pDef || !pDef->ItemSlotMatches( m_szSlot ) )
 			continue;
 
 		m_pGrid->AddEntry( new CRD_Collection_Entry_Inventory( m_pGrid, "CollectionEntryInventory", pItem, i ) );

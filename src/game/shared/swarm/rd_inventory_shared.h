@@ -31,6 +31,11 @@ namespace ReactiveDropInventory
 		"extra15", "extra16", "extra17",
 	};
 #define RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS NELEMS( ReactiveDropInventory::g_InventorySlotNames )
+	constexpr const char *const g_InventorySlotAliases[][2] =
+	{
+		// first value is the name from g_InventorySlotNames, second value is the value to also accept from item definitions.
+		{ "", "" }, // placeholder until we have any of these
+	};
 
 	// Data extracted from the Steam Inventory Service Schema.
 	struct ItemDef_t
@@ -57,6 +62,8 @@ namespace ReactiveDropInventory
 		vgui::IImage *Icon{};
 		vgui::IImage *IconSmall{};
 #endif
+
+		bool ItemSlotMatches( const char *szRequiredSlot ) const;
 	};
 
 	// Data extracted from SteamInventoryResult_t; it is safe to destroy the result after constructing this data type.
