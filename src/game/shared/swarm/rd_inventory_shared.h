@@ -35,10 +35,13 @@ namespace ReactiveDropInventory
 #define RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE 1
 #define RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_WEAPON 9
 #define RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_EXTRA 36
+#pragma warning(push)
+#pragma warning(disable: 4130) // we're comparing string literals, but if the comparison fails due to memory weirdness, it'll fail at compile time, so it's fine
 	COMPILE_TIME_ASSERT( g_InventorySlotNames[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MEDAL] == "medal" );
 	COMPILE_TIME_ASSERT( g_InventorySlotNames[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE] == "marine0" );
 	COMPILE_TIME_ASSERT( g_InventorySlotNames[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_WEAPON] == "weapon0" );
 	COMPILE_TIME_ASSERT( g_InventorySlotNames[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_EXTRA] == "extra0" );
+#pragma warning(pop)
 	constexpr const char *const g_InventorySlotAliases[][2] =
 	{
 		// first value is the name from g_InventorySlotNames, second value is the value to also accept from item definitions.

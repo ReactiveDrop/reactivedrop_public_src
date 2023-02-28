@@ -955,9 +955,9 @@ void CASW_VGUI_Hack_Wire_Tile_Container::PerformLayout()
 {
 	BaseClass::PerformLayout();
 
-	float m_fScale = ScreenHeight() / 768.0f;
-	int border = 10.0f * m_fScale;
-	int title_border = 30.0f * m_fScale;
+	float fScale = ScreenHeight() / 768.0f;
+	int border = 10.0f * fScale;
+	int title_border = 30.0f * fScale;
 
 	// calculate size of our child hack panel
 	int childw = 600;
@@ -988,7 +988,7 @@ void CASW_VGUI_Hack_Wire_Tile_Container::PerformLayout()
 
 	if (m_bFrameMinimized)
 	{
-		w = m_fScale * 0.3f * 1024.0f;
+		w = fScale * 0.3f * 1024.0f;
 		vgui::HFont title_font = m_pTitleLabel->GetFont();
 		int title_tall = vgui::surface()->GetFontTall(title_font);
 		h = title_tall * 1.2f;
