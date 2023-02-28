@@ -85,10 +85,11 @@ class CASW_EquipItem
 public:
 	DECLARE_CLASS_NOBASE( CASW_EquipItem );
 
-	CASW_EquipItem( int iItemIndex, const char *szEquipClass, bool bSelectableInBriefing );
+	CASW_EquipItem( int iItemIndex, const char *szEquipClass, bool bSelectableInBriefing, int iInventoryIndex = -1 );
 
 	// the items index in the list of equipment
 	const int m_iItemIndex;
+	const int m_iInventoryIndex;
 	const char *const m_szEquipClass;
 	const bool m_bSelectableInBriefing; // if false, this item won't show up on the loadout screen
 	string_t m_EquipClass;

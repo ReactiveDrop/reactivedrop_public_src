@@ -31,6 +31,14 @@ namespace ReactiveDropInventory
 		"extra15", "extra16", "extra17",
 	};
 #define RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS NELEMS( ReactiveDropInventory::g_InventorySlotNames )
+#define RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MEDAL 0
+#define RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE 1
+#define RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_WEAPON 9
+#define RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_EXTRA 36
+	COMPILE_TIME_ASSERT( g_InventorySlotNames[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MEDAL] == "medal" );
+	COMPILE_TIME_ASSERT( g_InventorySlotNames[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE] == "marine0" );
+	COMPILE_TIME_ASSERT( g_InventorySlotNames[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_WEAPON] == "weapon0" );
+	COMPILE_TIME_ASSERT( g_InventorySlotNames[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_EXTRA] == "extra0" );
 	constexpr const char *const g_InventorySlotAliases[][2] =
 	{
 		// first value is the name from g_InventorySlotNames, second value is the value to also accept from item definitions.
