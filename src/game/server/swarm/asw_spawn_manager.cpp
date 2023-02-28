@@ -527,6 +527,8 @@ void CASW_Spawn_Manager::UpdateCandidateNodes()
 			continue;
 
 		Vector vecPos = pNode->GetPosition( CANDIDATE_ALIEN_HULL );
+		if ( !ValidSpawnPoint( vecPos, NAI_Hull::Mins( CANDIDATE_ALIEN_HULL ), NAI_Hull::Maxs( CANDIDATE_ALIEN_HULL ), false ) )
+			continue;
 		
 		// find the nearest marine to this node
 		float flDistance = 0;
