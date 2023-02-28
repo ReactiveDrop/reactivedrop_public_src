@@ -496,10 +496,17 @@ public:
 	{
 		DevMsg( 2, "[%c] Steam Inventory result for %08x received: EResult %d (%s)\n", IsClientDll() ? 'C' : 'S', pParam->m_handle, pParam->m_result, UTIL_RD_EResultToString( pParam->m_result ) );
 
+#ifdef CLIENT_DLL
+		ISteamInventory *pInventory = SteamInventory();
+#else
+		ISteamInventory *pInventory = engine->IsDedicatedServer() ? SteamGameServerInventory() : SteamInventory();
+#endif
+		Assert( pInventory );
+
 		if ( pParam->m_handle == m_DebugPrintInventoryResult )
 		{
 			DebugPrintResult( m_DebugPrintInventoryResult );
-			SteamInventory()->DestroyResult( m_DebugPrintInventoryResult );
+			pInventory->DestroyResult( m_DebugPrintInventoryResult );
 			m_DebugPrintInventoryResult = k_SteamInventoryResultInvalid;
 
 			return;
@@ -511,8 +518,13 @@ public:
 			HandleItemDropResult( m_PromotionalItemsResult );
 			if ( m_PromotionalItemsNext.Count() )
 			{
-				SteamInventory()->AddPromoItems( &m_PromotionalItemsResult, m_PromotionalItemsNext.Base(), m_PromotionalItemsNext.Count() );
+				pInventory->AddPromoItems( &m_PromotionalItemsResult, m_PromotionalItemsNext.Base(), m_PromotionalItemsNext.Count() );
 				m_PromotionalItemsNext.Purge();
+			}
+			else if ( m_bRequestGenericPromotionalItemsAgain )
+			{
+				pInventory->GrantPromoItems( &m_PromotionalItemsResult );
+				m_bRequestGenericPromotionalItemsAgain = false;
 			}
 
 			return;
@@ -530,7 +542,7 @@ public:
 		{
 			BaseModUI::ItemShowcase::ShowItems( pParam->m_handle, 0, -1, BaseModUI::ItemShowcase::MODE_INSPECT );
 
-			SteamInventory()->DestroyResult( m_InspectItemResult );
+			pInventory->DestroyResult( m_InspectItemResult );
 			m_InspectItemResult = k_SteamInventoryResultInvalid;
 
 			return;
@@ -540,7 +552,7 @@ public:
 		{
 			CacheUserInventory( m_GetFullInventoryForCacheResult );
 
-			SteamInventory()->DestroyResult( m_GetFullInventoryForCacheResult );
+			pInventory->DestroyResult( m_GetFullInventoryForCacheResult );
 			m_GetFullInventoryForCacheResult = k_SteamInventoryResultInvalid;
 
 			return;
@@ -625,6 +637,7 @@ public:
 #ifdef CLIENT_DLL
 	SteamInventoryResult_t m_PromotionalItemsResult{ k_SteamInventoryResultInvalid };
 	CUtlVector<SteamItemDef_t> m_PromotionalItemsNext{};
+	bool m_bRequestGenericPromotionalItemsAgain{ false };
 	SteamInventoryResult_t m_PlaytimeItemGeneratorResult[3]{ k_SteamInventoryResultInvalid, k_SteamInventoryResultInvalid, k_SteamInventoryResultInvalid };
 	SteamInventoryResult_t m_InspectItemResult{ k_SteamInventoryResultInvalid };
 	SteamInventoryResult_t m_GetFullInventoryForCacheResult{ k_SteamInventoryResultInvalid };
@@ -1585,6 +1598,7 @@ namespace ReactiveDropInventory
 		if ( s_RD_Inventory_Manager.m_PromotionalItemsResult != k_SteamInventoryResultInvalid )
 		{
 			DevMsg( "Not requesting generic promo items: request already in-flight.\n" );
+			s_RD_Inventory_Manager.m_bRequestGenericPromotionalItemsAgain = true;
 			return;
 		}
 
