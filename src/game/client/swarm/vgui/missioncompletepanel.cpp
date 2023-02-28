@@ -226,6 +226,8 @@ void MissionCompletePanel::ShowImageAndPlaySound()
 
 	m_pResultImage->SetMouseInputEnabled( false );
 
+	// check if we earned any goodies
+	ReactiveDropInventory::RequestGenericPromoItems();
 
 	// set up fail advice
 	if ( m_bSuccess )

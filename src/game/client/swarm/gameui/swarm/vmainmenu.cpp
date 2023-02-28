@@ -989,9 +989,6 @@ void MainMenu::Activate()
 	// we've left whatever server we were on; get rid of the stuff we borrowed
 	g_ReactiveDropWorkshop.UnloadTemporaryAddons();
 
-	// see if we earned any goodies since the last time we were on the main menu
-	ReactiveDropInventory::RequestGenericPromoItems();
-
 	static bool bRunOnce = true;
 	if ( bRunOnce )
 	{
@@ -1006,6 +1003,9 @@ void MainMenu::Activate()
 			// if relayed connections are enabled, use them by default instead of trying direct IPv4 UDP first
 			ConVarRef( "net_steamcnx_enabled" ).SetValue( 2 );
 		}
+
+		// see if we earned any goodies since last time we played
+		ReactiveDropInventory::RequestGenericPromoItems();
 
 		// update soundcache on initial load
 		engine->ClientCmd_Unrestricted( "snd_restart; update_addon_paths; mission_reload; snd_updateaudiocache; snd_restart" );
