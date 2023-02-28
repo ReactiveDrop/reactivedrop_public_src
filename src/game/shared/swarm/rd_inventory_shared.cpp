@@ -616,14 +616,14 @@ public:
 
 					if ( bValid )
 					{
-						pPlayer->SetEquippedItemForSlot( ReactiveDropInventory::g_InventorySlotNames[j], ReactiveDropInventory::ItemInstance_t{ pParam->m_handle, 0 } );
+						pPlayer->m_EquippedItemData[j].SetFromInstance( ReactiveDropInventory::ItemInstance_t{ pParam->m_handle, 0 } );
 						return;
 					}
 
 					Warning( "Player %s item in slot %s is invalid.\n", pPlayer->GetASWNetworkID(), ReactiveDropInventory::g_InventorySlotNames[j] );
 					DebugPrintResult( pParam->m_handle );
 					ReactiveDropInventory::DecodeItemData( pPlayer->m_EquippedItems[j], "" );
-					pPlayer->ClearEquippedItemForSlot( ReactiveDropInventory::g_InventorySlotNames[j] );
+					pPlayer->m_EquippedItemData[j].Reset();
 
 					return;
 				}

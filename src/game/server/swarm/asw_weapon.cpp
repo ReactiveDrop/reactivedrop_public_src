@@ -12,6 +12,18 @@
 
 LINK_ENTITY_TO_CLASS( asw_weapon, CASW_Weapon );
 
+static void *SendProxy_WeaponItemDataForOwningPlayer( const SendProp *pProp, const void *pStructBase, const void *pData, CSendProxyRecipients *pRecipients, int objectID )
+{
+	static CRD_ItemInstance s_BlankInstance;
+
+	const CASW_Weapon *pWeapon = static_cast< const CASW_Weapon * >( pData );
+	CASW_Player *pPlayer = pWeapon->m_hOriginalOwnerPlayer;
+	if ( !pPlayer || pWeapon->m_iInventoryEquipSlotIndex == -1 )
+		return &s_BlankInstance;
+
+	return &pPlayer->m_EquippedItemData[pWeapon->m_iInventoryEquipSlotIndex];
+}
+
 BEGIN_NETWORK_TABLE_NOBASE( CASW_Weapon, DT_ASWLocalWeaponData )
 	SendPropIntWithMinusOneFlag( SENDINFO(m_iClip2 ), 8 ),
 	SendPropInt( SENDINFO(m_iSecondaryAmmoType ), 8 ),
@@ -50,6 +62,8 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Weapon, DT_ASW_Weapon)
 	SendPropIntWithMinusOneFlag( SENDINFO(m_iClip1 ), 8 ),
 	SendPropInt( SENDINFO(m_iPrimaryAmmoType ), 8 ),
 	SendPropBool(SENDINFO(m_bIsTemporaryPickup)),
+	SendPropInt( SENDINFO( m_iOriginalOwnerSteamAccount ), -1, SPROP_UNSIGNED ),
+	SendPropDataTable( "m_InventoryItemData", 0, &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ), SendProxy_WeaponItemDataForOwningPlayer ),
 END_SEND_TABLE()
 
 //---------------------------------------------------------
@@ -93,6 +107,8 @@ CASW_Weapon::CASW_Weapon()
 
 	m_bPoweredUp = false;
 	m_bIsTemporaryPickup = false;
+	m_iOriginalOwnerSteamAccount = 0;
+	m_hOriginalOwnerPlayer = NULL;
 }
 
 
@@ -134,22 +150,8 @@ int	CASW_Weapon::UpdateTransmitState()
 
 int CASW_Weapon::ShouldTransmit( const CCheckTransmitInfo *pInfo )
 {
-	// asw temp
 	return FL_EDICT_ALWAYS;
 }
-
-// railgun
-/*
-class CASW_Railgun_Beam : public CBaseEntity
-{
-	DECLARE_SERVERCLASS();
-	DECLARE_CLASS( CASW_Railgun_Beam, CBaseEntity );
-};
-
-IMPLEMENT_SERVERCLASS_ST( CASW_Railgun_Beam, DT_ASW_Railgun_Beam )
-	
-END_SEND_TABLE()
-*/
 
 bool CASW_Weapon::ShouldAlienFlinch(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 {

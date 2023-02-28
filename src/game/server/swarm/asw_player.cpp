@@ -246,7 +246,7 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Player, DT_ASW_Player )
 	SendPropQAngles( SENDINFO( m_angMarineAutoAimFromClient ), 10, SPROP_CHANGES_OFTEN ),
 	SendPropBool( SENDINFO( m_bWantsSpectatorOnly ) ),
 	SendPropFloat( SENDINFO( m_flInactiveKickWarning ) ),
-	SendPropDataTable( SENDINFO_DT( m_EquippedMedal ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT_NAME( m_EquippedItemData[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MEDAL + 0], "m_EquippedMedal" ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Player )
@@ -425,6 +425,7 @@ CASW_Player::CASW_Player()
 	for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS; i++ )
 	{
 		m_EquippedItems[i] = k_SteamInventoryResultInvalid;
+		m_EquippedItemData[i].Reset();
 	}
 }
 
@@ -437,6 +438,7 @@ CASW_Player::~CASW_Player()
 
 	for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS; i++ )
 	{
+		// free inventory handle
 		ReactiveDropInventory::DecodeItemData( m_EquippedItems[i], "" );
 	}
 }
@@ -3378,20 +3380,4 @@ HSCRIPT CASW_Player::ScriptGetMarine()
 	}
 
 	return NULL;
-}
-
-void CASW_Player::ClearEquippedItemForSlot( const char *szSlot )
-{
-	if ( !V_strcmp( szSlot, "medal" ) )
-	{
-		m_EquippedMedal.GetForModify().Reset();
-	}
-}
-
-void CASW_Player::SetEquippedItemForSlot( const char *szSlot, const ReactiveDropInventory::ItemInstance_t &instance )
-{
-	if ( !V_strcmp( szSlot, "medal" ) )
-	{
-		m_EquippedMedal.GetForModify().SetFromInstance( instance );
-	}
 }

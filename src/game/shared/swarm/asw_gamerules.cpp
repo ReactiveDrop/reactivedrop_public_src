@@ -4251,7 +4251,7 @@ bool CAlienSwarm::CanHaveAmmo( CBaseCombatCharacter *pPlayer, int iAmmoIndex )
 	return false;
 }
 
-void CAlienSwarm::GiveStartingWeaponToMarine( CASW_Marine *pMarine, int iEquipIndex, int iSlot )
+void CAlienSwarm::GiveStartingWeaponToMarine( CASW_Marine *pMarine, int iEquipIndex, int iSlot, bool bAssociateWithAccount )
 {
 	if ( !pMarine || iEquipIndex == -1 || iSlot < 0 || iSlot >= ASW_MAX_EQUIP_SLOTS )
 		return;
@@ -4270,6 +4270,14 @@ void CAlienSwarm::GiveStartingWeaponToMarine( CASW_Marine *pMarine, int iEquipIn
 	Assert( pWeapon );
 	if ( !pWeapon )
 		return;
+
+	CSteamID ownerID;
+	if ( bAssociateWithAccount && pMarine->GetCommander() && pMarine->GetCommander()->GetSteamID( &ownerID ) && ownerID.BIndividualAccount() )
+	{
+		pWeapon->m_iOriginalOwnerSteamAccount = ownerID.GetAccountID();
+		pWeapon->m_hOriginalOwnerPlayer = pMarine->GetCommander();
+		pWeapon->m_iInventoryEquipSlotIndex = pEquip->m_iInventoryIndex;
+	}
 
 	// If I have a name, make my weapon match it with "_weapon" appended
 	if ( pMarine->GetEntityName() != NULL_STRING )
@@ -6795,7 +6803,7 @@ void CAlienSwarm::ClientCommandKeyValues( edict_t *pEntity, KeyValues *pKeyValue
 		{
 			if ( KeyValues *pSlot = pKeyValues->FindKey( ReactiveDropInventory::g_InventorySlotNames[i] ) )
 			{
-				pPlayer->ClearEquippedItemForSlot( ReactiveDropInventory::g_InventorySlotNames[i] );
+				pPlayer->m_EquippedItemData[i].Reset();
 
 				if ( !ReactiveDropInventory::DecodeItemData( pPlayer->m_EquippedItems[i], pSlot->GetString() ) && *pSlot->GetString() != '\0' )
 				{
@@ -6826,7 +6834,7 @@ void CAlienSwarm::ClientCommandKeyValues( edict_t *pEntity, KeyValues *pKeyValue
 			if ( KeyValues *pSlot = pKeyValues->FindKey( ReactiveDropInventory::g_InventorySlotNames[i] ) )
 			{
 				SteamItemInstanceID_t id = pSlot->GetUint64();
-				pPlayer->ClearEquippedItemForSlot( ReactiveDropInventory::g_InventorySlotNames[i] );
+				pPlayer->m_EquippedItemData[i].Reset();
 
 				FOR_EACH_SUBKEY( pCache, pItem )
 				{
@@ -6835,7 +6843,7 @@ void CAlienSwarm::ClientCommandKeyValues( edict_t *pEntity, KeyValues *pKeyValue
 						continue;
 					}
 
-					pPlayer->SetEquippedItemForSlot( ReactiveDropInventory::g_InventorySlotNames[i], ReactiveDropInventory::ItemInstance_t{ pItem } );
+					pPlayer->m_EquippedItemData[i].SetFromInstance( ReactiveDropInventory::ItemInstance_t{ pItem } );
 
 					break;
 				}

@@ -8,6 +8,7 @@
 #include "iasw_client_usable_entity.h"
 #include "basecombatweapon_shared.h"
 #include "glow_outline_effect.h"
+#include "rd_inventory_shared.h"
 
 class C_ASW_Player;
 class C_ASW_Marine;
@@ -227,6 +228,9 @@ public:
 	virtual int DisplayMaxClip1() { return GetMaxClip1(); }
 	virtual int DisplayClip2() { return Clip2(); }
 	virtual int DisplayMaxClip2() { return GetMaxClip2(); }
+
+	CNetworkVar( AccountID_t, m_iOriginalOwnerSteamAccount );
+	CNetworkVarEmbedded( CRD_ItemInstance, m_InventoryItemData );
 
 private:	
 	C_ASW_Weapon( const C_ASW_Weapon & ); // not defined, not accessible
