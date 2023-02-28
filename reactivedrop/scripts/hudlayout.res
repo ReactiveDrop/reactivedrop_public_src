@@ -301,9 +301,9 @@
 	ASWHudKills
 	{
 		"fieldName"		"ASWHudKills"
-		"xpos"	"r100"
+		"xpos"	"r150"
 		"ypos"	"100"
-		"wide"	"90"
+		"wide"	"140"
 		"tall"  "200"
 		"visible" "1"
 		"enabled" "1"

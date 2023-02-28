@@ -6,7 +6,7 @@
 		"fieldName"		"CounterText"
 		"xpos"			"5"
 		"ypos"			"3"
-		"wide"			"80"
+		"wide"			"130"
 		"tall"			"14"
 		"visible"		"1"
 		"enabled"		"1"
