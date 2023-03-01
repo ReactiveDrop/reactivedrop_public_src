@@ -729,6 +729,7 @@
 		"Paragraph" "#rd_so_paragraph_antlionguard_2"
 		"Paragraph" "#rd_so_paragraph_antlionguard_3"
 		"Paragraph" "#rd_so_paragraph_antlionguard_4"
+		"Paragraph" "#rd_so_paragraph_antlionguard_5"
 	}
 
 	"WEAPON" {
