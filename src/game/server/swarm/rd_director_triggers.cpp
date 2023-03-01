@@ -16,6 +16,15 @@ END_DATADESC()
 
 IMPLEMENT_AUTO_LIST( IRD_No_Director_Aliens );
 
+void CRD_No_Director_Aliens::Spawn()
+{
+	SetSolid( SOLID_BSP );
+	SetSolidFlags( FSOLID_NOT_SOLID );
+	SetModel( STRING( GetModelName() ) );
+
+	BaseClass::Spawn();
+}
+
 void CRD_No_Director_Aliens::InputEnable( inputdata_t & inputdata )
 {
 	m_bDisabled = false;

@@ -15,6 +15,8 @@ public:
 	DECLARE_DATADESC();
 	IMPLEMENT_AUTO_LIST_GET();
 
+	void Spawn() override;
+
 	void InputEnable( inputdata_t & inputdata );
 	void InputDisable( inputdata_t & inputdata );
 	void InputToggle( inputdata_t & inputdata );
