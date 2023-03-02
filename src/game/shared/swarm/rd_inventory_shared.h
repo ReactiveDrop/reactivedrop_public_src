@@ -110,7 +110,10 @@ namespace ReactiveDropInventory
 	void AddPromoItem( SteamItemDef_t id );
 	void RequestGenericPromoItems();
 	void CheckPlaytimeItemGenerators( int iMarineClass );
+
+	void CommitDynamicProperties();
 #endif
+	void OnHitConfirm( CBaseEntity *pAttacker, CBaseEntity *pTarget, Vector vecDamagePosition, bool bKilled, bool bDamageOverTime, bool bBlastDamage, int iDisposition, float flDamage, CBaseEntity *pWeapon );
 }
 
 #define RD_ITEM_MAX_ACCESSORIES 4

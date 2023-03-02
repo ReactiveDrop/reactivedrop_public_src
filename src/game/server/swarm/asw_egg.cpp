@@ -554,8 +554,10 @@ int CASW_Egg::OnTakeDamage( const CTakeDamageInfo &info )
 				WRITE_BOOL( info.GetDamageType() & DMG_BLAST );
 				WRITE_UBITLONG( pInhabitableAttacker->IRelationType( this ), 3 );
 				WRITE_FLOAT( MIN( info.GetDamage(), iHealthBefore ) );
-				WRITE_ENTITY( info.GetWeapon() ? info.GetWeapon()->entindex() : 0 );
+				WRITE_ENTITY( info.GetWeapon() ? info.GetWeapon()->entindex() : -1 );
 			MessageEnd();
+
+			ReactiveDropInventory::OnHitConfirm( pAttacker, this, info.GetDamagePosition(), GetHealth() <= 0, info.GetDamageType() & DMG_DIRECT, info.GetDamageType() & DMG_BLAST, pInhabitableAttacker->IRelationType( this ), MIN( info.GetDamage(), iHealthBefore ), info.GetWeapon() );
 		}
 
 		if ( ( info.GetDamageType() & DMG_BURN ) || ( info.GetDamageType() & DMG_BLAST ) )

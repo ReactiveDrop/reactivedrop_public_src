@@ -12,6 +12,7 @@
 #include "basecombatcharacter.h"
 #include "asw_gamerules.h"
 #include "EntityFlame.h"
+#include "rd_inventory_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -943,8 +944,10 @@ int CASW_Simple_Alien::OnTakeDamage( const CTakeDamageInfo &info )
 			WRITE_BOOL( info.GetDamageType() & DMG_BLAST );
 			WRITE_UBITLONG( pInhabitableAttacker->IRelationType( this ), 3 );
 			WRITE_FLOAT( MIN( info.GetDamage(), iHealthBefore ) );
-			WRITE_ENTITY( info.GetWeapon() ? info.GetWeapon()->entindex() : 0 );
+			WRITE_ENTITY( info.GetWeapon() ? info.GetWeapon()->entindex() : -1 );
 		MessageEnd();
+
+		ReactiveDropInventory::OnHitConfirm( pAttacker, this, info.GetDamagePosition(), GetHealth() <= 0, info.GetDamageType() & DMG_DIRECT, info.GetDamageType() & DMG_BLAST, pInhabitableAttacker->IRelationType( this ), MIN( info.GetDamage(), iHealthBefore ), info.GetWeapon() );
 	}
 
 	if (iDamage > 0 && GetHealth() > 0)

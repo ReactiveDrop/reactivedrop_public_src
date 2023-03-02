@@ -98,6 +98,7 @@ public:
 	//----------------------------
 	// Steam handling
 	bool		GetSteamID( CSteamID *pID );
+	CSteamID	GetSteamID();
 	uint64		GetSteamIDAsUInt64( void );
 #endif
 

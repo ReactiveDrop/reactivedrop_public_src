@@ -2,6 +2,9 @@
 #include "rd_inventory_shared.h"
 #include "rd_lobby_utils.h"
 #include "asw_util_shared.h"
+#include "asw_equipment_list.h"
+#include "asw_deathmatch_mode_light.h"
+#include "GameEventListener.h"
 #include "fmtstr.h"
 #include "jsmn.h"
 #include <ctime>
@@ -12,7 +15,12 @@
 #include <vgui_controls/Controls.h>
 #include <vgui_controls/RichText.h>
 #include "lodepng.h"
+#include "c_asw_player.h"
+#include "c_asw_marine_resource.h"
+#include "c_asw_marine.h"
+#include "c_asw_weapon.h"
 #include "asw_gamerules.h"
+#include "c_asw_game_resource.h"
 #include "asw_equipment_list.h"
 #include "rd_workshop.h"
 #include "rd_missions_shared.h"
@@ -22,21 +30,33 @@
 #include "c_user_message_register.h"
 #else
 #include "asw_player.h"
+#include "asw_marine_resource.h"
+#include "asw_marine.h"
+#include "asw_weapon.h"
+#include "asw_game_resource.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 
-#ifdef GAME_DLL
+#ifdef CLIENT_DLL
+ConVar rd_debug_inventory_dynamic_props( "cl_debug_inventory_dynamic_props", "0", FCVAR_NONE, "print debugging messages about dynamic property updates" );
+#else
 extern ConVar rd_dedicated_server_language;
+ConVar rd_debug_inventory_dynamic_props( "sv_debug_inventory_dynamic_props", "0", FCVAR_NONE, "print debugging messages about dynamic property updates" );
 #endif
 
 static CUtlMap<SteamItemDef_t, ReactiveDropInventory::ItemDef_t *> s_ItemDefs( DefLessFunc( SteamItemDef_t ) );
 static KeyValues *s_pItemDefCache = NULL;
 static bool s_bLoadedItemDefs = false;
 
-static class CRD_Inventory_Manager final : public CAutoGameSystem
+static bool DynamicPropertyAllowsArbitraryValues( const char *szPropertyName )
+{
+	return false;
+}
+
+static class CRD_Inventory_Manager final : public CAutoGameSystem, public CGameEventListener
 {
 public:
 	CRD_Inventory_Manager() : CAutoGameSystem( "CRD_Inventory_Manager" )
@@ -62,6 +82,7 @@ public:
 				pInventory->DestroyResult( m_PlaytimeItemGeneratorResult[i] );
 			}
 			pInventory->DestroyResult( m_InspectItemResult );
+			pInventory->DestroyResult( m_DynamicPropertyUpdateResult );
 			pInventory->DestroyResult( m_PreparingEquipNotification );
 			FOR_EACH_VEC( m_PendingEquipSend, i )
 			{
@@ -92,6 +113,11 @@ public:
 		{
 			Warning( "Failed to load inventory item definitions!\n" );
 		}
+
+		ListenForGameEvent( "mission_success" );
+		ListenForGameEvent( "mission_failed" );
+		ListenForGameEvent( "asw_mission_restart" );
+		ListenForGameEvent( "fast_hack_success" );
 
 #ifdef CLIENT_DLL
 		pInventory->GetAllItems( &m_GetFullInventoryForCacheResult );
@@ -152,6 +178,8 @@ public:
 
 		}
 		m_PendingEquipSend.Purge();
+
+		CommitDynamicProperties();
 
 		m_LocalEquipCache.PurgeAndDeleteElements();
 #endif
@@ -497,7 +525,417 @@ public:
 	}
 
 	CUtlVector<SteamItemDef_t> m_HighOwnedInventoryDefIDs;
+
+	struct PendingDynamicPropertyUpdate_t
+	{
+		SteamItemInstanceID_t ItemInstanceID{ k_SteamItemInstanceIDInvalid };
+		SteamItemDef_t ItemDefID{};
+		int PropertyIndex{};
+		int64_t NewValue{};
+	};
+	CUtlVector<PendingDynamicPropertyUpdate_t> m_PendingDynamicPropertyUpdates{};
+	SteamInventoryResult_t m_DynamicPropertyUpdateResult{ k_SteamInventoryResultInvalid };
+	bool m_bWantExtraDynamicPropertyCommit{};
+
+	void CommitDynamicProperties()
+	{
+		if ( m_PendingDynamicPropertyUpdates.Count() == 0 )
+		{
+			if ( rd_debug_inventory_dynamic_props.GetBool() )
+			{
+				Msg( "[C] Not committing dynamic property update (no properties changed)\n" );
+			}
+
+			return;
+		}
+
+		if ( m_DynamicPropertyUpdateResult != k_SteamInventoryResultInvalid )
+		{
+			if ( rd_debug_inventory_dynamic_props.GetBool() )
+			{
+				Msg( "[C] Not committing dynamic property update (%s)\n", m_bWantExtraDynamicPropertyCommit ? "request in flight and repeat already queued" : "request in flight, queueing repeat" );
+			}
+
+			m_bWantExtraDynamicPropertyCommit = true;
+
+			return;
+		}
+
+		ISteamInventory *pInventory = SteamInventory();
+		Assert( pInventory );
+		if ( !pInventory )
+		{
+			Warning( "Cannot commit dynamic property updates: no inventory API\n" );
+			return;
+		}
+
+		SteamInventoryUpdateHandle_t hUpdate = pInventory->StartUpdateProperties();
+
+		if ( rd_debug_inventory_dynamic_props.GetBool() )
+		{
+			Msg( "[C] Committing dynamic property update with %d changed properties (handle %016llx)\n", m_PendingDynamicPropertyUpdates.Count(), hUpdate );
+		}
+
+		FOR_EACH_VEC( m_PendingDynamicPropertyUpdates, i )
+		{
+			const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( m_PendingDynamicPropertyUpdates[i].ItemDefID );
+			const char *szProperty = pDef->CompressedDynamicProps[m_PendingDynamicPropertyUpdates[i].PropertyIndex];
+			if ( rd_debug_inventory_dynamic_props.GetBool() )
+			{
+				Msg( "[C] Setting item %llu (#%d:%s) property %d:%s value to %lld\n", m_PendingDynamicPropertyUpdates[i].ItemInstanceID, m_PendingDynamicPropertyUpdates[i].ItemDefID, pDef->Name.Get(),
+					m_PendingDynamicPropertyUpdates[i].PropertyIndex, szProperty, m_PendingDynamicPropertyUpdates[i].NewValue );
+			}
+
+			bool ok = pInventory->SetProperty( hUpdate, m_PendingDynamicPropertyUpdates[i].ItemInstanceID, szProperty, m_PendingDynamicPropertyUpdates[i].NewValue );
+			Assert( ok );
+			if ( !ok )
+			{
+				Warning( "ISteamInventory::SetProperty returned false\n" );
+			}
+		}
+
+		bool ok = pInventory->SubmitUpdateProperties( hUpdate, &m_DynamicPropertyUpdateResult );
+		Assert( ok );
+		if ( !ok )
+		{
+			Warning( "ISteamInventory::SubmitUpdateProperties returned false\n" );
+		}
+
+		m_PendingDynamicPropertyUpdates.Purge();
+	}
 #endif
+
+	void IncrementStrangePropertyOnStartingItems( SteamItemDef_t iAccessoryID, int64_t iAmount, int iPropertyIndex = 0, bool bRelative = true )
+	{
+		Assert( iPropertyIndex >= 0 );
+
+		CASW_Game_Resource *pGameResource = ASWGameResource();
+		if ( !pGameResource )
+		{
+			if ( rd_debug_inventory_dynamic_props.GetBool() )
+			{
+				Msg( "[%c] Cannot increment property on starting items: no game resource\n", IsClientDll() ? 'C' : 'S' );
+			}
+
+			return;
+		}
+
+		for ( int i = 1; i <= ( IsClientDll() ? 1 : gpGlobals->maxClients ); i++ )
+		{
+#ifdef CLIENT_DLL
+			C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+#else
+			CASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
+#endif
+			if ( !pPlayer )
+				continue;
+
+			CASW_Marine_Resource *pMR = pGameResource->GetFirstMarineResourceForPlayer( pPlayer );
+			if ( !pMR || pMR->m_OriginalCommander.Get() != pPlayer || ( !pMR->IsInhabited() && pMR->GetHealthPercent() > 0 ) )
+				continue;
+
+#ifdef CLIENT_DLL
+			CRD_ItemInstance &suitInstance = pMR->m_EquippedSuit;
+#else
+			CRD_ItemInstance &suitInstance = pPlayer->m_EquippedItemData[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + pMR->GetProfileIndex()];
+#endif
+
+			ModifyAccessoryDynamicPropValue( suitInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative );
+
+			for ( int j = 0; j < ASW_NUM_INVENTORY_SLOTS; j++ )
+			{
+#ifdef CLIENT_DLL
+				CRD_ItemInstance &weaponInstance = pMR->m_StartingEquipWeapons[j];
+#else
+				CASW_EquipItem *pEquip = g_ASWEquipmentList.GetItemForSlot( j, pMR->m_iInitialWeaponsInSlots[j] );
+				if ( !pEquip || pEquip->m_iInventoryIndex == -1 )
+					continue;
+				CRD_ItemInstance &weaponInstance = pPlayer->m_EquippedItemData[pEquip->m_iInventoryIndex];
+#endif
+
+				ModifyAccessoryDynamicPropValue( weaponInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative );
+			}
+		}
+	}
+
+	void IncrementStrangePropertyOnEquippedItems( CASW_Inhabitable_NPC *pNPC, SteamItemDef_t iAccessoryID, int64_t iAmount, int iPropertyIndex = 0, bool bRelative = true )
+	{
+		Assert( pNPC );
+		if ( !pNPC || !pNPC->IsInhabited() || !pNPC->GetCommander() )
+			return;
+
+#ifdef CLIENT_DLL
+		if ( !pNPC->GetCommander()->IsLocalPlayer() )
+			return;
+#endif
+
+		if ( CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC ) )
+		{
+			CASW_Marine_Resource *pMR = pMarine->GetMarineResource();
+			if ( pMR && pMR->m_OriginalCommander.Get() == pMR->m_Commander.Get() )
+			{
+#ifdef CLIENT_DLL
+				CRD_ItemInstance &suitInstance = pMR->m_EquippedSuit;
+#else
+				CRD_ItemInstance &suitInstance = pMR->m_Commander->m_EquippedItemData[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + pMR->GetProfileIndex()];
+#endif
+
+				ModifyAccessoryDynamicPropValue( suitInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative );
+			}
+		}
+
+		AccountID_t iRequiredAccount = pNPC->GetCommander()->GetSteamID().GetAccountID();
+
+		for ( int i = 0; i < MAX_WEAPONS; i++ )
+		{
+			CASW_Weapon *pWeapon = pNPC->GetASWWeapon( i );
+			if ( pWeapon && pWeapon->m_iOriginalOwnerSteamAccount == iRequiredAccount )
+			{
+#ifdef CLIENT_DLL
+				CRD_ItemInstance &weaponInstance = pWeapon->m_InventoryItemData;
+#else
+				if ( pWeapon->m_iInventoryEquipSlotIndex == -1 )
+					continue;
+				CRD_ItemInstance &weaponInstance = pNPC->GetCommander()->m_EquippedItemData[pWeapon->m_iInventoryEquipSlotIndex];
+#endif
+
+				ModifyAccessoryDynamicPropValue( weaponInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative );
+			}
+		}
+	}
+
+	void IncrementStrangePropertyOnWeaponAndGlobals( CASW_Inhabitable_NPC *pNPC, CASW_Weapon *pWeapon, SteamItemDef_t iAccessoryID, int64_t iAmount, int iPropertyIndex = 0, bool bRelative = true )
+	{
+		Assert( pNPC );
+		if ( !pNPC || !pNPC->IsInhabited() || !pNPC->GetCommander() )
+			return;
+
+#ifdef CLIENT_DLL
+		if ( !pNPC->GetCommander()->IsLocalPlayer() )
+			return;
+#endif
+
+		if ( CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC ) )
+		{
+			CASW_Marine_Resource *pMR = pMarine->GetMarineResource();
+			if ( pMR && pMR->m_OriginalCommander.Get() == pMR->m_Commander.Get() )
+			{
+#ifdef CLIENT_DLL
+				CRD_ItemInstance &suitInstance = pMR->m_EquippedSuit;
+#else
+				CRD_ItemInstance &suitInstance = pMR->m_Commander->m_EquippedItemData[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + pMR->GetProfileIndex()];
+#endif
+
+				ModifyAccessoryDynamicPropValue( suitInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative );
+			}
+		}
+
+		AccountID_t iRequiredAccount = pNPC->GetCommander()->GetSteamID().GetAccountID();
+		if ( pWeapon && pWeapon->m_iOriginalOwnerSteamAccount == iRequiredAccount )
+		{
+#ifdef CLIENT_DLL
+			CRD_ItemInstance &weaponInstance = pWeapon->m_InventoryItemData;
+#else
+			if ( pWeapon->m_iInventoryEquipSlotIndex == -1 )
+				return;
+			CRD_ItemInstance &weaponInstance = pNPC->GetCommander()->m_EquippedItemData[pWeapon->m_iInventoryEquipSlotIndex];
+#endif
+
+			ModifyAccessoryDynamicPropValue( weaponInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative );
+		}
+	}
+
+	bool ModifyAccessoryDynamicPropValue( CRD_ItemInstance &instance, SteamItemDef_t iAccessoryID, int iPropertyIndex, int64_t iAmount, bool bRelative = true )
+	{
+		if ( !instance.IsSet() )
+		{
+			// no item in slot
+			return false;
+		}
+
+		if ( !s_bLoadedItemDefs )
+		{
+			if ( rd_debug_inventory_dynamic_props.GetBool() )
+			{
+				static int s_nOfflineWarnings = 0;
+				if ( s_nOfflineWarnings < 10 )
+				{
+					s_nOfflineWarnings++;
+					Msg( "[%c] Cannot modify dynamic properties in offline mode.\n", IsClientDll() ? 'C' : 'S' );
+				}
+			}
+
+			return false;
+		}
+
+		const ReactiveDropInventory::ItemDef_t *pItemDef = ReactiveDropInventory::GetItemDef( instance.m_iItemDefID );
+		const ReactiveDropInventory::ItemDef_t *pAccessoryDef = ReactiveDropInventory::GetItemDef( iAccessoryID );
+		Assert( pItemDef );
+		Assert( pAccessoryDef );
+		if ( !pItemDef || !pAccessoryDef )
+			return false;
+
+		Assert( iPropertyIndex >= 0 && iPropertyIndex < pAccessoryDef->CompressedDynamicProps.Count() );
+		const char *szPropertyName = pAccessoryDef->CompressedDynamicProps[iPropertyIndex];
+		int iCombinedIndex = pItemDef->CompressedDynamicProps.Count() + iPropertyIndex;
+
+#ifdef CLIENT_DLL
+		ReactiveDropInventory::ItemInstance_t *pLocalInstance = NULL;
+		FOR_EACH_VEC( m_LocalEquipCache, i )
+		{
+			if ( m_LocalEquipCache[i]->ItemID == instance.m_iItemInstanceID )
+			{
+				pLocalInstance = m_LocalEquipCache[i];
+				break;
+			}
+		}
+		Assert( pLocalInstance );
+		if ( !pLocalInstance )
+		{
+			if ( rd_debug_inventory_dynamic_props.GetBool() )
+			{
+				Msg( "[C] Could not find local instance of item %llu '%s' for property update.\n", instance.m_iItemInstanceID, pItemDef->Name.Get() );
+			}
+
+			return false;
+		}
+#endif
+
+		FOR_EACH_VEC( instance.m_iAccessory, i )
+		{
+			if ( instance.m_iAccessory[i] == iAccessoryID )
+			{
+				int64_t iCounterBefore = instance.m_nCounter[iCombinedIndex];
+#ifdef CLIENT_DLL
+				PendingDynamicPropertyUpdate_t *pUpdate = NULL;
+				FOR_EACH_VEC( m_PendingDynamicPropertyUpdates, j )
+				{
+					if ( m_PendingDynamicPropertyUpdates[j].ItemInstanceID == instance.m_iItemInstanceID && m_PendingDynamicPropertyUpdates[j].ItemDefID == iAccessoryID && m_PendingDynamicPropertyUpdates[j].PropertyIndex == iPropertyIndex )
+					{
+						pUpdate = &m_PendingDynamicPropertyUpdates[j];
+						iCounterBefore = pUpdate->NewValue;
+						break;
+					}
+				}
+				if ( !pUpdate )
+				{
+					pUpdate = &m_PendingDynamicPropertyUpdates[m_PendingDynamicPropertyUpdates.AddToTail()];
+					pUpdate->ItemInstanceID = instance.m_iItemInstanceID;
+					pUpdate->ItemDefID = iAccessoryID;
+					pUpdate->PropertyIndex = iPropertyIndex;
+					iCounterBefore = strtoll( pLocalInstance->DynamicProps[szPropertyName], NULL, 10 );
+				}
+#endif
+				int64_t iCounterAfter = iCounterBefore;
+				if ( !bRelative )
+				{
+					iCounterAfter = iAmount;
+				}
+				else if ( iCounterBefore > 0 )
+				{
+					if ( iAmount > INT64_MAX - iCounterBefore )
+						iCounterAfter = INT64_MAX;
+					else
+						iCounterAfter += iAmount;
+				}
+				else
+				{
+					if ( iAmount < INT64_MIN - iCounterBefore )
+						iCounterAfter = INT64_MIN;
+					else
+						iCounterAfter += iAmount;
+				}
+
+				if ( iAccessoryID == 5007 && iPropertyIndex == 0 ) // 5007 = Alien Kill Streak
+				{
+					int64_t iBestStreak = instance.m_nCounter[iCombinedIndex + 1];
+#ifdef CLIENT_DLL
+					bool bFoundBestStreak = false;
+					FOR_EACH_VEC( m_PendingDynamicPropertyUpdates, j )
+					{
+						if ( m_PendingDynamicPropertyUpdates[j].ItemInstanceID == instance.m_iItemInstanceID && m_PendingDynamicPropertyUpdates[j].ItemDefID == iAccessoryID && m_PendingDynamicPropertyUpdates[j].PropertyIndex == iPropertyIndex + 1 )
+						{
+							iBestStreak = pUpdate->NewValue;
+							bFoundBestStreak = true;
+							break;
+						}
+					}
+					if ( !bFoundBestStreak )
+					{
+						iBestStreak = strtoll( pLocalInstance->DynamicProps[pAccessoryDef->CompressedDynamicProps[1]], NULL, 10 );
+					}
+#endif
+
+					if ( iBestStreak < iCounterAfter )
+					{
+						ModifyAccessoryDynamicPropValue( instance, iAccessoryID, 1, iCounterAfter, false );
+					}
+				}
+
+#ifdef CLIENT_DLL
+				pLocalInstance->DynamicProps[szPropertyName] = CFmtStr( "%lld", iCounterAfter );
+				pUpdate->NewValue = iCounterAfter;
+#endif
+				instance.m_nCounter.GetForModify( iCombinedIndex ) = iCounterAfter;
+
+				if ( rd_debug_inventory_dynamic_props.GetBool() )
+				{
+					DevMsg( "[%c] Item %llu #%d '%s' dynamic property '%s' '%s' changed (%s) %+lld from %lld to %lld.\n", IsClientDll() ? 'C' : 'S', instance.m_iItemInstanceID, instance.m_iItemDefID, pItemDef->Name.Get(), pAccessoryDef->Name.Get(), szPropertyName, bRelative ? "relative" : "absolute", iAmount, iCounterBefore, iCounterAfter );
+				}
+
+				return true;
+			}
+
+			if ( instance.m_iAccessory[i] )
+			{
+				const ReactiveDropInventory::ItemDef_t *pOtherAccessory = ReactiveDropInventory::GetItemDef( instance.m_iAccessory[i] );
+				Assert( pOtherAccessory );
+				if ( !pOtherAccessory )
+					return false;
+
+				iCombinedIndex += pOtherAccessory->CompressedDynamicProps.Count();
+			}
+		}
+
+		// no such accessory on item
+		return false;
+	}
+
+	void FireGameEvent( IGameEvent *event ) override
+	{
+		if ( FStrEq( event->GetName(), "mission_success" ) )
+		{
+			if ( !ASWDeathmatchMode() )
+			{
+				IncrementStrangePropertyOnStartingItems( 5000, 1 ); // Missions
+				IncrementStrangePropertyOnStartingItems( 5001, 1 ); // Successful Missions
+			}
+		}
+		else if ( FStrEq( event->GetName(), "mission_failure" ) )
+		{
+			if ( !ASWDeathmatchMode() )
+			{
+				IncrementStrangePropertyOnStartingItems( 5000, 1 ); // Missions
+			}
+		}
+		else if ( FStrEq( event->GetName(), "asw_mission_restart" ) )
+		{
+#ifdef CLIENT_DLL
+			if ( m_PendingDynamicPropertyUpdates.Count() )
+				CommitDynamicProperties();
+			else if ( m_DynamicPropertyUpdateResult == k_SteamInventoryResultInvalid )
+				QueueSendEquipNotification();
+#endif
+		}
+		else if ( FStrEq( event->GetName(), "fast_hack_success" ) )
+		{
+			CASW_Marine *pMarine = CASW_Marine::AsMarine( CBaseEntity::Instance( event->GetInt( "marine" ) ) );
+			if ( pMarine )
+			{
+				IncrementStrangePropertyOnEquippedItems( pMarine, 5004, 1 ); // Fast Hacks
+			}
+		}
+	}
 
 	void DebugPrintResult( SteamInventoryResult_t hResult )
 	{
@@ -626,6 +1064,34 @@ public:
 			m_GetFullInventoryForCacheResult = k_SteamInventoryResultInvalid;
 
 			return;
+		}
+
+		if ( pParam->m_handle == m_DynamicPropertyUpdateResult )
+		{
+			if ( rd_debug_inventory_dynamic_props.GetBool() )
+			{
+				DebugPrintResult( pParam->m_handle );
+			}
+
+			EResult eResult = pInventory->GetResultStatus( pParam->m_handle );
+
+			pInventory->DestroyResult( m_DynamicPropertyUpdateResult );
+			m_DynamicPropertyUpdateResult = k_SteamInventoryResultInvalid;
+
+			if ( m_bWantExtraDynamicPropertyCommit )
+			{
+				CommitDynamicProperties();
+				m_bWantExtraDynamicPropertyCommit = false;
+			}
+			else if ( eResult == k_EResultOK )
+			{
+				pInventory->DestroyResult( m_GetFullInventoryForCacheResult );
+				m_GetFullInventoryForCacheResult = k_SteamInventoryResultInvalid;
+
+				pInventory->GetAllItems( &m_GetFullInventoryForCacheResult );
+
+				QueueSendEquipNotification();
+			}
 		}
 
 		if ( pParam->m_handle == m_PreparingEquipNotification )
@@ -1144,11 +1610,6 @@ namespace ReactiveDropInventory
 	ItemInstance_t::ItemInstance_t( KeyValues *pKV )
 	{
 		FromKeyValues( pKV );
-	}
-
-	static bool DynamicPropertyAllowsArbitraryValues( const char *szPropertyName )
-	{
-		return false;
 	}
 
 	void ItemInstance_t::FormatDescription( wchar_t *wszBuf, size_t sizeOfBufferInBytes, const CUtlString &szDesc ) const
@@ -1918,7 +2379,37 @@ namespace ReactiveDropInventory
 		pInventory->TriggerItemDrop( &s_RD_Inventory_Manager.m_PlaytimeItemGeneratorResult[2], 7029 );
 #endif
 	}
+
+	void CommitDynamicProperties()
+	{
+		s_RD_Inventory_Manager.CommitDynamicProperties();
+	}
 #endif
+
+	void OnHitConfirm( CBaseEntity *pAttacker, CBaseEntity *pTarget, Vector vecDamagePosition, bool bKilled, bool bDamageOverTime, bool bBlastDamage, int iDisposition, float flDamage, CBaseEntity *pWeapon )
+	{
+		CASW_Game_Resource *pGameResource = ASWGameResource();
+		if ( !pGameResource )
+			return;
+
+		if ( !ASWDeathmatchMode() )
+		{
+			if ( pTarget && pTarget->IsInhabitableNPC() && bKilled )
+			{
+				s_RD_Inventory_Manager.IncrementStrangePropertyOnEquippedItems( assert_cast< CASW_Inhabitable_NPC * >( pTarget ), 5007, 0, 0, false ); // Alien Kill Streak
+			}
+
+			if ( !pAttacker || !pAttacker->IsInhabitableNPC() )
+				return;
+			CASW_Inhabitable_NPC *pInhabitableAttacker = assert_cast< CASW_Inhabitable_NPC * >( pAttacker );
+
+			if ( pTarget && pTarget->IsAlien() && bKilled )
+			{
+				s_RD_Inventory_Manager.IncrementStrangePropertyOnWeaponAndGlobals( pInhabitableAttacker, assert_cast< CASW_Weapon * >( pWeapon ), 5002, 1 ); // Aliens Killed
+				s_RD_Inventory_Manager.IncrementStrangePropertyOnWeaponAndGlobals( pInhabitableAttacker, assert_cast< CASW_Weapon * >( pWeapon ), 5007, 1 ); // Alien Kill Streak
+			}
+		}
+	}
 
 #undef GET_INVENTORY_OR_BAIL
 }
@@ -1989,7 +2480,7 @@ void CRD_ItemInstance::SetFromInstance( const ReactiveDropInventory::ItemInstanc
 
 	FOR_EACH_VEC( pDef->CompressedDynamicProps, i )
 	{
-		Assert( !ReactiveDropInventory::DynamicPropertyAllowsArbitraryValues( pDef->CompressedDynamicProps[i] ) );
+		Assert( !DynamicPropertyAllowsArbitraryValues( pDef->CompressedDynamicProps[i] ) );
 
 		if ( !V_stricmp( pDef->CompressedDynamicProps[i], "m_unQuantity" ) )
 		{
@@ -2020,7 +2511,7 @@ void CRD_ItemInstance::SetFromInstance( const ReactiveDropInventory::ItemInstanc
 			const ReactiveDropInventory::ItemDef_t *pAccessoryDef = ReactiveDropInventory::GetItemDef( iAccessoryID );
 			FOR_EACH_VEC( pAccessoryDef->CompressedDynamicProps, j )
 			{
-				Assert( !ReactiveDropInventory::DynamicPropertyAllowsArbitraryValues( pAccessoryDef->CompressedDynamicProps[j] ) );
+				Assert( !DynamicPropertyAllowsArbitraryValues( pAccessoryDef->CompressedDynamicProps[j] ) );
 				if ( instance.DynamicProps.Defined( pAccessoryDef->CompressedDynamicProps[j] ) )
 				{
 					const char *szPropValue = instance.DynamicProps[instance.DynamicProps.Find( pAccessoryDef->CompressedDynamicProps[j] )];

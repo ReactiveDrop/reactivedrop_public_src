@@ -87,6 +87,7 @@ public:
 	float m_fHurtPulse;
 
 	EHANDLE m_MarineEntity;
+	CNetworkHandle( C_ASW_Player, m_OriginalCommander );
 	CNetworkHandle( C_ASW_Player, m_Commander );
 	CNetworkVar( int, m_iCommanderIndex );
 
@@ -105,6 +106,9 @@ public:
 	CNetworkVar(bool, m_bUsingEngineeringAura);
 	CNetworkVar( int, m_iScore );
 	CNetworkVar( float, m_flFinishedMissionTime );
+
+	CRD_ItemInstance m_EquippedSuit;
+	CRD_ItemInstance m_StartingEquipWeapons[3];
 
 private:
 	C_ASW_Marine_Resource( const C_ASW_Marine_Resource & ); // not defined, not accessible

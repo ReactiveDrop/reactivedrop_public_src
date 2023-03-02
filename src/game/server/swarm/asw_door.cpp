@@ -1247,23 +1247,6 @@ int CASW_Door::OnTakeDamage( const CTakeDamageInfo &info )
 		// do the damage
 		m_iHealth -= damage;
 
-		if ( pAttacker && pAttacker->IsInhabitableNPC() )
-		{
-			CASW_Inhabitable_NPC *pInhabitableAttacker = assert_cast< CASW_Inhabitable_NPC * >( pAttacker );
-			CASW_ViewNPCRecipientFilter filter{ pInhabitableAttacker };
-			UserMessageBegin( filter, "RDHitConfirm" );
-				WRITE_ENTITY( pAttacker->entindex() );
-				WRITE_ENTITY( entindex() );
-				WRITE_VEC3COORD( info.GetDamagePosition() );
-				WRITE_BOOL( m_iHealth <= 0 );
-				WRITE_BOOL( info.GetDamageType() & DMG_DIRECT );
-				WRITE_BOOL( info.GetDamageType() & DMG_BLAST );
-				WRITE_UBITLONG( pInhabitableAttacker->IRelationType( this ), 3 );
-				WRITE_FLOAT( MIN( info.GetDamage(), iHealthBefore ) );
-				WRITE_ENTITY( info.GetWeapon() ? info.GetWeapon()->entindex() : 0 );
-			MessageEnd();
-		}
-
 		//Msg("Door health now %d (%d) seq %d frame %f DoorOpen=%d DoorOpening=%d DoorClosed=%d DoorClosing=%d\n",
 			//m_iHealth, (int) m_DentAmount, GetSequence(), GetCycle(),
 			//IsDoorOpen(), IsDoorOpening(), IsDoorClosed(), IsDoorClosing() );
@@ -1287,11 +1270,8 @@ int CASW_Door::OnTakeDamage( const CTakeDamageInfo &info )
 				SetDentSequence();
 
 				Event_Killed( newInfo );
-
-				return 0;
 			}
-
-			if ( DoorNeedsFlip() )
+			else if ( DoorNeedsFlip() )
 			{
 				//Msg( "  keeping door alive\n" );
 				m_iHealth = 1;
@@ -1321,7 +1301,6 @@ int CASW_Door::OnTakeDamage( const CTakeDamageInfo &info )
 					Event_Killed( newInfo );
 				}
 			}
-			return 0;
 		}
 		else	// door is still alive
 		{
@@ -1340,7 +1319,25 @@ int CASW_Door::OnTakeDamage( const CTakeDamageInfo &info )
 			}
 
 			SetDentSequence();
+		}
 
+		if ( pAttacker && pAttacker->IsInhabitableNPC() )
+		{
+			CASW_Inhabitable_NPC *pInhabitableAttacker = assert_cast< CASW_Inhabitable_NPC * >( pAttacker );
+			CASW_ViewNPCRecipientFilter filter{ pInhabitableAttacker };
+			UserMessageBegin( filter, "RDHitConfirm" );
+				WRITE_ENTITY( pAttacker->entindex() );
+				WRITE_ENTITY( entindex() );
+				WRITE_VEC3COORD( info.GetDamagePosition() );
+				WRITE_BOOL( m_iHealth <= 0 );
+				WRITE_BOOL( info.GetDamageType() & DMG_DIRECT );
+				WRITE_BOOL( info.GetDamageType() & DMG_BLAST );
+				WRITE_UBITLONG( pInhabitableAttacker->IRelationType( this ), 3 );
+				WRITE_FLOAT( MIN( info.GetDamage(), iHealthBefore ) );
+				WRITE_ENTITY( info.GetWeapon() ? info.GetWeapon()->entindex() : -1 );
+			MessageEnd();
+
+			ReactiveDropInventory::OnHitConfirm( pAttacker, this, info.GetDamagePosition(), m_iHealth <= 0, info.GetDamageType() &DMG_DIRECT, info.GetDamageType() &DMG_BLAST, pInhabitableAttacker->IRelationType( this ), MIN( info.GetDamage(), iHealthBefore ), info.GetWeapon() );
 		}
 	}
 

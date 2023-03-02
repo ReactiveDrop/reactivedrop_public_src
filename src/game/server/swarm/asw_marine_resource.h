@@ -32,7 +32,7 @@ public:
 	CNetworkVar( int,  m_MarineProfileIndex );	
 
 	CNetworkHandle (CASW_Marine, m_MarineEntity); 	// the actual marine
-	CHandle<CASW_Player> m_OriginalCommander;		// the player who was first in charge of this marine
+	CNetworkHandle (CASW_Player, m_OriginalCommander);	// the player who was first in charge of this marine
 	bool m_bHadOriginalCommander;					// if true and m_OriginalCommander is null, the original commander disconnected
 	CNetworkHandle (CASW_Player, m_Commander);		// the player in charge of this marine
 	CNetworkVar( int, m_iCommanderIndex );

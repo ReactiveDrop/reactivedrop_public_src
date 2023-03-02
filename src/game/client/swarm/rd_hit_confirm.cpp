@@ -72,6 +72,8 @@ void __MsgFunc_RDHitConfirm( bf_read &msg )
 	float flDamage = msg.ReadFloat();
 	short weaponindex = msg.ReadShort();
 
+	ReactiveDropInventory::OnHitConfirm( C_BaseEntity::Instance( entindex ), C_BaseEntity::Instance( targetent ), vecDamagePosition, bKilled, bDamageOverTime, bBlastDamage, iDisposition, flDamage, C_BaseEntity::Instance( weaponindex ) );
+
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	if ( !pPlayer || !pPlayer->GetViewNPC() )
 		return;

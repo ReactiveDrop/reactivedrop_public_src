@@ -35,6 +35,7 @@ IMPLEMENT_CLIENTCLASS_DT(C_ASW_Marine_Resource, DT_ASW_Marine_Resource, CASW_Mar
 	RecvPropDataTable( "mr_timelines", 0, 0, &REFERENCE_RECV_TABLE(DT_MR_Timelines) ),
 	RecvPropInt		(RECVINFO(m_MarineProfileIndex)),
 	RecvPropEHandle (RECVINFO(m_MarineEntity)),
+	RecvPropEHandle (RECVINFO(m_OriginalCommander)),
 	RecvPropEHandle (RECVINFO(m_Commander)),
 	RecvPropInt		(RECVINFO(m_iCommanderIndex)),
 	RecvPropArray	( RecvPropInt( RECVINFO(m_iWeaponsInSlots[0]), 30 ), m_iWeaponsInSlots ),
@@ -51,6 +52,10 @@ IMPLEMENT_CLIENTCLASS_DT(C_ASW_Marine_Resource, DT_ASW_Marine_Resource, CASW_Mar
 	RecvPropInt		(RECVINFO(m_iBotFrags)),
 	RecvPropInt		(RECVINFO(m_iScore)),
 	RecvPropFloat	(RECVINFO(m_flFinishedMissionTime)),
+	RecvPropDataTable( RECVINFO_DT( m_EquippedSuit ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_StartingEquipWeapons[0] ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_StartingEquipWeapons[1] ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_StartingEquipWeapons[2] ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
 END_RECV_TABLE()
 
 extern ConVar asw_leadership_radius;

@@ -79,7 +79,7 @@ BEGIN_DATADESC( CASW_Marine_Resource )
 	DEFINE_FIELD( m_flFinishedMissionTime, FIELD_FLOAT ),
 END_DATADESC()
 
-void *SendProxy_SendMarineResourceTimelinesDataTable( const SendProp *pProp, const void *pStruct, const void *pVarData, CSendProxyRecipients *pRecipients, int objectID )
+static void *SendProxy_SendMarineResourceTimelinesDataTable( const SendProp *pProp, const void *pStruct, const void *pVarData, CSendProxyRecipients *pRecipients, int objectID )
 {
 	if ( ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME )
 	{
@@ -88,6 +88,37 @@ void *SendProxy_SendMarineResourceTimelinesDataTable( const SendProp *pProp, con
 	}
 
 	return ( void * )pVarData;
+}
+
+static void *SendProxy_MarineResourceEquippedSuit( const SendProp *pProp, const void *pStructBase, const void *pData, CSendProxyRecipients *pRecipients, int objectID )
+{
+	static CRD_ItemInstance s_BlankInstance;
+
+	const CASW_Marine_Resource *pMR = static_cast< const CASW_Marine_Resource * >( pStructBase );
+	if ( !pMR->m_OriginalCommander )
+		return &s_BlankInstance;
+
+	return &pMR->m_OriginalCommander->m_EquippedItemData[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + pMR->m_MarineProfileIndex];
+}
+
+static void *SendProxy_MarineResourceStartingEquip( const SendProp *pProp, const void *pStructBase, const void *pData, CSendProxyRecipients *pRecipients, int objectID )
+{
+	static CRD_ItemInstance s_BlankInstance;
+
+	const CASW_Marine_Resource *pMR = static_cast< const CASW_Marine_Resource * >( pStructBase );
+	if ( !pMR->m_OriginalCommander )
+		return &s_BlankInstance;
+
+	int index = ( const char * )pData - ( const char * )pStructBase;
+	Assert( index >= 0 && index < ASW_NUM_INVENTORY_SLOTS );
+	int iEquip = pMR->m_iInitialWeaponsInSlots[index];
+	if ( iEquip == -1 )
+		iEquip = pMR->m_iWeaponsInSlots[index];
+	CASW_EquipItem *pEquipItem = g_ASWEquipmentList.GetItemForSlot( index, iEquip );
+	if ( !pEquipItem || pEquipItem->m_iInventoryIndex == -1 )
+		return &s_BlankInstance;
+
+	return &pMR->m_OriginalCommander->m_EquippedItemData[pEquipItem->m_iInventoryIndex];
 }
 
 // Only send active weapon index to local player
@@ -106,6 +137,7 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Marine_Resource, DT_ASW_Marine_Resource)
 	SendPropDataTable( "mr_timelines", 0, &REFERENCE_SEND_TABLE(DT_MR_Timelines), SendProxy_SendMarineResourceTimelinesDataTable ),
 	SendPropInt		(SENDINFO(m_MarineProfileIndex), 10 ),
 	SendPropEHandle (SENDINFO(m_MarineEntity) ),
+	SendPropEHandle (SENDINFO(m_OriginalCommander) ),
 	SendPropEHandle (SENDINFO(m_Commander) ),
 	SendPropInt		(SENDINFO(m_iCommanderIndex), 10),
 	SendPropArray( SendPropInt( SENDINFO_ARRAY( m_iWeaponsInSlots ), 30 ), m_iWeaponsInSlots ),
@@ -122,6 +154,10 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Marine_Resource, DT_ASW_Marine_Resource)
 	SendPropInt		(SENDINFO(m_iBotFrags)),
 	SendPropInt		(SENDINFO(m_iScore)),
 	SendPropFloat	(SENDINFO(m_flFinishedMissionTime)),
+	SendPropDataTable( "m_EquippedSuit", 0, &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ), SendProxy_MarineResourceEquippedSuit ),
+	SendPropDataTable( "m_StartingEquipWeapons[0]", 0, &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ), SendProxy_MarineResourceStartingEquip ),
+	SendPropDataTable( "m_StartingEquipWeapons[1]", 1, &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ), SendProxy_MarineResourceStartingEquip ),
+	SendPropDataTable( "m_StartingEquipWeapons[2]", 2, &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ), SendProxy_MarineResourceStartingEquip ),
 END_SEND_TABLE()
 
 extern ConVar asw_leadership_radius;

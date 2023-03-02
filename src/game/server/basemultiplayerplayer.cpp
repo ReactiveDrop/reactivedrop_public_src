@@ -320,6 +320,12 @@ bool CBaseMultiplayerPlayer::GetSteamID( CSteamID *pID )
 	return false;
 }
 
+CSteamID CBaseMultiplayerPlayer::GetSteamID()
+{
+	CSteamID steamIDForPlayer = k_steamIDNil;
+	GetSteamID( &steamIDForPlayer );
+	return steamIDForPlayer;
+}
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------

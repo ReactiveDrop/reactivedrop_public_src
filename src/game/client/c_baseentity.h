@@ -1091,6 +1091,7 @@ public:
 	virtual bool					IsNPC( void ) { return false; }
 	C_AI_BaseNPC					*MyNPCPointer( void );
 
+	virtual bool					IsAlien( void ) const { return false; }
 	virtual bool					IsAlienClassType( void ) const { return false; }
 
 	virtual bool					IsSprite( void ) const { return false; }
