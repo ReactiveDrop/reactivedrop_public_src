@@ -321,6 +321,7 @@ void CNB_Lobby_Row::UpdateDetails()
 		// AI slots
 		m_pLevelLabel->SetVisible( false );
 		m_pPromotionIcon->SetVisible( false );
+		m_pMedalIcon->SetVisible( false );
 		m_pAvatarImage->SetVisible( false );
 
 		int nAvatarX, nAvatarY;
