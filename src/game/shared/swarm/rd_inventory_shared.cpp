@@ -62,7 +62,6 @@ public:
 				pInventory->DestroyResult( m_PlaytimeItemGeneratorResult[i] );
 			}
 			pInventory->DestroyResult( m_InspectItemResult );
-			pInventory->DestroyResult( m_DynamicPropertyUpdateResult );
 			pInventory->DestroyResult( m_PreparingEquipNotification );
 			FOR_EACH_VEC( m_PendingEquipSend, i )
 			{
