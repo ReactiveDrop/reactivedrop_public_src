@@ -943,6 +943,7 @@ int CASW_Simple_Alien::OnTakeDamage( const CTakeDamageInfo &info )
 			WRITE_BOOL( info.GetDamageType() & DMG_BLAST );
 			WRITE_UBITLONG( pInhabitableAttacker->IRelationType( this ), 3 );
 			WRITE_FLOAT( MIN( info.GetDamage(), iHealthBefore ) );
+			WRITE_ENTITY( info.GetWeapon() ? info.GetWeapon()->entindex() : 0 );
 		MessageEnd();
 	}
 

@@ -617,19 +617,29 @@ int CASW_Inhabitable_NPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		CASW_GameStats.Event_AlienTookDamage( this, newInfo );
 	}
 
+	CASW_ViewNPCRecipientFilter filter;
+	CASW_Inhabitable_NPC *pInhabitableAttacker = NULL;
 	if ( pAttacker && pAttacker->IsInhabitableNPC() )
 	{
-		CASW_Inhabitable_NPC *pInhabitableAttacker = assert_cast< CASW_Inhabitable_NPC * >( pAttacker );
-		CASW_ViewNPCRecipientFilter filter{ pInhabitableAttacker };
+		pInhabitableAttacker = assert_cast< CASW_Inhabitable_NPC * >( pAttacker );
+		filter.AddRecipientsByViewNPC( pInhabitableAttacker );
+	}
+	if ( Classify() == CLASS_ASW_MARINE && assert_cast< CASW_Marine * >( this )->GetMarineResource() )
+	{
+		filter.AddRecipientsByViewNPC( this );
+	}
+	if ( filter.GetRecipientCount() > 0 )
+	{
 		UserMessageBegin( filter, "RDHitConfirm" );
-			WRITE_ENTITY( pAttacker->entindex() );
+			WRITE_ENTITY( pAttacker ? pAttacker->entindex() : 0 );
 			WRITE_ENTITY( entindex() );
 			WRITE_VEC3COORD( newInfo.GetDamagePosition() );
 			WRITE_BOOL( GetHealth() <= 0 );
 			WRITE_BOOL( newInfo.GetDamageType() & DMG_DIRECT );
 			WRITE_BOOL( newInfo.GetDamageType() & DMG_BLAST );
-			WRITE_UBITLONG( pInhabitableAttacker->IRelationType( this ), 3 );
+			WRITE_UBITLONG( pInhabitableAttacker ? pInhabitableAttacker->IRelationType( this ) : D_HT, 3 );
 			WRITE_FLOAT( MIN( newInfo.GetDamage(), iHealthBefore ) );
+			WRITE_ENTITY( info.GetWeapon() ? info.GetWeapon()->entindex() : 0 );
 		MessageEnd();
 	}
 

@@ -70,12 +70,19 @@ void __MsgFunc_RDHitConfirm( bf_read &msg )
 	bool bBlastDamage = msg.ReadOneBit();
 	int iDisposition = msg.ReadUBitLong( 3 );
 	float flDamage = msg.ReadFloat();
+	short weaponindex = msg.ReadShort();
 
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if ( !pPlayer || !pPlayer->GetNPC() || pPlayer->GetNPC()->entindex() != entindex )
+	if ( !pPlayer || !pPlayer->GetViewNPC() )
 		return;
 
-	bool bDoHitSound = tf_dingalingaling[bKilled].GetBool();
+	bool bMyHit = pPlayer->GetViewNPC()->entindex() == entindex;
+	bool bHitMe = pPlayer->GetViewNPC()->entindex() == targetent;
+
+	if ( !bMyHit && !bHitMe )
+		return;
+
+	bool bDoHitSound = bMyHit && !bHitMe && tf_dingalingaling[bKilled].GetBool();
 	if ( bDoHitSound && !bKilled )
 	{
 		static float s_flNextHitSound = 0.0f;
@@ -144,7 +151,13 @@ void __MsgFunc_RDHitConfirm( bf_read &msg )
 			pTarget->m_flAccumulatedDamage = flDamage;
 		}
 
-		HPARTICLEFFECT hParticle = UTIL_ASW_ParticleDamageNumber( pAttacker, vecDamagePosition, flDamage, iDisposition == 3 /*D_LI*/ ? DAMAGE_FLAG_CRITICAL : 0, bDamageOverTime ? 0.5f : 1.0f, bBlastDamage || bDamageOverTime );
+		int iDmgCustom = 0;
+		if ( iDisposition == 3 ) // D_LI
+			iDmgCustom |= DAMAGE_FLAG_CRITICAL;
+		if ( bHitMe )
+			iDmgCustom |= DAMAGE_FLAG_WEAKSPOT;
+
+		HPARTICLEFFECT hParticle = UTIL_ASW_ParticleDamageNumber( pAttacker, vecDamagePosition, flDamage, iDmgCustom, bDamageOverTime ? 0.5f : 1.0f, bBlastDamage || bDamageOverTime );
 		if ( pTarget && !bBlastDamage && !bDamageOverTime )
 		{
 			pTarget->m_hDamageNumberParticle = hParticle;

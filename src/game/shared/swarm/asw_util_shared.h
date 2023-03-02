@@ -80,7 +80,10 @@ float UTIL_ASW_CalcFastDoorHackTime(int iNumRows, int iNumColumns, int iNumWires
 	class CASW_ViewNPCRecipientFilter : public CRecipientFilter
 	{
 	public:
+		CASW_ViewNPCRecipientFilter();
 		CASW_ViewNPCRecipientFilter( CASW_Inhabitable_NPC *pNPC, bool bSendToRecorders = true );
+
+		void AddRecipientsByViewNPC( CASW_Inhabitable_NPC *pNPC, bool bSendToRecorders = true );
 	};
 #else
 	bool UTIL_ASW_ClientsideGib(C_BaseAnimating* pEnt);

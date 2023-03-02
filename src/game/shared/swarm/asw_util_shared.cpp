@@ -672,7 +672,16 @@ CASW_Marine* UTIL_ASW_Marine_Can_Chatter_Spot(CBaseEntity *pEntity, float fDist)
 	return NULL;
 }
 
+CASW_ViewNPCRecipientFilter::CASW_ViewNPCRecipientFilter()
+{
+}
+
 CASW_ViewNPCRecipientFilter::CASW_ViewNPCRecipientFilter( CASW_Inhabitable_NPC *pNPC, bool bSendToRecorders )
+{
+	AddRecipientsByViewNPC( pNPC, bSendToRecorders );
+}
+
+void CASW_ViewNPCRecipientFilter::AddRecipientsByViewNPC( CASW_Inhabitable_NPC *pNPC, bool bSendToRecorders)
 {
 	for ( int i = 1; i <= MAX_PLAYERS; i++ )
 	{
