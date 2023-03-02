@@ -2801,6 +2801,8 @@ void CASW_Marine::ApplyPassiveMeleeDamageEffects( CTakeDamageInfo &dmgInfo )
 			float flDamageScale = pWeapon->GetPassiveMeleeDamageScale();
 			if ( flDamageScale != 1.0f )
 			{
+				Assert( dmgInfo.GetWeapon() == NULL );
+				dmgInfo.SetWeapon( pWeapon );
 				dmgInfo.ScaleDamage( flDamageScale );
 			}
 		}
