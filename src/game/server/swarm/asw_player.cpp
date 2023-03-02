@@ -424,9 +424,12 @@ CASW_Player::CASW_Player()
 
 	for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS; i++ )
 	{
-		m_EquippedItems[i] = k_SteamInventoryResultInvalid;
 		m_EquippedItemData[i].Reset();
 	}
+	m_EquippedItemsResult = k_SteamInventoryResultInvalid;
+	m_EquippedItemsReceiving.Purge();
+	m_iEquippedItemsReceivingOffset = 0;
+	m_iEquippedItemsParity = 0;
 }
 
 
@@ -436,11 +439,8 @@ CASW_Player::~CASW_Player()
 	if (ASWGameRules())
 		ASWGameRules()->SetMaxMarines(this);
 
-	for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS; i++ )
-	{
-		// free inventory handle
-		ReactiveDropInventory::DecodeItemData( m_EquippedItems[i], "" );
-	}
+	// free inventory handle
+	ReactiveDropInventory::DecodeItemData( m_EquippedItemsResult, "" );
 }
 
 //------------------------------------------------------------------------------

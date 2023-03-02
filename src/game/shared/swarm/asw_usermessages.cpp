@@ -99,4 +99,5 @@ void RegisterUserMessages( void )
 	usermessages->Register( "RDAlienKillStat", 2 );
 	usermessages->Register( "RDCauseOfDeath", 2 );
 	usermessages->Register( "RDHitConfirm", -1 );
+	usermessages->Register( "RDEquippedItemsACK", 4 );
 }

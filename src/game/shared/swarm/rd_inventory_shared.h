@@ -81,8 +81,8 @@ namespace ReactiveDropInventory
 	struct ItemInstance_t
 	{
 		CSteamID AccountID{};
-		SteamItemInstanceID_t ItemID{};
-		SteamItemInstanceID_t OriginalItemID{};
+		SteamItemInstanceID_t ItemID{ k_SteamItemInstanceIDInvalid };
+		SteamItemInstanceID_t OriginalItemID{ k_SteamItemInstanceIDInvalid };
 		SteamItemDef_t ItemDefID{};
 		int32 Quantity{};
 		uint32 Acquired{};
@@ -105,6 +105,7 @@ namespace ReactiveDropInventory
 	const ItemDef_t *GetItemDef( SteamItemDef_t id );
 	bool DecodeItemData( SteamInventoryResult_t &hResult, const char *szEncodedData );
 	bool ValidateItemData( bool &bValid, SteamInventoryResult_t hResult, const char *szRequiredSlot = NULL, CSteamID requiredSteamID = k_steamIDNil, bool bRequireFresh = false );
+	bool ValidateEquipItemData( bool &bValid, SteamInventoryResult_t hResult, byte( &nIndex )[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS], CSteamID requiredSteamID );
 #ifdef CLIENT_DLL
 	void AddPromoItem( SteamItemDef_t id );
 	void RequestGenericPromoItems();
@@ -115,6 +116,9 @@ namespace ReactiveDropInventory
 #define RD_ITEM_MAX_ACCESSORIES 4
 #define RD_ITEM_MAX_COMPRESSED_DYNAMIC_PROPS 8
 #define RD_ITEM_MAX_COMPRESSED_DYNAMIC_PROPS_PER_ACCESSORY 2
+
+#define RD_EQUIPPED_ITEMS_NOTIFICATION_WORST_CASE_SIZE ( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS * 2048 )
+#define RD_EQUIPPED_ITEMS_NOTIFICATION_PAYLOAD_SIZE_PER_PACKET ( MAX_VALUE / 2 - 1 )
 
 #ifdef CLIENT_DLL
 EXTERN_RECV_TABLE( DT_RD_ItemInstance );
@@ -148,6 +152,7 @@ public:
 	void FormatDescription( vgui::RichText *pRichText ) const;
 #endif
 
+	CNetworkVar( SteamItemInstanceID_t, m_iItemInstanceID );
 	CNetworkVar( SteamItemDef_t, m_iItemDefID );
 	CNetworkArray( SteamItemDef_t, m_iAccessory, RD_ITEM_MAX_ACCESSORIES );
 	CNetworkArray( int64, m_nCounter, RD_ITEM_MAX_COMPRESSED_DYNAMIC_PROPS );

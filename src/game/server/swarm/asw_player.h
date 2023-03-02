@@ -267,8 +267,13 @@ public:
 	int32 m_iStatNumXP[ ASW_NUM_XP_TYPES ];
 	CNetworkVar( int, m_iNetworkedXP );
 	CNetworkVar( int, m_iNetworkedPromotion );
-	SteamInventoryResult_t m_EquippedItems[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS];
+
+	// inventory
+	SteamInventoryResult_t m_EquippedItemsResult;
 	CRD_ItemInstance m_EquippedItemData[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS];
+	CUtlMemory<char> m_EquippedItemsReceiving;
+	int m_iEquippedItemsReceivingOffset;
+	int m_iEquippedItemsParity;
 
 	bool m_bHasAwardedXP;
 	bool m_bPendingSteamStats;

@@ -6799,17 +6799,72 @@ void CAlienSwarm::ClientCommandKeyValues( edict_t *pEntity, KeyValues *pKeyValue
 	}
 	else if ( FStrEq( szCommand, "EquippedItems" ) )
 	{
-		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS; i++ )
+		int iOffset = pKeyValues->GetInt( "i", -1 );
+		int iTotal = pKeyValues->GetInt( "t", -1 );
+		int iParity = pKeyValues->GetInt( "e", -1 );
+		const char *szData = pKeyValues->GetString( "m", NULL );
+		if ( iOffset < 0 || iTotal < 8 + 2 * RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS || iTotal > RD_EQUIPPED_ITEMS_NOTIFICATION_WORST_CASE_SIZE || ( iTotal & 1 ) || ( iOffset & 1 ) || iParity <= 0 || !szData || !*szData || ( V_strlen( szData ) & 1 ) )
 		{
-			if ( KeyValues *pSlot = pKeyValues->FindKey( ReactiveDropInventory::g_InventorySlotNames[i] ) )
+			Warning( "Ignoring equipped items notification from player %s (invalid data)\n", pPlayer->GetASWNetworkID() );
+			return;
+		}
+
+		if ( iOffset == 0 && ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME )
+		{
+			// allow receiving data after mission start if the transfer as at least started beforehand
+			DevWarning( "Ignoring equipped items notification from player %s as the mission is in-progress.\n", pPlayer->GetASWNetworkID() );
+			return;
+		}
+
+		int iLength = V_strlen( szData );
+		if ( iOffset != 0 && ( iParity != pPlayer->m_iEquippedItemsParity || iOffset != pPlayer->m_iEquippedItemsReceivingOffset || iTotal + 1 != pPlayer->m_EquippedItemsReceiving.Count() || iLength + iOffset > iTotal ) )
+		{
+			Assert( iParity == pPlayer->m_iEquippedItemsParity );
+			Assert( iOffset == pPlayer->m_iEquippedItemsReceivingOffset );
+			Assert( iTotal + 1 == pPlayer->m_EquippedItemsReceiving.Count() );
+			Assert( iLength + iOffset <= iTotal );
+			Warning( "Ignoring equipped items notification from player %s (out of order or bad parity)\n", pPlayer->GetASWNetworkID() );
+			return;
+		}
+
+		if ( iOffset == 0 )
+		{
+			ReactiveDropInventory::DecodeItemData( pPlayer->m_EquippedItemsResult, "" );
+			for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS; i++ )
 			{
 				pPlayer->m_EquippedItemData[i].Reset();
-
-				if ( !ReactiveDropInventory::DecodeItemData( pPlayer->m_EquippedItems[i], pSlot->GetString() ) && *pSlot->GetString() != '\0' )
-				{
-					Warning( "Failed to decode player %s item in slot %s.\n", pPlayer->GetASWNetworkID(), ReactiveDropInventory::g_InventorySlotNames[i] );
-				}
 			}
+			pPlayer->m_EquippedItemsReceiving.Init( 0, iTotal + 1 );
+			pPlayer->m_iEquippedItemsReceivingOffset = 0;
+			pPlayer->m_iEquippedItemsParity = iParity;
+			Assert( pPlayer->m_EquippedItemsReceiving.Count() == iTotal + 1 );
+		}
+
+		V_memcpy( pPlayer->m_EquippedItemsReceiving.Base() + pPlayer->m_iEquippedItemsReceivingOffset, szData, iLength );
+		pPlayer->m_iEquippedItemsReceivingOffset += iLength;
+		Assert( pPlayer->m_iEquippedItemsReceivingOffset <= iTotal );
+		if ( pPlayer->m_iEquippedItemsReceivingOffset == iTotal )
+		{
+			pPlayer->m_EquippedItemsReceiving.Base()[iTotal] = '\0';
+			CUtlMemory<byte> RawBuffer{ 0, iTotal / 2 };
+			V_hextobinary( pPlayer->m_EquippedItemsReceiving.Base(), iTotal, RawBuffer.Base(), RawBuffer.Count() );
+			CRC32_t iChecksumExpected = CRC32_ProcessSingleBuffer( RawBuffer.Base() + 4, RawBuffer.Count() - 4 );
+			if ( iChecksumExpected != *reinterpret_cast< const CRC32_t * >( RawBuffer.Base() ) )
+			{
+				Warning( "Ignoring equipped items notification from player %s (bad checksum)\n", pPlayer->GetASWNetworkID() );
+			}
+			else
+			{
+				ReactiveDropInventory::DecodeItemData( pPlayer->m_EquippedItemsResult, pPlayer->m_EquippedItemsReceiving.Base() + 8 + RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS * 2 );
+			}
+		}
+		else
+		{
+			CSingleUserRecipientFilter filter{ pPlayer };
+			filter.MakeReliable();
+			UserMessageBegin( filter, "RDEquippedItemsACK" );
+				WRITE_LONG( iParity );
+			MessageEnd();
 		}
 	}
 	else if ( FStrEq( szCommand, "EquippedItemsCached" ) )
