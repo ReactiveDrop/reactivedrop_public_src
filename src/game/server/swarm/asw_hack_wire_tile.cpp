@@ -181,6 +181,14 @@ void CASW_Hack_Wire_Tile::ASWPostThink(CASW_Player *pPlayer, CASW_Marine *pMarin
 			pButton->EmitSound( "ASWComputer.TimeOut" );
 			pButton->m_OnFastHackFailed.FireOutput( pMarine, pButton );
 			m_bPlayedTimeOutSound = true;
+
+			IGameEvent *pEvent = gameeventmanager->CreateEvent( "fast_hack_failed" );
+			if ( pEvent )
+			{
+				pEvent->SetInt( "entindex", pButton->entindex() );
+				pEvent->SetInt( "marine", pMarine->entindex() );
+				gameeventmanager->FireEvent( pEvent );
+			}
 		}
 	}
 }

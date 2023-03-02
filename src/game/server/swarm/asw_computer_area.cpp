@@ -718,6 +718,14 @@ void CASW_Computer_Area::UnlockFromHack(CASW_Marine *pMarine)
 					}
 					bFast = true;
 					pMarine->GetMarineSpeech()->QueueChatter(CHATTER_HACK_FINISHED, gpGlobals->curtime + 2.0f, gpGlobals->curtime + 3.0f);
+
+					IGameEvent *pEvent = gameeventmanager->CreateEvent( "fast_hack_success" );
+					if ( pEvent )
+					{
+						pEvent->SetInt( "entindex", entindex() );
+						pEvent->SetInt( "marine", pMarine->entindex() );
+						gameeventmanager->FireEvent( pEvent );
+					}
 				}
 			}
 		}

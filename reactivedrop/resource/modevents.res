@@ -465,7 +465,19 @@
 		"marine"			"long"		// entindex of the marine
 		"weapon"			"long"		// entindex of the weapon
 	}
-	
+
+	"fast_hack_success"
+	{
+		"entindex"		"long"		// entindex of the hack area
+		"marine"		"long"   	// marine entindex who is hacking
+	}
+
+	"fast_hack_failed"
+	{
+		"entindex"		"long"		// entindex of the hack area
+		"marine"		"long"   	// marine entindex who is hacking
+	}
+
 // CLIENTSIDE
 
 	"alien_hurt"

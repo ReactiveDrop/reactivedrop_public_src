@@ -537,6 +537,8 @@ const char *const g_ScriptGameEventList[] =
 	"gas_grenade_placed",
 	"flare_placed",
 	"rocket_fired",
+	"fast_hack_success",
+	"fast_hack_failed",
 };
 
 static CScriptGameEventListener	s_ScriptGameEventListener;

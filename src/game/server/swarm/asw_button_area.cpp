@@ -555,6 +555,14 @@ void CASW_Button_Area::SetHackProgress(float f, CASW_Marine *pMarine)
 			{
 				pCommander->AwardAchievement( ACHIEVEMENT_ASW_FAST_WIRE_HACKS );
 			}
+
+			IGameEvent *pEvent = gameeventmanager->CreateEvent( "fast_hack_success" );
+			if ( pEvent )
+			{
+				pEvent->SetInt( "entindex", entindex() );
+				pEvent->SetInt( "marine", pMarine->entindex() );
+				gameeventmanager->FireEvent( pEvent );
+			}
 		}
 
 		CASW_Hack* pHack = GetCurrentHack();

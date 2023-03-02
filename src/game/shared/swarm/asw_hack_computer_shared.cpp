@@ -43,7 +43,7 @@ void CASW_Hack_Computer::ASWPostThink(CASW_Player *pPlayer, CASW_Marine *pMarine
 	
 
 	// play a sound if the player has done the hack too slowly?
-	if (!m_bPlayedTimeOutSound && m_iNumTumblers.Get() > 3)
+	if ( !m_bPlayedTimeOutSound && m_iNumTumblers.Get() > ASW_MIN_TUMBLERS_FAST_HACK )
 	{
 		if (m_fFastFinishTime.Get() > 0 && gpGlobals->curtime > m_fFastFinishTime.Get())
 		{
@@ -52,6 +52,14 @@ void CASW_Hack_Computer::ASWPostThink(CASW_Player *pPlayer, CASW_Marine *pMarine
 			{
 				pArea->EmitSound( "ASWComputer.TimeOut" );
 				pArea->m_OnFastHackFailed.FireOutput( pMarine, pArea );
+
+				IGameEvent *pEvent = gameeventmanager->CreateEvent( "fast_hack_failed" );
+				if ( pEvent )
+				{
+					pEvent->SetInt( "entindex", pArea->entindex() );
+					pEvent->SetInt( "marine", pMarine->entindex() );
+					gameeventmanager->FireEvent( pEvent );
+				}
 			}
 
 			m_bPlayedTimeOutSound = true;
