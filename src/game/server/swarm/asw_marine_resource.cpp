@@ -24,6 +24,8 @@ LINK_ENTITY_TO_CLASS( asw_marine_resource, CASW_Marine_Resource );
 BEGIN_DATADESC( CASW_Marine_Resource )
 	DEFINE_FIELD( m_MarineProfileIndex, FIELD_INTEGER ),
 	DEFINE_FIELD( m_MarineEntity, FIELD_EHANDLE ),
+	DEFINE_FIELD( m_OriginalCommander, FIELD_EHANDLE ),
+	DEFINE_FIELD( m_bHadOriginalCommander, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_Commander, FIELD_EHANDLE),	
 	DEFINE_AUTO_ARRAY( m_iWeaponsInSlots, FIELD_INTEGER ),
 	DEFINE_AUTO_ARRAY( m_iInitialWeaponsInSlots, FIELD_INTEGER ),
@@ -133,6 +135,8 @@ CASW_Marine_Resource::CASW_Marine_Resource()
 	m_bAwardedMedals = false;
 	m_MarineProfileIndex = -1;
 	m_bInfested = false;
+	m_bHadOriginalCommander = false;
+	m_OriginalCommander = NULL;
 	SetCommander(NULL);
 	m_bInhabited = false;
 	m_iServerFiring = 0;
@@ -237,13 +241,19 @@ int CASW_Marine_Resource::ShouldTransmit( const CCheckTransmitInfo *pInfo )
 }
 
 
-void CASW_Marine_Resource::SetCommander(CASW_Player* pCommander)
-{	
+void CASW_Marine_Resource::SetCommander( CASW_Player *pCommander )
+{
+	if ( !m_OriginalCommander && !m_bHadOriginalCommander )
+	{
+		m_OriginalCommander = pCommander;
+		m_bHadOriginalCommander = pCommander != NULL;
+	}
+
 	m_Commander = pCommander;
 	m_iCommanderIndex = pCommander ? pCommander->entindex() : -1;
 }
 
-CASW_Player* CASW_Marine_Resource::GetCommander()
+CASW_Player *CASW_Marine_Resource::GetCommander()
 {
 	return m_Commander;
 }
