@@ -1282,6 +1282,11 @@ CON_COMMAND( rd_debug_print_inventory, "" )
 	SteamInventory()->GetAllItems( &s_RD_Inventory_Manager.m_DebugPrintInventoryResult );
 }
 
+CON_COMMAND( rd_debug_inspect_entire_inventory, "inspect every item in your inventory" )
+{
+	SteamInventory()->GetAllItems( &s_RD_Inventory_Manager.m_InspectItemResult );
+}
+
 CON_COMMAND( rd_debug_inspect_own_item, "inspect an item you own by ID" )
 {
 	SteamItemInstanceID_t id = strtoull( args.Arg( 1 ), NULL, 10 );
