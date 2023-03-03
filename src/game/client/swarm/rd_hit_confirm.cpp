@@ -135,12 +135,14 @@ void __MsgFunc_RDHitConfirm( bf_read &msg )
 	}
 	else if ( asw_floating_number_type.GetInt() == 2 )
 	{
+		bool bIsAccumulated = false;
 		C_BaseEntity *pAttacker = ClientEntityList().GetBaseEntity( entindex );
 		C_ASW_Inhabitable_NPC *pTarget = dynamic_cast< C_ASW_Inhabitable_NPC * >( ClientEntityList().GetBaseEntity( targetent ) );
 		if ( pTarget && !bBlastDamage && !bDamageOverTime )
 		{
 			if ( gpGlobals->curtime - pTarget->m_flLastDamageNumberTime < asw_floating_number_combine.GetFloat() )
 			{
+				bIsAccumulated = true;
 				flDamage += pTarget->m_flAccumulatedDamage;
 				CNewParticleEffect *pParticle = pTarget->m_hDamageNumberParticle.GetObject();
 				if ( pParticle )
@@ -159,7 +161,7 @@ void __MsgFunc_RDHitConfirm( bf_read &msg )
 		if ( bHitMe )
 			iDmgCustom |= DAMAGE_FLAG_WEAKSPOT;
 
-		HPARTICLEFFECT hParticle = UTIL_ASW_ParticleDamageNumber( pAttacker, vecDamagePosition, flDamage, iDmgCustom, bDamageOverTime ? 0.5f : 1.0f, bBlastDamage || bDamageOverTime );
+		HPARTICLEFFECT hParticle = UTIL_ASW_ParticleDamageNumber( pAttacker, vecDamagePosition, flDamage, iDmgCustom, bDamageOverTime ? 0.5f : 1.0f, bBlastDamage || bDamageOverTime, bIsAccumulated );
 		if ( pTarget && !bBlastDamage && !bDamageOverTime )
 		{
 			pTarget->m_hDamageNumberParticle = hParticle;

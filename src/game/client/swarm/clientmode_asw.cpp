@@ -94,6 +94,7 @@ ConVar fov_desired( "fov_desired", "75", FCVAR_USERINFO, "Sets the base field-of
 ConVar asw_instant_restart_cleanup( "asw_instant_restart_cleanup", "1", FCVAR_NONE, "remove corpses, gibs, and decals when performing an instant restart" );
 ConVar cl_auto_restart_mission( "cl_auto_restart_mission", "0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "After failed mission, if you are the leader will auto restart on the client side." );
 extern ConVar rd_auto_record_stop_on_retry;
+extern ConVar asw_floating_number_type;
 
 vgui::HScheme g_hVGuiCombineScheme = 0;
 
@@ -1078,9 +1079,31 @@ void ClientModeASW::Update( void )
 
 	engine->SetMouseWindowLock( ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME && !enginevgui->IsGameUIVisible() );
 
-#ifndef _X360
+	if ( asw_floating_number_type.GetInt() == 2 )
+	{
+		// rotate damage numbers to whatever our current camera angle is
 
-#endif
+		QAngle vecAngles;
+		vecAngles[PITCH] = 0.0f;
+		vecAngles[YAW] = ASWInput()->ASW_GetCameraYaw() - 90;
+		vecAngles[ROLL] = ASWInput()->ASW_GetCameraPitch();
+
+		//Msg( "DMG # angles ( %f, %f, %f )\n", vecAngles[PITCH], vecAngles[YAW], vecAngles[ROLL] );
+		Vector vecForward, vecRight, vecUp;
+		AngleVectors( vecAngles, &vecForward, &vecRight, &vecUp );
+
+		for ( C_BaseEntity *pEnt = ClientEntityList().FirstBaseEntity(); pEnt; pEnt = ClientEntityList().NextBaseEntity( pEnt ) )
+		{
+			if ( !pEnt->IsInhabitableNPC() )
+				continue;
+
+			HPARTICLEFFECT &hEffect = assert_cast< C_ASW_Inhabitable_NPC * >( pEnt )->m_hDamageNumberParticle;
+			if ( !hEffect )
+				continue;
+
+			hEffect->SetControlPointOrientation( 5, vecForward, vecRight, vecUp );
+		}
+	}
 }
 
 void ClientModeASW::DoPostScreenSpaceEffects( const CViewSetup *pSetup )

@@ -1147,7 +1147,7 @@ void UTIL_ASW_ClientFloatingDamageNumber( const CTakeDamageInfo &info )
 			if (pAttackingPlayer != C_BasePlayer::GetLocalPlayer())
 				return;
 
-			UTIL_ASW_ParticleDamageNumber(info.GetAttacker(), info.GetDamagePosition(), int(info.GetDamage()), info.GetDamageCustom(), 1.0f, false);
+			UTIL_ASW_ParticleDamageNumber( info.GetAttacker(), info.GetDamagePosition(), int( info.GetDamage() ), info.GetDamageCustom(), 1.0f, false, false );
 		}
 	}
 }
@@ -1155,9 +1155,11 @@ void UTIL_ASW_ClientFloatingDamageNumber( const CTakeDamageInfo &info )
 PRECACHE_REGISTER_BEGIN( GLOBAL, ParticleDamageNumbers )
 	PRECACHE( PARTICLE_SYSTEM, "damage_numbers" )
 	PRECACHE( PARTICLE_SYSTEM, "floating_numbers" )
+	PRECACHE( PARTICLE_SYSTEM, "damage_numbers_noramp" )
+	PRECACHE( PARTICLE_SYSTEM, "floating_numbers_noramp" )
 PRECACHE_REGISTER_END()
 
-HPARTICLEFFECT UTIL_ASW_ParticleDamageNumber( C_BaseEntity *pEnt, Vector vecPos, int iDamage, int iDmgCustom, float flScale, bool bRandomVelocity )
+HPARTICLEFFECT UTIL_ASW_ParticleDamageNumber( C_BaseEntity *pEnt, Vector vecPos, int iDamage, int iDmgCustom, float flScale, bool bRandomVelocity, bool bSkipRampUp )
 {
 	if ( asw_floating_number_type.GetInt() != 2 )
 		return NULL;
@@ -1167,7 +1169,7 @@ HPARTICLEFFECT UTIL_ASW_ParticleDamageNumber( C_BaseEntity *pEnt, Vector vecPos,
 
 	QAngle vecAngles;
 	vecAngles[PITCH] = 0.0f;
-	vecAngles[YAW] = ASWInput()->ASW_GetCameraYaw();
+	vecAngles[YAW] = ASWInput()->ASW_GetCameraYaw() - 90;
 	vecAngles[ROLL] = ASWInput()->ASW_GetCameraPitch();
 
 	//Msg( "DMG # angles ( %f, %f, %f )\n", vecAngles[PITCH], vecAngles[YAW], vecAngles[ROLL] );
@@ -1207,11 +1209,11 @@ HPARTICLEFFECT UTIL_ASW_ParticleDamageNumber( C_BaseEntity *pEnt, Vector vecPos,
 	CUtlReference<CNewParticleEffect> pEffect;
 	if ( bRandomVelocity )
 	{
-		pEffect = pEnt->ParticleProp()->Create( "damage_numbers", PATTACH_CUSTOMORIGIN );
+		pEffect = pEnt->ParticleProp()->Create( bSkipRampUp ? "damage_numbers_noramp" : "damage_numbers", PATTACH_CUSTOMORIGIN );
 	}
 	else
 	{
-		pEffect = pEnt->ParticleProp()->Create( "floating_numbers", PATTACH_CUSTOMORIGIN );
+		pEffect = pEnt->ParticleProp()->Create( bSkipRampUp ? "floating_numbers_noramp" : "floating_numbers", PATTACH_CUSTOMORIGIN );
 	}
 	pEffect->SetControlPoint( 0, vecPos );
 	pEffect->SetControlPoint( 1, Vector( 0, iDamage, iCrit ) );
@@ -1270,7 +1272,7 @@ void __MsgFunc_ASWDamageNumber( bf_read &msg )
 	}
 	else if ( asw_floating_number_type.GetInt() == 2 )
 	{
-		UTIL_ASW_ParticleDamageNumber( pEnt, pEnt->WorldSpaceCenter(), iAmount, iFlags, 1.25f, false );
+		UTIL_ASW_ParticleDamageNumber( pEnt, pEnt->WorldSpaceCenter(), iAmount, iFlags, 1.25f, false, false );
 	}
 }
 USER_MESSAGE_REGISTER( ASWDamageNumber );
