@@ -1509,6 +1509,7 @@ CAlienSwarm::CAlienSwarm() : m_ActorSpeakingUntil( DefLessFunc( string_t ) )
 	m_MapResetFilter.AddKeepEntity( "info_node_climb" );
 	m_MapResetFilter.AddKeepEntity( "info_marine_hint" );
 	m_MapResetFilter.AddKeepEntity( "info_node_marine_hint" );
+	m_MapResetFilter.AddKeepEntity( "infodecal" );
 
 	// riflemod: keep health regen entity all the time
 	m_MapResetFilter.AddKeepEntity( "asw_health_regen" );
