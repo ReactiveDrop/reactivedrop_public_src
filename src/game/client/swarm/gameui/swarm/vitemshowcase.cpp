@@ -104,6 +104,13 @@ void ItemShowcase::OnThink()
 {
 	BaseClass::OnThink();
 
+	if ( m_QueueType.Count() == 0 )
+	{
+		m_bShowWeaponOnNextFrame = false;
+		MarkForDeletion();
+		return;
+	}
+
 	if ( m_bShowWeaponOnNextFrame )
 	{
 		const char *szSoundName = soundemitterbase->GetWavFileForSound( "ASWInterface.SelectWeapon", GENDER_NONE );
@@ -405,6 +412,11 @@ void ItemShowcase::ShowItems( SteamInventoryResult_t hResult, int iStart, int iC
 	for ( int i = 0; i < iCount; i++ )
 	{
 		ReactiveDropInventory::ItemInstance_t *pInstance = new ReactiveDropInventory::ItemInstance_t{ hResult, uint32( iStart + i ) };
+		if ( pInstance->Quantity == 0 )
+		{
+			delete pInstance;
+			continue;
+		}
 		( void )ReactiveDropInventory::GetItemDef( pInstance->ItemDefID );
 		pItemShowcase->m_Queue.AddToTail( pInstance );
 		pItemShowcase->m_QueueExtra.AddToTail( 0 );

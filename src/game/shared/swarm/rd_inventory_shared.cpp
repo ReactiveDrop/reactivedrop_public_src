@@ -82,6 +82,7 @@ public:
 				pInventory->DestroyResult( m_PlaytimeItemGeneratorResult[i] );
 			}
 			pInventory->DestroyResult( m_InspectItemResult );
+			pInventory->DestroyResult( m_ExchangeItemsResult );
 			pInventory->DestroyResult( m_DynamicPropertyUpdateResult );
 			pInventory->DestroyResult( m_PreparingEquipNotification );
 			FOR_EACH_VEC( m_PendingEquipSend, i )
@@ -1046,6 +1047,17 @@ public:
 			}
 		}
 
+		if ( pParam->m_handle == m_ExchangeItemsResult )
+		{
+			DebugPrintResult( m_ExchangeItemsResult );
+			BaseModUI::ItemShowcase::ShowItems( m_ExchangeItemsResult, 0, -1, BaseModUI::ItemShowcase::MODE_ITEM_DROP );
+
+			pInventory->DestroyResult( m_ExchangeItemsResult );
+			m_ExchangeItemsResult = k_SteamInventoryResultInvalid;
+
+			return;
+		}
+
 		if ( pParam->m_handle == m_InspectItemResult )
 		{
 			BaseModUI::ItemShowcase::ShowItems( pParam->m_handle, 0, -1, BaseModUI::ItemShowcase::MODE_INSPECT );
@@ -1144,6 +1156,7 @@ public:
 	bool m_bRequestGenericPromotionalItemsAgain{ false };
 	SteamInventoryResult_t m_PlaytimeItemGeneratorResult[3]{ k_SteamInventoryResultInvalid, k_SteamInventoryResultInvalid, k_SteamInventoryResultInvalid };
 	SteamInventoryResult_t m_InspectItemResult{ k_SteamInventoryResultInvalid };
+	SteamInventoryResult_t m_ExchangeItemsResult{ k_SteamInventoryResultInvalid };
 	SteamInventoryResult_t m_GetFullInventoryForCacheResult{ k_SteamInventoryResultInvalid };
 	SteamInventoryResult_t m_PreparingEquipNotification{ k_SteamInventoryResultInvalid };
 	CUtlQueue<KeyValues *> m_PendingEquipSend{};
