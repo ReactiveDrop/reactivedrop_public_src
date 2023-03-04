@@ -106,7 +106,15 @@ void __MsgFunc_RDHitConfirm( bf_read &msg )
 	Assert( targetent >= -1 && targetent < MAX_EDICTS );
 	Assert( weaponindex >= -1 && weaponindex < MAX_EDICTS );
 
-	ReactiveDropInventory::OnHitConfirm( C_BaseEntity::Instance( entindex ), C_BaseEntity::Instance( targetent ), vecDamagePosition, bKilled, bDamageOverTime, bBlastDamage, iDisposition, flDamage, C_BaseEntity::Instance( weaponindex ) );
+	C_BaseEntity *pAttacker = C_BaseEntity::Instance( entindex );
+	C_BaseEntity *pTarget = C_BaseEntity::Instance( targetent );
+	C_BaseEntity *pWeapon = C_BaseEntity::Instance( weaponindex );
+
+	Assert( vecDamagePosition != vec3_origin );
+	if ( vecDamagePosition == vec3_origin && pTarget )
+		vecDamagePosition = pTarget->WorldSpaceCenter();
+
+	ReactiveDropInventory::OnHitConfirm( pAttacker, pTarget, vecDamagePosition, bKilled, bDamageOverTime, bBlastDamage, iDisposition, flDamage, pWeapon );
 
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	if ( !pPlayer || !pPlayer->GetViewNPC() )
@@ -170,7 +178,6 @@ void __MsgFunc_RDHitConfirm( bf_read &msg )
 	else if ( asw_floating_number_type.GetInt() == 2 )
 	{
 		bool bIsAccumulated = false;
-		C_BaseEntity *pAttacker = ClientEntityList().GetBaseEntity( entindex );
 		if ( targetent >= 0 && targetent < MAX_EDICTS && !bBlastDamage && !bDamageOverTime )
 		{
 			RD_Floating_Damage_Number_t &accumulator = s_RD_Floating_Damage_Numbers[targetent];
