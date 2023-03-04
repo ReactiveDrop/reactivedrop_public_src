@@ -700,7 +700,7 @@ ConVar	sk_max_asw_medrifle( "sk_max_asw_medrifle", "504", FCVAR_REPLICATED | FCV
 
 // AR2 (6 clips, 30 per)
 ConVar	sk_plr_dmg_ar2( "sk_plr_dmg_ar2", "8", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar	sk_npc_dmg_ar2( "sk_npc_dmg_ar2", "8", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_npc_dmg_ar2( "sk_npc_dmg_ar2", "5", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar	sk_max_ar2( "sk_max_ar2", "180", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar	sk_max_ar2_altfire( "sk_max_ar2_altfire", "3", FCVAR_REPLICATED | FCVAR_CHEAT );
 

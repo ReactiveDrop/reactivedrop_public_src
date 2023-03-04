@@ -17,6 +17,7 @@
 #include "prop_combine_ball.h"
 #include "asw_fail_advice.h"
 #include "effect_dispatch_data.h"
+#include "asw_gamerules.h"
 #endif
 #include "asw_marine_skills.h"
 #include "asw_weapon_parse.h"
@@ -46,6 +47,7 @@ PRECACHE_WEAPON_REGISTER( asw_weapon_ar2 );
 #ifndef CLIENT_DLL
 extern ConVar asw_debug_marine_damage;
 
+extern ConVar sk_npc_dmg_ar2;
 ConVar sk_weapon_ar2_alt_fire_radius( "sk_weapon_ar2_alt_fire_radius", "10", FCVAR_CHEAT );
 ConVar sk_weapon_ar2_alt_fire_duration( "sk_weapon_ar2_alt_fire_duration", "2", FCVAR_CHEAT );
 ConVar sk_weapon_ar2_alt_fire_mass( "sk_weapon_ar2_alt_fire_mass", "150", FCVAR_CHEAT );
@@ -150,6 +152,12 @@ float CASW_Weapon_AR2::GetWeaponDamage()
 	{
 		flDamage += MarineSkills()->GetSkillBasedValueByMarine( GetMarine(), ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_AR2_DMG );
 	}
+#ifdef GAME_DLL
+	else if ( ASWGameRules() )
+	{
+		flDamage = ASWGameRules()->ModifyAlienDamageBySkillLevel( sk_npc_dmg_ar2.GetFloat() );
+	}
+#endif
 
 	return flDamage;
 }

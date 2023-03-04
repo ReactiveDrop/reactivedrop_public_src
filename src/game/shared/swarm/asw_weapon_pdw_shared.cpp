@@ -22,6 +22,7 @@
 #include "shot_manipulator.h"
 #include "asw_marine_speech.h"
 #include "asw_weapon_ammo_bag_shared.h"
+#include "asw_gamerules.h"
 #endif
 #include "asw_marine_skills.h"
 #include "asw_weapon_parse.h"
@@ -46,9 +47,12 @@ END_PREDICTION_DATA()
 LINK_ENTITY_TO_CLASS( asw_weapon_pdw, CASW_Weapon_PDW );
 PRECACHE_WEAPON_REGISTER(asw_weapon_pdw);
 
-ConVar asw_pdw_max_shooting_distance( "asw_pdw_max_shooting_distance", "400", FCVAR_REPLICATED, "Maximum distance of the hitscan weapons." );
+ConVar asw_pdw_max_shooting_distance( "asw_pdw_max_shooting_distance", "400", FCVAR_CHEAT | FCVAR_REPLICATED, "Maximum distance of the hitscan weapons." );
 extern ConVar asw_weapon_max_shooting_distance;
 extern ConVar asw_weapon_force_scale;
+#ifndef CLIENT_DLL
+ConVar sk_npc_dmg_smg1( "sk_npc_dmg_smg1", "3", FCVAR_CHEAT );
+#endif
 
 CASW_Weapon_PDW::CASW_Weapon_PDW()
 {
@@ -326,6 +330,12 @@ float CASW_Weapon_PDW::GetWeaponDamage()
 	{
 		flDamage += MarineSkills()->GetSkillBasedValueByMarine(GetMarine(), ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_PDW_DMG);
 	}
+#ifdef GAME_DLL
+	else if ( ASWGameRules() )
+	{
+		flDamage = ASWGameRules()->ModifyAlienDamageBySkillLevel( sk_npc_dmg_smg1.GetFloat() );
+	}
+#endif
 
 	//CALL_ATTRIB_HOOK_FLOAT( flDamage, mod_damage_done );
 
