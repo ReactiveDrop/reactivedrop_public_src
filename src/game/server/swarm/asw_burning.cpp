@@ -60,40 +60,36 @@ void CASW_Burning::FireThink()
 {
 	int c = m_Burning.Count();
 	CBaseEntity* pEnt;
-	for (int i=c-1;i>=0;i--)	// go backwards in case we remove one
+	for ( int i = c - 1; i >= 0; i-- )	// go backwards in case we remove one
 	{
 		pEnt = m_Burning[i]->m_hEntity.Get();
-		if (m_Burning[i]->m_fDieTime <= gpGlobals->curtime || !pEnt)
+		if ( m_Burning[i]->m_fDieTime <= gpGlobals->curtime || !pEnt )
 		{
 			delete m_Burning[i];
-			m_Burning.Remove(i);
+			m_Burning.Remove( i );
 			CBaseAnimating *pAnim = pEnt ? pEnt->GetBaseAnimating() : NULL;
-			if (pAnim)
+			if ( pAnim )
 			{
 				//OnEntityExtinguished(pEnt);
 				pAnim->Extinguish();	// this makes the entity remove its FL_ONFIRE flag, its m_bOnFire bool and then calls back to us to check its not in the list anymore
-			}		
+			}
 		}
 		else
 		{
-			if (m_Burning[i]->m_fNextBurnTime <= gpGlobals->curtime + 0.01f)
+			if ( m_Burning[i]->m_fNextBurnTime <= gpGlobals->curtime + 0.01f )
 			{
 				// hurt the entity!
 				CBaseEntity *pAttacker = m_Burning[i]->m_hAttacker.Get();
-				if (!pAttacker)
+				if ( !pAttacker )
 					pAttacker = this;
-				//Msg("%f: burning %d:%s from %d:%s for %f\n", gpGlobals->curtime,
-					//pEnt->entindex(), pEnt->GetClassName(),
-					//pAttacker->entindex(), pAttacker->GetClassName(),
-					//m_Burning[i]->m_fDamagePerInterval);
-				CTakeDamageInfo info(this, pAttacker, m_Burning[i]->m_fDamagePerInterval, DMG_BURN | DMG_DIRECT);
-				info.SetWeapon( m_Burning[i]->m_hDamagingWeapon.Get() );
+				CTakeDamageInfo info( this, pAttacker, m_Burning[i]->m_hDamagingWeapon.Get(), vec3_origin, pEnt->WorldSpaceCenter(), m_Burning[i]->m_fDamagePerInterval, DMG_BURN | DMG_DIRECT );
 				pEnt->TakeDamage( info );
 
 				m_Burning[i]->m_fNextBurnTime += m_Burning[i]->m_fBurnInterval;
 			}
-		}		
+		}
 	}
+
 	SetNextThinkTime();
 }
 
