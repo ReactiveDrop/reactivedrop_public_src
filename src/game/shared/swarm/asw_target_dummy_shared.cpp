@@ -4,7 +4,9 @@
 	#define CASW_Target_Dummy C_ASW_Target_Dummy
 	#include "asw_hud_3dmarinenames.h"
 #else
-
+	#include "asw_inhabitable_npc.h"
+	#include "asw_util_shared.h"
+	#include "rd_inventory_shared.h"
 #endif
 #include "asw_target_dummy_shared.h"
 
@@ -59,17 +61,17 @@ CASW_Target_Dummy::~CASW_Target_Dummy()
 void CASW_Target_Dummy::Spawn()
 {
 	BaseClass::Spawn();
-	
-	//SetModelName( AllocPooledString( ASW_TARGET_DUMMY_MODEL ) );
-	
+
+	SetModelName( AllocPooledString( ASW_TARGET_DUMMY_MODEL ) );
+
 	Precache();
 	SetModel( ASW_TARGET_DUMMY_MODEL );
 	SetMoveType( MOVETYPE_NONE );
 	SetSolid( SOLID_VPHYSICS );
-	SetCollisionGroup( COLLISION_GROUP_NONE ); //COLLISION_GROUP_DEBRIS );
+	SetCollisionGroup( COLLISION_GROUP_NONE );
 	m_takedamage = DAMAGE_YES;
 	m_iHealth = 100;
-	m_iMaxHealth = m_iHealth;	
+	m_iMaxHealth = m_iHealth;
 
 	AddFlag( FL_STATICPROP );
 	VPhysicsInitStatic();
@@ -107,6 +109,26 @@ int CASW_Target_Dummy::OnTakeDamage( const CTakeDamageInfo &info )
 		m_flStartDamageTime = gpGlobals->curtime;
 	}
 	m_flLastDamageTime = gpGlobals->curtime;
+
+	CBaseEntity *pAttacker = info.GetAttacker();
+	if ( pAttacker && pAttacker->IsInhabitableNPC() )
+	{
+		CASW_Inhabitable_NPC *pInhabitableAttacker = assert_cast< CASW_Inhabitable_NPC * >( pAttacker );
+		CASW_ViewNPCRecipientFilter filter{ pInhabitableAttacker };
+		UserMessageBegin( filter, "RDHitConfirm" );
+			WRITE_ENTITY( pAttacker->entindex() );
+			WRITE_ENTITY( entindex() );
+			WRITE_VEC3COORD( info.GetDamagePosition() );
+			WRITE_BOOL( false );
+			WRITE_BOOL( info.GetDamageType() & DMG_DIRECT );
+			WRITE_BOOL( info.GetDamageType() & DMG_BLAST );
+			WRITE_UBITLONG( pInhabitableAttacker->IRelationType( this ), 3 );
+			WRITE_FLOAT( info.GetDamage() );
+			WRITE_ENTITY( info.GetWeapon() ? info.GetWeapon()->entindex() : -1 );
+		MessageEnd();
+
+		ReactiveDropInventory::OnHitConfirm( pAttacker, this, info.GetDamagePosition(), false, info.GetDamageType() & DMG_DIRECT, info.GetDamageType() & DMG_BLAST, pInhabitableAttacker->IRelationType( this ), info.GetDamage(), info.GetWeapon() );
+	}
 
 	SetThink( &CASW_Target_Dummy::ResetThink );
 	SetNextThink( gpGlobals->curtime + 5.0f );	

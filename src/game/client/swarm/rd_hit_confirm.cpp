@@ -6,6 +6,7 @@
 #include "asw_util_shared.h"
 #include "asw_hud_floating_number.h"
 #include "iclientmode.h"
+#include "asw_input.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
@@ -59,6 +60,35 @@ ConVar tf_dingalingaling_repeat_delay( "tf_dingalingaling_repeat_delay", "0.0", 
 extern ConVar asw_floating_number_type;
 ConVar asw_floating_number_combine( "asw_floating_number_combine", "0", FCVAR_ARCHIVE );
 
+static struct RD_Floating_Damage_Number_t
+{
+	float m_flAccumulatedDamage{};
+	float m_flLastDamageNumberTime{};
+	HPARTICLEFFECT m_hDamageNumberParticle{};
+} s_RD_Floating_Damage_Numbers[MAX_EDICTS];
+
+void UpdateHitConfirmRotation()
+{
+	// rotate damage numbers to whatever our current camera angle is
+
+	QAngle vecAngles;
+	vecAngles[PITCH] = 0.0f;
+	vecAngles[YAW] = ASWInput()->ASW_GetCameraYaw() - 90;
+	vecAngles[ROLL] = ASWInput()->ASW_GetCameraPitch();
+
+	Vector vecForward, vecRight, vecUp;
+	AngleVectors( vecAngles, &vecForward, &vecRight, &vecUp );
+
+	for ( int i = 0; i < MAX_EDICTS; i++ )
+	{
+		HPARTICLEFFECT &hEffect = s_RD_Floating_Damage_Numbers[i].m_hDamageNumberParticle;
+		if ( !hEffect )
+			continue;
+
+		hEffect->SetControlPointOrientation( 5, vecForward, vecRight, vecUp );
+	}
+}
+
 void __MsgFunc_RDHitConfirm( bf_read &msg )
 {
 	int entindex = msg.ReadShort();
@@ -71,6 +101,10 @@ void __MsgFunc_RDHitConfirm( bf_read &msg )
 	int iDisposition = msg.ReadUBitLong( 3 );
 	float flDamage = msg.ReadFloat();
 	short weaponindex = msg.ReadShort();
+
+	Assert( entindex >= -1 && entindex < MAX_EDICTS );
+	Assert( targetent >= -1 && targetent < MAX_EDICTS );
+	Assert( weaponindex >= -1 && weaponindex < MAX_EDICTS );
 
 	ReactiveDropInventory::OnHitConfirm( C_BaseEntity::Instance( entindex ), C_BaseEntity::Instance( targetent ), vecDamagePosition, bKilled, bDamageOverTime, bBlastDamage, iDisposition, flDamage, C_BaseEntity::Instance( weaponindex ) );
 
@@ -137,22 +171,22 @@ void __MsgFunc_RDHitConfirm( bf_read &msg )
 	{
 		bool bIsAccumulated = false;
 		C_BaseEntity *pAttacker = ClientEntityList().GetBaseEntity( entindex );
-		C_ASW_Inhabitable_NPC *pTarget = dynamic_cast< C_ASW_Inhabitable_NPC * >( ClientEntityList().GetBaseEntity( targetent ) );
-		if ( pTarget && !bBlastDamage && !bDamageOverTime )
+		if ( targetent >= 0 && targetent < MAX_EDICTS && !bBlastDamage && !bDamageOverTime )
 		{
-			if ( gpGlobals->curtime - pTarget->m_flLastDamageNumberTime < asw_floating_number_combine.GetFloat() )
+			RD_Floating_Damage_Number_t &accumulator = s_RD_Floating_Damage_Numbers[targetent];
+			if ( gpGlobals->curtime - accumulator.m_flLastDamageNumberTime < asw_floating_number_combine.GetFloat() )
 			{
 				bIsAccumulated = true;
-				flDamage += pTarget->m_flAccumulatedDamage;
-				CNewParticleEffect *pParticle = pTarget->m_hDamageNumberParticle.GetObject();
+				flDamage += accumulator.m_flAccumulatedDamage;
+				CNewParticleEffect *pParticle = accumulator.m_hDamageNumberParticle.GetObject();
 				if ( pParticle )
 				{
 					pAttacker->ParticleProp()->StopEmissionAndDestroyImmediately( pParticle );
 				}
 			}
 
-			pTarget->m_flLastDamageNumberTime = gpGlobals->curtime;
-			pTarget->m_flAccumulatedDamage = flDamage;
+			accumulator.m_flLastDamageNumberTime = gpGlobals->curtime;
+			accumulator.m_flAccumulatedDamage = flDamage;
 		}
 
 		int iDmgCustom = 0;
@@ -162,9 +196,9 @@ void __MsgFunc_RDHitConfirm( bf_read &msg )
 			iDmgCustom |= DAMAGE_FLAG_WEAKSPOT;
 
 		HPARTICLEFFECT hParticle = UTIL_ASW_ParticleDamageNumber( pAttacker, vecDamagePosition, flDamage, iDmgCustom, bDamageOverTime ? 0.5f : 1.0f, bBlastDamage || bDamageOverTime, bIsAccumulated );
-		if ( pTarget && !bBlastDamage && !bDamageOverTime )
+		if ( targetent >= 0 && targetent < MAX_EDICTS && !bBlastDamage && !bDamageOverTime )
 		{
-			pTarget->m_hDamageNumberParticle = hParticle;
+			s_RD_Floating_Damage_Numbers[targetent].m_hDamageNumberParticle = hParticle;
 		}
 	}
 }

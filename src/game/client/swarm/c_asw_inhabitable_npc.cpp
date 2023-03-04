@@ -66,10 +66,6 @@ C_ASW_Inhabitable_NPC::C_ASW_Inhabitable_NPC() :
 	m_bElectroStunned = false;
 	m_fNextElectroStunEffect = 0;
 	m_pBurningEffect = NULL;
-
-	m_flAccumulatedDamage = 0.0f;
-	m_flLastDamageNumberTime = 0.0f;
-	m_hDamageNumberParticle = NULL;
 }
 
 C_ASW_Inhabitable_NPC::~C_ASW_Inhabitable_NPC()

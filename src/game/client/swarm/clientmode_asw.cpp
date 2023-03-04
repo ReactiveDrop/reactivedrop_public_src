@@ -66,6 +66,7 @@
 #define INFESTED_CC_FADE_TIME 0.5f
 
 extern bool IsInCommentaryMode( void );
+extern void UpdateHitConfirmRotation();
 
 extern ConVar mat_object_motion_blur_enable;
 
@@ -1079,31 +1080,7 @@ void ClientModeASW::Update( void )
 
 	engine->SetMouseWindowLock( ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME && !enginevgui->IsGameUIVisible() );
 
-	if ( asw_floating_number_type.GetInt() == 2 )
-	{
-		// rotate damage numbers to whatever our current camera angle is
-
-		QAngle vecAngles;
-		vecAngles[PITCH] = 0.0f;
-		vecAngles[YAW] = ASWInput()->ASW_GetCameraYaw() - 90;
-		vecAngles[ROLL] = ASWInput()->ASW_GetCameraPitch();
-
-		//Msg( "DMG # angles ( %f, %f, %f )\n", vecAngles[PITCH], vecAngles[YAW], vecAngles[ROLL] );
-		Vector vecForward, vecRight, vecUp;
-		AngleVectors( vecAngles, &vecForward, &vecRight, &vecUp );
-
-		for ( C_BaseEntity *pEnt = ClientEntityList().FirstBaseEntity(); pEnt; pEnt = ClientEntityList().NextBaseEntity( pEnt ) )
-		{
-			if ( !pEnt->IsInhabitableNPC() )
-				continue;
-
-			HPARTICLEFFECT &hEffect = assert_cast< C_ASW_Inhabitable_NPC * >( pEnt )->m_hDamageNumberParticle;
-			if ( !hEffect )
-				continue;
-
-			hEffect->SetControlPointOrientation( 5, vecForward, vecRight, vecUp );
-		}
-	}
+	UpdateHitConfirmRotation();
 }
 
 void ClientModeASW::DoPostScreenSpaceEffects( const CViewSetup *pSetup )
