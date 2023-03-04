@@ -30,6 +30,18 @@ ConVar rd_sentry_take_damage_from_marine( "rd_sentry_take_damage_from_marine", "
 ConVar rd_sentry_invincible( "rd_sentry_invincible", "0", FCVAR_CHEAT, "If set to 1 sentries will not take damage from anything" );
 ConVar rd_sentry_refilled_by_dismantling( "rd_sentry_refilled_by_dismantling", "0", FCVAR_CHEAT, "If set to 1 marine will refill sentry ammo by dismantling it." );
 
+static void *SendProxy_SentryItemDataForOwningPlayer( const SendProp *pProp, const void *pStructBase, const void *pData, CSendProxyRecipients *pRecipients, int objectID )
+{
+	static CRD_ItemInstance s_BlankInstance;
+
+	const CASW_Sentry_Base *pSentry = static_cast< const CASW_Sentry_Base * >( pStructBase );
+	CASW_Player *pPlayer = pSentry->m_hOriginalOwnerPlayer;
+	if ( !pPlayer || pSentry->m_iInventoryEquipSlotIndex == -1 )
+		return &s_BlankInstance;
+
+	return &pPlayer->m_EquippedItemData[pSentry->m_iInventoryEquipSlotIndex];
+}
+
 LINK_ENTITY_TO_CLASS( asw_sentry_base, CASW_Sentry_Base );
 PRECACHE_REGISTER( asw_sentry_base );
 
@@ -42,6 +54,8 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Sentry_Base, DT_ASW_Sentry_Base)
 	SendPropInt(SENDINFO(m_iMaxAmmo)),	
 	SendPropBool(SENDINFO(m_bSkillMarineHelping)),
 	SendPropInt(SENDINFO(m_nGunType)),
+	SendPropInt( SENDINFO( m_iOriginalOwnerSteamAccount ), -1, SPROP_UNSIGNED ),
+	SendPropDataTable( "m_InventoryItemData", 0, &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ), SendProxy_SentryItemDataForOwningPlayer ),
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Sentry_Base )
@@ -62,10 +76,10 @@ BEGIN_ENT_SCRIPTDESC( CASW_Sentry_Base, CBaseAnimating, "sentry" )
 END_SCRIPTDESC()
 
 CASW_Sentry_Base::CASW_Sentry_Base()
-: bait1_(NULL),
-bait2_(NULL),
-bait3_(NULL),
-bait4_(NULL)
+	: bait1_( NULL ),
+	bait2_( NULL ),
+	bait3_( NULL ),
+	bait4_( NULL )
 {
 	m_iAmmo = -1;
 	m_fSkillMarineHelping = 0;
@@ -73,27 +87,29 @@ bait4_(NULL)
 	m_fDamageScale = 1.0f;
 	m_nGunType = kAUTOGUN;
 	m_bAlreadyTaken = false;
+	m_iOriginalOwnerSteamAccount = 0;
+	m_hOriginalOwnerPlayer = NULL;
 }
 
 
 CASW_Sentry_Base::~CASW_Sentry_Base()
 {
-    if (bait1_)
-    {
-        UTIL_Remove(bait1_);
-    }
-    if (bait2_)
-    {
-        UTIL_Remove(bait2_);
-    }
-    if (bait3_)
-    {
-        UTIL_Remove(bait3_);
-    }
-    if (bait4_)
-    {
-        UTIL_Remove(bait4_);
-    }
+	if ( bait1_ )
+	{
+		UTIL_Remove( bait1_ );
+	}
+	if ( bait2_ )
+	{
+		UTIL_Remove( bait2_ );
+	}
+	if ( bait3_ )
+	{
+		UTIL_Remove( bait3_ );
+	}
+	if ( bait4_ )
+	{
+		UTIL_Remove( bait4_ );
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -170,7 +186,7 @@ int CASW_Sentry_Base::ShouldTransmit( const CCheckTransmitInfo *pInfo )
 
 int CASW_Sentry_Base::UpdateTransmitState()
 {
-	return SetTransmitState( FL_EDICT_FULLCHECK );
+	return SetTransmitState( FL_EDICT_ALWAYS );
 }
 
 void CASW_Sentry_Base::AnimThink( void )
@@ -225,11 +241,14 @@ void CASW_Sentry_Base::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldTyp
 					gameeventmanager->FireEvent( event );
 				}
 
-				CASW_Weapon_Sentry *pWeapon = dynamic_cast< CASW_Weapon_Sentry * >( Create( GetWeaponNameForGunType( GetGunType() ), WorldSpaceCenter(), GetAbsAngles(), NULL ) );
+				CASW_Weapon_Sentry *pWeapon = assert_cast< CASW_Weapon_Sentry * >( Create( GetWeaponNameForGunType( GetGunType() ), WorldSpaceCenter(), GetAbsAngles(), NULL ) );
 				if ( !rd_sentry_refilled_by_dismantling.GetBool() )
 				{
 					pWeapon->SetSentryAmmo( m_iAmmo );
 				}
+				pWeapon->m_iOriginalOwnerSteamAccount = m_iOriginalOwnerSteamAccount;
+				pWeapon->m_hOriginalOwnerPlayer = m_hOriginalOwnerPlayer;
+				pWeapon->m_iInventoryEquipSlotIndex = m_iInventoryEquipSlotIndex;
 
 				pMarine->TakeWeaponPickup( pWeapon );
 				EmitSound( "ASW_Sentry.Dismantled" );
@@ -453,16 +472,16 @@ void CASW_Sentry_Base::Event_Killed( const CTakeDamageInfo &info )
 	m_takedamage = DAMAGE_NO;
 
 	// explosion effect
-	Vector vecPos = GetAbsOrigin() + Vector(0, 0, 30);
-				
-	trace_t		tr;
-	UTIL_TraceLine ( vecPos, vecPos - Vector(0,0, 60), MASK_SHOT, 
-		this, COLLISION_GROUP_NONE, &tr);
+	Vector vecPos = GetAbsOrigin() + Vector( 0, 0, 30 );
 
-	if ((tr.m_pEnt != GetWorldEntity()) || (tr.hitbox != 0))
+	trace_t		tr;
+	UTIL_TraceLine( vecPos, vecPos - Vector( 0, 0, 60 ), MASK_SHOT,
+		this, COLLISION_GROUP_NONE, &tr );
+
+	if ( ( tr.m_pEnt != GetWorldEntity() ) || ( tr.hitbox != 0 ) )
 	{
 		// non-world needs smaller decals
-		if( tr.m_pEnt && !tr.m_pEnt->IsNPC() )
+		if ( tr.m_pEnt && !tr.m_pEnt->IsNPC() )
 		{
 			UTIL_DecalTrace( &tr, "SmallScorch" );
 		}
@@ -479,21 +498,20 @@ void CASW_Sentry_Base::Event_Killed( const CTakeDamageInfo &info )
 	EmitSound( "ASWGrenade.Explode" );
 
 	// damage to nearby things
-	ASWGameRules()->RadiusDamage ( CTakeDamageInfo( this, info.GetAttacker(), 150.0f, DMG_BLAST ), vecPos, 400.0f, CLASS_NONE, NULL );
+	ASWGameRules()->RadiusDamage( CTakeDamageInfo( this, info.GetAttacker(), 150.0f, DMG_BLAST ), vecPos, 400.0f, CLASS_NONE, NULL );
 
-	if (GetSentryTop())
+	if ( GetSentryTop() )
 	{
-		UTIL_Remove(GetSentryTop());
+		UTIL_Remove( GetSentryTop() );
 	}
 
-	BaseClass::Event_Killed(info);
+	BaseClass::Event_Killed( info );
 }
-
 
 const char *CASW_Sentry_Base::GetEntityNameForGunType( GunType_t guntype )
 {
 	AssertMsg1( static_cast<int>(guntype) >= 0, "Faulty guntype %d passed to CASW_Sentry_Base::GetEntityNameForGunType()\n", guntype );
-	if ( guntype < kGUNTYPE_MAX )
+	if ( guntype >= 0 && guntype < kGUNTYPE_MAX )
 	{
 		return sm_gunTypeToInfo[guntype].m_entityName;
 	}
@@ -507,7 +525,7 @@ const char *CASW_Sentry_Base::GetEntityNameForGunType( GunType_t guntype )
 const char *CASW_Sentry_Base::GetWeaponNameForGunType( GunType_t guntype )
 {
 	AssertMsg1( static_cast<int>(guntype) >= 0, "Faulty guntype %d passed to CASW_Sentry_Base::GetWeaponNameForGunType()\n", guntype );
-	if ( guntype < kGUNTYPE_MAX )
+	if ( guntype >= 0 && guntype < kGUNTYPE_MAX )
 	{
 		return sm_gunTypeToInfo[guntype].m_weaponName;
 	}
@@ -521,7 +539,7 @@ const char *CASW_Sentry_Base::GetWeaponNameForGunType( GunType_t guntype )
 int CASW_Sentry_Base::GetBaseAmmoForGunType( GunType_t guntype )
 {
 	AssertMsg1( static_cast<int>(guntype) >= 0, "Faulty guntype %d passed to CASW_Sentry_Base::GetBaseAmmoForGunType()\n", guntype );
-	if ( guntype < kGUNTYPE_MAX )
+	if ( guntype >= 0 && guntype < kGUNTYPE_MAX )
 	{
 		return sm_gunTypeToInfo[guntype].m_nBaseAmmo;
 	}

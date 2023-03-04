@@ -2,7 +2,7 @@
 #define C_ASW_SENTRY_BASE_H
 
 #include "iasw_client_usable_entity.h"
-
+#include "rd_inventory_shared.h"
 #include <vgui/vgui.h>
 
 class C_ASW_Sentry_Base : public C_BaseAnimating, public IASW_Client_Usable_Entity
@@ -39,6 +39,9 @@ public:
 	CNetworkVar(int, m_iMaxAmmo);
 	CNetworkVar(bool, m_bSkillMarineHelping);
 	CNetworkVar(int, m_nGunType);
+
+	CNetworkVar( AccountID_t, m_iOriginalOwnerSteamAccount );
+	CNetworkVarEmbedded( CRD_ItemInstance, m_InventoryItemData );
 
 	// class of the weapon that created us
 	const char* GetWeaponClass();

@@ -84,6 +84,10 @@ public:
 	inline void SetGunType( GunType_t iType );
 	inline void SetGunType( int iType );
 
+	CNetworkVar( AccountID_t, m_iOriginalOwnerSteamAccount );
+	CHandle<CASW_Player> m_hOriginalOwnerPlayer;
+	int m_iInventoryEquipSlotIndex;
+
 protected:
 	
 	CNetworkVar( int, m_nGunType );

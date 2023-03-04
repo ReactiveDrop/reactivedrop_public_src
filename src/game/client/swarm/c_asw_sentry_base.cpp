@@ -23,6 +23,8 @@ IMPLEMENT_CLIENTCLASS_DT(C_ASW_Sentry_Base, DT_ASW_Sentry_Base, CASW_Sentry_Base
 	RecvPropInt(RECVINFO(m_iMaxAmmo)),	
 	RecvPropBool(RECVINFO(m_bSkillMarineHelping)),
 	RecvPropInt(RECVINFO(m_nGunType)),
+	RecvPropInt( RECVINFO( m_iOriginalOwnerSteamAccount ) ),
+	RecvPropDataTable( RECVINFO_DT( m_InventoryItemData ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_ASW_Sentry_Base )
