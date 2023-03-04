@@ -19,6 +19,8 @@
 	#include "fogcontroller.h"
 	#include "asw_point_camera.h"
 	#include "asw_deathmatch_mode.h"
+	#include "asw_sentry_base.h"
+	#include "asw_sentry_top.h"
 #else
 	#include "asw_gamerules.h"
 	#include "c_asw_drone_advanced.h"
@@ -707,14 +709,22 @@ void UTIL_RD_HitConfirm( CBaseEntity *pTarget, int iHealthBefore, const CTakeDam
 	}
 
 	CBaseEntity *pAttacker = info.GetAttacker();
+	CBaseEntity *pWeapon = info.GetWeapon();
+	if ( CASW_Sentry_Top *pSentry = dynamic_cast< CASW_Sentry_Top * >( pAttacker ) )
+	{
+		CASW_Sentry_Base *pBase = pSentry->GetSentryBase();
+		if ( pBase && pBase->m_hDeployer )
+		{
+			pAttacker = pBase->m_hDeployer;
+			pWeapon = pBase;
+		}
+	}
 	CASW_Inhabitable_NPC *pInhabitableAttacker = NULL;
 	if ( pAttacker && pAttacker->IsInhabitableNPC() )
 	{
 		pInhabitableAttacker = assert_cast< CASW_Inhabitable_NPC * >( pAttacker );
 		filter.AddRecipientsByViewNPC( pInhabitableAttacker );
 	}
-
-	CBaseEntity *pWeapon = info.GetWeapon();
 
 	Vector vecDamagePosition = info.GetDamagePosition();
 	if ( pTarget && vecDamagePosition == vec3_origin )

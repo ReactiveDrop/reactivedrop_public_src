@@ -20,6 +20,7 @@
 #include "c_asw_marine_resource.h"
 #include "c_asw_marine.h"
 #include "c_asw_weapon.h"
+#include "c_asw_sentry_base.h"
 #include "c_asw_game_resource.h"
 #include "asw_equipment_list.h"
 #include "rd_workshop.h"
@@ -28,11 +29,13 @@
 #include "gameui/swarm/vitemshowcase.h"
 #include "filesystem.h"
 #include "c_user_message_register.h"
+#define CASW_Sentry_Base C_ASW_Sentry_Base
 #else
 #include "asw_player.h"
 #include "asw_marine_resource.h"
 #include "asw_marine.h"
 #include "asw_weapon.h"
+#include "asw_sentry_base.h"
 #include "asw_game_resource.h"
 #endif
 
@@ -705,7 +708,8 @@ public:
 		}
 	}
 
-	void IncrementStrangePropertyOnWeaponAndGlobals( CASW_Inhabitable_NPC *pNPC, CASW_Weapon *pWeapon, SteamItemDef_t iAccessoryID, int64_t iAmount, int iPropertyIndex = 0, bool bRelative = true )
+	template<typename Weapon_t>
+	void IncrementStrangePropertyOnWeaponAndGlobals( CASW_Inhabitable_NPC *pNPC, Weapon_t *pWeapon, SteamItemDef_t iAccessoryID, int64_t iAmount, int iPropertyIndex = 0, bool bRelative = true )
 	{
 		Assert( pNPC );
 		if ( !pNPC || !pNPC->IsInhabited() || !pNPC->GetCommander() )
@@ -2429,8 +2433,16 @@ namespace ReactiveDropInventory
 
 			if ( pTarget && pTarget->IsAlien() && bKilled )
 			{
-				s_RD_Inventory_Manager.IncrementStrangePropertyOnWeaponAndGlobals( pInhabitableAttacker, assert_cast< CASW_Weapon * >( pWeapon ), 5002, 1 ); // Aliens Killed
-				s_RD_Inventory_Manager.IncrementStrangePropertyOnWeaponAndGlobals( pInhabitableAttacker, assert_cast< CASW_Weapon * >( pWeapon ), 5007, 1 ); // Alien Kill Streak
+				if ( pWeapon && pWeapon->Classify() == CLASS_ASW_SENTRY_BASE )
+				{
+					s_RD_Inventory_Manager.IncrementStrangePropertyOnWeaponAndGlobals( pInhabitableAttacker, assert_cast< CASW_Sentry_Base * >( pWeapon ), 5002, 1 ); // Aliens Killed
+					s_RD_Inventory_Manager.IncrementStrangePropertyOnWeaponAndGlobals( pInhabitableAttacker, assert_cast< CASW_Sentry_Base * >( pWeapon ), 5007, 1 ); // Alien Kill Streak
+				}
+				else
+				{
+					s_RD_Inventory_Manager.IncrementStrangePropertyOnWeaponAndGlobals( pInhabitableAttacker, assert_cast< CASW_Weapon * >( pWeapon ), 5002, 1 ); // Aliens Killed
+					s_RD_Inventory_Manager.IncrementStrangePropertyOnWeaponAndGlobals( pInhabitableAttacker, assert_cast< CASW_Weapon * >( pWeapon ), 5007, 1 ); // Alien Kill Streak
+				}
 			}
 		}
 	}
