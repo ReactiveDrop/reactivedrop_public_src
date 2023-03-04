@@ -617,31 +617,7 @@ int CASW_Inhabitable_NPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		CASW_GameStats.Event_AlienTookDamage( this, newInfo );
 	}
 
-	CASW_ViewNPCRecipientFilter filter;
-	CASW_Inhabitable_NPC *pInhabitableAttacker = NULL;
-	if ( pAttacker && pAttacker->IsInhabitableNPC() )
-	{
-		pInhabitableAttacker = assert_cast< CASW_Inhabitable_NPC * >( pAttacker );
-		filter.AddRecipientsByViewNPC( pInhabitableAttacker );
-	}
-	if ( Classify() == CLASS_ASW_MARINE && assert_cast< CASW_Marine * >( this )->GetMarineResource() )
-	{
-		filter.AddRecipientsByViewNPC( this );
-	}
-
-	UserMessageBegin( filter, "RDHitConfirm" );
-		WRITE_ENTITY( pAttacker ? pAttacker->entindex() : -1 );
-		WRITE_ENTITY( entindex() );
-		WRITE_VEC3COORD( newInfo.GetDamagePosition() );
-		WRITE_BOOL( GetHealth() <= 0 );
-		WRITE_BOOL( newInfo.GetDamageType() & DMG_DIRECT );
-		WRITE_BOOL( newInfo.GetDamageType() & DMG_BLAST );
-		WRITE_UBITLONG( pInhabitableAttacker ? pInhabitableAttacker->IRelationType( this ) : D_HT, 3 );
-		WRITE_FLOAT( MIN( newInfo.GetDamage(), iHealthBefore ) );
-		WRITE_ENTITY( newInfo.GetWeapon() ? newInfo.GetWeapon()->entindex() : -1 );
-	MessageEnd();
-
-	ReactiveDropInventory::OnHitConfirm( pAttacker, this, newInfo.GetDamagePosition(), GetHealth() <= 0, newInfo.GetDamageType() & DMG_DIRECT, newInfo.GetDamageType() & DMG_BLAST, pInhabitableAttacker ? pInhabitableAttacker->IRelationType( this ) : D_HT, MIN( newInfo.GetDamage(), iHealthBefore ), newInfo.GetWeapon() );
+	UTIL_RD_HitConfirm( this, iHealthBefore, newInfo );
 
 	return result;
 }

@@ -85,6 +85,8 @@ float UTIL_ASW_CalcFastDoorHackTime(int iNumRows, int iNumColumns, int iNumWires
 
 		void AddRecipientsByViewNPC( CASW_Inhabitable_NPC *pNPC, bool bSendToRecorders = true );
 	};
+
+	void UTIL_RD_HitConfirm( CBaseEntity *pTarget, int iHealthBefore, const CTakeDamageInfo &info );
 #else
 	bool UTIL_ASW_ClientsideGib(C_BaseAnimating* pEnt);
 	CNewParticleEffect *UTIL_ASW_CreateFireEffect( C_BaseEntity *pEntity );

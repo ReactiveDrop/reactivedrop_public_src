@@ -1321,24 +1321,7 @@ int CASW_Door::OnTakeDamage( const CTakeDamageInfo &info )
 			SetDentSequence();
 		}
 
-		if ( pAttacker && pAttacker->IsInhabitableNPC() )
-		{
-			CASW_Inhabitable_NPC *pInhabitableAttacker = assert_cast< CASW_Inhabitable_NPC * >( pAttacker );
-			CASW_ViewNPCRecipientFilter filter{ pInhabitableAttacker };
-			UserMessageBegin( filter, "RDHitConfirm" );
-				WRITE_ENTITY( pAttacker->entindex() );
-				WRITE_ENTITY( entindex() );
-				WRITE_VEC3COORD( info.GetDamagePosition() );
-				WRITE_BOOL( m_iHealth <= 0 );
-				WRITE_BOOL( info.GetDamageType() & DMG_DIRECT );
-				WRITE_BOOL( info.GetDamageType() & DMG_BLAST );
-				WRITE_UBITLONG( pInhabitableAttacker->IRelationType( this ), 3 );
-				WRITE_FLOAT( MIN( info.GetDamage(), iHealthBefore ) );
-				WRITE_ENTITY( info.GetWeapon() ? info.GetWeapon()->entindex() : -1 );
-			MessageEnd();
-
-			ReactiveDropInventory::OnHitConfirm( pAttacker, this, info.GetDamagePosition(), m_iHealth <= 0, info.GetDamageType() &DMG_DIRECT, info.GetDamageType() &DMG_BLAST, pInhabitableAttacker->IRelationType( this ), MIN( info.GetDamage(), iHealthBefore ), info.GetWeapon() );
-		}
+		UTIL_RD_HitConfirm( this, iHealthBefore, info );
 	}
 
 	return 1;

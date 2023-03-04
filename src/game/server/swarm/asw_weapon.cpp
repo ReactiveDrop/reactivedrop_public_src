@@ -16,7 +16,7 @@ static void *SendProxy_WeaponItemDataForOwningPlayer( const SendProp *pProp, con
 {
 	static CRD_ItemInstance s_BlankInstance;
 
-	const CASW_Weapon *pWeapon = static_cast< const CASW_Weapon * >( pData );
+	const CASW_Weapon *pWeapon = static_cast< const CASW_Weapon * >( pStructBase );
 	CASW_Player *pPlayer = pWeapon->m_hOriginalOwnerPlayer;
 	if ( !pPlayer || pWeapon->m_iInventoryEquipSlotIndex == -1 )
 		return &s_BlankInstance;

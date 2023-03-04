@@ -4,6 +4,7 @@
 #include "asw_util_shared.h"
 #include "asw_equipment_list.h"
 #include "asw_deathmatch_mode_light.h"
+#include "asw_gamerules.h"
 #include "GameEventListener.h"
 #include "fmtstr.h"
 #include "jsmn.h"
@@ -19,7 +20,6 @@
 #include "c_asw_marine_resource.h"
 #include "c_asw_marine.h"
 #include "c_asw_weapon.h"
-#include "asw_gamerules.h"
 #include "c_asw_game_resource.h"
 #include "asw_equipment_list.h"
 #include "rd_workshop.h"
@@ -746,11 +746,17 @@ public:
 		}
 	}
 
-	bool ModifyAccessoryDynamicPropValue( CRD_ItemInstance &instance, SteamItemDef_t iAccessoryID, int iPropertyIndex, int64_t iAmount, bool bRelative = true )
+	bool ModifyAccessoryDynamicPropValue( CRD_ItemInstance &instance, SteamItemDef_t iAccessoryID, int iPropertyIndex, int64_t iAmount, bool bRelative = true, bool bAllowCheating = false )
 	{
 		if ( !instance.IsSet() )
 		{
 			// no item in slot
+			return false;
+		}
+
+		if ( !bAllowCheating && ASWGameRules() && ASWGameRules()->m_bCheated )
+		{
+			// can't affect strange stats while cheating
 			return false;
 		}
 

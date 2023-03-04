@@ -693,6 +693,55 @@ void CASW_ViewNPCRecipientFilter::AddRecipientsByViewNPC( CASW_Inhabitable_NPC *
 	}
 }
 
+void UTIL_RD_HitConfirm( CBaseEntity *pTarget, int iHealthBefore, const CTakeDamageInfo &info )
+{
+	Assert( pTarget );
+	Assert( iHealthBefore > 0 );
+
+	CASW_ViewNPCRecipientFilter filter;
+	CASW_Inhabitable_NPC *pInhabitableTarget = NULL;
+	if ( pTarget && pTarget->IsInhabitableNPC() )
+	{
+		pInhabitableTarget = assert_cast< CASW_Inhabitable_NPC * >( pTarget );
+		filter.AddRecipientsByViewNPC( pInhabitableTarget );
+	}
+
+	CBaseEntity *pAttacker = info.GetAttacker();
+	CASW_Inhabitable_NPC *pInhabitableAttacker = NULL;
+	if ( pAttacker && pAttacker->IsInhabitableNPC() )
+	{
+		pInhabitableAttacker = assert_cast< CASW_Inhabitable_NPC * >( pAttacker );
+		filter.AddRecipientsByViewNPC( pInhabitableAttacker );
+	}
+
+	CBaseEntity *pWeapon = info.GetWeapon();
+
+	Vector vecDamagePosition = info.GetDamagePosition();
+	if ( pTarget && vecDamagePosition == vec3_origin )
+	{
+		vecDamagePosition = pTarget->WorldSpaceCenter();
+	}
+
+	bool bKilled = pTarget && pTarget->GetHealth() <= 0;
+	bool bDamageOverTime = info.GetDamageType() & DMG_DIRECT;
+	bool bBlastDamage = info.GetDamageType() & DMG_BLAST;
+	Disposition_t iDisposition = pInhabitableAttacker && pTarget ? pInhabitableAttacker->IRelationType( pTarget ) : D_HT;
+	float flDamage = MIN( info.GetDamage(), iHealthBefore );
+
+	UserMessageBegin( filter, "RDHitConfirm" );
+		WRITE_ENTITY( pAttacker ? pAttacker->entindex() : -1 );
+		WRITE_ENTITY( pTarget ? pTarget->entindex() : -1 );
+		WRITE_VEC3COORD( vecDamagePosition );
+		WRITE_BOOL( bKilled );
+		WRITE_BOOL( bDamageOverTime );
+		WRITE_BOOL( bBlastDamage );
+		WRITE_UBITLONG( iDisposition, 3 );
+		WRITE_FLOAT( flDamage );
+		WRITE_ENTITY( pWeapon ? pWeapon->entindex() : -1 );
+	MessageEnd();
+
+	ReactiveDropInventory::OnHitConfirm( pAttacker, pTarget, vecDamagePosition, bKilled, bDamageOverTime, bBlastDamage, iDisposition, flDamage, pWeapon );
+}
 #endif
 
 //-----------------------------------------------------------------------------
