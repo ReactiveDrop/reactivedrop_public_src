@@ -204,6 +204,7 @@ void CASW_Model_FX_Proxy::OnBind( C_BaseEntity *pEnt )
 		bOnFire = pNPC->m_bOnFire;
 		flFrozen = pNPC->GetMoveType() == MOVETYPE_NONE ? 0.0f : pNPC->GetFrozenAmount();
 		UpdateEffects( bShockBig, bOnFire, flFrozen );
+		return;
 	}
 
 	m_pDetailBlendFactor->SetFloatValue( 0.0f );
