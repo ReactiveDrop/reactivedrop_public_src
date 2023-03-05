@@ -57,6 +57,7 @@ public:
 	virtual const char* GetTracerEffectName() { return "tracer_default"; }	// particle effect name
 	virtual const char* GetMuzzleEffectName() { return "muzzle_rifle"; }	// particle effect name
 	virtual const char *GetMagazineGibModelName() const { return NULL; }
+	virtual int GetMagazineGibModelSkin() const { return 0; }
 	virtual void DropMagazineGib();
 	virtual bool Simulate();
 	virtual bool ShouldMarineFlame() { return false; } // if true, the marine emits flames from his flame emitter

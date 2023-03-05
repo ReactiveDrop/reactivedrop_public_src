@@ -31,6 +31,7 @@ public:
 	virtual void UpdateEffects();
 #else
 #endif
+	virtual int GetMagazineGibModelSkin() const override { return 1; }
 
 protected:
 	void	SetFiringState( ASW_Weapon_HealGunFireState_t state );

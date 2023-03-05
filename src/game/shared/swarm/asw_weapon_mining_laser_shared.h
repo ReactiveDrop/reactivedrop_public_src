@@ -47,7 +47,8 @@ public:
 	virtual void GetButtons(bool& bAttack1, bool& bAttack2, bool& bReload, bool& bOldReload, bool& bOldAttack1 );
 	float m_fLastForcedFireTime;
 #endif
-    
+	virtual const char *GetMagazineGibModelName() const override { return "models/weapons/empty_clips/teslagun_empty_clip.mdl"; }
+
 	void	SecondaryAttack( void )
 	{
 		PrimaryAttack();

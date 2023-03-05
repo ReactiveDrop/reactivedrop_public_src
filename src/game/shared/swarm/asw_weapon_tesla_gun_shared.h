@@ -51,6 +51,7 @@ public:
 	float m_fLastForcedFireTime;
 #endif
 	virtual const char *GetMagazineGibModelName() const override { return "models/weapons/empty_clips/teslagun_empty_clip.mdl"; }
+	virtual int GetMagazineGibModelSkin() const override { return 1; }
 
 	virtual const float GetAutoAimAmount() { return AUTOAIM_2DEGREES; };
 	virtual bool ShouldFlareAutoaim() { return true; }

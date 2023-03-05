@@ -430,20 +430,28 @@ void C_ASW_Weapon::DropMagazineGib()
 	GetBonePosition( LookupBone( "ValveBiped.Bip01_R_Hand" ), vecHand, angHand );
 	AngleVectors( angHand, &vecHandForward );
 
-	C_Gib::CreateClientsideGib( szModelName, vecHand + vecHandForward * BoundingRadius(),
+	C_Gib *pGib = C_Gib::CreateClientsideGib( szModelName, vecHand + vecHandForward * BoundingRadius(),
 		RandomVector( -rd_drop_magazine_force.GetFloat(), rd_drop_magazine_force.GetFloat() ) + Vector( 0, 0, rd_drop_magazine_force_up.GetFloat() ),
 		RandomAngularImpulse( -rd_drop_magazine_spin.GetFloat(), rd_drop_magazine_spin.GetFloat() ),
 		rd_drop_magazine_lifetime.GetFloat() );
+	if ( pGib )
+	{
+		pGib->SetSkin( GetMagazineGibModelSkin() );
+	}
 
 	if ( DisplayClipsDoubled() )
 	{
 		GetBonePosition( LookupBone( "ValveBiped.Bip01_L_Hand" ), vecHand, angHand );
 		AngleVectors( angHand, &vecHandForward );
 
-		C_Gib::CreateClientsideGib( szModelName, vecHand + vecHandForward * BoundingRadius(),
+		pGib = C_Gib::CreateClientsideGib( szModelName, vecHand + vecHandForward * BoundingRadius(),
 			RandomVector( -rd_drop_magazine_force.GetFloat(), rd_drop_magazine_force.GetFloat() ) + Vector( 0, 0, rd_drop_magazine_force_up.GetFloat() ),
 			RandomAngularImpulse( -rd_drop_magazine_spin.GetFloat(), rd_drop_magazine_spin.GetFloat() ),
 			rd_drop_magazine_lifetime.GetFloat() );
+		if ( pGib )
+		{
+			pGib->SetSkin( GetMagazineGibModelSkin() );
+		}
 	}
 }
 

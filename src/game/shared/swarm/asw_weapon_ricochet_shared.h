@@ -38,6 +38,7 @@ public:
 		void UpdateBounceLaser();
 		virtual bool Simulate();
 	#endif
+	virtual const char *GetMagazineGibModelName() const override { return "models/weapons/empty_clips/autogun_empty_clip.mdl"; }
 
 	// aiming grenades at the ground
 	virtual bool SupportsGroundShooting() { return false; }
