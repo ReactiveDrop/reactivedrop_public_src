@@ -1237,7 +1237,7 @@ HPARTICLEFFECT UTIL_ASW_ParticleDamageNumber( C_BaseEntity *pEnt, Vector vecPos,
 
 	Color cNumber = Color( 255, 240, 240 );
 
-	int iCrit = 0;
+	int iPrefix = 0, iCrit = 0;
 	float flNewScale = MAX( flScale, 1.0f );
 	float flLifetime = 1.0f;
 	int r, g, b;
@@ -1250,6 +1250,7 @@ HPARTICLEFFECT UTIL_ASW_ParticleDamageNumber( C_BaseEntity *pEnt, Vector vecPos,
 	}
 	else if ( iDmgCustom & DAMAGE_FLAG_WEAKSPOT )
 	{
+		iPrefix = 1;
 		flNewScale *= 1.3f;
 		flLifetime = 1.25f;
 		cNumber = Color( 255, 128, 128 );
@@ -1275,7 +1276,7 @@ HPARTICLEFFECT UTIL_ASW_ParticleDamageNumber( C_BaseEntity *pEnt, Vector vecPos,
 		pEffect = pEnt->ParticleProp()->Create( bSkipRampUp ? "floating_numbers_noramp" : "floating_numbers", PATTACH_CUSTOMORIGIN );
 	}
 	pEffect->SetControlPoint( 0, vecPos );
-	pEffect->SetControlPoint( 1, Vector( 0, iDamage, iCrit ) );
+	pEffect->SetControlPoint( 1, Vector( iPrefix, iDamage, iCrit ) );
 	pEffect->SetControlPoint( 2, Vector( r, g, b ) );
 	pEffect->SetControlPoint( 3, Vector( flNewScale, flLifetime, 0 ) );
 	pEffect->SetControlPointOrientation( 5, vecForward, vecRight, vecUp );
