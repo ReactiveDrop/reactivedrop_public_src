@@ -21,6 +21,7 @@ public:
 	
 	void	SecondaryAttack( void );
 	virtual bool SupportsBayonet() { return true; }
+	virtual const char *GetMagazineGibModelName() const override { return const_cast< CASW_Weapon_Rifle * >( this )->Classify() == CLASS_ASW_RIFLE ? "models/weapons/empty_clips/assaultrifle_empty_clip.mdl" : NULL; }
 
 	const char *GetTracerType( void ) { return "ASWTracer"; }
 

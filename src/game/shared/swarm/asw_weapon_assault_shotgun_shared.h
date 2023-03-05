@@ -44,6 +44,7 @@ public:
 		virtual float GetLaserPointerRange( void ) { return 360; }
 		virtual void OnMuzzleFlashed();
 	#endif
+	virtual const char *GetMagazineGibModelName() const override { return "models/weapons/empty_clips/vindicator_empty_clip.mdl"; }
 
 	virtual bool ShouldMarineMoveSlow();
 

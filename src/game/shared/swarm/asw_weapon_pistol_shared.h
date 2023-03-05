@@ -70,6 +70,7 @@ public:
 		virtual const char* GetTracerEffectName() { return "tracer_pistol"; }	// particle effect name
 		virtual const char* GetMuzzleEffectName() { return "muzzle_pistol"; }	// particle effect name
 	#endif
+	virtual const char *GetMagazineGibModelName() const override { return "models/weapons/empty_clips/pistol_empty_clip.mdl"; }
 
 	virtual const char* GetUTracerType();
 	// Classification

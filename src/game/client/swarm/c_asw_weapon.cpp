@@ -102,6 +102,11 @@ ConVar glow_outline_color_weapon( "glow_outline_color_weapon", "0 102 192", FCVA
 ConVar rd_tracer_tint_self( "rd_tracer_tint_self", "255 255 255", FCVAR_ARCHIVE, "Tint tracers and muzzle flashes from own marine" );
 ConVar rd_tracer_tint_other( "rd_tracer_tint_other", "255 255 255", FCVAR_ARCHIVE, "Tint tracers and muzzle flashes from other marines" );
 ConVar rd_marine_gear( "rd_marine_gear", "1", FCVAR_NONE, "Draw model overlays for marine gear items" );
+ConVar rd_drop_magazine( "rd_drop_magazine", "1", FCVAR_NONE, "Drop a magazine model when reloading weapons" );
+ConVar rd_drop_magazine_force( "rd_drop_magazine_force", "50", FCVAR_NONE, "Amount of random force to apply to dropped magazine" );
+ConVar rd_drop_magazine_force_up( "rd_drop_magazine_force_up", "50", FCVAR_NONE, "Amount of upward force to apply to the dropped magazine" );
+ConVar rd_drop_magazine_spin( "rd_drop_magazine_spin", "1000", FCVAR_NONE, "Amount of random angular velocity to apply to dropped magazine" );
+ConVar rd_drop_magazine_lifetime( "rd_drop_magazine_lifetime", "4", FCVAR_NONE, "Time before a dropped magazine fades" );
 
 extern ConVar asw_use_particle_tracers;
 extern ConVar muzzleflash_light;
@@ -409,6 +414,38 @@ void C_ASW_Weapon::ProcessMuzzleFlashEvent()
 	OnMuzzleFlashed();	
 }
 
+void C_ASW_Weapon::DropMagazineGib()
+{
+	const char *szModelName = GetMagazineGibModelName();
+	if ( !szModelName )
+		return;
+
+	if ( !rd_drop_magazine.GetBool() )
+		return;
+
+	Vector vecHand;
+	QAngle angHand;
+	Vector vecHandForward;
+
+	GetBonePosition( LookupBone( "ValveBiped.Bip01_R_Hand" ), vecHand, angHand );
+	AngleVectors( angHand, &vecHandForward );
+
+	C_Gib::CreateClientsideGib( szModelName, vecHand + vecHandForward * BoundingRadius(),
+		RandomVector( -rd_drop_magazine_force.GetFloat(), rd_drop_magazine_force.GetFloat() ) + Vector( 0, 0, rd_drop_magazine_force_up.GetFloat() ),
+		RandomAngularImpulse( -rd_drop_magazine_spin.GetFloat(), rd_drop_magazine_spin.GetFloat() ),
+		rd_drop_magazine_lifetime.GetFloat() );
+
+	if ( DisplayClipsDoubled() )
+	{
+		GetBonePosition( LookupBone( "ValveBiped.Bip01_L_Hand" ), vecHand, angHand );
+		AngleVectors( angHand, &vecHandForward );
+
+		C_Gib::CreateClientsideGib( szModelName, vecHand + vecHandForward * BoundingRadius(),
+			RandomVector( -rd_drop_magazine_force.GetFloat(), rd_drop_magazine_force.GetFloat() ) + Vector( 0, 0, rd_drop_magazine_force_up.GetFloat() ),
+			RandomAngularImpulse( -rd_drop_magazine_spin.GetFloat(), rd_drop_magazine_spin.GetFloat() ),
+			rd_drop_magazine_lifetime.GetFloat() );
+	}
+}
 
 bool C_ASW_Weapon::Simulate()
 {

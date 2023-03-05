@@ -74,6 +74,7 @@ public:
 		float m_flEjectBrassTime;
 		int m_nEjectBrassCount;
 	#endif
+	virtual const char *GetMagazineGibModelName() const override { return "models/weapons/empty_clips/sniperrifle_empty_clip.mdl"; }
 
 	CNetworkVar( bool, m_bZoomed );
 protected:

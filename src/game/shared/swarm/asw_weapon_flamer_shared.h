@@ -68,6 +68,7 @@ public:
 		virtual void UpdateOnRemove();
 		virtual void ClientThink();
 	#endif
+	virtual const char *GetMagazineGibModelName() const override { return "models/weapons/empty_clips/flmethrower_empty_clip.mdl"; }
 
 	float m_flLastFireTime;
 	CNetworkVar(bool, m_bIsSecondaryFiring);

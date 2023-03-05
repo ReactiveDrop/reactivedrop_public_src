@@ -55,6 +55,7 @@ public:
 		virtual const char* GetMuzzleEffectName() { return "muzzle_pdw"; }	// particle effect name
 		virtual const char *GetPartialReloadSound( int iPart );
 	#endif
+	virtual const char *GetMagazineGibModelName() const override { return "models/weapons/empty_clips/pdw_empty_clip.mdl"; }
 
 	virtual const char* GetUTracerType();
 	virtual int ASW_SelectWeaponActivity(int idealActivity);

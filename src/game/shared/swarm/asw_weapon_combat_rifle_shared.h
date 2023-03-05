@@ -44,6 +44,7 @@ public:
 	virtual bool HasSecondaryExplosive(void) const { return false; }
 	virtual bool GroundSecondary() { return false; }
 #endif
+	virtual const char *GetMagazineGibModelName() const override { return "models/weapons/empty_clips/combatrifle_empty_clip.mdl"; }
 
 	virtual Class_T		Classify(void) { return (Class_T)CLASS_ASW_COMBAT_RIFLE; }
 };

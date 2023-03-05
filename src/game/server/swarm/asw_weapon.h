@@ -176,6 +176,7 @@ public:
 	virtual int DisplayMaxClip1() { return GetMaxClip1(); }
 	virtual int DisplayClip2() { return Clip2(); }
 	virtual int DisplayMaxClip2() { return GetMaxClip2(); }
+	virtual const char *GetMagazineGibModelName() const { return NULL; }
 
 	CNetworkVar( AccountID_t, m_iOriginalOwnerSteamAccount );
 	CHandle<CASW_Player> m_hOriginalOwnerPlayer;

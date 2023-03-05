@@ -43,13 +43,14 @@ public:
 #ifdef CLIENT_DLL
 	virtual void ClientThink( void );
 	virtual const char* GetPartialReloadSound( int iPart );
-	virtual void UpdateEffects();	
+	virtual void UpdateEffects();
 	virtual float GetLaserPointerRange( void ) { return 240; }// Give a chance for non-local weapons to update their effects on the client
 #else
 	int		CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
 	virtual void GetButtons(bool& bAttack1, bool& bAttack2, bool& bReload, bool& bOldReload, bool& bOldAttack1 );
 	float m_fLastForcedFireTime;
 #endif
+	virtual const char *GetMagazineGibModelName() const override { return "models/weapons/empty_clips/teslagun_empty_clip.mdl"; }
 
 	virtual const float GetAutoAimAmount() { return AUTOAIM_2DEGREES; };
 	virtual bool ShouldFlareAutoaim() { return true; }

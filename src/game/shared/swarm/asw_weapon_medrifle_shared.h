@@ -55,10 +55,11 @@ public:
 		virtual void MouseOverEntity(C_BaseEntity *pEnt, Vector vecWorldCursor);
 		virtual void ClientThink( void );
 		//virtual const char* GetPartialReloadSound( int iPart );
-		virtual void UpdateEffects();	
+		virtual void UpdateEffects();
 		virtual bool ShouldShowLaserPointer();
 		virtual float GetLaserPointerRange( void ) { return 240; }// Give a chance for non-local weapons to update their effects on the client
 	#endif
+	virtual const char *GetMagazineGibModelName() const override { return "models/weapons/empty_clips/medrifle_empty_clip.mdl"; }
 
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_MEDRIFLE; }

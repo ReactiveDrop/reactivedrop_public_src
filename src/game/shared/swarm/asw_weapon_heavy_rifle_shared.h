@@ -31,6 +31,7 @@ public:
 	#ifndef CLIENT_DLL
 		DECLARE_DATADESC();
 	#endif
+		virtual const char *GetMagazineGibModelName() const override { return "models/weapons/empty_clips/heavyrifle_empty_clip.mdl"; }
 
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_HEAVY_RIFLE; }

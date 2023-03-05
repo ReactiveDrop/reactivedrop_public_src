@@ -20,6 +20,7 @@ public:
 
 	virtual const char* GetTracerEffectName() { return "tracer_rifle"; }	// particle effect name
 	virtual const char* GetMuzzleEffectName() { return "muzzle_rifle"; }	// particle effect name
+	virtual const char *GetMagazineGibModelName() const override { return const_cast< C_ASW_Weapon_Rifle * >( this )->Classify() == CLASS_ASW_RIFLE ? "models/weapons/empty_clips/assaultrifle_empty_clip.mdl" : NULL; }
 
 	virtual const float GetAutoAimAmount() { return AUTOAIM_2DEGREES * 0.3f; }
 	virtual bool ShouldFlareAutoaim() { return true; }

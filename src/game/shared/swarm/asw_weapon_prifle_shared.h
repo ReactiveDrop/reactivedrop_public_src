@@ -39,6 +39,7 @@ public:
 		virtual const char* GetTracerEffectName() { return "tracer_proto_rifle"; }	// particle effect name
 		virtual const char* GetMuzzleEffectName() { return "muzzle_proto_rifle"; }	// particle effect name
 	#endif
+	virtual const char *GetMagazineGibModelName() const override { return "models/weapons/empty_clips/prototyperifle_empty_clip.mdl"; }
 
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_PRIFLE; }

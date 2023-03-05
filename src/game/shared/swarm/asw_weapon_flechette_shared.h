@@ -34,6 +34,7 @@ public:
 	#else
 		virtual bool HasSecondaryExplosive( void ) const { return false; }
 	#endif
+	virtual const char *GetMagazineGibModelName() const override { return "models/weapons/empty_clips/flachette_empty_clip.mdl"; }
 
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_FLECHETTE; }

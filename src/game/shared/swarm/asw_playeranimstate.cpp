@@ -344,6 +344,17 @@ void CASWPlayerAnimState::DoAnimationEvent( PlayerAnimEvent_t event )
 			m_flReloadCycle = 0;
 		}
 	}
+	else if ( event == PLAYERANIMEVENT_DROP_MAGAZINE_GIB )
+	{
+#ifdef CLIENT_DLL
+		CASW_Marine *pOuter = CASW_Marine::AsMarine( GetOuter() );
+		CASW_Weapon *pWeapon = pOuter ? pOuter->GetActiveASWWeapon() : NULL;
+		if ( pWeapon )
+		{
+			pWeapon->DropMagazineGib();
+		}
+#endif
+	}
 	else
 	{
 		DoAnimationEventForMiscLayer( event );
