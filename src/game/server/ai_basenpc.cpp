@@ -11456,6 +11456,11 @@ void CAI_BaseNPC::Freeze( float flFreezeAmount, CBaseEntity *pFreezer, Ray_t *pF
 	{	
 		m_flFrozenThawRate = 0.1f;
 
+		if ( IsFrozen() )
+		{
+			m_bWasEverFrozen = true;
+		}
+
 		if ( ShouldBecomeStatue() )
 		{
 			// Dude is frozen, so lets use a stiff server side statue
@@ -11571,6 +11576,8 @@ CAI_BaseNPC::CAI_BaseNPC(void)
 
 	m_pLockedBestSound = new CSound;
 	m_pLockedBestSound->m_iType = SOUND_NONE;
+
+	m_bWasEverFrozen = false;
 
 	// ----------------------------
 	//  Debugging fields

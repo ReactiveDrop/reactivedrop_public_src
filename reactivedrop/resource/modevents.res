@@ -478,6 +478,13 @@
 		"marine"		"long"   	// marine entindex who is hacking
 	}
 
+	"entity_frozen"
+	{
+		"entindex"		"short"		// entindex of frozen entity
+		"attacker"		"short"		// entindex of attacker
+		"weapon"		"short"		// entindex of weapon (grenade or sentry base)
+	}
+
 // CLIENTSIDE
 
 	"alien_hurt"

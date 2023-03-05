@@ -37,7 +37,7 @@ void CASW_Grenade_Freeze::DoExplosion()
 	}
 
 	// Add freeze to all creatures in the radius
-	ASWGameRules()->FreezeAliensInRadius( m_hFirer.Get(), m_flFreezeAmount, GetAbsOrigin(), m_DmgRadius );
+	ASWGameRules()->FreezeAliensInRadius( m_hFirer.Get(), this, m_flFreezeAmount, GetAbsOrigin(), m_DmgRadius );
 }
 
 void CASW_Grenade_Freeze::Precache()

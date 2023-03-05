@@ -2149,6 +2149,7 @@ public:
 	virtual bool		IsMovementFrozen( void ) { return m_flMovementFrozen > m_flFrozenMoveBlock; }
 	virtual bool		IsAttackFrozen( void ) { return m_flAttackFrozen > 0.0f; }
 	virtual void		Unfreeze();
+	bool				m_bWasEverFrozen;
 
 	static void			ClearAllSchedules(void);
 

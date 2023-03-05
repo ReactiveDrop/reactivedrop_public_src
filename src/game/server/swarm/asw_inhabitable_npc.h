@@ -142,6 +142,7 @@ public:
 	float m_flElectroStunSlowMoveTime;
 
 	// freezeing
+	virtual bool CanBeFullyFrozen() { return true; }
 	virtual void Freeze( float flFreezeAmount, CBaseEntity *pFreezer, Ray_t *pFreezeRay ) override;
 	virtual void Unfreeze() override;
 	virtual void ScriptFreeze( float flFreezeAmount );

@@ -1538,6 +1538,15 @@ bool CASW_Alien::CanBePushedAway()
 	return !IsCurSchedule( CAI_ASW_SleepBehavior::SCHED_SLEEP_UNBURROW );
 }
 
+bool CASW_Alien::CanBeFullyFrozen()
+{
+	if ( IsCurSchedule( SCHED_BURROW_WAIT, false ) || IsCurSchedule( SCHED_WAIT_FOR_CLEAR_UNBORROW, false )
+		|| IsCurSchedule( SCHED_BURROW_OUT, false ) )
+		return false;
+
+	return BaseClass::CanBeFullyFrozen();
+}
+
 AI_BEGIN_CUSTOM_NPC( asw_alien, CASW_Alien )
 	DECLARE_CONDITION( COND_ASW_BEGIN_COMBAT_STUN )
 	DECLARE_CONDITION( COND_ASW_FLINCH )

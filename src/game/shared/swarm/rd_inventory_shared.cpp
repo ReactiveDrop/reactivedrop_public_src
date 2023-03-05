@@ -123,6 +123,7 @@ public:
 		ListenForGameEvent( "mission_failed" );
 		ListenForGameEvent( "asw_mission_restart" );
 		ListenForGameEvent( "fast_hack_success" );
+		ListenForGameEvent( "entity_frozen" );
 
 #ifdef CLIENT_DLL
 		pInventory->GetAllItems( &m_GetFullInventoryForCacheResult );
@@ -962,6 +963,18 @@ public:
 				if ( pMarine )
 				{
 					IncrementStrangePropertyOnEquippedItems( pMarine, 5004, 1 ); // Fast Hacks
+				}
+				return;
+			}
+
+			if ( FStrEq( event->GetName(), "entity_frozen" ) )
+			{
+				CBaseEntity *pTarget = CBaseEntity::Instance( event->GetInt( "entindex" ) );
+				CBaseEntity *pAttacker = CBaseEntity::Instance( event->GetInt( "attacker" ) );
+				CBaseEntity *pWeapon = CBaseEntity::Instance( event->GetInt( "weapon" ) );
+				if ( pTarget && pAttacker && pAttacker->IsInhabitableNPC() && pWeapon )
+				{
+					s_RD_Inventory_Manager.IncrementStrangePropertiesForWeapon( assert_cast< CASW_Inhabitable_NPC * >( pAttacker ), pWeapon, 5005, 1 ); // Enemies Frozen
 				}
 				return;
 			}

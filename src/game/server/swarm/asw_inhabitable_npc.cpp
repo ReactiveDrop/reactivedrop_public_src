@@ -737,6 +737,9 @@ void CASW_Inhabitable_NPC::Freeze( float flFreezeAmount, CBaseEntity *pFreezer, 
 		return;
 	}
 
+	if ( !CanBeFullyFrozen() && ( flFreezeAmount > 1.0f || flFreezeAmount * ( 1.0f - m_flFreezeResistance ) + m_flFrozen >= 1.0f ) )
+		return;
+
 	if ( flFreezeAmount > 1.0f )
 	{
 		float flFreezeDuration = flFreezeAmount - 1.0f;

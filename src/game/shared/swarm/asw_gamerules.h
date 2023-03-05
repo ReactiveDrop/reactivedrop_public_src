@@ -251,7 +251,7 @@ public:
 	// custom version of radius damage to hurt marines a little less
 	virtual void RadiusDamage( const CTakeDamageInfo &info, const Vector &vecSrcIn, float flRadius, int iClassIgnore, CBaseEntity *pEntityIgnore );
 	virtual bool ShouldUseRobustRadiusDamage( CBaseEntity *pEntity );
-	void FreezeAliensInRadius( CBaseEntity *pInflictor, float flFreezeAmount, const Vector &vecSrcIn, float flRadius );
+	void FreezeAliensInRadius( CBaseEntity *pAttacker, CBaseEntity *pInflictor, float flFreezeAmount, const Vector &vecSrcIn, float flRadius );
 	void StumbleAliensInRadius( CBaseEntity *pInflictor, const Vector &vecSrcIn, float flRadius );
 	void ShockNearbyAliens( CASW_Marine *pMarine, CASW_Weapon *pWeaponSource );
 			

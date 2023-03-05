@@ -6625,7 +6625,7 @@ void CAlienSwarm::ShockNearbyAliens( CASW_Marine *pMarine, CASW_Weapon *pWeaponS
 	}
 }
 
-void CAlienSwarm::FreezeAliensInRadius( CBaseEntity *pInflictor, float flFreezeAmount, const Vector &vecSrcIn, float flRadius )
+void CAlienSwarm::FreezeAliensInRadius( CBaseEntity *pAttacker, CBaseEntity *pInflictor, float flFreezeAmount, const Vector &vecSrcIn, float flRadius )
 {
 	const int MASK_RADIUS_DAMAGE = MASK_SHOT&(~CONTENTS_HITBOX);
 	CBaseEntity *pEntity = NULL;
@@ -6640,7 +6640,7 @@ void CAlienSwarm::FreezeAliensInRadius( CBaseEntity *pInflictor, float flFreezeA
 	float flHalfRadiusSqr = Square( flRadius / 2.0f );
 	//float flMarineHalfRadiusSqr = flHalfRadiusSqr * asw_marine_explosion_protection.GetFloat();
 
-	CASW_Marine *pInflictorMarine = CASW_Marine::AsMarine( pInflictor );
+	CASW_Marine *pAttackerMarine = CASW_Marine::AsMarine( pAttacker );
 
 	// iterate on all entities in the vicinity.
 	for ( CEntitySphereQuery sphere( vecSrc, flRadius ); (pEntity = sphere.GetCurrentEntity()) != NULL; sphere.NextEntity() )
@@ -6667,14 +6667,14 @@ void CAlienSwarm::FreezeAliensInRadius( CBaseEntity *pInflictor, float flFreezeA
 				}			
 				pAnim->Extinguish();
 
-				CASW_Marine_Resource *pMR = pInflictorMarine ? pInflictorMarine->GetMarineResource() : NULL;
+				CASW_Marine_Resource *pMR = pAttackerMarine ? pAttackerMarine->GetMarineResource() : NULL;
 				if ( pMR )
 				{
 					ADD_STAT( m_iGrenadeExtinguishMarine, 1 );
 				}
 			}
 #endif
-			if ( !ASWDeathmatchMode() && ( !pInflictor || ( pInflictorMarine && pInflictorMarine->IRelationType( pEntity ) == D_LI ) ) )
+			if ( !ASWDeathmatchMode() && ( !pAttacker || ( pAttackerMarine && pAttackerMarine->IRelationType( pEntity ) == D_LI ) ) )
 				continue;
 		}
 
@@ -6683,7 +6683,7 @@ void CAlienSwarm::FreezeAliensInRadius( CBaseEntity *pInflictor, float flFreezeA
 
 		// Check that the explosion can 'see' this entity.
 		vecSpot = pEntity->BodyTarget( vecSrc, false );
-		UTIL_TraceLine( vecSrc, vecSpot, MASK_RADIUS_DAMAGE, pInflictor, COLLISION_GROUP_NONE, &tr );
+		UTIL_TraceLine( vecSrc, vecSpot, MASK_RADIUS_DAMAGE, pAttacker, COLLISION_GROUP_NONE, &tr );
 
 		if ( tr.fraction != 1.0 )
 		{
@@ -6708,11 +6708,11 @@ void CAlienSwarm::FreezeAliensInRadius( CBaseEntity *pInflictor, float flFreezeA
 					VectorNormalize( vecDeflect );
 
 					// Trace along the surface that intercepted the blast...
-					UTIL_TraceLine( tr.endpos, tr.endpos + vecDeflect * ROBUST_RADIUS_PROBE_DIST, MASK_RADIUS_DAMAGE, pInflictor, COLLISION_GROUP_NONE, &tr );
+					UTIL_TraceLine( tr.endpos, tr.endpos + vecDeflect * ROBUST_RADIUS_PROBE_DIST, MASK_RADIUS_DAMAGE, pAttacker, COLLISION_GROUP_NONE, &tr );
 					//NDebugOverlay::Line( tr.startpos, tr.endpos, 255, 255, 0, false, 10 );
 
 					// ...to see if there's a nearby edge that the explosion would 'spill over' if the blast were fully simulated.
-					UTIL_TraceLine( tr.endpos, vecSpot, MASK_RADIUS_DAMAGE, pInflictor, COLLISION_GROUP_NONE, &tr );
+					UTIL_TraceLine( tr.endpos, vecSpot, MASK_RADIUS_DAMAGE, pAttacker, COLLISION_GROUP_NONE, &tr );
 					//NDebugOverlay::Line( tr.startpos, tr.endpos, 255, 0, 0, false, 10 );
 
 					if( tr.fraction != 1.0 && tr.DidHitWorld() )
@@ -6737,7 +6737,7 @@ void CAlienSwarm::FreezeAliensInRadius( CBaseEntity *pInflictor, float flFreezeA
 				//CBaseEntity *pBlockingEntity = tr.m_pEnt;
 				//Msg( "%s may be blocked by %s...", pEntity->GetClassname(), pBlockingEntity->GetClassname() );
 
-				UTIL_TraceLine( vecSrc, vecSpot, CONTENTS_SOLID, pInflictor, COLLISION_GROUP_NONE, &tr );
+				UTIL_TraceLine( vecSrc, vecSpot, CONTENTS_SOLID, pAttacker, COLLISION_GROUP_NONE, &tr );
 
 				if( tr.fraction != 1.0 )
 				{
@@ -6763,19 +6763,32 @@ void CAlienSwarm::FreezeAliensInRadius( CBaseEntity *pInflictor, float flFreezeA
 		{
 			nFrozenStat++;
 		}
-		pAlien->Freeze( flFreezeAmount, pInflictor, NULL );
+		bool bWasFrozen = pAlien->m_bWasEverFrozen;
+		pAlien->Freeze( flFreezeAmount, pAttacker, NULL );
 		nFrozen++;
+		if ( !bWasFrozen && pAlien->IsFrozen() )
+		{
+			IGameEvent *event = gameeventmanager->CreateEvent( "entity_frozen" );
+			if ( event )
+			{
+				event->SetInt( "entindex", pAlien->entindex() );
+				event->SetInt( "attacker", pAttacker ? pAttacker->entindex() : -1 );
+				event->SetInt( "weapon", pInflictor ? pInflictor->entindex() : -1 );
+
+				gameeventmanager->FireEvent( event );
+			}
+		}
 #endif
 	}
 #ifdef GAME_DLL
-	CASW_Marine_Resource *pMR = pInflictorMarine ? pInflictorMarine->GetMarineResource() : NULL;
+	CASW_Marine_Resource *pMR = pAttackerMarine ? pAttackerMarine->GetMarineResource() : NULL;
 	if ( pMR && nFrozenStat )
 	{
 		ADD_STAT( m_iGrenadeFreezeAlien, nFrozenStat );
 	}
-	if ( nFrozen >= 6 && pInflictorMarine && pInflictorMarine->IsInhabited() && pInflictorMarine->GetCommander() )
+	if ( nFrozen >= 6 && pAttackerMarine && pAttackerMarine->IsInhabited() && pAttackerMarine->GetCommander() )
 	{
-		pInflictorMarine->GetCommander()->AwardAchievement( ACHIEVEMENT_ASW_FREEZE_GRENADE );
+		pAttackerMarine->GetCommander()->AwardAchievement( ACHIEVEMENT_ASW_FREEZE_GRENADE );
 		if ( pMR )
 		{
 			pMR->m_bFreezeGrenadeMedal = true;
