@@ -767,7 +767,19 @@ ConVar rd_player_bots_allowed( "rd_player_bots_allowed", "1", FCVAR_CHEAT | FCVA
 ConVar rd_slowmo( "rd_slowmo", "1", FCVAR_NONE, "If 0 env_slomo will be deleted from map on round start(if present)" );
 #endif
 ConVar rd_queen_hud_suppress_time( "rd_queen_hud_suppress_time", "-1.0", FCVAR_CHEAT | FCVAR_REPLICATED, "Hides the Swarm Queen's health HUD if not damaged for this long (-1 to always show)" );
-ConVar rd_anniversary_week_debug( "rd_anniversary_week_debug", "-1", FCVAR_CHEAT | FCVAR_REPLICATED, "Set to 1 to force anniversary week logic; 0 to force off" );
+ConVar rd_anniversary_week_debug( "rd_anniversary_week_debug", "-1", FCVAR_CHEAT | FCVAR_REPLICATED, "Set to 1 to force anniversary week logic (requires sv_cheats); 0 to force off" );
+static void SoundPitchScaleChanged( IConVar *var, const char *pOldValue, float flOldValue )
+{
+#ifdef CLIENT_DLL
+	ConVarRef cv( var );
+	if ( engine && engine->IsConnected() )
+	{
+		// if we're in slomo, this will cause a tiny anomaly in the pitch which will get corrected by the local player's ClientThink.
+		engine->SetPitchScale( cv.GetFloat() );
+	}
+#endif
+}
+ConVar rd_sound_pitch_scale( "rd_sound_pitch_scale", "1.0", FCVAR_CHEAT | FCVAR_REPLICATED, "Global audio pitch modifier.", SoundPitchScaleChanged );
 extern ConVar asw_stats_verbose;
 
 #define ADD_STAT( field, amount ) \
@@ -1336,7 +1348,7 @@ CAlienSwarm::CAlienSwarm()
 	m_iPreviousGameState = 200;
 	m_iPreviousMissionWorkshopID = 999999; // impossible workshop ID
 
-	engine->SetPitchScale( 1.0f );
+	engine->SetPitchScale( rd_sound_pitch_scale.GetFloat() );
 
 	CVoiceStatus *pVoiceMgr = GetClientVoiceMgr();
 	if ( pVoiceMgr )

@@ -193,6 +193,7 @@ extern ConVar cl_sidespeed;
 extern ConVar asw_marine_death_cam_time;
 extern ConVar asw_time_scale_delay;
 extern ConVar asw_stim_time_scale;
+extern ConVar rd_sound_pitch_scale;
 
 extern float g_fMarinePoisonDuration;
 
@@ -1072,7 +1073,7 @@ void C_ASW_Player::ClientThink()
 			}
 
 			lastTimescale = f;
-			engine->SetPitchScale( f );
+			engine->SetPitchScale( f * rd_sound_pitch_scale.GetFloat() );
 			if ( f > asw_stim_cam_time.GetFloat() )
 			{
 				if ( GetStimCam() )
