@@ -59,6 +59,7 @@ ConVar tf_dingalingaling_effect[2]
 ConVar tf_dingalingaling_repeat_delay( "tf_dingalingaling_repeat_delay", "0.0", FCVAR_ARCHIVE, "Desired repeat delay of the hit sound.Set to 0 to play a sound for every instance of damage dealt.", true, 0, false, 0 );
 extern ConVar asw_floating_number_type;
 ConVar asw_floating_number_combine( "asw_floating_number_combine", "0", FCVAR_ARCHIVE );
+ConVar asw_floating_number_combine_window( "asw_floating_number_combine_window", "0.5", FCVAR_NONE );
 
 static struct RD_Floating_Damage_Number_t
 {
@@ -181,7 +182,7 @@ void __MsgFunc_RDHitConfirm( bf_read &msg )
 		if ( targetent >= 0 && targetent < MAX_EDICTS && !bBlastDamage && !bDamageOverTime )
 		{
 			RD_Floating_Damage_Number_t &accumulator = s_RD_Floating_Damage_Numbers[targetent];
-			if ( gpGlobals->curtime - accumulator.m_flLastDamageNumberTime < asw_floating_number_combine.GetFloat() )
+			if ( gpGlobals->curtime - accumulator.m_flLastDamageNumberTime < ( asw_floating_number_combine.GetBool() ? asw_floating_number_combine_window.GetFloat() : 0.0f ) )
 			{
 				bIsAccumulated = true;
 				flDamage += accumulator.m_flAccumulatedDamage;
