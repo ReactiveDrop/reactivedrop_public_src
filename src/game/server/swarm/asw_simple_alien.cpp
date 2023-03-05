@@ -470,9 +470,6 @@ bool CASW_Simple_Alien::ApplyGravity(Vector &vecSrc, float deltatime)
 		Vector vecGravityTarget = vecSrc;
 		vecGravityTarget.z -= sv_gravity.GetFloat() * deltatime;
 		// do a trace to the floor
-		Ray_t ray;
-		trace_t trace;
-		CTraceFilterSimple traceFilter(this, GetCollisionGroup() );
 		ray.Init( vecSrc, vecGravityTarget, GetHullMins(), GetHullMaxs() );
 		enginetrace->TraceRay( ray, MASK_NPCSOLID, &traceFilter, &trace );
 

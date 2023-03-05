@@ -113,21 +113,7 @@ int CASW_Target_Dummy::OnTakeDamage( const CTakeDamageInfo &info )
 	CBaseEntity *pAttacker = info.GetAttacker();
 	if ( pAttacker && pAttacker->IsInhabitableNPC() )
 	{
-		CASW_Inhabitable_NPC *pInhabitableAttacker = assert_cast< CASW_Inhabitable_NPC * >( pAttacker );
-		CASW_ViewNPCRecipientFilter filter{ pInhabitableAttacker };
-		UserMessageBegin( filter, "RDHitConfirm" );
-			WRITE_ENTITY( pAttacker->entindex() );
-			WRITE_ENTITY( entindex() );
-			WRITE_VEC3COORD( info.GetDamagePosition() );
-			WRITE_BOOL( false );
-			WRITE_BOOL( info.GetDamageType() & DMG_DIRECT );
-			WRITE_BOOL( info.GetDamageType() & DMG_BLAST );
-			WRITE_UBITLONG( pInhabitableAttacker->IRelationType( this ), 3 );
-			WRITE_FLOAT( info.GetDamage() );
-			WRITE_ENTITY( info.GetWeapon() ? info.GetWeapon()->entindex() : -1 );
-		MessageEnd();
-
-		ReactiveDropInventory::OnHitConfirm( pAttacker, this, info.GetDamagePosition(), false, info.GetDamageType() & DMG_DIRECT, info.GetDamageType() & DMG_BLAST, pInhabitableAttacker->IRelationType( this ), info.GetDamage(), info.GetWeapon() );
+		UTIL_RD_HitConfirm( this, GetHealth() + info.GetDamage(), info );
 	}
 
 	SetThink( &CASW_Target_Dummy::ResetThink );
