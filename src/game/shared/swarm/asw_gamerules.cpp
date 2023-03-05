@@ -6676,8 +6676,11 @@ void CAlienSwarm::FreezeAliensInRadius( CBaseEntity *pAttacker, CBaseEntity *pIn
 				{
 					pAnim->SetEffectEntity( NULL );
 					UTIL_Remove( pFireChild );	
-				}			
-				pAnim->Extinguish();
+				}
+				if ( CASW_Marine *pMarine = CASW_Marine::AsMarine( pAnim ) )
+					pMarine->Extinguish( pAttacker, pInflictor );
+				else
+					pAnim->Extinguish();
 
 				CASW_Marine_Resource *pMR = pAttackerMarine ? pAttackerMarine->GetMarineResource() : NULL;
 				if ( pMR )
@@ -6767,8 +6770,11 @@ void CAlienSwarm::FreezeAliensInRadius( CBaseEntity *pAttacker, CBaseEntity *pIn
 			{
 				pAnim->SetEffectEntity( NULL );
 				UTIL_Remove( pFireChild );	
-			}			
-			pAnim->Extinguish();
+			}
+			if ( CASW_Marine *pMarine = CASW_Marine::AsMarine( pAnim ) )
+				pMarine->Extinguish( pAttacker, pInflictor );
+			else
+				pAnim->Extinguish();
 		}
 
 		if ( pAlien->IsAlive() && !pAlien->IsFrozen() )

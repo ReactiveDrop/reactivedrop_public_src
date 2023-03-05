@@ -25,8 +25,8 @@ ConVar rd_extinguisher_dmg_amount( "rd_extinguisher_dmg_amount", "0.0", FCVAR_RE
 
 LINK_ENTITY_TO_CLASS( asw_extinguisher_projectile, CASW_Extinguisher_Projectile );
 
-IMPLEMENT_SERVERCLASS_ST(CASW_Extinguisher_Projectile, DT_ASW_Extinguisher_Projectile)
-	
+IMPLEMENT_SERVERCLASS_ST( CASW_Extinguisher_Projectile, DT_ASW_Extinguisher_Projectile )
+	SendPropDataTable( SENDINFO_DT( m_ProjectileData ), &REFERENCE_SEND_TABLE( DT_RD_ProjectileData ) ),
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Extinguisher_Projectile )
@@ -34,6 +34,7 @@ BEGIN_DATADESC( CASW_Extinguisher_Projectile )
 	DEFINE_FIELD( m_flDamage, FIELD_FLOAT ),
 	DEFINE_FIELD( m_inSolid, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_hFirer, FIELD_EHANDLE ),
+	DEFINE_FIELD( m_hFirerWeapon, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_flFreezeAmount, FIELD_FLOAT ),
 END_DATADESC()
 
@@ -43,7 +44,6 @@ END_DATADESC()
 //-----------------------------------------------------------------------------
 CASW_Extinguisher_Projectile::~CASW_Extinguisher_Projectile( void )
 {
-	m_flFreezeAmount = 0.001f;
 }
 
 void CASW_Extinguisher_Projectile::Spawn( void )
@@ -82,13 +82,6 @@ unsigned int CASW_Extinguisher_Projectile::PhysicsSolidMaskForEntity() const
 
 void CASW_Extinguisher_Projectile::ProjectileTouch( CBaseEntity *pOther )
 {
-	// can't do this here, since CFire isn't declared in a .h   >_<
-	//CFire* pFire = dynamic_cast<CFire*>(pOther);
-	//if (pFire)
-	//{
-		//pFire->Extinguish(5);
-		//TouchedEnvFire();
-	//}
 	if ( !g_pGameRules || !g_pGameRules->ShouldCollide( GetCollisionGroup(), pOther->GetCollisionGroup() ) )
 		return;
 
@@ -100,7 +93,7 @@ void CASW_Extinguisher_Projectile::ProjectileTouch( CBaseEntity *pOther )
 		CASW_Marine *pMarine = CASW_Marine::AsMarine( pOther );
 		if (pMarine && pMarine->m_bOnFire)
 		{
-			pMarine->Extinguish();
+			pMarine->Extinguish( m_hFirer, this );
 		}
 		else
 		{		
@@ -124,33 +117,21 @@ void CASW_Extinguisher_Projectile::ProjectileTouch( CBaseEntity *pOther )
 			pOther->TakeDamage( dmgInfo );
 		}
 
-		//FireSystem_ExtinguishInRadius( GetAbsOrigin(), 100, 100 );
-
-		// todo: keep going through normal entities?
-		//if ( pOther->GetCollisionGroup() == COLLISION_GROUP_BREAKABLE_GLASS )
-			 //return;
-
 		CAI_BaseNPC * RESTRICT pNPC = pOther->MyNPCPointer();
 		if ( pNPC )
 		{
-			// Freeze faster the more frozen the object is
-			//flFreeze = (0.5f * pNPC->GetFrozenAmount()) + flFreeze;
-
 			if ( m_flFreezeAmount > 0 && ( !m_hFirer || !m_hFirer->MyCombatCharacterPointer() || m_hFirer->MyCombatCharacterPointer()->IRelationType( pNPC ) != D_LI ) )
 			{
 				bool bWasFrozen = pNPC->m_bWasEverFrozen;
-				pNPC->Freeze( m_flFreezeAmount, GetOwnerEntity() ? GetOwnerEntity() : this );
-				Assert( GetOwnerEntity() && GetOwnerEntity()->Classify() == CLASS_ASW_SENTRY_FREEZE );
-				if ( !bWasFrozen && pNPC->IsFrozen() && GetOwnerEntity() && GetOwnerEntity()->Classify() == CLASS_ASW_SENTRY_FREEZE )
+				pNPC->Freeze( m_flFreezeAmount, m_hFirer ? m_hFirer : this );
+				if ( !bWasFrozen && pNPC->IsFrozen() )
 				{
-					CASW_Sentry_Top_Icer *pSentry = assert_cast< CASW_Sentry_Top_Icer * >( GetOwnerEntity() );
-					CASW_Sentry_Base *pBase = pSentry->GetSentryBase();
 					IGameEvent *event = gameeventmanager->CreateEvent( "entity_frozen" );
 					if ( event )
 					{
 						event->SetInt( "entindex", pNPC->entindex() );
-						event->SetInt( "attacker", pBase && pBase->m_hDeployer ? pBase->m_hDeployer->entindex() : pSentry->entindex() );
-						event->SetInt( "weapon", pBase ? pBase->entindex() : -1 );
+						event->SetInt( "attacker", m_hFirer ? m_hFirer->entindex() : -1 );
+						event->SetInt( "weapon", m_hFirerWeapon ? m_hFirerWeapon->entindex() : -1 );
 
 						gameeventmanager->FireEvent( event );
 					}
@@ -209,13 +190,15 @@ void CASW_Extinguisher_Projectile::ProjectileTouch( CBaseEntity *pOther )
 	}
 }
 
-CASW_Extinguisher_Projectile* CASW_Extinguisher_Projectile::Extinguisher_Projectile_Create( const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner )
+CASW_Extinguisher_Projectile* CASW_Extinguisher_Projectile::Extinguisher_Projectile_Create( const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner, CBaseEntity *pWeapon )
 {
 	CASW_Extinguisher_Projectile *pPellet = (CASW_Extinguisher_Projectile *)CreateEntityByName( "asw_extinguisher_projectile" );	
 	pPellet->SetAbsAngles( angles );
 	pPellet->Spawn();
 	pPellet->SetOwnerEntity( pOwner );
 	pPellet->m_hFirer = pOwner;
+	pPellet->m_hFirerWeapon = pWeapon;
+	pPellet->m_ProjectileData.GetForModify().SetFromWeapon( pWeapon );
 	UTIL_SetOrigin( pPellet, position );
 	pPellet->SetAbsVelocity( velocity );
 

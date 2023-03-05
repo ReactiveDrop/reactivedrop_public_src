@@ -169,21 +169,12 @@ void CASW_Weapon_FireExtinguisher::PrimaryAttack( void )
 			// aim it downwards a bit
 			newVel.z -= 40.0f;
 			CASW_Extinguisher_Projectile::Extinguisher_Projectile_Create( vecSrc, QAngle(0,0,0),
-					newVel, rotSpeed, pMarine );
+					newVel, rotSpeed, pMarine, this );
 
-			// check for putting outselves out
+			// check for putting ourselves out
 			if (pMarine->IsOnFire())
 			{
-				//Orange. This is no longer used with marine
-				/*
-				CEntityFlame *pFireChild = dynamic_cast<CEntityFlame *>( pMarine->GetEffectEntity() );
-				if ( pFireChild )
-				{
-					pMarine->SetEffectEntity( NULL );
-					UTIL_Remove( pFireChild );
-				}
-				*/
-				pMarine->Extinguish();
+				pMarine->Extinguish( pMarine, this );
 				// spawn a cloud effect on this marine
 				CEffectData	data;
 				data.m_vOrigin = pMarine->GetAbsOrigin();

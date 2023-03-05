@@ -31,7 +31,7 @@ ConVar asw_flamer_debug("asw_flamer_debug", "0", FCVAR_CHEAT, "Visualize flamer 
 LINK_ENTITY_TO_CLASS( asw_flamer_projectile, CASW_Flamer_Projectile );
 
 IMPLEMENT_SERVERCLASS_ST(CASW_Flamer_Projectile, DT_ASW_Flamer_Projectile)
-	
+	SendPropDataTable( SENDINFO_DT( m_ProjectileData ), &REFERENCE_SEND_TABLE( DT_RD_ProjectileData ) ),
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Flamer_Projectile )
@@ -300,6 +300,7 @@ CASW_Flamer_Projectile * CASW_Flamer_Projectile::Flamer_Projectile_Create( float
 	UTIL_SetOrigin( pPellet, position );
 	pPellet->SetAbsVelocity( velocity );
 	pPellet->m_hCreatorWeapon.Set( pCreatorWeapon );
+	pPellet->m_ProjectileData.GetForModify().SetFromWeapon( pCreatorWeapon );
 
 	if (asw_flamer_debug.GetBool())
 		pPellet->m_debugOverlays |= OVERLAY_BBOX_BIT;

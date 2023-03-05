@@ -120,8 +120,9 @@
 	
 	"marine_extinguished"
 	{
-		"entindex"		"long"		// entindex of of the target marine
-		"extinguisher"	"short"		// user ID of extinguisher
+		"entindex"		"short"		// entindex of of the target marine
+		"healer"		"short"		// entindex of extinguisher
+		"weapon"		"short"		// healing weapon or extinguisher particle
 	}
 	
 	"marine_infested"
@@ -373,9 +374,11 @@
 	
 	"marine_healed"
 	{
-		"medic_entindex"	"long"		// entindex of the marine medic
-		"patient_entindex"	"long"		// entindex of the marine patient 
+		"medic_entindex"	"short"		// entindex of the marine medic
+		"patient_entindex"	"short"		// entindex of the marine patient 
 		"amount_healed"		"short"		// amount of meds given
+		"amount"			"short"		// amount of meds given (limited to max health)
+		"weapon"			"short"		// entindex of healing weapon
 		"weapon_class"		"string"	// classname of the healing device
 	}
 

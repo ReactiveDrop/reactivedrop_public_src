@@ -41,7 +41,7 @@ public: // CBaseGameSystem overrides
 	virtual bool Init();
 };
 
-#define NUM_SCRIPT_GAME_EVENTS 155
+#define NUM_SCRIPT_GAME_EVENTS 156
 extern const char *const g_ScriptGameEventList[NUM_SCRIPT_GAME_EVENTS];
 extern CScriptGameEventListener *g_pScriptGameEventListener;
 

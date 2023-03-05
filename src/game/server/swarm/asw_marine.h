@@ -616,7 +616,9 @@ public:
 	virtual void ScriptIgnite( float flFlameLifetime );
 	virtual void ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon = NULL );
 	virtual void Ignite( float flFlameLifetime, bool bNPCOnly = true, float flSize = 0.0f, bool bCalledByLevelDesigner = false );
+	virtual void Extinguish( CBaseEntity *pHealer, CBaseEntity *pWeapon );
 	virtual void Extinguish();
+	void ScriptExtinguish() { Extinguish( NULL, NULL ); }
 	virtual	bool		AllowedToIgnite( void );
 	float m_flFirstBurnTime;
 	float m_flLastBurnTime;

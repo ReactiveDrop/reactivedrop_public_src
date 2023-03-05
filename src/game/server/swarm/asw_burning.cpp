@@ -1,5 +1,6 @@
 #include "cbase.h"
 #include "asw_burning.h"
+#include "asw_marine.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -71,7 +72,10 @@ void CASW_Burning::FireThink()
 			if ( pAnim )
 			{
 				//OnEntityExtinguished(pEnt);
-				pAnim->Extinguish();	// this makes the entity remove its FL_ONFIRE flag, its m_bOnFire bool and then calls back to us to check its not in the list anymore
+				if ( CASW_Marine *pMarine = CASW_Marine::AsMarine( pAnim ) )
+					pMarine->Extinguish( NULL, NULL );
+				else
+					pAnim->Extinguish();	// this makes the entity remove its FL_ONFIRE flag, its m_bOnFire bool and then calls back to us to check its not in the list anymore
 			}
 		}
 		else

@@ -105,21 +105,18 @@ void CASW_Sentry_Top_Icer::FireProjectiles( int numShotsToFire, ///< number of p
 {
 	CShotManipulator Manipulator( vecAiming );
 
-	/*
-	CASW_Marine * RESTRICT const pMarineDeployer = GetSentryBase()->m_hDeployer.Get();
-	Assert( pMarineDeployer );
-	*/
-
-	for ( int i = 0 ; i < numShotsToFire ; i++ )
+	CASW_Sentry_Base *pBase = GetSentryBase();
+	CBaseEntity *pBaseEntThis = this;
+	for ( int i = 0; i < numShotsToFire; i++ )
 	{
 		// create a pellet at some random spread direction		
-		Vector projectileVel = Manipulator.GetShotDirection(); // Manipulator.ApplySpread(GetBulletSpread());
+		Vector projectileVel = Manipulator.GetShotDirection();
 
 		projectileVel *= GetProjectileVelocity();
-		projectileVel *= (1.0 + (0.1 * random->RandomFloat(-1,1)));
-		CASW_Extinguisher_Projectile *pProjectile = CASW_Extinguisher_Projectile::Extinguisher_Projectile_Create( 
-			vecSrc + (projectileVel.Normalized() * BoundingRadius()), QAngle(0,0,0),	projectileVel, rotSpeed, 
-			this /*, pMarineDeployer*/ );
+		projectileVel *= ( 1.0 + ( 0.1 * random->RandomFloat( -1, 1 ) ) );
+		CASW_Extinguisher_Projectile *pProjectile = CASW_Extinguisher_Projectile::Extinguisher_Projectile_Create(
+			vecSrc + ( projectileVel.Normalized() * BoundingRadius() ), QAngle( 0, 0, 0 ), projectileVel, rotSpeed,
+			pBase && pBase->m_hDeployer ? pBase->m_hDeployer : pBaseEntThis, pBase ? pBase : pBaseEntThis );
 		if ( pProjectile )
 		{
 			pProjectile->SetFreezeAmount( 0.4f );

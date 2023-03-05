@@ -125,6 +125,8 @@ public:
 		ListenForGameEvent( "fast_hack_success" );
 		ListenForGameEvent( "entity_frozen" );
 		ListenForGameEvent( "marine_infested_cured" );
+		ListenForGameEvent( "marine_extinguished" );
+		ListenForGameEvent( "marine_healed" );
 
 #ifdef CLIENT_DLL
 		pInventory->GetAllItems( &m_GetFullInventoryForCacheResult );
@@ -1001,6 +1003,34 @@ public:
 				else if ( pTarget && pHealer && pWeapon )
 				{
 					s_RD_Inventory_Manager.IncrementStrangePropertiesForWeapon( pHealer, pWeapon, 5008, 1 ); // Infestations Cured
+				}
+
+				return;
+			}
+
+			if ( FStrEq( event->GetName(), "marine_extinguished" ) )
+			{
+				CASW_Marine *pTarget = CASW_Marine::AsMarine( CBaseEntity::Instance( event->GetInt( "entindex" ) ) );
+				CASW_Marine *pHealer = CASW_Marine::AsMarine( CBaseEntity::Instance( event->GetInt( "healer" ) ) );
+				CBaseEntity *pWeapon = CBaseEntity::Instance( event->GetInt( "weapon" ) );
+
+				if ( pTarget && pHealer && pWeapon )
+				{
+					s_RD_Inventory_Manager.IncrementStrangePropertiesForWeapon( pHealer, pWeapon, 5006, 1 ); // Allies Extinguished
+				}
+
+				return;
+			}
+
+			if ( FStrEq( event->GetName(), "marine_healed" ) )
+			{
+				CASW_Marine *pTarget = CASW_Marine::AsMarine( CBaseEntity::Instance( event->GetInt( "patient_entindex" ) ) );
+				CASW_Marine *pHealer = CASW_Marine::AsMarine( CBaseEntity::Instance( event->GetInt( "medic_entindex" ) ) );
+				CBaseEntity *pWeapon = CBaseEntity::Instance( event->GetInt( "weapon" ) );
+
+				if ( pTarget && pHealer && pWeapon )
+				{
+					s_RD_Inventory_Manager.IncrementStrangePropertiesForWeapon( pHealer, pWeapon, 5003, event->GetInt( "amount" ) ); // Healing
 				}
 
 				return;

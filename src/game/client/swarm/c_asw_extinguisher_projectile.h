@@ -2,7 +2,7 @@
 #define C_ASW_EXTINGUISHER_PROJECTILE_H
 
 #include "c_basecombatcharacter.h"
-
+#include "rd_inventory_shared.h"
 
 class C_ASW_Extinguisher_Projectile : public C_BaseCombatCharacter
 {
@@ -13,6 +13,8 @@ public:
 
 					C_ASW_Extinguisher_Projectile();
 	virtual			~C_ASW_Extinguisher_Projectile();
+
+	CNetworkVarEmbedded( CRD_ProjectileData, m_ProjectileData );
 
 private:
 	C_ASW_Extinguisher_Projectile( const C_ASW_Extinguisher_Projectile & ); // not defined, not accessible

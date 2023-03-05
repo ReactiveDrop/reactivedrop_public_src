@@ -6,7 +6,7 @@
 #include "tier0/memdbgon.h"
 
 IMPLEMENT_CLIENTCLASS_DT(C_ASW_Extinguisher_Projectile, DT_ASW_Extinguisher_Projectile, CASW_Extinguisher_Projectile)
-	
+	RecvPropDataTable( RECVINFO_DT( m_ProjectileData ), 0, &REFERENCE_RECV_TABLE( DT_RD_ProjectileData ) ),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_ASW_Extinguisher_Projectile )

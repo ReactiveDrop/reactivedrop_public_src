@@ -385,7 +385,7 @@ END_DATADESC()
 BEGIN_ENT_SCRIPTDESC( CASW_Marine, CASW_Inhabitable_NPC, "Marine" )
 	DEFINE_SCRIPTFUNC( IsInhabited, "true if the marine is a player, false if the marine is a bot" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetCommander, "GetCommander", "get the player that owns the marine" )
-	DEFINE_SCRIPTFUNC( Extinguish, "Extinguish a burning marine." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptExtinguish, "Extinguish", "Extinguish a burning marine.")
 	DEFINE_SCRIPTFUNC_NAMED( ScriptIgnite, "Ignite", "Ignites the marine into flames." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptBecomeInfested, "BecomeInfested", "Infests the marine." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptCureInfestation, "CureInfestation", "Cures an infestation." )
@@ -3613,18 +3613,9 @@ void CASW_Marine::AddSlowHeal( int iHealAmount, float flHealRateScale, CASW_Mari
 		}
 
 		// healing puts out fires
-		if (IsOnFire())
+		if ( IsOnFire() )
 		{
-			Extinguish();
-			/*
-			CEntityFlame *pFireChild = dynamic_cast<CEntityFlame *>( GetEffectEntity() );
-			if ( pFireChild )
-			{
-				SetEffectEntity( NULL );
-				UTIL_Remove( pFireChild );				
-				Extinguish();
-			}
-			*/
+			Extinguish( pMedic, pHealingWeapon );
 		}
 
 		// count heal for stats
@@ -3632,14 +3623,16 @@ void CASW_Marine::AddSlowHeal( int iHealAmount, float flHealRateScale, CASW_Mari
 			GetMarineResource()->m_iHealCount++;
 
 		// Fire event
-		IGameEvent * event = gameeventmanager->CreateEvent("marine_healed");
+		IGameEvent *event = gameeventmanager->CreateEvent( "marine_healed" );
 		if (event)
 		{
-			event->SetInt("medic_entindex", (pMedic ? pMedic->entindex() : -1));
-			event->SetInt("patient_entindex", entindex());
-			event->SetInt("amount_healed", iHealAmount);
-			event->SetString("weapon_class", (pHealingWeapon ? pHealingWeapon->GetClassname() : ""));
-			gameeventmanager->FireEvent(event);
+			event->SetInt( "medic_entindex", ( pMedic ? pMedic->entindex() : -1 ) );
+			event->SetInt( "patient_entindex", entindex() );
+			event->SetInt( "amount_healed", iHealAmount );
+			event->SetInt( "amount", iMedicMedalHealed );
+			event->SetInt( "weapon", pHealingWeapon ? pHealingWeapon->entindex() : -1 );
+			event->SetString( "weapon_class", ( pHealingWeapon ? pHealingWeapon->GetClassname() : "" ) );
+			gameeventmanager->FireEvent( event );
 		}
 
 		// Fire heal event for stat tracking
@@ -5021,14 +5014,16 @@ void CASW_Marine::Ignite( float flFlameLifetime, bool bNPCOnly, float flSize, bo
 	return;	// use ASW_Ignite instead;
 }
 
-void CASW_Marine::Extinguish()
+void CASW_Marine::Extinguish( CBaseEntity *pHealer, CBaseEntity *pWeapon )
 {
 	if ( m_bOnFire )
 	{
-		IGameEvent * event = gameeventmanager->CreateEvent( "marine_extinguished" );
+		IGameEvent *event = gameeventmanager->CreateEvent( "marine_extinguished" );
 		if ( event )
 		{
 			event->SetInt( "entindex", entindex() );
+			event->SetInt( "healer", pHealer ? pHealer->entindex() : -1 );
+			event->SetInt( "weapon", pWeapon ? pWeapon->entindex() : -1 );
 			gameeventmanager->FireEvent( event );
 		}
 	}
@@ -5037,10 +5032,17 @@ void CASW_Marine::Extinguish()
 
 	if ( ASWBurning() )
 	{
-		ASWBurning()->Extinguish(this);
+		ASWBurning()->Extinguish( this );
 	}
 
 	RemoveFlag( FL_ONFIRE );
+}
+
+void CASW_Marine::Extinguish()
+{
+	Assert( !"should be calling version of extinguish with arguments" );
+
+	Extinguish( NULL, NULL );
 }
 
 bool CASW_Marine::AllowedToIgnite( void ) 

@@ -3,10 +3,7 @@
 #pragma once
 
 #include "asw_shareddefs.h"
-
-#ifdef CLIENT_DLL
-#define CBaseEntity C_BaseEntity
-#endif
+#include "rd_inventory_shared.h"
 
 class CSprite;
 class CSpriteTrail;
@@ -14,12 +11,9 @@ class CSpriteTrail;
 class CASW_Flamer_Projectile : public CBaseCombatCharacter
 {
 	DECLARE_CLASS( CASW_Flamer_Projectile, CBaseCombatCharacter );
-
-#if !defined( CLIENT_DLL )
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
-#endif
-					
+
 	CASW_Flamer_Projectile();
 	virtual ~CASW_Flamer_Projectile( void );
 
@@ -48,6 +42,8 @@ public:
 	virtual Class_T Classify( void ) { return (Class_T)CLASS_ASW_FLAMER_PROJECTILE; }
 	EHANDLE					m_pGetsCreditedForDamage; /// if the owner is (eg) a turret, set this to the marine so the damage is credited to him.
 	EHANDLE					m_hCreatorWeapon; // The weapon that created this projectile
+
+	CNetworkVarEmbedded( CRD_ProjectileData, m_ProjectileData );
 protected:
 	CHandle<CSprite>		m_pMainGlow;
 	CHandle<CSpriteTrail>	m_pGlowTrail;

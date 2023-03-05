@@ -6,8 +6,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-IMPLEMENT_CLIENTCLASS_DT(C_ASW_Flamer_Projectile, DT_ASW_Flamer_Projectile, CASW_Flamer_Projectile)
-	
+IMPLEMENT_CLIENTCLASS_DT( C_ASW_Flamer_Projectile, DT_ASW_Flamer_Projectile, CASW_Flamer_Projectile )
+	RecvPropDataTable( RECVINFO_DT( m_ProjectileData ), 0, &REFERENCE_RECV_TABLE( DT_RD_ProjectileData ) ),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_ASW_Flamer_Projectile )
