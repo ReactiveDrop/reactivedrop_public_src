@@ -132,7 +132,9 @@
 	"marine_infested_cured"
 	{
 		"entindex"		"long"		// entindex of of the target marine
-		"curer"			"short"		// user ID of the curer
+		"userid"		"short"		// user ID of the curer (if marine is inhabited)
+		"marine"		"short"		// marine that cured infestation
+		"weapon"		"short"		// healing weapon that cured the infestation
 	}
 	
 	"marine_infested_killed"

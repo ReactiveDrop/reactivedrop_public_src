@@ -255,6 +255,7 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Marine, DT_ASW_Marine)
 	SendPropBool	( SENDINFO( m_bReflectingProjectiles ) ),
 	SendPropTime	( SENDINFO( m_flDamageBuffEndTime ) ),
 	SendPropTime	( SENDINFO( m_flElectrifiedArmorEndTime ) ),
+	SendPropDataTable( SENDINFO_DT( m_ElectrifiedArmorProjectileData ), &REFERENCE_SEND_TABLE( DT_RD_ProjectileData ) ),
 	SendPropInt		( SENDINFO( m_iPowerupType ) ),
 	SendPropTime	( SENDINFO( m_flPowerupExpireTime ) ),
 	SendPropBool	( SENDINFO( m_bPowerupExpires ) ),
@@ -334,6 +335,7 @@ BEGIN_DATADESC( CASW_Marine )
 	DEFINE_FIELD( m_fLastMobDamageTime, FIELD_TIME ),
 	DEFINE_FIELD( m_bHasBeenMobAttacked, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_hInfestationCurer, FIELD_EHANDLE ),
+	DEFINE_FIELD( m_hInfestationCureWeapon, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_bOnFire, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_fLastShotAlienTime, FIELD_TIME ),
 	DEFINE_FIELD( m_fLastShotJunkTime, FIELD_TIME ),
@@ -2271,7 +2273,7 @@ void CASW_Marine::ASWThinkEffects()
 					if ( IsElectrifiedArmorActive() )
 					{
 						// Do some serious hurt to that bug each time he bites!
-						CureInfestation( NULL, 0.4f );
+						CureInfestation( NULL, NULL, 0.4f );
 					}
 
 					m_iInfestCycle = 0;
@@ -2308,31 +2310,35 @@ void CASW_Marine::ASWThinkEffects()
 							UTIL_ASW_DroneBleed( WorldSpaceCenter(), Vector(0, 0, 1), 4 );
 						}
 
-						if (m_hInfestationCurer.Get() && m_hInfestationCurer->GetMarineResource())
+						IGameEvent *event = gameeventmanager->CreateEvent( "marine_infested_cured" );
+						if ( event )
+						{
+							CASW_Player *pPlayer = NULL;
+							if ( m_hInfestationCurer.Get() && m_hInfestationCurer->IsInhabited() )
+							{
+								pPlayer = m_hInfestationCurer->GetCommander();
+							}
+
+							event->SetInt( "entindex", entindex() );
+							event->SetInt( "userid", pPlayer ? pPlayer->GetUserID() : 0 );
+							event->SetInt( "marine", m_hInfestationCurer ? m_hInfestationCurer->entindex() : -1 );
+							event->SetInt( "weapon", m_hInfestationCureWeapon ? m_hInfestationCureWeapon->entindex() : -1 );
+							gameeventmanager->FireEvent( event );
+						}
+
+						if ( m_hInfestationCurer.Get() && m_hInfestationCurer->GetMarineResource() )
 						{
 							if ( m_hInfestationCurer->GetCommander() && m_hInfestationCurer->IsInhabited() )
 							{
 								m_hInfestationCurer->GetCommander()->AwardAchievement( ACHIEVEMENT_ASW_INFESTATION_CURING );
 							}
 							m_hInfestationCurer->GetMarineResource()->m_iCuredInfestation++;
-							m_hInfestationCurer = NULL;
 						}
 
-						IGameEvent * event = gameeventmanager->CreateEvent( "marine_infested_cured" );
-						if ( event )
-						{
-							CASW_Player *pPlayer = NULL;
-							if ( m_hInfestationCurer.Get() )
-							{
-								pPlayer = m_hInfestationCurer->GetCommander();
-							}
-
-							event->SetInt( "entindex", entindex() );
-							event->SetInt( "userid", ( pPlayer ? pPlayer->GetUserID() : 0 ) );
-							gameeventmanager->FireEvent( event );
-						}
+						m_hInfestationCurer = NULL;
+						m_hInfestationCureWeapon = NULL;
 					}
-				}				
+				}
 			}
 		}
 	}
@@ -3743,7 +3749,7 @@ void CASW_Marine::BecomeInfested(CASW_Alien* pAlien)
 	m_bPlayedCureScream = false;
 }
 
-void CASW_Marine::CureInfestation(CASW_Marine *pHealer, float fCureFraction)
+void CASW_Marine::CureInfestation(CASW_Marine *pHealer, CBaseEntity *pWeapon, float fCureFraction)
 {
 	if ( !GetMarineResource() )
 		return;
@@ -3752,7 +3758,10 @@ void CASW_Marine::CureInfestation(CASW_Marine *pHealer, float fCureFraction)
 	{
 		m_fInfestedTime = m_fInfestedTime * fCureFraction;
 		if ( pHealer )
-			m_hInfestationCurer = pHealer;	
+		{
+			m_hInfestationCurer = pHealer;
+			m_hInfestationCureWeapon = pWeapon;
+		}
 
 		if ( m_fInfestedTime < 0.0f )
 		{
@@ -3773,7 +3782,7 @@ void CASW_Marine::ScriptBecomeInfested()
 
 void CASW_Marine::ScriptCureInfestation()
 {
-	CureInfestation( NULL, 0 );
+	CureInfestation( NULL, NULL, 0 );
 }
 
 // if we died from infestation, then gib

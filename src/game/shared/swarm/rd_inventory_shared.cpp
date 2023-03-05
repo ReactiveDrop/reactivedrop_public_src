@@ -124,6 +124,7 @@ public:
 		ListenForGameEvent( "asw_mission_restart" );
 		ListenForGameEvent( "fast_hack_success" );
 		ListenForGameEvent( "entity_frozen" );
+		ListenForGameEvent( "marine_infested_cured" );
 
 #ifdef CLIENT_DLL
 		pInventory->GetAllItems( &m_GetFullInventoryForCacheResult );
@@ -611,7 +612,7 @@ public:
 	}
 #endif
 
-	void IncrementStrangePropertyOnStartingItems( SteamItemDef_t iAccessoryID, int64_t iAmount, int iPropertyIndex = 0, bool bRelative = true )
+	void IncrementStrangePropertyOnStartingItems( SteamItemDef_t iAccessoryID, int64_t iAmount, int iPropertyIndex = 0, bool bRelative = true, bool bAllowCheating = false )
 	{
 		Assert( iPropertyIndex >= 0 );
 
@@ -646,7 +647,7 @@ public:
 			CRD_ItemInstance &suitInstance = pPlayer->m_EquippedItemData[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + pMR->GetProfileIndex()];
 #endif
 
-			ModifyAccessoryDynamicPropValue( suitInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative );
+			ModifyAccessoryDynamicPropValue( suitInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
 
 			for ( int j = 0; j < ASW_NUM_INVENTORY_SLOTS; j++ )
 			{
@@ -659,12 +660,12 @@ public:
 				CRD_ItemInstance &weaponInstance = pPlayer->m_EquippedItemData[pEquip->m_iInventoryIndex];
 #endif
 
-				ModifyAccessoryDynamicPropValue( weaponInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative );
+				ModifyAccessoryDynamicPropValue( weaponInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
 			}
 		}
 	}
 
-	void IncrementStrangePropertyOnEquippedItems( CASW_Inhabitable_NPC *pNPC, SteamItemDef_t iAccessoryID, int64_t iAmount, int iPropertyIndex = 0, bool bRelative = true )
+	void IncrementStrangePropertyOnEquippedItems( CASW_Inhabitable_NPC *pNPC, SteamItemDef_t iAccessoryID, int64_t iAmount, int iPropertyIndex = 0, bool bRelative = true, bool bAllowCheating = false )
 	{
 		Assert( pNPC );
 		if ( !pNPC || !pNPC->IsInhabited() || !pNPC->GetCommander() )
@@ -683,10 +684,10 @@ public:
 #ifdef CLIENT_DLL
 				CRD_ItemInstance &suitInstance = pMR->m_EquippedSuit;
 #else
-				CRD_ItemInstance &suitInstance = pMR->m_Commander->m_EquippedItemData[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + pMR->GetProfileIndex()];
+				CRD_ItemInstance &suitInstance = pMR->m_OriginalCommander->m_EquippedItemData[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + pMR->GetProfileIndex()];
 #endif
 
-				ModifyAccessoryDynamicPropValue( suitInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative );
+				ModifyAccessoryDynamicPropValue( suitInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
 			}
 		}
 
@@ -702,53 +703,61 @@ public:
 #else
 				if ( pWeapon->m_iInventoryEquipSlotIndex == -1 )
 					continue;
-				CRD_ItemInstance &weaponInstance = pNPC->GetCommander()->m_EquippedItemData[pWeapon->m_iInventoryEquipSlotIndex];
+				CRD_ItemInstance &weaponInstance = pWeapon->m_hOriginalOwnerPlayer->m_EquippedItemData[pWeapon->m_iInventoryEquipSlotIndex];
 #endif
 
-				ModifyAccessoryDynamicPropValue( weaponInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative );
+				ModifyAccessoryDynamicPropValue( weaponInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
 			}
 		}
 	}
 
 	template<typename Weapon_t>
-	void IncrementStrangePropertyOnWeaponAndGlobals( CASW_Inhabitable_NPC *pNPC, Weapon_t *pWeapon, SteamItemDef_t iAccessoryID, int64_t iAmount, int iPropertyIndex = 0, bool bRelative = true )
+	void IncrementStrangePropertyOnWeaponAndGlobals( CASW_Inhabitable_NPC *pNPC, Weapon_t *pWeapon, SteamItemDef_t iAccessoryID, int64_t iAmount, int iPropertyIndex = 0, bool bRelative = true, bool bAllowCheating = false, bool bAllowBorrowed = false )
 	{
 		Assert( pNPC );
 		if ( !pNPC || !pNPC->IsInhabited() || !pNPC->GetCommander() )
 			return;
 
 #ifdef CLIENT_DLL
-		if ( !pNPC->GetCommander()->IsLocalPlayer() )
+		if ( !bAllowBorrowed && !pNPC->GetCommander()->IsLocalPlayer() )
 			return;
 #endif
 
 		if ( CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC ) )
 		{
 			CASW_Marine_Resource *pMR = pMarine->GetMarineResource();
-			if ( pMR && pMR->m_OriginalCommander.Get() == pMR->m_Commander.Get() )
+			if ( pMR && pMR->m_OriginalCommander.Get() == pMR->m_Commander.Get()
+#ifdef CLIENT_DLL
+				&& pMR->m_OriginalCommander->IsLocalPlayer()
+#endif
+				)
 			{
 #ifdef CLIENT_DLL
 				CRD_ItemInstance &suitInstance = pMR->m_EquippedSuit;
 #else
-				CRD_ItemInstance &suitInstance = pMR->m_Commander->m_EquippedItemData[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + pMR->GetProfileIndex()];
+				CRD_ItemInstance &suitInstance = pMR->m_OriginalCommander->m_EquippedItemData[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + pMR->GetProfileIndex()];
 #endif
 
-				ModifyAccessoryDynamicPropValue( suitInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative );
+				ModifyAccessoryDynamicPropValue( suitInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
 			}
 		}
 
 		AccountID_t iRequiredAccount = pNPC->GetCommander()->GetSteamID().GetAccountID();
-		if ( pWeapon && pWeapon->m_iOriginalOwnerSteamAccount == iRequiredAccount )
+		if ( pWeapon && ( bAllowBorrowed || pWeapon->m_iOriginalOwnerSteamAccount == iRequiredAccount )
+#ifdef CLIENT_DLL
+			&& SteamUser() && pWeapon->m_iOriginalOwnerSteamAccount == SteamUser()->GetSteamID().GetAccountID()
+#endif
+			)
 		{
 #ifdef CLIENT_DLL
 			CRD_ItemInstance &weaponInstance = pWeapon->m_InventoryItemData;
 #else
 			if ( pWeapon->m_iInventoryEquipSlotIndex == -1 )
 				return;
-			CRD_ItemInstance &weaponInstance = pNPC->GetCommander()->m_EquippedItemData[pWeapon->m_iInventoryEquipSlotIndex];
+			CRD_ItemInstance &weaponInstance = pWeapon->m_hOriginalOwnerPlayer->m_EquippedItemData[pWeapon->m_iInventoryEquipSlotIndex];
 #endif
 
-			ModifyAccessoryDynamicPropValue( weaponInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative );
+			ModifyAccessoryDynamicPropValue( weaponInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
 		}
 	}
 
@@ -976,6 +985,24 @@ public:
 				{
 					s_RD_Inventory_Manager.IncrementStrangePropertiesForWeapon( assert_cast< CASW_Inhabitable_NPC * >( pAttacker ), pWeapon, 5005, 1 ); // Enemies Frozen
 				}
+				return;
+			}
+
+			if ( FStrEq( event->GetName(), "marine_infested_cured" ) )
+			{
+				CASW_Marine *pTarget = CASW_Marine::AsMarine( CBaseEntity::Instance( event->GetInt( "entindex" ) ) );
+				CASW_Marine *pHealer = CASW_Marine::AsMarine( CBaseEntity::Instance( event->GetInt( "marine" ) ) );
+				CBaseEntity *pWeapon = CBaseEntity::Instance( event->GetInt( "weapon" ) );
+
+				if ( !pWeapon && pTarget && pTarget->IsElectrifiedArmorActive() )
+				{
+					s_RD_Inventory_Manager.IncrementStrangePropertyOnWeaponAndGlobals( pTarget, &pTarget->m_ElectrifiedArmorProjectileData, 5008, 1, 0, true, false, true ); // Infestations Cured
+				}
+				else if ( pTarget && pHealer && pWeapon )
+				{
+					s_RD_Inventory_Manager.IncrementStrangePropertiesForWeapon( pHealer, pWeapon, 5008, 1 ); // Infestations Cured
+				}
+
 				return;
 			}
 		}

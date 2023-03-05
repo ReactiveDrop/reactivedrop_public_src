@@ -87,7 +87,7 @@ void CASW_Weapon_Electrified_Armor::PrimaryAttack( void )
 
 	float flDuration = asw_electrified_armor_duration.GetFloat();
 
-	pMarine->AddElectrifiedArmor( flDuration );
+	pMarine->AddElectrifiedArmor( flDuration, this );
 
 	// stun aliens within the radius
 	ASWGameRules()->ShockNearbyAliens( pMarine, this );

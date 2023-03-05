@@ -211,7 +211,7 @@ void CASW_HealGrenade_Projectile::DoAOE( CBaseEntity *pEntity )
 		if ( fCurePercent > 0.0f )
 		{
 			// Cure infestation at 1/20th normal rate per second (the full 20 seconds or amount used does the full cure)
-			pTargetMarine->CureInfestation( pMarine, 1.0f - ( ( 1.0f - fCurePercent ) * ( flHealUsed / m_flHealAmountTotal ) * ( gpGlobals->curtime - m_flLastDoAOE ) ) );
+			pTargetMarine->CureInfestation( pMarine, this, 1.0f - ( ( 1.0f - fCurePercent ) * ( flHealUsed / m_flHealAmountTotal ) * ( gpGlobals->curtime - m_flLastDoAOE ) ) );
 		}
 	}
 }

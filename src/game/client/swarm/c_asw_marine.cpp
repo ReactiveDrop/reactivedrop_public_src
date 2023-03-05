@@ -183,6 +183,7 @@ BEGIN_NETWORK_TABLE( CASW_Marine, DT_ASW_Marine )
 	RecvPropBool	( RECVINFO( m_bReflectingProjectiles ) ),
 	RecvPropTime( RECVINFO( m_flDamageBuffEndTime ) ),
 	RecvPropTime( RECVINFO( m_flElectrifiedArmorEndTime ) ),
+	RecvPropDataTable( RECVINFO_DT( m_ElectrifiedArmorProjectileData ), 0, &REFERENCE_RECV_TABLE( DT_RD_ProjectileData ) ),
 
 	RecvPropInt		( RECVINFO( m_iPowerupType ) ),	
 	RecvPropTime		( RECVINFO( m_flPowerupExpireTime ) ),	

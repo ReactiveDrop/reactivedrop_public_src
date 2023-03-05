@@ -15,6 +15,7 @@
 #include "object_motion_blur_effect.h"
 #include "asw_deathmatch_mode.h"
 #include "dlight.h"
+#include "rd_inventory_shared.h"
 
 class C_ASW_Player;
 class C_ASW_Marine_Resource;
@@ -213,6 +214,7 @@ public:
 	bool IsElectrifiedArmorActive() { return GetElectrifiedArmorEndTime() > gpGlobals->curtime; }
 	CNetworkVar( float, m_flElectrifiedArmorEndTime );
 	bool m_bClientElectrifiedArmor;
+	CNetworkVarEmbedded( CRD_ProjectileData, m_ElectrifiedArmorProjectileData );
 	CUtlReference<CNewParticleEffect> m_pElectrifiedArmorEmitter;
 
 	// flamer

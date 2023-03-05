@@ -259,7 +259,7 @@ void CASW_Weapon_HealAmp_Gun::HealEntity( void )
 			if ( fCurePercent > 0.0f )
 			{
 				// Cure infestation on a per bullet basis (the full clip does cure relative to 9 heal grenades)
-				pTarget->CureInfestation( pMarine, 1.0f - ( ( 1.0f - fCurePercent ) / ( GetMaxClip1() / 9.0f ) ) );
+				pTarget->CureInfestation( pMarine, this, 1.0f - ( ( 1.0f - fCurePercent ) / ( GetMaxClip1() / 9.0f ) ) );
 			}
 		}
 

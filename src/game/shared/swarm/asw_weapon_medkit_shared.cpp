@@ -151,8 +151,8 @@ void CASW_Weapon_Medkit::SelfHeal()
 		{
 			float fCure = GetInfestationCureAmount();
 			// cure infestation
-			if (fCure < 100)
-				pMarine->CureInfestation(pMarine, fCure);
+			if ( fCure < 100 )
+				pMarine->CureInfestation( pMarine, this, fCure );
 		}
 #endif
 		// decrement ammo
