@@ -150,6 +150,7 @@ void CASW_Extinguisher_Projectile::ProjectileTouch( CBaseEntity *pOther )
 	}
 	else
 	{
+#if 0
 		trace_t	tr;
 		tr = BaseClass::GetTouchTrace();
 
@@ -184,6 +185,7 @@ void CASW_Extinguisher_Projectile::ProjectileTouch( CBaseEntity *pOther )
 			return;
 		}
 		else
+#endif
 		{
 			UTIL_Remove( this );
 		}
