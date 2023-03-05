@@ -225,11 +225,7 @@ void CASW_Weapon::ItemBusyFrame( void )
 				//Msg("%f RELOAD SUCCESS! - bAttack1 = %d, bOldAttack1 = %d\n", gpGlobals->curtime, bAttack1, bOldAttack1 );
 				//Msg( "S: %f - %f - %f RELOAD SUCCESS! -- Progress = %f\n", gpGlobals->curtime, fFastStart, fFastEnd, flProgress );
 
-#ifdef CLIENT_DLL
-				DropMagazineGib();
-#else
-				TE_MarineAnimEventExceptCommander( pMarine, PLAYERANIMEVENT_DROP_MAGAZINE_GIB );
-#endif
+				pMarine->DoAnimationEvent( PLAYERANIMEVENT_DROP_MAGAZINE_GIB );
 
 #ifdef GAME_DLL				
 				pMarine->GetMarineSpeech()->PersonalChatter( CHATTER_SELECTION );
@@ -297,11 +293,7 @@ void CASW_Weapon::ItemBusyFrame( void )
 #endif
 
 				DispatchParticleEffect( "reload_fail", PATTACH_POINT_FOLLOW, this, "muzzle" );
-#ifdef CLIENT_DLL
-				DropMagazineGib();
-#else
-				TE_MarineAnimEventExceptCommander( pMarine, PLAYERANIMEVENT_DROP_MAGAZINE_GIB );
-#endif
+				pMarine->DoAnimationEvent( PLAYERANIMEVENT_DROP_MAGAZINE_GIB );
 
 #ifdef GAME_DLL	
 				pMarine->GetMarineSpeech()->PersonalChatter( CHATTER_PAIN_SMALL );
@@ -1232,11 +1224,7 @@ void CASW_Weapon::FinishReload( void )
 
 		if ( !m_bFastReloadSuccess && !m_bFastReloadFailure )
 		{
-#ifdef CLIENT_DLL
-			DropMagazineGib();
-#else
-			TE_MarineAnimEventExceptCommander( pOwner, PLAYERANIMEVENT_DROP_MAGAZINE_GIB );
-#endif
+			pOwner->DoAnimationEvent( PLAYERANIMEVENT_DROP_MAGAZINE_GIB );
 		}
 
 		m_bFastReloadSuccess = false;
