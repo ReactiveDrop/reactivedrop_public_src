@@ -3,6 +3,7 @@
 #pragma once
 
 #include "basecombatcharacter.h"
+#include "rd_inventory_shared.h"
 
 class CASW_Emitter;
 class CASW_Radiation_Volume;
@@ -12,7 +13,7 @@ extern ConVar asw_gas_grenade_damage_interval;
 extern ConVar asw_gas_grenade_duration;
 extern ConVar asw_gas_grenade_fuse;
 
-class CASW_Gas_Grenade_Projectile : public CBaseCombatCharacter
+class CASW_Gas_Grenade_Projectile : public CBaseCombatCharacter, public IRD_Has_Projectile_Data
 {
 	DECLARE_CLASS( CASW_Gas_Grenade_Projectile, CBaseCombatCharacter );
 
@@ -26,12 +27,7 @@ public:
 	void	Spawn( void );
 	void	Precache( void );
 
-	//void	SetVelocity( const Vector &velocity, const AngularImpulse &angVelocity );
-	//void	VPhysicsUpdate( IPhysicsObject *pPhysics );
 	unsigned int PhysicsSolidMaskForEntity() const;
-	void	Gas_GrenadeTouch( CBaseEntity *pOther );
-	void	Gas_GrenadeBurnTouch( CBaseEntity *pOther );
-	void LayFlat();
 
 	// copied from asw_grenade_vindicator.h
 	virtual void SetFuseLength( float fSeconds );
@@ -40,7 +36,7 @@ public:
 
 	const Vector& GetEffectOrigin();
 
-	static CASW_Gas_Grenade_Projectile* Gas_Grenade_Projectile_Create( const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner, float flDamage = asw_gas_grenade_damage.GetFloat(), float flDmgInterval = asw_gas_grenade_damage_interval.GetFloat(), float flDmgDuration = asw_gas_grenade_duration.GetFloat(), float flFuse = asw_gas_grenade_fuse.GetFloat() );
+	static CASW_Gas_Grenade_Projectile* Gas_Grenade_Projectile_Create( const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner, CBaseEntity *pCreator, float flDamage = asw_gas_grenade_damage.GetFloat(), float flDmgInterval = asw_gas_grenade_damage_interval.GetFloat(), float flDmgDuration = asw_gas_grenade_duration.GetFloat(), float flFuse = asw_gas_grenade_fuse.GetFloat() );
 
 	float GetDuration() { return m_flTimeBurnOut; }
 	void SetDuration( float fDuration ) { m_flTimeBurnOut = fDuration; }
@@ -56,7 +52,7 @@ public:
 
 	Class_T Classify( void );
 
-	void	Gas_GrenadeThink( void );
+	void	GasGrenadeThink( void );
 
 	int			m_nBounces;			// how many times has this flare bounced?
 	CNetworkVar( float, m_flTimeBurnOut );	// when will the flare burn out?
@@ -66,6 +62,12 @@ public:
 	
 	bool		m_bFading;
 	CNetworkVar( bool, m_bSmoke );
+
+	CNetworkVarEmbedded( CRD_ProjectileData, m_ProjectileData );
+	const CRD_ProjectileData *GetProjectileData() const override
+	{
+		return &m_ProjectileData;
+	}
 
 	virtual void DrawDebugGeometryOverlays();	// visualise the autoaim radius
 

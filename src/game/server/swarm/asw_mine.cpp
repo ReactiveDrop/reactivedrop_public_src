@@ -23,8 +23,8 @@ ConVar asw_debug_mine("asw_debug_mine", "0", FCVAR_CHEAT, "Turn on debug message
 LINK_ENTITY_TO_CLASS( asw_mine, CASW_Mine );
 
 BEGIN_DATADESC( CASW_Mine )
-	DEFINE_FUNCTION( MineTouch ),
-	DEFINE_FUNCTION( MineThink ),
+	DEFINE_ENTITYFUNC( MineTouch ),
+	DEFINE_THINKFUNC( MineThink ),
 	DEFINE_FIELD( m_bPrimed, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bMineTriggered, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_fForcePrimeTime, FIELD_FLOAT ),
@@ -32,6 +32,7 @@ END_DATADESC()
 
 IMPLEMENT_SERVERCLASS_ST( CASW_Mine, DT_ASW_Mine )
 	SendPropBool( SENDINFO( m_bMineTriggered ) ),
+	SendPropDataTable( SENDINFO_DT( m_ProjectileData ), &REFERENCE_SEND_TABLE( DT_RD_ProjectileData ) ),
 END_SEND_TABLE()
 
 CASW_Mine::CASW_Mine()
@@ -148,6 +149,11 @@ CASW_Mine* CASW_Mine::ASW_Mine_Create( const Vector &position, const QAngle &ang
 	pMine->SetAbsVelocity( velocity );
 	pMine->m_hCreatorWeapon.Set( pCreatorWeapon );
 	pMine->m_bPlacedByMarine = pOwner && pOwner->Classify() == CLASS_ASW_MARINE;
+
+	if ( pCreatorWeapon )
+	{
+		pMine->m_ProjectileData.GetForModify().SetFromWeapon( pCreatorWeapon );
+	}
 
 	return pMine;
 }

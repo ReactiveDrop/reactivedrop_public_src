@@ -2,7 +2,9 @@
 #define _DEFINED_ASW_MINE_H
 #pragma once
 
-class CASW_Mine : public CBaseCombatCharacter
+#include "rd_inventory_shared.h"
+
+class CASW_Mine : public CBaseCombatCharacter, public IRD_Has_Projectile_Data
 {
 	DECLARE_CLASS( CASW_Mine, CBaseCombatCharacter );
 	DECLARE_SERVERCLASS();
@@ -33,6 +35,12 @@ public:
 	int m_iExtraFires;
 
 	EHANDLE m_hCreatorWeapon;
+
+	CNetworkVarEmbedded( CRD_ProjectileData, m_ProjectileData );
+	const CRD_ProjectileData *GetProjectileData() const override
+	{
+		return &m_ProjectileData;
+	}
 };
 
 

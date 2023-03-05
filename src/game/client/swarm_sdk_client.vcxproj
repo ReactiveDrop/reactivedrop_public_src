@@ -1059,6 +1059,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="swarm\c_asw_railgun_beam.cpp" />
     <ClCompile Include="swarm\c_asw_ranger.cpp" />
     <ClCompile Include="swarm\c_asw_render_targets.cpp" />
+    <ClCompile Include="swarm\c_asw_rifle_grenade.cpp" />
     <ClCompile Include="swarm\c_asw_rocket.cpp" />
     <ClCompile Include="swarm\c_asw_scanner_info.cpp" />
     <ClCompile Include="swarm\c_asw_scanner_noise.cpp" />
@@ -2672,6 +2673,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="swarm\c_asw_railgun_beam.h" />
     <ClInclude Include="swarm\c_asw_ranger.h" />
     <ClInclude Include="swarm\c_asw_render_targets.h" />
+    <ClInclude Include="swarm\c_asw_rifle_grenade.h" />
     <ClInclude Include="swarm\c_asw_rocket.h" />
     <ClInclude Include="swarm\c_asw_scanner_info.h" />
     <ClInclude Include="swarm\c_asw_scanner_noise.h" />

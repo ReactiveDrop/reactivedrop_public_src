@@ -64,6 +64,7 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_AOEGrenade_Projectile, DT_ASW_AOEGrenade_Project
 	RecvPropFloat( RECVINFO( m_flScale ) ),
 	RecvPropBool( RECVINFO( m_bSettled ) ),
 	RecvPropFloat( RECVINFO( m_flRadius ) ),
+	RecvPropDataTable( RECVINFO_DT( m_ProjectileData ), 0, &REFERENCE_RECV_TABLE( DT_RD_ProjectileData ) ),
 END_RECV_TABLE()
 
 IMPLEMENT_AUTO_LIST( IASW_AOEGrenade_Projectile_List );

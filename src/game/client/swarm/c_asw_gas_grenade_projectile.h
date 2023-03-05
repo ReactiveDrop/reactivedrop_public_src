@@ -3,8 +3,9 @@
 #pragma once
 
 #include "c_pixel_visibility.h"
+#include "rd_inventory_shared.h"
 
-class C_ASW_Gas_Grenade_Projectile : public C_BaseCombatCharacter
+class C_ASW_Gas_Grenade_Projectile : public C_BaseCombatCharacter, public IRD_Has_Projectile_Data
 {
 public:
 	DECLARE_CLASS( C_ASW_Gas_Grenade_Projectile, C_BaseCombatCharacter );
@@ -28,6 +29,11 @@ public:
 	bool	m_bStopped;
 	pixelvis_handle_t m_queryHandle;
 
+	CNetworkVarEmbedded( CRD_ProjectileData, m_ProjectileData );
+	const CRD_ProjectileData *GetProjectileData() const override
+	{
+		return &m_ProjectileData;
+	}
 
 private:
 	C_ASW_Gas_Grenade_Projectile( const C_ASW_Gas_Grenade_Projectile & );

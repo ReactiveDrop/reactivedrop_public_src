@@ -21,7 +21,7 @@ public:
 	void Precache( void );
 
 	static CASW_BuffGrenade_Projectile* Grenade_Projectile_Create( const Vector &position, const QAngle &angles, const Vector &velocity,
-		const AngularImpulse &angVelocity, CBaseEntity *pOwner,
+		const AngularImpulse &angVelocity, CBaseEntity *pOwner, CBaseEntity *pCreator,
 		float flRadius, float flDuration );
 
 	virtual float GetGrenadeGravity( void );

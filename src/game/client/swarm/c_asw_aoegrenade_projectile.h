@@ -5,10 +5,11 @@
 struct dlight_t;
 
 #include "c_pixel_visibility.h"
+#include "rd_inventory_shared.h"
 
 DECLARE_AUTO_LIST( IASW_AOEGrenade_Projectile_List );
 
-class C_ASW_AOEGrenade_Projectile : public C_BaseCombatCharacter, public IASW_AOEGrenade_Projectile_List
+class C_ASW_AOEGrenade_Projectile : public C_BaseCombatCharacter, public IASW_AOEGrenade_Projectile_List, public IRD_Has_Projectile_Data
 {
 public:
 	DECLARE_CLASS( C_ASW_AOEGrenade_Projectile, C_BaseCombatCharacter );
@@ -64,6 +65,12 @@ public:
 
 	EHANDLE m_hSphereModel;
 	float m_flTimeCreated;
+
+	CNetworkVarEmbedded( CRD_ProjectileData, m_ProjectileData );
+	const CRD_ProjectileData *GetProjectileData() const override
+	{
+		return &m_ProjectileData;
+	}
 
 private:
 	bool	m_bPlayingSound;

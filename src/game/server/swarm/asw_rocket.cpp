@@ -23,7 +23,7 @@ extern int	g_sModelIndexFireball;			// (in combatweapon.cpp) holds the index for
 PRECACHE_REGISTER( asw_rocket );
 
 IMPLEMENT_SERVERCLASS_ST(CASW_Rocket, DT_ASW_Rocket)
-	
+	SendPropDataTable( SENDINFO_DT( m_ProjectileData ), &REFERENCE_SEND_TABLE( DT_RD_ProjectileData ) ),
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Rocket )
@@ -35,10 +35,10 @@ BEGIN_DATADESC( CASW_Rocket )
 	DEFINE_FIELD( m_bCreateDangerSounds,	FIELD_BOOLEAN ),
 	
 	// Function Pointers
-	DEFINE_FUNCTION( MissileTouch ),
-	DEFINE_FUNCTION( AccelerateThink ),
-	DEFINE_FUNCTION( IgniteThink ),
-	DEFINE_FUNCTION( SeekThink ),
+	DEFINE_ENTITYFUNC( MissileTouch ),
+	DEFINE_THINKFUNC( AccelerateThink ),
+	DEFINE_THINKFUNC( IgniteThink ),
+	DEFINE_THINKFUNC( SeekThink ),
 
 END_DATADESC()
 LINK_ENTITY_TO_CLASS( asw_rocket, CASW_Rocket );
@@ -664,8 +664,11 @@ CASW_Rocket * CASW_Rocket::Create( float fDamage, const Vector &vecOrigin, const
 	pMissile->SetAbsVelocity( vecForward * ASW_ROCKET_MIN_SPEED );	//  + Vector( 0,0, 128 )
 
 	pMissile->m_hCreatorWeapon.Set( pCreatorWeapon );
-	if( pCreatorWeapon )
+	if ( pCreatorWeapon )
+	{
 		pMissile->m_CreatorWeaponClass = pCreatorWeapon->Classify();
+		pMissile->m_ProjectileData.GetForModify().SetFromWeapon( pCreatorWeapon );
+	}
 
 	return pMissile;
 }

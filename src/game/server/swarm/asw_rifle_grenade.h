@@ -3,6 +3,7 @@
 #pragma once
 
 #include "asw_shareddefs.h"
+#include "rd_inventory_shared.h"
 
 #ifdef CLIENT_DLL
 #define CBaseEntity C_BaseEntity
@@ -11,12 +12,14 @@
 class CSprite;
 class CSpriteTrail;
 
-class CASW_Rifle_Grenade : public CBaseCombatCharacter
+class CASW_Rifle_Grenade : public CBaseCombatCharacter, IRD_Has_Projectile_Data
 {
 public:
 	DECLARE_CLASS( CASW_Rifle_Grenade, CBaseCombatCharacter );
 	DECLARE_DATADESC();
-					
+	DECLARE_SERVERCLASS();
+
+	CASW_Rifle_Grenade();
 	virtual ~CASW_Rifle_Grenade( void );
 
 	void	Spawn( void );
@@ -41,6 +44,12 @@ public:
 	CHandle<CSpriteTrail>	m_pGlowTrail;
 
 	EHANDLE m_hCreatorWeapon;
+
+	CNetworkVarEmbedded( CRD_ProjectileData, m_ProjectileData );
+	const CRD_ProjectileData *GetProjectileData() const override
+	{
+		return &m_ProjectileData;
+	}
 
 	// Classification
 	virtual Class_T Classify( void ) { return (Class_T)CLASS_ASW_RIFLE_GRENADE; }

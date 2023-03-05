@@ -36,6 +36,10 @@ CASW_Grenade_PRifle* CASW_Grenade_PRifle::PRifle_Grenade_Create( float flDamage,
 	pGrenade->CreateEffects();
 	pGrenade->SetAbsVelocity( velocity );
 	pGrenade->m_hCreatorWeapon.Set( pCreatorWeapon );
+	if ( pCreatorWeapon )
+	{
+		pGrenade->m_ProjectileData.GetForModify().SetFromWeapon( pCreatorWeapon );
+	}
 
 	return pGrenade;
 }

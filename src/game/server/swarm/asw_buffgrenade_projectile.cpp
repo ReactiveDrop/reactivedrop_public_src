@@ -167,7 +167,7 @@ void CASW_BuffGrenade_Projectile::LoseTimeForMoving()
 }
 
 CASW_BuffGrenade_Projectile* CASW_BuffGrenade_Projectile::Grenade_Projectile_Create( const Vector &position, const QAngle &angles, const Vector &velocity,
-																				   const AngularImpulse &angVelocity, CBaseEntity *pOwner,
+																				   const AngularImpulse &angVelocity, CBaseEntity *pOwner, CBaseEntity *pCreator,
 																				   float flRadius, float flDuration )
 {
 	CASW_BuffGrenade_Projectile *pGrenade = (CASW_BuffGrenade_Projectile *)CreateEntityByName( "asw_buffgrenade_projectile" );
@@ -179,6 +179,8 @@ CASW_BuffGrenade_Projectile* CASW_BuffGrenade_Projectile::Grenade_Projectile_Cre
 	//Msg("making pBuffGrenade with velocity %f,%f,%f\n", velocity.x, velocity.y, velocity.z);
 	UTIL_SetOrigin( pGrenade, position );
 	pGrenade->SetAbsVelocity( velocity );
+
+	pGrenade->m_ProjectileData.GetForModify().SetFromWeapon( pCreator );
 
 	return pGrenade;
 }

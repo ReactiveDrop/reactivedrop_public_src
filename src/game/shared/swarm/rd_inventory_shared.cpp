@@ -36,6 +36,7 @@
 #include "asw_marine.h"
 #include "asw_weapon.h"
 #include "asw_sentry_base.h"
+#include "asw_sentry_top.h"
 #include "asw_game_resource.h"
 #endif
 
@@ -750,6 +751,32 @@ public:
 		}
 	}
 
+	void IncrementStrangePropertiesForWeapon( CASW_Inhabitable_NPC *pNPC, CBaseEntity *pWeapon, SteamItemDef_t iAccessoryID, int64_t iAmount, int iPropertyIndex = 0, bool bRelative = true )
+	{
+		if ( CASW_Weapon *pASWWeapon = dynamic_cast< CASW_Weapon * >( pWeapon ) )
+		{
+			s_RD_Inventory_Manager.IncrementStrangePropertyOnWeaponAndGlobals( pNPC, pASWWeapon, iAccessoryID, iAmount, iPropertyIndex, bRelative );
+		}
+		else if ( CASW_Sentry_Base *pSentry = dynamic_cast< CASW_Sentry_Base * >( pWeapon ) )
+		{
+			s_RD_Inventory_Manager.IncrementStrangePropertyOnWeaponAndGlobals( pNPC, pSentry, iAccessoryID, iAmount, iPropertyIndex, bRelative );
+		}
+		else if ( IRD_Has_Projectile_Data *pProjectile = dynamic_cast< IRD_Has_Projectile_Data * >( pWeapon ) )
+		{
+			CRD_ProjectileData *pData = const_cast< CRD_ProjectileData * >( pProjectile->GetProjectileData() );
+			if ( pData->m_bFiredByOwner )
+			{
+				s_RD_Inventory_Manager.IncrementStrangePropertyOnWeaponAndGlobals( pNPC, pData, iAccessoryID, iAmount, iPropertyIndex, bRelative );
+			}
+		}
+#ifdef DBGFLAG_ASSERT
+		else if ( pWeapon )
+		{
+			Assert( !"Unhandled weapon type" );
+		}
+#endif
+	}
+
 	bool ModifyAccessoryDynamicPropValue( CRD_ItemInstance &instance, SteamItemDef_t iAccessoryID, int iPropertyIndex, int64_t iAmount, bool bRelative = true, bool bAllowCheating = false )
 	{
 		if ( !instance.IsSet() )
@@ -914,22 +941,33 @@ public:
 
 	void FireGameEvent( IGameEvent *event ) override
 	{
-		if ( FStrEq( event->GetName(), "mission_success" ) )
+		if ( !ASWDeathmatchMode() )
 		{
-			if ( !ASWDeathmatchMode() )
+			if ( FStrEq( event->GetName(), "mission_success" ) )
 			{
 				IncrementStrangePropertyOnStartingItems( 5000, 1 ); // Missions
 				IncrementStrangePropertyOnStartingItems( 5001, 1 ); // Successful Missions
+				return;
 			}
-		}
-		else if ( FStrEq( event->GetName(), "mission_failure" ) )
-		{
-			if ( !ASWDeathmatchMode() )
+
+			if ( FStrEq( event->GetName(), "mission_failure" ) )
 			{
 				IncrementStrangePropertyOnStartingItems( 5000, 1 ); // Missions
+				return;
+			}
+
+			if ( FStrEq( event->GetName(), "fast_hack_success" ) )
+			{
+				CASW_Marine *pMarine = CASW_Marine::AsMarine( CBaseEntity::Instance( event->GetInt( "marine" ) ) );
+				if ( pMarine )
+				{
+					IncrementStrangePropertyOnEquippedItems( pMarine, 5004, 1 ); // Fast Hacks
+				}
+				return;
 			}
 		}
-		else if ( FStrEq( event->GetName(), "asw_mission_restart" ) )
+
+		if ( FStrEq( event->GetName(), "asw_mission_restart" ) )
 		{
 #ifdef CLIENT_DLL
 			if ( m_PendingDynamicPropertyUpdates.Count() )
@@ -937,15 +975,9 @@ public:
 			else if ( m_DynamicPropertyUpdateResult == k_SteamInventoryResultInvalid )
 				QueueSendEquipNotification();
 #endif
+			return;
 		}
-		else if ( FStrEq( event->GetName(), "fast_hack_success" ) )
-		{
-			CASW_Marine *pMarine = CASW_Marine::AsMarine( CBaseEntity::Instance( event->GetInt( "marine" ) ) );
-			if ( pMarine )
-			{
-				IncrementStrangePropertyOnEquippedItems( pMarine, 5004, 1 ); // Fast Hacks
-			}
-		}
+
 	}
 
 	void DebugPrintResult( SteamInventoryResult_t hResult )
@@ -2429,20 +2461,12 @@ namespace ReactiveDropInventory
 
 			if ( !pAttacker || !pAttacker->IsInhabitableNPC() )
 				return;
-			CASW_Inhabitable_NPC *pInhabitableAttacker = assert_cast< CASW_Inhabitable_NPC * >( pAttacker );
 
+			CASW_Inhabitable_NPC *pInhabitableAttacker = assert_cast< CASW_Inhabitable_NPC * >( pAttacker );
 			if ( pTarget && pTarget->IsAlien() && bKilled )
 			{
-				if ( pWeapon && pWeapon->Classify() == CLASS_ASW_SENTRY_BASE )
-				{
-					s_RD_Inventory_Manager.IncrementStrangePropertyOnWeaponAndGlobals( pInhabitableAttacker, assert_cast< CASW_Sentry_Base * >( pWeapon ), 5002, 1 ); // Aliens Killed
-					s_RD_Inventory_Manager.IncrementStrangePropertyOnWeaponAndGlobals( pInhabitableAttacker, assert_cast< CASW_Sentry_Base * >( pWeapon ), 5007, 1 ); // Alien Kill Streak
-				}
-				else
-				{
-					s_RD_Inventory_Manager.IncrementStrangePropertyOnWeaponAndGlobals( pInhabitableAttacker, assert_cast< CASW_Weapon * >( pWeapon ), 5002, 1 ); // Aliens Killed
-					s_RD_Inventory_Manager.IncrementStrangePropertyOnWeaponAndGlobals( pInhabitableAttacker, assert_cast< CASW_Weapon * >( pWeapon ), 5007, 1 ); // Alien Kill Streak
-				}
+				s_RD_Inventory_Manager.IncrementStrangePropertiesForWeapon( pInhabitableAttacker, pWeapon, 5002, 1 ); // Aliens Killed
+				s_RD_Inventory_Manager.IncrementStrangePropertiesForWeapon( pInhabitableAttacker, pWeapon, 5007, 1 ); // Alien Kill Streak
 			}
 		}
 	}
@@ -2806,5 +2830,71 @@ void CRD_ItemInstance::FormatDescription( vgui::RichText *pRichText ) const
 			AppendBBCode( pRichText, wszBuf, rd_briefing_item_details_color2.GetColor() );
 		}
 	}
+}
+#endif
+
+#ifndef CLIENT_DLL
+static void *SendProxy_ProjectileItemDataForOwningPlayer( const SendProp *pProp, const void *pStructBase, const void *pData, CSendProxyRecipients *pRecipients, int objectID )
+{
+	static CRD_ItemInstance s_BlankInstance;
+
+	const CRD_ProjectileData *pProjectile = static_cast< const CRD_ProjectileData * >( pStructBase );
+	CASW_Player *pPlayer = pProjectile->m_hOriginalOwnerPlayer;
+	if ( !pPlayer || pProjectile->m_iInventoryEquipSlotIndex == -1 )
+		return &s_BlankInstance;
+
+	return &pPlayer->m_EquippedItemData[pProjectile->m_iInventoryEquipSlotIndex];
+}
+#endif
+
+BEGIN_NETWORK_TABLE_NOBASE( CRD_ProjectileData, DT_RD_ProjectileData )
+#ifdef CLIENT_DLL
+	RecvPropInt( RECVINFO( m_iOriginalOwnerSteamAccount ) ),
+	RecvPropDataTable( RECVINFO_DT( m_InventoryItemData ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropBool( RECVINFO( m_bFiredByOwner ) ),
+#else
+	SendPropInt( SENDINFO( m_iOriginalOwnerSteamAccount ), -1, SPROP_UNSIGNED ),
+	SendPropDataTable( "m_InventoryItemData", 0, &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ), SendProxy_ProjectileItemDataForOwningPlayer ),
+	SendPropBool( SENDINFO( m_bFiredByOwner ) ),
+#endif
+END_NETWORK_TABLE()
+
+CRD_ProjectileData::CRD_ProjectileData()
+{
+	m_iOriginalOwnerSteamAccount = 0;
+#ifdef CLIENT_DLL
+	m_InventoryItemData.Reset();
+#else
+	m_hOriginalOwnerPlayer = NULL;
+	m_iInventoryEquipSlotIndex = -1;
+#endif
+	m_bFiredByOwner = false;
+}
+
+#ifdef GAME_DLL
+void CRD_ProjectileData::SetFromWeapon( CBaseEntity *pCreator )
+{
+	if ( CASW_Weapon *pWeapon = dynamic_cast< CASW_Weapon * >( pCreator ) )
+	{
+		m_iOriginalOwnerSteamAccount = pWeapon->m_iOriginalOwnerSteamAccount;
+		m_hOriginalOwnerPlayer = pWeapon->m_hOriginalOwnerPlayer;
+		m_iInventoryEquipSlotIndex = pWeapon->m_iInventoryEquipSlotIndex;
+		if ( pWeapon->GetOwner() && pWeapon->GetOwner()->IsInhabitableNPC() )
+		{
+			CASW_Inhabitable_NPC *pOwnerNPC = assert_cast< CASW_Inhabitable_NPC * >( pWeapon->GetOwner() );
+			m_bFiredByOwner = pOwnerNPC->IsInhabited() && pOwnerNPC->GetCommander() == pWeapon->m_hOriginalOwnerPlayer;
+		}
+	}
+	else if ( CASW_Sentry_Top *pSentry = dynamic_cast< CASW_Sentry_Top * >( pCreator ) )
+	{
+		if ( CASW_Sentry_Base *pBase = pSentry->GetSentryBase() )
+		{
+			m_iOriginalOwnerSteamAccount = pBase->m_iOriginalOwnerSteamAccount;
+			m_hOriginalOwnerPlayer = pBase->m_hOriginalOwnerPlayer;
+			m_iInventoryEquipSlotIndex = pBase->m_iInventoryEquipSlotIndex;
+			m_bFiredByOwner = true;
+		}
+	}
+
 }
 #endif

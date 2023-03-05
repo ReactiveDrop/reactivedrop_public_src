@@ -10,7 +10,7 @@
 #include "tier0/memdbgon.h"
 
 IMPLEMENT_CLIENTCLASS_DT(C_ASW_Rocket, DT_ASW_Rocket, CASW_Rocket)
-	
+	RecvPropDataTable( RECVINFO_DT( m_ProjectileData ), 0, &REFERENCE_RECV_TABLE( DT_RD_ProjectileData ) ),
 END_RECV_TABLE()
 
 ConVar asw_rocket_volume_time( "asw_rocket_volume_time", "0.3", FCVAR_NONE, "Time taken to fade in rocket loop sound" );

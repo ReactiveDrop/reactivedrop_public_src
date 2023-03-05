@@ -150,7 +150,7 @@ void CASW_Weapon_Buff_Grenade::PrimaryAttack( void )
 
 	float flRadius = 120.0f;
 	float flDuration = 30.0f;
-	CASW_BuffGrenade_Projectile *pBuff = CASW_BuffGrenade_Projectile::Grenade_Projectile_Create(vecSrc, ang, newVel, rotSpeed, pMarine, flRadius, flDuration);
+	CASW_BuffGrenade_Projectile *pBuff = CASW_BuffGrenade_Projectile::Grenade_Projectile_Create( vecSrc, ang, newVel, rotSpeed, pMarine, this, flRadius, flDuration );
 
 	CASW_Marine_Profile *pProfile = pMarine->GetMarineProfile();
 	if ( pProfile && pProfile->GetMarineClass() == MARINE_CLASS_SPECIAL_WEAPONS && rd_buff_grenade_attach_sw.GetBool() )

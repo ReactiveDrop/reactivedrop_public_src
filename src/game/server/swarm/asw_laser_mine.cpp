@@ -42,6 +42,7 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Laser_Mine, DT_ASW_Laser_Mine )
 	SendPropVector( SENDINFO ( m_angLaserAim ), 0, SPROP_NOSCALE ),
 	SendPropBool( SENDINFO( m_bFriendly ) ),
 	SendPropBool( SENDINFO( m_bMineActive ) ),
+	SendPropDataTable( SENDINFO_DT( m_ProjectileData ), &REFERENCE_SEND_TABLE( DT_RD_ProjectileData ) ),
 END_SEND_TABLE()
 
 CASW_Laser_Mine::CASW_Laser_Mine()
@@ -322,8 +323,11 @@ CASW_Laser_Mine* CASW_Laser_Mine::ASW_Laser_Mine_Create( const Vector &position,
 	flDistFraction += RandomFloat( 0.0f, 0.2f );
 	pMine->StartSpawnFlipping( vecSrc, position, angMine, 0.30f * flDistFraction );
 
-	if( pCreatorWeapon )
+	if ( pCreatorWeapon )
+	{
 		pMine->m_CreatorWeaponClass = pCreatorWeapon->Classify();
+		pMine->m_ProjectileData.SetFromWeapon( pCreatorWeapon );
+	}
 
 	if ( pMoveParent )
 	{

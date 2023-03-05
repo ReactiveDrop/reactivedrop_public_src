@@ -217,7 +217,7 @@ void CASW_HealGrenade_Projectile::DoAOE( CBaseEntity *pEntity )
 }
 
 CASW_AOEGrenade_Projectile* CASW_HealGrenade_Projectile::Grenade_Projectile_Create( const Vector &position, const QAngle &angles, const Vector &velocity,
-																							const AngularImpulse &angVelocity, CBaseEntity *pOwner,
+																							const AngularImpulse &angVelocity, CBaseEntity *pOwner, CBaseEntity *pCreator,
 																							float flHealPerSecond, float flInfestationCureAmount, float flRadius, float flDuration, float flTotalHealAmount )
 {
 	CASW_HealGrenade_Projectile *pGrenade = (CASW_HealGrenade_Projectile *)CreateEntityByName( "asw_healgrenade_projectile" );
@@ -233,6 +233,11 @@ CASW_AOEGrenade_Projectile* CASW_HealGrenade_Projectile::Grenade_Projectile_Crea
 	//Msg("making pBuffGrenade with velocity %f,%f,%f\n", velocity.x, velocity.y, velocity.z);
 	UTIL_SetOrigin( pGrenade, position );
 	pGrenade->SetAbsVelocity( velocity );
+
+	if ( pCreator )
+	{
+		pGrenade->m_ProjectileData.GetForModify().SetFromWeapon( pCreator );
+	}
 
 	return pGrenade;
 }
@@ -303,7 +308,7 @@ CASW_AOEGrenade_Projectile* CASW_Weapon_HealGrenade::CreateProjectile( const Vec
 	float flHealthPerSecond = 3.0f;
 	float flInfestationCureAmount = MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_XENOWOUNDS ) / 100.0f;
 
-	return CASW_HealGrenade_Projectile::Grenade_Projectile_Create( vecSrc, angles, vecVel, rotSpeed, pOwner,
+	return CASW_HealGrenade_Projectile::Grenade_Projectile_Create( vecSrc, angles, vecVel, rotSpeed, pOwner, this,
 		flHealthPerSecond, flInfestationCureAmount, flRadius, flDuration, flHealAmount );
 }
 #endif

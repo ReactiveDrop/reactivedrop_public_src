@@ -114,6 +114,7 @@ IMPLEMENT_SERVERCLASS_ST( CASW_AOEGrenade_Projectile, DT_ASW_AOEGrenade_Projecti
 	SendPropFloat( SENDINFO( m_flScale ), 0, SPROP_NOSCALE ),
 	SendPropBool( SENDINFO( m_bSettled ) ),
 	SendPropFloat( SENDINFO( m_flRadius ), 0, SPROP_NOSCALE ),
+	SendPropDataTable( SENDINFO_DT( m_ProjectileData ), &REFERENCE_SEND_TABLE( DT_RD_ProjectileData ) ),
 END_SEND_TABLE()
 
 IMPLEMENT_AUTO_LIST( IASW_AOEGrenade_Projectile_List );

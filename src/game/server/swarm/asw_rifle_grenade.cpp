@@ -30,7 +30,7 @@ LINK_ENTITY_TO_CLASS( asw_rifle_grenade, CASW_Rifle_Grenade );
 PRECACHE_REGISTER(asw_rifle_grenade);
 
 BEGIN_DATADESC( CASW_Rifle_Grenade )
-	DEFINE_FUNCTION( GrenadeTouch ),
+	DEFINE_ENTITYFUNC( GrenadeTouch ),
 
 	DEFINE_KEYFIELD( m_bSilent, FIELD_BOOLEAN, "silent" ),
 	DEFINE_FIELD( m_inSolid, FIELD_BOOLEAN ),
@@ -40,9 +40,14 @@ END_DATADESC()
 
 extern int	g_sModelIndexFireball;			// (in combatweapon.cpp) holds the index for the smoke cloud
 
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
+IMPLEMENT_SERVERCLASS_ST( CASW_Rifle_Grenade, DT_ASW_Rifle_Grenade )
+	SendPropDataTable( SENDINFO_DT( m_ProjectileData ), &REFERENCE_SEND_TABLE( DT_RD_ProjectileData ) ),
+END_SEND_TABLE();
+
+CASW_Rifle_Grenade::CASW_Rifle_Grenade()
+{
+}
+
 CASW_Rifle_Grenade::~CASW_Rifle_Grenade( void )
 {
 	KillEffects();
@@ -293,6 +298,8 @@ CASW_Rifle_Grenade* CASW_Rifle_Grenade::Rifle_Grenade_Create( float flDamage, fl
 	pGrenade->SetOwnerEntity( pOwner );
 	pGrenade->SetAbsVelocity( velocity );
 	pGrenade->m_hCreatorWeapon.Set( pCreator );
+
+	pGrenade->m_ProjectileData.GetForModify().SetFromWeapon( pCreator );
 
 	return pGrenade;
 }

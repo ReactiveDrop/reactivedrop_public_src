@@ -3,10 +3,11 @@
 
 #include "c_basecombatcharacter.h"
 #include "asw_shareddefs.h"
+#include "rd_inventory_shared.h"
 
 struct dlight_t;
 
-class C_ASW_Laser_Mine : public C_BaseCombatCharacter
+class C_ASW_Laser_Mine : public C_BaseCombatCharacter, public IRD_Has_Projectile_Data
 {
 public:
 	DECLARE_CLASS( C_ASW_Laser_Mine, C_BaseCombatCharacter );
@@ -26,6 +27,12 @@ public:
 	CNetworkVar( QAngle, m_angLaserAim );
 	CNetworkVar( bool, m_bFriendly );
 	CNetworkVar( bool, m_bMineActive );
+
+	CNetworkVarEmbedded( CRD_ProjectileData, m_ProjectileData );
+	const CRD_ProjectileData *GetProjectileData() const override
+	{
+		return &m_ProjectileData;
+	}
 
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_LASER_MINE_PROJECTILE; }

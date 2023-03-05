@@ -731,13 +731,13 @@ HSCRIPT Script_DropFreezeGrenade( float flDamage, float flFreezeAmount, float fl
 
 HSCRIPT Script_PlaceHealBeacon( float flHealAmount, float flHealthPerSecond, float flInfestationCureAmount, float flDuration, float flGrenadeRadius, const Vector origin )
 {
-	CASW_AOEGrenade_Projectile *pHeal = CASW_HealGrenade_Projectile::Grenade_Projectile_Create( origin, QAngle(0,0,0), Vector(0,0,0), AngularImpulse(0,0,0), NULL, flHealthPerSecond, flInfestationCureAmount, flGrenadeRadius, flDuration, flHealAmount );
+	CASW_AOEGrenade_Projectile *pHeal = CASW_HealGrenade_Projectile::Grenade_Projectile_Create( origin, QAngle(0,0,0), Vector(0,0,0), AngularImpulse(0,0,0), NULL, NULL, flHealthPerSecond, flInfestationCureAmount, flGrenadeRadius, flDuration, flHealAmount );
 	return ToHScript( pHeal );
 }
 
 HSCRIPT Script_PlaceDamageAmplifier( float flDuration, float flGrenadeRadius, const Vector origin )
 {
-	CASW_BuffGrenade_Projectile *pBuff = CASW_BuffGrenade_Projectile::Grenade_Projectile_Create( origin, QAngle(0,0,0), Vector(0,0,0), AngularImpulse(0,0,0), NULL, flGrenadeRadius, flDuration );
+	CASW_BuffGrenade_Projectile *pBuff = CASW_BuffGrenade_Projectile::Grenade_Projectile_Create( origin, QAngle(0,0,0), Vector(0,0,0), AngularImpulse(0,0,0), NULL, NULL, flGrenadeRadius, flDuration );
 	return ToHScript( pBuff );
 }
 
@@ -773,7 +773,7 @@ HSCRIPT Script_DropFragGrenade( float flDamage, float fRadius, const Vector posi
 
 HSCRIPT Script_DropGasGrenade( float flDamage, float fInterval, float fDuration, float fFuse, const Vector position )
 {
-	CASW_Gas_Grenade_Projectile *pGas_Grenade = CASW_Gas_Grenade_Projectile::Gas_Grenade_Projectile_Create( position, QAngle(0,0,0), Vector(0,0,0), AngularImpulse(0,0,0), NULL, flDamage, fInterval, fDuration, fFuse );
+	CASW_Gas_Grenade_Projectile *pGas_Grenade = CASW_Gas_Grenade_Projectile::Gas_Grenade_Projectile_Create( position, QAngle(0,0,0), Vector(0,0,0), AngularImpulse(0,0,0), NULL, NULL, flDamage, fInterval, fDuration, fFuse );
 	return ToHScript( pGas_Grenade );
 }
 
@@ -861,7 +861,6 @@ void Script_CheckSpecialAchievementEligibility()
 		{
 			for ( int i = 1; i < 6; i++ )
 			{
-				ScriptVariant_t element;
 				ArrayGet( element, AreaVisitCount, i );
 
 				if ( element.Get<int>() != 1 )

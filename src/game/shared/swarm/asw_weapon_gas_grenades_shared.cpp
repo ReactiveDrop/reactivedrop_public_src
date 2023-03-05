@@ -160,7 +160,7 @@ void CASW_Weapon_Gas_Grenades::DelayedAttack()
 	}
 	Vector newVel = UTIL_LaunchVector( vecSrc, vecDest, GetThrowGravity() ) * 28.0f;
 		
-	CASW_Gas_Grenade_Projectile *pGas_Grenade = CASW_Gas_Grenade_Projectile::Gas_Grenade_Projectile_Create( vecSrc, QAngle( 90, 0, 0 ), newVel, rotSpeed, pMarine );
+	CASW_Gas_Grenade_Projectile *pGas_Grenade = CASW_Gas_Grenade_Projectile::Gas_Grenade_Projectile_Create( vecSrc, QAngle( 90, 0, 0 ), newVel, rotSpeed, pMarine, this );
 	if ( pGas_Grenade )
 	{
 		float flDuration = pGas_Grenade->GetDuration();

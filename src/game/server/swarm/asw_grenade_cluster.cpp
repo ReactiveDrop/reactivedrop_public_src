@@ -240,8 +240,11 @@ CASW_Grenade_Cluster* CASW_Grenade_Cluster::Cluster_Grenade_Create( float flDama
 	pGrenade->SetAbsVelocity( velocity );
 	pGrenade->SetClusters(iClusters, true);
 	pGrenade->m_hCreatorWeapon = pCreatorWeapon;
-	if( pCreatorWeapon )
+	if ( pCreatorWeapon )
+	{
 		pGrenade->m_CreatorWeaponClass = pCreatorWeapon->Classify();
+		pGrenade->m_ProjectileData.GetForModify().SetFromWeapon( pCreatorWeapon );
+	}
 
 	IGameEvent* event = gameeventmanager->CreateEvent("cluster_grenade_create");
 	if (event)
@@ -487,6 +490,7 @@ void CASW_Grenade_Cluster::VGrenadeTouch(CBaseEntity* pOther)
 								m_DmgRadius,
 								m_iClusters,
 								GetAbsOrigin(), GetAbsAngles(), GetAbsVelocity(), AngularImpulse(0, 0, 0), m_hFirer.Get(), m_hCreatorWeapon.Get());
+							pGrenade->m_ProjectileData.GetForModify() = m_ProjectileData;
 
 							UTIL_Remove(this);
 

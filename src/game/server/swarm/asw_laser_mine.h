@@ -5,10 +5,11 @@
 #endif
 
 #include "asw_shareddefs.h"
+#include "rd_inventory_shared.h"
 
-static const char *s_pLaserMineSpawnFlipThink = "LaserMineSpawnFlipThink";
+constexpr const char *s_pLaserMineSpawnFlipThink = "LaserMineSpawnFlipThink";
 
-class CASW_Laser_Mine : public CBaseCombatCharacter, public IEntityListener
+class CASW_Laser_Mine : public CBaseCombatCharacter, public IEntityListener, public IRD_Has_Projectile_Data
 {
 	DECLARE_CLASS( CASW_Laser_Mine, CBaseCombatCharacter );
 	DECLARE_SERVERCLASS();
@@ -55,6 +56,13 @@ public:
 
 	EHANDLE m_hCreatorWeapon;
 	Class_T m_CreatorWeaponClass;
+
+	CNetworkVarEmbedded( CRD_ProjectileData, m_ProjectileData );
+	const CRD_ProjectileData *GetProjectileData() const override
+	{
+		return &m_ProjectileData;
+	}
+
 
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_LASER_MINE_PROJECTILE; }

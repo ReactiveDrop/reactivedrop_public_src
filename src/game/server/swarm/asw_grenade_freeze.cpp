@@ -69,6 +69,10 @@ CASW_Grenade_Freeze* CASW_Grenade_Freeze::Freeze_Grenade_Create( float flDamage,
 	pGrenade->SetOwnerEntity( pOwner );
 	pGrenade->SetClusters(iClusters, true);	
 	pGrenade->m_hCreatorWeapon.Set( pCreatorWeapon );
+	if ( pCreatorWeapon )
+	{
+		pGrenade->m_ProjectileData.GetForModify().SetFromWeapon( pCreatorWeapon );
+	}
 
 	// hack attack!  for some reason, grenades refuse to be affect by damage forces until they're actually dead
 	//  so we kill it immediately.

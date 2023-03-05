@@ -20,9 +20,10 @@
 
 
 IMPLEMENT_CLIENTCLASS_DT( C_ASW_Gas_Grenade_Projectile, DT_ASW_Gas_Grenade_Projectile, CASW_Gas_Grenade_Projectile )
-RecvPropFloat( RECVINFO( m_flTimeBurnOut ) ),
-RecvPropFloat( RECVINFO( m_flScale ) ),
-RecvPropInt( RECVINFO( m_bSmoke ) ),
+	RecvPropFloat( RECVINFO( m_flTimeBurnOut ) ),
+	RecvPropFloat( RECVINFO( m_flScale ) ),
+	RecvPropInt( RECVINFO( m_bSmoke ) ),
+	RecvPropDataTable( RECVINFO_DT( m_ProjectileData ), 0, &REFERENCE_RECV_TABLE( DT_RD_ProjectileData ) ),
 END_RECV_TABLE()
 
 //-----------------------------------------------------------------------------

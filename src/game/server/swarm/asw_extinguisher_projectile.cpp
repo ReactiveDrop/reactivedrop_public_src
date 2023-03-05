@@ -8,6 +8,8 @@
 #include "asw_fire.h"
 #include "asw_marine.h"
 #include "asw_weapon_flamer_shared.h"
+#include "asw_sentry_top_icer.h"
+#include "asw_sentry_base.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -136,7 +138,24 @@ void CASW_Extinguisher_Projectile::ProjectileTouch( CBaseEntity *pOther )
 
 			if ( m_flFreezeAmount > 0 && ( !m_hFirer || !m_hFirer->MyCombatCharacterPointer() || m_hFirer->MyCombatCharacterPointer()->IRelationType( pNPC ) != D_LI ) )
 			{
-				pNPC->Freeze( m_flFreezeAmount, this );
+				bool bWasFrozen = pNPC->m_bWasEverFrozen;
+				pNPC->Freeze( m_flFreezeAmount, GetOwnerEntity() ? GetOwnerEntity() : this );
+				Assert( GetOwnerEntity() && GetOwnerEntity()->Classify() == CLASS_ASW_SENTRY_FREEZE );
+				if ( !bWasFrozen && pNPC->IsFrozen() && GetOwnerEntity() && GetOwnerEntity()->Classify() == CLASS_ASW_SENTRY_FREEZE )
+				{
+					CASW_Sentry_Top_Icer *pSentry = assert_cast< CASW_Sentry_Top_Icer * >( GetOwnerEntity() );
+					CASW_Sentry_Base *pBase = pSentry->GetSentryBase();
+					IGameEvent *event = gameeventmanager->CreateEvent( "entity_frozen" );
+					if ( event )
+					{
+						event->SetInt( "entindex", pNPC->entindex() );
+						event->SetInt( "attacker", pBase && pBase->m_hDeployer ? pBase->m_hDeployer->entindex() : pSentry->entindex() );
+						event->SetInt( "weapon", pBase ? pBase->entindex() : -1 );
+
+						gameeventmanager->FireEvent( event );
+					}
+				}
+
 				if ( pNPC->GetFrozenAmount() >= 0.9f )
 					return;
 			}

@@ -2,6 +2,7 @@
 #define _INCLUDED_ASW_ROCKET_H
 
 #include "basehlcombatweapon.h"
+#include "rd_inventory_shared.h"
 
 class RocketTrail;
 
@@ -139,7 +140,7 @@ inline bool CASW_DamageAllocationMgr::IsValid( const IndexType_t &I ) const
 	return I != InvalidIndex();
 }
 
-class CASW_Rocket : public CBaseCombatCharacter
+class CASW_Rocket : public CBaseCombatCharacter, public IRD_Has_Projectile_Data
 {
 	DECLARE_CLASS( CASW_Rocket, CBaseCombatCharacter );
 	DECLARE_SERVERCLASS();
@@ -187,6 +188,12 @@ public:
 
 	EHANDLE m_hCreatorWeapon;
 	Class_T m_CreatorWeaponClass;
+
+	CNetworkVarEmbedded( CRD_ProjectileData, m_ProjectileData );
+	const CRD_ProjectileData *GetProjectileData() const override
+	{
+		return &m_ProjectileData;
+	}
 
 protected:
 	virtual void DoExplosion(bool bHitwall);

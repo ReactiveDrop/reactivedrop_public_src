@@ -9,8 +9,12 @@ namespace vgui
 	class RichText;
 }
 
+#define CASW_Player C_ASW_Player
 #define CRD_ItemInstance C_RD_ItemInstance
+#define CRD_ProjectileData C_RD_ProjectileData
 #endif
+
+class CASW_Player;
 
 namespace ReactiveDropInventory
 {
@@ -125,6 +129,7 @@ namespace ReactiveDropInventory
 
 #ifdef CLIENT_DLL
 EXTERN_RECV_TABLE( DT_RD_ItemInstance );
+EXTERN_RECV_TABLE( DT_RD_ProjectileData );
 
 namespace vgui
 {
@@ -132,6 +137,7 @@ namespace vgui
 }
 #else
 EXTERN_SEND_TABLE( DT_RD_ItemInstance );
+EXTERN_SEND_TABLE( DT_RD_ProjectileData );
 #endif
 
 // A reduced network-friendly version of the ItemInstance_t that can be transmitted from server to client.
@@ -159,4 +165,32 @@ public:
 	CNetworkVar( SteamItemDef_t, m_iItemDefID );
 	CNetworkArray( SteamItemDef_t, m_iAccessory, RD_ITEM_MAX_ACCESSORIES );
 	CNetworkArray( int64, m_nCounter, RD_ITEM_MAX_COMPRESSED_DYNAMIC_PROPS );
+};
+
+class CRD_ProjectileData
+{
+public:
+	DECLARE_CLASS_NOBASE( CRD_ProjectileData );
+	DECLARE_EMBEDDED_NETWORKVAR();
+
+	CRD_ProjectileData();
+
+	CNetworkVar( AccountID_t, m_iOriginalOwnerSteamAccount );
+#ifdef CLIENT_DLL
+	CNetworkVarEmbedded( CRD_ItemInstance, m_InventoryItemData );
+#else
+	CHandle<CASW_Player> m_hOriginalOwnerPlayer;
+	int m_iInventoryEquipSlotIndex;
+#endif
+	CNetworkVar( bool, m_bFiredByOwner );
+
+#ifdef GAME_DLL
+	void SetFromWeapon( CBaseEntity *pCreator );
+#endif
+};
+
+abstract_class IRD_Has_Projectile_Data
+{
+public:
+	virtual const CRD_ProjectileData *GetProjectileData() const = 0;
 };

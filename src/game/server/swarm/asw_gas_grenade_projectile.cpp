@@ -30,9 +30,7 @@ extern ConVar asw_gas_grenade_cloud_width;
 LINK_ENTITY_TO_CLASS( asw_gas_grenade_projectile, CASW_Gas_Grenade_Projectile );
 
 BEGIN_DATADESC( CASW_Gas_Grenade_Projectile )
-	DEFINE_FUNCTION( Gas_GrenadeTouch ),
-	DEFINE_FUNCTION( Gas_GrenadeBurnTouch ),
-	DEFINE_FUNCTION( Gas_GrenadeThink ),
+	DEFINE_THINKFUNC( GasGrenadeThink ),
 
 	// Fields
 	DEFINE_FIELD( m_flDamage, FIELD_FLOAT ),
@@ -51,6 +49,7 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Gas_Grenade_Projectile, DT_ASW_Gas_Grenade_Projec
 	SendPropFloat( SENDINFO( m_flTimeBurnOut ), 0,	SPROP_NOSCALE ),
 	SendPropFloat( SENDINFO( m_flScale ), 0, SPROP_NOSCALE ),
 	SendPropInt( SENDINFO( m_bSmoke ), 1, SPROP_UNSIGNED ),
+	SendPropDataTable( SENDINFO_DT( m_ProjectileData ), &REFERENCE_SEND_TABLE( DT_RD_ProjectileData ) ),
 END_SEND_TABLE()
 
 CASW_Gas_Grenade_Projectile::CASW_Gas_Grenade_Projectile()
@@ -62,7 +61,6 @@ CASW_Gas_Grenade_Projectile::CASW_Gas_Grenade_Projectile()
 	m_flNextDamage	= gpGlobals->curtime;
 	m_lifeState		= LIFE_ALIVE;
 	m_iHealth		= 100;
-	//m_pRadSound	= NULL;
 }
 
 CASW_Gas_Grenade_Projectile::~CASW_Gas_Grenade_Projectile( void )
@@ -89,7 +87,6 @@ void CASW_Gas_Grenade_Projectile::Spawn( void )
 	m_nSkin = 2;
 	UTIL_SetSize( this, Vector( -2, -2, -2 ), Vector( 2, 2, 2 ) );
 	SetSolid( SOLID_BBOX );
-	//AddSolidFlags( FSOLID_NOT_SOLID );
 
 	SetMoveType( MOVETYPE_FLYGRAVITY, MOVECOLLIDE_FLY_BOUNCE );
 
@@ -102,17 +99,10 @@ void CASW_Gas_Grenade_Projectile::Spawn( void )
 	AddFlag( FL_OBJECT );
 	
 	SetCollisionGroup( ASW_COLLISION_GROUP_IGNORE_NPCS );
-	//CreateVPhysics();
 
 	// Tumble in air
 	QAngle vecAngVelocity( 0, random->RandomFloat ( -100, -500 ), 0 );
 	SetLocalAngularVelocity( vecAngVelocity );
-
-	SetTouch( &CASW_Gas_Grenade_Projectile::Gas_GrenadeTouch );
-
-	//AddSolidFlags( FSOLID_NOT_STANDABLE );	
-	
-	//SetThink( &CASW_Gas_Grenade_Projectile::Gas_GrenadeThink );
 
 	if ( m_flDmgDuration > 0 )
 	{
@@ -123,8 +113,6 @@ void CASW_Gas_Grenade_Projectile::Spawn( void )
 		m_flTimeBurnOut = -1.0f;
 	}
 
-	//SetNextThink( gpGlobals->curtime + 0.1f );
-
 	SetFuseLength( asw_gas_grenade_fuse.GetFloat() );
 }
 
@@ -133,7 +121,7 @@ unsigned int CASW_Gas_Grenade_Projectile::PhysicsSolidMaskForEntity( void ) cons
 	return (MASK_NPCSOLID & ~CONTENTS_MONSTERCLIP);
 }
 
-void CASW_Gas_Grenade_Projectile::Gas_GrenadeThink( void )
+void CASW_Gas_Grenade_Projectile::GasGrenadeThink( void )
 {
 	float deltaTime = ( m_flTimeBurnOut - gpGlobals->curtime );
 
@@ -187,166 +175,23 @@ void CASW_Gas_Grenade_Projectile::Precache( void )
 
 
 
-CASW_Gas_Grenade_Projectile* CASW_Gas_Grenade_Projectile::Gas_Grenade_Projectile_Create( const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner, float flDamage, float flDmgInterval, float flDmgDuration, float flFuse )
+CASW_Gas_Grenade_Projectile* CASW_Gas_Grenade_Projectile::Gas_Grenade_Projectile_Create( const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner, CBaseEntity *pCreator, float flDamage, float flDmgInterval, float flDmgDuration, float flFuse )
 {
-	CASW_Gas_Grenade_Projectile *pGas_Grenade = (CASW_Gas_Grenade_Projectile *)CreateEntityByName( "asw_gas_grenade_projectile" );
-	pGas_Grenade->SetAbsAngles( angles );
-	pGas_Grenade->m_flDamage = flDamage;
-	pGas_Grenade->m_flDmgInterval = flDmgInterval;
-	pGas_Grenade->m_flDmgDuration = flDmgDuration;
-	pGas_Grenade->m_flFuse = flFuse;
-	pGas_Grenade->Spawn();
-	pGas_Grenade->SetOwnerEntity( pOwner );
+	CASW_Gas_Grenade_Projectile *pGrenade = (CASW_Gas_Grenade_Projectile *)CreateEntityByName( "asw_gas_grenade_projectile" );
+	pGrenade->SetAbsAngles( angles );
+	pGrenade->m_flDamage = flDamage;
+	pGrenade->m_flDmgInterval = flDmgInterval;
+	pGrenade->m_flDmgDuration = flDmgDuration;
+	pGrenade->m_flFuse = flFuse;
+	pGrenade->Spawn();
+	pGrenade->SetOwnerEntity( pOwner );
 	//Msg("making pGas_Grenade with velocity %f,%f,%f\n", velocity.x, velocity.y, velocity.z);
-	UTIL_SetOrigin( pGas_Grenade, position );
-	pGas_Grenade->SetAbsVelocity( velocity );
+	UTIL_SetOrigin( pGrenade, position );
+	pGrenade->SetAbsVelocity( velocity );
 
-	return pGas_Grenade;
-}
+	pGrenade->m_ProjectileData.SetFromWeapon( pCreator );
 
-void CASW_Gas_Grenade_Projectile::Gas_GrenadeTouch( CBaseEntity *pOther )
-{
-	Assert( pOther );
-	if ( !pOther->IsSolid() )
-		return;
-
-	return;
-
-	//If the flare hit a person or NPC, do damage here.
-	if ( pOther && pOther->m_takedamage )
-	{
-		/*
-			The Gas_Grenade is the iRifle round right now. No damage, just ignite. (sjb)
-
-		//Damage is a function of how fast the flare is flying.
-		int iDamage = GetAbsVelocity().Length() / 50.0f;
-
-		if ( iDamage < 5 )
-		{
-			//Clamp minimum damage
-			iDamage = 5;
-		}
-
-		//Use m_pOwner, not GetOwnerEntity()
-		pOther->TakeDamage( CTakeDamageInfo( this, m_pOwner, iDamage, (DMG_BULLET|DMG_BURN) ) );
-		m_flNextDamage = gpGlobals->curtime + 1.0f;
-		*/
-
-		//CBaseAnimating *pAnim;
-
-		//pAnim = dynamic_cast<CBaseAnimating*>(pOther);
-		//if( pAnim )
-		//{
-			//pAnim->Ignite( 30.0f );
-		//}
-
-		Vector vecNewVelocity = GetAbsVelocity();
-		vecNewVelocity	*= 0.1f;
-		SetAbsVelocity( vecNewVelocity );
-
-		SetMoveType( MOVETYPE_FLYGRAVITY, MOVECOLLIDE_FLY_BOUNCE );
-		SetGravity(1.0f);
-
-		return;
-	}
-	else
-	{
-		// hit the world, check the material type here, see if the flare should stick.
-		trace_t tr;
-		tr = CBaseEntity::GetTouchTrace();
-
-		//Only do this on the first bounce
-		if ( m_nBounces == 0 )
-		{
-			surfacedata_t *pdata = physprops->GetSurfaceData( tr.surface.surfaceProps );	
-
-			if ( pdata != NULL )
-			{
-				//Only embed into concrete and wood (jdw: too obscure for players?)
-				//if ( ( pdata->gameMaterial == 'C' ) || ( pdata->gameMaterial == 'W' ) )
-				{
-					Vector	impactDir = ( tr.endpos - tr.startpos );
-					VectorNormalize( impactDir );
-
-					float	surfDot = tr.plane.normal.Dot( impactDir );
-
-					//Do not stick to ceilings or on shallow impacts
-					if ( ( tr.plane.normal.z > 0.3f ) && ( surfDot < -0.9f ) )
-					{
-						RemoveSolidFlags( FSOLID_NOT_SOLID );
-						AddSolidFlags( FSOLID_TRIGGER );
-						LayFlat();
-						UTIL_SetOrigin( this, tr.endpos + ( tr.plane.normal * 2.0f ) );
-						SetAbsVelocity( vec3_origin );
-						SetMoveType( MOVETYPE_NONE );
-						
-						SetTouch( &CASW_Gas_Grenade_Projectile::Gas_GrenadeBurnTouch );
-						
-						//int index = decalsystem->GetDecalIndexForName( "SmallScorch" );
-						//if ( index >= 0 )
-						//{
-							//CBroadcastRecipientFilter filter;
-							//te->Decal( filter, 0.0, &tr.endpos, &tr.startpos, ENTINDEX( tr.m_pEnt ), tr.hitbox, index );
-						//}
-						
-						CPASAttenuationFilter filter2( this, "ASW_Flare.Touch" );
-						EmitSound( filter2, entindex(), "ASW_Flare.Touch" );
-
-						return;
-					}
-				}
-			}
-		}
-
-		//Scorch decal
-		//if ( GetAbsVelocity().LengthSqr() > (250*250) )
-		//{
-			//int index = decalsystem->GetDecalIndexForName( "FadingScorch" );
-			//if ( index >= 0 )
-			//{
-				//CBroadcastRecipientFilter filter;
-				//te->Decal( filter, 0.0, &tr.endpos, &tr.startpos, ENTINDEX( tr.m_pEnt ), tr.hitbox, index );
-			//}
-		//}
-
-		// Change our flight characteristics
-		SetMoveType( MOVETYPE_FLYGRAVITY, MOVECOLLIDE_FLY_BOUNCE );
-		SetGravity( UTIL_ScaleForGravity( 640 ) );
-		
-		m_nBounces++;
-
-		//After the first bounce, smacking into whoever fired the flare is fair game
-		SetOwnerEntity( NULL );	
-
-		// Slow down
-		Vector vecNewVelocity = GetAbsVelocity();
-		vecNewVelocity.x *= 0.8f;
-		vecNewVelocity.y *= 0.8f;
-		SetAbsVelocity( vecNewVelocity );
-
-		//Stopped?
-		if ( GetAbsVelocity().Length() < 64.0f )
-		{
-			LayFlat();
-			SetAbsVelocity( vec3_origin );
-			SetMoveType( MOVETYPE_NONE );
-			RemoveSolidFlags( FSOLID_NOT_SOLID );
-			AddSolidFlags( FSOLID_TRIGGER );
-			SetTouch( &CASW_Gas_Grenade_Projectile::Gas_GrenadeBurnTouch );
-		}
-	}
-}
-
-void CASW_Gas_Grenade_Projectile::LayFlat()
-{
-	return;
-	QAngle angFacing = GetAbsAngles();
-	if (angFacing[PITCH] > 0 && angFacing[PITCH] < 180.0f)
-		angFacing[PITCH] = 90;
-	else
-		angFacing[PITCH] = 270;
-	SetAbsAngles(angFacing);
-	//Msg("Laying flat to %f, %f, %f\n", angFacing[PITCH], angFacing[YAW], angFacing[ROLL]);
+	return pGrenade;
 }
 
 void CASW_Gas_Grenade_Projectile::SetFuseLength( float fSeconds )
@@ -389,18 +234,8 @@ void CASW_Gas_Grenade_Projectile::Detonate()
 		WRITE_FLOAT( 400.0f );
 	MessageEnd();
 
-	SetThink( &CASW_Gas_Grenade_Projectile::Gas_GrenadeThink );
+	SetThink( &CASW_Gas_Grenade_Projectile::GasGrenadeThink );
 	SetNextThink( gpGlobals->curtime + 0.1f );
-}
-
-void CASW_Gas_Grenade_Projectile::Gas_GrenadeBurnTouch( CBaseEntity *pOther )
-{
-	// asw no burning flares for now
-	//if ( pOther && pOther->m_takedamage && ( m_flNextDamage < gpGlobals->curtime ) )
-	//{
-		//pOther->TakeDamage( CTakeDamageInfo( this, m_pFirer, 1, (DMG_BULLET|DMG_BURN) ) );
-		//m_flNextDamage = gpGlobals->curtime + 1.0f;
-	//}
 }
 
 extern ConVar asw_flare_autoaim_radius;

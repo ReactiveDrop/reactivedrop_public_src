@@ -9,6 +9,7 @@
 
 IMPLEMENT_CLIENTCLASS_DT(C_ASW_Mine, DT_ASW_Mine, CASW_Mine)
 	RecvPropBool( RECVINFO( m_bMineTriggered ) ),
+	RecvPropDataTable( RECVINFO_DT( m_ProjectileData ), 0, &REFERENCE_RECV_TABLE( DT_RD_ProjectileData ) ),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_ASW_Mine )
