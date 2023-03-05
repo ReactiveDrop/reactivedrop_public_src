@@ -66,7 +66,7 @@ public:
 		//virtual const char* GetTracerEffectName() { return "tracer_pistol"; }	// particle effect name
 		//virtual const char* GetMuzzleEffectName() { return "muzzle_pistol"; }	// particle effect name
 
-		virtual bool DisplayClipsDoubled() { return false; }
+		virtual bool DisplayClipsDoubled() { return true; }
 		virtual const char* GetTracerEffectName() { return "tracer_pistol"; }	// particle effect name
 		virtual const char* GetMuzzleEffectName() { return "muzzle_pistol"; }	// particle effect name
 	#endif

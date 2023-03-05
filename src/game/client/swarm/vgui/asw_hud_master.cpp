@@ -298,7 +298,7 @@ void CASW_Hud_Master::OnThink()
 	}
 	for ( int i = 0; i < nMaxResources && nPosition < MAX_SQUADMATE_HUD_POSITIONS; i++ )
 	{
-		if (nMaxWidth < m_SquadMateInfo[nPosition].xpos + m_nMarinePortrait_spacing)
+		if ( nMaxWidth < m_SquadMateInfo[nPosition].xpos + m_nSquadMates_spacing )
 		{
 			// don't draw marine info over the minimap.
 			break;
@@ -370,11 +370,7 @@ void CASW_Hud_Master::OnThink()
 						m_SquadMateInfo[ nPosition ].nMaxClips = 0;
 					}
 
-					if ( m_SquadMateInfo[ nPosition ].pWeapon->DisplayClipsDoubled() )
-					{
-						m_SquadMateInfo[ nPosition ].nClips *= 2;
-						m_SquadMateInfo[ nPosition ].nMaxClips *= 2;
-					}
+					m_SquadMateInfo[ nPosition ].bClipsDoubled = m_SquadMateInfo[ nPosition ].pWeapon->DisplayClipsDoubled();
 					m_SquadMateInfo[ nPosition ].flAmmoFraction = pMR->GetAmmoPercent();
 					//Msg( "Setting squadmate %d ammo to %f.  clip1 is %d max is %d\n", nPosition, pMR->GetAmmoPercent(),
 						//m_SquadMateInfo[ nPosition ].pWeapon->Clip1(), m_SquadMateInfo[ nPosition ].pWeapon->GetMaxClip1() );
@@ -383,6 +379,7 @@ void CASW_Hud_Master::OnThink()
 				{
 					m_SquadMateInfo[ nPosition ].nClips = 0;
 					m_SquadMateInfo[ nPosition ].nMaxClips = 0;
+					m_SquadMateInfo[ nPosition ].bClipsDoubled = false;
 					m_SquadMateInfo[ nPosition ].flAmmoFraction = 0;
 					//Msg( "Setting squadmate %d ammo to zero 1\n", nPosition );
 				}
@@ -441,6 +438,7 @@ void CASW_Hud_Master::OnThink()
 				m_SquadMateInfo[ nPosition ].pExtraItemInfoShift = NULL;
 				m_SquadMateInfo[ nPosition ].pWeapon = NULL;
 				m_SquadMateInfo[ nPosition ].nClips = 0;
+				m_SquadMateInfo[ nPosition ].bClipsDoubled = false;
 				m_SquadMateInfo[ nPosition ].flAmmoFraction = 0;
 				//Msg( "Setting squadmate %d ammo to zero 2\n", nPosition );
 			}
@@ -506,10 +504,7 @@ void CASW_Hud_Master::Paint( void )
 		int nMaxBullets = GetAmmoDef()->MaxCarry( nAmmoIndex, m_pLocalMarine ) * nGuns;
 		m_nLocalMarineMaxClips = nMaxClip == 0 ? 1 : nMaxBullets / nMaxClip;
 
-		if ( m_pLocalMarineActiveWeapon->DisplayClipsDoubled() )
-		{
-			m_nLocalMarineClips *= 2;
-		}
+		m_bLocalMarineClipsDoubled = m_pLocalMarineActiveWeapon->DisplayClipsDoubled();
 		m_nLocalMarineBullets = m_pLocalMarineActiveWeapon->DisplayClip1();
 		m_nLocalMarineGrenades = m_pLocalMarineActiveWeapon->DisplayClip2();
 		m_nLocalMarineGrenades = MIN( m_nLocalMarineGrenades, 9 );
@@ -518,6 +513,7 @@ void CASW_Hud_Master::Paint( void )
 	}
 	else
 	{
+		m_bLocalMarineClipsDoubled = false;
 		m_nLocalMarineClips = 0;
 		m_nLocalMarineMaxClips = 0;
 	}
@@ -943,7 +939,7 @@ void CASW_Hud_Master::PaintLocalMarinePortrait()
 					m_nMarinePortrait_y + m_nMarinePortrait_clips_y,
 					m_nMarinePortrait_x + m_nMarinePortrait_clips_x + m_nMarinePortrait_clips_w,
 					m_nMarinePortrait_y + m_nMarinePortrait_clips_y + m_nMarinePortrait_clips_t,
-					HUD_UV_COORDS( Sheet_Stencil, UV_hud_ammo_clip_full )
+					HUD_UV_COORDS( Sheet_Stencil, m_bLocalMarineClipsDoubled ? UV_hud_ammo_clip_double : UV_hud_ammo_clip_full )
 					);
 			}
 			else
@@ -951,7 +947,7 @@ void CASW_Hud_Master::PaintLocalMarinePortrait()
 				// draw up to 5 clip icons, filling them in if the player has that many clips
 				for ( int i = 0; i < 5; i++ )
 				{
-					int x = m_nMarinePortrait_x + m_nMarinePortrait_clips_x + m_nMarinePortrait_spacing * i;
+					int x = m_nMarinePortrait_x + m_nMarinePortrait_clips_x + m_nMarinePortrait_clips_spacing * i;
 					if ( m_nLocalMarineClips > i )
 					{
 						surface()->DrawSetColor( 255, 255, 255, 255 );
@@ -960,7 +956,7 @@ void CASW_Hud_Master::PaintLocalMarinePortrait()
 							m_nMarinePortrait_y + m_nMarinePortrait_clips_y,
 							x + m_nMarinePortrait_clips_w,
 							m_nMarinePortrait_y + m_nMarinePortrait_clips_y + m_nMarinePortrait_clips_t,
-							HUD_UV_COORDS( Sheet_Stencil, UV_hud_ammo_clip_full )
+							HUD_UV_COORDS( Sheet_Stencil, m_bLocalMarineClipsDoubled ? UV_hud_ammo_clip_double : UV_hud_ammo_clip_full )
 							);
 					}
 					else if ( m_nLocalMarineMaxClips > i )
@@ -1095,7 +1091,7 @@ void CASW_Hud_Master::PaintSquadMemberStatus( int nPosition )
 				y + m_nSquadMate_clips_y,
 				x + m_nSquadMate_clips_x + m_nSquadMate_clips_w,
 				y + m_nSquadMate_clips_y + m_nSquadMate_clips_t,
-				HUD_UV_COORDS( Sheet_Stencil, UV_hud_ammo_clip_full )
+				HUD_UV_COORDS( Sheet_Stencil, m_SquadMateInfo[ nPosition ].bClipsDoubled ? UV_hud_ammo_clip_double : UV_hud_ammo_clip_full )
 				);
 		}
 		else
@@ -1112,7 +1108,7 @@ void CASW_Hud_Master::PaintSquadMemberStatus( int nPosition )
 						y + m_nSquadMate_clips_y,
 						clip_x + m_nSquadMate_clips_w,
 						y + m_nSquadMate_clips_y + m_nSquadMate_clips_t,
-						HUD_UV_COORDS( Sheet_Stencil, UV_hud_ammo_clip_full )
+						HUD_UV_COORDS( Sheet_Stencil, m_SquadMateInfo[ nPosition ].bClipsDoubled ? UV_hud_ammo_clip_double : UV_hud_ammo_clip_full )
 					);
 				}
 				else if ( m_SquadMateInfo[ nPosition ].nMaxClips > i )
