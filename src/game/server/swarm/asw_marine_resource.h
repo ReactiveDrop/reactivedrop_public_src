@@ -98,6 +98,7 @@ public:
 	bool IsFiring();
 	void SetFiring(int iFiring) { m_iServerFiring = iFiring; }
 	bool IsReloading();
+	bool CanHack();
 
 	// leadership effects
 	void OnFired_ScaleDamage( FireBulletsInfo_t & info );	// called whenever a weapon is fired.  Leadership and damage amp scaling is done here

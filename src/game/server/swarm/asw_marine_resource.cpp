@@ -696,6 +696,15 @@ bool CASW_Marine_Resource::IsReloading()
 	return pWeapon->IsReloading();
 }
 
+bool CASW_Marine_Resource::CanHack()
+{
+	CASW_Marine_Profile *pProfile = GetProfile();
+	if ( !pProfile )
+		return false;
+
+	return pProfile->CanHack();
+}
+
 void CASW_Marine_Resource::IncrementWeaponStats( Class_T weaponClass, int32 nDamage, int32 nFFDamage, int32 nShotsFired, int32 nShotsHit, int32 nKills )
 {
 	extern ConVar asw_stats_verbose;

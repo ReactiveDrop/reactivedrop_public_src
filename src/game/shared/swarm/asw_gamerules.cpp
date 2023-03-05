@@ -8564,12 +8564,13 @@ void CAlienSwarm::CheckTechFailure()
 
 		// count number of live techs
 		bool bTech = false;
-		for (int i=0;i<pGameResource->GetMaxMarineResources();i++)
+		for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
 		{
-			CASW_Marine_Resource *pMR = pGameResource->GetMarineResource(i);
-			if (pMR && pMR->GetHealthPercent() > 0 && pMR->GetProfile() && pMR->GetProfile()->CanHack())
+			CASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
+			if ( pMR && pMR->GetHealthPercent() > 0 && pMR->CanHack() )
 			{
 				bTech = true;
+				m_flTechFailureRestartTime = 0; // if we end up cancelling the no-tech failure restart, clear the timer so we can fail again later
 				break;
 			}
 		}
