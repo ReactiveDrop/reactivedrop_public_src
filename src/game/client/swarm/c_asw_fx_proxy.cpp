@@ -479,13 +479,13 @@ int64_t CRD_StatTrakDigit_Proxy::GetStatValue( const CRD_ItemInstance &instance 
 {
 	int iAccessory = int( m_AccessoryIndex.GetFloat() );
 	int iProperty = int( m_PropertyIndex.GetFloat() );
-	if ( !instance.IsSet() || iAccessory < -1 || iProperty < 0 || iAccessory >= RD_ITEM_MAX_ACCESSORIES || iProperty >= ( iAccessory == -1 ? pDef->CompressedDynamicProps.Count() : RD_ITEM_MAX_COMPRESSED_DYNAMIC_PROPS_PER_ACCESSORY ) )
+	if ( !instance.IsSet() || iAccessory < -1 || iProperty < 0 || iAccessory >= RD_ITEM_MAX_ACCESSORIES )
 	{
 		return int64_t( m_DefaultValue.GetFloat() );
 	}
 
 	const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( instance.m_iItemDefID );
-	if ( !pDef )
+	if ( !pDef || iProperty >= ( iAccessory == -1 ? pDef->CompressedDynamicProps.Count() : RD_ITEM_MAX_COMPRESSED_DYNAMIC_PROPS_PER_ACCESSORY ) )
 	{
 		return int64_t( m_DefaultValue.GetFloat() );
 	}
