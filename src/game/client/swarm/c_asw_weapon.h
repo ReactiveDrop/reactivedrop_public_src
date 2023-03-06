@@ -244,4 +244,11 @@ protected:
 	CGlowObject m_GlowObject;
 };
 
+class C_RD_Weapon_Accessory : public C_BaseAnimating
+{
+	DECLARE_CLASS( C_RD_Weapon_Accessory, C_BaseAnimating );
+public:
+	int m_iAccessoryIndex;
+};
+
 #endif /* _INCLUDED_C_ASW_WEAPON_H */

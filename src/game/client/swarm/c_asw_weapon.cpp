@@ -1054,3 +1054,5 @@ bool C_ASW_Weapon::GroundSecondary()
 {
 	return asw_ground_secondary.GetBool();
 }
+
+LINK_ENTITY_TO_CLASS( rd_weapon_accessory, C_RD_Weapon_Accessory );

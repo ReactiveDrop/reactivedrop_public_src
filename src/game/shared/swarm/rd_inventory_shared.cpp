@@ -827,10 +827,10 @@ public:
 
 		Assert( iPropertyIndex >= 0 && iPropertyIndex < pAccessoryDef->CompressedDynamicProps.Count() );
 		const char *szPropertyName = pAccessoryDef->CompressedDynamicProps[iPropertyIndex];
-		int iCombinedIndex = pItemDef->CompressedDynamicProps.Count() + iPropertyIndex;
+		int iCombinedIndex = iPropertyIndex;
 
-#ifdef CLIENT_DLL
 		ReactiveDropInventory::ItemInstance_t *pLocalInstance = NULL;
+#ifdef CLIENT_DLL
 		FOR_EACH_VEC( m_LocalEquipCache, i )
 		{
 			if ( m_LocalEquipCache[i]->ItemID == instance.m_iItemInstanceID )
@@ -851,88 +851,19 @@ public:
 		}
 #endif
 
+		if ( instance.m_iItemDefID == iAccessoryID )
+		{
+			ModifyDynamicPropValueHelper( instance, iAccessoryID, iPropertyIndex, iCombinedIndex, szPropertyName, pItemDef, pAccessoryDef, pLocalInstance, iAmount, bRelative );
+			return true;
+		}
+
+		iCombinedIndex += pItemDef->CompressedDynamicProps.Count();
+
 		FOR_EACH_VEC( instance.m_iAccessory, i )
 		{
 			if ( instance.m_iAccessory[i] == iAccessoryID )
 			{
-				int64_t iCounterBefore = instance.m_nCounter[iCombinedIndex];
-#ifdef CLIENT_DLL
-				PendingDynamicPropertyUpdate_t *pUpdate = NULL;
-				FOR_EACH_VEC( m_PendingDynamicPropertyUpdates, j )
-				{
-					if ( m_PendingDynamicPropertyUpdates[j].ItemInstanceID == instance.m_iItemInstanceID && m_PendingDynamicPropertyUpdates[j].ItemDefID == iAccessoryID && m_PendingDynamicPropertyUpdates[j].PropertyIndex == iPropertyIndex )
-					{
-						pUpdate = &m_PendingDynamicPropertyUpdates[j];
-						iCounterBefore = pUpdate->NewValue;
-						break;
-					}
-				}
-				if ( !pUpdate )
-				{
-					pUpdate = &m_PendingDynamicPropertyUpdates[m_PendingDynamicPropertyUpdates.AddToTail()];
-					pUpdate->ItemInstanceID = instance.m_iItemInstanceID;
-					pUpdate->ItemDefID = iAccessoryID;
-					pUpdate->PropertyIndex = iPropertyIndex;
-					iCounterBefore = strtoll( pLocalInstance->DynamicProps[szPropertyName], NULL, 10 );
-				}
-#endif
-				int64_t iCounterAfter = iCounterBefore;
-				if ( !bRelative )
-				{
-					iCounterAfter = iAmount;
-				}
-				else if ( iCounterBefore > 0 )
-				{
-					if ( iAmount > INT64_MAX - iCounterBefore )
-						iCounterAfter = INT64_MAX;
-					else
-						iCounterAfter += iAmount;
-				}
-				else
-				{
-					if ( iAmount < INT64_MIN - iCounterBefore )
-						iCounterAfter = INT64_MIN;
-					else
-						iCounterAfter += iAmount;
-				}
-
-				if ( iAccessoryID == 5007 && iPropertyIndex == 0 ) // 5007 = Alien Kill Streak
-				{
-					int64_t iBestStreak = instance.m_nCounter[iCombinedIndex + 1];
-#ifdef CLIENT_DLL
-					bool bFoundBestStreak = false;
-					FOR_EACH_VEC( m_PendingDynamicPropertyUpdates, j )
-					{
-						if ( m_PendingDynamicPropertyUpdates[j].ItemInstanceID == instance.m_iItemInstanceID && m_PendingDynamicPropertyUpdates[j].ItemDefID == iAccessoryID && m_PendingDynamicPropertyUpdates[j].PropertyIndex == iPropertyIndex + 1 )
-						{
-							iBestStreak = pUpdate->NewValue;
-							bFoundBestStreak = true;
-							break;
-						}
-					}
-					if ( !bFoundBestStreak )
-					{
-						iBestStreak = strtoll( pLocalInstance->DynamicProps[pAccessoryDef->CompressedDynamicProps[1]], NULL, 10 );
-					}
-#endif
-
-					if ( iBestStreak < iCounterAfter )
-					{
-						ModifyAccessoryDynamicPropValue( instance, iAccessoryID, 1, iCounterAfter, false );
-					}
-				}
-
-#ifdef CLIENT_DLL
-				pLocalInstance->DynamicProps[szPropertyName] = CFmtStr( "%lld", iCounterAfter );
-				pUpdate->NewValue = iCounterAfter;
-#endif
-				instance.m_nCounter.GetForModify( iCombinedIndex ) = iCounterAfter;
-
-				if ( rd_debug_inventory_dynamic_props.GetBool() )
-				{
-					DevMsg( "[%c] Item %llu #%d '%s' dynamic property '%s' '%s' changed (%s) %+lld from %lld to %lld.\n", IsClientDll() ? 'C' : 'S', instance.m_iItemInstanceID, instance.m_iItemDefID, pItemDef->Name.Get(), pAccessoryDef->Name.Get(), szPropertyName, bRelative ? "relative" : "absolute", iAmount, iCounterBefore, iCounterAfter );
-				}
-
+				ModifyDynamicPropValueHelper( instance, iAccessoryID, iPropertyIndex, iCombinedIndex, szPropertyName, pItemDef, pAccessoryDef, pLocalInstance, iAmount, bRelative );
 				return true;
 			}
 
@@ -949,6 +880,88 @@ public:
 
 		// no such accessory on item
 		return false;
+	}
+
+	void ModifyDynamicPropValueHelper( CRD_ItemInstance &instance, SteamItemDef_t iAccessoryID, int iPropertyIndex, int iCombinedIndex, const char *szPropertyName,
+		const ReactiveDropInventory::ItemDef_t *pItemDef, const ReactiveDropInventory::ItemDef_t *pAccessoryDef, ReactiveDropInventory::ItemInstance_t *pLocalInstance, int64_t iAmount, bool bRelative )
+	{
+		int64_t iCounterBefore = instance.m_nCounter[iCombinedIndex];
+#ifdef CLIENT_DLL
+		PendingDynamicPropertyUpdate_t *pUpdate = NULL;
+		FOR_EACH_VEC( m_PendingDynamicPropertyUpdates, j )
+		{
+			if ( m_PendingDynamicPropertyUpdates[j].ItemInstanceID == instance.m_iItemInstanceID && m_PendingDynamicPropertyUpdates[j].ItemDefID == iAccessoryID && m_PendingDynamicPropertyUpdates[j].PropertyIndex == iPropertyIndex )
+			{
+				pUpdate = &m_PendingDynamicPropertyUpdates[j];
+				iCounterBefore = pUpdate->NewValue;
+				break;
+			}
+		}
+		if ( !pUpdate )
+		{
+			pUpdate = &m_PendingDynamicPropertyUpdates[m_PendingDynamicPropertyUpdates.AddToTail()];
+			pUpdate->ItemInstanceID = instance.m_iItemInstanceID;
+			pUpdate->ItemDefID = iAccessoryID;
+			pUpdate->PropertyIndex = iPropertyIndex;
+			iCounterBefore = strtoll( pLocalInstance->DynamicProps[szPropertyName], NULL, 10 );
+		}
+#endif
+		int64_t iCounterAfter = iCounterBefore;
+		if ( !bRelative )
+		{
+			iCounterAfter = iAmount;
+		}
+		else if ( iCounterBefore > 0 )
+		{
+			if ( iAmount > INT64_MAX - iCounterBefore )
+				iCounterAfter = INT64_MAX;
+			else
+				iCounterAfter += iAmount;
+		}
+		else
+		{
+			if ( iAmount < INT64_MIN - iCounterBefore )
+				iCounterAfter = INT64_MIN;
+			else
+				iCounterAfter += iAmount;
+		}
+
+		if ( iAccessoryID == 5007 && iPropertyIndex == 0 ) // 5007 = Alien Kill Streak
+		{
+			int64_t iBestStreak = instance.m_nCounter[iCombinedIndex + 1];
+#ifdef CLIENT_DLL
+			bool bFoundBestStreak = false;
+			FOR_EACH_VEC( m_PendingDynamicPropertyUpdates, j )
+			{
+				if ( m_PendingDynamicPropertyUpdates[j].ItemInstanceID == instance.m_iItemInstanceID && m_PendingDynamicPropertyUpdates[j].ItemDefID == iAccessoryID && m_PendingDynamicPropertyUpdates[j].PropertyIndex == iPropertyIndex + 1 )
+				{
+					iBestStreak = pUpdate->NewValue;
+					bFoundBestStreak = true;
+					break;
+				}
+			}
+			if ( !bFoundBestStreak )
+			{
+				iBestStreak = strtoll( pLocalInstance->DynamicProps[pAccessoryDef->CompressedDynamicProps[1]], NULL, 10 );
+			}
+#endif
+
+			if ( iBestStreak < iCounterAfter )
+			{
+				ModifyAccessoryDynamicPropValue( instance, iAccessoryID, 1, iCounterAfter, false );
+			}
+		}
+
+#ifdef CLIENT_DLL
+		pLocalInstance->DynamicProps[szPropertyName] = CFmtStr( "%lld", iCounterAfter );
+		pUpdate->NewValue = iCounterAfter;
+#endif
+		instance.m_nCounter.GetForModify( iCombinedIndex ) = iCounterAfter;
+
+		if ( rd_debug_inventory_dynamic_props.GetBool() )
+		{
+			DevMsg( "[%c] Item %llu #%d '%s' dynamic property '%s' '%s' changed (%s) %+lld from %lld to %lld.\n", IsClientDll() ? 'C' : 'S', instance.m_iItemInstanceID, instance.m_iItemDefID, pItemDef->Name.Get(), pAccessoryDef->Name.Get(), szPropertyName, bRelative ? "relative" : "absolute", iAmount, iCounterBefore, iCounterAfter );
+		}
 	}
 
 	void FireGameEvent( IGameEvent *event ) override
@@ -2061,6 +2074,13 @@ namespace ReactiveDropInventory
 		if ( *szValue )
 		{
 			pItemDef->IconSmall = new CSteamItemIcon( szValue );
+		}
+
+		pItemDef->AccessoryIcon = NULL;
+		FETCH_PROPERTY( "accessory_icon" );
+		if ( *szValue )
+		{
+			pItemDef->AccessoryIcon = materials->FindTexture( szValue, TEXTURE_GROUP_CLIENT_EFFECTS );
 		}
 #endif
 

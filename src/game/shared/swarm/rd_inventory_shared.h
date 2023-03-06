@@ -76,6 +76,7 @@ namespace ReactiveDropInventory
 #ifdef CLIENT_DLL
 		vgui::IImage *Icon{};
 		vgui::IImage *IconSmall{};
+		ITexture *AccessoryIcon{};
 #endif
 
 		bool ItemSlotMatches( const char *szRequiredSlot ) const;
@@ -121,7 +122,7 @@ namespace ReactiveDropInventory
 }
 
 #define RD_ITEM_MAX_ACCESSORIES 4
-#define RD_ITEM_MAX_COMPRESSED_DYNAMIC_PROPS 8
+#define RD_ITEM_MAX_COMPRESSED_DYNAMIC_PROPS 10
 #define RD_ITEM_MAX_COMPRESSED_DYNAMIC_PROPS_PER_ACCESSORY 2
 
 #define RD_EQUIPPED_ITEMS_NOTIFICATION_WORST_CASE_SIZE ( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS * 2048 )
