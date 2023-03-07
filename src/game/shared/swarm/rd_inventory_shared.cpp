@@ -1566,6 +1566,17 @@ public:
 	virtual vgui::HTexture GetID() { return m_iTextureID; }
 	virtual void SetRotation( int iRotation ) {}
 
+	static CSteamItemIcon *Get( const char *szURL )
+	{
+		UtlSymId_t index = s_ItemIcons.Find( szURL );
+		if ( index == s_ItemIcons.InvalidIndex() )
+		{
+			return s_ItemIcons[index];
+		}
+
+		return s_ItemIcons[szURL] = new CSteamItemIcon( szURL );
+	}
+
 private:
 	CRC32_t m_URLHash;
 	vgui::HTexture m_iTextureID;
@@ -2241,24 +2252,14 @@ namespace ReactiveDropInventory
 		FETCH_PROPERTY( "icon_url" );
 		if ( *szValue )
 		{
-			CSteamItemIcon *&pIcon = s_ItemIcons[szValue];
-			if ( pIcon == NULL )
-			{
-				pIcon = new CSteamItemIcon( szValue );
-			}
-			pItemDef->Icon = pIcon;
+			pItemDef->Icon = CSteamItemIcon::Get( szValue );
 		}
 
 		pItemDef->IconSmall = pItemDef->Icon;
 		FETCH_PROPERTY( "icon_url_small" );
 		if ( *szValue )
 		{
-			CSteamItemIcon *&pIcon = s_ItemIcons[szValue];
-			if ( pIcon == NULL )
-			{
-				pIcon = new CSteamItemIcon( szValue );
-			}
-			pItemDef->IconSmall = pIcon;
+			pItemDef->IconSmall = CSteamItemIcon::Get( szValue );
 		}
 
 		pItemDef->StyleIcons.SetCount( pItemDef->StyleNames.Count() );
@@ -2269,12 +2270,7 @@ namespace ReactiveDropInventory
 			FETCH_PROPERTY( szKey );
 			if ( *szValue )
 			{
-				CSteamItemIcon *&pIcon = s_ItemIcons[szValue];
-				if ( pIcon == NULL )
-				{
-					pIcon = new CSteamItemIcon( szValue );
-				}
-				pItemDef->StyleIcons[i] = pIcon;
+				pItemDef->StyleIcons[i] = CSteamItemIcon::Get( szValue );
 			}
 		}
 
