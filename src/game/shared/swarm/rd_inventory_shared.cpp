@@ -1569,7 +1569,7 @@ public:
 	static CSteamItemIcon *Get( const char *szURL )
 	{
 		UtlSymId_t index = s_ItemIcons.Find( szURL );
-		if ( index == s_ItemIcons.InvalidIndex() )
+		if ( index != s_ItemIcons.InvalidIndex() )
 		{
 			return s_ItemIcons[index];
 		}
