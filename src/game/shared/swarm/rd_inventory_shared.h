@@ -28,24 +28,31 @@ namespace ReactiveDropInventory
 		"weapon10", "weapon11", "weapon12", "weapon13", "weapon14",
 		"weapon15", "weapon16", "weapon17", "weapon18", "weapon19",
 		"weapon20", "weapon21", "weapon22", "weapon23", "weapon24",
-		"weapon25", "weapon26",
+		"weapon25", "weapon26", "weapon27", "weapon28", "weapon29",
+		"weapon30", "weapon31", "weapon32", "weapon33", "weapon34",
+#ifdef RD_7A_WEAPONS
+		"weapon35", "weapon36", "weapon37", "weapon38", "weapon39",
+		"weapon40",
+#endif
 		"extra0", "extra1", "extra2", "extra3", "extra4",
 		"extra5", "extra6", "extra7", "extra8", "extra9",
 		"extra10", "extra11", "extra12", "extra13", "extra14",
-		"extra15", "extra16", "extra17",
+		"extra15", "extra16", "extra17", "extra18", "extra19",
+		"extra20", "extra21",
+#ifdef RD_7A_WEAPONS
+		"extra22", "extra23", "extra24",
+		"extra25",
+#endif
 	};
 #define RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS NELEMS( ReactiveDropInventory::g_InventorySlotNames )
 #define RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MEDAL 0
 #define RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE 1
 #define RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_WEAPON 9
-#define RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_EXTRA 36
-#pragma warning(push)
-#pragma warning(disable: 4130) // we're comparing string literals, but if the comparison fails due to memory weirdness, it'll fail at compile time, so it's fine
-	COMPILE_TIME_ASSERT( g_InventorySlotNames[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MEDAL] == "medal" );
-	COMPILE_TIME_ASSERT( g_InventorySlotNames[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE] == "marine0" );
-	COMPILE_TIME_ASSERT( g_InventorySlotNames[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_WEAPON] == "weapon0" );
-	COMPILE_TIME_ASSERT( g_InventorySlotNames[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_EXTRA] == "extra0" );
-#pragma warning(pop)
+#ifdef RD_7A_WEAPONS
+#define RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_EXTRA 50
+#else
+#define RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_EXTRA 44
+#endif
 	constexpr const char *const g_InventorySlotAliases[][2] =
 	{
 		// first value is the name from g_InventorySlotNames, second value is the value to also accept from item definitions.
@@ -60,10 +67,12 @@ namespace ReactiveDropInventory
 		CUtlStringMap<CUtlStringList> Tags;
 		CUtlStringMap<CUtlStringList> AllowedTagsFromTools;
 		CUtlString AccessoryTag;
+		int AccessoryLimit{ 4 };
 		CUtlStringList CompressedDynamicProps;
 		CUtlString DisplayType;
 		CUtlString Name;
 		CUtlString BriefingName;
+		CUtlStringList StyleNames;
 		CUtlString Description;
 		CUtlString BeforeDescription;
 		CUtlString AfterDescription;
@@ -71,11 +80,12 @@ namespace ReactiveDropInventory
 		Color BackgroundColor;
 		Color NameColor;
 		bool AfterDescriptionOnlyMultiStack : 1;
-		bool HasIngameDescription : 1;
+		bool HasInGameDescription : 1;
 		bool HasBorder : 1;
 #ifdef CLIENT_DLL
 		vgui::IImage *Icon{};
 		vgui::IImage *IconSmall{};
+		CUtlVector<vgui::IImage *> StyleIcons{};
 		ITexture *AccessoryIcon{};
 #endif
 

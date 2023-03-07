@@ -43,7 +43,14 @@ enum ASW_Equip_Regular
 	ASW_EQUIP_AMMO_BAG,
 	ASW_EQUIP_MEDICAL_SATCHEL,
 	ASW_EQUIP_AR2,
-	//ASW_EQUIP_CRYOCANNON,
+#ifdef RD_7A_WEAPONS
+	ASW_EQUIP_CRYO_CANNON,
+	ASW_EQUIP_PLASMA_THROWER,
+	ASW_EQUIP_HACK_TOOL,
+	ASW_EQUIP_SENTRY_RAILGUN,
+	ASW_EQUIP_ENERGY_SHIELD,
+	ASW_EQUIP_REVIVE_TOOL,
+#endif
 
 	ASW_NUM_EQUIP_REGULAR,
 	ASW_FIRST_HIDDEN_EQUIP_REGULAR = ASW_EQUIP_FIRE_EXTINGUISHER,
@@ -75,6 +82,12 @@ enum ASW_Equip_Extra
 	ASW_EQUIP_BLINK,
 	ASW_EQUIP_JUMP_JET,
 	ASW_EQUIP_BAIT,
+#ifdef RD_7A_WEAPONS
+	ASW_EQUIP_STUN_GRENADES,
+	ASW_EQUIP_INCENDIARY_GRENADES,
+	ASW_EQUIP_SPEED_BURST,
+	ASW_EQUIP_SHIELD_BUBBLE,
+#endif
 
 	ASW_NUM_EQUIP_EXTRA,
 	ASW_FIRST_HIDDEN_EQUIP_EXTRA = ASW_EQUIP_T75,
@@ -85,13 +98,14 @@ class CASW_EquipItem
 public:
 	DECLARE_CLASS_NOBASE( CASW_EquipItem );
 
-	CASW_EquipItem( int iItemIndex, const char *szEquipClass, bool bSelectableInBriefing, int iInventoryIndex = -1 );
+	CASW_EquipItem( int iItemIndex, const char *szEquipClass, bool bSelectableInBriefing, bool bIsExtra );
 
 	// the items index in the list of equipment
 	const int m_iItemIndex;
 	const int m_iInventoryIndex;
 	const char *const m_szEquipClass;
-	const bool m_bSelectableInBriefing; // if false, this item won't show up on the loadout screen
+	const bool m_bSelectableInBriefing; // if false, this item won't show up on the loadout screen unless an inventory item is equipped
+	const bool m_bIsExtra;
 	string_t m_EquipClass;
 };
 

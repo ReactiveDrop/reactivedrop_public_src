@@ -44,6 +44,17 @@
 #include "tier0/memdbgon.h"
 
 
+COMPILE_TIME_ASSERT( RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + ASW_NUM_MARINE_PROFILES == RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_WEAPON );
+COMPILE_TIME_ASSERT( RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_WEAPON + ASW_NUM_EQUIP_REGULAR == RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_EXTRA );
+COMPILE_TIME_ASSERT( RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_EXTRA + ASW_NUM_EQUIP_EXTRA == RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS );
+#pragma warning(push)
+#pragma warning(disable: 4130) // we're comparing string literals, but if the comparison fails due to memory weirdness, it'll fail at compile time, so it's fine
+COMPILE_TIME_ASSERT( ReactiveDropInventory::g_InventorySlotNames[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MEDAL] == "medal" );
+COMPILE_TIME_ASSERT( ReactiveDropInventory::g_InventorySlotNames[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE] == "marine0" );
+COMPILE_TIME_ASSERT( ReactiveDropInventory::g_InventorySlotNames[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_WEAPON] == "weapon0" );
+COMPILE_TIME_ASSERT( ReactiveDropInventory::g_InventorySlotNames[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_EXTRA] == "extra0" );
+#pragma warning(pop)
+
 #ifdef CLIENT_DLL
 ConVar rd_debug_inventory_dynamic_props( "cl_debug_inventory_dynamic_props", "0", FCVAR_NONE, "print debugging messages about dynamic property updates" );
 #else
@@ -51,7 +62,10 @@ extern ConVar rd_dedicated_server_language;
 ConVar rd_debug_inventory_dynamic_props( "sv_debug_inventory_dynamic_props", "0", FCVAR_NONE, "print debugging messages about dynamic property updates" );
 #endif
 
+class CSteamItemIcon;
+
 static CUtlMap<SteamItemDef_t, ReactiveDropInventory::ItemDef_t *> s_ItemDefs( DefLessFunc( SteamItemDef_t ) );
+static CUtlStringMap<CSteamItemIcon *> s_ItemIcons( false );
 static KeyValues *s_pItemDefCache = NULL;
 static bool s_bLoadedItemDefs = false;
 
@@ -1350,7 +1364,7 @@ ConVar rd_equipped_marine[ASW_NUM_MARINE_PROFILES]
 	{ "rd_equipped_marine6", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Bastille's suit.", RD_Equipped_Item_Changed },
 	{ "rd_equipped_marine7", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Vegas's suit.", RD_Equipped_Item_Changed },
 };
-ConVar rd_equipped_weapon[ASW_FIRST_HIDDEN_EQUIP_REGULAR]
+ConVar rd_equipped_weapon[ASW_NUM_EQUIP_REGULAR]
 {
 	{ "rd_equipped_weapon0", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for 22A3-1 Assault Rifle.", RD_Equipped_Item_Changed },
 	{ "rd_equipped_weapon1", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for 22A7-Z Prototype Assault Rifle.", RD_Equipped_Item_Changed },
@@ -1379,8 +1393,24 @@ ConVar rd_equipped_weapon[ASW_FIRST_HIDDEN_EQUIP_REGULAR]
 	{ "rd_equipped_weapon24", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for IAF Medical Amplifier Gun.", RD_Equipped_Item_Changed },
 	{ "rd_equipped_weapon25", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for 22A5 Heavy Assault Rifle.", RD_Equipped_Item_Changed },
 	{ "rd_equipped_weapon26", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for IAF Medical SMG.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon27", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Fire Extinguisher.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon28", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Mining Laser.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon29", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for 50CMG4-1.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon30", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Flechette Launcher.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon31", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Ricochet Rifle.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon32", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for IAF Ammo Bag.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon33", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for IAF Medical Satchel.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon34", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Overwatch Standard Issue Pulse Rifle.", RD_Equipped_Item_Changed },
+#ifdef RD_7A_WEAPONS
+	{ "rd_equipped_weapon35", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for <<Cryo Cannon>>.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon36", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for <<Plasma Thrower>>.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon37", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for <<Hack Tool>>.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon38", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for <<Railgun Sentry>>.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon39", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for <<Energy Shield>>.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_weapon40", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for <<Revive Tool>>.", RD_Equipped_Item_Changed },
+#endif
 };
-ConVar rd_equipped_extra[ASW_FIRST_HIDDEN_EQUIP_EXTRA]
+ConVar rd_equipped_extra[ASW_NUM_EQUIP_EXTRA]
 {
 	{ "rd_equipped_extra0", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for IAF Personal Healing Kit.", RD_Equipped_Item_Changed },
 	{ "rd_equipped_extra1", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Hand Welder.", RD_Equipped_Item_Changed },
@@ -1400,6 +1430,16 @@ ConVar rd_equipped_extra[ASW_FIRST_HIDDEN_EQUIP_EXTRA]
 	{ "rd_equipped_extra15", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for MNV34 Nightvision Goggles.", RD_Equipped_Item_Changed },
 	{ "rd_equipped_extra16", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for MTD6 Smart Bomb.", RD_Equipped_Item_Changed },
 	{ "rd_equipped_extra17", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for TG-05 Gas Grenades.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_extra18", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for T75 Explosives.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_extra19", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Displacement 'Blink' Pack.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_extra20", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Short Range Assault Jets.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_extra21", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Swarm Bait.", RD_Equipped_Item_Changed },
+#ifdef RD_7A_WEAPONS
+	{ "rd_equipped_extra22", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for <<Stun Grenades>>.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_extra23", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for <<Incendiary Grenades>>.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_extra24", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for <<Speed Burst>>.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_extra25", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for <<Shield Bubble>>.", RD_Equipped_Item_Changed },
+#endif
 };
 
 CON_COMMAND( rd_debug_print_inventory, "" )
@@ -1957,6 +1997,11 @@ namespace ReactiveDropInventory
 	const ItemDef_t *GetItemDef( SteamItemDef_t id )
 	{
 		Assert( id >= 1 && id <= 999999999 );
+		if ( id <= 0 )
+		{
+			return NULL;
+		}
+
 		unsigned short index = s_ItemDefs.Find( id );
 		if ( s_ItemDefs.IsValidIndex( index ) )
 		{
@@ -2061,29 +2106,6 @@ namespace ReactiveDropInventory
 
 		char szKey[256];
 
-#ifdef CLIENT_DLL
-		pItemDef->Icon = NULL;
-		FETCH_PROPERTY( "icon_url" );
-		if ( *szValue )
-		{
-			pItemDef->Icon = new CSteamItemIcon( szValue );
-		}
-
-		pItemDef->IconSmall = pItemDef->Icon;
-		FETCH_PROPERTY( "icon_url_small" );
-		if ( *szValue )
-		{
-			pItemDef->IconSmall = new CSteamItemIcon( szValue );
-		}
-
-		pItemDef->AccessoryIcon = NULL;
-		FETCH_PROPERTY( "accessory_icon" );
-		if ( *szValue )
-		{
-			pItemDef->AccessoryIcon = materials->FindTexture( szValue, TEXTURE_GROUP_CLIENT_EFFECTS );
-		}
-#endif
-
 		FETCH_PROPERTY( "item_slot" );
 		pItemDef->ItemSlot = szValue;
 		FETCH_PROPERTY( "tags" );
@@ -2092,6 +2114,10 @@ namespace ReactiveDropInventory
 		ParseTags( pItemDef->AllowedTagsFromTools, szValue );
 		FETCH_PROPERTY( "accessory_tag" );
 		pItemDef->AccessoryTag = szValue;
+		FETCH_PROPERTY( "accessory_limit" );
+		if ( *szValue )
+			pItemDef->AccessoryLimit = strtol( szValue, NULL, 10 );
+		Assert( pItemDef->AccessoryLimit <= RD_ITEM_MAX_ACCESSORIES );
 		FETCH_PROPERTY( "compressed_dynamic_props" );
 		if ( *szValue )
 		{
@@ -2115,6 +2141,22 @@ namespace ReactiveDropInventory
 		FETCH_PROPERTY( szKey );
 		if ( *szValue )
 			pItemDef->Name = szValue;
+
+		for ( int i = 0; ; i++ )
+		{
+			V_snprintf( szKey, sizeof( szKey ), "style_%d_name_english", i );
+			FETCH_PROPERTY( szKey );
+			if ( !*szValue )
+				break;
+
+			CUtlString szFallback( szValue );
+			V_snprintf( szKey, sizeof( szKey ), "style_%d_name_%s", i, szLang );
+			FETCH_PROPERTY( szKey );
+			if ( *szValue )
+				pItemDef->StyleNames.CopyAndAddToTail( szValue );
+			else
+				pItemDef->StyleNames.CopyAndAddToTail( szFallback );
+		}
 
 		FETCH_PROPERTY( "background_color" );
 		if ( *szValue )
@@ -2142,7 +2184,7 @@ namespace ReactiveDropInventory
 		}
 		
 		V_snprintf( szKey, sizeof( szKey ), "description_%s", szLang );
-		pItemDef->HasIngameDescription = false;
+		pItemDef->HasInGameDescription = false;
 		FETCH_PROPERTY( "description" );
 		pItemDef->Description = szValue;
 		FETCH_PROPERTY( szKey );
@@ -2153,14 +2195,11 @@ namespace ReactiveDropInventory
 		if ( *szValue )
 		{
 			pItemDef->Description = szValue;
-			pItemDef->HasIngameDescription = true;
-		}
-		V_snprintf( szKey, sizeof( szKey ), "ingame_description_%s", szLang );
-		FETCH_PROPERTY( szKey );
-		if ( *szValue )
-		{
-			pItemDef->Description = szValue;
-			pItemDef->HasIngameDescription = true;
+			pItemDef->HasInGameDescription = true;
+			V_snprintf( szKey, sizeof( szKey ), "ingame_description_%s", szLang );
+			FETCH_PROPERTY( szKey );
+			if ( *szValue )
+				pItemDef->Description = szValue;
 		}
 
 		V_snprintf( szKey, sizeof( szKey ), "briefing_name_%s", szLang );
@@ -2196,6 +2235,56 @@ namespace ReactiveDropInventory
 		FETCH_PROPERTY( "after_description_only_multi_stack" );
 		Assert( !V_strcmp( szValue, "" ) || !V_strcmp( szValue, "true" ) || !V_strcmp( szValue, "false" ) );
 		pItemDef->AfterDescriptionOnlyMultiStack = !V_strcmp( szValue, "true" );
+
+#ifdef CLIENT_DLL
+		pItemDef->Icon = NULL;
+		FETCH_PROPERTY( "icon_url" );
+		if ( *szValue )
+		{
+			CSteamItemIcon *&pIcon = s_ItemIcons[szValue];
+			if ( pIcon == NULL )
+			{
+				pIcon = new CSteamItemIcon( szValue );
+			}
+			pItemDef->Icon = pIcon;
+		}
+
+		pItemDef->IconSmall = pItemDef->Icon;
+		FETCH_PROPERTY( "icon_url_small" );
+		if ( *szValue )
+		{
+			CSteamItemIcon *&pIcon = s_ItemIcons[szValue];
+			if ( pIcon == NULL )
+			{
+				pIcon = new CSteamItemIcon( szValue );
+			}
+			pItemDef->IconSmall = pIcon;
+		}
+
+		pItemDef->StyleIcons.SetCount( pItemDef->StyleNames.Count() );
+		for ( int i = 0; i < pItemDef->StyleNames.Count(); i++ )
+		{
+			V_snprintf( szKey, sizeof( szKey ), "icon_url_style_%d", i );
+			pItemDef->StyleIcons[i] = pItemDef->Icon;
+			FETCH_PROPERTY( szKey );
+			if ( *szValue )
+			{
+				CSteamItemIcon *&pIcon = s_ItemIcons[szValue];
+				if ( pIcon == NULL )
+				{
+					pIcon = new CSteamItemIcon( szValue );
+				}
+				pItemDef->StyleIcons[i] = pIcon;
+			}
+		}
+
+		pItemDef->AccessoryIcon = NULL;
+		FETCH_PROPERTY( "accessory_icon" );
+		if ( *szValue )
+		{
+			pItemDef->AccessoryIcon = materials->FindTexture( szValue, TEXTURE_GROUP_CLIENT_EFFECTS );
+		}
+#endif
 #undef FETCH_PROPERTY
 
 		s_ItemDefs.Insert( id, pItemDef );
@@ -2360,10 +2449,26 @@ namespace ReactiveDropInventory
 		pInventory->GrantPromoItems( &s_RD_Inventory_Manager.m_PromotionalItemsResult );
 	}
 
-#ifdef RD_CRAFTING_ENABLED
+#ifdef RD_7A_DROPS
 	static const char *const s_RDWorkshopCompetitionTags[] =
 	{
 		"BossFight2023",
+		// (future themes subject to change)
+		//"SpaceStation2024",
+		//"Endless2025",
+		//"Biomes2026",
+		//"Deathmatch2027",
+		//"Factory2028",
+		//"Backtracking2029",
+		//"Transportation2030",
+		//"Defense2031",
+		//"VirtualReality2032",
+		//"AlternatePath2033",
+		//"Coast2034",
+		//"Scavenger2035",
+		//"Mining2036",
+		//"Infiltration2037",
+		//"City2038",
 	};
 
 	static const struct
@@ -2446,7 +2551,7 @@ namespace ReactiveDropInventory
 
 	void CheckPlaytimeItemGenerators( int iMarineClass )
 	{
-#ifdef RD_CRAFTING_ENABLED
+#ifdef RD_7A_DROPS
 		for ( int i = 0; i < NELEMS( s_RD_Inventory_Manager.m_PlaytimeItemGeneratorResult ); i++ )
 		{
 			if ( s_RD_Inventory_Manager.m_PlaytimeItemGeneratorResult[i] != k_SteamInventoryResultInvalid )
@@ -2752,7 +2857,14 @@ void CRD_ItemInstance::FormatDescription( wchar_t *wszBuf, size_t sizeOfBufferIn
 		{
 			if ( !V_strcmp( pDef->CompressedDynamicProps[j], szToken ) )
 			{
-				V_wcsncpy( wszReplacement, UTIL_RD_CommaNumber( m_nCounter[j] ), sizeof( wszReplacement ) );
+				if ( !V_strcmp( szToken, "style" ) && m_nCounter[j] >= 0 && m_nCounter[j] < pDef->StyleNames.Count() )
+				{
+					V_UTF8ToUnicode( pDef->StyleNames[m_nCounter[j]], wszReplacement, sizeof( wszReplacement ) );
+				}
+				else
+				{
+					V_wcsncpy( wszReplacement, UTIL_RD_CommaNumber( m_nCounter[j] ), sizeof( wszReplacement ) );
+				}
 				break;
 			}
 		}
@@ -2889,7 +3001,7 @@ void CRD_ItemInstance::FormatDescription( vgui::RichText *pRichText ) const
 	if ( bAnyAccessories )
 		pRichText->InsertString( L"\n" );
 
-	if ( pDef->HasIngameDescription )
+	if ( pDef->HasInGameDescription )
 		FormatDescription( wszBuf, sizeof( wszBuf ), pDef->Description );
 	else
 		V_UTF8ToUnicode( pDef->Description, wszBuf, sizeof( wszBuf ) );
@@ -2974,17 +3086,21 @@ void CRD_ProjectileData::SetFromWeapon( CBaseEntity *pCreator )
 			CASW_Inhabitable_NPC *pOwnerNPC = assert_cast< CASW_Inhabitable_NPC * >( pWeapon->GetOwner() );
 			m_bFiredByOwner = pOwnerNPC->IsInhabited() && pOwnerNPC->GetCommander() == pWeapon->m_hOriginalOwnerPlayer;
 		}
-	}
-	else if ( CASW_Sentry_Top *pSentry = dynamic_cast< CASW_Sentry_Top * >( pCreator ) )
-	{
-		if ( CASW_Sentry_Base *pBase = pSentry->GetSentryBase() )
-		{
-			m_iOriginalOwnerSteamAccount = pBase->m_iOriginalOwnerSteamAccount;
-			m_hOriginalOwnerPlayer = pBase->m_hOriginalOwnerPlayer;
-			m_iInventoryEquipSlotIndex = pBase->m_iInventoryEquipSlotIndex;
-			m_bFiredByOwner = true;
-		}
+		return;
 	}
 
+	if ( CASW_Sentry_Top *pSentry = dynamic_cast< CASW_Sentry_Top * >( pCreator ) )
+	{
+		pCreator = pSentry->GetSentryBase();
+	}
+
+	if ( CASW_Sentry_Base *pSentry = dynamic_cast< CASW_Sentry_Base * >( pCreator ) )
+	{
+		m_iOriginalOwnerSteamAccount = pSentry->m_iOriginalOwnerSteamAccount;
+		m_hOriginalOwnerPlayer = pSentry->m_hOriginalOwnerPlayer;
+		m_iInventoryEquipSlotIndex = pSentry->m_iInventoryEquipSlotIndex;
+		m_bFiredByOwner = true;
+		return;
+	}
 }
 #endif
