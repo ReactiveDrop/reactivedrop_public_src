@@ -795,6 +795,11 @@ public:
 				s_RD_Inventory_Manager.IncrementStrangePropertyOnWeaponAndGlobals( pNPC, pData, iAccessoryID, iAmount, iPropertyIndex, bRelative );
 			}
 		}
+		else if ( pWeapon && pWeapon->IsInhabitableNPC() )
+		{
+			// unarmed melee
+			s_RD_Inventory_Manager.IncrementStrangePropertyOnWeaponAndGlobals< CASW_Weapon >( pNPC, NULL, iAccessoryID, iAmount, iPropertyIndex, bRelative );
+		}
 #ifdef DBGFLAG_ASSERT
 		else if ( pWeapon )
 		{
