@@ -51,11 +51,13 @@ CNB_Select_Marine_Panel::CNB_Select_Marine_Panel( vgui::Panel *parent, const cha
 	m_nInitialProfileIndex = -1;
 	m_nPreferredLobbySlot = -1;
 	m_bAddingBot = false;
+
+	GetControllerFocus()->AddToFocusList( m_pBackButton, false, true );
 }
 
 CNB_Select_Marine_Panel::~CNB_Select_Marine_Panel()
 {
-
+	GetControllerFocus()->RemoveFromFocusList( m_pBackButton );
 }
 
 void CNB_Select_Marine_Panel::InitMarineList()
