@@ -405,6 +405,11 @@ BEGIN_ENT_SCRIPTDESC( CASW_Marine, CASW_Inhabitable_NPC, "Marine" )
 	DEFINE_SCRIPTFUNC( SetSpawnZombineOnDeath, "Used to spawn a zombine in the place of a marine after death." )
 	DEFINE_SCRIPTFUNC( SetNightVision, "Activate night vision on a marine without needing the equipment." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptKnockdown, "Knockdown", "Knocks down the marine with desired velocity." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptOrderHackArea,"OrderHackArea", "Order the marine to hack a computer or button area." )
+	DEFINE_SCRIPTFUNC_NAMED( OrderUseOffhandItem, "OrderUseItem", "Order the marine to use an item (welder, ammo satchel, etc)")
+	DEFINE_SCRIPTFUNC_NAMED( ScriptOrderFollowSquadLeader, "OrderFollowSquadLeader", "Order the marine to follow the squad leader" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptOrderHoldPosition, "OrderHoldPosition", "Order the marine to stop moving" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptOrderMoveTo, "OrderMoveTo", "Order the marine to move to a specified position" )
 END_SCRIPTDESC()
 
 extern ConVar weapon_showproficiency;

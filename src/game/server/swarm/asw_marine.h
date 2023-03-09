@@ -414,6 +414,9 @@ public:
 	CNetworkVar(int, m_ASWOrders);
 	ASW_Orders GetASWOrders() { return (ASW_Orders) m_ASWOrders.Get(); }
 	void SetASWOrders(ASW_Orders NewOrders, float fHoldingYaw=-1, const Vector *pOrderPos=NULL);
+	void ScriptOrderFollowSquadLeader();
+	void ScriptOrderHoldPosition( float flYaw );
+	void ScriptOrderMoveTo( float flYaw, Vector vecOrderPos );
 	void OrdersFromPlayer(CASW_Player* pPlayer, ASW_Orders NewOrders, CBaseEntity *pMarine, bool bChatter, float fHoldingYaw=-1, Vector *pVecOrderPos = NULL);	// called by the player when ordering this marine about	
 	virtual bool CreateBehaviors();
 	void ProjectBeam( const Vector &vecStart, const Vector &vecDir, int width, int brightness, float duration );
@@ -436,6 +439,7 @@ public:
 	float m_flLastEnemyYawTime;
 
 	void OrderHackArea( CASW_Use_Area *pArea );
+	void ScriptOrderHackArea( HSCRIPT area );
 
 	// AI taking ammo
 	virtual int SelectTakeAmmoSchedule();

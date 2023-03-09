@@ -696,6 +696,14 @@ void CASW_Marine::OrderHackArea( CASW_Use_Area *pArea )
 	}
 }
 
+void CASW_Marine::ScriptOrderHackArea( HSCRIPT area )
+{
+	if ( IsInhabited() )
+		return;
+
+	OrderHackArea( dynamic_cast< CASW_Use_Area * >( ToEnt( area ) ) );
+}
+
 int CASW_Marine::SelectTakeAmmoSchedule()
 {
 	if ( !m_hTakeAmmo.Get() && !m_hTakeAmmoDrop.Get() )
@@ -1109,6 +1117,19 @@ void CASW_Marine::SetASWOrders(ASW_Orders NewOrders, float fHoldingYaw, const Ve
 	if (fHoldingYaw != -1)
 		m_fHoldingYaw = fHoldingYaw;
 	//Msg("Marine receives asw orders: %d\n", NewOrders);
+}
+
+void CASW_Marine::ScriptOrderFollowSquadLeader()
+{
+	SetASWOrders( ASW_ORDER_FOLLOW );
+}
+void CASW_Marine::ScriptOrderHoldPosition( float flYaw )
+{
+	SetASWOrders( ASW_ORDER_HOLD_POSITION, flYaw );
+}
+void CASW_Marine::ScriptOrderMoveTo( float flYaw, Vector vecOrderPos )
+{
+	SetASWOrders( ASW_ORDER_MOVE_TO, flYaw, &vecOrderPos );
 }
 
 void CASW_Marine::OrdersFromPlayer(CASW_Player *pPlayer, ASW_Orders NewOrders, CBaseEntity *pMarine, bool bChatter, float fHoldingYaw, Vector *pVecOrderPos)
