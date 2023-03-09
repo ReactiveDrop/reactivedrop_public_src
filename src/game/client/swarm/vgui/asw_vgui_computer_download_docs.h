@@ -53,6 +53,7 @@ class CASW_VGUI_Computer_Download_Docs : public vgui::Panel, public CASW_VGUI_In
 	float m_fLastThinkTime;
 	float m_fDownloadFinishedTime;
 	bool m_bSetAlpha;
+	bool m_bAutoClosed;
 };
 
 #endif /* _INCLUDED_ASW_VGUI_COMPUTER_DOWNLOAD_DOCS_H */

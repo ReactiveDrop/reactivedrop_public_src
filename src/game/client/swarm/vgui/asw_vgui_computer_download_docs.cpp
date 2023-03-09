@@ -60,6 +60,7 @@ CASW_VGUI_Computer_Download_Docs::CASW_VGUI_Computer_Download_Docs( vgui::Panel 
 	m_bSetTextComplete = false;
 	m_bSetAlpha = false;
 	m_fDownloadFinishedTime = 0;
+	m_bAutoClosed = false;
 
 	if (GetControllerFocus())
 	{
@@ -289,8 +290,9 @@ void CASW_VGUI_Computer_Download_Docs::OnThink()
 		}
 		m_pArrow->SetAlpha(m_pProgressBar->GetAlpha() * fAlpha);
 	}
-	else if ( m_fDownloadFinishedTime < gpGlobals->curtime - 1 )
+	else if ( !m_bAutoClosed && m_fDownloadFinishedTime < gpGlobals->curtime - 1.5f )
 	{
+		m_bAutoClosed = true;
 		OnCommand( "Back" );
 	}
 
