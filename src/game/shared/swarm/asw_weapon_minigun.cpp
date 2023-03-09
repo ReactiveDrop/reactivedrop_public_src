@@ -77,6 +77,15 @@ END_PREDICTION_DATA()
 LINK_ENTITY_TO_CLASS( asw_weapon_minigun, CASW_Weapon_Minigun );
 PRECACHE_WEAPON_REGISTER( asw_weapon_minigun );
 
+BEGIN_ENT_SCRIPTDESC( CASW_Weapon_Minigun, CASW_Weapon, "IAF Minigun" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptClip1, "Clip1", "" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetMaxClip1, "GetMaxClip1", "" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetDefaultClip1, "GetDefaultClip1", "" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetMaxAmmo1, "GetMaxAmmo1", "" )
+#ifdef GAME_DLL
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetClip1, "SetClip1", "" )
+#endif
+END_SCRIPTDESC()
 
 #ifndef CLIENT_DLL
 extern ConVar asw_debug_marine_damage;
@@ -644,6 +653,34 @@ int CASW_Weapon_Minigun::DisplayMaxClip1()
 {
 	return GetMaxClip1() * 2;
 }
+
+int CASW_Weapon_Minigun::ScriptClip1()
+{
+	return DisplayClip1();
+}
+
+int CASW_Weapon_Minigun::ScriptGetMaxClip1()
+{
+	return DisplayMaxClip1();
+}
+
+int CASW_Weapon_Minigun::ScriptGetDefaultClip1()
+{
+	return GetDefaultClip1() * 2;
+}
+
+int CASW_Weapon_Minigun::ScriptGetMaxAmmo1()
+{
+	return BaseClass::ScriptGetMaxAmmo1() * 2;
+}
+
+#ifdef GAME_DLL
+void CASW_Weapon_Minigun::ScriptSetClip1( int iAmmo )
+{
+	BaseClass::ScriptSetClip1( ( iAmmo + 1 ) / 2 );
+	m_bHalfShot = iAmmo & 1 != 0;
+}
+#endif
 
 void CASW_Weapon_Minigun::FinishReload()
 {

@@ -23,6 +23,7 @@ class C_ASW_Weapon : public C_BaseCombatWeapon, public IASW_Client_Usable_Entity
 public:
 	DECLARE_CLIENTCLASS();
 	DECLARE_PREDICTABLE();
+	DECLARE_ENT_SCRIPTDESC();
 
 					C_ASW_Weapon();
 	virtual			~C_ASW_Weapon();

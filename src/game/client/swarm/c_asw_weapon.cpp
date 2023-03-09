@@ -89,6 +89,10 @@ BEGIN_PREDICTION_DATA( C_ASW_Weapon )
 END_PREDICTION_DATA()
 //DEFINE_PRED_FIELD_TOL( m_flNextCoolTime, FIELD_FLOAT, FTYPEDESC_INSENDTABLE, TD_MSECTOLERANCE ),
 
+BEGIN_ENT_SCRIPTDESC( C_ASW_Weapon, C_BaseCombatWeapon, "Alien Swarm weapon" )
+
+END_SCRIPTDESC()
+
 ConVar asw_red_muzzle_r("asw_red_muzzle_r", "255");
 ConVar asw_red_muzzle_g("asw_red_muzzle_g", "128");
 ConVar asw_red_muzzle_b("asw_red_muzzle_b", "128");

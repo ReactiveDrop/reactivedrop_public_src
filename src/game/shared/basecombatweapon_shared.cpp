@@ -2418,44 +2418,47 @@ int CBaseCombatWeapon::ScriptGetMaxAmmo2()
 
 int CBaseCombatWeapon::ScriptGetClips()
 {
-	if ( !GetOwner() )
+	if ( !UsesClipsForAmmo1() )
 		return -1;
 
 	int nClipSize = GetMaxClip1();
+	if ( nClipSize < 1 )
+		return 0;
 
-	if ( nClipSize < 1 || FStrEq("asw_weapon_chainsaw", GetClassname()) )
-		return 1;
+	if ( GetOwner() )
+		return GetOwner()->GetAmmoCount( GetPrimaryAmmoType() ) / nClipSize;
 
-	int nClips = GetOwner()->GetAmmoCount( m_iPrimaryAmmoType ) / nClipSize;
-
-	return nClips;
+	return GetPrimaryAmmoCount() / nClipSize;
 }
 
 int CBaseCombatWeapon::ScriptGetMaxClips()
 {
-	if ( !GetOwner() )
+	if ( !UsesClipsForAmmo1() )
 		return -1;
 
 	int nClipSize = GetMaxClip1();
+	if ( nClipSize < 1 )
+		return 0;
 
-	if ( nClipSize < 1 || FStrEq("asw_weapon_chainsaw", GetClassname()) )
-		return 1;
-
-	return GetAmmoDef()->MaxCarry( m_iPrimaryAmmoType, GetOwner() ) / nClipSize;
+	return GetAmmoDef()->MaxCarry( GetPrimaryAmmoType(), GetOwner() ) / nClipSize;
 }
 
 #ifdef GAME_DLL
 void CBaseCombatWeapon::ScriptSetClips( int nClips )
 {
-	if ( !GetOwner() )
+	if ( !UsesClipsForAmmo1() )
 		return;
+
+	nClips = clamp( nClips, 0, ScriptGetMaxClips() );
 
 	int nClipSize = GetMaxClip1();
-
-	if ( nClipSize < 0 || FStrEq("asw_weapon_chainsaw", GetClassname()) )
+	if ( nClipSize < 1 )
 		return;
 
-	GetOwner()->VScriptGiveAmmo( (nClipSize * nClips), m_iPrimaryAmmoType );
+	if ( GetOwner() )
+		GetOwner()->SetAmmoCount( nClipSize * nClips, GetPrimaryAmmoType() );
+	else
+		SetPrimaryAmmoCount( nClipSize * nClips );
 }
 #endif
 

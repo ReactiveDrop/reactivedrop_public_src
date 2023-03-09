@@ -21,6 +21,7 @@ class CASW_Weapon_Minigun : public CASW_Weapon_Rifle
 public:
 	DECLARE_CLASS( CASW_Weapon_Minigun, CASW_Weapon_Rifle );
 	DECLARE_NETWORKCLASS();
+	DECLARE_ENT_SCRIPTDESC();
 
 	CASW_Weapon_Minigun();
 	virtual ~CASW_Weapon_Minigun();
@@ -92,6 +93,13 @@ public:
 
 	virtual int DisplayClip1() override;
 	virtual int DisplayMaxClip1() override;
+	int ScriptClip1();
+	int ScriptGetMaxClip1();
+	int ScriptGetDefaultClip1();
+	int ScriptGetMaxAmmo1();
+#ifdef GAME_DLL
+	void ScriptSetClip1( int iAmmo );
+#endif
 	virtual void FinishReload() override;
 private:
 #ifdef CLIENT_DLL
