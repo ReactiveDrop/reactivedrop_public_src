@@ -678,7 +678,7 @@ int CASW_Weapon_Minigun::ScriptGetMaxAmmo1()
 void CASW_Weapon_Minigun::ScriptSetClip1( int iAmmo )
 {
 	BaseClass::ScriptSetClip1( ( iAmmo + 1 ) / 2 );
-	m_bHalfShot = iAmmo & 1 != 0;
+	m_bHalfShot = ( iAmmo & 1 ) != 0;
 }
 #endif
 

@@ -180,9 +180,9 @@ void CAI_ASW_HealOtherBehavior::GatherCommonConditions( )
 					continue;
 				
 				Class_T entClass = pEntity->Classify();
- 				if ( entClass == CLASS_ASW_SHAMAN || entClass == CLASS_ASW_BOOMER || entClass == CLASS_ASW_BOOMERMINI
+ 				if ( entClass == CLASS_ASW_SHAMAN || entClass == CLASS_ASW_BOOMER || entClass == CLASS_ASW_DETONATOR
 						|| entClass == CLASS_ASW_PARASITE || entClass == CLASS_ASW_BLOB || entClass == CLASS_ASW_BUZZER
-						|| entClass == CLASS_ASW_RUNNER )
+						|| entClass == CLASS_ASW_RUNNER || entClass == CLASS_ASW_FLOCK )
  				{
  					continue;
  				}

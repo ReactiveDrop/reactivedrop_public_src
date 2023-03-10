@@ -456,6 +456,7 @@ public:
 		uint32 size{};
 
 		uint32 nSkippedDefs = 0;
+		const char *szUserLanguage = SteamApps()->GetCurrentGameLanguage();
 
 		FOR_EACH_VEC( ItemDefIDs, i )
 		{
@@ -496,7 +497,6 @@ public:
 				}
 
 				// only cache english (fallback) and the current language preference so we don't waste space on strings we probably won't use
-				const char *szUserLanguage = SteamApps()->GetCurrentGameLanguage();
 				const char *szAfterPrefix;
 #define CHECK_LANGUAGE_PREFIX( szPrefix ) \
 				szAfterPrefix = StringAfterPrefixCaseSensitive( PropertyNames[j], szPrefix ); \
@@ -2985,6 +2985,13 @@ void CRD_ItemInstance::FormatDescription( vgui::RichText *pRichText ) const
 	}
 
 	bool bAnyAccessories = false;
+	FormatDescription( wszBuf, sizeof( wszBuf ), pDef->AccessoryDescription );
+	if ( wszBuf[0] )
+	{
+		AppendBBCode( pRichText, wszBuf, rd_briefing_item_accessory_color.GetColor() );
+		pRichText->InsertString( L"\n" );
+		bAnyAccessories = true;
+	}
 	for ( int i = 0; i < RD_ITEM_MAX_ACCESSORIES; i++ )
 	{
 		if ( m_iAccessory[i] == 0 )

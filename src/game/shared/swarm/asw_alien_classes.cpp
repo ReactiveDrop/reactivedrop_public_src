@@ -54,6 +54,15 @@ const ASW_Alien_Class_Entry g_Aliens[] =
 	ASW_Alien_Class_Entry( "npc_combine_shotgun", HULL_HUMAN, Vector( -13, -13, 0 ), Vector( 13, 13, 72 ) ),
 	ASW_Alien_Class_Entry( "npc_combine_elite", HULL_HUMAN, Vector( -13, -13, 0 ), Vector( 13, 13, 72 ) ),
 	ASW_Alien_Class_Entry( "npc_hunter", HULL_MEDIUM_TALL, Vector( -18, -18, 0 ), Vector( 18, 18, 100 ) ),
+#ifdef RD_7A_ENEMIES
+	ASW_Alien_Class_Entry( "asw_meatbug", HULL_LARGE, Vector( -30, -30, 0 ), Vector( 30, 30, 110 ) ),
+	ASW_Alien_Class_Entry( "asw_juggernaut", HULL_LARGE, Vector( -30, -30, 0 ), Vector( 30, 30, 110 ) ),
+	ASW_Alien_Class_Entry( "asw_spitter", HULL_MEDIUMBIG, Vector( -20, -20, 0 ), Vector( 20, 20, 69 ) ),
+	ASW_Alien_Class_Entry( "asw_detonator", HULL_MEDIUMBIG, Vector( -20, -20, 0 ), Vector( 20, 20, 69 ) ),
+	ASW_Alien_Class_Entry( "asw_flock", HULL_MEDIUM, Vector( -16, -16, 0 ), Vector( 16, 16, 64 ) ),
+	ASW_Alien_Class_Entry( "asw_runner", HULL_WIDE_SHORT, Vector( -23, -23, 0 ), Vector( 23, 23, 69 ) ),
+	ASW_Alien_Class_Entry( "asw_watcher", HULL_MEDIUM_TALL, Vector( -18, -18, 0 ), Vector( 18, 18, 100 ) ),
+#endif
 };
 
 int GetAlienClassIndex( CBaseEntity *pAlien )

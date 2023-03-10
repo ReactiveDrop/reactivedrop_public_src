@@ -52,12 +52,12 @@ CNB_Select_Marine_Panel::CNB_Select_Marine_Panel( vgui::Panel *parent, const cha
 	m_nPreferredLobbySlot = -1;
 	m_bAddingBot = false;
 
-	GetControllerFocus()->AddToFocusList( m_pBackButton, false, true );
+	// we re-add this in InitMarineList
+	GetControllerFocus()->RemoveFromFocusList( m_pBackButton );
 }
 
 CNB_Select_Marine_Panel::~CNB_Select_Marine_Panel()
 {
-	GetControllerFocus()->RemoveFromFocusList( m_pBackButton );
 }
 
 void CNB_Select_Marine_Panel::InitMarineList()
@@ -84,9 +84,13 @@ void CNB_Select_Marine_Panel::InitMarineList()
 		pEntry->InvalidateLayout( true, true );
 		m_Entries.AddToTail( handle );
 	}
+
 	m_nHighlightedEntry = m_nInitialProfileIndex;
 	if ( m_nHighlightedEntry == -1 )
 		m_nHighlightedEntry = 0;
+
+	GetControllerFocus()->AddToFocusList( m_pBackButton, false, true );
+
 	InvalidateLayout( true, true );
 }
 

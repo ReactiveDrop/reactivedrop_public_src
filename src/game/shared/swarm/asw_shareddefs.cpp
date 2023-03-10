@@ -18,7 +18,17 @@ bool IsAlienClass( Class_T npc_class )
 		npc_class == CLASS_ASW_BOOMER ||
 		npc_class == CLASS_ASW_RANGER ||
 		npc_class == CLASS_ASW_EGG ||
-		npc_class == CLASS_ANTLION
+		npc_class == CLASS_HEADCRAB ||
+		npc_class == CLASS_ZOMBIE ||
+		npc_class == CLASS_ANTLION ||
+		npc_class == CLASS_ASW_ANTLIONGUARD ||
+		npc_class == CLASS_ASW_JUGGERNAUT ||
+		npc_class == CLASS_ASW_MEATBUG ||
+		npc_class == CLASS_ASW_DETONATOR ||
+		npc_class == CLASS_ASW_RUNNER ||
+		npc_class == CLASS_ASW_FLOCK ||
+		npc_class == CLASS_ASW_SPITTER ||
+		npc_class == CLASS_ASW_WATCHER
 		);
 }
 
@@ -52,6 +62,8 @@ bool IsSentryClass( Class_T entity_class )
 			entity_class == CLASS_ASW_SENTRY_FLAMER ||
 			entity_class == CLASS_ASW_SENTRY_FREEZE ||
 			entity_class == CLASS_ASW_SENTRY_CANNON ||
+			entity_class == CLASS_ASW_TESLA_TRAP ||
+			entity_class == CLASS_ASW_SENTRY_RAILGUN ||
 			entity_class == CLASS_ASW_REMOTE_TURRET );
 }
 

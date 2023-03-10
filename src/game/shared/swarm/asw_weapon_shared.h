@@ -12,6 +12,7 @@
 #pragma once
 #endif
 
+#include "asw_shareddefs.h"
 
 // Shared header file for weapons
 #if defined( CLIENT_DLL )

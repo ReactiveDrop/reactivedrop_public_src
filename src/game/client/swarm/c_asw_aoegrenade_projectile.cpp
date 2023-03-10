@@ -432,8 +432,6 @@ void C_ASW_AOEGrenade_Projectile::ClientThink( void )
 	C_BaseAnimating *pSphere = static_cast<C_BaseAnimating*>( m_hSphereModel.Get() );
 	if ( pSphere )
 	{
-		float	flTimeLeft = m_flTimeBurnOut - gpGlobals->curtime;
-
 		float flScale = GetSphereScale();
 
 		if ( m_flTimeCreated > 0 && ( gpGlobals->curtime - m_flTimeCreated ) < 0.25f )

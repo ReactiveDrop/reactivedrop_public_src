@@ -4,21 +4,20 @@
 
 #ifdef CLIENT_DLL
 	#define CASW_Weapon_Welder C_ASW_Weapon_Welder
-	#define CASW_Weapon_Rifle C_ASW_Weapon_Rifle
-	#include "c_asw_weapon_rifle.h"
+	#define CASW_Weapon C_ASW_Weapon
+	#include "c_asw_weapon.h"
 #else
-	#include "npc_combine.h"
-	#include "asw_weapon_rifle.h"
+	#include "asw_weapon.h"
 #endif
 
 class CASW_Door;
 class CASW_Door_Area;
 class CSoundPatch;
 
-class CASW_Weapon_Welder : public CASW_Weapon_Rifle
+class CASW_Weapon_Welder : public CASW_Weapon
 {
 public:
-	DECLARE_CLASS( CASW_Weapon_Welder, CASW_Weapon_Rifle );
+	DECLARE_CLASS( CASW_Weapon_Welder, CASW_Weapon );
 	DECLARE_NETWORKCLASS();
 	DECLARE_PREDICTABLE();
 
