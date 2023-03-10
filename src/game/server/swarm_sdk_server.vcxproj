@@ -561,9 +561,11 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClCompile Include="..\shared\swarm\asw_weapon_buff_grenade.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_chainsaw_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_combat_rifle_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_cryo_cannon_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_deagle_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_devastator_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_electrified_armor.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_energy_shield_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_fire_extinguisher_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_fist.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_flamer_shared.cpp" />
@@ -574,11 +576,13 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClCompile Include="..\shared\swarm\asw_weapon_gas_grenades_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_grenades.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_grenade_launcher.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_hack_tool_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_healamp_gun_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_healgrenade_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_heal_gun_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_heavy_rifle_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_hornet_barrage.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_incendiary_grenades_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_jump_jet.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_laser_mines.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_medical_satchel_shared.cpp" />
@@ -592,15 +596,20 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClCompile Include="..\shared\swarm\asw_weapon_parse.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_pdw_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_pistol_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_plasma_thrower_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_prifle_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_railgun_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_revive_tool_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_ricochet_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_sentry_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_shield_bubble_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_shotgun_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_smart_bomb.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_sniper_rifle.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_speed_burst_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_stim_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_stun_grenades_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_t75.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_tesla_gun_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_tesla_trap.cpp" />
@@ -1022,9 +1031,11 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClCompile Include="swarm\asw_concommands.cpp" />
     <ClCompile Include="swarm\asw_debrief_info.cpp" />
     <ClCompile Include="swarm\asw_debrief_stats.cpp" />
+    <ClCompile Include="swarm\asw_detonator.cpp" />
     <ClCompile Include="swarm\asw_director.cpp" />
     <ClCompile Include="swarm\asw_director_control.cpp" />
     <ClCompile Include="swarm\asw_director_intensity.cpp" />
+    <ClCompile Include="swarm\asw_flock.cpp" />
     <ClCompile Include="swarm\asw_gamerules_vscript.cpp" />
     <ClCompile Include="swarm\asw_door.cpp" />
     <ClCompile Include="swarm\asw_door_area.cpp" />
@@ -1064,6 +1075,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClCompile Include="swarm\asw_holoscan.cpp" />
     <ClCompile Include="swarm\asw_intro_control.cpp" />
     <ClCompile Include="swarm\asw_jeep.cpp" />
+    <ClCompile Include="swarm\asw_juggernaut.cpp" />
     <ClCompile Include="swarm\asw_jukebox.cpp" />
     <ClCompile Include="swarm\asw_jump_trigger.cpp" />
     <ClCompile Include="swarm\asw_lag_compensation.cpp" />
@@ -1076,6 +1088,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClCompile Include="swarm\asw_marine_schedule.cpp" />
     <ClCompile Include="swarm\asw_marine_speech.cpp" />
     <ClCompile Include="swarm\asw_marker.cpp" />
+    <ClCompile Include="swarm\asw_meatbug.cpp" />
     <ClCompile Include="swarm\asw_medals.cpp" />
     <ClCompile Include="swarm\asw_mine.cpp" />
     <ClCompile Include="swarm\asw_mission_manager.cpp" />
@@ -1112,6 +1125,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClCompile Include="swarm\asw_ranger.cpp" />
     <ClCompile Include="swarm\asw_rifle_grenade.cpp" />
     <ClCompile Include="swarm\asw_rocket.cpp" />
+    <ClCompile Include="swarm\asw_runner.cpp" />
     <ClCompile Include="swarm\asw_scanner_info.cpp" />
     <ClCompile Include="swarm\asw_sentry_base.cpp" />
     <ClCompile Include="swarm\asw_sentry_top.cpp" />
@@ -1119,6 +1133,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClCompile Include="swarm\asw_sentry_top_flamer.cpp" />
     <ClCompile Include="swarm\asw_sentry_top_icer.cpp" />
     <ClCompile Include="swarm\asw_sentry_top_machinegun.cpp" />
+    <ClCompile Include="swarm\asw_sentry_top_railgun.cpp" />
     <ClCompile Include="swarm\asw_shaman.cpp" />
     <ClCompile Include="swarm\asw_shieldbug.cpp" />
     <ClCompile Include="swarm\asw_simple_alien.cpp" />
@@ -1129,6 +1144,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClCompile Include="swarm\asw_spawn_group.cpp" />
     <ClCompile Include="swarm\asw_spawn_manager.cpp" />
     <ClCompile Include="swarm\asw_spawn_selection.cpp" />
+    <ClCompile Include="swarm\asw_spitter.cpp" />
     <ClCompile Include="swarm\asw_squadformation.cpp" />
     <ClCompile Include="swarm\asw_t75.cpp" />
     <ClCompile Include="swarm\asw_tech_marine_req.cpp" />
@@ -1142,6 +1158,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClCompile Include="swarm\asw_voiceover_dialogue.cpp" />
     <ClCompile Include="swarm\asw_inhabitable_npc.cpp" />
     <ClCompile Include="swarm\asw_vphysics_npc.cpp" />
+    <ClCompile Include="swarm\asw_watcher.cpp" />
     <ClCompile Include="swarm\asw_wc_edit.cpp" />
     <ClCompile Include="swarm\asw_weapon.cpp" />
     <ClCompile Include="swarm\asw_weapon_rifle.cpp" />
@@ -1552,9 +1569,11 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="..\shared\swarm\asw_weapon_buff_grenade.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_chainsaw_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_combat_rifle_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_cryo_cannon_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_deagle_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_devastator_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_electrified_armor.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_energy_shield_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_fire_extinguisher_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_fist.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_flamer_shared.h" />
@@ -1565,11 +1584,13 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="..\shared\swarm\asw_weapon_gas_grenades_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_grenades.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_grenade_launcher.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_hack_tool_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_healamp_gun_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_healgrenade_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_heal_gun_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_heavy_rifle_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_hornet_barrage.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_incendiary_grenades_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_jump_jet.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_laser_mines.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_medical_satchel_shared.h" />
@@ -1583,15 +1604,20 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="..\shared\swarm\asw_weapon_parse.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_pdw_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_pistol_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_plasma_thrower_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_prifle_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_railgun_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_revive_tool_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_ricochet_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_sentry_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_shield_bubble_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_shotgun_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_smart_bomb.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_sniper_rifle.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_speed_burst_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_stim_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_stun_grenades_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_t75.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_tesla_gun_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_tesla_trap.h" />
@@ -1922,6 +1948,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="swarm\asw_computer_area.h" />
     <ClInclude Include="swarm\asw_debrief_info.h" />
     <ClInclude Include="swarm\asw_debrief_stats.h" />
+    <ClInclude Include="swarm\asw_detonator.h" />
     <ClInclude Include="swarm\asw_director.h" />
     <ClInclude Include="swarm\asw_director_control.h" />
     <ClInclude Include="swarm\asw_door.h" />
@@ -1942,6 +1969,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="swarm\asw_firewall_piece.h" />
     <ClInclude Include="swarm\asw_flamer_projectile.h" />
     <ClInclude Include="swarm\asw_flare_projectile.h" />
+    <ClInclude Include="swarm\asw_flock.h" />
     <ClInclude Include="swarm\asw_gamestats.h" />
     <ClInclude Include="swarm\asw_game_resource.h" />
     <ClInclude Include="swarm\asw_gas_grenade_projectile.h" />
@@ -1958,6 +1986,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="swarm\asw_holoscan.h" />
     <ClInclude Include="swarm\asw_intro_control.h" />
     <ClInclude Include="swarm\asw_jeep.h" />
+    <ClInclude Include="swarm\asw_juggernaut.h" />
     <ClInclude Include="swarm\asw_jukebox.h" />
     <ClInclude Include="swarm\asw_jump_trigger.h" />
     <ClInclude Include="swarm\asw_lag_compensation.h" />
@@ -1969,6 +1998,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="swarm\asw_marine_resource.h" />
     <ClInclude Include="swarm\asw_marine_speech.h" />
     <ClInclude Include="swarm\asw_marker.h" />
+    <ClInclude Include="swarm\asw_meatbug.h" />
     <ClInclude Include="swarm\asw_medals.h" />
     <ClInclude Include="swarm\asw_mine.h" />
     <ClInclude Include="swarm\asw_mission_manager.h" />
@@ -2003,6 +2033,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="swarm\asw_ranger.h" />
     <ClInclude Include="swarm\asw_rifle_grenade.h" />
     <ClInclude Include="swarm\asw_rocket.h" />
+    <ClInclude Include="swarm\asw_runner.h" />
     <ClInclude Include="swarm\asw_scanner_info.h" />
     <ClInclude Include="swarm\asw_sentry_base.h" />
     <ClInclude Include="swarm\asw_sentry_top.h" />
@@ -2010,6 +2041,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="swarm\asw_sentry_top_flamer.h" />
     <ClInclude Include="swarm\asw_sentry_top_icer.h" />
     <ClInclude Include="swarm\asw_sentry_top_machinegun.h" />
+    <ClInclude Include="swarm\asw_sentry_top_railgun.h" />
     <ClInclude Include="swarm\asw_shaman.h" />
     <ClInclude Include="swarm\asw_shieldbug.h" />
     <ClInclude Include="swarm\asw_simple_alien.h" />
@@ -2020,6 +2052,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="swarm\asw_spawn_group.h" />
     <ClInclude Include="swarm\asw_spawn_manager.h" />
     <ClInclude Include="swarm\asw_spawn_selection.h" />
+    <ClInclude Include="swarm\asw_spitter.h" />
     <ClInclude Include="swarm\asw_squadformation.h" />
     <ClInclude Include="swarm\asw_t75.h" />
     <ClInclude Include="swarm\asw_tech_marine_req.h" />
@@ -2032,6 +2065,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="swarm\asw_voiceover_dialogue.h" />
     <ClInclude Include="swarm\asw_inhabitable_npc.h" />
     <ClInclude Include="swarm\asw_vphysics_npc.h" />
+    <ClInclude Include="swarm\asw_watcher.h" />
     <ClInclude Include="swarm\asw_wc_edit.h" />
     <ClInclude Include="swarm\asw_weapon.h" />
     <ClInclude Include="swarm\asw_weapon_rifle.h" />
