@@ -116,6 +116,18 @@ void __MsgFunc_RDHitConfirm( bf_read &msg )
 	if ( vecDamagePosition == vec3_origin && pTarget )
 		vecDamagePosition = pTarget->WorldSpaceCenter();
 
+	if ( pTarget )
+	{
+		Vector vecOffset = vecDamagePosition - pTarget->WorldSpaceCenter();
+		float flMaxDistFromCenter = pTarget->BoundingRadius() * 0.75f;
+		if ( vecOffset.LengthSqr() > Square( flMaxDistFromCenter ) )
+		{
+			vecOffset.NormalizeInPlace();
+			vecOffset *= flMaxDistFromCenter;
+			vecDamagePosition = vecOffset + pTarget->WorldSpaceCenter();
+		}
+	}
+
 	ReactiveDropInventory::OnHitConfirm( pAttacker, pTarget, vecDamagePosition, bKilled, bDamageOverTime, bBlastDamage, iDisposition, flDamage, pWeapon );
 
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
@@ -199,10 +211,14 @@ void __MsgFunc_RDHitConfirm( bf_read &msg )
 		}
 
 		int iDmgCustom = 0;
-		if ( iDisposition == 3 ) // D_LI
-			iDmgCustom |= DAMAGE_FLAG_CRITICAL;
-		if ( bHitMe )
-			iDmgCustom |= DAMAGE_FLAG_WEAKSPOT;
+		// don't render punctuation if we're not going to render a number
+		if ( flDamage >= 0.5f )
+		{
+			if ( iDisposition == 3 ) // D_LI
+				iDmgCustom |= DAMAGE_FLAG_CRITICAL;
+			if ( bHitMe )
+				iDmgCustom |= DAMAGE_FLAG_WEAKSPOT;
+		}
 
 		HPARTICLEFFECT hParticle = UTIL_ASW_ParticleDamageNumber( pAttacker, vecDamagePosition, flDamage, iDmgCustom, bDamageOverTime ? 0.5f : 1.0f, bBlastDamage || bDamageOverTime, bIsAccumulated );
 		if ( targetent >= 0 && targetent < MAX_EDICTS && !bBlastDamage && !bDamageOverTime )
