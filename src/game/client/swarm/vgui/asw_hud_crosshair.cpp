@@ -859,15 +859,13 @@ int CASWHudCrosshair::GetCurrentCrosshair( int x, int y )
 			}
 		}
 	}
-	else
+
+	CASW_VGUI_Hack_Wire_Tile *pWireTile = dynamic_cast< CASW_VGUI_Hack_Wire_Tile* >( GetClientMode()->GetPanelFromViewport( "WireTileContainer/HackWireTile" ) );
+	if ( pWireTile )
 	{
-		CASW_VGUI_Hack_Wire_Tile *pWireTile = dynamic_cast< CASW_VGUI_Hack_Wire_Tile* >( GetClientMode()->GetPanelFromViewport( "WireTileContainer/HackWireTile" ) );
-		if ( pWireTile )
+		if ( pWireTile->IsCursorOverWireTile( x, y ) )
 		{
-			if ( pWireTile->IsCursorOverWireTile( x, y ) )
-			{
-				return m_nHackActiveCrosshairTexture;
-			}
+			return m_nHackActiveCrosshairTexture;
 		}
 	}
 
