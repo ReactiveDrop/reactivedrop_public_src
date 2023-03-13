@@ -456,6 +456,7 @@
 				"6" "#tf_dingalingaling_Beepo"
 				"7" "#tf_dingalingaling_Vortex"
 				"8" "#tf_dingalingaling_Squasher"
+				"9" "#tf_dingalingaling_Swarm"
 			}
 			hide_unless "tf_dingalingaling"
 		}
@@ -494,6 +495,7 @@
 				"6" "#tf_dingalingaling_Beepo"
 				"7" "#tf_dingalingaling_Vortex"
 				"8" "#tf_dingalingaling_Squasher"
+				"9" "#tf_dingalingaling_Swarm"
 			}
 			hide_unless "tf_dingalingaling_lasthit"
 		}

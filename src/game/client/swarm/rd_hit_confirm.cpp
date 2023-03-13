@@ -23,12 +23,13 @@ constexpr const char *const s_DingalingSounds[] =
 	"Beepo",
 	"Vortex",
 	"Squasher",
+	"Swarm",
 };
 
 // ConVar names, default values, descriptions, and sound effects stolen from TF2.
 ConVar tf_dingalingaling[2]
 {
-	{ "tf_dingalingaling", "0", FCVAR_ARCHIVE, "If set to 1, play a sound everytime you injure an enemy.The sound can be customized by replacing the 'sound/ui/hitsound.wav' file." },
+	{ "tf_dingalingaling", "0", FCVAR_ARCHIVE, "If set to 1, play a sound every time you injure an enemy.The sound can be customized by replacing the 'sound/ui/hitsound.wav' file." },
 	{ "tf_dingalingaling_lasthit", "0", FCVAR_ARCHIVE, "If set to 1, play a sound whenever one of your attacks kills an enemy.The sound can be customized by replacing the 'sound/ui/killsound.wav' file." },
 };
 ConVar tf_dingaling_volume[2]
