@@ -192,6 +192,13 @@ void CASW_Hack_Computer::SelectHackOption(int i)
 		return;
 	}
 
+	if ( i == 0 && GetOptionTypeForEntry( 1 ) == ASW_COMPUTER_OPTION_TYPE_SECURITY_CAM_1 && GetOptionTypeForEntry( 2 ) == ASW_COMPUTER_OPTION_TYPE_NONE )
+	{
+		pArea->m_flStopUsingTime = gpGlobals->curtime;
+
+		return;
+	}
+
 	m_iShowOption = i;
 
 	// remember that the boot-up sequence finished
@@ -304,16 +311,28 @@ int CASW_Hack_Computer::GetMailOption()
 
 void CASW_Hack_Computer::SetDefaultHackOption()
 {
-	if (IsPDA())
+	if ( IsPDA() )
 	{
 		int iMailOption = GetMailOption();
-		if (iMailOption != -1)
+		if ( iMailOption != -1 )
 			m_iShowOption = iMailOption;
 		else
 			m_iShowOption = 0;
 	}
 	else
-		m_iShowOption = 0;	// put us on the main menu
+	{
+		CASW_Computer_Area *pArea = GetComputerArea();
+		if ( pArea && !pArea->IsLocked() && GetOptionTypeForEntry( 1 ) == ASW_COMPUTER_OPTION_TYPE_SECURITY_CAM_1 && GetOptionTypeForEntry( 2 ) == ASW_COMPUTER_OPTION_TYPE_NONE )
+		{
+			pArea->m_bLoggedIn = true;
+			m_iShowOption = 1; // boot directly into camera
+			pArea->m_iActiveCam = 1;
+		}
+		else
+		{
+			m_iShowOption = 0;	// put us on the main menu
+		}
+	}
 }
 
 void CASW_Hack_Computer::MarineStoppedUsing(CASW_Marine* pMarine)
