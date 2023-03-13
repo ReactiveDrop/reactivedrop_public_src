@@ -963,10 +963,12 @@ void C_ASW_Marine::ClientThink()
 	}
 
 	extern ConVar asw_allow_detach;
+	bool bVisibilityChanged = false;
 	if ( pViewMarine == this && pPlayer && pPlayer->GetASWControls() == ASWC_FIRSTPERSON && !asw_allow_detach.GetBool() )
 	{
 		if ( !m_bIsHiddenLocal || GetRenderAlpha() )
 		{
+			bVisibilityChanged = true;
 			m_PrevRenderAlpha = GetRenderAlpha();
 			m_bIsHiddenLocal = true;
 		}
@@ -976,8 +978,19 @@ void C_ASW_Marine::ClientThink()
 	}
 	else if ( m_bIsHiddenLocal )
 	{
+		bVisibilityChanged = true;
 		SetRenderAlpha( m_PrevRenderAlpha );
 		m_bIsHiddenLocal = false;
+	}
+
+	if ( bVisibilityChanged )
+	{
+		for ( int i = 0; i < ASW_MAX_EQUIP_SLOTS; i++ )
+		{
+			C_ASW_Weapon *pWeapon = GetASWWeapon( i );
+			if ( pWeapon )
+				pWeapon->UpdateVisibility();
+		}
 	}
 
 	if ( ASWDeathmatchMode() )
