@@ -98,6 +98,11 @@ void C_ASW_Hack_Computer::ClientThink()
 			{
 				vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFile("resource/SwarmSchemeNew.res", "SwarmSchemeNew");
 
+				vgui::Panel *pOldFrame = GetClientMode()->GetPanelFromViewport( "ComputerContainer" );
+				Assert( !pOldFrame );
+				if ( pOldFrame )
+					pOldFrame->MarkForDeletion();
+
 				if (GetComputerArea() && GetComputerArea()->IsPDA())
 					m_hFrame = new CASW_VGUI_Computer_Container( GetClientMode()->GetViewport(), "ComputerContainer", "#asw_syntek_pda" );
 				else
@@ -111,8 +116,8 @@ void C_ASW_Hack_Computer::ClientThink()
 
 				m_hFrame->MoveToFront();
 				m_hFrame->RequestFocus();
-				m_hFrame->SetVisible(true);
-				m_hFrame->SetEnabled(true);			
+				m_hFrame->SetVisible( true );
+				m_hFrame->SetEnabled( true );
 				
 				m_bLaunchedHackPanel = true;
 			}

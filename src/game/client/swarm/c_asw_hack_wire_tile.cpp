@@ -132,6 +132,11 @@ void C_ASW_Hack_Wire_Tile::ClientThink()
 	{
 		vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFile("resource/SwarmSchemeNew.res", "SwarmSchemeNew");
 
+		vgui::Panel *pOldFrame = GetClientMode()->GetPanelFromViewport( "WireTileContainer" );
+		Assert( !pOldFrame );
+		if ( pOldFrame )
+			pOldFrame->MarkForDeletion();
+
 		m_hFrame = new CASW_VGUI_Hack_Wire_Tile_Container( GetClientMode()->GetViewport(), "WireTileContainer", this);
 		m_hFrame->SetScheme(scheme);					
 
