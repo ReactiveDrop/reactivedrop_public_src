@@ -293,7 +293,6 @@ void CASW_Weapon::ItemBusyFrame( void )
 #endif
 
 				DispatchParticleEffect( "reload_fail", PATTACH_POINT_FOLLOW, this, "muzzle" );
-				pMarine->DoAnimationEvent( PLAYERANIMEVENT_DROP_MAGAZINE_GIB );
 
 #ifdef GAME_DLL	
 				pMarine->GetMarineSpeech()->PersonalChatter( CHATTER_PAIN_SMALL );
@@ -1222,7 +1221,7 @@ void CASW_Weapon::FinishReload( void )
 		}
 #endif
 
-		if ( !m_bFastReloadSuccess && !m_bFastReloadFailure )
+		if ( !m_bFastReloadSuccess )
 		{
 			pOwner->DoAnimationEvent( PLAYERANIMEVENT_DROP_MAGAZINE_GIB );
 		}
