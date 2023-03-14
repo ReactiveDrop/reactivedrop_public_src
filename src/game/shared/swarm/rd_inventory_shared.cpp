@@ -768,7 +768,7 @@ public:
 #ifdef CLIENT_DLL
 			CRD_ItemInstance &weaponInstance = pWeapon->m_InventoryItemData;
 #else
-			if ( pWeapon->m_iInventoryEquipSlotIndex == -1 )
+			if ( pWeapon->m_iInventoryEquipSlotIndex == -1 || !pWeapon->m_hOriginalOwnerPlayer )
 				return;
 			CRD_ItemInstance &weaponInstance = pWeapon->m_hOriginalOwnerPlayer->m_EquippedItemData[pWeapon->m_iInventoryEquipSlotIndex];
 #endif
