@@ -179,10 +179,10 @@ void CASW_Parasite::Precache( void )
 
 	PrecacheScriptSound( "ASW_Parasite.Death" );
 	PrecacheScriptSound( "ASW_Xenomite.Death" );
-	PrecacheScriptSound( "ASW_Parasite.Attack" );
-	PrecacheScriptSound( "ASW_Xenomite.Attack" );
-	PrecacheScriptSound( "ASW_Parasite.Attack2" );
-	PrecacheScriptSound( "ASW_Xenomite.Attack2" );
+	PrecacheScriptSound( "ASW_Parasite.LeapAttack" );
+	PrecacheScriptSound( "ASW_Xenomite.LeapAttack" );
+	PrecacheScriptSound( "ASW_Parasite.BiteAttack" );
+	PrecacheScriptSound( "ASW_Xenomite.BiteAttack" );
 	PrecacheScriptSound( "ASW_Parasite.Idle" );
 	PrecacheScriptSound( "ASW_Xenomite.Idle" );
 	PrecacheScriptSound( "ASW_Parasite.Pain" );
