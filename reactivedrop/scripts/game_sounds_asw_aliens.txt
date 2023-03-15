@@ -733,7 +733,36 @@
 	"wave"		"aliens\impacts\shared\spray03.wav"
 }
 
+// not captioned
 "ASW_Parasite.Attack"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"		"0.6, 1.0"
+	"pitch"			"90, 110"
+	"soundlevel"	"SNDLVL_80dB"
+	"rndwave"
+	{
+		"wave"	"aliens\voc\parasite\attack01.wav"
+		"wave"	"aliens\voc\parasite\attack02.wav"
+		"wave"	"aliens\voc\parasite\attack03.wav"
+	}
+}
+
+"ASW_Parasite.BiteAttack"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"		"0.6, 1.0"
+	"pitch"			"90, 110"
+	"soundlevel"	"SNDLVL_80dB"
+	"rndwave"
+	{
+		"wave"	"aliens\voc\parasite\attack01.wav"
+		"wave"	"aliens\voc\parasite\attack02.wav"
+		"wave"	"aliens\voc\parasite\attack03.wav"
+	}
+}
+
+"ASW_Parasite.LeapAttack"
 {
 	"channel"	"CHAN_VOICE"
 	"volume"		"0.6, 1.0"
@@ -793,6 +822,76 @@
 }
 
 "ASW_Parasite.Idle"
+{
+	"channel"	"CHAN_BODY"
+	"volume"		"1.0"
+	"pitch"			"90, 110"
+
+	"soundlevel"	"SNDLVL_70dB"
+
+	"wave"	"aliens\voc\parasite\idle.wav"
+}
+
+"ASW_Xenomite.BiteAttack"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"		"0.6, 1.0"
+	"pitch"			"90, 110"
+	"soundlevel"	"SNDLVL_80dB"
+	"rndwave"
+	{
+		"wave"	"aliens\voc\parasite\attack01.wav"
+		"wave"	"aliens\voc\parasite\attack02.wav"
+		"wave"	"aliens\voc\parasite\attack03.wav"
+	}
+}
+
+"ASW_Xenomite.LeapAttack"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"		"0.6, 1.0"
+	"pitch"			"90, 110"
+	"soundlevel"	"SNDLVL_80dB"
+	"rndwave"
+	{
+		"wave"	"aliens\voc\parasite\attack01.wav"
+		"wave"	"aliens\voc\parasite\attack02.wav"
+		"wave"	"aliens\voc\parasite\attack03.wav"
+	}
+}
+
+"ASW_Xenomite.Pain"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"		"0.5"
+	"pitch"			"55, 75"
+
+	"soundlevel"	"SNDLVL_75dB"
+
+	"rndwave"
+	{
+		"wave"		"aliens\voc\egg\pain01.wav"
+		"wave"		"aliens\voc\egg\pain02.wav"
+		"wave"		"aliens\voc\egg\pain03.wav"
+	}
+}
+
+"ASW_Xenomite.Death"
+{
+	"channel"	"CHAN_BODY"
+	"volume"		"0.7, 1.0"
+	"pitch"			"95, 105"
+
+	"soundlevel"	"SNDLVL_85dB"
+
+	"rndwave"
+	{
+		"wave"	"aliens\voc\parasite\death01.wav"
+		"wave"	"aliens\voc\parasite\death02.wav"
+	}
+}
+
+"ASW_Xenomite.Idle"
 {
 	"channel"	"CHAN_BODY"
 	"volume"		"1.0"
