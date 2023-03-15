@@ -1,0 +1,51 @@
+// Cryo Cannon
+
+WeaponData
+{
+	// Weapon data is loaded by both the Game and Client DLLs.
+	"printname"				"#asw_weapon_cryo_cannon"
+	"viewmodel"				"models/weapons/cryocannon/cryocannon.mdl"
+	"playermodel"			"models/weapons/cryocannon/cryocannon.mdl"
+	"anim_prefix"			"ar2"
+	"bucket"				"0"
+	"bucket_position"		"0"
+
+	"clip_size"				"80"
+	"default_clip"			"80"
+
+	"clip2_size"			"-1"
+	"default_clip2"			"-1"
+
+	"primary_ammo"			"ASW_CRYO"
+	"secondary_ammo"		"None"
+
+	"weight"				"5"
+	"item_flags"			"0"
+			
+	// asw properties
+	"reload_time"			"2.2"
+	"base_damage"			"2"
+	"fire_rate"				"0.1"
+	"equipicon"				"swarm/EquipIcons/EquipCryoCannon"
+	"equiplongname"			"#asw_weaponl_cryo_cannon"
+	"equipdescription1"		"#asw_wdesc_cryo_cannon"
+	"altfiretext"			"#asw_weapon_cryo_cannon_altfire"
+	"attributestext"		"#asw_weapon_cryo_cannon_attributes"
+
+	// flinching
+	"FlinchChance"				"0.20"
+	"StoppingPowerFlinchBonus"	"0.10"
+
+	// which ammo elements this weapon should display on the hud
+	"ShowBulletsOnHUD"			"1"
+	"ShowClipsOnHUD"			"1"
+	"ShowGrenadesOnHUD"			"1"
+
+	"HUDIconOffsetX"			"0"
+
+	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
+	SoundData
+	{
+		"empty"				"ASW_Weapon.Empty"
+	}
+}

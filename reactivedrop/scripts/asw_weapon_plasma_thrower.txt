@@ -1,0 +1,51 @@
+// Plasma Thrower
+
+WeaponData
+{
+	// Weapon data is loaded by both the Game and Client DLLs.
+	"printname"				"#asw_weapon_plasma_thrower"
+	"viewmodel"				"models/weapons/plasmalauncher/plasmalauncher.mdl"
+	"playermodel"			"models/weapons/plasmalauncher/plasmalauncher.mdl"
+	"anim_prefix"			"ar2"
+	"bucket"				"0"
+	"bucket_position"		"0"
+
+	"clip_size"				"80"
+	"default_clip"			"80"
+
+	"clip2_size"			"-1"
+	"default_clip2"			"-1"
+
+	"primary_ammo"			"ASW_F"
+	"secondary_ammo"		"None"
+
+	"weight"				"5"
+	"item_flags"			"0"
+			
+	// asw properties
+	"reload_time"			"2.2"
+	"base_damage"			"2"
+	"fire_rate"				"0.1"
+	"equipicon"				"swarm/EquipIcons/EquipPlasmaThrower"
+	"equiplongname"			"#asw_weaponl_plasma_thrower"
+	"equipdescription1"		"#asw_wdesc_plasma_thrower"
+	"altfiretext"			"#asw_weapon_plasma_thrower_altfire"
+	"attributestext"		"#asw_weapon_plasma_thrower_attributes"
+
+	// flinching
+	"FlinchChance"				"0.20"
+	"StoppingPowerFlinchBonus"	"0.10"
+
+	// which ammo elements this weapon should display on the hud
+	"ShowBulletsOnHUD"			"1"
+	"ShowClipsOnHUD"			"1"
+	"ShowGrenadesOnHUD"			"1"
+
+	"HUDIconOffsetX"			"0"
+
+	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
+	SoundData
+	{
+		"empty"				"ASW_Weapon.Empty"
+	}
+}

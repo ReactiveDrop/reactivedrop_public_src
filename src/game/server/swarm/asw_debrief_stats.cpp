@@ -22,7 +22,8 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Debrief_Stats, DT_ASW_Debrief_Stats)
 	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iWounded) ), m_iWounded ),
 	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iAliensBurned) ), m_iAliensBurned ),
 	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iHealthHealed) ), m_iHealthHealed ),
-	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iFastHacks) ), m_iFastHacks ),
+	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iFastHacksWire) ), m_iFastHacksWire ),
+	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iFastHacksComputer) ), m_iFastHacksComputer ),
 	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iSkillPointsAwarded) ), m_iSkillPointsAwarded ),
 	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iStartingEquip0) ), m_iStartingEquip0 ),
 	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iStartingEquip1) ), m_iStartingEquip1 ),
@@ -32,6 +33,7 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Debrief_Stats, DT_ASW_Debrief_Stats)
 	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iSentryFlamerDeployed) ), m_iSentryFlamerDeployed ),
 	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iSentryFreezeDeployed) ), m_iSentryFreezeDeployed ),
 	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iSentryCannonDeployed) ), m_iSentryCannonDeployed ),
+	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iSentryRailgunDeployed) ), m_iSentryRailgunDeployed ),
 	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iMedkitsUsed) ), m_iMedkitsUsed ),
 	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iFlaresUsed) ), m_iFlaresUsed ),
 	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iAdrenalineUsed) ), m_iAdrenalineUsed ),
@@ -53,6 +55,21 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Debrief_Stats, DT_ASW_Debrief_Stats)
 	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iHealAmpGunHeals) ), m_iHealAmpGunHeals ),
 	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iHealAmpGunAmps) ), m_iHealAmpGunAmps ),
 	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iMedRifleHeals) ), m_iMedRifleHeals ),
+	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iCryoCannonFreezeAlien) ), m_iCryoCannonFreezeAlien ),
+	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iPlasmaThrowerExtinguishMarine) ), m_iPlasmaThrowerExtinguishMarine ),
+	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iHackToolWireHacksTech) ), m_iHackToolWireHacksTech ),
+	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iHackToolWireHacksOther) ), m_iHackToolWireHacksOther ),
+	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iHackToolComputerHacksTech) ), m_iHackToolComputerHacksTech ),
+	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iHackToolComputerHacksOther) ), m_iHackToolComputerHacksOther ),
+	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iEnergyShieldProjectilesDestroyed) ), m_iEnergyShieldProjectilesDestroyed ),
+	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iReanimatorRevivesOfficer) ), m_iReanimatorRevivesOfficer ),
+	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iReanimatorRevivesSpecialWeapons) ), m_iReanimatorRevivesSpecialWeapons ),
+	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iReanimatorRevivesMedic) ), m_iReanimatorRevivesMedic ),
+	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iReanimatorRevivesTech) ), m_iReanimatorRevivesTech ),
+	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iSpeedBoostsUsed) ), m_iSpeedBoostsUsed ),
+	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iShieldBubblesThrown) ), m_iShieldBubblesThrown ),
+	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iShieldBubblePushedEnemy) ), m_iShieldBubblePushedEnemy ),
+	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iShieldBubbleDamageAbsorbed) ), m_iShieldBubbleDamageAbsorbed ),
 	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iBiomassIgnited) ), m_iBiomassIgnited ),
 	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iLeadershipProcsAccuracy) ), m_iLeadershipProcsAccuracy ),
 	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iLeadershipProcsResist) ), m_iLeadershipProcsResist ),
@@ -129,8 +146,8 @@ void CASW_Debrief_Stats::Spawn( void )
 {
 	BaseClass::Spawn();
 
-	CASW_Debrief_Info* pDebriefInfo = dynamic_cast<CASW_Debrief_Info*>(gEntList.FindEntityByClassname( NULL, "asw_debrief_info" ));
-	if (pDebriefInfo)
+	CASW_Debrief_Info *pDebriefInfo = dynamic_cast< CASW_Debrief_Info * >( gEntList.FindEntityByClassname( NULL, "asw_debrief_info" ) );
+	if ( pDebriefInfo )
 	{
 		Q_strncpy( m_DebriefText1.GetForModify(), STRING( pDebriefInfo->m_DebriefText1 ), 255 );
 		Q_strncpy( m_DebriefText2.GetForModify(), STRING( pDebriefInfo->m_DebriefText2 ), 255 );
@@ -138,10 +155,10 @@ void CASW_Debrief_Stats::Spawn( void )
 	}
 	else
 	{
-		Q_snprintf(m_DebriefText1.GetForModify(), 255, "");
-		Q_snprintf(m_DebriefText2.GetForModify(), 255, "");
-		Q_snprintf(m_DebriefText3.GetForModify(), 255, "");
-	}	
+		Q_snprintf( m_DebriefText1.GetForModify(), 255, "" );
+		Q_snprintf( m_DebriefText2.GetForModify(), 255, "" );
+		Q_snprintf( m_DebriefText3.GetForModify(), 255, "" );
+	}
 }
 
 int CASW_Debrief_Stats::ShouldTransmit( const CCheckTransmitInfo *pInfo )
@@ -151,21 +168,21 @@ int CASW_Debrief_Stats::ShouldTransmit( const CCheckTransmitInfo *pInfo )
 
 int CASW_Debrief_Stats::UpdateTransmitState()
 {
-	return SetTransmitState( FL_EDICT_FULLCHECK );
+	return SetTransmitState( FL_EDICT_ALWAYS );
 }
 
-int CASW_Debrief_Stats::GetSkillPointsAwarded(int iProfileIndex)
+int CASW_Debrief_Stats::GetSkillPointsAwarded( int iProfileIndex )
 {
-	if (!ASWGameRules())
+	if ( !ASWGameRules() )
 		return ASW_SKILL_POINTS_PER_MISSION;
 	CASW_Game_Resource *pGameResource = ASWGameResource();
-	if (!pGameResource)
+	if ( !pGameResource )
 		return ASW_SKILL_POINTS_PER_MISSION;
 
-	for (int i=0;i<ASW_MAX_MARINE_RESOURCES;i++)
+	for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
 	{
-		CASW_Marine_Resource *pMR = pGameResource->GetMarineResource(i);
-		if (pMR && pMR->GetProfileIndex() == iProfileIndex)
+		CASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
+		if ( pMR && pMR->GetProfileIndex() == iProfileIndex )
 			return m_iSkillPointsAwarded[i];
 	}
 	return ASW_SKILL_POINTS_PER_MISSION;
@@ -173,12 +190,19 @@ int CASW_Debrief_Stats::GetSkillPointsAwarded(int iProfileIndex)
 
 void CASW_Debrief_Stats::SetWeaponStats( int nMarineIndex, int nWeaponIndex, int nWeaponClass, int nDamage, int nFFDamage, int nShotsFired, int nShotsHit, int nKills )
 {
+	Assert( ( int )( unsigned short )nWeaponClass == nWeaponClass );
+	Assert( ( int )( unsigned short )nKills == nKills );
+	Assert( ( int )( unsigned short )nFFDamage == nFFDamage );
+	Assert( ( int )( unsigned short )nDamage == nDamage );
+	Assert( ( int )( unsigned short )nShotsHit == nShotsHit );
+	Assert( ( int )( unsigned short )nShotsFired == nShotsFired );
+
 	// Pack each attribute into 32 bit ints
-	unsigned int nClassAndKills = ( (unsigned short)nKills & 0x0000FFFF ) | ( (unsigned short)nWeaponClass << 16 );
-	unsigned int nDamageAndFF = ( (unsigned short)nFFDamage & 0x0000FFFF ) | ( (unsigned short)nDamage << 16 );
-	unsigned int nShotsFiredAndHit = ( (unsigned short)nShotsHit & 0x0000FFFF ) | ( (unsigned short)nShotsFired << 16 );
-	
-	switch( nWeaponIndex )
+	unsigned int nClassAndKills = ( ( unsigned short )nKills & 0x0000FFFF ) | ( ( unsigned short )nWeaponClass << 16 );
+	unsigned int nDamageAndFF = ( ( unsigned short )nFFDamage & 0x0000FFFF ) | ( ( unsigned short )nDamage << 16 );
+	unsigned int nShotsFiredAndHit = ( ( unsigned short )nShotsHit & 0x0000FFFF ) | ( ( unsigned short )nShotsFired << 16 );
+
+	switch ( nWeaponIndex )
 	{
 	case 0:
 		m_iWeaponClassAndKills0.Set( nMarineIndex, nClassAndKills );
@@ -233,7 +257,7 @@ void CASW_Debrief_Stats::SetWeaponStats( int nMarineIndex, int nWeaponIndex, int
 	}
 }
 
-CASW_Debrief_Stats* GetDebriefStats()
+CASW_Debrief_Stats *GetDebriefStats()
 {
 	return ASWGameRules() ? ASWGameRules()->m_hDebriefStats.Get() : NULL;
 }

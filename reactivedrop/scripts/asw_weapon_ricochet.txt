@@ -17,7 +17,7 @@ WeaponData
 	"default_clip2"			"5"
 
 	"primary_ammo"			"ASW_R"
-	"secondary_ammo"		"ASW_R_G"
+	"secondary_ammo"		"ASW_SG_G"
 
 	"weight"				"5"
 	"item_flags"			"0"

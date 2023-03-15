@@ -88,6 +88,13 @@ static Class_T GetWeaponClassFromDamageInfo( const CTakeDamageInfo & info, CBase
 		// this says a lot about our society
 		return (Class_T)CLASS_ASW_GAS_GRENADES;
 	}
+	else if ( weaponClass == CLASS_ASW_RICOCHET )
+	{
+		if ( info.GetDamageType() & DMG_BUCKSHOT )
+		{
+			return (Class_T)CLASS_ASW_RICOCHET_SHOTGUN;
+		}
+	}
 	else if ( weaponClass == CLASS_ASW_AR2 )
 	{
 		if ( info.GetDamageType() & DMG_DISSOLVE )
@@ -164,40 +171,20 @@ void CASWGameStats::Event_AlienTookDamage( CBaseEntity *pAlien, const CTakeDamag
 	{
 		if ( pAlien )
 		{
-			CASW_Alien* pBaseAlien = NULL;
-			CASW_Buzzer* pBuzzer = NULL;
-
-			if ( pAlien->IsAlienClassType() )
+			if ( pAlien->IsInhabitableNPC() )
 			{
-				pBaseAlien = assert_cast<CASW_Alien*>(pAlien);
+				CASW_Inhabitable_NPC *pNPC = assert_cast< CASW_Inhabitable_NPC * >( pAlien );
 
-				if ( pBaseAlien->m_bFlammable )
+				if ( pNPC->m_bFlammable )
 				{
 					if ( asw_stats_verbose.GetBool() )
 					{
-						DevMsg( "marine %d weaponclass %d (burned %s, %d+%d)\n", ASWGameResource()->GetMarineResourceIndex(pMR), weaponClass, pBaseAlien->GetClassname(), pMR->m_iAliensBurned, 1 );
+						DevMsg( "marine %d weaponclass %d (burned %s, %d+%d)\n", ASWGameResource()->GetMarineResourceIndex( pMR ), weaponClass, pNPC->GetClassname(), pMR->m_iAliensBurned, 1 );
 					}
 
-					if ( !pBaseAlien->m_bWasOnFireForStats )
+					if ( !pNPC->m_bWasOnFireForStats )
 					{
-						pBaseAlien->m_bWasOnFireForStats = true;
-						pMR->m_iAliensBurned++;
-					}
-				}
-			}
-			else if ( pAlien->Classify() == CLASS_ASW_BUZZER )
-			{
-				pBuzzer = assert_cast<CASW_Buzzer*>(pAlien);
-				if ( pBuzzer->m_bFlammable )
-				{
-					if ( asw_stats_verbose.GetBool() )
-					{
-						DevMsg( "marine %d weaponclass %d (burned %s, %d+%d)\n", ASWGameResource()->GetMarineResourceIndex(pMR), weaponClass, pBuzzer->GetClassname(), pMR->m_iAliensBurned, 1 );
-					}
-
-					if ( !pBuzzer->m_bWasOnFireForStats )
-					{
-						pBuzzer->m_bWasOnFireForStats = true;
+						pNPC->m_bWasOnFireForStats = true;
 						pMR->m_iAliensBurned++;
 					}
 				}
@@ -252,7 +239,7 @@ void CASWGameStats::Event_MarineHealed( CASW_Marine *pMarine, int amount, CBaseE
 
 	if ( pHealingWeapon->Classify() == CLASS_ASW_HEALGRENADE_PROJECTILE )
 	{
-		CASW_HealGrenade_Projectile *pHealGrenade = assert_cast<CASW_HealGrenade_Projectile *>( pHealingWeapon );
+		CASW_HealGrenade_Projectile *pHealGrenade = assert_cast< CASW_HealGrenade_Projectile * >( pHealingWeapon );
 		CASW_Marine *pMedic = CASW_Marine::AsMarine( pHealGrenade->GetOwnerEntity() );
 		if ( !pMedic )
 		{
@@ -274,7 +261,7 @@ void CASWGameStats::Event_MarineHealed( CASW_Marine *pMarine, int amount, CBaseE
 	}
 	else if ( pHealingWeapon->Classify() == CLASS_ASW_HEAL_GUN )
 	{
-		CASW_Weapon_Heal_Gun *pHealGun = assert_cast<CASW_Weapon_Heal_Gun *>( pHealingWeapon );
+		CASW_Weapon_Heal_Gun *pHealGun = assert_cast< CASW_Weapon_Heal_Gun * >( pHealingWeapon );
 		CASW_Marine *pMedic = pHealGun->GetMarine();
 		if ( !pMedic )
 		{
@@ -296,7 +283,7 @@ void CASWGameStats::Event_MarineHealed( CASW_Marine *pMarine, int amount, CBaseE
 	}
 	else if ( pHealingWeapon->Classify() == CLASS_ASW_HEALAMP_GUN )
 	{
-		CASW_Weapon_HealAmp_Gun *pHealGun = assert_cast<CASW_Weapon_HealAmp_Gun *>( pHealingWeapon );
+		CASW_Weapon_HealAmp_Gun *pHealGun = assert_cast< CASW_Weapon_HealAmp_Gun * >( pHealingWeapon );
 		CASW_Marine *pMedic = pHealGun->GetMarine();
 		if ( !pMedic )
 		{
@@ -311,7 +298,7 @@ void CASWGameStats::Event_MarineHealed( CASW_Marine *pMarine, int amount, CBaseE
 	}
 	else if ( pHealingWeapon->Classify() == CLASS_ASW_MEDRIFLE )
 	{
-		CASW_Weapon_MedRifle *pHealGun = assert_cast< CASW_Weapon_MedRifle *>( pHealingWeapon );
+		CASW_Weapon_MedRifle *pHealGun = assert_cast< CASW_Weapon_MedRifle * >( pHealingWeapon );
 		CASW_Marine *pMedic = pHealGun->GetMarine();
 		if ( !pMedic )
 		{
@@ -326,7 +313,7 @@ void CASWGameStats::Event_MarineHealed( CASW_Marine *pMarine, int amount, CBaseE
 	}
 	else if ( pHealingWeapon->Classify() == CLASS_ASW_MEDKIT )
 	{
-		CASW_Weapon_Medkit *pMedkit = assert_cast<CASW_Weapon_Medkit *>( pHealingWeapon );
+		CASW_Weapon_Medkit *pMedkit = assert_cast< CASW_Weapon_Medkit * >( pHealingWeapon );
 		CASW_Marine *pMedic = pMedkit->GetMarine();
 		if ( !pMedic )
 		{
@@ -343,7 +330,7 @@ void CASWGameStats::Event_MarineHealed( CASW_Marine *pMarine, int amount, CBaseE
 
 void CASWGameStats::Event_MarineWeaponFired( const CBaseEntity *pWeapon, const CASW_Marine *pMarine, int nShotsFired, bool bIsSecondary )
 {
-	Class_T weaponClass = const_cast<CBaseEntity *>( pWeapon )->Classify();
+	Class_T weaponClass = const_cast< CBaseEntity * >( pWeapon )->Classify();
 
 	CASW_Marine_Resource *pMR = pMarine->GetMarineResource();
 	if ( !pMR )
@@ -356,68 +343,83 @@ void CASWGameStats::Event_MarineWeaponFired( const CBaseEntity *pWeapon, const C
 		ADD_STAT( m_iAmmoDeployed, 1 );
 		return;
 	}
-	else if ( weaponClass == CLASS_ASW_SENTRY_GUN_CASE )
+	if ( weaponClass == CLASS_ASW_SENTRY_GUN_CASE )
 	{
 		ADD_STAT( m_iSentryGunsDeployed, 1 );
 		return;
 	}
-	else if ( weaponClass == CLASS_ASW_SENTRY_FLAMER_CASE )
+	if ( weaponClass == CLASS_ASW_SENTRY_FLAMER_CASE )
 	{
 		ADD_STAT( m_iSentryFlamerDeployed, 1 );
 		return;
 	}
-	else if ( weaponClass == CLASS_ASW_SENTRY_FREEZE_CASE )
+	if ( weaponClass == CLASS_ASW_SENTRY_FREEZE_CASE )
 	{
 		ADD_STAT( m_iSentryFreezeDeployed, 1 );
 		return;
 	}
-	else if ( weaponClass == CLASS_ASW_SENTRY_CANNON_CASE )
+	if ( weaponClass == CLASS_ASW_SENTRY_CANNON_CASE )
 	{
 		ADD_STAT( m_iSentryCannonDeployed, 1 );
 		return;
 	}
-	else if ( weaponClass == CLASS_ASW_MEDKIT )
+	if ( weaponClass == CLASS_ASW_SENTRY_RAILGUN_CASE )
+	{
+		ADD_STAT( m_iSentryRailgunDeployed, 1 );
+		return;
+	}
+	if ( weaponClass == CLASS_ASW_MEDKIT )
 	{
 		ADD_STAT( m_iMedkitsUsed, 1 );
 		return;
 	}
-	else if ( weaponClass == CLASS_ASW_FLARES )
+	if ( weaponClass == CLASS_ASW_FLARES )
 	{
 		ADD_STAT( m_iFlaresUsed, 1 );
 		return;
 	}
-	else if ( weaponClass == CLASS_ASW_STIM )
+	if ( weaponClass == CLASS_ASW_STIM )
 	{
 		ADD_STAT( m_iAdrenalineUsed, 1 );
 		return;
 	}
-	else if ( weaponClass == CLASS_ASW_TESLA_TRAP )
+	if ( weaponClass == CLASS_ASW_TESLA_TRAP )
 	{
 		ADD_STAT( m_iTeslaTrapsDeployed, 1 );
 		return;
 	}
-	else if ( weaponClass == CLASS_ASW_TESLA_TRAP_PROJECTILE )
+	if ( weaponClass == CLASS_ASW_TESLA_TRAP_PROJECTILE )
 	{
-		weaponClass = (Class_T)CLASS_ASW_TESLA_TRAP;
+		weaponClass = ( Class_T )CLASS_ASW_TESLA_TRAP;
 	}
-	else if ( weaponClass == CLASS_ASW_FREEZE_GRENADES )
+	if ( weaponClass == CLASS_ASW_FREEZE_GRENADES )
 	{
 		ADD_STAT( m_iFreezeGrenadesThrown, 1 );
 		return;
 	}
-	else if ( weaponClass == CLASS_ASW_ELECTRIFIED_ARMOR )
+	if ( weaponClass == CLASS_ASW_ELECTRIFIED_ARMOR )
 	{
 		ADD_STAT( m_iElectricArmorUsed, 1 );
 		return;
 	}
-	else if ( weaponClass == CLASS_ASW_BUFF_GRENADE )
+	if ( weaponClass == CLASS_ASW_BUFF_GRENADE )
 	{
 		ADD_STAT( m_iDamageAmpsUsed, 1 );
 		return;
 	}
-	else if (weaponClass == CLASS_ASW_HEALGRENADE)
+	if ( weaponClass == CLASS_ASW_HEALGRENADE )
 	{
 		ADD_STAT( m_iHealBeaconsDeployed, 1 );
+		return;
+	}
+	if ( weaponClass == CLASS_ASW_SPEED_BURST )
+	{
+		ADD_STAT( m_iSpeedBoostsUsed, 1 );
+		return;
+	}
+	if ( weaponClass == CLASS_ASW_SHIELD_BUBBLE )
+	{
+		ADD_STAT( m_iShieldBubblesThrown, 1 );
 		return;
 	}
 
@@ -425,15 +427,15 @@ void CASWGameStats::Event_MarineWeaponFired( const CBaseEntity *pWeapon, const C
 	{
 		if ( weaponClass == CLASS_ASW_RIFLE )
 		{
-			weaponClass = (Class_T)CLASS_ASW_RIFLE_GRENADE;
+			weaponClass = ( Class_T )CLASS_ASW_RIFLE_GRENADE;
 		}
 		else if ( weaponClass == CLASS_ASW_PRIFLE )
 		{
-			weaponClass = (Class_T)CLASS_ASW_GRENADE_PRIFLE;
+			weaponClass = ( Class_T )CLASS_ASW_GRENADE_PRIFLE;
 		}
 		else if ( weaponClass == CLASS_ASW_ASSAULT_SHOTGUN )
 		{
-			weaponClass = (Class_T)CLASS_ASW_GRENADE_VINDICATOR;
+			weaponClass = ( Class_T )CLASS_ASW_GRENADE_VINDICATOR;
 		}
 		else if ( weaponClass == CLASS_ASW_FLAMER )
 		{
@@ -442,16 +444,20 @@ void CASWGameStats::Event_MarineWeaponFired( const CBaseEntity *pWeapon, const C
 		}
 		else if ( weaponClass == CLASS_ASW_COMBAT_RIFLE )
 		{
-			weaponClass = (Class_T)CLASS_ASW_COMBAT_RIFLE_SHOTGUN;
+			weaponClass = ( Class_T )CLASS_ASW_COMBAT_RIFLE_SHOTGUN;
 		}
 		else if ( weaponClass == CLASS_ASW_AR2 )
 		{
-			weaponClass = (Class_T)CLASS_ASW_COMBINE_BALL;
+			weaponClass = ( Class_T )CLASS_ASW_COMBINE_BALL;
+		}
+		else if ( weaponClass == CLASS_ASW_PLASMA_THROWER )
+		{
+			weaponClass = ( Class_T )CLASS_ASW_PLASMA_THROWER_AIRBLAST;
 		}
 		else
 		{
 			Assert( 0 );
-			weaponClass = (Class_T)(1024 - weaponClass);
+			weaponClass = ( Class_T )( 1024 - weaponClass );
 		}
 	}
 

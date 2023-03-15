@@ -294,11 +294,11 @@ void CASW_Player::CalculateEarnedXP()
 				m_iStatNumXP[ ASW_XP_HEALING ] = pDebrief->GetHealthHealed( iMarineIndex );
 
 				// hacking
-				if ( pDebrief->GetFastHacks( iMarineIndex ) >= 2 )
+				if ( pDebrief->GetFastHacksWire( iMarineIndex ) + pDebrief->GetFastHacksComputer( iMarineIndex ) >= 2 )
 				{
 					m_iEarnedXP[ ASW_XP_HACKING ] = g_iXPAward[ ASW_XP_HACKING ];
 				}
-				else if ( pDebrief->GetFastHacks( iMarineIndex ) >= 1 )
+				else if ( pDebrief->GetFastHacksWire( iMarineIndex ) + pDebrief->GetFastHacksComputer( iMarineIndex ) >= 1 )
 				{
 					m_iEarnedXP[ ASW_XP_HACKING ] = g_iXPAward[ ASW_XP_HACKING ] / 2;
 				}
@@ -306,7 +306,7 @@ void CASW_Player::CalculateEarnedXP()
 				{
 					m_iEarnedXP[ ASW_XP_HACKING ] = 0;
 				}
-				m_iStatNumXP[ ASW_XP_HACKING ] = pDebrief->GetFastHacks( iMarineIndex );
+				m_iStatNumXP[ ASW_XP_HACKING ] = pDebrief->GetFastHacksWire( iMarineIndex ) + pDebrief->GetFastHacksComputer( iMarineIndex );
 			}
 
 			if ( ASWGameRules()->GetMissionSuccess() )

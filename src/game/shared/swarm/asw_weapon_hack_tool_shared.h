@@ -20,6 +20,11 @@ public:
 	DECLARE_DATADESC();
 #endif
 
+	// attacking with this does nothing
+	void PrimaryAttack() override {}
+	void SecondaryAttack() override {}
+	bool IsOffensiveWeapon() override { return false; }
+
 	Class_T Classify() override { return ( Class_T )CLASS_ASW_HACK_TOOL; }
 };
 #endif

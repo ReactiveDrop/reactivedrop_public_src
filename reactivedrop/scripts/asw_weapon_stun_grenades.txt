@@ -1,0 +1,51 @@
+// Stun Grenades
+
+WeaponData
+{
+	// Weapon data is loaded by both the Game and Client DLLs.
+	"printname"				"#asw_weapon_stun_grenades"
+	"viewmodel"				"models/swarm/grenades/grenadebox.mdl"
+	"playermodel"			"models/swarm/grenades/grenadebox.mdl"
+	"playermodel_skin"		"4"
+	"anim_prefix"			"ar2"
+	"bucket"				"0"
+	"bucket_position"		"0"
+
+	"clip_size"				"5"
+	"default_clip"			"5"
+
+	"clip2_size"			"-1"
+	"default_clip2"			"-1"
+
+	"primary_ammo"			"ASW_MINES"
+	"secondary_ammo"		"None"
+
+	"weight"				"5"
+	"item_flags"			"0"
+	
+	// asw properties
+	"reload_time"			"2.2"
+	"equipicon"				"swarm/EquipIcons/EquipStunGrenades"
+	"equiplongname"			"#asw_weaponl_stun_grenades"
+	"equipdescription1"		"#asw_wdesc_stun_grenades"
+	"attributestext"		"#asw_weapon_stun_grenades_attributes"
+	"ExtraItem"				"1"
+	"ShowCharges"			"1"
+	"OffhandActivate"		"1"
+	"OffhandOrderType"		"ASW_OFFHAND_THROW"
+	
+	// flinching
+	"FlinchChance"				"0"
+	"StoppingPowerFlinchBonus"	"0"
+	
+	// which ammo elements this weapon should display on the hud
+	"ShowBulletsOnHUD"		"1"
+	"ShowClipsOnHUD"		"0"
+	"ShowGrenadesOnHUD"		"0"
+
+	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
+	SoundData
+	{
+		"empty"			"ASW_Weapon.Empty"
+	}
+}

@@ -59,7 +59,7 @@ struct WeaponStats_t
 	int32 m_iShotsHit;
 	int32 m_iKills;
 	bool  m_bIsExtra;
-	char *m_szClassName;
+	const char *m_szClassName;
 };
 
 #pragma pack(push, 1)
@@ -164,7 +164,9 @@ private:
 	int32 m_iAliensBurned;
 	int32 m_iBiomassIgnited;
 	int32 m_iHealing;
-	int32 m_iFastHacks;
+	int32 m_iFastHacksLegacy;
+	int32 m_iFastHacksWire;
+	int32 m_iFastHacksComputer;
 	int32 m_iGamesTotal;
 	int32 m_iGamesSuccess;
 	float32 m_fGamesSuccessPercent;
@@ -173,6 +175,7 @@ private:
 	int32	m_iSentryFlamerDeployed;
 	int32	m_iSentryFreezeDeployed;
 	int32	m_iSentryCannonDeployed;
+	int32	m_iSentryRailgunDeployed;
 	int32	m_iMedkitsUsed;
 	int32	m_iFlaresUsed;
 	int32	m_iAdrenalineUsed;
@@ -194,6 +197,21 @@ private:
 	int32	m_iHealAmpGunHeals;
 	int32	m_iHealAmpGunAmps;
 	int32	m_iMedRifleHeals;
+	int32	m_iCryoCannonFreezeAlien;
+	int32	m_iPlasmaThrowerExtinguishMarine;
+	int32	m_iHackToolWireHacksTech;
+	int32	m_iHackToolWireHacksOther;
+	int32	m_iHackToolComputerHacksTech;
+	int32	m_iHackToolComputerHacksOther;
+	int32	m_iEnergyShieldProjectilesDestroyed;
+	int32	m_iReanimatorRevivesOfficer;
+	int32	m_iReanimatorRevivesSpecialWeapons;
+	int32	m_iReanimatorRevivesMedic;
+	int32	m_iReanimatorRevivesTech;
+	int32	m_iSpeedBoostsUsed;
+	int32	m_iShieldBubblesThrown;
+	int32	m_iShieldBubblePushedEnemy;
+	int32	m_iShieldBubbleDamageAbsorbed;
 	int32	m_iLeadershipProcsAccuracy;
 	int32	m_iLeadershipProcsResist;
 	int32	m_iLeadershipDamageAccuracy;

@@ -20,6 +20,9 @@ public:
 	DECLARE_DATADESC();
 #endif
 
+	void SecondaryAttack() override {}
+	bool IsOffensiveWeapon() override { return false; }
+
 	Class_T Classify() override { return ( Class_T )CLASS_ASW_REVIVE_TOOL; }
 };
 #endif

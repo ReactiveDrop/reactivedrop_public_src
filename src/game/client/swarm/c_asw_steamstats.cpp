@@ -198,10 +198,14 @@ namespace
 
 	const char *const g_OfficialNonCampaignMaps[] =
 	{
+#ifdef RD_6A_CAMPAIGNS_ACCIDENT32
 		"rd-acc_complex",
 		"rd-ht-marine_academy",
+#endif
+#ifdef RD_6A_CAMPAIGNS_ADANAXIS
 		"rd-ada_new_beginning",
 		"rd-ada_anomaly",
+#endif
 		"dm_desert",
 		"dm_deima",
 		"dm_residential",
@@ -336,18 +340,20 @@ bool ShouldUploadOnFailure()
 	return pMission->HasTag( "upload_on_failure" );
 }
 
-bool IsDamagingWeapon( const char* szWeaponName, bool bIsExtraEquip )
+bool IsDamagingWeapon( const char *szWeaponName, bool bIsExtraEquip )
 {
-	if( bIsExtraEquip )
+	if ( bIsExtraEquip )
 	{
 		// Check for the few damaging weapons
-		if( !Q_strcmp( szWeaponName, "asw_weapon_laser_mines" ) || 
+		if ( !Q_strcmp( szWeaponName, "asw_weapon_laser_mines" ) ||
 			!Q_strcmp( szWeaponName, "asw_weapon_hornet_barrage" ) ||
 			!Q_strcmp( szWeaponName, "asw_weapon_mines" ) ||
 			!Q_strcmp( szWeaponName, "asw_weapon_grenades" ) ||
 			!Q_strcmp( szWeaponName, "asw_weapon_smart_bomb" ) ||
 			!Q_strcmp( szWeaponName, "asw_weapon_tesla_trap" ) ||
-			!Q_strcmp( szWeaponName, "asw_weapon_gas_grenades" ))
+			!Q_strcmp( szWeaponName, "asw_weapon_gas_grenades" ) ||
+			!Q_strcmp( szWeaponName, "asw_weapon_stun_grenades" ) ||
+			!Q_strcmp( szWeaponName, "asw_weapon_incendiary_grenades" ) )
 			return true;
 		else
 			return false;
@@ -355,14 +361,16 @@ bool IsDamagingWeapon( const char* szWeaponName, bool bIsExtraEquip )
 	else
 	{
 		// Check for the few non-damaging weapons
-		if( !Q_strcmp( szWeaponName, "asw_weapon_heal_grenade" ) ||
+		if ( !Q_strcmp( szWeaponName, "asw_weapon_heal_grenade" ) ||
 			!Q_strcmp( szWeaponName, "asw_weapon_ammo_satchel" ) ||
 			!Q_strcmp( szWeaponName, "asw_weapon_heal_gun" ) ||
 			!Q_strcmp( szWeaponName, "asw_weapon_healamp_gun" ) ||
 			!Q_strcmp( szWeaponName, "asw_weapon_fire_extinguisher" ) ||
 			!Q_strcmp( szWeaponName, "asw_weapon_t75" ) ||
 			!Q_strcmp( szWeaponName, "asw_weapon_ammo_bag" ) ||
-			!Q_strcmp( szWeaponName, "asw_weapon_medical_satchel" ) )
+			!Q_strcmp( szWeaponName, "asw_weapon_medical_satchel" ) ||
+			!Q_strcmp( szWeaponName, "asw_weapon_hack_tool" ) ||
+			!Q_strcmp( szWeaponName, "asw_weapon_revive_tool" ) )
 			return false;
 		else
 			return true;
@@ -424,7 +432,19 @@ Class_T GetDamagingWeaponClassFromName( const char *szClassName )
 	else if ( FStrEq( szClassName, "asw_weapon_medrifle" ) )
 		return (Class_T) CLASS_ASW_MEDRIFLE;
 	else if ( FStrEq( szClassName, "asw_weapon_ar2" ) )
-		return (Class_T) CLASS_ASW_AR2;
+		return ( Class_T )CLASS_ASW_AR2;
+	else if ( FStrEq( szClassName, "asw_weapon_flechette" ) )
+		return ( Class_T )CLASS_ASW_FLECHETTE;
+	else if ( FStrEq( szClassName, "asw_weapon_ricochet" ) )
+		return ( Class_T )CLASS_ASW_RICOCHET;
+	else if ( FStrEq( szClassName, "asw_weapon_cryo_cannon" ) )
+		return ( Class_T )CLASS_ASW_CRYO_CANNON;
+	else if ( FStrEq( szClassName, "asw_weapon_plasma_thrower" ) )
+		return ( Class_T )CLASS_ASW_PLASMA_THROWER;
+	else if ( FStrEq( szClassName, "asw_weapon_sentry_railgun" ) )
+		return ( Class_T )CLASS_ASW_SENTRY_RAILGUN;
+	else if ( FStrEq( szClassName, "asw_weapon_energy_shield" ) )
+		return ( Class_T )CLASS_ASW_ENERGY_SHIELD;
 
 	else if( FStrEq( szClassName, "asw_weapon_laser_mines") )
 		return (Class_T)CLASS_ASW_LASER_MINES;
@@ -442,6 +462,10 @@ Class_T GetDamagingWeaponClassFromName( const char *szClassName )
 		return (Class_T)CLASS_ASW_TESLA_TRAP;
 	else if( FStrEq( szClassName, "asw_weapon_gas_grenades") )
 		return (Class_T)CLASS_ASW_GAS_GRENADES;
+	else if ( FStrEq( szClassName, "asw_weapon_stun_grenades" ) )
+		return ( Class_T )CLASS_ASW_GRENADE_BOX_PRIFLE;
+	else if ( FStrEq( szClassName, "asw_weapon_incendiary_grenades" ) )
+		return ( Class_T )CLASS_ASW_GRENADE_BOX_VINDICATOR;
 
 	else if( FStrEq( szClassName, "asw_rifle_grenade") )
 		return (Class_T)CLASS_ASW_RIFLE_GRENADE;
@@ -451,8 +475,12 @@ Class_T GetDamagingWeaponClassFromName( const char *szClassName )
 		return (Class_T)CLASS_ASW_GRENADE_VINDICATOR;
 	else if( FStrEq( szClassName, "asw_combat_rifle_shotgun") )
 		return (Class_T)CLASS_ASW_COMBAT_RIFLE_SHOTGUN;
+	else if( FStrEq( szClassName, "asw_ricochet_shotgun") )
+		return (Class_T)CLASS_ASW_RICOCHET_SHOTGUN;
 	else if( FStrEq( szClassName, "prop_combine_ball" ) )
 		return (Class_T)CLASS_ASW_COMBINE_BALL;
+	else if ( FStrEq( szClassName, "asw_plasma_thrower_airblast" ) )
+		return (Class_T)CLASS_ASW_PLASMA_THROWER_AIRBLAST;
 
 	else
 		return (Class_T)CLASS_ASW_UNKNOWN;
@@ -540,7 +568,9 @@ bool CASW_Steamstats::FetchStats( CSteamID playerSteamID, CASW_Player *pPlayer )
 	FETCH_STEAM_STATS( "iAliensBurned", m_iAliensBurned );
 	FETCH_STEAM_STATS( "iBiomassIgnited", m_iBiomassIgnited );
 	FETCH_STEAM_STATS( "iHealing", m_iHealing );
-	FETCH_STEAM_STATS( "iFastHacks", m_iFastHacks );
+	FETCH_STEAM_STATS( "iFastHacks", m_iFastHacksLegacy );
+	FETCH_STEAM_STATS( "iFastHacksWire", m_iFastHacksWire );
+	FETCH_STEAM_STATS( "iFastHacksComputer", m_iFastHacksComputer );
 	FETCH_STEAM_STATS( "iGamesTotal", m_iGamesTotal );
 	FETCH_STEAM_STATS( "iGamesSuccess", m_iGamesSuccess );
 	FETCH_STEAM_STATS( "fGamesSuccessPercent", m_fGamesSuccessPercent );
@@ -549,6 +579,7 @@ bool CASW_Steamstats::FetchStats( CSteamID playerSteamID, CASW_Player *pPlayer )
 	FETCH_STEAM_STATS( "sentry_flamers_deployed", m_iSentryFlamerDeployed );
 	FETCH_STEAM_STATS( "sentry_freeze_deployed", m_iSentryFreezeDeployed );
 	FETCH_STEAM_STATS( "sentry_cannon_deployed", m_iSentryCannonDeployed );
+	FETCH_STEAM_STATS( "sentry_railgun_deployed", m_iSentryRailgunDeployed );
 	FETCH_STEAM_STATS( "medkits_used", m_iMedkitsUsed );
 	FETCH_STEAM_STATS( "flares_used", m_iFlaresUsed );
 	FETCH_STEAM_STATS( "adrenaline_used", m_iAdrenalineUsed );
@@ -570,6 +601,21 @@ bool CASW_Steamstats::FetchStats( CSteamID playerSteamID, CASW_Player *pPlayer )
 	FETCH_STEAM_STATS( "healampgun_heals", m_iHealAmpGunHeals );
 	FETCH_STEAM_STATS( "healampgun_amps", m_iHealAmpGunAmps );
 	FETCH_STEAM_STATS( "medrifle_heals", m_iMedRifleHeals );
+	FETCH_STEAM_STATS( "cryo_cannon_freeze_aliens", m_iCryoCannonFreezeAlien );
+	FETCH_STEAM_STATS( "plasma_thrower_extinguish_marines", m_iPlasmaThrowerExtinguishMarine );
+	FETCH_STEAM_STATS( "hack_tool_wire_hacks_tech", m_iHackToolWireHacksTech );
+	FETCH_STEAM_STATS( "hack_tool_wire_hacks_other", m_iHackToolWireHacksOther );
+	FETCH_STEAM_STATS( "hack_tool_computer_hacks_tech", m_iHackToolComputerHacksTech );
+	FETCH_STEAM_STATS( "hack_tool_computer_hacks_other", m_iHackToolComputerHacksOther );
+	FETCH_STEAM_STATS( "energy_shield_projectiles_destroyed", m_iEnergyShieldProjectilesDestroyed );
+	FETCH_STEAM_STATS( "reanimator_revives_officer", m_iReanimatorRevivesOfficer );
+	FETCH_STEAM_STATS( "reanimator_revives_sw", m_iReanimatorRevivesSpecialWeapons );
+	FETCH_STEAM_STATS( "reanimator_revives_medic", m_iReanimatorRevivesMedic );
+	FETCH_STEAM_STATS( "reanimator_revives_tech", m_iReanimatorRevivesTech );
+	FETCH_STEAM_STATS( "speed_boosts_used", m_iSpeedBoostsUsed );
+	FETCH_STEAM_STATS( "shield_bubbles_thrown", m_iShieldBubblesThrown );
+	FETCH_STEAM_STATS( "shield_bubble_pushed_enemy", m_iShieldBubblePushedEnemy );
+	FETCH_STEAM_STATS( "shield_bubble_damage_absorbed", m_iShieldBubbleDamageAbsorbed );
 	FETCH_STEAM_STATS( "leadership.procs.accuracy", m_iLeadershipProcsAccuracy );
 	FETCH_STEAM_STATS( "leadership.procs.resist", m_iLeadershipProcsResist );
 	FETCH_STEAM_STATS( "leadership.damage.accuracy", m_iLeadershipDamageAccuracy );
@@ -587,7 +633,7 @@ bool CASW_Steamstats::FetchStats( CSteamID playerSteamID, CASW_Player *pPlayer )
 			m_WeaponStats[weaponIndex].FetchWeaponStats( playerSteamID, szClassname );
 			m_WeaponStats[weaponIndex].m_iWeaponIndex = GetDamagingWeaponClassFromName( szClassname );
 			m_WeaponStats[weaponIndex].m_bIsExtra = false;
-			m_WeaponStats[weaponIndex].m_szClassName = const_cast< char * >( szClassname );
+			m_WeaponStats[weaponIndex].m_szClassName = szClassname;
 		}
 
 		// For primary equips
@@ -611,7 +657,7 @@ bool CASW_Steamstats::FetchStats( CSteamID playerSteamID, CASW_Player *pPlayer )
 			m_WeaponStats[weaponIndex].FetchWeaponStats( playerSteamID, szClassname );
 			m_WeaponStats[weaponIndex].m_iWeaponIndex = GetDamagingWeaponClassFromName( szClassname );
 			m_WeaponStats[weaponIndex].m_bIsExtra = true;
-			m_WeaponStats[weaponIndex].m_szClassName = const_cast< char * >( szClassname );
+			m_WeaponStats[weaponIndex].m_szClassName = szClassname;
 		}
 
 		int32 iTempCount;
@@ -621,7 +667,7 @@ bool CASW_Steamstats::FetchStats( CSteamID playerSteamID, CASW_Player *pPlayer )
 
 	// Get weapon stats for rifle grenade and vindicator grenade
 	int weaponIndex = m_WeaponStats.AddToTail();
-	char *szClassname = "asw_rifle_grenade";
+	const char *szClassname = "asw_rifle_grenade";
 	m_WeaponStats[weaponIndex].FetchWeaponStats( playerSteamID, szClassname );
 	m_WeaponStats[weaponIndex].m_iWeaponIndex = GetDamagingWeaponClassFromName( szClassname );
 	m_WeaponStats[weaponIndex].m_bIsExtra = false;
@@ -655,6 +701,12 @@ bool CASW_Steamstats::FetchStats( CSteamID playerSteamID, CASW_Player *pPlayer )
 	m_WeaponStats[weaponIndex].m_bIsExtra = false;
 	m_WeaponStats[weaponIndex].m_szClassName = szClassname;
 
+	weaponIndex = m_WeaponStats.AddToTail();
+	szClassname = "asw_plasma_thrower_airblast";
+	m_WeaponStats[weaponIndex].FetchWeaponStats( playerSteamID, szClassname );
+	m_WeaponStats[weaponIndex].m_iWeaponIndex = GetDamagingWeaponClassFromName( szClassname );
+	m_WeaponStats[weaponIndex].m_bIsExtra = false;
+	m_WeaponStats[weaponIndex].m_szClassName = szClassname;
 
 	// Fetch marine counts
 	for ( int i = 0; i < ASW_NUM_MARINE_PROFILES; i++ )
@@ -679,7 +731,7 @@ bool CASW_Steamstats::FetchStats( CSteamID playerSteamID, CASW_Player *pPlayer )
 
 	// Get stats for this mission/difficulty/marine
 	bOK &= m_MissionStats.FetchMissionStats( playerSteamID );
-	
+
 	return bOK;
 }
 
@@ -688,14 +740,10 @@ void CASW_Steamstats::PrepStatsForSend( CASW_Player *pPlayer )
 	if( !SteamUserStats() )
 		return;
 
-	// Update stats from the briefing screen
-	if( !GetDebriefStats() 
-		|| !ASWGameResource() 
-#ifndef DEBUG 
-		|| ASWGameRules()->m_bCheated 
-#endif
-		|| engine->IsPlayingDemo()
-		)
+	if ( !GetDebriefStats() || !ASWGameResource() || !ASWGameRules() )
+		return;
+
+	if ( ASWGameRules()->m_bCheated || engine->IsPlayingDemo() )
 		return;
 
 	if ( !IsOfficialCampaign() && !IsWorkshopCampaign() )
@@ -740,7 +788,10 @@ void CASW_Steamstats::PrepStatsForSend( CASW_Player *pPlayer )
 	m_iAliensBurned += GetDebriefStats()->GetAliensBurned( iMarineIndex );
 	m_iBiomassIgnited += GetDebriefStats()->GetBiomassIgnited( iMarineIndex );
 	m_iHealing += GetDebriefStats()->GetHealthHealed( iMarineIndex );
-	m_iFastHacks += GetDebriefStats()->GetFastHacks( iMarineIndex );
+	m_iFastHacksLegacy += GetDebriefStats()->GetFastHacksWire( iMarineIndex );
+	m_iFastHacksWire += GetDebriefStats()->GetFastHacksWire( iMarineIndex );
+	m_iFastHacksLegacy += GetDebriefStats()->GetFastHacksComputer( iMarineIndex );
+	m_iFastHacksComputer += GetDebriefStats()->GetFastHacksComputer( iMarineIndex );
 	m_iGamesTotal++;
 	if ( m_DifficultyCounts.IsValidIndex( ASWGameRules()->GetSkillLevel() - 1 ) )
 		m_DifficultyCounts[ASWGameRules()->GetSkillLevel() - 1] += 1;
@@ -755,6 +806,7 @@ void CASW_Steamstats::PrepStatsForSend( CASW_Player *pPlayer )
 	m_iSentryFlamerDeployed += GetDebriefStats()->GetSentryFlamersDeployed( iMarineIndex );
 	m_iSentryFreezeDeployed += GetDebriefStats()->GetSentryFreezeDeployed( iMarineIndex );
 	m_iSentryCannonDeployed += GetDebriefStats()->GetSentryCannonDeployed( iMarineIndex );
+	m_iSentryRailgunDeployed += GetDebriefStats()->GetSentryRailgunsDeployed( iMarineIndex );
 	m_iMedkitsUsed += GetDebriefStats()->GetMedkitsUsed( iMarineIndex );
 	m_iFlaresUsed += GetDebriefStats()->GetFlaresUsed( iMarineIndex );
 	m_iAdrenalineUsed += GetDebriefStats()->GetAdrenalineUsed( iMarineIndex );
@@ -776,6 +828,21 @@ void CASW_Steamstats::PrepStatsForSend( CASW_Player *pPlayer )
 	m_iHealAmpGunHeals += GetDebriefStats()->GetHealampgunHeals( iMarineIndex );
 	m_iHealAmpGunAmps += GetDebriefStats()->GetHealampgunAmps( iMarineIndex );
 	m_iMedRifleHeals += GetDebriefStats()->GetMedRifleHeals( iMarineIndex );
+	m_iCryoCannonFreezeAlien += GetDebriefStats()->GetCryoCannonFreezeAlien( iMarineIndex );
+	m_iPlasmaThrowerExtinguishMarine += GetDebriefStats()->GetPlasmaThrowerExtinguishMarine( iMarineIndex );
+	m_iHackToolWireHacksTech += GetDebriefStats()->GetHackToolWireHacksTech( iMarineIndex );
+	m_iHackToolWireHacksOther += GetDebriefStats()->GetHackToolWireHacksOther( iMarineIndex );
+	m_iHackToolComputerHacksTech += GetDebriefStats()->GetHackToolComputerHacksTech( iMarineIndex );
+	m_iHackToolComputerHacksOther += GetDebriefStats()->GetHackToolComputerHacksOther( iMarineIndex );
+	m_iEnergyShieldProjectilesDestroyed += GetDebriefStats()->GetEnergyShieldProjectilesDestroyed( iMarineIndex );
+	m_iReanimatorRevivesOfficer += GetDebriefStats()->GetReanimatorRevivesOfficer( iMarineIndex );
+	m_iReanimatorRevivesSpecialWeapons += GetDebriefStats()->GetReanimatorRevivesSpecialWeapons( iMarineIndex );
+	m_iReanimatorRevivesMedic += GetDebriefStats()->GetReanimatorRevivesMedic( iMarineIndex );
+	m_iReanimatorRevivesTech += GetDebriefStats()->GetReanimatorRevivesTech( iMarineIndex );
+	m_iSpeedBoostsUsed += GetDebriefStats()->GetSpeedBoostsUsed( iMarineIndex );
+	m_iShieldBubblesThrown += GetDebriefStats()->GetShieldBubblesThrown( iMarineIndex );
+	m_iShieldBubblePushedEnemy += GetDebriefStats()->GetShieldBubblePushedEnemy( iMarineIndex );
+	m_iShieldBubbleDamageAbsorbed += GetDebriefStats()->GetShieldBubbleDamageAbsorbed( iMarineIndex );
 	m_iLeadershipProcsAccuracy += GetDebriefStats()->GetLeadershipProcsAccuracy( iMarineIndex );
 	m_iLeadershipProcsResist += GetDebriefStats()->GetLeadershipProcsResist( iMarineIndex );
 	m_iLeadershipDamageAccuracy += GetDebriefStats()->GetLeadershipDamageAccuracy( iMarineIndex );
@@ -809,7 +876,9 @@ void CASW_Steamstats::PrepStatsForSend( CASW_Player *pPlayer )
 	SEND_STEAM_STATS( "iAliensBurned", m_iAliensBurned );
 	SEND_STEAM_STATS( "iBiomassIgnited", m_iBiomassIgnited );
 	SEND_STEAM_STATS( "iHealing", m_iHealing );
-	SEND_STEAM_STATS( "iFastHacks", m_iFastHacks );
+	SEND_STEAM_STATS( "iFastHacks", m_iFastHacksLegacy );
+	SEND_STEAM_STATS( "iFastHacksWire", m_iFastHacksWire );
+	SEND_STEAM_STATS( "iFastHacksComputer", m_iFastHacksComputer );
 	SEND_STEAM_STATS( "iGamesTotal", m_iGamesTotal );
 	SEND_STEAM_STATS( "iGamesSuccess", m_iGamesSuccess );
 	SEND_STEAM_STATS( "fGamesSuccessPercent", m_fGamesSuccessPercent );
@@ -819,6 +888,7 @@ void CASW_Steamstats::PrepStatsForSend( CASW_Player *pPlayer )
 	SEND_STEAM_STATS( "sentry_flamers_deployed", m_iSentryFlamerDeployed );
 	SEND_STEAM_STATS( "sentry_freeze_deployed", m_iSentryFreezeDeployed );
 	SEND_STEAM_STATS( "sentry_cannon_deployed", m_iSentryCannonDeployed );
+	SEND_STEAM_STATS( "sentry_railgun_deployed", m_iSentryRailgunDeployed );
 	SEND_STEAM_STATS( "medkits_used", m_iMedkitsUsed );
 	SEND_STEAM_STATS( "flares_used", m_iFlaresUsed );
 	SEND_STEAM_STATS( "adrenaline_used", m_iAdrenalineUsed );
@@ -840,6 +910,21 @@ void CASW_Steamstats::PrepStatsForSend( CASW_Player *pPlayer )
 	SEND_STEAM_STATS( "healampgun_heals", m_iHealAmpGunHeals );
 	SEND_STEAM_STATS( "healampgun_amps", m_iHealAmpGunAmps );
 	SEND_STEAM_STATS( "medrifle_heals", m_iMedRifleHeals );
+	SEND_STEAM_STATS( "cryo_cannon_freeze_aliens", m_iCryoCannonFreezeAlien );
+	SEND_STEAM_STATS( "plasma_thrower_extinguish_marines", m_iPlasmaThrowerExtinguishMarine );
+	SEND_STEAM_STATS( "hack_tool_wire_hacks_tech", m_iHackToolWireHacksTech );
+	SEND_STEAM_STATS( "hack_tool_wire_hacks_other", m_iHackToolWireHacksOther );
+	SEND_STEAM_STATS( "hack_tool_computer_hacks_tech", m_iHackToolComputerHacksTech );
+	SEND_STEAM_STATS( "hack_tool_computer_hacks_other", m_iHackToolComputerHacksOther );
+	SEND_STEAM_STATS( "energy_shield_projectiles_destroyed", m_iEnergyShieldProjectilesDestroyed );
+	SEND_STEAM_STATS( "reanimator_revives_officer", m_iReanimatorRevivesOfficer );
+	SEND_STEAM_STATS( "reanimator_revives_sw", m_iReanimatorRevivesSpecialWeapons );
+	SEND_STEAM_STATS( "reanimator_revives_medic", m_iReanimatorRevivesMedic );
+	SEND_STEAM_STATS( "reanimator_revives_tech", m_iReanimatorRevivesTech );
+	SEND_STEAM_STATS( "speed_boosts_used", m_iSpeedBoostsUsed );
+	SEND_STEAM_STATS( "shield_bubbles_thrown", m_iShieldBubblesThrown );
+	SEND_STEAM_STATS( "shield_bubble_pushed_enemy", m_iShieldBubblePushedEnemy );
+	SEND_STEAM_STATS( "shield_bubble_damage_absorbed", m_iShieldBubbleDamageAbsorbed );
 	SEND_STEAM_STATS( "leadership.procs.accuracy", m_iLeadershipProcsAccuracy );
 	SEND_STEAM_STATS( "leadership.procs.resist", m_iLeadershipProcsResist );
 	SEND_STEAM_STATS( "leadership.damage.accuracy", m_iLeadershipDamageAccuracy );

@@ -299,7 +299,7 @@ void MissionCompleteStatsLine::InitFrom(C_ASW_Debrief_Stats *pDebriefStats)
 		{
 			int iHighest = pDebriefStats->GetHighestFastHacks();
 			float fRate = float(iHighest) / fDelay;
-			m_pStats[5]->Init(0, pDebriefStats->GetFastHacks(m_iMarineIndex), fRate, true, false);
+			m_pStats[5]->Init(0, pDebriefStats->GetFastHacksWire(m_iMarineIndex) + pDebriefStats->GetFastHacksComputer(m_iMarineIndex), fRate, true, false);
 			m_pStats[5]->AddMinMax( 0, iHighest );
 			m_pBarIcons[5]->SetImage("swarm/Briefing/stathack");
 		}

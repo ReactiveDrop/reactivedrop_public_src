@@ -135,7 +135,6 @@ void CASW_Weapon_Ricochet::PrimaryAttack()
 		}
 
 		info.m_flDistance = asw_weapon_max_shooting_distance.GetFloat();
-		info.m_iAmmoType = m_iPrimaryAmmoType;
 		info.m_iTracerFreq = 1;  // asw tracer test everytime
 
 		// To make the firing framerate independent, we may have to fire more than one bullet here on low-framerate systems, 
@@ -188,6 +187,7 @@ void CASW_Weapon_Ricochet::PrimaryAttack()
 		{
 			info.m_vecSpread.x = info.m_vecSpread.y = info.m_vecSpread.z = rd_ricochet_shotgun_spread.GetFloat();
 			info.m_nFlags = FIRE_BULLETS_NO_PIERCING_SPARK | FIRE_BULLETS_HULL | FIRE_BULLETS_ANGULAR_SPREAD;
+			info.m_iAmmoType = m_iSecondaryAmmoType;
 
 			info.m_iShots *= rd_ricochet_shotgun_pellets.GetInt();
 			info.m_flDamage = MAX( GetWeaponDamage() * rd_ricochet_shotgun_damage_scale.GetFloat(), 1.0f );
@@ -198,6 +198,7 @@ void CASW_Weapon_Ricochet::PrimaryAttack()
 		{
 			info.m_vecSpread = GetBulletSpread();
 			info.m_flDamage = GetWeaponDamage();
+			info.m_iAmmoType = m_iPrimaryAmmoType;
 
 			nBounces = rd_ricochet_bounces.GetInt();
 		}
@@ -215,7 +216,7 @@ void CASW_Weapon_Ricochet::PrimaryAttack()
 		if ( pMarine->GetMarineResource() )
 		{
 			pMarine->GetMarineResource()->UsedWeapon( this, info.m_iShots );
-			pMarine->OnWeaponFired( this, info.m_iShots );
+			pMarine->OnWeaponFired( this, info.m_iShots, bAttack2 );
 		}
 #endif
 	}

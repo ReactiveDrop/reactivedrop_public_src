@@ -20,6 +20,8 @@ public:
 	DECLARE_DATADESC();
 #endif
 
+	bool SecondaryAttackUsesPrimaryAmmo() override { return true; }
+
 	Class_T Classify() override { return ( Class_T )CLASS_ASW_PLASMA_THROWER; }
 };
 #endif

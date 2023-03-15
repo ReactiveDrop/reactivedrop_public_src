@@ -1,0 +1,60 @@
+// Alien Swarm Railgun Sentry Gun Case
+
+WeaponData
+{
+	// Weapon data is loaded by both the Game and Client DLLs.
+	"printname"				"#asw_weapon_sentry_cannon"
+	"viewmodel"				"models/items/ItemBox/ItemBoxLarge.mdl"
+	"playermodel"			"models/items/ItemBox/ItemBoxLarge.mdl"
+	"playermodel_skin"		"5"
+	"displaymodel"			"models/sentry_gun/sentry_base.mdl"
+	"displaymodel2"			"models/sentry_gun/railgun_top.mdl"
+	"anim_prefix"			"ar2"
+	"bucket"				"0"
+	"bucket_position"		"0"
+
+	"clip_size"				"1"
+	"default_clip"			"1"
+
+	"clip2_size"			"-1"
+	"default_clip2"			"-1"
+
+	"primary_ammo"			"None"
+	"secondary_ammo"		"None"
+
+	"weight"				"5"
+	"item_flags"			"0"
+
+	// asw properties
+	////// *** These numbers are just for show in the loadout page - they aren't used by the weapon	
+	"base_damage"			"60"
+	"fire_rate"				"1.75"
+	"display_clip_size"		"25"
+	"display_reload_time"	"0"
+	"altfiretext"			"#asw_weapon_altfire_NA"
+	////// ***
+	
+	"reload_time"			"2.2"
+	"equipicon"				"swarm/EquipIcons/EquipSentryRailgun"
+	"equiplongname"			"#asw_weaponl_sentry_railgun"
+	"equipdescription1"		"#asw_wdesc_sentry_railgun"
+	"attributestext"		"#asw_weapon_sentry_railgun_attributes"
+	
+	// flinching
+	"FlinchChance"				"0"
+	"StoppingPowerFlinchBonus"	"0"
+	
+	// which ammo elements this weapon should display on the hud
+	"ShowBulletsOnHUD"			"1"
+	"ShowClipsOnHUD"			"0"
+	"ShowGrenadesOnHUD"			"0"
+	"OffhandActivate"			"1"
+	"OffhandOrderType"			"ASW_OFFHAND_DEPLOY"
+	"ShowClipsInWeaponDetail"	"0"
+
+	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
+	SoundData
+	{
+		"empty"			"ASW_Weapon.Empty"
+	}
+}

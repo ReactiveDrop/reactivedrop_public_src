@@ -33,7 +33,8 @@ public:
 	int GetAliensBurned(int iMarineIndex) { return m_iAliensBurned[iMarineIndex]; }
 	int GetBiomassIgnited(int iMarineIndex) { return m_iBiomassIgnited[iMarineIndex]; }
 	int GetHealthHealed(int iMarineIndex) { return m_iHealthHealed[iMarineIndex]; }
-	int GetFastHacks(int iMarineIndex) { return m_iFastHacks[iMarineIndex]; }
+	int GetFastHacksWire(int iMarineIndex) { return m_iFastHacksWire[iMarineIndex]; }
+	int GetFastHacksComputer(int iMarineIndex) { return m_iFastHacksComputer[iMarineIndex]; }
 	bool IsWounded(int iMarineIndex) { return (m_iWounded[iMarineIndex] > 0); }
 	int	GetStartingPrimaryEquip( int iMarineIndex ) { return m_iStartingEquip0[iMarineIndex]; }
 	int	GetStartingSecondaryEquip( int iMarineIndex ) { return m_iStartingEquip1[iMarineIndex]; }
@@ -57,7 +58,8 @@ public:
 	CNetworkArray( int,		m_iWounded,		ASW_MAX_MARINE_RESOURCES );	
 	CNetworkArray( int,		m_iAliensBurned,		ASW_MAX_MARINE_RESOURCES );
 	CNetworkArray( int,		m_iHealthHealed,		ASW_MAX_MARINE_RESOURCES );
-	CNetworkArray( int,		m_iFastHacks,		ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iFastHacksWire,		ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iFastHacksComputer,	ASW_MAX_MARINE_RESOURCES );
 	CNetworkArray( int,		m_iSkillPointsAwarded,		ASW_MAX_MARINE_RESOURCES );
 	CNetworkArray( int,		m_iStartingEquip0,			ASW_MAX_MARINE_RESOURCES );	
 	CNetworkArray( int,		m_iStartingEquip1,			ASW_MAX_MARINE_RESOURCES );	
@@ -67,6 +69,7 @@ public:
 	CNetworkArray( int,		m_iSentryFlamerDeployed,			ASW_MAX_MARINE_RESOURCES );
 	CNetworkArray( int,		m_iSentryFreezeDeployed,			ASW_MAX_MARINE_RESOURCES );
 	CNetworkArray( int,		m_iSentryCannonDeployed,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iSentryRailgunDeployed,			ASW_MAX_MARINE_RESOURCES );
 	CNetworkArray( int,		m_iMedkitsUsed,			ASW_MAX_MARINE_RESOURCES );
 	CNetworkArray( int,		m_iFlaresUsed,			ASW_MAX_MARINE_RESOURCES );
 	CNetworkArray( int,		m_iAdrenalineUsed,			ASW_MAX_MARINE_RESOURCES );
@@ -88,6 +91,21 @@ public:
 	CNetworkArray( int,		m_iHealAmpGunHeals,			ASW_MAX_MARINE_RESOURCES );
 	CNetworkArray( int,		m_iHealAmpGunAmps,			ASW_MAX_MARINE_RESOURCES );
 	CNetworkArray( int,		m_iMedRifleHeals,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iCryoCannonFreezeAlien,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iPlasmaThrowerExtinguishMarine,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iHackToolWireHacksTech,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iHackToolWireHacksOther,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iHackToolComputerHacksTech,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iHackToolComputerHacksOther,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iEnergyShieldProjectilesDestroyed,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iReanimatorRevivesOfficer,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iReanimatorRevivesSpecialWeapons,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iReanimatorRevivesMedic,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iReanimatorRevivesTech,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iSpeedBoostsUsed,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iShieldBubblesThrown,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iShieldBubblePushedEnemy,			ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( int,		m_iShieldBubbleDamageAbsorbed,			ASW_MAX_MARINE_RESOURCES );
 	CNetworkArray( int,		m_iBiomassIgnited,			ASW_MAX_MARINE_RESOURCES );
 	CNetworkArray( int,		m_iLeadershipProcsAccuracy,			ASW_MAX_MARINE_RESOURCES );
 	CNetworkArray( int,		m_iLeadershipProcsResist,			ASW_MAX_MARINE_RESOURCES );

@@ -20,6 +20,8 @@ public:
 	DECLARE_DATADESC();
 #endif
 
+	bool IsOffensiveWeapon() override { return false; }
+
 	Class_T Classify() override { return ( Class_T )CLASS_ASW_SPEED_BURST; }
 };
 #endif

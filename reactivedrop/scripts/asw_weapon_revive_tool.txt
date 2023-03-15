@@ -1,0 +1,45 @@
+// Resurrector
+
+WeaponData
+{
+	// Weapon data is loaded by both the Game and Client DLLs.
+	"printname"				"#asw_weapon_revive_tool"
+	"viewmodel"				"models/weapons/revivetool/revivetool.mdl"
+	"playermodel"			"models/weapons/revivetool/revivetool.mdl"
+	"anim_prefix"			"ar2"
+	"bucket"				"0"
+	"bucket_position"		"0"
+
+	"clip_size"				"1"
+	"default_clip"			"1"
+
+	"clip2_size"			"-1"
+	"default_clip2"			"-1"
+
+	"primary_ammo"			"None"
+	"secondary_ammo"		"None"
+
+	"weight"				"5"
+	"item_flags"			"0"
+			
+	// asw properties
+	"equipicon"				"swarm/EquipIcons/EquipReviveTool"
+	"equiplongname"			"#asw_weaponl_revive_tool"
+	"equipdescription1"		"#asw_wdesc_revive_tool"
+	"attributestext"		"#asw_weapon_revive_tool_attributes"
+
+	// flinching
+	"FlinchChance"				"0.20"
+	"StoppingPowerFlinchBonus"	"0.10"
+	
+	// which ammo elements this weapon should display on the hud
+	"ShowBulletsOnHUD"			"0"
+	"ShowClipsOnHUD"			"0"
+	"ShowGrenadesOnHUD"			"0"
+
+	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
+	SoundData
+	{
+		"empty"				"ASW_Weapon.Empty"
+	}
+}
