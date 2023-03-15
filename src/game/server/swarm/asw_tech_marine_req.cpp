@@ -62,7 +62,8 @@ void CASW_Tech_Marine_Req::InputEnableTechMarineReq( inputdata_t &inputdata )
 				}
 				if ( !bTech && pGameResource->CountAllAliveMarines() > 0 )
 				{
-					ASWGameRules()->ScheduleTechFailureRestart( gpGlobals->curtime + 1.5f );
+					float flDelay = gEntList.FindEntityByClassname( NULL, "asw_weapon_hack_tool" ) ? 5.0f : 1.5f;
+					ASWGameRules()->ScheduleTechFailureRestart( gpGlobals->curtime + flDelay );
 				}
 			}
 		}

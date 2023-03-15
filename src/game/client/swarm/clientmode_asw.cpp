@@ -788,6 +788,7 @@ void ClientModeASW::FireGameEvent( IGameEvent *event )
 			g_RD_Auto_Record_System.LevelInitPostEntity();
 		}
 
+		m_bTechFailure = false;
 		m_aAchievementsEarned.Purge();
 		m_aAwardedExperience.Purge();
 
