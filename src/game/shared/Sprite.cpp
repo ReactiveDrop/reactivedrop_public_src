@@ -342,7 +342,7 @@ void CSprite::SpriteInit( const char *pSpriteName, const Vector &origin )
 
 int CSprite::UpdateTransmitState( void )
 {
-	if ( GetMoveParent() )
+	if ( GetMoveParent() && !HasSpawnFlags( SF_SPRITE_IGNOREPVS ) )
 	{
 		// we must call ShouldTransmit() if we have a move parent
 		return SetTransmitState( FL_EDICT_FULLCHECK );
@@ -360,7 +360,7 @@ int CSprite::ShouldTransmit( const CCheckTransmitInfo *pInfo )
 	// the client. Otherwise, the server will have to send big bursts of data with the entity states
 	// as they come in and out of the PVS.
 	
-	if ( GetMoveParent() )
+	if ( GetMoveParent() && !HasSpawnFlags( SF_SPRITE_IGNOREPVS ) )
 	{
 		CBaseViewModel *pViewModel = ToBaseViewModel( GetMoveParent() );
 
@@ -794,11 +794,37 @@ extern ConVar r_drawviewmodel;
 int CSprite::DrawModel( int flags, const RenderableInstance_t &instance )
 {
 	VPROF_BUDGET( "CSprite::DrawModel", VPROF_BUDGETGROUP_PARTICLE_RENDERING );
+
+	CSprite *pSpriteDataSource = this;
+
+	if ( m_iszSpriteControllerName != NULL_STRING && !m_hSpriteController )
+	{
+		for ( C_BaseEntity *pEnt = ClientEntityList().FirstBaseEntity(); pEnt; pEnt = ClientEntityList().NextBaseEntity( pEnt ) )
+		{
+			const char *szEntName = pEnt->GetEntityName();
+			if ( szEntName && !V_stricmp( szEntName, STRING( m_iszSpriteControllerName ) ) )
+			{
+				m_hSpriteController = dynamic_cast< CSprite * >( pEnt );
+				if ( m_hSpriteController )
+					break;
+
+				Warning( "Sprite controller must be a sprite: %s is %s\n", szEntName, pEnt->GetClassname() );
+			}
+		}
+
+		if ( !m_hSpriteController )
+		{
+			Warning( "Sprite controller not found: %s; clearing sprite controller (mapper: check to make sure the entity exists and is unparented or has the always transmit flag set)\n", STRING( m_iszSpriteControllerName ) );
+			m_iszSpriteControllerName = NULL_STRING;
+		}
+	}
+
+	if ( m_hSpriteController )
+		pSpriteDataSource = m_hSpriteController;
+
 	//See if we should draw
-	if ( !IsVisible() || ( m_bReadyToDraw == false ) )
+	if ( !pSpriteDataSource->IsVisible() || ( m_bReadyToDraw == false ) )
 		return 0;
-
-
 
 	// Tracker 16432:  If rendering a savegame screenshot then don't draw sprites 
 	//   who have viewmodels as their moveparent
@@ -839,12 +865,12 @@ int CSprite::DrawModel( int flags, const RenderableInstance_t &instance )
 		m_flFrame,				// sprite frame to render
 		m_hAttachedToEntity,	// attach to
 		m_nAttachment,			// attachment point
-		GetRenderMode(),		// rendermode
-		GetRenderFX(),
-		(float)( GetRenderBrightness() * instance.m_nAlpha ) * ( 1.0f / 255.0f ) + 0.5f,	// alpha
-		GetRenderColorR(),
-		GetRenderColorG(),
-		GetRenderColorB(),
+		pSpriteDataSource->GetRenderMode(),		// rendermode
+		pSpriteDataSource->GetRenderFX(),
+		(float)( pSpriteDataSource->GetRenderBrightness() * instance.m_nAlpha ) * ( 1.0f / 255.0f ) + 0.5f,	// alpha
+		pSpriteDataSource->GetRenderColorR(),
+		pSpriteDataSource->GetRenderColorG(),
+		pSpriteDataSource->GetRenderColorB(),
 		renderscale,			// sprite scale
 		GetHDRColorScale()		// HDR Color Scale
 		);

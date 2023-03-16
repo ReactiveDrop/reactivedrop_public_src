@@ -3931,6 +3931,8 @@
 
 	GlowProxySize(float) : "Size of Glow Proxy Geometry." : "2.0" : "Size of the glow to be rendered for visibility testing. Must be larger than the distance from the sprite center to empty space.  So if this glow is inside geometry (like a light bulb), set this value to be bigger than the bulb's radius. Any time a sphere of this radius would be visible (poking through any nearby geometry), the glow will be rendered."
 
+	SpriteController(target_destination) : "Sprite Controller" : "" : "The name of an env_sprite (if it is parented, be sure to set the always transmit flag) that will be used for render settings (color, on/off status, render fx, etc.) instead of this sprite."
+
 	HDRColorScale(float) : "HDR color scale." : "1.0" : "float value to multiply sprite color by when running in HDR mode."		
 ]
 

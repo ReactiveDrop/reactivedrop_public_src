@@ -2221,6 +2221,7 @@
 	[
 		1: "Start on" : 0
 		2: "Play Once" : 0
+		4: "Always transmit to client (ignore PVS)" : 0
 	]
 
 	GlowProxySize(float) : "Size of Glow Proxy Geometry." : "2.0" : "Size of the glow to be rendered for visibility testing. Must be larger than the distance from the sprite center to empty space.  So if this glow is inside geometry (like a light bulb), set this value to be bigger than the bulb's radius. Any time a sphere of this radius would be visible (poking through any nearby geometry), the glow will be rendered."

@@ -16,6 +16,7 @@
 
 #define SF_SPRITE_STARTON		0x0001
 #define SF_SPRITE_ONCE			0x0002
+#define SF_SPRITE_IGNOREPVS		0x0004
 #define SF_SPRITE_TEMPORARY		0x8000
 
 class CBasePlayer;
@@ -250,7 +251,9 @@ public:
 
 	bool InitializeClientside();
 
-	virtual bool KeyValue( const char *szKeyName, const char *szValue ) ;	
+	virtual bool KeyValue( const char *szKeyName, const char *szValue );
+	string_t m_iszSpriteControllerName{};
+	CHandle<CSprite> m_hSpriteController{};
 #endif
 
 public:
