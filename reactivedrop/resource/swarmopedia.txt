@@ -2799,8 +2799,8 @@
 			"Caption" "#rd_so_stat_equip_extra"
 		}
 		"GlobalStat" {
-			"StatName" "normal_armor_reduction"
-			"Caption" "#rd_so_stat_damage_blocked"
+			"StatName" "damage_amp_amps"
+			"Caption" "#rd_so_stat_damage_doubled"
 		}
 		"Facts" {
 			"Ammo" {
