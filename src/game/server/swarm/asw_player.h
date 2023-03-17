@@ -115,6 +115,8 @@ public:
 	bool HasLiveMarines();
 	virtual bool IsAlive( void );
 	HSCRIPT ScriptGetMarine();
+	void ScriptSetNPC( HSCRIPT hNPC );
+	void ScriptSetSpectatingNPC( HSCRIPT hNPC );
 
 	CNetworkHandle( CASW_Marine, m_hOrderingMarine );
 

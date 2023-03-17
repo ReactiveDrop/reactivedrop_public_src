@@ -1877,7 +1877,7 @@ void CBaseEntity::PhysicsSimulate( void )
 		break;
 
 	default:
-		Warning( "PhysicsSimulate: %s bad movetype %d", GetClassname(), GetMoveType() );
+		Warning( "PhysicsSimulate: %s bad movetype %d\n", GetClassname(), GetMoveType() );
 		Assert(0);
 		break;
 	}

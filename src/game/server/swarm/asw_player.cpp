@@ -290,6 +290,8 @@ BEGIN_ENT_SCRIPTDESC( CASW_Player, CBasePlayer, "The player entity." )
 	DEFINE_SCRIPTFUNC( ResurrectMarine, "Resurrect the marine" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetNPC, "GetNPC", "Returns entity the player is inhabiting" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetSpectatingNPC, "GetSpectatingNPC", "Returns entity the player is spectating" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetNPC, "SetNPC", "Force the player to inhabit an NPC" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetSpectatingNPC, "SetSpectatingNPC", "Force the player to spectate an NPC" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetViewNPC, "GetViewNPC", "Returns entity the player is spectating, else will return inhabiting entity" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetMarine, "GetMarine", "Returns the marine the player is commanding" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptFindPickerEntity, "FindPickerEntity", "Finds the nearest entity in front of the player" )
@@ -3380,4 +3382,51 @@ HSCRIPT CASW_Player::ScriptGetMarine()
 	}
 
 	return NULL;
+}
+
+void CASW_Player::ScriptSetNPC( HSCRIPT hNPC )
+{
+	CBaseEntity *pEnt = ToEnt( hNPC );
+	if ( !pEnt )
+	{
+		LeaveMarines();
+		return;
+	}
+
+	if ( !pEnt->IsInhabitableNPC() )
+	{
+		Warning( "Player #%d:%s cannot inhabit %s #%d:%s (vscript error)\n", entindex(), GetASWNetworkID(), pEnt->GetClassname(), pEnt->entindex(), pEnt->GetDebugName() );
+		return;
+	}
+
+	if ( CASW_Marine *pMarine = CASW_Marine::AsMarine( pEnt ) )
+	{
+		CASW_Marine_Resource *pMR = pMarine->GetMarineResource();
+		if ( pMR )
+		{
+			SwitchMarine( pMR );
+			return;
+		}
+	}
+
+	SwitchInhabiting( assert_cast< CASW_Inhabitable_NPC * >( pEnt ) );
+}
+
+void CASW_Player::ScriptSetSpectatingNPC( HSCRIPT hNPC )
+{
+	CBaseEntity *pEnt = ToEnt( hNPC );
+	if ( !pEnt )
+	{
+		SetSpectatingNPC( NULL );
+		return;
+	}
+
+	if ( !pEnt->IsInhabitableNPC() )
+	{
+		Warning( "Player #%d:%s cannot spectate %s #%d:%s (vscript error)\n", entindex(), GetASWNetworkID(), pEnt->GetClassname(), pEnt->entindex(), pEnt->GetDebugName() );
+		return;
+	}
+
+	LeaveMarines();
+	SetSpectatingNPC( assert_cast< CASW_Inhabitable_NPC * >( pEnt ) );
 }
