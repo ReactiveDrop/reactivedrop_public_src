@@ -17,6 +17,17 @@ extern const ASW_Alien_Class_Entry g_Aliens[38];
 #else
 extern const ASW_Alien_Class_Entry g_Aliens[31];
 #endif
+extern const ASW_Alien_Class_Entry g_NonSpawnableAliens[5];
+
 int GetAlienClassIndex( CBaseEntity *pAlien );
+
+const ASW_Alien_Class_Entry *GetAlienClass( int index );
+const char *GetAlienClassname( int index );
+
+inline const char *GetAlienClassname( CBaseEntity *pAlien )
+{
+	return GetAlienClassname( GetAlienClassIndex( pAlien ) );
+}
+
 extern const int g_nDroneClassEntry;
 extern const int g_nDroneJumperClassEntry;

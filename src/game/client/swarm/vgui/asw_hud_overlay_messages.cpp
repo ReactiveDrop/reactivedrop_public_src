@@ -14,6 +14,7 @@ using namespace vgui;
 #include "asw_hudelement.h"
 #include "hud_numericdisplay.h"
 #include "asw_marine_profile.h"
+#include "asw_alien_classes.h"
 #include "c_asw_game_resource.h"
 #include "c_asw_player.h"
 #include "c_asw_marine.h"
@@ -221,7 +222,7 @@ void CASWHudOverlayMessages::UpdateSpectatingLabel()
 
 	C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pNPC );
 	CASW_Marine_Profile *pProfile = pMarine ? pMarine->GetMarineProfile() : NULL;
-	const char *szShortName = pProfile ? pProfile->GetShortName() : "";
+	const char *szShortName = pProfile ? pProfile->GetShortName() : GetAlienClassname( pNPC );
 
 	wchar_t wbuffer[128];
 	if ( pNPC->GetCommander() && pNPC->IsInhabited() )

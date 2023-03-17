@@ -114,6 +114,8 @@ public:
 	void UpdateFireEmitters( void );
 	bool m_bClientOnFire;
 
+	CNetworkVar( int, m_iAlienClassIndex );
+
 private:
 	C_ASW_Inhabitable_NPC( const C_ASW_Inhabitable_NPC & ) = delete; // not defined, not accessible
 };

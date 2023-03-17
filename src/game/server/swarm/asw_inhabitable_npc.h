@@ -195,6 +195,8 @@ public:
 	int  m_iHealthBonus;
 	float m_fSizeScale;
 	CNetworkVar( float, m_fSpeedScale );
+
+	CNetworkVar( int, m_iAlienClassIndex );
 };
 
 #endif /* ASW_INHABITABLE_NPC_H */

@@ -1,5 +1,6 @@
 #include "cbase.h"
 #include "asw_inhabitable_npc.h"
+#include "asw_alien_classes.h"
 #include "asw_player.h"
 #include "asw_weapon.h"
 #include "env_tonemap_controller.h"
@@ -72,6 +73,7 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Inhabitable_NPC, DT_ASW_Inhabitable_NPC )
 	SendPropBool( SENDINFO( m_bGlowWhenOccluded ) ),
 	SendPropBool( SENDINFO( m_bGlowWhenUnoccluded ) ),
 	SendPropBool( SENDINFO( m_bGlowFullBloom ) ),
+	SendPropInt( SENDINFO( m_iAlienClassIndex ), NumBitsForCount( MAX( NELEMS( g_Aliens ), NELEMS( g_NonSpawnableAliens ) + 2 ) ) + 1 ),
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Inhabitable_NPC )
@@ -84,6 +86,7 @@ BEGIN_DATADESC( CASW_Inhabitable_NPC )
 	DEFINE_FIELD( m_hColorCorrection, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_hTonemapController, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_iControlsOverride, FIELD_INTEGER ),
+	DEFINE_FIELD( m_iAlienClassIndex, FIELD_INTEGER ),
 
 	DEFINE_FIELD( m_hSpawner, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_bOnFire, FIELD_BOOLEAN ),
@@ -186,6 +189,8 @@ void CASW_Inhabitable_NPC::Spawn()
 
 	SetModelScale( m_fSizeScale );
 	SetHealthByDifficultyLevel();
+
+	m_iAlienClassIndex = GetAlienClassIndex( this );
 }
 
 void CASW_Inhabitable_NPC::OnRestore()
