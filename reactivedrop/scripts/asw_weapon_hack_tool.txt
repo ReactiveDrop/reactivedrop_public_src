@@ -4,8 +4,8 @@ WeaponData
 {
 	// Weapon data is loaded by both the Game and Client DLLs.
 	"printname"				"#asw_weapon_hack_tool"
-	"viewmodel"				"models/weapons/hacktool/hacktool.mdl"
-	"playermodel"			"models/weapons/hacktool/hacktool.mdl"
+	"viewmodel"				"models/weapons/hackpad/hackpad.mdl"
+	"playermodel"			"models/weapons/hackpad/hackpad.mdl"
 	"anim_prefix"			"ar2"
 	"bucket"				"0"
 	"bucket_position"		"0"
