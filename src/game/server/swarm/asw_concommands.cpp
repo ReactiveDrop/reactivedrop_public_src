@@ -2132,6 +2132,15 @@ CON_COMMAND_F( asw_inhabit_npc, "inhabit targeted NPC", FCVAR_CHEAT )
 		return;
 	}
 
+	if ( CASW_Marine *pMarine = CASW_Marine::AsMarine( pTarget ) )
+	{
+		if ( CASW_Marine_Resource *pMR = pMarine->GetMarineResource() )
+		{
+			pPlayer->SwitchMarine( pMR );
+			return;
+		}
+	}
+
 	pPlayer->SwitchInhabiting( assert_cast< CASW_Inhabitable_NPC * >( pTarget ) );
 }
 
@@ -2157,5 +2166,6 @@ CON_COMMAND_F( asw_spectate_npc, "spectate targeted NPC", FCVAR_CHEAT )
 		return;
 	}
 
+	pPlayer->LeaveMarines();
 	pPlayer->SetSpectatingNPC( assert_cast< CASW_Inhabitable_NPC * >( pTarget ) );
 }

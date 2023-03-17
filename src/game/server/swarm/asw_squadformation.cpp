@@ -533,15 +533,14 @@ void CASW_SquadFormation::ChangeLeader( CASW_Marine *pNewLeader, bool bUpdateLea
 	// if we're trying to wipe out the leader, do so if there are no followers
 	if ( !pNewLeader )
 	{
-		AssertMsg2( Count() == 0, "Tried to unset squad leader %s, but squad has %d followers\n",
-			pNewLeader->GetMarineProfile()->GetShortName(), Count() );
+		//AssertMsg2( Count() == 0, "Tried to unset squad leader %s, but squad has %d followers\n", pNewLeader->GetMarineProfile()->GetShortName(), Count() );
 		Leader(NULL);
 		return;
 	}
 
 	if ( pOldLeader == pNewLeader )
 	{
-		AssertMsg1( false, "Tried to reset squad leader to its current value (%s)\n", pNewLeader->GetMarineProfile()->GetShortName() );
+		//AssertMsg1( false, "Tried to reset squad leader to its current value (%s)\n", pNewLeader->GetMarineProfile()->GetShortName() );
 		return;
 	}
 
