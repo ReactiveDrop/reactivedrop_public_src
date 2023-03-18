@@ -1,6 +1,6 @@
 $modelname swarm/marine/attachments/normal_armor.mdl
 $cdmaterials models/player/male
-$body equip "marine_normal_armor.smd"
+$body equip "marine_normal_armor.dmx"
 
 $texturegroup skinfamilies
 {
@@ -11,7 +11,7 @@ $texturegroup skinfamilies
 	{ "tech_body" }
 }
 
-$sequence BindPose "marine_normal_armor.smd"
+$sequence BindPose "marine_normal_armor.dmx"
 $contents solid
 $surfaceprop armorflesh
 $opaque

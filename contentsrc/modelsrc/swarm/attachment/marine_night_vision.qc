@@ -1,6 +1,6 @@
 $modelname swarm/marine/attachments/night_vision.mdl
 $cdmaterials models/player/male
-$body equip "marine_night_vision.smd"
+$body equip "marine_night_vision.dmx"
 
 $texturegroup skinfamilies
 {
@@ -11,7 +11,7 @@ $texturegroup skinfamilies
 	{ "tech_body" "tech_helmet" }
 }
 
-$sequence BindPose "marine_night_vision.smd"
+$sequence BindPose "marine_night_vision.dmx"
 $contents solid
 $surfaceprop armorflesh
 $opaque

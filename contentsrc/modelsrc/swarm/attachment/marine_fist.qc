@@ -1,6 +1,6 @@
 $modelname swarm/marine/attachments/fist.mdl
 $cdmaterials models/player/male
-$body equip "marine_fist.smd"
+$body equip "marine_fist.dmx"
 
 $texturegroup skinfamilies
 {
@@ -14,7 +14,7 @@ $texturegroup skinfamilies
 $include "../marine/_DefineBones.qci"
 $include "../marine/_HierarchyChainsWeights.qci"
 
-$sequence BindPose "marine_fist.smd"
+$sequence BindPose "marine_fist.dmx"
 $contents solid
 $surfaceprop armorflesh
 $opaque
