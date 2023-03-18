@@ -525,7 +525,6 @@ void CASW_Weapon_Minigun::UpdateSpinningBarrel()
 	if ( GetSpinRate() < 0.1 && m_bShouldUpdateActivityClient )
 	{
 		SetActivity( ACT_VM_IDLE, 0 );
-		m_flPlaybackRate = 0;
 		m_bShouldUpdateActivityClient = false;
 	}
 
