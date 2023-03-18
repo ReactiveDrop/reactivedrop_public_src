@@ -2249,8 +2249,8 @@ namespace ReactiveDropInventory
 			pItemDef->AccessoryDescription = szValue;
 
 		FETCH_PROPERTY( "after_description_only_multi_stack" );
-		Assert( !V_strcmp( szValue, "" ) || !V_strcmp( szValue, "true" ) || !V_strcmp( szValue, "false" ) );
-		pItemDef->AfterDescriptionOnlyMultiStack = !V_strcmp( szValue, "true" );
+		Assert( !V_strcmp( szValue, "" ) || !V_strcmp( szValue, "1" ) || !V_strcmp( szValue, "0" ) );
+		pItemDef->AfterDescriptionOnlyMultiStack = !V_strcmp( szValue, "1" );
 
 #ifdef CLIENT_DLL
 		pItemDef->Icon = NULL;
