@@ -225,9 +225,14 @@ void CASW_Weapon::ItemBusyFrame( void )
 				//Msg("%f RELOAD SUCCESS! - bAttack1 = %d, bOldAttack1 = %d\n", gpGlobals->curtime, bAttack1, bOldAttack1 );
 				//Msg( "S: %f - %f - %f RELOAD SUCCESS! -- Progress = %f\n", gpGlobals->curtime, fFastStart, fFastEnd, flProgress );
 
-				pMarine->DoAnimationEvent( PLAYERANIMEVENT_DROP_MAGAZINE_GIB );
+#ifdef CLIENT_DLL
+				if ( prediction->IsFirstTimePredicted() )
+#endif
+				{
+					pMarine->DoAnimationEvent( PLAYERANIMEVENT_DROP_MAGAZINE_GIB );
+				}
 
-#ifdef GAME_DLL				
+#ifdef GAME_DLL
 				pMarine->GetMarineSpeech()->PersonalChatter( CHATTER_SELECTION );
 #endif
 				m_bFastReloadSuccess = true;
@@ -1221,9 +1226,14 @@ void CASW_Weapon::FinishReload( void )
 		}
 #endif
 
-		if ( !m_bFastReloadSuccess )
+#ifdef CLIENT_DLL
+		if ( prediction->IsFirstTimePredicted() )
+#endif
 		{
-			pOwner->DoAnimationEvent( PLAYERANIMEVENT_DROP_MAGAZINE_GIB );
+			if ( !m_bFastReloadSuccess )
+			{
+				pOwner->DoAnimationEvent( PLAYERANIMEVENT_DROP_MAGAZINE_GIB );
+			}
 		}
 
 		m_bFastReloadSuccess = false;
