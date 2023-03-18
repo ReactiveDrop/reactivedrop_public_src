@@ -2274,6 +2274,17 @@ void CASW_Player::SwitchMarine( CASW_Marine_Resource *pMR, bool set_squad_leader
 	CASW_Marine *pOldMarine = CASW_Marine::AsMarine( GetNPC() );
 	CASW_Marine *pNewMarine = pMR->GetMarineEntity();
 
+	if ( pNewMarine->GetCommander() != this )
+	{
+		if ( pNewMarine->IsInhabited() && pNewMarine->GetCommander() )
+		{
+			pNewMarine->GetCommander()->LeaveMarines();
+		}
+
+		pMR->SetCommander( this );
+		pNewMarine->SetCommander( this );
+	}
+
 	SwitchInhabiting( pNewMarine );
 
 	if ( gpGlobals->curtime > ASWGameRules()->m_fMissionStartedTime + 5.0f )
