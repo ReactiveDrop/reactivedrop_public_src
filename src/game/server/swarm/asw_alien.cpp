@@ -2966,6 +2966,9 @@ void CASW_Alien::InhabitedBy( CASW_Player *player )
 	SetMoveType( MOVETYPE_WALK );
 
 	int seq = SelectHeaviestSequence( ACT_WALK );
+	if ( seq == -1 )
+		seq = SelectHeaviestSequence( ACT_RUN );
+	Assert( seq != -1 );
 	m_flAlienWalkSpeed = GetSequenceGroundSpeed( seq );
 	Assert( m_flAlienWalkSpeed > 0.0f );
 

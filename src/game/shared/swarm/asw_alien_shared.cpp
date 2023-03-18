@@ -179,5 +179,10 @@ float CASW_Alien::MaxSpeed()
 
 float CASW_Alien::GetBasePlayerYawRate()
 {
-	return 1000;
+	if ( m_bInhabitedMovementAllowed )
+	{
+		return 1000.0f;
+	}
+
+	return FLT_EPSILON;
 }

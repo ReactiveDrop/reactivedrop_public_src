@@ -38,6 +38,7 @@ public:
 
 	virtual bool IsAlien( void ) const { return false; }
 	virtual void ClientThink( void ) override;
+	virtual void PhysicsSimulate() override;
 
 	// health
 	virtual int	GetHealth() const { return m_iHealth; }

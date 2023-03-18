@@ -179,6 +179,21 @@ void C_ASW_Inhabitable_NPC::ClientThink()
 	UpdateFireEmitters();
 }
 
+void C_ASW_Inhabitable_NPC::PhysicsSimulate()
+{
+	if ( ShouldPredict() )
+	{
+		Assert( GetMoveType() == MOVETYPE_WALK );
+		SetMoveType( MOVETYPE_STEP );
+		BaseClass::PhysicsSimulate();
+		SetMoveType( MOVETYPE_WALK );
+
+		return;
+	}
+
+	BaseClass::PhysicsSimulate();
+}
+
 const Vector &C_ASW_Inhabitable_NPC::GetFacingPoint()
 {
 	if ( m_vecFacingPointFromServer != vec3_origin )

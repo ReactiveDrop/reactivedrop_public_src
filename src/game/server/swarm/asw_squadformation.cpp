@@ -511,7 +511,7 @@ bool CASW_SquadFormation::SanityCheck() const
 // way to go
 unsigned int CASW_SquadFormation::Find( CASW_Marine *pMarine ) const
 {
-	Assert( pMarine != Leader() );
+	//Assert( pMarine != Leader() );
 	for ( int i = 0 ; i < MAX_SQUAD_SIZE ; ++i )
 	{
 		if ( m_hSquad[i] == pMarine )

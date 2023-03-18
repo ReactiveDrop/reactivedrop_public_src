@@ -87,7 +87,7 @@ public:
 	CNetworkVar( int, m_iControlsOverride );
 	void ScriptSetControls( int iControls );
 
-	virtual void InhabitedPhysicsSimulate() {}
+	virtual void InhabitedPhysicsSimulate();
 	virtual void PhysicsSimulate() override;
 	CASW_Lag_Compensation m_LagCompensation;
 	IMPLEMENT_NETWORK_VAR_FOR_DERIVED( m_vecBaseVelocity );
