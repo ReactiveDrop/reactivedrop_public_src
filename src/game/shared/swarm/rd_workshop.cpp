@@ -610,13 +610,13 @@ void CReactiveDropWorkshop::SetupThink()
 		}
 		else if ( iItemState & k_EItemStateNeedsUpdate )
 		{
-			ConMsg( "Workshop item %llu needs update\n", id );
+			Msg( "Workshop item %llu needs update\n", id );
 			SteamGameServerUGC()->DownloadItem( id, false );
 			bWaitingForAny = true;
 		}
 		else if ( iItemState & ! k_EItemStateInstalled )
 		{
-			ConMsg("Workshop item %llu returned %d\n", id, iItemState);
+			Msg("Workshop item %llu returned %d\n", id, iItemState);
 		}
 	}
 
