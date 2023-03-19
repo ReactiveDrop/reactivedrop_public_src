@@ -616,7 +616,7 @@ void CReactiveDropWorkshop::SetupThink()
 		}
 		else if ( iItemState & ! k_EItemStateInstalled )
 		{
-			Msg("Workshop item %llu returned %d\n", id, iItemState);
+			Msg( "Workshop item %llu returned %d\n", id, iItemState );
 		}
 	}
 
