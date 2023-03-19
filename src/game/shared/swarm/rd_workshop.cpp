@@ -2004,7 +2004,7 @@ void CReactiveDropWorkshop::RealLoadAddon( PublishedFileId_t id )
 			pWorkshop->SetReturnOnlyIDs( hQuery, true );
 			pWorkshop->SetReturnChildren( hQuery, true );
 
-			if (rd_workshop_query_cache.GetInt() > 0)
+			if ( rd_workshop_query_cache.GetInt() > 0 )
 				pWorkshop->SetAllowCachedResponse( hQuery, rd_workshop_query_cache.GetInt());
 
 			new LoadWorkshopCollection_t( pWorkshop->SendQueryUGCRequest( hQuery ) );
