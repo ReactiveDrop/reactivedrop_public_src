@@ -335,7 +335,7 @@ void CASW_Medals::AwardMedalsTo(CASW_Marine_Resource *pMR)
 		AwardSingleMedalTo(MEDAL_EXPLOSIVES_MERIT, pMR);
 
 	// Perfect - awarded for finishing a mission taking no damage
-	if ( !pMR->m_bHurt && pMR->m_iAliensKilled >= 25 && ASWGameRules()->GetSkillLevel() >= 2 && ASWGameRules()->GetMissionSuccess() && !ASWGameRules()->m_bChallengeActiveThisCampaign )
+	if ( !pMR->m_bHurt && pMR->m_iAliensKilled >= 25 && ASWGameRules()->GetSkillLevel() >= 2 && ASWGameRules()->GetMissionSuccess() && !ASWGameRules()->m_bChallengeActiveThisMission )
 	{
 		AwardSingleMedalTo( MEDAL_PERFECT, pMR );
 		pPlayer->AwardAchievement( ACHIEVEMENT_ASW_NO_DAMAGE_TAKEN );
