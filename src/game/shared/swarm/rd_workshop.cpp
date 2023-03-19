@@ -51,6 +51,7 @@ ConVar rd_workshop_temp_subscribe( "rd_workshop_temp_subscribe", "1", FCVAR_ARCH
 ConVar rd_workshop_update_every_round( "rd_workshop_update_every_round", "1", FCVAR_HIDDEN, "If 1 dedicated server will check for workshop items during each mission restart(workshop.cfg will be executed). If 0, workshop items will only update once during server startup" );
 ConVar rd_workshop_use_reactivedrop_folder( "rd_workshop_use_reactivedrop_folder", "1", FCVAR_NONE, "If 1, use the reactivedrop folder. If 0, use the folder steam assigns by default", true, 0, true, 1 );
 ConVar rd_workshop_unconditional_download_item( "rd_workshop_unconditional_download_item", "0", FCVAR_NONE, "Dedicated server only. If nonzero, call ISteamUGC::DownloadItem every [number] map loads, even if the API reports it being up-to-date." );
+ConVar rd_workshop_query_cache( "rd_workshop_query_cache", "300", FCVAR_NONE, "If set, caches all calls to SteamUGC for given seconds. Can reduce SteamUGC network calls." );
 ConVar sv_workshop_debug( "sv_workshop_debug", "0", FCVAR_NONE, "If 1 workshop debugging messages will be printed in console" );
 #define rd_workshop_debug sv_workshop_debug
 ConVar rd_workshop_official_addons( "rd_workshop_official_addons", "2", FCVAR_NONE, "0 = load workshop.cfg on official dedicated servers, 1 = load official addon list, 2 = load both" );
@@ -612,6 +613,10 @@ void CReactiveDropWorkshop::SetupThink()
 			Msg( "Workshop item %llu needs update\n", id );
 			SteamGameServerUGC()->DownloadItem( id, false );
 			bWaitingForAny = true;
+		}
+		else if ( iItemState & ! k_EItemStateInstalled )
+		{
+			Msg( "Workshop item %llu returned %d\n", id, iItemState );
 		}
 	}
 
@@ -1998,7 +2003,10 @@ void CReactiveDropWorkshop::RealLoadAddon( PublishedFileId_t id )
 			UGCQueryHandle_t hQuery = pWorkshop->CreateQueryUGCDetailsRequest( &id, 1 );
 			pWorkshop->SetReturnOnlyIDs( hQuery, true );
 			pWorkshop->SetReturnChildren( hQuery, true );
-			pWorkshop->SetAllowCachedResponse( hQuery, 300 );
+
+			if ( rd_workshop_query_cache.GetInt() > 0 )
+				pWorkshop->SetAllowCachedResponse( hQuery, rd_workshop_query_cache.GetInt());
+
 			new LoadWorkshopCollection_t( pWorkshop->SendQueryUGCRequest( hQuery ) );
 		}
 		else
