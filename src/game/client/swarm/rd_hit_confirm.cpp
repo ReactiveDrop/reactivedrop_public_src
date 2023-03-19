@@ -101,7 +101,7 @@ void __MsgFunc_RDHitConfirm( bf_read &msg )
 	bool bDamageOverTime = msg.ReadOneBit();
 	bool bBlastDamage = msg.ReadOneBit();
 	int iDisposition = msg.ReadUBitLong( 3 );
-	float flDamage = msg.ReadFloat();
+	float flDamage = int( msg.ReadFloat() );
 	short weaponindex = msg.ReadShort();
 
 	Assert( entindex >= -1 && entindex < MAX_EDICTS );
