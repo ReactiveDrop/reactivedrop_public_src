@@ -1321,7 +1321,7 @@ int CASW_Door::OnTakeDamage( const CTakeDamageInfo &info )
 			SetDentSequence();
 		}
 
-		UTIL_RD_HitConfirm( this, iHealthBefore, info );
+		UTIL_RD_HitConfirm( this, iHealthBefore, newInfo );
 	}
 
 	return 1;
