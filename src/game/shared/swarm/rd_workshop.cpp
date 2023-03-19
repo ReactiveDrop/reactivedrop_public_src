@@ -614,7 +614,7 @@ void CReactiveDropWorkshop::SetupThink()
 			SteamGameServerUGC()->DownloadItem( id, false );
 			bWaitingForAny = true;
 		}
-		else if ( iItemState & ! k_EItemStateInstalled )
+		else if ( !( iItemState & k_EItemStateInstalled ) )
 		{
 			Msg( "Workshop item %llu returned %d\n", id, iItemState );
 		}
