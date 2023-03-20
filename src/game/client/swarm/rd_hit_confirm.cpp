@@ -64,6 +64,7 @@ ConVar asw_floating_number_combine_window( "asw_floating_number_combine_window",
 
 static struct RD_Floating_Damage_Number_t
 {
+	EHANDLE m_hEntity{};
 	float m_flAccumulatedDamage{};
 	float m_flLastDamageNumberTime{};
 	HPARTICLEFFECT m_hDamageNumberParticle{};
@@ -84,6 +85,13 @@ void UpdateHitConfirmRotation()
 	for ( int i = 0; i < MAX_EDICTS; i++ )
 	{
 		HPARTICLEFFECT &hEffect = s_RD_Floating_Damage_Numbers[i].m_hDamageNumberParticle;
+		if ( !hEffect || !s_RD_Floating_Damage_Numbers[i].m_hEntity )
+		{
+			s_RD_Floating_Damage_Numbers[i].m_hEntity.Term();
+			s_RD_Floating_Damage_Numbers[i].m_flAccumulatedDamage = 0;
+			s_RD_Floating_Damage_Numbers[i].m_flLastDamageNumberTime = 0;
+		}
+
 		if ( !hEffect )
 			continue;
 
@@ -223,6 +231,7 @@ void __MsgFunc_RDHitConfirm( bf_read &msg )
 		HPARTICLEFFECT hParticle = UTIL_ASW_ParticleDamageNumber( pAttacker, vecDamagePosition, flDamage, iDmgCustom, bDamageOverTime ? 0.5f : 1.0f, bBlastDamage || bDamageOverTime, bIsAccumulated );
 		if ( targetent >= 0 && targetent < MAX_EDICTS && !bBlastDamage && !bDamageOverTime )
 		{
+			s_RD_Floating_Damage_Numbers[targetent].m_hEntity = pTarget;
 			s_RD_Floating_Damage_Numbers[targetent].m_hDamageNumberParticle = hParticle;
 		}
 	}
