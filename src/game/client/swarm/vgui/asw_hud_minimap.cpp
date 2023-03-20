@@ -42,6 +42,7 @@ using namespace vgui;
 #include "ConVar.h"
 
 #include "c_asw_parasite.h"
+#include "asw_weapon_revive_tool_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -51,6 +52,7 @@ extern ConVar asw_hud_alpha;
 extern ConVar asw_hud_scale;
 extern ConVar rd_paint_marine_blips;
 extern ConVar rd_paint_scanner_blips;
+extern ConVar rd_revive_tombstone_shows_on_map;
 ConVar rd_draw_minimap( "rd_draw_minimap", "1", FCVAR_NONE );
 ConVar asw_map_range( "asw_map_range", "1200", FCVAR_CHEAT, "Range in world units of the minimap" );
 ConVar asw_scanner_ring_scale( "asw_scanner_ring_scale", "1.0f", FCVAR_CHEAT, "Overdraw in the scanner ring size from the blip boundary" );
@@ -420,6 +422,16 @@ void CASWMap::PaintMarineBlips( bool bRotate )
 			}
 		}
 	}
+}
+
+void CASWMap::PaintTombstoneBlips()
+{
+#ifdef RD_7A_WEAPONS
+	FOR_EACH_VEC( IASW_Revive_Tombstone_Auto_List::AutoList(), i )
+	{
+		PaintWorldBlip( IASW_Revive_Tombstone_Auto_List::AutoList()[i]->GetEntity()->GetAbsOrigin(), 1.0f, Color{ 255, 255, 255, 255 }, MAP_BLIP_TEXTURE_DEATH );
+	}
+#endif
 }
 
 void CASWMap::PaintExtraBlips()
@@ -1063,6 +1075,11 @@ void CASWHudMinimap::PaintBlips()
 
 	if ( rd_paint_scanner_blips.GetBool() )
 		PaintScannerBlips();
+
+#ifdef RD_7A_WEAPONS
+	if ( rd_revive_tombstone_shows_on_map.GetBool() )
+		PaintTombstoneBlips();
+#endif
 }
 
 void CASWHudMinimap::PaintScannerBlips()

@@ -16,6 +16,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+#ifndef INFESTED_DLL
 using namespace vgui;
 
 extern ConVar hud_drawhistory_time;
@@ -433,5 +434,4 @@ void CHudHistoryResource::Paint( void )
 		}
 	}
 }
-
-
+#endif

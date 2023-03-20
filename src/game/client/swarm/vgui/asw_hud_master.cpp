@@ -1146,7 +1146,7 @@ void CASW_Hud_Master::PaintLocalMarineInventory()
 			{
 				surface()->DrawSetColor( 66, 142, 192, 255 );		// light blue
 			}
-			surface()->DrawSetTexture( g_ASWEquipmentList.GetEquipIconTexture( !pInfo->m_bExtra, pWeapon->GetEquipmentListIndex() ) );
+			surface()->DrawSetTexture( g_ASWEquipmentList.GetEquipIconTexture( i != ASW_INVENTORY_SLOT_EXTRA, pWeapon->GetEquipmentListIndex() ) );
 			int x = YRES( pInfo->m_iHUDIconOffsetX );
 			int y = YRES( pInfo->m_iHUDIconOffsetY );
 			int w = m_nWeapon_w;
@@ -1228,7 +1228,7 @@ void CASW_Hud_Master::PaintSquadMatesInventory()
 			int w = m_nSquadMate_ExtraItem_w;
 			int h = m_nSquadMate_ExtraItem_t;
 			
-			surface()->DrawSetTexture( g_ASWEquipmentList.GetEquipIconTexture( !m_SquadMateInfo[ i ].pExtraItemInfo->m_bExtra, m_SquadMateInfo[ i ].nEquipmentListIndex ) );
+			surface()->DrawSetTexture( g_ASWEquipmentList.GetEquipIconTexture( m_SquadMateInfo[ i ].nExtraItemInventoryIndex != ASW_INVENTORY_SLOT_EXTRA, m_SquadMateInfo[ i ].nEquipmentListIndex ) );
 			if ( m_SquadMateInfo[ i ].pExtraItemInfo->m_bZoomHotbarIcon )
 			{
 				vgui::Vertex_t zoomed_hotbar_icon_points[4] = 
@@ -1242,7 +1242,7 @@ void CASW_Hud_Master::PaintSquadMatesInventory()
 			}
 			else
 			{
-				if ( !m_SquadMateInfo[ i ].pExtraItemInfo->m_bExtra )
+				if ( m_SquadMateInfo[ i ].nExtraItemInventoryIndex != ASW_INVENTORY_SLOT_EXTRA )
 				{
 					x -= w * 0.5f;
 					w *= 2;
@@ -1359,23 +1359,26 @@ void CASW_Hud_Master::PaintText()
 	if ( m_pLocalMarineActiveWeapon && m_pLocalMarineResource )
 	{
 		const CASW_WeaponInfo *pInfo = m_pLocalMarineActiveWeapon->GetWeaponInfo();
+		Assert( pInfo );
 
 		// weapon name
 		surface()->DrawSetTextFont( m_hDefaultSmallFont );
 		surface()->DrawSetTextColor( 255, 255, 255, 255 );
 		surface()->DrawSetTextPos( m_nMarinePortrait_x + m_nMarinePortrait_weapon_name_x, m_nMarinePortrait_y + m_nMarinePortrait_weapon_name_y );
 
-		if (m_pLocalMarineActiveWeapon->Classify() == CLASS_RD_WEAPON_GENERIC_OBJECT)
+		if ( m_pLocalMarineActiveWeapon->Classify() == CLASS_RD_WEAPON_GENERIC_OBJECT )
 		{
-			C_RD_Weapon_Generic_Object* pGenericObject = assert_cast<C_RD_Weapon_Generic_Object*>(m_pLocalMarineActiveWeapon);
-			surface()->DrawUnicodeString( pGenericObject->m_wszCarriedName) ;
+			C_RD_Weapon_Generic_Object *pGenericObject = assert_cast< C_RD_Weapon_Generic_Object * >( m_pLocalMarineActiveWeapon );
+			surface()->DrawUnicodeString( pGenericObject->m_wszCarriedName );
 		}
 		else
 		{
-			surface()->DrawUnicodeString( g_pVGuiLocalize->FindSafe( pInfo->szPrintName ) );
+			const CASW_EquipItem *pItem = m_pLocalMarineActiveWeapon->GetEquipItem();
+			Assert( pItem );
+			surface()->DrawUnicodeString( g_pVGuiLocalize->FindSafe( pItem->m_szShortName ) );
 
 			// > 5 clips
-			static wchar_t wszBullets[ 6 ];
+			static wchar_t wszBullets[6];
 			if ( pInfo->m_iShowClipsOnHUD && m_nLocalMarineClips > 5 )
 			{
 				V_snwprintf( wszBullets, ARRAYSIZE( wszBullets ), L"x%d", m_nLocalMarineClips );
@@ -1385,7 +1388,7 @@ void CASW_Hud_Master::PaintText()
 			}
 
 			// low ammo
-			if ( ( int( gpGlobals->curtime*4 ) % 2 ) == 0 )
+			if ( ( int( gpGlobals->curtime * 4 ) % 2 ) == 0 )
 			{
 				bool bReloading = ( m_pLocalMarineActiveWeapon && m_pLocalMarineActiveWeapon->IsReloading() );
 				if ( !bReloading )
@@ -1443,21 +1446,21 @@ void CASW_Hud_Master::PaintText()
 	{
 		int w, t;
 		// quantity for extra item
-		const CASW_WeaponInfo* pInfo = pExtraItem->GetWeaponInfo();
+		const CASW_WeaponInfo *pInfo = pExtraItem->GetWeaponInfo();
 		if ( pInfo )
 		{
 			if ( pInfo->m_bShowCharges )
 			{
-				wchar_t wszQuantity[ 12 ];
+				wchar_t wszQuantity[12];
 				V_snwprintf( wszQuantity, ARRAYSIZE( wszQuantity ), L"x%d", pExtraItem->DisplayClip1() );
 
-				surface()->DrawSetTextColor( m_SquadMate_ExtraItem_quantity_color );		
-				surface()->DrawSetTextFont( m_hDefaultSmallFont );	
+				surface()->DrawSetTextColor( m_SquadMate_ExtraItem_quantity_color );
+				surface()->DrawSetTextFont( m_hDefaultSmallFont );
 				surface()->GetTextSize( m_hDefaultSmallFont, wszQuantity, w, t );
 				surface()->DrawSetTextPos( m_nExtraItem_quantity_x + m_nMarinePortrait_x - w,
 					m_nExtraItem_quantity_y + m_nMarinePortrait_y - t );
 				surface()->DrawUnicodeString( wszQuantity );
-			}		
+			}
 
 			if ( pInfo->m_bShowLocalPlayerHotkey && !C_ASW_Player::GetLocalASWPlayer()->GetSpectatingNPC() )
 			{

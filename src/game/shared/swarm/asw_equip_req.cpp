@@ -109,10 +109,10 @@ void CASW_Equip_Req::ReportMissingEquipment()
 		if ( numEquippedClasses[k] )
 			continue;
 
-		CASW_WeaponInfo *pWI = g_ASWEquipmentList.GetWeaponDataFor( GetEquipClass( k ) );
-		if ( pWI )
+		CASW_EquipItem *pItem = g_ASWEquipmentList.GetEquipItemFor( GetEquipClass( k ) );
+		if ( pItem )
 		{
-			UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_need_equip", pWI->szPrintName );
+			UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_need_equip", pItem->m_szShortName );
 			return;
 		}
 	}

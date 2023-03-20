@@ -10,6 +10,7 @@ class CASW_Inhabitable_NPC;
 class CASW_Player;
 class CASW_Marine;
 class CASW_WeaponInfo;
+class CASW_EquipItem;
 
 class CASW_Weapon : public CBaseCombatWeapon, public IASW_Server_Usable_Entity
 {
@@ -77,7 +78,8 @@ public:
 	virtual bool ASWCanBeSelected() { return true; }
 	virtual bool ShouldFlareAutoaim() { return false; }
 	virtual int GetEquipmentListIndex() { return m_iEquipmentListIndex; }
-	const CASW_WeaponInfo* GetWeaponInfo() const;
+	const CASW_EquipItem *GetEquipItem() const;
+	const CASW_WeaponInfo *GetWeaponInfo() const;
 	virtual bool OffhandActivate() { return false; };
 	virtual bool WantsOffhandPostFrame() { return m_bShotDelayed; }
 	virtual bool SendWeaponAnim( int iActivity );
@@ -172,6 +174,12 @@ public:
 	virtual void NPCStoppedUsing( CASW_Inhabitable_NPC *pNPC ) { }
 	virtual bool NeedsLOSCheck() { return true; }
 
+	virtual const char *GetPrintName() const override;
+	virtual int GetMaxClip1() const override;
+	virtual int GetMaxClip2() const override;
+	virtual int GetDefaultClip1() const override;
+	virtual int GetDefaultClip2() const override;
+
 	virtual int DisplayClip1() { return Clip1(); }
 	virtual int DisplayMaxClip1() { return GetMaxClip1(); }
 	virtual int DisplayClip2() { return Clip2(); }
@@ -185,6 +193,7 @@ public:
 
 protected:
 	int m_iEquipmentListIndex;
+	CASW_EquipItem *m_pEquipItem;
 };
 
 

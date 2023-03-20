@@ -752,7 +752,7 @@ Weapon::Weapon( const Weapon &copy ) :
 	Sources = copy.Sources;
 }
 
-static void PostProcessBuiltin( WeaponFact *pFact, CASW_WeaponInfo *pWeaponInfo, bool bIsSecondary )
+static void PostProcessBuiltin( WeaponFact *pFact, CASW_EquipItem *pItem, CASW_WeaponInfo *pWeaponInfo, bool bIsSecondary )
 {
 	if ( !pFact->UseWeaponInfo )
 	{
@@ -762,7 +762,7 @@ static void PostProcessBuiltin( WeaponFact *pFact, CASW_WeaponInfo *pWeaponInfo,
 	if ( pFact->Type == WeaponFact::Type_T::DamagePerShot || pFact->Type == WeaponFact::Type_T::Ammo )
 	{
 		const char *szSuffix = NULL;
-		int iDamageType = GetAmmoDef()->DamageType( bIsSecondary ? pWeaponInfo->iAmmo2Type : pWeaponInfo->iAmmoType );
+		int iDamageType = GetAmmoDef()->DamageType( bIsSecondary ? pItem->m_iAmmo2 : pItem->m_iAmmo1 );
 		switch ( iDamageType )
 		{
 		case 0:
@@ -798,7 +798,7 @@ static void PostProcessBuiltin( WeaponFact *pFact, CASW_WeaponInfo *pWeaponInfo,
 			szSuffix = "_buckshot";
 			break;
 		default:
-			Warning( "Swarmopedia: unhandled damage type %d (%s)\n", iDamageType, bIsSecondary ? pWeaponInfo->szAmmo2 : pWeaponInfo->szAmmo1 );
+			Warning( "Swarmopedia: unhandled damage type %d (%s)\n", iDamageType, bIsSecondary ? pItem->m_szAmmo2 : pItem->m_szAmmo1 );
 			DebuggerBreakIfDebugging();
 			break;
 		}
@@ -841,21 +841,20 @@ static void PostProcessBuiltin( WeaponFact *pFact, CASW_WeaponInfo *pWeaponInfo,
 		pFact->Base += pWeaponInfo->m_flFireRate;
 		break;
 	case WeaponFact::Type_T::Ammo:
-		pFact->Base += bIsSecondary ? pWeaponInfo->iDefaultClip2 : pWeaponInfo->iDefaultClip1;
+		pFact->Base += bIsSecondary ? pItem->DefaultAmmo2() : pItem->DefaultAmmo1();
 
 		if ( pFact->ClipSize == 0 )
 		{
-			pFact->ClipSize = bIsSecondary ? pWeaponInfo->iMaxClip2 : pWeaponInfo->iMaxClip1;
+			pFact->ClipSize = bIsSecondary ? pItem->MaxAmmo2() : pItem->MaxAmmo1();
 		}
 
-		// TODO: figure out where "AR2" ammo type has its max carry ignored normally
-		if ( pFact->ClipSize == WEAPON_NOCLIP || bIsSecondary || pWeaponInfo->iAmmoType <= 1 )
+		if ( pFact->ClipSize == WEAPON_NOCLIP || bIsSecondary || pItem->m_iAmmo1 < 0 )
 		{
 			pFact->ClipSize = 0;
 		}
 		else
 		{
-			Ammo_t *pAmmo = GetAmmoDef()->GetAmmoOfIndex( pWeaponInfo->iAmmoType );
+			Ammo_t *pAmmo = GetAmmoDef()->GetAmmoOfIndex( pItem->m_iAmmo1 );
 			if ( pAmmo->pMaxCarry == USE_CVAR )
 			{
 				pFact->CVar = pAmmo->pMaxCarryCVar->GetName();
@@ -869,17 +868,17 @@ static void PostProcessBuiltin( WeaponFact *pFact, CASW_WeaponInfo *pWeaponInfo,
 
 		break;
 	case WeaponFact::Type_T::Secondary:
-		pFact->Caption += pWeaponInfo->szAltFireText;
+		pFact->Caption += pItem->m_szAltFireDescription;
 
 		FOR_EACH_VEC( pFact->Facts, i )
 		{
-			PostProcessBuiltin( pFact->Facts[i], pWeaponInfo, true );
+			PostProcessBuiltin( pFact->Facts[i], pItem, pWeaponInfo, true );
 		}
 		break;
 	case WeaponFact::Type_T::Deployed:
 		FOR_EACH_VEC( pFact->Facts, i )
 		{
-			PostProcessBuiltin( pFact->Facts[i], pWeaponInfo, bIsSecondary );
+			PostProcessBuiltin( pFact->Facts[i], pItem, pWeaponInfo, bIsSecondary );
 		}
 		break;
 	case WeaponFact::Type_T::RequirementLevel:
@@ -904,48 +903,25 @@ bool Weapon::ReadFromFile( const char *pszPath, KeyValues *pKV )
 	Builtin = pKV->GetBool( "Builtin" );
 	if ( Builtin )
 	{
+		CASW_EquipItem *pEquipItem = g_ASWEquipmentList.GetEquipItemFor( ClassName );
 		CASW_WeaponInfo *pWeaponInfo = g_ASWEquipmentList.GetWeaponDataFor( ClassName );
-		Assert( pWeaponInfo && pWeaponInfo->szClassName[0] != '\0' );
-		if ( !pWeaponInfo || pWeaponInfo->szClassName[0] == '\0' )
+		Assert( pEquipItem && pWeaponInfo );
+		if ( !pEquipItem || !pWeaponInfo )
 		{
 			Warning( "Swarmopedia: no data for builtin weapon %s in %s\n", ClassName.Get(), pszPath );
 			DebuggerBreakIfDebugging();
 			return false;
 		}
 
-		Icon = pWeaponInfo->szEquipIcon;
+		Icon = pEquipItem->m_szEquipIcon;
 		RequiredLevel = GetWeaponLevelRequirement( ClassName ) + 1;
+		RequiredClass = ASW_Marine_Class( pEquipItem->m_iRequiredClass );
 
-		if ( pWeaponInfo->m_bSapper )
-		{
-			RequiredClass = MARINE_CLASS_NCO;
-		}
-		else if ( pWeaponInfo->m_bSpecialWeapons )
-		{
-			RequiredClass = MARINE_CLASS_SPECIAL_WEAPONS;
-		}
-		else if ( pWeaponInfo->m_bFirstAid )
-		{
-			RequiredClass = MARINE_CLASS_MEDIC;
-		}
-		else if ( pWeaponInfo->m_bTech )
-		{
-			RequiredClass = MARINE_CLASS_TECH;
-		}
+		Extra = pEquipItem->m_bIsExtra;
+		Unique = pEquipItem->m_bIsUnique;
 
-		Extra = pWeaponInfo->m_bExtra;
-		Unique = pWeaponInfo->m_bUnique;
-
-		if ( Extra )
-		{
-			EquipIndex = g_ASWEquipmentList.GetExtraIndex( ClassName );
-			Hidden = EquipIndex == -1 || !g_ASWEquipmentList.GetExtra( EquipIndex )->m_bSelectableInBriefing;
-		}
-		else
-		{
-			EquipIndex = g_ASWEquipmentList.GetRegularIndex( ClassName );
-			Hidden = EquipIndex == -1 || !g_ASWEquipmentList.GetRegular( EquipIndex )->m_bSelectableInBriefing;
-		}
+		EquipIndex = pEquipItem->m_iItemIndex;
+		Hidden = !pEquipItem->m_bSelectableInBriefing;
 
 		Assert( EquipIndex != -1 );
 
@@ -964,11 +940,11 @@ bool Weapon::ReadFromFile( const char *pszPath, KeyValues *pKV )
 			Helpers::AddMerge( Facts, "INTERNAL", KeyValues::AutoDeleteInline( new KeyValues( "Generic", "Icon", "swarm/swarmopedia/fact/unique", "Caption", "#rd_weapon_fact_unique" ) ) );
 		}
 
-		Name = pWeaponInfo->szPrintName;
+		Name = pEquipItem->m_szShortName;
 
 		RD_Swarmopedia::Display *pDisplay = new RD_Swarmopedia::Display{};
 		Display.AddToTail( pDisplay );
-		pDisplay->Caption = pWeaponInfo->szEquipLongName;
+		pDisplay->Caption = pEquipItem->m_szLongName;
 
 		pDisplay->LightingState = SwarmopediaDefaultLightingState();
 
@@ -1012,16 +988,13 @@ bool Weapon::ReadFromFile( const char *pszPath, KeyValues *pKV )
 			}
 		}
 
-		if ( pWeaponInfo->szAttributesText[0] != '\0' )
-		{
-			Ability *a = new Ability();
-			a->Caption = pWeaponInfo->szAttributesText;
-			Helpers::AddMerge( Abilities, a );
-		}
+		Ability *a = new Ability();
+		a->Caption = pEquipItem->m_szAttributeDescription;
+		Helpers::AddMerge( Abilities, a );
 
 		RD_Swarmopedia::Content *pContent = new RD_Swarmopedia::Content{};
 		Content.AddToTail( pContent );
-		pContent->Text = pWeaponInfo->szEquipDescription1;
+		pContent->Text = pEquipItem->m_szDescription1;
 		pContent->Color = Color{ 255, 255, 255, 255 };
 	}
 
@@ -1058,22 +1031,23 @@ bool Weapon::ReadFromFile( const char *pszPath, KeyValues *pKV )
 
 	if ( Builtin )
 	{
+		CASW_EquipItem *pItem = g_ASWEquipmentList.GetEquipItemFor( ClassName );
 		CASW_WeaponInfo *pWeaponInfo = g_ASWEquipmentList.GetWeaponDataFor( ClassName );
-		Assert( pWeaponInfo && pWeaponInfo->szClassName[0] != '\0' );
+		Assert( pItem && pWeaponInfo && pWeaponInfo->szClassName[0] != '\0' );
 
-		bool bWantAmmoFacts = !Extra && pWeaponInfo->iAmmoType > 1;
+		bool bWantAmmoFacts = !Extra && pItem->m_iAmmo1 > 0;
 
 		FOR_EACH_VEC( Facts, i )
 		{
-			PostProcessBuiltin( Facts[i], pWeaponInfo, false );
+			PostProcessBuiltin( Facts[i], pItem, pWeaponInfo, false );
 
 			if ( Facts[i]->Type == WeaponFact::Type_T::Ammo && bWantAmmoFacts )
 			{
 				bWantAmmoFacts = false;
 
 				ASSERT_INVARIANT( DEFAULT_AMMO_DROP_UNITS == 100 );
-				int iUnitCost = CASW_Ammo_Drop_Shared::GetAmmoUnitCost( pWeaponInfo->iAmmoType );
-				int iClipsPerRefill = CASW_Ammo_Drop_Shared::GetAmmoClipsToGive( pWeaponInfo->iAmmoType );
+				int iUnitCost = CASW_Ammo_Drop_Shared::GetAmmoUnitCost( pItem->m_iAmmo1 );
+				int iClipsPerRefill = CASW_Ammo_Drop_Shared::GetAmmoClipsToGive( pItem->m_iAmmo1 );
 
 				int iNext = i;
 				if ( iUnitCost > DEFAULT_AMMO_DROP_UNITS )

@@ -32,6 +32,7 @@ using namespace vgui;
 #include "asw_weapon_parse.h"
 #include "asw_vgui_fast_reload.h"
 #include "asw_hud_objective.h"
+#include "asw_equipment_list.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -222,21 +223,22 @@ void CASWHudAmmo::OnThink()
 					SetClips(clips);
 				SetGrenades(wpn->Clip2());
 				// changed weapon?
-				if (wpn != m_hLastWeapon.Get() && wpn->m_bWeaponCreated)
+				if ( wpn != m_hLastWeapon.Get() && wpn->m_bWeaponCreated )
 				{
 					m_hLastWeapon = wpn;
-					
-					const CASW_WeaponInfo* pInfo = wpn->GetWeaponInfo();
-					if (pInfo)
+
+					const CASW_EquipItem *pItem = wpn->GetEquipItem();
+					const CASW_WeaponInfo *pInfo = wpn->GetWeaponInfo();
+					if ( pItem && pInfo )
 					{
 						m_iDisplayPrimaryValue = pInfo->m_iShowBulletsOnHUD;
-						m_iDisplaySecondaryValue =  pInfo->m_iShowClipsOnHUD;
+						m_iDisplaySecondaryValue = pInfo->m_iShowClipsOnHUD;
 						m_iDisplayTertiaryValue = pInfo->m_iShowGrenadesOnHUD || pInfo->m_iShowSecondaryBulletsOnHUD ? 1 : 0;
 
-						if (!pAmmoBag)
+						if ( !pAmmoBag )
 						{
-							m_pWeaponLabel->SetText(pInfo->szPrintName);
-							m_pWeaponGlowLabel->SetText(pInfo->szPrintName);
+							m_pWeaponLabel->SetText( pItem->m_szShortName );
+							m_pWeaponGlowLabel->SetText( pItem->m_szShortName );
 						}
 					}
 				}

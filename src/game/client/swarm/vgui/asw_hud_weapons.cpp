@@ -198,7 +198,7 @@ void CASWHudWeapons::Paint()
 		if ( pWeapon )
 		{
 			int list_index = pWeapon->GetEquipmentListIndex();
-			int iTexture = g_ASWEquipmentList.GetEquipIconTexture( !pWeapon->GetWeaponInfo()->m_bExtra, list_index );
+			int iTexture = g_ASWEquipmentList.GetEquipIconTexture( !pWeapon->GetEquipItem()->m_bIsExtra, list_index );
 			if ( iTexture != -1 )
 			{
 				surface()->DrawSetColor( Color( r, g, b, 255 ) );
@@ -210,7 +210,7 @@ void CASWHudWeapons::Paint()
 				int text_y_offset = pWeapon->GetWeaponInfo()->m_iHUDNumberOffsetY * ( m_iFrameHeight / 160.0f ) * asw_hud_scale.GetFloat();
 
 				surface()->DrawSetColor( Color( r, g, b, 255 ) );
-				if ( pWeapon->GetWeaponInfo()->m_bExtra )
+				if ( pWeapon->GetEquipItem()->m_bIsExtra )
 				{
 					surface()->DrawTexturedRect( icon_x_offset, k * spacing_y + icon_y_offset,
 						icon_x_offset + tall, k * spacing_y + tall + icon_y_offset );
@@ -240,11 +240,13 @@ void CASWHudWeapons::Paint()
 				// show weapon swaps
 				if ( asw_hud_swaps.GetBool() && pUseAction && pUseAction->iInventorySlot == k )
 				{
+					const CASW_EquipItem *pItem = NULL;
 					const CASW_WeaponInfo *pWeaponData = NULL;
 					const char *szWeaponClass = NULL;
 					C_ASW_Pickup_Weapon *pPickup = dynamic_cast< C_ASW_Pickup_Weapon * >( pUseAction->UseTarget.Get() );
 					if ( pPickup )
 					{
+						pItem = g_ASWEquipmentList.GetEquipItemFor( pPickup->GetWeaponClass() );
 						pWeaponData = g_ASWEquipmentList.GetWeaponDataFor( pPickup->GetWeaponClass() );
 						szWeaponClass = pPickup->GetWeaponClass();
 					}
@@ -253,15 +255,15 @@ void CASWHudWeapons::Paint()
 						C_ASW_Weapon *pPickupWeapon = dynamic_cast< C_ASW_Weapon * >( pUseAction->UseTarget.Get() );
 						if ( pPickupWeapon )
 						{
+							pItem = pPickupWeapon->GetEquipItem();
 							pWeaponData = pPickupWeapon->GetWeaponInfo();
 							szWeaponClass = pPickupWeapon->GetClassname();
 						}
 					}
-					if ( pWeaponData )
+					if ( pItem && pWeaponData )
 					{
-						int iEquipListIndex = pWeaponData->m_bExtra ? g_ASWEquipmentList.GetExtraIndex( szWeaponClass )
-							: g_ASWEquipmentList.GetRegularIndex( szWeaponClass );
-						int iSwapWeaponTexture = g_ASWEquipmentList.GetEquipIconTexture( !pWeaponData->m_bExtra, iEquipListIndex );
+						int iEquipListIndex = pItem->m_iItemIndex;
+						int iSwapWeaponTexture = g_ASWEquipmentList.GetEquipIconTexture( !pItem->m_bIsExtra, iEquipListIndex );
 						if ( m_nSwapArrowTexture != -1 && iSwapWeaponTexture != -1 )
 						{
 							surface()->DrawSetColor( Color( r, g, b, m_hUseArea->m_pUseIcon->m_pUseText->GetAlpha() ) );	// fade in along with the use icon
@@ -275,7 +277,7 @@ void CASWHudWeapons::Paint()
 							icon_y_offset = pWeaponData->m_iHUDIconOffsetY;
 							surface()->DrawSetTexture( iSwapWeaponTexture );
 							surface()->DrawTexturedRect( icon_x_offset, k * spacing_y + icon_y_offset,
-								icon_x_offset + ( pWeaponData->m_bExtra ? tall : tall * 2.0f ), k * spacing_y + tall + icon_y_offset );
+								icon_x_offset + ( pItem->m_bIsExtra ? tall : tall * 2.0f ), k * spacing_y + tall + icon_y_offset );
 						}
 					}
 				}

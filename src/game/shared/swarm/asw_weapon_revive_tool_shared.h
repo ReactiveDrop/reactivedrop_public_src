@@ -59,6 +59,8 @@ public:
 	IMPLEMENT_AUTO_LIST_GET();
 
 	void Precache() override;
+	bool IsUsable( CBaseEntity *pUser ) override;
+	bool NeedsLOSCheck() override { return false; }
 
 #ifdef CLIENT_DLL
 	void OnDataChanged( DataUpdateType_t updateType ) override;
@@ -68,10 +70,18 @@ public:
 	bool m_bIsReviving;
 
 	dlight_t *m_pLightGlow;
+
+	// IASW_Client_Usable_Entity implementation
+	bool GetUseAction( ASWUseAction &action, C_ASW_Inhabitable_NPC *pUser ) override;
+	void CustomPaint( int ix, int iy, int alpha, vgui::Panel *pUseIcon ) override {}
+	bool ShouldPaintBoxAround() override { return false; }
 #else
 	DECLARE_DATADESC();
 
+	static CASW_Revive_Tombstone *MaybeCreateTombstone( CASW_Marine *pMarine, const CTakeDamageInfo &info, bool bGibbed );
+
 	void Spawn() override;
+	bool CreateVPhysics() override;
 	void TombstoneThink();
 
 	int m_iPathFails;
@@ -79,7 +89,16 @@ public:
 	bool m_bKeepUpright;
 
 	IMPLEMENT_NETWORK_VAR_FOR_DERIVED( m_hGroundEntity );
+
+	// IASW_Server_Usable_Entity implementation
+	bool RequirementsMet( CBaseEntity *pUser ) override { return true; }
+	void ActivateUseIcon( CASW_Inhabitable_NPC *pUser, int nHoldType ) override;
+	void NPCStartedUsing( CASW_Inhabitable_NPC *pUser ) override {}
+	void NPCStoppedUsing( CASW_Inhabitable_NPC *pUser ) override {}
+	void NPCUsing( CASW_Inhabitable_NPC *pUser, float fDeltaTime ) override {}
 #endif
+
+	Class_T Classify() override { return ( Class_T )CLASS_ASW_REVIVE_TOOL_MARKER; }
 
 	CNetworkHandle( CASW_Marine_Resource, m_hMarineResource );
 	CNetworkVar( bool, m_bGibbed );

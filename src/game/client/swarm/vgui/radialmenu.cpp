@@ -36,6 +36,7 @@
 #include "fmtstr.h"
 #include "vgui_int.h"
 #include "asw_util_shared.h"
+#include "asw_equipment_list.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1561,8 +1562,9 @@ public:
 				continue;
 
 			const CASW_WeaponInfo *pInfo = pWeapon->GetWeaponInfo();
-			Assert( pInfo );
-			if ( !pInfo )
+			const CASW_EquipItem *pItem = pWeapon->GetEquipItem();
+			Assert( pInfo && pItem );
+			if ( !pInfo || !pItem )
 				continue;
 
 			if ( pMR->GetCommander() != pPlayer && pInfo->m_iSquadEmote == -1 )
@@ -1577,7 +1579,7 @@ public:
 			g_pVGuiLocalize->ConstructString( wszText, sizeof( wszText ),
 				g_pVGuiLocalize->FindSafe( VarArgs( "#rd_radial_use_extra_%s", pProfile->m_PortraitName ) ),
 				1,
-				g_pVGuiLocalize->FindSafe( pInfo->szPrintName )
+				g_pVGuiLocalize->FindSafe( pItem->m_szShortName )
 			);
 			pDirection->SetWString( "text", wszText );
 

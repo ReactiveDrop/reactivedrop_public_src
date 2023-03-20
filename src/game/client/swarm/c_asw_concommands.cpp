@@ -34,6 +34,7 @@
 #include "asw_deathmatch_mode.h"
 #include "asw_medal_store.h"
 #include "asw_weapon_parse.h"
+#include "asw_equipment_list.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -333,7 +334,7 @@ void ASW_ActivateExtra_f()
 	if ( pMarine )
 	{
 		C_ASW_Weapon *pTempExtra = pMarine->GetASWWeapon( ASW_TEMPORARY_WEAPON_SLOT );
-		if ( pTempExtra && pTempExtra->GetWeaponInfo() && pTempExtra->GetWeaponInfo()->m_bExtra )
+		if ( pTempExtra && pTempExtra->GetEquipItem() && pTempExtra->GetEquipItem()->m_bIsExtra )
 		{
 			index = ASW_TEMPORARY_WEAPON_SLOT;
 		}

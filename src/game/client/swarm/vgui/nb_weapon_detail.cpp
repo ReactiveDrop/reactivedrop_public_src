@@ -72,7 +72,7 @@ void CNB_Weapon_Detail::OnThink()
 			CASW_WeaponInfo *pWeaponInfo = g_ASWEquipmentList.GetWeaponDataFor( pItem->m_szEquipClass );
 			if ( pWeaponInfo )
 			{
-				UpdateLabels( pWeaponInfo );
+				UpdateLabels( pItem, pWeaponInfo );
 			}
 		}
 	}
@@ -86,7 +86,7 @@ void CNB_Weapon_Detail::SetWeaponDetails( int nEquipIndex, int nInventorySlot, i
 	m_nDetailIndex = nDetailIndex;
 }
 
-void CNB_Weapon_Detail::UpdateLabels( CASW_WeaponInfo *pWeaponData )
+void CNB_Weapon_Detail::UpdateLabels( CASW_EquipItem *pItem, CASW_WeaponInfo *pWeaponData )
 {
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	if ( !pPlayer )
@@ -288,8 +288,8 @@ void CNB_Weapon_Detail::UpdateLabels( CASW_WeaponInfo *pWeaponData )
 			// clip capacity
 			static wchar_t wszClipLine[32];
 			Q_snwprintf( wszClipLine, ARRAYSIZE( wszClipLine ), L"%s", g_pVGuiLocalize->Find( "#asw_weapon_details_clipsize" ) );
-			int iClipValue = pWeaponData->iMaxClip1;
-			int nMaxBulletsPerGun = GetAmmoDef()->MaxCarry( pWeaponData->iAmmoType, NULL );
+			int iClipValue = pItem->MaxAmmo1();
+			int nMaxBulletsPerGun = GetAmmoDef()->MaxCarry( pItem->m_iAmmo1, NULL );
 			int iNumClips = ( nMaxBulletsPerGun / iClipValue ) + 1;
 			if ( pWeaponData->m_bShowClipsDoubled )
 			{
@@ -332,15 +332,16 @@ void CNB_Weapon_Detail::UpdateLabels( CASW_WeaponInfo *pWeaponData )
 			Q_snwprintf( wszAltLine, ARRAYSIZE( wszAltLine ), L"%s", g_pVGuiLocalize->Find( "#asw_weapon_details_altfire" ) );
 			wchar_t wzAltValue[64];
 			bool bHighlightText = false;
-			if ( !Q_stricmp( pWeaponData->szAltFireText, "" ) )
-				Q_snwprintf( wzAltValue, ARRAYSIZE( wzAltValue ), L"%s", g_pVGuiLocalize->Find( "#asw_weapon_altfire_none" ) );
+
+			if ( !g_pVGuiLocalize->Find( pItem->m_szAltFireDescription ) )
+				V_snwprintf( wzAltValue, ARRAYSIZE( wzAltValue ), L"%s", g_pVGuiLocalize->Find( "#asw_weapon_altfire_none" ) );
 			else
 			{
-				int iAltFire = pWeaponData->iDefaultClip2;
+				int iAltFire = pItem->DefaultAmmo2();
 				if ( iAltFire > 0 )
-					Q_snwprintf( wzAltValue, ARRAYSIZE( wzAltValue ), L"%d %s", iAltFire, g_pVGuiLocalize->Find( pWeaponData->szAltFireText ) );
+					Q_snwprintf( wzAltValue, ARRAYSIZE( wzAltValue ), L"%d %s", iAltFire, g_pVGuiLocalize->Find( pItem->m_szAltFireDescription ) );
 				else
-					Q_snwprintf( wzAltValue, ARRAYSIZE( wzAltValue ), L"%s", g_pVGuiLocalize->Find( pWeaponData->szAltFireText ) );
+					Q_snwprintf( wzAltValue, ARRAYSIZE( wzAltValue ), L"%s", g_pVGuiLocalize->Find( pItem->m_szAltFireDescription ) );
 				bHighlightText = true;
 			}
 
@@ -357,27 +358,15 @@ void CNB_Weapon_Detail::UpdateLabels( CASW_WeaponInfo *pWeaponData )
 			// attributes
 			static wchar_t wszAttributesLine[32];
 			Q_snwprintf( wszAttributesLine, ARRAYSIZE( wszAttributesLine ), L"%s", g_pVGuiLocalize->Find( "#asw_weapon_details_notes" ) );
-			//wchar_t wszAttributesTempNull[4];
-			//wchar_t wszAttributesTempText[64];
-			wchar_t wszAttributesValue[64];
 			bool bHighlightText = false;
-			//Q_snwprintf( wszAttributesTempText, ARRAYSIZE( wszAttributesTempText ), g_pVGuiLocalize->Find( pWeaponData->szAttributesText ) );
-			//Q_snwprintf( wszAttributesTempNull, ARRAYSIZE( wszAttributesTempNull ), "" );
-			// fixing crash on missing weapon description 
-			const wchar_t *wattributes_str = g_pVGuiLocalize->Find( pWeaponData->szAttributesText );
-			if ( !pWeaponData->szAttributesText					||
-				 !Q_strcmp( pWeaponData->szAttributesText, "" ) ||
-				 !wattributes_str								||
-				 !Q_wcscmp( wattributes_str, g_pVGuiLocalize->Find( "#asw_weapon_null_line" ) ) )
-				//asw_weapon_null_line
+			const wchar_t *wszAttributesValue = g_pVGuiLocalize->Find( pItem->m_szAttributeDescription );
+			if ( !wszAttributesValue )
 			{
-			//	Q_snwprintf( wszAttributesValue, ARRAYSIZE( wszAttributesValue ), g_pVGuiLocalize->Find( "#asw_weapon_altfire_none" ) );
 				m_pTitleLabel->SetVisible( false );
 				m_pValueLabel->SetVisible( false );
 			}
 			else
 			{
-				Q_snwprintf( wszAttributesValue, ARRAYSIZE( wszAttributesValue ), L"%s", g_pVGuiLocalize->Find( pWeaponData->szAttributesText ) );
 				bHighlightText = true;
 				m_pTitleLabel->SetText( wszAttributesLine );
 				m_pTitleLabel->SetVisible( true );

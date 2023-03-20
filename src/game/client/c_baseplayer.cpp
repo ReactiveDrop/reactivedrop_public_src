@@ -928,6 +928,7 @@ void C_BasePlayer::OnDataChanged( DataUpdateType_t updateType )
 			render->SetAreaState( m_Local.m_chAreaBits, m_Local.m_chAreaPortalBits );
 		}
 
+#ifndef INFESTED_DLL
 		// Check for Ammo pickups.
 		int ammoTypes = GetAmmoDef()->NumAmmoTypes();
 		for ( int i = 0; i <= ammoTypes; i++ )
@@ -951,6 +952,7 @@ void C_BasePlayer::OnDataChanged( DataUpdateType_t updateType )
 				}
 			}
 		}
+#endif
 
 		// Only add this to the correct Hud
 		{

@@ -70,7 +70,7 @@ END_SEND_TABLE()
 // Save/Restore
 //---------------------------------------------------------
 BEGIN_DATADESC( CASW_Weapon )
-	DEFINE_FIELD(m_iEquipmentListIndex, FIELD_INTEGER),
+	DEFINE_FIELD( m_iEquipmentListIndex, FIELD_INTEGER ),
 	DEFINE_FIELD( m_bShotDelayed,	FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_flDelayedFire,	FIELD_TIME ),	
 	DEFINE_FIELD( m_fReloadStart, FIELD_TIME ),
@@ -90,6 +90,7 @@ CASW_Weapon::CASW_Weapon()
 {
 	SetPredictionEligible(true);
 	m_iEquipmentListIndex = -1;
+	m_pEquipItem = NULL;
 
 	m_bSwitchingWeapons = false;
 

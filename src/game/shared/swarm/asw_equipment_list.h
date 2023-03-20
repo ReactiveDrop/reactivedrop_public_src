@@ -98,14 +98,39 @@ class CASW_EquipItem
 public:
 	DECLARE_CLASS_NOBASE( CASW_EquipItem );
 
-	CASW_EquipItem( int iItemIndex, const char *szEquipClass, bool bSelectableInBriefing, bool bIsExtra );
+	CASW_EquipItem( int iItemIndex, const char *szEquipClass, const char *szShortName, const char *szLongName,
+		const char *szDescription1, const char *szAltFireDescription, const char *szAttributeDescription,
+		bool bSelectableInBriefing, bool bIsExtra, const char *szAmmo1, const char *szAmmo2,
+		const char *szEquipIcon, ConVar *pMaxAmmo1, ConVar *pMaxAmmo2,
+		int iRequiredClass = -1, bool bIsUnique = false );
+
+	int DefaultAmmo1() const;
+	int MaxAmmo1() const;
+	int DefaultAmmo2() const;
+	int MaxAmmo2() const;
+
+	void LevelInitPreEntity();
 
 	// the items index in the list of equipment
 	const int m_iItemIndex;
-	const int m_iInventoryIndex;
+	const int m_iInventoryEquipIndex;
+	const int m_iRequiredClass;
+	int m_iAmmo1;
+	int m_iAmmo2;
+	ConVar *const m_pMaxAmmo1;
+	ConVar *const m_pMaxAmmo2;
 	const char *const m_szEquipClass;
+	const char *const m_szShortName;
+	const char *const m_szLongName;
+	const char *const m_szDescription1;
+	const char *const m_szAltFireDescription;
+	const char *const m_szAttributeDescription;
+	const char *const m_szAmmo1;
+	const char *const m_szAmmo2;
+	const char *const m_szEquipIcon;
 	const bool m_bSelectableInBriefing; // if false, this item won't show up on the loadout screen unless an inventory item is equipped
 	const bool m_bIsExtra;
+	const bool m_bIsUnique;
 	string_t m_EquipClass;
 };
 
@@ -120,6 +145,7 @@ public:
 
 	// return info on a particular weapon data
 	CASW_WeaponInfo *GetWeaponDataFor( const char *szWeaponClass );
+	CASW_EquipItem *GetEquipItemFor( const char *szWeaponClass );
 
 	// find the index of a particular item
 	int GetRegularIndex( const char *szWeaponClass );

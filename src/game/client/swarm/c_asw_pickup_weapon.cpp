@@ -33,17 +33,14 @@ C_ASW_Pickup_Weapon::C_ASW_Pickup_Weapon()
 
 void C_ASW_Pickup_Weapon::InitPickup()
 {
-	CASW_WeaponInfo *pInfo = g_ASWEquipmentList.GetWeaponDataFor( GetWeaponClass() );
-	if ( !pInfo )
+	CASW_EquipItem *pItem = g_ASWEquipmentList.GetEquipItemFor( GetWeaponClass() );
+	if ( !pItem )
 		return;
 
-	V_snprintf( m_szUseIconText, sizeof( m_szUseIconText ), "%s", pInfo->szPrintName );
+	V_snprintf( m_szUseIconText, sizeof( m_szUseIconText ), "%s", pItem->m_szShortName );
 
-	m_nUseIconTextureID = g_ASWEquipmentList.GetEquipIconTexture( !pInfo->m_bExtra,
-		pInfo->m_bExtra ?
-		g_ASWEquipmentList.GetExtraIndex( GetWeaponClass() ) :
-		g_ASWEquipmentList.GetRegularIndex( GetWeaponClass() ) );
-	m_bWideIcon = !pInfo->m_bExtra;
+	m_nUseIconTextureID = g_ASWEquipmentList.GetEquipIconTexture( !pItem->m_bIsExtra, pItem->m_iItemIndex );
+	m_bWideIcon = !pItem->m_bIsExtra;
 }
 
 void C_ASW_Pickup_Weapon::GetUseIconText( wchar_t *unicode, int unicodeBufferSizeInBytes )

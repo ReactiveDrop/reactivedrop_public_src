@@ -17,6 +17,7 @@
 #include "asw_input.h"
 #include <vgui_controls/AnimationController.h>
 #include "hud_locator_target.h"
+#include "asw_equipment_list.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -492,9 +493,9 @@ void CASW_Hotbar_Entry::UpdateImage()
 		return;
 	}
 
-
-	const CASW_WeaponInfo* pInfo = pWeapon->GetWeaponInfo();
-	if ( !pInfo )
+	const CASW_WeaponInfo *pInfo = pWeapon->GetWeaponInfo();
+	const CASW_EquipItem *pItem = pWeapon->GetEquipItem();
+	if ( !pInfo || !pItem )
 	{
 		return;
 	}
@@ -510,7 +511,7 @@ void CASW_Hotbar_Entry::UpdateImage()
 	m_pKeybindLabel->SetVisible( true );
 	m_pQuantityLabel->SetVisible( true );
 
-	m_pWeaponImage->SetImage( pInfo->szEquipIcon );
+	m_pWeaponImage->SetImage( pItem->m_szEquipIcon );
 
 	CASW_Marine_Profile *pProfile = m_hMarine->GetMarineProfile();
 	if ( pProfile )
@@ -548,14 +549,15 @@ void CASW_Hotbar_Entry::ShowTooltip()
 	if ( !pWeapon )
 		return;
 
-	const CASW_WeaponInfo* pInfo = pWeapon->GetWeaponInfo();
-	if ( !pInfo || !pInfo->m_bOffhandActivate )		// TODO: Fix for sentry guns
+	const CASW_WeaponInfo *pInfo = pWeapon->GetWeaponInfo();
+	const CASW_EquipItem *pItem = pWeapon->GetEquipItem();
+	if ( !pInfo || !pItem || !pInfo->m_bOffhandActivate )		// TODO: Fix for sentry guns
 		return;
 
 	int x = GetWide() * 0.8f;
 	int y = GetTall() * 0.02f;
 	LocalToScreen( x, y );
-	g_hBriefingTooltip->SetTooltip( this, pInfo->szPrintName, " ", x, y, true );
+	g_hBriefingTooltip->SetTooltip( this, pItem->m_szShortName, " ", x, y, true );
 }
 
 void CASW_Hotbar_Entry::ActivateItem()
@@ -577,30 +579,12 @@ void CASW_Hotbar_Entry::ActivateItem()
 	// make it flash
 	new CASWSelectOverlayPulse( this );
 
-	//Msg( "Activating item %s (%s) on marine %s\n", pInfo->szPrintName, pWeapon->GetDebugName(), m_hMarine->GetDebugName() );
-	//pWeapon->OffhandActivate();
-
 	char buffer[ 64 ];
 	Q_snprintf(buffer, sizeof(buffer), "cl_ai_offhand %d %d", m_iInventoryIndex, m_hMarine->entindex() );
 	engine->ClientCmd( buffer );
 
 	CLocalPlayerFilter filter;
 	C_BaseEntity::EmitSound( filter, -1 /*SOUND_FROM_LOCAL_PLAYER*/, "ASWInterface.Button3" );
-
-	/*  this was replaced with a particle indicator in the world
-	// show an icon where they were ordered!
-	CLocatorTarget *pLocatorTarget = Locator_GetTargetFromHandle( Locator_AddTarget() );
-	if ( pLocatorTarget )
-	{
-		pLocatorTarget->m_vecOrigin = ASWInput()->GetCrosshairTracePos();
-		pLocatorTarget->SetCaptionText( "", "" );
-		pLocatorTarget->SetOnscreenIconTextureName( pWeapon->GetWeaponInfo()->szClassName );
-		pLocatorTarget->SetVisible( true );
-		pLocatorTarget->AddIconEffects( LOCATOR_ICON_FX_NONE );
-		pLocatorTarget->AddIconEffects( LOCATOR_ICON_FX_NO_OFFSCREEN );
-		pLocatorTarget->AddIconEffects( LOCATOR_ICON_FX_FORCE_CAPTION );
-	}
-	*/
 }
 
 void CASW_Hotbar_Entry::ApplySchemeSettings( vgui::IScheme *pScheme )
@@ -643,26 +627,6 @@ void CASW_Hotbar_Entry::PerformLayout()
 	border = YRES( 3 );
 	m_pWeaponImage->SetBounds( border, border, w - border * 2, h - border * 2 );
 }
-
-/*
-void SquadHotbar( const CCommand &args )
-{
-	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if (!pPlayer)
-		return;
-
-	if ( args.ArgC() < 2 )
-		return;
-	
-	CASW_Hud_Squad_Hotbar *pHUD = GET_HUDELEMENT( CASW_Hud_Squad_Hotbar );
-	if ( !pHUD )
-		return;
-
-	pHUD->ActivateHotbarItem( atoi( args[1] ) );
-}
-
-static ConCommand asw_squad_hotbar( "asw_squad_hotbar", SquadHotbar, "Activate a squad hotbar button", 0 );
-*/
 
 // ============================================================
 

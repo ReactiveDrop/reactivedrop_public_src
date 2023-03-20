@@ -4,7 +4,6 @@
 #include <vgui_controls/AnimationController.h>
 #include "asw_marine_profile.h"
 #include "asw_equipment_list.h"
-#include "asw_weapon_parse.h"
 #include "c_asw_steamstats.h"
 #include "rd_text_filtering.h"
 
@@ -219,24 +218,15 @@ void CReactiveDrop_VGUI_Leaderboard_Entry::SetEntry( const RD_LeaderboardEntry_t
 		}
 		if ( CASW_EquipItem *pPrimaryWeapon = g_ASWEquipmentList.GetRegular( entry.details.v1.m_iPrimaryWeapon ) )
 		{
-			if ( CASW_WeaponInfo *pWeaponInfo = g_ASWEquipmentList.GetWeaponDataFor( pPrimaryWeapon->m_szEquipClass ) )
-			{
-				m_imgPrimaryWeapon->SetImage( pWeaponInfo->szEquipIcon );
-			}
+			m_imgPrimaryWeapon->SetImage( pPrimaryWeapon->m_szEquipIcon );
 		}
 		if ( CASW_EquipItem *pSecondaryWeapon = g_ASWEquipmentList.GetRegular( entry.details.v1.m_iSecondaryWeapon ) )
 		{
-			if ( CASW_WeaponInfo *pWeaponInfo = g_ASWEquipmentList.GetWeaponDataFor( pSecondaryWeapon->m_szEquipClass ) )
-			{
-				m_imgSecondaryWeapon->SetImage( pWeaponInfo->szEquipIcon );
-			}
+			m_imgSecondaryWeapon->SetImage( pSecondaryWeapon->m_szEquipIcon );
 		}
 		if ( CASW_EquipItem *pExtraWeapon = g_ASWEquipmentList.GetExtra( entry.details.v1.m_iExtraWeapon ) )
 		{
-			if ( CASW_WeaponInfo *pWeaponInfo = g_ASWEquipmentList.GetWeaponDataFor( pExtraWeapon->m_szEquipClass ) )
-			{
-				m_imgExtraWeapon->SetImage( pWeaponInfo->szEquipIcon );
-			}
+			m_imgExtraWeapon->SetImage( pExtraWeapon->m_szEquipIcon );
 		}
 		if ( entry.details.v1.m_iSquadSize > 1 )
 		{
@@ -277,24 +267,15 @@ void CReactiveDrop_VGUI_Leaderboard_Entry::SetEntry( const RD_LeaderboardEntry_t
 		}
 		if ( CASW_EquipItem *pPrimaryWeapon = g_ASWEquipmentList.GetRegular( entry.details.v2.m_iPrimaryWeapon ) )
 		{
-			if ( CASW_WeaponInfo *pWeaponInfo = g_ASWEquipmentList.GetWeaponDataFor( pPrimaryWeapon->m_szEquipClass ) )
-			{
-				m_imgPrimaryWeapon->SetImage( pWeaponInfo->szEquipIcon );
-			}
+			m_imgPrimaryWeapon->SetImage( pPrimaryWeapon->m_szEquipIcon );
 		}
 		if ( CASW_EquipItem *pSecondaryWeapon = g_ASWEquipmentList.GetRegular( entry.details.v2.m_iSecondaryWeapon ) )
 		{
-			if ( CASW_WeaponInfo *pWeaponInfo = g_ASWEquipmentList.GetWeaponDataFor( pSecondaryWeapon->m_szEquipClass ) )
-			{
-				m_imgSecondaryWeapon->SetImage( pWeaponInfo->szEquipIcon );
-			}
+			m_imgSecondaryWeapon->SetImage( pSecondaryWeapon->m_szEquipIcon );
 		}
 		if ( CASW_EquipItem *pExtraWeapon = g_ASWEquipmentList.GetExtra( entry.details.v2.m_iExtraWeapon ) )
 		{
-			if ( CASW_WeaponInfo *pWeaponInfo = g_ASWEquipmentList.GetWeaponDataFor( pExtraWeapon->m_szEquipClass ) )
-			{
-				m_imgExtraWeapon->SetImage( pWeaponInfo->szEquipIcon );
-			}
+			m_imgExtraWeapon->SetImage( pExtraWeapon->m_szEquipIcon );
 		}
 		if ( entry.details.v2.m_iSquadSize > 1 )
 		{

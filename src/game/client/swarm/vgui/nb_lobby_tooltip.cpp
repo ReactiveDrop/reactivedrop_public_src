@@ -382,7 +382,7 @@ void CNB_Lobby_Tooltip::OnTick()
 		m_pWeaponDetail5->SetWeaponDetails( nEquipIndex, m_nInventorySlot, nProfileIndex, 5 );
 	}
 
-	m_pTitle->SetText( pWeaponInfo->szEquipLongName );
+	m_pTitle->SetText( pItem->m_szLongName );
 
 	m_bValidTooltip = true;
 }

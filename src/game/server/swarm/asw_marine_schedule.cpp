@@ -1415,17 +1415,18 @@ static bool AdjustOffhandItemDestination( CASW_Marine *pMarine, CASW_Weapon *pWe
 void CASW_Marine::OrderUseOffhandItem( int iInventorySlot, const Vector &vecDest )
 {
 	// check we have an item in that slot
-	CASW_Weapon* pWeapon = GetASWWeapon( iInventorySlot );
+	CASW_Weapon *pWeapon = GetASWWeapon( iInventorySlot );
 	if ( !pWeapon )
 		return;
-	const CASW_WeaponInfo* pWpnInfo = pWeapon->GetWeaponInfo();
-	if ( !pWpnInfo || !pWpnInfo->m_bOffhandActivate )
+	const CASW_WeaponInfo *pWpnInfo = pWeapon->GetWeaponInfo();
+	const CASW_EquipItem *pItem = pWeapon->GetEquipItem();
+	if ( !pWpnInfo || !pItem || !pWpnInfo->m_bOffhandActivate )
 		return;
 
 	// m_vecOffhandItemSpot = vecDest;
-	if ( !AdjustOffhandItemDestination( this, pWeapon, vecDest, &m_vecOffhandItemSpot) )
+	if ( !AdjustOffhandItemDestination( this, pWeapon, vecDest, &m_vecOffhandItemSpot ) )
 		return;
-	else if ( asw_debug_order_weld.GetBool() ) 
+	else if ( asw_debug_order_weld.GetBool() )
 	{
 		NDebugOverlay::Cross( m_vecOffhandItemSpot, 12.0f, 255, 0, 0, true, 3 );
 	}
@@ -1433,10 +1434,10 @@ void CASW_Marine::OrderUseOffhandItem( int iInventorySlot, const Vector &vecDest
 	if ( pWpnInfo->m_nOffhandOrderType == ASW_OFFHAND_USE_IMMEDIATELY )
 	{
 		pWeapon->OffhandActivate();
-		if ( pWpnInfo->m_bExtra )
+		if ( pItem->m_bIsExtra )
 		{
 			// Fire event when a marine uses an offhand item
-			IGameEvent * event = gameeventmanager->CreateEvent( "weapon_offhand_activate" );
+			IGameEvent *event = gameeventmanager->CreateEvent( "weapon_offhand_activate" );
 			if ( event )
 			{
 				CASW_Player *pPlayer = NULL;
@@ -1459,12 +1460,12 @@ void CASW_Marine::OrderUseOffhandItem( int iInventorySlot, const Vector &vecDest
 		// Tell the player's client that he's been hurt.
 		CSingleUserRecipientFilter user( pPlayer );
 		UserMessageBegin( user, "ASWOrderUseItemFX" );
-		WRITE_SHORT( entindex() );
-		WRITE_SHORT( ASW_USE_ORDER_WITH_ITEM );
-		WRITE_SHORT( iInventorySlot );
-		WRITE_FLOAT( m_vecOffhandItemSpot.x );
-		WRITE_FLOAT( m_vecOffhandItemSpot.y );
-		WRITE_FLOAT( m_vecOffhandItemSpot.z );
+			WRITE_SHORT( entindex() );
+			WRITE_SHORT( ASW_USE_ORDER_WITH_ITEM );
+			WRITE_SHORT( iInventorySlot );
+			WRITE_FLOAT( m_vecOffhandItemSpot.x );
+			WRITE_FLOAT( m_vecOffhandItemSpot.y );
+			WRITE_FLOAT( m_vecOffhandItemSpot.z );
 		MessageEnd();
 	}
 
@@ -1496,7 +1497,8 @@ int CASW_Marine::SelectOffhandItemSchedule()
 		return -1;
 
 	const CASW_WeaponInfo *pInfo = m_hOffhandItemToUse->GetWeaponInfo();
-	if ( !pInfo )
+	const CASW_EquipItem *pItem = m_hOffhandItemToUse->GetEquipItem();
+	if ( !pInfo || !pItem )
 		return -1;
 
 	SetPoseParameter( "move_x", 1.0f );
@@ -1508,7 +1510,7 @@ int CASW_Marine::SelectOffhandItemSchedule()
 		if ( ( m_vecOffhandItemSpot - GetAbsOrigin() ).Length2D() < ASW_DEPLOY_RANGE )
 		{
 			m_hOffhandItemToUse->OffhandActivate();
-			if ( pInfo->m_bExtra )
+			if ( pItem->m_bIsExtra )
 			{
 				// Fire event when a marine uses an offhand item
 				IGameEvent * event = gameeventmanager->CreateEvent( "weapon_offhand_activate" );
@@ -1546,7 +1548,7 @@ int CASW_Marine::SelectOffhandItemSchedule()
 		if ( CanThrowOffhand( m_hOffhandItemToUse, GetOffhandThrowSource(), m_vecOffhandItemSpot, asw_debug_throw.GetInt() == 3 ) )
 		{
 			m_hOffhandItemToUse->OffhandActivate();
-			if ( pInfo->m_bExtra )
+			if ( pItem->m_bIsExtra )
 			{
 				// Fire event when a marine uses an offhand item
 				IGameEvent * event = gameeventmanager->CreateEvent( "weapon_offhand_activate" );
@@ -1598,14 +1600,14 @@ void CASW_Marine::FinishedUsingOffhandItem( bool bItemThrown, bool bFailed )
 
 		CSingleUserRecipientFilter user( pPlayer );
 		UserMessageBegin( user, "ASWOrderStopItemFX" );
-		WRITE_SHORT( entindex() );
-		WRITE_BOOL( bItemThrown );
-		WRITE_BOOL( bFailed );
+			WRITE_SHORT( entindex() );
+			WRITE_BOOL( bItemThrown );
+			WRITE_BOOL( bFailed );
 		MessageEnd();
 	}
 	else
 	{
-		OrdersFromPlayer( NULL, ASW_ORDER_HOLD_POSITION, this, true, GetLocalAngles().y);
+		OrdersFromPlayer( NULL, ASW_ORDER_HOLD_POSITION, this, true, GetLocalAngles().y );
 	}
 }
 

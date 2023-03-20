@@ -757,18 +757,10 @@ void C_ASW_Marine::ClientThink()
 		C_EnvProjectedTexture::SetVisibleBBoxMinHeight( GetAbsOrigin().z - 64.0f );
 	}
 
-	if (IsInhabited())
-	{
-		//m_vecLastRenderedPos = GetRenderOrigin();
-	}
 	if (asw_DebugAutoAim.GetInt() == 3)
 	{
 		Msg("%f: Drawmodel render origin %s\n", gpGlobals->curtime, VecToString(GetRenderOrigin()));
 	}
-
-	//if (GetActiveWeapon() && GetActiveWeapon()->GetPrimaryAmmoType())
-	//Msg("Ammo = %d\n", GetAmmoCount(GetActiveWeapon()->GetPrimaryAmmoType()));
-	//Msg("Ammo = %d\n", GetAmmoCount("ASW_R"));
 
 	// tick up/down our minimap blip, reversing direction at the bounds
 	float deltatime = gpGlobals->curtime - m_LastThinkTime;	
@@ -790,21 +782,13 @@ void C_ASW_Marine::ClientThink()
 		// Predict
 		m_fInfestedTime -= deltatime;
 	}
-	
-	//Vector light_pos = engine->GetClosestLightLocation(GetAbsOrigin());
-	//m_ShadowDirection.x = RandomFloat( -1.0, 1.0 );
-	//m_ShadowDirection.y = RandomFloat( -1.0, 1.0 );
-	//m_ShadowDirection.z = RandomFloat( -1.0, 1.0 );
-	//VectorSubtract(GetAbsOrigin(), light_pos, m_ShadowDirection);
-	//m_ShadowDirection = engine->GetClosestLightPosition(GetAbsOrigin());
-	//m_ShadowDirection.NormalizeInPlace();
 
 	// turn the flame emitter on or off
-	C_ASW_Weapon *pWeapon = GetActiveASWWeapon();
+	C_ASW_Weapon *pActiveWeapon = GetActiveASWWeapon();
 	// flamethrower handles its own effects now
-	if ( pWeapon && IsAlive() )//m_hFlameEmitter.IsValid() && 
+	if ( pActiveWeapon && IsAlive() )//m_hFlameEmitter.IsValid() && 
 	{			
-		bool bFlameOn = pWeapon->ShouldMarineFlame();
+		bool bFlameOn = pActiveWeapon->ShouldMarineFlame();
 		if (bFlameOn && !bPlayingFlamerSound)
 		{
 			StartFlamerLoop();
@@ -814,32 +798,15 @@ void C_ASW_Marine::ClientThink()
 			StopFlamerLoop();
 		}			
 		bPlayingFlamerSound = bFlameOn;
-		/*
-		m_hFlameEmitter->SetActive(bFlameOn);
-		Vector vecMuzzle = GetAbsOrigin()+Vector(0,0,45);
-		QAngle angMuzzle;
-		
-		C_BaseAnimating::PushAllowBoneAccess( true, false, "ClientThink" );
-		pWeapon->GetAttachment( pWeapon->LookupAttachment("muzzle"), vecMuzzle, angMuzzle );
-
-		m_hFlameEmitter->Think(gpGlobals->frametime, vecMuzzle, angMuzzle);
-		if (m_hFlameStreamEmitter.IsValid())
-		{
-			m_hFlameStreamEmitter->SetActive(bFlameOn);
-			m_hFlameStreamEmitter->Think(gpGlobals->frametime, vecMuzzle, angMuzzle);		
-		}
-		C_BaseAnimating::PopBoneAccess( "ClientThink" );
-		*/
 	}
 	else
 	{
 		if (bPlayingFlamerSound)
 			StopFlamerLoop();
 	}
-	if ( pWeapon && IsAlive())
-	{			
-		//bool bFireExtinguisherOn = m_fFireExtinguisherTime >= gpGlobals->curtime;
-		bool bFireExtinguisherOn = pWeapon->ShouldMarineFireExtinguish();
+	if ( pActiveWeapon && IsAlive())
+	{
+		bool bFireExtinguisherOn = pActiveWeapon->ShouldMarineFireExtinguish();
 		if (bFireExtinguisherOn && !bPlayingFireExtinguisherSound)
 		{
 			StartFireExtinguisherLoop();
@@ -847,29 +814,8 @@ void C_ASW_Marine::ClientThink()
 		else if (!bFireExtinguisherOn && bPlayingFireExtinguisherSound)
 		{
 			StopFireExtinguisherLoop();
-		}			
+		}
 		bPlayingFireExtinguisherSound = bFireExtinguisherOn;
-		// extinguisher weapons now handle their own effects
-		/*
-		m_hFireExtinguisherEmitter->SetActive(bFireExtinguisherOn);	
-
-		Vector vecMuzzle = GetAbsOrigin()+Vector(0,0,45);
-		QAngle angMuzzle;
-		int iMuzzleAttach = pWeapon->LookupAttachment("muzzle");
-		//Msg("Firext muzzle attach = %d\n", iMuzzleAttach);
-		if (!pWeapon->GetAttachment(iMuzzleAttach , vecMuzzle, angMuzzle ))
-		{
-			vecMuzzle = GetAbsOrigin()+Vector(0,0,45);
-			angMuzzle = ASWEyeAngles();
-		}
-		else
-		{
-			//Msg("  from weapon %s vec = %s ang = %s\n", pWeapon->GetClassname(), VecToString(vecMuzzle), VecToString(angMuzzle));
-		}
-
-		m_hFireExtinguisherEmitter->Think(gpGlobals->frametime, vecMuzzle, angMuzzle);
-		//m_hFireExtinguisherEmitter->Think(gpGlobals->frametime, GetAbsOrigin()+Vector(0,0,45), ASWEyeAngles());
-		*/
 	}
 	else
 	{
@@ -877,9 +823,9 @@ void C_ASW_Marine::ClientThink()
 			StopFireExtinguisherLoop();
 	}
 
-	if ( pWeapon && IsAlive() )//m_hFlameEmitter.IsValid() && 
+	if ( pActiveWeapon && IsAlive() )//m_hFlameEmitter.IsValid() && 
 	{			
-		bool bMinigunOn = pWeapon->ShouldMarineMinigunShoot();
+		bool bMinigunOn = pActiveWeapon->ShouldMarineMinigunShoot();
 		if (bMinigunOn && !bPlayingMinigunSound)
 		{
 			StartMinigunLoop();

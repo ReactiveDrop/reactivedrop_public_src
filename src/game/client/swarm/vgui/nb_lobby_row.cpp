@@ -389,26 +389,24 @@ void CNB_Lobby_Row::UpdateDetails()
 		case ASW_INVENTORY_SLOT_SECONDARY:  pButton = m_pWeaponButton1; pSilhouette = m_pSilhouetteWeapon1; break;
 		case ASW_INVENTORY_SLOT_EXTRA:  pButton = m_pWeaponButton2; pSilhouette = m_pSilhouetteWeapon2; break;
 		}
+		Assert( pButton && pSilhouette );
 
 		int nWeapon = Briefing()->GetMarineSelectedWeapon( m_nLobbySlot, i );
 		if ( nWeapon != -1 )
 		{
 			CASW_EquipItem *pItem = g_ASWEquipmentList.GetItemForSlot( i, nWeapon );
+			Assert( pItem );
 			if ( pItem )
 			{
-				CASW_WeaponInfo *pWeaponInfo = g_ASWEquipmentList.GetWeaponDataFor( pItem->m_szEquipClass );
-				if ( pButton && pWeaponInfo )
+				bSetButtonImage = true;
+				char imagename[255];
+				Q_snprintf( imagename, sizeof( imagename ), "vgui/%s", pItem->m_szEquipIcon );
+				if ( Q_strcmp( imagename, m_szLastWeaponImage[i] ) )
 				{
-					bSetButtonImage = true;
-					char imagename[255];
-					Q_snprintf( imagename, sizeof( imagename ), "vgui/%s", pWeaponInfo->szEquipIcon );
-					if ( Q_strcmp( imagename, m_szLastWeaponImage[i] ) )
-					{
-						Q_snprintf( m_szLastWeaponImage[i], sizeof( m_szLastWeaponImage[i] ), "%s", imagename );
-						pButton->SetImage( CBitmapButton::BUTTON_ENABLED, imagename, lightblue );
-						pButton->SetImage( CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, imagename, Briefing()->IsLobbySlotLocal( m_nLobbySlot ) ? white : lightblue );
-						pButton->SetImage( CBitmapButton::BUTTON_PRESSED, imagename, lightblue );
-					}
+					Q_snprintf( m_szLastWeaponImage[i], sizeof( m_szLastWeaponImage[i] ), "%s", imagename );
+					pButton->SetImage( CBitmapButton::BUTTON_ENABLED, imagename, lightblue );
+					pButton->SetImage( CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, imagename, Briefing()->IsLobbySlotLocal( m_nLobbySlot ) ? white : lightblue );
+					pButton->SetImage( CBitmapButton::BUTTON_PRESSED, imagename, lightblue );
 				}
 			}
 		}

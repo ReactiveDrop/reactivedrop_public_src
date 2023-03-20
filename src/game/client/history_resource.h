@@ -30,6 +30,7 @@ namespace vgui
 
 class C_BaseCombatWeapon;
 
+#ifndef INFESTED_DLL
 //-----------------------------------------------------------------------------
 // Purpose: Used to draw the history of ammo / weapon / item pickups by the player
 //-----------------------------------------------------------------------------
@@ -92,5 +93,6 @@ private:
 	CPanelAnimationVar( vgui::HFont, m_hNumberFont, "NumberFont", "HudNumbersSmall" );
 	CPanelAnimationVar( vgui::HFont, m_hTextFont, "TextFont", "Default" );
 };
+#endif
 
 #endif // HISTORY_RESOURCE_H

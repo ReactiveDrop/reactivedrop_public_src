@@ -323,17 +323,12 @@ void RD_Rich_Presence::UpdatePresence()
 						V_strncpy( szDetails, "Gun Game", sizeof( szDetails ) );
 						{
 							int iWeaponIndex = ASWDeathmatchMode()->GetWeaponIndexByFragsCount( g_PR->GetPlayerScore( pPlayer->entindex() ) );
-							if ( CASW_WeaponInfo *pWeaponInfo = g_ASWEquipmentList.GetWeaponDataFor( g_ASWEquipmentList.GetRegular( iWeaponIndex )->m_szEquipClass ) )
+							if ( CASW_EquipItem *pItem = g_ASWEquipmentList.GetRegular( iWeaponIndex ) )
 							{
+								wchar_t wszWeaponName[128];
 								char szWeaponName[128];
-								if ( wchar_t *pwszTranslatedWeaponName = g_pLocalize->Find( pWeaponInfo->szPrintName ) )
-								{
-									V_UnicodeToUTF8( pwszTranslatedWeaponName, szWeaponName, sizeof( szWeaponName ) );
-								}
-								else
-								{
-									V_strncpy( szWeaponName, pWeaponInfo->szPrintName, sizeof( szWeaponName ) );
-								}
+								TryLocalize( pItem->m_szShortName, wszWeaponName, sizeof( wszWeaponName ) );
+								V_UnicodeToUTF8( wszWeaponName, szWeaponName, sizeof( szWeaponName ) );
 								V_snprintf( szState, sizeof( szState ), "Score: %d (%s)", g_PR->GetPlayerScore( pPlayer->entindex() ), szWeaponName );
 							}
 						}

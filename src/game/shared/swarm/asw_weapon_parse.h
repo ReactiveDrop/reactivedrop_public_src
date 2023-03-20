@@ -36,15 +36,9 @@ public:
 	float				m_flDisplayReloadTime;
 	int					m_iPlayerModelSkin;
 	int					m_iDisplayModelSkin;
-	char				szEquipIcon[64];
-	char				szEquipLongName[64];
-	char				szEquipDescription1[256];
-	char				szAltFireText[64];
-	char				szAttributesText[128];
 	char				szDisplayModel[64];  // the model displayed in the loadout screen
 	char				szDisplayModel2[64];  // the second model shown in addition to the first in the loadout screen
 	float				m_flModelPanelZOffset;
-	bool				m_bExtra;	// is this an extra item or not
 	bool				m_bShowCharges;	//whether this item shows charges on the left side HUD thing or not
 	bool				m_bShowBatteryCharge;		// show a battery charge progress under the icon
 	bool				m_bShowLocalPlayerHotkey;
@@ -56,14 +50,6 @@ public:
 	int					m_iHUDIconOffsetX, m_iHUDIconOffsetY;
 	int					m_iHUDNumberOffsetX, m_iHUDNumberOffsetY;
 	bool				m_bZoomHotbarIcon;		// zoom this icon on the squad hotbar
-	// skill reqs
-	bool		m_bTech;				// requires tech to use
-	bool		m_bFirstAid;			// requires medic to use
-	bool		m_bSpecialWeapons;		// requires special weapons to use
-	bool		m_bTracker;			
-	bool		m_bSapper;				// requires officer to use
-	bool		m_bSarge;
-	bool		m_bUnique;				// can only hold 1 of this weapon
 
 	float		m_fFlinchChance;		// chance of this weapon putting the drone into a flinch
 	float		m_fStoppingPowerFlinchBonus;	// bonus to the flinch chance per stopping power skill point

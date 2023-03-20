@@ -671,9 +671,9 @@ public:
 				CRD_ItemInstance &weaponInstance = pMR->m_StartingEquipWeapons[j];
 #else
 				CASW_EquipItem *pEquip = g_ASWEquipmentList.GetItemForSlot( j, pMR->m_iInitialWeaponsInSlots[j] );
-				if ( !pEquip || pEquip->m_iInventoryIndex == -1 )
+				if ( !pEquip || pEquip->m_iInventoryEquipIndex == -1 )
 					continue;
-				CRD_ItemInstance &weaponInstance = pPlayer->m_EquippedItemData[pEquip->m_iInventoryIndex];
+				CRD_ItemInstance &weaponInstance = pPlayer->m_EquippedItemData[pEquip->m_iInventoryEquipIndex];
 #endif
 
 				ModifyAccessoryDynamicPropValue( weaponInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );

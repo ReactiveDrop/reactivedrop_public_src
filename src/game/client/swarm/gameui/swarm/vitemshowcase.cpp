@@ -150,9 +150,10 @@ void ItemShowcase::OnThink()
 
 			m_pItemModelPanel->ClearMergeMDLs();
 
-			CASW_WeaponInfo *pWeaponData = g_ASWEquipmentList.GetWeaponDataFor( m_QueueType[0] == MODE_UNLOCK_REGULAR_WEAPON ?
-				g_ASWEquipmentList.GetRegular( m_QueueExtra[0] )->m_szEquipClass :
-				g_ASWEquipmentList.GetExtra( m_QueueExtra[0] )->m_szEquipClass );
+			CASW_EquipItem *pItem = m_QueueType[0] == MODE_UNLOCK_REGULAR_WEAPON ?
+				g_ASWEquipmentList.GetRegular( m_QueueExtra[0] ) :
+				g_ASWEquipmentList.GetExtra( m_QueueExtra[0] );
+			CASW_WeaponInfo *pWeaponData = pItem ? g_ASWEquipmentList.GetWeaponDataFor( pItem->m_szEquipClass ) : NULL;
 			if ( !pWeaponData )
 			{
 				m_pItemModelPanel->m_bShouldPaint = false;
@@ -175,8 +176,8 @@ void ItemShowcase::OnThink()
 				m_pItemModelPanel->SetMDL( pWeaponData->szWorldModel );
 			}
 
-			m_pSubTitle->SetText( pWeaponData->szAttributesText );
-			m_pDescriptionArea->SetText( pWeaponData->szEquipDescription1 );
+			m_pSubTitle->SetText( pItem->m_szAttributeDescription );
+			m_pDescriptionArea->SetText( pItem->m_szDescription1 );
 
 			int nSkin = 0;
 			if ( pWeaponData->m_iDisplayModelSkin > 0 )
@@ -190,7 +191,7 @@ void ItemShowcase::OnThink()
 			m_pItemModelPanel->SetVisible( true );
 
 			m_pWeaponLabel->SetVisible( true );
-			m_pWeaponLabel->SetText( pWeaponData->szEquipLongName );
+			m_pWeaponLabel->SetText( pItem->m_szLongName );
 
 			break;
 		}

@@ -10,6 +10,7 @@
 #include "ai_pathfinder.h"
 #include "asw_path_utils.h"
 #include "asw_marine.h"
+#include "asw_marine_resource.h"
 #include "phys_controller.h"
 #endif
 
@@ -22,9 +23,10 @@ IMPLEMENT_AUTO_LIST( IASW_Revive_Tool_Auto_List );
 IMPLEMENT_AUTO_LIST( IASW_Revive_Tombstone_Auto_List );
 
 #ifdef CLIENT_DLL
-static void TombstoneLightSettingsChanged( IConVar *var, const char *pOldValue, float flOldValue );
 ConVar rd_revive_tombstone_hologram_always_visible( "rd_revive_tombstone_hologram_always_visible", "0", FCVAR_ARCHIVE, "1 = show hologram when it would normally be inactive; 3 = even when falling" );
 ConVar rd_revive_tombstone_hologram_force_visible_distance( "rd_revive_tombstone_hologram_force_visible_distance", "100", FCVAR_NONE, "Tombstone holograms show as if rd_revive_tombstone_hologram_always_visible was 1 when the marine is within this distance" );
+
+static void TombstoneLightSettingsChanged( IConVar *var, const char *pOldValue, float flOldValue );
 ConVar rd_revive_tombstone_dlight( "rd_revive_tombstone_dlight", "1", FCVAR_NONE, "Should tombstone holograms emit light?", TombstoneLightSettingsChanged );
 ConVar rd_revive_tombstone_dlight_z_offset( "rd_revive_tombstone_dlight_z_offset", "64", FCVAR_NONE, "Where's that light?", TombstoneLightSettingsChanged );
 ConVar rd_revive_tombstone_dlight_radius( "rd_revive_tombstone_dlight_radius", "128", FCVAR_NONE, "How big's that light?", TombstoneLightSettingsChanged );
@@ -38,12 +40,34 @@ ConVar rd_revive_tombstone_dlight_active_color_officer( "rd_revive_tombstone_dli
 ConVar rd_revive_tombstone_dlight_active_color_special_weapons( "rd_revive_tombstone_dlight_active_color_special_weapons", "255 255 255 128", FCVAR_NONE, "Light glow color for special weapons being revived", TombstoneLightSettingsChanged );
 ConVar rd_revive_tombstone_dlight_active_color_medic( "rd_revive_tombstone_dlight_active_color_medic", "255 255 255 128", FCVAR_NONE, "Light glow color for medic being revived", TombstoneLightSettingsChanged );
 ConVar rd_revive_tombstone_dlight_active_color_tech( "rd_revive_tombstone_dlight_active_color_tech", "255 255 255 128", FCVAR_NONE, "Light glow color for tech being revived", TombstoneLightSettingsChanged );
+static void TombstoneLightSettingsChanged( IConVar *var, const char *pOldValue, float flOldValue )
+{
+	// kill the lights if the settings changed; the tombstones will re-create the lights if they need to.
+	FOR_EACH_VEC( IASW_Revive_Tombstone_Auto_List::AutoList(), i )
+	{
+		CASW_Revive_Tombstone *pTombstone = assert_cast< CASW_Revive_Tombstone * >( IASW_Revive_Tombstone_Auto_List::AutoList()[i] );
+		if ( pTombstone->m_pLightGlow )
+		{
+			pTombstone->m_pLightGlow->die = gpGlobals->curtime;
+			pTombstone->m_pLightGlow = NULL;
+		}
+	}
+}
+
+ConVar rd_revive_tombstone_shows_on_map( "rd_revive_tombstone_shows_on_map", "1", FCVAR_NONE, "Show minimap marker for tombstone" );
+extern ConVar rd_marine_explodes_into_gibs;
 #else
 ConVar rd_revive_tombstone_tick( "rd_revive_tombstone_tick", "0.25", FCVAR_CHEAT, "Tick interval for tombstone maintenance" );
 ConVar rd_revive_tombstone_path_fails_for_teleport( "rd_revive_tombstone_path_fails_for_teleport", "16", FCVAR_CHEAT, "Teleport if the tombstone is grounded and the medic cannot reach the tombstone for this many consecutive ticks" );
 ConVar rd_revive_tombstone_path_success_cooldown( "rd_revive_tombstone_path_success_cooldown", "8", FCVAR_CHEAT, "Tombstone doesn't check again for this many ticks if it finds a path" );
 ConVar rd_revive_tombstone_angular_limit( "rd_revive_tombstone_angular_limit", "2", FCVAR_CHEAT, "Maximum tilt of the tombstone" );
+ConVar rd_revive_tombstone_charge_duration( "rd_revive_tombstone_charge_duration", "3", FCVAR_CHEAT, "Time between tool being inserted and marine spawning" );
+ConVar rd_revive_tombstone_immunity_duration( "rd_revive_tombstone_immunity_duration", "5", FCVAR_CHEAT, "Amount of time after being resurrected a marine is invulnerable" );
+ConVar rd_revive_tombstone_immunity_duration_attack_penalty( "rd_revive_tombstone_immunity_duration_attack_penalty", "4", FCVAR_CHEAT, "Amount of time subtracted from immunity duration if marine attacks (only once)" );
+ConVar rd_revive_tombstone_steal_from_inhabited_marine( "rd_revive_tombstone_steal_from_inhabited_marine", "1", FCVAR_CHEAT, "Should the revive process grab the consciousness of commanders who are inhabiting another marine?" );
 #endif
+ConVar rd_revive_tombstone_hold_duration( "rd_revive_tombstone_hold_duration", "1.5", FCVAR_CHEAT | FCVAR_REPLICATED, "Time required to insert revive tool into tombstone" );
+ConVar rd_revive_tombstone_survive_without_tool( "rd_revive_tombstone_survive_without_tool", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "Should tombstones still appear even if there is no revive tool?" );
 
 IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Weapon_Revive_Tool, DT_ASW_Weapon_Revive_Tool );
 
@@ -141,6 +165,11 @@ void CASW_Revive_Tombstone::Precache()
 	PrecacheParticleSystem( "marine_resurrection" );
 }
 
+bool CASW_Revive_Tombstone::IsUsable( CBaseEntity *pUser )
+{
+	return ( pUser && pUser->GetAbsOrigin().DistTo( GetAbsOrigin() ) < ASW_MARINE_USE_RADIUS );	// near enough?
+}
+
 #ifdef CLIENT_DLL
 void CASW_Revive_Tombstone::OnDataChanged( DataUpdateType_t updateType )
 {
@@ -152,7 +181,7 @@ void CASW_Revive_Tombstone::ClientThink()
 	bool bShouldHologramsBeActive = true;
 	if ( m_flReviveTime < 0.0f )
 	{
-		bool bAnyReviveTool = false;
+		bool bAnyReviveTool = rd_revive_tombstone_survive_without_tool.GetBool();
 		bool bReviveToolIsOut = false;
 		CASW_Marine *pViewMarine = CASW_Marine::GetViewMarine();
 		FOR_EACH_VEC( IASW_Revive_Tool_Auto_List::AutoList(), i )
@@ -171,7 +200,7 @@ void CASW_Revive_Tombstone::ClientThink()
 			}
 		}
 
-		if ( !bAnyReviveTool )
+		if ( !bAnyReviveTool || !m_hMarineResource )
 		{
 			// we will die soon :(
 
@@ -242,6 +271,8 @@ void CASW_Revive_Tombstone::ClientThink()
 		// - 14: hologram for gibbed bastille
 		// - 15: hologram for gibbed vegas
 		// - 16: no hologram
+		bool bGibbed = m_bGibbed && rd_marine_explodes_into_gibs.GetBool();
+
 		switch ( GetBodygroupCount( 3 ) )
 		{
 		default:
@@ -257,17 +288,17 @@ void CASW_Revive_Tombstone::ClientThink()
 			}
 			else
 			{
-				SetBodygroup( 3, m_bGibbed ? 1 : 0 );
+				SetBodygroup( 3, bGibbed ? 1 : 0 );
 			}
 			break;
 		case 5: // variant C
 			SetBodygroup( 3, bShouldHologramsBeActive ? iProfileSkinMinusOne : 4 );
 			break;
 		case 9: // variant D
-			SetBodygroup( 3, bShouldHologramsBeActive ? iProfileSkinMinusOne + ( m_bGibbed ? 4 : 0 ) : 8 );
+			SetBodygroup( 3, bShouldHologramsBeActive ? iProfileSkinMinusOne + ( bGibbed ? 4 : 0 ) : 8 );
 			break;
 		case 17: // variant E
-			SetBodygroup( 3, bShouldHologramsBeActive ? iMarineProfile + ( m_bGibbed ? 8 : 0 ) : 16 );
+			SetBodygroup( 3, bShouldHologramsBeActive ? iMarineProfile + ( bGibbed ? 8 : 0 ) : 16 );
 			break;
 		}
 	}
@@ -308,34 +339,61 @@ void CASW_Revive_Tombstone::ClientThink()
 			m_pLightGlow->radius = m_bIsReviving ? rd_revive_tombstone_dlight_active_radius.GetFloat() : rd_revive_tombstone_dlight_radius.GetFloat();
 		}
 	}
-
-	Assert( 0 ); // TODO: globally visible minimap skull
 }
 
-static void TombstoneLightSettingsChanged( IConVar *var, const char *pOldValue, float flOldValue )
+bool CASW_Revive_Tombstone::GetUseAction( ASWUseAction &action, C_ASW_Inhabitable_NPC *pUser )
 {
-	// kill the lights if the settings changed; the tombstones will re-create the lights if they need to.
-	FOR_EACH_VEC( IASW_Revive_Tombstone_Auto_List::AutoList(), i )
-	{
-		CASW_Revive_Tombstone *pTombstone = assert_cast< CASW_Revive_Tombstone * >( IASW_Revive_Tombstone_Auto_List::AutoList()[i] );
-		if ( pTombstone->m_pLightGlow )
-		{
-			pTombstone->m_pLightGlow->die = gpGlobals->curtime;
-			pTombstone->m_pLightGlow = NULL;
-		}
-	}
+	Assert( !"TODO" );
+	return false;
 }
 #else
+CASW_Revive_Tombstone *CASW_Revive_Tombstone::MaybeCreateTombstone( CASW_Marine *pMarine, const CTakeDamageInfo &info, bool bGibbed )
+{
+	Assert( pMarine );
+	if ( !pMarine || !pMarine->GetMarineResource() )
+		return NULL;
+
+	if ( !rd_revive_tombstone_survive_without_tool.GetBool() && IASW_Revive_Tool_Auto_List::AutoList().Count() == 0 )
+		return NULL;
+
+	CASW_Revive_Tombstone *pTombstone = ( CASW_Revive_Tombstone * )CreateNoSpawn( "asw_revive_tombstone", pMarine->WorldSpaceCenter(), pMarine->GetAbsAngles() );
+	Assert( pTombstone );
+	if ( !pTombstone )
+		return NULL;
+
+	pTombstone->m_hMarineResource = pMarine->GetMarineResource();
+	pTombstone->m_bGibbed = bGibbed;
+
+	DispatchSpawn( pTombstone );
+
+	pTombstone->VPhysicsTakeDamage( info );
+
+	return pTombstone;
+}
+
 void CASW_Revive_Tombstone::Spawn()
 {
+	Assert( m_hMarineResource );
+
 	Precache();
 
 	SetModel( STRING( GetModelName() ) );
 
 	BaseClass::Spawn();
 
+	m_takedamage = DAMAGE_EVENTS_ONLY;
+	CreateVPhysics();
+
 	m_hKeepUpright = CreateKeepUpright( GetAbsOrigin(), vec3_angle, this, rd_revive_tombstone_angular_limit.GetFloat(), false );
-	SetContextThink( &TombstoneThink, gpGlobals->curtime, s_pTombstoneThink );
+	SetContextThink( &CASW_Revive_Tombstone::TombstoneThink, gpGlobals->curtime, s_pTombstoneThink );
+}
+
+bool CASW_Revive_Tombstone::CreateVPhysics()
+{
+	VPhysicsInitNormal( SOLID_VPHYSICS, FSOLID_NOT_STANDABLE, false );
+	Assert( m_pPhysicsObject );
+
+	return true;
 }
 
 void CASW_Revive_Tombstone::TombstoneThink()
@@ -343,21 +401,20 @@ void CASW_Revive_Tombstone::TombstoneThink()
 	Assert( m_flReviveTime < 0.0f ); // we shouldn't be doing the TombstoneThink if we're reviving.
 
 	bool bOnGround = GetGroundEntity() != NULL;
-	if ( !bOnGround )
+	if ( !bOnGround && m_hMarineResource )
 	{
 		m_iPathFails = 0;
 	}
-	else if ( m_iPathFails < 0 )
+	else if ( m_iPathFails < 0 && m_hMarineResource )
 	{
 		m_iPathFails++;
 	}
 	else
 	{
-		bool bAnyReviveTool = false;
+		bool bAnyReviveTool = rd_revive_tombstone_survive_without_tool.GetBool();
 		bool bAnyMedicHoldingReviveTool = false;
 		bool bAnyMedicCanReach = false;
 
-		CBaseEntity *pEnt = NULL;
 		FOR_EACH_VEC( IASW_Revive_Tool_Auto_List::AutoList(), i )
 		{
 			CASW_Weapon_Revive_Tool *pReviveTool = assert_cast< CASW_Weapon_Revive_Tool * >( IASW_Revive_Tool_Auto_List::AutoList()[i] );
@@ -380,17 +437,27 @@ void CASW_Revive_Tombstone::TombstoneThink()
 			}
 		}
 
-		if ( !bAnyReviveTool )
+		if ( !bAnyReviveTool || !m_hMarineResource )
 		{
-			Assert( 0 ); // TODO: the box dies :(
+			// the box dies :(
+
+			if ( m_hKeepUpright && m_bKeepUpright )
+			{
+				m_hKeepUpright->AcceptInput( "TurnOff", this, this, variant_t{}, -1 );
+				m_bKeepUpright = false;
+			}
+
+			Dissolve( NULL, gpGlobals->curtime, false, ENTITY_DISSOLVE_ELECTRICAL_LIGHT );
+			return;
 		}
-		else if ( bAnyMedicHoldingReviveTool && !bAnyMedicCanReach )
+
+		if ( bAnyMedicHoldingReviveTool && !bAnyMedicCanReach )
 		{
 			m_iPathFails++;
 
 			if ( m_iPathFails >= rd_revive_tombstone_path_fails_for_teleport.GetInt() )
 			{
-				Assert( 0 ); // TODO: teleport somewhere closer
+				Assert( !"TODO" ); // TODO: teleport somewhere closer
 			}
 		}
 		else
@@ -406,6 +473,11 @@ void CASW_Revive_Tombstone::TombstoneThink()
 	}
 
 	SetNextThink( gpGlobals->curtime + rd_revive_tombstone_tick.GetFloat(), s_pTombstoneThink);
+}
+
+void CASW_Revive_Tombstone::ActivateUseIcon( CASW_Inhabitable_NPC *pUser, int nHoldType )
+{
+	Assert( !"TODO" );
 }
 #endif
 #endif

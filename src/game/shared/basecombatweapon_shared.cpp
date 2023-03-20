@@ -224,6 +224,7 @@ void CBaseCombatWeapon::Precache( void )
 	// Get weapon data from script file
 	if ( ReadWeaponDataFromFileForSlot( filesystem, GetClassname(), &m_hWeaponFileInfo, GetEncryptionKey() ) )
 	{
+#ifndef INFESTED_DLL
 		// Get the ammo indexes for the ammo's specified in the data file
 		if ( GetWpnData().szAmmo1[0] )
 		{
@@ -240,8 +241,8 @@ void CBaseCombatWeapon::Precache( void )
 			{
 				Msg("ERROR: Weapon (%s) using undefined secondary ammo type (%s)\n",GetClassname(),GetWpnData().szAmmo2);
 			}
-
 		}
+#endif
 #if defined( CLIENT_DLL )
 		gWR.LoadWeaponSprites( GetWeaponFileInfoHandle() );
 #endif
@@ -323,7 +324,12 @@ const char *CBaseCombatWeapon::GetAnimPrefix( void ) const
 //-----------------------------------------------------------------------------
 const char *CBaseCombatWeapon::GetPrintName( void ) const
 {
+#ifdef INFESTED_DLL
+	Assert( 0 );
+	return "";
+#else
 	return GetWpnData().szPrintName;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -331,7 +337,12 @@ const char *CBaseCombatWeapon::GetPrintName( void ) const
 //-----------------------------------------------------------------------------
 int CBaseCombatWeapon::GetMaxClip1( void ) const
 {
+#ifdef INFESTED_DLL
+	Assert( 0 );
+	return 0;
+#else
 	return GetWpnData().iMaxClip1;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -339,7 +350,12 @@ int CBaseCombatWeapon::GetMaxClip1( void ) const
 //-----------------------------------------------------------------------------
 int CBaseCombatWeapon::GetMaxClip2( void ) const
 {
+#ifdef INFESTED_DLL
+	Assert( 0 );
+	return 0;
+#else
 	return GetWpnData().iMaxClip2;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -347,7 +363,12 @@ int CBaseCombatWeapon::GetMaxClip2( void ) const
 //-----------------------------------------------------------------------------
 int CBaseCombatWeapon::GetDefaultClip1( void ) const
 {
+#ifdef INFESTED_DLL
+	Assert( 0 );
+	return 0;
+#else
 	return GetWpnData().iDefaultClip1;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -355,7 +376,12 @@ int CBaseCombatWeapon::GetDefaultClip1( void ) const
 //-----------------------------------------------------------------------------
 int CBaseCombatWeapon::GetDefaultClip2( void ) const
 {
+#ifdef INFESTED_DLL
+	Assert( 0 );
+	return 0;
+#else
 	return GetWpnData().iDefaultClip2;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -368,7 +394,11 @@ bool CBaseCombatWeapon::UsesClipsForAmmo1( void ) const
 
 bool CBaseCombatWeapon::IsMeleeWeapon() const
 {
+#ifdef INFESTED_DLL
+	return false;
+#else
 	return GetWpnData().m_bMeleeWeapon;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -418,7 +448,11 @@ int CBaseCombatWeapon::GetWeaponFlags( void ) const
 //-----------------------------------------------------------------------------
 int CBaseCombatWeapon::GetSlot( void ) const
 {
+#ifdef INFESTED_DLL
+	return 0;
+#else
 	return GetWpnData().iSlot;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -426,7 +460,11 @@ int CBaseCombatWeapon::GetSlot( void ) const
 //-----------------------------------------------------------------------------
 int CBaseCombatWeapon::GetPosition( void ) const
 {
+#ifdef INFESTED_DLL
+	return 0;
+#else
 	return GetWpnData().iPosition;
+#endif
 }
 
 //-----------------------------------------------------------------------------

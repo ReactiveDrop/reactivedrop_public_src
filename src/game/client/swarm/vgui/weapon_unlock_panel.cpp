@@ -92,8 +92,9 @@ void WeaponUnlockPanel::UpdateWeaponDetails()
 	m_pItemModelPanel->ClearMergeMDLs();
 
 	CASW_WeaponInfo *pWeaponData = g_ASWEquipmentList.GetWeaponDataFor( m_szWeaponClass );
+	CASW_EquipItem *pItem = g_ASWEquipmentList.GetEquipItemFor( m_szWeaponClass );
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if ( !pWeaponData || !pPlayer || !m_szWeaponClass[0] )
+	if ( !pWeaponData || !pItem || !pPlayer || !m_szWeaponClass[0] )
 	{
 		m_pItemModelPanel->m_bShouldPaint = false;
 		m_pItemModelPanel->SetVisible( false );
@@ -148,8 +149,7 @@ void WeaponUnlockPanel::UpdateWeaponDetails()
 		m_pLockedBG->SetVisible( true );
 		m_pLevelRequirementLabel->SetVisible( true );
 	}
-	m_pWeaponLabel->SetText( pWeaponData->szEquipLongName );
-
+	m_pWeaponLabel->SetText( pItem->m_szLongName );
 
 	wchar_t wnumber[8];
 	V_snwprintf( wnumber, ARRAYSIZE( wnumber ), L"%d", iRequiredLevel + 1 ); /// levels start from 0 in code, but show from 1 in the UI

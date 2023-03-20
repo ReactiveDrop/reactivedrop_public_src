@@ -11,6 +11,7 @@
 class vgui::Label;
 class StatsBar;
 // == MANAGED_CLASS_DECLARATIONS_END ==
+class CASW_EquipItem;
 class CASW_WeaponInfo;
 
 class CNB_Weapon_Detail : public vgui::EditablePanel
@@ -26,7 +27,7 @@ public:
 
 	void SetWeaponDetails( int nEquipIndex, int nInventorySlot, int nProfileIndex, int nDetailIndex );
 
-	void UpdateLabels( CASW_WeaponInfo *pWeaponData );
+	void UpdateLabels( CASW_EquipItem *pItem, CASW_WeaponInfo *pWeaponData );
 	
 	// == MANAGED_MEMBER_POINTERS_START: Do not edit by hand ==
 	vgui::Label	*m_pTitleLabel;

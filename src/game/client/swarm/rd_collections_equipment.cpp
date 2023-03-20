@@ -273,7 +273,7 @@ void CRD_Collection_Details_Equipment::DisplayEntry( TGD_Entry *pEntry )
 		wchar_t wszBuf[1024]{};
 		g_pVGuiLocalize->ConstructString( wszBuf, sizeof( wszBuf ),
 			g_pVGuiLocalize->Find( "#rd_reach_level_to_unlock_weapon" ), 2,
-			wszRequiredLevel, g_pVGuiLocalize->Find( pEquip->m_pWeapon->Name ) );
+			wszRequiredLevel, g_pVGuiLocalize->FindSafe( pEquip->m_pWeapon->Name ) );
 		m_pWeaponDescLabel->SetText( wszBuf );
 	}
 	else

@@ -29,17 +29,18 @@ public:
 	CNetworkVar( string_t, m_iOriginalName );
 #endif
 
-	virtual Class_T Classify() { return (Class_T)CLASS_RD_WEAPON_GENERIC_OBJECT; }
-	virtual void Precache();
-	virtual void PrimaryAttack() { }
-	virtual void Equip( CBaseCombatCharacter *pOwner );
-	virtual void Drop( const Vector & vecVelocity );
-	virtual bool ShouldMarineMoveSlow();
-	virtual float GetMovementScale();
-	virtual bool IsOffensiveWeapon();
-	virtual int ASW_SelectWeaponActivity( int idealActivity );
-	virtual const char *GetViewModel( int viewmodelindex = 0 ) const { return m_szWorldModel; }
-	virtual const char *GetWorldModel() const { return m_szWorldModel; }
+	virtual Class_T Classify() override { return (Class_T)CLASS_RD_WEAPON_GENERIC_OBJECT; }
+	virtual void Precache() override;
+	virtual void PrimaryAttack() override { }
+	virtual void Equip( CBaseCombatCharacter *pOwner ) override;
+	virtual void Drop( const Vector & vecVelocity ) override;
+	virtual bool ShouldMarineMoveSlow() override;
+	virtual float GetMovementScale() override;
+	virtual bool IsOffensiveWeapon() override;
+	virtual int ASW_SelectWeaponActivity( int idealActivity ) override;
+	virtual const char *GetViewModel( int viewmodelindex = 0 ) const override { return m_szWorldModel; }
+	virtual const char *GetWorldModel() const override { return m_szWorldModel; }
+	virtual const char *GetPrintName() const override { return m_szCarriedName; }
 
 	CNetworkVar( float, m_flMoveSpeedMultiplier );
 	CNetworkVar( bool, m_bLargeObject );
@@ -52,7 +53,7 @@ public:
 #ifdef CLIENT_DLL
 	wchar_t m_wszCarriedName[256];
 	char m_iOriginalName[MAX_PATH];
-	virtual void PostDataUpdate( DataUpdateType_t updateType );
-	virtual bool GetUseAction( ASWUseAction & action, C_ASW_Inhabitable_NPC *pUser );
+	virtual void PostDataUpdate( DataUpdateType_t updateType ) override;
+	virtual bool GetUseAction( ASWUseAction & action, C_ASW_Inhabitable_NPC *pUser ) override;
 #endif
 };

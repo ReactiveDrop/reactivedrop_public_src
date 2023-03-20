@@ -25,7 +25,6 @@
 #include "asw_util_shared.h"
 #include "asw_marine_profile.h"
 #include "asw_equipment_list.h"
-#include "asw_weapon_parse.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -245,15 +244,14 @@ void CASW_Weapon_Ammo_Bag::GiveClipTo( CASW_Marine *pTargetMarine, int iAmmoType
 		return;
 
 	// find how much ammo per clip for this type
-	CASW_WeaponInfo *pWeaponData = g_ASWEquipmentList.GetWeaponDataFor( m_szWeaponClass[iBagIndex] );
-	if ( !pWeaponData )
+	CASW_EquipItem *pItem = g_ASWEquipmentList.GetEquipItemFor( m_szWeaponClass[iBagIndex] );
+	if ( !pItem )
 		return;
 
-	int iAmmoPerClip = pWeaponData->iMaxClip1;
+	int iAmmoPerClip = pItem->MaxAmmo1();
 	//Msg(" ammo per clip %d\n", iAmmoPerClip);
 	if ( iAmmoPerClip <= 0 )
 		return;
-
 
 	// give ammo to the target marine
 	if ( pTargetMarine->GiveAmmo( iAmmoPerClip, iAmmoType, bSuppressSound ) <= 0 )
@@ -361,11 +359,11 @@ int CASW_Weapon_Ammo_Bag::AddAmmo( int iBullets, int iAmmoIndex )
 	if ( !HasRoomForAmmo( iAmmoIndex ) )
 		return 0;
 
-	CASW_WeaponInfo *pWeaponData = g_ASWEquipmentList.GetWeaponDataFor( m_szWeaponClass[iBagSlot] );
-	if ( !pWeaponData )
+	CASW_EquipItem *pItem = g_ASWEquipmentList.GetEquipItemFor( m_szWeaponClass[iBagSlot] );
+	if ( !pItem )
 		return 0;
 
-	int iBulletsPerClip = pWeaponData->iMaxClip1;
+	int iBulletsPerClip = pItem->MaxAmmo1();
 	int clips = iBullets / iBulletsPerClip;
 
 	m_AmmoCount.Set( iBagSlot, AmmoCount( iBagSlot ) + clips );

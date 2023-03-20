@@ -238,8 +238,8 @@ bool CASW_Marine::Weapon_CanSwitchTo( CBaseCombatWeapon *pWeapon )
 		return false;
 
 	// disallow selection of offhand item
-	const CASW_WeaponInfo* pWpnInfo = pASWWeapon->GetWeaponInfo();
-	if ( pWpnInfo && pWpnInfo->m_bExtra )
+	const CASW_EquipItem *pItem = pASWWeapon->GetEquipItem();
+	if ( pItem && pItem->m_bIsExtra )
 		return false;
 
 	if ( !pWeapon->CanDeploy() )
@@ -271,9 +271,9 @@ const QAngle& CASW_Marine::ASWEyeAngles( void )
 	m_AIEyeAngles = EyeAngles();
 	m_AIEyeAngles[PITCH] = m_fAIPitch;
 	return m_AIEyeAngles;
-#endif
-
+#else
 	return EyeAngles();
+#endif
 }
 
 bool CASW_Marine::IsInfested()
@@ -1989,38 +1989,39 @@ int CASW_Marine::GetWeaponPositionForPickup( const char *szWeaponClass, bool bIs
 		return 0;
 	}
 
-	CASW_WeaponInfo *pWeaponData = g_ASWEquipmentList.GetWeaponDataFor( szWeaponClass );
+	CASW_EquipItem *pItem = g_ASWEquipmentList.GetEquipItemFor( szWeaponClass );
+	Assert( pItem || FStrEq( szWeaponClass, "rd_weapon_generic_object" ) );
 
 	// use the temporary slot unless we can put it in primary or secondary without dropping anything
-	if ( bIsTemporary && ( pWeaponData->m_bExtra || !V_stricmp( szWeaponClass, "rd_weapon_generic_object" ) || ( GetWeapon( 0 ) && GetWeapon( 1 ) ) ) )
+	if ( bIsTemporary && ( ( pItem && pItem->m_bIsExtra ) || FStrEq( szWeaponClass, "rd_weapon_generic_object" ) || ( GetWeapon( 0 ) && GetWeapon( 1 ) ) ) )
 	{
 		return ASW_TEMPORARY_WEAPON_SLOT;
 	}
 
 	// if it's an extra type item, return the 3rd slot as that's the only place it'll fit
-	if ( pWeaponData && pWeaponData->m_bExtra )
+	if ( pItem && pItem->m_bIsExtra )
 		return 2;
 
 	// if item is unique, then check if we're already carrying one
-	if ( pWeaponData && pWeaponData->m_bUnique )
+	if ( pItem && pItem->m_bIsUnique )
 	{
-		CBaseCombatWeapon *pWeapon = GetWeapon( 0 );
-		if ( pWeapon && !Q_strcmp( szWeaponClass, pWeapon->GetClassname() ) )
+		CASW_Weapon *pWeapon = GetASWWeapon( 0 );
+		if ( pWeapon && FStrEq( szWeaponClass, pWeapon->GetClassname() ) )
 			return 0;
 
-		pWeapon = GetWeapon( 1 );
-		if ( pWeapon && !Q_strcmp( szWeaponClass, pWeapon->GetClassname() ) )
+		pWeapon = GetASWWeapon( 1 );
+		if ( pWeapon && FStrEq( szWeaponClass, pWeapon->GetClassname() ) )
 			return 1;
 	}
 
-	if ( GetWeapon( 0 ) == NULL )		// primary slot is free
+	if ( GetASWWeapon( 0 ) == NULL )		// primary slot is free
 		return 0;
-	else if ( GetWeapon( 1 ) == NULL )	// secondary slot is free
+	else if ( GetASWWeapon( 1 ) == NULL )	// secondary slot is free
 		return 1;
 	// all slots are full
-	else if ( GetActiveWeapon() == GetWeapon( 0 ) )		// we have primary currently selected, so exchange with that
+	else if ( GetActiveASWWeapon() == GetASWWeapon( 0 ) )		// we have primary currently selected, so exchange with that
 		return 0;
-	else if ( GetActiveWeapon() == GetWeapon( 1 ) )		// we have primary currently selected, so exchange with that
+	else if ( GetActiveASWWeapon() == GetASWWeapon( 1 ) )		// we have primary currently selected, so exchange with that
 		return 1;
 
 	return 0;		// otherwise, swap with the primary slot

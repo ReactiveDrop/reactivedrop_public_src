@@ -11,6 +11,7 @@
 #include "asw_weapon_parse.h"
 #include "clientmode_asw.h"
 #include "briefingtooltip.h"
+#include "asw_equipment_list.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
@@ -176,11 +177,12 @@ void CSquad_Inventory_Panel_Entry::UpdateImage()
 	if ( !pWeapon )
 		return;
 
-	const CASW_WeaponInfo* pInfo = pWeapon->GetWeaponInfo();
-	if ( !pInfo || !pInfo->m_bOffhandActivate )		// TODO: Fix for sentry guns
+	const CASW_WeaponInfo *pInfo = pWeapon->GetWeaponInfo();
+	const CASW_EquipItem *pItem = pWeapon->GetEquipItem();
+	if ( !pInfo || !pItem || !pInfo->m_bOffhandActivate )		// TODO: Fix for sentry guns
 		return;
 
-	m_pWeaponImage->SetImage( pInfo->szEquipIcon );
+	m_pWeaponImage->SetImage( pItem->m_szEquipIcon );
 
 	CASW_Marine_Profile *pProfile = m_hMarine->GetMarineProfile();
 	if ( pProfile )
@@ -199,13 +201,14 @@ void CSquad_Inventory_Panel_Entry::ShowTooltip()
 		return;
 
 	const CASW_WeaponInfo* pInfo = pWeapon->GetWeaponInfo();
-	if ( !pInfo || !pInfo->m_bOffhandActivate )		// TODO: Fix for sentry guns
+	const CASW_EquipItem *pItem = pWeapon->GetEquipItem();
+	if ( !pInfo || !pItem || !pInfo->m_bOffhandActivate )		// TODO: Fix for sentry guns
 		return;
 
 	int x = GetWide() * 0.8f;
 	int y = GetTall() * 0.02f;
 	LocalToScreen( x, y );
-	g_hBriefingTooltip->SetTooltip( this, pInfo->szPrintName, "#asw_weapon_tooltip_activate", x, y, true );
+	g_hBriefingTooltip->SetTooltip( this, pItem->m_szShortName, "#asw_weapon_tooltip_activate", x, y, true );
 }
 
 void CSquad_Inventory_Panel_Entry::ActivateItem()
@@ -273,7 +276,7 @@ void ShowSquadInventory()
 		return;
 	}
 
-	CSquad_Inventory_Panel *pSquadPanel = new CSquad_Inventory_Panel( GetClientMode()->GetViewport(), "SquadInventoryPanel" );		
+	CSquad_Inventory_Panel *pSquadPanel = new CSquad_Inventory_Panel( GetClientMode()->GetViewport(), "SquadInventoryPanel" );
 	if ( !pSquadPanel )
 	{
 		Msg("Error: CSquad_Inventory_Panel was closed immediately on opening\n");

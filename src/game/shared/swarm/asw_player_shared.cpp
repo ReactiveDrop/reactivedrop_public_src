@@ -79,6 +79,7 @@
 #include "collisionutils.h"
 #include "particle_parse.h"
 #include "cdll_int.h"
+#include "asw_equipment_list.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -88,6 +89,7 @@ extern IMarineGameMovement *g_pMarineGameMovement;
 extern CMoveData *g_pMoveData;	// This is a global because it is subclassed by each game.
 extern ConVar sv_noclipduringpause;
 extern ConVar rd_revive_duration;
+extern ConVar rd_revive_tombstone_hold_duration;
 
 static void ASWControlsChanged( IConVar *var, const char *pOldValue, float flOldValue );
 
@@ -402,7 +404,7 @@ void CASW_Player::ItemPostFrame()
 	}
 
 	CASW_Weapon *pTempExtra = pNPC ? pNPC->GetASWWeapon( ASW_TEMPORARY_WEAPON_SLOT ) : NULL;
-	if ( pTempExtra && pTempExtra->GetWeaponInfo() && pTempExtra->GetWeaponInfo()->m_bExtra )
+	if ( pTempExtra && pTempExtra->GetEquipItem() && pTempExtra->GetEquipItem()->m_bIsExtra )
 	{
 		pExtra = pTempExtra;
 		if ( pExtra && pExtra != pWeapon && pExtra->WantsOffhandPostFrame() )
@@ -1176,14 +1178,24 @@ void CASW_Player::PlayerUse()
 
 				if ( pEnt->Classify() == CLASS_ASW_MARINE )
 				{
-					CASW_Marine* pUsableMarine = assert_cast<CASW_Marine*>( pEnt );
+					CASW_Marine *pUsableMarine = assert_cast< CASW_Marine * >( pEnt );
 					if ( pUsableMarine->m_bKnockedOut )
 						flUseHoldTime = rd_revive_duration.GetFloat();
 				}
 
-				CASW_Button_Area *pButtonArea = dynamic_cast<CASW_Button_Area *>( pEnt );
-				if ( pButtonArea && pButtonArea->m_flHoldTime > 0 )
-					flUseHoldTime = pButtonArea->m_flHoldTime;
+				if ( pEnt->Classify() == CLASS_ASW_BUTTON_PANEL )
+				{
+					CASW_Button_Area *pButtonArea = assert_cast< CASW_Button_Area * >( pEnt );
+					if ( pButtonArea->m_flHoldTime > 0 )
+						flUseHoldTime = pButtonArea->m_flHoldTime;
+				}
+
+#ifdef RD_7A_WEAPONS
+				if ( pEnt->Classify() == CLASS_ASW_REVIVE_TOOL_MARKER )
+				{
+					flUseHoldTime = rd_revive_tombstone_hold_duration.GetFloat();
+				}
+#endif
 
 				if ( ( gpGlobals->curtime - m_flUseKeyDownTime ) >= flUseHoldTime )
 				{

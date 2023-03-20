@@ -115,10 +115,10 @@ static void *SendProxy_MarineResourceStartingEquip( const SendProp *pProp, const
 	if ( iEquip == -1 )
 		iEquip = pMR->m_iWeaponsInSlots[index];
 	CASW_EquipItem *pEquipItem = g_ASWEquipmentList.GetItemForSlot( index, iEquip );
-	if ( !pEquipItem || pEquipItem->m_iInventoryIndex == -1 )
+	if ( !pEquipItem || pEquipItem->m_iInventoryEquipIndex == -1 )
 		return &s_BlankInstance;
 
-	return &pMR->m_OriginalCommander->m_EquippedItemData[pEquipItem->m_iInventoryIndex];
+	return &pMR->m_OriginalCommander->m_EquippedItemData[pEquipItem->m_iInventoryEquipIndex];
 }
 
 // Only send active weapon index to local player
@@ -566,28 +566,23 @@ void CASW_Marine_Resource::UsedWeapon(CASW_Weapon *pWeapon, int iShots)
 		}
 	}
 
-	if (!pWeapon || m_iOnlyWeaponEquipIndex == -2)
+	if ( !pWeapon || m_iOnlyWeaponEquipIndex == -2 )
 		return;
 
-	const CASW_WeaponInfo* pWpnInfo = pWeapon->GetWeaponInfo();
+	const CASW_EquipItem *pItem = pWeapon->GetEquipItem();
+	if ( !pItem )
+		return;
+
 	// not used a weapon yet?
 	if (m_iOnlyWeaponEquipIndex == -1)
 	{
-		m_iOnlyWeaponEquipIndex = pWeapon->GetEquipmentListIndex();
-		if (pWpnInfo)
-			m_bOnlyWeaponExtra = pWpnInfo->m_bExtra;
+		m_iOnlyWeaponEquipIndex = pItem->m_iItemIndex;
+		m_bOnlyWeaponExtra = pItem->m_bIsExtra;
 		return;
 	}
 
-	// used a different type of weapon?
-	if (pWpnInfo && pWpnInfo->m_bExtra != m_bOnlyWeaponExtra)
-	{
-		m_iOnlyWeaponEquipIndex = -2;
-		return;
-	}
-
-	// used a different weapon index?
-	if (pWeapon->GetEquipmentListIndex() != m_iOnlyWeaponEquipIndex)
+	// used a different weapon?
+	if ( pItem->m_iItemIndex != m_iOnlyWeaponEquipIndex && pItem->m_bIsExtra != m_bOnlyWeaponExtra)
 	{
 		m_iOnlyWeaponEquipIndex = -2;
 		return;

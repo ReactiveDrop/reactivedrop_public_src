@@ -250,20 +250,20 @@ void CASW_VGUI_Marine_Ammo_Report::SetAmmoTypesVisible()
 		if ( bShow )
 		{
 			// find how many clips that many bullets is
-			CASW_WeaponInfo *pWeaponData = NULL;
+			CASW_EquipItem *pItem = NULL;
 			switch ( i )
 			{
-			case 1: pWeaponData = g_ASWEquipmentList.GetWeaponDataFor( "asw_weapon_autogun" ); break;
-			case 2: pWeaponData = g_ASWEquipmentList.GetWeaponDataFor( "asw_weapon_shotgun" ); break;
-			case 3: pWeaponData = g_ASWEquipmentList.GetWeaponDataFor( "asw_weapon_vindicator" ); break;
-			case 4: pWeaponData = g_ASWEquipmentList.GetWeaponDataFor( "asw_weapon_flamer" ); break;
-			case 5: pWeaponData = g_ASWEquipmentList.GetWeaponDataFor( "asw_weapon_pdw" ); break;
-			case 6: pWeaponData = g_ASWEquipmentList.GetWeaponDataFor( "asw_weapon_pistol" ); break;
-			case 7: pWeaponData = g_ASWEquipmentList.GetWeaponDataFor( "asw_weapon_mining_laser" ); break;
-			default: pWeaponData = g_ASWEquipmentList.GetWeaponDataFor( "asw_weapon_rifle" ); break;
+			case 1: pItem = g_ASWEquipmentList.GetRegular( ASW_EQUIP_AUTOGUN ); break;
+			case 2: pItem = g_ASWEquipmentList.GetRegular( ASW_EQUIP_SHOTGUN ); break;
+			case 3: pItem = g_ASWEquipmentList.GetRegular( ASW_EQUIP_VINDICATOR ); break;
+			case 4: pItem = g_ASWEquipmentList.GetRegular( ASW_EQUIP_FLAMER ); break;
+			case 5: pItem = g_ASWEquipmentList.GetRegular( ASW_EQUIP_PDW ); break;
+			case 6: pItem = g_ASWEquipmentList.GetRegular( ASW_EQUIP_PISTOL ); break;
+			case 7: pItem = g_ASWEquipmentList.GetRegular( ASW_EQUIP_MINING_LASER ); break;
+			default: pItem = g_ASWEquipmentList.GetRegular( ASW_EQUIP_RIFLE ); break;
 			}
 			int overflow = ammo;
-			if ( pWeaponData && pWeaponData->iMaxClip1 > 0 )
+			if ( pItem && pItem->MaxAmmo1() > 0 )
 			{
 				// overflow should actually be the current count in the guns marine holds using this ammo
 				overflow = 0;
@@ -276,7 +276,7 @@ void CASW_VGUI_Marine_Ammo_Report::SetAmmoTypesVisible()
 
 				// subtract what's in the gun and divide count into clips
 				ammo -= overflow;
-				ammo /= pWeaponData->iMaxClip1;
+				ammo /= pItem->MaxAmmo1();
 
 				//int orig = ammo;
 				//
@@ -286,7 +286,7 @@ void CASW_VGUI_Marine_Ammo_Report::SetAmmoTypesVisible()
 				if ( overflow == 0 && ammo > 0 )
 				{
 					ammo--;
-					overflow = pWeaponData->iMaxClip1;
+					overflow = pItem->MaxAmmo1();
 				}
 			}
 			else

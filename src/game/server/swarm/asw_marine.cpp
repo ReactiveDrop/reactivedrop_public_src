@@ -89,6 +89,7 @@
 #include "iservervehicle.h"
 #include "rd_cause_of_death.h"
 #include "npc_zombine.h"
+#include "asw_weapon_revive_tool_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1213,7 +1214,7 @@ int CASW_Marine::OnTakeDamage( const CTakeDamageInfo &info )
 		retVal = OnTakeDamage_Alive( info );
 		if ( m_iHealth <= 0 )
 		{
-			// reactivedrop: make sure marines die from asw_trigger_fall, trigger_hurt or env_laser immediately, withoug being incapacitated
+			// reactivedrop: make sure marines die from asw_trigger_fall, trigger_hurt or env_laser immediately, without being incapacitated
 			CBaseEntity* pAttacker = info.GetAttacker();
 			bool bIsLethalDanger =	dynamic_cast< CASW_Trigger_Fall* >( pAttacker ) ||
 									dynamic_cast< CTriggerHurt* >( pAttacker )		||
@@ -1307,6 +1308,10 @@ int CASW_Marine::OnTakeDamage( const CTakeDamageInfo &info )
 			{
 				bGibbed = Event_Gibbed( info );
 			}
+
+#ifdef RD_7A_WEAPONS
+			CASW_Revive_Tombstone::MaybeCreateTombstone( this, info, bGibbed );
+#endif
 
 			if ( bGibbed == false )
 			{

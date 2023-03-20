@@ -202,6 +202,7 @@ void WeaponsResource::LoadWeaponSprites( WEAPON_FILE_INFO_HANDLE hWeaponFileInfo
 		}
 	}
 
+#ifndef INFESTED_DLL
 	// Blast data into all of the Huds
 	for ( int hh = 0; hh < MAX_SPLITSCREEN_PLAYERS; ++hh )
 	{
@@ -227,6 +228,7 @@ void WeaponsResource::LoadWeaponSprites( WEAPON_FILE_INFO_HANDLE hWeaponFileInfo
 			pHudHR->SetHistoryGap( pWeaponInfo->iconAmmo2->Height() );
 		}
 	}
+#endif
 
 	FreeHudTextureList( tempList );
 }

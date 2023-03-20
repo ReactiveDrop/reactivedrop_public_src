@@ -23,6 +23,7 @@
 #include "asw_gamerules.h"
 #include "game_timescale_shared.h"
 #include "vgui/ILocalize.h"
+#include "asw_equipment_list.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -121,6 +122,7 @@ m_GlowObject( this, glow_outline_color_weapon.GetColorAsVector(), 1.0f, false, t
 {
 	SetPredictionEligible( true );
 	m_iEquipmentListIndex = -1;
+	m_pEquipItem = NULL;
 	m_fLastMuzzleFlashTime = 0;
 	m_fMuzzleFlashScale = -1;
 	m_fTurnRateModifier = 1.0f;
@@ -679,12 +681,12 @@ int C_ASW_Weapon::GetUseIconTextureID()
 {
 	if (m_nUseIconTextureID == -1)
 	{
-		const CASW_WeaponInfo *pInfo = GetWeaponInfo();
-		if ( pInfo )
+		const CASW_EquipItem *pItem = GetEquipItem();
+		if ( pItem )
 		{
 			m_nUseIconTextureID = vgui::surface()->CreateNewTextureID();
 			char buffer[ 256 ];
-			Q_snprintf( buffer, sizeof( buffer ), "vgui/%s", pInfo->szEquipIcon );
+			Q_snprintf( buffer, sizeof( buffer ), "vgui/%s", pItem->m_szEquipIcon );
 			vgui::surface()->DrawSetTextureFile( m_nUseIconTextureID, buffer, true, false);
 		}
 	}
@@ -706,11 +708,11 @@ bool C_ASW_Weapon::GetUseAction( ASWUseAction &action, C_ASW_Inhabitable_NPC *pU
 	action.bWideIcon = ( action.iInventorySlot != ASW_INVENTORY_SLOT_EXTRA );
 
 	// build the appropriate take string
-	const CASW_WeaponInfo *pInfo = GetWeaponInfo();
-	if ( pInfo )
+	const CASW_EquipItem *pItem = GetEquipItem();
+	if ( pItem )
 	{
 		wchar_t wszWeaponShortName[128];
-		TryLocalize( pInfo->szPrintName, wszWeaponShortName, sizeof( wszWeaponShortName ) );
+		TryLocalize( pItem->m_szShortName, wszWeaponShortName, sizeof( wszWeaponShortName ) );
 		wchar_t wszWeaponName[128];
 		if ( m_iOriginalOwnerSteamAccount != 0 && m_InventoryItemData.IsSet() && SteamFriends() )
 		{

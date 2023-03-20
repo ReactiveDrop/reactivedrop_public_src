@@ -699,10 +699,15 @@ ConVar	sk_npc_dmg_asw_medrifle( "sk_npc_dmg_asw_medrifle", "7", FCVAR_REPLICATED
 ConVar	sk_max_asw_medrifle( "sk_max_asw_medrifle", "504", FCVAR_REPLICATED | FCVAR_CHEAT );
 
 // AR2 (6 clips, 30 per)
-ConVar	sk_plr_dmg_ar2( "sk_plr_dmg_ar2", "8", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_plr_dmg_ar2( "sk_plr_dmg_ar2", "15", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar	sk_npc_dmg_ar2( "sk_npc_dmg_ar2", "5", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar	sk_max_ar2( "sk_max_ar2", "180", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar	sk_max_ar2_altfire( "sk_max_ar2_altfire", "3", FCVAR_REPLICATED | FCVAR_CHEAT );
+
+// Flechette Launcher (7 clips, 60 per)
+ConVar	sk_plr_dmg_asw_flechette( "sk_plr_dmg_asw_flechette", "7", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_npc_dmg_asw_flechette( "sk_npc_dmg_asw_flechette", "7", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_flechette( "sk_max_asw_flechette", "420", FCVAR_REPLICATED | FCVAR_CHEAT );
 
 ConVar sk_asw_parasite_infest_dmg_easy( "sk_asw_parasite_infest_dmg_easy", "175", FCVAR_REPLICATED | FCVAR_CHEAT, "Total damage from parasite infestation" );
 ConVar sk_asw_parasite_infest_dmg_normal( "sk_asw_parasite_infest_dmg_normal", "225", FCVAR_REPLICATED | FCVAR_CHEAT, "Total damage from parasite infestation" );
@@ -1325,7 +1330,9 @@ CAmmoDef *GetAmmoDef()
 		// heavy rifle secondary
 		def.AddAmmoType( "ASW_HR_G",		DMG_SONIC,					TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_asw_hr_g",	"sk_npc_dmg_asw_hr_g",	"sk_max_asw_hr_g",	BULLET_IMPULSE(200, 1225),	0 );
 		// medrifle
-		def.AddAmmoType("ASW_MEDRIFLE",		DMG_BULLET,					TRACER_LINE,	"sk_plr_dmg_asw_medrifle",			"sk_npc_dmg_asw_medrifle",			"sk_max_asw_medrifle",			BULLET_IMPULSE(200, 1225),	0 );
+		def.AddAmmoType( "ASW_MEDRIFLE", DMG_BULLET, TRACER_LINE, "sk_plr_dmg_asw_medrifle", "sk_npc_dmg_asw_medrifle", "sk_max_asw_medrifle", BULLET_IMPULSE( 200, 1225 ), 0 );
+		// flechette
+		def.AddAmmoType( "ASW_FLECHETTE", DMG_DISSOLVE, TRACER_NONE, "sk_plr_dmg_asw_flechette", "sk_npc_dmg_asw_flechette", "sk_max_asw_flechette", BULLET_IMPULSE( 200, 1225 ), 0 );
 	}
 
 	return &def;
@@ -4289,7 +4296,7 @@ void CAlienSwarm::GiveStartingWeaponToMarine( CASW_Marine *pMarine, int iEquipIn
 	{
 		pWeapon->m_iOriginalOwnerSteamAccount = ownerID.GetAccountID();
 		pWeapon->m_hOriginalOwnerPlayer = pMarine->GetCommander();
-		pWeapon->m_iInventoryEquipSlotIndex = pEquip->m_iInventoryIndex;
+		pWeapon->m_iInventoryEquipSlotIndex = pEquip->m_iInventoryEquipIndex;
 	}
 
 	// If I have a name, make my weapon match it with "_weapon" appended
@@ -5948,92 +5955,55 @@ bool CAlienSwarm::MarineCanPickup( CASW_Marine_Resource *pMarineResource, const 
 {
 	if ( !pMarineResource )
 		return false;
+
 	// need to get the weapon data associated with this class
-	CASW_WeaponInfo *pWeaponData = g_ASWEquipmentList.GetWeaponDataFor( szWeaponClass );
-	if ( !pWeaponData )
-		return false;
+	CASW_EquipItem *pItem = g_ASWEquipmentList.GetEquipItemFor( szWeaponClass );
+	if ( !pItem )
+		return true;
 
 	CASW_Marine_Profile *pProfile = pMarineResource->GetProfile();
 	if ( !pProfile )
 		return false;
 
 	bool bCheckRestriction = true;
-	if ( !pWeaponData->m_bExtra && rd_weapons_regular_class_unrestricted.GetInt() != -1 )
+	if ( !pItem->m_bIsExtra && rd_weapons_regular_class_unrestricted.GetInt() != -1 )
 	{
-		if ( rd_weapons_regular_class_unrestricted.GetInt() == -2 || CanPickupUnrestrictedWeapon( g_ASWEquipmentList.GetRegularIndex( szWeaponClass ), rd_weapons_regular_class_unrestricted ) )
+		if ( rd_weapons_regular_class_unrestricted.GetInt() == -2 || CanPickupUnrestrictedWeapon( pItem->m_iItemIndex, rd_weapons_regular_class_unrestricted ) )
 			bCheckRestriction = false;
 	}
-	else if ( pWeaponData->m_bExtra && rd_weapons_extra_class_unrestricted.GetInt() != -1 )
+	else if ( pItem->m_bIsExtra && rd_weapons_extra_class_unrestricted.GetInt() != -1 )
 	{
-		if ( rd_weapons_extra_class_unrestricted.GetInt() == -2 || CanPickupUnrestrictedWeapon( g_ASWEquipmentList.GetExtraIndex( szWeaponClass ), rd_weapons_extra_class_unrestricted ) )
+		if ( rd_weapons_extra_class_unrestricted.GetInt() == -2 || CanPickupUnrestrictedWeapon( pItem->m_iItemIndex, rd_weapons_extra_class_unrestricted ) )
 			bCheckRestriction = false;
 	}
 
 	if ( bCheckRestriction )
 	{
 		// check various class skills
-		if ( pWeaponData->m_bTech && !pProfile->CanHack() )
+		if ( pItem->m_iRequiredClass == MARINE_CLASS_TECH && !pProfile->CanHack() )
 		{
-			Q_snprintf( m_szPickupDenial, sizeof( m_szPickupDenial ), "#asw_requires_tech" );
+			V_strncpy( m_szPickupDenial, "#asw_requires_tech", sizeof( m_szPickupDenial ) );
 			return false;
 		}
 
-		if ( pWeaponData->m_bFirstAid && !pProfile->CanUseFirstAid() )
+		if ( pItem->m_iRequiredClass == MARINE_CLASS_MEDIC && !pProfile->CanUseFirstAid() )
 		{
-			Q_snprintf( m_szPickupDenial, sizeof( m_szPickupDenial ), "#asw_requires_medic" );
+			V_strncpy( m_szPickupDenial, "#asw_requires_medic", sizeof( m_szPickupDenial ) );
 			return false;
 		}
 
-		if ( pWeaponData->m_bSpecialWeapons && pProfile->GetMarineClass() != MARINE_CLASS_SPECIAL_WEAPONS )
+		if ( pItem->m_iRequiredClass == MARINE_CLASS_SPECIAL_WEAPONS && pProfile->GetMarineClass() != MARINE_CLASS_SPECIAL_WEAPONS )
 		{
-			Q_snprintf( m_szPickupDenial, sizeof( m_szPickupDenial ), "#asw_requires_sw" );
+			V_strncpy( m_szPickupDenial, "#asw_requires_sw", sizeof( m_szPickupDenial ) );
 			return false;
 		}
 
-		if ( pWeaponData->m_bSapper && pProfile->GetMarineClass() != MARINE_CLASS_NCO )
+		if ( pItem->m_iRequiredClass == MARINE_CLASS_NCO && pProfile->GetMarineClass() != MARINE_CLASS_NCO )
 		{
-			Q_snprintf( m_szPickupDenial, sizeof( m_szPickupDenial ), "#asw_requires_nco" );
+			V_strncpy( m_szPickupDenial, "#asw_requires_nco", sizeof( m_szPickupDenial ) );
 			return false;
 		}
 	}
-
-	// 	if (pWeaponData->m_bSarge && !pProfile->m_bSarge)
-	// 	{
-	// 		Q_snprintf( m_szPickupDenial, sizeof(m_szPickupDenial), "#asw_sarge_only");
-	// 		return false;
-	// 	}
-
-	if ( pWeaponData->m_bTracker && !pProfile->CanScanner() )
-	{
-		Q_snprintf( m_szPickupDenial, sizeof( m_szPickupDenial ), "TRACKING ONLY" );
-		return false;
-	}
-
-	// reactivedrop: this code doesn't work and is not needed 
-	// the pickup of unique weapons is handled correctly in 
-	// CASW_Marine::GetWeaponPositionForPickup(), so turning this code off
-// 	if (pWeaponData->m_bUnique)
-// 	{
-// 		// if we're swapping a unique item for the same unique item, allow the pickup
-// 		if (szSwappingClass && !Q_strcmp(szWeaponClass, szSwappingClass))
-// 			return true;
-// 		
-// 		// check if we have one of these already
-// 		// todo: shouldn't use these vars when ingame, but should check the marine's inventory?
-// 		for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++ iWpnSlot )
-// 		{
-// 			CASW_EquipItem* pItem = ASWEquipmentList()->GetItemForSlot( iWpnSlot, pMarineResource->m_iWeaponsInSlots[ iWpnSlot ] );
-// 			if ( !pItem )
-// 				continue;
-// 
-// 			const char* szItemClass = STRING(pItem->m_EquipClass);
-// 			if ( !Q_strcmp(szItemClass, szWeaponClass) )
-// 			{
-// 				Q_snprintf( m_szPickupDenial, sizeof(m_szPickupDenial), "#asw_cannot_carry_two");
-// 				return false;
-// 			}
-// 		}
-// 	}
 
 	return true;
 }
@@ -6042,11 +6012,11 @@ bool CAlienSwarm::MarineCanSelectInLobby( CASW_Marine_Resource *pMarineResource,
 {
 	if ( MarineCanPickup( pMarineResource, szWeaponClass, szSwappingClass ) )
 	{
-		CASW_WeaponInfo *pWeaponData = g_ASWEquipmentList.GetWeaponDataFor( szWeaponClass );
-		if ( !pWeaponData )
+		CASW_EquipItem *pItem = g_ASWEquipmentList.GetEquipItemFor( szWeaponClass );
+		if ( !pItem )
 			return false;
 
-		if ( pWeaponData->m_bUnique )
+		if ( pItem->m_bIsUnique )
 		{
 			// if we're swapping a unique item for the same unique item, allow the pickup
 			if ( szSwappingClass && !Q_strcmp( szWeaponClass, szSwappingClass ) )
@@ -6056,11 +6026,11 @@ bool CAlienSwarm::MarineCanSelectInLobby( CASW_Marine_Resource *pMarineResource,
 			// todo: shouldn't use these vars when ingame, but should check the marine's inventory?
 			for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++iWpnSlot )
 			{
-				CASW_EquipItem *pItem = g_ASWEquipmentList.GetItemForSlot( iWpnSlot, pMarineResource->m_iWeaponsInSlots[iWpnSlot] );
-				if ( !pItem )
+				CASW_EquipItem *pOtherItem = g_ASWEquipmentList.GetItemForSlot( iWpnSlot, pMarineResource->m_iWeaponsInSlots[iWpnSlot] );
+				if ( !pOtherItem )
 					continue;
 
-				const char *szItemClass = STRING( pItem->m_EquipClass );
+				const char *szItemClass = STRING( pOtherItem->m_EquipClass );
 				if ( !Q_strcmp( szItemClass, szWeaponClass ) )
 				{
 					Q_snprintf( m_szPickupDenial, sizeof( m_szPickupDenial ), "#asw_cannot_carry_two" );

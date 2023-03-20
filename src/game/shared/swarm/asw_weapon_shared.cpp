@@ -259,7 +259,6 @@ void CASW_Weapon::ItemBusyFrame( void )
 				m_fFastReloadEnd = 0;
 				m_fFastReloadStart = 0;
 
-				CBaseCombatCharacter *pOwner = GetOwner();
 				if ( pOwner )
 				{
 					float flMissDelay = MAX( gpGlobals->curtime + 2.0f, m_flNextPrimaryAttack + 1.0f );
@@ -1076,16 +1075,6 @@ void CASW_Weapon::GetButtons( bool &bAttack1, bool &bAttack2, bool &bReload, boo
 	CBaseCombatCharacter *pOwner = GetOwner();
 	if ( !pOwner || !pOwner->IsInhabitableNPC() )
 	{
-		CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
-		if ( pOwner )
-		{
-			bAttack1 = !!( pOwner->m_nButtons & IN_ATTACK );
-			bAttack2 = !!( pOwner->m_nButtons & IN_ATTACK2 );
-			bReload = !!( pOwner->m_nButtons & IN_RELOAD );
-			bOldReload = false;
-			bOldAttack1 = false;
-			return;
-		}
 		bAttack1 = false;
 		bAttack2 = false;
 		bReload = false;
@@ -1308,10 +1297,15 @@ void CASW_Weapon::Precache()
 	if ( pWeaponInfo )
 	{
 		// find equipment list index
-		if ( pWeaponInfo->m_bExtra )
-			m_iEquipmentListIndex = g_ASWEquipmentList.GetExtraIndex( GetClassname() );
-		else
-			m_iEquipmentListIndex = g_ASWEquipmentList.GetRegularIndex( GetClassname() );
+		m_pEquipItem = g_ASWEquipmentList.GetEquipItemFor( GetClassname() );
+		Assert( m_pEquipItem || Classify() == CLASS_RD_WEAPON_GENERIC_OBJECT );
+		m_iEquipmentListIndex = m_pEquipItem ? m_pEquipItem->m_iItemIndex : -1;
+
+		if ( m_pEquipItem )
+		{
+			m_iPrimaryAmmoType = m_pEquipItem->m_iAmmo1;
+			m_iSecondaryAmmoType = m_pEquipItem->m_iAmmo2;
+		}
 
 		if ( pWeaponInfo->szDisplayModel && pWeaponInfo->szDisplayModel[0] )
 		{
@@ -1322,6 +1316,11 @@ void CASW_Weapon::Precache()
 			PrecacheModel( pWeaponInfo->szDisplayModel2 );
 		}
 	}
+}
+
+const CASW_EquipItem *CASW_Weapon::GetEquipItem() const
+{
+	return m_pEquipItem;
 }
 
 const CASW_WeaponInfo *CASW_Weapon::GetWeaponInfo() const
@@ -1690,4 +1689,34 @@ void CASW_Weapon::OnStartedRoll()
 	m_bFastReloadSuccess = false;
 	m_bFastReloadFailure = false;
 	m_bInReload = false; 
+}
+
+const char *CASW_Weapon::GetPrintName() const
+{
+	Assert( GetEquipItem() );
+	return GetEquipItem() ? GetEquipItem()->m_szShortName : "";
+}
+
+int CASW_Weapon::GetMaxClip1() const
+{
+	Assert( GetEquipItem() );
+	return GetEquipItem() ? GetEquipItem()->MaxAmmo1() : WEAPON_NOCLIP;
+}
+
+int CASW_Weapon::GetMaxClip2() const
+{
+	Assert( GetEquipItem() );
+	return GetEquipItem() ? GetEquipItem()->MaxAmmo2() : WEAPON_NOCLIP;
+}
+
+int CASW_Weapon::GetDefaultClip1() const
+{
+	Assert( GetEquipItem() );
+	return GetEquipItem() ? GetEquipItem()->DefaultAmmo1() : WEAPON_NOCLIP;
+}
+
+int CASW_Weapon::GetDefaultClip2() const
+{
+	Assert( GetEquipItem() );
+	return GetEquipItem() ? GetEquipItem()->DefaultAmmo2() : WEAPON_NOCLIP;
 }
