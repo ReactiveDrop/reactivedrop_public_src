@@ -208,7 +208,7 @@ void __MsgFunc_RDHitConfirm( bf_read &msg )
 				bIsAccumulated = true;
 				flDamage += accumulator.m_flAccumulatedDamage;
 				CNewParticleEffect *pParticle = accumulator.m_hDamageNumberParticle.GetObject();
-				if ( pParticle )
+				if ( pParticle && pAttacker )
 				{
 					pAttacker->ParticleProp()->StopEmissionAndDestroyImmediately( pParticle );
 				}
