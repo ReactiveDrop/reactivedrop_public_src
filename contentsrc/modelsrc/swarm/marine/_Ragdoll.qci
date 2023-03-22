@@ -1,7 +1,7 @@
 $surfaceprop "flesh"
 
 
-$collisionjoints ragdoll {
+$collisionjoints ragdoll.dmx {
 
 	$mass 90.0
 	$inertia 10.00
