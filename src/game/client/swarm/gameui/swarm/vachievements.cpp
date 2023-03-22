@@ -476,14 +476,14 @@ BaseClass(parent, panelName, false, true)
 
 	m_LblComplete = new Label(this, "LblComplete", ""); 
 	m_LblGamerscore = new Label(this, "LblGamerscore", ""); 
-	m_GplAchievements = new AchievementGenericPanelList( this, "GplAchievements", GenericPanelList::ISM_ELEVATOR, m_iStartingUserSlot );
+	m_GplAchievements = new AchievementGenericPanelList( this, "GplAchievements", GenericPanelList::ISM_PERITEM, m_iStartingUserSlot );
 	m_GplAchievements->ShowScrollProgress( false );
 	m_GplAchievements->SetScrollBarVisible( IsPC() );
 	m_GplAchievements->SetBgColor( Color( 0, 0, 0, 0 ) );
 
 	if ( IsX360() )
 	{
-		m_GplAwards = new AchievementGenericPanelList( this, "GplAwards", GenericPanelList::ISM_ELEVATOR, m_iStartingUserSlot );
+		m_GplAwards = new AchievementGenericPanelList( this, "GplAwards", GenericPanelList::ISM_PERITEM, m_iStartingUserSlot );
 		m_GplAwards->ShowScrollProgress( true );
 		m_GplAwards->SetScrollBarVisible( false );
 		m_GplAwards->SetBgColor( Color( 0, 0, 0, 0 ) );
