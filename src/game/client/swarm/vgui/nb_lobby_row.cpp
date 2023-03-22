@@ -482,7 +482,7 @@ void CNB_Lobby_Row::OnCommand( const char *command )
 	}
 	else if ( !Q_stricmp( command, "PlayerFlyout" ) )
 	{
-		if ( !Briefing()->IsLobbySlotBot( m_nLobbySlot ) )
+		if ( !Briefing()->IsLobbySlotBot( m_nLobbySlot ) && Briefing()->GetCommanderSteamID( m_nLobbySlot ).IsValid() )
 		{
 			OpenPlayerFlyout();
 		}
