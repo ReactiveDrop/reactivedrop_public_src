@@ -45,10 +45,10 @@ $texturegroup skinfamilies
 	{ "tech_body_female" "tech_helmet_female" }
 }
 
-$renamematerial "models/player/male/back_unit/officer_back_unit" "models/player/male/back_unit/officer_back_unit_female"
-$renamematerial "models/player/male/back_unit/medic_back_unit" "models/player/male/back_unit/medic_back_unit_female"
-$renamematerial "models/player/male/back_unit/special_weapons_back_unit" "models/player/male/back_unit/special_weapons_back_unit_female"
-$renamematerial "models/player/male/back_unit/tech_back_unit" "models/player/male/back_unit/tech_back_unit_female"
+$renamematerial "officer_back_unit" "officer_back_unit_female"
+$renamematerial "medic_back_unit" "medic_back_unit_female"
+$renamematerial "special_weapons_back_unit" "special_weapons_back_unit_female"
+$renamematerial "tech_back_unit" "tech_back_unit_female"
 
 //==============================================================================
 // includes
