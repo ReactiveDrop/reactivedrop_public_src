@@ -83,6 +83,7 @@ protected:
 	bool m_bFlammableSp;
 	bool m_bTeslableSp;
 	bool m_bFreezableSp;
+	float m_flFreezeResistanceSp;
 	bool m_bFlinchableSp;
 	bool m_bGrenadeReflectorSp;
 	int m_iHealthBonusSp;

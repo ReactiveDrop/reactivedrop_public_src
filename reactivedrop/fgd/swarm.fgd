@@ -28,6 +28,7 @@
 		0 : "No"
 		1 : "Yes"
 	]
+	freezeresistance(float) : "Freeze Resistance" : "0.0" : "Examples: 0.8 means unfreezes 5 times as fast, -1.0 means unfreezes 2 times as slow"
 	flinchable(choices) : "Can flinch" : 1 : "If true, this alien works as usual. If false, the alien doesn't flinch on taken damage. " =
 	[
 		0 : "No"
@@ -2434,6 +2435,8 @@
 		0 : "No"
 		1 : "Yes"
 	]
+
+	freezeresistancesp(float) : "Freeze Resistance" : "0.0" : "Examples: 0.8 means unfreezes 5 times as fast, -1.0 means unfreezes 2 times as slow"
 
 	flinchablesp(choices) : "Can flinch" : 1 : "If true, this alien works as usual. If false, the alien doesn't flinch on taken damage. " =
 	[

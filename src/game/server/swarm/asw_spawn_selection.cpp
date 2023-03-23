@@ -832,6 +832,7 @@ CASW_Spawn_NPC::CASW_Spawn_NPC( const char *szAlienClass ) : m_Requirement( NULL
 	m_flSizeScale = 1;
 	m_bFlammable = true;
 	m_bFreezable = true;
+	m_flFreezeResistance = 0.0f;
 	m_bTeslable = true;
 	m_bFlinches = true;
 	m_bGrenadeReflector = false;
@@ -873,6 +874,7 @@ CASW_Spawn_NPC::CASW_Spawn_NPC( KeyValues *pKV ) : m_Requirement( pKV )
 	}
 	m_bFlammable = pKV->GetBool( "Flammable", true );
 	m_bFreezable = pKV->GetBool( "Freezable", true );
+	m_flFreezeResistance = pKV->GetFloat( "FreezeResistance", 0.0f );
 	m_bTeslable = pKV->GetBool( "Teslable", true );
 	m_bFlinches = pKV->GetBool( "Flinches", true );
 	m_bGrenadeReflector = pKV->GetBool("Reflector", false);
@@ -901,6 +903,7 @@ CASW_Spawn_NPC::CASW_Spawn_NPC( const CASW_Spawn_NPC & npc ) : m_Requirement( np
 	m_flSizeScale = npc.m_flSizeScale;
 	m_bFlammable = npc.m_bFlammable;
 	m_bFreezable = npc.m_bFreezable;
+	m_flFreezeResistance = npc.m_flFreezeResistance;
 	m_bTeslable = npc.m_bTeslable;
 	m_bFlinches = npc.m_bFlinches;
 	m_bGrenadeReflector = npc.m_bGrenadeReflector;
@@ -926,6 +929,10 @@ void CASW_Spawn_NPC::Dump()
 	if ( m_flSizeScale != 1 )
 	{
 		CmdMsg( "      Size: %+f%%", ( m_flSizeScale - 1 ) * 100 );
+	}
+	if ( m_flFreezeResistance != 0.0f )
+	{
+		CmdMsg( "      Freeze resistance: %f\n", m_flFreezeResistance );
 	}
 	if ( !m_bFlammable )
 	{

@@ -131,6 +131,7 @@ public:
 	float m_flSizeScale;
 	bool m_bFlammable;
 	bool m_bFreezable;
+	float m_flFreezeResistance;
 	bool m_bTeslable;
 	bool m_bFlinches;
 	bool m_bGrenadeReflector;

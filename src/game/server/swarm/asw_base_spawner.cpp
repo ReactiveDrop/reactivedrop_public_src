@@ -35,6 +35,7 @@ BEGIN_DATADESC( CASW_Base_Spawner )
 	DEFINE_KEYFIELD( m_bFlammableSp, FIELD_BOOLEAN, "flammablesp" ),
 	DEFINE_KEYFIELD( m_bTeslableSp, FIELD_BOOLEAN, "teslablesp" ),
 	DEFINE_KEYFIELD( m_bFreezableSp, FIELD_BOOLEAN, "freezablesp" ),
+	DEFINE_KEYFIELD( m_flFreezeResistanceSp, FIELD_FLOAT, "freezeresistancesp" ),
 	DEFINE_KEYFIELD( m_bFlinchableSp, FIELD_BOOLEAN, "flinchablesp" ),
 	DEFINE_KEYFIELD( m_bGrenadeReflectorSp, FIELD_BOOLEAN, "reflectorsp"),
 	DEFINE_KEYFIELD( m_iHealthBonusSp, FIELD_INTEGER, "healthbonussp"),
@@ -68,6 +69,7 @@ CASW_Base_Spawner::CASW_Base_Spawner()
 	m_bFlammableSp = true;
 	m_bTeslableSp = true;
 	m_bFreezableSp = true;
+	m_flFreezeResistanceSp = 0.0f;
 	m_bFlinchableSp = true;
 	m_bGrenadeReflectorSp = false;
 	m_iHealthBonusSp = 0;
@@ -338,6 +340,7 @@ IASW_Spawnable_NPC* CASW_Base_Spawner::SpawnAlien( const char *szAlienClassName,
 			pAlien->m_bFlammable = pDirectorNPC->m_bFlammable;
 			pAlien->m_bTeslable = pDirectorNPC->m_bTeslable;
 			pAlien->m_bFreezable = pDirectorNPC->m_bFreezable;
+			pAlien->m_flFreezeResistance = pDirectorNPC->m_flFreezeResistance;
 			pAlien->m_bFlinchable = pDirectorNPC->m_bFlinches;
 			pAlien->m_bGrenadeReflector = pDirectorNPC->m_bGrenadeReflector;
 			pAlien->m_iHealthBonus = pDirectorNPC->m_iHealthBonus;
@@ -349,6 +352,7 @@ IASW_Spawnable_NPC* CASW_Base_Spawner::SpawnAlien( const char *szAlienClassName,
 			pAlien->m_bFlammable = m_bFlammableSp;
 			pAlien->m_bTeslable = m_bTeslableSp;
 			pAlien->m_bFreezable = m_bFreezableSp;
+			pAlien->m_flFreezeResistance = m_flFreezeResistanceSp;
 			pAlien->m_bFlinchable = m_bFlinchableSp;
 			pAlien->m_bGrenadeReflector = m_bGrenadeReflectorSp;
 			pAlien->m_iHealthBonus = m_iHealthBonusSp;
@@ -363,6 +367,7 @@ IASW_Spawnable_NPC* CASW_Base_Spawner::SpawnAlien( const char *szAlienClassName,
 		pBuzzer->m_bFlammable = m_bFlammableSp;
 		pBuzzer->m_bTeslable = m_bTeslableSp;
 		pBuzzer->m_bFreezable = m_bFreezableSp;
+		pBuzzer->m_flFreezeResistance = m_flFreezeResistanceSp;
 		pBuzzer->m_bFlinchable = m_bFlinchableSp;
 		pBuzzer->m_bGrenadeReflector = m_bGrenadeReflectorSp;
 		pBuzzer->m_iHealthBonus = m_iHealthBonusSp;
