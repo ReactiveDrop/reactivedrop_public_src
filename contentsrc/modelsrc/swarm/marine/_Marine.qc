@@ -11,7 +11,7 @@
 //==============================================================================
 $modelname swarm/marine/marine.mdl
 $cdmaterials models/player/male
-$cdmaterials models/player/male/back_units
+$cdmaterials models/player/male/back_unit
 $addsearchdir dmx/
 $addsearchdir dmx/animation/
 $eyeposition 0 0 70
