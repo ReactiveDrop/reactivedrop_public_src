@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "105"
+	"mapversion" "107"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -14,13 +14,13 @@ viewsettings
 	"bSnapToGrid" "1"
 	"bShowGrid" "1"
 	"bShowLogicalGrid" "0"
-	"nGridSpacing" "2"
+	"nGridSpacing" "8"
 	"bShow3DGrid" "0"
 }
 world
 {
 	"id" "1"
-	"mapversion" "105"
+	"mapversion" "107"
 	"classname" "worldspawn"
 	"comment" "Decompiled by BSPSource v1.3.6 from ocs_3.bsp"
 	"detailmaterial" "detail/detailsprites"
@@ -27487,6 +27487,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"dentamount" "0"
 	"disableshadows" "1"
 	"distance" "130"
@@ -27621,6 +27622,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"dentamount" "0"
 	"distance" "130"
 	"dmg" "0"
@@ -27754,6 +27756,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"dentamount" "0"
 	"distance" "130"
 	"dmg" "0"
@@ -27891,6 +27894,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"dentamount" "0"
 	"distance" "130"
 	"dmg" "0"
@@ -28024,6 +28028,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"dentamount" "0"
 	"distance" "130"
 	"dmg" "0"
@@ -28162,6 +28167,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"dentamount" "0"
 	"distance" "130"
 	"dmg" "0"
@@ -28295,6 +28301,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"dentamount" "0"
 	"distance" "130"
 	"dmg" "0"
@@ -28334,6 +28341,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"dentamount" "0"
 	"distance" "130"
 	"dmg" "0"
@@ -28373,6 +28381,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"dentamount" "0"
 	"distance" "130"
 	"dmg" "0"
@@ -28651,6 +28660,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"dentamount" "1"
 	"disableshadows" "1"
 	"distance" "125"
@@ -29706,6 +29716,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"dentamount" "0"
 	"distance" "130"
 	"dmg" "0"
@@ -29844,6 +29855,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"dentamount" "0"
 	"distance" "130"
 	"dmg" "0"
@@ -31314,6 +31326,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"dentamount" "0"
 	"distance" "130"
 	"dmg" "0"
@@ -32250,7 +32263,7 @@ entity
 	"wirerows" "2"
 	connections
 	{
-		"OnButtonActivated" "elevator01Open0-1"
+		"OnButtonActivated" "elevator01FireUser10-1"
 	}
 	solid
 	{
@@ -32358,7 +32371,7 @@ entity
 	"wirerows" "2"
 	connections
 	{
-		"OnButtonActivated" "elevator01Close0-1"
+		"OnButtonActivated" "elevator01FireUser20-1"
 	}
 	solid
 	{
@@ -32796,6 +32809,13 @@ entity
 	"startsound" "swarm.gameeffects.bigelevatoractivate"
 	"stopsound" "plats.elevator_large_stop1"
 	"targetname" "elevator01"
+	connections
+	{
+		"OnUser1" "elevator01Open0-1"
+		"OnUser2" "elevator01Close0-1"
+		"OnUser2" "hurt_elevatorDisable0-1"
+		"OnUser1" "hurt_elevatorEnable0-1"
+	}
 	solid
 	{
 		"id" "284"
@@ -33225,6 +33245,7 @@ entity
 		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
+		"comments" "user1 - open, user2 - close"
 		"logicalpos" "[1000 4500]"
 	}
 }
@@ -36723,6 +36744,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"dentamount" "0"
 	"distance" "130"
 	"dmg" "0"
@@ -38080,6 +38102,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"dentamount" "0"
 	"distance" "130"
 	"dmg" "0"
@@ -38118,6 +38141,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"dentamount" "0"
 	"distance" "130"
 	"dmg" "0"
@@ -38156,6 +38180,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"dentamount" "1"
 	"disableshadows" "1"
 	"distance" "125"
@@ -45084,6 +45109,7 @@ entity
 	"CanCloseToWeld" "0"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"dentamount" "0"
 	"distance" "130"
 	"dmg" "0"
@@ -167336,7 +167362,7 @@ entity
 	"wirerows" "2"
 	connections
 	{
-		"OnButtonActivated" "elevator01Open0-1"
+		"OnButtonActivated" "elevator01FireUser10-1"
 	}
 	solid
 	{
@@ -167601,13 +167627,201 @@ entity
 		"logicalpos" "[9500 4500]"
 	}
 }
+entity
+{
+	"id" "118088"
+	"classname" "func_rd_no_director_aliens"
+	"StartDisabled" "0"
+	solid
+	{
+		"id" "118086"
+		side
+		{
+			"id" "9964"
+			"plane" "(248 2600 674) (456 2600 674) (456 2448 674)"
+			"material" "TOOLS/TOOLSTRIGGER"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 -1 0 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "9963"
+			"plane" "(248 2448 -3.43323e-005) (456 2448 -3.43323e-005) (456 2600 -3.43323e-005)"
+			"material" "TOOLS/TOOLSTRIGGER"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 -1 0 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "9962"
+			"plane" "(248 2600 674) (248 2448 674) (248 2448 -3.43323e-005)"
+			"material" "TOOLS/TOOLSTRIGGER"
+			"uaxis" "[0 1 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "9961"
+			"plane" "(456 2600 -3.43323e-005) (456 2448 -3.43323e-005) (456 2448 674)"
+			"material" "TOOLS/TOOLSTRIGGER"
+			"uaxis" "[0 1 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "9960"
+			"plane" "(456 2600 674) (248 2600 674) (248 2600 -3.43323e-005)"
+			"material" "TOOLS/TOOLSTRIGGER"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "9959"
+			"plane" "(456 2448 -3.43323e-005) (248 2448 -3.43323e-005) (248 2448 674)"
+			"material" "TOOLS/TOOLSTRIGGER"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		editor
+		{
+			"color" "220 30 220"
+			"visgroupshown" "1"
+			"visgroupautoshown" "1"
+		}
+	}
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "118099"
+	"classname" "trigger_hurt"
+	"damage" "10000"
+	"damagecap" "20000"
+	"damagemodel" "0"
+	"damagetype" "0"
+	"nodmgforce" "0"
+	"origin" "1696 -1696 40"
+	"parentname" "elevator01"
+	"spawnflags" "2"
+	"StartDisabled" "0"
+	"targetname" "hurt_elevator"
+	solid
+	{
+		"id" "118097"
+		side
+		{
+			"id" "9976"
+			"plane" "(1568 -1568 48) (1824 -1568 48) (1824 -1824 48)"
+			"material" "TOOLS/TOOLSTRIGGER"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 -1 0 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "9975"
+			"plane" "(1568 -1824 32) (1824 -1824 32) (1824 -1568 32)"
+			"material" "TOOLS/TOOLSTRIGGER"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 -1 0 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "9974"
+			"plane" "(1568 -1568 48) (1568 -1824 48) (1568 -1824 32)"
+			"material" "TOOLS/TOOLSTRIGGER"
+			"uaxis" "[0 1 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "9973"
+			"plane" "(1824 -1568 32) (1824 -1824 32) (1824 -1824 48)"
+			"material" "TOOLS/TOOLSTRIGGER"
+			"uaxis" "[0 1 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "9972"
+			"plane" "(1824 -1568 48) (1568 -1568 48) (1568 -1568 32)"
+			"material" "TOOLS/TOOLSTRIGGER"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "9971"
+			"plane" "(1824 -1824 32) (1568 -1824 32) (1568 -1824 48)"
+			"material" "TOOLS/TOOLSTRIGGER"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		editor
+		{
+			"color" "220 30 220"
+			"visgroupshown" "1"
+			"visgroupautoshown" "1"
+		}
+	}
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"comments" "disable when going up"
+		"logicalpos" "[0 1500]"
+	}
+}
 cameras
 {
 	"activecamera" "0"
 	camera
 	{
-		"position" "[2279.13 2660.76 1404.33]"
-		"look" "[2310.36 2687.22 1141.13]"
+		"position" "[1752.7 -1850.03 308.247]"
+		"look" "[1717.9 -1713.23 82.3587]"
 	}
 	camera
 	{
