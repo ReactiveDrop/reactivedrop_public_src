@@ -38,6 +38,7 @@
 #include "rumble_shared.h"
 #include "saverestoretypes.h"
 #include "nav_mesh.h"
+#include "asw_gamerules.h"
 
 #ifdef HL2_DLL
 #include "weapon_physcannon.h"
@@ -2286,44 +2287,21 @@ int CBaseCombatCharacter::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 			newDamage.AssignTo( &flDamage );
 		}
 	}
-	if ( g_pScriptVM )
+	if ( CAlienSwarm *pAlienSwarm = ASWGameRules() )
 	{
-		if ( HSCRIPT hFunction = g_pScriptVM->LookupFunction( "OnTakeDamage_Alive_Any" ) )
-		{
-			ScriptVariant_t newDamage;
-			ScriptStatus_t nStatus = g_pScriptVM->Call( hFunction, NULL, true, &newDamage, ToHScript( this ), ToHScript( pInflictor ), ToHScript( info.GetAttacker() ), ToHScript( info.GetWeapon() ), flDamage, info.GetDamageType(), info.GetAmmoName() );
-			if ( nStatus != SCRIPT_DONE )
-			{
-				DevWarning( "OnTakeDamage_Alive_Any VScript function did not finish!\n" );
-			}
-			else
-			{
-				newDamage.AssignTo( &flDamage );
-			}
-			g_pScriptVM->ReleaseFunction( hFunction );
-		}
-		if ( g_pScriptVM->ValueExists( "g_ModeScript" ) )
-		{
-			ScriptVariant_t hModeScript;
-			if ( g_pScriptVM->GetValue( "g_ModeScript", &hModeScript ) )
-			{
-				if ( HSCRIPT hFunction = g_pScriptVM->LookupFunction( "OnTakeDamage_Alive_Any", hModeScript ) )
-				{
-					ScriptVariant_t newDamage;
-					ScriptStatus_t nStatus = g_pScriptVM->Call( hFunction, hModeScript, true, &newDamage, ToHScript( this ), ToHScript( pInflictor ), ToHScript( info.GetAttacker() ), ToHScript( info.GetWeapon() ), flDamage, info.GetDamageType(), info.GetAmmoName() );
-					if ( nStatus != SCRIPT_DONE )
-					{
-						DevWarning( "OnTakeDamage_Alive_Any VScript function did not finish!\n" );
-					}
-					else
-					{
-						newDamage.AssignTo( &flDamage );
-					}
-					g_pScriptVM->ReleaseFunction( hFunction );
-				}
-				g_pScriptVM->ReleaseValue( hModeScript );
-			}
-		}
+		ScriptVariant_t args[7];
+
+		args[0] = ToHScript( this );
+		args[1] = ToHScript( pInflictor );
+		args[2] = ToHScript( info.GetAttacker() );
+		args[3] = ToHScript( info.GetWeapon() );
+		args[4] = flDamage;
+		args[5] = info.GetDamageType();
+		args[6] = info.GetAmmoName();
+
+		pAlienSwarm->RunScriptFunctionInListenerScopes( "OnTakeDamage_Alive_Any", &args[4], NELEMS( args ), args );
+
+		args[4].AssignTo( &flDamage );
 	}
 #endif
 

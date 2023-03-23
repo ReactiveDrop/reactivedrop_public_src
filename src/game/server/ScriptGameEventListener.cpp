@@ -6,6 +6,7 @@
 #include "cbase.h"
 #include "scriptgameeventlistener.h"
 #include "vscript_server.h"
+#include "asw_gamerules.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -21,51 +22,19 @@ CScriptGameEventListener::~CScriptGameEventListener()
 
 void CScriptGameEventListener::FireGameEvent( IGameEvent *event )
 {
-	if ( !g_pScriptVM )
+	if ( !g_pScriptVM || !ASWGameRules() )
 		return;
 
 	char szGameEventFunctionName[256];
-	Q_snprintf( szGameEventFunctionName, sizeof(szGameEventFunctionName), "OnGameEvent_%s", event->GetName() );
+	V_snprintf( szGameEventFunctionName, sizeof( szGameEventFunctionName ), "OnGameEvent_%s", event->GetName() );
 
-	HSCRIPT hGameEventFunc = g_pScriptVM->LookupFunction( szGameEventFunctionName );
-	if ( hGameEventFunc )
-	{
-		ScriptVariant_t hGameEventTable;
-		g_pScriptVM->CreateTable( hGameEventTable );
-		SetVScriptEventValues( event, hGameEventTable );
-		ScriptStatus_t nStatus = g_pScriptVM->Call( hGameEventFunc, NULL, false, NULL, hGameEventTable );
-		if ( nStatus != SCRIPT_DONE )
-		{
-			DevWarning( "%s VScript function did not finish!\n", szGameEventFunctionName );
-		}
-		g_pScriptVM->ReleaseFunction( hGameEventFunc );
-		g_pScriptVM->ReleaseValue( hGameEventTable );
-	}
+	ScriptVariant_t hGameEventTable;
+	g_pScriptVM->CreateTable( hGameEventTable );
+	SetVScriptEventValues( event, hGameEventTable );
 
-	if ( g_pScriptVM->ValueExists( "g_ModeScript" ) )
-	{
-		ScriptVariant_t hModeScript;
-		if ( g_pScriptVM->GetValue( "g_ModeScript", &hModeScript ) )
-		{
-			if ( HSCRIPT hFunction = g_pScriptVM->LookupFunction( szGameEventFunctionName, hModeScript ) )
-			{
-				ScriptVariant_t hGameEventTable;
-				g_pScriptVM->CreateTable( hGameEventTable );
+	ASWGameRules()->RunScriptFunctionInListenerScopes( szGameEventFunctionName, NULL, 1, &hGameEventTable );
 
-				SetVScriptEventValues( event, hGameEventTable );
-
-				ScriptStatus_t nStatus = g_pScriptVM->Call( hFunction, hModeScript, false, NULL, hGameEventTable );
-				if ( nStatus != SCRIPT_DONE )
-				{
-					DevWarning( "%s VScript function did not finish!\n", szGameEventFunctionName );
-				}
-
-				g_pScriptVM->ReleaseFunction( hFunction );
-				g_pScriptVM->ReleaseValue( hGameEventTable );
-			}
-			g_pScriptVM->ReleaseValue( hModeScript );
-		}
-	}
+	g_pScriptVM->ReleaseValue( hGameEventTable );
 }
 
 void CScriptGameEventListener::SetVScriptEventValues( IGameEvent *event, HSCRIPT table )

@@ -22,6 +22,7 @@
 #include "rd_missions_shared.h"
 #include "asw_achievements.h"
 #include "asw_player.h"
+#include "ScriptGameEventListener.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1051,4 +1052,91 @@ void CAlienSwarm::RegisterScriptFunctions()
 	ScriptRegisterFunctionNamed( g_pScriptVM, Script_FindNearestNPC, "FindNearestNPC", "Find nearest NPC to position (position, ZcoordCheck, radius)" );
 	ScriptRegisterFunctionNamed( g_pScriptVM, Script_GamePause, "GamePause", "Pause or unpause the game" );
 	ScriptRegisterFunctionNamed( g_pScriptVM, Script_IsAnniversaryWeek, "IsAnniversaryWeek", "Returns true if it is the anniversary week of Alien Swarm: Reactive Drop" );
+}
+
+class CASW_Challenge_Thinker : public CLogicalEntity
+{
+public:
+	DECLARE_CLASS( CASW_Challenge_Thinker, CLogicalEntity );
+
+	static CUtlVector<CASW_Challenge_Thinker *> s_Thinkers;
+
+	CASW_Challenge_Thinker()
+	{
+		m_iszScriptThinkFunction = AllocPooledString( "Update" );
+	}
+
+	virtual void RunVScripts()
+	{
+		if ( ValidateScriptScope() )
+		{
+			// https://github.com/ReactiveDrop/reactivedrop_public_src/issues/138
+			// We need to make sure our scope includes every value that might be looked up from it.
+			// If we don't, global variables will be inherited by our scope and functions will be run twice.
+
+			HSCRIPT hScope = GetScriptScope();
+			Assert( hScope );
+			for ( int i = 0; i < NUM_SCRIPT_GAME_EVENTS; i++ )
+			{
+				g_pScriptVM->SetValue( hScope, CFmtStr( "OnGameEvent_%s", g_ScriptGameEventList[i] ), SCRIPT_VARIANT_NULL );
+			}
+			g_pScriptVM->SetValue( hScope, "OnTakeDamage_Alive_Any", SCRIPT_VARIANT_NULL );
+			g_pScriptVM->SetValue( hScope, "UserConsoleCommand", SCRIPT_VARIANT_NULL );
+			g_pScriptVM->SetValue( hScope, "OnMissionStart", SCRIPT_VARIANT_NULL );
+			g_pScriptVM->SetValue( hScope, "OnGameplayStart", SCRIPT_VARIANT_NULL );
+
+			s_Thinkers.AddToTail( this );
+		}
+
+		BaseClass::RunVScripts();
+	}
+
+	virtual void UpdateOnRemove()
+	{
+		ScriptVariant_t value;
+		if ( GetScriptScope() && g_pScriptVM->GetValue( "g_ModeScript", &value ) && value == GetScriptScope() )
+		{
+			g_pScriptVM->SetValue( "g_ModeScript", SCRIPT_VARIANT_NULL );
+		}
+
+		s_Thinkers.FindAndRemove( this );
+
+		BaseClass::UpdateOnRemove();
+	}
+};
+
+CUtlVector<CASW_Challenge_Thinker *> CASW_Challenge_Thinker::s_Thinkers;
+
+LINK_ENTITY_TO_CLASS( asw_challenge_thinker, CASW_Challenge_Thinker );
+
+void CAlienSwarm::RunScriptFunctionInListenerScopes( const char *szFunctionName, ScriptVariant_t *pReturn, int nArgs, ScriptVariant_t *pArgs )
+{
+	HSCRIPT hFunc = g_pScriptVM->LookupFunction( szFunctionName );
+	if ( hFunc )
+	{
+		ScriptStatus_t nStatus = g_pScriptVM->ExecuteFunction( hFunc, pArgs, nArgs, pReturn, NULL, false );
+		if ( nStatus != SCRIPT_DONE )
+		{
+			DevWarning( "%s VScript function did not finish!\n", szFunctionName );
+		}
+		g_pScriptVM->ReleaseFunction( hFunc );
+	}
+
+	FOR_EACH_VEC( CASW_Challenge_Thinker::s_Thinkers, i )
+	{
+		CASW_Challenge_Thinker *pThinker = CASW_Challenge_Thinker::s_Thinkers[i];
+		if ( HSCRIPT hScope = pThinker->GetScriptScope() )
+		{
+			if ( HSCRIPT hFunc = g_pScriptVM->LookupFunction( szFunctionName, hScope ) )
+			{
+				ScriptStatus_t nStatus = g_pScriptVM->ExecuteFunction( hFunc, pArgs, nArgs, pReturn, hScope, false );
+				if ( nStatus != SCRIPT_DONE )
+				{
+					DevWarning( "%s VScript function for thinker #%d:%s did not finish!\n", szFunctionName, pThinker->entindex(), pThinker->GetDebugName() );
+				}
+
+				g_pScriptVM->ReleaseFunction( hFunc );
+			}
+		}
+	}
 }

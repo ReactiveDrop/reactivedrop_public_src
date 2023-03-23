@@ -28,6 +28,7 @@
 #ifdef _WIN32
 #include "vscript_server_nut.h"
 #endif
+#include "asw_gamerules.h"
 
 extern ScriptClassDesc_t * GetScriptDesc( CBaseEntity * );
 
@@ -1971,35 +1972,15 @@ CON_COMMAND( scripted_user_func, "Call script from this user, with the value" )
 	CBasePlayer* pPlayer = UTIL_GetCommandClient();
 	const char *pszValue = args[1];
 
-	HSCRIPT hUserCommandFunc = g_pScriptVM->LookupFunction( "UserConsoleCommand" );
-	if ( hUserCommandFunc )
-	{
-		ScriptStatus_t nStatus = g_pScriptVM->Call( hUserCommandFunc, NULL, false, NULL, ToHScript( pPlayer ), pszValue );
-		if ( nStatus != SCRIPT_DONE )
-		{
-			DevWarning( "UserConsoleCommand VScript function did not finish!\n" );
-		}
-		g_pScriptVM->ReleaseFunction( hUserCommandFunc );
-	}
+	if ( !ASWGameRules() )
+		return;
 
-	if ( g_pScriptVM->ValueExists( "g_ModeScript" ) )
-	{
-		ScriptVariant_t hModeScript;
-		if ( g_pScriptVM->GetValue( "g_ModeScript", &hModeScript ) )
-		{
-			if ( HSCRIPT hFunction = g_pScriptVM->LookupFunction( "UserConsoleCommand", hModeScript ) )
-			{
-				ScriptStatus_t nStatus = g_pScriptVM->Call( hFunction, hModeScript, false, NULL, ToHScript( pPlayer ), pszValue );
-				if ( nStatus != SCRIPT_DONE )
-				{
-					DevWarning( "UserConsoleCommand VScript function did not finish!\n" );
-				}
+	ScriptVariant_t scriptArgs[2];
 
-				g_pScriptVM->ReleaseFunction( hFunction );
-			}
-			g_pScriptVM->ReleaseValue( hModeScript );
-		}
-	}
+	scriptArgs[0] = ToHScript( pPlayer );
+	scriptArgs[1] = pszValue;
+
+	ASWGameRules()->RunScriptFunctionInListenerScopes( "UserConsoleCommand", NULL, NELEMS( scriptArgs ), scriptArgs );
 }
 
 class CVScriptGameSystem : public CAutoGameSystemPerFrame
