@@ -620,7 +620,7 @@ CASW_EquipItem *CASW_EquipmentList::GetEquipItemFor( const char *szWeaponClass )
 
 CASW_EquipItem *CASW_EquipmentList::GetRegular( int index )
 {
-	Assert( index >= 0 && index < NELEMS( s_RegularEquips ) );
+	Assert( index >= -1 && index < int( NELEMS( s_RegularEquips ) ) );
 	if ( index < 0 || index >= NELEMS( s_RegularEquips ) )
 		return NULL;
 
@@ -634,7 +634,7 @@ int CASW_EquipmentList::GetNumRegular( bool bIncludeHidden )
 
 CASW_EquipItem *CASW_EquipmentList::GetExtra( int index )
 {
-	Assert( index >= 0 && index < NELEMS( s_ExtraEquips ) );
+	Assert( index >= -1 && index < int( NELEMS( s_ExtraEquips ) ) );
 	if ( index < 0 || index >= NELEMS( s_ExtraEquips ) )
 		return NULL;
 
