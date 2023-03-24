@@ -33,8 +33,6 @@ public:
 	virtual bool	OffhandActivate();
 	void	DeployAmmoDrop();
 
-	virtual bool			UsesClipsForAmmo1( void ) const { return false; }
-
 #ifndef CLIENT_DLL
 	DECLARE_DATADESC();
 
