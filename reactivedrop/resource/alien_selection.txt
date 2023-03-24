@@ -67,6 +67,7 @@
 // - SizeScale (must be above 0, default 1.0)
 // - Flammable (0 or 1, default 1)
 // - Freezable (0 or 1, default 1)
+// - FreezeResistance (any value, default 0.0), Examples: 0.8 means unfreezes 5 times as fast, -1.0 means unfreezes 2 times as slow
 // - Teslable (0 or 1, default 1)
 // - Flinches (0 or 1, default 1)
 // - Reflector (0 or 1, default 0)

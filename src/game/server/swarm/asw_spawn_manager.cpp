@@ -975,6 +975,7 @@ CBaseEntity *CASW_Spawn_Manager::SpawnAlienAt( CASW_Spawn_NPC *pNPC, const Vecto
 		pAlien->m_bFlammable = pNPC->m_bFlammable;
 		pAlien->m_bTeslable = pNPC->m_bTeslable;
 		pAlien->m_bFreezable = pNPC->m_bFreezable;
+		pAlien->m_flFreezeResistance = pNPC->m_flFreezeResistance;
 		pAlien->m_bFlinchable = pNPC->m_bFlinches;
 		pAlien->m_bGrenadeReflector = pNPC->m_bGrenadeReflector;
 		pAlien->m_iHealthBonus = pNPC->m_iHealthBonus;
