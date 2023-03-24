@@ -78,7 +78,7 @@ void CASW_Weapon_Heavy_Rifle::Precache()
 
 	PrecacheScriptSound( "ASW_Weapon_HeavyRifle.ChargeOn" );
 	PrecacheScriptSound( "ASW_Weapon_HeavyRifle.ChargeOff" );
-	PrecacheParticleSystem( "thorns_marine_buff" );
+	PrecacheParticleSystem( "buffgrenade_attach_arc" );
 	PrecacheParticleSystem( "mining_laser_exhaust" );
 }
 
@@ -188,7 +188,8 @@ void CASW_Weapon_Heavy_Rifle::ClientThink()
 	{
 		if ( m_bFastFire )
 		{
-			m_hFastFireParticle.Set( ParticleProp()->Create( "thorns_marine_buff", PATTACH_ABSORIGIN_FOLLOW ) );
+			m_hFastFireParticle.Set( ParticleProp()->Create( "buffgrenade_attach_arc", PATTACH_POINT_FOLLOW, "eject1" ) );
+			ParticleProp()->AddControlPoint( m_hFastFireParticle, 1, this, PATTACH_POINT_FOLLOW, "muzzle" );
 		}
 		else
 		{
