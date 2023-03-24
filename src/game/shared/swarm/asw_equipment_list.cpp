@@ -291,7 +291,7 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 	},
 	{
 		ASW_EQUIP_HEAVY_RIFLE, WEAPON_NAME( heavy_rifle ),
-		true, false, "ASW_HR", "",
+		true, false, "ASW_HR", "ASW_HR_G",
 		"swarm/EquipIcons/EquipHeavyRifle",
 		&asw_ammo_count_heavy_rifle, &asw_ammo_count_heavy_rifle_charge,
 	},
