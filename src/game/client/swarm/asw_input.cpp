@@ -1825,7 +1825,7 @@ void CASWInput::JoyStickTurn( CUserCmd *cmd, float &yaw, float &pitch, float fra
 		}
 	}
 
-	if ( bAutoWalk )
+	if ( bWalkingThreshold )
 	{
 		if ( !m_bAutoWalking )
 		{
