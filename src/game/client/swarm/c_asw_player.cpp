@@ -677,6 +677,11 @@ void C_ASW_Player::LoadoutSelectEquip( int iMarineIndex, int iInvSlot, int iEqui
 				{
 					pCVar->SetValue( iEquipIndex );
 				}
+
+				if ( ASWGameRules() )
+				{
+					ASWGameRules()->m_bShouldSaveChangedLoadout = true;
+				}
 			}
 		}
 	}

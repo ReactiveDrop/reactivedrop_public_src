@@ -1354,6 +1354,7 @@ CAlienSwarm::CAlienSwarm()
 	m_fDeathCamYawAngleOffset = 0.0f;
 	m_iPreviousGameState = 200;
 	m_iPreviousMissionWorkshopID = 999999; // impossible workshop ID
+	m_bShouldSaveChangedLoadout = false;
 
 	engine->SetPitchScale( rd_sound_pitch_scale.GetFloat() );
 
@@ -1452,8 +1453,9 @@ void CAlienSwarm::OnDataChanged( DataUpdateType_t updateType )
 
 		if ( GetGameState() == ASW_GS_INGAME )
 		{
-			if ( rd_write_config_on_mission_start.GetBool() )
+			if ( rd_write_config_on_mission_start.GetBool() && m_bShouldSaveChangedLoadout )
 			{
+				m_bShouldSaveChangedLoadout = false;
 				engine->ClientCmd_Unrestricted( "host_writeconfig" );
 			}
 			g_ReactiveDropWorkshop.OnMissionStart();

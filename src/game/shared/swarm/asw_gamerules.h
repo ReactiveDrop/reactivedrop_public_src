@@ -549,6 +549,7 @@ public:
 	CNetworkVar( PublishedFileId_t, m_iMissionWorkshopID );
 #ifdef CLIENT_DLL
 	PublishedFileId_t m_iPreviousMissionWorkshopID;
+	bool m_bShouldSaveChangedLoadout;
 #endif
 
 	CNetworkVar( bool, m_bChallengeActiveThisCampaign );
