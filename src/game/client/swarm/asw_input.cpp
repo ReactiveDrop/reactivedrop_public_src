@@ -37,13 +37,15 @@ ConVar asw_marine_turn_firing_fraction("asw_marine_turn_firing_fraction", "0.6",
 ConVar asw_marine_turn_normal_fraction("asw_marine_turn_normal_fraction", "0.9", FCVAR_CHEAT, "Fractional turning value if using asw_marine_fraction_turn_scale");
 ConVar asw_marine_turn_y_pos("asw_marine_turn_y_pos", "0.55", FCVAR_ARCHIVE, "Normalized height position for where the cursor changes the player from looking north to south.");
 
-ConVar joy_autoattack( "joy_autoattack", "0", FCVAR_ARCHIVE, "If enabled, marine will fire when you push the right analogue stick" );
+ConVar joy_autoattack( "joy_autoattack", "0", FCVAR_ARCHIVE, "If enabled, marine will fire when you push the right analog stick" );
 ConVar joy_lock_firing_angle( "joy_lock_firing_angle", "0", FCVAR_ARCHIVE, "If enabled, your facing direction will be locked while firing instead of aiming to movement" );
 ConVar joy_autoattack_threshold( "joy_autoattack_threshold", "0.6", FCVAR_ARCHIVE, "Threshold for joy_autoattack" );
 ConVar joy_autoattack_angle( "joy_autoattack_angle", "10", FCVAR_ARCHIVE, "Facing has to be within this many degrees of aim for the marine to auto fire" );
 ConVar joy_cursor_speed( "joy_cursor_speed", "2.0f", FCVAR_ARCHIVE, "Cursor speed of joystick when used in targeting mode" );
 ConVar joy_cursor_scale( "joy_cursor_scale", "1.3f", FCVAR_ARCHIVE, "Cursor extent scale of joystick when used in targeting mode" );
 ConVar joy_radius_snap_factor( "joy_radius_snap_factor", "2.0f", FCVAR_ARCHIVE, "Rate at which joystick targeting radius tracks the current cursor radius" );
+ConVar joy_autowalk( "joy_autowalk", "0", FCVAR_ARCHIVE, "If enabled, marine will walk when you push the right analog stick" );
+ConVar joy_autowalk_threshold( "joy_autowalk_threshold", "0.3", FCVAR_ARCHIVE, "Threshold for joy_autowalk" );
 ConVar joy_aim_to_movement( "joy_aim_to_movement", "1", FCVAR_ARCHIVE, "Aim in the direction of movement if the aiming stick is not in use" );
 ConVar joy_aim_to_movement_time( "joy_aim_to_movement_time", "1.0f", FCVAR_ARCHIVE, "Time before the player automatically aims in the direction of movement." );
 ConVar joy_tilted_view( "joy_tilted_view", "0", FCVAR_ARCHIVE, "Set to 1 when using maps with tilted view to rotate player movement." );
@@ -52,6 +54,7 @@ ConVar asw_horizontal_autoaim( "asw_horizontal_autoaim", "1", FCVAR_ARCHIVE, "Ap
 ConVar joy_disable_movement_in_ui( "joy_disable_movement_in_ui", "1", 0, "Disables joystick character movement when UI is active." );
 
 extern kbutton_t in_attack;
+extern kbutton_t in_walk;
 extern int g_asw_iPlayerListOpen;
 extern ConVar asw_DebugAutoAim;
 extern ConVar in_forceuser;
@@ -810,6 +813,7 @@ m_fCamYawRotStartTime(0.0f)
 	m_vecCrosshairAimingPos = vec3_origin;
 	m_vecCrosshairTracePos = vec3_origin;
 	m_bAutoAttacking = false;
+	m_bAutoWalking = false;
 
 	cl_entitylist->AddListenerEntity( this );
 
@@ -1714,11 +1718,12 @@ void CASWInput::JoyStickTurn( CUserCmd *cmd, float &yaw, float &pitch, float fra
 	}
 
 	// check for changing direction based on right analogue stick
-	bool bFiringThreshold = false;
-	if ( joy_autoattack.GetBool() )
+	bool bFiringThreshold = false, bWalkingThreshold = false;
+	if ( joy_autoattack.GetBool() || joy_autowalk.GetBool() )
 	{
 		float fDist = sqrt( yaw * yaw + pitch * pitch );
-		bFiringThreshold = ( fDist >= joy_autoattack_threshold.GetFloat() );
+		bFiringThreshold = joy_autoattack.GetBool() && ( fDist >= joy_autoattack_threshold.GetFloat() );
+		bWalkingThreshold = joy_autowalk.GetBool() && ( fDist >= joy_autowalk_threshold.GetFloat() );
 	}
 
 	float dt = MIN( 0.2, gpGlobals->frametime );
@@ -1818,6 +1823,20 @@ void CASWInput::JoyStickTurn( CUserCmd *cmd, float &yaw, float &pitch, float fra
 			}
 			//Msg( "%f: m_fJoypadFacingYaw = %f eyeangles = %f flAngle = %f\n", gpGlobals->curtime, m_fJoypadFacingYaw, pPlayer->EyeAngles()[YAW], fabs( flAngle ) );
 		}
+	}
+
+	if ( bAutoWalk )
+	{
+		if ( !m_bAutoWalking )
+		{
+			KeyDown( &in_walk, NULL );
+			m_bAutoWalking = true;
+		}
+	}
+	else if ( m_bAutoWalking )
+	{
+		KeyUp( &in_walk, NULL );
+		m_bAutoWalking = false;
 	}
 
 	if ( bAutoFire && !m_bCursorPlacement )

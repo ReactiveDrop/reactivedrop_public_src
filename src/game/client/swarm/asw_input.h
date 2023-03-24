@@ -73,7 +73,8 @@ public:
 	float m_fJoypadYaw;			// left/right on analogue stick
 	float m_fJoypadFacingYaw;	// desired yaw for our marine
 	bool m_bAutoAttacking;
-	
+	bool m_bAutoWalking;
+
 	bool m_bCursorPlacement;	// set to true when the aiming joystick should be used like a mouse for skill placement, rather than robotron-style shooting
 	int m_nRelativeCursorX, m_nRelativeCursorY;
 	float m_flDesiredCursorRadius;
