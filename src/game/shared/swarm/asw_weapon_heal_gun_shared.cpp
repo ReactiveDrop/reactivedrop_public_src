@@ -707,11 +707,10 @@ void CASW_Weapon_Heal_Gun::Fire( const Vector &vecOrigSrc, const Vector &vecDir 
 	if( pMarine->IsInhabited() )
 	{
 		CBaseEntity *pEntity = tr.m_pEnt;
-		//CASW_Marine *pTargetMarine = NULL;
-		//if ( pEntity )
-		//{
-		//	pTargetMarine = CASW_Marine::AsMarine( pEntity );
-		//}
+		if ( ( !pEntity || !TargetCanBeHealed( pEntity ) ) && TargetCanBeHealed( pMarine ) )
+		{
+			pEntity = pMarine;
+		}
 
 		Vector vecUp, vecRight;
 		QAngle angDir;
@@ -861,18 +860,18 @@ bool CASW_Weapon_Heal_Gun::ShouldShowLaserPointer()
 }
 
 // if the player has his mouse over another marine, highlight it, cos he's the one we can give health to
-void CASW_Weapon_Heal_Gun::MouseOverEntity(C_BaseEntity *pEnt, Vector vecWorldCursor)
+void CASW_Weapon_Heal_Gun::MouseOverEntity( C_BaseEntity *pEnt, Vector vecWorldCursor )
 {
-	C_ASW_Marine* pOtherMarine = C_ASW_Marine::AsMarine( pEnt );
+	C_ASW_Marine *pOtherMarine = C_ASW_Marine::AsMarine( pEnt );
 	CASW_Player *pOwner = GetCommander();
 	CASW_Marine *pMarine = GetMarine();
-	if (!pOwner || !pMarine)
+	if ( !pOwner || !pMarine )
 		return;
-	
-	if (!pOtherMarine)
+
+	if ( !pOtherMarine )
 	{
 		C_ASW_Game_Resource *pGameResource = ASWGameResource();
-		if (pGameResource)
+		if ( pGameResource )
 		{
 			// find marine closest to world cursor
 			const float fMustBeThisClose = 70;
@@ -884,24 +883,42 @@ void CASW_Weapon_Heal_Gun::MouseOverEntity(C_BaseEntity *pEnt, Vector vecWorldCu
 		}
 	}
 
-	// if the marine our cursor is over is near enough, highlight him
-	if (pOtherMarine)
+	if ( !pOtherMarine || !TargetCanBeHealed( pOtherMarine ) )
 	{
-		float dist = (pMarine->GetAbsOrigin() - pOtherMarine->GetAbsOrigin()).Length2D();
-		if (dist < GetWeaponRange() )
+		if ( TargetCanBeHealed( pMarine ) )
 		{
-			bool bCanGiveHealth = ( TargetCanBeHealed( pOtherMarine ) && m_iClip1 > 0 );
-			ASWInput()->SetHighlightEntity( pOtherMarine, bCanGiveHealth );
-			if ( bCanGiveHealth )		// if he needs healing, show the give health cursor
+			pOtherMarine = pMarine;
+		}
+		else
+		{
+			return;
+		}
+	}
+	else
+	{
+		float dist = ( pMarine->GetAbsOrigin() - pOtherMarine->GetAbsOrigin() ).Length2D();
+		if ( dist >= GetWeaponRange() )
+		{
+			if ( TargetCanBeHealed( pMarine ) )
 			{
-				CASWHudCrosshair *pCrosshair = GET_HUDELEMENT( CASWHudCrosshair );
-				if ( pCrosshair )
-				{
-					pCrosshair->SetShowGiveHealth(true);
-				}
+				pOtherMarine = pMarine;
+			}
+			else
+			{
+				return;
 			}
 		}
-	}		
+	}
+
+	// if the marine our cursor is over is near enough, highlight them
+	bool bCanGiveHealth = m_iClip1 > 0;
+	ASWInput()->SetHighlightEntity( pOtherMarine, bCanGiveHealth );
+
+	CASWHudCrosshair *pCrosshair = GET_HUDELEMENT( CASWHudCrosshair );
+	if ( pCrosshair )
+	{
+		pCrosshair->SetShowGiveHealth( bCanGiveHealth );
+	}
 }
 
 void CASW_Weapon_Heal_Gun::ClientThink()
