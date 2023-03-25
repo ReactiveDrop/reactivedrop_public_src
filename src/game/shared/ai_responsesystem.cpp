@@ -26,6 +26,7 @@
 #include "characterset.h"
 #include "responserules/response_host_interface.h"
 #include "../../responserules/runtime/response_types_internal.h"
+#include "choreoscene.h"
 
 #include "scenefilecache/ISceneFileCache.h"
 
@@ -288,9 +289,6 @@ void PrecacheInstancedScene( char const *pszScene )
 {
 	static int nMakingReslists = -1;
 
-	if ( !g_ScenePrecacheSystem.ShouldPrecache( pszScene ) )
-		return;
-
 	if ( nMakingReslists == -1 )
 	{
 		nMakingReslists = CommandLine()->FindParm( "-makereslists" ) > 0 ? 1 : 0;
@@ -302,13 +300,45 @@ void PrecacheInstancedScene( char const *pszScene )
 		g_pFullFileSystem->Size( pszScene );
 	}
 
-	// verify existence, cache is pre-populated, should be there
 	SceneCachedData_t sceneData;
-	if ( !scenefilecache->GetSceneCachedData( pszScene, &sceneData ) )
+
+	char loadfile[MAX_PATH];
+	Q_strncpy( loadfile, pszScene, sizeof( loadfile ) );
+	Q_SetExtension( loadfile, ".vcd", sizeof( loadfile ) );
+	Q_FixSlashes( loadfile );
+
+	// Attempt to precache manually
+	void *pBuffer = NULL;
+	if ( filesystem->ReadFileEx( loadfile, "GAME", &pBuffer, false, true ) )
 	{
-		// Scenes are sloppy and don't always exist.
-		// A scene that is not in the pre-built cache image, but on disk, is a true error.
-		if ( IsX360() && ( g_pFullFileSystem->GetDVDMode() != DVDMODE_STRICT ) && g_pFullFileSystem->FileExists( pszScene, "GAME" ) )
+		g_TokenProcessor.SetBuffer( ( char * )pBuffer );
+		CChoreoScene *pScene = ChoreoLoadScene( loadfile, NULL, &g_TokenProcessor, Scene_Printf );
+		if ( pScene )
+		{
+			for ( int i = 0; i < pScene->GetNumEvents(); i++ )
+			{
+				CChoreoEvent *pEvent = pScene->GetEvent( i );
+				if ( pEvent && pEvent->GetType() == CChoreoEvent::SPEAK )
+				{
+					CBaseEntity::PrecacheScriptSound( pEvent->GetParameters() );
+
+					// Precache CC token
+					if ( pEvent->GetCloseCaptionType() == CChoreoEvent::CC_MASTER &&
+						pEvent->GetNumSlaves() > 0 )
+					{
+						char tok[CChoreoEvent::MAX_CCTOKEN_STRING];
+						if ( pEvent->GetPlaybackCloseCaptionToken( tok, sizeof( tok ) ) )
+						{
+							CBaseEntity::PrecacheScriptSound( tok );
+						}
+					}
+				}
+			}
+		}
+	}
+	else if ( !scenefilecache->GetSceneCachedData( pszScene, &sceneData ) )
+	{
+		if ( developer.GetInt() && ( IsX360() && ( g_pFullFileSystem->GetDVDMode() != DVDMODE_STRICT ) && g_pFullFileSystem->FileExists( pszScene, "GAME" ) ) )
 		{
 			Warning( "PrecacheInstancedScene: Missing scene '%s' from scene image cache.\nRebuild scene image cache!\n", pszScene );
 		}
