@@ -1287,6 +1287,7 @@ void CASW_Weapon::Precache()
 	PrecacheModel( "models/swarm/Bayonet/bayonet.mdl" );
 	if ( const char *szMagazineGibName = GetMagazineGibModelName() )
 		PrecacheModel( szMagazineGibName );
+	PrecacheScriptSound( GetEquipSound() );
 	PrecacheScriptSound( "ASW_Rifle.ReloadA" );
 	PrecacheScriptSound( "ASW_Rifle.ReloadB" );
 	PrecacheScriptSound( "ASW_Rifle.ReloadC" );
@@ -1334,9 +1335,14 @@ bool CASW_Weapon::SendWeaponAnim(int iActivity)
 	return false;
 }
 
-void CASW_Weapon::Equip(CBaseCombatCharacter *pOwner)
+const char *CASW_Weapon::GetEquipSound()
 {
-	BaseClass::Equip(pOwner);
+	return "BaseCombatCharacter.AmmoPickup";
+}
+
+void CASW_Weapon::Equip( CBaseCombatCharacter *pOwner )
+{
+	BaseClass::Equip( pOwner );
 
 	SetModel( GetViewModel() );
 
@@ -1345,13 +1351,8 @@ void CASW_Weapon::Equip(CBaseCombatCharacter *pOwner)
 		m_nSkin = pOwner->GetSkin();
 	}
 
-	//IHasAttributes *pOwnerAttribInterface = dynamic_cast<IHasAttributes *>( pOwner );
-	//if ( pOwnerAttribInterface )
-	//{
-		//pOwnerAttribInterface->GetAttributeManager()->AddProvider( this );
-	//}
+	pOwner->EmitSound( GetEquipSound() );
 }
-
 
 float CASW_Weapon::GetTurnRateModifier()
 {

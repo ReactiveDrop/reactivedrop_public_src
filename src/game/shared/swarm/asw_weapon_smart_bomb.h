@@ -29,6 +29,9 @@ public:
 	
 #endif
 
+	const char *GetEquipSound() override { return "ASW_Weapon.AttachmentEquipLarge"; }
+	virtual bool ViewModelIsMarineAttachment() const { return true; }
+
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_SMART_BOMB; }
 };

@@ -34,7 +34,8 @@ public:
 		DECLARE_DATADESC();
 
 		int		CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
-	#endif
+		const char *GetEquipSound() override { return "ASW_Weapon.AttachmentEquipLarge"; }
+#endif
 
 	virtual bool IsOffensiveWeapon() { return false; }
 	virtual bool ViewModelIsMarineAttachment() const { return true; }

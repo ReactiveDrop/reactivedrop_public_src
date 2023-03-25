@@ -2820,14 +2820,14 @@ void CASW_Marine::Weapon_Equip_Post( CBaseCombatWeapon *pWeapon)
 	// If gun doesn't use clips, just give ammo
 	if (pWeapon->GetMaxClip1() == -1)
 	{
-		GiveAmmo(pWeapon->GetDefaultClip1(), pWeapon->m_iPrimaryAmmoType); 
+		GiveAmmo( pWeapon->GetDefaultClip1(), pWeapon->m_iPrimaryAmmoType, true );
 	}
 	// If default ammo given is greater than clip
 	// size, fill clips and give extra ammo
 	else if (pWeapon->GetDefaultClip1() >  pWeapon->GetMaxClip1() )
 	{
 		pWeapon->m_iClip1 = pWeapon->GetMaxClip1();
-		GiveAmmo( (pWeapon->GetDefaultClip1() - pWeapon->GetMaxClip1()), pWeapon->m_iPrimaryAmmoType); 
+		GiveAmmo( ( pWeapon->GetDefaultClip1() - pWeapon->GetMaxClip1() ), pWeapon->m_iPrimaryAmmoType, true );
 	}
 
 	// ----------------------
@@ -2836,14 +2836,14 @@ void CASW_Marine::Weapon_Equip_Post( CBaseCombatWeapon *pWeapon)
 	// If gun doesn't use clips, just give ammo
 	if (pWeapon->GetMaxClip2() == -1)
 	{
-		GiveAmmo(pWeapon->GetDefaultClip2(), pWeapon->m_iSecondaryAmmoType); 
+		GiveAmmo( pWeapon->GetDefaultClip2(), pWeapon->m_iSecondaryAmmoType, true );
 	}
 	// If default ammo given is greater than clip
 	// size, fill clips and give extra ammo
 	else if ( pWeapon->GetDefaultClip2() > pWeapon->GetMaxClip2() )
 	{
 		pWeapon->m_iClip2 = pWeapon->GetMaxClip2();
-		GiveAmmo( (pWeapon->GetDefaultClip2() - pWeapon->GetMaxClip2()), pWeapon->m_iSecondaryAmmoType); 
+		GiveAmmo( ( pWeapon->GetDefaultClip2() - pWeapon->GetMaxClip2() ), pWeapon->m_iSecondaryAmmoType, true );
 	}
 
 	pWeapon->Equip( this );

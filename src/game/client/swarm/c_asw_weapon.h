@@ -115,6 +115,7 @@ public:
 	virtual bool IsPredicted( void ) const;
 	virtual bool ViewModelIsMarineAttachment() const { return false; }
 	bool Holster( CBaseCombatWeapon *pSwitchingTo );
+	virtual const char *GetEquipSound();
 	virtual void Equip(CBaseCombatCharacter *pOwner);
 	virtual void SetWeaponVisible( bool visible );
 	virtual void ApplyWeaponSwitchTime(float fSwitchDelay);

@@ -36,6 +36,7 @@ public:
 		DECLARE_DATADESC();
 
 		int		CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
+		const char *GetEquipSound() override { return "ASW_Weapon.AttachmentEquipLarge"; }
 
 		void ShockNearbyAliens();
 	#endif

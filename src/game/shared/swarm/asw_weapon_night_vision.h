@@ -59,6 +59,7 @@ public:
 		DECLARE_DATADESC();
 	#endif
 
+	const char *GetEquipSound() override { return "ASW_Weapon.AttachmentEquipSmall"; }
 	virtual bool IsOffensiveWeapon() { return false; }
 	virtual bool ViewModelIsMarineAttachment() const { return true; }
 	bool IsVisionActive() { return m_bVisionActive.Get(); }

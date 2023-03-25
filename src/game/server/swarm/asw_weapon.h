@@ -67,6 +67,7 @@ public:
 	virtual void ClearIsFiring();
 	virtual void GetButtons(bool& bAttack1, bool& bAttack2, bool& bReload, bool& bOldReload, bool& bOldAttack1 );
 	bool Holster( CBaseCombatWeapon *pSwitchingTo );
+	virtual const char *GetEquipSound();
 	virtual void Equip(CBaseCombatCharacter *pOwner);
 	virtual void			SetWeaponVisible( bool visible );
 	virtual void ApplyWeaponSwitchTime(float fSwitchDelay);
