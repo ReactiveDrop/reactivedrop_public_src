@@ -381,6 +381,8 @@ BEGIN_DATADESC( CASW_Marine )
 	DEFINE_FIELD( m_flPowerupExpireTime, FIELD_FLOAT ),
 	DEFINE_FIELD( m_bPowerupExpires, FIELD_BOOLEAN ),
 	DEFINE_KEYFIELD( m_nMarineProfile, FIELD_INTEGER, "MarineProfile" ),
+	DEFINE_INPUTFUNC( FIELD_INTEGER, "AddPoints", InputAddPoints ),
+	DEFINE_OUTPUT( m_TotalPoints, "TotalPoints" ),
 END_DATADESC()
 
 BEGIN_ENT_SCRIPTDESC( CASW_Marine, CASW_Inhabitable_NPC, "Marine" )
@@ -5937,4 +5939,44 @@ void CASW_Marine::StrafePush()
 	Vector forward;
 	AngleVectors(EyeAngles(), &forward);
 	SetAbsVelocity(rda_marine_strafe_push_hor_velocity.GetInt() * forward + Vector(0, 0, rda_marine_strafe_push_vert_velocity.GetInt()));
+}
+
+void CASW_Marine::InputAddPoints( inputdata_t &inputdata )
+{
+	CASW_Marine_Resource *pMR = GetMarineResource();
+	Assert( pMR );
+	if ( !pMR )
+	{
+		Warning( "Cannot AddPoints: cannot find marine resource\n" );
+		return;
+	}
+
+	if ( inputdata.value.Int() < 0 )
+	{
+		Warning( "Cannot AddPoints with negative value. (%d)\n", inputdata.value.Int() );
+		return;
+	}
+
+	if ( pMR->m_iScore < 0 )
+	{
+		Warning( "Cannot AddPoints on this map: overview not tagged with 'points' or mission not yet started.\n" );
+		return;
+	}
+
+	int64_t iTotal = int64_t( pMR->m_iScore ) + int64_t( inputdata.value.Int() );
+	if ( iTotal < 0 || iTotal > INT32_MAX )
+	{
+		Warning( "AddPoints would overflow by %d - clamping.\n", int( iTotal - INT32_MAX ) );
+		iTotal = INT32_MAX;
+	}
+
+	pMR->m_TimelineScore.RecordValue( iTotal - pMR->m_iScore );
+	pMR->m_iScore = iTotal;
+
+	m_TotalPoints.Set( pMR->m_iScore, inputdata.pActivator, inputdata.pCaller );
+
+	CASW_ViewNPCRecipientFilter filter( this );
+	UserMessageBegin( filter, "ShowObjectives" );
+		WRITE_FLOAT( 30.0f );
+	MessageEnd();
 }

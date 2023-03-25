@@ -1025,6 +1025,12 @@ void CAlienSwarmProxy::InputAddPoints( inputdata_t & inputdata )
 		pMR->m_TimelineScore.RecordValue( iTotal - pMR->m_iScore );
 		pMR->m_iScore = iTotal;
 
+		CASW_Marine *pMarine = pMR->GetMarineEntity();
+		if ( pMarine )
+		{
+			pMarine->m_TotalPoints.Set( pMR->m_iScore, inputdata.pActivator, inputdata.pCaller );
+		}
+
 		iMaxScore = MAX( iMaxScore, pMR->m_iScore );
 	}
 
@@ -1032,7 +1038,7 @@ void CAlienSwarmProxy::InputAddPoints( inputdata_t & inputdata )
 
 	CBroadcastRecipientFilter filter;
 	UserMessageBegin( filter, "ShowObjectives" );
-	WRITE_FLOAT( 30.0f );
+		WRITE_FLOAT( 30.0f );
 	MessageEnd();
 }
 
