@@ -750,9 +750,9 @@ void CAI_BaseActor::UpdateLatchedValues( )
 		// set head latch
 		m_fLatchedPositions |= HUMANOID_LATCHED_HEAD;
 
-		if ( CanSkipAnimation() || !GetAttachment( "eyes", m_latchedEyeOrigin, &m_latchedHeadDirection ))
+		if ( CanSkipAnimation() || !GetAttachment( Classify() == CLASS_COMBINE_HUNTER ? "bottom_eye" : "eyes", m_latchedEyeOrigin, &m_latchedHeadDirection ) )
 		{
-			m_latchedEyeOrigin = BaseClass::EyePosition( );
+			m_latchedEyeOrigin = BaseClass::EyePosition();
 			AngleVectors( GetLocalAngles(), &m_latchedHeadDirection );
 		}
 		// clear out eye latch
@@ -853,8 +853,8 @@ float CAI_BaseActor::HeadTargetValidity(const Vector &lookTargetPos)
 {
 	Vector vFacing = BodyDirection3D();
 
-	int iForward = LookupAttachment( "forward" );
-	if (iForward)
+	int iForward = Classify() == CLASS_COMBINE_HUNTER ? 0 : LookupAttachment( "forward" );
+	if ( iForward )
 	{
 		Vector tmp1;
 		GetAttachment( iForward, tmp1, &vFacing, NULL, NULL );
@@ -1671,8 +1671,8 @@ void CAI_BaseActor::MaintainLookTargets( float flInterval )
 
 		if (active[i]->IsThis( this ))
 		{
-			int iForward = LookupAttachment( "forward" );
-			if (iForward)
+			int iForward = Classify() == CLASS_COMBINE_HUNTER ? 0 : LookupAttachment( "forward" );
+			if ( iForward )
 			{
 				Vector tmp1;
 				GetAttachment( iForward, tmp1, &dir, NULL, NULL );

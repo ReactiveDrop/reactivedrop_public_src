@@ -894,6 +894,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="hl2\c_strider.cpp" />
     <ClCompile Include="hl2\c_te_concussiveexplosion.cpp" />
     <ClCompile Include="hl2\c_waterbullet.cpp" />
+    <ClCompile Include="hl2\fx_hl2_tracers.cpp" />
     <ClCompile Include="hltvcamera.cpp" />
     <ClCompile Include="hud.cpp" />
     <ClCompile Include="hud_basechat.cpp" />

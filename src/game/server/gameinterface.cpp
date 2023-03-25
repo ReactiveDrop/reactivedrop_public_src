@@ -2364,6 +2364,7 @@ int GetEffectIndex( const char *pEffectName )
 			return nIndex;
 
 		DevWarning("Server: Missing precache for effect \"%s\"!\n", pEffectName );
+		AssertMsg1( false, "Server: Missing precache for effect \"%s\"!", pEffectName );
 	}
 
 	// This is the invalid string index

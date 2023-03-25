@@ -1670,6 +1670,8 @@ void CNPC_Hunter::Precache()
 	UTIL_PrecacheOther( "hunter_flechette" );
 	UTIL_PrecacheOther( "sparktrail" );
 
+	PrecacheEffect( "HunterMuzzleFlash" );
+
 	m_bInLargeOutdoorMap = false;
 	if( !Q_strnicmp( STRING(gpGlobals->mapname), "ep2_outland_12", 14) )
 	{
@@ -1805,8 +1807,8 @@ void CNPC_Hunter::SetupGlobalModelData()
 
 	m_nTopGunAttachment = LookupAttachment( "top_eye" );
 	m_nBottomGunAttachment = LookupAttachment( "bottom_eye" );
-	m_nStaggerYawPoseParam = LookupAttachment( "stagger_yaw" );
-	
+	m_nStaggerYawPoseParam = LookupPoseParameter( "stagger_yaw" );
+
 	m_nHeadCenterAttachment = LookupAttachment( "head_center" );
 	m_nHeadBottomAttachment = LookupAttachment( "head_radius_measure" );
 
@@ -1964,6 +1966,7 @@ void CNPC_Hunter::Activate()
 		// Have to create a virgin hunter to ensure proper pose
 		CNPC_Hunter *pHunter = (CNPC_Hunter *)CreateEntityByName( "npc_hunter" );
 		Assert(pHunter);
+		pHunter->SetModelName( GetModelName() );
 		pHunter->Spawn();
 
 		pHunter->SetActivity( ACT_WALK );
@@ -5159,7 +5162,7 @@ CBaseEntity *CNPC_Hunter::MeleeAttack( float flDist, int iDamage, QAngle &qaView
 				{
 					case HUNTER_BLOOD_LEFT_FOOT:
 					{
-						if ( GetAttachment( "blood_left", vecBloodPos ) )
+						if ( GetAttachment( "left_toe", vecBloodPos ) )
 						{
 							SpawnBlood( vecBloodPos, g_vecAttackDir, pHurt->BloodColor(), MIN( iDamage, 30 ) );
 						}
@@ -5942,7 +5945,7 @@ void CNPC_Hunter::DoMuzzleFlash( int nAttachment )
 	
 	DispatchParticleEffect( "hunter_muzzle_flash", PATTACH_POINT_FOLLOW, this, nAttachment );
 
-	// Dispatch the elight	
+	// Dispatch the elight
 	CEffectData data;
 	data.m_nAttachmentIndex = nAttachment;
 	data.m_nEntIndex = entindex();
