@@ -778,40 +778,37 @@ CChoreoScene *C_SceneEntity::LoadScene( const char *filename )
 	Q_SetExtension( loadfile, ".vcd", sizeof( loadfile ) );
 	Q_FixSlashes( loadfile );
 
-	void *pBuffer = NULL;
+	byte *pBuffer = NULL;
 	CChoreoScene *pScene = NULL;
+	bool bLoadedFromScenesImage = true;
 
-	int fileSize = filesystem->ReadFileEx( loadfile, "GAME", &pBuffer, true );
-	if ( fileSize )
+	int fileSize = scenefilecache->GetSceneBufferSize( loadfile );
+	if ( fileSize > 0 )
 	{
-		g_TokenProcessor.SetBuffer( ( char * )pBuffer );
-		pScene = ChoreoLoadScene( loadfile, this, &g_TokenProcessor, Scene_Printf );
-	}
-	else
-	{
-		fileSize = scenefilecache->GetSceneBufferSize( loadfile );
-		if ( fileSize <= 0 )
-			return NULL;
-
-		pBuffer = new char[fileSize];
-		if ( !scenefilecache->GetSceneData( filename, ( byte * )pBuffer, fileSize ) )
+		pBuffer = new byte[fileSize];
+		if ( !scenefilecache->GetSceneData( filename, pBuffer, fileSize ) )
 		{
 			delete[] pBuffer;
 			return NULL;
 		}
-
-
-		if ( IsBufferBinaryVCD( ( char * )pBuffer, fileSize ) )
+	}
+	else
+	{
+		bLoadedFromScenesImage = false;
+		fileSize = filesystem->ReadFileEx( loadfile, "GAME", ( void ** )&pBuffer, true );
+		if ( fileSize <= 0 )
 		{
-			pScene = new CChoreoScene( this );
-			CUtlBuffer buf( pBuffer, fileSize, CUtlBuffer::READ_ONLY );
-			if ( !pScene->RestoreFromBinaryBuffer( buf, loadfile, &g_ChoreoStringPool ) )
-			{
-				Warning( "Unable to restore scene '%s'\n", loadfile );
-				delete pScene;
-				pScene = NULL;
-			}
+			return NULL;
 		}
+	}
+
+	pScene = new CChoreoScene( this );
+	CUtlBuffer buf( pBuffer, fileSize, CUtlBuffer::READ_ONLY );
+	if ( !pScene->RestoreFromBinaryBuffer( buf, loadfile, &g_ChoreoStringPool ) )
+	{
+		Warning( "Unable to restore scene '%s'\n", loadfile );
+		delete pScene;
+		pScene = NULL;
 	}
 
 	if ( pScene )
@@ -820,7 +817,15 @@ CChoreoScene *C_SceneEntity::LoadScene( const char *filename )
 		pScene->SetEventCallbackInterface( this );
 	}
 
-	delete[] pBuffer;
+	if ( bLoadedFromScenesImage )
+	{
+		delete[] pBuffer;
+	}
+	else
+	{
+		filesystem->FreeOptimalReadBuffer( pBuffer );
+	}
+
 	return pScene;
 }
 

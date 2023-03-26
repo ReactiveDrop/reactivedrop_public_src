@@ -3497,34 +3497,29 @@ CChoreoScene *CSceneEntity::LoadScene( const char *filename, IChoreoEventCallbac
 	Q_SetExtension( loadfile, ".vcd", sizeof( loadfile ) );
 	Q_FixSlashes( loadfile );
 
-	void *pBuffer = NULL;
+	byte *pBuffer = NULL;
 	CChoreoScene *pScene;
+	int fileSize;
+	bool bLoadedFromScenesImage = true;
 
-	int fileSize = filesystem->ReadFileEx( loadfile, "GAME", &pBuffer, true );
-	if ( fileSize )
+	if ( !CopySceneFileIntoMemory( loadfile, &pBuffer, &fileSize ) )
 	{
-		g_TokenProcessor.SetBuffer( ( char * )pBuffer );
-		pScene = ChoreoLoadScene( loadfile, NULL, &g_TokenProcessor, LocalScene_Printf );
-	}
-	else
-	{
-		// binary compiled vcd
-		byte *pBuffer;
-		int fileSize;
-		if ( !CopySceneFileIntoMemory( loadfile, &pBuffer, &fileSize ) )
+		bLoadedFromScenesImage = false;
+		fileSize = filesystem->ReadFileEx( loadfile, "GAME", ( void ** )&pBuffer, true );
+		if ( fileSize <= 0 )
 		{
 			MissingSceneWarning( loadfile );
 			return NULL;
 		}
+	}
 
-		pScene = new CChoreoScene( NULL );
-		CUtlBuffer buf( pBuffer, fileSize, CUtlBuffer::READ_ONLY );
-		if ( !pScene->RestoreFromBinaryBuffer( buf, loadfile, &g_ChoreoStringPool ) )
-		{
-			Warning( "CSceneEntity::LoadScene: Unable to load binary scene '%s'\n", loadfile );
-			delete pScene;
-			pScene = NULL;
-		}
+	pScene = new CChoreoScene( NULL );
+	CUtlBuffer buf( pBuffer, fileSize, CUtlBuffer::READ_ONLY );
+	if ( !pScene->RestoreFromBinaryBuffer( buf, loadfile, &g_ChoreoStringPool ) )
+	{
+		Warning( "CSceneEntity::LoadScene: Unable to load binary scene '%s'\n", loadfile );
+		delete pScene;
+		pScene = NULL;
 	}
 
 	if ( pScene )
@@ -3533,7 +3528,15 @@ CChoreoScene *CSceneEntity::LoadScene( const char *filename, IChoreoEventCallbac
 		pScene->SetEventCallbackInterface( pCallback );
 	}
 
-	FreeSceneFileMemory( ( byte * )pBuffer );
+	if ( bLoadedFromScenesImage )
+	{
+		FreeSceneFileMemory( pBuffer );
+	}
+	else
+	{
+		filesystem->FreeOptimalReadBuffer( pBuffer );
+	}
+
 	return pScene;
 }
 
