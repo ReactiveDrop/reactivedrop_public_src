@@ -61,7 +61,9 @@ public:
 		const char *GetEquipSound() override { return "ASW_Weapon.AttachmentEquipSmall"; }
 		virtual void MarineDropped(CASW_Marine* pMarine);
 		virtual void Equip( CBaseCombatCharacter *pOwner );
-	#endif	
+	#else
+		virtual void ClientThink() override;
+	#endif
 };
 
 

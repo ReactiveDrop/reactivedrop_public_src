@@ -58,7 +58,17 @@ CASW_Weapon_Flashlight::~CASW_Weapon_Flashlight()
 
 }
 
-#ifndef CLIENT_DLL
+#ifdef CLIENT_DLL
+
+void CASW_Weapon_Flashlight::ClientThink()
+{
+	BaseClass::ClientThink();
+
+	CASW_Marine *pMarine = GetMarine();
+	SetBodygroup( 0, !pMarine || pMarine->IsEffectActive( EF_DIMLIGHT ) ? 0 : 1 );
+}
+
+#else
 
 void CASW_Weapon_Flashlight::MarineDropped(CASW_Marine* pMarine)
 {
@@ -77,7 +87,7 @@ void CASW_Weapon_Flashlight::Equip( CBaseCombatCharacter *pOwner )
 	}
 }
 
-#endif // not client
+#endif
 
 void CASW_Weapon_Flashlight::Precache()
 {
