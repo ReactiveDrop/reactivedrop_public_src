@@ -90,6 +90,7 @@ extern ConVar asw_DebugAutoAim;
 extern ConVar rd_revive_duration;
 extern ConVar rd_aim_marines;
 extern ConVar rd_highlight_active_character;
+extern ConVar rd_marine_gear;
 extern ConVar asw_night_vision_fade_in_speed;
 extern ConVar asw_night_vision_fade_out_speed;
 extern ConVar asw_night_vision_flash_min;
@@ -840,6 +841,16 @@ void C_ASW_Marine::ClientThink()
 	{
 		if (bPlayingMinigunSound)
 			StopMinigunLoop();
+	}
+
+	C_ASW_Weapon *pExtraWeapon = GetASWWeapon( ASW_INVENTORY_SLOT_EXTRA );
+	if ( pExtraWeapon && rd_marine_gear.GetBool() && pExtraWeapon->ViewModelHidesMarineBodyGroup1() )
+	{
+		SetBodygroup( 1, 0 );
+	}
+	else
+	{
+		SetBodygroup( 1, GetSkin() );
 	}
 
 	// if we're healing and we don't have an emitter, create a heal emitter
