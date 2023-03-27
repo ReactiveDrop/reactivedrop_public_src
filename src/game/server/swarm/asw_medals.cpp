@@ -317,7 +317,7 @@ void CASW_Medals::AwardMedalsTo(CASW_Marine_Resource *pMR)
 	
 	// Clear Firing - awarded for having no friendly fire incidents
 	if (pMR->m_fFriendlyFireDamageDealt <= 0 && ASWGameRules()->GetMissionSuccess() && pMR->m_iAliensKilled >= 25
-		&& pMR->m_iPlayerShotsFired >= 25 )
+		&& pMR->m_iPlayerShotsFired >= 25 && pMR->GetHealthPercent() > 0 )
 	{
 		if (ASWGameResource() && ASWGameResource()->GetNumMarines(NULL) >= 4)
 		{
