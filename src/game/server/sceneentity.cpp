@@ -264,6 +264,7 @@ public:
 	} 	
 };
 CChoreoStringPool g_ChoreoStringPool;
+IChoreoStringPool *g_pChoreoStringPool = &g_ChoreoStringPool;
 
 //-----------------------------------------------------------------------------
 // Purpose: Singleton scene manager.  Created by first placed scene or recreated it it's deleted for some unknown reason
@@ -3505,7 +3506,7 @@ CChoreoScene *CSceneEntity::LoadScene( const char *filename, IChoreoEventCallbac
 	if ( !CopySceneFileIntoMemory( loadfile, &pBuffer, &fileSize ) )
 	{
 		bLoadedFromScenesImage = false;
-		fileSize = filesystem->ReadFileEx( loadfile, "GAME", ( void ** )&pBuffer, true );
+		fileSize = filesystem->ReadFileEx( loadfile, "GAME", ( void ** )&pBuffer, true, true );
 		if ( fileSize <= 0 )
 		{
 			MissingSceneWarning( loadfile );

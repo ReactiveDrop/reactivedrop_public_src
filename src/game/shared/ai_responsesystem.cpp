@@ -32,6 +32,8 @@
 
 #ifdef GAME_DLL
 #include "sceneentity.h"
+#else
+#include "c_sceneentity.h"
 #endif
 
 #include "networkstringtabledefs.h"
@@ -281,6 +283,7 @@ private:
 };
 
 static CScenePrecacheSystem g_ScenePrecacheSystem;
+extern IChoreoStringPool *g_pChoreoStringPool;
 //-----------------------------------------------------------------------------
 // Purpose: Used for precaching instanced scenes
 // Input  : *pszScene - 
@@ -307,13 +310,21 @@ void PrecacheInstancedScene( char const *pszScene )
 	Q_SetExtension( loadfile, ".vcd", sizeof( loadfile ) );
 	Q_FixSlashes( loadfile );
 
-	// Attempt to precache manually
 	void *pBuffer = NULL;
-	if ( filesystem->ReadFileEx( loadfile, "GAME", &pBuffer, false, true ) )
+	int fileSize;
+	if ( scenefilecache->GetSceneCachedData( pszScene, &sceneData ) )
 	{
-		g_TokenProcessor.SetBuffer( ( char * )pBuffer );
-		CChoreoScene *pScene = ChoreoLoadScene( loadfile, NULL, &g_TokenProcessor, Scene_Printf );
-		if ( pScene )
+		for ( int i = 0; i < sceneData.numSounds; ++i )
+		{
+			short stringId = scenefilecache->GetSceneCachedSound( sceneData.sceneId, i );
+			CBaseEntity::PrecacheScriptSound( scenefilecache->GetSceneString( stringId ) );
+		}
+	}
+	else if ( ( fileSize = filesystem->ReadFileEx( loadfile, "GAME", &pBuffer, true, true ) ) > 0 )
+	{
+		CChoreoScene *pScene = new CChoreoScene( NULL );
+		CUtlBuffer buf( pBuffer, fileSize, CUtlBuffer::READ_ONLY );
+		if ( pScene->RestoreFromBinaryBuffer( buf, loadfile, g_pChoreoStringPool ) )
 		{
 			for ( int i = 0; i < pScene->GetNumEvents(); i++ )
 			{
@@ -335,20 +346,15 @@ void PrecacheInstancedScene( char const *pszScene )
 				}
 			}
 		}
+
+		delete pScene;
+		filesystem->FreeOptimalReadBuffer( pBuffer );
 	}
-	else if ( !scenefilecache->GetSceneCachedData( pszScene, &sceneData ) )
+	else
 	{
 		if ( developer.GetInt() && ( IsX360() && ( g_pFullFileSystem->GetDVDMode() != DVDMODE_STRICT ) && g_pFullFileSystem->FileExists( pszScene, "GAME" ) ) )
 		{
 			Warning( "PrecacheInstancedScene: Missing scene '%s' from scene image cache.\nRebuild scene image cache!\n", pszScene );
-		}
-	}
-	else
-	{
-		for ( int i = 0; i < sceneData.numSounds; ++i )
-		{
-			short stringId = scenefilecache->GetSceneCachedSound( sceneData.sceneId, i );
-			CBaseEntity::PrecacheScriptSound( scenefilecache->GetSceneString( stringId ) );
 		}
 	}
 

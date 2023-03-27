@@ -770,6 +770,7 @@ public:
 	} 	
 };
 CChoreoStringPool g_ChoreoStringPool;
+IChoreoStringPool *g_pChoreoStringPool = &g_ChoreoStringPool;
 
 CChoreoScene *C_SceneEntity::LoadScene( const char *filename )
 {
@@ -795,7 +796,7 @@ CChoreoScene *C_SceneEntity::LoadScene( const char *filename )
 	else
 	{
 		bLoadedFromScenesImage = false;
-		fileSize = filesystem->ReadFileEx( loadfile, "GAME", ( void ** )&pBuffer, true );
+		fileSize = filesystem->ReadFileEx( loadfile, "GAME", ( void ** )&pBuffer, true, true );
 		if ( fileSize <= 0 )
 		{
 			return NULL;
