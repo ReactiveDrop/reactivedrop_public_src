@@ -1186,6 +1186,14 @@ void CASW_Melee_System::OnMeleeAttackFinished( CASW_Marine *pMarine )
 
 	if ( pMarine->m_fJumpJetAnimationDurationOverride > 0 )
 		pMarine->m_fJumpJetAnimationDurationOverride = 0.0f;
+
+#ifndef CLIENT_DLL
+	CASW_Weapon *pExtraWeapon = pMarine->GetASWWeapon( ASW_INVENTORY_SLOT_EXTRA );
+	if ( pExtraWeapon && pExtraWeapon->Classify() == CLASS_ASW_JUMP_JET )
+	{
+		pExtraWeapon->DestroyIfEmpty( true );
+	}
+#endif
 }
 
 // ==================================================================================================

@@ -30,7 +30,9 @@ public:
 
 	#ifndef CLIENT_DLL
 		DECLARE_DATADESC();
+		virtual void MarineDropped( CASW_Marine *pMarine ) override;
 	#else
+		virtual void ClientThink() override;
 	#endif
 
 	const char *GetEquipSound() override { return "ASW_Weapon.AttachmentEquipLarge"; }

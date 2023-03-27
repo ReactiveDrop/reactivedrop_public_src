@@ -30,7 +30,7 @@ public:
 #ifndef CLIENT_DLL
 	DECLARE_DATADESC();
 #else
-	
+	virtual void ClientThink() override;
 #endif
 	int GetRocketsToFire() { return m_iRocketsToFire.Get(); }
 	float GetNextLaunchTime() { return m_flNextLaunchTime.Get(); }

@@ -61,6 +61,7 @@ public:
 
 		Vector m_vecInvalidDestination;
 	#else
+		virtual void ClientThink() override;
 	#endif
 
 	void DoBlink();

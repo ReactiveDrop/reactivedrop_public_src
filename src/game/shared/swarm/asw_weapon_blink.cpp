@@ -431,7 +431,15 @@ void CASW_Weapon_Blink::UpdatePower()
 	}
 }
 
-#ifdef CLIENT_DLL
+#ifndef CLIENT_DLL
+#else
+void CASW_Weapon_Blink::ClientThink()
+{
+	BaseClass::ClientThink();
+
+	CASW_Marine *pMarine = GetMarine();
+	SetBodygroup( 0, !pMarine || pMarine->m_iJumpJetting != JJ_BLINK ? 0 : 1 );
+}
 #endif
 
 int CASW_Weapon_Blink::ASW_SelectWeaponActivity(int idealActivity)

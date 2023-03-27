@@ -69,6 +69,15 @@ void CASW_Weapon_Hornet_Barrage::Precache()
 	PrecacheScriptSound( "ASW_Hornet_Barrage.Fire" );
 }
 
+#ifdef CLIENT_DLL
+void CASW_Weapon_Hornet_Barrage::ClientThink()
+{
+	BaseClass::ClientThink();
+
+	SetBodygroup( 0, GetRocketsToFire() > 0 ? 1 : 0 );
+}
+#endif
+
 bool CASW_Weapon_Hornet_Barrage::OffhandActivate()
 {
 	if (!GetMarine() || GetMarine()->GetFlags() & FL_FROZEN)	// don't allow this if the marine is frozen
