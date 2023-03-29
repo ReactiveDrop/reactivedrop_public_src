@@ -1064,7 +1064,7 @@ void C_ASW_Player::ClientThink()
 			}
 			else
 			{
-				if ( gpGlobals->curtime >= ASWGameRules()->m_flStimEndTime && ( ( asw_stim_time_scale.GetFloat() < 1.0f && lastTimescale <= asw_stim_time_scale.GetFloat() && f > lastTimescale ) || ( asw_stim_time_scale.GetFloat() > 1.0f && lastTimescale >= asw_stim_time_scale.GetFloat() && f < lastTimescale ) ) )
+				if ( gpGlobals->curtime >= ASWGameRules()->m_flStimEndTime && ( ( asw_stim_time_scale.GetFloat() < 1.0f && lastTimescale != -1 && lastTimescale <= asw_stim_time_scale.GetFloat() && f > lastTimescale ) || ( asw_stim_time_scale.GetFloat() > 1.0f && lastTimescale >= asw_stim_time_scale.GetFloat() && f < lastTimescale ) ) )
 				{
 					StopStimSound();
 					StopStimMusic();
