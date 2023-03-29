@@ -13,23 +13,25 @@ public:
 	virtual			~C_ASW_Shaman();
 		
 	// death;
-	virtual C_ClientRagdoll* CreateClientRagdoll( bool bRestoring = false );
-	virtual C_BaseAnimating* BecomeRagdollOnClient( void );
+	virtual C_ClientRagdoll *CreateClientRagdoll( bool bRestoring = false );
+	virtual C_BaseAnimating *BecomeRagdollOnClient( void );
 	virtual const char *GetBigDeathParticleEffectName( void ) { return "drone_death_sml"; }
-	void	SpawnClientSideEffects();
 
 	virtual void ClientThink();
 	virtual void UpdateOnRemove();
 	void UpdateEffects();
+	void StartBeamSound( bool bIsHeal );
+	void StopBeamSound( bool bPlayEndSound );
 
-	Class_T		Classify( void ) { return (Class_T) CLASS_ASW_SHAMAN; }
+	Class_T		Classify( void ) { return ( Class_T )CLASS_ASW_SHAMAN; }
 
 	CNetworkVar( EHANDLE, m_hHealingTarget );
 
 	CUtlReference<CNewParticleEffect>	m_pHealEffect;
+	bool m_bIsPlayingBeamSound;
 
 private:
-	C_ASW_Shaman( const C_ASW_Shaman & ); // not defined, not accessible
+	C_ASW_Shaman( const C_ASW_Shaman & ) = delete; // not defined, not accessible
 };
 
 #endif /* _INCLUDED_C_ASW_SHAMAN_H */

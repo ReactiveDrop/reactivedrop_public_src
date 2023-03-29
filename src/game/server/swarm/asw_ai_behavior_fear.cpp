@@ -40,6 +40,7 @@ ConVar asw_ai_fear_player_dist( "asw_ai_fear_player_dist", "720", FCVAR_CHEAT );
 CAI_ASW_FearBehavior::CAI_ASW_FearBehavior()
 {
 	m_bForceFear = false;
+	m_iRunAwaySchedule = -1;
 
 	ReleaseAllHints();
 	m_SafePlaceMoveMonitor.ClearMark();
@@ -436,12 +437,29 @@ int CAI_ASW_FearBehavior::SelectSchedule()
 {
 	bool bInSafePlace = IsInASafePlace();
 
+	if ( m_iRunAwaySchedule == -1 )
+	{
+		CHintCriteria hintCriteria;
+		hintCriteria.SetHintType( HINT_PLAYER_ALLY_FEAR_DEST );
+
+		if ( CAI_HintManager::FindHint( GetOuter(), hintCriteria ) )
+		{
+			// we can potentially find a safe place
+			m_iRunAwaySchedule = SCHED_FEAR_MOVE_TO_SAFE_PLACE;
+		}
+		else
+		{
+			// there are no safe places
+			m_iRunAwaySchedule = SCHED_FEAR_RUN_FROM_ENEMY;
+		}
+	}
+
 	if ( m_bForceFear )
 	{
 		if ( !bInSafePlace )
 		{
 			// Always move to a safe place if we're not running from a danger sound
-			return SCHED_FEAR_MOVE_TO_SAFE_PLACE;
+			return m_iRunAwaySchedule;
 		}
 		else
 		{
@@ -454,7 +472,7 @@ int CAI_ASW_FearBehavior::SelectSchedule()
 		if ( !bInSafePlace )
 		{
 			// Always move to a safe place if we're not running from a danger sound
-			return SCHED_FEAR_MOVE_TO_SAFE_PLACE;
+			return m_iRunAwaySchedule;
 		}
 		else
 		{

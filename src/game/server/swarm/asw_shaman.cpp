@@ -32,7 +32,7 @@ int AE_SHAMAN_SPRAY_START;
 int AE_SHAMAN_SPRAY_END;
 
 ConVar asw_shaman_health( "asw_shaman_health", "59", FCVAR_CHEAT );
-ConVar rd_shaman_healing_speed( "rd_shaman_healing_speed", "0", FCVAR_CHEAT, "Number of health shaman gives per second. 0 means heal ~40% of maxhealth in 1 second" );
+ConVar rd_shaman_healing_speed( "rd_shaman_healing_speed", "0", FCVAR_CHEAT, "Number of health Mender gives per second. 0 means heal ~40% of maxhealth in 1 second" );
 extern ConVar asw_debug_alien_damage;
 
 #define RD_SHAMAN_HEAL_INTERVAL 1.0f
@@ -82,8 +82,13 @@ void CASW_Shaman::Precache( void )
 {
 	BaseClass::Precache();
 
-	PrecacheScriptSound( "Shaman.Pain" );
-	PrecacheScriptSound( "Shaman.Die" );
+	PrecacheParticleSystem( "shaman_heal_attach" );
+	PrecacheScriptSound( "ASW_Mender.Pain" );
+	PrecacheScriptSound( "ASW_Mender.Death" );
+	PrecacheScriptSound( "ASW_Mender.Idle" );
+	PrecacheScriptSound( "ASW_Mender.BeamHeal" );
+	PrecacheScriptSound( "ASW_Mender.BeamLeech" );
+	PrecacheScriptSound( "ASW_Mender.BeamStop" );
 }
 
 
@@ -138,7 +143,7 @@ void CASW_Shaman::PainSound( const CTakeDamageInfo &info )
 	//	BaseClass::PainSound(info);
 	if ( gpGlobals->curtime > m_fNextPainSound )
 	{
-		EmitSound( "Shaman.Pain" );
+		EmitSound( "ASW_Mender.Pain" );
 		m_fNextPainSound = gpGlobals->curtime + RandomFloat( 0.75f, 1.25f );
 	}
 }
@@ -151,11 +156,18 @@ void CASW_Shaman::PainSound( const CTakeDamageInfo &info )
 //-----------------------------------------------------------------------------
 void CASW_Shaman::DeathSound( const CTakeDamageInfo &info )
 {
-	// reactivedrop: apparently npc_tier_tables don't work, changed to EmitSound()
-	//	// sounds for pain and death are defined in the npc_tier_tables excel sheet
-	//	// they are called from the asw_alien base class
-	//	BaseClass::DeathSound(info);
-	EmitSound( "Shaman.Die" );
+	EmitSound( "ASW_Mender.Death" );
+}
+
+
+//-----------------------------------------------------------------------------
+// Purpose:	
+// Input:	
+// Output:	
+//-----------------------------------------------------------------------------
+void CASW_Shaman::IdleSound()
+{
+	EmitSound( "ASW_Mender.Idle" );
 }
 
 
@@ -190,21 +202,12 @@ void CASW_Shaman::HandleAnimEvent( animevent_t *pEvent )
 //-----------------------------------------------------------------------------
 bool CASW_Shaman::CreateBehaviors()
 {
-	/*
-	AddBehavior( &m_CombatStunBehavior );
-	m_CombatStunBehavior.Init();
-	*/
-
-	//self.AddBehavior( "behavior_protect", BehaviorParms );
-
-
 	m_HealOtherBehavior.KeyValue( "heal_distance", "300" );
 	m_HealOtherBehavior.KeyValue( "approach_distance", "120" );
 	m_HealOtherBehavior.KeyValue( "heal_amount", "0.04" );	// percentage per tick healed
 	m_HealOtherBehavior.KeyValue( "consideration_distance", "800" );
 	AddBehavior( &m_HealOtherBehavior );
 	m_HealOtherBehavior.Init();
-
 
 	m_ScuttleBehavior.KeyValue( "pack_range", "800" );
 	m_ScuttleBehavior.KeyValue( "min_backoff", "150" );
@@ -216,10 +219,8 @@ bool CASW_Shaman::CreateBehaviors()
 	AddBehavior( &m_ScuttleBehavior );
 	m_ScuttleBehavior.Init();
 
-	/*
 	AddBehavior( &m_FearBehavior );
 	m_FearBehavior.Init();
-	*/
 
 	AddBehavior( &m_IdleBehavior );
 	m_IdleBehavior.Init();
@@ -245,6 +246,8 @@ void CASW_Shaman::NPCThink( void )
 		pHealTarget = m_HealOtherBehavior.GetCurrentHealTarget();
 		if ( pHealTarget )
 		{
+			GetMotor()->SetIdealYawToTargetAndUpdate( pHealTarget->WorldSpaceCenter() );
+
 			if ( rd_shaman_healing_speed.GetInt() > 0 )
 			{
 				if ( m_flHealTime < gpGlobals->curtime )

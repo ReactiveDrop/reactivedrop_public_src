@@ -16,18 +16,13 @@ END_RECV_TABLE()
 
 C_ASW_Shaman::C_ASW_Shaman()
 {
- 
+	m_bIsPlayingBeamSound = false;
 }
 
 
 C_ASW_Shaman::~C_ASW_Shaman()
 {
 	
-}
-
-void C_ASW_Shaman::SpawnClientSideEffects()
-{
-	//ParticleProp()->Create( "meatbug_death", PATTACH_POINT, "attach_explosion" );
 }
 
 C_BaseAnimating * C_ASW_Shaman::BecomeRagdollOnClient( void )
@@ -38,7 +33,6 @@ C_BaseAnimating * C_ASW_Shaman::BecomeRagdollOnClient( void )
 		m_pHealEffect = NULL;
 	}
 
-	SpawnClientSideEffects();	
 	return BaseClass::BecomeRagdollOnClient();
 
 }
@@ -47,46 +41,6 @@ C_ClientRagdoll *C_ASW_Shaman::CreateClientRagdoll( bool bRestoring )
 {
 	return new C_ASW_ClientRagdoll( bRestoring );
 }
-
-/*
-//-----------------------------------------------------------------------------
-// Material proxy for Shaman's glow
-//-----------------------------------------------------------------------------
-
-class CASW_Shaman_Proxy : public CResultProxy
-{
-public:
-	virtual bool Init( IMaterial *pMaterial, KeyValues *pKeyValues );
-	virtual void OnBind( void *pC_BaseEntity );
-
-private:
-	CFloatInput m_IllumTint1;
-	CFloatInput m_IllumTint2;
-	CFloatInput m_IllumTint3;
-};
-
-
-bool CASW_Shaman_Proxy::Init( IMaterial *pMaterial, KeyValues *pKeyValues )
-{
-	if (!CResultProxy::Init( pMaterial, pKeyValues ))
-		return false;
-	SetFloatResult( 1 );
-	return true;
-}
-
-void CASW_Shaman_Proxy::OnBind( void *pC_BaseEntity )
-{
-	Assert( m_pResult );
-
-	C_ASW_Shaman *pShaman = static_cast<C_ASW_Shaman*>( BindArgToEntity( pC_BaseEntity ) );
-
-	if ( pShaman->m_bChampion )
-		SetFloatResult( 4 );
-
-}
-
-EXPOSE_MATERIAL_PROXY( CASW_Shaman_Proxy, ChampionGlow );
-*/
 
 void C_ASW_Shaman::ClientThink()
 {
@@ -104,6 +58,8 @@ void C_ASW_Shaman::UpdateOnRemove()
 		m_pHealEffect->StopEmission();
 		m_pHealEffect = NULL;
 	}
+
+	StopBeamSound( false );
 }
 
 void C_ASW_Shaman::UpdateEffects()
@@ -115,6 +71,9 @@ void C_ASW_Shaman::UpdateEffects()
 			m_pHealEffect->StopEmission();
 			m_pHealEffect = NULL;
 		}
+
+		StopBeamSound( true );
+
 		return;
 	}
 
@@ -124,12 +83,16 @@ void C_ASW_Shaman::UpdateEffects()
 		{
 			m_pHealEffect->StopEmission();
 			m_pHealEffect = NULL;
+
+			StopBeamSound( true );
 		}
 	}
 			
 	if ( !m_pHealEffect )
-	{				
+	{
 		m_pHealEffect = ParticleProp()->Create( "shaman_heal_attach", PATTACH_POINT_FOLLOW, "nozzle" );	// "heal_receiver"
+
+		StartBeamSound( true );
 	}
 
 	Assert( m_pHealEffect );
@@ -141,5 +104,31 @@ void C_ASW_Shaman::UpdateEffects()
 
 		ParticleProp()->AddControlPoint( m_pHealEffect, 1, pTarget, PATTACH_ABSORIGIN_FOLLOW, NULL, vOffset );
 		m_pHealEffect->SetControlPointOrientation( 0, pTarget->Forward(), -pTarget->Left(), pTarget->Up() );
+	}
+}
+
+void C_ASW_Shaman::StartBeamSound( bool bIsHeal )
+{
+	if ( !m_bIsPlayingBeamSound )
+	{
+		EmitSound( bIsHeal ? "ASW_Mender.BeamHeal" : "ASW_Mender.BeamLeech" );
+
+		m_bIsPlayingBeamSound = true;
+	}
+}
+
+void C_ASW_Shaman::StopBeamSound( bool bPlayEndSound )
+{
+	if ( m_bIsPlayingBeamSound )
+	{
+		StopSound( "ASW_Mender.BeamHeal" );
+		StopSound( "ASW_Mender.BeamLeech" );
+
+		m_bIsPlayingBeamSound = false;
+
+		if ( bPlayEndSound )
+		{
+			EmitSound( "ASW_Mender.BeamStop" );
+		}
 	}
 }

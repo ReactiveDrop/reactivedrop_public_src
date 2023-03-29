@@ -1464,28 +1464,76 @@
 	"wave"			"aliens\voc\queen\tentacleattackstart.wav"
 }
 
-"Shaman.pain"
+"ASW_Mender.Pain"
 {
 	"channel"		"CHAN_VOICE"
-	"volume"		"0.750, 1.000"
+	"volume"		"0.75,1"
 	"soundlevel"	"SNDLVL_75dB"
 	"pitch"			"95,105"
 
 	"rndwave"
 	{
-	"wave"			"aliens\voc\shaman\pain.wav"
+		"wave"		"aliens/voc/mender/pain1.wav"
+		"wave"		"aliens/voc/mender/pain2.wav"
 	}
 }
 
-"Shaman.die"
+"ASW_Mender.Death"
 {
 	"channel"		"CHAN_BODY"
-	"volume"		"0.750, 1.000"
+	"volume"		"0.8,1"
+	"soundlevel"	"SNDLVL_95dB"
+	"pitch"			"95,105"
+
+	"rndwave"
+	{
+		"wave"		"aliens/voc/mender/die1.wav"
+		"wave"		"aliens/voc/mender/die2.wav"
+		"wave"		"aliens/voc/mender/die3.wav"
+	}
+}
+
+"ASW_Mender.Idle"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"0.75,1"
 	"soundlevel"	"SNDLVL_75dB"
 	"pitch"			"95,105"
 
 	"rndwave"
 	{
-	"wave"			"aliens\voc\shaman\die.wav"
+		"wave"		"aliens/voc/mender/idle1.wav"
+		"wave"		"aliens/voc/mender/idle2.wav"
+		"wave"		"aliens/voc/mender/idle3.wav"
 	}
+}
+
+"ASW_Mender.BeamHeal"
+{
+	"channel"		"CHAN_BODY"
+	"volume"		"0.85,0.95"
+	"soundlevel"	"SNDLVL_75dB"
+	"pitch"			"95,105"
+
+	"wave"			")aliens/voc/mender/beam_heal.wav"
+}
+
+"ASW_Mender.BeamLeech"
+{
+	"channel"		"CHAN_BODY"
+	"volume"		"0.85,0.95"
+	"soundlevel"	"SNDLVL_75dB"
+	"pitch"			"95,105"
+
+	"wave"			")aliens/voc/mender/beam_leech.wav"
+}
+
+"ASW_Mender.BeamStop"
+{
+	"channel"		"CHAN_BODY"
+	"volume"		"0.8,1.0"
+	"soundlevel"	"SNDLVL_75dB"
+	"pitch"			"95,105"
+
+	"wave"			")aliens/voc/mender/beam_stop.wav"
 }

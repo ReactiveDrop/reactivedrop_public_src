@@ -78,6 +78,7 @@ private:
 
 	bool			m_bForceFear;
 	float			m_flDuration;
+	int				m_iRunAwaySchedule;
 
 	float			m_flTimeToSafety;
 	float			m_flTimePlayerLastVisible;
