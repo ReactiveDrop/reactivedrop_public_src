@@ -6,6 +6,8 @@
 
 #include "asw_prop_dynamic.h"
 
+class CASW_Inhabitable_NPC;
+
 class CProp_ASW_Fade : public CASW_Prop_Dynamic
 {
 public:
@@ -16,8 +18,13 @@ public:
 
 	CProp_ASW_Fade();
 
-	CNetworkVector( m_vecFadeOrigin );
+	virtual void Spawn() override;
+	bool ShouldFade( CASW_Inhabitable_NPC *pNPC );
+
+	CNetworkVar( bool, m_bHasProxies );
+	CNetworkVar( float, m_flFadeOriginOffset );
 protected:
+	Vector m_vecFadeOrigin;
 	CNetworkVar( byte, m_nFadeOpacity );
 	CNetworkVar( bool, m_bAllowFade );
 };

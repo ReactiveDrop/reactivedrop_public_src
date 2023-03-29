@@ -44,16 +44,13 @@ bool CASW_Trace_Filter::ShouldHitEntity(IHandleEntity *pServerEntity, int conten
 	}
 	else
 	{
-		CFunc_ASW_Fade *pBrush = dynamic_cast<CFunc_ASW_Fade *>( pServerEntity );
-		if ( pBrush && pBrush->GetAbsOrigin().z > m_pNPC->GetAbsOrigin().z )
+		CFunc_ASW_Fade *pBrush = dynamic_cast< CFunc_ASW_Fade * >( pServerEntity );
+		if ( pBrush && pBrush->ShouldFade( m_pNPC ) )
 		{
 			return false;
 		}
-		CProp_ASW_Fade *pProp = dynamic_cast<CProp_ASW_Fade *>( pServerEntity );
-#ifdef GAME_DLL
-#define m_vecFadeOrigin m_vecFadeOrigin.Get()
-#endif
-		if ( pProp && pProp->m_vecFadeOrigin.z > m_pNPC->GetAbsOrigin().z )
+		CProp_ASW_Fade *pProp = dynamic_cast< CProp_ASW_Fade * >( pServerEntity );
+		if ( pProp && pProp->ShouldFade( m_pNPC ) )
 		{
 			return false;
 		}

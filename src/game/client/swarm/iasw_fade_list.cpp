@@ -2,6 +2,7 @@
 #include "iasw_fade_list.h"
 #include "c_func_asw_fade.h"
 #include "c_prop_asw_fade.h"
+#include "asw_fade_proxy_shared.h"
 #include "c_asw_player.h"
 #include "c_asw_marine.h"
 
@@ -10,7 +11,8 @@
 
 IMPLEMENT_AUTO_LIST( IASW_Fade_List_ );
 
-ConVar asw_fade_duration( "asw_fade_duration", "0.5", FCVAR_ARCHIVE, "", true, 0.01f, false, 0 );
+ConVar asw_fade_duration( "asw_fade_duration", "0.5", FCVAR_NONE, "", true, 0.01f, false, 0 );
+ConVar asw_debug_fade( "asw_debug_fade", "0", FCVAR_NONE );
 extern ConVar asw_allow_detach;
 
 int IASW_Fade_List::s_iFadeReflectionDepth = 0;
@@ -21,6 +23,7 @@ IASW_Fade_List::IASW_Fade_List() : IASW_Fade_List_( true )
 	m_hLastNPC = NULL;
 	m_flInterpStart = 0;
 	m_bFaded = false;
+	m_bHasProxies = false;
 }
 
 void IASW_Fade_List::DisableFading()
@@ -76,7 +79,68 @@ void IASW_Fade_List::EnableFading()
 	}
 }
 
-void IASW_Fade_List::OnDataChangedImpl( DataUpdateType_t updateType )
+bool IASW_Fade_List::ShouldFade( C_ASW_Inhabitable_NPC *pNPC )
+{
+	HACK_GETLOCALPLAYER_GUARD( "need to know who our view NPC is" );
+
+	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	if ( !m_bAllowFade || !pNPC || !pPlayer )
+	{
+		return false;
+	}
+
+	if ( pPlayer->GetASWControls() == ASWC_TOPDOWN )
+	{
+		Vector vecEyePosition = pNPC->EyePosition();
+
+		if ( m_bHasProxies )
+		{
+			bool bShouldFade = false;
+
+#ifdef DBGFLAG_ASSERT
+			bool bAtLeastOneProxy = false;
+#endif
+			for ( C_BaseEntity *pEnt = GetEntity()->FirstMoveChild(); pEnt; pEnt = pEnt->NextMovePeer() )
+			{
+				C_Point_ASW_Fade_Proxy *pProxy = dynamic_cast< C_Point_ASW_Fade_Proxy * >( pEnt );
+				if ( pProxy )
+				{
+					if ( pProxy->ShouldFade( vecEyePosition ) )
+					{
+						if ( !asw_debug_fade.GetBool() )
+						{
+							return true;
+						}
+
+						bShouldFade = true;
+					}
+
+#ifdef DBGFLAG_ASSERT
+					bAtLeastOneProxy = true;
+#endif
+				}
+			}
+
+			Assert( bAtLeastOneProxy );
+
+			return bShouldFade;
+		}
+
+		Vector vecFadeOrigin = GetFadeOrigin();
+		if ( asw_debug_fade.GetBool() )
+		{
+			Vector vecTarget = vecFadeOrigin;
+			vecTarget.z = vecEyePosition.z;
+			NDebugOverlay::Line( vecFadeOrigin, vecTarget, vecEyePosition.z < vecFadeOrigin.z ? 0 : 255, vecEyePosition.z < vecFadeOrigin.z ? 255 : 0, 0, false, 0.01f );
+		}
+
+		return vecEyePosition.z < vecFadeOrigin.z;
+	}
+
+	return false;
+}
+
+void IASW_Fade_List::OnFadeDataChanged( DataUpdateType_t updateType )
 {
 	C_BaseEntity *pEnt = GetEntity();
 
@@ -93,7 +157,7 @@ void IASW_Fade_List::OnDataChangedImpl( DataUpdateType_t updateType )
 	}
 }
 
-void IASW_Fade_List::ClientThinkImpl( const Vector & vecFadeOrigin )
+void IASW_Fade_List::ClientFadeThink()
 {
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	if ( !pPlayer )
@@ -102,10 +166,14 @@ void IASW_Fade_List::ClientThinkImpl( const Vector & vecFadeOrigin )
 	}
 
 	C_ASW_Inhabitable_NPC *pNPC = pPlayer->GetViewNPC();
+	if ( !pNPC )
+	{
+		return;
+	}
 
 	C_BaseEntity *pEnt = GetEntity();
 
-	bool bFade = pPlayer->GetASWControls() == ASWC_TOPDOWN && pNPC && pNPC->GetAbsOrigin().z <= vecFadeOrigin.z && m_bAllowFade;
+	bool bFade = ShouldFade( pNPC );
 	byte target = bFade ? m_nFadeOpacity : m_nNormalOpacity;
 	byte prev = bFade ? m_nNormalOpacity : m_nFadeOpacity;
 	if ( bFade != m_bFaded )

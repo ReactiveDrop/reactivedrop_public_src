@@ -6,6 +6,8 @@
 
 #include "modelentities.h"
 
+class CASW_Inhabitable_NPC;
+
 class CFunc_ASW_Fade : public CFuncBrush
 {
 public:
@@ -17,7 +19,9 @@ public:
 	CFunc_ASW_Fade();
 
 	virtual void Spawn() override;
+	bool ShouldFade( CASW_Inhabitable_NPC *pNPC );
 
+	CNetworkVar( bool, m_bHasProxies );
 protected:
 	bool m_bCollideWithGrenades;
 	CNetworkVar( byte, m_nFadeOpacity );

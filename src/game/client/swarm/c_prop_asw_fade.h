@@ -15,9 +15,9 @@ public:
 
 	C_Prop_ASW_Fade();
 
-	Vector m_vecFadeOrigin;
+	CNetworkVar( float, m_flFadeOriginOffset );
 
-	IMPLEMENT_ASW_FADE_LIST( m_vecFadeOrigin );
+	IMPLEMENT_ASW_FADE_LIST( GetAbsOrigin() + Vector( 0, 0, m_flFadeOriginOffset ) );
 };
 
 #endif	// _INCLUDED_C_PROP_ASW_FADE_H

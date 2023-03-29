@@ -23,6 +23,8 @@ public:
 	static void DisableFading();
 	static void EnableFading();
 
+	bool ShouldFade( C_ASW_Inhabitable_NPC *pNPC );
+
 protected:
 	ASW_Controls_t m_iLastControls;
 	CHandle<C_ASW_Inhabitable_NPC> m_hLastNPC;
@@ -31,14 +33,17 @@ protected:
 	byte m_nFadeOpacity;
 	bool m_bFaded;
 	bool m_bAllowFade;
+	bool m_bHasProxies;
 
-	void OnDataChangedImpl( DataUpdateType_t updateType );
-	void ClientThinkImpl( const Vector & vecFadeOrigin );
+	void OnFadeDataChanged( DataUpdateType_t updateType );
+	void ClientFadeThink();
+	virtual Vector GetFadeOrigin() = 0;
 };
 
 #define IMPLEMENT_ASW_FADE_LIST( vecFadeOrigin ) \
 	IMPLEMENT_AUTO_LIST_GET(); \
-	virtual void OnDataChanged( DataUpdateType_t updateType ) { BaseClass::OnDataChanged( updateType ); OnDataChangedImpl( updateType ); } \
-	virtual void ClientThink() { BaseClass::ClientThink(); ClientThinkImpl( vecFadeOrigin ); }
+	virtual void OnDataChanged( DataUpdateType_t updateType ) override { BaseClass::OnDataChanged( updateType ); OnFadeDataChanged( updateType ); } \
+	virtual void ClientThink() override { BaseClass::ClientThink(); ClientFadeThink(); } \
+	virtual Vector GetFadeOrigin() override { return vecFadeOrigin; }
 
 #endif	// _INCLUDED_IASW_FADE_LIST_H

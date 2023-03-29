@@ -90,8 +90,6 @@
 [
 ]
 
-// BenLubar(sd2-ceiling-ents): func_asw_fade, prop_asw_fade, and env_sprite_asw_fade
-
 @SolidClass base(Targetname, Parentname, Origin, RenderFields, Global, Inputfilter, EnableDisable, Shadow) = func_asw_fade : 
 	"A func_brush that fades when the camera is third person and the marine is below the origin." 
 [
@@ -166,6 +164,26 @@
 	input ShowSprite(void) : "Show the sprite."
 	input ToggleSprite(void) : "Toggle the sprite between hidden and shown."
 	input AllowFade(integer) : "Enable or disable fading (0 or 1)"
+]
+
+@BaseClass = asw_fade_proxy
+[
+	parentname(target_destination) report : "Fade Entity" : : "The entity to control fading of. An entity that has at least one proxy will only use proxies to determine whether it should fade, not its origin. This must be a func_asw_fade or prop_asw_fade."
+]
+
+@PointClass base(asw_fade_proxy, Targetname, EnableDisable) size(-2 -2 -2, 2 2 2) sphere(FreeRadius) sphere(MaxRadius) = point_asw_fade_proxy : "A fade proxy that determines visibility by whether a line drawn between the proxy and the viewer's eyes crosses any objects. If the viewer's eyes are outside of the max radius, they cannot see this proxy. If the viewer's eyes are within the free vision radius, the proxy is considered visible without tracing the line."
+[
+	FreeRadius(float) : "Free Vision Radius" : 128 : "When the viewer is within this distance, they can always see this proxy."
+	MaxRadius(float) : "Max Radius" : 768 : "When the viewer is further away than this distance, they cannot this proxy."
+	BrushOnly(choices) : "Vision blocked by" : 0 : "Which types of entities block vision when the viewer is between the free and max radiuses? Vision is never blocked by physics props." =
+	[
+		0 : "Brushes and Props"
+		1 : "Brushes Only"
+	]
+]
+
+@SolidClass base(asw_fade_proxy, Targetname, EnableDisable) = trigger_asw_fade_proxy : "A fade proxy that determines visibility by whether the viewer's eyes are within a solid part of the brush model."
+[
 ]
 
 // 50cal Pickup //

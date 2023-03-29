@@ -5,7 +5,6 @@
 #endif
 
 #include "c_func_brush.h"
-#include "c_asw_marine.h"
 #include "iasw_fade_list.h"
 
 class C_Func_ASW_Fade : public C_FuncBrush, public IASW_Fade_List

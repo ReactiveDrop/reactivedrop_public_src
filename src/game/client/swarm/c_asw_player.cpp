@@ -194,6 +194,7 @@ extern ConVar asw_marine_death_cam_time;
 extern ConVar asw_time_scale_delay;
 extern ConVar asw_stim_time_scale;
 extern ConVar rd_sound_pitch_scale;
+extern ConVar asw_debug_fade;
 
 extern float g_fMarinePoisonDuration;
 
@@ -1321,6 +1322,14 @@ void C_ASW_Player::ClientThink()
 	C_ASW_Snow_Volume::UpdateSnow( this );
 
 	UpdateLocalMarineGlow();
+
+	if ( asw_debug_fade.GetBool() )
+	{
+		if ( C_ASW_Inhabitable_NPC *pViewNPC = GetViewNPC() )
+		{
+			NDebugOverlay::Cross3DOriented( pViewNPC->EyePosition(), pViewNPC->EyeAngles(), 4.0f, 255, 255, 255, false, 0.01f );
+		}
+	}
 
 	if ( missionchooser->RandomMissions() && missionchooser->RandomMissions()->ValidMapLayout() )
 	{
