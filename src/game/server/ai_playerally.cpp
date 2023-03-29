@@ -785,11 +785,11 @@ void CAI_PlayerAlly::PostSpeakDispatchResponse( AIConcept_t concept, AI_Response
 		{
 			if ( bSaidHelloToNPC )
 			{
-				Warning("Q&A: '%s' said Hello to '%s' (concept %s)\n", GetDebugName(), GetSpeechTarget()->GetDebugName(), concept );
+				Warning("Q&A: '%s' said Hello to '%s' (concept %s)\n", GetDebugName(), GetSpeechTarget()->GetDebugName(), concept.GetStringConcept() );
 			}
 			else
 			{
-				Warning("Q&A: '%s' questioned '%s' (concept %s)\n", GetDebugName(), GetSpeechTarget()->GetDebugName(), concept );
+				Warning("Q&A: '%s' questioned '%s' (concept %s)\n", GetDebugName(), GetSpeechTarget()->GetDebugName(), concept.GetStringConcept() );
 			}
 			NDebugOverlay::HorzArrow( GetAbsOrigin(), GetSpeechTarget()->GetAbsOrigin(), 8, 0, 255, 0, 64, true, duration );
 		}
