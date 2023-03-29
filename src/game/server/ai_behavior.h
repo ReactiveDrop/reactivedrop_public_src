@@ -264,45 +264,14 @@ protected:
 
 	bool				m_bAllocated;
 
-public:
-	static				CGenericClassmap< CAI_BehaviorBase >	m_BehaviorClasses;
-
 private:
 	
 	DECLARE_DATADESC();
 };
 
-#define LINK_BEHAVIOR_TO_CLASS( localName, className )													\
-	static CAI_BehaviorBase *C##className##Factory( void )												\
-	{																									\
-		return static_cast< CAI_BehaviorBase * >( new className );										\
-	};																									\
-	class C##localName##Foo																				\
-	{																									\
-	public:																								\
-		C##localName##Foo( void )																		\
-		{																								\
-			CAI_BehaviorBase::m_BehaviorClasses.Add( #localName, #className,							\
-				sizeof( className ),&C##className##Factory );											\
-		}																								\
-	};																									\
-	static C##localName##Foo g_C##localName##Foo;
-
-#define LINK_BEHAVIOR_TO_CLASSNAME( className )															\
-	static CAI_BehaviorBase *C##className##Factory( void )												\
-	{																									\
-		return static_cast< CAI_BehaviorBase * >( new className );										\
-	};																									\
-	class C##className##Foo																				\
-	{																									\
-	public:																								\
-		C##className##Foo( void )																		\
-		{																								\
-		CAI_BehaviorBase::m_BehaviorClasses.Add( ##className::GetClassName(), #className,				\
-				sizeof( className ),&C##className##Factory );											\
-		}																								\
-	};																									\
-	static C##className##Foo g_C##className##Foo;
+// These used to add the class constructor to a dictionary, but the dictionary was never used.
+#define LINK_BEHAVIOR_TO_CLASS( localName, className )
+#define LINK_BEHAVIOR_TO_CLASSNAME( className )
 
 //-----------------------------------------------------------------------------
 // Purpose: Template provides provides back bridge to owning class and 

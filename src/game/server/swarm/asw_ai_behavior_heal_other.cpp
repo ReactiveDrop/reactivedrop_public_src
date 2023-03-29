@@ -15,6 +15,7 @@
 #include "particles/particles.h"
 #include "asw_director.h"
 #include "asw_shaman.h"
+#include "asw_alien_goo_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -32,6 +33,8 @@ END_DATADESC();
 LINK_BEHAVIOR_TO_CLASSNAME( CAI_ASW_HealOtherBehavior );
 
 ConVar asw_shaman_aim_ahead_time( "asw_shaman_aim_ahead_time", "1.0", FCVAR_CHEAT, "Look ahead time for shaman's heal target" );
+ConVar asw_mender_heal_biomass( "asw_mender_heal_biomass", "1", FCVAR_CHEAT, "Should menders heal biomass?" );
+ConVar asw_mender_prioritize_fire( "asw_mender_prioritize_fire", "1", FCVAR_CHEAT, "Should menders heal burning aliens first?" );
 
 //------------------------------------------------------------------------------
 // Purpose: constructor
@@ -193,14 +196,50 @@ void CAI_ASW_HealOtherBehavior::GatherCommonConditions( )
 					float	flLengthSquared = vDiff.LengthSqr();
 
 					if ( flLengthSquared <= m_flHealConsiderationDistanceSquared )
-						//&& ( !asw_shaman_only_heal_hurt_pEntity->m_iHealth < pEntity->m_iMaxHealth )
 					{
+						if ( asw_mender_prioritize_fire.GetBool() && pBestObject && ( pBestObject->GetFlags() & FL_ONFIRE ) && !( pEntity->GetFlags() & FL_ONFIRE ) )
+						{
+							continue;
+						}
+
+						if ( asw_mender_prioritize_fire.GetBool() && ( !pBestObject || !( pBestObject->GetFlags() & FL_ONFIRE ) ) && ( pEntity->GetFlags() & FL_ONFIRE ) )
+						{
+							Assert( pEntity->IsInhabitableNPC() );
+							nPotentialHealthBenefit = 0; // always favor the new target if it's on fire and the old one wasn't
+						}
+
 						if ( nPotentialHealthBenefit == 0 || ( pEntity->m_iMaxHealth - pEntity->m_iHealth ) > nPotentialHealthBenefit )
 						{
 							nPotentialHealthBenefit = ( pEntity->m_iMaxHealth - pEntity->m_iHealth );
 							pBestObject = pEntity;
-						}	
+						}
 					}
+				}
+			}
+		}
+	}
+
+	if ( asw_mender_heal_biomass.GetBool() )
+	{
+		FOR_EACH_VEC( g_AlienGoo, i )
+		{
+			if ( g_AlienGoo[i]->m_bHasGrubs || g_AlienGoo[i]->GetHealth() <= 0 )
+				continue;
+
+			Vector	vDiff = g_AlienGoo[i]->GetAbsOrigin() - GetAbsOrigin();
+			float	flLengthSquared = vDiff.LengthSqr();
+
+			if ( flLengthSquared <= m_flHealConsiderationDistanceSquared )
+			{
+				if ( asw_mender_prioritize_fire.GetBool() && pBestObject && ( pBestObject->GetFlags() & FL_ONFIRE ) && !g_AlienGoo[i]->IsOnFire() )
+				{
+					continue;
+				}
+
+				if ( g_AlienGoo[i]->IsOnFire() || ( g_AlienGoo[i]->m_iMaxHealth - g_AlienGoo[i]->m_iHealth ) > nPotentialHealthBenefit )
+				{
+					nPotentialHealthBenefit = ( g_AlienGoo[i]->m_iMaxHealth - g_AlienGoo[i]->m_iHealth );
+					pBestObject = g_AlienGoo[i];
 				}
 			}
 		}

@@ -13,6 +13,7 @@
 #include "asw_ai_behavior_fear.h"
 #include "gib.h"
 #include "te_effect_dispatch.h"
+#include "asw_alien_goo_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -247,6 +248,22 @@ void CASW_Shaman::NPCThink( void )
 		if ( pHealTarget )
 		{
 			GetMotor()->SetIdealYawToTargetAndUpdate( pHealTarget->WorldSpaceCenter() );
+
+			if ( pHealTarget->IsInhabitableNPC() )
+			{
+				if ( CASW_Marine *pHealMarine = CASW_Marine::AsMarine( pHealTarget ) )
+				{
+					pHealMarine->Extinguish( this, NULL );
+				}
+				else
+				{
+					assert_cast< CASW_Inhabitable_NPC * >( pHealTarget )->Extinguish();
+				}
+			}
+			else if ( pHealTarget->Classify() == CLASS_ASW_ALIEN_GOO )
+			{
+				assert_cast< CASW_Alien_Goo * >( pHealTarget )->Extinguish();
+			}
 
 			if ( rd_shaman_healing_speed.GetInt() > 0 )
 			{

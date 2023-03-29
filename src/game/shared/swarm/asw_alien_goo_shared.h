@@ -12,6 +12,7 @@ class CNewParticleEffect;
 #else
 #include "asw_weapon.h"
 #include "npc_combine.h"
+class CASW_Marine_Resource;
 #endif
 
 #include "basegrenade_shared.h"
@@ -32,6 +33,7 @@ class CNewParticleEffect;
 //   Pulsating sac that hangs on walls.  Will burst open if shot or touched, spewing out grubs.
 
 #ifndef CLIENT_DLL
+class CASW_Alien_Goo;
 extern CUtlVector<CASW_Alien_Goo*>	g_AlienGoo;
 #endif
 

@@ -17,7 +17,6 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-CGenericClassmap< CAI_BehaviorBase >	CAI_BehaviorBase::m_BehaviorClasses;
 
 bool g_bBehaviorHost_PreventBaseClassGatherConditions;
 
