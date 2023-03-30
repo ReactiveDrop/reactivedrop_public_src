@@ -544,6 +544,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="..\shared\swarm\asw_env_spark.cpp" />
     <ClCompile Include="..\shared\swarm\asw_equipment_list.cpp" />
     <ClCompile Include="..\shared\swarm\asw_equip_req.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_fade_ent_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_fade_proxy_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_fx_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_gamemovement.cpp" />
@@ -2294,6 +2295,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="..\shared\swarm\asw_deathmatch_mode_light.h" />
     <ClInclude Include="..\shared\swarm\asw_equipment_list.h" />
     <ClInclude Include="..\shared\swarm\asw_equip_req.h" />
+    <ClInclude Include="..\shared\swarm\asw_fade_ent_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_fade_proxy_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_fx_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_gamerules.h" />
