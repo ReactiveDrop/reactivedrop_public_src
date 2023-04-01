@@ -5974,9 +5974,4 @@ void CASW_Marine::InputAddPoints( inputdata_t &inputdata )
 	pMR->m_iScore = iTotal;
 
 	m_TotalPoints.Set( pMR->m_iScore, inputdata.pActivator, inputdata.pCaller );
-
-	CASW_ViewNPCRecipientFilter filter( this );
-	UserMessageBegin( filter, "ShowObjectives" );
-		WRITE_FLOAT( 30.0f );
-	MessageEnd();
 }

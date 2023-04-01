@@ -90,8 +90,8 @@ void RegisterUserMessages( void )
 	usermessages->Register( "ASWNewHoldoutWave", -1 );
 	usermessages->Register( "ASWShowHoldoutResupply", -1 );
 	usermessages->Register( "ASWShowHoldoutWaveEnd", -1 );
-	usermessages->Register( "ShowObjectives", -1 );
-	usermessages->Register( "ASWBuzzerDeath", -1 );	
+	usermessages->Register( "ShowObjectives", 4 );
+	usermessages->Register( "ASWBuzzerDeath", -1 );
 	usermessages->Register( "ASWEggEffects", -1 );	
 	usermessages->Register( "SavedConvar", -1 );
 	usermessages->Register( "RDPlayerPromoted", 1 );

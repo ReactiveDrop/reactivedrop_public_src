@@ -301,9 +301,9 @@
 	ASWHudKills
 	{
 		"fieldName"		"ASWHudKills"
-		"xpos"	"r150"
+		"xpos"	"r100"
 		"ypos"	"100"
-		"wide"	"140"
+		"wide"	"90"
 		"tall"  "200"
 		"visible" "1"
 		"enabled" "1"
@@ -315,9 +315,9 @@
 	ASWHudCounters
 	{
 		"fieldName"		"ASWHudCounters"
-		"xpos"	"r100"
+		"xpos"	"r150"
 		"ypos"	"300"
-		"wide"	"90"
+		"wide"	"140"
 		"tall"  "20"
 		"visible" "1"
 		"enabled" "1"

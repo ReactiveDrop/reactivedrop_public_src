@@ -3,6 +3,8 @@
 #ifdef CLIENT_DLL
 #include "c_asw_inhabitable_npc.h"
 #include "c_asw_player.h"
+#include "c_asw_marine.h"
+#include "c_asw_marine_resource.h"
 #include "c_asw_game_resource.h"
 #include "clientmode_asw.h"
 #include "asw_hudelement.h"
@@ -405,6 +407,14 @@ void CASWHudCounters::OnThink()
 		AppendFormatCounter( wszAllCounters, L"", g_pVGuiLocalize->Find( "#asw_money_format" ), ASWGameResource()->GetMoney(), 0 );
 	}
 
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pViewNPC );
+	CASW_Marine_Resource *pMR = pMarine ? pMarine->GetMarineResource() : NULL;
+	if ( pMR && pMR->m_iScore >= 0 )
+	{
+		int iScore = pMR->GetInterpolatedScore();
+		AppendFormatCounter( wszAllCounters, L"", g_pVGuiLocalize->Find( "#asw_holdout_hud_score" ), iScore, pMR->m_iCurScore - iScore );
+	}
+
 	FOR_EACH_VEC( s_pHudCounters, i )
 	{
 		C_RD_Hud_Counter *pCounter = s_pHudCounters[i];
@@ -460,6 +470,11 @@ bool CASWHudCounters::ShouldDraw()
 		return false;
 
 	if ( asw_money.GetBool() )
+		return true;
+
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pViewNPC );
+	CASW_Marine_Resource *pMR = pMarine ? pMarine->GetMarineResource() : NULL;
+	if ( pMR && pMR->m_iScore >= 0 )
 		return true;
 
 	FOR_EACH_VEC( s_pHudCounters, i )

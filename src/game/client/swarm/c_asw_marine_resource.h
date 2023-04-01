@@ -107,6 +107,11 @@ public:
 	CNetworkVar( int, m_iScore );
 	CNetworkVar( float, m_flFinishedMissionTime );
 
+	int GetInterpolatedScore();
+	float m_flScoreLastChanged;
+	int m_iPrevScore;
+	int m_iCurScore;
+
 	CRD_ItemInstance m_EquippedSuit;
 	CRD_ItemInstance m_StartingEquipWeapons[3];
 

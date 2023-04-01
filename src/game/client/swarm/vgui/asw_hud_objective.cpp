@@ -97,11 +97,6 @@ CASWHudObjective::CASWHudObjective( const char *pElementName ) :
 	m_fPrevObjectiveTime = 0;
 	m_bPrObjTimeAltColorDrawing = false;
 
-	m_iPointsLerp = 0;
-	m_iPointsCache = -2;
-	m_fNextPointsLerp = 0;
-	m_fPointsLerpDeadline = 0;
-
 	m_pHeaderGlowLabel = new vgui::Label(this, "HeaderLabelGlow", L" ");
 	m_pObjectiveGlowLabel = new vgui::Label(this, "ObjectiveGlowLabel", L" ");
 	m_pHeaderLabel = new vgui::Label(this, "HeaderLabel", "");
@@ -127,9 +122,6 @@ CASWHudObjective::CASWHudObjective( const char *pElementName ) :
 		m_pObjectiveLabel[i]->SetVisible(false);
 		m_bObjectiveTitleEmpty[i] = true;
 	}
-
-	m_pPointsText = new vgui::Label( this, "ObjectiveLabel", "" );
-	m_pPointsText->SetVisible( false );
 
 	vgui::ivgui()->AddTickSignal( GetVPanel() );
 }
@@ -175,9 +167,6 @@ void CASWHudObjective::ApplySchemeSettings( IScheme *scheme )
 		m_pObjectiveLabel[i]->SetFont( m_font );
 		m_pTickBox[i]->SetShouldScaleImage(true);
 	}
-
-	m_pPointsText->SetFgColor( Color( 255, 255, 255, 255 ) );
-	m_pPointsText->SetFont( m_font );
 
 	SetAlpha( m_flCurrentAlpha * 255.0f );
 }
@@ -493,14 +482,12 @@ void CASWHudObjective::LayoutObjectives()
 		}		
 	}
 
-	m_pPointsText->SetBounds( label_x, label_y + iCurrent * row_height, label_width, row_height );
-
 	m_pCompleteLabel->SetWide(GetWide() - 16 * fScale);
 	m_pCompleteLabelBD->SetWide(GetWide() - 16 * fScale);
 
 	int ox, oy, ow, ot;
 	// grab the position of the last objective
-	( m_pPointsText->IsVisible() ? m_pPointsText : m_pObjectiveLabel[m_iNumObjectivesListed - 1] )->GetBounds( ox, oy, ow, ot );
+	m_pObjectiveLabel[m_iNumObjectivesListed - 1]->GetBounds( ox, oy, ow, ot );
 	m_pCompleteLabel->SetPos(ox, oy + ot*1.5f);
 	m_pCompleteLabelBD->SetPos(ox + 1, oy + ot*1.5f + 1);
 
@@ -525,57 +512,6 @@ void CASWHudObjective::OnTick()
 		return;
 
 	UpdateObjectiveList();
-
-	C_ASW_Player *pLocalPlayer = C_ASW_Player::GetLocalASWPlayer();
-	C_ASW_Marine *pViewMarine = pLocalPlayer ? C_ASW_Marine::AsMarine( pLocalPlayer->GetViewNPC() ) : NULL;
-	if ( C_ASW_Marine_Resource *pMR = pViewMarine ? pViewMarine->GetMarineResource() : NULL )
-	{
-		bool bSetPointsText = false;
-		if ( pMR->m_iScore != m_iPointsCache )
-		{
-			m_pPointsText->SetVisible( pMR->m_iScore >= 0 );
-			InvalidateLayout();
-
-			m_iPointsLerp += pMR->m_iScore - m_iPointsCache;
-			m_iPointsCache = pMR->m_iScore;
-			m_iPointsLerp = MIN( m_iPointsLerp, m_iPointsCache );
-
-			if ( !m_fPointsLerpDeadline )
-				m_fPointsLerpDeadline = gpGlobals->curtime + rd_points_delay_max.GetFloat();
-
-			if ( m_fNextPointsLerp < m_fPointsLerpDeadline )
-				m_fNextPointsLerp = gpGlobals->curtime + rd_points_delay.GetFloat();
-
-			bSetPointsText = true;
-		}
-
-		while ( m_iPointsLerp && gpGlobals->curtime >= m_fNextPointsLerp )
-		{
-			m_iPointsLerp = m_iPointsLerp * rd_points_decay.GetFloat();
-			m_fNextPointsLerp += rd_points_decay_tick.GetFloat();
-			if ( !m_iPointsLerp )
-				m_fPointsLerpDeadline = 0;
-
-			bSetPointsText = true;
-		}
-
-		if ( bSetPointsText )
-		{
-			wchar_t wszFull[256];
-			if ( m_iPointsLerp )
-			{
-				V_snwprintf( wszFull, sizeof( wszFull ), L"%d +%d", m_iPointsCache - m_iPointsLerp, m_iPointsLerp );
-			}
-			else
-			{
-				V_snwprintf( wszFull, sizeof( wszFull ), L"%d", m_iPointsCache - m_iPointsLerp );
-			}
-
-			wchar_t wszWithLabel[256];
-			g_pVGuiLocalize->ConstructString( wszWithLabel, sizeof( wszWithLabel ), g_pVGuiLocalize->FindSafe( "#asw_holdout_hud_score" ), 1, wszFull );
-			m_pPointsText->SetText( wszWithLabel );
-		}
-	}
 
 	if (m_bPlayMissionCompleteSequence)
 	{
@@ -642,10 +578,6 @@ void CASWHudObjective::LevelShutdown()
 	m_flShowObjectivesTime = 0;
 	m_fPrevObjectiveTime = 0;
 	m_bPrObjTimeAltColorDrawing = !m_bPrObjTimeAltColorDrawing;
-	m_iPointsLerp = 0;
-	m_iPointsCache = -2;
-	m_fNextPointsLerp = 0;
-	m_fPointsLerpDeadline = 0;
 }
 
 void CASWHudObjective::ShowObjectives( float fDuration )

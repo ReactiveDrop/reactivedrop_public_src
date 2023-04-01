@@ -330,7 +330,20 @@ void C_ASW_Marine_Resource::OnDataChanged(DataUpdateType_t updateType)
 		}
 		SetNextClientThink(gpGlobals->curtime);
 	}
+
 	BaseClass::OnDataChanged(updateType);
+
+	if ( updateType == DATA_UPDATE_CREATED )
+	{
+		m_iCurScore = m_iPrevScore = m_iScore;
+		m_flScoreLastChanged = gpGlobals->curtime;
+	}
+	else if ( m_iCurScore != m_iScore )
+	{
+		m_iPrevScore = GetInterpolatedScore();
+		m_iCurScore = m_iScore;
+		m_flScoreLastChanged = gpGlobals->curtime;
+	}
 }
 
 void C_ASW_Marine_Resource::ClientThink()
@@ -429,4 +442,20 @@ float C_ASW_Marine_Resource::GetClipsPercentForHUD()
 	int iGuns = pMarine->GetNumberOfWeaponsUsingAmmo( pWeapon->GetPrimaryAmmoType() );
 	int iMaxAmmo = GetAmmoDef()->MaxCarry( pWeapon->GetPrimaryAmmoType(), pMarine );
 	return (float) pMarine->GetAmmoCount( pWeapon->GetPrimaryAmmoType() ) / (float) ( iMaxAmmo * iGuns );
+}
+
+int C_ASW_Marine_Resource::GetInterpolatedScore()
+{
+	float flSinceChange = gpGlobals->curtime - m_flScoreLastChanged - 0.5f;
+	if ( flSinceChange < 0.0f )
+	{
+		return m_iPrevScore;
+	}
+
+	if ( flSinceChange >= 0.5f )
+	{
+		return m_iCurScore;
+	}
+
+	return RemapValClamped( flSinceChange, 0.0f, 0.5f, m_iPrevScore, m_iCurScore );
 }

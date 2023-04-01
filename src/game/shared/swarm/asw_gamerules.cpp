@@ -1035,11 +1035,6 @@ void CAlienSwarmProxy::InputAddPoints( inputdata_t & inputdata )
 	}
 
 	m_TotalPoints.Set( iMaxScore, inputdata.pActivator, inputdata.pCaller );
-
-	CBroadcastRecipientFilter filter;
-	UserMessageBegin( filter, "ShowObjectives" );
-		WRITE_FLOAT( 30.0f );
-	MessageEnd();
 }
 
 void CAlienSwarmProxy::InputModifyDifficulty( inputdata_t & inputdata )
