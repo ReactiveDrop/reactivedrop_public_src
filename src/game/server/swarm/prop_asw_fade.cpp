@@ -48,10 +48,10 @@ bool CProp_ASW_Fade::ShouldFade( CASW_Inhabitable_NPC *pNPC )
 
 	if ( pNPC->GetCommander()->GetASWControls() == ASWC_TOPDOWN )
 	{
-		Vector vecEyePosition = pNPC->EyePosition();
-
 		if ( m_bHasProxies )
 		{
+			Vector vecEyePosition = pNPC->EyePosition();
+
 #ifdef DBGFLAG_ASSERT
 			bool bAtLeastOneProxy = false;
 #endif
@@ -76,7 +76,7 @@ bool CProp_ASW_Fade::ShouldFade( CASW_Inhabitable_NPC *pNPC )
 			return false;
 		}
 
-		return vecEyePosition.z < GetAbsOrigin().z + m_flFadeOriginOffset;
+		return pNPC->GetAbsOrigin().z < GetAbsOrigin().z + m_flFadeOriginOffset;
 	}
 
 	return false;

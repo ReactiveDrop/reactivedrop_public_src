@@ -91,10 +91,10 @@ bool IASW_Fade_List::ShouldFade( C_ASW_Inhabitable_NPC *pNPC )
 
 	if ( pPlayer->GetASWControls() == ASWC_TOPDOWN )
 	{
-		Vector vecEyePosition = pNPC->EyePosition();
-
 		if ( m_bHasProxies )
 		{
+			Vector vecEyePosition = pNPC->EyePosition();
+
 			bool bShouldFade = false;
 
 #ifdef DBGFLAG_ASSERT
@@ -126,15 +126,17 @@ bool IASW_Fade_List::ShouldFade( C_ASW_Inhabitable_NPC *pNPC )
 			return bShouldFade;
 		}
 
+		Vector vecTestOrigin = pNPC->GetAbsOrigin();
+
 		Vector vecFadeOrigin = GetFadeOrigin();
 		if ( asw_debug_fade.GetBool() )
 		{
 			Vector vecTarget = vecFadeOrigin;
-			vecTarget.z = vecEyePosition.z;
-			NDebugOverlay::Line( vecFadeOrigin, vecTarget, vecEyePosition.z < vecFadeOrigin.z ? 0 : 255, vecEyePosition.z < vecFadeOrigin.z ? 255 : 0, 0, false, 0.01f );
+			vecTarget.z = vecTestOrigin.z;
+			NDebugOverlay::Line( vecFadeOrigin, vecTarget, vecTestOrigin.z < vecFadeOrigin.z ? 0 : 255, vecTestOrigin.z < vecFadeOrigin.z ? 255 : 0, 0, false, 0.01f );
 		}
 
-		return vecEyePosition.z < vecFadeOrigin.z;
+		return vecTestOrigin.z < vecFadeOrigin.z;
 	}
 
 	return false;
