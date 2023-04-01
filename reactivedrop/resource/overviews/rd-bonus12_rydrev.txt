@@ -5,9 +5,10 @@ GAME
 	"scale"	"9"
 	"material" "vgui/swarm/Overviews/rydbergOverview"
 	"briefingmaterial" "vgui/swarm/Overviews/rydbergBriefingOverview"
-	"missiontitle"		"Reversed Rydberg Reactor"
-	"description"	"Gain access to the Reactor Control Room and bring the power offline."
-	"image"			"swarm/ObjectivePics/obrydbergreactor"
+	
+	"missiontitle"		"#rd_mission_title_rd-bonus12_rydrev"
+	"description"		"#rd_mission_desc_rd-bonus12_rydrev"
+	"image"				"swarm/ObjectivePics/obrydbergreactor"
 	"version"		"1"
 	"author"		"Valve"
 	"website"		""

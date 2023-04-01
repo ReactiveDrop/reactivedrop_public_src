@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "2137"
+	"mapversion" "2139"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -50,7 +50,7 @@ viewsettings
 world
 {
 	"id" "394754"
-	"mapversion" "2137"
+	"mapversion" "2139"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -62328,11 +62328,11 @@ entity
 	"id" "2180444"
 	"classname" "asw_objective_triggered"
 	"mapmarkings" "BRACKETS 773 19 35 54"
-	"objectivedescription1" "#asw_ob_landing2_2"
+	"objectivedescription1" "#bon14_obj_elevator"
 	"objectiveimage" "oblandingelev"
 	"objectiveinfoicon1" "OIconPlanet"
 	"objectiveinfoicon2" "OIconDroneTop"
-	"objectivetitle" "Activate the cargo elevator and ascend"
+	"objectivetitle" "#bon14_obj_elevator_t"
 	"targetname" "cargo_elevator_objective"
 	"Visible" "1"
 	"origin" "-1862 7048 1104"
@@ -63621,6 +63621,7 @@ entity
 	"MaxLiveAliens" "5"
 	"maxoffset" "0 0 0"
 	"minoffset" "0 0 0"
+	"NearDistance" "740"
 	"NumAliens" "15"
 	"sizescalesp" "1.0"
 	"SpawnerState" "1"
@@ -63629,7 +63630,6 @@ entity
 	"speedscalesp" "1.0"
 	"targetname" "liftExitDroneHordeSpawner"
 	"teslablesp" "1"
-	"NearDistance" "740"
 	"origin" "-4952 7136 808"
 	editor
 	{
@@ -63653,6 +63653,7 @@ entity
 	"MaxLiveAliens" "4"
 	"maxoffset" "0 0 0"
 	"minoffset" "0 0 0"
+	"NearDistance" "740"
 	"NumAliens" "10"
 	"sizescalesp" "1.0"
 	"SpawnerState" "1"
@@ -63661,7 +63662,6 @@ entity
 	"speedscalesp" "1.0"
 	"targetname" "liftExitDroneHordeSpawner"
 	"teslablesp" "1"
-	"NearDistance" "740"
 	"origin" "-5618 6602 804"
 	editor
 	{
@@ -63686,6 +63686,7 @@ entity
 	"maxoffset" "0 0 0"
 	"minoffset" "0 0 0"
 	"MinSkillLevel" "4"
+	"NearDistance" "740"
 	"NumAliens" "15"
 	"sizescalesp" "1.0"
 	"SpawnerState" "1"
@@ -63695,7 +63696,6 @@ entity
 	"speedscalesp" "1.0"
 	"targetname" "liftExitDroneHordeSpawner"
 	"teslablesp" "1"
-	"NearDistance" "740"
 	"origin" "-5047.35 6686.72 801.906"
 	editor
 	{

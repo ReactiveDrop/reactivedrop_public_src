@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "3790"
+	"mapversion" "3791"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -80,7 +80,7 @@ viewsettings
 world
 {
 	"id" "394754"
-	"mapversion" "3790"
+	"mapversion" "3791"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -36829,7 +36829,6 @@ entity
 	"id" "3110926"
 	"classname" "asw_objective_escape"
 	"mapmarkings" "BRACKETS 773 19 35 54"
-	"objectivedescription1" "#asw_ob_landing_3"
 	"objectiveimage" "oblandingexit"
 	"objectiveinfoicon1" "OIconPlanet"
 	"objectiveinfoicon2" "OIconDroneTop"

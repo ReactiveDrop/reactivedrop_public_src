@@ -6,8 +6,10 @@ GAME
 	"material" "vgui/swarm/Overviews/landingbay02Overview"
 	"briefingmaterial" "vgui/swarm/Overviews/landingbay02briefingOverview"
 	"mapyoffset" "0"
-	"missiontitle"		"Reversed Cargo Elevator"
-	"description"	"#rd_mission_desc_asi-jac1-landingbay_02"
+	
+	"missiontitle"		"#rd_mission_title_rd-bonus14_cargrev"
+	"description"		"#rd_mission_desc_rd-bonus14_cargrev"
+	
 	"image"			"swarm/ObjectivePics/oblandingelev"
 	"version"		"1"
 	"author"		"Valve"

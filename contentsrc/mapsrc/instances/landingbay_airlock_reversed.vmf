@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "32"
+	"mapversion" "33"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -20,7 +20,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "32"
+	"mapversion" "33"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -7649,11 +7649,11 @@ entity
 	"id" "6760"
 	"classname" "asw_objective_triggered"
 	"mapmarkings" "BRACKETS 773 19 35 54"
-	"objectivedescription1" "#asw_ob_landing2_1"
+	"objectivedescription1" "#bon14_obj_exit"
 	"objectiveimage" "oblandingexit"
 	"objectiveinfoicon1" "OIconPlanet"
 	"objectiveinfoicon2" "OIconDroneTop"
-	"objectivetitle" "#asw_ob_landing2_1t"
+	"objectivetitle" "#bon14_obj_exit_t"
 	"targetname" "ExitZone"
 	"Visible" "1"
 	"origin" "-4971.19 874.87 1176"
