@@ -1,0 +1,18 @@
+GAME
+{
+	"pos_x"	"-13850" // -15692
+	"pos_y"	"1829"
+	"scale"	"11.2"
+	"material" "vgui/swarm/Overviews/landingbay01Overview"
+	"briefingmaterial" "vgui/swarm/Overviews/landingbay01BriefingOverview"
+	"mapyoffset" "0"
+	"missiontitle"		"Reversed Landing Bay"
+	"description"	"Perform a sweep of the Landing Bay on Vereon XII.  IAF Command has ordered retrieval of flight data from an escape pod in one of the bays."
+	"image"		"swarm/ObjectivePics/oblandinghack"
+	"version"		"1"
+	"author"		"Valve"
+	"website"		""
+	"builtin"		"1"
+	"tag"			"bonus"
+	"CustomCreditsFile"		"resource/rd_bonus_missions_credits"
+}

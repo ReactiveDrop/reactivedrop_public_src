@@ -1,0 +1,17 @@
+GAME
+{
+	"pos_x"	"-6090"
+	"pos_y"	"3762"
+	"scale"	"11"
+	"material" "vgui/swarm/Overviews/SewersOverview"
+	"briefingmaterial" "vgui/swarm/Overviews/SewersBriefingOverview"
+	"missiontitle"		"Reversed Sewer Junction B5"
+	"description"	"Explore the underground sewer passages beneath the colony."
+	"image"		"swarm/ObjectivePics/obsewertunnel"
+	"version"		"1"
+	"author"		"Valve"
+	"website"		""
+	"builtin"		"1"
+	"tag"			"bonus"
+	"CustomCreditsFile"		"resource/rd_bonus_missions_credits"
+}
