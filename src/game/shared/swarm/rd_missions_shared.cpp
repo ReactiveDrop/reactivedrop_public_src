@@ -72,6 +72,10 @@ static const char *s_szMissionNamesFirst[] =
 	"rd-ada_new_beginning",
 	"rd-ada_anomaly",
 #endif
+	"rd-bonus10_sewrev",
+	"rd-bonus12_rydrev",
+	"rd-bonus14_cargrev",
+	"rd-bonus15_landrev",
 };
 
 #pragma pack(push, 1)
