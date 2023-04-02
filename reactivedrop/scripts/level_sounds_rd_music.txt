@@ -1,0 +1,500 @@
+// =========================
+// Nam Humanum Music
+// =========================
+
+"NH_Logistics01_battle"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/a3_station_street_battle_01.mp3"
+}
+
+"NH_Plat02_Hacking02"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/a2_train_action2.mp3"
+}
+
+"NH_Plat02_StartRuning02"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/a2_train_action3.mp3"
+}
+
+"NH_Plat02_TheLastSeconds02"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/a2_train_crash.mp3"
+}
+
+"NH_Lab03_MidArenaFight"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/arena_roller.mp3"
+}
+
+"NH_Lab03_Evacuatiation"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/a5_ending_triumph.mp3"
+}
+
+// =========================
+// Research 7 Music
+// =========================
+
+"Research7_02.Forest_battle"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"	"*#music/a4_tanker_antlion_alley_combat_01.mp3"
+}
+
+"Research7_02.Forest_battle2"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"	"*#music/a4_tanker_antlion_alley_combat_02.mp3"
+}
+
+"Research7_03.Generator_battle"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"	"*#music/a4_tanker_antlion_zoo_combat.mp3"
+}
+
+"Research7_04.Queen_battle"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"	"*#music/a4_tanker_arena_combat.mp3"
+}
+
+// =========================
+// Tears for Tarnor Music
+// =========================
+
+"Tarnor01.AirlockBattle"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"	"*#music/portal_4000_degrees_kelvin.mp3"
+}
+
+"Tarnor02.MaintenanceBattle"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"	"*#music/vlvx_song12.mp3"
+}
+
+"Tarnor03.AirportBattle"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"	"*#music/portal_youre_not_a_good_person.mp3"
+}
+
+// =========================
+// Lana's Escape Music
+// =========================
+
+"Lana01_brdige.Brdige_battle"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"	"*#music/combine_battle_01.mp3"
+}
+
+"Lana02_cannals.Cannals_battle"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"	"*#music/a2_tunnel_flashlight.mp3"
+}
+
+"Lana03_compound.gate_battle"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"	"*#music/combine_battle_05.mp3"
+}
+
+"Lana04_vents.catwalk_battle"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"	"*#music/combine_battle_03.mp3"
+}
+
+"Lana05_Reactor.Evacuation_battle"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"	"*#music/a4_tanker_arena_combat2.mp3"
+}
+
+// =========================
+// Paranoia Music
+// =========================
+
+"Paranoia.HighTensionBattleMusic"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"	"*#music/hl2_song20_submix0.mp3"
+}
+
+"Paranoia.HighTensionBattleMusic2"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"			"*#music/vlvx_song21.mp3"
+}
+
+"Paranoia.CrucialPointBattleMusic"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"			"*#music/vlvx_song22.mp3"
+}
+
+// =========================
+// Tilarus Campaign
+// =========================
+
+"tilarus.PortBattleMusic"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"	"*#music/hl2_song1.mp3"
+}
+
+"tilarus.RoadBattleMusic"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"	"*#music/hl2_song16.mp3"
+}
+
+"tilarus.ArcticBattleMusic"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"	"*#music/half-life15.mp3"
+}
+
+"tilarus.ArcticBattleMusicGenerator"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"	"*#music/half-life14.mp3"
+}
+
+"tilarus.AreaBattleMusic01"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"			"*#music/parking_battle.mp3"
+}
+
+"tilarus.AreaBattleMusic02"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"			"*#music/parking_battle2.mp3"
+}
+
+"tilarus.AreaBattleMusic03"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"			"*#music/parking_battle3.mp3"
+}
+
+"tilarus.CatwalksBattleMusic"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"	"*#music/hl2_song12_long.mp3"
+}
+
+"tilarus.YanaurusBattleMusic"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"			"*#music/vlvx_song11.mp3"
+}
+
+"tilarus.FactoryBattleMusic"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"			"*#music/vlvx_song4.mp3"
+}
+
+"tilarus.CommCenterBattleMusic"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"			"*#music/vlvx_song23.mp3"
+}
+
+"tilarus.CommCenterBattleMusic2"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"			"*#music/vlvx_song24.mp3"
+}
+
+"tilarus.HospitalBattleMusic"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"			"*#music/hl2_song14.mp3"
+}
+
+// =========================
+// Area9800 Music
+// =========================
+
+"area9800.LZBattleMusic"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	// TODO: Portal2-01-You_Will_Be_Perfect.mp3
+	"wave"			"*#music/AS01.wav"
+}
+
+"area9800.LZBattleMusic2"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	// TODO: Portal2-17-I_Am_Different.mp3
+	"wave"			"*#music/AS01.wav"
+}
+
+"area9800.LZBattleMusic3"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	// TODO: Portal2-04-An_Accent_Beyond.mp3
+	"wave"			"*#music/AS01.wav"
+}
+
+"area9800.PP1BattleMusic"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	// TODO: Portal2-06-TEST.mp3
+	"wave"			"*#music/AS01.wav"
+}
+
+"area9800.PP1BattleMusic2"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+ 
+	// TODO: Portal2-02-Wheatley_Science.mp3
+	"wave"			"*#music/AS01.wav"
+}
+
+"area9800.PP2BattleMusic"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	// TODO: Portal2-07-The_Part_Where_He_Kills_You.mp3
+	"wave"			"*#music/AS01.wav"
+}
+
+"area9800.WLBattleMusic01"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	// TODO: Portal2-08-Omg_What_has_He_Done_.mp3
+	"wave"			"*#music/AS01.wav"
+}
+
+// =========================
+// Bonus Missions Music
+// =========================
+
+"peacemakers01rapture.BattleMusic"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.9"
+	"pitch"			"100"
+
+	"soundlevel"		"SNDLVL_NONE"
+
+	"wave"			"*#music/half-life08.mp3"
+}

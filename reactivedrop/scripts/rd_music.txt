@@ -1,0 +1,82 @@
+"rd_song.dm_round_end_music"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.9"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"rndwave"
+	{
+		"wave"	"*#music/awolnation_01/wonround.mp3"
+		"wave"	"*#music/beartooth_01/wonround.mp3"
+		"wave"	"*#music/beartooth_02/wonround.mp3"
+		"wave"	"*#music/kitheory_01/wonround.mp3"
+	}
+}
+
+"rd_song.DM_final_frags"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.9"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"rndwave"
+	{
+		"wave"	"*#music/dm_finale_as01.wav"
+		"wave"	"*#music/dm_finale_rydberg.wav"
+		"wave"	"*#music/dm_finale_timor.wav"
+	}
+}
+
+"rd_song.DM_adrenaline"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.9"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"rndwave"
+	{
+		"wave"	"*#music/adrenaline.wav"
+		"wave"	"*#music/dm_adr_hl1.wav"
+		"wave"	"*#music/dm_adr_csgo.wav"
+	}
+}
+
+"rd_song.dm_lobby_music"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.9"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"	"*#music/dm_lobby.wav"
+}
+
+"rd_song.dm_marine_select"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.9"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"	"*#music/dm_marine_select.wav"
+
+}
+
+"rd_song.dm_marine_respawn"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.9"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"	"*#music/dm_marine_respawn.wav"
+}

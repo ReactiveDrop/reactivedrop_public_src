@@ -1,5 +1,3 @@
-
-
 "asw_song.TimorBattle"
 {
 	"channel"		"CHAN_STATIC"
@@ -8,9 +6,8 @@
 
 	"soundlevel"	"0"
 
-	"wave"			"*#music\timor_battle.wav"
+	"wave"			"*#music/timor_battle.wav"
 }
-
 
 "asw_song.RydbergRumble"
 {
@@ -20,7 +17,7 @@
 
 	"soundlevel"	"0"
 
-	"wave"			"*#music\rydberg_rumble.wav"
+	"wave"			"*#music/rydberg_rumble.wav"
 }
 
 "asw_song.briefing"
@@ -31,26 +28,28 @@
 
 	"soundlevel"	"0"
 
-	"wave"			"*#music\solo\briefing_main.wav"
+	"wave"			"*#music/solo/briefing_main.wav"
 }
 
 "asw_song.Stinger"
 {
-	"channel"		"CHAN_STATIC"
+	"channel"		"CHAN_AUTO"
 	"volume"		"0.9"
 	"pitch"			"100"
 
 	"soundlevel"	"0"
 
+	// These are not in the music folder because players complained about
+	// the horde sound effect being affected by music volume settings.
 	"rndwave"
 	{
-        "wave"	"#swarm\shockStinger01.wav"
-        "wave"	"#swarm\shockStinger02.wav"
-        "wave"	"#swarm\shockStinger03.wav"
+		"wave"	"#swarm/shockstinger01.wav"
+		"wave"	"#swarm/shockstinger02.wav"
+		"wave"	"#swarm/shockstinger03.wav"
 	}
 }
 
-"asw_song.elevatorMusic"
+"asw_song.ElevatorMusic"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.9"
@@ -58,10 +57,10 @@
 
 	"soundlevel"	"0"
 
-	"wave"			"*#music\AS01.wav"
+	"wave"			"*#music/AS01.wav"
 }
 
-"asw_song.stims"
+"asw_song.Stims"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.9"
@@ -76,6 +75,8 @@
 {
 	"channel"	"CHAN_ITEM"
 	"volume"	"1.0"
+	"pitch"		"100"
+
 	"soundlevel"	"0"
 
 	"wave"	"#music/slomo_out.wav"
@@ -89,7 +90,7 @@
 
 	"soundlevel"	"0"
 
-	"wave"	"#music\slomo_in.wav"
+	"wave"	"#music/slomo_in.wav"
 }
 
 "noslow.SingleBreath"
@@ -100,10 +101,10 @@
 
 	"soundlevel"	"0"
 
-	"wave"	"#music\slomo_breath.wav"
+	"wave"	"#music/slomo_breath.wav"
 }
 
-"asw_song.statsSuccess"
+"asw_song.StatsSuccess"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1.0"
@@ -111,10 +112,10 @@
 
 	"soundlevel"	"0"
 
-	"wave"			"*#music\solo\stats_success.wav"
+	"wave"			"*#music/solo/stats_success.wav"
 }
 
-"asw_song.statsFail"
+"asw_song.StatsSuccessCampaign"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1.0"
@@ -122,9 +123,52 @@
 
 	"soundlevel"	"0"
 
-	"wave"			"*#music\solo\stats_failure.wav"
+	"wave"			"*#music/solo/stats_victory.wav"
 }
 
+"asw_song.StatsSuccessTragic"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/solo/stats_cliffhanger.wav"
+}
+
+"asw_song.StatsFail"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/solo/stats_failure.wav"
+}
+
+"asw_song.StatsFailTech"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/solo/stats_no_living_tech.wav"
+}
+
+"asw_song.StatsFailNuked"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/solo/stats_out_of_time.wav"
+}
 
 "Game.ObjectiveComplete"
 {
@@ -134,7 +178,7 @@
 
 	"soundlevel"	"0"
 
-	"wave"	"*#music\ObjectiveComplete.wav"
+	"wave"	"*#music/ObjectiveComplete.wav"
 }
 
 "Game.MissionWon"
@@ -145,7 +189,7 @@
 
 	"soundlevel"	"0"
 
-	"wave"	"*#music\ObjectiveComplete.wav"
+	"wave"	"*#music/MissionComplete.wav"
 }
 
 "Game.MissionLost"
@@ -156,7 +200,7 @@
 
 	"soundlevel"	"0"
 
-	"wave"	"*#music\GameOverMan.wav"
+	"wave"	"*#music/GameOverMan.wav"
 }
 
 "Spawner.Horde"
@@ -164,13 +208,46 @@
 	"channel"	"CHAN_AUTO"
 	"volume"		"1.0"
 	"pitch"			"100"
+
 	"soundlevel"	"SNDLVL_NONE"
 
-    "rndwave"
+	"rndwave"
 	{
-        "wave"	"*#swarm\shockStinger01.wav"
-        "wave"	"*#swarm\shockStinger02.wav"
-        "wave"	"*#swarm\shockStinger03.wav"
+		"wave"	"#swarm/shockstinger01.wav"
+		"wave"	"#swarm/shockstinger02.wav"
+		"wave"	"#swarm/shockstinger03.wav"
+	}
+}
+
+"Spawner.HordeCombine"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"rndwave"
+	{
+		"wave"	"#swarm/shockstinger_combine01.wav"
+		"wave"	"#swarm/shockstinger_combine02.wav"
+		"wave"	"#swarm/shockstinger_combine03.wav"
+	}
+}
+
+"Spawner.HordeZombies"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"rndwave"
+	{
+		"wave"	"#swarm/shockstinger_zombies01.wav"
+		"wave"	"#swarm/shockstinger_zombies02.wav"
+		"wave"	"#swarm/shockstinger_zombies03.wav"
 	}
 }
 
@@ -179,11 +256,11 @@
 	"channel"	"CHAN_AUTO"
 	"volume"		"0.75"
 	"pitch"			"100"
+
 	"soundlevel"	"SNDLVL_NONE"
 
-    "rndwave"
+	"rndwave"
 	{
-         "wave"	"#music\area_clear.wav"
+		"wave"	"#music/area_clear.wav"
 	}
 }
-
