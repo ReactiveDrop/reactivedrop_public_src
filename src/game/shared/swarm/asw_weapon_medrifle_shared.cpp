@@ -716,7 +716,7 @@ void CASW_Weapon_MedRifle::Fire( const Vector &vecOrigSrc, const Vector &vecDir 
 	if( pMarine->IsInhabited() )
 	{
 		CBaseEntity *pEntity = tr.m_pEnt;
-		if ( ( !pEntity || !TargetCanBeHealed( pEntity ) ) && TargetCanBeHealed( pMarine ) )
+		if ( ( !pEntity || !TargetCanBeHealed( pEntity ) ) && TargetCanBeHealed( pMarine ) && ShouldHealSelfOnInvalidTarget( pEntity ) )
 		{
 			pEntity = pMarine;
 		}
@@ -1045,3 +1045,20 @@ void CASW_Weapon_MedRifle::UpdateEffects()
 	}
 }
 #endif
+
+bool CASW_Weapon_MedRifle::ShouldHealSelfOnInvalidTarget( CBaseEntity *pTarget )
+{
+	Assert( GetMarine() && GetMarine()->IsInhabited() && GetCommander() );
+	if ( !GetMarine() || !GetMarine()->IsInhabited() || !GetCommander() )
+		return false;
+
+	// we can't aim at ourself in first or third person
+	if ( GetCommander()->GetASWControls() != ASWC_TOPDOWN )
+		return true;
+
+	// if we're in controller aiming mode or the player is holding shift, self-heal
+	if ( GetCommander()->m_nButtons & IN_WALK )
+		return true;
+
+	return false;
+}

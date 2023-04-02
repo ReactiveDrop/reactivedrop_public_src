@@ -16,9 +16,8 @@
 	#include "asw_fail_advice.h"
 	#include "asw_marine_resource.h"
 #endif
-
 #include "asw_gamerules.h"
-
+#include "in_buttons.h"
 #include "soundenvelope.h"
 
 
@@ -573,3 +572,20 @@ void CASW_Weapon_HealAmp_Gun::UpdateEffects()
 	}
 }
 #endif // CLIENT_DLL
+
+bool CASW_Weapon_HealAmp_Gun::ShouldHealSelfOnInvalidTarget( CBaseEntity *pTarget )
+{
+	Assert( GetMarine() && GetMarine()->IsInhabited() && GetCommander() );
+	if ( !GetMarine() || !GetMarine()->IsInhabited() || !GetCommander() )
+		return false;
+
+	// we can't aim at ourself in first or third person
+	if ( GetCommander()->GetASWControls() != ASWC_TOPDOWN )
+		return true;
+
+	// if we're in controller aiming mode or the player is holding shift, self-heal
+	if ( GetCommander()->m_nButtons & IN_WALK )
+		return true;
+
+	return false;
+}

@@ -31,6 +31,7 @@ public:
 	virtual void UpdateEffects();
 #else
 #endif
+	virtual bool ShouldHealSelfOnInvalidTarget( CBaseEntity *pTarget );
 	virtual int GetMagazineGibModelSkin() const override { return 1; }
 
 protected:

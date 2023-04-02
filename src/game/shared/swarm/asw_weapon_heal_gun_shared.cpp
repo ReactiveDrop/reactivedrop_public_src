@@ -707,7 +707,7 @@ void CASW_Weapon_Heal_Gun::Fire( const Vector &vecOrigSrc, const Vector &vecDir 
 	if( pMarine->IsInhabited() )
 	{
 		CBaseEntity *pEntity = tr.m_pEnt;
-		if ( ( !pEntity || !TargetCanBeHealed( pEntity ) ) && TargetCanBeHealed( pMarine ) )
+		if ( ( !pEntity || !TargetCanBeHealed( pEntity ) ) && TargetCanBeHealed( pMarine ) && ShouldHealSelfOnInvalidTarget( pEntity ) )
 		{
 			pEntity = pMarine;
 		}
@@ -1036,3 +1036,7 @@ void CASW_Weapon_Heal_Gun::UpdateEffects()
 }
 #endif
 
+bool CASW_Weapon_Heal_Gun::ShouldHealSelfOnInvalidTarget( CBaseEntity *pTarget )
+{
+	return false;
+}
