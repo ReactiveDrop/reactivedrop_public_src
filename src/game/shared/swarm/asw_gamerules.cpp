@@ -196,9 +196,10 @@ extern ConVar old_radius_damage;
 	ConVar rd_dedicated_high_resolution_timer_ms( "rd_dedicated_high_resolution_timer_ms", "0.01", FCVAR_NONE, "Acquire timer with specified resolution in ms" );
 	ConVar rd_radial_damage_no_falloff_distance( "rd_radial_damage_no_falloff_distance", "16", FCVAR_CHEAT, "Distance from an explosion where damage starts to decrease based on distance.", true, 0, false, 0 );
 	ConVar rda_marine_allow_strafe("rda_marine_allow_strafe", "0", FCVAR_CHEAT, "Allow marines to use strafe command");
+	// 0 = vote only, 1 = loop, 2 = shuffle
 	ConVar rd_mapcycle_deathmatch( "rd_mapcycle_deathmatch", "1", FCVAR_ARCHIVE, "Automatically select the next Deathmatch mission." );
 	ConVar rd_mapcycle_endless( "rd_mapcycle_endless", "0", FCVAR_ARCHIVE, "Automatically select the next Endless mission." );
-	ConVar rd_mapcycle_bonus( "rd_mapcycle_bonus", "2", FCVAR_ARCHIVE, "Automatically select the next Bonus mission." );
+	ConVar rd_mapcycle_bonus( "rd_mapcycle_bonus", "1", FCVAR_ARCHIVE, "Automatically select the next Bonus mission." );
 	ConVar rd_mapcycle_ignore( "rd_mapcycle_ignore", "", FCVAR_ARCHIVE, "Comma-separated list of map filenames (no .bsp) that cannot be selected by map cycle." );
 
 	// allow updateing the high res timer realtime
