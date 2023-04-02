@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "2139"
+	"mapversion" "2146"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -50,7 +50,7 @@ viewsettings
 world
 {
 	"id" "394754"
-	"mapversion" "2139"
+	"mapversion" "2146"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -3145,7 +3145,7 @@ world
 		side
 		{
 			"id" "63595"
-			"plane" "(-5712 6528 1032) (-5728 6528 1032) (-5728 6712 1032)"
+			"plane" "(-5728 6484 1032) (-5728 6712 1032) (-5712 6712 1032)"
 			"material" "TOOLS/TOOLSCLIP"
 			"uaxis" "[1 0 0 -16] 0.25"
 			"vaxis" "[0 -1 0 56] 0.25"
@@ -3156,7 +3156,7 @@ world
 		side
 		{
 			"id" "63594"
-			"plane" "(-5712 6712 800) (-5728 6712 800) (-5728 6528 800)"
+			"plane" "(-5728 6712 800) (-5728 6484 800) (-5712 6484 800)"
 			"material" "TOOLS/TOOLSCLIP"
 			"uaxis" "[1 0 0 -16] 0.25"
 			"vaxis" "[0 -1 0 56] 0.25"
@@ -3167,7 +3167,7 @@ world
 		side
 		{
 			"id" "63593"
-			"plane" "(-5728 6528 1032) (-5728 6528 800) (-5728 6712 800)"
+			"plane" "(-5728 6484 800) (-5728 6712 800) (-5728 6712 1032)"
 			"material" "TOOLS/TOOLSCLIP"
 			"uaxis" "[0 1 0 -56] 0.25"
 			"vaxis" "[0 0 -1 48] 0.25"
@@ -3178,7 +3178,7 @@ world
 		side
 		{
 			"id" "63592"
-			"plane" "(-5712 6712 1032) (-5712 6712 800) (-5712 6528 800)"
+			"plane" "(-5712 6712 800) (-5712 6484 800) (-5712 6484 1032)"
 			"material" "TOOLS/TOOLSCLIP"
 			"uaxis" "[0 1 0 -56] 0.25"
 			"vaxis" "[0 0 -1 48] 0.25"
@@ -3189,7 +3189,7 @@ world
 		side
 		{
 			"id" "63591"
-			"plane" "(-5728 6712 1032) (-5728 6712 800) (-5712 6712 800)"
+			"plane" "(-5728 6712 800) (-5712 6712 800) (-5712 6712 1032)"
 			"material" "TOOLS/TOOLSCLIP"
 			"uaxis" "[1 0 0 -16] 0.25"
 			"vaxis" "[0 0 -1 48] 0.25"
@@ -3200,7 +3200,7 @@ world
 		side
 		{
 			"id" "63590"
-			"plane" "(-5712 6528 1032) (-5712 6528 800) (-5728 6528 800)"
+			"plane" "(-5712 6484 800) (-5728 6484 800) (-5728 6484 1032)"
 			"material" "TOOLS/TOOLSCLIP"
 			"uaxis" "[1 0 0 -16] 0.25"
 			"vaxis" "[0 0 -1 48] 0.25"
@@ -3221,7 +3221,7 @@ world
 		side
 		{
 			"id" "63583"
-			"plane" "(-5592 6528 1032) (-5528 6448 1032) (-5728 6448 1032)"
+			"plane" "(-5728 6448 1032) (-5728 6484.35 1032) (-5572 6486 1032)"
 			"material" "TOOLS/TOOLSCLIP"
 			"uaxis" "[1 0 0 -16] 0.25"
 			"vaxis" "[0 -1 0 -8] 0.25"
@@ -3232,7 +3232,7 @@ world
 		side
 		{
 			"id" "63582"
-			"plane" "(-5528 6448 800) (-5592 6528 800) (-5728 6528 800)"
+			"plane" "(-5728 6484.35 800) (-5728 6448 800) (-5528 6448 800)"
 			"material" "TOOLS/TOOLSCLIP"
 			"uaxis" "[1 0 0 -16] 0.25"
 			"vaxis" "[0 -1 0 -8] 0.25"
@@ -3243,7 +3243,7 @@ world
 		side
 		{
 			"id" "63581"
-			"plane" "(-5728 6528 1032) (-5728 6448 1032) (-5728 6448 800)"
+			"plane" "(-5728 6448 800) (-5728 6484.35 800) (-5728 6484.35 1032)"
 			"material" "TOOLS/TOOLSCLIP"
 			"uaxis" "[0 1 0 8] 0.25"
 			"vaxis" "[0 0 -1 48] 0.25"
@@ -3254,7 +3254,7 @@ world
 		side
 		{
 			"id" "63580"
-			"plane" "(-5528 6448 1032) (-5592 6528 1032) (-5592 6528 800)"
+			"plane" "(-5572 6486 800) (-5528 6448 800) (-5528 6448 1032)"
 			"material" "TOOLS/TOOLSCLIP"
 			"uaxis" "[0 1 0 8] 0.25"
 			"vaxis" "[0 0 -1 48] 0.25"
@@ -3265,7 +3265,7 @@ world
 		side
 		{
 			"id" "63579"
-			"plane" "(-5592 6528 1032) (-5728 6528 1032) (-5728 6528 800)"
+			"plane" "(-5728 6484.35 800) (-5572 6486 800) (-5572 6486 1032)"
 			"material" "TOOLS/TOOLSCLIP"
 			"uaxis" "[1 0 0 -16] 0.25"
 			"vaxis" "[0 0 -1 48] 0.25"
@@ -3276,7 +3276,7 @@ world
 		side
 		{
 			"id" "63578"
-			"plane" "(-5728 6448 1032) (-5528 6448 1032) (-5528 6448 800)"
+			"plane" "(-5528 6448 800) (-5728 6448 800) (-5728 6448 1032)"
 			"material" "TOOLS/TOOLSCLIP"
 			"uaxis" "[1 0 0 -16] 0.25"
 			"vaxis" "[0 0 -1 48] 0.25"
@@ -3297,7 +3297,7 @@ world
 		side
 		{
 			"id" "63535"
-			"plane" "(-5360 6448 1032) (-5273.64 6528 1032) (-4410 6528 1032)"
+			"plane" "(-4410 6448 1032) (-5360 6448 1032) (-5308 6484 1032)"
 			"material" "TOOLS/TOOLSCLIP"
 			"uaxis" "[1 0 0 16] 0.25"
 			"vaxis" "[0 -1 0 -8] 0.25"
@@ -3308,7 +3308,7 @@ world
 		side
 		{
 			"id" "63534"
-			"plane" "(-5273.64 6528 800) (-5360 6448 800) (-4410 6448 800)"
+			"plane" "(-4410 6484 800) (-5308 6484 800) (-5360 6448 800)"
 			"material" "TOOLS/TOOLSCLIP"
 			"uaxis" "[1 0 0 16] 0.25"
 			"vaxis" "[0 -1 0 -8] 0.25"
@@ -3319,7 +3319,7 @@ world
 		side
 		{
 			"id" "63533"
-			"plane" "(-5360 6448 800) (-5273.64 6528 800) (-5273.64 6528 1032)"
+			"plane" "(-5360 6448 1032) (-5360 6448 800) (-5308 6484 800)"
 			"material" "TOOLS/TOOLSCLIP"
 			"uaxis" "[0 1 0 8] 0.25"
 			"vaxis" "[0 0 -1 48] 0.25"
@@ -3330,7 +3330,7 @@ world
 		side
 		{
 			"id" "63532"
-			"plane" "(-4410 6528 800) (-4410 6448 800) (-4410 6448 1032)"
+			"plane" "(-4410 6484 1032) (-4410 6484 800) (-4410 6448 800)"
 			"material" "TOOLS/TOOLSCLIP"
 			"uaxis" "[0 1 0 8] 0.25"
 			"vaxis" "[0 0 -1 48] 0.25"
@@ -3341,7 +3341,7 @@ world
 		side
 		{
 			"id" "63531"
-			"plane" "(-5273.64 6528 800) (-4410 6528 800) (-4410 6528 1032)"
+			"plane" "(-5308 6484 1032) (-5308 6484 800) (-4410 6484 800)"
 			"material" "TOOLS/TOOLSCLIP"
 			"uaxis" "[1 0 0 16] 0.25"
 			"vaxis" "[0 0 -1 48] 0.25"
@@ -3352,7 +3352,7 @@ world
 		side
 		{
 			"id" "63530"
-			"plane" "(-4410 6448 800) (-5360 6448 800) (-5360 6448 1032)"
+			"plane" "(-4410 6448 1032) (-4410 6448 800) (-5360 6448 800)"
 			"material" "TOOLS/TOOLSCLIP"
 			"uaxis" "[1 0 0 16] 0.25"
 			"vaxis" "[0 0 -1 48] 0.25"
@@ -8295,7 +8295,7 @@ world
 		side
 		{
 			"id" "90309"
-			"plane" "(-4384 6624 1032) (-4384 6528 1032) (-4648 6528 1032)"
+			"plane" "(-4648 6484 1032) (-4608 6624 1032) (-4384 6624 1032)"
 			"material" "TOOLS/TOOLSCLIP"
 			"uaxis" "[1 0 0 -48] 0.25"
 			"vaxis" "[0 -1 0 -8] 0.25"
@@ -8306,7 +8306,7 @@ world
 		side
 		{
 			"id" "90308"
-			"plane" "(-4384 6528 800) (-4384 6624 800) (-4608 6624 800)"
+			"plane" "(-4608 6624 800) (-4648 6484 800) (-4384 6484 800)"
 			"material" "TOOLS/TOOLSCLIP"
 			"uaxis" "[1 0 0 -48] 0.25"
 			"vaxis" "[0 -1 0 -8] 0.25"
@@ -8317,7 +8317,7 @@ world
 		side
 		{
 			"id" "90307"
-			"plane" "(-4608 6624 1032) (-4648 6528 1032) (-4648 6528 800)"
+			"plane" "(-4648 6484 800) (-4608 6624 800) (-4608 6624 1032)"
 			"material" "TOOLS/TOOLSCLIP"
 			"uaxis" "[0 1 0 8] 0.25"
 			"vaxis" "[0 0 -1 48] 0.25"
@@ -8328,7 +8328,7 @@ world
 		side
 		{
 			"id" "90306"
-			"plane" "(-4384 6528 1032) (-4384 6624 1032) (-4384 6624 800)"
+			"plane" "(-4384 6624 800) (-4384 6484 800) (-4384 6484 1032)"
 			"material" "TOOLS/TOOLSCLIP"
 			"uaxis" "[0 1 0 8] 0.25"
 			"vaxis" "[0 0 -1 48] 0.25"
@@ -8339,7 +8339,7 @@ world
 		side
 		{
 			"id" "90305"
-			"plane" "(-4384 6624 1032) (-4608 6624 1032) (-4608 6624 800)"
+			"plane" "(-4608 6624 800) (-4384 6624 800) (-4384 6624 1032)"
 			"material" "TOOLS/TOOLSCLIP"
 			"uaxis" "[1 0 0 -48] 0.25"
 			"vaxis" "[0 0 -1 48] 0.25"
@@ -8350,7 +8350,7 @@ world
 		side
 		{
 			"id" "90304"
-			"plane" "(-4648 6528 1032) (-4384 6528 1032) (-4384 6528 800)"
+			"plane" "(-4384 6484 800) (-4648 6484 800) (-4648 6484 1032)"
 			"material" "TOOLS/TOOLSCLIP"
 			"uaxis" "[1 0 0 -48] 0.25"
 			"vaxis" "[0 0 -1 48] 0.25"
@@ -28242,10 +28242,10 @@ entity
 	"nearz" "4.0"
 	"parentname" "FreightElevatorWalls"
 	"shadowquality" "1"
-	"spawnflags" "1"
+	"spawnflags" "3"
 	"targetname" "light_spin_ele_bottom"
 	"texturename" "effects/flashlight001"
-	"origin" "-3182 8978 -1047.95"
+	"origin" "-3186 8972 -1047.95"
 	editor
 	{
 		"color" "190 111 0"
@@ -42112,7 +42112,7 @@ entity
 	"teslablesp" "1"
 	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_LONG"
 	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_LONG_IDLE"
-	"origin" "-3702 7072 794"
+	"origin" "-3702 7072 806"
 	editor
 	{
 		"color" "0 0 255"
@@ -42154,7 +42154,7 @@ entity
 	"teslablesp" "1"
 	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT"
 	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT_IDLE"
-	"origin" "-3764 7200 794"
+	"origin" "-3764 7200 810"
 	editor
 	{
 		"color" "0 0 255"
@@ -42196,7 +42196,7 @@ entity
 	"teslablesp" "1"
 	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT"
 	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT_IDLE"
-	"origin" "-3770.03 7140 794"
+	"origin" "-3770.03 7138 808"
 	editor
 	{
 		"color" "0 0 255"
@@ -63330,6 +63330,8 @@ entity
 	"StartBurrowed" "1"
 	"targetname" "ins_drone_spawn"
 	"teslablesp" "1"
+	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT"
+	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT_IDLE"
 	"origin" "-3620 7133.81 792"
 	editor
 	{
@@ -63371,6 +63373,8 @@ entity
 	"StartBurrowed" "1"
 	"targetname" "ins_drone_spawn"
 	"teslablesp" "1"
+	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT"
+	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT_IDLE"
 	"origin" "-3620 7053.81 792"
 	editor
 	{
@@ -63412,7 +63416,9 @@ entity
 	"StartBurrowed" "1"
 	"targetname" "ins_drone_spawn"
 	"teslablesp" "1"
-	"origin" "-3548 7101.81 792"
+	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT"
+	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT_IDLE"
+	"origin" "-3548 7101.81 794"
 	editor
 	{
 		"color" "0 0 255"
@@ -63453,7 +63459,7 @@ entity
 	"StartBurrowed" "1"
 	"targetname" "ins_drone_spawn"
 	"teslablesp" "1"
-	"origin" "-3708 7094 794"
+	"origin" "-3708 7094 806"
 	editor
 	{
 		"color" "0 0 255"
@@ -63535,6 +63541,8 @@ entity
 	"StartBurrowed" "1"
 	"targetname" "ins_drone_spawn"
 	"teslablesp" "1"
+	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT"
+	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT_IDLE"
 	"origin" "-3596 7181.81 792"
 	editor
 	{
@@ -63650,7 +63658,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
-	"MaxLiveAliens" "4"
+	"MaxLiveAliens" "1"
 	"maxoffset" "0 0 0"
 	"minoffset" "0 0 0"
 	"NearDistance" "740"
@@ -63814,8 +63822,8 @@ cameras
 	"activecamera" "0"
 	camera
 	{
-		"position" "[-3555.78 6870.04 1047.47]"
-		"look" "[-3585.7 7046.9 848.264]"
+		"position" "[-3467.87 7104.89 832.117]"
+		"look" "[-3654.76 6914.04 809.686]"
 	}
 	camera
 	{
