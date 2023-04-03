@@ -69,6 +69,21 @@
 }
 
 // =========================
+// BioGen Corporation Music
+// =========================
+
+"BioGen.OperationX5DoorHoldout"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.9"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"	"*#music/AS01.wav"
+}
+
+// =========================
 // Research 7 Music
 // =========================
 
@@ -142,7 +157,7 @@
 	"wave"	"*#music/vlvx_song12.mp3"
 }
 
-"Tarnor03.AirportBattle"
+"Tarnor03.SpaceportBattle"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -157,7 +172,18 @@
 // Lana's Escape Music
 // =========================
 
-"Lana01_brdige.Brdige_battle"
+"Lana.BridgeIntro"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.5"
+	"pitch"			"100"
+
+	"soundlevel"		"SNDLVL_NONE"
+
+	"wave"			"*#music/rd-lan1_bridge-intromusic.mp3"
+}
+
+"Lana.BridgeBattle"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -168,7 +194,7 @@
 	"wave"	"*#music/combine_battle_01.mp3"
 }
 
-"Lana02_cannals.Cannals_battle"
+"Lana.SewerBattle"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -179,7 +205,7 @@
 	"wave"	"*#music/a2_tunnel_flashlight.mp3"
 }
 
-"Lana03_compound.gate_battle"
+"Lana.GeneratorBattle"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -190,7 +216,18 @@
 	"wave"	"*#music/combine_battle_05.mp3"
 }
 
-"Lana04_vents.catwalk_battle"
+"Lana.VentAmbient"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"		"SNDLVL_NONE"
+
+	"wave"			"*#music/rd-lan4_vent-labymusic.mp3"
+}
+
+"Lana.VentBattle"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
@@ -201,7 +238,7 @@
 	"wave"	"*#music/combine_battle_03.mp3"
 }
 
-"Lana05_Reactor.Evacuation_battle"
+"Lana.FinaleMusic"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"

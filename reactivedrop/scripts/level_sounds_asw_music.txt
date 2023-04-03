@@ -20,7 +20,7 @@
 	"wave"			"*#music/rydberg_rumble.wav"
 }
 
-"asw_song.briefing"
+"asw_song.Briefing"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"0.75"

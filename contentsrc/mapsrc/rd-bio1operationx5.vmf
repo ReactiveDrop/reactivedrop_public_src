@@ -129806,7 +129806,7 @@ entity
 {
 	"id" "986"
 	"classname" "asw_jukebox"
-	"DefaultMusic" "asw_song.elevatorMusic"
+	"DefaultMusic" "BioGen.OperationX5DoorHoldout"
 	"FadeInTime" "1.0"
 	"FadeOutTime" "1.0"
 	"targetname" "music"

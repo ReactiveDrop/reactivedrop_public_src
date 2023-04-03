@@ -98524,7 +98524,7 @@ entity
 {
 	"id" "11713"
 	"classname" "asw_jukebox"
-	"DefaultMusic" "music/timor_battle.wav"
+	"DefaultMusic" "Lana.SewerBattle"
 	"FadeInTime" "0.2"
 	"FadeOutTime" "3.0"
 	"spawnflags" "48"

@@ -118807,7 +118807,7 @@ entity
 {
 	"id" "171384"
 	"classname" "asw_jukebox"
-	"DefaultMusic" "music/rydberg_rumble.wav"
+	"DefaultMusic" "Tarnor02.MaintenanceBattle"
 	"FadeInTime" "1.0"
 	"FadeOutTime" "1.0"
 	"targetname" "jukebox"

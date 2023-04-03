@@ -95424,7 +95424,7 @@ entity
 {
 	"id" "186903"
 	"classname" "asw_jukebox"
-	"DefaultMusic" "asw_song.TimorBattle"
+	"DefaultMusic" "NH_Logistics01_battle"
 	"FadeInTime" "1.0"
 	"FadeOutTime" "1.0"
 	"targetname" "finalBattle_music"
