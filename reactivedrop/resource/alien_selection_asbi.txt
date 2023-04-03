@@ -107,36 +107,36 @@
 			"AlienClass"	"asw_shaman"
 		}
 	}
-	"WANDERER+HORDE_WANDERER" {
-		"SelectionWeight"	"1.125"
-		"NPC" {
-			"AlienClass"	"npc_antlionguard_normal"
-		}
-	}
-	"WANDERER+HORDE_WANDERER" {
-		"SelectionWeight"	"1.125"
-		"NPC" {
-			"AlienClass"	"npc_antlionguard_cavern"
-		}
-	}
+	//"WANDERER+HORDE_WANDERER" {
+	//	"SelectionWeight"	"1.125"
+	//	"NPC" {
+	//		"AlienClass"	"npc_antlionguard_normal"
+	//	}
+	//}
+	//"WANDERER+HORDE_WANDERER" {
+	//	"SelectionWeight"	"1.125"
+	//	"NPC" {
+	//		"AlienClass"	"npc_antlionguard_cavern"
+	//	}
+	//}
 	"PRESPAWN" {
 		"SelectionWeight"	"1"
 		"NPC" {
 			"AlienClass"	"asw_shieldbug"
 		}
 	}
-	"PRESPAWN" {
-		"SelectionWeight"	"0.25"
-		"NPC" {
-			"AlienClass"	"npc_antlionguard_normal"
-		}
-	}
-	"PRESPAWN" {
-		"SelectionWeight"	"0.25"
-		"NPC" {
-			"AlienClass"	"npc_antlionguard_cavern"
-		}
-	}
+	//"PRESPAWN" {
+	//	"SelectionWeight"	"0.25"
+	//	"NPC" {
+	//		"AlienClass"	"npc_antlionguard_normal"
+	//	}
+	//}
+	//"PRESPAWN" {
+	//	"SelectionWeight"	"0.25"
+	//	"NPC" {
+	//		"AlienClass"	"npc_antlionguard_cavern"
+	//	}
+	//}
 	"PRESPAWN" {
 		"SelectionWeight"	"1"
 		"NPC" {
@@ -694,18 +694,18 @@
 			"AlienClass"	"asw_harvester"
 		}
 	}
-	"WANDERER+HORDE_WANDERER" {
-		"SelectionWeight"	"7"
-		"NPC" {
-			"AlienClass"	"npc_antlionguard_normal"
-		}
-	}
-	"WANDERER+HORDE_WANDERER" {
-		"SelectionWeight"	"7"
-		"NPC" {
-			"AlienClass"	"npc_antlionguard_cavern"
-		}
-	}
+	//"WANDERER+HORDE_WANDERER" {
+	//	"SelectionWeight"	"7"
+	//	"NPC" {
+	//		"AlienClass"	"npc_antlionguard_normal"
+	//	}
+	//}
+	//"WANDERER+HORDE_WANDERER" {
+	//	"SelectionWeight"	"7"
+	//	"NPC" {
+	//		"AlienClass"	"npc_antlionguard_cavern"
+	//	}
+	//}
 }
 
 "SpawnSetOverlay" {
@@ -976,12 +976,12 @@
 			"AlienClass"	"asw_boomer"
 		}
 	}
-	"WANDERER+HORDE_WANDERER" {
-		"SelectionWeight"	"10"
-		"NPC" {
-			"AlienClass"	"npc_antlionguard_cavern"
-		}
-	}
+	//"WANDERER+HORDE_WANDERER" {
+	//	"SelectionWeight"	"10"
+	//	"NPC" {
+	//		"AlienClass"	"npc_antlionguard_cavern"
+	//	}
+	//}
 	"WANDERER" {
 		"SelectionWeight"	"10"
 		"NPC" {
@@ -1098,12 +1098,12 @@
 			"AlienClass"	"asw_boomer"
 		}
 	}
-	"WANDERER+HORDE_WANDERER" {
-		"SelectionWeight"	"5"
-		"NPC" {
-			"AlienClass"	"npc_antlionguard_normal"
-		}
-	}
+	//"WANDERER+HORDE_WANDERER" {
+	//	"SelectionWeight"	"5"
+	//	"NPC" {
+	//		"AlienClass"	"npc_antlionguard_normal"
+	//	}
+	//}
 }
 
 "SpawnSetOverlay" {
@@ -1314,12 +1314,12 @@
 			"AlienClass"	"asw_shieldbug"
 		}
 	}
-	"WANDERER+HORDE_WANDERER" {
-		"SelectionWeight"	"5"
-		"NPC" {
-			"AlienClass"	"npc_antlionguard_normal"
-		}
-	}
+	//"WANDERER+HORDE_WANDERER" {
+	//	"SelectionWeight"	"5"
+	//	"NPC" {
+	//		"AlienClass"	"npc_antlionguard_normal"
+	//	}
+	//}
 }
 
 "SpawnSetOverlay" {
