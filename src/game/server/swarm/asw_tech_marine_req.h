@@ -5,7 +5,6 @@
 #endif
 
 #include "baseentity.h"
-// Hold debriefing messages
 
 class CASW_Tech_Marine_Req : public CLogicalEntity
 {
@@ -16,6 +15,8 @@ public:
 	virtual void Spawn();
 	void InputDisableTechMarineReq( inputdata_t &inputdata );
 	void InputEnableTechMarineReq( inputdata_t &inputdata );
+
+	string_t m_szStatsMusicFailure{ NULL_STRING };
 };
 
 #endif /* _INCLUDED_ASW_TECH_MARINE_REQ_H */

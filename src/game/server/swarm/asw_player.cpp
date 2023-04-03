@@ -633,8 +633,9 @@ void CASW_Player::Precache()
 	PrecacheScriptSound( "asw_song.stims" );
 	//PrecacheScriptSound( "Holdout.GetReadySlide" );
 	//PrecacheScriptSound( "Holdout.GetReadySlam" );
-	PrecacheScriptSound( "asw_song.statsSuccess" );
-	PrecacheScriptSound( "asw_song.statsFail" );
+	PrecacheScriptSound( "asw_song.StatsSuccess" );
+	PrecacheScriptSound( "asw_song.StatsSuccessCampaign" );
+	PrecacheScriptSound( "asw_song.StatsFail" );
 
 	if (MarineProfileList())
 	{

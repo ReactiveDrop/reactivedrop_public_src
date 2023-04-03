@@ -244,17 +244,31 @@ void MissionCompletePanel::ShowImageAndPlaySound()
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	if ( pPlayer )
 	{
+		const char *szStatsMusic = ASWGameRules()->m_szStatsMusicOverride.Get();
+		if ( szStatsMusic[0] != '\0' )
+		{
+			C_BaseEntity::PrecacheScriptSound( szStatsMusic );
+		}
+		else if ( m_bSuccess )
+		{
+			szStatsMusic = ASWGameRules()->IsCampaignGame() && ASWGameRules()->CampaignMissionsLeft() <= 1 ? "asw_song.StatsSuccessCampaign" : "asw_song.StatsSuccess";
+		}
+		else
+		{
+			szStatsMusic = "asw_song.StatsFail";
+		}
+
 		if ( m_bSuccess )
 		{
 			pPlayer->EmitSound( "Game.MissionWon" );
 			CLocalPlayerFilter filter;
-			C_BaseEntity::EmitSound( filter, pPlayer->entindex(), "asw_song.statsSuccess", NULL, gpGlobals->curtime + asw_success_sound_delay.GetFloat() );
+			C_BaseEntity::EmitSound( filter, pPlayer->entindex(), szStatsMusic, NULL, gpGlobals->curtime + asw_success_sound_delay.GetFloat() );
 		}
 		else
 		{
 			pPlayer->EmitSound( "Game.MissionLost" );
 			CLocalPlayerFilter filter;
-			C_BaseEntity::EmitSound( filter, pPlayer->entindex(), "asw_song.statsFail", NULL, gpGlobals->curtime + asw_fail_sound_delay.GetFloat() );
+			C_BaseEntity::EmitSound( filter, pPlayer->entindex(), szStatsMusic, NULL, gpGlobals->curtime + asw_fail_sound_delay.GetFloat() );
 		}
 	}	
 

@@ -38,6 +38,7 @@ BEGIN_DATADESC( CASW_Objective_Countdown )
 	DEFINE_KEYFIELD( m_szSound10, FIELD_SOUNDNAME, "Sound10" ),
 	DEFINE_KEYFIELD( m_szSoundFail, FIELD_SOUNDNAME, "SoundFail" ),
 	DEFINE_KEYFIELD( m_szSoundFailLF, FIELD_SOUNDNAME, "SoundFailLF" ),
+	DEFINE_KEYFIELD( m_szStatsMusicFailure, FIELD_SOUNDNAME, "StatsMusicFailure" ),
 	DEFINE_KEYFIELD( m_FailColor, FIELD_COLOR32, "FailColor" ),
 
 	DEFINE_THINKFUNC( ExplodeLevel ),
@@ -61,6 +62,7 @@ CASW_Objective_Countdown::CASW_Objective_Countdown()
 	m_szSound10 = NULL_STRING;
 	m_szSoundFail = NULL_STRING;
 	m_szSoundFailLF = NULL_STRING;
+	m_szStatsMusicFailure = NULL_STRING;
 	m_FailColor.Init( 255, 255, 255, 255 );
 }
 
@@ -82,6 +84,8 @@ void CASW_Objective_Countdown::Spawn()
 		m_szSoundFail = AllocPooledString( "ASW.WarheadExplosion" );
 	if ( m_szSoundFailLF.Get() == NULL_STRING )
 		m_szSoundFailLF = AllocPooledString( "ASW.WarheadExplosionLF" );
+	if ( m_szStatsMusicFailure == NULL_STRING )
+		m_szStatsMusicFailure = AllocPooledString( "asw_song.StatsFailNuked" );
 
 	Precache();
 }
@@ -95,6 +99,7 @@ void CASW_Objective_Countdown::Precache()
 	PrecacheScriptSound( STRING( m_szSound10.Get() ) );
 	PrecacheScriptSound( STRING( m_szSoundFail.Get() ) );
 	PrecacheScriptSound( STRING( m_szSoundFailLF.Get() ) );
+	PrecacheScriptSound( STRING( m_szStatsMusicFailure ) );
 }
 
 CASW_Objective_Countdown::~CASW_Objective_Countdown()
@@ -142,5 +147,7 @@ void CASW_Objective_Countdown::ExplodeLevel()
 
 void CASW_Objective_Countdown::FailMission()
 {
+	CAlienSwarm *pAlienSwarm = ASWGameRules();
+	V_strncpy( pAlienSwarm->m_szStatsMusicOverride.GetForModify(), STRING( m_szStatsMusicFailure ), sizeof( pAlienSwarm->m_szStatsMusicOverride ) );
 	ASWGameRules()->ExplodedLevel( this );
 }

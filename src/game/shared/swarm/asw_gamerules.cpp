@@ -835,6 +835,7 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		RecvPropEHandle(RECVINFO(m_hBriefingCamera)),
 		RecvPropString( RECVINFO( m_szDeathmatchWinnerName ) ),
 		RecvPropString( RECVINFO( m_szCycleNextMap ) ),
+		RecvPropString( RECVINFO( m_szStatsMusicOverride ) ),
 	#else
 		SendPropInt(SENDINFO(m_iGameState), 8, SPROP_UNSIGNED ),
 		SendPropBool(SENDINFO(m_bMissionSuccess)),
@@ -872,6 +873,7 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		SendPropEHandle(SENDINFO(m_hBriefingCamera)),
 		SendPropString( SENDINFO( m_szDeathmatchWinnerName ) ),
 		SendPropString( SENDINFO( m_szCycleNextMap ) ),
+		SendPropString( SENDINFO( m_szStatsMusicOverride ) ),
 	#endif
 END_NETWORK_TABLE()
 
@@ -880,6 +882,8 @@ BEGIN_DATADESC( CAlienSwarmProxy )
 	DEFINE_KEYFIELD( m_iSpeedrunTime, FIELD_INTEGER, "speedruntime" ),
 	DEFINE_KEYFIELD( m_iJumpJetType,  FIELD_INTEGER, "jumpjettype" ),
 	DEFINE_KEYFIELD( m_bDisallowCameraRotation, FIELD_BOOLEAN, "disallowcamerarotation" ),
+	DEFINE_INPUT( m_szStatsMusicSuccess, FIELD_SOUNDNAME, "StatsMusicSuccess" ),
+	DEFINE_INPUT( m_szStatsMusicFailure, FIELD_SOUNDNAME, "StatsMusicFailure" ),
 #ifdef GAME_DLL
 	DEFINE_INPUTFUNC( FIELD_INTEGER, "SetTutorialStage", InputSetTutorialStage ),
 	DEFINE_INPUTFUNC( FIELD_INTEGER, "AddPoints", InputAddPoints ),
@@ -904,6 +908,8 @@ CAlienSwarmProxy::CAlienSwarmProxy()
 	m_iSpeedrunTime = 0;
 	m_iJumpJetType = 0;
 	m_bDisallowCameraRotation = false;
+	m_szStatsMusicSuccess = NULL_STRING;
+	m_szStatsMusicFailure = NULL_STRING;
 
 	g_pSwarmProxy = this;
 }
@@ -1592,6 +1598,7 @@ void CAlienSwarm::FullReset()
 	V_memset( m_szCurrentVoteMapName.GetForModify(), 0, sizeof( m_szCurrentVoteMapName ) );
 	V_memset( m_szCurrentVoteCampaignName.GetForModify(), 0, sizeof( m_szCurrentVoteCampaignName ) );
 	V_memset( m_szCycleNextMap.GetForModify(), 0, sizeof( m_szCycleNextMap ) );
+	V_memset( m_szStatsMusicOverride.GetForModify(), 0, sizeof( m_szStatsMusicOverride ) );
 
 	m_szCurrentVoteName[0] = '\0';
 	m_iCurrentVoteYes = 0;
@@ -1627,6 +1634,7 @@ void CAlienSwarm::FullReset()
 
 	m_fLastPowerupDropTime = 0;
 	m_flTechFailureRestartTime = 0.0f;
+	m_szTechFailureSong = NULL_STRING;
 
 	m_bSentLeaderboardReady = false;
 
@@ -4545,6 +4553,11 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 	// setting these variables will make the player's go into their debrief screens
 	if ( bSuccess )
 	{
+		if ( m_szStatsMusicOverride.Get()[0] == '\0' && g_pSwarmProxy && g_pSwarmProxy->m_szStatsMusicSuccess != NULL_STRING )
+		{
+			V_strncpy( m_szStatsMusicOverride.GetForModify(), STRING( g_pSwarmProxy->m_szStatsMusicSuccess ), sizeof( m_szStatsMusicOverride ) );
+		}
+
 		m_bMissionSuccess = true;
 		IGameEvent *event = gameeventmanager->CreateEvent( "mission_success" );
 		if ( event )
@@ -4555,6 +4568,11 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 	}
 	else
 	{
+		if ( m_szStatsMusicOverride.Get()[0] == '\0' && g_pSwarmProxy && g_pSwarmProxy->m_szStatsMusicFailure != NULL_STRING )
+		{
+			V_strncpy( m_szStatsMusicOverride.GetForModify(), STRING( g_pSwarmProxy->m_szStatsMusicFailure ), sizeof( m_szStatsMusicOverride ) );
+		}
+
 		m_bMissionFailed = true;
 		m_nFailAdvice = ASWFailAdvice()->UseCurrentFailAdvice();
 		IGameEvent *event = gameeventmanager->CreateEvent( "mission_failed" );
@@ -8262,7 +8280,12 @@ void CAlienSwarm::FinishForceReady()
 
 				if ( gpGlobals->curtime - m_fMissionStartedTime > 30.0f && GetGameState() == ASW_GS_INGAME )
 				{
-					MissionComplete( false );		
+					if ( m_flTechFailureRestartTime > 0 && gpGlobals->curtime >= m_flTechFailureRestartTime && m_szTechFailureSong != NULL_STRING )
+					{
+						V_strncpy( m_szStatsMusicOverride.GetForModify(), STRING( m_szTechFailureSong ), sizeof( m_szStatsMusicOverride ) );
+					}
+
+					MissionComplete( false );
 				}
 				else
 				{
@@ -8497,6 +8520,15 @@ void CAlienSwarm::DropPowerup( CBaseEntity *pSource, const CTakeDamageInfo &info
 	pPowerup->SetAbsVelocity( vel );
 }
 
+void CAlienSwarm::ScheduleTechFailureRestart( float flRestartBeginTime, string_t szTechFailureSong )
+{
+	if ( m_flTechFailureRestartTime == 0 )
+	{
+		m_flTechFailureRestartTime = flRestartBeginTime;
+		m_szTechFailureSong = szTechFailureSong;
+	}
+}
+
 void CAlienSwarm::CheckTechFailure()
 {	
 	if ( m_flTechFailureRestartTime > 0 && gpGlobals->curtime >= m_flTechFailureRestartTime )
@@ -8514,6 +8546,8 @@ void CAlienSwarm::CheckTechFailure()
 			{
 				bTech = true;
 				m_flTechFailureRestartTime = 0; // if we end up cancelling the no-tech failure restart, clear the timer so we can fail again later
+				m_szTechFailureSong = NULL_STRING;
+				SetForceReady( ASW_FR_NONE );
 				break;
 			}
 		}

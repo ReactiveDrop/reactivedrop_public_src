@@ -11,6 +11,7 @@
 LINK_ENTITY_TO_CLASS( asw_tech_marine_req, CASW_Tech_Marine_Req );
 
 BEGIN_DATADESC( CASW_Tech_Marine_Req )
+	DEFINE_INPUT( m_szStatsMusicFailure, FIELD_SOUNDNAME, "StatsMusicFailure" ),
 	DEFINE_INPUTFUNC( FIELD_VOID,	"DisableTechMarineReq",	InputDisableTechMarineReq ),
 	DEFINE_INPUTFUNC( FIELD_VOID,	"EnableTechMarineReq",	InputEnableTechMarineReq ),
 END_DATADESC()
@@ -19,6 +20,13 @@ END_DATADESC()
 void CASW_Tech_Marine_Req::Spawn()
 {
 	BaseClass::Spawn();
+
+	if ( m_szStatsMusicFailure == NULL_STRING )
+	{
+		m_szStatsMusicFailure = AllocPooledString( "asw_song.StatsFailTech" );
+	}
+
+	PrecacheScriptSound( STRING( m_szStatsMusicFailure ) );
 
 	//Msg("CASW_Tech_Marine_Req::Spawn setting mission requires tech to true\n");
 	if (ASWGameRules())
@@ -63,7 +71,7 @@ void CASW_Tech_Marine_Req::InputEnableTechMarineReq( inputdata_t &inputdata )
 				if ( !bTech && pGameResource->CountAllAliveMarines() > 0 )
 				{
 					float flDelay = gEntList.FindEntityByClassname( NULL, "asw_weapon_hack_tool" ) ? 5.0f : 1.5f;
-					ASWGameRules()->ScheduleTechFailureRestart( gpGlobals->curtime + flDelay );
+					ASWGameRules()->ScheduleTechFailureRestart( gpGlobals->curtime + flDelay, m_szStatsMusicFailure );
 				}
 			}
 		}

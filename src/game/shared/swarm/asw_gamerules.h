@@ -59,6 +59,8 @@ public:
 	int m_iSpeedrunTime;
 	int m_iJumpJetType;
 	CNetworkVar( bool, m_bDisallowCameraRotation );
+	string_t m_szStatsMusicSuccess;
+	string_t m_szStatsMusicFailure;
 
 #ifdef CLIENT_DLL
 	virtual void OnDataChanged( DataUpdateType_t updateType );
@@ -222,11 +224,12 @@ public:
 	virtual void MissionComplete(bool bSuccess);
 	virtual void RemoveAllAliens();
 	virtual void RemoveNoisyWeapons();
-	void ScheduleTechFailureRestart( float flRestartBeginTime ) { if ( m_flTechFailureRestartTime == 0 ) { m_flTechFailureRestartTime = flRestartBeginTime; } }
+	void ScheduleTechFailureRestart( float flRestartBeginTime, string_t szTechFailureSong );
 	void CheckTechFailure();
 	float m_fRemoveAliensTime;
 	bool m_bShouldStartMission;
 	float m_flTechFailureRestartTime;
+	string_t m_szTechFailureSong;
 
 	virtual void BroadcastMapLine(CASW_Player *pPlayer, int linetype, int world_x, int world_y);
 
@@ -471,6 +474,7 @@ public:
 	unsigned char m_iPreviousGameState;
 #endif
 	void FinishDeathmatchRound( CASW_Marine_Resource *winner );
+	CNetworkString( m_szStatsMusicOverride, 128 );
 
 	// misc
 	virtual void CreateStandardEntities( void );	

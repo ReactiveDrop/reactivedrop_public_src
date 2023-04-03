@@ -32,6 +32,7 @@ public:
 	CNetworkVar( string_t, m_szSound10 );
 	CNetworkVar( string_t, m_szSoundFail );
 	CNetworkVar( string_t, m_szSoundFailLF );
+	string_t m_szStatsMusicFailure;
 	CNetworkColor32( m_FailColor );
 	float m_fCountdownLength;
 	bool m_bCountdownStarted;
