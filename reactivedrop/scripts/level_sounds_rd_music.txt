@@ -135,6 +135,17 @@
 // Tears for Tarnor Music
 // =========================
 
+"Tarnor01.BGMusic"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"	"*#music/portal_party_escort.mp3"
+}
+
 "Tarnor01.AirlockBattle"
 {
 	"channel"		"CHAN_STATIC"
@@ -146,6 +157,17 @@
 	"wave"	"*#music/portal_4000_degrees_kelvin.mp3"
 }
 
+"Tarnor02.BGMusic"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"	"*#music/portal_taste_of_blood.mp3"
+}
+
 "Tarnor02.MaintenanceBattle"
 {
 	"channel"		"CHAN_STATIC"
@@ -155,6 +177,17 @@
 	"soundlevel"	"SNDLVL_NONE"
 
 	"wave"	"*#music/vlvx_song12.mp3"
+}
+
+"Tarnor03.BGMusic"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"	"*#music/portal_stop_what_you_are_doing.mp3"
 }
 
 "Tarnor03.SpaceportBattle"
@@ -299,6 +332,17 @@
 	"soundlevel"	"SNDLVL_NONE"
 
 	"wave"	"*#music/hl2_song1.mp3"
+}
+
+"tilarus.PortBattleMusic2"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"	"*#music/timor_battle.wav"
 }
 
 "tilarus.RoadBattleMusic"

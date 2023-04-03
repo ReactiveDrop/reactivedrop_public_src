@@ -103458,37 +103458,6 @@ entity
 }
 entity
 {
-	"id" "475612"
-	"classname" "ambient_generic"
-	"cspinup" "0"
-	"fadeinsecs" "0"
-	"fadeoutsecs" "4"
-	"health" "10"
-	"lfomodpitch" "0"
-	"lfomodvol" "0"
-	"lforate" "0"
-	"lfotype" "0"
-	"message" "music/nh_adrenaline.wav"
-	"pitch" "100"
-	"pitchstart" "100"
-	"preset" "0"
-	"radius" "901"
-	"spawnflags" "17"
-	"spindown" "0"
-	"spinup" "0"
-	"targetname" "SD_MusicFight01"
-	"volstart" "10"
-	"origin" "2683.29 2269.42 -64"
-	editor
-	{
-		"color" "220 30 220"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 500]"
-	}
-}
-entity
-{
 	"id" "186942"
 	"classname" "prop_static"
 	"angles" "0 195 0"
@@ -103588,7 +103557,7 @@ entity
 	"lfomodvol" "0"
 	"lforate" "0"
 	"lfotype" "0"
-	"message" "music/objectivecomplete.wav"
+	"message" "Game.ObjectiveComplete"
 	"pitch" "100"
 	"pitchstart" "100"
 	"preset" "0"

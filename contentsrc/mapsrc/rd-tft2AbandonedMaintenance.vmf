@@ -98204,7 +98204,7 @@ entity
 	"id" "75211"
 	"classname" "ambient_generic"
 	"health" "10"
-	"message" "ambient/computer/alarm.wav"
+	"message" "ASWComputer.alarm"
 	"pitch" "100"
 	"pitchstart" "100"
 	"radius" "1250"
@@ -98448,7 +98448,7 @@ entity
 	"id" "77040"
 	"classname" "ambient_generic"
 	"health" "10"
-	"message" "ambient/computer/reactoronline.wav"
+	"message" "ASWComputer.ReactorOnline"
 	"pitch" "100"
 	"pitchstart" "100"
 	"radius" "6250"
@@ -113621,7 +113621,7 @@ entity
 	"id" "148663"
 	"classname" "ambient_generic"
 	"health" "10"
-	"message" "ambient/computer/syntekcomputerloop.wav"
+	"message" "ASWComputer.Loop"
 	"pitch" "100"
 	"pitchstart" "100"
 	"radius" "2250"
@@ -114518,46 +114518,6 @@ entity
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[0 13500]"
-	}
-}
-entity
-{
-	"id" "155130"
-	"classname" "ambient_generic"
-	"health" "10"
-	"message" "ambient/computer/syntekcomputerloop.wav"
-	"pitch" "100"
-	"pitchstart" "100"
-	"radius" "2250"
-	"spawnflags" "16"
-	"targetname" "sound_computernoises"
-	"origin" "-920 -1296 -711.937"
-	editor
-	{
-		"color" "220 30 220"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 9000]"
-	}
-}
-entity
-{
-	"id" "155133"
-	"classname" "ambient_generic"
-	"health" "10"
-	"message" "ambient/computer/syntekcomputerloop.wav"
-	"pitch" "100"
-	"pitchstart" "100"
-	"radius" "2250"
-	"spawnflags" "16"
-	"targetname" "sound_computernoises"
-	"origin" "-888 -1296 -711.937"
-	editor
-	{
-		"color" "220 30 220"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 9000]"
 	}
 }
 entity
@@ -115997,7 +115957,7 @@ entity
 	"id" "160649"
 	"classname" "ambient_generic"
 	"health" "7"
-	"message" "music/objectivecomplete.wav"
+	"message" "Game.ObjectiveComplete"
 	"pitch" "100"
 	"pitchstart" "100"
 	"radius" "1250"
@@ -125122,66 +125082,6 @@ entity
 }
 entity
 {
-	"id" "205676"
-	"classname" "ambient_generic"
-	"health" "10"
-	"message" "ambient/computer/reactoronline.wav"
-	"pitch" "100"
-	"pitchstart" "100"
-	"radius" "6250"
-	"spawnflags" "48"
-	"targetname" "reactor_online_sound"
-	"origin" "-760 -1184 -696"
-	editor
-	{
-		"color" "220 30 220"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 7500]"
-	}
-}
-entity
-{
-	"id" "205679"
-	"classname" "ambient_generic"
-	"health" "10"
-	"message" "ambient/computer/reactoronline.wav"
-	"pitch" "100"
-	"pitchstart" "100"
-	"radius" "6250"
-	"spawnflags" "48"
-	"targetname" "reactor_online_sound"
-	"origin" "-760 -1200 -696"
-	editor
-	{
-		"color" "220 30 220"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 7500]"
-	}
-}
-entity
-{
-	"id" "205682"
-	"classname" "ambient_generic"
-	"health" "10"
-	"message" "ambient/computer/reactoronline.wav"
-	"pitch" "100"
-	"pitchstart" "100"
-	"radius" "6250"
-	"spawnflags" "48"
-	"targetname" "reactor_online_sound"
-	"origin" "-744 -1200 -696"
-	editor
-	{
-		"color" "220 30 220"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 7500]"
-	}
-}
-entity
-{
 	"id" "205700"
 	"classname" "asw_spawner"
 	"AlienClass" "10"
@@ -129781,7 +129681,7 @@ entity
 	"id" "330654"
 	"classname" "ambient_generic"
 	"health" "5"
-	"message" "music/portal_taste_of_blood.mp3"
+	"message" "Tarnor02.BGMusic"
 	"pitch" "100"
 	"pitchstart" "100"
 	"radius" "1250"

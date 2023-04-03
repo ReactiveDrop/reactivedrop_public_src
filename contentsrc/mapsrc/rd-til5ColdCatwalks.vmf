@@ -148790,7 +148790,7 @@ entity
 	"id" "103102"
 	"classname" "ambient_generic"
 	"health" "10"
-	"message" "music/shockstinger01.wav"
+	"message" "asw_song.Stinger"
 	"pitch" "100"
 	"pitchstart" "100"
 	"radius" "1250"
