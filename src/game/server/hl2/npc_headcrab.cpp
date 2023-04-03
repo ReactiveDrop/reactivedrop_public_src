@@ -67,6 +67,7 @@ const int HEADCRAB_MAX_JUMP_DIST = 256;
 #define HEADCRAB_BURN_SOUND_FREQUENCY 10
 
 ConVar g_debug_headcrab( "g_debug_headcrab", "0", FCVAR_CHEAT );
+ConVar rd_headcrab_waterproof( "rd_headcrab_waterproof", "0", FCVAR_CHEAT, "Headcrabs don't drown in water." );
 extern ConVar asw_debug_alien_damage;
 
 //------------------------------------
@@ -940,7 +941,7 @@ void CBaseHeadcrab::GatherConditions( void )
 
 	BaseClass::GatherConditions();
 
-	if( m_lifeState == LIFE_ALIVE && GetWaterLevel() > 1 )
+	if ( m_lifeState == LIFE_ALIVE && GetWaterLevel() > 1 && !rd_headcrab_waterproof.GetBool() )
 	{
 		// Start Drowning!
 		SetCondition( COND_HEADCRAB_IN_WATER );
