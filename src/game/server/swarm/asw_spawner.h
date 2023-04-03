@@ -25,8 +25,9 @@ public:
 
 	Class_T Classify() { return (Class_T) CLASS_ASW_SPAWNER; }
 
-	virtual IASW_Spawnable_NPC*	SpawnAlien( const char *szAlienClassName, const Vector &vecHullMins, const Vector &vecHullMaxs, CASW_Spawn_NPC *pDirectorNPC = NULL );
-	virtual bool			CanSpawn( const Vector &vecHullMins, const Vector &vecHullMaxs, CASW_Spawn_NPC *pDirectorNPC = NULL );
+	virtual IASW_Spawnable_NPC*	SpawnAlien( const char *szAlienClassName, const Vector &vecHullMins, const Vector &vecHullMaxs, CASW_Spawn_NPC *pDirectorNPC = NULL ) override;
+	virtual bool			CanSpawn( const Vector &vecHullMins, const Vector &vecHullMaxs, CASW_Spawn_NPC *pDirectorNPC = NULL ) override;
+	virtual void			DoDispatchSpawn( CBaseEntity *pEntity, CASW_Spawn_NPC *pDirectorNPC ) override;
 	void					SpawnerThink();
 	void					SpawnOneAlien();
 
@@ -72,6 +73,7 @@ protected:
 
 	int			m_AlienClassNum;			// integer from choice in Hammer, which sets the classname on Spawn
 	string_t	m_AlienClassName;			// classname of the NPC(s) that will be created.
+	string_t	m_szAlienModelOverride;
 
 	int			m_nCurrentLiveAliens;		// current number of live aliens
 

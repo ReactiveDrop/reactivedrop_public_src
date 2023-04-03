@@ -420,7 +420,7 @@ IASW_Spawnable_NPC* CASW_Base_Spawner::SpawnAlien( const char *szAlienClassName,
 	pEntity->m_iszVScripts = m_iszAlienVScripts;
 	pEntity->m_iszScriptThinkFunction = m_iszAlienScriptThinkFunction;
 
-	DispatchSpawn( pEntity );
+	DoDispatchSpawn( pEntity, pDirectorNPC );
 
 	if ( pDirectorNPC )
 	{

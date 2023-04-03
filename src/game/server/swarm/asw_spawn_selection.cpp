@@ -119,6 +119,7 @@ void CASW_Spawn_Selection::OnMissionStarted()
 		{
 			overlays[j]->ApplyOverlay( pSpawnSet );
 		}
+		pSpawnSet->Precache();
 		return;
 	}
 
@@ -399,6 +400,22 @@ void CASW_Spawn_Set::ApplyOverlay( CASW_Spawn_Set *pTarget )
 	COPY_OVER( Packs, ASW_SPAWN_TYPE_PACK );
 
 #undef COPY_OVER
+}
+
+void CASW_Spawn_Set::Precache()
+{
+	bool bAllowPrecache = CBaseEntity::IsPrecacheAllowed();
+	CBaseEntity::SetAllowPrecache( true );
+
+	for ( int i = 0; i < NUM_ASW_SPAWN_TYPES; i++ )
+	{
+		FOR_EACH_VEC( m_SpawnDefinitions[i], j )
+		{
+			m_SpawnDefinitions[i][j]->Precache();
+		}
+	}
+
+	CBaseEntity::SetAllowPrecache( bAllowPrecache );
 }
 
 void CASW_Spawn_Set::Dump()
@@ -798,6 +815,14 @@ CASW_Spawn_Definition::CASW_Spawn_Definition( const CASW_Spawn_Definition & def 
 	}
 }
 
+void CASW_Spawn_Definition::Precache()
+{
+	FOR_EACH_VEC( m_NPCs, i )
+	{
+		m_NPCs[i]->Precache();
+	}
+}
+
 void CASW_Spawn_Definition::Dump( float flTotalWeight )
 {
 	CmdMsg( "  %f%% chance (weight %f):\n", m_flSelectionWeight / flTotalWeight * 100, m_flSelectionWeight );
@@ -847,6 +872,7 @@ CASW_Spawn_NPC::CASW_Spawn_NPC( const char *szAlienClass ) : m_Requirement( NULL
 	m_bFlinches = true;
 	m_bGrenadeReflector = false;
 	m_iszVScript = NULL_STRING;
+	m_iszModelOverride = NULL_STRING;
 	m_flSpawnChance = 1;
 }
 
@@ -898,6 +924,15 @@ CASW_Spawn_NPC::CASW_Spawn_NPC( KeyValues *pKV ) : m_Requirement( pKV )
 		m_iszVScript = AllocPooledString( pKV->GetString( "VScript" ) );
 	}
 
+	if ( pKV->GetString( "ModelOverride", NULL ) == NULL )
+	{
+		m_iszModelOverride = NULL_STRING;
+	}
+	else
+	{
+		m_iszModelOverride = AllocPooledString( pKV->GetString( "ModelOverride" ) );
+	}
+
 	m_flSpawnChance = pKV->GetFloat( "SpawnChance", 1.0f );
 	if ( m_flSpawnChance <= 0 )
 	{
@@ -918,7 +953,16 @@ CASW_Spawn_NPC::CASW_Spawn_NPC( const CASW_Spawn_NPC & npc ) : m_Requirement( np
 	m_bFlinches = npc.m_bFlinches;
 	m_bGrenadeReflector = npc.m_bGrenadeReflector;
 	m_iszVScript = npc.m_iszVScript;
+	m_iszModelOverride = npc.m_iszModelOverride;
 	m_flSpawnChance = npc.m_flSpawnChance;
+}
+
+void CASW_Spawn_NPC::Precache()
+{
+	if ( m_iszModelOverride != NULL_STRING )
+	{
+		CBaseEntity::PrecacheModel( STRING( m_iszModelOverride ) );
+	}
 }
 
 void CASW_Spawn_NPC::Dump()
@@ -963,6 +1007,10 @@ void CASW_Spawn_NPC::Dump()
 	if ( m_iszVScript != NULL_STRING )
 	{
 		CmdMsg( "      Run VScript: scripts/vscripts/%s.nut\n", STRING( m_iszVScript ) );
+	}
+	if ( m_iszModelOverride != NULL_STRING )
+	{
+		CmdMsg( "      Model Override: %s\n", STRING( m_iszModelOverride ) );
 	}
 	m_Requirement.Dump( "      " );
 }

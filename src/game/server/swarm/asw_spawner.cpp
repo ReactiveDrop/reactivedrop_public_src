@@ -1,7 +1,6 @@
 #include "cbase.h"
 #include "baseentity.h"
 #include "asw_spawner.h"
-//#include "asw_simpleai_senses.h"
 #include "asw_marine.h"
 #include "asw_gamerules.h"
 #include "asw_marine_resource.h"
@@ -14,6 +13,8 @@
 #include "asw_director.h"
 #include "asw_fail_advice.h"
 #include "asw_spawn_manager.h"
+#include "asw_spawn_selection.h"
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -32,6 +33,7 @@ BEGIN_DATADESC( CASW_Spawner )
 	DEFINE_KEYFIELD( m_flSpawnInterval,			FIELD_FLOAT,	"SpawnInterval" ),
 	DEFINE_KEYFIELD( m_flSpawnIntervalJitter,	FIELD_FLOAT,	"SpawnIntervalJitter" ),
 	DEFINE_KEYFIELD( m_AlienClassNum,			FIELD_INTEGER,	"AlienClass" ),
+	DEFINE_KEYFIELD( m_szAlienModelOverride,	FIELD_MODELNAME, "AlienModelOverride" ),
 	DEFINE_KEYFIELD( m_SpawnerState,			FIELD_INTEGER,	"SpawnerState" ),
 	DEFINE_KEYFIELD( m_flDirectorLockTime,		FIELD_FLOAT,	"DirectorLockTime" ),
 	DEFINE_INPUT(    m_iAllowDirectorSpawns,	FIELD_INTEGER,	"AllowDirectorSpawns" ),
@@ -57,6 +59,7 @@ CASW_Spawner::CASW_Spawner()
 	m_iAllowDirectorSpawns = 0;
 	m_flDirectorLockTime = 4;
 	m_flLastDirectorSpawn = -FLT_MAX;
+	m_szAlienModelOverride = NULL_STRING;
 }
 
 CASW_Spawner::~CASW_Spawner()
@@ -103,6 +106,11 @@ void CASW_Spawner::Precache()
 	else
 	{
 		UTIL_PrecacheOther( pszNPCName );
+	}
+
+	if ( m_szAlienModelOverride != NULL_STRING )
+	{
+		PrecacheModel( STRING( m_szAlienModelOverride ) );
 	}
 }
 
@@ -156,6 +164,23 @@ bool CASW_Spawner::CanSpawn( const Vector &vecHullMins, const Vector &vecHullMax
 		return false;
 
 	return BaseClass::CanSpawn( vecHullMins, vecHullMaxs );
+}
+
+void CASW_Spawner::DoDispatchSpawn( CBaseEntity *pEntity, CASW_Spawn_NPC *pDirectorNPC )
+{
+	if ( pDirectorNPC )
+	{
+		if ( pDirectorNPC->m_iszModelOverride != NULL_STRING )
+		{
+			pEntity->SetModelName( pDirectorNPC->m_iszModelOverride );
+		}
+	}
+	else if ( m_szAlienModelOverride != NULL_STRING )
+	{
+		pEntity->SetModelName( m_szAlienModelOverride );
+	}
+
+	BaseClass::DoDispatchSpawn( pEntity, pDirectorNPC );
 }
 
 // called when we've spawned all the aliens we can,

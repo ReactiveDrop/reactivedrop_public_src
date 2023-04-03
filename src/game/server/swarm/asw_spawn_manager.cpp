@@ -93,6 +93,12 @@ void CASW_Spawn_Manager::LevelInitPostEntity()
 	m_southCandidateNodes.Purge();
 	m_bWarnedAboutMissingNodes = false;
 
+	UTIL_PrecacheOther( "asw_alien_goo" );
+	CBaseEntity::PrecacheModel( "models/aliens/biomass/biomasshelix.mdl" );
+	CBaseEntity::PrecacheModel( "models/aliens/biomass/biomassl.mdl" );
+	CBaseEntity::PrecacheModel( "models/aliens/biomass/biomasss.mdl" );
+	CBaseEntity::PrecacheModel( "models/aliens/biomass/biomassu.mdl" );
+
 	FindEscapeTriggers();
 }
 
@@ -968,6 +974,11 @@ CBaseEntity *CASW_Spawn_Manager::SpawnAlienAt( CASW_Spawn_NPC *pNPC, const Vecto
 		return NULL;
 	}
 
+	if ( pNPC->m_iszModelOverride != NULL_STRING )
+	{
+		pEntity->SetModelName( pNPC->m_iszModelOverride );
+	}
+
 	if ( pEntity->IsInhabitableNPC() )
 	{
 		CASW_Inhabitable_NPC *pAlien = assert_cast< CASW_Inhabitable_NPC * >( pEntity );
@@ -1433,11 +1444,6 @@ void CASW_Spawn_Manager::PrespawnEntityAtRandomNode( const char *szEntityClass, 
 				continue;
 			}
 
-			MDLCACHE_CRITICAL_SECTION();
-
-			bool allowPrecache = CBaseEntity::IsPrecacheAllowed();
-			CBaseEntity::SetAllowPrecache( true );
-
 			// Try to create entity
 			CBaseEntity *entity = dynamic_cast< CBaseEntity * >( CreateEntityByName( szEntityClass ) );
 			if ( entity )
@@ -1458,17 +1464,17 @@ void CASW_Spawn_Manager::PrespawnEntityAtRandomNode( const char *szEntityClass, 
 						ang.Init( 0, RandomFloat( 0.0f, 360.0f ), 0.0f );
 						break;
 					case 2: 
-						pBiomass->SetModelName( AllocPooledString( "models/aliens/biomass/biomassl.mdl" ) ); 
+						pBiomass->SetModelName( AllocPooledString( "models/aliens/biomass/biomassl.mdl" ) );
 						vecPositionOffset.Init( 0, 0, -32.f );
 						ang.Init( 40.f, RandomFloat( 0.0f, 360.0f ), 0.0f );
 						break;
 					case 3: 
-						pBiomass->SetModelName( AllocPooledString( "models/aliens/biomass/biomasss.mdl" ) ); 
+						pBiomass->SetModelName( AllocPooledString( "models/aliens/biomass/biomasss.mdl" ) );
 						vecPositionOffset.Init( 0, 0, -32.f );
 						ang.Init( 0, RandomFloat( 0.0f, 360.0f ), 0.0f );
 						break;
 					case 4: 
-						pBiomass->SetModelName( AllocPooledString( "models/aliens/biomass/biomassu.mdl" ) ); 
+						pBiomass->SetModelName( AllocPooledString( "models/aliens/biomass/biomassu.mdl" ) );
 						vecPositionOffset.Init( 0, 0, 32.f );
 						ang.Init( -81.5, RandomFloat( 0.0f, 360.0f ), 0.0f );
 						break;
@@ -1480,7 +1486,6 @@ void CASW_Spawn_Manager::PrespawnEntityAtRandomNode( const char *szEntityClass, 
 
 				DispatchSpawn( entity );
 			}
-			CBaseEntity::SetAllowPrecache( allowPrecache );
 
 			if ( entity )
 				break;			// exit from 30 tries

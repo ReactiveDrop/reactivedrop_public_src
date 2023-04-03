@@ -72,6 +72,7 @@
 // - Flinches (0 or 1, default 1)
 // - Reflector (0 or 1, default 0)
 // - VScript (name of a file in scripts/vscripts, run with the global "self" variable set to the alien entity)
+// - ModelOverride (name of a model to give the alien instead of its default)
 // - SpawnChance (>0 to 1, default 1, chance that this NPC spawns at all)
 //
 // The following KeyValues affect whether an NPC block is allowed to spawn and may be specified any number

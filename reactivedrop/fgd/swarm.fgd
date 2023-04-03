@@ -2491,7 +2491,7 @@
 	SpawnInterval(float) : "Spawn interval" : 4 : "Time in seconds between each alien spawning."
 	SpawnIntervalJitter(float) : "Spawn interval variation" : 25 : "Percentage variation applied randomly to the spawn interval each time an alien spawns.  Value must be between 0 and 100.  The default 25 will give a 25% variation to the spawn interval, so a 1 second spawn interval would actually be randomly between 0.75 seconds and 1.25 seconds."
 	
-	AlienClass(choices) : "Alien Class" : 0 : "Which type of alien to produce from this spawner." =
+	AlienClass(choices) report : "Alien Class" : 0 : "Which type of alien to produce from this spawner." =
 	[
 		0 : "asw_drone"
 		1 : "asw_buzzer"
@@ -2525,6 +2525,7 @@
 		29 : "npc_combine_elite"
 		30 : "npc_hunter"
 	]
+	AlienModelOverride(studio) : "Alien Model Override" : : "Spawn aliens with a different model than the default."
 
 	AllowDirectorSpawns(choices) : "Allow director spawns" : 0 : "Should the director be allowed to spawn aliens from this spawner? Director spawns do not count towards the limit of this spawner." =
 	[
