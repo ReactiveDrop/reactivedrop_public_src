@@ -810,6 +810,16 @@ void CASW_Spawn_Definition::Dump( float flTotalWeight )
 	}
 }
 
+const char *CASW_Spawn_Definition::GetHordeSoundName() const
+{
+	if ( m_NPCs.Count() > 0 )
+	{
+		return m_NPCs[0]->m_pAlienClass->m_szHordeSound;
+	}
+
+	return "Spawner.Horde";
+}
+
 CASW_Spawn_NPC::CASW_Spawn_NPC( const char *szAlienClass ) : m_Requirement( NULL )
 {
 	m_pAlienClass = NULL;

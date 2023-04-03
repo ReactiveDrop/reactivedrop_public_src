@@ -319,7 +319,7 @@ void CASW_Director::UpdateHorde()
 
 					if ( ASWGameRules() )
 					{
-						ASWGameRules()->BroadcastSound( "Spawner.Horde" );
+						ASWGameRules()->BroadcastSound( pHorde->GetHordeSoundName() );
 					}
 					m_HordeTimer.Invalidate();
 				}

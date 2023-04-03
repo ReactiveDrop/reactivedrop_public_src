@@ -14,12 +14,13 @@
 // == Master list of alien classes ==
 // ==================================
 
-ASW_Alien_Class_Entry::ASW_Alien_Class_Entry( const char *szClass, int nHullType, Vector vecRealHullMins, Vector vecRealHullMaxs )
+ASW_Alien_Class_Entry::ASW_Alien_Class_Entry( const char *szClass, int nHullType, Vector vecRealHullMins, Vector vecRealHullMaxs, const char *szHordeSound )
 {
 	m_pszAlienClass = szClass;
 	m_nHullType = nHullType;
 	m_vecRealHullMins = vecRealHullMins;
 	m_vecRealHullMaxs = vecRealHullMins;
+	m_szHordeSound = szHordeSound;
 }
 
 // NOTE: If you add new entries to this list, update the asw_spawner choices in swarm.fgd.
@@ -44,19 +45,19 @@ const ASW_Alien_Class_Entry g_Aliens[] =
 	{ "npc_antlionguard_cavern", HULL_LARGE, Vector( -30, -30, 0 ), Vector( 30, 30, 110 ) },
 	{ "npc_antlion", HULL_MEDIUM, Vector( -16, -16, 0 ), Vector( 16, 16, 64 ) },
 	{ "npc_antlion_worker", HULL_MEDIUM, Vector( -16, -16, 0 ), Vector( 16, 16, 64 ) },
-	{ "npc_zombie", HULL_HUMAN, Vector( -13, -13, 0 ), Vector( 13, 13, 72 ) },
-	{ "npc_zombie_torso", HULL_HUMAN, Vector( -13, -13, 0 ), Vector( 13, 13, 72 ) },
-	{ "npc_poisonzombie", HULL_HUMAN, Vector( -13, -13, 0 ), Vector( 13, 13, 72 ) },
-	{ "npc_fastzombie", HULL_HUMAN, Vector( -13, -13, 0 ), Vector( 13, 13, 72 ) },
-	{ "npc_fastzombie_torso", HULL_HUMAN, Vector( -13, -13, 0 ), Vector( 13, 13, 72 ) },
+	{ "npc_zombie", HULL_HUMAN, Vector( -13, -13, 0 ), Vector( 13, 13, 72 ), "Spawner.HordeZombies" },
+	{ "npc_zombie_torso", HULL_HUMAN, Vector( -13, -13, 0 ), Vector( 13, 13, 72 ), "Spawner.HordeZombies" },
+	{ "npc_poisonzombie", HULL_HUMAN, Vector( -13, -13, 0 ), Vector( 13, 13, 72 ), "Spawner.HordeZombies" },
+	{ "npc_fastzombie", HULL_HUMAN, Vector( -13, -13, 0 ), Vector( 13, 13, 72 ), "Spawner.HordeZombies" },
+	{ "npc_fastzombie_torso", HULL_HUMAN, Vector( -13, -13, 0 ), Vector( 13, 13, 72 ), "Spawner.HordeZombies" },
 	{ "npc_headcrab", HULL_TINY, Vector( -12, -12, 0 ), Vector( 12, 12, 12 ) },
 	{ "npc_headcrab_fast", HULL_TINY, Vector( -12, -12, 0 ), Vector( 12, 12, 12 ) },
 	{ "npc_headcrab_poison", HULL_TINY, Vector( -12, -12, 0 ), Vector( 12, 12, 12 ) },
-	{ "npc_zombine", HULL_HUMAN, Vector( -13, -13, 0 ), Vector( 13, 13, 72 ) },
-	{ "npc_combine_s", HULL_HUMAN, Vector( -13, -13, 0 ), Vector( 13, 13, 72 ) },
-	{ "npc_combine_shotgun", HULL_HUMAN, Vector( -13, -13, 0 ), Vector( 13, 13, 72 ) },
-	{ "npc_combine_elite", HULL_HUMAN, Vector( -13, -13, 0 ), Vector( 13, 13, 72 ) },
-	{ "npc_hunter", HULL_MEDIUM_TALL, Vector( -18, -18, 0 ), Vector( 18, 18, 100 ) },
+	{ "npc_zombine", HULL_HUMAN, Vector( -13, -13, 0 ), Vector( 13, 13, 72 ), "Spawner.HordeZombies" },
+	{ "npc_combine_s", HULL_HUMAN, Vector( -13, -13, 0 ), Vector( 13, 13, 72 ), "Spawner.HordeCombine" },
+	{ "npc_combine_shotgun", HULL_HUMAN, Vector( -13, -13, 0 ), Vector( 13, 13, 72 ), "Spawner.HordeCombine" },
+	{ "npc_combine_elite", HULL_HUMAN, Vector( -13, -13, 0 ), Vector( 13, 13, 72 ), "Spawner.HordeCombine" },
+	{ "npc_hunter", HULL_MEDIUM_TALL, Vector( -18, -18, 0 ), Vector( 18, 18, 100 ), "Spawner.HordeCombine" },
 #ifdef RD_7A_ENEMIES
 	{ "asw_meatbug", HULL_LARGE, Vector( -30, -30, 0 ), Vector( 30, 30, 110 ) },
 	{ "asw_juggernaut", HULL_LARGE, Vector( -30, -30, 0 ), Vector( 30, 30, 110 ) },
@@ -84,9 +85,9 @@ const ASW_Alien_Class_Entry g_NonSpawnableAliens[] =
 {
 	{ "asw_marine", HULL_HUMAN, Vector( -13, -13, 0 ), Vector( 13, 13, 72 ) },
 	{ "asw_colonist", HULL_HUMAN, Vector( -13, -13, 0 ), Vector( 13, 13, 72 ) },
-	{ "npc_strider", HULL_LARGE_CENTERED, Vector( -38, -38, -38 ), Vector( 38, 38, 38 ) },
-	{ "npc_combinegunship", HULL_LARGE_CENTERED, Vector( -38, -38, -38 ), Vector( 38, 38, 38 ) },
-	{ "npc_combinedropship", HULL_LARGE_CENTERED, Vector( -38, -38, -38 ), Vector( 38, 38, 38 ) },
+	{ "npc_strider", HULL_LARGE_CENTERED, Vector( -38, -38, -38 ), Vector( 38, 38, 38 ), "Spawner.HordeCombine" },
+	{ "npc_combinegunship", HULL_LARGE_CENTERED, Vector( -38, -38, -38 ), Vector( 38, 38, 38 ), "Spawner.HordeCombine" },
+	{ "npc_combinedropship", HULL_LARGE_CENTERED, Vector( -38, -38, -38 ), Vector( 38, 38, 38 ), "Spawner.HordeCombine" },
 };
 
 int GetAlienClassIndex( CBaseEntity *pAlien )

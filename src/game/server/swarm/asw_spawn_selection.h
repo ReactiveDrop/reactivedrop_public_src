@@ -111,6 +111,7 @@ public:
 	CASW_Spawn_Definition( KeyValues *pKV );
 	CASW_Spawn_Definition( const CASW_Spawn_Definition & def );
 	void Dump( float flTotalWeight );
+	const char *GetHordeSoundName() const;
 
 	float m_flSelectionWeight;
 	CUtlVectorAutoPurge<CASW_Spawn_NPC *> m_NPCs;

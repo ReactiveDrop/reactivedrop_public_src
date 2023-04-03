@@ -47,9 +47,10 @@ void CServerGameClients::GetPlayerLimits( int& minplayers, int& maxplayers, int 
 void CServerGameDLL::LevelInit_ParseAllEntities( const char *pMapEntities )
 {
 	// precache even if not in the level, for onslaught mode
-	for ( int i = 0; i < ASWSpawnManager()->GetNumAlienClasses(); i++ )
+	for ( int i = 0; i < NELEMS( g_Aliens ); i++ )
 	{
-		UTIL_PrecacheOther( ASWSpawnManager()->GetAlienClass( i )->m_pszAlienClass );
+		UTIL_PrecacheOther( g_Aliens[i].m_pszAlienClass );
+		CBaseEntity::PrecacheScriptSound( g_Aliens[i].m_szHordeSound );
 	}
 }
 
