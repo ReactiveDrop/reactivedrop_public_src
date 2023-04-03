@@ -2273,8 +2273,8 @@
 	input AddPoints(integer) : "Award points to the players. Only works if the mission is in progress and the mission overview is tagged with 'points'."
 	input ModifyDifficulty(integer) : "Modify the mission difficulty level during gameplay. This does NOT affect health for already-spawned aliens. Normal difficulty is 5, brutal is 13. Only works if the mission is in progress. Difficulty level cannot go below 2 or above 10 million."
 	input MarineFinishedMission(target_destination) : "Mark a marine as having finished the mission independely of their team, for speedrun leaderboards."
-	input StatsMusicSuccess(sound) : "Overrides the music that plays during debriefing."
-	input StatsMusicFailure(sound) : "Overrides the music that plays during debriefing."
+	input StatsMusicSuccess(string) : "Overrides the music that plays during debriefing."
+	input StatsMusicFailure(string) : "Overrides the music that plays during debriefing."
 	output OnDifficulty(integer) : "On mission start, 1=Easy, 2=Normal, 3=Hard, 4=Insane, 5=Brutal"
 	output OnOnslaught(integer) : "On mission start, 0=Normal, 1=Onslaught"
 	output OnFriendlyFire(integer) : "On mission start, 0=Normal, 1=Hardcore"
@@ -3635,7 +3635,7 @@
 
 	input StartCountdown(void) : "Start Countdown"
 	input CancelCountdown(void) : "Cancel Countdown"
-	input StatsMusicFailure(sound) : "Overrides the music that plays during debriefing."
+	input StatsMusicFailure(string) : "Overrides the music that plays during debriefing."
 
 	output OnCountdownFailed(void) : "Fired when the countdown timer reaches 0."
 ]
@@ -3662,7 +3662,7 @@
 
 	input DisableTechMarineReq(void) : "Disable tech marine req.  If a tech is required to hack a certain objective, then send this input after the hack is finished (as the tech marine is no longer needed to finish the mission)."
 	input EnableTechMarineReq(void) : "Re-enable the tech marine req. after disabling it."
-	input StatsMusicFailure(sound) : "Overrides the music that plays during debriefing."
+	input StatsMusicFailure(string) : "Overrides the music that plays during debriefing."
 ]
 
 @PointClass base(Targetname) iconsprite("editor/asw_tech_marine_req.vmt") = asw_equip_req : 
