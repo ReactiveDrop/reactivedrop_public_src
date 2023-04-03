@@ -90,6 +90,7 @@
 #include "rd_cause_of_death.h"
 #include "npc_zombine.h"
 #include "asw_weapon_revive_tool_shared.h"
+#include "asw_tech_marine_req.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -4268,7 +4269,8 @@ void CASW_Marine::Event_Killed( const CTakeDamageInfo &info )
 			if ( !bTech && pGameResource->CountAllAliveMarines() > 0 )
 			{
 				float flDelay = gEntList.FindEntityByClassname( NULL, "asw_weapon_hack_tool" ) ? 5.0f : 1.5f;
-				ASWGameRules()->ScheduleTechFailureRestart( gpGlobals->curtime + flDelay );
+				CASW_Tech_Marine_Req *pReq = assert_cast< CASW_Tech_Marine_Req * >( gEntList.FindEntityByClassname( NULL, "asw_tech_marine_req" ) );
+				ASWGameRules()->ScheduleTechFailureRestart( gpGlobals->curtime + flDelay, pReq ? pReq->m_szStatsMusicFailure : NULL_STRING );
 			}
 		}
 	}
