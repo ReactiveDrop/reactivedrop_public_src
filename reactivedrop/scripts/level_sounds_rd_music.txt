@@ -489,8 +489,7 @@
 
 	"soundlevel"	"SNDLVL_NONE"
 
-	// TODO: Portal2-01-You_Will_Be_Perfect.mp3
-	"wave"			"*#music/AS01.wav"
+	"wave"			"*#music/Portal2-01-You_Will_Be_Perfect.mp3"
 }
 
 "area9800.LZBattleMusic2"
@@ -501,8 +500,7 @@
 
 	"soundlevel"	"SNDLVL_NONE"
 
-	// TODO: Portal2-17-I_Am_Different.mp3
-	"wave"			"*#music/AS01.wav"
+	"wave"			"*#music/Portal2-17-I_Am_Different.mp3"
 }
 
 "area9800.LZBattleMusic3"
@@ -513,8 +511,7 @@
 
 	"soundlevel"	"SNDLVL_NONE"
 
-	// TODO: Portal2-04-An_Accent_Beyond.mp3
-	"wave"			"*#music/AS01.wav"
+	"wave"			"*#music/Portal2-04-An_Accent_Beyond.mp3"
 }
 
 "area9800.PP1BattleMusic"
@@ -525,8 +522,7 @@
 
 	"soundlevel"	"SNDLVL_NONE"
 
-	// TODO: Portal2-06-TEST.mp3
-	"wave"			"*#music/AS01.wav"
+	"wave"			"*#music/Portal2-06-TEST.mp3"
 }
 
 "area9800.PP1BattleMusic2"
@@ -536,9 +532,8 @@
 	"pitch"			"100"
 
 	"soundlevel"	"SNDLVL_NONE"
- 
-	// TODO: Portal2-02-Wheatley_Science.mp3
-	"wave"			"*#music/AS01.wav"
+
+	"wave"			"*#music/Portal2-02-Wheatley_Science.mp3"
 }
 
 "area9800.PP2BattleMusic"
@@ -549,8 +544,7 @@
 
 	"soundlevel"	"SNDLVL_NONE"
 
-	// TODO: Portal2-07-The_Part_Where_He_Kills_You.mp3
-	"wave"			"*#music/AS01.wav"
+	"wave"			"*#music/Portal2-07-The_Part_Where_He_Kills_You.mp3"
 }
 
 "area9800.WLBattleMusic01"
@@ -561,8 +555,7 @@
 
 	"soundlevel"	"SNDLVL_NONE"
 
-	// TODO: Portal2-08-Omg_What_has_He_Done_.mp3
-	"wave"			"*#music/AS01.wav"
+	"wave"			"*#music/Portal2-08-Omg_What_has_He_Done_.mp3"
 }
 
 // =========================
