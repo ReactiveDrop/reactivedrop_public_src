@@ -257,7 +257,8 @@ void CASW_Sentry_Top::TurnToGoal( float deltatime )
 			}
 		}
 
-		if ( fabsf( AngleDiff( m_fGoalYaw, m_fCurrentYaw ) ) < fabsf( AngleDiff( m_fGoalYaw, m_fCenterAimYaw ) ) )
+		float flDeployYaw = GetDeployYaw();
+		if ( fabsf( AngleDiff( flDeployYaw, m_fCurrentYaw ) ) < fabsf( AngleDiff( flDeployYaw, m_fCenterAimYaw ) ) )
 		{
 			m_fCenterAimYaw = m_fCurrentYaw;
 		}
