@@ -693,6 +693,11 @@ screenshake_t *CViewEffects::FindLongestShake()
 }
 
 ConVar rd_camera_shake( "rd_camera_shake", "2", FCVAR_ARCHIVE, "Enable camera shakes (2=all, 1=only forced, 0=none)" );
+CON_COMMAND_F( asw_camera_shake, "legacy camera shake setting", FCVAR_HIDDEN )
+{
+	rd_camera_shake.SetValue( V_atoi( args[1] ) ? 2 : 1 );
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Message hook to parse ScreenShake messages
 // Input  : pszName - 
