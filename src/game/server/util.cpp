@@ -35,7 +35,7 @@
 #include "engine/ivdebugoverlay.h"
 #include "datacache/imdlcache.h"
 #include "util.h"
-
+#include "asw_util_shared.h"
 
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -721,6 +721,7 @@ inline float ComputeShakeAmplitude( const Vector &center, const Vector &shakePt,
 }
 
 
+#ifndef INFESTED_DLL
 //-----------------------------------------------------------------------------
 // Transmits the actual shake event
 //-----------------------------------------------------------------------------
@@ -741,6 +742,7 @@ inline void TransmitShakeEvent( CBasePlayer *pPlayer, float localAmplitude, floa
 		MessageEnd();
 	}
 }
+#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: Shake the screen of all clients within radius.
@@ -764,6 +766,10 @@ inline void TransmitShakeEvent( CBasePlayer *pPlayer, float localAmplitude, floa
 const float MAX_SHAKE_AMPLITUDE = 16.0f;
 void UTIL_ScreenShake( const Vector &center, float amplitude, float frequency, float duration, float radius, ShakeCommand_t eCommand, bool bAirShake, CUtlVector<CBasePlayer *> *ignore )
 {
+#ifdef INFESTED_DLL
+	Assert( !ignore );
+	UTIL_ASW_ScreenShake( center, amplitude, frequency, duration, radius, eCommand, bAirShake );
+#else
 	int			i;
 	float		localAmplitude;
 
@@ -797,6 +803,7 @@ void UTIL_ScreenShake( const Vector &center, float amplitude, float frequency, f
 
 		TransmitShakeEvent( pPlayer, localAmplitude, frequency, duration, eCommand );
 	}
+#endif
 }
 
 
@@ -805,6 +812,9 @@ void UTIL_ScreenShake( const Vector &center, float amplitude, float frequency, f
 //-----------------------------------------------------------------------------
 void UTIL_ScreenShakeObject( CBaseEntity *pEnt, const Vector &center, float amplitude, float frequency, float duration, float radius, ShakeCommand_t eCommand, bool bAirShake )
 {
+#ifdef INFESTED_DLL
+	Assert( 0 );
+#else
 	int			i;
 	float		localAmplitude;
 
@@ -844,6 +854,7 @@ void UTIL_ScreenShakeObject( CBaseEntity *pEnt, const Vector &center, float ampl
 
 		TransmitShakeEvent( (CBasePlayer *)pPlayer, localAmplitude, frequency, duration, eCommand );
 	}
+#endif
 }
 
 
