@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "2146"
+	"mapversion" "2149"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -50,7 +50,7 @@ viewsettings
 world
 {
 	"id" "394754"
-	"mapversion" "2146"
+	"mapversion" "2149"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -41284,7 +41284,7 @@ entity
 	"teslablesp" "1"
 	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT"
 	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT_IDLE"
-	"origin" "-3278.5 7194.12 792"
+	"origin" "-3370 7088 798"
 	editor
 	{
 		"color" "0 0 255"
@@ -41326,7 +41326,7 @@ entity
 	"teslablesp" "1"
 	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT"
 	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT_IDLE"
-	"origin" "-3320 7224 792.649"
+	"origin" "-3430 7124 798"
 	editor
 	{
 		"color" "0 0 255"
@@ -41366,9 +41366,9 @@ entity
 	"StartBurrowed" "1"
 	"targetname" "ElevatorSpawn_group_4"
 	"teslablesp" "1"
-	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_LONG"
-	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_LONG_IDLE"
-	"origin" "-3344 7144 792.649"
+	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT"
+	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT_IDLE"
+	"origin" "-3344 7144 804"
 	editor
 	{
 		"color" "0 0 255"
@@ -41410,7 +41410,7 @@ entity
 	"teslablesp" "1"
 	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT"
 	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT_IDLE"
-	"origin" "-3272 7104 796.649"
+	"origin" "-3296 7112 816"
 	editor
 	{
 		"color" "0 0 255"
@@ -41452,7 +41452,7 @@ entity
 	"teslablesp" "1"
 	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT"
 	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT_IDLE"
-	"origin" "-3312 7048 795.649"
+	"origin" "-3312 7050 808"
 	editor
 	{
 		"color" "0 0 255"
@@ -41494,7 +41494,7 @@ entity
 	"teslablesp" "1"
 	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT"
 	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT_IDLE"
-	"origin" "-3286 6966 793.649"
+	"origin" "-3284 6966 802"
 	editor
 	{
 		"color" "0 0 255"
@@ -41534,9 +41534,9 @@ entity
 	"StartBurrowed" "1"
 	"targetname" "ElevatorSpawn_group_8"
 	"teslablesp" "1"
-	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_LONG"
-	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_LONG_IDLE"
-	"origin" "-3297 6907 793"
+	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT"
+	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT_IDLE"
+	"origin" "-3297 6908 804"
 	editor
 	{
 		"color" "0 0 255"
@@ -41576,9 +41576,9 @@ entity
 	"StartBurrowed" "1"
 	"targetname" "ElevatorSpawn_group_2"
 	"teslablesp" "1"
-	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_LONG"
-	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_LONG_IDLE"
-	"origin" "-3385.28 6934 792"
+	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT"
+	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT_IDLE"
+	"origin" "-3384 6934 804"
 	editor
 	{
 		"color" "0 0 255"
@@ -41618,8 +41618,8 @@ entity
 	"StartBurrowed" "1"
 	"targetname" "ElevatorSpawn_group_3"
 	"teslablesp" "1"
-	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_LONG"
-	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_LONG_IDLE"
+	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT"
+	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT_IDLE"
 	"origin" "-3415 6998 792"
 	editor
 	{
@@ -41660,9 +41660,9 @@ entity
 	"StartBurrowed" "1"
 	"targetname" "ElevatorSpawn_group_7"
 	"teslablesp" "1"
-	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_LONG"
-	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_LONG_IDLE"
-	"origin" "-3577 6979 792"
+	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT"
+	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT_IDLE"
+	"origin" "-3577 6978 808"
 	editor
 	{
 		"color" "0 0 255"
@@ -41744,8 +41744,8 @@ entity
 	"StartBurrowed" "1"
 	"targetname" "ElevatorSpawn_group_5"
 	"teslablesp" "1"
-	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_LONG"
-	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_LONG_IDLE"
+	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT"
+	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT_IDLE"
 	"origin" "-3678 6938 794"
 	editor
 	{
@@ -42110,8 +42110,8 @@ entity
 	"StartBurrowed" "1"
 	"targetname" "ElevatorSpawn_crawl_2"
 	"teslablesp" "1"
-	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_LONG"
-	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_LONG_IDLE"
+	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT"
+	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT_IDLE"
 	"origin" "-3702 7072 806"
 	editor
 	{
@@ -63332,7 +63332,7 @@ entity
 	"teslablesp" "1"
 	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT"
 	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT_IDLE"
-	"origin" "-3620 7133.81 792"
+	"origin" "-3620 7133.81 796"
 	editor
 	{
 		"color" "0 0 255"
@@ -63375,7 +63375,7 @@ entity
 	"teslablesp" "1"
 	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT"
 	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT_IDLE"
-	"origin" "-3620 7053.81 792"
+	"origin" "-3620 7053.81 794"
 	editor
 	{
 		"color" "0 0 255"
@@ -63418,7 +63418,7 @@ entity
 	"teslablesp" "1"
 	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT"
 	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT_IDLE"
-	"origin" "-3548 7101.81 794"
+	"origin" "-3548 7102 798"
 	editor
 	{
 		"color" "0 0 255"
@@ -63543,7 +63543,7 @@ entity
 	"teslablesp" "1"
 	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT"
 	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT_IDLE"
-	"origin" "-3596 7181.81 792"
+	"origin" "-3596 7181.81 798"
 	editor
 	{
 		"color" "0 0 255"
@@ -63584,7 +63584,7 @@ entity
 	"StartBurrowed" "1"
 	"targetname" "ins_drone_spawn"
 	"teslablesp" "1"
-	"origin" "-3572 7013.81 792"
+	"origin" "-3572 7014 794"
 	editor
 	{
 		"color" "0 0 255"
@@ -63822,8 +63822,8 @@ cameras
 	"activecamera" "0"
 	camera
 	{
-		"position" "[-3467.87 7104.89 832.117]"
-		"look" "[-3654.76 6914.04 809.686]"
+		"position" "[-3397.71 7141.53 1034.98]"
+		"look" "[-3389.39 7260.43 794.871]"
 	}
 	camera
 	{
