@@ -23,6 +23,7 @@ class CNPC_CombineS : public CNPC_Combine
 public: 
 	void		Spawn( void );
 	void		Precache( void );
+	int			GetBaseHealth() override;
 	void		DeathSound( const CTakeDamageInfo &info );
 	void		BuildScheduleTestBits( void );
 	int			SelectSchedule ( void );

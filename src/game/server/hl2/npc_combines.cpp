@@ -65,14 +65,10 @@ void CNPC_CombineS::Spawn( void )
 	if ( IsElite() )
 	{
 		// Stronger, tougher.
-		SetHealth( sk_combine_guard_health.GetFloat() );
-		SetMaxHealth( sk_combine_guard_health.GetFloat() );
 		SetKickDamage( sk_combine_guard_kick.GetFloat() );
 	}
 	else
 	{
-		SetHealth( sk_combine_s_health.GetFloat() );
-		SetMaxHealth( sk_combine_s_health.GetFloat() );
 		SetKickDamage( sk_combine_s_kick.GetFloat() );
 	}
 
@@ -156,6 +152,15 @@ void CNPC_CombineS::Precache()
 	BaseClass::Precache();
 }
 
+int CNPC_CombineS::GetBaseHealth()
+{
+	if ( IsElite() )
+	{
+		return sk_combine_guard_health.GetInt();
+	}
+
+	return sk_combine_s_health.GetInt();
+}
 
 void CNPC_CombineS::DeathSound( const CTakeDamageInfo &info )
 {

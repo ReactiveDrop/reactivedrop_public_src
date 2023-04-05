@@ -305,6 +305,8 @@ void CNPC_Combine::Activate()
 //-----------------------------------------------------------------------------
 void CNPC_Combine::Spawn( void )
 {
+	BaseClass::Spawn();
+
 	SetHullType(HULL_HUMAN);
 	SetHullSizeNormal();
 
@@ -352,8 +354,6 @@ void CNPC_Combine::Spawn( void )
 	m_flNextAltFireTime = gpGlobals->curtime;
 
 	ChangeFaction( FACTION_COMBINE );
-
-	NPCInit();
 }
 
 //-----------------------------------------------------------------------------
@@ -2424,7 +2424,7 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 							pHurt->ApplyAbsVelocityImpulse( forward * 100 + up * 50 );
 						}
 
-						CTakeDamageInfo info( this, this, m_nKickDamage, DMG_CLUB );
+						CTakeDamageInfo info( this, this, ASWGameRules()->ModifyAlienDamageBySkillLevel( m_nKickDamage ), DMG_CLUB );
 						CalculateMeleeDamageForce( &info, forward, pBCC->GetAbsOrigin() );
 						pBCC->TakeDamage( info );
 
