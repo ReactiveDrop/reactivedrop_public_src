@@ -2460,7 +2460,7 @@ BEGIN_ENT_SCRIPTDESC_ROOT( CBaseEntity, "Root class of all server-side entities"
 	DEFINE_SCRIPTFUNC_NAMED( GetAbsOrigin, "GetOrigin", ""  )
 	DEFINE_SCRIPTFUNC( SetAbsOrigin, "SetAbsOrigin" )
 
-	
+
 	DEFINE_SCRIPTFUNC_NAMED( ScriptSetOrigin, "SetOrigin", ""  )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetForward, "GetForwardVector", "Get the forward vector of the entity"  )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetLeft, "GetLeftVector", "Get the left vector of the entity"  )
@@ -2468,7 +2468,7 @@ BEGIN_ENT_SCRIPTDESC_ROOT( CBaseEntity, "Root class of all server-side entities"
 
 	DEFINE_SCRIPTFUNC_NAMED( ScriptSetForward, "SetForwardVector", "Set the orientation of the entity to have this forward vector"  )
 	DEFINE_SCRIPTFUNC_NAMED( GetAbsVelocity, "GetVelocity", ""  )
-	DEFINE_SCRIPTFUNC_NAMED( SetAbsVelocity, "SetVelocity", ""  )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetAbsVelocity, "SetVelocity", ""  )
 
 	DEFINE_SCRIPTFUNC_NAMED( ScriptSetLocalAngularVelocity, "SetAngularVelocity", "Set the local angular velocity - takes float pitch,yaw,roll velocities"  )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetLocalAngularVelocity, "GetAngularVelocity", "Get the local angular velocity - returns a vector of pitch,yaw,roll"  )
