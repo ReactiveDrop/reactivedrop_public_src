@@ -31,7 +31,7 @@ DEFINE_EMBEDDEDBYREF( m_pExpresser ),
 END_DATADESC()
 
 ConVar asw_ranger_health( "asw_ranger_health", "101", FCVAR_CHEAT );
-ConVar sk_asw_ranger_volley_damage_direct( "sk_asw_ranger_volley_damage_direct", "12", FCVAR_CHEAT );
+ConVar sk_asw_ranger_volley_damage_direct( "sk_asw_ranger_volley_damage_direct", "6", FCVAR_CHEAT );
 ConVar sk_asw_ranger_volley_damage_splash( "sk_asw_ranger_volley_damage_splash", "0", FCVAR_CHEAT );
 extern ConVar asw_debug_alien_damage;
 
@@ -54,7 +54,7 @@ CASW_Ranger::CASW_Ranger()
 void CASW_Ranger::SetupRangerShot( CASW_AlienShot &shot )
 {
 	shot.m_flSize = 4;
-	shot.m_flDamage_direct = sk_asw_ranger_volley_damage_direct.GetFloat();
+	shot.m_flDamage_direct = ASWGameRules()->ModifyAlienDamageBySkillLevel( sk_asw_ranger_volley_damage_direct.GetFloat() );
 	shot.m_flDamage_splash = sk_asw_ranger_volley_damage_splash.GetFloat();
 	shot.m_flSeek_strength = 0;
 	shot.m_flGravity = 0;
