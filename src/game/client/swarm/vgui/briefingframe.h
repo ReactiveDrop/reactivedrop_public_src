@@ -21,6 +21,7 @@ class BriefingFrame : public vgui::Frame
 
 	virtual void PerformLayout();
 	virtual void OnClose();
+	virtual void OnThink();
 
 	BriefingImagePanel* m_pBackdrop;
 

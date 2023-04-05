@@ -19,6 +19,7 @@
 #include "tier0/memdbgon.h"
 
 extern ConVar rd_chatwipe;
+ConVar rd_waste_cpu_in_briefing( "rd_waste_cpu_in_briefing", "0", FCVAR_NONE, "Waste CPU cycles in briefing to try to keep the CPU out of low power mode." );
 
 BriefingFrame::BriefingFrame(Panel *parent, const char *panelName, bool showTaskbarIcon) :
 	vgui::Frame(parent, panelName, showTaskbarIcon)
@@ -88,6 +89,20 @@ void BriefingFrame::OnClose()
 	
 	// make the fade out slower
 	vgui::GetAnimationController()->RunAnimationCommand(this, "alpha", 0.0f, 0.0f, 1.0f, vgui::AnimationController::INTERPOLATOR_LINEAR);
+}
+
+void BriefingFrame::OnThink()
+{
+	BaseClass::OnThink();
+
+	for ( int i = 0; i < rd_waste_cpu_in_briefing.GetInt(); i++ )
+	{
+		static CRC32_t x = 0;
+		for ( int j = 0; j < 10000; j++ )
+		{
+			x = CRC32_ProcessSingleBuffer( &x, sizeof( x ) );
+		}
+	}
 }
 
 void BriefingFrame::PerformLayout()
