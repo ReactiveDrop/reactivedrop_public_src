@@ -11,6 +11,7 @@
 	#include "antlion_dust.h"
 #endif
 #include "asw_fx_shared.h"
+#include "asw_gamerules.h"
 #include "asw_queen_grabber_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -442,7 +443,7 @@ void	CASW_Queen_Grabber::ReachedEndOfSequence()
 				{
 					// do him some damage
 					CTakeDamageInfo damageinfo( this, GetQueen(),
-						Vector(1,1,1), GetQueenEnemy()->GetAbsOrigin(), asw_queen_grabber_dmg.GetInt(), DMG_SLASH );
+						Vector(1,1,1), GetQueenEnemy()->GetAbsOrigin(), ASWGameRules()->ModifyAlienDamageBySkillLevel( asw_queen_grabber_dmg.GetInt() ), DMG_SLASH );
 
 					GetQueenEnemy()->TakeDamage(damageinfo);
 					
