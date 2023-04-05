@@ -63,7 +63,6 @@ bool CASW_Mission_Manager::CheckMissionComplete()
 
 	bool bFailed = false;
 	bool bSuccess = true;
-	bool bAtLeastOneObjective = false;
 
 	// notify all objectives about this event
 	if ( !ASWGameResource() )
@@ -72,13 +71,14 @@ bool CASW_Mission_Manager::CheckMissionComplete()
 	}
 
 	int iIncomplete = 0;
+	int nObjectives = 0;
 	bool bEscapeIncomplete = false;
 	for ( int i = 0; i < ASW_MAX_OBJECTIVES; i++ )
 	{
 		CASW_Objective* pObjective = ASWGameResource()->GetObjective(i);
 		if ( pObjective && !pObjective->IsObjectiveOptional() )
 		{
-			bAtLeastOneObjective = true;
+			nObjectives++;
 
 			if ( !pObjective->IsObjectiveComplete() )
 			{
@@ -108,7 +108,7 @@ bool CASW_Mission_Manager::CheckMissionComplete()
 		bFailed = true;
 	}
 
-	if ( bSuccess && bAtLeastOneObjective )
+	if ( bSuccess && nObjectives > 0 )
 	{
 		MissionSuccess();
 		return true;
@@ -118,7 +118,7 @@ bool CASW_Mission_Manager::CheckMissionComplete()
 		MissionFail();
 		return true;
 	}
-	else if ( bEscapeIncomplete && iIncomplete == 1 )
+	else if ( bEscapeIncomplete && iIncomplete == 1 && nObjectives > 1 )
 	{
 		// make a marine do the 'time to leave' speech
 		if ( ASWGameResource() )
