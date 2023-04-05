@@ -20,11 +20,12 @@
 #include "soundenvelope.h"
 #include "ai_utils.h"
 #include "te_effect_dispatch.h"
+#include "asw_gamerules.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-ConVar    sk_antlion_worker_spit_grenade_dmg		  ( "sk_antlion_worker_spit_grenade_dmg", "20", FCVAR_CHEAT, "Total damage done by an individual antlion worker loogie.");
+ConVar    sk_antlion_worker_spit_grenade_dmg		  ( "sk_antlion_worker_spit_grenade_dmg", "10", FCVAR_CHEAT, "Total damage done by an individual antlion worker loogie.");
 ConVar	  sk_antlion_worker_spit_grenade_radius		  ( "sk_antlion_worker_spit_grenade_radius","40", FCVAR_CHEAT, "Radius of effect for an antlion worker spit grenade.");
 ConVar	  sk_antlion_worker_spit_grenade_poison_ratio ( "sk_antlion_worker_spit_grenade_poison_ratio","0.3", FCVAR_CHEAT, "Percentage of an antlion worker's spit damage done as poison (which regenerates)");
 
@@ -60,7 +61,7 @@ void CGrenadeSpit::Spawn( void )
 	SetTouch( &CGrenadeSpit::GrenadeSpitTouch );
 	SetNextThink( gpGlobals->curtime + 0.1f );
 
-	m_flDamage		= sk_antlion_worker_spit_grenade_dmg.GetFloat();
+	m_flDamage		= ASWGameRules()->ModifyAlienDamageBySkillLevel( sk_antlion_worker_spit_grenade_dmg.GetFloat() );
 	m_DmgRadius		= sk_antlion_worker_spit_grenade_radius.GetFloat();
 	m_takedamage	= DAMAGE_NO;
 	m_iHealth		= 1;
