@@ -2707,7 +2707,7 @@ void ApplyChargeDamage( CBaseEntity *pAntlionGuard, CBaseEntity *pTarget, float 
 	if ( rd_antlionguardian_poison.GetBool() && static_cast<CNPC_AntlionGuard *>(pAntlionGuard)->IsCavernBreed() && pTarget->Classify() == CLASS_ASW_MARINE && pTarget->IsAlive() && pTarget->m_iHealth > ANTLIONGUARD_POISON_TO)
 	{
 		// That didn't finish them. Take them down to one point with poison damage. It'll heal.
-		pTarget->TakeDamage( CTakeDamageInfo( pAntlionGuard, pAntlionGuard, pTarget->m_iHealth - ANTLIONGUARD_POISON_TO, DMG_POISON ) );
+		pTarget->TakeDamage( CTakeDamageInfo( pAntlionGuard, pAntlionGuard, pTarget->m_iHealth - ANTLIONGUARD_POISON_TO, DMG_POISON | DMG_PREVENT_PHYSICS_FORCE ) );
 	}
 #endif
 

@@ -894,7 +894,7 @@ void CBaseHeadcrab::LeapTouch( CBaseEntity *pOther )
 //-----------------------------------------------------------------------------
 int CBaseHeadcrab::CalcDamageInfo( CTakeDamageInfo *pInfo )
 {
-	pInfo->Set( this, this, sk_headcrab_melee_dmg.GetFloat(), DMG_SLASH );
+	pInfo->Set( this, this, ASWGameRules()->ModifyAlienDamageBySkillLevel( sk_headcrab_melee_dmg.GetFloat() ), DMG_SLASH );
 	CalculateMeleeDamageForce( pInfo, GetAbsVelocity(), GetAbsOrigin() );
 	return pInfo->GetDamage();
 }
@@ -3166,18 +3166,18 @@ void CBlackHeadcrab::TouchDamage( CBaseEntity *pOther )
 				if ( pOther->Classify() == CLASS_ASW_MARINE )
 				{
 					// That didn't finish them. Take them down to one point with poison damage. It'll heal.
-					pOther->TakeDamage( CTakeDamageInfo( this, this, pOther->m_iHealth - 1, DMG_POISON ) );
+					pOther->TakeDamage( CTakeDamageInfo( this, this, pOther->m_iHealth - 1, DMG_POISON | DMG_PREVENT_PHYSICS_FORCE ) );
 				}
 				else
 				{
 					// Just take some amount of slash damage instead
-					pOther->TakeDamage( CTakeDamageInfo( this, this, sk_headcrab_poison_npc_damage.GetFloat(), DMG_SLASH ) );
+					pOther->TakeDamage( CTakeDamageInfo( this, this, ASWGameRules()->ModifyAlienDamageBySkillLevel( sk_headcrab_poison_npc_damage.GetFloat() ), DMG_SLASH ) );
 				}
 			}
 			else
 			{
 				// That didn't finish them. Take them down to one point with poison damage. It'll heal.
-				pOther->TakeDamage( CTakeDamageInfo( this, this, pOther->m_iHealth - 1, DMG_POISON ) );
+				pOther->TakeDamage( CTakeDamageInfo( this, this, pOther->m_iHealth - 1, DMG_POISON | DMG_PREVENT_PHYSICS_FORCE ) );
 			}
 		}
 	}
