@@ -996,6 +996,7 @@ public:
 	// Remove this as ground entity for all object resting on this object
 	void					WakeRestingObjects();
 	bool					HasNPCsOnIt();
+	void					ScriptWake() { if ( IPhysicsObject *pPhys = VPhysicsGetObject() ) pPhys->Wake(); }
 
 	virtual void			UpdateOnRemove( void );
 	virtual void			StopLoopingSounds( void ) {}
@@ -1166,6 +1167,7 @@ public:
 	void			SetLocalVelocity( const Vector &vecVelocity );
 	void			ApplyLocalVelocityImpulse( const Vector &vecImpulse );
 	void			SetAbsVelocity( const Vector &vecVelocity );
+	void			ScriptSetAbsVelocity( const Vector &vecVelocity );
 	void			ApplyAbsVelocityImpulse( const Vector &vecImpulse );
 	void			ApplyLocalAngularVelocityImpulse( const AngularImpulse &angImpulse );
 	const Vector&	ScriptGetLocalAngularVelocity( void );
@@ -1873,7 +1875,6 @@ public:
 	void ScriptSetOwner( HSCRIPT hEntity ) { SetOwnerEntity( ToEnt( hEntity ) ); }
 	void ScriptSetOrigin( const Vector &v ) { Teleport( &v, NULL, NULL ); }
 	void ScriptSetForward( const Vector &v ) { QAngle angles; VectorAngles( v, angles ); Teleport( NULL, &angles, NULL ); }
-	void ScriptSetAbsVelocity( const Vector &v ) { Teleport( NULL, NULL, &v ); }
 	const Vector &ScriptGetForward( void ) { static Vector vecForward; GetVectors( &vecForward, NULL, NULL ); return vecForward; }
 	const Vector &ScriptGetLeft( void ) { static Vector vecLeft; GetVectors( NULL, &vecLeft, NULL ); return vecLeft; }
 	const Vector &ScriptGetUp( void ) { static Vector vecUp; GetVectors( NULL, NULL, &vecUp ); return vecUp; }

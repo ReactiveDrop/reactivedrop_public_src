@@ -2472,6 +2472,7 @@ BEGIN_ENT_SCRIPTDESC_ROOT( CBaseEntity, "Root class of all server-side entities"
 
 	DEFINE_SCRIPTFUNC_NAMED( ScriptSetLocalAngularVelocity, "SetAngularVelocity", "Set the local angular velocity - takes float pitch,yaw,roll velocities"  )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetLocalAngularVelocity, "GetAngularVelocity", "Get the local angular velocity - returns a vector of pitch,yaw,roll"  )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptWake, "Wake", "Wakes this entity's physics object" )
 
 
 	DEFINE_SCRIPTFUNC_NAMED( WorldSpaceCenter, "GetCenter", "Get vector to center of object - absolute coords")
@@ -6728,6 +6729,17 @@ void CBaseEntity::SetAbsVelocity( const Vector &vecAbsVelocity )
 	Vector vNew;
 	VectorIRotate( relVelocity, pMoveParent->EntityToWorldTransform(), vNew );
 	m_vecVelocity = vNew;
+}
+
+void CBaseEntity::ScriptSetAbsVelocity( const Vector &vecAbsVelocity )
+{
+	SetAbsVelocity( vecAbsVelocity );
+
+	// physics objects need their velocity changed a different way
+	if ( IPhysicsObject *pPhys = VPhysicsGetObject() )
+	{
+		pPhys->SetVelocity( &vecAbsVelocity, NULL );
+	}
 }
 
 // FIXME: While we're using (dPitch, dYaw, dRoll) as our local angular velocity
