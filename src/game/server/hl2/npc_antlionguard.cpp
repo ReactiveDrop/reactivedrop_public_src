@@ -48,9 +48,10 @@ inline void TraceHull_SkipPhysics( const Vector &vecAbsStart, const Vector &vecA
 					 int collisionGroup, trace_t *ptr, float minMass );
 
 ConVar	g_debug_antlionguard( "g_debug_antlionguard", "0", FCVAR_CHEAT );
-ConVar	sk_antlionguard_dmg_charge( "sk_antlionguard_dmg_charge", "23", FCVAR_CHEAT ); // was 20 in HL2
-ConVar	sk_antlionguard_dmg_shove( "sk_antlionguard_dmg_shove", "23", FCVAR_CHEAT ); // was 10 in HL2
-ConVar	rd_antlionguard_incavern("rd_antlionguard_incavern", "1", FCVAR_CHEAT, "If 1 antlionguard behavior changes, more agile for tight places");
+ConVar	sk_antlionguard_dmg_charge( "sk_antlionguard_dmg_charge", "20", FCVAR_CHEAT ); // was 20 in HL2
+ConVar	sk_antlionguard_dmg_shove( "sk_antlionguard_dmg_shove", "10", FCVAR_CHEAT ); // was 10 in HL2
+ConVar	rd_antlionguard_incavern( "rd_antlionguard_incavern", "1", FCVAR_CHEAT, "If 1 antlionguard behavior changes, more agile for tight places" );
+ConVar	rd_antlionguardian_poison( "rd_antlionguardian_poison", "0", FCVAR_CHEAT, "If 1, antlion guardians poison marines down to 12 HP (it will slowly heal)" );
 
 #if HL2_EPISODIC
 // When enabled, add code to have the antlion bleed profusely as it is badly injured.
@@ -2696,14 +2697,14 @@ void ApplyChargeDamage( CBaseEntity *pAntlionGuard, CBaseEntity *pTarget, float 
 	Vector vecForce = attackDir * ImpulseScale( 75, 700 );
 
 	// Deal the damage
-	CTakeDamageInfo	info( pAntlionGuard, pAntlionGuard, vecForce, offset, flDamage, DMG_CLUB );
+	CTakeDamageInfo	info( pAntlionGuard, pAntlionGuard, vecForce, offset, ASWGameRules()->ModifyAlienDamageBySkillLevel( flDamage ), DMG_CLUB );
 	pTarget->TakeDamage( info );
 
 #if HL2_EPISODIC
 	// If I am a cavern guard attacking the player, and he still lives, then poison him too.
 	Assert( dynamic_cast<CNPC_AntlionGuard *>(pAntlionGuard) );
 
-	if ( static_cast<CNPC_AntlionGuard *>(pAntlionGuard)->IsInCavern() && pTarget->IsPlayer() && pTarget->IsAlive() && pTarget->m_iHealth > ANTLIONGUARD_POISON_TO)
+	if ( rd_antlionguardian_poison.GetBool() && static_cast<CNPC_AntlionGuard *>(pAntlionGuard)->IsCavernBreed() && pTarget->Classify() == CLASS_ASW_MARINE && pTarget->IsAlive() && pTarget->m_iHealth > ANTLIONGUARD_POISON_TO)
 	{
 		// That didn't finish them. Take them down to one point with poison damage. It'll heal.
 		pTarget->TakeDamage( CTakeDamageInfo( pAntlionGuard, pAntlionGuard, pTarget->m_iHealth - ANTLIONGUARD_POISON_TO, DMG_POISON ) );
