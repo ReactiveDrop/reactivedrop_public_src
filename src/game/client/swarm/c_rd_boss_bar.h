@@ -24,10 +24,15 @@ public:
 	float m_flBarFlashSustain;
 	float m_flBarFlashInterpolate;
 	bool m_bEnabled;
+	float m_flBarRadius;
+	bool m_bBarTooFarAway = false;
 
 	float m_flBarValuePrev;
 	float m_flBarValueTruePrev;
 	float m_flBarValueLastChanged;
 
+	bool IsTooFarAway();
 	virtual void PostDataUpdate( DataUpdateType_t updateType );
+	virtual void ClientThink();
+	void SendHudUpdate( bool bCreated );
 };

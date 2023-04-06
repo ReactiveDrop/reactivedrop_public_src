@@ -21,7 +21,41 @@ IMPLEMENT_CLIENTCLASS_DT( C_RD_Boss_Bar, DT_RD_Boss_Bar, CRD_Boss_Bar )
 	RecvPropFloat(RECVINFO(m_flBarFlashSustain)),
 	RecvPropFloat(RECVINFO(m_flBarFlashInterpolate)),
 	RecvPropBool(RECVINFO(m_bEnabled)),
+	RecvPropFloat(RECVINFO(m_flBarRadius)),
 END_RECV_TABLE()
+
+bool C_RD_Boss_Bar::IsTooFarAway()
+{
+	if ( m_flBarRadius < 0 )
+		return false;
+	
+	Vector vecEyePosition = C_BasePlayer::GetLocalPlayer()->EyePosition();
+	if ( vecEyePosition.DistTo( GetAbsOrigin() ) > m_flBarRadius )
+		return true;
+
+	return false;
+}
+
+void C_RD_Boss_Bar::ClientThink()
+{	
+	bool bPrevious = m_bBarTooFarAway;
+	m_bBarTooFarAway = IsTooFarAway();
+
+	if ( bPrevious != m_bBarTooFarAway )
+		SendHudUpdate( false );
+
+	SetNextClientThink( gpGlobals->curtime + 0.1f );
+}
+
+void C_RD_Boss_Bar::SendHudUpdate( bool bCreated )
+{
+	FOR_EACH_VALID_SPLITSCREEN_PLAYER(slot)
+	{
+		ACTIVE_SPLITSCREEN_PLAYER_GUARD(slot);
+
+		(GET_HUDELEMENT( CRD_Hud_Boss_Bars ))->OnBossBarEntityChanged( this, bCreated );
+	}
+}
 
 void C_RD_Boss_Bar::PostDataUpdate( DataUpdateType_t updateType )
 {
@@ -34,6 +68,8 @@ void C_RD_Boss_Bar::PostDataUpdate( DataUpdateType_t updateType )
 	{
 		m_flBarValuePrev = m_flBarValue;
 		m_flBarValueLastChanged = gpGlobals->curtime - flSustain - flInterpolate;
+
+		SetNextClientThink( gpGlobals->curtime + 0.1f );
 	}
 	else if ( m_flBarValue != m_flBarValueTruePrev )
 	{
@@ -51,10 +87,5 @@ void C_RD_Boss_Bar::PostDataUpdate( DataUpdateType_t updateType )
 
 	m_flBarValueTruePrev = m_flBarValue;
 
-	FOR_EACH_VALID_SPLITSCREEN_PLAYER(slot)
-	{
-		ACTIVE_SPLITSCREEN_PLAYER_GUARD(slot);
-
-		(GET_HUDELEMENT( CRD_Hud_Boss_Bars ))->OnBossBarEntityChanged( this, updateType == DATA_UPDATE_CREATED );
-	}
+	SendHudUpdate( updateType == DATA_UPDATE_CREATED );
 }

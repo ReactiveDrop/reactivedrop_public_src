@@ -172,7 +172,7 @@ void CRD_Hud_Boss_Bar_Container::OnBarDataChanged()
 			continue;
 		}
 
-		bAnyVisible = bAnyVisible || pBar->m_bEnabled;
+		bAnyVisible = bAnyVisible || ( pBar->m_bEnabled && !pBar->IsTooFarAway() );
 	}
 
 	if ( m_BarEntities.Count() == 0 )

@@ -25,6 +25,9 @@ public:
 	CNetworkVar( float, m_flBarFlashSustain );
 	CNetworkVar( float, m_flBarFlashInterpolate );
 	CNetworkVar( bool, m_bEnabled );
+	CNetworkVar( float, m_flBarRadius );
+
+	CRD_Boss_Bar();
 
 	virtual int ShouldTransmit( const CCheckTransmitInfo *pInfo );
 

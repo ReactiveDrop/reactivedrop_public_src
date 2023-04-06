@@ -22,6 +22,7 @@ IMPLEMENT_SERVERCLASS_ST( CRD_Boss_Bar, DT_RD_Boss_Bar )
 	SendPropFloat(SENDINFO(m_flBarFlashSustain)),
 	SendPropFloat(SENDINFO(m_flBarFlashInterpolate)),
 	SendPropBool(SENDINFO(m_bEnabled)),
+	SendPropFloat(SENDINFO(m_flBarRadius)),
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CRD_Boss_Bar )
@@ -40,10 +41,16 @@ BEGIN_DATADESC( CRD_Boss_Bar )
 	DEFINE_KEYFIELD( m_flBarFlashSustain, FIELD_FLOAT, "BarFlashSustain" ),
 	DEFINE_KEYFIELD( m_flBarFlashInterpolate, FIELD_FLOAT, "BarFlashInterpolate" ),
 	DEFINE_FIELD( m_bEnabled, FIELD_BOOLEAN ),
+	DEFINE_KEYFIELD( m_flBarRadius, FIELD_FLOAT, "BarRadius" ),
 
 	DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
 	DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
 END_DATADESC()
+
+CRD_Boss_Bar::CRD_Boss_Bar()
+{
+	m_flBarRadius = -1;
+}
 
 int CRD_Boss_Bar::ShouldTransmit( const CCheckTransmitInfo *pInfo )
 {
