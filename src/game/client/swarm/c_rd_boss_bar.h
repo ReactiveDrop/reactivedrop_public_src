@@ -25,11 +25,13 @@ public:
 	float m_flBarFlashInterpolate;
 	bool m_bEnabled;
 	float m_flBarRadius;
-	bool m_bBarTooFarAway = false;
+	bool m_bBarTooFarAway;
 
 	float m_flBarValuePrev;
 	float m_flBarValueTruePrev;
 	float m_flBarValueLastChanged;
+
+	C_RD_Boss_Bar();
 
 	bool IsTooFarAway();
 	virtual void PostDataUpdate( DataUpdateType_t updateType );

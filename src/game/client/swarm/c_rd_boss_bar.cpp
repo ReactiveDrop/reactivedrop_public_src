@@ -24,6 +24,11 @@ IMPLEMENT_CLIENTCLASS_DT( C_RD_Boss_Bar, DT_RD_Boss_Bar, CRD_Boss_Bar )
 	RecvPropFloat(RECVINFO(m_flBarRadius)),
 END_RECV_TABLE()
 
+C_RD_Boss_Bar::C_RD_Boss_Bar()
+{
+	m_bBarTooFarAway = false;
+}
+
 bool C_RD_Boss_Bar::IsTooFarAway()
 {
 	if ( m_flBarRadius < 0 )
@@ -43,8 +48,6 @@ void C_RD_Boss_Bar::ClientThink()
 
 	if ( bPrevious != m_bBarTooFarAway )
 		SendHudUpdate( false );
-
-	SetNextClientThink( gpGlobals->curtime + 0.1f );
 }
 
 void C_RD_Boss_Bar::SendHudUpdate( bool bCreated )
@@ -69,7 +72,7 @@ void C_RD_Boss_Bar::PostDataUpdate( DataUpdateType_t updateType )
 		m_flBarValuePrev = m_flBarValue;
 		m_flBarValueLastChanged = gpGlobals->curtime - flSustain - flInterpolate;
 
-		SetNextClientThink( gpGlobals->curtime + 0.1f );
+		SetNextClientThink( CLIENT_THINK_ALWAYS );
 	}
 	else if ( m_flBarValue != m_flBarValueTruePrev )
 	{
