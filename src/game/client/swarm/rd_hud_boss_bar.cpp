@@ -172,7 +172,7 @@ void CRD_Hud_Boss_Bar_Container::OnBarDataChanged()
 			continue;
 		}
 
-		bAnyVisible = bAnyVisible || pBar->m_bEnabled;
+		bAnyVisible = bAnyVisible || ( pBar->m_bEnabled && !pBar->IsTooFarAway() );
 	}
 
 	if ( m_BarEntities.Count() == 0 )
@@ -297,7 +297,7 @@ void CRD_Hud_Boss_Bar_Container::Paint()
 		C_RD_Boss_Bar *pBar = m_BarEntities[i];
 		const Layout_t & layout = m_BarLayout[i];
 
-		if ( !pBar || !pBar->m_bEnabled )
+		if ( !pBar || !pBar->m_bEnabled || pBar->IsTooFarAway() )
 		{
 			continue;
 		}

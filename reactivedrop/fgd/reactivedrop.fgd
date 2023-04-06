@@ -222,7 +222,7 @@ asw_pickup_50calmg : "50cal Machine Gun"
 	input SetScale(float) : "Set the sprite's scale (0 - 8.0)."
 ]
 
-@PointClass base(Targetname) iconsprite("editor/flat.vmt") = rd_boss_bar :
+@PointClass base(Targetname) sphere(BarRadius) iconsprite("editor/flat.vmt") = rd_boss_bar :
 	"Displays the progress of an event. (eg. the health of a boss)"
 [
 	BarMode(choices) : "Display Mode" : 0 : "How to display this bar on the player's screen." =
@@ -238,6 +238,7 @@ asw_pickup_50calmg : "50cal Machine Gun"
 	BarColumn(integer) : "Column" : 1 : ""
 	BarRow(integer) : "Row" : 1 : ""
 	BarScale(float) : "Height Scale" : "1.0" : ""
+	BarRadius(float) : "Radius" : "-1" : "Distance (from the player's camera!) beyond which boss bar won't be drawn for that player. Lower than 0 means infinite."
 	BarFGColor(color255) : "Filled Color" : "93 149 193 255" : ""
 	BarBGColor(color255) : "Empty Color" : "9 32 54 255" : ""
 	BarBorderColor(color255) : "Border Color" : "29 76 111 255" : ""
