@@ -42,6 +42,7 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Queen, DT_ASW_Queen )
 	SendPropEHandle( SENDINFO ( m_hQueenEnemy ) ),	
 	SendPropBool( SENDINFO(m_bChestOpen) ),
 	SendPropInt( SENDINFO(m_iMaxHealth), 14, SPROP_UNSIGNED ),
+	SendPropBool( SENDINFO(m_bHealthBarEnabled) ),
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Queen )
@@ -61,6 +62,8 @@ BEGIN_DATADESC( CASW_Queen )
 	DEFINE_FIELD( m_fLastRangedAttack, FIELD_FLOAT ),
 	DEFINE_FIELD( m_iCrittersAlive, FIELD_INTEGER ),
 	DEFINE_FIELD( m_hBlockingSentry, FIELD_EHANDLE ),
+
+	DEFINE_KEYFIELD( m_bHealthBarEnabled, FIELD_BOOLEAN, "healthbarenabled" ),
 	
 	DEFINE_OUTPUT( m_OnSummonWave1,		"OnSummonWave1" ),
 	DEFINE_OUTPUT( m_OnSummonWave2,		"OnSummonWave2" ),
@@ -98,6 +101,7 @@ ConVar asw_queen_debug("asw_queen_debug", "0", FCVAR_CHEAT, "Display debug info 
 ConVar asw_queen_flame_flinch_chance("asw_queen_flame_flinch_chance", "0", FCVAR_CHEAT, "Chance of queen flinching when she takes fire damage");
 ConVar asw_queen_force_parasite_spawn("asw_queen_force_parasite_spawn", "0", FCVAR_CHEAT, "Set to 1 to force the queen to spawn parasites");
 ConVar asw_queen_force_spit("asw_queen_force_spit", "0", FCVAR_CHEAT, "Set to 1 to force the queen to spit");
+ConVar rd_queen_has_damage_resistances("rd_queen_has_damage_resistances", "1", FCVAR_CHEAT, "Is the queen resistant to certain damage types");
 
 extern ConVar rd_deagle_bigalien_dmg_scale;
 extern ConVar asw_fist_finisher_damage_scale;
@@ -129,6 +133,7 @@ CASW_Queen::CASW_Queen()
 	m_iCrittersSpawnedRecently = 0;
 	m_pszAlienModelName = SWARM_QUEEN_MODEL;
 	m_nAlienCollisionGroup = ASW_COLLISION_GROUP_ALIEN;
+	m_bHealthBarEnabled = true;
 }
 
 CASW_Queen::~CASW_Queen()
@@ -1324,6 +1329,15 @@ int CASW_Queen::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	float damage = info.GetDamage();
 	CBaseEntity* pAttacker = info.GetAttacker();
 	
+	// make queen immune to buzzers
+	if ( pAttacker && pAttacker->Classify() == CLASS_ASW_BUZZER )
+	{
+		return 0;
+	}
+
+	if ( !rd_queen_has_damage_resistances.GetBool() )
+		return BaseClass::OnTakeDamage_Alive( info );
+
 	// reduce all damage because the queen is TUFF!
 	damage *= 0.2f;
 
@@ -1374,12 +1388,6 @@ int CASW_Queen::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 				}
 			}
 		}
-	}
-
-	// make queen immune to buzzers
-	if ( pAttacker && pAttacker->Classify() == CLASS_ASW_BUZZER )
-	{
-		return 0;
 	}
 
 	// make queen immune to crush damage

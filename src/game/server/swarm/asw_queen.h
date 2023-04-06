@@ -73,6 +73,9 @@ public:
 	void UpdatePoseParams();
 	void PrescheduleThink();
 
+	// health bar
+	CNetworkVar(bool, m_bHealthBarEnabled);
+
 	// opening/closing the vulnerable chest
 	void SetChestOpen(bool bOpen);
 	CNetworkVar(bool, m_bChestOpen);

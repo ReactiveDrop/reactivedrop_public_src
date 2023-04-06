@@ -28,6 +28,7 @@ public:
 
 	CNetworkHandle(C_BaseEntity, m_hQueenEnemy);
 	CNetworkVar(bool, m_bChestOpen);
+	CNetworkVar(bool, m_bHealthBarEnabled);
 
 	virtual int	GetHealth() const { return m_iHealth; }
 	int GetMaxHealth( void ) const { return m_iMaxHealth; }
