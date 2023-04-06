@@ -2926,8 +2926,13 @@
 @NPCClass base(InhabitableNPC) studio("models/swarm/Queen/queen.mdl") sphere() = asw_queen :
 	"Swarm Queen"
 [
-	healthbarenabled(boolean) : "Health Bar Enabled" : 1
-	
+	HealthBarEnabled(boolean) : "Health Bar Enabled" : 1
+	CanMove(boolean) : "Can Move?" : 1
+	CanClaw(boolean) : "Can Claw?" : 1
+	CanSpit(boolean) : "Can Spit?" : 1
+	CanDive(boolean) : "Can Dive? (tentacle attack)" : 1
+	CanSpawnParasites(boolean) : "Can Spawn Parasites?" : 0
+
 	sleepstate(choices) : "Sleep State" : 1 : "Holds the NPC in stasis until specified condition. See also 'Wake Radius' and 'Wake Squad'." =
 	[
 		0 : "None"
@@ -2945,13 +2950,11 @@
 	[
 		131072 : "Use Ground Checks" : 0
 	]
-	//radius(integer) : "Alert Radius" : 256
-	//eludedist(integer) : "Distance until eluded" : 1024 : "Only available when Burrow When Eluded is flagged"
 
-	output	OnSummonWave1(void) : "Fired out when the queen is at 80% health, to call the first attack wave"
-	output	OnSummonWave2(void) : "Fired out when the queen is at 60% health, to call the second attack wave"
-	output	OnSummonWave3(void) : "Fired out when the queen is at 40% health, to call the third attack wave"
-	output	OnSummonWave4(void) : "Fired out when the queen is at 20% health, to call the last attack wave"
+	output	OnSummonWave1(void) : "Fired out when the queen is at 80% health. When this output is fired, you should spawn the first attack wave."
+	output	OnSummonWave2(void) : "Fired out when the queen is at 60% health. When this output is fired, you should spawn the second attack wave."
+	output	OnSummonWave3(void) : "Fired out when the queen is at 40% health. When this output is fired, you should spawn the third attack wave."
+	output	OnSummonWave4(void) : "Fired out when the queen is at 20% health. When this output is fired, you should spawn the last attack wave."
 	output	OnQueenKilled(void) : "Fired when the queen is killed."
 ]
 

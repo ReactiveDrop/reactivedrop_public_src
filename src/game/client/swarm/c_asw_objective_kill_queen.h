@@ -17,10 +17,6 @@ public:
 
 	virtual void OnDataChanged( DataUpdateType_t updateType );
 
-	bool m_bLaunchedPanel;
-	CASW_VGUI_Queen_Health_Panel* m_pQueenHealthPanel;
-	C_ASW_Queen* GetQueen() { return m_hQueen.Get(); }
-
 	CNetworkHandle(C_ASW_Queen, m_hQueen);
 
 private:

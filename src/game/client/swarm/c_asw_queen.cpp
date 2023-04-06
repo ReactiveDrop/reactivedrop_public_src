@@ -10,26 +10,26 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-IMPLEMENT_CLIENTCLASS_DT(C_ASW_Queen, DT_ASW_Queen, CASW_Queen)
-	RecvPropEHandle		( RECVINFO(m_hQueenEnemy) ),
-	RecvPropBool( RECVINFO(m_bChestOpen) ),
-	RecvPropInt			( RECVINFO(m_iMaxHealth) ),
-	RecvPropBool( RECVINFO(m_bHealthBarEnabled) ),
+IMPLEMENT_CLIENTCLASS_DT( C_ASW_Queen, DT_ASW_Queen, CASW_Queen )
+	RecvPropEHandle( RECVINFO( m_hQueenEnemy ) ),
+	RecvPropBool( RECVINFO( m_bChestOpen ) ),
+	RecvPropInt( RECVINFO( m_iHealth ) ),
+	RecvPropInt( RECVINFO( m_iMaxHealth ) ),
+	RecvPropBool( RECVINFO( m_bHealthBarEnabled ) ),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_ASW_Queen )
 	DEFINE_PRED_FIELD( m_flPoseParameter, FIELD_FLOAT, FTYPEDESC_OVERRIDE | FTYPEDESC_PRIVATE | FTYPEDESC_NOERRORCHECK ),
 END_PREDICTION_DATA()
 
-CHandle<C_ASW_Queen> g_hQueen;
+ConVar asw_queen_health_bars( "asw_queen_health_bars", "5", FCVAR_CHEAT | FCVAR_REPLICATED, "Number of health bar segments for queen", true, 1, false, 0 );
 
 C_ASW_Queen::C_ASW_Queen()
-{	
+{
 	m_fLastShieldPose = 0;
 	m_fLastHeadYaw = 0;
-	g_hQueen = this;
 
-	for (int i=0;i<MAXSTUDIOPOSEPARAM;i++)
+	for ( int i = 0; i < MAXSTUDIOPOSEPARAM; i++ )
 	{
 		m_flClientPoseParameter[i] = 0;
 	}
@@ -56,7 +56,7 @@ void C_ASW_Queen::OnDataChanged( DataUpdateType_t updateType )
 			if ( m_bHealthBarEnabled )
 			{
 				// launch panel to show our health
-				CASW_VGUI_Queen_Health_Panel* m_pQueenHealthPanel = new CASW_VGUI_Queen_Health_Panel( GetClientMode()->GetViewport(), "QueenHealthPanel", this );
+				CASW_VGUI_Queen_Health_Panel *m_pQueenHealthPanel = new CASW_VGUI_Queen_Health_Panel( GetFullscreenClientMode()->GetViewport(), "QueenHealthPanel", this );
 				vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFile( "resource/SwarmSchemeNew.res", "SwarmSchemeNew" );
 				m_pQueenHealthPanel->SetScheme( scheme );
 				m_pQueenHealthPanel->SetVisible( true );

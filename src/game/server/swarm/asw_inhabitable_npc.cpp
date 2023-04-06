@@ -557,7 +557,7 @@ void CASW_Inhabitable_NPC::PhysicsSimulate()
 
 void CASW_Inhabitable_NPC::SetHealth( int amt )
 {
-	Assert( amt < ( 1 << ASW_ALIEN_HEALTH_BITS ) );
+	Assert( amt < ( 1 << ASW_ALIEN_HEALTH_BITS ) || Classify() == CLASS_ASW_QUEEN );
 	BaseClass::SetHealth( amt );
 }
 

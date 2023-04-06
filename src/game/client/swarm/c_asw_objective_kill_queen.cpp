@@ -14,7 +14,6 @@ END_RECV_TABLE()
 
 C_ASW_Objective_Kill_Queen::C_ASW_Objective_Kill_Queen()
 {
-	m_bLaunchedPanel = false;
 }
 
 C_ASW_Objective_Kill_Queen::~C_ASW_Objective_Kill_Queen()

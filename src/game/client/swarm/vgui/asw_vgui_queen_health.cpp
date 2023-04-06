@@ -19,6 +19,7 @@
 #include "tier0/memdbgon.h"
 
 extern ConVar asw_hud_alpha;
+extern ConVar asw_queen_health_bars;
 extern ConVar rd_queen_hud_suppress_time;
 
 CASW_VGUI_Queen_Health_Panel::CASW_VGUI_Queen_Health_Panel( vgui::Panel *pParent, const char *pElementName, C_ASW_Queen *pQueen )
@@ -55,20 +56,20 @@ void CASW_VGUI_Queen_Health_Panel::PerformLayout()
 }
 
 void CASW_VGUI_Queen_Health_Panel::UpdateBars()
-{	
-	if (GetQueen() && GetQueen()->GetHealth() > 0 && !GetQueen()->IsDormant())
+{
+	if ( GetQueen() && GetQueen()->GetHealth() > 0 && !GetQueen()->IsDormant() )
 	{
 		int w = GetWide();
 		int h = GetTall();
 
-		m_pBackdrop->SetBounds(0, 0, w, h);
+		m_pBackdrop->SetBounds( 0, 0, w, h );
 
 		int padding = ScreenWidth() * 0.005f;
-		int bar_width = (w - padding) / ASW_QUEEN_HEALTH_BARS;
-		float health_per_bar = float(GetQueen()->GetMaxHealth()) / ASW_QUEEN_HEALTH_BARS;
+		int bar_width = ( w - padding ) / asw_queen_health_bars.GetInt();
+		float health_per_bar = float( GetQueen()->GetMaxHealth() ) / asw_queen_health_bars.GetInt();
 		float queen_health = GetQueen()->GetHealth();
 		static float flasthealth = 0;
-		if (flasthealth != queen_health)
+		if ( flasthealth != queen_health )
 		{
 			//Msg("Queen health changed.  health=%f / %d\n", queen_health, GetQueen()->GetMaxHealth());
 			flasthealth = queen_health;
@@ -79,12 +80,12 @@ void CASW_VGUI_Queen_Health_Panel::UpdateBars()
 			m_iLastQueenHealth = queen_health;
 			m_flLastDamageTime = gpGlobals->curtime;
 		}
-		
-		for (int i=0;i<ASW_QUEEN_HEALTH_BARS;i++)
+
+		for ( int i = 0; i < asw_queen_health_bars.GetInt(); i++ )
 		{
-			float f = (queen_health > (health_per_bar * (i+1)) ) ? 1.0f :		// queen's health is more than this bar section, so full bar
-						(queen_health - (health_per_bar * i)) / health_per_bar;		// find the health remainder into this bar and divide by the health per bar to get how full this bar should be
-			m_pHealthBar[i]->SetBounds((bar_width * i + padding), padding, f * (bar_width - padding), h - (padding * 2));
+			float f = ( queen_health > ( health_per_bar * ( i + 1 ) ) ) ? 1.0f :		// queen's health is more than this bar section, so full bar
+				( queen_health - ( health_per_bar * i ) ) / health_per_bar;		// find the health remainder into this bar and divide by the health per bar to get how full this bar should be
+			m_pHealthBar[i]->SetBounds( ( bar_width * i + padding ), padding, f * ( bar_width - padding ), h - ( padding * 2 ) );
 		}
 	}
 }
