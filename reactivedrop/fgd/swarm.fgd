@@ -2926,6 +2926,8 @@
 @NPCClass base(InhabitableNPC) studio("models/swarm/Queen/queen.mdl") sphere() = asw_queen :
 	"Swarm Queen"
 [
+	healthbarenabled(boolean) : "Health Bar Enabled" : 1
+	
 	sleepstate(choices) : "Sleep State" : 1 : "Holds the NPC in stasis until specified condition. See also 'Wake Radius' and 'Wake Squad'." =
 	[
 		0 : "None"

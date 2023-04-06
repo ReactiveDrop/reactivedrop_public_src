@@ -14,6 +14,7 @@ IMPLEMENT_CLIENTCLASS_DT(C_ASW_Queen, DT_ASW_Queen, CASW_Queen)
 	RecvPropEHandle		( RECVINFO(m_hQueenEnemy) ),
 	RecvPropBool( RECVINFO(m_bChestOpen) ),
 	RecvPropInt			( RECVINFO(m_iMaxHealth) ),
+	RecvPropBool( RECVINFO(m_bHealthBarEnabled) ),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_ASW_Queen )
@@ -52,11 +53,14 @@ void C_ASW_Queen::OnDataChanged( DataUpdateType_t updateType )
 		{
 			ACTIVE_SPLITSCREEN_PLAYER_GUARD( hh );
 
-			// launch panel to show our health
-			CASW_VGUI_Queen_Health_Panel *m_pQueenHealthPanel = new CASW_VGUI_Queen_Health_Panel( GetClientMode()->GetViewport(), "QueenHealthPanel", this );		
-			vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFile("resource/SwarmSchemeNew.res", "SwarmSchemeNew");
-			m_pQueenHealthPanel->SetScheme(scheme);			
-			m_pQueenHealthPanel->SetVisible(true);
+			if ( m_bHealthBarEnabled )
+			{
+				// launch panel to show our health
+				CASW_VGUI_Queen_Health_Panel* m_pQueenHealthPanel = new CASW_VGUI_Queen_Health_Panel( GetClientMode()->GetViewport(), "QueenHealthPanel", this );
+				vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFile( "resource/SwarmSchemeNew.res", "SwarmSchemeNew" );
+				m_pQueenHealthPanel->SetScheme( scheme );
+				m_pQueenHealthPanel->SetVisible( true );
+			}
 		}
 	}
 }
