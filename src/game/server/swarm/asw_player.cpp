@@ -296,6 +296,7 @@ BEGIN_ENT_SCRIPTDESC( CASW_Player, CBasePlayer, "The player entity." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetMarine, "GetMarine", "Returns the marine the player is commanding" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptFindPickerEntity, "FindPickerEntity", "Finds the nearest entity in front of the player" )
 	DEFINE_SCRIPTFUNC( GetCrosshairTracePos, "Returns the world location directly beneath the player's crosshair" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptShowMenu, "ShowMenu", "Show a menu with up to 10 options." )
 END_SCRIPTDESC()
 
 // -------------------------------------------------------------------------------- //
@@ -3047,6 +3048,36 @@ void CASW_Player::ShowInfoMessage(CASW_Info_Message* pMessage)
 void CASW_Player::HideInfoMessage()
 {
 	m_pCurrentInfoMessage = NULL;
+}
+
+void CASW_Player::ScriptShowMenu( int iValidOptionsBits, int iTimeout, const char *szDisplayString )
+{
+	CSingleUserRecipientFilter filter( this );
+	filter.MakeReliable();
+
+	int len = V_strlen( szDisplayString );
+	char szChunk[241];
+
+	while ( len >= sizeof( szChunk ) )
+	{
+		V_strncpy( szChunk, szDisplayString, sizeof( szChunk ) );
+		szDisplayString += sizeof( szChunk ) - 1;
+		len -= sizeof( szChunk ) - 1;
+
+		UserMessageBegin( filter, "ShowMenu" );
+			WRITE_SHORT( iValidOptionsBits );
+			WRITE_CHAR( iTimeout );
+			WRITE_BYTE( 1 );
+			WRITE_STRING( szChunk );
+		MessageEnd();
+	}
+
+	UserMessageBegin( filter, "ShowMenu" );
+		WRITE_SHORT( iValidOptionsBits );
+		WRITE_CHAR( iTimeout );
+		WRITE_BYTE( 0 );
+		WRITE_STRING( szDisplayString );
+	MessageEnd();
 }
 
 void CASW_Player::MoveMarineToPredictedPosition()

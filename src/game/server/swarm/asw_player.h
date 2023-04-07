@@ -179,6 +179,7 @@ public:
 	void ShowInfoMessage(CASW_Info_Message* pMessage);
 	void HideInfoMessage();
 	CNetworkHandle (CASW_Info_Message, m_pCurrentInfoMessage);
+	void ScriptShowMenu( int iValidOptionsBits, int iTimeout, const char *szDisplayString );
 
 	virtual void SetAnimation( PLAYER_ANIM playerAnim );
 
