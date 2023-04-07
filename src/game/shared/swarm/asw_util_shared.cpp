@@ -2660,7 +2660,7 @@ void CmdMsg( _Printf_format_string_ const char *pszFormat, ... )
 	CBasePlayer *pPlayer = UTIL_GetCommandClient();
 	if ( pPlayer )
 	{
-		ClientPrint( pPlayer, HUD_PRINTCONSOLE, "%s", szString);
+		ClientPrint( pPlayer, HUD_PRINTCONSOLE, "%s1", szString);
 	}
 	else
 #endif
