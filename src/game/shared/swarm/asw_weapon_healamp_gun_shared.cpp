@@ -420,6 +420,11 @@ void CASW_Weapon_HealAmp_Gun::MouseOverEntity(C_BaseEntity *pEnt, Vector vecWorl
 		}
 	}
 
+	if ( ( !pOtherMarine || !TargetCanBeHealed( pOtherMarine ) ) && TargetCanBeHealed( pMarine ) && ShouldHealSelfOnInvalidTarget( pOtherMarine ) )
+	{
+		pOtherMarine = pMarine;
+	}
+
 	// if the marine our cursor is over is near enough, highlight him
 	if (pOtherMarine)
 	{

@@ -895,7 +895,7 @@ void CASW_Weapon_MedRifle::MouseOverEntity(C_BaseEntity *pEnt, Vector vecWorldCu
 
 	if ( !pOtherMarine || !TargetCanBeHealed( pOtherMarine ) )
 	{
-		if ( TargetCanBeHealed( pMarine ) )
+		if ( TargetCanBeHealed( pMarine ) && ShouldHealSelfOnInvalidTarget( pOtherMarine ) )
 		{
 			pOtherMarine = pMarine;
 		}
@@ -909,7 +909,7 @@ void CASW_Weapon_MedRifle::MouseOverEntity(C_BaseEntity *pEnt, Vector vecWorldCu
 		float dist = ( pMarine->GetAbsOrigin() - pOtherMarine->GetAbsOrigin() ).Length2D();
 		if ( dist >= GetWeaponRange() )
 		{
-			if ( TargetCanBeHealed( pMarine ) )
+			if ( TargetCanBeHealed( pMarine ) && ShouldHealSelfOnInvalidTarget( pOtherMarine ) )
 			{
 				pOtherMarine = pMarine;
 			}
