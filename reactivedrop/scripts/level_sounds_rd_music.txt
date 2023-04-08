@@ -279,7 +279,7 @@
 
 	"soundlevel"	"SNDLVL_NONE"
 
-	"wave"	"*#music/a4_tanker_arena_combat2_lana.mp3"
+	"wave"	"*#music/a4_tanker_vault_catch_lana.mp3"
 }
 
 // =========================
