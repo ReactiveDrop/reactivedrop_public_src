@@ -260,7 +260,7 @@
 	"wave"			"*#music/rd-lan4_vent-labymusic.mp3"
 }
 
-"Lana.VentBattle"
+"Lana04_vents.catwalk_battle"
 {
 	"channel"		"CHAN_STATIC"
 	"volume"		"1"
