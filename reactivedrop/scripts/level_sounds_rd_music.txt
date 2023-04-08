@@ -630,7 +630,7 @@
 
 	"soundlevel"		"SNDLVL_NONE"
 
-	"wave"			"*#music/hlvr_a5_vault_hallway_gravity.wav"
+	"wave"			"music/hlvr_a5_vault_hallway_gravity.wav"
 }
 "Accident32.MuonGemLoopFight"
 {
@@ -640,7 +640,7 @@
 
 	"soundlevel"		"SNDLVL_NONE"
 
-	"wave"			"*#music/hlvr_a5_vault_field.wav"
+	"wave"			"music/hlvr_a5_vault_field.wav"
 }
 "Accident32.MuonGemStinger"
 {
@@ -650,7 +650,7 @@
 
 	"soundlevel"		"SNDLVL_NONE"
 
-	"wave"			"*#music/hlvr_a5_vault_field_end.mp3"
+	"wave"			"*music/hlvr_a5_vault_field_end.mp3"
 }
 
 // =========================
