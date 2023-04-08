@@ -559,6 +559,101 @@
 }
 
 // =========================
+// Accident 32 Music
+// =========================
+
+"Accident32.EnteredPoolRoom"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"		"SNDLVL_NONE"
+
+	"wave"			"*#music/a1_intro_refuge.mp3"
+}
+"Accident32.EnteredConnector"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"		"SNDLVL_NONE"
+
+	"wave"			"*#music/a3_basement_reviver_base.mp3"
+}
+"Accident32.ElevatorHoldoutMusic"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"		"SNDLVL_NONE"
+
+	"wave"			"*#music/a5_vault_combat4.mp3"
+}
+"Accident32.CageAlarmMusic"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"		"SNDLVL_NONE"
+
+	"wave"			"*#music/garage_gate.mp3"
+}
+"Accident32.ElectrifierMusicA"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"		"SNDLVL_NONE"
+
+	"wave"			"*#music/manhack_b01.mp3"
+}
+"Accident32.ElectrifierMusicB"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"		"SNDLVL_NONE"
+
+	"wave"			"*#music/manhack_b02.mp3"
+}
+"Accident32.MuonGemLoop"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"		"SNDLVL_NONE"
+
+	"wave"			"*#music/hlvr_a5_vault_hallway_gravity.wav"
+}
+"Accident32.MuonGemLoopFight"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"		"SNDLVL_NONE"
+
+	"wave"			"*#music/hlvr_a5_vault_field.wav"
+}
+"Accident32.MuonGemStinger"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"		"SNDLVL_NONE"
+
+	"wave"			"*#music/hlvr_a5_vault_field_end.mp3"
+}
+
+// =========================
 // Bonus Missions Music
 // =========================
 
