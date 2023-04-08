@@ -628,14 +628,14 @@
 	"volume"		"1.0"
 	"pitch"			"100"
 
-	"soundlevel"		"SNDLVL_NONE"
+	"soundlevel"		"SNDLVL_90dB"
 
-	"wave"			"music/hlvr_a5_vault_hallway_gravity.wav"
+	"wave"			")music/hlvr_a5_vault_hallway_gravity.wav"
 }
 "Accident32.MuonGemLoopFight"
 {
 	"channel"		"CHAN_STATIC"
-	"volume"		"1.0"
+	"volume"		"0.9"
 	"pitch"			"100"
 
 	"soundlevel"		"SNDLVL_NONE"
@@ -645,7 +645,7 @@
 "Accident32.MuonGemStinger"
 {
 	"channel"		"CHAN_STATIC"
-	"volume"		"1.0"
+	"volume"		"0.9"
 	"pitch"			"100"
 
 	"soundlevel"		"SNDLVL_NONE"
