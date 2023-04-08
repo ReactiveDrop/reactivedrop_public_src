@@ -128,7 +128,7 @@
 
 	"soundlevel"	"SNDLVL_NONE"
 
-	"wave"	"*#music/a4_tanker_arena_combat.mp3"
+	"wave"	"*#music/a4_tanker_arena_combat_res7.mp3"
 }
 
 // =========================
