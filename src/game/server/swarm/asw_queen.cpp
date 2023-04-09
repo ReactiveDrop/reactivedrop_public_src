@@ -164,7 +164,7 @@ void CASW_Queen::Spawn( void )
 	BaseClass::Spawn();
 	
 	SetHullType( HULL_HUGE );
-	SetHullSizeNormal();
+	SetHullSizeSmall();
 
 	if ( m_bCanSpit )
 		CapabilitiesAdd( bits_CAP_INNATE_RANGE_ATTACK1 );
