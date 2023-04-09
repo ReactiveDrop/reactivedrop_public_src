@@ -616,6 +616,11 @@
 				"1" "#RD_AdvancedSettings_Misc_CameraRotation_Always"
 			}
 		}
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_Misc_CameraShift"
+			cvar "asw_cam_marine_shift_enable"
+		}
 		SELECT
 		{
 			title "#RD_AdvancedSettings_Misc_SwarmopediaUnits"

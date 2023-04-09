@@ -49,7 +49,7 @@ ConVar asw_cam_marine_spring_dampening( "asw_cam_marine_spring_dampening", "3.0"
 
 ConVar asw_cam_marine_yshift_static( "asw_cam_marine_yshift_static", "75.0f", FCVAR_CHEAT, "Camera y-shift value." );
 
-ConVar asw_cam_marine_shift_enable( "asw_cam_marine_shift_enable", "1", FCVAR_CHEAT, "Camera shifting enable/disable." );
+ConVar asw_cam_marine_shift_enable( "asw_cam_marine_shift_enable", "1", FCVAR_ARCHIVE, "Camera shifting enable/disable." );
 
 // Vehicle Camera ConVars.
 ConVar asw_vehicle_cam_height( "asw_vehicle_cam_height", "0", FCVAR_CHEAT );
