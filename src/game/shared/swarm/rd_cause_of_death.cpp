@@ -401,7 +401,8 @@ RD_Cause_of_Death_t GetCauseOfDeath( CBaseEntity *pVictim, const CTakeDamageInfo
 		return DEATHCAUSE_QUEEN_TENTACLES;
 	}
 
-	if ( info.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_QUEEN && ( info.GetDamageType() & DMG_SLASH ) )
+	// queen does bullet damage against physics props so explosive barrels pop
+	if ( info.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_QUEEN && ( info.GetDamageType() & ( DMG_SLASH | DMG_BULLET ) ) )
 	{
 		return DEATHCAUSE_QUEEN_CLAWS;
 	}
