@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "3649"
+	"mapversion" "3651"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -50,7 +50,7 @@ viewsettings
 world
 {
 	"id" "394754"
-	"mapversion" "3649"
+	"mapversion" "3651"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -17272,82 +17272,6 @@ world
 		editor
 		{
 			"color" "0 128 197"
-			"visgroupshown" "1"
-			"visgroupautoshown" "1"
-		}
-	}
-	solid
-	{
-		"id" "3218159"
-		side
-		{
-			"id" "157848"
-			"plane" "(-5472 5228 800) (-5356 5228 800) (-5356 5024 800)"
-			"material" "TOOLS/TOOLSNPCCLIP"
-			"uaxis" "[1 0 0 0] 1"
-			"vaxis" "[0 -1 0 0] 1"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		side
-		{
-			"id" "157849"
-			"plane" "(-5472 5024 788) (-5356 5024 788) (-5356 5228 788)"
-			"material" "TOOLS/TOOLSNPCCLIP"
-			"uaxis" "[1 0 0 0] 1"
-			"vaxis" "[0 -1 0 0] 1"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		side
-		{
-			"id" "157850"
-			"plane" "(-5472 5228 800) (-5472 5024 800) (-5472 5024 788)"
-			"material" "TOOLS/TOOLSNPCCLIP"
-			"uaxis" "[0 1 0 0] 1"
-			"vaxis" "[0 0 -1 0] 1"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		side
-		{
-			"id" "157851"
-			"plane" "(-5356 5228 788) (-5356 5024 788) (-5356 5024 800)"
-			"material" "TOOLS/TOOLSNPCCLIP"
-			"uaxis" "[0 1 0 0] 1"
-			"vaxis" "[0 0 -1 0] 1"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		side
-		{
-			"id" "157852"
-			"plane" "(-5356 5228 800) (-5472 5228 800) (-5472 5228 788)"
-			"material" "TOOLS/TOOLSNPCCLIP"
-			"uaxis" "[1 0 0 0] 1"
-			"vaxis" "[0 0 -1 0] 1"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		side
-		{
-			"id" "157853"
-			"plane" "(-5356 5024 788) (-5472 5024 788) (-5472 5024 800)"
-			"material" "TOOLS/TOOLSNPCCLIP"
-			"uaxis" "[1 0 0 0] 1"
-			"vaxis" "[0 0 -1 0] 1"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		editor
-		{
-			"color" "0 216 221"
 			"visgroupshown" "1"
 			"visgroupautoshown" "1"
 		}
@@ -39053,7 +38977,7 @@ entity
 	"EndV" "0"
 	"fademindist" "-1"
 	"material" "decals/bloodstain_003"
-	"sides" "54667"
+	"sides" "150410 54667"
 	"StartU" "0"
 	"StartV" "1"
 	"uv0" "-140.5 -60.4997 0"
@@ -51655,13 +51579,14 @@ entity
 	"NumAliens" "3"
 	"sizescalesp" "1.0"
 	"SpawnerState" "1"
+	"spawnflags" "0"
 	"SpawnInterval" "3"
 	"SpawnIntervalJitter" "25"
 	"SpeedScale" "1"
 	"speedscalesp" "1.0"
 	"targetname" "Spawn14"
 	"teslablesp" "1"
-	"origin" "-5073.11 5979.7 809"
+	"origin" "-5048 5884 816"
 	editor
 	{
 		"color" "0 0 255"
@@ -82080,6 +82005,8 @@ entity
 	"StartBurrowed" "1"
 	"targetname" "SlomoSpawn4"
 	"teslablesp" "1"
+	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT"
+	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT_IDLE"
 	"origin" "-5752 4000 841"
 	editor
 	{
@@ -86595,7 +86522,7 @@ entity
 	"classname" "asw_spawner"
 	"AlienClass" "10"
 	"AlienOrders" "3"
-	"angles" "0 270 0"
+	"angles" "0 90 0"
 	"ClearCheck" "1"
 	"DirectorLockTime" "4"
 	"flammablesp" "1"
@@ -86607,7 +86534,6 @@ entity
 	"maxoffset" "0 0 0"
 	"minoffset" "0 0 0"
 	"MinSkillLevel" "4"
-	"NearDistance" "512"
 	"NumAliens" "1"
 	"sizescalesp" "1.0"
 	"SpawnerState" "1"
@@ -86620,7 +86546,8 @@ entity
 	"StartBurrowed" "1"
 	"targetname" "ins_ranger2_spawn"
 	"teslablesp" "1"
-	"origin" "-5568 6048 800.973"
+	"NearDistance" "740"
+	"origin" "-5572 5620 808"
 	editor
 	{
 		"color" "0 0 255"
@@ -86647,7 +86574,6 @@ entity
 	"maxoffset" "0 0 0"
 	"minoffset" "0 0 0"
 	"MinSkillLevel" "4"
-	"NearDistance" "512"
 	"NumAliens" "1"
 	"sizescalesp" "1.0"
 	"SpawnerState" "1"
@@ -86660,7 +86586,8 @@ entity
 	"StartBurrowed" "1"
 	"targetname" "ins_ranger2_spawn"
 	"teslablesp" "1"
-	"origin" "-5312 6048 800.973"
+	"NearDistance" "740"
+	"origin" "-5708 5396 808"
 	editor
 	{
 		"color" "0 0 255"
@@ -86673,12 +86600,13 @@ entity
 {
 	"id" "3178887"
 	"classname" "trigger_once"
-	"origin" "-4964 6591 928.98"
+	"origin" "-4624 6846 886.49"
 	"spawnflags" "16"
 	"StartDisabled" "0"
 	connections
 	{
 		"OnTrigger" "ins_ranger2_spawnStartSpawning0-1"
+		"OnTrigger" "Spawn14StartSpawning0-1"
 	}
 	solid
 	{
@@ -86686,10 +86614,10 @@ entity
 		side
 		{
 			"id" "157745"
-			"plane" "(-4974 6488 1056.98) (-4974 6694 1056.98) (-4954 6694 1056.98)"
+			"plane" "(-4840 6832 971.998) (-4840 6860 971.998) (-4408 6860 971.998)"
 			"material" "TOOLS/TOOLSTRIGGER"
-			"uaxis" "[1 0 0 -62.084] 0.25"
-			"vaxis" "[0 -1 0 32.0156] 0.25"
+			"uaxis" "[1 0 0 -54.084] 0.25"
+			"vaxis" "[0 -1 0 56.0156] 0.25"
 			"rotation" "0"
 			"lightmapscale" "16"
 			"smoothing_groups" "0"
@@ -86697,10 +86625,10 @@ entity
 		side
 		{
 			"id" "157744"
-			"plane" "(-4974 6694 800.98) (-4974 6488 800.98) (-4954 6488 800.98)"
+			"plane" "(-4840 6860 800.98) (-4840 6832 800.98) (-4408 6832 800.98)"
 			"material" "TOOLS/TOOLSTRIGGER"
-			"uaxis" "[1 0 0 -62.084] 0.25"
-			"vaxis" "[0 -1 0 32.0156] 0.25"
+			"uaxis" "[1 0 0 -54.084] 0.25"
+			"vaxis" "[0 -1 0 56.0156] 0.25"
 			"rotation" "0"
 			"lightmapscale" "16"
 			"smoothing_groups" "0"
@@ -86708,9 +86636,9 @@ entity
 		side
 		{
 			"id" "157743"
-			"plane" "(-4974 6488 800.98) (-4974 6694 800.98) (-4974 6694 1056.98)"
+			"plane" "(-4840 6832 800.98) (-4840 6860 800.98) (-4840 6860 972)"
 			"material" "TOOLS/TOOLSTRIGGER"
-			"uaxis" "[0 1 0 -32.0156] 0.25"
+			"uaxis" "[0 1 0 -56.0156] 0.25"
 			"vaxis" "[0 0 -1 3.9209] 0.25"
 			"rotation" "0"
 			"lightmapscale" "16"
@@ -86719,9 +86647,9 @@ entity
 		side
 		{
 			"id" "157742"
-			"plane" "(-4954 6694 800.98) (-4954 6488 800.98) (-4954 6488 1056.98)"
+			"plane" "(-4408 6860 800.98) (-4408 6832 800.98) (-4408 6832 972)"
 			"material" "TOOLS/TOOLSTRIGGER"
-			"uaxis" "[0 1 0 -32.0156] 0.25"
+			"uaxis" "[0 1 0 -56.0156] 0.25"
 			"vaxis" "[0 0 -1 3.9209] 0.25"
 			"rotation" "0"
 			"lightmapscale" "16"
@@ -86730,9 +86658,9 @@ entity
 		side
 		{
 			"id" "157741"
-			"plane" "(-4974 6694 800.98) (-4954 6694 800.98) (-4954 6694 1056.98)"
+			"plane" "(-4840 6860 800.98) (-4408 6860 800.98) (-4408 6860 972)"
 			"material" "TOOLS/TOOLSTRIGGER"
-			"uaxis" "[1 0 0 -62.084] 0.25"
+			"uaxis" "[1 0 0 -54.084] 0.25"
 			"vaxis" "[0 0 -1 3.9209] 0.25"
 			"rotation" "0"
 			"lightmapscale" "16"
@@ -86741,9 +86669,9 @@ entity
 		side
 		{
 			"id" "157740"
-			"plane" "(-4954 6488 800.98) (-4974 6488 800.98) (-4974 6488 1056.98)"
+			"plane" "(-4408 6832 800.98) (-4840 6832 800.98) (-4840 6832 972)"
 			"material" "TOOLS/TOOLSTRIGGER"
-			"uaxis" "[1 0 0 -62.084] 0.25"
+			"uaxis" "[1 0 0 -54.084] 0.25"
 			"vaxis" "[0 0 -1 3.9209] 0.25"
 			"rotation" "0"
 			"lightmapscale" "16"
@@ -86770,7 +86698,7 @@ entity
 	"classname" "asw_spawner"
 	"AlienClass" "10"
 	"AlienOrders" "3"
-	"angles" "0 270 0"
+	"angles" "0 90 0"
 	"ClearCheck" "1"
 	"DirectorLockTime" "4"
 	"flammablesp" "1"
@@ -86782,7 +86710,6 @@ entity
 	"maxoffset" "0 0 0"
 	"minoffset" "0 0 0"
 	"MinSkillLevel" "4"
-	"NearDistance" "512"
 	"NumAliens" "1"
 	"sizescalesp" "1.0"
 	"SpawnerState" "1"
@@ -86795,7 +86722,8 @@ entity
 	"StartBurrowed" "1"
 	"targetname" "ins_ranger2_spawn"
 	"teslablesp" "1"
-	"origin" "-5440 6048 800.973"
+	"NearDistance" "740"
+	"origin" "-5316 5656 808"
 	editor
 	{
 		"color" "0 0 255"
@@ -88177,8 +88105,8 @@ cameras
 	"activecamera" "0"
 	camera
 	{
-		"position" "[-3454.64 7127.72 871.368]"
-		"look" "[-8736.12 5329.67 -2045.37]"
+		"position" "[-5406.88 6243.41 998.101]"
+		"look" "[-5535.87 77.7632 -267.785]"
 	}
 }
 cordons

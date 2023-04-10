@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "2149"
+	"mapversion" "2152"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -50,7 +50,7 @@ viewsettings
 world
 {
 	"id" "394754"
-	"mapversion" "2149"
+	"mapversion" "2152"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -63817,9 +63817,110 @@ entity
 		"logicalpos" "[0 5500]"
 	}
 }
+entity
+{
+	"id" "2216050"
+	"classname" "func_instance"
+	"angles" "-0 90 0"
+	"file" "instances/pallet_onwall_02.vmf"
+	"origin" "-4784 6468 802"
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "2216062"
+	"classname" "prop_static"
+	"angles" "0 0 10"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/crossbeam_3/crossbeam03c.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 145 49"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-5006 6482 786"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[9500 4000]"
+	}
+}
+entity
+{
+	"id" "2216066"
+	"classname" "prop_static"
+	"angles" "0 0 10"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/supports/crossbeam_3/crossbeam03c.mdl"
+	"renderamt" "255"
+	"rendercolor" "162 145 49"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-5262 6482 786"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[9500 4000]"
+	}
+}
+entity
+{
+	"id" "2216151"
+	"classname" "prop_static"
+	"angles" "90 138 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/swarm/crates/crate001.mdl"
+	"renderamt" "255"
+	"rendercolor" "255 255 255"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-4496 6536 836"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[13000 7000]"
+	}
+}
 cameras
 {
 	"activecamera" "0"
+	camera
+	{
+		"position" "[-5436.24 6612.88 1014.98]"
+		"look" "[-5443.08 6368.1 905.957]"
+	}
+	camera
+	{
+		"position" "[-5064.87 6645.69 1077.37]"
+		"look" "[-4989.14 6901.99 1056.81]"
+	}
+	camera
+	{
+		"position" "[-6053.79 6129.26 1510.68]"
+		"look" "[-6038.46 6265.65 1280.44]"
+	}
+	camera
+	{
+		"position" "[-5064.87 6645.69 1077.37]"
+		"look" "[-4989.14 6901.99 1056.81]"
+	}
 	camera
 	{
 		"position" "[-3397.71 7141.53 1034.98]"
