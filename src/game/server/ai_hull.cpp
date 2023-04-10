@@ -41,7 +41,7 @@ ai_hull_t  Large_Centered_Hull	(bits_LARGE_CENTERED_HULL,	"LARGE_CENTERED_HULL",
 ai_hull_t  Medium_Tall_Hull		(bits_MEDIUM_TALL_HULL,		"MEDIUM_TALL_HULL",		Vector(-22,-22,   0),	Vector(22, 22, 100),	Vector(-22,-22, 0),	    Vector(22, 22, 100) );			// Hunter/Meatbug
 ai_hull_t  Tiny_Fluid_Hull		(bits_TINY_FLUID_HULL,		"TINY_FLUID_HULL",		Vector(-8,-8,   0),		Vector(8, 8, 16),		Vector(-8,-8, 0),	    Vector(8, 8, 16),	MASK_NPCWORLDSTATIC_FLUID );		// Blob?
 ai_hull_t  MediumBig_Hull		(bits_MEDIUMBIG_HULL,		"MEDIUMBIG_HULL",		Vector(-20,-20,   0),	Vector(20, 20, 69),		Vector(-20,-20, 0),	Vector(20, 20, 69) );				// Drones
-ai_hull_t  Huge_Hull			(bits_HUGE_HULL,			"HUGE_HULL",			Vector(-120,-120, 0),	Vector(120, 120, 160),	Vector(-80,-80,0),		Vector(80, 80, 200) );			// Queen
+ai_hull_t  Huge_Hull			(bits_HUGE_HULL,			"HUGE_HULL",			Vector(-80,-80, 0),		Vector(80, 80, 160),	Vector(-80,-80,0),		Vector(80, 80, 160) );			// Queen
 
 #else
 
