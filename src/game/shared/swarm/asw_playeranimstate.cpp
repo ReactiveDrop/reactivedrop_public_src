@@ -31,7 +31,7 @@
 	#include "asw_player.h"
 	#include "asw_marine.h"
 	#include "asw_marine_profile.h"
-	#define C_ASW_Marine CASW_Marine
+	#define C_ASW_Inhabitable_NPC CASW_Inhabitable_NPC
 	#define C_ASW_Weapon_Ammo_Bag CASW_Weapon_Ammo_Bag
 	#define C_ASW_Marine CASW_Marine
 #endif
@@ -286,6 +286,14 @@ void CASWPlayerAnimState::DoAnimationEvent( PlayerAnimEvent_t event )
 		m_flFireCycle = 0;
 		m_iFireSequence = CalcFireLayerSequence( event );
 		m_bFiring = m_iFireSequence != -1;
+
+		C_ASW_Inhabitable_NPC *pNPC = assert_cast< C_ASW_Inhabitable_NPC * >( GetOuter() );
+		CASW_Weapon *pActiveWeapon = pNPC ? pNPC->GetActiveASWWeapon() : NULL;
+		if ( pActiveWeapon && pActiveWeapon->ShouldPlayFiringAnimations() )
+		{
+			pActiveWeapon->SetIdealActivity( event == PLAYERANIMEVENT_FIRE_GUN_PRIMARY ? ACT_VM_PRIMARYATTACK : ACT_VM_SECONDARYATTACK );
+			pActiveWeapon->SetCycle( 0.0f );
+		}
 	}
 	else if ( event == PLAYERANIMEVENT_JUMP )
 	{

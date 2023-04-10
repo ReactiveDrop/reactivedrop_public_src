@@ -85,6 +85,7 @@ public:
 	virtual bool OffhandActivate() { return false; };
 	virtual bool WantsOffhandPostFrame() { return m_bShotDelayed; }
 	virtual bool SendWeaponAnim( int iActivity );
+	virtual bool ShouldPlayFiringAnimations() { return true; }
 	virtual int WeaponRangeAttack1Condition( float flDot, float flDist );
 	virtual bool IsOffensiveWeapon() { return true; }		// is this weapon an offensive gun type weapon (as opposed to a utility item)
 	virtual bool IsRapidFire() { return true; }

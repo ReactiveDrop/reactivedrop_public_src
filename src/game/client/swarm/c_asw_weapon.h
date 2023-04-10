@@ -133,6 +133,7 @@ public:
 	virtual bool OffhandActivate() { return false; };
 	virtual bool WantsOffhandPostFrame() { return m_bShotDelayed; }
 	virtual bool SendWeaponAnim( int iActivity );
+	virtual bool ShouldPlayFiringAnimations() { return true; }
 	virtual void CalcBoneMerge( CStudioHdr *hdr, int boneMask, CBoneBitList &boneComputed );
 	virtual int ASW_SelectWeaponActivity(int idealActivity);
 	virtual float GetWeaponPvpDamageBase();

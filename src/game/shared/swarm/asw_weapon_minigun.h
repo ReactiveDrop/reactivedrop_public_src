@@ -74,6 +74,7 @@ public:
 		CSoundPatch		*m_pBarrelSpinSound;
 	#endif
 	virtual const char *GetMagazineGibModelName() const override { return "models/weapons/empty_clips/autogun_empty_clip.mdl"; }
+	virtual bool ShouldPlayFiringAnimations() { return false; }
 	virtual float GetWeaponDamage();
 	virtual float GetMovementScale();
 	virtual bool ShouldMarineMoveSlow();

@@ -35,7 +35,7 @@ const ASW_Alien_Class_Entry g_Aliens[] =
 	{ "asw_drone_jumper", HULL_MEDIUMBIG, Vector( -17, -17, 0 ), Vector( 17, 17, 69 ) },
 	{ "asw_harvester", HULL_WIDE_SHORT, Vector( -23, -23, 0 ), Vector( 23, 23, 69 ) },
 	{ "asw_parasite_defanged", HULL_TINY, Vector( -12, -12, 0 ), Vector( 12, 12, 12 ) },
-	{ "asw_queen", HULL_HUGE, Vector( -120, -120, 0 ), Vector( 120, 120, 160 ) },
+	{ "asw_queen", HULL_HUGE, Vector( -80, -80, 0 ), Vector( 80, 80, 160 ) },
 	{ "asw_boomer", HULL_LARGE, Vector( -30, -30, 0 ), Vector( 30, 30, 110 ) },
 	{ "asw_ranger", HULL_MEDIUMBIG, Vector( -20, -20, 0 ), Vector( 20, 20, 69 ) },
 	{ "asw_mortarbug", HULL_WIDE_SHORT, Vector( -23, -23, 0 ), Vector( 23, 23, 69 ) },

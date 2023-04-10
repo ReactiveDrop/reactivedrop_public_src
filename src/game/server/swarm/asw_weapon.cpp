@@ -25,6 +25,12 @@ static void *SendProxy_WeaponItemDataForOwningPlayer( const SendProp *pProp, con
 }
 
 BEGIN_NETWORK_TABLE_NOBASE( CASW_Weapon, DT_ASWLocalWeaponData )
+	SendPropExclude( "DT_BaseAnimating", "m_flPlaybackRate" ),
+	SendPropExclude( "DT_BaseAnimating", "m_nSequence" ),
+	SendPropExclude( "DT_BaseAnimatingOverlay", "overlay_vars" ),
+	SendPropExclude( "DT_BaseAnimating", "m_nNewSequenceParity" ),
+	SendPropExclude( "DT_BaseAnimating", "m_nResetEventsParity" ),
+
 	SendPropIntWithMinusOneFlag( SENDINFO(m_iClip2 ), 8 ),
 	SendPropInt( SENDINFO(m_iSecondaryAmmoType ), 8 ),
 
@@ -37,7 +43,6 @@ BEGIN_NETWORK_TABLE_NOBASE( CASW_Weapon, DT_ASWActiveLocalWeaponData )
 	SendPropTime( SENDINFO( m_flNextPrimaryAttack ) ),
 	SendPropTime( SENDINFO( m_flNextSecondaryAttack ) ),
 	SendPropInt( SENDINFO( m_nNextThinkTick ) ),
-	SendPropTime( SENDINFO( m_flTimeWeaponIdle ) ),
 END_NETWORK_TABLE()
 
 IMPLEMENT_SERVERCLASS_ST(CASW_Weapon, DT_ASW_Weapon)
@@ -88,6 +93,7 @@ extern ConVar rd_server_marine_backpacks;
 
 CASW_Weapon::CASW_Weapon()
 {
+	UseClientSideAnimation();
 	SetPredictionEligible(true);
 	m_iEquipmentListIndex = -1;
 	m_pEquipItem = NULL;
