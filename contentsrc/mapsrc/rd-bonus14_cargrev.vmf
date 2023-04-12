@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "3651"
+	"mapversion" "3654"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -44,13 +44,13 @@ viewsettings
 	"bSnapToGrid" "1"
 	"bShowGrid" "1"
 	"bShowLogicalGrid" "0"
-	"nGridSpacing" "4"
+	"nGridSpacing" "1"
 	"bShow3DGrid" "0"
 }
 world
 {
 	"id" "394754"
-	"mapversion" "3651"
+	"mapversion" "3654"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -86534,6 +86534,7 @@ entity
 	"maxoffset" "0 0 0"
 	"minoffset" "0 0 0"
 	"MinSkillLevel" "4"
+	"NearDistance" "740"
 	"NumAliens" "1"
 	"sizescalesp" "1.0"
 	"SpawnerState" "1"
@@ -86546,7 +86547,6 @@ entity
 	"StartBurrowed" "1"
 	"targetname" "ins_ranger2_spawn"
 	"teslablesp" "1"
-	"NearDistance" "740"
 	"origin" "-5572 5620 808"
 	editor
 	{
@@ -86574,6 +86574,7 @@ entity
 	"maxoffset" "0 0 0"
 	"minoffset" "0 0 0"
 	"MinSkillLevel" "4"
+	"NearDistance" "740"
 	"NumAliens" "1"
 	"sizescalesp" "1.0"
 	"SpawnerState" "1"
@@ -86586,7 +86587,6 @@ entity
 	"StartBurrowed" "1"
 	"targetname" "ins_ranger2_spawn"
 	"teslablesp" "1"
-	"NearDistance" "740"
 	"origin" "-5708 5396 808"
 	editor
 	{
@@ -86710,6 +86710,7 @@ entity
 	"maxoffset" "0 0 0"
 	"minoffset" "0 0 0"
 	"MinSkillLevel" "4"
+	"NearDistance" "740"
 	"NumAliens" "1"
 	"sizescalesp" "1.0"
 	"SpawnerState" "1"
@@ -86722,7 +86723,6 @@ entity
 	"StartBurrowed" "1"
 	"targetname" "ins_ranger2_spawn"
 	"teslablesp" "1"
-	"NearDistance" "740"
 	"origin" "-5316 5656 808"
 	editor
 	{
@@ -88100,13 +88100,85 @@ entity
 		"logicalpos" "[13500 -1268]"
 	}
 }
+entity
+{
+	"id" "3239742"
+	"classname" "prop_static"
+	"angles" "-76 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/miscdeco/pallet/pallet.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 97 88"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-4864 6484 863.882"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[13000 10000]"
+	}
+}
+entity
+{
+	"id" "3239746"
+	"classname" "prop_static"
+	"angles" "-76 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/miscdeco/pallet/pallet.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 97 88"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-4854 6477 862.769"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[13000 10000]"
+	}
+}
+entity
+{
+	"id" "3239750"
+	"classname" "prop_static"
+	"angles" "-76 270 0"
+	"disableselfshadowing" "0"
+	"disablevertexlighting" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"model" "models/props/miscdeco/pallet/pallet.mdl"
+	"renderamt" "255"
+	"rendercolor" "90 97 88"
+	"screenspacefade" "0"
+	"skin" "0"
+	"solid" "6"
+	"origin" "-4710 6477 862.769"
+	editor
+	{
+		"color" "255 255 0"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[13000 10000]"
+	}
+}
 cameras
 {
 	"activecamera" "0"
 	camera
 	{
-		"position" "[-5406.88 6243.41 998.101]"
-		"look" "[-5535.87 77.7632 -267.785]"
+		"position" "[-4638.91 6777.64 1081.96]"
+		"look" "[-6874.05 1757.15 -1989.4]"
 	}
 }
 cordons

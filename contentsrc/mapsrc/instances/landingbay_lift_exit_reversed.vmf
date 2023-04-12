@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "2152"
+	"mapversion" "2153"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -50,7 +50,7 @@ viewsettings
 world
 {
 	"id" "394754"
-	"mapversion" "2152"
+	"mapversion" "2153"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -63819,21 +63819,6 @@ entity
 }
 entity
 {
-	"id" "2216050"
-	"classname" "func_instance"
-	"angles" "-0 90 0"
-	"file" "instances/pallet_onwall_02.vmf"
-	"origin" "-4784 6468 802"
-	editor
-	{
-		"color" "220 30 220"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 0]"
-	}
-}
-entity
-{
 	"id" "2216062"
 	"classname" "prop_static"
 	"angles" "0 0 10"
@@ -63903,8 +63888,8 @@ cameras
 	"activecamera" "0"
 	camera
 	{
-		"position" "[-5436.24 6612.88 1014.98]"
-		"look" "[-5443.08 6368.1 905.957]"
+		"position" "[-4588.69 6452.8 950.994]"
+		"look" "[-4813.22 6424.44 807.367]"
 	}
 	camera
 	{
