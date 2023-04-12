@@ -1,8 +1,8 @@
 versioninfo
 {
 	"editorversion" "400"
-	"editorbuild" "4950"
-	"mapversion" "29"
+	"editorbuild" "7397"
+	"mapversion" "32"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -20,7 +20,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "29"
+	"mapversion" "32"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -3406,10 +3406,8 @@ entity
 entity
 {
 	"id" "10446"
-	"classname" "info_node_marine_hint"
+	"classname" "info_marine_hint"
 	"angles" "0 105 0"
-	"nodeid" "667"
-	"spawnflags" "0"
 	"origin" "-6368 -1456 838"
 	editor
 	{
@@ -3726,10 +3724,8 @@ entity
 entity
 {
 	"id" "10490"
-	"classname" "info_node_marine_hint"
-	"angles" "0 60 0"
-	"nodeid" "689"
-	"spawnflags" "0"
+	"classname" "info_marine_hint"
+	"angles" "0 79 0"
 	"origin" "-6768 -1456 838"
 	editor
 	{
@@ -4019,6 +4015,104 @@ entity
 	"nodeid" "707"
 	"spawnflags" "0"
 	"origin" "-5128 3946 850"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "11456"
+	"classname" "info_marine_hint"
+	"angles" "0 83 0"
+	"origin" "-6696 -1424 838"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "11460"
+	"classname" "info_marine_hint"
+	"angles" "0 90 0"
+	"origin" "-6610 -1432 838"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "11464"
+	"classname" "info_marine_hint"
+	"angles" "0 117 0"
+	"origin" "-6498 -1416 838"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "11468"
+	"classname" "info_marine_hint"
+	"angles" "0 108 0"
+	"origin" "-6512 -1510 838"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "11472"
+	"classname" "info_marine_hint"
+	"angles" "0 59 0"
+	"origin" "-6594 -1544 838"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "11476"
+	"classname" "info_marine_hint"
+	"angles" "0 116 0"
+	"origin" "-6656 -1560 838"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "11480"
+	"classname" "info_marine_hint"
+	"angles" "0 274 0"
+	"origin" "-6720 -1556 838"
 	editor
 	{
 		"color" "8 64 232"

@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "33"
+	"mapversion" "35"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -20,7 +20,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "33"
+	"mapversion" "35"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -7577,6 +7577,104 @@ entity
 	"nodeid" "708"
 	"spawnflags" "0"
 	"origin" "-5266.7 972.027 836"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "11289"
+	"classname" "info_marine_hint"
+	"angles" "0 180 0"
+	"origin" "-4908 -8955 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "11291"
+	"classname" "info_marine_hint"
+	"angles" "0 180 0"
+	"origin" "-4907 -8898 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "11293"
+	"classname" "info_marine_hint"
+	"angles" "0 180 0"
+	"origin" "-4855 -8897 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "11295"
+	"classname" "info_marine_hint"
+	"angles" "0 180 0"
+	"origin" "-4858 -8957 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "11297"
+	"classname" "info_marine_hint"
+	"angles" "0 180 0"
+	"origin" "-4810 -8957 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "11299"
+	"classname" "info_marine_hint"
+	"angles" "0 180 0"
+	"origin" "-4809 -8897 962"
+	editor
+	{
+		"color" "8 64 232"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[500 -11768]"
+	}
+}
+entity
+{
+	"id" "11301"
+	"classname" "info_marine_hint"
+	"angles" "0 180 0"
+	"origin" "-4766 -8927 962"
 	editor
 	{
 		"color" "8 64 232"
