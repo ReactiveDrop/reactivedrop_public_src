@@ -68,6 +68,8 @@ void C_ASW_Weapon_Rifle::SecondaryAttack( void )
 	VectorScale( vecThrow, 1000.0f, vecThrow );
 	
 	SendWeaponAnim( ACT_VM_SECONDARYATTACK );
+	pMarine->DoAnimationEvent( PLAYERANIMEVENT_FIRE_GUN_SECONDARY );
+
 	if ( bUsesClips )
 	{
 		m_iClip2 -= 1;

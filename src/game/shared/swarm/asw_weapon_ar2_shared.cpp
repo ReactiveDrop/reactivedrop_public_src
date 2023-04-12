@@ -215,6 +215,11 @@ void CASW_Weapon_AR2::DelayedAttack( void )
 
 	m_flNextSecondaryAttack = pOwner->m_flNextAttack = gpGlobals->curtime + 0.66f;
 
+	if ( CASW_Marine *pMarine = CASW_Marine::AsMarine( pOwner ) )
+	{
+		pMarine->DoAnimationEvent( PLAYERANIMEVENT_FIRE_GUN_SECONDARY );
+	}
+
 	WeaponSound( WPN_DOUBLE );
 
 #ifdef GAME_DLL

@@ -280,7 +280,8 @@ void CASWPlayerAnimState::ClearAnimationState()
 void CASWPlayerAnimState::DoAnimationEvent( PlayerAnimEvent_t event )
 {
 	if ( event == PLAYERANIMEVENT_FIRE_GUN_PRIMARY || 
-		 event == PLAYERANIMEVENT_FIRE_GUN_SECONDARY )
+		 event == PLAYERANIMEVENT_FIRE_GUN_SECONDARY ||
+		 event == PLAYERANIMEVENT_FIRE_GUN_TERTIARY )
 	{
 		// Regardless of what we're doing in the fire layer, restart it.
 		m_flFireCycle = 0;
@@ -289,7 +290,7 @@ void CASWPlayerAnimState::DoAnimationEvent( PlayerAnimEvent_t event )
 
 		C_ASW_Inhabitable_NPC *pNPC = assert_cast< C_ASW_Inhabitable_NPC * >( GetOuter() );
 		CASW_Weapon *pActiveWeapon = pNPC ? pNPC->GetActiveASWWeapon() : NULL;
-		if ( pActiveWeapon && pActiveWeapon->ShouldPlayFiringAnimations() )
+		if ( pActiveWeapon && pActiveWeapon->ShouldPlayFiringAnimations() && event != PLAYERANIMEVENT_FIRE_GUN_TERTIARY )
 		{
 			pActiveWeapon->SetIdealActivity( event == PLAYERANIMEVENT_FIRE_GUN_PRIMARY ? ACT_VM_PRIMARYATTACK : ACT_VM_SECONDARYATTACK );
 			pActiveWeapon->SetCycle( 0.0f );

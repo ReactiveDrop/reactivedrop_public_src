@@ -356,7 +356,7 @@ void CASW_Weapon_Flamer::SecondaryAttack( void )
 		pMarine->DoMuzzleFlash();
 
 		// sets the animation on the weapon model iteself
-		SendWeaponAnim( GetPrimaryAttackActivity() );
+		SendWeaponAnim( GetSecondaryAttackActivity() );
 
 		// sets the animation on the marine holding this weapon
 #ifndef CLIENT_DLL

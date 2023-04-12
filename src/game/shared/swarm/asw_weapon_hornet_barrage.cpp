@@ -166,7 +166,7 @@ void CASW_Weapon_Hornet_Barrage::FireRocket()
 	// tell the marine to tell its weapon to draw the muzzle flash
 	pMarine->DoMuzzleFlash();
 
-	pMarine->DoAnimationEvent( PLAYERANIMEVENT_FIRE_GUN_PRIMARY );
+	pMarine->DoAnimationEvent( PLAYERANIMEVENT_FIRE_GUN_TERTIARY );
 
 	
 	m_iRocketsToFire = m_iRocketsToFire.Get() - 1;

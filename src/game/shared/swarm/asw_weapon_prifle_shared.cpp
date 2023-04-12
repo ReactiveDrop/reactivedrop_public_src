@@ -171,9 +171,9 @@ void CASW_Weapon_PRifle::SecondaryAttack()
 	pMarine->OnWeaponFired( this, 1, true );
 #endif
 
-	SendWeaponAnim( GetPrimaryAttackActivity() );
+	SendWeaponAnim( GetSecondaryAttackActivity() );
 
-	pMarine->DoAnimationEvent( PLAYERANIMEVENT_FIRE_GUN_PRIMARY );
+	pMarine->DoAnimationEvent( PLAYERANIMEVENT_FIRE_GUN_SECONDARY );
 
 	if ( bUsesClips )
 	{
