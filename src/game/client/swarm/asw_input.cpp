@@ -369,7 +369,7 @@ C_BaseEntity* HUDToWorld(float screenx, float screeny,
 	Vector vCameraLocation;
 	QAngle cameraAngle;
 	Vector vTraceEnd;
-	int nTraceMask = (CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_WINDOW|CONTENTS_MONSTER|CONTENTS_GRATE);		// CONTENTS_PLAYERCLIP
+	int nTraceMask = (CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_WINDOW|CONTENTS_MONSTER|CONTENTS_GRATE|CONTENTS_HITBOX);		// CONTENTS_PLAYERCLIP
 	trace_t tr;
 	int nDebugLine = 3;
 

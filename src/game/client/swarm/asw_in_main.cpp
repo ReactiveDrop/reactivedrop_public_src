@@ -27,8 +27,10 @@
 ConVar joy_pan_camera("joy_pan_camera", "0", FCVAR_ARCHIVE);
 ConVar asw_ground_secondary("asw_ground_secondary", "1", FCVAR_NONE, "Set to 1 to make marines aim grenades at the floor instead of firing them straight");
 extern ConVar rd_ground_shooting;
-// BenLubar(spectator-mouse)
+extern ConVar asw_DebugAutoAim;
 ConVar rd_networked_mouse( "rd_networked_mouse", "1", FCVAR_DEVELOPMENTONLY, "Send the mouse position to the server for spectating" );
+ConVar rd_first_person_aim_correction( "rd_first_person_aim_correction", "1", FCVAR_USERINFO, "Make the gun point where the player is looking rather than straight forward." );
+ConVar rd_first_person_aim_correction_weapon_length( "rd_first_person_aim_correction_weapon_length", "35", FCVAR_USERINFO, "Scale down aim angle correction linearly when distance is below this." );
 
 static  kbutton_t	in_holdorder;
 
@@ -557,7 +559,7 @@ void CASWInput::CreateMove( int sequence_number, float input_sample_frametime, b
 	}
 	cmd->crosshair_entity = GetHighlightEntity() ? GetHighlightEntity()->entindex() : 0;
 
-	if ( pPlayer && pPlayer->GetASWControls() != ASWC_TOPDOWN && pMarine )
+	if ( pPlayer && pPlayer->GetASWControls() != ASWC_TOPDOWN && pMarine && rd_first_person_aim_correction.GetBool() )
 	{
 		Vector vecFacing;
 		AngleVectors( cmd->viewangles, &vecFacing );
@@ -571,21 +573,63 @@ void CASWInput::CreateMove( int sequence_number, float input_sample_frametime, b
 
 		Vector vecHitLocation;
 		IASW_Client_Aim_Target *pAutoAimEnt = NULL;
-		HUDToWorld( 0, 0, vecHitLocation, pAutoAimEnt );
-		if ( pAutoAimEnt && !vecHitLocation.IsZero() )
+		C_BaseEntity *pAimEnt = HUDToWorld( 0, 0, vecHitLocation, pAutoAimEnt );
+
+		if ( asw_DebugAutoAim.GetInt() >= 1 )
+		{
+			if ( tr.startsolid )
+			{
+				NDebugOverlay::Cross3D( tr.endpos, 16.0f, 255, 0, 0, true, 0.1f );
+			}
+			else
+			{
+				NDebugOverlay::Cross3D( tr.endpos, 16.0f, 255, 255, 255, true, 0.1f );
+				if ( pAutoAimEnt && !vecHitLocation.IsZero() )
+				{
+					NDebugOverlay::Box( vecHitLocation, Vector( -2, -2, -2 ), Vector( 2, 2, 2 ), 255, 255, 0, 127, 0.1f );
+				}
+			}
+		}
+
+		Vector vecScreenPos;
+		if ( pAutoAimEnt && !vecHitLocation.IsZero() && !debugoverlay->ScreenPosition( vecHitLocation, vecScreenPos ) )
 		{
 			tr.endpos = vecHitLocation;
+		}
+
+		Vector vecShootPos = pMarine->Weapon_ShootPosition();
+		if ( asw_DebugAutoAim.GetInt() >= 1 )
+		{
+			NDebugOverlay::Line( vecShootPos, tr.endpos, 255, 0, 127, true, 0.1f );
+
+			Vector vecUnadjustedForward;
+			AngleVectors( pPlayer->EyeAngles(), &vecUnadjustedForward );
+
+			NDebugOverlay::Line( tr.endpos, vecShootPos + vecUnadjustedForward * vecShootPos.DistTo( tr.endpos ), 255, 0, 0, true, 0.1f );
 		}
 
 		if ( !tr.startsolid )
 		{
 			Vector vecAimDelta;
-			VectorSubtract( tr.endpos, pMarine->Weapon_ShootPosition(), vecAimDelta );
+			VectorSubtract( tr.endpos, vecShootPos, vecAimDelta );
 			QAngle angIdealAim;
 			VectorAngles( vecAimDelta, angIdealAim );
 			cmd->aimangleoffset = angIdealAim - pPlayer->EyeAngles();
 			cmd->aimangleoffset.z = 0;
 			NormalizeAngles( cmd->aimangleoffset );
+
+			float flDist = vecAimDelta.Length();
+			if ( rd_first_person_aim_correction_weapon_length.GetFloat() > 0 && flDist < rd_first_person_aim_correction_weapon_length.GetFloat() )
+			{
+				cmd->aimangleoffset *= flDist / rd_first_person_aim_correction_weapon_length.GetFloat();
+
+				if ( asw_DebugAutoAim.GetInt() >= 1 )
+				{
+					Vector vecForward;
+					AngleVectors( pPlayer->EyeAngles() + cmd->aimangleoffset, &vecForward );
+					NDebugOverlay::Line( tr.endpos, vecShootPos + vecForward * rd_first_person_aim_correction_weapon_length.GetFloat(), 255, 0, 255, true, 0.1f );
+				}
+			}
 		}
 	}
 
