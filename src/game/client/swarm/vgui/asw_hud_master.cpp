@@ -291,10 +291,11 @@ void CASW_Hud_Master::OnThink()
 	int nPosition = 0;
 	int nMaxWidth = ScreenWidth();
 	CASWHudMinimap *pMinimap = GET_HUDELEMENT(CASWHudMinimap);
-	if (pMinimap)
+	if ( pMinimap )
 	{
 		int y;
-		pMinimap->GetPos(nMaxWidth, y);
+		pMinimap->GetPos( nMaxWidth, y );
+		nMaxWidth += pMinimap->GetMapCornerInPanel().x;
 	}
 	for ( int i = 0; i < nMaxResources && nPosition < MAX_SQUADMATE_HUD_POSITIONS; i++ )
 	{
