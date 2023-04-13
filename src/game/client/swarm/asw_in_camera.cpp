@@ -487,12 +487,19 @@ void CASWInput::ASW_GetCameraLocation( C_ASW_Player *pPlayer, Vector &vecCameraL
 	vecCameraLocation = pPlayer->EyePosition();
 
 	// Get the camera angles and calculate the camera view directions.
-	Vector vecCameraDirection;
-	::input->CAM_GetCameraOffset( vecCameraDirection );
+	if ( pPlayer->GetASWControls() == ASWC_TOPDOWN )
+	{
+		Vector vecCameraDirection;
+		::input->CAM_GetCameraOffset( vecCameraDirection );
 
-	angCamera[PITCH] = vecCameraDirection[PITCH];
-	angCamera[YAW] = vecCameraDirection[YAW];
-	angCamera[ROLL] = 0;
+		angCamera[PITCH] = vecCameraDirection[PITCH];
+		angCamera[YAW] = vecCameraDirection[YAW];
+		angCamera[ROLL] = 0;
+	}
+	else
+	{
+		angCamera = pPlayer->EyeAngles();
+	}
 
 	Vector vecCamForward, vecCamRight, vecCamUp;
 	AngleVectors( angCamera, &vecCamForward, &vecCamRight, &vecCamUp );
