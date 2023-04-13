@@ -523,7 +523,7 @@ void CASW_Marine::TaskFail( AI_TaskFailureCode_t code )
 					CollisionProp()->OBBMaxs(),
 					MASK_PLAYERSOLID,
 					this,
-					COLLISION_GROUP_NONE,
+					COLLISION_GROUP_PLAYER_MOVEMENT,
 					&tr );
 				if ( tr.fraction == 1.0 )
 				{
@@ -532,7 +532,7 @@ void CASW_Marine::TaskFail( AI_TaskFailureCode_t code )
 						vecIdealPos + Vector( 0, 0, 40 ),
 						MASK_PLAYERSOLID_BRUSHONLY,
 						this,
-						COLLISION_GROUP_NONE,
+						COLLISION_GROUP_PLAYER_MOVEMENT,
 						&tr );
 					if ( tr.fraction == 1.0 )
 					{
