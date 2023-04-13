@@ -983,6 +983,14 @@ public:
 		}
 	}
 
+	static CBaseEntity *Ent( int index )
+	{
+		if ( index == -1 )
+			return NULL;
+
+		return CBaseEntity::Instance( index );
+	}
+
 	void FireGameEvent( IGameEvent *event ) override
 	{
 		if ( !ASWDeathmatchMode() )
@@ -1002,7 +1010,7 @@ public:
 
 			if ( FStrEq( event->GetName(), "fast_hack_success" ) )
 			{
-				CASW_Marine *pMarine = CASW_Marine::AsMarine( CBaseEntity::Instance( event->GetInt( "marine" ) ) );
+				CASW_Marine *pMarine = CASW_Marine::AsMarine( Ent( event->GetInt( "marine" ) ) );
 				if ( pMarine )
 				{
 					IncrementStrangePropertyOnEquippedItems( pMarine, 5004, 1 ); // Fast Hacks
@@ -1012,9 +1020,9 @@ public:
 
 			if ( FStrEq( event->GetName(), "entity_frozen" ) )
 			{
-				CBaseEntity *pTarget = CBaseEntity::Instance( event->GetInt( "entindex" ) );
-				CBaseEntity *pAttacker = CBaseEntity::Instance( event->GetInt( "attacker" ) );
-				CBaseEntity *pWeapon = CBaseEntity::Instance( event->GetInt( "weapon" ) );
+				CBaseEntity *pTarget = Ent( event->GetInt( "entindex" ) );
+				CBaseEntity *pAttacker = Ent( event->GetInt( "attacker" ) );
+				CBaseEntity *pWeapon = Ent( event->GetInt( "weapon" ) );
 				if ( pTarget && pAttacker && pAttacker->IsInhabitableNPC() && pWeapon )
 				{
 					s_RD_Inventory_Manager.IncrementStrangePropertiesForWeapon( assert_cast< CASW_Inhabitable_NPC * >( pAttacker ), pWeapon, 5005, 1 ); // Enemies Frozen
@@ -1024,9 +1032,9 @@ public:
 
 			if ( FStrEq( event->GetName(), "marine_infested_cured" ) )
 			{
-				CASW_Marine *pTarget = CASW_Marine::AsMarine( CBaseEntity::Instance( event->GetInt( "entindex" ) ) );
-				CASW_Marine *pHealer = CASW_Marine::AsMarine( CBaseEntity::Instance( event->GetInt( "marine" ) ) );
-				CBaseEntity *pWeapon = CBaseEntity::Instance( event->GetInt( "weapon" ) );
+				CASW_Marine *pTarget = CASW_Marine::AsMarine( Ent( event->GetInt( "entindex" ) ) );
+				CASW_Marine *pHealer = CASW_Marine::AsMarine( Ent( event->GetInt( "marine" ) ) );
+				CBaseEntity *pWeapon = Ent( event->GetInt( "weapon" ) );
 
 				if ( !pWeapon && pTarget && pTarget->IsElectrifiedArmorActive() )
 				{
@@ -1042,9 +1050,9 @@ public:
 
 			if ( FStrEq( event->GetName(), "marine_extinguished" ) )
 			{
-				CASW_Marine *pTarget = CASW_Marine::AsMarine( CBaseEntity::Instance( event->GetInt( "entindex" ) ) );
-				CASW_Marine *pHealer = CASW_Marine::AsMarine( CBaseEntity::Instance( event->GetInt( "healer" ) ) );
-				CBaseEntity *pWeapon = CBaseEntity::Instance( event->GetInt( "weapon" ) );
+				CASW_Marine *pTarget = CASW_Marine::AsMarine( Ent( event->GetInt( "entindex" ) ) );
+				CASW_Marine *pHealer = CASW_Marine::AsMarine( Ent( event->GetInt( "healer" ) ) );
+				CBaseEntity *pWeapon = Ent( event->GetInt( "weapon" ) );
 
 				if ( pTarget && pHealer && pWeapon )
 				{
@@ -1056,9 +1064,9 @@ public:
 
 			if ( FStrEq( event->GetName(), "marine_healed" ) )
 			{
-				CASW_Marine *pTarget = CASW_Marine::AsMarine( CBaseEntity::Instance( event->GetInt( "patient_entindex" ) ) );
-				CASW_Marine *pHealer = CASW_Marine::AsMarine( CBaseEntity::Instance( event->GetInt( "medic_entindex" ) ) );
-				CBaseEntity *pWeapon = CBaseEntity::Instance( event->GetInt( "weapon" ) );
+				CASW_Marine *pTarget = CASW_Marine::AsMarine( Ent( event->GetInt( "patient_entindex" ) ) );
+				CASW_Marine *pHealer = CASW_Marine::AsMarine( Ent( event->GetInt( "medic_entindex" ) ) );
+				CBaseEntity *pWeapon = Ent( event->GetInt( "weapon" ) );
 
 				if ( pTarget && pHealer && pWeapon )
 				{
