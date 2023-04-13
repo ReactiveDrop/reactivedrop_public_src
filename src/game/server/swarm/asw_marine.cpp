@@ -458,6 +458,8 @@ ConVar asw_marine_special_idle_chatter_chance( "asw_marine_special_idle_chatter_
 ConVar asw_force_ai_fire("asw_force_ai_fire", "0", FCVAR_CHEAT, "Forces all AI marines to fire constantly");
 ConVar asw_realistic_death_chatter( "asw_realistic_death_chatter", "0", FCVAR_CHEAT, "If true, only 1 nearby marine will shout about marine deaths" );
 ConVar asw_god( "asw_god", "0", FCVAR_CHEAT, "Set to 1 to make marines invulnerable" );
+ConVar asw_god_effects( "asw_god_effects", "0", FCVAR_CHEAT, "If 1, marine health will not be affected by damage, but they will still take other effects" );
+ConVar asw_marine_damage_force_scale( "asw_marine_damage_force_scale", "1", FCVAR_CHEAT, "Damage force applied to marines is multiplied by this factor" );
 ConVar rd_infinite_ammo( "rd_infinite_ammo", "0", FCVAR_CHEAT, "Marine's active weapon will never run out of ammo" );
 extern ConVar asw_sentry_friendly_fire_scale;
 extern ConVar asw_marine_ff_absorption;
@@ -1358,6 +1360,8 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 
 	CTakeDamageInfo newInfo(info);
 
+	newInfo.ScaleDamageForce( asw_marine_damage_force_scale.GetFloat() );
+
 	CBaseEntity* pAttacker = newInfo.GetAttacker();
 	if ( asw_debug_marine_damage.GetBool() )
 		Msg( "Marine taking premodified damage of %f\n", newInfo.GetDamage() );
@@ -1632,6 +1636,8 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	CASW_GameStats.Event_MarineTookDamage( this, newInfo );
 	int result = BaseClass::OnTakeDamage_Alive( newInfo );
 	int iDamageTaken = MAX( iPreDamageHealth, 0 ) - MAX( GetHealth(), 0 );
+	if ( asw_god_effects.GetBool() )
+		SetHealth( iPreDamageHealth );
 
 	if (asw_debug_marine_damage.GetBool() && result > 0)
 		Msg("  Marine took final damage: %f of type %d\n", newInfo.GetDamage(), newInfo.GetDamageType());
