@@ -48,6 +48,7 @@ public:
 	virtual bool IsPredicted( void ) const;
 	virtual bool ViewModelIsMarineAttachment() const { return false; }
 	virtual bool ViewModelHidesMarineBodyGroup1() const { return false; }
+	// note: these only work for player, not spectator
 	void PlaySoundDirectlyToOwner( const char *szSoundName );
 	void PlaySoundToOthers( const char *szSoundName );
 

@@ -95,10 +95,10 @@ CASW_Player* CASW_Weapon::GetCommander()
 {
 	CASW_Player *pOwner = NULL;
 	CBaseCombatCharacter* pCombatCharOwner = GetOwner();
-	if ( pCombatCharOwner && pCombatCharOwner->Classify() == CLASS_ASW_MARINE )
+	if ( pCombatCharOwner && pCombatCharOwner->IsInhabitableNPC() )
 	{
-		CASW_Marine* pMarine = assert_cast<CASW_Marine*>(pCombatCharOwner);
-		pOwner = pMarine->GetCommander();
+		CASW_Inhabitable_NPC *pNPC = assert_cast< CASW_Inhabitable_NPC * >( pCombatCharOwner );
+		pOwner = pNPC->GetCommander();
 	}
 	else
 	{
@@ -1532,6 +1532,9 @@ void CASW_Weapon::PlaySoundDirectlyToOwner( const char *szSoundName )
 	if ( !pPlayer )
 		return;
 
+	if ( !assert_cast< CASW_Inhabitable_NPC * >( GetOwner() )->IsInhabited() )
+		return;
+
 	CSoundParameters params;
 	if ( !GetParametersForSound( szSoundName, params, NULL ) )
 		return;
@@ -1563,7 +1566,7 @@ void CASW_Weapon::PlaySoundToOthers( const char *szSoundName )
 		{
 			filter.UsePredictionRules();
 		}
-		if ( pPlayer )
+		if ( pPlayer && assert_cast< CASW_Inhabitable_NPC * >( GetOwner() )->IsInhabited() )
 		{
 			filter.RemoveRecipient( pPlayer );
 		}
@@ -1576,10 +1579,6 @@ void CASW_Weapon::PlaySoundToOthers( const char *szSoundName )
 		if ( IsPredicted() && CBaseEntity::GetPredictionPlayer() )
 		{
 			filter.UsePredictionRules();
-		}
-		if ( pPlayer )
-		{
-			filter.RemoveRecipient( pPlayer );
 		}
 		EmitSound(filter, entindex(), playparams);
 	}
