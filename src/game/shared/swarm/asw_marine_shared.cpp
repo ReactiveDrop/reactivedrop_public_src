@@ -433,8 +433,8 @@ float CASW_Marine::MaxSpeed()
 
 	// speed up as time slows down
 	float flTimeDifference = 0.0f;
-	
-	if ( gpGlobals->curtime > ASWGameRules()->GetStimEndTime() )
+
+	if ( gpGlobals->curtime < ASWGameRules()->GetStimEndTime() + 1.5f )
 	{
 		flTimeDifference = 1.0f - MAX( asw_stim_time_scale.GetFloat(), GameTimescale()->GetCurrentTimescale() );
 	}
