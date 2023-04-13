@@ -514,6 +514,7 @@ void CASW_Marine::TaskFail( AI_TaskFailureCode_t code )
 			{
 				Vector vecIdealPos = GetSquadFormation()->GetIdealPosition( squaddie );
 				QAngle angIdeal( 0, GetSquadFormation()->GetYaw( squaddie ), 0 );
+				bool bTeleported = false;
 
 				// check the spot is clear
 				trace_t tr;
@@ -536,12 +537,25 @@ void CASW_Marine::TaskFail( AI_TaskFailureCode_t code )
 						&tr );
 					if ( tr.fraction == 1.0 )
 					{
-						Teleport( &vecIdealPos, &angIdeal, &vec3_origin );
-						DevMsg( this, "Teleported stuck marine to %s (squad)\n", pLeader->GetDebugName() );
+						// make sure we have a floor of some kind
+						UTIL_TraceHull( vecIdealPos,
+							vecIdealPos - Vector( 0, 0, 64 ),
+							CollisionProp()->OBBMins(),
+							CollisionProp()->OBBMaxs(),
+							MASK_PLAYERSOLID,
+							this,
+							COLLISION_GROUP_PLAYER_MOVEMENT,
+							&tr );
+						if ( tr.fraction != 1.0 )
+						{
+							Teleport( &vecIdealPos, &angIdeal, &vec3_origin );
+							DevMsg( this, "Teleported stuck marine to %s (squad)\n", pLeader->GetDebugName() );
+							bTeleported = true;
+						}
 					}
 				}
 
-				if ( tr.fraction != 1.0 )
+				if ( !bTeleported )
 				{
 					if ( TeleportToFreeNode( pLeader, rd_stuck_bot_teleport_max_range.GetFloat() ) )
 					{
