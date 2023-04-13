@@ -111,6 +111,7 @@ void CASW_Weapon_Ricochet::PrimaryAttack()
 
 		// sets the animation on the weapon model iteself
 		SendWeaponAnim( GetPrimaryAttackActivity() );
+		pMarine->DoAnimationEvent( bAttack2 ? PLAYERANIMEVENT_FIRE_GUN_SECONDARY : PLAYERANIMEVENT_FIRE_GUN_PRIMARY );
 
 #ifdef GAME_DLL	// check for turning on lag compensation
 		if ( pPlayer && pMarine->IsInhabited() )

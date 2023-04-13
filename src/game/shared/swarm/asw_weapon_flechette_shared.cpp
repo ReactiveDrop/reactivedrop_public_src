@@ -107,6 +107,7 @@ void CASW_Weapon_Flechette::PrimaryAttack()
 
 		// sets the animation on the weapon model iteself
 		SendWeaponAnim( GetPrimaryAttackActivity() );
+		pMarine->DoAnimationEvent( PLAYERANIMEVENT_FIRE_GUN_PRIMARY );
 
 		Vector vecDir;
 		Vector vecSrc = pMarine->Weapon_ShootPosition( );
