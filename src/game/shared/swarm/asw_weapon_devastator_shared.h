@@ -28,7 +28,8 @@ public:
 
 #ifndef CLIENT_DLL
 	DECLARE_DATADESC();
-#else 
+#else
+	virtual const char *GetPartialReloadSound( int iPart );
 	virtual bool HasSecondaryExplosive(void) const { return false; }
 #endif
 	virtual const char *GetMagazineGibModelName() const override { return "models/weapons/empty_clips/devastator_empty_clip.mdl"; }

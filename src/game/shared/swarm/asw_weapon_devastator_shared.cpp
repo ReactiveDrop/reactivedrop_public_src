@@ -67,9 +67,11 @@ void CASW_Weapon_Devastator::Precache()
 	PrecacheModel( "swarm/sprites/whiteglow1.vmt" );
 	PrecacheModel( "swarm/sprites/greylaser1.vmt");
 	PrecacheScriptSound( "ASW_Weapon.Empty" );
-	PrecacheScriptSound( "ASW_Weapon.Reload3" );
 	PrecacheScriptSound( "ASW_Weapon_Devastator.SingleFP" );
 	PrecacheScriptSound( "ASW_Weapon_Devastator.Single" );
+	PrecacheScriptSound( "ASW_Weapon_Devastator.ReloadA" );
+	PrecacheScriptSound( "ASW_Weapon_Devastator.ReloadB" );
+	PrecacheScriptSound( "ASW_Weapon_Devastator.ReloadC" );
 
 	BaseClass::Precache();
 }
@@ -87,7 +89,7 @@ float CASW_Weapon_Devastator::GetWeaponDamage()
 
 	if (GetMarine())
 	{
-		flDamage += MarineSkills()->GetSkillBasedValueByMarine( GetMarine(), ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG );
+		flDamage += MarineSkills()->GetSkillBasedValueByMarine( GetMarine(), ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_DEVASTATOR_DMG );
 	}
 
 	return flDamage;
@@ -98,6 +100,20 @@ float CASW_Weapon_Devastator::GetMovementScale()
 {
 	return ShouldMarineMoveSlow() ? 0.3f : 0.7f;
 }
+
+#ifndef CLIENT_DLL
+#else
+const char *CASW_Weapon_Devastator::GetPartialReloadSound( int iPart )
+{
+	switch ( iPart )
+	{
+	case 1: return "ASW_Weapon_Devastator.ReloadB"; break;
+	case 2: return "ASW_Weapon_Devastator.ReloadC"; break;
+	default: break;
+	};
+	return "ASW_Weapon_Devastator.ReloadA";
+}
+#endif
 
 bool CASW_Weapon_Devastator::ShouldMarineMoveSlow()
 {
