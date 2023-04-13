@@ -514,7 +514,44 @@ void CASW_Marine::TaskFail( AI_TaskFailureCode_t code )
 			{
 				Vector vecIdealPos = GetSquadFormation()->GetIdealPosition( squaddie );
 				QAngle angIdeal( 0, GetSquadFormation()->GetYaw( squaddie ), 0 );
-				Teleport( &vecIdealPos, &angIdeal, &vec3_origin );
+
+				// check the spot is clear
+				trace_t tr;
+				UTIL_TraceHull( vecIdealPos,
+					vecIdealPos + Vector( 0, 0, 1 ),
+					CollisionProp()->OBBMins(),
+					CollisionProp()->OBBMaxs(),
+					MASK_PLAYERSOLID,
+					this,
+					COLLISION_GROUP_NONE,
+					&tr );
+				if ( tr.fraction == 1.0 )
+				{
+					// make sure we have line of sight
+					UTIL_TraceLine( pLeader->GetAbsOrigin() + Vector( 0, 0, 40 ),
+						vecIdealPos + Vector( 0, 0, 40 ),
+						MASK_PLAYERSOLID_BRUSHONLY,
+						this,
+						COLLISION_GROUP_NONE,
+						&tr );
+					if ( tr.fraction == 1.0 )
+					{
+						Teleport( &vecIdealPos, &angIdeal, &vec3_origin );
+						DevMsg( this, "Teleported stuck marine to %s (squad)\n", pLeader->GetDebugName() );
+					}
+				}
+
+				if ( tr.fraction != 1.0 )
+				{
+					if ( TeleportToFreeNode( pLeader, rd_stuck_bot_teleport_max_range.GetFloat() ) )
+					{
+						DevMsg( this, "Teleported stuck marine to %s (node)\n", pLeader->GetDebugName() );
+					}
+					else
+					{
+						DevMsg( this, "Could not teleport stuck marine.\n" );
+					}
+				}
 			}
 			else if ( TeleportToFreeNode( pLeader, rd_stuck_bot_teleport_max_range.GetFloat() ) )
 			{
