@@ -79,6 +79,7 @@ ConVar asw_marine_speed_scale_easy("asw_marine_speed_scale_easy", "0.96", FCVAR_
 ConVar asw_marine_speed_scale_normal("asw_marine_speed_scale_normal", "1.0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_marine_speed_scale_hard("asw_marine_speed_scale_hard", "1.024", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_marine_speed_scale_insane("asw_marine_speed_scale_insane", "1.048", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_marine_speed_scale_adrenaline( "asw_marine_speed_scale_adrenaline", "1.0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_marine_box_collision("asw_marine_box_collision", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
 // reactivedrop: setting to 0, this prevents killing shieldbug from front using shotguns 
 ConVar asw_allow_hull_shots("asw_allow_hull_shots", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
@@ -434,14 +435,14 @@ float CASW_Marine::MaxSpeed()
 	// speed up as time slows down
 	float flTimeDifference = 0.0f;
 
-	if ( gpGlobals->curtime < ASWGameRules()->GetStimEndTime() + 1.5f )
+	if ( gpGlobals->curtime < ASWGameRules()->GetStimEndTime() + 1.5f && asw_stim_time_scale.GetFloat() != 1.0f )
 	{
-		flTimeDifference = 1.0f - MAX( asw_stim_time_scale.GetFloat(), GameTimescale()->GetCurrentTimescale() );
+		flTimeDifference = MAX( 0.0f, ( 1.0f - GameTimescale()->GetCurrentTimescale() ) / ( 1.0f - asw_stim_time_scale.GetFloat() ) );
 	}
 
 	if ( flTimeDifference > 0.0f )
 	{
-		speedscale *= 1.0f + flTimeDifference * 0.75f;
+		speedscale *= 1.0f + flTimeDifference * ( asw_marine_speed_scale_adrenaline.GetFloat() - 1.0f );
 	}
 	
 	return speed * speedscale;
