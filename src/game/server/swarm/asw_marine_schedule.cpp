@@ -530,7 +530,7 @@ void CASW_Marine::TaskFail( AI_TaskFailureCode_t code )
 					// make sure we have line of sight
 					UTIL_TraceLine( pLeader->GetAbsOrigin() + Vector( 0, 0, 40 ),
 						vecIdealPos + Vector( 0, 0, 40 ),
-						MASK_PLAYERSOLID_BRUSHONLY,
+						MASK_PLAYERSOLID,
 						this,
 						COLLISION_GROUP_PLAYER_MOVEMENT,
 						&tr );

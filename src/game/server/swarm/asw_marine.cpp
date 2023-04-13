@@ -5760,7 +5760,7 @@ bool CASW_Marine::TeleportToFreeNode( CASW_Marine *pTarget, float fNearestDist )
 				// make sure we have line of sight
 				UTIL_TraceLine( pTarget->GetAbsOrigin() + Vector( 0, 0, 40 ),
 					vecPos + Vector( 0, 0, 40 ),
-					MASK_PLAYERSOLID_BRUSHONLY,
+					MASK_PLAYERSOLID,
 					this,
 					COLLISION_GROUP_PLAYER_MOVEMENT,
 					&tr );
