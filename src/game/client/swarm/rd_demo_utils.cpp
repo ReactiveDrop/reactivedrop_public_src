@@ -25,6 +25,7 @@ CRD_Auto_Record_System::CRD_Auto_Record_System() : CAutoGameSystemPerFrame( "CRD
 {
 	m_bStartedRecording = false;
 	m_bJustConnected = false;
+	m_iAutoRecordAttempts = 0;
 }
 
 void CRD_Auto_Record_System::PostInit()
@@ -75,6 +76,7 @@ void CRD_Auto_Record_System::LevelInitPostEntity()
 	Assert( !m_bStartedRecording );
 
 	m_bJustConnected = true;
+	m_iAutoRecordAttempts = 0;
 }
 
 void CRD_Auto_Record_System::LevelShutdownPreEntity()
@@ -104,6 +106,16 @@ void CRD_Auto_Record_System::LevelShutdownPreEntity()
 
 void CRD_Auto_Record_System::Update( float frametime )
 {
+	if ( m_bJustConnected && engine->IsRecordingDemo() && m_iAutoRecordAttempts < 3 )
+	{
+		// wait a few frames for the previous demo to stop before giving up
+		m_iAutoRecordAttempts++;
+		if ( rd_auto_record_debug.GetBool() )
+			Msg( "[Auto Record] Recording still in progress after connect, attempt %d.\n", m_iAutoRecordAttempts );
+
+		return;
+	}
+
 	if ( m_bJustConnected )
 	{
 		m_bJustConnected = false;
@@ -132,6 +144,7 @@ void CRD_Auto_Record_System::Update( float frametime )
 			return;
 		}
 
+		Assert( !engine->IsRecordingDemo() );
 		if ( engine->IsRecordingDemo() )
 		{
 			if ( rd_auto_record_debug.GetBool() )
