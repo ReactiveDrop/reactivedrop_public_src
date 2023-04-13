@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "992"
+	"mapversion" "993"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -44,7 +44,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "992"
+	"mapversion" "993"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -107196,7 +107196,7 @@ entity
 	"id" "177728"
 	"classname" "info_node"
 	"nodeid" "46"
-	"spawnflags" "4096"
+	"spawnflags" "8192"
 	"origin" "-11519.8 -5575.03 -2051"
 	editor
 	{
@@ -107211,7 +107211,7 @@ entity
 	"id" "177730"
 	"classname" "info_node"
 	"nodeid" "47"
-	"spawnflags" "4096"
+	"spawnflags" "8192"
 	"origin" "-11515.5 -5816.64 -2051"
 	editor
 	{
@@ -134461,8 +134461,8 @@ cameras
 	"activecamera" "0"
 	camera
 	{
-		"position" "[-11579.4 -5620.48 -1883.67]"
-		"look" "[-11595.7 -5979.72 -2060.9]"
+		"position" "[-11548.5 -5603.54 -1951.56]"
+		"look" "[-11349.9 -5622.58 -2299.34]"
 	}
 }
 cordons
