@@ -269,18 +269,19 @@
 	spawnflags(Flags) = 
 	[
 		1 : "Force human permission" : 0
-		2 : "Force small_centered permission" : 0
-		4 : "Force wide_human permission" : 0
-		8 : "Force tiny permissiont" : 0
-		16 : "Force wide_short permission" : 0
-		32 : "Force medium permission" : 0
-		64 : "Force tiny_centered permission" : 0
-		128 : "Force large permission" : 0
-		256 : "Force large_centered permission" : 0		
-		512 : "Keep editor position" : 0
-		1024 : "Force medium tall permission" : 0
+		2 : "Force small centered permission" : 0
+		4 : "Force wide human permission" : 0
+		8 : "Force tiny (Parasite, Xenomite, Grub, Headcrab) permission" : 0
+		16 : "Force wide short (Harvester, Shieldbug, Mortarbug) permission" : 0
+		32 : "Force medium (Antlion, Mender) permission" : 0
+		64 : "Force tiny centered (Buzzer) permission" : 0
+		128 : "Force large (Boomer, Antlion Guard) permission" : 0
+		256 : "Force large centered (Combine flying units) permission" : 0
+		512 : "Keep editor position (don't drop)" : 0
+		1024 : "Force medium tall (Combine Hunter) permission" : 0
 		2048 : "Force tiny fluid permission" : 0
-		4096 : "Force medium big (Swarm Drone) permission" : 0
+		4096 : "Force medium big (Drone, Ranger) permission" : 0
+		8192 : "Force huge (Queen) permission" : 0
 	]
 ]
 
@@ -318,18 +319,18 @@
 	spawnflags( Flags ) =
 	[
 		1 : "Force human connect" : 0
-		2 : "Force small_centered connect" : 0
-		4 : "Force wide_human connect" : 0
-		8 : "Force tiny connect" : 0
-		16 : "Force wide_short connect" : 0
-		32 : "Force medium connect" : 0
-		64 : "Force tiny_centered connect" : 0
-		128 : "Force large connect" : 0
-		256 : "Force large_centered connect" : 0
-		512 : "(Don't drop placeholder)" : 0
-		1024 : "Force medium tall connect" : 0
+		2 : "Force small centered connect" : 0
+		4 : "Force wide human connect" : 0
+		8 : "Force tiny (Parasite, Xenomite, Grub, Headcrab) connect" : 0
+		16 : "Force wide short (Harvester, Shieldbug, Mortarbug) connect" : 0
+		32 : "Force medium (Antlion, Mender) connect" : 0
+		64 : "Force tiny centered (Buzzer) connect" : 0
+		128 : "Force large (Boomer, Antlion Guard) connect" : 0
+		256 : "Force large centered (Combine flying units) connect" : 0
+		1024 : "Force medium tall (Combine Hunter) connect" : 0
 		2048 : "Force tiny fluid connect" : 0
-		4096 : "Force medium big (Swarm Drone) connect" : 0
+		4096 : "Force medium big (Drone, Ranger) connect" : 0
+		8192 : "Force huge (Queen) connect" : 0
 	]
 
 	// Inputs

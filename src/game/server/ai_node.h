@@ -89,6 +89,7 @@ enum NodeInfoBits_e
 	//bits_MEDIUM_TALL_HULL			15
 	//bits_TINY_FLUID_HULL			16
 	//bits_MEDIUMBIG_HULL			17
+	//bits_HUGE_HULL				18
 
 	//ADD MORE HULLS HERE (18-26)
 
