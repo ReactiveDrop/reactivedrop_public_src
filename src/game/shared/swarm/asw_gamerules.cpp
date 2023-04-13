@@ -51,6 +51,7 @@
 	#include "ai_network.h"
 	#include "ai_navigator.h"
 	#include "ai_node.h"
+	#include "ai_link.h"
 	#include "asw_campaign_save.h"
 	#include "asw_egg.h"
 	#include "asw_alien_goo_shared.h"
@@ -3119,6 +3120,7 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 	ASWDirector()->LevelInitPostEntity();
 	GameTimescale()->LevelInitPostEntity();
 	g_ASWSquadFormation.LevelInitPostEntity();
+	CAI_Link::ClearStaleLinks();
 	CAI_DynamicLink::gm_bInitialized = false;
 	CAI_DynamicLink::InitDynamicLinks();
 

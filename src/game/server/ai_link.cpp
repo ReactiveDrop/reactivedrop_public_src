@@ -13,6 +13,8 @@
 
 #include "cbase.h"
 #include "ai_link.h"
+#include "ai_network.h"
+#include "ai_node.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -120,4 +122,16 @@ HSCRIPT CAI_Link::ScriptGetDynamicLink()
 
 	CBaseEntity *pDynamicLink = ( CBaseEntity* )m_pDynamicLink;
 	return ToHScript( pDynamicLink );
+}
+
+void CAI_Link::ClearStaleLinks()
+{
+	for ( int i = 0; i < g_pBigAINet->NumNodes(); i++ )
+	{
+		CAI_Node *pNode = g_pBigAINet->GetNode( i );
+		for ( int j = 0; j < pNode->NumLinks(); j++ )
+		{
+			pNode->GetLinkByIndex( j )->m_LinkInfo &= ~bits_LINK_STALE_SUGGESTED;
+		}
+	}
 }

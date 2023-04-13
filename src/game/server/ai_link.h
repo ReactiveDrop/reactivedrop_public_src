@@ -69,6 +69,8 @@ public:
 	void 	ScriptSetDangerCount( int iCount )				{ m_nDangerCount = iCount; }
 	void 	ScriptSetAcceptedMoveTypes( int hullType, int moveType );
 	HSCRIPT ScriptGetDynamicLink();
+
+	static void ClearStaleLinks();
 	
 private:
 	friend class CAI_Network;

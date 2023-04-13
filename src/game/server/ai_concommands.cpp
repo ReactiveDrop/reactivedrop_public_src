@@ -964,16 +964,7 @@ CON_COMMAND_F( npc_ammo_deplete, "Subtracts half of the target's ammo", FCVAR_CH
 
 CON_COMMAND( ai_clear_bad_links, "Clears bits set on nav links indicating link is unusable " )
 {
-	CAI_Node *pNode;
-	
-	for ( int i = 0; i < g_pBigAINet->NumNodes(); i++ )
-	{
-		pNode = g_pBigAINet->GetNode( i );
-		for ( int j = 0; j < pNode->NumLinks(); j++ )
-		{
-			pNode->GetLinkByIndex( j )->m_LinkInfo &= ~bits_LINK_STALE_SUGGESTED;
-		}
-	}
+	CAI_Link::ClearStaleLinks();
 }
 
 CON_COMMAND_F( ai_test_los, "Test AI LOS from the player's POV", FCVAR_CHEAT )
