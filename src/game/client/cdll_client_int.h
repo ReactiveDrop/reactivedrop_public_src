@@ -299,10 +299,4 @@ int XBX_GetActiveUserId();
 
 #define XBX_GetPrimaryUserId() _Use_XBX_GetActiveUserId_Instead
 
-class IConsistency : public IAppSystem
-{
-};
-
-#define INTERFACEVERSION_ICONSISTENCY_V1 "Interface_Consistency_001"
-
 #endif // CDLL_CLIENT_INT_H

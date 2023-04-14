@@ -1626,6 +1626,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="..\shared\swarm\asw_weapon_tesla_gun_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_tesla_trap.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_welder_shared.h" />
+    <ClInclude Include="..\shared\swarm\iconsistency.h" />
     <ClInclude Include="..\shared\swarm\rd_boss_bar_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_cause_of_death.h" />
     <ClInclude Include="..\shared\swarm\rd_challenges_shared.h" />
