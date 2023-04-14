@@ -188,6 +188,12 @@ void CASW_Game_Resource::FindObjectivesOfClass(const char *szClass)
 	CBaseEntity* pEntity = NULL;
 	while ((pEntity = gEntList.FindEntityByClassname( pEntity, szClass )) != NULL)
 	{
+		if ( m_NumObjectives >= ASW_MAX_OBJECTIVES )
+		{
+			Warning( "Missions cannot have more than %d objectives!\n", ASW_MAX_OBJECTIVES );
+			continue;
+		}
+
 		m_Objectives.Set( m_NumObjectives, assert_cast< CASW_Objective * >( pEntity ) );
 		m_NumObjectives++;
 	}
