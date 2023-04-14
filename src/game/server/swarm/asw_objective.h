@@ -34,6 +34,7 @@ public:
 
 	virtual int	 ShouldTransmit( const CCheckTransmitInfo *pInfo );
 	virtual void Precache( void );
+	virtual void Spawn( void );
 
 	virtual bool IsObjectiveComplete() { return m_bComplete; }
 	virtual bool IsObjectiveFailed() { return m_bFailed; }

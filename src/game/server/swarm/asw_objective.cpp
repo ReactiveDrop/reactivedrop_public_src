@@ -99,6 +99,17 @@ void CASW_Objective::Precache( void )
 	PrecacheScriptSound( "Game.ObjectiveComplete" );
 }
 
+void CASW_Objective::Spawn( void )
+{
+	BaseClass::Spawn();
+
+	if ( ASWGameResource() )
+	{
+		// objective was created after level load; re-init objective list
+		ASWGameResource()->FindObjectives();
+	}
+}
+
 void CASW_Objective::SetComplete( bool bComplete )
 {
 	bool bOld = m_bComplete;
@@ -112,7 +123,7 @@ void CASW_Objective::SetComplete( bool bComplete )
 		CASW_Mission_Manager *pManager = pGameRules ? pGameRules->GetMissionManager() : NULL;
 		if ( pManager && pGameRules->GetGameState() == ASW_GS_INGAME ) // only emit objective complete sounds in the middle of a mission
 		{
-			if ( !pManager->CheckMissionComplete() && !pGameRules->IsTutorialMap() )
+			if ( !pManager->CheckMissionComplete() )
 			{
 				// play objective complete sound
 				pGameRules->BroadcastSound( "Game.ObjectiveComplete" );
