@@ -512,6 +512,11 @@ public:
 				CHECK_LANGUAGE_PREFIX( "accessory_description_" );
 				CHECK_LANGUAGE_PREFIX( "display_type_" );
 
+				for ( int k = 0; k < RD_STEAM_INVENTORY_ITEM_MAX_STYLES; k++ )
+				{
+					CHECK_LANGUAGE_PREFIX( CFmtStr( "style_%d_name_", k ) );
+				}
+
 #undef CHECK_LANGUAGE_PREFIX
 
 				pInventory->GetItemDefinitionProperty( ItemDefIDs[i], PropertyNames[j], NULL, &size );
@@ -1087,7 +1092,6 @@ public:
 #endif
 			return;
 		}
-
 	}
 
 	void DebugPrintResult( SteamInventoryResult_t hResult )
@@ -1947,7 +1951,38 @@ namespace ReactiveDropInventory
 		CRD_ItemInstance reduced{ *this };
 		reduced.FormatDescription( pRichText );
 	}
+
+	vgui::IImage *ItemInstance_t::GetIcon() const
+	{
+		const ItemDef_t *pDef = GetItemDef( ItemDefID );
+		Assert( pDef );
+		if ( !pDef )
+			return NULL;
+
+		int iStyle = GetStyle();
+		if ( pDef->StyleIcons.Count() )
+		{
+			Assert( pDef->StyleIcons.IsValidIndex( iStyle ) );
+			if ( pDef->StyleIcons.IsValidIndex( iStyle ) )
+			{
+				return pDef->StyleIcons[iStyle];
+			}
+		}
+
+		return pDef->Icon;
+	}
 #endif
+
+	int ItemInstance_t::GetStyle() const
+	{
+		UtlSymId_t i = DynamicProps.Find( "style" );
+		if ( i != UTL_INVAL_SYMBOL )
+		{
+			return atoi( DynamicProps[i] );
+		}
+
+		return 0;
+	}
 
 	KeyValues *ItemInstance_t::ToKeyValues() const
 	{
@@ -2166,7 +2201,7 @@ namespace ReactiveDropInventory
 		if ( *szValue )
 			pItemDef->Name = szValue;
 
-		for ( int i = 0; ; i++ )
+		for ( int i = 0; i < RD_STEAM_INVENTORY_ITEM_MAX_STYLES; i++ )
 		{
 			V_snprintf( szKey, sizeof( szKey ), "style_%d_name_english", i );
 			FETCH_PROPERTY( szKey );
@@ -2284,6 +2319,9 @@ namespace ReactiveDropInventory
 			if ( *szValue )
 			{
 				pItemDef->StyleIcons[i] = CSteamItemIcon::Get( szValue );
+
+				// first style should always match default icon
+				Assert( i || pItemDef->StyleIcons[i] == pItemDef->Icon );
 			}
 		}
 
@@ -3049,7 +3087,45 @@ void CRD_ItemInstance::FormatDescription( vgui::RichText *pRichText ) const
 		}
 	}
 }
+
+vgui::IImage *CRD_ItemInstance::GetIcon() const
+{
+	const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( m_iItemDefID );
+	Assert( pDef );
+	if ( !pDef )
+		return NULL;
+
+	int iStyle = GetStyle();
+	if ( pDef->StyleIcons.Count() )
+	{
+		Assert( pDef->StyleIcons.IsValidIndex( iStyle ) );
+		if ( pDef->StyleIcons.IsValidIndex( iStyle ) )
+		{
+			return pDef->StyleIcons[iStyle];
+		}
+	}
+
+	return pDef->Icon;
+}
 #endif
+
+int CRD_ItemInstance::GetStyle() const
+{
+	const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( m_iItemDefID );
+	Assert( pDef );
+	if ( !pDef )
+		return 0;
+
+	FOR_EACH_VEC( pDef->CompressedDynamicProps, i )
+	{
+		if ( !V_stricmp( pDef->CompressedDynamicProps[i], "style" ) )
+		{
+			return m_nCounter.Get( i );
+		}
+	}
+
+	return 0;
+}
 
 #ifndef CLIENT_DLL
 static void *SendProxy_ProjectileItemDataForOwningPlayer( const SendProp *pProp, const void *pStructBase, const void *pData, CSendProxyRecipients *pRecipients, int objectID )

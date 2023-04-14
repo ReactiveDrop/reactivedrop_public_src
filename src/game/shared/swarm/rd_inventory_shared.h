@@ -53,6 +53,7 @@ namespace ReactiveDropInventory
 #else
 #define RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_EXTRA 44
 #endif
+#define RD_STEAM_INVENTORY_ITEM_MAX_STYLES 64
 	constexpr const char *const g_InventorySlotAliases[][2] =
 	{
 		// first value is the name from g_InventorySlotNames, second value is the value to also accept from item definitions.
@@ -112,7 +113,9 @@ namespace ReactiveDropInventory
 		void FormatDescription( wchar_t *wszBuf, size_t sizeOfBufferInBytes, const CUtlString &szDesc ) const;
 #ifdef CLIENT_DLL
 		void FormatDescription( vgui::RichText *pRichText ) const;
+		vgui::IImage *GetIcon() const;
 #endif
+		int GetStyle() const;
 		KeyValues *ToKeyValues() const;
 		void FromKeyValues( KeyValues *pKV );
 	};
@@ -170,7 +173,9 @@ public:
 #ifdef CLIENT_DLL
 	static void AppendBBCode( vgui::RichText *pRichText, const wchar_t *wszBuf, Color defaultColor );
 	void FormatDescription( vgui::RichText *pRichText ) const;
+	vgui::IImage *GetIcon() const;
 #endif
+	int GetStyle() const;
 
 	CNetworkVar( SteamItemInstanceID_t, m_iItemInstanceID );
 	CNetworkVar( SteamItemDef_t, m_iItemDefID );

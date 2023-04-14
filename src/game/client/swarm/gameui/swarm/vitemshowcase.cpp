@@ -358,7 +358,7 @@ void ItemShowcase::PostChildPaint()
 	case MODE_INSPECT:
 	case MODE_ITEM_DROP:
 	{
-		const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( m_Queue[0]->ItemDefID );
+		vgui::IImage *pIcon = m_Queue[0]->GetIcon();
 
 		int x, y;
 		m_pItemModelPanel->GetPos( x, y );
@@ -369,7 +369,7 @@ void ItemShowcase::PostChildPaint()
 		w -= w / 3;
 
 		surface()->DrawSetColor( Color( 255, 255, 255, 255 ) );
-		surface()->DrawSetTexture( pDef->Icon->GetID() );
+		surface()->DrawSetTexture( pIcon ? pIcon->GetID() : 0 );
 		surface()->DrawTexturedRect( x, y, x + w, y + t );
 
 		break;

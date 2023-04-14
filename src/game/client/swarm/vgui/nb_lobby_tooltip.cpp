@@ -200,7 +200,7 @@ void CNB_Lobby_Tooltip::OnTick()
 			m_pIconBackground->SetPaintBackgroundType( 2 );
 
 			m_pPromotionIcon->SetImage( "" );
-			m_pPromotionIcon->SetImage( pDef->Icon );
+			m_pPromotionIcon->SetImage( details.GetIcon() );
 
 			V_UTF8ToUnicode( pDef->DisplayType, wszBuf, sizeof( wszBuf ) );
 			m_pPromotionLabel->SetText( wszBuf );
