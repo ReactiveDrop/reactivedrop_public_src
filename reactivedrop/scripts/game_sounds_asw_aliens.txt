@@ -948,6 +948,20 @@
 	}
 }
 
+"ASW_Grub.EggBurst"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0.90, 1.000"
+	"pitch"			"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+	"rndwave"
+		{
+			"wave"		"aliens\impacts\shared\pop01.wav"
+			"wave"		"aliens\impacts\shared\pop02.wav"
+		}
+}
+
 "ASW_Buzzer.Death"
 {
 	"channel"	"CHAN_VOICE"

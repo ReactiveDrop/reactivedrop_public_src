@@ -71,6 +71,7 @@ BEGIN_DATADESC( CASW_Alien_Goo )
 	DEFINE_KEYFIELD( m_fGrubSpawnAngle, FIELD_FLOAT, "GrubSpawnAngle" ),
 	DEFINE_KEYFIELD( m_bHasAmbientSound, FIELD_BOOLEAN, "HasAmbientSound" ),
 	DEFINE_KEYFIELD( m_bRequiredByObjective, FIELD_BOOLEAN, "RequiredByObjective" ),
+	DEFINE_KEYFIELD( m_iGrubModel, FIELD_MODELNAME, "GrubModel" ),
 	DEFINE_FIELD( m_bSpawnedGrubs, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bHasGrubs, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bOnFire, FIELD_BOOLEAN ),
@@ -101,9 +102,10 @@ CASW_Alien_Goo::CASW_Alien_Goo()
 	m_fNextAcidBurnTime = 0;
 #endif
 	m_fPulseStrength = 1.0f;
-	m_fPulseSpeed = 1.0f;	
+	m_fPulseSpeed = 1.0f;
 #ifndef CLIENT_DLL
 	m_hIgnitedBy = NULL;
+	m_iGrubModel = NULL_STRING;
 	g_AlienGoo.AddToTail( this );
 #endif
 }
@@ -210,14 +212,20 @@ void CASW_Alien_Goo::Precache()
 	PrecacheModel( "models/aliens/biomass/biomasss.mdl" );
 	PrecacheModel( "models/aliens/biomass/biomassu.mdl" );
 
-	PrecacheScriptSound("ASWGoo.GooLoop");
-	PrecacheScriptSound("ASWGoo.GooScream");
-	PrecacheScriptSound("ASWGoo.GooDissolve");	
-	PrecacheScriptSound("ASWFire.AcidBurn");	
+	PrecacheScriptSound( "ASWGoo.GooLoop" );
+	PrecacheScriptSound( "ASWGoo.GooScream" );
+	PrecacheScriptSound( "ASWGoo.GooDissolve" );
+	PrecacheScriptSound( "ASWFire.AcidBurn" );
+	PrecacheScriptSound( "ASW_Grub.EggBurst" );
 	PrecacheParticleSystem( "biomass_dissolve" );
 	PrecacheParticleSystem( "acid_touch" );
 	PrecacheParticleSystem( "grubsack_death" );
 	UTIL_PrecacheOther( "asw_grub" );
+
+	if ( m_iGrubModel != NULL_STRING )
+	{
+		PrecacheModel( STRING( m_iGrubModel ) );
+	}
 
 	BaseClass::Precache();
 }
@@ -271,7 +279,7 @@ int CASW_Alien_Goo::OnTakeDamage( const CTakeDamageInfo &info )
 	if ( !( info.GetDamageType() & DMG_BURN ) && !( info.GetDamageType() & DMG_ENERGYBEAM ) && 
 		 !( rd_biomass_damage_from_explosions.GetBool() && info.GetDamageType() & DMG_BLAST ) )
 		return 0;
-	
+
 	// notify the marine that he's hurting this, so his accuracy doesn't drop
 	if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
 	{
@@ -546,14 +554,15 @@ void CASW_Alien_Goo::SpawnGrubs()
 		if (pGrub)
 		{
 			ASWGameRules()->GrubSpawned(pGrub);
-			pGrub->AddSpawnFlags(SF_NPC_FALL_TO_GROUND);	// stop it teleporting to the ground			
+			pGrub->AddSpawnFlags(SF_NPC_FALL_TO_GROUND);	// stop it teleporting to the ground
+			pGrub->SetModelName( m_iGrubModel );
 			pGrub->Spawn();
 			pGrub->m_fFallSpeed = 250;
 			pGrub->PlayFallingAnimation();
 		}
 	}
 
-	EmitSound("ASW_Parasite.EggBurst");
+	EmitSound( "ASW_Grub.EggBurst" );
 
 	UTIL_ASW_EggGibs( WorldSpaceCenter(), EGG_FLAG_GRUBSACK_DIE, entindex() );
 

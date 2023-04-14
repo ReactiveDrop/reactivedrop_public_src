@@ -15,16 +15,12 @@ LINK_ENTITY_TO_CLASS( asw_grub, CASW_Simple_Grub );
 PRECACHE_REGISTER( asw_grub );
 
 BEGIN_DATADESC( CASW_Simple_Grub )
-	DEFINE_ENTITYFUNC(GrubTouch),
+	DEFINE_ENTITYFUNC( GrubTouch ),
 END_DATADESC()
 
 extern ConVar asw_debug_simple_alien;
 extern ConVar asw_debug_alien_damage;
 ConVar rd_grub_health( "rd_grub_health", "1", FCVAR_CHEAT );
-
-//IMPLEMENT_SERVERCLASS_ST(CASW_Simple_Grub, DT_ASW_Simple_Drone)
-	
-//END_SEND_TABLE()
 
 // =========================================
 // Creation
@@ -40,10 +36,10 @@ CASW_Simple_Grub::~CASW_Simple_Grub()
 }
 
 void CASW_Simple_Grub::Spawn(void)
-{	
+{
 	BaseClass::Spawn();
 	SetCollisionGroup( ASW_COLLISION_GROUP_GRUBS );
-	SetModel( SWARM_GRUB_MODEL );
+	SetModel( STRING( GetModelName() ) );
 
 	SetHullType( HULL_TINY );
 	AddSolidFlags( FSOLID_TRIGGER );
@@ -56,31 +52,33 @@ void CASW_Simple_Grub::Spawn(void)
 
 void CASW_Simple_Grub::GrubTouch( CBaseEntity *pOther )
 {
-	if (!pOther)
+	if ( !pOther )
 		return;
 
-	if (pOther->Classify() == CLASS_ASW_MARINE && pOther->GetAbsVelocity().Length() > 100)
+	if ( pOther->Classify() == CLASS_ASW_MARINE && pOther->GetAbsVelocity().Length() > 100 )
 	{
 		Vector xydiff = GetAbsOrigin() - pOther->GetAbsOrigin();
-		xydiff.z = 0;
-		if (xydiff.Length() < 20)
+		if ( xydiff.Length2D() < 20 )
 		{
-			CTakeDamageInfo dmg(pOther, pOther, Vector(0, 0, -1), GetAbsOrigin() + Vector(0, 0, 1), 20, DMG_CRUSH);
-			TakeDamage(dmg);
+			CTakeDamageInfo dmg( pOther, pOther, Vector( 0, 0, -1 ), GetAbsOrigin() + Vector( 0, 0, 1 ), 20, DMG_CRUSH );
+			TakeDamage( dmg );
 		}
 	}
 }
 
 void CASW_Simple_Grub::Precache()
 {
+	if ( GetModelName() == NULL_STRING )
+	{
+		SetModelName( AllocPooledString( SWARM_GRUB_MODEL ) );
+	}
+
 	BaseClass::Precache();
 
-	PrecacheModel( SWARM_GRUB_MODEL );
 	PrecacheModel( "Models/Swarm/Grubs/GrubGib4.mdl" );
 
-	PrecacheScriptSound("ASW_Grub.Pain");
-	PrecacheScriptSound("ASW_Parasite.Attack");
-	PrecacheScriptSound("ASW_Parasite.Idle");
+	PrecacheEffect( "GrubGib" );
+	PrecacheScriptSound( "ASW_Grub.Pain" );
 	PrecacheParticleSystem( "grub_death" );
 	PrecacheParticleSystem( "grub_death_fire" );
 }
@@ -91,19 +89,19 @@ void CASW_Simple_Grub::Precache()
 
 void CASW_Simple_Grub::PlayRunningAnimation()
 {
-	ResetSequence(LookupSequence("CrawlA"));
+	ResetSequence( LookupSequence( "CrawlA" ) );
 	m_flPlaybackRate = 1.25f;
 }
 
 void CASW_Simple_Grub::PlayFallingAnimation()
 {
-	ResetSequence(LookupSequence("Jump"));
+	ResetSequence( LookupSequence( "Jump" ) );
 	m_flPlaybackRate = 1.25f;
 }
 
 void CASW_Simple_Grub::PlayAttackingAnimation()
 {
-	ResetSequence(LookupSequence("CrawlA"));
+	ResetSequence( LookupSequence( "CrawlA" ) );
 	m_flPlaybackRate = 1.25f;
 }
 
@@ -113,26 +111,23 @@ void CASW_Simple_Grub::PlayAttackingAnimation()
 
 void CASW_Simple_Grub::PainSound( const CTakeDamageInfo &info )
 {
-	if (gpGlobals->curtime > m_fNextPainSound)
+	if ( gpGlobals->curtime > m_fNextPainSound )
 	{
-		EmitSound("ASW_Grub.Pain");
+		EmitSound( "ASW_Grub.Pain" );
 		m_fNextPainSound = gpGlobals->curtime + 0.5f;
 	}
 }
 
 void CASW_Simple_Grub::AlertSound()
 {
-	
 }
 
 void CASW_Simple_Grub::DeathSound( const CTakeDamageInfo &info )
 {
-	
 }
 
 void CASW_Simple_Grub::AttackSound()
 {
-	
 }
 
 // =========================================
@@ -158,7 +153,6 @@ bool CASW_Simple_Grub::CorpseGib( const CTakeDamageInfo &info )
 	CPASFilter filter( data.m_vOrigin );
 	filter.SetIgnorePredictionCull(true);
 	DispatchEffect( filter, 0.0, "GrubGib", data );
-	//DispatchEffect( "GrubGib", data );
 
 	return true;
 }
@@ -179,23 +173,6 @@ void CASW_Simple_Grub::AlienThink()
 	BaseClass::AlienThink();
 
 	UpdatePitch(delta);
-/*
-	if (GetEnemy() && GetAbsOrigin().DistTo(GetEnemy()->GetAbsOrigin()) < 800)
-	{
-		// check if a marine is standing on us		
-		trace_t tr;
-		UTIL_TraceLine( GetAbsOrigin() - Vector(5, 5, -1),	GetAbsOrigin() + Vector(5, 5, 5), MASK_SOLID, this, COLLISION_GROUP_PLAYER, &tr );
-		if (tr.fraction < 1 && tr.m_pEnt)
-		{
-			if (tr.m_pEnt->Classify() == CLASS_ASW_MARINE)
-			{
-				CTakeDamageInfo dmg(tr.m_pEnt, tr.m_pEnt, Vector(0, 0, -1), GetAbsOrigin() + Vector(0, 0, 1), 20, DMG_CRUSH);
-				TakeDamage(dmg);
-			}
-		}
-		// think more frequently so we don't miss a player stomping on us
-		SetNextThink( gpGlobals->curtime + 0.025f );
-	}*/
 }
 
 void CASW_Simple_Grub::UpdatePitch(float delta)
@@ -236,51 +213,52 @@ float CASW_Simple_Grub::GetZigZagChaseDistance() const
 	return 50.0f;
 }
 
-bool CASW_Simple_Grub::ApplyGravity(Vector &vecTarget, float deltatime)
+bool CASW_Simple_Grub::ApplyGravity( Vector &vecTarget, float deltatime )
 {
-	if (m_bSkipGravity)
+	if ( m_bSkipGravity )
 	{
-		if (asw_debug_simple_alien.GetBool())
-			Msg("Skipping grav\n");
+		if ( asw_debug_simple_alien.GetBool() )
+			Msg( "Skipping grav\n" );
+
 		return false;
 	}
 
-	return BaseClass::ApplyGravity(vecTarget, deltatime);
+	return BaseClass::ApplyGravity( vecTarget, deltatime );
 }
 
 // run towards the target like a normal simple alien, but if he hit some geometry, try to climb up over it
 //  todo: perform move could check if gravity was skipped and switch us to a climbing anim instead of a running
-bool CASW_Simple_Grub::TryMove(const Vector &vecSrc, Vector &vecTarget, float deltatime, bool bStepMove)
+bool CASW_Simple_Grub::TryMove( const Vector &vecSrc, Vector &vecTarget, float deltatime, bool bStepMove )
 {
 	m_bSkipGravity = false;
 
 	// do a trace to the dest
 	Ray_t ray;
 	trace_t trace;
-	CTraceFilterSimple traceFilter(this, GetCollisionGroup() );
+	CTraceFilterSimple traceFilter( this, GetCollisionGroup() );
 	ray.Init( vecSrc, vecTarget, GetHullMins(), GetHullMaxs() );
 	enginetrace->TraceRay( ray, MASK_NPCSOLID, &traceFilter, &trace );
-	if (trace.startsolid)
+	if ( trace.startsolid )
 	{
 		// doh, we're stuck in something!
 		//  todo: move us to a safe spot? wait for push out phys props?
-		if (asw_debug_simple_alien.GetBool())
-			Msg("CASW_Simple_Grub stuck!\n");
+		if ( asw_debug_simple_alien.GetBool() )
+			Msg( "CASW_Simple_Grub stuck!\n" );
 		m_MoveFailure.trace = trace;
 		m_MoveFailure.vecStartPos = vecSrc;
 		m_MoveFailure.vecTargetPos = vecTarget;
 		return false;
 	}
-	if (trace.fraction < 0.1f)	 // barely/didn't move
+	if ( trace.fraction < 0.1f )	 // barely/didn't move
 	{
 		// try and do a 'stepped up' move to the target
-		if (!bStepMove)
+		if ( !bStepMove )
 		{
 			Vector vecStepSrc = vecSrc;
 			vecStepSrc.z += 24;
 			Vector vecStepTarget = vecTarget;
 			vecTarget.z += 24;
-			if (TryMove(vecStepSrc, vecStepTarget, deltatime, true))
+			if ( TryMove( vecStepSrc, vecStepTarget, deltatime, true ) )
 			{
 				vecTarget = vecStepTarget;
 				return true;
@@ -288,21 +266,21 @@ bool CASW_Simple_Grub::TryMove(const Vector &vecSrc, Vector &vecTarget, float de
 		}
 
 		// if we collide with geometry, try to climb up over it		
-		if (trace.m_pEnt && trace.m_pEnt->IsWorld() && GetEnemy() && !bStepMove)
+		if ( trace.m_pEnt && trace.m_pEnt->IsWorld() && GetEnemy() && !bStepMove )
 		{
 			// check our enemy is on the other side of this obstruction
 			Vector vecEnemyDiff = GetEnemy()->GetAbsOrigin() - GetAbsOrigin();
 			vecEnemyDiff.NormalizeInPlace();
-			if (vecEnemyDiff.Dot(trace.plane.normal) < 0)
+			if ( vecEnemyDiff.Dot( trace.plane.normal ) < 0 )
 			{
-				Vector vecClimbSrc = vecSrc;			
+				Vector vecClimbSrc = vecSrc;
 				Vector vecClimbTarget = vecSrc;
 				vecClimbTarget.z += GetIdealSpeed() * deltatime * 0.7f;	// 70% speed when climbing...
-				if (TryMove(vecClimbSrc, vecClimbTarget, deltatime, true))
+				if ( TryMove( vecClimbSrc, vecClimbTarget, deltatime, true ) )
 				{
 					m_bSkipGravity = true;
-					if (asw_debug_simple_alien.GetBool())
-						Msg("Setting skip grav, moved %f z=%f\n", GetIdealSpeed() * deltatime * 0.7f, vecClimbTarget.z);	// 70% speed when climbing...
+					if ( asw_debug_simple_alien.GetBool() )
+						Msg( "Setting skip grav, moved %f z=%f\n", GetIdealSpeed() * deltatime * 0.7f, vecClimbTarget.z );	// 70% speed when climbing...
 					vecTarget = vecClimbTarget;
 					return true;
 				}
@@ -315,14 +293,14 @@ bool CASW_Simple_Grub::TryMove(const Vector &vecSrc, Vector &vecTarget, float de
 
 		return false;
 	}
-	else if (trace.fraction < 1)  // we hit something early, but we did move
+	else if ( trace.fraction < 1 )  // we hit something early, but we did move
 	{
 		// we hit something early
 		m_MoveFailure.trace = trace;
 		m_MoveFailure.vecStartPos = vecSrc;
 		m_MoveFailure.vecTargetPos = vecTarget;
 
-		vecTarget = trace.endpos;		
+		vecTarget = trace.endpos;
 	}
 
 	return true;
@@ -330,16 +308,16 @@ bool CASW_Simple_Grub::TryMove(const Vector &vecSrc, Vector &vecTarget, float de
 
 void CASW_Simple_Grub::Event_Killed( const CTakeDamageInfo &info )
 {
-	CBaseEntity* pAttacker = info.GetAttacker();
+	CBaseEntity *pAttacker = info.GetAttacker();
 	if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
 	{
-		CASW_Marine* pMarine = assert_cast<CASW_Marine*>(pAttacker);
-		if (pMarine->GetMarineResource())
+		CASW_Marine *pMarine = assert_cast< CASW_Marine * >( pAttacker );
+		if ( pMarine->GetMarineResource() )
 		{
 			pMarine->GetMarineResource()->m_iGrubKills++;
 		}
 	}
-	BaseClass::Event_Killed(info);
+	BaseClass::Event_Killed( info );
 }
 
 void CASW_Simple_Grub::SetHealthByDifficultyLevel()

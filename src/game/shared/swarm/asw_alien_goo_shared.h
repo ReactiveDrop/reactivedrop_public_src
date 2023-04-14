@@ -79,6 +79,7 @@ public:
 	bool m_bHasAmbientSound, m_bPlayingAmbientSound, m_bPlayingGooScream;
 	bool m_bRequiredByObjective;
 	bool RoomToSpawnGrub(const Vector& pos);
+	string_t m_iGrubModel;
 
 	float m_fGrubSpawnAngle;				// size of random yaw used when spawning grubs
 	float m_fNextAcidBurnTime;				// timer for periodic acid damage dealt to touching marines

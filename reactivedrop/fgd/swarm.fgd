@@ -2676,7 +2676,7 @@
 	input TurnOff(void) : "Turns the emitter off"
 ]
 
-@NPCClass base(BaseNPC) studio("models/swarm/drone/drone.mdl") sphere() = asw_simple_drone :
+@NPCClass base(BaseNPC, Studiomodel) studio("models/swarm/drone/drone.mdl") sphere() = asw_simple_drone :
     "Simple version of alien drone"
 [
 
@@ -2829,7 +2829,7 @@
 ]
 
 @NPCClass base(InhabitableNPC) studio("models/aliens/shaman/shaman.mdl") sphere() = asw_shaman :
-	"The Shaman uses a healing beam, like a medic. It will follow other aliens around and switch targets based on whichever has taken the most damage."
+	"The Mender uses a healing beam, like a medic. It will follow other aliens around and switch targets based on whichever has taken the most damage."
 [
 	sleepstate(choices) : "Sleep State" : 1 : "Holds the NPC in stasis until specified condition. See also 'Wake Radius' and 'Wake Squad'." =
 	[
@@ -3726,10 +3726,12 @@
 		4 : "Burst when damaged" : 1
 		8 : "Burst on input" : 1
 	]
-	input Burst(void) : "Burst and spawn grubs."
 	//PulseStrength(float) : "Pulse Strength" : "0.8" : "Controls the amplitude of the pulsating goo (ranges from 0 to 1.0)."
 	//PulseSpeed(float) : "Pulse Speed" : "1.0" : "Controls how quickly the goo pulsates (1.0 is normal, can be set higher or lower)."
 	BurningLinkName(string) : "Burning Link Name" : "" : "Alien goo/Grub sacs that share the same Burning Link Name will all be set on fire when one of those alien goo's is set on fire."
+	GrubModel(studio) : "Grub Model" : ""
+
+	input Burst(void) : "Burst and spawn grubs."
 ]
 
 @PointClass base(Targetname) iconsprite("editor/asw_info_message.vmt") = asw_info_message : 
@@ -3864,7 +3866,7 @@
 	input StopShake(void) : "Stop the shake."
 ]
 
-@NPCClass base(BaseNPC) studio("models/swarm/Grubs/Grub.mdl") sphere() = asw_grub :
+@NPCClass base(BaseNPC, Studiomodel) studio("models/swarm/Grubs/Grub.mdl") sphere() = asw_grub :
 	"A harmless Swarm grub, that crawls about looking icky."
 [
 ]
