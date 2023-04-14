@@ -161,21 +161,6 @@ void CASW_Alien_Goo::Spawn()
 	{
 		VisibilityMonitor_AddEntity( this, asw_visrange_generic.GetFloat() * 0.9f, NULL, NULL );
 	}
-
-	//hack to fix tracehull crash via this biomass
-	if ( !Q_strcmp( STRING( gpGlobals->mapname ), "rd-til8comcenter") )
-	{
-		if( !Q_strcmp( STRING( GetEntityName() ), "biomass_start" ) )
-		{
-			//SetAbsOrigin( GetAbsOrigin() + Vector(48, -36, 0) ); //moving it doesnt seem to work good, easier to remove for now than to test for valid position
-			UTIL_Remove( this );
-		}
-		else if ( !Q_strcmp( STRING( GetEntityName() ), "biomass_start2") )
-		{
-			//SetAbsOrigin( GetAbsOrigin() + Vector(10, 0, 0) );
-			UTIL_Remove( this );
-		}
-	}
 }
 
 void CASW_Alien_Goo::InitThink()
