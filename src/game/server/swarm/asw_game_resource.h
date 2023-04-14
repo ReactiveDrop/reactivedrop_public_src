@@ -30,10 +30,10 @@ public:
 	virtual ~CASW_Game_Resource();	
 
 	// info about each marine
-	CNetworkArray( EHANDLE, m_MarineResources, ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( CHandle<CASW_Marine_Resource>, m_MarineResources, ASW_MAX_MARINE_RESOURCES );
 
 	// mission objectives for this level
-	CNetworkArray( EHANDLE, m_Objectives, ASW_MAX_OBJECTIVES );
+	CNetworkArray( CHandle<CASW_Objective>, m_Objectives, ASW_MAX_OBJECTIVES );
 
 	// which marines from the roster have been selected	
 	CNetworkVar( bool, m_bOneMarineEach );

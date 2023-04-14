@@ -175,16 +175,12 @@ int CASW_Game_Resource::ShouldTransmit( const CCheckTransmitInfo *pInfo )
 	return FL_EDICT_ALWAYS;
 }
 
-CASW_Objective* CASW_Game_Resource::GetObjective(int i)
+CASW_Objective *CASW_Game_Resource::GetObjective( int i )
 {
-	if (i<0 || i>=ASW_MAX_OBJECTIVES)
+	if ( i < 0 || i >= ASW_MAX_OBJECTIVES )
 		return NULL;
 
-	if (m_Objectives[i] == NULL)
-		return NULL;
-
-	CBaseEntity* c = m_Objectives[i].Get();
-	return static_cast<CASW_Objective*>(c);
+	return m_Objectives[i];
 }
 
 void CASW_Game_Resource::FindObjectivesOfClass(const char *szClass)
@@ -192,8 +188,7 @@ void CASW_Game_Resource::FindObjectivesOfClass(const char *szClass)
 	CBaseEntity* pEntity = NULL;
 	while ((pEntity = gEntList.FindEntityByClassname( pEntity, szClass )) != NULL)
 	{
-		//CASW_Objective* pObjective = dynamic_cast<CASW_Objective*>(pEntity);
-		m_Objectives.Set(m_NumObjectives, pEntity); //pObjective;
+		m_Objectives.Set( m_NumObjectives, assert_cast< CASW_Objective * >( pEntity ) );
 		m_NumObjectives++;
 	}
 }
@@ -212,7 +207,7 @@ void CASW_Game_Resource::FindObjectives()
 	FindObjectivesOfClass( "asw_objective_countdown" );
 	FindObjectivesOfClass( "asw_objective_kill_aliens" );
 	FindObjectivesOfClass( "asw_objective_kill_queen" );
-	
+
 	// bubble sort objectives by their Y coord
 	for ( int i = 0; i < m_NumObjectives; i++ )
 	{
@@ -226,30 +221,6 @@ void CASW_Game_Resource::FindObjectives()
 			}
 		}
 	}
-}
-
-bool CASW_Game_Resource::IsRosterSelected(int i)
-{
-	// allow any marine selection for deathmatch
-	if (ASWDeathmatchMode())
-		return false;
-
-	if (i<0 || i>=ASW_NUM_MARINE_PROFILES)
-		return false;
-
-	return m_iRosterSelected[i] == 1;
-}
-
-bool CASW_Game_Resource::IsRosterReserved(int i)
-{
-	// allow any marine selection for deathmatch
-	if (ASWDeathmatchMode())
-		return false;
-
-	if (i<0 || i>=ASW_NUM_MARINE_PROFILES)
-		return false;
-
-	return m_iRosterSelected[i] == 2;
 }
 
 void CASW_Game_Resource::SetRosterSelected(int i, int iSelected)

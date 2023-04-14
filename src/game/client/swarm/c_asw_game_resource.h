@@ -27,8 +27,8 @@ public:
 					C_ASW_Game_Resource();
 	virtual			~C_ASW_Game_Resource();
 
-	CNetworkArray( EHANDLE, m_MarineResources, ASW_MAX_MARINE_RESOURCES );
-	CNetworkArray( EHANDLE, m_Objectives, ASW_MAX_OBJECTIVES );
+	CNetworkArray( CHandle<C_ASW_Marine_Resource>, m_MarineResources, ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( CHandle<C_ASW_Objective>, m_Objectives, ASW_MAX_OBJECTIVES );
 	CNetworkArray( int, m_iRosterSelected, ASW_NUM_MARINE_PROFILES);
 	CNetworkVar( bool, m_bOneMarineEach );
 	CNetworkVar( int, m_iMaxMarines );

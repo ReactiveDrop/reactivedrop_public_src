@@ -1,10 +1,12 @@
 #include "cbase.h"
 #include "asw_marine_skills.h"
 #include "collisionutils.h"
+#include "asw_deathmatch_mode_light.h"
 #ifdef CLIENT_DLL
 	#include "c_asw_game_resource.h"
 	#include "c_asw_marine_resource.h"
 	#include "c_asw_marine.h"
+	#include "c_asw_objective.h"
 	#include "c_playerresource.h"
 	#include "c_asw_player.h"
 	#include "engine/ivdebugoverlay.h"
@@ -13,9 +15,10 @@
 	#define CASW_Player C_ASW_Player
 	#define CASW_Marine C_ASW_Marine
 #else
+	#include "asw_game_resource.h"
 	#include "asw_marine_resource.h"
 	#include "asw_marine.h"
-	#include "asw_game_resource.h"
+	#include "asw_objective.h"
 	#include "player_resource.h"
 	#include "asw_player.h"
 #endif
@@ -188,6 +191,30 @@ CASW_Marine * CASW_Game_Resource::EnumeratedMarine(int i)
 		return NULL;
 
 	return m_pEnumeratedMarines[i];
+}
+
+bool CASW_Game_Resource::IsRosterSelected( int i )
+{
+	// allow any marine selection for deathmatch
+	if ( ASWDeathmatchMode() )
+		return false;
+
+	if ( i < 0 || i >= ASW_NUM_MARINE_PROFILES )
+		return false;
+
+	return m_iRosterSelected[i] == 1;
+}
+
+bool CASW_Game_Resource::IsRosterReserved( int i )
+{
+	// allow any marine selection for deathmatch
+	if ( ASWDeathmatchMode() )
+		return false;
+
+	if ( i < 0 || i >= ASW_NUM_MARINE_PROFILES )
+		return false;
+
+	return m_iRosterSelected[i] == 2;
 }
 
 // returns true if at least one marine has been selected

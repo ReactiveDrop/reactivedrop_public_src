@@ -57,17 +57,17 @@ C_ASW_Game_Resource::C_ASW_Game_Resource()
 {
 	g_pASWGameResource = this;
 
-	for (int i=0;i<ASW_MAX_MARINE_RESOURCES;i++)
+	for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
 	{
-		m_MarineResources.Set(i, NULL);
+		m_MarineResources.Set( i, NULL );
 	}
-	for (int i=0;i<ASW_MAX_OBJECTIVES;i++)
+	for ( int i = 0; i < ASW_MAX_OBJECTIVES; i++ )
 	{
-		m_Objectives.Set(i, NULL);
+		m_Objectives.Set( i, NULL );
 	}
-	for (int i=0;i<ASW_NUM_MARINE_PROFILES;i++)
+	for ( int i = 0; i < ASW_NUM_MARINE_PROFILES; i++ )
 	{
-		m_iRosterSelected.Set(i, 0);
+		m_iRosterSelected.Set( i, 0 );
 	}
 	m_iCampaignGame = -1;
 	m_iNumEnumeratedMarines = NULL;
@@ -81,61 +81,30 @@ C_ASW_Game_Resource::~C_ASW_Game_Resource()
 	}
 }
 
-C_ASW_Objective* C_ASW_Game_Resource::GetObjective(int i)
+C_ASW_Objective *C_ASW_Game_Resource::GetObjective( int i )
 {
-	if (i<0 || i>=ASW_MAX_OBJECTIVES)
+	if ( i < 0 || i >= ASW_MAX_OBJECTIVES )
 		return NULL;
 
-	if (m_Objectives[i] == NULL)
-		return NULL;
-
-	C_BaseEntity* c = m_Objectives[i];
-	return static_cast<C_ASW_Objective*>(c);
+	return m_Objectives[i];
 }
 
-C_ASW_Marine_Resource* C_ASW_Game_Resource::GetMarineResource(int i)
+C_ASW_Marine_Resource *C_ASW_Game_Resource::GetMarineResource( int i )
 {
-	if (i<0 || i>ASW_MAX_MARINE_RESOURCES - 1)	// DY: changed from 11 to ASW_MAX_MARINE_RESOURCES - 1
+	if ( i < 0 || i >= ASW_MAX_MARINE_RESOURCES )
 		return NULL;
 
-	if (m_MarineResources[i] == NULL)
-		return NULL;
-
-	C_BaseEntity* c = m_MarineResources[i];
-	return static_cast<C_ASW_Marine_Resource*>(c);
+	return m_MarineResources[i];
 }
 
-int C_ASW_Game_Resource::GetIndexFor(C_ASW_Marine_Resource* pMarineResource)
+int C_ASW_Game_Resource::GetIndexFor( C_ASW_Marine_Resource *pMarineResource )
 {
-	for (int i=0;i<GetMaxMarineResources();i++)
+	for ( int i = 0; i < GetMaxMarineResources(); i++ )
 	{
-		if (m_MarineResources[i] == pMarineResource)
+		if ( m_MarineResources[i] == pMarineResource )
 			return i;
 	}
 	return -1;
-}
-
-bool C_ASW_Game_Resource::IsRosterSelected(int i)
-{
-	// allow any marine selection for deathmatch
-	if (ASWDeathmatchMode())
-		return false;
-
-	if (i<0 || i>=ASW_NUM_MARINE_PROFILES)
-		return false;
-
-	return m_iRosterSelected[i] == 1;
-}
-
-bool C_ASW_Game_Resource::IsRosterReserved(int i)
-{
-	// allow any marine selection for deathmatch
-	if (ASWDeathmatchMode())
-		return false;
-
-	if (i<0 || i>=ASW_NUM_MARINE_PROFILES)
-		return false;
-	return m_iRosterSelected[i] == 2;
 }
 
 C_ASW_Player* C_ASW_Game_Resource::GetLeader()
