@@ -764,7 +764,7 @@ static void UpdateGameRulesOverrideAllowRotateCamera( IConVar *var, const char *
 	}
 }
 #endif
-ConVar rd_player_bots_allowed( "rd_player_bots_allowed", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "If 0 will prevent players from adding bots"
+ConVar rd_player_bots_allowed( "rd_player_bots_allowed", "1", FCVAR_REPLICATED, "If 0 will prevent players from adding bots"
 #ifdef GAME_DLL
 	, DeselectMarineBots );
 #else
