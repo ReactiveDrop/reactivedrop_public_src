@@ -85,7 +85,6 @@ namespace ReactiveDropInventory
 		bool HasBorder : 1;
 #ifdef CLIENT_DLL
 		vgui::IImage *Icon{};
-		vgui::IImage *IconSmall{};
 		CUtlVector<vgui::IImage *> StyleIcons{};
 		ITexture *AccessoryIcon{};
 #endif

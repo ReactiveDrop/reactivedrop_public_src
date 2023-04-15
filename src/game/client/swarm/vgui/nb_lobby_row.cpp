@@ -230,19 +230,19 @@ void CNB_Lobby_Row::UpdateDetails()
 		}
 		m_lastSteamID = steamID;
 
-		SteamItemDef_t iMedal = Briefing()->GetEquippedMedal( m_nLobbySlot ).m_iItemDefID;
-		if ( iMedal != m_lastMedal )
+		const C_RD_ItemInstance &medal = Briefing()->GetEquippedMedal( m_nLobbySlot );
+		if ( medal.m_iItemDefID != m_lastMedal )
 		{
-			if ( iMedal <= 0 )
+			if ( !medal.IsSet() )
 			{
 				m_pMedalIcon->SetVisible( false );
-				m_lastMedal = iMedal;
+				m_lastMedal = medal.m_iItemDefID;
 			}
-			else if ( const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( iMedal ) )
+			else
 			{
-				m_pMedalIcon->SetImage( pDef->IconSmall );
+				m_pMedalIcon->SetImage( medal.GetIcon() );
 				m_pMedalIcon->SetVisible( true );
-				m_lastMedal = iMedal;
+				m_lastMedal = medal.m_iItemDefID;
 			}
 		}
 	}

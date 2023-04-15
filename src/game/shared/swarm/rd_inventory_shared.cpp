@@ -1497,12 +1497,26 @@ class CSteamItemIcon : public vgui::IImage
 public:
 	CSteamItemIcon( const char *szURL )
 	{
+		m_URLHash = CRC32_ProcessSingleBuffer( szURL, V_strlen( szURL ) );
 		m_iTextureID = 0;
 		m_Color.SetColor( 255, 255, 255, 255 );
 		m_nX = 0;
 		m_nY = 0;
 		m_nWide = 512;
 		m_nTall = 512;
+
+		CFmtStr fileName1( "materials/vgui/inventory/cache/%08x.vmt", m_URLHash );
+		CFmtStr fileName2( "materials/vgui/inventory/cache/%08x.vtf", m_URLHash );
+		if ( g_pFullFileSystem->FileExists( fileName1, "MOD" ) && g_pFullFileSystem->FileExists( fileName2, "MOD" ) )
+		{
+			m_iTextureID = vgui::surface()->CreateNewTextureID();
+			const char *szMaterialName = fileName1.Access() + V_strlen( "materials/" );
+			PrecacheMaterial( szMaterialName ); // silence warning
+			vgui::surface()->DrawSetTextureFile( m_iTextureID, szMaterialName, true, false );
+			vgui::surface()->DrawGetTextureSize( m_iTextureID, ( int & )m_nWide, ( int & )m_nTall );
+
+			return;
+		}
 
 		ISteamHTTP *pHTTP = SteamHTTP();
 		Assert( pHTTP );
@@ -1638,10 +1652,34 @@ private:
 			Warning( "Decoding inventory item icon: lodepng error %d: %s\n", error, lodepng_error_text( error ) );
 		}
 
-		m_iTextureID = vgui::surface()->CreateNewTextureID( true );
-		vgui::surface()->DrawSetTextureRGBA( m_iTextureID, rgba, m_nWide, m_nTall );
-
+		IVTFTexture *pVTF = CreateVTFTexture();
+		pVTF->Init( m_nWide, m_nTall, 1, IMAGE_FORMAT_RGBA8888, TEXTUREFLAGS_EIGHTBITALPHA, 1 );
+		V_memcpy( pVTF->ImageData(), rgba, m_nWide * m_nTall * 4 );
 		free( rgba );
+
+		pVTF->ConvertImageFormat( IMAGE_FORMAT_DEFAULT, false );
+		VtfProcessingOptions opt = { sizeof( opt ), VtfProcessingOptions::OPT_FILTER_NICE };
+		pVTF->SetPostProcessingSettings( &opt );
+		pVTF->PostProcess( false );
+
+		CUtlBuffer buf;
+		pVTF->Serialize( buf );
+		DestroyVTFTexture( pVTF );
+
+		g_pFullFileSystem->CreateDirHierarchy( "materials/vgui/inventory/cache", "MOD" );
+
+		CFmtStr fileName2( "materials/vgui/inventory/cache/%08x.vtf", m_URLHash );
+		g_pFullFileSystem->WriteFile( fileName2, "MOD", buf );
+
+		buf.Clear();
+		buf.SetBufferType( true, true );
+		buf.PutString( CFmtStr( "UnlitGeneric {\n$basetexture vgui/inventory/cache/%08x\n$translucent 1\n}\n", m_URLHash ) );
+		CFmtStr fileName1( "materials/vgui/inventory/cache/%08x.vmt", m_URLHash );
+		g_pFullFileSystem->WriteFile( fileName1, "MOD", buf );
+
+		m_iTextureID = vgui::surface()->CreateNewTextureID();
+		// this causes a warning about an un-precached material, which is technically correct but for a different reason than the engine thinks
+		vgui::surface()->DrawSetTextureFile( m_iTextureID, fileName1.Access() + V_strlen( "materials/" ), true, false );
 	}
 
 	CCallResult<CSteamItemIcon, HTTPRequestCompleted_t> m_HTTPRequestCompleted;
@@ -2301,13 +2339,6 @@ namespace ReactiveDropInventory
 		if ( *szValue )
 		{
 			pItemDef->Icon = CSteamItemIcon::Get( szValue );
-		}
-
-		pItemDef->IconSmall = pItemDef->Icon;
-		FETCH_PROPERTY( "icon_url_small" );
-		if ( *szValue )
-		{
-			pItemDef->IconSmall = CSteamItemIcon::Get( szValue );
 		}
 
 		pItemDef->StyleIcons.SetCount( pItemDef->StyleNames.Count() );
