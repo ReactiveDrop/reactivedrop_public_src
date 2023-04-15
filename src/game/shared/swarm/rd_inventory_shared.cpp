@@ -1510,10 +1510,8 @@ public:
 		if ( g_pFullFileSystem->FileExists( fileName1, "MOD" ) && g_pFullFileSystem->FileExists( fileName2, "MOD" ) )
 		{
 			m_iTextureID = vgui::surface()->CreateNewTextureID();
-			const char *szMaterialName = fileName1.Access() + V_strlen( "materials/" );
-			PrecacheMaterial( szMaterialName ); // silence warning
-			vgui::surface()->DrawSetTextureFile( m_iTextureID, szMaterialName, true, false );
-			vgui::surface()->DrawGetTextureSize( m_iTextureID, ( int & )m_nWide, ( int & )m_nTall );
+			vgui::surface()->DrawSetTextureFile( m_iTextureID, fileName1.Access() + V_strlen( "materials/" ), true, false );
+			vgui::surface()->DrawGetTextureSize( m_iTextureID, m_nWide, m_nTall );
 
 			return;
 		}
@@ -1599,6 +1597,22 @@ public:
 
 	static CSteamItemIcon *Get( const char *szURL )
 	{
+#ifdef DBGFLAG_ASSERT
+		static CUtlMap<CRC32_t, CUtlString> s_HashToURL( DefLessFunc( CRC32_t ) );
+		CRC32_t iHash = CRC32_ProcessSingleBuffer( szURL, V_strlen( szURL ) );
+		unsigned short iHashIndex = s_HashToURL.Find( iHash );
+		if ( !s_HashToURL.IsValidIndex( iHashIndex ) )
+		{
+			s_HashToURL.Insert( iHash, szURL );
+		}
+		else
+		{
+			// if this fails, it means we have a hash collision!
+			// we need to rename one of the icons in this unusual case.
+			Assert( s_HashToURL[iHashIndex] == szURL );
+		}
+#endif
+
 		UtlSymId_t index = s_ItemIcons.Find( szURL );
 		if ( index != s_ItemIcons.InvalidIndex() )
 		{
@@ -1613,7 +1627,7 @@ private:
 	vgui::HTexture m_iTextureID;
 	Color m_Color;
 	int m_nX, m_nY;
-	unsigned m_nWide, m_nTall;
+	int m_nWide, m_nTall;
 
 	void OnRequestCompleted( HTTPRequestCompleted_t *pParam, bool bIOFailure )
 	{
@@ -1640,13 +1654,12 @@ private:
 		if ( !pHTTP->GetHTTPResponseBodyData( pParam->m_hRequest, data.Base(), pParam->m_unBodySize ) )
 		{
 			Warning( "Failed to get inventory item icon from successful request. Programmer error?\n" );
-			return;
 		}
 
 		pHTTP->ReleaseHTTPRequest( pParam->m_hRequest );
 
 		uint8_t *rgba = NULL;
-		unsigned error = lodepng_decode32( &rgba, &m_nWide, &m_nTall, data.Base(), pParam->m_unBodySize );
+		unsigned error = lodepng_decode32( &rgba, ( unsigned * )&m_nWide, ( unsigned * )&m_nTall, data.Base(), pParam->m_unBodySize );
 		if ( error )
 		{
 			Warning( "Decoding inventory item icon: lodepng error %d: %s\n", error, lodepng_error_text( error ) );
@@ -1654,7 +1667,8 @@ private:
 
 		IVTFTexture *pVTF = CreateVTFTexture();
 		pVTF->Init( m_nWide, m_nTall, 1, IMAGE_FORMAT_RGBA8888, TEXTUREFLAGS_EIGHTBITALPHA, 1 );
-		V_memcpy( pVTF->ImageData(), rgba, m_nWide * m_nTall * 4 );
+		if ( rgba )
+			V_memcpy( pVTF->ImageData(), rgba, m_nWide * m_nTall * 4 );
 		free( rgba );
 
 		pVTF->ConvertImageFormat( IMAGE_FORMAT_DEFAULT, false );
@@ -1679,7 +1693,6 @@ private:
 		g_pFullFileSystem->WriteFile( fileName1, "MOD", buf );
 
 		m_iTextureID = vgui::surface()->CreateNewTextureID();
-		// this causes a warning about an un-precached material, which is technically correct but for a different reason than the engine thinks
 		vgui::surface()->DrawSetTextureFile( m_iTextureID, fileName1.Access() + V_strlen( "materials/" ), true, false );
 	}
 
@@ -2204,6 +2217,8 @@ namespace ReactiveDropInventory
 
 		char szKey[256];
 
+		FETCH_PROPERTY( "type" );
+		CUtlString szType = szValue;
 		FETCH_PROPERTY( "item_slot" );
 		pItemDef->ItemSlot = szValue;
 		FETCH_PROPERTY( "tags" );
@@ -2215,11 +2230,13 @@ namespace ReactiveDropInventory
 		FETCH_PROPERTY( "accessory_limit" );
 		if ( *szValue )
 			pItemDef->AccessoryLimit = strtol( szValue, NULL, 10 );
-		Assert( pItemDef->AccessoryLimit <= RD_ITEM_MAX_ACCESSORIES );
+		Assert( pItemDef->AccessoryLimit >= 0 && pItemDef->AccessoryLimit <= RD_ITEM_MAX_ACCESSORIES );
 		FETCH_PROPERTY( "compressed_dynamic_props" );
 		if ( *szValue )
 		{
 			CSplitString CompressedDynamicProps{ szValue, ";" };
+			Assert( CompressedDynamicProps.Count() <= RD_ITEM_MAX_COMPRESSED_DYNAMIC_PROPS - ( pItemDef->AccessoryTag.IsEmpty() ? 0 : pItemDef->AccessoryLimit * RD_ITEM_MAX_COMPRESSED_DYNAMIC_PROPS_PER_ACCESSORY ) );
+			Assert( szType != "tag_tool" || CompressedDynamicProps.Count() <= RD_ITEM_MAX_COMPRESSED_DYNAMIC_PROPS_PER_ACCESSORY );
 			FOR_EACH_VEC( CompressedDynamicProps, i )
 			{
 				pItemDef->CompressedDynamicProps.CopyAndAddToTail( CompressedDynamicProps[i] );
