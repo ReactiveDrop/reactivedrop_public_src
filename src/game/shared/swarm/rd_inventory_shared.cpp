@@ -1661,6 +1661,7 @@ private:
 		VtfProcessingOptions opt = { sizeof( opt ), VtfProcessingOptions::OPT_FILTER_NICE };
 		pVTF->SetPostProcessingSettings( &opt );
 		pVTF->PostProcess( false );
+		pVTF->ConvertImageFormat( IMAGE_FORMAT_DXT5, false );
 
 		CUtlBuffer buf;
 		pVTF->Serialize( buf );
