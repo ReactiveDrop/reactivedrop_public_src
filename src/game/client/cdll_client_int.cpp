@@ -520,7 +520,7 @@ public:
 #endif
 #ifdef INFESTED_DLL
 		AddAppSystem( "missionchooser", ASW_MISSION_CHOOSER_VERSION );
-		AddAppSystem( "consistency", INTERFACEVERSION_ICONSISTENCY_V2 );
+		AddAppSystem( "consistency", INTERFACEVERSION_ICONSISTENCY_V3 );
 #endif
 	}
 
@@ -1165,7 +1165,7 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CGlobalVarsBase *pGloba
 #ifdef INFESTED_DLL
 	if ( (missionchooser = (IASW_Mission_Chooser *)appSystemFactory(ASW_MISSION_CHOOSER_VERSION, NULL)) == NULL )
 		return false;
-	if ( (consistency = (IConsistency *)appSystemFactory(INTERFACEVERSION_ICONSISTENCY_V2, NULL)) == NULL )
+	if ( (consistency = (IConsistency *)appSystemFactory(INTERFACEVERSION_ICONSISTENCY_V3, NULL)) == NULL )
 		return false;
 #endif
 

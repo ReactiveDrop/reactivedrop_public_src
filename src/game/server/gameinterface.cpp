@@ -577,10 +577,12 @@ static bool InitGameSystems( CreateInterfaceFn appSystemFactory )
 	}
 #endif // SERVER_USES_VGUI
 
+#ifdef INFESTED_DLL
+	IGameSystem::Add( consistency->ConnectServer( Sys_GetFactoryThis() ) );
+#endif
+
 	// load Mod specific game events ( MUST be before InitAllSystems() so it can pickup the mod specific events)
 	gameeventmanager->LoadEventsFromFile("resource/ModEvents.res");
-
-
 
 	if ( !IGameSystem::InitAllSystems() )
 		return false;
@@ -696,7 +698,7 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 		return false;
 	if ( (g_pMatchExtSwarm = (IMatchExtSwarm *)appSystemFactory(IMATCHEXT_SWARM_INTERFACE, NULL)) == NULL )
 		return false;
-	if ( ( consistency = ( IConsistency * )appSystemFactory( INTERFACEVERSION_ICONSISTENCY_V2, NULL ) ) == NULL )
+	if ( ( consistency = ( IConsistency * )appSystemFactory( INTERFACEVERSION_ICONSISTENCY_V3, NULL ) ) == NULL )
 		return false;
 #endif
 
@@ -773,8 +775,6 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 	g_pGameSaveRestoreBlockSet->AddBlockHandler( GetEventQueueSaveRestoreBlockHandler() );
 	g_pGameSaveRestoreBlockSet->AddBlockHandler( GetAchievementSaveRestoreBlockHandler() );
 	g_pGameSaveRestoreBlockSet->AddBlockHandler( GetVScriptSaveRestoreBlockHandler() );
-
-	consistency->ConnectServer( Sys_GetFactoryThis() );
 
 	bool bInitSuccess = false;
 	if ( sv_threaded_init.GetBool() )
@@ -3468,7 +3468,7 @@ public:
 		AddAppSystem( "scenefilecache", SCENE_FILE_CACHE_INTERFACE_VERSION );
 #ifdef INFESTED_DLL
 		AddAppSystem( "missionchooser", ASW_MISSION_CHOOSER_VERSION );
-		AddAppSystem( "consistency", INTERFACEVERSION_ICONSISTENCY_V2 );
+		AddAppSystem( "consistency", INTERFACEVERSION_ICONSISTENCY_V3 );
 #endif
 	}
 
