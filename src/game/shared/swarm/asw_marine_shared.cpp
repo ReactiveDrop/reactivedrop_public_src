@@ -1066,7 +1066,7 @@ void CASW_Marine::FireRegularBullets( const FireBulletsInfo_t &info )
 				Tracer = tr;
 				Tracer.endpos = vecTracerDest;
 
-				MakeTracer( vecTracerSrc, Tracer, pAmmoDef->TracerType(info.m_iAmmoType) );
+				MakeTracer( vecTracerSrc, Tracer, pAmmoDef->TracerType(info.m_iAmmoType), nDamageType );
 			}
 			else
 			{
@@ -1548,7 +1548,7 @@ void CASW_Marine::FirePenetratingBullets( const FireBulletsInfo_t &info, int iMa
 					{
 						Tracer.endpos += vecFinalDir * 2.9f;
 					}
-					MakeTracer( vecTracerSrc, Tracer, pAmmoDef->TracerType(info.m_iAmmoType) );
+					MakeTracer( vecTracerSrc, Tracer, pAmmoDef->TracerType(info.m_iAmmoType), nDamageType );
 				}
 				else
 				{
@@ -1587,19 +1587,19 @@ void CASW_Marine::FirePenetratingBullets( const FireBulletsInfo_t &info, int iMa
 					if ( pPiercingTracerEnd == NULL )
 					{
 						if ( bSegmentTracer )
-							MakeTracer( vecTracerSrc, Tracer, pAmmoDef->TracerType(info.m_iAmmoType) );
+							MakeTracer( vecTracerSrc, Tracer, pAmmoDef->TracerType(info.m_iAmmoType), nDamageType );
 						else
 						{
 							trace_t Tracer2;
 							Tracer = tr;
 							Tracer.endpos = vecPiercingTracerEnd;
-							MakeTracer( vecTracerSrc, Tracer2, pAmmoDef->TracerType(info.m_iAmmoType) );
+							MakeTracer( vecTracerSrc, Tracer2, pAmmoDef->TracerType(info.m_iAmmoType), nDamageType );
 						}
 					}
 					else
 					{
 						if ( bSegmentTracer )
-							MakeUnattachedTracer( vecTracerSrc, Tracer, pAmmoDef->TracerType(info.m_iAmmoType) );
+							MakeUnattachedTracer( vecTracerSrc, Tracer, pAmmoDef->TracerType(info.m_iAmmoType), nDamageType );
 						QAngle	vecAngles;
 						VectorAngles( vecFinalDir, vecAngles );
 						DispatchParticleEffect( "drone_shot_exit", vecTracerSrc, vecAngles );
@@ -1894,7 +1894,7 @@ void CASW_Marine::FireBouncingBullets( const FireBulletsInfo_t &info, int iMaxBo
 					Tracer = tr;
 					Tracer.endpos = vecTracerDest;
 
-					MakeTracer( vecTracerSrc, Tracer, pAmmoDef->TracerType( info.m_iAmmoType ) );
+					MakeTracer( vecTracerSrc, Tracer, pAmmoDef->TracerType( info.m_iAmmoType ), nDamageType );
 				}
 				else
 				{
@@ -1903,7 +1903,7 @@ void CASW_Marine::FireBouncingBullets( const FireBulletsInfo_t &info, int iMaxBo
 					Tracer = tr;
 					Tracer.endpos = vecTracerDest;
 
-					MakeUnattachedTracer( vecTracerSrc, Tracer, pAmmoDef->TracerType( info.m_iAmmoType ) );
+					MakeUnattachedTracer( vecTracerSrc, Tracer, pAmmoDef->TracerType( info.m_iAmmoType ), nDamageType );
 				}
 			}
 			else

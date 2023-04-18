@@ -42,6 +42,7 @@ public:
 
 	// aiming grenades at the ground
 	virtual bool SupportsGroundShooting() { return false; }
+	virtual bool HasBuckshotSecondaryAttack() { return true; }
 
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_RICOCHET; }

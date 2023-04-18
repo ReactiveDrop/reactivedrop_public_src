@@ -24,9 +24,10 @@ enum ASW_Bullet_Attribute_Bits
 	BULLET_ATT_CHEMICAL			=	0x00000004,
 	BULLET_ATT_ELECTRIC			=	0x00000008,
 	BULLET_ATT_FREEZE			=	0x00000010,
+	BULLET_ATT_TRACER_BUCKSHOT	=	0x00000020, // used to determine if tracers should play secondary fire animation for some weapons
 
 	// Highest legal value
-	BULLET_ATT_MAX				=	0x00000020,
+	BULLET_ATT_MAX				=	0x0000002F,
 };
 
 enum ASW_Forced_Action

@@ -61,8 +61,9 @@ public:
 
 	virtual void DoImpactEffect( trace_t &tr, int nDamageType ) override;
 	virtual void DoMuzzleFlash() override;
-	virtual void MakeTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType ) override;
-	virtual void MakeUnattachedTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType );
+	virtual void MakeTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType ) override { MakeTracer( vecTracerSrc, tr, iTracerType, 0 ); }
+	virtual void MakeTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType, int iDamageType );
+	virtual void MakeUnattachedTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType, int iDamageType );
 
 	// interacting
 	virtual bool StartUsing( CBaseEntity *pEntity );

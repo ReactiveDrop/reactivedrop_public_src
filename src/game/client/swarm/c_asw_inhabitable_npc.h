@@ -92,8 +92,9 @@ public:
 	CNetworkVar( bool, m_bGlowWhenUnoccluded );
 	CNetworkVar( bool, m_bGlowFullBloom );
 
-	virtual void MakeTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType );
-	virtual void MakeUnattachedTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType );
+	virtual void MakeTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType ) override { MakeTracer( vecTracerSrc, tr, iTracerType, 0 ); }
+	virtual void MakeTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType, int iDamageType );
+	virtual void MakeUnattachedTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType, int iDamageType );
 
 	// aim target interface
 	IMPLEMENT_AUTO_LIST_GET();

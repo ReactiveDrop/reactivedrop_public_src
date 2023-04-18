@@ -2051,7 +2051,7 @@ void ASWUTracer( C_ASW_Inhabitable_NPC *pNPC, const Vector &vecEnd, int iAttribu
 
 	// make the marine do a firing anim
 	if ( C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pNPC ) )
-		pMarine->DoAnimationEvent( PLAYERANIMEVENT_FIRE_GUN_PRIMARY );
+		pMarine->DoAnimationEvent( ( iAttributeEffects & BULLET_ATT_TRACER_BUCKSHOT ) && pMarine->GetActiveASWWeapon() && pMarine->GetActiveASWWeapon()->HasBuckshotSecondaryAttack() ? PLAYERANIMEVENT_FIRE_GUN_SECONDARY : PLAYERANIMEVENT_FIRE_GUN_PRIMARY );
 
 	C_BaseAnimating::PopBoneAccess( "ASWUTracer" );
 }
@@ -2096,7 +2096,7 @@ void ASWUTracerless( C_ASW_Inhabitable_NPC *pNPC, const Vector &vecEnd, int iAtt
 
 	// make the marine do a firing anim
 	if ( C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pNPC ) )
-		pMarine->DoAnimationEvent( PLAYERANIMEVENT_FIRE_GUN_PRIMARY );
+		pMarine->DoAnimationEvent( ( iAttributeEffects & BULLET_ATT_TRACER_BUCKSHOT ) && pMarine->GetActiveASWWeapon() && pMarine->GetActiveASWWeapon()->HasBuckshotSecondaryAttack() ? PLAYERANIMEVENT_FIRE_GUN_SECONDARY : PLAYERANIMEVENT_FIRE_GUN_PRIMARY );
 
 	C_BaseAnimating::PopBoneAccess( "ASWUTracerless" );
 }
@@ -2192,7 +2192,7 @@ void ASWUTracerDual( C_ASW_Inhabitable_NPC *pNPC, const Vector &vecEnd, int nDua
 
 	// make the marine do a firing anim
 	if ( C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pNPC ) )
-		pMarine->DoAnimationEvent( PLAYERANIMEVENT_FIRE_GUN_PRIMARY );
+		pMarine->DoAnimationEvent( ( iAttributeEffects & BULLET_ATT_TRACER_BUCKSHOT ) && pMarine->GetActiveASWWeapon() && pMarine->GetActiveASWWeapon()->HasBuckshotSecondaryAttack() ? PLAYERANIMEVENT_FIRE_GUN_SECONDARY : PLAYERANIMEVENT_FIRE_GUN_PRIMARY );
 
 	C_BaseAnimating::PopBoneAccess( "ASWUTracerDual" );
 }
@@ -2277,7 +2277,7 @@ void ASWUTracerRG( C_ASW_Inhabitable_NPC *pNPC, const Vector &vecEnd, int iAttri
 	// make the marine do a firing anim
 
 	if ( C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pNPC ) )
-		pMarine->DoAnimationEvent( PLAYERANIMEVENT_FIRE_GUN_PRIMARY );
+		pMarine->DoAnimationEvent( ( iAttributeEffects & BULLET_ATT_TRACER_BUCKSHOT ) && pMarine->GetActiveASWWeapon() && pMarine->GetActiveASWWeapon()->HasBuckshotSecondaryAttack() ? PLAYERANIMEVENT_FIRE_GUN_SECONDARY : PLAYERANIMEVENT_FIRE_GUN_PRIMARY );
 
 	C_BaseAnimating::PopBoneAccess( "ASWUTracerRG" );
 }

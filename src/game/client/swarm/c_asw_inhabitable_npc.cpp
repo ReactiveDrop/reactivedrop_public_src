@@ -6,6 +6,7 @@
 #include "c_te_effect_dispatch.h"
 #include "c_asw_fx.h"
 #include "asw_util_shared.h"
+#include "asw_marine_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -293,7 +294,7 @@ void C_ASW_Inhabitable_NPC::UpdateGlowObject()
 	}
 }
 
-void C_ASW_Inhabitable_NPC::MakeTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType )
+void C_ASW_Inhabitable_NPC::MakeTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType, int iDamageType )
 {
 	const char *tracer = "ASWUTracer";
 	if ( GetActiveASWWeapon() )
@@ -304,10 +305,13 @@ void C_ASW_Inhabitable_NPC::MakeTracer( const Vector &vecTracerSrc, const trace_
 	data.m_hEntity = this;
 	data.m_nMaterial = m_iDamageAttributeEffects;
 
+	if ( iDamageType & DMG_BUCKSHOT )
+		data.m_nMaterial |= BULLET_ATT_TRACER_BUCKSHOT;
+
 	DispatchEffect( tracer, data );
 }
 
-void C_ASW_Inhabitable_NPC::MakeUnattachedTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType )
+void C_ASW_Inhabitable_NPC::MakeUnattachedTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType, int iDamageType )
 {
 	const char *tracer = "ASWUTracerUnattached";
 
@@ -315,6 +319,10 @@ void C_ASW_Inhabitable_NPC::MakeUnattachedTracer( const Vector &vecTracerSrc, co
 	data.m_vOrigin = tr.endpos;
 	data.m_hEntity = this;
 	data.m_vStart = vecTracerSrc;
+	data.m_nMaterial = m_iDamageAttributeEffects;
+
+	if ( iDamageType & DMG_BUCKSHOT )
+		data.m_nMaterial |= BULLET_ATT_TRACER_BUCKSHOT;
 
 	DispatchEffect( tracer, data );
 }

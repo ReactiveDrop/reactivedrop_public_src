@@ -471,7 +471,7 @@ void CASW_Inhabitable_NPC::DoMuzzleFlash()
 	// asw - muzzle flashes are triggered by tracer usermessages instead to save bandwidth
 }
 
-void CASW_Inhabitable_NPC::MakeTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType )
+void CASW_Inhabitable_NPC::MakeTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType, int iDamageType )
 {
 	const char *tracer = "ASWUTracer";
 	if ( GetActiveASWWeapon() )
@@ -484,16 +484,18 @@ void CASW_Inhabitable_NPC::MakeTracer( const Vector &vecTracerSrc, const trace_t
 		filter.RemoveRecipient( GetCommander() );
 	}
 
+	int iDamageAtt = ( iDamageType & DMG_BUCKSHOT ) ? BULLET_ATT_TRACER_BUCKSHOT : 0;
+
 	UserMessageBegin( filter, tracer );
 		WRITE_SHORT( entindex() );
 		WRITE_FLOAT( tr.endpos.x );
 		WRITE_FLOAT( tr.endpos.y );
 		WRITE_FLOAT( tr.endpos.z );
-		WRITE_SHORT( m_iDamageAttributeEffects );
+		WRITE_SHORT( m_iDamageAttributeEffects | iDamageAtt );
 	MessageEnd();
 }
 
-void CASW_Inhabitable_NPC::MakeUnattachedTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType )
+void CASW_Inhabitable_NPC::MakeUnattachedTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType, int iDamageType )
 {
 	const char *tracer = "ASWUTracerUnattached";
 
@@ -504,6 +506,8 @@ void CASW_Inhabitable_NPC::MakeUnattachedTracer( const Vector &vecTracerSrc, con
 		filter.RemoveRecipient( GetCommander() );
 	}
 
+	int iDamageAtt = ( iDamageType & DMG_BUCKSHOT ) ? BULLET_ATT_TRACER_BUCKSHOT : 0;
+
 	UserMessageBegin( filter, tracer );
 		WRITE_SHORT( entindex() );
 		WRITE_FLOAT( tr.endpos.x );
@@ -512,7 +516,7 @@ void CASW_Inhabitable_NPC::MakeUnattachedTracer( const Vector &vecTracerSrc, con
 		WRITE_FLOAT( vecTracerSrc.x );
 		WRITE_FLOAT( vecTracerSrc.y );
 		WRITE_FLOAT( vecTracerSrc.z );
-		WRITE_SHORT( m_iDamageAttributeEffects );
+		WRITE_SHORT( m_iDamageAttributeEffects | iDamageAtt );
 	MessageEnd();
 }
 
