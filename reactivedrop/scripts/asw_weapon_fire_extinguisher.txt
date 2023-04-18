@@ -48,6 +48,6 @@ WeaponData
 	SoundData
 	{
 		"empty"			"ASW_Weapon.Empty"
-		"special3"		"ASW_Weapon.Reload3"	//switch weapon
+		"special3"		"Canister.ImpactHard"	//switch weapon
 	}
 }

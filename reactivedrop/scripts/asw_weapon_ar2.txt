@@ -47,6 +47,7 @@ WeaponData
 	SoundData
 	{
 		"special1"			"Weapon_CombineGuard.Special1"
+		"special3"			"Weapon_AR2.Reload"
 		"empty"				"Weapon_IRifle.Empty"
 		"double_shot"		"Weapon_IRifle.Single"
 		"reload"			"Weapon_AR2.Reload"

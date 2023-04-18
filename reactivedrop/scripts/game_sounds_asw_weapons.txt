@@ -86,7 +86,47 @@
 	"soundlevel"	"SNDLVL_110dB"
 	"pitch"			"125"
 
-	"wave"			"weapons/3D/grenade_launcher/fire.wav"
+	"wave"			"common/null.wav"
+}
+
+"ASW_Weapon_AssaultRifle.Grenade"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"0.8,1.0"
+	"soundlevel"	"SNDLVL_110dB"
+	"pitch"			"95,105"
+
+	"wave"			"weapons/3d/rifle/fire_grenade.wav"
+}
+
+"ASW_Weapon_Prototype.Grenade"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"0.8,1.0"
+	"soundlevel"	"SNDLVL_110dB"
+	"pitch"			"95,105"
+
+	"wave"			"weapons/3d/prifle/fire_grenade.wav"
+}
+
+"ASW_Weapon_Vindicator.Grenade"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"0.8,1.0"
+	"soundlevel"	"SNDLVL_110dB"
+	"pitch"			"95,105"
+
+	"wave"			"weapons/3d/vindicator/fire_grenade.wav"
+}
+
+"ASW_Weapon_CombatRifle.Grenade"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"0.8,1.0"
+	"soundlevel"	"SNDLVL_110dB"
+	"pitch"			"95,105"
+
+	"wave"			"weapons/3d/Combatrifle/fire_buckshot.wav"
 }
 
 "ASW_Weapon_Minigun.Single"
@@ -257,6 +297,24 @@
 	"wave"			"@weapons\2D\rifle\singleShotFP.wav"
 }
 
+"ASW_Weapon_CombatRifle.Single"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_95dB"
+	"volume"		"0.8"
+	"pitch"			"95,105"
+	"wave"			"^weapons\3D\combatrifle\singleShot.wav"
+}
+
+"ASW_Weapon_CombatRifle.SingleFP"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_NONE"
+	"volume"		"0.90"
+	"pitch"			"95, 105"
+	"wave"			"@weapons\2D\combatrifle\singleShotFP.wav"
+}
+
 "ASW_Weapon_Sniper_Rifle.Single"
 {
 	"channel"		"CHAN_WEAPON"
@@ -273,6 +331,24 @@
 	"volume"		"1.0"
 	"pitch"			"90, 100"
 	"wave"			"@weapons/2D/sniper/singleShotFP.wav"
+}
+
+"ASW_Weapon_Sniper_Rifle.Zoomin"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_110dB"
+	"volume"		"1.0"
+	"pitch"			"95, 100"
+	"wave"			"^weapons/3D/sniper/Sniperrifle_zoomin.wav"
+}
+
+"ASW_Weapon_Sniper_Rifle.Zoomout"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_NONE"
+	"volume"		"1.0"
+	"pitch"			"95, 100"
+	"wave"			"@weapons/2D/sniper/Sniperrifle_zoomout.wav"
 }
 
 "ASW_Weapon_Shotgun.FireAndPump"
@@ -494,13 +570,13 @@
 {
 	"channel"		"CHAN_AUTO"
 	"soundlevel"	"SNDLVL_80dB"
-	"pitch"			"80, 90"
+	"pitch"			"90,100"
 	"rndwave"
 	{
-		"wave"		"weapons/3D/tesla/arcImpact01.wav"
-		"wave"		"weapons/3D/tesla/arcImpact02.wav"
-		"wave"		"weapons/3D/tesla/arcImpact03.wav"
-		"wave"		"weapons/3D/tesla/arcImpact04.wav"
+		"wave"		"weapons/3D/tesla/Teslacoil_zap01.wav"
+		"wave"		"weapons/3D/tesla/Teslacoil_zap02.wav"
+		"wave"		"weapons/3D/tesla/Teslacoil_zap03.wav"
+		"wave"		"weapons/3D/tesla/Teslacoil_zap04.wav"
 	}
 }
 
@@ -732,10 +808,10 @@
 	"pitch"			"90, 110"
 	"rndwave"
 	{
-		"wave"		"weapons/3D/tesla/arcImpact01.wav"
-		"wave"		"weapons/3D/tesla/arcImpact02.wav"
-		"wave"		"weapons/3D/tesla/arcImpact03.wav"
-		"wave"		"weapons/3D/tesla/arcImpact04.wav"
+		"wave"		"weapons/3D/tesla/Shockvest_zap01.wav"
+		"wave"		"weapons/3D/tesla/Shockvest_zap02.wav"
+		"wave"		"weapons/3D/tesla/Shockvest_zap03.wav"
+		"wave"		"weapons/3D/tesla/Shockvest_zap04.wav"
 	}
 }
 
@@ -1358,6 +1434,33 @@
 	"soundlevel"	"SNDLVL_NORM"
 
 	"wave"			"weapons\3D\reloads\sniper_C.wav"
+}
+
+"ASW_Weapon_Devastator.ReloadA"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\devastator_A.wav"
+}
+
+"ASW_Weapon_Devastator.ReloadB"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\devastator_B.wav"
+}
+
+"ASW_Weapon_Devastator.ReloadC"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\reloads\devastator_C.wav"
 }
 
 "ASW_Weapon.Reload1"

@@ -49,9 +49,9 @@ WeaponData
 	{
 		"empty"				"ASW_Weapon.Empty"
 		"special3"			"ASW_Weapon.Reload3"				// weapon switch
-		"special1"			"ASW_Weapon_Shotgun.FireAndPump"			// alt-fire
+		"special1"			"ASW_Weapon_CombatRifle.Grenade"			// alt-fire
 
-		"single_shot"		"ASW_Weapon_Rifle.SingleFP"		// sound for locally controlled marine
-		"single_shot_npc"	"ASW_Weapon_Rifle.Single"		// sound for other marines
+		"single_shot"		"ASW_Weapon_CombatRifle.SingleFP"		// sound for locally controlled marine
+		"single_shot_npc"	"ASW_Weapon_CombatRifle.Single"		// sound for other marines
 	}
 }

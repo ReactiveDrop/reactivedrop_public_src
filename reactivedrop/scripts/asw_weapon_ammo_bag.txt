@@ -1,14 +1,11 @@
-// Alien Swarm Cannon Sentry Gun Case
+// Alien Swarm Ammo Bag
 
 WeaponData
 {
 	// Weapon data is loaded by both the Game and Client DLLs.
-	"printname"	"#asw_weapon_sentry_cannon"
-	"viewmodel"				"models/items/ItemBox/ItemBoxLarge.mdl"
-	"playermodel"			"models/items/ItemBox/ItemBoxLarge.mdl"
-	"playermodel_skin"		"5"
-	"displaymodel"			"models/sentry_gun/sentry_base.mdl"
-	"displaymodel2"			"models/sentry_gun/grenade_top.mdl"
+	"printname"	"#asw_weapon_ammo_bag"
+	"viewmodel"			"models/swarm/Ammo/ammobag.mdl"
+	"playermodel"			"models/swarm/Ammo/ammobag.mdl"
 	"anim_prefix"			"ar2"
 	"bucket"			"0"
 	"bucket_position"		"1"
@@ -26,33 +23,27 @@ WeaponData
 	"item_flags"			"0"
 				
 	// asw properties
-	////// *** These numbers are just for show in the loadout page - they aren't used by the weapon	
-	"base_damage"			"60"
-	"fire_rate"				"1.75"
-	"display_clip_size"		"25"
-	"display_reload_time"	"0"
-	"altfiretext"			"#asw_weapon_altfire_NA"
-	////// ***
-	
 	"reload_time"			"2.2"
-	"equipicon"			"swarm/EquipIcons/EquipSentryCannon"
-	"equiplongname"			"#asw_weaponl_sentry_cannon"
-	"equipdescription1"		"#asw_wdesc_sentry_cannon"
-	"attributestext"		"#asw_weapon_sentry_cannon_attributes"
+	"equipicon"			"swarm/EquipIcons/EquipAmmobag"
+	"equiplongname"			"#asw_weaponl_ammo_bag"
+	"equipdescription1"		"#asw_wdesc_ammobag"
+	"attributestext"		"#asw_weapon_ammo_bag_attributes"
+	"ShowCharges"			"1"
 	
 	// flinching
 	"FlinchChance"              "0"
 	"StoppingPowerFlinchBonus"  "0"
 	
 	// which ammo elements this weapon should display on the hud
-	"ShowBulletsOnHUD"      "1"
+	"ShowBulletsOnHUD"      "0"
 	"ShowClipsOnHUD"      "0"
 	"ShowGrenadesOnHUD"      "0"
-	"OffhandActivate"		"1"
-	"OffhandOrderType"		"ASW_OFFHAND_DEPLOY"
-	"ShowClipsInWeaponDetail"	"0"
 	
-	"HUDIconOffsetX" "-11"
+	"ShowMultiplayerHotkey"	"1"
+
+	"SquadEmote"	"1"
+	
+	"HUDIconOffsetX" "-10"
 
 	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
 	SoundData

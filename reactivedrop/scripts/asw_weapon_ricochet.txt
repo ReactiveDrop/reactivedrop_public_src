@@ -26,7 +26,7 @@ WeaponData
 	//"reload_time"			"1.7"
 	"reload_time"			"1.3"
 	"fire_rate"				"0.07"
-	"equipicon"			"swarm/EquipIcons/EquipRicochet"
+	"equipicon"			"swarm/EquipIcons/EquipRailgun"
 	"equiplongname"			"#asw_weapon_ricochet"
 	"equipdescription1"		"#asw_wdesc_ricochet"
 	"altfiretext"		"#asw_weapon_ricochet_attributes"
@@ -46,5 +46,7 @@ WeaponData
 	{
 		"empty"			"ASW_Weapon.Empty"
 		"special3"		"ASW_Weapon.Reload3"	//switch weapon
+		"single_shot"		"ASW_Weapon_Minigun.SingleFP"		// sound for locally controlled marine
+		"single_shot_npc"	"ASW_Weapon_Minigun.Single"		// sound for other marines
 	}
 }

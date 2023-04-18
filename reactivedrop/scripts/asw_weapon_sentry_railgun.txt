@@ -55,6 +55,15 @@ WeaponData
 	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
 	SoundData
 	{
+		//"special1"		"Weapon_CombineGuard.Special1"
 		"empty"			"ASW_Weapon.Empty"
+		"double_shot"		"ASW_Weapon.Reload4"
+		"single_shot"		"ASW_Weapon.Reload4"
+		// weapon switch sound
+		"special3"		"ASW_Weapon.Reload1"
+
+		// NPC SECTION
+		"single_shot_npc"	"ASW_Weapon.Reload4"
+		"double_shot_npc"	"ASW_Weapon.Reload4"
 	}
 }

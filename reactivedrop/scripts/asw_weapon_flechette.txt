@@ -25,7 +25,7 @@ WeaponData
 		
 	// asw properties
 	"reload_time"			"2.0"
-	"equipicon"				"swarm/EquipIcons/EquipFlechette"
+	"equipicon"			"swarm/EquipIcons/EquipRailgun"
 	"equiplongname"			"#asw_weapon_flechette"
 	"equipdescription1"		"#asw_wdesc_flechette"
 	"attributestext"		"#asw_weapon_flechette_attributes"
@@ -43,5 +43,7 @@ WeaponData
 	{
 		"empty"			"ASW_Weapon.Empty"
 		"special3"		"ASW_Weapon.Reload3"	//switch weapon
+		"single_shot"		"NPC_Hunter.FlechetteShoot"		// sound for locally controlled marine
+		"single_shot_npc"	"NPC_Hunter.FlechetteShoot"		// sound for other marines
 	}
 }

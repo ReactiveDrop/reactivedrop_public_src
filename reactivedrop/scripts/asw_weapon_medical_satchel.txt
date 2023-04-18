@@ -53,7 +53,7 @@ WeaponData
 	SoundData
 	{
 		"empty"			"ASW_Weapon.Empty"
-		"special3"		"ASW_Weapon.Reload3"	//switch weapon
+		"special3"		"ASW_Weapon.Reload2"	//switch weapon
 
 		"single_shot"		"ASW_Medkit.Use"		// sound for locally controlled marine
 		"single_shot_npc"	"ASW_Medkit.Use"		// sound for other marines
