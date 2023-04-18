@@ -568,6 +568,10 @@ static bool InitGameSystems( CreateInterfaceFn appSystemFactory )
 	// Add VScript game event listener system
 	IGameSystem::Add( g_pScriptGameEventListener );
 
+#ifdef INFESTED_DLL
+	IGameSystem::Add( consistency->ConnectServer( Sys_GetFactoryThis() ) );
+#endif
+
 #ifdef SERVER_USES_VGUI
 	// Startup vgui
 	if ( enginevgui )
@@ -576,10 +580,6 @@ static bool InitGameSystems( CreateInterfaceFn appSystemFactory )
 			return false;
 	}
 #endif // SERVER_USES_VGUI
-
-#ifdef INFESTED_DLL
-	IGameSystem::Add( consistency->ConnectServer( Sys_GetFactoryThis() ) );
-#endif
 
 	// load Mod specific game events ( MUST be before InitAllSystems() so it can pickup the mod specific events)
 	gameeventmanager->LoadEventsFromFile("resource/ModEvents.res");
