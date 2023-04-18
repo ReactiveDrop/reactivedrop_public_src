@@ -1007,7 +1007,7 @@ public:
 				return;
 			}
 
-			if ( FStrEq( event->GetName(), "mission_failure" ) )
+			if ( FStrEq( event->GetName(), "mission_failed" ) )
 			{
 				IncrementStrangePropertyOnStartingItems( 5000, 1 ); // Missions
 				return;
