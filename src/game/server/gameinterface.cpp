@@ -569,7 +569,7 @@ static bool InitGameSystems( CreateInterfaceFn appSystemFactory )
 	IGameSystem::Add( g_pScriptGameEventListener );
 
 #ifdef INFESTED_DLL
-	IGameSystem::Add( consistency->ConnectServer( Sys_GetFactoryThis() ) );
+	consistency->ConnectServer( Sys_GetFactoryThis() );
 #endif
 
 #ifdef SERVER_USES_VGUI
