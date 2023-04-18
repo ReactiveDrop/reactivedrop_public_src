@@ -21,4 +21,6 @@ PRECACHE_WEAPON_REGISTER( asw_weapon_energy_shield );
 BEGIN_DATADESC( CASW_Weapon_Energy_Shield )
 END_DATADESC()
 #endif
+
+// TODO: m_iEnergyShieldProjectilesDestroyed
 #endif

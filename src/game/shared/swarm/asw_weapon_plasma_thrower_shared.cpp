@@ -21,4 +21,6 @@ PRECACHE_WEAPON_REGISTER( asw_weapon_plasma_thrower );
 BEGIN_DATADESC( CASW_Weapon_Plasma_Thrower )
 END_DATADESC()
 #endif
+
+// TODO: m_iPlasmaThrowerExtinguishMarine
 #endif

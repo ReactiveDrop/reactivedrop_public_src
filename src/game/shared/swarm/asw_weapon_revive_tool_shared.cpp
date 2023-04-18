@@ -477,6 +477,10 @@ void CASW_Revive_Tombstone::TombstoneThink()
 
 void CASW_Revive_Tombstone::ActivateUseIcon( CASW_Inhabitable_NPC *pUser, int nHoldType )
 {
+	// TODO: m_iReanimatorRevivesOfficer
+	// TODO: m_iReanimatorRevivesSpecialWeapons
+	// TODO: m_iReanimatorRevivesMedic
+	// TODO: m_iReanimatorRevivesTech
 	Assert( !"TODO" );
 }
 #endif

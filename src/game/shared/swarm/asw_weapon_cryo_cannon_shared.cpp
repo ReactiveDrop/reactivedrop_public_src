@@ -35,4 +35,6 @@ void CASW_Weapon_Cryo_Cannon::Precache()
 
 	BaseClass::Precache();
 }
+
+// TODO: m_iCryoCannonFreezeAlien
 #endif

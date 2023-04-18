@@ -21,4 +21,7 @@ PRECACHE_WEAPON_REGISTER( asw_weapon_shield_bubble );
 BEGIN_DATADESC( CASW_Weapon_Shield_Bubble )
 END_DATADESC()
 #endif
+
+// TODO: m_iShieldBubblePushedEnemy
+// TODO: m_iShieldBubbleDamageAbsorbed
 #endif

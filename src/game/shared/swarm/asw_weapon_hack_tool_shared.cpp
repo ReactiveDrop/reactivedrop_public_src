@@ -21,4 +21,9 @@ PRECACHE_WEAPON_REGISTER( asw_weapon_hack_tool );
 BEGIN_DATADESC( CASW_Weapon_Hack_Tool )
 END_DATADESC()
 #endif
+
+// TODO: m_iHackToolWireHacksTech
+// TODO: m_iHackToolWireHacksOther
+// TODO: m_iHackToolComputerHacksTech
+// TODO: m_iHackToolComputerHacksOther
 #endif
