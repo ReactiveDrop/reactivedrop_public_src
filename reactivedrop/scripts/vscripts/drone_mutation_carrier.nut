@@ -3,7 +3,15 @@
 //     "VScript"       "drone_mutation_carrier"
 // }
 
-parasiteProp <- CreateProp("prop_dynamic", self.GetOrigin(), "models/aliens/parasite/parasite.mdl", 17);
+parasiteProp <- Entities.CreateByClassname("prop_dynamic");
+
+parasiteProp.__KeyValueFromString("model", "models/aliens/parasite/parasite.mdl");
+parasiteProp.__KeyValueFromString("DefaultAnim", "ragdoll");
+parasiteProp.__KeyValueFromInt("DisableBoneFollowers", 1);
+parasiteProp.__KeyValueFromInt("solid", 0);
+parasiteProp.__KeyValueFromInt("disableshadows", 1);
+
+parasiteProp.Spawn();
 
 function CarrierDroneDied() {
 	realParasite <- Director.SpawnAlienAt("asw_parasite", parasiteProp.GetOrigin(), parasiteProp.GetAngles());
@@ -40,10 +48,7 @@ function RotateToFaceForward() {
 parasiteProp.ValidateScriptScope();
 parasiteProp.GetScriptScope().RotateToFaceForward <- RotateToFaceForward;
 
-EntFireByHandle(parasiteProp, "SetDefaultAnimation", "ragdoll", 0, self, self);
-EntFireByHandle(parasiteProp, "SetAnimation", "ragdoll", 0, self, self);
-EntFireByHandle(parasiteProp, "DisableShadow", "", 0, self, self);
-EntFireByHandle(parasiteProp, "SetParent", "!activator", 0, self, self);
+parasiteProp.SetParent(self);
 EntFireByHandle(parasiteProp, "SetParentAttachment", "blood_spray", 0, self, self);
 parasiteProp.ConnectOutput("OnUser1", "RotateToFaceForward");
 EntFireByHandle(parasiteProp, "FireUser1", "", 0, self, self);
