@@ -1,0 +1,58 @@
+// Alien Swarm Vindicator (Assault Shotgun)
+
+WeaponData
+{
+	// Weapon data is loaded by both the Game and Client DLLs.
+	"printname"	"#asw_weapon_vindicator"
+	"viewmodel"			"models/weapons/vindicator/vindicator.mdl"
+	"playermodel"			"models/weapons/vindicator/vindicator.mdl"
+	"anim_prefix"			"ar2"
+	"bucket"			"0"
+	"bucket_position"		"0"
+
+	"clip_size"			"14"
+	"default_clip"			"14"
+
+	"clip2_size"			"8"
+	"default_clip2"			"5"
+
+	"primary_ammo"			"ASW_ASG"
+	"secondary_ammo"		"ASW_ASG_G"
+
+	"weight"				"5"
+	"item_flags"			"0"
+
+	// asw properties
+	"reload_time"			"2.0"
+	"base_damage"			"15"
+	"fire_rate"				"0.65"
+	"num_pellets"			"7"
+	"equipicon"			"swarm/EquipIcons/EquipShotgunAssault"
+	"equiplongname"			"#asw_weaponl_vindicator"
+	"equipdescription1"		"#asw_wdesc_vindicator"
+	"altfiretext"			"#asw_weapon_vindicator_altfire"
+	"attributestext"		"#asw_weapon_vindicator_attributes"
+	"RequiresSapper"		"1"
+	
+	// which ammo elements this weapon should display on the hud
+	"ShowBulletsOnHUD"      "1"
+	"ShowClipsOnHUD"      "1"
+	"ShowGrenadesOnHUD"      "1"
+
+	"HUDIconOffsetX" "-10"
+	
+	// flinching
+	"FlinchChance"              "0.20"
+	"StoppingPowerFlinchBonus"  "0.10"
+
+	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
+	SoundData
+	{
+		"empty"			"ASW_Weapon.Empty"
+		"special3"		"ASW_Weapon.Reload3"				// weapon switch
+		"special1"		"ASW_Weapon_Vindicator.Grenade"			// alt-fire
+
+		"single_shot"		   "ASW_Weapon_Vindicator.FireAndPumpFP"		// sound for locally controlled marine
+		"single_shot_npc"	 "ASW_Weapon_Vindicator.FireAndPump"		// sound for other marines
+	}
+}
