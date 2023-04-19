@@ -1,0 +1,68 @@
+// Alien Swarm Heal Grenade
+
+WeaponData
+{
+	// Weapon data is loaded by both the Game and Client DLLs.
+	"printname"	"#asw_weapon_heal_grenade"
+	"viewmodel"			"models/items/ItemBox/ItemBoxLarge.mdl"
+	"playermodel"			"models/items/ItemBox/ItemBoxLarge.mdl"
+	"playermodel_skin"		"1"
+	"anim_prefix"			"ar2"
+	"bucket"			"0"
+	"bucket_position"		"1"
+
+	"clip_size"			"9"
+	"default_clip"			"5"
+
+	"clip2_size"			"5"
+	"default_clip2"			"2"
+
+	"primary_ammo"			"ASW_MEDSAT"
+	"secondary_ammo"		"ASW_MEDSELF"
+
+	"weight"				"5"
+	"item_flags"			"0"
+				
+	// asw properties
+	"reload_time"			"2.2"
+	"equipicon"			"swarm/EquipIcons/EquipHealGrenade"
+	"equiplongname"			"#asw_weaponl_heal_grenade"
+	"RequiresFirstAid"		"1"
+	"ShowCharges"			"1"
+	"equipdescription1"		"#asw_wdesc_heal_grenade"
+	"attributestext"		"#asw_weapon_heal_grenade_attributes"
+	//"Unique"			"1"
+	"OffhandActivate"		"1"
+	"OffhandOrderType"		"ASW_OFFHAND_DEPLOY"
+	
+	// flinching
+	"FlinchChance"              "0"
+	"StoppingPowerFlinchBonus"  "0"
+	
+	// which ammo elements this weapon should display on the hud
+	"ShowBulletsOnHUD"      "2"
+	"ShowClipsOnHUD"      "0"
+	"ShowGrenadesOnHUD"      "0"
+
+	"ShowMultiplayerHotkey"	"1"
+	"SquadEmote"	"0"
+	
+	"HUDIconOffsetX" "-10"
+	"HUDNumberOffsetX" "56"
+	"HUDNumberOffsetY" "10"
+
+	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
+	SoundData
+	{
+		//"special1"		"Weapon_CombineGuard.Special1"
+		"empty"			"ASW_Weapon.Empty"
+		"double_shot"		"ASW_Weapon.Reload4"
+		"single_shot"		"ASW_Medkit.Use"
+		// weapon switch sound
+		"special3"		"ASW_Weapon.Reload2"
+
+		// NPC SECTION
+		"single_shot_npc"	"ASW_Medkit.Use"
+		"double_shot_npc"	"ASW_Weapon.Reload4"
+	}
+}
