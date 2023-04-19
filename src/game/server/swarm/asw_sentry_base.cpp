@@ -75,6 +75,17 @@ BEGIN_ENT_SCRIPTDESC( CASW_Sentry_Base, CBaseAnimating, "sentry" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetSentryTop, "GetSentryTop", "" )
 END_SCRIPTDESC()
 
+static const char *const s_szSentryGibs[] =
+{
+	"models/sentry_gun/sentry_gibs/sentry_base_gib.mdl",
+	"models/sentry_gun/sentry_gibs/sentry_cam_gib.mdl",
+	"models/sentry_gun/sentry_gibs/sentry_holder_gib.mdl",
+	"models/sentry_gun/sentry_gibs/sentry_left_arm_gib.mdl",
+	"models/sentry_gun/sentry_gibs/sentry_left_backleg_gib.mdl",
+	"models/sentry_gun/sentry_gibs/sentry_right_backleg_gib.mdl",
+	"models/sentry_gun/sentry_gibs/sentry_top_gib.mdl",
+};
+
 CASW_Sentry_Base::CASW_Sentry_Base()
 	: bait1_( NULL ),
 	bait2_( NULL ),
@@ -174,6 +185,11 @@ void CASW_Sentry_Base::Precache()
 	PrecacheScriptSound( "ASW_Sentry.SetupInterrupt" );
 	PrecacheScriptSound( "ASW_Sentry.SetupComplete" );
 	PrecacheScriptSound( "ASW_Sentry.Dismantled" );
+
+	for ( int i = 0; i < NELEMS( s_szSentryGibs ); i++ )
+	{
+		PrecacheModel( s_szSentryGibs[i] );
+	}
 
 	BaseClass::Precache();
 }
@@ -490,6 +506,14 @@ void CASW_Sentry_Base::Event_Killed( const CTakeDamageInfo &info )
 	{
 		UTIL_DecalTrace( &tr, "Scorch" );
 	}
+
+	CBroadcastRecipientFilter filter;
+	UserMessageBegin( filter, "SentryGib" );
+		WRITE_FLOAT( vecPos.x );
+		WRITE_FLOAT( vecPos.y );
+		WRITE_FLOAT( vecPos.z );
+		WRITE_ANGLE( GetAbsAngles()[YAW] );
+	MessageEnd();
 
 	UTIL_ASW_ScreenShake( vecPos, 25.0, 150.0, 1.0, 750, SHAKE_START );
 

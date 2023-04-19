@@ -10,6 +10,8 @@
 #include "asw_equipment_list.h"
 #include "asw_weapon_parse.h"
 #include "asw_hud_use_icon.h"
+#include "c_user_message_register.h"
+#include "c_gib.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -185,3 +187,30 @@ const char* C_ASW_Sentry_Base::GetWeaponClass()
 	}
 	return "asw_weapon_sentry";
 }
+
+static const char *const s_szSentryGibs[] =
+{
+	"models/sentry_gun/sentry_gibs/sentry_base_gib.mdl",
+	"models/sentry_gun/sentry_gibs/sentry_cam_gib.mdl",
+	"models/sentry_gun/sentry_gibs/sentry_holder_gib.mdl",
+	"models/sentry_gun/sentry_gibs/sentry_left_arm_gib.mdl",
+	"models/sentry_gun/sentry_gibs/sentry_left_backleg_gib.mdl",
+	"models/sentry_gun/sentry_gibs/sentry_right_backleg_gib.mdl",
+	"models/sentry_gun/sentry_gibs/sentry_top_gib.mdl",
+};
+
+void __MsgFunc_SentryGib( bf_read &msg )
+{
+	Vector vecOrigin( msg.ReadFloat(), msg.ReadFloat(), msg.ReadFloat() );
+	QAngle angles( 0, msg.ReadBitAngle( 8 ), 0 );
+
+	for ( int i = 0; i < NELEMS( s_szSentryGibs ); i++ )
+	{
+		C_Gib *pGib = C_Gib::CreateClientsideGib( s_szSentryGibs[i], vecOrigin, RandomVector( -50, 50 ), RandomAngularImpulse( -30, 30 ), 30.0f );
+		if ( pGib )
+		{
+			pGib->SetAbsAngles( angles );
+		}
+	}
+}
+USER_MESSAGE_REGISTER( SentryGib );
