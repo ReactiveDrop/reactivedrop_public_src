@@ -231,6 +231,12 @@ void CASW_Weapon_Sniper_Rifle::PrimaryAttack( void )
 	m_fSlowTime = gpGlobals->curtime + 0.03f;
 }
 
+void CASW_Weapon_Sniper_Rifle::SecondaryAttack()
+{
+	// set secondary attack time far in the future so holding middle mouse doesn't interrupt left mouse
+	m_flNextSecondaryAttack = FLT_MAX;
+}
+
 void CASW_Weapon_Sniper_Rifle::Precache()
 {
 	PrecacheModel( "swarm/sprites/whiteglow1.vmt" );
@@ -238,6 +244,8 @@ void CASW_Weapon_Sniper_Rifle::Precache()
 	PrecacheScriptSound( "ASW_Weapon_Sniper_Rifle.ReloadA" );
 	PrecacheScriptSound( "ASW_Weapon_Sniper_Rifle.ReloadB" );
 	PrecacheScriptSound( "ASW_Weapon_Sniper_Rifle.ReloadC" );
+	PrecacheScriptSound( "ASW_Weapon_Sniper_Rifle.Zoomin" );
+	PrecacheScriptSound( "ASW_Weapon_Sniper_Rifle.Zoomout" );
 
 	BaseClass::Precache();
 }
@@ -285,6 +293,7 @@ void CASW_Weapon_Sniper_Rifle::UpdateZoomState( void )
 	if ( !pMarine->IsInhabited() && IsZoomed() )
 	{
 		m_bZoomed = false;
+		EmitSound( "ASW_Weapon_Sniper_Rifle.Zoomout" );
 		return;
 	}
 
@@ -300,6 +309,7 @@ void CASW_Weapon_Sniper_Rifle::UpdateZoomState( void )
 	if ( bAttack2 && !bOldAttack2 )
 	{
 		m_bZoomed = !IsZoomed();
+		EmitSound( m_bZoomed ? "ASW_Weapon_Sniper_Rifle.Zoomin" : "ASW_Weapon_Sniper_Rifle.Zoomout" );
 	}
 }
 

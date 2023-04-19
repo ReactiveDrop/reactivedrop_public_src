@@ -37,6 +37,7 @@ public:
 	virtual bool IsZoomed() { return m_bZoomed.Get(); }
 
 	void	PrimaryAttack();
+	void	SecondaryAttack();
 	virtual float GetWeaponDamage();
 	virtual float GetZoomedDamageBonus();
 	virtual int AmmoClickPoint() { return 2; }
