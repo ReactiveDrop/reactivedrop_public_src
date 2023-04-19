@@ -159,10 +159,10 @@
 
 "ASW_Weapon_Minigun.MinigunLoop"
 {
-        "channel"           "CHAN_WEAPON"
-        "soundlevel"        "SNDLVL_90dB"
-		"pitch"				"90, 110"
-        "wave"              "weapons\3D\minigun\minigunloop.wav"
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_90dB"
+	"pitch"			"90, 110"
+	"wave"			"weapons\3D\minigun\minigunloop.wav"
 }
 
 "ASW_Weapon_Minigun.MinigunStop"
@@ -339,7 +339,7 @@
 	"soundlevel"	"SNDLVL_110dB"
 	"volume"		"1.0"
 	"pitch"			"95, 100"
-	"wave"			"^weapons/3D/sniper/Sniperrifle_zoomin.wav"
+	"wave"			"weapons/2D/sniper/Sniperrifle_zoomin.wav"
 }
 
 "ASW_Weapon_Sniper_Rifle.Zoomout"
@@ -348,7 +348,7 @@
 	"soundlevel"	"SNDLVL_NONE"
 	"volume"		"1.0"
 	"pitch"			"95, 100"
-	"wave"			"@weapons/2D/sniper/Sniperrifle_zoomout.wav"
+	"wave"			"weapons/2D/sniper/Sniperrifle_zoomout.wav"
 }
 
 "ASW_Weapon_Shotgun.FireAndPump"
@@ -489,7 +489,7 @@
 
 "ASW_Mining_Laser.Start"
 {
-    "channel"		"CHAN_AUTO"
+	"channel"		"CHAN_AUTO"
 	"volume"		"1.0"
 	"soundlevel"	"SNDLVL_85dB"
 
@@ -498,7 +498,7 @@
 
 "ASW_Mining_Laser.Run"
 {
-    "channel"		"CHAN_AUTO"
+	"channel"		"CHAN_AUTO"
 	"volume"		"1.0"
 	"soundlevel"	"SNDLVL_90dB"
 
@@ -507,7 +507,7 @@
 
 "ASW_Mining_Laser.Cut"
 {
-    "channel"		"CHAN_WEAPON"
+	"channel"		"CHAN_WEAPON"
 	"volume"		"1.0"
 	"soundlevel"	"SNDLVL_90dB"
 
@@ -516,7 +516,7 @@
 
 "ASW_Mining_Laser.Damage"
 {
-    "channel"		"CHAN_AUTO"
+	"channel"		"CHAN_AUTO"
 	"volume"		"0.8, 1.0"
 	"pitch"			"90, 110"
 	"soundlevel"	"SNDLVL_80dB"
@@ -526,7 +526,7 @@
 
 "ASW_Mining_Laser.Off"
 {
-    "channel"		"CHAN_WEAPON"
+	"channel"		"CHAN_WEAPON"
 	"volume"		"1.0"
 	"soundlevel"	"SNDLVL_85dB"
 	"wave"			"weapons\2D\mininglaser1\off.wav"
@@ -534,7 +534,7 @@
 
 "ASW_Tesla_Laser.Loop"
 {
-    "channel"		"CHAN_WEAPON"
+	"channel"		"CHAN_WEAPON"
 	"volume"		"1.0"
 	"soundlevel"	"SNDLVL_80dB"
 
@@ -543,7 +543,7 @@
 
 "ASW_Tesla_Laser.Stop"
 {
-    "channel"		"CHAN_WEAPON"
+	"channel"		"CHAN_WEAPON"
 	"volume"		"0.8, 1.0"
 	"pitch"			"95, 105"
 	"soundlevel"	"SNDLVL_75dB"
@@ -553,7 +553,7 @@
 
 "ASW_Tesla_Laser.Damage"
 {
-    "channel"		"CHAN_WEAPON"
+	"channel"		"CHAN_WEAPON"
 	"volume"		"0.6, 1.0"
 	"pitch"			"110, 140"
 	"soundlevel"	"SNDLVL_80dB"
@@ -715,7 +715,7 @@
 
 "ASW_HealGun.Off"
 {
-    "channel"		"CHAN_WEAPON"
+	"channel"		"CHAN_WEAPON"
 	"volume"		"0.8"
 	"soundlevel"	"SNDLVL_85dB"
 	"wave"			"null.wav"
@@ -1008,7 +1008,7 @@
 	"channel"		"CHAN_WEAPON"
 	"soundlevel"	"SNDLVL_85dB"
 	"pitch"			"90,110"
-	"wave"		    "<weapons/3D/hornet/rocket.wav"
+	"wave"			"<weapons/3D/hornet/rocket.wav"
 }
 
 "ASWRocket.Explosion"
@@ -1070,7 +1070,7 @@
 	"soundlevel"	"SNDLVL_120dB"
 	"pitch"			"95, 105"
 
-   "wave"			")explosions\incendiaryGrenade.wav"
+	"wave"			")explosions\incendiaryGrenade.wav"
 }
 
 "ASWGrenade.FireLoop"
