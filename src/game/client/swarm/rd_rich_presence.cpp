@@ -350,12 +350,19 @@ void RD_Rich_Presence::UpdatePresence()
 					V_strncpy( szSteamDisplay, "#Campaign_Difficulty_Challenge", sizeof( szSteamDisplay ) );
 				}
 
-				static char szMissionName[128];
+				static char szMissionTranslationKey[128];
 				if ( IsOfficialCampaign() )
 				{
-					V_snprintf( szMissionName, sizeof( szMissionName ), "#official_mission_%s", pMission->BaseName );
+					V_snprintf( szMissionTranslationKey, sizeof( szMissionTranslationKey ), "official_mission_%s", pMission->BaseName );
 				}
-				else if ( wchar_t *pwszTranslatedMissionName = g_pLocalize->Find( STRING( pMission->MissionTitle ) ) )
+				else
+				{
+					V_strncpy( szMissionTranslationKey, "community_mission", sizeof( szMissionTranslationKey ) );
+				}
+				pSteamFriends->SetRichPresence( "rd_mission_key", szMissionTranslationKey );
+
+				static char szMissionName[128];
+				if ( wchar_t *pwszTranslatedMissionName = g_pLocalize->Find( STRING( pMission->MissionTitle ) ) )
 				{
 					V_UnicodeToUTF8( pwszTranslatedMissionName, szMissionName, sizeof( szMissionName ) );
 				}
@@ -386,12 +393,19 @@ void RD_Rich_Presence::UpdatePresence()
 					if ( V_strcmp( rd_challenge.GetString(), "0" ) )
 					{
 						const char *pszDisplayName = ReactiveDropChallenges::DisplayName( rd_challenge.GetString() );
-						static char szChallengeName[128];
+						static char szChallengeTranslationKey[128];
 						if ( ReactiveDropChallenges::IsOfficial( rd_challenge.GetString() ) )
 						{
-							V_snprintf( szChallengeName, sizeof( szChallengeName ), "#official_challenge_%s", rd_challenge.GetString() );
+							V_snprintf( szChallengeTranslationKey, sizeof( szChallengeTranslationKey ), "official_challenge_%s", rd_challenge.GetString() );
 						}
-						else if ( wchar_t *pwszTranslatedChallengeName = g_pLocalize->Find( pszDisplayName ) )
+						else
+						{
+							V_strncpy( szChallengeTranslationKey, "community_challenge", sizeof( szChallengeTranslationKey ) );
+						}
+						pSteamFriends->SetRichPresence( "rd_challenge_key", szChallengeTranslationKey );
+
+						static char szChallengeName[128];
+						if ( wchar_t *pwszTranslatedChallengeName = g_pLocalize->Find( pszDisplayName ) )
 						{
 							V_UnicodeToUTF8( pwszTranslatedChallengeName, szChallengeName, sizeof( szChallengeName ) );
 						}
