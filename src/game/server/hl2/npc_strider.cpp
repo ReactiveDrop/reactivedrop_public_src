@@ -470,6 +470,7 @@ void CNPC_Strider::Precache()
 	UTIL_PrecacheOther( "sparktrail" );
 
 	PrecacheEffect( "StriderMuzzleFlash" );
+	PrecacheEffect( "StriderTracer" );
 
 	BaseClass::Precache();
 }
