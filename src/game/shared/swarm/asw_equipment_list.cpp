@@ -72,7 +72,6 @@ void CASW_EquipItem::LevelInitPreEntity()
 }
 
 ConVar asw_ammo_count_internal_sentry( "asw_ammo_count_internal_sentry", "1", FCVAR_DEVELOPMENTONLY | FCVAR_REPLICATED );
-ConVar asw_ammo_count_internal_medical( "asw_ammo_count_internal_medical", "80", FCVAR_DEVELOPMENTONLY | FCVAR_REPLICATED );
 ConVar asw_ammo_count_internal_chainsaw( "asw_ammo_count_internal_chainsaw", "111", FCVAR_DEVELOPMENTONLY | FCVAR_REPLICATED );
 
 ConVar asw_ammo_count_rifle( "asw_ammo_count_rifle", "98", FCVAR_CHEAT | FCVAR_REPLICATED );
@@ -82,10 +81,12 @@ ConVar asw_ammo_count_autogun( "asw_ammo_count_autogun", "250", FCVAR_CHEAT | FC
 ConVar asw_ammo_count_vindicator( "asw_ammo_count_vindicator", "14", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_vindicator_grenade( "asw_ammo_count_vindicator_grenade", "5", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_pistol( "asw_ammo_count_pistol", "24", FCVAR_CHEAT | FCVAR_REPLICATED );
+ConVar asw_ammo_count_heal_beacon( "asw_ammo_count_heal_beacon", "9", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_ammo_satchel( "asw_ammo_count_ammo_satchel", "3", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_shotgun( "asw_ammo_count_shotgun", "4", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_tesla_gun( "asw_ammo_count_tesla_gun", "20", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_railgun( "asw_ammo_count_railgun", "1", FCVAR_CHEAT | FCVAR_REPLICATED );
+ConVar asw_ammo_count_heal_gun( "asw_ammo_count_heal_gun", "100", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_pdw( "asw_ammo_count_pdw", "80", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_flamer( "asw_ammo_count_flamer", "80", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_sniper_rifle( "asw_ammo_count_sniper_rifle", "12", FCVAR_CHEAT | FCVAR_REPLICATED );
@@ -93,13 +94,17 @@ ConVar asw_ammo_count_grenade_launcher( "asw_ammo_count_grenade_launcher", "6", 
 ConVar asw_ammo_count_deagle( "asw_ammo_count_deagle", "7", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_devastator( "asw_ammo_count_devastator", "70", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_combat_rifle_shotgun( "asw_ammo_count_combat_rifle_shotgun", "8", FCVAR_CHEAT | FCVAR_REPLICATED );
+ConVar asw_ammo_count_healampgun_heal( "asw_ammo_count_healampgun_heal", "50", FCVAR_CHEAT | FCVAR_REPLICATED );
+ConVar asw_ammo_count_healampgun_amp( "asw_ammo_count_healampgun_amp", "100", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_heavy_rifle( "asw_ammo_count_heavy_rifle", "98", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_heavy_rifle_charge( "asw_ammo_count_heavy_rifle_charge", "5", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_medrifle( "asw_ammo_count_medrifle", "72", FCVAR_CHEAT | FCVAR_REPLICATED );
+ConVar asw_ammo_count_medrifle_heal( "asw_ammo_count_medrifle_heal", "50", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_fire_extinguisher( "asw_ammo_count_fire_extinguisher", "200", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_mining_laser( "asw_ammo_count_mining_laser", "50", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_50calmg( "asw_ammo_count_50calmg", "200", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_flechette( "asw_ammo_count_flechette", "60", FCVAR_CHEAT | FCVAR_REPLICATED );
+ConVar asw_ammo_count_medsatchel( "asw_ammo_count_medsatchel", "9", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_ar2( "asw_ammo_count_ar2", "30", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_ar2_grenade( "asw_ammo_count_ar2_grenade", "3", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_cryo_cannon( "asw_ammo_count_cryo_cannon", "200", FCVAR_CHEAT | FCVAR_REPLICATED );
@@ -172,7 +177,7 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		ASW_EQUIP_HEAL_GRENADE, WEAPON_NAME( heal_grenade ),
 		true, false, "", "",
 		"swarm/EquipIcons/EquipHealGrenade",
-		&asw_ammo_count_internal_medical, NULL,
+		&asw_ammo_count_heal_beacon, NULL,
 		MARINE_CLASS_MEDIC,
 	},
 	{
@@ -205,7 +210,7 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		ASW_EQUIP_HEAL_GUN, WEAPON_NAME( heal_gun ),
 		true, false, "", "",
 		"swarm/EquipIcons/EquipHealGun",
-		&asw_ammo_count_internal_medical, NULL,
+		&asw_ammo_count_heal_gun, NULL,
 		MARINE_CLASS_MEDIC, true,
 	},
 	{
@@ -286,7 +291,7 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		ASW_EQUIP_HEALAMP_GUN, WEAPON_NAME( healamp_gun ),
 		true, false, "", "",
 		"swarm/EquipIcons/EquipHealAmpGun",
-		&asw_ammo_count_internal_medical, &asw_ammo_count_internal_medical,
+		&asw_ammo_count_healampgun_heal, &asw_ammo_count_healampgun_amp,
 		MARINE_CLASS_MEDIC, true,
 	},
 	{
@@ -299,7 +304,7 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		ASW_EQUIP_MEDRIFLE, WEAPON_NAME( medrifle ),
 		true, false, "ASW_MEDRIFLE", "",
 		"swarm/EquipIcons/EquipMedRifle",
-		&asw_ammo_count_medrifle, &asw_ammo_count_internal_medical,
+		&asw_ammo_count_medrifle, &asw_ammo_count_medrifle_heal,
 		MARINE_CLASS_MEDIC,
 	},
 
@@ -344,7 +349,7 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		ASW_EQUIP_MEDICAL_SATCHEL, WEAPON_NAME( medical_satchel ),
 		false, false, "", "",
 		"swarm/EquipIcons/EquipMedSatchel",
-		&asw_ammo_count_internal_medical, NULL,
+		&asw_ammo_count_medsatchel, NULL,
 		MARINE_CLASS_MEDIC,
 	},
 	{
