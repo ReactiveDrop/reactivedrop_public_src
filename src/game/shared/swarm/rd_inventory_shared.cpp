@@ -3009,9 +3009,8 @@ void CRD_ItemInstance::FormatDescription( wchar_t *wszBuf, size_t sizeOfBufferIn
 }
 
 #ifdef CLIENT_DLL
-ConVar rd_briefing_item_details_color1( "rd_briefing_item_details_color1", "169 213 255 255", FCVAR_NONE );
-ConVar rd_briefing_item_details_color2( "rd_briefing_item_details_color2", "83 148 192 255", FCVAR_NONE );
-ConVar rd_briefing_item_accessory_color( "rd_briefing_item_accessory_color", "191 191 191 255", FCVAR_NONE );
+ConVar rd_briefing_item_details_color1( "rd_briefing_item_details_color1", "221 238 255 255", FCVAR_NONE );
+ConVar rd_briefing_item_details_color2( "rd_briefing_item_details_color2", "170 204 238 255", FCVAR_NONE );
 
 void CRD_ItemInstance::AppendBBCode( vgui::RichText *pRichText, const wchar_t *wszBuf, Color defaultColor )
 {
@@ -3042,7 +3041,7 @@ void CRD_ItemInstance::AppendBBCode( vgui::RichText *pRichText, const wchar_t *w
 				colorStack.AddToTail( nextColor );
 				pRichText->InsertColorChange( nextColor );
 
-				pBuf += 15;
+				pBuf += 14;
 				continue;
 			}
 
@@ -3053,7 +3052,7 @@ void CRD_ItemInstance::AppendBBCode( vgui::RichText *pRichText, const wchar_t *w
 				colorStack.RemoveMultipleFromTail( 1 );
 				pRichText->InsertColorChange( colorStack.Tail() );
 
-				pBuf += 8;
+				pBuf += 7;
 
 				continue;
 			}
@@ -3079,35 +3078,7 @@ void CRD_ItemInstance::FormatDescription( vgui::RichText *pRichText ) const
 		pRichText->InsertString( L"\n\n" );
 	}
 
-	bool bAnyAccessories = false;
-	FormatDescription( wszBuf, sizeof( wszBuf ), pDef->AccessoryDescription );
-	if ( wszBuf[0] )
-	{
-		AppendBBCode( pRichText, wszBuf, rd_briefing_item_accessory_color.GetColor() );
-		pRichText->InsertString( L"\n" );
-		bAnyAccessories = true;
-	}
-	for ( int i = 0; i < RD_ITEM_MAX_ACCESSORIES; i++ )
-	{
-		if ( m_iAccessory[i] == 0 )
-			continue;
-
-		bAnyAccessories = true;
-		FormatDescription( wszBuf, sizeof( wszBuf ), ReactiveDropInventory::GetItemDef( m_iAccessory[i] )->AccessoryDescription );
-		if ( wszBuf[0] )
-		{
-			AppendBBCode( pRichText, wszBuf, rd_briefing_item_accessory_color.GetColor() );
-			pRichText->InsertString( L"\n" );
-		}
-	}
-
-	if ( bAnyAccessories )
-		pRichText->InsertString( L"\n" );
-
-	if ( pDef->HasInGameDescription )
-		FormatDescription( wszBuf, sizeof( wszBuf ), pDef->Description );
-	else
-		V_UTF8ToUnicode( pDef->Description, wszBuf, sizeof( wszBuf ) );
+	FormatDescription( wszBuf, sizeof( wszBuf ), pDef->Description );
 	AppendBBCode( pRichText, wszBuf, rd_briefing_item_details_color1.GetColor() );
 
 	bool bShowAfterDescription = !pDef->AfterDescriptionOnlyMultiStack;
@@ -3133,6 +3104,23 @@ void CRD_ItemInstance::FormatDescription( vgui::RichText *pRichText ) const
 		{
 			pRichText->InsertString( L"\n\n" );
 			AppendBBCode( pRichText, wszBuf, rd_briefing_item_details_color2.GetColor() );
+		}
+	}
+
+	bool bAnyAccessories = false;
+	for ( int i = 0; i < RD_ITEM_MAX_ACCESSORIES; i++ )
+	{
+		if ( m_iAccessory[i] == 0 )
+			continue;
+
+		FormatDescription( wszBuf, sizeof( wszBuf ), ReactiveDropInventory::GetItemDef( m_iAccessory[i] )->AccessoryDescription );
+		if ( wszBuf[0] )
+		{
+			if ( !bAnyAccessories )
+				pRichText->InsertString( L"\n" );
+			bAnyAccessories = true;
+			pRichText->InsertString( L"\n" );
+			AppendBBCode( pRichText, wszBuf, rd_briefing_item_details_color1.GetColor() );
 		}
 	}
 }
