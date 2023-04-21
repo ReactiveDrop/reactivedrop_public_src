@@ -31,6 +31,7 @@ public:
 	float m_flYaw;
 	int m_nHintIndex;
 	float m_flIgnoreUntil;
+	float m_flPathValidUntil;
 };
 
 class CASW_Marine_Hint_Ent : public CServerOnlyPointEntity

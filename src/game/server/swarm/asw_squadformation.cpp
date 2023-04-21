@@ -36,7 +36,9 @@ ConVar rd_bots_avoid_bombs( "rd_bots_avoid_bombs", "1", FCVAR_NONE, "If 1 AI mar
 ConVar rd_bots_avoid_gas( "rd_bots_avoid_gas", "1", FCVAR_NONE, "If 1 AI marines will try to find a safe place when they see gas grenades or ruptured radioactive barrels" );
 ConVar rd_bots_avoid_fire( "rd_bots_avoid_fire", "1", FCVAR_NONE, "If 1 AI marines will try to avoid standing near fires" );
 ConVar rd_use_info_nodes( "rd_use_info_nodes", "0", FCVAR_NONE, "If there are no info_marine_hint nodes, info_node will be used instead" );
-ConVar rd_follow_hint_pathfind( "rd_follow_hint_pathfind", "2.5", FCVAR_NONE, "Avoid directing marines to stand in places that cannot be walked to by the squad leader. Remember bad nodes for this many seconds." );
+ConVar rd_follow_hint_pathfind( "rd_follow_hint_pathfind", "1", FCVAR_CHEAT, "Avoid directing marines to stand in places that cannot be walked to by the squad leader." );
+ConVar rd_follow_hint_pathfind_good( "rd_follow_hint_pathfind_good", "30.0", FCVAR_NONE, "Avoid directing marines to stand in places that cannot be walked to by the squad leader. Remember good hints for this many seconds." );
+ConVar rd_follow_hint_pathfind_bad( "rd_follow_hint_pathfind_bad", "2.5", FCVAR_NONE, "Avoid directing marines to stand in places that cannot be walked to by the squad leader. Remember bad hints for this many seconds." );
 
 bool FireSystem_IsValidFirePosition( const Vector &position, float testRadius );
 
@@ -833,10 +835,13 @@ void CASW_SquadFormation::FindFollowHintNodes()
 		g_pSortLeader = pLeader;
 		hints.Sort( CASW_SquadFormation::FollowHintSortFunc );
 
-		if ( rd_follow_hint_pathfind.GetFloat() != 0 )
+		if ( rd_follow_hint_pathfind.GetBool() )
 		{
 			FOR_EACH_VEC_BACK( hints, i )
 			{
+				if ( hints[i]->m_flPathValidUntil > gpGlobals->curtime )
+					continue;
+
 				AI_Waypoint_t *pRoute = pMarine->GetPathfinder()->BuildRoute( pLeader->GetAbsOrigin(), hints[i]->GetAbsOrigin(),
 					NULL, 100, NAV_GROUND );
 				if ( pRoute )
@@ -850,7 +855,10 @@ void CASW_SquadFormation::FindFollowHintNodes()
 					ASWPathUtils()->DeleteRoute( pRoute );
 
 					if ( bShortEnough )
+					{
+						hints[i]->m_flPathValidUntil = gpGlobals->curtime + rd_follow_hint_pathfind_good.GetFloat();
 						continue;
+					}
 				}
 
 				if ( asw_debug_marine_hints.GetBool() )
@@ -858,7 +866,7 @@ void CASW_SquadFormation::FindFollowHintNodes()
 					NDebugOverlay::Box( hints[i]->GetAbsOrigin(), -Vector( 5, 5, 0 ), Vector( 5, 5, 5 ), 255, 127, 127, 64, 0.35f );
 				}
 
-				hints[i]->m_flIgnoreUntil = gpGlobals->curtime + rd_follow_hint_pathfind.GetFloat();
+				hints[i]->m_flIgnoreUntil = gpGlobals->curtime + rd_follow_hint_pathfind_bad.GetFloat();
 				hints.Remove( i );
 				nCount--;
 			}

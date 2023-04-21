@@ -168,6 +168,7 @@ HintData_t *CASW_Marine_Hint_Manager::AddHint( CBaseEntity *pEnt )
 	pHintData->m_flYaw = pEnt->GetAbsAngles()[YAW];
 	pHintData->m_nHintIndex = m_Hints.AddToTail( pHintData );
 	pHintData->m_flIgnoreUntil = -1;
+	pHintData->m_flPathValidUntil = -1;
 	return pHintData;
 }
 
@@ -182,6 +183,7 @@ HintData_t *CASW_Marine_Hint_Manager::AddInfoNode( CAI_Node *pNode )
 	pHintData->m_flYaw = pNode->GetYaw();
 	pHintData->m_nHintIndex = m_Hints.AddToTail( pHintData );
 	pHintData->m_flIgnoreUntil = -1;
+	pHintData->m_flPathValidUntil = -1;
 	return pHintData;
 }
 
