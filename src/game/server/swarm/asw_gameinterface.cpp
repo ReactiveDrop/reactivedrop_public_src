@@ -212,7 +212,7 @@ void CServerGameDLL::ApplyGameSettings( KeyValues *pKV )
 
 	if ( rd_adjust_sv_maxrate.GetBool() )
 	{
-		int numSlots = pKV->GetInt( "members/numSlots", 0 );
+		int numSlots = pKV->GetInt( "members/numSlots", 32 );
 		if ( numSlots > 4 )
 		{
 			ConVarRef sv_maxrate( "sv_maxrate" );
