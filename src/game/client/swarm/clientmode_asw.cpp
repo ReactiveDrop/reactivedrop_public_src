@@ -97,6 +97,9 @@ ConVar cl_auto_restart_mission( "cl_auto_restart_mission", "0", FCVAR_CLIENTDLL 
 extern ConVar rd_auto_record_stop_on_retry;
 extern ConVar asw_floating_number_type;
 
+// SourceMod wants this ConVar to exist and be empty or it spams the log any time USERINFO ConVars change. Doesn't do anything.
+ConVar networkid_force( "networkid_force", "", FCVAR_DEVELOPMENTONLY | FCVAR_USERINFO );
+
 vgui::HScheme g_hVGuiCombineScheme = 0;
 
 vgui::DHANDLE<CASW_Logo_Panel> g_hLogoPanel;
