@@ -112,6 +112,7 @@ ConVar glow_outline_color_weapon( "glow_outline_color_weapon", "0 102 192", FCVA
 ConVar rd_tracer_tint_self( "rd_tracer_tint_self", "255 255 255", FCVAR_ARCHIVE, "Tint tracers and muzzle flashes from own marine" );
 ConVar rd_tracer_tint_other( "rd_tracer_tint_other", "255 255 255", FCVAR_ARCHIVE, "Tint tracers and muzzle flashes from other marines" );
 ConVar rd_marine_gear( "rd_marine_gear", "1", FCVAR_NONE, "Draw model overlays for marine gear items" );
+ConVar rd_marine_gear_hide_backpack( "rd_marine_gear_hide_backpack", "1", FCVAR_NONE, "Disable body group 1 on the marine model when rendering certain model overlays" );
 ConVar rd_drop_magazine( "rd_drop_magazine", "1", FCVAR_NONE, "Drop a magazine model when reloading weapons" );
 ConVar rd_drop_magazine_force( "rd_drop_magazine_force", "50", FCVAR_NONE, "Amount of random force to apply to dropped magazine" );
 ConVar rd_drop_magazine_force_up( "rd_drop_magazine_force_up", "50", FCVAR_NONE, "Amount of upward force to apply to the dropped magazine" );
