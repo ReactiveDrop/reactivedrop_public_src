@@ -899,6 +899,8 @@ void MainMenu::OnOpen()
 		if ( rd_revert_convars.GetBool() )
 		{
 			engine->ClientCmd_Unrestricted( "execifexists autoexec\n" );
+
+			g_ReactiveDropWorkshop.RerunAutoExecScripts();
 		}
 	}
 

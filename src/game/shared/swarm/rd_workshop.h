@@ -191,6 +191,7 @@ public:
 	void CheckForRequiredAddons();
 	bool MaybeAddTemporaryAddon( PublishedFileId_t id, bool bHighPriority );
 	void UnloadTemporaryAddons();
+	void RerunAutoExecScripts();
 #endif
 	const wchar_t *AddonName( PublishedFileId_t nPublishedFileId );
 

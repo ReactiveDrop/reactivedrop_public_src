@@ -1037,6 +1037,17 @@ void CReactiveDropWorkshop::UnloadTemporaryAddons()
 	PrepareForUnloadCacheClear();
 	ClearCaches( "unloaded temporary addons" );
 }
+
+void CReactiveDropWorkshop::RerunAutoExecScripts()
+{
+	FOR_EACH_VEC( m_LoadedAddonPaths, i )
+	{
+		if ( IsSubscribedToFile( m_LoadedAddonPaths[i].ID, false ) )
+		{
+			engine->ClientCmd_Unrestricted( VarArgs( "execifexists autoexec_%llu\n", m_LoadedAddonPaths[i].ID ) );
+		}
+	}
+}
 #endif
 
 const wchar_t *CReactiveDropWorkshop::AddonName( PublishedFileId_t nPublishedFileId )
@@ -2072,6 +2083,8 @@ void CReactiveDropWorkshop::RealLoadAddon( PublishedFileId_t id )
 		V_snprintf( szOverview, sizeof( szOverview ), "resource/overviews/%s.txt", STRING( gpGlobals->mapname ) );
 		ASWGameRules()->m_iMissionWorkshopID = g_ReactiveDropWorkshop.FindAddonProvidingFile( szOverview );
 	}
+#else
+	engine->ClientCmd_Unrestricted( VarArgs( "execifexists autoexec_%llu\n", id ) );
 #endif
 }
 
