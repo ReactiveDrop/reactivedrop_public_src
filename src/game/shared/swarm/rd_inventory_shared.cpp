@@ -3187,6 +3187,11 @@ BEGIN_NETWORK_TABLE_NOBASE( CRD_ProjectileData, DT_RD_ProjectileData )
 	SendPropInt( SENDINFO( m_iOriginalOwnerSteamAccount ), -1, SPROP_UNSIGNED ),
 	SendPropDataTable( "m_InventoryItemData", 0, &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ), SendProxy_ProjectileItemDataForOwningPlayer ),
 	SendPropBool( SENDINFO( m_bFiredByOwner ) ),
+
+	// WORKAROUND: CRD_ProjectileData is horrifyingly unoptimized and causing lag. If we remove it, we break demos recorded since April 20th. Instead, make it just not do anything.
+	SendPropExclude( "DT_RD_ProjectileData", "m_iOriginalOwnerSteamAccount" ),
+	SendPropExclude( "DT_RD_ProjectileData", "m_InventoryItemData" ),
+	SendPropExclude( "DT_RD_ProjectileData", "m_bFiredByOwner" ),
 #endif
 END_NETWORK_TABLE()
 
