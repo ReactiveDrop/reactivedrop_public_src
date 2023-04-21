@@ -77,6 +77,7 @@ ConVar rd_override_commander_level( "rd_override_commander_level", "-1", FCVAR_R
 
 #ifndef CLIENT_DLL
 ConVar asw_debug_marine_can_see("asw_debug_marine_can_see", "0", FCVAR_CHEAT, "Display lines for waking up aliens");
+ConVar rd_hit_confirms_to_recorders( "rd_hit_confirms_to_recorders", "1", FCVAR_NONE, "Send hit confirm user messages to players who are recording, not just players who are spectating the relevant character." );
 #else
 ConVar rd_load_all_localization_files( "rd_load_all_localization_files", "1", FCVAR_DEVELOPMENTONLY, "Load reactivedrop_english.txt, etc. from all addons rather than just the last one." );
 extern int g_asw_iGUIWindowsOpen;
@@ -705,7 +706,7 @@ void UTIL_RD_HitConfirm( CBaseEntity *pTarget, int iHealthBefore, const CTakeDam
 	if ( pTarget && pTarget->IsInhabitableNPC() )
 	{
 		pInhabitableTarget = assert_cast< CASW_Inhabitable_NPC * >( pTarget );
-		filter.AddRecipientsByViewNPC( pInhabitableTarget, false );
+		filter.AddRecipientsByViewNPC( pInhabitableTarget, rd_hit_confirms_to_recorders.GetBool() );
 	}
 
 	CBaseEntity *pAttacker = info.GetAttacker();
@@ -723,7 +724,7 @@ void UTIL_RD_HitConfirm( CBaseEntity *pTarget, int iHealthBefore, const CTakeDam
 	if ( pAttacker && pAttacker->IsInhabitableNPC() )
 	{
 		pInhabitableAttacker = assert_cast< CASW_Inhabitable_NPC * >( pAttacker );
-		filter.AddRecipientsByViewNPC( pInhabitableAttacker, false );
+		filter.AddRecipientsByViewNPC( pInhabitableAttacker, rd_hit_confirms_to_recorders.GetBool() );
 	}
 
 	Vector vecDamagePosition = info.GetDamagePosition();
