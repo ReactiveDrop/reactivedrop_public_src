@@ -300,6 +300,8 @@ public:
 
 	bool m_bLeaderboardReady;
 
+	int m_iWantsAutoRecord;
+
 private:
 
 	// Copyed from EyeAngles() so we can send it to the client.

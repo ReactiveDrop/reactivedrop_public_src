@@ -433,6 +433,8 @@ CASW_Player::CASW_Player()
 	m_EquippedItemsReceiving.Purge();
 	m_iEquippedItemsReceivingOffset = 0;
 	m_iEquippedItemsParity = 0;
+
+	m_iWantsAutoRecord = 0;
 }
 
 
@@ -3186,7 +3188,7 @@ void CASW_Player::SetupVisibility( CBaseEntity *pViewEntity, unsigned char *pvs,
 	if ( rd_force_all_marines_in_pvs.GetBool() && pGameResource )
 	{
 		if ( ( rd_force_all_marines_in_pvs.GetInt() != 2 || !GetNPC() ) &&
-			( rd_force_all_marines_in_pvs.GetInt() != 3 || V_atoi( engine->GetClientConVarValue( entindex(), "rd_auto_record_lobbies" ) ) ) )
+			( rd_force_all_marines_in_pvs.GetInt() != 3 || m_iWantsAutoRecord != 0 ) )
 		{
 			for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
 			{

@@ -7446,6 +7446,8 @@ void CAlienSwarm::ClientSettingsChanged( CBasePlayer *pPlayer )
 		}
 	}
 
+	pASWPlayer->m_iWantsAutoRecord = V_atoi( engine->GetClientConVarValue( pPlayer->entindex(), "rd_auto_record_lobbies" ) );
+
 	const char *pszFov = engine->GetClientConVarValue( pPlayer->entindex(), "fov_desired" );
 	if ( pszFov )
 	{
