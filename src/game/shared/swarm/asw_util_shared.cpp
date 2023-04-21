@@ -705,7 +705,7 @@ void UTIL_RD_HitConfirm( CBaseEntity *pTarget, int iHealthBefore, const CTakeDam
 	if ( pTarget && pTarget->IsInhabitableNPC() )
 	{
 		pInhabitableTarget = assert_cast< CASW_Inhabitable_NPC * >( pTarget );
-		filter.AddRecipientsByViewNPC( pInhabitableTarget );
+		filter.AddRecipientsByViewNPC( pInhabitableTarget, false );
 	}
 
 	CBaseEntity *pAttacker = info.GetAttacker();
@@ -723,7 +723,7 @@ void UTIL_RD_HitConfirm( CBaseEntity *pTarget, int iHealthBefore, const CTakeDam
 	if ( pAttacker && pAttacker->IsInhabitableNPC() )
 	{
 		pInhabitableAttacker = assert_cast< CASW_Inhabitable_NPC * >( pAttacker );
-		filter.AddRecipientsByViewNPC( pInhabitableAttacker );
+		filter.AddRecipientsByViewNPC( pInhabitableAttacker, false );
 	}
 
 	Vector vecDamagePosition = info.GetDamagePosition();
