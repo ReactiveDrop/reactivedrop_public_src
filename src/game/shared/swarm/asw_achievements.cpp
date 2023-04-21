@@ -253,17 +253,13 @@ class CAchievement_ ## DifficultyName ## _Campaign_ ## CampaignName : public CAS
 	{ \
 		SetFlags( ACH_SAVE_GLOBAL | ACH_HAS_COMPONENTS ); \
 		SetStoreProgressInSteam( true ); \
+		m_iNumComponents = NELEMS( g_szAchievementMapNames ## CampaignName ); \
 		SetGoal( NELEMS( g_szAchievementMapNames ## CampaignName ) ); \
 	} \
 \
 	virtual void ListenForEvents( void ) \
 	{ \
 		ListenForGameEvent( "mission_success" ); \
-	} \
-\
-	virtual int GetNumComponents() \
-	{ \
-		return NELEMS( g_szAchievementMapNames ## CampaignName ); \
 	} \
 \
 	virtual const char *GetComponentDisplayString( int iComponent ) \

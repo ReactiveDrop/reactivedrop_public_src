@@ -244,7 +244,6 @@ public:
 	CASW_Achievement();
 
 	virtual const char *GetIconPath();
-	virtual int GetNumComponents() { return 0; }
 	virtual const char *GetComponentDisplayString( int iComponent ) { return NULL; }
 
 	virtual bool OnAlienDied( int nAlienClass, C_ASW_Marine *pKiller, int nWeaponClass );

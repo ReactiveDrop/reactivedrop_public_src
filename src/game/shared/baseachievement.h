@@ -61,6 +61,7 @@ public:
 	void SetAchieved( bool bAchieved ) { m_bAchieved = bAchieved; }
 	uint64 GetComponentBits() { return m_iComponentBits; }
 	void SetComponentBits( uint64 iComponentBits );
+	int GetNumComponents() { return m_iNumComponents; }
 	void OnComponentEvent( const char *pchComponentName );
 	void EnsureComponentBitSetAndEvaluate( int iBitNumber );
 	void EvaluateIsAlreadyAchieved();

@@ -448,8 +448,8 @@ void CBaseAchievement::EnsureComponentBitSetAndEvaluate( int iBitNumber )
 	// calculate which bit this component corresponds to
 	uint64 iBitMask = ( (uint64) 1 ) << iBitNumber;
 
-	// see if we already have gotten this component
-	if ( 0 == ( iBitMask & m_iComponentBits ) )
+	// see if we already have gotten this component or the achievement is stuck with all component bits set
+	if ( 0 == ( iBitMask & m_iComponentBits ) || m_iComponentBits == ( 1LLU << GetNumComponents() ) - 1 )
 	{				
 		if ( !m_pAchievementMgr->CheckAchievementsEnabled() )
 		{
