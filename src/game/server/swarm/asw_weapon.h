@@ -24,6 +24,7 @@ public:
 	CASW_Weapon();
 	virtual ~CASW_Weapon();	
 	virtual void Precache();
+	virtual bool KeyValue( const char *szKeyName, const char *szValue );
 	bool DestroyIfEmpty( bool bDestroyWhenActive, bool bCheckSecondaryAmmo=false );
 
 	virtual void ItemPostFrame(void);

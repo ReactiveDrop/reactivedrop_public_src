@@ -124,6 +124,28 @@ CASW_Weapon::~CASW_Weapon()
 
 }
 
+bool CASW_Weapon::KeyValue( const char *szKeyName, const char *szValue )
+{
+	// support the asw_pickup keyvalues because some maps use them on asw_weapon entities
+	if ( !V_stricmp( szKeyName, "BulletsInGun" ) )
+	{
+		SetClip1( V_atoi( szValue ) );
+		return true;
+	}
+	if ( !V_stricmp( szKeyName, "Clips" ) )
+	{
+		SetPrimaryAmmoCount( V_atoi( szValue ) * GetMaxClip1() );
+		return true;
+	}
+	if ( !V_stricmp( szKeyName, "SecondaryBullets" ) )
+	{
+		SetClip1( V_atoi( szValue ) );
+		return true;
+	}
+
+	return BaseClass::KeyValue( szKeyName, szValue );
+}
+
 int CASW_Weapon::WeaponRangeAttack1Condition( float flDot, float flDist )
 {
 	if (!IsOffensiveWeapon())
