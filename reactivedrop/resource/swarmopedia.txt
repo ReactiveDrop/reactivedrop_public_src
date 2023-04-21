@@ -2366,6 +2366,9 @@
 				"Ammo" {
 					"RequireCVar" "rd_medgun_infinite_ammo"
 					"RequireValue" "0"
+					"UseWeaponInfo" "0"
+					"Skill" "ASW_MARINE_SKILL_HEALING"
+					"SubSkill" "ASW_MARINE_SUBSKILL_MEDRIFLE_HEALING_CHARGES"
 				}
 				"FireRate" {}
 				"Numeric" {

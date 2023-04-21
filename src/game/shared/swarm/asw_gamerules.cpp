@@ -4296,6 +4296,13 @@ void CAlienSwarm::GiveStartingWeaponToMarine( CASW_Marine *pMarine, int iEquipIn
 			iSecondaryAmmo = MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_DRUGS, ASW_MARINE_SUBSKILL_HEALAMP_GUN_AMP_CHARGES );
 		}
 	}
+	if ( !stricmp( szWeaponClass, "asw_weapon_medrifle" ) )
+	{
+		if ( pMarine->GetMarineProfile() && pMarine->GetMarineProfile()->CanUseFirstAid() )
+		{
+			iSecondaryAmmo = MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_HEALING, ASW_MARINE_SUBSKILL_MEDRIFLE_HEALING_CHARGES );
+		}
+	}
 	if ( !stricmp( szWeaponClass, "asw_weapon_flares" ) ||
 		!stricmp( szWeaponClass, "asw_weapon_gas_grenades" ) ||
 		!stricmp( szWeaponClass, "asw_weapon_grenades" ) ||

@@ -29,6 +29,7 @@ ConVar asw_skill_piercing_base( "asw_skill_piercing_base", "0", FCVAR_REPLICATED
 
 ConVar asw_skill_healing_charges_base( "asw_skill_healing_charges_base", "4", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_self_healing_charges_base( "asw_skill_self_healing_charges_base", "2", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_healing_medrifle_healing_charges_base( "asw_skill_healing_medrifle_healing_charges_base", "50", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_healing_medkit_hps_base( "asw_skill_healing_medkit_hps_base", "50", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_healing_hps_base( "asw_skill_healing_hps_base", "25", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_healing_grenade_base( "asw_skill_healing_grenade_base", "120", FCVAR_REPLICATED | FCVAR_CHEAT );
@@ -78,6 +79,7 @@ ConVar asw_skill_piercing_step( "asw_skill_piercing_step", "0.20", FCVAR_REPLICA
 
 ConVar asw_skill_healing_charges_step( "asw_skill_healing_charges_step", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_self_healing_charges_step( "asw_skill_self_healing_charges_step", "0.5", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_healing_medrifle_healing_charges_step( "asw_skill_healing_medrifle_healing_charges_step", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_healing_hps_step( "asw_skill_healing_hps_step", "8", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_healing_grenade_step( "asw_skill_healing_grenade_step", "30", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_healing_gun_charges_step( "asw_skill_healing_gun_charges_step", "10", FCVAR_REPLICATED | FCVAR_CHEAT );
@@ -263,6 +265,8 @@ float CASW_Marine_Skills::GetSkillBasedValue( CASW_Marine_Profile *pProfile, ASW
 			return asw_skill_healing_amp_gun_charges_base.GetFloat() + asw_skill_healing_amp_gun_charges_step.GetFloat() * iSkillPoints;
 		case ASW_MARINE_SUBSKILL_HEALING_MEDKIT_HPS:
 			return asw_skill_healing_medkit_hps_base.GetFloat() + asw_skill_healing_medkit_hps_step.GetFloat() * iSkillPoints;
+		case ASW_MARINE_SUBSKILL_MEDRIFLE_HEALING_CHARGES:
+			return asw_skill_healing_medrifle_healing_charges_base.GetFloat() + asw_skill_healing_medrifle_healing_charges_step.GetFloat() * iSkillPoints;
 		default:
 			Assert( 0 );
 			return 0.0f;
