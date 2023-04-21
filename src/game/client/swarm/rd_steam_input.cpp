@@ -293,7 +293,7 @@ static const char *OriginPlaceholderString( EInputActionOrigin eOrigin )
 
 static EInputActionOrigin OriginFromPlaceholderString( const char *szKey )
 {
-	if ( V_strncmp( szKey, "STEAM_INPUT_ORIGIN_", strlen( "STEAM_INPUT_ORIGIN_" ) ) )
+	if ( !szKey || V_strncmp( szKey, "STEAM_INPUT_ORIGIN_", strlen( "STEAM_INPUT_ORIGIN_" ) ) )
 		return k_EInputActionOrigin_None;
 
 	EInputActionOrigin eOrigin = static_cast< EInputActionOrigin >( atoi( szKey + strlen( "STEAM_INPUT_ORIGIN_" ) ) );
