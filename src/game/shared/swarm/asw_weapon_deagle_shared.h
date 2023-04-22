@@ -32,6 +32,8 @@ public:
 
 #ifndef CLIENT_DLL
 	DECLARE_DATADESC();
+#else
+	virtual bool DisplayClipsDoubled() { return false; }
 #endif
 
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_DEAGLE; }
