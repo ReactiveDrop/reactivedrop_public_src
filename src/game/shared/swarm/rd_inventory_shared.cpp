@@ -1875,9 +1875,14 @@ namespace ReactiveDropInventory
 		FromKeyValues( pKV );
 	}
 
-	void ItemInstance_t::FormatDescription( wchar_t *wszBuf, size_t sizeOfBufferInBytes, const CUtlString &szDesc ) const
+	void ItemInstance_t::FormatDescription( wchar_t *wszBuf, size_t sizeOfBufferInBytes, const CUtlString &szDesc, bool bIsSteamCommunityDesc ) const
 	{
+		Assert( !bIsSteamCommunityDesc || !V_stristr( szDesc, "m_unQuantity" ) );
+
 		V_UTF8ToUnicode( szDesc, wszBuf, sizeOfBufferInBytes );
+
+		if ( bIsSteamCommunityDesc && DynamicProps.GetNumStrings() == 0 )
+			return;
 
 		GET_INVENTORY_OR_BAIL;
 
@@ -1896,60 +1901,39 @@ namespace ReactiveDropInventory
 				continue;
 			}
 
-			V_wcsncpy( wszReplacement, L"MISSING", sizeof( wszReplacement ) );
-
 			size_t tokenLength = 1;
-			while ( wszBuf[i + tokenLength] != L'%' && wszBuf[i + tokenLength] != L':' )
+			while ( wszBuf[i + tokenLength] != L'%' )
 			{
-				if ( wszBuf[i + tokenLength] == L'\0' )
+				wchar_t ch = wszBuf[i + tokenLength];
+				if ( ch == L'\0' )
 				{
 					return;
 				}
 
-				Assert( wszBuf[i + tokenLength] < 0x80 ); // assume ASCII
-				szToken[tokenLength - 1] = ( char )wszBuf[i + tokenLength];
+				if ( ( ch < L'a' || ch > L'z' ) && ( ch < L'A' || ch > L'Z' ) && ( ch < L'0' || ch > L'9' ) && ch != L'_' )
+				{
+					tokenLength = 0;
+					break;
+				}
+
+				Assert( ch < 0x80 ); // assume ASCII
+				szToken[tokenLength - 1] = ( char )ch;
 
 				tokenLength++;
 
 				Assert( tokenLength < sizeof( szToken ) );
 			}
 
-			szToken[tokenLength - 1] = '\0';
-
-			if ( wszBuf[i + tokenLength] == L':' )
+			// bail if there's a non-token character after the percent sign
+			if ( tokenLength == 0 )
 			{
-				size_t tokenReplacementLength = 0;
-				tokenLength++;
-
-				while ( wszBuf[i + tokenLength] != L'%' )
-				{
-					if ( wszBuf[i + tokenLength] == L'\0' )
-					{
-						return;
-					}
-
-					szToken[tokenReplacementLength] = wszBuf[i + tokenLength];
-
-					tokenReplacementLength++;
-					tokenLength++;
-
-					Assert( tokenReplacementLength < NELEMS( wszReplacement ) );
-				}
-
-				wszReplacement[tokenReplacementLength] = L'\0';
-			}
-
-			tokenLength++;
-
-			if ( tokenLength == 2 )
-			{
-				// special case: %% is just %
-				V_memmove( &wszBuf[i + 1], &wszBuf[i + 2], sizeOfBufferInBytes - ( i + 2 ) * sizeof( wchar_t ) );
-				i++;
 				continue;
 			}
 
-			if ( !V_stricmp( szToken, "m_unQuantity" ) )
+			szToken[tokenLength - 1] = '\0';
+			tokenLength++;
+
+			if ( !bIsSteamCommunityDesc && !V_stricmp( szToken, "m_unQuantity" ) )
 			{
 				// special case: m_unQuantity is not stored in dynamic_props
 				V_wcsncpy( wszReplacement, UTIL_RD_CommaNumber( Quantity ), sizeof( wszReplacement ) );
@@ -1957,7 +1941,10 @@ namespace ReactiveDropInventory
 
 			if ( !DynamicProps.Defined( szToken ) )
 			{
-				// use replacement value as-is
+				if ( !DynamicPropertyAllowsArbitraryValues( szToken ) )
+				{
+					V_wcsncpy( wszReplacement, L"0", sizeof( wszReplacement ) );
+				}
 			}
 			else if ( DynamicPropertyAllowsArbitraryValues( szToken ) )
 			{
@@ -1991,7 +1978,7 @@ namespace ReactiveDropInventory
 #ifdef DBGFLAG_ASSERT
 		wchar_t *wszTemp = new wchar_t[sizeOfBufferInBytes / sizeof( wchar_t )];
 		CRD_ItemInstance reduced{ *this };
-		reduced.FormatDescription( wszTemp, sizeOfBufferInBytes, szDesc );
+		reduced.FormatDescription( wszTemp, sizeOfBufferInBytes, szDesc, bIsSteamCommunityDesc );
 		Assert( !V_wcscmp( wszBuf, wszTemp ) );
 		delete[] wszTemp;
 #endif
@@ -2874,7 +2861,7 @@ void CRD_ItemInstance::SetFromInstance( const ReactiveDropInventory::ItemInstanc
 	}
 }
 
-void CRD_ItemInstance::FormatDescription( wchar_t *wszBuf, size_t sizeOfBufferInBytes, const CUtlString &szDesc ) const
+void CRD_ItemInstance::FormatDescription( wchar_t *wszBuf, size_t sizeOfBufferInBytes, const CUtlString &szDesc, bool bIsSteamCommunityDesc ) const
 {
 	const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( m_iItemDefID );
 
@@ -2895,65 +2882,45 @@ void CRD_ItemInstance::FormatDescription( wchar_t *wszBuf, size_t sizeOfBufferIn
 			continue;
 		}
 
-		V_wcsncpy( wszReplacement, L"MISSING", sizeof( wszReplacement ) );
+		V_wcsncpy( wszReplacement, L"0", sizeof( wszReplacement ) );
 
 		size_t tokenLength = 1;
-		while ( wszBuf[i + tokenLength] != L'%' && wszBuf[i + tokenLength] != L':' )
+		while ( wszBuf[i + tokenLength] != L'%' )
 		{
-			if ( wszBuf[i + tokenLength] == L'\0' )
+			wchar_t ch = wszBuf[i + tokenLength];
+			if ( ch == L'\0' )
 			{
 				return;
 			}
 
-			Assert( wszBuf[i + tokenLength] < 0x80 ); // assume ASCII
-			szToken[tokenLength - 1] = ( char )wszBuf[i + tokenLength];
+			if ( ( ch < L'a' || ch > L'z' ) && ( ch < L'A' || ch > L'Z' ) && ( ch < L'0' || ch > L'9' ) && ch != L'_' )
+			{
+				tokenLength = 0;
+				break;
+			}
+
+			Assert( ch < 0x80 ); // assume ASCII
+			szToken[tokenLength - 1] = ( char )ch;
 
 			tokenLength++;
 
 			Assert( tokenLength < sizeof( szToken ) );
 		}
 
+		if ( tokenLength == 0 )
+			continue;
+
 		szToken[tokenLength - 1] = '\0';
-
-		Assert( wszBuf[i + tokenLength] != L':' );
-		if ( wszBuf[i + tokenLength] == L':' )
-		{
-			size_t tokenReplacementLength = 0;
-			tokenLength++;
-
-			while ( wszBuf[i + tokenLength] != L'%' )
-			{
-				if ( wszBuf[i + tokenLength] == L'\0' )
-				{
-					return;
-				}
-
-				szToken[tokenReplacementLength] = wszBuf[i + tokenLength];
-
-				tokenReplacementLength++;
-				tokenLength++;
-
-				Assert( tokenReplacementLength < NELEMS( wszReplacement ) );
-			}
-
-			wszReplacement[tokenReplacementLength] = L'\0';
-		}
-
 		tokenLength++;
 
-		if ( tokenLength == 2 )
-		{
-			// special case: %% is just %
-			V_memmove( &wszBuf[i + 1], &wszBuf[i + 2], sizeOfBufferInBytes - ( i + 2 ) * sizeof( wchar_t ) );
-			i++;
-			continue;
-		}
+		Assert( !bIsSteamCommunityDesc || V_stricmp( szToken, "m_unQuantity" ) );
+		Assert( !bIsSteamCommunityDesc || V_stricmp( szToken, "style" ) );
 
 		FOR_EACH_VEC( pDef->CompressedDynamicProps, j )
 		{
 			if ( !V_strcmp( pDef->CompressedDynamicProps[j], szToken ) )
 			{
-				if ( !V_strcmp( szToken, "style" ) && m_nCounter[j] >= 0 && m_nCounter[j] < pDef->StyleNames.Count() )
+				if ( !bIsSteamCommunityDesc && !V_strcmp( szToken, "style" ) && m_nCounter[j] >= 0 && m_nCounter[j] < pDef->StyleNames.Count() )
 				{
 					V_UTF8ToUnicode( pDef->StyleNames[m_nCounter[j]], wszReplacement, sizeof( wszReplacement ) );
 				}
@@ -3056,6 +3023,23 @@ void CRD_ItemInstance::AppendBBCode( vgui::RichText *pRichText, const wchar_t *w
 
 				continue;
 			}
+
+			if ( ( pBuf[1] == L'b' || pBuf[1] == L'i' ) && pBuf[2] == L']' )
+			{
+				// just ignore bold and italics for now
+				pBuf += 2;
+
+				continue;
+			}
+
+			if ( pBuf[1] == L'/' && ( pBuf[2] == L'b' || pBuf[2] == L'i' ) && pBuf[3] == L']' )
+			{
+				pBuf += 3;
+
+				continue;
+			}
+
+			Assert( !"unexpected bbcode" );
 		}
 
 		pRichText->InsertChar( *pBuf );
@@ -3071,15 +3055,30 @@ void CRD_ItemInstance::FormatDescription( vgui::RichText *pRichText ) const
 
 	pRichText->SetText( "" );
 
-	FormatDescription( wszBuf, sizeof( wszBuf ), pDef->BeforeDescription );
+	FormatDescription( wszBuf, sizeof( wszBuf ), pDef->BeforeDescription, false );
 	if ( wszBuf[0] )
 	{
 		AppendBBCode( pRichText, wszBuf, rd_briefing_item_details_color2.GetColor() );
 		pRichText->InsertString( L"\n\n" );
 	}
 
-	FormatDescription( wszBuf, sizeof( wszBuf ), pDef->Description );
+	FormatDescription( wszBuf, sizeof( wszBuf ), pDef->Description, !pDef->HasInGameDescription );
 	AppendBBCode( pRichText, wszBuf, rd_briefing_item_details_color1.GetColor() );
+
+	for ( int i = 0; i < RD_ITEM_MAX_ACCESSORIES; i++ )
+	{
+		if ( m_iAccessory[i] == 0 )
+			continue;
+
+		Assert( !pDef->AccessoryTag.IsEmpty() );
+
+		FormatDescription( wszBuf, sizeof( wszBuf ), ReactiveDropInventory::GetItemDef( m_iAccessory[i] )->AccessoryDescription, true );
+		if ( wszBuf[0] )
+		{
+			pRichText->InsertString( L"\n" );
+			AppendBBCode( pRichText, wszBuf, rd_briefing_item_details_color1.GetColor() );
+		}
+	}
 
 	bool bShowAfterDescription = !pDef->AfterDescriptionOnlyMultiStack;
 	if ( !bShowAfterDescription )
@@ -3099,28 +3098,11 @@ void CRD_ItemInstance::FormatDescription( vgui::RichText *pRichText ) const
 	}
 	if ( bShowAfterDescription )
 	{
-		FormatDescription( wszBuf, sizeof( wszBuf ), pDef->AfterDescription );
+		FormatDescription( wszBuf, sizeof( wszBuf ), pDef->AfterDescription, false );
 		if ( wszBuf[0] )
 		{
 			pRichText->InsertString( L"\n\n" );
 			AppendBBCode( pRichText, wszBuf, rd_briefing_item_details_color2.GetColor() );
-		}
-	}
-
-	bool bAnyAccessories = false;
-	for ( int i = 0; i < RD_ITEM_MAX_ACCESSORIES; i++ )
-	{
-		if ( m_iAccessory[i] == 0 )
-			continue;
-
-		FormatDescription( wszBuf, sizeof( wszBuf ), ReactiveDropInventory::GetItemDef( m_iAccessory[i] )->AccessoryDescription );
-		if ( wszBuf[0] )
-		{
-			if ( !bAnyAccessories )
-				pRichText->InsertString( L"\n" );
-			bAnyAccessories = true;
-			pRichText->InsertString( L"\n" );
-			AppendBBCode( pRichText, wszBuf, rd_briefing_item_details_color1.GetColor() );
 		}
 	}
 }

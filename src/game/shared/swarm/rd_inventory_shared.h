@@ -109,7 +109,7 @@ namespace ReactiveDropInventory
 
 		explicit ItemInstance_t( SteamInventoryResult_t hResult, uint32 index );
 		explicit ItemInstance_t( KeyValues *pKV );
-		void FormatDescription( wchar_t *wszBuf, size_t sizeOfBufferInBytes, const CUtlString &szDesc ) const;
+		void FormatDescription( wchar_t *wszBuf, size_t sizeOfBufferInBytes, const CUtlString &szDesc, bool bIsSteamCommunityDesc ) const;
 #ifdef CLIENT_DLL
 		void FormatDescription( vgui::RichText *pRichText ) const;
 		vgui::IImage *GetIcon() const;
@@ -168,7 +168,7 @@ public:
 	void Reset();
 	bool IsSet() const;
 	void SetFromInstance( const ReactiveDropInventory::ItemInstance_t &instance );
-	void FormatDescription( wchar_t *wszBuf, size_t sizeOfBufferInBytes, const CUtlString &szDesc ) const;
+	void FormatDescription( wchar_t *wszBuf, size_t sizeOfBufferInBytes, const CUtlString &szDesc, bool bIsSteamCommunityDesc ) const;
 #ifdef CLIENT_DLL
 	static void AppendBBCode( vgui::RichText *pRichText, const wchar_t *wszBuf, Color defaultColor );
 	void FormatDescription( vgui::RichText *pRichText ) const;
