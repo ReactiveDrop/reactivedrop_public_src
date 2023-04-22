@@ -6866,7 +6866,7 @@ void CAlienSwarm::ClientCommandKeyValues( edict_t *pEntity, KeyValues *pKeyValue
 	else if ( FStrEq( szCommand, "EquippedItemsCached" ) )
 	{
 		// This only works in singleplayer, and we need access to our own Steam ID.
-		if ( engine->IsDedicatedServer() || gpGlobals->maxClients != 0 || !SteamUser() )
+		if ( engine->IsDedicatedServer() || gpGlobals->maxClients != 1 || !SteamUser() )
 			return;
 
 		CFmtStr szCacheFileName{ "cfg/clienti_%llu.dat", SteamUser()->GetSteamID().ConvertToUint64() };
