@@ -33,7 +33,7 @@ END_DATADESC();
 LINK_BEHAVIOR_TO_CLASSNAME( CAI_ASW_HealOtherBehavior );
 
 ConVar asw_shaman_aim_ahead_time( "asw_shaman_aim_ahead_time", "1.0", FCVAR_CHEAT, "Look ahead time for shaman's heal target" );
-ConVar asw_mender_heal_biomass( "asw_mender_heal_biomass", "1", FCVAR_CHEAT, "Should menders heal biomass?" );
+ConVar asw_mender_heal_biomass( "asw_mender_heal_biomass", "0", FCVAR_CHEAT, "Should menders heal biomass?" );
 ConVar asw_mender_prioritize_fire( "asw_mender_prioritize_fire", "1", FCVAR_CHEAT, "Should menders heal burning aliens first?" );
 
 //------------------------------------------------------------------------------

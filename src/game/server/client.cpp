@@ -51,7 +51,6 @@ extern bool IsInCommentaryMode( void );
 
 ConVar *sv_cheats = NULL;
 ConVar rd_check_clientdll_consistency( "rd_check_clientdll_consistency", RD_IS_RELEASE ? "1" : "0", FCVAR_NOTIFY, "If 1, client.dll must match on the client and server. Default is 0 on beta, 1 on other branches." );
-ConVar rd_check_equipment_consistency( "rd_check_equipment_consistency", RD_IS_RELEASE ? "1" : "0", FCVAR_NOTIFY, "If 1, certain resource and script files must match on the client and server. Default is 0 on beta, 1 on other branches.");
 
 #define P_MAX_LEN 127 //used in CheckChatText and Host_Say to limit p pointer where pszFormat + pszPrefix + pszLocation + p as main text and few more symbols define the full text string. should be under 256
 //also seems not to be really usefull without client adjustment m_pInput->SetMaximumCharCount( 127 ); in hud_basechat.cpp
@@ -386,30 +385,6 @@ void ClientPrecache( void )
 	if ( rd_check_clientdll_consistency.GetBool() )
 	{
 		engine->ForceExactFile( "bin/client.dll" );
-	}
-
-	// BenLubar: not particularly worried about wallhacks in a top-down game.
-	// additionally, allowing these files to differ gives us some freedom for
-	// updating game instructor stuff in a hotfix.
-	//// Game Instructor lessons - don't want people making simple scripted wall hacks
-	//engine->ForceExactFile( "scripts/instructor_lessons.txt" );
-	//engine->ForceExactFile( "scripts/mod_lessons.txt" );
-
-	if ( rd_check_equipment_consistency.GetBool() )
-	{
-		// ensure marines and weapons are the same on client and server
-		engine->ForceExactFile( "resource/profiles.res" );
-		engine->ForceExactFile( "resource/equipment.res" );
-		int nCount = g_ASWEquipmentList.GetNumRegular( true );
-		for ( int i = 0; i < nCount; i++ )
-		{
-			engine->ForceExactFile( CFmtStr( "scripts/%s.txt", g_ASWEquipmentList.GetRegular( i )->m_szEquipClass ) );
-		}
-		nCount = g_ASWEquipmentList.GetNumExtra( true );
-		for ( int i = 0; i < nCount; i++ )
-		{
-			engine->ForceExactFile( CFmtStr( "scripts/%s.txt", g_ASWEquipmentList.GetExtra( i )->m_szEquipClass ) );
-		}
 	}
 }
 

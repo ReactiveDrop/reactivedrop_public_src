@@ -1216,6 +1216,13 @@ public:
 		}
 	}
 
+#ifndef CLIENT_DLL
+	STEAM_GAMESERVER_CALLBACK( CRD_Inventory_Manager, OnSteamInventoryResultReadyDedicated, SteamInventoryResultReady_t )
+	{
+		OnSteamInventoryResultReady( pParam );
+	}
+#endif
+
 	STEAM_CALLBACK( CRD_Inventory_Manager, OnSteamInventoryResultReady, SteamInventoryResultReady_t )
 	{
 		DevMsg( 2, "[%c] Steam Inventory result for %08x received: EResult %d (%s)\n", IsClientDll() ? 'C' : 'S', pParam->m_handle, pParam->m_result, UTIL_RD_EResultToString( pParam->m_result ) );
@@ -1424,6 +1431,11 @@ public:
 			return;
 
 		CacheUserInventory( pParam->m_handle );
+	}
+#else
+	STEAM_GAMESERVER_CALLBACK( CRD_Inventory_Manager, OnSteamInventoryDefinitionUpdateDedicated, SteamInventoryDefinitionUpdate_t )
+	{
+		OnSteamInventoryDefinitionUpdate( pParam );
 	}
 #endif
 

@@ -233,8 +233,7 @@ void CASW_Weapon_Sniper_Rifle::PrimaryAttack( void )
 
 void CASW_Weapon_Sniper_Rifle::SecondaryAttack()
 {
-	// set secondary attack time far in the future so holding middle mouse doesn't interrupt left mouse
-	m_flNextSecondaryAttack = FLT_MAX;
+	m_flNextSecondaryAttack = gpGlobals->curtime + 0.5f;
 }
 
 void CASW_Weapon_Sniper_Rifle::Precache()
