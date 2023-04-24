@@ -77,11 +77,8 @@ public:
 		skill_dest.Init();
 		skill_dest_ent = 0;
 #endif
-		// BenLubar(spectator-mouse)
-		mousex = 0;
-		mousey = 0;
-		screenw = 0;
-		screenh = 0;
+		mousexy = 0;
+		screenwh = 0;
 
 		aimangleoffset.Init();
 	}
@@ -130,11 +127,8 @@ public:
 		skill_dest_ent				= src.skill_dest_ent;
 #endif
 
-		// BenLubar(spectator-mouse)
-		mousex = src.mousex;
-		mousey = src.mousey;
-		screenw = src.screenw;
-		screenh = src.screenh;
+		mousexy = src.mousexy;
+		screenwh = src.screenwh;
 
 		aimangleoffset = src.aimangleoffset;
 
@@ -180,11 +174,8 @@ public:
 		CRC32_ProcessBuffer( &crc, &skill_dest, sizeof( skill_dest ) );
 		CRC32_ProcessBuffer( &crc, &skill_dest_ent, sizeof( skill_dest_ent ) );
 #endif
-		// BenLubar(spectator-mouse)
-		CRC32_ProcessBuffer( &crc, &mousex, sizeof( mousex ) );
-		CRC32_ProcessBuffer( &crc, &mousey, sizeof( mousey ) );
-		CRC32_ProcessBuffer( &crc, &screenw, sizeof( screenw ) );
-		CRC32_ProcessBuffer( &crc, &screenh, sizeof( screenh ) );
+		CRC32_ProcessBuffer( &crc, &mousexy, sizeof( mousexy ) );
+		CRC32_ProcessBuffer( &crc, &screenwh, sizeof( screenwh ) );
 
 		CRC32_ProcessBuffer( &crc, &aimangleoffset, sizeof( aimangleoffset ) );
 
@@ -247,11 +238,27 @@ public:
 	short skill_dest_ent;
 #endif
 
-	// BenLubar(spectator-mouse)
-	short mousex;
-	short mousey;
-	short screenw;
-	short screenh;
+#pragma warning(push)
+#pragma warning(disable: 4201)
+	union
+	{
+		unsigned mousexy;
+		struct
+		{
+			short mousex;
+			short mousey;
+		};
+	};
+	union
+	{
+		unsigned screenwh;
+		struct
+		{
+			short screenw;
+			short screenh;
+		};
+	};
+#pragma warning(pop)
 
 	QAngle aimangleoffset;
 };

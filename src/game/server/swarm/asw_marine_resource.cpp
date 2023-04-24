@@ -89,37 +89,7 @@ static void *SendProxy_SendMarineResourceTimelinesDataTable( const SendProp *pPr
 
 	return ( void * )pVarData;
 }
-
-static void *SendProxy_MarineResourceEquippedSuit( const SendProp *pProp, const void *pStructBase, const void *pData, CSendProxyRecipients *pRecipients, int objectID )
-{
-	static CRD_ItemInstance s_BlankInstance;
-
-	const CASW_Marine_Resource *pMR = static_cast< const CASW_Marine_Resource * >( pStructBase );
-	if ( !pMR->m_OriginalCommander )
-		return &s_BlankInstance;
-
-	return &pMR->m_OriginalCommander->m_EquippedItemData[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + pMR->m_MarineProfileIndex];
-}
-
-static void *SendProxy_MarineResourceStartingEquip( const SendProp *pProp, const void *pStructBase, const void *pData, CSendProxyRecipients *pRecipients, int objectID )
-{
-	static CRD_ItemInstance s_BlankInstance;
-
-	const CASW_Marine_Resource *pMR = static_cast< const CASW_Marine_Resource * >( pStructBase );
-	if ( !pMR->m_OriginalCommander )
-		return &s_BlankInstance;
-
-	int index = ( const char * )pData - ( const char * )pStructBase;
-	Assert( index >= 0 && index < ASW_NUM_INVENTORY_SLOTS );
-	int iEquip = pMR->m_iInitialWeaponsInSlots[index];
-	if ( iEquip == -1 )
-		iEquip = pMR->m_iWeaponsInSlots[index];
-	CASW_EquipItem *pEquipItem = g_ASWEquipmentList.GetItemForSlot( index, iEquip );
-	if ( !pEquipItem || pEquipItem->m_iInventoryEquipIndex == -1 )
-		return &s_BlankInstance;
-
-	return &pMR->m_OriginalCommander->m_EquippedItemData[pEquipItem->m_iInventoryEquipIndex];
-}
+REGISTER_SEND_PROXY_NON_MODIFIED_POINTER( SendProxy_SendMarineResourceTimelinesDataTable );
 
 // Only send active weapon index to local player
 BEGIN_SEND_TABLE_NOBASE( CASW_Marine_Resource, DT_MR_Timelines )
@@ -132,33 +102,30 @@ BEGIN_SEND_TABLE_NOBASE( CASW_Marine_Resource, DT_MR_Timelines )
 	SendPropDataTable( SENDINFO_DT( m_TimelineScore ), &REFERENCE_SEND_TABLE(DT_Timeline) ),
 END_SEND_TABLE();
 
-IMPLEMENT_SERVERCLASS_ST(CASW_Marine_Resource, DT_ASW_Marine_Resource)
+IMPLEMENT_SERVERCLASS_ST( CASW_Marine_Resource, DT_ASW_Marine_Resource )
 	// Timeline data only gets sent at mission end
-	SendPropDataTable( "mr_timelines", 0, &REFERENCE_SEND_TABLE(DT_MR_Timelines), SendProxy_SendMarineResourceTimelinesDataTable ),
-	SendPropInt		(SENDINFO(m_MarineProfileIndex), 10 ),
-	SendPropEHandle (SENDINFO(m_MarineEntity) ),
-	SendPropEHandle (SENDINFO(m_OriginalCommander) ),
-	SendPropEHandle (SENDINFO(m_Commander) ),
-	SendPropInt		(SENDINFO(m_iCommanderIndex), 10),
-	SendPropArray( SendPropInt( SENDINFO_ARRAY( m_iWeaponsInSlots ), 30 ), m_iWeaponsInSlots ),
-	SendPropBool	(SENDINFO(m_bInfested) ),
-	SendPropBool	(SENDINFO(m_bInhabited) ),
-	SendPropInt		(SENDINFO(m_iServerFiring), 8 ),
-	//SendPropFloat		(SENDINFO(m_fDamageTaken) ),
-	SendPropInt		(SENDINFO(m_iAliensKilled) ),
-	SendPropBool	(SENDINFO(m_bTakenWoundDamage) ),
-	SendPropBool	(SENDINFO(m_bHealthHalved) ),	
-	SendPropString	(SENDINFO(m_MedalsAwarded)),
-	SendPropEHandle	(SENDINFO(m_hWeldingDoor)),
-	SendPropBool	(SENDINFO(m_bUsingEngineeringAura)),
-	SendPropInt		(SENDINFO(m_iBotFrags)),
-	SendPropInt		(SENDINFO(m_iScore)),
-	SendPropFloat	(SENDINFO(m_flFinishedMissionTime)),
-	SendPropDataTable( "m_EquippedSuit", 0, &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ), SendProxy_MarineResourceEquippedSuit ),
-	SendPropDataTable( "m_StartingEquipWeapons[0]", 0, &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ), SendProxy_MarineResourceStartingEquip ),
-	SendPropDataTable( "m_StartingEquipWeapons[1]", 1, &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ), SendProxy_MarineResourceStartingEquip ),
-	SendPropDataTable( "m_StartingEquipWeapons[2]", 2, &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ), SendProxy_MarineResourceStartingEquip ),
-END_SEND_TABLE()
+	SendPropDataTable( "mr_timelines", 0, &REFERENCE_SEND_TABLE( DT_MR_Timelines ), SendProxy_SendMarineResourceTimelinesDataTable ),
+	SendPropIntWithMinusOneFlag( SENDINFO( m_MarineProfileIndex ), NumBitsForCount( ASW_NUM_MARINE_PROFILES + 1 ) ),
+	SendPropEHandle( SENDINFO( m_MarineEntity ) ),
+	SendPropEHandle( SENDINFO( m_OriginalCommander ) ),
+	SendPropEHandle( SENDINFO( m_Commander ) ),
+	SendPropIntWithMinusOneFlag( SENDINFO( m_iCommanderIndex ), NumBitsForCount( ABSOLUTE_PLAYER_LIMIT + 1 ) ),
+	SendPropArray( SendPropIntWithMinusOneFlag( SENDINFO_ARRAY( m_iWeaponsInSlots ), NumBitsForCount( MAX( ASW_NUM_EQUIP_REGULAR, ASW_NUM_EQUIP_EXTRA ) + 1 ) ), m_iWeaponsInSlots ),
+	SendPropArray( SendPropIntWithMinusOneFlag( SENDINFO_ARRAY( m_iWeaponsInSlotsDynamic ), NumBitsForCount( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC + 1 ) ), m_iWeaponsInSlotsDynamic ),
+	SendPropArray( SendPropIntWithMinusOneFlag( SENDINFO_ARRAY( m_iInitialWeaponsInSlots ), NumBitsForCount( MAX( ASW_NUM_EQUIP_REGULAR, ASW_NUM_EQUIP_EXTRA ) + 1 ) ), m_iInitialWeaponsInSlots ),
+	SendPropBool( SENDINFO( m_bInfested ) ),
+	SendPropBool( SENDINFO( m_bInhabited ) ),
+	SendPropInt( SENDINFO( m_iServerFiring ), 2, SPROP_UNSIGNED ),
+	SendPropInt( SENDINFO( m_iAliensKilled ) ),
+	SendPropBool( SENDINFO( m_bTakenWoundDamage ) ),
+	SendPropBool( SENDINFO( m_bHealthHalved ) ),
+	SendPropString( SENDINFO( m_MedalsAwarded ) ),
+	SendPropEHandle( SENDINFO( m_hWeldingDoor ) ),
+	SendPropBool( SENDINFO( m_bUsingEngineeringAura ) ),
+	SendPropInt( SENDINFO( m_iBotFrags ) ),
+	SendPropIntWithMinusOneFlag( SENDINFO( m_iScore ) ),
+	SendPropFloat( SENDINFO( m_flFinishedMissionTime ) ),
+END_SEND_TABLE();
 
 extern ConVar asw_leadership_radius;
 extern ConVar asw_debug_marine_damage;
@@ -273,8 +240,12 @@ CASW_Marine_Resource::CASW_Marine_Resource()
 	m_bUsingEngineeringAura = false;
 	m_pIntensity = new CASW_Intensity();
 
-	memset( m_iInitialWeaponsInSlots, -1, sizeof( m_iInitialWeaponsInSlots ) );
-	memset( const_cast<int*>( m_iWeaponsInSlots.Base() ), -1, sizeof( m_iInitialWeaponsInSlots ) );
+	for ( int i = 0; i < ASW_NUM_INVENTORY_SLOTS; i++ )
+	{
+		m_iWeaponsInSlots.GetForModify( i ) = -1;
+		m_iWeaponsInSlotsDynamic.GetForModify( i ) = -1;
+		m_iInitialWeaponsInSlots.GetForModify( i ) = -1;
+	}
 }
 
 

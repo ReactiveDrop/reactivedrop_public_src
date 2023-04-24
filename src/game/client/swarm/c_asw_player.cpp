@@ -272,9 +272,7 @@ IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Player, DT_ASW_Player )
 
 BEGIN_NETWORK_TABLE( C_ASW_Player, DT_ASW_Player )
 	RecvPropBool( RECVINFO( m_fIsWalking ) ),
-	RecvPropFloat( RECVINFO( m_angEyeAngles[0] ) ),
-	RecvPropFloat( RECVINFO( m_angEyeAngles[1] ) ),
-	RecvPropFloat( RECVINFO( m_angEyeAngles[2] ) ),
+	RecvPropQAngles( RECVINFO( m_angEyeAngles ) ),
 	RecvPropEHandle( RECVINFO( m_hInhabiting ) ),
 	RecvPropEHandle( RECVINFO( m_hSpectating ) ),
 	RecvPropInt( RECVINFO( m_iHealth ) ),
@@ -292,18 +290,13 @@ BEGIN_NETWORK_TABLE( C_ASW_Player, DT_ASW_Player )
 	RecvPropInt( RECVINFO( m_iMapVoted ) ),
 	RecvPropInt( RECVINFO( m_iNetworkedXP ) ),
 	RecvPropInt( RECVINFO( m_iNetworkedPromotion ) ),
-
-	// BenLubar(spectator-mouse)
-	RecvPropInt( RECVINFO( m_iScreenWidth ) ),
-	RecvPropInt( RECVINFO( m_iScreenHeight ) ),
-	RecvPropInt( RECVINFO( m_iMouseX ) ),
-	RecvPropInt( RECVINFO( m_iMouseY ) ),
-
+	RecvPropInt( RECVINFO( m_iScreenWidthHeight ) ),
+	RecvPropInt( RECVINFO( m_iMouseXY ) ),
 	RecvPropBool( RECVINFO( m_bSentJoinedMessage ) ),
 	RecvPropQAngles( RECVINFO( m_angMarineAutoAimFromClient ) ),
-	RecvPropBool( RECVINFO( m_bWantsSpectatorOnly ) ),
 	RecvPropFloat( RECVINFO( m_flInactiveKickWarning ) ),
-	RecvPropDataTable( RECVINFO_NOSIZE( m_EquippedMedal ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_EquippedItemDataStatic ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstances_Static ) ),
+	RecvPropDataTable( RECVINFO_DT( m_EquippedItemDataDynamic ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstances_Dynamic ) ),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_ASW_Player )
@@ -313,10 +306,8 @@ BEGIN_PREDICTION_DATA( C_ASW_Player )
 	DEFINE_PRED_FIELD( m_flUseKeyDownTime, FIELD_FLOAT, FTYPEDESC_NOERRORCHECK ),
 	DEFINE_PRED_FIELD( m_hUseKeyDownEnt, FIELD_EHANDLE, FTYPEDESC_NOERRORCHECK ),
 	DEFINE_PRED_FIELD( m_angMarineAutoAimFromClient, FIELD_VECTOR, FTYPEDESC_NOERRORCHECK ),
-	DEFINE_PRED_FIELD( m_iScreenWidth, FIELD_SHORT, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iScreenHeight, FIELD_SHORT, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iMouseX, FIELD_SHORT, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iMouseY, FIELD_SHORT, FTYPEDESC_INSENDTABLE ),
+	DEFINE_PRED_ARRAY( m_iScreenWidthHeight, FIELD_SHORT, 2, FTYPEDESC_INSENDTABLE ),
+	DEFINE_PRED_ARRAY( m_iMouseXY, FIELD_SHORT, 2, FTYPEDESC_INSENDTABLE ),
 END_PREDICTION_DATA()
 
 vgui::DHANDLE<vgui::Frame> g_hBriefingFrame;
@@ -329,7 +320,7 @@ C_ASW_Player::C_ASW_Player() :
 	m_PlayerAnimState = CreatePlayerAnimState( this, this, LEGANIM_9WAY, false );
 
 	AddVar( &m_angEyeAngles, &m_iv_angEyeAngles, LATCH_SIMULATION_VAR );
-	AddVar( &m_iMouseX, &m_iv_iMouseX, LATCH_SIMULATION_VAR ); // BenLubar(spectator-mouse)
+	AddVar( &m_iMouseX, &m_iv_iMouseX, LATCH_SIMULATION_VAR );
 	AddVar( &m_iMouseY, &m_iv_iMouseY, LATCH_SIMULATION_VAR );
 
 	// create the profile list for clients
@@ -379,11 +370,8 @@ C_ASW_Player::C_ASW_Player() :
 	m_nChangingMR = -1;
 	m_nChangingSlot = 0;
 
-	// BenLubar(spectator-mouse)
-	m_iScreenWidth = 0;
-	m_iScreenHeight = 0;
-	m_iMouseX = 0;
-	m_iMouseY = 0;
+	m_iScreenWidthHeight = 0;
+	m_iMouseXY = 0;
 
 	m_angMarineAutoAimFromClient = vec3_angle;
 	m_flInactiveKickWarning = 0.0f;

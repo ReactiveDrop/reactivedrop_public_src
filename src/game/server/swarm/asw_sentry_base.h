@@ -21,26 +21,31 @@ public:
 
 	CASW_Sentry_Base();
 	virtual ~CASW_Sentry_Base();
-    EHANDLE bait1_, bait2_, bait3_, bait4_;
-    void    SetBait(CBaseEntity *bait1, CBaseEntity *bait2,
-                    CBaseEntity *bait3, CBaseEntity *bait4) { bait1_ = bait1; bait2_ = bait2; bait3_ = bait3; bait4_ = bait4;}
+	EHANDLE m_hBait[4];
+	void SetBait( CBaseEntity *pBait1, CBaseEntity *pBait2, CBaseEntity *pBait3, CBaseEntity *pBait4 )
+	{
+		m_hBait[0] = pBait1;
+		m_hBait[1] = pBait2;
+		m_hBait[2] = pBait3;
+		m_hBait[3] = pBait4;
+	}
 	void	Spawn( void );
 	void	AnimThink( void );
-	virtual int				ShouldTransmit( const CCheckTransmitInfo *pInfo );
+	virtual int ShouldTransmit( const CCheckTransmitInfo *pInfo );
 	int UpdateTransmitState();	
 	
 	void PlayDeploySound();
 	CASW_Sentry_Top* GetSentryTop();
 	HSCRIPT ScriptGetSentryTop();
-	EHANDLE m_hSentryTop;
-	CHandle<CASW_Marine> m_hDeployer;
-	CNetworkVar(bool, m_bAssembled);
-	CNetworkVar(bool, m_bIsInUse);
-	CNetworkVar(float, m_fAssembleProgress);
-	CNetworkVar(float, m_fAssembleCompleteTime);
-	CNetworkVar(int, m_iAmmo);
-	CNetworkVar(int, m_iMaxAmmo);
-	CNetworkVar(bool, m_bSkillMarineHelping);
+	CNetworkHandle( CASW_Sentry_Top, m_hSentryTop );
+	CNetworkHandle( CASW_Marine, m_hDeployer );
+	CNetworkVar( bool, m_bAssembled );
+	CNetworkVar( bool, m_bIsInUse );
+	CNetworkVar( float, m_fAssembleProgress );
+	CNetworkVar( float, m_fAssembleCompleteTime );
+	CNetworkVar( int, m_iAmmo );
+	CNetworkVar( int, m_iMaxAmmo );
+	CNetworkVar( bool, m_bSkillMarineHelping );
 	float m_fSkillMarineHelping;
 	float m_fDamageScale;
 	bool m_bAlreadyTaken;
@@ -84,9 +89,15 @@ public:
 	inline void SetGunType( GunType_t iType );
 	inline void SetGunType( int iType );
 
-	CNetworkVar( AccountID_t, m_iOriginalOwnerSteamAccount );
-	CHandle<CASW_Player> m_hOriginalOwnerPlayer;
-	int m_iInventoryEquipSlotIndex;
+	CNetworkHandle( CASW_Player, m_hOriginalOwnerPlayer );
+	CNetworkVar( int, m_iInventoryEquipSlot );
+	// sentry item validity was checked when the sentry was deployed.
+	// there's a chance players could do some convoluted process where
+	// they partially upload dynamic item data before mission start
+	// and finish uploading it after the sentry is placed, but they
+	// can also just write their own code that increments stats directly,
+	// so this is not something we should spend resources trying to prevent.
+	bool IsInventoryEquipSlotValid() const { return !!m_hOriginalOwnerPlayer && m_iInventoryEquipSlot != -1; }
 
 protected:
 	
@@ -106,8 +117,7 @@ protected:
 	static const SentryGunTypeInfo_t sm_gunTypeToInfo[kGUNTYPE_MAX];
 };
 
-
-void CASW_Sentry_Base::SetGunType( int iType )
+inline void CASW_Sentry_Base::SetGunType( int iType )
 {
 	Assert( iType >= 0 && iType < kGUNTYPE_MAX );
 	SetGunType( (GunType_t) iType );

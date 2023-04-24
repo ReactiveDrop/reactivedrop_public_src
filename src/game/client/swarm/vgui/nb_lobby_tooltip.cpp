@@ -58,7 +58,7 @@ CNB_Lobby_Tooltip::CNB_Lobby_Tooltip( vgui::Panel *parent, const char *name ) : 
 	m_nLastInventorySlot = -1;
 	m_bMarineTooltip = false;
 	m_bPromotionTooltip = false;
-	m_bMedalTooltip = false;
+	m_iMedalTooltip = -1;
 	m_iLastMedal = 0;
 
 	vgui::ivgui()->AddTickSignal( GetVPanel() );
@@ -103,7 +103,7 @@ void CNB_Lobby_Tooltip::ShowMarineTooltip( int nLobbySlot )
 	m_bMarineTooltip = true;
 	m_nLobbySlot = nLobbySlot;
 	m_bPromotionTooltip = false;
-	m_bMedalTooltip = false;
+	m_iMedalTooltip = -1;
 }
 
 void CNB_Lobby_Tooltip::ShowWeaponTooltip( int nLobbySlot, int nInventorySlot )
@@ -112,7 +112,7 @@ void CNB_Lobby_Tooltip::ShowWeaponTooltip( int nLobbySlot, int nInventorySlot )
 	m_nLobbySlot = nLobbySlot;
 	m_nInventorySlot = nInventorySlot;
 	m_bPromotionTooltip = false;
-	m_bMedalTooltip = false;
+	m_iMedalTooltip = -1;
 }
 
 void CNB_Lobby_Tooltip::ShowMarinePromotionTooltip( int nLobbySlot )
@@ -120,19 +120,21 @@ void CNB_Lobby_Tooltip::ShowMarinePromotionTooltip( int nLobbySlot )
 	m_bMarineTooltip = false;
 	m_nLobbySlot = nLobbySlot;
 	m_bPromotionTooltip = true;
-	m_bMedalTooltip = false;
+	m_iMedalTooltip = -1;
 }
 
-void CNB_Lobby_Tooltip::ShowMarineMedalTooltip( int nLobbySlot )
+void CNB_Lobby_Tooltip::ShowMarineMedalTooltip( int nLobbySlot, int nMedalIndex )
 {
+	Assert( nMedalIndex >= 0 && nMedalIndex < RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS );
+
 	// force reset (this handles cases like multiple players with HoIAF medals)
-	if ( m_nLobbySlot != nLobbySlot )
+	if ( m_nLobbySlot != nLobbySlot || m_iMedalTooltip != nMedalIndex )
 		m_iLastMedal = -1;
 
 	m_bMarineTooltip = false;
 	m_nLobbySlot = nLobbySlot;
 	m_bPromotionTooltip = false;
-	m_bMedalTooltip = true;
+	m_iMedalTooltip = nMedalIndex;
 }
 
 void CNB_Lobby_Tooltip::OnTick()
@@ -176,11 +178,11 @@ void CNB_Lobby_Tooltip::OnTick()
 		return;
 	}
 
-	if ( m_bMedalTooltip )
+	if ( m_iMedalTooltip != -1 )
 	{
 		m_pTitle->SetVisible( true );
 
-		const CRD_ItemInstance &details = Briefing()->GetEquippedMedal( m_nLobbySlot );
+		const CRD_ItemInstance &details = Briefing()->GetEquippedMedal( m_nLobbySlot, m_iMedalTooltip );
 		if ( details.m_iItemDefID != m_iLastMedal )
 		{
 			const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( details.m_iItemDefID );

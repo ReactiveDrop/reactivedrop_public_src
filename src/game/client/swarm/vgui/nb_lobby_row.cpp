@@ -66,8 +66,14 @@ CNB_Lobby_Row::CNB_Lobby_Row( vgui::Panel *parent, const char *name ) : BaseClas
 	m_pVoiceIcon = new vgui::ImagePanel( this, "VoiceIcon" );
 	m_pPromotionIcon = new vgui::ImagePanel( this, "PromotionIcon" );
 	m_pPromotionIcon->SetVisible( false );
-	m_pMedalIcon = new vgui::ImagePanel( this, "MedalIcon" );
-	m_pMedalIcon->SetVisible( false );
+	m_pMedalIcon[0] = new vgui::ImagePanel( this, "MedalIcon" );
+	m_pMedalIcon[0]->SetVisible( false );
+	for ( int i = 1; i < NELEMS( m_pMedalIcon ); i++ )
+	{
+		m_pMedalIcon[i] = new vgui::ImagePanel( this, VarArgs( "MedalIcon%d", i ) );
+		m_pMedalIcon[i]->SetVisible( false );
+		m_lastMedal[i] = 0;
+	}
 
 	m_nLobbySlot = -1;
 
@@ -87,7 +93,6 @@ CNB_Lobby_Row::CNB_Lobby_Row( vgui::Panel *parent, const char *name ) : BaseClas
 	m_pXPBar->SetColors( Color( 255, 255, 255, 0 ), Color( 93,148,192,255 ), Color( 255, 255, 255, 255 ), Color( 17,37,57,255 ), Color( 35, 77, 111, 255 ) );
 	//m_pXPBar->m_bShowCumulativeTotal = true;
 	m_nLastPromotion = 0;
-	m_lastMedal = 0;
 
 	m_pXPBar->m_flBorder = 1.5f;
 	m_nLobbySlot = 0;
@@ -159,7 +164,11 @@ void CNB_Lobby_Row::UpdateDetails()
 		m_pXPBar->SetVisible( false );
 		m_pLevelLabel->SetVisible( false );
 		m_pPromotionIcon->SetVisible( false );
-		m_pMedalIcon->SetVisible( false );
+		for ( int i = 0; i < NELEMS( m_pMedalIcon ); i++ )
+		{
+			m_pMedalIcon[i]->SetVisible( false );
+			m_lastMedal[i] = 0;
+		}
 		m_pNameDropdown->SetVisible( false );
 		m_pAvatarImage->SetVisible( false );
 		m_pClassLabel->SetVisible( false );
@@ -225,24 +234,30 @@ void CNB_Lobby_Row::UpdateDetails()
 			( ( CAvatarImage * )m_pAvatarImage->GetImage() )->SetAvatarSize( wide, tall );
 			( ( CAvatarImage * )m_pAvatarImage->GetImage() )->SetPos( -AVATAR_INDENT_X, -AVATAR_INDENT_Y );
 
-			m_pMedalIcon->SetVisible( false );
-			m_lastMedal = 0;
+			for ( int i = 0; i < NELEMS( m_pMedalIcon ); i++ )
+			{
+				m_pMedalIcon[i]->SetVisible( false );
+				m_lastMedal[i] = 0;
+			}
 		}
 		m_lastSteamID = steamID;
 
-		const C_RD_ItemInstance &medal = Briefing()->GetEquippedMedal( m_nLobbySlot );
-		if ( medal.m_iItemDefID != m_lastMedal )
+		for ( int i = 0; i < NELEMS( m_pMedalIcon ); i++ )
 		{
-			if ( !medal.IsSet() )
+			const C_RD_ItemInstance &medal = Briefing()->GetEquippedMedal( m_nLobbySlot, i );
+			if ( medal.m_iItemDefID != m_lastMedal[i] )
 			{
-				m_pMedalIcon->SetVisible( false );
-				m_lastMedal = medal.m_iItemDefID;
-			}
-			else
-			{
-				m_pMedalIcon->SetImage( medal.GetIcon() );
-				m_pMedalIcon->SetVisible( true );
-				m_lastMedal = medal.m_iItemDefID;
+				if ( !medal.IsSet() )
+				{
+					m_pMedalIcon[i]->SetVisible( false );
+					m_lastMedal[i] = medal.m_iItemDefID;
+				}
+				else
+				{
+					m_pMedalIcon[i]->SetImage( medal.GetIcon() );
+					m_pMedalIcon[i]->SetVisible( true );
+					m_lastMedal[i] = medal.m_iItemDefID;
+				}
 			}
 		}
 	}
@@ -321,7 +336,11 @@ void CNB_Lobby_Row::UpdateDetails()
 		// AI slots
 		m_pLevelLabel->SetVisible( false );
 		m_pPromotionIcon->SetVisible( false );
-		m_pMedalIcon->SetVisible( false );
+		for ( int i = 0; i < NELEMS( m_pMedalIcon ); i++ )
+		{
+			m_pMedalIcon[i]->SetVisible( false );
+			m_lastMedal[i] = 0;
+		}
 		m_pAvatarImage->SetVisible( false );
 
 		int nAvatarX, nAvatarY;
@@ -450,9 +469,16 @@ void CNB_Lobby_Row::CheckTooltip( CNB_Lobby_Tooltip *pTooltip )
 	{
 		pTooltip->ShowMarinePromotionTooltip( m_nLobbySlot );
 	}
-	else if ( CControllerFocus::IsPanelReallyVisible( m_pMedalIcon ) && m_pMedalIcon->IsCursorOver() )
+	else
 	{
-		pTooltip->ShowMarineMedalTooltip( m_nLobbySlot );
+		for ( int i = 0; i < NELEMS( m_pMedalIcon ); i++ )
+		{
+			if ( CControllerFocus::IsPanelReallyVisible( m_pMedalIcon[i] ) && m_pMedalIcon[i]->IsCursorOver() )
+			{
+				pTooltip->ShowMarineMedalTooltip( m_nLobbySlot, i );
+				return;
+			}
+		}
 	}
 }
 

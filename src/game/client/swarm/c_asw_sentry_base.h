@@ -31,17 +31,18 @@ public:
 	int GetAmmo() const { return m_iAmmo; }
 	int GetMaxAmmo() const { return m_iMaxAmmo; }
 
-	CNetworkVar(bool, m_bAssembled);
-	CNetworkVar(bool, m_bIsInUse);
-	CNetworkVar(float, m_fAssembleProgress);
-	CNetworkVar(float, m_fAssembleCompleteTime);
-	CNetworkVar(int, m_iAmmo);
-	CNetworkVar(int, m_iMaxAmmo);
-	CNetworkVar(bool, m_bSkillMarineHelping);
-	CNetworkVar(int, m_nGunType);
+	CNetworkVar( bool, m_bAssembled );
+	CNetworkVar( bool, m_bIsInUse );
+	CNetworkVar( float, m_fAssembleProgress );
+	CNetworkVar( float, m_fAssembleCompleteTime );
+	CNetworkVar( int, m_iAmmo );
+	CNetworkVar( int, m_iMaxAmmo );
+	CNetworkVar( bool, m_bSkillMarineHelping );
+	CNetworkVar( int, m_nGunType );
 
-	CNetworkVar( AccountID_t, m_iOriginalOwnerSteamAccount );
-	CNetworkVarEmbedded( CRD_ItemInstance, m_InventoryItemData );
+	CNetworkHandle( CASW_Player, m_hOriginalOwnerPlayer );
+	CNetworkVar( int, m_iInventoryEquipSlot );
+	bool IsInventoryEquipSlotValid() const { return !!m_hOriginalOwnerPlayer && m_iInventoryEquipSlot != -1; }
 
 	// class of the weapon that created us
 	const char* GetWeaponClass();

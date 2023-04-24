@@ -1720,3 +1720,27 @@ int CASW_Weapon::GetDefaultClip2() const
 	Assert( GetEquipItem() );
 	return GetEquipItem() ? GetEquipItem()->DefaultAmmo2() : WEAPON_NOCLIP;
 }
+
+bool CASW_Weapon::IsInventoryEquipSlotValid() const
+{
+	if ( m_hOriginalOwnerPlayer == NULL || m_iInventoryEquipSlot == -1 )
+		return false;
+
+	Assert( m_pEquipItem );
+	if ( !m_pEquipItem )
+		return false;
+
+	const CRD_ItemInstance &instance = m_hOriginalOwnerPlayer->m_EquippedItemDataDynamic[m_iInventoryEquipSlot];
+	if ( !instance.IsSet() )
+		return false;
+
+	const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( instance.m_iItemDefID );
+	Assert( pDef );
+	if ( !pDef )
+		return false;
+
+	if ( pDef->EquipIndex != m_pEquipItem->m_iItemIndex )
+		return false;
+
+	return pDef->ItemSlotMatches( m_pEquipItem->m_bIsExtra ? "extra" : "weapon" );
+}

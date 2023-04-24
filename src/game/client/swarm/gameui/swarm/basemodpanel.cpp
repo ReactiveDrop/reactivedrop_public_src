@@ -1464,11 +1464,11 @@ void CBaseModPanel::OnLevelLoadingFinished( KeyValues *kvEvent )
 		if ( pMsg )
 		{
 			GenericConfirmation::Data_t data;
-			data.pWindowTitle = "#L4D360UI_MsgBx_DisconnectedFromServer";			
+			data.pWindowTitle = "#L4D360UI_MsgBx_DisconnectedFromServer";
 			data.bOkButtonEnabled = true;
 			data.pMessageText = failureReason;
 			pMsg->SetUsageData( data );
-		}		
+		}
 	}
 }
 

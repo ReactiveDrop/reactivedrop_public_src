@@ -44,15 +44,13 @@
 #include "tier0/memdbgon.h"
 
 
-COMPILE_TIME_ASSERT( RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + ASW_NUM_MARINE_PROFILES == RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_WEAPON );
-COMPILE_TIME_ASSERT( RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_WEAPON + ASW_NUM_EQUIP_REGULAR == RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_EXTRA );
-COMPILE_TIME_ASSERT( RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_EXTRA + ASW_NUM_EQUIP_EXTRA == RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS );
+COMPILE_TIME_ASSERT( RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MEDAL + RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS == RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE );
+COMPILE_TIME_ASSERT( RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + ASW_NUM_MARINE_PROFILES == RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC );
+COMPILE_TIME_ASSERT( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC == 24 ); // if this assert fails, fix network table and update assert
 #pragma warning(push)
 #pragma warning(disable: 4130) // we're comparing string literals, but if the comparison fails due to memory weirdness, it'll fail at compile time, so it's fine
 COMPILE_TIME_ASSERT( ReactiveDropInventory::g_InventorySlotNames[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MEDAL] == "medal" );
 COMPILE_TIME_ASSERT( ReactiveDropInventory::g_InventorySlotNames[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE] == "marine0" );
-COMPILE_TIME_ASSERT( ReactiveDropInventory::g_InventorySlotNames[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_WEAPON] == "weapon0" );
-COMPILE_TIME_ASSERT( ReactiveDropInventory::g_InventorySlotNames[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_EXTRA] == "extra0" );
 #pragma warning(pop)
 
 #ifdef CLIENT_DLL
@@ -102,13 +100,15 @@ public:
 			pInventory->DestroyResult( m_InspectItemResult );
 			pInventory->DestroyResult( m_ExchangeItemsResult );
 			pInventory->DestroyResult( m_DynamicPropertyUpdateResult );
-			pInventory->DestroyResult( m_PreparingEquipNotification );
-			FOR_EACH_VEC( m_PendingEquipSend, i )
+			for ( int iType = 0; iType < NUM_EQUIP_SLOT_TYPES; iType++ )
 			{
-				m_PendingEquipSend[i]->deleteThis();
-
+				pInventory->DestroyResult( m_PreparingEquipNotification[iType] );
+				FOR_EACH_VEC( m_PendingEquipSend[iType], i )
+				{
+					m_PendingEquipSend[iType][i]->deleteThis();
+				}
+				m_PendingEquipSend[iType].Purge();
 			}
-			m_PendingEquipSend.Purge();
 #endif
 		}
 	}
@@ -173,7 +173,7 @@ public:
 		}
 
 #ifdef CLIENT_DLL
-		QueueSendEquipNotification( true );
+		QueueSendStaticEquipNotification( true );
 #endif
 	}
 
@@ -193,25 +193,26 @@ public:
 		}
 
 #ifdef CLIENT_DLL
-		pInventory->DestroyResult( m_PreparingEquipNotification );
-		m_PreparingEquipNotification = k_SteamInventoryResultInvalid;
-		FOR_EACH_VEC( m_PendingEquipSend, i )
+		for ( int iType = 0; iType < NUM_EQUIP_SLOT_TYPES; iType++ )
 		{
-			m_PendingEquipSend[i]->deleteThis();
+			pInventory->DestroyResult( m_PreparingEquipNotification[iType] );
+			m_PreparingEquipNotification[iType] = k_SteamInventoryResultInvalid;
+			FOR_EACH_VEC( m_PendingEquipSend[iType], i)
+			{
+				m_PendingEquipSend[iType][i]->deleteThis();
 
+			}
+			m_PendingEquipSend[iType].Purge();
+
+			CommitDynamicProperties();
 		}
-		m_PendingEquipSend.Purge();
-
-		CommitDynamicProperties();
-
-		m_LocalEquipCache.PurgeAndDeleteElements();
 #endif
 	}
 
 #ifdef CLIENT_DLL
-	void QueueSendEquipNotification( bool bForce = false )
+	void QueueSendStaticEquipNotification( bool bForce = false )
 	{
-		if ( !bForce && ( m_PreparingEquipNotification != k_SteamInventoryResultInvalid || !engine->IsInGame() ) )
+		if ( !bForce && ( m_PreparingEquipNotification[EQUIP_SLOT_TYPE_STATIC] != k_SteamInventoryResultInvalid || !engine->IsInGame() ) )
 		{
 			return;
 		}
@@ -222,6 +223,28 @@ public:
 			return;
 		}
 
+		if ( !s_bLoadedItemDefs && gpGlobals->maxClients == 1 && engine->IsClientLocalToActiveServer() )
+		{
+			KeyValues *pCachedNotification = new KeyValues( "EquippedItemsCachedS" );
+			for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC; i++ )
+			{
+				// leave local cache empty; dynamic properties cannot be updated offline
+				m_LocalEquipCacheStatic[i] = ReactiveDropInventory::ItemInstance_t{};
+
+				const char *szSlot = ReactiveDropInventory::g_InventorySlotNames[i];
+				ConVarRef cv{ CFmtStr{ "rd_equipped_%s", szSlot } };
+				Assert( cv.IsValid() );
+
+				SteamItemInstanceID_t id = strtoull( cv.GetString(), NULL, 10 );
+				if ( id != 0 && id != k_SteamItemInstanceIDInvalid )
+					pCachedNotification->SetUint64( szSlot, id );
+			}
+
+			engine->ServerCmdKeyValues( pCachedNotification );
+
+			// still try to send networked notification (we might have gone online since startup)
+		}
+
 		ISteamInventory *pInventory = SteamInventory();
 		Assert( pInventory );
 		if ( !pInventory )
@@ -229,16 +252,16 @@ public:
 			return;
 		}
 
-		pInventory->DestroyResult( m_PreparingEquipNotification );
-		m_PreparingEquipNotification = k_SteamInventoryResultInvalid;
-		FOR_EACH_VEC( m_PendingEquipSend, i )
+		pInventory->DestroyResult( m_PreparingEquipNotification[EQUIP_SLOT_TYPE_STATIC] );
+		m_PreparingEquipNotification[EQUIP_SLOT_TYPE_STATIC] = k_SteamInventoryResultInvalid;
+		FOR_EACH_VEC( m_PendingEquipSend[EQUIP_SLOT_TYPE_STATIC], i )
 		{
-			m_PendingEquipSend[i]->deleteThis();
+			m_PendingEquipSend[EQUIP_SLOT_TYPE_STATIC][i]->deleteThis();
 		}
-		m_PendingEquipSend.Purge();
+		m_PendingEquipSend[EQUIP_SLOT_TYPE_STATIC].Purge();
 
 		CUtlVector<SteamItemInstanceID_t> ItemIDs;
-		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS; i++ )
+		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC; i++ )
 		{
 			const char *szSlot = ReactiveDropInventory::g_InventorySlotNames[i];
 			ConVarRef cv{ CFmtStr{ "rd_equipped_%s", szSlot } };
@@ -250,23 +273,40 @@ public:
 		}
 
 		if ( ItemIDs.Count() == 0 )
-			SendEquipNotification();
+			SendEquipNotification( EQUIP_SLOT_TYPE_STATIC );
 		else
-			pInventory->GetItemsByID( &m_PreparingEquipNotification, ItemIDs.Base(), ItemIDs.Count() );
+			pInventory->GetItemsByID( &m_PreparingEquipNotification[EQUIP_SLOT_TYPE_STATIC], ItemIDs.Base(), ItemIDs.Count() );
 	}
 
-	void SendEquipNotification()
+	void ResendDynamicEquipNotification()
 	{
-		COMPILE_TIME_ASSERT( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS < 255 );
+		Assert( !"TODO" );
+	}
 
-		if ( m_PreparingEquipNotification == k_SteamInventoryResultInvalid )
+	void SendEquipNotification( int iType )
+	{
+		COMPILE_TIME_ASSERT( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC < 255 );
+		COMPILE_TIME_ASSERT( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC < 255 );
+		COMPILE_TIME_ASSERT( NUM_EQUIP_SLOT_TYPES == 2 );
+
+		int iNumSlots = iType == EQUIP_SLOT_TYPE_STATIC ? RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC : RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC;
+
+		if ( m_PreparingEquipNotification[iType] == k_SteamInventoryResultInvalid )
 		{
-			byte allZeroes[4 + RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS];
+			byte allZeroes[4 + MAX( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC, RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC )];
 			V_memset( allZeroes, 0, sizeof( allZeroes ) );
 
-			*reinterpret_cast< CRC32_t * >( &allZeroes[0] ) = CRC32_ProcessSingleBuffer( &allZeroes[4], RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS );
+			*reinterpret_cast< CRC32_t * >( &allZeroes[0] ) = CRC32_ProcessSingleBuffer( &allZeroes[4], iNumSlots );
 
-			SendEquipNotification( allZeroes, sizeof( allZeroes ) );
+			if ( iType == EQUIP_SLOT_TYPE_STATIC )
+			{
+				for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC; i++ )
+				{
+					m_LocalEquipCacheStatic[i] = ReactiveDropInventory::ItemInstance_t{};
+				}
+			}
+
+			SendEquipNotification( allZeroes, 4 + iNumSlots, iType );
 
 			return;
 		}
@@ -278,91 +318,121 @@ public:
 			return;
 		}
 
-		EResult eResult = pInventory->GetResultStatus( m_PreparingEquipNotification );
+		EResult eResult = pInventory->GetResultStatus( m_PreparingEquipNotification[iType] );
 		if ( eResult != k_EResultOK )
 		{
-			Warning( "Getting snapshot of equipped items to send to server failed: %d %s\n", eResult, UTIL_RD_EResultToString( eResult ) );
+			Warning( "Getting snapshot of equipped items (type %d) to send to server failed: %d %s\n", iType, eResult, UTIL_RD_EResultToString( eResult ) );
 
-			pInventory->DestroyResult( m_PreparingEquipNotification );
-			m_PreparingEquipNotification = k_SteamInventoryResultInvalid;
+			pInventory->DestroyResult( m_PreparingEquipNotification[iType] );
+			m_PreparingEquipNotification[iType] = k_SteamInventoryResultInvalid;
 
 			return;
 		}
 
 		uint32_t nSize{};
-		pInventory->GetResultItems( m_PreparingEquipNotification, NULL, &nSize );
-		m_LocalEquipCache.PurgeAndDeleteElements();
-		m_LocalEquipCache.EnsureCapacity( int( nSize ) );
+		pInventory->GetResultItems( m_PreparingEquipNotification[iType], NULL, &nSize );
 
+		CUtlVector<ReactiveDropInventory::ItemInstance_t> instances{ 0, int( nSize ) };
 		for ( uint32_t i = 0; i < nSize; i++ )
 		{
-			m_LocalEquipCache.AddToTail( new ReactiveDropInventory::ItemInstance_t{ m_PreparingEquipNotification, i } );
+			instances.AddToTail( ReactiveDropInventory::ItemInstance_t{ m_PreparingEquipNotification[iType], i } );
 		}
 
 		nSize = 0;
-		pInventory->SerializeResult( m_PreparingEquipNotification, NULL, &nSize );
-		CUtlMemory<byte> buf{ 0, int( 4 + RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS + nSize ) };
+		pInventory->SerializeResult( m_PreparingEquipNotification[iType], NULL, &nSize );
+		CUtlMemory<byte> buf{ 0, int( 4 + iNumSlots + nSize ) };
 
 		byte *pIndex = buf.Base() + 4;
-
-		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS; i++ )
+		if ( iType == EQUIP_SLOT_TYPE_STATIC )
 		{
-			const char *szSlot = ReactiveDropInventory::g_InventorySlotNames[i];
-			ConVarRef cv{ CFmtStr{ "rd_equipped_%s", szSlot } };
-			Assert( cv.IsValid() );
-
-			*pIndex = 0;
-
-			SteamItemInstanceID_t id = strtoull( cv.GetString(), NULL, 10 );
-			if ( id != 0 && id != k_SteamItemInstanceIDInvalid )
+			for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC; i++ )
 			{
-				FOR_EACH_VEC( m_LocalEquipCache, j )
+				const char *szSlot = ReactiveDropInventory::g_InventorySlotNames[i];
+				ConVarRef cv{ CFmtStr{ "rd_equipped_%s", szSlot } };
+				Assert( cv.IsValid() );
+
+				*pIndex = 0;
+				m_LocalEquipCacheStatic[i] = ReactiveDropInventory::ItemInstance_t{};
+
+				SteamItemInstanceID_t id = strtoull( cv.GetString(), NULL, 10 );
+				if ( id != 0 && id != k_SteamItemInstanceIDInvalid )
 				{
-					if ( m_LocalEquipCache[j]->ItemID == id )
+					FOR_EACH_VEC( instances, j )
 					{
-						*pIndex = j + 1;
-						break;
+						if ( instances[j].ItemID == id )
+						{
+							m_LocalEquipCacheStatic[i] = instances[j];
+							*pIndex = j + 1;
+							break;
+						}
 					}
 				}
-			}
 
-			pIndex++;
+				pIndex++;
+			}
+		}
+		else if ( iType == EQUIP_SLOT_TYPE_DYNAMIC )
+		{
+			for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC; i++ )
+			{
+				*pIndex = 0;
+
+				if ( m_EquipIDsDynamic[i] != 0 && m_EquipIDsDynamic[i] != k_SteamItemInstanceIDInvalid )
+				{
+					FOR_EACH_VEC( instances, j )
+					{
+						if ( instances[j].ItemID == m_EquipIDsDynamic[i] )
+						{
+							m_LocalEquipCacheDynamic[i] = instances[j];
+							*pIndex = j + 1;
+							break;
+						}
+					}
+				}
+
+				pIndex++;
+			}
+		}
+		else
+		{
+			Assert( 0 );
 		}
 
-		pInventory->SerializeResult( m_PreparingEquipNotification, pIndex, &nSize );
+		pInventory->SerializeResult( m_PreparingEquipNotification[iType], pIndex, &nSize );
 
 		*reinterpret_cast< CRC32_t * >( buf.Base() ) = CRC32_ProcessSingleBuffer( buf.Base() + 4, buf.Count() - 4 );
 
-		pInventory->DestroyResult( m_PreparingEquipNotification );
-		m_PreparingEquipNotification = k_SteamInventoryResultInvalid;
+		pInventory->DestroyResult( m_PreparingEquipNotification[iType] );
+		m_PreparingEquipNotification[iType] = k_SteamInventoryResultInvalid;
 
-		SendEquipNotification( buf.Base(), buf.Count() );
+		SendEquipNotification( buf.Base(), buf.Count(), iType );
 	}
 
-	void SendEquipNotification( const byte *pData, int nLength )
+	void SendEquipNotification( const byte *pData, int nLength, int iType )
 	{
-		Assert( m_PendingEquipSend.Count() == 0 );
+		Assert( m_PendingEquipSend[iType].Count() == 0 );
 		Assert( nLength <= RD_EQUIPPED_ITEMS_NOTIFICATION_WORST_CASE_SIZE );
-		m_EquipSendParity++;
-		Assert( m_EquipSendParity > 0 );
+		m_EquipSendParity[iType] = ++m_EquipSendParityNext;
+		Assert( m_EquipSendParity[iType] > 0);
 		char szHex[RD_EQUIPPED_ITEMS_NOTIFICATION_PAYLOAD_SIZE_PER_PACKET * 2 + 1]{};
 		for ( int i = 0; i < nLength; i += RD_EQUIPPED_ITEMS_NOTIFICATION_PAYLOAD_SIZE_PER_PACKET )
 		{
 			V_binarytohex( pData + i, MIN( nLength - i, RD_EQUIPPED_ITEMS_NOTIFICATION_PAYLOAD_SIZE_PER_PACKET ), szHex, sizeof( szHex ) );
 
-			KeyValues *pKV = new KeyValues( "EquippedItems" );
-			pKV->SetInt( "i", i * 2 );
-			pKV->SetInt( "t", nLength * 2 );
-			pKV->SetInt( "e", m_EquipSendParity );
+			COMPILE_TIME_ASSERT( NUM_EQUIP_SLOT_TYPES == 2 );
+			KeyValues *pKV = new KeyValues( iType == EQUIP_SLOT_TYPE_STATIC ? "EquippedItemsS" : "EquippedItemsD" );
+			pKV->SetInt( "i", i );
+			pKV->SetInt( "t", nLength );
+			pKV->SetInt( "e", m_EquipSendParity[iType]);
 			pKV->SetString( "m", szHex );
 
 			if ( i == 0 )
 				engine->ServerCmdKeyValues( pKV );
 			else
-				m_PendingEquipSend.Insert( pKV );
+				m_PendingEquipSend[iType].Insert( pKV );
 		}
 
-		DevMsg( 3, "Split equipped items notification into %d chunks (%d bytes total payload)\n", m_PendingEquipSend.Count() + 1, nLength );
+		DevMsg( 3, "Split equipped items notification (type %d) into %d chunks (%d bytes total payload)\n", iType, m_PendingEquipSend[iType].Count() + 1, nLength );
 	}
 
 	void HandleItemDropResult( SteamInventoryResult_t &hResult )
@@ -662,24 +732,22 @@ public:
 			if ( !pMR || pMR->m_OriginalCommander.Get() != pPlayer || ( !pMR->IsInhabited() && pMR->GetHealthPercent() > 0 ) )
 				continue;
 
-#ifdef CLIENT_DLL
-			CRD_ItemInstance &suitInstance = pMR->m_EquippedSuit;
-#else
-			CRD_ItemInstance &suitInstance = pPlayer->m_EquippedItemData[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + pMR->GetProfileIndex()];
-#endif
+			CRD_ItemInstance &suitInstance = pPlayer->m_EquippedItemDataStatic[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + pMR->GetProfileIndex()];
 
 			ModifyAccessoryDynamicPropValue( suitInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
 
 			for ( int j = 0; j < ASW_NUM_INVENTORY_SLOTS; j++ )
 			{
-#ifdef CLIENT_DLL
-				CRD_ItemInstance &weaponInstance = pMR->m_StartingEquipWeapons[j];
-#else
-				CASW_EquipItem *pEquip = g_ASWEquipmentList.GetItemForSlot( j, pMR->m_iInitialWeaponsInSlots[j] );
-				if ( !pEquip || pEquip->m_iInventoryEquipIndex == -1 )
+				if ( pMR->m_iWeaponsInSlotsDynamic[j] == -1 )
 					continue;
-				CRD_ItemInstance &weaponInstance = pPlayer->m_EquippedItemData[pEquip->m_iInventoryEquipIndex];
-#endif
+
+				CRD_ItemInstance &weaponInstance = pPlayer->m_EquippedItemDataDynamic[j];
+				if ( !weaponInstance.IsSet() )
+					continue;
+
+				const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( weaponInstance.m_iItemDefID );
+				if ( !pDef || !pDef->ItemSlotMatches( j == ASW_INVENTORY_SLOT_EXTRA ? "extra" : "weapon" ) || pDef->EquipIndex != pMR->m_iInitialWeaponsInSlots[j] )
+					continue;
 
 				ModifyAccessoryDynamicPropValue( weaponInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
 			}
@@ -702,30 +770,19 @@ public:
 			CASW_Marine_Resource *pMR = pMarine->GetMarineResource();
 			if ( pMR && pMR->m_OriginalCommander.Get() == pMR->m_Commander.Get() )
 			{
-#ifdef CLIENT_DLL
-				CRD_ItemInstance &suitInstance = pMR->m_EquippedSuit;
-#else
-				CRD_ItemInstance &suitInstance = pMR->m_OriginalCommander->m_EquippedItemData[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + pMR->GetProfileIndex()];
-#endif
+				CRD_ItemInstance &suitInstance = pMR->m_OriginalCommander->m_EquippedItemDataStatic[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + pMR->GetProfileIndex()];
 
 				ModifyAccessoryDynamicPropValue( suitInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
 			}
 		}
 
-		AccountID_t iRequiredAccount = pNPC->GetCommander()->GetSteamID().GetAccountID();
-
-		for ( int i = 0; i < MAX_WEAPONS; i++ )
+		for ( int i = 0; i < ASW_NUM_INVENTORY_SLOTS; i++ )
 		{
 			CASW_Weapon *pWeapon = pNPC->GetASWWeapon( i );
-			if ( pWeapon && pWeapon->m_iOriginalOwnerSteamAccount == iRequiredAccount )
+			if ( pWeapon && pWeapon->m_hOriginalOwnerPlayer.Get() == pNPC->GetCommander() && pWeapon->IsInventoryEquipSlotValid() )
 			{
-#ifdef CLIENT_DLL
-				CRD_ItemInstance &weaponInstance = pWeapon->m_InventoryItemData;
-#else
-				if ( pWeapon->m_iInventoryEquipSlotIndex == -1 )
-					continue;
-				CRD_ItemInstance &weaponInstance = pWeapon->m_hOriginalOwnerPlayer->m_EquippedItemData[pWeapon->m_iInventoryEquipSlotIndex];
-#endif
+				CRD_ItemInstance &weaponInstance = pWeapon->m_hOriginalOwnerPlayer->m_EquippedItemDataDynamic[pWeapon->m_iInventoryEquipSlot];
+				Assert( weaponInstance.IsSet() );
 
 				ModifyAccessoryDynamicPropValue( weaponInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
 			}
@@ -753,30 +810,16 @@ public:
 #endif
 				)
 			{
-#ifdef CLIENT_DLL
-				CRD_ItemInstance &suitInstance = pMR->m_EquippedSuit;
-#else
-				CRD_ItemInstance &suitInstance = pMR->m_OriginalCommander->m_EquippedItemData[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + pMR->GetProfileIndex()];
-#endif
+				CRD_ItemInstance &suitInstance = pMR->m_OriginalCommander->m_EquippedItemDataStatic[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + pMR->GetProfileIndex()];
 
 				ModifyAccessoryDynamicPropValue( suitInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
 			}
 		}
 
-		AccountID_t iRequiredAccount = pNPC->GetCommander()->GetSteamID().GetAccountID();
-		if ( pWeapon && ( bAllowBorrowed || pWeapon->m_iOriginalOwnerSteamAccount == iRequiredAccount )
-#ifdef CLIENT_DLL
-			&& SteamUser() && pWeapon->m_iOriginalOwnerSteamAccount == SteamUser()->GetSteamID().GetAccountID()
-#endif
-			)
+		if ( pWeapon && pWeapon->IsInventoryEquipSlotValid() && ( bAllowBorrowed || pWeapon->m_hOriginalOwnerPlayer.Get() == pNPC->GetCommander() ) )
 		{
-#ifdef CLIENT_DLL
-			CRD_ItemInstance &weaponInstance = pWeapon->m_InventoryItemData;
-#else
-			if ( pWeapon->m_iInventoryEquipSlotIndex == -1 || !pWeapon->m_hOriginalOwnerPlayer )
-				return;
-			CRD_ItemInstance &weaponInstance = pWeapon->m_hOriginalOwnerPlayer->m_EquippedItemData[pWeapon->m_iInventoryEquipSlotIndex];
-#endif
+			CRD_ItemInstance &weaponInstance = pWeapon->m_hOriginalOwnerPlayer->m_EquippedItemDataDynamic[pWeapon->m_iInventoryEquipSlot];
+			Assert( weaponInstance.IsSet() );
 
 			ModifyAccessoryDynamicPropValue( weaponInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
 		}
@@ -855,12 +898,23 @@ public:
 
 		ReactiveDropInventory::ItemInstance_t *pLocalInstance = NULL;
 #ifdef CLIENT_DLL
-		FOR_EACH_VEC( m_LocalEquipCache, i )
+		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC; i++ )
 		{
-			if ( m_LocalEquipCache[i]->ItemID == instance.m_iItemInstanceID )
+			if ( m_LocalEquipCacheDynamic[i].ItemID == instance.m_iItemInstanceID )
 			{
-				pLocalInstance = m_LocalEquipCache[i];
+				pLocalInstance = &m_LocalEquipCacheDynamic[i];
 				break;
+			}
+		}
+		if ( !pLocalInstance )
+		{
+			for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC; i++ )
+			{
+				if ( m_LocalEquipCacheStatic[i].ItemID == instance.m_iItemInstanceID )
+				{
+					pLocalInstance = &m_LocalEquipCacheStatic[i];
+					break;
+				}
 			}
 		}
 		Assert( pLocalInstance );
@@ -1086,9 +1140,14 @@ public:
 		{
 #ifdef CLIENT_DLL
 			if ( m_PendingDynamicPropertyUpdates.Count() )
+			{
 				CommitDynamicProperties();
+			}
 			else if ( m_DynamicPropertyUpdateResult == k_SteamInventoryResultInvalid )
-				QueueSendEquipNotification();
+			{
+				QueueSendStaticEquipNotification();
+				ResendDynamicEquipNotification();
+			}
 #endif
 			return;
 		}
@@ -1258,15 +1317,19 @@ public:
 
 				pInventory->GetAllItems( &m_GetFullInventoryForCacheResult );
 
-				QueueSendEquipNotification();
+				QueueSendStaticEquipNotification();
+				ResendDynamicEquipNotification();
 			}
 		}
 
-		if ( pParam->m_handle == m_PreparingEquipNotification )
+		for ( int iType = 0; iType < NUM_EQUIP_SLOT_TYPES; iType++ )
 		{
-			SendEquipNotification();
+			if ( pParam->m_handle == m_PreparingEquipNotification[iType] )
+			{
+				SendEquipNotification( iType );
 
-			return;
+				return;
+			}
 		}
 #else
 		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
@@ -1275,26 +1338,51 @@ public:
 			if ( !pPlayer )
 				continue;
 
-			if ( pParam->m_handle == pPlayer->m_EquippedItemsResult )
+			if ( pParam->m_handle == pPlayer->m_EquippedItemsResult[0] )
 			{
-				byte nIndex[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS]{};
-				V_hextobinary( static_cast< const char * >( pPlayer->m_EquippedItemsReceiving.Base() ) + 8, RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS * 2, nIndex, sizeof( nIndex ) );
+				byte nIndex[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC]{};
+				V_hextobinary( static_cast< const char * >( pPlayer->m_EquippedItemsReceiving[0].Base() ) + 8, RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC * 2, nIndex, sizeof( nIndex ) );
 
 				bool bValid = false;
-				if ( !ReactiveDropInventory::ValidateEquipItemData( bValid, pParam->m_handle, nIndex, pPlayer->GetSteamIDAsUInt64() ) )
+				if ( !ReactiveDropInventory::ValidateEquipItemDataStatic( bValid, pParam->m_handle, nIndex, pPlayer->GetSteamIDAsUInt64() ) )
 				{
 					Assert( !"ValidateEquipItemData failed as 'not-ready' but we are in the ready callback!" );
 				}
 
-				for ( int j = 0; j < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS; j++ )
+				for ( int j = 0; j < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC; j++ )
 				{
 					if ( nIndex[j] == 0 || !bValid )
 					{
-						pPlayer->m_EquippedItemData[j].Reset();
+						pPlayer->m_EquippedItemDataStatic[j].Reset();
 					}
 					else
 					{
-						pPlayer->m_EquippedItemData[j].SetFromInstance( ReactiveDropInventory::ItemInstance_t{ pParam->m_handle, nIndex[j] - 1u } );
+						pPlayer->m_EquippedItemDataStatic[j].SetFromInstance( ReactiveDropInventory::ItemInstance_t{ pParam->m_handle, nIndex[j] - 1u } );
+					}
+				}
+
+				return;
+			}
+
+			if ( pParam->m_handle == pPlayer->m_EquippedItemsResult[1] )
+			{
+				byte nIndex[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC]{};
+				V_hextobinary( static_cast< const char * >( pPlayer->m_EquippedItemsReceiving[1].Base() ) + 8, RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC * 2, nIndex, sizeof( nIndex ) );
+
+				bool bValid = false;
+				if ( !ReactiveDropInventory::ValidateEquipItemDataDynamic( bValid, pParam->m_handle, nIndex, pPlayer->GetSteamIDAsUInt64(), pPlayer ) )
+				{
+					Assert( !"ValidateEquipItemData failed as 'not-ready' but we are in the ready callback!" );
+				}
+
+				if ( bValid )
+				{
+					for ( int j = 0; j < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC; j++ )
+					{
+						if ( nIndex[j] != 0 )
+						{
+							pPlayer->m_EquippedItemDataDynamic[j].SetFromInstance( ReactiveDropInventory::ItemInstance_t{ pParam->m_handle, nIndex[j] - 1u } );
+						}
 					}
 				}
 
@@ -1314,10 +1402,20 @@ public:
 	SteamInventoryResult_t m_InspectItemResult{ k_SteamInventoryResultInvalid };
 	SteamInventoryResult_t m_ExchangeItemsResult{ k_SteamInventoryResultInvalid };
 	SteamInventoryResult_t m_GetFullInventoryForCacheResult{ k_SteamInventoryResultInvalid };
-	SteamInventoryResult_t m_PreparingEquipNotification{ k_SteamInventoryResultInvalid };
-	CUtlQueue<KeyValues *> m_PendingEquipSend{};
-	int m_EquipSendParity{};
-	CUtlVectorAutoPurge<ReactiveDropInventory::ItemInstance_t *> m_LocalEquipCache;
+
+	enum
+	{
+		EQUIP_SLOT_TYPE_STATIC,
+		EQUIP_SLOT_TYPE_DYNAMIC,
+		NUM_EQUIP_SLOT_TYPES,
+	};
+	SteamInventoryResult_t m_PreparingEquipNotification[NUM_EQUIP_SLOT_TYPES]{ k_SteamInventoryResultInvalid, k_SteamInventoryResultInvalid };
+	CUtlQueue<KeyValues *> m_PendingEquipSend[NUM_EQUIP_SLOT_TYPES]{};
+	int m_EquipSendParityNext;
+	int m_EquipSendParity[NUM_EQUIP_SLOT_TYPES]{};
+	ReactiveDropInventory::ItemInstance_t m_LocalEquipCacheStatic[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC];
+	SteamItemInstanceID_t m_EquipIDsDynamic[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC];
+	ReactiveDropInventory::ItemInstance_t m_LocalEquipCacheDynamic[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC];
 
 	STEAM_CALLBACK( CRD_Inventory_Manager, OnSteamInventoryFullUpdate, SteamInventoryFullUpdate_t )
 	{
@@ -1351,25 +1449,36 @@ public:
 void __MsgFunc_RDEquippedItemsACK( bf_read &msg )
 {
 	int iParity = msg.ReadLong();
-	Assert( s_RD_Inventory_Manager.m_EquipSendParity == iParity );
-	if ( s_RD_Inventory_Manager.m_EquipSendParity != iParity )
+	for ( int iType = 0; iType < CRD_Inventory_Manager::NUM_EQUIP_SLOT_TYPES; iType++ )
+	{
+		if ( s_RD_Inventory_Manager.m_EquipSendParity[iType] != iParity )
+			continue;
+
+		Assert( s_RD_Inventory_Manager.m_PendingEquipSend[iType].Count() != 0 );
+		if ( s_RD_Inventory_Manager.m_PendingEquipSend[iType].Count() == 0 )
+			return;
+
+		engine->ServerCmdKeyValues( s_RD_Inventory_Manager.m_PendingEquipSend[iType].RemoveAtHead() );
+
+		DevMsg( 3, "Sending next equipped items (type %d) notification chunk (%d remain)\n", iType, s_RD_Inventory_Manager.m_PendingEquipSend[iType].Count() );
+
 		return;
+	}
 
-	Assert( s_RD_Inventory_Manager.m_PendingEquipSend.Count() != 0 );
-	if ( s_RD_Inventory_Manager.m_PendingEquipSend.Count() == 0 )
-		return;
-
-	engine->ServerCmdKeyValues( s_RD_Inventory_Manager.m_PendingEquipSend.RemoveAtHead() );
-
-	DevMsg( 3, "Sending next equipped items notification chunk (%d remain)\n", s_RD_Inventory_Manager.m_PendingEquipSend.Count() );
+	Assert( !"No equip notification parity match!" );
 }
 USER_MESSAGE_REGISTER( RDEquippedItemsACK );
 
 static void RD_Equipped_Item_Changed( IConVar *var, const char *pOldValue, float flOldValue )
 {
-	s_RD_Inventory_Manager.QueueSendEquipNotification();
+	s_RD_Inventory_Manager.QueueSendStaticEquipNotification();
 }
-ConVar rd_equipped_medal( "rd_equipped_medal", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped medal.", RD_Equipped_Item_Changed );
+ConVar rd_equipped_medal[RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS]
+{
+	{ "rd_equipped_medal", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped medal.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_medal1", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped medal.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_medal2", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped medal.", RD_Equipped_Item_Changed },
+};
 ConVar rd_equipped_marine[ASW_NUM_MARINE_PROFILES]
 {
 	{ "rd_equipped_marine0", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Sarge's suit.", RD_Equipped_Item_Changed },
@@ -1380,83 +1489,6 @@ ConVar rd_equipped_marine[ASW_NUM_MARINE_PROFILES]
 	{ "rd_equipped_marine5", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Wolfe's suit.", RD_Equipped_Item_Changed },
 	{ "rd_equipped_marine6", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Bastille's suit.", RD_Equipped_Item_Changed },
 	{ "rd_equipped_marine7", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Vegas's suit.", RD_Equipped_Item_Changed },
-};
-ConVar rd_equipped_weapon[ASW_NUM_EQUIP_REGULAR]
-{
-	{ "rd_equipped_weapon0", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for 22A3-1 Assault Rifle.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon1", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for 22A7-Z Prototype Assault Rifle.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon2", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for S23A SynTek Autogun.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon3", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for M42 Vindicator.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon4", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for M73 Twin Pistols.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon5", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for IAF Advanced Sentry Gun.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon6", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for IAF Heal Beacon.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon7", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for IAF Ammo Satchel.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon8", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Model 35 Pump-action Shotgun.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon9", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for IAF Tesla Cannon.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon10", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Precision Rail Rifle.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon11", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for IAF Medical Gun.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon12", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for K80 Personal Defense Weapon.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon13", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for M868 Flamer Unit.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon14", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for IAF Freeze Sentry Gun.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon15", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for IAF Minigun.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon16", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for AVK-36 Marksman Rifle.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon17", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for IAF Incendiary Sentry Gun.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon18", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Chainsaw.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon19", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for IAF High Velocity Sentry Cannon.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon20", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Grenade Launcher.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon21", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for PS50 Bulldog.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon22", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for IAF HAS42 Devastator.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon23", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for 22A4-2 Combat Rifle.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon24", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for IAF Medical Amplifier Gun.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon25", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for 22A5 Heavy Assault Rifle.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon26", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for IAF Medical SMG.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon27", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Fire Extinguisher.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon28", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Mining Laser.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon29", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for 50CMG4-1.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon30", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Flechette Launcher.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon31", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Ricochet Rifle.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon32", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for IAF Ammo Bag.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon33", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for IAF Medical Satchel.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon34", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Overwatch Standard Issue Pulse Rifle.", RD_Equipped_Item_Changed },
-#ifdef RD_7A_WEAPONS
-	{ "rd_equipped_weapon35", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for <<Cryo Cannon>>.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon36", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for <<Plasma Thrower>>.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon37", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for <<Hack Tool>>.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon38", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for <<Railgun Sentry>>.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon39", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for <<Energy Shield>>.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_weapon40", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for <<Revive Tool>>.", RD_Equipped_Item_Changed },
-#endif
-};
-ConVar rd_equipped_extra[ASW_NUM_EQUIP_EXTRA]
-{
-	{ "rd_equipped_extra0", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for IAF Personal Healing Kit.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_extra1", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Hand Welder.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_extra2", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for SM75 Combat Flares.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_extra3", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for ML30 Laser Trip Mine.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_extra4", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for l3a Tactical Heavy Armor.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_extra5", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for X33 Damage Amplifier.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_extra6", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Hornet Barrage.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_extra7", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for CR18 Freeze Grenades.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_extra8", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Adrenaline.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_extra9", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for IAF Tesla Sentry Coil.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_extra10", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for v45 Electric Charged Armor.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_extra11", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for M478 Proximity Incendiary Mines.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_extra12", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Flashlight Attachment.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_extra13", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for IAF Power Fist Attachment.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_extra14", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for FG01 Hand Grenades.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_extra15", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for MNV34 Nightvision Goggles.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_extra16", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for MTD6 Smart Bomb.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_extra17", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for TG-05 Gas Grenades.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_extra18", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for T75 Explosives.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_extra19", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Displacement 'Blink' Pack.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_extra20", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Short Range Assault Jets.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_extra21", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Swarm Bait.", RD_Equipped_Item_Changed },
-#ifdef RD_7A_WEAPONS
-	{ "rd_equipped_extra22", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for <<Stun Grenades>>.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_extra23", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for <<Incendiary Grenades>>.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_extra24", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for <<Speed Burst>>.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_extra25", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for <<Shield Bubble>>.", RD_Equipped_Item_Changed },
-#endif
 };
 
 CON_COMMAND( rd_debug_print_inventory, "" )
@@ -1666,7 +1698,7 @@ private:
 		}
 
 		IVTFTexture *pVTF = CreateVTFTexture();
-		pVTF->Init( m_nWide, m_nTall, 1, IMAGE_FORMAT_RGBA8888, TEXTUREFLAGS_EIGHTBITALPHA, 1 );
+		pVTF->Init( m_nWide, m_nTall, 1, IMAGE_FORMAT_RGBA8888, TEXTUREFLAGS_EIGHTBITALPHA | TEXTUREFLAGS_CLAMPS | TEXTUREFLAGS_CLAMPT, 1 );
 		if ( rgba )
 			V_memcpy( pVTF->ImageData(), rgba, m_nWide * m_nTall * 4 );
 		free( rgba );
@@ -1732,6 +1764,11 @@ namespace ReactiveDropInventory
 		}
 
 		return false;
+	}
+
+	bool ItemDef_t::ItemSlotMatchesAnyDynamic() const
+	{
+		return ItemSlotMatches( "weapon" ) || ItemSlotMatches( "extra" );
 	}
 
 	static bool ParseDynamicProps( CUtlStringMap<CUtlString> & props, const char *szDynamicProps )
@@ -2092,6 +2129,41 @@ namespace ReactiveDropInventory
 		}
 	}
 
+	ItemInstance_t &ItemInstance_t::operator=( const ItemInstance_t &other )
+	{
+		if ( this == &other )
+			return *this;
+
+		AccountID = other.AccountID;
+		ItemID = other.ItemID;
+		OriginalItemID = other.OriginalItemID;
+		ItemDefID = other.ItemDefID;
+		Quantity = other.Quantity;
+		Acquired = other.Acquired;
+		StateChangedTimestamp = other.StateChangedTimestamp;
+		State = other.State.Get();
+		Origin = other.Origin.Get();
+
+		DynamicProps.Purge();
+		for ( int i = 0; i < other.DynamicProps.GetNumStrings(); i++ )
+		{
+			DynamicProps[other.DynamicProps.String( i )] = other.DynamicProps[i].Get();
+		}
+
+		Tags.Purge();
+		for ( int i = 0; i < other.Tags.GetNumStrings(); i++ )
+		{
+			Tags[other.Tags.String( i )].EnsureCapacity( other.Tags[i].Count() );
+			Assert( Tags.Find( other.Tags.String( i ) ) == i );
+			for ( int j = 0; j < other.Tags[i].Count(); j++ )
+			{
+				Tags[i].CopyAndAddToTail( other.Tags[i][j] );
+			}
+		}
+
+		return *this;
+	}
+
 	const ItemDef_t *GetItemDef( SteamItemDef_t id )
 	{
 		Assert( id >= 1 && id <= 999999999 );
@@ -2443,7 +2515,7 @@ namespace ReactiveDropInventory
 		return true;
 	}
 
-	bool ValidateEquipItemData( bool &bValid, SteamInventoryResult_t hResult, byte( &nIndex )[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS], CSteamID requiredSteamID )
+	bool ValidateEquipItemDataStatic( bool &bValid, SteamInventoryResult_t hResult, byte( &nIndex )[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC], CSteamID requiredSteamID )
 	{
 		GET_INVENTORY_OR_BAIL( false );
 
@@ -2455,7 +2527,7 @@ namespace ReactiveDropInventory
 
 		if ( eResultStatus != k_EResultOK )
 		{
-			DevWarning( "ReactiveDropInventory::ValidateEquipItemData: EResult %d (%s)\n", eResultStatus, UTIL_RD_EResultToString( eResultStatus ) );
+			Warning( "ReactiveDropInventory::ValidateEquipItemDataStatic: EResult %d (%s) for SteamID %llu\n", eResultStatus, UTIL_RD_EResultToString( eResultStatus ), requiredSteamID.ConvertToUint64() );
 
 			bValid = false;
 			return true;
@@ -2464,16 +2536,16 @@ namespace ReactiveDropInventory
 		Assert( requiredSteamID.IsValid() );
 		if ( !pInventory->CheckResultSteamID( hResult, requiredSteamID ) )
 		{
-			DevWarning( "ReactiveDropInventory::ValidateEquipItemData: not from SteamID %llu\n", requiredSteamID.ConvertToUint64() );
+			Warning( "ReactiveDropInventory::ValidateEquipItemDataStatic: not from SteamID %llu\n", requiredSteamID.ConvertToUint64() );
 
 			bValid = false;
 			return true;
 		}
 
 		CUtlVector<SteamItemInstanceID_t> seenIDs;
-		seenIDs.EnsureCapacity( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS );
+		seenIDs.EnsureCapacity( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC );
 
-		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS; i++ )
+		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC; i++ )
 		{
 			if ( nIndex[i] == 0 )
 				continue;
@@ -2483,7 +2555,7 @@ namespace ReactiveDropInventory
 
 			if ( !pItemDef || !pItemDef->ItemSlotMatches( ReactiveDropInventory::g_InventorySlotNames[i] ) )
 			{
-				DevWarning( "ReactiveDropInventory::ValidateEquipItemData: item %llu '%s' fits in slot '%s', not '%s'\n", instance.ItemID, pItemDef ? pItemDef->Name.Get() : "<NO DEF>", pItemDef ? pItemDef->ItemSlot.Get() : "<NO DEF>", ReactiveDropInventory::g_InventorySlotNames[i] );
+				Warning( "ReactiveDropInventory::ValidateEquipItemDataStatic: item %llu '%s' fits in slot '%s', not '%s' for SteamID %llu\n", instance.ItemID, pItemDef ? pItemDef->Name.Get() : "<NO DEF>", pItemDef ? pItemDef->ItemSlot.Get() : "<NO DEF>", ReactiveDropInventory::g_InventorySlotNames[i], requiredSteamID.ConvertToUint64() );
 
 				bValid = false;
 				return true;
@@ -2491,11 +2563,80 @@ namespace ReactiveDropInventory
 
 			if ( seenIDs.IsValidIndex( seenIDs.Find( instance.ItemID ) ) )
 			{
-				DevWarning( "ReactiveDropInventory::ValidateEquipItemData: item %llu '%s' is in multiple slots (latest '%s')\n", instance.ItemID, pItemDef ? pItemDef->Name.Get() : "<NO DEF>", ReactiveDropInventory::g_InventorySlotNames[i] );
+				Warning( "ReactiveDropInventory::ValidateEquipItemDataStatic: item %llu '%s' is in multiple slots (latest '%s') for SteamID %llu\n", instance.ItemID, pItemDef ? pItemDef->Name.Get() : "<NO DEF>", ReactiveDropInventory::g_InventorySlotNames[i], requiredSteamID.ConvertToUint64() );
 
 				bValid = false;
 				return true;
 			}
+
+			seenIDs.AddToTail( instance.ItemID );
+		}
+
+		bValid = true;
+		return true;
+	}
+
+	bool ValidateEquipItemDataDynamic( bool &bValid, SteamInventoryResult_t hResult, byte( &nIndex )[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC], CSteamID requiredSteamID, CASW_Player *pPlayer )
+	{
+		GET_INVENTORY_OR_BAIL( false );
+
+		EResult eResultStatus = pInventory->GetResultStatus( hResult );
+		if ( eResultStatus == k_EResultPending )
+		{
+			return false;
+		}
+
+		if ( eResultStatus != k_EResultOK )
+		{
+			Warning( "ReactiveDropInventory::ValidateEquipItemDataDynamic: EResult %d (%s) for SteamID %llu\n", eResultStatus, UTIL_RD_EResultToString( eResultStatus ), requiredSteamID.ConvertToUint64() );
+
+			bValid = false;
+			return true;
+		}
+
+		Assert( requiredSteamID.IsValid() );
+		if ( !pInventory->CheckResultSteamID( hResult, requiredSteamID ) )
+		{
+			Warning( "ReactiveDropInventory::ValidateEquipItemDataDynamic: not from SteamID %llu\n", requiredSteamID.ConvertToUint64() );
+
+			bValid = false;
+			return true;
+		}
+
+		CUtlVector<SteamItemInstanceID_t> seenIDs;
+		seenIDs.EnsureCapacity( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC );
+		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC; i++ )
+		{
+			if ( nIndex[i] == 0 && pPlayer->m_EquippedItemDataDynamic[i].IsSet() )
+			{
+				seenIDs.AddToTail( pPlayer->m_EquippedItemDataDynamic[i].m_iItemInstanceID );
+			}
+		}
+
+		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC; i++ )
+		{
+			if ( nIndex[i] == 0 )
+				continue;
+
+			ReactiveDropInventory::ItemInstance_t instance{ hResult, nIndex[i] - 1u };
+			const ReactiveDropInventory::ItemDef_t *pItemDef = GetItemDef( instance.ItemDefID );
+
+			if ( !pItemDef || !pItemDef->ItemSlotMatchesAnyDynamic() )
+			{
+				Warning( "ReactiveDropInventory::ValidateEquipItemDataDynamic: item %llu '%s' fits in slot '%s' (not in dynamic list) for SteamID %llu\n", instance.ItemID, pItemDef ? pItemDef->Name.Get() : "<NO DEF>", pItemDef ? pItemDef->ItemSlot.Get() : "<NO DEF>", requiredSteamID.ConvertToUint64() );
+
+				bValid = false;
+				return true;
+			}
+
+			if ( seenIDs.IsValidIndex( seenIDs.Find( instance.ItemID ) ) )
+			{
+				Warning( "ReactiveDropInventory::ValidateEquipItemDataDynamic: item %llu '%s' is in multiple slots (latest %d) for SteamID %llu\n", instance.ItemID, pItemDef ? pItemDef->Name.Get() : "<NO DEF>", i, requiredSteamID.ConvertToUint64() );
+
+				bValid = false;
+				return true;
+			}
+
 			seenIDs.AddToTail( instance.ItemID );
 		}
 
@@ -2765,13 +2906,32 @@ BEGIN_NETWORK_TABLE_NOBASE( CRD_ItemInstance, DT_RD_ItemInstance )
 	SendPropInt( SENDINFO( m_iItemInstanceID ), 64, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO( m_iItemDefID ), RD_ITEM_ID_BITS, SPROP_UNSIGNED ),
 	SendPropArray( SendPropInt( SENDINFO_ARRAY( m_iAccessory ), RD_ITEM_ACCESSORY_BITS, SPROP_UNSIGNED ), m_iAccessory ),
-	SendPropArray( SendPropInt( SENDINFO_ARRAY( m_nCounter ), 63, SPROP_UNSIGNED ), m_nCounter ),
+	// This should be a SendPropArray3, but if we do that we create way too many netprops.
+	// Problem is, as a result of this, updating a counter sends a minimum of 630 bits of data.
+	// We limit player inventory counter updates to once every few seconds to avoid flooding the network.
+	SendPropArray( SendPropInt( SENDINFO_ARRAY( m_nCounterCommitted ), 63, SPROP_UNSIGNED ), m_nCounter ),
 #endif
 END_NETWORK_TABLE()
 
 CRD_ItemInstance::CRD_ItemInstance()
 {
-	Reset();
+	// clear values without marking network state as updated
+	m_iItemInstanceID.m_Value = k_SteamItemInstanceIDInvalid;
+
+	// except for this one
+	m_iItemDefID = 0;
+
+	for ( int i = 0; i < m_iAccessory.Count(); i++ )
+	{
+		m_iAccessory.m_Value[i] = 0;
+	}
+	for ( int i = 0; i < m_nCounter.Count(); i++ )
+	{
+		m_nCounter.m_Value[i] = 0;
+#ifndef CLIENT_DLL
+		m_nCounterCommitted.m_Value[i] = 0;
+#endif
+	}
 }
 
 CRD_ItemInstance::CRD_ItemInstance( const ReactiveDropInventory::ItemInstance_t &instance )
@@ -2786,15 +2946,19 @@ CRD_ItemInstance::CRD_ItemInstance( SteamInventoryResult_t hResult, uint32 index
 
 void CRD_ItemInstance::Reset()
 {
-	m_iItemInstanceID = k_SteamItemInstanceIDInvalid;
-	m_iItemDefID = 0;
-	for ( int i = 0; i < m_iAccessory.Count(); i++ )
+	// avoid calling NetworkStateChanged if it didn't change
+	m_iItemInstanceID.Set( k_SteamItemInstanceIDInvalid );
+	m_iItemDefID.Set( 0 );
+	FOR_EACH_VEC( m_iAccessory, i )
 	{
 		m_iAccessory.Set( i, 0 );
 	}
-	for ( int i = 0; i < m_nCounter.Count(); i++ )
+	FOR_EACH_VEC( m_nCounter, i )
 	{
 		m_nCounter.Set( i, 0 );
+#ifndef CLIENT_DLL
+		m_nCounterCommitted.Set( i, 0 );
+#endif
 	}
 }
 
@@ -2859,6 +3023,10 @@ void CRD_ItemInstance::SetFromInstance( const ReactiveDropInventory::ItemInstanc
 			}
 		}
 	}
+
+#ifndef CLIENT_DLL
+	CommitCounters();
+#endif
 }
 
 void CRD_ItemInstance::FormatDescription( wchar_t *wszBuf, size_t sizeOfBufferInBytes, const CUtlString &szDesc, bool bIsSteamCommunityDesc ) const
@@ -3147,45 +3315,129 @@ int CRD_ItemInstance::GetStyle() const
 }
 
 #ifndef CLIENT_DLL
-static void *SendProxy_ProjectileItemDataForOwningPlayer( const SendProp *pProp, const void *pStructBase, const void *pData, CSendProxyRecipients *pRecipients, int objectID )
+void CRD_ItemInstance::CommitCounters()
 {
-	static CRD_ItemInstance s_BlankInstance;
-
-	const CRD_ProjectileData *pProjectile = static_cast< const CRD_ProjectileData * >( pStructBase );
-	CASW_Player *pPlayer = pProjectile->m_hOriginalOwnerPlayer;
-	if ( !pPlayer || pProjectile->m_iInventoryEquipSlotIndex == -1 )
-		return &s_BlankInstance;
-
-	return &pPlayer->m_EquippedItemData[pProjectile->m_iInventoryEquipSlotIndex];
+	FOR_EACH_VEC( m_nCounter, i )
+	{
+		m_nCounterCommitted.Set( i, m_nCounter.Get( i ) );
+	}
 }
 #endif
 
+BEGIN_NETWORK_TABLE_NOBASE( CRD_ItemInstances_Static, DT_RD_ItemInstances_Static )
+#ifdef CLIENT_DLL
+	RecvPropDataTable( RECVINFO_DT( m_Medal0 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_Medal1 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_Medal2 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_Marine0 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_Marine1 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_Marine2 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_Marine3 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_Marine4 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_Marine5 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_Marine6 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_Marine7 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+#else
+	SendPropDataTable( SENDINFO_DT( m_Medal0 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT( m_Medal1 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT( m_Medal2 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT( m_Marine0 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT( m_Marine1 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT( m_Marine2 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT( m_Marine3 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT( m_Marine4 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT( m_Marine5 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT( m_Marine6 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT( m_Marine7 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+#endif
+END_NETWORK_TABLE()
+
+CRD_ItemInstance &CRD_ItemInstances_Static::operator []( int index )
+{
+	COMPILE_TIME_ASSERT( sizeof( ThisClass ) - offsetof( ThisClass, m_Medal0 ) == sizeof( CRD_ItemInstance[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC] ) );
+	Assert( index >= 0 && index < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC );
+
+	return ( &m_Medal0 )[index];
+}
+
+BEGIN_NETWORK_TABLE_NOBASE( CRD_ItemInstances_Dynamic, DT_RD_ItemInstances_Dynamic )
+#ifdef CLIENT_DLL
+	RecvPropDataTable( RECVINFO_DT( m_Item0 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_Item1 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_Item2 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_Item3 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_Item4 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_Item5 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_Item6 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_Item7 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_Item8 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_Item9 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_Item10 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_Item11 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_Item12 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_Item13 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_Item14 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_Item15 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_Item16 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_Item17 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_Item18 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_Item19 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_Item20 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_Item21 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_Item22 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_Item23 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+#else
+	SendPropDataTable( SENDINFO_DT( m_Item0 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT( m_Item1 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT( m_Item2 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT( m_Item3 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT( m_Item4 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT( m_Item5 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT( m_Item6 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT( m_Item7 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT( m_Item8 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT( m_Item9 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT( m_Item10 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT( m_Item11 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT( m_Item12 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT( m_Item13 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT( m_Item14 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT( m_Item15 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT( m_Item16 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT( m_Item17 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT( m_Item18 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT( m_Item19 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT( m_Item20 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT( m_Item21 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT( m_Item22 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT( m_Item23 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+#endif
+END_NETWORK_TABLE()
+
+CRD_ItemInstance &CRD_ItemInstances_Dynamic::operator []( int index )
+{
+	COMPILE_TIME_ASSERT( sizeof( ThisClass ) - offsetof( ThisClass, m_Item0 ) == sizeof( CRD_ItemInstance[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC] ) );
+	Assert( index >= 0 && index < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC );
+
+	return ( &m_Item0 )[index];
+}
+
 BEGIN_NETWORK_TABLE_NOBASE( CRD_ProjectileData, DT_RD_ProjectileData )
 #ifdef CLIENT_DLL
-	RecvPropInt( RECVINFO( m_iOriginalOwnerSteamAccount ) ),
-	RecvPropDataTable( RECVINFO_DT( m_InventoryItemData ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropEHandle( RECVINFO( m_hOriginalOwnerPlayer ) ),
+	RecvPropIntWithMinusOneFlag( RECVINFO( m_iInventoryEquipSlot ) ),
 	RecvPropBool( RECVINFO( m_bFiredByOwner ) ),
 #else
-	SendPropInt( SENDINFO( m_iOriginalOwnerSteamAccount ), -1, SPROP_UNSIGNED ),
-	SendPropDataTable( "m_InventoryItemData", 0, &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ), SendProxy_ProjectileItemDataForOwningPlayer ),
+	SendPropEHandle( SENDINFO( m_hOriginalOwnerPlayer ) ),
+	SendPropIntWithMinusOneFlag( SENDINFO( m_iInventoryEquipSlot ), NumBitsForCount( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC + 1 ) ),
 	SendPropBool( SENDINFO( m_bFiredByOwner ) ),
-
-	// WORKAROUND: CRD_ProjectileData is horrifyingly unoptimized and causing lag. If we remove it, we break demos recorded since April 20th. Instead, make it just not do anything.
-	SendPropExclude( "DT_RD_ProjectileData", "m_iOriginalOwnerSteamAccount" ),
-	SendPropExclude( "DT_RD_ProjectileData", "m_InventoryItemData" ),
-	SendPropExclude( "DT_RD_ProjectileData", "m_bFiredByOwner" ),
 #endif
 END_NETWORK_TABLE()
 
 CRD_ProjectileData::CRD_ProjectileData()
 {
-	m_iOriginalOwnerSteamAccount = 0;
-#ifdef CLIENT_DLL
-	m_InventoryItemData.Reset();
-#else
 	m_hOriginalOwnerPlayer = NULL;
-	m_iInventoryEquipSlotIndex = -1;
-#endif
+	m_iInventoryEquipSlot = -1;
 	m_bFiredByOwner = false;
 }
 
@@ -3194,13 +3446,15 @@ void CRD_ProjectileData::SetFromWeapon( CBaseEntity *pCreator )
 {
 	if ( CASW_Weapon *pWeapon = dynamic_cast< CASW_Weapon * >( pCreator ) )
 	{
-		m_iOriginalOwnerSteamAccount = pWeapon->m_iOriginalOwnerSteamAccount;
-		m_hOriginalOwnerPlayer = pWeapon->m_hOriginalOwnerPlayer;
-		m_iInventoryEquipSlotIndex = pWeapon->m_iInventoryEquipSlotIndex;
-		if ( pWeapon->GetOwner() && pWeapon->GetOwner()->IsInhabitableNPC() )
+		if ( pWeapon->IsInventoryEquipSlotValid() )
 		{
-			CASW_Inhabitable_NPC *pOwnerNPC = assert_cast< CASW_Inhabitable_NPC * >( pWeapon->GetOwner() );
-			m_bFiredByOwner = pOwnerNPC->IsInhabited() && pOwnerNPC->GetCommander() == pWeapon->m_hOriginalOwnerPlayer;
+			m_hOriginalOwnerPlayer = pWeapon->m_hOriginalOwnerPlayer;
+			m_iInventoryEquipSlot = pWeapon->m_iInventoryEquipSlot;
+			if ( pWeapon->GetOwner() && pWeapon->GetOwner()->IsInhabitableNPC() )
+			{
+				CASW_Inhabitable_NPC *pOwnerNPC = assert_cast< CASW_Inhabitable_NPC * >( pWeapon->GetOwner() );
+				m_bFiredByOwner = pOwnerNPC->IsInhabited() && pOwnerNPC->GetCommander() == pWeapon->m_hOriginalOwnerPlayer;
+			}
 		}
 		return;
 	}
@@ -3212,9 +3466,8 @@ void CRD_ProjectileData::SetFromWeapon( CBaseEntity *pCreator )
 
 	if ( CASW_Sentry_Base *pSentry = dynamic_cast< CASW_Sentry_Base * >( pCreator ) )
 	{
-		m_iOriginalOwnerSteamAccount = pSentry->m_iOriginalOwnerSteamAccount;
 		m_hOriginalOwnerPlayer = pSentry->m_hOriginalOwnerPlayer;
-		m_iInventoryEquipSlotIndex = pSentry->m_iInventoryEquipSlotIndex;
+		m_iInventoryEquipSlot = pSentry->m_iInventoryEquipSlot;
 		m_bFiredByOwner = true;
 		return;
 	}

@@ -344,9 +344,11 @@ void CASW_Weapon_Sentry::DeploySentry()
 	pBase->m_hDeployer = pMarine;
 	pBase->SetGunType( m_iSentryMunitionType );
 	pBase->SetAmmo( m_nSentryAmmo );
-	pBase->m_iOriginalOwnerSteamAccount = m_iOriginalOwnerSteamAccount;
-	pBase->m_hOriginalOwnerPlayer = m_hOriginalOwnerPlayer;
-	pBase->m_iInventoryEquipSlotIndex = m_iInventoryEquipSlotIndex;
+	if ( IsInventoryEquipSlotValid() )
+	{
+		pBase->m_hOriginalOwnerPlayer = m_hOriginalOwnerPlayer;
+		pBase->m_iInventoryEquipSlot = m_iInventoryEquipSlot;
+	}
 
 	UTIL_SetOrigin( pBase, m_vecValidSentrySpot );
 	pBase->SetAbsVelocity( vec3_origin );

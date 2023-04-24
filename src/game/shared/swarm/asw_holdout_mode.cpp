@@ -658,7 +658,7 @@ void CASW_Holdout_Mode::LoadoutSelect( CASW_Marine_Resource *pMarineResource, in
 	}
 
 	// give them the new weapon
-	ASWGameRules()->GiveStartingWeaponToMarine( pMarine, nEquipIndex, nInvSlot );
+	ASWGameRules()->GiveStartingWeaponToMarine( pMarine, nEquipIndex, nInvSlot, -1 );
 	pMarineResource->UpdateWeaponIndices();
 }
 

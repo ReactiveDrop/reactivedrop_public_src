@@ -246,8 +246,9 @@ public:
 	virtual int DisplayClip2() { return Clip2(); }
 	virtual int DisplayMaxClip2() { return GetMaxClip2(); }
 
-	CNetworkVar( AccountID_t, m_iOriginalOwnerSteamAccount );
-	CNetworkVarEmbedded( CRD_ItemInstance, m_InventoryItemData );
+	CNetworkHandle( CASW_Player, m_hOriginalOwnerPlayer );
+	CNetworkVar( int, m_iInventoryEquipSlot );
+	bool IsInventoryEquipSlotValid() const;
 
 private:	
 	C_ASW_Weapon( const C_ASW_Weapon & ); // not defined, not accessible

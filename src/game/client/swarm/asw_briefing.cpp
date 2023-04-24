@@ -987,12 +987,18 @@ bool CASW_Briefing::IsCommanderSpeaking( int nLobbySlot )
 	return bTalking;
 }
 
-const CRD_ItemInstance &CASW_Briefing::GetEquippedMedal( int nLobbySlot )
+const CRD_ItemInstance &CASW_Briefing::GetEquippedMedal( int nLobbySlot, int nMedalIndex )
 {
 	static const CRD_ItemInstance s_empty;
+
+	Assert( nMedalIndex >= 0 && nMedalIndex < RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS );
+	if ( nMedalIndex < 0 || nMedalIndex >= RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS )
+	{
+		return s_empty;
+	}
 
 	UpdateLobbySlotMapping();
 
 	C_ASW_Player *pPlayer = m_LobbySlotMapping[nLobbySlot].m_hPlayer.Get();
-	return pPlayer ? pPlayer->m_EquippedMedal : s_empty;
+	return pPlayer ? pPlayer->m_EquippedItemDataStatic[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MEDAL + nMedalIndex] : s_empty;
 }

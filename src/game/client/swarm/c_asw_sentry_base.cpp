@@ -16,17 +16,17 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-IMPLEMENT_CLIENTCLASS_DT(C_ASW_Sentry_Base, DT_ASW_Sentry_Base, CASW_Sentry_Base)
-	RecvPropBool(RECVINFO(m_bAssembled)),
-	RecvPropBool(RECVINFO(m_bIsInUse)),
-	RecvPropFloat(RECVINFO(m_fAssembleProgress)),
-	RecvPropFloat(RECVINFO(m_fAssembleCompleteTime)),
-	RecvPropInt(RECVINFO(m_iAmmo)),	
-	RecvPropInt(RECVINFO(m_iMaxAmmo)),	
-	RecvPropBool(RECVINFO(m_bSkillMarineHelping)),
-	RecvPropInt(RECVINFO(m_nGunType)),
-	RecvPropInt( RECVINFO( m_iOriginalOwnerSteamAccount ) ),
-	RecvPropDataTable( RECVINFO_DT( m_InventoryItemData ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+IMPLEMENT_CLIENTCLASS_DT( C_ASW_Sentry_Base, DT_ASW_Sentry_Base, CASW_Sentry_Base )
+	RecvPropBool( RECVINFO( m_bAssembled ) ),
+	RecvPropBool( RECVINFO( m_bIsInUse ) ),
+	RecvPropFloat( RECVINFO( m_fAssembleProgress ) ),
+	RecvPropFloat( RECVINFO( m_fAssembleCompleteTime ) ),
+	RecvPropInt( RECVINFO( m_iAmmo ) ),
+	RecvPropInt( RECVINFO( m_iMaxAmmo ) ),
+	RecvPropBool( RECVINFO( m_bSkillMarineHelping ) ),
+	RecvPropInt( RECVINFO( m_nGunType ) ),
+	RecvPropEHandle( RECVINFO( m_hOriginalOwnerPlayer ) ),
+	RecvPropIntWithMinusOneFlag( RECVINFO( m_iInventoryEquipSlot ) ),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_ASW_Sentry_Base )
@@ -45,6 +45,8 @@ C_ASW_Sentry_Base::C_ASW_Sentry_Base()
 	m_bSkillMarineHelping = false;
 	g_SentryGuns.AddToTail( this );
 	m_nUseIconTextureID = -1;
+	m_hOriginalOwnerPlayer = NULL;
+	m_iInventoryEquipSlot = -1;
 }
 
 

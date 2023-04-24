@@ -78,6 +78,7 @@ ConVar rm_welcome_message_delay("rm_welcome_message_delay", "10", FCVAR_NONE, "T
 ConVar rd_kick_inactive_players( "rd_kick_inactive_players", "0", FCVAR_NONE, "If positive, kick players who are inactive for this many seconds." );
 ConVar rd_kick_inactive_players_warning( "rd_kick_inactive_players_warning", "0.8", FCVAR_NONE, "Warn players that they will be kicked after this fraction of the inactive time.", true, 0, true, 1 );
 ConVar rd_force_all_marines_in_pvs( "rd_force_all_marines_in_pvs", "3", FCVAR_NONE, "Send information about objects near all marines to all players. Helps record more complete demos, but increases memory and bandwidth usage. 2=only for spectators, 3=only for players with rd_auto_record_lobbies enabled" );
+ConVar rd_throttle_inventory_counter_updates( "rd_throttle_inventory_counter_updates", "60", FCVAR_NONE, "Only update inventory item counters once every this many seconds to save bandwidth. Staggered per player." );
 
 static const char* s_pWelcomeMessageContext = "WelcomeMessageDelayedContext";
 
@@ -203,50 +204,41 @@ PRECACHE_REGISTER(player);
 
 IMPLEMENT_SERVERCLASS_ST( CASW_Player, DT_ASW_Player )
 	SendPropExclude( "DT_BaseAnimating", "m_flPoseParameter" ),
-	SendPropExclude( "DT_BaseAnimating", "m_flPlaybackRate" ),	
+	SendPropExclude( "DT_BaseAnimating", "m_flPlaybackRate" ),
 	SendPropExclude( "DT_BaseAnimating", "m_nSequence" ),
 	SendPropExclude( "DT_BaseEntity", "m_angRotation" ),
 	SendPropExclude( "DT_BaseAnimatingOverlay", "overlay_vars" ),
-	
-	// cs_playeranimstate and clientside animation takes care of these on the client
-	SendPropExclude( "DT_ServerAnimationData" , "m_flCycle" ),	
-	SendPropExclude( "DT_AnimTimeMustBeFirst" , "m_flAnimTime" ),
 
-	//SendPropInt		(SENDINFO(m_iHealth), 10 ),
-	SendPropAngle( SENDINFO_VECTORELEM(m_angEyeAngles, 0), 10, 0, SendProxy_AngleToFloat, SENDPROP_PLAYER_EYE_ANGLES_PRIORITY ),
-	SendPropAngle( SENDINFO_VECTORELEM(m_angEyeAngles, 1), 10, 0, SendProxy_AngleToFloat, SENDPROP_PLAYER_EYE_ANGLES_PRIORITY ),
-	SendPropAngle( SENDINFO_VECTORELEM(m_angEyeAngles, 2), 10, 0, SendProxy_AngleToFloat, SENDPROP_PLAYER_EYE_ANGLES_PRIORITY ),
+	// cs_playeranimstate and clientside animation takes care of these on the client
+	SendPropExclude( "DT_ServerAnimationData", "m_flCycle" ),
+	SendPropExclude( "DT_AnimTimeMustBeFirst", "m_flAnimTime" ),
+
+	SendPropQAngles( SENDINFO( m_angEyeAngles ), 10, SPROP_CHANGES_OFTEN, SendProxy_QAngles, SENDPROP_PLAYER_EYE_ANGLES_PRIORITY ),
 	SendPropEHandle( SENDINFO( m_hInhabiting ) ),
 	SendPropEHandle( SENDINFO( m_hSpectating ) ),
-	SendPropFloat(   SENDINFO( m_fMarineDeathTime) ),
+	SendPropFloat( SENDINFO( m_fMarineDeathTime ) ),
 	SendPropEHandle( SENDINFO( m_hOrderingMarine ) ),
-	SendPropEHandle( SENDINFO ( m_pCurrentInfoMessage ) ),
+	SendPropEHandle( SENDINFO( m_pCurrentInfoMessage ) ),
 
-	SendPropInt(SENDINFO(m_iLeaderVoteIndex) ),
-	SendPropInt(SENDINFO(m_iKickVoteIndex) ),
+	SendPropInt( SENDINFO( m_iLeaderVoteIndex ) ),
+	SendPropInt( SENDINFO( m_iKickVoteIndex ) ),
 	SendPropFloat( SENDINFO( m_fMapGenerationProgress ) ),
 
 	SendPropTime( SENDINFO( m_flUseKeyDownTime ) ),
-	SendPropEHandle( SENDINFO ( m_hUseKeyDownEnt ) ),
-	SendPropFloat	(SENDINFO( m_flMovementAxisYaw)),
-	SendPropInt		(SENDINFO(m_nChangingMR)),
-	SendPropInt		(SENDINFO(m_nChangingSlot)),
-	SendPropInt	(SENDINFO( m_iMapVoted ) ),
-	SendPropInt		(SENDINFO( m_iNetworkedXP ) ),
-	SendPropInt		(SENDINFO( m_iNetworkedPromotion ) ),
-
-	// BenLubar(spectator-mouse)
-	SendPropInt( SENDINFO( m_iScreenWidth ) ),
-	SendPropInt( SENDINFO( m_iScreenHeight ) ),
-	SendPropInt( SENDINFO( m_iMouseX ), -1, SPROP_CHANGES_OFTEN ),
-	SendPropInt( SENDINFO( m_iMouseY ), -1, SPROP_CHANGES_OFTEN ),
-	//
-
+	SendPropEHandle( SENDINFO( m_hUseKeyDownEnt ) ),
+	SendPropFloat( SENDINFO( m_flMovementAxisYaw ) ),
+	SendPropInt( SENDINFO( m_nChangingMR ) ),
+	SendPropInt( SENDINFO( m_nChangingSlot ) ),
+	SendPropInt( SENDINFO( m_iMapVoted ) ),
+	SendPropInt( SENDINFO( m_iNetworkedXP ) ),
+	SendPropInt( SENDINFO( m_iNetworkedPromotion ) ),
+	SendPropInt( SENDINFO( m_iScreenWidthHeight ) ),
+	SendPropInt( SENDINFO( m_iMouseXY ), -1, SPROP_CHANGES_OFTEN ),
 	SendPropBool( SENDINFO( m_bSentJoinedMessage ) ),
 	SendPropQAngles( SENDINFO( m_angMarineAutoAimFromClient ), 10, SPROP_CHANGES_OFTEN ),
-	SendPropBool( SENDINFO( m_bWantsSpectatorOnly ) ),
 	SendPropFloat( SENDINFO( m_flInactiveKickWarning ) ),
-	SendPropDataTable( SENDINFO_DT_NAME( m_EquippedItemData[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MEDAL + 0], m_EquippedMedal ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT( m_EquippedItemDataStatic ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstances_Static ) ),
+	SendPropDataTable( SENDINFO_DT( m_EquippedItemDataDynamic ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstances_Dynamic ) ),
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Player )
@@ -256,7 +248,6 @@ BEGIN_DATADESC( CASW_Player )
 	DEFINE_FIELD( m_hSpectating, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_vecStoredPosition, FIELD_VECTOR ),
 	DEFINE_FIELD( m_pCurrentInfoMessage, FIELD_EHANDLE ),
-	//DEFINE_FIELD( m_bLastAttackButton, FIELD_BOOLEAN ),		// keep this at no click after restore
 	DEFINE_FIELD( m_iUseEntities, FIELD_INTEGER ),
 	DEFINE_AUTO_ARRAY( m_hUseEntities, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_fBlendAmount, FIELD_FLOAT ),
@@ -272,16 +263,9 @@ BEGIN_DATADESC( CASW_Player )
 	DEFINE_FIELD( m_iMapVoted, FIELD_INTEGER ),
 	DEFINE_FIELD( m_fLastControlledMarineTime, FIELD_TIME ),
 	DEFINE_FIELD( m_vecCrosshairTracePos, FIELD_VECTOR ),
-
-	// BenLubar(spectator-mouse)
-	DEFINE_FIELD( m_iScreenWidth, FIELD_SHORT ),
-	DEFINE_FIELD( m_iScreenHeight, FIELD_SHORT ),
-	DEFINE_FIELD( m_iMouseX, FIELD_SHORT ),
-	DEFINE_FIELD( m_iMouseY, FIELD_SHORT ),
-	//
-
+	DEFINE_ARRAY( m_iScreenWidthHeight, FIELD_SHORT, 2 ),
+	DEFINE_ARRAY( m_iMouseXY, FIELD_SHORT, 2 ),
 	DEFINE_FIELD( m_angMarineAutoAimFromClient, FIELD_VECTOR ),
-	DEFINE_FIELD( m_bWantsSpectatorOnly, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_flLastActiveTime, FIELD_TIME ),
 	DEFINE_FIELD( m_flInactiveKickWarning, FIELD_TIME ),
 END_DATADESC()
@@ -298,6 +282,20 @@ BEGIN_ENT_SCRIPTDESC( CASW_Player, CBasePlayer, "The player entity." )
 	DEFINE_SCRIPTFUNC( GetCrosshairTracePos, "Returns the world location directly beneath the player's crosshair" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptShowMenu, "ShowMenu", "Show a menu with up to 10 options." )
 END_SCRIPTDESC()
+
+static const float s_flPlayerItemUpdateOffset[ABSOLUTE_PLAYER_LIMIT]
+{
+	0.0f, 0.5f, 0.25f, 0.75f, 0.125f, 0.625f, 0.375f, 0.875f, 0.0625f, 0.5625f,
+	0.3125f, 0.8125f, 0.1875f, 0.6875f, 0.4375f, 0.9375f, 0.03125f, 0.53125f,
+	0.28125f, 0.78125f, 0.15625f, 0.65625f, 0.40625f, 0.90625f, 0.09375f,
+	0.59375f, 0.34375f, 0.84375f, 0.21875f, 0.71875f, 0.46875f, 0.96875f,
+	0.015625f, 0.515625f, 0.265625f, 0.765625f, 0.140625f, 0.640625f,
+	0.390625f, 0.890625f, 0.078125f, 0.578125f, 0.328125f, 0.828125f,
+	0.203125f, 0.703125f, 0.453125f, 0.953125f, 0.046875f, 0.546875f,
+	0.296875f, 0.796875f, 0.171875f, 0.671875f, 0.421875f, 0.921875f,
+	0.109375f, 0.609375f, 0.359375f, 0.859375f, 0.234375f, 0.734375f,
+	0.484375f, 0.984375f,
+};
 
 // -------------------------------------------------------------------------------- //
 
@@ -412,27 +410,23 @@ CASW_Player::CASW_Player()
 	m_fLastFragTime = FLT_MIN;
 	m_iKillingSpree = 0;
 
-	// BenLubar(spectator-mouse)
-	m_iScreenWidth = 0;
-	m_iScreenHeight = 0;
-	m_iMouseX = 0;
-	m_iMouseY = 0;
-	// 
+	m_iScreenWidthHeight = 0;
+	m_iMouseXY = 0;
 
 	m_bLeaderboardReady = false;
-	m_bWantsSpectatorOnly = false;
+	m_bSentJoinedMessage = false;
 
 	m_flLastActiveTime = 0.0f;
 	m_flInactiveKickWarning = 0.0f;
 
-	for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS; i++ )
+	for ( int i = 0; i < 2; i++ )
 	{
-		m_EquippedItemData[i].Reset();
+		m_EquippedItemsResult[i] = k_SteamInventoryResultInvalid;
+		m_EquippedItemsReceiving[i].Purge();
+		m_iEquippedItemsReceivingOffset[i] = 0;
+		m_iEquippedItemsParity[i] = 0;
 	}
-	m_EquippedItemsResult = k_SteamInventoryResultInvalid;
-	m_EquippedItemsReceiving.Purge();
-	m_iEquippedItemsReceivingOffset = 0;
-	m_iEquippedItemsParity = 0;
+	m_flNextItemCounterCommit = -1;
 
 	m_iWantsAutoRecord = 0;
 }
@@ -441,11 +435,14 @@ CASW_Player::CASW_Player()
 CASW_Player::~CASW_Player()
 {
 	m_PlayerAnimState->Release();
-	if (ASWGameRules())
-		ASWGameRules()->SetMaxMarines(this);
+	if ( ASWGameRules() )
+		ASWGameRules()->SetMaxMarines( this );
 
 	// free inventory handle
-	ReactiveDropInventory::DecodeItemData( m_EquippedItemsResult, "" );
+	for ( int i = 0; i < 2; i++ )
+	{
+		ReactiveDropInventory::DecodeItemData( m_EquippedItemsResult[i], "" );
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -483,7 +480,7 @@ void CASW_Player::PostThink()
 	// Store the eye angles pitch so the client can compute its animation state correctly.
 	m_angEyeAngles = EyeAngles();
 
-    m_PlayerAnimState->Update( m_angEyeAngles[YAW], m_angEyeAngles[PITCH] );
+	m_PlayerAnimState->Update( m_angEyeAngles[YAW], m_angEyeAngles[PITCH] );
 
 	// find nearby usable items
 	FindUseEntities();
@@ -612,6 +609,35 @@ void CASW_Player::PostThink()
 	{
 		ASW_DrawAwakeAI();
 		m_fLastAICountTime = gpGlobals->curtime;
+	}
+
+	bool bShouldCommitCounters = true;
+	if ( rd_throttle_inventory_counter_updates.GetFloat() > 0 )
+	{
+		bShouldCommitCounters = m_flNextItemCounterCommit <= gpGlobals->curtime;
+		if ( bShouldCommitCounters )
+		{
+			float flNext = gpGlobals->curtime;
+			flNext /= rd_throttle_inventory_counter_updates.GetFloat();
+			flNext += 1 - s_flPlayerItemUpdateOffset[entindex() - 1];
+			flNext = roundf( flNext );
+			flNext += s_flPlayerItemUpdateOffset[entindex() - 1];
+			flNext *= rd_throttle_inventory_counter_updates.GetFloat();
+			Assert( flNext > gpGlobals->curtime && flNext <= gpGlobals->curtime + rd_throttle_inventory_counter_updates.GetFloat() );
+			m_flNextItemCounterCommit = flNext;
+		}
+	}
+
+	if ( bShouldCommitCounters )
+	{
+		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC; i++ )
+		{
+			m_EquippedItemDataStatic[i].CommitCounters();
+		}
+		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC; i++ )
+		{
+			m_EquippedItemDataDynamic[i].CommitCounters();
+		}
 	}
 }
 
@@ -1414,11 +1440,6 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			}
 		}
 
-//         if ( ASWDeathmatchMode() )
-//         {
-//             ASWDeathmatchMode()->SpawnMarine( this );
-//         }
-
 		return true;
 	}
 	else if ( FStrEq( pcmd, "cl_loadout" ) )			// selecting equipment
@@ -1945,7 +1966,7 @@ void CASW_Player::BecomeNonSolid()
 
 	SetGroundEntity( (CBaseEntity *)NULL );
 
-    AddSolidFlags( FSOLID_NOT_SOLID );
+	AddSolidFlags( FSOLID_NOT_SOLID );
 	RemoveFlag( FL_AIMTARGET ); // don't attract autoaim
 	AddFlag( FL_DONTTOUCH );	// stop it touching anything
 	AddFlag( FL_NOTARGET );	// stop NPCs noticing it
@@ -3481,4 +3502,209 @@ void CASW_Player::ScriptSetSpectatingNPC( HSCRIPT hNPC )
 
 	LeaveMarines();
 	SetSpectatingNPC( assert_cast< CASW_Inhabitable_NPC * >( pEnt ) );
+}
+
+void CASW_Player::HandleEquippedItemsNotification( KeyValues *pKeyValues, bool bDynamic )
+{
+	int iOffset = pKeyValues->GetInt( "i", -1 );
+	int iTotal = pKeyValues->GetInt( "t", -1 );
+	int iParity = pKeyValues->GetInt( "e", -1 );
+	const char *szData = pKeyValues->GetString( "m", NULL );
+	int iLength = szData ? V_strlen( szData ) : 0;
+	if ( iOffset < 0 || iTotal < 8 + 2 * RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC || iTotal > RD_EQUIPPED_ITEMS_NOTIFICATION_WORST_CASE_SIZE || iParity <= 0 || !szData || !*szData || ( iLength & 1 ) )
+	{
+		Warning( "Ignoring equipped items notification (%s) from player %s (invalid data)\n", bDynamic ? "dynamic" : "static", GetASWNetworkID() );
+		return;
+	}
+
+	if ( iOffset == 0 && ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME )
+	{
+		// allow receiving data after mission start if the transfer as at least started beforehand
+		DevWarning( "Ignoring equipped items notification (%s) from player %s as the mission is in-progress.\n", bDynamic ? "dynamic" : "static", GetASWNetworkID() );
+		return;
+	}
+
+	iOffset *= 2;
+	iTotal *= 2;
+
+	if ( iOffset != 0 && ( iParity != m_iEquippedItemsParity[bDynamic] || iOffset != m_iEquippedItemsReceivingOffset[bDynamic] || iTotal + 1 != m_EquippedItemsReceiving[bDynamic].Count() ) || iLength + iOffset > iTotal || iLength != MIN( iTotal - iOffset, RD_EQUIPPED_ITEMS_NOTIFICATION_PAYLOAD_SIZE_PER_PACKET * 2 ) )
+	{
+		Assert( iParity == m_iEquippedItemsParity[bDynamic] );
+		Assert( iOffset == m_iEquippedItemsReceivingOffset[bDynamic] );
+		Assert( iTotal + 1 == m_EquippedItemsReceiving[bDynamic].Count() );
+		Assert( iLength + iOffset <= iTotal );
+		Assert( iLength == MIN( iTotal - iOffset, RD_EQUIPPED_ITEMS_NOTIFICATION_PAYLOAD_SIZE_PER_PACKET * 2 ) );
+		Warning( "Ignoring equipped items notification (%s) from player %s (out of order or bad parity)\n", bDynamic ? "dynamic" : "static", GetASWNetworkID() );
+		return;
+	}
+
+	if ( iOffset == 0 )
+	{
+		ReactiveDropInventory::DecodeItemData( m_EquippedItemsResult[bDynamic], "" );
+		if ( !bDynamic )
+		{
+			for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC; i++ )
+			{
+				m_EquippedItemDataStatic[i].Reset();
+			}
+		}
+		m_EquippedItemsReceiving[bDynamic].Init( 0, iTotal + 1 );
+		m_iEquippedItemsReceivingOffset[bDynamic] = 0;
+		m_iEquippedItemsParity[bDynamic] = iParity;
+		Assert( m_EquippedItemsReceiving[bDynamic].Count() == iTotal + 1 );
+	}
+
+	V_memcpy( m_EquippedItemsReceiving[bDynamic].Base() + m_iEquippedItemsReceivingOffset[bDynamic], szData, iLength );
+	m_iEquippedItemsReceivingOffset[bDynamic] += iLength;
+	Assert( m_iEquippedItemsReceivingOffset[bDynamic] <= iTotal );
+	if ( m_iEquippedItemsReceivingOffset[bDynamic] == iTotal )
+	{
+		m_EquippedItemsReceiving[bDynamic].Base()[iTotal] = '\0';
+		CUtlMemory<byte> RawBuffer{ 0, iTotal / 2 };
+		V_hextobinary( m_EquippedItemsReceiving[bDynamic].Base(), iTotal, RawBuffer.Base(), RawBuffer.Count() );
+		CRC32_t iChecksumExpected = CRC32_ProcessSingleBuffer( RawBuffer.Base() + 4, RawBuffer.Count() - 4 );
+		if ( iChecksumExpected != *reinterpret_cast< const CRC32_t * >( RawBuffer.Base() ) )
+		{
+			Warning( "Ignoring equipped items notification (%s) from player %s (bad checksum)\n", bDynamic ? "dynamic" : "static", GetASWNetworkID() );
+		}
+		else
+		{
+			ReactiveDropInventory::DecodeItemData( m_EquippedItemsResult[bDynamic], m_EquippedItemsReceiving[bDynamic].Base() + 8 + ( bDynamic ? RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC : RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC ) * 2 );
+		}
+	}
+	else
+	{
+		CSingleUserRecipientFilter filter{ this };
+		filter.MakeReliable();
+		UserMessageBegin( filter, "RDEquippedItemsACK" );
+			WRITE_LONG( iParity );
+		MessageEnd();
+	}
+}
+
+void CASW_Player::HandleEquippedItemsCachedNotification( KeyValues *pKeyValues, bool bDynamic )
+{
+	// This only works in singleplayer, and we need access to our own Steam ID.
+	if ( engine->IsDedicatedServer() || gpGlobals->maxClients != 1 || !SteamUser() )
+		return;
+
+	CFmtStr szCacheFileName{ "cfg/clienti_%llu.dat", SteamUser()->GetSteamID().ConvertToUint64() };
+	CUtlBuffer buf;
+
+	if ( !g_pFullFileSystem->ReadFile( szCacheFileName, "MOD", buf ) )
+		return;
+
+	KeyValues::AutoDelete pCache{ "IC" };
+
+	if ( !pCache->ReadAsBinary( buf ) )
+		return;
+
+	if ( bDynamic )
+	{
+		CUtlVector<SteamItemInstanceID_t> seen;
+		seen.EnsureCapacity( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC );
+
+		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC; i++ )
+		{
+			SteamItemInstanceID_t id = pKeyValues->GetUint64( CFmtStr( "item%d", i ), k_SteamItemInstanceIDInvalid );
+			Assert( id != 0 );
+
+			if ( id == k_SteamItemInstanceIDInvalid )
+			{
+				if ( !m_EquippedItemDataDynamic[i].IsSet() )
+					continue;
+
+				id = m_EquippedItemDataDynamic[i].m_iItemInstanceID;
+			}
+
+			Assert( !seen.IsValidIndex( seen.Find( id ) ) );
+			if ( seen.IsValidIndex( seen.Find( id ) ) )
+			{
+				Warning( "Offline dynamic items notification contains duplicate item ID %llu in slot %d\n", id, i );
+				return;
+			}
+		}
+
+		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC; i++ )
+		{
+			if ( KeyValues *pSlot = pKeyValues->FindKey( CFmtStr( "item%d", i ) ) )
+			{
+				SteamItemInstanceID_t id = pSlot->GetUint64();
+
+				FOR_EACH_SUBKEY( pCache, pItem )
+				{
+					if ( pItem->GetUint64( "i" ) != id )
+					{
+						continue;
+					}
+
+
+					ReactiveDropInventory::ItemInstance_t instance{ pItem };
+					const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( instance.ItemDefID );
+					Assert( pDef && pDef->ItemSlotMatchesAnyDynamic() );
+					if ( !pDef || !pDef->ItemSlotMatchesAnyDynamic() )
+					{
+						Warning( "Offline dynamic items notification contains %llu %d '%s' which fits in '%s', not a dynamic slot\n", instance.ItemID, instance.ItemDefID, pDef ? pDef->Name.Get() : "<NO DEF>", pDef ? pDef->ItemSlot.Get() : "<NO DEF>" );
+						m_EquippedItemDataDynamic[i].Reset();
+						continue;
+					}
+
+					m_EquippedItemDataDynamic[i].SetFromInstance( ReactiveDropInventory::ItemInstance_t{ pItem } );
+
+					break;
+				}
+			}
+		}
+	}
+	else
+	{
+		CUtlVector<SteamItemInstanceID_t> seen;
+		seen.EnsureCapacity( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC );
+
+		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC; i++ )
+		{
+			SteamItemInstanceID_t id = pKeyValues->GetUint64( ReactiveDropInventory::g_InventorySlotNames[i], k_SteamItemInstanceIDInvalid );
+			Assert( id != 0 );
+
+			if ( id == k_SteamItemInstanceIDInvalid )
+				continue;
+
+			Assert( !seen.IsValidIndex( seen.Find( id ) ) );
+			if ( seen.IsValidIndex( seen.Find( id ) ) )
+			{
+				Warning( "Offline static items notification contains duplicate item ID %llu in slot '%s'\n", id, ReactiveDropInventory::g_InventorySlotNames[i] );
+				return;
+			}
+		}
+
+		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC; i++ )
+		{
+			if ( KeyValues *pSlot = pKeyValues->FindKey( ReactiveDropInventory::g_InventorySlotNames[i] ) )
+			{
+				SteamItemInstanceID_t id = pSlot->GetUint64();
+				m_EquippedItemDataStatic[i].Reset();
+
+				FOR_EACH_SUBKEY( pCache, pItem )
+				{
+					if ( pItem->GetUint64( "i" ) != id )
+					{
+						continue;
+					}
+
+					ReactiveDropInventory::ItemInstance_t instance{ pItem };
+					const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( instance.ItemDefID );
+					Assert( pDef && pDef->ItemSlotMatches( ReactiveDropInventory::g_InventorySlotNames[i] ) );
+					if ( !pDef || !pDef->ItemSlotMatches( ReactiveDropInventory::g_InventorySlotNames[i] ) )
+					{
+						Warning( "Offline static items notification contains %llu %d '%s' which fits in '%s', not '%s'\n", instance.ItemID, instance.ItemDefID, pDef ? pDef->Name.Get() : "<NO DEF>", pDef ? pDef->ItemSlot.Get() : "<NO DEF>", ReactiveDropInventory::g_InventorySlotNames[i] );
+						continue;
+					}
+
+					m_EquippedItemDataStatic[i].SetFromInstance( instance );
+
+					break;
+				}
+			}
+		}
+	}
 }

@@ -113,7 +113,6 @@ public:
 
 	// the items index in the list of equipment
 	const int m_iItemIndex;
-	const int m_iInventoryEquipIndex;
 	const int m_iRequiredClass;
 	int m_iAmmo1;
 	int m_iAmmo2;

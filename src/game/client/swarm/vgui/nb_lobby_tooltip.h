@@ -34,7 +34,7 @@ public:
 	void ShowMarineTooltip( int nLobbySlot );
 	void ShowWeaponTooltip( int nLobbySlot, int nInventorySlot );
 	void ShowMarinePromotionTooltip( int nLobbySlot );
-	void ShowMarineMedalTooltip( int nLobbySlot );
+	void ShowMarineMedalTooltip( int nLobbySlot, int nMedalIndex );
 	
 	// == MANAGED_MEMBER_POINTERS_START: Do not edit by hand ==
 	vgui::Panel	*m_pBackground;
@@ -64,7 +64,7 @@ public:
 
 	bool m_bPromotionTooltip;
 	bool m_bMarineTooltip;
-	bool m_bMedalTooltip;
+	int m_iMedalTooltip;
 	int m_nLobbySlot;
 	int m_nInventorySlot;
 	bool m_bValidTooltip;

@@ -274,8 +274,7 @@ void WriteUsercmd( bf_write *buf, const CUserCmd *to, const CUserCmd *from )
 	if ( from->screenw != to->screenw || from->screenh != to->screenh )
 	{
 		buf->WriteOneBit( 1 );
-		buf->WriteShort( to->screenw );
-		buf->WriteShort( to->screenh );
+		buf->WriteLong( to->screenwh );
 	}
 	else
 	{
@@ -488,11 +487,9 @@ void ReadUsercmd( bf_read *buf, CUserCmd *move, CUserCmd *from )
 		// TrackIR
 	}
 
-	// BenLubar(spectator-mouse): send the screen size and cursor position
 	if ( buf->ReadOneBit() )
 	{
-		move->screenw = buf->ReadShort();
-		move->screenh = buf->ReadShort();
+		move->screenwh = buf->ReadLong();
 	}
 
 	if ( buf->ReadOneBit() )

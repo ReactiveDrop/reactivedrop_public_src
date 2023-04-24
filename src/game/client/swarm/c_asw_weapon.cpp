@@ -57,8 +57,8 @@ BEGIN_NETWORK_TABLE( CASW_Weapon, DT_ASW_Weapon )
 	RecvPropIntWithMinusOneFlag( RECVINFO(m_iClip1 )),
 	RecvPropInt( RECVINFO(m_iPrimaryAmmoType )),
 	RecvPropBool		( RECVINFO( m_bIsTemporaryPickup ) ),
-	RecvPropInt( RECVINFO( m_iOriginalOwnerSteamAccount ) ),
-	RecvPropDataTable( RECVINFO_DT( m_InventoryItemData ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropEHandle( RECVINFO( m_hOriginalOwnerPlayer ) ),
+	RecvPropIntWithMinusOneFlag( RECVINFO( m_iInventoryEquipSlot ) ),
 END_NETWORK_TABLE()
 
 BEGIN_PREDICTION_DATA( C_ASW_Weapon )
@@ -720,10 +720,10 @@ bool C_ASW_Weapon::GetUseAction( ASWUseAction &action, C_ASW_Inhabitable_NPC *pU
 		wchar_t wszWeaponShortName[128];
 		TryLocalize( pItem->m_szShortName, wszWeaponShortName, sizeof( wszWeaponShortName ) );
 		wchar_t wszWeaponName[128];
-		if ( m_iOriginalOwnerSteamAccount != 0 && m_InventoryItemData.IsSet() && SteamFriends() )
+		if ( IsInventoryEquipSlotValid() && SteamFriends() )
 		{
 			wchar_t wszPlayerName[128];
-			V_UTF8ToUnicode( SteamFriends()->GetFriendPersonaName( CSteamID( m_iOriginalOwnerSteamAccount, SteamUtils()->GetConnectedUniverse(), k_EAccountTypeIndividual ) ), wszPlayerName, sizeof( wszPlayerName ) );
+			V_UTF8ToUnicode( SteamFriends()->GetFriendPersonaName( m_hOriginalOwnerPlayer->GetSteamID() ), wszPlayerName, sizeof( wszPlayerName ) );
 			g_pVGuiLocalize->ConstructString( wszWeaponName, sizeof( wszWeaponName ), g_pVGuiLocalize->Find( "#asw_owned_weapon_format" ), 2, wszPlayerName, wszWeaponShortName );
 		}
 		else

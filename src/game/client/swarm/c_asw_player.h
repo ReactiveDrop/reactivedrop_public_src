@@ -219,8 +219,8 @@ public:
 	CNetworkHandle(C_ASW_Marine, m_hOrderingMarine);
 
 	CNetworkVar( float, m_fMarineDeathTime);
-	bool IsSpectatorOnly();	// for players who can *only* spectate, i.e. not able to control characters
-	CNetworkVar( bool, m_bWantsSpectatorOnly );
+	// for players who can *only* spectate, i.e. not able to control characters
+	bool IsSpectatorOnly();
 
 	bool HasFullyJoined() { return m_bSentJoinedMessage; }
 	CNetworkVar( bool, m_bSentJoinedMessage );
@@ -263,11 +263,27 @@ public:
 	CNetworkVar( int, m_nChangingMR );
 	CNetworkVar( int, m_nChangingSlot );
 
-	// BenLubar(spectator-mouse)
-	short m_iScreenWidth;
-	short m_iScreenHeight;
-	short m_iMouseX;
-	short m_iMouseY;
+#pragma warning(push)
+#pragma warning(disable: 4201)
+	union
+	{
+		unsigned m_iScreenWidthHeight;
+		struct
+		{
+			short m_iScreenWidth;
+			short m_iScreenHeight;
+		};
+	};
+	union
+	{
+		unsigned m_iMouseXY;
+		struct
+		{
+			short m_iMouseX;
+			short m_iMouseY;
+		};
+	};
+#pragma warning(pop)
 	CInterpolatedVar<short> m_iv_iMouseX;
 	CInterpolatedVar<short> m_iv_iMouseY;
 
@@ -318,7 +334,9 @@ public:
 	int32 m_iStatNumXP[ ASW_NUM_XP_TYPES ];
 	CNetworkVar( int, m_iNetworkedXP );
 	CNetworkVar( int, m_iNetworkedPromotion );
-	CNetworkVarEmbedded( CRD_ItemInstance, m_EquippedMedal );
+
+	CNetworkVarEmbedded( CRD_ItemInstances_Static, m_EquippedItemDataStatic );
+	CNetworkVarEmbedded( CRD_ItemInstances_Dynamic, m_EquippedItemDataDynamic );
 
 	bool m_bPendingSteamStats;
 	float m_flPendingSteamStatsStart;

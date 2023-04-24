@@ -30,32 +30,20 @@ ConVar rd_sentry_take_damage_from_marine( "rd_sentry_take_damage_from_marine", "
 ConVar rd_sentry_invincible( "rd_sentry_invincible", "0", FCVAR_CHEAT, "If set to 1 sentries will not take damage from anything" );
 ConVar rd_sentry_refilled_by_dismantling( "rd_sentry_refilled_by_dismantling", "0", FCVAR_CHEAT, "If set to 1 marine will refill sentry ammo by dismantling it." );
 
-static void *SendProxy_SentryItemDataForOwningPlayer( const SendProp *pProp, const void *pStructBase, const void *pData, CSendProxyRecipients *pRecipients, int objectID )
-{
-	static CRD_ItemInstance s_BlankInstance;
-
-	const CASW_Sentry_Base *pSentry = static_cast< const CASW_Sentry_Base * >( pStructBase );
-	CASW_Player *pPlayer = pSentry->m_hOriginalOwnerPlayer;
-	if ( !pPlayer || pSentry->m_iInventoryEquipSlotIndex == -1 )
-		return &s_BlankInstance;
-
-	return &pPlayer->m_EquippedItemData[pSentry->m_iInventoryEquipSlotIndex];
-}
-
 LINK_ENTITY_TO_CLASS( asw_sentry_base, CASW_Sentry_Base );
 PRECACHE_REGISTER( asw_sentry_base );
 
-IMPLEMENT_SERVERCLASS_ST(CASW_Sentry_Base, DT_ASW_Sentry_Base)
-	SendPropBool(SENDINFO(m_bAssembled)),
-	SendPropBool(SENDINFO(m_bIsInUse)),
-	SendPropFloat(SENDINFO(m_fAssembleProgress)),
-	SendPropFloat(SENDINFO(m_fAssembleCompleteTime)),
-	SendPropInt(SENDINFO(m_iAmmo)),	
-	SendPropInt(SENDINFO(m_iMaxAmmo)),	
-	SendPropBool(SENDINFO(m_bSkillMarineHelping)),
-	SendPropInt(SENDINFO(m_nGunType)),
-	SendPropInt( SENDINFO( m_iOriginalOwnerSteamAccount ), -1, SPROP_UNSIGNED ),
-	SendPropDataTable( "m_InventoryItemData", 0, &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ), SendProxy_SentryItemDataForOwningPlayer ),
+IMPLEMENT_SERVERCLASS_ST( CASW_Sentry_Base, DT_ASW_Sentry_Base )
+	SendPropBool( SENDINFO( m_bAssembled ) ),
+	SendPropBool( SENDINFO( m_bIsInUse ) ),
+	SendPropFloat( SENDINFO( m_fAssembleProgress ) ),
+	SendPropFloat( SENDINFO( m_fAssembleCompleteTime ) ),
+	SendPropInt( SENDINFO( m_iAmmo ) ),
+	SendPropInt( SENDINFO( m_iMaxAmmo ) ),
+	SendPropBool( SENDINFO( m_bSkillMarineHelping ) ),
+	SendPropInt( SENDINFO( m_nGunType ), NumBitsForCount( CASW_Sentry_Base::kGUNTYPE_MAX ), SPROP_UNSIGNED ),
+	SendPropEHandle( SENDINFO( m_hOriginalOwnerPlayer ) ),
+	SendPropIntWithMinusOneFlag( SENDINFO( m_iInventoryEquipSlot ), NumBitsForCount( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC + 1 ) ),
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Sentry_Base )
@@ -87,10 +75,6 @@ static const char *const s_szSentryGibs[] =
 };
 
 CASW_Sentry_Base::CASW_Sentry_Base()
-	: bait1_( NULL ),
-	bait2_( NULL ),
-	bait3_( NULL ),
-	bait4_( NULL )
 {
 	m_iAmmo = -1;
 	m_fSkillMarineHelping = 0;
@@ -98,28 +82,23 @@ CASW_Sentry_Base::CASW_Sentry_Base()
 	m_fDamageScale = 1.0f;
 	m_nGunType = kAUTOGUN;
 	m_bAlreadyTaken = false;
-	m_iOriginalOwnerSteamAccount = 0;
+	for ( int i = 0; i < NELEMS( m_hBait ); i++ )
+	{
+		m_hBait[i] = NULL;
+	}
 	m_hOriginalOwnerPlayer = NULL;
+	m_iInventoryEquipSlot = -1;
 }
 
 
 CASW_Sentry_Base::~CASW_Sentry_Base()
 {
-	if ( bait1_ )
+	for ( int i = 0; i < NELEMS( m_hBait ); i++ )
 	{
-		UTIL_Remove( bait1_ );
-	}
-	if ( bait2_ )
-	{
-		UTIL_Remove( bait2_ );
-	}
-	if ( bait3_ )
-	{
-		UTIL_Remove( bait3_ );
-	}
-	if ( bait4_ )
-	{
-		UTIL_Remove( bait4_ );
+		if ( m_hBait[i] )
+		{
+			UTIL_Remove( m_hBait[i] );
+		}
 	}
 }
 
@@ -262,9 +241,8 @@ void CASW_Sentry_Base::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldTyp
 				{
 					pWeapon->SetSentryAmmo( m_iAmmo );
 				}
-				pWeapon->m_iOriginalOwnerSteamAccount = m_iOriginalOwnerSteamAccount;
 				pWeapon->m_hOriginalOwnerPlayer = m_hOriginalOwnerPlayer;
-				pWeapon->m_iInventoryEquipSlotIndex = m_iInventoryEquipSlotIndex;
+				pWeapon->m_iInventoryEquipSlot = m_iInventoryEquipSlot;
 
 				pMarine->TakeWeaponPickup( pWeapon );
 				EmitSound( "ASW_Sentry.Dismantled" );

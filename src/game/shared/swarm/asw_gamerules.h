@@ -148,7 +148,7 @@ public:
 	// loadout/equip
 	virtual void			LoadoutSelect( CASW_Player *pPlayer, int iRosterIndex, int iInvSlot, int iEquipIndex);
 	virtual bool			CanHaveAmmo( CBaseCombatCharacter *pPlayer, int iAmmoIndex );
-	void GiveStartingWeaponToMarine( CASW_Marine *pMarine, int iEquipIndex, int iSlot, bool bAssociateWithAccount = true );	// gives the specified marine the specified starting gun and default ammo
+	void GiveStartingWeaponToMarine( CASW_Marine *pMarine, int iEquipIndex, int iSlot, int iDynamicItemSlot );	// gives the specified marine the specified starting gun and default ammo
 	void AddBonusChargesToPickups();
 	
 	// spawning/connecting

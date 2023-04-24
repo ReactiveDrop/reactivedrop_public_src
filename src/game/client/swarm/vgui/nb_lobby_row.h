@@ -7,6 +7,7 @@
 #include <vgui/VGUI.h>
 #include <vgui_controls/EditablePanel.h>
 #include "asw_shareddefs.h"
+#include "rd_inventory_shared.h"
 #include "steam/steam_api.h"
 
 // == MANAGED_CLASS_DECLARATIONS_START: Do not edit by hand ==
@@ -68,14 +69,14 @@ public:
 	CBitmapButton	*m_pWeaponButton2;
 	vgui::ImagePanel *m_pVoiceIcon;
 	vgui::ImagePanel *m_pPromotionIcon;
-	vgui::ImagePanel *m_pMedalIcon;
+	vgui::ImagePanel *m_pMedalIcon[RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS];
 	vgui::ImagePanel *m_pChangingSlot[ 4 ];
 
 	char m_szLastWeaponImage[ ASW_NUM_INVENTORY_SLOTS ][ 255 ];
 	char m_szLastPortraitImage[ 255 ];
 	CSteamID m_lastSteamID;
 	int m_nLastPromotion;
-	SteamItemDef_t m_lastMedal;
+	SteamItemDef_t m_lastMedal[RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS];
 
 	int m_nLobbySlot;
 };

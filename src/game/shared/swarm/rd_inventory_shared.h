@@ -1,5 +1,6 @@
 #pragma once
 
+#include "asw_shareddefs.h"
 #include "steam/steam_api.h"
 
 #ifdef CLIENT_DLL
@@ -11,6 +12,8 @@ namespace vgui
 
 #define CASW_Player C_ASW_Player
 #define CRD_ItemInstance C_RD_ItemInstance
+#define CRD_ItemInstances_Static C_RD_ItemInstances_Static
+#define CRD_ItemInstances_Dynamic C_RD_ItemInstances_Dynamic
 #define CRD_ProjectileData C_RD_ProjectileData
 #endif
 
@@ -20,44 +23,21 @@ namespace ReactiveDropInventory
 {
 	constexpr const char *const g_InventorySlotNames[] =
 	{
-		"medal",
+		"medal", "medal1", "medal2",
 		"marine0", "marine1", "marine2", "marine3",
 		"marine4", "marine5", "marine6", "marine7",
-		"weapon0", "weapon1", "weapon2", "weapon3", "weapon4",
-		"weapon5", "weapon6", "weapon7", "weapon8", "weapon9",
-		"weapon10", "weapon11", "weapon12", "weapon13", "weapon14",
-		"weapon15", "weapon16", "weapon17", "weapon18", "weapon19",
-		"weapon20", "weapon21", "weapon22", "weapon23", "weapon24",
-		"weapon25", "weapon26", "weapon27", "weapon28", "weapon29",
-		"weapon30", "weapon31", "weapon32", "weapon33", "weapon34",
-#ifdef RD_7A_WEAPONS
-		"weapon35", "weapon36", "weapon37", "weapon38", "weapon39",
-		"weapon40",
-#endif
-		"extra0", "extra1", "extra2", "extra3", "extra4",
-		"extra5", "extra6", "extra7", "extra8", "extra9",
-		"extra10", "extra11", "extra12", "extra13", "extra14",
-		"extra15", "extra16", "extra17", "extra18", "extra19",
-		"extra20", "extra21",
-#ifdef RD_7A_WEAPONS
-		"extra22", "extra23", "extra24",
-		"extra25",
-#endif
 	};
-#define RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS NELEMS( ReactiveDropInventory::g_InventorySlotNames )
+#define RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC NELEMS( ReactiveDropInventory::g_InventorySlotNames )
+#define RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC ( ASW_NUM_MARINE_PROFILES * ASW_NUM_INVENTORY_SLOTS )
+#define RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS 3
 #define RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MEDAL 0
-#define RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE 1
-#define RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_WEAPON 9
-#ifdef RD_7A_WEAPONS
-#define RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_EXTRA 50
-#else
-#define RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_EXTRA 44
-#endif
+#define RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE 3
 #define RD_STEAM_INVENTORY_ITEM_MAX_STYLES 64
 	constexpr const char *const g_InventorySlotAliases[][2] =
 	{
 		// first value is the name from g_InventorySlotNames, second value is the value to also accept from item definitions.
-		{ "", "" }, // placeholder until we have any of these
+		{ "medal1", "medal" },
+		{ "medal2", "medal" },
 	};
 
 	// Data extracted from the Steam Inventory Service Schema.
@@ -65,6 +45,7 @@ namespace ReactiveDropInventory
 	{
 		SteamItemDef_t ID;
 		CUtlString ItemSlot;
+		int EquipIndex{ -1 };
 		CUtlStringMap<CUtlStringList> Tags;
 		CUtlStringMap<CUtlStringList> AllowedTagsFromTools;
 		CUtlString AccessoryTag;
@@ -86,10 +67,12 @@ namespace ReactiveDropInventory
 #ifdef CLIENT_DLL
 		vgui::IImage *Icon{};
 		CUtlVector<vgui::IImage *> StyleIcons{};
-		ITexture *AccessoryIcon{};
+		mutable ITexture *AccessoryIcon{};
+		ITexture *GetAccessoryIcon() const;
 #endif
 
 		bool ItemSlotMatches( const char *szRequiredSlot ) const;
+		bool ItemSlotMatchesAnyDynamic() const;
 	};
 
 	// Data extracted from SteamInventoryResult_t; it is safe to destroy the result after constructing this data type.
@@ -107,6 +90,11 @@ namespace ReactiveDropInventory
 		CUtlStringMap<CUtlString> DynamicProps{};
 		CUtlStringMap<CUtlStringList> Tags{};
 
+		ItemInstance_t() {}
+		ItemInstance_t( const ItemInstance_t &other )
+		{
+			*this = other;
+		}
 		explicit ItemInstance_t( SteamInventoryResult_t hResult, uint32 index );
 		explicit ItemInstance_t( KeyValues *pKV );
 		void FormatDescription( wchar_t *wszBuf, size_t sizeOfBufferInBytes, const CUtlString &szDesc, bool bIsSteamCommunityDesc ) const;
@@ -117,12 +105,15 @@ namespace ReactiveDropInventory
 		int GetStyle() const;
 		KeyValues *ToKeyValues() const;
 		void FromKeyValues( KeyValues *pKV );
+
+		ItemInstance_t &operator=( const ItemInstance_t &other );
 	};
 
 	const ItemDef_t *GetItemDef( SteamItemDef_t id );
 	bool DecodeItemData( SteamInventoryResult_t &hResult, const char *szEncodedData );
 	bool ValidateItemData( bool &bValid, SteamInventoryResult_t hResult, const char *szRequiredSlot = NULL, CSteamID requiredSteamID = k_steamIDNil, bool bRequireFresh = false );
-	bool ValidateEquipItemData( bool &bValid, SteamInventoryResult_t hResult, byte( &nIndex )[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS], CSteamID requiredSteamID );
+	bool ValidateEquipItemDataStatic( bool &bValid, SteamInventoryResult_t hResult, byte( &nIndex )[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC], CSteamID requiredSteamID );
+	bool ValidateEquipItemDataDynamic( bool &bValid, SteamInventoryResult_t hResult, byte( &nIndex )[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC], CSteamID requiredSteamID, CASW_Player *pPlayer );
 #ifdef CLIENT_DLL
 	void AddPromoItem( SteamItemDef_t id );
 	void RequestGenericPromoItems();
@@ -137,11 +128,13 @@ namespace ReactiveDropInventory
 #define RD_ITEM_MAX_COMPRESSED_DYNAMIC_PROPS 10
 #define RD_ITEM_MAX_COMPRESSED_DYNAMIC_PROPS_PER_ACCESSORY 2
 
-#define RD_EQUIPPED_ITEMS_NOTIFICATION_WORST_CASE_SIZE ( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS * 2048 )
+#define RD_EQUIPPED_ITEMS_NOTIFICATION_WORST_CASE_SIZE ( MAX( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC, RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC ) * 2048 )
 #define RD_EQUIPPED_ITEMS_NOTIFICATION_PAYLOAD_SIZE_PER_PACKET ( MAX_VALUE / 2 - 1 )
 
 #ifdef CLIENT_DLL
 EXTERN_RECV_TABLE( DT_RD_ItemInstance );
+EXTERN_RECV_TABLE( DT_RD_ItemInstances_Static );
+EXTERN_RECV_TABLE( DT_RD_ItemInstances_Dynamic );
 EXTERN_RECV_TABLE( DT_RD_ProjectileData );
 
 namespace vgui
@@ -150,6 +143,8 @@ namespace vgui
 }
 #else
 EXTERN_SEND_TABLE( DT_RD_ItemInstance );
+EXTERN_SEND_TABLE( DT_RD_ItemInstances_Static );
+EXTERN_SEND_TABLE( DT_RD_ItemInstances_Dynamic );
 EXTERN_SEND_TABLE( DT_RD_ProjectileData );
 #endif
 
@@ -180,6 +175,65 @@ public:
 	CNetworkVar( SteamItemDef_t, m_iItemDefID );
 	CNetworkArray( SteamItemDef_t, m_iAccessory, RD_ITEM_MAX_ACCESSORIES );
 	CNetworkArray( int64, m_nCounter, RD_ITEM_MAX_COMPRESSED_DYNAMIC_PROPS );
+#ifndef CLIENT_DLL
+	CNetworkArray( int64, m_nCounterCommitted, RD_ITEM_MAX_COMPRESSED_DYNAMIC_PROPS );
+	void CommitCounters();
+#endif
+};
+
+class CRD_ItemInstances_Static
+{
+public:
+	DECLARE_CLASS_NOBASE( CRD_ItemInstances_Static );
+	DECLARE_EMBEDDED_NETWORKVAR();
+
+	CNetworkVarEmbedded( CRD_ItemInstance, m_Medal0 );
+	CNetworkVarEmbedded( CRD_ItemInstance, m_Medal1 );
+	CNetworkVarEmbedded( CRD_ItemInstance, m_Medal2 );
+	CNetworkVarEmbedded( CRD_ItemInstance, m_Marine0 );
+	CNetworkVarEmbedded( CRD_ItemInstance, m_Marine1 );
+	CNetworkVarEmbedded( CRD_ItemInstance, m_Marine2 );
+	CNetworkVarEmbedded( CRD_ItemInstance, m_Marine3 );
+	CNetworkVarEmbedded( CRD_ItemInstance, m_Marine4 );
+	CNetworkVarEmbedded( CRD_ItemInstance, m_Marine5 );
+	CNetworkVarEmbedded( CRD_ItemInstance, m_Marine6 );
+	CNetworkVarEmbedded( CRD_ItemInstance, m_Marine7 );
+
+	CRD_ItemInstance &operator []( int index );
+};
+
+class CRD_ItemInstances_Dynamic
+{
+public:
+	DECLARE_CLASS_NOBASE( CRD_ItemInstances_Dynamic );
+	DECLARE_EMBEDDED_NETWORKVAR();
+
+	CNetworkVarEmbedded( CRD_ItemInstance, m_Item0 );
+	CNetworkVarEmbedded( CRD_ItemInstance, m_Item1 );
+	CNetworkVarEmbedded( CRD_ItemInstance, m_Item2 );
+	CNetworkVarEmbedded( CRD_ItemInstance, m_Item3 );
+	CNetworkVarEmbedded( CRD_ItemInstance, m_Item4 );
+	CNetworkVarEmbedded( CRD_ItemInstance, m_Item5 );
+	CNetworkVarEmbedded( CRD_ItemInstance, m_Item6 );
+	CNetworkVarEmbedded( CRD_ItemInstance, m_Item7 );
+	CNetworkVarEmbedded( CRD_ItemInstance, m_Item8 );
+	CNetworkVarEmbedded( CRD_ItemInstance, m_Item9 );
+	CNetworkVarEmbedded( CRD_ItemInstance, m_Item10 );
+	CNetworkVarEmbedded( CRD_ItemInstance, m_Item11 );
+	CNetworkVarEmbedded( CRD_ItemInstance, m_Item12 );
+	CNetworkVarEmbedded( CRD_ItemInstance, m_Item13 );
+	CNetworkVarEmbedded( CRD_ItemInstance, m_Item14 );
+	CNetworkVarEmbedded( CRD_ItemInstance, m_Item15 );
+	CNetworkVarEmbedded( CRD_ItemInstance, m_Item16 );
+	CNetworkVarEmbedded( CRD_ItemInstance, m_Item17 );
+	CNetworkVarEmbedded( CRD_ItemInstance, m_Item18 );
+	CNetworkVarEmbedded( CRD_ItemInstance, m_Item19 );
+	CNetworkVarEmbedded( CRD_ItemInstance, m_Item20 );
+	CNetworkVarEmbedded( CRD_ItemInstance, m_Item21 );
+	CNetworkVarEmbedded( CRD_ItemInstance, m_Item22 );
+	CNetworkVarEmbedded( CRD_ItemInstance, m_Item23 );
+
+	CRD_ItemInstance &operator []( int index );
 };
 
 class CRD_ProjectileData
@@ -190,14 +244,11 @@ public:
 
 	CRD_ProjectileData();
 
-	CNetworkVar( AccountID_t, m_iOriginalOwnerSteamAccount );
-#ifdef CLIENT_DLL
-	CNetworkVarEmbedded( CRD_ItemInstance, m_InventoryItemData );
-#else
-	CHandle<CASW_Player> m_hOriginalOwnerPlayer;
-	int m_iInventoryEquipSlotIndex;
-#endif
+	CNetworkHandle( CASW_Player, m_hOriginalOwnerPlayer );
+	CNetworkVar( int, m_iInventoryEquipSlot );
 	CNetworkVar( bool, m_bFiredByOwner );
+
+	bool IsInventoryEquipSlotValid() const { return !!m_hOriginalOwnerPlayer && m_iInventoryEquipSlot != -1; }
 
 #ifdef GAME_DLL
 	void SetFromWeapon( CBaseEntity *pCreator );

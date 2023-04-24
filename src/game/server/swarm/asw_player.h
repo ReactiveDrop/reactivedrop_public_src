@@ -97,7 +97,6 @@ public:
 	float m_fLastControlledMarineTime;
 	CNetworkVar( float, m_fMarineDeathTime );	// same as above but optimized for networking
 	bool IsSpectatorOnly();	// for players who can *only* spectate, i.e. not able to control characters
-	CNetworkVar( bool, m_bWantsSpectatorOnly );
 
 	void BecomeNonSolid();
 	void OnNPCCommanded( CASW_Inhabitable_NPC *pNPC );
@@ -271,17 +270,23 @@ public:
 	CNetworkVar( int, m_iNetworkedXP );
 	CNetworkVar( int, m_iNetworkedPromotion );
 
-	// inventory
-	SteamInventoryResult_t m_EquippedItemsResult;
-	CRD_ItemInstance m_EquippedItemData[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS];
-	CUtlMemory<char> m_EquippedItemsReceiving;
-	int m_iEquippedItemsReceivingOffset;
-	int m_iEquippedItemsParity;
-
 	bool m_bHasAwardedXP;
 	bool m_bPendingSteamStats;
 	float m_flPendingSteamStatsStart;
 	bool m_bSentPromotedMessage;
+
+	// static inventory (medals, suits)
+	CNetworkVarEmbedded( CRD_ItemInstances_Static, m_EquippedItemDataStatic );
+	// dynamic inventory (weapons, equipment)
+	CNetworkVarEmbedded( CRD_ItemInstances_Dynamic, m_EquippedItemDataDynamic );
+	float m_flNextItemCounterCommit;
+	// receiving inventory data
+	SteamInventoryResult_t m_EquippedItemsResult[2];
+	CUtlMemory<char> m_EquippedItemsReceiving[2];
+	int m_iEquippedItemsReceivingOffset[2];
+	int m_iEquippedItemsParity[2];
+	void HandleEquippedItemsNotification( KeyValues *pKeyValues, bool bDynamic );
+	void HandleEquippedItemsCachedNotification( KeyValues *pKeyValues, bool bDynamic );
 
 	static CBaseEntity *spawn_point;
 	bool m_bWelcomed;
@@ -292,11 +297,8 @@ public:
 	CCallResult< CASW_Player, UserStatsReceived_t > m_CallbackUserStatsReceived;
 	void Steam_OnUserStatsReceived( UserStatsReceived_t *pUserStatsReceived, bool bError );
 #endif
-	// BenLubar(spectator-mouse)
-	CNetworkVar( short, m_iScreenWidth );
-	CNetworkVar( short, m_iScreenHeight );
-	CNetworkVar( short, m_iMouseX );
-	CNetworkVar( short, m_iMouseY );
+	CNetworkVar( unsigned, m_iScreenWidthHeight );
+	CNetworkVar( unsigned, m_iMouseXY );
 
 	bool m_bLeaderboardReady;
 

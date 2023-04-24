@@ -218,7 +218,7 @@ void rd_givemeweaponf( const CCommand &args )
 		int weapon_index = 0;
 		weapon_index = atoi( args[1] );
 
-		ASWGameRules()->GiveStartingWeaponToMarine( mymarine, weapon_index, 0 );
+		ASWGameRules()->GiveStartingWeaponToMarine( mymarine, weapon_index, 0, -1 );
 	}
 }
 ConCommand rd_givemeweapon( "rd_givemeweapon", rd_givemeweaponf, "Gives a specified weapon to me", FCVAR_CHEAT );

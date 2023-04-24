@@ -193,9 +193,9 @@ public:
 	virtual const char *GetMagazineGibModelName() const { return NULL; }
 	virtual int GetMagazineGibModelSkin() const { return 0; }
 
-	CNetworkVar( AccountID_t, m_iOriginalOwnerSteamAccount );
-	CHandle<CASW_Player> m_hOriginalOwnerPlayer;
-	int m_iInventoryEquipSlotIndex;
+	CNetworkHandle( CASW_Player, m_hOriginalOwnerPlayer );
+	CNetworkVar( int, m_iInventoryEquipSlot );
+	bool IsInventoryEquipSlotValid() const;
 
 protected:
 	int m_iEquipmentListIndex;

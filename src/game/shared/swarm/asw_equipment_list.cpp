@@ -24,7 +24,6 @@ CASW_EquipItem::CASW_EquipItem( int iItemIndex, const char *szEquipClass, const 
 	const char *szEquipIcon, ConVar *pMaxAmmo1, ConVar *pMaxAmmo2,
 	int iRequiredClass, bool bIsUnique )
 	: m_iItemIndex{ iItemIndex },
-	m_iInventoryEquipIndex{ ( bIsExtra ? RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_EXTRA : RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_WEAPON ) + iItemIndex },
 	m_iRequiredClass{ iRequiredClass },
 	m_pMaxAmmo1{ pMaxAmmo1 },
 	m_pMaxAmmo2{ pMaxAmmo2 },

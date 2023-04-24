@@ -150,11 +150,8 @@ void CASW_Player::DriveNPCMovement( CUserCmd *ucmd, IMoveHelper *moveHelper )
 		MoveHelper()->SetHost( pNPC );
 	}
 
-	// BenLubar(spectator-mouse)
-	m_iScreenWidth = ucmd->screenw;
-	m_iScreenHeight = ucmd->screenh;
-	m_iMouseX = ucmd->mousex;
-	m_iMouseY = ucmd->mousey;
+	m_iScreenWidthHeight = ucmd->screenwh;
+	m_iMouseXY = ucmd->mousexy;
 
 	m_angMarineAutoAimFromClient = ucmd->aimangleoffset;
 
@@ -259,12 +256,7 @@ bool CASW_Player::IsSpectatorOnly()
 
 	bool bGotPlayerInfo = engine->GetPlayerInfo( entindex(), &playerinfo );
 	Assert( bGotPlayerInfo );
-	if ( bGotPlayerInfo && ( playerinfo.ishltv || playerinfo.isreplay ) )
-	{
-		return true;
-	}
-
-	return m_bWantsSpectatorOnly;
+	return bGotPlayerInfo && ( playerinfo.ishltv || playerinfo.isreplay );
 }
 
 bool CASW_Player::IsAnyBot()
@@ -333,7 +325,7 @@ bool CASW_Player::CanBeLeader()
 		return false;
 	}
 
-	if ( m_bWantsSpectatorOnly )
+	if ( IsSpectatorOnly() )
 	{
 		return false;
 	}

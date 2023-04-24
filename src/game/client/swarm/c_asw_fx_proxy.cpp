@@ -5,6 +5,7 @@
 // $NoKeywords: $
 //=============================================================================//
 #include "cbase.h"
+#include "c_asw_player.h"
 #include "c_asw_marine.h"
 #include "c_asw_physics_prop_statue.h"
 #include "c_asw_mesh_emitter_entity.h"
@@ -347,7 +348,10 @@ static const CRD_ItemInstance &GetItemInstanceFromRenderable( IClientRenderable 
 
 	if ( C_ASW_Weapon *pWeapon = dynamic_cast< C_ASW_Weapon * >( pEnt ) )
 	{
-		return pWeapon->m_InventoryItemData;
+		if ( !pWeapon->IsInventoryEquipSlotValid() )
+			return s_EmptyInstance;
+
+		return pWeapon->m_hOriginalOwnerPlayer->m_EquippedItemDataDynamic[pWeapon->m_iInventoryEquipSlot];
 	}
 
 	if ( C_ASW_Sentry_Top *pSentry = dynamic_cast< C_ASW_Sentry_Top * >( pEnt ) )
@@ -357,12 +361,20 @@ static const CRD_ItemInstance &GetItemInstanceFromRenderable( IClientRenderable 
 
 	if ( C_ASW_Sentry_Base *pSentry = dynamic_cast< C_ASW_Sentry_Base * >( pEnt ) )
 	{
-		return pSentry->m_InventoryItemData;
+		if ( !pSentry->IsInventoryEquipSlotValid() )
+			return s_EmptyInstance;
+
+		return pSentry->m_hOriginalOwnerPlayer->m_EquippedItemDataDynamic[pSentry->m_iInventoryEquipSlot];
 	}
 
 	if ( IRD_Has_Projectile_Data *pProjectile = dynamic_cast< IRD_Has_Projectile_Data * >( pEnt ) )
 	{
-		return pProjectile->GetProjectileData()->m_InventoryItemData;
+		const C_RD_ProjectileData *pData = pProjectile->GetProjectileData();
+		Assert( pData );
+		if ( !pData || !pData->IsInventoryEquipSlotValid() )
+			return s_EmptyInstance;
+
+		return pData->m_hOriginalOwnerPlayer->m_EquippedItemDataDynamic[pData->m_iInventoryEquipSlot];
 	}
 
 	return s_EmptyInstance;

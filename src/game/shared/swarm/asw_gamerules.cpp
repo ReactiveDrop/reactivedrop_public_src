@@ -2269,7 +2269,7 @@ bool CAlienSwarm::RosterSelect( CASW_Player *pPlayer, int RosterIndex, int nPref
 					// with picked up items 
 					if ( ASWDeathmatchMode() )
 					{
-						m->m_iInitialWeaponsInSlots[iWpnSlot] = nWeaponIndex;
+						m->m_iInitialWeaponsInSlots.Set( iWpnSlot, nWeaponIndex );
 					}
 				}
 				else
@@ -2576,7 +2576,7 @@ void CAlienSwarm::LoadoutSelect( CASW_Player *pPlayer, int iRosterIndex, int iIn
 
 	if ( ASWDeathmatchMode() )
 	{
-		pMarineResource->m_iInitialWeaponsInSlots[iInvSlot] = iEquipIndex;
+		pMarineResource->m_iInitialWeaponsInSlots.Set( iInvSlot, iEquipIndex );
 	}
 
 	if ( ASWHoldoutMode() )
@@ -3582,7 +3582,7 @@ bool CAlienSwarm::SpawnMarineAt( CASW_Marine_Resource * RESTRICT pMR, const Vect
 	{
 		// give the pMarine the equipment selected on the briefing screen
 		for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++ iWpnSlot )
-			GiveStartingWeaponToMarine( pMarine, pMR->m_iInitialWeaponsInSlots[ iWpnSlot ], iWpnSlot );
+			GiveStartingWeaponToMarine( pMarine, pMR->m_iInitialWeaponsInSlots[ iWpnSlot ], iWpnSlot, pMR->m_iWeaponsInSlotsDynamic.Get( iWpnSlot ) );
 	}
 	else
 	{
@@ -3591,7 +3591,7 @@ bool CAlienSwarm::SpawnMarineAt( CASW_Marine_Resource * RESTRICT pMR, const Vect
 			if ( ASWDeathmatchMode()->IsGunGameEnabled() )
 			{
 				int weapon_id = ASWDeathmatchMode()->GetWeaponIndexByFragsCount( ASWDeathmatchMode()->GetFragCount( pMR ) );
-				GiveStartingWeaponToMarine( pMarine, weapon_id , 0 );
+				GiveStartingWeaponToMarine( pMarine, weapon_id , 0, -1 );
 			}
 			else if ( ASWDeathmatchMode()->IsTeamDeathmatchEnabled() ||
 				( rd_deathmatch_loadout_allowed.GetBool() &&
@@ -3606,18 +3606,18 @@ bool CAlienSwarm::SpawnMarineAt( CASW_Marine_Resource * RESTRICT pMR, const Vect
 						Warning( "When spawning marine the weapon_index is -1 \n" );
 						weapon_index = pMR->m_iWeaponsInSlots.Get( iWpnSlot );
 					}
-					GiveStartingWeaponToMarine( pMarine, weapon_index, iWpnSlot );
+					GiveStartingWeaponToMarine( pMarine, weapon_index, iWpnSlot, pMR->m_iWeaponsInSlotsDynamic.Get( iWpnSlot ) );
 				}
 			}
 			else
 			{
 				// give the pistols only in deathmatch, railgun in InstaGib
-				GiveStartingWeaponToMarine( pMarine, rd_default_weapon.GetInt(), 0 );
+				GiveStartingWeaponToMarine( pMarine, rd_default_weapon.GetInt(), 0, -1 );
 				// give a heal gun for medic by default to compensate theirs weakness
 				if ( pMR->GetProfile()->GetMarineClass() == MARINE_CLASS_MEDIC )
 				{
 					// heal gun
-					GiveStartingWeaponToMarine( pMarine, 11, 1 );
+					GiveStartingWeaponToMarine( pMarine, 11, 1, -1 );
 				}
 			}
 		}
@@ -3625,14 +3625,14 @@ bool CAlienSwarm::SpawnMarineAt( CASW_Marine_Resource * RESTRICT pMR, const Vect
 		{
 			for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; iWpnSlot++ )
 			{
-				GiveStartingWeaponToMarine( pMarine, ApplyWeaponSelectionRules( iWpnSlot, pMR->m_iWeaponsInSlots.Get( iWpnSlot ) ), iWpnSlot );
+				GiveStartingWeaponToMarine( pMarine, ApplyWeaponSelectionRules( iWpnSlot, pMR->m_iWeaponsInSlots.Get( iWpnSlot ) ), iWpnSlot, pMR->m_iWeaponsInSlotsDynamic.Get( iWpnSlot ) );
 			}
 		}
 
 		// store off his initial equip selection for stats tracking
 		for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++ iWpnSlot )
 		{
-			pMR->m_iInitialWeaponsInSlots[ iWpnSlot ] = pMR->m_iWeaponsInSlots.Get( iWpnSlot );
+			pMR->m_iInitialWeaponsInSlots.Set( iWpnSlot, pMR->m_iWeaponsInSlots.Get( iWpnSlot ) );
 		}
 	}
 
@@ -4231,7 +4231,7 @@ bool CAlienSwarm::CanHaveAmmo( CBaseCombatCharacter *pPlayer, int iAmmoIndex )
 	return false;
 }
 
-void CAlienSwarm::GiveStartingWeaponToMarine( CASW_Marine *pMarine, int iEquipIndex, int iSlot, bool bAssociateWithAccount )
+void CAlienSwarm::GiveStartingWeaponToMarine( CASW_Marine *pMarine, int iEquipIndex, int iSlot, int iDynamicItemSlot )
 {
 	if ( !pMarine || iEquipIndex == -1 || iSlot < 0 || iSlot >= ASW_MAX_EQUIP_SLOTS )
 		return;
@@ -4252,11 +4252,10 @@ void CAlienSwarm::GiveStartingWeaponToMarine( CASW_Marine *pMarine, int iEquipIn
 		return;
 
 	CSteamID ownerID;
-	if ( bAssociateWithAccount && pMarine->GetCommander() && pMarine->GetCommander()->GetSteamID( &ownerID ) && ownerID.BIndividualAccount() )
+	if ( iDynamicItemSlot != -1 && pMarine->GetCommander() && pMarine->GetCommander()->GetSteamID( &ownerID ) && ownerID.BIndividualAccount() )
 	{
-		pWeapon->m_iOriginalOwnerSteamAccount = ownerID.GetAccountID();
 		pWeapon->m_hOriginalOwnerPlayer = pMarine->GetCommander();
-		pWeapon->m_iInventoryEquipSlotIndex = pEquip->m_iInventoryEquipIndex;
+		pWeapon->m_iInventoryEquipSlot = iDynamicItemSlot;
 	}
 
 	// If I have a name, make my weapon match it with "_weapon" appended
@@ -6793,113 +6792,21 @@ void CAlienSwarm::ClientCommandKeyValues( edict_t *pEntity, KeyValues *pKeyValue
 		pPlayer->SetNetworkedExperience( pKeyValues->GetInt( "xp" ) );
 		pPlayer->SetNetworkedPromotion( pKeyValues->GetInt( "pro" ) );
 	}
-	else if ( FStrEq( szCommand, "EquippedItems" ) )
+	else if ( FStrEq( szCommand, "EquippedItemsS" ) )
 	{
-		int iOffset = pKeyValues->GetInt( "i", -1 );
-		int iTotal = pKeyValues->GetInt( "t", -1 );
-		int iParity = pKeyValues->GetInt( "e", -1 );
-		const char *szData = pKeyValues->GetString( "m", NULL );
-		if ( iOffset < 0 || iTotal < 8 + 2 * RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS || iTotal > RD_EQUIPPED_ITEMS_NOTIFICATION_WORST_CASE_SIZE || ( iTotal & 1 ) || ( iOffset & 1 ) || iParity <= 0 || !szData || !*szData || ( V_strlen( szData ) & 1 ) )
-		{
-			Warning( "Ignoring equipped items notification from player %s (invalid data)\n", pPlayer->GetASWNetworkID() );
-			return;
-		}
-
-		if ( iOffset == 0 && ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME )
-		{
-			// allow receiving data after mission start if the transfer as at least started beforehand
-			DevWarning( "Ignoring equipped items notification from player %s as the mission is in-progress.\n", pPlayer->GetASWNetworkID() );
-			return;
-		}
-
-		int iLength = V_strlen( szData );
-		if ( iOffset != 0 && ( iParity != pPlayer->m_iEquippedItemsParity || iOffset != pPlayer->m_iEquippedItemsReceivingOffset || iTotal + 1 != pPlayer->m_EquippedItemsReceiving.Count() || iLength + iOffset > iTotal ) )
-		{
-			Assert( iParity == pPlayer->m_iEquippedItemsParity );
-			Assert( iOffset == pPlayer->m_iEquippedItemsReceivingOffset );
-			Assert( iTotal + 1 == pPlayer->m_EquippedItemsReceiving.Count() );
-			Assert( iLength + iOffset <= iTotal );
-			Warning( "Ignoring equipped items notification from player %s (out of order or bad parity)\n", pPlayer->GetASWNetworkID() );
-			return;
-		}
-
-		if ( iOffset == 0 )
-		{
-			ReactiveDropInventory::DecodeItemData( pPlayer->m_EquippedItemsResult, "" );
-			for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS; i++ )
-			{
-				pPlayer->m_EquippedItemData[i].Reset();
-			}
-			pPlayer->m_EquippedItemsReceiving.Init( 0, iTotal + 1 );
-			pPlayer->m_iEquippedItemsReceivingOffset = 0;
-			pPlayer->m_iEquippedItemsParity = iParity;
-			Assert( pPlayer->m_EquippedItemsReceiving.Count() == iTotal + 1 );
-		}
-
-		V_memcpy( pPlayer->m_EquippedItemsReceiving.Base() + pPlayer->m_iEquippedItemsReceivingOffset, szData, iLength );
-		pPlayer->m_iEquippedItemsReceivingOffset += iLength;
-		Assert( pPlayer->m_iEquippedItemsReceivingOffset <= iTotal );
-		if ( pPlayer->m_iEquippedItemsReceivingOffset == iTotal )
-		{
-			pPlayer->m_EquippedItemsReceiving.Base()[iTotal] = '\0';
-			CUtlMemory<byte> RawBuffer{ 0, iTotal / 2 };
-			V_hextobinary( pPlayer->m_EquippedItemsReceiving.Base(), iTotal, RawBuffer.Base(), RawBuffer.Count() );
-			CRC32_t iChecksumExpected = CRC32_ProcessSingleBuffer( RawBuffer.Base() + 4, RawBuffer.Count() - 4 );
-			if ( iChecksumExpected != *reinterpret_cast< const CRC32_t * >( RawBuffer.Base() ) )
-			{
-				Warning( "Ignoring equipped items notification from player %s (bad checksum)\n", pPlayer->GetASWNetworkID() );
-			}
-			else
-			{
-				ReactiveDropInventory::DecodeItemData( pPlayer->m_EquippedItemsResult, pPlayer->m_EquippedItemsReceiving.Base() + 8 + RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS * 2 );
-			}
-		}
-		else
-		{
-			CSingleUserRecipientFilter filter{ pPlayer };
-			filter.MakeReliable();
-			UserMessageBegin( filter, "RDEquippedItemsACK" );
-				WRITE_LONG( iParity );
-			MessageEnd();
-		}
+		pPlayer->HandleEquippedItemsNotification( pKeyValues, false );
 	}
-	else if ( FStrEq( szCommand, "EquippedItemsCached" ) )
+	else if ( FStrEq( szCommand, "EquippedItemsD" ) )
 	{
-		// This only works in singleplayer, and we need access to our own Steam ID.
-		if ( engine->IsDedicatedServer() || gpGlobals->maxClients != 1 || !SteamUser() )
-			return;
-
-		CFmtStr szCacheFileName{ "cfg/clienti_%llu.dat", SteamUser()->GetSteamID().ConvertToUint64() };
-		CUtlBuffer buf;
-
-		if ( !g_pFullFileSystem->ReadFile( szCacheFileName, "MOD", buf ) )
-			return;
-
-		KeyValues::AutoDelete pCache{ "IC" };
-
-		if ( !pCache->ReadAsBinary( buf ) )
-			return;
-
-		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS; i++ )
-		{
-			if ( KeyValues *pSlot = pKeyValues->FindKey( ReactiveDropInventory::g_InventorySlotNames[i] ) )
-			{
-				SteamItemInstanceID_t id = pSlot->GetUint64();
-				pPlayer->m_EquippedItemData[i].Reset();
-
-				FOR_EACH_SUBKEY( pCache, pItem )
-				{
-					if ( pItem->GetUint64( "i" ) != id )
-					{
-						continue;
-					}
-
-					pPlayer->m_EquippedItemData[i].SetFromInstance( ReactiveDropInventory::ItemInstance_t{ pItem } );
-
-					break;
-				}
-			}
-		}
+		pPlayer->HandleEquippedItemsNotification( pKeyValues, true );
+	}
+	else if ( FStrEq( szCommand, "EquippedItemsCachedS" ) )
+	{
+		pPlayer->HandleEquippedItemsCachedNotification( pKeyValues, false );
+	}
+	else if ( FStrEq( szCommand, "EquippedItemsCachedD" ) )
+	{
+		pPlayer->HandleEquippedItemsCachedNotification( pKeyValues, true );
 	}
 #endif
 }

@@ -39,7 +39,8 @@ public:
 
 	// indices into the equipment list for currently selected equipment
 	CNetworkArray( int, m_iWeaponsInSlots, ASW_MAX_EQUIP_SLOTS );
-	int m_iInitialWeaponsInSlots[ ASW_MAX_EQUIP_SLOTS ];
+	CNetworkArray( int, m_iWeaponsInSlotsDynamic, ASW_MAX_EQUIP_SLOTS );
+	CNetworkArray( int, m_iInitialWeaponsInSlots, ASW_MAX_EQUIP_SLOTS );
 
 	CNetworkVar( bool, m_bInfested );
 	CNetworkVar( bool, m_bInhabited );

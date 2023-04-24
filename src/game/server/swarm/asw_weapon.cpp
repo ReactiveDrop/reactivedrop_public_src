@@ -12,18 +12,6 @@
 
 LINK_ENTITY_TO_CLASS( asw_weapon, CASW_Weapon );
 
-static void *SendProxy_WeaponItemDataForOwningPlayer( const SendProp *pProp, const void *pStructBase, const void *pData, CSendProxyRecipients *pRecipients, int objectID )
-{
-	static CRD_ItemInstance s_BlankInstance;
-
-	const CASW_Weapon *pWeapon = static_cast< const CASW_Weapon * >( pStructBase );
-	CASW_Player *pPlayer = pWeapon->m_hOriginalOwnerPlayer;
-	if ( !pPlayer || pWeapon->m_iInventoryEquipSlotIndex == -1 )
-		return &s_BlankInstance;
-
-	return &pPlayer->m_EquippedItemData[pWeapon->m_iInventoryEquipSlotIndex];
-}
-
 BEGIN_NETWORK_TABLE_NOBASE( CASW_Weapon, DT_ASWLocalWeaponData )
 	SendPropExclude( "DT_BaseAnimating", "m_flPlaybackRate" ),
 	SendPropExclude( "DT_BaseAnimating", "m_nSequence" ),
@@ -31,12 +19,12 @@ BEGIN_NETWORK_TABLE_NOBASE( CASW_Weapon, DT_ASWLocalWeaponData )
 	SendPropExclude( "DT_BaseAnimating", "m_nNewSequenceParity" ),
 	SendPropExclude( "DT_BaseAnimating", "m_nResetEventsParity" ),
 
-	SendPropIntWithMinusOneFlag( SENDINFO(m_iClip2 ), 8 ),
-	SendPropInt( SENDINFO(m_iSecondaryAmmoType ), 8 ),
+	SendPropIntWithMinusOneFlag( SENDINFO( m_iClip2 ), 8 ),
+	SendPropInt( SENDINFO( m_iSecondaryAmmoType ), 8 ),
 
-	SendPropFloat(SENDINFO(m_fReloadStart)),
-	SendPropFloat(SENDINFO(m_fFastReloadStart)),
-	SendPropFloat(SENDINFO(m_fFastReloadEnd)),
+	SendPropFloat( SENDINFO( m_fReloadStart ) ),
+	SendPropFloat( SENDINFO( m_fFastReloadStart ) ),
+	SendPropFloat( SENDINFO( m_fFastReloadEnd ) ),
 END_NETWORK_TABLE()
 
 BEGIN_NETWORK_TABLE_NOBASE( CASW_Weapon, DT_ASWActiveLocalWeaponData )
@@ -45,30 +33,30 @@ BEGIN_NETWORK_TABLE_NOBASE( CASW_Weapon, DT_ASWActiveLocalWeaponData )
 	SendPropInt( SENDINFO( m_nNextThinkTick ) ),
 END_NETWORK_TABLE()
 
-IMPLEMENT_SERVERCLASS_ST(CASW_Weapon, DT_ASW_Weapon)
+IMPLEMENT_SERVERCLASS_ST( CASW_Weapon, DT_ASW_Weapon )
 	SendPropExclude( "DT_BaseAnimating", "m_flPoseParameter" ),
-	SendPropExclude( "DT_BaseAnimating", "m_flPlaybackRate" ),	
-	SendPropExclude( "DT_BaseAnimating", "m_nSequence" ),	
+	SendPropExclude( "DT_BaseAnimating", "m_flPlaybackRate" ),
+	SendPropExclude( "DT_BaseAnimating", "m_nSequence" ),
 	SendPropExclude( "DT_BaseAnimatingOverlay", "overlay_vars" ),
-	SendPropExclude( "DT_ServerAnimationData" , "m_flCycle" ),	
-	SendPropExclude( "DT_AnimTimeMustBeFirst" , "m_flAnimTime" ),
-	SendPropBool(SENDINFO(m_bIsFiring)),
-	SendPropBool(SENDINFO(m_bInReload)),
-	SendPropBool(SENDINFO(m_bSwitchingWeapons)),
+	SendPropExclude( "DT_ServerAnimationData", "m_flCycle" ),
+	SendPropExclude( "DT_AnimTimeMustBeFirst", "m_flAnimTime" ),
+	SendPropBool( SENDINFO( m_bIsFiring ) ),
+	SendPropBool( SENDINFO( m_bInReload ) ),
+	SendPropBool( SENDINFO( m_bSwitchingWeapons ) ),
 	SendPropExclude( "DT_BaseCombatWeapon", "LocalWeaponData" ),
 	SendPropExclude( "DT_BaseCombatWeapon", "LocalActiveWeaponData" ),
 	// BenLubar: both of these tables are required for the fast reload bar to work properly,
 	// so we have to send them to all players no matter what.
-	SendPropDataTable("ASWLocalWeaponData", 0, &REFERENCE_SEND_TABLE(DT_ASWLocalWeaponData) ),
-	SendPropDataTable("ASWActiveLocalWeaponData", 0, &REFERENCE_SEND_TABLE(DT_ASWActiveLocalWeaponData) ),
-	SendPropBool(SENDINFO(m_bFastReloadSuccess)),
-	SendPropBool(SENDINFO(m_bFastReloadFailure)),
-	SendPropBool(SENDINFO(m_bPoweredUp)),
-	SendPropIntWithMinusOneFlag( SENDINFO(m_iClip1 ), 8 ),
-	SendPropInt( SENDINFO(m_iPrimaryAmmoType ), 8 ),
-	SendPropBool(SENDINFO(m_bIsTemporaryPickup)),
-	SendPropInt( SENDINFO( m_iOriginalOwnerSteamAccount ), -1, SPROP_UNSIGNED ),
-	SendPropDataTable( "m_InventoryItemData", 0, &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ), SendProxy_WeaponItemDataForOwningPlayer ),
+	SendPropDataTable( "ASWLocalWeaponData", 0, &REFERENCE_SEND_TABLE( DT_ASWLocalWeaponData ) ),
+	SendPropDataTable( "ASWActiveLocalWeaponData", 0, &REFERENCE_SEND_TABLE( DT_ASWActiveLocalWeaponData ) ),
+	SendPropBool( SENDINFO( m_bFastReloadSuccess ) ),
+	SendPropBool( SENDINFO( m_bFastReloadFailure ) ),
+	SendPropBool( SENDINFO( m_bPoweredUp ) ),
+	SendPropIntWithMinusOneFlag( SENDINFO( m_iClip1 ), 8 ),
+	SendPropInt( SENDINFO( m_iPrimaryAmmoType ), 8 ),
+	SendPropBool( SENDINFO( m_bIsTemporaryPickup ) ),
+	SendPropEHandle( SENDINFO( m_hOriginalOwnerPlayer ) ),
+	SendPropIntWithMinusOneFlag( SENDINFO( m_iInventoryEquipSlot ), NumBitsForCount( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC + 1 ) ),
 END_SEND_TABLE()
 
 //---------------------------------------------------------
@@ -114,8 +102,8 @@ CASW_Weapon::CASW_Weapon()
 
 	m_bPoweredUp = false;
 	m_bIsTemporaryPickup = false;
-	m_iOriginalOwnerSteamAccount = 0;
 	m_hOriginalOwnerPlayer = NULL;
+	m_iInventoryEquipSlot = -1;
 }
 
 
