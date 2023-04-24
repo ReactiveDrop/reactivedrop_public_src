@@ -1242,9 +1242,6 @@ bool CASW_Mission_Chooser_Source_Local::MapNameLess::Less( MapListName const& sr
 static const char *s_szCampaignNamesFirst[] =
 {
 	"jacob.txt",
-#if defined( RD_6A_CAMPAIGNS_ACCIDENT32 ) && defined( RD_NEW_CAMPAIGN_SPOTLIGHT )
-	"rd_accident32.txt",
-#endif
 #if defined( RD_6A_CAMPAIGNS_ADANAXIS ) && defined( RD_NEW_CAMPAIGN_SPOTLIGHT )
 	"rd_adanaxis.txt",
 #endif
@@ -1252,9 +1249,7 @@ static const char *s_szCampaignNamesFirst[] =
 	"rd_nh_campaigns.txt",
 	"rd-tarnorcampaign1.txt",
 	"rd_paranoia.txt",
-#if defined( RD_6A_CAMPAIGNS_ACCIDENT32 ) && !defined( RD_NEW_CAMPAIGN_SPOTLIGHT )
 	"rd_accident32.txt",
-#endif
 	"rd-area9800.txt",
 #if defined( RD_6A_CAMPAIGNS_ADANAXIS ) && !defined( RD_NEW_CAMPAIGN_SPOTLIGHT )
 	"rd_adanaxis.txt",

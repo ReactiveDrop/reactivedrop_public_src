@@ -8,7 +8,6 @@
 #define RD_NEW_CAMPAIGN_SPOTLIGHT
 
 // new campaigns
-#define RD_6A_CAMPAIGNS_ACCIDENT32
 //#define RD_6A_CAMPAIGNS_ADANAXIS
 //#define RD__CAMPAIGNS_DEADCITY
 //#define RD__CAMPAIGNS_REDUCTION
@@ -32,9 +31,6 @@
 // new campaigns sort at the start of the list until some time has passed,
 // after which point they are put in approximate order of difficulty
 #define RD_NEW_CAMPAIGN_SPOTLIGHT
-
-// new campaigns that are ready to ship
-#define RD_6A_CAMPAIGNS_ACCIDENT32
 
 #define RD_IS_RELEASE 1
 #endif

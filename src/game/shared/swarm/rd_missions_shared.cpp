@@ -28,9 +28,6 @@ int ReactiveDropMissions::s_nDataResets = 1;
 static const char *s_szCampaignNamesFirst[] =
 {
 	"jacob",
-#if defined( RD_6A_CAMPAIGNS_ACCIDENT32 ) && defined( RD_NEW_CAMPAIGN_SPOTLIGHT )
-	"rd_accident32",
-#endif
 #if defined( RD_6A_CAMPAIGNS_ADANAXIS ) && defined( RD_NEW_CAMPAIGN_SPOTLIGHT )
 	"rd_adanaxis",
 #endif
@@ -38,9 +35,7 @@ static const char *s_szCampaignNamesFirst[] =
 	"rd_nh_campaigns",
 	"rd-tarnorcampaign1",
 	"rd_paranoia",
-#if defined( RD_6A_CAMPAIGNS_ACCIDENT32 ) && !defined( RD_NEW_CAMPAIGN_SPOTLIGHT )
 	"rd_accident32",
-#endif
 	"rd-area9800",
 #if defined( RD_6A_CAMPAIGNS_ADANAXIS ) && !defined( RD_NEW_CAMPAIGN_SPOTLIGHT )
 	"rd_adanaxis",
@@ -64,10 +59,8 @@ static const char *s_szMissionNamesFirst[] =
 	"rd-bonus_mission5",
 	"rd-bonus_mission6",
 	"rd-bonus_mission7",
-#ifdef RD_6A_CAMPAIGNS_ACCIDENT32
 	"rd-acc_complex",
 	"rd-ht-marine_academy",
-#endif
 #ifdef RD_6A_CAMPAIGNS_ADANAXIS
 	"rd-ada_new_beginning",
 	"rd-ada_anomaly",
