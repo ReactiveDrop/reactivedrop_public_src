@@ -198,7 +198,7 @@ public:
 
 
 // This can be used to set the # of bits used to transmit a number between 0 and nMaxElements-1.
-inline int NumBitsForCount( int nMaxElements )
+inline constexpr int NumBitsForCount( int nMaxElements )
 {
 	int nBits = 0;
 	while ( nMaxElements > 0 )

@@ -46,8 +46,8 @@ SendProp SendPropPredictableId(
 SendProp SendPropIntWithMinusOneFlag(
 	char *pVarName,
 	int offset,
-	int bits,
-	int sizeofVar=SIZEOF_IGNORE,
+	int sizeofVar,
+	int bits=-1,
 	SendVarProxyFn proxyFn=SendProxy_IntAddOne );
 
 
