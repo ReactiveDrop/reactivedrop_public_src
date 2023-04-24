@@ -19,7 +19,6 @@
 #include "asw_circularprogressbar.h"
 #include <vgui/IInput.h>
 #include "asw_deathmatch_mode.h"
-#include "asw_hud_minimap.h"
 #include "stats_report.h"
 #include "rd_weapon_generic_object_shared.h"
 #include "asw_util_shared.h"
@@ -35,7 +34,7 @@ extern ConVar rd_hud_hide_clips;
 
 ConVar rd_draw_avatars_with_frags( "rd_draw_avatars_with_frags", "1",  FCVAR_ARCHIVE, "If 1 In PvP modes a panel with avatars and frags will be shown at top of the screen");
 ConVar rd_draw_portraits( "rd_draw_portraits", "1", FCVAR_NONE );
-ConVar rd_draw_timer( "rd_draw_timer", "0", FCVAR_ARCHIVE, "Display the current mission time above the minimap" );
+ConVar rd_draw_timer( "rd_draw_timer", "0", FCVAR_ARCHIVE, "Display the current mission time at the top of the screen" );
 ConVar rd_draw_timer_color( "rd_draw_timer_color", "255 255 255 255", FCVAR_ARCHIVE, "The color of the current mission time" );
 ConVar rd_draw_marine_health_counter( "rd_draw_marine_health_counter", "0", FCVAR_ARCHIVE, "Display a numeric counter for marine health on the HUD" );
 
@@ -289,22 +288,8 @@ void CASW_Hud_Master::OnThink()
 	// gather squad mate data
 	int nMaxResources = ASWGameResource()->GetMaxMarineResources();
 	int nPosition = 0;
-	int nMaxWidth = ScreenWidth();
-	CASWHudMinimap *pMinimap = GET_HUDELEMENT(CASWHudMinimap);
-	if ( pMinimap )
-	{
-		int y;
-		pMinimap->GetPos( nMaxWidth, y );
-		nMaxWidth += pMinimap->GetMapCornerInPanel().x;
-	}
 	for ( int i = 0; i < nMaxResources && nPosition < MAX_SQUADMATE_HUD_POSITIONS; i++ )
 	{
-		if ( nMaxWidth < m_SquadMateInfo[nPosition].xpos + m_nSquadMates_spacing )
-		{
-			// don't draw marine info over the minimap.
-			break;
-		}
-
 		C_ASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( i );
 		
 		if ( pMR && pPlayer->GetViewNPC() != pMR->GetMarineEntity() )
