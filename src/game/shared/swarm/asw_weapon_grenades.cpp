@@ -190,12 +190,7 @@ void CASW_Weapon_Grenades::DelayedAttack( void )
 
 #ifndef CLIENT_DLL
 	Vector vecSrc = pMarine->GetOffhandThrowSource();
-
-	Vector vecDest = pPlayer->GetCrosshairTracePos();
-	if ( !pMarine->IsInhabited() )
-	{
-		vecDest = pMarine->GetOffhandItemSpot();
-	}
+	Vector vecDest = pMarine->GetOffhandThrowDest();
 	Vector newVel = UTIL_LaunchVector( vecSrc, vecDest, GetThrowGravity() ) * 28.0f;
 
 	float fGrenadeRadius = GetBoomRadius( pMarine );

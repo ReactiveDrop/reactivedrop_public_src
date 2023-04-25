@@ -487,8 +487,9 @@ public:
 	int SelectOffhandItemSchedule();
 	void FinishedUsingOffhandItem( bool bItemThrown = false, bool bFailed = false );
 	bool CanThrowOffhand( CASW_Weapon *pWeapon, const Vector &vecSrc, const Vector &vecDest, bool bDrawArc = false );
-	const Vector& GetOffhandItemSpot() { return m_vecOffhandItemSpot; }
+	const Vector &GetOffhandItemSpot() { return m_vecOffhandItemSpot; }
 	Vector GetOffhandThrowSource( const Vector *vecStandingPos = NULL );
+	const Vector &GetOffhandThrowDest();
 	int FindThrowNode( const Vector &vThreatPos, float flMinThreatDist, float flMaxThreatDist, float flBlockTime );
 	Vector m_vecOffhandItemSpot;					// the place we want to throw/deploy our offhand item
 	CHandle<CASW_Weapon> m_hOffhandItemToUse;		// ordering the marine to use an offhand item

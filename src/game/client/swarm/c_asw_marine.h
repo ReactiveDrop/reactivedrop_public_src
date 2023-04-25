@@ -117,6 +117,7 @@ public:
 	int GetWeaponPositionForPickup( const char* szWeaponClass, bool bIsTemporary );	// returns which slot in the m_hWeapons array this pickup should go in	
 	int GetWeaponIndex( CBaseCombatWeapon *pWeapon ) const;		// returns weapon's position in our myweapons array
 	Vector GetOffhandThrowSource( const Vector *vecStandingPos = NULL );
+	const Vector &GetOffhandThrowDest();
 	virtual bool IsFiring();
 
 	bool ShouldPreventLaserSight() { return m_flPreventLaserSightTime.Get() < 0.0f || m_flPreventLaserSightTime.Get() > gpGlobals->curtime; }

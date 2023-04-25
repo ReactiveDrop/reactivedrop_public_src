@@ -23,6 +23,7 @@
 #include "rd_weapon_generic_object_shared.h"
 #include "asw_util_shared.h"
 #include "rd_steam_input.h"
+#include "asw_gamerules.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"

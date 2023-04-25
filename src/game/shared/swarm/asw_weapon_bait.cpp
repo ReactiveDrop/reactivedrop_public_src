@@ -140,7 +140,7 @@ void CASW_Weapon_Bait::DelayedAttack()
 	Vector vecSrc = pMarine->GetOffhandThrowSource();
 	AngularImpulse rotSpeed(0,0,720);
 
-	Vector vecDest = pPlayer->GetCrosshairTracePos();
+	Vector vecDest = pMarine->GetOffhandThrowDest();
 	Vector newVel = UTIL_LaunchVector( vecSrc, vecDest, GetThrowGravity() ) * 28.0f;
 		
 	CASW_Bait *pEnt = CASW_Bait::Bait_Create( vecSrc, QAngle(90,0,0), newVel, rotSpeed, pMarine );

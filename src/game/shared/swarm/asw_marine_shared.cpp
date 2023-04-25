@@ -2787,6 +2787,22 @@ Vector CASW_Marine::GetOffhandThrowSource( const Vector *vecStandingPos )
 	return vecSrc;
 }
 
+const Vector &CASW_Marine::GetOffhandThrowDest()
+{
+#ifdef CLIENT_DLL
+	Assert( IsInhabited() && GetCommander() ); // this should only be called from prediction
+#else
+	if ( IsInhabited() && GetCommander() )
+#endif
+	{
+		return GetCommander()->GetCrosshairTracePos();
+	}
+
+#ifndef CLIENT_DLL
+	return GetOffhandItemSpot();
+#endif
+}
+
 bool CASW_Marine::IsFiring()
 {
 	return GetActiveASWWeapon() && GetActiveASWWeapon()->IsFiring();

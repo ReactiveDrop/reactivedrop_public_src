@@ -151,16 +151,10 @@ void CASW_Weapon_Gas_Grenades::DelayedAttack()
 	//pMarine->SetAnimation( PLAYER_ATTACK1 );
 #ifndef CLIENT_DLL
 	Vector vecSrc = pMarine->GetOffhandThrowSource();
-	AngularImpulse rotSpeed(0,0,720);
-
-	Vector vecDest = pPlayer->GetCrosshairTracePos();
-	if ( !pMarine->IsInhabited() )
-	{
-		vecDest = pMarine->GetOffhandItemSpot();
-	}
+	Vector vecDest = pMarine->GetOffhandThrowDest();
 	Vector newVel = UTIL_LaunchVector( vecSrc, vecDest, GetThrowGravity() ) * 28.0f;
 		
-	CASW_Gas_Grenade_Projectile *pGas_Grenade = CASW_Gas_Grenade_Projectile::Gas_Grenade_Projectile_Create( vecSrc, QAngle( 90, 0, 0 ), newVel, rotSpeed, pMarine, this );
+	CASW_Gas_Grenade_Projectile *pGas_Grenade = CASW_Gas_Grenade_Projectile::Gas_Grenade_Projectile_Create( vecSrc, QAngle( 90, 0, 0 ), newVel, AngularImpulse( 0, 0, 720 ), pMarine, this );
 	if ( pGas_Grenade )
 	{
 		float flDuration = pGas_Grenade->GetDuration();
@@ -261,10 +255,6 @@ void CASW_Weapon_Gas_Grenades::ClientThink()
 	}
 }
 
-
-
-extern ConVar sv_gravity;
-
 void CASW_Weapon_Gas_Grenades::ShowThrowArc()
 {
 	CASW_Player *pPlayer = GetCommander();
@@ -276,13 +266,9 @@ void CASW_Weapon_Gas_Grenades::ShowThrowArc()
 		return;
 
 	Vector vecSrc = pMarine->GetOffhandThrowSource();
-
-	Vector vecDest = pPlayer->GetCrosshairTracePos();
+	Vector vecDest = pMarine->GetOffhandThrowDest();
 	Vector vecVelocity = UTIL_LaunchVector( vecSrc, vecDest, GetThrowGravity() ) * 28.0f;
-
-	//debugoverlay->AddLineOverlay( vecSrc, vecDest, 255, 0, 0, true, 0.01f );
-
-	
+	UTIL_Check_Throw( vecSrc, vecVelocity, GetThrowGravity(), Vector( -2, -2, -2 ), Vector( 2, 2, 2 ), MASK_SOLID, ASW_COLLISION_GROUP_GRENADES, NULL, true );
 }
 
 #endif

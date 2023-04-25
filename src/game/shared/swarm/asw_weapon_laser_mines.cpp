@@ -305,7 +305,7 @@ bool CASW_Weapon_Laser_Mines::ValidateThrow( int nMineNumber, int nMinesPerShot,
 		{
 			// do another trace to try and put it on the ground
 //#ifndef CLIENT_DLL		
-			Vector vecDest = pPlayer->GetCrosshairTracePos();
+			Vector vecDest = pMarine->GetOffhandThrowDest();
 			if ( vecDest.DistTo( vecSrc ) > flDeployDistance )
 			{
 				trace_t tr2;

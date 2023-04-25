@@ -146,11 +146,7 @@ void CASW_Weapon_Flares::DelayedAttack()
 	Vector vecSrc = pMarine->GetOffhandThrowSource();
 	AngularImpulse rotSpeed(0,0,720);
 
-	Vector vecDest = pPlayer->GetCrosshairTracePos();
-	if ( !pMarine->IsInhabited() )
-	{
-		vecDest = pMarine->GetOffhandItemSpot();
-	}
+	Vector vecDest = pMarine->GetOffhandThrowDest();
 	Vector newVel = UTIL_LaunchVector( vecSrc, vecDest, GetThrowGravity() ) * 28.0f;
 		
 	CASW_Flare_Projectile *pFlare = CASW_Flare_Projectile::Flare_Projectile_Create( vecSrc, QAngle(90,0,0), newVel, rotSpeed, pMarine );
@@ -257,10 +253,6 @@ void CASW_Weapon_Flares::ClientThink()
 	}
 }
 
-
-
-extern ConVar sv_gravity;
-
 void CASW_Weapon_Flares::ShowThrowArc()
 {
 	CASW_Player *pPlayer = GetCommander();
@@ -272,12 +264,8 @@ void CASW_Weapon_Flares::ShowThrowArc()
 		return;
 
 	Vector vecSrc = pMarine->GetOffhandThrowSource();
-
-	Vector vecDest = pPlayer->GetCrosshairTracePos();
+	Vector vecDest = pMarine->GetOffhandThrowDest();
 	Vector vecVelocity = UTIL_LaunchVector( vecSrc, vecDest, GetThrowGravity() ) * 28.0f;
-
-	//debugoverlay->AddLineOverlay( vecSrc, vecDest, 255, 0, 0, true, 0.01f );
-
-	
+	UTIL_Check_Throw( vecSrc, vecVelocity, GetThrowGravity(), Vector( -2, -2, -2 ), Vector( 2, 2, 2 ), MASK_SOLID, ASW_COLLISION_GROUP_IGNORE_NPCS, NULL, true );
 }
 #endif
