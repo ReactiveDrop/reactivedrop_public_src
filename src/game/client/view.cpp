@@ -754,8 +754,8 @@ void CViewRender::SetUpView()
 	view.fovViewmodel = GetClientMode()->GetViewModelFOV() - flFOVOffset;
 
 	// Compute the world->main camera transform
-	ComputeCameraVariables( view.origin, view.angles, 
-		&g_vecVForward[ nSlot ], &g_vecVRight[ nSlot ], &g_vecVUp[ nSlot ], &g_matCamInverse[ nSlot ] );
+	//ComputeCameraVariables( view.origin, view.angles, 
+	//	&g_vecVForward[ nSlot ], &g_vecVRight[ nSlot ], &g_vecVUp[ nSlot ], &g_matCamInverse[ nSlot ] );
 
 	// set up the hearing origin...
 	AudioState_t audioState;

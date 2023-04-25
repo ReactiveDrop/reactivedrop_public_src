@@ -898,8 +898,8 @@ void SetupCurrentView( const Vector &vecOrigin, const QAngle &angles, view_id_t 
 	g_vecCurrentRenderAngles = angles;
 
 	// Compute the world->main camera transform
-	ComputeCameraVariables( vecOrigin, angles, 
-		&g_vecCurrentVForward, &g_vecCurrentVRight, &g_vecCurrentVUp, &g_matCurrentCamInverse );
+	//ComputeCameraVariables( vecOrigin, angles, 
+	//	&g_vecCurrentVForward, &g_vecCurrentVRight, &g_vecCurrentVUp, &g_matCurrentCamInverse );
 
 	g_CurrentViewID = viewID;
 	AllowCurrentViewAccess( true );
