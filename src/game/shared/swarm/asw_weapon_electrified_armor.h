@@ -9,7 +9,6 @@
 #define CASW_Marine C_ASW_Marine
 #else
 #include "asw_weapon.h"
-#include "npc_combine.h"
 #endif
 
 #include "asw_shareddefs.h"
@@ -38,7 +37,11 @@ public:
 		int		CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
 		const char *GetEquipSound() override { return "ASW_Weapon.AttachmentEquipLarge"; }
 
-		void ShockNearbyAliens();
+		void MarineDropped( CASW_Marine *pMarine ) override;
+		void ItemPostFrame() override;
+		bool WantsOffhandPostFrame() override { return m_iClip1 <= 0; }
+	#else
+		void ClientThink() override;
 	#endif
 	virtual bool IsOffensiveWeapon() { return false; }
 	virtual bool ViewModelIsMarineAttachment() const { return true; }

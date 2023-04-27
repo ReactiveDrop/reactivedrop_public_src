@@ -36,6 +36,7 @@ LINK_ENTITY_TO_CLASS( asw_weapon_electrified_armor, CASW_Weapon_Electrified_Armo
 PRECACHE_WEAPON_REGISTER( asw_weapon_electrified_armor );
 
 ConVar asw_electrified_armor_duration( "asw_electrified_armor_duration", "12.0f", FCVAR_CHEAT | FCVAR_REPLICATED, "Duration of electrified armor when activated" );
+extern ConVar rm_destroy_empty_weapon;
 
 #ifndef CLIENT_DLL
 //---------------------------------------------------------
@@ -126,3 +127,35 @@ int CASW_Weapon_Electrified_Armor::ASW_SelectWeaponActivity(int idealActivity)
 	// we just use the normal 'no weapon' anims for this
 	return idealActivity;
 }
+
+#ifndef CLIENT_DLL
+void CASW_Weapon_Electrified_Armor::MarineDropped( CASW_Marine *pMarine )
+{
+	BaseClass::MarineDropped( pMarine );
+
+	if ( rm_destroy_empty_weapon.GetBool() && m_iClip1 <= 0 )
+	{
+		// if we get dropped while active, we still need to destroy on empty
+		Kill();
+	}
+}
+
+void CASW_Weapon_Electrified_Armor::ItemPostFrame()
+{
+	BaseClass::ItemPostFrame();
+
+	CASW_Marine *pMarine = GetMarine();
+	if ( pMarine && !pMarine->IsElectrifiedArmorActive() )
+	{
+		DestroyIfEmpty( true );
+	}
+}
+#else
+void CASW_Weapon_Electrified_Armor::ClientThink()
+{
+	BaseClass::ClientThink();
+
+	CASW_Marine *pMarine = GetMarine();
+	SetBodygroup( 0, !pMarine || !pMarine->IsElectrifiedArmorActive() ? 0 : 1 );
+}
+#endif

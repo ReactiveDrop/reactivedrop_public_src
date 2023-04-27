@@ -112,11 +112,13 @@ void CASW_Weapon_Night_Vision::PrimaryAttack( void )
 #ifndef CLIENT_DLL
 		pMarine->OnWeaponFired( this, 1 );
 #endif
+		SetBodygroup( 0, 1 );
 	}
 	else
 	{
 		PlaySoundDirectlyToOwner( "ASW_NightVision.TurnOffFP" );
 		PlaySoundToOthers( "ASW_NightVision.TurnOff" );
+		SetBodygroup( 0, 0 );
 	}
 }
 
@@ -174,6 +176,7 @@ void CASW_Weapon_Night_Vision::UpdateVisionPower()
 			m_bVisionActive = false;
 			PlaySoundDirectlyToOwner( "ASW_NightVision.TurnOffFP" );
 			PlaySoundToOthers( "ASW_NightVision.TurnOff" );
+			SetBodygroup( 0, 0 );
 		}
 	}
 	else
