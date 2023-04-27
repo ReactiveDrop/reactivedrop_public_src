@@ -146,16 +146,16 @@ void CASW_Weapon_Devastator::FireShotgunPellet( CASW_Inhabitable_NPC *pNPC, cons
 	}
 }
 
-const Vector& CASW_Weapon_Devastator::GetAngularBulletSpread()
+const Vector &CASW_Weapon_Devastator::GetAngularBulletSpread()
 {
-	static Vector cone( 22, 22, 22 );
-	static Vector cone_duck( 14, 14, 14 );
+	const static Vector cone( 22, 22, 22 );
+	const static Vector cone_duck( 14, 14, 14 );
 
 	CASW_Marine *marine = GetMarine();
 
 	if ( marine && rd_devastator_dynamic_bullet_spread.GetBool() )
 	{
-		if ( marine->GetAbsVelocity() == Vector( 0, 0, 0 ) && marine->m_bWalking )
+		if ( marine->GetLocalVelocity().IsZero() && marine->m_bWalking )
 			return cone_duck;
 	}
 	return cone;

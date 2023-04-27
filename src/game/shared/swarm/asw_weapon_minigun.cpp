@@ -458,14 +458,14 @@ float CASW_Weapon_Minigun::GetWeaponDamage()
 
 const Vector &CASW_Weapon_Minigun::GetBulletSpread( void )
 {
-	static Vector cone = Vector( 0.13053, 0.13053, 0.02 );	// VECTOR_CONE_15DEGREES with flattened Z
-	static Vector cone_duck = Vector( 0.05234, 0.05234, 0.01 ); // VECTOR_CONE_6DEGREES with flattened Z
+	const static Vector cone = Vector( 0.13053, 0.13053, 0.02 );	// VECTOR_CONE_15DEGREES with flattened Z
+	const static Vector cone_duck = Vector( 0.05234, 0.05234, 0.01 ); // VECTOR_CONE_6DEGREES with flattened Z
 
 	CASW_Marine *marine = GetMarine();
 
 	if ( marine )
 	{
-		if ( marine->GetAbsVelocity() == Vector( 0, 0, 0 ) && marine->m_bWalking )
+		if ( marine->GetLocalVelocity().IsZero() && marine->m_bWalking )
 			return cone_duck;
 	}
 	return cone;

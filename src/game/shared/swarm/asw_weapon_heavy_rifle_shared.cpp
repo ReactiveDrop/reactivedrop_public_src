@@ -149,16 +149,16 @@ float CASW_Weapon_Heavy_Rifle::GetFireRate()
 	return flRate;
 }
 
-const Vector& CASW_Weapon_Heavy_Rifle::GetBulletSpread( void )
+const Vector &CASW_Weapon_Heavy_Rifle::GetBulletSpread( void )
 {
-	static Vector vec15degrees = Vector( 0.13053, 0.02618, 0.13053 );	// VECTOR_CONE_15DEGREES with y as VECTOR_CONE_3DEGREES
-	static Vector vec6degrees = Vector( 0.05234, 0.02618, 0.05234 );		// VECTOR_CONE_6DEGREES with y as VECTOR_CONE_3DEGREES
+	const static Vector vec15degrees = Vector( 0.13053, 0.02618, 0.13053 );	// VECTOR_CONE_15DEGREES with y as VECTOR_CONE_3DEGREES
+	const static Vector vec6degrees = Vector( 0.05234, 0.02618, 0.05234 );		// VECTOR_CONE_6DEGREES with y as VECTOR_CONE_3DEGREES
 
 	CASW_Marine *marine = GetMarine();
 
 	if ( marine )
 	{
-		if ( marine->GetAbsVelocity() == Vector( 0, 0, 0 ) && marine->m_bWalking && !m_bFastFire )
+		if ( marine->GetLocalVelocity().IsZero() && marine->m_bWalking && !m_bFastFire )
 			return vec6degrees;
 	}
 	return vec15degrees;
