@@ -642,7 +642,7 @@ void CASWHud3DMarineNames::PaintMarineLabel( int iMyMarineNum, C_ASW_Marine * RE
 			// only draw health bars for marines near the cursor or their health is low/healing
 			int idx = ASWGameResource()->GetMarineCrosshairCache()->FindIndexForMarine( pMarine );
 			if ( //!bMarineOnScreen ||
-				 ( idx >= 0 && ASWGameResource()->GetMarineCrosshairCache()->GetElement(idx).m_fDistToCursor < asw_marine_labels_cursor_maxdist.GetFloat() ) || 
+				 ( idx >= 0 && ( asw_marine_labels_cursor_maxdist.GetFloat() < 0 || ASWGameResource()->GetMarineCrosshairCache()->GetElement(idx).m_fDistToCursor < asw_marine_labels_cursor_maxdist.GetFloat() ) ) ||
 				 pMR->GetHealthPercent() < 0.4f || pMR->IsInfested() || pMarine->m_fLastHealTime + 1.0f > gpGlobals->curtime )
 			{
 				nHealthBarWidth  = GetHealthBarMaxWidth( bMarineIsKnockedOut );
@@ -860,7 +860,7 @@ void CASWHud3DMarineNames::PaintMarineLabel( int iMyMarineNum, C_ASW_Marine * RE
 			if ( !bMarineIsKnockedOut && bMarineOnScreen && rd_ammo_under_marine.GetBool() )
 			{
 				int idx = ASWGameResource()->GetMarineCrosshairCache()->FindIndexForMarine( pMarine );
-				if ( idx >= 0 && ASWGameResource()->GetMarineCrosshairCache()->GetElement( idx ).m_fDistToCursor < asw_marine_labels_cursor_maxdist.GetFloat() )
+				if ( idx >= 0 && ( asw_marine_labels_cursor_maxdist.GetFloat() < 0 || ASWGameResource()->GetMarineCrosshairCache()->GetElement( idx ).m_fDistToCursor < asw_marine_labels_cursor_maxdist.GetFloat() ) )
 				{
 					PaintAmmoBar( pWeapon, pMR->GetAmmoPercent(), nBoxCenterX, nCursorY );
 					nCursorY += nHealthBarHeight + nLineSpacing;

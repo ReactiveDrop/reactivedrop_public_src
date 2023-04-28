@@ -74,7 +74,7 @@
 				"30" "#RD_AdvancedSettings_HUD_MarineLabelsDist_Direct"
 				"70" "#RD_AdvancedSettings_HUD_MarineLabelsDist_Default"
 				"100" "#RD_AdvancedSettings_HUD_MarineLabelsDist_Further"
-				"99999" "#RD_AdvancedSettings_HUD_MarineLabelsDist_Always"
+				"-1" "#RD_AdvancedSettings_HUD_MarineLabelsDist_Always"
 			}
 		}
 		TOGGLE
