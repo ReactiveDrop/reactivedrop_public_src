@@ -78,7 +78,7 @@ ConVar asw_blip_color_boomer( "asw_blip_color_boomer", "255 255 255", FCVAR_NONE
 ConVar asw_blip_color_buzzer( "asw_blip_color_buzzer", "0 255 255", FCVAR_NONE, "The buzzer blip color." );
 ConVar asw_blip_color_drone( "asw_blip_color_drone", "250 110 110", FCVAR_NONE, "The drone blip color." );
 ConVar asw_blip_color_parasite( "asw_blip_color_parasite", "0 255 0", FCVAR_NONE, "The parasite blip color." );
-ConVar asw_blip_color_parasite_egg( "asw_blip_color_parasite_egg", "0 0 255", FCVAR_NONE, "The parasite blip color while inside an egg." );
+ConVar asw_blip_color_parasite_egg( "asw_blip_color_parasite_egg", "170 255 0", FCVAR_NONE, "The parasite blip color while inside an egg." );
 ConVar asw_blip_color_parasite_defanged( "asw_blip_color_parasite_defanged", "128 0 0", FCVAR_NONE, "The parasite defanged blip color. Detection method requires correct parasite model" );
 ConVar asw_blip_color_queen( "asw_blip_color_queen", "255 0 0", FCVAR_NONE, "The queen blip color." );
 ConVar asw_blip_color_ranger( "asw_blip_color_ranger", "255 0 255", FCVAR_NONE, "The ranger blip color." );
