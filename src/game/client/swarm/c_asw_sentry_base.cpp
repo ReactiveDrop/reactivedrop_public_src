@@ -16,6 +16,12 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+ConVar rd_sentry_gib( "rd_sentry_gib", "1", FCVAR_NONE, "should destroyed sentries create gibs? (if not, they just disappear)" );
+ConVar rd_sentry_gib_force( "rd_sentry_gib_force", "150", FCVAR_NONE, "amount of random force to apply to sentry gibs" );
+ConVar rd_sentry_gib_spin( "rd_sentry_gib_spin", "30", FCVAR_NONE, "amount of random spin to apply to sentry gibs" );
+ConVar rd_sentry_gib_lifetime( "rd_sentry_gib_lifetime", "30", FCVAR_NONE, "time in seconds before sentry gibs fade out" );
+ConVar rd_sentry_gib_lifetime_jitter( "rd_sentry_gib_lifetime_jitter", "1", FCVAR_NONE, "random time to add to lifetime to avoid all gibs fading at the same instant" );
+
 IMPLEMENT_CLIENTCLASS_DT( C_ASW_Sentry_Base, DT_ASW_Sentry_Base, CASW_Sentry_Base )
 	RecvPropBool( RECVINFO( m_bAssembled ) ),
 	RecvPropBool( RECVINFO( m_bIsInUse ) ),
@@ -201,14 +207,34 @@ static const char *const s_szSentryGibs[] =
 	"models/sentry_gun/sentry_gibs/sentry_top_gib.mdl",
 };
 
+static const Vector s_vecSentryGibOffset[] =
+{
+	Vector( 0, 0, 0 ),
+	Vector( 0, 0, 0 ),
+	Vector( 0, 0, 0 ),
+	Vector( 0, 0, 0 ),
+	Vector( 0, 0, 0 ),
+	Vector( 0, 0, 0 ),
+	Vector( 0, 0, 0 ),
+};
+
 void __MsgFunc_SentryGib( bf_read &msg )
 {
 	Vector vecOrigin( msg.ReadFloat(), msg.ReadFloat(), msg.ReadFloat() );
 	QAngle angles( 0, msg.ReadBitAngle( 8 ), 0 );
 
+	if ( !rd_sentry_gib.GetBool() )
+		return;
+
+	matrix3x4_t matOrigin;
+	AngleMatrix( angles, vecOrigin, matOrigin );
+
 	for ( int i = 0; i < NELEMS( s_szSentryGibs ); i++ )
 	{
-		C_Gib *pGib = C_Gib::CreateClientsideGib( s_szSentryGibs[i], vecOrigin, RandomVector( -50, 50 ), RandomAngularImpulse( -30, 30 ), 30.0f );
+		Vector vecGibOrigin;
+		VectorTransform( s_vecSentryGibOffset[i], matOrigin, vecGibOrigin );
+
+		C_Gib *pGib = C_Gib::CreateClientsideGib( s_szSentryGibs[i], vecGibOrigin, RandomVector( -rd_sentry_gib_force.GetFloat(), rd_sentry_gib_force.GetFloat() ), RandomAngularImpulse( -rd_sentry_gib_spin.GetFloat(), rd_sentry_gib_spin.GetFloat() ), rd_sentry_gib_lifetime.GetFloat() + RandomFloat( 0, rd_sentry_gib_lifetime_jitter.GetFloat() ) );
 		if ( pGib )
 		{
 			pGib->SetAbsAngles( angles );

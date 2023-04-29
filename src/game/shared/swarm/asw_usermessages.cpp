@@ -78,7 +78,7 @@ void RegisterUserMessages( void )
 	usermessages->Register( "BroadcastStopPatchAudio", -1 );
 	usermessages->Register( "ASWMarineHitByMelee", -1 );
 	usermessages->Register( "ASWMarineHitByFF", -1 );
-	usermessages->Register( "ASWRipRagdoll", -1 );
+	usermessages->Register( "ASWRipRagdoll", 26 );
 	usermessages->Register( "ASWEnemyZappedByThorns", -1 );
 	usermessages->Register( "ASWEnemyZappedByTesla", -1 );
 	usermessages->Register( "ASWEnemyTeslaGunArcShock", -1 );

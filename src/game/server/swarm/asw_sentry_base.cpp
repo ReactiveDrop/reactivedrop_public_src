@@ -63,6 +63,7 @@ BEGIN_ENT_SCRIPTDESC( CASW_Sentry_Base, CBaseAnimating, "sentry" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetSentryTop, "GetSentryTop", "" )
 END_SCRIPTDESC()
 
+// server only needs these for precaching
 static const char *const s_szSentryGibs[] =
 {
 	"models/sentry_gun/sentry_gibs/sentry_base_gib.mdl",
@@ -466,10 +467,10 @@ void CASW_Sentry_Base::Event_Killed( const CTakeDamageInfo &info )
 	m_takedamage = DAMAGE_NO;
 
 	// explosion effect
-	Vector vecPos = GetAbsOrigin() + Vector( 0, 0, 30 );
+	Vector vecPos = GetAbsOrigin();
 
 	trace_t		tr;
-	UTIL_TraceLine( vecPos, vecPos - Vector( 0, 0, 60 ), MASK_SHOT,
+	UTIL_TraceLine( vecPos + Vector( 0, 0, 30 ), vecPos - Vector( 0, 0, 30 ), MASK_SHOT,
 		this, COLLISION_GROUP_NONE, &tr );
 
 	if ( ( tr.m_pEnt != GetWorldEntity() ) || ( tr.hitbox != 0 ) )
@@ -571,7 +572,6 @@ int CASW_Sentry_Base::ScriptGetMaxAmmo()
 	return GetBaseAmmoForGunType( GetGunType() );
 }
 
-
 /// This must exactly match the enum CASW_Sentry_Base::GunType_t
 const CASW_Sentry_Base::SentryGunTypeInfo_t CASW_Sentry_Base::sm_gunTypeToInfo[CASW_Sentry_Base::kGUNTYPE_MAX] =
 {
@@ -580,3 +580,31 @@ const CASW_Sentry_Base::SentryGunTypeInfo_t CASW_Sentry_Base::sm_gunTypeToInfo[C
 	SentryGunTypeInfo_t("asw_sentry_top_flamer", "asw_weapon_sentry_flamer",  1200), // kFLAME
 	SentryGunTypeInfo_t("asw_sentry_top_icer", "asw_weapon_sentry_freeze",    800), // kICE
 };
+
+CON_COMMAND_F( rd_test_sentry_gib, "spawn sentry gibs at the currently targeted point", FCVAR_CHEAT )
+{
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
+	if ( !pPlayer )
+	{
+		Warning( "Cannot rd_test_sentry_gib from server console\n" );
+		return;
+	}
+
+	CASW_Inhabitable_NPC *pNPC = pPlayer->GetViewNPC();
+	if ( !pNPC )
+	{
+		return;
+	}
+
+	Vector vecCrosshair = pPlayer->GetCrosshairTracePos();
+
+	NDebugOverlay::Cross3D( vecCrosshair, 8, 255, 255, 255, false, 1.0f );
+
+	CSingleUserRecipientFilter filter( pPlayer );
+	UserMessageBegin( filter, "SentryGib" );
+		WRITE_FLOAT( vecCrosshair.x );
+		WRITE_FLOAT( vecCrosshair.y );
+		WRITE_FLOAT( vecCrosshair.z );
+		WRITE_ANGLE( pNPC->GetAbsAngles()[YAW] );
+	MessageEnd();
+}

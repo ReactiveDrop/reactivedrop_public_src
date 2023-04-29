@@ -3839,25 +3839,25 @@ bool CASW_Marine::CorpseGib( const CTakeDamageInfo &info )
 // called when marine dies from parasites or from an explosion
 bool  CASW_Marine::Event_Gibbed( const CTakeDamageInfo &info )
 {
-	Vector force = Vector(0, 0, 0);
+	Vector force = Vector( 0, 0, 0 );
 	Vector origin = GetAbsOrigin();
-	short death_type = RIP_PARASITE;
+	eRip_Type death_type = RIP_PARASITE;
 
 	if ( info.GetDamageType() & DMG_INFEST )
 	{
 		if ( asw_debug_marine_damage.GetBool() )
 		{
-			Msg("marine infest gibbed at loc %f, %f, %f\n", GetAbsOrigin().x, GetAbsOrigin().y, GetAbsOrigin().z);
+			Msg( "marine infest gibbed at loc %f, %f, %f\n", GetAbsOrigin().x, GetAbsOrigin().y, GetAbsOrigin().z );
 		}
 
-		if ( asw_debug_marine_damage.GetBool())
+		if ( asw_debug_marine_damage.GetBool() )
 		{
-			NDebugOverlay::EntityBounds(this, 255,0,0, 255, 15.0f);
+			NDebugOverlay::EntityBounds( this, 255, 0, 0, 255, 15.0f );
 		}
 
 		ASWFailAdvice()->OnMarineInfestedGibbed();
 
-		int iNumParasites = 3 + RandomInt(0,2);
+		int iNumParasites = 3 + RandomInt( 0, 2 );
 		QAngle angParasiteFacing[5];
 		float fJumpDistance[5];
 		// for some reason if we calculate these inside the loop, the random numbers all come out the same.  Worrying.
@@ -3874,7 +3874,7 @@ bool  CASW_Marine::Event_Gibbed( const CTakeDamageInfo &info )
 
 		for ( int i = 0; i < iNumParasites; i++ )
 		{
-			bool bBlocked = true;			
+			bool bBlocked = true;
 			int k = 0;
 
 			Vector vecSpawnPos = GetAbsOrigin();
@@ -3882,7 +3882,7 @@ bool  CASW_Marine::Event_Gibbed( const CTakeDamageInfo &info )
 			vecSpawnPos.x += sinf( fCircleDegree ) * RandomFloat( 3.0f, 20.0f );
 			vecSpawnPos.y += cosf( fCircleDegree ) * RandomFloat( 3.0f, 20.0f );
 			vecSpawnPos.z += RandomFloat( 20.0f, 40.0f );
-			
+
 			while ( bBlocked && k < 6 )
 			{
 				if ( k > 0 )
@@ -3890,16 +3890,16 @@ bool  CASW_Marine::Event_Gibbed( const CTakeDamageInfo &info )
 					// Scooch it up
 					vecSpawnPos.z += NAI_Hull::Maxs( HULL_TINY ).z - NAI_Hull::Mins( HULL_TINY ).z;
 				}
-						
+
 				// check if there's room at this position
 				trace_t tr;
-				UTIL_TraceHull( vecSpawnPos, vecSpawnPos + Vector( 0.0f, 0.0f, 1.0f ), 
-					NAI_Hull::Mins(HULL_TINY) + Vector( -4.0f, -4.0f, -4.0f ),NAI_Hull::Maxs(HULL_TINY) + Vector( 4.0f, 4.0f, 4.0f ),
-					MASK_NPCSOLID, this, ASW_COLLISION_GROUP_PARASITE, &tr );	
+				UTIL_TraceHull( vecSpawnPos, vecSpawnPos + Vector( 0.0f, 0.0f, 1.0f ),
+					NAI_Hull::Mins( HULL_TINY ) + Vector( -4.0f, -4.0f, -4.0f ), NAI_Hull::Maxs( HULL_TINY ) + Vector( 4.0f, 4.0f, 4.0f ),
+					MASK_NPCSOLID, this, ASW_COLLISION_GROUP_PARASITE, &tr );
 
 				if ( asw_debug_marine_damage.GetBool() )
 				{
-					NDebugOverlay::Box(vecSpawnPos, NAI_Hull::Mins(HULL_TINY),NAI_Hull::Maxs(HULL_TINY), 255,255,0,255,15.0f);
+					NDebugOverlay::Box( vecSpawnPos, NAI_Hull::Mins( HULL_TINY ), NAI_Hull::Maxs( HULL_TINY ), 255, 255, 0, 255, 15.0f );
 				}
 
 				if ( tr.fraction == 1.0 )
@@ -3907,52 +3907,57 @@ bool  CASW_Marine::Event_Gibbed( const CTakeDamageInfo &info )
 					bBlocked = false;
 				}
 
-				k++;				
+				k++;
 			}
 
-			if (bBlocked)
+			if ( bBlocked )
 				continue;	// couldn't find room for parasites
 
 			if ( asw_debug_marine_damage.GetBool() )
 			{
-				Msg("Found an unblocked pos for this entity, trying to spawn it there %f, %f, %f\n", vecSpawnPos.x, 
-					vecSpawnPos.y, vecSpawnPos.z);
+				Msg( "Found an unblocked pos for this entity, trying to spawn it there %f, %f, %f\n", vecSpawnPos.x,
+					vecSpawnPos.y, vecSpawnPos.z );
 			}
 
-			CASW_Parasite *pParasite = assert_cast< CASW_Parasite* >( CreateNoSpawn( "asw_parasite", vecSpawnPos, angParasiteFacing[i], this ) );
+			CASW_Parasite *pParasite = assert_cast< CASW_Parasite * >( CreateNoSpawn( "asw_parasite", vecSpawnPos, angParasiteFacing[i], this ) );
 			if ( pParasite )
 			{
 				PhysDisableEntityCollisions( pParasite, this );
 				DispatchSpawn( pParasite );
-				pParasite->SetSleepState(AISS_WAITING_FOR_INPUT);
-				pParasite->SetJumpFromEgg(true, fJumpDistance[i]);
+				pParasite->SetSleepState( AISS_WAITING_FOR_INPUT );
+				pParasite->SetJumpFromEgg( true, fJumpDistance[i] );
 				pParasite->Wake();
 			}
 		}
 	}
-	else if (info.GetDamageType() & DMG_BLAST)
+	else if ( info.GetDamageType() & DMG_BLAST )
 	{
 		death_type = RIP_EXPLOSION;
-		force = CalcDeathForceVector(info);
+		force = CalcDeathForceVector( info );
 	}
 
-	CASW_Marine_Profile* pProfile = GetMarineProfile();
+	CASW_Marine_Profile *pProfile = GetMarineProfile();
 
 	CRecipientFilter filter;
 	filter.AddAllPlayers();
 
-	UserMessageBegin(filter, "ASWRipRagdoll");
-		WRITE_BYTE(death_type);
-		WRITE_VEC3COORD( origin );
-		WRITE_VEC3COORD( force );
-		WRITE_BYTE( pProfile->m_ProfileIndex );
+	UserMessageBegin( filter, "ASWRipRagdoll" );
+		WRITE_UBITLONG( death_type, 2 );
+		WRITE_UBITLONG( pProfile->m_ProfileIndex, 6 );
+		WRITE_ANGLE( GetAbsAngles()[YAW] );
+		WRITE_FLOAT( origin.x );
+		WRITE_FLOAT( origin.y );
+		WRITE_FLOAT( origin.z );
+		WRITE_FLOAT( force.x );
+		WRITE_FLOAT( force.y );
+		WRITE_FLOAT( force.z );
 	MessageEnd();
 
 	AddEffects( EF_NODRAW ); // make the model invisible.
 	SetSolid( SOLID_NONE );
 	// reactivedrop: changed from 2 seconds to 0.1, to prevent crashes on fast 
 	// respawn in DeathMatch
-	SetNextThink( gpGlobals->curtime + 0.1f ); 
+	SetNextThink( gpGlobals->curtime + 0.1f );
 	SetThink( &CASW_Marine::SUB_Remove );
 	return CorpseGib( info );
 }
@@ -5991,4 +5996,96 @@ void CASW_Marine::InputAddPoints( inputdata_t &inputdata )
 	pMR->m_iScore = iTotal;
 
 	m_TotalPoints.Set( pMR->m_iScore, inputdata.pActivator, inputdata.pCaller );
+}
+
+CON_COMMAND_F( rd_test_marine_gib, "spawn marine gibs at the currently targeted point", FCVAR_CHEAT )
+{
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
+	if ( !pPlayer )
+	{
+		Warning( "Cannot rd_test_marine_gib from server console\n" );
+		return;
+	}
+
+	CASW_Inhabitable_NPC *pNPC = pPlayer->GetViewNPC();
+	if ( !pNPC )
+	{
+		return;
+	}
+
+	int iType = RIP_EXPLOSION;
+	int iProfile = 0;
+	float flVelocityMultiplier = 1.0f;
+
+	if ( CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC ) )
+	{
+		iProfile = pMarine->GetMarineProfile()->m_ProfileIndex;
+	}
+
+	for ( int i = 1; i < args.ArgC(); i++ )
+	{
+		const char *szArg = args.Arg( i );
+		if ( float flMult = atof( szArg ) )
+		{
+			flVelocityMultiplier = flMult;
+		}
+		else if ( FStrEq( szArg, "parasite" ) )
+		{
+			iType = RIP_PARASITE;
+		}
+		else if ( FStrEq( szArg, "sarge" ) )
+		{
+			iProfile = ASW_MARINE_PROFILE_SARGE;
+		}
+		else if ( FStrEq( szArg, "wildcat" ) )
+		{
+			iProfile = ASW_MARINE_PROFILE_WILDCAT;
+		}
+		else if ( FStrEq( szArg, "faith" ) )
+		{
+			iProfile = ASW_MARINE_PROFILE_FAITH;
+		}
+		else if ( FStrEq( szArg, "crash" ) )
+		{
+			iProfile = ASW_MARINE_PROFILE_CRASH;
+		}
+		else if ( FStrEq( szArg, "jaeger" ) )
+		{
+			iProfile = ASW_MARINE_PROFILE_JAEGER;
+		}
+		else if ( FStrEq( szArg, "wolfe" ) )
+		{
+			iProfile = ASW_MARINE_PROFILE_WOLFE;
+		}
+		else if ( FStrEq( szArg, "bastille" ) )
+		{
+			iProfile = ASW_MARINE_PROFILE_BASTILLE;
+		}
+		else if ( FStrEq( szArg, "vegas" ) )
+		{
+			iProfile = ASW_MARINE_PROFILE_VEGAS;
+		}
+		else
+		{
+			Warning( "Unhandled param '%s'\n", szArg );
+		}
+	}
+
+	Vector vecCrosshair = pPlayer->GetCrosshairTracePos();
+	Vector vecForce = ( vecCrosshair - pNPC->GetAbsOrigin() ) * flVelocityMultiplier;
+
+	NDebugOverlay::Cross3D( vecCrosshair, 8, 255, 255, 255, false, 1.0f );
+
+	CSingleUserRecipientFilter filter( pPlayer );
+	UserMessageBegin( filter, "ASWRipRagdoll" );
+		WRITE_UBITLONG( iType, 2 );
+		WRITE_UBITLONG( iProfile, 6 );
+		WRITE_ANGLE( pNPC->GetAbsAngles()[YAW] );
+		WRITE_FLOAT( vecCrosshair.x );
+		WRITE_FLOAT( vecCrosshair.y );
+		WRITE_FLOAT( vecCrosshair.z );
+		WRITE_FLOAT( vecForce.x );
+		WRITE_FLOAT( vecForce.y );
+		WRITE_FLOAT( vecForce.z );
+	MessageEnd();
 }

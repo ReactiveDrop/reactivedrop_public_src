@@ -84,6 +84,7 @@ ConVar rd_use_new_prediction_strategy( "rd_use_new_prediction_strategy", "1", FC
 ConVar rd_marine_explodes_into_gibs("rd_marine_explodes_into_gibs", "1", FCVAR_ARCHIVE);
 ConVar rd_marine_gib_lifetime( "rd_marine_gib_lifetime", "36000.0", FCVAR_NONE, "number of seconds before marine gibs fade" );
 ConVar rd_marine_gib_lifetime_dm( "rd_marine_gib_lifetime_dm", "15.0", FCVAR_NONE, "number of seconds before marine gibs fade in deathmatch mode" );
+ConVar rd_marine_gib_spin( "rd_marine_gib_spin", "500", FCVAR_NONE, "how much do marine gibs spin?" );
 ConVar rd_client_marine_backpacks( "rd_client_marine_backpacks", "0", FCVAR_NONE, "Show marine's un-equipped weapon on their back." );
 
 extern ConVar asw_DebugAutoAim;
@@ -2644,16 +2645,59 @@ enum eRip_Type
 	RIP_EXPLOSION
 };
 
+static const char *const s_szGibNames[7] =
+{
+	"models/swarm/marine/gibs/marine_gib_head.mdl",
+	"models/swarm/marine/gibs/marine_gib_chest.mdl",
+	"models/swarm/marine/gibs/marine_gib_rightarm.mdl",
+	"models/swarm/marine/gibs/marine_gib_leftarm.mdl",
+	"models/swarm/marine/gibs/marine_gib_pelvis.mdl",
+	"models/swarm/marine/gibs/marine_gib_rightleg.mdl",
+	"models/swarm/marine/gibs/marine_gib_leftleg.mdl"
+};
+
+static const Vector s_vecVelocityBodyPart[7] =
+{
+	Vector( 0, 0, 400 ),
+	Vector( 0, 0, 400 ),
+	Vector( 0, 1500, 400 ),
+	Vector( 0, -1500, 400 ),
+	Vector( 0, 0, 400 ),
+	Vector( 0, 1500, 400 ),
+	Vector( 0, -1500, 400 )
+};
+
+static const Vector s_vecBodyPartOffset[7] =
+{
+	Vector( -2, 3, 70 ),
+	Vector( -5, 3, 55 ),
+	Vector( -6, -14, 46 ),
+	Vector( -6, 20, 46 ),
+	Vector( -4, 3, 41 ),
+	Vector( -4, -5, 17 ),
+	Vector( -4, 11, 17 ),
+};
+
 // rip the marine into pieces
 void __MsgFunc_ASWRipRagdoll( bf_read &msg )
 {
-	eRip_Type nDeathType = eRip_Type( msg.ReadByte() );
+	eRip_Type nDeathType = eRip_Type( msg.ReadUBitLong( 2 ) );
+	int nMarineProfile = msg.ReadUBitLong( 6 );
 
-	Vector origin, vecForce;
-	msg.ReadBitVec3Coord( origin );
-	msg.ReadBitVec3Coord( vecForce );
+	float flYaw = msg.ReadBitAngle( 8 );
+	QAngle angles( 0, flYaw, 0 );
 
-	int nMarineProfile = msg.ReadByte();
+	Vector vecOrigin, vecForce;
+	vecOrigin.x = msg.ReadFloat();
+	vecOrigin.y = msg.ReadFloat();
+	vecOrigin.z = msg.ReadFloat();
+	vecForce.x = msg.ReadFloat();
+	vecForce.y = msg.ReadFloat();
+	vecForce.z = msg.ReadFloat();
+
+	matrix3x4_t matOrigin;
+	AngleMatrix( angles, vecOrigin, matOrigin );
+
 	CASW_Marine_Profile *pProfile = MarineProfileList() ? MarineProfileList()->GetProfile( nMarineProfile ) : NULL;
 	if ( !pProfile )
 	{
@@ -2680,7 +2724,7 @@ void __MsgFunc_ASWRipRagdoll( bf_read &msg )
 				if ( !pMarine )
 					continue;
 
-				float flDistance = pMarine->GetAbsOrigin().DistToSqr( origin );
+				float flDistance = pMarine->GetAbsOrigin().DistToSqr( vecOrigin );
 				if ( !pClosest || flDistance < flClosestDistance )
 				{
 					pClosest = pMarine;
@@ -2703,43 +2747,30 @@ void __MsgFunc_ASWRipRagdoll( bf_read &msg )
 	}
 
 	const float flLifetime = ASWDeathmatchMode() ? rd_marine_gib_lifetime_dm.GetFloat() : rd_marine_gib_lifetime.GetFloat();
-	const Vector velocity_explosion = vecForce / 35.0f;
+	const Vector vecExplosionVelocity = vecForce / 35.0f;
 
-	static const char *const s_szGibNames[7] =
+	AngularImpulse impulses[7];
+	for ( int i = 0; i < 7; i++ )
 	{
-		"models/swarm/marine/gibs/marine_gib_head.mdl",
-		"models/swarm/marine/gibs/marine_gib_chest.mdl",
-		"models/swarm/marine/gibs/marine_gib_rightarm.mdl",
-		"models/swarm/marine/gibs/marine_gib_leftarm.mdl",
-		"models/swarm/marine/gibs/marine_gib_pelvis.mdl",
-		"models/swarm/marine/gibs/marine_gib_rightleg.mdl",
-		"models/swarm/marine/gibs/marine_gib_leftleg.mdl"
-	};
-
-	static const Vector s_vecVelocityBodyPart[7] =
-	{
-		Vector( 0, 0, 400 ),
-		Vector( 0, 0, 400 ),
-		Vector( 0, 1500, 400 ),
-		Vector( 0, -1500, 400 ),
-		Vector( 0, 0, 400 ),
-		Vector( 0, 1500, 400 ),
-		Vector( 0, -1500, 400 )
-	};
+		// for some reason if this is done along with the clientside gib creation it doesn't actually randomize
+		impulses[i].Random( -rd_marine_gib_spin.GetFloat(), rd_marine_gib_spin.GetFloat() );
+	}
 
 	for ( int i = 0; i < 7; i++ )
 	{
-		const char *szGibName = i != 0 || !pProfile->IsFemale() ? s_szGibNames[i] : "models/swarm/marine/gibs/femalemarine_gib_head.mdl";
+		const char *szGibName = i != 0 || V_strcmp( pProfile->GetModelName(), "models/swarm/marine/femalemarine.mdl" ) ? s_szGibNames[i] : "models/swarm/marine/gibs/femalemarine_gib_head.mdl";
+
+		Vector vecGibOrigin;
+		VectorTransform( s_vecBodyPartOffset[i], matOrigin, vecGibOrigin );
 
 		C_Gib *pGib = NULL;
-
 		switch ( nDeathType )
 		{
 		case RIP_PARASITE:
-			pGib = C_Gib::CreateClientsideGib( szGibName, origin, s_vecVelocityBodyPart[i], RandomAngularImpulse( -500.0f, 500.0f ), flLifetime );
+			pGib = C_Gib::CreateClientsideGib( szGibName, vecGibOrigin, s_vecVelocityBodyPart[i], impulses[i], flLifetime );
 			break;
 		case RIP_EXPLOSION:
-			pGib = C_Gib::CreateClientsideGib( szGibName, origin, velocity_explosion, RandomAngularImpulse( -500.0f, 500.0f ), flLifetime );
+			pGib = C_Gib::CreateClientsideGib( szGibName, vecGibOrigin, vecExplosionVelocity, impulses[i], flLifetime );
 			break;
 		}
 
@@ -2750,9 +2781,10 @@ void __MsgFunc_ASWRipRagdoll( bf_read &msg )
 			ASWGameRules()->m_hMarineDeathRagdoll = pGib;
 
 		pGib->SetSkin( pProfile->GetSkinNum() );
+		pGib->SetAbsAngles( angles );
 
 		// vq: blood decals
-		Vector vecTraceStart = origin;
+		Vector vecTraceStart = vecGibOrigin;
 		vecTraceStart.z += 8.0f;
 
 		Vector vecDir( 0, 0, -1.0f );
@@ -2775,7 +2807,7 @@ void __MsgFunc_ASWRipRagdoll( bf_read &msg )
 		}
 	}
 
-	UTIL_ASW_BloodDrips( origin, vec3_origin, BLOOD_COLOR_RED, 10 );
+	UTIL_ASW_BloodDrips( vecOrigin, vec3_origin, BLOOD_COLOR_RED, 10 );
 }
 USER_MESSAGE_REGISTER( ASWRipRagdoll );
 
