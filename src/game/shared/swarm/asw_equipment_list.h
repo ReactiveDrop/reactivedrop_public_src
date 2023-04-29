@@ -101,7 +101,7 @@ public:
 	CASW_EquipItem( int iItemIndex, const char *szEquipClass, const char *szShortName, const char *szLongName,
 		const char *szDescription1, const char *szAltFireDescription, const char *szAttributeDescription,
 		bool bSelectableInBriefing, bool bIsExtra, const char *szAmmo1, const char *szAmmo2,
-		const char *szEquipIcon, ConVar *pMaxAmmo1, ConVar *pMaxAmmo2,
+		const char *szEquipIcon, ConVar *pDefaultAmmo1, ConVar *pMaxAmmo1, ConVar *pDefaultAmmo2, ConVar *pMaxAmmo2,
 		int iRequiredClass = -1, bool bIsUnique = false );
 
 	int DefaultAmmo1() const;
@@ -116,7 +116,9 @@ public:
 	const int m_iRequiredClass;
 	int m_iAmmo1;
 	int m_iAmmo2;
+	ConVar *const m_pDefaultAmmo1;
 	ConVar *const m_pMaxAmmo1;
+	ConVar *const m_pDefaultAmmo2;
 	ConVar *const m_pMaxAmmo2;
 	const char *const m_szEquipClass;
 	const char *const m_szShortName;
