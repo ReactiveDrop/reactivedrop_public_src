@@ -2714,7 +2714,7 @@
 	output	OnReachedFightGoal(void) : "Fires when the drone reaches his specified fight-to location"
 ]
 
-@NPCClass base(InhabitableNPC) studio("models/swarm/drone/uberdrone.mdl") sphere() = asw_drone_uber :
+@NPCClass base(InhabitableNPC) studio("models/aliens/drone/uberdrone.mdl") sphere() = asw_drone_uber :
 	"Larger, stronger version of the asw_drone"
 [
 	sleepstate(choices) : "Sleep State" : 1 : "Holds the NPC in stasis until specified condition. See also 'Wake Radius' and 'Wake Squad'." =
