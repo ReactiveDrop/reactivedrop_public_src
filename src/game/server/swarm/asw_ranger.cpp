@@ -136,6 +136,8 @@ void CASW_Ranger::Precache( void )
 	BaseClass::Precache();
 
 	PrecacheModel( "models/aliens/rangerSpit/rangerspit.mdl" );
+	PrecacheScriptSound( "Ranger.Pain" );
+	PrecacheScriptSound( "Ranger.Death" );
 
 	// precache shot model and fx, add shot to list
 	CASW_AlienShot shot;
@@ -263,6 +265,15 @@ bool CASW_Ranger::CreateBehaviors()
 	return BaseClass::CreateBehaviors();
 }
 
+void CASW_Ranger::PainSound( const CTakeDamageInfo &info )
+{
+	if ( gpGlobals->curtime > m_fNextPainSound )
+	{
+		EmitSound( "Ranger.Pain" );
+		m_fNextPainSound = gpGlobals->curtime + 0.5f;
+	}
+}
+
 void CASW_Ranger::DeathSound( const CTakeDamageInfo &info )
 {
 	// if we are playing a fancy death animation, don't play death sounds from code
@@ -270,7 +281,7 @@ void CASW_Ranger::DeathSound( const CTakeDamageInfo &info )
 	if ( m_nDeathStyle == kDIE_FANCY )
 		return;
 
-	//EmitSound( "ASW_Drone.Death" );
+	EmitSound( "Ranger.Death" );
 
 	if ( m_bOnFire )
 		EmitSound( "ASW_Drone.DeathFireSizzle" );

@@ -49,6 +49,7 @@ public:
 	virtual int			OnTakeDamage_Alive(const CTakeDamageInfo &info);
 
 	// sounds
+	virtual void PainSound( const CTakeDamageInfo &info );
 	virtual void DeathSound( const CTakeDamageInfo &info );
 
 private:

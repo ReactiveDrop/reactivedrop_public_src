@@ -1,3 +1,7 @@
+// =========================
+// DRONE
+// =========================
+
 "ASW_Drone.Death"
 {
 	"channel"		"CHAN_VOICE"
@@ -59,10 +63,10 @@
 	"pitch"			"100"
 	"rndwave"
 	{
-		"wave"			"aliens\voc\drone\deathFire01.wav"
-		"wave"			"aliens\voc\drone\deathFire02.wav"
-		"wave"			"aliens\voc\drone\deathFire03.wav"
-		"wave"			"aliens\voc\drone\deathFire04.wav"
+		"wave"			"aliens\voc\drone\deathshock01.wav"
+		"wave"			"aliens\voc\drone\deathshock02.wav"
+		"wave"			"aliens\voc\drone\deathshock03.wav"
+		"wave"			"aliens\voc\drone\deathshock04.wav"
 	}
 }
 
@@ -94,6 +98,11 @@
 		"wave"		"aliens\voc\drone\pain05.wav"
 		"wave"		"aliens\voc\drone\pain06.wav"
 		"wave"		"aliens\voc\drone\pain07.wav"
+		"wave"		"aliens\voc\drone\pain08.wav"
+		"wave"		"aliens\voc\drone\pain09.wav"
+		"wave"		"aliens\voc\drone\pain10.wav"
+		"wave"		"aliens\voc\drone\pain11.wav"
+		"wave"		"aliens\voc\drone\pain12.wav"
 	}
 }
 
@@ -108,6 +117,10 @@
 		"wave"		"aliens\voc\drone\attack02.wav"
 		"wave"		"aliens\voc\drone\attack03.wav"
 		"wave"		"aliens\voc\drone\attack04.wav"
+		"wave"		"aliens\voc\drone\attack05.wav"
+		"wave"		"aliens\voc\drone\attack06.wav"
+		"wave"		"aliens\voc\drone\attack07.wav"
+		"wave"		"aliens\voc\drone\attack08.wav"
 	}
 }
 
@@ -162,7 +175,6 @@
 	}
 }
 
-
 "ASW_Drone.Land"
 {
 	"channel"		"CHAN_AUTO"
@@ -189,7 +201,6 @@
 		"wave"		"aliens\voc\drone\swipe03.wav"
 	}
 }
-
 
 "ASW_Drone.Footstep"
 {
@@ -244,6 +255,10 @@
 		"wave"	"aliens\impacts\drone\burrow02.wav"
 		"wave"	"aliens\impacts\drone\burrow03.wav"
 		"wave"	"aliens\impacts\drone\burrow04.wav"
+		"wave"	"aliens\impacts\drone\burrow05.wav"
+		"wave"	"aliens\impacts\drone\burrow06.wav"
+		"wave"	"aliens\impacts\drone\burrow07.wav"
+		"wave"	"aliens\impacts\drone\burrow08.wav"
 	}
 }
 
@@ -258,6 +273,7 @@
 	"rndwave"
 	{
 		"wave"	"aliens\impacts\drone\shove1.wav"
+		"wave"	"aliens\impacts\drone\shove2.wav"
 	}
 }
 
@@ -274,7 +290,6 @@
 		"wave"		"aliens/impacts/drone/gibHeavy02.wav"
 		"wave"		"aliens/impacts/drone/gibHeavy03.wav"
 	}
-	
 }
 
 "ASW_Drone.GibSplat"
@@ -337,6 +352,373 @@
 		"wave"	"aliens\impacts\shared\splatter04.wav"
 	}
 }
+
+// =========================
+// UBER DRONE
+// =========================
+
+"ASW_Uber_Drone.Death"
+{
+	"channel"		"CHAN_VOICE"
+	"soundlevel"		"SNDLVL_80dB"
+	"volume"		"0.4, 0.8"
+	"pitch"		"75,80"
+	"rndwave"
+	{
+		"wave"			"aliens\voc\drone\death01.wav"
+		"wave"			"aliens\voc\drone\death02.wav"
+		"wave"			"aliens\voc\drone\death03.wav"
+		"wave"			"aliens\voc\drone\death04.wav"
+	}
+}
+
+"ASW_Uber_Drone.DeathFancy"
+{
+	"channel"		"CHAN_VOICE"
+	"soundlevel"	"SNDLVL_80dB"
+	"volume"		"0.8, 1.0"
+	"pitch"			"75,80"
+	"wave"			"aliens\voc\drone\die_fancy.wav"
+}
+
+"ASW_Uber_Drone.DeathFire"
+{
+	"channel"		"CHAN_VOICE"
+	"soundlevel"	"SNDLVL_80dB"
+	"volume"		"0.8, 1.0"
+	"pitch"			"75,80"
+	"rndwave"
+	{
+		"wave"			"aliens\voc\drone\deathFire01.wav"
+		"wave"			"aliens\voc\drone\deathFire02.wav"
+		"wave"			"aliens\voc\drone\deathFire03.wav"
+		"wave"			"aliens\voc\drone\deathFire04.wav"
+	}
+}
+
+"ASW_Uber_Drone.DeathFireSizzle"
+{
+	"channel"		"CHAN_BODY"
+	"soundlevel"	"SNDLVL_85dB"
+	"volume"		"0.7, 1.0"
+	"pitch"			"75,80"
+	"rndwave"
+	{
+		"wave"			"aliens\impacts\drone\gib_sizzle01.wav"
+		"wave"			"aliens\impacts\drone\gib_sizzle02.wav"
+		"wave"			"aliens\impacts\drone\gib_sizzle03.wav"
+	}
+}
+
+"ASW_Uber_Drone.DeathElectric"
+{
+	"channel"		"CHAN_VOICE"
+	"soundlevel"	"SNDLVL_85dB"
+	"volume"		"0.8, 1.0"
+	"pitch"			"75,80"
+	"rndwave"
+	{
+		"wave"			"aliens\voc\drone\deathshock01.wav"
+		"wave"			"aliens\voc\drone\deathshock02.wav"
+		"wave"			"aliens\voc\drone\deathshock03.wav"
+		"wave"			"aliens\voc\drone\deathshock04.wav"
+	}
+}
+
+"ASW_Uber_Drone.Roar"
+{
+	"channel"		"CHAN_VOICE"
+	"soundlevel"	"SNDLVL_90dB"
+	"volume"		"1.0"
+	"pitch"			"80,90"
+	"rndwave"
+	{
+		"wave"			"aliens\voc\drone\roar01.wav"
+		"wave"			"aliens\voc\drone\roar02.wav"
+	}
+}
+
+"ASW_Uber_Drone.Pain"
+{
+	"channel"		"CHAN_VOICE"
+	"soundlevel"	"SNDLVL_80dB"
+	"volume"		"0.90,1.00"
+	"pitch"			"75,80"
+	"rndwave"
+	{
+		"wave"		"aliens\voc\drone\pain01.wav"
+		"wave"		"aliens\voc\drone\pain02.wav"
+		"wave"		"aliens\voc\drone\pain03.wav"
+		"wave"		"aliens\voc\drone\pain04.wav"
+		"wave"		"aliens\voc\drone\pain05.wav"
+		"wave"		"aliens\voc\drone\pain06.wav"
+		"wave"		"aliens\voc\drone\pain07.wav"
+		"wave"		"aliens\voc\drone\pain08.wav"
+		"wave"		"aliens\voc\drone\pain09.wav"
+		"wave"		"aliens\voc\drone\pain10.wav"
+		"wave"		"aliens\voc\drone\pain11.wav"
+		"wave"		"aliens\voc\drone\pain12.wav"
+		"wave"	    "aliens\voc\drone\run\run01.wav"
+		"wave"	    "aliens\voc\drone\run\run03.wav"
+		"wave"	    "aliens\voc\drone\run\run04.wav"
+		"wave"	    "aliens\voc\drone\run\run05.wav"
+		"wave"	    "aliens\voc\drone\run\run06.wav"
+		"wave"	    "aliens\voc\drone\run\run07.wav"
+		"wave"	    "aliens\voc\drone\run\run08.wav"
+		"wave"	    "aliens\voc\drone\run\run09.wav"
+		"wave"	    "aliens\voc\drone\run\run10.wav"
+		"wave"	    "aliens\voc\drone\run\run11.wav"
+		"wave"	    "aliens\voc\drone\run\run12.wav"
+	}
+}
+
+"ASW_Uber_Drone.Attack"
+{
+	"channel"		"CHAN_VOICE"
+	"soundlevel"		"SNDLVL_80dB"
+	"pitch"		"75,80"
+	"rndwave"
+	{
+		"wave"		"aliens\voc\drone\attack01.wav"
+		"wave"		"aliens\voc\drone\attack02.wav"
+		"wave"		"aliens\voc\drone\attack03.wav"
+		"wave"		"aliens\voc\drone\attack04.wav"
+		"wave"		"aliens\voc\drone\attack05.wav"
+		"wave"		"aliens\voc\drone\attack06.wav"
+		"wave"		"aliens\voc\drone\attack07.wav"
+		"wave"		"aliens\voc\drone\attack08.wav"
+	}
+}
+
+
+"ASW_Uber_Drone.Alert"
+{
+	"channel"		"CHAN_VOICE"
+	"soundlevel"	"SNDLVL_80dB"
+	"volume"		"1"
+	"pitch"			"75,80"
+	"rndwave"
+	{
+		"wave"		"aliens\voc\drone\alert01.wav"
+		"wave"		"aliens\voc\drone\alert02.wav"
+		"wave"		"aliens\voc\drone\alert03.wav"
+	}
+}
+
+"ASW_Uber_Drone.Jump"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_85dB"
+	"volume"		"0.7, 1.0"
+	"pitch"			"75,80"
+	"wave"			"aliens\voc\drone\jump.wav"
+}
+
+"ASW_Uber_Drone.Glide"
+{
+	"channel"		"CHAN_VOICE"
+	"soundlevel"	"SNDLVL_80dB"
+	"volume"		"0.8, 1.0"
+	"pitch"			"75,80"
+	"rndwave"
+	{
+		"wave"			"aliens\voc\drone\glide01.wav"
+		"wave"			"aliens\voc\drone\glide02.wav"
+		"wave"			"aliens\voc\drone\glide03.wav"
+	}
+}
+
+"ASW_Uber_Drone.LandVoc"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"0.4, 0.8"
+	"pitch"			"75,80"
+	"soundlevel"	"SNDLVL_NORM"
+	"rndwave"
+	{
+		"wave"			"aliens\voc\drone\land01.wav"
+		"wave"			"aliens\voc\drone\land02.wav"
+	}
+}
+
+"ASW_Uber_Drone.Land"
+{
+	"channel"		"CHAN_AUTO"
+	"volume"		"0.7, 1.0"
+	"pitch"			"90, 105"
+	"soundlevel"	"SNDLVL_80dB"
+	"rndwave"
+	{
+		"wave"			"aliens\impacts\drone\Uber_land01.wav"
+		"wave"			"aliens\impacts\drone\Uber_land02.wav"
+	}
+}
+
+"ASW_Uber_Drone.Swipe"
+{
+	"channel"		"CHAN_BODY"
+	"volume"		"0.8, 1.0"
+	"soundlevel"	"SNDLVL_80dB"
+	"pitch"			"95, 105"
+	"rndwave"
+	{
+		"wave"		"aliens\voc\drone\Uber_swipe01.wav"
+		"wave"		"aliens\voc\drone\Uber_swipe02.wav"
+		"wave"		"aliens\voc\drone\Uber_swipe03.wav"
+	}
+}
+
+"ASW_Uber_Drone.Footstep"
+{
+	"channel"		"CHAN_BODY"
+	"volume"		"0.1, 0.5"
+	"pitch"			"95,105"
+
+	"soundlevel"	"SNDLVL_75dB"
+
+	"rndwave"
+	{
+		"wave"	"aliens\impacts\drone\Uber_footstep1a.wav"
+		"wave"	"aliens\impacts\drone\Uber_footstep1b.wav"
+	}
+}
+
+"ASW_Uber_Drone.Run"
+{
+	"channel"		"CHAN_BODY"
+	"volume"		"0.6, 1.0"
+	"pitch"			"90, 95"
+
+	"soundlevel"	"SNDLVL_72dB"
+
+	"rndwave"
+	{
+		"wave"	"aliens\voc\drone\run\run01.wav"
+		"wave"	"aliens\voc\drone\run\run03.wav"
+		"wave"	"aliens\voc\drone\run\run04.wav"
+		"wave"	"aliens\voc\drone\run\run05.wav"
+		"wave"	"aliens\voc\drone\run\run06.wav"
+		"wave"	"aliens\voc\drone\run\run07.wav"
+		"wave"	"aliens\voc\drone\run\run08.wav"
+		"wave"	"aliens\voc\drone\run\run09.wav"
+		"wave"	"aliens\voc\drone\run\run10.wav"
+		"wave"	"aliens\voc\drone\run\run11.wav"
+		"wave"	"aliens\voc\drone\run\run12.wav"
+	}
+}
+
+"ASW_Uber_Drone.Burrow"
+{
+	"channel"		"CHAN_BODY"
+	"volume"		"0.7, 1.0"
+	"pitch"			"90, 110"
+
+	"soundlevel"	"SNDLVL_75dB"
+
+	"rndwave"
+	{
+		"wave"	"aliens\impacts\drone\uber_burrow01.wav"
+		"wave"	"aliens\impacts\drone\uber_burrow02.wav"
+		"wave"	"aliens\impacts\drone\uber_burrow03.wav"
+		"wave"	"aliens\impacts\drone\uber_burrow04.wav"
+	}
+}
+
+"ASW_Uber_Drone.Shove"
+{
+	"channel"		"CHAN_BODY"
+	"volume"		"0.7, 1.0"
+	"pitch"			"85, 100"
+
+	"soundlevel"	"SNDLVL_75dB"
+
+	"rndwave"
+	{
+		"wave"	"aliens\impacts\drone\Uber_shove1.wav"
+		"wave"	"aliens\impacts\drone\Uber_shove2.wav"
+	}
+}
+
+"ASW_Uber_Drone.GibSplatHeavy"
+{
+	"channel"		"CHAN_BODY"
+	"volume"		"0.7, 1.0"
+	"pitch"			"90, 110"
+
+	"soundlevel"	"SNDLVL_80dB"
+	"rndwave"
+	{
+		"wave"		"aliens/impacts/drone/gibHeavy01.wav"
+		"wave"		"aliens/impacts/drone/gibHeavy02.wav"
+		"wave"		"aliens/impacts/drone/gibHeavy03.wav"
+	}
+	
+}
+
+"ASW_Uber_Drone.GibSplat"
+{
+	"channel"		"CHAN_BODY"
+	"volume"		"0.7, 1.0"
+	"pitch"			"80, 95"
+
+	"soundlevel"	"SNDLVL_75dB"
+	"rndwave"
+	{
+		"wave"		"aliens/impacts/drone/gib01.wav"
+		"wave"		"aliens/impacts/drone/gib02.wav"
+		"wave"		"aliens/impacts/drone/gib03.wav"
+	}
+}
+
+"ASW_Uber_Drone.GibSplatQuiet"
+{
+	"channel"		"CHAN_BODY"
+	"soundlevel"	"SNDLVL_75dB"
+	"volume"		"0.7, 1.0"
+	"pitch"			"80, 95"
+	"rndwave"
+	{
+		"wave"	"aliens\impacts\shared\splatter01.wav"
+		"wave"	"aliens\impacts\shared\splatter02.wav"
+		"wave"	"aliens\impacts\shared\splatter03.wav"
+		"wave"	"aliens\impacts\shared\splatter04.wav"
+	}
+}
+
+"ASW_Uber_Drone.Spray"
+{
+	"channel"		"CHAN_AUTO"
+	"volume"		"0.6, 1.0"
+	"pitch"			"80, 95"
+
+	"soundlevel"	"SNDLVL_70dB"
+	"rndwave"
+	{
+		"wave"	"aliens\impacts\shared\spray01.wav"
+		"wave"	"aliens\impacts\shared\spray02.wav"
+		"wave"	"aliens\impacts\shared\spray03.wav"
+	}
+}
+
+"ASW_Uber_Drone.Splatter"
+{
+	"channel"		"CHAN_AUTO"
+	"volume"		"0.6, 1.0"
+	"pitch"			"80, 95"
+
+	"soundlevel"	"SNDLVL_70dB"
+	"rndwave"
+	{
+		"wave"	"aliens\impacts\shared\splatter01.wav"
+		"wave"	"aliens\impacts\shared\splatter02.wav"
+		"wave"	"aliens\impacts\shared\splatter03.wav"
+		"wave"	"aliens\impacts\shared\splatter04.wav"
+	}
+}
+
+// =========================
+// SHIELDBUG
+// =========================
 
 // Don't comment out ASW_ShieldBug.StepLight!
 "ASW_ShieldBug.StepLight"
@@ -546,7 +928,6 @@
 	"wave"	"aliens\voc\shieldbug\roar.wav"
 }
 
-
 "ASW_ShieldBug.Attack"
 {
 	"channel"	"CHAN_VOICE"
@@ -591,6 +972,9 @@
 	}
 }
 
+// =========================
+// RANGER
+// =========================
 
 "Ranger.fire_prep"
 {
@@ -667,6 +1051,42 @@
 	
 }
 
+"Ranger.Death"
+{
+	"channel"	"CHAN_BODY"
+	"volume"		"0.90, 1.000"
+	"pitch"			"95, 105"
+
+	"soundlevel"	"SNDLVL_90dB"
+
+	"rndwave"
+	{
+		"wave"	"aliens\voc\ranger\death01.wav"
+		"wave"	"aliens\voc\ranger\death02.wav"
+	    "wave"	"aliens\voc\ranger\death03.wav"
+	}
+}
+
+"Ranger.Pain"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"0.6, 1.0"
+	"pitch"			"90, 110"
+
+	"soundlevel"	"SNDLVL_90dB"
+
+	"rndwave"
+	{
+		"wave"	"aliens\voc\ranger\pain01.wav"
+		"wave"	"aliens\voc\ranger\pain02.wav"
+		"wave"	"aliens\voc\ranger\pain03.wav"
+	}
+}
+
+// =========================
+// EGG
+// =========================
+
 "ASW_Egg.Burn"
 {
 	"channel"		"CHAN_BODY"
@@ -732,6 +1152,10 @@
 	
 	"wave"		"aliens\impacts\shared\spray03.wav"
 }
+
+// =========================
+// PARASITE
+// =========================
 
 // not captioned
 "ASW_Parasite.Attack"
@@ -832,6 +1256,26 @@
 	"wave"	"aliens\voc\parasite\idle.wav"
 }
 
+"ASW_Parasite.Pain"
+{
+	"channel"	"CHAN_BODY"
+	"volume"		"0.5, 1.0"
+	"pitch"			"95, 105"
+
+	"soundlevel"	"SNDLVL_85dB"
+
+	"rndwave"
+	{
+		"wave"	"aliens\voc\grub\pain01.wav"
+		"wave"	"aliens\voc\grub\pain02.wav"
+		"wave"	"aliens\voc\grub\pain03.wav"
+	}
+}
+
+// =========================
+// XENOMITE
+// =========================
+
 "ASW_Xenomite.BiteAttack"
 {
 	"channel"	"CHAN_VOICE"
@@ -840,9 +1284,9 @@
 	"soundlevel"	"SNDLVL_80dB"
 	"rndwave"
 	{
-		"wave"	"aliens\voc\parasite\attack01.wav"
-		"wave"	"aliens\voc\parasite\attack02.wav"
-		"wave"	"aliens\voc\parasite\attack03.wav"
+		"wave"	"aliens\voc\parasite\xeno_attack01.wav"
+		"wave"	"aliens\voc\parasite\xeno_attack02.wav"
+		"wave"	"aliens\voc\parasite\xeno_attack03.wav"
 	}
 }
 
@@ -854,9 +1298,9 @@
 	"soundlevel"	"SNDLVL_80dB"
 	"rndwave"
 	{
-		"wave"	"aliens\voc\parasite\attack01.wav"
-		"wave"	"aliens\voc\parasite\attack02.wav"
-		"wave"	"aliens\voc\parasite\attack03.wav"
+		"wave"	"aliens\voc\parasite\xeno_attack01.wav"
+		"wave"	"aliens\voc\parasite\xeno_attack02.wav"
+		"wave"	"aliens\voc\parasite\xeno_attack03.wav"
 	}
 }
 
@@ -864,15 +1308,14 @@
 {
 	"channel"	"CHAN_VOICE"
 	"volume"		"0.5"
-	"pitch"			"55, 75"
+	"pitch"			"95, 105"
 
 	"soundlevel"	"SNDLVL_75dB"
 
 	"rndwave"
 	{
-		"wave"		"aliens\voc\egg\pain01.wav"
-		"wave"		"aliens\voc\egg\pain02.wav"
-		"wave"		"aliens\voc\egg\pain03.wav"
+		"wave"		"aliens\voc\parasite\xeno_death01.wav"
+		"wave"		"aliens\voc\parasite\xeno_death02.wav"
 	}
 }
 
@@ -886,8 +1329,8 @@
 
 	"rndwave"
 	{
-		"wave"	"aliens\voc\parasite\death01.wav"
-		"wave"	"aliens\voc\parasite\death02.wav"
+		"wave"	"aliens\voc\parasite\xeno_death01.wav"
+		"wave"	"aliens\voc\parasite\xeno_death02.wav"
 	}
 }
 
@@ -899,39 +1342,12 @@
 
 	"soundlevel"	"SNDLVL_70dB"
 
-	"wave"	"aliens\voc\parasite\idle.wav"
+	"wave"	"aliens\voc\parasite\xeno_idle.wav"
 }
 
-"ASW_Buzzer.Attack"
-{
-	"channel"	"CHAN_VOICE"
-	"volume"		"1.000"
-	"pitch"			"95, 105"
-
-	"soundlevel"	"SNDLVL_NORM"
-
-	"rndwave"
-	{
-		"wave"	"aliens\voc\buzzer\attack01.wav"
-		"wave"	"aliens\voc\buzzer\attack02.wav"
-		"wave"	"aliens\voc\buzzer\attack03.wav"
-	}
-}
-
-"ASW_Parasite.Pain"
-{
-	"channel"	"CHAN_BODY"
-	"volume"		"0.5, 1.0"
-	"pitch"			"95, 105"
-
-	"soundlevel"	"SNDLVL_85dB"
-
-	"rndwave"
-	{
-		"wave"	"aliens\voc\parasite\death01.wav"
-		"wave"	"aliens\voc\parasite\death02.wav"
-	}
-}
+// =========================
+// GRUB
+// =========================
 
 "ASW_Grub.Pain"
 {
@@ -943,8 +1359,9 @@
 
 	"rndwave"
 	{
-		"wave"	"aliens\voc\parasite\death01.wav"
-		"wave"	"aliens\voc\parasite\death02.wav"
+		"wave"	"aliens\voc\grub\death01.wav"
+		"wave"	"aliens\voc\grub\death02.wav"
+		"wave"	"aliens\voc\grub\death03.wav"
 	}
 }
 
@@ -960,6 +1377,26 @@
 			"wave"		"aliens\impacts\shared\pop01.wav"
 			"wave"		"aliens\impacts\shared\pop02.wav"
 		}
+}
+
+// =========================
+// BUZZER
+// =========================
+
+"ASW_Buzzer.Attack"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"		"1.000"
+	"pitch"			"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"rndwave"
+	{
+		"wave"	"aliens\voc\buzzer\attack01.wav"
+		"wave"	"aliens\voc\buzzer\attack02.wav"
+		"wave"	"aliens\voc\buzzer\attack03.wav"
+	}
 }
 
 "ASW_Buzzer.Death"
@@ -1013,6 +1450,10 @@
 		"wave"	"aliens\voc\buzzer\idle03.wav"
 	}
 }
+
+// =========================
+// BOOMER
+// =========================
 
 "ASW_Boomer.FootstepWalk"
 {
@@ -1154,6 +1595,10 @@
 	}
 }
 
+// =========================
+// MORTARBUG
+// =========================
+
 "ASW_MortarBug.Idle"
 {
 	"channel"	"CHAN_AUTO"
@@ -1222,6 +1667,9 @@
 	"wave"	"aliens\voc\mortarbug\Death_Explode.wav"
 }
 
+// =========================
+// HARVESTER
+// =========================
 
 "ASW_Harvester.Death"
 {
@@ -1332,8 +1780,6 @@
 	"wave"	"swarm\harvester\SpawnSound2.wav"
 }
 
-
-
 "ASW_Harvester.Alert"
 {
 	"channel"	"CHAN_VOICE"
@@ -1356,6 +1802,9 @@
 	"wave"			"swarm\harvester\Sniffing.wav"
 }
 
+// =========================
+// ANTLIONS
+// =========================
 
 "FX_AntlionImpact.ShellImpact"
 {
@@ -1373,16 +1822,15 @@
 	}
 }
 
+// =========================
+// QUEEN
+// =========================
+
 "ASW_Queen.Pain"
 {
 	"channel"		"CHAN_BODY"
 	"soundlevel"	"SNDLVL_100dB"
 	"volume"		"0.7, 1"
-	//"pitch"			"75,80,85"
-	//"rndwave"
-	//{
-	//	"wave"		"aliens\voc\queen\pain.wav"
-	//}
 	"pitch"		"100,140"
 	"rndwave"
 	{
@@ -1396,7 +1844,6 @@
 	"channel"		"CHAN_VOICE"
 	"soundlevel"	"SNDLVL_150dB"
 	"volume"		"0.8, 1"
-	//"pitch"			"100"
 	"pitch"			"70"
     "rndwave"
 	{
@@ -1404,16 +1851,12 @@
     }
 }
 
-"ASW_Queen.Painbig"
+"ASW_Queen.PainBig"
 {
 	"channel"		"CHAN_BODY"
 	"soundlevel"	"SNDLVL_130dB"
 	"volume"		"0.9, 1"
 	"pitch"			"95,100,105"
-	//"rndwave"
-	//{
-    //    "wave"		"aliens\voc\queen\painbig.wav"
-	//}
 	"wave"	"aliens\voc\shieldbug\roar.wav"
 }
 
@@ -1422,11 +1865,7 @@
 	"channel"		"CHAN_VOICE"
 	"soundlevel"	"SNDLVL_100dB"
 	"volume"		"0.6, 1"
-	"pitch"			"85,90,95"
-	//"rndwave"
-	//{
-	//	"wave"		"aliens\voc\queen\slashshort.wav"
-	//}
+	"pitch"			"85,95"
 	"rndwave"
 	{
 		"wave"		"aliens/voc/boomer/melee_whoosh01.wav"
@@ -1439,11 +1878,7 @@
 	"channel"		"CHAN_VOICE"
 	"soundlevel"	"SNDLVL_100dB"
 	"volume"		"0.9, 1"
-	"pitch"			"90,95,100"
-	//"rndwave"
-	//{
-	//	"wave"			"aliens\voc\queen\slash.wav"
-	//}
+	"pitch"			"90,100"
 	"wave"		"aliens/voc/boomer/melee_voc.wav"
 }
 
@@ -1465,7 +1900,6 @@
 	"soundlevel"	"SNDLVL_100dB"
 	"volume"		"0.8, 1"
 	"pitch"			"80"
-	//"wave"			"aliens\voc\queen\spit.wav"
 	"wave"			"aliens\voc\ranger\fire.wav"
 }
 
@@ -1474,9 +1908,13 @@
 	"channel"		"CHAN_VOICE"
 	"soundlevel"	"SNDLVL_90dB"
 	"volume"		"0.5, 0.8"
-	"pitch"			"95,100,105"
+	"pitch"			"95,105"
 	"wave"			"aliens\voc\queen\tentacleattackstart.wav"
 }
+
+// =========================
+// MENDER
+// =========================
 
 "ASW_Mender.Pain"
 {
