@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "33"
+	"mapversion" "35"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -14,13 +14,13 @@ viewsettings
 	"bSnapToGrid" "1"
 	"bShowGrid" "1"
 	"bShowLogicalGrid" "0"
-	"nGridSpacing" "8"
+	"nGridSpacing" "16"
 	"bShow3DGrid" "0"
 }
 world
 {
 	"id" "1"
-	"mapversion" "33"
+	"mapversion" "35"
 	"classname" "worldspawn"
 	"comment" "Decompiled by BSPSource v1.3.6 from ocs_2.bsp"
 	"detailmaterial" "detail/detailsprites"
@@ -6294,12 +6294,12 @@ world
 		side
 		{
 			"id" "511"
-			"plane" "(3328 0 224) (4992 0 224) (4992 -1664 224)"
+			"plane" "(5392 -1664 224) (3328 -1664 224) (3328 0 224)"
 			"material" "NATURE/BLENDROCKGRAVEL001A"
 			"uaxis" "[1 0 0 -419] 0.55"
 			"vaxis" "[0 -1 0 0] 0.55"
 			"rotation" "0"
-			"lightmapscale" "16"
+			"lightmapscale" "17"
 			"smoothing_groups" "0"
 			dispinfo
 			{
@@ -6388,7 +6388,7 @@ world
 		side
 		{
 			"id" "512"
-			"plane" "(3328 0 223) (4992 -1664 223) (4992 0 223)"
+			"plane" "(3328 -1664 223) (5392 -1664 223) (5392 0 223)"
 			"material" "NATURE/BLENDROCKGRAVEL001A"
 			"uaxis" "[1 0 0 -419] 0.55"
 			"vaxis" "[0 -1 0 0] 0.55"
@@ -6399,7 +6399,7 @@ world
 		side
 		{
 			"id" "513"
-			"plane" "(3328 0 224) (3328 0 223) (4992 0 224)"
+			"plane" "(5392 0 224) (3328 0 224) (3328 0 223)"
 			"material" "NATURE/BLENDROCKGRAVEL001A"
 			"uaxis" "[1 0 0 0] 0.25"
 			"vaxis" "[0 0 -1 0] 0.25"
@@ -6410,7 +6410,7 @@ world
 		side
 		{
 			"id" "514"
-			"plane" "(4992 0 224) (4992 0 223) (4992 -1664 224)"
+			"plane" "(5392 -1664 224) (5392 0 224) (5392 0 223)"
 			"material" "NATURE/BLENDROCKGRAVEL001A"
 			"uaxis" "[0 -1 0 0] 0.25"
 			"vaxis" "[0 0 -1 0] 0.25"
@@ -6421,7 +6421,7 @@ world
 		side
 		{
 			"id" "515"
-			"plane" "(4992 -1664 224) (4992 -1664 223) (3328 -1664 224)"
+			"plane" "(3328 -1664 224) (5392 -1664 224) (5392 -1664 223)"
 			"material" "NATURE/BLENDROCKGRAVEL001A"
 			"uaxis" "[-1 0 0 0] 0.25"
 			"vaxis" "[0 0 -1 0] 0.25"
@@ -6432,7 +6432,7 @@ world
 		side
 		{
 			"id" "516"
-			"plane" "(3328 -1664 224) (3328 -1664 223) (3328 0 224)"
+			"plane" "(3328 0 224) (3328 -1664 224) (3328 -1664 223)"
 			"material" "NATURE/BLENDROCKGRAVEL001A"
 			"uaxis" "[0 1 0 0] 0.25"
 			"vaxis" "[0 0 -1 0] 0.25"
@@ -6453,12 +6453,12 @@ world
 		side
 		{
 			"id" "517"
-			"plane" "(3328 1664 224) (4992 1664 224) (4992 0 224)"
+			"plane" "(5392 0 224) (3328 0 224) (3328 1664 224)"
 			"material" "NATURE/BLENDROCKGRAVEL001A"
 			"uaxis" "[1 0 0 -419] 0.55"
 			"vaxis" "[0 -1 0 0] 0.55"
 			"rotation" "0"
-			"lightmapscale" "16"
+			"lightmapscale" "17"
 			"smoothing_groups" "0"
 			dispinfo
 			{
@@ -6530,9 +6530,9 @@ world
 				triangle_tags
 				{
 					"row0" "9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9"
-					"row1" "9 9 9 1 1 1 1 9 9 9 9 1 1 1 1 1"
+					"row1" "9 9 9 1 9 1 1 9 9 9 9 1 1 1 1 1"
 					"row2" "9 1 1 1 1 1 1 9 9 9 9 1 1 1 1 1"
-					"row3" "9 1 1 1 1 1 1 9 9 9 1 1 1 0 0 0"
+					"row3" "9 1 1 1 1 1 1 9 9 9 9 1 1 0 0 0"
 					"row4" "1 1 1 1 1 1 1 0 0 0 0 0 0 0 1 9"
 					"row5" "1 9 9 1 1 1 1 1 1 0 0 0 0 9 9 9"
 					"row6" "9 1 1 9 9 1 1 1 1 9 9 9 9 9 9 9"
@@ -6547,7 +6547,7 @@ world
 		side
 		{
 			"id" "518"
-			"plane" "(3328 1664 223) (4992 0 223) (4992 1664 223)"
+			"plane" "(3328 0 223) (5392 0 223) (5392 1664 223)"
 			"material" "NATURE/BLENDROCKGRAVEL001A"
 			"uaxis" "[1 0 0 -419] 0.55"
 			"vaxis" "[0 -1 0 0] 0.55"
@@ -6558,7 +6558,7 @@ world
 		side
 		{
 			"id" "519"
-			"plane" "(3328 1664 224) (3328 1664 223) (4992 1664 224)"
+			"plane" "(5392 1664 224) (3328 1664 224) (3328 1664 223)"
 			"material" "NATURE/BLENDROCKGRAVEL001A"
 			"uaxis" "[1 0 0 0] 0.25"
 			"vaxis" "[0 0 -1 0] 0.25"
@@ -6569,7 +6569,7 @@ world
 		side
 		{
 			"id" "520"
-			"plane" "(4992 1664 224) (4992 1664 223) (4992 0 224)"
+			"plane" "(5392 0 224) (5392 1664 224) (5392 1664 223)"
 			"material" "NATURE/BLENDROCKGRAVEL001A"
 			"uaxis" "[0 -1 0 0] 0.25"
 			"vaxis" "[0 0 -1 0] 0.25"
@@ -6580,7 +6580,7 @@ world
 		side
 		{
 			"id" "521"
-			"plane" "(4992 0 224) (4992 0 223) (3328 0 224)"
+			"plane" "(3328 0 224) (5392 0 224) (5392 0 223)"
 			"material" "NATURE/BLENDROCKGRAVEL001A"
 			"uaxis" "[-1 0 0 0] 0.25"
 			"vaxis" "[0 0 -1 0] 0.25"
@@ -6591,7 +6591,7 @@ world
 		side
 		{
 			"id" "522"
-			"plane" "(3328 0 224) (3328 0 223) (3328 1664 224)"
+			"plane" "(3328 1664 224) (3328 0 224) (3328 0 223)"
 			"material" "NATURE/BLENDROCKGRAVEL001A"
 			"uaxis" "[0 1 0 0] 0.25"
 			"vaxis" "[0 0 -1 0] 0.25"
@@ -6989,6 +6989,483 @@ world
 			"visgroupautoshown" "1"
 		}
 	}
+	solid
+	{
+		"id" "54223"
+		side
+		{
+			"id" "3716"
+			"plane" "(-752 -1648 832) (1296 -1648 832) (1296 -1664 832)"
+			"material" "TOOLS/TOOLSNODRAW"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 -1 0 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "3715"
+			"plane" "(-752 -1664 -1216) (1296 -1664 -1216) (1296 -1648 -1216)"
+			"material" "TOOLS/TOOLSNODRAW"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 -1 0 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "3714"
+			"plane" "(-752 -1648 832) (-752 -1664 832) (-752 -1664 -1216)"
+			"material" "TOOLS/TOOLSNODRAW"
+			"uaxis" "[0 1 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "3713"
+			"plane" "(1296 -1648 -1216) (1296 -1664 -1216) (1296 -1664 832)"
+			"material" "TOOLS/TOOLSNODRAW"
+			"uaxis" "[0 1 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "3712"
+			"plane" "(1296 -1648 832) (-752 -1648 832) (-752 -1648 -1216)"
+			"material" "NATURE/BLENDROCKGRAVEL001A"
+			"uaxis" "[1 0 0 -419] 0.55"
+			"vaxis" "[0 0 -1 0] 0.55"
+			"rotation" "0"
+			"lightmapscale" "40"
+			"smoothing_groups" "0"
+			dispinfo
+			{
+				"power" "3"
+				"startposition" "[-752 -1648 -1216]"
+				"flags" "0"
+				"elevation" "0"
+				"subdiv" "0"
+				normals
+				{
+					"row0" "0 0 0 0 0 0 0 1 0 0 1 0 0 1 0 0 1 0 0 -1 0 0 -1 0 0 -1 0"
+					"row1" "0 0 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 -1 0 0 -1 0"
+					"row2" "0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 -1 0"
+					"row3" "0 1 0 0 1 0 0 1 0 0 1 0 0 0.999999 0 0 1 0 0 1 0 0 -1 0 0 -1 0"
+					"row4" "0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0"
+					"row5" "0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0"
+					"row6" "0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0"
+					"row7" "0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0"
+					"row8" "0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0"
+				}
+				distances
+				{
+					"row0" "0 0 14.2241 95.9969 121.361 68.3385 86.688 125 81.5989"
+					"row1" "0 24.0828 94.201 150.965 113.748 59.4373 36.7587 42.2065 69.8206"
+					"row2" "32.5913 159.616 216.824 164.541 15.8558 42.4745 105.476 52.3467 94.5321"
+					"row3" "164.449 298.105 297.448 149.096 0.183472 1.95105 79.875 45.7855 160.987"
+					"row4" "225.543 294.246 217.034 93.6179 27.1465 14.5635 27.2817 123.692 186.526"
+					"row5" "349.036 238.38 110.797 121.577 54.6592 27.2817 40 121.364 159.155"
+					"row6" "401.091 281.731 149.522 188.521 109.485 28.5177 53.8538 96.6649 119.586"
+					"row7" "478.442 357.628 216.239 202.925 96.9658 55.7422 94.2534 111.418 93.7108"
+					"row8" "459.101 395.7 203.3 108.388 28.4402 83.5229 133.987 162.375 148.232"
+				}
+				offsets
+				{
+					"row0" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row1" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row2" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row3" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row4" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row5" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row6" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row7" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row8" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+				}
+				offset_normals
+				{
+					"row0" "0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0"
+					"row1" "0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0"
+					"row2" "0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0"
+					"row3" "0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0"
+					"row4" "0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0"
+					"row5" "0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0"
+					"row6" "0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0"
+					"row7" "0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0"
+					"row8" "0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0"
+				}
+				alphas
+				{
+					"row0" "0 0 0 0 0 0 0 0 0"
+					"row1" "0 0 0 0 0 0 0 0 0"
+					"row2" "0 0 0 0 0 0 0 0 0"
+					"row3" "175 150 100 175 0 0 0 0 0"
+					"row4" "25 0 75 0 0 0 0 0 0"
+					"row5" "0 0 0 0 0 0 0 0 0"
+					"row6" "0 0 0 0 0 0 0 0 0"
+					"row7" "0 0 0 0 0 0 0 0 0"
+					"row8" "0 0 0 0 0 0 0 0 0"
+				}
+				triangle_tags
+				{
+					"row0" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row1" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row2" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row3" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row4" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row5" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row6" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row7" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+				}
+				allowed_verts
+				{
+					"10" "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1"
+				}
+			}
+		}
+		side
+		{
+			"id" "3711"
+			"plane" "(1296 -1664 -1216) (-752 -1664 -1216) (-752 -1664 832)"
+			"material" "TOOLS/TOOLSNODRAW"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		editor
+		{
+			"color" "0 121 194"
+			"visgroupshown" "1"
+			"visgroupautoshown" "1"
+		}
+	}
+	solid
+	{
+		"id" "54237"
+		side
+		{
+			"id" "3728"
+			"plane" "(1296 -1648 832) (3344 -1648 832) (3344 -1664 832)"
+			"material" "TOOLS/TOOLSNODRAW"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 -1 0 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "3727"
+			"plane" "(1296 -1664 -1216) (3344 -1664 -1216) (3344 -1648 -1216)"
+			"material" "TOOLS/TOOLSNODRAW"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 -1 0 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "3726"
+			"plane" "(1296 -1648 832) (1296 -1664 832) (1296 -1664 -1216)"
+			"material" "TOOLS/TOOLSNODRAW"
+			"uaxis" "[0 1 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "3725"
+			"plane" "(3344 -1648 -1216) (3344 -1664 -1216) (3344 -1664 832)"
+			"material" "TOOLS/TOOLSNODRAW"
+			"uaxis" "[0 1 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "3724"
+			"plane" "(3344 -1648 832) (1296 -1648 832) (1296 -1648 -1216)"
+			"material" "NATURE/BLENDROCKGRAVEL001A"
+			"uaxis" "[1 0 0 -46.6363] 0.55"
+			"vaxis" "[0 0 -1 0] 0.55"
+			"rotation" "0"
+			"lightmapscale" "40"
+			"smoothing_groups" "0"
+			dispinfo
+			{
+				"power" "3"
+				"startposition" "[1296 -1648 -1216]"
+				"flags" "0"
+				"elevation" "0"
+				"subdiv" "0"
+				normals
+				{
+					"row0" "0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0"
+					"row1" "0 1 0 0 1 0 0 1 0 0 1 0 0 0 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0"
+					"row2" "0 1 0 0 1 0 0 1 0 0 1 0 0 0 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0"
+					"row3" "0 1 0 0 1 0 0 1 0 0 1 0 0 0 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0"
+					"row4" "0 1 0 0 1 0 0 1 0 0 1 0 0 0 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0"
+					"row5" "0 1 0 0 1 0 0 1 0 0 1 0 0 0 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0"
+					"row6" "0 1 0 0 1 0 0 1 0 0 1 0 0 0 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0"
+					"row7" "0 1 0 0 1 0 0 1 0 0 1 0 0 0 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0"
+					"row8" "0 1 0 0 1 0 0 1 0 0 1 0 0 0 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0"
+				}
+				distances
+				{
+					"row0" "459.101 395.7 203.3 108.388 28.4402 83.5229 133.987 162.375 148.232"
+					"row1" "434.569 377.794 243.971 92.7656 0 56.2517 94.5635 198.1 254.972"
+					"row2" "348.093 346.503 228.004 118.25 0 14.4191 27.1373 173.657 264.797"
+					"row3" "318.159 277.538 131.46 48.4092 0 29.0013 54.5321 115.471 167.081"
+					"row4" "325.956 283.611 165.579 57.7863 0 54.5321 80 107.973 92.2444"
+					"row5" "305.82 368.527 287 157.414 0 57.9628 108.188 111.642 94.129"
+					"row6" "254.37 310.768 279.307 147.549 0 54.5321 80 109.787 94.1097"
+					"row7" "214.966 233.308 188.853 109.855 0 43.6261 81.6604 97.9446 94.11"
+					"row8" "238.057 233.479 146.313 83.4159 0 27.2817 40 109.633 148.224"
+				}
+				offsets
+				{
+					"row0" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row1" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row2" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row3" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row4" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row5" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row6" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row7" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row8" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+				}
+				offset_normals
+				{
+					"row0" "0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0"
+					"row1" "0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0"
+					"row2" "0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0"
+					"row3" "0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0"
+					"row4" "0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0"
+					"row5" "0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0"
+					"row6" "0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0"
+					"row7" "0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0"
+					"row8" "0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0"
+				}
+				alphas
+				{
+					"row0" "0 0 0 0 0 0 0 0 0"
+					"row1" "0 0 0 0 0 0 0 0 0"
+					"row2" "0 0 0 0 0 0 0 0 0"
+					"row3" "0 0 0 0 0 0 0 0 0"
+					"row4" "0 0 0 0 0 0 0 0 0"
+					"row5" "0 0 0 0 0 0 0 0 0"
+					"row6" "0 0 0 75 0 0 0 0 0"
+					"row7" "75 75 255 100 0 0 0 0 0"
+					"row8" "125 150 0 0 0 0 0 0 0"
+				}
+				triangle_tags
+				{
+					"row0" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row1" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row2" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row3" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row4" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row5" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row6" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row7" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+				}
+				allowed_verts
+				{
+					"10" "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1"
+				}
+			}
+		}
+		side
+		{
+			"id" "3723"
+			"plane" "(3344 -1664 -1216) (1296 -1664 -1216) (1296 -1664 832)"
+			"material" "TOOLS/TOOLSNODRAW"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		editor
+		{
+			"color" "0 121 194"
+			"visgroupshown" "1"
+			"visgroupautoshown" "1"
+		}
+	}
+	solid
+	{
+		"id" "54239"
+		side
+		{
+			"id" "3740"
+			"plane" "(3344 -1648 832) (5392 -1648 832) (5392 -1664 832)"
+			"material" "TOOLS/TOOLSNODRAW"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 -1 0 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "3739"
+			"plane" "(3344 -1664 -1216) (5392 -1664 -1216) (5392 -1648 -1216)"
+			"material" "TOOLS/TOOLSNODRAW"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 -1 0 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "3738"
+			"plane" "(3344 -1648 832) (3344 -1664 832) (3344 -1664 -1216)"
+			"material" "TOOLS/TOOLSNODRAW"
+			"uaxis" "[0 1 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "3737"
+			"plane" "(5392 -1648 -1216) (5392 -1664 -1216) (5392 -1664 832)"
+			"material" "TOOLS/TOOLSNODRAW"
+			"uaxis" "[0 1 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "3736"
+			"plane" "(5392 -1648 832) (3344 -1648 832) (3344 -1648 -1216)"
+			"material" "NATURE/BLENDROCKGRAVEL001A"
+			"uaxis" "[1 0 0 -186.272] 0.55"
+			"vaxis" "[0 0 -1 0] 0.55"
+			"rotation" "0"
+			"lightmapscale" "40"
+			"smoothing_groups" "0"
+			dispinfo
+			{
+				"power" "3"
+				"startposition" "[3344 -1648 -1216]"
+				"flags" "0"
+				"elevation" "0"
+				"subdiv" "0"
+				normals
+				{
+					"row0" "0 1 0 0 1 0 0 1 0 0 1 0 0 0 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0"
+					"row1" "0 1 0 0 1 0 0 1 0 0 1 0 0 0 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0"
+					"row2" "0 1 0 0 1 0 0 1 0 0 0 0 0 0 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0"
+					"row3" "0 1 0 0 1 0 0 1 0 0 0 0 0 0 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0"
+					"row4" "0 1 0 0 1 0 0 1 0 0 0 0 0 0 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0"
+					"row5" "0 1 0 0 1 0 0 1 0 0 0 0 0 0 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0"
+					"row6" "0 1 0 0 1 0 0 1 0 0 0 0 0 0 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0"
+					"row7" "0 1 0 0 1 0 0 1 0 0 0 0 0 0 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0"
+					"row8" "0 1 0 0 1 0 0 1 0 0 0 0 0 0 0 0 -1 0 0 -1 0 0 -1 0 0 -1 0"
+				}
+				distances
+				{
+					"row0" "238.057 233.479 146.313 83.4159 0 27.2817 40 109.633 148.224"
+					"row1" "242.804 222.806 98.7256 28.8237 0 14.5635 27.2817 148.792 228.369"
+					"row2" "244.942 246.395 85.9272 0 0 14.5635 27.2817 186.557 306.85"
+					"row3" "242.743 232.141 73.9629 0 0 27.2817 40 192.813 291.338"
+					"row4" "213.729 239.764 81.849 0 0 28.9436 54.2776 167.969 267.452"
+					"row5" "211.834 209.931 107.341 0 0 41.6694 67.1373 187 254.446"
+					"row6" "148.118 186.791 68.8142 0 0 56.3354 94.2507 183.078 227.38"
+					"row7" "162.548 111.901 26.2784 0 0 41.8452 67.2504 161.936 227.371"
+					"row8" "134.115 108.951 13.5602 0 0 14.5635 27.2817 133.856 186.734"
+				}
+				offsets
+				{
+					"row0" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row1" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row2" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row3" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row4" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row5" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row6" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row7" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row8" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+				}
+				offset_normals
+				{
+					"row0" "0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0"
+					"row1" "0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0"
+					"row2" "0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0"
+					"row3" "0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0"
+					"row4" "0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0"
+					"row5" "0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0"
+					"row6" "0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0"
+					"row7" "0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0"
+					"row8" "0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0"
+				}
+				alphas
+				{
+					"row0" "125 150 0 0 0 0 0 0 0"
+					"row1" "0 0 0 0 0 0 0 0 0"
+					"row2" "0 0 0 0 0 0 0 0 0"
+					"row3" "0 0 0 0 0 0 0 0 0"
+					"row4" "0 0 0 0 0 0 0 0 0"
+					"row5" "0 0 0 0 0 0 0 0 0"
+					"row6" "0 0 0 0 0 0 0 0 0"
+					"row7" "0 0 0 0 0 0 0 0 0"
+					"row8" "0 0 0 0 0 0 0 0 0"
+				}
+				triangle_tags
+				{
+					"row0" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row1" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row2" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row3" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row4" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row5" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row6" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+					"row7" "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+				}
+				allowed_verts
+				{
+					"10" "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1"
+				}
+			}
+		}
+		side
+		{
+			"id" "3735"
+			"plane" "(5392 -1664 -1216) (3344 -1664 -1216) (3344 -1664 832)"
+			"material" "TOOLS/TOOLSNODRAW"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		editor
+		{
+			"color" "0 121 194"
+			"visgroupshown" "1"
+			"visgroupautoshown" "1"
+		}
+	}
 }
 entity
 {
@@ -7259,6 +7736,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"disableshadows" "1"
 	"distance" "125"
 	"DoBreachedShout" "1"
@@ -8025,6 +8503,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "7"
+	"CustomMaxHealth" "1800"
 	"dentamount" "1"
 	"disableshadows" "1"
 	"distance" "125"
@@ -8063,6 +8542,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "3"
 	"maxoffset" "0 0 0"
@@ -8099,6 +8579,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "4"
 	"maxoffset" "0 0 0"
@@ -8135,6 +8616,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "1"
 	"maxoffset" "0 0 0"
@@ -8440,6 +8922,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"disableshadows" "1"
 	"distance" "125"
 	"DoBreachedShout" "1"
@@ -8503,6 +8986,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "1"
 	"maxoffset" "0 0 0"
@@ -8539,6 +9023,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "1"
 	"maxoffset" "0 0 0"
@@ -11449,6 +11934,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"MaxLiveAliens" "1"
 	"maxoffset" "0 0 0"
 	"minoffset" "0 0 0"
@@ -14715,6 +15201,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"MaxLiveAliens" "1"
 	"maxoffset" "0 0 0"
 	"minoffset" "0 0 0"
@@ -14748,6 +15235,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"MaxLiveAliens" "1"
 	"maxoffset" "0 0 0"
 	"minoffset" "0 0 0"
@@ -14781,6 +15269,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"MaxLiveAliens" "2"
 	"maxoffset" "0 0 0"
 	"minoffset" "0 0 0"
@@ -15566,6 +16055,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"MaxLiveAliens" "2"
 	"maxoffset" "0 0 0"
 	"minoffset" "0 0 0"
@@ -15597,6 +16087,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"MaxLiveAliens" "2"
 	"maxoffset" "0 0 0"
 	"minoffset" "0 0 0"
@@ -15628,6 +16119,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"MaxLiveAliens" "2"
 	"maxoffset" "0 0 0"
 	"minoffset" "0 0 0"
@@ -15891,6 +16383,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -15918,6 +16411,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -15945,6 +16439,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -15972,6 +16467,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -16205,6 +16701,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -16232,6 +16729,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -16468,6 +16966,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -16494,6 +16993,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -16520,6 +17020,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -16546,6 +17047,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -16572,6 +17074,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -16598,6 +17101,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -16624,6 +17128,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -16650,6 +17155,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -16676,6 +17182,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -16705,6 +17212,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"MaxLiveAliens" "3"
 	"maxoffset" "0 0 0"
 	"minoffset" "0 0 0"
@@ -16734,6 +17242,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"radius" "539"
 	"renderamt" "255"
@@ -16761,6 +17270,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"radius" "539"
 	"renderamt" "255"
@@ -16791,6 +17301,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"MaxLiveAliens" "3"
 	"maxoffset" "0 0 0"
 	"minoffset" "0 0 0"
@@ -16820,6 +17331,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -17171,6 +17683,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"MaxLiveAliens" "1"
 	"maxoffset" "0 0 0"
 	"minoffset" "0 0 0"
@@ -17228,6 +17741,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -17253,6 +17767,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -17366,6 +17881,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"disableshadows" "1"
 	"distance" "125"
 	"DoBreachedShout" "1"
@@ -17530,6 +18046,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"disableshadows" "1"
 	"distance" "125"
 	"DoBreachedShout" "1"
@@ -18805,6 +19322,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -18832,6 +19350,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -18859,6 +19378,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -18886,6 +19406,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -18913,6 +19434,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -18940,6 +19462,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -20606,6 +21129,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"radius" "512"
 	"renderamt" "255"
@@ -20635,6 +21159,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"radius" "256"
 	"renderamt" "255"
@@ -20666,6 +21191,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "3"
 	"maxoffset" "0 0 0"
@@ -20821,6 +21347,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -20847,6 +21374,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -20987,6 +21515,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -21014,6 +21543,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -21041,6 +21571,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -21203,6 +21734,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"radius" "512"
 	"renderamt" "255"
@@ -21599,6 +22131,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"radius" "539"
 	"renderamt" "255"
@@ -21821,6 +22354,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -21848,6 +22382,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -21875,6 +22410,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -22278,6 +22814,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -22305,6 +22842,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -22464,6 +23002,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "1"
 	"maxoffset" "0 0 0"
@@ -22554,6 +23093,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"radius" "256"
 	"renderamt" "255"
@@ -22583,6 +23123,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"radius" "512"
 	"renderamt" "255"
@@ -22611,6 +23152,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -22638,6 +23180,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -22665,6 +23208,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -22692,6 +23236,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"physdamagescale" "1.0"
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
@@ -22715,6 +23260,7 @@ entity
 {
 	"id" "949"
 	"classname" "asw_tech_marine_req"
+	"StatsMusicFailure" "asw_song.StatsFailTech"
 	"targetname" "techreq"
 	"origin" "4440 -280 180"
 	editor
@@ -83408,13 +83954,104 @@ entity
 		"logicalpos" "[0 9000]"
 	}
 }
+entity
+{
+	"id" "54346"
+	"classname" "asw_trigger_fall"
+	"origin" "1888 -792 -688"
+	"spawnflags" "2"
+	"StartDisabled" "0"
+	solid
+	{
+		"id" "54340"
+		side
+		{
+			"id" "3752"
+			"plane" "(-1712 1600 -144) (5488 1600 -144) (5488 -3184 -144)"
+			"material" "TOOLS/TOOLSTRIGGER"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 -1 0 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "3751"
+			"plane" "(-1712 -3184 -1232) (5488 -3184 -1232) (5488 1600 -1232)"
+			"material" "TOOLS/TOOLSTRIGGER"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 -1 0 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "3750"
+			"plane" "(-1712 1600 -144) (-1712 -3184 -144) (-1712 -3184 -1232)"
+			"material" "TOOLS/TOOLSTRIGGER"
+			"uaxis" "[0 1 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "3749"
+			"plane" "(5488 1600 -1232) (5488 -3184 -1232) (5488 -3184 -144)"
+			"material" "TOOLS/TOOLSTRIGGER"
+			"uaxis" "[0 1 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "3748"
+			"plane" "(5488 1600 -144) (-1712 1600 -144) (-1712 1600 -1232)"
+			"material" "TOOLS/TOOLSTRIGGER"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "3747"
+			"plane" "(5488 -3184 -1232) (-1712 -3184 -1232) (-1712 -3184 -144)"
+			"material" "TOOLS/TOOLSTRIGGER"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		editor
+		{
+			"color" "220 30 220"
+			"visgroupshown" "1"
+			"visgroupautoshown" "1"
+		}
+	}
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 4000]"
+	}
+}
 cameras
 {
 	"activecamera" "0"
 	camera
 	{
-		"position" "[2673.94 -905.68 653.165]"
-		"look" "[2717.8 -725.714 461.697]"
+		"position" "[2849.2 -1036.85 843.008]"
+		"look" "[3004.08 -919.697 660.644]"
 	}
 	camera
 	{
