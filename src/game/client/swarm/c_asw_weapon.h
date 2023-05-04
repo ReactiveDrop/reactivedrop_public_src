@@ -15,6 +15,7 @@ class C_ASW_Marine;
 class CASW_WeaponInfo;
 class C_BreakableProp;
 class CASW_EquipItem;
+class C_RD_Weapon_Accessory;
 
 extern ConVar rd_ground_shooting;
 
