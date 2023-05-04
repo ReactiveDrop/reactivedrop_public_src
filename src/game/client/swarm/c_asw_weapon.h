@@ -209,6 +209,8 @@ public:
 	int m_nUseIconTextureID;
 
 	bool m_bWeaponCreated;
+	CHandle<C_RD_Weapon_Accessory> m_hWeaponAccessory[RD_ITEM_MAX_ACCESSORIES + 1];
+	void MaybeAddStrangeDevice( int i, SteamItemDef_t defID );
 
 	// laser pointer
 	virtual bool ShouldShowLaserPointer();

@@ -55,9 +55,19 @@ COMPILE_TIME_ASSERT( ReactiveDropInventory::g_InventorySlotNames[RD_STEAM_INVENT
 
 #ifdef CLIENT_DLL
 ConVar rd_debug_inventory_dynamic_props( "cl_debug_inventory_dynamic_props", "0", FCVAR_NONE, "print debugging messages about dynamic property updates" );
+#define GET_INVENTORY_OR_BAIL \
+	ISteamInventory *pInventory = SteamInventory(); \
+	Assert( pInventory ); \
+	if ( !pInventory ) \
+		return
 #else
 extern ConVar rd_dedicated_server_language;
 ConVar rd_debug_inventory_dynamic_props( "sv_debug_inventory_dynamic_props", "0", FCVAR_NONE, "print debugging messages about dynamic property updates" );
+#define GET_INVENTORY_OR_BAIL \
+	ISteamInventory *pInventory = engine->IsDedicatedServer() ? SteamGameServerInventory() : SteamInventory(); \
+	Assert( pInventory ); \
+	if ( !pInventory ) \
+		return
 #endif
 
 class CSteamItemIcon;
@@ -67,9 +77,9 @@ static CUtlStringMap<CSteamItemIcon *> s_ItemIcons( false );
 static KeyValues *s_pItemDefCache = NULL;
 static bool s_bLoadedItemDefs = false;
 
-static bool DynamicPropertyAllowsArbitraryValues( const char *szPropertyName )
+static fieldtype_t DynamicPropertyDataType( const char *szPropertyName )
 {
-	return false;
+	return FIELD_INTEGER64;
 }
 
 static class CRD_Inventory_Manager final : public CAutoGameSystem, public CGameEventListener
@@ -81,36 +91,28 @@ public:
 
 	~CRD_Inventory_Manager()
 	{
-		ISteamInventory *pInventory = SteamInventory();
-#ifdef GAME_DLL
-		if ( engine->IsDedicatedServer() )
-		{
-			pInventory = SteamGameServerInventory();
-		}
-#endif
-		if ( pInventory )
-		{
-			pInventory->DestroyResult( m_DebugPrintInventoryResult );
+		GET_INVENTORY_OR_BAIL;
+
+		pInventory->DestroyResult( m_DebugPrintInventoryResult );
 #ifdef CLIENT_DLL
-			pInventory->DestroyResult( m_PromotionalItemsResult );
-			for ( int i = 0; i < NELEMS( m_PlaytimeItemGeneratorResult ); i++ )
-			{
-				pInventory->DestroyResult( m_PlaytimeItemGeneratorResult[i] );
-			}
-			pInventory->DestroyResult( m_InspectItemResult );
-			pInventory->DestroyResult( m_ExchangeItemsResult );
-			pInventory->DestroyResult( m_DynamicPropertyUpdateResult );
-			for ( int iType = 0; iType < NUM_EQUIP_SLOT_TYPES; iType++ )
-			{
-				pInventory->DestroyResult( m_PreparingEquipNotification[iType] );
-				FOR_EACH_VEC( m_PendingEquipSend[iType], i )
-				{
-					m_PendingEquipSend[iType][i]->deleteThis();
-				}
-				m_PendingEquipSend[iType].Purge();
-			}
-#endif
+		pInventory->DestroyResult( m_PromotionalItemsResult );
+		for ( int i = 0; i < NELEMS( m_PlaytimeItemGeneratorResult ); i++ )
+		{
+			pInventory->DestroyResult( m_PlaytimeItemGeneratorResult[i] );
 		}
+		pInventory->DestroyResult( m_InspectItemResult );
+		pInventory->DestroyResult( m_ExchangeItemsResult );
+		pInventory->DestroyResult( m_DynamicPropertyUpdateResult );
+		for ( int iType = 0; iType < NUM_EQUIP_SLOT_TYPES; iType++ )
+		{
+			pInventory->DestroyResult( m_PreparingEquipNotification[iType] );
+			FOR_EACH_VEC( m_PendingEquipSend[iType], i )
+			{
+				m_PendingEquipSend[iType][i]->deleteThis();
+			}
+			m_PendingEquipSend[iType].Purge();
+		}
+#endif
 	}
 
 	void PostInit() override
@@ -203,9 +205,9 @@ public:
 
 			}
 			m_PendingEquipSend[iType].Purge();
-
-			CommitDynamicProperties();
 		}
+
+		CommitDynamicProperties();
 #endif
 	}
 
@@ -245,12 +247,7 @@ public:
 			// still try to send networked notification (we might have gone online since startup)
 		}
 
-		ISteamInventory *pInventory = SteamInventory();
-		Assert( pInventory );
-		if ( !pInventory )
-		{
-			return;
-		}
+		GET_INVENTORY_OR_BAIL;
 
 		pInventory->DestroyResult( m_PreparingEquipNotification[EQUIP_SLOT_TYPE_STATIC] );
 		m_PreparingEquipNotification[EQUIP_SLOT_TYPE_STATIC] = k_SteamInventoryResultInvalid;
@@ -311,12 +308,7 @@ public:
 			return;
 		}
 
-		ISteamInventory *pInventory = SteamInventory();
-		Assert( pInventory );
-		if ( !pInventory )
-		{
-			return;
-		}
+		GET_INVENTORY_OR_BAIL;
 
 		EResult eResult = pInventory->GetResultStatus( m_PreparingEquipNotification[iType] );
 		if ( eResult != k_EResultOK )
@@ -1153,6 +1145,251 @@ public:
 		}
 	}
 
+#ifdef CLIENT_DLL
+	enum CraftItemType_t
+	{
+		// craft an item via a predefined recipe. notifies user when complete. modal while in progress.
+		CRAFT_RECIPE,
+		// attach an accessory to an item. modal while in progress. updates equip slots to use new ID. forces a dynamic property update for the accessory.
+		CRAFT_ACCESSORY,
+		// convert currency to items or items to currency. modal while in progress.
+		CRAFT_SHOP,
+		// claiming a currency reward. modal while in progress.
+		CRAFT_CLAIM_MINOR,
+		// claiming an item or bundle reward. modal while in progress. notifies user when complete.
+		CRAFT_CLAIM_MAJOR,
+		// behind-the-scenes item exchange. no notification.
+		CRAFT_BTS,
+		// set dynamic properties on newly created item to 0. modal while in progress. notifies user when complete (replaces notification from craft task that queued this).
+		CRAFT_DYNAMIC_PROPERTY_INIT,
+	};
+	struct CraftItemTask_t
+	{
+		~CraftItemTask_t()
+		{
+			ISteamInventory *pInventory = SteamInventory();
+			if ( pInventory )
+			{
+				pInventory->DestroyResult( m_hResult );
+			}
+		}
+
+		CraftItemType_t m_Type;
+		SteamItemDef_t m_iAccessoryDef{ 0 }; // used for BaseModUI::ItemShowcase::Mode_t if m_Type is CRAFT_DYNAMIC_PROPERTY_INIT.
+		SteamItemInstanceID_t m_iReplaceItemInstance{ k_SteamItemInstanceIDInvalid };
+		SteamInventoryResult_t m_hResult{ k_SteamInventoryResultInvalid };
+	};
+	CUtlVectorAutoPurge<CraftItemTask_t *> m_CraftingQueue;
+
+	bool HasModalCraftingTask()
+	{
+		FOR_EACH_VEC( m_CraftingQueue, i )
+		{
+			switch ( m_CraftingQueue[i]->m_Type )
+			{
+			case CRAFT_RECIPE:
+			case CRAFT_ACCESSORY:
+			case CRAFT_SHOP:
+			case CRAFT_CLAIM_MINOR:
+			case CRAFT_CLAIM_MAJOR:
+			case CRAFT_DYNAMIC_PROPERTY_INIT:
+				return true;
+			case CRAFT_BTS:
+				break;
+			default:
+				Assert( !"unhandled crafting task type" );
+				break;
+			}
+		}
+
+		return false;
+	}
+	void OnCraftingTaskCompleted( CraftItemTask_t *pTask )
+	{
+		GET_INVENTORY_OR_BAIL;
+
+		DebugPrintResult( pTask->m_hResult );
+
+		EResult eResult = pInventory->GetResultStatus( pTask->m_hResult );
+		if ( eResult != k_EResultOK )
+		{
+			if ( !HasModalCraftingTask() )
+			{
+				Assert( !"TODO: hide modal crafting wait screen" );
+			}
+
+			Warning( "Crafting task (type %d) failed with EResult %d %s\n", pTask->m_Type, eResult, UTIL_RD_EResultToString( eResult ) );
+			Assert( !"TODO: display error message for failed crafting task" );
+
+			return;
+		}
+
+		switch ( pTask->m_Type )
+		{
+		case CRAFT_RECIPE:
+			InitDynamicPropertiesAndShowcase( pTask, BaseModUI::ItemShowcase::MODE_ITEM_CRAFTED );
+			break;
+		case CRAFT_ACCESSORY:
+			ReplaceEquippedItemInstance( pTask->m_iReplaceItemInstance, pTask->m_hResult, 0 );
+			InitDynamicPropertiesAndShowcase( pTask, BaseModUI::ItemShowcase::MODE_ITEM_UPGRADED );
+			break;
+		case CRAFT_SHOP:
+			Assert( !"TODO: update inventory/currency status" );
+			break;
+		case CRAFT_CLAIM_MINOR:
+			Assert( !"TODO: update inventory/currency status" );
+			break;
+		case CRAFT_CLAIM_MAJOR:
+			InitDynamicPropertiesAndShowcase( pTask, BaseModUI::ItemShowcase::MODE_ITEM_CLAIMED );
+			break;
+		case CRAFT_BTS:
+			break;
+		case CRAFT_DYNAMIC_PROPERTY_INIT:
+			BaseModUI::ItemShowcase::ShowItems( pTask->m_hResult, 0, -1, ( BaseModUI::ItemShowcase::Mode_t )pTask->m_iAccessoryDef );
+			break;
+		default:
+			Assert( !"unhandled crafting task type" );
+			break;
+		}
+
+		if ( !HasModalCraftingTask() )
+		{
+			// the just-completed task is already removed from the list before this function is called, but we may have added an additional modal task
+			Assert( !"TODO: hide modal crafting wait screen" );
+		}
+	}
+	void InitDynamicPropertiesAndShowcase( CraftItemTask_t *pTask, BaseModUI::ItemShowcase::Mode_t iMode )
+	{
+		GET_INVENTORY_OR_BAIL;
+
+		SteamInventoryUpdateHandle_t hUpdate = k_SteamInventoryUpdateHandleInvalid;
+
+		uint32 nCount{};
+		pInventory->GetResultItems( pTask->m_hResult, NULL, &nCount );
+		CUtlVector<SteamItemDetails_t> items;
+		items.AddMultipleToTail( nCount );
+		pInventory->GetResultItems( pTask->m_hResult, items.Base(), &nCount );
+
+		FOR_EACH_VEC( items, i )
+		{
+			if ( items[i].m_unFlags & k_ESteamItemRemoved )
+				continue;
+
+			ReactiveDropInventory::ItemInstance_t instance{ pTask->m_hResult, uint32( i ) };
+			const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( instance.ItemDefID );
+			Assert( pDef );
+			if ( !pDef )
+				continue;
+
+			bool bHeldBack = false;
+
+			FOR_EACH_VEC( pDef->CompressedDynamicProps, j )
+			{
+				if ( !instance.DynamicProps.Defined( pDef->CompressedDynamicProps[j] ) )
+				{
+					Assert( DynamicPropertyDataType( pDef->CompressedDynamicProps[j] ) == FIELD_INTEGER64 );
+					if ( hUpdate == k_SteamInventoryUpdateHandleInvalid )
+					{
+						hUpdate = pInventory->StartUpdateProperties();
+						Assert( hUpdate != k_SteamInventoryUpdateHandleInvalid );
+					}
+
+					if ( rd_debug_inventory_dynamic_props.GetBool() )
+						Msg( "[C] Initializing missing dynamic property '%s' on item %llu (%d %s) to 0.\n", pDef->CompressedDynamicProps[j], instance.ItemID, instance.ItemDefID, pDef->Name.Get() );
+
+					bHeldBack = true;
+					pInventory->SetProperty( hUpdate, instance.ItemID, pDef->CompressedDynamicProps[j], 0ll );
+				}
+			}
+
+			if ( !pDef->AccessoryTag.IsEmpty() && instance.Tags.Defined( pDef->AccessoryTag ) )
+			{
+				const CUtlStringList &accessories = instance.Tags[pDef->AccessoryTag];
+				FOR_EACH_VEC( accessories, j )
+				{
+					SteamItemDef_t accessoryID = V_atoi( accessories[i] );
+					Assert( accessoryID > 0 && accessoryID < 1000000000 );
+					const ReactiveDropInventory::ItemDef_t *pAccessoryDef = ReactiveDropInventory::GetItemDef( accessoryID );
+					Assert( pAccessoryDef );
+					if ( !pAccessoryDef )
+						continue;
+
+					FOR_EACH_VEC( pAccessoryDef->CompressedDynamicProps, k )
+					{
+						if ( !instance.DynamicProps.Defined( pAccessoryDef->CompressedDynamicProps[k] ) )
+						{
+							Assert( DynamicPropertyDataType( pAccessoryDef->CompressedDynamicProps[k] ) == FIELD_INTEGER64 );
+							if ( hUpdate == k_SteamInventoryUpdateHandleInvalid )
+							{
+								hUpdate = pInventory->StartUpdateProperties();
+								Assert( hUpdate != k_SteamInventoryUpdateHandleInvalid );
+							}
+
+							if ( rd_debug_inventory_dynamic_props.GetBool() )
+								Msg( "[C] Initializing missing dynamic property '%s' on item %llu (%d %s) (from accessory %d %s) to 0.\n", pAccessoryDef->CompressedDynamicProps[k], instance.ItemID, instance.ItemDefID, pDef->Name.Get(), accessoryID, pAccessoryDef->Name.Get() );
+
+							bHeldBack = true;
+							pInventory->SetProperty( hUpdate, instance.ItemID, pAccessoryDef->CompressedDynamicProps[k], 0ll );
+						}
+					}
+				}
+			}
+
+			if ( !bHeldBack )
+			{
+				if ( rd_debug_inventory_dynamic_props.GetBool() )
+					Msg( "[C] No dynamic property init needed for item %llu (%d %s).\n", instance.ItemID, instance.ItemDefID, pDef->Name.Get() );
+
+				BaseModUI::ItemShowcase::ShowItems( pTask->m_hResult, i, 1, iMode );
+			}
+		}
+
+		if ( hUpdate != k_SteamInventoryUpdateHandleInvalid )
+		{
+			SteamInventoryResult_t hResult{ k_SteamInventoryResultInvalid };
+			pInventory->SubmitUpdateProperties( hUpdate, &hResult );
+
+			m_CraftingQueue.AddToTail( new CraftItemTask_t
+				{
+					CRAFT_DYNAMIC_PROPERTY_INIT,
+					SteamItemDef_t( iMode ),
+					k_SteamItemInstanceIDInvalid,
+					hResult,
+				} );
+		}
+	}
+	void ReplaceEquippedItemInstance( SteamItemInstanceID_t iOldInstance, SteamInventoryResult_t hResult, uint32 index )
+	{
+		bool bAnyChanged = false;
+
+		ReactiveDropInventory::ItemInstance_t instance{ hResult, index };
+		CFmtStr szNewValue{ "%llu", instance.ItemID };
+
+		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC; i++ )
+		{
+			ConVarRef var{ CFmtStr{ "rd_equipped_%s", ReactiveDropInventory::g_InventorySlotNames[i] } };
+			Assert( var.IsValid() );
+			if ( strtoull( var.GetString(), NULL, 10 ) == iOldInstance )
+			{
+				var.SetValue( szNewValue );
+				DevMsg( "Replacing item instance %llu with %llu in rd_equipped_%s\n", iOldInstance, instance.ItemID, ReactiveDropInventory::g_InventorySlotNames[i] );
+				bAnyChanged = true;
+			}
+		}
+
+		Assert( !"TODO: weapon equip replacements" );
+
+		if ( bAnyChanged )
+		{
+			engine->ClientCmd_Unrestricted( "host_writeconfig\n" );
+		}
+		else
+		{
+			DevMsg( "Item instance %llu replaced with %llu but is not equipped; nothing to do.\n", iOldInstance, instance.ItemID );
+		}
+	}
+#endif
+
 	void DebugPrintResult( SteamInventoryResult_t hResult )
 	{
 		ISteamInventory *pInventory = SteamInventory();
@@ -1336,6 +1573,18 @@ public:
 				SendEquipNotification( iType );
 
 				return;
+			}
+		}
+
+		FOR_EACH_VEC( m_CraftingQueue, i )
+		{
+			CraftItemTask_t *pTask = m_CraftingQueue[i];
+			if ( pParam->m_handle == pTask->m_hResult )
+			{
+				m_CraftingQueue.Remove( i );
+				OnCraftingTaskCompleted( pTask );
+				delete pTask;
+				break;
 			}
 		}
 #else
@@ -1539,9 +1788,9 @@ CON_COMMAND( rd_econ_item_preview, "inspect an item using a code from the Steam 
 class CSteamItemIcon : public vgui::IImage
 {
 public:
-	CSteamItemIcon( const char *szURL )
+	CSteamItemIcon( const char *szURL ) :
+		m_URLHash{ CRC32_ProcessSingleBuffer( szURL, V_strlen( szURL ) ) }
 	{
-		m_URLHash = CRC32_ProcessSingleBuffer( szURL, V_strlen( szURL ) );
 		m_iTextureID = 0;
 		m_Color.SetColor( 255, 255, 255, 255 );
 		m_nX = 0;
@@ -1666,8 +1915,8 @@ public:
 		return s_ItemIcons[szURL] = new CSteamItemIcon( szURL );
 	}
 
+	const CRC32_t m_URLHash;
 private:
-	CRC32_t m_URLHash;
 	vgui::HTexture m_iTextureID;
 	Color m_Color;
 	int m_nX, m_nY;
@@ -1746,17 +1995,16 @@ private:
 
 namespace ReactiveDropInventory
 {
-#ifdef CLIENT_DLL
-#define GET_INVENTORY_OR_BAIL \
-	ISteamInventory *pInventory = SteamInventory(); \
-	if ( !pInventory ) \
-		return
-#else
-#define GET_INVENTORY_OR_BAIL \
-	ISteamInventory *pInventory = engine->IsDedicatedServer() ? SteamGameServerInventory() : SteamInventory(); \
-	if ( !pInventory ) \
-		return
-#endif
+	ITexture *ItemDef_t::GetAccessoryIcon() const
+	{
+		if ( !AccessoryIcon && Icon && Icon->GetNumFrames() )
+		{
+			CFmtStr szTextureName{ "vgui/inventory/cache/%08x", assert_cast< CSteamItemIcon * >( Icon )->m_URLHash };
+			AccessoryIcon = materials->FindTexture( szTextureName, TEXTURE_GROUP_CLIENT_EFFECTS );
+		}
+
+		return AccessoryIcon;
+	}
 
 	bool ItemDef_t::ItemSlotMatches( const char *szRequiredSlot ) const
 	{
@@ -1990,12 +2238,16 @@ namespace ReactiveDropInventory
 
 			if ( !DynamicProps.Defined( szToken ) )
 			{
-				if ( !DynamicPropertyAllowsArbitraryValues( szToken ) )
+				if ( DynamicPropertyDataType( szToken ) == FIELD_BOOLEAN )
+				{
+					V_wcsncpy( wszReplacement, L"false", sizeof( wszReplacement ) );
+				}
+				else if ( DynamicPropertyDataType( szToken ) != FIELD_STRING )
 				{
 					V_wcsncpy( wszReplacement, L"0", sizeof( wszReplacement ) );
 				}
 			}
-			else if ( DynamicPropertyAllowsArbitraryValues( szToken ) )
+			else if ( DynamicPropertyDataType( szToken ) == FIELD_STRING )
 			{
 				V_UTF8ToUnicode( DynamicProps[DynamicProps.Find( szToken )], wszReplacement, sizeof( wszReplacement ) );
 			}
@@ -2086,10 +2338,21 @@ namespace ReactiveDropInventory
 		pKV->SetString( "b", Origin );
 		for ( int i = 0; i < DynamicProps.GetNumStrings(); i++ )
 		{
-			if ( DynamicPropertyAllowsArbitraryValues( DynamicProps.String( i ) ) )
+			switch ( DynamicPropertyDataType( DynamicProps.String( i ) ) )
+			{
+			case FIELD_STRING:
 				pKV->SetString( CFmtStr( "x/%s", DynamicProps.String( i ) ), DynamicProps[i] );
-			else
+				break;
+			case FIELD_INTEGER64:
 				pKV->SetUint64( CFmtStr( "x/%s", DynamicProps.String( i ) ), strtoll( DynamicProps[i], NULL, 10 ) );
+				break;
+			case FIELD_FLOAT:
+				pKV->SetFloat( CFmtStr( "x/%s", DynamicProps.String( i ) ), strtof( DynamicProps[i], NULL ) );
+				break;
+			case FIELD_BOOLEAN:
+				pKV->SetBool( CFmtStr( "x/%s", DynamicProps.String( i ) ), !V_strcmp( DynamicProps[i], "true" ) );
+				break;
+			}
 		}
 		if ( Tags.GetNumStrings() )
 		{
@@ -2128,6 +2391,8 @@ namespace ReactiveDropInventory
 			{
 				if ( pProp->GetDataType() == KeyValues::TYPE_UINT64 )
 					DynamicProps[pProp->GetName()] = CFmtStr( "%lld", pProp->GetUint64() );
+				else if ( pProp->GetDataType() == KeyValues::TYPE_INT )
+					DynamicProps[pProp->GetName()] = pProp->GetBool() ? "true" : "false";
 				else
 					DynamicProps[pProp->GetName()] = pProp->GetString();
 			}
@@ -2443,13 +2708,6 @@ namespace ReactiveDropInventory
 				// first style should always match default icon
 				Assert( i || pItemDef->StyleIcons[i] == pItemDef->Icon );
 			}
-		}
-
-		pItemDef->AccessoryIcon = NULL;
-		FETCH_PROPERTY( "accessory_icon" );
-		if ( *szValue )
-		{
-			pItemDef->AccessoryIcon = materials->FindTexture( szValue, TEXTURE_GROUP_CLIENT_EFFECTS );
 		}
 #endif
 #undef FETCH_PROPERTY
@@ -2901,8 +3159,6 @@ namespace ReactiveDropInventory
 			}
 		}
 	}
-
-#undef GET_INVENTORY_OR_BAIL
 }
 
 #define RD_ITEM_ID_BITS 30
@@ -2994,7 +3250,7 @@ void CRD_ItemInstance::SetFromInstance( const ReactiveDropInventory::ItemInstanc
 
 	FOR_EACH_VEC( pDef->CompressedDynamicProps, i )
 	{
-		Assert( !DynamicPropertyAllowsArbitraryValues( pDef->CompressedDynamicProps[i] ) );
+		Assert( DynamicPropertyDataType( pDef->CompressedDynamicProps[i] ) == FIELD_INTEGER64 );
 
 		if ( !V_stricmp( pDef->CompressedDynamicProps[i], "m_unQuantity" ) )
 		{
@@ -3025,7 +3281,7 @@ void CRD_ItemInstance::SetFromInstance( const ReactiveDropInventory::ItemInstanc
 			const ReactiveDropInventory::ItemDef_t *pAccessoryDef = ReactiveDropInventory::GetItemDef( iAccessoryID );
 			FOR_EACH_VEC( pAccessoryDef->CompressedDynamicProps, j )
 			{
-				Assert( !DynamicPropertyAllowsArbitraryValues( pAccessoryDef->CompressedDynamicProps[j] ) );
+				Assert( DynamicPropertyDataType( pAccessoryDef->CompressedDynamicProps[j] ) == FIELD_INTEGER64 );
 				if ( instance.DynamicProps.Defined( pAccessoryDef->CompressedDynamicProps[j] ) )
 				{
 					const char *szPropValue = instance.DynamicProps[instance.DynamicProps.Find( pAccessoryDef->CompressedDynamicProps[j] )];

@@ -34,6 +34,11 @@ public:
 		MODE_ITEM_DROP,
 		MODE_UNLOCK_REGULAR_WEAPON,
 		MODE_UNLOCK_EXTRA_WEAPON,
+		MODE_ITEM_CLAIMED,
+		MODE_ITEM_UPGRADED,
+		MODE_ITEM_CRAFTED,
+
+		NUM_MODES,
 	};
 
 	static void ShowItems( SteamInventoryResult_t hResult, int iStart, int iCount, Mode_t mode );
