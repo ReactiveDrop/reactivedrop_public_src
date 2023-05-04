@@ -1995,6 +1995,7 @@ private:
 
 namespace ReactiveDropInventory
 {
+#ifdef CLIENT_DLL
 	ITexture *ItemDef_t::GetAccessoryIcon() const
 	{
 		if ( !AccessoryIcon && Icon && Icon->GetNumFrames() )
@@ -2005,6 +2006,7 @@ namespace ReactiveDropInventory
 
 		return AccessoryIcon;
 	}
+#endif
 
 	bool ItemDef_t::ItemSlotMatches( const char *szRequiredSlot ) const
 	{
