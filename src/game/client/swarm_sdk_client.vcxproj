@@ -265,11 +265,6 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="..\..\vpc_scripts\loadaddress.vpc" />
-    <None Include="..\..\vpc_scripts\source_dll_base.vpc" />
-    <None Include="..\..\vpc_scripts\source_dll_win32_base.vpc" />
-    <None Include="..\..\vpc_scripts\source_dll_win32_debug.vpc" />
-    <None Include="..\..\vpc_scripts\source_dll_win32_release.vpc" />
-    <None Include="..\..\vpc_scripts\version.vpc" />
     <None Include="client_base.vpc" />
     <None Include="client_swarm.vpc" />
     <None Include="vscript_client.nut" />
@@ -2199,10 +2194,6 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="..\shared\choreoevent.h" />
     <ClInclude Include="..\shared\choreoscene.h" />
     <ClInclude Include="..\shared\collisionproperty.h" />
-    <ClInclude Include="..\shared\cstrike\basecsgrenade_projectile.h" />
-    <ClInclude Include="..\shared\cstrike\fx_cs_shared.h" />
-    <ClInclude Include="..\shared\cstrike\weapon_flashbang.h" />
-    <ClInclude Include="..\shared\cstrike\weapon_hegrenade.h" />
     <ClInclude Include="..\shared\death_pose.h" />
     <ClInclude Include="..\shared\decals.h" />
     <ClInclude Include="..\shared\effect_color_tables.h" />
@@ -2421,7 +2412,6 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="..\shared\voice_status.h" />
     <ClInclude Include="..\shared\vphysics_sound.h" />
     <ClInclude Include="..\shared\vscript_shared.h" />
-    <ClInclude Include="..\shared\weapon_ifmsteadycam.h" />
     <ClInclude Include="..\shared\weapon_parse.h" />
     <ClInclude Include="..\shared\weapon_proficiency.h" />
     <ClInclude Include="achievement_notification_panel.h" />
@@ -2446,8 +2436,6 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="cl_mat_stub.h" />
     <ClInclude Include="colorcorrectionmgr.h" />
     <ClInclude Include="commentary_modelviewer.h" />
-    <ClInclude Include="cstrike\fx_cs_blood.h" />
-    <ClInclude Include="cstrike\hud_radar.h" />
     <ClInclude Include="c_ai_basenpc.h" />
     <ClInclude Include="c_baseanimating.h" />
     <ClInclude Include="c_baseanimatingoverlay.h" />
@@ -2740,7 +2728,6 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="swarm\c_prop_asw_fade.h" />
     <ClInclude Include="swarm\c_rd_boss_bar.h" />
     <ClInclude Include="swarm\gameui\backgroundmenubutton.h" />
-    <ClInclude Include="swarm\gameui\basepaenl.h" />
     <ClInclude Include="swarm\gameui\basesavegamedialog.h" />
     <ClInclude Include="swarm\gameui\bitmapimagepanel.h" />
     <ClInclude Include="swarm\gameui\commandcheckbutton.h" />

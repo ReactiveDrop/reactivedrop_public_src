@@ -82,7 +82,6 @@
     <ClInclude Include="tile_check.h" />
     <ClInclude Include="tilegen_core.h" />
     <ClInclude Include="VMFExporter.h" />
-    <ClInclude Include="chunkfile.h" />
     <ClInclude Include="..\..\public\missionchooser\iasw_mission_chooser.h" />
     <ClInclude Include="..\..\public\missionchooser\iasw_mission_chooser_source.h" />
     <ClInclude Include="..\..\public\missionchooser\iasw_random_missions.h" />
