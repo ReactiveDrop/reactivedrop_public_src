@@ -1195,8 +1195,8 @@
 	"rndwave"
 	{
 		"wave"	"aliens\voc\parasite\attack01.wav"
-		"wave"	"aliens\voc\parasite\attack02.wav"
-		"wave"	"aliens\voc\parasite\attack03.wav"
+		"wave"	"aliens\voc\parasite\attack01.wav"
+		"wave"	"aliens\voc\parasite\attack01.wav"
 	}
 }
 
@@ -1210,9 +1210,8 @@
 
 	"rndwave"
 	{
-		"wave"		"aliens\voc\egg\pain01.wav"
-		"wave"		"aliens\voc\egg\pain02.wav"
-		"wave"		"aliens\voc\egg\pain03.wav"
+		"wave"	"aliens\voc\parasite\pain01.wav"
+		"wave"	"aliens\voc\parasite\pain02.wav"
 	}
 }
 
@@ -1266,9 +1265,8 @@
 
 	"rndwave"
 	{
-		"wave"	"aliens\voc\grub\pain01.wav"
-		"wave"	"aliens\voc\grub\pain02.wav"
-		"wave"	"aliens\voc\grub\pain03.wav"
+		"wave"	"aliens\voc\parasite\pain01.wav"
+		"wave"	"aliens\voc\parasite\pain02.wav"
 	}
 }
 
@@ -1284,9 +1282,9 @@
 	"soundlevel"	"SNDLVL_80dB"
 	"rndwave"
 	{
-		"wave"	"aliens\voc\parasite\xeno_attack01.wav"
-		"wave"	"aliens\voc\parasite\xeno_attack02.wav"
-		"wave"	"aliens\voc\parasite\xeno_attack03.wav"
+		"wave"	"aliens\voc\parasite\xeno_bite01.wav"
+		"wave"	"aliens\voc\parasite\xeno_bite02.wav"
+		"wave"	"aliens\voc\parasite\xeno_bite03.wav"
 	}
 }
 
@@ -1314,8 +1312,8 @@
 
 	"rndwave"
 	{
-		"wave"		"aliens\voc\parasite\xeno_death01.wav"
-		"wave"		"aliens\voc\parasite\xeno_death02.wav"
+		"wave"		"aliens\voc\parasite\xeno_pain01.wav"
+		"wave"		"aliens\voc\parasite\xeno_pain02.wav"
 	}
 }
 
