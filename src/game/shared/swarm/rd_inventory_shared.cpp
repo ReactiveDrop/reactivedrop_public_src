@@ -1285,7 +1285,7 @@ public:
 
 			FOR_EACH_VEC( pDef->CompressedDynamicProps, j )
 			{
-				if ( !instance.DynamicProps.Defined( pDef->CompressedDynamicProps[j] ) )
+				if ( V_stricmp( pDef->CompressedDynamicProps[j], "m_unQuantity" ) && !instance.DynamicProps.Defined(pDef->CompressedDynamicProps[j]) )
 				{
 					Assert( DynamicPropertyDataType( pDef->CompressedDynamicProps[j] ) == FIELD_INTEGER64 );
 					if ( hUpdate == k_SteamInventoryUpdateHandleInvalid )
@@ -1307,7 +1307,7 @@ public:
 				const CUtlStringList &accessories = instance.Tags[pDef->AccessoryTag];
 				FOR_EACH_VEC( accessories, j )
 				{
-					SteamItemDef_t accessoryID = V_atoi( accessories[i] );
+					SteamItemDef_t accessoryID = V_atoi( accessories[j] );
 					Assert( accessoryID > 0 && accessoryID < 1000000000 );
 					const ReactiveDropInventory::ItemDef_t *pAccessoryDef = ReactiveDropInventory::GetItemDef( accessoryID );
 					Assert( pAccessoryDef );
@@ -1316,7 +1316,7 @@ public:
 
 					FOR_EACH_VEC( pAccessoryDef->CompressedDynamicProps, k )
 					{
-						if ( !instance.DynamicProps.Defined( pAccessoryDef->CompressedDynamicProps[k] ) )
+						if ( V_stricmp( pAccessoryDef->CompressedDynamicProps[k], "m_unQuantity" ) && !instance.DynamicProps.Defined( pAccessoryDef->CompressedDynamicProps[k] ) )
 						{
 							Assert( DynamicPropertyDataType( pAccessoryDef->CompressedDynamicProps[k] ) == FIELD_INTEGER64 );
 							if ( hUpdate == k_SteamInventoryUpdateHandleInvalid )
