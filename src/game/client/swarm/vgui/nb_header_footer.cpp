@@ -17,6 +17,7 @@
 using namespace vgui;
 
 ConVar rd_reduce_motion( "rd_reduce_motion", "0", FCVAR_ARCHIVE, "reduce ambient motion in menus" );
+ConVar rd_disable_briefing_camera( "rd_disable_briefing_camera", "0", FCVAR_NONE, "always render video backgrounds for briefing" );
 static bool s_bLastReduceMotion = false;
 
 CASW_Background_Movie *g_pBackgroundMovie = NULL;
@@ -416,7 +417,7 @@ void CNB_Header_Footer::PaintBackground()
 {
 	BaseClass::PaintBackground();
 
-	if ( m_bMovieEnabled && ASWBackgroundMovie() && !( m_bBriefingCameraEnabled && engine->IsConnected() && ASWGameRules() && ASWGameRules()->GetGameState() < ASW_GS_INGAME && ASWGameRules()->m_hBriefingCamera ) )
+	if ( m_bMovieEnabled && ASWBackgroundMovie() && !( m_bBriefingCameraEnabled && engine->IsConnected() && ASWGameRules() && ASWGameRules()->GetGameState() < ASW_GS_INGAME && ASWGameRules()->m_hBriefingCamera && !rd_reduce_motion.GetBool() && !rd_disable_briefing_camera.GetBool() ) )
 	{
 		ASWBackgroundMovie()->Update();
 		if ( ASWBackgroundMovie()->SetTextureMaterial() != -1 )
