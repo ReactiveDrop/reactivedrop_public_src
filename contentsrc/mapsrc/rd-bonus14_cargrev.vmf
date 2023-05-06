@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "3654"
+	"mapversion" "3658"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -50,7 +50,7 @@ viewsettings
 world
 {
 	"id" "394754"
-	"mapversion" "3654"
+	"mapversion" "3658"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -17276,6 +17276,141 @@ world
 			"visgroupautoshown" "1"
 		}
 	}
+	solid
+	{
+		"id" "3245082"
+		side
+		{
+			"id" "157877"
+			"plane" "(-7001 5578.97 708) (-7001 5642.97 708) (-4177 5642.97 708)"
+			"material" "TOOLS/TOOLSNOLIGHT"
+			"uaxis" "[-1 0 0 7.99219] 0.25"
+			"vaxis" "[0 1 0 -3.86328] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "157876"
+			"plane" "(-7001 5642.97 -1792) (-7001 5578.97 -1792) (-4177 5578.97 -1792)"
+			"material" "SWARM/BSP/BLENDSWARM_SNOW"
+			"uaxis" "[-1 0 0 15.9919] 0.25"
+			"vaxis" "[0 1 0 -75.8633] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "157875"
+			"plane" "(-4177 5642.97 -1792) (-4177 5578.97 -1792) (-4177 5578.97 708)"
+			"material" "TOOLS/TOOLSNOLIGHT"
+			"uaxis" "[0 -1 0 3.86328] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "157874"
+			"plane" "(-7001 5578.97 -1792) (-7001 5642.97 -1792) (-7001 5642.97 708)"
+			"material" "SWARM/BSP/BLENDSWARM_SNOW"
+			"uaxis" "[0 -1 0 75.8633] 0.25"
+			"vaxis" "[0 0 -1 -168] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "157873"
+			"plane" "(-4177 5578.97 -1792) (-7001 5578.97 -1792) (-7001 5578.97 708)"
+			"material" "TOOLS/TOOLSNOLIGHT"
+			"uaxis" "[-1 0 0 7.99219] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "157872"
+			"plane" "(-7001 5642.97 -1792) (-4177 5642.97 -1792) (-4177 5642.97 708)"
+			"material" "NATURE/SNOWWALL006B"
+			"uaxis" "[-1 0 0 72] 1"
+			"vaxis" "[0 0 -1 -316] 1"
+			"rotation" "0"
+			"lightmapscale" "33"
+			"smoothing_groups" "0"
+			dispinfo
+			{
+				"power" "2"
+				"startposition" "[-7001 5642.97 -1792]"
+				"flags" "0"
+				"elevation" "0"
+				"subdiv" "1"
+				normals
+				{
+					"row0" "0.825721 0.889253 0.0713978 0 0 0 0.0548968 0.999309 0.013848 -1.01337e-007 -1 -1.10504e-008 2.31541 -0.37715 -0.456468"
+					"row1" "-0.245679 0.990478 -0.0247215 0.0549058 0.999308 0.013853 0 0 0 1.07088e-005 -1 -1.54709e-007 0.131917 -0.205383 -0.595008"
+					"row2" "0.174584 0.993675 0.0408374 0.0549058 0.999308 0.0138531 -0.0334847 0.999786 0.00628911 -0.0482086 0.999633 0.00502722 0.261562 -0.0946912 -0.60439"
+					"row3" "0.0268045 0.995171 -0.059109 0.133072 0.995731 0.0356924 0 0 0 -0.685285 0.929311 0.0255183 0.233374 -0.0459188 -0.606719"
+					"row4" "-0.435833 0.957935 0.108586 1.67439 -0.494068 -0.0627305 1.91078 -0.167495 -0.0227872 1.93862 -0.013063 -0.0172367 1.18256 -3.79876e-007 -0.482133"
+				}
+				distances
+				{
+					"row0" "561.178 0 42.0001 140 141.891"
+					"row1" "394.42 105 0 9.99977 118.879"
+					"row2" "381.917 83.9999 48.9903 49.0001 105.625"
+					"row3" "452.866 49.2073 0 54.649 101.132"
+					"row4" "447.231 184.57 284.723 203.37 82.0059"
+				}
+				offsets
+				{
+					"row0" "80.9451 44.4982 0 240.225 132.063 1.23754e-005 310.121 170.491 7.42518e-005 240.225 132.063 0.000126847 80.9451 44.4982 0.000148504"
+					"row1" "29.7676 17.3883 0 101.607 59.115 3.30009e-005 141.292 81.9025 8.66271e-005 101.607 59.115 0.000126847 29.7676 17.3883 0.000148504"
+					"row2" "0.000225348 6.59987 0 0.000209203 22.5514 1.65004e-005 0.00020334 31.047 7.83771e-005 0.000208412 22.5514 0.000126847 0.000224754 6.59987 0.000148504"
+					"row3" "-29.7671 9.1242 0 -101.607 30.9065 3.30009e-005 -141.291 42.6768 8.66271e-005 -101.607 30.9066 0.000126847 -29.7671 9.12421 0.000148504"
+					"row4" "-132.911 22.0269 0 -394.448 65.3724 6.18765e-006 -509.216 84.3953 6.34234e-005 -394.448 65.3724 0.000124527 -132.911 22.0269 0.000148504"
+				}
+				offset_normals
+				{
+					"row0" "0.382103 0.777135 -0.024371 1.09911 0.805891 -0.0395915 1.11874 0.80076 0.000515169 1.1341 0.791364 0.0431734 0.513755 0.833045 0.0320562"
+					"row1" "-0.252924 0.864319 -0.00820998 0.164164 0.962172 -0.0103043 0.459079 0.933395 8.26776e-005 0.519369 0.933936 0.0120592 0.0461318 0.937286 0.010095"
+					"row2" "-0.515572 0.723858 -0.00548987 -0.0548843 0.957434 -0.00774586 0.0468318 0.985203 0.000215823 0.0287836 0.978315 0.00865468 -0.332838 0.917424 0.00567617"
+					"row3" "-0.758765 0.592955 -0.0144673 -0.164456 0.952301 -0.0214282 -0.310147 0.939687 0.00100768 -0.321678 0.959521 0.0274094 -0.643356 0.873567 0.0192007"
+					"row4" "-2.22553 0.358231 -0.0154141 -2.00694 0.881505 -0.0244068 -2.15632 0.862836 0.00046467 -2.47059 0.813648 0.0307592 -2.02509 0.621474 0.0189483"
+				}
+				alphas
+				{
+					"row0" "0 0 0 0 0"
+					"row1" "0 0 0 0 0"
+					"row2" "0 0 0 0 0"
+					"row3" "0 0 0 0 0"
+					"row4" "0 0 0 0 0"
+				}
+				triangle_tags
+				{
+					"row0" "0 0 0 0 0 0 0 0"
+					"row1" "0 0 0 0 0 0 0 0"
+					"row2" "0 0 0 0 0 0 0 0"
+					"row3" "0 0 0 0 0 0 0 0"
+				}
+				allowed_verts
+				{
+					"10" "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1"
+				}
+			}
+		}
+		editor
+		{
+			"color" "0 218 187"
+			"visgroupshown" "1"
+			"visgroupautoshown" "1"
+		}
+	}
 }
 entity
 {
@@ -22589,6 +22724,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "4"
@@ -22623,6 +22759,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "4"
@@ -22657,6 +22794,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"MaxLiveAliens" "1"
 	"maxoffset" "0 0 0"
@@ -22949,6 +23087,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"MaxLiveAliens" "1"
 	"maxoffset" "0 0 0"
@@ -22989,6 +23128,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"MaxLiveAliens" "1"
 	"maxoffset" "0 0 0"
@@ -23029,6 +23169,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"MaxLiveAliens" "1"
 	"maxoffset" "0 0 0"
@@ -23070,6 +23211,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"MaxLiveAliens" "1"
 	"maxoffset" "0 0 0"
@@ -23111,6 +23253,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"MaxLiveAliens" "1"
 	"maxoffset" "0 0 0"
@@ -23152,6 +23295,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"MaxLiveAliens" "1"
 	"maxoffset" "0 0 0"
@@ -26506,6 +26650,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"MaxLiveAliens" "3"
 	"maxoffset" "0 0 0"
@@ -51570,6 +51715,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "1"
@@ -52246,6 +52392,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "4"
@@ -52285,6 +52432,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "2"
@@ -60122,6 +60270,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"MaxLiveAliens" "3"
 	"maxoffset" "0 0 0"
@@ -62949,6 +63098,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "1"
 	"MaxLiveAliens" "3"
@@ -67501,6 +67651,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "2"
@@ -67634,6 +67785,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"MaxLiveAliens" "3"
 	"maxoffset" "0 0 0"
@@ -73551,6 +73703,7 @@ entity
 	"autoopen" "0"
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
+	"CustomMaxHealth" "1800"
 	"disableshadows" "1"
 	"distance" "125"
 	"DoBreachedShout" "1"
@@ -75994,6 +76147,7 @@ entity
 	"autoopen" "0"
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
+	"CustomMaxHealth" "1800"
 	"disableshadows" "1"
 	"distance" "125"
 	"DoBreachedShout" "1"
@@ -80813,6 +80967,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"MaxLiveAliens" "4"
 	"maxoffset" "0 0 0"
@@ -80852,6 +81007,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"MaxLiveAliens" "3"
 	"maxoffset" "0 0 0"
@@ -80891,6 +81047,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"MaxLiveAliens" "8"
 	"maxoffset" "0 0 0"
@@ -81120,6 +81277,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"MaxLiveAliens" "2"
 	"maxoffset" "0 0 0"
@@ -81159,6 +81317,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"MaxLiveAliens" "4"
 	"maxoffset" "0 0 0"
@@ -81198,6 +81357,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "2"
@@ -81236,6 +81396,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "4"
@@ -81274,6 +81435,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "4"
@@ -81948,6 +82110,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "2"
@@ -81986,6 +82149,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "2"
@@ -82747,6 +82911,7 @@ entity
 	"autoopen" "0"
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
+	"CustomMaxHealth" "1800"
 	"disableshadows" "1"
 	"distance" "125"
 	"DoBreachedShout" "1"
@@ -83504,6 +83669,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"disableshadows" "1"
 	"distance" "125"
 	"DoBreachedShout" "1"
@@ -86409,6 +86575,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "2"
@@ -86448,6 +86615,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "1"
@@ -86488,6 +86656,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "1"
@@ -86528,6 +86697,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "1"
 	"MaxLiveAliens" "1"
@@ -86568,6 +86738,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "1"
 	"MaxLiveAliens" "1"
@@ -86704,6 +86875,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "1"
 	"MaxLiveAliens" "1"
@@ -86839,6 +87011,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "1"
@@ -87628,6 +87801,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "1"
@@ -87668,6 +87842,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "1"
@@ -87707,6 +87882,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "4"
@@ -87745,6 +87921,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "4"
@@ -87783,6 +87960,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "4"
@@ -87821,6 +87999,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "4"
@@ -87860,6 +88039,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "4"
@@ -87915,6 +88095,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "4"
@@ -88049,6 +88230,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "1"
@@ -88177,8 +88359,8 @@ cameras
 	"activecamera" "0"
 	camera
 	{
-		"position" "[-4638.91 6777.64 1081.96]"
-		"look" "[-6874.05 1757.15 -1989.4]"
+		"position" "[-4614.26 6967.75 1219.68]"
+		"look" "[-3104.49 10423.6 -3821.35]"
 	}
 }
 cordons
