@@ -89,32 +89,6 @@ public:
 	{
 	}
 
-	~CRD_Inventory_Manager()
-	{
-		GET_INVENTORY_OR_BAIL;
-
-		pInventory->DestroyResult( m_DebugPrintInventoryResult );
-#ifdef CLIENT_DLL
-		pInventory->DestroyResult( m_PromotionalItemsResult );
-		for ( int i = 0; i < NELEMS( m_PlaytimeItemGeneratorResult ); i++ )
-		{
-			pInventory->DestroyResult( m_PlaytimeItemGeneratorResult[i] );
-		}
-		pInventory->DestroyResult( m_InspectItemResult );
-		pInventory->DestroyResult( m_ExchangeItemsResult );
-		pInventory->DestroyResult( m_DynamicPropertyUpdateResult );
-		for ( int iType = 0; iType < NUM_EQUIP_SLOT_TYPES; iType++ )
-		{
-			pInventory->DestroyResult( m_PreparingEquipNotification[iType] );
-			FOR_EACH_VEC( m_PendingEquipSend[iType], i )
-			{
-				m_PendingEquipSend[iType][i]->deleteThis();
-			}
-			m_PendingEquipSend[iType].Purge();
-		}
-#endif
-	}
-
 	void PostInit() override
 	{
 		ISteamInventory *pInventory = SteamInventory();
@@ -146,6 +120,26 @@ public:
 
 #ifdef CLIENT_DLL
 		pInventory->GetAllItems( &m_GetFullInventoryForCacheResult );
+#endif
+	}
+
+	void Shutdown() override
+	{
+		GET_INVENTORY_OR_BAIL;
+
+		pInventory->DestroyResult( m_DebugPrintInventoryResult );
+#ifdef CLIENT_DLL
+		pInventory->DestroyResult( m_DynamicPropertyUpdateResult );
+		for ( int iType = 0; iType < NUM_EQUIP_SLOT_TYPES; iType++ )
+		{
+			pInventory->DestroyResult( m_PreparingEquipNotification[iType] );
+			FOR_EACH_VEC( m_PendingEquipSend[iType], i )
+			{
+				m_PendingEquipSend[iType][i]->deleteThis();
+			}
+			m_PendingEquipSend[iType].Purge();
+		}
+		m_CraftingQueue.PurgeAndDeleteElements();
 #endif
 	}
 
@@ -425,14 +419,6 @@ public:
 		}
 
 		DevMsg( 3, "Split equipped items notification (type %d) into %d chunks (%d bytes total payload)\n", iType, m_PendingEquipSend[iType].Count() + 1, nLength );
-	}
-
-	void HandleItemDropResult( SteamInventoryResult_t &hResult )
-	{
-		BaseModUI::ItemShowcase::ShowItems( hResult, 0, -1, BaseModUI::ItemShowcase::MODE_ITEM_DROP );
-
-		SteamInventory()->DestroyResult( hResult );
-		hResult = k_SteamInventoryResultInvalid;
 	}
 
 	void CacheUserInventory( SteamInventoryResult_t hResult )
@@ -1162,12 +1148,21 @@ public:
 		CRAFT_BTS,
 		// set dynamic properties on newly created item to 0. modal while in progress. notifies user when complete (replaces notification from craft task that queued this).
 		CRAFT_DYNAMIC_PROPERTY_INIT,
+		// checking for item drop. notifies user based on preferences if successful.
+		CRAFT_DROP,
+		// checking for promo item. notifies user if successful.
+		CRAFT_PROMO,
+		// retrieving item data. may not be ours. notification when complete.
+		CRAFT_INSPECT,
+		// updating dynamic properties for an item (ex. at the end of a mission). no notifications.
+		CRAFT_DYNAMIC_PROPERTY_UPDATE,
 	};
 	struct CraftItemTask_t
 	{
 		~CraftItemTask_t()
 		{
 			ISteamInventory *pInventory = SteamInventory();
+			Assert( pInventory );
 			if ( pInventory )
 			{
 				pInventory->DestroyResult( m_hResult );
@@ -1181,6 +1176,25 @@ public:
 	};
 	CUtlVectorAutoPurge<CraftItemTask_t *> m_CraftingQueue;
 
+	SteamInventoryResult_t *AddCraftItemTask( CraftItemType_t iMode, SteamItemDef_t iAccessoryDef = 0, SteamItemInstanceID_t iReplaceItemInstance = k_SteamItemInstanceIDInvalid )
+	{
+		CraftItemTask_t *pTask = new CraftItemTask_t
+		{
+			iMode,
+			iAccessoryDef,
+			iReplaceItemInstance,
+			k_SteamInventoryResultInvalid,
+		};
+
+		bool bHadModal = HasModalCraftingTask();
+
+		m_CraftingQueue.AddToTail( pTask );
+
+		if ( !bHadModal && HasModalCraftingTask() )
+			ShowModalCraftingWaitScreen();
+
+		return &pTask->m_hResult;
+	}
 	bool HasModalCraftingTask()
 	{
 		FOR_EACH_VEC( m_CraftingQueue, i )
@@ -1195,6 +1209,10 @@ public:
 			case CRAFT_DYNAMIC_PROPERTY_INIT:
 				return true;
 			case CRAFT_BTS:
+			case CRAFT_DROP:
+			case CRAFT_PROMO:
+			case CRAFT_INSPECT:
+			case CRAFT_DYNAMIC_PROPERTY_UPDATE:
 				break;
 			default:
 				Assert( !"unhandled crafting task type" );
@@ -1215,7 +1233,7 @@ public:
 		{
 			if ( !HasModalCraftingTask() )
 			{
-				Assert( !"TODO: hide modal crafting wait screen" );
+				HideModalCraftingWaitScreen();
 			}
 
 			Warning( "Crafting task (type %d) failed with EResult %d %s\n", pTask->m_Type, eResult, UTIL_RD_EResultToString( eResult ) );
@@ -1234,10 +1252,10 @@ public:
 			InitDynamicPropertiesAndShowcase( pTask, BaseModUI::ItemShowcase::MODE_ITEM_UPGRADED );
 			break;
 		case CRAFT_SHOP:
-			Assert( !"TODO: update inventory/currency status" );
+			InitDynamicPropertiesAndShowcase( pTask, BaseModUI::ItemShowcase::MODE_ITEM_CLAIMED, false, true );
 			break;
 		case CRAFT_CLAIM_MINOR:
-			Assert( !"TODO: update inventory/currency status" );
+			InitDynamicPropertiesAndShowcase( pTask, BaseModUI::ItemShowcase::MODE_ITEM_CLAIMED, false, true );
 			break;
 		case CRAFT_CLAIM_MAJOR:
 			InitDynamicPropertiesAndShowcase( pTask, BaseModUI::ItemShowcase::MODE_ITEM_CLAIMED );
@@ -1247,18 +1265,63 @@ public:
 		case CRAFT_DYNAMIC_PROPERTY_INIT:
 			BaseModUI::ItemShowcase::ShowItems( pTask->m_hResult, 0, -1, ( BaseModUI::ItemShowcase::Mode_t )pTask->m_iAccessoryDef );
 			break;
+		case CRAFT_DROP:
+			InitDynamicPropertiesAndShowcase( pTask, BaseModUI::ItemShowcase::MODE_ITEM_DROP, true );
+			break;
+		case CRAFT_PROMO:
+			InitDynamicPropertiesAndShowcase( pTask, BaseModUI::ItemShowcase::MODE_ITEM_DROP );
+			break;
+		case CRAFT_INSPECT:
+			BaseModUI::ItemShowcase::ShowItems( pTask->m_hResult, 0, -1, BaseModUI::ItemShowcase::MODE_INSPECT );
+			break;
+		case CRAFT_DYNAMIC_PROPERTY_UPDATE:
+			if ( rd_debug_inventory_dynamic_props.GetBool() )
+			{
+				DebugPrintResult( pTask->m_hResult );
+			}
+
+			if ( m_bWantExtraDynamicPropertyCommit )
+			{
+				CommitDynamicProperties();
+				m_bWantExtraDynamicPropertyCommit = false;
+			}
+			break;
 		default:
 			Assert( !"unhandled crafting task type" );
 			break;
 		}
 
+		ISteamUser *pUser = SteamUser();
+		if ( pUser && pInventory->CheckResultSteamID( pTask->m_hResult, pUser->GetSteamID() ) )
+		{
+			uint32 nCount{ 0 };
+			pInventory->GetResultItems( pTask->m_hResult, NULL, &nCount );
+			if ( nCount > 0 )
+			{
+				m_bWantFullInventoryRefresh = true;
+			}
+		}
+
 		if ( !HasModalCraftingTask() )
 		{
 			// the just-completed task is already removed from the list before this function is called, but we may have added an additional modal task
-			Assert( !"TODO: hide modal crafting wait screen" );
+			HideModalCraftingWaitScreen();
+		}
+
+		if ( m_bWantFullInventoryRefresh && m_CraftingQueue.Count() == 0 )
+		{
+			pInventory->DestroyResult( m_GetFullInventoryForCacheResult );
+			m_GetFullInventoryForCacheResult = k_SteamInventoryResultInvalid;
+
+			pInventory->GetAllItems( &m_GetFullInventoryForCacheResult );
+
+			QueueSendStaticEquipNotification();
+			ResendDynamicEquipNotification();
+
+			m_bWantFullInventoryRefresh = false;
 		}
 	}
-	void InitDynamicPropertiesAndShowcase( CraftItemTask_t *pTask, BaseModUI::ItemShowcase::Mode_t iMode )
+	void InitDynamicPropertiesAndShowcase( CraftItemTask_t *pTask, BaseModUI::ItemShowcase::Mode_t iMode, bool bCheckPreferences = false, bool bSilenceNotification = false )
 	{
 		GET_INVENTORY_OR_BAIL;
 
@@ -1340,22 +1403,14 @@ public:
 				if ( rd_debug_inventory_dynamic_props.GetBool() )
 					Msg( "[C] No dynamic property init needed for item %llu (%d %s).\n", instance.ItemID, instance.ItemDefID, pDef->Name.Get() );
 
-				BaseModUI::ItemShowcase::ShowItems( pTask->m_hResult, i, 1, iMode );
+				if ( !bSilenceNotification )
+					BaseModUI::ItemShowcase::ShowItems( pTask->m_hResult, i, 1, iMode );
 			}
 		}
 
 		if ( hUpdate != k_SteamInventoryUpdateHandleInvalid )
 		{
-			SteamInventoryResult_t hResult{ k_SteamInventoryResultInvalid };
-			pInventory->SubmitUpdateProperties( hUpdate, &hResult );
-
-			m_CraftingQueue.AddToTail( new CraftItemTask_t
-				{
-					CRAFT_DYNAMIC_PROPERTY_INIT,
-					SteamItemDef_t( iMode ),
-					k_SteamItemInstanceIDInvalid,
-					hResult,
-				} );
+			pInventory->SubmitUpdateProperties( hUpdate, AddCraftItemTask( bSilenceNotification ? CRAFT_DYNAMIC_PROPERTY_UPDATE : CRAFT_DYNAMIC_PROPERTY_INIT, SteamItemDef_t( iMode ) ) );
 		}
 	}
 	void ReplaceEquippedItemInstance( SteamItemInstanceID_t iOldInstance, SteamInventoryResult_t hResult, uint32 index )
@@ -1387,6 +1442,14 @@ public:
 		{
 			DevMsg( "Item instance %llu replaced with %llu but is not equipped; nothing to do.\n", iOldInstance, instance.ItemID );
 		}
+	}
+	void ShowModalCraftingWaitScreen()
+	{
+		Assert( !"TODO: show modal crafting wait screen" );
+	}
+	void HideModalCraftingWaitScreen()
+	{
+		Assert( !"TODO: hide modal crafting wait screen" );
 	}
 #endif
 
@@ -1481,52 +1544,6 @@ public:
 		}
 
 #ifdef CLIENT_DLL
-		if ( pParam->m_handle == m_PromotionalItemsResult )
-		{
-			HandleItemDropResult( m_PromotionalItemsResult );
-			if ( m_PromotionalItemsNext.Count() )
-			{
-				pInventory->AddPromoItems( &m_PromotionalItemsResult, m_PromotionalItemsNext.Base(), m_PromotionalItemsNext.Count() );
-				m_PromotionalItemsNext.Purge();
-			}
-			else if ( m_bRequestGenericPromotionalItemsAgain )
-			{
-				pInventory->GrantPromoItems( &m_PromotionalItemsResult );
-				m_bRequestGenericPromotionalItemsAgain = false;
-			}
-
-			return;
-		}
-
-		for ( int i = 0; i < NELEMS( m_PlaytimeItemGeneratorResult ); i++ )
-		{
-			if ( pParam->m_handle == m_PlaytimeItemGeneratorResult[i] )
-			{
-				HandleItemDropResult( m_PlaytimeItemGeneratorResult[i] );
-			}
-		}
-
-		if ( pParam->m_handle == m_ExchangeItemsResult )
-		{
-			DebugPrintResult( m_ExchangeItemsResult );
-			BaseModUI::ItemShowcase::ShowItems( m_ExchangeItemsResult, 0, -1, BaseModUI::ItemShowcase::MODE_ITEM_DROP );
-
-			pInventory->DestroyResult( m_ExchangeItemsResult );
-			m_ExchangeItemsResult = k_SteamInventoryResultInvalid;
-
-			return;
-		}
-
-		if ( pParam->m_handle == m_InspectItemResult )
-		{
-			BaseModUI::ItemShowcase::ShowItems( pParam->m_handle, 0, -1, BaseModUI::ItemShowcase::MODE_INSPECT );
-
-			pInventory->DestroyResult( m_InspectItemResult );
-			m_InspectItemResult = k_SteamInventoryResultInvalid;
-
-			return;
-		}
-
 		if ( pParam->m_handle == m_GetFullInventoryForCacheResult )
 		{
 			CacheUserInventory( m_GetFullInventoryForCacheResult );
@@ -1535,35 +1552,6 @@ public:
 			m_GetFullInventoryForCacheResult = k_SteamInventoryResultInvalid;
 
 			return;
-		}
-
-		if ( pParam->m_handle == m_DynamicPropertyUpdateResult )
-		{
-			if ( rd_debug_inventory_dynamic_props.GetBool() )
-			{
-				DebugPrintResult( pParam->m_handle );
-			}
-
-			EResult eResult = pInventory->GetResultStatus( pParam->m_handle );
-
-			pInventory->DestroyResult( m_DynamicPropertyUpdateResult );
-			m_DynamicPropertyUpdateResult = k_SteamInventoryResultInvalid;
-
-			if ( m_bWantExtraDynamicPropertyCommit )
-			{
-				CommitDynamicProperties();
-				m_bWantExtraDynamicPropertyCommit = false;
-			}
-			else if ( eResult == k_EResultOK )
-			{
-				pInventory->DestroyResult( m_GetFullInventoryForCacheResult );
-				m_GetFullInventoryForCacheResult = k_SteamInventoryResultInvalid;
-
-				pInventory->GetAllItems( &m_GetFullInventoryForCacheResult );
-
-				QueueSendStaticEquipNotification();
-				ResendDynamicEquipNotification();
-			}
 		}
 
 		for ( int iType = 0; iType < NUM_EQUIP_SLOT_TYPES; iType++ )
@@ -1584,7 +1572,7 @@ public:
 				m_CraftingQueue.Remove( i );
 				OnCraftingTaskCompleted( pTask );
 				delete pTask;
-				break;
+				return;
 			}
 		}
 #else
@@ -1646,18 +1634,15 @@ public:
 			}
 		}
 #endif
+
+		DevMsg( "[%c] Inventory result %08x unhandled on %s.\n", IsClientDll() ? 'C' : 'S', pParam->m_handle, IsClientDll() ? "client" : "server" );
 	}
 
 	float m_flDefsUpdateTime{ 0.0f };
 	SteamInventoryResult_t m_DebugPrintInventoryResult{ k_SteamInventoryResultInvalid };
 #ifdef CLIENT_DLL
-	SteamInventoryResult_t m_PromotionalItemsResult{ k_SteamInventoryResultInvalid };
-	CUtlVector<SteamItemDef_t> m_PromotionalItemsNext{};
-	bool m_bRequestGenericPromotionalItemsAgain{ false };
-	SteamInventoryResult_t m_PlaytimeItemGeneratorResult[3]{ k_SteamInventoryResultInvalid, k_SteamInventoryResultInvalid, k_SteamInventoryResultInvalid };
-	SteamInventoryResult_t m_InspectItemResult{ k_SteamInventoryResultInvalid };
-	SteamInventoryResult_t m_ExchangeItemsResult{ k_SteamInventoryResultInvalid };
 	SteamInventoryResult_t m_GetFullInventoryForCacheResult{ k_SteamInventoryResultInvalid };
+	bool m_bWantFullInventoryRefresh{ false };
 
 	enum
 	{
@@ -1667,7 +1652,7 @@ public:
 	};
 	SteamInventoryResult_t m_PreparingEquipNotification[NUM_EQUIP_SLOT_TYPES]{ k_SteamInventoryResultInvalid, k_SteamInventoryResultInvalid };
 	CUtlQueue<KeyValues *> m_PendingEquipSend[NUM_EQUIP_SLOT_TYPES]{};
-	int m_EquipSendParityNext;
+	int m_EquipSendParityNext{};
 	int m_EquipSendParity[NUM_EQUIP_SLOT_TYPES]{};
 	ReactiveDropInventory::ItemInstance_t m_LocalEquipCacheStatic[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC];
 	SteamItemInstanceID_t m_EquipIDsDynamic[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC];
@@ -1759,7 +1744,7 @@ CON_COMMAND( rd_debug_print_inventory, "" )
 
 CON_COMMAND( rd_debug_inspect_entire_inventory, "inspect every item in your inventory" )
 {
-	SteamInventory()->GetAllItems( &s_RD_Inventory_Manager.m_InspectItemResult );
+	SteamInventory()->GetAllItems( s_RD_Inventory_Manager.AddCraftItemTask( CRD_Inventory_Manager::CRAFT_INSPECT ) );
 }
 
 CON_COMMAND( rd_debug_inspect_own_item, "inspect an item you own by ID" )
@@ -1771,7 +1756,7 @@ CON_COMMAND( rd_debug_inspect_own_item, "inspect an item you own by ID" )
 		return;
 	}
 
-	SteamInventory()->GetItemsByID( &s_RD_Inventory_Manager.m_InspectItemResult, &id, 1 );
+	SteamInventory()->GetItemsByID( s_RD_Inventory_Manager.AddCraftItemTask( CRD_Inventory_Manager::CRAFT_INSPECT ), &id, 1 );
 }
 
 CON_COMMAND( rd_econ_item_preview, "inspect an item using a code from the Steam Community backpack" )
@@ -1782,7 +1767,7 @@ CON_COMMAND( rd_econ_item_preview, "inspect an item using a code from the Steam 
 		return;
 	}
 
-	SteamInventory()->InspectItem( &s_RD_Inventory_Manager.m_InspectItemResult, args.Arg( 1 ) );
+	SteamInventory()->InspectItem( s_RD_Inventory_Manager.AddCraftItemTask( CRD_Inventory_Manager::CRAFT_INSPECT ), args.Arg( 1 ) );
 }
 
 class CSteamItemIcon : public vgui::IImage
@@ -2919,30 +2904,16 @@ namespace ReactiveDropInventory
 #ifdef CLIENT_DLL
 	void AddPromoItem( SteamItemDef_t id )
 	{
-		if ( s_RD_Inventory_Manager.m_PromotionalItemsResult != k_SteamInventoryResultInvalid )
-		{
-			DevMsg( "Not requesting promo item %d: request already in-flight.\n", id );
-			s_RD_Inventory_Manager.m_PromotionalItemsNext.AddToTail( id );
-			return;
-		}
-
 		GET_INVENTORY_OR_BAIL;
 
-		pInventory->AddPromoItem( &s_RD_Inventory_Manager.m_PromotionalItemsResult, id );
+		pInventory->AddPromoItem( s_RD_Inventory_Manager.AddCraftItemTask( CRD_Inventory_Manager::CRAFT_PROMO ), id );
 	}
 
 	void RequestGenericPromoItems()
 	{
-		if ( s_RD_Inventory_Manager.m_PromotionalItemsResult != k_SteamInventoryResultInvalid )
-		{
-			DevMsg( "Not requesting generic promo items: request already in-flight.\n" );
-			s_RD_Inventory_Manager.m_bRequestGenericPromotionalItemsAgain = true;
-			return;
-		}
-
 		GET_INVENTORY_OR_BAIL;
 
-		pInventory->GrantPromoItems( &s_RD_Inventory_Manager.m_PromotionalItemsResult );
+		pInventory->GrantPromoItems( s_RD_Inventory_Manager.AddCraftItemTask( CRD_Inventory_Manager::CRAFT_PROMO ) );
 	}
 
 #ifdef RD_7A_DROPS
@@ -3125,9 +3096,9 @@ namespace ReactiveDropInventory
 			}
 		}
 
-		pInventory->TriggerItemDrop( &s_RD_Inventory_Manager.m_PlaytimeItemGeneratorResult[0], iItemGenerator );
-		pInventory->TriggerItemDrop( &s_RD_Inventory_Manager.m_PlaytimeItemGeneratorResult[1], 7021 );
-		pInventory->TriggerItemDrop( &s_RD_Inventory_Manager.m_PlaytimeItemGeneratorResult[2], 7029 );
+		pInventory->TriggerItemDrop( s_RD_Inventory_Manager.AddCraftItemTask( CRD_Inventory_Manager::CRAFT_DROP ), iItemGenerator );
+		pInventory->TriggerItemDrop( s_RD_Inventory_Manager.AddCraftItemTask( CRD_Inventory_Manager::CRAFT_DROP ), 7021 );
+		pInventory->TriggerItemDrop( s_RD_Inventory_Manager.AddCraftItemTask( CRD_Inventory_Manager::CRAFT_DROP ), 7029 );
 #endif
 	}
 
