@@ -1845,6 +1845,26 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 		m_fMapGenerationProgress = clamp(atof(args[1]), 0.0f, 1.0f);
 		return true;
 	}
+	else if ( FStrEq( pcmd, "menuselect" ) )
+	{
+		if ( !g_pScriptVM || !ASWGameRules() )
+			return BaseClass::ClientCommand( args );
+
+		ScriptVariant_t scriptArgs[2];
+
+		scriptArgs[0] = ToHScript( this );
+		scriptArgs[1] = args.GetCommandString();
+
+		// forward command as it was documented in the release that added this feature
+		ASWGameRules()->RunScriptFunctionInListenerScopes( "UserConsoleCommand", NULL, NELEMS( scriptArgs ), scriptArgs );
+
+		// forward just the menu number
+		scriptArgs[1] = V_atoi( args[1] );
+		ASWGameRules()->RunScriptFunctionInListenerScopes( "UserMenuSelect", NULL, NELEMS( scriptArgs ), scriptArgs );
+
+		// act as if the command was not handled
+		return BaseClass::ClientCommand( args );
+	}
 	
 	return BaseClass::ClientCommand( args );
 }
