@@ -96,7 +96,7 @@ public:
 	CRD_Swarmopedia_Model_Panel *m_pModelPanel;
 	vgui::Label *m_pWeaponNameLabel;
 	vgui::Label *m_pWeaponAttrLabel;
-	vgui::Label *m_pWeaponDescLabel;
+	vgui::RichText *m_pWeaponDescLabel;
 	BaseModUI::GenericPanelList *m_pGplStats;
 };
 

@@ -7,6 +7,7 @@
 #include <vgui/ISurface.h>
 #include <vgui_controls/ImagePanel.h>
 #include <vgui_controls/Label.h>
+#include <vgui_controls/RichText.h>
 #include <vgui_controls/TextImage.h>
 #include "vgui_bitmapbutton.h"
 #include "gameui/swarm/vgenericpanellist.h"
@@ -240,7 +241,11 @@ CRD_Collection_Details_Equipment::CRD_Collection_Details_Equipment( CRD_Collecti
 	m_pModelPanel = new CRD_Swarmopedia_Model_Panel( this, "ModelPanel" );
 	m_pWeaponNameLabel = new vgui::Label( this, "WeaponNameLabel", L"" );
 	m_pWeaponAttrLabel = new vgui::Label( this, "WeaponAttrLabel", L"" );
-	m_pWeaponDescLabel = new vgui::Label( this, "WeaponDescLabel", L"" );
+	m_pWeaponDescLabel = new vgui::RichText( this, "WeaponDescLabel" );
+	m_pWeaponDescLabel->SetPanelInteractive( false );
+	m_pWeaponDescLabel->SetUnusedScrollbarInvisible( true );
+	m_pWeaponDescLabel->SetDrawTextOnly();
+	m_pWeaponDescLabel->SetMouseInputEnabled( false );
 	m_pGplStats = new BaseModUI::GenericPanelList( this, "GplStats", BaseModUI::GenericPanelList::ISM_ELEVATOR );
 
 	m_nDisplayedFrames = 0;
@@ -340,7 +345,12 @@ void CRD_Collection_Details_Equipment::DisplayEntry( TGD_Entry *pEntry )
 	}
 	else
 	{
-		if ( pEquip->m_pWeapon->Content.Count() == 1 )
+		if ( pDef )
+		{
+			m_pWeaponDescLabel->SetText( L"" );
+			pEquip->m_ItemInstance.FormatDescription( m_pWeaponDescLabel );
+		}
+		else if ( pEquip->m_pWeapon->Content.Count() == 1 )
 		{
 			m_pWeaponDescLabel->SetText( pEquip->m_pWeapon->Content[0]->Text );
 		}
