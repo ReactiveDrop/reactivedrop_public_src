@@ -60,6 +60,10 @@ ConVar rd_debug_inventory_dynamic_props( "cl_debug_inventory_dynamic_props", "0"
 	Assert( pInventory ); \
 	if ( !pInventory ) \
 		return
+
+extern ConVar rd_equipped_weapon_primary[ASW_NUM_MARINE_PROFILES];
+extern ConVar rd_equipped_weapon_secondary[ASW_NUM_MARINE_PROFILES];
+extern ConVar rd_equipped_weapon_extra[ASW_NUM_MARINE_PROFILES];
 #else
 extern ConVar rd_dedicated_server_language;
 ConVar rd_debug_inventory_dynamic_props( "sv_debug_inventory_dynamic_props", "0", FCVAR_NONE, "print debugging messages about dynamic property updates" );
@@ -198,6 +202,7 @@ public:
 		for ( int iPlayer = 0; iPlayer < MAX_SPLITSCREEN_PLAYERS; iPlayer++ )
 		{
 			QueueSendStaticEquipNotification( iPlayer, true );
+			QueueSendInitialDynamicEquipNotification( iPlayer );
 		}
 #endif
 	}
@@ -301,9 +306,157 @@ public:
 			pInventory->GetItemsByID( &m_PlayerLocal[iPlayer].m_PreparingEquipNotification[EQUIP_SLOT_TYPE_STATIC], ItemIDs.Base(), ItemIDs.Count() );
 	}
 
-	void ResendDynamicEquipNotification( int iPlayer )
+	void QueueSendInitialDynamicEquipNotification( int iPlayer )
 	{
-		Assert( !"TODO" );
+		// this function should only be called on initial connect when we have no marines selected
+		m_PlayerLocal[iPlayer].m_DynamicNeedsSend.ClearAll();
+		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC; i++ )
+		{
+			m_PlayerLocal[iPlayer].m_EquipIDsDynamic[i] = k_SteamItemInstanceIDInvalid;
+			m_PlayerLocal[iPlayer].m_LocalEquipCacheDynamic[i] = ReactiveDropInventory::ItemInstance_t{};
+		}
+
+		for ( int i = 0; i < ASW_NUM_MARINE_PROFILES; i++ )
+		{
+			AllocateDynamicItemSlot( iPlayer, strtoull( rd_equipped_weapon_primary[i].GetString(), NULL, 10 ), i, ASW_INVENTORY_SLOT_PRIMARY );
+			AllocateDynamicItemSlot( iPlayer, strtoull( rd_equipped_weapon_secondary[i].GetString(), NULL, 10 ), i, ASW_INVENTORY_SLOT_SECONDARY );
+			AllocateDynamicItemSlot( iPlayer, strtoull( rd_equipped_weapon_extra[i].GetString(), NULL, 10 ), i, ASW_INVENTORY_SLOT_EXTRA );
+		}
+
+		ResendDynamicEquipNotification( iPlayer, true );
+	}
+
+	int AllocateDynamicItemSlot( int iPlayer, SteamItemInstanceID_t iItemInstanceID, int iMarineProfile, int iInventorySlot )
+	{
+		if ( iItemInstanceID == 0 || iItemInstanceID == k_SteamItemInstanceIDInvalid )
+		{
+			return -1;
+		}
+
+		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC; i++ )
+		{
+			if ( m_PlayerLocal[iPlayer].m_EquipIDsDynamic[i] == iItemInstanceID )
+			{
+				return i;
+			}
+		}
+
+		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC; i++ )
+		{
+			if ( m_PlayerLocal[iPlayer].m_EquipIDsDynamic[i] == k_SteamItemInstanceIDInvalid )
+			{
+				m_PlayerLocal[iPlayer].m_EquipIDsDynamic[i] = iItemInstanceID;
+				m_PlayerLocal[iPlayer].m_DynamicNeedsSend.Set( i );
+				return i;
+			}
+		}
+
+		C_ASW_Game_Resource *pGameResource = ASWGameResource();
+		Assert( pGameResource );
+		if ( pGameResource )
+		{
+			bool bSlotInUse[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC]{};
+			for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC; i++ )
+			{
+				if ( m_PlayerLocal[iPlayer].m_DynamicNeedsSend.Get( i ) )
+				{
+					bSlotInUse[i] = true;
+				}
+			}
+			for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
+			{
+				C_ASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
+				if ( !pMR || !pMR->m_OriginalCommander || !pMR->m_OriginalCommander->IsLocalPlayer() || pMR->m_OriginalCommander->GetSplitScreenPlayerSlot() != iPlayer )
+					continue;
+
+				for ( int j = 0; j < ASW_NUM_INVENTORY_SLOTS; j++ )
+				{
+					if ( j == iInventorySlot && pMR->GetProfileIndex() == iMarineProfile )
+						continue;
+
+					if ( pMR->m_iWeaponsInSlotsDynamic[j] >= 0 && pMR->m_iWeaponsInSlotsDynamic[j] < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC )
+					{
+						bSlotInUse[pMR->m_iWeaponsInSlotsDynamic[j]] = true;
+					}
+				}
+			}
+
+			for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC; i++ )
+			{
+				if ( !bSlotInUse[i] )
+				{
+					m_PlayerLocal[iPlayer].m_EquipIDsDynamic[i] = iItemInstanceID;
+					m_PlayerLocal[iPlayer].m_DynamicNeedsSend.Set( i );
+					return i;
+				}
+			}
+		}
+
+		// If this assert gets hit, we need to also track information about which slots are using pending items.
+		// Problem is, pending items can be in multiple slots. Good news is that's only 72 bytes of bitfields.
+		Assert( !"Failed to find a free dynamic item equip slot!" );
+
+		return -1;
+	}
+
+	void ResendDynamicEquipNotification( int iPlayer, bool bForce = false )
+	{
+		if ( !engine->IsInGame() )
+		{
+			return;
+		}
+
+		if ( m_PlayerLocal[iPlayer].m_DynamicNeedsSend.IsAllClear() && !bForce )
+		{
+			return;
+		}
+
+		if ( ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME )
+		{
+			// we'll try again on map load or instant restart
+			return;
+		}
+
+		if ( !s_bLoadedItemDefs && gpGlobals->maxClients == 1 && engine->IsClientLocalToActiveServer() )
+		{
+			KeyValues *pCachedNotification = new KeyValues( "EquippedItemsCachedD" );
+			for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC; i++ )
+			{
+				// leave local cache empty; dynamic properties cannot be updated offline
+				m_PlayerLocal[iPlayer].m_LocalEquipCacheDynamic[i] = ReactiveDropInventory::ItemInstance_t{};
+
+				SteamItemInstanceID_t id = m_PlayerLocal[iPlayer].m_EquipIDsDynamic[i];
+				if ( id != 0 && id != k_SteamItemInstanceIDInvalid )
+					pCachedNotification->SetUint64( CFmtStr( "item%d", i ), id );
+			}
+
+			engine->ServerCmdKeyValues( pCachedNotification );
+
+			// still try to send networked notification (we might have gone online since startup)
+		}
+
+		GET_INVENTORY_OR_BAIL;
+
+		pInventory->DestroyResult( m_PlayerLocal[iPlayer].m_PreparingEquipNotification[EQUIP_SLOT_TYPE_DYNAMIC] );
+		m_PlayerLocal[iPlayer].m_PreparingEquipNotification[EQUIP_SLOT_TYPE_DYNAMIC] = k_SteamInventoryResultInvalid;
+		FOR_EACH_VEC( m_PlayerLocal[iPlayer].m_PendingEquipSend[EQUIP_SLOT_TYPE_DYNAMIC], i )
+		{
+			m_PlayerLocal[iPlayer].m_PendingEquipSend[EQUIP_SLOT_TYPE_DYNAMIC][i]->deleteThis();
+		}
+		m_PlayerLocal[iPlayer].m_PendingEquipSend[EQUIP_SLOT_TYPE_DYNAMIC].Purge();
+
+		CUtlVector<SteamItemInstanceID_t> ItemIDs;
+		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC; i++ )
+		{
+			SteamItemInstanceID_t id = m_PlayerLocal[iPlayer].m_EquipIDsDynamic[i];
+			if ( id != 0 && id != k_SteamItemInstanceIDInvalid )
+				ItemIDs.AddToTail( id );
+		}
+
+		if ( ItemIDs.Count() == 0 )
+			SendEquipNotification( EQUIP_SLOT_TYPE_DYNAMIC, iPlayer );
+		else
+			pInventory->GetItemsByID( &m_PlayerLocal[iPlayer].m_PreparingEquipNotification[EQUIP_SLOT_TYPE_DYNAMIC], ItemIDs.Base(), ItemIDs.Count() );
 	}
 
 	void SendEquipNotification( int iType, int iPlayer )
@@ -448,6 +601,11 @@ public:
 				engine->ServerCmdKeyValues( pKV );
 			else
 				m_PlayerLocal[iPlayer].m_PendingEquipSend[iType].Insert( pKV );
+		}
+
+		if ( iType == EQUIP_SLOT_TYPE_DYNAMIC && m_PlayerLocal[iPlayer].m_PendingEquipSend[EQUIP_SLOT_TYPE_DYNAMIC].Count() == 0 )
+		{
+			m_PlayerLocal[iPlayer].m_DynamicNeedsSend.ClearAll();
 		}
 
 		DevMsg( 3, "Split equipped items notification (type %d) into %d chunks (%d bytes total payload)\n", iType, m_PlayerLocal[iPlayer].m_PendingEquipSend[iType].Count() + 1, nLength );
@@ -1363,7 +1521,7 @@ public:
 			for ( int iPlayer = 0; iPlayer < MAX_SPLITSCREEN_PLAYERS; iPlayer++ )
 			{
 				QueueSendStaticEquipNotification( iPlayer );
-				ResendDynamicEquipNotification( iPlayer );
+				ResendDynamicEquipNotification( iPlayer, true );
 			}
 
 			m_bWantFullInventoryRefresh = false;
@@ -1674,7 +1832,11 @@ public:
 				{
 					for ( int j = 0; j < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC; j++ )
 					{
-						if ( nIndex[j] != 0 )
+						if ( nIndex[j] == 0 )
+						{
+							pPlayer->m_EquippedItemDataDynamic[j].Reset();
+						}
+						else
 						{
 							pPlayer->m_EquippedItemDataDynamic[j].SetFromInstance( ReactiveDropInventory::ItemInstance_t{ pParam->m_handle, nIndex[j] - 1u } );
 						}
@@ -1711,6 +1873,7 @@ public:
 		ReactiveDropInventory::ItemInstance_t m_LocalEquipCacheStatic[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC];
 		SteamItemInstanceID_t m_EquipIDsDynamic[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC];
 		ReactiveDropInventory::ItemInstance_t m_LocalEquipCacheDynamic[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC];
+		CBitVec<RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC> m_DynamicNeedsSend;
 	};
 	PlayerLocal_t m_PlayerLocal[MAX_SPLITSCREEN_PLAYERS];
 
@@ -1766,6 +1929,15 @@ void __MsgFunc_RDEquippedItemsACK( bf_read &msg )
 
 			DevMsg( 3, "Sending next equipped items (type %d) notification chunk (%d remain)\n", iType, s_RD_Inventory_Manager.m_PlayerLocal[iPlayer].m_PendingEquipSend[iType].Count() );
 
+			if ( iType == CRD_Inventory_Manager::EQUIP_SLOT_TYPE_DYNAMIC && s_RD_Inventory_Manager.m_PlayerLocal[iPlayer].m_PendingEquipSend[iType].Count() == 0 )
+			{
+				// revisit this if the equip command is coming in later than the item notification
+				// the hope is that delaying it until the last packet is sent means that we can use
+				// the "needs send" flag to know whether a slot is reserved for an item the marine
+				// resource doesn't yet know about
+				s_RD_Inventory_Manager.m_PlayerLocal[iPlayer].m_DynamicNeedsSend.ClearAll();
+			}
+
 			return;
 		}
 	}
@@ -1776,7 +1948,7 @@ USER_MESSAGE_REGISTER( RDEquippedItemsACK );
 
 static void RD_Equipped_Item_Changed( IConVar *var, const char *pOldValue, float flOldValue )
 {
-	s_RD_Inventory_Manager.QueueSendStaticEquipNotification( MAX( var->GetSplitScreenPlayerSlot(), 0 ) );
+	s_RD_Inventory_Manager.QueueSendStaticEquipNotification( var->GetSplitScreenPlayerSlot() );
 }
 ConVar rd_equipped_medal[RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS]
 {
@@ -3200,6 +3372,16 @@ namespace ReactiveDropInventory
 				const ItemDef_t *pDef = GetItemDef( instance.ItemDefID );
 				return pDef && pDef->ItemSlotMatches( szRequiredSlot ) && pDef->EquipIndex == iEquipIndex;
 			} );
+	}
+
+	int AllocateDynamicItemSlot( int iPlayer, SteamItemInstanceID_t iItemInstanceID, int iMarineProfile, int iInventorySlot )
+	{
+		return s_RD_Inventory_Manager.AllocateDynamicItemSlot( iPlayer, iItemInstanceID, iMarineProfile, iInventorySlot );
+	}
+
+	void ResendDynamicEquipNotification( int iPlayer, bool bForce )
+	{
+		s_RD_Inventory_Manager.ResendDynamicEquipNotification( iPlayer, bForce );
 	}
 #endif
 

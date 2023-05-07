@@ -122,6 +122,8 @@ namespace ReactiveDropInventory
 	void CommitDynamicProperties();
 	void GetItemsForSlot( CUtlVector<ItemInstance_t> &instances, const char *szRequiredSlot );
 	void GetItemsForSlotAndEquipIndex( CUtlVector<ItemInstance_t> &instances, const char *szRequiredSlot, int iEquipIndex );
+	int AllocateDynamicItemSlot( int iPlayer, SteamItemInstanceID_t iItemInstanceID, int iMarineProfile = -1, int iInventorySlot = -1 );
+	void ResendDynamicEquipNotification( int iPlayer, bool bForce = false );
 #endif
 	void OnHitConfirm( CBaseEntity *pAttacker, CBaseEntity *pTarget, Vector vecDamagePosition, bool bKilled, bool bDamageOverTime, bool bBlastDamage, int iDisposition, float flDamage, CBaseEntity *pWeapon );
 }

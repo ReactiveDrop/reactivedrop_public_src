@@ -2527,7 +2527,7 @@ void CAlienSwarm::ReviveDeadMarines()
 	}	
 }
 
-void CAlienSwarm::LoadoutSelect( CASW_Player *pPlayer, int iRosterIndex, int iInvSlot, int iEquipIndex)
+void CAlienSwarm::LoadoutSelect( CASW_Player *pPlayer, int iRosterIndex, int iInvSlot, int iEquipIndex, int iDynamicIndex)
 {
 	if (!ASWGameResource())
 		return;
@@ -2536,24 +2536,24 @@ void CAlienSwarm::LoadoutSelect( CASW_Player *pPlayer, int iRosterIndex, int iIn
 		return;
 
 	// find the appropriate marine resource
-	int iMarineIndex=-1;
-	for (int i=0;i<ASWGameResource()->GetMaxMarineResources();i++)
+	int iMarineIndex = -1;
+	for ( int i = 0; i < ASWGameResource()->GetMaxMarineResources(); i++ )
 	{
-		CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource(i);
-		if (!pMR)
+		CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( i );
+		if ( !pMR )
 			continue;
 
-		if (pMR->GetProfileIndex() == iRosterIndex && pMR->GetCommander() == pPlayer)
+		if ( pMR->GetProfileIndex() == iRosterIndex && pMR->GetCommander() == pPlayer )
 		{
 			iMarineIndex = i;
 			break;
 		}
 	}
-	if (iMarineIndex == -1)
+	if ( iMarineIndex == -1 )
 		return;
 
-	CASW_Marine_Resource* pMarineResource = ASWGameResource()->GetMarineResource(iMarineIndex);
-	if (!pMarineResource)
+	CASW_Marine_Resource *pMarineResource = ASWGameResource()->GetMarineResource( iMarineIndex );
+	if ( !pMarineResource )
 		return;
 
 	// reactivedrop: check whether this weapon is allowed, if not, returns an ID of alternative
@@ -2561,18 +2561,19 @@ void CAlienSwarm::LoadoutSelect( CASW_Player *pPlayer, int iRosterIndex, int iIn
 
 	// Figure out what item the marine is trying to equip
 	CASW_EquipItem *pNewItem = g_ASWEquipmentList.GetItemForSlot( iInvSlot, iEquipIndex );
-	if ( !pNewItem || ( !pNewItem->m_bSelectableInBriefing && !rd_weapons_show_hidden.GetBool() ) )
+	if ( !pNewItem || ( !pNewItem->m_bSelectableInBriefing && !rd_weapons_show_hidden.GetBool() && iDynamicIndex == -1 ) )
 		return;
 
 	// Figure out if the marine is already carrying an item in the slot
 	CASW_EquipItem *pOldItem = g_ASWEquipmentList.GetItemForSlot( iInvSlot, pMarineResource->m_iWeaponsInSlots.Get( iInvSlot ) );
 	// Can swap the old item for new one?
 	if ( !MarineCanSelectInLobby( pMarineResource,
-		pNewItem ? STRING(pNewItem->m_EquipClass) : NULL,
-		pOldItem ? STRING(pOldItem->m_EquipClass) : NULL ) )
+		pNewItem ? STRING( pNewItem->m_EquipClass ) : NULL,
+		pOldItem ? STRING( pOldItem->m_EquipClass ) : NULL ) )
 		return;
 
 	pMarineResource->m_iWeaponsInSlots.Set( iInvSlot, iEquipIndex );
+	pMarineResource->m_iWeaponsInSlotsDynamic.Set( iInvSlot, iDynamicIndex );
 
 	if ( ASWDeathmatchMode() )
 	{
@@ -2697,19 +2698,19 @@ void CAlienSwarm::StartMission()
 		//*/
 		CASW_Player *pLeader = ASWGameResource() ? ASWGameResource()->GetLeader() : NULL;
 		int nPreferredSlot = -1; // we don't care which slot will it take 
-		for (int i = 0; i < 4; ++i)
+		for ( int i = 0; i < 4; ++i )
 		{
 			if ( RosterSelect( pLeader, i, nPreferredSlot ) )
 			{
 				// 0 is Sarge, select fire mines(11) for him
-				if (0 == i)
-					LoadoutSelect(pLeader, i, 2, 11);	// Sarge has asw_weapon_mines
-				if (1 == i)
-					LoadoutSelect(pLeader, i, 2,  6);   // Wildcat has asw_weapon_hornet_barrage
-				if (2 == i)
-					LoadoutSelect(pLeader, i, 2,  7);   // Faith has asw_weapon_freeze_grenades
-				if (3 == i)
-					LoadoutSelect(pLeader, i, 2, 10);   // Tech has asw_weapon_electrified_armor
+				if ( 0 == i )
+					LoadoutSelect( pLeader, i, 2, ASW_EQUIP_MINES, -1 );	// Sarge has asw_weapon_mines
+				if ( 1 == i )
+					LoadoutSelect( pLeader, i, 2, ASW_EQUIP_HORNET_BARRAGE, -1 );	// Wildcat has asw_weapon_hornet_barrage
+				if ( 2 == i )
+					LoadoutSelect( pLeader, i, 2, ASW_EQUIP_FREEZE_GRENADES, -1 );	// Faith has asw_weapon_freeze_grenades
+				if ( 3 == i )
+					LoadoutSelect( pLeader, i, 2, ASW_EQUIP_ELECTRIFIED_ARMOR, -1 );	// Tech has asw_weapon_electrified_armor
 			}
 		}
 		// end of riflemod code
@@ -4256,6 +4257,38 @@ void CAlienSwarm::GiveStartingWeaponToMarine( CASW_Marine *pMarine, int iEquipIn
 	{
 		pWeapon->m_hOriginalOwnerPlayer = pMarine->GetCommander();
 		pWeapon->m_iInventoryEquipSlot = iDynamicItemSlot;
+
+		Assert( pWeapon->IsInventoryEquipSlotValid() );
+		if ( !pWeapon->IsInventoryEquipSlotValid() && !pEquip->m_bSelectableInBriefing && !rd_weapons_show_hidden.GetBool() )
+		{
+			Warning( "Invalid inventory item for player %s weapon %s: changing to %s\n", pMarine->GetCommander()->GetASWNetworkID(), szWeaponClass, iSlot == ASW_INVENTORY_SLOT_EXTRA ? "medkit" : "rifle" );
+			UTIL_Remove( pWeapon );
+
+			CASW_Marine_Resource *pMR = pMarine->GetMarineResource();
+			Assert( pMR );
+			if ( pMR )
+			{
+				Assert( pMR->m_iWeaponsInSlots[iSlot] == iEquipIndex );
+				Assert( pMR->m_iWeaponsInSlotsDynamic[iSlot] == iDynamicItemSlot );
+
+				pMR->m_iWeaponsInSlots.Set( iSlot, iSlot == ASW_INVENTORY_SLOT_EXTRA ? ASW_EQUIP_MEDKIT : ASW_EQUIP_RIFLE );
+				pMR->m_iWeaponsInSlotsDynamic.Set( iSlot, -1 );
+			}
+
+			GiveStartingWeaponToMarine( pMarine, iSlot == ASW_INVENTORY_SLOT_EXTRA ? ASW_EQUIP_MEDKIT : ASW_EQUIP_RIFLE, iSlot, -1 );
+
+			return;
+		}
+	}
+	else
+	{
+		Assert( pEquip->m_bSelectableInBriefing || rd_weapons_show_hidden.GetBool() );
+		if ( !pEquip->m_bSelectableInBriefing && !rd_weapons_show_hidden.GetBool() )
+		{
+			Warning( "Invalid inventory item for player %s weapon %s: removing weapon\n", pMarine->GetCommander()->GetASWNetworkID(), szWeaponClass );
+			UTIL_Remove( pWeapon );
+			return;
+		}
 	}
 
 	// If I have a name, make my weapon match it with "_weapon" appended

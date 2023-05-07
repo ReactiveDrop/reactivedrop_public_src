@@ -195,6 +195,7 @@ ConVar rd_equipped_weapon_extra[ASW_NUM_MARINE_PROFILES]
 	{ "rd_equipped_weapon_extra6", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current extra weapon for Bastille" },
 	{ "rd_equipped_weapon_extra7", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current extra weapon for Vegas" },
 };
+ConVar rd_loadout_auto_update( "rd_loadout_auto_update", "1", FCVAR_ARCHIVE, "Should the current loadout be updated when an item is selected during briefing?" );
 
 ConVar asw_particle_count( "asw_particle_count", "0", 0, "Shows how many particles are being drawn" );
 ConVar asw_dlight_list( "asw_dlight_list", "0", 0, "Lists dynamic lights" );
@@ -592,13 +593,19 @@ void C_ASW_Player::SendRosterSelectCommand( const char *command, int i, int nPre
 				default_extra = ASW_EQUIP_MEDKIT;
 			}
 		}
-		Q_snprintf( buffer, sizeof( buffer ), "%s %d %d %d %d %d", command, i, nPreferredSlot, default_primary, default_secondary, default_extra );
 
+		int iAllocatedSlot0 = ReactiveDropInventory::AllocateDynamicItemSlot( GetSplitScreenPlayerSlot(), strtoull( rd_equipped_weapon_primary[i].GetString(), NULL, 10 ), i, ASW_INVENTORY_SLOT_PRIMARY );
+		int iAllocatedSlot1 = ReactiveDropInventory::AllocateDynamicItemSlot( GetSplitScreenPlayerSlot(), strtoull( rd_equipped_weapon_secondary[i].GetString(), NULL, 10 ), i, ASW_INVENTORY_SLOT_SECONDARY );
+		int iAllocatedSlot2 = ReactiveDropInventory::AllocateDynamicItemSlot( GetSplitScreenPlayerSlot(), strtoull( rd_equipped_weapon_extra[i].GetString(), NULL, 10 ), i, ASW_INVENTORY_SLOT_EXTRA );
+
+		V_snprintf( buffer, sizeof( buffer ), "%s %d %d %d %d %d", command, i, nPreferredSlot, default_primary, default_secondary, default_extra, iAllocatedSlot0, iAllocatedSlot1, iAllocatedSlot2 );
 		engine->ServerCmd( buffer );
+
+		ReactiveDropInventory::ResendDynamicEquipNotification( GetSplitScreenPlayerSlot() );
 	}
 	else
 	{
-		Q_snprintf( buffer, sizeof( buffer ), "%s %d %d", command, i, nPreferredSlot );
+		V_snprintf( buffer, sizeof( buffer ), "%s %d %d", command, i, nPreferredSlot );
 		engine->ServerCmd( buffer );
 	}
 }
@@ -650,7 +657,7 @@ void C_ASW_Player::RosterSpendSkillPoint( int iProfileIndex, int nSkillSlot )
 	engine->ClientCmd( buffer );
 }
 
-void C_ASW_Player::LoadoutSelectEquip( int iMarineIndex, int iInvSlot, int iEquipIndex )
+void C_ASW_Player::LoadoutSelectEquip( int iMarineIndex, int iInvSlot, int iEquipIndex, SteamItemInstanceID_t iItemInstanceID )
 {
 	CASW_EquipItem *pWeapon = g_ASWEquipmentList.GetItemForSlot( iInvSlot, iEquipIndex );
 	if ( pWeapon )
@@ -668,9 +675,8 @@ void C_ASW_Player::LoadoutSelectEquip( int iMarineIndex, int iInvSlot, int iEqui
 		}
 	}
 
-	int iAllocatedDynamicSlot = -1; // TODO
 	int iProfileIndex = -1;
-	if ( ASWGameResource() )
+	if ( ASWGameResource() && rd_loadout_auto_update.GetBool() )
 	{
 		C_ASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( iMarineIndex );
 		if ( pMR )
@@ -679,15 +685,27 @@ void C_ASW_Player::LoadoutSelectEquip( int iMarineIndex, int iInvSlot, int iEqui
 			iProfileIndex = pMR->GetProfileIndex();
 			if ( iProfileIndex >= 0 && iProfileIndex < ASW_NUM_MARINE_PROFILES && iInvSlot >= 0 && iInvSlot <= 2 )
 			{
-				ConVar *pCVar = NULL;
+				ConVar *pEquipIndex = NULL, *pItemInstanceID = NULL;
 				if ( iInvSlot == 0 )
-					pCVar = &asw_default_primary[iProfileIndex];
+				{
+					pEquipIndex = &asw_default_primary[iProfileIndex];
+					pItemInstanceID = &rd_equipped_weapon_primary[iProfileIndex];
+				}
 				else if ( iInvSlot == 1 )
-					pCVar = &asw_default_secondary[iProfileIndex];
+				{
+					pEquipIndex = &asw_default_secondary[iProfileIndex];
+					pItemInstanceID = &rd_equipped_weapon_secondary[iProfileIndex];
+				}
 				else
-					pCVar = &asw_default_extra[iProfileIndex];
+				{
+					pEquipIndex = &asw_default_extra[iProfileIndex];
+					pItemInstanceID = &rd_equipped_weapon_extra[iProfileIndex];
+				}
 
-				pCVar->SetValue( iEquipIndex );
+				char szItemInstanceID[32];
+				V_snprintf( szItemInstanceID, sizeof( szItemInstanceID ), "%llu", iItemInstanceID );
+				pEquipIndex->SetValue( iEquipIndex );
+				pItemInstanceID->SetValue( szItemInstanceID );
 
 				if ( ASWGameRules() )
 				{
@@ -696,11 +714,16 @@ void C_ASW_Player::LoadoutSelectEquip( int iMarineIndex, int iInvSlot, int iEqui
 			}
 		}
 	}
+
 	if ( iProfileIndex != -1 )
 	{
+		int iAllocatedDynamicSlot = ReactiveDropInventory::AllocateDynamicItemSlot( GetSplitScreenPlayerSlot(), iItemInstanceID, iProfileIndex, iInvSlot );
+
 		char buffer[64];
 		Q_snprintf( buffer, sizeof( buffer ), "cl_loadout %d %d %d %d", iProfileIndex, iInvSlot, iEquipIndex, iAllocatedDynamicSlot );
 		engine->ClientCmd( buffer );
+
+		ReactiveDropInventory::ResendDynamicEquipNotification( GetSplitScreenPlayerSlot() );
 	}
 }
 
@@ -734,10 +757,9 @@ void C_ASW_Player::LoadoutSendStored( C_ASW_Marine_Resource *pMR )
 	int iSecondary = asw_default_secondary[iRosterIndex].GetInt();
 	int iExtra = asw_default_extra[iRosterIndex].GetInt();
 
-	// TODO: dynamic item data
-	int iAllocatedSlot0 = -1;
-	int iAllocatedSlot1 = -1;
-	int iAllocatedSlot2 = -1;
+	int iAllocatedSlot0 = ReactiveDropInventory::AllocateDynamicItemSlot( GetSplitScreenPlayerSlot(), strtoull( rd_equipped_weapon_primary[iRosterIndex].GetString(), NULL, 10 ), iRosterIndex, ASW_INVENTORY_SLOT_PRIMARY );
+	int iAllocatedSlot1 = ReactiveDropInventory::AllocateDynamicItemSlot( GetSplitScreenPlayerSlot(), strtoull( rd_equipped_weapon_secondary[iRosterIndex].GetString(), NULL, 10 ), iRosterIndex, ASW_INVENTORY_SLOT_SECONDARY );
+	int iAllocatedSlot2 = ReactiveDropInventory::AllocateDynamicItemSlot( GetSplitScreenPlayerSlot(), strtoull( rd_equipped_weapon_extra[iRosterIndex].GetString(), NULL, 10 ), iRosterIndex, ASW_INVENTORY_SLOT_EXTRA );
 
 	CASW_EquipItem *pPrimary = g_ASWEquipmentList.GetRegular( iPrimary );
 	if ( pPrimary )
@@ -767,6 +789,8 @@ void C_ASW_Player::LoadoutSendStored( C_ASW_Marine_Resource *pMR )
 	char mbuffer[64];
 	Q_snprintf( mbuffer, sizeof( mbuffer ), "cl_loadouta %d %d %d %d %d %d %d", iRosterIndex, iPrimary, iSecondary, iExtra, iAllocatedSlot0, iAllocatedSlot1, iAllocatedSlot2 );
 	engine->ClientCmd( mbuffer );
+
+	ReactiveDropInventory::ResendDynamicEquipNotification( GetSplitScreenPlayerSlot() );
 }
 
 void C_ASW_Player::StartReady()

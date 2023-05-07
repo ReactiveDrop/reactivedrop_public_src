@@ -767,7 +767,7 @@ void CASW_Briefing::SelectWeapon( int nProfileIndex, int nInventorySlot, int nEq
 		if ( pMR->GetProfileIndex() == nProfileIndex )
 		{
 			int nMarineResourceIndex = ASWGameResource()->GetIndexFor( pMR );
-			pPlayer->LoadoutSelectEquip( nMarineResourceIndex, nInventorySlot, nEquipIndex );
+			pPlayer->LoadoutSelectEquip( nMarineResourceIndex, nInventorySlot, nEquipIndex, iItemInstance );
 			return;
 		}
 	}
