@@ -124,33 +124,77 @@ ConVar asw_marine_switch_blend_speed( "asw_marine_switch_blend_speed", "2.5", 0,
 ConVar asw_marine_switch_blend_max_dist( "asw_marine_switch_blend_max_dist", "1500", 0, "Maximum distance apart marines can be for a camera blend to occur" );
 
 // default inventory convars
-ConVar asw_default_primary_0( "asw_default_primary_0", "-1", FCVAR_ARCHIVE, "Default primary equip for marine with this number" );
-ConVar asw_default_secondary_0( "asw_default_secondary_0", "-1", FCVAR_ARCHIVE, "Default secondary equip for marine with this number" );
-ConVar asw_default_extra_0( "asw_default_extra_0", "-1", FCVAR_ARCHIVE, "Default extra equip for marine with this number" );
-ConVar asw_default_primary_1( "asw_default_primary_1", "-1", FCVAR_ARCHIVE, "Default primary equip for marine with this number" );
-ConVar asw_default_secondary_1( "asw_default_secondary_1", "-1", FCVAR_ARCHIVE, "Default secondary equip for marine with this number" );
-ConVar asw_default_extra_1( "asw_default_extra_1", "-1", FCVAR_ARCHIVE, "Default extra equip for marine with this number" );
-ConVar asw_default_primary_2( "asw_default_primary_2", "-1", FCVAR_ARCHIVE, "Default primary equip for marine with this number" );
-ConVar asw_default_secondary_2( "asw_default_secondary_2", "-1", FCVAR_ARCHIVE, "Default secondary equip for marine with this number" );
-ConVar asw_default_extra_2( "asw_default_extra_2", "-1", FCVAR_ARCHIVE, "Default extra equip for marine with this number" );
-ConVar asw_default_primary_3( "asw_default_primary_3", "-1", FCVAR_ARCHIVE, "Default primary equip for marine with this number" );
-ConVar asw_default_secondary_3( "asw_default_secondary_3", "-1", FCVAR_ARCHIVE, "Default secondary equip for marine with this number" );
-ConVar asw_default_extra_3( "asw_default_extra_3", "-1", FCVAR_ARCHIVE, "Default extra equip for marine with this number" );
-ConVar asw_default_primary_4( "asw_default_primary_4", "-1", FCVAR_ARCHIVE, "Default primary equip for marine with this number" );
-ConVar asw_default_secondary_4( "asw_default_secondary_4", "-1", FCVAR_ARCHIVE, "Default secondary equip for marine with this number" );
-ConVar asw_default_extra_4( "asw_default_extra_4", "-1", FCVAR_ARCHIVE, "Default extra equip for marine with this number" );
-ConVar asw_default_primary_5( "asw_default_primary_5", "-1", FCVAR_ARCHIVE, "Default primary equip for marine with this number" );
-ConVar asw_default_secondary_5( "asw_default_secondary_5", "-1", FCVAR_ARCHIVE, "Default secondary equip for marine with this number" );
-ConVar asw_default_extra_5( "asw_default_extra_5", "-1", FCVAR_ARCHIVE, "Default extra equip for marine with this number" );
-ConVar asw_default_primary_6( "asw_default_primary_6", "-1", FCVAR_ARCHIVE, "Default primary equip for marine with this number" );
-ConVar asw_default_secondary_6( "asw_default_secondary_6", "-1", FCVAR_ARCHIVE, "Default secondary equip for marine with this number" );
-ConVar asw_default_extra_6( "asw_default_extra_6", "-1", FCVAR_ARCHIVE, "Default extra equip for marine with this number" );
-ConVar asw_default_primary_7( "asw_default_primary_7", "-1", FCVAR_ARCHIVE, "Default primary equip for marine with this number" );
-ConVar asw_default_secondary_7( "asw_default_secondary_7", "-1", FCVAR_ARCHIVE, "Default secondary equip for marine with this number" );
-ConVar asw_default_extra_7( "asw_default_extra_7", "-1", FCVAR_ARCHIVE, "Default extra equip for marine with this number" );
-ConVar asw_default_primary_8( "asw_default_primary_8", "-1", FCVAR_ARCHIVE, "Default primary equip for marine with this number" );
-ConVar asw_default_secondary_8( "asw_default_secondary_8", "-1", FCVAR_ARCHIVE, "Default secondary equip for marine with this number" );
-ConVar asw_default_extra_8( "asw_default_extra_8", "-1", FCVAR_ARCHIVE, "Default extra equip for marine with this number" );
+ConVar asw_default_primary[ASW_NUM_MARINE_PROFILES + 1]
+{
+	{ "asw_default_primary_0", "-1", FCVAR_ARCHIVE, "Default primary equip for Sarge" },
+	{ "asw_default_primary_1", "-1", FCVAR_ARCHIVE, "Default primary equip for Wildcat" },
+	{ "asw_default_primary_2", "-1", FCVAR_ARCHIVE, "Default primary equip for Faith" },
+	{ "asw_default_primary_3", "-1", FCVAR_ARCHIVE, "Default primary equip for Crash" },
+	{ "asw_default_primary_4", "-1", FCVAR_ARCHIVE, "Default primary equip for Jaeger" },
+	{ "asw_default_primary_5", "-1", FCVAR_ARCHIVE, "Default primary equip for Wolfe" },
+	{ "asw_default_primary_6", "-1", FCVAR_ARCHIVE, "Default primary equip for Bastille" },
+	{ "asw_default_primary_7", "-1", FCVAR_ARCHIVE, "Default primary equip for Vegas" },
+	// we don't have Flynn, but this convar has existed for a while so keep it as FCVAR_ARCHIVE in case anyone is really attached to the number they put there
+	{ "asw_default_primary_8", "-1", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Default primary equip for Flynn" },
+};
+ConVar asw_default_secondary[ASW_NUM_MARINE_PROFILES + 1]
+{
+	{ "asw_default_secondary_0", "-1", FCVAR_ARCHIVE, "Default secondary equip for Sarge" },
+	{ "asw_default_secondary_1", "-1", FCVAR_ARCHIVE, "Default secondary equip for Wildcat" },
+	{ "asw_default_secondary_2", "-1", FCVAR_ARCHIVE, "Default secondary equip for Faith" },
+	{ "asw_default_secondary_3", "-1", FCVAR_ARCHIVE, "Default secondary equip for Crash" },
+	{ "asw_default_secondary_4", "-1", FCVAR_ARCHIVE, "Default secondary equip for Jaeger" },
+	{ "asw_default_secondary_5", "-1", FCVAR_ARCHIVE, "Default secondary equip for Wolfe" },
+	{ "asw_default_secondary_6", "-1", FCVAR_ARCHIVE, "Default secondary equip for Bastille" },
+	{ "asw_default_secondary_7", "-1", FCVAR_ARCHIVE, "Default secondary equip for Vegas" },
+	{ "asw_default_secondary_8", "-1", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Default secondary equip for Flynn" },
+};
+ConVar asw_default_extra[ASW_NUM_MARINE_PROFILES + 1]
+{
+	{ "asw_default_extra_0", "-1", FCVAR_ARCHIVE, "Default extra equip for Sarge" },
+	{ "asw_default_extra_1", "-1", FCVAR_ARCHIVE, "Default extra equip for Wildcat" },
+	{ "asw_default_extra_2", "-1", FCVAR_ARCHIVE, "Default extra equip for Faith" },
+	{ "asw_default_extra_3", "-1", FCVAR_ARCHIVE, "Default extra equip for Crash" },
+	{ "asw_default_extra_4", "-1", FCVAR_ARCHIVE, "Default extra equip for Jaeger" },
+	{ "asw_default_extra_5", "-1", FCVAR_ARCHIVE, "Default extra equip for Wolfe" },
+	{ "asw_default_extra_6", "-1", FCVAR_ARCHIVE, "Default extra equip for Bastille" },
+	{ "asw_default_extra_7", "-1", FCVAR_ARCHIVE, "Default extra equip for Vegas" },
+	{ "asw_default_extra_8", "-1", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Default extra equip for Flynn" },
+};
+extern ConVar rd_equipped_marine[ASW_NUM_MARINE_PROFILES];
+ConVar rd_equipped_weapon_primary[ASW_NUM_MARINE_PROFILES]
+{
+	{ "rd_equipped_weapon_primary0", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current primary weapon for Sarge" },
+	{ "rd_equipped_weapon_primary1", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current primary weapon for Wildcat" },
+	{ "rd_equipped_weapon_primary2", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current primary weapon for Faith" },
+	{ "rd_equipped_weapon_primary3", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current primary weapon for Crash" },
+	{ "rd_equipped_weapon_primary4", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current primary weapon for Jaeger" },
+	{ "rd_equipped_weapon_primary5", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current primary weapon for Wolfe" },
+	{ "rd_equipped_weapon_primary6", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current primary weapon for Bastille" },
+	{ "rd_equipped_weapon_primary7", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current primary weapon for Vegas" },
+};
+ConVar rd_equipped_weapon_secondary[ASW_NUM_MARINE_PROFILES]
+{
+	{ "rd_equipped_weapon_secondary0", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current secondary weapon for Sarge" },
+	{ "rd_equipped_weapon_secondary1", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current secondary weapon for Wildcat" },
+	{ "rd_equipped_weapon_secondary2", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current secondary weapon for Faith" },
+	{ "rd_equipped_weapon_secondary3", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current secondary weapon for Crash" },
+	{ "rd_equipped_weapon_secondary4", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current secondary weapon for Jaeger" },
+	{ "rd_equipped_weapon_secondary5", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current secondary weapon for Wolfe" },
+	{ "rd_equipped_weapon_secondary6", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current secondary weapon for Bastille" },
+	{ "rd_equipped_weapon_secondary7", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current secondary weapon for Vegas" },
+};
+ConVar rd_equipped_weapon_extra[ASW_NUM_MARINE_PROFILES]
+{
+	{ "rd_equipped_weapon_extra0", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current extra weapon for Sarge" },
+	{ "rd_equipped_weapon_extra1", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current extra weapon for Wildcat" },
+	{ "rd_equipped_weapon_extra2", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current extra weapon for Faith" },
+	{ "rd_equipped_weapon_extra3", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current extra weapon for Crash" },
+	{ "rd_equipped_weapon_extra4", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current extra weapon for Jaeger" },
+	{ "rd_equipped_weapon_extra5", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current extra weapon for Wolfe" },
+	{ "rd_equipped_weapon_extra6", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current extra weapon for Bastille" },
+	{ "rd_equipped_weapon_extra7", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current extra weapon for Vegas" },
+};
 
 ConVar asw_particle_count( "asw_particle_count", "0", 0, "Shows how many particles are being drawn" );
 ConVar asw_dlight_list( "asw_dlight_list", "0", 0, "Lists dynamic lights" );
@@ -159,8 +203,6 @@ ConVar asw_stim_music( "asw_stim_music", "", FCVAR_ARCHIVE, "Custom music file u
 ConVar asw_player_avoidance_force( "asw_player_avoidance_force", "1024", FCVAR_CHEAT, "Marine avoidance separation force." );
 ConVar asw_player_avoidance_bounce( "asw_player_avoidance_bounce", "1.0", FCVAR_CHEAT, "Marine avoidance bounce." );
 ConVar asw_player_avoidance_fakehull( "asw_player_avoidance_fakehull", "25.0", FCVAR_CHEAT, "Marine avoidance hull size." );
-
-ConVar asw_roster_select_bypass_steam( "asw_roster_select_bypass_steam", "0", FCVAR_CHEAT, "Bypass checking if data has been downloaded from steam when selecting a Marine." );
 
 void fnAutoReloadChangedCallback( IConVar *var, const char *pOldString, float flOldValue )
 {
@@ -518,31 +560,13 @@ void C_ASW_Player::SelectTumbler( int iTumblerImpulse )
 
 void C_ASW_Player::SendRosterSelectCommand( const char *command, int i, int nPreferredSlot )
 {
-	//if ( m_bPendingSteamStats && !asw_roster_select_bypass_steam.GetBool() && ( gpGlobals->curtime - m_flPendingSteamStatsStart ) < 2.0f )
-		//return;
-
 	char buffer[64];
 	if ( i >= 0 && i < ASW_NUM_MARINE_PROFILES )
 	{
 		// grab default inventory numbers
-		char primarybuf[24];
-		char secondarybuf[26];
-		char extrabuf[24];
-		Q_snprintf( primarybuf, sizeof( primarybuf ), "asw_default_primary_%d", i );
-		Q_snprintf( secondarybuf, sizeof( secondarybuf ), "asw_default_secondary_%d", i );
-		Q_snprintf( extrabuf, sizeof( extrabuf ), "asw_default_extra_%d", i );
-		int default_primary = -1;
-		int default_secondary = -1;
-		int default_extra = -1;
-		ConVar *pCVar = cvar->FindVar( primarybuf );
-		if ( pCVar )
-			default_primary = pCVar->GetInt();
-		pCVar = cvar->FindVar( secondarybuf );
-		if ( pCVar )
-			default_secondary = pCVar->GetInt();
-		pCVar = cvar->FindVar( extrabuf );
-		if ( pCVar )
-			default_extra = pCVar->GetInt();
+		int default_primary = asw_default_primary[i].GetInt();
+		int default_secondary = asw_default_secondary[i].GetInt();
+		int default_extra = asw_default_extra[i].GetInt();
 
 		CASW_EquipItem *pPrimary = g_ASWEquipmentList.GetRegular( default_primary );
 		if ( pPrimary )
@@ -644,6 +668,7 @@ void C_ASW_Player::LoadoutSelectEquip( int iMarineIndex, int iInvSlot, int iEqui
 		}
 	}
 
+	int iAllocatedDynamicSlot = -1; // TODO
 	int iProfileIndex = -1;
 	if ( ASWGameResource() )
 	{
@@ -654,18 +679,15 @@ void C_ASW_Player::LoadoutSelectEquip( int iMarineIndex, int iInvSlot, int iEqui
 			iProfileIndex = pMR->GetProfileIndex();
 			if ( iProfileIndex >= 0 && iProfileIndex < ASW_NUM_MARINE_PROFILES && iInvSlot >= 0 && iInvSlot <= 2 )
 			{
-				char buffer[32];
+				ConVar *pCVar = NULL;
 				if ( iInvSlot == 0 )
-					Q_snprintf( buffer, sizeof( buffer ), "asw_default_primary_%d", iProfileIndex );
+					pCVar = &asw_default_primary[iProfileIndex];
 				else if ( iInvSlot == 1 )
-					Q_snprintf( buffer, sizeof( buffer ), "asw_default_secondary_%d", iProfileIndex );
-				else if ( iInvSlot == 2 )
-					Q_snprintf( buffer, sizeof( buffer ), "asw_default_extra_%d", iProfileIndex );
-				ConVar *pCVar = cvar->FindVar( buffer );
-				if ( pCVar )
-				{
-					pCVar->SetValue( iEquipIndex );
-				}
+					pCVar = &asw_default_secondary[iProfileIndex];
+				else
+					pCVar = &asw_default_extra[iProfileIndex];
+
+				pCVar->SetValue( iEquipIndex );
 
 				if ( ASWGameRules() )
 				{
@@ -677,7 +699,7 @@ void C_ASW_Player::LoadoutSelectEquip( int iMarineIndex, int iInvSlot, int iEqui
 	if ( iProfileIndex != -1 )
 	{
 		char buffer[64];
-		Q_snprintf( buffer, sizeof( buffer ), "cl_loadout %d %d %d", iProfileIndex, iInvSlot, iEquipIndex );
+		Q_snprintf( buffer, sizeof( buffer ), "cl_loadout %d %d %d %d", iProfileIndex, iInvSlot, iEquipIndex, iAllocatedDynamicSlot );
 		engine->ClientCmd( buffer );
 	}
 }
@@ -708,25 +730,14 @@ void C_ASW_Player::LoadoutSendStored( C_ASW_Marine_Resource *pMR )
 
 	int iRosterIndex = pMR->m_MarineProfileIndex;
 
-	int iPrimary = -1;
-	int iSecondary = -1;
-	int iExtra = -1;
-	ConVar *pCVar = NULL;
-	char buffer[32];
-	Q_snprintf( buffer, sizeof( buffer ), "asw_default_primary_%d", iRosterIndex );
-	pCVar = cvar->FindVar( buffer );
-	if ( pCVar )
-		iPrimary = pCVar->GetInt();
+	int iPrimary = asw_default_primary[iRosterIndex].GetInt();
+	int iSecondary = asw_default_secondary[iRosterIndex].GetInt();
+	int iExtra = asw_default_extra[iRosterIndex].GetInt();
 
-	Q_snprintf( buffer, sizeof( buffer ), "asw_default_secondary_%d", iRosterIndex );
-	pCVar = cvar->FindVar( buffer );
-	if ( pCVar )
-		iSecondary = pCVar->GetInt();
-
-	Q_snprintf( buffer, sizeof( buffer ), "asw_default_extra_%d", iRosterIndex );
-	pCVar = cvar->FindVar( buffer );
-	if ( pCVar )
-		iExtra = pCVar->GetInt();
+	// TODO: dynamic item data
+	int iAllocatedSlot0 = -1;
+	int iAllocatedSlot1 = -1;
+	int iAllocatedSlot2 = -1;
 
 	CASW_EquipItem *pPrimary = g_ASWEquipmentList.GetRegular( iPrimary );
 	if ( pPrimary )
@@ -754,7 +765,7 @@ void C_ASW_Player::LoadoutSendStored( C_ASW_Marine_Resource *pMR )
 	}
 
 	char mbuffer[64];
-	Q_snprintf( mbuffer, sizeof( mbuffer ), "cl_loadouta %d %d %d %d", iRosterIndex, iPrimary, iSecondary, iExtra );
+	Q_snprintf( mbuffer, sizeof( mbuffer ), "cl_loadouta %d %d %d %d %d %d %d", iRosterIndex, iPrimary, iSecondary, iExtra, iAllocatedSlot0, iAllocatedSlot1, iAllocatedSlot2 );
 	engine->ClientCmd( mbuffer );
 }
 

@@ -64,6 +64,7 @@ namespace ReactiveDropInventory
 		bool AfterDescriptionOnlyMultiStack : 1;
 		bool HasInGameDescription : 1;
 		bool HasBorder : 1;
+		bool IsBasic : 1;
 #ifdef CLIENT_DLL
 		vgui::IImage *Icon{};
 		CUtlVector<vgui::IImage *> StyleIcons{};
@@ -118,8 +119,9 @@ namespace ReactiveDropInventory
 	void AddPromoItem( SteamItemDef_t id );
 	void RequestGenericPromoItems();
 	void CheckPlaytimeItemGenerators( int iMarineClass );
-
 	void CommitDynamicProperties();
+	void GetItemsForSlot( CUtlVector<ItemInstance_t> &instances, const char *szRequiredSlot );
+	void GetItemsForSlotAndEquipIndex( CUtlVector<ItemInstance_t> &instances, const char *szRequiredSlot, int iEquipIndex );
 #endif
 	void OnHitConfirm( CBaseEntity *pAttacker, CBaseEntity *pTarget, Vector vecDamagePosition, bool bKilled, bool bDamageOverTime, bool bBlastDamage, int iDisposition, float flDamage, CBaseEntity *pWeapon );
 }

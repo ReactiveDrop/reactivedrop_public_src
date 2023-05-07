@@ -91,6 +91,29 @@ public:
 
 	void PostInit() override
 	{
+#ifdef CLIENT_DLL
+		if ( SteamUser() )
+		{
+			CFmtStr szCacheFileName{ "cfg/clienti_%llu.dat", SteamUser()->GetSteamID().ConvertToUint64() };
+			CUtlBuffer buf;
+			if ( g_pFullFileSystem->ReadFile( szCacheFileName, "MOD", buf ) )
+			{
+				KeyValues::AutoDelete pCache{ "IC" };
+				bool bOK = pCache->ReadAsBinary( buf );
+				Assert( bOK );
+				if ( bOK )
+				{
+					FOR_EACH_SUBKEY( pCache, pItem )
+					{
+						m_LocalInventoryCache.AddToTail( ReactiveDropInventory::ItemInstance_t{ pItem } );
+					}
+
+					DevMsg( "Loaded %d items from inventory cache.\n", m_LocalInventoryCache.Count() );
+				}
+			}
+		}
+#endif
+
 		ISteamInventory *pInventory = SteamInventory();
 #ifdef GAME_DLL
 		if ( engine->IsDedicatedServer() )
@@ -130,14 +153,17 @@ public:
 		pInventory->DestroyResult( m_DebugPrintInventoryResult );
 #ifdef CLIENT_DLL
 		pInventory->DestroyResult( m_DynamicPropertyUpdateResult );
-		for ( int iType = 0; iType < NUM_EQUIP_SLOT_TYPES; iType++ )
+		for ( int iPlayer = 0; iPlayer < MAX_SPLITSCREEN_PLAYERS; iPlayer++ )
 		{
-			pInventory->DestroyResult( m_PreparingEquipNotification[iType] );
-			FOR_EACH_VEC( m_PendingEquipSend[iType], i )
+			for ( int iType = 0; iType < NUM_EQUIP_SLOT_TYPES; iType++ )
 			{
-				m_PendingEquipSend[iType][i]->deleteThis();
+				pInventory->DestroyResult( m_PlayerLocal[iPlayer].m_PreparingEquipNotification[iType] );
+				FOR_EACH_VEC( m_PlayerLocal[iPlayer].m_PendingEquipSend[iType], i )
+				{
+					m_PlayerLocal[iPlayer].m_PendingEquipSend[iType][i]->deleteThis();
+				}
+				m_PlayerLocal[iPlayer].m_PendingEquipSend[iType].Purge();
 			}
-			m_PendingEquipSend[iType].Purge();
 		}
 		m_CraftingQueue.PurgeAndDeleteElements();
 #endif
@@ -169,7 +195,10 @@ public:
 		}
 
 #ifdef CLIENT_DLL
-		QueueSendStaticEquipNotification( true );
+		for ( int iPlayer = 0; iPlayer < MAX_SPLITSCREEN_PLAYERS; iPlayer++ )
+		{
+			QueueSendStaticEquipNotification( iPlayer, true );
+		}
 #endif
 	}
 
@@ -189,16 +218,19 @@ public:
 		}
 
 #ifdef CLIENT_DLL
-		for ( int iType = 0; iType < NUM_EQUIP_SLOT_TYPES; iType++ )
+		for ( int iPlayer = 0; iPlayer < MAX_SPLITSCREEN_PLAYERS; iPlayer++ )
 		{
-			pInventory->DestroyResult( m_PreparingEquipNotification[iType] );
-			m_PreparingEquipNotification[iType] = k_SteamInventoryResultInvalid;
-			FOR_EACH_VEC( m_PendingEquipSend[iType], i)
+			for ( int iType = 0; iType < NUM_EQUIP_SLOT_TYPES; iType++ )
 			{
-				m_PendingEquipSend[iType][i]->deleteThis();
+				pInventory->DestroyResult( m_PlayerLocal[iPlayer].m_PreparingEquipNotification[iType] );
+				m_PlayerLocal[iPlayer].m_PreparingEquipNotification[iType] = k_SteamInventoryResultInvalid;
+				FOR_EACH_VEC( m_PlayerLocal[iPlayer].m_PendingEquipSend[iType], i )
+				{
+					m_PlayerLocal[iPlayer].m_PendingEquipSend[iType][i]->deleteThis();
 
+				}
+				m_PlayerLocal[iPlayer].m_PendingEquipSend[iType].Purge();
 			}
-			m_PendingEquipSend[iType].Purge();
 		}
 
 		CommitDynamicProperties();
@@ -206,9 +238,9 @@ public:
 	}
 
 #ifdef CLIENT_DLL
-	void QueueSendStaticEquipNotification( bool bForce = false )
+	void QueueSendStaticEquipNotification( int iPlayer, bool bForce = false )
 	{
-		if ( !bForce && ( m_PreparingEquipNotification[EQUIP_SLOT_TYPE_STATIC] != k_SteamInventoryResultInvalid || !engine->IsInGame() ) )
+		if ( !bForce && ( m_PlayerLocal[iPlayer].m_PreparingEquipNotification[EQUIP_SLOT_TYPE_STATIC] != k_SteamInventoryResultInvalid || !engine->IsInGame() ) )
 		{
 			return;
 		}
@@ -225,7 +257,7 @@ public:
 			for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC; i++ )
 			{
 				// leave local cache empty; dynamic properties cannot be updated offline
-				m_LocalEquipCacheStatic[i] = ReactiveDropInventory::ItemInstance_t{};
+				m_PlayerLocal[iPlayer].m_LocalEquipCacheStatic[i] = ReactiveDropInventory::ItemInstance_t{};
 
 				const char *szSlot = ReactiveDropInventory::g_InventorySlotNames[i];
 				ConVarRef cv{ CFmtStr{ "rd_equipped_%s", szSlot } };
@@ -243,13 +275,13 @@ public:
 
 		GET_INVENTORY_OR_BAIL;
 
-		pInventory->DestroyResult( m_PreparingEquipNotification[EQUIP_SLOT_TYPE_STATIC] );
-		m_PreparingEquipNotification[EQUIP_SLOT_TYPE_STATIC] = k_SteamInventoryResultInvalid;
-		FOR_EACH_VEC( m_PendingEquipSend[EQUIP_SLOT_TYPE_STATIC], i )
+		pInventory->DestroyResult( m_PlayerLocal[iPlayer].m_PreparingEquipNotification[EQUIP_SLOT_TYPE_STATIC] );
+		m_PlayerLocal[iPlayer].m_PreparingEquipNotification[EQUIP_SLOT_TYPE_STATIC] = k_SteamInventoryResultInvalid;
+		FOR_EACH_VEC( m_PlayerLocal[iPlayer].m_PendingEquipSend[EQUIP_SLOT_TYPE_STATIC], i )
 		{
-			m_PendingEquipSend[EQUIP_SLOT_TYPE_STATIC][i]->deleteThis();
+			m_PlayerLocal[iPlayer].m_PendingEquipSend[EQUIP_SLOT_TYPE_STATIC][i]->deleteThis();
 		}
-		m_PendingEquipSend[EQUIP_SLOT_TYPE_STATIC].Purge();
+		m_PlayerLocal[iPlayer].m_PendingEquipSend[EQUIP_SLOT_TYPE_STATIC].Purge();
 
 		CUtlVector<SteamItemInstanceID_t> ItemIDs;
 		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC; i++ )
@@ -264,17 +296,17 @@ public:
 		}
 
 		if ( ItemIDs.Count() == 0 )
-			SendEquipNotification( EQUIP_SLOT_TYPE_STATIC );
+			SendEquipNotification( EQUIP_SLOT_TYPE_STATIC, iPlayer );
 		else
-			pInventory->GetItemsByID( &m_PreparingEquipNotification[EQUIP_SLOT_TYPE_STATIC], ItemIDs.Base(), ItemIDs.Count() );
+			pInventory->GetItemsByID( &m_PlayerLocal[iPlayer].m_PreparingEquipNotification[EQUIP_SLOT_TYPE_STATIC], ItemIDs.Base(), ItemIDs.Count() );
 	}
 
-	void ResendDynamicEquipNotification()
+	void ResendDynamicEquipNotification( int iPlayer )
 	{
 		Assert( !"TODO" );
 	}
 
-	void SendEquipNotification( int iType )
+	void SendEquipNotification( int iType, int iPlayer )
 	{
 		COMPILE_TIME_ASSERT( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC < 255 );
 		COMPILE_TIME_ASSERT( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC < 255 );
@@ -282,7 +314,7 @@ public:
 
 		int iNumSlots = iType == EQUIP_SLOT_TYPE_STATIC ? RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC : RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC;
 
-		if ( m_PreparingEquipNotification[iType] == k_SteamInventoryResultInvalid )
+		if ( m_PlayerLocal[iPlayer].m_PreparingEquipNotification[iType] == k_SteamInventoryResultInvalid )
 		{
 			byte allZeroes[4 + MAX( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC, RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC )];
 			V_memset( allZeroes, 0, sizeof( allZeroes ) );
@@ -293,39 +325,39 @@ public:
 			{
 				for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC; i++ )
 				{
-					m_LocalEquipCacheStatic[i] = ReactiveDropInventory::ItemInstance_t{};
+					m_PlayerLocal[iPlayer].m_LocalEquipCacheStatic[i] = ReactiveDropInventory::ItemInstance_t{};
 				}
 			}
 
-			SendEquipNotification( allZeroes, 4 + iNumSlots, iType );
+			SendEquipNotification( allZeroes, 4 + iNumSlots, iType, iPlayer );
 
 			return;
 		}
 
 		GET_INVENTORY_OR_BAIL;
 
-		EResult eResult = pInventory->GetResultStatus( m_PreparingEquipNotification[iType] );
+		EResult eResult = pInventory->GetResultStatus( m_PlayerLocal[iPlayer].m_PreparingEquipNotification[iType] );
 		if ( eResult != k_EResultOK )
 		{
 			Warning( "Getting snapshot of equipped items (type %d) to send to server failed: %d %s\n", iType, eResult, UTIL_RD_EResultToString( eResult ) );
 
-			pInventory->DestroyResult( m_PreparingEquipNotification[iType] );
-			m_PreparingEquipNotification[iType] = k_SteamInventoryResultInvalid;
+			pInventory->DestroyResult( m_PlayerLocal[iPlayer].m_PreparingEquipNotification[iType] );
+			m_PlayerLocal[iPlayer].m_PreparingEquipNotification[iType] = k_SteamInventoryResultInvalid;
 
 			return;
 		}
 
 		uint32_t nSize{};
-		pInventory->GetResultItems( m_PreparingEquipNotification[iType], NULL, &nSize );
+		pInventory->GetResultItems( m_PlayerLocal[iPlayer].m_PreparingEquipNotification[iType], NULL, &nSize );
 
 		CUtlVector<ReactiveDropInventory::ItemInstance_t> instances{ 0, int( nSize ) };
 		for ( uint32_t i = 0; i < nSize; i++ )
 		{
-			instances.AddToTail( ReactiveDropInventory::ItemInstance_t{ m_PreparingEquipNotification[iType], i } );
+			instances.AddToTail( ReactiveDropInventory::ItemInstance_t{ m_PlayerLocal[iPlayer].m_PreparingEquipNotification[iType], i } );
 		}
 
 		nSize = 0;
-		pInventory->SerializeResult( m_PreparingEquipNotification[iType], NULL, &nSize );
+		pInventory->SerializeResult( m_PlayerLocal[iPlayer].m_PreparingEquipNotification[iType], NULL, &nSize );
 		CUtlMemory<byte> buf{ 0, int( 4 + iNumSlots + nSize ) };
 
 		byte *pIndex = buf.Base() + 4;
@@ -338,7 +370,7 @@ public:
 				Assert( cv.IsValid() );
 
 				*pIndex = 0;
-				m_LocalEquipCacheStatic[i] = ReactiveDropInventory::ItemInstance_t{};
+				m_PlayerLocal[iPlayer].m_LocalEquipCacheStatic[i] = ReactiveDropInventory::ItemInstance_t{};
 
 				SteamItemInstanceID_t id = strtoull( cv.GetString(), NULL, 10 );
 				if ( id != 0 && id != k_SteamItemInstanceIDInvalid )
@@ -347,7 +379,7 @@ public:
 					{
 						if ( instances[j].ItemID == id )
 						{
-							m_LocalEquipCacheStatic[i] = instances[j];
+							m_PlayerLocal[iPlayer].m_LocalEquipCacheStatic[i] = instances[j];
 							*pIndex = j + 1;
 							break;
 						}
@@ -363,13 +395,13 @@ public:
 			{
 				*pIndex = 0;
 
-				if ( m_EquipIDsDynamic[i] != 0 && m_EquipIDsDynamic[i] != k_SteamItemInstanceIDInvalid )
+				if ( m_PlayerLocal[iPlayer].m_EquipIDsDynamic[i] != 0 && m_PlayerLocal[iPlayer].m_EquipIDsDynamic[i] != k_SteamItemInstanceIDInvalid )
 				{
 					FOR_EACH_VEC( instances, j )
 					{
-						if ( instances[j].ItemID == m_EquipIDsDynamic[i] )
+						if ( instances[j].ItemID == m_PlayerLocal[iPlayer].m_EquipIDsDynamic[i] )
 						{
-							m_LocalEquipCacheDynamic[i] = instances[j];
+							m_PlayerLocal[iPlayer].m_LocalEquipCacheDynamic[i] = instances[j];
 							*pIndex = j + 1;
 							break;
 						}
@@ -384,22 +416,22 @@ public:
 			Assert( 0 );
 		}
 
-		pInventory->SerializeResult( m_PreparingEquipNotification[iType], pIndex, &nSize );
+		pInventory->SerializeResult( m_PlayerLocal[iPlayer].m_PreparingEquipNotification[iType], pIndex, &nSize );
 
 		*reinterpret_cast< CRC32_t * >( buf.Base() ) = CRC32_ProcessSingleBuffer( buf.Base() + 4, buf.Count() - 4 );
 
-		pInventory->DestroyResult( m_PreparingEquipNotification[iType] );
-		m_PreparingEquipNotification[iType] = k_SteamInventoryResultInvalid;
+		pInventory->DestroyResult( m_PlayerLocal[iPlayer].m_PreparingEquipNotification[iType] );
+		m_PlayerLocal[iPlayer].m_PreparingEquipNotification[iType] = k_SteamInventoryResultInvalid;
 
-		SendEquipNotification( buf.Base(), buf.Count(), iType );
+		SendEquipNotification( buf.Base(), buf.Count(), iType, iPlayer );
 	}
 
-	void SendEquipNotification( const byte *pData, int nLength, int iType )
+	void SendEquipNotification( const byte *pData, int nLength, int iType, int iPlayer )
 	{
-		Assert( m_PendingEquipSend[iType].Count() == 0 );
+		Assert( m_PlayerLocal[iPlayer].m_PendingEquipSend[iType].Count() == 0 );
 		Assert( nLength <= RD_EQUIPPED_ITEMS_NOTIFICATION_WORST_CASE_SIZE );
-		m_EquipSendParity[iType] = ++m_EquipSendParityNext;
-		Assert( m_EquipSendParity[iType] > 0);
+		m_PlayerLocal[iPlayer].m_EquipSendParity[iType] = ++m_EquipSendParityNext;
+		Assert( m_PlayerLocal[iPlayer].m_EquipSendParity[iType] > 0);
 		char szHex[RD_EQUIPPED_ITEMS_NOTIFICATION_PAYLOAD_SIZE_PER_PACKET * 2 + 1]{};
 		for ( int i = 0; i < nLength; i += RD_EQUIPPED_ITEMS_NOTIFICATION_PAYLOAD_SIZE_PER_PACKET )
 		{
@@ -409,16 +441,16 @@ public:
 			KeyValues *pKV = new KeyValues( iType == EQUIP_SLOT_TYPE_STATIC ? "EquippedItemsS" : "EquippedItemsD" );
 			pKV->SetInt( "i", i );
 			pKV->SetInt( "t", nLength );
-			pKV->SetInt( "e", m_EquipSendParity[iType]);
+			pKV->SetInt( "e", m_PlayerLocal[iPlayer].m_EquipSendParity[iType]);
 			pKV->SetString( "m", szHex );
 
 			if ( i == 0 )
 				engine->ServerCmdKeyValues( pKV );
 			else
-				m_PendingEquipSend[iType].Insert( pKV );
+				m_PlayerLocal[iPlayer].m_PendingEquipSend[iType].Insert( pKV );
 		}
 
-		DevMsg( 3, "Split equipped items notification (type %d) into %d chunks (%d bytes total payload)\n", iType, m_PendingEquipSend[iType].Count() + 1, nLength );
+		DevMsg( 3, "Split equipped items notification (type %d) into %d chunks (%d bytes total payload)\n", iType, m_PlayerLocal[iPlayer].m_PendingEquipSend[iType].Count() + 1, nLength );
 	}
 
 	void CacheUserInventory( SteamInventoryResult_t hResult )
@@ -437,6 +469,9 @@ public:
 			return;
 		}
 
+		m_LocalInventoryCache.Purge();
+		m_LocalInventoryCache.EnsureCapacity( nItems );
+
 		m_HighOwnedInventoryDefIDs.Purge();
 
 		KeyValues::AutoDelete pCache{ "IC" };
@@ -444,6 +479,7 @@ public:
 		for ( uint32 i = 0; i < nItems; i++ )
 		{
 			ReactiveDropInventory::ItemInstance_t instance{ hResult, i };
+			m_LocalInventoryCache.AddToTail( instance );
 			pCache->AddSubKey( instance.ToKeyValues() );
 
 			// precache item def + icon
@@ -876,22 +912,28 @@ public:
 
 		ReactiveDropInventory::ItemInstance_t *pLocalInstance = NULL;
 #ifdef CLIENT_DLL
-		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC; i++ )
+		for ( int iPlayer = 0; iPlayer < MAX_SPLITSCREEN_PLAYERS; iPlayer++ )
 		{
-			if ( m_LocalEquipCacheDynamic[i].ItemID == instance.m_iItemInstanceID )
+			if ( !pLocalInstance )
 			{
-				pLocalInstance = &m_LocalEquipCacheDynamic[i];
-				break;
-			}
-		}
-		if ( !pLocalInstance )
-		{
-			for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC; i++ )
-			{
-				if ( m_LocalEquipCacheStatic[i].ItemID == instance.m_iItemInstanceID )
+				for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC; i++ )
 				{
-					pLocalInstance = &m_LocalEquipCacheStatic[i];
-					break;
+					if ( m_PlayerLocal[iPlayer].m_LocalEquipCacheDynamic[i].ItemID == instance.m_iItemInstanceID )
+					{
+						pLocalInstance = &m_PlayerLocal[iPlayer].m_LocalEquipCacheDynamic[i];
+						break;
+					}
+				}
+			}
+			if ( !pLocalInstance )
+			{
+				for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC; i++ )
+				{
+					if ( m_PlayerLocal[iPlayer].m_LocalEquipCacheStatic[i].ItemID == instance.m_iItemInstanceID )
+					{
+						pLocalInstance = &m_PlayerLocal[iPlayer].m_LocalEquipCacheStatic[i];
+						break;
+					}
 				}
 			}
 		}
@@ -1123,8 +1165,11 @@ public:
 			}
 			else if ( m_DynamicPropertyUpdateResult == k_SteamInventoryResultInvalid )
 			{
-				QueueSendStaticEquipNotification();
-				ResendDynamicEquipNotification();
+				for ( int iPlayer = 0; iPlayer < MAX_SPLITSCREEN_PLAYERS; iPlayer++ )
+				{
+					QueueSendStaticEquipNotification( iPlayer );
+					ResendDynamicEquipNotification( iPlayer );
+				}
 			}
 #endif
 			return;
@@ -1315,8 +1360,11 @@ public:
 
 			pInventory->GetAllItems( &m_GetFullInventoryForCacheResult );
 
-			QueueSendStaticEquipNotification();
-			ResendDynamicEquipNotification();
+			for ( int iPlayer = 0; iPlayer < MAX_SPLITSCREEN_PLAYERS; iPlayer++ )
+			{
+				QueueSendStaticEquipNotification( iPlayer );
+				ResendDynamicEquipNotification( iPlayer );
+			}
 
 			m_bWantFullInventoryRefresh = false;
 		}
@@ -1335,7 +1383,7 @@ public:
 
 		FOR_EACH_VEC( items, i )
 		{
-			if ( items[i].m_unFlags & k_ESteamItemRemoved )
+			if ( ( items[i].m_unFlags & k_ESteamItemRemoved ) || items[i].m_unQuantity == 0 || items[i].m_iDefinition == 0 )
 				continue;
 
 			ReactiveDropInventory::ItemInstance_t instance{ pTask->m_hResult, uint32( i ) };
@@ -1554,13 +1602,16 @@ public:
 			return;
 		}
 
-		for ( int iType = 0; iType < NUM_EQUIP_SLOT_TYPES; iType++ )
+		for ( int iPlayer = 0; iPlayer < MAX_SPLITSCREEN_PLAYERS; iPlayer++ )
 		{
-			if ( pParam->m_handle == m_PreparingEquipNotification[iType] )
+			for ( int iType = 0; iType < NUM_EQUIP_SLOT_TYPES; iType++ )
 			{
-				SendEquipNotification( iType );
+				if ( pParam->m_handle == m_PlayerLocal[iPlayer].m_PreparingEquipNotification[iType] )
+				{
+					SendEquipNotification( iType, iPlayer );
 
-				return;
+					return;
+				}
 			}
 		}
 
@@ -1641,6 +1692,7 @@ public:
 	float m_flDefsUpdateTime{ 0.0f };
 	SteamInventoryResult_t m_DebugPrintInventoryResult{ k_SteamInventoryResultInvalid };
 #ifdef CLIENT_DLL
+	CUtlVector<ReactiveDropInventory::ItemInstance_t> m_LocalInventoryCache;
 	SteamInventoryResult_t m_GetFullInventoryForCacheResult{ k_SteamInventoryResultInvalid };
 	bool m_bWantFullInventoryRefresh{ false };
 
@@ -1650,13 +1702,17 @@ public:
 		EQUIP_SLOT_TYPE_DYNAMIC,
 		NUM_EQUIP_SLOT_TYPES,
 	};
-	SteamInventoryResult_t m_PreparingEquipNotification[NUM_EQUIP_SLOT_TYPES]{ k_SteamInventoryResultInvalid, k_SteamInventoryResultInvalid };
-	CUtlQueue<KeyValues *> m_PendingEquipSend[NUM_EQUIP_SLOT_TYPES]{};
 	int m_EquipSendParityNext{};
-	int m_EquipSendParity[NUM_EQUIP_SLOT_TYPES]{};
-	ReactiveDropInventory::ItemInstance_t m_LocalEquipCacheStatic[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC];
-	SteamItemInstanceID_t m_EquipIDsDynamic[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC];
-	ReactiveDropInventory::ItemInstance_t m_LocalEquipCacheDynamic[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC];
+	struct PlayerLocal_t
+	{
+		SteamInventoryResult_t m_PreparingEquipNotification[NUM_EQUIP_SLOT_TYPES]{ k_SteamInventoryResultInvalid, k_SteamInventoryResultInvalid };
+		CUtlQueue<KeyValues *> m_PendingEquipSend[NUM_EQUIP_SLOT_TYPES]{};
+		int m_EquipSendParity[NUM_EQUIP_SLOT_TYPES]{};
+		ReactiveDropInventory::ItemInstance_t m_LocalEquipCacheStatic[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC];
+		SteamItemInstanceID_t m_EquipIDsDynamic[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC];
+		ReactiveDropInventory::ItemInstance_t m_LocalEquipCacheDynamic[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC];
+	};
+	PlayerLocal_t m_PlayerLocal[MAX_SPLITSCREEN_PLAYERS];
 
 	STEAM_CALLBACK( CRD_Inventory_Manager, OnSteamInventoryFullUpdate, SteamInventoryFullUpdate_t )
 	{
@@ -1695,20 +1751,23 @@ public:
 void __MsgFunc_RDEquippedItemsACK( bf_read &msg )
 {
 	int iParity = msg.ReadLong();
-	for ( int iType = 0; iType < CRD_Inventory_Manager::NUM_EQUIP_SLOT_TYPES; iType++ )
+	for ( int iPlayer = 0; iPlayer < MAX_SPLITSCREEN_PLAYERS; iPlayer++ )
 	{
-		if ( s_RD_Inventory_Manager.m_EquipSendParity[iType] != iParity )
-			continue;
+		for ( int iType = 0; iType < CRD_Inventory_Manager::NUM_EQUIP_SLOT_TYPES; iType++ )
+		{
+			if ( s_RD_Inventory_Manager.m_PlayerLocal[iPlayer].m_EquipSendParity[iType] != iParity )
+				continue;
 
-		Assert( s_RD_Inventory_Manager.m_PendingEquipSend[iType].Count() != 0 );
-		if ( s_RD_Inventory_Manager.m_PendingEquipSend[iType].Count() == 0 )
+			Assert( s_RD_Inventory_Manager.m_PlayerLocal[iPlayer].m_PendingEquipSend[iType].Count() != 0 );
+			if ( s_RD_Inventory_Manager.m_PlayerLocal[iPlayer].m_PendingEquipSend[iType].Count() == 0 )
+				return;
+
+			engine->ServerCmdKeyValues( s_RD_Inventory_Manager.m_PlayerLocal[iPlayer].m_PendingEquipSend[iType].RemoveAtHead() );
+
+			DevMsg( 3, "Sending next equipped items (type %d) notification chunk (%d remain)\n", iType, s_RD_Inventory_Manager.m_PlayerLocal[iPlayer].m_PendingEquipSend[iType].Count() );
+
 			return;
-
-		engine->ServerCmdKeyValues( s_RD_Inventory_Manager.m_PendingEquipSend[iType].RemoveAtHead() );
-
-		DevMsg( 3, "Sending next equipped items (type %d) notification chunk (%d remain)\n", iType, s_RD_Inventory_Manager.m_PendingEquipSend[iType].Count() );
-
-		return;
+		}
 	}
 
 	Assert( !"No equip notification parity match!" );
@@ -1717,7 +1776,7 @@ USER_MESSAGE_REGISTER( RDEquippedItemsACK );
 
 static void RD_Equipped_Item_Changed( IConVar *var, const char *pOldValue, float flOldValue )
 {
-	s_RD_Inventory_Manager.QueueSendStaticEquipNotification();
+	s_RD_Inventory_Manager.QueueSendStaticEquipNotification( MAX( var->GetSplitScreenPlayerSlot(), 0 ) );
 }
 ConVar rd_equipped_medal[RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS]
 {
@@ -2544,6 +2603,8 @@ namespace ReactiveDropInventory
 		CUtlString szType = szValue;
 		FETCH_PROPERTY( "item_slot" );
 		pItemDef->ItemSlot = szValue;
+		FETCH_PROPERTY( "equip_index" );
+		pItemDef->EquipIndex = *szValue ? V_atoi( szValue ) : -1;
 		FETCH_PROPERTY( "tags" );
 		ParseTags( pItemDef->Tags, szValue );
 		FETCH_PROPERTY( "allowed_tags_from_tools" );
@@ -2673,6 +2734,10 @@ namespace ReactiveDropInventory
 		FETCH_PROPERTY( "after_description_only_multi_stack" );
 		Assert( !V_strcmp( szValue, "" ) || !V_strcmp( szValue, "1" ) || !V_strcmp( szValue, "0" ) );
 		pItemDef->AfterDescriptionOnlyMultiStack = !V_strcmp( szValue, "1" );
+
+		FETCH_PROPERTY( "is_basic" );
+		Assert( !V_strcmp( szValue, "" ) || !V_strcmp( szValue, "1" ) || !V_strcmp( szValue, "0" ) );
+		pItemDef->IsBasic = !V_strcmp( szValue, "1" );
 
 #ifdef CLIENT_DLL
 		pItemDef->Icon = NULL;
@@ -3105,6 +3170,36 @@ namespace ReactiveDropInventory
 	void CommitDynamicProperties()
 	{
 		s_RD_Inventory_Manager.CommitDynamicProperties();
+	}
+
+	template<typename F>
+	static void GetLocalInventoryWhere( CUtlVector<ItemInstance_t> &instances, F condition )
+	{
+		FOR_EACH_VEC( s_RD_Inventory_Manager.m_LocalInventoryCache, i )
+		{
+			if ( condition( s_RD_Inventory_Manager.m_LocalInventoryCache[i] ) )
+			{
+				instances.AddToTail( s_RD_Inventory_Manager.m_LocalInventoryCache[i] );
+			}
+		}
+	}
+
+	void GetItemsForSlot( CUtlVector<ItemInstance_t> &instances, const char *szRequiredSlot )
+	{
+		GetLocalInventoryWhere( instances, [&]( const ItemInstance_t &instance ) -> bool
+			{
+				const ItemDef_t *pDef = GetItemDef( instance.ItemDefID );
+				return pDef && pDef->ItemSlotMatches( szRequiredSlot );
+			} );
+	}
+
+	void GetItemsForSlotAndEquipIndex( CUtlVector<ItemInstance_t> &instances, const char *szRequiredSlot, int iEquipIndex )
+	{
+		GetLocalInventoryWhere( instances, [&]( const ItemInstance_t &instance ) -> bool
+			{
+				const ItemDef_t *pDef = GetItemDef( instance.ItemDefID );
+				return pDef && pDef->ItemSlotMatches( szRequiredSlot ) && pDef->EquipIndex == iEquipIndex;
+			} );
 	}
 #endif
 

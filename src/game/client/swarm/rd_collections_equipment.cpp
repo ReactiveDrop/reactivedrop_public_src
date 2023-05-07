@@ -25,6 +25,7 @@
 ConVar rd_swarmopedia_units_preference( "rd_swarmopedia_units_preference", "1", FCVAR_ARCHIVE, "0=hammer, 1=metric, 2=imperial" );
 ConVar rd_swarmopedia_units_per_foot( "rd_swarmopedia_units_per_foot", "16", FCVAR_NONE, "recommended: 12 to 16" );
 ConVar rd_swarmopedia_units_per_meter( "rd_swarmopedia_units_per_meter", "52.49", FCVAR_NONE, "recommended: 39.37 to 52.49" );
+ConVar rd_weapons_show_all_basic( "rd_weapons_show_all_basic", "0", FCVAR_ARCHIVE, "show basic weapons like 'Assault Rifle' even if upgraded weapons like 'Strange Assault Rifle' are available" );
 extern ConVar asw_unlock_all_weapons;
 extern ConVar rd_weapons_show_hidden;
 extern ConVar rd_weapons_regular_class_unrestricted;
@@ -147,21 +148,71 @@ TGD_Grid *CRD_Collection_Tab_Equipment::CreateGrid()
 	m_pCollection = new RD_Swarmopedia::Collection();
 	m_pCollection->ReadFromFiles( m_nInventorySlot == ASW_INVENTORY_SLOT_EXTRA ? RD_Swarmopedia::Subset::ExtraWeapons : RD_Swarmopedia::Subset::RegularWeapons );
 
+	CUtlVector<ReactiveDropInventory::ItemInstance_t> instances;
 	int iEquippedIndex = m_pBriefing ? m_pBriefing->GetMarineSelectedWeapon( m_nLobbySlot, m_nInventorySlot ) : -1;
+	SteamItemInstanceID_t iEquippedItemID = m_pBriefing ? m_pBriefing->GetEquippedWeapon( m_nLobbySlot, m_nInventorySlot ).m_iItemInstanceID : k_SteamItemInstanceIDInvalid;
 
 	FOR_EACH_VEC( m_pCollection->Weapons, i )
 	{
 		const RD_Swarmopedia::Weapon *pWeapon = m_pCollection->Weapons[i];
-		if ( pWeapon->Hidden && !rd_weapons_show_hidden.GetBool() )
+		if ( pWeapon->EquipIndex == -1 && m_pBriefing )
+		{
+			continue; // can't equip a weapon that isn't built in
+		}
+
+		bool bHideNonInventory = pWeapon->Hidden && !rd_weapons_show_hidden.GetBool();
+
+		instances.Purge();
+		ReactiveDropInventory::GetItemsForSlotAndEquipIndex( instances, pWeapon->Extra ? "extra" : "weapon", pWeapon->EquipIndex );
+		if ( bHideNonInventory && instances.Count() == 0 )
 		{
 			continue;
 		}
 
-		pGrid->AddEntry( new CRD_Collection_Entry_Equipment( pGrid, pWeapon->Extra ? "CollectionEntryEquipmentExtra" : "CollectionEntryEquipmentRegular", pWeapon ) );
-
-		if ( pWeapon->EquipIndex != -1 && pWeapon->EquipIndex == iEquippedIndex )
+		bool bHideBasic = false;
+		if ( !rd_weapons_show_all_basic.GetBool() )
 		{
-			pGrid->m_iLastFocus = pGrid->m_Entries.Count() - 1;
+			FOR_EACH_VEC( instances, j )
+			{
+				const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( instances[j].ItemDefID );
+				Assert( pDef );
+				if ( !pDef )
+					continue;
+
+				if ( !pDef->IsBasic )
+				{
+					bHideBasic = true;
+					break;
+				}
+			}
+		}
+
+		if ( !bHideBasic && !bHideNonInventory )
+		{
+			pGrid->AddEntry( new CRD_Collection_Entry_Equipment( pGrid, pWeapon->Extra ? "CollectionEntryEquipmentExtra" : "CollectionEntryEquipmentRegular", pWeapon, ReactiveDropInventory::ItemInstance_t{} ) );
+
+			if ( pWeapon->EquipIndex != -1 && pWeapon->EquipIndex == iEquippedIndex && iEquippedItemID == k_SteamItemInstanceIDInvalid )
+			{
+				pGrid->m_iLastFocus = pGrid->m_Entries.Count() - 1;
+			}
+		}
+
+		FOR_EACH_VEC( instances, j )
+		{
+			const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( instances[j].ItemDefID );
+			Assert( pDef );
+			if ( !pDef )
+				continue;
+
+			if ( bHideBasic && pDef->IsBasic )
+				continue;
+
+			pGrid->AddEntry( new CRD_Collection_Entry_Equipment( pGrid, pWeapon->Extra ? "CollectionEntryEquipmentExtra" : "CollectionEntryEquipmentRegular", pWeapon, instances[j] ) );
+
+			if ( pWeapon->EquipIndex != -1 && pWeapon->EquipIndex == iEquippedIndex && iEquippedItemID == k_SteamItemInstanceIDInvalid )
+			{
+				pGrid->m_iLastFocus = pGrid->m_Entries.Count() - 1;
+			}
 		}
 	}
 
@@ -263,6 +314,17 @@ void CRD_Collection_Details_Equipment::DisplayEntry( TGD_Entry *pEntry )
 		m_pModelPanel->m_bShouldPaint = false;
 		m_pModelPanel->SetVisible( false );
 		m_pWeaponNameLabel->SetText( L"" );
+	}
+
+	const ReactiveDropInventory::ItemDef_t *pDef = pEquip->m_ItemInstance.ItemDefID != 0 ? ReactiveDropInventory::GetItemDef( pEquip->m_ItemInstance.ItemDefID ) : NULL;
+	if ( pDef )
+	{
+		m_pWeaponNameLabel->SetText( pDef->BriefingName );
+		m_pWeaponNameLabel->SetFgColor( pDef->NameColor );
+	}
+	else
+	{
+		m_pWeaponNameLabel->SetFgColor( Color{ 255, 255, 255, 255 } );
 	}
 
 	if ( pEquip->m_pLockedLabel->IsVisible() )
@@ -379,10 +441,11 @@ void CRD_Collection_Details_Equipment::OnGlobalStatsReceived( GlobalStatsReceive
 	DisplayEntry( GetCurrentEntry() );
 }
 
-CRD_Collection_Entry_Equipment::CRD_Collection_Entry_Equipment( TGD_Grid *parent, const char *panelName, const RD_Swarmopedia::Weapon *pWeapon )
+CRD_Collection_Entry_Equipment::CRD_Collection_Entry_Equipment( TGD_Grid *parent, const char *panelName, const RD_Swarmopedia::Weapon *pWeapon, const ReactiveDropInventory::ItemInstance_t &itemInstance )
 	: BaseClass( parent, panelName )
 {
 	m_pWeapon = pWeapon;
+	m_ItemInstance = itemInstance;
 	m_bNoDirectEquip = false;
 
 	m_pIcon = new vgui::ImagePanel( this, "Icon" );
@@ -573,7 +636,7 @@ void CRD_Collection_Entry_Equipment::ApplyEntry()
 		pPanel->MarkForDeletion();
 	}
 
-	pTGD->SetOverridePanel( new CRD_Collection_Panel_Equipment( pTGD, "EquipmentPanel", pTab, m_pWeapon ) );
+	pTGD->SetOverridePanel( new CRD_Collection_Panel_Equipment( pTGD, "EquipmentPanel", pTab, m_pWeapon, m_ItemInstance ) );
 
 	if ( !m_bNoDirectEquip && pTab->m_pBriefing )
 	{
@@ -1062,7 +1125,7 @@ void CRD_Equipment_WeaponFact::OnCommand( const char *command )
 	}
 }
 
-CRD_Collection_Panel_Equipment::CRD_Collection_Panel_Equipment( vgui::Panel *parent, const char *panelName, CRD_Collection_Tab_Equipment *pTab, const RD_Swarmopedia::Weapon *pWeapon )
+CRD_Collection_Panel_Equipment::CRD_Collection_Panel_Equipment( vgui::Panel *parent, const char *panelName, CRD_Collection_Tab_Equipment *pTab, const RD_Swarmopedia::Weapon *pWeapon, const ReactiveDropInventory::ItemInstance_t &itemInstance )
 	: BaseClass( parent, panelName )
 {
 	m_pGplFacts = new BaseModUI::GenericPanelList( this, "GplFacts", BaseModUI::GenericPanelList::ISM_PERITEM );
@@ -1071,6 +1134,7 @@ CRD_Collection_Panel_Equipment::CRD_Collection_Panel_Equipment( vgui::Panel *par
 
 	m_pTab = pTab;
 	m_pWeapon = pWeapon;
+	m_ItemInstance = itemInstance;
 }
 
 void CRD_Collection_Panel_Equipment::ApplySchemeSettings( vgui::IScheme *pScheme )
@@ -1125,7 +1189,7 @@ void CRD_Collection_Panel_Equipment::OnCommand( const char *command )
 			pMedalStore->OnSelectedEquipment( m_pWeapon->Extra, m_pWeapon->EquipIndex );
 		}
 
-		m_pTab->m_pBriefing->SelectWeapon( m_pTab->m_pProfile->m_ProfileIndex, m_pTab->m_nInventorySlot, m_pWeapon->EquipIndex );
+		m_pTab->m_pBriefing->SelectWeapon( m_pTab->m_pProfile->m_ProfileIndex, m_pTab->m_nInventorySlot, m_pWeapon->EquipIndex, m_ItemInstance.ItemID );
 
 		m_pTab->m_pParent->MarkForDeletion();
 	}
