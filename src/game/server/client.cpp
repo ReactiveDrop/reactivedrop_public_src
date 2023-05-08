@@ -591,7 +591,7 @@ void CPointClientCommand::InputCommand( inputdata_t& inputdata )
 	if ( !pClient || !pClient->GetUnknown() )
 		return;
 
-	engine->ClientCommand( pClient, UTIL_VarArgs( "%s\n", inputdata.value.String() ) );
+	engine->ClientCommand( pClient, "%s\n", inputdata.value.String() );
 }
 
 BEGIN_DATADESC( CPointClientCommand )
@@ -659,7 +659,7 @@ void CPointBroadcastClientCommand::InputCommand( inputdata_t& inputdata )
 		if ( !pClient || !pClient->GetUnknown() )
 			continue;
 
-		engine->ClientCommand( pClient, UTIL_VarArgs( "%s\n", inputdata.value.String() ) );
+		engine->ClientCommand( pClient, "%s\n", inputdata.value.String() );
 	}
 }
 
