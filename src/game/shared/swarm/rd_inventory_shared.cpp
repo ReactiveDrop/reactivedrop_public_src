@@ -12,6 +12,7 @@
 
 #ifdef CLIENT_DLL
 #include <vgui/IImage.h>
+#include <vgui/ILocalize.h>
 #include <vgui/ISurface.h>
 #include <vgui_controls/Controls.h>
 #include <vgui_controls/RichText.h>
@@ -26,6 +27,7 @@
 #include "rd_workshop.h"
 #include "rd_missions_shared.h"
 #include "asw_deathmatch_mode_light.h"
+#include "gameui/swarm/vgenericconfirmation.h"
 #include "gameui/swarm/vitemshowcase.h"
 #include "filesystem.h"
 #include "c_user_message_register.h"
@@ -1378,6 +1380,7 @@ public:
 		SteamInventoryResult_t m_hResult{ k_SteamInventoryResultInvalid };
 	};
 	CUtlVectorAutoPurge<CraftItemTask_t *> m_CraftingQueue;
+	bool m_bModalCraftingWaitScreenActive{ false };
 
 	SteamInventoryResult_t *AddCraftItemTask( CraftItemType_t iMode, SteamItemDef_t iAccessoryDef = 0, SteamItemInstanceID_t iReplaceItemInstance = k_SteamItemInstanceIDInvalid )
 	{
@@ -1425,6 +1428,31 @@ public:
 
 		return false;
 	}
+	bool IsUserInitiatedTask( CraftItemTask_t *pTask )
+	{
+		switch ( pTask->m_Type )
+		{
+		case CRAFT_RECIPE:
+		case CRAFT_ACCESSORY:
+		case CRAFT_SHOP:
+		case CRAFT_CLAIM_MINOR:
+		case CRAFT_CLAIM_MAJOR:
+		case CRAFT_INSPECT:
+			return true;
+		case CRAFT_DYNAMIC_PROPERTY_INIT:
+			return pTask->m_iAccessoryDef != BaseModUI::ItemShowcase::MODE_ITEM_DROP;
+		case CRAFT_BTS:
+		case CRAFT_DROP:
+		case CRAFT_PROMO:
+		case CRAFT_DYNAMIC_PROPERTY_UPDATE:
+			break;
+		default:
+			Assert( !"unhandled crafting task type" );
+			break;
+		}
+
+		return false;
+	}
 	void OnCraftingTaskCompleted( CraftItemTask_t *pTask )
 	{
 		GET_INVENTORY_OR_BAIL;
@@ -1440,7 +1468,28 @@ public:
 			}
 
 			Warning( "Crafting task (type %d) failed with EResult %d %s\n", pTask->m_Type, eResult, UTIL_RD_EResultToString( eResult ) );
-			Assert( !"TODO: display error message for failed crafting task" );
+
+			if ( IsUserInitiatedTask( pTask ) )
+			{
+				BaseModUI::GenericConfirmation *pConfirm = assert_cast< BaseModUI::GenericConfirmation * >( BaseModUI::CBaseModPanel::GetSingleton().OpenWindow( BaseModUI::WT_GENERICCONFIRMATION, NULL, false ) );
+				BaseModUI::GenericConfirmation::Data_t data{};
+				CFmtStr szSpecificError{ "#rd_inventory_item_action_failed_%d_desc", eResult };
+				data.pWindowTitle = "#rd_inventory_item_action_failed_title";
+				if ( g_pVGuiLocalize->Find( szSpecificError ) )
+				{
+					data.pMessageText = szSpecificError;
+				}
+				else
+				{
+					wchar_t wszErrorCode[16];
+					V_snwprintf( wszErrorCode, NELEMS( wszErrorCode ), L"%d", eResult );
+					wchar_t wszMessage[1024];
+					g_pVGuiLocalize->ConstructString( wszMessage, sizeof( wszMessage ), g_pVGuiLocalize->Find( "#rd_inventory_item_action_failed_generic_desc" ), 1, wszErrorCode );
+					data.pMessageTextW = wszMessage;
+				}
+				data.bOkButtonEnabled = true;
+				pConfirm->SetUsageData( data );
+			}
 
 			return;
 		}
@@ -1651,11 +1700,19 @@ public:
 	}
 	void ShowModalCraftingWaitScreen()
 	{
-		Assert( !"TODO: show modal crafting wait screen" );
+		if ( m_bModalCraftingWaitScreenActive )
+			return;
+
+		BaseModUI::CUIGameData::Get()->OpenWaitScreen( "#rd_inventory_item_action_wait", 0.5f );
+		m_bModalCraftingWaitScreenActive = true;
 	}
 	void HideModalCraftingWaitScreen()
 	{
-		Assert( !"TODO: hide modal crafting wait screen" );
+		if ( !m_bModalCraftingWaitScreenActive )
+			return;
+
+		BaseModUI::CUIGameData::Get()->CloseWaitScreen( NULL, NULL );
+		m_bModalCraftingWaitScreenActive = false;
 	}
 #endif
 
