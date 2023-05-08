@@ -119,10 +119,6 @@ public:
 inline ISteamApps *SteamApps();
 STEAM_DEFINE_USER_INTERFACE_ACCESSOR( ISteamApps *, SteamApps, STEAMAPPS_INTERFACE_VERSION );
 
-// Global accessor for the gameserver client
-inline ISteamApps *SteamGameServerApps();
-STEAM_DEFINE_GAMESERVER_INTERFACE_ACCESSOR( ISteamApps *, SteamGameServerApps, STEAMAPPS_INTERFACE_VERSION );
-
 // callbacks
 #if defined( VALVE_CALLBACK_PACK_SMALL )
 #pragma pack( push, 4 )
@@ -138,30 +134,6 @@ struct DlcInstalled_t
 {
 	enum { k_iCallback = k_iSteamAppsCallbacks + 5 };
 	AppId_t m_nAppID;		// AppID of the DLC
-};
-
-
-//-----------------------------------------------------------------------------
-// Purpose: possible results when registering an activation code
-//-----------------------------------------------------------------------------
-enum ERegisterActivationCodeResult
-{
-	k_ERegisterActivationCodeResultOK = 0,
-	k_ERegisterActivationCodeResultFail = 1,
-	k_ERegisterActivationCodeResultAlreadyRegistered = 2,
-	k_ERegisterActivationCodeResultTimeout = 3,
-	k_ERegisterActivationCodeAlreadyOwned = 4,
-};
-
-
-//-----------------------------------------------------------------------------
-// Purpose: response to RegisterActivationCode()
-//-----------------------------------------------------------------------------
-struct RegisterActivationCodeResponse_t
-{
-	enum { k_iCallback = k_iSteamAppsCallbacks + 8 };
-	ERegisterActivationCodeResult m_eResult;
-	uint32 m_unPackageRegistered;						// package that was registered. Only set on success
 };
 
 
