@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "2153"
+	"mapversion" "2159"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -50,7 +50,7 @@ viewsettings
 world
 {
 	"id" "394754"
-	"mapversion" "2153"
+	"mapversion" "2159"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -10803,6 +10803,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "4"
@@ -11291,6 +11292,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "1"
 	"MaxLiveAliens" "3"
@@ -12795,11 +12797,11 @@ entity
 		{
 			"id" "78166"
 			"plane" "(-3852 7224 788) (-3852 6888 788) (-3852 6888 796)"
-			"material" "TOOLS/TOOLSNODRAW"
-			"uaxis" "[0 -1 0 -61.0027] 0.4"
-			"vaxis" "[0 0 -1 -59] 0.4"
+			"material" "METAL/METALWALL057A"
+			"uaxis" "[0 -1 0 -304] 0.25"
+			"vaxis" "[0 0 -1 32] 0.25"
 			"rotation" "0"
-			"lightmapscale" "24"
+			"lightmapscale" "128"
 			"smoothing_groups" "0"
 		}
 		side
@@ -15278,60 +15280,6 @@ entity
 }
 entity
 {
-	"id" "1803744"
-	"classname" "info_node"
-	"angles" "0 0 0"
-	"nodeid" "533"
-	"spawnflags" "1024"
-	"origin" "-3424.28 6576.54 1252"
-	editor
-	{
-		"color" "190 111 0"
-		"groupid" "1879640"
-		"visgroupid" "14"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 10500]"
-	}
-}
-entity
-{
-	"id" "1803752"
-	"classname" "info_node"
-	"angles" "0 0 0"
-	"nodeid" "534"
-	"spawnflags" "1024"
-	"origin" "-3552 6576 1252"
-	editor
-	{
-		"color" "190 111 0"
-		"groupid" "1879640"
-		"visgroupid" "14"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 10500]"
-	}
-}
-entity
-{
-	"id" "1803754"
-	"classname" "info_node"
-	"angles" "0 0 0"
-	"nodeid" "535"
-	"spawnflags" "1024"
-	"origin" "-3664 6576 1252"
-	editor
-	{
-		"color" "190 111 0"
-		"groupid" "1879640"
-		"visgroupid" "14"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 10500]"
-	}
-}
-entity
-{
 	"id" "1807706"
 	"classname" "func_detail"
 	solid
@@ -15508,219 +15456,6 @@ entity
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[-13768 -768]"
-	}
-}
-entity
-{
-	"id" "1816600"
-	"classname" "info_node"
-	"angles" "0 90 0"
-	"nodeid" "555"
-	"spawnflags" "1024"
-	"origin" "-3104 6904 1252"
-	editor
-	{
-		"color" "190 111 0"
-		"groupid" "1879640"
-		"visgroupid" "14"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 10500]"
-	}
-}
-entity
-{
-	"id" "1816609"
-	"classname" "info_node"
-	"angles" "0 90 0"
-	"nodeid" "557"
-	"spawnflags" "1024"
-	"origin" "-3104 6784 1252"
-	editor
-	{
-		"color" "190 111 0"
-		"groupid" "1879640"
-		"visgroupid" "14"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 10500]"
-	}
-}
-entity
-{
-	"id" "1816620"
-	"classname" "info_node"
-	"angles" "0 0 0"
-	"nodeid" "559"
-	"spawnflags" "1024"
-	"origin" "-3328.28 6576 1252"
-	editor
-	{
-		"color" "190 111 0"
-		"groupid" "1879640"
-		"visgroupid" "14"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 10500]"
-	}
-}
-entity
-{
-	"id" "1816655"
-	"classname" "info_node_link"
-	"EndNode" "538"
-	"initialstate" "1"
-	"InvertAllow" "0"
-	"linktype" "2"
-	"preciseMovement" "0"
-	"priority" "0"
-	"spawnflags" "8192"
-	"StartNode" "562"
-	"origin" "-3776.28 6632 1248"
-	editor
-	{
-		"color" "190 111 0"
-		"groupid" "1879640"
-		"visgroupid" "14"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 11500]"
-	}
-}
-entity
-{
-	"id" "1816660"
-	"classname" "info_node"
-	"angles" "0 0 0"
-	"nodeid" "562"
-	"spawnflags" "1024"
-	"origin" "-3768.28 6576 1252"
-	editor
-	{
-		"color" "190 111 0"
-		"groupid" "1879640"
-		"visgroupid" "14"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 10500]"
-	}
-}
-entity
-{
-	"id" "1816671"
-	"classname" "info_node"
-	"angles" "0 0 0"
-	"nodeid" "564"
-	"spawnflags" "1024"
-	"origin" "-3840 6576 1252"
-	editor
-	{
-		"color" "190 111 0"
-		"groupid" "1879640"
-		"visgroupid" "14"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 10500]"
-	}
-}
-entity
-{
-	"id" "1817145"
-	"classname" "info_node_link"
-	"EndNode" "572"
-	"initialstate" "1"
-	"InvertAllow" "0"
-	"linktype" "2"
-	"preciseMovement" "0"
-	"priority" "0"
-	"spawnflags" "8192"
-	"StartNode" "571"
-	"origin" "-3912 6890 1248"
-	editor
-	{
-		"color" "190 111 0"
-		"groupid" "1879640"
-		"visgroupid" "14"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 11500]"
-	}
-}
-entity
-{
-	"id" "1817148"
-	"classname" "info_node"
-	"angles" "0 270 0"
-	"nodeid" "571"
-	"spawnflags" "1024"
-	"origin" "-3944 6890 1252"
-	editor
-	{
-		"color" "190 111 0"
-		"groupid" "1879640"
-		"visgroupid" "14"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 10500]"
-	}
-}
-entity
-{
-	"id" "1817163"
-	"classname" "info_node"
-	"angles" "0 270 0"
-	"nodeid" "574"
-	"spawnflags" "1024"
-	"origin" "-3944 6800 1252"
-	editor
-	{
-		"color" "190 111 0"
-		"groupid" "1879640"
-		"visgroupid" "14"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 10500]"
-	}
-}
-entity
-{
-	"id" "1817326"
-	"classname" "info_node"
-	"angles" "0 0 0"
-	"nodeid" "576"
-	"spawnflags" "1024"
-	"origin" "-3240 6576 1252"
-	editor
-	{
-		"color" "190 111 0"
-		"groupid" "1879640"
-		"visgroupid" "14"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 10500]"
-	}
-}
-entity
-{
-	"id" "1817330"
-	"classname" "info_node_link"
-	"EndNode" "556"
-	"initialstate" "1"
-	"InvertAllow" "0"
-	"linktype" "2"
-	"preciseMovement" "0"
-	"priority" "0"
-	"spawnflags" "8192"
-	"StartNode" "576"
-	"origin" "-3248 6632 1248"
-	editor
-	{
-		"color" "190 111 0"
-		"groupid" "1879640"
-		"visgroupid" "14"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 11500]"
 	}
 }
 entity
@@ -28258,48 +27993,12 @@ entity
 }
 entity
 {
-	"id" "1816405"
-	"classname" "info_node"
-	"angles" "0 90 0"
-	"nodeid" "549"
-	"spawnflags" "1024"
-	"origin" "-3104 7160 1252"
-	editor
-	{
-		"color" "190 111 0"
-		"groupid" "1879640"
-		"visgroupid" "14"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 10500]"
-	}
-}
-entity
-{
 	"id" "1816410"
 	"classname" "info_node"
 	"angles" "0 90 0"
 	"nodeid" "550"
 	"spawnflags" "1024"
 	"origin" "-3304 7088 799"
-	editor
-	{
-		"color" "190 111 0"
-		"groupid" "1879640"
-		"visgroupid" "14"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 10500]"
-	}
-}
-entity
-{
-	"id" "1816521"
-	"classname" "info_node"
-	"angles" "0 90 0"
-	"nodeid" "551"
-	"spawnflags" "1024"
-	"origin" "-3104 7050 1252"
 	editor
 	{
 		"color" "190 111 0"
@@ -28326,47 +28025,6 @@ entity
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[0 10500]"
-	}
-}
-entity
-{
-	"id" "1816591"
-	"classname" "info_node"
-	"angles" "0 90 0"
-	"nodeid" "553"
-	"spawnflags" "1024"
-	"origin" "-3104 6976 1252"
-	editor
-	{
-		"color" "190 111 0"
-		"groupid" "1879640"
-		"visgroupid" "14"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 10500]"
-	}
-}
-entity
-{
-	"id" "1816593"
-	"classname" "info_node_link"
-	"EndNode" "567"
-	"initialstate" "1"
-	"InvertAllow" "0"
-	"linktype" "2"
-	"preciseMovement" "0"
-	"priority" "0"
-	"spawnflags" "8192"
-	"StartNode" "553"
-	"origin" "-3136 6976 1248"
-	editor
-	{
-		"color" "190 111 0"
-		"groupid" "1879640"
-		"visgroupid" "14"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 11500]"
 	}
 }
 entity
@@ -28461,24 +28119,6 @@ entity
 }
 entity
 {
-	"id" "1816681"
-	"classname" "info_node"
-	"angles" "0 270 0"
-	"nodeid" "565"
-	"spawnflags" "1024"
-	"origin" "-3944 7144 1252"
-	editor
-	{
-		"color" "190 111 0"
-		"groupid" "1879640"
-		"visgroupid" "14"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 10500]"
-	}
-}
-entity
-{
 	"id" "1816686"
 	"classname" "info_node"
 	"angles" "0 270 0"
@@ -28503,24 +28143,6 @@ entity
 	"nodeid" "567"
 	"spawnflags" "1024"
 	"origin" "-3296 7000 799"
-	editor
-	{
-		"color" "190 111 0"
-		"groupid" "1879640"
-		"visgroupid" "14"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 10500]"
-	}
-}
-entity
-{
-	"id" "1817130"
-	"classname" "info_node"
-	"angles" "0 270 0"
-	"nodeid" "568"
-	"spawnflags" "1024"
-	"origin" "-3944 6996 1252"
 	editor
 	{
 		"color" "190 111 0"
@@ -38672,6 +38294,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "1"
 	"MoveClone" "train_drone_climb_1_3"
@@ -39019,6 +38642,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "1"
 	"MoveClone" "train_drone_climb_1_4"
@@ -39366,6 +38990,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "1"
 	"MoveClone" "train_drone_climb_1_5"
@@ -40471,7 +40096,7 @@ entity
 	"DefaultAnim" "closed"
 	"DisableBoneFollowers" "0"
 	"disablereceiveshadows" "0"
-	"disableshadows" "0"
+	"disableshadows" "1"
 	"ExplodeDamage" "0"
 	"ExplodeRadius" "0"
 	"fademaxdist" "0"
@@ -41264,6 +40889,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "1"
 	"MaxLiveAliens" "1"
@@ -41306,6 +40932,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "1"
 	"MaxLiveAliens" "1"
@@ -41348,11 +40975,12 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "1"
 	"MaxLiveAliens" "1"
-	"maxoffset" "60 60 0"
-	"minoffset" "-256 -128 0"
+	"maxoffset" "0 0 0"
+	"minoffset" "0 0 0"
 	"NearDistance" "740"
 	"NumAliens" "1"
 	"sizescalesp" "1.0"
@@ -41368,7 +40996,7 @@ entity
 	"teslablesp" "1"
 	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT"
 	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT_IDLE"
-	"origin" "-3344 7144 804"
+	"origin" "-3344 7144 796"
 	editor
 	{
 		"color" "0 0 255"
@@ -41390,6 +41018,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "1"
 	"MaxLiveAliens" "1"
@@ -41410,7 +41039,7 @@ entity
 	"teslablesp" "1"
 	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT"
 	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT_IDLE"
-	"origin" "-3296 7112 816"
+	"origin" "-3296 7112 802"
 	editor
 	{
 		"color" "0 0 255"
@@ -41432,6 +41061,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "1"
 	"MaxLiveAliens" "1"
@@ -41474,6 +41104,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "1"
 	"MaxLiveAliens" "1"
@@ -41494,7 +41125,7 @@ entity
 	"teslablesp" "1"
 	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT"
 	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT_IDLE"
-	"origin" "-3284 6966 802"
+	"origin" "-3284 6966 796"
 	editor
 	{
 		"color" "0 0 255"
@@ -41516,6 +41147,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "1"
 	"MaxLiveAliens" "1"
@@ -41536,7 +41168,7 @@ entity
 	"teslablesp" "1"
 	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT"
 	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT_IDLE"
-	"origin" "-3297 6908 804"
+	"origin" "-3297 6908 798"
 	editor
 	{
 		"color" "0 0 255"
@@ -41558,6 +41190,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "1"
 	"MaxLiveAliens" "1"
@@ -41578,7 +41211,7 @@ entity
 	"teslablesp" "1"
 	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT"
 	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT_IDLE"
-	"origin" "-3384 6934 804"
+	"origin" "-3384 6936 796"
 	editor
 	{
 		"color" "0 0 255"
@@ -41600,6 +41233,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "1"
 	"MaxLiveAliens" "1"
@@ -41620,7 +41254,7 @@ entity
 	"teslablesp" "1"
 	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT"
 	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT_IDLE"
-	"origin" "-3415 6998 792"
+	"origin" "-3415 6998 794"
 	editor
 	{
 		"color" "0 0 255"
@@ -41642,11 +41276,12 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "1"
 	"MaxLiveAliens" "1"
-	"maxoffset" "0 360 0"
-	"minoffset" "-256 0 0"
+	"maxoffset" "0 0 0"
+	"minoffset" "0 0 0"
 	"NearDistance" "740"
 	"NumAliens" "1"
 	"sizescalesp" "1.0"
@@ -41662,7 +41297,7 @@ entity
 	"teslablesp" "1"
 	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT"
 	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT_IDLE"
-	"origin" "-3577 6978 808"
+	"origin" "-3577 6976 796"
 	editor
 	{
 		"color" "0 0 255"
@@ -41684,6 +41319,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "1"
 	"MaxLiveAliens" "1"
@@ -41726,6 +41362,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "1"
 	"MaxLiveAliens" "1"
@@ -41768,6 +41405,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "1"
 	"MaxLiveAliens" "1"
@@ -41810,6 +41448,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "1"
 	"MaxLiveAliens" "1"
@@ -42092,11 +41731,12 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "1"
 	"MaxLiveAliens" "1"
-	"maxoffset" "128 128 0"
-	"minoffset" "-128 -128 0"
+	"maxoffset" "0 0 0"
+	"minoffset" "0 0 0"
 	"NearDistance" "740"
 	"NumAliens" "1"
 	"sizescalesp" "1.0"
@@ -42128,12 +41768,13 @@ entity
 	"AlienClass" "5"
 	"AlienNameTag" "alien_lift_jump"
 	"AlienOrders" "3"
-	"angles" "0 0 0"
+	"angles" "0 80 0"
 	"ClearCheck" "1"
 	"DirectorLockTime" "4"
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "1"
 	"MaxLiveAliens" "1"
@@ -42154,7 +41795,7 @@ entity
 	"teslablesp" "1"
 	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT"
 	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT_IDLE"
-	"origin" "-3764 7200 810"
+	"origin" "-3666 7038 794"
 	editor
 	{
 		"color" "0 0 255"
@@ -42176,6 +41817,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "1"
 	"MaxLiveAliens" "1"
@@ -42196,7 +41838,7 @@ entity
 	"teslablesp" "1"
 	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT"
 	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT_IDLE"
-	"origin" "-3770.03 7138 808"
+	"origin" "-3770.03 7138 794"
 	editor
 	{
 		"color" "0 0 255"
@@ -58094,6 +57736,8 @@ entity
 		"OnTrigger" "light_spin_ele_4TurnOn0-1"
 		"OnTrigger" "FreightElevatorWall_hideEnable0-1"
 		"OnTrigger" "ins_para3_spawnStartSpawning17-1"
+		"OnTrigger" "ExitSpawnerStopSpawning0-1"
+		"OnTrigger" "start_area_alien_killerEnable4-1"
 	}
 	"origin" "-3520 7216 905"
 	editor
@@ -60925,6 +60569,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"disableshadows" "1"
 	"distance" "125"
 	"DoBreachedShout" "1"
@@ -61173,11 +60818,12 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "1"
-	"maxoffset" "128 128 20"
+	"maxoffset" "0 0 0"
 	"MaxSkillLevel" "0"
-	"minoffset" "-128 -128 -20"
+	"minoffset" "0 0 0"
 	"MinSkillLevel" "4"
 	"NearDistance" "512"
 	"NumAliens" "1"
@@ -61212,11 +60858,12 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "1"
-	"maxoffset" "128 128 20"
+	"maxoffset" "0 0 0"
 	"MaxSkillLevel" "0"
-	"minoffset" "-128 -128 -20"
+	"minoffset" "0 0 0"
 	"MinSkillLevel" "4"
 	"NearDistance" "740"
 	"NumAliens" "1"
@@ -61251,11 +60898,12 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "1"
-	"maxoffset" "64 64 20"
+	"maxoffset" "0 0 0"
 	"MaxSkillLevel" "0"
-	"minoffset" "-64 -64 -20"
+	"minoffset" "0 0 0"
 	"MinSkillLevel" "4"
 	"NearDistance" "740"
 	"NumAliens" "1"
@@ -61385,11 +61033,12 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "1"
-	"maxoffset" "128 128 20"
+	"maxoffset" "0 0 0"
 	"MaxSkillLevel" "0"
-	"minoffset" "-128 -128 -20"
+	"minoffset" "0 0 0"
 	"MinSkillLevel" "4"
 	"NearDistance" "740"
 	"NumAliens" "1"
@@ -61424,6 +61073,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "1"
 	"maxoffset" "0 0 0"
@@ -61463,11 +61113,12 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "1"
-	"maxoffset" "128 0 20"
+	"maxoffset" "0 0 0"
 	"MaxSkillLevel" "0"
-	"minoffset" "-128 -128 -20"
+	"minoffset" "0 0 0"
 	"MinSkillLevel" "4"
 	"NearDistance" "740"
 	"NumAliens" "1"
@@ -61502,11 +61153,12 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "1"
-	"maxoffset" "128 128 20"
+	"maxoffset" "0 0 0"
 	"MaxSkillLevel" "0"
-	"minoffset" "-128 -128 -20"
+	"minoffset" "0 0 0"
 	"MinSkillLevel" "4"
 	"NearDistance" "740"
 	"NumAliens" "1"
@@ -61541,11 +61193,12 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "1"
-	"maxoffset" "128 0 20"
+	"maxoffset" "0 0 0"
 	"MaxSkillLevel" "0"
-	"minoffset" "-128 -128 -20"
+	"minoffset" "0 0 0"
 	"MinSkillLevel" "4"
 	"NearDistance" "740"
 	"NumAliens" "1"
@@ -61580,6 +61233,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "1"
 	"maxoffset" "0 150 20"
@@ -61619,6 +61273,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "1"
@@ -63310,6 +62965,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "1"
@@ -63353,6 +63009,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "1"
@@ -63396,6 +63053,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "1"
@@ -63418,7 +63076,7 @@ entity
 	"teslablesp" "1"
 	"UnburrowActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT"
 	"UnburrowIdleActivity" "ACT_JUMP_FROM_OFFSCREEN_SHORT_IDLE"
-	"origin" "-3548 7102 798"
+	"origin" "-3548 7102 796"
 	editor
 	{
 		"color" "0 0 255"
@@ -63439,6 +63097,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "1"
@@ -63480,6 +63139,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "1"
@@ -63521,6 +63181,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "1"
@@ -63564,6 +63225,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"HealthScale" "1"
 	"InfiniteAliens" "0"
 	"MaxLiveAliens" "1"
@@ -63626,11 +63288,12 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"MaxLiveAliens" "5"
 	"maxoffset" "0 0 0"
 	"minoffset" "0 0 0"
 	"NearDistance" "740"
-	"NumAliens" "15"
+	"NumAliens" "7"
 	"sizescalesp" "1.0"
 	"SpawnerState" "1"
 	"SpawnInterval" "0.01"
@@ -63658,11 +63321,12 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"MaxLiveAliens" "1"
 	"maxoffset" "0 0 0"
 	"minoffset" "0 0 0"
 	"NearDistance" "740"
-	"NumAliens" "10"
+	"NumAliens" "6"
 	"sizescalesp" "1.0"
 	"SpawnerState" "1"
 	"SpawnInterval" "0.01"
@@ -63690,12 +63354,13 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"MaxLiveAliens" "4"
 	"maxoffset" "0 0 0"
 	"minoffset" "0 0 0"
 	"MinSkillLevel" "4"
 	"NearDistance" "740"
-	"NumAliens" "15"
+	"NumAliens" "7"
 	"sizescalesp" "1.0"
 	"SpawnerState" "1"
 	"spawnflags" "0"
@@ -63883,13 +63548,105 @@ entity
 		"logicalpos" "[13000 7000]"
 	}
 }
+entity
+{
+	"id" "2218669"
+	"classname" "asw_trigger_fall"
+	"origin" "-2176 6705 1403.5"
+	"spawnflags" "2"
+	"StartDisabled" "1"
+	"targetname" "start_area_alien_killer"
+	solid
+	{
+		"id" "2218670"
+		side
+		{
+			"id" "90929"
+			"plane" "(-2976 5952 2068) (-2976 7458 2068) (-1376 7458 2068)"
+			"material" "TOOLS/TOOLSTRIGGER"
+			"uaxis" "[-1 0 0 51.8] 10"
+			"vaxis" "[0 1 0 56] 10"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "90928"
+			"plane" "(-2976 7458 739) (-2976 5952 739) (-1376 5952 739)"
+			"material" "TOOLS/TOOLSTRIGGER"
+			"uaxis" "[-1 0 0 51.8] 10"
+			"vaxis" "[0 1 0 56] 10"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "90927"
+			"plane" "(-1376 7458 739) (-1376 5952 739) (-1376 5952 2068)"
+			"material" "TOOLS/TOOLSTRIGGER"
+			"uaxis" "[0 -1 0 -56] 10"
+			"vaxis" "[0 0 -1 -48] 10"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "90926"
+			"plane" "(-2976 5952 739) (-2976 7458 739) (-2976 7458 2068)"
+			"material" "TOOLS/TOOLSTRIGGER"
+			"uaxis" "[0 -1 0 -56] 10"
+			"vaxis" "[0 0 -1 -48] 10"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "90925"
+			"plane" "(-1376 5952 739) (-2976 5952 739) (-2976 5952 2068)"
+			"material" "TOOLS/TOOLSTRIGGER"
+			"uaxis" "[-1 0 0 51.8] 10"
+			"vaxis" "[0 0 -1 -48] 10"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "90924"
+			"plane" "(-2976 7458 739) (-1376 7458 739) (-1376 7458 2068)"
+			"material" "TOOLS/TOOLSTRIGGER"
+			"uaxis" "[-1 0 0 51.8] 10"
+			"vaxis" "[0 0 -1 -48] 10"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		editor
+		{
+			"color" "220 30 220"
+			"visgroupshown" "1"
+			"visgroupautoshown" "1"
+		}
+	}
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 500]"
+	}
+}
 cameras
 {
 	"activecamera" "0"
 	camera
 	{
-		"position" "[-4588.69 6452.8 950.994]"
-		"look" "[-4813.22 6424.44 807.367]"
+		"position" "[-3805.25 6939.49 922.167]"
+		"look" "[-3902.92 7120.11 749.877]"
 	}
 	camera
 	{
