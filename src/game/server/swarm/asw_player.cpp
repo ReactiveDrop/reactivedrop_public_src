@@ -855,19 +855,20 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			}
 			else if ( FStrEq( pcmd, "cl_loadouta" ) )			// selecting equipment
 			{
-				if ( args.ArgC() < 8 )
+				if ( args.ArgC() < 9 )
 				{
 					Warning( "Player sent bad loadouta command\n" );
 					return false;
 				}
 
 				int iProfileIndex = clamp( atoi( args[1] ), 0, ASW_NUM_MARINE_PROFILES - 1 );
-				int iPrimary = atoi( args[2] );
-				int iSecondary = atoi( args[3] );
-				int iExtra = atoi( args[4] );
-				int iDynamicPrimary = atoi( args[5] );
-				int iDynamicSecondary = atoi( args[6] );
-				int iDynamicExtra = atoi( args[7] );
+				Assert( atoi( args[2] ) == -1 ); // dummy arg so that the arg count is the same as for other loadout commands
+				int iPrimary = atoi( args[3] );
+				int iSecondary = atoi( args[4] );
+				int iExtra = atoi( args[5] );
+				int iDynamicPrimary = atoi( args[6] );
+				int iDynamicSecondary = atoi( args[7] );
+				int iDynamicExtra = atoi( args[8] );
 
 				if ( iPrimary >= 0 )
 					ASWGameRules()->LoadoutSelect( this, iProfileIndex, 0, iPrimary, iDynamicPrimary );
@@ -1529,18 +1530,6 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			}
 		}
 		return true;
-	}
-	else if ( FStrEq( pcmd, "cl_autoreload" ) )			// telling the server you've read an info message
-	{
-		if ( args.ArgC() < 2 )
-		{
-			Warning( "Player sent bad cl_autoreload command\n" );
-			return false;
-		}
-
-		m_bAutoReload = (atoi(args[1]) == 1);
-		return true;
-
 	}
 	else if ( FStrEq( pcmd, "cl_switchm" ) )			// selecting a marine from the roster
 	{

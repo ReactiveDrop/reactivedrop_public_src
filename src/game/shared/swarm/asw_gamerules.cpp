@@ -124,6 +124,7 @@
 #include "rd_missions_shared.h"
 #include "rd_workshop.h"
 #include "rd_lobby_utils.h"
+#include "rd_loadout.h"
 #include "matchmaking/imatchframework.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -230,16 +231,13 @@ extern ConVar old_radius_damage;
 					continue;
 
 				CASW_Player *pPlayer = pMR->GetCommander();
-				CASW_Marine_Profile *pProfile = pMR->GetProfile();
-				if ( !pPlayer || !pProfile )
+				int iProfile = pMR->GetProfileIndex();
+				if ( !pPlayer )
 					continue;
 
-				for ( int j = 0; j < ASW_MAX_EQUIP_SLOTS; j++ )
-				{
-					const char *szWeaponClass = pProfile->m_DefaultWeaponsInSlots[ j ];
-					int nWeaponIndex = g_ASWEquipmentList.GetIndexForSlot( j, szWeaponClass );
-					engine->ClientCommand( pPlayer->edict(), "cl_loadout %d %d %d", pProfile->m_ProfileIndex, j, nWeaponIndex );
-				}
+				engine->ClientCommand( pPlayer->edict(), "cl_loadout %d %d %d %d\n", iProfile, ASW_INVENTORY_SLOT_PRIMARY, ReactiveDropLoadout::DefaultLoadout.Marines[iProfile].Primary, -1 );
+				engine->ClientCommand( pPlayer->edict(), "cl_loadout %d %d %d %d\n", iProfile, ASW_INVENTORY_SLOT_SECONDARY, ReactiveDropLoadout::DefaultLoadout.Marines[iProfile].Secondary, -1 );
+				engine->ClientCommand( pPlayer->edict(), "cl_loadout %d %d %d %d\n", iProfile, ASW_INVENTORY_SLOT_EXTRA, ReactiveDropLoadout::DefaultLoadout.Marines[iProfile].Extra, -1 );
 			}
 		}
 	}
@@ -2244,10 +2242,16 @@ bool CAlienSwarm::RosterSelect( CASW_Player *pPlayer, int RosterIndex, int nPref
 				m->ChangeTeam( ASWDeathmatchMode()->GetSmallestTeamNumber() );
 			}
 
+			int iDefaultWeapon[ASW_MAX_EQUIP_SLOTS]
+			{
+				ReactiveDropLoadout::DefaultLoadout.Marines[RosterIndex].Primary,
+				ReactiveDropLoadout::DefaultLoadout.Marines[RosterIndex].Secondary,
+				ReactiveDropLoadout::DefaultLoadout.Marines[RosterIndex].Extra,
+			};
+
 			for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++iWpnSlot )
 			{
-				const char *szWeaponClass = m->GetProfile()->m_DefaultWeaponsInSlots[iWpnSlot];
-				int nWeaponIndex = g_ASWEquipmentList.GetIndexForSlot( iWpnSlot, szWeaponClass );
+				int nWeaponIndex = iDefaultWeapon[iWpnSlot];
 				if ( nWeaponIndex < 0 )		// if there's a bad weapon here, then fall back to one of the starting weapons
 				{
 					if ( iWpnSlot == 2 )
@@ -3228,7 +3232,7 @@ void CAlienSwarm::CampaignSaveAndShowCampaignMap(CASW_Player* pPlayer, bool bFor
 	{
 		for (int i=0;i<ASW_NUM_MARINE_PROFILES;i++)
 		{
-			CASW_Marine_Profile *pProfile = MarineProfileList()->m_Profiles[i];
+			CASW_Marine_Profile *pProfile = MarineProfileList()->GetProfile( i );
 			if (pProfile)
 			{
 				bool bOnMission = false;
@@ -7009,7 +7013,7 @@ bool CAlienSwarm::SpendSkill(int iProfileIndex, int nSkillSlot)
 	if (!ASWGameResource())
 		return false;
 
-	CASW_Marine_Profile *pProfile = MarineProfileList()->m_Profiles[iProfileIndex];
+	CASW_Marine_Profile *pProfile = MarineProfileList()->GetProfile( iProfileIndex );
 	if (!pProfile)
 		return false;
 
@@ -7387,6 +7391,7 @@ void CAlienSwarm::ClientSettingsChanged( CBasePlayer *pPlayer )
 	}
 
 	pASWPlayer->m_iWantsAutoRecord = V_atoi( engine->GetClientConVarValue( pPlayer->entindex(), "rd_auto_record_lobbies" ) );
+	pASWPlayer->m_bAutoReload = V_atoi( engine->GetClientConVarValue( pPlayer->entindex(), "asw_auto_reload" ) );
 
 	const char *pszFov = engine->GetClientConVarValue( pPlayer->entindex(), "fov_desired" );
 	if ( pszFov )

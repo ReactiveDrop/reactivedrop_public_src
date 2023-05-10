@@ -119,32 +119,6 @@ void asw_cain_mail_f()
 }
 static ConCommand asw_cain_mail("asw_cain_mail", asw_cain_mail_f, "Test shows cain mail", FCVAR_CHEAT);
 
-// lists a few basic details about a marine's profile
-void ASW_InspectProfile( const CCommand &args )
-{	
-	int i = atoi( args[1] );
-	Msg("Marine profile %d\n", i);
-
-	CASW_Marine_Profile *profile = MarineProfileList()->m_Profiles[i];
-	if (profile != NULL)
-	{
-		Msg("Name: %s\n", profile->m_ShortName);
-		Msg("Age: %d\n",
-			profile->m_Age);
-		if (profile->GetMarineClass() == MARINE_CLASS_TECH)
-			Msg("Tech\n");
-		if (profile->GetMarineClass() == MARINE_CLASS_MEDIC)
-			Msg("First Aid\n");
-		if (profile->GetMarineClass() == MARINE_CLASS_SPECIAL_WEAPONS)
-			Msg("Special Weapons\n");
-		if (profile->GetMarineClass() == MARINE_CLASS_NCO)
-			Msg("Sapper\n");
-	}
-}
-
-static ConCommand asw_inspect_profile("asw_inspect_profile", ASW_InspectProfile, "Display a marine's profile", FCVAR_CHEAT);
-
-
 void CC_ASWEditEmitterFrame(void)
 {
 	using namespace vgui;

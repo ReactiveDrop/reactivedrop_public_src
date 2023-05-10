@@ -169,14 +169,11 @@ enum {
 class CASW_Marine_Profile
 {
 public:
-					CASW_Marine_Profile();
-	virtual			~CASW_Marine_Profile();
-	
-	void		ApplyKeyValues( KeyValues *pKeys );
-
 	// this profile's position in the list of profiles
-	int			m_ProfileIndex;	
-	
+	int m_ProfileIndex;
+	ASW_Marine_Class m_iMarineClass;
+	ASW_Voice_Type m_VoiceType;
+
 	// Accessors
 	inline bool CanHack( void );						///< Can this character type hack computers? (In general -- the marine may be unable to do it at this moment due to combat, distance, etc)
 	inline bool CanScanner( void );						///< Does this character type have a scanner?
@@ -185,62 +182,54 @@ public:
 	inline bool HasTechIcon( void );
 	inline bool CanUseFirstAid( void );
 	inline bool CanUseAutogun( void );
-	
+
 	void SetMarineClass( ASW_Marine_Class marineClass );
 	ASW_Marine_Class GetMarineClass();
 
-	// personal data
+	// personnel data
 	const char *GetShortName() { return m_ShortName; }
-	void SetShortName( const char *szName );
 	bool IsFemale() { return m_bFemale; }
-	void SetFemale( bool bFemale ) { m_bFemale = bFemale; }
+
 	char	m_RankName[24];
+	char	m_Bio[24];
 	char	m_FirstName[24];
 	char	m_LastName[24];
 	char	m_ShortName[24];
-	bool		m_bNickname;	// is the shortname a nickname to be put in quotes between 1st and last?
-	char	m_Bio[512];
-	int			m_Age;
-	bool		m_bFemale;
-#ifdef GAME_DLL
-	ResponseRules::CriteriaSet::CritSymbol_t m_nResponseRulesName; // used for the "who" fact
-#endif
-	
+	// name used for  portrait vmt files
+	char	m_PortraitName[24];
+	// is the shortname a nickname to be put in quotes between 1st and last?
+	bool	m_bNickname;
+	int		m_Age;
+	bool	m_bFemale;
+	// used for the "who" fact
+	char	m_ResponseRulesName[24];
+
 	// model
 	const char *GetModelName() { return m_ModelName; }
-	void SetModelName( const char *szName );
 	int GetSkinNum() { return m_SkinNum; }
-	void SetSkinNum( int iSkin ) { m_SkinNum = iSkin; }
 	char	m_ModelName[64];
-	int			m_SkinNum;
+	int		m_SkinNum;
 
 	// portraits
-	char m_PortraitName[24];		// name used for  portrait vmt files
-	int m_nPortraitTextureID;		// regular small portrait texture ID
-	int m_nClassTextureID;			// class icon
+	int m_nPortraitTextureID{ -1 }; // regular small portrait texture ID
+	int m_nClassTextureID{ -1 }; // class icon
 
 	// chatter stuff
 	ASW_Voice_Type GetVoiceType();
 	void SetVoiceType( ASW_Voice_Type vt );
 	char m_Chatter[NUM_CHATTER_LINES][CHATTER_STRING_SIZE];
-	void InitChatterNames(const char *szMarineName);
+	void InitChatterNames( const char *szMarineName );
 	int m_iChatterCount[NUM_CHATTER_LINES];	// how many speech lines this marine has for each chatter type
 #ifndef CLIENT_DLL
-	void PrecacheSpeech(CBaseEntity* pEnt);
-	float m_fChatterChance[NUM_CHATTER_LINES];	
+	void PrecacheSpeech( CBaseEntity *pEnt );
+	float m_fChatterChance[NUM_CHATTER_LINES];
 	float m_fChatterDuration[NUM_CHATTER_LINES][NUM_SUB_CHATTERS];	// how long each sub chatter line is
-	void SaveSpeechDurations(CBaseEntity *pEnt);
+	void SaveSpeechDurations( CBaseEntity *pEnt );
+	ResponseRules::CriteriaSet::CritSymbol_t m_nResponseRulesName;
 #endif
-	
-	char	m_DefaultWeaponsInSlots[ ASW_MAX_EQUIP_SLOTS ][32];
-	ASW_Voice_Type		m_VoiceType;
-
-	ASW_Marine_Class m_iMarineClass;
 
 	ASW_Skill GetSkillMapping( int nSkillSlot );
-
-	int m_iStaticSkills[ ASW_NUM_SKILL_SLOTS ];			// skills for single mission mode
-	ASW_Skill m_nSkillMapping[ ASW_NUM_SKILL_SLOTS ];	// maps skill slot to actual skill
+	int GetStaticSkillPoints( int nSkillSlot );
 
 	void LoadTextures();	// loads the portrait textures
 };
@@ -248,24 +237,21 @@ public:
 class CASW_Marine_ProfileList
 {
 public:
-	CASW_Marine_ProfileList();
-	virtual ~CASW_Marine_ProfileList();
-
 	void PrecacheSpeech(CBaseEntity* pEnt);
 #ifndef CLIENT_DLL
 	void SaveSpeechDurations(CBaseEntity *pEnt);
 #endif
 
-	CASW_Marine_Profile* GetProfile(int i)
-	{		
-		if (i >=0 && i < m_NumProfiles)
-			return m_Profiles[i];
+	CASW_Marine_Profile *GetProfile( int i )
+	{
+		if ( i >= 0 && i < ASW_NUM_MARINE_PROFILES )
+			return &m_Profiles[i];
 
 		return NULL;
 	}
 
-	CASW_Marine_Profile* m_Profiles[16];
-	int m_NumProfiles;
+	CASW_Marine_Profile m_Profiles[ASW_NUM_MARINE_PROFILES];
+	bool m_bInitOnce{ false };
 };
 
 extern CASW_Marine_ProfileList* MarineProfileList();

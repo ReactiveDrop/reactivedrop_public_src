@@ -677,7 +677,7 @@ void CASW_Briefing::AutoSelectFullSquadForSingleplayer( int nFirstSelectedProfil
 			continue;
 
 		CASW_Marine_Profile* pProfile = NULL;
-		for ( int p = 0; p < MarineProfileList()->m_NumProfiles; p++ )
+		for ( int p = 0; p < ASW_NUM_MARINE_PROFILES; p++ )
 		{
 			pProfile = MarineProfileList()->GetProfile( p );
 			if ( pProfile && pProfile->GetMarineClass() == nMarineClasses[i] )

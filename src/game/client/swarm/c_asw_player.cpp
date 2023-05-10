@@ -18,6 +18,7 @@
 #include "prediction.h"
 #include "c_env_ambient_light.h"
 #include "game_timescale_shared.h"
+#include "fmtstr.h"
 
 // effects
 #include "ivieweffects.h"
@@ -124,78 +125,13 @@ ConVar asw_marine_switch_blend_speed( "asw_marine_switch_blend_speed", "2.5", 0,
 ConVar asw_marine_switch_blend_max_dist( "asw_marine_switch_blend_max_dist", "1500", 0, "Maximum distance apart marines can be for a camera blend to occur" );
 
 // default inventory convars
-ConVar asw_default_primary[ASW_NUM_MARINE_PROFILES + 1]
-{
-	{ "asw_default_primary_0", "-1", FCVAR_ARCHIVE, "Default primary equip for Sarge" },
-	{ "asw_default_primary_1", "-1", FCVAR_ARCHIVE, "Default primary equip for Wildcat" },
-	{ "asw_default_primary_2", "-1", FCVAR_ARCHIVE, "Default primary equip for Faith" },
-	{ "asw_default_primary_3", "-1", FCVAR_ARCHIVE, "Default primary equip for Crash" },
-	{ "asw_default_primary_4", "-1", FCVAR_ARCHIVE, "Default primary equip for Jaeger" },
-	{ "asw_default_primary_5", "-1", FCVAR_ARCHIVE, "Default primary equip for Wolfe" },
-	{ "asw_default_primary_6", "-1", FCVAR_ARCHIVE, "Default primary equip for Bastille" },
-	{ "asw_default_primary_7", "-1", FCVAR_ARCHIVE, "Default primary equip for Vegas" },
-	// we don't have Flynn, but this convar has existed for a while so keep it as FCVAR_ARCHIVE in case anyone is really attached to the number they put there
-	{ "asw_default_primary_8", "-1", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Default primary equip for Flynn" },
-};
-ConVar asw_default_secondary[ASW_NUM_MARINE_PROFILES + 1]
-{
-	{ "asw_default_secondary_0", "-1", FCVAR_ARCHIVE, "Default secondary equip for Sarge" },
-	{ "asw_default_secondary_1", "-1", FCVAR_ARCHIVE, "Default secondary equip for Wildcat" },
-	{ "asw_default_secondary_2", "-1", FCVAR_ARCHIVE, "Default secondary equip for Faith" },
-	{ "asw_default_secondary_3", "-1", FCVAR_ARCHIVE, "Default secondary equip for Crash" },
-	{ "asw_default_secondary_4", "-1", FCVAR_ARCHIVE, "Default secondary equip for Jaeger" },
-	{ "asw_default_secondary_5", "-1", FCVAR_ARCHIVE, "Default secondary equip for Wolfe" },
-	{ "asw_default_secondary_6", "-1", FCVAR_ARCHIVE, "Default secondary equip for Bastille" },
-	{ "asw_default_secondary_7", "-1", FCVAR_ARCHIVE, "Default secondary equip for Vegas" },
-	{ "asw_default_secondary_8", "-1", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Default secondary equip for Flynn" },
-};
-ConVar asw_default_extra[ASW_NUM_MARINE_PROFILES + 1]
-{
-	{ "asw_default_extra_0", "-1", FCVAR_ARCHIVE, "Default extra equip for Sarge" },
-	{ "asw_default_extra_1", "-1", FCVAR_ARCHIVE, "Default extra equip for Wildcat" },
-	{ "asw_default_extra_2", "-1", FCVAR_ARCHIVE, "Default extra equip for Faith" },
-	{ "asw_default_extra_3", "-1", FCVAR_ARCHIVE, "Default extra equip for Crash" },
-	{ "asw_default_extra_4", "-1", FCVAR_ARCHIVE, "Default extra equip for Jaeger" },
-	{ "asw_default_extra_5", "-1", FCVAR_ARCHIVE, "Default extra equip for Wolfe" },
-	{ "asw_default_extra_6", "-1", FCVAR_ARCHIVE, "Default extra equip for Bastille" },
-	{ "asw_default_extra_7", "-1", FCVAR_ARCHIVE, "Default extra equip for Vegas" },
-	{ "asw_default_extra_8", "-1", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Default extra equip for Flynn" },
-};
-extern ConVar rd_equipped_marine[ASW_NUM_MARINE_PROFILES];
-ConVar rd_equipped_weapon_primary[ASW_NUM_MARINE_PROFILES]
-{
-	{ "rd_equipped_weapon_primary0", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current primary weapon for Sarge" },
-	{ "rd_equipped_weapon_primary1", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current primary weapon for Wildcat" },
-	{ "rd_equipped_weapon_primary2", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current primary weapon for Faith" },
-	{ "rd_equipped_weapon_primary3", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current primary weapon for Crash" },
-	{ "rd_equipped_weapon_primary4", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current primary weapon for Jaeger" },
-	{ "rd_equipped_weapon_primary5", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current primary weapon for Wolfe" },
-	{ "rd_equipped_weapon_primary6", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current primary weapon for Bastille" },
-	{ "rd_equipped_weapon_primary7", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current primary weapon for Vegas" },
-};
-ConVar rd_equipped_weapon_secondary[ASW_NUM_MARINE_PROFILES]
-{
-	{ "rd_equipped_weapon_secondary0", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current secondary weapon for Sarge" },
-	{ "rd_equipped_weapon_secondary1", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current secondary weapon for Wildcat" },
-	{ "rd_equipped_weapon_secondary2", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current secondary weapon for Faith" },
-	{ "rd_equipped_weapon_secondary3", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current secondary weapon for Crash" },
-	{ "rd_equipped_weapon_secondary4", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current secondary weapon for Jaeger" },
-	{ "rd_equipped_weapon_secondary5", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current secondary weapon for Wolfe" },
-	{ "rd_equipped_weapon_secondary6", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current secondary weapon for Bastille" },
-	{ "rd_equipped_weapon_secondary7", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current secondary weapon for Vegas" },
-};
-ConVar rd_equipped_weapon_extra[ASW_NUM_MARINE_PROFILES]
-{
-	{ "rd_equipped_weapon_extra0", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current extra weapon for Sarge" },
-	{ "rd_equipped_weapon_extra1", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current extra weapon for Wildcat" },
-	{ "rd_equipped_weapon_extra2", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current extra weapon for Faith" },
-	{ "rd_equipped_weapon_extra3", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current extra weapon for Crash" },
-	{ "rd_equipped_weapon_extra4", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current extra weapon for Jaeger" },
-	{ "rd_equipped_weapon_extra5", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current extra weapon for Wolfe" },
-	{ "rd_equipped_weapon_extra6", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current extra weapon for Bastille" },
-	{ "rd_equipped_weapon_extra7", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current extra weapon for Vegas" },
-};
-ConVar rd_loadout_auto_update( "rd_loadout_auto_update", "1", FCVAR_ARCHIVE, "Should the current loadout be updated when an item is selected during briefing?" );
+extern ConVar asw_default_primary[ASW_NUM_MARINE_PROFILES + 1];
+extern ConVar asw_default_secondary[ASW_NUM_MARINE_PROFILES + 1];
+extern ConVar asw_default_extra[ASW_NUM_MARINE_PROFILES + 1];
+extern ConVar rd_equipped_weapon_primary[ASW_NUM_MARINE_PROFILES];
+extern ConVar rd_equipped_weapon_secondary[ASW_NUM_MARINE_PROFILES];
+extern ConVar rd_equipped_weapon_extra[ASW_NUM_MARINE_PROFILES];
+extern ConVar rd_loadout_auto_update;
 
 ConVar asw_particle_count( "asw_particle_count", "0", 0, "Shows how many particles are being drawn" );
 ConVar asw_dlight_list( "asw_dlight_list", "0", 0, "Lists dynamic lights" );
@@ -204,15 +140,7 @@ ConVar asw_stim_music( "asw_stim_music", "", FCVAR_ARCHIVE, "Custom music file u
 ConVar asw_player_avoidance_force( "asw_player_avoidance_force", "1024", FCVAR_CHEAT, "Marine avoidance separation force." );
 ConVar asw_player_avoidance_bounce( "asw_player_avoidance_bounce", "1.0", FCVAR_CHEAT, "Marine avoidance bounce." );
 ConVar asw_player_avoidance_fakehull( "asw_player_avoidance_fakehull", "25.0", FCVAR_CHEAT, "Marine avoidance hull size." );
-
-void fnAutoReloadChangedCallback( IConVar *var, const char *pOldString, float flOldValue )
-{
-	if ( engine->IsInGame() )
-	{
-		engine->ClientCmd( VarArgs( "cl_autoreload %d\n", ( ( ConVar * )var )->GetInt() ) );
-	}
-}
-ConVar asw_auto_reload( "asw_auto_reload", "1", FCVAR_ARCHIVE, "Whether your marines should autoreload when reaching 0 bullets", true, 0, true, 1, fnAutoReloadChangedCallback );
+ConVar asw_auto_reload( "asw_auto_reload", "1", FCVAR_ARCHIVE | FCVAR_USERINFO, "Whether your marines should autoreload when reaching 0 bullets", true, 0, true, 1 );
 
 ConVar asw_turret_fog_start( "asw_turret_fog_start", "900", 0, "Fog start distance for turret view" );
 ConVar asw_turret_fog_end( "asw_turret_fog_end", "1200", 0, "Fog end distance for turret view" );
@@ -542,14 +470,14 @@ void C_ASW_Player::StopUsing()
 {
 	char buffer[64];
 	Q_snprintf( buffer, sizeof( buffer ), "cl_stopusing" );
-	engine->ClientCmd( buffer );
+	engine->ServerCmd( buffer );
 }
 
 void C_ASW_Player::SelectHackOption( int iHackOption )
 {
 	char buffer[64];
 	Q_snprintf( buffer, sizeof( buffer ), "cl_selecthack %d", iHackOption );
-	engine->ClientCmd( buffer );
+	engine->ServerCmd( buffer );
 }
 
 void C_ASW_Player::SelectTumbler( int iTumblerImpulse )
@@ -565,32 +493,32 @@ void C_ASW_Player::SendRosterSelectCommand( const char *command, int i, int nPre
 	if ( i >= 0 && i < ASW_NUM_MARINE_PROFILES )
 	{
 		// grab default inventory numbers
-		int default_primary = asw_default_primary[i].GetInt();
-		int default_secondary = asw_default_secondary[i].GetInt();
-		int default_extra = asw_default_extra[i].GetInt();
+		int iPrimary = asw_default_primary[i].GetInt();
+		int iSecondary = asw_default_secondary[i].GetInt();
+		int iExtra = asw_default_extra[i].GetInt();
 
-		CASW_EquipItem *pPrimary = g_ASWEquipmentList.GetRegular( default_primary );
+		CASW_EquipItem *pPrimary = g_ASWEquipmentList.GetRegular( iPrimary );
 		if ( pPrimary )
 		{
 			if ( !IsWeaponUnlocked( pPrimary->m_szEquipClass ) )
 			{
-				default_primary = ASW_EQUIP_RIFLE;
+				iPrimary = ASW_EQUIP_RIFLE;
 			}
 		}
-		CASW_EquipItem *pSecondary = g_ASWEquipmentList.GetRegular( default_secondary );
+		CASW_EquipItem *pSecondary = g_ASWEquipmentList.GetRegular( iSecondary );
 		if ( pSecondary )
 		{
 			if ( !IsWeaponUnlocked( pSecondary->m_szEquipClass ) )
 			{
-				default_secondary = ASW_EQUIP_RIFLE;
+				iSecondary = ASW_EQUIP_RIFLE;
 			}
 		}
-		CASW_EquipItem *pExtra = g_ASWEquipmentList.GetExtra( default_extra );
+		CASW_EquipItem *pExtra = g_ASWEquipmentList.GetExtra( iExtra );
 		if ( pExtra )
 		{
 			if ( !IsWeaponUnlocked( pExtra->m_szEquipClass ) )
 			{
-				default_extra = ASW_EQUIP_MEDKIT;
+				iExtra = ASW_EQUIP_MEDKIT;
 			}
 		}
 
@@ -598,7 +526,7 @@ void C_ASW_Player::SendRosterSelectCommand( const char *command, int i, int nPre
 		int iAllocatedSlot1 = ReactiveDropInventory::AllocateDynamicItemSlot( GetSplitScreenPlayerSlot(), strtoull( rd_equipped_weapon_secondary[i].GetString(), NULL, 10 ), i, ASW_INVENTORY_SLOT_SECONDARY );
 		int iAllocatedSlot2 = ReactiveDropInventory::AllocateDynamicItemSlot( GetSplitScreenPlayerSlot(), strtoull( rd_equipped_weapon_extra[i].GetString(), NULL, 10 ), i, ASW_INVENTORY_SLOT_EXTRA );
 
-		V_snprintf( buffer, sizeof( buffer ), "%s %d %d %d %d %d", command, i, nPreferredSlot, default_primary, default_secondary, default_extra, iAllocatedSlot0, iAllocatedSlot1, iAllocatedSlot2 );
+		V_snprintf( buffer, sizeof( buffer ), "%s %d %d %d %d %d %d %d %d", command, i, nPreferredSlot, iPrimary, iSecondary, iExtra, iAllocatedSlot0, iAllocatedSlot1, iAllocatedSlot2 );
 		engine->ServerCmd( buffer );
 
 		ReactiveDropInventory::ResendDynamicEquipNotification( GetSplitScreenPlayerSlot() );
@@ -628,8 +556,8 @@ void C_ASW_Player::RosterSelectMarineForSlot( int i, int nPreferredSlot )
 void C_ASW_Player::RosterDeselectMarine( int iProfileIndex )
 {
 	char buffer[64];
-	Q_snprintf( buffer, sizeof( buffer ), "cl_dselectm %d", iProfileIndex );
-	engine->ClientCmd( buffer );
+	V_snprintf( buffer, sizeof( buffer ), "cl_dselectm %d", iProfileIndex );
+	engine->ServerCmd( buffer );
 }
 
 void C_ASW_Player::RosterSpendSkillPoint( int iProfileIndex, int nSkillSlot )
@@ -654,7 +582,7 @@ void C_ASW_Player::RosterSpendSkillPoint( int iProfileIndex, int nSkillSlot )
 	char buffer[64];
 	Q_snprintf( buffer, sizeof( buffer ), "cl_spendskill %d %d", iProfileIndex, nSkillSlot );
 	//Msg("Sending command %s\n", buffer);
-	engine->ClientCmd( buffer );
+	engine->ServerCmd( buffer );
 }
 
 void C_ASW_Player::LoadoutSelectEquip( int iMarineIndex, int iInvSlot, int iEquipIndex, SteamItemInstanceID_t iItemInstanceID )
@@ -721,7 +649,7 @@ void C_ASW_Player::LoadoutSelectEquip( int iMarineIndex, int iInvSlot, int iEqui
 
 		char buffer[64];
 		Q_snprintf( buffer, sizeof( buffer ), "cl_loadout %d %d %d %d", iProfileIndex, iInvSlot, iEquipIndex, iAllocatedDynamicSlot );
-		engine->ClientCmd( buffer );
+		engine->ServerCmd( buffer );
 
 		ReactiveDropInventory::ResendDynamicEquipNotification( GetSplitScreenPlayerSlot() );
 	}
@@ -732,93 +660,35 @@ void C_ASW_Player::LoadoutSendStored( C_ASW_Marine_Resource *pMR )
 	if ( !pMR )
 		return;
 
-	C_ASW_Game_Resource *pGameResource = ASWGameResource();
-	if ( !pGameResource )
-		return;
-
-	// find our index in the list of marine infos
-	int iMarineResourceIndex = -1;
-	for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
-	{
-		C_ASW_Marine_Resource *pOtherResource = pGameResource->GetMarineResource( i );
-		if ( pOtherResource == pMR )
-		{
-			iMarineResourceIndex = i;
-			break;
-		}
-	}
-
-	if ( iMarineResourceIndex == -1 )
-		return;
-
-	int iRosterIndex = pMR->m_MarineProfileIndex;
-
-	int iPrimary = asw_default_primary[iRosterIndex].GetInt();
-	int iSecondary = asw_default_secondary[iRosterIndex].GetInt();
-	int iExtra = asw_default_extra[iRosterIndex].GetInt();
-
-	int iAllocatedSlot0 = ReactiveDropInventory::AllocateDynamicItemSlot( GetSplitScreenPlayerSlot(), strtoull( rd_equipped_weapon_primary[iRosterIndex].GetString(), NULL, 10 ), iRosterIndex, ASW_INVENTORY_SLOT_PRIMARY );
-	int iAllocatedSlot1 = ReactiveDropInventory::AllocateDynamicItemSlot( GetSplitScreenPlayerSlot(), strtoull( rd_equipped_weapon_secondary[iRosterIndex].GetString(), NULL, 10 ), iRosterIndex, ASW_INVENTORY_SLOT_SECONDARY );
-	int iAllocatedSlot2 = ReactiveDropInventory::AllocateDynamicItemSlot( GetSplitScreenPlayerSlot(), strtoull( rd_equipped_weapon_extra[iRosterIndex].GetString(), NULL, 10 ), iRosterIndex, ASW_INVENTORY_SLOT_EXTRA );
-
-	CASW_EquipItem *pPrimary = g_ASWEquipmentList.GetRegular( iPrimary );
-	if ( pPrimary )
-	{
-		if ( !IsWeaponUnlocked( pPrimary->m_szEquipClass ) )
-		{
-			iPrimary = ASW_EQUIP_RIFLE;
-		}
-	}
-	CASW_EquipItem *pSecondary = g_ASWEquipmentList.GetRegular( iSecondary );
-	if ( pSecondary )
-	{
-		if ( !IsWeaponUnlocked( pSecondary->m_szEquipClass ) )
-		{
-			iSecondary = ASW_EQUIP_RIFLE;
-		}
-	}
-	CASW_EquipItem *pExtra = g_ASWEquipmentList.GetExtra( iExtra );
-	if ( pExtra )
-	{
-		if ( !IsWeaponUnlocked( pExtra->m_szEquipClass ) )
-		{
-			iExtra = ASW_EQUIP_MEDKIT;
-		}
-	}
-
-	char mbuffer[64];
-	Q_snprintf( mbuffer, sizeof( mbuffer ), "cl_loadouta %d %d %d %d %d %d %d", iRosterIndex, iPrimary, iSecondary, iExtra, iAllocatedSlot0, iAllocatedSlot1, iAllocatedSlot2 );
-	engine->ClientCmd( mbuffer );
-
-	ReactiveDropInventory::ResendDynamicEquipNotification( GetSplitScreenPlayerSlot() );
+	SendRosterSelectCommand( "cl_loadouta", pMR->GetProfileIndex() );
 }
 
 void C_ASW_Player::StartReady()
 {
 	// todo: if we're not the leader, do a cl_ready
 	if ( ASWGameResource() && ASWGameResource()->GetLeader() == this )
-		engine->ClientCmd( "cl_start" );
+		engine->ServerCmd( "cl_start" );
 	else
-		engine->ClientCmd( "cl_ready" );
+		engine->ServerCmd( "cl_ready" );
 }
 
 void C_ASW_Player::CampaignSaveAndShow()
 {
-	engine->ClientCmd( "cl_campaignsas" );
+	engine->ServerCmd( "cl_campaignsas" );
 }
 
 void C_ASW_Player::NextCampaignMission( int iTargetMission )
 {
 	char buffer[64];
 	Q_snprintf( buffer, sizeof( buffer ), "cl_campaignnext %d", iTargetMission );
-	engine->ClientCmd( buffer );
+	engine->ServerCmd( buffer );
 }
 
 void C_ASW_Player::CampaignLaunchMission( int iTargetMission )
 {
 	char buffer[64];
 	Q_snprintf( buffer, sizeof( buffer ), "cl_campaignlaunch %d", iTargetMission );
-	engine->ClientCmd( buffer );
+	engine->ServerCmd( buffer );
 }
 
 bool C_ASW_Player::ShouldDraw()			// we don't draw the player at all (only the npc's that he's remote controlling)
@@ -850,7 +720,7 @@ void C_ASW_Player::ActivateInventoryItem( int slot )
 	{
 		char buffer[64];
 		Q_snprintf( buffer, sizeof( buffer ), "cl_offhand %d", slot );
-		engine->ClientCmd( buffer );
+		engine->ServerCmd( buffer );
 
 		// and predict it?
 		if ( prediction->InPrediction() && pWeapon->IsPredicted() )
@@ -1496,13 +1366,11 @@ void C_ASW_Player::OnDataChanged( DataUpdateType_t updateType )
 			GetMedalStore()->GetCounts( iMissions, iCampaigns, iKills, ( gpGlobals->maxClients <= 1 ) );
 			char buffer[48];
 			Q_snprintf( buffer, sizeof( buffer ), "cl_ccounts %d %d %d", iMissions, iCampaigns, iKills );
-			engine->ClientCmd( buffer );
+			engine->ServerCmd( buffer );
 #endif
-			// inform server of our autoreload preferences
-			engine->ClientCmd( VarArgs( "cl_autoreload %d\n", asw_auto_reload.GetInt() ) );
 
 			// tell other players that we're fully connected
-			engine->ClientCmd( "cl_fullyjoined\n" );
+			engine->ServerCmd( "cl_fullyjoined\n" );
 
 			ASWInput()->UpdateASWControls();
 

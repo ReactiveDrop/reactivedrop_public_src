@@ -26,6 +26,7 @@
 #include "asw_equipment_list.h"
 #include "rd_workshop.h"
 #include "rd_missions_shared.h"
+#include "rd_loadout.h"
 #include "asw_deathmatch_mode_light.h"
 #include "gameui/swarm/vgenericconfirmation.h"
 #include "gameui/swarm/vitemshowcase.h"
@@ -149,29 +150,6 @@ public:
 
 #ifdef CLIENT_DLL
 		pInventory->GetAllItems( &m_GetFullInventoryForCacheResult );
-#endif
-	}
-
-	void Shutdown() override
-	{
-		GET_INVENTORY_OR_BAIL;
-
-		pInventory->DestroyResult( m_DebugPrintInventoryResult );
-#ifdef CLIENT_DLL
-		pInventory->DestroyResult( m_DynamicPropertyUpdateResult );
-		for ( int iPlayer = 0; iPlayer < MAX_SPLITSCREEN_PLAYERS; iPlayer++ )
-		{
-			for ( int iType = 0; iType < NUM_EQUIP_SLOT_TYPES; iType++ )
-			{
-				pInventory->DestroyResult( m_PlayerLocal[iPlayer].m_PreparingEquipNotification[iType] );
-				FOR_EACH_VEC( m_PlayerLocal[iPlayer].m_PendingEquipSend[iType], i )
-				{
-					m_PlayerLocal[iPlayer].m_PendingEquipSend[iType][i]->deleteThis();
-				}
-				m_PlayerLocal[iPlayer].m_PendingEquipSend[iType].Purge();
-			}
-		}
-		m_CraftingQueue.PurgeAndDeleteElements();
 #endif
 	}
 
@@ -1670,33 +1648,8 @@ public:
 	}
 	void ReplaceEquippedItemInstance( SteamItemInstanceID_t iOldInstance, SteamInventoryResult_t hResult, uint32 index )
 	{
-		bool bAnyChanged = false;
-
 		ReactiveDropInventory::ItemInstance_t instance{ hResult, index };
-		CFmtStr szNewValue{ "%llu", instance.ItemID };
-
-		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC; i++ )
-		{
-			ConVarRef var{ CFmtStr{ "rd_equipped_%s", ReactiveDropInventory::g_InventorySlotNames[i] } };
-			Assert( var.IsValid() );
-			if ( strtoull( var.GetString(), NULL, 10 ) == iOldInstance )
-			{
-				var.SetValue( szNewValue );
-				DevMsg( "Replacing item instance %llu with %llu in rd_equipped_%s\n", iOldInstance, instance.ItemID, ReactiveDropInventory::g_InventorySlotNames[i] );
-				bAnyChanged = true;
-			}
-		}
-
-		Assert( !"TODO: weapon equip replacements" );
-
-		if ( bAnyChanged )
-		{
-			engine->ClientCmd_Unrestricted( "host_writeconfig\n" );
-		}
-		else
-		{
-			DevMsg( "Item instance %llu replaced with %llu but is not equipped; nothing to do.\n", iOldInstance, instance.ItemID );
-		}
+		ReactiveDropLoadout::ReplaceItemID( iOldInstance, instance.ItemID );
 	}
 	void ShowModalCraftingWaitScreen()
 	{
