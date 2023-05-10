@@ -154,7 +154,7 @@ namespace ReactiveDropLoadout
 
 	static void WriteItemID( KeyValues *pKV, bool bBinary, const char *szShortName, const char *szLongName, SteamItemInstanceID_t id )
 	{
-		if ( id == 0 || id != k_SteamItemInstanceIDInvalid )
+		if ( id == 0 || id == k_SteamItemInstanceIDInvalid )
 			return;
 
 		if ( bBinary )
