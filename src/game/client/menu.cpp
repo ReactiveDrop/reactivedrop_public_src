@@ -113,6 +113,7 @@ void CHudMenu::VidInit( void )
 //-----------------------------------------------------------------------------
 void CHudMenu::OnThink()
 {
+#ifndef INFESTED_DLL
 	float flSelectionTimeout = MENU_SELECTION_TIMEOUT;
 
 	// If we've been open for a while without input, hide
@@ -120,6 +121,7 @@ void CHudMenu::OnThink()
 	{
 		m_bMenuDisplayed = false;
 	}
+#endif
 }
 
 //-----------------------------------------------------------------------------
