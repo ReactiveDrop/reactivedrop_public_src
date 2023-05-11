@@ -245,25 +245,23 @@ void Host_Say( edict_t *pEdict, const CCommand &args, bool teamonly )
 				continue;
 		}
 
+		ScriptVariant_t result;
+		const char* newText = text;
+
 		if ( hFunction )
 		{
-			ScriptVariant_t result;
 			ScriptVariant_t args[3];
 			args[0] = ToHScript( client );
 			args[1] = ToHScript( pPlayer );
-			args[2] = ScriptVariant_t( text );
+			args[2] = ScriptVariant_t( newText );
 
-			ScriptStatus_t nStatus = g_pScriptVM->ExecuteFunction( hFunction, args, 3, &result, NULL, true );//g_pScriptVM->Call( hFunction, NULL, true, result, ToHScript( client ), ToHScript( pPlayer ), ScriptVariant_t( p ) );
+			ScriptStatus_t nStatus = g_pScriptVM->ExecuteFunction( hFunction, args, 3, &result, NULL, true );
 			if ( nStatus == SCRIPT_DONE )
 			{
-				if ( !result )
-				{
+				if ( !result || result.m_type != FIELD_CSTRING )
 					continue;
-				}
-				else
-				{
-					Q_strcpy( text, result.m_pszString );
-				}
+				
+				newText = result.m_pszString;
 			}
 		}
 
@@ -276,7 +274,7 @@ void Host_Say( edict_t *pEdict, const CCommand &args, bool teamonly )
 		}
 		else
 		{
-			UTIL_SayTextFilter( user, text, pPlayer, true );
+			UTIL_SayTextFilter( user, newText, pPlayer, true );
 		}
 	}
 
