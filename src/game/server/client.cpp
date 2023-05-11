@@ -204,6 +204,20 @@ void Host_Say( edict_t *pEdict, const CCommand &args, bool teamonly )
 	Q_strncat( text, p, sizeof( text ), COPY_ALL_CHARACTERS );
 	Q_strncat( text, "\n", sizeof( text ), COPY_ALL_CHARACTERS );
  
+	// find if there is a vscript function which modifies messages
+	HSCRIPT hFunction = NULL;
+	if ( g_pScriptVM )
+	{
+		hFunction = g_pScriptVM->LookupFunction( "OnSentTextMessage" );
+		if ( !hFunction )
+		{
+			ScriptVariant_t hModeScript;
+			g_pScriptVM->GetValue( "g_ModeScript", &hModeScript );
+
+			hFunction = g_pScriptVM->LookupFunction( "OnSentTextMessage", hModeScript );
+		}
+	}
+
 	// loop through all players
 	// Start with the first player.
 	// This may return the world in single player if the client types something between levels or during spawn
@@ -216,38 +230,44 @@ void Host_Say( edict_t *pEdict, const CCommand &args, bool teamonly )
 		if ( !client || !client->edict() )
 			continue;
 		
-		if ( client->edict() == pEdict )
-			continue;
+		if ( client->edict() != pEdict )
+		{
+			if ( !(client->IsNetClient()) )	// Not a client ? (should never be true)
+				continue;
 
-		if ( !(client->IsNetClient()) )	// Not a client ? (should never be true)
-			continue;
+			if ( teamonly && !g_pGameRules->PlayerCanHearChat( client, pPlayer ) )
+				continue;
 
-		if ( teamonly && !g_pGameRules->PlayerCanHearChat( client, pPlayer ) )
-			continue;
+			if ( pPlayer && !client->CanHearAndReadChatFrom( pPlayer ) )
+				continue;
 
-		if ( pPlayer && !client->CanHearAndReadChatFrom( pPlayer ) )
-			continue;
+			if ( pPlayer && GetVoiceGameMgr() && GetVoiceGameMgr()->IsPlayerIgnoringPlayer( pPlayer->entindex(), i ) )
+				continue;
+		}
 
-		if ( pPlayer && GetVoiceGameMgr() && GetVoiceGameMgr()->IsPlayerIgnoringPlayer( pPlayer->entindex(), i ) )
-			continue;
+		if ( hFunction )
+		{
+			ScriptVariant_t result;
+			ScriptVariant_t args[3];
+			args[0] = ToHScript( client );
+			args[1] = ToHScript( pPlayer );
+			args[2] = ScriptVariant_t( text );
+
+			ScriptStatus_t nStatus = g_pScriptVM->ExecuteFunction( hFunction, args, 3, &result, NULL, true );//g_pScriptVM->Call( hFunction, NULL, true, result, ToHScript( client ), ToHScript( pPlayer ), ScriptVariant_t( p ) );
+			if ( nStatus == SCRIPT_DONE )
+			{
+				if ( !result )
+				{
+					continue;
+				}
+				else
+				{
+					Q_strcpy( text, result.m_pszString );
+				}
+			}
+		}
 
 		CSingleUserRecipientFilter user( client );
-		user.MakeReliable();
-
-		if ( pszFormat )
-		{
-			UTIL_SayText2Filter( user, pPlayer, true, pszFormat, pszPlayerName, p, pszLocation );
-		}
-		else
-		{
-			UTIL_SayTextFilter( user, text, pPlayer, true );
-		}
-	}
-
-	if ( pPlayer )
-	{
-		// print to the sending client
-		CSingleUserRecipientFilter user( pPlayer );
 		user.MakeReliable();
 
 		if ( pszFormat )
