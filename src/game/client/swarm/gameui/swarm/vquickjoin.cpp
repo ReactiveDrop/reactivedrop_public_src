@@ -347,11 +347,13 @@ void QuickJoinPanel::OnThink()
 	bool bScrolling = ( iNumItems >= cl_quick_join_scroll_start.GetInt() );
 
 	int iCurrentX, iCurrentY;
+#ifndef INFESTED_DLL
 	GetPos( iCurrentX, iCurrentY );
 	iCurrentY = GetSmoothPanelY( iCurrentY, screenTall
 								 - vgui::scheme()->GetProportionalScaledValue( iYOffset )
 								 - MAX( iNumItems, ( bScrolling ) ? ( 2 ) : ( 1 ) ) * iItemTall );
 	SetPos( iCurrentX, iCurrentY );
+#endif
 
 	if ( iNumItems > cl_quick_join_scroll_start.GetInt() - 1 )
 	{

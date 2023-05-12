@@ -1874,7 +1874,9 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="swarm\vgui\playerswaitingpanel.cpp" />
     <ClCompile Include="swarm\vgui\polygonbutton.cpp" />
     <ClCompile Include="swarm\vgui\radialmenu.cpp" />
+    <ClCompile Include="swarm\vgui\rd_vgui_commander_mini_profile.cpp" />
     <ClCompile Include="swarm\vgui\rd_vgui_leaderboard_panel.cpp" />
+    <ClCompile Include="swarm\vgui\rd_vgui_stock_ticker.cpp" />
     <ClCompile Include="swarm\vgui\rd_vgui_workshop_download_progress.cpp" />
     <ClCompile Include="swarm\vgui\rd_workshop_preview_image.cpp" />
     <ClCompile Include="swarm\vgui\restartmissionbutton.cpp" />
@@ -2973,7 +2975,9 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="swarm\vgui\playerswaitingpanel.h" />
     <ClInclude Include="swarm\vgui\polygonbutton.h" />
     <ClInclude Include="swarm\vgui\radialmenu.h" />
+    <ClInclude Include="swarm\vgui\rd_vgui_commander_mini_profile.h" />
     <ClInclude Include="swarm\vgui\rd_vgui_leaderboard_panel.h" />
+    <ClInclude Include="swarm\vgui\rd_vgui_stock_ticker.h" />
     <ClInclude Include="swarm\vgui\rd_vgui_workshop_download_progress.h" />
     <ClInclude Include="swarm\vgui\rd_workshop_preview_image.h" />
     <ClInclude Include="swarm\vgui\restartmissionbutton.h" />
