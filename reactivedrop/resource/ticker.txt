@@ -1,0 +1,164 @@
+"TickerDefs" {
+	// stock market!
+	"stock" {
+		"symbol"		"CCT"
+		"name"		"#asw_so_centralcredit"
+		"base"		"44"
+		"weight"		"3"
+	}
+	"stock" {
+		"symbol"		"DLI"
+		"name"		"#asw_so_dominic"
+		"base"		"14"
+		"weight"		"3"
+	}
+	"stock" {
+		"symbol"		"ENIG"
+		"name"		"#asw_so_enigma"
+		"base"		"96"
+		"weight"		"3"
+	}
+	"stock" {
+		"symbol"		"FRTR"
+		"name"		"#asw_so_frontier"
+		"base"		"36"
+		"weight"		"3"
+	}
+	"stock" {
+		"symbol"		"NPRC"
+		"name"		"#asw_so_nanoproc"
+		"base"		"10"
+		"weight"		"3"
+	}
+	"stock" {
+		"symbol"		"PARA"
+		"name"		"#asw_so_paradise"
+		"base"		"46"
+		"weight"		"3"
+	}
+	"stock" {
+		"symbol"		"PHIG"
+		"name"		"#asw_so_phinvest"
+		"base"		"7"
+		"weight"		"3"
+	}
+	"stock" {
+		"symbol"		"PPR"
+		"name"		"#asw_so_premier"
+		"base"		"19"
+		"weight"		"3"
+	}
+	"stock" {
+		"symbol"		"SOL"
+		"name"		"#asw_so_solar"
+		"base"		"30"
+		"weight"		"3"
+	}
+	"stock" {
+		"symbol"		"STEL"
+		"name"		"#asw_so_stellar"
+		"base"		"15"
+		"weight"		"3"
+	}
+	"stock" {
+		"symbol"		"SYN"
+		"name"		"#asw_so_syntek"
+		"base"		"150"
+		"weight"		"3"
+	}
+	"stock" {
+		"symbol"		"TELT"
+		"name"		"#asw_so_teltech"
+		"base"		"12"
+		"weight"		"3"
+	}
+	"stock" {
+		"symbol"		"TRST"
+		"name"		"#asw_so_trust"
+		"base"		"54"
+		"weight"		"3"
+	}
+	"stock" {
+		"symbol"		"UIND"
+		"name"		"#asw_so_united"
+		"base"		"60"
+		"weight"		"3"
+	}
+	"stock" {
+		"symbol"		"ZRG"
+		"name"		"#asw_so_zerog"
+		"base"		"18"
+		"weight"		"3"
+	}
+
+	// news!
+	"flavor" {
+		"text"		"#rd_ticker_headline_antheonmissingnews"
+		"icon"		"vgui/swarm/ticker/news"
+		"weight"		"5"
+	}
+	"flavor" {
+		"text"		"#rd_ticker_headline_antheonmoonnews"
+		"icon"		"vgui/swarm/ticker/news"
+		"weight"		"5"
+	}
+	"flavor" {
+		"text"		"#rd_ticker_headline_brainnews"
+		"icon"		"vgui/swarm/ticker/news"
+		"weight"		"5"
+	}
+	"flavor" {
+		"text"		"#rd_ticker_headline_convoynews"
+		"icon"		"vgui/swarm/ticker/news"
+		"weight"		"5"
+	}
+	"flavor" {
+		"text"		"#rd_ticker_headline_droidlawsnews"
+		"icon"		"vgui/swarm/ticker/news"
+		"weight"		"5"
+	}
+	"flavor" {
+		"text"		"#rd_ticker_headline_expansionnews"
+		"icon"		"vgui/swarm/ticker/news"
+		"weight"		"5"
+	}
+	"flavor" {
+		"text"		"#rd_ticker_headline_newcolonynews"
+		"icon"		"vgui/swarm/ticker/news"
+		"weight"		"5"
+	}
+	"flavor" {
+		"text"		"#rd_ticker_headline_rd-spaceport_news1"
+		"icon"		"vgui/swarm/ticker/news"
+		"weight"		"5"
+	}
+	"flavor" {
+		"text"		"#rd_ticker_headline_refugeenews"
+		"icon"		"vgui/swarm/ticker/news"
+		"weight"		"5"
+	}
+	"flavor" {
+		"text"		"#rd_ticker_headline_accident32"
+		"icon"		"vgui/swarm/ticker/news"
+		"weight"		"5"
+	}
+
+	// stats!
+	// (TODO)
+	//"global_stat" {
+	//	"stat_name"		""
+	//	"text"		"#rd_ticker_stat_"
+	//	"days"		"30"
+	//}
+
+	// easter eggs!
+	"stock" {
+		"symbol"		"TLC"
+		"name"		"#asw_so_telic"
+		// everyone at Telic is dead :(
+		"base"		"0"
+		"variance"		"0"
+		"maxchange"		"0"
+		"weight"		"0.1"
+	}
+}

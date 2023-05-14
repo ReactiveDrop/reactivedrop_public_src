@@ -377,7 +377,7 @@ void BaseModHybridButton::PaintButtonEx()
 				//col.SetColor( 0, 128, 128, 255 );
 				col.SetColor( 169, 213, 255, 255 );
 			}
-			else if ( m_nStyle == BUTTON_ALIENSWARMMENUBUTTON || m_nStyle == BUTTON_ALIENSWARMMENUBUTTONSMALL )
+			else if ( m_nStyle == BUTTON_ALIENSWARMMENUBUTTON || m_nStyle == BUTTON_ALIENSWARMMENUBUTTONSMALL || m_nStyle == BUTTON_REACTIVEDROPMAINMENU || m_nStyle == BUTTON_REACTIVEDROPMAINMENUBIG || m_nStyle == BUTTON_REACTIVEDROPMAINMENUTOP )
 			{
 				col.SetColor( 135, 170, 193, 255 );
 			}
@@ -436,6 +436,12 @@ void BaseModHybridButton::PaintButtonEx()
 	{
 		// dialog buttons are centered
 		textInsetX = ( wide - textWide ) / 2;
+	}
+	if ( m_nStyle == BUTTON_REACTIVEDROPMAINMENU || m_nStyle == BUTTON_REACTIVEDROPMAINMENUBIG || m_nStyle == BUTTON_REACTIVEDROPMAINMENUTOP )
+	{
+		// main menu buttons are centered in both directions
+		textInsetX = ( wide - textWide ) / 2;
+		y = ( tall - textTall ) / 2;
 	}
 
 	if ( FlyoutMenu::GetActiveMenu() && FlyoutMenu::GetActiveMenu()->GetNavFrom() != this )
@@ -785,6 +791,21 @@ void BaseModHybridButton::ApplySettings( KeyValues * inResourceData )
 	{
 		m_hTextFont = scheme->GetFont( "Default", true );
 		m_hTextBlurFont = scheme->GetFont( "DefaultBlur", true );
+	}
+	else if ( m_nStyle == BUTTON_REACTIVEDROPMAINMENU )
+	{
+		m_hTextFont = scheme->GetFont( "DefaultLarge", true );
+		m_hTextBlurFont = scheme->GetFont( "DefaultLargeBlur", true );
+	}
+	else if ( m_nStyle == BUTTON_REACTIVEDROPMAINMENUBIG )
+	{
+		m_hTextFont = scheme->GetFont( "DefaultExtraLarge", true );
+		m_hTextBlurFont = scheme->GetFont( "DefaultExtraLargeBlur", true );
+	}
+	else if ( m_nStyle == BUTTON_REACTIVEDROPMAINMENUTOP )
+	{
+		m_hTextFont = scheme->GetFont( "DefaultMedium", true );
+		m_hTextBlurFont = scheme->GetFont( "DefaultMediumBlur", true );
 	}
 	else
 	{

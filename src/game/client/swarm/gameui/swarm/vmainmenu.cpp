@@ -12,6 +12,7 @@
 #include "VFlyoutMenu.h"
 #include "vGenericConfirmation.h"
 #include "VQuickJoin.h"
+#include "VQuickJoinGroups.h"
 #include "basemodpanel.h"
 #include "UIGameData.h"
 #include "VGameSettings.h"
@@ -34,6 +35,7 @@
 
 #include "steam/isteamremotestorage.h"
 #include "materialsystem/materialsystem_config.h"
+#include "bitmap/psheet.h"
 
 #include "ienginevgui.h"
 #include "basepanel.h"
@@ -83,6 +85,7 @@ MainMenu::MainMenu( Panel *parent, const char *panelName ):
 	SetTitle( "", false );
 	SetMoveable( false );
 	SetSizeable( false );
+	SetPaintBackgroundEnabled( true );
 
 	SetLowerGarnishEnabled( true );
 
@@ -91,6 +94,20 @@ MainMenu::MainMenu( Panel *parent, const char *panelName ):
 	m_iQuickJoinHelpText = MMQJHT_NONE;
 
 	SetDeleteSelfOnClose( true );
+
+	ADD_HUD_SHEET( MainMenuSheet, "vgui/swarm/main_menu_sheet" );
+
+	for ( int i = 0; i < m_HudSheets.Count(); i++ )
+	{
+		*( m_HudSheets[i].m_pSheetID ) = -1;
+	}
+
+	m_pBtnLogo = new BaseModHybridButton( this, "BtnLogo", "", this, "" );
+	m_pBtnQuit = new BaseModHybridButton( this, "BtnQuit", "", this, "QuitGame" );
+	m_pBtnMultiplayer = new BaseModHybridButton( this, "BtnMultiplayer", "#L4D360UI_FoudGames_CreateNew_campaign", this, "CreateGame" );
+	m_pBtnSingleplayer = new BaseModHybridButton( this, "BtnSingleplayer", "#L4D360UI_MainMenu_PlaySolo", this, "SoloPlay" );
+	m_pPnlQuickJoin = new QuickJoinPanel( this, "PnlQuickJoin" );
+	m_pPnlQuickJoinGroups = new QuickJoinGroupsPanel( this, "PnlQuickJoinGroups" );
 }
 
 //=============================================================================
@@ -984,6 +1001,50 @@ void MainMenu::Activate()
 		firstPanel->NavigateTo();
 	}
 
+	for ( int i = 0; i < m_HudSheets.Count(); i++ )
+	{
+		if ( *( m_HudSheets[i].m_pSheetID ) == -1 )
+		{
+			*( m_HudSheets[i].m_pSheetID ) = surface()->CreateNewTextureID();
+			surface()->DrawSetTextureFile( *( m_HudSheets[i].m_pSheetID ), m_HudSheets[i].m_pszTextureFile, true, false );
+
+			// pull out UV coords for this sheet
+			ITexture *pTexture = materials->FindTexture( m_HudSheets[i].m_pszTextureFile, TEXTURE_GROUP_VGUI );
+			if ( pTexture )
+			{
+				m_HudSheets[i].m_pSize->x = pTexture->GetActualWidth();
+				m_HudSheets[i].m_pSize->y = pTexture->GetActualHeight();
+				size_t numBytes;
+				void const *pSheetData = pTexture->GetResourceData( VTF_RSRC_SHEET, &numBytes );
+				if ( pSheetData )
+				{
+					CUtlBuffer bufLoad( pSheetData, numBytes, CUtlBuffer::READ_ONLY );
+					CSheet *pSheet = new CSheet( bufLoad );
+					for ( int k = 0; k < pSheet->m_SheetInfo.Count(); k++ )
+					{
+						if ( k >= m_HudSheets[i].m_nNumSubTextures )
+						{
+							break;
+						}
+						SequenceSampleTextureCoords_t &Coords = pSheet->m_SheetInfo[k].m_pSamples->m_TextureCoordData[0];
+						m_HudSheets[i].m_pTextureData[k].u = Coords.m_fLeft_U0;
+						m_HudSheets[i].m_pTextureData[k].v = Coords.m_fTop_V0;
+						m_HudSheets[i].m_pTextureData[k].s = Coords.m_fRight_U0;
+						m_HudSheets[i].m_pTextureData[k].t = Coords.m_fBottom_V0;
+					}
+				}
+				else
+				{
+					Warning( "Error finding VTF_RSRC_SHEET for %s\n", m_HudSheets[i].m_pszTextureFile );
+				}
+			}
+			else
+			{
+				Warning( "Error finding %s\n", m_HudSheets[i].m_pszTextureFile );
+			}
+		}
+	}
+
 	// reactivedrop: reset the value each time we go in main menu
 	// for us to be able to browse lobbies with up to 32 slots
 	mm_max_players.Revert();
@@ -991,8 +1052,8 @@ void MainMenu::Activate()
 	// we've left whatever server we were on; get rid of the stuff we borrowed
 	g_ReactiveDropWorkshop.UnloadTemporaryAddons();
 
-	static bool bRunOnce = true;
-	if ( bRunOnce )
+	static bool s_bRunOnce = true;
+	if ( s_bRunOnce )
 	{
 		if ( SteamNetworkingUtils() )
 		{
@@ -1015,13 +1076,84 @@ void MainMenu::Activate()
 		// added support for loadout editor, by element109
 		engine->ClientCmd( "execifexists loadouts" );
 
-		bRunOnce = false;
+		s_bRunOnce = false;
 	}
 }
 
 //=============================================================================
-void MainMenu::PaintBackground() 
+void MainMenu::PaintBackground()
 {
+	int w, t;
+	GetSize( w, t );
+
+	vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
+	vgui::surface()->DrawSetTexture( m_nMainMenuSheetID );
+
+	int x0, y0, x1, y1;
+	if ( m_pBtnLogo->IsVisible() )
+	{
+		int iTex = UV_logo;
+		if ( m_pBtnLogo->HasFocus() )
+			iTex = UV_logo_hover;
+		m_pBtnLogo->GetBounds( x0, y0, x1, y1 );
+		vgui::surface()->DrawTexturedSubRect( x0, y0, x0 + x1, y0 + y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
+	}
+	if ( m_pBtnQuit->IsVisible() )
+	{
+		int iTex = UV_quit;
+		if ( m_pBtnQuit->HasFocus() )
+			iTex = UV_quit_hover;
+		m_pBtnQuit->GetBounds( x0, y0, x1, y1 );
+		vgui::surface()->DrawTexturedSubRect( x0, y0, x0 + x1, y0 + y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
+	}
+	if ( m_pBtnMultiplayer->IsVisible() )
+	{
+		int iTex = UV_create_lobby;
+		if ( m_pBtnMultiplayer->HasFocus() )
+			iTex = UV_create_lobby_hover;
+		if ( m_pBtnSingleplayer->HasFocus() )
+			iTex = UV_create_lobby_singleplayer_hover;
+		m_pBtnMultiplayer->GetBounds( x0, y0, x1, y1 );
+		vgui::surface()->DrawTexturedSubRect( x0, y0, x0 + x1, y0 + y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
+	}
+	if ( m_pBtnSingleplayer->IsVisible() )
+	{
+		int iTex = UV_singleplayer;
+		if ( m_pBtnSingleplayer->HasFocus() )
+			iTex = UV_singleplayer_hover;
+		else if ( m_pBtnMultiplayer->HasFocus() )
+			iTex = UV_singleplayer_create_lobby_hover;
+		else if ( m_pPnlQuickJoinGroups->HasMouseover() )
+			iTex = UV_singleplayer_quick_join_hover;
+		m_pBtnSingleplayer->GetBounds( x0, y0, x1, y1 );
+		vgui::surface()->DrawTexturedSubRect( x0, y0, x0 + x1, y0 + y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
+	}
+	if ( m_pPnlQuickJoinGroups->IsVisible() )
+	{
+		int iTex = UV_quick_join;
+		if ( m_pPnlQuickJoinGroups->HasMouseover() )
+			iTex = UV_quick_join_hover;
+		else if ( m_pPnlQuickJoin->HasMouseover() )
+			iTex = UV_quick_join_below_hover;
+		else if ( m_pBtnSingleplayer->HasFocus() )
+			iTex = UV_quick_join_singleplayer_hover;
+		m_pPnlQuickJoinGroups->GetBounds( x0, y0, x1, y1 );
+		vgui::surface()->DrawTexturedSubRect( x0, y0, x0 + x1, y0 + y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
+	}
+	if ( m_pPnlQuickJoin->IsVisible() )
+	{
+		int iTex = UV_quick_join;
+		if ( m_pPnlQuickJoin->HasMouseover() )
+			iTex = UV_quick_join_hover;
+		else if ( m_pPnlQuickJoinGroups->HasMouseover() )
+			iTex = UV_quick_join_above_hover;
+		m_pPnlQuickJoin->GetBounds( x0, y0, x1, y1 );
+		vgui::surface()->DrawTexturedSubRect( x0, y0, x0 + x1, y0 + y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
+	}
+
+	vgui::surface()->DrawTexturedSubRect( 0, t - YRES( 20 ), YRES( 150 ), t, HUD_UV_COORDS( MainMenuSheet, UV_ticker_left ) );
+	vgui::surface()->DrawTexturedSubRect( YRES( 150 ), t - YRES( 20 ), w - YRES( 225 ), t, HUD_UV_COORDS( MainMenuSheet, UV_ticker_mid ) );
+	vgui::surface()->DrawTexturedSubRect( w - YRES( 225 ), t - YRES( 20 ), w, t, HUD_UV_COORDS( MainMenuSheet, UV_ticker_right ) );
 }
 
 void MainMenu::SetFooterState()

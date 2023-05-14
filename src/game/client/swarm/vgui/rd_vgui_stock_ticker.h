@@ -10,7 +10,6 @@ public:
 	CRD_VGUI_Stock_Ticker( vgui::Panel *parent, const char *panelName );
 	~CRD_VGUI_Stock_Ticker();
 
-	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 	void PerformLayout() override;
 	void OnThink() override;
 	void Paint() override;
@@ -22,6 +21,7 @@ public:
 	int m_iTitleX;
 	int m_iTextStartX;
 	KeyValues::AutoDelete m_pKVTickerDefs;
+	CUtlQueue<KeyValues *> m_TickerDefCooldown;
 	float m_flTotalWeight;
 	CUtlDict<int> m_TickerDefTextures;
 	wchar_t m_wszTitle[128];
@@ -29,11 +29,11 @@ public:
 	CUtlQueue<int> m_IconBuffer;
 	int m_iFirstTextWidth;
 	int m_iTextTotalWidth;
-	vgui::HFont m_hTickerFont;
-	vgui::HFont m_hTickerBlurFont;
 	CUniformRandomStream m_RandomStream;
 	int m_iLastRandomSeed;
 
+	CPanelAnimationVar( vgui::HFont, m_hTickerFont, "ticker_font", "DefaultSmall" );
+	CPanelAnimationVar( vgui::HFont, m_hTickerBlurFont, "ticker_blur_font", "DefaultSmallBlur" );
 	CPanelAnimationVarAliasType( int, m_iTextY, "text_ypos", "0", "proportional_int" );
 	CPanelAnimationVarAliasType( int, m_iTitlePadding, "title_padding", "5", "proportional_int" );
 	CPanelAnimationVarAliasType( int, m_iTitleAfterWidth, "title_after_wide", "10", "proportional_int" );

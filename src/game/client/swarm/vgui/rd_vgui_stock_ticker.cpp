@@ -61,6 +61,12 @@ static bool CheckTickerDefCorrectness( const char *szPath, KeyValues *pDef )
 			return false;
 		}
 
+		if ( pDef->GetString( "stat_name" )[0] == '\0' )
+		{
+			Warning( "Missing global stat name in %s\n", szPath );
+			return false;
+		}
+
 		if ( pDef->GetString( "text" )[0] == '\0' )
 		{
 			Warning( "Empty global stat text in %s\n", szPath );
@@ -132,14 +138,6 @@ CRD_VGUI_Stock_Ticker::~CRD_VGUI_Stock_Ticker()
 	}
 }
 
-void CRD_VGUI_Stock_Ticker::ApplySchemeSettings( vgui::IScheme *pScheme )
-{
-	BaseClass::ApplySchemeSettings( pScheme );
-
-	m_hTickerFont = pScheme->GetFont( "DefaultSmall", true );
-	m_hTickerBlurFont = pScheme->GetFont( "DefaultSmallBlur", true );
-}
-
 void CRD_VGUI_Stock_Ticker::PerformLayout()
 {
 	BaseClass::PerformLayout();
@@ -150,7 +148,7 @@ void CRD_VGUI_Stock_Ticker::PerformLayout()
 	if ( m_hTickerFont == vgui::INVALID_FONT )
 		ApplySchemeSettings( vgui::scheme()->GetIScheme( GetScheme() ) );
 
-	TryLocalize( "#rd_stock_ticker_title", m_wszTitle, sizeof( m_wszTitle ) );
+	TryLocalize( "#rd_ticker_title", m_wszTitle, sizeof( m_wszTitle ) );
 	int w, t;
 	vgui::surface()->GetTextSize( m_hTickerFont, m_wszTitle, w, t );
 	int iTitleWidth = m_iTitlePadding * 2 + m_iTitleAfterWidth + w;
@@ -174,7 +172,25 @@ void CRD_VGUI_Stock_Ticker::PerformLayout()
 void CRD_VGUI_Stock_Ticker::OnThink()
 {
 	if ( m_flLastThink == -1 )
+	{
+		int iCurrentSeed = std::time( NULL ) / 300;
+		if ( m_iLastRandomSeed == iCurrentSeed )
+			return;
+
+		// for reduced motion mode, we update the entire ticker once every 5 minutes
+		FOR_EACH_VEC( m_TextBuffer, i )
+		{
+			delete[] m_TextBuffer[i];
+		}
+		m_TextBuffer.Purge();
+		m_IconBuffer.Purge();
+		m_iFirstTextWidth = 0;
+		m_iTextTotalWidth = 0;
+		ManageTextBuffer();
+		Repaint();
+
 		return;
+	}
 
 	float flSpeed = YRES( rd_stock_ticker_speed.GetFloat() );
 	if ( flSpeed <= 0 )
@@ -235,10 +251,10 @@ void CRD_VGUI_Stock_Ticker::Paint()
 	if ( m_iTitleX )
 	{
 		vgui::surface()->DrawSetTexture( m_iTitleBeforeTexture );
-		vgui::surface()->DrawTexturedSubRect( 0, 0, m_iTitleX, GetTall(), 1 - float( GetTall() ) / m_iTitleX, 0, 1, 1 );
+		vgui::surface()->DrawTexturedSubRect( 0, 0, m_iTitleX, GetTall(), 1 - m_iTitleX / float( GetTall() ), 0, 1, 1 );
 	}
 	vgui::surface()->DrawSetTexture( m_iTitleBackgroundTexture );
-	vgui::surface()->DrawTexturedSubRect( m_iTitleX, 0, m_iTitleX + w, GetTall(), 0, 0, float( GetTall() ) / w, 1 );
+	vgui::surface()->DrawTexturedSubRect( m_iTitleX, 0, m_iTitleX + w, GetTall(), 0, 0, w / float( GetTall() ), 1 );
 	vgui::surface()->DrawSetTexture( m_iTitleAfterTexture );
 	vgui::surface()->DrawTexturedRect( m_iTitleX + w, 0, m_iTitleX + w + m_iTitleAfterWidth, GetTall() );
 
@@ -320,6 +336,7 @@ void CRD_VGUI_Stock_Ticker::GenerateNextTickerText( wchar_t *&wszText, int &iIco
 	{
 		m_RandomStream.SetSeed( iCurrentSeed );
 		m_iLastRandomSeed = iCurrentSeed;
+		m_TickerDefCooldown.Purge();
 
 		if ( ISteamUserStats *pUserStats = SteamUserStats() )
 		{
@@ -327,10 +344,34 @@ void CRD_VGUI_Stock_Ticker::GenerateNextTickerText( wchar_t *&wszText, int &iIco
 		}
 	}
 
+	float flTotalWeight = m_flTotalWeight;
+	FOR_EACH_VEC( m_TickerDefCooldown, i )
+	{
+		flTotalWeight -= m_TickerDefCooldown[i]->GetFloat( "weight", 1.0f );
+	}
+
+	if ( m_TickerDefCooldown.Count() >= 15 || ( m_TickerDefCooldown.Count() > 0 && flTotalWeight <= 1.0f ) )
+	{
+		flTotalWeight += m_TickerDefCooldown.RemoveAtHead()->GetFloat( "weight", 1.0f );
+	}
+
 	float flWeight = m_RandomStream.RandomFloat( 0, m_flTotalWeight );
 	KeyValues *pChosenDef = NULL;
 	FOR_EACH_SUBKEY( m_pKVTickerDefs, pDef )
 	{
+		bool bSkip = false;
+		FOR_EACH_VEC( m_TickerDefCooldown, i )
+		{
+			if ( m_TickerDefCooldown[i] == pDef )
+			{
+				bSkip = true;
+				break;
+			}
+		}
+
+		if ( bSkip )
+			continue;
+
 		pChosenDef = pDef;
 		flWeight -= pDef->GetFloat( "weight", 1.0f );
 		if ( flWeight <= 0 )
@@ -392,7 +433,7 @@ void CRD_VGUI_Stock_Ticker::GenerateTickerText( KeyValues *pDef, wchar_t *&wszTe
 		wchar_t wszSymbol[32];
 		TryLocalize( pDef->GetString( "symbol" ), wszSymbol, sizeof( wszSymbol ) );
 
-		g_pVGuiLocalize->ConstructString( wszText, SIZEOF_WSZTEXT, g_pVGuiLocalize->Find( flChange < 0 ? "#rd_stock_ticker_down" : "#rd_stock_ticker_up" ), 4, wszName, wszSymbol, wszChange, wszCurrent );
+		g_pVGuiLocalize->ConstructString( wszText, SIZEOF_WSZTEXT, g_pVGuiLocalize->Find( flChange < 0 ? "#rd_ticker_stock_down" : "#rd_ticker_stock_up" ), 4, wszName, wszSymbol, wszChange, wszCurrent );
 		if ( iIconTexture == -1 )
 			iIconTexture = flChange < 0 ? m_iStockDownTexture : m_iStockUpTexture;
 
@@ -404,11 +445,9 @@ void CRD_VGUI_Stock_Ticker::GenerateTickerText( KeyValues *pDef, wchar_t *&wszTe
 		int iDays = pDef->GetInt( "days", 30 );
 		Assert( iDays <= 60 );
 
-		int64 iStatHistory[60];
-		int iDaysRetrieved = SteamUserStats() ? SteamUserStats()->GetGlobalStatHistory( pDef->GetString( "stat_name" ), iStatHistory, sizeof( iStatHistory ) ) : 0;
-		if ( iDaysRetrieved < iDays )
+		ISteamUserStats *pUserStats = SteamUserStats();
+		if ( !pUserStats )
 		{
-			// failed to retrieve stats; will try again next time this comes up
 			delete[] wszText;
 			wszText = NULL;
 
@@ -416,9 +455,26 @@ void CRD_VGUI_Stock_Ticker::GenerateTickerText( KeyValues *pDef, wchar_t *&wszTe
 		}
 
 		int64 iTotalStat = 0;
-		for ( int i = 0; i < iDays; i++ )
+		FOR_EACH_VALUE( pDef, pValue )
 		{
-			iTotalStat += iStatHistory[i];
+			if ( !FStrEq( pValue->GetName(), "stat_name" ) )
+				continue;
+
+			int64 iStatHistory[60];
+			int iDaysRetrieved = pUserStats->GetGlobalStatHistory( pValue->GetString(), iStatHistory, sizeof( iStatHistory ) );
+			if ( iDaysRetrieved < iDays )
+			{
+				// failed to retrieve stats; will try again next time this comes up
+				delete[] wszText;
+				wszText = NULL;
+
+				return;
+			}
+
+			for ( int i = 0; i < iDays; i++ )
+			{
+				iTotalStat += iStatHistory[i];
+			}
 		}
 
 		wchar_t wszTemplate[1024];

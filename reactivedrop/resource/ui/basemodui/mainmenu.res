@@ -24,10 +24,10 @@
 	{
 		"ControlName"			"BaseModHybridButton"
 		"fieldName"				"BtnMultiplayer"
-		"xpos"					"100"
-		"ypos"					"180"
-		"wide"					"180"
-		"tall"					"17"
+		"xpos"					"10"
+		"ypos"					"125"
+		"wide"					"145"
+		"tall"					"30"
 		"autoResize"			"1"
 		"pinCorner"				"0"
 		"visible"				"1"
@@ -36,33 +36,10 @@
 		"allcaps"				"1"
 		"navUp"					"BtnQuit"
 		"navDown"				"BtnTraining"
-		"labelText"				"#L4D360UI_MainMenu_CoOp"
+		"labelText"				"#L4D360UI_FoudGames_CreateNew_campaign"
 		"tooltiptext"			"#L4D360UI_MainMenu_CoOp_Tip"
-		"style"					"AlienSwarmMenuButton"
-		"command"				"FlmCampaignFlyout"	
-		"ActivationType"		"1"
-	}
-	
-	"BtnTraining"
-	{
-		"ControlName"			"BaseModHybridButton"
-		"fieldName"				"BtnTraining"
-		"xpos"					"100"
-		"ypos"					"210"
-		"wide"					"180"
-		"tall"					"13"
-		"autoResize"			"1"
-		"pinCorner"				"0"
-		"visible"				"1"
-		"enabled"				"1"
-		"tabPosition"			"0"
-		"allcaps"				"1"
-		"navUp"					"BtnMultiplayer"
-		"navDown"				"BtnSingleplayer"
-		"labelText"				"#RD_MainMenu_Training"
-		"tooltiptext"			"#RD_MainMenu_Training_Tip"
-		"style"					"AlienSwarmMenuButtonSmall"
-		"command"				"TrainingPlay"	
+		"style"					"ReactiveDropMainMenuBig"
+		"command"				"CreateGame"	
 		"ActivationType"		"1"
 	}
 
@@ -70,21 +47,21 @@
 	{
 		"ControlName"			"BaseModHybridButton"
 		"fieldName"				"BtnSingleplayer"
-		"xpos"					"100"
-		"ypos"					"225"
-		"wide"					"180"
-		"tall"					"13"
+		"xpos"					"10"
+		"ypos"					"160"
+		"wide"					"130"
+		"tall"					"25"
 		"autoResize"			"1"
 		"pinCorner"				"0"
 		"visible"				"1"
 		"enabled"				"1"
 		"tabPosition"			"0"
 		"allcaps"				"1"
-		"navUp"					"BtnTraining"
-		"navDown"				"BtnStatsAndAchievements"
+		"navUp"					"BtnMultiplayer"
+		"navDown"				"PnlQuickJoinGroups"
 		"labelText"				"#L4D360UI_MainMenu_PlaySolo"
 		"tooltiptext"			"#L4D360UI_MainMenu_PlaySolo_Tip"
-		"style"					"AlienSwarmMenuButtonSmall"
+		"style"					"ReactiveDropMainMenu"
 		"command"				"SoloPlay"	
 		"ActivationType"		"1"
 	}
@@ -228,30 +205,41 @@
 		"ActivationType"		"1"
 	}
 
+	"BtnLogo" 
+	{
+		"ControlName"			"BaseModHybridButton"
+		"fieldName"				"BtnLogo"
+		"xpos"					"48"
+		"ypos"					"0"
+		"wide"					"64"
+		"tall"					"32"
+		"visible"				"1"
+		"enabled"				"1"
+		"tabPosition"			"0"
+		"allcaps"				"1"
+		"style"					"ReactiveDropMainMenuTop"
+		"ActivationType"		"1"
+		"labelText"				""
+		"command"				""
+	}
+
 	"BtnQuit"
 	{
 		"ControlName"			"BaseModHybridButton"
 		"fieldName"				"BtnQuit"
-		"xpos"					"100"
-		"ypos"					"325"   [$X360]
-		"ypos"					"345"	[$WIN32]
-		"wide"					"180"
-		"tall"					"13"
-		"autoResize"			"1"
+		"xpos"					"r24"
+		"ypos"					"0"
+		"wide"					"24"
+		"tall"					"24"
 		"pinCorner"				"0"
-		"visible"				"0"		[$X360]
-		"visible"				"1"		[$WIN32]
+		"visible"				"1"
 		"enabled"				"1"
 		"tabPosition"			"0"
 		"allcaps"				"1"
-		"navUp"					"BtnIafRanks"
-		"navDown"				"BtnMultiplayer"
-		"style"					"AlienSwarmMenuButtonSmall"
+		"style"					"ReactiveDropMainMenuTop"
 		"ActivationType"		"1"
-		"labelText"				"#L4D360UI_MainMenu_Quit"			[$WIN32]
-		"tooltiptext"			"#L4D360UI_MainMenu_Quit_Tip"		[$WIN32]
-		"labelText"				"#L4D360UI_MainMenu_QuitDemo"		[$X360]
-		"tooltiptext"			"L4D360UI_MainMenu_QuitDemo_Tip"	[$X360]
+		"labelText"				""
+		"tooltiptext"			"#L4D360UI_MainMenu_Quit_Tip"
 		"command"				"QuitGame"
 	}
 
@@ -297,34 +285,34 @@
 		"ControlName"			"QuickJoinPanel"
 		"fieldName"				"PnlQuickJoin"
 		"ResourceFile"			"resource/UI/basemodui/QuickJoin.res"
-		"visible"				"0"
-		"wide"					"500"	[$X360]
-		"wide"					"240"	[$WIN32]
-		"tall"					"300"
-		"xpos"					"r260"	[$X360]
-		"xpos"					"80"	[$WIN32]
-		"ypos"					"r120"	[$X360]
-		"ypos"					"r75"	[$WIN32]
+		"navUp"					"PnlQuickJoinGroups"
+		"visible"				"1"
+		"xpos"					"10"
+		"ypos"					"285"
+		"wide"					"130"
+		"tall"					"90"
 	}
-	
-	"PnlQuickJoinGroups"	[$WIN32]
+
+	"PnlQuickJoinGroups"
 	{
 		"ControlName"			"QuickJoinGroupsPanel"
 		"fieldName"				"PnlQuickJoinGroups"
 		"ResourceFile"			"resource/UI/basemodui/QuickJoinGroups.res"
+		"navUp"					"BtnSingleplayer"
+		"navDown"				"PnlQuickJoin"
 		"visible"				"0"
-		"wide"					"500"
-		"tall"					"300"
-		"xpos"					"c0"
-		"ypos"					"r75"
+		"xpos"					"10"
+		"ypos"					"190"
+		"wide"					"130"
+		"tall"					"90"
 	}
 
 	"WorkshopDownloadProgress"
 	{
 		"ControlName"		"CRD_VGUI_Workshop_Download_Progress"
 		"fieldName"			"WorkshopDownloadProgress"
-		"xpos"				"r150"
-		"ypos"				"r50"
+		"xpos"				"145"
+		"ypos"				"409"
 		"wide"				"145"
 		"tall"				"45"
 		"zpos"				"20"
@@ -336,11 +324,35 @@
 	{
 		"ControlName"		"Label"
 		"fieldName"			"LblBranchDisclaimer"
-		"xpos"				"r305"
-		"ypos"				"5"
-		"wide"				"300"
-		"tall"				"150"
-		"textAlignment"		"north-east"
+		"xpos"				"155"
+		"ypos"				"40"
+		"wide"				"200"
+		"tall"				"60"
+		"textAlignment"		"north-west"
 		"wrap"				"1"
+	}
+
+	"StockTicker"
+	{
+		"ControlName"		"CRD_VGUI_Stock_Ticker"
+		"fieldName"			"StockTicker"
+		"xpos"				"4"
+		"ypos"				"r16"
+		"wide"				"f8"
+		"tall"				"12"
+		"visible"			"1"
+		"mouseinputenabled"	"0"
+		"text_ypos"			"1"
+		"title_padding"		"5"
+		"title_after_wide"	"10"
+		"icon_size"			"10"
+		"separator_wide"	"10"
+		"background_tex"	"vgui/swarm/ticker/bg"
+		"title_before_tex"	"vgui/swarm/ticker/lead"
+		"title_background_tex"	"vgui/swarm/ticker/title"
+		"title_after_tex"	"vgui/swarm/ticker/divider"
+		"separator_tex"		"vgui/swarm/ticker/separator"
+		"stock_down_tex"	"vgui/swarm/ticker/stock_down"
+		"stock_up_tex"		"vgui/swarm/ticker/stock_up"
 	}
 }

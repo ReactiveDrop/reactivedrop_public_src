@@ -292,8 +292,11 @@ Scheme
 		
 		// who invented this crazy style system anyway?
 		AlienSwarmMenuButton.Style					"11"
-		AlienSwarmMenuButtonSmall.Style					"12"
-		AlienSwarmDefault.Style									"13"
+		AlienSwarmMenuButtonSmall.Style				"12"
+		AlienSwarmDefault.Style						"13"
+		ReactiveDropMainMenu.Style					"14"
+		ReactiveDropMainMenuBig.Style				"15"
+		ReactiveDropMainMenuTop.Style				"16"
 
 		MediumButton.Style						"8"
 	}
@@ -474,6 +477,18 @@ Scheme
 				"antialias"	"1"
 			}
 		}
+		"DefaultLargeBlur"
+		{
+			"1"
+			{
+				"name"		"Neo Sans"
+				"tall"		"15"
+				"weight"	"100"
+				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
+				"antialias"	"1"
+				"blur"		"3"
+			}
+		}
 		// DefaultExtraLarge
 		"DefaultExtraLarge"
 		{
@@ -484,6 +499,18 @@ Scheme
 				"weight"	"100"
 				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
 				"antialias"	"1"
+			}
+		}
+		"DefaultExtraLargeBlur"
+		{
+			"1"
+			{
+				"name"		"Neo Sans"
+				"tall"		"20"
+				"weight"	"100"
+				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
+				"antialias"	"1"
+				"blur"		"3"
 			}
 		}
 
