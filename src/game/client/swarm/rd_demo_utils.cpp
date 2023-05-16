@@ -620,5 +620,5 @@ CON_COMMAND( rd_auto_record_fix_time, "Recompute the duration of a demo file." )
 		return;
 	}
 
-	g_RD_Auto_Record_System.RecomputeDemoDuration( args.Arg( 1 ), false );
+	g_RD_Auto_Record_System.RecomputeDemoDuration( args.Arg( 1 ), true );
 }

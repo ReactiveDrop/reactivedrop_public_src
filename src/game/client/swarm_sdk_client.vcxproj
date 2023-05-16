@@ -76,7 +76,7 @@ if ERRORLEVEL 1 exit 1
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>.\hl2;.\swarm;.\swarm\vgui;..\statemachine;..\..\game\shared\multiplayer;..\..\game\shared\swarm;.\;..\..\common;..\..\public;..\..\public\tier0;..\..\public\tier1;..\..\game\shared;.\game_controls;$(IntDir);..\..\game\client\swarm\gameui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WIN32;_DEBUG;DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;DLLNAME=client;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;COMPILER_MSVC32;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;COMPILER_MSVC;MEMOVERRIDE_MODULE=client;_DLL_EXT=.dll;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;DLLNAME=client;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;NO_STRING_T;CLIENT_DLL;VECTOR;VERSION_SAFE_STEAM_API_INTERFACES;PROTECTED_THINGS_ENABLE;strncpy=use_Q_strncpy_instead;_snprintf=use_Q_snprintf_instead;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;ENABLE_HTMLWINDOW;fopen=dont_use_fopen;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;INFESTED_DLL;SWARM_DLL;HL2_EPISODIC;INFESTED_PARTICLES;GAMEUI_EMBEDDED;GAMEUI_EXPORTS;VERSION_SAFE_STEAM_API_INTERFACES;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WIN32;_DEBUG;DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;DLLNAME=client;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;COMPILER_MSVC32;COMPILER_MSVC;MEMOVERRIDE_MODULE=client;NO_STRING_T;CLIENT_DLL;VECTOR;VERSION_SAFE_STEAM_API_INTERFACES;PROTECTED_THINGS_ENABLE;ENABLE_HTMLWINDOW;fopen=dont_use_fopen;INFESTED_DLL;SWARM_DLL;HL2_EPISODIC;INFESTED_PARTICLES;GAMEUI_EMBEDDED;GAMEUI_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling />
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -176,7 +176,7 @@ if ERRORLEVEL 1 exit 1
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <AdditionalIncludeDirectories>.\hl2;.\swarm;.\swarm\vgui;..\statemachine;..\..\game\shared\multiplayer;..\..\game\shared\swarm;.\;..\..\common;..\..\public;..\..\public\tier0;..\..\public\tier1;..\..\game\shared;.\game_controls;$(IntDir);..\..\game\client\swarm\gameui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WIN32;NDEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;DLLNAME=client;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;COMPILER_MSVC32;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;COMPILER_MSVC;MEMOVERRIDE_MODULE=client;_DLL_EXT=.dll;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;DLLNAME=client;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;NO_STRING_T;CLIENT_DLL;VECTOR;VERSION_SAFE_STEAM_API_INTERFACES;PROTECTED_THINGS_ENABLE;strncpy=use_Q_strncpy_instead;_snprintf=use_Q_snprintf_instead;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;ENABLE_HTMLWINDOW;fopen=dont_use_fopen;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;INFESTED_DLL;SWARM_DLL;HL2_EPISODIC;INFESTED_PARTICLES;GAMEUI_EMBEDDED;GAMEUI_EXPORTS;VERSION_SAFE_STEAM_API_INTERFACES;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WIN32;NDEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;DLLNAME=client;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;COMPILER_MSVC32;COMPILER_MSVC;MEMOVERRIDE_MODULE=client;NO_STRING_T;CLIENT_DLL;VECTOR;VERSION_SAFE_STEAM_API_INTERFACES;PROTECTED_THINGS_ENABLE;ENABLE_HTMLWINDOW;fopen=dont_use_fopen;INFESTED_DLL;SWARM_DLL;HL2_EPISODIC;INFESTED_PARTICLES;GAMEUI_EMBEDDED;GAMEUI_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling />
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -1654,6 +1654,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vquickjoinpublic.cpp" />
     <ClCompile Include="swarm\gameui\swarm\vsignindialog.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
@@ -1876,6 +1877,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="swarm\vgui\radialmenu.cpp" />
     <ClCompile Include="swarm\vgui\rd_vgui_commander_mini_profile.cpp" />
     <ClCompile Include="swarm\vgui\rd_vgui_leaderboard_panel.cpp" />
+    <ClCompile Include="swarm\vgui\rd_vgui_main_menu_hoiaf_leaderboard_entry.cpp" />
     <ClCompile Include="swarm\vgui\rd_vgui_stock_ticker.cpp" />
     <ClCompile Include="swarm\vgui\rd_vgui_workshop_download_progress.cpp" />
     <ClCompile Include="swarm\vgui\rd_workshop_preview_image.cpp" />
@@ -2827,6 +2829,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="swarm\gameui\swarm\vpasswordentry.h" />
     <ClInclude Include="swarm\gameui\swarm\vquickjoin.h" />
     <ClInclude Include="swarm\gameui\swarm\vquickjoingroups.h" />
+    <ClInclude Include="swarm\gameui\swarm\vquickjoinpublic.h" />
     <ClInclude Include="swarm\gameui\swarm\vsignindialog.h" />
     <ClInclude Include="swarm\gameui\swarm\vslidercontrol.h" />
     <ClInclude Include="swarm\gameui\swarm\vspinnercontrol.h" />
@@ -2977,6 +2980,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="swarm\vgui\radialmenu.h" />
     <ClInclude Include="swarm\vgui\rd_vgui_commander_mini_profile.h" />
     <ClInclude Include="swarm\vgui\rd_vgui_leaderboard_panel.h" />
+    <ClInclude Include="swarm\vgui\rd_vgui_main_menu_hoiaf_leaderboard_entry.h" />
     <ClInclude Include="swarm\vgui\rd_vgui_stock_ticker.h" />
     <ClInclude Include="swarm\vgui\rd_vgui_workshop_download_progress.h" />
     <ClInclude Include="swarm\vgui\rd_workshop_preview_image.h" />

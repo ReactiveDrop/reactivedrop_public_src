@@ -39,6 +39,7 @@ public:
 	CPanelAnimationVarAliasType( int, m_iTitleAfterWidth, "title_after_wide", "10", "proportional_int" );
 	CPanelAnimationVarAliasType( int, m_iIconSize, "icon_size", "10", "proportional_int" );
 	CPanelAnimationVarAliasType( int, m_iSeparatorWidth, "separator_wide", "10", "proportional_int" );
+	CPanelAnimationVarAliasType( float, m_flTickerSpeed, "ticker_speed", "10", "proportional_float" );
 	CPanelAnimationVarAliasType( int, m_iBackgroundTexture, "background_tex", "vgui/white", "textureid" );
 	CPanelAnimationVarAliasType( int, m_iTitleBeforeTexture, "title_before_tex", "vgui/white", "textureid" );
 	CPanelAnimationVarAliasType( int, m_iTitleBackgroundTexture, "title_background_tex", "vgui/white", "textureid" );

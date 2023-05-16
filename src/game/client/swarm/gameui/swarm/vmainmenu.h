@@ -11,17 +11,22 @@
 #include "VFlyoutMenu.h"
 #include "asw_hud_master.h"
 
+class CRD_VGUI_Commander_Mini_Profile;
+class CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry;
+class CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry_Large;
+class CReactiveDropWorkshopPreviewImage;
+
 namespace BaseModUI {
 
 class QuickJoinPanel;
-class QuickJoinGroupsPanel;
+class QuickJoinPublicPanel;
 
 class MainMenu : public CBaseModFrame, public IBaseModFrameListener, public FlyoutMenuListener
 {
 	DECLARE_CLASS_SIMPLE( MainMenu, CBaseModFrame );
 
 public:
-	MainMenu(vgui::Panel *parent, const char *panelName);
+	MainMenu( vgui::Panel *parent, const char *panelName );
 	~MainMenu();
 
 	void Activate();
@@ -29,10 +34,10 @@ public:
 	void UpdateVisibility();
 
 	MESSAGE_FUNC_CHARPTR( OpenMainMenuJoinFailed, "OpenMainMenuJoinFailed", msg );
-	
+
 	//flyout menu listener
-	virtual void OnNotifyChildFocus( vgui::Panel* child );
-	virtual void OnFlyoutMenuClose( vgui::Panel* flyTo );
+	virtual void OnNotifyChildFocus( vgui::Panel *child );
+	virtual void OnFlyoutMenuClose( vgui::Panel *flyTo );
 	virtual void OnFlyoutMenuCancelled();
 
 	DECLARE_HUD_SHEET( MainMenuSheet )
@@ -70,11 +75,6 @@ public:
 		DECLARE_HUD_SHEET_UV( news_event_timer_hover ),
 		DECLARE_HUD_SHEET_UV( news_hover ),
 		DECLARE_HUD_SHEET_UV( news_update_hover ),
-		DECLARE_HUD_SHEET_UV( profile ),
-		DECLARE_HUD_SHEET_UV( profile_create_lobby_hover ),
-		DECLARE_HUD_SHEET_UV( profile_hover ),
-		DECLARE_HUD_SHEET_UV( profile_logo_hover ),
-		DECLARE_HUD_SHEET_UV( profile_settings_hover ),
 		DECLARE_HUD_SHEET_UV( quick_join ),
 		DECLARE_HUD_SHEET_UV( quick_join_above_hover ),
 		DECLARE_HUD_SHEET_UV( quick_join_below_hover ),
@@ -95,6 +95,15 @@ public:
 		DECLARE_HUD_SHEET_UV( ticker_mid ),
 		DECLARE_HUD_SHEET_UV( ticker_right ),
 		DECLARE_HUD_SHEET_UV( ticker_right_update_hover ),
+		DECLARE_HUD_SHEET_UV( top_bar ),
+		DECLARE_HUD_SHEET_UV( top_bar_button_glow ),
+		DECLARE_HUD_SHEET_UV( top_bar_left ),
+		DECLARE_HUD_SHEET_UV( top_bar_left_logo_glow ),
+		DECLARE_HUD_SHEET_UV( top_bar_left_profile_glow ),
+		DECLARE_HUD_SHEET_UV( top_bar_left_settings_glow ),
+		DECLARE_HUD_SHEET_UV( top_bar_right ),
+		DECLARE_HUD_SHEET_UV( top_bar_right_hoiaf_glow ),
+		DECLARE_HUD_SHEET_UV( top_bar_right_quit_glow ),
 		DECLARE_HUD_SHEET_UV( top_button ),
 		DECLARE_HUD_SHEET_UV( top_button_hover ),
 		DECLARE_HUD_SHEET_UV( top_button_left_hover ),
@@ -106,14 +115,16 @@ public:
 		DECLARE_HUD_SHEET_UV( workshop ),
 		DECLARE_HUD_SHEET_UV( workshop_hover ),
 		DECLARE_HUD_SHEET_UV( workshop_quick_join_hover ),
-	END_HUD_SHEET( MainMenuSheet );
+		END_HUD_SHEET( MainMenuSheet );
 
 	CUtlVector<HudSheet_t> m_HudSheets;
 
+	CPanelAnimationVarAliasType( int, m_iHoIAFTimerOffset, "hoiaf_timer_offset", "-1", "proportional_int" );
+
 protected:
-	virtual void ApplySchemeSettings(vgui::IScheme *pScheme);
-	virtual void OnCommand(const char *command);
-	virtual void OnKeyCodePressed(vgui::KeyCode code);
+	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
+	virtual void OnCommand( const char *command );
+	virtual void OnKeyCodePressed( vgui::KeyCode code );
 	virtual void OnThink();
 	virtual void OnOpen();
 	virtual void RunFrame();
@@ -125,6 +136,7 @@ private:
 	static void AcceptVersusSoftLockCallback();
 	static void AcceptQuitGameCallback();
 	void SetFooterState();
+	void OpenNewsURL( const char *szURL );
 
 	enum MainMenuQuickJoinHelpText
 	{
@@ -133,19 +145,45 @@ private:
 		MMQJHT_QUICKSTART,
 	};
 
-	int					m_iQuickJoinHelpText;
+	uint32 m_iLastTimerUpdate;
+	int m_iQuickJoinHelpText;
 	BaseModHybridButton *m_pBtnSettings;
 	BaseModHybridButton *m_pBtnLogo;
-	BaseModHybridButton *m_pBtnLoadout;
-	BaseModHybridButton *m_pBtnContracts;
-	BaseModHybridButton *m_pBtnRecordings;
-	BaseModHybridButton *m_pBtnSwarmopedia;
-	BaseModHybridButton *m_pBtnInventory;
+	BaseModHybridButton *m_pTopButton[5];
 	BaseModHybridButton *m_pBtnQuit;
+	CRD_VGUI_Commander_Mini_Profile *m_pCommanderProfile;
 	BaseModHybridButton *m_pBtnMultiplayer;
 	BaseModHybridButton *m_pBtnSingleplayer;
 	QuickJoinPanel *m_pPnlQuickJoin;
-	QuickJoinGroupsPanel *m_pPnlQuickJoinGroups;
+	QuickJoinPublicPanel *m_pPnlQuickJoinPublic;
+	BaseModHybridButton *m_pBtnWorkshopShowcase;
+	CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry *m_pTopLeaderboardEntries[10];
+	BaseModHybridButton *m_pBtnHoIAFTimer;
+	BaseModHybridButton *m_pBtnEventTimer[3];
+	BaseModHybridButton *m_pBtnNewsShowcase;
+	BaseModHybridButton *m_pBtnUpdateNotes;
+
+	wchar_t m_wszNewsTitle[5][256]{};
+	char m_szNewsURL[5][256]{};
+	wchar_t m_wszEventTitle[3][256]{};
+	char m_szEventURL[3][256]{};
+	uint32 m_iEventStarts[3]{};
+	uint32 m_iEventEnds[3]{};
+
+	PublishedFileId_t m_iWorkshopTrendingFileID[5]{ k_PublishedFileIdInvalid, k_PublishedFileIdInvalid, k_PublishedFileIdInvalid, k_PublishedFileIdInvalid, k_PublishedFileIdInvalid };
+	wchar_t m_wszWorkshopTrendingTitle[5][k_cchPublishedDocumentTitleMax]{};
+	UGCHandle_t m_hWorkshopTrendingPreview[5]{ k_UGCHandleInvalid, k_UGCHandleInvalid, k_UGCHandleInvalid, k_UGCHandleInvalid, k_UGCHandleInvalid };
+	CReactiveDropWorkshopPreviewImage *m_pWorkshopTrendingPreview[5]{};
+
+	CCallResult<MainMenu, LeaderboardScoresDownloaded_t> m_HoIAFTop10Callback;
+	CCallResult<MainMenu, LeaderboardScoresDownloaded_t> m_HoIAFSelfCallback;
+	CCallResult<MainMenu, SteamUGCQueryCompleted_t> m_WorkshopTrendingItemsCallback;
+	CCallResult<MainMenu, RemoteStorageDownloadUGCResult_t> m_WorkshopPreviewImageCallback[5];
+
+	void OnHoIAFTop10ScoresDownloaded( LeaderboardScoresDownloaded_t *pParam, bool bIOFailure );
+	void OnHoIAFSelfScoreDownloaded( LeaderboardScoresDownloaded_t *pParam, bool bIOFailure );
+	void OnWorkshopTrendingItems( SteamUGCQueryCompleted_t *pParam, bool bIOFailure );
+	void OnWorkshopPreviewImage( RemoteStorageDownloadUGCResult_t *pParam, bool bIOFailure );
 };
 
 }

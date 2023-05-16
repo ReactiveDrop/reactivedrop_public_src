@@ -13,7 +13,6 @@
 DECLARE_BUILD_FACTORY( CRD_VGUI_Stock_Ticker );
 
 extern ConVar rd_reduce_motion;
-ConVar rd_stock_ticker_speed( "rd_stock_ticker_speed", "16", FCVAR_NONE, "Speed of main menu stats/flavor text marquee in 480ths of screen height per second" );
 
 static bool CheckTickerDefCorrectness( const char *szPath, KeyValues *pDef )
 {
@@ -192,16 +191,15 @@ void CRD_VGUI_Stock_Ticker::OnThink()
 		return;
 	}
 
-	float flSpeed = YRES( rd_stock_ticker_speed.GetFloat() );
-	if ( flSpeed <= 0 )
+	if ( m_flTickerSpeed <= 0 )
 		return;
 
 	float flDeltaTime = clamp<float>( Plat_FloatTime() - m_flLastThink, 0, 1 );
-	int iShiftPixels = flDeltaTime * flSpeed;
+	int iShiftPixels = flDeltaTime * m_flTickerSpeed;
 	if ( iShiftPixels == 0 )
 		return;
 
-	m_flLastThink += iShiftPixels / flSpeed;
+	m_flLastThink += iShiftPixels / m_flTickerSpeed;
 
 	m_iTitleX = MAX( m_iTitleX - iShiftPixels, 0 );
 	m_iTextStartX -= iShiftPixels;

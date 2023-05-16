@@ -280,7 +280,9 @@ Scheme
 		// left aligned within the focus
 		SmallButton.Style							"7"
 		SmallButton.TextInsetY						"1"
-		
+
+		MediumButton.Style						"8"
+
 		// specialized button, only appears in game mode carousel
 		GameModeButton.Style						"9"
 		GameModeButton.TextInsetY					"0"		[$WIN32]
@@ -297,8 +299,12 @@ Scheme
 		ReactiveDropMainMenu.Style					"14"
 		ReactiveDropMainMenuBig.Style				"15"
 		ReactiveDropMainMenuTop.Style				"16"
-
-		MediumButton.Style						"8"
+		ReactiveDropMainMenuShowcase.Style			"17"
+		ReactiveDropMainMenuShowcase.TextInsetX		"3"
+		ReactiveDropMainMenuShowcase.TextInsetY		"5"
+		ReactiveDropMainMenuTimer.Style				"18"
+		ReactiveDropMainMenuTimer.TextInsetX		"2"
+		ReactiveDropMainMenuTimer.TextInsetY		"1"
 	}
 
 	//
