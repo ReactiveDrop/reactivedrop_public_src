@@ -1326,17 +1326,7 @@ void MainMenu::PaintBackground()
 		TODO:
 
 		DECLARE_HUD_SHEET_UV( create_lobby_profile_hover ),
-		DECLARE_HUD_SHEET_UV( create_lobby_singleplayer_hover ),
-		DECLARE_HUD_SHEET_UV( event_timer ),
-		DECLARE_HUD_SHEET_UV( event_timer_above_hover ),
-		DECLARE_HUD_SHEET_UV( event_timer_below_hover ),
-		DECLARE_HUD_SHEET_UV( event_timer_hoiaf_timer_hover ),
-		DECLARE_HUD_SHEET_UV( event_timer_hover ),
-		DECLARE_HUD_SHEET_UV( event_timer_news_hover ),
-		DECLARE_HUD_SHEET_UV( hoiaf_timer ),
-		DECLARE_HUD_SHEET_UV( hoiaf_timer_event_timer_hover ),
 		DECLARE_HUD_SHEET_UV( hoiaf_timer_hoiaf_top_10_hover ),
-		DECLARE_HUD_SHEET_UV( hoiaf_timer_hover ),
 		DECLARE_HUD_SHEET_UV( hoiaf_top_1 ),
 		DECLARE_HUD_SHEET_UV( hoiaf_top_10 ),
 		DECLARE_HUD_SHEET_UV( hoiaf_top_10_above_hover ),
@@ -1350,29 +1340,9 @@ void MainMenu::PaintBackground()
 		DECLARE_HUD_SHEET_UV( hoiaf_top_1_hover ),
 		DECLARE_HUD_SHEET_UV( hoiaf_top_1_quit_hover ),
 		DECLARE_HUD_SHEET_UV( logo_profile_hover ),
-		DECLARE_HUD_SHEET_UV( news ),
-		DECLARE_HUD_SHEET_UV( news_event_timer_hover ),
-		DECLARE_HUD_SHEET_UV( news_hover ),
-		DECLARE_HUD_SHEET_UV( news_update_hover ),
-		DECLARE_HUD_SHEET_UV( quick_join ),
-		DECLARE_HUD_SHEET_UV( quick_join_above_hover ),
-		DECLARE_HUD_SHEET_UV( quick_join_below_hover ),
-		DECLARE_HUD_SHEET_UV( quick_join_hover ),
-		DECLARE_HUD_SHEET_UV( quick_join_singleplayer_hover ),
 		DECLARE_HUD_SHEET_UV( settings_profile_hover ),
-		DECLARE_HUD_SHEET_UV( top_button ),
-		DECLARE_HUD_SHEET_UV( top_button_hover ),
-		DECLARE_HUD_SHEET_UV( top_button_left_hover ),
 		DECLARE_HUD_SHEET_UV( top_button_profile_hover ),
-		DECLARE_HUD_SHEET_UV( top_button_right_hover ),
-		DECLARE_HUD_SHEET_UV( update ),
-		DECLARE_HUD_SHEET_UV( update_hover ),
-		DECLARE_HUD_SHEET_UV( update_news_hover ),
-		DECLARE_HUD_SHEET_UV( workshop ),
-		DECLARE_HUD_SHEET_UV( workshop_hover ),
-		DECLARE_HUD_SHEET_UV( workshop_quick_join_hover ),
 	*/
-
 
 	int x0, y0, x1, y1, iTex;
 
@@ -1461,14 +1431,6 @@ void MainMenu::PaintBackground()
 		m_pBtnLogo->GetBounds( x0, y0, x1, y1 );
 		vgui::surface()->DrawTexturedSubRect( x0, y0, x0 + x1, y0 + y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
 	}
-	if ( m_pBtnQuit->IsVisible() )
-	{
-		iTex = UV_quit;
-		if ( m_pBtnQuit->GetCurrentState() == BaseModHybridButton::Focus )
-			iTex = UV_quit_hover;
-		m_pBtnQuit->GetBounds( x0, y0, x1, y1 );
-		vgui::surface()->DrawTexturedSubRect( x0, y0, x0 + x1, y0 + y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
-	}
 	for ( int i = 0; i < NELEMS( m_pTopButton ); i++ )
 	{
 		if ( m_pTopButton[i]->IsVisible() )
@@ -1476,9 +1438,21 @@ void MainMenu::PaintBackground()
 			iTex = UV_top_button;
 			if ( m_pTopButton[i]->GetCurrentState() == BaseModHybridButton::Focus )
 				iTex = UV_top_button_hover;
+			else if ( i > 0 && m_pTopButton[i - 1]->GetCurrentState() == BaseModHybridButton::Focus )
+				iTex = UV_top_button_left_hover;
+			else if ( i < NELEMS( m_pTopButton ) - 1 && m_pTopButton[i + 1]->GetCurrentState() == BaseModHybridButton::Focus )
+				iTex = UV_top_button_right_hover;
 			m_pTopButton[i]->GetBounds( x0, y0, x1, y1 );
 			vgui::surface()->DrawTexturedSubRect( x0, y0, x0 + x1, y0 + y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
 		}
+	}
+	if ( m_pBtnQuit->IsVisible() )
+	{
+		iTex = UV_quit;
+		if ( m_pBtnQuit->GetCurrentState() == BaseModHybridButton::Focus )
+			iTex = UV_quit_hover;
+		m_pBtnQuit->GetBounds( x0, y0, x1, y1 );
+		vgui::surface()->DrawTexturedSubRect( x0, y0, x0 + x1, y0 + y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
 	}
 	if ( m_pBtnMultiplayer->IsVisible() )
 	{
@@ -1541,6 +1515,8 @@ void MainMenu::PaintBackground()
 		iTex = UV_hoiaf_timer;
 		if ( m_pBtnHoIAFTimer->GetCurrentState() == BaseModHybridButton::Focus )
 			iTex = UV_hoiaf_timer_hover;
+		else if ( m_pBtnEventTimer[NELEMS( m_pBtnEventTimer ) - 1]->GetCurrentState() == BaseModHybridButton::Focus )
+			iTex = UV_hoiaf_timer_event_timer_hover;
 		m_pBtnHoIAFTimer->GetBounds( x0, y0, x1, y1 );
 		vgui::surface()->DrawTexturedSubRect( x0, y0, x0 + x1, y0 + y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
 	}
@@ -1551,6 +1527,14 @@ void MainMenu::PaintBackground()
 			iTex = UV_event_timer;
 			if ( m_pBtnEventTimer[i]->GetCurrentState() == BaseModHybridButton::Focus )
 				iTex = UV_event_timer_hover;
+			else if ( i == 0 && m_pBtnNewsShowcase->GetCurrentState() == BaseModHybridButton::Focus )
+				iTex = UV_event_timer_news_hover;
+			else if ( i == NELEMS( m_pBtnEventTimer ) - 1 && m_pBtnHoIAFTimer->GetCurrentState() == BaseModHybridButton::Focus )
+				iTex = UV_event_timer_hoiaf_timer_hover;
+			else if ( i > 0 && m_pBtnEventTimer[i - 1]->GetCurrentState() == BaseModHybridButton::Focus )
+				iTex = UV_event_timer_below_hover;
+			else if ( i < NELEMS( m_pBtnEventTimer ) - 1 && m_pBtnEventTimer[i + 1]->GetCurrentState() == BaseModHybridButton::Focus )
+				iTex = UV_event_timer_above_hover;
 			m_pBtnEventTimer[i]->GetBounds( x0, y0, x1, y1 );
 			vgui::surface()->DrawTexturedSubRect( x0, y0, x0 + x1, y0 + y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
 		}
@@ -1560,6 +1544,10 @@ void MainMenu::PaintBackground()
 		iTex = UV_news;
 		if ( m_pBtnNewsShowcase->GetCurrentState() == BaseModHybridButton::Focus )
 			iTex = UV_news_hover;
+		else if ( m_pBtnUpdateNotes->GetCurrentState() == BaseModHybridButton::Focus )
+			iTex = UV_news_update_hover;
+		else if ( m_pBtnEventTimer[0]->GetCurrentState() == BaseModHybridButton::Focus )
+			iTex = UV_news_event_timer_hover;
 		m_pBtnNewsShowcase->GetBounds( x0, y0, x1, y1 );
 		vgui::surface()->DrawTexturedSubRect( x0, y0, x0 + x1, y0 + y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
 	}
@@ -1568,6 +1556,8 @@ void MainMenu::PaintBackground()
 		iTex = UV_update;
 		if ( m_pBtnUpdateNotes->GetCurrentState() == BaseModHybridButton::Focus )
 			iTex = UV_update_hover;
+		else if ( m_pBtnNewsShowcase->GetCurrentState() == BaseModHybridButton::Focus )
+			iTex = UV_update_news_hover;
 		m_pBtnUpdateNotes->GetBounds( x0, y0, x1, y1 );
 		vgui::surface()->DrawTexturedSubRect( x0, y0, x0 + x1, y0 + y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
 	}
