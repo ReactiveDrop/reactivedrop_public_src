@@ -364,11 +364,13 @@ void QuickJoinPanel::OnThink()
 	int screenWide, screenTall;
 	vgui::surface()->GetScreenSize( screenWide, screenTall );
 
+#ifndef INFESTED_DLL
 	int iYOffset = 110;
 	if ( IsPC() )
 	{
 		iYOffset = 30;
 	}
+#endif
 
 	bool bScrolling = ( iNumItems >= cl_quick_join_scroll_start.GetInt() );
 

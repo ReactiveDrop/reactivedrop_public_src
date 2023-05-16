@@ -1,5 +1,6 @@
 #include "cbase.h"
 #include "rd_vgui_commander_mini_profile.h"
+#include "c_asw_steamstats.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -12,6 +13,10 @@ CRD_VGUI_Commander_Mini_Profile::CRD_VGUI_Commander_Mini_Profile( vgui::Panel *p
 }
 
 CRD_VGUI_Commander_Mini_Profile::~CRD_VGUI_Commander_Mini_Profile()
+{
+}
+
+void CRD_VGUI_Commander_Mini_Profile::SetHoIAFData( const LeaderboardEntry_t &entry, const LeaderboardScoreDetails_Points_t &details )
 {
 }
 

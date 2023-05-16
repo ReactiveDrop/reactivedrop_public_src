@@ -256,7 +256,7 @@ void CRD_VGUI_Stock_Ticker::Paint()
 	vgui::surface()->DrawSetTexture( m_iTitleAfterTexture );
 	vgui::surface()->DrawTexturedRect( m_iTitleX + w, 0, m_iTitleX + w + m_iTitleAfterWidth, GetTall() );
 
-	vgui::surface()->DrawSetTextColor( 0, 0, 0, 255 );
+	vgui::surface()->DrawSetTextColor( 255, 255, 255, 60 );
 	vgui::surface()->DrawSetTextFont( m_hTickerBlurFont );
 	vgui::surface()->DrawSetTextPos( m_iTitleX + m_iTitlePadding, m_iTextY );
 	vgui::surface()->DrawUnicodeString( m_wszTitle );

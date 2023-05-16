@@ -101,7 +101,7 @@ void QuickJoinPublicPanel::AddServersToList( void )
 			bool bIsHoIAF = false;
 			FOR_EACH_VEC( tags, i )
 			{
-				if ( !V_strcmp( tags[i], "hoiaf" ) )
+				if ( !V_strcmp( tags[i], "HoIAF" ) )
 				{
 					bIsHoIAF = true;
 					break;
@@ -166,7 +166,7 @@ void QuickJoinPublicPanel::RefreshQuery()
 			{ "and", "2" },
 			{ "notfull", "" },
 			{ "hasplayers", "" },
-			{ "gametagsand", "hoiaf" },
+			{ "gametagsand", "HoIAF" },
 		};
 		MatchMakingKeyValuePair_t *pServerQuery[NELEMS( ServerQuery )];
 		for ( int i = 0; i < NELEMS( ServerQuery ); i++ )

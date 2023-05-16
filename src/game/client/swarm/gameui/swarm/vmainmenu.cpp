@@ -957,7 +957,7 @@ void MainMenu::OnThink()
 				continue;
 			}
 
-			uint32 iTimeLeftHours = ( iCurrentTime - m_iEventEnds[i] ) / 3600;
+			uint32 iTimeLeftHours = ( m_iEventEnds[i] - iCurrentTime ) / 3600;
 			if ( iTimeLeftHours > 23 )
 				g_pVGuiLocalize->ConstructString( wszTimerText, sizeof( wszTimerText ), g_pVGuiLocalize->Find( "#rd_event_timer_days" ), 2, m_wszEventTitle[i], UTIL_RD_CommaNumber( iTimeLeftHours / 24 ) );
 			else if ( iTimeLeftHours > 0 )
@@ -1326,22 +1326,22 @@ void MainMenu::PaintBackground()
 		TODO:
 
 		DECLARE_HUD_SHEET_UV( create_lobby_profile_hover ),
-		DECLARE_HUD_SHEET_UV( hoiaf_timer_hoiaf_top_10_hover ),
-		DECLARE_HUD_SHEET_UV( hoiaf_top_1 ),
-		DECLARE_HUD_SHEET_UV( hoiaf_top_10 ),
-		DECLARE_HUD_SHEET_UV( hoiaf_top_10_above_hover ),
-		DECLARE_HUD_SHEET_UV( hoiaf_top_10_below_hover ),
-		DECLARE_HUD_SHEET_UV( hoiaf_top_10_hoiaf_timer_hover ),
-		DECLARE_HUD_SHEET_UV( hoiaf_top_10_hover ),
-		DECLARE_HUD_SHEET_UV( hoiaf_top_10_quit_hover_1 ),
-		DECLARE_HUD_SHEET_UV( hoiaf_top_10_quit_hover_2 ),
-		DECLARE_HUD_SHEET_UV( hoiaf_top_10_quit_hover_3 ),
-		DECLARE_HUD_SHEET_UV( hoiaf_top_1_below_hover ),
-		DECLARE_HUD_SHEET_UV( hoiaf_top_1_hover ),
-		DECLARE_HUD_SHEET_UV( hoiaf_top_1_quit_hover ),
 		DECLARE_HUD_SHEET_UV( logo_profile_hover ),
 		DECLARE_HUD_SHEET_UV( settings_profile_hover ),
 		DECLARE_HUD_SHEET_UV( top_button_profile_hover ),
+		DECLARE_HUD_SHEET_UV( hoiaf_timer_hoiaf_top_10_hover ),
+		DECLARE_HUD_SHEET_UV( hoiaf_top_1 ),
+		DECLARE_HUD_SHEET_UV( hoiaf_top_1_hover ),
+		DECLARE_HUD_SHEET_UV( hoiaf_top_1_below_hover ),
+		DECLARE_HUD_SHEET_UV( hoiaf_top_10 ),
+		DECLARE_HUD_SHEET_UV( hoiaf_top_10_hover ),
+		DECLARE_HUD_SHEET_UV( hoiaf_top_10_above_hover ),
+		DECLARE_HUD_SHEET_UV( hoiaf_top_10_below_hover ),
+		DECLARE_HUD_SHEET_UV( hoiaf_top_10_hoiaf_timer_hover ),
+		DECLARE_HUD_SHEET_UV( hoiaf_top_1_quit_hover ),
+		DECLARE_HUD_SHEET_UV( hoiaf_top_10_quit_hover_1 ),
+		DECLARE_HUD_SHEET_UV( hoiaf_top_10_quit_hover_2 ),
+		DECLARE_HUD_SHEET_UV( hoiaf_top_10_quit_hover_3 ),
 	*/
 
 	int x0, y0, x1, y1, iTex;
@@ -1515,8 +1515,10 @@ void MainMenu::PaintBackground()
 		iTex = UV_hoiaf_timer;
 		if ( m_pBtnHoIAFTimer->GetCurrentState() == BaseModHybridButton::Focus )
 			iTex = UV_hoiaf_timer_hover;
-		else if ( m_pBtnEventTimer[NELEMS( m_pBtnEventTimer ) - 1]->GetCurrentState() == BaseModHybridButton::Focus )
+		else if ( m_pTopLeaderboardEntries[NELEMS( m_pTopLeaderboardEntries ) - 1]->IsVisible() && m_pBtnEventTimer[NELEMS( m_pBtnEventTimer ) - 1]->GetCurrentState() == BaseModHybridButton::Focus )
 			iTex = UV_hoiaf_timer_event_timer_hover;
+		else if ( !m_pTopLeaderboardEntries[0]->IsVisible() && m_pBtnQuit->GetCurrentState() == BaseModHybridButton::Focus )
+			iTex = UV_hoiaf_top_1_quit_hover;
 		m_pBtnHoIAFTimer->GetBounds( x0, y0, x1, y1 );
 		vgui::surface()->DrawTexturedSubRect( x0, y0, x0 + x1, y0 + y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
 	}
@@ -1529,7 +1531,7 @@ void MainMenu::PaintBackground()
 				iTex = UV_event_timer_hover;
 			else if ( i == 0 && m_pBtnNewsShowcase->GetCurrentState() == BaseModHybridButton::Focus )
 				iTex = UV_event_timer_news_hover;
-			else if ( i == NELEMS( m_pBtnEventTimer ) - 1 && m_pBtnHoIAFTimer->GetCurrentState() == BaseModHybridButton::Focus )
+			else if ( i == NELEMS( m_pBtnEventTimer ) - 1 && m_pTopLeaderboardEntries[NELEMS( m_pTopLeaderboardEntries ) - 1]->IsVisible() && m_pBtnHoIAFTimer->GetCurrentState() == BaseModHybridButton::Focus )
 				iTex = UV_event_timer_hoiaf_timer_hover;
 			else if ( i > 0 && m_pBtnEventTimer[i - 1]->GetCurrentState() == BaseModHybridButton::Focus )
 				iTex = UV_event_timer_below_hover;
@@ -1789,7 +1791,6 @@ void MainMenu::ApplySchemeSettings( IScheme *pScheme )
 
 	if ( m_iHoIAFTimerOffset >= 0 )
 	{
-		// move HoIAF timer to top
 		int x, y, discard;
 		m_pBtnHoIAFTimer->GetPos( x, discard );
 		m_pTopLeaderboardEntries[0]->GetPos( discard, y );
@@ -1855,22 +1856,53 @@ void MainMenu::AcceptVersusSoftLockCallback()
 
 void MainMenu::OnHoIAFTop10ScoresDownloaded( LeaderboardScoresDownloaded_t *pParam, bool bIOFailure )
 {
-	if ( bIOFailure )
-		return;
-
-	for ( int i = 0; i < pParam->m_cEntryCount; i++ )
+	for ( int i = 0; i < NELEMS( m_pTopLeaderboardEntries ); i++ )
 	{
-		LeaderboardEntry_t entry;
-		LeaderboardScoreDetails_Points_t details;
-		bool bOK = SteamUserStats()->GetDownloadedLeaderboardEntry( pParam->m_hSteamLeaderboardEntries, i, &entry, reinterpret_cast< int32 * >( &details ), sizeof( details ) / sizeof( int32 ) );
-		Assert( bOK );
-		Assert( entry.m_cDetails == sizeof( details ) / sizeof( int32 ) );
+		m_pTopLeaderboardEntries[i]->ClearData();
+		m_pTopLeaderboardEntries[i]->SetVisible( false );
 	}
-	Assert( !"TODO" );
+
+	if ( !bIOFailure )
+	{
+		for ( int i = 0; i < pParam->m_cEntryCount; i++ )
+		{
+			Assert( i < NELEMS( m_pTopLeaderboardEntries ) );
+			if ( i >= NELEMS( m_pTopLeaderboardEntries ) )
+				break;
+
+			LeaderboardEntry_t entry;
+			LeaderboardScoreDetails_Points_t details;
+			bool bOK = SteamUserStats()->GetDownloadedLeaderboardEntry( pParam->m_hSteamLeaderboardEntries, i, &entry, reinterpret_cast< int32 * >( &details ), sizeof( details ) / sizeof( int32 ) );
+			Assert( bOK );
+			Assert( entry.m_cDetails == sizeof( details ) / sizeof( int32 ) );
+
+			m_pTopLeaderboardEntries[i]->SetFromEntry( entry, details );
+			m_pTopLeaderboardEntries[i]->SetVisible( true );
+		}
+	}
+
+	if ( m_iHoIAFTimerOffset >= 0 )
+	{
+		int x, y, discard;
+		m_pBtnHoIAFTimer->GetPos( x, discard );
+		m_pTopLeaderboardEntries[0]->GetPos( discard, y );
+
+		for ( int i = 0; i < NELEMS( m_pTopLeaderboardEntries ); i++ )
+		{
+			if ( !m_pTopLeaderboardEntries[i]->IsVisible() )
+				break;
+
+			m_pTopLeaderboardEntries[i]->GetPos( discard, y );
+			y += m_pTopLeaderboardEntries[i]->GetTall() + m_iHoIAFTimerOffset;
+		}
+		m_pBtnHoIAFTimer->SetPos( x, y );
+	}
 }
 
 void MainMenu::OnHoIAFSelfScoreDownloaded( LeaderboardScoresDownloaded_t *pParam, bool bIOFailure )
 {
+	m_pCommanderProfile->ClearHoIAFData();
+
 	if ( bIOFailure )
 		return;
 
@@ -1881,8 +1913,9 @@ void MainMenu::OnHoIAFSelfScoreDownloaded( LeaderboardScoresDownloaded_t *pParam
 		bool bOK = SteamUserStats()->GetDownloadedLeaderboardEntry( pParam->m_hSteamLeaderboardEntries, 0, &entry, reinterpret_cast< int32 * >( &details ), sizeof( details ) / sizeof( int32 ) );
 		Assert( bOK );
 		Assert( entry.m_cDetails == sizeof( details ) / sizeof( int32 ) );
+
+		m_pCommanderProfile->SetHoIAFData( entry, details );
 	}
-	Assert( !"TODO" );
 }
 
 void MainMenu::OnWorkshopTrendingItems( SteamUGCQueryCompleted_t *pParam, bool bIOFailure )
