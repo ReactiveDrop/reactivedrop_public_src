@@ -43,7 +43,7 @@ ConVar hud_saytext_time( "hud_saytext_time", "12", 0 );
 ConVar cl_showtextmsg( "cl_showtextmsg", "1", 0, "Enable/disable text messages printing on the screen." );
 ConVar cl_chat_active( "cl_chat_active", "0" );
 ConVar cl_chatfilters( "cl_chatfilters", "31", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Stores the chat filter settings " );
-ConVar rd_chatwipe( "rd_chatwipe", "1", FCVAR_ARCHIVE, "Set this to 0 to prevent chat wiping between missions" );
+ConVar rd_chatwipe( "rd_chatwipe", "0", FCVAR_ARCHIVE, "Set this to 0 to prevent chat wiping between missions" );
 ConVar rd_chatwipe_mainmenu( "rd_chatwipe_mainmenu", "1", FCVAR_ARCHIVE, "Set this to 0 to prevent chat wiping between games" );
 
 Color g_ColorBlue( 153, 204, 255, 255 );
