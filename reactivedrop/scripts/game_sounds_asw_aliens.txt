@@ -1195,7 +1195,7 @@
 	"rndwave"
 	{
 		"wave"	"aliens\voc\parasite\attack01.wav"
-		"wave"	"aliens\voc\parasite\attack02wav"
+		"wave"	"aliens\voc\parasite\attack02.wav"
 		"wave"	"aliens\voc\parasite\attack03.wav"
 	}
 }
