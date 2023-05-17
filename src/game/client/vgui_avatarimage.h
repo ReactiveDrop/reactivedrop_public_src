@@ -37,7 +37,7 @@ public:
 	CAvatarImage( void );
 
 	// Call this to set the steam ID associated with the avatar
-	bool SetAvatarSteamID( CSteamID steamIDUser );
+	bool SetAvatarSteamID( CSteamID steamIDUser, bool bFetch = true );
 	void UpdateFriendStatus( void );
 	void ClearAvatarSteamID( void );
 
@@ -114,6 +114,8 @@ private:
 	int	 m_iAvatarHeight;
 	CSteamID	m_SteamID;
 	EAvatarSize m_SourceArtSize;
+
+	STEAM_CALLBACK( CAvatarImage, OnPersonaStateChange, PersonaStateChange_t );
 };
 
 //-----------------------------------------------------------------------------

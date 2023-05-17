@@ -64,6 +64,11 @@ public:
 		DECLARE_HUD_SHEET_UV( hoiaf_top_10_quit_hover_1 ),
 		DECLARE_HUD_SHEET_UV( hoiaf_top_10_quit_hover_2 ),
 		DECLARE_HUD_SHEET_UV( hoiaf_top_10_quit_hover_3 ),
+		DECLARE_HUD_SHEET_UV( hoiaf_top_10_quit_hover_4 ),
+		DECLARE_HUD_SHEET_UV( hoiaf_top_10_quit_hover_5 ),
+		DECLARE_HUD_SHEET_UV( hoiaf_top_10_quit_hover_6 ),
+		DECLARE_HUD_SHEET_UV( hoiaf_top_10_quit_hover_7 ),
+		DECLARE_HUD_SHEET_UV( hoiaf_top_10_quit_hover_8 ),
 		DECLARE_HUD_SHEET_UV( hoiaf_top_1_below_hover ),
 		DECLARE_HUD_SHEET_UV( hoiaf_top_1_hover ),
 		DECLARE_HUD_SHEET_UV( hoiaf_top_1_quit_hover ),
@@ -115,7 +120,7 @@ public:
 		DECLARE_HUD_SHEET_UV( workshop ),
 		DECLARE_HUD_SHEET_UV( workshop_hover ),
 		DECLARE_HUD_SHEET_UV( workshop_quick_join_hover ),
-		END_HUD_SHEET( MainMenuSheet );
+	END_HUD_SHEET( MainMenuSheet );
 
 	CUtlVector<HudSheet_t> m_HudSheets;
 

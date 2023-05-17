@@ -1329,19 +1329,6 @@ void MainMenu::PaintBackground()
 		DECLARE_HUD_SHEET_UV( logo_profile_hover ),
 		DECLARE_HUD_SHEET_UV( settings_profile_hover ),
 		DECLARE_HUD_SHEET_UV( top_button_profile_hover ),
-		DECLARE_HUD_SHEET_UV( hoiaf_timer_hoiaf_top_10_hover ),
-		DECLARE_HUD_SHEET_UV( hoiaf_top_1 ),
-		DECLARE_HUD_SHEET_UV( hoiaf_top_1_hover ),
-		DECLARE_HUD_SHEET_UV( hoiaf_top_1_below_hover ),
-		DECLARE_HUD_SHEET_UV( hoiaf_top_10 ),
-		DECLARE_HUD_SHEET_UV( hoiaf_top_10_hover ),
-		DECLARE_HUD_SHEET_UV( hoiaf_top_10_above_hover ),
-		DECLARE_HUD_SHEET_UV( hoiaf_top_10_below_hover ),
-		DECLARE_HUD_SHEET_UV( hoiaf_top_10_hoiaf_timer_hover ),
-		DECLARE_HUD_SHEET_UV( hoiaf_top_1_quit_hover ),
-		DECLARE_HUD_SHEET_UV( hoiaf_top_10_quit_hover_1 ),
-		DECLARE_HUD_SHEET_UV( hoiaf_top_10_quit_hover_2 ),
-		DECLARE_HUD_SHEET_UV( hoiaf_top_10_quit_hover_3 ),
 	*/
 
 	int x0, y0, x1, y1, iTex;
@@ -1510,6 +1497,47 @@ void MainMenu::PaintBackground()
 		m_pBtnWorkshopShowcase->GetBounds( x0, y0, x1, y1 );
 		vgui::surface()->DrawTexturedSubRect( x0, y0, x0 + x1, y0 + y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
 	}
+	for ( int i = 0; i < NELEMS( m_pTopLeaderboardEntries ); i++ )
+	{
+		if ( m_pTopLeaderboardEntries[i]->IsVisible() )
+		{
+			iTex = i == 0 ? UV_hoiaf_top_1 : UV_hoiaf_top_10;
+			if ( m_pTopLeaderboardEntries[i]->GetCurrentState() == BaseModHybridButton::Focus )
+				iTex = i == 0 ? UV_hoiaf_top_1_hover : UV_hoiaf_top_10_hover;
+			else if ( m_pBtnQuit->GetCurrentState() == BaseModHybridButton::Focus )
+			{
+				if ( i == 0 )
+					iTex = UV_hoiaf_top_1_quit_hover;
+				else if ( i == 1 )
+					iTex = UV_hoiaf_top_10_quit_hover_1;
+				else if ( i == 2 )
+					iTex = UV_hoiaf_top_10_quit_hover_2;
+				else if ( i == 3 )
+					iTex = UV_hoiaf_top_10_quit_hover_3;
+				else if ( i == 4 )
+					iTex = UV_hoiaf_top_10_quit_hover_4;
+				else if ( i == 5 )
+					iTex = UV_hoiaf_top_10_quit_hover_5;
+				else if ( i == 6 )
+					iTex = UV_hoiaf_top_10_quit_hover_6;
+				else if ( i == 7 )
+					iTex = UV_hoiaf_top_10_quit_hover_7;
+				else if ( i == 8 )
+					iTex = UV_hoiaf_top_10_quit_hover_8;
+			}
+			else if ( i == 0 && m_pTopLeaderboardEntries[1]->GetCurrentState() == BaseModHybridButton::Focus )
+				iTex = UV_hoiaf_top_1_below_hover;
+			else if ( i < NELEMS( m_pTopLeaderboardEntries ) - 1 && m_pTopLeaderboardEntries[i + 1]->GetCurrentState() == BaseModHybridButton::Focus )
+				iTex = UV_hoiaf_top_10_below_hover;
+			else if ( i > 0 && m_pTopLeaderboardEntries[i - 1]->GetCurrentState() == BaseModHybridButton::Focus )
+				iTex = UV_hoiaf_top_10_above_hover;
+			else if ( ( i == NELEMS( m_pTopLeaderboardEntries ) - 1 || !m_pTopLeaderboardEntries[i + 1]->IsVisible() ) && m_pBtnHoIAFTimer->GetCurrentState() == BaseModHybridButton::Focus )
+				iTex = UV_hoiaf_top_10_hoiaf_timer_hover;
+			m_pTopLeaderboardEntries[i]->GetBounds( x0, y0, x1, y1 );
+			// add 1 pixel on the bottom so these don't look weird with rounding errors
+			vgui::surface()->DrawTexturedSubRect( x0, y0, x0 + x1, y0 + y1 + 1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
+		}
+	}
 	if ( m_pBtnHoIAFTimer->IsVisible() )
 	{
 		iTex = UV_hoiaf_timer;
@@ -1519,6 +1547,18 @@ void MainMenu::PaintBackground()
 			iTex = UV_hoiaf_timer_event_timer_hover;
 		else if ( !m_pTopLeaderboardEntries[0]->IsVisible() && m_pBtnQuit->GetCurrentState() == BaseModHybridButton::Focus )
 			iTex = UV_hoiaf_top_1_quit_hover;
+		else
+		{
+			for ( int i = NELEMS( m_pTopLeaderboardEntries ) - 1; i >= 0; i-- )
+			{
+				if ( m_pTopLeaderboardEntries[i]->IsVisible() )
+				{
+					if ( m_pTopLeaderboardEntries[i]->GetCurrentState() == BaseModHybridButton::Focus )
+						iTex = UV_hoiaf_timer_hoiaf_top_10_hover;
+					break;
+				}
+			}
+		}
 		m_pBtnHoIAFTimer->GetBounds( x0, y0, x1, y1 );
 		vgui::surface()->DrawTexturedSubRect( x0, y0, x0 + x1, y0 + y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
 	}
