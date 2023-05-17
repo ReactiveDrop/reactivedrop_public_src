@@ -130,7 +130,7 @@ void QuickJoinPanelItem::Update()
 			}
 			else if ( m_info.m_eType == m_info.TYPE_SERVER_RANKED )
 			{
-				imgAvatar->SetImage( "icon_lan_ranked" );
+				imgAvatar->SetImage( "icon_server_ranked" );
 			}
 			else if ( m_info.m_eType == m_info.TYPE_PUBLIC_LOBBY_COUNT_PLACEHOLDER )
 			{
@@ -138,7 +138,7 @@ void QuickJoinPanelItem::Update()
 			}
 			else
 			{
-				imgAvatar->SetImage( "icon_lan" );
+				imgAvatar->SetImage( "icon_server" );
 			}
 		}
 	}
@@ -361,18 +361,18 @@ void QuickJoinPanel::OnThink()
 		return;
 	}
 
+#ifndef INFESTED_DLL
 	int screenWide, screenTall;
 	vgui::surface()->GetScreenSize( screenWide, screenTall );
 
-#ifndef INFESTED_DLL
 	int iYOffset = 110;
 	if ( IsPC() )
 	{
 		iYOffset = 30;
 	}
-#endif
 
 	bool bScrolling = ( iNumItems >= cl_quick_join_scroll_start.GetInt() );
+#endif
 
 	int iCurrentX, iCurrentY;
 #ifndef INFESTED_DLL

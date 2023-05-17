@@ -124,17 +124,17 @@ MainMenu::MainMenu( Panel *parent, const char *panelName ):
 	m_pPnlQuickJoin = new QuickJoinPanel( this, "PnlQuickJoin" );
 	m_pPnlQuickJoinPublic = new QuickJoinPublicPanel( this, "PnlQuickJoinPublic" );
 	m_pBtnWorkshopShowcase = new BaseModHybridButton( this, "BtnWorkshopShowcase", "", this, "WorkshopShowcase" );
-	m_pTopLeaderboardEntries[0] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry_Large( this, "HoIAFTop1" );
-	m_pTopLeaderboardEntries[1] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry( this, "HoIAFTop2" );
-	m_pTopLeaderboardEntries[2] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry( this, "HoIAFTop3" );
-	m_pTopLeaderboardEntries[3] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry( this, "HoIAFTop4" );
-	m_pTopLeaderboardEntries[4] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry( this, "HoIAFTop5" );
-	m_pTopLeaderboardEntries[5] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry( this, "HoIAFTop6" );
-	m_pTopLeaderboardEntries[6] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry( this, "HoIAFTop7" );
-	m_pTopLeaderboardEntries[7] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry( this, "HoIAFTop8" );
-	m_pTopLeaderboardEntries[8] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry( this, "HoIAFTop9" );
-	m_pTopLeaderboardEntries[9] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry( this, "HoIAFTop10" );
-	m_pBtnHoIAFTimer = new BaseModHybridButton( this, "BtnHoIAFTimer", "", this, "HoIAFTimer" );
+	m_pTopLeaderboardEntries[0] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry_Large( this, "HoIAFTop1", this, "ShowHoIAF" );
+	m_pTopLeaderboardEntries[1] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry( this, "HoIAFTop2", this, "ShowHoIAF" );
+	m_pTopLeaderboardEntries[2] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry( this, "HoIAFTop3", this, "ShowHoIAF" );
+	m_pTopLeaderboardEntries[3] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry( this, "HoIAFTop4", this, "ShowHoIAF" );
+	m_pTopLeaderboardEntries[4] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry( this, "HoIAFTop5", this, "ShowHoIAF" );
+	m_pTopLeaderboardEntries[5] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry( this, "HoIAFTop6", this, "ShowHoIAF" );
+	m_pTopLeaderboardEntries[6] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry( this, "HoIAFTop7", this, "ShowHoIAF" );
+	m_pTopLeaderboardEntries[7] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry( this, "HoIAFTop8", this, "ShowHoIAF" );
+	m_pTopLeaderboardEntries[8] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry( this, "HoIAFTop9", this, "ShowHoIAF" );
+	m_pTopLeaderboardEntries[9] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry( this, "HoIAFTop10", this, "ShowHoIAF" );
+	m_pBtnHoIAFTimer = new BaseModHybridButton( this, "BtnHoIAFTimer", "", this, "ShowHoIAF" );
 	m_pBtnEventTimer[0] = new BaseModHybridButton( this, "BtnEventTimer1", "", this, "EventTimer1" );
 	m_pBtnEventTimer[1] = new BaseModHybridButton( this, "BtnEventTimer2", "", this, "EventTimer2" );
 	m_pBtnEventTimer[2] = new BaseModHybridButton( this, "BtnEventTimer3", "", this, "EventTimer3" );
@@ -146,6 +146,14 @@ MainMenu::MainMenu( Panel *parent, const char *panelName ):
 MainMenu::~MainMenu()
 {
 	RemoveFrameListener( this );
+
+	for ( int i = 0; i < NELEMS( m_iNewsImageTexture ); i++ )
+	{
+		if ( vgui::surface() && m_iNewsImageTexture[i] != -1 )
+		{
+			vgui::surface()->DestroyTextureID( m_iNewsImageTexture[i] );
+		}
+	}
 
 	for ( int i = 0; i < NELEMS( m_pWorkshopTrendingPreview ); i++ )
 	{
@@ -753,6 +761,46 @@ void MainMenu::OnCommand( const char *command )
 	{
 		engine->ClientCmd_Unrestricted( "asw_mission_chooser createserver" );
 	}
+	else if ( !V_stricmp( command, "WorkshopShowcase" ) )
+	{
+		uint32 iCurrentWorkshopShowcase = ( std::time( NULL ) / 60 ) % NELEMS( m_iWorkshopTrendingFileID );
+		if ( m_iWorkshopTrendingFileID[iCurrentWorkshopShowcase] == k_PublishedFileIdInvalid )
+		{
+			OpenNewsURL( "https://steamcommunity.com/app/563560/workshop/?l=%s" );
+		}
+		else
+		{
+			OpenNewsURL( CFmtStr{ "https://steamcommunity.com/workshop/filedetails/?id=%llu&l=%%s", m_iWorkshopTrendingFileID[iCurrentWorkshopShowcase] } );
+		}
+	}
+	else if ( !V_stricmp( command, "ShowHoIAF" ) )
+	{
+		OpenNewsURL( "https://stats.reactivedrop.com/heroes?lang=%s" );
+	}
+	else if ( !V_stricmp( command, "EventTimer1" ) )
+	{
+		OpenNewsURL( m_szEventURL[0] );
+	}
+	else if ( !V_stricmp( command, "EventTimer2" ) )
+	{
+		OpenNewsURL( m_szEventURL[1] );
+	}
+	else if ( !V_stricmp( command, "EventTimer3" ) )
+	{
+		OpenNewsURL( m_szEventURL[2] );
+	}
+	else if ( !V_stricmp( command, "NewsShowcase" ) )
+	{
+		int iNumNewsShowcases = 0;
+		while ( iNumNewsShowcases < NELEMS( m_wszNewsTitle ) && m_wszNewsTitle[iNumNewsShowcases][0] != L'\0' )
+			iNumNewsShowcases++;
+
+		if ( iNumNewsShowcases )
+		{
+			int iCurrentMinute = ( std::time( NULL ) / 60 );
+			OpenNewsURL( m_szNewsURL[iCurrentMinute % iNumNewsShowcases] );
+		}
+	}
 	else if ( !V_stricmp( command, "UpdateNotes" ) )
 	{
 		char szBranchName[64]{};
@@ -764,10 +812,6 @@ void MainMenu::OnCommand( const char *command )
 		{
 			OpenNewsURL( "https://steamcommunity.com/app/563560/allnews/?l=%s" );
 		}
-	}
-	else if ( !V_stricmp( command, "ShowHoIAF" ) )
-	{
-		OpenNewsURL( "https://stats.reactivedrop.com/heroes?lang=%s" );
 	}
 	else
 	{
@@ -1254,6 +1298,11 @@ void MainMenu::Activate()
 		{
 			TryLocalize( pLatestUpdate->GetString( VarArgs( "major%d_title", i + 1 ) ), m_wszNewsTitle[i], sizeof( m_wszNewsTitle[i] ) );
 			V_strncpy( m_szNewsURL[i], pLatestUpdate->GetString( VarArgs( "major%d_url", i + 1 ) ), sizeof( m_szNewsURL[i] ) );
+			if ( m_wszNewsTitle[i][0] != L'\0' && m_iNewsImageTexture[i] == -1 )
+			{
+				m_iNewsImageTexture[i] = vgui::surface()->CreateNewTextureID();
+				vgui::surface()->DrawSetTextureFile( m_iNewsImageTexture[i], CFmtStr{ "vgui/swarm/news_showcase_%d", i + 1 }, 1, false );
+			}
 		}
 
 		for ( int i = 0; i < NELEMS( m_wszEventTitle ); i++ )
@@ -1267,25 +1316,6 @@ void MainMenu::Activate()
 		// force an update
 		m_iLastTimerUpdate = 0;
 	}
-
-	if ( m_iHoIAFTimerOffset >= 0 )
-	{
-		// move HoIAF timer to top
-		int x, y, discard;
-		m_pBtnHoIAFTimer->GetPos( x, discard );
-		m_pTopLeaderboardEntries[0]->GetPos( discard, y );
-		m_pBtnHoIAFTimer->SetPos( x, y );
-	}
-
-	// remove all visible leaderboard entries
-	for ( int i = 0; i < NELEMS( m_pTopLeaderboardEntries ); i++ )
-	{
-		m_pTopLeaderboardEntries[i]->ClearData();
-		m_pTopLeaderboardEntries[i]->SetVisible( false );
-	}
-
-	// forget our own rank (it might have changed since last time we were on the main menu)
-	m_pCommanderProfile->ClearHoIAFData();
 
 	ISteamUserStats *pUserStats = SteamUserStats();
 	if ( pUserStats && rd_hoiaf_leaderboard_on_main_menu.GetBool() )
@@ -1604,7 +1634,22 @@ void MainMenu::PaintBackground()
 		vgui::surface()->DrawTexturedSubRect( x0, y0, x0 + x1, y0 + y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
 	}
 
-	int iCurrentWorkshopShowcase = ( std::time( NULL ) / 60 ) % NELEMS( m_pWorkshopTrendingPreview );
+	int iCurrentMinute = ( std::time( NULL ) / 60 );
+
+	int iNumNewsShowcases = 0;
+	while ( iNumNewsShowcases < NELEMS( m_wszNewsTitle ) && m_wszNewsTitle[iNumNewsShowcases][0] != L'\0' )
+		iNumNewsShowcases++;
+
+	if ( iNumNewsShowcases && m_pBtnNewsShowcase->IsVisible() )
+	{
+		vgui::surface()->DrawSetTexture( m_iNewsImageTexture[iCurrentMinute % iNumNewsShowcases] );
+		vgui::surface()->DrawSetColor( 255, 255, 255, m_pBtnNewsShowcase->GetCurrentState() == BaseModHybridButton::Focus ? 224 : 255 );
+		m_pBtnNewsShowcase->GetBounds( x0, y0, x1, y1 );
+		vgui::surface()->DrawTexturedRect( x0 + YRES( 1 ), y0 + YRES( 1 ), x0 + x1 - YRES( 1 ), y0 + y1 - YRES( 1 ) );
+		vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
+	}
+
+	int iCurrentWorkshopShowcase = iCurrentMinute % NELEMS( m_pWorkshopTrendingPreview );
 	if ( m_pBtnWorkshopShowcase->IsVisible() && m_pWorkshopTrendingPreview[iCurrentWorkshopShowcase] )
 	{
 		vgui::surface()->DrawSetTexture( m_pWorkshopTrendingPreview[iCurrentWorkshopShowcase]->GetID() );
