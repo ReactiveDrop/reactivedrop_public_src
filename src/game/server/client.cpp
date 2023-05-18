@@ -232,7 +232,6 @@ void Host_Say( edict_t *pEdict, const CCommand &args, bool teamonly )
 		}
 
 		const char* newText = text;
-
 		if ( CAlienSwarm *pAlienSwarm = ASWGameRules() )
 		{
 			ScriptVariant_t args[3];
@@ -243,7 +242,7 @@ void Host_Say( edict_t *pEdict, const CCommand &args, bool teamonly )
 			pAlienSwarm->RunScriptFunctionInListenerScopes( "OnReceivedTextMessage", &args[2], NELEMS(args), args );
 
 			ScriptVariant_t result = args[2];
-			if ( !result || result.m_type != FIELD_CSTRING )
+			if ( result.m_type != FIELD_CSTRING )
 					continue;
 				
 			newText = result.m_pszString;
