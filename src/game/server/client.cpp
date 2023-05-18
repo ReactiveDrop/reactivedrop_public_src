@@ -29,7 +29,7 @@
 #include "voice_gamemgr.h"
 #include "fmtstr.h"
 #include "videocfg/videocfg.h"
-
+#include "asw_gamerules.h"
 
 
 #ifdef HL2_DLL
@@ -203,20 +203,6 @@ void Host_Say( edict_t *pEdict, const CCommand &args, bool teamonly )
 
 	Q_strncat( text, p, sizeof( text ), COPY_ALL_CHARACTERS );
 	Q_strncat( text, "\n", sizeof( text ), COPY_ALL_CHARACTERS );
- 
-	// find if there is a vscript function which modifies messages
-	HSCRIPT hFunction = NULL;
-	if ( g_pScriptVM )
-	{
-		hFunction = g_pScriptVM->LookupFunction( "OnSentTextMessage" );
-		if ( !hFunction )
-		{
-			ScriptVariant_t hModeScript;
-			g_pScriptVM->GetValue( "g_ModeScript", &hModeScript );
-
-			hFunction = g_pScriptVM->LookupFunction( "OnSentTextMessage", hModeScript );
-		}
-	}
 
 	// loop through all players
 	// Start with the first player.
@@ -245,24 +231,22 @@ void Host_Say( edict_t *pEdict, const CCommand &args, bool teamonly )
 				continue;
 		}
 
-		ScriptVariant_t result;
 		const char* newText = text;
 
-		if ( hFunction )
+		if ( CAlienSwarm *pAlienSwarm = ASWGameRules() )
 		{
 			ScriptVariant_t args[3];
 			args[0] = ToHScript( client );
 			args[1] = ToHScript( pPlayer );
 			args[2] = ScriptVariant_t( newText );
+			
+			pAlienSwarm->RunScriptFunctionInListenerScopes( "OnReceivedTextMessage", &args[2], NELEMS(args), args );
 
-			ScriptStatus_t nStatus = g_pScriptVM->ExecuteFunction( hFunction, args, 3, &result, NULL, true );
-			if ( nStatus == SCRIPT_DONE )
-			{
-				if ( !result || result.m_type != FIELD_CSTRING )
+			ScriptVariant_t result = args[2];
+			if ( !result || result.m_type != FIELD_CSTRING )
 					continue;
 				
-				newText = result.m_pszString;
-			}
+			newText = result.m_pszString;
 		}
 
 		CSingleUserRecipientFilter user( client );
