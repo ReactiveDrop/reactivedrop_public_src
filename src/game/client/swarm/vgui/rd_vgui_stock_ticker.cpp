@@ -108,6 +108,7 @@ CRD_VGUI_Stock_Ticker::CRD_VGUI_Stock_Ticker( vgui::Panel *parent, const char *p
 	m_wszTitle[0] = L'\0';
 	m_hTickerFont = vgui::INVALID_FONT;
 	m_hTickerBlurFont = vgui::INVALID_FONT;
+	m_bLastReduceMotion = rd_reduce_motion.GetBool();
 
 	KeyValues *pKVTickerDefs = m_pKVTickerDefs;
 	UTIL_RD_LoadAllKeyValues( "resource/ticker.txt", "GAME", "TickerDefs", AppendTickerDefsHelper, pKVTickerDefs );
@@ -152,7 +153,8 @@ void CRD_VGUI_Stock_Ticker::PerformLayout()
 	vgui::surface()->GetTextSize( m_hTickerFont, m_wszTitle, w, t );
 	int iTitleWidth = m_iTitlePadding * 2 + m_iTitleAfterWidth + w;
 
-	if ( rd_reduce_motion.GetBool() )
+	m_bLastReduceMotion = rd_reduce_motion.GetBool();
+	if ( m_bLastReduceMotion )
 	{
 		m_flLastThink = -1;
 		m_iTitleX = 0;
@@ -170,6 +172,24 @@ void CRD_VGUI_Stock_Ticker::PerformLayout()
 
 void CRD_VGUI_Stock_Ticker::OnThink()
 {
+	if ( rd_reduce_motion.GetBool() != m_bLastReduceMotion )
+	{
+		// do a full reset if our initial state has become invalid
+		m_flLastThink = 0;
+		m_iFirstTextWidth = 0;
+		m_iTextTotalWidth = 0;
+		m_iLastRandomSeed = 0;
+		FOR_EACH_VEC( m_TextBuffer, i )
+		{
+			delete[] m_TextBuffer[i];
+		}
+		m_TextBuffer.Purge();
+		m_IconBuffer.Purge();
+
+		InvalidateLayout( true );
+		return;
+	}
+
 	if ( m_flLastThink == -1 )
 	{
 		int iCurrentSeed = std::time( NULL ) / 300;

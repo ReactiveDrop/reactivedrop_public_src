@@ -17,6 +17,7 @@ public:
 	void GenerateNextTickerText( wchar_t * &wszText, int &iIconTexture );
 	void GenerateTickerText( KeyValues *pDef, wchar_t *&wszText, int &iIconTexture );
 
+	bool m_bLastReduceMotion;
 	float m_flLastThink;
 	int m_iTitleX;
 	int m_iTextStartX;
