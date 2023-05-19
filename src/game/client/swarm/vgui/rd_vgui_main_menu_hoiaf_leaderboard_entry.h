@@ -17,6 +17,7 @@ public:
 	void SetFromEntry( const LeaderboardEntry_t &entry, const LeaderboardScoreDetails_Points_t &details );
 	void ClearData();
 
+	CSteamID m_SteamID;
 	vgui::Label *m_pLblRankNumber;
 	vgui::Label *m_pLblScore;
 	CAvatarImagePanel *m_pAvatar;

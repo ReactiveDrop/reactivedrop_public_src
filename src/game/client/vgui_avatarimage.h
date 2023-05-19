@@ -72,17 +72,21 @@ public:
 		m_nTall = tall; 
 	}
 
-	void SetAvatarSize(int wide, int tall)	
+	void SetAvatarSize( int wide, int tall, bool bLegacyPadding )
 	{
 		m_iAvatarWidth = wide;
 		m_iAvatarHeight = tall;
-		SetSize( wide + AVATAR_INDENT_X + AVATAR_POSTDENT_X, tall + AVATAR_INDENT_Y + AVATAR_POSTDENT_Y );
+		m_bLegacyPadding = bLegacyPadding;
+		if ( bLegacyPadding )
+			SetSize( wide + AVATAR_INDENT_X + AVATAR_POSTDENT_X, tall + AVATAR_INDENT_Y + AVATAR_POSTDENT_Y );
+		else
+			SetSize( wide, tall );
 	}
 
 	// Set the draw color 
-	virtual void SetColor(Color col)			
-	{ 
-		m_Color = col; 
+	virtual void SetColor( Color col )
+	{
+		m_Color = col;
 	}
 
 	void SetAvatarSize( EAvatarSize size )
@@ -109,6 +113,7 @@ private:
 	int m_nX, m_nY, m_nWide, m_nTall;
 	bool m_bValid;
 	bool m_bFriend;
+	bool m_bLegacyPadding;
 	CHudTexture *m_pFriendIcon;
 	int	 m_iAvatarWidth;
 	int	 m_iAvatarHeight;
@@ -131,12 +136,12 @@ public:
 	// Set the player that this Avatar should display for
 	void SetPlayer( C_BasePlayer *pPlayer );
 	void SetPlayerByIndex( int iIndex );
-	void SetAvatarBySteamID( CSteamID *friendsID );
+	void SetAvatarBySteamID( const CSteamID *friendsID );
 
 	virtual void PaintBackground( void );
 	bool	IsValid( void ) { return (GetImage() && ((CAvatarImage*)GetImage())->IsValid()); }
 
-protected:
+	CPanelAnimationVar( bool, m_bLegacyPadding, "legacy_padding", "1" );
 	CPanelAnimationVar( Color, m_clrOutline, "color_outline", "Black" );
 };
 
