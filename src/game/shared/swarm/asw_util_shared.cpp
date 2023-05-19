@@ -1337,6 +1337,26 @@ void __MsgFunc_ASWDamageNumber( bf_read &msg )
 	}
 }
 USER_MESSAGE_REGISTER( ASWDamageNumber );
+
+void UTIL_RD_DecideMainMenuBackground( const char *&szImage, const char *&szVideo, const char *&szAudio, bool bAllowChange )
+{
+	static const char *s_szImage = NULL;
+	static const char *s_szVideo = NULL;
+	static const char *s_szAudio = NULL;
+
+	if ( bAllowChange || !s_szImage || !s_szVideo || !s_szAudio )
+	{
+		Assert( bAllowChange );
+
+		s_szImage = "materials/console/RdSelectionScreen_widescreen.vtf";
+		s_szVideo = "media/bg_01.bik";
+		s_szAudio = "Misc.MainUI";
+	}
+
+	szImage = s_szImage;
+	szVideo = s_szVideo;
+	szAudio = s_szAudio;
+}
 #endif
 
 // attempts to localize a string

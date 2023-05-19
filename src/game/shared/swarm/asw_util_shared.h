@@ -92,6 +92,7 @@ float UTIL_ASW_CalcFastDoorHackTime(int iNumRows, int iNumColumns, int iNumWires
 	CNewParticleEffect *UTIL_ASW_CreateFireEffect( C_BaseEntity *pEntity );
 	void UTIL_ASW_ClientFloatingDamageNumber( const CTakeDamageInfo &info );
 	HPARTICLEFFECT UTIL_ASW_ParticleDamageNumber( C_BaseEntity *pEnt, Vector vecPos, int iDamage, int iDmgCustom, float flScale, bool bRandomVelocity, bool bSkipRampUp );
+	void UTIL_RD_DecideMainMenuBackground( const char *&szImage, const char *&szVideo, const char *&szAudio, bool bAllowChange );
 #endif
 
 void TryLocalize( const char *token, wchar_t *unicode, int unicodeBufferSizeInBytes );

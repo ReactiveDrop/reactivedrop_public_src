@@ -9,6 +9,7 @@
 #include "asw_gamerules.h"
 #include "filesystem.h"
 #include "rd_workshop.h"
+#include "asw_util_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -190,7 +191,9 @@ void CASW_Background_Movie::Update()
 		if ( nGameState != m_nLastGameState )
 		{
 #ifdef ASW_BINK_MOVIES
-			SetCurrentMovie( "media/bg_01.bik" );
+			const char *szMainMenuImage, *szMainMenuVideo, *szMainMenuAudio;
+			UTIL_RD_DecideMainMenuBackground( szMainMenuImage, szMainMenuVideo, szMainMenuAudio, false );
+			SetCurrentMovie( szMainMenuVideo );
 #else
 			SetCurrentMovie( "media/test.avi" );
 #endif

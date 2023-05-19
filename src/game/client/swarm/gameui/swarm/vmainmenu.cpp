@@ -465,15 +465,7 @@ void MainMenu::OnCommand( const char *command )
 	}
 	else if ( !Q_strcmp( command, "Workshop" ) )
 	{
-		const char *url = "https://steamcommunity.com/app/563560/workshop/";
-		if ( BaseModUI::CUIGameData::Get() )
-		{
-			BaseModUI::CUIGameData::Get()->ExecuteOverlayUrl( url, true );
-		}
-		else if ( vgui::system() )
-		{
-			vgui::system()->ShellExecute("open", url );
-		}
+		OpenNewsURL( "https://steamcommunity.com/app/563560/workshop/?l=%s" );
 	}
 	else if ( !Q_strcmp( command, "WorkshopManage" ) )
 	{
