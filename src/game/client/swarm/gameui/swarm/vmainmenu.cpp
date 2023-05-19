@@ -124,16 +124,16 @@ MainMenu::MainMenu( Panel *parent, const char *panelName ):
 	m_pPnlQuickJoin = new QuickJoinPanel( this, "PnlQuickJoin" );
 	m_pPnlQuickJoinPublic = new QuickJoinPublicPanel( this, "PnlQuickJoinPublic" );
 	m_pBtnWorkshopShowcase = new BaseModHybridButton( this, "BtnWorkshopShowcase", "", this, "WorkshopShowcase" );
-	m_pTopLeaderboardEntries[0] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry_Large( this, "HoIAFTop1", this, "ShowHoIAF" );
-	m_pTopLeaderboardEntries[1] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry( this, "HoIAFTop2", this, "ShowHoIAF" );
-	m_pTopLeaderboardEntries[2] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry( this, "HoIAFTop3", this, "ShowHoIAF" );
-	m_pTopLeaderboardEntries[3] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry( this, "HoIAFTop4", this, "ShowHoIAF" );
-	m_pTopLeaderboardEntries[4] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry( this, "HoIAFTop5", this, "ShowHoIAF" );
-	m_pTopLeaderboardEntries[5] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry( this, "HoIAFTop6", this, "ShowHoIAF" );
-	m_pTopLeaderboardEntries[6] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry( this, "HoIAFTop7", this, "ShowHoIAF" );
-	m_pTopLeaderboardEntries[7] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry( this, "HoIAFTop8", this, "ShowHoIAF" );
-	m_pTopLeaderboardEntries[8] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry( this, "HoIAFTop9", this, "ShowHoIAF" );
-	m_pTopLeaderboardEntries[9] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry( this, "HoIAFTop10", this, "ShowHoIAF" );
+	m_pTopLeaderboardEntries[0] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry_Large( this, "HoIAFTop1", this, "HoIAFTop1" );
+	m_pTopLeaderboardEntries[1] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry( this, "HoIAFTop2", this, "HoIAFTop2" );
+	m_pTopLeaderboardEntries[2] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry( this, "HoIAFTop3", this, "HoIAFTop3" );
+	m_pTopLeaderboardEntries[3] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry( this, "HoIAFTop4", this, "HoIAFTop4" );
+	m_pTopLeaderboardEntries[4] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry( this, "HoIAFTop5", this, "HoIAFTop5" );
+	m_pTopLeaderboardEntries[5] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry( this, "HoIAFTop6", this, "HoIAFTop6" );
+	m_pTopLeaderboardEntries[6] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry( this, "HoIAFTop7", this, "HoIAFTop7" );
+	m_pTopLeaderboardEntries[7] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry( this, "HoIAFTop8", this, "HoIAFTop8" );
+	m_pTopLeaderboardEntries[8] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry( this, "HoIAFTop9", this, "HoIAFTop9" );
+	m_pTopLeaderboardEntries[9] = new CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry( this, "HoIAFTop10", this, "HoIAFTop10" );
 	m_pBtnHoIAFTimer = new BaseModHybridButton( this, "BtnHoIAFTimer", "", this, "ShowHoIAF" );
 	m_pBtnEventTimer[0] = new BaseModHybridButton( this, "BtnEventTimer1", "", this, "EventTimer1" );
 	m_pBtnEventTimer[1] = new BaseModHybridButton( this, "BtnEventTimer2", "", this, "EventTimer2" );
@@ -765,6 +765,19 @@ void MainMenu::OnCommand( const char *command )
 			OpenNewsURL( CFmtStr{ "https://steamcommunity.com/workshop/filedetails/?id=%llu&l=%%s", m_iWorkshopTrendingFileID[iCurrentWorkshopShowcase] } );
 		}
 	}
+	else if ( const char *szHoIAFPlaceNumber = StringAfterPrefix( command, "HoIAFTop" ) )
+	{
+		int iPlaceNumber = V_atoi( szHoIAFPlaceNumber );
+		Assert( iPlaceNumber >= 1 && iPlaceNumber <= NELEMS( m_pTopLeaderboardEntries ) );
+		if ( iPlaceNumber >= 1 && iPlaceNumber <= NELEMS( m_pTopLeaderboardEntries ) )
+		{
+			Assert( m_pTopLeaderboardEntries[iPlaceNumber - 1]->IsVisible() );
+			KeyValues::AutoDelete pSettings{ "settings" };
+			pSettings->SetUint64( "steamid", m_pTopLeaderboardEntries[iPlaceNumber - 1]->m_SteamID.ConvertToUint64() );
+			Assert( !"TODO" );
+			//CBaseModPanel::GetSingleton().OpenWindow( WT_COMMANDERPROFILE, this, true, pSettings );
+		}
+	}
 	else if ( !V_stricmp( command, "ShowHoIAF" ) )
 	{
 		OpenNewsURL( "https://stats.reactivedrop.com/heroes?lang=%s" );
@@ -804,6 +817,30 @@ void MainMenu::OnCommand( const char *command )
 		{
 			OpenNewsURL( "https://steamcommunity.com/app/563560/allnews/?l=%s" );
 		}
+	}
+	else if ( !V_stricmp( command, "Settings" ) )
+	{
+		Assert( !"TODO" );
+	}
+	else if ( !V_stricmp( command, "Loadout" ) )
+	{
+		Assert( !"TODO" );
+	}
+	else if ( !V_stricmp( command, "Contracts" ) )
+	{
+		Assert( !"TODO" );
+	}
+	else if ( !V_stricmp( command, "Recordings" ) )
+	{
+		CBaseModPanel::GetSingleton().OpenWindow( WT_DEMOS, CBaseModPanel::GetSingleton().GetWindow( CBaseModPanel::GetSingleton().GetActiveWindowType() ) );
+	}
+	else if ( !V_stricmp( command, "Swarmopedia" ) )
+	{
+		Assert( !"TODO" );
+	}
+	else if ( !V_stricmp( command, "Inventory" ) )
+	{
+		Assert( !"TODO" );
 	}
 	else
 	{

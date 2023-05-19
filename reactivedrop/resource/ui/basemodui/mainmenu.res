@@ -161,6 +161,7 @@
 		"navUp"					"BtnLogo"
 		"navDown"				"BtnMultiplayer"
 		"showLocalPlayer"		"1"
+		"isButton"				"1"
 	}
 
 	"BtnMultiplayer"
@@ -247,10 +248,10 @@
 		"ypos"					"40"
 		"wide"					"200"
 		"tall"					"20"
-		"position"				"1"
 		"navLeft"				"BtnMultiplayer"
 		"navUp"					"BtnQuit"
 		"navDown"				"HoIAFTop2"
+		"command"				"HoIAFTop1"
 	}
 
 	"HoIAFTop2"
@@ -261,10 +262,10 @@
 		"ypos"					"60"
 		"wide"					"190"
 		"tall"					"15"
-		"position"				"2"
 		"navLeft"				"BtnMultiplayer"
 		"navUp"					"HoIAFTop1"
 		"navDown"				"HoIAFTop3"
+		"command"				"HoIAFTop2"
 	}
 
 	"HoIAFTop3"
@@ -275,10 +276,10 @@
 		"ypos"					"75"
 		"wide"					"190"
 		"tall"					"15"
-		"position"				"3"
 		"navLeft"				"BtnMultiplayer"
 		"navUp"					"HoIAFTop2"
 		"navDown"				"HoIAFTop4"
+		"command"				"HoIAFTop3"
 	}
 
 	"HoIAFTop4"
@@ -289,10 +290,10 @@
 		"ypos"					"90"
 		"wide"					"190"
 		"tall"					"15"
-		"position"				"4"
 		"navLeft"				"BtnMultiplayer"
 		"navUp"					"HoIAFTop3"
 		"navDown"				"HoIAFTop5"
+		"command"				"HoIAFTop4"
 	}
 
 	"HoIAFTop5"
@@ -303,10 +304,10 @@
 		"ypos"					"105"
 		"wide"					"190"
 		"tall"					"15"
-		"position"				"5"
 		"navLeft"				"BtnMultiplayer"
 		"navUp"					"HoIAFTop4"
 		"navDown"				"HoIAFTop6"
+		"command"				"HoIAFTop5"
 	}
 
 	"HoIAFTop6"
@@ -317,10 +318,10 @@
 		"ypos"					"120"
 		"wide"					"190"
 		"tall"					"15"
-		"position"				"6"
 		"navLeft"				"BtnMultiplayer"
 		"navUp"					"HoIAFTop5"
 		"navDown"				"HoIAFTop7"
+		"command"				"HoIAFTop6"
 	}
 
 	"HoIAFTop7"
@@ -331,10 +332,10 @@
 		"ypos"					"135"
 		"wide"					"190"
 		"tall"					"15"
-		"position"				"7"
 		"navLeft"				"BtnMultiplayer"
 		"navUp"					"HoIAFTop6"
 		"navDown"				"HoIAFTop8"
+		"command"				"HoIAFTop7"
 	}
 
 	"HoIAFTop8"
@@ -345,10 +346,10 @@
 		"ypos"					"150"
 		"wide"					"190"
 		"tall"					"15"
-		"position"				"8"
 		"navLeft"				"BtnMultiplayer"
 		"navUp"					"HoIAFTop7"
 		"navDown"				"HoIAFTop9"
+		"command"				"HoIAFTop8"
 	}
 
 	"HoIAFTop9"
@@ -359,10 +360,10 @@
 		"ypos"					"165"
 		"wide"					"190"
 		"tall"					"15"
-		"position"				"9"
 		"navLeft"				"BtnMultiplayer"
 		"navUp"					"HoIAFTop8"
 		"navDown"				"HoIAFTop10"
+		"command"				"HoIAFTop9"
 	}
 
 	"HoIAFTop10"
@@ -373,10 +374,10 @@
 		"ypos"					"180"
 		"wide"					"190"
 		"tall"					"15"
-		"position"				"10"
 		"navLeft"				"BtnMultiplayer"
 		"navUp"					"HoIAFTop9"
 		"navDown"				"BtnHoIAFTimer"
+		"command"				"HoIAFTop10"
 	}
 
 	"BtnHoIAFTimer"
