@@ -1959,6 +1959,16 @@ USER_MESSAGE_REGISTER( RDEquippedItemsACK );
 static void RD_Equipped_Item_Changed( IConVar *var, const char *pOldValue, float flOldValue )
 {
 	s_RD_Inventory_Manager.QueueSendStaticEquipNotification( var->GetSplitScreenPlayerSlot() );
+
+	if ( ReactiveDropInventory::CheckMedalEquipCache() )
+	{
+		Assert( SteamUserStats() );
+		if ( SteamUserStats() )
+		{
+			bool bOK = SteamUserStats()->StoreStats();
+			Assert( bOK ); ( void )bOK;
+		}
+	}
 }
 ConVar rd_equipped_medal[RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS]
 {
@@ -3392,6 +3402,54 @@ namespace ReactiveDropInventory
 	void ResendDynamicEquipNotification( int iPlayer, bool bForce )
 	{
 		s_RD_Inventory_Manager.ResendDynamicEquipNotification( iPlayer, bForce );
+	}
+
+	bool CheckMedalEquipCache()
+	{
+		ISteamUserStats *pUserStats = SteamUserStats();
+		Assert( pUserStats );
+		if ( !pUserStats )
+			return false;
+
+		bool bAnyChanged = false;
+
+		union
+		{
+			SteamItemInstanceID_t iItemInstance;
+			struct
+			{
+				int32 iLowBits;
+				int32 iHighBits;
+			} Bits;
+		} MedalID;
+
+		for ( int i = 0; i < NELEMS( rd_equipped_medal ); i++ )
+		{
+			CFmtStr szLowBitsStatName{ "equipped_medal_%da", i + 1 };
+			CFmtStr szHighBitsStatName{ "equipped_medal_%db", i + 1 };
+			bool bOK = pUserStats->GetStat( szLowBitsStatName, &MedalID.Bits.iLowBits ) && pUserStats->GetStat( szHighBitsStatName, &MedalID.Bits.iHighBits );
+			Assert( bOK );
+			if ( bOK )
+			{
+				SteamItemInstanceID_t iCurrentInstance = strtoull( rd_equipped_medal[i].GetString(), NULL, 10 );
+				if ( iCurrentInstance == 0 )
+				{
+					iCurrentInstance = k_SteamItemInstanceIDInvalid;
+				}
+
+				if ( iCurrentInstance != MedalID.iItemInstance )
+				{
+					bAnyChanged = true;
+					MedalID.iItemInstance = iCurrentInstance;
+					bOK = pUserStats->SetStat( szLowBitsStatName, MedalID.Bits.iLowBits );
+					Assert( bOK ); ( void )bOK;
+					bOK = pUserStats->SetStat( szHighBitsStatName, MedalID.Bits.iHighBits );
+					Assert( bOK ); ( void )bOK;
+				}
+			}
+		}
+
+		return bAnyChanged;
 	}
 #endif
 
