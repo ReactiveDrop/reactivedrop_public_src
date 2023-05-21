@@ -15,4 +15,6 @@ public:
 
 	void SetHoIAFData( const LeaderboardEntry_t &entry,	const LeaderboardScoreDetails_Points_t &details );
 	void ClearHoIAFData();
+
+	bool m_bEmbedded{ false };
 };

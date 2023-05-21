@@ -1434,6 +1434,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vcommanderprofile.cpp" />
     <ClCompile Include="swarm\gameui\swarm\vcontrolleroptions.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
@@ -1875,6 +1876,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="swarm\vgui\playerswaitingpanel.cpp" />
     <ClCompile Include="swarm\vgui\polygonbutton.cpp" />
     <ClCompile Include="swarm\vgui\radialmenu.cpp" />
+    <ClCompile Include="swarm\vgui\rd_hud_sheet.cpp" />
     <ClCompile Include="swarm\vgui\rd_vgui_commander_mini_profile.cpp" />
     <ClCompile Include="swarm\vgui\rd_vgui_leaderboard_panel.cpp" />
     <ClCompile Include="swarm\vgui\rd_vgui_main_menu_hoiaf_leaderboard_entry.cpp" />
@@ -2790,6 +2792,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="swarm\gameui\swarm\vaudioadvancedmixers.h" />
     <ClInclude Include="swarm\gameui\swarm\vaudiovideo.h" />
     <ClInclude Include="swarm\gameui\swarm\vcloud.h" />
+    <ClInclude Include="swarm\gameui\swarm\vcommanderprofile.h" />
     <ClInclude Include="swarm\gameui\swarm\vcontrolleroptions.h" />
     <ClInclude Include="swarm\gameui\swarm\vcontrolleroptionsbuttons.h" />
     <ClInclude Include="swarm\gameui\swarm\vcontrolleroptionssticks.h" />
@@ -2978,6 +2981,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="swarm\vgui\playerswaitingpanel.h" />
     <ClInclude Include="swarm\vgui\polygonbutton.h" />
     <ClInclude Include="swarm\vgui\radialmenu.h" />
+    <ClInclude Include="swarm\vgui\rd_hud_sheet.h" />
     <ClInclude Include="swarm\vgui\rd_vgui_commander_mini_profile.h" />
     <ClInclude Include="swarm\vgui\rd_vgui_leaderboard_panel.h" />
     <ClInclude Include="swarm\vgui\rd_vgui_main_menu_hoiaf_leaderboard_entry.h" />

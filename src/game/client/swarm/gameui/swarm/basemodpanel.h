@@ -82,6 +82,7 @@ namespace BaseModUI
 		WT_AUDIOADVANCEDMIXERS,
 		WT_DEMOS,
 		WT_ITEMSHOWCASE,
+		WT_COMMANDERPROFILE,
 		WT_WINDOW_COUNT // WT_WINDOW_COUNT must be last in the list!
 	};
 

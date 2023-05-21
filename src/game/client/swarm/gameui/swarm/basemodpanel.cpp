@@ -34,6 +34,7 @@
 #include "VAudioAdvancedMixers.h"
 #include "VAudioVideo.h"
 #include "VCloud.h"
+#include "VCommanderProfile.h"
 #include "VControllerOptions.h"
 #include "VControllerOptionsButtons.h"
 #include "VControllerOptionsSticks.h"
@@ -552,6 +553,10 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 
 		case WT_ITEMSHOWCASE:
 			m_Frames[wt] = new ItemShowcase( this, "ItemShowcase" );
+			break;
+
+		case WT_COMMANDERPROFILE:
+			m_Frames[wt] = new CommanderProfile( this, "CommanderProfile" );
 			break;
 
 		default:

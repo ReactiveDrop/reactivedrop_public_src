@@ -10,6 +10,8 @@
 #define CPointCamera C_PointCamera
 #endif
 
+#define STEAM_LEADERBOARD_HOIAF_CURRENT_SEASON 7581028ULL
+
 class CPhysicsProp;
 class CASW_Player;
 class CASW_Inhabitable_NPC;

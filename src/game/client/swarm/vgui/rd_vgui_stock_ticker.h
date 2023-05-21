@@ -21,6 +21,7 @@ public:
 	float m_flLastThink;
 	int m_iTitleX;
 	int m_iTextStartX;
+	int m_iBackgroundStartX;
 	KeyValues::AutoDelete m_pKVTickerDefs;
 	CUtlQueue<KeyValues *> m_TickerDefCooldown;
 	float m_flTotalWeight;
@@ -35,9 +36,11 @@ public:
 
 	CPanelAnimationVar( vgui::HFont, m_hTickerFont, "ticker_font", "DefaultSmall" );
 	CPanelAnimationVar( vgui::HFont, m_hTickerBlurFont, "ticker_blur_font", "DefaultSmallBlur" );
+	CPanelAnimationVarAliasType( int, m_iTextStartXOffset, "text_start_xpos", "0", "proportional_int" );
 	CPanelAnimationVarAliasType( int, m_iTextY, "text_ypos", "0", "proportional_int" );
 	CPanelAnimationVarAliasType( int, m_iTitlePadding, "title_padding", "5", "proportional_int" );
 	CPanelAnimationVarAliasType( int, m_iTitleAfterWidth, "title_after_wide", "10", "proportional_int" );
+	CPanelAnimationVarAliasType( int, m_iIconXPos, "icon_xpos", "0", "proportional_int");
 	CPanelAnimationVarAliasType( int, m_iIconSize, "icon_size", "10", "proportional_int" );
 	CPanelAnimationVarAliasType( int, m_iSeparatorWidth, "separator_wide", "10", "proportional_int" );
 	CPanelAnimationVarAliasType( float, m_flTickerSpeed, "ticker_speed", "10", "proportional_float" );
@@ -46,6 +49,6 @@ public:
 	CPanelAnimationVarAliasType( int, m_iTitleBackgroundTexture, "title_background_tex", "vgui/white", "textureid" );
 	CPanelAnimationVarAliasType( int, m_iTitleAfterTexture, "title_after_tex", "vgui/white", "textureid" );
 	CPanelAnimationVarAliasType( int, m_iSeparatorTexture, "separator_tex", "vgui/white", "textureid" );
-	CPanelAnimationVarAliasType( int, m_iStockUpTexture, "stock_down_tex", "vgui/white", "textureid" );
-	CPanelAnimationVarAliasType( int, m_iStockDownTexture, "stock_up_tex", "vgui/white", "textureid" );
+	CPanelAnimationVarAliasType( int, m_iStockUpTexture, "stock_up_tex", "vgui/white", "textureid" );
+	CPanelAnimationVarAliasType( int, m_iStockDownTexture, "stock_down_tex", "vgui/white", "textureid" );
 };

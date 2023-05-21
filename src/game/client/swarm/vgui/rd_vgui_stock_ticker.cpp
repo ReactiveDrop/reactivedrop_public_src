@@ -130,7 +130,7 @@ CRD_VGUI_Stock_Ticker::~CRD_VGUI_Stock_Ticker()
 
 	if ( vgui::surface() )
 	{
-		FOR_EACH_VEC( m_TickerDefTextures, i )
+		for ( unsigned i = 0; i < m_TickerDefTextures.Count(); i++ )
 		{
 			vgui::surface()->DestroyTextureID( m_TickerDefTextures[i] );
 		}
@@ -151,7 +151,7 @@ void CRD_VGUI_Stock_Ticker::PerformLayout()
 	TryLocalize( "#rd_ticker_title", m_wszTitle, sizeof( m_wszTitle ) );
 	int w, t;
 	vgui::surface()->GetTextSize( m_hTickerFont, m_wszTitle, w, t );
-	int iTitleWidth = m_iTitlePadding * 2 + m_iTitleAfterWidth + w;
+	int iTitleWidth = m_iTitlePadding * 2 + m_iTitleAfterWidth + w + m_iTextStartXOffset;
 
 	m_bLastReduceMotion = rd_reduce_motion.GetBool();
 	if ( m_bLastReduceMotion )
@@ -159,12 +159,14 @@ void CRD_VGUI_Stock_Ticker::PerformLayout()
 		m_flLastThink = -1;
 		m_iTitleX = 0;
 		m_iTextStartX = iTitleWidth;
+		m_iBackgroundStartX = m_iTextStartX - m_iTitleAfterWidth;
 	}
 	else
 	{
 		m_flLastThink = Plat_FloatTime();
 		m_iTitleX = GetWide() - iTitleWidth;
 		m_iTextStartX = GetWide();
+		m_iBackgroundStartX = m_iTextStartX - m_iTitleAfterWidth;
 	}
 
 	ManageTextBuffer();
@@ -223,6 +225,9 @@ void CRD_VGUI_Stock_Ticker::OnThink()
 
 	m_iTitleX = MAX( m_iTitleX - iShiftPixels, 0 );
 	m_iTextStartX -= iShiftPixels;
+	m_iBackgroundStartX -= iShiftPixels;
+	if ( m_iBackgroundStartX < -GetTall() )
+		m_iBackgroundStartX += GetTall();
 
 	ManageTextBuffer();
 	Repaint();
@@ -240,7 +245,7 @@ void CRD_VGUI_Stock_Ticker::Paint()
 
 	vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
 	vgui::surface()->DrawSetTexture( m_iBackgroundTexture );
-	vgui::surface()->DrawTexturedSubRect( m_iTextStartX, 0, m_iTextStartX + GetWide() * 2, GetTall(), 0, 0, GetWide() * 2.0f / GetTall(), 1 );
+	vgui::surface()->DrawTexturedSubRect( m_iBackgroundStartX, 0, m_iBackgroundStartX + GetWide() * 2, GetTall(), 0, 0, GetWide() * 2.0f / GetTall(), 1 );
 
 	int x = m_iTextStartX;
 	int iIconY = ( GetTall() - m_iIconSize ) / 2;
@@ -249,7 +254,7 @@ void CRD_VGUI_Stock_Ticker::Paint()
 		if ( m_IconBuffer[i] != -1 )
 		{
 			vgui::surface()->DrawSetTexture( m_IconBuffer[i] );
-			vgui::surface()->DrawTexturedRect( x, iIconY, x + m_iIconSize, iIconY + m_iIconSize );
+			vgui::surface()->DrawTexturedRect( x + m_iIconXPos, iIconY, x + m_iIconSize + m_iIconXPos, iIconY + m_iIconSize );
 			x += m_iIconSize;
 		}
 		vgui::surface()->DrawSetTextPos( x, m_iTextY );
