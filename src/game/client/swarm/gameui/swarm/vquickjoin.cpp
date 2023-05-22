@@ -399,7 +399,7 @@ void QuickJoinPanel::OnThink()
 		pItem = m_GplQuickJoinList->GetPanelItem( 0 );
 		if ( pItem )
 		{
-			pItem->SetAlpha( fListEdgeAlphas );
+			pItem->SetAlpha( rd_reduce_motion.GetBool() ? 255 : fListEdgeAlphas );
 		}
 
 		// Fade out last item
@@ -407,7 +407,7 @@ void QuickJoinPanel::OnThink()
 
 		if ( pItem )
 		{
-			pItem->SetAlpha( 255.0f - fListEdgeAlphas );
+			pItem->SetAlpha( rd_reduce_motion.GetBool() ? 255 : 255.0f - fListEdgeAlphas );
 		}
 	}
 	else
