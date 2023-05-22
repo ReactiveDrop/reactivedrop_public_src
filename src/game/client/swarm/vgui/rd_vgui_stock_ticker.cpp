@@ -378,7 +378,7 @@ void CRD_VGUI_Stock_Ticker::GenerateNextTickerText( wchar_t *&wszText, int &iIco
 		flTotalWeight += m_TickerDefCooldown.RemoveAtHead()->GetFloat( "weight", 1.0f );
 	}
 
-	float flWeight = m_RandomStream.RandomFloat( 0, m_flTotalWeight );
+	float flWeight = m_RandomStream.RandomFloat( 0, flTotalWeight );
 	KeyValues *pChosenDef = NULL;
 	FOR_EACH_SUBKEY( m_pKVTickerDefs, pDef )
 	{
