@@ -404,6 +404,8 @@ void CRD_VGUI_Stock_Ticker::GenerateNextTickerText( wchar_t *&wszText, int &iIco
 	// if we exited early, we probably hit a rounding error
 	Assert( flWeight < 1.0f );
 
+	m_TickerDefCooldown.Insert( pChosenDef );
+
 	GenerateTickerText( pChosenDef, wszText, iIconTexture );
 }
 

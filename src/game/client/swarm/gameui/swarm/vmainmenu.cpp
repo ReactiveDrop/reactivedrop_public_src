@@ -280,7 +280,7 @@ void MainMenu::OnCommand( const char *command )
 		data.pWindowTitle = "#rd_no_steam_service";
 		data.pMessageText = "#rd_no_steam_solutions";
 
-		if ( SteamUser() )
+		if ( SteamApps() && SteamFriends() && SteamHTTP() && SteamInput() && SteamMatchmaking() && SteamMatchmakingServers() && SteamUGC() && SteamUser() && SteamUserStats() )
 		{
 			// The NO STEAM main menu is active, but the Steam API is available. This should never happen. Please contact https://reactivedrop.com/feedback
 			data.pMessageText = "#rd_no_steam_solutions_api";
@@ -294,6 +294,14 @@ void MainMenu::OnCommand( const char *command )
 		{
 			// Could not determine the location of the Steam Client through the registry. Try restarting Steam.
 			data.pMessageText = "#rd_no_steam_solutions_path";
+		}
+		else if ( wine_get_version )
+		{
+			static wchar_t s_wszWineVersionWarning[1024];
+			wchar_t wszWineVersion[128];
+			V_UTF8ToUnicode( wine_get_version(), wszWineVersion, sizeof( wszWineVersion ) );
+			g_pVGuiLocalize->ConstructString( s_wszWineVersionWarning, sizeof( s_wszWineVersionWarning ), g_pVGuiLocalize->Find( "#rd_no_steam_solutions_wine" ), 1, wszWineVersion );
+			data.pMessageTextW = s_wszWineVersionWarning;
 		}
 
 		data.bOkButtonEnabled = true;
@@ -968,6 +976,10 @@ void MainMenu::OnKeyCodePressed( KeyCode code )
 //=============================================================================
 void MainMenu::OnThink()
 {
+	// don't need any of this if we're not able to run
+	if ( m_bIsStub )
+		return;
+
 	// need to change state of flyout if user suddenly disconnects
 	// while flyout is open
 	BaseModUI::FlyoutMenu *flyout = dynamic_cast< FlyoutMenu* >( FindChildByName( "FlmCampaignFlyout" ) );
@@ -1326,6 +1338,9 @@ void MainMenu::Activate()
 //=============================================================================
 void MainMenu::PaintBackground()
 {
+	if ( m_bIsStub )
+		return;
+
 	int w, t;
 	GetSize( w, t );
 
@@ -1673,7 +1688,30 @@ void MainMenu::OpenNewsURL( const char *szURL )
 	CUIGameData::Get()->ExecuteOverlayUrl( szFormattedURL );
 }
 
-//=============================================================================
+void MainMenu::LoadLayout()
+{
+	const char *pSettings = "Resource/UI/BaseModUI/mainmenu.res";
+	if ( !g_pMatchFramework || !g_pMatchFramework->GetMatchSystem() || !g_pMatchFramework->GetMatchSystem()->GetPlayerManager() || !g_pMatchFramework->GetMatchSystem()->GetPlayerManager()->GetLocalPlayer( 0 ) || !SteamApps() || !SteamFriends() || !SteamHTTP() || !SteamInput() || !SteamMatchmaking() || !SteamMatchmakingServers() || !SteamUGC() || !SteamUser() || !SteamUserStats() )
+	{
+		pSettings = "Resource/UI/BaseModUI/MainMenuStub.res";
+		m_bIsStub = true;
+
+		for ( int i = GetChildCount() - 1; i >= 0; i-- )
+		{
+			// Clean up all UI elements we made in the constructor
+			vgui::Panel *pChild = GetChild( i );
+			if ( pChild && V_stricmp( pChild->GetName(), "BtnStub" ) && V_stricmp( pChild->GetName(), "BtnQuit" ) )
+			{
+				pChild->SetVisible( false );
+			}
+		}
+	}
+
+	V_strncpy( m_ResourceName, pSettings, sizeof( m_ResourceName ) );
+
+	BaseClass::LoadLayout();
+}
+
 void MainMenu::ApplySchemeSettings( IScheme *pScheme )
 {
 	static bool s_bReloadLocOnce = true;
@@ -1685,25 +1723,6 @@ void MainMenu::ApplySchemeSettings( IScheme *pScheme )
 	}
 
 	BaseClass::ApplySchemeSettings( pScheme );
-
-	const char *pSettings = "Resource/UI/BaseModUI/mainmenu.res";
-
-#if !defined( _X360 )
-	if ( !g_pMatchFramework->GetMatchSystem() )
-	{
-		Msg( "BAD!\n" );
-	}
-	if ( !g_pMatchFramework->GetMatchSystem()->GetPlayerManager() )
-	{
-		Msg( "BAD PLAYER MANAGER!\n" );
-	}
-	if ( !g_pMatchFramework->GetMatchSystem()->GetPlayerManager()->GetLocalPlayer( 0 ) )
-	{
-		pSettings = "Resource/UI/BaseModUI/MainMenuStub.res";
-	}
-#endif
-
-	LoadControlSettings( pSettings );
 
 	BaseModHybridButton *button = dynamic_cast< BaseModHybridButton* >( FindChildByName( "BtnPlaySolo" ) );
 	if ( button )
@@ -1929,7 +1948,7 @@ void MainMenu::OnHoIAFTop10ScoresDownloaded( LeaderboardScoresDownloaded_t *pPar
 		m_pTopLeaderboardEntries[i]->SetVisible( false );
 	}
 
-	if ( !bIOFailure )
+	if ( !bIOFailure && !m_bIsStub )
 	{
 		for ( int i = 0; i < pParam->m_cEntryCount; i++ )
 		{

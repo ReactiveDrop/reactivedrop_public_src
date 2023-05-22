@@ -599,6 +599,12 @@ public:
 			DevWarning( "Failed to cache user inventory for offline play: no ISteamInventory\n" );
 			return;
 		}
+		ISteamUser *pUser = SteamUser();
+		if ( !pUser )
+		{
+			DevWarning( "Failed to cache user inventory for offline play: no ISteamUser\n" );
+			return;
+		}
 
 		uint32 nItems{};
 		if ( !pInventory->GetResultItems( hResult, NULL, &nItems ) )
@@ -640,7 +646,7 @@ public:
 			return;
 		}
 
-		CFmtStr szCacheFileName{ "cfg/clienti_%llu.dat", SteamUser()->GetSteamID().ConvertToUint64() };
+		CFmtStr szCacheFileName{ "cfg/clienti_%llu.dat", pUser->GetSteamID().ConvertToUint64() };
 		if ( !g_pFullFileSystem->WriteFile( szCacheFileName, "MOD", buf ) )
 		{
 			DevWarning( "Failed to write inventory cache\n" );

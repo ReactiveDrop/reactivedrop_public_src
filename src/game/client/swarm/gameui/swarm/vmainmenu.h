@@ -42,6 +42,7 @@ public:
 	CPanelAnimationVarAliasType( int, m_iHoIAFTimerOffset, "hoiaf_timer_offset", "-1", "proportional_int" );
 
 protected:
+	virtual void LoadLayout();
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
 	virtual void OnCommand( const char *command );
 	virtual void OnKeyCodePressed( vgui::KeyCode code );
@@ -82,6 +83,7 @@ private:
 	BaseModHybridButton *m_pBtnEventTimer[3];
 	BaseModHybridButton *m_pBtnNewsShowcase;
 	BaseModHybridButton *m_pBtnUpdateNotes;
+	bool m_bIsStub{};
 
 	int m_iNewsImageTexture[5]{ -1, -1, -1, -1, -1 };
 	wchar_t m_wszNewsTitle[5][256]{};

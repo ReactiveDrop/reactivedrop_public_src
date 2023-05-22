@@ -646,7 +646,9 @@ const char *CASW_Player::GetWeaponUnlockedAtLevel( int nLevel )
 void CASW_Player::Steam_OnUserStatsReceived( UserStatsReceived_t *pUserStatsReceived )
 {
 	Assert( SteamUserStats() );
-	if ( !SteamUserStats() )
+	Assert( SteamUser() );
+	Assert( SteamUtils() );
+	if ( !SteamUserStats() || !SteamUser() || !SteamUtils() )
 		return;
 
 	if ( pUserStatsReceived->m_eResult != k_EResultOK )
