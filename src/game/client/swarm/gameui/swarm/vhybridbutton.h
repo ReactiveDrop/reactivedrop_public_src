@@ -53,6 +53,7 @@ public:
 		BUTTON_REACTIVEDROPMAINMENUTOP,
 		BUTTON_REACTIVEDROPMAINMENUSHOWCASE,
 		BUTTON_REACTIVEDROPMAINMENUTIMER,
+		BUTTON_REACTIVEDROPMAINMENUHOIAF,
 	};
 
 	enum EnableCondition
@@ -111,7 +112,6 @@ protected:
 	virtual Panel* NavigateLeft();
 	virtual Panel* NavigateRight();
 
-private:
 	void		PaintButtonEx();
 
 	int			m_originalTall;

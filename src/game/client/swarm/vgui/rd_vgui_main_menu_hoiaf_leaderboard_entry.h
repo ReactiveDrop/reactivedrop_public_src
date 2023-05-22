@@ -14,6 +14,10 @@ public:
 	CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry( vgui::Panel *parent, const char *panelName, vgui::Panel *pActionSignalTarget = NULL, const char *pCmd = NULL );
 	~CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry();
 
+	void PerformLayout() override;
+	void ApplySettings( KeyValues *pSettings ) override;
+	void SetFgColor( Color color ) override;
+
 	void SetFromEntry( const LeaderboardEntry_t &entry, const LeaderboardScoreDetails_Points_t &details );
 	void ClearData();
 
@@ -30,4 +34,6 @@ public:
 
 	CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry_Large( vgui::Panel *parent, const char *panelName, vgui::Panel *pActionSignalTarget = NULL, const char *pCmd = NULL );
 	~CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry_Large();
+
+	void ApplySettings( KeyValues *pSettings ) override;
 };

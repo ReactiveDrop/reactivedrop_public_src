@@ -387,7 +387,7 @@ void BaseModHybridButton::PaintButtonEx()
 			{
 				col.SetColor( 135, 170, 193, 255 );
 			}
-			else if ( m_nStyle == BUTTON_REACTIVEDROPMAINMENU || m_nStyle == BUTTON_REACTIVEDROPMAINMENUBIG || m_nStyle == BUTTON_REACTIVEDROPMAINMENUTOP || m_nStyle == BUTTON_REACTIVEDROPMAINMENUSHOWCASE || m_nStyle == BUTTON_REACTIVEDROPMAINMENUTIMER )
+			else if ( m_nStyle == BUTTON_REACTIVEDROPMAINMENU || m_nStyle == BUTTON_REACTIVEDROPMAINMENUBIG || m_nStyle == BUTTON_REACTIVEDROPMAINMENUTOP || m_nStyle == BUTTON_REACTIVEDROPMAINMENUSHOWCASE || m_nStyle == BUTTON_REACTIVEDROPMAINMENUTIMER || m_nStyle == BUTTON_REACTIVEDROPMAINMENUHOIAF )
 			{
 				col.SetColor( 192, 192, 192, 255 );
 			}
@@ -441,7 +441,7 @@ void BaseModHybridButton::PaintButtonEx()
 	GetTextImage()->GetContentSize( textWide, textTall );
 
 	textWide = clamp( textWide, 0, wide - m_textInsetX * 2 );
-	textTall = clamp( textTall, 0, tall - m_textInsetX * 2 );
+	textTall = clamp( textTall, 0, tall - m_textInsetY * 2 );
 
 	int textInsetX = m_textInsetX;
 	if ( m_nStyle == BUTTON_DIALOG )
@@ -453,6 +453,11 @@ void BaseModHybridButton::PaintButtonEx()
 	{
 		// main menu buttons are centered in both directions
 		textInsetX = ( wide - textWide ) / 2;
+		y = ( tall - textTall ) / 2 - m_textInsetY * 2;
+	}
+	if ( m_nStyle == BUTTON_REACTIVEDROPMAINMENUHOIAF )
+	{
+		// only centered vertically
 		y = ( tall - textTall ) / 2 - m_textInsetY * 2;
 	}
 	if ( m_nStyle == BUTTON_REACTIVEDROPMAINMENUSHOWCASE )
@@ -676,6 +681,7 @@ void BaseModHybridButton::PaintButtonEx()
 		GetTextImage()->SetFont( m_hTextBlurFont );
 		GetTextImage()->Paint();
 		GetTextImage()->SetFont( m_hTextFont );
+		SetFgColor( col );
 #else
 		vgui::surface()->DrawSetTextFont( m_hTextBlurFont );
 		vgui::surface()->DrawSetTextPos( x + textInsetX, y + m_textInsetY );

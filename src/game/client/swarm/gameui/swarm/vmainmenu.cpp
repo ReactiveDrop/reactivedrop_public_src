@@ -1561,8 +1561,8 @@ void MainMenu::PaintBackground()
 			else if ( ( i == NELEMS( m_pTopLeaderboardEntries ) - 1 || !m_pTopLeaderboardEntries[i + 1]->IsVisible() ) && m_pBtnHoIAFTimer->GetCurrentState() == BaseModHybridButton::Focus )
 				iTex = Sheet::UV_hoiaf_top_10_hoiaf_timer_hover;
 			m_pTopLeaderboardEntries[i]->GetBounds( x0, y0, x1, y1 );
-			// add 1 pixel on the bottom so these don't look weird with rounding errors
-			vgui::surface()->DrawTexturedSubRect( x0, y0, x0 + x1, y0 + y1 + 1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
+			// add 1 pixel on each side so these don't look weird with rounding errors
+			vgui::surface()->DrawTexturedSubRect( x0 - 1, y0 - 1, x0 + x1 + 1, y0 + y1 + 1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
 		}
 	}
 	if ( m_pBtnHoIAFTimer->IsVisible() )
