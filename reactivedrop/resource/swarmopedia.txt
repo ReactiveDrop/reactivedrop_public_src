@@ -3051,6 +3051,10 @@
 				"Icon" "swarm/swarmopedia/fact/heals_infestation"
 				"Caption" "#rd_weapon_fact_prevents_and_reverses_infestation"
 			}
+			"Numeric" {
+				"Caption" "#rd_weapon_fact_damage_reduction_base"
+				"Base" "75"
+			}
 		}
 	}
 	"WEAPON" {
