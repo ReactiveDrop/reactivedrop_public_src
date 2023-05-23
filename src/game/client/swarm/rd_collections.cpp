@@ -12,6 +12,7 @@
 
 ConVar rd_swarmopedia_timescale( "rd_swarmopedia_timescale", "0.3", FCVAR_ARCHIVE, "Speed for Swarmopedia specimen animations" );
 ConVar rd_swarmopedia_grid( "rd_swarmopedia_grid", "0", FCVAR_ARCHIVE, "Draw a grid in the Swarmopedia model viewer" );
+ConVar rd_swarmopedia_last_tab( "rd_swarmopedia_last_tab", "0", FCVAR_ARCHIVE, "Remembers last accessed tab index of the Swarmopedia screen." );
 ConVar rd_collections_last_tab( "rd_collections_last_tab", "0", FCVAR_ARCHIVE, "Remembers last accessed tab index of the collections screen." );
 extern ConVar rd_reduce_motion;
 
@@ -29,10 +30,30 @@ void LaunchCollectionsFrame()
 	pFrame = new TabbedGridDetails();
 	pFrame->SetTitle( "#rd_collection_title", true );
 	pFrame->AddTab( new CRD_Collection_Tab_Inventory( pFrame, "#rd_collection_inventory_medals", "medal" ) );
+	pFrame->RememberTabIndex( &rd_collections_last_tab );
+	pFrame->UseMainMenuLayout();
+	pFrame->ShowFullScreen();
+
+	g_hCollectionFrame = pFrame;
+}
+
+void LaunchSwarmopediaFrame()
+{
+	TabbedGridDetails *pFrame = g_hCollectionFrame;
+	if ( pFrame )
+	{
+		pFrame->SetVisible( false );
+		pFrame->MarkForDeletion();
+		g_hCollectionFrame = NULL;
+	}
+
+	pFrame = new TabbedGridDetails();
+	pFrame->SetTitle( "#rd_collection_title", true );
+	pFrame->AddTab( new CRD_Collection_Tab_Swarmopedia( pFrame, "#rd_collection_swarmopedia" ) );
 	pFrame->AddTab( new CRD_Collection_Tab_Equipment( pFrame, "#rd_collection_weapons", NULL, ASW_INVENTORY_SLOT_PRIMARY ) );
 	pFrame->AddTab( new CRD_Collection_Tab_Equipment( pFrame, "#rd_collection_equipment", NULL, ASW_INVENTORY_SLOT_EXTRA ) );
-	pFrame->AddTab( new CRD_Collection_Tab_Swarmopedia( pFrame, "#rd_collection_swarmopedia" ) );
-	pFrame->RememberTabIndex( &rd_collections_last_tab );
+	pFrame->RememberTabIndex( &rd_swarmopedia_last_tab );
+	pFrame->UseMainMenuLayout();
 	pFrame->ShowFullScreen();
 
 	g_hCollectionFrame = pFrame;

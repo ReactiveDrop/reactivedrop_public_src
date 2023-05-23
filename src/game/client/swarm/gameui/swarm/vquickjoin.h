@@ -37,6 +37,7 @@ namespace BaseModUI
 		virtual void NavigateToChild( Panel *pNavigateTo );
 		virtual void NavigateTo();
 		virtual void NavigateFrom();
+		virtual void OnNavigateFrom( const char *panelName );
 
 		virtual void OnCursorEntered();
 

@@ -10,6 +10,7 @@
 #include "inputsystem/iinputsystem.h"
 #include <vgui/IInput.h>
 #include "rd_steam_input.h"
+#include "rd_vgui_main_menu_top_bar.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -38,6 +39,7 @@ TabbedGridDetails::TabbedGridDetails() : BaseClass( NULL, "TabbedGridDetails" )
 	m_pTabLeftHint = new vgui::Label( this, "TabLeftHint", "#GameUI_Icons_LEFT_BUMPER" );
 	m_pTabRightHint = new vgui::Label( this, "TabRightHint", "#GameUI_Icons_RIGHT_BUMPER" );
 
+	m_pMainMenuBar = NULL;
 	m_pLastTabConVar = NULL;
 }
 
@@ -96,6 +98,11 @@ void TabbedGridDetails::PerformLayout()
 	}
 
 	m_pTabRightHint->SetPos( x + hx, hy );
+
+	if ( m_pMainMenuBar )
+	{
+		m_pBackButton->SetVisible( false );
+	}
 }
 
 void TabbedGridDetails::OnCommand( const char *command )
@@ -268,6 +275,16 @@ void TabbedGridDetails::ShowFullScreen()
 	}
 
 	SetVisible( true );
+}
+
+void TabbedGridDetails::UseMainMenuLayout()
+{
+	m_pHeaderFooter->SetTitle( L"" );
+	m_pHeaderFooter->SetHeaderEnabled( false );
+	m_pHeaderFooter->SetFooterEnabled( false );
+	m_pMainMenuBar = new CRD_VGUI_Main_Menu_Top_Bar( this, "TopBar" );
+
+	InvalidateLayout();
 }
 
 void TabbedGridDetails::RememberTabIndex( ConVar *pCVar )
@@ -537,6 +554,9 @@ void TGD_Grid::PerformLayout()
 	m_pScrollBar->SetRangeWindow( MIN( totalTall, totalHeight ) );
 	m_pScrollBar->SetRange( 0, totalHeight );
 
+	if ( m_pParent->m_pParent->m_pMainMenuBar )
+		m_pParent->m_pParent->m_pMainMenuBar->SetNavDown( m_Entries[0]->m_pFocusHolder );
+
 	int yOffset = -m_pScrollBar->GetValue();
 
 	bool bAnyFocus = false;
@@ -559,7 +579,7 @@ void TGD_Grid::PerformLayout()
 		int left = !bAllowWrapping && col == 0 ? -1 : col - 1 + row * perRow;
 		int right = !bAllowWrapping && col == perRow - 1 ? -1 : col + 1 + row * perRow;
 
-		m_Entries[i]->m_pFocusHolder->SetNavUp( up >= 0 && up < m_Entries.Count() ? m_Entries[up]->m_pFocusHolder : NULL );
+		m_Entries[i]->m_pFocusHolder->SetNavUp( up >= 0 && up < m_Entries.Count() ? m_Entries[up]->m_pFocusHolder : m_pParent->m_pParent->m_pMainMenuBar );
 		m_Entries[i]->m_pFocusHolder->SetNavDown( down >= 0 && down < m_Entries.Count() ? m_Entries[down]->m_pFocusHolder : NULL );
 		m_Entries[i]->m_pFocusHolder->SetNavLeft( left >= 0 && left < m_Entries.Count() ? m_Entries[left]->m_pFocusHolder : NULL );
 		m_Entries[i]->m_pFocusHolder->SetNavRight( right >= 0 && right < m_Entries.Count() ? m_Entries[right]->m_pFocusHolder : NULL );

@@ -13,6 +13,7 @@
 class CRD_VGUI_Commander_Mini_Profile;
 class CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry;
 class CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry_Large;
+class CRD_VGUI_Main_Menu_Top_Bar;
 class CReactiveDropWorkshopPreviewImage;
 
 namespace BaseModUI {
@@ -41,7 +42,6 @@ public:
 
 	CPanelAnimationVarAliasType( int, m_iHoIAFTimerOffset, "hoiaf_timer_offset", "-1", "proportional_int" );
 
-protected:
 	virtual void LoadLayout();
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
 	virtual void OnCommand( const char *command );
@@ -51,7 +51,6 @@ protected:
 	virtual void RunFrame();
 	virtual void PaintBackground();
 
-private:
 	static void AcceptCommentaryRulesCallback();
 	static void AcceptSplitscreenDisableCallback();
 	static void AcceptVersusSoftLockCallback();
@@ -68,10 +67,7 @@ private:
 
 	uint32 m_iLastTimerUpdate;
 	int m_iQuickJoinHelpText;
-	BaseModHybridButton *m_pBtnSettings;
-	BaseModHybridButton *m_pBtnLogo;
-	BaseModHybridButton *m_pTopButton[5];
-	BaseModHybridButton *m_pBtnQuit;
+	CRD_VGUI_Main_Menu_Top_Bar *m_pTopBar;
 	CRD_VGUI_Commander_Mini_Profile *m_pCommanderProfile;
 	BaseModHybridButton *m_pBtnMultiplayer;
 	BaseModHybridButton *m_pBtnSingleplayer;

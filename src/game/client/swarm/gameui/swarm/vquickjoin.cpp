@@ -547,6 +547,12 @@ void QuickJoinPanel::NavigateFrom()
 	}
 }
 
+void QuickJoinPanel::OnNavigateFrom( const char *panelName )
+{
+	BaseClass::OnNavigateFrom( panelName );
+	SetHasMouseover( false );
+}
+
 void QuickJoinPanel::NavigateToChild( Panel *pNavigateTo )
 {
 	GetParent()->NavigateToChild( this );

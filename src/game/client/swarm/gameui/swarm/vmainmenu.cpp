@@ -53,6 +53,7 @@
 #include "rd_workshop.h"
 #include "rd_inventory_shared.h"
 #include "rd_hud_sheet.h"
+#include "rd_vgui_main_menu_top_bar.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -102,14 +103,7 @@ MainMenu::MainMenu( Panel *parent, const char *panelName ):
 
 	SetDeleteSelfOnClose( true );
 
-	m_pBtnSettings = new BaseModHybridButton( this, "BtnSettings", "", this, "Settings" );
-	m_pBtnLogo = new BaseModHybridButton( this, "BtnLogo", "", this, "" );
-	m_pTopButton[0] = new BaseModHybridButton( this, "BtnLoadout", "#rd_collection_inventory_loadout", this, "Loadout" );
-	m_pTopButton[1] = new BaseModHybridButton( this, "BtnContracts", "#rd_mainmenu_contracts", this, "Contracts" );
-	m_pTopButton[2] = new BaseModHybridButton( this, "BtnRecordings", "#rd_mainmenu_recordings", this, "Recordings" );
-	m_pTopButton[3] = new BaseModHybridButton( this, "BtnSwarmopedia", "#rd_collection_swarmopedia", this, "Swarmopedia" );
-	m_pTopButton[4] = new BaseModHybridButton( this, "BtnInventory", "#rd_mainmenu_inventory", this, "Inventory" );
-	m_pBtnQuit = new BaseModHybridButton( this, "BtnQuit", "", this, "QuitGame" );
+	m_pTopBar = new CRD_VGUI_Main_Menu_Top_Bar( this, "TopBar" );
 	m_pCommanderProfile = new CRD_VGUI_Commander_Mini_Profile( this, "CommanderMiniProfile" );
 	m_pBtnMultiplayer = new BaseModHybridButton( this, "BtnMultiplayer", "#L4D360UI_FoudGames_CreateNew_campaign", this, "CreateGame" );
 	m_pBtnSingleplayer = new BaseModHybridButton( this, "BtnSingleplayer", "#L4D360UI_MainMenu_PlaySolo", this, "SoloPlay" );
@@ -817,30 +811,6 @@ void MainMenu::OnCommand( const char *command )
 			OpenNewsURL( "https://steamcommunity.com/app/563560/allnews/?l=%s" );
 		}
 	}
-	else if ( !V_stricmp( command, "Settings" ) )
-	{
-		Assert( !"TODO" );
-	}
-	else if ( !V_stricmp( command, "Loadout" ) )
-	{
-		Assert( !"TODO" );
-	}
-	else if ( !V_stricmp( command, "Contracts" ) )
-	{
-		Assert( !"TODO" );
-	}
-	else if ( !V_stricmp( command, "Recordings" ) )
-	{
-		CBaseModPanel::GetSingleton().OpenWindow( WT_DEMOS, CBaseModPanel::GetSingleton().GetWindow( CBaseModPanel::GetSingleton().GetActiveWindowType() ) );
-	}
-	else if ( !V_stricmp( command, "Swarmopedia" ) )
-	{
-		Assert( !"TODO" );
-	}
-	else if ( !V_stricmp( command, "Inventory" ) )
-	{
-		Assert( !"TODO" );
-	}
 	else
 	{
 		// does this command match a flyout menu?
@@ -1341,186 +1311,93 @@ void MainMenu::PaintBackground()
 	if ( m_bIsStub )
 		return;
 
+	m_pTopBar->m_bLeftGlow = m_pCommanderProfile->HasFocus();
+	m_pTopBar->m_bRightGlow = m_pTopLeaderboardEntries[0]->GetCurrentState() == BaseModHybridButton::Focus;
+
 	int w, t;
 	GetSize( w, t );
 
 	vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
 	vgui::surface()->DrawSetTexture( g_RD_HUD_Sheets.m_nMainMenuSheetID );
 
-	using Sheet = CRD_HUD_Sheets;
-
-	/*
-		TODO:
-
-		DECLARE_HUD_SHEET_UV( create_lobby_profile_hover ),
-		DECLARE_HUD_SHEET_UV( logo_profile_hover ),
-		DECLARE_HUD_SHEET_UV( settings_profile_hover ),
-		DECLARE_HUD_SHEET_UV( top_button_profile_hover ),
-	*/
-
 	int x0, y0, x1, y1, iTex;
-
-	x0 = 0;
-	y0 = 0;
-	x1 = YRES( 240 );
-	y1 = YRES( 24 );
-	iTex = Sheet::UV_top_bar_left;
-	if ( m_pBtnSettings->GetCurrentState() == BaseModHybridButton::Focus )
-		iTex = Sheet::UV_top_bar_left_settings_glow;
-	else if ( m_pBtnLogo->GetCurrentState() == BaseModHybridButton::Focus )
-		iTex = Sheet::UV_top_bar_left_logo_glow;
-	else if ( false ) // TODO
-		iTex = Sheet::UV_top_bar_left_profile_glow;
-	vgui::surface()->DrawTexturedSubRect( x0, y0, x1, y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
-
-	x0 = x1;
-	x1 = w - YRES( 240 );
-	iTex = Sheet::UV_top_bar;
-	vgui::surface()->DrawTexturedSubRect( x0, y0, x1, y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
-
-	x0 = x1;
-	x1 = w;
-	iTex = Sheet::UV_top_bar_right;
-	if ( m_pBtnQuit->GetCurrentState() == BaseModHybridButton::Focus )
-		iTex = Sheet::UV_top_bar_right_quit_glow;
-	else if ( false ) // TODO
-		iTex = Sheet::UV_top_bar_right_hoiaf_glow;
-	vgui::surface()->DrawTexturedSubRect( x0, y0, x1, y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
-
-	iTex = Sheet::UV_top_bar_button_glow;
-	x0 = YRES( -64 );
-	x1 = YRES( 64 );
-	for ( int i = 0; i < NELEMS( m_pTopButton ); i++ )
-	{
-		if ( m_pTopButton[i]->GetCurrentState() == BaseModHybridButton::Focus )
-		{
-			int x, y, wide, tall;
-			m_pTopButton[i]->GetBounds( x, y, wide, tall );
-			x += wide / 2;
-			x0 += x;
-			x1 += x;
-			vgui::surface()->DrawTexturedSubRect( x0, y0, x1, y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
-			break;
-		}
-	}
 
 	x0 = 0;
 	y0 = t - YRES( 20 );
 	x1 = YRES( 150 );
 	y1 = t;
-	iTex = Sheet::UV_ticker_left;
+	iTex = CRD_HUD_Sheets::UV_ticker_left;
 	if ( m_pBtnWorkshopShowcase->GetCurrentState() == BaseModHybridButton::Focus )
-		iTex = Sheet::UV_ticker_left_workshop_hover;
+		iTex = CRD_HUD_Sheets::UV_ticker_left_workshop_hover;
 	vgui::surface()->DrawTexturedSubRect( x0, y0, x1, y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
 
 	x0 = x1;
 	x1 = w - YRES( 225 );
-	iTex = Sheet::UV_ticker_mid;
+	iTex = CRD_HUD_Sheets::UV_ticker_mid;
 	vgui::surface()->DrawTexturedSubRect( x0, y0, x1, y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
 
 	x0 = x1;
 	x1 = w;
-	iTex = Sheet::UV_ticker_right;
+	iTex = CRD_HUD_Sheets::UV_ticker_right;
 	if ( m_pBtnUpdateNotes->GetCurrentState() == BaseModHybridButton::Focus )
-		iTex = Sheet::UV_ticker_right_update_hover;
+		iTex = CRD_HUD_Sheets::UV_ticker_right_update_hover;
 	vgui::surface()->DrawTexturedSubRect( x0, y0, x1, y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
 
-	if ( m_pBtnSettings->IsVisible() )
-	{
-		iTex = Sheet::UV_settings;
-		if ( m_pBtnSettings->GetCurrentState() == BaseModHybridButton::Focus )
-			iTex = Sheet::UV_settings_hover;
-		else if ( m_pBtnLogo->GetCurrentState() == BaseModHybridButton::Focus )
-			iTex = Sheet::UV_settings_logo_hover;
-		m_pBtnSettings->GetBounds( x0, y0, x1, y1 );
-		vgui::surface()->DrawTexturedSubRect( x0, y0, x0 + x1, y0 + y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
-	}
-	if ( m_pBtnLogo->IsVisible() )
-	{
-		iTex = Sheet::UV_logo;
-		if ( m_pBtnLogo->GetCurrentState() == BaseModHybridButton::Focus )
-			iTex = Sheet::UV_logo_hover;
-		else if ( m_pBtnSettings->GetCurrentState() == BaseModHybridButton::Focus )
-			iTex = Sheet::UV_logo_settings_hover;
-		m_pBtnLogo->GetBounds( x0, y0, x1, y1 );
-		vgui::surface()->DrawTexturedSubRect( x0, y0, x0 + x1, y0 + y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
-	}
-	for ( int i = 0; i < NELEMS( m_pTopButton ); i++ )
-	{
-		if ( m_pTopButton[i]->IsVisible() )
-		{
-			iTex = Sheet::UV_top_button;
-			if ( m_pTopButton[i]->GetCurrentState() == BaseModHybridButton::Focus )
-				iTex = Sheet::UV_top_button_hover;
-			else if ( i > 0 && m_pTopButton[i - 1]->GetCurrentState() == BaseModHybridButton::Focus )
-				iTex = Sheet::UV_top_button_left_hover;
-			else if ( i < NELEMS( m_pTopButton ) - 1 && m_pTopButton[i + 1]->GetCurrentState() == BaseModHybridButton::Focus )
-				iTex = Sheet::UV_top_button_right_hover;
-			m_pTopButton[i]->GetBounds( x0, y0, x1, y1 );
-			vgui::surface()->DrawTexturedSubRect( x0, y0, x0 + x1, y0 + y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
-		}
-	}
-	if ( m_pBtnQuit->IsVisible() )
-	{
-		iTex = Sheet::UV_quit;
-		if ( m_pBtnQuit->GetCurrentState() == BaseModHybridButton::Focus )
-			iTex = Sheet::UV_quit_hover;
-		m_pBtnQuit->GetBounds( x0, y0, x1, y1 );
-		vgui::surface()->DrawTexturedSubRect( x0, y0, x0 + x1, y0 + y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
-	}
 	if ( m_pBtnMultiplayer->IsVisible() )
 	{
-		iTex = Sheet::UV_create_lobby;
+		iTex = CRD_HUD_Sheets::UV_create_lobby;
 		if ( m_pBtnMultiplayer->GetCurrentState() == BaseModHybridButton::Focus )
-			iTex = Sheet::UV_create_lobby_hover;
-		if ( m_pBtnSingleplayer->GetCurrentState() == BaseModHybridButton::Focus )
-			iTex = Sheet::UV_create_lobby_singleplayer_hover;
+			iTex = CRD_HUD_Sheets::UV_create_lobby_hover;
+		else if ( m_pBtnSingleplayer->GetCurrentState() == BaseModHybridButton::Focus )
+			iTex = CRD_HUD_Sheets::UV_create_lobby_singleplayer_hover;
+		else if ( m_pCommanderProfile->HasFocus() )
+			iTex = CRD_HUD_Sheets::UV_create_lobby_profile_hover;
 		m_pBtnMultiplayer->GetBounds( x0, y0, x1, y1 );
 		vgui::surface()->DrawTexturedSubRect( x0, y0, x0 + x1, y0 + y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
 	}
 	if ( m_pBtnSingleplayer->IsVisible() )
 	{
-		iTex = Sheet::UV_singleplayer;
+		iTex = CRD_HUD_Sheets::UV_singleplayer;
 		if ( m_pBtnSingleplayer->GetCurrentState() == BaseModHybridButton::Focus )
-			iTex = Sheet::UV_singleplayer_hover;
+			iTex = CRD_HUD_Sheets::UV_singleplayer_hover;
 		else if ( m_pBtnMultiplayer->GetCurrentState() == BaseModHybridButton::Focus )
-			iTex = Sheet::UV_singleplayer_create_lobby_hover;
+			iTex = CRD_HUD_Sheets::UV_singleplayer_create_lobby_hover;
 		else if ( m_pPnlQuickJoinPublic->HasMouseover() )
-			iTex = Sheet::UV_singleplayer_quick_join_hover;
+			iTex = CRD_HUD_Sheets::UV_singleplayer_quick_join_hover;
 		m_pBtnSingleplayer->GetBounds( x0, y0, x1, y1 );
 		vgui::surface()->DrawTexturedSubRect( x0, y0, x0 + x1, y0 + y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
 	}
 	if ( m_pPnlQuickJoinPublic->IsVisible() )
 	{
-		iTex = Sheet::UV_quick_join;
+		iTex = CRD_HUD_Sheets::UV_quick_join;
 		if ( m_pPnlQuickJoinPublic->HasMouseover() )
-			iTex = Sheet::UV_quick_join_hover;
+			iTex = CRD_HUD_Sheets::UV_quick_join_hover;
 		else if ( m_pPnlQuickJoin->HasMouseover() )
-			iTex = Sheet::UV_quick_join_below_hover;
+			iTex = CRD_HUD_Sheets::UV_quick_join_below_hover;
 		else if ( m_pBtnSingleplayer->GetCurrentState() == BaseModHybridButton::Focus )
-			iTex = Sheet::UV_quick_join_singleplayer_hover;
+			iTex = CRD_HUD_Sheets::UV_quick_join_singleplayer_hover;
 		m_pPnlQuickJoinPublic->GetBounds( x0, y0, x1, y1 );
 		vgui::surface()->DrawTexturedSubRect( x0, y0, x0 + x1, y0 + y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
 	}
 	if ( m_pPnlQuickJoin->IsVisible() )
 	{
-		iTex = Sheet::UV_quick_join;
+		iTex = CRD_HUD_Sheets::UV_quick_join;
 		if ( m_pPnlQuickJoin->HasMouseover() )
-			iTex = Sheet::UV_quick_join_hover;
+			iTex = CRD_HUD_Sheets::UV_quick_join_hover;
 		else if ( m_pPnlQuickJoinPublic->HasMouseover() )
-			iTex = Sheet::UV_quick_join_above_hover;
+			iTex = CRD_HUD_Sheets::UV_quick_join_above_hover;
 		else if ( m_pBtnWorkshopShowcase->GetCurrentState() == BaseModHybridButton::Focus )
-			iTex = Sheet::UV_quick_join_below_hover;
+			iTex = CRD_HUD_Sheets::UV_quick_join_below_hover;
 		m_pPnlQuickJoin->GetBounds( x0, y0, x1, y1 );
 		vgui::surface()->DrawTexturedSubRect( x0, y0, x0 + x1, y0 + y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
 	}
 	if ( m_pBtnWorkshopShowcase->IsVisible() )
 	{
-		iTex = Sheet::UV_workshop;
+		iTex = CRD_HUD_Sheets::UV_workshop;
 		if ( m_pBtnWorkshopShowcase->GetCurrentState() == BaseModHybridButton::Focus )
-			iTex = Sheet::UV_workshop_hover;
+			iTex = CRD_HUD_Sheets::UV_workshop_hover;
 		else if ( m_pPnlQuickJoin->HasMouseover() )
-			iTex = Sheet::UV_workshop_quick_join_hover;
+			iTex = CRD_HUD_Sheets::UV_workshop_quick_join_hover;
 		m_pBtnWorkshopShowcase->GetBounds( x0, y0, x1, y1 );
 		vgui::surface()->DrawTexturedSubRect( x0, y0, x0 + x1, y0 + y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
 	}
@@ -1528,38 +1405,38 @@ void MainMenu::PaintBackground()
 	{
 		if ( m_pTopLeaderboardEntries[i]->IsVisible() )
 		{
-			iTex = i == 0 ? Sheet::UV_hoiaf_top_1 : Sheet::UV_hoiaf_top_10;
+			iTex = i == 0 ? CRD_HUD_Sheets::UV_hoiaf_top_1 : CRD_HUD_Sheets::UV_hoiaf_top_10;
 			if ( m_pTopLeaderboardEntries[i]->GetCurrentState() == BaseModHybridButton::Focus )
-				iTex = i == 0 ? Sheet::UV_hoiaf_top_1_hover : Sheet::UV_hoiaf_top_10_hover;
-			else if ( m_pBtnQuit->GetCurrentState() == BaseModHybridButton::Focus )
+				iTex = i == 0 ? CRD_HUD_Sheets::UV_hoiaf_top_1_hover : CRD_HUD_Sheets::UV_hoiaf_top_10_hover;
+			else if ( m_pTopBar->m_pBtnQuit->GetCurrentState() == BaseModHybridButton::Focus )
 			{
 				if ( i == 0 )
-					iTex = Sheet::UV_hoiaf_top_1_quit_hover;
+					iTex = CRD_HUD_Sheets::UV_hoiaf_top_1_quit_hover;
 				else if ( i == 1 )
-					iTex = Sheet::UV_hoiaf_top_10_quit_hover_1;
+					iTex = CRD_HUD_Sheets::UV_hoiaf_top_10_quit_hover_1;
 				else if ( i == 2 )
-					iTex = Sheet::UV_hoiaf_top_10_quit_hover_2;
+					iTex = CRD_HUD_Sheets::UV_hoiaf_top_10_quit_hover_2;
 				else if ( i == 3 )
-					iTex = Sheet::UV_hoiaf_top_10_quit_hover_3;
+					iTex = CRD_HUD_Sheets::UV_hoiaf_top_10_quit_hover_3;
 				else if ( i == 4 )
-					iTex = Sheet::UV_hoiaf_top_10_quit_hover_4;
+					iTex = CRD_HUD_Sheets::UV_hoiaf_top_10_quit_hover_4;
 				else if ( i == 5 )
-					iTex = Sheet::UV_hoiaf_top_10_quit_hover_5;
+					iTex = CRD_HUD_Sheets::UV_hoiaf_top_10_quit_hover_5;
 				else if ( i == 6 )
-					iTex = Sheet::UV_hoiaf_top_10_quit_hover_6;
+					iTex = CRD_HUD_Sheets::UV_hoiaf_top_10_quit_hover_6;
 				else if ( i == 7 )
-					iTex = Sheet::UV_hoiaf_top_10_quit_hover_7;
+					iTex = CRD_HUD_Sheets::UV_hoiaf_top_10_quit_hover_7;
 				else if ( i == 8 )
-					iTex = Sheet::UV_hoiaf_top_10_quit_hover_8;
+					iTex = CRD_HUD_Sheets::UV_hoiaf_top_10_quit_hover_8;
 			}
 			else if ( i == 0 && m_pTopLeaderboardEntries[1]->GetCurrentState() == BaseModHybridButton::Focus )
-				iTex = Sheet::UV_hoiaf_top_1_below_hover;
+				iTex = CRD_HUD_Sheets::UV_hoiaf_top_1_below_hover;
 			else if ( i < NELEMS( m_pTopLeaderboardEntries ) - 1 && m_pTopLeaderboardEntries[i + 1]->GetCurrentState() == BaseModHybridButton::Focus )
-				iTex = Sheet::UV_hoiaf_top_10_below_hover;
+				iTex = CRD_HUD_Sheets::UV_hoiaf_top_10_below_hover;
 			else if ( i > 0 && m_pTopLeaderboardEntries[i - 1]->GetCurrentState() == BaseModHybridButton::Focus )
-				iTex = Sheet::UV_hoiaf_top_10_above_hover;
+				iTex = CRD_HUD_Sheets::UV_hoiaf_top_10_above_hover;
 			else if ( ( i == NELEMS( m_pTopLeaderboardEntries ) - 1 || !m_pTopLeaderboardEntries[i + 1]->IsVisible() ) && m_pBtnHoIAFTimer->GetCurrentState() == BaseModHybridButton::Focus )
-				iTex = Sheet::UV_hoiaf_top_10_hoiaf_timer_hover;
+				iTex = CRD_HUD_Sheets::UV_hoiaf_top_10_hoiaf_timer_hover;
 			m_pTopLeaderboardEntries[i]->GetBounds( x0, y0, x1, y1 );
 			// add 1 pixel on each side so these don't look weird with rounding errors
 			vgui::surface()->DrawTexturedSubRect( x0 - 1, y0 - 1, x0 + x1 + 1, y0 + y1 + 1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
@@ -1567,13 +1444,13 @@ void MainMenu::PaintBackground()
 	}
 	if ( m_pBtnHoIAFTimer->IsVisible() )
 	{
-		iTex = Sheet::UV_hoiaf_timer;
+		iTex = CRD_HUD_Sheets::UV_hoiaf_timer;
 		if ( m_pBtnHoIAFTimer->GetCurrentState() == BaseModHybridButton::Focus )
-			iTex = Sheet::UV_hoiaf_timer_hover;
+			iTex = CRD_HUD_Sheets::UV_hoiaf_timer_hover;
 		else if ( m_pTopLeaderboardEntries[NELEMS( m_pTopLeaderboardEntries ) - 1]->IsVisible() && m_pBtnEventTimer[NELEMS( m_pBtnEventTimer ) - 1]->GetCurrentState() == BaseModHybridButton::Focus )
-			iTex = Sheet::UV_hoiaf_timer_event_timer_hover;
-		else if ( !m_pTopLeaderboardEntries[0]->IsVisible() && m_pBtnQuit->GetCurrentState() == BaseModHybridButton::Focus )
-			iTex = Sheet::UV_hoiaf_top_1_quit_hover;
+			iTex = CRD_HUD_Sheets::UV_hoiaf_timer_event_timer_hover;
+		else if ( !m_pTopLeaderboardEntries[0]->IsVisible() && m_pTopBar->m_pBtnQuit->GetCurrentState() == BaseModHybridButton::Focus )
+			iTex = CRD_HUD_Sheets::UV_hoiaf_top_1_quit_hover;
 		else
 		{
 			for ( int i = NELEMS( m_pTopLeaderboardEntries ) - 1; i >= 0; i-- )
@@ -1581,7 +1458,7 @@ void MainMenu::PaintBackground()
 				if ( m_pTopLeaderboardEntries[i]->IsVisible() )
 				{
 					if ( m_pTopLeaderboardEntries[i]->GetCurrentState() == BaseModHybridButton::Focus )
-						iTex = Sheet::UV_hoiaf_timer_hoiaf_top_10_hover;
+						iTex = CRD_HUD_Sheets::UV_hoiaf_timer_hoiaf_top_10_hover;
 					break;
 				}
 			}
@@ -1593,40 +1470,40 @@ void MainMenu::PaintBackground()
 	{
 		if ( m_pBtnEventTimer[i]->IsVisible() )
 		{
-			iTex = Sheet::UV_event_timer;
+			iTex = CRD_HUD_Sheets::UV_event_timer;
 			if ( m_pBtnEventTimer[i]->GetCurrentState() == BaseModHybridButton::Focus )
-				iTex = Sheet::UV_event_timer_hover;
+				iTex = CRD_HUD_Sheets::UV_event_timer_hover;
 			else if ( i == 0 && m_pBtnNewsShowcase->GetCurrentState() == BaseModHybridButton::Focus )
-				iTex = Sheet::UV_event_timer_news_hover;
+				iTex = CRD_HUD_Sheets::UV_event_timer_news_hover;
 			else if ( i == NELEMS( m_pBtnEventTimer ) - 1 && m_pTopLeaderboardEntries[NELEMS( m_pTopLeaderboardEntries ) - 1]->IsVisible() && m_pBtnHoIAFTimer->GetCurrentState() == BaseModHybridButton::Focus )
-				iTex = Sheet::UV_event_timer_hoiaf_timer_hover;
+				iTex = CRD_HUD_Sheets::UV_event_timer_hoiaf_timer_hover;
 			else if ( i > 0 && m_pBtnEventTimer[i - 1]->GetCurrentState() == BaseModHybridButton::Focus )
-				iTex = Sheet::UV_event_timer_below_hover;
+				iTex = CRD_HUD_Sheets::UV_event_timer_below_hover;
 			else if ( i < NELEMS( m_pBtnEventTimer ) - 1 && m_pBtnEventTimer[i + 1]->GetCurrentState() == BaseModHybridButton::Focus )
-				iTex = Sheet::UV_event_timer_above_hover;
+				iTex = CRD_HUD_Sheets::UV_event_timer_above_hover;
 			m_pBtnEventTimer[i]->GetBounds( x0, y0, x1, y1 );
 			vgui::surface()->DrawTexturedSubRect( x0, y0, x0 + x1, y0 + y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
 		}
 	}
 	if ( m_pBtnNewsShowcase->IsVisible() )
 	{
-		iTex = Sheet::UV_news;
+		iTex = CRD_HUD_Sheets::UV_news;
 		if ( m_pBtnNewsShowcase->GetCurrentState() == BaseModHybridButton::Focus )
-			iTex = Sheet::UV_news_hover;
+			iTex = CRD_HUD_Sheets::UV_news_hover;
 		else if ( m_pBtnUpdateNotes->GetCurrentState() == BaseModHybridButton::Focus )
-			iTex = Sheet::UV_news_update_hover;
+			iTex = CRD_HUD_Sheets::UV_news_update_hover;
 		else if ( m_pBtnEventTimer[0]->GetCurrentState() == BaseModHybridButton::Focus )
-			iTex = Sheet::UV_news_event_timer_hover;
+			iTex = CRD_HUD_Sheets::UV_news_event_timer_hover;
 		m_pBtnNewsShowcase->GetBounds( x0, y0, x1, y1 );
 		vgui::surface()->DrawTexturedSubRect( x0, y0, x0 + x1, y0 + y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
 	}
 	if ( m_pBtnUpdateNotes->IsVisible() )
 	{
-		iTex = Sheet::UV_update;
+		iTex = CRD_HUD_Sheets::UV_update;
 		if ( m_pBtnUpdateNotes->GetCurrentState() == BaseModHybridButton::Focus )
-			iTex = Sheet::UV_update_hover;
+			iTex = CRD_HUD_Sheets::UV_update_hover;
 		else if ( m_pBtnNewsShowcase->GetCurrentState() == BaseModHybridButton::Focus )
-			iTex = Sheet::UV_update_news_hover;
+			iTex = CRD_HUD_Sheets::UV_update_news_hover;
 		m_pBtnUpdateNotes->GetBounds( x0, y0, x1, y1 );
 		vgui::surface()->DrawTexturedSubRect( x0, y0, x0 + x1, y0 + y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
 	}
