@@ -160,21 +160,29 @@ void CASW_Background_Movie::Update()
 		{
 			const char *pFilename = NULL;
 #ifdef ASW_BINK_MOVIES
+			const char *szMovieType = "briefing";
 			if ( ASWGameRules()->GetGameState() >= ASW_GS_DEBRIEF )
 			{
 				if ( ASWGameRules()->GetMissionSuccess() )
 				{
-					pFilename = "media/SpaceFX.bik";
+					szMovieType = "success";
 				}
 				else
 				{
-					pFilename = "media/BG_Fail.bik";
+					szMovieType = "failure";
 				}
 			}
 			else
 			{
 				pFilename = ASWGameRules()->m_szBriefingVideo;
+				if ( pFilename[0] == '\0' )
+				{
+					pFilename = NULL;
+				}
 			}
+
+			if ( pFilename == NULL )
+				pFilename = UTIL_RD_RandomBriefingMovie( engine->GetLevelNameShort(), ASWGameRules()->m_iCosmeticRandomSeed, szMovieType );
 #else
 			pFilename = "media/test.avi";
 #endif

@@ -126,6 +126,7 @@
 #include "rd_lobby_utils.h"
 #include "rd_loadout.h"
 #include "matchmaking/imatchframework.h"
+#include <ctime>
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -830,6 +831,7 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		RecvPropBool(RECVINFO(m_bDeathCamSlowdown)),
 		RecvPropInt(RECVINFO(m_iOverrideAllowRotateCamera)),
 		RecvPropString(RECVINFO(m_szApproximatePingLocation)),
+		RecvPropInt(RECVINFO(m_iCosmeticRandomSeed)),
 		RecvPropString(RECVINFO(m_szBriefingVideo)),
 		RecvPropEHandle(RECVINFO(m_hBriefingCamera)),
 		RecvPropString( RECVINFO( m_szDeathmatchWinnerName ) ),
@@ -868,6 +870,7 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		SendPropBool(SENDINFO(m_bDeathCamSlowdown)),
 		SendPropInt(SENDINFO(m_iOverrideAllowRotateCamera)),
 		SendPropString(SENDINFO(m_szApproximatePingLocation)),
+		SendPropInt(SENDINFO(m_iCosmeticRandomSeed)),
 		SendPropString(SENDINFO(m_szBriefingVideo)),
 		SendPropEHandle(SENDINFO(m_hBriefingCamera)),
 		SendPropString( SENDINFO( m_szDeathmatchWinnerName ) ),
@@ -1651,22 +1654,8 @@ void CAlienSwarm::FullReset()
 
 	m_hBriefingCamera = NULL;
 	m_bHadBriefingCamera = false;
-	switch ( RandomInt( 0, 3 ) )
-	{
-	case 0:
-		V_strncpy( m_szBriefingVideo.GetForModify(), "media/BGFX_01.bik", sizeof( m_szBriefingVideo ) );
-		break;
-	case 1:
-		V_strncpy( m_szBriefingVideo.GetForModify(), "media/BGFX_02.bik", sizeof( m_szBriefingVideo ) );
-		break;
-	default:
-	case 2:
-		V_strncpy( m_szBriefingVideo.GetForModify(), "media/BGFX_03.bik", sizeof( m_szBriefingVideo ) );
-		break;
-	case 3:
-		V_strncpy( m_szBriefingVideo.GetForModify(), "media/BG_04_FX.bik", sizeof( m_szBriefingVideo ) );
-		break;
-	}
+	m_szBriefingVideo.GetForModify()[0] = '\0';
+	m_iCosmeticRandomSeed = std::time( NULL );
 
 	m_ActorSpeakingUntil.Purge();
 

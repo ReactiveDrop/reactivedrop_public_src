@@ -95,6 +95,7 @@ float UTIL_ASW_CalcFastDoorHackTime(int iNumRows, int iNumColumns, int iNumWires
 	void UTIL_ASW_ClientFloatingDamageNumber( const CTakeDamageInfo &info );
 	HPARTICLEFFECT UTIL_ASW_ParticleDamageNumber( C_BaseEntity *pEnt, Vector vecPos, int iDamage, int iDmgCustom, float flScale, bool bRandomVelocity, bool bSkipRampUp );
 	void UTIL_RD_DecideMainMenuBackground( const char *&szImage, const char *&szVideo, const char *&szAudio, bool bAllowChange );
+	const char *UTIL_RD_RandomBriefingMovie( const char *szMapName, int iSeed, const char *szType = "briefing" );
 #endif
 
 void TryLocalize( const char *token, wchar_t *unicode, int unicodeBufferSizeInBytes );

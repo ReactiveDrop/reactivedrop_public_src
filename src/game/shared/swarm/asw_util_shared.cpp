@@ -68,6 +68,7 @@
 #include "vpklib/packedstore.h"
 #include "vgui/ILocalize.h"
 #include "iregistry.h"
+#include <ctime>
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1338,6 +1339,75 @@ void __MsgFunc_ASWDamageNumber( bf_read &msg )
 }
 USER_MESSAGE_REGISTER( ASWDamageNumber );
 
+static const char *const s_szMapBackgroundMovieTypes[] =
+{
+	"briefing",
+	"failure",
+	"success",
+};
+
+static KeyValues::AutoDelete s_pBackgroundMovie{ "BackgroundMovie" };
+
+static void MergeBackgroundMovieData( const char *pszPath, KeyValues *pKV, void *pUserData )
+{
+	while ( KeyValues *pMovie = pKV->GetFirstSubKey() )
+	{
+		pKV->RemoveSubKey( pMovie );
+
+		KeyValues *pMerge = s_pBackgroundMovie->FindKey( pMovie->GetName(), true );
+
+		// special merging logic for "briefing" key: empty string clears, otherwise add multiple
+		for ( int i = 0; i < NELEMS( s_szMapBackgroundMovieTypes ); i++ )
+		{
+			const char *szType = s_szMapBackgroundMovieTypes[i];
+			while ( KeyValues *pBriefing = pMovie->FindKey( szType ) )
+			{
+				pMovie->RemoveSubKey( pBriefing );
+
+				if ( pBriefing->GetString()[0] != '\0' )
+				{
+					pMerge->AddSubKey( pBriefing );
+
+					continue;
+				}
+
+				while ( KeyValues *pRemoveBriefing = pMerge->FindKey( szType ) )
+				{
+					pMerge->RemoveSubKey( pRemoveBriefing );
+					pRemoveBriefing->deleteThis();
+				}
+
+				pBriefing->deleteThis();
+			}
+		}
+
+		// other keys merge by simply replacing (if there are multiple, the last wins)
+		while ( KeyValues *pValue = pMovie->GetFirstSubKey() )
+		{
+			pMovie->RemoveSubKey( pValue );
+
+			if ( KeyValues *pRemove = pMerge->FindKey( pValue->GetName() ) )
+			{
+				pMerge->RemoveSubKey( pRemove );
+				pRemove->deleteThis();
+			}
+
+			pMerge->AddSubKey( pValue );
+		}
+	}
+}
+
+static void LoadBackgroundMovieData()
+{
+	// already loaded?
+	if ( !s_pBackgroundMovie->GetFirstSubKey() )
+	{
+		UTIL_RD_LoadAllKeyValues( "resource/background_movie.txt", "GAME", "BackgroundMovie", &MergeBackgroundMovieData, NULL );
+
+		Assert( s_pBackgroundMovie->GetFirstSubKey() );
+	}
+}
+
 void UTIL_RD_DecideMainMenuBackground( const char *&szImage, const char *&szVideo, const char *&szAudio, bool bAllowChange )
 {
 	static const char *s_szImage = NULL;
@@ -1348,14 +1418,100 @@ void UTIL_RD_DecideMainMenuBackground( const char *&szImage, const char *&szVide
 	{
 		Assert( bAllowChange );
 
-		s_szImage = "materials/console/RdSelectionScreen_widescreen.vtf";
-		s_szVideo = "media/bg_01.bik";
-		s_szAudio = "Misc.MainUI";
+		LoadBackgroundMovieData();
+
+		float flTotalWeight = 0.0f;
+		FOR_EACH_SUBKEY( s_pBackgroundMovie, pOption )
+		{
+			if ( pOption->GetBool( "mainmenu" ) && !pOption->GetBool( "disabled" ) && pOption->GetFloat( "weight", 1.0f ) > 0 )
+			{
+				flTotalWeight += pOption->GetFloat( "weight", 1.0f );
+			}
+		}
+
+		CUniformRandomStream rand;
+		rand.SetSeed( std::time( NULL ) );
+
+		float flRemainingWeight = rand.RandomFloat( 0, flTotalWeight );
+		KeyValues *pSelected = NULL;
+		FOR_EACH_SUBKEY( s_pBackgroundMovie, pOption )
+		{
+			if ( pOption->GetBool( "mainmenu" ) && !pOption->GetBool( "disabled" ) && pOption->GetFloat( "weight", 1.0f ) > 0 )
+			{
+				pSelected = pOption;
+
+				flRemainingWeight -= pOption->GetFloat( "weight", 1.0f );
+				if ( flRemainingWeight <= 0 )
+					break;
+			}
+		}
+
+		s_szImage = pSelected->GetString( "image", "materials/console/RdSelectionScreen_widescreen.vtf" );
+		s_szVideo = pSelected->GetString( "video", "media/bg_01.bik" );
+		s_szAudio = pSelected->GetString( "audio", "Misc.MainUI" );
 	}
 
 	szImage = s_szImage;
 	szVideo = s_szVideo;
 	szAudio = s_szAudio;
+}
+
+const char *UTIL_RD_RandomBriefingMovie( const char *szMapName, int iSeed, const char *szType )
+{
+	LoadBackgroundMovieData();
+
+	float flTotalWeight = 0.0f;
+	CUtlVector<KeyValues *> options;
+
+	FOR_EACH_SUBKEY( s_pBackgroundMovie, pOption )
+	{
+		if ( pOption->GetBool( "disabled" ) || pOption->GetFloat( "weight", 1.0f ) <= 0 )
+			continue;
+
+		bool bMapMatch = false;
+		FOR_EACH_VALUE( pOption, pBriefing )
+		{
+			if ( V_stricmp( pBriefing->GetName(), szType ) )
+				continue;
+
+			const char *szFilter = pBriefing->GetString();
+			int len = V_strlen( szFilter );
+			if ( len > 0 && szFilter[len - 1] == '*' )
+				bMapMatch = !V_strnicmp( szFilter, szMapName, len - 1 );
+			else
+				bMapMatch = V_stricmp( szFilter, szMapName );
+
+			if ( bMapMatch )
+				break;
+		}
+
+		if ( !bMapMatch )
+			continue;
+
+		flTotalWeight += pOption->GetFloat( "weight", 1.0f );
+		options.AddToTail( pOption );
+	}
+
+	CUniformRandomStream rand;
+	rand.SetSeed( iSeed );
+	float flRemainingWeight = rand.RandomFloat( 0, flTotalWeight );
+	KeyValues *pSelected = NULL;
+	FOR_EACH_VEC( options, i )
+	{
+		pSelected = options[i];
+
+		flRemainingWeight -= pSelected->GetFloat( "weight", 1.0f );
+		if ( flRemainingWeight <= 0 )
+			break;
+	}
+
+	const char *szDefault = "media/BGFX_03.bik";
+	if ( !V_stricmp( szType, "success" ) )
+		szDefault = "media/SpaceFX.bik";
+	else if ( !V_stricmp( szType, "failure" ) )
+		szDefault = "media/BG_Fail.bik";
+
+	return pSelected->GetString( "video", szDefault );
 }
 #endif
 

@@ -565,6 +565,7 @@ public:
 	void SetPingLocation( const SteamNetworkPingLocation_t & location );
 #endif
 
+	CNetworkVar( int, m_iCosmeticRandomSeed );
 	CNetworkString( m_szBriefingVideo, 64 );
 	CNetworkHandle( CBaseEntity, m_hBriefingCamera );
 #ifdef GAME_DLL
