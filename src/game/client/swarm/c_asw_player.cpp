@@ -96,6 +96,8 @@
 #include "missionchooser/iasw_mission_chooser.h"
 #include "missionchooser/iasw_random_missions.h"
 #include "rd_rich_presence.h"
+#include "inetchannel.h"
+#include <ctime>
 
 #if defined( CASW_Player )
 #undef CASW_Player
@@ -1227,6 +1229,20 @@ void C_ASW_Player::ClientThink()
 	if ( missionchooser->RandomMissions() && missionchooser->RandomMissions()->ValidMapLayout() )
 	{
 		UpdateRoomDetails();
+	}
+
+	INetChannel *pNetChannel = assert_cast< INetChannel * >( engine->GetNetChannelInfo() );
+	Assert( pNetChannel && !pNetChannel->IsOverflowed() );
+	if ( pNetChannel && pNetChannel->IsOverflowed() )
+	{
+		// dump the start of the buffer that was too big to store to disk
+		CUtlMemory<byte> *pReliableBuffer = reinterpret_cast< CUtlMemory<byte> * >( &pNetChannel[14] );
+		CUtlBuffer buf{ pReliableBuffer->Base(), pReliableBuffer->Count(), CUtlBuffer::READ_ONLY };
+		CFmtStr szErrorFileName{ "../net_channel_overflow_%s_%u.ndmp", engine->GetLevelNameShort(), std::time( NULL ) };
+		g_pFullFileSystem->WriteFile( szErrorFileName, "MOD", buf );
+
+		// disconnect instead of soft-locking
+		pNetChannel->Shutdown( "Client reliable send channel overflowed!" );
 	}
 }
 
