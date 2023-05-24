@@ -1084,7 +1084,7 @@ void CASW_Hud_Master::PaintLocalMarineInventory()
 			{
 				surface()->DrawSetColor( 66, 142, 192, 255 );		// light blue
 			}
-			surface()->DrawSetTexture( g_ASWEquipmentList.GetEquipIconTexture( i != ASW_INVENTORY_SLOT_EXTRA, pWeapon->GetEquipmentListIndex() ) );
+			surface()->DrawSetTexture( pWeapon->GetUseIconTextureID() );
 			int x = YRES( pInfo->m_iHUDIconOffsetX );
 			int y = YRES( pInfo->m_iHUDIconOffsetY );
 			int w = m_nWeapon_w;

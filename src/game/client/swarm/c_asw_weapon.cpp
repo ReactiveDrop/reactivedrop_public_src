@@ -151,7 +151,6 @@ m_GlowObject( this, glow_outline_color_weapon.GetColorAsVector(), 1.0f, false, t
 	m_bFastReloadSuccess = false;
 	m_bFastReloadFailure = false;
 
-	m_nUseIconTextureID = -1;
 	m_bWeaponCreated = false;
 	m_nMuzzleAttachment = 0;
 	m_nLastMuzzleAttachment = 0;
@@ -707,19 +706,10 @@ void C_ASW_Weapon::CreateLaserSight()
 
 int C_ASW_Weapon::GetUseIconTextureID()
 {
-	if (m_nUseIconTextureID == -1)
-	{
-		const CASW_EquipItem *pItem = GetEquipItem();
-		if ( pItem )
-		{
-			m_nUseIconTextureID = vgui::surface()->CreateNewTextureID();
-			char buffer[ 256 ];
-			Q_snprintf( buffer, sizeof( buffer ), "vgui/%s", pItem->m_szEquipIcon );
-			vgui::surface()->DrawSetTextureFile( m_nUseIconTextureID, buffer, true, false);
-		}
-	}
+	const CASW_EquipItem *pEquipItem = GetEquipItem();
+	Assert( pEquipItem );
 
-	return m_nUseIconTextureID;
+	return g_ASWEquipmentList.GetEquipIconTexture( !pEquipItem || !pEquipItem->m_bIsExtra, GetEquipmentListIndex() );
 }
 
 bool C_ASW_Weapon::GetUseAction( ASWUseAction &action, C_ASW_Inhabitable_NPC *pUser )

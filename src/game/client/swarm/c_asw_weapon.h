@@ -207,7 +207,6 @@ public:
 	virtual bool NeedsLOSCheck() { return true; }
 
 	virtual int GetUseIconTextureID();
-	int m_nUseIconTextureID;
 
 	bool m_bWeaponCreated;
 	CHandle<C_RD_Weapon_Accessory> m_hWeaponAccessory[RD_ITEM_MAX_ACCESSORIES + 1];
