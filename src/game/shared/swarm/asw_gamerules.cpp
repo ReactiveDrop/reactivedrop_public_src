@@ -2561,7 +2561,12 @@ void CAlienSwarm::LoadoutSelect( CASW_Player *pPlayer, int iRosterIndex, int iIn
 		return;
 
 	// reactivedrop: check whether this weapon is allowed, if not, returns an ID of alternative
-	iEquipIndex = ApplyWeaponSelectionRules( iInvSlot, iEquipIndex );
+	int iChangedEquipIndex = ApplyWeaponSelectionRules( iInvSlot, iEquipIndex );
+	if ( iChangedEquipIndex != iEquipIndex )
+	{
+		iEquipIndex = iChangedEquipIndex;
+		iDynamicIndex = -1;
+	}
 
 	// Figure out what item the marine is trying to equip
 	CASW_EquipItem *pNewItem = g_ASWEquipmentList.GetItemForSlot( iInvSlot, iEquipIndex );

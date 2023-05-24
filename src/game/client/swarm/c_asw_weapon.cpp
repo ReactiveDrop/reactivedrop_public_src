@@ -125,9 +125,6 @@ extern ConVar muzzleflash_light;
 extern ConVar rd_show_others_laser_pointer;
 
 #define RD_STRANGE_DEVICE_MODEL "models/weapons/accessories/strange_device.mdl"
-PRECACHE_REGISTER_BEGIN( GLOBAL, RDPrecacheStrangeDeviceModel )
-	PRECACHE( MODEL, RD_STRANGE_DEVICE_MODEL )
-PRECACHE_REGISTER_END();
 
 C_ASW_Weapon::C_ASW_Weapon() :
 m_GlowObject( this, glow_outline_color_weapon.GetColorAsVector(), 1.0f, false, true)
@@ -819,6 +816,13 @@ void C_ASW_Weapon::MaybeAddStrangeDevice( int i, SteamItemDef_t defID )
 		Assert( pEnt );
 		if ( !pEnt )
 			return;
+
+		if ( !pEnt->InitializeAsClientEntity( RD_STRANGE_DEVICE_MODEL, false ) )
+		{
+			Assert( !"Failed to initialize strange device" );
+			pEnt->Release();
+			return;
+		}
 
 		pEnt->SetOwnerEntity( this );
 		pEnt->m_iAccessoryIndex = i;
