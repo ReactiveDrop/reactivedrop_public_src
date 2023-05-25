@@ -2042,13 +2042,21 @@ public:
 
 		CFmtStr fileName1( "materials/vgui/inventory/cache/%08x.vmt", m_URLHash );
 		CFmtStr fileName2( "materials/vgui/inventory/cache/%08x.vtf", m_URLHash );
-		if ( g_pFullFileSystem->FileExists( fileName1, "MOD" ) && g_pFullFileSystem->FileExists( fileName2, "MOD" ) )
+		if ( g_pFullFileSystem->FileExists( fileName1, "GAME" ) && g_pFullFileSystem->FileExists( fileName2, "GAME" ) )
 		{
-			m_iTextureID = vgui::surface()->CreateNewTextureID();
-			vgui::surface()->DrawSetTextureFile( m_iTextureID, fileName1.Access() + V_strlen( "materials/" ), true, false );
-			vgui::surface()->DrawGetTextureSize( m_iTextureID, m_nWide, m_nTall );
+			CUtlBuffer buf{ 0, 0, CUtlBuffer::TEXT_BUFFER };
+			if ( g_pFullFileSystem->ReadFile( fileName1, "GAME", buf ) )
+			{
+				buf.SeekGet( CUtlBuffer::SEEK_HEAD, strlen( "// version " ) );
+				if ( buf.GetInt() == 1 ) // current version number
+				{
+					m_iTextureID = vgui::surface()->CreateNewTextureID();
+					vgui::surface()->DrawSetTextureFile( m_iTextureID, fileName1.Access() + V_strlen( "materials/" ), true, false );
+					vgui::surface()->DrawGetTextureSize( m_iTextureID, m_nWide, m_nTall );
 
-			return;
+					return;
+				}
+			}
 		}
 
 		ISteamHTTP *pHTTP = SteamHTTP();
@@ -2223,7 +2231,7 @@ private:
 
 		buf.Clear();
 		buf.SetBufferType( true, true );
-		buf.PutString( CFmtStr( "UnlitGeneric {\n$basetexture vgui/inventory/cache/%08x\n$translucent 1\n}\n", m_URLHash ) );
+		buf.PutString( CFmtStr( "// version 1\nUnlitGeneric {\n$basetexture vgui/inventory/cache/%08x\n$translucent 1\n$vertexcolor 1\n$vertexalpha 1\n$ignorez 1\n}\n", m_URLHash ) );
 		CFmtStr fileName1( "materials/vgui/inventory/cache/%08x.vmt", m_URLHash );
 		g_pFullFileSystem->WriteFile( fileName1, "MOD", buf );
 
@@ -3380,6 +3388,20 @@ namespace ReactiveDropInventory
 				instances.AddToTail( s_RD_Inventory_Manager.m_LocalInventoryCache[i] );
 			}
 		}
+	}
+
+	const ItemInstance_t *GetLocalItemCache( SteamItemInstanceID_t id )
+	{
+		FOR_EACH_VEC( s_RD_Inventory_Manager.m_LocalInventoryCache, i )
+		{
+			ItemInstance_t *pInstance = &s_RD_Inventory_Manager.m_LocalInventoryCache[i];
+			if ( pInstance->ItemID == id )
+			{
+				return pInstance;
+			}
+		}
+
+		return NULL;
 	}
 
 	void GetItemsForSlot( CUtlVector<ItemInstance_t> &instances, const char *szRequiredSlot )

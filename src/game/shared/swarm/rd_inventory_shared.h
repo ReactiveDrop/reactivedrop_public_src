@@ -120,6 +120,7 @@ namespace ReactiveDropInventory
 	void RequestGenericPromoItems();
 	void CheckPlaytimeItemGenerators( int iMarineClass );
 	void CommitDynamicProperties();
+	const ItemInstance_t *GetLocalItemCache( SteamItemInstanceID_t id );
 	void GetItemsForSlot( CUtlVector<ItemInstance_t> &instances, const char *szRequiredSlot );
 	void GetItemsForSlotAndEquipIndex( CUtlVector<ItemInstance_t> &instances, const char *szRequiredSlot, int iEquipIndex );
 	int AllocateDynamicItemSlot( int iPlayer, SteamItemInstanceID_t iItemInstanceID, int iMarineProfile = -1, int iInventorySlot = -1 );

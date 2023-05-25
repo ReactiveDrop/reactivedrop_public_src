@@ -152,6 +152,8 @@ const wchar_t *UTIL_RD_CommaNumber( int64_t num );
 int UTIL_RD_IndexToBit( unsigned bits, int n );
 int UTIL_RD_BitToIndex( unsigned bits, int n );
 
+int UTIL_RD_GetCurrentHoIAFSeason( int *pDaysRemaining = NULL, int *pHoursRemaining = NULL );
+
 void CmdMsg( _Printf_format_string_ const char *pszFormat, ... );
 
 #endif // _INCLUDE_ASW_UTIL_SHARED_H

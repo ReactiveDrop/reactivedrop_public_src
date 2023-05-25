@@ -2824,6 +2824,35 @@ int UTIL_RD_BitToIndex( unsigned bits, int n )
 	return UTIL_CountNumBitsSet( bits & ( ( 1 << n ) - 1 ) );
 }
 
+int UTIL_RD_GetCurrentHoIAFSeason( int *pDaysRemaining, int *pHoursRemaining )
+{
+	struct tm tm;
+	Plat_gmtime( SteamUtils() ? SteamUtils()->GetServerRealTime() : std::time( NULL ), &tm );
+
+	if ( pHoursRemaining )
+		*pHoursRemaining = 23 - tm.tm_hour;
+
+	if ( *pDaysRemaining )
+	{
+		*pDaysRemaining = 31 - tm.tm_mday;
+		if ( tm.tm_mon == 1 )
+		{
+			// february
+			*pDaysRemaining -= 2;
+			int iActualYear = tm.tm_year + 1900;
+			if ( iActualYear % 4 == 0 && ( iActualYear % 100 != 0 || iActualYear % 400 == 0 ) )
+				*pDaysRemaining--;
+		}
+		else if ( tm.tm_mon == 3 || tm.tm_mon == 5 || tm.tm_mon == 8 || tm.tm_mon == 10 )
+		{
+			// 30-day months
+			*pDaysRemaining--;
+		}
+	}
+
+	return ( tm.tm_year - 123 ) * 12 + 7 + tm.tm_mon;
+}
+
 void CmdMsg( _Printf_format_string_ const char *pszFormat, ... )
 {
 	char szString[1024];

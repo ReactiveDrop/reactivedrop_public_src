@@ -1015,25 +1015,8 @@ void MainMenu::OnThink()
 			m_pBtnEventTimer[i]->SetVisible( true );
 		}
 
-		struct tm tm;
-		Plat_gmtime( iCurrentTime, &tm );
-
-		int iSeasonNumber = ( tm.tm_year - 123 ) * 12 + 7 + tm.tm_mon;
-		int iHoursRemaining = 23 - tm.tm_hour;
-		int iDaysRemaining = 31 - tm.tm_mday;
-		if ( tm.tm_mon == 1 )
-		{
-			// february
-			iDaysRemaining -= 2;
-			int iActualYear = tm.tm_year + 1900;
-			if ( iActualYear % 4 == 0 && ( iActualYear % 100 != 0 || iActualYear % 400 == 0 ) )
-				iDaysRemaining--;
-		}
-		else if ( tm.tm_mon == 3 || tm.tm_mon == 5 || tm.tm_mon == 8 || tm.tm_mon == 10 )
-		{
-			// 30-day months
-			iDaysRemaining--;
-		}
+		int iDaysRemaining, iHoursRemaining;
+		int iSeasonNumber = UTIL_RD_GetCurrentHoIAFSeason( &iDaysRemaining, &iHoursRemaining );
 
 		if ( iDaysRemaining > 0 )
 			g_pVGuiLocalize->ConstructString( wszTimerText, sizeof( wszTimerText ), g_pVGuiLocalize->Find( "#rd_hoiaf_ends_days_hours" ), 3, UTIL_RD_CommaNumber( iSeasonNumber ), UTIL_RD_CommaNumber( iDaysRemaining ), UTIL_RD_CommaNumber( iHoursRemaining ) );
