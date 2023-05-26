@@ -237,26 +237,28 @@ void CRD_VGUI_Commander_Mini_Profile::SetHoIAFData( const LeaderboardEntry_t &en
 
 #ifdef DBGFLAG_ASSERT
 	// HoIAF medal dynamic props are in this order:
-	// season;score;rank;alien_kills;player_kills;games_won;games_lost
-	Assert( pDef->CompressedDynamicProps.Count() == 7 );
-	Assert( !V_strcmp( pDef->CompressedDynamicProps[0], "season" ) );
-	Assert( !V_strcmp( pDef->CompressedDynamicProps[1], "score" ) );
-	Assert( !V_strcmp( pDef->CompressedDynamicProps[2], "rank" ) );
-	Assert( !V_strcmp( pDef->CompressedDynamicProps[3], "alien_kills" ) );
-	Assert( !V_strcmp( pDef->CompressedDynamicProps[4], "player_kills" ) );
-	Assert( !V_strcmp( pDef->CompressedDynamicProps[5], "games_won" ) );
-	Assert( !V_strcmp( pDef->CompressedDynamicProps[6], "games_lost" ) );
+	// style;season;score;rank;alien_kills;player_kills;games_won;games_lost
+	Assert( pDef->CompressedDynamicProps.Count() == 8 );
+	Assert( !V_strcmp( pDef->CompressedDynamicProps[0], "style" ) );
+	Assert( !V_strcmp( pDef->CompressedDynamicProps[1], "season" ) );
+	Assert( !V_strcmp( pDef->CompressedDynamicProps[2], "score" ) );
+	Assert( !V_strcmp( pDef->CompressedDynamicProps[3], "rank" ) );
+	Assert( !V_strcmp( pDef->CompressedDynamicProps[4], "alien_kills" ) );
+	Assert( !V_strcmp( pDef->CompressedDynamicProps[5], "player_kills" ) );
+	Assert( !V_strcmp( pDef->CompressedDynamicProps[6], "games_won" ) );
+	Assert( !V_strcmp( pDef->CompressedDynamicProps[7], "games_lost" ) );
 #endif
 
 	m_PredictedHoIAFMedal.Reset();
 	m_PredictedHoIAFMedal.m_iItemDefID.Set( iMedalID );
-	m_PredictedHoIAFMedal.m_nCounter.Set( 0, iSeason );
-	m_PredictedHoIAFMedal.m_nCounter.Set( 1, entry.m_nScore );
-	m_PredictedHoIAFMedal.m_nCounter.Set( 2, entry.m_nGlobalRank );
-	m_PredictedHoIAFMedal.m_nCounter.Set( 3, details.m_iAlienKills );
-	m_PredictedHoIAFMedal.m_nCounter.Set( 4, details.m_iPlayerKills );
-	m_PredictedHoIAFMedal.m_nCounter.Set( 5, details.m_iGamesWon );
-	m_PredictedHoIAFMedal.m_nCounter.Set( 6, details.m_iGamesLost );
+	m_PredictedHoIAFMedal.m_nCounter.Set( 0, 0 );
+	m_PredictedHoIAFMedal.m_nCounter.Set( 1, iSeason );
+	m_PredictedHoIAFMedal.m_nCounter.Set( 2, entry.m_nScore );
+	m_PredictedHoIAFMedal.m_nCounter.Set( 3, entry.m_nGlobalRank );
+	m_PredictedHoIAFMedal.m_nCounter.Set( 4, details.m_iAlienKills );
+	m_PredictedHoIAFMedal.m_nCounter.Set( 5, details.m_iPlayerKills );
+	m_PredictedHoIAFMedal.m_nCounter.Set( 6, details.m_iGamesWon );
+	m_PredictedHoIAFMedal.m_nCounter.Set( 7, details.m_iGamesLost );
 	m_bHoIAFError = false;
 }
 
