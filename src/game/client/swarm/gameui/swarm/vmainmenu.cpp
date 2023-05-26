@@ -1331,6 +1331,8 @@ void MainMenu::PaintBackground()
 		iTex = CRD_HUD_Sheets::UV_create_lobby;
 		if ( m_pBtnMultiplayer->GetCurrentState() == BaseModHybridButton::Focus )
 			iTex = CRD_HUD_Sheets::UV_create_lobby_hover;
+		else if ( m_pTopBar->m_pBtnLogo->GetCurrentState() == BaseModHybridButton::Focus )
+			iTex = CRD_HUD_Sheets::UV_create_lobby_logo_hover;
 		else if ( m_pBtnSingleplayer->GetCurrentState() == BaseModHybridButton::Focus )
 			iTex = CRD_HUD_Sheets::UV_create_lobby_singleplayer_hover;
 		else if ( m_pCommanderProfile->HasFocus() )

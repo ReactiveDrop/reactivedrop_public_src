@@ -108,6 +108,7 @@ public:
 	DECLARE_HUD_SHEET( MainMenuSheet )
 		DECLARE_HUD_SHEET_UV( create_lobby ),
 		DECLARE_HUD_SHEET_UV( create_lobby_hover ),
+		DECLARE_HUD_SHEET_UV( create_lobby_logo_hover ),
 		DECLARE_HUD_SHEET_UV( create_lobby_profile_hover ),
 		DECLARE_HUD_SHEET_UV( create_lobby_singleplayer_hover ),
 		DECLARE_HUD_SHEET_UV( event_timer ),
