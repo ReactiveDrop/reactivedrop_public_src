@@ -2238,7 +2238,8 @@ bool UTIL_RD_LoadKeyValuesFromFile( KeyValues *pKV, IFileSystem *pFileSystem, co
 		g_pFullFileSystem->Close( hFile );
 
 		// This mission is included in HoIAF but its overview file is missing a closing brace.
-		if ( !V_strcmp( szFileName, "resource/overviews/researchlab2.txt" ) && CRC32_ProcessSingleBuffer( buf.Base(), buf.TellPut() ) == 0x5a28bbce )
+		if ( ( !V_strcmp( szFileName, "resource/overviews/researchlab2.txt" ) && CRC32_ProcessSingleBuffer( buf.Base(), buf.TellPut() ) == 0x5a28bbce ) ||
+			( !V_strcmp( szFileName, "resource/campaigns/revenantcampaign.txt" ) && CRC32_ProcessSingleBuffer( buf.Base(), buf.TellPut() ) == 0x99e46667 ) )
 		{
 			buf.PutChar( '}' );
 		}
