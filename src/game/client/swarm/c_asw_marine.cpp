@@ -2704,7 +2704,8 @@ void __MsgFunc_ASWRipRagdoll( bf_read &msg )
 		return;
 	}
 
-	if ( !rd_marine_explodes_into_gibs.GetBool() )
+	static ConVarRef violence_hgibs{ "violence_hgibs" };
+	if ( !rd_marine_explodes_into_gibs.GetBool() || !violence_hgibs.GetBool() )
 	{
 		C_ASW_Game_Resource *pGameResource = ASWGameResource();
 		if ( pGameResource )
