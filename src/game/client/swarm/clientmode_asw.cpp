@@ -55,6 +55,7 @@
 #include "asw_hud_chat.h"
 #include "game_timescale_shared.h"
 #include "rd_demo_utils.h"
+#include "menu.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -907,6 +908,7 @@ void ClientModeASW::ASW_CloseAllWindows()
 
 	g_hBriefingFrame = NULL;
 	m_hMissionCompleteFrame = NULL;
+	GET_FULLSCREEN_HUDELEMENT( CHudMenu )->Reset();
 
 	// make sure we don't have a mission chooser up
 	engine->ClientCmd( "asw_mission_chooser exit" );
