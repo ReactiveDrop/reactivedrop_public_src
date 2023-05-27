@@ -150,6 +150,10 @@ namespace ReactiveDropLoadout
 			{ ASW_EQUIP_RIFLE, ASW_EQUIP_HEAL_GRENADE, ASW_EQUIP_FLARES }, // Bastille
 			{ ASW_EQUIP_PRIFLE, ASW_EQUIP_PISTOL, ASW_EQUIP_MEDKIT }, // Vegas
 		},
+		{
+			true, true, true, true,
+			true, true, true, true,
+		},
 	};
 
 	static void WriteItemID( KeyValues *pKV, bool bBinary, const char *szShortName, const char *szLongName, SteamItemInstanceID_t id )
@@ -239,14 +243,25 @@ namespace ReactiveDropLoadout
 		ExtraItem = ReadItemID( pKV, bBinary, "ei", "Items/Extra" );
 	}
 
-	static void WriteMarine( KeyValues *pKV, bool bBinary, const char *szShortName, const char *szLongName, const LoadoutMarineData_t &marine )
+	static void WriteMarine( KeyValues *pKV, bool bBinary, const char *szShortName, const char *szLongName, const LoadoutMarineData_t &marine, bool bMarineIncluded )
 	{
-		marine.ToKeyValues( pKV->FindKey( bBinary ? szShortName : szLongName, true ), bBinary );
+		if ( bMarineIncluded )
+		{
+			marine.ToKeyValues( pKV->FindKey( bBinary ? szShortName : szLongName, true ), bBinary );
+		}
 	}
-	static void ReadMarine( KeyValues *pKV, bool bBinary, const char *szShortName, const char *szLongName, LoadoutMarineData_t &marine )
+	static void ReadMarine( KeyValues *pKV, bool bBinary, const char *szShortName, const char *szLongName, LoadoutMarineData_t &marine, bool &bMarineIncluded )
 	{
-		// this edits the keyvalues if it was missing the key previously but honestly who cares
-		marine.FromKeyValues( pKV->FindKey( bBinary ? szShortName : szLongName, true ), bBinary );
+		KeyValues *pMarine = pKV->FindKey( bBinary ? szShortName : szLongName );
+		if ( pMarine )
+		{
+			bMarineIncluded = true;
+			marine.FromKeyValues( pMarine, bBinary );
+		}
+		else
+		{
+			bMarineIncluded = false;
+		}
 	}
 
 	void LoadoutData_t::ToKeyValues( KeyValues *pKV, bool bBinary ) const
@@ -263,14 +278,14 @@ namespace ReactiveDropLoadout
 		for ( int i = 0; i < RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS; i++ )
 			WriteItemID( pKV, bBinary, CFmtStr{ "m%d", i }, CFmtStr{ "Medals/Slot%d", i + 1 }, Medals[i] );
 
-		WriteMarine( pKV, bBinary, "0", "Marines/Sarge", Marines[ASW_MARINE_PROFILE_SARGE] );
-		WriteMarine( pKV, bBinary, "1", "Marines/Wildcat", Marines[ASW_MARINE_PROFILE_WILDCAT] );
-		WriteMarine( pKV, bBinary, "2", "Marines/Faith", Marines[ASW_MARINE_PROFILE_FAITH] );
-		WriteMarine( pKV, bBinary, "3", "Marines/Crash", Marines[ASW_MARINE_PROFILE_CRASH] );
-		WriteMarine( pKV, bBinary, "4", "Marines/Jaeger", Marines[ASW_MARINE_PROFILE_JAEGER] );
-		WriteMarine( pKV, bBinary, "5", "Marines/Wolfe", Marines[ASW_MARINE_PROFILE_WOLFE] );
-		WriteMarine( pKV, bBinary, "6", "Marines/Bastille", Marines[ASW_MARINE_PROFILE_BASTILLE] );
-		WriteMarine( pKV, bBinary, "7", "Marines/Vegas", Marines[ASW_MARINE_PROFILE_VEGAS] );
+		WriteMarine( pKV, bBinary, "0", "Marines/Sarge", Marines[ASW_MARINE_PROFILE_SARGE], MarineIncluded[ASW_MARINE_PROFILE_SARGE] );
+		WriteMarine( pKV, bBinary, "1", "Marines/Wildcat", Marines[ASW_MARINE_PROFILE_WILDCAT], MarineIncluded[ASW_MARINE_PROFILE_WILDCAT] );
+		WriteMarine( pKV, bBinary, "2", "Marines/Faith", Marines[ASW_MARINE_PROFILE_FAITH], MarineIncluded[ASW_MARINE_PROFILE_FAITH] );
+		WriteMarine( pKV, bBinary, "3", "Marines/Crash", Marines[ASW_MARINE_PROFILE_CRASH], MarineIncluded[ASW_MARINE_PROFILE_CRASH] );
+		WriteMarine( pKV, bBinary, "4", "Marines/Jaeger", Marines[ASW_MARINE_PROFILE_JAEGER], MarineIncluded[ASW_MARINE_PROFILE_JAEGER] );
+		WriteMarine( pKV, bBinary, "5", "Marines/Wolfe", Marines[ASW_MARINE_PROFILE_WOLFE], MarineIncluded[ASW_MARINE_PROFILE_WOLFE] );
+		WriteMarine( pKV, bBinary, "6", "Marines/Bastille", Marines[ASW_MARINE_PROFILE_BASTILLE], MarineIncluded[ASW_MARINE_PROFILE_BASTILLE] );
+		WriteMarine( pKV, bBinary, "7", "Marines/Vegas", Marines[ASW_MARINE_PROFILE_VEGAS], MarineIncluded[ASW_MARINE_PROFILE_VEGAS] );
 	}
 	void LoadoutData_t::FromKeyValues( KeyValues *pKV, bool bBinary )
 	{
@@ -280,14 +295,14 @@ namespace ReactiveDropLoadout
 		for ( int i = 0; i < RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS; i++ )
 			Medals[i] = ReadItemID( pKV, bBinary, CFmtStr{ "m%d", i }, CFmtStr{ "Medals/Slot%d", i + 1 } );
 
-		ReadMarine( pKV, bBinary, "0", "Marines/Sarge", Marines[ASW_MARINE_PROFILE_SARGE] );
-		ReadMarine( pKV, bBinary, "1", "Marines/Wildcat", Marines[ASW_MARINE_PROFILE_WILDCAT] );
-		ReadMarine( pKV, bBinary, "2", "Marines/Faith", Marines[ASW_MARINE_PROFILE_FAITH] );
-		ReadMarine( pKV, bBinary, "3", "Marines/Crash", Marines[ASW_MARINE_PROFILE_CRASH] );
-		ReadMarine( pKV, bBinary, "4", "Marines/Jaeger", Marines[ASW_MARINE_PROFILE_JAEGER] );
-		ReadMarine( pKV, bBinary, "5", "Marines/Wolfe", Marines[ASW_MARINE_PROFILE_WOLFE] );
-		ReadMarine( pKV, bBinary, "6", "Marines/Bastille", Marines[ASW_MARINE_PROFILE_BASTILLE] );
-		ReadMarine( pKV, bBinary, "7", "Marines/Vegas", Marines[ASW_MARINE_PROFILE_VEGAS] );
+		ReadMarine( pKV, bBinary, "0", "Marines/Sarge", Marines[ASW_MARINE_PROFILE_SARGE], MarineIncluded[ASW_MARINE_PROFILE_SARGE] );
+		ReadMarine( pKV, bBinary, "1", "Marines/Wildcat", Marines[ASW_MARINE_PROFILE_WILDCAT], MarineIncluded[ASW_MARINE_PROFILE_WILDCAT] );
+		ReadMarine( pKV, bBinary, "2", "Marines/Faith", Marines[ASW_MARINE_PROFILE_FAITH], MarineIncluded[ASW_MARINE_PROFILE_FAITH] );
+		ReadMarine( pKV, bBinary, "3", "Marines/Crash", Marines[ASW_MARINE_PROFILE_CRASH], MarineIncluded[ASW_MARINE_PROFILE_CRASH] );
+		ReadMarine( pKV, bBinary, "4", "Marines/Jaeger", Marines[ASW_MARINE_PROFILE_JAEGER], MarineIncluded[ASW_MARINE_PROFILE_JAEGER] );
+		ReadMarine( pKV, bBinary, "5", "Marines/Wolfe", Marines[ASW_MARINE_PROFILE_WOLFE], MarineIncluded[ASW_MARINE_PROFILE_WOLFE] );
+		ReadMarine( pKV, bBinary, "6", "Marines/Bastille", Marines[ASW_MARINE_PROFILE_BASTILLE], MarineIncluded[ASW_MARINE_PROFILE_BASTILLE] );
+		ReadMarine( pKV, bBinary, "7", "Marines/Vegas", Marines[ASW_MARINE_PROFILE_VEGAS], MarineIncluded[ASW_MARINE_PROFILE_VEGAS] );
 	}
 
 #ifdef CLIENT_DLL
@@ -444,7 +459,8 @@ namespace ReactiveDropLoadout
 
 		for ( int i = 0; i < ASW_NUM_MARINE_PROFILES; i++ )
 		{
-			Marines[i].CopyToLive( ASW_Marine_Profile( i ) );
+			if ( MarineIncluded[i] )
+				Marines[i].CopyToLive( ASW_Marine_Profile( i ) );
 		}
 
 		ISteamUtils *pUtils = SteamUtils();
@@ -468,6 +484,7 @@ namespace ReactiveDropLoadout
 		for ( int i = 0; i < ASW_NUM_MARINE_PROFILES; i++ )
 		{
 			Marines[i].CopyFromLive( ASW_Marine_Profile( i ) );
+			MarineIncluded[i] = true;
 		}
 
 		ISteamUtils *pUtils = SteamUtils();
