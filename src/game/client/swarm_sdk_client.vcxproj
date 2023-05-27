@@ -1888,7 +1888,6 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="swarm\vgui\restartmissionbutton.cpp" />
     <ClCompile Include="swarm\vgui\returncampaignmapbutton.cpp" />
     <ClCompile Include="swarm\vgui\scanlinepanel.cpp" />
-    <ClCompile Include="swarm\vgui\serveroptionspanel.cpp" />
     <ClCompile Include="swarm\vgui\skillanimpanel.cpp" />
     <ClCompile Include="swarm\vgui\softline.cpp" />
     <ClCompile Include="swarm\vgui\squad_inventory_panel.cpp" />
@@ -2995,7 +2994,6 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="swarm\vgui\restartmissionbutton.h" />
     <ClInclude Include="swarm\vgui\returncampaignmapbutton.h" />
     <ClInclude Include="swarm\vgui\scanlinepanel.h" />
-    <ClInclude Include="swarm\vgui\serveroptionspanel.h" />
     <ClInclude Include="swarm\vgui\skillanimpanel.h" />
     <ClInclude Include="swarm\vgui\softline.h" />
     <ClInclude Include="swarm\vgui\squad_inventory_panel.h" />

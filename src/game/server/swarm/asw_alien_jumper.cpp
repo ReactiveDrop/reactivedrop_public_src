@@ -30,7 +30,6 @@
 #include "tier0/memdbgon.h"
 
 
-ConVar  asw_test_new_alien_jump( "asw_test_new_alien_jump", "1", FCVAR_ARCHIVE );
 extern ConVar asw_debug_aliens;
 extern ConVar sv_gravity;
 
@@ -127,9 +126,6 @@ bool CASW_Alien_Jumper::IsUnusableNode(int iNodeID, CAI_Hint *pHint)
 {
 	bool iBaseReturn = BaseClass::IsUnusableNode( iNodeID, pHint );
 
-	if ( asw_test_new_alien_jump.GetBool() == 0 )
-		 return iBaseReturn;
-
 	CAI_Node *pNode = GetNavigator()->GetNetwork()->GetNode( iNodeID );
 
 	if ( pNode )
@@ -147,9 +143,6 @@ void CASW_Alien_Jumper::LockJumpNode( void )
 		 return;
 	
 	if ( GetNavigator()->GetPath() == NULL )
-		 return;
-
-	if ( asw_test_new_alien_jump.GetBool() == false )
 		 return;
 
 	AI_Waypoint_t *pWaypoint = GetNavigator()->GetPath()->GetCurWaypoint();
@@ -180,9 +173,6 @@ void CASW_Alien_Jumper::LockJumpNode( void )
 bool CASW_Alien_Jumper::OnObstructionPreSteer( AILocalMoveGoal_t *pMoveGoal, float distClear, AIMoveResult_t *pResult )
 {
 	bool iBaseReturn = BaseClass::OnObstructionPreSteer( pMoveGoal, distClear, pResult );
-
-	if ( asw_test_new_alien_jump.GetBool() == false )
-		 return iBaseReturn;
 
 	if ( HasSpawnFlags( SF_ANTLION_USE_GROUNDCHECKS ) == false )
 		 return iBaseReturn;
@@ -301,7 +291,7 @@ bool CASW_Alien_Jumper::IsJumpLegal( const Vector &startPos, const Vector &apex,
 	if ( ( endPos - GetAbsOrigin()).Length() < MIN_JUMP_DISTANCE ) 
 		 return false;
 
-	if ( HasSpawnFlags( SF_ANTLION_USE_GROUNDCHECKS ) && asw_test_new_alien_jump.GetBool() == true )
+	if ( HasSpawnFlags( SF_ANTLION_USE_GROUNDCHECKS ) )
 	{
 		trace_t	tr;
 		AI_TraceHull( endPos, endPos, GetHullMins(), GetHullMaxs(), MASK_NPCSOLID, this, COLLISION_GROUP_NONE, &tr );
