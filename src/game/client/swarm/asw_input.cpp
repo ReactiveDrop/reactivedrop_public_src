@@ -1797,8 +1797,11 @@ void CASWInput::JoyStickTurn( CUserCmd *cmd, float &yaw, float &pitch, float fra
 	}
 	else
 	{
-		viewangles[PITCH] += pitch;
-		viewangles[YAW] -= yaw;
+		static SplitScreenConVarRef s_joy_yawsensitivity( "joy_yawsensitivity" );
+		static SplitScreenConVarRef s_joy_pitchsensitivity( "joy_pitchsensitivity" );
+
+		viewangles[PITCH] += pitch * s_joy_pitchsensitivity.GetFloat( GET_ACTIVE_SPLITSCREEN_SLOT() );
+		viewangles[YAW] += yaw * s_joy_yawsensitivity.GetFloat( GET_ACTIVE_SPLITSCREEN_SLOT() );
 	}
 
 	// Store out the new viewangles.
