@@ -1829,7 +1829,6 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="swarm\vgui\imagebutton.cpp" />
     <ClCompile Include="swarm\vgui\mapedgesbox.cpp" />
     <ClCompile Include="swarm\vgui\medalarea.cpp" />
-    <ClCompile Include="swarm\vgui\medalcollectionpanel.cpp" />
     <ClCompile Include="swarm\vgui\medalpanel.cpp" />
     <ClCompile Include="swarm\vgui\medalstooltip.cpp" />
     <ClCompile Include="swarm\vgui\missioncompleteframe.cpp" />
@@ -2935,7 +2934,6 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="swarm\vgui\imagebutton.h" />
     <ClInclude Include="swarm\vgui\mapedgesbox.h" />
     <ClInclude Include="swarm\vgui\medalarea.h" />
-    <ClInclude Include="swarm\vgui\medalcollectionpanel.h" />
     <ClInclude Include="swarm\vgui\medalpanel.h" />
     <ClInclude Include="swarm\vgui\medalstooltip.h" />
     <ClInclude Include="swarm\vgui\missioncompleteframe.h" />
