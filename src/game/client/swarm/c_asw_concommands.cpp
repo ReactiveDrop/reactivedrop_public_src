@@ -17,7 +17,6 @@
 #include "asw_vgui_manipulator.h"
 #include "c_asw_camera_volume.h"
 #include "c_asw_mesh_emitter_entity.h"
-#include "MedalCollectionPanel.h"
 #include "PlayerListPanel.h"
 #include "PlayerListContainer.h"
 #include "vgui\nb_main_panel.h"

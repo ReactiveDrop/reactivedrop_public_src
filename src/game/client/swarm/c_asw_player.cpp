@@ -48,7 +48,6 @@
 #include "asw_hud_chat.h"
 #include "PlayerListPanel.h"
 #include "asw_vgui_frame.h"
-#include "MedalCollectionPanel.h"
 #include "CreditsPanel.h"
 #include "CainMailPanel.h"
 #include "asw_vgui_skip_intro.h"
