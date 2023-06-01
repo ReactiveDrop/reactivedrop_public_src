@@ -611,13 +611,15 @@ void asw_afkf()
 		}
 		else if ( pPlayer->GetNPC() )
 		{
+			// jh: no longer needed, now bots take standard damage if got infested when were inhabited.
+
 			// prevent players from going afk when they are infested
 			// bots take less damage and players abuse this
-			CASW_Marine *pMarine = CASW_Marine::AsMarine( pPlayer->GetNPC() );
-			if ( !pMarine || pMarine->IsInfested() )
-			{
-				return;
-			}
+			//CASW_Marine *pMarine = CASW_Marine::AsMarine( pPlayer->GetNPC() );
+			//if ( !pMarine || pMarine->IsInfested() )
+			//{
+			//	return;
+			//}
 
 			for ( int i = 0; i < ASWGameResource()->GetMaxMarineResources(); i++ )
 			{
