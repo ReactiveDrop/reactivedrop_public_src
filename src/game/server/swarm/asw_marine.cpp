@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2003, Valve LLC, All rights reserved. ============
+//========= Copyright Â© 1996-2003, Valve LLC, All rights reserved. ============
 //
 // Purpose: 
 //
@@ -1625,7 +1625,9 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	}
 
 	// scale down the damage received by bots but not for PvP, jh: make marines take standard damage from infestation/burning if marine was inhabited when got infested/ignited (prevent people exploiting damage taken by going bot)
-	if ( rd_bot_strong.GetBool() && !IsInhabited() && !ASWDeathmatchMode() && !( IsInfested() && m_bGotInfestedWhenInhabited && info.GetDamageType() & DMG_INFEST ) && !( IsOnFire() && m_bGotIgnitedWhenInhabited && info.GetDamageType() & DMG_BURN ) )
+	if ( rd_bot_strong.GetBool() && !IsInhabited() && !ASWDeathmatchMode() &&
+		!( IsInfested() && m_bGotInfestedWhenInhabited && ( info.GetDamageType() & DMG_INFEST ) ) &&
+		!( IsOnFire() && m_bGotIgnitedWhenInhabited && ( info.GetDamageType() & ( DMG_BURN | DMG_DIRECT ) ) == ( DMG_BURN | DMG_DIRECT ) ) )
 	{
 		newInfo.ScaleDamage( 0.25f );
 	}
