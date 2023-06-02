@@ -34,7 +34,7 @@
 
 #define ASW_WIRE_LEFT (ASW_TILE_SIZE * 2.5f)
 
-ConVar rda_faster_wire_hack_close("rda_faster_wire_hack_close", "1", FCVAR_ARCHIVE, "Wire hack closes faster");
+ConVar rda_faster_wire_hack_close("rda_faster_wire_hack_close", "1", FCVAR_NONE, "Wire hack closes faster");
 
 //int CASW_VGUI_Hack_Wire_Tile::s_nBackDropTexture = -1;
 int CASW_VGUI_Hack_Wire_Tile::s_nTileHoriz = -1;
