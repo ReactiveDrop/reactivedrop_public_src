@@ -20,7 +20,8 @@ CRD_VGUI_Main_Menu_Top_Bar::CRD_VGUI_Main_Menu_Top_Bar( vgui::Panel *parent, con
 	m_pTopButton[1] = new BaseModHybridButton( this, "BtnContracts", "#rd_mainmenu_contracts", this, "Contracts" );
 	m_pTopButton[2] = new BaseModHybridButton( this, "BtnRecordings", "#rd_mainmenu_recordings", this, "Recordings" );
 	m_pTopButton[3] = new BaseModHybridButton( this, "BtnSwarmopedia", "#rd_collection_swarmopedia", this, "Swarmopedia" );
-	m_pTopButton[4] = new BaseModHybridButton( this, "BtnInventory", "#rd_mainmenu_inventory", this, "Inventory" );
+	m_pTopButton[4] = new BaseModHybridButton( this, "BtnWorkshop", "#rd_mainmenu_workshop", this, "Workshop" );
+	m_pTopButton[5] = new BaseModHybridButton( this, "BtnInventory", "#rd_mainmenu_inventory", this, "Inventory" );
 	m_pBtnQuit = new BaseModHybridButton( this, "BtnQuit", "", this, "QuitGame" );
 
 	m_bLeftGlow = false;
@@ -91,6 +92,11 @@ void CRD_VGUI_Main_Menu_Top_Bar::OnCommand( const char *command )
 	{
 		DismissMainMenuScreens();
 		LaunchSwarmopediaFrame();
+	}
+	else if ( !V_stricmp( command, "Workshop" ) )
+	{
+		DismissMainMenuScreens();
+		Assert( !"TODO" );
 	}
 	else if ( !V_stricmp( command, "Inventory" ) )
 	{

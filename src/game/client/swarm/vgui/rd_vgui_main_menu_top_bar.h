@@ -20,7 +20,7 @@ public:
 
 	BaseModUI::BaseModHybridButton *m_pBtnSettings;
 	BaseModUI::BaseModHybridButton *m_pBtnLogo;
-	BaseModUI::BaseModHybridButton *m_pTopButton[5];
+	BaseModUI::BaseModHybridButton *m_pTopButton[6];
 	BaseModUI::BaseModHybridButton *m_pBtnQuit;
 
 	bool m_bLeftGlow;
