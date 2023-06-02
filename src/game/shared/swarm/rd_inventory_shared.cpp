@@ -86,6 +86,7 @@ static bool s_bLoadedItemDefs = false;
 
 static fieldtype_t DynamicPropertyDataType( const char *szPropertyName )
 {
+	// can be FIELD_INTEGER64, FIELD_STRING, FIELD_FLOAT, or FIELD_BOOLEAN.
 	return FIELD_INTEGER64;
 }
 
@@ -1168,6 +1169,9 @@ public:
 				iCounterAfter += iAmount;
 		}
 
+		int iTierBefore = iPropertyIndex == 0 ? pAccessoryDef->GetStrangeTier( iCounterBefore ) : -1;
+		int iTierAfter = iPropertyIndex == 0 ? pAccessoryDef->GetStrangeTier( iCounterAfter ) : -1;
+
 		if ( iAccessoryID == 5007 && iPropertyIndex == 0 ) // 5007 = Alien Kill Streak
 		{
 			int64_t iBestStreak = instance.m_nCounter[iCombinedIndex + 1];
@@ -1192,17 +1196,26 @@ public:
 			{
 				ModifyAccessoryDynamicPropValue( instance, iAccessoryID, 1, iCounterAfter, false );
 			}
+			else
+			{
+				iTierAfter = -1;
+			}
 		}
 
 #ifdef CLIENT_DLL
 		pLocalInstance->DynamicProps[szPropertyName] = CFmtStr( "%lld", iCounterAfter );
 		pUpdate->NewValue = iCounterAfter;
 #endif
-		instance.m_nCounter.GetForModify( iCombinedIndex ) = iCounterAfter;
+		instance.m_nCounter.Set( iCombinedIndex, iCounterAfter );
+
+		if ( iTierBefore < iTierAfter )
+		{
+			Assert( !"TODO: notification!" );
+		}
 
 		if ( rd_debug_inventory_dynamic_props.GetBool() )
 		{
-			DevMsg( "[%c] Item %llu #%d '%s' dynamic property '%s' '%s' changed (%s) %+lld from %lld to %lld.\n", IsClientDll() ? 'C' : 'S', instance.m_iItemInstanceID, instance.m_iItemDefID, pItemDef->Name.Get(), pAccessoryDef->Name.Get(), szPropertyName, bRelative ? "relative" : "absolute", iAmount, iCounterBefore, iCounterAfter );
+			DevMsg( "[%c] Item %llu #%d '%s' dynamic property '%s' '%s' changed (%s) %+lld from %lld (tier %d) to %lld (tier %d).\n", IsClientDll() ? 'C' : 'S', instance.m_iItemInstanceID, instance.m_iItemDefID, pItemDef->Name.Get(), pAccessoryDef->Name.Get(), szPropertyName, bRelative ? "relative" : "absolute", iAmount, iCounterBefore, iTierBefore, iCounterAfter, iTierAfter );
 		}
 	}
 
@@ -2283,6 +2296,27 @@ namespace ReactiveDropInventory
 		return ItemSlotMatches( "weapon" ) || ItemSlotMatches( "extra" );
 	}
 
+	int ItemDef_t::GetStrangeTier( int64_t x ) const
+	{
+		int iTier = 0;
+		Assert( x >= 0 );
+
+		FOR_EACH_VEC( StrangeNotify, i )
+		{
+			if ( StrangeNotify[i] > x )
+				break;
+
+			iTier++;
+		}
+
+		if ( StrangeNotifyEvery > 0 && x > 0 )
+		{
+			iTier += x / StrangeNotifyEvery;
+		}
+
+		return iTier;
+	}
+
 	static bool ParseDynamicProps( CUtlStringMap<CUtlString> & props, const char *szDynamicProps )
 	{
 		jsmn_parser parser;
@@ -2944,6 +2978,24 @@ namespace ReactiveDropInventory
 		FETCH_PROPERTY( "is_basic" );
 		Assert( !V_strcmp( szValue, "" ) || !V_strcmp( szValue, "1" ) || !V_strcmp( szValue, "0" ) );
 		pItemDef->IsBasic = !V_strcmp( szValue, "1" );
+
+		FETCH_PROPERTY( "strange_notify_every" );
+		if ( *szValue )
+		{
+			pItemDef->StrangeNotifyEvery = strtoll( szValue, NULL, 10 );
+			Assert( pItemDef->StrangeNotifyEvery > 0 );
+		}
+		for ( int i = 0; ; i++ )
+		{
+			FETCH_PROPERTY( CFmtStr( "strange_notify_%d", i ) );
+			if ( !*szValue )
+				break;
+
+			pItemDef->StrangeNotify.AddToTail( strtoll( szValue, NULL, 10 ) );
+			Assert( pItemDef->StrangeNotify.Tail() > 0 );
+			Assert( i == 0 || pItemDef->StrangeNotify[i - 1] < pItemDef->StrangeNotify[i] );
+			Assert( pItemDef->StrangeNotifyEvery == 0 || pItemDef->StrangeNotifyEvery > pItemDef->StrangeNotify[i] );
+		}
 
 #ifdef CLIENT_DLL
 		pItemDef->Icon = NULL;

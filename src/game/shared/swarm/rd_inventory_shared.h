@@ -61,6 +61,8 @@ namespace ReactiveDropInventory
 		CUtlString AccessoryDescription;
 		Color BackgroundColor;
 		Color NameColor;
+		int64_t StrangeNotifyEvery{ 0 };
+		CUtlVector<int64_t> StrangeNotify;
 		bool AfterDescriptionOnlyMultiStack : 1;
 		bool HasInGameDescription : 1;
 		bool HasBorder : 1;
@@ -74,6 +76,7 @@ namespace ReactiveDropInventory
 
 		bool ItemSlotMatches( const char *szRequiredSlot ) const;
 		bool ItemSlotMatchesAnyDynamic() const;
+		int GetStrangeTier( int64_t x ) const;
 	};
 
 	// Data extracted from SteamInventoryResult_t; it is safe to destroy the result after constructing this data type.
