@@ -250,6 +250,69 @@ void CReactiveDropWorkshop::SaveDisabledAddons()
 }
 
 #ifdef GAME_DLL
+class LoadWorkshopCollection_t
+{
+public:
+	LoadWorkshopCollection_t( SteamAPICall_t hCall )
+	{
+		m_QueryCompletedCall.SetGameserverFlag();
+		m_QueryCompletedCall.Set( hCall, this, &LoadWorkshopCollection_t::QueryCompletedCall );
+	}
+
+	CCallResult<LoadWorkshopCollection_t, SteamUGCQueryCompleted_t> m_QueryCompletedCall;
+	void QueryCompletedCall( SteamUGCQueryCompleted_t *pResult, bool bIOFailure )
+	{
+		delete this;
+
+		if ( bIOFailure )
+		{
+			Warning( "Workshop collection query failed: IO Failure\n" );
+			return;
+		}
+
+		ISteamUGC *pWorkshop = SteamGameServerUGC();
+		Assert( pWorkshop );
+
+		if ( pResult->m_eResult != k_EResultOK )
+		{
+			Warning( "Workshop collection query failed: EResult %d (%s)\n", pResult->m_eResult, UTIL_RD_EResultToString( pResult->m_eResult ) );
+			pWorkshop->ReleaseQueryUGCRequest( pResult->m_handle );
+			return;
+		}
+
+		if ( !pResult->m_unNumResultsReturned )
+		{
+			Warning( "Workshop collection query failed. (no results)\n" );
+			pWorkshop->ReleaseQueryUGCRequest( pResult->m_handle );
+			return;
+		}
+
+		SteamUGCDetails_t details;
+		if ( !pWorkshop->GetQueryUGCResult( pResult->m_handle, 0, &details ) )
+		{
+			Warning( "Workshop collection query failed. (failed to get result)\n" );
+			pWorkshop->ReleaseQueryUGCRequest( pResult->m_handle );
+			return;
+		}
+
+		PublishedFileId_t *children = ( PublishedFileId_t * )stackalloc( sizeof( PublishedFileId_t ) * details.m_unNumChildren );
+		if ( !pWorkshop->GetQueryUGCChildren( pResult->m_handle, 0, children, details.m_unNumChildren ) )
+		{
+			Warning( "Workshop collection query failed. (failed to get children)\n" );
+			pWorkshop->ReleaseQueryUGCRequest( pResult->m_handle );
+			return;
+		}
+
+		for ( uint32_t i = 0; i < details.m_unNumChildren; i++ )
+		{
+			DevMsg( "Loading workshop addon %d/%d from collection: %llu\n", i + 1, details.m_unNumChildren, children[i] );
+			g_ReactiveDropWorkshop.EnableServerWorkshopItem( children[i] );
+		}
+
+		pWorkshop->ReleaseQueryUGCRequest( pResult->m_handle );
+	}
+};
+
 bool CReactiveDropWorkshop::DedicatedServerWorkshopSetup()
 {
 	if ( !SteamGameServer() || !SteamGameServer()->BLoggedOn() )
@@ -1923,71 +1986,6 @@ bool CReactiveDropWorkshop::UpdateAndLoadAddon( PublishedFileId_t id, bool bHigh
 	}
 	return false;
 }
-
-#ifdef GAME_DLL
-class LoadWorkshopCollection_t
-{
-public:
-	LoadWorkshopCollection_t( SteamAPICall_t hCall )
-	{
-		m_QueryCompletedCall.SetGameserverFlag();
-		m_QueryCompletedCall.Set( hCall, this, &LoadWorkshopCollection_t::QueryCompletedCall );
-	}
-
-	CCallResult<LoadWorkshopCollection_t, SteamUGCQueryCompleted_t> m_QueryCompletedCall;
-	void QueryCompletedCall( SteamUGCQueryCompleted_t *pResult, bool bIOFailure )
-	{
-		delete this;
-
-		if ( bIOFailure )
-		{
-			Warning( "Workshop collection query failed: IO Failure\n" );
-			return;
-		}
-
-		ISteamUGC *pWorkshop = SteamGameServerUGC();
-		Assert( pWorkshop );
-
-		if ( pResult->m_eResult != k_EResultOK )
-		{
-			Warning( "Workshop collection query failed: EResult %d (%s)\n", pResult->m_eResult, UTIL_RD_EResultToString( pResult->m_eResult ) );
-			pWorkshop->ReleaseQueryUGCRequest(pResult->m_handle);
-			return;
-		}
-
-		if ( !pResult->m_unNumResultsReturned )
-		{
-			Warning( "Workshop collection query failed. (no results)\n" );
-			pWorkshop->ReleaseQueryUGCRequest( pResult->m_handle );
-			return;
-		}
-
-		SteamUGCDetails_t details;
-		if ( !pWorkshop->GetQueryUGCResult( pResult->m_handle, 0, &details ) )
-		{
-			Warning( "Workshop collection query failed. (failed to get result)\n" );
-			pWorkshop->ReleaseQueryUGCRequest( pResult->m_handle );
-			return;
-		}
-
-		PublishedFileId_t *children = (PublishedFileId_t *)stackalloc( sizeof( PublishedFileId_t ) * details.m_unNumChildren );
-		if ( !pWorkshop->GetQueryUGCChildren( pResult->m_handle, 0, children, details.m_unNumChildren ) )
-		{
-			Warning( "Workshop collection query failed. (failed to get children)\n" );
-			pWorkshop->ReleaseQueryUGCRequest( pResult->m_handle );
-			return;
-		}
-
-		for ( uint32_t i = 0; i < details.m_unNumChildren; i++ )
-		{
-			DevMsg( "Loading workshop addon %d/%d from collection: %llu\n", i + 1, details.m_unNumChildren, children[i] );
-			g_ReactiveDropWorkshop.EnableServerWorkshopItem( children[i] );
-		}
-
-		pWorkshop->ReleaseQueryUGCRequest( pResult->m_handle );
-	}
-};
-#endif
 
 void CReactiveDropWorkshop::RealLoadAddon( PublishedFileId_t id )
 {
