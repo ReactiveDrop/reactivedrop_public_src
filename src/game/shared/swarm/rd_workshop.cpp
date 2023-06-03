@@ -55,6 +55,7 @@ ConVar rd_workshop_query_cache( "rd_workshop_query_cache", "300", FCVAR_NONE, "I
 ConVar sv_workshop_debug( "sv_workshop_debug", "0", FCVAR_NONE, "If 1 workshop debugging messages will be printed in console" );
 #define rd_workshop_debug sv_workshop_debug
 ConVar rd_workshop_official_addons( "rd_workshop_official_addons", "2", FCVAR_NONE, "0 = load workshop.cfg on official dedicated servers, 1 = load official addon list, 2 = load both" );
+ConVar rd_workshop_is_official_dedicated_server( "rd_workshop_is_official_dedicated_server", "0", FCVAR_HIDDEN, "Force using logic for official dedicated server addon loading" );
 #endif
 
 extern ConVar rd_challenge;
@@ -256,7 +257,8 @@ bool CReactiveDropWorkshop::DedicatedServerWorkshopSetup()
 		return false;
 	}
 
-	if ( !SteamGameServerUGC() )
+	ISteamUGC *pWorkshop = SteamGameServerUGC();
+	if ( !pWorkshop )
 	{
 		Warning( "No Steam connection. Skipping workshop.\n" );
 		return true;
@@ -269,19 +271,36 @@ bool CReactiveDropWorkshop::DedicatedServerWorkshopSetup()
 		char szWorkshopDir[MAX_PATH];
 		V_ComposeFileName( szDir, "workshop", szWorkshopDir, sizeof( szWorkshopDir ) );
 
-		bool bInit = SteamGameServerUGC()->BInitWorkshopForGameServer( 563560, szWorkshopDir );
+		bool bInit = pWorkshop->BInitWorkshopForGameServer( 563560, szWorkshopDir );
 		if ( !bInit )
 		{
 			DevWarning( "Workshop init failed! Trying to continue anyway...\n" );
 		}
 	}
 
+	m_ServerWorkshopAddons.Purge();
 	m_bAnyServerUpdates = false;
 	m_bStartingUp = true;
-	if ( rd_workshop_official_addons.GetInt() != 1 )
+	if ( !rd_workshop_is_official_dedicated_server.GetBool() || rd_workshop_official_addons.GetInt() != 1 )
 	{
 		engine->ServerCommand( "exec workshop.cfg\n" );
 		engine->ServerExecute();
+	}
+	if ( rd_workshop_is_official_dedicated_server.GetBool() && rd_workshop_official_addons.GetInt() != 0 )
+	{
+		// engine->ServerCommand( "rd_enable_workshop_item 2816464806\n" );
+		// engine->ServerExecute();
+
+		// It's a collection, so let's just cut to the chase.
+		PublishedFileId_t id = 2816464806;
+		UGCQueryHandle_t hQuery = pWorkshop->CreateQueryUGCDetailsRequest( &id, 1 );
+		pWorkshop->SetReturnOnlyIDs( hQuery, true );
+		pWorkshop->SetReturnChildren( hQuery, true );
+
+		if ( rd_workshop_query_cache.GetInt() > 0 )
+			pWorkshop->SetAllowCachedResponse( hQuery, rd_workshop_query_cache.GetInt() );
+
+		new LoadWorkshopCollection_t( pWorkshop->SendQueryUGCRequest( hQuery ) );
 	}
 	m_bStartingUp = false;
 	if ( m_bAnyServerUpdates )
@@ -1926,42 +1945,46 @@ public:
 			return;
 		}
 
+		ISteamUGC *pWorkshop = SteamGameServerUGC();
+		Assert( pWorkshop );
+
 		if ( pResult->m_eResult != k_EResultOK )
 		{
 			Warning( "Workshop collection query failed: EResult %d (%s)\n", pResult->m_eResult, UTIL_RD_EResultToString( pResult->m_eResult ) );
-			SteamGameServerUGC()->ReleaseQueryUGCRequest( pResult->m_handle );
+			pWorkshop->ReleaseQueryUGCRequest(pResult->m_handle);
 			return;
 		}
 
 		if ( !pResult->m_unNumResultsReturned )
 		{
 			Warning( "Workshop collection query failed. (no results)\n" );
-			SteamGameServerUGC()->ReleaseQueryUGCRequest( pResult->m_handle );
+			pWorkshop->ReleaseQueryUGCRequest( pResult->m_handle );
 			return;
 		}
 
 		SteamUGCDetails_t details;
-		if ( !SteamGameServerUGC()->GetQueryUGCResult( pResult->m_handle, 0, &details ) )
+		if ( !pWorkshop->GetQueryUGCResult( pResult->m_handle, 0, &details ) )
 		{
 			Warning( "Workshop collection query failed. (failed to get result)\n" );
-			SteamGameServerUGC()->ReleaseQueryUGCRequest( pResult->m_handle );
+			pWorkshop->ReleaseQueryUGCRequest( pResult->m_handle );
 			return;
 		}
 
 		PublishedFileId_t *children = (PublishedFileId_t *)stackalloc( sizeof( PublishedFileId_t ) * details.m_unNumChildren );
-		if ( !SteamGameServerUGC()->GetQueryUGCChildren( pResult->m_handle, 0, children, details.m_unNumChildren ) )
+		if ( !pWorkshop->GetQueryUGCChildren( pResult->m_handle, 0, children, details.m_unNumChildren ) )
 		{
 			Warning( "Workshop collection query failed. (failed to get children)\n" );
-			SteamGameServerUGC()->ReleaseQueryUGCRequest( pResult->m_handle );
+			pWorkshop->ReleaseQueryUGCRequest( pResult->m_handle );
 			return;
 		}
 
 		for ( uint32_t i = 0; i < details.m_unNumChildren; i++ )
 		{
+			DevMsg( "Loading workshop addon %d/%d from collection: %llu\n", i + 1, details.m_unNumChildren, children[i] );
 			g_ReactiveDropWorkshop.EnableServerWorkshopItem( children[i] );
 		}
 
-		SteamGameServerUGC()->ReleaseQueryUGCRequest( pResult->m_handle );
+		pWorkshop->ReleaseQueryUGCRequest( pResult->m_handle );
 	}
 };
 #endif
