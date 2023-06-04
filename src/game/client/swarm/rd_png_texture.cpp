@@ -88,6 +88,8 @@ bool CRD_PNG_Texture::Init( const char *szDirectory, uint32_t iHash )
 	Assert( !m_iTextureID );
 	Assert( !m_bReady );
 
+	m_DownloadTimer.Start();
+
 	V_snprintf( m_szFileNameVMT, sizeof( m_szFileNameVMT ), "materials/%s/%08x.vmt", szDirectory, iHash );
 	V_snprintf( m_szFileNameVTF, sizeof( m_szFileNameVTF ), "materials/%s/%08x.vtf", szDirectory, iHash );
 
@@ -105,6 +107,7 @@ bool CRD_PNG_Texture::Init( const char *szDirectory, uint32_t iHash )
 		vgui::surface()->DrawSetTextureFile( m_iTextureID, m_szFileNameVMT + V_strlen( "materials/" ), true, false );
 		vgui::surface()->DrawGetTextureSize( m_iTextureID, m_nWide, m_nTall );
 		m_bReady = true;
+		m_DownloadTimer.End();
 
 		return true;
 	}
@@ -112,17 +115,178 @@ bool CRD_PNG_Texture::Init( const char *szDirectory, uint32_t iHash )
 	return false;
 }
 
-void CRD_PNG_Texture::OnPNGDataReady( const unsigned char *pData, size_t nDataSize, const char *szIconDebugName )
+static void SmearAlpha( uint8_t *rgba, int wide, int tall )
+{
+	uint16_t *pDistanceToColor = new uint16_t[wide * tall];
+	bool bAnyOpaque = false, bAnyTransparent = false;
+
+	// first, we set each pixel to either 0 (for pixels with color information) or 1 (for pixels with an alpha value of 0).
+	for ( int y = 0; y < tall; y++ )
+	{
+		for ( int x = 0; x < wide; x++ )
+		{
+			int i = x + y * wide;
+
+			if ( rgba[i * 4 + 3] == 0 )
+			{
+				pDistanceToColor[i] = 1;
+				bAnyTransparent = true;
+			}
+			else
+			{
+				pDistanceToColor[i] = 0;
+				bAnyOpaque = true;
+			}
+		}
+	}
+
+	// if we don't have at least one 0 and at least one 1, we can't do anything.
+	if ( !bAnyTransparent || !bAnyOpaque )
+	{
+		delete[] pDistanceToColor;
+		return;
+	}
+
+	// iteratively convert 1 pixels to instead have the manhattan distance to the nearest 0 pixel.
+	bool bKeepGoing = true;
+	uint16_t iMaxDistance = 0;
+	while ( bKeepGoing )
+	{
+		iMaxDistance++;
+		bKeepGoing = false;
+
+		for ( int y = 0; y < tall; y++ )
+		{
+			for ( int x = 0; x < wide; x++ )
+			{
+				int i = x + y * wide;
+				uint16_t iDist = pDistanceToColor[i];
+				if ( iDist != iMaxDistance )
+					continue;
+
+				uint16_t iLeft = x <= 0 ? iDist : pDistanceToColor[i - 1];
+				uint16_t iRight = x >= wide - 1 ? iDist : pDistanceToColor[i + 1];
+				uint16_t iUp = y <= 0 ? iDist : pDistanceToColor[i - wide];
+				uint16_t iDown = y >= tall - 1 ? iDist : pDistanceToColor[i + wide];
+
+				uint16_t iMinNeighbor = MIN( MIN( iLeft, iRight ), MIN( iUp, iDown ) );
+				if ( iDist < iMinNeighbor + 1 )
+				{
+					pDistanceToColor[i]++;
+					bKeepGoing = true;
+				}
+			}
+		}
+	}
+
+	// loop through and make fully transparent pixels inherit the color of their neighbors.
+	for ( uint16_t iCurrentDistance = 1; iCurrentDistance <= iMaxDistance; iCurrentDistance++ )
+	{
+		for ( int y = 0; y < tall; y++ )
+		{
+			for ( int x = 0; x < wide; x++ )
+			{
+				int i = x + y * wide;
+				if ( pDistanceToColor[i] != iCurrentDistance )
+					continue;
+
+				int r = 0, g = 0, b = 0, iCount = 0;
+				if ( x > 0 && pDistanceToColor[i - 1] < iCurrentDistance )
+				{
+					// left
+					r += rgba[( i - 1 ) * 4 + 0];
+					g += rgba[( i - 1 ) * 4 + 1];
+					b += rgba[( i - 1 ) * 4 + 2];
+					iCount++;
+				}
+				if ( x < wide - 1 && pDistanceToColor[i + 1] < iCurrentDistance )
+				{
+					// right
+					r += rgba[( i + 1 ) * 4 + 0];
+					g += rgba[( i + 1 ) * 4 + 1];
+					b += rgba[( i + 1 ) * 4 + 2];
+					iCount++;
+				}
+				if ( y > 0 && pDistanceToColor[i - wide] < iCurrentDistance )
+				{
+					// up
+					r += rgba[( i - wide ) * 4 + 0];
+					g += rgba[( i - wide ) * 4 + 1];
+					b += rgba[( i - wide ) * 4 + 2];
+					iCount++;
+				}
+				if ( y < tall - 1 && pDistanceToColor[i + wide] < iCurrentDistance )
+				{
+					// down
+					r += rgba[( i + wide ) * 4 + 0];
+					g += rgba[( i + wide ) * 4 + 1];
+					b += rgba[( i + wide ) * 4 + 2];
+					iCount++;
+				}
+				if ( x > 0 && y > 0 && pDistanceToColor[i - wide - 1] < iCurrentDistance )
+				{
+					// up left
+					r += rgba[( i - wide - 1 ) * 4 + 0];
+					g += rgba[( i - wide - 1 ) * 4 + 1];
+					b += rgba[( i - wide - 1 ) * 4 + 2];
+					iCount++;
+				}
+				if ( x < wide - 1 && y > 0 && pDistanceToColor[i - wide + 1] < iCurrentDistance )
+				{
+					// up right
+					r += rgba[( i - wide + 1 ) * 4 + 0];
+					g += rgba[( i - wide + 1 ) * 4 + 1];
+					b += rgba[( i - wide + 1 ) * 4 + 2];
+					iCount++;
+				}
+				if ( x > 0 && y < tall - 1 && pDistanceToColor[i + wide - 1] < iCurrentDistance )
+				{
+					// down left
+					r += rgba[( i + wide - 1 ) * 4 + 0];
+					g += rgba[( i + wide - 1 ) * 4 + 1];
+					b += rgba[( i + wide - 1 ) * 4 + 2];
+					iCount++;
+				}
+				if ( x < wide - 1 && y < tall - 1 && pDistanceToColor[i + wide + 1] < iCurrentDistance )
+				{
+					// down right
+					r += rgba[( i + wide + 1 ) * 4 + 0];
+					g += rgba[( i + wide + 1 ) * 4 + 1];
+					b += rgba[( i + wide + 1 ) * 4 + 2];
+					iCount++;
+				}
+
+				Assert( iCount > 0 );
+				Assert( rgba[i * 4 + 3] == 0 );
+
+				rgba[i * 4 + 0] = r / iCount;
+				rgba[i * 4 + 1] = g / iCount;
+				rgba[i * 4 + 2] = b / iCount;
+			}
+		}
+	}
+
+	delete[] pDistanceToColor;
+}
+
+void CRD_PNG_Texture::OnPNGDataReady( const void *pData, size_t nDataSize, const char *szIconDebugName )
 {
 	Assert( !m_iTextureID );
 	Assert( !m_bReady );
 
+	m_DownloadTimer.End();
+
+	CFastTimer timer;
+	timer.Start();
+
 	uint8_t *rgba = NULL;
-	unsigned error = lodepng_decode32( &rgba, ( unsigned * )&m_nWide, ( unsigned * )&m_nTall, pData, nDataSize );
+	unsigned error = lodepng_decode32( &rgba, ( unsigned * )&m_nWide, ( unsigned * )&m_nTall, ( const unsigned char * )pData, nDataSize );
 	if ( error )
 	{
 		Warning( "Decoding %s: lodepng error %d: %s\n", szIconDebugName, error, lodepng_error_text( error ) );
 	}
+
+	SmearAlpha( rgba, m_nWide, m_nTall );
 
 	IVTFTexture *pVTF = CreateVTFTexture();
 	pVTF->Init( m_nWide, m_nTall, 1, IMAGE_FORMAT_RGBA8888, TEXTUREFLAGS_EIGHTBITALPHA | TEXTUREFLAGS_CLAMPS | TEXTUREFLAGS_CLAMPT, 1 );
@@ -161,6 +325,10 @@ void CRD_PNG_Texture::OnPNGDataReady( const unsigned char *pData, size_t nDataSi
 	m_iTextureID = vgui::surface()->CreateNewTextureID();
 	vgui::surface()->DrawSetTextureFile( m_iTextureID, szStrippedName, true, false );
 	m_bReady = true;
+
+	timer.End();
+
+	Msg( "Recovered from cache miss for PNG texture %s (%s) in %lf+%lf seconds.\n", m_szFileNameVMT, szIconDebugName, m_DownloadTimer.GetDuration().GetSeconds(), timer.GetDuration().GetSeconds() );
 }
 
 void CRD_PNG_Texture::OnFailedToLoadData( const char *szReason, const char *szIconDebugName )
