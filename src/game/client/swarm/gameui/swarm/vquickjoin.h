@@ -19,9 +19,11 @@ namespace BaseModUI
 				TYPE_UNKNOWN,
 				TYPE_PLAYER,
 				TYPE_SERVER,
+				TYPE_SERVER_RANKED,
+				TYPE_PUBLIC_LOBBY_COUNT_PLACEHOLDER,
 			} m_eType;
 			XUID m_xuid;
-			char m_szName[ MAX_PLAYER_NAME_LENGTH ];
+			wchar_t m_wszName[MAX( k_cwchPersonaNameMax, k_cbMaxGameServerName )];
 		};
 
 		QuickJoinPanel( vgui::Panel* parent, const char* panelName );
@@ -35,6 +37,7 @@ namespace BaseModUI
 		virtual void NavigateToChild( Panel *pNavigateTo );
 		virtual void NavigateTo();
 		virtual void NavigateFrom();
+		virtual void OnNavigateFrom( const char *panelName );
 
 		virtual void OnCursorEntered();
 

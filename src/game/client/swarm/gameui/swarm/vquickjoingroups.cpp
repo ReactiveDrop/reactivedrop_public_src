@@ -14,6 +14,7 @@ using namespace vgui;
 
 extern ConVar cl_quick_join_scroll_max;
 extern ConVar cl_quick_join_scroll_start;
+extern ConVar cl_quick_join_panel_fakecount;
 
 DECLARE_BUILD_FACTORY( QuickJoinGroupsPanel );
 
@@ -52,6 +53,12 @@ void QuickJoinGroupsPanel::OnMousePressed( vgui::MouseCode code )
 
 void QuickJoinGroupsPanel::AddServersToList( void )
 {
+	if ( cl_quick_join_panel_fakecount.GetInt() >= 0 )
+	{
+		BaseClass::AddServersToList();
+		return;
+	}
+
 	IServerManager *mgr = g_pMatchFramework->GetMatchSystem()->GetUserGroupsServerManager();
 	int iNumServers = mgr->GetNumServers();
 
@@ -73,7 +80,7 @@ void QuickJoinGroupsPanel::AddServersToList( void )
 		QuickInfo qi;
 		qi.m_eType = qi.TYPE_SERVER;
 		qi.m_xuid = pServer->GetOnlineId();
-		Q_strncpy( qi.m_szName, szName, sizeof( qi.m_szName ) - 1 );
+		V_UTF8ToUnicode( szName, qi.m_wszName, sizeof( qi.m_wszName ) );
 		
 		m_FriendInfo.AddToTail( qi );
 	}

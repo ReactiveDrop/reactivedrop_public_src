@@ -779,32 +779,35 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 				if (ASWGameRules()->RosterSelect( this, iRosterIndex, nPreferredSlot ) )
 				{
 					// did they specify a previous inventory selection too?
-					if ( args.ArgC() == 6 )
+					if ( args.ArgC() == 9 )
 					{
 						int iMarineResource = -1;
-						for (int i=0;i<pGameResource->GetMaxMarineResources();i++)
+						for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
 						{
-							CASW_Marine_Resource *pMR = pGameResource->GetMarineResource(i);
-							if (pMR && pMR->GetProfileIndex() == iRosterIndex)
+							CASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
+							if ( pMR && pMR->GetProfileIndex() == iRosterIndex )
 							{
 								iMarineResource = i;
 								break;
 							}
 						}
-						if (iMarineResource == -1)
+						if ( iMarineResource == -1 )
 							return true;
 
 						m_bRequestedSpectator = false;
 						int primary = atoi( args[3] );
 						int secondary = atoi( args[4] );
 						int extra = atoi( args[5] );
+						int iDynamicPrimary = atoi( args[6] );
+						int iDynamicSecondary = atoi( args[7] );
+						int iDynamicExtra = atoi( args[8] );
 
-						if (primary != -1)
-							ASWGameRules()->LoadoutSelect(this, iRosterIndex, 0, primary);
-						if (secondary != -1)
-							ASWGameRules()->LoadoutSelect(this, iRosterIndex, 1, secondary);
-						if (extra != -1)
-							ASWGameRules()->LoadoutSelect(this, iRosterIndex, 2, extra);
+						if ( primary != -1 )
+							ASWGameRules()->LoadoutSelect( this, iRosterIndex, 0, primary, iDynamicPrimary );
+						if ( secondary != -1 )
+							ASWGameRules()->LoadoutSelect( this, iRosterIndex, 1, secondary, iDynamicSecondary );
+						if ( extra != -1 )
+							ASWGameRules()->LoadoutSelect( this, iRosterIndex, 2, extra, iDynamicExtra );
 					}
 				}
 
@@ -852,26 +855,29 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			}
 			else if ( FStrEq( pcmd, "cl_loadouta" ) )			// selecting equipment
 			{
-				if ( args.ArgC() < 5 )
+				if ( args.ArgC() < 9 )
 				{
 					Warning( "Player sent bad loadouta command\n" );
 					return false;
 				}
 
-				int iProfileIndex = clamp(atoi( args[1] ), 0, ASW_NUM_MARINE_PROFILES-1);
-				int iPrimary = atoi( args[2] );
-				int iSecondary = atoi( args[3] );
-				int iExtra = atoi( args[4] );
+				int iProfileIndex = clamp( atoi( args[1] ), 0, ASW_NUM_MARINE_PROFILES - 1 );
+				Assert( atoi( args[2] ) == -1 ); // dummy arg so that the arg count is the same as for other loadout commands
+				int iPrimary = atoi( args[3] );
+				int iSecondary = atoi( args[4] );
+				int iExtra = atoi( args[5] );
+				int iDynamicPrimary = atoi( args[6] );
+				int iDynamicSecondary = atoi( args[7] );
+				int iDynamicExtra = atoi( args[8] );
 
-				if (iPrimary >=0)
-					ASWGameRules()->LoadoutSelect(this, iProfileIndex, 0, iPrimary);
-				if (iSecondary >=0)
-					ASWGameRules()->LoadoutSelect(this, iProfileIndex, 1, iSecondary);
-				if (iExtra >=0)
-					ASWGameRules()->LoadoutSelect(this, iProfileIndex, 2, iExtra);
+				if ( iPrimary >= 0 )
+					ASWGameRules()->LoadoutSelect( this, iProfileIndex, 0, iPrimary, iDynamicPrimary );
+				if ( iSecondary >= 0 )
+					ASWGameRules()->LoadoutSelect( this, iProfileIndex, 1, iSecondary, iDynamicSecondary );
+				if ( iExtra >= 0 )
+					ASWGameRules()->LoadoutSelect( this, iProfileIndex, 2, iExtra, iDynamicExtra );
 
 				return true;
-
 			}
 			else if ( FStrEq( pcmd, "cl_start" ) )			// done selecting, go ingame
 			{
@@ -1411,7 +1417,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 		if ( ASWGameRules()->RosterSelect( this, iRosterIndex, -2 ) )
 		{
 			// did they specify a previous inventory selection too?
-			if (args.ArgC() == 5)
+			if (args.ArgC() == 8)
 			{
 				int iMarineResource = -1;
 				for (int i=0;i<pGameResource->GetMaxMarineResources();i++)
@@ -1430,13 +1436,16 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 				int primary = atoi( args[2] );
 				int secondary = atoi( args[3] );
 				int extra = atoi( args[4] );
+				int iDynamicPrimary = atoi( args[5] );
+				int iDynamicSecondary = atoi( args[6] );
+				int iDynamicExtra = atoi( args[7] );
 
-				if (primary != -1)
-					ASWGameRules()->LoadoutSelect(this, iRosterIndex, 0, primary);
-				if (secondary != -1)
-					ASWGameRules()->LoadoutSelect(this, iRosterIndex, 1, secondary);
-				if (extra != -1)
-					ASWGameRules()->LoadoutSelect(this, iRosterIndex, 2, extra);
+				if ( primary != -1 )
+					ASWGameRules()->LoadoutSelect( this, iRosterIndex, 0, primary, iDynamicPrimary );
+				if ( secondary != -1 )
+					ASWGameRules()->LoadoutSelect( this, iRosterIndex, 1, secondary, iDynamicSecondary );
+				if ( extra != -1 )
+					ASWGameRules()->LoadoutSelect( this, iRosterIndex, 2, extra, iDynamicExtra );
 			}
 		}
 
@@ -1446,7 +1455,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 	{
 		if ( ASWDeathmatchMode() || ASWGameRules()->GetGameState() == ASW_GS_BRIEFING )
 		{
-			if ( args.ArgC() < 4 )
+			if ( args.ArgC() < 5 )
 			{
 				Warning( "Player sent bad loadout command\n" );
 				return false;
@@ -1455,8 +1464,9 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			int iProfileIndex = clamp(atoi( args[1] ), 0, ASW_NUM_MARINE_PROFILES-1);
 			int iInvSlot = atoi( args[2] );
 			int iEquipIndex = atoi( args[3] );
+			int iDynamicIndex = atoi( args[4] );
 
-			ASWGameRules()->LoadoutSelect(this, iProfileIndex, iInvSlot, iEquipIndex);
+			ASWGameRules()->LoadoutSelect( this, iProfileIndex, iInvSlot, iEquipIndex, iDynamicIndex );
 			return true;
 		}
 		else 
@@ -1520,18 +1530,6 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			}
 		}
 		return true;
-	}
-	else if ( FStrEq( pcmd, "cl_autoreload" ) )			// telling the server you've read an info message
-	{
-		if ( args.ArgC() < 2 )
-		{
-			Warning( "Player sent bad cl_autoreload command\n" );
-			return false;
-		}
-
-		m_bAutoReload = (atoi(args[1]) == 1);
-		return true;
-
 	}
 	else if ( FStrEq( pcmd, "cl_switchm" ) )			// selecting a marine from the roster
 	{
@@ -1844,6 +1842,26 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 		}
 		m_fMapGenerationProgress = clamp(atof(args[1]), 0.0f, 1.0f);
 		return true;
+	}
+	else if ( FStrEq( pcmd, "menuselect" ) )
+	{
+		if ( !g_pScriptVM || !ASWGameRules() )
+			return BaseClass::ClientCommand( args );
+
+		ScriptVariant_t scriptArgs[2];
+
+		scriptArgs[0] = ToHScript( this );
+		scriptArgs[1] = args.GetCommandString();
+
+		// forward command as it was documented in the release that added this feature
+		ASWGameRules()->RunScriptFunctionInListenerScopes( "UserConsoleCommand", NULL, NELEMS( scriptArgs ), scriptArgs );
+
+		// forward just the menu number
+		scriptArgs[1] = V_atoi( args[1] );
+		ASWGameRules()->RunScriptFunctionInListenerScopes( "UserMenuSelect", NULL, NELEMS( scriptArgs ), scriptArgs );
+
+		// act as if the command was not handled
+		return BaseClass::ClientCommand( args );
 	}
 	
 	return BaseClass::ClientCommand( args );

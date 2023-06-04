@@ -246,7 +246,7 @@ RD_Cause_of_Death_t GetCauseOfDeath( CBaseEntity *pVictim, const CTakeDamageInfo
 		return DEATHCAUSE_FALLING;
 	}
 
-	if ( info.GetAttacker() && V_stristr( info.GetAttacker()->GetClassname(), "_hurt" ) )
+	if ( info.GetAttacker() && ( V_stristr( info.GetAttacker()->GetClassname(), "_hurt" ) || ( info.GetAttacker()->entindex() == 0 && info.GetDamageType() == DMG_GENERIC ) ) )
 	{
 		return DEATHCAUSE_TRIGGER;
 	}
@@ -543,7 +543,7 @@ RD_Cause_of_Death_t GetCauseOfDeath( CBaseEntity *pVictim, const CTakeDamageInfo
 		return DEATHCAUSE_ENV_LASER;
 	}
 
-	if ( info.GetAttacker() && ( info.GetAttacker()->ClassMatches( "env_explosion" ) || info.GetAttacker()->ClassMatches( "asw_env_explosion" ) ) )
+	if ( info.GetAttacker() && ( info.GetAttacker()->ClassMatches( "env_explosion" ) || info.GetAttacker()->ClassMatches( "asw_env_explosion" ) || info.GetAttacker()->ClassMatches( "env_physexplosion" ) ) )
 	{
 		return DEATHCAUSE_ENV_EXPLOSION;
 	}

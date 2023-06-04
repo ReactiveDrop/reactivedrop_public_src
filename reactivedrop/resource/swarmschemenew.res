@@ -280,7 +280,9 @@ Scheme
 		// left aligned within the focus
 		SmallButton.Style							"7"
 		SmallButton.TextInsetY						"1"
-		
+
+		MediumButton.Style						"8"
+
 		// specialized button, only appears in game mode carousel
 		GameModeButton.Style						"9"
 		GameModeButton.TextInsetY					"0"		[$WIN32]
@@ -292,10 +294,17 @@ Scheme
 		
 		// who invented this crazy style system anyway?
 		AlienSwarmMenuButton.Style					"11"
-		AlienSwarmMenuButtonSmall.Style					"12"
-		AlienSwarmDefault.Style									"13"
-
-		MediumButton.Style						"8"
+		AlienSwarmMenuButtonSmall.Style				"12"
+		AlienSwarmDefault.Style						"13"
+		ReactiveDropMainMenu.Style					"14"
+		ReactiveDropMainMenuBig.Style				"15"
+		ReactiveDropMainMenuTop.Style				"16"
+		ReactiveDropMainMenuShowcase.Style			"17"
+		ReactiveDropMainMenuShowcase.TextInsetX		"3"
+		ReactiveDropMainMenuShowcase.TextInsetY		"5"
+		ReactiveDropMainMenuTimer.Style				"18"
+		ReactiveDropMainMenuTimer.TextInsetX		"2"
+		ReactiveDropMainMenuTimer.TextInsetY		"1"
 	}
 
 	//
@@ -474,6 +483,18 @@ Scheme
 				"antialias"	"1"
 			}
 		}
+		"DefaultLargeBlur"
+		{
+			"1"
+			{
+				"name"		"Neo Sans"
+				"tall"		"15"
+				"weight"	"100"
+				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
+				"antialias"	"1"
+				"blur"		"3"
+			}
+		}
 		// DefaultExtraLarge
 		"DefaultExtraLarge"
 		{
@@ -484,6 +505,18 @@ Scheme
 				"weight"	"100"
 				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
 				"antialias"	"1"
+			}
+		}
+		"DefaultExtraLargeBlur"
+		{
+			"1"
+			{
+				"name"		"Neo Sans"
+				"tall"		"20"
+				"weight"	"100"
+				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
+				"antialias"	"1"
+				"blur"		"3"
 			}
 		}
 

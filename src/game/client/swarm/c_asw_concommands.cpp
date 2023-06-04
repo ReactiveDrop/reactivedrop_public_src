@@ -17,7 +17,6 @@
 #include "asw_vgui_manipulator.h"
 #include "c_asw_camera_volume.h"
 #include "c_asw_mesh_emitter_entity.h"
-#include "MedalCollectionPanel.h"
 #include "PlayerListPanel.h"
 #include "PlayerListContainer.h"
 #include "vgui\nb_main_panel.h"
@@ -118,32 +117,6 @@ void asw_cain_mail_f()
 	}
 }
 static ConCommand asw_cain_mail("asw_cain_mail", asw_cain_mail_f, "Test shows cain mail", FCVAR_CHEAT);
-
-// lists a few basic details about a marine's profile
-void ASW_InspectProfile( const CCommand &args )
-{	
-	int i = atoi( args[1] );
-	Msg("Marine profile %d\n", i);
-
-	CASW_Marine_Profile *profile = MarineProfileList()->m_Profiles[i];
-	if (profile != NULL)
-	{
-		Msg("Name: %s\n", profile->m_ShortName);
-		Msg("Age: %d\n",
-			profile->m_Age);
-		if (profile->GetMarineClass() == MARINE_CLASS_TECH)
-			Msg("Tech\n");
-		if (profile->GetMarineClass() == MARINE_CLASS_MEDIC)
-			Msg("First Aid\n");
-		if (profile->GetMarineClass() == MARINE_CLASS_SPECIAL_WEAPONS)
-			Msg("Special Weapons\n");
-		if (profile->GetMarineClass() == MARINE_CLASS_NCO)
-			Msg("Sapper\n");
-	}
-}
-
-static ConCommand asw_inspect_profile("asw_inspect_profile", ASW_InspectProfile, "Display a marine's profile", FCVAR_CHEAT);
-
 
 void CC_ASWEditEmitterFrame(void)
 {
@@ -839,71 +812,6 @@ void ShowReportTeam()
 
 }
 static ConCommand rd_team_report_client("rd_team_report_client", ShowReportTeam, "Outputs debug team information ", FCVAR_CHEAT);
-
-void ShowMedalCollection()
-{
-	using namespace vgui;
-
-	vgui::Panel *pMedalPanel = GetClientMode()->GetViewport()->FindChildByName("MedalCollectionPanel", true);
-	if (pMedalPanel)	
-	{
-		pMedalPanel->SetVisible(false);
-		pMedalPanel->MarkForDeletion();
-		pMedalPanel = NULL;
-		return;
-	}
-
-	vgui::Frame* pFrame = NULL;
-	// create the basic frame which holds our briefing panels
-	//Msg("Assigning player list frame\n");
-	if (g_hBriefingFrame.Get())	// todo: handle if they bring it up during debrief or campaign map too
-		pMedalPanel = new vgui::Panel( g_hBriefingFrame.Get(), "MedalCollectionPanel" );
-	else
-	{
-		pFrame = new vgui::Frame( GetClientMode()->GetViewport(), "MedalCollectionPanel" );
-		pMedalPanel = pFrame;
-	}
-	HScheme scheme = vgui::scheme()->LoadSchemeFromFile("resource/SwarmSchemeNew.res", "SwarmSchemeNew");
-	pMedalPanel->SetScheme(scheme);
-	pMedalPanel->SetBounds(0, 0, GetClientMode()->GetViewport()->GetWide(), GetClientMode()->GetViewport()->GetTall());
-	//pMedalPanel->SetPos(GetClientMode()->GetViewport()->GetWide() * 0.15f, GetClientMode()->GetViewport()->GetTall() * 0.15f);
-	//pMedalPanel->SetSize( GetClientMode()->GetViewport()->GetWide() * 0.7f, GetClientMode()->GetViewport()->GetTall() * 0.7f );
-
-	if (pFrame)
-	{		
-		pFrame->SetMoveable(false);
-		pFrame->SetSizeable(false);
-		pFrame->SetMenuButtonVisible(false);
-		pFrame->SetMaximizeButtonVisible(false);
-		pFrame->SetMinimizeToSysTrayButtonVisible(false);
-		pFrame->SetCloseButtonVisible(true);
-		pFrame->SetTitleBarVisible(false);
-	}
-	pMedalPanel->SetPaintBackgroundEnabled(false);
-	pMedalPanel->SetBgColor(Color(0,0,0, 192));
-
-	// the panel to show the info
-	MedalCollectionPanel *collection = new MedalCollectionPanel( pMedalPanel, "Collection" );
-	collection->SetVisible( true );
-	collection->SetBounds(0, 0, pMedalPanel->GetWide(),pMedalPanel->GetTall());
-
-	if (!pMedalPanel)
-	{
-		Msg("Error: pMedalPanel frame was closed immediately on opening\n");
-	}
-	else
-	{
-		pMedalPanel->RequestFocus();
-		pMedalPanel->SetVisible(true);
-		pMedalPanel->SetEnabled(true);
-		pMedalPanel->SetKeyBoardInputEnabled(false);
-		pMedalPanel->SetZPos(200);		
-	}
-}
-
-//static ConCommand asw_medals("asw_medals", ShowMedalCollection, "Shows the players medal collection", FCVAR_CHEAT);
-
-
 
 void asw_list_sounds_f()
 {

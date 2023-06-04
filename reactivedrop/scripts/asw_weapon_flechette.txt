@@ -26,7 +26,7 @@ WeaponData
 	// asw properties
 	"reload_time"			"2.0"
 	"equipicon"			"swarm/EquipIcons/EquipRailgun"
-	"equiplongname"			"#asw_weapon_flechette"
+	"equiplongname"			"#asw_weaponl_flechette"
 	"equipdescription1"		"#asw_wdesc_flechette"
 	"attributestext"		"#asw_weapon_flechette_attributes"
 	// flinching

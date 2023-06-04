@@ -9532,8 +9532,8 @@ void CAI_BaseNPC::ReportAIState( void )
 
 //-----------------------------------------------------------------------------
 
-ConVar ai_report_task_timings_on_limit( "ai_report_task_timings_on_limit", "0", FCVAR_ARCHIVE );
-ConVar ai_think_limit_label( "ai_think_limit_label", "0", FCVAR_ARCHIVE );
+ConVar ai_report_task_timings_on_limit( "ai_report_task_timings_on_limit", "0", FCVAR_NONE );
+ConVar ai_think_limit_label( "ai_think_limit_label", "0", FCVAR_NONE );
 
 void CAI_BaseNPC::ReportOverThinkLimit( float time )
 {

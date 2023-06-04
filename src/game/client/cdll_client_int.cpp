@@ -1169,6 +1169,13 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CGlobalVarsBase *pGloba
 		return false;
 #endif
 
+	if ( !CommandLine()->CheckParm( "-unrestrictcommands" ) && !CommandLine()->CheckParm( "-makedevshots" ) )
+	{
+		// prevent servers from running arbitrary console commands on the client:
+		// this blocks things like "unbindall" from being run by malicious servers or game modes
+		// we need to allow this in certain very specific cases like -makedevshots
+		engine->SetRestrictServerCommands( true );
+	}
 
 	if ( !CommandLine()->CheckParm( "-noscripting") )
 	{

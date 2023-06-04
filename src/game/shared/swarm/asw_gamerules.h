@@ -146,7 +146,7 @@ public:
 	float m_fReserveMarinesEndTime;
 
 	// loadout/equip
-	virtual void			LoadoutSelect( CASW_Player *pPlayer, int iRosterIndex, int iInvSlot, int iEquipIndex);
+	virtual void			LoadoutSelect( CASW_Player *pPlayer, int iRosterIndex, int iInvSlot, int iEquipIndex, int iDynamicIndex );
 	virtual bool			CanHaveAmmo( CBaseCombatCharacter *pPlayer, int iAmmoIndex );
 	void GiveStartingWeaponToMarine( CASW_Marine *pMarine, int iEquipIndex, int iSlot, int iDynamicItemSlot );	// gives the specified marine the specified starting gun and default ammo
 	void AddBonusChargesToPickups();
@@ -565,6 +565,7 @@ public:
 	void SetPingLocation( const SteamNetworkPingLocation_t & location );
 #endif
 
+	CNetworkVar( int, m_iCosmeticRandomSeed );
 	CNetworkString( m_szBriefingVideo, 64 );
 	CNetworkHandle( CBaseEntity, m_hBriefingCamera );
 #ifdef GAME_DLL

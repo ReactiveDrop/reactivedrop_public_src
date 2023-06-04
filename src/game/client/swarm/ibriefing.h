@@ -5,6 +5,7 @@
 #endif
 
 #include "asw_shareddefs.h"
+#include "steam/steam_api.h"
 
 class CASW_Marine_Profile;
 #ifdef CLIENT_DLL
@@ -63,11 +64,13 @@ public:
 
 	virtual void SelectMarine( int nOrder, int nProfileIndex, int nPreferredLobbySlot ) = 0;
 	virtual void SelectBot( int nOrder, int nProfileIndex) = 0;
-	virtual void SelectWeapon( int nProfileIndex, int nInventorySlot, int nEquipIndex ) = 0;
+	virtual void SelectWeapon( int nProfileIndex, int nInventorySlot, int nEquipIndex, SteamItemInstanceID_t iItemInstance ) = 0;
 	virtual void AutoSelectFullSquadForSingleplayer( int nFirstSelectedProfileIndex ) = 0;
 
 	virtual void ResetLastChatterTime() = 0;
 	virtual const IBriefing_ItemInstance &GetEquippedMedal( int nLobbySlot, int nMedalIndex ) = 0;
+	virtual const IBriefing_ItemInstance &GetEquippedSuit( int nLobbySlot ) = 0;
+	virtual const IBriefing_ItemInstance &GetEquippedWeapon( int nLobbySlot, int nWeaponSlot ) = 0;
 };
 
 #define NUM_BRIEFING_LOBBY_SLOTS MAX( ASW_MAX_MARINE_RESOURCES, MAX_PLAYERS + ASW_NUM_MARINE_PROFILES - 1 ) // was 9, was 4
