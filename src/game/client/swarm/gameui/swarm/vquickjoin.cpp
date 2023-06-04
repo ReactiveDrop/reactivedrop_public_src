@@ -4,6 +4,7 @@
 //
 //=====================================================================================//
 
+#include "cbase.h"
 #include "VQuickJoin.h"
 #include "VGenericPanelList.h"
 #include "VHybridButton.h"
@@ -31,13 +32,14 @@ using namespace vgui;
 DECLARE_BUILD_FACTORY( QuickJoinPanel );
 
 ConVar cl_quick_join_scroll_start( "cl_quick_join_scroll_start", "1", FCVAR_NONE, "Number of players available to start friend scrolling ticker." );
-ConVar cl_quick_join_scroll_max( "cl_quick_join_scroll_max", "4", FCVAR_NONE, "Max players shown in the friend scrolling ticker." );
+ConVar cl_quick_join_scroll_max( "cl_quick_join_scroll_max", "5", FCVAR_NONE, "Max players shown in the friend scrolling ticker." );
 ConVar cl_quick_join_scroll_rate( "cl_quick_join_scroll_rate", "90", FCVAR_NONE, "Rate of the friend scrolling ticker." );
 ConVar cl_quick_join_scroll_offset( "cl_quick_join_scroll_offset", "16", FCVAR_NONE, "Offset of the friend scrolling ticker from the title." );
 ConVar cl_quick_join_panel_tall( "cl_quick_join_panel_tall", IsX360() ? "16" : "14", // X360 doesn't show icons, but need extra space on PC for Steam avatars
 								 FCVAR_NONE, "The spacing between panels." );
 ConVar cl_quick_join_panel_accel( "cl_quick_join_panel_accel", "0.025", FCVAR_NONE, "Acceleration for the y position of the panel when items are added or removed." );
 ConVar cl_quick_join_panel_fakecount( "cl_quick_join_panel_fakecount", "-1", FCVAR_NONE );
+extern ConVar rd_reduce_motion;
 
 
 //=============================================================================
@@ -126,9 +128,17 @@ void QuickJoinPanelItem::Update()
 				imgAvatar->SetImage( "" );
 				imgAvatar->SetImage( pImage );
 			}
+			else if ( m_info.m_eType == m_info.TYPE_SERVER_RANKED )
+			{
+				imgAvatar->SetImage( "icon_server_ranked" );
+			}
+			else if ( m_info.m_eType == m_info.TYPE_PUBLIC_LOBBY_COUNT_PLACEHOLDER )
+			{
+				imgAvatar->SetVisible( false );
+			}
 			else
 			{
-				imgAvatar->SetImage( "icon_lan" );
+				imgAvatar->SetImage( "icon_server" );
 			}
 		}
 	}
@@ -234,20 +244,33 @@ void QuickJoinPanel::OnTick()
 
 static int QuickJoinNameAlphaSort( const QuickJoinPanel::QuickInfo *pFriend1, const QuickJoinPanel::QuickInfo *pFriend2 )
 {
-	return Q_stricmp( pFriend1->m_szName, pFriend2->m_szName );
+	if ( pFriend1->m_eType != pFriend2->m_eType )
+	{
+		if ( pFriend1->m_eType == QuickJoinPanel::QuickInfo::TYPE_PUBLIC_LOBBY_COUNT_PLACEHOLDER )
+			return 1;
+		if ( pFriend2->m_eType == QuickJoinPanel::QuickInfo::TYPE_PUBLIC_LOBBY_COUNT_PLACEHOLDER )
+			return -1;
+	}
+
+	int cmp = V_wcscmp( pFriend1->m_wszName, pFriend2->m_wszName );
+	if ( cmp )
+		return cmp;
+
+	return pFriend1->m_eType - pFriend2->m_eType;
 }
 
 static void RemoveDuplicateEntries( CUtlVector< QuickJoinPanel::QuickInfo > &arr )
 {
 	//
-	// Assumes list sorted by name "stricmp"
+	// Assumes list sorted by name "strcmp"
 	//
-	const char *szLastName = "";
+	const wchar_t *wszLastName = L"";
+	QuickJoinPanel::QuickInfo::Type_t iLastType = QuickJoinPanel::QuickInfo::TYPE_UNKNOWN;
 
 	for ( int k = 0; k < arr.Count(); ++ k )
 	{
 		QuickJoinPanel::QuickInfo &fi = arr[k];
-		if ( !stricmp( fi.m_szName, szLastName ) )
+		if ( !V_wcscmp( fi.m_wszName, wszLastName ) && fi.m_eType == iLastType )
 		{
 			// Same name entry, must be removed
 			arr.Remove( k -- );
@@ -255,7 +278,8 @@ static void RemoveDuplicateEntries( CUtlVector< QuickJoinPanel::QuickInfo > &arr
 		else
 		{
 			// Next name, remember for next item
-			szLastName = fi.m_szName;
+			wszLastName = fi.m_wszName;
+			iLastType = fi.m_eType;
 		}
 	}
 }
@@ -317,6 +341,8 @@ void QuickJoinPanel::OnThink()
 	iItemTall = MAX( iItemTall, iItemTallMin );
 
 	long lRateValue = ( system()->GetTimeMillis() / cl_quick_join_scroll_rate.GetInt() );
+	if ( rd_reduce_motion.GetBool() )
+		lRateValue = 0;
 	int iWrap = ( lRateValue / iItemTall ) + cl_quick_join_scroll_max.GetInt();
 
 	if ( iWrap != m_iPrevWrap )
@@ -335,6 +361,7 @@ void QuickJoinPanel::OnThink()
 		return;
 	}
 
+#ifndef INFESTED_DLL
 	int screenWide, screenTall;
 	vgui::surface()->GetScreenSize( screenWide, screenTall );
 
@@ -345,13 +372,16 @@ void QuickJoinPanel::OnThink()
 	}
 
 	bool bScrolling = ( iNumItems >= cl_quick_join_scroll_start.GetInt() );
+#endif
 
 	int iCurrentX, iCurrentY;
+#ifndef INFESTED_DLL
 	GetPos( iCurrentX, iCurrentY );
 	iCurrentY = GetSmoothPanelY( iCurrentY, screenTall
 								 - vgui::scheme()->GetProportionalScaledValue( iYOffset )
 								 - MAX( iNumItems, ( bScrolling ) ? ( 2 ) : ( 1 ) ) * iItemTall );
 	SetPos( iCurrentX, iCurrentY );
+#endif
 
 	if ( iNumItems > cl_quick_join_scroll_start.GetInt() - 1 )
 	{
@@ -369,7 +399,7 @@ void QuickJoinPanel::OnThink()
 		pItem = m_GplQuickJoinList->GetPanelItem( 0 );
 		if ( pItem )
 		{
-			pItem->SetAlpha( fListEdgeAlphas );
+			pItem->SetAlpha( rd_reduce_motion.GetBool() ? 255 : fListEdgeAlphas );
 		}
 
 		// Fade out last item
@@ -377,7 +407,7 @@ void QuickJoinPanel::OnThink()
 
 		if ( pItem )
 		{
-			pItem->SetAlpha( 255.0f - fListEdgeAlphas );
+			pItem->SetAlpha( rd_reduce_motion.GetBool() ? 255 : 255.0f - fListEdgeAlphas );
 		}
 	}
 	else
@@ -397,7 +427,7 @@ void QuickJoinPanel::AddServersToList( void )
 			QuickInfo qi;
 			qi.m_eType = qi.TYPE_PLAYER;
 			qi.m_xuid = k + 100;
-			Q_snprintf( qi.m_szName, sizeof( qi.m_szName ), "FakeItem#%03d", k + 10 );
+			V_snwprintf( qi.m_wszName, NELEMS( qi.m_wszName ), L"FakeItem#%03d", k + 10 );
 			m_FriendInfo.AddToTail( qi );
 		}
 		return;
@@ -413,9 +443,9 @@ void QuickJoinPanel::AddServersToList( void )
 		QuickInfo qi;
 		qi.m_eType = qi.TYPE_PLAYER;
 		qi.m_xuid = pFriend->GetXUID();
-		Q_strncpy( qi.m_szName, pFriend->GetName(), sizeof( qi.m_szName ) );
+		V_UTF8ToUnicode( pFriend->GetName(), qi.m_wszName, sizeof( qi.m_wszName ) );
 
-		if ( !qi.m_szName[0] || !qi.m_xuid )
+		if ( !qi.m_wszName[0] || !qi.m_xuid )
 			continue;
 
 		m_FriendInfo.AddToTail( qi );
@@ -444,8 +474,8 @@ void QuickJoinPanel::RefreshContents( int iWrap )
 
 		if ( m_FriendInfo.Count() == 1 && cl_quick_join_scroll_start.GetInt() <= 1 )
 		{
-			AddGame( 0, m_FriendInfo[ 0 ], m_FriendInfo[ 0 ].m_szName );
-			AddGame( 1, m_FriendInfo[ 0 ], m_FriendInfo[ 0 ].m_szName );
+			AddGame( 0, m_FriendInfo[ 0 ], m_FriendInfo[ 0 ].m_wszName );
+			AddGame( 1, m_FriendInfo[ 0 ], m_FriendInfo[ 0 ].m_wszName );
 		}
 		else
 		{
@@ -453,7 +483,7 @@ void QuickJoinPanel::RefreshContents( int iWrap )
 			{
 				int iWrappedIndex = ( -1 * ( i - iWrap ) ) % m_FriendInfo.Count();
 
-				AddGame( i, m_FriendInfo[ iWrappedIndex ], m_FriendInfo[ iWrappedIndex ].m_szName );
+				AddGame( i, m_FriendInfo[ iWrappedIndex ], m_FriendInfo[ iWrappedIndex ].m_wszName );
 			}
 		}
 	}
@@ -467,10 +497,14 @@ void QuickJoinPanel::UpdateNumGamesFoundLabel( void )
 		wchar_t* wFormatString = g_pVGuiLocalize->Find( GetTitle() );
 		if( wFormatString )
 		{
-			char gameCountTxt[ 4 ];
-			itoa( m_FriendInfo.Count(), gameCountTxt, 10 );
+			int iCount = m_FriendInfo.Count();
+			if ( iCount > 0 && m_FriendInfo[iCount - 1].m_eType == QuickInfo::TYPE_PUBLIC_LOBBY_COUNT_PLACEHOLDER )
+				iCount += m_FriendInfo[iCount - 1].m_xuid - 1;
 
-			wchar_t wGameCountTxt[ 4 ];
+			char gameCountTxt[ 16 ];
+			itoa( iCount, gameCountTxt, 10 );
+
+			wchar_t wGameCountTxt[ 16 ];
 			g_pVGuiLocalize->ConvertANSIToUnicode( gameCountTxt, wGameCountTxt, sizeof( wGameCountTxt ) );
 
 			wchar_t wMessage[ 256 ];
@@ -511,6 +545,12 @@ void QuickJoinPanel::NavigateFrom()
 		if( pPanel )
 			pPanel->NavigateFrom();
 	}
+}
+
+void QuickJoinPanel::OnNavigateFrom( const char *panelName )
+{
+	BaseClass::OnNavigateFrom( panelName );
+	SetHasMouseover( false );
 }
 
 void QuickJoinPanel::NavigateToChild( Panel *pNavigateTo )

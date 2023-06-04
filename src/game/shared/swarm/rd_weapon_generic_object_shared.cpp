@@ -2,8 +2,13 @@
 #include "rd_weapon_generic_object_shared.h"
 
 #ifdef CLIENT_DLL
+#include <vgui_controls/Controls.h>
 #include <vgui/ILocalize.h>
+#include <vgui/ISurface.h>
 #include "c_asw_marine.h"
+#include "asw_util_shared.h"
+#else
+#include "asw_marine.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -21,6 +26,7 @@ BEGIN_NETWORK_TABLE( CRD_Weapon_Generic_Object, DT_RD_Weapon_Generic_Object )
 	RecvPropString( RECVINFO( m_szWorldModel ) ),
 	RecvPropString( RECVINFO( m_szCarriedName ) ),
 	RecvPropString( RECVINFO( m_iOriginalName ) ),
+	RecvPropString( RECVINFO( m_szEquipIcon ) ),
 #else
 	SendPropFloat( SENDINFO( m_flMoveSpeedMultiplier ) ),
 	SendPropBool( SENDINFO( m_bLargeObject ) ),
@@ -30,6 +36,7 @@ BEGIN_NETWORK_TABLE( CRD_Weapon_Generic_Object, DT_RD_Weapon_Generic_Object )
 	SendPropString( SENDINFO( m_szWorldModel ) ),
 	SendPropString( SENDINFO( m_szCarriedName ) ),
 	SendPropStringT( SENDINFO( m_iOriginalName ) ),
+	SendPropString( SENDINFO( m_szEquipIcon ) ),
 #endif
 END_NETWORK_TABLE()
 
@@ -48,6 +55,13 @@ BEGIN_DATADESC( CRD_Weapon_Generic_Object )
 	DEFINE_KEYFIELD( m_bUseBoneMerge, FIELD_BOOLEAN, "UseBoneMerge" ),
 	DEFINE_KEYFIELD( m_angCarriedAngle, FIELD_VECTOR, "CarriedAngle" ),
 	DEFINE_KEYFIELD( m_vecCarriedOffset, FIELD_VECTOR, "CarriedOffset" ),
+	DEFINE_INPUTFUNC( FIELD_EHANDLE, "ForcePickUp", InputForcePickUp ),
+	DEFINE_INPUTFUNC( FIELD_VOID, "ForceDrop", InputForceDrop ),
+	DEFINE_OUTPUT( m_OnPrimaryAttack, "OnPrimaryAttack" ),
+	DEFINE_OUTPUT( m_OnSecondaryAttack, "OnSecondaryAttack" ),
+	DEFINE_OUTPUT( m_OnReload, "OnReload" ),
+	DEFINE_OUTPUT( m_OnPickedUp, "OnPickedUp" ),
+	DEFINE_OUTPUT( m_OnDropped, "OnDropped" ),
 END_DATADESC()
 #endif
 
@@ -58,15 +72,24 @@ CRD_Weapon_Generic_Object::CRD_Weapon_Generic_Object()
 	m_bUseBoneMerge = false;
 	m_angCarriedAngle.Init();
 	m_vecCarriedOffset.Init();
-	Q_strncpy( m_szWorldModel.GetForModify(), "models/error.mdl", 256 );
+	V_strncpy( m_szWorldModel.GetForModify(), "models/error.mdl", sizeof( m_szWorldModel ) );
 	m_szCarriedName.GetForModify()[0] = '\0';
+	m_szEquipIcon.GetForModify()[0] = '\0';
 #ifdef CLIENT_DLL
-	m_wszCarriedName[0] = '\0';
+	m_wszCarriedName[0] = L'\0';
+	m_iEquipIcon = -1;
 #endif
 }
 
 CRD_Weapon_Generic_Object::~CRD_Weapon_Generic_Object()
 {
+#ifdef CLIENT_DLL
+	if ( vgui::surface() && m_iEquipIcon != -1 )
+	{
+		vgui::surface()->DestroyTextureID( m_iEquipIcon );
+		m_iEquipIcon = -1;
+	}
+#endif
 }
 
 #ifdef GAME_DLL
@@ -80,6 +103,11 @@ bool CRD_Weapon_Generic_Object::KeyValue( const char *szKeyName, const char *szV
 	else if ( FStrEq( szKeyName, "CarriedName" ) )
 	{
 		V_strncpy( m_szCarriedName.GetForModify(), szValue, 256 );
+		return true;
+	}
+	else if ( FStrEq( szKeyName, "EquipIcon" ) )
+	{
+		V_strncpy( m_szEquipIcon.GetForModify(), szValue, 256 );
 		return true;
 	}
 	
@@ -99,6 +127,38 @@ void CRD_Weapon_Generic_Object::MarineDropped( CASW_Marine *pMarine )
 
 	SetName( m_iOriginalName );
 }
+
+void CRD_Weapon_Generic_Object::InputForcePickUp( inputdata_t &data )
+{
+	if ( GetOwner() )
+	{
+		DevWarning( "Mapper error: %s cannot be picked up as it is already being held by %s\n", GetDebugName(), GetOwner()->GetDebugName() );
+		return;
+	}
+
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( data.value.Entity() );
+	Assert( pMarine );
+	if ( !pMarine )
+	{
+		DevWarning( "Mapper error: %s cannot be picked up by non-marine entity %s\n", GetDebugName(), data.value.Entity() ? data.value.Entity()->GetDebugName() : "<<NULL>>" );
+		return;
+	}
+
+	ActivateUseIcon( pMarine, ASW_USE_RELEASE_QUICK );
+}
+
+void CRD_Weapon_Generic_Object::InputForceDrop( inputdata_t &data )
+{
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( GetOwner() );
+	Assert( pMarine );
+	if ( !pMarine )
+	{
+		DevWarning( "Mapper error: %s cannot be picked up as it is not being held\n", GetDebugName() );
+		return;
+	}
+
+	pMarine->DropWeapon( this, false );
+}
 #endif
 
 void CRD_Weapon_Generic_Object::Precache()
@@ -106,6 +166,30 @@ void CRD_Weapon_Generic_Object::Precache()
 	BaseClass::Precache();
 
 	PrecacheModel( m_szWorldModel );
+}
+
+void CRD_Weapon_Generic_Object::PrimaryAttack()
+{
+#ifdef GAME_DLL
+	m_OnPrimaryAttack.FireOutput( GetOwner(), this );
+#endif
+	m_flNextPrimaryAttack = gpGlobals->curtime + 0.1f;
+}
+
+void CRD_Weapon_Generic_Object::SecondaryAttack()
+{
+#ifdef GAME_DLL
+	m_OnSecondaryAttack.FireOutput( GetOwner(), this );
+#endif
+	m_flNextSecondaryAttack = gpGlobals->curtime + 0.1f;
+}
+
+bool CRD_Weapon_Generic_Object::Reload()
+{
+#ifdef GAME_DLL
+	m_OnReload.FireOutput( GetOwner(), this );
+#endif
+	return false;
 }
 
 void CRD_Weapon_Generic_Object::Equip( CBaseCombatCharacter *pOwner )
@@ -119,10 +203,18 @@ void CRD_Weapon_Generic_Object::Equip( CBaseCombatCharacter *pOwner )
 		SetLocalOrigin( m_vecCarriedOffset );
 		SetLocalAngles( m_angCarriedAngle );
 	}
+
+#ifdef GAME_DLL
+	m_OnPickedUp.FireOutput( GetOwner(), this );
+#endif
 }
 
 void CRD_Weapon_Generic_Object::Drop( const Vector & vecVelocity )
 {
+#ifdef GAME_DLL
+	m_OnDropped.FireOutput( GetOwner(), this );
+#endif
+
 	if ( !m_bUseBoneMerge )
 	{
 		Vector origin = GetAbsOrigin();
@@ -184,14 +276,7 @@ void CRD_Weapon_Generic_Object::PostDataUpdate( DataUpdateType_t updateType )
 {
 	BaseClass::PostDataUpdate( updateType );
 
-	if ( const wchar_t *pwszCarriedName = g_pVGuiLocalize->Find( m_szCarriedName ) )
-	{
-		V_wcsncpy( m_wszCarriedName, pwszCarriedName, sizeof( m_wszCarriedName ) );
-	}
-	else
-	{
-		g_pVGuiLocalize->ConvertANSIToUnicode( m_szCarriedName, m_wszCarriedName, sizeof( m_wszCarriedName ) );
-	}
+	TryLocalize( m_szCarriedName, m_wszCarriedName, sizeof( m_wszCarriedName ) );
 }
 
 bool CRD_Weapon_Generic_Object::GetUseAction( ASWUseAction & action, C_ASW_Inhabitable_NPC *pUser )
@@ -201,7 +286,7 @@ bool CRD_Weapon_Generic_Object::GetUseAction( ASWUseAction & action, C_ASW_Inhab
 
 	CASW_Marine *pMarine = CASW_Marine::AsMarine( pUser );
 
-	action.iUseIconTexture = -1;
+	action.iUseIconTexture = GetUseIconTextureID();
 	action.UseTarget = this;
 	action.fProgress = -1;
 	action.iInventorySlot = pMarine ? pMarine->GetWeaponPositionForPickup( GetClassname(), m_bIsTemporaryPickup ) : -1;
@@ -227,5 +312,16 @@ bool CRD_Weapon_Generic_Object::GetUseAction( ASWUseAction & action, C_ASW_Inhab
 	action.bShowUseKey = true;
 
 	return true;
+}
+
+int CRD_Weapon_Generic_Object::GetUseIconTextureID()
+{
+	if ( m_iEquipIcon == -1 && m_szEquipIcon.Get()[0] != '\0' && vgui::surface() )
+	{
+		m_iEquipIcon = vgui::surface()->CreateNewTextureID();
+		vgui::surface()->DrawSetTextureFile( m_iEquipIcon, m_szEquipIcon, 1, false );
+	}
+
+	return m_iEquipIcon;
 }
 #endif

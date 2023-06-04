@@ -10,6 +10,8 @@
 #define CPointCamera C_PointCamera
 #endif
 
+#define STEAM_LEADERBOARD_HOIAF_CURRENT_SEASON 7581028ULL
+
 class CPhysicsProp;
 class CASW_Player;
 class CASW_Inhabitable_NPC;
@@ -92,6 +94,8 @@ float UTIL_ASW_CalcFastDoorHackTime(int iNumRows, int iNumColumns, int iNumWires
 	CNewParticleEffect *UTIL_ASW_CreateFireEffect( C_BaseEntity *pEntity );
 	void UTIL_ASW_ClientFloatingDamageNumber( const CTakeDamageInfo &info );
 	HPARTICLEFFECT UTIL_ASW_ParticleDamageNumber( C_BaseEntity *pEnt, Vector vecPos, int iDamage, int iDmgCustom, float flScale, bool bRandomVelocity, bool bSkipRampUp );
+	void UTIL_RD_DecideMainMenuBackground( const char *&szImage, const char *&szVideo, const char *&szAudio, bool bAllowChange );
+	const char *UTIL_RD_RandomBriefingMovie( const char *szMapName, int iSeed, const char *szType = "briefing" );
 #endif
 
 void TryLocalize( const char *token, wchar_t *unicode, int unicodeBufferSizeInBytes );
@@ -147,6 +151,8 @@ const wchar_t *UTIL_RD_CommaNumber( int64_t num );
 
 int UTIL_RD_IndexToBit( unsigned bits, int n );
 int UTIL_RD_BitToIndex( unsigned bits, int n );
+
+int UTIL_RD_GetCurrentHoIAFSeason( int *pDaysRemaining = NULL, int *pHoursRemaining = NULL );
 
 void CmdMsg( _Printf_format_string_ const char *pszFormat, ... );
 

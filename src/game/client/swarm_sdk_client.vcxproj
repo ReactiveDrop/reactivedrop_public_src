@@ -76,7 +76,7 @@ if ERRORLEVEL 1 exit 1
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>.\hl2;.\swarm;.\swarm\vgui;..\statemachine;..\..\game\shared\multiplayer;..\..\game\shared\swarm;.\;..\..\common;..\..\public;..\..\public\tier0;..\..\public\tier1;..\..\game\shared;.\game_controls;$(IntDir);..\..\game\client\swarm\gameui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WIN32;_DEBUG;DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;DLLNAME=client;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;COMPILER_MSVC32;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;COMPILER_MSVC;MEMOVERRIDE_MODULE=client;_DLL_EXT=.dll;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;DLLNAME=client;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;NO_STRING_T;CLIENT_DLL;VECTOR;VERSION_SAFE_STEAM_API_INTERFACES;PROTECTED_THINGS_ENABLE;strncpy=use_Q_strncpy_instead;_snprintf=use_Q_snprintf_instead;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;ENABLE_HTMLWINDOW;fopen=dont_use_fopen;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;INFESTED_DLL;SWARM_DLL;HL2_EPISODIC;INFESTED_PARTICLES;GAMEUI_EMBEDDED;GAMEUI_EXPORTS;VERSION_SAFE_STEAM_API_INTERFACES;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WIN32;_DEBUG;DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;DLLNAME=client;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;COMPILER_MSVC32;COMPILER_MSVC;MEMOVERRIDE_MODULE=client;NO_STRING_T;CLIENT_DLL;VECTOR;VERSION_SAFE_STEAM_API_INTERFACES;PROTECTED_THINGS_ENABLE;ENABLE_HTMLWINDOW;fopen=dont_use_fopen;INFESTED_DLL;SWARM_DLL;HL2_EPISODIC;INFESTED_PARTICLES;GAMEUI_EMBEDDED;GAMEUI_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling />
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -176,7 +176,7 @@ if ERRORLEVEL 1 exit 1
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <AdditionalIncludeDirectories>.\hl2;.\swarm;.\swarm\vgui;..\statemachine;..\..\game\shared\multiplayer;..\..\game\shared\swarm;.\;..\..\common;..\..\public;..\..\public\tier0;..\..\public\tier1;..\..\game\shared;.\game_controls;$(IntDir);..\..\game\client\swarm\gameui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WIN32;NDEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;DLLNAME=client;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;COMPILER_MSVC32;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;COMPILER_MSVC;MEMOVERRIDE_MODULE=client;_DLL_EXT=.dll;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;DLLNAME=client;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;NO_STRING_T;CLIENT_DLL;VECTOR;VERSION_SAFE_STEAM_API_INTERFACES;PROTECTED_THINGS_ENABLE;strncpy=use_Q_strncpy_instead;_snprintf=use_Q_snprintf_instead;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;ENABLE_HTMLWINDOW;fopen=dont_use_fopen;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;INFESTED_DLL;SWARM_DLL;HL2_EPISODIC;INFESTED_PARTICLES;GAMEUI_EMBEDDED;GAMEUI_EXPORTS;VERSION_SAFE_STEAM_API_INTERFACES;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WIN32;NDEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;DLLNAME=client;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;COMPILER_MSVC32;COMPILER_MSVC;MEMOVERRIDE_MODULE=client;NO_STRING_T;CLIENT_DLL;VECTOR;VERSION_SAFE_STEAM_API_INTERFACES;PROTECTED_THINGS_ENABLE;ENABLE_HTMLWINDOW;fopen=dont_use_fopen;INFESTED_DLL;SWARM_DLL;HL2_EPISODIC;INFESTED_PARTICLES;GAMEUI_EMBEDDED;GAMEUI_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling />
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -265,11 +265,6 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="..\..\vpc_scripts\loadaddress.vpc" />
-    <None Include="..\..\vpc_scripts\source_dll_base.vpc" />
-    <None Include="..\..\vpc_scripts\source_dll_win32_base.vpc" />
-    <None Include="..\..\vpc_scripts\source_dll_win32_debug.vpc" />
-    <None Include="..\..\vpc_scripts\source_dll_win32_release.vpc" />
-    <None Include="..\..\vpc_scripts\version.vpc" />
     <None Include="client_base.vpc" />
     <None Include="client_swarm.vpc" />
     <None Include="vscript_client.nut" />
@@ -655,6 +650,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="..\shared\swarm\rd_challenges_shared.cpp" />
     <ClCompile Include="..\shared\swarm\rd_hud_counter_shared.cpp" />
     <ClCompile Include="..\shared\swarm\rd_inventory_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\rd_loadout.cpp" />
     <ClCompile Include="..\shared\swarm\rd_lobby_utils.cpp" />
     <ClCompile Include="..\shared\swarm\rd_missions_shared.cpp" />
     <ClCompile Include="..\shared\swarm\rd_weapon_generic_object_shared.cpp" />
@@ -1438,6 +1434,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vcommanderprofile.cpp" />
     <ClCompile Include="swarm\gameui\swarm\vcontrolleroptions.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
@@ -1658,6 +1655,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vquickjoinpublic.cpp" />
     <ClCompile Include="swarm\gameui\swarm\vsignindialog.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
@@ -1741,6 +1739,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="swarm\rd_fps_max_hack.cpp" />
     <ClCompile Include="swarm\rd_hit_confirm.cpp" />
     <ClCompile Include="swarm\rd_hud_boss_bar.cpp" />
+    <ClCompile Include="swarm\rd_player_reporting.cpp" />
     <ClCompile Include="swarm\rd_rich_presence.cpp" />
     <ClCompile Include="swarm\rd_steam_input.cpp" />
     <ClCompile Include="swarm\rd_steam_input_binds.cpp" />
@@ -1830,7 +1829,6 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="swarm\vgui\imagebutton.cpp" />
     <ClCompile Include="swarm\vgui\mapedgesbox.cpp" />
     <ClCompile Include="swarm\vgui\medalarea.cpp" />
-    <ClCompile Include="swarm\vgui\medalcollectionpanel.cpp" />
     <ClCompile Include="swarm\vgui\medalpanel.cpp" />
     <ClCompile Include="swarm\vgui\medalstooltip.cpp" />
     <ClCompile Include="swarm\vgui\missioncompleteframe.cpp" />
@@ -1878,13 +1876,17 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="swarm\vgui\playerswaitingpanel.cpp" />
     <ClCompile Include="swarm\vgui\polygonbutton.cpp" />
     <ClCompile Include="swarm\vgui\radialmenu.cpp" />
+    <ClCompile Include="swarm\vgui\rd_hud_sheet.cpp" />
+    <ClCompile Include="swarm\vgui\rd_vgui_commander_mini_profile.cpp" />
     <ClCompile Include="swarm\vgui\rd_vgui_leaderboard_panel.cpp" />
+    <ClCompile Include="swarm\vgui\rd_vgui_main_menu_hoiaf_leaderboard_entry.cpp" />
+    <ClCompile Include="swarm\vgui\rd_vgui_main_menu_top_bar.cpp" />
+    <ClCompile Include="swarm\vgui\rd_vgui_stock_ticker.cpp" />
     <ClCompile Include="swarm\vgui\rd_vgui_workshop_download_progress.cpp" />
     <ClCompile Include="swarm\vgui\rd_workshop_preview_image.cpp" />
     <ClCompile Include="swarm\vgui\restartmissionbutton.cpp" />
     <ClCompile Include="swarm\vgui\returncampaignmapbutton.cpp" />
     <ClCompile Include="swarm\vgui\scanlinepanel.cpp" />
-    <ClCompile Include="swarm\vgui\serveroptionspanel.cpp" />
     <ClCompile Include="swarm\vgui\skillanimpanel.cpp" />
     <ClCompile Include="swarm\vgui\softline.cpp" />
     <ClCompile Include="swarm\vgui\squad_inventory_panel.cpp" />
@@ -2199,10 +2201,6 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="..\shared\choreoevent.h" />
     <ClInclude Include="..\shared\choreoscene.h" />
     <ClInclude Include="..\shared\collisionproperty.h" />
-    <ClInclude Include="..\shared\cstrike\basecsgrenade_projectile.h" />
-    <ClInclude Include="..\shared\cstrike\fx_cs_shared.h" />
-    <ClInclude Include="..\shared\cstrike\weapon_flashbang.h" />
-    <ClInclude Include="..\shared\cstrike\weapon_hegrenade.h" />
     <ClInclude Include="..\shared\death_pose.h" />
     <ClInclude Include="..\shared\decals.h" />
     <ClInclude Include="..\shared\effect_color_tables.h" />
@@ -2399,6 +2397,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="..\shared\swarm\rd_cause_of_death.h" />
     <ClInclude Include="..\shared\swarm\rd_challenges_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_inventory_shared.h" />
+    <ClInclude Include="..\shared\swarm\rd_loadout.h" />
     <ClInclude Include="..\shared\swarm\rd_lobby_utils.h" />
     <ClInclude Include="..\shared\swarm\rd_missions_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_release_flags.h" />
@@ -2421,7 +2420,6 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="..\shared\voice_status.h" />
     <ClInclude Include="..\shared\vphysics_sound.h" />
     <ClInclude Include="..\shared\vscript_shared.h" />
-    <ClInclude Include="..\shared\weapon_ifmsteadycam.h" />
     <ClInclude Include="..\shared\weapon_parse.h" />
     <ClInclude Include="..\shared\weapon_proficiency.h" />
     <ClInclude Include="achievement_notification_panel.h" />
@@ -2446,8 +2444,6 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="cl_mat_stub.h" />
     <ClInclude Include="colorcorrectionmgr.h" />
     <ClInclude Include="commentary_modelviewer.h" />
-    <ClInclude Include="cstrike\fx_cs_blood.h" />
-    <ClInclude Include="cstrike\hud_radar.h" />
     <ClInclude Include="c_ai_basenpc.h" />
     <ClInclude Include="c_baseanimating.h" />
     <ClInclude Include="c_baseanimatingoverlay.h" />
@@ -2740,7 +2736,6 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="swarm\c_prop_asw_fade.h" />
     <ClInclude Include="swarm\c_rd_boss_bar.h" />
     <ClInclude Include="swarm\gameui\backgroundmenubutton.h" />
-    <ClInclude Include="swarm\gameui\basepaenl.h" />
     <ClInclude Include="swarm\gameui\basesavegamedialog.h" />
     <ClInclude Include="swarm\gameui\bitmapimagepanel.h" />
     <ClInclude Include="swarm\gameui\commandcheckbutton.h" />
@@ -2797,6 +2792,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="swarm\gameui\swarm\vaudioadvancedmixers.h" />
     <ClInclude Include="swarm\gameui\swarm\vaudiovideo.h" />
     <ClInclude Include="swarm\gameui\swarm\vcloud.h" />
+    <ClInclude Include="swarm\gameui\swarm\vcommanderprofile.h" />
     <ClInclude Include="swarm\gameui\swarm\vcontrolleroptions.h" />
     <ClInclude Include="swarm\gameui\swarm\vcontrolleroptionsbuttons.h" />
     <ClInclude Include="swarm\gameui\swarm\vcontrolleroptionssticks.h" />
@@ -2836,6 +2832,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="swarm\gameui\swarm\vpasswordentry.h" />
     <ClInclude Include="swarm\gameui\swarm\vquickjoin.h" />
     <ClInclude Include="swarm\gameui\swarm\vquickjoingroups.h" />
+    <ClInclude Include="swarm\gameui\swarm\vquickjoinpublic.h" />
     <ClInclude Include="swarm\gameui\swarm\vsignindialog.h" />
     <ClInclude Include="swarm\gameui\swarm\vslidercontrol.h" />
     <ClInclude Include="swarm\gameui\swarm\vspinnercontrol.h" />
@@ -2857,6 +2854,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="swarm\rd_demo_utils.h" />
     <ClInclude Include="swarm\rd_font_hack.h" />
     <ClInclude Include="swarm\rd_hud_boss_bar.h" />
+    <ClInclude Include="swarm\rd_player_reporting.h" />
     <ClInclude Include="swarm\rd_rich_presence.h" />
     <ClInclude Include="swarm\rd_steam_input.h" />
     <ClInclude Include="swarm\rd_swarmopedia.h" />
@@ -2936,7 +2934,6 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="swarm\vgui\imagebutton.h" />
     <ClInclude Include="swarm\vgui\mapedgesbox.h" />
     <ClInclude Include="swarm\vgui\medalarea.h" />
-    <ClInclude Include="swarm\vgui\medalcollectionpanel.h" />
     <ClInclude Include="swarm\vgui\medalpanel.h" />
     <ClInclude Include="swarm\vgui\medalstooltip.h" />
     <ClInclude Include="swarm\vgui\missioncompleteframe.h" />
@@ -2984,13 +2981,17 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="swarm\vgui\playerswaitingpanel.h" />
     <ClInclude Include="swarm\vgui\polygonbutton.h" />
     <ClInclude Include="swarm\vgui\radialmenu.h" />
+    <ClInclude Include="swarm\vgui\rd_hud_sheet.h" />
+    <ClInclude Include="swarm\vgui\rd_vgui_commander_mini_profile.h" />
     <ClInclude Include="swarm\vgui\rd_vgui_leaderboard_panel.h" />
+    <ClInclude Include="swarm\vgui\rd_vgui_main_menu_hoiaf_leaderboard_entry.h" />
+    <ClInclude Include="swarm\vgui\rd_vgui_main_menu_top_bar.h" />
+    <ClInclude Include="swarm\vgui\rd_vgui_stock_ticker.h" />
     <ClInclude Include="swarm\vgui\rd_vgui_workshop_download_progress.h" />
     <ClInclude Include="swarm\vgui\rd_workshop_preview_image.h" />
     <ClInclude Include="swarm\vgui\restartmissionbutton.h" />
     <ClInclude Include="swarm\vgui\returncampaignmapbutton.h" />
     <ClInclude Include="swarm\vgui\scanlinepanel.h" />
-    <ClInclude Include="swarm\vgui\serveroptionspanel.h" />
     <ClInclude Include="swarm\vgui\skillanimpanel.h" />
     <ClInclude Include="swarm\vgui\softline.h" />
     <ClInclude Include="swarm\vgui\squad_inventory_panel.h" />

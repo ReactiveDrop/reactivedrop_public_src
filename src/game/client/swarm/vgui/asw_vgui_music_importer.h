@@ -11,12 +11,9 @@ class vgui::IScheme;
 //--------------------------------------------------------
 struct ID3Info_t
 {
-	ID3Info_t( void );
-
-	char *szTrackName;
-	char *szArtistName;
-	char *szAlbumName;
-	char *szGenre;
+	char szTrackName[256]{};
+	char szArtistName[256]{};
+	char szAlbumName[256]{};
 
 	bool Deserialize( const byte *pBuffer, unsigned int unBufferSize );
 };

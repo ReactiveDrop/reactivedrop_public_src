@@ -128,17 +128,6 @@ void CNB_Lobby_Row::ApplySchemeSettings( vgui::IScheme *pScheme )
 void CNB_Lobby_Row::PerformLayout()
 {
 	BaseClass::PerformLayout();
-
-	if ( m_pAvatarImage )
-	{
-		int wide, tall;
-		m_pAvatarImage->GetSize( wide, tall );
-		if ( ((CAvatarImage*)m_pAvatarImage->GetImage()) )
-		{
-			((CAvatarImage*)m_pAvatarImage->GetImage())->SetAvatarSize( wide, tall );
-			((CAvatarImage*)m_pAvatarImage->GetImage())->SetPos( -AVATAR_INDENT_X, -AVATAR_INDENT_Y );
-		}
-	}
 }
 
 void CNB_Lobby_Row::OnThink()
@@ -228,11 +217,6 @@ void CNB_Lobby_Row::UpdateDetails()
 		if ( steamID.ConvertToUint64() != m_lastSteamID.ConvertToUint64() )
 		{
 			m_pAvatarImage->SetAvatarBySteamID( &steamID );
-
-			int wide, tall;
-			m_pAvatarImage->GetSize( wide, tall );
-			( ( CAvatarImage * )m_pAvatarImage->GetImage() )->SetAvatarSize( wide, tall );
-			( ( CAvatarImage * )m_pAvatarImage->GetImage() )->SetPos( -AVATAR_INDENT_X, -AVATAR_INDENT_Y );
 
 			for ( int i = 0; i < NELEMS( m_pMedalIcon ); i++ )
 			{

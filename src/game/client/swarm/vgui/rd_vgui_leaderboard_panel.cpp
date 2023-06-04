@@ -156,14 +156,6 @@ void CReactiveDrop_VGUI_Leaderboard_Entry::SetEntry( const RD_LeaderboardEntry_t
 	CSteamID steamIDCopy = entry.entry.m_steamIDUser;
 	m_imgAvatar->SetAvatarBySteamID( &steamIDCopy );
 
-	int wide, tall;
-	m_imgAvatar->GetSize( wide, tall );
-	if ( ( ( CAvatarImage * )m_imgAvatar->GetImage() ) )
-	{
-		( ( CAvatarImage * )m_imgAvatar->GetImage() )->SetAvatarSize( wide, tall );
-		( ( CAvatarImage * )m_imgAvatar->GetImage() )->SetPos( -AVATAR_INDENT_X, -AVATAR_INDENT_Y );
-	}
-
 	wchar_t wszName[k_cwchPersonaNameMax];
 	Q_UTF8ToUnicode( SteamFriends()->GetFriendPersonaName( entry.entry.m_steamIDUser ), wszName, sizeof( wszName ) );
 	g_RDTextFiltering.FilterTextName( wszName, entry.entry.m_steamIDUser );
@@ -450,14 +442,6 @@ void CReactiveDrop_VGUI_Leaderboard_Entry_Points::SetEntry( const RD_Leaderboard
 
 	CSteamID steamIDCopy = entry.entry.m_steamIDUser;
 	m_imgAvatar->SetAvatarBySteamID(&steamIDCopy);
-
-	int wide, tall;
-	m_imgAvatar->GetSize(wide, tall);
-	if (((CAvatarImage*)m_imgAvatar->GetImage()))
-	{
-		((CAvatarImage*)m_imgAvatar->GetImage())->SetAvatarSize(wide, tall);
-		((CAvatarImage*)m_imgAvatar->GetImage())->SetPos(-AVATAR_INDENT_X, -AVATAR_INDENT_Y);
-	}
 
 	wchar_t wszName[k_cwchPersonaNameMax];
 	Q_UTF8ToUnicode(SteamFriends()->GetFriendPersonaName(entry.entry.m_steamIDUser), wszName, sizeof(wszName));

@@ -34,6 +34,7 @@
 #include "VAudioAdvancedMixers.h"
 #include "VAudioVideo.h"
 #include "VCloud.h"
+#include "VCommanderProfile.h"
 #include "VControllerOptions.h"
 #include "VControllerOptionsButtons.h"
 #include "VControllerOptionsSticks.h"
@@ -552,6 +553,10 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 
 		case WT_ITEMSHOWCASE:
 			m_Frames[wt] = new ItemShowcase( this, "ItemShowcase" );
+			break;
+
+		case WT_COMMANDERPROFILE:
+			m_Frames[wt] = new CommanderProfile( this, "CommanderProfile" );
 			break;
 
 		default:
@@ -2003,41 +2008,19 @@ void CBaseModPanel::ApplySchemeSettings(IScheme *pScheme)
 	m_nProductImageWide = vgui::scheme()->GetProportionalScaledValue( logoW );
 	m_nProductImageTall = vgui::scheme()->GetProportionalScaledValue( logoH );
 
-	if ( aspectRatio >= 1.6f )
-	{
-		// use the widescreen version
-		Q_snprintf( m_szFadeFilename, sizeof( m_szFadeFilename ), "materials/console/%s_widescreen.vtf", "RdSelectionScreen" );
-	}
-	else
-	{
-		Q_snprintf( m_szFadeFilename, sizeof( m_szFadeFilename ), "materials/console/%s.vtf", "RdSelectionScreen" );
-	}
-
-	// TODO: GetBackgroundMusic
-#if 0
-
-	bool bUseMono = false;
-#if defined( _X360 )
-	// cannot use the very large stereo version during the install
-	 bUseMono = g_pXboxInstaller->IsInstallEnabled() && !g_pXboxInstaller->IsFullyInstalled();
-#if defined( _DEMO )
-	bUseMono = true;
-#endif
-#endif
-
-	char backgroundMusic[MAX_PATH];
-	engine->GetBackgroundMusic( backgroundMusic, sizeof( backgroundMusic ), bUseMono );
+	const char *szMainMenuImage, *szMainMenuVideo, *szMainMenuAudio;
+	UTIL_RD_DecideMainMenuBackground( szMainMenuImage, szMainMenuVideo, szMainMenuAudio, true );
+	V_strncpy( m_szFadeFilename, szMainMenuImage, sizeof( m_szFadeFilename ) );
 
 	// the precache will be a memory or stream wave as needed 
 	// on 360 the sound system will detect the install state and force it to a memory wave to finalize the the i/o now
 	// it will be a stream resource if the installer is dormant
 	// On PC it will be a streaming MP3
-	if ( enginesound->PrecacheSound( backgroundMusic, true, false ) )
+	if ( enginesound->PrecacheSound( szMainMenuAudio, true, false ) )
 	{
 		// successfully precached
-		m_backgroundMusic = backgroundMusic;
+		m_backgroundMusic = szMainMenuAudio;
 	}
-#endif
 }
 
 void CBaseModPanel::DrawColoredText( vgui::HFont hFont, int x, int y, unsigned int color, const char *pAnsiText )

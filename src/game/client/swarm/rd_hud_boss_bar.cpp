@@ -8,7 +8,7 @@
 #include "tier0/memdbgon.h"
 
 
-ConVar rd_paint_boss_bars( "rd_paint_boss_bars", "1", FCVAR_ARCHIVE, "Draw boss bars on the HUD when rd_boss_bar entities are active" );
+ConVar rd_paint_boss_bars( "rd_paint_boss_bars", "1", FCVAR_NONE, "Draw boss bars on the HUD when rd_boss_bar entities are active" );
 
 #define BAR_HEIGHT_BASE 15
 #define BAR_PADDING 2

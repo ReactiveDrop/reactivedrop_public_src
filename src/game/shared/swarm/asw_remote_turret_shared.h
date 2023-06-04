@@ -30,13 +30,13 @@ public:
 
 	void SetupMove( CBasePlayer *player, CUserCmd *ucmd, IMoveHelper *pHelper, CMoveData *move );
 	void ProcessMovement( CBasePlayer *pPlayer, CMoveData *pMoveData );
-	const QAngle& EyeAngles();
-	const QAngle& RealEyeAngles();
-	void SmoothTurretAngle(QAngle &ang);
+	const QAngle &EyeAngles();
+	const QAngle &RealEyeAngles();
+	void SmoothTurretAngle( QAngle &ang );
 	Vector GetTurretCamPosition();
 	Vector GetTurretMuzzlePosition();
-	void GetButtons(bool& bAttack1, bool& bAttack2, bool& bReload );
-	void FireTurret(CBasePlayer *pPlayer);
+	void GetButtons( bool &bAttack1, bool &bAttack2, bool &bReload );
+	void FireTurret( CBasePlayer *pPlayer );
 	int GetSentryDamage();
 
 	virtual void MakeTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType );
@@ -55,50 +55,51 @@ public:
 	COutputEvent m_OnStartedUsing;
 	COutputEvent m_OnStoppedUsing;
 
-	CNetworkQAngle( m_angEyeAngles );	
-#else	
+	CNetworkQAngle( m_angEyeAngles );
+#else
+	int m_iFireSequence;
+	int m_iIdleSequence;
+	int m_iIdleOffSequence;
+	int m_iTurnOnSequence;
+	int m_iTurnOffSequence;
 	virtual void ClientThink();
+	virtual void ReachedEndOfSequence();
 	QAngle m_angEyeAngles;
 	CInterpolatedVar<QAngle> m_iv_angEyeAngles;
 	float GetMuzzleFlashScale();
 	int GetMuzzleAttachment();
 	void ProcessMuzzleFlashEvent();
 
+	float m_flNextTurnSound;
+	bool m_bLastUser;
 	QAngle m_LastAngle;
-	CSoundPatch		*m_pLoopingSound;
-	bool m_bLastPlaySound;
 	virtual void OnDataChanged( DataUpdateType_t updateType );
-	virtual void UpdateOnRemove();
-	virtual void OnRestore();
-	void SoundInit();
-	void SoundShutdown();
 	virtual void CreateMove( float flInputSampleTime, CUserCmd *pCmd );
 	void ASWRemoteTurretTracer( const Vector &vecEnd );
 #endif
-	CNetworkVar(bool, m_bUpsideDown);
+	CNetworkVar( bool, m_bUpsideDown );
 #ifdef CLIENT_DLL
 	C_ASW_Marine *GetUser();
-	CNetworkHandle(C_ASW_Marine, m_hUser);
+	CNetworkHandle( C_ASW_Marine, m_hUser );
 #else
 	CASW_Marine *GetUser();
-	CNetworkHandle(CASW_Marine, m_hUser);
+	CNetworkHandle( CASW_Marine, m_hUser );
 	EHANDLE m_hComputerArea;
 #endif
 	float m_fNextFireTime;
 	int m_iAmmoType;
-	virtual const Vector& GetBulletSpread( void )
+	virtual const Vector &GetBulletSpread( void )
 	{
 		static Vector cone;
-		
+
 		cone = VECTOR_CONE_PRECALCULATED;//VECTOR_CONE_5DEGREES;
 
 		return cone;
 	}
-	virtual Class_T Classify( void ) { return (Class_T) CLASS_ASW_REMOTE_TURRET; }
+	virtual Class_T Classify( void ) { return ( Class_T )CLASS_ASW_REMOTE_TURRET; }
 
-	CNetworkQAngle(m_angDefault);	// reference angle for view limits
-	CNetworkQAngle(m_angViewLimit);	// how far we can look either side
+	CNetworkQAngle( m_angDefault );	// reference angle for view limits
+	CNetworkQAngle( m_angViewLimit );	// how far we can look either side
 };
-
 
 #endif /* _INCLUDED_ASW_REMOTE_TURRET_H */

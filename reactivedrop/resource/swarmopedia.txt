@@ -3028,7 +3028,7 @@
 		}
 		"GlobalStat" {
 			"StatName" "electric_armor_used"
-			"Caption" "#rd_so_stat_damage_blocked"
+			"Caption" "#rd_so_stat_deployed"
 		}
 		"GlobalStat" {
 			"StatName" "electric_armor_reduction"
@@ -3050,6 +3050,10 @@
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/heals_infestation"
 				"Caption" "#rd_weapon_fact_prevents_and_reverses_infestation"
+			}
+			"Numeric" {
+				"Caption" "#rd_weapon_fact_damage_reduction_base"
+				"Base" "75"
 			}
 		}
 	}

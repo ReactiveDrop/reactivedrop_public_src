@@ -1285,6 +1285,7 @@ void CASW_Weapon::Precache()
 	BaseClass::Precache();
 
 	PrecacheModel( "models/swarm/Bayonet/bayonet.mdl" );
+	PrecacheModel( "models/weapons/accessories/strange_device.mdl" );
 	if ( const char *szMagazineGibName = GetMagazineGibModelName() )
 		PrecacheModel( szMagazineGibName );
 	PrecacheScriptSound( GetEquipSound() );
@@ -1624,10 +1625,19 @@ const char* CASW_Weapon::GetUTracerType()
 void CASW_Weapon::UpdateOnRemove( void )
 {
 #ifdef CLIENT_DLL
-    RemoveLaserPointerEffect();
+	RemoveLaserPointerEffect();
 	if ( m_hLaserSight.Get() )
 	{
 		UTIL_Remove( m_hLaserSight );
+	}
+
+	for ( int i = 0; i < NELEMS( m_hWeaponAccessory ); i++ )
+	{
+		if ( m_hWeaponAccessory[i].Get() )
+		{
+			UTIL_Remove( m_hWeaponAccessory[i].Get() );
+			m_hWeaponAccessory[i] = NULL;
+		}
 	}
 #endif
 	//IHasAttributes *pOwnerAttribInterface = dynamic_cast<IHasAttributes *>( GetOwnerEntity() );
