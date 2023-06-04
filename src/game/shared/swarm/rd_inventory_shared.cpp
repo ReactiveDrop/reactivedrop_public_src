@@ -16,7 +16,7 @@
 #include <vgui/ISurface.h>
 #include <vgui_controls/Controls.h>
 #include <vgui_controls/RichText.h>
-#include "lodepng.h"
+#include "rd_png_texture.h"
 #include "c_asw_player.h"
 #include "c_asw_marine_resource.h"
 #include "c_asw_marine.h"
@@ -2040,37 +2040,14 @@ CON_COMMAND( rd_econ_item_preview, "inspect an item using a code from the Steam 
 	SteamInventory()->InspectItem( s_RD_Inventory_Manager.AddCraftItemTask( CRD_Inventory_Manager::CRAFT_INSPECT ), args.Arg( 1 ) );
 }
 
-class CSteamItemIcon : public vgui::IImage
+class CSteamItemIcon : public CRD_PNG_Texture
 {
 public:
 	CSteamItemIcon( const char *szURL ) :
 		m_URLHash{ CRC32_ProcessSingleBuffer( szURL, V_strlen( szURL ) ) }
 	{
-		m_iTextureID = 0;
-		m_Color.SetColor( 255, 255, 255, 255 );
-		m_nX = 0;
-		m_nY = 0;
-		m_nWide = 512;
-		m_nTall = 512;
-
-		CFmtStr fileName1( "materials/vgui/inventory/cache/%08x.vmt", m_URLHash );
-		CFmtStr fileName2( "materials/vgui/inventory/cache/%08x.vtf", m_URLHash );
-		if ( g_pFullFileSystem->FileExists( fileName1, "GAME" ) && g_pFullFileSystem->FileExists( fileName2, "GAME" ) )
-		{
-			CUtlBuffer buf{ 0, 0, CUtlBuffer::TEXT_BUFFER };
-			if ( g_pFullFileSystem->ReadFile( fileName1, "GAME", buf ) )
-			{
-				buf.SeekGet( CUtlBuffer::SEEK_HEAD, strlen( "// version " ) );
-				if ( buf.GetInt() == 1 ) // current version number
-				{
-					m_iTextureID = vgui::surface()->CreateNewTextureID();
-					vgui::surface()->DrawSetTextureFile( m_iTextureID, fileName1.Access() + V_strlen( "materials/" ), true, false );
-					vgui::surface()->DrawGetTextureSize( m_iTextureID, m_nWide, m_nTall );
-
-					return;
-				}
-			}
-		}
+		if ( Init( "vgui/inventory/cache", m_URLHash ) )
+			return;
 
 		ISteamHTTP *pHTTP = SteamHTTP();
 		Assert( pHTTP );
@@ -2086,70 +2063,14 @@ public:
 			}
 			else
 			{
-				Warning( "Sending request for inventory item icon failed!\n" );
+				OnFailedToLoadData( "Sending HTTP request failed!", "inventory item icon" );
 			}
 		}
 		else
 		{
-			Warning( "No ISteamHTTP access - cannot fetch inventory item icon.\n" );
+			OnFailedToLoadData( "No ISteamHTTP access", "inventory item icon" );
 		}
 	}
-
-	virtual ~CSteamItemIcon()
-	{
-		if ( m_iTextureID )
-		{
-			vgui::surface()->DestroyTextureID( m_iTextureID );
-		}
-	}
-
-	virtual void Paint()
-	{
-		if ( !m_iTextureID )
-		{
-			return;
-		}
-
-		vgui::surface()->DrawSetColor( m_Color );
-		vgui::surface()->DrawSetTexture( m_iTextureID );
-		vgui::surface()->DrawTexturedRect( m_nX, m_nY, m_nX + m_nWide, m_nY + m_nTall );
-	}
-
-	virtual void SetPos( int x, int y )
-	{
-		m_nX = x;
-		m_nY = y;
-	}
-
-	virtual void GetContentSize( int &wide, int &tall )
-	{
-		wide = m_nWide;
-		tall = m_nTall;
-	}
-
-	virtual void GetSize( int &wide, int &tall )
-	{
-		wide = m_nWide;
-		tall = m_nTall;
-	}
-
-	virtual void SetSize( int wide, int tall )
-	{
-		m_nWide = wide;
-		m_nTall = tall;
-	}
-
-	virtual void SetColor( Color col )
-	{
-		m_Color = col;
-	}
-
-	virtual bool Evict() { return false; }
-	// Using GetNumFrames to signal whether the HTTP request has finished.
-	virtual int GetNumFrames() { return m_HTTPRequestCompleted.IsActive() ? 0 : 1; }
-	virtual void SetFrame( int nFrame ) {}
-	virtual vgui::HTexture GetID() { return m_iTextureID; }
-	virtual void SetRotation( int iRotation ) {}
 
 	static CSteamItemIcon *Get( const char *szURL )
 	{
@@ -2180,16 +2101,11 @@ public:
 
 	const CRC32_t m_URLHash;
 private:
-	vgui::HTexture m_iTextureID;
-	Color m_Color;
-	int m_nX, m_nY;
-	int m_nWide, m_nTall;
-
 	void OnRequestCompleted( HTTPRequestCompleted_t *pParam, bool bIOFailure )
 	{
 		if ( bIOFailure || !pParam->m_bRequestSuccessful )
 		{
-			Warning( "Failed to fetch inventory item icon: IO Failure\n" );
+			OnFailedToLoadData( "IO Failure", "inventory item icon" );
 			return;
 		}
 
@@ -2197,7 +2113,7 @@ private:
 		Assert( pHTTP );
 		if ( !pHTTP )
 		{
-			Warning( "No access to ISteamHTTP inside callback from HTTP request!\n" );
+			OnFailedToLoadData( "No access to ISteamHTTP inside callback from HTTP request!", "inventory item icon" );
 			return;
 		}
 
@@ -2214,42 +2130,7 @@ private:
 
 		pHTTP->ReleaseHTTPRequest( pParam->m_hRequest );
 
-		uint8_t *rgba = NULL;
-		unsigned error = lodepng_decode32( &rgba, ( unsigned * )&m_nWide, ( unsigned * )&m_nTall, data.Base(), pParam->m_unBodySize );
-		if ( error )
-		{
-			Warning( "Decoding inventory item icon: lodepng error %d: %s\n", error, lodepng_error_text( error ) );
-		}
-
-		IVTFTexture *pVTF = CreateVTFTexture();
-		pVTF->Init( m_nWide, m_nTall, 1, IMAGE_FORMAT_RGBA8888, TEXTUREFLAGS_EIGHTBITALPHA | TEXTUREFLAGS_CLAMPS | TEXTUREFLAGS_CLAMPT, 1 );
-		if ( rgba )
-			V_memcpy( pVTF->ImageData(), rgba, m_nWide * m_nTall * 4 );
-		free( rgba );
-
-		pVTF->ConvertImageFormat( IMAGE_FORMAT_DEFAULT, false );
-		VtfProcessingOptions opt = { sizeof( opt ), VtfProcessingOptions::OPT_FILTER_NICE };
-		pVTF->SetPostProcessingSettings( &opt );
-		pVTF->PostProcess( false );
-		pVTF->ConvertImageFormat( IMAGE_FORMAT_DXT5, false );
-
-		CUtlBuffer buf;
-		pVTF->Serialize( buf );
-		DestroyVTFTexture( pVTF );
-
-		g_pFullFileSystem->CreateDirHierarchy( "materials/vgui/inventory/cache", "MOD" );
-
-		CFmtStr fileName2( "materials/vgui/inventory/cache/%08x.vtf", m_URLHash );
-		g_pFullFileSystem->WriteFile( fileName2, "MOD", buf );
-
-		buf.Clear();
-		buf.SetBufferType( true, true );
-		buf.PutString( CFmtStr( "// version 1\nUnlitGeneric {\n$basetexture vgui/inventory/cache/%08x\n$translucent 1\n$vertexcolor 1\n$vertexalpha 1\n$ignorez 1\n}\n", m_URLHash ) );
-		CFmtStr fileName1( "materials/vgui/inventory/cache/%08x.vmt", m_URLHash );
-		g_pFullFileSystem->WriteFile( fileName1, "MOD", buf );
-
-		m_iTextureID = vgui::surface()->CreateNewTextureID();
-		vgui::surface()->DrawSetTextureFile( m_iTextureID, fileName1.Access() + V_strlen( "materials/" ), true, false );
+		OnPNGDataReady( data.Base(), pParam->m_unBodySize, "inventory item icon" );
 	}
 
 	CCallResult<CSteamItemIcon, HTTPRequestCompleted_t> m_HTTPRequestCompleted;

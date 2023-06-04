@@ -1740,6 +1740,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="swarm\rd_hit_confirm.cpp" />
     <ClCompile Include="swarm\rd_hud_boss_bar.cpp" />
     <ClCompile Include="swarm\rd_player_reporting.cpp" />
+    <ClCompile Include="swarm\rd_png_texture.cpp" />
     <ClCompile Include="swarm\rd_rich_presence.cpp" />
     <ClCompile Include="swarm\rd_steam_input.cpp" />
     <ClCompile Include="swarm\rd_steam_input_binds.cpp" />
@@ -2855,6 +2856,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="swarm\rd_font_hack.h" />
     <ClInclude Include="swarm\rd_hud_boss_bar.h" />
     <ClInclude Include="swarm\rd_player_reporting.h" />
+    <ClInclude Include="swarm\rd_png_texture.h" />
     <ClInclude Include="swarm\rd_rich_presence.h" />
     <ClInclude Include="swarm\rd_steam_input.h" />
     <ClInclude Include="swarm\rd_swarmopedia.h" />
