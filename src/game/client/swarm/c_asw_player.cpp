@@ -38,6 +38,7 @@
 #include <vgui_controls/Button.h>
 #include "controller_focus.h"
 #include "iclientmode.h"
+#include "stats_report.h"
 
 // ASW HUD
 #include "vgui\asw_vgui_info_message.h"
@@ -871,6 +872,36 @@ C_ASW_Inhabitable_NPC *C_ASW_Player::GetViewNPC() const
 		pNPC = GetNPC();
 	}
 	return pNPC;
+}
+
+Color C_ASW_Player::GetPlayerColor()
+{
+	C_ASW_Game_Resource *pGameResource = ASWGameResource();
+	if ( !pGameResource )
+		return Color{};
+
+	bool bFoundAny = false;
+	Color FirstMarineResourceColor{};
+	for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
+	{
+		Assert( i < NELEMS( g_rgbaStatsReportPlayerColors ) );
+		C_ASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
+		if ( !pMR || pMR->GetCommander() != this || i < NELEMS( g_rgbaStatsReportPlayerColors ) )
+			continue;
+
+		if ( pMR->IsInhabited() )
+		{
+			return g_rgbaStatsReportPlayerColors[i];
+		}
+
+		if ( !bFoundAny )
+		{
+			bFoundAny = true;
+			FirstMarineResourceColor = g_rgbaStatsReportPlayerColors[i];
+		}
+	}
+
+	return FirstMarineResourceColor;
 }
 
 Vector C_ASW_Player::GetAutoaimVectorForMarine( C_ASW_Marine *marine, float flDelta, float flNearMissDelta )

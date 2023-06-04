@@ -152,6 +152,7 @@ public:
 	C_ASW_Inhabitable_NPC *GetViewNPC() const;
 	bool HasLiveMarines();
 	virtual bool IsAlive( void );
+	Color GetPlayerColor();
 
 	// anim state helper
 	CBaseCombatWeapon* ASWAnim_GetActiveWeapon();

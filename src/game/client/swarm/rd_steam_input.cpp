@@ -20,9 +20,9 @@
 #define RD_INPUT_GLYPH_SIZE k_ESteamInputGlyphSize_Medium
 #define RD_INPUT_GLYPH_STYLE ESteamInputGlyphStyle_Light
 
-ConVar rd_gamepad_soft_keyboard( "rd_gamepad_soft_keyboard", "1", FCVAR_NONE, "Automatically open Steam Deck style keyboard when focusing a text field." );
-ConVar rd_force_power_of_two_controller_glyphs( "rd_force_power_of_two_controller_glyphs", "0", FCVAR_NONE, "Shrink controller glyphs until they are a power-of-two size to avoid scaling artifacts." );
+ConVar rd_gamepad_soft_keyboard( "rd_gamepad_soft_keyboard", "1", FCVAR_ARCHIVE, "Automatically open Steam Deck style keyboard when focusing a text field." );
 ConVar rd_force_controller_glyph_set( "rd_force_controller_glyph_set", "-1", FCVAR_ARCHIVE, "Use a specific controller button set for UI hints. 3=xbox, 10=switch, 13=ps5, 14=steam deck", true, -1, true, k_ESteamInputType_Count - 1 );
+ConVar rd_gamepad_player_color( "rd_gamepad_player_color", "1", FCVAR_ARCHIVE, "Set controller LED color to player color when controlling a marine." );
 
 CRD_Steam_Input g_RD_Steam_Input;
 
@@ -402,15 +402,6 @@ void CRD_Steam_Input::DrawLegacyControllerGlyph( const char *szKey, int x, int y
 
 	int tall = vgui::surface()->GetFontTall( hFont );
 
-	if ( rd_force_power_of_two_controller_glyphs.GetBool() )
-	{
-		// hack!
-		int scaledTall = LargestPowerOfTwoLessThanOrEqual( tall );
-		x += ( tall - scaledTall ) / 2;
-		y += ( tall - scaledTall ) / 2;
-		tall = scaledTall;
-	}
-
 	if ( iCenterX )
 		x -= tall * iCenterX / 2;
 
@@ -569,7 +560,8 @@ void CRD_Steam_Input::OnActionEvent( SteamInputActionEvent_t *pEvent )
 CRD_Steam_Controller::CRD_Steam_Controller( InputHandle_t hController ) :
 	m_hController{ hController },
 	m_bConnected{ false },
-	m_SplitScreenPlayerIndex{ -1 }
+	m_SplitScreenPlayerIndex{ -1 },
+	m_LastPlayerColor{}
 {
 	// controllers are always the first splitscreen player until we have actual splitscreen
 	m_SplitScreenPlayerIndex = 0;
@@ -606,10 +598,24 @@ void CRD_Steam_Controller::OnFrame( ISteamInput *pSteamInput )
 #define ACTIVATE_LAYER( name ) pSteamInput->ActivateActionSetLayer( m_hController, g_RD_Steam_Input.m_ActionSetLayers.name )
 
 	C_ASW_Player *pPlayer = m_SplitScreenPlayerIndex == -1 ? NULL : C_ASW_Player::GetLocalASWPlayer( m_SplitScreenPlayerIndex );
-	NOTE_UNUSED( pPlayer );
 
 	// for now, we only have one mode
 	ACTIVATE_SET( InGame );
+
+	if ( rd_gamepad_player_color.GetBool() )
+	{
+		Color PlayerColor{};
+		if ( pPlayer )
+		{
+			PlayerColor = pPlayer->GetPlayerColor();
+		}
+
+		if ( PlayerColor != m_LastPlayerColor )
+		{
+			m_LastPlayerColor = PlayerColor;
+			pSteamInput->SetLEDColor( m_hController, PlayerColor.r(), PlayerColor.g(), PlayerColor.b(), PlayerColor == Color{} ? k_ESteamInputLEDFlag_RestoreUserDefault : k_ESteamInputLEDFlag_SetColor );
+		}
+	}
 #endif
 }
 

@@ -63,6 +63,7 @@ public:
 	const InputHandle_t m_hController;
 	bool m_bConnected;
 	int m_SplitScreenPlayerIndex;
+	Color m_LastPlayerColor;
 };
 
 class CRD_Steam_Input_Bind final
