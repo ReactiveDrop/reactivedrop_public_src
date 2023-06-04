@@ -100,7 +100,7 @@ ConVar mat_fullbright( "mat_fullbright", "0", FCVAR_CHEAT );
 
 ConVar mat_grain_enable( "mat_grain_enable", "1" );
 ConVar mat_vignette_enable( "mat_vignette_enable", "0" );
-ConVar mat_local_contrast_enable( "mat_local_contrast_enable", "1", FCVAR_ARCHIVE );
+ConVar mat_local_contrast_enable( "mat_local_contrast_enable", "1" );
 
 static void SetRenderTargetAndViewPort(ITexture *rt)
 {

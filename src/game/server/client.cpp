@@ -29,7 +29,7 @@
 #include "voice_gamemgr.h"
 #include "fmtstr.h"
 #include "videocfg/videocfg.h"
-#include "asw_gamerules.h"
+
 
 
 #ifdef HL2_DLL
@@ -203,7 +203,7 @@ void Host_Say( edict_t *pEdict, const CCommand &args, bool teamonly )
 
 	Q_strncat( text, p, sizeof( text ), COPY_ALL_CHARACTERS );
 	Q_strncat( text, "\n", sizeof( text ), COPY_ALL_CHARACTERS );
-
+ 
 	// loop through all players
 	// Start with the first player.
 	// This may return the world in single player if the client types something between levels or during spawn
@@ -216,37 +216,20 @@ void Host_Say( edict_t *pEdict, const CCommand &args, bool teamonly )
 		if ( !client || !client->edict() )
 			continue;
 		
-		if ( client->edict() != pEdict )
-		{
-			if ( !(client->IsNetClient()) )	// Not a client ? (should never be true)
-				continue;
+		if ( client->edict() == pEdict )
+			continue;
 
-			if ( teamonly && !g_pGameRules->PlayerCanHearChat( client, pPlayer ) )
-				continue;
+		if ( !(client->IsNetClient()) )	// Not a client ? (should never be true)
+			continue;
 
-			if ( pPlayer && !client->CanHearAndReadChatFrom( pPlayer ) )
-				continue;
+		if ( teamonly && !g_pGameRules->PlayerCanHearChat( client, pPlayer ) )
+			continue;
 
-			if ( pPlayer && GetVoiceGameMgr() && GetVoiceGameMgr()->IsPlayerIgnoringPlayer( pPlayer->entindex(), i ) )
-				continue;
-		}
+		if ( pPlayer && !client->CanHearAndReadChatFrom( pPlayer ) )
+			continue;
 
-		const char* newText = text;
-		if ( CAlienSwarm *pAlienSwarm = ASWGameRules() )
-		{
-			ScriptVariant_t args[3];
-			args[0] = ToHScript( client );
-			args[1] = ToHScript( pPlayer );
-			args[2] = ScriptVariant_t( newText );
-			
-			pAlienSwarm->RunScriptFunctionInListenerScopes( "OnReceivedTextMessage", &args[2], NELEMS(args), args );
-
-			ScriptVariant_t result = args[2];
-			if ( result.m_type != FIELD_CSTRING )
-					continue;
-				
-			newText = result.m_pszString;
-		}
+		if ( pPlayer && GetVoiceGameMgr() && GetVoiceGameMgr()->IsPlayerIgnoringPlayer( pPlayer->entindex(), i ) )
+			continue;
 
 		CSingleUserRecipientFilter user( client );
 		user.MakeReliable();
@@ -257,7 +240,23 @@ void Host_Say( edict_t *pEdict, const CCommand &args, bool teamonly )
 		}
 		else
 		{
-			UTIL_SayTextFilter( user, newText, pPlayer, true );
+			UTIL_SayTextFilter( user, text, pPlayer, true );
+		}
+	}
+
+	if ( pPlayer )
+	{
+		// print to the sending client
+		CSingleUserRecipientFilter user( pPlayer );
+		user.MakeReliable();
+
+		if ( pszFormat )
+		{
+			UTIL_SayText2Filter( user, pPlayer, true, pszFormat, pszPlayerName, p, pszLocation );
+		}
+		else
+		{
+			UTIL_SayTextFilter( user, text, pPlayer, true );
 		}
 	}
 
@@ -592,7 +591,7 @@ void CPointClientCommand::InputCommand( inputdata_t& inputdata )
 	if ( !pClient || !pClient->GetUnknown() )
 		return;
 
-	engine->ClientCommand( pClient, "%s\n", inputdata.value.String() );
+	engine->ClientCommand( pClient, UTIL_VarArgs( "%s\n", inputdata.value.String() ) );
 }
 
 BEGIN_DATADESC( CPointClientCommand )
@@ -660,7 +659,7 @@ void CPointBroadcastClientCommand::InputCommand( inputdata_t& inputdata )
 		if ( !pClient || !pClient->GetUnknown() )
 			continue;
 
-		engine->ClientCommand( pClient, "%s\n", inputdata.value.String() );
+		engine->ClientCommand( pClient, UTIL_VarArgs( "%s\n", inputdata.value.String() ) );
 	}
 }
 

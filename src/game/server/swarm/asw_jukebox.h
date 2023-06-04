@@ -7,17 +7,13 @@ public:
 	DECLARE_CLASS( CASW_Jukebox, CBaseEntity );
 	DECLARE_DATADESC();
 
-	void Precache() override;
-
+	virtual void Precache();
 	void InputMusicStart( inputdata_t &inputdata );
 	void InputMusicStop( inputdata_t &inputdata );
 protected:
-	float m_fFadeInTime{ 1 };
-	float m_fFadeOutTime{ 1 };
-	string_t m_szDefaultMusic{ NULL_STRING };
-	string_t m_szTrackName{ NULL_STRING };
-	string_t m_szAlbumName{ NULL_STRING };
-	string_t m_szArtistName{ NULL_STRING };
+	float m_fFadeInTime;
+	float m_fFadeOutTime;
+	char *m_szDefaultMusic;
 };
 
 #endif // #ifndef _DEFINED_ASW_JUKEBOX_H

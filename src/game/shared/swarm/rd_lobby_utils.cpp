@@ -47,7 +47,7 @@ void UTIL_RD_JoinByLobbyID( CSteamID lobby )
 bool UTIL_RD_IsLobbyOwner()
 {
 	CSteamID lobby = UTIL_RD_GetCurrentLobbyID();
-	if ( !lobby.IsValid() || !SteamMatchmaking() || !SteamUser() )
+	if ( !lobby.IsValid() )
 	{
 		return false;
 	}

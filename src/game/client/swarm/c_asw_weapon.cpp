@@ -24,7 +24,6 @@
 #include "game_timescale_shared.h"
 #include "vgui/ILocalize.h"
 #include "asw_equipment_list.h"
-#include "gamestringpool.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -124,8 +123,6 @@ extern ConVar asw_use_particle_tracers;
 extern ConVar muzzleflash_light;
 extern ConVar rd_show_others_laser_pointer;
 
-#define RD_STRANGE_DEVICE_MODEL "models/weapons/accessories/strange_device.mdl"
-
 C_ASW_Weapon::C_ASW_Weapon() :
 m_GlowObject( this, glow_outline_color_weapon.GetColorAsVector(), 1.0f, false, true)
 {
@@ -151,6 +148,7 @@ m_GlowObject( this, glow_outline_color_weapon.GetColorAsVector(), 1.0f, false, t
 	m_bFastReloadSuccess = false;
 	m_bFastReloadFailure = false;
 
+	m_nUseIconTextureID = -1;
 	m_bWeaponCreated = false;
 	m_nMuzzleAttachment = 0;
 	m_nLastMuzzleAttachment = 0;
@@ -179,15 +177,6 @@ C_ASW_Weapon::~C_ASW_Weapon()
 	{
 		UTIL_Remove( m_hLaserSight.Get() );
 		m_hLaserSight = NULL;
-	}
-
-	for ( int i = 0; i < NELEMS( m_hWeaponAccessory ); i++ )
-	{
-		if ( m_hWeaponAccessory[i].Get() )
-		{
-			UTIL_Remove( m_hWeaponAccessory[i].Get() );
-			m_hWeaponAccessory[i] = NULL;
-		}
 	}
 }
 
@@ -225,16 +214,6 @@ void C_ASW_Weapon::OnDataChanged( DataUpdateType_t type )
 		//CreateLaserSight();
 
 		m_bWeaponCreated = true;
-
-		if ( IsInventoryEquipSlotValid() )
-		{
-			const CRD_ItemInstance &instance = m_hOriginalOwnerPlayer->m_EquippedItemDataDynamic[m_iInventoryEquipSlot];
-			MaybeAddStrangeDevice( -1, instance.m_iItemDefID );
-			for ( int i = 0; i < RD_ITEM_MAX_ACCESSORIES; i++ )
-			{
-				MaybeAddStrangeDevice( i, instance.m_iAccessory[i] );
-			}
-		}
 
 		SetNextClientThink( CLIENT_THINK_ALWAYS );
 	}
@@ -706,10 +685,19 @@ void C_ASW_Weapon::CreateLaserSight()
 
 int C_ASW_Weapon::GetUseIconTextureID()
 {
-	const CASW_EquipItem *pEquipItem = GetEquipItem();
-	Assert( pEquipItem );
+	if (m_nUseIconTextureID == -1)
+	{
+		const CASW_EquipItem *pItem = GetEquipItem();
+		if ( pItem )
+		{
+			m_nUseIconTextureID = vgui::surface()->CreateNewTextureID();
+			char buffer[ 256 ];
+			Q_snprintf( buffer, sizeof( buffer ), "vgui/%s", pItem->m_szEquipIcon );
+			vgui::surface()->DrawSetTextureFile( m_nUseIconTextureID, buffer, true, false);
+		}
+	}
 
-	return g_ASWEquipmentList.GetEquipIconTexture( !pEquipItem || !pEquipItem->m_bIsExtra, GetEquipmentListIndex() );
+	return m_nUseIconTextureID;
 }
 
 bool C_ASW_Weapon::GetUseAction( ASWUseAction &action, C_ASW_Inhabitable_NPC *pUser )
@@ -788,42 +776,6 @@ IClientModelRenderable*	C_ASW_Weapon::GetClientModelRenderable()
 	// HACK - avoid the hack in C_BaseCombatWeapon that changes the model inappropriately for Infested
 	return BASECOMBATWEAPON_DERIVED_FROM::GetClientModelRenderable();
 }
-
-void C_ASW_Weapon::MaybeAddStrangeDevice( int i, SteamItemDef_t defID )
-{
-	Assert( m_hWeaponAccessory[i + 1] == NULL );
-	if ( defID == 0 )
-		return;
-
-	const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( defID );
-	Assert( pDef );
-	if ( !pDef )
-		return;
-
-	if ( pDef->CompressedDynamicProps.Count() )
-	{
-		C_RD_Weapon_Accessory *pEnt = ( C_RD_Weapon_Accessory * )CreateEntityByName( "rd_weapon_accessory" );
-		Assert( pEnt );
-		if ( !pEnt )
-			return;
-
-		if ( !pEnt->InitializeAsClientEntity( RD_STRANGE_DEVICE_MODEL, false ) )
-		{
-			Assert( !"Failed to initialize strange device" );
-			pEnt->Release();
-			return;
-		}
-
-		pEnt->SetOwnerEntity( this );
-		pEnt->m_iAccessoryIndex = i;
-		pEnt->SetModelName( AllocPooledString( RD_STRANGE_DEVICE_MODEL ) );
-		pEnt->SetModel( RD_STRANGE_DEVICE_MODEL );
-		pEnt->SetParent( this );
-		pEnt->AddEffects( EF_BONEMERGE | EF_BONEMERGE_FASTCULL );
-		m_hWeaponAccessory[i + 1] = pEnt;
-	}
-}
-
 //--------------------------------------------------------------------------------------------------------
 bool C_ASW_Weapon::ShouldShowLaserPointer()
 {

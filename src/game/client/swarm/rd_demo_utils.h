@@ -45,7 +45,6 @@ public:
 	bool m_bStartedRecording;
 	bool m_bJustConnected;
 	int m_iAutoRecordAttempts;
-	int m_iDelayRecordingStart;
 };
 
 extern CRD_Auto_Record_System g_RD_Auto_Record_System;

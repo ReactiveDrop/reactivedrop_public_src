@@ -921,7 +921,7 @@ void CASW_Weapon_MedRifle::MouseOverEntity(C_BaseEntity *pEnt, Vector vecWorldCu
 	}
 
 	// if the marine our cursor is over is near enough, highlight them
-	bool bCanGiveHealth = m_iClip2 > 0;
+	bool bCanGiveHealth = m_iClip1 > 0;
 	ASWInput()->SetHighlightEntity( pOtherMarine, bCanGiveHealth );
 
 	CASWHudCrosshair *pCrosshair = GET_HUDELEMENT( CASWHudCrosshair );

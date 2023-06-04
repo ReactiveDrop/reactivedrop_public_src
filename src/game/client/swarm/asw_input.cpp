@@ -35,7 +35,7 @@ ConVar asw_marine_fraction_turn_scale("asw_marine_fraction_turn_scale", "0", FCV
 
 ConVar asw_marine_turn_firing_fraction("asw_marine_turn_firing_fraction", "0.6", FCVAR_CHEAT, "Fractional turning value while firing, if using asw_marine_fraction_turn_scale");
 ConVar asw_marine_turn_normal_fraction("asw_marine_turn_normal_fraction", "0.9", FCVAR_CHEAT, "Fractional turning value if using asw_marine_fraction_turn_scale");
-ConVar asw_marine_turn_y_pos("asw_marine_turn_y_pos", "0.55", FCVAR_NONE, "Normalized height position for where the cursor changes the player from looking north to south.");
+ConVar asw_marine_turn_y_pos("asw_marine_turn_y_pos", "0.55", FCVAR_ARCHIVE, "Normalized height position for where the cursor changes the player from looking north to south.");
 
 ConVar joy_autoattack( "joy_autoattack", "0", FCVAR_ARCHIVE, "If enabled, marine will fire when you push the right analog stick" );
 ConVar joy_lock_firing_angle( "joy_lock_firing_angle", "0", FCVAR_ARCHIVE, "If enabled, your facing direction will be locked while firing instead of aiming to movement" );
@@ -1797,11 +1797,8 @@ void CASWInput::JoyStickTurn( CUserCmd *cmd, float &yaw, float &pitch, float fra
 	}
 	else
 	{
-		static SplitScreenConVarRef s_joy_yawsensitivity( "joy_yawsensitivity" );
-		static SplitScreenConVarRef s_joy_pitchsensitivity( "joy_pitchsensitivity" );
-
-		viewangles[PITCH] += pitch * s_joy_pitchsensitivity.GetFloat( GET_ACTIVE_SPLITSCREEN_SLOT() );
-		viewangles[YAW] += yaw * s_joy_yawsensitivity.GetFloat( GET_ACTIVE_SPLITSCREEN_SLOT() );
+		viewangles[PITCH] += pitch;
+		viewangles[YAW] -= yaw;
 	}
 
 	// Store out the new viewangles.

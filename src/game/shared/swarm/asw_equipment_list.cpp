@@ -99,7 +99,7 @@ ConVar asw_ammo_count_deagle( "asw_ammo_count_deagle", "7", FCVAR_CHEAT | FCVAR_
 ConVar asw_ammo_count_devastator( "asw_ammo_count_devastator", "70", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_combat_rifle_shotgun( "asw_ammo_count_combat_rifle_shotgun", "8", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_healampgun_heal( "asw_ammo_count_healampgun_heal", "50", FCVAR_CHEAT | FCVAR_REPLICATED );
-ConVar asw_ammo_count_healampgun_amp( "asw_ammo_count_healampgun_amp", "190", FCVAR_CHEAT | FCVAR_REPLICATED );
+ConVar asw_ammo_count_healampgun_amp( "asw_ammo_count_healampgun_amp", "100", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_heavy_rifle( "asw_ammo_count_heavy_rifle", "98", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_heavy_rifle_charge( "asw_ammo_count_heavy_rifle_charge", "5", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_medrifle( "asw_ammo_count_medrifle", "72", FCVAR_CHEAT | FCVAR_REPLICATED );

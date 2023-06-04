@@ -37,14 +37,14 @@
 
 #define CHAT_WIDTH_PERCENTAGE 0.6f
 
-ConVar cl_showchatmsg( "cl_showchatmsg", "1", FCVAR_NONE, "Enable/disable chat messages printing on the screen." );
+ConVar cl_showchatmsg( "cl_showchatmsg", "1", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Enable/disable chat messages printing on the screen." );
 
-ConVar hud_saytext_time( "hud_saytext_time", "12", FCVAR_NONE );
-ConVar cl_showtextmsg( "cl_showtextmsg", "1", FCVAR_NONE, "Enable/disable text messages printing on the screen." );
-ConVar cl_chat_active( "cl_chat_active", "0", FCVAR_NONE );
-ConVar cl_chatfilters( "cl_chatfilters", "31", FCVAR_NONE, "Stores the chat filter settings " );
-ConVar rd_chatwipe( "rd_chatwipe", "0", FCVAR_NONE, "Set this to 0 to prevent chat wiping between missions" );
-ConVar rd_chatwipe_mainmenu( "rd_chatwipe_mainmenu", "1", FCVAR_NONE, "Set this to 0 to prevent chat wiping between games" );
+ConVar hud_saytext_time( "hud_saytext_time", "12", 0 );
+ConVar cl_showtextmsg( "cl_showtextmsg", "1", 0, "Enable/disable text messages printing on the screen." );
+ConVar cl_chat_active( "cl_chat_active", "0" );
+ConVar cl_chatfilters( "cl_chatfilters", "31", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Stores the chat filter settings " );
+ConVar rd_chatwipe( "rd_chatwipe", "1", FCVAR_ARCHIVE, "Set this to 0 to prevent chat wiping between missions" );
+ConVar rd_chatwipe_mainmenu( "rd_chatwipe_mainmenu", "1", FCVAR_ARCHIVE, "Set this to 0 to prevent chat wiping between games" );
 
 Color g_ColorBlue( 153, 204, 255, 255 );
 Color g_ColorRed( 255, 63.75, 63.75, 255 );

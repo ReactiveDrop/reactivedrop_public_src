@@ -542,9 +542,6 @@
 	{
 		"fadeintime"	"float"
 		"defaulttrack"	"string"
-		"trackname"		"string"
-		"albumname"		"string"
-		"artistname"	"string"
 	}
 	"jukebox_stop"
 	{

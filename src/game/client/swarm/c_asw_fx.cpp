@@ -412,7 +412,7 @@ const char *pszDroneGibs_Unique[NUM_DRONE_GIBS_UNIQUE] = {
 "models/swarm/DroneGibs/dronepart59.mdl"
 };
 
-ConVar g_drone_maxgibs( "g_drone_maxgibs", "16", FCVAR_NONE );
+ConVar g_drone_maxgibs( "g_drone_maxgibs", "16", FCVAR_ARCHIVE );
 
 void CDroneGibManager::LevelInitPreEntity( void )
 {

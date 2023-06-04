@@ -974,9 +974,6 @@ void CASW_Steamstats::PrepStatsForSend( CASW_Player *pPlayer )
 		m_WeaponStats[i].PrepStatsForSend( pPlayer );
 	}
 
-	ReactiveDropInventory::CheckMedalEquipCache();
-
-	// Check whether this is the first time we've played today.
 	int32_t iLastPlayedDay = 0;
 	if ( SteamUserStats()->GetStat( "last_played_day", &iLastPlayedDay ) )
 	{
@@ -992,7 +989,6 @@ void CASW_Steamstats::PrepStatsForSend( CASW_Player *pPlayer )
 		}
 	}
 
-	// Drops!
 	ReactiveDropInventory::CheckPlaytimeItemGenerators( MarineProfileList()->GetProfile( iMarineProfileIndex )->GetMarineClass() );
 
 	char szBetaBranch[256]{};

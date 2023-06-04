@@ -33,7 +33,6 @@ using namespace vgui;
 #include "nb_vote_panel.h"
 #include "asw_hud_master.h"
 #include "asw_input.h"
-#include "rd_hud_sheet.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"

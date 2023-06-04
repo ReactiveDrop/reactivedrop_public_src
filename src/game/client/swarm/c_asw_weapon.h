@@ -15,7 +15,6 @@ class C_ASW_Marine;
 class CASW_WeaponInfo;
 class C_BreakableProp;
 class CASW_EquipItem;
-class C_RD_Weapon_Accessory;
 
 extern ConVar rd_ground_shooting;
 
@@ -207,10 +206,9 @@ public:
 	virtual bool NeedsLOSCheck() { return true; }
 
 	virtual int GetUseIconTextureID();
+	int m_nUseIconTextureID;
 
 	bool m_bWeaponCreated;
-	CHandle<C_RD_Weapon_Accessory> m_hWeaponAccessory[RD_ITEM_MAX_ACCESSORIES + 1];
-	void MaybeAddStrangeDevice( int i, SteamItemDef_t defID );
 
 	// laser pointer
 	virtual bool ShouldShowLaserPointer();

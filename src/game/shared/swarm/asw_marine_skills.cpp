@@ -653,8 +653,8 @@ int CASW_Marine_Skills::GetSkillPoints( CASW_Marine_Profile *pProfile, ASW_Skill
 		return 0;
 
 	int iProfileIndex = pProfile->m_ProfileIndex;
-	Assert( iProfileIndex >= 0 && iProfileIndex < ASW_NUM_MARINE_PROFILES );
-	if ( iProfileIndex < 0 || iProfileIndex >= ASW_NUM_MARINE_PROFILES )
+	Assert( iProfileIndex >= 0 && iProfileIndex < MarineProfileList()->m_NumProfiles );
+	if ( iProfileIndex < 0 || iProfileIndex >= MarineProfileList()->m_NumProfiles )
 		return 0;
 
 	int nSkillSlot = pGameResource->GetSlotForSkill( iProfileIndex, iSkillIndex );

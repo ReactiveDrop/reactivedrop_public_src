@@ -451,17 +451,17 @@ void CASW_Game_Resource::UpdateMarineSkills( CASW_Campaign_Save *pCampaign )
 	if ( !pCampaign || pCampaign->UsingFixedSkillPoints() )
 	{
 		// update skills with defaults
-		for ( int iProfileIndex = 0; iProfileIndex < ASW_NUM_MARINE_PROFILES; iProfileIndex++ )
+		for (int iProfileIndex=0;iProfileIndex<ASW_NUM_MARINE_PROFILES;iProfileIndex++)
 		{
-			CASW_Marine_Profile *pProfile = MarineProfileList()->GetProfile( iProfileIndex );
-			if ( pProfile )
+			CASW_Marine_Profile *pProfile = MarineProfileList()->m_Profiles[iProfileIndex];
+			if (pProfile)
 			{
-				m_iSkillSlot0.Set( iProfileIndex, pProfile->GetStaticSkillPoints( ASW_SKILL_SLOT_0 ) );
-				m_iSkillSlot1.Set( iProfileIndex, pProfile->GetStaticSkillPoints( ASW_SKILL_SLOT_1 ) );
-				m_iSkillSlot2.Set( iProfileIndex, pProfile->GetStaticSkillPoints( ASW_SKILL_SLOT_2 ) );
-				m_iSkillSlot3.Set( iProfileIndex, pProfile->GetStaticSkillPoints( ASW_SKILL_SLOT_3 ) );
-				m_iSkillSlot4.Set( iProfileIndex, pProfile->GetStaticSkillPoints( ASW_SKILL_SLOT_4 ) );
-				m_iSkillSlotSpare.Set( iProfileIndex, pProfile->GetStaticSkillPoints( ASW_SKILL_SLOT_SPARE ) );
+				m_iSkillSlot0.Set( iProfileIndex, pProfile->m_iStaticSkills[ ASW_SKILL_SLOT_0 ] );
+				m_iSkillSlot1.Set( iProfileIndex, pProfile->m_iStaticSkills[ ASW_SKILL_SLOT_1 ] );
+				m_iSkillSlot2.Set( iProfileIndex, pProfile->m_iStaticSkills[ ASW_SKILL_SLOT_2 ] );
+				m_iSkillSlot3.Set( iProfileIndex, pProfile->m_iStaticSkills[ ASW_SKILL_SLOT_3 ] );
+				m_iSkillSlot4.Set( iProfileIndex, pProfile->m_iStaticSkills[ ASW_SKILL_SLOT_4 ] );
+				m_iSkillSlotSpare.Set( iProfileIndex, pProfile->m_iStaticSkills[ ASW_SKILL_SLOT_SPARE ] );
 			}
 			else
 			{
@@ -477,7 +477,7 @@ void CASW_Game_Resource::UpdateMarineSkills( CASW_Campaign_Save *pCampaign )
 	else
 	{
 		// get skills from the campaign save
-		for ( int iProfileIndex = 0; iProfileIndex < ASW_NUM_MARINE_PROFILES; iProfileIndex++ )
+		for (int iProfileIndex=0;iProfileIndex<ASW_NUM_MARINE_PROFILES;iProfileIndex++)
 		{
 			m_iSkillSlot0.Set( iProfileIndex, pCampaign->m_iMarineSkill[iProfileIndex][ASW_SKILL_SLOT_0] );
 			m_iSkillSlot1.Set( iProfileIndex, pCampaign->m_iMarineSkill[iProfileIndex][ASW_SKILL_SLOT_1] );

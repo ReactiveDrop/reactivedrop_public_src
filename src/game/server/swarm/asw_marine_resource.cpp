@@ -352,9 +352,12 @@ int CASW_Marine_Resource::GetProfileIndex()
 
 CASW_Marine_Profile* CASW_Marine_Resource::GetProfile()
 {
-	Assert( MarineProfileList() );
+	Assert(MarineProfileList());
 
-	return MarineProfileList()->GetProfile( m_MarineProfileIndex );
+	if (m_MarineProfileIndex <0 || m_MarineProfileIndex >= MarineProfileList()->m_NumProfiles)
+		return NULL;
+	
+	return MarineProfileList()->m_Profiles[m_MarineProfileIndex];
 }
 
 

@@ -75,6 +75,17 @@ void ExperienceBar::ApplySchemeSettings( vgui::IScheme *pScheme )
 void ExperienceBar::PerformLayout()
 {
 	BaseClass::PerformLayout();
+	
+	if ( m_pAvatarImage )
+	{
+		int wide, tall;
+		m_pAvatarImage->GetSize( wide, tall );
+		if ( ((CAvatarImage*)m_pAvatarImage->GetImage()) )
+		{
+			((CAvatarImage*)m_pAvatarImage->GetImage())->SetAvatarSize( wide, tall );
+			((CAvatarImage*)m_pAvatarImage->GetImage())->SetPos( -AVATAR_INDENT_X, -AVATAR_INDENT_Y );
+		}
+	}
 }
 
 void ExperienceBar::OnTick()
@@ -177,6 +188,11 @@ void ExperienceBar::InitFor( C_ASW_Player *pPlayer )
 		if ( steamID.ConvertToUint64() != m_lastSteamID.ConvertToUint64() )
 		{
 			m_pAvatarImage->SetAvatarBySteamID( &steamID );
+
+			int wide, tall;
+			m_pAvatarImage->GetSize( wide, tall );
+			((CAvatarImage*)m_pAvatarImage->GetImage())->SetAvatarSize( wide, tall );
+			((CAvatarImage*)m_pAvatarImage->GetImage())->SetPos( -AVATAR_INDENT_X, -AVATAR_INDENT_Y );
 		}
 		m_lastSteamID = steamID;
 	}

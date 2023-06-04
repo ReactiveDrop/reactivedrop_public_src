@@ -12,6 +12,7 @@
 #include "vgui/isurface.h"
 #include "BriefingTooltip.h"
 #include "BriefingPropertySheet.h"
+#include "MedalCollectionPanel.h"
 #include "MissionStatsPanel.h"
 #include "c_playerresource.h"
 #include "controller_focus.h"

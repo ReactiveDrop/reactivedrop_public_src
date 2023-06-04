@@ -522,11 +522,11 @@ bool C_ASW_Alien::GetShadowCastDirection( Vector *pDirection, ShadowType_t shado
 
 ShadowType_t C_ASW_Alien::ShadowCastType()
 {	
-	if ( asw_alien_shadows.GetBool() )
+	if (asw_alien_shadows.GetBool())
 		return BaseClass::ShadowCastType();
 
-	if ( !asw_directional_shadows.GetBool() )
-		return SHADOWS_NONE;
+	// reactivedrop: disabling shadows from flashlight dlight
+	return SHADOWS_NONE;
 
 	float fContribution = 0;
 	Vector vecDir = vec3_origin;

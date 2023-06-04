@@ -350,6 +350,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd missi
     <ClInclude Include="asw_random_missions.h" />
     <ClInclude Include="asw_spawn_selection.h" />
     <ClInclude Include="asw_system.h" />
+    <ClInclude Include="chunkfile.h" />
     <ClInclude Include="keyvalues_editor\kv_combo_leaf_panel.h" />
     <ClInclude Include="keyvalues_editor\kv_editor.h" />
     <ClInclude Include="keyvalues_editor\kv_editor_base_panel.h" />

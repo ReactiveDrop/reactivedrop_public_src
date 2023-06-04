@@ -572,7 +572,7 @@ void CClientScoreBoardDialog::UpdatePlayerAvatar( int playerIndex, KeyValues *kv
 					{
 						CAvatarImage *pImage = new CAvatarImage();
 						pImage->SetAvatarSteamID( steamIDForPlayer );
-						pImage->SetAvatarSize( 32, 32, true );	// Deliberately non scaling
+						pImage->SetAvatarSize( 32, 32 );	// Deliberately non scaling
 						int iImageIndex = m_pImageList->AddImage( pImage );
 
 						m_mapAvatarsToImageList.Insert( iAvatar, iImageIndex );

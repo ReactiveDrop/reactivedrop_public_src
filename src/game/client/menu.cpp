@@ -90,7 +90,6 @@ void CHudMenu::Reset( void )
 {
 	g_szPrelocalisedMenuString[0] = 0;
 	m_fWaitingForMore = false;
-	m_bMenuDisplayed = false;
 }
 
 //-----------------------------------------------------------------------------
@@ -114,7 +113,6 @@ void CHudMenu::VidInit( void )
 //-----------------------------------------------------------------------------
 void CHudMenu::OnThink()
 {
-#ifndef INFESTED_DLL
 	float flSelectionTimeout = MENU_SELECTION_TIMEOUT;
 
 	// If we've been open for a while without input, hide
@@ -122,7 +120,6 @@ void CHudMenu::OnThink()
 	{
 		m_bMenuDisplayed = false;
 	}
-#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -378,10 +375,6 @@ void CHudMenu::ProcessText( void )
 //-----------------------------------------------------------------------------
 void CHudMenu::HideMenu( void )
 {
-	// hide immediately if the menu is empty
-	if ( m_Processed.Count() == 0 )
-		m_bMenuDisplayed = false;
-
 	m_bMenuTakesInput = false;
 	m_flShutoffTime = gpGlobals->realtime + m_flOpenCloseTime;
 	GetFullscreenClientMode()->GetViewportAnimationController()->StartAnimationSequence("MenuClose");

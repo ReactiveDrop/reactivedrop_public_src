@@ -28,7 +28,6 @@
 	#include "steam/steam_api.h"
 	#include "c_asw_steamstats.h"
 #endif
-	#include "rd_loadout.h"
 	#define CASW_Marine C_ASW_Marine
 	#define CASW_Marine_Resource C_ASW_Marine_Resource
 	#define CASW_Weapon C_ASW_Weapon
@@ -646,9 +645,7 @@ const char *CASW_Player::GetWeaponUnlockedAtLevel( int nLevel )
 void CASW_Player::Steam_OnUserStatsReceived( UserStatsReceived_t *pUserStatsReceived )
 {
 	Assert( SteamUserStats() );
-	Assert( SteamUser() );
-	Assert( SteamUtils() );
-	if ( !SteamUserStats() || !SteamUser() || !SteamUtils() )
+	if ( !SteamUserStats() )
 		return;
 
 	if ( pUserStatsReceived->m_eResult != k_EResultOK )
@@ -825,7 +822,7 @@ void CASW_Player::AcceptPromotion()
 
 	CLocalPlayerFilter filter;
 	C_BaseEntity::EmitSound( filter, -1 /*SOUND_FROM_LOCAL_PLAYER*/, "ASW_XP.LevelUp" );
-	engine->ServerCmd( VarArgs( "cl_promoted %d", m_iPromotion ) );
+	engine->ClientCmd( VarArgs( "cl_promoted %d", m_iPromotion ) );
 
 	// reset the player's selected equipment
 	if ( !ASWGameResource() )
@@ -835,11 +832,16 @@ void CASW_Player::AcceptPromotion()
 	if ( !pMR )
 		return;
 
-	int iProfile = pMR->GetProfileIndex();
+	CASW_Marine_Profile *pProfile = pMR->GetProfile();
+	if ( !pProfile )
+		return;
 
-	engine->ServerCmd( VarArgs( "cl_loadout %d %d %d %d\n", iProfile, ASW_INVENTORY_SLOT_PRIMARY, ReactiveDropLoadout::DefaultLoadout.Marines[iProfile].Primary, -1 ) );
-	engine->ServerCmd( VarArgs( "cl_loadout %d %d %d %d\n", iProfile, ASW_INVENTORY_SLOT_SECONDARY, ReactiveDropLoadout::DefaultLoadout.Marines[iProfile].Secondary, -1 ) );
-	engine->ServerCmd( VarArgs( "cl_loadout %d %d %d %d\n", iProfile, ASW_INVENTORY_SLOT_EXTRA, ReactiveDropLoadout::DefaultLoadout.Marines[iProfile].Extra, -1 ) );
+	for ( int i = 0; i < ASW_NUM_INVENTORY_SLOTS; i++ )
+	{
+		const char *szWeaponClass = pProfile->m_DefaultWeaponsInSlots[ i ];
+		int nWeaponIndex = g_ASWEquipmentList.GetIndexForSlot( i, szWeaponClass );
+		engine->ClientCmd( VarArgs( "cl_loadout %d %d %d", pProfile->m_ProfileIndex, i, nWeaponIndex ) );
+	}
 }
 
 #else

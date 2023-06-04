@@ -4259,9 +4259,6 @@
 	FadeInTime(float): "Fade In Time": "1.0" : "The amount of time it takes for the music to fade in to 100% volume (in seconds.)"
 	FadeOutTime(float): "Fade Out Time": "1.0" : "The amount of time it takes for the music to fade out to 0 volume (in seconds.)"
 	DefaultMusic(sound) : "Default Music" : "" : "Default music to play if no custom combat music has been imported."
-	TrackName(string) : "Track Name" : "" : "Name of the default music track."
-	AlbumName(string) : "Album Name" : "" : "Album or collection name of the default music track."
-	ArtistName(string) : "Artist Name" : "" : "Artist name of the default music track."
 	// Inputs
 	input StartMusic(void) : "Start a random music track from the user's playlist."
 	input StopMusic(void) : "Stop the currently playing music."

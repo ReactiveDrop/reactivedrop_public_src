@@ -422,14 +422,12 @@ void CRD_Steam_Input::DrawLegacyControllerGlyph( const char *szKey, int x, int y
 	if ( pSteamInput && eOrigin != k_EInputActionOrigin_None )
 	{
 		vgui::HTexture hTexture = GlyphForOrigin( eOrigin );
-		if ( hTexture )
-		{
-			vgui::surface()->DrawSetTexture( hTexture );
-			vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
-			vgui::surface()->DrawTexturedRect( x, y, x + tall, y + tall );
 
-			return;
-		}
+		vgui::surface()->DrawSetTexture( hTexture );
+		vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
+		vgui::surface()->DrawTexturedRect( x, y, x + tall, y + tall );
+
+		return;
 	}
 
 	Assert( eXboxOrigin != k_EXboxOrigin_Count );
@@ -444,14 +442,12 @@ void CRD_Steam_Input::DrawLegacyControllerGlyph( const char *szKey, int x, int y
 
 			eOrigin = pSteamInput->GetActionOriginFromXboxOrigin( m_Controllers[i]->m_hController, eXboxOrigin );
 			vgui::HTexture hTexture = GlyphForOrigin( eOrigin );
-			if ( hTexture )
-			{
-				vgui::surface()->DrawSetTexture( hTexture );
-				vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
-				vgui::surface()->DrawTexturedRect( x, y, x + tall, y + tall );
 
-				return;
-			}
+			vgui::surface()->DrawSetTexture( hTexture );
+			vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
+			vgui::surface()->DrawTexturedRect( x, y, x + tall, y + tall );
+
+			return;
 		}
 	}
 

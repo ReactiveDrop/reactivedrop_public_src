@@ -4,14 +4,12 @@
 //
 //=====================================================================================//
 
-#include "cbase.h"
 #include "VHybridButton.h"
 #include "basemodpanel.h"
 #include "VFooterPanel.h"
 #include "VFlyoutMenu.h"
 #include "EngineInterface.h"
 #include "vgui/ISurface.h"
-#include "vgui_controls/TextImage.h"
 #include "vgui_controls/Tooltip.h"
 #include "vgui/IVgui.h"
 #include "tier1/KeyValues.h"
@@ -29,10 +27,6 @@
 
 using namespace BaseModUI;
 using namespace vgui;
-
-#ifdef INFESTED_DLL
-extern ConVar rd_reduce_motion;
-#endif
 
 DECLARE_BUILD_FACTORY_DEFAULT_TEXT( BaseModHybridButton, HybridButton );
 
@@ -387,10 +381,6 @@ void BaseModHybridButton::PaintButtonEx()
 			{
 				col.SetColor( 135, 170, 193, 255 );
 			}
-			else if ( m_nStyle == BUTTON_REACTIVEDROPMAINMENU || m_nStyle == BUTTON_REACTIVEDROPMAINMENUBIG || m_nStyle == BUTTON_REACTIVEDROPMAINMENUTOP || m_nStyle == BUTTON_REACTIVEDROPMAINMENUSHOWCASE || m_nStyle == BUTTON_REACTIVEDROPMAINMENUTIMER || m_nStyle == BUTTON_REACTIVEDROPMAINMENUHOIAF )
-			{
-				col.SetColor( 192, 192, 192, 255 );
-			}
 			else
 			{
 				//col.SetColor( 125, 125, 125, 255 );
@@ -431,46 +421,21 @@ void BaseModHybridButton::PaintButtonEx()
 			break;
 	}
 
-	SetFgColor( col );
-
 	wchar_t szUnicode[512];
 	GetText( szUnicode, sizeof( szUnicode ) );
 	int len = V_wcslen( szUnicode );
 
 	int textWide, textTall;
-	GetTextImage()->GetContentSize( textWide, textTall );
+	surface()->GetTextSize( m_hTextFont, szUnicode, textWide, textTall );
 
 	textWide = clamp( textWide, 0, wide - m_textInsetX * 2 );
-	textTall = clamp( textTall, 0, tall - m_textInsetY * 2 );
+	textTall = clamp( textTall, 0, tall - m_textInsetX * 2 );
 
 	int textInsetX = m_textInsetX;
 	if ( m_nStyle == BUTTON_DIALOG )
 	{
 		// dialog buttons are centered
 		textInsetX = ( wide - textWide ) / 2;
-	}
-	if ( m_nStyle == BUTTON_REACTIVEDROPMAINMENU || m_nStyle == BUTTON_REACTIVEDROPMAINMENUBIG || m_nStyle == BUTTON_REACTIVEDROPMAINMENUTOP || m_nStyle == BUTTON_REACTIVEDROPMAINMENUTIMER )
-	{
-		// main menu buttons are centered in both directions
-		textInsetX = ( wide - textWide ) / 2;
-		y = ( tall - textTall ) / 2 - m_textInsetY * 2;
-	}
-	if ( m_nStyle == BUTTON_REACTIVEDROPMAINMENUHOIAF )
-	{
-		// only centered vertically
-		y = ( tall - textTall ) / 2 - m_textInsetY * 2;
-	}
-	if ( m_nStyle == BUTTON_REACTIVEDROPMAINMENUSHOWCASE )
-	{
-		// showcase text is at the bottom
-		y = tall - textTall - m_textInsetY * 2;
-
-		if ( szUnicode[0] != L'\0' )
-		{
-			// black background so we can read the text on top of the image
-			surface()->DrawSetColor( blotchColor.r() * blotchColor.a() / 255, blotchColor.g() * blotchColor.a() / 255, blotchColor.b() * blotchColor.a() / 255, 224 );
-			surface()->DrawFilledRectFastFade( YRES( 1 ), y, wide - YRES( 1 ), tall - YRES( 1 ), y, y + YRES( 2 ), 0, 224, false );
-		}
 	}
 
 	if ( FlyoutMenu::GetActiveMenu() && FlyoutMenu::GetActiveMenu()->GetNavFrom() != this )
@@ -532,10 +497,8 @@ void BaseModHybridButton::PaintButtonEx()
 		}
 	}
 
-#ifndef INFESTED_DLL
 	// assume drawn, unless otherwise shortened with ellipsis
 	int iLabelCharsDrawn = len;
-#endif
 
 	// draw the text
 	if ( bDrawText )
@@ -548,7 +511,7 @@ void BaseModHybridButton::PaintButtonEx()
 			int textLen = 0;
 
 			len = wcslen( szUnicode );
-			for ( int i = 0; i < len; i++ )
+			for ( int i=0;i<len;i++ )
 			{
 				textLen += vgui::surface()->GetCharacterWidth( m_hTextFont, szUnicode[i] );
 			}
@@ -577,14 +540,10 @@ void BaseModHybridButton::PaintButtonEx()
 			availableWidth -= m_iSelectedArrowSize * 2;
 		}
 
-#ifdef INFESTED_DLL
-		vgui::surface()->DrawSetColor( col );
-		GetTextImage()->SetPos( x + textInsetX, y + m_textInsetY );
-		GetTextImage()->Paint();
-#else
 		vgui::surface()->DrawSetTextFont( m_hTextFont );
-		vgui::surface()->DrawSetTextPos( x + textInsetX, y + m_textInsetY );
+		vgui::surface()->DrawSetTextPos( x + textInsetX, y + m_textInsetY  );
 		vgui::surface()->DrawSetTextColor( col );
+
 		if ( textWide > availableWidth )
 		{
 			// length of 3 dots
@@ -594,7 +553,7 @@ void BaseModHybridButton::PaintButtonEx()
 
 			iLabelCharsDrawn = 0;
 			int charX = x + textInsetX;
-			for ( int i = 0; i < len; i++ )
+			for ( int i=0; i < len; i++ )
 			{
 				vgui::surface()->DrawUnicodeChar( szUnicode[i] );
 				iLabelCharsDrawn++;
@@ -603,30 +562,23 @@ void BaseModHybridButton::PaintButtonEx()
 				if ( charX >= ( x + textInsetX + availableWidth ) )
 					break;
 			}
-
+			
 			vgui::surface()->DrawPrintText( L"...", 3 );
 		}
 		else
 		{
 			vgui::surface()->DrawUnicodeString( szUnicode );
 		}
-#endif
 	}
 	else if ( GetCurrentState() == Disabled || GetCurrentState() == FocusDisabled )
 	{
 		Color textcol = col;
 		textcol[ 3 ] = 64;
 
-#ifdef INFESTED_DLL
-		vgui::surface()->DrawSetColor( textcol );
-		GetTextImage()->SetPos( x + textInsetX, y + m_textInsetY );
-		GetTextImage()->Paint();
-#else
 		vgui::surface()->DrawSetTextFont( m_hTextFont );
 		vgui::surface()->DrawSetTextPos( x + textInsetX, y + m_textInsetY  );
 		vgui::surface()->DrawSetTextColor( textcol );
 		vgui::surface()->DrawPrintText( szUnicode, len );
-#endif
 	}
 
 	// draw the help text
@@ -655,34 +607,14 @@ void BaseModHybridButton::PaintButtonEx()
 	{
 		if ( !bDrawText )
 		{
-#ifdef INFESTED_DLL
-			vgui::surface()->DrawSetColor( col );
-#else
 			vgui::surface()->DrawSetTextColor( col );
-#endif
 		}
 		else
 		{
 			int alpha = bAnimateGlow ? 60.0f + 30.0f * sin( Plat_FloatTime() * 4.0f ) : 30;
-#ifdef INFESTED_DLL
-			if ( bAnimateGlow && rd_reduce_motion.GetBool() )
-				alpha = 60;
-#endif
 			Color glowColor( 255, 255, 255, alpha );
-#ifdef INFESTED_DLL
-			SetFgColor( glowColor );
-			vgui::surface()->DrawSetColor( glowColor );
-#else
 			vgui::surface()->DrawSetTextColor( glowColor );
-#endif
 		}
-#ifdef INFESTED_DLL
-		GetTextImage()->SetPos( x + textInsetX, y + m_textInsetY );
-		GetTextImage()->SetFont( m_hTextBlurFont );
-		GetTextImage()->Paint();
-		GetTextImage()->SetFont( m_hTextFont );
-		SetFgColor( col );
-#else
 		vgui::surface()->DrawSetTextFont( m_hTextBlurFont );
 		vgui::surface()->DrawSetTextPos( x + textInsetX, y + m_textInsetY );
 
@@ -690,7 +622,6 @@ void BaseModHybridButton::PaintButtonEx()
 		{
 			vgui::surface()->DrawUnicodeChar( szUnicode[i] );
 		}
-#endif
 	}
 
 	if ( m_nStyle == BUTTON_DROPDOWN && curState != Open )
@@ -855,32 +786,6 @@ void BaseModHybridButton::ApplySettings( KeyValues * inResourceData )
 		m_hTextFont = scheme->GetFont( "Default", true );
 		m_hTextBlurFont = scheme->GetFont( "DefaultBlur", true );
 	}
-	else if ( m_nStyle == BUTTON_REACTIVEDROPMAINMENU )
-	{
-		m_hTextFont = scheme->GetFont( "DefaultLarge", true );
-		m_hTextBlurFont = scheme->GetFont( "DefaultLargeBlur", true );
-	}
-	else if ( m_nStyle == BUTTON_REACTIVEDROPMAINMENUBIG )
-	{
-		m_hTextFont = scheme->GetFont( "DefaultExtraLarge", true );
-		m_hTextBlurFont = scheme->GetFont( "DefaultExtraLargeBlur", true );
-	}
-	else if ( m_nStyle == BUTTON_REACTIVEDROPMAINMENUTOP )
-	{
-		m_hTextFont = scheme->GetFont( "DefaultMedium", true );
-		m_hTextBlurFont = scheme->GetFont( "DefaultMediumBlur", true );
-	}
-	else if ( m_nStyle == BUTTON_REACTIVEDROPMAINMENUSHOWCASE )
-	{
-		m_hTextFont = scheme->GetFont( "Default", true );
-		m_hTextBlurFont = scheme->GetFont( "DefaultBlur", true );
-	}
-	else if ( m_nStyle == BUTTON_REACTIVEDROPMAINMENUTIMER )
-	{
-		m_hTextFont = scheme->GetFont( "Default", true );
-		m_hTextBlurFont = scheme->GetFont( "DefaultBlur", true );
-		SetWrap( true );
-	}
 	else
 	{
 		m_nStyle = BUTTON_SIMPLE;
@@ -930,14 +835,11 @@ void BaseModHybridButton::ApplySettings( KeyValues * inResourceData )
 		m_textInsetY = vgui::scheme()->GetProportionalScaledValueEx( GetScheme(), m_textInsetY );
 	}
 
-	// tell Label double the inset so it adjusts the width for word wrap/ellipsis
-	SetTextInset( m_textInsetX * 2, m_textInsetY * 2 );
-
 	//0 = press and release
 	//1 = press
 	//2 = release
-	int activationType = inResourceData->GetInt( "ActivationType" );
-	activationType = clamp( activationType, 0, 2 );
+	int activationType = inResourceData->GetInt( "ActivationType", IsPC() ? 1 : 2 );
+	clamp( activationType, 0, 2 );
 	SetButtonActivationType( static_cast< vgui::Button::ActivationType_t >( activationType ) );
 
 	int x, y, wide, tall;
@@ -1043,7 +945,7 @@ void BaseModHybridButton::OnKeyCodePressed( vgui::KeyCode code )
 	BaseModUI::CBaseModPanel::GetSingleton().SetLastActiveUserId( iJoystick );
 
 	int iController = XBX_GetUserId( iJoystick );
-	bool bIsPrimaryUser = ( iController >= 0 && XBX_GetActiveUserId() == iController );
+	bool bIsPrimaryUser = ( iController >= 0 && XBX_GetPrimaryUserId() == DWORD( iController ) );
 
 	KeyCode localCode = GetBaseButtonCode( code );
 

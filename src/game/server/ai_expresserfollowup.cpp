@@ -200,7 +200,7 @@ static CResponseQueue::CFollowupTargetSpec_t ResolveFollowupTargetToEntity( AICo
 }
 
 
-ConVar chet_debug_idle( "chet_debug_idle", "0", FCVAR_NONE, "If set one, many debug prints to help track down the TLK_IDLE issue. Set two for super verbose info" );
+ConVar chet_debug_idle( "chet_debug_idle", "0", FCVAR_ARCHIVE, "If set one, many debug prints to help track down the TLK_IDLE issue. Set two for super verbose info" );
 // extern ConVar chet_debug_idle;
 bool CAI_ExpresserWithFollowup::Speak( AIConcept_t &concept, const char *modifiers /*= NULL*/, char *pszOutResponseChosen /* = NULL*/, size_t bufsize /* = 0 */, IRecipientFilter *filter /* = NULL */ )
 {

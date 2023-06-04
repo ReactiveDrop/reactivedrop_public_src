@@ -177,7 +177,7 @@ void StatsReport::PerformLayout()
 		CAvatarImage *pImage = static_cast< CAvatarImage* >( m_pAvatarImages[ i ]->GetImage() );
 		if ( pImage )
 		{
-			pImage->SetAvatarSize( nAvatarImageW, nAvatarImageH, false );
+			pImage->SetAvatarSize( nAvatarImageW, nAvatarImageH );
 		}
 	}
 
@@ -417,6 +417,16 @@ void StatsReport::SetPlayerNames( void )
 				if ( steamID.IsValid() )
 				{
 					m_pAvatarImages[ nMarine ]->SetAvatarBySteamID( &steamID );
+
+					int wide, tall;
+					m_pAvatarImages[ nMarine ]->GetSize( wide, tall );
+
+					CAvatarImage *pImage = static_cast< CAvatarImage* >( m_pAvatarImages[ nMarine ]->GetImage() );
+					if ( pImage )
+					{
+						pImage->SetAvatarSize( wide, tall );
+						pImage->SetPos( -AVATAR_INDENT_X, -AVATAR_INDENT_Y );
+					}
 				}
 #endif
 			}

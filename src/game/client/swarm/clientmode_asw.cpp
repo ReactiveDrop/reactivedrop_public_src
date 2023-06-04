@@ -55,7 +55,6 @@
 #include "asw_hud_chat.h"
 #include "game_timescale_shared.h"
 #include "rd_demo_utils.h"
-#include "menu.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -78,8 +77,8 @@ ConVar asw_hear_pos_debug("asw_hear_pos_debug", "0", FCVAR_NONE, "Shows audio he
 ConVar asw_hear_height("asw_hear_height", "0", FCVAR_NONE, "If set, hearing audio position is this many units above the marine.  If number is negative, then hear position is number of units below the camera." );
 ConVar asw_hear_fixed("asw_hear_fixed", "0", FCVAR_NONE, "If set, hearing audio position is locked in place.  Use asw_set_hear_pos to set the fixed position to the current audio location." );
 
-ConVar rd_tree_sway_enabled("rd_tree_sway_enabled", "1", FCVAR_NONE, "If set, some trees sway in the wind.", true, 0, true, 1);
-ConVar rd_tree_sway_strength("rd_tree_sway_strength", "1", FCVAR_NONE, "How strong is the wind. 0-16", true, 0, true, 16);
+ConVar rd_tree_sway_enabled("rd_tree_sway_enabled", "1", FCVAR_ARCHIVE, "If set, some trees sway in the wind.", true, 0, true, 1);
+ConVar rd_tree_sway_strength("rd_tree_sway_strength", "8", FCVAR_ARCHIVE, "How strong is the wind. 0-16", true, 0, true, 16);
 
 Vector g_asw_vec_fixed_cam(-276.03076, -530.74951, -196.65625);
 QAngle g_asw_ang_fixed_cam(42.610226, 90.289375, 0);
@@ -94,7 +93,7 @@ ConVar default_fov( "default_fov", "75", FCVAR_CHEAT );
 ConVar fov_desired( "fov_desired", "75", FCVAR_USERINFO, "Sets the base field-of-view.", true, 1.0, true, 120.0 );
 
 ConVar asw_instant_restart_cleanup( "asw_instant_restart_cleanup", "1", FCVAR_NONE, "remove corpses, gibs, and decals when performing an instant restart" );
-ConVar cl_auto_restart_mission( "cl_auto_restart_mission", "0", FCVAR_ARCHIVE, "After failed mission, if you are the leader will auto restart on the client side." );
+ConVar cl_auto_restart_mission( "cl_auto_restart_mission", "0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "After failed mission, if you are the leader will auto restart on the client side." );
 extern ConVar rd_auto_record_stop_on_retry;
 extern ConVar asw_floating_number_type;
 
@@ -908,7 +907,6 @@ void ClientModeASW::ASW_CloseAllWindows()
 
 	g_hBriefingFrame = NULL;
 	m_hMissionCompleteFrame = NULL;
-	GET_FULLSCREEN_HUDELEMENT( CHudMenu )->Reset();
 
 	// make sure we don't have a mission chooser up
 	engine->ClientCmd( "asw_mission_chooser exit" );

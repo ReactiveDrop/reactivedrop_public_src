@@ -87,20 +87,25 @@ C_ASW_Marine_Resource::~C_ASW_Marine_Resource()
 
 }
 
-CASW_Marine_Profile *C_ASW_Marine_Resource::GetProfile( void )
+CASW_Marine_Profile* C_ASW_Marine_Resource::GetProfile(void)
 {
-	if ( MarineProfileList() == NULL )
+	if (MarineProfileList() == NULL)
 		return NULL;
 
-	return MarineProfileList()->GetProfile( m_MarineProfileIndex );
+	if (m_MarineProfileIndex >=0 && m_MarineProfileIndex < MarineProfileList()->m_NumProfiles)
+		return MarineProfileList()->m_Profiles[m_MarineProfileIndex];
+
+	return NULL;
 }
 
-C_ASW_Marine *C_ASW_Marine_Resource::GetMarineEntity()
+C_ASW_Marine* C_ASW_Marine_Resource::GetMarineEntity()
 {
-	return m_MarineEntity.Get();
+	C_BaseEntity* base = m_MarineEntity;
+	C_ASW_Marine* marine = (C_ASW_Marine*) base;
+	return marine;
 }
 
-C_ASW_Player *C_ASW_Marine_Resource::GetCommander()
+C_ASW_Player* C_ASW_Marine_Resource::GetCommander()
 {
 	return m_Commander.Get();
 }

@@ -18,7 +18,6 @@ ConVar rd_auto_record_lobbies( "rd_auto_record_lobbies", "0", FCVAR_ARCHIVE | FC
 ConVar rd_auto_record_stop_on_retry( "rd_auto_record_stop_on_retry", "1", FCVAR_ARCHIVE, "Treat an instant restart the same way as a loading screen for auto recordings." );
 ConVar rd_auto_record_auto_fix_times( "rd_auto_record_auto_fix_times", "1", FCVAR_NONE, "If a demo has a negative duration, automatically fix the file's header." );
 ConVar rd_auto_record_demo_search_paths( "rd_auto_record_demo_search_paths", "*.dem recordings/*.dem", FCVAR_NONE, "Space-separated list of wildcards used to find demo files." );
-ConVar rd_auto_record_delay_start_frames( "rd_auto_record_delay_start_frames", "50", FCVAR_NONE, "Auto record will wait this number of client frames after an instant restart or the initial connection to a server to start a recording." );
 
 CRD_Auto_Record_System g_RD_Auto_Record_System;
 
@@ -27,7 +26,6 @@ CRD_Auto_Record_System::CRD_Auto_Record_System() : CAutoGameSystemPerFrame( "CRD
 	m_bStartedRecording = false;
 	m_bJustConnected = false;
 	m_iAutoRecordAttempts = 0;
-	m_iDelayRecordingStart = 0;
 }
 
 void CRD_Auto_Record_System::PostInit()
@@ -78,7 +76,6 @@ void CRD_Auto_Record_System::LevelInitPostEntity()
 	Assert( !m_bStartedRecording );
 
 	m_bJustConnected = true;
-	m_iDelayRecordingStart = rd_auto_record_delay_start_frames.GetInt();
 	m_iAutoRecordAttempts = 0;
 }
 
@@ -109,12 +106,6 @@ void CRD_Auto_Record_System::LevelShutdownPreEntity()
 
 void CRD_Auto_Record_System::Update( float frametime )
 {
-	if ( m_bJustConnected && m_iDelayRecordingStart > 0 )
-	{
-		m_iDelayRecordingStart--;
-		return;
-	}
-
 	if ( m_bJustConnected && engine->IsRecordingDemo() && m_iAutoRecordAttempts < 3 )
 	{
 		// wait a few frames for the previous demo to stop before giving up
@@ -629,5 +620,5 @@ CON_COMMAND( rd_auto_record_fix_time, "Recompute the duration of a demo file." )
 		return;
 	}
 
-	g_RD_Auto_Record_System.RecomputeDemoDuration( args.Arg( 1 ), true );
+	g_RD_Auto_Record_System.RecomputeDemoDuration( args.Arg( 1 ), false );
 }

@@ -41,13 +41,13 @@ void CAvatarImage::ClearAvatarSteamID( void )
 { 
 	m_bValid = false; 
 	m_bFriend = false;
-	m_SteamID.Clear();
+	m_SteamID.Set( 0, k_EUniverseInvalid, k_EAccountTypeInvalid );
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-bool CAvatarImage::SetAvatarSteamID( CSteamID steamIDUser, bool bFetch )
+bool CAvatarImage::SetAvatarSteamID( CSteamID steamIDUser )
 {
 	if ( m_steamIDUser == steamIDUser && m_bValid )
 		return true;
@@ -59,13 +59,9 @@ bool CAvatarImage::SetAvatarSteamID( CSteamID steamIDUser, bool bFetch )
 	{
 		m_SteamID = steamIDUser;
 
-		// if this goes through we'll get a callback
-		if ( bFetch )
-			SteamFriends()->RequestUserInformation( m_SteamID, false );
-
 		int iAvatar;
 
-		switch ( m_SourceArtSize )
+		switch (m_SourceArtSize)
 		{
 		case k_EAvatarSize32x32:
 			iAvatar = SteamFriends()->GetSmallFriendAvatar( steamIDUser );
@@ -87,9 +83,16 @@ bool CAvatarImage::SetAvatarSteamID( CSteamID steamIDUser, bool bFetch )
 		if ( SteamUtils()->GetImageSize( iAvatar, &wide, &tall ) )
 		{
 			int cubImage = wide * tall * 4;
-			byte *rgubDest = ( byte * )_alloca( cubImage );
+			byte *rgubDest = (byte*)_alloca( cubImage );
 			SteamUtils()->GetImageRGBA( iAvatar, rgubDest, cubImage );
 			InitFromRGBA( rgubDest, wide, tall );
+
+			/*
+			// put it in the list
+			RGBAImage *pRGBAImage = new RGBAImage( rgubDest, wide, tall );
+			int iImageList = m_pImageList->AddImage( pRGBAImage );
+			m_mapAvatarToIImageList.Insert( iAvatar, iImageList );
+			*/
 		}
 
 		UpdateFriendStatus();
@@ -127,8 +130,8 @@ void CAvatarImage::InitFromRGBA( const byte *rgba, int width, int height )
 	}
 
 	vgui::surface()->DrawSetTextureRGBA( m_iTextureID, rgba, width, height );
-	m_nWide = YRES( width );
-	m_nTall = YRES( height );
+	m_nWide = XRES(width);
+	m_nTall = YRES(height);
 	m_Color = Color( 255, 255, 255, 255 );
 
 	m_bValid = true;
@@ -148,20 +151,7 @@ void CAvatarImage::Paint( void )
 
 		vgui::surface()->DrawSetColor( m_Color );
 		vgui::surface()->DrawSetTexture( m_iTextureID );
-		if ( m_bLegacyPadding )
-			vgui::surface()->DrawTexturedRect( m_nX + AVATAR_INDENT_X, m_nY + AVATAR_INDENT_Y, m_nX + AVATAR_INDENT_X + m_iAvatarWidth, m_nY + AVATAR_INDENT_Y + m_iAvatarHeight );
-		else
-			vgui::surface()->DrawTexturedRect( m_nX, m_nY, m_nX + m_iAvatarWidth, m_nY + m_iAvatarHeight );
-	}
-}
-
-void CAvatarImage::OnPersonaStateChange( PersonaStateChange_t *pParam )
-{
-	if ( m_steamIDUser == pParam->m_ulSteamID )
-	{
-		// re-init
-		m_bValid = false;
-		SetAvatarSteamID( m_steamIDUser, false );
+		vgui::surface()->DrawTexturedRect( m_nX + AVATAR_INDENT_X, m_nY + AVATAR_INDENT_Y, m_nX + AVATAR_INDENT_X + m_iAvatarWidth, m_nY + AVATAR_INDENT_Y + m_iAvatarHeight );
 	}
 }
 
@@ -216,25 +206,21 @@ void CAvatarImagePanel::PaintBackground( void )
 	}
 }
 
-void CAvatarImagePanel::SetAvatarBySteamID( const CSteamID *friendsID )
+void CAvatarImagePanel::SetAvatarBySteamID( CSteamID *friendsID )
 {
-	CAvatarImage *pImage = assert_cast< CAvatarImage * > ( GetImage() );
-	if ( !pImage )
+	if ( !GetImage() )
 	{
-		pImage = new CAvatarImage();
+		CAvatarImage *pImage = new CAvatarImage();
 		SetImage( pImage );
 	}
 
 	// Indent the image. These are deliberately non-resolution-scaling.
 	int iIndent = 2;
-	pImage->SetPos( iIndent, iIndent );
-	int wide = GetWide() - ( iIndent * 2 );
+	GetImage()->SetPos( iIndent, iIndent );
+	int wide = GetWide() - (iIndent*2);
 
-	pImage->SetAvatarSize( ( wide > 32 ) ? k_EAvatarSize64x64 : k_EAvatarSize32x32 );
-	if ( friendsID )
-		pImage->SetAvatarSteamID( *friendsID );
-	else
-		pImage->ClearAvatarSteamID();
+	((CAvatarImage*)GetImage())->SetAvatarSize( ( wide > 32 ) ? k_EAvatarSize64x64 : k_EAvatarSize32x32 );
+	((CAvatarImage*)GetImage())->SetAvatarSteamID( *friendsID );
 
-	pImage->SetAvatarSize( wide, GetTall() - ( iIndent * 2 ), m_bLegacyPadding );
+	GetImage()->SetSize( wide, GetTall()-(iIndent*2) );
 }

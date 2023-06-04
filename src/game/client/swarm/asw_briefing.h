@@ -68,14 +68,12 @@ public:
 
 	virtual void SelectMarine( int nOrder, int nProfileIndex, int nPreferredLobbySlot );
 	virtual void SelectBot( int nOrder, int nProfileIndex );
-	virtual void SelectWeapon( int nProfileIndex, int nInventorySlot, int nEquipIndex, SteamItemInstanceID_t iItemInstance );
+	virtual void SelectWeapon( int nProfileIndex, int nInventorySlot, int nEquipIndex );
 	virtual void AutoSelectFullSquadForSingleplayer( int nFirstSelectedProfileIndex );
 
 	virtual void ResetLastChatterTime() { m_flLastSelectionChatterTime = 0.0f; }
 
 	virtual const IBriefing_ItemInstance &GetEquippedMedal( int nLobbySlot, int nMedalIndex );
-	virtual const IBriefing_ItemInstance &GetEquippedSuit( int nLobbySlot );
-	virtual const IBriefing_ItemInstance &GetEquippedWeapon( int nLobbySlot, int nWeaponSlot );
 
 	int LobbySlotToMarineResourceIndex( int nLobbySlot );
 	void UpdateLobbySlotMapping();

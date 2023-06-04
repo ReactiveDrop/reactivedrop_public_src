@@ -43,7 +43,6 @@
 		"tall"			"14"
 		"scaleImage"	"1"
 		"ControlName"	"CAvatarImagePanel"
-		"legacy_padding"	"0"
 	}
 
 	"LblName"

@@ -39,6 +39,17 @@ void CNB_Commander_List_Entry::ApplySchemeSettings( vgui::IScheme *pScheme )
 void CNB_Commander_List_Entry::PerformLayout()
 {
 	BaseClass::PerformLayout();
+
+	if ( m_pAvatar )
+	{
+		int wide, tall;
+		m_pAvatar->GetSize( wide, tall );
+		if ( ((CAvatarImage*)m_pAvatar->GetImage()) )
+		{
+			((CAvatarImage*)m_pAvatar->GetImage())->SetAvatarSize( wide, tall );
+			((CAvatarImage*)m_pAvatar->GetImage())->SetPos( -AVATAR_INDENT_X, -AVATAR_INDENT_Y );
+		}
+	}
 }
 
 void CNB_Commander_List_Entry::OnTick()
@@ -63,6 +74,11 @@ void CNB_Commander_List_Entry::OnThink()
 
 		if ( m_pAvatar->GetImage() )
 		{
+			int wide, tall;
+			m_pAvatar->GetSize( wide, tall );
+			((CAvatarImage*)m_pAvatar->GetImage())->SetAvatarSize( wide, tall );
+			((CAvatarImage*)m_pAvatar->GetImage())->SetPos( -AVATAR_INDENT_X, -AVATAR_INDENT_Y );
+
 			m_nLastClientIndex = m_nClientIndex;
 		}
 	}

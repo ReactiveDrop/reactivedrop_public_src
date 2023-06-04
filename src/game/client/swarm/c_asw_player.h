@@ -86,14 +86,14 @@ public:
 	
 	// contacting the server for briefing stuff
 	void StartReady();	// player is ready to start the mission
-	virtual void SendRosterSelectCommand( const char *command, int index, int nPreferredSlot = -1 );
-	virtual void RosterSelectMarine( int index );
-	virtual void RosterSelectSingleMarine( int index );
+	virtual void SendRosterSelectCommand( const char *command, int index, int nPreferredSlot=-1 );
+	virtual void RosterSelectMarine(int index);
+	virtual void RosterSelectSingleMarine(int index);
 	virtual void RosterSelectMarineForSlot( int index, int nPreferredSlot );
-	virtual void RosterDeselectMarine( int iProfileIndex );
-	virtual void LoadoutSelectEquip( int iMarineIndex, int iInvSlot, int iEquipIndex, SteamItemInstanceID_t iItemInstanceID );
-	virtual void LoadoutSendStored( C_ASW_Marine_Resource *pMR );
-	virtual void RosterSpendSkillPoint( int iProfileIndex, int iSkillIndex );
+	virtual void RosterDeselectMarine(int iProfileIndex);	
+	virtual void LoadoutSelectEquip(int iMarineIndex, int iInvSlot, int iEquipIndex);
+	virtual void LoadoutSendStored(C_ASW_Marine_Resource *pMR);
+	virtual void RosterSpendSkillPoint(int iProfileIndex, int iSkillIndex);
 
 	// campaign
 	virtual void CampaignLaunchMission(int iTargetMission);

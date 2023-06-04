@@ -37,7 +37,7 @@ public:
 	CAvatarImage( void );
 
 	// Call this to set the steam ID associated with the avatar
-	bool SetAvatarSteamID( CSteamID steamIDUser, bool bFetch = true );
+	bool SetAvatarSteamID( CSteamID steamIDUser );
 	void UpdateFriendStatus( void );
 	void ClearAvatarSteamID( void );
 
@@ -72,21 +72,17 @@ public:
 		m_nTall = tall; 
 	}
 
-	void SetAvatarSize( int wide, int tall, bool bLegacyPadding )
+	void SetAvatarSize(int wide, int tall)	
 	{
 		m_iAvatarWidth = wide;
 		m_iAvatarHeight = tall;
-		m_bLegacyPadding = bLegacyPadding;
-		if ( bLegacyPadding )
-			SetSize( wide + AVATAR_INDENT_X + AVATAR_POSTDENT_X, tall + AVATAR_INDENT_Y + AVATAR_POSTDENT_Y );
-		else
-			SetSize( wide, tall );
+		SetSize( wide + AVATAR_INDENT_X + AVATAR_POSTDENT_X, tall + AVATAR_INDENT_Y + AVATAR_POSTDENT_Y );
 	}
 
 	// Set the draw color 
-	virtual void SetColor( Color col )
-	{
-		m_Color = col;
+	virtual void SetColor(Color col)			
+	{ 
+		m_Color = col; 
 	}
 
 	void SetAvatarSize( EAvatarSize size )
@@ -113,14 +109,11 @@ private:
 	int m_nX, m_nY, m_nWide, m_nTall;
 	bool m_bValid;
 	bool m_bFriend;
-	bool m_bLegacyPadding;
 	CHudTexture *m_pFriendIcon;
 	int	 m_iAvatarWidth;
 	int	 m_iAvatarHeight;
 	CSteamID	m_SteamID;
 	EAvatarSize m_SourceArtSize;
-
-	STEAM_CALLBACK( CAvatarImage, OnPersonaStateChange, PersonaStateChange_t );
 };
 
 //-----------------------------------------------------------------------------
@@ -136,12 +129,12 @@ public:
 	// Set the player that this Avatar should display for
 	void SetPlayer( C_BasePlayer *pPlayer );
 	void SetPlayerByIndex( int iIndex );
-	void SetAvatarBySteamID( const CSteamID *friendsID );
+	void SetAvatarBySteamID( CSteamID *friendsID );
 
 	virtual void PaintBackground( void );
 	bool	IsValid( void ) { return (GetImage() && ((CAvatarImage*)GetImage())->IsValid()); }
 
-	CPanelAnimationVar( bool, m_bLegacyPadding, "legacy_padding", "1" );
+protected:
 	CPanelAnimationVar( Color, m_clrOutline, "color_outline", "Black" );
 };
 

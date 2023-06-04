@@ -1,4 +1,4 @@
-//========= Copyright Â© 1996-2003, Valve LLC, All rights reserved. ============
+//========= Copyright © 1996-2003, Valve LLC, All rights reserved. ============
 //
 // Purpose: 
 //
@@ -1624,10 +1624,8 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		}
 	}
 
-	// scale down the damage received by bots but not for PvP, jh: make marines take standard damage from infestation/burning if marine was inhabited when got infested/ignited (prevent people exploiting damage taken by going bot)
-	if ( rd_bot_strong.GetBool() && !IsInhabited() && !ASWDeathmatchMode() &&
-		!( IsInfested() && m_bGotInfestedWhenInhabited && ( info.GetDamageType() & DMG_INFEST ) ) &&
-		!( IsOnFire() && m_bGotIgnitedWhenInhabited && ( info.GetDamageType() & ( DMG_BURN | DMG_DIRECT ) ) == ( DMG_BURN | DMG_DIRECT ) ) )
+	// scale down the damage received by bots but not for PvP
+	if ( rd_bot_strong.GetBool() && !IsInhabited() && !ASWDeathmatchMode() )
 	{
 		newInfo.ScaleDamage( 0.25f );
 	}
@@ -3746,7 +3744,6 @@ void CASW_Marine::BecomeInfested(CASW_Alien* pAlien)
 		TakeDamage( info );
 
 		m_fInfestedStartTime = gpGlobals->curtime;
-		m_bGotInfestedWhenInhabited = IsInhabited();
 
 		// Give them 3 free cycles (.9 seconds) to panic before we do the first real bite!
 		m_iInfestCycle = -3;
@@ -4984,8 +4981,6 @@ void CASW_Marine::ScriptIgnite( float flFlameLifetime )
 
 	AddFlag( FL_ONFIRE );
 	m_bOnFire = true;
-	m_bGotIgnitedWhenInhabited = IsInhabited();
-
 	if ( ASWBurning() )
 	{
 		ASWBurning()->BurnEntity( this, NULL, flFlameLifetime, 0.4f, 10.0f * 0.4f, NULL );	// 10 dps, applied every 0.4 seconds
@@ -5034,8 +5029,6 @@ void CASW_Marine::ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *
 
 		AddFlag( FL_ONFIRE );
 		m_bOnFire = true;
-		m_bGotIgnitedWhenInhabited = IsInhabited();
-
 		if ( ASWBurning() )
 		{
 			ASWBurning()->BurnEntity(this, pAttacker, flFlameLifetime, 0.4f, 10.0f * 0.4f, pDamagingWeapon );	// 10 dps, applied every 0.4 seconds

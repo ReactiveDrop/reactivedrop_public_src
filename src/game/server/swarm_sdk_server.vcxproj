@@ -74,7 +74,7 @@ if ERRORLEVEL 1 exit 1
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\..\common;..\..\public;..\..\public\tier0;..\..\public\tier1;.\;..\..\game\shared;..\..\utils\common;..\..\game\server\NextBot;$(IntDir);.\hl2;..\..\game\shared\hl2;.\swarm;..\..\game\shared\swarm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WIN32;_DEBUG;DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;DLLNAME=server;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;COMPILER_MSVC32;COMPILER_MSVC;MEMOVERRIDE_MODULE=server;GAME_DLL;VECTOR;VERSION_SAFE_STEAM_API_INTERFACES;PROTECTED_THINGS_ENABLE;INFESTED_DLL;SWARM_DLL;HL2_EPISODIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WIN32;_DEBUG;DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;DLLNAME=server;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;COMPILER_MSVC32;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;COMPILER_MSVC;MEMOVERRIDE_MODULE=server;_DLL_EXT=.dll;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;DLLNAME=server;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;GAME_DLL;VECTOR;VERSION_SAFE_STEAM_API_INTERFACES;PROTECTED_THINGS_ENABLE;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;sprintf=use_Q_snprintf_instead_of_sprintf;strncpy=use_Q_strncpy_instead;_snprintf=use_Q_snprintf_instead;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;INFESTED_DLL;SWARM_DLL;HL2_EPISODIC;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling />
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -173,7 +173,7 @@ if ERRORLEVEL 1 exit 1
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <AdditionalIncludeDirectories>..\..\common;..\..\public;..\..\public\tier0;..\..\public\tier1;.\;..\..\game\shared;..\..\utils\common;..\..\game\server\NextBot;$(IntDir);.\hl2;..\..\game\shared\hl2;.\swarm;..\..\game\shared\swarm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WIN32;NDEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;DLLNAME=server;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;COMPILER_MSVC32;COMPILER_MSVC;MEMOVERRIDE_MODULE=server;GAME_DLL;VECTOR;VERSION_SAFE_STEAM_API_INTERFACES;PROTECTED_THINGS_ENABLE;INFESTED_DLL;SWARM_DLL;HL2_EPISODIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WIN32;NDEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;DLLNAME=server;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;COMPILER_MSVC32;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;COMPILER_MSVC;MEMOVERRIDE_MODULE=server;_DLL_EXT=.dll;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;DLLNAME=server;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;GAME_DLL;VECTOR;VERSION_SAFE_STEAM_API_INTERFACES;PROTECTED_THINGS_ENABLE;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;sprintf=use_Q_snprintf_instead_of_sprintf;strncpy=use_Q_strncpy_instead;_snprintf=use_Q_snprintf_instead;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;INFESTED_DLL;SWARM_DLL;HL2_EPISODIC;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling />
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -260,6 +260,14 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="..\..\vpc_scripts\loadaddress.vpc" />
+    <None Include="..\..\vpc_scripts\source_dll_base.vpc" />
+    <None Include="..\..\vpc_scripts\source_dll_win32_base.vpc" />
+    <None Include="..\..\vpc_scripts\source_dll_win32_debug.vpc" />
+    <None Include="..\..\vpc_scripts\source_dll_win32_release.vpc" />
+    <None Include="..\..\vpc_scripts\version.vpc" />
+    <None Include="server_base.vpc" />
+    <None Include="server_swarm.vpc" />
     <None Include="spawn_helper.nut" />
     <None Include="vscript_server.nut" />
   </ItemGroup>
@@ -612,7 +620,6 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClCompile Include="..\shared\swarm\rd_challenges_shared.cpp" />
     <ClCompile Include="..\shared\swarm\rd_hud_counter_shared.cpp" />
     <ClCompile Include="..\shared\swarm\rd_inventory_shared.cpp" />
-    <ClCompile Include="..\shared\swarm\rd_loadout.cpp" />
     <ClCompile Include="..\shared\swarm\rd_lobby_utils.cpp" />
     <ClCompile Include="..\shared\swarm\rd_missions_shared.cpp" />
     <ClCompile Include="..\shared\swarm\rd_weapon_generic_object_shared.cpp" />
@@ -1238,18 +1245,21 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
   <ItemGroup>
     <ClInclude Include="..\..\public\appframework\IAppSystem.h" />
     <ClInclude Include="..\..\public\basehandle.h" />
+    <ClInclude Include="..\..\public\basetypes.h" />
     <ClInclude Include="..\..\public\bittools.h" />
     <ClInclude Include="..\..\public\bitvec.h" />
     <ClInclude Include="..\..\public\bone_accessor.h" />
     <ClInclude Include="..\..\public\bone_setup.h" />
     <ClInclude Include="..\..\public\bspfile.h" />
     <ClInclude Include="..\..\public\bspflags.h" />
+    <ClInclude Include="..\..\public\cache_user.h" />
     <ClInclude Include="..\..\public\client_class.h" />
     <ClInclude Include="..\..\public\client_textmessage.h" />
     <ClInclude Include="..\..\public\closedcaptions.h" />
     <ClInclude Include="..\..\public\cmodel.h" />
     <ClInclude Include="..\..\public\collisionutils.h" />
     <ClInclude Include="..\..\public\Color.h" />
+    <ClInclude Include="..\..\public\commonmacros.h" />
     <ClInclude Include="..\..\public\const.h" />
     <ClInclude Include="..\..\public\coordsize.h" />
     <ClInclude Include="..\..\public\datamap.h" />
@@ -1267,6 +1277,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="..\..\public\engine\IEngineTrace.h" />
     <ClInclude Include="..\..\public\engine\IStaticPropMgr.h" />
     <ClInclude Include="..\..\public\engine\ivdebugoverlay.h" />
+    <ClInclude Include="..\..\public\engine\IVEngineCache.h" />
     <ClInclude Include="..\..\public\engine\ivmodelinfo.h" />
     <ClInclude Include="..\..\public\event_flags.h" />
     <ClInclude Include="..\..\public\filesystem.h" />
@@ -1283,6 +1294,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="..\..\public\ihandleentity.h" />
     <ClInclude Include="..\..\public\ihltv.h" />
     <ClInclude Include="..\..\public\ihltvdirector.h" />
+    <ClInclude Include="..\..\public\ImageLoader.h" />
     <ClInclude Include="..\..\public\inetchannelinfo.h" />
     <ClInclude Include="..\..\public\interpolatortypes.h" />
     <ClInclude Include="..\..\public\irecipientfilter.h" />
@@ -1299,6 +1311,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="..\..\public\materialsystem\imaterial.h" />
     <ClInclude Include="..\..\public\materialsystem\imaterialsystem.h" />
     <ClInclude Include="..\..\public\materialsystem\imaterialvar.h" />
+    <ClInclude Include="..\..\public\mathlib\amd3dx.h" />
     <ClInclude Include="..\..\public\mathlib\bumpvects.h" />
     <ClInclude Include="..\..\public\mathlib\compressed_light_cube.h" />
     <ClInclude Include="..\..\public\mathlib\compressed_vector.h" />
@@ -1345,16 +1358,20 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="..\..\public\tier0\memdbgon.h" />
     <ClInclude Include="..\..\public\tier0\platform.h" />
     <ClInclude Include="..\..\public\tier0\protected_things.h" />
+    <ClInclude Include="..\..\public\tier0\vcrmode.h" />
+    <ClInclude Include="..\..\public\tier0\vcr_shared.h" />
     <ClInclude Include="..\..\public\tier0\vprof.h" />
     <ClInclude Include="..\..\public\tier1\bitbuf.h" />
     <ClInclude Include="..\..\public\tier1\characterset.h" />
     <ClInclude Include="..\..\public\tier1\checksum_md5.h" />
+    <ClInclude Include="..\..\public\tier1\datalru.h" />
     <ClInclude Include="..\..\public\tier1\fmtstr.h" />
     <ClInclude Include="..\..\public\tier1\KeyValues.h" />
     <ClInclude Include="..\..\public\tier1\processor_detect.h" />
     <ClInclude Include="..\..\public\tier1\stringpool.h" />
     <ClInclude Include="..\..\public\tier1\strtools.h" />
     <ClInclude Include="..\..\public\tier1\utldict.h" />
+    <ClInclude Include="..\..\public\tier1\utlfixedlinkedlist.h" />
     <ClInclude Include="..\..\public\tier1\utlfixedmemory.h" />
     <ClInclude Include="..\..\public\tier1\utlhash.h" />
     <ClInclude Include="..\..\public\tier1\utllinkedlist.h" />
@@ -1460,6 +1477,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="..\shared\multiplay_gamerules.h" />
     <ClInclude Include="..\shared\npcevent.h" />
     <ClInclude Include="..\shared\obstacle_pushaway.h" />
+    <ClInclude Include="..\shared\particle_dispatch_shared.h" />
     <ClInclude Include="..\shared\particle_parse.h" />
     <ClInclude Include="..\shared\physics_saverestore.h" />
     <ClInclude Include="..\shared\physics_shared.h" />
@@ -1613,7 +1631,6 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="..\shared\swarm\rd_cause_of_death.h" />
     <ClInclude Include="..\shared\swarm\rd_challenges_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_inventory_shared.h" />
-    <ClInclude Include="..\shared\swarm\rd_loadout.h" />
     <ClInclude Include="..\shared\swarm\rd_lobby_utils.h" />
     <ClInclude Include="..\shared\swarm\rd_missions_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_release_flags.h" />

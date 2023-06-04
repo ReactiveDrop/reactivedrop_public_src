@@ -4,7 +4,6 @@
 //
 //=====================================================================================//
 
-#include "cbase.h"
 #include "basemodpanel.h"
 #include "basemodframe.h"
 #include "UIGameData.h"
@@ -1391,7 +1390,7 @@ char const * GameModeGetDefaultDifficulty( char const *szGameMode )
 	if ( !GameModeHasDifficulty( szGameMode ) )
 		return "normal";
 
-	IPlayerLocal *pProfile = g_pMatchFramework->GetMatchSystem()->GetPlayerManager()->GetLocalPlayer( XBX_GetActiveUserId() );
+	IPlayerLocal *pProfile = g_pMatchFramework->GetMatchSystem()->GetPlayerManager()->GetLocalPlayer( XBX_GetPrimaryUserId() );
 	if ( !pProfile )
 		return "normal";
 

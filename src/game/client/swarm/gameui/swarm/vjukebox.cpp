@@ -3,7 +3,12 @@
 // Purpose: 
 //
 //=====================================================================================//
-#include "cbase.h"
+#undef fopen
+
+#include <tier0/platform.h>
+#ifdef IS_WINDOWS_PC
+#include "windows.h"
+#endif
 
 #include "vjukebox.h"
 #include "VGenericPanelList.h"
@@ -57,8 +62,8 @@ static int ListStringSortFunc( ListPanel *pPanel, const ListPanelItem &item1, co
 	const char *string2 = item2.kv->GetString( szElement );
 
 	// YWB:  Mimic windows behavior where filenames starting with numbers are sorted based on numeric part
-	int num1 = V_atoi( string1 );
-	int num2 = V_atoi( string2 );
+	int num1 = Q_atoi( string1 );
+	int num2 = Q_atoi( string2 );
 
 	if ( num1 != 0 && 
 		num2 != 0 )
@@ -81,12 +86,17 @@ static int ListStringSortFunc( ListPanel *pPanel, const ListPanelItem &item1, co
 		return 1;
 	}
 
-	return V_stricmp( string1, string2 );
+	return Q_stricmp( string1, string2 );
 }
 
 static int ListFileNameSortFunc( ListPanel *pPanel, const ListPanelItem &item1, const ListPanelItem &item2 )
 {
 	return ListStringSortFunc( pPanel, item1, item2, "text" );
+}
+
+static int ListFileGenreSortFunc( ListPanel *pPanel, const ListPanelItem &item1, const ListPanelItem &item2 )
+{
+	return ListStringSortFunc( pPanel, item1, item2, "genre" );
 }
 
 static int ListFileArtistSortFunc( ListPanel *pPanel, const ListPanelItem &item1, const ListPanelItem &item2 )
@@ -114,6 +124,7 @@ struct ColumnInfo_t
 static ColumnInfo_t g_ColInfo[] =
 {
 	{	"text",				"#FileOpenDialog_Col_Name",				500,	50, 10000, ListPanel::COLUMN_UNHIDABLE,		&ListFileNameSortFunc			, Label::a_west },
+	{	"genre",			"#ASW_Custom_Music_Col_Genre",			200,	50, 10000, 0,								&ListFileGenreSortFunc			, Label::a_west },
 	{	"artist",			"#ASW_Custom_Music_Col_Artist",			200,	50, 10000, 0,								&ListFileArtistSortFunc			, Label::a_west },
 	{	"album",			"#ASW_Custom_Music_Col_Album",			200,	50, 10000, 0,								&ListFileAlbumSortFunc			, Label::a_west },
 };

@@ -61,12 +61,9 @@ namespace ReactiveDropInventory
 		CUtlString AccessoryDescription;
 		Color BackgroundColor;
 		Color NameColor;
-		int64_t StrangeNotifyEvery{ 0 };
-		CUtlVector<int64_t> StrangeNotify;
 		bool AfterDescriptionOnlyMultiStack : 1;
 		bool HasInGameDescription : 1;
 		bool HasBorder : 1;
-		bool IsBasic : 1;
 #ifdef CLIENT_DLL
 		vgui::IImage *Icon{};
 		CUtlVector<vgui::IImage *> StyleIcons{};
@@ -76,7 +73,6 @@ namespace ReactiveDropInventory
 
 		bool ItemSlotMatches( const char *szRequiredSlot ) const;
 		bool ItemSlotMatchesAnyDynamic() const;
-		int GetStrangeTier( int64_t x ) const;
 	};
 
 	// Data extracted from SteamInventoryResult_t; it is safe to destroy the result after constructing this data type.
@@ -122,13 +118,8 @@ namespace ReactiveDropInventory
 	void AddPromoItem( SteamItemDef_t id );
 	void RequestGenericPromoItems();
 	void CheckPlaytimeItemGenerators( int iMarineClass );
+
 	void CommitDynamicProperties();
-	const ItemInstance_t *GetLocalItemCache( SteamItemInstanceID_t id );
-	void GetItemsForSlot( CUtlVector<ItemInstance_t> &instances, const char *szRequiredSlot );
-	void GetItemsForSlotAndEquipIndex( CUtlVector<ItemInstance_t> &instances, const char *szRequiredSlot, int iEquipIndex );
-	int AllocateDynamicItemSlot( int iPlayer, SteamItemInstanceID_t iItemInstanceID, int iMarineProfile = -1, int iInventorySlot = -1 );
-	void ResendDynamicEquipNotification( int iPlayer, bool bForce = false );
-	bool CheckMedalEquipCache();
 #endif
 	void OnHitConfirm( CBaseEntity *pAttacker, CBaseEntity *pTarget, Vector vecDamagePosition, bool bKilled, bool bDamageOverTime, bool bBlastDamage, int iDisposition, float flDamage, CBaseEntity *pWeapon );
 }

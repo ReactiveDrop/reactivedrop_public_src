@@ -68,18 +68,15 @@ void CASW_Weapon_DEagle::Precache()
 
 void CASW_Weapon_DEagle::ItemPostFrame() 
 {
-	CBasePlayer *pOwner = GetCommander();
-
-	if ( !m_bCanShoot && pOwner && !( pOwner->m_afButtonReleased & IN_ATTACK ) && ( pOwner->m_nButtons & IN_ATTACK ) )
-	{
-		// pretend we're still on cooldown so we don't run the weapon_fire event
-		m_flNextPrimaryAttack = MAX( gpGlobals->curtime + TICK_INTERVAL, m_flNextPrimaryAttack );
-	}
-
 	// we don't call BaseClass::ItemPostFrame() to prevent pistol fast shooting
 	CASW_Weapon::ItemPostFrame();
 
-	if ( pOwner && ( pOwner->m_afButtonReleased & IN_ATTACK ) )
+	CBasePlayer *pOwner = GetCommander();
+
+	if ( pOwner == NULL )
+		return;
+
+	if ( pOwner->m_afButtonReleased & IN_ATTACK )
 	{
 		m_bCanShoot = true;
 	}
@@ -87,13 +84,13 @@ void CASW_Weapon_DEagle::ItemPostFrame()
 
 void CASW_Weapon_DEagle::PrimaryAttack() 
 {
-	if ( m_bCanShoot )
+	if (m_bCanShoot)
 	{
 		BaseClass::PrimaryAttack();
 		m_currentPistol = ASW_WEAPON_PISTOL_LEFT;
-
+		
 		// use this only for players, but not for AI
-		if ( GetMarine() && GetMarine()->IsInhabited() )
+		if (GetMarine() && GetMarine()->IsInhabited())
 		{
 			m_bCanShoot = false;
 		}

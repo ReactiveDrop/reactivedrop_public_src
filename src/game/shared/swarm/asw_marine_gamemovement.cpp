@@ -4795,13 +4795,13 @@ void CASW_MarineGameMovement::PlayerMove( void )
 	m_nOldWaterLevel = marine->GetWaterLevel();
 
 	// If we are not on ground, store off how fast we are moving down
-	if ( player && marine->GetGroundEntity() == NULL )
+	if ( marine->GetGroundEntity() == NULL )
 	{
 		player->m_Local.m_flFallVelocity = -mv->m_vecVelocity[ 2 ];
 	}
 
 #ifdef GAME_DLL
-	if ( player && marine->Classify() == CLASS_ASW_DRONE )
+	if ( marine->Classify() == CLASS_ASW_DRONE )
 	{
 		assert_cast< CASW_Drone_Advanced * >( marine )->m_hAimTarget = player->FindPickerEntity();
 	}
@@ -4820,7 +4820,7 @@ void CASW_MarineGameMovement::PlayerMove( void )
 	//Duck();		// asw, remove duck for now (causes strange z change when you jump)
 
 	// Don't run ladder code if dead on on a train
-	if ( player && !player->pl.deadflag && !(marine->GetFlags() & FL_ONTRAIN) )
+	if ( !player->pl.deadflag && !(marine->GetFlags() & FL_ONTRAIN) )
 	{
 		// If was not on a ladder now, but was on one before, 
 		//  get off of the ladder

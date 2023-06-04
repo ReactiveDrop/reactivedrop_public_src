@@ -657,8 +657,6 @@ public:
 	int m_pRecentAttackers[ ASW_MOB_VICTIM_SIZE ];
 	float m_fLastMobDamageTime;
 	bool m_bHasBeenMobAttacked;
-	bool m_bGotInfestedWhenInhabited;
-	bool m_bGotIgnitedWhenInhabited;
 	CHandle<CASW_Marine> m_hInfestationCurer;	// the last medic to cure us of some infestation - give him some stats if I survive the infestation
 	EHANDLE m_hInfestationCureWeapon;
 	CNetworkVar(bool, m_bOnFire);

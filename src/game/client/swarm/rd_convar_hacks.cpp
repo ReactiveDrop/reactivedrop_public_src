@@ -41,19 +41,6 @@ public:
 		"mat_depth_blur_strength_override",
 	};
 
-	constexpr static const char *s_szRemoveArchive[] =
-	{
-		// These are very advanced settings, and if a player changes a setting
-		// during slomo, FCVAR_ARCHIVE will cause them to save the wrong value.
-		"cl_updaterate",
-		"cl_cmdrate",
-	};
-
-	constexpr static const char *s_szAddServerCanExecute[] =
-	{
-		"disconnect",
-	};
-
 	virtual bool Init() override
 	{
 		Assert( g_pCVar );
@@ -90,26 +77,6 @@ public:
 				continue;
 
 			pCmd->AddFlags( FCVAR_ARCHIVE );
-		}
-
-		for ( int i = 0; i < NELEMS( s_szRemoveArchive ); i++ )
-		{
-			ConCommandBase *pCmd = g_pCVar->FindCommandBase( s_szRemoveArchive[i] );
-			Assert( pCmd );
-			if ( !pCmd )
-				continue;
-
-			pCmd->RemoveFlags( FCVAR_ARCHIVE );
-		}
-
-		for ( int i = 0; i < NELEMS( s_szAddServerCanExecute ); i++ )
-		{
-			ConCommandBase *pCmd = g_pCVar->FindCommandBase( s_szAddServerCanExecute[i] );
-			Assert( pCmd );
-			if ( !pCmd )
-				continue;
-
-			pCmd->AddFlags( FCVAR_SERVER_CAN_EXECUTE );
 		}
 
 		return true;

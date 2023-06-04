@@ -15,7 +15,55 @@ class CASW_Marine_Profile;
 class C_ASW_Player;
 class C_ASW_Weapon;
 class CASW_WeaponInfo;
-struct HudSheetTexture_t;
+
+struct HudSheetTexture_t
+{
+	float u;
+	float v;
+	float s;
+	float t;
+};
+
+// ====================================
+//  Macros for defining texture sheets
+// ====================================
+
+#define DECLARE_HUD_SHEET( name ) \
+	int m_n##name##ID; \
+	Vector2D m_vec##name##Size; \
+	enum {
+
+#define DECLARE_HUD_SHEET_UV( name ) \
+	UV_##name
+
+#define END_HUD_SHEET( name ) \
+	NUM_##name##_UVS, \
+	}; \
+	HudSheetTexture_t m_##name##[ NUM_##name##_UVS ];
+
+
+class HudSheet_t
+{
+public:
+	HudSheet_t( int *pTextureID, HudSheetTexture_t *pTextureData, int nNumSubTextures, const char *pszTextureFile, Vector2D *pSize ) :
+	  m_pSheetID( pTextureID ), m_pTextureData( pTextureData ), m_nNumSubTextures( nNumSubTextures ), m_pszTextureFile( pszTextureFile ),
+	  m_pSize( pSize ) { }
+
+	int *m_pSheetID;
+	HudSheetTexture_t *m_pTextureData;
+	int m_nNumSubTextures;
+	const char *m_pszTextureFile;
+	Vector2D *m_pSize;
+};
+
+#define ADD_HUD_SHEET( name, textureFile ) \
+	m_HudSheets.AddToTail( HudSheet_t( &m_n##name##ID, &m_##name##[0], NUM_##name##_UVS, textureFile, &m_vec##name##Size ) );
+
+#define HUD_UV_COORDS( sheet, full_texture_name ) \
+	m_##sheet[ full_texture_name ].u, \
+	m_##sheet[ full_texture_name ].v, \
+	m_##sheet[ full_texture_name ].s, \
+	m_##sheet[ full_texture_name ].t
 
 #define MAX_SQUADMATE_HUD_POSITIONS (ASW_NUM_MARINE_PROFILES - 1) // (ASW_MAX_MARINE_RESOURCES - 1), was 3 
 
@@ -65,6 +113,41 @@ protected:
 	void PaintDeathmatchFrags();
 
 	int GetClassIcon( C_ASW_Marine_Resource *pMR );
+
+	// textures
+
+	DECLARE_HUD_SHEET( Sheet1 )
+		DECLARE_HUD_SHEET_UV( hud_ammo_heal ),
+		DECLARE_HUD_SHEET_UV( marine_health_circle_BG ),
+		DECLARE_HUD_SHEET_UV( marine_health_circle_FG ),
+		DECLARE_HUD_SHEET_UV( marine_health_circle_FG_subtract ),
+		DECLARE_HUD_SHEET_UV( marine_health_circle_FG_infested ),
+		DECLARE_HUD_SHEET_UV( marine_portrait_BG_cap ),
+		DECLARE_HUD_SHEET_UV( marine_portrait_BG_circle ),
+		DECLARE_HUD_SHEET_UV( marine_portrait_square ),
+
+		DECLARE_HUD_SHEET_UV( NCOClassIcon ),
+		DECLARE_HUD_SHEET_UV( SpecialWeaponsClassIcon ),
+		DECLARE_HUD_SHEET_UV( MedicClassIcon ),
+		DECLARE_HUD_SHEET_UV( TechClassIcon ),
+		DECLARE_HUD_SHEET_UV( DeadIcon ),
+		DECLARE_HUD_SHEET_UV( InfestedIcon ),
+
+		DECLARE_HUD_SHEET_UV( team_health_bar_BG ),
+		DECLARE_HUD_SHEET_UV( team_health_bar_FG ),
+		DECLARE_HUD_SHEET_UV( team_health_bar_FG_subtract ),
+		DECLARE_HUD_SHEET_UV( team_health_bar_FG_infested ),
+		DECLARE_HUD_SHEET_UV( team_portrait_BG ),
+	END_HUD_SHEET( Sheet1 );
+
+	DECLARE_HUD_SHEET( Sheet_Stencil )
+		DECLARE_HUD_SHEET_UV( hud_ammo_bullets ),
+		DECLARE_HUD_SHEET_UV( hud_ammo_clip_empty ),
+		DECLARE_HUD_SHEET_UV( hud_ammo_clip_full ),
+		DECLARE_HUD_SHEET_UV( hud_ammo_grenade ),
+		DECLARE_HUD_SHEET_UV( team_ammo_bar ),
+		DECLARE_HUD_SHEET_UV( hud_ammo_clip_double ),
+	END_HUD_SHEET( Sheet_Stencil );
 
 	// positioning
 
@@ -216,6 +299,8 @@ protected:
 	CPanelAnimationVar( vgui::HFont, m_hDefaultFont, "DefaultFont", "Default" );
 	CPanelAnimationVar( vgui::HFont, m_hDefaultLargeFont, "DefaultLargeFont", "DefaultLarge" );
 	CPanelAnimationVar( vgui::HFont, m_hButtonFont, "DefaultButtonFont", "GameUIButtonsTiny" );
+	
+	CUtlVector<HudSheet_t> m_HudSheets;
 
 	// data for the local marine
 	C_ASW_Marine *m_pLocalMarine;

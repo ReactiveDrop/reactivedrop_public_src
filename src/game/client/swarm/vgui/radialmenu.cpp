@@ -46,7 +46,7 @@ ConVar RadialMenuDebug( "cl_rosetta_debug", "0" );
 ConVar cl_rosetta_line_inner_radius( "cl_rosetta_line_inner_radius", "25" );
 ConVar cl_rosetta_line_outer_radius( "cl_rosetta_line_outer_radius", "45" );
 
-ConVar rda_faster_radialmenu("rda_faster_radialmenu", "1", FCVAR_NONE, "Radial menu disappears faster and does not delay weapon's fire");
+ConVar rda_faster_radialmenu("rda_faster_radialmenu", "1", FCVAR_ARCHIVE, "Radial menu disappears faster and does not delay weapon's fire");
 
 void FlushClientMenus( void );
 

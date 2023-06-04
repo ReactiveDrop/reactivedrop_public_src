@@ -100,18 +100,6 @@ void ItemShowcase::OnTick()
 	}
 }
 
-static const char *const s_szItemShowcaseTitle[] =
-{
-	"#nb_item_inspect",
-	"#nb_item_dropped",
-	"#nb_weapon_unlocked",
-	"#nb_equipment_unlocked",
-	"#nb_item_claimed",
-	"#nb_item_upgraded",
-	"#nb_item_crafted",
-};
-COMPILE_TIME_ASSERT( NELEMS( s_szItemShowcaseTitle ) == ItemShowcase::NUM_MODES );
-
 void ItemShowcase::OnThink()
 {
 	BaseClass::OnThink();
@@ -128,16 +116,14 @@ void ItemShowcase::OnThink()
 		const char *szSoundName = soundemitterbase->GetWavFileForSound( "ASWInterface.SelectWeapon", GENDER_NONE );
 		enginesound->EmitAmbientSound( szSoundName, 1.0f, 100, 0, 0.25f );
 
-		m_pTitle->SetText( s_szItemShowcaseTitle[m_QueueType[0]] );
-
 		switch ( m_QueueType[0] )
 		{
 		case MODE_INSPECT:
 		case MODE_ITEM_DROP:
-		case MODE_ITEM_CLAIMED:
-		case MODE_ITEM_UPGRADED:
 		{
 			const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( m_Queue[0]->ItemDefID );
+
+			m_pTitle->SetText( m_QueueType[0] == MODE_ITEM_DROP ? "#nb_item_dropped" : "#nb_item_inspect" );
 
 			m_pWeaponLabel->SetText( pDef->Name );
 			m_pWeaponLabel->SetVisible( true );
@@ -154,6 +140,8 @@ void ItemShowcase::OnThink()
 		case MODE_UNLOCK_REGULAR_WEAPON:
 		case MODE_UNLOCK_EXTRA_WEAPON:
 		{
+			m_pTitle->SetText( m_QueueType[0] == MODE_UNLOCK_REGULAR_WEAPON ? "#nb_weapon_unlocked" : "#nb_equipment_unlocked" );
+
 			KeyValues::AutoDelete pKV( "ItemModelPanel" );
 			pKV->SetInt( "fov", 20 );
 			pKV->SetInt( "start_framed", 0 );
@@ -241,9 +229,6 @@ void ItemShowcase::OnThink()
 	{
 	case MODE_INSPECT:
 	case MODE_ITEM_DROP:
-	case MODE_ITEM_CLAIMED:
-	case MODE_ITEM_UPGRADED:
-	case MODE_ITEM_CRAFTED:
 	{
 		break;
 	}
@@ -372,9 +357,6 @@ void ItemShowcase::PostChildPaint()
 	{
 	case MODE_INSPECT:
 	case MODE_ITEM_DROP:
-	case MODE_ITEM_CLAIMED:
-	case MODE_ITEM_UPGRADED:
-	case MODE_ITEM_CRAFTED:
 	{
 		vgui::IImage *pIcon = m_Queue[0]->GetIcon();
 

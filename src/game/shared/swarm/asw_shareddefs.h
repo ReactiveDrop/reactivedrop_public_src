@@ -170,7 +170,7 @@ enum
 #define VPROF_BUDGETGROUP_ASW_CLIENT			_T("Swarm Client")
 
 // how many marine profiles there are (used by the campaign save system)
-enum ASW_Marine_Profile
+enum
 {
 	ASW_MARINE_PROFILE_SARGE,
 	ASW_MARINE_PROFILE_WILDCAT,
