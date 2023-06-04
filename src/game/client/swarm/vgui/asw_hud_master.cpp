@@ -24,6 +24,7 @@
 #include "asw_util_shared.h"
 #include "rd_steam_input.h"
 #include "asw_gamerules.h"
+#include "rd_hud_sheet.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -81,14 +82,6 @@ CASW_Hud_Master::CASW_Hud_Master( const char *pElementName ) :
 	SetParent( GetClientMode()->GetViewport() );
 	SetScheme( vgui::scheme()->LoadSchemeFromFile( "resource/SwarmSchemeNew.res", "SwarmSchemeNew" ) );
 
-	ADD_HUD_SHEET( Sheet1, "vgui/hud/sheet1/sheet1" );
-	ADD_HUD_SHEET( Sheet_Stencil, "vgui/hud/sheet_stencil/sheet_stencil" );
-
-	for ( int i = 0; i < m_HudSheets.Count(); i++ )
-	{
-		*( m_HudSheets[i].m_pSheetID ) = -1;
-	}
-
 	for ( int i = 0; i < NELEMS( m_nMostFrags ); i++ )
 	{
 		m_nMostFrags[i] = -1;
@@ -135,49 +128,7 @@ void CASW_Hud_Master::VidInit()
 {
 	CASW_HudElement::VidInit();
 
-	for ( int i = 0; i < m_HudSheets.Count(); i++ )
-	{
-		if ( *( m_HudSheets[i].m_pSheetID ) == -1 )
-		{
-			*( m_HudSheets[i].m_pSheetID ) = surface()->CreateNewTextureID();
-			surface()->DrawSetTextureFile( *( m_HudSheets[i].m_pSheetID ), m_HudSheets[i].m_pszTextureFile, true, false );
-
-			// pull out UV coords for this sheet
-			ITexture *pTexture = materials->FindTexture( m_HudSheets[i].m_pszTextureFile, TEXTURE_GROUP_VGUI );
-			if ( pTexture )
-			{
-				m_HudSheets[i].m_pSize->x = pTexture->GetActualWidth();
-				m_HudSheets[i].m_pSize->y = pTexture->GetActualHeight();
-				size_t numBytes;
-				void const *pSheetData =  pTexture->GetResourceData( VTF_RSRC_SHEET, &numBytes );
-				if ( pSheetData )
-				{				
-					CUtlBuffer bufLoad( pSheetData, numBytes, CUtlBuffer::READ_ONLY );
-					CSheet *pSheet = new CSheet( bufLoad );
-					for ( int k = 0; k < pSheet->m_SheetInfo.Count(); k++ )
-					{
-						if ( k >= m_HudSheets[i].m_nNumSubTextures )
-						{
-							break;
-						}
-						SequenceSampleTextureCoords_t &Coords = pSheet->m_SheetInfo[ k ].m_pSamples->m_TextureCoordData[ 0 ];
-						m_HudSheets[i].m_pTextureData[ k ].u = Coords.m_fLeft_U0;
-						m_HudSheets[i].m_pTextureData[ k ].v = Coords.m_fTop_V0;
-						m_HudSheets[i].m_pTextureData[ k ].s = Coords.m_fRight_U0;
-						m_HudSheets[i].m_pTextureData[ k ].t = Coords.m_fBottom_V0;
-					}
-				}
-				else
-				{
-					Warning( "Error finding VTF_RSRC_SHEET for %s\n", m_HudSheets[i].m_pszTextureFile );
-				}
-			}
-			else
-			{
-				Warning( "Error finding %s\n", m_HudSheets[i].m_pszTextureFile );
-			}
-		}
-	}
+	g_RD_HUD_Sheets.VidInit();
 }
 
 void CASW_Hud_Master::ApplySchemeSettings( IScheme *scheme )
@@ -741,49 +692,49 @@ bool CASW_Hud_Master::LookupElementBounds( const char *elementName, int &x, int 
 
 int CASW_Hud_Master::GetClassIcon( C_ASW_Marine_Resource *pMR )
 {
-	int nUV = UV_NCOClassIcon;
+	int nUV = CRD_HUD_Sheets::UV_NCOClassIcon;
 	if ( pMR->GetHealthPercent() <= 0.0f )
 	{
-		nUV = UV_DeadIcon;
+		nUV = CRD_HUD_Sheets::UV_DeadIcon;
 	}
 	else if ( pMR->IsInfested() )
 	{
-		nUV = UV_InfestedIcon;
+		nUV = CRD_HUD_Sheets::UV_InfestedIcon;
 	}
 	else
 	{
 		switch ( pMR->GetProfile()->GetMarineClass() )
 		{
-		case MARINE_CLASS_SPECIAL_WEAPONS: nUV = UV_SpecialWeaponsClassIcon; break;
-		case MARINE_CLASS_MEDIC: nUV = UV_MedicClassIcon; break;
-		case MARINE_CLASS_TECH: nUV = UV_TechClassIcon; break;
+		case MARINE_CLASS_SPECIAL_WEAPONS: nUV = CRD_HUD_Sheets::UV_SpecialWeaponsClassIcon; break;
+		case MARINE_CLASS_MEDIC: nUV = CRD_HUD_Sheets::UV_MedicClassIcon; break;
+		case MARINE_CLASS_TECH: nUV = CRD_HUD_Sheets::UV_TechClassIcon; break;
 		}
 	}
 	return nUV;
 }
 
 void CASW_Hud_Master::PaintLocalMarinePortrait()
-{	
-	surface()->DrawSetTexture( m_nSheet1ID );
+{
+	surface()->DrawSetTexture( g_RD_HUD_Sheets.m_nSheet1ID );
 
 	// backgrounds
 	surface()->DrawSetColor( 255, 255, 255, asw_hud_alpha.GetInt() );
-	
+
  	surface()->DrawTexturedSubRect(
  		m_nMarinePortrait_circle_x, m_nMarinePortrait_circle_y, m_nMarinePortrait_circle_x2, m_nMarinePortrait_circle_y2,
- 		HUD_UV_COORDS( Sheet1, UV_marine_portrait_BG_circle )
+ 		HUD_UV_COORDS( Sheet1, CRD_HUD_Sheets::UV_marine_portrait_BG_circle )
  	);
 
-	float flSheet1HalfPixel_x = 1.0f / m_vecSheet1Size.x;
-	float flSheet1HalfPixel_y = 1.0f / m_vecSheet1Size.y;
-		
+	float flSheet1HalfPixel_x = 1.0f / g_RD_HUD_Sheets.m_vecSheet1Size.x;
+	float flSheet1HalfPixel_y = 1.0f / g_RD_HUD_Sheets.m_vecSheet1Size.y;
+
 	vgui::Vertex_t portrait_bar_points[4] = 
-	{ 
-		vgui::Vertex_t( Vector2D(m_nMarinePortrait_bar_x, m_nMarinePortrait_bar_y),		Vector2D(m_Sheet1[ UV_marine_portrait_square ].u + flSheet1HalfPixel_x, m_Sheet1[ UV_marine_portrait_square ].v + flSheet1HalfPixel_y) ), 
-		vgui::Vertex_t( Vector2D(m_nMarinePortrait_bar_x2, m_nMarinePortrait_bar_y),	Vector2D(m_Sheet1[ UV_marine_portrait_square ].s - flSheet1HalfPixel_x, m_Sheet1[ UV_marine_portrait_square ].v + flSheet1HalfPixel_y) ), 
-		vgui::Vertex_t( Vector2D(m_nMarinePortrait_bar_x2, m_nMarinePortrait_bar_y2),	Vector2D(m_Sheet1[ UV_marine_portrait_square ].s - flSheet1HalfPixel_x, m_Sheet1[ UV_marine_portrait_square ].t - flSheet1HalfPixel_y) ), 
-		vgui::Vertex_t( Vector2D(m_nMarinePortrait_bar_x, m_nMarinePortrait_bar_y2),	Vector2D(m_Sheet1[ UV_marine_portrait_square ].u + flSheet1HalfPixel_x, m_Sheet1[ UV_marine_portrait_square ].t - flSheet1HalfPixel_y) )
-	}; 	
+	{
+		vgui::Vertex_t( Vector2D(m_nMarinePortrait_bar_x, m_nMarinePortrait_bar_y),		Vector2D(g_RD_HUD_Sheets.m_Sheet1[ CRD_HUD_Sheets::UV_marine_portrait_square ].u + flSheet1HalfPixel_x, g_RD_HUD_Sheets.m_Sheet1[ CRD_HUD_Sheets::UV_marine_portrait_square ].v + flSheet1HalfPixel_y) ), 
+		vgui::Vertex_t( Vector2D(m_nMarinePortrait_bar_x2, m_nMarinePortrait_bar_y),	Vector2D(g_RD_HUD_Sheets.m_Sheet1[ CRD_HUD_Sheets::UV_marine_portrait_square ].s - flSheet1HalfPixel_x, g_RD_HUD_Sheets.m_Sheet1[ CRD_HUD_Sheets::UV_marine_portrait_square ].v + flSheet1HalfPixel_y) ), 
+		vgui::Vertex_t( Vector2D(m_nMarinePortrait_bar_x2, m_nMarinePortrait_bar_y2),	Vector2D(g_RD_HUD_Sheets.m_Sheet1[ CRD_HUD_Sheets::UV_marine_portrait_square ].s - flSheet1HalfPixel_x, g_RD_HUD_Sheets.m_Sheet1[ CRD_HUD_Sheets::UV_marine_portrait_square ].t - flSheet1HalfPixel_y) ), 
+		vgui::Vertex_t( Vector2D(m_nMarinePortrait_bar_x, m_nMarinePortrait_bar_y2),	Vector2D(g_RD_HUD_Sheets.m_Sheet1[ CRD_HUD_Sheets::UV_marine_portrait_square ].u + flSheet1HalfPixel_x, g_RD_HUD_Sheets.m_Sheet1[ CRD_HUD_Sheets::UV_marine_portrait_square ].t - flSheet1HalfPixel_y) )
+	};
 	vgui::surface()->DrawTexturedPolygon( 4, portrait_bar_points );
 
 	// need to material switch to draw the video here	
@@ -804,13 +755,13 @@ void CASW_Hud_Master::PaintLocalMarinePortrait()
 	}
 	vgui::surface()->DrawTexturedPolygon( NUM_CIRCLE_POINTS, portrait_points );
 
-	surface()->DrawSetTexture( m_nSheet1ID );
+	surface()->DrawSetTexture( g_RD_HUD_Sheets.m_nSheet1ID );
 
 	// health bar background
 	surface()->DrawSetColor( m_colorBG );
 	surface()->DrawTexturedSubRect(
 		m_nMarinePortrait_circle_x, m_nMarinePortrait_circle_y, m_nMarinePortrait_circle_x2, m_nMarinePortrait_circle_y2,
-		HUD_UV_COORDS( Sheet1, UV_marine_health_circle_BG )
+		HUD_UV_COORDS( Sheet1, CRD_HUD_Sheets::UV_marine_health_circle_BG )
 		);
 
 	float flHealthFraction = m_pLocalMarineResource->GetHealthPercent();
@@ -823,7 +774,7 @@ void CASW_Hud_Master::PaintLocalMarinePortrait()
 		m_nMarinePortrait_circle_bg_w * 0.5f,
 		m_nMarinePortrait_circle_bg_t * 0.5f,
 		0.75f * ( m_flMainProgress ), 0.75f * ( m_flDelayProgress ), true, 180, -180,
-		HUD_UV_COORDS( Sheet1, UV_marine_health_circle_FG_subtract ) );
+		HUD_UV_COORDS( Sheet1, CRD_HUD_Sheets::UV_marine_health_circle_FG_subtract ) );
 
 	// draw infestation
 	if ( m_pLocalMarineResource->IsInfested() )
@@ -838,7 +789,7 @@ void CASW_Hud_Master::PaintLocalMarinePortrait()
 			m_nMarinePortrait_circle_bg_w * 0.5f,
 			m_nMarinePortrait_circle_bg_t * 0.5f,
 			flInfestation  * 0.75f, ( flHealthFraction * 0.75f ), true, 180, -180,
-			HUD_UV_COORDS( Sheet1, UV_marine_health_circle_FG_infested ) );
+			HUD_UV_COORDS( Sheet1, CRD_HUD_Sheets::UV_marine_health_circle_FG_infested ) );
 
 		// draw uninfested health bar
 		float flUninfestedHealth = flHealthFraction - flInfestation;
@@ -851,7 +802,7 @@ void CASW_Hud_Master::PaintLocalMarinePortrait()
 				m_nMarinePortrait_circle_bg_w * 0.5f,
 				m_nMarinePortrait_circle_bg_t * 0.5f,
 				0, flUninfestedHealth * 0.75f, true, 180, -180,
-				HUD_UV_COORDS( Sheet1, UV_marine_health_circle_FG ) );
+				HUD_UV_COORDS( Sheet1, CRD_HUD_Sheets::UV_marine_health_circle_FG ) );
 		}
 	}
 	else
@@ -864,7 +815,7 @@ void CASW_Hud_Master::PaintLocalMarinePortrait()
 			m_nMarinePortrait_circle_bg_w * 0.5f,
 			m_nMarinePortrait_circle_bg_t * 0.5f,
 			0, flHealthFraction * 0.75f, true, 180, -180,
-			HUD_UV_COORDS( Sheet1, UV_marine_health_circle_FG ) );
+			HUD_UV_COORDS( Sheet1, CRD_HUD_Sheets::UV_marine_health_circle_FG ) );
 	}
 
 	
@@ -882,7 +833,7 @@ void CASW_Hud_Master::PaintLocalMarinePortrait()
 	if ( m_pLocalMarineActiveWeapon )
 	{
 		const CASW_WeaponInfo *pInfo = m_pLocalMarineActiveWeapon->GetWeaponInfo();
-		surface()->DrawSetTexture( m_nSheet_StencilID );
+		surface()->DrawSetTexture( g_RD_HUD_Sheets.m_nSheet_StencilID );
 
 		if ( pInfo->m_iShowBulletsOnHUD )
 		{
@@ -891,7 +842,7 @@ void CASW_Hud_Master::PaintLocalMarinePortrait()
 				m_nMarinePortrait_y + m_nMarinePortrait_bullets_icon_y,
 				m_nMarinePortrait_x + m_nMarinePortrait_bullets_icon_x + m_nMarinePortrait_bullets_icon_w,
 				m_nMarinePortrait_y + m_nMarinePortrait_bullets_icon_y + m_nMarinePortrait_bullets_icon_t,
-				HUD_UV_COORDS( Sheet_Stencil, UV_hud_ammo_bullets )
+				HUD_UV_COORDS( Sheet_Stencil, CRD_HUD_Sheets::UV_hud_ammo_bullets )
 				);
 		}
 
@@ -902,7 +853,7 @@ void CASW_Hud_Master::PaintLocalMarinePortrait()
 				m_nMarinePortrait_y + m_nMarinePortrait_grenades_icon_y,
 				m_nMarinePortrait_x + m_nMarinePortrait_grenades_icon_x + m_nMarinePortrait_grenades_icon_w,
 				m_nMarinePortrait_y + m_nMarinePortrait_grenades_icon_y + m_nMarinePortrait_grenades_icon_t,
-				HUD_UV_COORDS( Sheet_Stencil, UV_hud_ammo_grenade )
+				HUD_UV_COORDS( Sheet_Stencil, CRD_HUD_Sheets::UV_hud_ammo_grenade )
 				);
 		}
 		else if ( pInfo->m_iShowSecondaryBulletsOnHUD )
@@ -912,7 +863,7 @@ void CASW_Hud_Master::PaintLocalMarinePortrait()
 				m_nMarinePortrait_y + m_nMarinePortrait_grenades_icon_y,
 				m_nMarinePortrait_x + m_nMarinePortrait_grenades_icon_x + m_nMarinePortrait_grenades_icon_w,
 				m_nMarinePortrait_y + m_nMarinePortrait_grenades_icon_y + m_nMarinePortrait_grenades_icon_t,
-				HUD_UV_COORDS( Sheet_Stencil, UV_hud_ammo_bullets )
+				HUD_UV_COORDS( Sheet_Stencil, CRD_HUD_Sheets::UV_hud_ammo_bullets )
 				);
 		}
 
@@ -926,7 +877,7 @@ void CASW_Hud_Master::PaintLocalMarinePortrait()
 					m_nMarinePortrait_y + m_nMarinePortrait_clips_y,
 					m_nMarinePortrait_x + m_nMarinePortrait_clips_x + m_nMarinePortrait_clips_w,
 					m_nMarinePortrait_y + m_nMarinePortrait_clips_y + m_nMarinePortrait_clips_t,
-					HUD_UV_COORDS( Sheet_Stencil, m_bLocalMarineClipsDoubled ? UV_hud_ammo_clip_double : UV_hud_ammo_clip_full )
+					HUD_UV_COORDS( Sheet_Stencil, m_bLocalMarineClipsDoubled ? CRD_HUD_Sheets::UV_hud_ammo_clip_double : CRD_HUD_Sheets::UV_hud_ammo_clip_full )
 					);
 			}
 			else
@@ -943,7 +894,7 @@ void CASW_Hud_Master::PaintLocalMarinePortrait()
 							m_nMarinePortrait_y + m_nMarinePortrait_clips_y,
 							x + m_nMarinePortrait_clips_w,
 							m_nMarinePortrait_y + m_nMarinePortrait_clips_y + m_nMarinePortrait_clips_t,
-							HUD_UV_COORDS( Sheet_Stencil, m_bLocalMarineClipsDoubled ? UV_hud_ammo_clip_double : UV_hud_ammo_clip_full )
+							HUD_UV_COORDS( Sheet_Stencil, m_bLocalMarineClipsDoubled ? CRD_HUD_Sheets::UV_hud_ammo_clip_double : CRD_HUD_Sheets::UV_hud_ammo_clip_full )
 							);
 					}
 					else if ( m_nLocalMarineMaxClips > i )
@@ -954,7 +905,7 @@ void CASW_Hud_Master::PaintLocalMarinePortrait()
 							m_nMarinePortrait_y + m_nMarinePortrait_clips_y,
 							x + m_nMarinePortrait_clips_w,
 							m_nMarinePortrait_y + m_nMarinePortrait_clips_y + m_nMarinePortrait_clips_t,
-							HUD_UV_COORDS( Sheet_Stencil, UV_hud_ammo_clip_empty )
+							HUD_UV_COORDS( Sheet_Stencil, CRD_HUD_Sheets::UV_hud_ammo_clip_empty )
 							);
 					}
 				}
@@ -970,11 +921,11 @@ void CASW_Hud_Master::PaintSquadMemberStatus( int nPosition )
 
 	// background
 	surface()->DrawSetColor( 255, 255, 255, asw_hud_alpha.GetInt() );
-	surface()->DrawSetTexture( m_nSheet1ID );
+	surface()->DrawSetTexture( g_RD_HUD_Sheets.m_nSheet1ID );
 	surface()->DrawTexturedSubRect(
 		x + m_nSquadMate_bg_x, y + m_nSquadMate_bg_y,
 		x + m_nSquadMate_bg_x + m_nSquadMate_bg_w, y + m_nSquadMate_bg_y + m_nSquadMate_bg_t,
-		HUD_UV_COORDS( Sheet1, UV_team_portrait_BG )
+		HUD_UV_COORDS( Sheet1, CRD_HUD_Sheets::UV_team_portrait_BG )
 		);
 
 	// class icon/special status
@@ -995,23 +946,23 @@ void CASW_Hud_Master::PaintSquadMemberStatus( int nPosition )
 	float health_x2_progress = x + m_nSquadMate_health_x + m_nSquadMate_health_w * m_SquadMateInfo[ nPosition ].flHealthFraction;
 	float health_y2 = y + m_nSquadMate_health_y + m_nSquadMate_health_t;
 
-	vgui::Vertex_t health_bg_points[4] = 
-	{ 
-		vgui::Vertex_t( Vector2D(health_x, health_y),	Vector2D(m_Sheet1[ UV_team_health_bar_BG ].u, m_Sheet1[ UV_team_health_bar_BG ].v) ), 
-		vgui::Vertex_t( Vector2D(health_x2, health_y),	Vector2D(m_Sheet1[ UV_team_health_bar_BG ].s, m_Sheet1[ UV_team_health_bar_BG ].v) ), 
-		vgui::Vertex_t( Vector2D(health_x2, health_y2),	Vector2D(m_Sheet1[ UV_team_health_bar_BG ].s, m_Sheet1[ UV_team_health_bar_BG ].t) ), 
-		vgui::Vertex_t( Vector2D(health_x, health_y2),	Vector2D(m_Sheet1[ UV_team_health_bar_BG ].u, m_Sheet1[ UV_team_health_bar_BG ].t) )
-	}; 	
+	vgui::Vertex_t health_bg_points[4] =
+	{
+		vgui::Vertex_t( Vector2D(health_x, health_y),	Vector2D(g_RD_HUD_Sheets.m_Sheet1[ CRD_HUD_Sheets::UV_team_health_bar_BG ].u, g_RD_HUD_Sheets.m_Sheet1[ CRD_HUD_Sheets::UV_team_health_bar_BG ].v) ),
+		vgui::Vertex_t( Vector2D(health_x2, health_y),	Vector2D(g_RD_HUD_Sheets.m_Sheet1[ CRD_HUD_Sheets::UV_team_health_bar_BG ].s, g_RD_HUD_Sheets.m_Sheet1[ CRD_HUD_Sheets::UV_team_health_bar_BG ].v) ),
+		vgui::Vertex_t( Vector2D(health_x2, health_y2),	Vector2D(g_RD_HUD_Sheets.m_Sheet1[ CRD_HUD_Sheets::UV_team_health_bar_BG ].s, g_RD_HUD_Sheets.m_Sheet1[ CRD_HUD_Sheets::UV_team_health_bar_BG ].t) ),
+		vgui::Vertex_t( Vector2D(health_x, health_y2),	Vector2D(g_RD_HUD_Sheets.m_Sheet1[ CRD_HUD_Sheets::UV_team_health_bar_BG ].u, g_RD_HUD_Sheets.m_Sheet1[ CRD_HUD_Sheets::UV_team_health_bar_BG ].t) )
+	};
 	vgui::surface()->DrawTexturedPolygon( 4, health_bg_points );
 
-	float flHealth_UV_x2 = m_Sheet1[ UV_team_health_bar_FG ].u + (m_Sheet1[ UV_team_health_bar_FG ].s - m_Sheet1[ UV_team_health_bar_FG ].u ) * m_SquadMateInfo[ nPosition ].flHealthFraction;
-	vgui::Vertex_t health_fg_points[4] = 
-	{ 
-		vgui::Vertex_t( Vector2D(health_x, health_y),			Vector2D(m_Sheet1[ UV_team_health_bar_FG ].u, m_Sheet1[ UV_team_health_bar_FG ].v) ), 
-		vgui::Vertex_t( Vector2D(health_x2_progress, health_y),	Vector2D(flHealth_UV_x2, m_Sheet1[ UV_team_health_bar_FG ].v) ), 
-		vgui::Vertex_t( Vector2D(health_x2_progress, health_y2),Vector2D(flHealth_UV_x2, m_Sheet1[ UV_team_health_bar_FG ].t) ), 
-		vgui::Vertex_t( Vector2D(health_x, health_y2),			Vector2D(m_Sheet1[ UV_team_health_bar_FG ].u, m_Sheet1[ UV_team_health_bar_FG ].t) )
-	}; 
+	float flHealth_UV_x2 = g_RD_HUD_Sheets.m_Sheet1[CRD_HUD_Sheets::UV_team_health_bar_FG].u + ( g_RD_HUD_Sheets.m_Sheet1[CRD_HUD_Sheets::UV_team_health_bar_FG].s - g_RD_HUD_Sheets.m_Sheet1[CRD_HUD_Sheets::UV_team_health_bar_FG].u ) * m_SquadMateInfo[nPosition].flHealthFraction;
+	vgui::Vertex_t health_fg_points[4] =
+	{
+		vgui::Vertex_t( Vector2D(health_x, health_y),			Vector2D(g_RD_HUD_Sheets.m_Sheet1[ CRD_HUD_Sheets::UV_team_health_bar_FG ].u, g_RD_HUD_Sheets.m_Sheet1[ CRD_HUD_Sheets::UV_team_health_bar_FG ].v) ),
+		vgui::Vertex_t( Vector2D(health_x2_progress, health_y),	Vector2D(flHealth_UV_x2, g_RD_HUD_Sheets.m_Sheet1[ CRD_HUD_Sheets::UV_team_health_bar_FG ].v) ),
+		vgui::Vertex_t( Vector2D(health_x2_progress, health_y2),Vector2D(flHealth_UV_x2, g_RD_HUD_Sheets.m_Sheet1[ CRD_HUD_Sheets::UV_team_health_bar_FG ].t) ),
+		vgui::Vertex_t( Vector2D(health_x, health_y2),			Vector2D(g_RD_HUD_Sheets.m_Sheet1[ CRD_HUD_Sheets::UV_team_health_bar_FG ].u, g_RD_HUD_Sheets.m_Sheet1[ CRD_HUD_Sheets::UV_team_health_bar_FG ].t) )
+	};
 
 	vgui::surface()->DrawTexturedPolygon( 4, health_fg_points );
 
@@ -1021,22 +972,22 @@ void CASW_Hud_Master::PaintSquadMemberStatus( int nPosition )
 		flInfestStart = clamp<float>( flInfestStart, 0.0f, m_SquadMateInfo[ nPosition ].flHealthFraction );
 
 		float infest_start_x = x + m_nSquadMate_health_x + m_nSquadMate_health_w * flInfestStart;
-		float infest_start_UV_x = m_Sheet1[ UV_team_health_bar_FG_infested ].u + (m_Sheet1[ UV_team_health_bar_FG_infested ].s - m_Sheet1[ UV_team_health_bar_FG_infested ].u ) * flInfestStart;
-		float infest_end_UV_x = m_Sheet1[ UV_team_health_bar_FG_infested ].u + (m_Sheet1[ UV_team_health_bar_FG_infested ].s - m_Sheet1[ UV_team_health_bar_FG_infested ].u ) * m_SquadMateInfo[ nPosition ].flHealthFraction;
-		vgui::Vertex_t infest_fg_points[4] = 
-		{ 
-			vgui::Vertex_t( Vector2D(infest_start_x, health_y),			Vector2D(infest_start_UV_x, m_Sheet1[ UV_team_health_bar_FG_infested ].v) ), 
-			vgui::Vertex_t( Vector2D(health_x2_progress, health_y),	Vector2D(infest_end_UV_x, m_Sheet1[ UV_team_health_bar_FG_infested ].v) ), 
-			vgui::Vertex_t( Vector2D(health_x2_progress, health_y2),Vector2D(infest_end_UV_x, m_Sheet1[ UV_team_health_bar_FG_infested ].t) ), 
-			vgui::Vertex_t( Vector2D(infest_start_x, health_y2),			Vector2D(infest_start_UV_x, m_Sheet1[ UV_team_health_bar_FG_infested ].t) )
-		}; 
+		float infest_start_UV_x = g_RD_HUD_Sheets.m_Sheet1[CRD_HUD_Sheets::UV_team_health_bar_FG_infested].u + ( g_RD_HUD_Sheets.m_Sheet1[CRD_HUD_Sheets::UV_team_health_bar_FG_infested].s - g_RD_HUD_Sheets.m_Sheet1[CRD_HUD_Sheets::UV_team_health_bar_FG_infested].u ) * flInfestStart;
+		float infest_end_UV_x = g_RD_HUD_Sheets.m_Sheet1[CRD_HUD_Sheets::UV_team_health_bar_FG_infested].u + ( g_RD_HUD_Sheets.m_Sheet1[CRD_HUD_Sheets::UV_team_health_bar_FG_infested].s - g_RD_HUD_Sheets.m_Sheet1[CRD_HUD_Sheets::UV_team_health_bar_FG_infested].u ) * m_SquadMateInfo[nPosition].flHealthFraction;
+		vgui::Vertex_t infest_fg_points[4] =
+		{
+			vgui::Vertex_t( Vector2D( infest_start_x, health_y ),	Vector2D( infest_start_UV_x, g_RD_HUD_Sheets.m_Sheet1[CRD_HUD_Sheets::UV_team_health_bar_FG_infested].v ) ),
+			vgui::Vertex_t( Vector2D( health_x2_progress, health_y ),	Vector2D( infest_end_UV_x, g_RD_HUD_Sheets.m_Sheet1[CRD_HUD_Sheets::UV_team_health_bar_FG_infested].v ) ),
+			vgui::Vertex_t( Vector2D( health_x2_progress, health_y2 ),	Vector2D( infest_end_UV_x, g_RD_HUD_Sheets.m_Sheet1[CRD_HUD_Sheets::UV_team_health_bar_FG_infested].t ) ),
+			vgui::Vertex_t( Vector2D( infest_start_x, health_y2 ),	Vector2D( infest_start_UV_x, g_RD_HUD_Sheets.m_Sheet1[CRD_HUD_Sheets::UV_team_health_bar_FG_infested].t ) )
+		};
 		vgui::surface()->DrawTexturedPolygon( 4, infest_fg_points );
 	}
 
 	C_ASW_Weapon *pWeapon = m_SquadMateInfo[ nPosition ].pWeapon;
 	if ( pWeapon )
 	{
-		surface()->DrawSetTexture( m_nSheet_StencilID );
+		surface()->DrawSetTexture( g_RD_HUD_Sheets.m_nSheet_StencilID );
 		surface()->DrawSetColor( m_SquadMate_bullets_bg_color );
 
 		float bullets_x = x + m_nSquadMate_bullets_x;
@@ -1045,27 +996,27 @@ void CASW_Hud_Master::PaintSquadMemberStatus( int nPosition )
 		float bullets_x2_progress = x + m_nSquadMate_bullets_x + m_nSquadMate_bullets_w * m_SquadMateInfo[ nPosition ].flAmmoFraction;
 		float bullets_y2 = y + m_nSquadMate_bullets_y + m_nSquadMate_bullets_t;
 
-		vgui::Vertex_t bullets_bg_points[4] = 
-		{ 
-			vgui::Vertex_t( Vector2D(bullets_x, bullets_y),		Vector2D(m_Sheet_Stencil[ UV_team_ammo_bar ].u, m_Sheet_Stencil[ UV_team_ammo_bar ].v) ), 
-			vgui::Vertex_t( Vector2D(bullets_x2, bullets_y),	Vector2D(m_Sheet_Stencil[ UV_team_ammo_bar ].s, m_Sheet_Stencil[ UV_team_ammo_bar ].v) ), 
-			vgui::Vertex_t( Vector2D(bullets_x2, bullets_y2),	Vector2D(m_Sheet_Stencil[ UV_team_ammo_bar ].s, m_Sheet_Stencil[ UV_team_ammo_bar ].t) ), 
-			vgui::Vertex_t( Vector2D(bullets_x, bullets_y2),	Vector2D(m_Sheet_Stencil[ UV_team_ammo_bar ].u, m_Sheet_Stencil[ UV_team_ammo_bar ].t) )
-		}; 
+		vgui::Vertex_t bullets_bg_points[4] =
+		{
+			vgui::Vertex_t( Vector2D( bullets_x, bullets_y ),		Vector2D( g_RD_HUD_Sheets.m_Sheet_Stencil[CRD_HUD_Sheets::UV_team_ammo_bar].u, g_RD_HUD_Sheets.m_Sheet_Stencil[CRD_HUD_Sheets::UV_team_ammo_bar].v ) ),
+			vgui::Vertex_t( Vector2D( bullets_x2, bullets_y ),	Vector2D( g_RD_HUD_Sheets.m_Sheet_Stencil[CRD_HUD_Sheets::UV_team_ammo_bar].s, g_RD_HUD_Sheets.m_Sheet_Stencil[CRD_HUD_Sheets::UV_team_ammo_bar].v ) ),
+			vgui::Vertex_t( Vector2D( bullets_x2, bullets_y2 ),	Vector2D( g_RD_HUD_Sheets.m_Sheet_Stencil[CRD_HUD_Sheets::UV_team_ammo_bar].s, g_RD_HUD_Sheets.m_Sheet_Stencil[CRD_HUD_Sheets::UV_team_ammo_bar].t ) ),
+			vgui::Vertex_t( Vector2D( bullets_x, bullets_y2 ),	Vector2D( g_RD_HUD_Sheets.m_Sheet_Stencil[CRD_HUD_Sheets::UV_team_ammo_bar].u, g_RD_HUD_Sheets.m_Sheet_Stencil[CRD_HUD_Sheets::UV_team_ammo_bar].t ) )
+		};
 		vgui::surface()->DrawTexturedPolygon( 4, bullets_bg_points );
 
 		surface()->DrawSetColor( m_SquadMate_bullets_fg_color );
 
 		// TODO: Flash this after they fire
 		
-		float flUV_x2 = m_Sheet_Stencil[ UV_team_ammo_bar ].u + (m_Sheet_Stencil[ UV_team_ammo_bar ].s - m_Sheet_Stencil[ UV_team_ammo_bar ].u ) * m_SquadMateInfo[ nPosition ].flAmmoFraction;
-		vgui::Vertex_t bullets_points[4] = 
-		{ 
-			vgui::Vertex_t( Vector2D(bullets_x, bullets_y),		Vector2D(m_Sheet_Stencil[ UV_team_ammo_bar ].u, m_Sheet_Stencil[ UV_team_ammo_bar ].v) ), 
-			vgui::Vertex_t( Vector2D(bullets_x2_progress, bullets_y),	Vector2D(flUV_x2, m_Sheet_Stencil[ UV_team_ammo_bar ].v) ), 
-			vgui::Vertex_t( Vector2D(bullets_x2_progress, bullets_y2),	Vector2D(flUV_x2, m_Sheet_Stencil[ UV_team_ammo_bar ].t) ), 
-			vgui::Vertex_t( Vector2D(bullets_x, bullets_y2),	Vector2D(m_Sheet_Stencil[ UV_team_ammo_bar ].u, m_Sheet_Stencil[ UV_team_ammo_bar ].t) )
-		}; 
+		float flUV_x2 = g_RD_HUD_Sheets.m_Sheet_Stencil[CRD_HUD_Sheets::UV_team_ammo_bar].u + ( g_RD_HUD_Sheets.m_Sheet_Stencil[CRD_HUD_Sheets::UV_team_ammo_bar].s - g_RD_HUD_Sheets.m_Sheet_Stencil[CRD_HUD_Sheets::UV_team_ammo_bar].u ) * m_SquadMateInfo[nPosition].flAmmoFraction;
+		vgui::Vertex_t bullets_points[4] =
+		{
+			vgui::Vertex_t( Vector2D( bullets_x, bullets_y ),	Vector2D( g_RD_HUD_Sheets.m_Sheet_Stencil[CRD_HUD_Sheets::UV_team_ammo_bar].u, g_RD_HUD_Sheets.m_Sheet_Stencil[CRD_HUD_Sheets::UV_team_ammo_bar].v ) ),
+			vgui::Vertex_t( Vector2D( bullets_x2_progress, bullets_y ),	Vector2D( flUV_x2, g_RD_HUD_Sheets.m_Sheet_Stencil[CRD_HUD_Sheets::UV_team_ammo_bar].v ) ),
+			vgui::Vertex_t( Vector2D( bullets_x2_progress, bullets_y2 ),	Vector2D( flUV_x2, g_RD_HUD_Sheets.m_Sheet_Stencil[CRD_HUD_Sheets::UV_team_ammo_bar].t ) ),
+			vgui::Vertex_t( Vector2D( bullets_x, bullets_y2 ),	Vector2D( g_RD_HUD_Sheets.m_Sheet_Stencil[CRD_HUD_Sheets::UV_team_ammo_bar].u, g_RD_HUD_Sheets.m_Sheet_Stencil[CRD_HUD_Sheets::UV_team_ammo_bar].t ) )
+		};
 
 		vgui::surface()->DrawTexturedPolygon( 4, bullets_points );
 
@@ -1078,7 +1029,7 @@ void CASW_Hud_Master::PaintSquadMemberStatus( int nPosition )
 				y + m_nSquadMate_clips_y,
 				x + m_nSquadMate_clips_x + m_nSquadMate_clips_w,
 				y + m_nSquadMate_clips_y + m_nSquadMate_clips_t,
-				HUD_UV_COORDS( Sheet_Stencil, m_SquadMateInfo[ nPosition ].bClipsDoubled ? UV_hud_ammo_clip_double : UV_hud_ammo_clip_full )
+				HUD_UV_COORDS( Sheet_Stencil, m_SquadMateInfo[ nPosition ].bClipsDoubled ? CRD_HUD_Sheets::UV_hud_ammo_clip_double : CRD_HUD_Sheets::UV_hud_ammo_clip_full )
 				);
 		}
 		else
@@ -1095,7 +1046,7 @@ void CASW_Hud_Master::PaintSquadMemberStatus( int nPosition )
 						y + m_nSquadMate_clips_y,
 						clip_x + m_nSquadMate_clips_w,
 						y + m_nSquadMate_clips_y + m_nSquadMate_clips_t,
-						HUD_UV_COORDS( Sheet_Stencil, m_SquadMateInfo[ nPosition ].bClipsDoubled ? UV_hud_ammo_clip_double : UV_hud_ammo_clip_full )
+						HUD_UV_COORDS( Sheet_Stencil, m_SquadMateInfo[ nPosition ].bClipsDoubled ? CRD_HUD_Sheets::UV_hud_ammo_clip_double : CRD_HUD_Sheets::UV_hud_ammo_clip_full )
 					);
 				}
 				else if ( m_SquadMateInfo[ nPosition ].nMaxClips > i )
@@ -1106,7 +1057,7 @@ void CASW_Hud_Master::PaintSquadMemberStatus( int nPosition )
 						y + m_nSquadMate_clips_y,
 						clip_x + m_nSquadMate_clips_w,
 						y + m_nSquadMate_clips_y + m_nSquadMate_clips_t,
-						HUD_UV_COORDS( Sheet_Stencil, UV_hud_ammo_clip_empty )
+						HUD_UV_COORDS( Sheet_Stencil, CRD_HUD_Sheets::UV_hud_ammo_clip_empty )
 						);
 				}
 			}
@@ -1133,7 +1084,7 @@ void CASW_Hud_Master::PaintLocalMarineInventory()
 			{
 				surface()->DrawSetColor( 66, 142, 192, 255 );		// light blue
 			}
-			surface()->DrawSetTexture( g_ASWEquipmentList.GetEquipIconTexture( i != ASW_INVENTORY_SLOT_EXTRA, pWeapon->GetEquipmentListIndex() ) );
+			surface()->DrawSetTexture( pWeapon->GetUseIconTextureID() );
 			int x = YRES( pInfo->m_iHUDIconOffsetX );
 			int y = YRES( pInfo->m_iHUDIconOffsetY );
 			int w = m_nWeapon_w;
@@ -1534,13 +1485,13 @@ void CASW_Hud_Master::PaintText()
 		if ( m_pLocalMarine->IsAlive() )
 		{
 			surface()->DrawSetColor( m_MarinePortrait_health_counter_color );
-			surface()->DrawSetTexture( m_nSheet1ID );
+			surface()->DrawSetTexture( g_RD_HUD_Sheets.m_nSheet1ID );
 			surface()->DrawTexturedSubRect(
 					m_nMarinePortrait_x + m_nMarinePortrait_health_counter_icon_x,
 					m_nMarinePortrait_y + m_nMarinePortrait_health_counter_icon_y,
 					m_nMarinePortrait_x + m_nMarinePortrait_health_counter_icon_x + m_nMarinePortrait_health_counter_icon_w,
 					m_nMarinePortrait_y + m_nMarinePortrait_health_counter_icon_y + m_nMarinePortrait_health_counter_icon_t,
-					HUD_UV_COORDS( Sheet1, UV_hud_ammo_heal )
+					HUD_UV_COORDS( Sheet1, CRD_HUD_Sheets::UV_hud_ammo_heal )
 					);
 
 			wchar_t wszHealth[ 6 ];
@@ -1946,10 +1897,10 @@ bool CASW_Hud_Master::ShouldDraw()
 
 const HudSheetTexture_t* CASW_Hud_Master::GetDeadIconUVs()
 {
-	return &m_Sheet1[ UV_DeadIcon ];
+	return &g_RD_HUD_Sheets.m_Sheet1[CRD_HUD_Sheets::UV_DeadIcon];
 }
 
 int CASW_Hud_Master::GetDeadIconTextureID()
 {
-	return m_nSheet1ID;
+	return g_RD_HUD_Sheets.m_nSheet1ID;
 }

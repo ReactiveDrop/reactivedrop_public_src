@@ -44,7 +44,7 @@
 extern ConVar asw_draw_hud;
 extern ConVar asw_hud_scale;
 extern ConVar asw_hotbar_self;
-ConVar asw_debug_hud( "asw_debug_hud", "0", FCVAR_ARCHIVE, "Draw debug info for the HUD" );
+ConVar asw_debug_hud( "asw_debug_hud", "0", FCVAR_NONE, "Draw debug info for the HUD" );
 ConVar asw_hud_swaps( "asw_hud_swaps", "1", FCVAR_NONE, "Show weapon swap icons on the HUD" );
 
 using namespace vgui;

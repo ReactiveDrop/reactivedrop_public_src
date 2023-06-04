@@ -27,9 +27,10 @@ WeaponData
 	"reload_time"			"1.3"
 	"fire_rate"				"0.07"
 	"equipicon"			"swarm/EquipIcons/EquipRailgun"
-	"equiplongname"			"#asw_weapon_ricochet"
+	"equiplongname"			"#asw_weaponl_ricochet"
 	"equipdescription1"		"#asw_wdesc_ricochet"
-	"altfiretext"		"#asw_weapon_ricochet_attributes"
+	"altfiretext"		"#asw_weapon_ricochet_altfire"
+	"attributestext"		"#asw_weapon_ricochet_attributes"
 	
 	// flinching
 	"FlinchChance"              "0.20"

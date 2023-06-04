@@ -17,14 +17,13 @@ class CSoundPatch;
 struct TrackInfo_t
 {
 	TrackInfo_t();
-	TrackInfo_t( const char *szFilename, const char *szHexname, const char *szAlbum, const char *szArtist, const char *szGenre );
+	TrackInfo_t( const wchar_t *wszTrackName, const char *szHexname, const wchar_t *wszAlbum, const wchar_t *wszArtist );
 
-	string_t	m_szHexname;
-	string_t	m_szFilename;
-	string_t	m_szAlbum;
-	string_t	m_szArtist;
-	string_t	m_szGenre;
-	bool		m_bIsMarkedForDeletion;
+	char	m_szHexname[9]{};
+	wchar_t	m_wszTrackName[256]{};
+	wchar_t	m_wszAlbum[256]{};
+	wchar_t	m_wszArtist[256]{};
+	bool	m_bIsMarkedForDeletion{ false };
 
 	bool	operator==( const TrackInfo_t& rhs ) const;
 	void	PrepareKVForListView( KeyValues *kv );
@@ -38,7 +37,7 @@ struct ID3Info_t;
 class CASWJukeboxPlaylist : public CGameEventListener, public CAutoGameSystem
 {
 public:
-	void AddMusicToPlaylist( const char *szFilename, const char *szHexname, const char *szAlbum, const char *szArtist, const char *szGenre );
+	void AddMusicToPlaylist( const wchar_t *wszTrackName, const char *szHexname, const wchar_t *wszAlbum, const wchar_t *wszArtist );
 	void MarkTrackForDeletion( int index );
 
 	// CAutoGameSystem methods
@@ -51,10 +50,9 @@ public:
 	virtual void FireGameEvent( IGameEvent *event );
 	void StopTrack( bool immediate = true, float fadeOutTime = 1.0f );
 	void SavePlaylist( void );
-	const char *GetTrackName( int index );
-	const char *GetTrackArtist( int index );
-	const char *GetTrackAlbum( int index );
-	const char *GetTrackGenre( int index );
+	const wchar_t *GetTrackName( int index );
+	const wchar_t *GetTrackArtist( int index );
+	const wchar_t *GetTrackAlbum( int index );
 	void PrepareTrackKV( int index, KeyValues *pKV );
 	int GetTrackCount( void );
 	void Cleanup( void );
@@ -65,12 +63,15 @@ private:
 	void RemoveMusicFromPlaylist( const char* szHexnameToRemove );
 	void LoadPlaylistKV( void );
 	void ExportPlayistKV( void );
-	void PlayRandomTrack( float fadeInTime = 1.0f, const char *szDefaultTrack = null );
+	void PlayRandomTrack( float fadeInTime = 1.0f, const char *szDefaultTrack = NULL, const char *szTrackName = NULL, const char *szAlbumName = NULL, const char *szArtistName = NULL );
 
 	typedef CUtlVector< TrackInfo_t > TrackList_t;
 	TrackList_t		m_CombatMusicPlaylist;
-	CSoundPatch		*m_pCombatMusic; // The current combat music that's playing
-	int				m_iCurrentTrack; // The index of the current track being played
+	CSoundPatch		*m_pCombatMusic{}; // The current combat music that's playing
+	int				m_iCurrentTrack{ -1 }; // The index of the current track being played
+	wchar_t			m_wszTrackName[256]{};
+	wchar_t			m_wszAlbumName[256]{};
+	wchar_t			m_wszArtistName[256]{};
 };
 
 extern CASWJukeboxPlaylist g_ASWJukebox;

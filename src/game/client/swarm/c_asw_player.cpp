@@ -18,6 +18,7 @@
 #include "prediction.h"
 #include "c_env_ambient_light.h"
 #include "game_timescale_shared.h"
+#include "fmtstr.h"
 
 // effects
 #include "ivieweffects.h"
@@ -47,7 +48,6 @@
 #include "asw_hud_chat.h"
 #include "PlayerListPanel.h"
 #include "asw_vgui_frame.h"
-#include "MedalCollectionPanel.h"
 #include "CreditsPanel.h"
 #include "CainMailPanel.h"
 #include "asw_vgui_skip_intro.h"
@@ -95,6 +95,8 @@
 #include "missionchooser/iasw_mission_chooser.h"
 #include "missionchooser/iasw_random_missions.h"
 #include "rd_rich_presence.h"
+#include "inetchannel.h"
+#include <ctime>
 
 #if defined( CASW_Player )
 #undef CASW_Player
@@ -124,33 +126,13 @@ ConVar asw_marine_switch_blend_speed( "asw_marine_switch_blend_speed", "2.5", 0,
 ConVar asw_marine_switch_blend_max_dist( "asw_marine_switch_blend_max_dist", "1500", 0, "Maximum distance apart marines can be for a camera blend to occur" );
 
 // default inventory convars
-ConVar asw_default_primary_0( "asw_default_primary_0", "-1", FCVAR_ARCHIVE, "Default primary equip for marine with this number" );
-ConVar asw_default_secondary_0( "asw_default_secondary_0", "-1", FCVAR_ARCHIVE, "Default secondary equip for marine with this number" );
-ConVar asw_default_extra_0( "asw_default_extra_0", "-1", FCVAR_ARCHIVE, "Default extra equip for marine with this number" );
-ConVar asw_default_primary_1( "asw_default_primary_1", "-1", FCVAR_ARCHIVE, "Default primary equip for marine with this number" );
-ConVar asw_default_secondary_1( "asw_default_secondary_1", "-1", FCVAR_ARCHIVE, "Default secondary equip for marine with this number" );
-ConVar asw_default_extra_1( "asw_default_extra_1", "-1", FCVAR_ARCHIVE, "Default extra equip for marine with this number" );
-ConVar asw_default_primary_2( "asw_default_primary_2", "-1", FCVAR_ARCHIVE, "Default primary equip for marine with this number" );
-ConVar asw_default_secondary_2( "asw_default_secondary_2", "-1", FCVAR_ARCHIVE, "Default secondary equip for marine with this number" );
-ConVar asw_default_extra_2( "asw_default_extra_2", "-1", FCVAR_ARCHIVE, "Default extra equip for marine with this number" );
-ConVar asw_default_primary_3( "asw_default_primary_3", "-1", FCVAR_ARCHIVE, "Default primary equip for marine with this number" );
-ConVar asw_default_secondary_3( "asw_default_secondary_3", "-1", FCVAR_ARCHIVE, "Default secondary equip for marine with this number" );
-ConVar asw_default_extra_3( "asw_default_extra_3", "-1", FCVAR_ARCHIVE, "Default extra equip for marine with this number" );
-ConVar asw_default_primary_4( "asw_default_primary_4", "-1", FCVAR_ARCHIVE, "Default primary equip for marine with this number" );
-ConVar asw_default_secondary_4( "asw_default_secondary_4", "-1", FCVAR_ARCHIVE, "Default secondary equip for marine with this number" );
-ConVar asw_default_extra_4( "asw_default_extra_4", "-1", FCVAR_ARCHIVE, "Default extra equip for marine with this number" );
-ConVar asw_default_primary_5( "asw_default_primary_5", "-1", FCVAR_ARCHIVE, "Default primary equip for marine with this number" );
-ConVar asw_default_secondary_5( "asw_default_secondary_5", "-1", FCVAR_ARCHIVE, "Default secondary equip for marine with this number" );
-ConVar asw_default_extra_5( "asw_default_extra_5", "-1", FCVAR_ARCHIVE, "Default extra equip for marine with this number" );
-ConVar asw_default_primary_6( "asw_default_primary_6", "-1", FCVAR_ARCHIVE, "Default primary equip for marine with this number" );
-ConVar asw_default_secondary_6( "asw_default_secondary_6", "-1", FCVAR_ARCHIVE, "Default secondary equip for marine with this number" );
-ConVar asw_default_extra_6( "asw_default_extra_6", "-1", FCVAR_ARCHIVE, "Default extra equip for marine with this number" );
-ConVar asw_default_primary_7( "asw_default_primary_7", "-1", FCVAR_ARCHIVE, "Default primary equip for marine with this number" );
-ConVar asw_default_secondary_7( "asw_default_secondary_7", "-1", FCVAR_ARCHIVE, "Default secondary equip for marine with this number" );
-ConVar asw_default_extra_7( "asw_default_extra_7", "-1", FCVAR_ARCHIVE, "Default extra equip for marine with this number" );
-ConVar asw_default_primary_8( "asw_default_primary_8", "-1", FCVAR_ARCHIVE, "Default primary equip for marine with this number" );
-ConVar asw_default_secondary_8( "asw_default_secondary_8", "-1", FCVAR_ARCHIVE, "Default secondary equip for marine with this number" );
-ConVar asw_default_extra_8( "asw_default_extra_8", "-1", FCVAR_ARCHIVE, "Default extra equip for marine with this number" );
+extern ConVar asw_default_primary[ASW_NUM_MARINE_PROFILES + 1];
+extern ConVar asw_default_secondary[ASW_NUM_MARINE_PROFILES + 1];
+extern ConVar asw_default_extra[ASW_NUM_MARINE_PROFILES + 1];
+extern ConVar rd_equipped_weapon_primary[ASW_NUM_MARINE_PROFILES];
+extern ConVar rd_equipped_weapon_secondary[ASW_NUM_MARINE_PROFILES];
+extern ConVar rd_equipped_weapon_extra[ASW_NUM_MARINE_PROFILES];
+extern ConVar rd_loadout_auto_update;
 
 ConVar asw_particle_count( "asw_particle_count", "0", 0, "Shows how many particles are being drawn" );
 ConVar asw_dlight_list( "asw_dlight_list", "0", 0, "Lists dynamic lights" );
@@ -159,17 +141,7 @@ ConVar asw_stim_music( "asw_stim_music", "", FCVAR_ARCHIVE, "Custom music file u
 ConVar asw_player_avoidance_force( "asw_player_avoidance_force", "1024", FCVAR_CHEAT, "Marine avoidance separation force." );
 ConVar asw_player_avoidance_bounce( "asw_player_avoidance_bounce", "1.0", FCVAR_CHEAT, "Marine avoidance bounce." );
 ConVar asw_player_avoidance_fakehull( "asw_player_avoidance_fakehull", "25.0", FCVAR_CHEAT, "Marine avoidance hull size." );
-
-ConVar asw_roster_select_bypass_steam( "asw_roster_select_bypass_steam", "0", FCVAR_CHEAT, "Bypass checking if data has been downloaded from steam when selecting a Marine." );
-
-void fnAutoReloadChangedCallback( IConVar *var, const char *pOldString, float flOldValue )
-{
-	if ( engine->IsInGame() )
-	{
-		engine->ClientCmd( VarArgs( "cl_autoreload %d\n", ( ( ConVar * )var )->GetInt() ) );
-	}
-}
-ConVar asw_auto_reload( "asw_auto_reload", "1", FCVAR_ARCHIVE, "Whether your marines should autoreload when reaching 0 bullets", true, 0, true, 1, fnAutoReloadChangedCallback );
+ConVar asw_auto_reload( "asw_auto_reload", "1", FCVAR_ARCHIVE | FCVAR_USERINFO, "Whether your marines should autoreload when reaching 0 bullets", true, 0, true, 1 );
 
 ConVar asw_turret_fog_start( "asw_turret_fog_start", "900", 0, "Fog start distance for turret view" );
 ConVar asw_turret_fog_end( "asw_turret_fog_end", "1200", 0, "Fog end distance for turret view" );
@@ -499,14 +471,14 @@ void C_ASW_Player::StopUsing()
 {
 	char buffer[64];
 	Q_snprintf( buffer, sizeof( buffer ), "cl_stopusing" );
-	engine->ClientCmd( buffer );
+	engine->ServerCmd( buffer );
 }
 
 void C_ASW_Player::SelectHackOption( int iHackOption )
 {
 	char buffer[64];
 	Q_snprintf( buffer, sizeof( buffer ), "cl_selecthack %d", iHackOption );
-	engine->ClientCmd( buffer );
+	engine->ServerCmd( buffer );
 }
 
 void C_ASW_Player::SelectTumbler( int iTumblerImpulse )
@@ -518,63 +490,51 @@ void C_ASW_Player::SelectTumbler( int iTumblerImpulse )
 
 void C_ASW_Player::SendRosterSelectCommand( const char *command, int i, int nPreferredSlot )
 {
-	//if ( m_bPendingSteamStats && !asw_roster_select_bypass_steam.GetBool() && ( gpGlobals->curtime - m_flPendingSteamStatsStart ) < 2.0f )
-		//return;
-
 	char buffer[64];
 	if ( i >= 0 && i < ASW_NUM_MARINE_PROFILES )
 	{
 		// grab default inventory numbers
-		char primarybuf[24];
-		char secondarybuf[26];
-		char extrabuf[24];
-		Q_snprintf( primarybuf, sizeof( primarybuf ), "asw_default_primary_%d", i );
-		Q_snprintf( secondarybuf, sizeof( secondarybuf ), "asw_default_secondary_%d", i );
-		Q_snprintf( extrabuf, sizeof( extrabuf ), "asw_default_extra_%d", i );
-		int default_primary = -1;
-		int default_secondary = -1;
-		int default_extra = -1;
-		ConVar *pCVar = cvar->FindVar( primarybuf );
-		if ( pCVar )
-			default_primary = pCVar->GetInt();
-		pCVar = cvar->FindVar( secondarybuf );
-		if ( pCVar )
-			default_secondary = pCVar->GetInt();
-		pCVar = cvar->FindVar( extrabuf );
-		if ( pCVar )
-			default_extra = pCVar->GetInt();
+		int iPrimary = asw_default_primary[i].GetInt();
+		int iSecondary = asw_default_secondary[i].GetInt();
+		int iExtra = asw_default_extra[i].GetInt();
 
-		CASW_EquipItem *pPrimary = g_ASWEquipmentList.GetRegular( default_primary );
+		CASW_EquipItem *pPrimary = g_ASWEquipmentList.GetRegular( iPrimary );
 		if ( pPrimary )
 		{
 			if ( !IsWeaponUnlocked( pPrimary->m_szEquipClass ) )
 			{
-				default_primary = ASW_EQUIP_RIFLE;
+				iPrimary = ASW_EQUIP_RIFLE;
 			}
 		}
-		CASW_EquipItem *pSecondary = g_ASWEquipmentList.GetRegular( default_secondary );
+		CASW_EquipItem *pSecondary = g_ASWEquipmentList.GetRegular( iSecondary );
 		if ( pSecondary )
 		{
 			if ( !IsWeaponUnlocked( pSecondary->m_szEquipClass ) )
 			{
-				default_secondary = ASW_EQUIP_RIFLE;
+				iSecondary = ASW_EQUIP_RIFLE;
 			}
 		}
-		CASW_EquipItem *pExtra = g_ASWEquipmentList.GetExtra( default_extra );
+		CASW_EquipItem *pExtra = g_ASWEquipmentList.GetExtra( iExtra );
 		if ( pExtra )
 		{
 			if ( !IsWeaponUnlocked( pExtra->m_szEquipClass ) )
 			{
-				default_extra = ASW_EQUIP_MEDKIT;
+				iExtra = ASW_EQUIP_MEDKIT;
 			}
 		}
-		Q_snprintf( buffer, sizeof( buffer ), "%s %d %d %d %d %d", command, i, nPreferredSlot, default_primary, default_secondary, default_extra );
 
+		int iAllocatedSlot0 = ReactiveDropInventory::AllocateDynamicItemSlot( GetSplitScreenPlayerSlot(), strtoull( rd_equipped_weapon_primary[i].GetString(), NULL, 10 ), i, ASW_INVENTORY_SLOT_PRIMARY );
+		int iAllocatedSlot1 = ReactiveDropInventory::AllocateDynamicItemSlot( GetSplitScreenPlayerSlot(), strtoull( rd_equipped_weapon_secondary[i].GetString(), NULL, 10 ), i, ASW_INVENTORY_SLOT_SECONDARY );
+		int iAllocatedSlot2 = ReactiveDropInventory::AllocateDynamicItemSlot( GetSplitScreenPlayerSlot(), strtoull( rd_equipped_weapon_extra[i].GetString(), NULL, 10 ), i, ASW_INVENTORY_SLOT_EXTRA );
+
+		V_snprintf( buffer, sizeof( buffer ), "%s %d %d %d %d %d %d %d %d", command, i, nPreferredSlot, iPrimary, iSecondary, iExtra, iAllocatedSlot0, iAllocatedSlot1, iAllocatedSlot2 );
 		engine->ServerCmd( buffer );
+
+		ReactiveDropInventory::ResendDynamicEquipNotification( GetSplitScreenPlayerSlot() );
 	}
 	else
 	{
-		Q_snprintf( buffer, sizeof( buffer ), "%s %d %d", command, i, nPreferredSlot );
+		V_snprintf( buffer, sizeof( buffer ), "%s %d %d", command, i, nPreferredSlot );
 		engine->ServerCmd( buffer );
 	}
 }
@@ -597,8 +557,8 @@ void C_ASW_Player::RosterSelectMarineForSlot( int i, int nPreferredSlot )
 void C_ASW_Player::RosterDeselectMarine( int iProfileIndex )
 {
 	char buffer[64];
-	Q_snprintf( buffer, sizeof( buffer ), "cl_dselectm %d", iProfileIndex );
-	engine->ClientCmd( buffer );
+	V_snprintf( buffer, sizeof( buffer ), "cl_dselectm %d", iProfileIndex );
+	engine->ServerCmd( buffer );
 }
 
 void C_ASW_Player::RosterSpendSkillPoint( int iProfileIndex, int nSkillSlot )
@@ -623,10 +583,10 @@ void C_ASW_Player::RosterSpendSkillPoint( int iProfileIndex, int nSkillSlot )
 	char buffer[64];
 	Q_snprintf( buffer, sizeof( buffer ), "cl_spendskill %d %d", iProfileIndex, nSkillSlot );
 	//Msg("Sending command %s\n", buffer);
-	engine->ClientCmd( buffer );
+	engine->ServerCmd( buffer );
 }
 
-void C_ASW_Player::LoadoutSelectEquip( int iMarineIndex, int iInvSlot, int iEquipIndex )
+void C_ASW_Player::LoadoutSelectEquip( int iMarineIndex, int iInvSlot, int iEquipIndex, SteamItemInstanceID_t iItemInstanceID )
 {
 	CASW_EquipItem *pWeapon = g_ASWEquipmentList.GetItemForSlot( iInvSlot, iEquipIndex );
 	if ( pWeapon )
@@ -645,7 +605,7 @@ void C_ASW_Player::LoadoutSelectEquip( int iMarineIndex, int iInvSlot, int iEqui
 	}
 
 	int iProfileIndex = -1;
-	if ( ASWGameResource() )
+	if ( ASWGameResource() && rd_loadout_auto_update.GetBool() )
 	{
 		C_ASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( iMarineIndex );
 		if ( pMR )
@@ -654,18 +614,27 @@ void C_ASW_Player::LoadoutSelectEquip( int iMarineIndex, int iInvSlot, int iEqui
 			iProfileIndex = pMR->GetProfileIndex();
 			if ( iProfileIndex >= 0 && iProfileIndex < ASW_NUM_MARINE_PROFILES && iInvSlot >= 0 && iInvSlot <= 2 )
 			{
-				char buffer[32];
+				ConVar *pEquipIndex = NULL, *pItemInstanceID = NULL;
 				if ( iInvSlot == 0 )
-					Q_snprintf( buffer, sizeof( buffer ), "asw_default_primary_%d", iProfileIndex );
-				else if ( iInvSlot == 1 )
-					Q_snprintf( buffer, sizeof( buffer ), "asw_default_secondary_%d", iProfileIndex );
-				else if ( iInvSlot == 2 )
-					Q_snprintf( buffer, sizeof( buffer ), "asw_default_extra_%d", iProfileIndex );
-				ConVar *pCVar = cvar->FindVar( buffer );
-				if ( pCVar )
 				{
-					pCVar->SetValue( iEquipIndex );
+					pEquipIndex = &asw_default_primary[iProfileIndex];
+					pItemInstanceID = &rd_equipped_weapon_primary[iProfileIndex];
 				}
+				else if ( iInvSlot == 1 )
+				{
+					pEquipIndex = &asw_default_secondary[iProfileIndex];
+					pItemInstanceID = &rd_equipped_weapon_secondary[iProfileIndex];
+				}
+				else
+				{
+					pEquipIndex = &asw_default_extra[iProfileIndex];
+					pItemInstanceID = &rd_equipped_weapon_extra[iProfileIndex];
+				}
+
+				char szItemInstanceID[32];
+				V_snprintf( szItemInstanceID, sizeof( szItemInstanceID ), "%llu", iItemInstanceID );
+				pEquipIndex->SetValue( iEquipIndex );
+				pItemInstanceID->SetValue( szItemInstanceID );
 
 				if ( ASWGameRules() )
 				{
@@ -674,11 +643,16 @@ void C_ASW_Player::LoadoutSelectEquip( int iMarineIndex, int iInvSlot, int iEqui
 			}
 		}
 	}
+
 	if ( iProfileIndex != -1 )
 	{
+		int iAllocatedDynamicSlot = ReactiveDropInventory::AllocateDynamicItemSlot( GetSplitScreenPlayerSlot(), iItemInstanceID, iProfileIndex, iInvSlot );
+
 		char buffer[64];
-		Q_snprintf( buffer, sizeof( buffer ), "cl_loadout %d %d %d", iProfileIndex, iInvSlot, iEquipIndex );
-		engine->ClientCmd( buffer );
+		Q_snprintf( buffer, sizeof( buffer ), "cl_loadout %d %d %d %d", iProfileIndex, iInvSlot, iEquipIndex, iAllocatedDynamicSlot );
+		engine->ServerCmd( buffer );
+
+		ReactiveDropInventory::ResendDynamicEquipNotification( GetSplitScreenPlayerSlot() );
 	}
 }
 
@@ -687,103 +661,35 @@ void C_ASW_Player::LoadoutSendStored( C_ASW_Marine_Resource *pMR )
 	if ( !pMR )
 		return;
 
-	C_ASW_Game_Resource *pGameResource = ASWGameResource();
-	if ( !pGameResource )
-		return;
-
-	// find our index in the list of marine infos
-	int iMarineResourceIndex = -1;
-	for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
-	{
-		C_ASW_Marine_Resource *pOtherResource = pGameResource->GetMarineResource( i );
-		if ( pOtherResource == pMR )
-		{
-			iMarineResourceIndex = i;
-			break;
-		}
-	}
-
-	if ( iMarineResourceIndex == -1 )
-		return;
-
-	int iRosterIndex = pMR->m_MarineProfileIndex;
-
-	int iPrimary = -1;
-	int iSecondary = -1;
-	int iExtra = -1;
-	ConVar *pCVar = NULL;
-	char buffer[32];
-	Q_snprintf( buffer, sizeof( buffer ), "asw_default_primary_%d", iRosterIndex );
-	pCVar = cvar->FindVar( buffer );
-	if ( pCVar )
-		iPrimary = pCVar->GetInt();
-
-	Q_snprintf( buffer, sizeof( buffer ), "asw_default_secondary_%d", iRosterIndex );
-	pCVar = cvar->FindVar( buffer );
-	if ( pCVar )
-		iSecondary = pCVar->GetInt();
-
-	Q_snprintf( buffer, sizeof( buffer ), "asw_default_extra_%d", iRosterIndex );
-	pCVar = cvar->FindVar( buffer );
-	if ( pCVar )
-		iExtra = pCVar->GetInt();
-
-	CASW_EquipItem *pPrimary = g_ASWEquipmentList.GetRegular( iPrimary );
-	if ( pPrimary )
-	{
-		if ( !IsWeaponUnlocked( pPrimary->m_szEquipClass ) )
-		{
-			iPrimary = ASW_EQUIP_RIFLE;
-		}
-	}
-	CASW_EquipItem *pSecondary = g_ASWEquipmentList.GetRegular( iSecondary );
-	if ( pSecondary )
-	{
-		if ( !IsWeaponUnlocked( pSecondary->m_szEquipClass ) )
-		{
-			iSecondary = ASW_EQUIP_RIFLE;
-		}
-	}
-	CASW_EquipItem *pExtra = g_ASWEquipmentList.GetExtra( iExtra );
-	if ( pExtra )
-	{
-		if ( !IsWeaponUnlocked( pExtra->m_szEquipClass ) )
-		{
-			iExtra = ASW_EQUIP_MEDKIT;
-		}
-	}
-
-	char mbuffer[64];
-	Q_snprintf( mbuffer, sizeof( mbuffer ), "cl_loadouta %d %d %d %d", iRosterIndex, iPrimary, iSecondary, iExtra );
-	engine->ClientCmd( mbuffer );
+	SendRosterSelectCommand( "cl_loadouta", pMR->GetProfileIndex() );
 }
 
 void C_ASW_Player::StartReady()
 {
 	// todo: if we're not the leader, do a cl_ready
 	if ( ASWGameResource() && ASWGameResource()->GetLeader() == this )
-		engine->ClientCmd( "cl_start" );
+		engine->ServerCmd( "cl_start" );
 	else
-		engine->ClientCmd( "cl_ready" );
+		engine->ServerCmd( "cl_ready" );
 }
 
 void C_ASW_Player::CampaignSaveAndShow()
 {
-	engine->ClientCmd( "cl_campaignsas" );
+	engine->ServerCmd( "cl_campaignsas" );
 }
 
 void C_ASW_Player::NextCampaignMission( int iTargetMission )
 {
 	char buffer[64];
 	Q_snprintf( buffer, sizeof( buffer ), "cl_campaignnext %d", iTargetMission );
-	engine->ClientCmd( buffer );
+	engine->ServerCmd( buffer );
 }
 
 void C_ASW_Player::CampaignLaunchMission( int iTargetMission )
 {
 	char buffer[64];
 	Q_snprintf( buffer, sizeof( buffer ), "cl_campaignlaunch %d", iTargetMission );
-	engine->ClientCmd( buffer );
+	engine->ServerCmd( buffer );
 }
 
 bool C_ASW_Player::ShouldDraw()			// we don't draw the player at all (only the npc's that he's remote controlling)
@@ -815,7 +721,7 @@ void C_ASW_Player::ActivateInventoryItem( int slot )
 	{
 		char buffer[64];
 		Q_snprintf( buffer, sizeof( buffer ), "cl_offhand %d", slot );
-		engine->ClientCmd( buffer );
+		engine->ServerCmd( buffer );
 
 		// and predict it?
 		if ( prediction->InPrediction() && pWeapon->IsPredicted() )
@@ -1323,6 +1229,20 @@ void C_ASW_Player::ClientThink()
 	{
 		UpdateRoomDetails();
 	}
+
+	INetChannel *pNetChannel = assert_cast< INetChannel * >( engine->GetNetChannelInfo() );
+	Assert( pNetChannel && !pNetChannel->IsOverflowed() );
+	if ( pNetChannel && pNetChannel->IsOverflowed() )
+	{
+		// dump the start of the buffer that was too big to store to disk
+		CUtlMemory<byte> *pReliableBuffer = reinterpret_cast< CUtlMemory<byte> * >( &pNetChannel[14] );
+		CUtlBuffer buf{ pReliableBuffer->Base(), pReliableBuffer->Count(), CUtlBuffer::READ_ONLY };
+		CFmtStr szErrorFileName{ "../net_channel_overflow_%s_%u.ndmp", engine->GetLevelNameShort(), std::time( NULL ) };
+		g_pFullFileSystem->WriteFile( szErrorFileName, "MOD", buf );
+
+		// disconnect instead of soft-locking
+		pNetChannel->Shutdown( "Client reliable send channel overflowed!" );
+	}
 }
 
 void ForceSoundscape( const char *pSoundscapeName, float radius );
@@ -1461,13 +1381,11 @@ void C_ASW_Player::OnDataChanged( DataUpdateType_t updateType )
 			GetMedalStore()->GetCounts( iMissions, iCampaigns, iKills, ( gpGlobals->maxClients <= 1 ) );
 			char buffer[48];
 			Q_snprintf( buffer, sizeof( buffer ), "cl_ccounts %d %d %d", iMissions, iCampaigns, iKills );
-			engine->ClientCmd( buffer );
+			engine->ServerCmd( buffer );
 #endif
-			// inform server of our autoreload preferences
-			engine->ClientCmd( VarArgs( "cl_autoreload %d\n", asw_auto_reload.GetInt() ) );
 
 			// tell other players that we're fully connected
-			engine->ClientCmd( "cl_fullyjoined\n" );
+			engine->ServerCmd( "cl_fullyjoined\n" );
 
 			ASWInput()->UpdateASWControls();
 

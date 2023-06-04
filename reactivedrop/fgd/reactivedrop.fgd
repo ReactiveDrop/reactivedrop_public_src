@@ -347,6 +347,18 @@ asw_pickup_50calmg : "50cal Machine Gun"
 	]
 	CarriedAngle(angle) : "Carried Angle" : "0 0 0" : ""
 	CarriedOffset(vector) : "Carried Offset" : "0 0 0" : ""
+	EquipIcon(material) : "Equip Icon" : "" : ""
+
+	// Inputs
+	input ForcePickUp(target_destination) : "Force a marine to equip this item."
+	input ForceDrop(void) : "Force the marine currently holding this item to drop it."
+
+	// Outputs
+	output OnPrimaryAttack(void) : "When a marine is holding the primary fire button, 10 times per second."
+	output OnSecondaryAttack(void) : "When a marine is holding the secondary fire button, 10 times per second."
+	output OnReload(void) : "When a marine presses the reload button."
+	output OnPickedUp(void) : "When a marine picks up the item."
+	output OnDropped(void) : "When a marine drops the item."
 ]
 
 @SolidClass base( Targetname, EnableDisable ) = rd_func_jumpjet : "An entity to control free jumping/blinking area."

@@ -70,8 +70,7 @@ void CNB_Select_Marine_Panel::InitMarineList()
 		return;
 	}
 
-	int nProfiles = MarineProfileList()->m_NumProfiles;
-	for ( int i = 0; i < nProfiles; i++ )
+	for ( int i = 0; i < ASW_NUM_MARINE_PROFILES; i++ )
 	{
 		CNB_Select_Marine_Entry *pEntry = new CNB_Select_Marine_Entry( this, "Entry" );
 

@@ -8,6 +8,8 @@
 #include <tier0/memdbgon.h>
 
 extern ConVar rd_draw_briefing_ui;
+extern ConVar rd_reduce_motion;
+extern ConVar rd_disable_briefing_camera;
 
 FadeInPanel::FadeInPanel(vgui::Panel *parent, const char *name) : vgui::Panel(parent, name)
 {	
@@ -46,7 +48,7 @@ void FadeInPanel::AllowFastRemove()
 void FadeInPanel::OnThink()
 {
 	CAlienSwarm *pGameRules = ASWGameRules();
-	if ( !rd_draw_briefing_ui.GetBool() || ( pGameRules && pGameRules->GetGameState() < ASW_GS_INGAME && pGameRules->m_hBriefingCamera ) )
+	if ( !rd_draw_briefing_ui.GetBool() || ( pGameRules && pGameRules->GetGameState() < ASW_GS_INGAME && pGameRules->m_hBriefingCamera && !rd_reduce_motion.GetBool() && !rd_disable_briefing_camera.GetBool() ) )
 	{
 		SetAlpha( 0 );
 		return;

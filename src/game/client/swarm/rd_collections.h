@@ -96,7 +96,7 @@ public:
 	CRD_Swarmopedia_Model_Panel *m_pModelPanel;
 	vgui::Label *m_pWeaponNameLabel;
 	vgui::Label *m_pWeaponAttrLabel;
-	vgui::Label *m_pWeaponDescLabel;
+	vgui::RichText *m_pWeaponDescLabel;
 	BaseModUI::GenericPanelList *m_pGplStats;
 };
 
@@ -104,7 +104,7 @@ class CRD_Collection_Entry_Equipment : public TGD_Entry
 {
 	DECLARE_CLASS_SIMPLE( CRD_Collection_Entry_Equipment, TGD_Entry );
 public:
-	CRD_Collection_Entry_Equipment( TGD_Grid *parent, const char *panelName, const RD_Swarmopedia::Weapon *pWeapon );
+	CRD_Collection_Entry_Equipment( TGD_Grid *parent, const char *panelName, const RD_Swarmopedia::Weapon *pWeapon, const ReactiveDropInventory::ItemInstance_t &itemInstance );
 
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 	virtual void OnKeyCodePressed( vgui::KeyCode keycode ) override;
@@ -114,6 +114,7 @@ public:
 	virtual void ApplyEntry() override;
 
 	const RD_Swarmopedia::Weapon *m_pWeapon;
+	ReactiveDropInventory::ItemInstance_t m_ItemInstance;
 	bool m_bNoDirectEquip;
 
 	vgui::ImagePanel *m_pIcon;
@@ -132,7 +133,7 @@ class CRD_Collection_Panel_Equipment : public vgui::EditablePanel
 {
 	DECLARE_CLASS_SIMPLE( CRD_Collection_Panel_Equipment, vgui::EditablePanel );
 public:
-	CRD_Collection_Panel_Equipment( vgui::Panel *parent, const char *panelName, CRD_Collection_Tab_Equipment *pTab, const RD_Swarmopedia::Weapon *pWeapon );
+	CRD_Collection_Panel_Equipment( vgui::Panel *parent, const char *panelName, CRD_Collection_Tab_Equipment *pTab, const RD_Swarmopedia::Weapon *pWeapon, const ReactiveDropInventory::ItemInstance_t &itemInstance );
 
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 	virtual void OnCommand( const char *command ) override;
@@ -147,6 +148,7 @@ public:
 
 	CRD_Collection_Tab_Equipment *m_pTab;
 	const RD_Swarmopedia::Weapon *m_pWeapon;
+	ReactiveDropInventory::ItemInstance_t m_ItemInstance;
 };
 
 class CRD_Collection_Tab_Inventory : public TGD_Tab

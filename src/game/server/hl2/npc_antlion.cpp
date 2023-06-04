@@ -64,13 +64,13 @@ ConVar  sk_antlion_worker_burst_radius( "sk_antlion_worker_burst_radius", "160",
 
 #endif
 
-ConVar  g_test_new_antlion_jump( "g_test_new_antlion_jump", "1", FCVAR_ARCHIVE );
-ConVar	antlion_easycrush( "antlion_easycrush", "1" );
-ConVar g_antlion_cascade_push( "g_antlion_cascade_push", "1", FCVAR_ARCHIVE );
+ConVar  g_test_new_antlion_jump( "g_test_new_antlion_jump", "1", FCVAR_CHEAT );
+ConVar	antlion_easycrush( "antlion_easycrush", "1", FCVAR_CHEAT );
+ConVar g_antlion_cascade_push( "g_antlion_cascade_push", "1", FCVAR_CHEAT );
  
 ConVar g_debug_antlion_worker( "g_debug_antlion_worker", "0" );
 
-ConVar bugbait_radius("bugbait_radius", "300");
+ConVar bugbait_radius( "bugbait_radius", "300", FCVAR_CHEAT );
 
 int AE_ANTLION_WALK_FOOTSTEP;
 int AE_ANTLION_MELEE_HIT1;

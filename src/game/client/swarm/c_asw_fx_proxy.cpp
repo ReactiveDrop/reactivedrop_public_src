@@ -583,7 +583,7 @@ void CRD_StatTrakIcon_Proxy::OnBind( void *pRenderable )
 
 	const ReactiveDropInventory::ItemDef_t *pDef = iAccessory == -1 ? ReactiveDropInventory::GetItemDef( instance.m_iItemDefID ) : ReactiveDropInventory::GetItemDef( instance.m_iAccessory[iAccessory] );
 
-	m_pBaseTextureVar->SetTextureValue( pDef ? pDef->AccessoryIcon : NULL );
+	m_pBaseTextureVar->SetTextureValue( pDef ? pDef->GetAccessoryIcon() : NULL);
 }
 
 IMaterial *CRD_StatTrakIcon_Proxy::GetMaterial()

@@ -9,6 +9,7 @@
 #include "asw_gamerules.h"
 #include "filesystem.h"
 #include "rd_workshop.h"
+#include "asw_util_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -17,6 +18,7 @@
 using namespace vgui;
 
 ConVar rd_reduce_motion( "rd_reduce_motion", "0", FCVAR_ARCHIVE, "reduce ambient motion in menus" );
+ConVar rd_disable_briefing_camera( "rd_disable_briefing_camera", "0", FCVAR_NONE, "always render video backgrounds for briefing" );
 static bool s_bLastReduceMotion = false;
 
 CASW_Background_Movie *g_pBackgroundMovie = NULL;
@@ -158,21 +160,29 @@ void CASW_Background_Movie::Update()
 		{
 			const char *pFilename = NULL;
 #ifdef ASW_BINK_MOVIES
+			const char *szMovieType = "briefing";
 			if ( ASWGameRules()->GetGameState() >= ASW_GS_DEBRIEF )
 			{
 				if ( ASWGameRules()->GetMissionSuccess() )
 				{
-					pFilename = "media/SpaceFX.bik";
+					szMovieType = "success";
 				}
 				else
 				{
-					pFilename = "media/BG_Fail.bik";
+					szMovieType = "failure";
 				}
 			}
 			else
 			{
 				pFilename = ASWGameRules()->m_szBriefingVideo;
+				if ( pFilename[0] == '\0' )
+				{
+					pFilename = NULL;
+				}
 			}
+
+			if ( pFilename == NULL )
+				pFilename = UTIL_RD_RandomBriefingMovie( engine->GetLevelNameShort(), ASWGameRules()->m_iCosmeticRandomSeed, szMovieType );
 #else
 			pFilename = "media/test.avi";
 #endif
@@ -189,7 +199,9 @@ void CASW_Background_Movie::Update()
 		if ( nGameState != m_nLastGameState )
 		{
 #ifdef ASW_BINK_MOVIES
-			SetCurrentMovie( "media/bg_01.bik" );
+			const char *szMainMenuImage, *szMainMenuVideo, *szMainMenuAudio;
+			UTIL_RD_DecideMainMenuBackground( szMainMenuImage, szMainMenuVideo, szMainMenuAudio, false );
+			SetCurrentMovie( szMainMenuVideo );
 #else
 			SetCurrentMovie( "media/test.avi" );
 #endif
@@ -416,7 +428,7 @@ void CNB_Header_Footer::PaintBackground()
 {
 	BaseClass::PaintBackground();
 
-	if ( m_bMovieEnabled && ASWBackgroundMovie() && !( m_bBriefingCameraEnabled && engine->IsConnected() && ASWGameRules() && ASWGameRules()->GetGameState() < ASW_GS_INGAME && ASWGameRules()->m_hBriefingCamera ) )
+	if ( m_bMovieEnabled && ASWBackgroundMovie() && !( m_bBriefingCameraEnabled && engine->IsConnected() && ASWGameRules() && ASWGameRules()->GetGameState() < ASW_GS_INGAME && ASWGameRules()->m_hBriefingCamera && !rd_reduce_motion.GetBool() && !rd_disable_briefing_camera.GetBool() ) )
 	{
 		ASWBackgroundMovie()->Update();
 		if ( ASWBackgroundMovie()->SetTextureMaterial() != -1 )
