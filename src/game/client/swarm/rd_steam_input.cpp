@@ -7,7 +7,7 @@
 #include "vgui/IInput.h"
 #include "vgui/IScheme.h"
 #include "vgui/ISurface.h"
-#include "lodepng.h"
+#include "rd_png_texture.h"
 #include "asw_gamerules.h"
 #include "c_asw_player.h"
 #include "c_asw_marine.h"
@@ -137,6 +137,12 @@ void CRD_Steam_Input::Shutdown()
 
 	m_Controllers.PurgeAndDeleteElements();
 
+	FOR_EACH_MAP_FAST( m_GlyphTextures, i )
+	{
+		delete m_GlyphTextures[i];
+	}
+	m_GlyphTextures.Purge();
+
 	m_bInitialized = false;
 }
 
@@ -231,6 +237,56 @@ int CRD_Steam_Input::GetJoystickCount()
 
 vgui::HTexture CRD_Steam_Input::GlyphForOrigin( EInputActionOrigin eOrigin )
 {
+	vgui::IImage *pImage = GlyphImageForOrigin( eOrigin );
+	if ( pImage )
+		return pImage->GetID();
+
+	return NULL;
+}
+
+class CRD_Steam_Input_Glyph : public CRD_PNG_Texture
+{
+public:
+	CRD_Steam_Input_Glyph( EInputActionOrigin eOrigin )
+	{
+		if ( Init( "vgui/steam_input_glyphs", eOrigin ) )
+			return;
+
+		char szDebugName[256];
+		V_snprintf( szDebugName, sizeof( szDebugName ), "steam input glyph for action origin %d", eOrigin );
+
+		ISteamInput *pSteamInput = SteamInput();
+		Assert( pSteamInput );
+		if ( !pSteamInput )
+		{
+			OnFailedToLoadData( "cannot access Steam Input API", szDebugName );
+			return;
+		}
+
+		if ( const char *szOrigin = pSteamInput->GetStringForActionOrigin( eOrigin ) )
+			V_snprintf( szDebugName, sizeof( szDebugName ), "steam input glyph for %d %s", eOrigin, szOrigin );
+
+		const char *szGlyphPath = pSteamInput->GetGlyphPNGForActionOrigin( eOrigin, RD_INPUT_GLYPH_SIZE, RD_INPUT_GLYPH_STYLE );
+		Assert( szGlyphPath );
+		if ( !szGlyphPath )
+		{
+			OnFailedToLoadData( "no Steam Input glyph path", szDebugName );
+			return;
+		}
+
+		CUtlBuffer buf;
+		if ( !g_pFullFileSystem->ReadFile( szGlyphPath, NULL, buf ) )
+		{
+			OnFailedToLoadData( VarArgs( "failed to load Steam Input glyph from %s", szGlyphPath ), szDebugName );
+			return;
+		}
+
+		OnPNGDataReady( buf.Base(), buf.Size(), szDebugName );
+	}
+};
+
+vgui::IImage *CRD_Steam_Input::GlyphImageForOrigin( EInputActionOrigin eOrigin )
+{
 	ISteamInput *pSteamInput = SteamInput();
 	Assert( pSteamInput );
 	if ( !pSteamInput )
@@ -245,38 +301,10 @@ vgui::HTexture CRD_Steam_Input::GlyphForOrigin( EInputActionOrigin eOrigin )
 	if ( m_GlyphTextures.IsValidIndex( index ) )
 		return m_GlyphTextures[index];
 
-	const char *szGlyphPath = pSteamInput->GetGlyphPNGForActionOrigin( eOrigin, RD_INPUT_GLYPH_SIZE, RD_INPUT_GLYPH_STYLE );
-	Assert( szGlyphPath );
-	if ( !szGlyphPath )
-	{
-		Warning( "No Steam Input glyph for input action origin %d\n", eOrigin );
-		return NULL;
-	}
+	vgui::IImage *pImage = new CRD_Steam_Input_Glyph( eOrigin );
+	m_GlyphTextures.Insert( eOrigin, pImage );
 
-	CUtlBuffer buf;
-	if ( !g_pFullFileSystem->ReadFile( szGlyphPath, NULL, buf ) )
-	{
-		Warning( "Failed to read Steam Input glyph from %s\n", szGlyphPath );
-		return NULL;
-	}
-
-	unsigned char *pixels = NULL;
-	unsigned w = 0, h = 0;
-	unsigned error = lodepng_decode32( &pixels, &w, &h, static_cast< const unsigned char * >( buf.Base() ), buf.Size() );
-	if ( error )
-	{
-		Warning( "Failed to load Steam Input glyph from %s: error %d: %s\n", szGlyphPath, error, lodepng_error_text( error ) );
-		free( pixels );
-		return NULL;
-	}
-
-	Assert( vgui::surface() );
-	vgui::HTexture hTexture = vgui::surface()->CreateNewTextureID( true );
-	m_GlyphTextures.Insert( eOrigin, hTexture );
-	vgui::surface()->DrawSetTextureRGBA( hTexture, pixels, w, h );
-	free( pixels );
-
-	return hTexture;
+	return pImage;
 }
 
 static const char *OriginPlaceholderString( EInputActionOrigin eOrigin )
@@ -672,14 +700,18 @@ CRD_Steam_Input_Bind::CRD_Steam_Input_Bind( const char *szActionName, const char
 #endif
 }
 
-CON_COMMAND_F( rd_reload_controller_glyphs, "force all controller glyphs to be reloaded on next use. probably only useful in a debugger.", FCVAR_HIDDEN )
+CON_COMMAND_F( rd_reload_controller_glyphs, "unloads and then loads all controller glyphs. don't use this. will cause a lot of error spam.", FCVAR_HIDDEN )
 {
 	FOR_EACH_MAP_FAST( g_RD_Steam_Input.m_GlyphTextures, i )
 	{
-		vgui::surface()->DestroyTextureID( g_RD_Steam_Input.m_GlyphTextures[i] );
+		delete g_RD_Steam_Input.m_GlyphTextures[i];
 	}
-
 	g_RD_Steam_Input.m_GlyphTextures.Purge();
+
+	for ( EInputActionOrigin eOrigin = k_EInputActionOrigin_None; eOrigin < k_EInputActionOrigin_Count; eOrigin = EInputActionOrigin( eOrigin + 1 ) )
+	{
+		g_RD_Steam_Input.GlyphForOrigin( eOrigin );
+	}
 }
 
 CON_COMMAND( rd_steam_input_enable, "" )

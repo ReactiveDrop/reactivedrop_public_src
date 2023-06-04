@@ -2049,6 +2049,9 @@ public:
 		if ( Init( "vgui/inventory/cache", m_URLHash ) )
 			return;
 
+		char szDebugName[512];
+		V_snprintf( szDebugName, sizeof( szDebugName ), "inventory item icon %s", szURL );
+
 		ISteamHTTP *pHTTP = SteamHTTP();
 		Assert( pHTTP );
 		if ( pHTTP )
@@ -2059,16 +2062,26 @@ public:
 			SteamAPICall_t hAPICall;
 			if ( pHTTP->SendHTTPRequest( hRequest, &hAPICall ) )
 			{
+				m_szDebugName = strdup( szDebugName );
 				m_HTTPRequestCompleted.Set( hAPICall, this, &CSteamItemIcon::OnRequestCompleted );
 			}
 			else
 			{
-				OnFailedToLoadData( "Sending HTTP request failed!", "inventory item icon" );
+				OnFailedToLoadData( "Sending HTTP request failed!", szDebugName );
 			}
 		}
 		else
 		{
-			OnFailedToLoadData( "No ISteamHTTP access", "inventory item icon" );
+			OnFailedToLoadData( "No ISteamHTTP access", szDebugName );
+		}
+	}
+
+	~CSteamItemIcon()
+	{
+		if ( m_szDebugName )
+		{
+			free( m_szDebugName );
+			m_szDebugName = NULL;
 		}
 	}
 
@@ -2101,11 +2114,14 @@ public:
 
 	const CRC32_t m_URLHash;
 private:
+	char *m_szDebugName{};
 	void OnRequestCompleted( HTTPRequestCompleted_t *pParam, bool bIOFailure )
 	{
 		if ( bIOFailure || !pParam->m_bRequestSuccessful )
 		{
-			OnFailedToLoadData( "IO Failure", "inventory item icon" );
+			OnFailedToLoadData( "IO Failure", m_szDebugName );
+			free( m_szDebugName );
+			m_szDebugName = NULL;
 			return;
 		}
 
@@ -2113,7 +2129,9 @@ private:
 		Assert( pHTTP );
 		if ( !pHTTP )
 		{
-			OnFailedToLoadData( "No access to ISteamHTTP inside callback from HTTP request!", "inventory item icon" );
+			OnFailedToLoadData( "No access to ISteamHTTP inside callback from HTTP request!", m_szDebugName );
+			free( m_szDebugName );
+			m_szDebugName = NULL;
 			return;
 		}
 
@@ -2130,7 +2148,9 @@ private:
 
 		pHTTP->ReleaseHTTPRequest( pParam->m_hRequest );
 
-		OnPNGDataReady( data.Base(), pParam->m_unBodySize, "inventory item icon" );
+		OnPNGDataReady( data.Base(), pParam->m_unBodySize, m_szDebugName );
+		free( m_szDebugName );
+		m_szDebugName = NULL;
 	}
 
 	CCallResult<CSteamItemIcon, HTTPRequestCompleted_t> m_HTTPRequestCompleted;
@@ -4018,5 +4038,128 @@ void CRD_ProjectileData::SetFromWeapon( CBaseEntity *pCreator )
 		m_bFiredByOwner = true;
 		return;
 	}
+}
+#endif
+
+#ifdef CLIENT_DLL
+CON_COMMAND_F( rd_load_all_inventory_defs, "load data and icons for all defined AS:RD inventory items", FCVAR_HIDDEN | FCVAR_NOT_CONNECTED )
+{
+	// Item def IDs are split into ranges. The important ones are:
+	// id <= 0 - invalid.
+	// 1 <= id <= 999999 - "public" items, retrieved from GetItemDefinitionIDs.
+	// 1000000 <= id <= 899999999 - "private" items; for now all of these are in the store.
+	// 900000000 <= id <= 999999999 - "unique" items; one copy of each exists (this is an AS:RD restriction, not an inventory service one). IDs are consecutive.
+	// 1000000000 <= id - Steam internal reserved ID range.
+
+	ISteamInventory *pInventory = SteamInventory();
+	Assert( pInventory );
+	if ( !pInventory )
+	{
+		Warning( "No inventory API!\n" );
+		return;
+	}
+
+	uint32_t nItemDefCount{};
+	pInventory->GetItemDefinitionIDs( NULL, &nItemDefCount );
+	CUtlMemory<SteamItemDef_t> DefIDs{ 0, int( nItemDefCount ) };
+	bool bOK = pInventory->GetItemDefinitionIDs( DefIDs.Base(), &nItemDefCount );
+	Assert( bOK ); ( void )bOK;
+
+	Msg( "Checking %d item defs...\n", nItemDefCount );
+	int iLoading = 0;
+	FOR_EACH_VEC( DefIDs, i )
+	{
+		const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( DefIDs[i] );
+		Assert( pDef );
+		if ( pDef )
+		{
+			if ( pDef->Icon && pDef->Icon->GetNumFrames() == 0 )
+			{
+				iLoading++;
+			}
+
+			FOR_EACH_VEC( pDef->StyleIcons, j )
+			{
+				if ( pDef->StyleIcons[j]->GetNumFrames() == 0 )
+				{
+					iLoading++;
+				}
+			}
+		}
+	}
+
+	SteamAPICall_t hCall = pInventory->RequestPrices();
+	bool bFailed{};
+	SteamInventoryRequestPricesResult_t param{};
+	while ( !SteamUtils()->GetAPICallResult( hCall, &param, sizeof( param ), param.k_iCallback, &bFailed ) )
+	{
+		ThreadSleep( 10 );
+		SteamAPI_RunCallbacks();
+	}
+
+	if ( bFailed )
+	{
+		Warning( "Failed to load mtx item list\n" );
+		return;
+	}
+
+	DefIDs.Purge();
+	DefIDs.EnsureCapacity( pInventory->GetNumItemsWithPrices() );
+	CUtlMemory<uint64_t> CurrentPrices{ 0, int( pInventory->GetNumItemsWithPrices() ) };
+	CUtlMemory<uint64_t> BasePrices{ 0, int( pInventory->GetNumItemsWithPrices() ) };
+	pInventory->GetItemsWithPrices( DefIDs.Base(), CurrentPrices.Base(), BasePrices.Base(), pInventory->GetNumItemsWithPrices() );
+
+	Msg( "Checking %d store item defs...\n", pInventory->GetNumItemsWithPrices() );
+	FOR_EACH_VEC( DefIDs, i )
+	{
+		const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( DefIDs[i] );
+		Assert( pDef );
+		if ( pDef )
+		{
+			if ( pDef->Icon && pDef->Icon->GetNumFrames() == 0 )
+			{
+				iLoading++;
+			}
+
+			FOR_EACH_VEC( pDef->StyleIcons, j )
+			{
+				if ( pDef->StyleIcons[j]->GetNumFrames() == 0 )
+				{
+					iLoading++;
+				}
+			}
+		}
+	}
+
+	for ( SteamItemDef_t id = 900000000; ; id++ )
+	{
+		uint32_t count{};
+		pInventory->GetItemDefinitionProperty( id, NULL, NULL, &count );
+		if ( !count )
+		{
+			Msg( "Number of unique item defs: %d\n", id - 900000000 );
+			break;
+		}
+
+		const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( id );
+		Assert( pDef );
+		if ( pDef )
+		{
+			if ( pDef->Icon && pDef->Icon->GetNumFrames() == 0 )
+			{
+				iLoading++;
+			}
+
+			FOR_EACH_VEC( pDef->StyleIcons, j )
+			{
+				if ( pDef->StyleIcons[j]->GetNumFrames() == 0 )
+				{
+					iLoading++;
+				}
+			}
+		}
+	}
+
+	Msg( "async loading icons: %d\n", iLoading );
 }
 #endif

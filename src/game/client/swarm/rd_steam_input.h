@@ -2,6 +2,11 @@
 
 #include "steam/isteaminput.h"
 
+namespace vgui
+{
+	class IImage;
+}
+
 class CRD_Steam_Controller;
 class C_ASW_Player;
 
@@ -23,6 +28,7 @@ public:
 	const char *NameForOrigin( EInputActionOrigin eOrigin );
 	const char *NameForOrigin( const char *szKey );
 	vgui::HTexture GlyphForOrigin( EInputActionOrigin eOrigin );
+	vgui::IImage *GlyphImageForOrigin( EInputActionOrigin eOrigin );
 	void DrawLegacyControllerGlyph( const char *szKey, int x, int y, int iCenterX, int iCenterY, vgui::HFont hFont, int nSlot = GET_ACTIVE_SPLITSCREEN_SLOT() );
 	bool GetGameAxes( int nSlot, float *flMoveX, float *flMoveY, float *flLookX, float *flLookY );
 
@@ -32,7 +38,7 @@ public:
 
 	bool m_bInitialized;
 	CUtlVectorAutoPurge<CRD_Steam_Controller *> m_Controllers;
-	CUtlMap<EInputActionOrigin, vgui::HTexture> m_GlyphTextures;
+	CUtlMap<EInputActionOrigin, vgui::IImage *> m_GlyphTextures;
 	struct
 	{
 		InputActionSetHandle_t InGame;
