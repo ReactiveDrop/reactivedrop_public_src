@@ -507,7 +507,7 @@ void CASWHud3DMarineNames::PaintMarineLabel( int iMyMarineNum, C_ASW_Marine * RE
 
 	const wchar_t *pwszMarineProfileName = NULL;
 	
-	if ( asw_player_names.GetInt() >= 2 && pMarine->IsInhabited() && gpGlobals->maxClients > 1 )
+	if ( asw_player_names.GetInt() != 1 && asw_player_names.GetInt() != 4 && gpGlobals->maxClients > 1 )
 	{
 		pwszMarineProfileName = g_pVGuiLocalize->Find( pProfile->GetShortName() );
 	}
@@ -779,7 +779,7 @@ void CASWHud3DMarineNames::PaintMarineLabel( int iMyMarineNum, C_ASW_Marine * RE
 		}
 
 		Color nNameColor = nMarineTextColor;
-		if ( asw_player_names.GetInt() >= 3 && pwszMarineProfileName && bMarineOnScreen )
+		if ( asw_player_names.GetInt() >= 3 && bMarineOnScreen )
 		{
 			int nMarineResourceIndex = ASWGameResource()->GetMarineResourceIndex( pMarine->GetMarineResource() );
 			if ( nMarineResourceIndex >= 0 && nMarineResourceIndex < NELEMS( g_rgbaStatsReportPlayerColors ) )
@@ -789,11 +789,14 @@ void CASWHud3DMarineNames::PaintMarineLabel( int iMyMarineNum, C_ASW_Marine * RE
 		}
 
 		bool bDrawName = asw_marine_names.GetBool();
+		bool bDrawPlayerNameOnly = asw_player_names.GetInt() == 1 || asw_player_names.GetInt() == 4;
+		bool bBothDraw = asw_player_names.GetInt() == 2 || asw_player_names.GetInt() == 3;
 
 		// draw the marine name
 		if ( bDrawName )
 		{
 			Assert( nMarineNameWidth > 0 );
+			if(bDrawPlayerNameOnly ||  bBothDraw)
 			{
 				int nTextPosX = nBoxCenterX - ( nMarineNameWidth / 2 ) ;	// center it on the x
 				int nNameLength = Q_wcslen( wszMarineName );
@@ -812,7 +815,7 @@ void CASWHud3DMarineNames::PaintMarineLabel( int iMyMarineNum, C_ASW_Marine * RE
 				// advance cursor
 				nCursorY += nMarineNameHeight + MAX( nLineSpacing, YRES(2) );
 			}
-			if ( pwszMarineProfileName && bMarineOnScreen )
+			if ( pwszMarineProfileName && bMarineOnScreen && !bDrawPlayerNameOnly)
 			{
 				int nTextPosX = nBoxCenterX - ( nMarineProfileNameWidth / 2 ) ;	// center it on the x
 				int nNameLength = Q_wcslen( pwszMarineProfileName );
