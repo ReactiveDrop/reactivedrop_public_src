@@ -507,7 +507,7 @@ void CASWHud3DMarineNames::PaintMarineLabel( int iMyMarineNum, C_ASW_Marine * RE
 
 	const wchar_t *pwszMarineProfileName = NULL;
 	
-	if ( asw_player_names.GetInt() >= 2 && pMarine->IsInhabited() && gpGlobals->maxClients > 1 )
+	if (asw_player_names.GetInt()!=1 && gpGlobals->maxClients >= 1 )
 	{
 		pwszMarineProfileName = g_pVGuiLocalize->Find( pProfile->GetShortName() );
 	}
@@ -789,49 +789,56 @@ void CASWHud3DMarineNames::PaintMarineLabel( int iMyMarineNum, C_ASW_Marine * RE
 		}
 
 		bool bDrawName = asw_marine_names.GetBool();
+		bool bOnlyDrawPlayerColorName = asw_player_names.GetInt() == 4;
+		bool bOnlyDrawPlayerName = asw_player_names.GetInt() == 1;
+		bool bDrawBoth = asw_player_names.GetInt() == 2 || asw_player_names.GetInt() == 3;
 
 		// draw the marine name
-		if ( bDrawName )
+		
+		if (bDrawName)
 		{
-			Assert( nMarineNameWidth > 0 );
+			Assert(nMarineNameWidth > 0);
+			if ((bOnlyDrawPlayerName || bOnlyDrawPlayerColorName || bDrawBoth ) && bMarineOnScreen)
 			{
-				int nTextPosX = nBoxCenterX - ( nMarineNameWidth / 2 ) ;	// center it on the x
-				int nNameLength = Q_wcslen( wszMarineName );
+				int nTextPosX = nBoxCenterX - (nMarineNameWidth / 2);	// center it on the x
+				int nNameLength = Q_wcslen(wszMarineName);
 
 				// drop shadow
-				vgui::surface()->DrawSetTextFont( nMarineFont );
-				vgui::surface()->DrawSetTextColor( 0, 0, 0, 200 );
-				vgui::surface()->DrawSetTextPos( nTextPosX+1, nCursorY+1 );
-				vgui::surface()->DrawPrintText( wszMarineName, nNameLength );
+				vgui::surface()->DrawSetTextFont(nMarineFont);
+				vgui::surface()->DrawSetTextColor(0, 0, 0, 200);
+				vgui::surface()->DrawSetTextPos(nTextPosX + 1, nCursorY + 1);
+				vgui::surface()->DrawPrintText(wszMarineName, nNameLength);
 
 				// actual text
-				vgui::surface()->DrawSetTextColor( nNameColor.r(), nNameColor.g(), nNameColor.b(), 200 );
-				vgui::surface()->DrawSetTextPos( nTextPosX, nCursorY );
-				vgui::surface()->DrawPrintText( wszMarineName, nNameLength );
+				vgui::surface()->DrawSetTextColor(nNameColor.r(), nNameColor.g(), nNameColor.b(), 200);
+				vgui::surface()->DrawSetTextPos(nTextPosX, nCursorY);
+				vgui::surface()->DrawPrintText(wszMarineName, nNameLength);
 
 				// advance cursor
-				nCursorY += nMarineNameHeight + MAX( nLineSpacing, YRES(2) );
+				nCursorY += nMarineNameHeight + MAX(nLineSpacing, YRES(2));
 			}
-			if ( pwszMarineProfileName && bMarineOnScreen )
+			if (pwszMarineProfileName && bMarineOnScreen && !bOnlyDrawPlayerColorName && !bOnlyDrawPlayerColorName)
 			{
-				int nTextPosX = nBoxCenterX - ( nMarineProfileNameWidth / 2 ) ;	// center it on the x
-				int nNameLength = Q_wcslen( pwszMarineProfileName );
+				int nTextPosX = nBoxCenterX - (nMarineProfileNameWidth / 2);	// center it on the x
+				int nNameLength = Q_wcslen(pwszMarineProfileName);
 
 				// drop shadow
-				vgui::surface()->DrawSetTextFont( m_hSmallMarineNameFont );
-				vgui::surface()->DrawSetTextColor( 0, 0, 0, 200 );
-				vgui::surface()->DrawSetTextPos( nTextPosX+1, nCursorY+1 );
-				vgui::surface()->DrawPrintText( pwszMarineProfileName, nNameLength );
+				vgui::surface()->DrawSetTextFont(m_hSmallMarineNameFont);
+				vgui::surface()->DrawSetTextColor(0, 0, 0, 200);
+				vgui::surface()->DrawSetTextPos(nTextPosX + 1, nCursorY + 1);
+				vgui::surface()->DrawPrintText(pwszMarineProfileName, nNameLength);
 
 				// actual text
-				vgui::surface()->DrawSetTextColor( nMarineTextColor.r(), nMarineTextColor.g(), nMarineTextColor.b(), 200 );
-				vgui::surface()->DrawSetTextPos( nTextPosX, nCursorY );
-				vgui::surface()->DrawPrintText( pwszMarineProfileName, nNameLength );
+				vgui::surface()->DrawSetTextColor(nMarineTextColor.r(), nMarineTextColor.g(), nMarineTextColor.b(), 200);
+				vgui::surface()->DrawSetTextPos(nTextPosX, nCursorY);
+				vgui::surface()->DrawPrintText(pwszMarineProfileName, nNameLength);
 
 				// advance cursor
-				nCursorY += nMarineProfileNameHeight + MAX( nLineSpacing, YRES(2) );
+				nCursorY += nMarineProfileNameHeight + MAX(nLineSpacing, YRES(2));
 			}
 		}
+		
+		
 
 		// draw the talk icon to the left of the name
 		if ( bDrawName && !asw_voice_side_icon.GetBool() )
