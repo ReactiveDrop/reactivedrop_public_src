@@ -81,7 +81,8 @@ void Demo_DisableButton( Button *pButton );
 void OpenGammaDialog( VPANEL parent );
 
 #ifdef IS_WINDOWS_PC
-static const char *( *const wine_get_version )( void ) = static_cast< const char *( * )( void ) >( Plat_GetProcAddress( "ntdll.dll", "wine_get_version" ) );
+extern const char *( *const wine_get_version )( void );
+const char *( *const wine_get_version )( void ) = static_cast< const char *( * )( void ) >( Plat_GetProcAddress( "ntdll.dll", "wine_get_version" ) );
 #endif
 
 //=============================================================================
