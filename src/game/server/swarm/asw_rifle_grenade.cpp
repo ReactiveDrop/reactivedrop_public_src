@@ -20,6 +20,7 @@
 
 extern ConVar sk_plr_dmg_asw_r_g;
 ConVar asw_grenade_radius("asw_grenade_radius", "350", FCVAR_CHEAT, "Radius of the rifle's grenade explosion");
+ConVar asw_grenade_lifetime("asw_grenade_lifetime", "1", FCVAR_CHEAT, "Lifetime of the rifle's grenade, in seconds");
 
 const float GRENADE_COEFFICIENT_OF_RESTITUTION = 0.2f;
 
@@ -79,8 +80,8 @@ void CASW_Rifle_Grenade::Spawn( void )
 
 	//BaseClass::Spawn();
 	// projectile only lasts 1 second
-	SetThink( &CASW_Rifle_Grenade::SUB_Remove );
-	SetNextThink( gpGlobals->curtime + 1.0f );
+	SetThink( &CASW_Rifle_Grenade::Detonate );
+	SetNextThink( gpGlobals->curtime + asw_grenade_lifetime.GetFloat() );
 
 	//AddSolidFlags(FSOLID_TRIGGER);
 	//m_pLastHit = NULL;
