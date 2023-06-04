@@ -357,7 +357,7 @@ void CNB_Main_Panel::OnTick()
 		{
 			if ( !rd_player_bots_allowed.GetBool() )
 				nBriefingSlots = 1;
-			else if ( V_stricmp( mp_gamemode.GetString(), "single_mission" ) == 0 )
+			else if ( V_stricmp( mp_gamemode.GetString(), "single_mission" ) != 0 )
 				nBriefingSlots = mm_max_players.GetInt();
 		}
 	}
