@@ -972,6 +972,11 @@ bool InitGameSystems( CreateInterfaceFn appSystemFactory )
 	modemanager->Init();
 	consistency->ConnectClient( Sys_GetFactoryThis() );
 
+	// SteamUtils wasn't ready yet when we initialized the ConVar, so check it again
+	extern ConVar rd_represented_country;
+	if ( SteamUtils() && rd_represented_country.GetString()[0] == '\0' )
+		rd_represented_country.SetValue( SteamUtils()->GetIPCountry() );
+
 	// Load the ClientScheme just once
 	vgui::scheme()->LoadSchemeFromFileEx( VGui_GetFullscreenRootVPANEL(), "resource/ClientScheme.res", "ClientScheme");
 

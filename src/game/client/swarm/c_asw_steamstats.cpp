@@ -28,6 +28,32 @@ CASW_Steamstats g_ASW_Steamstats;
 
 ConVar asw_stats_leaderboard_debug( "asw_stats_leaderboard_debug", "0", FCVAR_NONE );
 ConVar rd_leaderboard_enabled_client( "rd_leaderboard_enabled_client", "1", FCVAR_ARCHIVE, "If 0 player leaderboard scores will not be set or updated on mission complete. Client only." );
+static void ValidateRDRepresentedCountry( IConVar *var, const char *pOldValue, float flOldValue )
+{
+	ConVarRef ref( var );
+	switch ( V_strlen( ref.GetString() ) )
+	{
+	case 0:
+		if ( SteamUtils() )
+		{
+			const char *szCountry = SteamUtils()->GetIPCountry();
+			if ( V_strlen( szCountry ) == 2 )
+			{
+				ref.SetValue( szCountry );
+			}
+		}
+	case 2:
+		if ( ref.GetString()[0] >= 'A' && ref.GetString()[0] <= 'Z' && ref.GetString()[1] >= 'A' && ref.GetString()[1] <= 'Z' )
+		{
+			break;
+		}
+	default:
+		Warning( "rd_represented_country must be set to a 2 uppercase English letters. To not represent a country, set it to XX.\n" );
+		ref.SetValue( pOldValue );
+		break;
+	}
+}
+ConVar rd_represented_country( "rd_represented_country", "", FCVAR_USERINFO, "If empty, this will be automatically set to your country based on your IP. Set to XX to not represent a country.", ValidateRDRepresentedCountry );
 
 namespace 
 {
@@ -1585,7 +1611,7 @@ void CASW_Steamstats::PrepStatsForSend_Leaderboard( CASW_Player *pPlayer, bool b
 		m_LeaderboardScoreDetails.m_iSquadExtraWeapon[i] = 0;
 	}
 	m_LeaderboardScoreDetails.m_iTimestamp = SteamUtils()->GetServerRealTime();
-	const char *pszCountry = SteamUtils()->GetIPCountry();
+	const char *pszCountry = rd_represented_country.GetString();
 	m_LeaderboardScoreDetails.m_CountryCode[0] = pszCountry[0];
 	m_LeaderboardScoreDetails.m_CountryCode[1] = pszCountry[1];
 	m_LeaderboardScoreDetails.m_iDifficulty = ASWGameRules()->GetSkillLevel();
