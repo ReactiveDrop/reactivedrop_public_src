@@ -75,7 +75,7 @@ void CRD_Steam_Input::PostInit()
 	if ( !pSteamInput )
 		return;
 
-	bool bSuccess = pSteamInput->Init( false );
+	bool bSuccess = pSteamInput->Init( true );
 	Assert( bSuccess );
 	if ( !bSuccess )
 		Warning( "ISteamInput::Init returned failure status\n" );
@@ -561,6 +561,7 @@ void CRD_Steam_Input::OnSteamInputDeviceDisconnected( SteamInputDeviceDisconnect
 
 	pController->OnDisconnected();
 }
+
 void CRD_Steam_Input::OnActionEvent( SteamInputActionEvent_t *pEvent )
 {
 	CRD_Steam_Controller *pController = g_RD_Steam_Input.FindController( pEvent->controllerHandle );
@@ -689,15 +690,21 @@ void CRD_Steam_Controller::OnAnalogAction( InputAnalogActionHandle_t hAction, EI
 }
 
 CRD_Steam_Input_Bind *CRD_Steam_Input_Bind::s_pBinds = NULL;
+CRD_Steam_Input_Bind *CRD_Steam_Input_Bind::s_pLastBind = NULL;
 
 CRD_Steam_Input_Bind::CRD_Steam_Input_Bind( const char *szActionName, const char *szBind ) :
 	m_szActionName{ szActionName },
 	m_szBind{ szBind }
 {
-#ifdef RD_STEAM_INPUT_ACTIONS
-	m_pNext = s_pBinds;
-	s_pBinds = this;
-#endif
+	m_pNext = NULL;
+
+	if ( !s_pBinds )
+		s_pBinds = this;
+
+	if ( s_pLastBind )
+		s_pLastBind->m_pNext = this;
+
+	s_pLastBind = this;
 }
 
 CON_COMMAND_F( rd_reload_controller_glyphs, "unloads and then loads all controller glyphs. don't use this. will cause a lot of error spam.", FCVAR_HIDDEN )

@@ -84,6 +84,7 @@ private:
 
 	CRD_Steam_Input_Bind *m_pNext;
 	static CRD_Steam_Input_Bind *s_pBinds;
+	static CRD_Steam_Input_Bind *s_pLastBind;
 
 	friend class CRD_Steam_Input;
 	friend class CRD_Steam_Controller;
