@@ -49,11 +49,6 @@ public:
 		"cl_cmdrate",
 	};
 
-	constexpr static const char *s_szAddServerCanExecute[] =
-	{
-		"disconnect",
-	};
-
 	virtual bool Init() override
 	{
 		Assert( g_pCVar );
@@ -100,16 +95,6 @@ public:
 				continue;
 
 			pCmd->RemoveFlags( FCVAR_ARCHIVE );
-		}
-
-		for ( int i = 0; i < NELEMS( s_szAddServerCanExecute ); i++ )
-		{
-			ConCommandBase *pCmd = g_pCVar->FindCommandBase( s_szAddServerCanExecute[i] );
-			Assert( pCmd );
-			if ( !pCmd )
-				continue;
-
-			pCmd->AddFlags( FCVAR_SERVER_CAN_EXECUTE );
 		}
 
 		return true;
