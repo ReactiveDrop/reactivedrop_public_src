@@ -22,6 +22,58 @@ extern ConVar cl_quick_join_panel_fakecount;
 
 DECLARE_BUILD_FACTORY( QuickJoinPublicPanel );
 
+#ifdef DBGFLAG_ASSERT
+// on debug builds, make sure that the participating servers file is up-to-date.
+// we don't do this on release builds because it'd just create a bunch of network traffic for no gain.
+static class CCheckHoIAFParticipatingServersFile : public CAutoGameSystem
+{
+public:
+	CCheckHoIAFParticipatingServersFile() : CAutoGameSystem( "CCheckHoIAFParticipatingServersFile" )
+	{
+	}
+
+	void PostInit() override
+	{
+		ISteamHTTP *pHTTP = SteamHTTP();
+		Assert( pHTTP );
+		if ( !pHTTP )
+			return;
+
+		HTTPRequestHandle hRequest = pHTTP->CreateHTTPRequest( k_EHTTPMethodGET, "https://stats.reactivedrop.com/hoiaf_participating_servers.bin" );
+		Assert( hRequest != INVALID_HTTPREQUEST_HANDLE );
+		SteamAPICall_t hCall{ k_uAPICallInvalid };
+		bool bOK = pHTTP->SendHTTPRequest( hRequest, &hCall );
+		Assert( bOK );
+
+		m_HTTPRequestCompleted.Set( hCall, this, &CCheckHoIAFParticipatingServersFile::OnHTTPRequestCompleted );
+	}
+
+	void OnHTTPRequestCompleted( HTTPRequestCompleted_t *pParam, bool bIOFailure )
+	{
+		Assert( !bIOFailure && pParam->m_bRequestSuccessful );
+		if ( bIOFailure || !pParam->m_bRequestSuccessful )
+			return;
+
+		Assert( pParam->m_eStatusCode == k_EHTTPStatusCode200OK );
+
+		CUtlBuffer localBuf;
+		bool bOK = g_pFullFileSystem->ReadFile( "resource/hoiaf_participating_servers.bin", "MOD", localBuf );
+		Assert( bOK );
+
+		Assert( localBuf.Size() == pParam->m_unBodySize );
+
+		CUtlBuffer remoteBuf{ 0, int( pParam->m_unBodySize ), 0 };
+		bOK = SteamHTTP()->GetHTTPResponseBodyData( pParam->m_hRequest, ( uint8_t * )remoteBuf.Base(), pParam->m_unBodySize );
+		Assert( bOK );
+
+		Assert( !V_memcmp( localBuf.Base(), remoteBuf.Base(), MIN( localBuf.Size(), pParam->m_unBodySize ) ) );
+		SteamHTTP()->ReleaseHTTPRequest( pParam->m_hRequest );
+	}
+
+	CCallResult<CCheckHoIAFParticipatingServersFile, HTTPRequestCompleted_t> m_HTTPRequestCompleted;
+} s_CheckHoIAFParticipatingServersFile;
+#endif
+
 //=============================================================================
 // Quick Join Panel
 //=============================================================================
