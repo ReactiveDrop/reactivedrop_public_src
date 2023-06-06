@@ -80,8 +80,6 @@ public:
 	CRD_VGUI_Bind *m_pBindSelectPrimary;
 	CRD_VGUI_Bind *m_pBindDropWeapon;
 	CRD_VGUI_Bind *m_pBindSwapWeapons;
-	CRD_VGUI_Bind *m_pBindSwapWeapon;
-	CRD_VGUI_Bind *m_pBindSwapWeapon;
 	CRD_VGUI_Bind *m_pBindMeleeAttack;
 	CRD_VGUI_Bind *m_pBindReload;
 	CRD_VGUI_Bind *m_pBindSelectSecondary;
