@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vgui_controls/EditablePanel.h>
+#include "asw_shareddefs.h"
 
 namespace BaseModUI
 {
@@ -8,6 +9,7 @@ namespace BaseModUI
 	class GenericPanelList;
 }
 
+class CCvarToggleCheckButton;
 class CRD_VGUI_Bind;
 class CRD_VGUI_Settings_Controls;
 class CRD_VGUI_Settings_Options;
@@ -49,9 +51,12 @@ class CRD_VGUI_Bind : public vgui::EditablePanel
 public:
 	CRD_VGUI_Bind( vgui::Panel *parent, const char *panelName, const char *szLabel, const char *szBind, bool bUseRowLayout );
 
+	void AddFallbackBind( const char *szBind );
+
 	vgui::Label *m_pLblDescription;
 	char m_szBind[63];
 	bool m_bUseRowLayout;
+	CUtlStringList m_AlternateBind;
 };
 
 class CRD_VGUI_Settings_Controls : public CRD_VGUI_Settings_Panel_Base
@@ -61,6 +66,59 @@ public:
 	CRD_VGUI_Settings_Controls( vgui::Panel *parent, const char *panelName );
 
 	BaseModUI::BaseModHybridButton *GetButton( CRD_VGUI_Settings *pSettings ) override { return pSettings->m_pBtnControls; }
+
+	CRD_VGUI_Bind *m_pBindMoveForward;
+	CRD_VGUI_Bind *m_pBindMoveLeft;
+	CRD_VGUI_Bind *m_pBindMoveBack;
+	CRD_VGUI_Bind *m_pBindMoveRight;
+	CRD_VGUI_Bind *m_pBindWalk;
+	CRD_VGUI_Bind *m_pBindJump;
+
+	CRD_VGUI_Bind *m_pBindPrimaryAttack;
+	CRD_VGUI_Bind *m_pBindSecondaryAttack;
+	CRD_VGUI_Bind *m_pBindUse;
+	CRD_VGUI_Bind *m_pBindSelectPrimary;
+	CRD_VGUI_Bind *m_pBindDropWeapon;
+	CRD_VGUI_Bind *m_pBindSwapWeapons;
+	CRD_VGUI_Bind *m_pBindSwapWeapon;
+	CRD_VGUI_Bind *m_pBindSwapWeapon;
+	CRD_VGUI_Bind *m_pBindMeleeAttack;
+	CRD_VGUI_Bind *m_pBindReload;
+	CRD_VGUI_Bind *m_pBindSelectSecondary;
+	CRD_VGUI_Bind *m_pBindDropEquipment;
+
+	CRD_VGUI_Bind *m_pBindTextChat;
+	CRD_VGUI_Bind *m_pBindVoiceChat;
+	CRD_VGUI_Bind *m_pBindWheelDefault;
+	CRD_VGUI_Bind *m_pBindEmoteGo;
+	CRD_VGUI_Bind *m_pBindEmoteStop;
+	CRD_VGUI_Bind *m_pBindMarinePosition;
+	CRD_VGUI_Bind *m_pBindEmoteMedic;
+	CRD_VGUI_Bind *m_pBindEmoteAmmo;
+	CRD_VGUI_Bind *m_pBindEmoteQuestion;
+	CRD_VGUI_Bind *m_pBindEmoteExclaim;
+	CRD_VGUI_Bind *m_pBindVoteYes;
+	CRD_VGUI_Bind *m_pBindVoteNo;
+	CRD_VGUI_Bind *m_pBindMissionOverview;
+	CRD_VGUI_Bind *m_pBindPlayerList;
+	CRD_VGUI_Bind *m_pBindRotateCameraLeft;
+	CRD_VGUI_Bind *m_pBindRotateCameraRight;
+	CRD_VGUI_Bind *m_pBindSecondaryAttackAlt;
+	CRD_VGUI_Bind *m_pBindChooseMarine;
+
+	CRD_VGUI_Bind *m_pBindActivatePrimary;
+	CRD_VGUI_Bind *m_pBindActivateSecondary;
+	CRD_VGUI_Bind *m_pBindActivateEquipment[ASW_NUM_MARINE_PROFILES];
+	CRD_VGUI_Bind *m_pBindWheelEquipment;
+	CRD_VGUI_Bind *m_pBindWheelEquipment1;
+	CRD_VGUI_Bind *m_pBindWheelEquipment2;
+
+	CRD_VGUI_Bind *m_pBindSelectMarine[ASW_NUM_MARINE_PROFILES];
+	CRD_VGUI_Bind *m_pBindWheelMarine;
+
+	BaseModUI::BaseModHybridButton *m_pBtnCustomWheels;
+	BaseModUI::BaseModHybridButton *m_pBtnResetDefaults;
+	CCvarToggleCheckButton *m_pChkDeveloperConsole;
 };
 
 class CRD_VGUI_Settings_Options : public CRD_VGUI_Settings_Panel_Base

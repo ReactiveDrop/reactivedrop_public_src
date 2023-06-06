@@ -395,6 +395,19 @@ const char *CRD_Steam_Input::Key_LookupBindingEx( const char *pBinding, int iUse
 	return szEngineBind;
 }
 
+bool CRD_Steam_Input::IsSteamInputBind( const char *szBinding )
+{
+	for ( CRD_Steam_Input_Bind *pBind = CRD_Steam_Input_Bind::s_pBinds; pBind; pBind = pBind->m_pNext )
+	{
+		if ( !V_stricmp( pBind->m_szBind, szBinding ) )
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
 bool CRD_Steam_Input::IsOriginPlaceholderString( const char *szKey )
 {
 	return OriginFromPlaceholderString( szKey ) != k_EInputActionOrigin_None;

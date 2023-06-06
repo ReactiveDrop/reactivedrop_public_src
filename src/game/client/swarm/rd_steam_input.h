@@ -24,6 +24,7 @@ public:
 	CRD_Steam_Controller *FindOrAddController( InputHandle_t hController );
 	int GetJoystickCount();
 	const char *Key_LookupBindingEx( const char *pBinding, int iUserId = -1, int iStartCount = 0, int iAllowJoystick = -1 );
+	bool IsSteamInputBind( const char *szBinding );
 	bool IsOriginPlaceholderString( const char *szKey );
 	const char *NameForOrigin( EInputActionOrigin eOrigin );
 	const char *NameForOrigin( const char *szKey );
