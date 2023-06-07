@@ -16,7 +16,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-ConVar rd_simple_beacons("rd_simple_beacons", "0", FCVAR_ARCHIVE, "If 1 heal beacon and damage amplifier will be rendered simple to improve performance");
+ConVar rd_simple_beacons("rd_simple_beacons", "0", FCVAR_NONE, "If 1 heal beacon and damage amplifier will be rendered simple to improve performance");
 
 //Precahce the effects
 PRECACHE_REGISTER_BEGIN( GLOBAL, ASWPrecacheEffectAOEGrenades )

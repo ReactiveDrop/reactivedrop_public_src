@@ -1558,7 +1558,7 @@ void C_ASW_Marine::PostThink()
 }
 
 
-ConVar rd_flashlight_dlight_enable("rd_flashlight_dlight_enable", "0", FCVAR_ARCHIVE, "If 1 adds additional dynamic light(ambient) to ordinary flashlight" );
+ConVar rd_flashlight_dlight_enable("rd_flashlight_dlight_enable", "1", FCVAR_NONE, "If 1 adds additional dynamic light(ambient) to ordinary flashlight" );
 ConVar rd_flashlight_enable("rd_flashlight_enable", "1", FCVAR_NONE, "If 1 an ordinary flashlight beam is used");
 
 //-----------------------------------------------------------------------------

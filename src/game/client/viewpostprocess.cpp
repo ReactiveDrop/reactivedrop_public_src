@@ -83,7 +83,7 @@ ConVar mat_hdr_manual_tonemap_rate( "mat_hdr_manual_tonemap_rate", "1.0" );
 ConVar mat_non_hdr_bloom_scalefactor("mat_non_hdr_bloom_scalefactor",".3");
 
 // Apply addition scale to the final bloom scale
-static ConVar mat_bloom_scalefactor_scalar( "mat_bloom_scalefactor_scalar", "1.0", FCVAR_ARCHIVE );
+static ConVar mat_bloom_scalefactor_scalar( "mat_bloom_scalefactor_scalar", "1.0", FCVAR_NONE );
 
 //ConVar mat_exposure_center_region_x( "mat_exposure_center_region_x","0.75", FCVAR_CHEAT );
 //ConVar mat_exposure_center_region_y( "mat_exposure_center_region_y","0.80", FCVAR_CHEAT );
@@ -100,7 +100,7 @@ ConVar mat_fullbright( "mat_fullbright", "0", FCVAR_CHEAT );
 
 ConVar mat_grain_enable( "mat_grain_enable", "1" );
 ConVar mat_vignette_enable( "mat_vignette_enable", "0" );
-ConVar mat_local_contrast_enable( "mat_local_contrast_enable", "1", FCVAR_ARCHIVE );
+ConVar mat_local_contrast_enable( "mat_local_contrast_enable", "1" );
 
 static void SetRenderTargetAndViewPort(ITexture *rt)
 {

@@ -35,12 +35,6 @@ public:
 		"buildcubemaps",
 	};
 
-	constexpr static const char *s_szAddArchive[] =
-	{
-		// Depth blur strength is a setting (0 or -1), so we need it to be saved.
-		"mat_depth_blur_strength_override",
-	};
-
 	constexpr static const char *s_szRemoveArchive[] =
 	{
 		// These are very advanced settings, and if a player changes a setting
@@ -75,16 +69,6 @@ public:
 				continue;
 
 			pCmd->AddFlags( FCVAR_CHEAT );
-		}
-
-		for ( int i = 0; i < NELEMS( s_szAddArchive ); i++ )
-		{
-			ConCommandBase *pCmd = g_pCVar->FindCommandBase( s_szAddArchive[i] );
-			Assert( pCmd );
-			if ( !pCmd )
-				continue;
-
-			pCmd->AddFlags( FCVAR_ARCHIVE );
 		}
 
 		for ( int i = 0; i < NELEMS( s_szRemoveArchive ); i++ )

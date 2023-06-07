@@ -48,7 +48,7 @@ PRECACHE_REGISTER_END()
 
 
 //Whether or not we should emit a dynamic light
-ConVar muzzleflash_light( "muzzleflash_light", "1", FCVAR_ARCHIVE );
+ConVar muzzleflash_light( "muzzleflash_light", "1", FCVAR_NONE );
 
 extern void FX_TracerSound( const Vector &start, const Vector &end, int iTracerType );
 

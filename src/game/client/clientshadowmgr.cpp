@@ -133,7 +133,7 @@ static ConVar r_shadow_debug_spew( "r_shadow_debug_spew", "0", FCVAR_CHEAT );
 // instead we'll add ours cvar to enabled\disable shadows from flashlight
 ConVar r_flashlightdepthtexture( "r_flashlightdepthtexture", "1" );
 
-ConVar rd_flashlightshadows( "rd_flashlightshadows", "0", FCVAR_ARCHIVE, "If 1 marine's flashlight will cast high quality shadows" );
+ConVar rd_flashlightshadows( "rd_flashlightshadows", "0", FCVAR_NONE, "If 1 marine's flashlight will cast high quality shadows" );
 
 #if defined( _X360 )
 ConVar r_flashlightdepthreshigh( "r_flashlightdepthreshigh", "512" );

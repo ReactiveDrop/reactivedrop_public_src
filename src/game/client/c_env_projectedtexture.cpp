@@ -22,7 +22,7 @@
 
 float C_EnvProjectedTexture::m_flVisibleBBoxMinHeight = -FLT_MAX;
 
-ConVar rd_env_projectedtexture_enabled("rd_env_projectedtexture_enabled", "1", FCVAR_ARCHIVE, "If 0 all projected textures are disabled(to improve performance)");
+ConVar rd_env_projectedtexture_enabled("rd_env_projectedtexture_enabled", "1", FCVAR_NONE, "If 0 all projected textures are disabled(to improve performance)");
 
 
 IMPLEMENT_CLIENTCLASS_DT( C_EnvProjectedTexture, DT_EnvProjectedTexture, CEnvProjectedTexture )

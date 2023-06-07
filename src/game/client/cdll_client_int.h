@@ -102,6 +102,8 @@ CPULevel_t GetCPULevel();
 // Returns the actual value of the CPU level convar, even on the 360
 CPULevel_t GetActualCPULevel();
 GPULevel_t GetGPULevel();
+MemLevel_t GetMemLevel();
+GPUMemLevel_t GetGPUMemLevel();
 void ConfigureCurrentSystemLevel();
 
 // Set to true between LevelInit and LevelShutdown.

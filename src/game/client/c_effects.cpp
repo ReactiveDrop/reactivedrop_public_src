@@ -65,7 +65,7 @@ ConVar r_DrawRain( "r_DrawRain", "1", FCVAR_CHEAT, "Enable/disable rain renderin
 ConVar r_RainProfile( "r_RainProfile", "0", FCVAR_CHEAT, "Enable/disable rain profiling." );
 ConVar r_RainDebugDuration( "r_RainDebugDuration", "0", FCVAR_CHEAT, "Shows rain tracelines for this many seconds (0 disables)" );
 
-ConVar rd_func_precipitation_enable("rd_func_precipitation_enable", "1", FCVAR_ARCHIVE, "If 0 disables all func_precipitation drawing");
+ConVar rd_func_precipitation_enable("rd_func_precipitation_enable", "1", FCVAR_NONE, "If 0 disables all func_precipitation drawing");
 
 //Precahce the effects
 PRECACHE_REGISTER_BEGIN( GLOBAL, PrecachePrecipitation )
