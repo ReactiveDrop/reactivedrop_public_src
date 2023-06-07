@@ -42,7 +42,58 @@ class CRD_VGUI_Settings_Panel_Base : public vgui::EditablePanel
 public:
 	CRD_VGUI_Settings_Panel_Base( vgui::Panel *parent, const char *panelName );
 
+	virtual void Activate() = 0;
 	virtual BaseModUI::BaseModHybridButton *GetButton( CRD_VGUI_Settings *pSettings ) = 0;
+};
+
+class CRD_VGUI_Option : public vgui::EditablePanel
+{
+	DECLARE_CLASS_SIMPLE( CRD_VGUI_Option, vgui::EditablePanel );
+public:
+	enum Mode_t
+	{
+		MODE_RADIO,    // all options displayed in a row
+		MODE_DROPDOWN, // only current option is displayed; when active all options displayed in a column
+		MODE_CHECKBOX, // value is either 0 or 1; checkbox displayed before label
+		MODE_SLIDER,   // value is a float
+		MODE_CUSTOM,   // no value; still handles label, hint, etc.
+	};
+
+	CRD_VGUI_Option( vgui::Panel *parent, const char *panelName, const char *szLabel, Mode_t eMode = MODE_RADIO );
+
+	// for MODE_RADIO and MODE_DROPDOWN
+	void RemoveAllOptions();
+	void AddOption( int iOption, const char *szLabel, const char *szHint );
+
+	// for MODE_RADIO, MODE_DROPDOWN, and MODE_CHECKBOX
+	void SetCurrentAndRecommended( int iCurrent, int iRecommended );
+	int GetCurrentOption();
+
+	// for MODE_SLIDER
+	void SetSliderMinMax( float flMin, float flMax );
+	void SetCurrentSliderValue( float flValue );
+	void SetRecommendedSliderValue( float flValue );
+	void ClearRecommendedSliderValue();
+	float GetCurrentSliderValue();
+
+	// for MODE_CHECKBOX, MODE_SLIDER, and MODE_CUSTOM
+	// as well as MODE_RADIO and MODE_DROPDOWN when no option is current.
+	void SetDefaultHint( const char *szHint );
+
+private:
+	Mode_t m_eMode;
+	bool m_bHaveCurrent{ false }, m_bHaveRecommended{ false };
+	union
+	{
+		int m_iCurrentValue;
+		float m_flCurrentValue;
+	} m_CurrentValue;
+	union
+	{
+		int m_iRecommendedValue;
+		float m_flRecommendedValue;
+	} m_RecommendedValue;
+	float m_flMinValue{ 0.0f }, m_flMaxValue{ 1.0f };
 };
 
 class CRD_VGUI_Bind : public vgui::EditablePanel
@@ -65,6 +116,7 @@ class CRD_VGUI_Settings_Controls : public CRD_VGUI_Settings_Panel_Base
 public:
 	CRD_VGUI_Settings_Controls( vgui::Panel *parent, const char *panelName );
 
+	void Activate() override;
 	BaseModUI::BaseModHybridButton *GetButton( CRD_VGUI_Settings *pSettings ) override { return pSettings->m_pBtnControls; }
 
 	CRD_VGUI_Bind *m_pBindMoveForward;
@@ -125,6 +177,7 @@ class CRD_VGUI_Settings_Options : public CRD_VGUI_Settings_Panel_Base
 public:
 	CRD_VGUI_Settings_Options( vgui::Panel *parent, const char *panelName );
 
+	void Activate() override;
 	BaseModUI::BaseModHybridButton *GetButton( CRD_VGUI_Settings *pSettings ) override { return pSettings->m_pBtnOptions; }
 };
 
@@ -134,6 +187,7 @@ class CRD_VGUI_Settings_Audio : public CRD_VGUI_Settings_Panel_Base
 public:
 	CRD_VGUI_Settings_Audio( vgui::Panel *parent, const char *panelName );
 
+	void Activate() override;
 	BaseModUI::BaseModHybridButton *GetButton( CRD_VGUI_Settings *pSettings ) override { return pSettings->m_pBtnAudio; }
 };
 
@@ -143,7 +197,32 @@ class CRD_VGUI_Settings_Video : public CRD_VGUI_Settings_Panel_Base
 public:
 	CRD_VGUI_Settings_Video( vgui::Panel *parent, const char *panelName );
 
+	void Activate() override;
 	BaseModUI::BaseModHybridButton *GetButton( CRD_VGUI_Settings *pSettings ) override { return pSettings->m_pBtnVideo; }
+
+	CRD_VGUI_Option *m_pSettingScreenResolution;
+	CRD_VGUI_Option *m_pSettingDisplayMode;
+	CRD_VGUI_Option *m_pSettingRenderingPipeline;
+	CRD_VGUI_Option *m_pSettingVSync;
+
+	CRD_VGUI_Option *m_pSettingEffectDetail;
+	CRD_VGUI_Option *m_pSettingShaderDetail;
+	CRD_VGUI_Option *m_pSettingTextureDetail;
+	CRD_VGUI_Option *m_pSettingAntiAliasing;
+	CRD_VGUI_Option *m_pSettingFiltering;
+
+	CRD_VGUI_Option *m_pSettingFilmGrain;
+	CRD_VGUI_Option *m_pSettingLocalContrast;
+	CRD_VGUI_Option *m_pSettingDepthBlur;
+	CRD_VGUI_Option *m_pSettingWeatherEffects;
+	CRD_VGUI_Option *m_pSettingBloomScale;
+	CRD_VGUI_Option *m_pSettingProjectedTextures;
+	CRD_VGUI_Option *m_pSettingFlashlightShadows;
+	CRD_VGUI_Option *m_pSettingFlashlightLightSpill;
+	CRD_VGUI_Option *m_pSettingHighQualityBeacons;
+	CRD_VGUI_Option *m_pSettingMuzzleFlashLights;
+	CRD_VGUI_Option *m_pSettingAlienShadows;
+	CRD_VGUI_Option *m_pSettingLowHealthEffect;
 };
 
 class CRD_VGUI_Settings_About : public CRD_VGUI_Settings_Panel_Base
@@ -152,7 +231,7 @@ class CRD_VGUI_Settings_About : public CRD_VGUI_Settings_Panel_Base
 public:
 	CRD_VGUI_Settings_About( vgui::Panel *parent, const char *panelName );
 
-	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+	void Activate() override;
 	BaseModUI::BaseModHybridButton *GetButton( CRD_VGUI_Settings *pSettings ) override { return pSettings->m_pBtnAbout; }
 
 	vgui::Label *m_pLblBuildID;

@@ -41,10 +41,8 @@ CRD_VGUI_Settings_About::CRD_VGUI_Settings_About( vgui::Panel *parent, const cha
 	}
 }
 
-void CRD_VGUI_Settings_About::ApplySchemeSettings( vgui::IScheme *pScheme )
+void CRD_VGUI_Settings_About::Activate()
 {
-	BaseClass::ApplySchemeSettings( pScheme );
-
 	ISteamApps *pApps = SteamApps();
 	Assert( pApps );
 
