@@ -58,6 +58,8 @@ class IReplayHistoryManager;
 class ISoundEmitterSystemBase;
 enum CPULevel_t;
 enum GPULevel_t;
+enum MemLevel_t;
+enum GPUMemLevel_t;
 
 extern IVModelRender *modelrender;
 extern IVEngineClient	*engine;
