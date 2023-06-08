@@ -116,7 +116,7 @@ void CASW_VGUI_Queen_Health_Panel::ApplySchemeSettings(vgui::IScheme *pScheme)
 
 void CASW_VGUI_Queen_Health_Panel::OnThink()
 {
-	if (GetQueen() && GetQueen()->GetHealth() > 0 && GetQueen()->GetHealth() < GetQueen()->GetMaxHealth())
+	if (GetQueen() && GetQueen()->GetHealth() > 0 && GetQueen()->GetHealth() < GetQueen()->GetMaxHealth() && ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME)
 	{
 		if ( rd_queen_hud_suppress_time.GetFloat() > -1 && gpGlobals->curtime - m_flLastDamageTime > rd_queen_hud_suppress_time.GetFloat() )
 		{
