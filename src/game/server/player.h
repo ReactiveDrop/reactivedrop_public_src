@@ -1,4 +1,4 @@
-//===== Copyright © 1996-2009, Valve Corporation, All rights reserved. ======//
+//===== Copyright ?1996-2009, Valve Corporation, All rights reserved. ======//
 //
 // Purpose: 
 //
@@ -110,6 +110,12 @@ enum PlayerPhysFlag_e
 
 	// If you add another flag here check that you aren't 
 	// overwriting phys flags in the HL2 of TF2 player classes
+};
+
+enum PlayerSpeakResult
+{
+	SPEAK_RESULT_OK,
+	SPEAK_RESULT_RateLimited
 };
 
 //
@@ -622,6 +628,7 @@ public:
 	// say/sayteam allowed?
 	virtual bool		CanHearAndReadChatFrom( CBasePlayer *pPlayer ) { return true; }
 	virtual bool		CanSpeak( void ) { return true; }
+	virtual PlayerSpeakResult        CheckSpeak( void );
 
 	audioparams_t			&GetAudioParams() { return m_Local.m_audio; }
 
@@ -1111,6 +1118,7 @@ public:
 	float					m_flForwardMove;
 	float					m_flSideMove;
 	int						m_nNumCrateHudHints;
+	float                   m_flLastSpeakTime;
 
 private:
 

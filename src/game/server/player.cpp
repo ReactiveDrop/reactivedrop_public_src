@@ -109,6 +109,7 @@ ConVar	sv_noclipduringpause( "sv_noclipduringpause", "0", FCVAR_REPLICATED | FCV
 extern ConVar sv_maxunlag;
 extern ConVar sv_turbophysics;
 extern ConVar *sv_maxreplay;
+extern ConVar rd_chat_ratelimit;
 
 extern CServerGameDLL g_ServerGameDLL;
 
@@ -7405,6 +7406,11 @@ void CBasePlayer::ChangeTeam( int iTeamNum, bool bAutoTeam, bool bSilent)
 	BaseClass::ChangeTeam( iTeamNum );
 }
 
+PlayerSpeakResult CBasePlayer::CheckSpeak( void )
+{
+	return  gpGlobals->curtime - m_flLastSpeakTime >= rd_chat_ratelimit.GetFloat () ? SPEAK_RESULT_OK : SPEAK_RESULT_RateLimited;
+}
+
 
 
 //-----------------------------------------------------------------------------
@@ -8373,6 +8379,7 @@ void CBasePlayer::SetDefaultFOV( int FOV )
 {
 	m_iDefaultFOV = ( FOV == 0 ) ? g_pGameRules->DefaultFOV() : FOV;
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose: // static func

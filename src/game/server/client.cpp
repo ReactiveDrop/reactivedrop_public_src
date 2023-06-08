@@ -30,6 +30,7 @@
 #include "fmtstr.h"
 #include "videocfg/videocfg.h"
 #include "asw_gamerules.h"
+#include "gameinterface.h"
 
 
 #ifdef HL2_DLL
@@ -147,8 +148,11 @@ void Host_Say( edict_t *pEdict, const CCommand &args, bool teamonly )
 
 	if ( pEdict )
 	{
-		if ( !pPlayer->CanSpeak() )
+		if (pPlayer && SPEAK_RESULT_RateLimited == pPlayer->CheckSpeak () )
+		{
+			ClientPrint ( pPlayer, HUD_PRINTTALK, "#rd_speak_result_ratelimited" );
 			return;
+		}
 
 		// See if the player wants to modify of check the text
 		pPlayer->CheckChatText( p, P_MAX_LEN );	// though the buffer szTemp that p points to is 256, 
@@ -297,6 +301,12 @@ void Host_Say( edict_t *pEdict, const CCommand &args, bool teamonly )
 		event->SetString("text", p );
 		event->SetInt("priority", 1 );	// HLTV event priority, not transmitted
 		gameeventmanager->FireEvent( event );
+	}
+
+	//update player last say time
+	if( pPlayer )
+	{
+		pPlayer->m_flLastSpeakTime = gpGlobals->curtime;
 	}
 }
 

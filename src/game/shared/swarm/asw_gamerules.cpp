@@ -204,6 +204,7 @@ extern ConVar old_radius_damage;
 	ConVar rd_mapcycle_endless( "rd_mapcycle_endless", "0", FCVAR_ARCHIVE, "Automatically select the next Endless mission." );
 	ConVar rd_mapcycle_bonus( "rd_mapcycle_bonus", "1", FCVAR_ARCHIVE, "Automatically select the next Bonus mission." );
 	ConVar rd_mapcycle_ignore( "rd_mapcycle_ignore", "", FCVAR_ARCHIVE, "Comma-separated list of map filenames (no .bsp) that cannot be selected by map cycle." );
+	ConVar rd_chat_ratelimit ( "rd_chat_ratelimit", "1", FCVAR_NONE, "Set player chat rate,default 1 second" );
 
 	// allow updateing the high res timer realtime
 	inline void HighResTimerChangeCallback( IConVar* pConVar, const char* pOldString, float flOldValue )
