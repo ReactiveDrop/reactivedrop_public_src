@@ -177,14 +177,25 @@ CRD_VGUI_Settings_Video::CRD_VGUI_Settings_Video( vgui::Panel *parent, const cha
 	m_pSettingDisplayMode->AddOption( 0, "#rd_video_display_mode_fullscreen", "#rd_video_display_mode_fullscreen_hint" );
 	m_pSettingDisplayMode->AddOption( 1, "#rd_video_display_mode_noborder", "#rd_video_display_mode_noborder_hint" );
 	m_pSettingDisplayMode->AddOption( 2, "#rd_video_display_mode_windowed", "#rd_video_display_mode_windowed_hint" );
+	m_pSettingScreenBrightness = new CRD_VGUI_Option( this, "SettingScreenBrightness", "#rd_video_screen_brightness", CRD_VGUI_Option::MODE_SLIDER );
+	m_pSettingScreenBrightness->SetSliderMinMax( 2.6f, 1.6f );
+	m_pSettingScreenBrightness->SetDefaultHint( "#rd_video_screen_brightness_hint" );
+	m_pSettingScreenBrightness->LinkToConVar( "mat_monitorgamma", false );
 	m_pSettingRenderingPipeline = new CRD_VGUI_Option( this, "SettingRenderingPipeline", "#rd_video_rendering_pipeline", CRD_VGUI_Option::MODE_DROPDOWN );
 	m_pSettingRenderingPipeline->AddOption( 0, "#rd_video_rendering_pipeline_single", "#rd_video_rendering_pipeline_hint" );
 	m_pSettingRenderingPipeline->AddOption( -1, "#rd_video_rendering_pipeline_multi", "#rd_video_rendering_pipeline_hint" );
 	m_pSettingRenderingPipeline->SetDefaultHint( "#rd_video_rendering_pipeline_hint" );
+	m_pSettingRenderingPipeline->LinkToConVar( "mat_queue_mode", false );
 	m_pSettingVSync = new CRD_VGUI_Option( this, "SettingVSync", "#rd_video_vsync", CRD_VGUI_Option::MODE_DROPDOWN );
 	m_pSettingVSync->AddOption( 0, "#rd_video_vsync_single", "#rd_video_vsync_single_hint" );
 	m_pSettingVSync->AddOption( 1, "#rd_video_vsync_double", "#rd_video_vsync_double_hint" );
 	m_pSettingVSync->AddOption( 2, "#rd_video_vsync_triple", "#rd_video_vsync_triple_hint" );
+	m_pSettingVSync->LinkToConVarAdvanced( 0, "mat_vsync", 0 );
+	m_pSettingVSync->LinkToConVarAdvanced( 1, "mat_vsync", 1 );
+	m_pSettingVSync->LinkToConVarAdvanced( 1, "mat_triplebuffered", 0 );
+	m_pSettingVSync->LinkToConVarAdvanced( 2, "mat_vsync", 1 );
+	m_pSettingVSync->LinkToConVarAdvanced( 2, "mat_triplebuffered", 1 );
+	m_pSettingVSync->SetCurrentUsingConVars();
 
 	m_pSettingEffectDetail = new CRD_VGUI_Option( this, "SettingEffectDetail", "#rd_video_effect_detail" );
 	m_pSettingEffectDetail->AddOption( 0, "#rd_video_level_low", "#rd_video_effect_detail_hint" );
@@ -213,6 +224,7 @@ CRD_VGUI_Settings_Video::CRD_VGUI_Settings_Video( vgui::Panel *parent, const cha
 	m_pSettingFiltering->AddOption( 8, "#GameUI_Anisotropic8X", "#rd_video_filtering_hint" );
 	m_pSettingFiltering->AddOption( 16, "#GameUI_Anisotropic16X", "#rd_video_filtering_hint" );
 	m_pSettingFiltering->SetDefaultHint( "#rd_video_filtering_hint" );
+	m_pSettingFiltering->LinkToConVar( "mat_forceaniso", false );
 
 	m_pSettingFilmGrain = new CRD_VGUI_Option( this, "SettingFilmGrain", "#rd_video_film_grain" );
 	m_pSettingFilmGrain->AddOption( 0, "#rd_video_effect_disabled", "#rd_video_film_grain_hint" );
@@ -222,46 +234,63 @@ CRD_VGUI_Settings_Video::CRD_VGUI_Settings_Video( vgui::Panel *parent, const cha
 	m_pSettingLocalContrast->AddOption( 0, "#rd_video_effect_disabled", "#rd_video_local_contrast_hint" );
 	m_pSettingLocalContrast->AddOption( 1, "#rd_video_effect_enabled", "#rd_video_local_contrast_hint" );
 	m_pSettingLocalContrast->SetDefaultHint( "#rd_video_local_contrast_hint" );
+	m_pSettingLocalContrast->LinkToConVar( "mat_local_contrast_enable", false );
 	m_pSettingDepthBlur = new CRD_VGUI_Option( this, "SettingDepthBlur", "#rd_video_depth_blur" );
 	m_pSettingDepthBlur->AddOption( 0, "#rd_video_effect_disabled", "#rd_video_depth_blur_hint" );
 	m_pSettingDepthBlur->AddOption( -1, "#rd_video_effect_enabled", "#rd_video_depth_blur_hint" );
 	m_pSettingDepthBlur->SetDefaultHint( "#rd_video_depth_blur_hint" );
+	m_pSettingDepthBlur->LinkToConVar( "mat_depth_blur_strength_override", false );
 	m_pSettingWeatherEffects = new CRD_VGUI_Option( this, "SettingWeatherEffects", "#rd_video_weather_effects" );
 	m_pSettingWeatherEffects->AddOption( 0, "#rd_video_effect_disabled", "#rd_video_weather_effects_hint" );
 	m_pSettingWeatherEffects->AddOption( 1, "#rd_video_effect_enabled", "#rd_video_weather_effects_hint" );
 	m_pSettingWeatherEffects->SetDefaultHint( "#rd_video_weather_effects_hint" );
+	m_pSettingWeatherEffects->LinkToConVar( "rd_func_precipitation_enable", false );
 	m_pSettingBloomScale = new CRD_VGUI_Option( this, "SettingBloomScale", "#rd_video_bloom_scale", CRD_VGUI_Option::MODE_SLIDER );
 	m_pSettingBloomScale->SetSliderMinMax( 0.0f, 2.0f );
 	m_pSettingBloomScale->SetDefaultHint( "#rd_video_bloom_scale_hint" );
+	m_pSettingBloomScale->LinkToConVar( "mat_bloom_scalefactor_scalar", false );
 	m_pSettingProjectedTextures = new CRD_VGUI_Option( this, "SettingProjectedTextures", "#rd_video_projected_textures" );
 	m_pSettingProjectedTextures->AddOption( 0, "#rd_video_effect_disabled", "#rd_video_projected_textures_hint" );
 	m_pSettingProjectedTextures->AddOption( 1, "#rd_video_effect_enabled", "#rd_video_projected_textures_hint" );
 	m_pSettingProjectedTextures->SetDefaultHint( "#rd_video_projected_textures_hint" );
+	m_pSettingProjectedTextures->LinkToConVar( "rd_env_projectedtexture_enabled", false );
 	m_pSettingFlashlightShadows = new CRD_VGUI_Option( this, "SettingFlashlightShadows", "#rd_video_flashlight_shadows" );
 	m_pSettingFlashlightShadows->AddOption( 0, "#rd_video_effect_disabled", "#rd_video_flashlight_shadows_hint" );
 	m_pSettingFlashlightShadows->AddOption( 1, "#rd_video_effect_enabled", "#rd_video_flashlight_shadows_hint" );
 	m_pSettingFlashlightShadows->SetDefaultHint( "#rd_video_flashlight_shadows_hint" );
+	m_pSettingFlashlightShadows->LinkToConVar( "rd_flashlightshadows", false );
 	m_pSettingFlashlightLightSpill = new CRD_VGUI_Option( this, "SettingFlashlightLightSpill", "#rd_video_flashlight_light_spill" );
 	m_pSettingFlashlightLightSpill->AddOption( 0, "#rd_video_effect_disabled", "#rd_video_flashlight_light_spill_hint" );
 	m_pSettingFlashlightLightSpill->AddOption( 1, "#rd_video_effect_enabled", "#rd_video_flashlight_light_spill_hint" );
 	m_pSettingFlashlightLightSpill->SetDefaultHint( "#rd_video_flashlight_light_spill_hint" );
+	m_pSettingFlashlightLightSpill->LinkToConVar( "rd_flashlight_dlight_enable", false );
 	m_pSettingHighQualityBeacons = new CRD_VGUI_Option( this, "SettingHighQualityBeacons", "#rd_video_high_quality_beacons" );
 	m_pSettingHighQualityBeacons->AddOption( 1, "#rd_video_effect_disabled", "#rd_video_high_quality_beacons_hint" );
 	m_pSettingHighQualityBeacons->AddOption( 0, "#rd_video_effect_enabled", "#rd_video_high_quality_beacons_hint" );
 	m_pSettingHighQualityBeacons->SetDefaultHint( "#rd_video_high_quality_beacons_hint" );
+	m_pSettingHighQualityBeacons->LinkToConVar( "rd_simple_beacons", false );
 	m_pSettingMuzzleFlashLights = new CRD_VGUI_Option( this, "SettingMuzzleFlashLights", "#rd_video_muzzle_flash_lights" );
 	m_pSettingMuzzleFlashLights->AddOption( 0, "#rd_video_effect_disabled", "#rd_video_muzzle_flash_lights_hint" );
 	m_pSettingMuzzleFlashLights->AddOption( 1, "#rd_video_effect_enabled", "#rd_video_muzzle_flash_lights_hint" );
 	m_pSettingMuzzleFlashLights->SetDefaultHint( "#rd_video_muzzle_flash_lights_hint" );
+	m_pSettingMuzzleFlashLights->LinkToConVar( "muzzleflash_light", false );
 	m_pSettingAlienShadows = new CRD_VGUI_Option( this, "SettingAlienShadows", "#rd_video_alien_shadows" );
 	m_pSettingAlienShadows->AddOption( 0, "#rd_video_effect_disabled", "#rd_video_alien_shadows_hint" );
 	m_pSettingAlienShadows->AddOption( 1, "#rd_video_effect_flashlight_only", "#rd_video_alien_shadows_hint" );
 	m_pSettingAlienShadows->AddOption( 2, "#rd_video_effect_enabled", "#rd_video_alien_shadows_hint" );
 	m_pSettingAlienShadows->SetDefaultHint( "#rd_video_alien_shadows_hint" );
+	m_pSettingAlienShadows->LinkToConVarAdvanced( 0, "asw_alien_shadows", 0 );
+	m_pSettingAlienShadows->LinkToConVarAdvanced( 0, "asw_directional_shadows", 0 );
+	m_pSettingAlienShadows->LinkToConVarAdvanced( 1, "asw_alien_shadows", 0 );
+	m_pSettingAlienShadows->LinkToConVarAdvanced( 1, "asw_directional_shadows", 1 );
+	m_pSettingAlienShadows->LinkToConVarAdvanced( 2, "asw_alien_shadows", 1 );
+	m_pSettingAlienShadows->SetCurrentUsingConVars();
+	m_pSettingAlienShadows->SetRecommendedUsingConVars();
 	m_pSettingLowHealthEffect = new CRD_VGUI_Option( this, "SettingLowHealthEffect", "#rd_video_low_health_effect" );
 	m_pSettingLowHealthEffect->AddOption( 0, "#rd_video_effect_disabled", "#rd_video_low_health_effect_hint" );
 	m_pSettingLowHealthEffect->AddOption( 1, "#rd_video_effect_enabled", "#rd_video_low_health_effect_hint" );
 	m_pSettingLowHealthEffect->SetDefaultHint( "#rd_video_low_health_effect_hint" );
+	m_pSettingLowHealthEffect->LinkToConVar( "rd_health_effect", true );
 }
 
 void CRD_VGUI_Settings_Video::Activate()
@@ -317,15 +346,27 @@ void CRD_VGUI_Settings_Video::Activate()
 	int iCurrentDisplayMode = config.Windowed() ? config.NoWindowBorder() ? 1 : 2 : 0;
 	m_pSettingDisplayMode->SetCurrentAndRecommended( iCurrentDisplayMode, iRecommendedDisplayMode );
 
+	// Screen Brightness [setting.mat_monitorgamma] [this setting is an adjustable bar]
+	// (Only works in Exclusive Full Screen mode.)
+	m_pSettingScreenBrightness->SetEnabled( !config.Windowed() );
+	if ( bHaveRecommended && pRecommended->FindKey( "setting.mat_monitorgamma" ) )
+		m_pSettingScreenBrightness->SetRecommendedSliderValue( pRecommended->GetFloat( "setting.mat_monitorgamma", 2.2f ) );
+	else
+		m_pSettingScreenBrightness->ClearRecommendedSliderValue();
+
 	// Rendering Pipeline [setting.mat_queue_mode] [radio buttons]
 	// Single-Threaded (Compatibility)	Multi-Threaded (Fastest)
 	// Does not affect graphical quality. It is recommended that you use Multi-Threaded rendering unless it causes problems on your hardware.
-	int iRecommendedRenderingPipeline = bHaveRecommended ? pRecommended->GetInt( "setting.mat_queue_mode", -1 ) : -2;
-	if ( GetCPUInformation().m_nPhysicalProcessors <= 1 )
-		iRecommendedRenderingPipeline = 0;
-	ConVarRef mat_queue_mode{ "mat_queue_mode" };
-	m_pSettingRenderingPipeline->SetCurrentAndRecommended( mat_queue_mode.GetInt(), iRecommendedRenderingPipeline );
-	m_pSettingRenderingPipeline->SetEnabled( GetCPUInformation().m_nPhysicalProcessors > 1 );
+	if ( GetCPUInformation().m_nPhysicalProcessors > 1 )
+	{
+		m_pSettingRenderingPipeline->SetRecommendedOption( bHaveRecommended ? pRecommended->GetInt( "setting.mat_queue_mode", -1 ) : -2 );
+		m_pSettingRenderingPipeline->SetEnabled( true );
+	}
+	else
+	{
+		m_pSettingRenderingPipeline->SetRecommendedOption( 0 );
+		m_pSettingRenderingPipeline->SetEnabled( false );
+	}
 
 	// V-Sync [setting.mat_vsync / setting.mat_triplebuffered]
 	// Unsynchronized - Render frames as fast as possible, limited to your monitor's refresh rate. May cause screen tearing on some graphics set-ups.
@@ -333,29 +374,24 @@ void CRD_VGUI_Settings_Video::Activate()
 	// Triple Buffering - Smooth out frame rate by rendering two frames ahead. Slightly increases input latency.
 	int iRecommendedVSyncEnabled = bHaveRecommended ? pRecommended->GetInt( "setting.mat_vsync", 1 ) : -1;
 	int iRecommendedTripleBuffering = bHaveRecommended ? pRecommended->GetInt( "setting.mat_triplebuffered", 0 ) : -1;
-	int iRecommendedVSync = iRecommendedVSyncEnabled != -1 ? iRecommendedVSyncEnabled != 0 ? iRecommendedTripleBuffering ? 2 : 1 : 0 : -1;
-	int iCurrentVSync = config.WaitForVSync() ? config.m_bWantTripleBuffered ? 2 : 1 : 0;
-	m_pSettingVSync->SetCurrentAndRecommended( iCurrentVSync, iRecommendedVSync );
+	m_pSettingVSync->SetRecommendedSliderValue( iRecommendedVSyncEnabled != -1 ? iRecommendedVSyncEnabled != 0 ? iRecommendedTripleBuffering ? 2 : 1 : 0 : -1 );
 
 	// Faster < - - - - > Higher Quality
 
 	// Effect Detail [setting.cpu_level]
 	// [0] Low [1] Medium [2] High
 	// Affected by CPU (processor) performance. Affects impact effects, physics-controlled debris animations, and precipitation.
-	int iRecommendedCPULevel = bHaveRecommended ? pRecommended->GetInt( "setting.cpu_level", -1 ) : -1;
-	m_pSettingEffectDetail->SetCurrentAndRecommended( GetCPULevel(), iRecommendedCPULevel );
+	m_pSettingEffectDetail->SetRecommendedOption( bHaveRecommended ? pRecommended->GetInt( "setting.cpu_level", -1 ) : -1 );
 
 	// Shader Detail [setting.gpu_level]
 	// [0] Low [1] Medium [2] High [3] Ultra
 	// Affected by GPU (graphics card) performance. Affects lighting and material detail, fog, stains, and bullet holes.
-	int iRecommendedGPULevel = bHaveRecommended ? pRecommended->GetInt( "setting.gpu_level", -1 ) : -1;
-	m_pSettingShaderDetail->SetCurrentAndRecommended( GetGPULevel(), iRecommendedGPULevel );
+	m_pSettingShaderDetail->SetRecommendedOption( bHaveRecommended ? pRecommended->GetInt( "setting.gpu_level", -1 ) : -1 );
 
 	// Texture Detail [setting.gpu_mem_level]
 	// [0] Low [1] Medium [2] High [3] Ultra
 	// Affected by GPU (graphics card) memory capacity and speed. Affects sharpness of textures.
-	int iRecommendedGPUMemLevel = bHaveRecommended ? pRecommended->GetInt( "setting.gpu_mem_level", -1 ) : -1;
-	m_pSettingTextureDetail->SetCurrentAndRecommended( GetGPUMemLevel(), iRecommendedGPUMemLevel );
+	m_pSettingTextureDetail->SetRecommendedOption( bHaveRecommended ? pRecommended->GetInt( "setting.gpu_mem_level", -1 ) : -1 );
 
 	// We no longer use mem_level to change any settings. Instead, we always set
 	// mem_level to the recommended value so anything that wants an approximate
@@ -394,6 +430,8 @@ void CRD_VGUI_Settings_Video::Activate()
 		}
 
 		m_pSettingAntiAliasing->AddOption( i, s_AAModes[i].m_szLabel, "#rd_video_aa_hint" );
+		m_pSettingAntiAliasing->LinkToConVarAdvanced( i, "mat_antialias", s_AAModes[i].m_nNumSamples );
+		m_pSettingAntiAliasing->LinkToConVarAdvanced( i, "mat_aaquality", s_AAModes[i].m_nQualityLevel );
 
 		if ( config.m_nAASamples == s_AAModes[i].m_nNumSamples && config.m_nAAQuality == s_AAModes[i].m_nQualityLevel )
 		{
@@ -409,8 +447,7 @@ void CRD_VGUI_Settings_Video::Activate()
 	// Texture Filtering [setting.mat_forceaniso]
 	// Bi-linear	Tri-linear	Anisotropic 2x	Anisotropic 4x	Anisotropic 8x	Anisotropic 16x
 	// Higher quality filtering makes textures viewed from a shallow angle or from far away clearer.
-	int iRecommendedFilteringLevel = bHaveRecommended ? pRecommended->GetInt( "setting.mat_forceaniso", 1 ) : -1;
-	m_pSettingFiltering->SetCurrentAndRecommended( config.m_nForceAnisotropicLevel, iRecommendedFilteringLevel );
+	m_pSettingFiltering->SetRecommendedOption( bHaveRecommended ? pRecommended->GetInt( "setting.mat_forceaniso", 1 ) : -1 );
 
 	// Film Grain [setting.mat_grain_scale_override]
 	// [0] Disabled [-1] Enabled
@@ -423,28 +460,20 @@ void CRD_VGUI_Settings_Video::Activate()
 	// Local Contrast [setting.mat_local_contrast_enable]
 	// [0] Disabled [1] Enabled
 	// Controls whether missions can change the sharpness of a scene for dramatic effect.
-	int iRecommendedLocalContrast = bHaveRecommended ? pRecommended->GetInt( "setting.mat_local_contrast_enable", 0 ) : -1;
-	ConVarRef mat_local_contrast_enable{ "mat_local_contrast_enable" };
-	m_pSettingLocalContrast->SetCurrentAndRecommended( mat_local_contrast_enable.GetInt(), iRecommendedLocalContrast );
+	m_pSettingLocalContrast->SetRecommendedOption( bHaveRecommended ? pRecommended->GetInt( "setting.mat_local_contrast_enable", 0 ) : -1 );
 
 	// Depth Blur [setting.mat_depth_blur_strength_override]
 	// [0] Disabled [-1] Enabled
 	// Controls whether missions can make objects far below the marines blurry for a simulated camera focus effect.
-	int iRecommendedDepthBlur = bHaveRecommended ? pRecommended->GetInt( "setting.mat_depth_blur_strength_override", 0 ) : -2;
-	ConVarRef mat_depth_blur_strength_override{ "mat_depth_blur_strength_override" };
-	m_pSettingDepthBlur->SetCurrentAndRecommended( mat_depth_blur_strength_override.GetInt(), iRecommendedDepthBlur );
+	m_pSettingDepthBlur->SetRecommendedOption( bHaveRecommended ? pRecommended->GetInt( "setting.mat_depth_blur_strength_override", 0 ) : -2 );
 
 	// Weather Effects [setting.rd_func_precipitation_enable]
 	// [0] Disabled [1] Enabled
 	// Controls some rain and snow effects.
-	int iRecommendedWeatherEffects = bHaveRecommended ? pRecommended->GetInt( "setting.rd_func_precipitation_enable", 0 ) : -1;
-	ConVarRef rd_func_precipitation_enable{ "rd_func_precipitation_enable" };
-	m_pSettingWeatherEffects->SetCurrentAndRecommended( rd_func_precipitation_enable.GetInt(), iRecommendedWeatherEffects );
+	m_pSettingWeatherEffects->SetRecommendedOption( bHaveRecommended ? pRecommended->GetInt( "setting.rd_func_precipitation_enable", 0 ) : -1 );
 
 	// Light and Specular Blooms [setting.mat_bloom_scalefactor_scalar] [slider]
 	// An effect where brightly glowing objects "spill" light into the surrounding area.
-	ConVarRef mat_bloom_scalefactor_scalar{ "mat_bloom_scalefactor_scalar" };
-	m_pSettingBloomScale->SetCurrentSliderValue( mat_bloom_scalefactor_scalar.GetFloat() );
 	if ( bHaveRecommended )
 		m_pSettingBloomScale->SetRecommendedSliderValue( pRecommended->GetFloat( "setting.mat_bloom_scalefactor_scalar", 1.0f ) );
 	else
@@ -453,49 +482,25 @@ void CRD_VGUI_Settings_Video::Activate()
 	// High Quality Dynamic Shadows [setting.rd_env_projectedtexture_enabled]
 	// [0] Disabled [1] Enabled
 	// Some missions contain stationary or moving area lights that produce dramatic shadows of marines and aliens. If this option is disabled, these lights will be turned off entirely.
-	int iRecommendedProjectedTextures = bHaveRecommended ? pRecommended->GetInt( "setting.rd_env_projectedtexture_enabled", 0 ) : -1;
-	ConVarRef rd_env_projectedtexture_enabled{ "rd_env_projectedtexture_enabled" };
-	m_pSettingProjectedTextures->SetCurrentAndRecommended( rd_env_projectedtexture_enabled.GetInt(), iRecommendedProjectedTextures );
+	m_pSettingProjectedTextures->SetRecommendedOption( bHaveRecommended ? pRecommended->GetInt( "setting.rd_env_projectedtexture_enabled", 0 ) : -1 );
 
 	// Flashlight Dynamic Shadows [setting.rd_flashlightshadows]
 	// [0] Disabled [1] Enabled
 	// Controls whether the Flashlight Attachment equipment casts high quality dynamic shadows.
-	int iRecommendedFlashlightShadows = bHaveRecommended ? pRecommended->GetInt( "setting.rd_flashlightshadows", 0 ) : -1;
-	ConVarRef rd_flashlightshadows{ "rd_flashlightshadows" };
-	m_pSettingFlashlightShadows->SetCurrentAndRecommended( rd_flashlightshadows.GetInt(), iRecommendedFlashlightShadows );
+	m_pSettingFlashlightShadows->SetRecommendedOption( bHaveRecommended ? pRecommended->GetInt( "setting.rd_flashlightshadows", 0 ) : -1 );
 
 	// Flashlight Light Spill [setting.rd_flashlight_dlight_enable]
 	// [0] Disabled [1] Enabled
 	// Controls whether the Flashlight Attachment equipment adds light to the area outside its beam.
-	int iRecommendedFlashlightLightSpill = bHaveRecommended ? pRecommended->GetInt( "setting.rd_flashlight_dlight_enable", 0 ) : -1;
-	ConVarRef rd_flashlight_dlight_enable{ "rd_flashlight_dlight_enable" };
-	m_pSettingFlashlightLightSpill->SetCurrentAndRecommended( rd_flashlight_dlight_enable.GetInt(), iRecommendedFlashlightLightSpill );
+	m_pSettingFlashlightLightSpill->SetRecommendedOption( bHaveRecommended ? pRecommended->GetInt( "setting.rd_flashlight_dlight_enable", 0 ) : -1 );
 
 	// High-Quality Beacons [setting.rd_simple_beacons]
 	// [1] Disabled [0] Enabled
 	// Controls whether items such as the IAF Heal Beacon and X-33 Damage Amplifier cause light distortion, glowing, and pulsing effects.
-	int iRecommendedHighQualityBeacons = bHaveRecommended ? pRecommended->GetInt( "setting.rd_simple_beacons", 1 ) : -1;
-	ConVarRef rd_simple_beacons{ "rd_simple_beacons" };
-	m_pSettingHighQualityBeacons->SetCurrentAndRecommended( rd_simple_beacons.GetInt(), iRecommendedHighQualityBeacons );
+	m_pSettingHighQualityBeacons->SetRecommendedOption( bHaveRecommended ? pRecommended->GetInt( "setting.rd_simple_beacons", 1 ) : -1 );
 
 	// Muzzle Flash Lights [setting.muzzleflash_light]
 	// [0] Disabled [1] Enabled
 	// Controls whether guns light up nearby surfaces and objects when fired.
-	int iRecommendedMuzzleFlashLights = bHaveRecommended ? pRecommended->GetInt( "setting.muzzleflash_light", 0 ) : -1;
-	ConVarRef muzzleflash_light{ "muzzleflash_light" };
-	m_pSettingMuzzleFlashLights->SetCurrentAndRecommended( muzzleflash_light.GetInt(), iRecommendedMuzzleFlashLights );
-
-	// Alien Shadows [convar asw_alien_shadows / convar asw_directional_shadows]
-	// [0/0] Disabled [0/1] Flashlight Only [1/1] Enabled
-	// Controls whether aliens have shadows. Warning: Setting this to "Enabled" may have a large effect on the frame rate of the game.
-	ConVarRef asw_alien_shadows{ "asw_alien_shadows" }, asw_directional_shadows{ "asw_directional_shadows" };
-	int iRecommendedAlienShadows = V_atoi( asw_alien_shadows.GetDefault() ) ? 2 : V_atoi( asw_directional_shadows.GetDefault() ) ? 1 : 0;
-	int iCurrentAlienShadows = asw_alien_shadows.GetBool() ? 2 : asw_directional_shadows.GetBool() ? 1 : 0;
-	m_pSettingAlienShadows->SetCurrentAndRecommended( iCurrentAlienShadows, iRecommendedAlienShadows );
-
-	// Low Health Vignetting [convar rd_health_effect]
-	// [0] Disabled [1] Enabled
-	// Controls whether the edges of the screen glow red when the marine is at low health.
-	ConVarRef rd_health_effect{ "rd_health_effect" };
-	m_pSettingLowHealthEffect->SetCurrentAndRecommended( rd_health_effect.GetInt(), V_atoi( rd_health_effect.GetDefault() ) );
+	m_pSettingMuzzleFlashLights->SetRecommendedOption( bHaveRecommended ? pRecommended->GetInt( "setting.muzzleflash_light", 0 ) : -1 );
 }

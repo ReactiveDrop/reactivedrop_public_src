@@ -45,3 +45,8 @@ CRD_VGUI_Settings_Audio::CRD_VGUI_Settings_Audio( vgui::Panel *parent, const cha
 	// tf_dingalingaling_lasthit / tf_dingalingaling_last_effect
 	// tf_dingaling_lasthit_volume
 }
+
+void CRD_VGUI_Settings_Audio::Activate()
+{
+	Assert( !"TODO" );
+}

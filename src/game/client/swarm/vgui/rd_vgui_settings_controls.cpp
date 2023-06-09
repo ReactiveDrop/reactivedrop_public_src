@@ -101,5 +101,11 @@ CRD_VGUI_Settings_Controls::CRD_VGUI_Settings_Controls( vgui::Panel *parent, con
 
 	m_pBtnCustomWheels = new BaseModUI::BaseModHybridButton( this, "BtnCustomWheels", "#rd_manage_custom_chat_wheels", this, "ManageWheels" );
 	m_pBtnResetDefaults = new BaseModUI::BaseModHybridButton( this, "BtnResetDefaults", "#L4D360UI_Controller_Default", this, "ResetDefaults" );
-	m_pChkDeveloperConsole = new CCvarToggleCheckButton( this, "ChkDeveloperConsole", "#GameUI_DeveloperConsoleCheck", "con_enable" );
+	m_pSettingDeveloperConsole = new CRD_VGUI_Option( this, "SettingDeveloperConsole", "#GameUI_DeveloperConsoleCheck", CRD_VGUI_Option::MODE_CHECKBOX );
+	m_pSettingDeveloperConsole->LinkToConVar( "con_enable", false );
+}
+
+void CRD_VGUI_Settings_Controls::Activate()
+{
+	Assert( !"TODO" );
 }
