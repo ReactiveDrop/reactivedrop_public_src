@@ -3529,7 +3529,7 @@ void CASW_Player::HandleEquippedItemsNotification( KeyValues *pKeyValues, bool b
 	int iParity = pKeyValues->GetInt( "e", -1 );
 	const char *szData = pKeyValues->GetString( "m", NULL );
 	int iLength = szData ? V_strlen( szData ) : 0;
-	if ( iOffset < 0 || iTotal < 8 + 2 * RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC || iTotal > RD_EQUIPPED_ITEMS_NOTIFICATION_WORST_CASE_SIZE || iParity <= 0 || !szData || !*szData || ( iLength & 1 ) )
+	if ( iOffset < 0 || iTotal < 4 + ( bDynamic ? RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC : RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC ) || iTotal > RD_EQUIPPED_ITEMS_NOTIFICATION_WORST_CASE_SIZE || iParity <= 0 || !szData || !*szData || ( iLength & 1 ) )
 	{
 		Warning( "Ignoring equipped items notification (%s) from player %s (invalid data)\n", bDynamic ? "dynamic" : "static", GetASWNetworkID() );
 		return;
