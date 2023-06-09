@@ -53,11 +53,12 @@ extern void LaunchCollectionsFrame();
 extern void LaunchSwarmopediaFrame();
 void CRD_VGUI_Main_Menu_Top_Bar::OnCommand( const char *command )
 {
+	CBaseModPanel &BaseModPanel = CBaseModPanel::GetSingleton();
 	if ( !V_stricmp( command, "QuitGame" ) )
 	{
 		DismissMainMenuScreens();
 
-		CBaseModFrame *pMainMenu = CBaseModPanel::GetSingleton().GetWindow( WT_MAINMENU );
+		CBaseModFrame *pMainMenu = BaseModPanel.GetWindow( WT_MAINMENU );
 		Assert( pMainMenu );
 		if ( pMainMenu )
 		{
@@ -67,26 +68,27 @@ void CRD_VGUI_Main_Menu_Top_Bar::OnCommand( const char *command )
 	else if ( !V_stricmp( command, "Settings" ) )
 	{
 		DismissMainMenuScreens();
-		Assert( !"TODO" );
+		BaseModPanel.OpenWindow( WT_SETTINGS, BaseModPanel.GetWindow( BaseModPanel.GetActiveWindowType() ), false );
 	}
 	else if ( !V_stricmp( command, "MainMenu" ) )
 	{
 		DismissMainMenuScreens();
+		BaseModPanel.OpenFrontScreen();
 	}
 	else if ( !V_stricmp( command, "Loadout" ) )
 	{
 		DismissMainMenuScreens();
-		Assert( !"TODO" );
+		BaseModPanel.OpenWindow( WT_LOADOUTS, BaseModPanel.GetWindow( BaseModPanel.GetActiveWindowType() ) );
 	}
 	else if ( !V_stricmp( command, "Contracts" ) )
 	{
 		DismissMainMenuScreens();
-		Assert( !"TODO" );
+		BaseModPanel.OpenWindow( WT_CONTRACTS, BaseModPanel.GetWindow( BaseModPanel.GetActiveWindowType() ) );
 	}
 	else if ( !V_stricmp( command, "Recordings" ) )
 	{
 		DismissMainMenuScreens();
-		CBaseModPanel::GetSingleton().OpenWindow( WT_DEMOS, CBaseModPanel::GetSingleton().GetWindow( CBaseModPanel::GetSingleton().GetActiveWindowType() ) );
+		BaseModPanel.OpenWindow( WT_DEMOS, BaseModPanel.GetWindow( BaseModPanel.GetActiveWindowType() ) );
 	}
 	else if ( !V_stricmp( command, "Swarmopedia" ) )
 	{
@@ -96,7 +98,7 @@ void CRD_VGUI_Main_Menu_Top_Bar::OnCommand( const char *command )
 	else if ( !V_stricmp( command, "Workshop" ) )
 	{
 		DismissMainMenuScreens();
-		Assert( !"TODO" );
+		BaseModPanel.OpenWindow( WT_WORKSHOP, BaseModPanel.GetWindow( BaseModPanel.GetActiveWindowType() ) );
 	}
 	else if ( !V_stricmp( command, "Inventory" ) )
 	{

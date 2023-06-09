@@ -83,6 +83,9 @@ namespace BaseModUI
 		WT_DEMOS,
 		WT_ITEMSHOWCASE,
 		WT_COMMANDERPROFILE,
+		WT_SETTINGS,
+		WT_LOADOUTS,
+		WT_CONTRACTS,
 		WT_WINDOW_COUNT // WT_WINDOW_COUNT must be last in the list!
 	};
 

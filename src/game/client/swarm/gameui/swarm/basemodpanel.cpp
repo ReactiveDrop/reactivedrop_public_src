@@ -35,6 +35,7 @@
 #include "VAudioVideo.h"
 #include "VCloud.h"
 #include "VCommanderProfile.h"
+#include "VContracts.h"
 #include "VControllerOptions.h"
 #include "VControllerOptionsButtons.h"
 #include "VControllerOptionsSticks.h"
@@ -59,6 +60,7 @@
 #include "vkeyboard.h"
 #include "VVoteOptions.h"
 #include "VLoadingProgress.h"
+#include "VLoadouts.h"
 #include "VMainMenu.h"
 #include "VMultiplayer.h"
 #include "VOptions.h"
@@ -93,6 +95,7 @@
 #include "vguisystemmoduleloader.h"
 #include "missionchooser/iasw_mission_chooser.h"
 #include "missionchooser/iasw_mission_chooser_source.h"
+#include "rd_vgui_settings.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -557,6 +560,18 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 
 		case WT_COMMANDERPROFILE:
 			m_Frames[wt] = new CommanderProfile( this, "CommanderProfile" );
+			break;
+
+		case WT_SETTINGS:
+			m_Frames[wt] = new CRD_VGUI_Settings( this, "Settings" );
+			break;
+
+		case WT_LOADOUTS:
+			m_Frames[wt] = new Loadouts( this, "Loadouts" );
+			break;
+
+		case WT_CONTRACTS:
+			m_Frames[wt] = new Contracts( this, "Contracts" );
 			break;
 
 		default:

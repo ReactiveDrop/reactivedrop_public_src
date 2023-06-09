@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vgui_controls/EditablePanel.h>
+#include "gameui/swarm/basemodui.h"
 #include "asw_shareddefs.h"
 
 namespace BaseModUI
@@ -16,9 +16,9 @@ class CRD_VGUI_Settings_Audio;
 class CRD_VGUI_Settings_Video;
 class CRD_VGUI_Settings_About;
 
-class CRD_VGUI_Settings : public vgui::EditablePanel
+class CRD_VGUI_Settings : public BaseModUI::CBaseModFrame
 {
-	DECLARE_CLASS_SIMPLE( CRD_VGUI_Settings, vgui::EditablePanel );
+	DECLARE_CLASS_SIMPLE( CRD_VGUI_Settings, BaseModUI::CBaseModFrame );
 public:
 	CRD_VGUI_Settings( vgui::Panel *parent, const char *panelName );
 

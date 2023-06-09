@@ -1881,6 +1881,8 @@ void MainMenu::OnWorkshopPreviewImage( RemoteStorageDownloadUGCResult_t *pParam,
 	if ( bIOFailure || pParam->m_eResult != k_EResultOK )
 		return;
 
+	Assert( pParam->m_nAppID == SteamUtils()->GetAppID() );
+
 	for ( int i = 0; i < NELEMS( m_hWorkshopTrendingPreview ); i++ )
 	{
 		if ( m_hWorkshopTrendingPreview[i] != pParam->m_hFile )

@@ -34,6 +34,9 @@ RD_STEAM_INPUT_BIND( MoveBack, "+back" );
 RD_STEAM_INPUT_BIND( MoveRight, "+moveright" );
 RD_STEAM_INPUT_BIND( MoveSlow, "+walk" );
 
+// manually position a bot marine
+RD_STEAM_INPUT_BIND( HoldOrder, "+holdorder" );
+
 // emotes
 RD_STEAM_INPUT_BIND( EmoteMedic, "cl_emote 0" );
 RD_STEAM_INPUT_BIND( EmoteAmmo, "cl_emote 1" );

@@ -1,6 +1,7 @@
 #include "cbase.h"
 #include "rd_vgui_settings.h"
 #include "gameui/swarm/vhybridbutton.h"
+#include "gameui/swarm/basemodpanel.h"
 #include "asw_util_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -9,9 +10,13 @@
 DECLARE_BUILD_FACTORY( CRD_VGUI_Settings );
 DECLARE_BUILD_FACTORY_DEFAULT_TEXT( CRD_VGUI_Option, OptionNameMissing );
 
+ConVar rd_settings_last_tab( "rd_settings_last_tab", "controls", FCVAR_ARCHIVE, "Remembers the last-used tab on the settings window." );
+
 CRD_VGUI_Settings::CRD_VGUI_Settings( vgui::Panel *parent, const char *panelName ) :
 	BaseClass( parent, panelName )
 {
+	SetProportional( true );
+
 	m_pBtnControls = new BaseModUI::BaseModHybridButton( this, "BtnControls", "#rd_settings_controls", this, "Controls" );
 	m_pBtnOptions = new BaseModUI::BaseModHybridButton( this, "BtnOptions", "#rd_settings_options", this, "Options" );
 	m_pBtnAudio = new BaseModUI::BaseModHybridButton( this, "BtnAudio", "#rd_settings_audio", this, "Audio" );
@@ -23,6 +28,11 @@ CRD_VGUI_Settings::CRD_VGUI_Settings( vgui::Panel *parent, const char *panelName
 	m_pPnlAudio = new CRD_VGUI_Settings_Audio( this, "PnlAudio" );
 	m_pPnlVideo = new CRD_VGUI_Settings_Video( this, "PnlVideo" );
 	m_pPnlAbout = new CRD_VGUI_Settings_About( this, "PnlAbout" );
+
+	SetTitle( "", false );
+	SetDeleteSelfOnClose( true );
+	SetLowerGarnishEnabled( false );
+	SetMoveable( false );
 }
 
 CRD_VGUI_Settings_Panel_Base::CRD_VGUI_Settings_Panel_Base( vgui::Panel *parent, const char *panelName ) :
@@ -489,4 +499,9 @@ CRD_VGUI_Option::Option_t::Option_t( int iValue, const char *szLabel, const char
 	m_iValue = iValue;
 	TryLocalize( szLabel, m_wszLabel, sizeof( m_wszLabel ) );
 	TryLocalize( szHint, m_wszHint, sizeof( m_wszHint ) );
+}
+
+CON_COMMAND( rd_settings, "Opens the settings screen." )
+{
+	BaseModUI::CBaseModPanel::GetSingleton().OpenWindow( BaseModUI::WT_SETTINGS, BaseModUI::CBaseModPanel::GetSingleton().GetWindow( BaseModUI::CBaseModPanel::GetSingleton().GetActiveWindowType() ), false );
 }

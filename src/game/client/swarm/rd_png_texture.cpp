@@ -318,7 +318,7 @@ void CRD_PNG_Texture::OnPNGDataReady( const void *pData, size_t nDataSize, const
 	buf.PutString( "\nUnlitGeneric {\n$basetexture ");
 	V_StripExtension( m_szFileNameVTF + V_strlen( "materials/" ), szStrippedName, sizeof( szStrippedName ) );
 	buf.PutString( szStrippedName );
-	buf.PutString( "\n$translucent 1\n$vertexcolor 1\n$vertexalpha $1\n$ignorez 1\n}\n" );
+	buf.PutString( "\n$translucent 1\n$vertexcolor 1\n$vertexalpha 1\n$ignorez 1\n}\n" );
 
 	g_pFullFileSystem->WriteFile( m_szFileNameVMT, "MOD", buf );
 
