@@ -57,7 +57,7 @@ COMPILE_TIME_ASSERT( ReactiveDropInventory::g_InventorySlotNames[RD_STEAM_INVENT
 #pragma warning(pop)
 
 #ifdef CLIENT_DLL
-ConVar rd_debug_inventory_dynamic_props( "cl_debug_inventory_dynamic_props", "0", FCVAR_NONE, "print debugging messages about dynamic property updates" );
+ConVar rd_debug_inventory( "cl_debug_inventory", "0", FCVAR_NONE, "print debugging messages about inventory service calls" );
 #define GET_INVENTORY_OR_BAIL \
 	ISteamInventory *pInventory = SteamInventory(); \
 	Assert( pInventory ); \
@@ -69,7 +69,7 @@ extern ConVar rd_equipped_weapon_secondary[ASW_NUM_MARINE_PROFILES];
 extern ConVar rd_equipped_weapon_extra[ASW_NUM_MARINE_PROFILES];
 #else
 extern ConVar rd_dedicated_server_language;
-ConVar rd_debug_inventory_dynamic_props( "sv_debug_inventory_dynamic_props", "0", FCVAR_NONE, "print debugging messages about dynamic property updates" );
+ConVar rd_debug_inventory( "sv_debug_inventory", "0", FCVAR_NONE, "print debugging messages about inventory service calls" );
 #define GET_INVENTORY_OR_BAIL \
 	ISteamInventory *pInventory = engine->IsDedicatedServer() ? SteamGameServerInventory() : SteamInventory(); \
 	Assert( pInventory ); \
@@ -116,7 +116,10 @@ public:
 						m_LocalInventoryCache.AddToTail( ReactiveDropInventory::ItemInstance_t{ pItem } );
 					}
 
-					DevMsg( "Loaded %d items from inventory cache.\n", m_LocalInventoryCache.Count() );
+					if ( rd_debug_inventory.GetBool() )
+					{
+						Msg( "Loaded %d items from inventory cache.\n", m_LocalInventoryCache.Count() );
+					}
 				}
 			}
 		}
@@ -131,7 +134,7 @@ public:
 #endif
 		if ( !pInventory )
 		{
-			DevWarning( "Cannot access ISteamInventory!\n" );
+			Warning( "Cannot access ISteamInventory!\n" );
 			return;
 		}
 
@@ -165,7 +168,7 @@ public:
 #endif
 		if ( !pInventory )
 		{
-			DevWarning( "Cannot access ISteamInventory!\n" );
+			Warning( "Cannot access ISteamInventory!\n" );
 			return;
 		}
 
@@ -199,7 +202,7 @@ public:
 #endif
 		if ( !pInventory )
 		{
-			DevWarning( "Cannot access ISteamInventory!\n" );
+			Warning( "Cannot access ISteamInventory!\n" );
 			return;
 		}
 
@@ -589,7 +592,10 @@ public:
 			m_PlayerLocal[iPlayer].m_DynamicNeedsSend.ClearAll();
 		}
 
-		DevMsg( 3, "Split equipped items notification (type %d) into %d chunks (%d bytes total payload)\n", iType, m_PlayerLocal[iPlayer].m_PendingEquipSend[iType].Count() + 1, nLength );
+		if ( rd_debug_inventory.GetBool() )
+		{
+			Msg( "Split equipped items notification (type %d) into %d chunks (%d bytes total payload)\n", iType, m_PlayerLocal[iPlayer].m_PendingEquipSend[iType].Count() + 1, nLength );
+		}
 	}
 
 	void CacheUserInventory( SteamInventoryResult_t hResult )
@@ -597,20 +603,20 @@ public:
 		ISteamInventory *pInventory = SteamInventory();
 		if ( !pInventory )
 		{
-			DevWarning( "Failed to cache user inventory for offline play: no ISteamInventory\n" );
+			Warning( "Failed to cache user inventory for offline play: no ISteamInventory\n" );
 			return;
 		}
 		ISteamUser *pUser = SteamUser();
 		if ( !pUser )
 		{
-			DevWarning( "Failed to cache user inventory for offline play: no ISteamUser\n" );
+			Warning( "Failed to cache user inventory for offline play: no ISteamUser\n" );
 			return;
 		}
 
 		uint32 nItems{};
 		if ( !pInventory->GetResultItems( hResult, NULL, &nItems ) )
 		{
-			DevWarning( "Failed to retrieve item count from inventory result for cache\n" );
+			Warning( "Failed to retrieve item count from inventory result for cache\n" );
 			return;
 		}
 
@@ -643,18 +649,21 @@ public:
 		CUtlBuffer buf;
 		if ( !pCache->WriteAsBinary( buf ) )
 		{
-			DevWarning( "Failed to serialize inventory cache\n" );
+			Warning( "Failed to serialize inventory cache\n" );
 			return;
 		}
 
 		CFmtStr szCacheFileName{ "cfg/clienti_%llu.dat", pUser->GetSteamID().ConvertToUint64() };
 		if ( !g_pFullFileSystem->WriteFile( szCacheFileName, "MOD", buf ) )
 		{
-			DevWarning( "Failed to write inventory cache\n" );
+			Warning( "Failed to write inventory cache\n" );
 			return;
 		}
 
-		DevMsg( 3, "Successfully wrote inventory cache with %d items\n", nItems );
+		if ( rd_debug_inventory.GetBool() )
+		{
+			Msg( "Successfully wrote inventory cache with %d items\n", nItems );
+		}
 
 		if ( m_HighOwnedInventoryDefIDs.Count() )
 		{
@@ -667,7 +676,7 @@ public:
 		ISteamInventory *pInventory = SteamInventory();
 		if ( !pInventory )
 		{
-			DevWarning( "Failed to cache item schema for offline play: no ISteamInventory\n" );
+			Warning( "Failed to cache item schema for offline play: no ISteamInventory\n" );
 			return;
 		}
 
@@ -768,17 +777,20 @@ public:
 		CUtlBuffer buf;
 		if ( !pCache->WriteAsBinary( buf ) )
 		{
-			DevWarning( "Failed to serialize item schema cache\n" );
+			Warning( "Failed to serialize item schema cache\n" );
 			return;
 		}
 
 		if ( !g_pFullFileSystem->WriteFile( "cfg/item_schema_cache.dat", "MOD", buf ) )
 		{
-			DevWarning( "Failed to write item schema cache\n" );
+			Warning( "Failed to write item schema cache\n" );
 			return;
 		}
 
-		DevMsg( 3, "Successfully wrote item schema cache with %d items (skipped %d)\n", nItemDefs - nSkippedDefs, nSkippedDefs );
+		if ( rd_debug_inventory.GetBool() )
+		{
+			Msg( "Successfully wrote item schema cache with %d items (skipped %d)\n", nItemDefs - nSkippedDefs, nSkippedDefs );
+		}
 	}
 
 	CUtlVector<SteamItemDef_t> m_HighOwnedInventoryDefIDs;
@@ -798,7 +810,7 @@ public:
 	{
 		if ( m_PendingDynamicPropertyUpdates.Count() == 0 )
 		{
-			if ( rd_debug_inventory_dynamic_props.GetBool() )
+			if ( rd_debug_inventory.GetBool() )
 			{
 				Msg( "[C] Not committing dynamic property update (no properties changed)\n" );
 			}
@@ -808,7 +820,7 @@ public:
 
 		if ( m_DynamicPropertyUpdateResult != k_SteamInventoryResultInvalid )
 		{
-			if ( rd_debug_inventory_dynamic_props.GetBool() )
+			if ( rd_debug_inventory.GetBool() )
 			{
 				Msg( "[C] Not committing dynamic property update (%s)\n", m_bWantExtraDynamicPropertyCommit ? "request in flight and repeat already queued" : "request in flight, queueing repeat" );
 			}
@@ -828,7 +840,7 @@ public:
 
 		SteamInventoryUpdateHandle_t hUpdate = pInventory->StartUpdateProperties();
 
-		if ( rd_debug_inventory_dynamic_props.GetBool() )
+		if ( rd_debug_inventory.GetBool() )
 		{
 			Msg( "[C] Committing dynamic property update with %d changed properties (handle %016llx)\n", m_PendingDynamicPropertyUpdates.Count(), hUpdate );
 		}
@@ -837,7 +849,7 @@ public:
 		{
 			const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( m_PendingDynamicPropertyUpdates[i].ItemDefID );
 			const char *szProperty = pDef->CompressedDynamicProps[m_PendingDynamicPropertyUpdates[i].PropertyIndex];
-			if ( rd_debug_inventory_dynamic_props.GetBool() )
+			if ( rd_debug_inventory.GetBool() )
 			{
 				Msg( "[C] Setting item %llu (#%d:%s) property %d:%s value to %lld\n", m_PendingDynamicPropertyUpdates[i].ItemInstanceID, m_PendingDynamicPropertyUpdates[i].ItemDefID, pDef->Name.Get(),
 					m_PendingDynamicPropertyUpdates[i].PropertyIndex, szProperty, m_PendingDynamicPropertyUpdates[i].NewValue );
@@ -869,7 +881,7 @@ public:
 		CASW_Game_Resource *pGameResource = ASWGameResource();
 		if ( !pGameResource )
 		{
-			if ( rd_debug_inventory_dynamic_props.GetBool() )
+			if ( rd_debug_inventory.GetBool() )
 			{
 				Msg( "[%c] Cannot increment property on starting items: no game resource\n", IsClientDll() ? 'C' : 'S' );
 			}
@@ -1031,7 +1043,7 @@ public:
 
 		if ( !s_bLoadedItemDefs )
 		{
-			if ( rd_debug_inventory_dynamic_props.GetBool() )
+			if ( rd_debug_inventory.GetBool() )
 			{
 				static int s_nOfflineWarnings = 0;
 				if ( s_nOfflineWarnings < 10 )
@@ -1085,7 +1097,7 @@ public:
 		Assert( pLocalInstance );
 		if ( !pLocalInstance )
 		{
-			if ( rd_debug_inventory_dynamic_props.GetBool() )
+			if ( rd_debug_inventory.GetBool() )
 			{
 				Msg( "[C] Could not find local instance of item %llu '%s' for property update.\n", instance.m_iItemInstanceID, pItemDef->Name.Get() );
 			}
@@ -1210,12 +1222,16 @@ public:
 
 		if ( iTierBefore < iTierAfter )
 		{
+#ifdef CLIENT_DLL
 			Assert( !"TODO: notification!" );
+#else
+			Assert( !"TODO: notification!" );
+#endif
 		}
 
-		if ( rd_debug_inventory_dynamic_props.GetBool() )
+		if ( rd_debug_inventory.GetBool() )
 		{
-			DevMsg( "[%c] Item %llu #%d '%s' dynamic property '%s' '%s' changed (%s) %+lld from %lld (tier %d) to %lld (tier %d).\n", IsClientDll() ? 'C' : 'S', instance.m_iItemInstanceID, instance.m_iItemDefID, pItemDef->Name.Get(), pAccessoryDef->Name.Get(), szPropertyName, bRelative ? "relative" : "absolute", iAmount, iCounterBefore, iTierBefore, iCounterAfter, iTierAfter );
+			Msg( "[%c] Item %llu #%d '%s' dynamic property '%s' '%s' changed (%s) %+lld from %lld (tier %d) to %lld (tier %d).\n", IsClientDll() ? 'C' : 'S', instance.m_iItemInstanceID, instance.m_iItemDefID, pItemDef->Name.Get(), pAccessoryDef->Name.Get(), szPropertyName, bRelative ? "relative" : "absolute", iAmount, iCounterBefore, iTierBefore, iCounterAfter, iTierAfter );
 		}
 	}
 
@@ -1454,7 +1470,11 @@ public:
 	{
 		GET_INVENTORY_OR_BAIL;
 
-		DebugPrintResult( pTask->m_hResult );
+		if ( rd_debug_inventory.GetBool() )
+		{
+			Msg( "Crafting task (type %d):\n", pTask->m_Type );
+			DebugPrintResult( pTask->m_hResult );
+		}
 
 		EResult eResult = pInventory->GetResultStatus( pTask->m_hResult );
 		if ( eResult != k_EResultOK )
@@ -1524,11 +1544,6 @@ public:
 			BaseModUI::ItemShowcase::ShowItems( pTask->m_hResult, 0, -1, BaseModUI::ItemShowcase::MODE_INSPECT );
 			break;
 		case CRAFT_DYNAMIC_PROPERTY_UPDATE:
-			if ( rd_debug_inventory_dynamic_props.GetBool() )
-			{
-				DebugPrintResult( pTask->m_hResult );
-			}
-
 			if ( m_bWantExtraDynamicPropertyCommit )
 			{
 				CommitDynamicProperties();
@@ -1609,7 +1624,7 @@ public:
 						Assert( hUpdate != k_SteamInventoryUpdateHandleInvalid );
 					}
 
-					if ( rd_debug_inventory_dynamic_props.GetBool() )
+					if ( rd_debug_inventory.GetBool() )
 						Msg( "[C] Initializing missing dynamic property '%s' on item %llu (%d %s) to 0.\n", pDef->CompressedDynamicProps[j], instance.ItemID, instance.ItemDefID, pDef->Name.Get() );
 
 					bHeldBack = true;
@@ -1640,7 +1655,7 @@ public:
 								Assert( hUpdate != k_SteamInventoryUpdateHandleInvalid );
 							}
 
-							if ( rd_debug_inventory_dynamic_props.GetBool() )
+							if ( rd_debug_inventory.GetBool() )
 								Msg( "[C] Initializing missing dynamic property '%s' on item %llu (%d %s) (from accessory %d %s) to 0.\n", pAccessoryDef->CompressedDynamicProps[k], instance.ItemID, instance.ItemDefID, pDef->Name.Get(), accessoryID, pAccessoryDef->Name.Get() );
 
 							bHeldBack = true;
@@ -1652,7 +1667,7 @@ public:
 
 			if ( !bHeldBack )
 			{
-				if ( rd_debug_inventory_dynamic_props.GetBool() )
+				if ( rd_debug_inventory.GetBool() )
 					Msg( "[C] No dynamic property init needed for item %llu (%d %s).\n", instance.ItemID, instance.ItemDefID, pDef->Name.Get() );
 
 				if ( !bSilenceNotification )
@@ -1877,7 +1892,10 @@ public:
 		}
 #endif
 
-		DevMsg( "[%c] Inventory result %08x unhandled on %s.\n", IsClientDll() ? 'C' : 'S', pParam->m_handle, IsClientDll() ? "client" : "server" );
+		if ( rd_debug_inventory.GetBool() )
+		{
+			DevMsg( "[%c] Inventory result %08x unhandled on %s.\n", IsClientDll() ? 'C' : 'S', pParam->m_handle, IsClientDll() ? "client" : "server" );
+		}
 	}
 
 	float m_flDefsUpdateTime{ 0.0f };
@@ -2228,7 +2246,7 @@ namespace ReactiveDropInventory
 		int count = jsmn_parse( &parser, szDynamicProps, V_strlen( szDynamicProps ), tokens, NELEMS( tokens ) );
 		if ( count <= 0 )
 		{
-			DevWarning( "Parsing item dynamic property data: corrupt data type %d\n", -count );
+			Warning( "Parsing item dynamic property data: corrupt data type %d\n", -count );
 			return false;
 		}
 
@@ -2946,7 +2964,7 @@ namespace ReactiveDropInventory
 
 		if ( !pInventory->DeserializeResult( &hResult, decodedData.Base(), decodedData.Count() ) )
 		{
-			DevWarning( "ISteamInventory::DeserializeResult failed to create a result.\n" );
+			Warning( "ISteamInventory::DeserializeResult failed to create a result.\n" );
 			return false;
 		}
 
@@ -2965,7 +2983,7 @@ namespace ReactiveDropInventory
 
 		if ( eResultStatus != k_EResultOK && ( bRequireFresh || eResultStatus != k_EResultExpired ) )
 		{
-			DevWarning( "ReactiveDropInventory::ValidateItemData: EResult %d (%s)\n", eResultStatus, UTIL_RD_EResultToString( eResultStatus ) );
+			Warning( "ReactiveDropInventory::ValidateItemData: EResult %d (%s)\n", eResultStatus, UTIL_RD_EResultToString( eResultStatus ) );
 			
 			bValid = false;
 			return true;
@@ -2973,7 +2991,7 @@ namespace ReactiveDropInventory
 
 		if ( requiredSteamID.IsValid() && !pInventory->CheckResultSteamID( hResult, requiredSteamID ) )
 		{
-			DevWarning( "ReactiveDropInventory::ValidateItemData: not from SteamID %llu\n", requiredSteamID.ConvertToUint64() );
+			Warning( "ReactiveDropInventory::ValidateItemData: not from SteamID %llu\n", requiredSteamID.ConvertToUint64() );
 
 			bValid = false;
 			return true;
@@ -2985,7 +3003,7 @@ namespace ReactiveDropInventory
 			const ReactiveDropInventory::ItemDef_t *pItemDef = GetItemDef( instance.ItemDefID );
 			if ( !pItemDef || !pItemDef->ItemSlotMatches( szRequiredSlot ) )
 			{
-				DevWarning( "ReactiveDropInventory::ValidateItemData: item fits in slot '%s', not '%s'\n", pItemDef ? pItemDef->ItemSlot.Get() : "<NO DEF>", szRequiredSlot );
+				Warning( "ReactiveDropInventory::ValidateItemData: item fits in slot '%s', not '%s'\n", pItemDef ? pItemDef->ItemSlot.Get() : "<NO DEF>", szRequiredSlot );
 
 				bValid = false;
 				return true;
