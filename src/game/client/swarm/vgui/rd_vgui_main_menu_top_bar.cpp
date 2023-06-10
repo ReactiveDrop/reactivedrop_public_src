@@ -114,7 +114,7 @@ void CRD_VGUI_Main_Menu_Top_Bar::OnCommand( const char *command )
 void CRD_VGUI_Main_Menu_Top_Bar::PaintBackground()
 {
 	int w = GetWide();
-	int t = 24;
+	int t = YRES( 24 );
 
 	int p1 = YRES( 240 );
 	int p2 = w - YRES( 240 );
