@@ -31,7 +31,7 @@ void LaunchCollectionsFrame()
 	pFrame->SetTitle( "#rd_collection_title", true );
 	pFrame->AddTab( new CRD_Collection_Tab_Inventory( pFrame, "#rd_collection_inventory_medals", "medal" ) );
 	pFrame->RememberTabIndex( &rd_collections_last_tab );
-	pFrame->UseMainMenuLayout();
+	pFrame->UseMainMenuLayout( 5 );
 	pFrame->ShowFullScreen();
 
 	g_hCollectionFrame = pFrame;
@@ -53,7 +53,7 @@ void LaunchSwarmopediaFrame()
 	pFrame->AddTab( new CRD_Collection_Tab_Equipment( pFrame, "#rd_collection_weapons", NULL, ASW_INVENTORY_SLOT_PRIMARY ) );
 	pFrame->AddTab( new CRD_Collection_Tab_Equipment( pFrame, "#rd_collection_equipment", NULL, ASW_INVENTORY_SLOT_EXTRA ) );
 	pFrame->RememberTabIndex( &rd_swarmopedia_last_tab );
-	pFrame->UseMainMenuLayout();
+	pFrame->UseMainMenuLayout( 3 );
 	pFrame->ShowFullScreen();
 
 	g_hCollectionFrame = pFrame;

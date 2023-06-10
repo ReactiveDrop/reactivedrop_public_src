@@ -9,6 +9,8 @@ namespace BaseModUI
 	class GenericPanelList;
 }
 
+class CNB_Header_Footer;
+class CRD_VGUI_Main_Menu_Top_Bar;
 class CRD_VGUI_Microphone_Tester;
 class CRD_VGUI_Settings_Controls;
 class CRD_VGUI_Settings_Options;
@@ -16,17 +18,22 @@ class CRD_VGUI_Settings_Audio;
 class CRD_VGUI_Settings_Video;
 class CRD_VGUI_Settings_About;
 
-class CRD_VGUI_Settings : public BaseModUI::CBaseModFrame
+namespace BaseModUI
 {
-	DECLARE_CLASS_SIMPLE( CRD_VGUI_Settings, BaseModUI::CBaseModFrame );
+class CRD_VGUI_Settings : public CBaseModFrame
+{
+	DECLARE_CLASS_SIMPLE( CRD_VGUI_Settings, CBaseModFrame );
 public:
 	CRD_VGUI_Settings( vgui::Panel *parent, const char *panelName );
 
-	BaseModUI::BaseModHybridButton *m_pBtnControls;
-	BaseModUI::BaseModHybridButton *m_pBtnOptions;
-	BaseModUI::BaseModHybridButton *m_pBtnAudio;
-	BaseModUI::BaseModHybridButton *m_pBtnVideo;
-	BaseModUI::BaseModHybridButton *m_pBtnAbout;
+	CNB_Header_Footer *m_pHeaderFooter;
+	CRD_VGUI_Main_Menu_Top_Bar *m_pTopBar;
+
+	BaseModHybridButton *m_pBtnControls;
+	BaseModHybridButton *m_pBtnOptions;
+	BaseModHybridButton *m_pBtnAudio;
+	BaseModHybridButton *m_pBtnVideo;
+	BaseModHybridButton *m_pBtnAbout;
 
 	CRD_VGUI_Settings_Controls *m_pPnlControls;
 	CRD_VGUI_Settings_Options *m_pPnlOptions;
@@ -34,6 +41,7 @@ public:
 	CRD_VGUI_Settings_Video *m_pPnlVideo;
 	CRD_VGUI_Settings_About *m_pPnlAbout;
 };
+}
 
 class CRD_VGUI_Settings_Panel_Base : public vgui::EditablePanel
 {
@@ -42,7 +50,7 @@ public:
 	CRD_VGUI_Settings_Panel_Base( vgui::Panel *parent, const char *panelName );
 
 	virtual void Activate() = 0;
-	virtual BaseModUI::BaseModHybridButton *GetButton( CRD_VGUI_Settings *pSettings ) = 0;
+	virtual BaseModUI::BaseModHybridButton *GetButton( BaseModUI::CRD_VGUI_Settings *pSettings ) = 0;
 };
 
 class CRD_VGUI_Option : public vgui::EditablePanel
@@ -159,7 +167,7 @@ public:
 	CRD_VGUI_Settings_Controls( vgui::Panel *parent, const char *panelName );
 
 	void Activate() override;
-	BaseModUI::BaseModHybridButton *GetButton( CRD_VGUI_Settings *pSettings ) override { return pSettings->m_pBtnControls; }
+	BaseModUI::BaseModHybridButton *GetButton( BaseModUI::CRD_VGUI_Settings *pSettings ) override { return pSettings->m_pBtnControls; }
 
 	CRD_VGUI_Bind *m_pBindMoveForward;
 	CRD_VGUI_Bind *m_pBindMoveLeft;
@@ -220,7 +228,7 @@ public:
 	CRD_VGUI_Settings_Options( vgui::Panel *parent, const char *panelName );
 
 	void Activate() override;
-	BaseModUI::BaseModHybridButton *GetButton( CRD_VGUI_Settings *pSettings ) override { return pSettings->m_pBtnOptions; }
+	BaseModUI::BaseModHybridButton *GetButton( BaseModUI::CRD_VGUI_Settings *pSettings ) override { return pSettings->m_pBtnOptions; }
 
 	CRD_VGUI_Option *m_pSettingasw_medic_under_marine;
 	CRD_VGUI_Option *m_pSettingasw_medic_under_marine_frequency;
@@ -308,7 +316,7 @@ public:
 	CRD_VGUI_Settings_Audio( vgui::Panel *parent, const char *panelName );
 
 	void Activate() override;
-	BaseModUI::BaseModHybridButton *GetButton( CRD_VGUI_Settings *pSettings ) override { return pSettings->m_pBtnAudio; }
+	BaseModUI::BaseModHybridButton *GetButton( BaseModUI::CRD_VGUI_Settings *pSettings ) override { return pSettings->m_pBtnAudio; }
 
 	CRD_VGUI_Option *m_pMixerOverallVolume;
 	CRD_VGUI_Option *m_pMixerMusicMenus;
@@ -352,7 +360,7 @@ public:
 	CRD_VGUI_Settings_Video( vgui::Panel *parent, const char *panelName );
 
 	void Activate() override;
-	BaseModUI::BaseModHybridButton *GetButton( CRD_VGUI_Settings *pSettings ) override { return pSettings->m_pBtnVideo; }
+	BaseModUI::BaseModHybridButton *GetButton( BaseModUI::CRD_VGUI_Settings *pSettings ) override { return pSettings->m_pBtnVideo; }
 
 	CRD_VGUI_Option *m_pSettingScreenResolution;
 	CRD_VGUI_Option *m_pSettingDisplayMode;
@@ -387,7 +395,7 @@ public:
 	CRD_VGUI_Settings_About( vgui::Panel *parent, const char *panelName );
 
 	void Activate() override;
-	BaseModUI::BaseModHybridButton *GetButton( CRD_VGUI_Settings *pSettings ) override { return pSettings->m_pBtnAbout; }
+	BaseModUI::BaseModHybridButton *GetButton( BaseModUI::CRD_VGUI_Settings *pSettings ) override { return pSettings->m_pBtnAbout; }
 
 	vgui::Label *m_pLblBuildID;
 	vgui::Label *m_pLblNetworkVersion;

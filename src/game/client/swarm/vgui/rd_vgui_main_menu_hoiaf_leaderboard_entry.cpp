@@ -8,6 +8,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+using namespace BaseModUI;
+
 DECLARE_BUILD_FACTORY( CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry );
 DECLARE_BUILD_FACTORY( CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry_Large );
 

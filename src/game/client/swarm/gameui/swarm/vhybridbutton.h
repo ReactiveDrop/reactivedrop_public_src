@@ -67,7 +67,7 @@ public:
 	BaseModHybridButton( Panel *parent, const char *panelName, const wchar_t *text, Panel *pActionSignalTarget = NULL, const char *pCmd = NULL );
 	virtual ~BaseModHybridButton();
 
-	State			GetCurrentState();
+	State			GetCurrentState( bool bIgnoreOpen = false );
 	int				GetOriginalTall() { return m_originalTall; }
 	ButtonStyle_t	GetStyle() { return m_nStyle; }
 	

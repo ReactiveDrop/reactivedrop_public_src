@@ -11,6 +11,7 @@ class vgui::ScrollBar;
 class CNB_Button;
 class CNB_Header_Footer;
 class CRD_VGUI_Main_Menu_Top_Bar;
+class CRD_VGUI_Stock_Ticker_Helper;
 
 class TabbedGridDetails : public vgui::Frame
 {
@@ -27,7 +28,7 @@ public:
 	virtual void SetTitle( const wchar_t *title, bool surfaceTitle ) override;
 
 	void ShowFullScreen();
-	void UseMainMenuLayout();
+	void UseMainMenuLayout( int iTopButtonIndex );
 	void RememberTabIndex( ConVar *pCVar );
 	void AddTab( TGD_Tab *pTab );
 	void RemoveTab( TGD_Tab *pTab );
@@ -43,6 +44,7 @@ public:
 	vgui::DHANDLE<TGD_Tab> m_hCurrentTab;
 	vgui::PHandle m_hOverridePanel;
 	CRD_VGUI_Main_Menu_Top_Bar *m_pMainMenuBar;
+	CRD_VGUI_Stock_Ticker_Helper *m_pMainMenuTicker;
 
 	ConVar *m_pLastTabConVar;
 };

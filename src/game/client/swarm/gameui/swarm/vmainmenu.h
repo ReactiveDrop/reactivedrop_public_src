@@ -11,14 +11,14 @@
 #include "VFlyoutMenu.h"
 
 class CRD_VGUI_Commander_Mini_Profile;
-class CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry;
-class CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry_Large;
 class CRD_VGUI_Main_Menu_Top_Bar;
 class CRD_VGUI_Stock_Ticker_Helper;
 class CReactiveDropWorkshopPreviewImage;
 
 namespace BaseModUI {
 
+class CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry;
+class CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry_Large;
 class QuickJoinPanel;
 class QuickJoinPublicPanel;
 

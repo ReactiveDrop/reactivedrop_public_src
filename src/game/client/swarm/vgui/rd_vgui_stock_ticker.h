@@ -66,6 +66,6 @@ public:
 
 	CRD_VGUI_Stock_Ticker *m_pStockTicker;
 
-	bool m_bLeftGlow;
-	bool m_bRightGlow;
+	uint8_t m_iLeftGlow;
+	uint8_t m_iRightGlow;
 };

@@ -6,10 +6,12 @@ class CAvatarImagePanel;
 struct LeaderboardEntry_t;
 struct LeaderboardScoreDetails_Points_t;
 
-class CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry : public BaseModUI::BaseModHybridButton
+namespace BaseModUI
+{
+class CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry : public BaseModHybridButton
 {
 public:
-	DECLARE_CLASS_SIMPLE( CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry, BaseModUI::BaseModHybridButton );
+	DECLARE_CLASS_SIMPLE( CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry, BaseModHybridButton );
 
 	CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry( vgui::Panel *parent, const char *panelName, vgui::Panel *pActionSignalTarget = NULL, const char *pCmd = NULL );
 	~CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry();
@@ -37,3 +39,4 @@ public:
 
 	void ApplySettings( KeyValues *pSettings ) override;
 };
+}

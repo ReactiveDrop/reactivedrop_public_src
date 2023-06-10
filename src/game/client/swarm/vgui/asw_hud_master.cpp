@@ -722,7 +722,7 @@ void CASW_Hud_Master::PaintLocalMarinePortrait()
 
  	surface()->DrawTexturedSubRect(
  		m_nMarinePortrait_circle_x, m_nMarinePortrait_circle_y, m_nMarinePortrait_circle_x2, m_nMarinePortrait_circle_y2,
- 		HUD_UV_COORDS( Sheet1, CRD_HUD_Sheets::UV_marine_portrait_BG_circle )
+ 		HUD_UV_COORDS( Sheet1, UV_marine_portrait_BG_circle )
  	);
 
 	float flSheet1HalfPixel_x = 1.0f / g_RD_HUD_Sheets.m_vecSheet1Size.x;
@@ -761,7 +761,7 @@ void CASW_Hud_Master::PaintLocalMarinePortrait()
 	surface()->DrawSetColor( m_colorBG );
 	surface()->DrawTexturedSubRect(
 		m_nMarinePortrait_circle_x, m_nMarinePortrait_circle_y, m_nMarinePortrait_circle_x2, m_nMarinePortrait_circle_y2,
-		HUD_UV_COORDS( Sheet1, CRD_HUD_Sheets::UV_marine_health_circle_BG )
+		HUD_UV_COORDS( Sheet1, UV_marine_health_circle_BG )
 		);
 
 	float flHealthFraction = m_pLocalMarineResource->GetHealthPercent();
@@ -774,7 +774,7 @@ void CASW_Hud_Master::PaintLocalMarinePortrait()
 		m_nMarinePortrait_circle_bg_w * 0.5f,
 		m_nMarinePortrait_circle_bg_t * 0.5f,
 		0.75f * ( m_flMainProgress ), 0.75f * ( m_flDelayProgress ), true, 180, -180,
-		HUD_UV_COORDS( Sheet1, CRD_HUD_Sheets::UV_marine_health_circle_FG_subtract ) );
+		HUD_UV_COORDS( Sheet1, UV_marine_health_circle_FG_subtract ) );
 
 	// draw infestation
 	if ( m_pLocalMarineResource->IsInfested() )
@@ -789,7 +789,7 @@ void CASW_Hud_Master::PaintLocalMarinePortrait()
 			m_nMarinePortrait_circle_bg_w * 0.5f,
 			m_nMarinePortrait_circle_bg_t * 0.5f,
 			flInfestation  * 0.75f, ( flHealthFraction * 0.75f ), true, 180, -180,
-			HUD_UV_COORDS( Sheet1, CRD_HUD_Sheets::UV_marine_health_circle_FG_infested ) );
+			HUD_UV_COORDS( Sheet1, UV_marine_health_circle_FG_infested ) );
 
 		// draw uninfested health bar
 		float flUninfestedHealth = flHealthFraction - flInfestation;
@@ -802,7 +802,7 @@ void CASW_Hud_Master::PaintLocalMarinePortrait()
 				m_nMarinePortrait_circle_bg_w * 0.5f,
 				m_nMarinePortrait_circle_bg_t * 0.5f,
 				0, flUninfestedHealth * 0.75f, true, 180, -180,
-				HUD_UV_COORDS( Sheet1, CRD_HUD_Sheets::UV_marine_health_circle_FG ) );
+				HUD_UV_COORDS( Sheet1, UV_marine_health_circle_FG ) );
 		}
 	}
 	else
@@ -815,7 +815,7 @@ void CASW_Hud_Master::PaintLocalMarinePortrait()
 			m_nMarinePortrait_circle_bg_w * 0.5f,
 			m_nMarinePortrait_circle_bg_t * 0.5f,
 			0, flHealthFraction * 0.75f, true, 180, -180,
-			HUD_UV_COORDS( Sheet1, CRD_HUD_Sheets::UV_marine_health_circle_FG ) );
+			HUD_UV_COORDS( Sheet1, UV_marine_health_circle_FG ) );
 	}
 
 	
@@ -827,7 +827,7 @@ void CASW_Hud_Master::PaintLocalMarinePortrait()
 		m_nMarinePortrait_y + m_nMarinePortrait_class_icon_y,
 		m_nMarinePortrait_x + m_nMarinePortrait_class_icon_x + m_nMarinePortrait_class_icon_w,
 		m_nMarinePortrait_y + m_nMarinePortrait_class_icon_y + m_nMarinePortrait_class_icon_t,
-		HUD_UV_COORDS( Sheet1, GetClassIcon( m_pLocalMarineResource ) )
+		HUD_UV_COORDS_QUALIFIED( Sheet1, GetClassIcon( m_pLocalMarineResource ) )
 		);
 	
 	if ( m_pLocalMarineActiveWeapon )
@@ -842,7 +842,7 @@ void CASW_Hud_Master::PaintLocalMarinePortrait()
 				m_nMarinePortrait_y + m_nMarinePortrait_bullets_icon_y,
 				m_nMarinePortrait_x + m_nMarinePortrait_bullets_icon_x + m_nMarinePortrait_bullets_icon_w,
 				m_nMarinePortrait_y + m_nMarinePortrait_bullets_icon_y + m_nMarinePortrait_bullets_icon_t,
-				HUD_UV_COORDS( Sheet_Stencil, CRD_HUD_Sheets::UV_hud_ammo_bullets )
+				HUD_UV_COORDS( Sheet_Stencil, UV_hud_ammo_bullets )
 				);
 		}
 
@@ -853,7 +853,7 @@ void CASW_Hud_Master::PaintLocalMarinePortrait()
 				m_nMarinePortrait_y + m_nMarinePortrait_grenades_icon_y,
 				m_nMarinePortrait_x + m_nMarinePortrait_grenades_icon_x + m_nMarinePortrait_grenades_icon_w,
 				m_nMarinePortrait_y + m_nMarinePortrait_grenades_icon_y + m_nMarinePortrait_grenades_icon_t,
-				HUD_UV_COORDS( Sheet_Stencil, CRD_HUD_Sheets::UV_hud_ammo_grenade )
+				HUD_UV_COORDS( Sheet_Stencil, UV_hud_ammo_grenade )
 				);
 		}
 		else if ( pInfo->m_iShowSecondaryBulletsOnHUD )
@@ -863,7 +863,7 @@ void CASW_Hud_Master::PaintLocalMarinePortrait()
 				m_nMarinePortrait_y + m_nMarinePortrait_grenades_icon_y,
 				m_nMarinePortrait_x + m_nMarinePortrait_grenades_icon_x + m_nMarinePortrait_grenades_icon_w,
 				m_nMarinePortrait_y + m_nMarinePortrait_grenades_icon_y + m_nMarinePortrait_grenades_icon_t,
-				HUD_UV_COORDS( Sheet_Stencil, CRD_HUD_Sheets::UV_hud_ammo_bullets )
+				HUD_UV_COORDS( Sheet_Stencil, UV_hud_ammo_bullets )
 				);
 		}
 
@@ -877,7 +877,7 @@ void CASW_Hud_Master::PaintLocalMarinePortrait()
 					m_nMarinePortrait_y + m_nMarinePortrait_clips_y,
 					m_nMarinePortrait_x + m_nMarinePortrait_clips_x + m_nMarinePortrait_clips_w,
 					m_nMarinePortrait_y + m_nMarinePortrait_clips_y + m_nMarinePortrait_clips_t,
-					HUD_UV_COORDS( Sheet_Stencil, m_bLocalMarineClipsDoubled ? CRD_HUD_Sheets::UV_hud_ammo_clip_double : CRD_HUD_Sheets::UV_hud_ammo_clip_full )
+					HUD_UV_COORDS_QUALIFIED( Sheet_Stencil, m_bLocalMarineClipsDoubled ? CRD_HUD_Sheets::UV_hud_ammo_clip_double : CRD_HUD_Sheets::UV_hud_ammo_clip_full )
 					);
 			}
 			else
@@ -894,7 +894,7 @@ void CASW_Hud_Master::PaintLocalMarinePortrait()
 							m_nMarinePortrait_y + m_nMarinePortrait_clips_y,
 							x + m_nMarinePortrait_clips_w,
 							m_nMarinePortrait_y + m_nMarinePortrait_clips_y + m_nMarinePortrait_clips_t,
-							HUD_UV_COORDS( Sheet_Stencil, m_bLocalMarineClipsDoubled ? CRD_HUD_Sheets::UV_hud_ammo_clip_double : CRD_HUD_Sheets::UV_hud_ammo_clip_full )
+							HUD_UV_COORDS_QUALIFIED( Sheet_Stencil, m_bLocalMarineClipsDoubled ? CRD_HUD_Sheets::UV_hud_ammo_clip_double : CRD_HUD_Sheets::UV_hud_ammo_clip_full )
 							);
 					}
 					else if ( m_nLocalMarineMaxClips > i )
@@ -905,7 +905,7 @@ void CASW_Hud_Master::PaintLocalMarinePortrait()
 							m_nMarinePortrait_y + m_nMarinePortrait_clips_y,
 							x + m_nMarinePortrait_clips_w,
 							m_nMarinePortrait_y + m_nMarinePortrait_clips_y + m_nMarinePortrait_clips_t,
-							HUD_UV_COORDS( Sheet_Stencil, CRD_HUD_Sheets::UV_hud_ammo_clip_empty )
+							HUD_UV_COORDS( Sheet_Stencil, UV_hud_ammo_clip_empty )
 							);
 					}
 				}
@@ -925,7 +925,7 @@ void CASW_Hud_Master::PaintSquadMemberStatus( int nPosition )
 	surface()->DrawTexturedSubRect(
 		x + m_nSquadMate_bg_x, y + m_nSquadMate_bg_y,
 		x + m_nSquadMate_bg_x + m_nSquadMate_bg_w, y + m_nSquadMate_bg_y + m_nSquadMate_bg_t,
-		HUD_UV_COORDS( Sheet1, CRD_HUD_Sheets::UV_team_portrait_BG )
+		HUD_UV_COORDS( Sheet1, UV_team_portrait_BG )
 		);
 
 	// class icon/special status
@@ -935,7 +935,7 @@ void CASW_Hud_Master::PaintSquadMemberStatus( int nPosition )
 		y + m_nSquadMate_class_icon_y,
 		x + m_nSquadMate_class_icon_x + m_nSquadMate_class_icon_w,
 		y + m_nSquadMate_class_icon_y + m_nSquadMate_class_icon_t,
-		HUD_UV_COORDS( Sheet1, m_SquadMateInfo[ nPosition ].nClassIcon )
+		HUD_UV_COORDS_QUALIFIED( Sheet1, m_SquadMateInfo[ nPosition ].nClassIcon )
 		);
 
 	// TODO: show infested progress
@@ -1029,7 +1029,7 @@ void CASW_Hud_Master::PaintSquadMemberStatus( int nPosition )
 				y + m_nSquadMate_clips_y,
 				x + m_nSquadMate_clips_x + m_nSquadMate_clips_w,
 				y + m_nSquadMate_clips_y + m_nSquadMate_clips_t,
-				HUD_UV_COORDS( Sheet_Stencil, m_SquadMateInfo[ nPosition ].bClipsDoubled ? CRD_HUD_Sheets::UV_hud_ammo_clip_double : CRD_HUD_Sheets::UV_hud_ammo_clip_full )
+				HUD_UV_COORDS_QUALIFIED( Sheet_Stencil, m_SquadMateInfo[ nPosition ].bClipsDoubled ? CRD_HUD_Sheets::UV_hud_ammo_clip_double : CRD_HUD_Sheets::UV_hud_ammo_clip_full )
 				);
 		}
 		else
@@ -1046,7 +1046,7 @@ void CASW_Hud_Master::PaintSquadMemberStatus( int nPosition )
 						y + m_nSquadMate_clips_y,
 						clip_x + m_nSquadMate_clips_w,
 						y + m_nSquadMate_clips_y + m_nSquadMate_clips_t,
-						HUD_UV_COORDS( Sheet_Stencil, m_SquadMateInfo[ nPosition ].bClipsDoubled ? CRD_HUD_Sheets::UV_hud_ammo_clip_double : CRD_HUD_Sheets::UV_hud_ammo_clip_full )
+						HUD_UV_COORDS_QUALIFIED( Sheet_Stencil, m_SquadMateInfo[ nPosition ].bClipsDoubled ? CRD_HUD_Sheets::UV_hud_ammo_clip_double : CRD_HUD_Sheets::UV_hud_ammo_clip_full )
 					);
 				}
 				else if ( m_SquadMateInfo[ nPosition ].nMaxClips > i )
@@ -1057,7 +1057,7 @@ void CASW_Hud_Master::PaintSquadMemberStatus( int nPosition )
 						y + m_nSquadMate_clips_y,
 						clip_x + m_nSquadMate_clips_w,
 						y + m_nSquadMate_clips_y + m_nSquadMate_clips_t,
-						HUD_UV_COORDS( Sheet_Stencil, CRD_HUD_Sheets::UV_hud_ammo_clip_empty )
+						HUD_UV_COORDS( Sheet_Stencil, UV_hud_ammo_clip_empty )
 						);
 				}
 			}
@@ -1491,7 +1491,7 @@ void CASW_Hud_Master::PaintText()
 					m_nMarinePortrait_y + m_nMarinePortrait_health_counter_icon_y,
 					m_nMarinePortrait_x + m_nMarinePortrait_health_counter_icon_x + m_nMarinePortrait_health_counter_icon_w,
 					m_nMarinePortrait_y + m_nMarinePortrait_health_counter_icon_y + m_nMarinePortrait_health_counter_icon_t,
-					HUD_UV_COORDS( Sheet1, CRD_HUD_Sheets::UV_hud_ammo_heal )
+					HUD_UV_COORDS( Sheet1, UV_hud_ammo_heal )
 					);
 
 			wchar_t wszHealth[ 6 ];

@@ -11,6 +11,7 @@
 #include <vgui/IInput.h>
 #include "rd_steam_input.h"
 #include "rd_vgui_main_menu_top_bar.h"
+#include "rd_vgui_stock_ticker.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -40,6 +41,7 @@ TabbedGridDetails::TabbedGridDetails() : BaseClass( NULL, "TabbedGridDetails" )
 	m_pTabRightHint = new vgui::Label( this, "TabRightHint", "#GameUI_Icons_RIGHT_BUMPER" );
 
 	m_pMainMenuBar = NULL;
+	m_pMainMenuTicker = NULL;
 	m_pLastTabConVar = NULL;
 }
 
@@ -277,12 +279,15 @@ void TabbedGridDetails::ShowFullScreen()
 	SetVisible( true );
 }
 
-void TabbedGridDetails::UseMainMenuLayout()
+void TabbedGridDetails::UseMainMenuLayout( int iTopButtonIndex )
 {
 	m_pHeaderFooter->SetTitle( L"" );
 	m_pHeaderFooter->SetHeaderEnabled( false );
 	m_pHeaderFooter->SetFooterEnabled( false );
 	m_pMainMenuBar = new CRD_VGUI_Main_Menu_Top_Bar( this, "TopBar" );
+	m_pMainMenuBar->m_pTopButton[iTopButtonIndex]->SetOpen();
+	m_pMainMenuTicker = new CRD_VGUI_Stock_Ticker_Helper( this, "StockTickerHelper" );
+	m_pBackButton->SetVisible( false );
 
 	InvalidateLayout();
 }

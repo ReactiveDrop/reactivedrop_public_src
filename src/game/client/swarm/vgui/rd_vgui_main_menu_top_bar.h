@@ -23,6 +23,6 @@ public:
 	BaseModUI::BaseModHybridButton *m_pTopButton[6];
 	BaseModUI::BaseModHybridButton *m_pBtnQuit;
 
-	bool m_bLeftGlow;
-	bool m_bRightGlow;
+	uint8_t m_iLeftGlow;
+	uint8_t m_iRightGlow;
 };

@@ -81,23 +81,22 @@ void CRD_VGUI_Commander_Mini_Profile::PaintBackground()
 	vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
 	vgui::surface()->DrawSetTexture( g_RD_HUD_Sheets.m_nCommanderProfileSheetID );
 
-	int x0, y0, x1, y1, iTex;
+	int x0, y0, x1, y1;
 
 	x0 = y0 = 0;
 	GetSize( x1, y1 );
-	iTex = CRD_HUD_Sheets::UV_profile;
 	CRD_VGUI_Main_Menu_Top_Bar *pTopBar = assert_cast< CRD_VGUI_Main_Menu_Top_Bar * >( FindSiblingByName( "TopBar" ) );
 	BaseModUI::MainMenu *pMainMenu = dynamic_cast< BaseModUI::MainMenu * >( GetParent() );
 	if ( m_bIsButton && HasFocus() )
-		iTex = CRD_HUD_Sheets::UV_profile_hover;
+		vgui::surface()->DrawTexturedSubRect( x0, y0, x1, y1, HUD_UV_COORDS( CommanderProfileSheet, UV_profile_hover ) );
 	else if ( pMainMenu && pMainMenu->m_pBtnMultiplayer->GetCurrentState() == BaseModUI::BaseModHybridButton::Focus )
-		iTex = CRD_HUD_Sheets::UV_profile_create_lobby_hover;
-	else if ( pTopBar && pTopBar->m_pBtnLogo->GetCurrentState() == BaseModUI::BaseModHybridButton::Focus )
-		iTex = CRD_HUD_Sheets::UV_profile_logo_hover;
-	else if ( pTopBar && pTopBar->m_pBtnSettings->GetCurrentState() == BaseModUI::BaseModHybridButton::Focus )
-		iTex = CRD_HUD_Sheets::UV_profile_settings_hover;
-
-	vgui::surface()->DrawTexturedSubRect( x0, y0, x1, y1, HUD_UV_COORDS( CommanderProfileSheet, iTex ) );
+		vgui::surface()->DrawTexturedSubRect( x0, y0, x1, y1, HUD_UV_COORDS( CommanderProfileSheet, UV_profile_create_lobby_hover ) );
+	else if ( pTopBar && pTopBar->m_pBtnLogo->GetCurrentState() == BaseModUI::BaseModHybridButton::Open )
+		vgui::surface()->DrawTexturedSubRect( x0, y0, x1, y1, HUD_UV_COORDS( CommanderProfileSheet, UV_profile_logo_hover ) );
+	else if ( pTopBar && pTopBar->m_pBtnSettings->GetCurrentState() == BaseModUI::BaseModHybridButton::Open )
+		vgui::surface()->DrawTexturedSubRect( x0, y0, x1, y1, HUD_UV_COORDS( CommanderProfileSheet, UV_profile_settings_hover ) );
+	else
+		vgui::surface()->DrawTexturedSubRect( x0, y0, x1, y1, HUD_UV_COORDS( CommanderProfileSheet, UV_profile ) );
 }
 
 void CRD_VGUI_Commander_Mini_Profile::InitForLocalPlayer()

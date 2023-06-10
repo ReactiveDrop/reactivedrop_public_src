@@ -3,9 +3,13 @@
 #include "gameui/swarm/vhybridbutton.h"
 #include "gameui/swarm/basemodpanel.h"
 #include "asw_util_shared.h"
+#include "nb_header_footer.h"
+#include "rd_vgui_main_menu_top_bar.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
+using namespace BaseModUI;
 
 DECLARE_BUILD_FACTORY( CRD_VGUI_Settings );
 DECLARE_BUILD_FACTORY_DEFAULT_TEXT( CRD_VGUI_Option, OptionNameMissing );
@@ -16,6 +20,9 @@ CRD_VGUI_Settings::CRD_VGUI_Settings( vgui::Panel *parent, const char *panelName
 	BaseClass( parent, panelName )
 {
 	SetProportional( true );
+
+	m_pHeaderFooter = new CNB_Header_Footer( this, "HeaderFooter" );
+	m_pTopBar = new CRD_VGUI_Main_Menu_Top_Bar( this, "TopBar" );
 
 	m_pBtnControls = new BaseModUI::BaseModHybridButton( this, "BtnControls", "#rd_settings_controls", this, "Controls" );
 	m_pBtnOptions = new BaseModUI::BaseModHybridButton( this, "BtnOptions", "#rd_settings_options", this, "Options" );
@@ -503,5 +510,5 @@ CRD_VGUI_Option::Option_t::Option_t( int iValue, const char *szLabel, const char
 
 CON_COMMAND( rd_settings, "Opens the settings screen." )
 {
-	BaseModUI::CBaseModPanel::GetSingleton().OpenWindow( BaseModUI::WT_SETTINGS, BaseModUI::CBaseModPanel::GetSingleton().GetWindow( BaseModUI::CBaseModPanel::GetSingleton().GetActiveWindowType() ), false );
+	BaseModUI::CBaseModPanel::GetSingleton().OpenWindow( BaseModUI::WT_SETTINGS, BaseModUI::CBaseModPanel::GetSingleton().GetWindow( BaseModUI::CBaseModPanel::GetSingleton().GetActiveWindowType() ) );
 }

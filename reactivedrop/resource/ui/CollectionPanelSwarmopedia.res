@@ -24,7 +24,7 @@
 	{
 		"fieldName"			"ModelButton"
 		"xpos"				"476"
-		"ypos"				"417"
+		"ypos"				"390"
 		"wide"				"117"
 		"tall"				"27"
 		"ControlName"		"CNB_Button"

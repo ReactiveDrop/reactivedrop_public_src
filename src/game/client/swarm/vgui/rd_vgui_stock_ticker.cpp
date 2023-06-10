@@ -543,8 +543,8 @@ CRD_VGUI_Stock_Ticker_Helper::CRD_VGUI_Stock_Ticker_Helper( vgui::Panel *parent,
 {
 	m_pStockTicker = new CRD_VGUI_Stock_Ticker( this, "StockTicker" );
 
-	m_bLeftGlow = false;
-	m_bRightGlow = false;
+	m_iLeftGlow = 0;
+	m_iRightGlow = 0;
 
 	g_RD_HUD_Sheets.VidInit();
 }
@@ -561,25 +561,15 @@ void CRD_VGUI_Stock_Ticker_Helper::PaintBackground()
 	int w, t;
 	GetSize( w, t );
 
-	vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
-	vgui::surface()->DrawSetTexture( g_RD_HUD_Sheets.m_nMainMenuSheetID );
+	int p1 = YRES( 150 );
+	int p2 = w - YRES( 255 );
 
-	int x0, y0, x1, y1, iTex;
+	HUD_SHEET_DRAW_RECT( 0, 0, p1, t, MainMenuSheet, UV_ticker_left );
+	HUD_SHEET_DRAW_RECT( p1, 0, p2, t, MainMenuSheet, UV_ticker_mid );
+	HUD_SHEET_DRAW_RECT( p2, 0, w, t, MainMenuSheet, UV_ticker_right );
 
-	x0 = 0;
-	y0 = 0;
-	x1 = YRES( 150 );
-	y1 = t;
-	iTex = m_bLeftGlow ? CRD_HUD_Sheets::UV_ticker_left_workshop_hover : CRD_HUD_Sheets::UV_ticker_left;
-	vgui::surface()->DrawTexturedSubRect( x0, y0, x1, y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
-
-	x0 = x1;
-	x1 = w - YRES( 225 );
-	iTex = CRD_HUD_Sheets::UV_ticker_mid;
-	vgui::surface()->DrawTexturedSubRect( x0, y0, x1, y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
-
-	x0 = x1;
-	x1 = w;
-	iTex = m_bRightGlow ? CRD_HUD_Sheets::UV_ticker_right_update_hover : CRD_HUD_Sheets::UV_ticker_right;
-	vgui::surface()->DrawTexturedSubRect( x0, y0, x1, y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
+	if ( m_iLeftGlow )
+		HUD_SHEET_DRAW_RECT_ALPHA( 0, 0, YRES( 150 ), t, MainMenuAdditive, UV_ticker_left_workshop_hover, m_iLeftGlow );
+	if ( m_iRightGlow )
+		HUD_SHEET_DRAW_RECT_ALPHA( w - YRES( 255 ), 0, w, t, MainMenuAdditive, UV_ticker_right_update_hover, m_iRightGlow );
 }

@@ -159,7 +159,7 @@ BaseModUI::BaseModHybridButton::~BaseModHybridButton()
 	// otherwise i/o constantly on these
 }
 
-BaseModHybridButton::State BaseModHybridButton::GetCurrentState()
+BaseModHybridButton::State BaseModHybridButton::GetCurrentState( bool bIgnoreOpen )
 {
 	State curState = Enabled;
 	if ( IsPC() )
@@ -169,13 +169,13 @@ BaseModHybridButton::State BaseModHybridButton::GetCurrentState()
 			curState = IsEnabled() ? Focus : FocusDisabled;
 		}
 	}
-	if( m_isOpen )
+	if ( !bIgnoreOpen && m_isOpen )
 	{
 		curState = Open;
 	}
-	else if( IsArmed() || m_isNavigateTo ) //NavigateTo doesn't instantly give focus to the control
+	else if ( IsArmed() || m_isNavigateTo )	//NavigateTo doesn't instantly give focus to the control
 	{										//so this little boolean value is meant to let us know we should have focus for the "focus state"
-		if( IsEnabled() )					//until vgui catches up and registers us as having focus.
+		if ( IsEnabled() )					//until vgui catches up and registers us as having focus.
 		{
 			curState = Focus;
 		}
@@ -184,12 +184,12 @@ BaseModHybridButton::State BaseModHybridButton::GetCurrentState()
 			curState = FocusDisabled;
 		}
 
-		if( IsArmed() )
+		if ( IsArmed() )
 		{
 			m_isNavigateTo = false;
 		}
 	}
-	else if( !IsEnabled() )
+	else if ( !IsEnabled() )
 	{
 		curState = Disabled;
 	}
@@ -387,9 +387,13 @@ void BaseModHybridButton::PaintButtonEx()
 			{
 				col.SetColor( 135, 170, 193, 255 );
 			}
-			else if ( m_nStyle == BUTTON_REACTIVEDROPMAINMENU || m_nStyle == BUTTON_REACTIVEDROPMAINMENUBIG || m_nStyle == BUTTON_REACTIVEDROPMAINMENUTOP || m_nStyle == BUTTON_REACTIVEDROPMAINMENUSHOWCASE || m_nStyle == BUTTON_REACTIVEDROPMAINMENUTIMER || m_nStyle == BUTTON_REACTIVEDROPMAINMENUHOIAF )
+			else if ( m_nStyle == BUTTON_REACTIVEDROPMAINMENU || m_nStyle == BUTTON_REACTIVEDROPMAINMENUBIG || m_nStyle == BUTTON_REACTIVEDROPMAINMENUSHOWCASE || m_nStyle == BUTTON_REACTIVEDROPMAINMENUTIMER || m_nStyle == BUTTON_REACTIVEDROPMAINMENUHOIAF )
 			{
 				col.SetColor( 192, 192, 192, 255 );
+			}
+			else if ( m_nStyle == BUTTON_REACTIVEDROPMAINMENUTOP )
+			{
+				col.SetColor( 96, 96, 96, 255 );
 			}
 			else
 			{
@@ -412,9 +416,16 @@ void BaseModHybridButton::PaintButtonEx()
 		case Open:
 			// flyout menu is attached
 			//col.SetColor( 200, 200, 200, 255 );
-			col.SetColor( 169, 213, 255, 255 );
-			bDrawGlow = true;
-			bDrawCursor = true;
+			if ( m_nStyle == BUTTON_REACTIVEDROPMAINMENUTOP )
+			{
+				col.SetColor( 224, 224, 224, 255 );
+			}
+			else
+			{
+				col.SetColor( 169, 213, 255, 255 );
+				bDrawGlow = true;
+				bDrawCursor = true;
+			}
 			break;
 		case Focus:
 			// active item
