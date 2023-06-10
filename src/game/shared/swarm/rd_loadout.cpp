@@ -156,6 +156,17 @@ namespace ReactiveDropLoadout
 		},
 	};
 
+	static void WriteItemDefID( KeyValues *pKV, bool bBinary, const char *szShortName, const char *szLongName, SteamItemDef_t id )
+	{
+		if ( id == 0 )
+			return;
+
+		pKV->SetInt( bBinary ? szShortName : szLongName, id );
+	}
+	static SteamItemDef_t ReadItemDefID( KeyValues *pKV, bool bBinary, const char *szShortName, const char *szLongName )
+	{
+		return pKV->GetInt( bBinary ? szShortName : szLongName );
+	}
 	static void WriteItemID( KeyValues *pKV, bool bBinary, const char *szShortName, const char *szLongName, SteamItemInstanceID_t id )
 	{
 		if ( id == 0 || id == k_SteamItemInstanceIDInvalid )
@@ -222,21 +233,32 @@ namespace ReactiveDropLoadout
 		return ASW_Equip_Extra( id );
 	}
 
-	void LoadoutMarineData_t::ToKeyValues( KeyValues *pKV, bool bBinary ) const
+	void LoadoutMarineData_t::ToKeyValues( KeyValues *pKV, bool bBinary, bool bForSharing ) const
 	{
 		WriteRegularID( pKV, bBinary, "p", "Primary", Primary );
 		WriteRegularID( pKV, bBinary, "s", "Secondary", Secondary );
 		WriteExtraID( pKV, bBinary, "e", "Extra", Extra );
-		WriteItemID( pKV, bBinary, "mi", "Items/Suit", Suit );
-		WriteItemID( pKV, bBinary, "pi", "Items/Primary", PrimaryItem );
-		WriteItemID( pKV, bBinary, "si", "Items/Secondary", SecondaryItem );
-		WriteItemID( pKV, bBinary, "ei", "Items/Extra", ExtraItem );
+		WriteItemDefID( pKV, bBinary, "md", "Defs/Suit", SuitDef );
+		WriteItemDefID( pKV, bBinary, "pd", "Defs/Primary", PrimaryDef );
+		WriteItemDefID( pKV, bBinary, "sd", "Defs/Secondary", SecondaryDef );
+		WriteItemDefID( pKV, bBinary, "ed", "Defs/Extra", ExtraDef );
+		if ( !bForSharing )
+		{
+			WriteItemID( pKV, bBinary, "mi", "Items/Suit", Suit );
+			WriteItemID( pKV, bBinary, "pi", "Items/Primary", PrimaryItem );
+			WriteItemID( pKV, bBinary, "si", "Items/Secondary", SecondaryItem );
+			WriteItemID( pKV, bBinary, "ei", "Items/Extra", ExtraItem );
+		}
 	}
 	void LoadoutMarineData_t::FromKeyValues( KeyValues *pKV, bool bBinary )
 	{
 		Primary = ReadRegularID( pKV, bBinary, "p", "Primary" );
 		Secondary = ReadRegularID( pKV, bBinary, "s", "Secondary" );
 		Extra = ReadExtraID( pKV, bBinary, "e", "Extra" );
+		SuitDef = ReadItemDefID( pKV, bBinary, "md", "Defs/Suit" );
+		PrimaryDef = ReadItemDefID( pKV, bBinary, "pd", "Defs/Primary" );
+		SecondaryDef = ReadItemDefID( pKV, bBinary, "sd", "Defs/Secondary" );
+		ExtraDef = ReadItemDefID( pKV, bBinary, "ed", "Defs/Extra" );
 		Suit = ReadItemID( pKV, bBinary, "mi", "Items/Suit" );
 		PrimaryItem = ReadItemID( pKV, bBinary, "pi", "Items/Primary" );
 		SecondaryItem = ReadItemID( pKV, bBinary, "si", "Items/Secondary" );
@@ -264,19 +286,24 @@ namespace ReactiveDropLoadout
 		}
 	}
 
-	void LoadoutData_t::ToKeyValues( KeyValues *pKV, bool bBinary ) const
+	void LoadoutData_t::ToKeyValues( KeyValues *pKV, bool bBinary, bool bForSharing ) const
 	{
-		// this is technically affected by the Y2K38 problem, but it'll just convert silently between negative and >2B,
-		// so it's more of a Y2106 problem and I'll be 112 years old then so I probably won't remember writing this comment
-		// if you're playing AS:RD in 2106 and the last modified time on your new loadout suddenly says 1970,
-		// well, you've probably got more important problems
-		if ( LastModified )
-			pKV->SetInt( bBinary ? "mt" : "LastModified", LastModified );
-		if ( LastUsed )
-			pKV->SetInt( bBinary ? "at" : "LastUsed", LastUsed );
+		if ( !bForSharing )
+		{
+			// this is technically affected by the Y2K38 problem, but it'll just convert silently between negative and >2B,
+			// so it's more of a Y2106 problem and I'll be 112 years old then so I probably won't remember writing this comment
+			// if you're playing AS:RD in 2106 and the last modified time on your new loadout suddenly says 1970,
+			// well, you've probably got more important problems
+			if ( LastModified )
+				pKV->SetInt( bBinary ? "mt" : "LastModified", LastModified );
+			if ( LastUsed )
+				pKV->SetInt( bBinary ? "at" : "LastUsed", LastUsed );
 
-		for ( int i = 0; i < RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS; i++ )
-			WriteItemID( pKV, bBinary, CFmtStr{ "m%d", i }, CFmtStr{ "Medals/Slot%d", i + 1 }, Medals[i] );
+			for ( int i = 0; i < RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS; i++ )
+			{
+				WriteItemID( pKV, bBinary, CFmtStr{ "m%d", i }, CFmtStr{ "Medals/Slot%d", i + 1 }, Medals[i] );
+			}
+		}
 
 		WriteMarine( pKV, bBinary, "0", "Marines/Sarge", Marines[ASW_MARINE_PROFILE_SARGE], MarineIncluded[ASW_MARINE_PROFILE_SARGE] );
 		WriteMarine( pKV, bBinary, "1", "Marines/Wildcat", Marines[ASW_MARINE_PROFILE_WILDCAT], MarineIncluded[ASW_MARINE_PROFILE_WILDCAT] );

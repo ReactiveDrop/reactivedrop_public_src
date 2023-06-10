@@ -10,12 +10,16 @@ namespace ReactiveDropLoadout
 		ASW_Equip_Regular Primary{ ASW_EQUIP_RIFLE };
 		ASW_Equip_Regular Secondary{ ASW_EQUIP_RIFLE };
 		ASW_Equip_Extra Extra{ ASW_EQUIP_MEDKIT };
+		SteamItemDef_t SuitDef{};
+		SteamItemDef_t PrimaryDef{};
+		SteamItemDef_t SecondaryDef{};
+		SteamItemDef_t ExtraDef{};
 		SteamItemInstanceID_t Suit{ k_SteamItemInstanceIDInvalid };
 		SteamItemInstanceID_t PrimaryItem{ k_SteamItemInstanceIDInvalid };
 		SteamItemInstanceID_t SecondaryItem{ k_SteamItemInstanceIDInvalid };
 		SteamItemInstanceID_t ExtraItem{ k_SteamItemInstanceIDInvalid };
 
-		void ToKeyValues( KeyValues *pKV, bool bBinary ) const;
+		void ToKeyValues( KeyValues *pKV, bool bBinary, bool bForSharing = false ) const;
 		void FromKeyValues( KeyValues *pKV, bool bBinary );
 #ifdef CLIENT_DLL
 		void CopyToLive( ASW_Marine_Profile id ) const;
@@ -31,7 +35,7 @@ namespace ReactiveDropLoadout
 		uint32 LastModified{};
 		uint32 LastUsed{};
 
-		void ToKeyValues( KeyValues *pKV, bool bBinary ) const;
+		void ToKeyValues( KeyValues *pKV, bool bBinary, bool bForSharing = false ) const;
 		void FromKeyValues( KeyValues *pKV, bool bBinary );
 #ifdef CLIENT_DLL
 		void CopyToLive();
