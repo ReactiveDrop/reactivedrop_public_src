@@ -4,7 +4,7 @@
 	{
 		"ControlName"				"EditablePanel"
 		"fieldName"					"QuickJoinPanelItem"
-		"wide"					"f8"
+		"wide"					"130"
 		"tall"					"12"
 		"autoResize"			"0"
 		"pinCorner"				"0"
@@ -19,7 +19,7 @@
 	{
 		"ControlName"			"ImagePanel"
 		"fieldName"				"PnlGamerPic"
-		"xpos"					"0"
+		"xpos"					"3"
 		"ypos"					"0"
 		"wide"					"12"
 		"tall"					"12"
@@ -38,7 +38,7 @@
 		"fieldName"				"LblGamerTag"
 		"xpos"					"17"
 		"ypos"					"0"
-		"wide"					"190"
+		"wide"					"107"
 		"tall"					"12"
 		"autoResize"			"0"
 		"pinCorner"				"0"

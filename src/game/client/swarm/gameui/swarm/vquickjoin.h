@@ -66,6 +66,7 @@ namespace BaseModUI
 
 	protected:
 		char *m_resFile;
+		vgui::Panel *m_pPnlClip;
 		GenericPanelList* m_GplQuickJoinList;
 
 		CUtlVector< QuickInfo > m_FriendInfo;
@@ -91,7 +92,7 @@ namespace BaseModUI
 
 		void SetInfo( QuickJoinPanel::QuickInfo const &qi );
 		const wchar_t *GetName() const;
-		void SetName( wchar_t *name );
+		void SetName( const wchar_t *name, CSteamID steamID );
 
 		void Update();
 
@@ -99,7 +100,6 @@ namespace BaseModUI
 		const char* GetItemTooltip();
 		bool GetText( char* outText, int buffLen );
 		void ApplySchemeSettings( vgui::IScheme *pScheme );
-
 
 	protected:
 		virtual void PaintBackground();

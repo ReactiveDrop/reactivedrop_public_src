@@ -26,23 +26,14 @@
 		"ActivationType"			"1"
 		"FocusDisabledBorderSize"	"1"
 	}
-	
-	"GplQuickJoinList"
+
+	"PnlClip"
 	{
-		"ControlName"					"GenericPanelList"
-		"fieldName"						"GplQuickJoinList"
-		"xpos"							"-1"
-		"ypos"							"20"
-		"zpos"							"0"
-		"wide"							"130"
-		"tall"							"300"
-		"autoResize"					"1"
-		"pinCorner"						"0"
-		"visible"						"1"
-		"enabled"						"1"
-		"tabPosition"					"1"
-		"panelBorder"					"0"
-		"NoDrawPanel"					"1"
-		"arrowsVisible"					"0"
+		"ControlName"					"Panel"
+		"fieldName"						"PnlClip"
+		"xpos"							"3"
+		"ypos"							"22"
+		"wide"							"124"
+		"tall"							"65"
 	}
 }

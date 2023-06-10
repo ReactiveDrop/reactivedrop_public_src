@@ -81,6 +81,7 @@ public:
 	virtual void OnMouseWheeled(int delta);
 
 	void SetSchemeBgColorName(const char* schemeBgColorName);
+	void SetPanelItemBorder( int iBorder );
 
 	unsigned short GetLastItemAdded();
 

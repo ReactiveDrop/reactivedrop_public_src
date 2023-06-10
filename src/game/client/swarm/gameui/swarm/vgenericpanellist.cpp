@@ -1046,6 +1046,11 @@ void GenericPanelList::SetSchemeBgColorName( const char* schemeBgColorName )
 	InvalidateLayout( false, true );
 }
 
+void GenericPanelList::SetPanelItemBorder( int iBorder )
+{
+	m_PanelItemBorder = iBorder;
+}
+
 //=============================================================================
 unsigned short GenericPanelList::GetLastItemAdded()
 {

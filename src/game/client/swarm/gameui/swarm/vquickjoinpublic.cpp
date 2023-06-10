@@ -60,13 +60,13 @@ public:
 		bool bOK = g_pFullFileSystem->ReadFile( "resource/hoiaf_participating_servers.bin", "MOD", localBuf );
 		Assert( bOK );
 
-		Assert( localBuf.TellMaxPut() == pParam->m_unBodySize );
+		Assert( localBuf.TellMaxPut() == int( pParam->m_unBodySize ) );
 
 		CUtlBuffer remoteBuf{ 0, int( pParam->m_unBodySize ), 0 };
 		bOK = SteamHTTP()->GetHTTPResponseBodyData( pParam->m_hRequest, ( uint8_t * )remoteBuf.Base(), pParam->m_unBodySize );
 		Assert( bOK );
 
-		Assert( !V_memcmp( localBuf.Base(), remoteBuf.Base(), MIN( localBuf.TellMaxPut(), pParam->m_unBodySize ) ) );
+		Assert( !V_memcmp( localBuf.Base(), remoteBuf.Base(), MIN( localBuf.TellMaxPut(), int( pParam->m_unBodySize ) ) ) );
 		SteamHTTP()->ReleaseHTTPRequest( pParam->m_hRequest );
 	}
 

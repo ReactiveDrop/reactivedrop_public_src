@@ -11,6 +11,7 @@
 #include "VMainMenu.h"
 #include "EngineInterface.h"
 #include "gameui_util.h"
+#include "rd_text_filtering.h"
 
 #include "tier1/KeyValues.h"
 #include "vgui/ILocalize.h"
@@ -32,9 +33,8 @@ using namespace vgui;
 DECLARE_BUILD_FACTORY( QuickJoinPanel );
 
 ConVar cl_quick_join_scroll_start( "cl_quick_join_scroll_start", "1", FCVAR_NONE, "Number of players available to start friend scrolling ticker." );
-ConVar cl_quick_join_scroll_max( "cl_quick_join_scroll_max", "5", FCVAR_NONE, "Max players shown in the friend scrolling ticker." );
+ConVar cl_quick_join_scroll_max( "cl_quick_join_scroll_max", "6", FCVAR_NONE, "Max players shown in the friend scrolling ticker." );
 ConVar cl_quick_join_scroll_rate( "cl_quick_join_scroll_rate", "90", FCVAR_NONE, "Rate of the friend scrolling ticker." );
-ConVar cl_quick_join_scroll_offset( "cl_quick_join_scroll_offset", "16", FCVAR_NONE, "Offset of the friend scrolling ticker from the title." );
 ConVar cl_quick_join_panel_tall( "cl_quick_join_panel_tall", IsX360() ? "16" : "14", // X360 doesn't show icons, but need extra space on PC for Steam avatars
 								 FCVAR_NONE, "The spacing between panels." );
 ConVar cl_quick_join_panel_accel( "cl_quick_join_panel_accel", "0.025", FCVAR_NONE, "Acceleration for the y position of the panel when items are added or removed." );
@@ -89,9 +89,10 @@ const wchar_t *QuickJoinPanelItem::GetName() const
 	return m_name;
 }
 
-void QuickJoinPanelItem::SetName( wchar_t *name )
+void QuickJoinPanelItem::SetName( const wchar_t *name, CSteamID steamID )
 {
-	Q_wcsncpy( m_name, name, ARRAYSIZE( m_name ) );
+	V_wcsncpy( m_name, name, ARRAYSIZE( m_name ) );
+	g_RDTextFiltering.FilterTextName( m_name, steamID );
 }
 
 bool QuickJoinPanelItem::GetText(char* outText, int buffLen)
@@ -202,7 +203,8 @@ BaseClass( parent, panelName )
 {
 	SetProportional( true );
 
-	m_GplQuickJoinList = new GenericPanelList( this, "GplQuickJoinList", GenericPanelList::ISM_PERITEM );
+	m_pPnlClip = new vgui::Panel( this, "PnlClip" );
+	m_GplQuickJoinList = new GenericPanelList( m_pPnlClip, "GplQuickJoinList", GenericPanelList::ISM_PERITEM );
 	ClearGames();
 
 	m_resFile = NULL;
@@ -361,28 +363,6 @@ void QuickJoinPanel::OnThink()
 		return;
 	}
 
-#ifndef INFESTED_DLL
-	int screenWide, screenTall;
-	vgui::surface()->GetScreenSize( screenWide, screenTall );
-
-	int iYOffset = 110;
-	if ( IsPC() )
-	{
-		iYOffset = 30;
-	}
-
-	bool bScrolling = ( iNumItems >= cl_quick_join_scroll_start.GetInt() );
-#endif
-
-	int iCurrentX, iCurrentY;
-#ifndef INFESTED_DLL
-	GetPos( iCurrentX, iCurrentY );
-	iCurrentY = GetSmoothPanelY( iCurrentY, screenTall
-								 - vgui::scheme()->GetProportionalScaledValue( iYOffset )
-								 - MAX( iNumItems, ( bScrolling ) ? ( 2 ) : ( 1 ) ) * iItemTall );
-	SetPos( iCurrentX, iCurrentY );
-#endif
-
 	if ( iNumItems > cl_quick_join_scroll_start.GetInt() - 1 )
 	{
 		// Scrolling list illusion
@@ -390,8 +370,7 @@ void QuickJoinPanel::OnThink()
 
 		float fTimeOffset = iTimeOffset;
 
-		m_GplQuickJoinList->GetPos( iCurrentX, iCurrentY );
-		m_GplQuickJoinList->SetPos( iCurrentX, fTimeOffset + vgui::scheme()->GetProportionalScaledValue( cl_quick_join_scroll_offset.GetFloat() ) );
+		m_GplQuickJoinList->SetPos( 0, fTimeOffset - iItemTall );
 
 		float fListEdgeAlphas = 255.0f * ( fTimeOffset / static_cast<float>( iItemTall ) );
 
@@ -412,8 +391,7 @@ void QuickJoinPanel::OnThink()
 	}
 	else
 	{
-		m_GplQuickJoinList->GetPos( iCurrentX, iCurrentY );
-		m_GplQuickJoinList->SetPos( iCurrentX, vgui::scheme()->GetProportionalScaledValue( cl_quick_join_scroll_offset.GetFloat() ) );
+		m_GplQuickJoinList->SetPos( 0, 0 );
 	}
 }
 
@@ -587,7 +565,7 @@ QuickJoinPanelItem* QuickJoinPanel::AddGame( int iPanelIndex, QuickInfo const &q
 	{
 		// Just update name
 		panel->SetInfo( qi );
-		panel->SetName( name );
+		panel->SetName( name, qi.m_eType == qi.TYPE_PLAYER ? qi.m_xuid : k_steamIDNil );
 		panel->Update();
 		return panel;
 	}
@@ -595,7 +573,7 @@ QuickJoinPanelItem* QuickJoinPanel::AddGame( int iPanelIndex, QuickInfo const &q
 	// Not found, add a new item
 	QuickJoinPanelItem* result = m_GplQuickJoinList->AddPanelItem< QuickJoinPanelItem >( "QuickJoinPanelItem" );
 	result->SetInfo( qi );
-	result->SetName( name );
+	result->SetName( name, qi.m_eType == qi.TYPE_PLAYER ? qi.m_xuid : k_steamIDNil );
 	result->SetItemTooltip( "#L4D360UI_MainMenu_Tooltip_QuickJoinItem" );
 	result->Update();
 	return result;
@@ -644,6 +622,11 @@ void QuickJoinPanel::ApplySettings( KeyValues *inResourceData )
 		LoadControlSettings( resFile );
 	}
 
+	m_GplQuickJoinList->SetSize( m_pPnlClip->GetWide(), YRES( cl_quick_join_panel_tall.GetInt() ) * cl_quick_join_scroll_max.GetInt() );
+	m_GplQuickJoinList->SetBgColor( Color{} );
+	m_GplQuickJoinList->SetScrollArrowsVisible( false );
+	m_GplQuickJoinList->SetPanelItemBorder( 0 );
+
 	for ( int i = 0; i < cl_quick_join_scroll_max.GetInt(); ++i )
 	{
 		QuickJoinPanelItem* result = m_GplQuickJoinList->AddPanelItem< QuickJoinPanelItem >( "QuickJoinPanelItem" );
@@ -685,7 +668,7 @@ void QuickJoinPanel::ClearGames()
 			memset( &qi, 0, sizeof( qi ) );
 
 			panel->SetAlpha( 255 );
-			panel->SetName( L"" );
+			panel->SetName( L"", k_steamIDNil );
 			panel->SetInfo( qi );
 			panel->Update();
 		}
