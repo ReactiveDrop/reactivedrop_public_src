@@ -54,6 +54,7 @@
 #include "rd_inventory_shared.h"
 #include "rd_hud_sheet.h"
 #include "rd_vgui_main_menu_top_bar.h"
+#include "rd_vgui_stock_ticker.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -105,6 +106,7 @@ MainMenu::MainMenu( Panel *parent, const char *panelName ):
 	SetDeleteSelfOnClose( true );
 
 	m_pTopBar = new CRD_VGUI_Main_Menu_Top_Bar( this, "TopBar" );
+	m_pStockTickerHelper = new CRD_VGUI_Stock_Ticker_Helper( this, "StockTickerHelper" );
 	m_pCommanderProfile = new CRD_VGUI_Commander_Mini_Profile( this, "CommanderMiniProfile" );
 	m_pBtnMultiplayer = new BaseModHybridButton( this, "BtnMultiplayer", "#L4D360UI_FoudGames_CreateNew_campaign", this, "CreateGame" );
 	m_pBtnSingleplayer = new BaseModHybridButton( this, "BtnSingleplayer", "#L4D360UI_MainMenu_PlaySolo", this, "SoloPlay" );
@@ -1297,6 +1299,8 @@ void MainMenu::PaintBackground()
 
 	m_pTopBar->m_bLeftGlow = m_pCommanderProfile->HasFocus();
 	m_pTopBar->m_bRightGlow = m_pTopLeaderboardEntries[0]->GetCurrentState() == BaseModHybridButton::Focus;
+	m_pStockTickerHelper->m_bLeftGlow = m_pBtnWorkshopShowcase->GetCurrentState() == BaseModHybridButton::Focus;
+	m_pStockTickerHelper->m_bRightGlow = m_pBtnUpdateNotes->GetCurrentState() == BaseModHybridButton::Focus;
 
 	int w, t;
 	GetSize( w, t );
@@ -1305,27 +1309,6 @@ void MainMenu::PaintBackground()
 	vgui::surface()->DrawSetTexture( g_RD_HUD_Sheets.m_nMainMenuSheetID );
 
 	int x0, y0, x1, y1, iTex;
-
-	x0 = 0;
-	y0 = t - YRES( 20 );
-	x1 = YRES( 150 );
-	y1 = t;
-	iTex = CRD_HUD_Sheets::UV_ticker_left;
-	if ( m_pBtnWorkshopShowcase->GetCurrentState() == BaseModHybridButton::Focus )
-		iTex = CRD_HUD_Sheets::UV_ticker_left_workshop_hover;
-	vgui::surface()->DrawTexturedSubRect( x0, y0, x1, y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
-
-	x0 = x1;
-	x1 = w - YRES( 225 );
-	iTex = CRD_HUD_Sheets::UV_ticker_mid;
-	vgui::surface()->DrawTexturedSubRect( x0, y0, x1, y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
-
-	x0 = x1;
-	x1 = w;
-	iTex = CRD_HUD_Sheets::UV_ticker_right;
-	if ( m_pBtnUpdateNotes->GetCurrentState() == BaseModHybridButton::Focus )
-		iTex = CRD_HUD_Sheets::UV_ticker_right_update_hover;
-	vgui::surface()->DrawTexturedSubRect( x0, y0, x1, y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
 
 	if ( m_pBtnMultiplayer->IsVisible() )
 	{

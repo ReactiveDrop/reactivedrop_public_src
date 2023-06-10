@@ -14,6 +14,7 @@ class CRD_VGUI_Commander_Mini_Profile;
 class CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry;
 class CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry_Large;
 class CRD_VGUI_Main_Menu_Top_Bar;
+class CRD_VGUI_Stock_Ticker_Helper;
 class CReactiveDropWorkshopPreviewImage;
 
 namespace BaseModUI {
@@ -68,6 +69,7 @@ public:
 	uint32 m_iLastTimerUpdate;
 	int m_iQuickJoinHelpText;
 	CRD_VGUI_Main_Menu_Top_Bar *m_pTopBar;
+	CRD_VGUI_Stock_Ticker_Helper *m_pStockTickerHelper;
 	CRD_VGUI_Commander_Mini_Profile *m_pCommanderProfile;
 	BaseModHybridButton *m_pBtnMultiplayer;
 	BaseModHybridButton *m_pBtnSingleplayer;

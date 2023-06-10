@@ -4,9 +4,8 @@
 
 class CRD_VGUI_Stock_Ticker : public vgui::EditablePanel
 {
-public:
 	DECLARE_CLASS_SIMPLE( CRD_VGUI_Stock_Ticker, vgui::EditablePanel );
-
+public:
 	CRD_VGUI_Stock_Ticker( vgui::Panel *parent, const char *panelName );
 	~CRD_VGUI_Stock_Ticker();
 
@@ -33,6 +32,9 @@ public:
 	int m_iTextTotalWidth;
 	CUniformRandomStream m_RandomStream;
 	int m_iLastRandomSeed;
+	static double s_flLastResetTime;
+	double m_flNextResetTime;
+	int m_iPixelsUntilSaveResetTime;
 
 	CPanelAnimationVar( vgui::HFont, m_hTickerFont, "ticker_font", "DefaultSmall" );
 	CPanelAnimationVar( vgui::HFont, m_hTickerBlurFont, "ticker_blur_font", "DefaultSmallBlur" );
@@ -51,4 +53,19 @@ public:
 	CPanelAnimationVarAliasType( int, m_iSeparatorTexture, "separator_tex", "vgui/white", "textureid" );
 	CPanelAnimationVarAliasType( int, m_iStockUpTexture, "stock_up_tex", "vgui/white", "textureid" );
 	CPanelAnimationVarAliasType( int, m_iStockDownTexture, "stock_down_tex", "vgui/white", "textureid" );
+};
+
+class CRD_VGUI_Stock_Ticker_Helper : public vgui::EditablePanel
+{
+	DECLARE_CLASS_SIMPLE( CRD_VGUI_Stock_Ticker_Helper, vgui::EditablePanel );
+public:
+	CRD_VGUI_Stock_Ticker_Helper( vgui::Panel *parent, const char *panelName );
+
+	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+	void PaintBackground() override;
+
+	CRD_VGUI_Stock_Ticker *m_pStockTicker;
+
+	bool m_bLeftGlow;
+	bool m_bRightGlow;
 };

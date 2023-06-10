@@ -6,11 +6,15 @@
 #include <vgui/IScheme.h>
 #include <vgui/ISurface.h>
 #include <ctime>
+#include "rd_hud_sheet.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 DECLARE_BUILD_FACTORY( CRD_VGUI_Stock_Ticker );
+DECLARE_BUILD_FACTORY( CRD_VGUI_Stock_Ticker_Helper );
+
+double CRD_VGUI_Stock_Ticker::s_flLastResetTime = Plat_FloatTime();
 
 extern ConVar rd_reduce_motion;
 
@@ -109,6 +113,7 @@ CRD_VGUI_Stock_Ticker::CRD_VGUI_Stock_Ticker( vgui::Panel *parent, const char *p
 	m_hTickerFont = vgui::INVALID_FONT;
 	m_hTickerBlurFont = vgui::INVALID_FONT;
 	m_bLastReduceMotion = rd_reduce_motion.GetBool();
+	m_iPixelsUntilSaveResetTime = 0;
 
 	KeyValues *pKVTickerDefs = m_pKVTickerDefs;
 	UTIL_RD_LoadAllKeyValues( "resource/ticker.txt", "GAME", "TickerDefs", AppendTickerDefsHelper, pKVTickerDefs );
@@ -163,11 +168,13 @@ void CRD_VGUI_Stock_Ticker::PerformLayout()
 	}
 	else
 	{
-		m_flLastThink = Plat_FloatTime();
+		m_flLastThink = s_flLastResetTime;
 		m_iTitleX = GetWide() - iTitleWidth;
 		m_iTextStartX = GetWide();
 		m_iBackgroundStartX = m_iTextStartX - m_iTitleAfterWidth;
 	}
+
+	m_iPixelsUntilSaveResetTime = 0;
 
 	ManageTextBuffer();
 }
@@ -216,21 +223,30 @@ void CRD_VGUI_Stock_Ticker::OnThink()
 	if ( m_flTickerSpeed <= 0 )
 		return;
 
-	float flDeltaTime = clamp<float>( Plat_FloatTime() - m_flLastThink, 0, 1 );
-	int iShiftPixels = flDeltaTime * m_flTickerSpeed;
-	if ( iShiftPixels == 0 )
-		return;
+	for ( ;; )
+	{
+		float flDeltaTime = clamp<float>( Plat_FloatTime() - m_flLastThink, 0, 1 );
+		int iShiftPixels = flDeltaTime * m_flTickerSpeed;
+		if ( iShiftPixels <= 0 )
+			return;
 
-	m_flLastThink += iShiftPixels / m_flTickerSpeed;
+		if ( m_iPixelsUntilSaveResetTime != 0 && m_iPixelsUntilSaveResetTime <= iShiftPixels )
+		{
+			s_flLastResetTime = m_flNextResetTime;
+			m_iPixelsUntilSaveResetTime = 0;
+		}
 
-	m_iTitleX = MAX( m_iTitleX - iShiftPixels, 0 );
-	m_iTextStartX -= iShiftPixels;
-	m_iBackgroundStartX -= iShiftPixels;
-	if ( m_iBackgroundStartX < -GetTall() )
-		m_iBackgroundStartX += GetTall();
+		m_flLastThink += iShiftPixels / m_flTickerSpeed;
 
-	ManageTextBuffer();
-	Repaint();
+		m_iTitleX = MAX( m_iTitleX - iShiftPixels, 0 );
+		m_iTextStartX -= iShiftPixels;
+		m_iBackgroundStartX -= iShiftPixels;
+		if ( m_iBackgroundStartX < -GetTall() )
+			m_iBackgroundStartX += GetTall();
+
+		ManageTextBuffer();
+		Repaint();
+	}
 }
 
 void CRD_VGUI_Stock_Ticker::Paint()
@@ -357,9 +373,16 @@ void CRD_VGUI_Stock_Ticker::GenerateNextTickerText( wchar_t *&wszText, int &iIco
 	int iCurrentSeed = std::time( NULL ) / 300;
 	if ( m_iLastRandomSeed != iCurrentSeed )
 	{
+		if ( m_iLastRandomSeed )
+			m_flLastThink = Plat_FloatTime();
+
 		m_RandomStream.SetSeed( iCurrentSeed );
 		m_iLastRandomSeed = iCurrentSeed;
 		m_TickerDefCooldown.Purge();
+
+		m_flNextResetTime = Plat_FloatTime();
+		m_iPixelsUntilSaveResetTime = m_iTextTotalWidth + m_iTextStartX;
+		Assert( m_iPixelsUntilSaveResetTime > 0 );
 
 		if ( ISteamUserStats *pUserStats = SteamUserStats() )
 		{
@@ -513,4 +536,50 @@ void CRD_VGUI_Stock_Ticker::GenerateTickerText( KeyValues *pDef, wchar_t *&wszTe
 	Assert( !"unhandled ticker def" );
 	delete[] wszText;
 	wszText = NULL;
+}
+
+CRD_VGUI_Stock_Ticker_Helper::CRD_VGUI_Stock_Ticker_Helper( vgui::Panel *parent, const char *panelName ) :
+	BaseClass( parent, panelName )
+{
+	m_pStockTicker = new CRD_VGUI_Stock_Ticker( this, "StockTicker" );
+
+	m_bLeftGlow = false;
+	m_bRightGlow = false;
+
+	g_RD_HUD_Sheets.VidInit();
+}
+
+void CRD_VGUI_Stock_Ticker_Helper::ApplySchemeSettings( vgui::IScheme *pScheme )
+{
+	BaseClass::ApplySchemeSettings( pScheme );
+
+	LoadControlSettings( "Resource/UI/BaseModUI/StockTickerHelper.res" );
+}
+
+void CRD_VGUI_Stock_Ticker_Helper::PaintBackground()
+{
+	int w, t;
+	GetSize( w, t );
+
+	vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
+	vgui::surface()->DrawSetTexture( g_RD_HUD_Sheets.m_nMainMenuSheetID );
+
+	int x0, y0, x1, y1, iTex;
+
+	x0 = 0;
+	y0 = 0;
+	x1 = YRES( 150 );
+	y1 = t;
+	iTex = m_bLeftGlow ? CRD_HUD_Sheets::UV_ticker_left_workshop_hover : CRD_HUD_Sheets::UV_ticker_left;
+	vgui::surface()->DrawTexturedSubRect( x0, y0, x1, y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
+
+	x0 = x1;
+	x1 = w - YRES( 225 );
+	iTex = CRD_HUD_Sheets::UV_ticker_mid;
+	vgui::surface()->DrawTexturedSubRect( x0, y0, x1, y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
+
+	x0 = x1;
+	x1 = w;
+	iTex = m_bRightGlow ? CRD_HUD_Sheets::UV_ticker_right_update_hover : CRD_HUD_Sheets::UV_ticker_right;
+	vgui::surface()->DrawTexturedSubRect( x0, y0, x1, y1, HUD_UV_COORDS( MainMenuSheet, iTex ) );
 }

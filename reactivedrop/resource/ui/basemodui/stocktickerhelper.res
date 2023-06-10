@@ -1,0 +1,43 @@
+"Resource/UI/BaseModUI/StockTickerHelper.res"
+{
+	"StockTickerHelper"
+	{
+		"ControlName"		"CRD_VGUI_Stock_Ticker_Helper"
+		"fieldName"			"StockTickerHelper"
+		"xpos"				"0"
+		"ypos"				"r20"
+		"wide"				"f0"
+		"tall"				"20"
+		"visible"			"1"
+		"enabled"			"1"
+		"mouseinputenabled"	"0"
+		"PaintBackground"	"1"
+	}
+
+	"StockTicker"
+	{
+		"ControlName"		"CRD_VGUI_Stock_Ticker"
+		"fieldName"			"StockTicker"
+		"xpos"				"4"
+		"ypos"				"4"
+		"wide"				"f8"
+		"tall"				"12"
+		"visible"			"1"
+		"mouseinputenabled"	"0"
+		"text_start_xpos"	"-8"
+		"text_ypos"			"2"
+		"title_padding"		"5"
+		"title_after_wide"	"24"
+		"icon_size"			"10"
+		"icon_xpos"			"-2"
+		"separator_wide"	"24"
+		"ticker_speed"		"5"
+		"background_tex"	"vgui/swarm/ticker/bg"
+		"title_before_tex"	"vgui/swarm/ticker/lead"
+		"title_background_tex"	"vgui/swarm/ticker/title"
+		"title_after_tex"	"vgui/swarm/ticker/divider"
+		"separator_tex"		"vgui/swarm/ticker/separator"
+		"stock_down_tex"	"vgui/swarm/ticker/stock_down"
+		"stock_up_tex"		"vgui/swarm/ticker/stock_up"
+	}
+}
