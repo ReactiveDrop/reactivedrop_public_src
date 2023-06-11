@@ -106,7 +106,7 @@ MainMenu::MainMenu( Panel *parent, const char *panelName ):
 	SetDeleteSelfOnClose( true );
 
 	m_pTopBar = new CRD_VGUI_Main_Menu_Top_Bar( this, "TopBar" );
-	m_pTopBar->m_pBtnLogo->SetOpen();
+	m_pTopBar->m_hActiveButton = m_pTopBar->m_pBtnLogo;
 	m_pStockTickerHelper = new CRD_VGUI_Stock_Ticker_Helper( this, "StockTickerHelper" );
 	m_pCommanderProfile = new CRD_VGUI_Commander_Mini_Profile( this, "CommanderMiniProfile" );
 	m_pBtnMultiplayer = new BaseModHybridButton( this, "BtnMultiplayer", "#L4D360UI_FoudGames_CreateNew_campaign", this, "CreateGame" );
@@ -1298,11 +1298,6 @@ void MainMenu::PaintBackground()
 	if ( m_bIsStub )
 		return;
 
-	m_pTopBar->m_iLeftGlow = m_pCommanderProfile->HasFocus() ? 255 : 0;
-	m_pTopBar->m_iRightGlow = m_pTopLeaderboardEntries[0]->GetCurrentState() == BaseModHybridButton::Focus ? 255 : 0;
-	m_pStockTickerHelper->m_iLeftGlow = m_pBtnWorkshopShowcase->GetCurrentState() == BaseModHybridButton::Focus ? 255 : 0;
-	m_pStockTickerHelper->m_iRightGlow = m_pBtnUpdateNotes->GetCurrentState() == BaseModHybridButton::Focus ? 255 : 0;
-
 	HUD_SHEET_DRAW_PANEL( m_pBtnMultiplayer, MainMenuSheet, UV_create_lobby );
 	HUD_SHEET_DRAW_PANEL( m_pBtnSingleplayer, MainMenuSheet, UV_singleplayer );
 	HUD_SHEET_DRAW_PANEL( m_pPnlQuickJoinPublic, MainMenuSheet, UV_quick_join );
@@ -1366,42 +1361,39 @@ void MainMenu::PaintBackground()
 		vgui::surface()->DrawTexturedSubRect( x0 + YRES( 1 ), y0 + YRES( 1 ), x0 + x1 - YRES( 1 ), y0 + y1 - YRES( 1 ), 0, 0, cw / ( float )iw, ct / ( float )it );
 	}
 
-	if ( m_pBtnMultiplayer->GetCurrentState() == BaseModHybridButton::Focus )
-		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnMultiplayer, MainMenuAdditive, UV_create_lobby_hover, 255 );
-	if ( m_pTopBar->m_pBtnLogo->GetCurrentState( true ) == BaseModHybridButton::Focus )
+	m_GlowCreateLobby.Update( m_pBtnMultiplayer->GetCurrentState() == BaseModHybridButton::Focus );
+	m_GlowSingleplayer.Update( m_pBtnSingleplayer->GetCurrentState() == BaseModHybridButton::Focus );
+	m_GlowQuickJoinPublic.Update( m_pPnlQuickJoinPublic->HasMouseover() );
+	m_GlowQuickJoinFriends.Update( m_pPnlQuickJoin->HasMouseover() );
+	m_GlowWorkshopShowcase.Update( m_pBtnWorkshopShowcase->GetCurrentState() == BaseModHybridButton::Focus );
+
+	m_GlowHoIAFTimer.Update( m_pBtnHoIAFTimer->GetCurrentState() == BaseModHybridButton::Focus );
+	for ( int i = 0; i < NELEMS( m_pBtnEventTimer ); i++ )
+		m_GlowEventTimer[i].Update( m_pBtnEventTimer[i]->GetCurrentState() == BaseModHybridButton::Focus );
+	m_GlowNewsShowcase.Update( m_pBtnNewsShowcase->GetCurrentState() == BaseModHybridButton::Focus );
+	m_GlowUpdateNotes.Update( m_pBtnUpdateNotes->GetCurrentState() == BaseModHybridButton::Focus );
+
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnMultiplayer, MainMenuAdditive, UV_create_lobby_hover, m_GlowCreateLobby.Get() );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnMultiplayer, MainMenuAdditive, UV_create_lobby_logo_hover, m_pTopBar->m_GlowLogo.Get() );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnMultiplayer, MainMenuAdditive, UV_create_lobby_singleplayer_hover, m_GlowSingleplayer.Get() );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnMultiplayer, MainMenuAdditive, UV_create_lobby_profile_hover, m_pCommanderProfile->m_GlowHover.Get() );
+	if ( m_pTopBar->m_hActiveButton.Get() == m_pTopBar->m_pBtnLogo )
 		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnMultiplayer, MainMenuAdditive, UV_create_lobby_logo_hover, 255 );
-	if ( m_pTopBar->m_pBtnLogo->GetCurrentState() == BaseModHybridButton::Open )
-		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnMultiplayer, MainMenuAdditive, UV_create_lobby_logo_hover, 255 );
-	if ( m_pBtnSingleplayer->GetCurrentState() == BaseModHybridButton::Focus )
-		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnMultiplayer, MainMenuAdditive, UV_create_lobby_singleplayer_hover, 255 );
-	if ( m_pCommanderProfile->HasFocus() )
-		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnMultiplayer, MainMenuAdditive, UV_create_lobby_profile_hover, 255 );
 
-	if ( m_pBtnSingleplayer->GetCurrentState() == BaseModHybridButton::Focus )
-		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnSingleplayer, MainMenuAdditive, UV_singleplayer_hover, 255 );
-	if ( m_pBtnMultiplayer->GetCurrentState() == BaseModHybridButton::Focus )
-		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnSingleplayer, MainMenuAdditive, UV_singleplayer_create_lobby_hover, 255 );
-	if ( m_pPnlQuickJoinPublic->HasMouseover() )
-		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnSingleplayer, MainMenuAdditive, UV_singleplayer_quick_join_hover, 255 );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnSingleplayer, MainMenuAdditive, UV_singleplayer_hover, m_GlowSingleplayer.Get() );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnSingleplayer, MainMenuAdditive, UV_singleplayer_create_lobby_hover, m_GlowCreateLobby.Get() );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnSingleplayer, MainMenuAdditive, UV_singleplayer_quick_join_hover, m_GlowQuickJoinPublic.Get() );
 
-	if ( m_pPnlQuickJoinPublic->HasMouseover() )
-		HUD_SHEET_DRAW_PANEL_ALPHA( m_pPnlQuickJoinPublic, MainMenuAdditive, UV_quick_join_hover, 255 );
-	if ( m_pPnlQuickJoin->HasMouseover() )
-		HUD_SHEET_DRAW_PANEL_ALPHA( m_pPnlQuickJoinPublic, MainMenuAdditive, UV_quick_join_below_hover, 255 );
-	if ( m_pBtnSingleplayer->GetCurrentState() == BaseModHybridButton::Focus )
-		HUD_SHEET_DRAW_PANEL_ALPHA( m_pPnlQuickJoinPublic, MainMenuAdditive, UV_quick_join_singleplayer_hover, 255 );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pPnlQuickJoinPublic, MainMenuAdditive, UV_quick_join_hover, m_GlowQuickJoinPublic.Get() );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pPnlQuickJoinPublic, MainMenuAdditive, UV_quick_join_below_hover, m_GlowQuickJoinFriends.Get() );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pPnlQuickJoinPublic, MainMenuAdditive, UV_quick_join_singleplayer_hover, m_GlowSingleplayer.Get() );
 
-	if ( m_pPnlQuickJoin->HasMouseover() )
-		HUD_SHEET_DRAW_PANEL_ALPHA( m_pPnlQuickJoin, MainMenuAdditive, UV_quick_join_hover, 255 );
-	if ( m_pPnlQuickJoinPublic->HasMouseover() )
-		HUD_SHEET_DRAW_PANEL_ALPHA( m_pPnlQuickJoin, MainMenuAdditive, UV_quick_join_above_hover, 255 );
-	if ( m_pBtnWorkshopShowcase->GetCurrentState() == BaseModHybridButton::Focus )
-		HUD_SHEET_DRAW_PANEL_ALPHA( m_pPnlQuickJoin, MainMenuAdditive, UV_quick_join_below_hover, 255 );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pPnlQuickJoin, MainMenuAdditive, UV_quick_join_hover, m_GlowQuickJoinFriends.Get() );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pPnlQuickJoin, MainMenuAdditive, UV_quick_join_above_hover, m_GlowQuickJoinPublic.Get() );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pPnlQuickJoin, MainMenuAdditive, UV_quick_join_below_hover, m_GlowWorkshopShowcase.Get() );
 
-	if ( m_pBtnWorkshopShowcase->GetCurrentState() == BaseModHybridButton::Focus )
-		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnWorkshopShowcase, MainMenuAdditive, UV_workshop_hover, 255 );
-	if ( m_pPnlQuickJoin->HasMouseover() )
-		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnWorkshopShowcase, MainMenuAdditive, UV_workshop_quick_join_hover, 255 );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnWorkshopShowcase, MainMenuAdditive, UV_workshop_hover, m_GlowWorkshopShowcase.Get() );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnWorkshopShowcase, MainMenuAdditive, UV_workshop_quick_join_hover, m_GlowQuickJoinFriends.Get() );
 
 	for ( int i = 0; i < NELEMS( m_pTopLeaderboardEntries ); i++ )
 	{
@@ -1413,86 +1405,81 @@ void MainMenu::PaintBackground()
 		x1 += 2;
 		y1 += 2;
 
-		if ( m_pTopLeaderboardEntries[i]->GetCurrentState() == BaseModHybridButton::Focus )
-		{
-			if ( i == 0 )
-				HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_1_hover, 255 );
-			else
-				HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_hover, 255 );
-		}
-		if ( m_pTopBar->m_pBtnQuit->GetCurrentState() == BaseModHybridButton::Focus )
-		{
-			if ( i == 0 )
-				HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_1_quit_hover, 255 );
-			else if ( i == 1 )
-				HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_quit_hover_1, 255 );
-			else if ( i == 2 )
-				HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_quit_hover_2, 255 );
-			else if ( i == 3 )
-				HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_quit_hover_3, 255 );
-			else if ( i == 4 )
-				HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_quit_hover_4, 255 );
-			else if ( i == 5 )
-				HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_quit_hover_5, 255 );
-			else if ( i == 6 )
-				HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_quit_hover_6, 255 );
-			else if ( i == 7 )
-				HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_quit_hover_7, 255 );
-			else if ( i == 8 )
-				HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_quit_hover_8, 255 );
-		}
-		if ( i == 0 && m_pTopLeaderboardEntries[1]->GetCurrentState() == BaseModHybridButton::Focus )
-			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_1_below_hover, 255 );
-		if ( i < NELEMS( m_pTopLeaderboardEntries ) - 1 && m_pTopLeaderboardEntries[i + 1]->GetCurrentState() == BaseModHybridButton::Focus )
-			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_below_hover, 255 );
-		if ( i > 0 && m_pTopLeaderboardEntries[i - 1]->GetCurrentState() == BaseModHybridButton::Focus )
-			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_above_hover, 255 );
-		else if ( ( i == NELEMS( m_pTopLeaderboardEntries ) - 1 || !m_pTopLeaderboardEntries[i + 1]->IsVisible() ) && m_pBtnHoIAFTimer->GetCurrentState() == BaseModHybridButton::Focus )
-			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_hoiaf_timer_hover, 255 );
+		if ( i == 0 )
+			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_1_hover, m_pTopLeaderboardEntries[i]->m_GlowHover.Update( m_pTopLeaderboardEntries[i]->GetCurrentState() == BaseModHybridButton::Focus ) );
+		else
+			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_hover, m_pTopLeaderboardEntries[i]->m_GlowHover.Update( m_pTopLeaderboardEntries[i]->GetCurrentState() == BaseModHybridButton::Focus ) );
+
+		if ( i == 0 )
+			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_1_quit_hover, m_pTopBar->m_GlowQuit.Get() );
+		else if ( i == 1 )
+			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_quit_hover_1, m_pTopBar->m_GlowQuit.Get() );
+		else if ( i == 2 )
+			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_quit_hover_2, m_pTopBar->m_GlowQuit.Get() );
+		else if ( i == 3 )
+			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_quit_hover_3, m_pTopBar->m_GlowQuit.Get() );
+		else if ( i == 4 )
+			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_quit_hover_4, m_pTopBar->m_GlowQuit.Get() );
+		else if ( i == 5 )
+			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_quit_hover_5, m_pTopBar->m_GlowQuit.Get() );
+		else if ( i == 6 )
+			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_quit_hover_6, m_pTopBar->m_GlowQuit.Get() );
+		else if ( i == 7 )
+			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_quit_hover_7, m_pTopBar->m_GlowQuit.Get() );
+		else if ( i == 8 )
+			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_quit_hover_8, m_pTopBar->m_GlowQuit.Get() );
+
+		// some of these are drawn one frame late, but that's also true of buttons in other PaintBackground scopes, so no point in adding more complex code for this.
+
+		if ( i == 0 )
+			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_1_below_hover, m_pTopLeaderboardEntries[1]->m_GlowHover.Get() );
+		if ( i < NELEMS( m_pTopLeaderboardEntries ) - 1 )
+			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_below_hover, m_pTopLeaderboardEntries[i + 1]->m_GlowHover.Get() );
+		if ( i > 0 )
+			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_above_hover, m_pTopLeaderboardEntries[i - 1]->m_GlowHover.Get() );
+		else if ( ( i == NELEMS( m_pTopLeaderboardEntries ) - 1 || !m_pTopLeaderboardEntries[i + 1]->IsVisible() ) )
+			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_hoiaf_timer_hover, m_GlowHoIAFTimer.Get() );
 	}
 
-	if ( m_pBtnHoIAFTimer->GetCurrentState() == BaseModHybridButton::Focus )
-		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnHoIAFTimer, MainMenuAdditive, UV_hoiaf_timer_hover, 255 );
-	if ( m_pTopLeaderboardEntries[NELEMS( m_pTopLeaderboardEntries ) - 1]->IsVisible() && m_pBtnEventTimer[NELEMS( m_pBtnEventTimer ) - 1]->GetCurrentState() == BaseModHybridButton::Focus )
-		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnHoIAFTimer, MainMenuAdditive, UV_hoiaf_timer_event_timer_hover, 255 );
-	if ( !m_pTopLeaderboardEntries[0]->IsVisible() && m_pTopBar->m_pBtnQuit->GetCurrentState() == BaseModHybridButton::Focus )
-		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnHoIAFTimer, MainMenuAdditive, UV_hoiaf_top_1_quit_hover, 255 );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnHoIAFTimer, MainMenuAdditive, UV_hoiaf_timer_hover, m_GlowHoIAFTimer.Get() );
+	if ( m_pTopLeaderboardEntries[NELEMS( m_pTopLeaderboardEntries ) - 1]->IsVisible() )
+		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnHoIAFTimer, MainMenuAdditive, UV_hoiaf_timer_event_timer_hover, m_GlowEventTimer[NELEMS( m_GlowEventTimer ) - 1].Get() );
+	if ( !m_pTopLeaderboardEntries[0]->IsVisible() )
+		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnHoIAFTimer, MainMenuAdditive, UV_hoiaf_top_1_quit_hover, m_pTopBar->m_GlowQuit.Get() );
 
 	for ( int i = NELEMS( m_pTopLeaderboardEntries ) - 1; i >= 0; i-- )
 	{
 		if ( m_pTopLeaderboardEntries[i]->IsVisible() )
 		{
-			if ( m_pTopLeaderboardEntries[i]->GetCurrentState() == BaseModHybridButton::Focus )
-				HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnHoIAFTimer, MainMenuAdditive, UV_hoiaf_timer_hoiaf_top_10_hover, 255 );
+			HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnHoIAFTimer, MainMenuAdditive, UV_hoiaf_timer_hoiaf_top_10_hover, m_pTopLeaderboardEntries[i]->m_GlowHover.Get() );
 			break;
 		}
 	}
 
 	for ( int i = 0; i < NELEMS( m_pBtnEventTimer ); i++ )
 	{
-		if ( m_pBtnEventTimer[i]->GetCurrentState() == BaseModHybridButton::Focus )
-			HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnEventTimer[i], MainMenuAdditive, UV_event_timer_hover, 255 );
-		if ( i == 0 && m_pBtnNewsShowcase->GetCurrentState() == BaseModHybridButton::Focus )
-			HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnEventTimer[i], MainMenuAdditive, UV_event_timer_news_hover, 255 );
-		if ( i == NELEMS( m_pBtnEventTimer ) - 1 && m_pTopLeaderboardEntries[NELEMS( m_pTopLeaderboardEntries ) - 1]->IsVisible() && m_pBtnHoIAFTimer->GetCurrentState() == BaseModHybridButton::Focus )
-			HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnEventTimer[i], MainMenuAdditive, UV_event_timer_hoiaf_timer_hover, 255 );
-		if ( i > 0 && m_pBtnEventTimer[i - 1]->GetCurrentState() == BaseModHybridButton::Focus )
-			HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnEventTimer[i], MainMenuAdditive, UV_event_timer_below_hover, 255 );
-		if ( i < NELEMS( m_pBtnEventTimer ) - 1 && m_pBtnEventTimer[i + 1]->GetCurrentState() == BaseModHybridButton::Focus )
-			HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnEventTimer[i], MainMenuAdditive, UV_event_timer_above_hover, 255 );
+		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnEventTimer[i], MainMenuAdditive, UV_event_timer_hover, m_GlowEventTimer[i].Get() );
+		if ( i == 0 )
+			HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnEventTimer[i], MainMenuAdditive, UV_event_timer_news_hover, m_GlowNewsShowcase.Get() );
+		if ( i == NELEMS( m_pBtnEventTimer ) - 1 && m_pTopLeaderboardEntries[NELEMS( m_pTopLeaderboardEntries ) - 1]->IsVisible() )
+			HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnEventTimer[i], MainMenuAdditive, UV_event_timer_hoiaf_timer_hover, m_GlowHoIAFTimer.Get() );
+		if ( i > 0 )
+			HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnEventTimer[i], MainMenuAdditive, UV_event_timer_below_hover, m_GlowEventTimer[i - 1].Get() );
+		if ( i < NELEMS( m_pBtnEventTimer ) - 1 )
+			HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnEventTimer[i], MainMenuAdditive, UV_event_timer_above_hover, m_GlowEventTimer[i + 1].Get() );
 	}
 
-	if ( m_pBtnNewsShowcase->GetCurrentState() == BaseModHybridButton::Focus )
-		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnNewsShowcase, MainMenuAdditive, UV_news_hover, 255 );
-	if ( m_pBtnUpdateNotes->GetCurrentState() == BaseModHybridButton::Focus )
-		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnNewsShowcase, MainMenuAdditive, UV_news_update_hover, 255 );
-	if ( m_pBtnEventTimer[0]->GetCurrentState() == BaseModHybridButton::Focus )
-		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnNewsShowcase, MainMenuAdditive, UV_news_event_timer_hover, 255 );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnNewsShowcase, MainMenuAdditive, UV_news_hover, m_GlowNewsShowcase.Get() );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnNewsShowcase, MainMenuAdditive, UV_news_update_hover, m_GlowUpdateNotes.Get() );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnNewsShowcase, MainMenuAdditive, UV_news_event_timer_hover, m_GlowEventTimer[0].Get() );
 
-	if ( m_pBtnUpdateNotes->GetCurrentState() == BaseModHybridButton::Focus )
-		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnUpdateNotes, MainMenuAdditive, UV_update_hover, 255 );
-	if ( m_pBtnNewsShowcase->GetCurrentState() == BaseModHybridButton::Focus )
-		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnUpdateNotes, MainMenuAdditive, UV_update_news_hover, 255 );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnUpdateNotes, MainMenuAdditive, UV_update_hover, m_GlowUpdateNotes.Get() );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnUpdateNotes, MainMenuAdditive, UV_update_news_hover, m_GlowNewsShowcase.Get() );
+
+	m_pTopBar->m_iLeftGlow = m_pCommanderProfile->m_GlowHover.Get();
+	m_pTopBar->m_iRightGlow = m_pTopLeaderboardEntries[0]->IsVisible() ? m_pTopLeaderboardEntries[0]->m_GlowHover.Get() : m_GlowHoIAFTimer.Get();
+	m_pStockTickerHelper->m_iLeftGlow = m_GlowWorkshopShowcase.Get();
+	m_pStockTickerHelper->m_iRightGlow = m_GlowUpdateNotes.Get();
 }
 
 void MainMenu::SetFooterState()

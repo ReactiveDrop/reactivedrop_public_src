@@ -9,6 +9,7 @@
 
 #include "basemodui.h"
 #include "VFlyoutMenu.h"
+#include "rd_hud_glow_helper.h"
 
 class CRD_VGUI_Commander_Mini_Profile;
 class CRD_VGUI_Main_Menu_Top_Bar;
@@ -82,6 +83,16 @@ public:
 	BaseModHybridButton *m_pBtnNewsShowcase;
 	BaseModHybridButton *m_pBtnUpdateNotes;
 	bool m_bIsStub{};
+
+	HUDGlowHelper_t m_GlowCreateLobby;
+	HUDGlowHelper_t m_GlowSingleplayer;
+	HUDGlowHelper_t m_GlowQuickJoinPublic;
+	HUDGlowHelper_t m_GlowQuickJoinFriends;
+	HUDGlowHelper_t m_GlowWorkshopShowcase;
+	HUDGlowHelper_t m_GlowHoIAFTimer;
+	HUDGlowHelper_t m_GlowEventTimer[3];
+	HUDGlowHelper_t m_GlowNewsShowcase;
+	HUDGlowHelper_t m_GlowUpdateNotes;
 
 	int m_iNewsImageTexture[5]{ -1, -1, -1, -1, -1 };
 	wchar_t m_wszNewsTitle[5][256]{};

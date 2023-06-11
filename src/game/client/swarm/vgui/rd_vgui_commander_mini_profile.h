@@ -2,6 +2,7 @@
 
 #include <vgui_controls/EditablePanel.h>
 #include "rd_inventory_shared.h"
+#include "rd_hud_glow_helper.h"
 
 struct LeaderboardEntry_t;
 struct LeaderboardScoreDetails_Points_t;
@@ -37,6 +38,8 @@ public:
 	vgui::Label *m_pLblLevel;
 	vgui::ImagePanel *m_pImgMedal[RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS];
 	vgui::ImagePanel *m_pImgPredictedHoIAFMedal;
+
+	HUDGlowHelper_t m_GlowHover;
 
 	CSteamID m_SteamID;
 	CRD_ItemInstance m_Medals[RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS];

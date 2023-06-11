@@ -21,7 +21,7 @@ Loadouts::Loadouts( Panel *parent, const char *panelName )
 	m_pHeaderFooter->SetHeaderEnabled( false );
 	m_pHeaderFooter->SetFooterEnabled( false );
 	m_pTopBar = new CRD_VGUI_Main_Menu_Top_Bar( this, "TopBar" );
-	m_pTopBar->m_pTopButton[0]->SetOpen();
+	m_pTopBar->m_hActiveButton = m_pTopBar->m_pTopButton[0];
 
 	// loadout name list
 	// - load

@@ -78,25 +78,33 @@ void CRD_VGUI_Commander_Mini_Profile::OnCursorEntered()
 
 void CRD_VGUI_Commander_Mini_Profile::PaintBackground()
 {
-	vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
-	vgui::surface()->DrawSetTexture( g_RD_HUD_Sheets.m_nCommanderProfileSheetID );
-
 	int x0, y0, x1, y1;
 
 	x0 = y0 = 0;
 	GetSize( x1, y1 );
+
+	HUD_SHEET_DRAW_BOUNDS( MainMenuSheet, UV_profile );
+
 	CRD_VGUI_Main_Menu_Top_Bar *pTopBar = assert_cast< CRD_VGUI_Main_Menu_Top_Bar * >( FindSiblingByName( "TopBar" ) );
 	BaseModUI::MainMenu *pMainMenu = dynamic_cast< BaseModUI::MainMenu * >( GetParent() );
-	if ( m_bIsButton && HasFocus() )
-		vgui::surface()->DrawTexturedSubRect( x0, y0, x1, y1, HUD_UV_COORDS( CommanderProfileSheet, UV_profile_hover ) );
-	else if ( pMainMenu && pMainMenu->m_pBtnMultiplayer->GetCurrentState() == BaseModUI::BaseModHybridButton::Focus )
-		vgui::surface()->DrawTexturedSubRect( x0, y0, x1, y1, HUD_UV_COORDS( CommanderProfileSheet, UV_profile_create_lobby_hover ) );
-	else if ( pTopBar && pTopBar->m_pBtnLogo->GetCurrentState() == BaseModUI::BaseModHybridButton::Open )
-		vgui::surface()->DrawTexturedSubRect( x0, y0, x1, y1, HUD_UV_COORDS( CommanderProfileSheet, UV_profile_logo_hover ) );
-	else if ( pTopBar && pTopBar->m_pBtnSettings->GetCurrentState() == BaseModUI::BaseModHybridButton::Open )
-		vgui::surface()->DrawTexturedSubRect( x0, y0, x1, y1, HUD_UV_COORDS( CommanderProfileSheet, UV_profile_settings_hover ) );
-	else
-		vgui::surface()->DrawTexturedSubRect( x0, y0, x1, y1, HUD_UV_COORDS( CommanderProfileSheet, UV_profile ) );
+
+	HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_profile_hover, m_GlowHover.Update( m_bIsButton && HasFocus() ) );
+
+	if ( pMainMenu )
+	{
+		HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_profile_create_lobby_hover, pMainMenu->m_GlowCreateLobby.Get() );
+	}
+
+	if ( pTopBar )
+	{
+		HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_profile_logo_hover, pTopBar->m_GlowLogo.Get() );
+		HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_profile_settings_hover, pTopBar->m_GlowSettings.Get() );
+
+		if ( pTopBar->m_hActiveButton.Get() == pTopBar->m_pBtnLogo )
+			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_profile_logo_hover, 255 );
+		if ( pTopBar->m_hActiveButton.Get() == pTopBar->m_pBtnSettings )
+			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_profile_settings_hover, 255 );
+	}
 }
 
 void CRD_VGUI_Commander_Mini_Profile::InitForLocalPlayer()

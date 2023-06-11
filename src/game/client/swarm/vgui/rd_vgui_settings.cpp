@@ -22,13 +22,17 @@ CRD_VGUI_Settings::CRD_VGUI_Settings( vgui::Panel *parent, const char *panelName
 	SetProportional( true );
 
 	m_pHeaderFooter = new CNB_Header_Footer( this, "HeaderFooter" );
+	m_pHeaderFooter->SetTitle( "" );
+	m_pHeaderFooter->SetHeaderEnabled( false );
+	m_pHeaderFooter->SetFooterEnabled( false );
 	m_pTopBar = new CRD_VGUI_Main_Menu_Top_Bar( this, "TopBar" );
+	m_pTopBar->m_hActiveButton = m_pTopBar->m_pBtnSettings;
 
-	m_pBtnControls = new BaseModUI::BaseModHybridButton( this, "BtnControls", "#rd_settings_controls", this, "Controls" );
-	m_pBtnOptions = new BaseModUI::BaseModHybridButton( this, "BtnOptions", "#rd_settings_options", this, "Options" );
-	m_pBtnAudio = new BaseModUI::BaseModHybridButton( this, "BtnAudio", "#rd_settings_audio", this, "Audio" );
-	m_pBtnVideo = new BaseModUI::BaseModHybridButton( this, "BtnVideo", "#rd_settings_video", this, "Video" );
-	m_pBtnAbout = new BaseModUI::BaseModHybridButton( this, "BtnAbout", "#rd_settings_about", this, "About" );
+	m_pBtnControls = new BaseModHybridButton( this, "BtnControls", "#rd_settings_controls", this, "Controls" );
+	m_pBtnOptions = new BaseModHybridButton( this, "BtnOptions", "#rd_settings_options", this, "Options" );
+	m_pBtnAudio = new BaseModHybridButton( this, "BtnAudio", "#rd_settings_audio", this, "Audio" );
+	m_pBtnVideo = new BaseModHybridButton( this, "BtnVideo", "#rd_settings_video", this, "Video" );
+	m_pBtnAbout = new BaseModHybridButton( this, "BtnAbout", "#rd_settings_about", this, "About" );
 
 	m_pPnlControls = new CRD_VGUI_Settings_Controls( this, "PnlControls" );
 	m_pPnlOptions = new CRD_VGUI_Settings_Options( this, "PnlOptions" );
@@ -510,5 +514,5 @@ CRD_VGUI_Option::Option_t::Option_t( int iValue, const char *szLabel, const char
 
 CON_COMMAND( rd_settings, "Opens the settings screen." )
 {
-	BaseModUI::CBaseModPanel::GetSingleton().OpenWindow( BaseModUI::WT_SETTINGS, BaseModUI::CBaseModPanel::GetSingleton().GetWindow( BaseModUI::CBaseModPanel::GetSingleton().GetActiveWindowType() ) );
+	CBaseModPanel::GetSingleton().OpenWindow( WT_SETTINGS, CBaseModPanel::GetSingleton().GetWindow( CBaseModPanel::GetSingleton().GetActiveWindowType() ) );
 }

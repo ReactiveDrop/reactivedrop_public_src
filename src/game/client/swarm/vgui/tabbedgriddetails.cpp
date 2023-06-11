@@ -285,7 +285,7 @@ void TabbedGridDetails::UseMainMenuLayout( int iTopButtonIndex )
 	m_pHeaderFooter->SetHeaderEnabled( false );
 	m_pHeaderFooter->SetFooterEnabled( false );
 	m_pMainMenuBar = new CRD_VGUI_Main_Menu_Top_Bar( this, "TopBar" );
-	m_pMainMenuBar->m_pTopButton[iTopButtonIndex]->SetOpen();
+	m_pMainMenuBar->m_hActiveButton = m_pMainMenuBar->m_pTopButton[iTopButtonIndex];
 	m_pMainMenuTicker = new CRD_VGUI_Stock_Ticker_Helper( this, "StockTickerHelper" );
 	m_pBackButton->SetVisible( false );
 

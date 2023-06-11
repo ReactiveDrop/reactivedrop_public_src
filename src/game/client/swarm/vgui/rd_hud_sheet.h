@@ -52,9 +52,12 @@ public:
 #define HUD_SHEET_DRAW_RECT_ALPHA( x0, y0, x1, y1, sheet, full_texture_name, alpha ) \
 	do \
 	{ \
-		vgui::surface()->DrawSetColor( 255, 255, 255, ( alpha ) ); \
-		vgui::surface()->DrawSetTexture( g_RD_HUD_Sheets.m_n##sheet##ID ); \
-		vgui::surface()->DrawTexturedSubRect( ( x0 ), ( y0 ), ( x1 ), ( y1 ), HUD_UV_COORDS( sheet, full_texture_name ) ); \
+		if ( int iAlpha = ( alpha ) ) \
+		{ \
+			vgui::surface()->DrawSetColor( 255, 255, 255, iAlpha ); \
+			vgui::surface()->DrawSetTexture( g_RD_HUD_Sheets.m_n##sheet##ID ); \
+			vgui::surface()->DrawTexturedSubRect( ( x0 ), ( y0 ), ( x1 ), ( y1 ), HUD_UV_COORDS( sheet, full_texture_name ) ); \
+		} \
 	} while ( 0 )
 #define HUD_SHEET_DRAW_RECT( x0, y0, x1, y1, sheet, full_texture_name ) \
 	HUD_SHEET_DRAW_RECT_ALPHA( ( x0 ), ( y0 ), ( x1 ), ( y1 ), sheet, full_texture_name, 255 )
@@ -90,7 +93,6 @@ public:
 		ADD_HUD_SHEET( Sheet_Stencil, "vgui/hud/sheet_stencil/sheet_stencil" );
 		ADD_HUD_SHEET( MainMenuSheet, "vgui/swarm/main_menu_sheet" );
 		ADD_HUD_SHEET( MainMenuAdditive, "vgui/swarm/main_menu_additive_sheet" );
-		ADD_HUD_SHEET( CommanderProfileSheet, "vgui/swarm/commander_profile_sheet" );
 
 		FOR_EACH_VEC( m_HudSheets, i )
 		{
@@ -135,7 +137,7 @@ public:
 		DECLARE_HUD_SHEET_UV( hud_ammo_clip_double ),
 	END_HUD_SHEET( Sheet_Stencil );
 
-	// Main Menu
+	// 2024 Main Menu
 	DECLARE_HUD_SHEET( MainMenuSheet )
 		DECLARE_HUD_SHEET_UV( create_lobby ),
 		DECLARE_HUD_SHEET_UV( event_timer ),
@@ -144,6 +146,7 @@ public:
 		DECLARE_HUD_SHEET_UV( hoiaf_top_10 ),
 		DECLARE_HUD_SHEET_UV( logo ),
 		DECLARE_HUD_SHEET_UV( news ),
+		DECLARE_HUD_SHEET_UV( profile ),
 		DECLARE_HUD_SHEET_UV( quick_join ),
 		DECLARE_HUD_SHEET_UV( quit ),
 		DECLARE_HUD_SHEET_UV( settings ),
@@ -159,6 +162,7 @@ public:
 		DECLARE_HUD_SHEET_UV( workshop ),
 	END_HUD_SHEET( MainMenuSheet );
 
+	// 2024 Main Menu Glows
 	DECLARE_HUD_SHEET( MainMenuAdditive )
 		DECLARE_HUD_SHEET_UV( create_lobby_hover ),
 		DECLARE_HUD_SHEET_UV( create_lobby_logo_hover ),
@@ -193,6 +197,10 @@ public:
 		DECLARE_HUD_SHEET_UV( news_event_timer_hover ),
 		DECLARE_HUD_SHEET_UV( news_hover ),
 		DECLARE_HUD_SHEET_UV( news_update_hover ),
+		DECLARE_HUD_SHEET_UV( profile_create_lobby_hover ),
+		DECLARE_HUD_SHEET_UV( profile_hover ),
+		DECLARE_HUD_SHEET_UV( profile_logo_hover ),
+		DECLARE_HUD_SHEET_UV( profile_settings_hover ),
 		DECLARE_HUD_SHEET_UV( quick_join_above_hover ),
 		DECLARE_HUD_SHEET_UV( quick_join_below_hover ),
 		DECLARE_HUD_SHEET_UV( quick_join_hover ),
@@ -221,15 +229,6 @@ public:
 		DECLARE_HUD_SHEET_UV( workshop_hover ),
 		DECLARE_HUD_SHEET_UV( workshop_quick_join_hover ),
 	END_HUD_SHEET( MainMenuAdditive );
-
-	// Commander Profile
-	DECLARE_HUD_SHEET( CommanderProfileSheet )
-		DECLARE_HUD_SHEET_UV( profile ),
-		DECLARE_HUD_SHEET_UV( profile_create_lobby_hover ),
-		DECLARE_HUD_SHEET_UV( profile_hover ),
-		DECLARE_HUD_SHEET_UV( profile_logo_hover ),
-		DECLARE_HUD_SHEET_UV( profile_settings_hover ),
-	END_HUD_SHEET( CommanderProfileSheet );
 
 	CUtlVector<HudSheet_t> m_HudSheets;
 } g_RD_HUD_Sheets;

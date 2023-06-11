@@ -1,6 +1,7 @@
 #pragma once
 
 #include "swarm/gameui/swarm/vhybridbutton.h"
+#include "rd_hud_glow_helper.h"
 
 class CAvatarImagePanel;
 struct LeaderboardEntry_t;
@@ -27,6 +28,7 @@ public:
 	vgui::Label *m_pLblRankNumber;
 	vgui::Label *m_pLblScore;
 	CAvatarImagePanel *m_pAvatar;
+	HUDGlowHelper_t m_GlowHover;
 };
 
 class CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry_Large : public CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry

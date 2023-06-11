@@ -131,23 +131,21 @@ void CRD_VGUI_Main_Menu_Top_Bar::PaintBackground()
 	HUD_SHEET_DRAW_RECT( p1, 0, p2, t, MainMenuSheet, UV_top_bar );
 	HUD_SHEET_DRAW_RECT( p2, 0, w, t, MainMenuSheet, UV_top_bar_right );
 
-	if ( m_pBtnSettings->GetCurrentState( true ) == BaseModHybridButton::Focus )
-		HUD_SHEET_DRAW_RECT_ALPHA( 0, 0, p1, t, MainMenuAdditive, UV_top_bar_left_settings_glow, 255 );
-	if ( m_pBtnSettings->GetCurrentState() == BaseModHybridButton::Open )
-		HUD_SHEET_DRAW_RECT_ALPHA( 0, 0, p1, t, MainMenuAdditive, UV_top_bar_left_settings_glow, 255 );
-	if ( m_pBtnLogo->GetCurrentState( true ) == BaseModHybridButton::Focus )
-		HUD_SHEET_DRAW_RECT_ALPHA( 0, 0, p1, t, MainMenuAdditive, UV_top_bar_left_logo_glow, 255 );
-	if ( m_pBtnLogo->GetCurrentState() == BaseModHybridButton::Open )
-		HUD_SHEET_DRAW_RECT_ALPHA( 0, 0, p1, t, MainMenuAdditive, UV_top_bar_left_logo_glow, 255 );
-	if ( m_iLeftGlow )
-		HUD_SHEET_DRAW_RECT_ALPHA( 0, 0, p1, t, MainMenuAdditive, UV_top_bar_left_profile_glow, m_iLeftGlow );
+	BaseModHybridButton *pActiveButton = m_hActiveButton;
 
-	if ( m_pBtnQuit->GetCurrentState( true ) == BaseModHybridButton::Focus )
+	if ( pActiveButton == m_pBtnSettings )
+		HUD_SHEET_DRAW_RECT_ALPHA( 0, 0, p1, t, MainMenuAdditive, UV_top_bar_left_settings_glow, 255 );
+	if ( pActiveButton == m_pBtnLogo )
+		HUD_SHEET_DRAW_RECT_ALPHA( 0, 0, p1, t, MainMenuAdditive, UV_top_bar_left_logo_glow, 255 );
+	if ( pActiveButton == m_pBtnQuit )
 		HUD_SHEET_DRAW_RECT_ALPHA( p2, 0, w, t, MainMenuAdditive, UV_top_bar_right_quit_glow, 255 );
-	if ( m_pBtnQuit->GetCurrentState() == BaseModHybridButton::Open )
-		HUD_SHEET_DRAW_RECT_ALPHA( p2, 0, w, t, MainMenuAdditive, UV_top_bar_right_quit_glow, 255 );
-	if ( m_iRightGlow )
-		HUD_SHEET_DRAW_RECT_ALPHA( p2, 0, w, t, MainMenuAdditive, UV_top_bar_right_hoiaf_glow, m_iRightGlow );
+
+	HUD_SHEET_DRAW_RECT_ALPHA( 0, 0, p1, t, MainMenuAdditive, UV_top_bar_left_profile_glow, m_iLeftGlow );
+	HUD_SHEET_DRAW_RECT_ALPHA( p2, 0, w, t, MainMenuAdditive, UV_top_bar_right_hoiaf_glow, m_iRightGlow );
+
+	HUD_SHEET_DRAW_RECT_ALPHA( 0, 0, p1, t, MainMenuAdditive, UV_top_bar_left_settings_glow, m_GlowSettings.Update( m_pBtnSettings->GetCurrentState( true ) == BaseModHybridButton::Focus ) );
+	HUD_SHEET_DRAW_RECT_ALPHA( 0, 0, p1, t, MainMenuAdditive, UV_top_bar_left_logo_glow, m_GlowLogo.Update( m_pBtnLogo->GetCurrentState( true ) == BaseModHybridButton::Focus ) );
+	HUD_SHEET_DRAW_RECT_ALPHA( p2, 0, w, t, MainMenuAdditive, UV_top_bar_right_quit_glow, m_GlowQuit.Update( m_pBtnQuit->GetCurrentState( true ) == BaseModHybridButton::Focus ) );
 
 	for ( int i = 0; i < NELEMS( m_pTopButton ); i++ )
 	{
@@ -157,10 +155,10 @@ void CRD_VGUI_Main_Menu_Top_Bar::PaintBackground()
 		int x0 = x - YRES( 64 );
 		int x1 = x + YRES( 64 );
 
-		if ( m_pTopButton[i]->GetCurrentState( true ) == BaseModHybridButton::Focus )
+		if ( pActiveButton == m_pTopButton[i] )
 			HUD_SHEET_DRAW_RECT_ALPHA( x0, 0, x1, t, MainMenuAdditive, UV_top_bar_button_glow, 255 );
-		if ( m_pTopButton[i]->GetCurrentState() == BaseModHybridButton::Open )
-			HUD_SHEET_DRAW_RECT_ALPHA( x0, 0, x1, t, MainMenuAdditive, UV_top_bar_button_glow, 255 );
+
+		HUD_SHEET_DRAW_RECT_ALPHA( x0, 0, x1, t, MainMenuAdditive, UV_top_bar_button_glow, m_GlowTopButton[i].Update( m_pTopButton[i]->GetCurrentState( true ) == BaseModHybridButton::Focus ) );
 	}
 
 	HUD_SHEET_DRAW_PANEL( m_pBtnSettings, MainMenuSheet, UV_settings );
@@ -171,47 +169,44 @@ void CRD_VGUI_Main_Menu_Top_Bar::PaintBackground()
 	}
 	HUD_SHEET_DRAW_PANEL( m_pBtnQuit, MainMenuSheet, UV_quit );
 
-	if ( m_pBtnSettings->GetCurrentState( true ) == BaseModHybridButton::Focus )
+	if ( pActiveButton == m_pBtnSettings )
 		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnSettings, MainMenuAdditive, UV_settings_hover, 255 );
-	if ( m_pBtnSettings->GetCurrentState() == BaseModHybridButton::Open )
-		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnSettings, MainMenuAdditive, UV_settings_hover, 255 );
-	if ( m_pBtnLogo->GetCurrentState( true ) == BaseModHybridButton::Focus )
+	if ( pActiveButton == m_pBtnLogo )
 		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnSettings, MainMenuAdditive, UV_settings_logo_hover, 255 );
-	if ( m_pBtnLogo->GetCurrentState() == BaseModHybridButton::Open )
-		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnSettings, MainMenuAdditive, UV_settings_logo_hover, 255 );
-	if ( m_iLeftGlow )
-		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnSettings, MainMenuAdditive, UV_settings_profile_hover, m_iLeftGlow );
 
-	if ( m_pBtnLogo->GetCurrentState( true ) == BaseModHybridButton::Focus )
+	if ( pActiveButton == m_pBtnLogo )
 		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnLogo, MainMenuAdditive, UV_logo_hover, 255 );
-	if ( m_pBtnLogo->GetCurrentState() == BaseModHybridButton::Open )
-		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnLogo, MainMenuAdditive, UV_logo_hover, 255 );
-	if ( m_pBtnSettings->GetCurrentState( true ) == BaseModHybridButton::Focus )
+	if ( pActiveButton == m_pBtnSettings )
 		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnLogo, MainMenuAdditive, UV_logo_settings_hover, 255 );
-	if ( m_pBtnSettings->GetCurrentState() == BaseModHybridButton::Open )
-		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnLogo, MainMenuAdditive, UV_logo_settings_hover, 255 );
-	if ( m_iLeftGlow )
-		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnLogo, MainMenuAdditive, UV_logo_profile_hover, m_iLeftGlow );
+
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnSettings, MainMenuAdditive, UV_settings_profile_hover, m_iLeftGlow );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnLogo, MainMenuAdditive, UV_logo_profile_hover, m_iLeftGlow );
+
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnSettings, MainMenuAdditive, UV_settings_hover, m_GlowSettings.Get() );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnSettings, MainMenuAdditive, UV_settings_logo_hover, m_GlowLogo.Get() );
+
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnLogo, MainMenuAdditive, UV_logo_settings_hover, m_GlowSettings.Get() );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnLogo, MainMenuAdditive, UV_logo_hover, m_GlowLogo.Get() );
 
 	for ( int i = 0; i < NELEMS( m_pTopButton ); i++ )
 	{
-		if ( m_pTopButton[i]->GetCurrentState( true ) == BaseModHybridButton::Focus )
-			HUD_SHEET_DRAW_PANEL_ALPHA( m_pTopButton[i], MainMenuAdditive, UV_top_button_hover, 255 );
-		if ( m_pTopButton[i]->GetCurrentState() == BaseModHybridButton::Open )
-			HUD_SHEET_DRAW_PANEL_ALPHA( m_pTopButton[i], MainMenuAdditive, UV_top_button_hover, 255 );
-		if ( i > 0 && m_pTopButton[i - 1]->GetCurrentState( true ) == BaseModHybridButton::Focus )
-			HUD_SHEET_DRAW_PANEL_ALPHA( m_pTopButton[i], MainMenuAdditive, UV_top_button_left_hover, 255 );
-		if ( i > 0 && m_pTopButton[i - 1]->GetCurrentState() == BaseModHybridButton::Open )
-			HUD_SHEET_DRAW_PANEL_ALPHA( m_pTopButton[i], MainMenuAdditive, UV_top_button_left_hover, 255 );
-		if ( i < NELEMS( m_pTopButton ) - 1 && m_pTopButton[i + 1]->GetCurrentState( true ) == BaseModHybridButton::Focus )
-			HUD_SHEET_DRAW_PANEL_ALPHA( m_pTopButton[i], MainMenuAdditive, UV_top_button_right_hover, 255 );
-		if ( i < NELEMS( m_pTopButton ) - 1 && m_pTopButton[i + 1]->GetCurrentState() == BaseModHybridButton::Open )
-			HUD_SHEET_DRAW_PANEL_ALPHA( m_pTopButton[i], MainMenuAdditive, UV_top_button_right_hover, 255 );
-		if ( i == 0 && m_iLeftGlow )
+		HUD_SHEET_DRAW_PANEL_ALPHA( m_pTopButton[i], MainMenuAdditive, UV_top_button_hover, m_GlowTopButton[i].Get() );
+		if ( i == 0 )
 			HUD_SHEET_DRAW_PANEL_ALPHA( m_pTopButton[i], MainMenuAdditive, UV_top_button_profile_hover, m_iLeftGlow );
+		if ( pActiveButton == m_pTopButton[i] )
+			HUD_SHEET_DRAW_PANEL_ALPHA( m_pTopButton[i], MainMenuAdditive, UV_top_button_hover, 255 );
+		if ( i > 0 )
+			HUD_SHEET_DRAW_PANEL_ALPHA( m_pTopButton[i], MainMenuAdditive, UV_top_button_left_hover, m_GlowTopButton[i - 1].Get() );
+		if ( i < NELEMS( m_pTopButton ) - 1 )
+			HUD_SHEET_DRAW_PANEL_ALPHA( m_pTopButton[i], MainMenuAdditive, UV_top_button_right_hover, m_GlowTopButton[i + 1].Get() );
+		if ( i > 0 && pActiveButton == m_pTopButton[i - 1] )
+			HUD_SHEET_DRAW_PANEL_ALPHA( m_pTopButton[i], MainMenuAdditive, UV_top_button_left_hover, 255 );
+		if ( i < NELEMS( m_pTopButton ) - 1 && pActiveButton == m_pTopButton[i + 1] )
+			HUD_SHEET_DRAW_PANEL_ALPHA( m_pTopButton[i], MainMenuAdditive, UV_top_button_right_hover, 255 );
 	}
 
-	if ( m_pBtnQuit->GetCurrentState( true ) == BaseModHybridButton::Focus )
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnQuit, MainMenuAdditive, UV_quit_hover, m_GlowQuit.Get() );
+	if ( pActiveButton == m_pBtnQuit )
 		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnQuit, MainMenuAdditive, UV_quit_hover, 255 );
 }
 
