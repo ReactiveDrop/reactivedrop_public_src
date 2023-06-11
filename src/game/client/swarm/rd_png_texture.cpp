@@ -302,6 +302,15 @@ void CRD_PNG_Texture::OnPNGDataReady( const void *pData, size_t nDataSize, const
 
 	CUtlBuffer buf;
 	pVTF->Serialize( buf );
+
+	// drop largest mipmaps if the texture is too big.
+	if ( pVTF->MipCount() > GetMaxMipMapCount() )
+	{
+		pVTF->Unserialize( buf, false, pVTF->MipCount() - GetMaxMipMapCount() );
+		buf.Clear();
+		pVTF->Serialize( buf );
+	}
+
 	DestroyVTFTexture( pVTF );
 
 	char szStrippedName[MAX_PATH];

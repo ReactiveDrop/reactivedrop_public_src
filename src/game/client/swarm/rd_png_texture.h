@@ -28,6 +28,8 @@ protected:
 	void OnPNGDataReady( const void *pData, size_t nDataSize, const char *szIconDebugName = "icon" );
 	void OnFailedToLoadData( const char *szReason, const char *szIconDebugName = "icon" );
 
+	virtual int GetMaxMipMapCount() const { return 9; } // 256x256 max texture size by default
+
 private:
 	vgui::HTexture m_iTextureID{ NULL };
 	Color m_Color{ 255, 255, 255, 255 };
