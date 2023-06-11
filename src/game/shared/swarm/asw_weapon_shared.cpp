@@ -1353,6 +1353,10 @@ void CASW_Weapon::Equip( CBaseCombatCharacter *pOwner )
 	}
 
 	pOwner->EmitSound( GetEquipSound() );
+
+#ifdef GAME_DLL
+	m_OnPickedUp.FireOutput( GetOwner(), this );
+#endif
 }
 
 float CASW_Weapon::GetTurnRateModifier()

@@ -28,14 +28,9 @@ public:
 
 	CNetworkVar( string_t, m_iOriginalName );
 
-	void InputForcePickUp( inputdata_t &data );
-	void InputForceDrop( inputdata_t &data );
-
 	COutputEvent m_OnPrimaryAttack;
 	COutputEvent m_OnSecondaryAttack;
 	COutputEvent m_OnReload;
-	COutputEvent m_OnPickedUp;
-	COutputEvent m_OnDropped;
 #endif
 
 	virtual Class_T Classify() override { return (Class_T)CLASS_RD_WEAPON_GENERIC_OBJECT; }

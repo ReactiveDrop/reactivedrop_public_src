@@ -180,6 +180,11 @@ public:
 	virtual void NPCStoppedUsing( CASW_Inhabitable_NPC *pNPC ) { }
 	virtual bool NeedsLOSCheck() { return true; }
 
+	void InputForcePickUp( inputdata_t &data );
+	void InputForceDrop( inputdata_t &data );
+	COutputEvent m_OnPickedUp;
+	COutputEvent m_OnDropped;
+
 	virtual const char *GetPrintName() const override;
 	virtual int GetMaxClip1() const override;
 	virtual int GetMaxClip2() const override;

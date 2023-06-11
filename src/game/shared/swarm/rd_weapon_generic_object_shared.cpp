@@ -55,13 +55,9 @@ BEGIN_DATADESC( CRD_Weapon_Generic_Object )
 	DEFINE_KEYFIELD( m_bUseBoneMerge, FIELD_BOOLEAN, "UseBoneMerge" ),
 	DEFINE_KEYFIELD( m_angCarriedAngle, FIELD_VECTOR, "CarriedAngle" ),
 	DEFINE_KEYFIELD( m_vecCarriedOffset, FIELD_VECTOR, "CarriedOffset" ),
-	DEFINE_INPUTFUNC( FIELD_EHANDLE, "ForcePickUp", InputForcePickUp ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "ForceDrop", InputForceDrop ),
 	DEFINE_OUTPUT( m_OnPrimaryAttack, "OnPrimaryAttack" ),
 	DEFINE_OUTPUT( m_OnSecondaryAttack, "OnSecondaryAttack" ),
 	DEFINE_OUTPUT( m_OnReload, "OnReload" ),
-	DEFINE_OUTPUT( m_OnPickedUp, "OnPickedUp" ),
-	DEFINE_OUTPUT( m_OnDropped, "OnDropped" ),
 END_DATADESC()
 #endif
 
@@ -127,38 +123,6 @@ void CRD_Weapon_Generic_Object::MarineDropped( CASW_Marine *pMarine )
 
 	SetName( m_iOriginalName );
 }
-
-void CRD_Weapon_Generic_Object::InputForcePickUp( inputdata_t &data )
-{
-	if ( GetOwner() )
-	{
-		DevWarning( "Mapper error: %s cannot be picked up as it is already being held by %s\n", GetDebugName(), GetOwner()->GetDebugName() );
-		return;
-	}
-
-	CASW_Marine *pMarine = CASW_Marine::AsMarine( data.value.Entity() );
-	Assert( pMarine );
-	if ( !pMarine )
-	{
-		DevWarning( "Mapper error: %s cannot be picked up by non-marine entity %s\n", GetDebugName(), data.value.Entity() ? data.value.Entity()->GetDebugName() : "<<NULL>>" );
-		return;
-	}
-
-	ActivateUseIcon( pMarine, ASW_USE_RELEASE_QUICK );
-}
-
-void CRD_Weapon_Generic_Object::InputForceDrop( inputdata_t &data )
-{
-	CASW_Marine *pMarine = CASW_Marine::AsMarine( GetOwner() );
-	Assert( pMarine );
-	if ( !pMarine )
-	{
-		DevWarning( "Mapper error: %s cannot be picked up as it is not being held\n", GetDebugName() );
-		return;
-	}
-
-	pMarine->DropWeapon( this, false );
-}
 #endif
 
 void CRD_Weapon_Generic_Object::Precache()
@@ -203,18 +167,10 @@ void CRD_Weapon_Generic_Object::Equip( CBaseCombatCharacter *pOwner )
 		SetLocalOrigin( m_vecCarriedOffset );
 		SetLocalAngles( m_angCarriedAngle );
 	}
-
-#ifdef GAME_DLL
-	m_OnPickedUp.FireOutput( GetOwner(), this );
-#endif
 }
 
 void CRD_Weapon_Generic_Object::Drop( const Vector & vecVelocity )
 {
-#ifdef GAME_DLL
-	m_OnDropped.FireOutput( GetOwner(), this );
-#endif
-
 	if ( !m_bUseBoneMerge )
 	{
 		Vector origin = GetAbsOrigin();

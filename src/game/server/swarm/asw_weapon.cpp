@@ -70,6 +70,10 @@ BEGIN_DATADESC( CASW_Weapon )
 	DEFINE_FIELD( m_fFastReloadStart, FIELD_TIME ),
 	DEFINE_FIELD( m_fFastReloadEnd, FIELD_TIME ),
 	DEFINE_KEYFIELD( m_bIsTemporaryPickup, FIELD_BOOLEAN, "IsTemporaryPickup" ),
+	DEFINE_INPUTFUNC( FIELD_EHANDLE, "ForcePickUp", InputForcePickUp ),
+	DEFINE_INPUTFUNC( FIELD_VOID, "ForceDrop", InputForceDrop ),
+	DEFINE_OUTPUT( m_OnPickedUp, "OnPickedUp" ),
+	DEFINE_OUTPUT( m_OnDropped, "OnDropped" ),
 END_DATADESC()
 
 BEGIN_ENT_SCRIPTDESC( CASW_Weapon, CBaseCombatWeapon, "Alien Swarm weapon" )
@@ -316,6 +320,8 @@ bool CASW_Weapon::DestroyIfEmpty( bool bDestroyWhenActive, bool bCheckSecondaryA
 //-----------------------------------------------------------------------------
 void CASW_Weapon::Drop( const Vector &vecVelocity )
 {
+	m_OnDropped.FireOutput( GetOwner(), this );
+
 	// cancel any reload in progress.
 	m_bInReload = false;
 
@@ -409,4 +415,39 @@ void CASW_Weapon::FallInit()
 
 	// We can't touch triggers if we are a trigger ourself.
 	RemoveSolidFlags( FSOLID_TRIGGER );
+}
+
+void CASW_Weapon::InputForcePickUp( inputdata_t &data )
+{
+	if ( GetOwner() )
+	{
+		DevWarning( "Mapper error: %s %s cannot be picked up as it is already being held by %s\n", GetClassname(), GetDebugName(), GetOwner()->GetDebugName() );
+		return;
+	}
+
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( data.value.Entity() );
+	Assert( pMarine );
+	if ( !pMarine )
+	{
+		DevWarning( "Mapper error: %s %s cannot be picked up by non-marine entity %s\n", GetClassname(), GetDebugName(), data.value.Entity() ? data.value.Entity()->GetDebugName() : "<<NULL>>" );
+		return;
+	}
+
+	if ( !pMarine->TakeWeaponPickup( this ) )
+	{
+		DevWarning( "Mapper error: %s %s cannot be picked up by marine %s\n", GetClassname(), GetDebugName(), pMarine->GetDebugName() );
+	}
+}
+
+void CASW_Weapon::InputForceDrop( inputdata_t &data )
+{
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( GetOwner() );
+	Assert( pMarine );
+	if ( !pMarine )
+	{
+		DevWarning( "Mapper error: %s %s cannot be dropped as it is not being held\n", GetClassname(), GetDebugName() );
+		return;
+	}
+
+	pMarine->DropWeapon( this, false );
 }
