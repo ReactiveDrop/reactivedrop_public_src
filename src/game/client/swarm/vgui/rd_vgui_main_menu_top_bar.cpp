@@ -47,6 +47,15 @@ void CRD_VGUI_Main_Menu_Top_Bar::ApplySchemeSettings( vgui::IScheme *pScheme )
 	m_pBtnQuit->SetNavDown( this );
 
 	SetNavUp( m_pBtnLogo );
+
+	// We may have loaded localization files since we first initialized.
+	// Set the text again to grab updates if we have them.
+	m_pTopButton[0]->SetText( "#rd_collection_inventory_loadout" );
+	m_pTopButton[1]->SetText( "#rd_mainmenu_contracts" );
+	m_pTopButton[2]->SetText( "#rd_mainmenu_recordings" );
+	m_pTopButton[3]->SetText( "#rd_collection_swarmopedia" );
+	m_pTopButton[4]->SetText( "#rd_mainmenu_workshop" );
+	m_pTopButton[5]->SetText( "#rd_mainmenu_inventory" );
 }
 
 extern void LaunchCollectionsFrame();
