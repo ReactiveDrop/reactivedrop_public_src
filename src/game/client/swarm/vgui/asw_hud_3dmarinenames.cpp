@@ -50,6 +50,7 @@ extern ConVar asw_draw_hud;
 extern ConVar asw_hud_alpha;
 extern ConVar asw_DebugAutoAim;
 extern ConVar asw_fast_reload_enabled;
+extern ConVar rd_reduce_motion;
 
 // these convars where moved in asw_gamerules.cpp to allow server to control them
 extern ConVar asw_marine_names;
@@ -81,6 +82,21 @@ ConVar rd_health_counter_under_marine_show_max_health( "rd_health_counter_under_
 ConVar rd_ammo_counter_under_marine( "rd_ammo_counter_under_marine", "0", FCVAR_ARCHIVE, "Draw an ammo counter of the marine's active weapon under the marine?" );
 ConVar rd_ammo_counter_under_marine_alignment( "rd_ammo_counter_under_marine_alignment", "1", FCVAR_ARCHIVE, "Aligns the ammo counter under the marine. 0 - Left, 1 - Center, 2 - Right" );
 ConVar rd_ammo_counter_under_marine_show_max_ammo( "rd_ammo_counter_under_marine_show_max_ammo", "0", FCVAR_ARCHIVE, "Should the ammo counter under the marine also show max ammo?" );
+ConVar rd_strange_device_tier_notifications( "rd_strange_device_tier_notifications", "1", FCVAR_NONE, "Should strange device rank-up notifications be shown? (2 = only my own)" );
+ConVar rd_strange_notification_world_z_offset( "rd_strange_notification_world_z_offset", "4", FCVAR_NONE, "How far above the character's eyes should the bottom of the notification be?" );
+ConVar rd_strange_notification_screen_y_offset( "rd_strange_notification_screen_y_offset", "-16", FCVAR_NONE, "Additional screen-space offset for the bottom of the notification. Positive is down. Scales with screen size." );
+ConVar rd_strange_notification_fade_y_distance( "rd_strange_notification_fade_y_distance", "6", FCVAR_NONE, "How far the notification text moves while fading. Scales with screen size." );
+ConVar rd_strange_notification_line_padding( "rd_strange_notification_line_padding", "2", FCVAR_NONE, "How much space should there be around the line in the notification? Scales with screen size." );
+ConVar rd_strange_notification_line_thickness( "rd_strange_notification_line_thickness", "1", FCVAR_NONE, "How thick should the line in the notification be? Scales with screen size." );
+ConVar rd_strange_notification_line_max_width( "rd_strange_notification_line_max_width", "69", FCVAR_NONE, "How wide should the line in the notification be once it is fully visible? Scales with screen size." );
+ConVar rd_strange_notification_line_grow_exponent( "rd_strange_notification_line_grow_exponent", "0.3", FCVAR_NONE, "Affects how the speed of the line's growth changes over time." );
+ConVar rd_strange_notification_text_fade_exponent( "rd_strange_notification_text_fade_exponent", "1.5", FCVAR_NONE, "Affects how the speed of the text fading in/out changes over time." );
+ConVar rd_strange_notification_timing_0( "rd_strange_notification_timing_0", "10", FCVAR_NONE, "Total lifetime of notification" );
+ConVar rd_strange_notification_timing_1( "rd_strange_notification_timing_1", "1.25", FCVAR_NONE, "Counter spin-up time" );
+ConVar rd_strange_notification_timing_2( "rd_strange_notification_timing_2", "0.5", FCVAR_NONE, "Line grow time" );
+ConVar rd_strange_notification_timing_3( "rd_strange_notification_timing_3", "1", FCVAR_NONE, "Fade-in time" );
+ConVar rd_strange_notification_timing_4( "rd_strange_notification_timing_4", "0.25", FCVAR_NONE, "Glow flare time" );
+ConVar rd_strange_notification_timing_5( "rd_strange_notification_timing_5", "0.5", FCVAR_NONE, "Fade-out time" );
 
 #define ASW_MIN_MARINE_ARROW_SIZE 20
 #define ASW_MAX_MARINE_ARROW_SIZE 60
@@ -110,10 +126,13 @@ CASWHud3DMarineNames::~CASWHud3DMarineNames()
 }
 
 DECLARE_HUDELEMENT( CASWHud3DMarineNames );
+DECLARE_HUD_MESSAGE( CASWHud3DMarineNames, RDStrangeDeviceTier );
 
 void CASWHud3DMarineNames::Init()
 {
 	Reset();
+
+	HOOK_HUD_MESSAGE( CASWHud3DMarineNames, RDStrangeDeviceTier );
 }
 
 void CASWHud3DMarineNames::Reset()
@@ -176,32 +195,9 @@ void CASWHud3DMarineNames::Paint()
 	VPROF_BUDGET( "CASWHud3DMarineNames::Paint", VPROF_BUDGETGROUP_ASW_CLIENT );
 
 	BaseClass::Paint();
-	//PaintFontTest();
 	MDLCACHE_CRITICAL_SECTION();
 	PaintMarineNameLabels();
 	PaintBoxesAroundUseEntities();
-	C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if (pPlayer)
-	{
-		/*
-		// check for drawing autoaim crosshair
-		if (pPlayer->m_ASWLocal.m_hAutoAimTarget.Get() && pPlayer->GetViewMarine())
-		{
-			C_ASW_Marine *pMarine = pPlayer->GetViewMarine();
-			C_ASW_Marine_Resource *pMR = pMarine->GetMarineResource();
-			if (pMR && pMR->IsFiring())
-			{
-				C_ASW_Weapon *pWeapon = pMarine->GetActiveASWWeapon();
-				if (pWeapon->IsOffensiveWeapon())
-					PaintAutoaimCrosshairOn(pPlayer->m_ASWLocal.m_hAutoAimTarget.Get());
-			}			
-		}
-		if (pPlayer->GetHighlightEntity())
-		{
-			PaintBoxAround(pPlayer->GetHighlightEntity(), 6);
-		}
-		*/
-	}
 
 	if ( ASWInput() && ASWInput()->GetAutoaimEntity() )
 	{
@@ -214,6 +210,7 @@ void CASWHud3DMarineNames::Paint()
 		PaintAimingDebug();
 	}
 
+	PaintStrangeDeviceNotifications();
 }
 
 /// simple convenience for printing unformatted text with a drop shadow
@@ -552,10 +549,14 @@ void CASWHud3DMarineNames::PaintMarineLabel( int iMyMarineNum, C_ASW_Marine * RE
 	int omx, omy;
 	ASWInput()->ASW_GetCameraLocation( pLocal, vecCameraFocus, ang, omx, omy, false);
 
+	Vector vecMarineOffset;
+	AngleVectors( ang, &vecMarineOffset );
+	vecMarineOffset *= 10.0f;
+
 	float flMarineDistanceFromCamera = vecCameraFocus.DistTo( vMarinePos );
 
 	// if marine is behind the player, convert it to a shortened vector, so it doesn't go behind the plane of the camera
-	if ( !!debugoverlay->ScreenPosition( vMarinePos - Vector( 0.0f, 10.0f, 0.0f ), screenPos ) )
+	if ( ( !bLocal || pLocal->GetASWControls() == ASWC_TOPDOWN ) && !!debugoverlay->ScreenPosition( vMarinePos + vecMarineOffset, screenPos ) )
 	{
 		Vector offset;
 		AngleVectors( ang, &offset );
@@ -570,7 +571,7 @@ void CASWHud3DMarineNames::PaintMarineLabel( int iMyMarineNum, C_ASW_Marine * RE
 		vMarinePos = vecCameraFocus + dir * 500;
 	}
 
-	if ( !debugoverlay->ScreenPosition( vMarinePos - Vector(0,10,0), screenPos ) )
+	if ( !debugoverlay->ScreenPosition( vMarinePos + vecMarineOffset, screenPos ) )
 	{
 		const int nMaxX = ScreenWidth() - YRES( 50 );
 		const int nMaxY = ScreenHeight() - YRES( 75 );
@@ -753,7 +754,7 @@ void CASWHud3DMarineNames::PaintMarineLabel( int iMyMarineNum, C_ASW_Marine * RE
 			// if the pointee marine is KO'd, make the arrow blink.
 			if ( bMarineIsKnockedOut )
 			{
-				surface()->DrawSetColor( fmod( gpGlobals->curtime , 0.5f ) <= 0.25f ? Color(255,0,0,255) : Color(0,0,0,0) );
+				surface()->DrawSetColor( !rd_reduce_motion.GetBool() && fmod( gpGlobals->curtime, 0.5f ) <= 0.25f ? Color( 255, 0, 0, 255 ) : Color( 0, 0, 0, 0 ) );
 			}
 			else 
 			{
@@ -1605,6 +1606,184 @@ void CASWHud3DMarineNames::SetHealthMarine(C_ASW_Marine *pMarine)
 	{
 		m_hHealthQueuedMarine = pMarine;
 		m_bHealthQueuedMarine = true;		
+	}
+}
+
+void CASWHud3DMarineNames::StrangeDeviceNotification_t::Init( CASWHud3DMarineNames *pParent )
+{
+	const ReactiveDropInventory::ItemDef_t *pAccessoryDef = ReactiveDropInventory::GetItemDef( m_iAccessoryID );
+	Assert( pAccessoryDef );
+	if ( pAccessoryDef )
+		V_UTF8ToUnicode( pAccessoryDef->Name, m_wszAccessoryName, sizeof( m_wszAccessoryName ) );
+	else
+		V_snwprintf( m_wszAccessoryName, NELEMS( m_wszAccessoryName ), L"ITEMDEFMISSING#%d", m_iAccessoryID );
+
+	if ( pAccessoryDef )
+		m_iStartCounter = pAccessoryDef->CountForStrangeTier( pAccessoryDef->GetStrangeTier( m_iCounter ) - 1 );
+	else
+		m_iStartCounter = m_iCounter;
+
+	m_iCurrentCounter = m_iStartCounter;
+
+	V_wcsncpy( m_wszCounterNumber, UTIL_RD_CommaNumber( m_iCurrentCounter ), sizeof( m_wszCounterNumber ) );
+
+	int discard;
+	vgui::surface()->GetTextSize( pParent->m_hNotificationNumberFont, UTIL_RD_CommaNumber( m_iCounter ), m_iCounterNumberWide, discard);
+	vgui::surface()->GetTextSize( pParent->m_hNotificationNameFont, m_wszAccessoryName, m_iAccessoryNameWide, discard );
+}
+
+void CASWHud3DMarineNames::OnStrangeDeviceTierNotification( C_ASW_Player *pOwner, C_ASW_Inhabitable_NPC *pNPC, SteamItemDef_t iItemDefID, SteamItemDef_t iAccessoryID, int iPropertyIndex, int64_t iCounter )
+{
+	Assert( pOwner );
+	Assert( pNPC );
+	if ( !pOwner || !pNPC )
+		return;
+
+	if ( rd_strange_device_tier_notifications.GetInt() == 0 )
+		return;
+
+	if ( rd_strange_device_tier_notifications.GetInt() == 2 && !pOwner->IsLocalPlayer() )
+		return;
+
+	StrangeDeviceNotification_t *pNotification = new StrangeDeviceNotification_t{ pOwner, pNPC, iItemDefID, iAccessoryID, iPropertyIndex, iCounter, gpGlobals->realtime };
+	pNotification->Init( this );
+	m_StrangeDeviceNotifications.AddToTail( pNotification );
+}
+
+void CASWHud3DMarineNames::MsgFunc_RDStrangeDeviceTier( bf_read &msg )
+{
+	int iOwner = msg.ReadUBitLong( 6 );
+	int iEntIndex = msg.ReadShort();
+	SteamItemDef_t iItemDefID = msg.ReadUBitLong( RD_ITEM_ID_BITS );
+	SteamItemDef_t iAccessoryID = msg.ReadUBitLong( RD_ITEM_ACCESSORY_BITS );
+	int iPropertyIndex = msg.ReadUBitLong( 2 );
+	int64_t iCounter;
+	msg.ReadBits( &iCounter, 64 );
+
+	C_ASW_Player *pOwner = ToASW_Player( UTIL_PlayerByIndex( iOwner + 1 ) );
+	C_BaseEntity *pEnt = ClientEntityList().GetBaseEntity( iEntIndex );
+	Assert( pEnt->IsInhabitableNPC() );
+	if ( !pEnt->IsInhabitableNPC() )
+		return;
+
+	C_ASW_Inhabitable_NPC *pNPC = assert_cast< C_ASW_Inhabitable_NPC * >( pEnt );
+
+	OnStrangeDeviceTierNotification( pOwner, pNPC, iItemDefID, iAccessoryID, iPropertyIndex, iCounter );
+}
+
+void CASWHud3DMarineNames::PaintStrangeDeviceNotifications()
+{
+	C_ASW_Player *pLocalPlayer = C_ASW_Player::GetLocalASWPlayer();
+	Assert( pLocalPlayer );
+	if ( !pLocalPlayer )
+		return;
+
+	// using a pointer as a map key because it's not leaving this function scope and you can't stop me
+	CUtlMap<C_ASW_Inhabitable_NPC *, int> StackedNotificationY{ DefLessFunc( C_ASW_Inhabitable_NPC * ) };
+
+	FOR_EACH_VEC( m_StrangeDeviceNotifications, i )
+	{
+		StrangeDeviceNotification_t *pNotification = m_StrangeDeviceNotifications[i];
+		float flLifetime = gpGlobals->realtime - pNotification->m_flStartTime;
+
+		C_ASW_Inhabitable_NPC *pNPC = pNotification->m_hNPC;
+		if ( !pNPC || flLifetime > rd_strange_notification_timing_0.GetFloat() )
+		{
+			delete pNotification;
+			m_StrangeDeviceNotifications.Remove( i );
+			i--;
+			continue;
+		}
+
+		Vector screen;
+		bool bOnScreen = !debugoverlay->ScreenPosition( pNPC->EyePosition() + Vector( 0, 0, rd_strange_notification_world_z_offset.GetFloat() ), screen );
+		if ( pLocalPlayer->GetASWControls() == ASWC_FIRSTPERSON && pLocalPlayer->GetViewNPC() == pNPC )
+		{
+			screen.x = ScreenWidth() / 2.0f;
+			screen.y = ScreenHeight() / 3.0f;
+			bOnScreen = true;
+		}
+
+		if ( bOnScreen )
+		{
+			int iCurrentCounterWide = pNotification->m_iCounterNumberWide;
+			if ( pNotification->m_iCurrentCounter != pNotification->m_iCounter )
+			{
+				pNotification->m_iCurrentCounter = flLifetime >= rd_strange_notification_timing_1.GetFloat() ? pNotification->m_iCounter : Lerp( flLifetime / rd_strange_notification_timing_1.GetFloat(), pNotification->m_iStartCounter, pNotification->m_iCounter );
+
+				V_wcsncpy( pNotification->m_wszCounterNumber, UTIL_RD_CommaNumber( pNotification->m_iCurrentCounter ), sizeof( pNotification->m_wszCounterNumber ) );
+
+				int discard;
+				vgui::surface()->GetTextSize( m_hNotificationNumberFont, pNotification->m_wszCounterNumber, iCurrentCounterWide, discard );
+			}
+
+			int x = screen.x;
+			int y = screen.y + rd_strange_notification_screen_y_offset.GetFloat();
+
+			unsigned short iStackedIndex = StackedNotificationY.Find( pNPC );
+			if ( StackedNotificationY.IsValidIndex( iStackedIndex ) )
+				y = StackedNotificationY[iStackedIndex];
+
+			// 0->1 at start
+			float flFadeInScale = rd_strange_notification_timing_3.GetFloat() > 0 ? clamp<float>( flLifetime / rd_strange_notification_timing_3.GetFloat(), 0.0f, 1.0f ) : 1.0f;
+			// 1->0.5
+			float flGlowFlareScale = rd_strange_notification_timing_4.GetFloat() > 0 ? 1.0f - clamp<float>( ( flLifetime - rd_strange_notification_timing_3.GetFloat() ) / rd_strange_notification_timing_4.GetFloat(), 0.0f, 1.0f ) / 2.0f : 0.5f;
+			// 0->1 at start
+			float flLineGrowScale = rd_strange_notification_timing_2.GetFloat() > 0 ? powf( clamp<float>( flLifetime / rd_strange_notification_timing_2.GetFloat(), 0.0f, 1.0f ), rd_strange_notification_line_grow_exponent.GetFloat() ) : 1.0f;
+			// 1->0 at end
+			float flFadeOutScale = rd_strange_notification_timing_5.GetFloat() > 0 ? clamp<float>( ( rd_strange_notification_timing_0.GetFloat() - flLifetime ) / rd_strange_notification_timing_5.GetFloat(), 0.0f, 1.0f ) : 1.0f;
+
+			float flFadeScale = powf( flFadeInScale * flFadeOutScale, rd_strange_notification_text_fade_exponent.GetFloat() );
+
+			int iNumberTall = vgui::surface()->GetFontTall( m_hNotificationNumberFont );
+			int iNameTall = vgui::surface()->GetFontTall( m_hNotificationNameFont );
+			int iLinePadding = YRES( rd_strange_notification_line_padding.GetFloat() );
+			int iLineThickness = YRES( rd_strange_notification_line_thickness.GetFloat() );
+			int iLineMaxWidth = YRES( rd_strange_notification_line_max_width.GetFloat() );
+			int iLineHalfWidth = iLineMaxWidth * flLineGrowScale * flFadeOutScale / 2.0f;
+			int iLineQuarterWidth = iLineHalfWidth / 2;
+			int iLineY = y - ( iNameTall + iLinePadding ) * flFadeOutScale;
+			int iNameX = x - pNotification->m_iAccessoryNameWide / 2.0f;
+			int iNameY = iLineY + iLinePadding - Lerp( flFadeScale, YRES( rd_strange_notification_fade_y_distance.GetFloat() ), 0.0 );
+			int iNumberX = x - ( pNotification->m_iCounterNumberWide - iNumberTall * 0.75f ) / 2.0f;
+			int iNumberXOffset = pNotification->m_iCounterNumberWide - iCurrentCounterWide;
+			int iNumberY = iLineY - iLineThickness - iLinePadding - iNumberTall + Lerp( flFadeScale, YRES( rd_strange_notification_fade_y_distance.GetFloat() ), 0.0 );
+
+			StackedNotificationY.InsertOrReplace( pNPC, y - flFadeOutScale * ( iNumberTall + iLinePadding * 3 + iLineThickness + iNameTall ) );
+
+			vgui::surface()->DrawSetTextFont( m_hNotificationNumberBlurFont );
+			vgui::surface()->DrawSetTextColor( 204, 84, 0, Lerp( flFadeScale * flGlowFlareScale, 0, 255 ) );
+			vgui::surface()->DrawSetTextPos( iNumberX + iNumberXOffset, iNumberY );
+			vgui::surface()->DrawUnicodeString( pNotification->m_wszCounterNumber );
+
+			vgui::surface()->DrawSetTextFont( m_hNotificationNumberFont );
+			vgui::surface()->DrawSetTextColor( 204, 129, 0, Lerp( flFadeScale, 0, 255 ) );
+			vgui::surface()->DrawSetTextPos( iNumberX + iNumberXOffset, iNumberY );
+			vgui::surface()->DrawUnicodeString( pNotification->m_wszCounterNumber );
+
+			vgui::surface()->DrawSetColor( 204, Lerp( flLineGrowScale, 84, 129 ), 0, 255 );
+			vgui::surface()->DrawFilledRect( x - iLineQuarterWidth, iLineY - iLineThickness, x + iLineQuarterWidth, iLineY );
+			vgui::surface()->DrawFilledRectFade( x - iLineHalfWidth, iLineY - iLineThickness, x - iLineQuarterWidth, iLineY, 0, 255, true );
+			vgui::surface()->DrawFilledRectFade( x + iLineQuarterWidth, iLineY - iLineThickness, x + iLineHalfWidth, iLineY, 255, 0, true );
+
+			vgui::surface()->DrawSetTextFont( m_hNotificationNameBlurFont );
+			vgui::surface()->DrawSetTextColor( 204, 84, 0, Lerp( flFadeScale * flGlowFlareScale, 0, 255 ) );
+			vgui::surface()->DrawSetTextPos( iNameX, iNameY );
+			vgui::surface()->DrawUnicodeString( pNotification->m_wszAccessoryName );
+
+			vgui::surface()->DrawSetTextFont( m_hNotificationNameFont );
+			vgui::surface()->DrawSetTextColor( 204, 129, 0, Lerp( flFadeScale, 0, 255 ) );
+			vgui::surface()->DrawSetTextPos( iNameX, iNameY );
+			vgui::surface()->DrawUnicodeString( pNotification->m_wszAccessoryName );
+
+			const ReactiveDropInventory::ItemDef_t *pAccessoryDef = ReactiveDropInventory::GetItemDef( pNotification->m_iAccessoryID );
+			if ( pAccessoryDef && pAccessoryDef->Icon && pAccessoryDef->Icon->GetNumFrames() )
+			{
+				vgui::surface()->DrawSetColor( 255, 255, 255, Lerp( flFadeScale, 0, 255 ) );
+				vgui::surface()->DrawSetTexture( pAccessoryDef->Icon->GetID() );
+				vgui::surface()->DrawTexturedRect( iNumberX - iNumberTall, iNumberY, iNumberX, iNumberY + iNumberTall );
+			}
+		}
 	}
 }
 

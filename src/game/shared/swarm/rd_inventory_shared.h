@@ -76,6 +76,7 @@ namespace ReactiveDropInventory
 
 		bool ItemSlotMatches( const char *szRequiredSlot ) const;
 		bool ItemSlotMatchesAnyDynamic() const;
+		int64_t CountForStrangeTier( int iTier ) const;
 		int GetStrangeTier( int64_t x ) const;
 	};
 
@@ -136,6 +137,9 @@ namespace ReactiveDropInventory
 #define RD_ITEM_MAX_ACCESSORIES 4
 #define RD_ITEM_MAX_COMPRESSED_DYNAMIC_PROPS 10
 #define RD_ITEM_MAX_COMPRESSED_DYNAMIC_PROPS_PER_ACCESSORY 2
+
+#define RD_ITEM_ID_BITS 30
+#define RD_ITEM_ACCESSORY_BITS 13
 
 #define RD_EQUIPPED_ITEMS_NOTIFICATION_WORST_CASE_SIZE ( MAX( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC, RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC ) * 2048 )
 #define RD_EQUIPPED_ITEMS_NOTIFICATION_PAYLOAD_SIZE_PER_PACKET ( MAX_VALUE / 2 - 1 )

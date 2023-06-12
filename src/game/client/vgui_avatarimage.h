@@ -138,7 +138,8 @@ public:
 	void SetPlayerByIndex( int iIndex );
 	void SetAvatarBySteamID( const CSteamID *friendsID );
 
-	virtual void PaintBackground( void );
+	void PerformLayout() override;
+	void PaintBackground() override;
 	bool	IsValid( void ) { return (GetImage() && ((CAvatarImage*)GetImage())->IsValid()); }
 
 	CPanelAnimationVar( bool, m_bLegacyPadding, "legacy_padding", "1" );

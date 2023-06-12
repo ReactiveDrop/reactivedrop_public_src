@@ -32,6 +32,7 @@
 #include "gameui/swarm/vitemshowcase.h"
 #include "filesystem.h"
 #include "c_user_message_register.h"
+#include "asw_hud_3dmarinenames.h"
 #define CASW_Sentry_Base C_ASW_Sentry_Base
 #else
 #include "asw_player.h"
@@ -67,14 +68,16 @@ ConVar rd_debug_inventory( "cl_debug_inventory", "0", FCVAR_NONE, "print debuggi
 extern ConVar rd_equipped_weapon_primary[ASW_NUM_MARINE_PROFILES];
 extern ConVar rd_equipped_weapon_secondary[ASW_NUM_MARINE_PROFILES];
 extern ConVar rd_equipped_weapon_extra[ASW_NUM_MARINE_PROFILES];
+extern ConVar rd_strange_device_tier_notifications;
 #else
-extern ConVar rd_dedicated_server_language;
 ConVar rd_debug_inventory( "sv_debug_inventory", "0", FCVAR_NONE, "print debugging messages about inventory service calls" );
 #define GET_INVENTORY_OR_BAIL \
 	ISteamInventory *pInventory = engine->IsDedicatedServer() ? SteamGameServerInventory() : SteamInventory(); \
 	Assert( pInventory ); \
 	if ( !pInventory ) \
 		return
+
+extern ConVar rd_dedicated_server_language;
 #endif
 
 class CSteamItemIcon;
@@ -905,7 +908,7 @@ public:
 
 			CRD_ItemInstance &suitInstance = pPlayer->m_EquippedItemDataStatic[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + pMR->GetProfileIndex()];
 
-			ModifyAccessoryDynamicPropValue( suitInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
+			ModifyAccessoryDynamicPropValue( pMR->GetMarineEntity(), pPlayer, suitInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
 
 			for ( int j = 0; j < ASW_NUM_INVENTORY_SLOTS; j++ )
 			{
@@ -920,7 +923,7 @@ public:
 				if ( !pDef || !pDef->ItemSlotMatches( j == ASW_INVENTORY_SLOT_EXTRA ? "extra" : "weapon" ) || pDef->EquipIndex != pMR->m_iInitialWeaponsInSlots[j] )
 					continue;
 
-				ModifyAccessoryDynamicPropValue( weaponInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
+				ModifyAccessoryDynamicPropValue( pMR->GetMarineEntity(), pPlayer, weaponInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
 			}
 		}
 	}
@@ -943,7 +946,7 @@ public:
 			{
 				CRD_ItemInstance &suitInstance = pMR->m_OriginalCommander->m_EquippedItemDataStatic[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + pMR->GetProfileIndex()];
 
-				ModifyAccessoryDynamicPropValue( suitInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
+				ModifyAccessoryDynamicPropValue( pNPC, pMR->m_OriginalCommander, suitInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
 			}
 		}
 
@@ -955,7 +958,7 @@ public:
 				CRD_ItemInstance &weaponInstance = pWeapon->m_hOriginalOwnerPlayer->m_EquippedItemDataDynamic[pWeapon->m_iInventoryEquipSlot];
 				Assert( weaponInstance.IsSet() );
 
-				ModifyAccessoryDynamicPropValue( weaponInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
+				ModifyAccessoryDynamicPropValue( pNPC, pWeapon->m_hOriginalOwnerPlayer, weaponInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
 			}
 		}
 	}
@@ -983,7 +986,7 @@ public:
 			{
 				CRD_ItemInstance &suitInstance = pMR->m_OriginalCommander->m_EquippedItemDataStatic[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + pMR->GetProfileIndex()];
 
-				ModifyAccessoryDynamicPropValue( suitInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
+				ModifyAccessoryDynamicPropValue( pMarine, pMR->m_OriginalCommander, suitInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
 			}
 		}
 
@@ -992,7 +995,7 @@ public:
 			CRD_ItemInstance &weaponInstance = pWeapon->m_hOriginalOwnerPlayer->m_EquippedItemDataDynamic[pWeapon->m_iInventoryEquipSlot];
 			Assert( weaponInstance.IsSet() );
 
-			ModifyAccessoryDynamicPropValue( weaponInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
+			ModifyAccessoryDynamicPropValue( pNPC, pWeapon->m_hOriginalOwnerPlayer, weaponInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
 		}
 	}
 
@@ -1027,7 +1030,7 @@ public:
 #endif
 	}
 
-	bool ModifyAccessoryDynamicPropValue( CRD_ItemInstance &instance, SteamItemDef_t iAccessoryID, int iPropertyIndex, int64_t iAmount, bool bRelative = true, bool bAllowCheating = false )
+	bool ModifyAccessoryDynamicPropValue( CASW_Inhabitable_NPC *pNPC, CASW_Player *pOwner, CRD_ItemInstance &instance, SteamItemDef_t iAccessoryID, int iPropertyIndex, int64_t iAmount, bool bRelative = true, bool bAllowCheating = false )
 	{
 		if ( !instance.IsSet() )
 		{
@@ -1108,7 +1111,7 @@ public:
 
 		if ( instance.m_iItemDefID == iAccessoryID )
 		{
-			ModifyDynamicPropValueHelper( instance, iAccessoryID, iPropertyIndex, iCombinedIndex, szPropertyName, pItemDef, pAccessoryDef, pLocalInstance, iAmount, bRelative );
+			ModifyDynamicPropValueHelper( pNPC, pOwner, instance, iAccessoryID, iPropertyIndex, iCombinedIndex, szPropertyName, pItemDef, pAccessoryDef, pLocalInstance, iAmount, bRelative );
 			return true;
 		}
 
@@ -1118,7 +1121,7 @@ public:
 		{
 			if ( instance.m_iAccessory[i] == iAccessoryID )
 			{
-				ModifyDynamicPropValueHelper( instance, iAccessoryID, iPropertyIndex, iCombinedIndex, szPropertyName, pItemDef, pAccessoryDef, pLocalInstance, iAmount, bRelative );
+				ModifyDynamicPropValueHelper( pNPC, pOwner, instance, iAccessoryID, iPropertyIndex, iCombinedIndex, szPropertyName, pItemDef, pAccessoryDef, pLocalInstance, iAmount, bRelative );
 				return true;
 			}
 
@@ -1137,7 +1140,7 @@ public:
 		return false;
 	}
 
-	void ModifyDynamicPropValueHelper( CRD_ItemInstance &instance, SteamItemDef_t iAccessoryID, int iPropertyIndex, int iCombinedIndex, const char *szPropertyName,
+	void ModifyDynamicPropValueHelper( CASW_Inhabitable_NPC *pNPC, CASW_Player *pOwner, CRD_ItemInstance &instance, SteamItemDef_t iAccessoryID, int iPropertyIndex, int iCombinedIndex, const char *szPropertyName,
 		const ReactiveDropInventory::ItemDef_t *pItemDef, const ReactiveDropInventory::ItemDef_t *pAccessoryDef, ReactiveDropInventory::ItemInstance_t *pLocalInstance, int64_t iAmount, bool bRelative )
 	{
 		int64_t iCounterBefore = instance.m_nCounter[iCombinedIndex];
@@ -1206,7 +1209,7 @@ public:
 
 			if ( iBestStreak < iCounterAfter )
 			{
-				ModifyAccessoryDynamicPropValue( instance, iAccessoryID, 1, iCounterAfter, false );
+				ModifyAccessoryDynamicPropValue( pNPC, pOwner, instance, iAccessoryID, 1, iCounterAfter, false );
 			}
 			else
 			{
@@ -1220,12 +1223,24 @@ public:
 #endif
 		instance.m_nCounter.Set( iCombinedIndex, iCounterAfter );
 
-		if ( iTierBefore < iTierAfter )
+		if ( iTierBefore < iTierAfter && pNPC && pOwner )
 		{
 #ifdef CLIENT_DLL
-			Assert( !"TODO: notification!" );
+			if ( CASWHud3DMarineNames *pMarineNames = assert_cast< CASWHud3DMarineNames * >( GetHud().FindElement( "ASWHud3DMarineNames" ) ) )
+			{
+				pMarineNames->OnStrangeDeviceTierNotification( pOwner, pNPC, instance.m_iItemDefID, iAccessoryID, iPropertyIndex, iCounterAfter );
+			}
 #else
-			Assert( !"TODO: notification!" );
+			CReliableBroadcastRecipientFilter filter;
+			filter.UsePredictionRules();
+			UserMessageBegin( filter, "RDStrangeDeviceTier" );
+				WRITE_UBITLONG( pOwner->GetClientIndex(), 6 );
+				WRITE_ENTITY( pNPC->entindex() );
+				WRITE_UBITLONG( instance.m_iItemDefID, RD_ITEM_ID_BITS );
+				WRITE_UBITLONG( iAccessoryID, RD_ITEM_ACCESSORY_BITS );
+				WRITE_UBITLONG( iPropertyIndex, 2 ); // 1 extra bit for possible future use
+				WRITE_BITS( &iCounterAfter, 64 );
+			MessageEnd();
 #endif
 		}
 
@@ -2213,6 +2228,22 @@ namespace ReactiveDropInventory
 	bool ItemDef_t::ItemSlotMatchesAnyDynamic() const
 	{
 		return ItemSlotMatches( "weapon" ) || ItemSlotMatches( "extra" );
+	}
+
+	int64_t ItemDef_t::CountForStrangeTier( int iTier ) const
+	{
+		Assert( iTier >= 0 );
+		if ( iTier <= 0 )
+			return 0;
+
+		if ( iTier <= StrangeNotify.Count() )
+		{
+			return StrangeNotify[iTier - 1];
+		}
+
+		iTier -= StrangeNotify.Count();
+
+		return StrangeNotifyEvery * iTier;
 	}
 
 	int ItemDef_t::GetStrangeTier( int64_t x ) const
@@ -3477,9 +3508,6 @@ namespace ReactiveDropInventory
 		}
 	}
 }
-
-#define RD_ITEM_ID_BITS 30
-#define RD_ITEM_ACCESSORY_BITS 13
 
 BEGIN_NETWORK_TABLE_NOBASE( CRD_ItemInstance, DT_RD_ItemInstance )
 #ifdef CLIENT_DLL

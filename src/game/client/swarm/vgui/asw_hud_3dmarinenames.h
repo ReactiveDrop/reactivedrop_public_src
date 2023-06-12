@@ -41,7 +41,6 @@ public:
 	virtual void PaintAutoaimCrosshairOn(C_BaseEntity *pEnt);
 	bool PaintHealthBar( C_ASW_Marine *pMarine, float xPos, float yPos, bool bOnScreen );
 	void PaintFontTest();
-	void PaintBossHealth();
 	void PaintTalkingIcon( C_ASW_Marine *pMarine, float xPos, float yPos );
 
 	float GetUsingFraction( C_ASW_Marine *pMarine );
@@ -62,11 +61,39 @@ public:
 	CHandle<C_ASW_Marine> m_hHealthMarine;
 	bool m_bHealthQueuedMarine;
 
+	struct StrangeDeviceNotification_t
+	{
+		CHandle<C_ASW_Player> m_hOwner;
+		CHandle<C_ASW_Inhabitable_NPC> m_hNPC;
+		SteamItemDef_t m_iItemDefID;
+		SteamItemDef_t m_iAccessoryID;
+		int m_iPropertyIndex;
+		int64_t m_iCounter;
+		float m_flStartTime;
+
+		int64_t m_iStartCounter;
+		int64_t m_iCurrentCounter;
+		wchar_t m_wszCounterNumber[32];
+		int m_iCounterNumberWide;
+		wchar_t m_wszAccessoryName[128];
+		int m_iAccessoryNameWide;
+
+		void Init( CASWHud3DMarineNames *pParent );
+	};
+	CUtlVectorAutoPurge<StrangeDeviceNotification_t *> m_StrangeDeviceNotifications;
+	void OnStrangeDeviceTierNotification( C_ASW_Player *pOwner, C_ASW_Inhabitable_NPC *pNPC, SteamItemDef_t iItemDefID, SteamItemDef_t iAccessoryID, int iPropertyIndex, int64_t iCounter );
+	void MsgFunc_RDStrangeDeviceTier( bf_read &msg );
+	void PaintStrangeDeviceNotifications();
+
 	CPanelAnimationVar( vgui::HFont, m_hMarineNameFont, "MarineNameFont", "Default" );
 	CPanelAnimationVar( vgui::HFont, m_hSmallMarineNameFont, "SmallMarineNameFont", "DefaultSmall" );
 	CPanelAnimationVar( vgui::HFont, m_hPlayerNameFont, "PlayerNameFont", "DefaultSmall" );
 	CPanelAnimationVar( vgui::HFont, m_hMarineHealthFont, "MarineHealthFont", "Default" );
 	CPanelAnimationVar( vgui::HFont, m_hNumberCounterFont, "NumberCounterFont", "DefaultVerySmall" );
+	CPanelAnimationVar( vgui::HFont, m_hNotificationNameFont, "NotificationNameFont", "DefaultMedium" );
+	CPanelAnimationVar( vgui::HFont, m_hNotificationNameBlurFont, "NotificationNameFont", "DefaultMediumBlur" );
+	CPanelAnimationVar( vgui::HFont, m_hNotificationNumberFont, "NotificationNumberFont", "DefaultExtraLarge" );
+	CPanelAnimationVar( vgui::HFont, m_hNotificationNumberBlurFont, "NotificationNumberFont", "DefaultExtraLargeBlur" );
 	CPanelAnimationVarAliasType( int, m_nMarinePointerTexture, "MarinePointerTexture", "vgui/swarm/HUD/MarinePointer", "textureid" );
 	CPanelAnimationVarAliasType( int, m_nBlackBarTexture, "BlackBarTexture", "vgui/swarm/HUD/ASWHUDBlackBar", "textureid" );	
 	CPanelAnimationVarAliasType( int, m_nAutoaimCrosshairTexture, "AutoaimCrosshairTexture", "vgui/swarm/HUD/AutoAimCrosshair", "textureid" );	

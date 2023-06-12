@@ -203,6 +203,20 @@ void CAvatarImagePanel::SetPlayerByIndex( int iIndex )
 	}
 }
 
+void CAvatarImagePanel::PerformLayout()
+{
+	BaseClass::PerformLayout();
+
+	if ( CAvatarImage *pImage = assert_cast< CAvatarImage * >( GetImage() ) )
+	{
+		int iIndent = 2;
+		pImage->SetPos( iIndent, iIndent );
+		int wide = GetWide() - ( iIndent * 2 );
+		pImage->SetAvatarSize( ( wide > 32 ) ? k_EAvatarSize64x64 : k_EAvatarSize32x32 );
+		pImage->SetAvatarSize( wide, GetTall() - ( iIndent * 2 ), m_bLegacyPadding );
+	}
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------

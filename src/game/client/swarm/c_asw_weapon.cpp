@@ -819,7 +819,7 @@ void C_ASW_Weapon::MaybeAddStrangeDevice( int i, SteamItemDef_t defID )
 		pEnt->SetModelName( AllocPooledString( RD_STRANGE_DEVICE_MODEL ) );
 		pEnt->SetModel( RD_STRANGE_DEVICE_MODEL );
 		pEnt->SetParent( this );
-		pEnt->AddEffects( EF_BONEMERGE | EF_BONEMERGE_FASTCULL );
+		//pEnt->AddEffects( EF_BONEMERGE );
 		m_hWeaponAccessory[i + 1] = pEnt;
 	}
 }
@@ -1116,3 +1116,11 @@ bool C_ASW_Weapon::GroundSecondary()
 }
 
 LINK_ENTITY_TO_CLASS( rd_weapon_accessory, C_RD_Weapon_Accessory );
+
+bool C_RD_Weapon_Accessory::ShouldDraw()
+{
+	if ( GetMoveParent() && !GetMoveParent()->ShouldDraw() )
+		return false;
+
+	return BaseClass::ShouldDraw();
+}

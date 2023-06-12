@@ -266,6 +266,8 @@ class C_RD_Weapon_Accessory : public C_BaseAnimating
 {
 	DECLARE_CLASS( C_RD_Weapon_Accessory, C_BaseAnimating );
 public:
+	bool ShouldDraw() override;
+
 	int m_iAccessoryIndex;
 };
 
