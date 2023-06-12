@@ -551,7 +551,7 @@ void CASWHud3DMarineNames::PaintMarineLabel( int iMyMarineNum, C_ASW_Marine * RE
 
 	Vector vecMarineOffset;
 	AngleVectors( ang, &vecMarineOffset );
-	vecMarineOffset *= 10.0f;
+	vecMarineOffset *= -10.0f;
 
 	float flMarineDistanceFromCamera = vecCameraFocus.DistTo( vMarinePos );
 
