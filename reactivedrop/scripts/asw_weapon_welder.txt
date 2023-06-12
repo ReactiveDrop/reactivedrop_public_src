@@ -1,0 +1,58 @@
+// Alien Swarm Welder
+
+WeaponData
+{
+	// Weapon data is loaded by both the Game and Client DLLs.
+	"printname"	"#asw_weapon_welder"
+	"viewmodel"			"models/swarm/Welder/Welder.mdl"
+	"playermodel"			"models/swarm/Welder/Welder.mdl"
+	"anim_prefix"			"ar2"
+	"bucket"			"0"
+	"bucket_position"		"1"
+
+	"clip_size"			"1"
+	"default_clip"			"1"
+
+	"clip2_size"			"-1"
+	"default_clip2"			"-1"
+
+	"primary_ammo"			"ASW_WELDER"
+	"secondary_ammo"		"ASW_WELDER"
+
+	"weight"				"5"
+	"item_flags"			"0"
+							
+	// asw properties
+	"reload_time"			"2.2"
+	"equipicon"			"swarm/EquipIcons/EquipWelder"
+	"equiplongname"			"#asw_weaponl_welder"
+	"equipdescription1"		"#asw_wdesc_welder"
+	"attributestext"		"#asw_weapon_welder_attributes"
+	"ExtraItem"			"1"
+	"OffhandActivate"		"1"
+	"OffhandOrderType"		"ASW_OFFHAND_DEPLOY"
+	
+	// flinching
+	"FlinchChance"              "0"
+	"StoppingPowerFlinchBonus"  "0"
+	
+	// which ammo elements this weapon should display on the hud
+	"ShowBulletsOnHUD"      "0"
+	"ShowClipsOnHUD"      "0"
+	"ShowGrenadesOnHUD"      "0"
+
+	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
+	SoundData
+	{
+		"special1"		"Weapon_CombineGuard.Special1"
+		"empty"			"ASW_Weapon.Empty"
+		"double_shot"		"ASW_Weapon_Shotgun.FireAndPump"
+		"single_shot"		"ASW_Weapon_Shotgun.FireAndPump"
+		// weapon switch sound
+		"special3"		"ASW_Weapon.Reload3"
+
+		// NPC SECTION
+		"single_shot_npc"	"ASW_Weapon_Shotgun.FireAndPump"
+		"double_shot_npc"	"ASW_Weapon_Shotgun.FireAndPump"
+	}
+}

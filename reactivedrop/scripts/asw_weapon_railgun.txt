@@ -1,0 +1,53 @@
+// Alien Swarm Coil Assisted Rail Rifle
+
+WeaponData
+{
+	// Weapon data is loaded by both the Game and Client DLLs.
+	"printname"	"#asw_weapon_railgun"
+	"viewmodel"			"models/weapons/railgun/railgun.mdl"
+	"playermodel"			"models/weapons/railgun/railgun.mdl"
+	"anim_prefix"			"ar2"
+	"bucket"			"0"
+	"bucket_position"		"0"
+
+	"clip_size"			"1"
+	"default_clip"			"1"
+
+	"clip2_size"			"8"
+	"default_clip2"			"5"
+
+	"primary_ammo"			"ASW_RG"
+	"secondary_ammo"		"ASW_R_G"
+
+	"weight"				"5"
+	"item_flags"			"0"
+		
+	// asw properties
+	"reload_time"			"1.3"
+	"base_damage"			"75"
+	"fire_rate"				"0"
+	"equipicon"			"swarm/EquipIcons/EquipRailgun"
+	"equiplongname"			"#asw_weaponl_railgun"
+	"equipdescription1"		"#asw_wdesc_railgun"
+	"attributestext"		"#asw_weapon_railgun_attributes"
+	
+	// flinching
+	"FlinchChance"              "0.20"
+	"StoppingPowerFlinchBonus"  "0.10"
+	
+	// which ammo elements this weapon should display on the hud
+	"ShowBulletsOnHUD"      "1"
+	"ShowClipsOnHUD"      "1"
+	"ShowGrenadesOnHUD"      "0"
+
+	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
+	SoundData
+	{
+		"empty"			"ASW_Weapon.Empty"
+		"special3"		"ASW_Weapon.Reload3"				// weapon switch
+		"special1"		"ASW_Weapon_Rifle.Grenade"			// alt-fire
+
+		"single_shot"		"ASW_Railgun.SingleFP"		// sound for locally controlled marine
+		"single_shot_npc"	"ASW_Railgun.Single"		// sound for other marines
+	}
+}

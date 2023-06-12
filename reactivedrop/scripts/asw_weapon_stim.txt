@@ -1,0 +1,64 @@
+// Alien Swarm Stimpack
+
+WeaponData
+{
+	// Weapon data is loaded by both the Game and Client DLLs.
+	"printname"	"#asw_weapon_stim"
+	"viewmodel"			"models/items/itembox/itemboxsmall.mdl"
+	//"playermodel"			"models/swarm/Stim/stim.mdl"
+	"playermodel"			"models/items/itembox/itemboxsmall.mdl"
+	"playermodel_skin"		"6"
+	"anim_prefix"			"ar2"
+	"bucket"			"0"
+	"bucket_position"		"1"
+
+	"clip_size"			"3"
+	"default_clip"			"3"
+
+	"clip2_size"			"-1"
+	"default_clip2"			"-1"
+
+	"primary_ammo"			"ASW_STIM"
+	"secondary_ammo"		"None"
+
+	"weight"				"5"
+	"item_flags"			"0"
+						
+	// asw properties
+	"reload_time"			"2.2"
+	"equipicon"			"swarm/EquipIcons/EquipStims"
+	"equiplongname"			"#asw_weaponl_stim"
+	"equipdescription1"		"#asw_wdesc_stims"
+	"attributestext"		"#asw_weapon_stim_attributes"
+	"ExtraItem"			"1"
+	"ShowCharges"			"1"
+	"OffhandActivate"		"1"
+	"OffhandOrderType"		"ASW_OFFHAND_USE_IMMEDIATELY"
+	
+	// which ammo elements this weapon should display on the hud
+	"ShowBulletsOnHUD"      "1"
+	"ShowClipsOnHUD"      "0"
+	"ShowGrenadesOnHUD"      "0"
+	
+	"HUDNumberOffsetX" "30"
+	"HUDNumberOffsetY" "20"
+	
+	// flinching
+	"FlinchChance"              "0"
+	"StoppingPowerFlinchBonus"  "0"
+
+	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
+	SoundData
+	{
+		"special1"		"Weapon_CombineGuard.Special1"
+		"empty"			"ASW_Weapon.Empty"
+		"double_shot"		"ASW_Stim.StimInject"
+		"single_shot"		"ASW_Stim.StimInject"
+		// weapon switch sound
+		"special3"		"ASW_Weapon.Reload3"
+
+		// NPC SECTION
+		"single_shot_npc"	"ASW_Stim.StimInject"
+		"double_shot_npc"	"ASW_Stim.StimInject"
+	}
+}

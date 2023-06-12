@@ -1,0 +1,59 @@
+// Alien Swarm Desert Eagle Pistol
+
+WeaponData
+{
+	// Weapon data is loaded by both the Game and Client DLLs.
+	"printname"	"#rd_weapon_deagle"
+    "viewmodel"				"models/weapons/deagle/deagle.mdl"
+	"playermodel"			"models/weapons/deagle/deagle.mdl"
+	//"viewmodel"			"models/w_models/weapons/w_desert_eagle.mdl"
+	//"playermodel"			"models/w_models/weapons/w_desert_eagle.mdl"
+	"anim_prefix"			"ar2"
+	"bucket"			"0"
+	"bucket_position"		"0"
+
+	"clip_size"				"7"
+	"default_clip"			"7"
+
+	"clip2_size"			"-1"
+	"default_clip2"			"-1"
+
+	"primary_ammo"			"ASW_DEAGLE"
+	"secondary_ammo"		"None"
+
+	"weight"				"5"
+	"item_flags"			"0"
+	
+	// asw properties
+	"reload_time"			"1.0"
+	"base_damage"			"104"  // kills a drone in one hit on brutal
+	"fire_rate"				"0.224"
+	"equipicon"			"swarm/EquipIcons/equipdeagle"
+	"equiplongname"			"#rd_weaponl_deagle"    // asw_weaponl_pistol
+	"equipdescription1"		"#rd_wdesc_deagle"    // asw_wdesc_pistol
+	"attributestext"		"#rd_weapon_deagle_attributes"   // asw_weapon_pistol_attributes
+	"ExtraItem"			"0"
+	"ModelPanelZOffset"		"10"
+	
+	// flinching
+	"FlinchChance"              "0.30"
+	"StoppingPowerFlinchBonus"  "0.1"
+	
+	// which ammo elements this weapon should display on the hud
+	"ShowBulletsOnHUD"      "1"
+	"ShowClipsOnHUD"      "1"
+	"ShowGrenadesOnHUD"      "0"
+	"ShowClipsDoubled"		"0"
+	
+	"HUDIconOffsetX" "-10"
+
+	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
+	SoundData
+	{
+		"empty"			"ASW_Weapon.Empty"
+		"special3"		"ASW_Weapon.Reload3"		// weapon switch
+		
+		"single_shot"		"ASW_Weapon_Deagle.SingleFP"		// sound for locally controlled marine
+		"single_shot_npc"	"ASW_Weapon_Deagle.Single"		// sound for other marines
+	}
+}

@@ -1,0 +1,46 @@
+// Alien Swarm Grenade Launcher
+
+WeaponData
+{
+	// Weapon data is loaded by both the Game and Client DLLs.
+	"printname"	"#asw_weapon_grenade_launcher"
+	"viewmodel"			"models/weapons/grenadelauncher/grenadelauncher.mdl"
+	"playermodel"			"models/weapons/grenadelauncher/grenadelauncher.mdl"
+	"anim_prefix"			"ar2"
+	"bucket"			"0"
+	"bucket_position"		"0"
+
+	"clip_size"			"6"
+	"default_clip"			"6"
+
+	"primary_ammo"			"ASW_GL"
+
+	"weight"				"5"
+	"item_flags"			"0"
+			
+	// asw properties
+	"reload_time"			"3.2"
+	"base_damage"			"80"
+	"fire_rate"			"1.8"
+	"equipicon"			"swarm/EquipIcons/EquipGrenadeLauncher"
+	"equiplongname"			"#asw_weaponl_grenade_launcher"
+	"equipdescription1"		"#asw_wdesc_grenade_launcher"
+	"attributestext"		"#asw_weapon_grenade_launcher_attributes"
+	
+	// which ammo elements this weapon should display on the hud
+	"ShowBulletsOnHUD"      "1"
+	"ShowClipsOnHUD"      "1"
+	"ShowGrenadesOnHUD"      "0"
+	
+	"HUDIconOffsetX" "-7"
+
+	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
+	SoundData
+	{
+		"empty"			"ASW_Weapon.Empty"
+		"special3"		"ASW_Weapon.Reload3"				// weapon switch
+
+		"single_shot"		"ASW_GrenadeLauncher.FireFP"		// sound for locally controlled marine
+		"single_shot_npc"	"ASW_GrenadeLauncher.Fire"		// sound for other marines
+	}
+}

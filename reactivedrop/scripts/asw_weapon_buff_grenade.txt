@@ -1,0 +1,67 @@
+// Alien Swarm Damage amp
+
+WeaponData
+{
+	// Weapon data is loaded by both the Game and Client DLLs.
+	"printname"	"#asw_weapon_damage_amp"
+	"viewmodel"			"models/items/itembox/itemboxsmall.mdl"
+	"playermodel"			"models/items/itembox/itemboxsmall.mdl"
+	"playermodel_skin"		"4"
+	"displaymodel"			"models/items/mine/mine.mdl"
+	"displaymodel_skin"		"1"
+	"anim_prefix"			"ar2"
+	"bucket"			"0"
+	"bucket_position"		"0"
+
+	"clip_size"			"5"
+	"default_clip"			"5"
+
+	"clip2_size"			"-1"
+	"default_clip2"			"-1"
+
+	"primary_ammo"			"ASW_MINES"
+	"secondary_ammo"		"None"
+
+	"weight"				"5"
+	"item_flags"			"0"
+		
+	// asw properties
+	"reload_time"			"2.2"
+	"equipicon"			"swarm/EquipIcons/EquipBuffGrenade"
+	"equiplongname"			"#asw_weaponl_damage_amp"
+	"equipdescription1"		"#asw_wdesc_damage_amp"
+	"attributestext"		"#asw_weapon_damage_amp_attributes"
+	"ExtraItem"			"1"
+	"RequiresSapper"		"0"
+	"ShowCharges"			"1"
+	"OffhandActivate"		"1"
+	"OffhandOrderType"		"ASW_OFFHAND_DEPLOY"
+	
+	// flinching
+	"FlinchChance"              "0"
+	"StoppingPowerFlinchBonus"  "0"
+	
+	// which ammo elements this weapon should display on the hud
+	"ShowBulletsOnHUD"      "1"
+	"ShowClipsOnHUD"      "0"
+	"ShowGrenadesOnHUD"      "0"
+	
+	"HUDNumberOffsetX" "35"
+	"HUDNumberOffsetY" "12"
+
+	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
+	SoundData
+	{
+		"special1"		"Weapon_CombineGuard.Special1"
+		"empty"			"ASW_Weapon.Empty"
+		"reload"		"Weapon_AR2.Reload"
+		"single_shot"		"ASW_Weapon_Rifle.Single"
+		// weapon switch sound
+		"special3"		"ASW_Weapon.Reload3"
+
+		// NPC SECTION
+		"single_shot_npc"	"ASW_Weapon_Rifle.Single"
+		"reload_npc"		"Weapon_AR2.NPC_Reload"
+		"double_shot_npc"	"ASW_Weapon_Rifle.Single"
+	}
+}
