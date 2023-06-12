@@ -556,7 +556,7 @@ void CASWHud3DMarineNames::PaintMarineLabel( int iMyMarineNum, C_ASW_Marine * RE
 	float flMarineDistanceFromCamera = vecCameraFocus.DistTo( vMarinePos );
 
 	// if marine is behind the player, convert it to a shortened vector, so it doesn't go behind the plane of the camera
-	if ( ( !bLocal || pLocal->GetASWControls() == ASWC_TOPDOWN ) && !!debugoverlay->ScreenPosition( vMarinePos + vecMarineOffset, screenPos ) )
+	if ( !!debugoverlay->ScreenPosition( vMarinePos + vecMarineOffset, screenPos ) )
 	{
 		Vector offset;
 		AngleVectors( ang, &offset );
@@ -610,7 +610,7 @@ void CASWHud3DMarineNames::PaintMarineLabel( int iMyMarineNum, C_ASW_Marine * RE
 		// 6/57.6.  It is encapsulated in a square.
 		int iArrowSize = 0;
 
-		if ( !bMarineOnScreen )
+		if ( ( !bLocal || pLocal->GetASWControls() == ASWC_TOPDOWN ) && !bMarineOnScreen )
 		{
 			int iArrowScale = ASW_MAX_MARINE_ARROW_SIZE;
 
