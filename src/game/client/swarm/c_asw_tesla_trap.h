@@ -8,15 +8,15 @@
 #define C_ASW_TESLATRAP_H
 
 #include "iasw_client_usable_entity.h"
+#include "rd_inventory_shared.h"
 
 #ifdef _WIN32
 #pragma once
 #endif
 
-//---------------------------------------------------------
-//---------------------------------------------------------
+class C_RD_Weapon_Accessory;
 
-class C_ASW_TeslaTrap : public C_BaseCombatCharacter, public IASW_Client_Usable_Entity
+class C_ASW_TeslaTrap : public C_BaseCombatCharacter, public IASW_Client_Usable_Entity, public IRD_Has_Projectile_Data
 {
 	DECLARE_CLASS( C_ASW_TeslaTrap, C_BaseCombatCharacter );
 
@@ -52,6 +52,14 @@ public:
 
 	static bool s_bLoadedTeslaIcon;
 	static int s_nTeslaIconTextureID;
+
+	CHandle<C_RD_Weapon_Accessory> m_hWeaponAccessory[RD_ITEM_MAX_ACCESSORIES + 1];
+
+	CNetworkVarEmbedded( CRD_ProjectileData, m_ProjectileData );
+	const CRD_ProjectileData *GetProjectileData() const override
+	{
+		return &m_ProjectileData;
+	}
 
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_TESLA_TRAP_PROJECTILE; }

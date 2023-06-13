@@ -41,7 +41,7 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Sentry_Base, DT_ASW_Sentry_Base )
 	SendPropInt( SENDINFO( m_iAmmo ) ),
 	SendPropInt( SENDINFO( m_iMaxAmmo ) ),
 	SendPropBool( SENDINFO( m_bSkillMarineHelping ) ),
-	SendPropInt( SENDINFO( m_nGunType ), NumBitsForCount( CASW_Sentry_Base::kGUNTYPE_MAX ), SPROP_UNSIGNED ),
+	SendPropInt( SENDINFO( m_nGunType ), NumBitsForCount( kGUNTYPE_MAX ), SPROP_UNSIGNED ),
 	SendPropEHandle( SENDINFO( m_hOriginalOwnerPlayer ) ),
 	SendPropIntWithMinusOneFlag( SENDINFO( m_iInventoryEquipSlot ), NumBitsForCount( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC + 1 ) ),
 END_SEND_TABLE()
@@ -553,17 +553,17 @@ int CASW_Sentry_Base::GetBaseAmmoForGunType( GunType_t guntype )
 	}
 }
 
-CASW_Sentry_Base::GunType_t CASW_Sentry_Base::GetGunType( void ) const
+GunType_t CASW_Sentry_Base::GetGunType( void ) const
 {
 	// read the cvar
 	int nCvarGunType = asw_sentry_gun_type.GetInt();
 	if ( nCvarGunType >= 0 )
 	{
-		return static_cast<CASW_Sentry_Base::GunType_t>(nCvarGunType);
+		return static_cast< GunType_t >( nCvarGunType );
 	}
 	else
 	{
-		return (GunType_t) m_nGunType.Get();
+		return ( GunType_t )m_nGunType.Get();
 	}
 }
 
@@ -573,7 +573,7 @@ int CASW_Sentry_Base::ScriptGetMaxAmmo()
 }
 
 /// This must exactly match the enum CASW_Sentry_Base::GunType_t
-const CASW_Sentry_Base::SentryGunTypeInfo_t CASW_Sentry_Base::sm_gunTypeToInfo[CASW_Sentry_Base::kGUNTYPE_MAX] =
+const CASW_Sentry_Base::SentryGunTypeInfo_t CASW_Sentry_Base::sm_gunTypeToInfo[kGUNTYPE_MAX] =
 {
 	SentryGunTypeInfo_t("asw_sentry_top_machinegun", "asw_weapon_sentry", 450), // kAUTOGUN
 	SentryGunTypeInfo_t("asw_sentry_top_cannon", "asw_weapon_sentry_cannon",	  40), // kCANNON

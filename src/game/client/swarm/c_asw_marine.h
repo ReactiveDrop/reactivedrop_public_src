@@ -34,6 +34,7 @@ class C_ASW_Order_Arrow;
 class C_ASW_Pickup_Weapon;
 class CNewParticleEffect;
 class CASW_Melee_Attack;
+class C_RD_Weapon_Accessory;
 
 #define CASW_Remote_Turret C_ASW_Remote_Turret
 
@@ -406,6 +407,9 @@ public:
 	virtual void RemoveBackpack();
 	EHANDLE m_hBackpack;
 	const char *m_sBackpackModel;
+
+	// accessories (strange devices)
+	CHandle<C_RD_Weapon_Accessory> m_hWeaponAccessory[RD_ITEM_MAX_ACCESSORIES + 1];
 
 	// powerup
 	bool HasAnyPowerups( void ) { return m_iPowerupType >= 0; }

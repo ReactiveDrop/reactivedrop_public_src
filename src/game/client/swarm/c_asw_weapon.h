@@ -266,9 +266,15 @@ class C_RD_Weapon_Accessory : public C_BaseAnimating
 {
 	DECLARE_CLASS( C_RD_Weapon_Accessory, C_BaseAnimating );
 public:
-	bool ShouldDraw() override;
+	static C_RD_Weapon_Accessory *CreateWeaponAccessory( C_BaseEntity *pParent, int iAccessoryIndex );
+	static void CreateWeaponAccessories( C_BaseAnimating *pParent, const CRD_ItemInstance &instance, CHandle<C_RD_Weapon_Accessory>( &hWeaponAccessory )[RD_ITEM_MAX_ACCESSORIES + 1], KeyValues *&pKVPositions, const char *szPositionsFile );
 
+	void ClientThink() override;
 	int m_iAccessoryIndex;
+
+	matrix3x4_t m_matAccessoryTransform;
+	matrix3x4_t m_matAccessoryTransformWorld;
+	int m_iAccessoryBone, m_iAccessoryBoneWorld;
 };
 
 #endif /* _INCLUDED_C_ASW_WEAPON_H */

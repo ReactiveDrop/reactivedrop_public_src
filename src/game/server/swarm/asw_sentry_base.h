@@ -70,18 +70,6 @@ public:
 
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_SENTRY_BASE; }
 
-	/// Here are the different types of sentry gun we support.
-	/// This array must match the entries in sm_gunTypeToEntityName
-	enum GunType_t
-	{
-		kAUTOGUN = 0,
-		kCANNON,
-		kFLAME,
-		kICE,
-		// not a valid gun type:
-		kGUNTYPE_MAX
-	};
-
 	static const char *GetEntityNameForGunType( GunType_t guntype );
 	static const char *GetWeaponNameForGunType( GunType_t guntype );
 	static int GetBaseAmmoForGunType( GunType_t guntype );
@@ -123,7 +111,7 @@ inline void CASW_Sentry_Base::SetGunType( int iType )
 	SetGunType( (GunType_t) iType );
 }
 
-inline void CASW_Sentry_Base::SetGunType( CASW_Sentry_Base::GunType_t iType )
+inline void CASW_Sentry_Base::SetGunType( GunType_t iType )
 {
 	m_nGunType = iType;
 }

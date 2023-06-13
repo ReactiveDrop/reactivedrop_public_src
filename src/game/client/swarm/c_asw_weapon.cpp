@@ -25,6 +25,7 @@
 #include "vgui/ILocalize.h"
 #include "asw_equipment_list.h"
 #include "gamestringpool.h"
+#include "bone_setup.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -119,6 +120,7 @@ ConVar rd_drop_magazine_force( "rd_drop_magazine_force", "50", FCVAR_NONE, "Amou
 ConVar rd_drop_magazine_force_up( "rd_drop_magazine_force_up", "50", FCVAR_NONE, "Amount of upward force to apply to the dropped magazine" );
 ConVar rd_drop_magazine_spin( "rd_drop_magazine_spin", "1000", FCVAR_NONE, "Amount of random angular velocity to apply to dropped magazine" );
 ConVar rd_drop_magazine_lifetime( "rd_drop_magazine_lifetime", "4", FCVAR_NONE, "Time before a dropped magazine fades" );
+ConVar rd_strange_device_model( "rd_strange_device_model", "1", FCVAR_NONE, "Should items with strange devices attached display them in the world?" );
 
 extern ConVar asw_use_particle_tracers;
 extern ConVar muzzleflash_light;
@@ -791,6 +793,9 @@ IClientModelRenderable*	C_ASW_Weapon::GetClientModelRenderable()
 
 void C_ASW_Weapon::MaybeAddStrangeDevice( int i, SteamItemDef_t defID )
 {
+	if ( !rd_strange_device_model.GetBool() )
+		return;
+
 	Assert( m_hWeaponAccessory[i + 1] == NULL );
 	if ( defID == 0 )
 		return;
@@ -802,25 +807,44 @@ void C_ASW_Weapon::MaybeAddStrangeDevice( int i, SteamItemDef_t defID )
 
 	if ( pDef->CompressedDynamicProps.Count() )
 	{
-		C_RD_Weapon_Accessory *pEnt = ( C_RD_Weapon_Accessory * )CreateEntityByName( "rd_weapon_accessory" );
+		C_RD_Weapon_Accessory *pEnt = C_RD_Weapon_Accessory::CreateWeaponAccessory( this, i );
 		Assert( pEnt );
 		if ( !pEnt )
 			return;
 
-		if ( !pEnt->InitializeAsClientEntity( RD_STRANGE_DEVICE_MODEL, false ) )
-		{
-			Assert( !"Failed to initialize strange device" );
-			pEnt->Release();
-			return;
-		}
+		pEnt->SetBodygroup( 1, pDef->CompressedDynamicProps.Count() );
 
-		pEnt->SetOwnerEntity( this );
-		pEnt->m_iAccessoryIndex = i;
-		pEnt->SetModelName( AllocPooledString( RD_STRANGE_DEVICE_MODEL ) );
-		pEnt->SetModel( RD_STRANGE_DEVICE_MODEL );
-		pEnt->SetParent( this );
-		//pEnt->AddEffects( EF_BONEMERGE );
 		m_hWeaponAccessory[i + 1] = pEnt;
+
+		const CASW_WeaponInfo *pWeaponInfo = GetWeaponInfo();
+		Assert( pWeaponInfo );
+		if ( pWeaponInfo )
+		{
+			Assert( !pWeaponInfo->m_vecStrangeDeviceOffset[i + 1].IsZeroFast() );
+			Assert( !pWeaponInfo->m_bUseStrangeDeviceWorldOffsets || !pWeaponInfo->m_vecStrangeDeviceOffsetWorld[i + 1].IsZeroFast() );
+
+			// we're not using the model cache here - we probably should, but it's not causing any problems yet
+			CStudioHdr ViewModel{ modelinfo->GetStudiomodel( modelinfo->GetModel( modelinfo->GetModelIndex( GetViewModel() ) ) ) };
+			Assert( ViewModel.IsValid() );
+			CStudioHdr WorldModel{ modelinfo->GetStudiomodel( modelinfo->GetModel( modelinfo->GetModelIndex( GetWorldModel() ) ) ) };
+			Assert( WorldModel.IsValid() );
+
+			AngleMatrix( pWeaponInfo->m_angStrangeDeviceAngle[i + 1], pWeaponInfo->m_vecStrangeDeviceOffset[i + 1], pEnt->m_matAccessoryTransform );
+			pEnt->m_iAccessoryBone = Studio_BoneIndexByName( &ViewModel, pWeaponInfo->m_szStrangeDeviceBone[i + 1] );
+			Assert( pEnt->m_iAccessoryBone != -1 );
+
+			if ( pWeaponInfo->m_bUseStrangeDeviceWorldOffsets )
+			{
+				AngleMatrix( pWeaponInfo->m_angStrangeDeviceAngleWorld[i + 1], pWeaponInfo->m_vecStrangeDeviceOffsetWorld[i + 1], pEnt->m_matAccessoryTransformWorld );
+				pEnt->m_iAccessoryBoneWorld = Studio_BoneIndexByName( &WorldModel, pWeaponInfo->m_szStrangeDeviceBoneWorld[i + 1] );
+			}
+			else
+			{
+				AngleMatrix( pWeaponInfo->m_angStrangeDeviceAngle[i + 1], pWeaponInfo->m_vecStrangeDeviceOffset[i + 1], pEnt->m_matAccessoryTransformWorld );
+				pEnt->m_iAccessoryBoneWorld = Studio_BoneIndexByName( &WorldModel, pWeaponInfo->m_szStrangeDeviceBone[i + 1] );
+			}
+			Assert( pEnt->m_iAccessoryBoneWorld != -1 );
+		}
 	}
 }
 
@@ -1117,10 +1141,124 @@ bool C_ASW_Weapon::GroundSecondary()
 
 LINK_ENTITY_TO_CLASS( rd_weapon_accessory, C_RD_Weapon_Accessory );
 
-bool C_RD_Weapon_Accessory::ShouldDraw()
+C_RD_Weapon_Accessory *C_RD_Weapon_Accessory::CreateWeaponAccessory( C_BaseEntity *pOwner, int iAccessoryIndex )
 {
-	if ( GetMoveParent() && !GetMoveParent()->ShouldDraw() )
-		return false;
+	C_RD_Weapon_Accessory *pEnt = ( C_RD_Weapon_Accessory * )CreateEntityByName( "rd_weapon_accessory" );
+	Assert( pEnt );
+	if ( !pEnt )
+		return NULL;
 
-	return BaseClass::ShouldDraw();
+	if ( !pEnt->InitializeAsClientEntity( RD_STRANGE_DEVICE_MODEL, false ) )
+	{
+		Assert( !"Failed to initialize strange device" );
+		pEnt->Release();
+		return NULL;
+	}
+
+	pEnt->SetOwnerEntity( pOwner );
+	pEnt->m_iAccessoryIndex = iAccessoryIndex;
+	pEnt->SetModelName( AllocPooledString( RD_STRANGE_DEVICE_MODEL ) );
+	pEnt->SetModel( RD_STRANGE_DEVICE_MODEL );
+	pEnt->SetParent( pOwner );
+	pEnt->SetNextClientThink( CLIENT_THINK_ALWAYS );
+
+	return pEnt;
+}
+
+static void CreateWeaponAccessoryHelper( C_BaseAnimating *pParent, int iAccessoryIndex, SteamItemDef_t iDefID, CHandle<C_RD_Weapon_Accessory> &hWeaponAccessory, KeyValues *pKVPositions )
+{
+	Assert( hWeaponAccessory.Get() == NULL );
+
+	if ( iDefID == 0 )
+		return;
+
+	const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( iDefID );
+	Assert( pDef );
+	if ( !pDef )
+		return;
+
+	if ( pDef->CompressedDynamicProps.Count() )
+	{
+		C_RD_Weapon_Accessory *pEnt = C_RD_Weapon_Accessory::CreateWeaponAccessory( pParent, iAccessoryIndex );
+		Assert( pEnt );
+		if ( !pEnt )
+			return;
+
+		pEnt->SetBodygroup( 1, pDef->CompressedDynamicProps.Count() );
+
+		hWeaponAccessory = pEnt;
+
+		// non-weapon-attached accessories always use the world offset/angle/bone.
+		Vector vecOffset
+		{
+			pKVPositions->GetFloat( UTIL_VarArgs( "StrangeDevice%dX", iAccessoryIndex + 1 ), 0.0f ),
+			pKVPositions->GetFloat( UTIL_VarArgs( "StrangeDevice%dY", iAccessoryIndex + 1 ), 0.0f ),
+			pKVPositions->GetFloat( UTIL_VarArgs( "StrangeDevice%dZ", iAccessoryIndex + 1 ), 0.0f ),
+		};
+		QAngle angAngles
+		{
+			pKVPositions->GetFloat( UTIL_VarArgs( "StrangeDevice%dPitch", iAccessoryIndex + 1 ), 0.0f ),
+			pKVPositions->GetFloat( UTIL_VarArgs( "StrangeDevice%dYaw", iAccessoryIndex + 1 ), 0.0f ),
+			pKVPositions->GetFloat( UTIL_VarArgs( "StrangeDevice%dRoll", iAccessoryIndex + 1 ), 0.0f ),
+		};
+		AngleMatrix( angAngles, vecOffset, pEnt->m_matAccessoryTransformWorld );
+
+		const char *szBoneName = pKVPositions->GetString( UTIL_VarArgs( "StrangeDevice%dBone", iAccessoryIndex + 1 ), "ValveBiped.Bip01_R_Hand" );
+		pEnt->m_iAccessoryBoneWorld = pParent->LookupBone( szBoneName );
+		Assert( pEnt->m_iAccessoryBoneWorld != -1 );
+	}
+}
+
+void C_RD_Weapon_Accessory::CreateWeaponAccessories( C_BaseAnimating *pParent, const CRD_ItemInstance &instance, CHandle<C_RD_Weapon_Accessory>( &hWeaponAccessory )[RD_ITEM_MAX_ACCESSORIES + 1], KeyValues *&pKVPositions, const char *szPositionsFile )
+{
+	Assert( pParent->GetModel() );
+
+	if ( !instance.IsSet() )
+		return;
+
+	if ( !pKVPositions )
+	{
+		pKVPositions = new KeyValues( "AccessoryPositions" );
+
+		if ( !UTIL_RD_LoadKeyValuesFromFile( pKVPositions, g_pFullFileSystem, szPositionsFile, "GAME" ) )
+		{
+			Assert( 0 );
+			Warning( "Failed to load accessory positions from %s\n", szPositionsFile );
+
+			pKVPositions->deleteThis();
+			pKVPositions = NULL;
+
+			return;
+		}
+	}
+
+	CreateWeaponAccessoryHelper( pParent, -1, instance.m_iItemDefID, hWeaponAccessory[0], pKVPositions );
+	for ( int i = 0; i < RD_ITEM_MAX_ACCESSORIES; i++ )
+	{
+		CreateWeaponAccessoryHelper( pParent, i, instance.m_iAccessory[i], hWeaponAccessory[i + 1], pKVPositions );
+	}
+}
+
+void C_RD_Weapon_Accessory::ClientThink()
+{
+	BaseClass::ClientThink();
+
+	C_BaseEntity *pOwner = GetOwnerEntity();
+	if ( !pOwner )
+		return;
+
+	C_BaseCombatWeapon *pWeapon = pOwner->MyCombatWeaponPointer();
+	bool bUsingWorldModel = !pWeapon || !pWeapon->GetOwner();
+	ALIGN16 matrix3x4_t matBoneTransform;
+	pOwner->GetBaseAnimating()->GetBoneTransform( bUsingWorldModel ? m_iAccessoryBoneWorld : m_iAccessoryBone, matBoneTransform );
+
+	ALIGN16 matrix3x4_t matCombinedTransform;
+	ConcatTransforms( matBoneTransform, bUsingWorldModel ? m_matAccessoryTransformWorld : m_matAccessoryTransform, matCombinedTransform );
+
+	Vector origin;
+	QAngle angles;
+	MatrixAngles( matCombinedTransform, angles, origin );
+
+	SetAbsOrigin( origin );
+	SetAbsAngles( angles );
 }

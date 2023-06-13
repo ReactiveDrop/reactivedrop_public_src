@@ -97,7 +97,7 @@ extern ConVar asw_night_vision_fade_in_speed;
 extern ConVar asw_night_vision_fade_out_speed;
 extern ConVar asw_night_vision_flash_min;
 extern ConVar asw_night_vision_flash_max;
-extern ConVar asw_night_vision_flash_speed; 
+extern ConVar asw_night_vision_flash_speed;
 extern float g_fMarinePoisonDuration;
 
 #define FLASHLIGHT_DISTANCE		1000
@@ -559,7 +559,15 @@ C_ASW_Marine::~C_ASW_Marine()
 			bLocalPlayer = true;
 		StopElectifiedArmorEffects(bLocalPlayer);
 	}
-		
+
+	for ( int i = 0; i < NELEMS( m_hWeaponAccessory ); i++ )
+	{
+		if ( m_hWeaponAccessory[i].Get() )
+		{
+			UTIL_Remove( m_hWeaponAccessory[i].Get() );
+			m_hWeaponAccessory[i] = NULL;
+		}
+	}
 }
 
 
@@ -1102,7 +1110,29 @@ void C_ASW_Marine::OnDataChanged( DataUpdateType_t updateType )
 		CreateWeaponEmitters();
 		//CreateHealEmitter();
 		CreateShoulderCone();
-		CreateBackpack( GetASWWeapon(1) );
+		CreateBackpack( GetASWWeapon( GetActiveASWWeapon() == GetASWWeapon( 0 ) ? 1 : 0 ) );
+
+		C_ASW_Marine_Resource *pMR = GetMarineResource();
+		if ( pMR && pMR->m_OriginalCommander )
+		{
+			static KeyValues *s_pKVAccessoryPosition[ASW_NUM_MARINE_PROFILES]{};
+			constexpr const char *const s_szAccessoryPositionFiles[ASW_NUM_MARINE_PROFILES] =
+			{
+				"scripts/strange_device_positions_marine_sarge.txt",
+				"scripts/strange_device_positions_marine_wildcat.txt",
+				"scripts/strange_device_positions_marine_faith.txt",
+				"scripts/strange_device_positions_marine_crash.txt",
+				"scripts/strange_device_positions_marine_jaeger.txt",
+				"scripts/strange_device_positions_marine_wolfe.txt",
+				"scripts/strange_device_positions_marine_bastille.txt",
+				"scripts/strange_device_positions_marine_vegas.txt",
+			};
+
+			int iProfile = pMR->GetProfileIndex();
+			Assert( iProfile >= 0 && iProfile < ASW_NUM_MARINE_PROFILES );
+
+			C_RD_Weapon_Accessory::CreateWeaponAccessories( this, pMR->m_OriginalCommander->m_EquippedItemDataStatic[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + iProfile], m_hWeaponAccessory, s_pKVAccessoryPosition[iProfile], s_szAccessoryPositionFiles[iProfile] );
+		}
 
 		// We want to think every frame.
 		SetNextClientThink( CLIENT_THINK_ALWAYS );
@@ -2435,6 +2465,15 @@ void C_ASW_Marine::UpdateOnRemove()
 	}
 
 	RemoveBackpack();
+
+	for ( int i = 0; i < NELEMS( m_hWeaponAccessory ); i++ )
+	{
+		if ( m_hWeaponAccessory[i].Get() )
+		{
+			UTIL_Remove( m_hWeaponAccessory[i].Get() );
+			m_hWeaponAccessory[i] = NULL;
+		}
+	}
 }
 
 // helper for movement code which will disable movement in controller mode if you're interacting and need those directionals

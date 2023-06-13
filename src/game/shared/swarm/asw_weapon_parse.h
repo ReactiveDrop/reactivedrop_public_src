@@ -63,6 +63,13 @@ public:
 
 	int			m_iSquadEmote;
 
+	Vector m_vecStrangeDeviceOffset[5];
+	QAngle m_angStrangeDeviceAngle[5];
+	char m_szStrangeDeviceBone[5][64];
+	bool m_bUseStrangeDeviceWorldOffsets;
+	Vector m_vecStrangeDeviceOffsetWorld[5];
+	QAngle m_angStrangeDeviceAngleWorld[5];
+	char m_szStrangeDeviceBoneWorld[5][64];
 };
 
 

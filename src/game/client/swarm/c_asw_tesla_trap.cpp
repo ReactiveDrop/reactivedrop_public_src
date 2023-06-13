@@ -17,6 +17,8 @@
 #include <vgui/ILocalize.h>
 #include "c_asw_sentry_base.h"
 #include "asw_hud_use_icon.h"
+#include "c_asw_weapon.h"
+#include "c_asw_player.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -37,7 +39,7 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_TeslaTrap, DT_ASW_TeslaTrap, CASW_TeslaTrap )
 	RecvPropFloat( RECVINFO( m_flDamage )),
 	RecvPropFloat( RECVINFO( m_flNextFullChargeTime )),
 	RecvPropBool(RECVINFO ( m_bAssembled )),
-	
+	RecvPropDataTable( RECVINFO_DT( m_ProjectileData ), 0, &REFERENCE_RECV_TABLE( DT_RD_ProjectileData ) ),
 END_NETWORK_TABLE()
 BEGIN_DATADESC( C_ASW_TeslaTrap )
 	DEFINE_FIELD( m_iTrapState, FIELD_INTEGER ),
@@ -66,6 +68,15 @@ C_ASW_TeslaTrap::~C_ASW_TeslaTrap()
 		ParticleProp()->StopEmissionAndDestroyImmediately( m_hEffects );
 		m_hEffects = NULL;
 	}
+
+	for ( int i = 0; i < NELEMS( m_hWeaponAccessory ); i++ )
+	{
+		if ( m_hWeaponAccessory[i].Get() )
+		{
+			UTIL_Remove( m_hWeaponAccessory[i].Get() );
+			m_hWeaponAccessory[i] = NULL;
+		}
+	}
 }
 
 void C_ASW_TeslaTrap::OnDataChanged( DataUpdateType_t type )
@@ -85,6 +96,13 @@ void C_ASW_TeslaTrap::OnDataChanged( DataUpdateType_t type )
 
 	if ( type == DATA_UPDATE_CREATED )
 	{
+		if ( m_ProjectileData.IsInventoryEquipSlotValid() )
+		{
+			static KeyValues *s_pKVAccessoryPosition{};
+
+			C_RD_Weapon_Accessory::CreateWeaponAccessories( this, m_ProjectileData.m_hOriginalOwnerPlayer->m_EquippedItemDataDynamic[m_ProjectileData.m_iInventoryEquipSlot], m_hWeaponAccessory, s_pKVAccessoryPosition, "scripts/strange_device_positions_tesla_trap.txt" );
+		}
+
 		// We want to think every frame.
 		SetNextClientThink( CLIENT_THINK_ALWAYS );
 	}

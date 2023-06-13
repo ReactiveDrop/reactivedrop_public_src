@@ -12,7 +12,7 @@
 class CSprite;
 class CSpriteTrail;
 
-class CASW_Rifle_Grenade : public CBaseCombatCharacter, IRD_Has_Projectile_Data
+class CASW_Rifle_Grenade : public CBaseCombatCharacter, public IRD_Has_Projectile_Data
 {
 public:
 	DECLARE_CLASS( CASW_Rifle_Grenade, CBaseCombatCharacter );

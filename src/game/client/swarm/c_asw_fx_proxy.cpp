@@ -7,6 +7,7 @@
 #include "cbase.h"
 #include "c_asw_player.h"
 #include "c_asw_marine.h"
+#include "c_asw_marine_resource.h"
 #include "c_asw_physics_prop_statue.h"
 #include "c_asw_mesh_emitter_entity.h"
 #include "c_asw_egg.h"
@@ -365,6 +366,15 @@ static const CRD_ItemInstance &GetItemInstanceFromRenderable( IClientRenderable 
 			return s_EmptyInstance;
 
 		return pSentry->m_hOriginalOwnerPlayer->m_EquippedItemDataDynamic[pSentry->m_iInventoryEquipSlot];
+	}
+
+	if ( C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pEnt ) )
+	{
+		C_ASW_Marine_Resource *pMR = pMarine->GetMarineResource();
+		if ( pMR && pMR->m_OriginalCommander )
+		{
+			return pMR->m_OriginalCommander->m_EquippedItemDataStatic[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + pMR->GetProfileIndex()];
+		}
 	}
 
 	if ( IRD_Has_Projectile_Data *pProjectile = dynamic_cast< IRD_Has_Projectile_Data * >( pEnt ) )

@@ -7,6 +7,8 @@
 #include "c_asw_fx.h"
 #include "c_user_message_register.h"
 #include "ai_debug_shared.h"
+#include "c_asw_player.h"
+#include "c_asw_weapon.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -50,12 +52,36 @@ C_ASW_Sentry_Top::~C_ASW_Sentry_Top()
 		ParticleProp()->StopEmissionAndDestroyImmediately( m_hPilotLight );
 		m_hPilotLight = NULL;
 	}
+
+	for ( int i = 0; i < NELEMS( m_hWeaponAccessory ); i++ )
+	{
+		if ( m_hWeaponAccessory[i].Get() )
+		{
+			UTIL_Remove( m_hWeaponAccessory[i].Get() );
+			m_hWeaponAccessory[i] = NULL;
+		}
+	}
 }
 
 void C_ASW_Sentry_Top::OnDataChanged( DataUpdateType_t updateType )
 {
 	if ( updateType == DATA_UPDATE_CREATED )
 	{
+		C_ASW_Sentry_Base *pBase = GetSentryBase();
+		if ( pBase && pBase->IsInventoryEquipSlotValid() )
+		{
+			static KeyValues *s_pKVAccessoryPosition[kGUNTYPE_MAX]{};
+			constexpr const char *const s_szAccessoryPositionFiles[kGUNTYPE_MAX] =
+			{
+				"scripts/strange_device_positions_sentry_machinegun.txt",
+				"scripts/strange_device_positions_sentry_cannon.txt",
+				"scripts/strange_device_positions_sentry_flamer.txt",
+				"scripts/strange_device_positions_sentry_icer.txt",
+			};
+
+			C_RD_Weapon_Accessory::CreateWeaponAccessories( this, pBase->m_hOriginalOwnerPlayer->m_EquippedItemDataDynamic[pBase->m_iInventoryEquipSlot], m_hWeaponAccessory, s_pKVAccessoryPosition[pBase->m_nGunType], s_szAccessoryPositionFiles[pBase->m_nGunType] );
+		}
+
 		SetNextClientThink( gpGlobals->curtime );
 	}
 
@@ -91,6 +117,15 @@ void C_ASW_Sentry_Top::UpdateOnRemove()
 	{
 		ParticleProp()->StopEmissionAndDestroyImmediately( m_hPilotLight );
 		m_hPilotLight = NULL;
+	}
+
+	for ( int i = 0; i < NELEMS( m_hWeaponAccessory ); i++ )
+	{
+		if ( m_hWeaponAccessory[i].Get() )
+		{
+			UTIL_Remove( m_hWeaponAccessory[i].Get() );
+			m_hWeaponAccessory[i] = NULL;
+		}
 	}
 }
 

@@ -65,8 +65,8 @@ CASW_Weapon_Sentry::CASW_Weapon_Sentry()
 	m_fMaxRange2	= 1024;
 
 #ifndef CLIENT_DLL
-	m_iSentryMunitionType = CASW_Sentry_Base::kAUTOGUN;
-	m_nMaxSentryAmmo = m_nSentryAmmo = CASW_Sentry_Base::GetBaseAmmoForGunType( (CASW_Sentry_Base::GunType_t) m_iSentryMunitionType );
+	m_iSentryMunitionType = kAUTOGUN;
+	m_nMaxSentryAmmo = m_nSentryAmmo = CASW_Sentry_Base::GetBaseAmmoForGunType( (GunType_t) m_iSentryMunitionType );
 #else
 	m_flNextDeployCheckThink = 0;
 	m_bDisplayActive = false;
@@ -466,8 +466,8 @@ PRECACHE_WEAPON_REGISTER( asw_weapon_sentry_flamer );
 CASW_Weapon_Sentry_Flamer::CASW_Weapon_Sentry_Flamer()
 {
 #ifndef CLIENT_DLL
-	m_iSentryMunitionType = CASW_Sentry_Base::kFLAME;
-	m_nMaxSentryAmmo = m_nSentryAmmo = CASW_Sentry_Base::GetBaseAmmoForGunType( (CASW_Sentry_Base::GunType_t) m_iSentryMunitionType );
+	m_iSentryMunitionType = kFLAME;
+	m_nMaxSentryAmmo = m_nSentryAmmo = CASW_Sentry_Base::GetBaseAmmoForGunType( (GunType_t) m_iSentryMunitionType );
 #endif
 }
 
@@ -487,8 +487,8 @@ PRECACHE_WEAPON_REGISTER( asw_weapon_sentry_cannon );
 CASW_Weapon_Sentry_Cannon::CASW_Weapon_Sentry_Cannon()
 {
 #ifndef CLIENT_DLL
-	m_iSentryMunitionType = CASW_Sentry_Base::kCANNON;
-	m_nMaxSentryAmmo = m_nSentryAmmo = CASW_Sentry_Base::GetBaseAmmoForGunType( (CASW_Sentry_Base::GunType_t) m_iSentryMunitionType );
+	m_iSentryMunitionType = kCANNON;
+	m_nMaxSentryAmmo = m_nSentryAmmo = CASW_Sentry_Base::GetBaseAmmoForGunType( (GunType_t) m_iSentryMunitionType );
 #endif
 }
 
@@ -517,7 +517,7 @@ PRECACHE_WEAPON_REGISTER( asw_weapon_sentry_freeze );
 CASW_Weapon_Sentry_Freeze::CASW_Weapon_Sentry_Freeze()
 {
 #ifndef CLIENT_DLL
-	m_iSentryMunitionType = CASW_Sentry_Base::kICE;
-	m_nMaxSentryAmmo = m_nSentryAmmo = CASW_Sentry_Base::GetBaseAmmoForGunType( (CASW_Sentry_Base::GunType_t) m_iSentryMunitionType );
+	m_iSentryMunitionType = kICE;
+	m_nMaxSentryAmmo = m_nSentryAmmo = CASW_Sentry_Base::GetBaseAmmoForGunType( (GunType_t) m_iSentryMunitionType );
 #endif
 }

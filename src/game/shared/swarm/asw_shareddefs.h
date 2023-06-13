@@ -249,6 +249,18 @@ enum ASW_DoorType_t
 	ASWDT_CUSTOM,
 };
 
+// Here are the different types of sentry gun we support.
+// This array must match the entries in sm_gunTypeToEntityName
+enum GunType_t
+{
+	kAUTOGUN = 0,
+	kCANNON,
+	kFLAME,
+	kICE,
+	// not a valid gun type:
+	kGUNTYPE_MAX
+};
+
 // DamageCustom flags for CTakeDamageInfo
 #define DAMAGE_FLAG_WEAKSPOT			0x0001
 #define DAMAGE_FLAG_CRITICAL			0x0002

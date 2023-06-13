@@ -52,6 +52,7 @@ IMPLEMENT_SERVERCLASS_ST( CASW_TeslaTrap, DT_ASW_TeslaTrap )
 	SendPropFloat( SENDINFO( m_flDamage )),
 	SendPropFloat( SENDINFO( m_flNextFullChargeTime )),
 	SendPropBool( SENDINFO( m_bAssembled )),
+	SendPropDataTable( SENDINFO_DT( m_ProjectileData ), &REFERENCE_SEND_TABLE( DT_RD_ProjectileData ) ),
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_TeslaTrap )
@@ -748,17 +749,20 @@ void CASW_TeslaTrap::ShockNearbyAliens()
 	}
 }
 
-CASW_TeslaTrap* CASW_TeslaTrap::Tesla_Trap_Create( const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner, CBaseEntity *pCreatorWeapon )
+CASW_TeslaTrap *CASW_TeslaTrap::Tesla_Trap_Create( const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner, CBaseEntity *pCreatorWeapon )
 {
-	CASW_TeslaTrap *pEnt = (CASW_TeslaTrap*)CreateEntityByName( "asw_tesla_trap" );
+	CASW_TeslaTrap *pEnt = ( CASW_TeslaTrap * )CreateEntityByName( "asw_tesla_trap" );
 	pEnt->SetAbsAngles( angles );
 	pEnt->Spawn();
 	pEnt->SetOwnerEntity( pOwner );
 	UTIL_SetOrigin( pEnt, position );
 	pEnt->SetAbsVelocity( velocity );
 	pEnt->m_hCreatorWeapon.Set( pCreatorWeapon );
-	if( pCreatorWeapon )
+	if ( pCreatorWeapon )
+	{
 		pEnt->m_CreatorWeaponClass = pCreatorWeapon->Classify();
+		pEnt->m_ProjectileData.GetForModify().SetFromWeapon( pCreatorWeapon );
+	}
 
 	return pEnt;
 }

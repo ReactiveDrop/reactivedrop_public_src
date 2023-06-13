@@ -14,6 +14,7 @@
 #include "Color.h"
 #include "asw_prop_physics.h"
 #include "asw_shareddefs.h"
+#include "rd_inventory_shared.h"
 
 class CSoundPatch;
 class CASW_Marine;
@@ -22,7 +23,7 @@ class CASW_Marine;
 //---------------------------------------------------------
 #define ASW_TESLATRAP_HOOK_RANGE		64
 
-class CASW_TeslaTrap : public CBaseCombatCharacter
+class CASW_TeslaTrap : public CBaseCombatCharacter, public IRD_Has_Projectile_Data
 {
 	DECLARE_CLASS( CASW_TeslaTrap, CBaseCombatCharacter );
 
@@ -68,6 +69,12 @@ public:
 	EHANDLE m_hCreatorWeapon;
 	Class_T m_CreatorWeaponClass;
 	CHandle<CASW_Marine> m_hMarineDeployer;
+
+	CNetworkVarEmbedded( CRD_ProjectileData, m_ProjectileData );
+	const CRD_ProjectileData *GetProjectileData() const override
+	{
+		return &m_ProjectileData;
+	}
 
 	DECLARE_DATADESC();
 

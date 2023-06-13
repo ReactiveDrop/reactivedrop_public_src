@@ -1,6 +1,7 @@
 #include "cbase.h"
 #include <KeyValues.h>
 #include "asw_weapon_parse.h"
+#include "rd_inventory_shared.h"
 
 FileWeaponInfo_t* CreateWeaponInfo()
 {
@@ -37,6 +38,24 @@ CASW_WeaponInfo::CASW_WeaponInfo()
 
 	m_iHUDIconOffsetX = m_iHUDIconOffsetY = 0;
 	m_iHUDNumberOffsetX = m_iHUDNumberOffsetY = 0;
+
+	m_bUseStrangeDeviceWorldOffsets = false;
+
+	COMPILE_TIME_ASSERT( NELEMS( m_vecStrangeDeviceOffset ) == NELEMS( m_angStrangeDeviceAngle ) );
+	COMPILE_TIME_ASSERT( NELEMS( m_vecStrangeDeviceOffset ) == NELEMS( m_szStrangeDeviceBone ) );
+	COMPILE_TIME_ASSERT( NELEMS( m_vecStrangeDeviceOffset ) == NELEMS( m_vecStrangeDeviceOffsetWorld ) );
+	COMPILE_TIME_ASSERT( NELEMS( m_vecStrangeDeviceOffset ) == NELEMS( m_angStrangeDeviceAngleWorld ) );
+	COMPILE_TIME_ASSERT( NELEMS( m_vecStrangeDeviceOffset ) == NELEMS( m_szStrangeDeviceBoneWorld ) );
+	COMPILE_TIME_ASSERT( NELEMS( m_vecStrangeDeviceOffset ) == RD_ITEM_MAX_ACCESSORIES + 1 );
+	for ( int i = 0; i < NELEMS( m_vecStrangeDeviceOffset ); i++ )
+	{
+		m_vecStrangeDeviceOffset[i].Init();
+		m_angStrangeDeviceAngle[i].Init();
+		m_szStrangeDeviceBone[i][0] = 0;
+		m_vecStrangeDeviceOffsetWorld[i].Init();
+		m_angStrangeDeviceAngleWorld[i].Init();
+		m_szStrangeDeviceBoneWorld[i][0] = 0;
+	}
 }
 
 static const char* g_OffhandOrderNames[]={
@@ -106,4 +125,23 @@ void CASW_WeaponInfo::Parse( KeyValues *pKeyValuesData, const char *szWeaponName
 	m_bShowClipsDoubled = pKeyValuesData->GetBool( "ShowClipsDoubled", 0 );
 
 	m_iSquadEmote = pKeyValuesData->GetInt("SquadEmote", -1);
+
+	m_bUseStrangeDeviceWorldOffsets = pKeyValuesData->GetBool( "StrangeDeviceUseWorldOffsets", false );
+	for ( int i = 0; i < NELEMS( m_vecStrangeDeviceOffset ); i++ )
+	{
+		m_vecStrangeDeviceOffset[i].x = pKeyValuesData->GetFloat( UTIL_VarArgs( "StrangeDevice%dX", i ), 0.0f );
+		m_vecStrangeDeviceOffset[i].y = pKeyValuesData->GetFloat( UTIL_VarArgs( "StrangeDevice%dY", i ), 0.0f );
+		m_vecStrangeDeviceOffset[i].z = pKeyValuesData->GetFloat( UTIL_VarArgs( "StrangeDevice%dZ", i ), 0.0f );
+		m_angStrangeDeviceAngle[i][PITCH] = pKeyValuesData->GetFloat( UTIL_VarArgs( "StrangeDevice%dPitch", i ), 0.0f );
+		m_angStrangeDeviceAngle[i][YAW] = pKeyValuesData->GetFloat( UTIL_VarArgs( "StrangeDevice%dYaw", i ), 0.0f );
+		m_angStrangeDeviceAngle[i][ROLL] = pKeyValuesData->GetFloat( UTIL_VarArgs( "StrangeDevice%dRoll", i ), 0.0f );
+		V_strncpy( m_szStrangeDeviceBone[i], pKeyValuesData->GetString( "StrangeDevice%dBone", "ValveBiped.Bip01_R_Hand" ), sizeof( m_szStrangeDeviceBone[i] ) );
+		m_vecStrangeDeviceOffsetWorld[i].x = pKeyValuesData->GetFloat( UTIL_VarArgs( "StrangeDevice%dWorldX", i ), 0.0f );
+		m_vecStrangeDeviceOffsetWorld[i].y = pKeyValuesData->GetFloat( UTIL_VarArgs( "StrangeDevice%dWorldY", i ), 0.0f );
+		m_vecStrangeDeviceOffsetWorld[i].z = pKeyValuesData->GetFloat( UTIL_VarArgs( "StrangeDevice%dWorldZ", i ), 0.0f );
+		m_angStrangeDeviceAngleWorld[i][PITCH] = pKeyValuesData->GetFloat( UTIL_VarArgs( "StrangeDevice%dWorldPitch", i ), 0.0f );
+		m_angStrangeDeviceAngleWorld[i][YAW] = pKeyValuesData->GetFloat( UTIL_VarArgs( "StrangeDevice%dWorldYaw", i ), 0.0f );
+		m_angStrangeDeviceAngleWorld[i][ROLL] = pKeyValuesData->GetFloat( UTIL_VarArgs( "StrangeDevice%dWorldRoll", i ), 0.0f );
+		V_strncpy( m_szStrangeDeviceBoneWorld[i], pKeyValuesData->GetString( "StrangeDevice%dWorldBone", "ValveBiped.Bip01_R_Hand" ), sizeof( m_szStrangeDeviceBone[i] ) );
+	}
 }

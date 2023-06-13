@@ -1,7 +1,10 @@
 #ifndef _INCLUDED_C_ASW_SENTRY_TOP_H
 #define _INCLUDED_C_ASW_SENTRY_TOP_H
 
+#include "rd_inventory_shared.h"
+
 class C_ASW_Sentry_Base;
+class C_RD_Weapon_Accessory;
 
 class C_ASW_Sentry_Top : public C_BaseCombatCharacter
 {
@@ -24,6 +27,8 @@ public:
 	int GetSentryAngle( void );
 	void Scan( void );
 	void CreateRadiusBeamEdges( const Vector &vecStart, const Vector &vecDir, int iControlPoint );
+
+	CHandle<C_RD_Weapon_Accessory> m_hWeaponAccessory[RD_ITEM_MAX_ACCESSORIES + 1];
 
 	C_ASW_Sentry_Base* GetSentryBase();
 
