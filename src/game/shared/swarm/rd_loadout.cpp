@@ -335,6 +335,7 @@ namespace ReactiveDropLoadout
 #ifdef CLIENT_DLL
 	static CUtlDict<LoadoutData_t> s_Loadouts;
 	static bool s_bLoadoutsInitialized = false;
+	CUtlVector<GuideLoadoutData_t> GuideLoadouts;
 
 	static void InitLoadouts()
 	{
@@ -643,5 +644,121 @@ namespace ReactiveDropLoadout
 			DevMsg( "Item instance %llu replaced with %llu but is not equipped; nothing to do.\n", oldID, newID );
 		}
 	}
+
+	void LoadIntegratedGuide( PublishedFileId_t id, const char *szFileName )
+	{
+		CUtlBuffer buf;
+		if ( !g_pFullFileSystem->ReadFile( szFileName, NULL, buf ) )
+		{
+			Warning( "Failed to read integrated guide from %s\n", szFileName );
+			return;
+		}
+
+		KeyValues::AutoDelete pKV{ "" };
+		if ( !pKV->ReadAsBinary( buf ) )
+		{
+			Warning( "Failed to parse integrated guide %s\n", szFileName );
+			return;
+		}
+
+		if ( V_strcmp( pKV->GetName(), "ASRDGuide" ) || V_strcmp( pKV->GetString( "t" ), "L" ) )
+		{
+			Warning( "Malformed integrated guide %s\n", szFileName );
+			return;
+		}
+
+		int iVersion = pKV->GetInt( "v" );
+		KeyValues *pLoadouts = pKV->FindKey( "l" );
+		switch ( iVersion )
+		{
+		case 1:
+			FOR_EACH_SUBKEY( pLoadouts, pLoadout )
+			{
+				int i = GuideLoadouts.AddToTail();
+				GuideLoadouts[i].FileID = id;
+				V_strncpy( GuideLoadouts[i].Name, pLoadout->GetName(), sizeof( GuideLoadouts[i].Name ) );
+				GuideLoadouts[i].Loadout.FromKeyValues( pLoadout, true );
+			}
+			break;
+		default:
+			Warning( "Unexpected integrated guide (loadouts) version %d in %s\n", iVersion, szFileName );
+			break;
+		}
+	}
+
+	void UnloadIntegratedGuide( PublishedFileId_t id )
+	{
+		FOR_EACH_VEC_BACK( GuideLoadouts, i )
+		{
+			if ( GuideLoadouts[i].FileID == id )
+			{
+				GuideLoadouts.Remove( i );
+			}
+		}
+	}
 #endif
 }
+
+#ifdef CLIENT_DLL
+class CRD_Share_Loadout
+{
+public:
+	static void WriteLoadouts( CUtlBuffer &buf, const CUtlDict<ReactiveDropLoadout::LoadoutData_t> &loadouts )
+	{
+		KeyValues::AutoDelete pKV{ "ASRDGuide" };
+		pKV->SetString( "t", "L" ); // type = loadouts
+		pKV->SetInt( "v", 1 ); // version = 1
+
+		KeyValues *pLoadouts = pKV->FindKey( "l", true );
+		for ( unsigned i = 0; i < loadouts.Count(); i++ )
+		{
+			KeyValues *pLoadout = pLoadouts->FindKey( loadouts.GetElementName( i ), true );
+			loadouts.Element( i ).ToKeyValues( pLoadout, true, true );
+		}
+
+		pKV->WriteAsBinary( buf );
+	}
+
+	CRD_Share_Loadout( const char *szTitle, const char *szDescription, const char *szPreviewFile, const CUtlDict<ReactiveDropLoadout::LoadoutData_t> &loadouts )
+	{
+		CUtlBuffer buf;
+		WriteLoadouts( buf, loadouts );
+
+		ISteamRemoteStorage *pRemoteStorage = SteamRemoteStorage();
+		Assert( pRemoteStorage );
+		if ( !pRemoteStorage )
+		{
+			Assert( !"TODO" );
+			return;
+		}
+		pRemoteStorage->FileWrite( "integrated_guide.bin", buf.Base(), buf.TellMaxPut() );
+
+		buf.Purge();
+		if ( !g_pFullFileSystem->ReadFile( szPreviewFile, NULL, buf ) )
+		{
+			Assert( !"TODO" );
+			pRemoteStorage->FileDelete( "integrated_guide.bin" );
+			return;
+		}
+		pRemoteStorage->FileWrite( "integrated_guide_preview.jpeg", buf.Base(), buf.TellMaxPut() );
+
+		const char *szLoadoutTag = "Loadouts";
+		SteamParamStringArray_t tags;
+		tags.m_ppStrings = &szLoadoutTag;
+		tags.m_nNumStrings = 1;
+
+		SteamAPICall_t hCall = pRemoteStorage->PublishWorkshopFile( "integrated_guide.bin", "integrated_guide_preview.jpeg",
+			SteamUtils()->GetAppID(), szTitle, szDescription,
+			k_ERemoteStoragePublishedFileVisibilityPublic, &tags, k_EWorkshopFileTypeIntegratedGuide );
+		m_RemoteStoragePublishFileResult.Set( hCall, this, &CRD_Share_Loadout::OnRemoteStoragePublishFileResult );
+	}
+
+	void OnRemoteStoragePublishFileResult( RemoteStoragePublishFileResult_t *pParam, bool bIOFailure )
+	{
+		SteamRemoteStorage()->FileDelete( "integrated_guide.bin" );
+		SteamRemoteStorage()->FileDelete( "integrated_guide_preview.jpeg" );
+		Assert( !"TODO" );
+	}
+	CCallResult<CRD_Share_Loadout, RemoteStoragePublishFileResult_t> m_RemoteStoragePublishFileResult;
+};
+#endif

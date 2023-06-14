@@ -20,6 +20,7 @@
 #include "gameui/swarm/basemodpanel.h"
 #include "gameui/swarm/vaddons.h"
 #include "gameui/swarm/rd_workshop_frame.h"
+#include "rd_loadout.h"
 #include <vgui/ISystem.h>
 #include <vgui/ILocalize.h>
 
@@ -1970,6 +1971,36 @@ bool CReactiveDropWorkshop::UpdateAndLoadAddon( PublishedFileId_t id, bool bHigh
 	return false;
 }
 
+static char IsIntegratedGuide( const char *szFileName )
+{
+	char buf[24];
+
+	FileHandle_t hFile = g_pFullFileSystem->Open( szFileName, "rb", NULL );
+	if ( !hFile )
+		return false;
+
+	int nRead = g_pFullFileSystem->Read( buf, sizeof( buf ), hFile );
+	g_pFullFileSystem->Close( hFile );
+
+	if ( nRead != sizeof( buf ) )
+		return false;
+
+	// File format is binary KeyValues with the following structure:
+	// "ASRDGuide" {
+	//     "t"     "[string]"
+	//     "v"     "[integer]"
+	//     // more fields come after
+	// }
+	return buf[0] == 0 && // "none" value type marker
+		!V_strcmp( buf + 1, "ASRDGuide" ) &&
+		buf[11] == 1 && // "string" value type marker
+		!V_strcmp( buf + 12, "t" ) &&
+		buf[14] != 0 && // current types are all 1 byte long; revisit if this changes.
+		buf[15] == 0 &&
+		buf[16] == 2 && // "integer" value type marker
+		!V_strcmp( buf + 17, "v" ) ? buf[14] : 0;
+}
+
 void CReactiveDropWorkshop::RealLoadAddon( PublishedFileId_t id )
 {
 #ifdef CLIENT_DLL
@@ -2005,11 +2036,39 @@ void CReactiveDropWorkshop::RealLoadAddon( PublishedFileId_t id )
 		return;
 	}
 
+	char szFolderName[MAX_PATH];
+	uint64 nSizeOnDisk;
+	uint32 nTimeStamp;
+	if ( !pWorkshop->GetItemInstallInfo( id, &nSizeOnDisk, szFolderName, sizeof( szFolderName ), &nTimeStamp ) )
+	{
+		Warning( "Could not get install location for UGC item %llu\n", id );
+		return;
+	}
+
 	if ( pWorkshop->GetItemState( id ) & k_EItemStateLegacyItem )
 	{
+		if ( char cGuideType = IsIntegratedGuide( szFolderName ) )
+		{
+#ifdef CLIENT_DLL
+			switch ( cGuideType )
+			{
+			case 'L':
+				ReactiveDropLoadout::LoadIntegratedGuide( id, szFolderName );
+				return;
+			default:
+				AssertMsg1( false, "Unhandled integrated guide type '%c'", cGuideType );
+				break;
+			}
+#else
+			if ( engine->IsDedicatedServer() )
+				Warning( "Cannot subscribe to integrated guides on dedicated server!\n" );
+			return;
+#endif
+		}
+
 		if ( rd_workshop_debug.GetBool() )
 		{
-			Msg( "UGC item %llu is a legacy item; assuming collection.\n", id );
+			Msg( "UGC item %llu is a legacy item and not an integrated guide; assuming collection.\n", id );
 		}
 
 #ifdef GAME_DLL
@@ -2033,14 +2092,6 @@ void CReactiveDropWorkshop::RealLoadAddon( PublishedFileId_t id )
 		return;
 	}
 
-	char szFolderName[MAX_PATH];
-	uint64 nSizeOnDisk;
-	uint32 nTimeStamp;
-	if ( !pWorkshop->GetItemInstallInfo( id, &nSizeOnDisk, szFolderName, sizeof( szFolderName ), &nTimeStamp ) )
-	{
-		Warning( "Could not get install location for UGC item %llu\n", id );
-		return;
-	}
 	char vpkname[MAX_PATH];
 	V_ComposeFileName( szFolderName, "addon.vpk", vpkname, sizeof( vpkname ) );
 
@@ -2118,6 +2169,10 @@ bool CReactiveDropWorkshop::LoadAddon( PublishedFileId_t id, bool bFromDownload 
 
 void CReactiveDropWorkshop::RealUnloadAddon( PublishedFileId_t id )
 {
+#ifdef CLIENT_DLL
+	ReactiveDropLoadout::UnloadIntegratedGuide( id );
+#endif
+
 	LoadedAddonPath_t path;
 	bool bFound = false;
 	FOR_EACH_VEC( m_LoadedAddonPaths, i )

@@ -44,6 +44,15 @@ namespace ReactiveDropLoadout
 #endif
 	};
 	extern const LoadoutData_t DefaultLoadout;
+	struct GuideLoadoutData_t
+	{
+		PublishedFileId_t FileID{};
+		char Name[MAX_VALUE]{};
+		LoadoutData_t Loadout{};
+	};
+#ifdef CLIENT_DLL
+	extern CUtlVector<GuideLoadoutData_t> GuideLoadouts;
+#endif
 
 #ifdef CLIENT_DLL
 	// saved loadout names will be appended to the list
@@ -56,5 +65,8 @@ namespace ReactiveDropLoadout
 	bool Delete( const char *szName );
 	// replaces all instances of the item ID in loadouts (saved and active)
 	void ReplaceItemID( SteamItemInstanceID_t oldID, SteamItemInstanceID_t newID );
+
+	void LoadIntegratedGuide( PublishedFileId_t id, const char *szFileName );
+	void UnloadIntegratedGuide( PublishedFileId_t id );
 #endif
 }
