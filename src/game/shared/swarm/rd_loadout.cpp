@@ -333,11 +333,11 @@ namespace ReactiveDropLoadout
 	}
 
 #ifdef CLIENT_DLL
-	static CUtlDict<LoadoutData_t> s_Loadouts;
+	CUtlDict<LoadoutData_t> Loadouts;
 	static bool s_bLoadoutsInitialized = false;
 	CUtlVector<GuideLoadoutData_t> GuideLoadouts;
 
-	static void InitLoadouts()
+	void InitLoadouts()
 	{
 		if ( s_bLoadoutsInitialized )
 			return;
@@ -369,27 +369,27 @@ namespace ReactiveDropLoadout
 			{
 				FOR_EACH_SUBKEY( pLoadouts, pLoadout )
 				{
-					int i = s_Loadouts.Insert( pLoadout->GetName() );
-					s_Loadouts[i].FromKeyValues( pLoadout, false );
+					int i = Loadouts.Insert( pLoadout->GetName() );
+					Loadouts[i].FromKeyValues( pLoadout, false );
 				}
 			}
 		}
 
 		s_bLoadoutsInitialized = true;
 	}
-	static void WriteLoadouts()
+	void WriteLoadouts()
 	{
 		Assert( s_bLoadoutsInitialized );
 
-		DevMsg( "Writing %d loadouts to file\n", s_Loadouts.Count() );
+		DevMsg( "Writing %d loadouts to file\n", Loadouts.Count() );
 
 		KeyValues::AutoDelete pKV{ "SavedLoadouts" };
 		pKV->SetInt( "Version", 1 );
 
 		KeyValues *pLoadouts = pKV->FindKey( "Loadouts", true );
-		for ( int i = 0; i < s_Loadouts.Count(); i++ )
+		for ( int i = 0; i < int( Loadouts.Count() ); i++ )
 		{
-			s_Loadouts[i].ToKeyValues( pLoadouts->FindKey( s_Loadouts.GetElementName( i ), true ), false );
+			Loadouts[i].ToKeyValues( pLoadouts->FindKey( Loadouts.GetElementName( i ), true ), false );
 		}
 
 		pKV->SaveToFile( g_pFullFileSystem, "cfg/saved_loadouts.txt", "MOD" );
@@ -402,6 +402,21 @@ namespace ReactiveDropLoadout
 			pKV->RecursiveSaveToFile( buf, 0 );
 			pSteamRemoteStorage->FileWrite( "reactivedrop/cfg/saved_loadouts.txt", buf.Base(), buf.TellPut() );
 		}
+	}
+	void WriteLoadoutsForSharing( CUtlBuffer &buf, const CUtlDict<ReactiveDropLoadout::LoadoutData_t> &loadouts )
+	{
+		KeyValues::AutoDelete pKV{ "ASRDGuide" };
+		pKV->SetString( "t", "L" ); // type = loadouts
+		pKV->SetInt( "v", 1 ); // version = 1
+
+		KeyValues *pLoadouts = pKV->FindKey( "l", true );
+		for ( unsigned i = 0; i < loadouts.Count(); i++ )
+		{
+			KeyValues *pLoadout = pLoadouts->FindKey( loadouts.GetElementName( i ), true );
+			loadouts.Element( i ).ToKeyValues( pLoadout, true, true );
+		}
+
+		pKV->WriteAsBinary( buf );
 	}
 	static void ReplaceItemIDHelper( bool &bAnyChanged, SteamItemInstanceID_t &id, SteamItemInstanceID_t oldID, SteamItemInstanceID_t newID, const char *szLoadoutName, const char *szSlotName )
 	{
@@ -542,9 +557,9 @@ namespace ReactiveDropLoadout
 	{
 		InitLoadouts();
 
-		for ( int i = 0; i < s_Loadouts.Count(); i++ )
+		for ( int i = 0; i < int( Loadouts.Count() ); i++ )
 		{
-			names.CopyAndAddToTail( s_Loadouts.GetElementName( i ) );
+			names.CopyAndAddToTail( Loadouts.GetElementName( i ) );
 		}
 	}
 	bool Save( const char *szName )
@@ -552,14 +567,14 @@ namespace ReactiveDropLoadout
 		InitLoadouts();
 
 		bool bFound = true;
-		int i = s_Loadouts.Find( szName );
-		if ( !s_Loadouts.IsValidIndex( i ) )
+		int i = Loadouts.Find( szName );
+		if ( !Loadouts.IsValidIndex( i ) )
 		{
 			bFound = false;
-			i = s_Loadouts.Insert( szName );
+			i = Loadouts.Insert( szName );
 		}
 
-		s_Loadouts[i].CopyFromLive();
+		Loadouts[i].CopyFromLive();
 		WriteLoadouts();
 
 		return bFound;
@@ -568,10 +583,10 @@ namespace ReactiveDropLoadout
 	{
 		InitLoadouts();
 
-		int i = s_Loadouts.Find( szName );
-		if ( s_Loadouts.IsValidIndex( i ) )
+		int i = Loadouts.Find( szName );
+		if ( Loadouts.IsValidIndex( i ) )
 		{
-			s_Loadouts[i].CopyToLive();
+			Loadouts[i].CopyToLive();
 			return true;
 		}
 
@@ -581,10 +596,10 @@ namespace ReactiveDropLoadout
 	{
 		InitLoadouts();
 
-		int i = s_Loadouts.Find( szName );
-		if ( s_Loadouts.IsValidIndex( i ) )
+		int i = Loadouts.Find( szName );
+		if ( Loadouts.IsValidIndex( i ) )
 		{
-			s_Loadouts.RemoveAt( i );
+			Loadouts.RemoveAt( i );
 			WriteLoadouts();
 			return true;
 		}
@@ -626,9 +641,9 @@ namespace ReactiveDropLoadout
 		}
 
 		// saved loadouts
-		for ( int i = 0; i < s_Loadouts.Count(); i++ )
+		for ( int i = 0; i < int( Loadouts.Count() ); i++ )
 		{
-			if ( s_Loadouts[i].ReplaceItemID( oldID, newID, s_Loadouts.GetElementName( i ) ) )
+			if ( Loadouts[i].ReplaceItemID( oldID, newID, Loadouts.GetElementName( i ) ) )
 			{
 				bAnyChanged = true;
 			}
@@ -696,69 +711,16 @@ namespace ReactiveDropLoadout
 			}
 		}
 	}
-#endif
-}
 
-#ifdef CLIENT_DLL
-class CRD_Share_Loadout
-{
-public:
-	static void WriteLoadouts( CUtlBuffer &buf, const CUtlDict<ReactiveDropLoadout::LoadoutData_t> &loadouts )
+	void MarkIntegratedGuideAsUsed( PublishedFileId_t id )
 	{
-		KeyValues::AutoDelete pKV{ "ASRDGuide" };
-		pKV->SetString( "t", "L" ); // type = loadouts
-		pKV->SetInt( "v", 1 ); // version = 1
-
-		KeyValues *pLoadouts = pKV->FindKey( "l", true );
-		for ( unsigned i = 0; i < loadouts.Count(); i++ )
-		{
-			KeyValues *pLoadout = pLoadouts->FindKey( loadouts.GetElementName( i ), true );
-			loadouts.Element( i ).ToKeyValues( pLoadout, true, true );
-		}
-
-		pKV->WriteAsBinary( buf );
-	}
-
-	CRD_Share_Loadout( const char *szTitle, const char *szDescription, const char *szPreviewFile, const CUtlDict<ReactiveDropLoadout::LoadoutData_t> &loadouts )
-	{
-		CUtlBuffer buf;
-		WriteLoadouts( buf, loadouts );
-
 		ISteamRemoteStorage *pRemoteStorage = SteamRemoteStorage();
 		Assert( pRemoteStorage );
-		if ( !pRemoteStorage )
+		if ( pRemoteStorage )
 		{
-			Assert( !"TODO" );
-			return;
+			// we don't really care about the result of this call because we can't do anything either way
+			pRemoteStorage->SetUserPublishedFileAction( id, k_EWorkshopFileActionPlayed );
 		}
-		pRemoteStorage->FileWrite( "integrated_guide.bin", buf.Base(), buf.TellMaxPut() );
-
-		buf.Purge();
-		if ( !g_pFullFileSystem->ReadFile( szPreviewFile, NULL, buf ) )
-		{
-			Assert( !"TODO" );
-			pRemoteStorage->FileDelete( "integrated_guide.bin" );
-			return;
-		}
-		pRemoteStorage->FileWrite( "integrated_guide_preview.jpeg", buf.Base(), buf.TellMaxPut() );
-
-		const char *szLoadoutTag = "Loadouts";
-		SteamParamStringArray_t tags;
-		tags.m_ppStrings = &szLoadoutTag;
-		tags.m_nNumStrings = 1;
-
-		SteamAPICall_t hCall = pRemoteStorage->PublishWorkshopFile( "integrated_guide.bin", "integrated_guide_preview.jpeg",
-			SteamUtils()->GetAppID(), szTitle, szDescription,
-			k_ERemoteStoragePublishedFileVisibilityPublic, &tags, k_EWorkshopFileTypeIntegratedGuide );
-		m_RemoteStoragePublishFileResult.Set( hCall, this, &CRD_Share_Loadout::OnRemoteStoragePublishFileResult );
 	}
-
-	void OnRemoteStoragePublishFileResult( RemoteStoragePublishFileResult_t *pParam, bool bIOFailure )
-	{
-		SteamRemoteStorage()->FileDelete( "integrated_guide.bin" );
-		SteamRemoteStorage()->FileDelete( "integrated_guide_preview.jpeg" );
-		Assert( !"TODO" );
-	}
-	CCallResult<CRD_Share_Loadout, RemoteStoragePublishFileResult_t> m_RemoteStoragePublishFileResult;
-};
 #endif
+}

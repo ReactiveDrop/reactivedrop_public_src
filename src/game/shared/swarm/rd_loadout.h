@@ -51,10 +51,14 @@ namespace ReactiveDropLoadout
 		LoadoutData_t Loadout{};
 	};
 #ifdef CLIENT_DLL
+	extern CUtlDict<LoadoutData_t> Loadouts;
 	extern CUtlVector<GuideLoadoutData_t> GuideLoadouts;
 #endif
 
 #ifdef CLIENT_DLL
+	void InitLoadouts();
+	void WriteLoadouts();
+	void WriteLoadoutsForSharing( CUtlBuffer &buf, const CUtlDict<LoadoutData_t> &loadouts );
 	// saved loadout names will be appended to the list
 	void List( CUtlStringList &names );
 	// returns true if the named loadout already existed and was replaced
@@ -68,5 +72,6 @@ namespace ReactiveDropLoadout
 
 	void LoadIntegratedGuide( PublishedFileId_t id, const char *szFileName );
 	void UnloadIntegratedGuide( PublishedFileId_t id );
+	void MarkIntegratedGuideAsUsed( PublishedFileId_t id );
 #endif
 }
