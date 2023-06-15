@@ -1514,14 +1514,6 @@ CAlienSwarm::CAlienSwarm() : m_ActorSpeakingUntil( DefLessFunc( string_t ) )
 		mod_dont_load_vertices.SetValue( 1 );
 	}
 
-	// load the player mute list
-	if ( engine->IsDedicatedServer() ) 
-	{
-		char gamePath[256];
-		engine->GetGameDir(gamePath, 256);
-		ConMsg("path: %s\n", gamePath);
-	}
-
 	V_strncpy( m_szGameDescription, "Alien Swarm: Reactive Drop", sizeof( m_szGameDescription ) );
 
 	// create the profile list for the server

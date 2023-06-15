@@ -578,8 +578,6 @@ private:
 	IASW_Map_Builder *m_pMapBuilder;
 	STEAM_CALLBACK( CAlienSwarm, OnSteamRelayNetworkStatusChanged, SteamRelayNetworkStatus_t );
 #endif
-
-	CUtlMap<unsigned int, bool> m_playersMuted;
 };
 
 enum ASW_GameState
