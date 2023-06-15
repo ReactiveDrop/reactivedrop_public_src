@@ -1494,6 +1494,8 @@ ConVar asw_blip_speech_chance( "asw_blip_speech_chance", "0.8", FCVAR_CHEAT, "Ch
 ConVar asw_instant_restart( "asw_instant_restart", "1", FCVAR_NONE, "Whether the game should use the instant restart (if not, it'll do a full reload of the map)." );
 ConVar asw_instant_restart_debug( "asw_instant_restart_debug", "0", FCVAR_NONE, "Write a lot of developer messages to the console during an instant restart." );
 
+extern IVEngineServer* engine;
+
 const char* CAlienSwarm::GetGameDescription( void )
 { 
 	return m_szGameDescription; 
@@ -1510,6 +1512,14 @@ CAlienSwarm::CAlienSwarm() : m_ActorSpeakingUntil( DefLessFunc( string_t ) )
 	{
 		ConVarRef mod_dont_load_vertices( "mod_dont_load_vertices" );
 		mod_dont_load_vertices.SetValue( 1 );
+	}
+
+	// load the player mute list
+	if ( engine->IsDedicatedServer() ) 
+	{
+		char gamePath[256];
+		engine->GetGameDir(gamePath, 256);
+		ConMsg("path: %s\n", gamePath);
 	}
 
 	V_strncpy( m_szGameDescription, "Alien Swarm: Reactive Drop", sizeof( m_szGameDescription ) );

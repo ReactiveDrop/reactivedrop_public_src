@@ -621,7 +621,9 @@ public:
 
 	// say/sayteam allowed?
 	virtual bool		CanHearAndReadChatFrom( CBasePlayer *pPlayer ) { return true; }
-	virtual bool		CanSpeak( void ) { return true; }
+	virtual bool		CanSpeak( void ) { return m_bCanSpeak; }
+	virtual bool		CanSpeakVoiceCommand( void ) { return m_bCanSpeak;  }
+	virtual void		ChangeSpeak( bool state ) { m_bCanSpeak = state; }
 
 	audioparams_t			&GetAudioParams() { return m_Local.m_audio; }
 
@@ -1123,6 +1125,7 @@ private:
 
 	bool					m_bGamePaused;
 	float					m_fLastPlayerTalkTime;
+	bool					m_bCanSpeak = true;
 	
 	CNetworkVar( CBaseCombatWeaponHandle, m_hLastWeapon );
 
