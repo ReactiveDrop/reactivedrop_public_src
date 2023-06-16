@@ -83,6 +83,7 @@ static void OnLegacyUIChanged( IConVar *var, const char *pOldValue, float flOldV
 {
 	// reset the main menu background video
 	CBaseModPanel::GetSingleton().InvalidateLayout( true, true );
+	CBaseModPanel::GetSingleton().ReleaseBackgroundMusic();
 	ASWBackgroundMovie()->Update( true );
 
 	// reset UI scripts
