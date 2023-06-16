@@ -108,7 +108,7 @@ void WeaponsResource::LoadWeaponSprites( WEAPON_FILE_INFO_HANDLE hWeaponFileInfo
 
 	CUtlDict< CHudTexture *, int > tempList;
 
-	LoadHudTextures( tempList, sz, g_pGameRules->GetEncryptionKey() );
+	LoadHudTextures( tempList, sz, g_pGameRules ? g_pGameRules->GetEncryptionKey() : NULL );
 
 	if ( !tempList.Count() )
 	{

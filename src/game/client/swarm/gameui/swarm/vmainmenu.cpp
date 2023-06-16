@@ -55,6 +55,7 @@
 #include "rd_hud_sheet.h"
 #include "rd_vgui_main_menu_top_bar.h"
 #include "rd_vgui_stock_ticker.h"
+#include "nb_header_footer.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -77,6 +78,17 @@ ConVar rd_last_game_onslaught( "rd_last_game_onslaught", "0", FCVAR_ARCHIVE, "Re
 ConVar rd_last_game_hardcoreff( "rd_last_game_hardcoreff", "0", FCVAR_ARCHIVE, "Remembers the last game hardcore friendly fire setting for a lobby created from the main menu." );
 ConVar rd_last_game_maxplayers( "rd_last_game_maxplayers", "4", FCVAR_ARCHIVE, "Remembers the last game max players setting for a lobby created from the main menu." );
 ConVar rd_revert_convars( "rd_revert_convars", "1", FCVAR_ARCHIVE, "Resets FCVAR_REPLICATED variables to their default values when opening the main menu." );
+
+static void OnLegacyUIChanged( IConVar *var, const char *pOldValue, float flOldValue )
+{
+	// reset the main menu background video
+	CBaseModPanel::GetSingleton().InvalidateLayout( true, true );
+	ASWBackgroundMovie()->Update( true );
+
+	// reset UI scripts
+	engine->ClientCmd_Unrestricted( "ui_reloadscheme; hud_reloadscheme\n" );
+}
+ConVar rd_legacy_ui( "rd_legacy_ui", "", FCVAR_ARCHIVE, "Set to 2004 or 2010 to use simulated versions of previous user interfaces.", OnLegacyUIChanged );
 
 void Demo_DisableButton( Button *pButton );
 void OpenGammaDialog( VPANEL parent );
@@ -278,7 +290,7 @@ void MainMenu::OnCommand( const char *command )
 		data.pWindowTitle = "#rd_no_steam_service";
 		data.pMessageText = "#rd_no_steam_solutions";
 
-		if ( SteamApps() && SteamFriends() && SteamHTTP() && SteamInput() && SteamMatchmaking() && SteamMatchmakingServers() && SteamUGC() && SteamUser() && SteamUserStats() )
+		if ( SteamApps() && SteamFriends() && SteamHTTP() && SteamInput() && SteamMatchmaking() && SteamMatchmakingServers() && SteamRemoteStorage() && SteamUGC() && SteamUser() && SteamUserStats() && SteamUtils() )
 		{
 			// The NO STEAM main menu is active, but the Steam API is available. This should never happen. Please contact https://reactivedrop.com/feedback
 			data.pMessageText = "#rd_no_steam_solutions_api";
@@ -994,6 +1006,19 @@ void MainMenu::OnThink()
 		}
 	}
 
+	// don't need fancy main menu stuff on the legacy version
+	if ( m_bIsLegacy )
+	{
+		for ( int i = 0; i < NELEMS( m_pTopLeaderboardEntries ); i++ )
+			m_pTopLeaderboardEntries[i]->SetVisible( false );
+		m_pBtnHoIAFTimer->SetVisible( false );
+		for ( int i = 0; i < NELEMS( m_pBtnEventTimer ); i++ )
+			m_pBtnEventTimer[i]->SetVisible( false );
+		m_pBtnNewsShowcase->SetVisible( false );
+		m_pBtnWorkshopShowcase->SetVisible( false );
+		return;
+	}
+
 	uint32 iCurrentTime = std::time( NULL );
 	uint32 iCurrentMinute = iCurrentTime / 60;
 	if ( m_iLastTimerUpdate != iCurrentMinute )
@@ -1295,7 +1320,7 @@ void MainMenu::Activate()
 //=============================================================================
 void MainMenu::PaintBackground()
 {
-	if ( m_bIsStub )
+	if ( m_bIsStub || m_bIsLegacy )
 		return;
 
 	HUD_SHEET_DRAW_PANEL( m_pBtnMultiplayer, MainMenuSheet, UV_create_lobby );
@@ -1510,8 +1535,16 @@ void MainMenu::OpenNewsURL( const char *szURL )
 
 void MainMenu::LoadLayout()
 {
-	const char *pSettings = "Resource/UI/BaseModUI/mainmenu.res";
-	if ( !g_pMatchFramework || !g_pMatchFramework->GetMatchSystem() || !g_pMatchFramework->GetMatchSystem()->GetPlayerManager() || !g_pMatchFramework->GetMatchSystem()->GetPlayerManager()->GetLocalPlayer( 0 ) || !SteamApps() || !SteamFriends() || !SteamHTTP() || !SteamInput() || !SteamMatchmaking() || !SteamMatchmakingServers() || !SteamUGC() || !SteamUser() || !SteamUserStats() )
+	const char *pSettings = "Resource/UI/BaseModUI/MainMenu.res";
+	m_bIsLegacy = false;
+
+	if ( !V_strcmp( rd_legacy_ui.GetString(), "2004" ) || !V_strcmp( rd_legacy_ui.GetString(), "2010" ) )
+	{
+		pSettings = "Resource/UI/BaseModUI/MainMenuLegacy.res";
+		m_bIsLegacy = true;
+	}
+
+	if ( !g_pMatchFramework || !g_pMatchFramework->GetMatchSystem() || !g_pMatchFramework->GetMatchSystem()->GetPlayerManager() || !g_pMatchFramework->GetMatchSystem()->GetPlayerManager()->GetLocalPlayer( 0 ) || !SteamApps() || !SteamFriends() || !SteamHTTP() || !SteamInput() || !SteamMatchmaking() || !SteamMatchmakingServers() || !SteamRemoteStorage() || !SteamUGC() || !SteamUser() || !SteamUserStats() || !SteamUtils() )
 	{
 		pSettings = "Resource/UI/BaseModUI/MainMenuStub.res";
 		m_bIsStub = true;
@@ -1783,7 +1816,7 @@ void MainMenu::OnHoIAFTop10ScoresDownloaded( LeaderboardScoresDownloaded_t *pPar
 			Assert( entry.m_cDetails == sizeof( details ) / sizeof( int32 ) );
 
 			m_pTopLeaderboardEntries[i]->SetFromEntry( entry, details );
-			m_pTopLeaderboardEntries[i]->SetVisible( true );
+			m_pTopLeaderboardEntries[i]->SetVisible( !m_bIsLegacy );
 		}
 	}
 

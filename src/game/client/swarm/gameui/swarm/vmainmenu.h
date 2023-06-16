@@ -83,6 +83,7 @@ public:
 	BaseModHybridButton *m_pBtnNewsShowcase;
 	BaseModHybridButton *m_pBtnUpdateNotes;
 	bool m_bIsStub{};
+	bool m_bIsLegacy{};
 
 	HUDGlowHelper_t m_GlowCreateLobby;
 	HUDGlowHelper_t m_GlowSingleplayer;

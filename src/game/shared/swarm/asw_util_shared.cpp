@@ -31,7 +31,7 @@
 	#include "c_asw_computer_area.h"
 	#include "c_point_camera.h"
 	#include "asw_remote_turret_shared.h"
-    #include "c_asw_player.h"
+	#include "c_asw_player.h"
 	#include "c_playerresource.h"
 	#include "c_asw_computer_area.h"
 	#include "c_asw_button_area.h"
@@ -87,7 +87,7 @@ extern int g_asw_iGUIWindowsOpen;
 ConVar asw_marine_view_cone_dist("asw_marine_view_cone_dist", "700", FCVAR_REPLICATED, "Distance for marine view cone checks");
 ConVar asw_marine_view_cone_dot("asw_marine_view_cone_dot", "0.5", FCVAR_REPLICATED, "Dot for marine view cone checks");
 extern ConVar asw_rts_controls;
-
+extern ConVar rd_legacy_ui;
 
 ConVar asw_shake_test_punch_dirx("asw_shake_test_punch_dirx","0", FCVAR_REPLICATED|FCVAR_HIDDEN );
 ConVar asw_shake_test_punch_diry("asw_shake_test_punch_diry","0", FCVAR_REPLICATED|FCVAR_HIDDEN );
@@ -1420,14 +1420,25 @@ void UTIL_RD_DecideMainMenuBackground( const char *&szImage, const char *&szVide
 
 		LoadBackgroundMovieData();
 
+		const char *szLegacyUI = rd_legacy_ui.GetString();
+		float flTotalWeightRespectingLegacyUI = 0.0f;
 		float flTotalWeight = 0.0f;
 		FOR_EACH_SUBKEY( s_pBackgroundMovie, pOption )
 		{
 			if ( pOption->GetBool( "mainmenu" ) && !pOption->GetBool( "disabled" ) && pOption->GetFloat( "weight", 1.0f ) > 0 )
 			{
 				flTotalWeight += pOption->GetFloat( "weight", 1.0f );
+
+				if ( !V_strcmp( pOption->GetString( "legacy", "" ), szLegacyUI ) )
+				{
+					flTotalWeightRespectingLegacyUI += pOption->GetFloat( "weight", 1.0f );
+				}
 			}
 		}
+
+		bool bUseLegacyUI = flTotalWeightRespectingLegacyUI > 0.0f;
+		if ( bUseLegacyUI )
+			flTotalWeight = flTotalWeightRespectingLegacyUI;
 
 		CUniformRandomStream rand;
 		rand.SetSeed( std::time( NULL ) );
@@ -1436,6 +1447,9 @@ void UTIL_RD_DecideMainMenuBackground( const char *&szImage, const char *&szVide
 		KeyValues *pSelected = NULL;
 		FOR_EACH_SUBKEY( s_pBackgroundMovie, pOption )
 		{
+			if ( bUseLegacyUI && V_strcmp( pOption->GetString( "legacy", "" ), szLegacyUI ) )
+				continue;
+
 			if ( pOption->GetBool( "mainmenu" ) && !pOption->GetBool( "disabled" ) && pOption->GetFloat( "weight", 1.0f ) > 0 )
 			{
 				pSelected = pOption;

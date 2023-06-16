@@ -43,7 +43,7 @@ public:
 	CASW_Background_Movie();
 	~CASW_Background_Movie();
 
-	void Update();
+	void Update( bool bForce = false );
 	void SetCurrentMovie( const char *szFilename );
 	int SetTextureMaterial();
 	void ClearCurrentMovie();

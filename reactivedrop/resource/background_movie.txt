@@ -11,6 +11,26 @@
 		"weight"	"1" // implied
 	}
 
+	"AlienSwarmDefault"
+	{
+		"image"	"materials/console/SwarmSelectionScreen_widescreen.vtf"
+		"video"	"media/bg_02.bik"
+		"audio"	"Misc.MainUI"
+		"mainmenu"	"1"
+		// Can be 2010, 2004, or blank (default).
+		"legacy"	"2010"
+	}
+
+	"AS2K4Default"
+	{
+		"image"	"materials/tools/toolsblack.vtf"
+		"video"	"media/bg_as2k4.bik"
+		"audio"	"Misc.MainUI"
+		"mainmenu"	"1"
+		// Can be 2010, 2004, or blank (default).
+		"legacy"	"2004"
+	}
+
 	"BriefingDefault01"
 	{
 		// only video; image and audio are unused for briefing

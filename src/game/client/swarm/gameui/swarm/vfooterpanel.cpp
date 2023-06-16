@@ -107,6 +107,12 @@ void CBaseModFooterPanel::ApplySchemeSettings( vgui::IScheme *pScheme )
 	m_hButtonFont = pScheme->GetFont( "GameUIButtonsTiny", true );
 
 	m_bInitialized = true;
+
+	vgui::Label *pLblHelpText = dynamic_cast< vgui::Label * >( FindChildByName( "LblHelpText" ) );
+	if ( pLblHelpText )
+	{
+		pLblHelpText->SetVisible( m_bHelpTextEnabled );
+	}
 }
 
 void CBaseModFooterPanel::UpdateHelp()
@@ -414,6 +420,8 @@ void CBaseModFooterPanel::SetButtonText( Button_t button, const char *pText )
 
 void CBaseModFooterPanel::SetHelpTextEnabled( bool bEnabled )
 {
+	m_bHelpTextEnabled = bEnabled;
+
 	vgui::Label *pLblHelpText = dynamic_cast< vgui::Label* >( FindChildByName( "LblHelpText" ) );
 	if ( pLblHelpText )
 	{

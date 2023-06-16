@@ -147,7 +147,7 @@ int CASW_Background_Movie::SetTextureMaterial()
 	return m_nTextureID;
 }
 
-void CASW_Background_Movie::Update()
+void CASW_Background_Movie::Update( bool bForce )
 {
 	if ( engine->IsConnected() && ASWGameRules() )
 	{
@@ -156,7 +156,7 @@ void CASW_Background_Movie::Update()
 		{
 			nGameState += 10;
 		}
-		if ( nGameState != m_nLastGameState && !( nGameState == ASW_GS_LAUNCHING || nGameState == ASW_GS_INGAME ) )
+		if ( ( nGameState != m_nLastGameState || bForce ) && !( nGameState == ASW_GS_LAUNCHING || nGameState == ASW_GS_INGAME ) )
 		{
 			const char *pFilename = NULL;
 #ifdef ASW_BINK_MOVIES
@@ -196,7 +196,7 @@ void CASW_Background_Movie::Update()
 	else
 	{
 		int nGameState = 0;
-		if ( nGameState != m_nLastGameState )
+		if ( nGameState != m_nLastGameState || bForce )
 		{
 #ifdef ASW_BINK_MOVIES
 			const char *szMainMenuImage, *szMainMenuVideo, *szMainMenuAudio;
