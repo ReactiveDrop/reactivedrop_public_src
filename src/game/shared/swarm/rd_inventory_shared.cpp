@@ -2522,10 +2522,10 @@ namespace ReactiveDropInventory
 	}
 
 #ifdef CLIENT_DLL
-	void ItemInstance_t::FormatDescription( vgui::RichText *pRichText ) const
+	void ItemInstance_t::FormatDescription( vgui::RichText *pRichText, bool bIncludeAccessories ) const
 	{
 		CRD_ItemInstance reduced{ *this };
-		reduced.FormatDescription( pRichText );
+		reduced.FormatDescription( pRichText, bIncludeAccessories );
 	}
 
 	vgui::IImage *ItemInstance_t::GetIcon() const
@@ -3829,7 +3829,7 @@ void CRD_ItemInstance::AppendBBCode( vgui::RichText *pRichText, const wchar_t *w
 	Assert( colorStack.Count() == 1 );
 }
 
-void CRD_ItemInstance::FormatDescription( vgui::RichText *pRichText ) const
+void CRD_ItemInstance::FormatDescription( vgui::RichText *pRichText, bool bIncludeAccessories ) const
 {
 	const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( m_iItemDefID );
 	wchar_t wszBuf[2048];
@@ -3846,18 +3846,21 @@ void CRD_ItemInstance::FormatDescription( vgui::RichText *pRichText ) const
 	FormatDescription( wszBuf, sizeof( wszBuf ), pDef->Description, !pDef->HasInGameDescription );
 	AppendBBCode( pRichText, wszBuf, rd_briefing_item_details_color1.GetColor() );
 
-	for ( int i = 0; i < RD_ITEM_MAX_ACCESSORIES; i++ )
+	if ( bIncludeAccessories )
 	{
-		if ( m_iAccessory[i] == 0 )
-			continue;
-
-		Assert( !pDef->AccessoryTag.IsEmpty() );
-
-		FormatDescription( wszBuf, sizeof( wszBuf ), ReactiveDropInventory::GetItemDef( m_iAccessory[i] )->AccessoryDescription, true );
-		if ( wszBuf[0] )
+		for ( int i = 0; i < RD_ITEM_MAX_ACCESSORIES; i++ )
 		{
-			pRichText->InsertString( L"\n" );
-			AppendBBCode( pRichText, wszBuf, rd_briefing_item_details_color1.GetColor() );
+			if ( m_iAccessory[i] == 0 )
+				continue;
+
+			Assert( !pDef->AccessoryTag.IsEmpty() );
+
+			FormatDescription( wszBuf, sizeof( wszBuf ), ReactiveDropInventory::GetItemDef( m_iAccessory[i] )->AccessoryDescription, true );
+			if ( wszBuf[0] )
+			{
+				pRichText->InsertString( L"\n" );
+				AppendBBCode( pRichText, wszBuf, rd_briefing_item_details_color1.GetColor() );
+			}
 		}
 	}
 

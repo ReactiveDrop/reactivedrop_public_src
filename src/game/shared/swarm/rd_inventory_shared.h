@@ -103,7 +103,7 @@ namespace ReactiveDropInventory
 		explicit ItemInstance_t( KeyValues *pKV );
 		void FormatDescription( wchar_t *wszBuf, size_t sizeOfBufferInBytes, const CUtlString &szDesc, bool bIsSteamCommunityDesc ) const;
 #ifdef CLIENT_DLL
-		void FormatDescription( vgui::RichText *pRichText ) const;
+		void FormatDescription( vgui::RichText *pRichText, bool bIncludeAccessories = true ) const;
 		vgui::IImage *GetIcon() const;
 #endif
 		int GetStyle() const;
@@ -178,7 +178,7 @@ public:
 	void FormatDescription( wchar_t *wszBuf, size_t sizeOfBufferInBytes, const CUtlString &szDesc, bool bIsSteamCommunityDesc ) const;
 #ifdef CLIENT_DLL
 	static void AppendBBCode( vgui::RichText *pRichText, const wchar_t *wszBuf, Color defaultColor );
-	void FormatDescription( vgui::RichText *pRichText ) const;
+	void FormatDescription( vgui::RichText *pRichText, bool bIncludeAccessories = true ) const;
 	vgui::IImage *GetIcon() const;
 #endif
 	int GetStyle() const;
