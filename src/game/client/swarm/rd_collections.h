@@ -52,7 +52,16 @@ private:
 	void OnPaint3D() override;
 	void OnMouseDoublePressed( vgui::MouseCode code ) override;
 
-	CUtlVector<MDLData_t> m_Models;
+	struct RD_MDLData_t : public MDLData_t
+	{
+		float m_flPoseParameters[MAXSTUDIOPOSEPARAM];
+		CUtlVector<MDLSquenceLayer_t> m_SequenceOverlay;
+		int m_iBoneMerge{ -1 };
+		int m_iRenderFlags{ STUDIORENDER_DRAW_ENTIRE_MODEL };
+		bool m_bIsWeapon;
+	};
+
+	CUtlVector<RD_MDLData_t> m_Models;
 	bool m_bDisplayChanged;
 };
 

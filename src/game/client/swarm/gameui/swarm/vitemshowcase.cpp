@@ -11,6 +11,7 @@
 #include "engine/IEngineSound.h"
 #include "asw_weapon_parse.h"
 #include "asw_gamerules.h"
+#include "rd_swarmopedia.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -18,8 +19,6 @@
 
 using namespace vgui;
 using namespace BaseModUI;
-
-extern const MaterialLightingState_t &SwarmopediaDefaultLightingState();
 
 extern ConVar rd_reduce_motion;
 

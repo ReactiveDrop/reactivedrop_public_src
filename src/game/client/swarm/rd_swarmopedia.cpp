@@ -621,7 +621,6 @@ void Display::Merge( const Display *pDisplay )
 
 Model::Model( const Model &copy ) :
 	ModelName{ copy.ModelName },
-	Animation{ copy.Animation },
 	Skin{ copy.Skin },
 	Color{ copy.Color },
 	Pitch{ copy.Pitch },
@@ -630,9 +629,23 @@ Model::Model( const Model &copy ) :
 	X{ copy.X },
 	Y{ copy.Y },
 	Z{ copy.Z },
-	Scale{ copy.Scale }
+	Scale{ copy.Scale },
+	BoneMerge{ copy.BoneMerge },
+	IsWeapon{ copy.IsWeapon }
 {
+	Animations.EnsureCapacity( copy.Animations.Count() );
+	PoseParameters.EnsureCapacity( copy.PoseParameters.Count() );
 	BodyGroups.EnsureCapacity( copy.BodyGroups.Count() );
+
+	for ( int i = 0; i < int( copy.Animations.Count() ); i++ )
+	{
+		Animations.Insert( copy.Animations.GetElementName( i ), copy.Animations.Element( i ) );
+	}
+
+	for ( int i = 0; i < int( copy.PoseParameters.Count() ); i++ )
+	{
+		PoseParameters.Insert( copy.PoseParameters.GetElementName( i ), copy.PoseParameters.Element( i ) );
+	}
 
 	FOR_EACH_MAP_FAST( copy.BodyGroups, i )
 	{
@@ -649,11 +662,24 @@ bool Model::ReadFromFile( const char *pszPath, KeyValues *pKV )
 		return false;
 	}
 
-	Animation = pKV->GetString( "Animation" );
-	if ( Animation.IsEmpty() )
+	if ( KeyValues *pAnimations = pKV->FindKey( "Animations" ) )
 	{
-		Warning( "Swarmopedia: Missing Animation for Model in %s\n", pszPath );
-		return false;
+		FOR_EACH_VALUE( pAnimations, pAnimation )
+		{
+			Animations.Insert( pAnimation->GetName(), pAnimation->GetFloat() );
+		}
+	}
+	else if ( const char *szAnimation = pKV->GetString("Animation", NULL) )
+	{
+		Animations.Insert( szAnimation, 1.0f );
+	}
+
+	if ( KeyValues *pPoseParams = pKV->FindKey( "PoseParameters" ) )
+	{
+		FOR_EACH_VALUE( pPoseParams, pPoseParam )
+		{
+			PoseParameters.Insert( pPoseParam->GetName(), pPoseParam->GetFloat() );
+		}
 	}
 
 	Skin = pKV->GetInt( "Skin", Skin );
@@ -665,6 +691,8 @@ bool Model::ReadFromFile( const char *pszPath, KeyValues *pKV )
 	Y = pKV->GetFloat( "Y", Y );
 	Z = pKV->GetFloat( "Z", Z );
 	Scale = pKV->GetFloat( "Scale", Scale );
+	BoneMerge = pKV->GetInt( "BoneMerge", BoneMerge );
+	IsWeapon = pKV->GetBool( "IsWeapon", IsWeapon );
 
 	FOR_EACH_SUBKEY( pKV, pSubKey )
 	{
@@ -676,7 +704,7 @@ bool Model::ReadFromFile( const char *pszPath, KeyValues *pKV )
 		{
 			FOR_EACH_VALUE( pSubKey, pGroup )
 			{
-				BodyGroups.Insert( atoi( pGroup->GetName() ), pGroup->GetInt() );
+				BodyGroups.Insert( V_atoi( pGroup->GetName() ), pGroup->GetInt() );
 			}
 		}
 	}

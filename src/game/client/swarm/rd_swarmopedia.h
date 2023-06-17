@@ -3,6 +3,8 @@
 #include "steam/steam_api.h"
 #include "asw_marine_skills.h"
 
+extern const MaterialLightingState_t &SwarmopediaDefaultLightingState();
+
 namespace RD_Swarmopedia
 {
 	struct Alien;
@@ -172,13 +174,16 @@ namespace RD_Swarmopedia
 		Model( const Model &copy );
 
 		CUtlString ModelName{};
-		CUtlString Animation{};
+		CUtlDict<float> Animations{};
+		CUtlDict<float> PoseParameters{};
 		int Skin{ -1 };
 		Color Color{ 255, 255, 255, 255 };
 		float Pitch{ 0.0f }, Yaw{ 0.0f }, Roll{ 0.0f };
 		float X{ 0.0f }, Y{ 0.0f }, Z{ 0.0f };
 		float Scale{ 1.0f };
 		CUtlMap<int, int> BodyGroups{ DefLessFunc( int ) };
+		int BoneMerge{ -1 };
+		bool IsWeapon{ false };
 
 	private:
 		friend struct Helpers;

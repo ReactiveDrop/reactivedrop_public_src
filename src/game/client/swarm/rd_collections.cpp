@@ -15,6 +15,7 @@ ConVar rd_swarmopedia_grid( "rd_swarmopedia_grid", "0", FCVAR_ARCHIVE, "Draw a g
 ConVar rd_swarmopedia_last_tab( "rd_swarmopedia_last_tab", "0", FCVAR_ARCHIVE, "Remembers last accessed tab index of the Swarmopedia screen." );
 ConVar rd_collections_last_tab( "rd_collections_last_tab", "0", FCVAR_ARCHIVE, "Remembers last accessed tab index of the collections screen." );
 extern ConVar rd_reduce_motion;
+extern ConVar asw_weapon_pitch;
 
 vgui::DHANDLE<TabbedGridDetails> g_hCollectionFrame;
 void LaunchCollectionsFrame()
@@ -133,6 +134,8 @@ void CRD_Swarmopedia_Model_Panel::SetDisplay( const RD_Swarmopedia::Display *pDi
 	// The parent class model is only used for sizing.
 	SetMDL( pDisplay->Models[0]->ModelName );
 
+	CStudioHdr RootHdr{ m_RootMDL.m_MDL.GetStudioHdr(), mdlcache };
+
 	m_Models.SetCount( pDisplay->Models.Count() );
 
 	FOR_EACH_VEC( pDisplay->Models, i )
@@ -151,16 +154,43 @@ void CRD_Swarmopedia_Model_Panel::SetDisplay( const RD_Swarmopedia::Display *pDi
 		CStudioHdr studioHdr( pStudioHdr, mdlcache );
 
 		m_Models[i].m_MDL.SetMDL( hStudioHdr );
-		m_Models[i].m_MDL.m_nSequence = LookupSequence( &studioHdr, pModel->Animation );
-		Assert( m_Models[i].m_MDL.m_nSequence != -1 || pModel->Animation.IsEmpty() );
-		if ( m_Models[i].m_MDL.m_nSequence == -1 )
+		m_Models[i].m_SequenceOverlay.SetCount( pModel->Animations.Count() );
+		FOR_EACH_VEC( m_Models[i].m_SequenceOverlay, j )
 		{
-			Assert( studioHdr.GetNumSeq() > 0 );
-			m_Models[i].m_MDL.m_nSequence = 0;
+			m_Models[i].m_SequenceOverlay[j].m_nSequenceIndex = LookupSequence( &studioHdr, pModel->Animations.GetElementName( j ) );
+			m_Models[i].m_SequenceOverlay[j].m_flWeight = pModel->Animations.Element( j );
+			Assert( m_Models[i].m_SequenceOverlay[j].m_nSequenceIndex != ACT_INVALID );
+			if ( m_Models[i].m_SequenceOverlay[j].m_nSequenceIndex == ACT_INVALID )
+			{
+				DevWarning( "Model '%s' has no animation named '%s'\n", pModel->ModelName.Get(), pModel->Animations.GetElementName( j ) );
+				m_Models[i].m_SequenceOverlay[j].m_nSequenceIndex = 0;
+				m_Models[i].m_SequenceOverlay[j].m_flWeight = 0;
+			}
+		}
+
+		for ( int j = 0; j < MAXSTUDIOPOSEPARAM; j++ )
+		{
+			m_Models[i].m_flPoseParameters[j] = 0.5f;
+			if ( j < studioHdr.GetNumPoseParameters() )
+			{
+				const mstudioposeparamdesc_t &param = studioHdr.pPoseParameter( j );
+				int iParam = pModel->PoseParameters.Find( param.pszName() );
+				if ( pModel->PoseParameters.IsValidIndex( iParam ) )
+				{
+					m_Models[i].m_flPoseParameters[j] = pModel->PoseParameters.Element( iParam );
+				}
+				else if ( param.start < 0.0f && param.end > 0.0f )
+				{
+					m_Models[i].m_flPoseParameters[j] = param.start / ( param.start - param.end );
+				}
+			}
 		}
 
 		m_Models[i].m_MDL.m_nSkin = pModel->Skin;
 		m_Models[i].m_MDL.m_Color = pModel->Color;
+		m_Models[i].m_iBoneMerge = pModel->BoneMerge;
+		Assert( m_Models[i].m_iBoneMerge < i );
+		m_Models[i].m_bIsWeapon = pModel->IsWeapon;
 
 		const QAngle angles( pModel->Pitch, pModel->Yaw, pModel->Roll );
 		const Vector position( pModel->X, pModel->Y, pModel->Z );
@@ -214,12 +244,42 @@ void CRD_Swarmopedia_Model_Panel::OnPaint3D()
 		return;
 	}
 
+	CUtlMemory<matrix3x4_t[MAXSTUDIOBONES]> Bones{ 0, m_Models.Count() };
+
 	FOR_EACH_VEC( m_Models, i )
 	{
 		matrix3x4_t mat;
 		ConcatTransforms( m_RootMDL.m_MDLToWorld, m_Models[i].m_MDLToWorld, mat );
+		CStudioHdr MergeHdr{ m_Models[i].m_MDL.GetStudioHdr(), mdlcache };
 		m_Models[i].m_MDL.m_flTime = flTime;
-		m_Models[i].m_MDL.Draw( mat );
+		if ( m_Models[i].m_iBoneMerge == -1 )
+		{
+			m_Models[i].m_MDL.SetUpBones( mat, MergeHdr.numbones(), Bones[i], m_Models[i].m_flPoseParameters, m_Models[i].m_SequenceOverlay.Base(), m_Models[i].m_SequenceOverlay.Count() );
+		}
+		else
+		{
+			CStudioHdr ParentHdr{ m_Models[m_Models[i].m_iBoneMerge].m_MDL.GetStudioHdr(), mdlcache };
+			matrix3x4_t ParentBones[MAXSTUDIOBONES];
+			V_memcpy( ParentBones, Bones[m_Models[i].m_iBoneMerge], sizeof( ParentBones ) );
+			if ( m_Models[i].m_bIsWeapon )
+			{
+				for ( int j = 0; j < ParentHdr.numbones(); j++ )
+				{
+					if ( !V_stricmp( ParentHdr.pBone( j )->pszName(), "ValveBiped.Bip01_R_Hand" ) )
+					{
+						matrix3x4_t matPitchUp;
+						AngleMatrix( QAngle( asw_weapon_pitch.GetFloat(), 0, 0 ), matPitchUp );
+						matrix3x4_t tmp = ParentBones[j];
+						ConcatTransforms( tmp, matPitchUp, ParentBones[j] );
+
+						break;
+					}
+				}
+			}
+
+			m_Models[i].m_MDL.SetupBonesWithBoneMerge( &MergeHdr, Bones[i], &ParentHdr, ParentBones, mat );
+		}
+		m_Models[i].m_MDL.Draw( mat, Bones[i], m_Models[i].m_iRenderFlags );
 	}
 
 	if ( rd_swarmopedia_grid.GetBool() )
