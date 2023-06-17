@@ -62,12 +62,8 @@ void CNB_Skill_Panel::OnThink()
 	if ( !MarineSkills() || !Briefing() )
 		return;
 
-	CASW_Marine_Profile *pProfile = Briefing()->GetMarineProfileByProfileIndex( m_nProfileIndex );
-	if ( !pProfile )
-		return;
-
-	int nMaxSkillPoints = MarineSkills()->GetMaxSkillPoints( pProfile->GetSkillMapping( m_nSkillSlot ) );
-	const char *szImageName = MarineSkills()->GetSkillImage( pProfile->GetSkillMapping( m_nSkillSlot ) );
+	int nMaxSkillPoints = MarineSkills()->GetMaxSkillPoints( m_nSkillType );
+	const char *szImageName = MarineSkills()->GetSkillImage( m_nSkillType );
 	if ( Q_strcmp( m_szLastSkillImage, szImageName ) )
 	{
 		Q_snprintf( m_szLastSkillImage, sizeof( m_szLastSkillImage ), "%s", szImageName );
@@ -95,7 +91,7 @@ void CNB_Skill_Panel::OnThink()
 	}
 	m_pSkillButton->SetEnabled( m_bSpendPointsMode && CanSpendPoint() );
 
-	m_pSkillLabel->SetText( MarineSkills()->GetSkillName( pProfile->GetSkillMapping( m_nSkillSlot ) ) );
+	m_pSkillLabel->SetText( MarineSkills()->GetSkillName( m_nSkillType ) );
 
 	wchar_t wszPointsBuffer[ 24 ];
 	V_snwprintf( wszPointsBuffer, ARRAYSIZE( wszPointsBuffer ), L"%d / %d", m_nSkillPoints, nMaxSkillPoints );
@@ -126,17 +122,18 @@ void CNB_Skill_Panel::OnThink()
 			tx += w * 0.5f;
 			ty -= h * 0.01f;
 
-			g_hBriefingTooltip.Get()->SetTooltip( this, MarineSkills()->GetSkillName( pProfile->GetSkillMapping( m_nSkillSlot ) ), MarineSkills()->GetSkillDescription( pProfile->GetSkillMapping( m_nSkillSlot ) ),
+			g_hBriefingTooltip.Get()->SetTooltip( this, MarineSkills()->GetSkillName( m_nSkillType ), MarineSkills()->GetSkillDescription( m_nSkillType ),
 				tx, ty );
 		}
 	}
 }
 
-void CNB_Skill_Panel::SetSkillDetails( int nProfileIndex, int nSkillSlot, int nSkillPoints )
+void CNB_Skill_Panel::SetSkillDetails( int nProfileIndex, int nSkillSlot, int nSkillPoints, int nSkillType )
 {
 	m_nProfileIndex = nProfileIndex;
 	m_nSkillSlot = nSkillSlot;
 	m_nSkillPoints = nSkillPoints;
+	m_nSkillType = nSkillType == -1 ? MarineProfileList()->GetProfile( nProfileIndex )->GetSkillMapping( nSkillSlot ) : ASW_Skill( nSkillType );
 }
 
 // NOTE: This function breaks IBriefing abstraction

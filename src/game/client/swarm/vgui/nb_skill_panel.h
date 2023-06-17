@@ -16,6 +16,7 @@ class StatsBar;
 // == MANAGED_CLASS_DECLARATIONS_END ==
 class CBitmapButton;
 class BriefingTooltip;
+enum ASW_Skill;
 
 class CNB_Skill_Panel : public vgui::EditablePanel
 {
@@ -29,7 +30,7 @@ public:
 	virtual void OnThink();
 	virtual void OnCommand( const char *command );
 	
-	void SetSkillDetails( int nProfileIndex, int nSkillSlot, int nSkillPoints );
+	void SetSkillDetails( int nProfileIndex, int nSkillSlot, int nSkillPoints, int nSkillType = -1 );
 
 	const char* GetSkillName();
 
@@ -42,6 +43,7 @@ public:
 
 	bool CanSpendPoint();
 
+	ASW_Skill m_nSkillType;
 	int m_nSkillSlot;
 	int m_nSkillPoints;
 	bool m_bSpendPointsMode;
