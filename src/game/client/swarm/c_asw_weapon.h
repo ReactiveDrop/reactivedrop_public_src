@@ -115,8 +115,8 @@ public:
 	C_ASW_Player* GetCommander();
 	C_ASW_Marine* GetMarine();
 	virtual bool IsPredicted( void ) const;
-	virtual bool ViewModelIsMarineAttachment() const { return false; }
-	virtual bool ViewModelHidesMarineBodyGroup1() const { return false; }
+	bool ViewModelIsMarineAttachment() const;
+	bool ViewModelHidesMarineBodyGroup1() const;
 	bool Holster( CBaseCombatWeapon *pSwitchingTo );
 	virtual const char *GetEquipSound();
 	virtual void Equip(CBaseCombatCharacter *pOwner);

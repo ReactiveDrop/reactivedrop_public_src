@@ -102,7 +102,7 @@ public:
 		const char *szDescription1, const char *szAltFireDescription, const char *szAttributeDescription,
 		bool bSelectableInBriefing, bool bIsExtra, const char *szAmmo1, const char *szAmmo2,
 		const char *szEquipIcon, ConVar *pDefaultAmmo1, ConVar *pMaxAmmo1, ConVar *pDefaultAmmo2, ConVar *pMaxAmmo2,
-		int iRequiredClass = -1, bool bIsUnique = false );
+		int iRequiredClass = -1, bool bIsUnique = false, bool bViewModelIsMarineAttachment = false, bool bViewModelHidesMarineBodyGroup1 = false );
 
 	int DefaultAmmo1() const;
 	int MaxAmmo1() const;
@@ -129,9 +129,11 @@ public:
 	const char *const m_szAmmo1;
 	const char *const m_szAmmo2;
 	const char *const m_szEquipIcon;
-	const bool m_bSelectableInBriefing; // if false, this item won't show up on the loadout screen unless an inventory item is equipped
-	const bool m_bIsExtra;
-	const bool m_bIsUnique;
+	const bool m_bSelectableInBriefing : 1; // if false, this item won't show up on the loadout screen unless an inventory item is equipped
+	const bool m_bIsExtra : 1;
+	const bool m_bIsUnique : 1;
+	const bool m_bViewModelIsMarineAttachment : 1;
+	const bool m_bViewModelHidesMarineBodyGroup1 : 1;
 	string_t m_EquipClass;
 };
 

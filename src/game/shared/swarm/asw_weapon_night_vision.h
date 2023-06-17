@@ -61,7 +61,6 @@ public:
 
 	const char *GetEquipSound() override { return "ASW_Weapon.AttachmentEquipSmall"; }
 	virtual bool IsOffensiveWeapon() { return false; }
-	virtual bool ViewModelIsMarineAttachment() const { return true; }
 	bool IsVisionActive() { return m_bVisionActive.Get(); }
 	float GetPower() { return m_flPower.Get(); }
 	virtual float GetBatteryCharge();

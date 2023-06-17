@@ -38,7 +38,6 @@ public:
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_FLASHLIGHT; }
 	virtual void	HandleFireOnEmpty() { return PrimaryAttack();  }
 
-	virtual bool ViewModelIsMarineAttachment() const { return true; }
 	Activity		GetPrimaryAttackActivity( void ) { return ACT_VM_PRIMARYATTACK; }
 //	virtual int		ASW_SelectWeaponActivity(int idealActivity) { return idealActivity; }
 	virtual int		AmmoClickPoint() { return 0; }

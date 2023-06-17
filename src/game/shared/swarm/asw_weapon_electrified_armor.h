@@ -44,7 +44,6 @@ public:
 		void ClientThink() override;
 	#endif
 	virtual bool IsOffensiveWeapon() { return false; }
-	virtual bool ViewModelIsMarineAttachment() const { return true; }
 
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_ELECTRIFIED_ARMOR; }

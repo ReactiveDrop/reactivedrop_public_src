@@ -22,7 +22,7 @@ CASW_EquipItem::CASW_EquipItem( int iItemIndex, const char *szEquipClass, const 
 	const char *szDescription1, const char *szAltFireDescription, const char *szAttributeDescription,
 	bool bSelectableInBriefing, bool bIsExtra, const char *szAmmo1, const char *szAmmo2,
 	const char *szEquipIcon, ConVar *pDefaultAmmo1, ConVar *pMaxAmmo1, ConVar *pDefaultAmmo2, ConVar *pMaxAmmo2,
-	int iRequiredClass, bool bIsUnique )
+	int iRequiredClass, bool bIsUnique, bool bViewModelIsMarineAttachment, bool bViewModelHidesMarineBodyGroup1 )
 	: m_iItemIndex{ iItemIndex },
 	m_iRequiredClass{ iRequiredClass },
 	m_pDefaultAmmo1{ pDefaultAmmo1 },
@@ -40,7 +40,9 @@ CASW_EquipItem::CASW_EquipItem( int iItemIndex, const char *szEquipClass, const 
 	m_szEquipIcon{ szEquipIcon },
 	m_bSelectableInBriefing{ bSelectableInBriefing },
 	m_bIsExtra{ bIsExtra },
-	m_bIsUnique{ bIsUnique }
+	m_bIsUnique{ bIsUnique },
+	m_bViewModelIsMarineAttachment{ bViewModelIsMarineAttachment },
+	m_bViewModelHidesMarineBodyGroup1{ m_bViewModelHidesMarineBodyGroup1 }
 {
 	m_EquipClass = NULL_STRING;
 }
@@ -487,6 +489,8 @@ static CASW_EquipItem s_ExtraEquips[ASW_NUM_EQUIP_EXTRA] =
 		"swarm/EquipIcons/EquipNormalArmor",
 		NULL, NULL,
 		NULL, NULL,
+		MARINE_CLASS_UNDEFINED, false,
+		true, false,
 	},
 	{
 		ASW_EQUIP_BUFF_GRENADE, WEAPON_NAME( buff_grenade ),
@@ -501,6 +505,8 @@ static CASW_EquipItem s_ExtraEquips[ASW_NUM_EQUIP_EXTRA] =
 		"swarm/EquipIcons/EquipHornetBarrage",
 		&asw_ammo_count_hornet_barrage, &asw_ammo_count_hornet_barrage,
 		NULL, NULL,
+		MARINE_CLASS_UNDEFINED, false,
+		true, false,
 	},
 	{
 		ASW_EQUIP_FREEZE_GRENADES, WEAPON_NAME( freeze_grenades ),
@@ -529,6 +535,8 @@ static CASW_EquipItem s_ExtraEquips[ASW_NUM_EQUIP_EXTRA] =
 		"swarm/EquipIcons/EquipElectrifiedArmor",
 		&asw_ammo_count_electrified_armor, &asw_ammo_count_electrified_armor,
 		NULL, NULL,
+		MARINE_CLASS_UNDEFINED, false,
+		true, false,
 	},
 	{
 		ASW_EQUIP_MINES, WEAPON_NAME( mines ),
@@ -544,6 +552,8 @@ static CASW_EquipItem s_ExtraEquips[ASW_NUM_EQUIP_EXTRA] =
 		"swarm/EquipIcons/EquipFlashlight",
 		NULL, NULL,
 		NULL, NULL,
+		MARINE_CLASS_UNDEFINED, false,
+		true, false,
 	},
 	{
 		ASW_EQUIP_FIST, WEAPON_NAME( fist ),
@@ -551,6 +561,8 @@ static CASW_EquipItem s_ExtraEquips[ASW_NUM_EQUIP_EXTRA] =
 		"swarm/EquipIcons/EquipPowerFist",
 		NULL, NULL,
 		NULL, NULL,
+		MARINE_CLASS_UNDEFINED, false,
+		true, false,
 	},
 	{
 		ASW_EQUIP_GRENADES, WEAPON_NAME( grenades ),
@@ -565,6 +577,8 @@ static CASW_EquipItem s_ExtraEquips[ASW_NUM_EQUIP_EXTRA] =
 		"swarm/EquipIcons/EquipGoggles",
 		NULL, NULL,
 		NULL, NULL,
+		MARINE_CLASS_UNDEFINED, false,
+		true, false,
 	},
 	{
 		ASW_EQUIP_SMART_BOMB, WEAPON_NAME( smart_bomb ),
@@ -572,6 +586,8 @@ static CASW_EquipItem s_ExtraEquips[ASW_NUM_EQUIP_EXTRA] =
 		"swarm/EquipIcons/EquipSmartBomb",
 		&asw_ammo_count_smart_bomb, &asw_ammo_count_smart_bomb,
 		NULL, NULL,
+		MARINE_CLASS_UNDEFINED, false,
+		true, true,
 	},
 	{
 		ASW_EQUIP_GAS_GRENADES, WEAPON_NAME( gas_grenades ),
@@ -596,6 +612,8 @@ static CASW_EquipItem s_ExtraEquips[ASW_NUM_EQUIP_EXTRA] =
 		"swarm/EquipIcons/EquipBlink",
 		NULL, NULL,
 		NULL, NULL,
+		MARINE_CLASS_UNDEFINED, false,
+		true, true,
 	},
 	{
 		ASW_EQUIP_JUMP_JET, WEAPON_NAME( jump_jet ),
@@ -603,6 +621,8 @@ static CASW_EquipItem s_ExtraEquips[ASW_NUM_EQUIP_EXTRA] =
 		"swarm/EquipIcons/EquipJumpJet",
 		&asw_ammo_count_jump_jet, &asw_ammo_count_jump_jet,
 		NULL, NULL,
+		MARINE_CLASS_UNDEFINED, false,
+		true, true,
 	},
 	{
 		ASW_EQUIP_BAIT, WEAPON_NAME( bait ),
@@ -633,6 +653,8 @@ static CASW_EquipItem s_ExtraEquips[ASW_NUM_EQUIP_EXTRA] =
 		"swarm/EquipIcons/EquipSpeedBurst",
 		NULL, NULL,
 		NULL, NULL,
+		MARINE_CLASS_UNDEFINED, false,
+		true, false,
 	},
 	{
 		ASW_EQUIP_SHIELD_BUBBLE, WEAPON_NAME( shield_bubble ),

@@ -39,7 +39,6 @@ public:
 
 	const char *GetEquipSound() override { return "ASW_Weapon.AttachmentEquipLarge"; }
 	virtual bool IsOffensiveWeapon() { return false; }
-	virtual bool ViewModelIsMarineAttachment() const { return true; }
 	virtual float GetPassiveMeleeDamageScale() { return asw_fist_passive_damage_scale.GetFloat(); }
 
 	// Classification

@@ -67,8 +67,6 @@ public:
 	void DoBlink();
 	const char *GetEquipSound() override { return "ASW_Weapon.AttachmentEquipLarge"; }
 	virtual bool IsOffensiveWeapon() { return false; }
-	virtual bool ViewModelIsMarineAttachment() const { return true; }
-	virtual bool ViewModelHidesMarineBodyGroup1() const { return true; }
 
 	float GetPower() { return m_flPower.Get(); }
 	virtual float GetBatteryCharge();

@@ -793,6 +793,18 @@ bool CASW_Weapon::IsPredicted(void) const
 	return true;
 }
 
+bool CASW_Weapon::ViewModelIsMarineAttachment() const
+{
+	const CASW_EquipItem *pEquipItem = GetEquipItem();
+	return pEquipItem ? pEquipItem->m_bViewModelIsMarineAttachment : false;
+}
+
+bool CASW_Weapon::ViewModelHidesMarineBodyGroup1() const
+{
+	const CASW_EquipItem *pEquipItem = GetEquipItem();
+	return pEquipItem ? pEquipItem->m_bViewModelHidesMarineBodyGroup1 : false;
+}
+
 // ========================
 // reloading
 // ========================
