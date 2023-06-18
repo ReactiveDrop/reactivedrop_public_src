@@ -1,5 +1,7 @@
 #include "cbase.h"
 #include "rd_vgui_settings.h"
+#include <vgui/ILocalize.h>
+#include <vgui/ISurface.h>
 #include <vgui_controls/Label.h>
 #include "gameui/swarm/vhybridbutton.h"
 #include "gameui/cvartogglecheckbutton.h"
@@ -15,10 +17,77 @@ CRD_VGUI_Bind::CRD_VGUI_Bind( vgui::Panel *parent, const char *panelName, const 
 {
 	Assert( g_RD_Steam_Input.IsSteamInputBind( szBind ) );
 
+	V_strncpy( m_szLabel, szLabel, sizeof( m_szLabel ) );
 	V_strncpy( m_szBind, szBind, sizeof( m_szBind ) );
 	m_bUseRowLayout = bUseRowLayout;
 
+	m_pLblKeyboardIcon = new vgui::Label( this, "LblKeyboardIcon", "" );
+	m_pLblKeyboardIconLong = new vgui::Label( this, "LblKeyboardIconLong", "" );
+	m_pPnlControllerIcon = new vgui::Panel( this, "PnlControllerIcon" );
 	m_pLblDescription = new vgui::Label( this, "LblDescription", szLabel );
+}
+
+void CRD_VGUI_Bind::ApplySchemeSettings( vgui::IScheme *pScheme )
+{
+	BaseClass::ApplySchemeSettings( pScheme );
+
+	LoadControlSettings( m_bUseRowLayout ? "Resource/UI/BaseModUI/CRD_VGUI_Bind_Row.res" : "Resource/UI/BaseModUI/CRD_VGUI_Bind_Box.res" );
+
+	m_pLblDescription->SetText( m_szLabel );
+}
+
+void CRD_VGUI_Bind::OnThink()
+{
+	BaseClass::OnThink();
+
+	const char *szKeyBind = g_RD_Steam_Input.Key_LookupBindingEx( m_szBind, -1, 0, 0 );
+	if ( szKeyBind )
+	{
+		if ( const wchar_t *wszTranslation = g_pVGuiLocalize->Find( szKeyBind ) )
+		{
+			if ( V_wcslen( wszTranslation ) > 2 )
+			{
+				m_pLblKeyboardIcon->SetText( "" );
+				m_pLblKeyboardIconLong->SetText( wszTranslation );
+			}
+			else
+			{
+				m_pLblKeyboardIcon->SetText( wszTranslation );
+				m_pLblKeyboardIconLong->SetText( "" );
+			}
+		}
+		else
+		{
+			if ( V_strlen( szKeyBind ) > 2 )
+			{
+				m_pLblKeyboardIcon->SetText( "" );
+				m_pLblKeyboardIconLong->SetText( szKeyBind );
+			}
+			else
+			{
+				m_pLblKeyboardIcon->SetText( szKeyBind );
+				m_pLblKeyboardIconLong->SetText( "" );
+			}
+		}
+	}
+	else
+	{
+		m_pLblKeyboardIcon->SetText( "" );
+		m_pLblKeyboardIconLong->SetText( "" );
+	}
+}
+
+void CRD_VGUI_Bind::Paint()
+{
+	BaseClass::Paint();
+
+	const char *szKeyBind = g_RD_Steam_Input.Key_LookupBindingEx( m_szBind, -1, 0, 1 );
+	if ( szKeyBind )
+	{
+		int x, y;
+		m_pPnlControllerIcon->GetPos( x, y );
+		g_RD_Steam_Input.DrawLegacyControllerGlyph( szKeyBind, x, y, 0, 0, m_hButtonFont );
+	}
 }
 
 void CRD_VGUI_Bind::AddFallbackBind( const char *szBind )
@@ -38,13 +107,27 @@ CRD_VGUI_Settings_Controls::CRD_VGUI_Settings_Controls( vgui::Panel *parent, con
 	m_pBindJump = new CRD_VGUI_Bind( this, "BindJump", "#ASW_GameUI_MoveRoll", "+jump", false );
 
 	// Controller
-	// TODO
-	// Movement stick... left [joy_movement_stick]
-	// Automatically crouch... no [joy_autowalk]
-	// Automatically shoot when aiming... no [joy_autoattack]
-	// Automatically aim to movement direction... yes [joy_aim_to_movement]
-	// Stick up in first person looks... down [joy_inverty]
-	// Use controller icon set... auto [rd_force_controller_glyph_set]
+	m_pSettingMovementStick = new CRD_VGUI_Option( this, "SettingMovementStick", "#rd_controls_movement_stick" );
+	m_pSettingMovementStick->AddOption( 0, "#rd_controls_movement_stick_left", "" );
+	m_pSettingMovementStick->AddOption( 1, "#rd_controls_movement_stick_right", "" );
+	m_pSettingMovementStick->LinkToConVar( "joy_movement_stick", false );
+	m_pSettingAutoWalk = new CRD_VGUI_Option( this, "SettingAutoWalk", "#rd_controls_auto_walk", CRD_VGUI_Option::MODE_CHECKBOX );
+	m_pSettingAutoWalk->LinkToConVar( "joy_autowalk", false );
+	m_pSettingAutoAttack = new CRD_VGUI_Option( this, "SetingAutoAttack", "#rd_controls_auto_attack", CRD_VGUI_Option::MODE_CHECKBOX );
+	m_pSettingAutoAttack->LinkToConVar( "joy_autoattack", false );
+	m_pSettingAimToMovement = new CRD_VGUI_Option( this, "SettingAimToMovement", "#rd_controls_aim_to_movement", CRD_VGUI_Option::MODE_CHECKBOX );
+	m_pSettingAimToMovement->LinkToConVar( "joy_aim_to_movement", false );
+	m_pSettingInvertY = new CRD_VGUI_Option( this, "SettingInvertY", "#rd_controls_invert_y" );
+	m_pSettingInvertY->AddOption( 0, "#rd_controls_invert_y_disabled", "" );
+	m_pSettingInvertY->AddOption( 1, "#rd_controls_invert_y_enabled", "" );
+	m_pSettingInvertY->LinkToConVar( "joy_inverty", false );
+	m_pSettingControllerGlyphs = new CRD_VGUI_Option( this, "SettingControllerGlyphs", "#RD_AdvancedSettings_HUD_ControllerIcons", CRD_VGUI_Option::MODE_DROPDOWN );
+	m_pSettingControllerGlyphs->AddOption( -1, "#RD_AdvancedSettings_HUD_ControllerIcons_Default", "" );
+	m_pSettingControllerGlyphs->AddOption( k_ESteamInputType_XBoxOneController, "#RD_AdvancedSettings_HUD_ControllerIcons_XboxOne", "" );
+	m_pSettingControllerGlyphs->AddOption( k_ESteamInputType_SwitchProController, "#RD_AdvancedSettings_HUD_ControllerIcons_Switch", "" );
+	m_pSettingControllerGlyphs->AddOption( k_ESteamInputType_PS5Controller, "#RD_AdvancedSettings_HUD_ControllerIcons_PS5", "" );
+	m_pSettingControllerGlyphs->AddOption( k_ESteamInputType_SteamDeckController, "#RD_AdvancedSettings_HUD_ControllerIcons_SteamDeck", "" );
+	m_pSettingControllerGlyphs->LinkToConVar( "rd_force_controller_glyph_set", false );
 
 	// Actions
 	m_pBindPrimaryAttack = new CRD_VGUI_Bind( this, "BindPrimaryAttack", "#Valve_Primary_Attack", "+attack", false );

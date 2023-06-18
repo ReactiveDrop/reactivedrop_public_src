@@ -37,8 +37,11 @@ CRD_VGUI_Settings_About::CRD_VGUI_Settings_About( vgui::Panel *parent, const cha
 	m_pCopyrightDisclaimers = new BaseModUI::GenericPanelList( this, "CopyrightDisclaimers", BaseModUI::GenericPanelList::ISM_ELEVATOR );
 	for ( int i = 0; i < NELEMS( s_szCopyrightStrings ); i++ )
 	{
-		m_pCopyrightDisclaimers->AddPanelItem<vgui::Label>( "CopyrightDisclaimer", s_szCopyrightStrings[i] );
+		vgui::Label *pLabel = m_pCopyrightDisclaimers->AddPanelItem<vgui::Label>( "CopyrightDisclaimer", s_szCopyrightStrings[i] );
+		pLabel->SetWrap( true );
 	}
+
+	MakeReadyForUse();
 }
 
 void CRD_VGUI_Settings_About::Activate()
@@ -94,4 +97,28 @@ void CRD_VGUI_Settings_About::Activate()
 	{
 		m_pLblWineVersion->SetVisible( false );
 	}
+}
+
+void CRD_VGUI_Settings_About::ApplySchemeSettings( vgui::IScheme *pScheme )
+{
+	BaseClass::ApplySchemeSettings( pScheme );
+
+
+	for ( int i = 0; i < m_pCopyrightDisclaimers->GetPanelItemCount(); i++ )
+	{
+		m_pCopyrightDisclaimers->GetPanelItem( i )->SetFgColor( m_pCopyrightDisclaimers->GetFgColor() );
+	}
+}
+
+void CRD_VGUI_Settings_About::PerformLayout()
+{
+	BaseClass::PerformLayout();
+
+	for ( int i = 0; i < m_pCopyrightDisclaimers->GetPanelItemCount(); i++ )
+	{
+		vgui::Label *pLabel = assert_cast< vgui::Label * >( m_pCopyrightDisclaimers->GetPanelItem( i ) );
+		pLabel->SizeToContents();
+	}
+
+	m_pCopyrightDisclaimers->InvalidateLayout();
 }

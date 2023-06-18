@@ -46,9 +46,91 @@ CRD_VGUI_Settings::CRD_VGUI_Settings( vgui::Panel *parent, const char *panelName
 	SetMoveable( false );
 }
 
+void CRD_VGUI_Settings::ApplySchemeSettings( vgui::IScheme *pScheme )
+{
+	BaseClass::ApplySchemeSettings( pScheme );
+
+	if ( !V_stricmp( rd_settings_last_tab.GetString(), "controls" ) )
+	{
+		NavigateToTab( m_pBtnControls, m_pPnlControls, null );
+	}
+	else if ( !V_stricmp( rd_settings_last_tab.GetString(), "options" ) )
+	{
+		NavigateToTab( m_pBtnOptions, m_pPnlOptions, NULL );
+	}
+	else if ( !V_stricmp( rd_settings_last_tab.GetString(), "audio" ) )
+	{
+		NavigateToTab( m_pBtnAudio, m_pPnlAudio, NULL );
+	}
+	else if ( !V_stricmp( rd_settings_last_tab.GetString(), "video" ) )
+	{
+		NavigateToTab( m_pBtnVideo, m_pPnlVideo, NULL );
+	}
+	else
+	{
+		NavigateToTab( m_pBtnAbout, m_pPnlAbout, NULL );
+	}
+}
+
+void CRD_VGUI_Settings::OnCommand( const char *command )
+{
+	if ( !V_stricmp( command, "Controls" ) )
+	{
+		NavigateToTab( m_pBtnControls, m_pPnlControls, "controls" );
+	}
+	else if ( !V_stricmp( command, "Options" ) )
+	{
+		NavigateToTab( m_pBtnOptions, m_pPnlOptions, "options" );
+	}
+	else if ( !V_stricmp( command, "Audio" ) )
+	{
+		NavigateToTab( m_pBtnAudio, m_pPnlAudio, "audio" );
+	}
+	else if ( !V_stricmp( command, "Video" ) )
+	{
+		NavigateToTab( m_pBtnVideo, m_pPnlVideo, "video" );
+	}
+	else if ( !V_stricmp( command, "About" ) )
+	{
+		NavigateToTab( m_pBtnAbout, m_pPnlAbout, "about" );
+	}
+	else
+	{
+		BaseClass::OnCommand( command );
+	}
+}
+
+void CRD_VGUI_Settings::NavigateToTab( BaseModHybridButton *pButton, CRD_VGUI_Settings_Panel_Base *pPanel, const char *szTabID )
+{
+	pButton->SetOpen();
+	m_pPnlControls->SetVisible( m_pPnlControls == pPanel );
+	m_pPnlOptions->SetVisible( m_pPnlOptions == pPanel );
+	m_pPnlAudio->SetVisible( m_pPnlAudio == pPanel );
+	m_pPnlVideo->SetVisible( m_pPnlVideo == pPanel );
+	m_pPnlAbout->SetVisible( m_pPnlAbout == pPanel );
+	NavigateToChild( pPanel );
+	pPanel->Activate();
+	pPanel->InvalidateLayout();
+
+	if ( szTabID )
+	{
+		rd_settings_last_tab.SetValue( szTabID );
+		engine->ClientCmd_Unrestricted( "host_writeconfig\n" );
+	}
+}
+
 CRD_VGUI_Settings_Panel_Base::CRD_VGUI_Settings_Panel_Base( vgui::Panel *parent, const char *panelName ) :
 	BaseClass( parent, panelName )
 {
+}
+
+void CRD_VGUI_Settings_Panel_Base::ApplySchemeSettings( vgui::IScheme *pScheme )
+{
+	BaseClass::ApplySchemeSettings( pScheme );
+
+	char szResourceFile[MAX_PATH];
+	V_snprintf( szResourceFile, sizeof( szResourceFile ), "resource/ui/basemodui/%s.res", GetClassName() );
+	LoadControlSettings( szResourceFile, "GAME" );
 }
 
 CRD_VGUI_Option::CRD_VGUI_Option( vgui::Panel *parent, const char *panelName, const char *szLabel, Mode_t eMode ) :

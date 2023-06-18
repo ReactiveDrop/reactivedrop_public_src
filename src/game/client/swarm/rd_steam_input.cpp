@@ -359,7 +359,8 @@ const char *CRD_Steam_Input::Key_LookupBindingEx( const char *pBinding, int iUse
 				}
 
 				iStartCount -= count;
-				bAny = true;
+				if ( count )
+					bAny = true;
 			}
 		}
 
@@ -380,7 +381,6 @@ const char *CRD_Steam_Input::Key_LookupBindingEx( const char *pBinding, int iUse
 		{
 			if ( V_strcmp( s_XInputTable[i].BindingName, szEngineBind ) )
 				continue;
-
 
 			FOR_EACH_VEC( m_Controllers, j )
 			{

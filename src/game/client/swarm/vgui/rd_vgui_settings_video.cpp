@@ -178,7 +178,7 @@ CRD_VGUI_Settings_Video::CRD_VGUI_Settings_Video( vgui::Panel *parent, const cha
 	m_pSettingDisplayMode->AddOption( 1, "#rd_video_display_mode_noborder", "#rd_video_display_mode_noborder_hint" );
 	m_pSettingDisplayMode->AddOption( 2, "#rd_video_display_mode_windowed", "#rd_video_display_mode_windowed_hint" );
 	m_pSettingScreenBrightness = new CRD_VGUI_Option( this, "SettingScreenBrightness", "#rd_video_screen_brightness", CRD_VGUI_Option::MODE_SLIDER );
-	m_pSettingScreenBrightness->SetSliderMinMax( 2.6f, 1.6f );
+	m_pSettingScreenBrightness->SetSliderMinMax( 1.6f, 2.6f );
 	m_pSettingScreenBrightness->SetDefaultHint( "#rd_video_screen_brightness_hint" );
 	m_pSettingScreenBrightness->LinkToConVar( "mat_monitorgamma", false );
 	m_pSettingRenderingPipeline = new CRD_VGUI_Option( this, "SettingRenderingPipeline", "#rd_video_rendering_pipeline", CRD_VGUI_Option::MODE_DROPDOWN );
@@ -374,7 +374,7 @@ void CRD_VGUI_Settings_Video::Activate()
 	// Triple Buffering - Smooth out frame rate by rendering two frames ahead. Slightly increases input latency.
 	int iRecommendedVSyncEnabled = bHaveRecommended ? pRecommended->GetInt( "setting.mat_vsync", 1 ) : -1;
 	int iRecommendedTripleBuffering = bHaveRecommended ? pRecommended->GetInt( "setting.mat_triplebuffered", 0 ) : -1;
-	m_pSettingVSync->SetRecommendedSliderValue( iRecommendedVSyncEnabled != -1 ? iRecommendedVSyncEnabled != 0 ? iRecommendedTripleBuffering ? 2 : 1 : 0 : -1 );
+	m_pSettingVSync->SetRecommendedOption( iRecommendedVSyncEnabled != -1 ? iRecommendedVSyncEnabled != 0 ? iRecommendedTripleBuffering ? 2 : 1 : 0 : -1 );
 
 	// Faster < - - - - > Higher Quality
 

@@ -12,6 +12,7 @@ namespace BaseModUI
 class CNB_Header_Footer;
 class CRD_VGUI_Main_Menu_Top_Bar;
 class CRD_VGUI_Microphone_Tester;
+class CRD_VGUI_Settings_Panel_Base;
 class CRD_VGUI_Settings_Controls;
 class CRD_VGUI_Settings_Options;
 class CRD_VGUI_Settings_Audio;
@@ -25,6 +26,11 @@ class CRD_VGUI_Settings : public CBaseModFrame
 	DECLARE_CLASS_SIMPLE( CRD_VGUI_Settings, CBaseModFrame );
 public:
 	CRD_VGUI_Settings( vgui::Panel *parent, const char *panelName );
+
+	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+	void OnCommand( const char *command ) override;
+
+	void NavigateToTab( BaseModHybridButton *pButton, CRD_VGUI_Settings_Panel_Base *pPanel, const char *szTabID );
 
 	CNB_Header_Footer *m_pHeaderFooter;
 	CRD_VGUI_Main_Menu_Top_Bar *m_pTopBar;
@@ -48,6 +54,8 @@ class CRD_VGUI_Settings_Panel_Base : public vgui::EditablePanel
 	DECLARE_CLASS_SIMPLE( CRD_VGUI_Settings_Panel_Base, vgui::EditablePanel );
 public:
 	CRD_VGUI_Settings_Panel_Base( vgui::Panel *parent, const char *panelName );
+
+	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 
 	virtual void Activate() = 0;
 	virtual BaseModUI::BaseModHybridButton *GetButton( BaseModUI::CRD_VGUI_Settings *pSettings ) = 0;
@@ -152,12 +160,22 @@ class CRD_VGUI_Bind : public vgui::EditablePanel
 public:
 	CRD_VGUI_Bind( vgui::Panel *parent, const char *panelName, const char *szLabel, const char *szBind, bool bUseRowLayout );
 
+	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+	void OnThink() override;
+	void Paint() override;
+
 	void AddFallbackBind( const char *szBind );
 
+	vgui::Label *m_pLblKeyboardIcon;
+	vgui::Label *m_pLblKeyboardIconLong;
+	vgui::Panel *m_pPnlControllerIcon;
 	vgui::Label *m_pLblDescription;
+	char m_szLabel[256];
 	char m_szBind[63];
 	bool m_bUseRowLayout;
 	CUtlStringList m_AlternateBind;
+
+	CPanelAnimationVar( vgui::HFont, m_hButtonFont, "buttonfont", "GameUIButtonsTinier" );
 };
 
 class CRD_VGUI_Settings_Controls : public CRD_VGUI_Settings_Panel_Base
@@ -175,6 +193,13 @@ public:
 	CRD_VGUI_Bind *m_pBindMoveRight;
 	CRD_VGUI_Bind *m_pBindWalk;
 	CRD_VGUI_Bind *m_pBindJump;
+
+	CRD_VGUI_Option *m_pSettingMovementStick;
+	CRD_VGUI_Option *m_pSettingAutoWalk;
+	CRD_VGUI_Option *m_pSettingAutoAttack;
+	CRD_VGUI_Option *m_pSettingAimToMovement;
+	CRD_VGUI_Option *m_pSettingInvertY;
+	CRD_VGUI_Option *m_pSettingControllerGlyphs;
 
 	CRD_VGUI_Bind *m_pBindPrimaryAttack;
 	CRD_VGUI_Bind *m_pBindSecondaryAttack;
@@ -298,7 +323,8 @@ public:
 	CRD_VGUI_Option *m_pSettingLoadingMissionScreens;
 	CRD_VGUI_Option *m_pSettingLoadingStatusText;
 
-	CRD_VGUI_Option *m_pSettingAccessibilityTracerTint;
+	CRD_VGUI_Option *m_pSettingAccessibilityTracerTintSelf;
+	CRD_VGUI_Option *m_pSettingAccessibilityTracerTintOther;
 	CRD_VGUI_Option *m_pSettingAccessibilityHighlightActiveCharacter;
 	CRD_VGUI_Option *m_pSettingAccessibilityReduceMotion;
 	CRD_VGUI_Option *m_pSettingAccessibilityCameraShake;
@@ -395,6 +421,8 @@ public:
 	CRD_VGUI_Settings_About( vgui::Panel *parent, const char *panelName );
 
 	void Activate() override;
+	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+	void PerformLayout() override;
 	BaseModUI::BaseModHybridButton *GetButton( BaseModUI::CRD_VGUI_Settings *pSettings ) override { return pSettings->m_pBtnAbout; }
 
 	vgui::Label *m_pLblBuildID;
