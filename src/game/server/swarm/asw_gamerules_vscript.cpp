@@ -812,7 +812,7 @@ void Script_CheckSpecialAchievementEligibility()
 {
 	CAlienSwarm *pAlienSwarm = ASWGameRules();
 	CASW_Game_Resource *pGameResource = ASWGameResource();
-	if ( !pAlienSwarm || !pGameResource || pAlienSwarm->m_iMissionWorkshopID.Get() || pAlienSwarm->m_bChallengeActiveThisMission )
+	if ( !pAlienSwarm || pAlienSwarm->m_bCheated || !pGameResource || pAlienSwarm->m_iMissionWorkshopID.Get() || pAlienSwarm->m_bChallengeActiveThisMission )
 	{
 		return;
 	}

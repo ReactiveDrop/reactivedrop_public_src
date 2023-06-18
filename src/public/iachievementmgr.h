@@ -58,6 +58,8 @@ public:
 #define ACH_FILTER_VICTIM_IS_PLAYER_ENEMY	0x0200
 #define ACH_FILTER_FULL_ROUND_ONLY			0x0400
 #define ACH_FILTER_LOCAL_PLAYER_EVENTS		0x0800		// Evaluate player-specific events only
+#define ACH_ASW_NO_CHALLENGES				0x1000		// this flag and the next are cosmetic only and mutually exclusive; logic is implemented elsewhere
+#define ACH_ASW_OUTSTANDING_EXECUTION		0x2000		// cannot be earned if any challenge was active or any marine died during the current campaign save
 
 #define ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS		ACH_LISTEN_KILL_EVENTS | ACH_FILTER_ATTACKER_IS_PLAYER | ACH_FILTER_VICTIM_IS_PLAYER_ENEMY
 #define ACH_LISTEN_KILL_ENEMY_EVENTS		ACH_LISTEN_KILL_EVENTS | ACH_FILTER_VICTIM_IS_PLAYER_ENEMY
