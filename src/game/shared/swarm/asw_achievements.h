@@ -212,8 +212,6 @@ enum
 	ACHIEVEMENT_RD_ACC_MUONGEM_KILL,
 };
 
-#define ACH_LISTEN_ALIEN_DEATH_EVENTS				0x1000
-
 #ifdef CLIENT_DLL
 
 class C_ASW_Marine;
