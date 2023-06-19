@@ -276,6 +276,8 @@ public:
 	// footsteps
 	//void			PlantFootprint( surfacedata_t *psurface );
 	surfacedata_t*	GetSurfaceData();
+
+	void GetMovementVectors( Vector &forward, Vector &right, Vector &up );
 };
 
 CASW_MarineGameMovement* ASWGameMovement();

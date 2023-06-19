@@ -64,6 +64,8 @@ extern IFileSystem *filesystem;
 #ifndef CLIENT_DLL
 	#include "env_player_surface_trigger.h"
 	static ConVar marine_dispcoll_drawplane( "marine_dispcoll_drawplane", "0" );
+#else
+	ConVar rd_movement_relative_to_aim( "rd_movement_relative_to_aim", "0", FCVAR_ARCHIVE | FCVAR_USERINFO, "In top-down view, makes commands like '+forward' move relative to the marine's facing rather than the camera position." );
 #endif
 
 static ConVar asw_marine_gravity( "asw_marine_gravity","800", FCVAR_CHEAT | FCVAR_REPLICATED, "Marine gravity." );
@@ -1052,19 +1054,13 @@ void CASW_MarineGameMovement::StartGravity( void )
 //-----------------------------------------------------------------------------
 void CASW_MarineGameMovement::CheckWaterJump( void )
 {
+#ifndef ASW_NO_WATER_JUMP
 	Vector	flatforward;
-	Vector forward;
+	Vector forward, right, up;
 	Vector	flatvelocity;
 	float curspeed;
 
-#ifdef ASW_NO_WATER_JUMP
-	return;
-#endif
-
-	if ( player && assert_cast<CASW_Player *>( player )->GetASWControls() == ASWC_TOPDOWN )
-		AngleVectors( mv->m_vecMovementAxis, &forward ); 
-	else
-		AngleVectors( mv->m_vecViewAngles, &forward );  // Determine movement angles
+	GetMovementVectors( forward, right, up );
 
 	// Already water jumping.
 	if ( !player || player->GetWaterJumpTime() )
@@ -1123,6 +1119,7 @@ void CASW_MarineGameMovement::CheckWaterJump( void )
 			}
 		}
 	}
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -1166,10 +1163,7 @@ void CASW_MarineGameMovement::WaterMove( void )
 	float speed, newspeed, addspeed, accelspeed;
 	Vector forward, right, up;
 
-	if ( player && assert_cast<CASW_Player *>( player )->GetASWControls() == ASWC_TOPDOWN )
-		AngleVectors( mv->m_vecMovementAxis, &forward, &right, &up ); 
-	else
-		AngleVectors (mv->m_vecViewAngles, &forward, &right, &up);  // Determine movement angles 
+	GetMovementVectors( forward, right, up );
 
 	//
 	// user intentions
@@ -1571,10 +1565,7 @@ void CASW_MarineGameMovement::AirMove( void )
 	float		wishspeed;
 	Vector forward, right, up;
 
-	if ( player && assert_cast<CASW_Player *>( player )->GetASWControls() == ASWC_TOPDOWN )
-		AngleVectors( mv->m_vecMovementAxis, &forward, &right, &up ); 
-	else
-		AngleVectors (mv->m_vecViewAngles, &forward, &right, &up);  // Determine movement angles  
+	GetMovementVectors( forward, right, up );
 	
 	// Copy movement amounts
 	fmove = mv->m_flForwardMove;
@@ -1734,10 +1725,7 @@ void CASW_MarineGameMovement::WalkMove( void )
 	trace_t pm;
 	Vector forward, right, up;
 
-	if ( player && assert_cast<CASW_Player *>( player )->GetASWControls() == ASWC_TOPDOWN )
-		AngleVectors( mv->m_vecMovementAxis, &forward, &right, &up ); 
-	else
-		AngleVectors (mv->m_vecViewAngles, &forward, &right, &up);  // Determine movement angles  
+	GetMovementVectors( forward, right, up );
 
 	CHandle< CBaseEntity > oldground;
 	oldground = marine->GetGroundEntity();
@@ -2468,10 +2456,7 @@ void CASW_MarineGameMovement::FullObserverMove( void )
 	Vector wishdir, wishend;
 	float wishspeed;
 
-	if ( player && assert_cast<CASW_Player *>( player )->GetASWControls() == ASWC_TOPDOWN )
-		AngleVectors( mv->m_vecMovementAxis, &forward, &right, &up ); 
-	else
-		AngleVectors (mv->m_vecViewAngles, &forward, &right, &up);  // Determine movement angles 
+	GetMovementVectors( forward, right, up );
 	
 	// Copy movement amounts
 
@@ -2551,10 +2536,7 @@ void CASW_MarineGameMovement::FullNoClipMove( float factor, float maxacceleratio
 	float wishspeed;
 	float maxspeed = asw_sv_maxspeed.GetFloat() * factor;
 
-	if ( player && assert_cast<CASW_Player *>( player )->GetASWControls() == ASWC_TOPDOWN )
-		AngleVectors( mv->m_vecMovementAxis, &forward, &right, &up ); 
-	else
-		AngleVectors (mv->m_vecViewAngles, &forward, &right, &up);  // Determine movement angles 
+	GetMovementVectors( forward, right, up );
 
 	if ( mv->m_nButtons & IN_SPEED )
 	{
@@ -4765,10 +4747,7 @@ void CASW_MarineGameMovement::PlayerMove( void )
 	}
 	
 	// use fixed axis?
-	if ( player && assert_cast<CASW_Player *>( player )->GetASWControls() == ASWC_TOPDOWN )
-		AngleVectors( mv->m_vecMovementAxis, &m_vecForward, &m_vecRight, &m_vecUp ); 
-	else
-		AngleVectors (mv->m_vecViewAngles, &m_vecForward, &m_vecRight, &m_vecUp );  // Determine movement angles
+	GetMovementVectors( m_vecForward, m_vecRight, m_vecUp );
 
 	// Always try and unstick us unless we are a couple of the movement modes
 	//if ( CheckInterval( STUCK ) )
@@ -4975,11 +4954,8 @@ void CASW_MarineGameMovement::FullTossMove( void )
 		Vector wishdir, wishvel;
 		float wishspeed;
 		int i;
-		
-		if ( player && assert_cast<CASW_Player *>( player )->GetASWControls() == ASWC_TOPDOWN )
-			AngleVectors( mv->m_vecMovementAxis, &forward, &right, &up ); 
-		else
-			AngleVectors (mv->m_vecViewAngles, &forward, &right, &up);  // Determine movement angles
+
+		GetMovementVectors( forward, right, up );
 
 		// Copy movement amounts
 		fmove = mv->m_flForwardMove;
@@ -5078,11 +5054,8 @@ void CASW_MarineGameMovement::IsometricMove( void )
 	Vector wishvel;
 	float fmove, smove;
 	Vector forward, right, up;
-	
-	if ( player && assert_cast<CASW_Player *>( player )->GetASWControls() == ASWC_TOPDOWN )
-		AngleVectors( mv->m_vecMovementAxis, &forward, &right, &up ); 
-	else
-		AngleVectors (mv->m_vecViewAngles, &forward, &right, &up);  // Determine movement angles
+
+	GetMovementVectors( forward, right, up );
 	
 	// Copy movement amounts
 	fmove = mv->m_flForwardMove;
@@ -5109,6 +5082,26 @@ void CASW_MarineGameMovement::IsometricMove( void )
 }
 
 #pragma warning (default : 4701)
+
+void CASW_MarineGameMovement::GetMovementVectors( Vector &forward, Vector &right, Vector &up )
+{
+	CASW_Player *pASWPlayer = assert_cast< CASW_Player * >( player );
+	if ( pASWPlayer && pASWPlayer->GetASWControls() == ASWC_TOPDOWN )
+	{
+#ifdef CLIENT_DLL
+		if ( rd_movement_relative_to_aim.GetBool() && marine )
+#else
+		if ( pASWPlayer->m_bUseCharacterDirectionForMovement && marine )
+#endif
+			AngleVectors( marine->GetAbsAngles(), &forward, &right, &up );
+		else
+			AngleVectors( mv->m_vecMovementAxis, &forward, &right, &up );
+	}
+	else
+	{
+		AngleVectors( mv->m_vecViewAngles, &forward, &right, &up );
+	}
+}
 
 // Expose our interface.
 static CASW_MarineGameMovement g_MarineGameMovement;

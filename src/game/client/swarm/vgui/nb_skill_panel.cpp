@@ -30,6 +30,7 @@ CNB_Skill_Panel::CNB_Skill_Panel( vgui::Panel *parent, const char *name ) : Base
 	m_bSpendPointsMode = false;
 	m_szLastSkillImage[0] = 0;
 	m_nProfileIndex = -1;
+	m_nSkillType = ASW_MARINE_SKILL_INVALID;
 }
 
 CNB_Skill_Panel::~CNB_Skill_Panel()
@@ -59,7 +60,7 @@ void CNB_Skill_Panel::OnThink()
 {
 	BaseClass::OnThink();
 
-	if ( !MarineSkills() || !Briefing() )
+	if ( !MarineSkills() || !Briefing() || m_nSkillType == ASW_MARINE_SKILL_INVALID )
 		return;
 
 	int nMaxSkillPoints = MarineSkills()->GetMaxSkillPoints( m_nSkillType );

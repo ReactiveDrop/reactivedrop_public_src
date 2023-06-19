@@ -7386,6 +7386,7 @@ void CAlienSwarm::ClientSettingsChanged( CBasePlayer *pPlayer )
 
 	pASWPlayer->m_iWantsAutoRecord = V_atoi( engine->GetClientConVarValue( pPlayer->entindex(), "rd_auto_record_lobbies" ) );
 	pASWPlayer->m_bAutoReload = V_atoi( engine->GetClientConVarValue( pPlayer->entindex(), "asw_auto_reload" ) );
+	pASWPlayer->m_bUseCharacterDirectionForMovement = V_atoi( engine->GetClientConVarValue( pPlayer->entindex(), "rd_movement_relative_to_aim" ) );
 
 	const char *pszFov = engine->GetClientConVarValue( pPlayer->entindex(), "fov_desired" );
 	if ( pszFov )

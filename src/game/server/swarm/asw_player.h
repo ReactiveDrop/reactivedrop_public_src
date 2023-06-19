@@ -173,6 +173,7 @@ public:
 		variable will hold only one of these these 4 values. 90 is default val
 	*/
 	CNetworkVar( float, m_flMovementAxisYaw );
+	bool m_bUseCharacterDirectionForMovement;
 
 	// looking at an info panel
 	void ShowInfoMessage(CASW_Info_Message* pMessage);
