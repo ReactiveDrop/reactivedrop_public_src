@@ -1,0 +1,98 @@
+"Resource/UI/ExperienceBar.res"
+{
+	"PlayerNameLabel"
+	{
+		"fieldName"		"PlayerNameLabel"
+		"xpos"		"27"
+		"ypos"		"0"
+		"wide"		"128"
+		"tall"		"14"
+		"font"		"Default"
+		"textAlignment"		"north-west"
+		"ControlName"		"Label"
+		"fgcolor_override"		"169 213 255 255"
+		"zpos"		"4"
+	}
+	"PlayerLevelLabel"
+	{
+		"fieldName"		"PlayerLevelLabel"
+		"xpos"		"170"
+		"ypos"		"0"
+		"wide"		"138"
+		"tall"		"14"
+		"font"		"Default"
+		"textAlignment"		"north-west"
+		"ControlName"		"Label"
+		"fgcolor_override"		"83 148 192 255"
+		"zpos"		"4"
+	}
+	"PromotionIcon"
+	{
+		"fieldName"		"PromotionIcon"
+		"ControlName"		"ImagePanel"
+		"xpos"		"156"
+		"ypos"		"0"
+		"scaleImage"		"1"
+		"wide"		"12"
+		"tall"		"12"
+		"zpos"		"4"
+	}
+	"AvatarBackground"
+	{
+		"fieldName"		"AvatarBackground"
+		"xpos"		"0"
+		"ypos"		"0"
+		"wide"		"22"
+		"tall"		"22"
+		"ControlName"		"Panel"
+		"bgcolor_override"	"0 0 0 180"
+		"zpos"		"4"
+	}
+	"AvatarImage"
+	{
+		"fieldName"		"AvatarImage"
+		"xpos"		"1"
+		"ypos"		"1"
+		"wide"		"20"
+		"tall"		"20"
+		"ControlName"		"CAvatarImagePanel"
+		"scaleImage"		"1"
+		"legacy_padding"	"0"
+		"zpos"		"4"
+	}
+	"ExperienceCounter"
+	{
+		"ControlName"		"Label"
+		"fieldName"		"ExperienceCounter"
+		"xpos"			"0"
+		"ypos"			"22"
+		"zpos"			"0"
+		"wide"			"250"
+		"tall"			"15"
+		"textAlignment"   "east"
+		"enabled"		"1"
+	}
+	"LevelUpLabel"
+	{
+		"ControlName"		"Label"
+		"fieldName"		"LevelUpLabel"
+		"xpos"			"0"
+		"ypos"			"36"
+		"zpos"			"0"
+		"wide"			"250"
+		"tall"			"15"
+		"textAlignment"   "east"
+		"font"			"DefaultLarge"
+		"fgcolor_override"	"255 255 255 255"
+	}
+	"ExperienceBar"
+	{
+		"fieldName"		"ExperienceBar"
+		"xpos"		"27"
+		"ypos"		"16"
+		"wide"		"223"
+		"tall"		"6"
+		"ControlName"		"StatsBar"
+		"zpos"		"4"
+	}
+}
