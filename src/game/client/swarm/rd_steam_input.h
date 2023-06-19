@@ -52,6 +52,7 @@ public:
 		InputAnalogActionHandle_t Move;
 		InputAnalogActionHandle_t Look;
 	} m_AnalogActions;
+	InputHandle_t m_hLastControllerWithEvent{};
 };
 
 // CRD_Steam_Controller: a gamepad/controller accessed via the Steam Input API. not necessarily a Steam controller.

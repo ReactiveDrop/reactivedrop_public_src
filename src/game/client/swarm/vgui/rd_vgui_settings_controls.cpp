@@ -103,7 +103,7 @@ CRD_VGUI_Settings_Controls::CRD_VGUI_Settings_Controls( vgui::Panel *parent, con
 	m_pBindMoveLeft = new CRD_VGUI_Bind( this, "BindMoveLeft", "#ASW_GameUI_MoveLeft", "+moveleft", false );
 	m_pBindMoveBack = new CRD_VGUI_Bind( this, "BindMoveBack", "#ASW_GameUI_MoveBack", "+back", false );
 	m_pBindMoveRight = new CRD_VGUI_Bind( this, "BindMoveRight", "#ASW_GameUI_MoveRight", "+moveright", false );
-	m_pBindWalk = new CRD_VGUI_Bind( this, "BindWalk", "#Valve_Walk", "+walk", false );
+	m_pBindWalk = new CRD_VGUI_Bind( this, "BindWalk", "#L4D360UI_Controller_Crouch", "+walk", false );
 	m_pBindJump = new CRD_VGUI_Bind( this, "BindJump", "#ASW_GameUI_MoveRoll", "+jump", false );
 
 	// Controller
@@ -133,14 +133,14 @@ CRD_VGUI_Settings_Controls::CRD_VGUI_Settings_Controls( vgui::Panel *parent, con
 	m_pBindPrimaryAttack = new CRD_VGUI_Bind( this, "BindPrimaryAttack", "#Valve_Primary_Attack", "+attack", false );
 	m_pBindSecondaryAttack = new CRD_VGUI_Bind( this, "BindSecondaryAttack", "#Valve_Secondary_Attack", "+attack2", false );
 	m_pBindUse = new CRD_VGUI_Bind( this, "BindUse", "#asw_use", "+use", false );
-	m_pBindSelectPrimary = new CRD_VGUI_Bind( this, "BindSelectPrimary", "#nb_select_weapon_one", "ASW_SelectPrimary", false );
+	m_pBindSelectPrimary = new CRD_VGUI_Bind( this, "BindSelectPrimary", "#rd_str_switch_to_primary_weapon", "ASW_SelectPrimary", false );
 	m_pBindDropWeapon = new CRD_VGUI_Bind( this, "BindDropWeapon", "#asw_drop", "ASW_Drop", false );
 	m_pBindSwapWeapons = new CRD_VGUI_Bind( this, "BindSwapWeapons", "#asw_switch_primary_secondary", "ASW_InvLast", false );
 	m_pBindSwapWeapons->AddFallbackBind( "ASW_InvNext" );
 	m_pBindSwapWeapons->AddFallbackBind( "ASW_InvPrev" );
 	m_pBindMeleeAttack = new CRD_VGUI_Bind( this, "BindMeleeAttack", "#asw_melee_attack", "+alt1", false );
 	m_pBindReload = new CRD_VGUI_Bind( this, "BindReload", "#Valve_Reload_Weapon", "+reload", false );
-	m_pBindSelectSecondary = new CRD_VGUI_Bind( this, "BindSelectSecondary", "#nb_select_weapon_two", "ASW_SelectSecondary", false );
+	m_pBindSelectSecondary = new CRD_VGUI_Bind( this, "BindSelectSecondary", "#rd_str_switch_to_secondary_weapon", "ASW_SelectSecondary", false );
 	m_pBindDropEquipment = new CRD_VGUI_Bind( this, "BindDropEquipment", "#rd_str_drop_extra", "ASW_DropExtra", false );
 
 	// Social / Extras
@@ -149,7 +149,7 @@ CRD_VGUI_Settings_Controls::CRD_VGUI_Settings_Controls( vgui::Panel *parent, con
 	m_pBindWheelDefault = new CRD_VGUI_Bind( this, "BindWheelDefault", "#rd_wheel_default", "+mouse_menu", true );
 	m_pBindEmoteGo = new CRD_VGUI_Bind( this, "BindEmoteGo", "#asw_order_marines_follow", "asw_orderMarinesFollow", true );
 	m_pBindEmoteStop = new CRD_VGUI_Bind( this, "BindEmoteStop", "#asw_order_marines_hold", "asw_orderMarinesHold", true );
-	m_pBindMarinePosition = new CRD_VGUI_Bind( this, "BindMarinePosition", "#rd_order_marine_hold", "+holdorder", true );
+	m_pBindMarinePosition = new CRD_VGUI_Bind( this, "BindMarinePosition", "#asw_order_specific_marine", "+holdorder", true );
 	m_pBindEmoteMedic = new CRD_VGUI_Bind( this, "BindEmoteMedic", "#asw_emote_medic", "cl_emote 0", true );
 	m_pBindEmoteAmmo = new CRD_VGUI_Bind( this, "BindEmoteAmmo", "#asw_emote_ammo", "cl_emote 1", true );
 	m_pBindEmoteQuestion = new CRD_VGUI_Bind( this, "BindEmoteQuestion", "#asw_emote_question", "cl_emote 7", true );

@@ -577,6 +577,8 @@ void CRD_Steam_Input::OnSteamInputDeviceDisconnected( SteamInputDeviceDisconnect
 
 void CRD_Steam_Input::OnActionEvent( SteamInputActionEvent_t *pEvent )
 {
+	g_RD_Steam_Input.m_hLastControllerWithEvent = pEvent->controllerHandle;
+
 	CRD_Steam_Controller *pController = g_RD_Steam_Input.FindController( pEvent->controllerHandle );
 	Assert( pController );
 	if ( !pController )
