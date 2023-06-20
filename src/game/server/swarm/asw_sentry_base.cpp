@@ -347,6 +347,11 @@ void CASW_Sentry_Base::NPCStartedUsing( CASW_Inhabitable_NPC *pNPC )
 		case kICE:
 			this->m_nSkin = 3;
 			break;
+#ifdef RD_7A_WEAPONS
+		case kRAILGUN:
+			this->m_nSkin = 6;
+			break;
+#endif
 		}
 	}
 
@@ -576,9 +581,12 @@ int CASW_Sentry_Base::ScriptGetMaxAmmo()
 const CASW_Sentry_Base::SentryGunTypeInfo_t CASW_Sentry_Base::sm_gunTypeToInfo[kGUNTYPE_MAX] =
 {
 	SentryGunTypeInfo_t("asw_sentry_top_machinegun", "asw_weapon_sentry", 450), // kAUTOGUN
-	SentryGunTypeInfo_t("asw_sentry_top_cannon", "asw_weapon_sentry_cannon",	  40), // kCANNON
-	SentryGunTypeInfo_t("asw_sentry_top_flamer", "asw_weapon_sentry_flamer",  1200), // kFLAME
-	SentryGunTypeInfo_t("asw_sentry_top_icer", "asw_weapon_sentry_freeze",    800), // kICE
+	SentryGunTypeInfo_t("asw_sentry_top_cannon", "asw_weapon_sentry_cannon", 40), // kCANNON
+	SentryGunTypeInfo_t("asw_sentry_top_flamer", "asw_weapon_sentry_flamer", 1200), // kFLAME
+	SentryGunTypeInfo_t("asw_sentry_top_icer", "asw_weapon_sentry_freeze", 800), // kICE
+#ifdef RD_7A_WEAPONS
+	SentryGunTypeInfo_t("asw_sentry_top_railgun", "asw_weapon_sentry_railgun", 300 ), // kRAILGUN
+#endif
 };
 
 CON_COMMAND_F( rd_test_sentry_gib, "spawn sentry gibs at the currently targeted point", FCVAR_CHEAT )

@@ -77,6 +77,9 @@ void C_ASW_Sentry_Top::OnDataChanged( DataUpdateType_t updateType )
 				"scripts/strange_device_positions_sentry_cannon.txt",
 				"scripts/strange_device_positions_sentry_flamer.txt",
 				"scripts/strange_device_positions_sentry_icer.txt",
+#ifdef RD_7A_WEAPONS
+				"scripts/strange_device_positions_sentry_railgun.txt",
+#endif
 			};
 
 			C_RD_Weapon_Accessory::CreateWeaponAccessories( this, pBase->m_hOriginalOwnerPlayer->m_EquippedItemDataDynamic[pBase->m_iInventoryEquipSlot], m_hWeaponAccessory, s_pKVAccessoryPosition[pBase->m_nGunType], s_szAccessoryPositionFiles[pBase->m_nGunType] );

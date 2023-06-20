@@ -259,6 +259,9 @@ enum GunType_t
 	kCANNON,
 	kFLAME,
 	kICE,
+#ifdef RD_7A_WEAPONS
+	kRAILGUN,
+#endif
 	// not a valid gun type:
 	kGUNTYPE_MAX
 };

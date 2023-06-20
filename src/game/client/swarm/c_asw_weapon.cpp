@@ -120,7 +120,7 @@ ConVar rd_drop_magazine_force( "rd_drop_magazine_force", "50", FCVAR_NONE, "Amou
 ConVar rd_drop_magazine_force_up( "rd_drop_magazine_force_up", "50", FCVAR_NONE, "Amount of upward force to apply to the dropped magazine" );
 ConVar rd_drop_magazine_spin( "rd_drop_magazine_spin", "1000", FCVAR_NONE, "Amount of random angular velocity to apply to dropped magazine" );
 ConVar rd_drop_magazine_lifetime( "rd_drop_magazine_lifetime", "4", FCVAR_NONE, "Time before a dropped magazine fades" );
-ConVar rd_strange_device_model( "rd_strange_device_model", "1", FCVAR_NONE, "Should items with strange devices attached display them in the world?" );
+ConVar rd_strange_device_model( "rd_strange_device_model", "0", FCVAR_NONE, "Should items with strange devices attached display them in the world?" );
 
 extern ConVar asw_use_particle_tracers;
 extern ConVar muzzleflash_light;
@@ -1214,6 +1214,9 @@ void C_RD_Weapon_Accessory::CreateWeaponAccessories( C_BaseAnimating *pParent, c
 	Assert( pParent->GetModel() );
 
 	if ( !instance.IsSet() )
+		return;
+
+	if ( !rd_strange_device_model.GetBool() )
 		return;
 
 	if ( !pKVPositions )
