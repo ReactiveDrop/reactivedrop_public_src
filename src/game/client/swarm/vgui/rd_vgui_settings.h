@@ -330,6 +330,7 @@ public:
 	CRD_VGUI_Option *m_pSettingAccessibilityCameraShake;
 	CRD_VGUI_Option *m_pSettingAccessibilityCameraShift;
 	CRD_VGUI_Option *m_pSettingAccessibilityMinimapClicks;
+	CRD_VGUI_Option *m_pSettingAccessibilityMoveRelativeToAim;
 
 	CRD_VGUI_Option *m_pSettingNetworkInterpolation;
 	CRD_VGUI_Option *m_pSettingNetworkAllowRelay;

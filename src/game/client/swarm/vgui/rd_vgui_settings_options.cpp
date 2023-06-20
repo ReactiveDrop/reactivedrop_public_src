@@ -129,6 +129,8 @@ CRD_VGUI_Settings_Options::CRD_VGUI_Settings_Options( vgui::Panel *parent, const
 	m_pSettingAccessibilityCameraShift->LinkToConVar( "asw_cam_marine_shift_enable", false );
 	m_pSettingAccessibilityMinimapClicks = new CRD_VGUI_Option( this, "SettingAccessibilityMinimapClicks", "#rd_option_accessibility_minimap_clicks", CRD_VGUI_Option::MODE_CHECKBOX );
 	m_pSettingAccessibilityMinimapClicks->LinkToConVar( "asw_minimap_clicks", false );
+	m_pSettingAccessibilityMoveRelativeToAim = new CRD_VGUI_Option( this, "SettingAccessibilityMoveRelativeToAim", "#rd_option_accessibility_move_relative_to_aim", CRD_VGUI_Option::MODE_CHECKBOX );
+	m_pSettingAccessibilityMoveRelativeToAim->LinkToConVar( "rd_movement_relative_to_aim", true );
 
 	// Network
 	m_pSettingNetworkInterpolation = new CRD_VGUI_Option( this, "SettingNetworkInterpolation", "#rd_option_network_interpolation", CRD_VGUI_Option::MODE_SLIDER );
