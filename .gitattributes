@@ -25,4 +25,5 @@
 *.tga binary
 *.vtf binary
 *.xcf binary
+*.bin binary
 *.ekv binary
