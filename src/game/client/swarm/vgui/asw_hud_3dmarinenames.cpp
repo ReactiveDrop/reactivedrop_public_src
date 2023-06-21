@@ -127,8 +127,14 @@ CASWHud3DMarineNames::~CASWHud3DMarineNames()
 }
 
 DECLARE_HUDELEMENT( CASWHud3DMarineNames );
-DECLARE_HUD_MESSAGE( CASWHud3DMarineNames, RDStrangeDeviceTier );
-
+void __MsgFunc_CASWHud3DMarineNames_RDStrangeDeviceTier( bf_read &msg )
+{
+	// not using the DECLARE_HUD_MESSAGE macro because the name is different
+	if ( CASWHud3DMarineNames *pElement = GET_NAMED_HUDELEMENT( CASWHud3DMarineNames, ASWHud3DMarineNames ) )
+	{
+		pElement->MsgFunc_RDStrangeDeviceTier( msg );
+	}
+}
 void CASWHud3DMarineNames::Init()
 {
 	Reset();
@@ -1661,6 +1667,10 @@ void CASWHud3DMarineNames::MsgFunc_RDStrangeDeviceTier( bf_read &msg )
 		return;
 
 	C_ASW_Inhabitable_NPC *pNPC = assert_cast< C_ASW_Inhabitable_NPC * >( pEnt );
+
+	// if we are predicting, don't show messages twice.
+	if ( pNPC->ShouldPredict() )
+		return;
 
 	OnStrangeDeviceTierNotification( pOwner, pNPC, iItemDefID, iAccessoryID, iPropertyIndex, iCounter );
 }
