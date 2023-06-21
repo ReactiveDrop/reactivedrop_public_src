@@ -3658,7 +3658,7 @@ void CRD_ItemInstance::SetFromInstance( const ReactiveDropInventory::ItemInstanc
 				if ( instance.DynamicProps.Defined( pAccessoryDef->CompressedDynamicProps[j] ) )
 				{
 					const char *szPropValue = instance.DynamicProps[instance.DynamicProps.Find( pAccessoryDef->CompressedDynamicProps[j] )];
-					m_nCounter.Set( i, strtoll( szPropValue, NULL, 10 ) );
+					m_nCounter.Set( iCounterIndex, strtoll( szPropValue, NULL, 10 ) );
 				}
 				iCounterIndex++;
 			}
