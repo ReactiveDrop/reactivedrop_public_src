@@ -39,6 +39,7 @@ ConVar cl_chatcolor( "cl_chatcolor", "255 255 255 255", FCVAR_ARCHIVE, "Default 
 #define CHAT_COLOR_STUB(CHANNEL) \
 CON_COMMAND_F( cl_chatcolor_ ## CHANNEL, "", FCVAR_HIDDEN ) \
 { \
+	Warning( "cl_chatcolor_%s is deprecated. Use cl_chatcolor with a full RGBA color instead.\n", #CHANNEL ); \
 	int r, g, b, a; \
 	cl_chatcolor.GetColor().GetColor( r, g, b, a ); \
 	CHANNEL = atoi( args.Arg( 1 ) ); \
@@ -48,7 +49,7 @@ CHAT_COLOR_STUB( r );
 CHAT_COLOR_STUB( g );
 CHAT_COLOR_STUB( b );
 #undef CHAT_COLOR_STUB
-ConVar rd_chat_colorful_player_names( "rd_chat_colorful_player_names", "0", FCVAR_ARCHIVE, "If set 1, the player name in the chat box will become colorful" );
+ConVar rd_chat_colorful_player_names( "rd_chat_colorful_player_names", "1", FCVAR_ARCHIVE, "If set 1, the player name in the chat box will become colorful" );
 
 
 //=====================
