@@ -1821,7 +1821,6 @@ public:
 
 		if ( pParam->m_handle == m_DynamicPropertyUpdateResult )
 		{
-			DebugPrintResult( m_DynamicPropertyUpdateResult );
 			pInventory->DestroyResult( m_DynamicPropertyUpdateResult );
 			m_DynamicPropertyUpdateResult = k_SteamInventoryResultInvalid;
 
