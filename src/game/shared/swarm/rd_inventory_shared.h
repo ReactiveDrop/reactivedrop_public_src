@@ -141,7 +141,9 @@ namespace ReactiveDropInventory
 #define RD_ITEM_ACCESSORY_BITS 13
 
 #define RD_EQUIPPED_ITEMS_NOTIFICATION_WORST_CASE_SIZE ( MAX( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC, RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC ) * 2048 )
-#define RD_EQUIPPED_ITEMS_NOTIFICATION_PAYLOAD_SIZE_PER_PACKET ( MAX_VALUE / 2 - 1 )
+// this can be an odd number up to 511, but we're using a lower value because the trade-off is
+// lower value = more round trips <-> higher value = higher chance of overflowing reliable buffer and disconnecting
+#define RD_EQUIPPED_ITEMS_NOTIFICATION_PAYLOAD_SIZE_PER_PACKET ( 127 )
 
 #ifdef CLIENT_DLL
 EXTERN_RECV_TABLE( DT_RD_ItemInstance );
