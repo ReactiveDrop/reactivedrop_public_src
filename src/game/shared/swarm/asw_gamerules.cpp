@@ -4469,6 +4469,9 @@ void CAlienSwarm::InitDefaultAIRelationships()
 		{
 			CBaseCombatCharacter::SetDefaultRelationship( CLASS_EARTH_FAUNA, (Class_T)nClass, D_HT, 0 );
 		}
+
+		// don't have any positive or negative thoughts about CLASS_NONE by default.
+		CBaseCombatCharacter::SetDefaultRelationship( ( Class_T )nClass, CLASS_NONE, D_NU, 0 );
 	}
 }
 
