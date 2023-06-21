@@ -531,7 +531,7 @@ void CASWHud3DMarineNames::PaintMarineLabel( int iMyMarineNum, C_ASW_Marine *RES
 
 	if ( bLocal ) // yellow if currently selected marine
 	{
-		MarineNameColor2.SetColor( 255, 0, 255, 255 );
+		MarineNameColor2.SetColor( 255, 255, 0, 255 );
 	}
 	else if ( pMR->IsInhabited() ) // other player's inhabited marines go blue
 	{
