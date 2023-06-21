@@ -1819,6 +1819,34 @@ public:
 			return;
 		}
 
+		if ( pParam->m_handle == m_DynamicPropertyUpdateResult )
+		{
+			DebugPrintResult( m_DynamicPropertyUpdateResult );
+			pInventory->DestroyResult( m_DynamicPropertyUpdateResult );
+			m_DynamicPropertyUpdateResult = k_SteamInventoryResultInvalid;
+
+			if ( m_bWantExtraDynamicPropertyCommit )
+			{
+				m_bWantExtraDynamicPropertyCommit = false;
+				CommitDynamicProperties();
+			}
+			else
+			{
+				// TODO: can we just slot in the updated items?
+				if ( m_GetFullInventoryForCacheResult != k_SteamInventoryResultInvalid )
+					pInventory->DestroyResult( m_GetFullInventoryForCacheResult );
+				pInventory->GetAllItems( &m_GetFullInventoryForCacheResult );
+
+				for ( int iPlayer = 0; iPlayer < MAX_SPLITSCREEN_PLAYERS; iPlayer++ )
+				{
+					QueueSendStaticEquipNotification( iPlayer );
+					ResendDynamicEquipNotification( iPlayer );
+				}
+			}
+
+			return;
+		}
+
 		for ( int iPlayer = 0; iPlayer < MAX_SPLITSCREEN_PLAYERS; iPlayer++ )
 		{
 			for ( int iType = 0; iType < NUM_EQUIP_SLOT_TYPES; iType++ )
