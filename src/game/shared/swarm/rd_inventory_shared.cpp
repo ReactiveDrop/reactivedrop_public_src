@@ -93,6 +93,20 @@ static fieldtype_t DynamicPropertyDataType( const char *szPropertyName )
 	return FIELD_INTEGER64;
 }
 
+#ifdef CLIENT_DLL
+static void ResetAccessoryIconsOnMaterialsReleased( int nChangeFlags )
+{
+	if ( nChangeFlags & MATERIAL_RESTORE_VERTEX_FORMAT_CHANGED )
+	{
+		FOR_EACH_MAP_FAST( s_ItemDefs, i )
+		{
+			// we will re-fetch the texture the next time it is to be displayed
+			s_ItemDefs[i]->AccessoryIcon = NULL;
+		}
+	}
+}
+#endif
+
 static class CRD_Inventory_Manager final : public CAutoGameSystem, public CGameEventListener
 {
 public:
@@ -157,6 +171,8 @@ public:
 
 #ifdef CLIENT_DLL
 		pInventory->GetAllItems( &m_GetFullInventoryForCacheResult );
+
+		materials->AddReleaseFunc( &ResetAccessoryIconsOnMaterialsReleased );
 #endif
 	}
 
