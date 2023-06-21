@@ -774,6 +774,11 @@ public:
 					CHECK_LANGUAGE_PREFIX( CFmtStr( "style_%d_name_", k ) );
 				}
 
+				for ( int k = 0; k < RD_ITEM_MAX_COMPRESSED_DYNAMIC_PROPS_PER_ACCESSORY; k++ )
+				{
+					CHECK_LANGUAGE_PREFIX( CFmtStr( "notification_name_%d_", k ) );
+				}
+
 #undef CHECK_LANGUAGE_PREFIX
 
 				pInventory->GetItemDefinitionProperty( ItemDefIDs[i], PropertyNames[j], NULL, &size );
@@ -2963,6 +2968,19 @@ namespace ReactiveDropInventory
 		FETCH_PROPERTY( szKey );
 		if ( *szValue )
 			pItemDef->AccessoryDescription = szValue;
+
+		for ( int i = 0; i < RD_ITEM_MAX_COMPRESSED_DYNAMIC_PROPS_PER_ACCESSORY; i++ )
+		{
+			pItemDef->NotificationName[i] = pItemDef->Name;
+			V_snprintf( szKey, sizeof( szKey ), "notification_name_%d_english", i );
+			FETCH_PROPERTY( szKey );
+			if ( *szValue )
+				pItemDef->NotificationName[i] = szValue;
+			V_snprintf( szKey, sizeof( szKey ), "notification_name_%d_%s", i, szLang );
+			FETCH_PROPERTY( szKey );
+			if ( *szValue )
+				pItemDef->NotificationName[i] = szValue;
+		}
 
 		FETCH_PROPERTY( "after_description_only_multi_stack" );
 		Assert( !V_strcmp( szValue, "" ) || !V_strcmp( szValue, "1" ) || !V_strcmp( szValue, "0" ) );

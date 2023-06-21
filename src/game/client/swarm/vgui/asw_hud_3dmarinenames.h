@@ -75,6 +75,8 @@ public:
 		int64_t m_iCurrentCounter;
 		wchar_t m_wszCounterNumber[32];
 		int m_iCounterNumberWide;
+		wchar_t m_wszItemName[128];
+		int m_iItemNameWide;
 		wchar_t m_wszAccessoryName[128];
 		int m_iAccessoryNameWide;
 

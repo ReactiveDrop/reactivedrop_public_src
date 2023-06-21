@@ -1611,10 +1611,17 @@ void CASWHud3DMarineNames::SetHealthMarine(C_ASW_Marine *pMarine)
 
 void CASWHud3DMarineNames::StrangeDeviceNotification_t::Init( CASWHud3DMarineNames *pParent )
 {
+	const ReactiveDropInventory::ItemDef_t *pItemDef = ReactiveDropInventory::GetItemDef( m_iItemDefID );
+	Assert( pItemDef );
+	if ( pItemDef )
+		V_UTF8ToUnicode( pItemDef->Name, m_wszItemName, sizeof( m_wszItemName ) );
+	else
+		V_snwprintf( m_wszItemName, NELEMS( m_wszItemName ), L"ITEMDEFMISSING#%d", m_iItemDefID );
+
 	const ReactiveDropInventory::ItemDef_t *pAccessoryDef = ReactiveDropInventory::GetItemDef( m_iAccessoryID );
 	Assert( pAccessoryDef );
 	if ( pAccessoryDef )
-		V_UTF8ToUnicode( pAccessoryDef->Name, m_wszAccessoryName, sizeof( m_wszAccessoryName ) );
+		V_UTF8ToUnicode( pAccessoryDef->NotificationName[m_iPropertyIndex], m_wszAccessoryName, sizeof( m_wszAccessoryName ) );
 	else
 		V_snwprintf( m_wszAccessoryName, NELEMS( m_wszAccessoryName ), L"ITEMDEFMISSING#%d", m_iAccessoryID );
 
@@ -1629,6 +1636,7 @@ void CASWHud3DMarineNames::StrangeDeviceNotification_t::Init( CASWHud3DMarineNam
 
 	int discard;
 	vgui::surface()->GetTextSize( pParent->m_hNotificationNumberFont, UTIL_RD_CommaNumber( m_iCounter ), m_iCounterNumberWide, discard);
+	vgui::surface()->GetTextSize( pParent->m_hNotificationNameFont, m_wszItemName, m_iItemNameWide, discard );
 	vgui::surface()->GetTextSize( pParent->m_hNotificationNameFont, m_wszAccessoryName, m_iAccessoryNameWide, discard );
 }
 
@@ -1746,14 +1754,16 @@ void CASWHud3DMarineNames::PaintStrangeDeviceNotifications()
 			int iLineMaxWidth = YRES( rd_strange_notification_line_max_width.GetFloat() );
 			int iLineHalfWidth = iLineMaxWidth * flLineGrowScale * flFadeOutScale / 2.0f;
 			int iLineQuarterWidth = iLineHalfWidth / 2;
-			int iLineY = y - ( iNameTall + iLinePadding ) * flFadeOutScale;
-			int iNameX = x - pNotification->m_iAccessoryNameWide / 2.0f;
-			int iNameY = iLineY + iLinePadding - Lerp( flFadeScale, YRES( rd_strange_notification_fade_y_distance.GetFloat() ), 0.0 );
+			int iLineY = y - ( iNameTall * 2 + iLinePadding ) * flFadeOutScale;
+			int iNameX1 = x - pNotification->m_iItemNameWide / 2.0f;
+			int iNameX2 = x - pNotification->m_iAccessoryNameWide / 2.0f;
+			int iNameY1 = iLineY + iLinePadding - Lerp( flFadeScale, YRES( rd_strange_notification_fade_y_distance.GetFloat() ), 0.0 );
+			int iNameY2 = iNameY1 + iNameTall - Lerp( flFadeScale, YRES( rd_strange_notification_fade_y_distance.GetFloat() ), 0.0 );
 			int iNumberX = x - ( pNotification->m_iCounterNumberWide - iNumberTall * 0.75f ) / 2.0f;
 			int iNumberXOffset = pNotification->m_iCounterNumberWide - iCurrentCounterWide;
 			int iNumberY = iLineY - iLineThickness - iLinePadding - iNumberTall + Lerp( flFadeScale, YRES( rd_strange_notification_fade_y_distance.GetFloat() ), 0.0 );
 
-			StackedNotificationY.InsertOrReplace( pNPC, y - flFadeOutScale * ( iNumberTall + iLinePadding * 3 + iLineThickness + iNameTall ) );
+			StackedNotificationY.InsertOrReplace( pNPC, y - flFadeOutScale * ( iNumberTall + iLinePadding * 3 + iLineThickness + iNameTall * 2 ) );
 
 			vgui::surface()->DrawSetTextFont( m_hNotificationNumberBlurFont );
 			vgui::surface()->DrawSetTextColor( 204, 84, 0, Lerp( flFadeScale * flGlowFlareScale, 0, 255 ) );
@@ -1772,12 +1782,22 @@ void CASWHud3DMarineNames::PaintStrangeDeviceNotifications()
 
 			vgui::surface()->DrawSetTextFont( m_hNotificationNameBlurFont );
 			vgui::surface()->DrawSetTextColor( 204, 84, 0, Lerp( flFadeScale * flGlowFlareScale, 0, 255 ) );
-			vgui::surface()->DrawSetTextPos( iNameX, iNameY );
+			vgui::surface()->DrawSetTextPos( iNameX1, iNameY1 );
+			vgui::surface()->DrawUnicodeString( pNotification->m_wszItemName );
+
+			vgui::surface()->DrawSetTextFont( m_hNotificationNameFont );
+			vgui::surface()->DrawSetTextColor( 204, 129, 0, Lerp( flFadeScale, 0, 255 ) );
+			vgui::surface()->DrawSetTextPos( iNameX1, iNameY1 );
+			vgui::surface()->DrawUnicodeString( pNotification->m_wszItemName );
+
+			vgui::surface()->DrawSetTextFont( m_hNotificationNameBlurFont );
+			vgui::surface()->DrawSetTextColor( 204, 84, 0, Lerp( flFadeScale * flGlowFlareScale, 0, 255 ) );
+			vgui::surface()->DrawSetTextPos( iNameX2, iNameY2 );
 			vgui::surface()->DrawUnicodeString( pNotification->m_wszAccessoryName );
 
 			vgui::surface()->DrawSetTextFont( m_hNotificationNameFont );
 			vgui::surface()->DrawSetTextColor( 204, 129, 0, Lerp( flFadeScale, 0, 255 ) );
-			vgui::surface()->DrawSetTextPos( iNameX, iNameY );
+			vgui::surface()->DrawSetTextPos( iNameX2, iNameY2 );
 			vgui::surface()->DrawUnicodeString( pNotification->m_wszAccessoryName );
 
 			const ReactiveDropInventory::ItemDef_t *pAccessoryDef = ReactiveDropInventory::GetItemDef( pNotification->m_iAccessoryID );

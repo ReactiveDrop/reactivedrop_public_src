@@ -19,6 +19,10 @@ namespace vgui
 
 class CASW_Player;
 
+#define RD_ITEM_MAX_ACCESSORIES 4
+#define RD_ITEM_MAX_COMPRESSED_DYNAMIC_PROPS 10
+#define RD_ITEM_MAX_COMPRESSED_DYNAMIC_PROPS_PER_ACCESSORY 2
+
 namespace ReactiveDropInventory
 {
 	constexpr const char *const g_InventorySlotNames[] =
@@ -58,6 +62,7 @@ namespace ReactiveDropInventory
 		CUtlString BeforeDescription;
 		CUtlString AfterDescription;
 		CUtlString AccessoryDescription;
+		CUtlString NotificationName[RD_ITEM_MAX_COMPRESSED_DYNAMIC_PROPS_PER_ACCESSORY];
 		Color BackgroundColor;
 		Color NameColor;
 		int64_t StrangeNotifyEvery{ 0 };
@@ -132,10 +137,6 @@ namespace ReactiveDropInventory
 #endif
 	void OnHitConfirm( CBaseEntity *pAttacker, CBaseEntity *pTarget, Vector vecDamagePosition, bool bKilled, bool bDamageOverTime, bool bBlastDamage, int iDisposition, float flDamage, CBaseEntity *pWeapon );
 }
-
-#define RD_ITEM_MAX_ACCESSORIES 4
-#define RD_ITEM_MAX_COMPRESSED_DYNAMIC_PROPS 10
-#define RD_ITEM_MAX_COMPRESSED_DYNAMIC_PROPS_PER_ACCESSORY 2
 
 #define RD_ITEM_ID_BITS 30
 #define RD_ITEM_ACCESSORY_BITS 13
