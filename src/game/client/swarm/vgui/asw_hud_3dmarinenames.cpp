@@ -617,6 +617,10 @@ void CASWHud3DMarineNames::PaintMarineLabel( int iMyMarineNum, C_ASW_Marine *RES
 		// (don't just clip to screen coords, which makes direction change inappropriately)
 		if ( !bMarineOnScreen )
 		{
+			// don't draw our own name if we're in first or third person
+			if ( bLocal && pLocal->GetASWControls() != ASWC_TOPDOWN )
+				return;
+
 			screenPos = ComputeClippedMarineLabelCoordinates( screenPos.x, screenPos.y,
 				nMinX, nMaxX, nMinY, nMaxY );
 		}
@@ -626,7 +630,7 @@ void CASWHud3DMarineNames::PaintMarineLabel( int iMyMarineNum, C_ASW_Marine *RES
 		// 6/57.6.  It is encapsulated in a square.
 		int iArrowSize = 0;
 
-		if ( ( !bLocal || pLocal->GetASWControls() == ASWC_TOPDOWN ) && !bMarineOnScreen )
+		if ( !bMarineOnScreen )
 		{
 			int iArrowScale = ASW_MAX_MARINE_ARROW_SIZE;
 
