@@ -113,7 +113,7 @@ void CASW_Extinguisher_Projectile::ProjectileTouch( CBaseEntity *pOther )
 
 		if ( rd_extinguisher_dmg_amount.GetFloat() > 0.0 && !pMarine )
 		{
-			CTakeDamageInfo	dmgInfo( this, GetOwnerEntity(), rd_extinguisher_dmg_amount.GetFloat(), DMG_GENERIC );
+			CTakeDamageInfo	dmgInfo( this, GetOwnerEntity(), rd_extinguisher_dmg_amount.GetFloat(), DMG_SLOWBURN );
 			pOther->TakeDamage( dmgInfo );
 		}
 

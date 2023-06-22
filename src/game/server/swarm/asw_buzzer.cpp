@@ -1234,7 +1234,7 @@ void CASW_Buzzer::Freeze( float flFreezeAmount, CBaseEntity *pFreezer, Ray_t *pF
 	if ( IsFrozen() )
 	{
 		SetHealth( 1 );
-		CTakeDamageInfo info( pFreezer, pFreezer, 10.0f, DMG_GENERIC );
+		CTakeDamageInfo info( pFreezer, pFreezer, 10.0f, DMG_SLOWBURN );
 		TakeDamage( info );
 	}
 }

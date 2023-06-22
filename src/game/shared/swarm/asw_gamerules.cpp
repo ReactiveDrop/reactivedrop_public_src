@@ -574,7 +574,7 @@ ConVar rd_write_config_on_mission_start( "rd_write_config_on_mission_start", "1"
 ConVar	sk_plr_dmg_asw_r( "sk_plr_dmg_asw_r", "7", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar	sk_npc_dmg_asw_r( "sk_npc_dmg_asw_r", "7", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar	sk_max_asw_r( "sk_max_asw_r", "490", FCVAR_REPLICATED | FCVAR_CHEAT );
-// Rifle Grenade (4 def 8 max)
+// Rifle Grenade (5 def 8 max)
 ConVar	sk_plr_dmg_asw_r_g( "sk_plr_dmg_asw_r_g", "100", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar	sk_npc_dmg_asw_r_g( "sk_npc_dmg_asw_r_g", "100", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar	sk_max_asw_r_g( "sk_max_asw_r_g", "8", FCVAR_REPLICATED | FCVAR_CHEAT );
@@ -709,6 +709,16 @@ ConVar	sk_max_ar2_altfire( "sk_max_ar2_altfire", "3", FCVAR_REPLICATED | FCVAR_C
 ConVar	sk_plr_dmg_asw_flechette( "sk_plr_dmg_asw_flechette", "7", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar	sk_npc_dmg_asw_flechette( "sk_npc_dmg_asw_flechette", "7", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar	sk_max_asw_flechette( "sk_max_asw_flechette", "420", FCVAR_REPLICATED | FCVAR_CHEAT );
+
+// Cryo Cannon (3 clips, 600 per)
+ConVar	sk_plr_dmg_asw_cryo( "sk_plr_dmg_asw_cryo", "2", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_npc_dmg_asw_cryo( "sk_npc_dmg_asw_cryo", "2", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_cryo( "sk_max_asw_cryo", "1800", FCVAR_REPLICATED | FCVAR_CHEAT );
+
+// Energy Shield alt fire (5 default 8 max)
+ConVar	sk_plr_dmg_asw_eshield( "sk_plr_dmg_asw_eshield", "10", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_npc_dmg_asw_eshield( "sk_npc_dmg_asw_eshield", "10", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_eshield( "sk_max_asw_eshield", "8", FCVAR_REPLICATED | FCVAR_CHEAT );
 
 ConVar sk_asw_parasite_infest_dmg_easy( "sk_asw_parasite_infest_dmg_easy", "175", FCVAR_REPLICATED | FCVAR_CHEAT, "Total damage from parasite infestation" );
 ConVar sk_asw_parasite_infest_dmg_normal( "sk_asw_parasite_infest_dmg_normal", "225", FCVAR_REPLICATED | FCVAR_CHEAT, "Total damage from parasite infestation" );
@@ -1343,6 +1353,10 @@ CAmmoDef *GetAmmoDef()
 		def.AddAmmoType( "ASW_MEDRIFLE", DMG_BULLET, TRACER_LINE, "sk_plr_dmg_asw_medrifle", "sk_npc_dmg_asw_medrifle", "sk_max_asw_medrifle", BULLET_IMPULSE( 200, 1225 ), 0 );
 		// flechette
 		def.AddAmmoType( "ASW_FLECHETTE", DMG_DISSOLVE, TRACER_NONE, "sk_plr_dmg_asw_flechette", "sk_npc_dmg_asw_flechette", "sk_max_asw_flechette", BULLET_IMPULSE( 200, 1225 ), 0 );
+		// cryo cannon
+		def.AddAmmoType( "ASW_CRYO", DMG_SLOWBURN, TRACER_NONE, "sk_plr_dmg_asw_cryo", "sk_npc_dmg_asw_cryo", "sk_max_asw_cryo", BULLET_IMPULSE( 200, 1225 ), 0 );
+		// energy shield alt fire
+		def.AddAmmoType( "ASW_ESHIELD", DMG_DISSOLVE, TRACER_NONE, "sk_plr_dmg_asw_eshield", "sk_npc_dmg_asw_eshield", "sk_max_asw_eshield", BULLET_IMPULSE( 200, 1225 ), 0 );
 	}
 
 	return &def;
