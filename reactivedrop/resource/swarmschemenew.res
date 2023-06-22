@@ -468,7 +468,7 @@ Scheme
 				"tall"		"12"
 				"weight"	"100"
 				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
-				"blur"	"1"
+				"blur"	"3"
 			}
 		}
 		// DefaultLarge is used for headers
