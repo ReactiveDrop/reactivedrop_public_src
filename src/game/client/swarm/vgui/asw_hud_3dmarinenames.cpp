@@ -91,12 +91,13 @@ ConVar rd_strange_notification_line_padding( "rd_strange_notification_line_paddi
 ConVar rd_strange_notification_line_thickness( "rd_strange_notification_line_thickness", "1", FCVAR_NONE, "How thick should the line in the notification be? Scales with screen size." );
 ConVar rd_strange_notification_line_max_width( "rd_strange_notification_line_max_width", "69", FCVAR_NONE, "How wide should the line in the notification be once it is fully visible? Scales with screen size." );
 ConVar rd_strange_notification_line_grow_exponent( "rd_strange_notification_line_grow_exponent", "0.3", FCVAR_NONE, "Affects how the speed of the line's growth changes over time." );
+ConVar rd_strange_notification_line_color_exponent( "rd_strange_notification_line_color_exponent", "1.5", FCVAR_NONE, "Affects how the speed of the line changing from orange to yellow changes over time." );
 ConVar rd_strange_notification_text_fade_exponent( "rd_strange_notification_text_fade_exponent", "1.5", FCVAR_NONE, "Affects how the speed of the text fading in/out changes over time." );
 ConVar rd_strange_notification_timing_0( "rd_strange_notification_timing_0", "10", FCVAR_NONE, "Total lifetime of notification" );
 ConVar rd_strange_notification_timing_1( "rd_strange_notification_timing_1", "1.25", FCVAR_NONE, "Counter spin-up time" );
 ConVar rd_strange_notification_timing_2( "rd_strange_notification_timing_2", "0.5", FCVAR_NONE, "Line grow time" );
 ConVar rd_strange_notification_timing_3( "rd_strange_notification_timing_3", "1", FCVAR_NONE, "Fade-in time" );
-ConVar rd_strange_notification_timing_4( "rd_strange_notification_timing_4", "0.25", FCVAR_NONE, "Glow flare time" );
+ConVar rd_strange_notification_timing_4( "rd_strange_notification_timing_4", "0.4", FCVAR_NONE, "Glow flare time" );
 ConVar rd_strange_notification_timing_5( "rd_strange_notification_timing_5", "0.5", FCVAR_NONE, "Fade-out time" );
 
 #define ASW_MIN_MARINE_ARROW_SIZE 20
@@ -565,8 +566,8 @@ void CASWHud3DMarineNames::PaintMarineLabel( int iMyMarineNum, C_ASW_Marine *RES
 	ASWInput()->ASW_GetCameraLocation( pLocal, vecCameraFocus, ang, omx, omy, false );
 
 	Vector vecMarineOffset;
-	AngleVectors( ang, &vecMarineOffset );
-	vecMarineOffset *= -10.0f;
+	AngleVectors( QAngle( 0, ang[YAW], 0 ), &vecMarineOffset );
+	vecMarineOffset *= -20.0f;
 
 	float flMarineDistanceFromCamera = vecCameraFocus.DistTo( vMarinePos );
 
@@ -1636,7 +1637,7 @@ void CASWHud3DMarineNames::StrangeDeviceNotification_t::Init( CASWHud3DMarineNam
 
 	int discard;
 	vgui::surface()->GetTextSize( pParent->m_hNotificationNumberFont, UTIL_RD_CommaNumber( m_iCounter ), m_iCounterNumberWide, discard);
-	vgui::surface()->GetTextSize( pParent->m_hNotificationNameFont, m_wszItemName, m_iItemNameWide, discard );
+	vgui::surface()->GetTextSize( pParent->m_hNotificationSmallNameFont, m_wszItemName, m_iItemNameWide, discard );
 	vgui::surface()->GetTextSize( pParent->m_hNotificationNameFont, m_wszAccessoryName, m_iAccessoryNameWide, discard );
 }
 
@@ -1687,8 +1688,12 @@ void CASWHud3DMarineNames::PaintStrangeDeviceNotifications()
 {
 	C_ASW_Player *pLocalPlayer = C_ASW_Player::GetLocalASWPlayer();
 	Assert( pLocalPlayer );
-	if ( !pLocalPlayer )
+	if ( !pLocalPlayer || m_StrangeDeviceNotifications.Count() == 0 )
 		return;
+
+	int iNumberTall = vgui::surface()->GetFontTall( m_hNotificationNumberFont );
+	int iNameTall1 = vgui::surface()->GetFontTall( m_hNotificationNameFont );
+	int iNameTall2 = vgui::surface()->GetFontTall( m_hNotificationSmallNameFont );
 
 	// using a pointer as a map key because it's not leaving this function scope and you can't stop me
 	CUtlMap<C_ASW_Inhabitable_NPC *, int> StackedNotificationY{ DefLessFunc( C_ASW_Inhabitable_NPC * ) };
@@ -1721,7 +1726,7 @@ void CASWHud3DMarineNames::PaintStrangeDeviceNotifications()
 			int iCurrentCounterWide = pNotification->m_iCounterNumberWide;
 			if ( pNotification->m_iCurrentCounter != pNotification->m_iCounter )
 			{
-				pNotification->m_iCurrentCounter = flLifetime >= rd_strange_notification_timing_1.GetFloat() ? pNotification->m_iCounter : Lerp( flLifetime / rd_strange_notification_timing_1.GetFloat(), pNotification->m_iStartCounter, pNotification->m_iCounter );
+				pNotification->m_iCurrentCounter = flLifetime >= rd_strange_notification_timing_1.GetFloat() ? pNotification->m_iCounter : ( pNotification->m_iCounter - Lerp( flLifetime / rd_strange_notification_timing_1.GetFloat(), pNotification->m_iCounter - pNotification->m_iStartCounter, 0ll ) );
 
 				V_wcsncpy( pNotification->m_wszCounterNumber, UTIL_RD_CommaNumber( pNotification->m_iCurrentCounter ), sizeof( pNotification->m_wszCounterNumber ) );
 
@@ -1742,28 +1747,28 @@ void CASWHud3DMarineNames::PaintStrangeDeviceNotifications()
 			float flGlowFlareScale = rd_strange_notification_timing_4.GetFloat() > 0 ? 1.0f - clamp<float>( ( flLifetime - rd_strange_notification_timing_3.GetFloat() ) / rd_strange_notification_timing_4.GetFloat(), 0.0f, 1.0f ) / 2.0f : 0.5f;
 			// 0->1 at start
 			float flLineGrowScale = rd_strange_notification_timing_2.GetFloat() > 0 ? powf( clamp<float>( flLifetime / rd_strange_notification_timing_2.GetFloat(), 0.0f, 1.0f ), rd_strange_notification_line_grow_exponent.GetFloat() ) : 1.0f;
+			// 0->1
+			float flLineColorScale = rd_strange_notification_timing_2.GetFloat() > 0 ? powf( clamp<float>( flLifetime / rd_strange_notification_timing_2.GetFloat(), 0.0f, 1.0f ), rd_strange_notification_line_color_exponent.GetFloat() ) : 1.0f;
 			// 1->0 at end
 			float flFadeOutScale = rd_strange_notification_timing_5.GetFloat() > 0 ? clamp<float>( ( rd_strange_notification_timing_0.GetFloat() - flLifetime ) / rd_strange_notification_timing_5.GetFloat(), 0.0f, 1.0f ) : 1.0f;
 
 			float flFadeScale = powf( flFadeInScale * flFadeOutScale, rd_strange_notification_text_fade_exponent.GetFloat() );
 
-			int iNumberTall = vgui::surface()->GetFontTall( m_hNotificationNumberFont );
-			int iNameTall = vgui::surface()->GetFontTall( m_hNotificationNameFont );
 			int iLinePadding = YRES( rd_strange_notification_line_padding.GetFloat() );
 			int iLineThickness = YRES( rd_strange_notification_line_thickness.GetFloat() );
 			int iLineMaxWidth = YRES( rd_strange_notification_line_max_width.GetFloat() );
 			int iLineHalfWidth = iLineMaxWidth * flLineGrowScale * flFadeOutScale / 2.0f;
 			int iLineQuarterWidth = iLineHalfWidth / 2;
-			int iLineY = y - ( iNameTall * 2 + iLinePadding ) * flFadeOutScale;
-			int iNameX1 = x - pNotification->m_iItemNameWide / 2.0f;
-			int iNameX2 = x - pNotification->m_iAccessoryNameWide / 2.0f;
+			int iLineY = y - ( iNameTall1 + iNameTall2 + iLinePadding ) * flFadeOutScale;
+			int iNameX1 = x - pNotification->m_iAccessoryNameWide / 2.0f;
+			int iNameX2 = x - pNotification->m_iItemNameWide / 2.0f;
 			int iNameY1 = iLineY + iLinePadding - Lerp( flFadeScale, YRES( rd_strange_notification_fade_y_distance.GetFloat() ), 0.0 );
-			int iNameY2 = iNameY1 + iNameTall - Lerp( flFadeScale, YRES( rd_strange_notification_fade_y_distance.GetFloat() ), 0.0 );
+			int iNameY2 = iNameY1 + iNameTall1 - Lerp( flFadeScale, YRES( rd_strange_notification_fade_y_distance.GetFloat() ), 0.0 );
 			int iNumberX = x - ( pNotification->m_iCounterNumberWide - iNumberTall * 0.75f ) / 2.0f;
 			int iNumberXOffset = pNotification->m_iCounterNumberWide - iCurrentCounterWide;
 			int iNumberY = iLineY - iLineThickness - iLinePadding - iNumberTall + Lerp( flFadeScale, YRES( rd_strange_notification_fade_y_distance.GetFloat() ), 0.0 );
 
-			StackedNotificationY.InsertOrReplace( pNPC, y - flFadeOutScale * ( iNumberTall + iLinePadding * 3 + iLineThickness + iNameTall * 2 ) );
+			StackedNotificationY.InsertOrReplace( pNPC, y - flFadeOutScale * ( iNumberTall + iLinePadding * 3 + iLineThickness + iNameTall1 + iNameTall2 ) );
 
 			vgui::surface()->DrawSetTextFont( m_hNotificationNumberBlurFont );
 			vgui::surface()->DrawSetTextColor( 204, 84, 0, Lerp( flFadeScale * flGlowFlareScale, 0, 255 ) );
@@ -1775,7 +1780,7 @@ void CASWHud3DMarineNames::PaintStrangeDeviceNotifications()
 			vgui::surface()->DrawSetTextPos( iNumberX + iNumberXOffset, iNumberY );
 			vgui::surface()->DrawUnicodeString( pNotification->m_wszCounterNumber );
 
-			vgui::surface()->DrawSetColor( 204, Lerp( flLineGrowScale, 84, 129 ), 0, 255 );
+			vgui::surface()->DrawSetColor( 204, Lerp( flFadeOutScale * flLineColorScale, 84, 129 ), 0, 255 );
 			vgui::surface()->DrawFilledRect( x - iLineQuarterWidth, iLineY - iLineThickness, x + iLineQuarterWidth, iLineY );
 			vgui::surface()->DrawFilledRectFade( x - iLineHalfWidth, iLineY - iLineThickness, x - iLineQuarterWidth, iLineY, 0, 255, true );
 			vgui::surface()->DrawFilledRectFade( x + iLineQuarterWidth, iLineY - iLineThickness, x + iLineHalfWidth, iLineY, 255, 0, true );
@@ -1783,22 +1788,22 @@ void CASWHud3DMarineNames::PaintStrangeDeviceNotifications()
 			vgui::surface()->DrawSetTextFont( m_hNotificationNameBlurFont );
 			vgui::surface()->DrawSetTextColor( 204, 84, 0, Lerp( flFadeScale * flGlowFlareScale, 0, 255 ) );
 			vgui::surface()->DrawSetTextPos( iNameX1, iNameY1 );
-			vgui::surface()->DrawUnicodeString( pNotification->m_wszItemName );
+			vgui::surface()->DrawUnicodeString( pNotification->m_wszAccessoryName );
 
 			vgui::surface()->DrawSetTextFont( m_hNotificationNameFont );
 			vgui::surface()->DrawSetTextColor( 204, 129, 0, Lerp( flFadeScale, 0, 255 ) );
 			vgui::surface()->DrawSetTextPos( iNameX1, iNameY1 );
-			vgui::surface()->DrawUnicodeString( pNotification->m_wszItemName );
+			vgui::surface()->DrawUnicodeString( pNotification->m_wszAccessoryName );
 
-			vgui::surface()->DrawSetTextFont( m_hNotificationNameBlurFont );
+			vgui::surface()->DrawSetTextFont( m_hNotificationSmallNameBlurFont );
 			vgui::surface()->DrawSetTextColor( 204, 84, 0, Lerp( flFadeScale * flGlowFlareScale, 0, 255 ) );
 			vgui::surface()->DrawSetTextPos( iNameX2, iNameY2 );
-			vgui::surface()->DrawUnicodeString( pNotification->m_wszAccessoryName );
+			vgui::surface()->DrawUnicodeString( pNotification->m_wszItemName );
 
-			vgui::surface()->DrawSetTextFont( m_hNotificationNameFont );
+			vgui::surface()->DrawSetTextFont( m_hNotificationSmallNameFont );
 			vgui::surface()->DrawSetTextColor( 204, 129, 0, Lerp( flFadeScale, 0, 255 ) );
 			vgui::surface()->DrawSetTextPos( iNameX2, iNameY2 );
-			vgui::surface()->DrawUnicodeString( pNotification->m_wszAccessoryName );
+			vgui::surface()->DrawUnicodeString( pNotification->m_wszItemName );
 
 			const ReactiveDropInventory::ItemDef_t *pAccessoryDef = ReactiveDropInventory::GetItemDef( pNotification->m_iAccessoryID );
 			if ( pAccessoryDef && pAccessoryDef->Icon && pAccessoryDef->Icon->GetNumFrames() )
@@ -2025,4 +2030,44 @@ bool CASWHud3DMarineNames::PaintGenericText( Vector vWorldPos, char *pText, Colo
 		pText );
 
 	return true;
+}
+
+CON_COMMAND_F( rd_strange_device_fake_notification, "Show a fake tier-up notification (for testing layout or making example screenshots)", FCVAR_CHEAT )
+{
+	C_ASW_Game_Resource *pGameResource = ASWGameResource();
+	if ( !pGameResource )
+	{
+		Warning( "rd_strange_device_fake_notification can only be used in-game.\n" );
+		return;
+	}
+
+	C_ASW_Inhabitable_NPC *pNPC = NULL;
+	for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
+	{
+		C_ASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
+		if ( !pMR )
+			continue;
+
+		if ( !V_stricmp( args[1], pMR->GetProfile()->m_PortraitName ) )
+		{
+			pNPC = pMR->GetMarineEntity();
+			break;
+		}
+	}
+
+	SteamItemDef_t iItemDefID = V_atoi( args[2] );
+	SteamItemDef_t iAccessoryID = V_atoi( args[3] );
+	int64_t iCounter = V_atoi64( args[4] );
+	int iPropertyIndex = V_atoi( args[5] );
+
+	const ReactiveDropInventory::ItemDef_t *pItemDef = ReactiveDropInventory::GetItemDef( iItemDefID );
+	const ReactiveDropInventory::ItemDef_t *pAccessoryDef = ReactiveDropInventory::GetItemDef( iAccessoryID );
+
+	if ( ( args.ArgC() != 4 && args.ArgC() != 5 ) || !pNPC || iCounter < 0 || iPropertyIndex < 0 || !pItemDef || pItemDef->AccessoryTag.IsEmpty() || !pAccessoryDef || pAccessoryDef->CompressedDynamicProps.Count() <= iPropertyIndex )
+	{
+		Warning( "Usage: rd_strange_device_fake_notification {marinename} {itemid} {accessoryid} {count} [propertyindex]\n" );
+		return;
+	}
+
+	( GET_NAMED_HUDELEMENT( CASWHud3DMarineNames, ASWHud3DMarineNames ) )->OnStrangeDeviceTierNotification( C_ASW_Player::GetLocalASWPlayer(), pNPC, iItemDefID, iAccessoryID, iPropertyIndex, iCounter );
 }
