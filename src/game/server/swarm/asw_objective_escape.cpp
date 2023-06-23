@@ -13,10 +13,9 @@ LINK_ENTITY_TO_CLASS( asw_objective_escape, CASW_Objective_Escape );
 BEGIN_DATADESC( CASW_Objective_Escape )
 	DEFINE_FIELD( m_hTrigger, FIELD_EHANDLE ),
 	DEFINE_INPUTFUNC( FIELD_VOID, "MarineInEscapeArea", InputMarineInEscapeArea ),
-END_DATADESC()
+END_DATADESC();
 
-CUtlVector<CASW_Objective_Escape*> g_aEscapeObjectives;
-
+CUtlVector<CASW_Objective_Escape *> g_aEscapeObjectives;
 
 // dummy objectives are complete automatically
 CASW_Objective_Escape::CASW_Objective_Escape() : CASW_Objective()
@@ -33,15 +32,15 @@ CASW_Objective_Escape::~CASW_Objective_Escape()
 
 void CASW_Objective_Escape::InputMarineInEscapeArea( inputdata_t &inputdata )
 {
-	CBaseTrigger* pTrig = dynamic_cast<CBaseTrigger*>(inputdata.pCaller);
-	if (!pTrig)
+	CBaseTrigger *pTrig = dynamic_cast< CBaseTrigger * >( inputdata.pCaller );
+	if ( !pTrig )
 	{
-		Msg("Error: Escape objective input called by something that wasn't a trigger\n");
+		Msg( "Error: Escape objective input called by something that wasn't a trigger\n" );
 		return;
 	}
-	if (pTrig != GetTrigger() && GetTrigger()!= NULL)
+	if ( pTrig != GetTrigger() && GetTrigger() != NULL )
 	{
-		Msg("Error: Escape objective input called by two different triggers.  Only 1 escape area is allowed per map.\n");
+		Msg( "Error: Escape objective input called by two different triggers.  Only 1 escape area is allowed per map.\n" );
 		return;
 	}
 	m_hTrigger = pTrig;
@@ -51,8 +50,8 @@ void CASW_Objective_Escape::InputMarineInEscapeArea( inputdata_t &inputdata )
 
 void CASW_Objective_Escape::CheckEscapeStatus()
 {
-	if (OtherObjectivesComplete() && AllLiveMarinesInExit())
-		SetComplete(true);
+	if ( OtherObjectivesComplete() && AllLiveMarinesInExit() )
+		SetComplete( true );
 }
 
 // are all other non-optional objectives complete?
@@ -60,14 +59,14 @@ bool CASW_Objective_Escape::OtherObjectivesComplete()
 {
 	if ( !ASWGameResource() )
 		return false;
-	
-	CASW_Game_Resource* pGameResource = ASWGameResource();
-	for (int i=0;i<ASW_MAX_OBJECTIVES;i++)
+
+	CASW_Game_Resource *pGameResource = ASWGameResource();
+	for ( int i = 0; i < ASW_MAX_OBJECTIVES; i++ )
 	{
-		CASW_Objective* pObjective = pGameResource->GetObjective(i);
+		CASW_Objective *pObjective = pGameResource->GetObjective( i );
 		// if another objective isn't optional and isn't complete, then we're not ready to escape
-		if (pObjective && pObjective!=this
-			&& !pObjective->IsObjectiveOptional() && !pObjective->IsObjectiveComplete())
+		if ( pObjective && pObjective != this
+			&& !pObjective->IsObjectiveOptional() && !pObjective->IsObjectiveComplete() )
 		{
 			return false;
 		}
@@ -77,25 +76,39 @@ bool CASW_Objective_Escape::OtherObjectivesComplete()
 
 bool CASW_Objective_Escape::AllLiveMarinesInExit()
 {
-	if ( !ASWGameResource() ||!GetTrigger() )
+	CASW_Game_Resource *pGameResource = ASWGameResource();
+	if ( !pGameResource || !GetTrigger() )
 		return false;
 	
-	CASW_Game_Resource* pGameResource = ASWGameResource();
-	for (int i=0;i<pGameResource->GetMaxMarineResources();i++)
+	bool bAnyAlive = false;
+	for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
 	{
-		CASW_Marine_Resource* pMR = pGameResource->GetMarineResource(i);
-		if (pMR && pMR->GetHealthPercent() > 0
-			&& pMR->GetMarineEntity())
+		CASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
+		if ( pMR && pMR->GetHealthPercent() > 0 && pMR->GetMarineEntity() )
 		{
-			// we've got a live marine, check if he's in the exit area
-			if (!GetTrigger()->IsTouching(pMR->GetMarineEntity()))
-				return false;	// a live marine isn't in the exit zone
+			bool bIncapacitated = pMR->GetMarineEntity()->m_bKnockedOut;
+			bool bInEscapeArea = GetTrigger()->IsTouching( pMR->GetMarineEntity() );
+
+			// downed in escape area = wait for team to revive
+			if ( bIncapacitated && bInEscapeArea )
+				return false;
+
+			// downed outside of escape area = ignore
+			if ( bIncapacitated )
+				continue;
+
+			bAnyAlive = true;
+
+			// up outside of escape area = wait for arrival
+			if ( !bInEscapeArea )
+				return false;
 		}
 	}
-	return true;
+
+	return bAnyAlive;
 }
 
-CBaseTrigger* CASW_Objective_Escape::GetTrigger()
+CBaseTrigger *CASW_Objective_Escape::GetTrigger()
 {
-	return dynamic_cast<CBaseTrigger*>(m_hTrigger.Get());
+	return dynamic_cast< CBaseTrigger * >( m_hTrigger.Get() );
 }

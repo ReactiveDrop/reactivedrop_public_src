@@ -4828,7 +4828,8 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 				CASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
 				if ( pMR )
 				{
-					fTotalHealthPercentage += pMR->GetHealthPercent();
+					if ( !pMR->GetMarineEntity() || !pMR->GetMarineEntity()->m_bKnockedOut )
+						fTotalHealthPercentage += pMR->GetHealthPercent();
 					nNumMarines++;
 				}
 			}
@@ -4892,7 +4893,7 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 			pMR->m_TimelineFriendlyFire.RecordFinalValue( 0.0f );
 			pMR->m_TimelineKillsTotal.RecordFinalValue( 0.0f );
 			pMR->m_TimelineAmmo.RecordFinalValue( pMarine ? pMarine->GetAllAmmoCount() : 0.0f );
-			pMR->m_TimelineHealth.RecordFinalValue( pMarine ? pMarine->GetHealth() : 0.0f );
+			pMR->m_TimelineHealth.RecordFinalValue( pMarine && !pMarine->m_bKnockedOut ? pMarine->GetHealth() : 0.0f );
 			pMR->m_TimelinePosX.RecordFinalValue( pMarine ? pMarine->GetAbsOrigin().x : pMR->m_TimelinePosX.GetValueAtInterp( 1.0f ) );
 			pMR->m_TimelinePosY.RecordFinalValue( pMarine ? pMarine->GetAbsOrigin().y : pMR->m_TimelinePosY.GetValueAtInterp( 1.0f ) );
 			pMR->m_TimelineScore.RecordFinalValue( 0.0f );
