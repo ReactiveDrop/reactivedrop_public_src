@@ -15,6 +15,7 @@
 #include "tier0/vprof.h"
 #include "checksum_crc.h"
 #include "tier0/icommandline.h"
+#include "rd_workshop.h"
 
 #ifndef CLIENT_DLL
 #include "envmicrophone.h"
@@ -382,6 +383,9 @@ public:
 	// Precache all wave files referenced in wave or rndwave keys
 	virtual void LevelInitPreEntity()
 	{
+		// call now to make sure level sounds overrides addon sounds
+		g_ReactiveDropWorkshop.AddSoundOverrides();
+
 		char mapname[ 256 ];
 #if !defined( CLIENT_DLL )
 		StartLog();

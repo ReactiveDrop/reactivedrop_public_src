@@ -1116,6 +1116,18 @@ void CReactiveDropWorkshop::RerunAutoExecScripts()
 }
 #endif
 
+void CReactiveDropWorkshop::AddSoundOverrides()
+{
+	FOR_EACH_VEC( m_LoadedAddonPaths, i )
+	{
+		CFmtStr szName{ "scripts/addon_sounds_%llu.txt", m_LoadedAddonPaths[i].ID };
+		if ( g_pFullFileSystem->FileExists( szName, "GAME" ) )
+		{
+			soundemitterbase->AddSoundOverrides( szName );
+		}
+	}
+}
+
 const wchar_t *CReactiveDropWorkshop::AddonName( PublishedFileId_t nPublishedFileId )
 {
 	if ( nPublishedFileId == 0 )

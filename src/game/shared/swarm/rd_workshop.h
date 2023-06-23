@@ -193,6 +193,7 @@ public:
 	void UnloadTemporaryAddons();
 	void RerunAutoExecScripts();
 #endif
+	void AddSoundOverrides();
 	const wchar_t *AddonName( PublishedFileId_t nPublishedFileId );
 
 	struct PublishedFileIdPair
