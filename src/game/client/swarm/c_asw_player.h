@@ -37,6 +37,7 @@ public:
 	DECLARE_CLIENTCLASS();
 	DECLARE_PREDICTABLE();
 	DECLARE_INTERPOLATION();
+	DECLARE_ENT_SCRIPTDESC();
 
 	C_ASW_Player();
 	virtual ~C_ASW_Player();
@@ -150,6 +151,9 @@ public:
 	C_ASW_Inhabitable_NPC *GetNPC() const;
 	C_ASW_Inhabitable_NPC *GetSpectatingNPC() const;
 	C_ASW_Inhabitable_NPC *GetViewNPC() const;
+	HSCRIPT Script_GetInhabitingNPC() const;
+	HSCRIPT Script_GetSpectatingNPC() const;
+	HSCRIPT Script_GetViewNPC() const;
 	bool HasLiveMarines();
 	virtual bool IsAlive( void );
 	Color GetPlayerColor();

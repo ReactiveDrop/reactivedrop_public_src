@@ -283,6 +283,12 @@ BEGIN_PREDICTION_DATA( C_ASW_Player )
 	DEFINE_PRED_ARRAY( m_iMouseXY, FIELD_SHORT, 2, FTYPEDESC_INSENDTABLE ),
 END_PREDICTION_DATA()
 
+BEGIN_ENT_SCRIPTDESC( C_ASW_Player, C_BaseAnimating, "Alien Swarm: Reactive Drop player" )
+	DEFINE_SCRIPTFUNC_NAMED( Script_GetInhabitingNPC, "GetInhabitingNPC", "Returns the currently controlled NPC." )
+	DEFINE_SCRIPTFUNC_NAMED( Script_GetSpectatingNPC, "GetSpectatingNPC", "Returns the currently spectated NPC." )
+	DEFINE_SCRIPTFUNC_NAMED( Script_GetViewNPC, "GetViewNPC", "Returns the currently controlled or spectated NPC." )
+END_SCRIPTDESC();
+
 vgui::DHANDLE<vgui::Frame> g_hBriefingFrame;
 
 C_ASW_Player::C_ASW_Player() :
@@ -872,6 +878,21 @@ C_ASW_Inhabitable_NPC *C_ASW_Player::GetViewNPC() const
 		pNPC = GetNPC();
 	}
 	return pNPC;
+}
+
+HSCRIPT C_ASW_Player::Script_GetInhabitingNPC() const
+{
+	return ToHScript( GetNPC() );
+}
+
+HSCRIPT C_ASW_Player::Script_GetSpectatingNPC() const
+{
+	return ToHScript( GetSpectatingNPC() );
+}
+
+HSCRIPT C_ASW_Player::Script_GetViewNPC() const
+{
+	return ToHScript( GetViewNPC() );
 }
 
 Color C_ASW_Player::GetPlayerColor()

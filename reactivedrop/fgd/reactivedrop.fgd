@@ -844,3 +844,8 @@ asw_pickup_50calmg : "50cal Machine Gun"
 	input SetLimitNPC(target_destination) : "Hide this counter from all players who are not viewing the specified NPC (eg. marine)."
 	input ClearLimitNPC(void) : "Make this counter visible to all players."
 ]
+
+@PointClass base(Targetname) = rd_hud_vscript : "VScript-driven HUD"
+[
+	client_vscript(script) : "Client Script" : "" : "Name of script file to run on clients."
+]

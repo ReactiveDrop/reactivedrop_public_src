@@ -25,6 +25,7 @@
 #include "rd_steam_input.h"
 #include "asw_gamerules.h"
 #include "rd_hud_sheet.h"
+#include "rd_hud_vscript_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -582,41 +583,44 @@ void CASW_Hud_Master::Paint( void )
 	m_nMarinePortrait_bar_y = m_nMarinePortrait_circle_y + m_nMarinePortrait_circle_bg_t * 0.5f;
 	m_nMarinePortrait_bar_y2 = m_nMarinePortrait_circle_y2;
 
-	if ( !rd_draw_portraits.GetBool() )
+	if ( rd_draw_portraits.GetBool() )
 	{
-		return;
-	}
-
-	if ( ASWDeathmatchMode() && ASWGameResource() && rd_draw_avatars_with_frags.GetBool() )
-	{
-		PaintDeathmatchFrags();
-	}
-
-	if ( m_pLocalMarineProfile && m_pLocalMarineResource )
-	{
-		PaintLocalMarinePortrait();
-		PaintLocalMarineInventory();
-		PaintFastReload();
-	}
-
-	for ( int i = 0; i < MAX_SQUADMATE_HUD_POSITIONS; i++ )
-	{
-		if ( m_SquadMateInfo[ i ].bPositionActive )
+		if ( ASWDeathmatchMode() && ASWGameResource() && rd_draw_avatars_with_frags.GetBool() )
 		{
-			PaintSquadMemberStatus( i );
+			PaintDeathmatchFrags();
+		}
+
+		if ( m_pLocalMarineProfile && m_pLocalMarineResource )
+		{
+			PaintLocalMarinePortrait();
+			PaintLocalMarineInventory();
+			PaintFastReload();
+		}
+
+		for ( int i = 0; i < MAX_SQUADMATE_HUD_POSITIONS; i++ )
+		{
+			if ( m_SquadMateInfo[i].bPositionActive )
+			{
+				PaintSquadMemberStatus( i );
+			}
+		}
+
+		PaintSquadMatesInventory();
+
+		// paint text
+		PaintText();
+		for ( int i = 0; i < MAX_SQUADMATE_HUD_POSITIONS; i++ )
+		{
+			if ( m_SquadMateInfo[i].bPositionActive )
+			{
+				PaintSquadMemberText( i );
+			}
 		}
 	}
 
-	PaintSquadMatesInventory();
-
-	// paint text
-	PaintText();
-	for ( int i = 0; i < MAX_SQUADMATE_HUD_POSITIONS; i++ )
+	FOR_EACH_VEC( CRD_HUD_VScript::s_HUDEntities, i )
 	{
-		if ( m_SquadMateInfo[ i ].bPositionActive )
-		{
-			PaintSquadMemberText( i );
-		}
+		CRD_HUD_VScript::s_HUDEntities[i]->Paint();
 	}
 }
 

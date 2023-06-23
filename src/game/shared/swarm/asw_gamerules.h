@@ -482,10 +482,11 @@ public:
 	bool IsOfflineGame();
 	bool IsAnniversaryWeek();
 	bool CanFlareAutoaimAt(CASW_Inhabitable_NPC* pAimer, CBaseEntity *pEntity);
-	virtual bool ShouldCollide( int collisionGroup0, int collisionGroup1 );
-#ifdef GAME_DLL
+	bool ShouldCollide( int collisionGroup0, int collisionGroup1 ) override;
+
 	// BenLubar: add game-specific vscript functions
-	virtual void RegisterScriptFunctions();
+	void RegisterScriptFunctions() override;
+#ifdef GAME_DLL
 	void RunScriptFunctionInListenerScopes( const char *szFunctionName, ScriptVariant_t *pReturn, int nArgs, ScriptVariant_t *pArgs );
 	CUtlMap<string_t, float> m_ActorSpeakingUntil;
 #endif
