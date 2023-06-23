@@ -2847,7 +2847,7 @@ int UTIL_RD_GetCurrentHoIAFSeason( int *pDaysRemaining, int *pHoursRemaining )
 	if ( pHoursRemaining )
 		*pHoursRemaining = 23 - tm.tm_hour;
 
-	if ( *pDaysRemaining )
+	if ( pDaysRemaining )
 	{
 		*pDaysRemaining = 31 - tm.tm_mday;
 		if ( tm.tm_mon == 1 )
