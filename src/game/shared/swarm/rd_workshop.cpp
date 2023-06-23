@@ -59,6 +59,7 @@ ConVar rd_workshop_official_addons( "rd_workshop_official_addons", "2", FCVAR_NO
 #endif
 
 extern ConVar rd_challenge;
+extern ISoundEmitterSystemBase *soundemitterbase;
 
 #if RD_NUM_WORKSHOP_CAMPAIGN_TAGS
 const char *const CReactiveDropWorkshop::s_RDWorkshopCampaignTags[] =
