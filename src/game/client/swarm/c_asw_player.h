@@ -151,7 +151,8 @@ public:
 	C_ASW_Inhabitable_NPC *GetNPC() const;
 	C_ASW_Inhabitable_NPC *GetSpectatingNPC() const;
 	C_ASW_Inhabitable_NPC *GetViewNPC() const;
-	HSCRIPT Script_GetInhabitingNPC() const;
+	HSCRIPT Script_GetMarine() const;
+	HSCRIPT Script_GetNPC() const;
 	HSCRIPT Script_GetSpectatingNPC() const;
 	HSCRIPT Script_GetViewNPC() const;
 	bool HasLiveMarines();

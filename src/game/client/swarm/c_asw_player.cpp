@@ -284,7 +284,8 @@ BEGIN_PREDICTION_DATA( C_ASW_Player )
 END_PREDICTION_DATA()
 
 BEGIN_ENT_SCRIPTDESC( C_ASW_Player, C_BaseAnimating, "Alien Swarm: Reactive Drop player" )
-	DEFINE_SCRIPTFUNC_NAMED( Script_GetInhabitingNPC, "GetInhabitingNPC", "Returns the currently controlled NPC." )
+	DEFINE_SCRIPTFUNC_NAMED( Script_GetMarine, "GetMarine", "Returns the currently controlled marine." )
+	DEFINE_SCRIPTFUNC_NAMED( Script_GetNPC, "GetNPC", "Returns the currently controlled NPC." )
 	DEFINE_SCRIPTFUNC_NAMED( Script_GetSpectatingNPC, "GetSpectatingNPC", "Returns the currently spectated NPC." )
 	DEFINE_SCRIPTFUNC_NAMED( Script_GetViewNPC, "GetViewNPC", "Returns the currently controlled or spectated NPC." )
 END_SCRIPTDESC();
@@ -880,7 +881,12 @@ C_ASW_Inhabitable_NPC *C_ASW_Player::GetViewNPC() const
 	return pNPC;
 }
 
-HSCRIPT C_ASW_Player::Script_GetInhabitingNPC() const
+HSCRIPT C_ASW_Player::Script_GetMarine() const
+{
+	return ToHScript( C_ASW_Marine::AsMarine( GetNPC() ) );
+}
+
+HSCRIPT C_ASW_Player::Script_GetNPC() const
 {
 	return ToHScript( GetNPC() );
 }
