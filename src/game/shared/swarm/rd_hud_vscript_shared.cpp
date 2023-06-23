@@ -172,7 +172,13 @@ int CRD_HUD_VScript::Script_LookupFont( const char *name )
 	if ( !pScheme )
 		return vgui::INVALID_FONT;
 
-	return pScheme->GetFont( name, true );
+	vgui::HFont hFont = pScheme->GetFont( name, true );
+	if ( !hFont )
+	{
+		Warning( "rd_hud_vscript (%s): LookupFont did not find a font named %s\n", m_szClientVScript, name );
+	}
+
+	return hFont;
 }
 
 int CRD_HUD_VScript::Script_GetFontTall( int font )
