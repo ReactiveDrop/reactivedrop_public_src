@@ -139,6 +139,8 @@ BEGIN_ENT_SCRIPTDESC( CBaseTrigger, CBaseEntity, "Server-side trigger" )
 	DEFINE_SCRIPTFUNC( Disable, "Disable the trigger" )
 	DEFINE_SCRIPTFUNC( Enable, "Enable the trigger" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptIsTouching, "IsTouching", "Checks whether the passed entity is touching the trigger." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetNumTouching, "GetNumTouching", "Gets the number of entities currently touching the trigger." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetTouching, "GetTouching", "Gets the i'th entity currently touching the trigger." )
 END_SCRIPTDESC();
 
 CBaseTrigger::CBaseTrigger()
@@ -562,6 +564,19 @@ bool CBaseTrigger::ScriptIsTouching( HSCRIPT entity )
 		return false;
 
 	return IsTouching( pOther );
+}
+
+int CBaseTrigger::ScriptGetNumTouching()
+{
+	return m_hTouchingEntities.Count();
+}
+
+HSCRIPT CBaseTrigger::ScriptGetTouching( int i )
+{
+	if ( i < 0 || i >= m_hTouchingEntities.Count() )
+		return NULL;
+
+	return ToHScript( m_hTouchingEntities[i] );
 }
 
 //-----------------------------------------------------------------------------
