@@ -509,6 +509,8 @@ Class_T GetDamagingWeaponClassFromName( const char *szClassName )
 		return (Class_T)CLASS_ASW_COMBINE_BALL;
 	else if ( FStrEq( szClassName, "asw_plasma_thrower_airblast" ) )
 		return (Class_T)CLASS_ASW_PLASMA_THROWER_AIRBLAST;
+	else if ( FStrEq( szClassName, "asw_energy_shield_shield" ) )
+		return (Class_T)CLASS_ASW_ENERGY_SHIELD_SHIELD;
 
 	else
 		return (Class_T)CLASS_ASW_UNKNOWN;
@@ -731,6 +733,13 @@ bool CASW_Steamstats::FetchStats( CSteamID playerSteamID, CASW_Player *pPlayer )
 
 	weaponIndex = m_WeaponStats.AddToTail();
 	szClassname = "asw_plasma_thrower_airblast";
+	m_WeaponStats[weaponIndex].FetchWeaponStats( playerSteamID, szClassname );
+	m_WeaponStats[weaponIndex].m_iWeaponIndex = GetDamagingWeaponClassFromName( szClassname );
+	m_WeaponStats[weaponIndex].m_bIsExtra = false;
+	m_WeaponStats[weaponIndex].m_szClassName = szClassname;
+
+	weaponIndex = m_WeaponStats.AddToTail();
+	szClassname = "asw_energy_shield_shield";
 	m_WeaponStats[weaponIndex].FetchWeaponStats( playerSteamID, szClassname );
 	m_WeaponStats[weaponIndex].m_iWeaponIndex = GetDamagingWeaponClassFromName( szClassname );
 	m_WeaponStats[weaponIndex].m_bIsExtra = false;

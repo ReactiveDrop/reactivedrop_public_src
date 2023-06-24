@@ -53,7 +53,8 @@ bool IsBulletBasedWeaponClass( Class_T weapon_class )
 		weapon_class == CLASS_ASW_50CALMG ||
 		weapon_class == CLASS_ASW_HEAVY_RIFLE ||
 		weapon_class == CLASS_ASW_MEDRIFLE ||
-		weapon_class == CLASS_ASW_AR2 );
+		weapon_class == CLASS_ASW_AR2 ||
+		weapon_class == CLASS_ASW_ENERGY_SHIELD );
 }
 
 bool IsSentryClass( Class_T entity_class )

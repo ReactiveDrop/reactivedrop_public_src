@@ -99,6 +99,13 @@ static Class_T GetWeaponClassFromDamageInfo( const CTakeDamageInfo & info, CBase
 			return (Class_T)CLASS_ASW_COMBINE_BALL;
 		}
 	}
+	else if ( weaponClass == CLASS_ASW_ENERGY_SHIELD )
+	{
+		if ( info.GetDamageType() & DMG_DISSOLVE )
+		{
+			return (Class_T)CLASS_ASW_ENERGY_SHIELD_SHIELD;
+		}
+	}
 	return weaponClass;
 }
 
@@ -450,6 +457,10 @@ void CASWGameStats::Event_MarineWeaponFired( const CBaseEntity *pWeapon, const C
 		else if ( weaponClass == CLASS_ASW_PLASMA_THROWER )
 		{
 			weaponClass = ( Class_T )CLASS_ASW_PLASMA_THROWER_AIRBLAST;
+		}
+		else if ( weaponClass == CLASS_ASW_ENERGY_SHIELD )
+		{
+			weaponClass = ( Class_T )CLASS_ASW_ENERGY_SHIELD_SHIELD;
 		}
 		else
 		{
