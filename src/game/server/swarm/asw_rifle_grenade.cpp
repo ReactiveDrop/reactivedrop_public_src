@@ -21,6 +21,7 @@
 extern ConVar sk_plr_dmg_asw_r_g;
 ConVar asw_grenade_radius("asw_grenade_radius", "350", FCVAR_CHEAT, "Radius of the rifle's grenade explosion");
 ConVar asw_grenade_lifetime("asw_grenade_lifetime", "1", FCVAR_CHEAT, "Lifetime of the rifle's grenade, in seconds");
+ConVar asw_grenade_gravity("asw_grenade_gravity", "0.05f", FCVAR_CHEAT, "Gravity of rifle's grenade");
 
 const float GRENADE_COEFFICIENT_OF_RESTITUTION = 0.2f;
 
@@ -68,7 +69,7 @@ void CASW_Rifle_Grenade::Spawn( void )
 
 	SetSize( -Vector(1,1,1), Vector(1,1,1) );
 	SetSolid( SOLID_BBOX );
-	SetGravity( 0.05f );
+	SetGravity( asw_grenade_gravity.GetFloat() );
 	SetCollisionGroup( COLLISION_GROUP_PROJECTILE );
 	//CreateVPhysics();
 
