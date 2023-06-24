@@ -59,10 +59,6 @@ enum ASW_Skill_Slot
 #define RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS 3
 
 #define ASW_PLAYER_VIEW_OFFSET	Vector( 0, 0, 53.5 )
-#define ASW_MARINE_GUN_OFFSET_X		25.0f
-#define ASW_MARINE_GUN_OFFSET_Y		4.0f
-#define ASW_MARINE_GUN_OFFSET_Z		34.0f
-		// was: 55.0f
 
 #define PUSHAWAY_THINK_INTERVAL		(1.0f / 20.0f)
 

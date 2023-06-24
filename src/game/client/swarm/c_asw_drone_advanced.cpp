@@ -22,6 +22,7 @@ ConVar asw_debug_drone_pose( "asw_debug_drone_pose", "0", FCVAR_NONE, "Set to dr
 ConVar asw_drone_jump_pitch_min( "asw_drone_jump_pitch_min", "-45", FCVAR_NONE, "Min pitch for drone's jumping pose parameter" );
 ConVar asw_drone_jump_pitch_max( "asw_drone_jump_pitch_max", "45", FCVAR_NONE, "Min pitch for drone's jumping pose parameter" );
 ConVar asw_drone_jump_pitch_speed( "asw_drone_jump_pitch_speed", "3.0", FCVAR_NONE, "Speed for drone's pitch jumping pose parameter transition" );
+extern ConVar asw_marine_gun_offset_z;
 
 namespace
 {
@@ -330,7 +331,7 @@ const Vector& C_ASW_Drone_Advanced::GetAimTargetPos(const Vector &vecFiringSrc, 
 { 
 	static Vector aim_pos;
 	aim_pos = m_vecLastRenderedPos - (WorldSpaceCenter() - GetAbsOrigin());	// last rendered stores our worldspacecenter, so convert to back origin
-	aim_pos.z += ASW_MARINE_GUN_OFFSET_Z;
+	aim_pos.z += asw_marine_gun_offset_z.GetFloat();
 	return aim_pos;
 }
 

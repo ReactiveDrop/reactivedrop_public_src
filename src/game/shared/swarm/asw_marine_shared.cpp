@@ -81,6 +81,9 @@ ConVar asw_marine_speed_scale_hard("asw_marine_speed_scale_hard", "1.024", FCVAR
 ConVar asw_marine_speed_scale_insane("asw_marine_speed_scale_insane", "1.048", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_marine_speed_scale_adrenaline( "asw_marine_speed_scale_adrenaline", "1.0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_marine_box_collision("asw_marine_box_collision", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_marine_gun_offset_x( "asw_marine_gun_offset_x", "25", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_marine_gun_offset_y( "asw_marine_gun_offset_y", "4", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_marine_gun_offset_z( "asw_marine_gun_offset_z", "34", FCVAR_REPLICATED | FCVAR_CHEAT );
 // reactivedrop: setting to 0, this prevents killing shieldbug from front using shotguns 
 ConVar asw_allow_hull_shots("asw_allow_hull_shots", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar rd_difficulty_tier( "rd_difficulty_tier", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Used to make difficulties higher then Brutal. 0 - default difficulties, 1 - Easy is as hard as Brutal + 1, 2 - Easy is as hard as Brutal + 6" );
@@ -366,10 +369,10 @@ Vector CASW_Marine::Weapon_ShootPosition( )
 	QAngle ang = ASWEyeAngles();
 	ang.x = 0;	// clear out pitch, so we're matching the fixes point of our autoaim calcs
 	AngleVectors( ang, &forward, &right, &up );
-	v = v + up * ASW_MARINE_GUN_OFFSET_Z;
+	v = v + up * asw_marine_gun_offset_z.GetFloat();
 	Vector vecSrc = v
-					+ forward * ASW_MARINE_GUN_OFFSET_X
-					+ right * ASW_MARINE_GUN_OFFSET_Y;
+					+ forward * asw_marine_gun_offset_x.GetFloat()
+					+ right * asw_marine_gun_offset_y.GetFloat();
 
 	trace_t tr;
 	UTIL_TraceLine(v, vecSrc, MASK_SHOT, this, COLLISION_GROUP_NONE, &tr);

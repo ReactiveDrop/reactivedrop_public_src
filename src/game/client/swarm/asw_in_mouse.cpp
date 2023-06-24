@@ -199,6 +199,7 @@ void CASWInput::SetMouseOverEntity( C_BaseEntity* pEnt )
 
 	//m_MouseOverGlowObject.SetEntity( pEnt );
 
+#if 0
 	if ( !pEnt )
 		return;
 
@@ -236,6 +237,7 @@ void CASWInput::SetMouseOverEntity( C_BaseEntity* pEnt )
 // 		}
 
 	}
+#endif
 }
 
 void CASWInput::SetHighlightEntity( C_BaseEntity* pEnt, bool bGlow )

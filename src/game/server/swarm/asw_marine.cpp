@@ -471,6 +471,7 @@ ConVar rd_marine_poison_recover_delay( "rd_marine_poison_recover_delay", "2", FC
 ConVar rd_marine_poison_recover_tick( "rd_marine_poison_recover_tick", "0.5", FCVAR_CHEAT, "time between hitpoints restored by antitoxin" );
 ConVar asw_leadership_resist_scale( "asw_leadership_resist_scale", "0.5", FCVAR_CHEAT, "Incoming damage scale for leadership bonus." );
 ConVar rd_marine_spawn_zombine_on_death_chance( "rd_marine_spawn_zombine_on_death_chance", "0.0", FCVAR_CHEAT, "Chance to spawn a zombine when a marine dies from an alien" );
+extern ConVar asw_marine_gun_offset_z;
 
 float CASW_Marine::s_fNextMadFiringChatter = 0;
 float CASW_Marine::s_fNextIdleChatterTime = 0;
@@ -574,7 +575,7 @@ CASW_Marine::CASW_Marine() : m_RecentMeleeHits( 16, 16 )
 	m_fUnfreezeTime = 0;
 	m_PlayerAnimState = CreatePlayerAnimState(this, this, LEGANIM_9WAY, false);
 	UseClientSideAnimation();
-	m_HackedGunPos = Vector ( 0, 0, ASW_MARINE_GUN_OFFSET_Z );
+	m_HackedGunPos = Vector( 0, 0, asw_marine_gun_offset_z.GetFloat() );
 	m_MarineSpeech = new CASW_MarineSpeech(this);
 	m_flHealRateScale = 1.0f;
 	m_fNextSlowHealTick = 0;
@@ -842,7 +843,7 @@ void CASW_Marine::Spawn( void )
 	CapabilitiesAdd( bits_CAP_MOVE_GROUND );
 	SetMoveType( MOVETYPE_STEP );
 
-	m_HackedGunPos = Vector( 0, 0, ASW_MARINE_GUN_OFFSET_Z );
+	m_HackedGunPos = Vector( 0, 0, asw_marine_gun_offset_z.GetFloat() );
 
 	// Marines collide/moveprobe as players.
 	m_nAITraceMask = MASK_PLAYERSOLID;

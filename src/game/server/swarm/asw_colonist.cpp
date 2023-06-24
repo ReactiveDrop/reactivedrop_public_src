@@ -21,6 +21,9 @@ const int MAX_PLAYER_SQUAD = 4;
 ConVar asw_colonist_health( "asw_colonist_health", "40", FCVAR_CHEAT );
 extern ConVar asw_god;
 extern ConVar asw_debug_alien_damage;
+extern ConVar asw_marine_gun_offset_x;
+extern ConVar asw_marine_gun_offset_y;
+extern ConVar asw_marine_gun_offset_z;
 
 #define NUM_FEMALE_COLONIST_MODELS 7
 #define NUM_MALE_COLONIST_MODELS 9
@@ -233,7 +236,7 @@ void CASW_Colonist::Spawn()
 	CapabilitiesAdd( bits_CAP_MOVE_GROUND );
 	SetMoveType( MOVETYPE_STEP );
 
-	m_HackedGunPos = Vector( 0, 0, ASW_MARINE_GUN_OFFSET_Z );
+	m_HackedGunPos = Vector( 0, 0, asw_marine_gun_offset_z.GetFloat() );
 
 	BaseClass::Spawn();
 
@@ -321,9 +324,10 @@ Vector CASW_Colonist::Weapon_ShootPosition( )
 
 	QAngle ang = EyeAngles();
 	AngleVectors( ang, &forward, &right, &up );
-	Vector vecSrc = v + up * ASW_MARINE_GUN_OFFSET_Z * 1.5
-					+ forward * ASW_MARINE_GUN_OFFSET_X * 2
-					+ right * ASW_MARINE_GUN_OFFSET_Y * 1.5;
+	// FIXME
+	Vector vecSrc = v + up * asw_marine_gun_offset_z.GetFloat() * 1.5
+					+ forward * asw_marine_gun_offset_x.GetFloat() * 2
+					+ right * asw_marine_gun_offset_y.GetFloat() * 1.5;
 
 	return vecSrc;
 }

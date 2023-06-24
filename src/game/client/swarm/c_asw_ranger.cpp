@@ -9,6 +9,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+extern ConVar asw_marine_gun_offset_z;
+
 IMPLEMENT_CLIENTCLASS_DT(C_ASW_Ranger, DT_ASW_Ranger, CASW_Ranger)
 END_RECV_TABLE()
 
@@ -45,7 +47,7 @@ C_ClientRagdoll *C_ASW_Ranger::CreateClientRagdoll( bool bRestoring )
 const Vector& C_ASW_Ranger::GetAimTargetPos(const Vector &vecFiringSrc, bool bWeaponPrefersFlatAiming)
 { 
 	static Vector aim_pos;
-	aim_pos = m_vecLastRenderedPos - (WorldSpaceCenter() - GetAbsOrigin());	// last rendered stores our worldspacecenter, so convert to back origin
-	aim_pos.z += ASW_MARINE_GUN_OFFSET_Z;
+	aim_pos = m_vecLastRenderedPos - ( WorldSpaceCenter() - GetAbsOrigin() );	// last rendered stores our worldspacecenter, so convert to back origin
+	aim_pos.z += asw_marine_gun_offset_z.GetFloat();
 	return aim_pos;
 }

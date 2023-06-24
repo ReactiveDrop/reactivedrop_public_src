@@ -6,8 +6,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-
-ConVar asw_shieldbug_death_force( "asw_shieldbug_death_force", "65000" , 0, "this sets the custom death force for the exploding shieldbug");
+ConVar asw_shieldbug_death_force( "asw_shieldbug_death_force", "65000", 0, "this sets the custom death force for the exploding shieldbug" );
+extern ConVar asw_marine_gun_offset_z;
 
 IMPLEMENT_CLIENTCLASS_DT(C_ASW_Shieldbug, DT_ASW_Shieldbug, CASW_Shieldbug)
 	
@@ -60,6 +60,6 @@ const Vector& C_ASW_Shieldbug::GetAimTargetPos(const Vector &vecFiringSrc, bool 
 { 
 	static Vector aim_pos;
 	aim_pos = m_vecLastRenderedPos - (WorldSpaceCenter() - GetAbsOrigin());	// last rendered stores our worldspacecenter, so convert to back origin
-	aim_pos.z += ASW_MARINE_GUN_OFFSET_Z;
+	aim_pos.z += asw_marine_gun_offset_z.GetFloat();
 	return aim_pos;
 }
