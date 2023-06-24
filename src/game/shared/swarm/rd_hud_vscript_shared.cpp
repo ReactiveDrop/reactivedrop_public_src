@@ -47,7 +47,6 @@ BEGIN_ENT_SCRIPTDESC( CRD_HUD_VScript, CBaseEntity, "Alien Swarm: Reactive Drop 
 	DEFINE_SCRIPTFUNC_NAMED( Script_GetFontTall, "GetFontTall", "Returns the height of a font in pixels" )
 	DEFINE_SCRIPTFUNC_NAMED( Script_GetTextWide, "GetTextWide", "Returns the width of the given text in pixels" )
 	DEFINE_SCRIPTFUNC_NAMED( Script_PaintText, "PaintText", "Draw text on the heads-up display. Can only be called during Paint" )
-	DEFINE_SCRIPTFUNC_NAMED( Script_PaintTextScale, "PaintTextScale", "Draw scaled text on the heads-up display. Can only be called during Paint" )
 	DEFINE_SCRIPTFUNC_NAMED( Script_PaintRectangle, "PaintRectangle", "Draw a solid-colored rectangle on the heads-up display. Can only be called during Paint" )
 	DEFINE_SCRIPTFUNC_NAMED( Script_PaintRectangleFade, "PaintRectangleFade", "Draw a solid-colored rectangle with a gradient of opacity on the heads-up display. Can only be called during Paint" )
 	DEFINE_SCRIPTFUNC_NAMED( Script_PaintTexturedRectangle, "PaintTexturedRectangle", "Draw a textured rectangle on the heads-up display. Can only be called during Paint" )
@@ -212,25 +211,6 @@ void CRD_HUD_VScript::Script_PaintText( int x, int y, int r, int g, int b, int a
 	vgui::surface()->DrawSetTextColor( r, g, b, a );
 	vgui::surface()->DrawSetTextPos( x, y );
 	vgui::surface()->DrawUnicodeString( wsz );
-}
-
-void CRD_HUD_VScript::Script_PaintTextScale( int x, int y, int r, int g, int b, int a, int font, const char *text, float sx, float sy )
-{
-	if ( !m_bIsPainting )
-	{
-		Warning( "rd_hud_vscript (%s): PaintTextScale cannot be called outside of Paint!\n", m_szClientVScript );
-		return;
-	}
-
-	wchar_t wsz[2048];
-	V_UTF8ToUnicode( text, wsz, sizeof( wsz ) );
-
-	vgui::surface()->DrawSetTextFont( font );
-	vgui::surface()->DrawSetTextColor( r, g, b, a );
-	vgui::surface()->DrawSetTextPos( x, y );
-	vgui::surface()->DrawSetTextScale( sx, sy );
-	vgui::surface()->DrawUnicodeString( wsz );
-	vgui::surface()->DrawSetTextScale( 1.0f, 1.0f );
 }
 
 void CRD_HUD_VScript::Script_PaintRectangle( int x0, int y0, int x1, int y1, int r, int g, int b, int a )
