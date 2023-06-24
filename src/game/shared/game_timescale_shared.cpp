@@ -189,7 +189,7 @@ void CGameTimescale::UpdateTimescale( void )
 			m_flCurrentTimescale = m_flStartTimescale * ( 1.0f - flInterp ) + m_flDesiredTimescale * flInterp;
 
 #ifdef CLIENT_DLL
-			if ( rd_scale_rates.GetBool() )
+			if ( rd_scale_rates.GetBool() && flInterp == 1.0f )
 			{
 				m_bUpdatingRates = true;
 				m_pUpdateRate->SetValue( m_flBaseUpdateRate / MIN( m_flCurrentTimescale, m_flDesiredTimescale ) );
