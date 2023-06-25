@@ -579,6 +579,10 @@ void CRD_Steam_Input::OnActionEvent( SteamInputActionEvent_t *pEvent )
 {
 	g_RD_Steam_Input.m_hLastControllerWithEvent = pEvent->controllerHandle;
 
+	// don't print warnings while we're starting up
+	if ( !g_RD_Steam_Input.m_Controllers.Count() )
+		return;
+
 	CRD_Steam_Controller *pController = g_RD_Steam_Input.FindController( pEvent->controllerHandle );
 	Assert( pController );
 	if ( !pController )
