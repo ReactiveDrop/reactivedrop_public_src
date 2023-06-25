@@ -5,8 +5,8 @@
 #include "tier0/memdbgon.h"
 
 extern ConVar rd_reduce_motion;
-ConVar rd_main_menu_glow_rampup( "rd_main_menu_glow_rampup", "0.2", FCVAR_NONE, "How many seconds does it take an unfocused button on the main menu to become focused?" );
-ConVar rd_main_menu_glow_rampdown( "rd_main_menu_glow_rampdown", "0.5", FCVAR_NONE, "How many seconds does it take a focused button on the main menu to become unfocused?" );
+ConVar rd_main_menu_glow_rampup( "rd_main_menu_glow_rampup", "0.1", FCVAR_NONE, "How many seconds does it take an unfocused button on the main menu to become focused?" );
+ConVar rd_main_menu_glow_rampdown( "rd_main_menu_glow_rampdown", "0.25", FCVAR_NONE, "How many seconds does it take a focused button on the main menu to become unfocused?" );
 ConVar rd_main_menu_glow_period( "rd_main_menu_glow_period", "3", FCVAR_NONE, "How many seconds does it take a focused button on the main menu to fade in or out while remaining focused?" );
 ConVar rd_main_menu_glow_min( "rd_main_menu_glow_min", "192", FCVAR_NONE, "Fade out glow intensity." );
 ConVar rd_main_menu_glow_max( "rd_main_menu_glow_max", "255", FCVAR_NONE, "Full glow intensity." );
