@@ -229,16 +229,16 @@ inline CNetPropManager::PropInfo_t CNetPropManager::GetEntityPropInfo( CBaseEnti
 		NetPropType ePropType = (NetPropType)pSendProp->GetType();
 		if ( ePropType == Type_DataTable )
 		{
-			SendTable pArrayTable = *pSendProp->GetDataTable();
-			propInfo.m_nProps = pArrayTable.GetNumProps();
+			SendTable *pArrayTable = pSendProp->GetDataTable();
+			propInfo.m_nProps = pArrayTable->GetNumProps();
 
-			if ( element >= pArrayTable.GetNumProps() )
+			if ( element >= pArrayTable->GetNumProps() )
 			{
 				propInfo.m_eType = Type_InvalidOrMax;
 				propInfo.m_IsPropValid = false;
 				return propInfo;
 			}
-			pSendProp = pArrayTable.GetProp( element );
+			pSendProp = pArrayTable->GetProp( element );
 			propInfo.m_nOffset += pSendProp->GetOffset();
 		}
 		else if ( ePropType == Type_Array )
