@@ -19,6 +19,8 @@ DECLARE_BUILD_FACTORY( CRD_VGUI_Commander_Mini_Profile );
 CRD_VGUI_Commander_Mini_Profile::CRD_VGUI_Commander_Mini_Profile( vgui::Panel *parent, const char *panelName ) :
 	BaseClass( parent, panelName )
 {
+	SetConsoleStylePanel( true );
+
 	m_pImgAvatar = new CAvatarImagePanel( this, "ImgAvatar" );
 	m_pLblPlayerName = new vgui::Label( this, "LblPlayerName", L"" );
 	m_pImgPromotionIcon = new vgui::ImagePanel( this, "ImgPromotionIcon" );
@@ -72,8 +74,12 @@ void CRD_VGUI_Commander_Mini_Profile::OnCursorEntered()
 {
 	BaseClass::OnCursorEntered();
 
-	if ( m_bIsButton )
-		RequestFocus( 0 );
+	if ( m_bIsButton && GetParent() )
+	{
+		BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_FOCUS );
+
+		GetParent()->NavigateToChild( this );
+	}
 }
 
 void CRD_VGUI_Commander_Mini_Profile::PaintBackground()

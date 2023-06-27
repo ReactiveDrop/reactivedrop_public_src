@@ -81,7 +81,7 @@ void CommanderProfile::InitForLocalPlayer()
 	char szStatsWeb[256];
 	V_snprintf( szStatsWeb, sizeof( szStatsWeb ), "https://stats.reactivedrop.com/profiles/%I64u?lang=%s&utm_source=profilewip", m_SteamID.ConvertToUint64(), SteamApps()->GetCurrentGameLanguage() );
 	BaseModUI::CUIGameData::Get()->ExecuteOverlayUrl( szStatsWeb );
-	Close();
+	BaseModUI::CBaseModPanel::GetSingleton().OpenFrontScreen();
 }
 
 void CommanderProfile::InitForNetworkedPlayer( C_ASW_Player *pPlayer )
@@ -102,7 +102,7 @@ void CommanderProfile::InitForNetworkedPlayer( C_ASW_Player *pPlayer )
 	char szStatsWeb[256];
 	V_snprintf( szStatsWeb, sizeof( szStatsWeb ), "https://stats.reactivedrop.com/profiles/%I64u?lang=%s&utm_source=profilewip", m_SteamID.ConvertToUint64(), SteamApps()->GetCurrentGameLanguage() );
 	BaseModUI::CUIGameData::Get()->ExecuteOverlayUrl( szStatsWeb );
-	Close();
+	BaseModUI::CBaseModPanel::GetSingleton().OpenFrontScreen();
 }
 
 void CommanderProfile::InitForSteamID( CSteamID steamID )
@@ -119,7 +119,7 @@ void CommanderProfile::InitForSteamID( CSteamID steamID )
 	char szStatsWeb[256];
 	V_snprintf( szStatsWeb, sizeof( szStatsWeb ), "https://stats.reactivedrop.com/profiles/%I64u?lang=%s&utm_source=profilewip", m_SteamID.ConvertToUint64(), SteamApps()->GetCurrentGameLanguage() );
 	BaseModUI::CUIGameData::Get()->ExecuteOverlayUrl( szStatsWeb );
-	Close();
+	BaseModUI::CBaseModPanel::GetSingleton().OpenFrontScreen();
 }
 
 void CommanderProfile::FetchLocalMedals()
