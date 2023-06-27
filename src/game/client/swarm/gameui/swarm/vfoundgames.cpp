@@ -1372,16 +1372,12 @@ void FoundGames::OnCommand( const char *command )
 	else if ( V_strcmp( command, "#L4D360UI_SendMessage" ) == 0 )
 	{
 		CBaseModPanel::GetSingleton().PlayUISound( UISOUND_ACCEPT );
-		char steamCmd[64];
-		Q_snprintf( steamCmd, sizeof( steamCmd ), "chat/%llu", m_SelectedGamePlayerID );
-		CUIGameData::Get()->ExecuteOverlayCommand( steamCmd );
+		CUIGameData::Get()->ExecuteOverlayCommand( "chat", m_SelectedGamePlayerID );
 	}
 	else if ( V_strcmp( command, "#L4D360UI_ViewSteamID" ) == 0 )
 	{
 		CBaseModPanel::GetSingleton().PlayUISound( UISOUND_ACCEPT );
-		char steamCmd[64];
-		Q_snprintf( steamCmd, sizeof( steamCmd ), "steamid/%llu", m_SelectedGamePlayerID );
-		CUIGameData::Get()->ExecuteOverlayCommand( steamCmd );
+		CUIGameData::Get()->ExecuteOverlayCommand( "steamid", m_SelectedGamePlayerID );
 	}
 }
 

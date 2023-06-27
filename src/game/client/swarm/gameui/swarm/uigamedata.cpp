@@ -55,6 +55,7 @@
 
 #include "gameui_util.h"
 #include "rd_text_filtering.h"
+#include "rd_lobby_utils.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -425,15 +426,33 @@ void CUIGameData::OpenInviteUI( char const *szInviteUiType )
 		DevWarning( "OpenInviteUI with wrong parameter `%s`!\n", szInviteUiType );
 		Assert( 0 );
 	}
+#else
+	if ( SteamFriends() && SteamUtils() && SteamUtils()->IsOverlayEnabled() )
+	{
+		SteamFriends()->ActivateGameOverlayInviteDialog( UTIL_RD_GetCurrentLobbyID() );
+	}
+	else
+	{
+		DisplayOkOnlyMsgBox( NULL, "#RDUI_SteamOverlay_Title", "#RDUI_SteamOverlay_Text" );
+	}
 #endif
 }
 
 void CUIGameData::ExecuteOverlayCommand( char const *szCommand )
 {
+	CSteamID steamID;
+	if ( SteamUser() )
+		steamID = SteamUser()->GetSteamID();
+
+	ExecuteOverlayCommand( szCommand, steamID );
+}
+
+void CUIGameData::ExecuteOverlayCommand( char const *szCommand, CSteamID steamID )
+{
 #if !defined( _X360 ) && !defined( NO_STEAM )
 	if ( SteamFriends() && SteamUtils() && SteamUtils()->IsOverlayEnabled() )
 	{
-		SteamFriends()->ActivateGameOverlay( szCommand );
+		SteamFriends()->ActivateGameOverlayToUser( szCommand, steamID );
 	}
 	else
 	{

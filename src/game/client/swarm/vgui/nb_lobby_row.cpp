@@ -499,15 +499,11 @@ void CNB_Lobby_Row::OnCommand( const char *command )
 	}
 	else if ( !Q_stricmp( command, "#L4D360UI_SendMessage" ) )
 	{
-		char steamCmd[64];
-		Q_snprintf( steamCmd, sizeof( steamCmd ), "chat/%I64u", pMainPanel->m_FlyoutSteamID );
-		BaseModUI::CUIGameData::Get()->ExecuteOverlayCommand( steamCmd );
+		BaseModUI::CUIGameData::Get()->ExecuteOverlayCommand( "chat", pMainPanel->m_FlyoutSteamID );
 	}
 	else if ( !Q_stricmp( command, "#L4D360UI_ViewSteamID" ) )
 	{
-		char steamCmd[64];
-		Q_snprintf( steamCmd, sizeof( steamCmd ), "steamid/%I64u", pMainPanel->m_FlyoutSteamID );
-		BaseModUI::CUIGameData::Get()->ExecuteOverlayCommand( steamCmd );
+		BaseModUI::CUIGameData::Get()->ExecuteOverlayCommand( "steamid", pMainPanel->m_FlyoutSteamID );
 	}
 	else if ( !Q_stricmp( command, "#L4D360UI_ViewSteamStats" ) )
 	{

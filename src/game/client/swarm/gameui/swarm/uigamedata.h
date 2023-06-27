@@ -147,6 +147,7 @@ public:
 	void OpenFriendRequestPanel(int index, uint64 playerXuid);
 	void OpenInviteUI( char const *szInviteUiType );
 	void ExecuteOverlayCommand( char const *szCommand );
+	void ExecuteOverlayCommand( char const *szCommand, CSteamID steamID );
 	void ExecuteOverlayUrl( char const *szUrl, bool bModal = false, bool bOpenInBrowserIfOverlayDisabled = true );
 
 	// Listening for match events

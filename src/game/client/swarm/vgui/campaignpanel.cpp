@@ -1086,7 +1086,7 @@ void CampaignPanel::OnCommand( const char *command )
 #ifndef _X360 
 		if ( BaseModUI::CUIGameData::Get() )
 		{
-			BaseModUI::CUIGameData::Get()->ExecuteOverlayCommand( "LobbyInvite" );
+			BaseModUI::CUIGameData::Get()->OpenInviteUI( "friends" );
 		}
 #endif
 	}

@@ -125,10 +125,7 @@ void PlayerListLine::OnCommand( const char *command )
 			if ( pi.friendsID )
 			{
 				CSteamID steamIDForPlayer( pi.friendsID, 1, SteamUtils()->GetConnectedUniverse(), k_EAccountTypeIndividual );
-				uint64 id = steamIDForPlayer.ConvertToUint64();
-				char steamCmd[64];
-				Q_snprintf( steamCmd, sizeof( steamCmd ), "steamid/%I64u", id );
-				BaseModUI::CUIGameData::Get()->ExecuteOverlayCommand( steamCmd );
+				BaseModUI::CUIGameData::Get()->ExecuteOverlayCommand( "steamid", steamIDForPlayer );
 			}
 		}
 	}

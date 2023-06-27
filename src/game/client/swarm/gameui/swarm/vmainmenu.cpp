@@ -424,14 +424,7 @@ void MainMenu::OnCommand( const char *command )
 	}
 	else if ( char const *szInviteType = StringAfterPrefix( command, "InviteUI_" ) )
 	{
-		if ( IsX360() )
-		{
-			CUIGameData::Get()->OpenInviteUI( szInviteType );
-		}
-		else
-		{
-			CUIGameData::Get()->ExecuteOverlayCommand( "LobbyInvite" );
-		}
+		CUIGameData::Get()->OpenInviteUI( szInviteType );
 	}
 	else if (!Q_strcmp(command, "Game"))
 	{

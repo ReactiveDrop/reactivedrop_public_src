@@ -264,15 +264,11 @@ void CPlayerItem::OnCommand( const char *command )
 	}
 	else if ( !Q_strcmp( command, "#L4D360UI_SendMessage" ) )
 	{
-		char steamCmd[64];
-		Q_snprintf( steamCmd, sizeof( steamCmd ), "chat/%I64u", xuidPlayer );
-		CUIGameData::Get()->ExecuteOverlayCommand( steamCmd );
+		CUIGameData::Get()->ExecuteOverlayCommand( "chat", xuidPlayer );
 	}
 	else if ( !Q_strcmp( command, "#L4D360UI_ViewSteamID" ) )
 	{
-		char steamCmd[64];
-		Q_snprintf( steamCmd, sizeof( steamCmd ), "steamid/%I64u", xuidPlayer );
-		CUIGameData::Get()->ExecuteOverlayCommand( steamCmd );
+		CUIGameData::Get()->ExecuteOverlayCommand( "steamid", xuidPlayer );
 	}
 	else if ( !Q_strcmp( command, "#L4D360UI_MutePlayer" ) )
 	{
@@ -911,14 +907,7 @@ void GameLobby::OnCommand(const  char *command )
 	else if ( char const *szInviteType = StringAfterPrefix( command, "InviteUI_" ) )
 	{
 		FlyoutMenu::CloseActiveMenu();
-		if ( IsX360() )
-		{
-			CUIGameData::Get()->OpenInviteUI( szInviteType );
-		}
-		else
-		{
-			CUIGameData::Get()->ExecuteOverlayCommand( "LobbyInvite" );
-		}
+		CUIGameData::Get()->OpenInviteUI( szInviteType );
 	}
 	else
 	{
