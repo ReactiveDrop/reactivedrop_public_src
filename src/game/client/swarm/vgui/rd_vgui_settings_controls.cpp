@@ -2,6 +2,7 @@
 #include "rd_vgui_settings.h"
 #include <vgui/ILocalize.h>
 #include <vgui/ISurface.h>
+#include <vgui_controls/ImagePanel.h>
 #include <vgui_controls/Label.h>
 #include "gameui/swarm/vhybridbutton.h"
 #include "gameui/cvartogglecheckbutton.h"
@@ -17,6 +18,8 @@ CRD_VGUI_Bind::CRD_VGUI_Bind( vgui::Panel *parent, const char *panelName, const 
 {
 	Assert( g_RD_Steam_Input.IsSteamInputBind( szBind ) );
 
+	SetConsoleStylePanel( true );
+
 	V_strncpy( m_szLabel, szLabel, sizeof( m_szLabel ) );
 	V_strncpy( m_szBind, szBind, sizeof( m_szBind ) );
 	m_bUseRowLayout = bUseRowLayout;
@@ -24,7 +27,9 @@ CRD_VGUI_Bind::CRD_VGUI_Bind( vgui::Panel *parent, const char *panelName, const 
 	m_pLblKeyboardIcon = new vgui::Label( this, "LblKeyboardIcon", "" );
 	m_pLblKeyboardIconLong = new vgui::Label( this, "LblKeyboardIconLong", "" );
 	m_pPnlControllerIcon = new vgui::Panel( this, "PnlControllerIcon" );
+	m_pImgClearBind = new vgui::ImagePanel( this, "ImgClearBind" );
 	m_pLblDescription = new vgui::Label( this, "LblDescription", szLabel );
+	m_pLblNotBound = new vgui::Label( this, "LblNotBound", "" );
 }
 
 void CRD_VGUI_Bind::ApplySchemeSettings( vgui::IScheme *pScheme )
@@ -36,9 +41,18 @@ void CRD_VGUI_Bind::ApplySchemeSettings( vgui::IScheme *pScheme )
 	m_pLblDescription->SetText( m_szLabel );
 }
 
+void CRD_VGUI_Bind::NavigateTo()
+{
+	BaseClass::NavigateTo();
+
+	RequestFocus();
+}
+
 void CRD_VGUI_Bind::OnThink()
 {
 	BaseClass::OnThink();
+
+	m_pImgClearBind->SetVisible( false );
 
 	const char *szKeyBind = g_RD_Steam_Input.Key_LookupBindingEx( m_szBind, -1, 0, 0 );
 	if ( szKeyBind )
@@ -69,11 +83,13 @@ void CRD_VGUI_Bind::OnThink()
 				m_pLblKeyboardIconLong->SetText( "" );
 			}
 		}
+		m_pLblNotBound->SetVisible( false );
 	}
 	else
 	{
 		m_pLblKeyboardIcon->SetText( "" );
 		m_pLblKeyboardIconLong->SetText( "" );
+		m_pLblNotBound->SetVisible( true );
 	}
 }
 
@@ -81,12 +97,39 @@ void CRD_VGUI_Bind::Paint()
 {
 	BaseClass::Paint();
 
-	const char *szKeyBind = g_RD_Steam_Input.Key_LookupBindingEx( m_szBind, -1, 0, 1 );
-	if ( szKeyBind )
+	int x, y, w, t;
+	if ( m_bUseRowLayout )
 	{
-		int x, y;
-		m_pPnlControllerIcon->GetPos( x, y );
-		g_RD_Steam_Input.DrawLegacyControllerGlyph( szKeyBind, x, y, 0, 0, m_hButtonFont );
+		m_pLblKeyboardIcon->GetBounds( x, y, w, t );
+		vgui::surface()->DrawSetColor( 48, 56, 64, 255 );
+		vgui::surface()->DrawFilledRect( YRES( 1 ), y - YRES( 1 ), x + w + YRES( 1 ), y + t + YRES( 1 ) );
+
+		m_pLblDescription->GetBounds( x, y, w, t );
+		vgui::surface()->DrawSetColor( 12, 16, 20, 255 );
+		vgui::surface()->DrawFilledRect( x - YRES( 1 ), y - YRES( 1 ), x + w - YRES( 3 ), y + t + YRES( 1 ) );
+		vgui::surface()->DrawFilledRectFade( x + w - YRES( 3 ), y - YRES( 1 ), x + w + YRES( 1 ), y + t + YRES( 1 ), 255, 0, true );
+	}
+	else
+	{
+		m_pLblKeyboardIcon->GetBounds( x, y, w, t );
+		vgui::surface()->DrawSetColor( 12, 16, 20, 255 );
+		vgui::surface()->DrawFilledRect( x, y, x + w, y + t );
+	}
+
+	int nBindCount = 0;
+	while ( g_RD_Steam_Input.Key_LookupBindingEx( m_szBind, -1, nBindCount, 1 ) )
+		nBindCount++;
+
+	if ( nBindCount )
+	{
+		const char *szKeyBind = g_RD_Steam_Input.Key_LookupBindingEx( m_szBind, -1, int( Plat_FloatTime() ) % nBindCount, 1 );
+		Assert( szKeyBind );
+		if ( szKeyBind )
+		{
+			int x, y;
+			m_pPnlControllerIcon->GetPos( x, y );
+			g_RD_Steam_Input.DrawLegacyControllerGlyph( szKeyBind, x, y, 0, 0, m_hButtonFont );
+		}
 	}
 }
 
@@ -100,6 +143,7 @@ CRD_VGUI_Settings_Controls::CRD_VGUI_Settings_Controls( vgui::Panel *parent, con
 {
 	// Movement
 	m_pBindMoveForward = new CRD_VGUI_Bind( this, "BindMoveForward", "#ASW_GameUI_MoveForward", "+forward", false );
+	SetNavDown( m_pBindMoveForward );
 	m_pBindMoveLeft = new CRD_VGUI_Bind( this, "BindMoveLeft", "#ASW_GameUI_MoveLeft", "+moveleft", false );
 	m_pBindMoveBack = new CRD_VGUI_Bind( this, "BindMoveBack", "#ASW_GameUI_MoveBack", "+back", false );
 	m_pBindMoveRight = new CRD_VGUI_Bind( this, "BindMoveRight", "#ASW_GameUI_MoveRight", "+moveright", false );
@@ -113,7 +157,7 @@ CRD_VGUI_Settings_Controls::CRD_VGUI_Settings_Controls( vgui::Panel *parent, con
 	m_pSettingMovementStick->LinkToConVar( "joy_movement_stick", false );
 	m_pSettingAutoWalk = new CRD_VGUI_Option( this, "SettingAutoWalk", "#rd_controls_auto_walk", CRD_VGUI_Option::MODE_CHECKBOX );
 	m_pSettingAutoWalk->LinkToConVar( "joy_autowalk", false );
-	m_pSettingAutoAttack = new CRD_VGUI_Option( this, "SetingAutoAttack", "#rd_controls_auto_attack", CRD_VGUI_Option::MODE_CHECKBOX );
+	m_pSettingAutoAttack = new CRD_VGUI_Option( this, "SettingAutoAttack", "#rd_controls_auto_attack", CRD_VGUI_Option::MODE_CHECKBOX );
 	m_pSettingAutoAttack->LinkToConVar( "joy_autoattack", false );
 	m_pSettingAimToMovement = new CRD_VGUI_Option( this, "SettingAimToMovement", "#rd_controls_aim_to_movement", CRD_VGUI_Option::MODE_CHECKBOX );
 	m_pSettingAimToMovement->LinkToConVar( "joy_aim_to_movement", false );
@@ -190,5 +234,5 @@ CRD_VGUI_Settings_Controls::CRD_VGUI_Settings_Controls( vgui::Panel *parent, con
 
 void CRD_VGUI_Settings_Controls::Activate()
 {
-	Assert( !"TODO" );
+	NavigateToChild( m_pBindMoveForward );
 }

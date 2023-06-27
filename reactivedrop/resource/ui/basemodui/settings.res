@@ -19,6 +19,7 @@
 		"visible"				"1"
 		"enabled"				"1"
 		"navUp"					"BtnLogo"
+		"navDown"				"BtnControls"
 	}
 
 	"StockTickerHelper"
@@ -40,6 +41,9 @@
 		"tall"				"24"
 		"labelText"			"#rd_settings_controls"
 		"command"			"Controls"
+		"navLeft"			"BtnControls"
+		"navRight"			"BtnOptions"
+		"navUp"				"TopBar"
 	}
 
 	"BtnOptions"
@@ -53,6 +57,9 @@
 		"tall"				"24"
 		"labelText"			"#rd_settings_options"
 		"command"			"Options"
+		"navLeft"			"BtnControls"
+		"navRight"			"BtnAudio"
+		"navUp"				"TopBar"
 	}
 
 	"BtnAudio"
@@ -66,6 +73,9 @@
 		"tall"				"24"
 		"labelText"			"#rd_settings_audio"
 		"command"			"Audio"
+		"navLeft"			"BtnOptions"
+		"navRight"			"BtnVideo"
+		"navUp"				"TopBar"
 	}
 
 	"BtnVideo"
@@ -79,6 +89,9 @@
 		"tall"				"24"
 		"labelText"			"#rd_settings_video"
 		"command"			"Video"
+		"navLeft"			"BtnAudio"
+		"navRight"			"BtnAbout"
+		"navUp"				"TopBar"
 	}
 
 	"BtnAbout"
@@ -92,9 +105,13 @@
 		"tall"				"24"
 		"labelText"			"#rd_settings_about"
 		"command"			"About"
+		"navLeft"			"BtnVideo"
+		"navRight"			"BtnAbout"
+		"navUp"				"TopBar"
 	}
 
-	"PnlControls" {
+	"PnlControls"
+	{
 		"ControlName"		"CRD_VGUI_Settings_Controls"
 		"fieldName"			"PnlControls"
 		"xpos"				"c-305"
@@ -103,9 +120,11 @@
 		"tall"				"400"
 		"bgcolor_override"	"16 20 24 224"
 		"paintbackgroundtype"	"2"
+		"navUp"				"BtnControls"
 	}
 
-	"PnlOptions" {
+	"PnlOptions"
+	{
 		"ControlName"		"CRD_VGUI_Settings_Options"
 		"fieldName"			"PnlOptions"
 		"xpos"				"c-305"
@@ -114,9 +133,11 @@
 		"tall"				"400"
 		"bgcolor_override"	"16 20 24 224"
 		"paintbackgroundtype"	"2"
+		"navUp"				"BtnOptions"
 	}
 
-	"PnlAudio" {
+	"PnlAudio"
+	{
 		"ControlName"		"CRD_VGUI_Settings_Audio"
 		"fieldName"			"PnlAudio"
 		"xpos"				"c-305"
@@ -125,9 +146,11 @@
 		"tall"				"400"
 		"bgcolor_override"	"16 20 24 224"
 		"paintbackgroundtype"	"2"
+		"navUp"				"BtnAudio"
 	}
 
-	"PnlVideo" {
+	"PnlVideo"
+	{
 		"ControlName"		"CRD_VGUI_Settings_Video"
 		"fieldName"			"PnlVideo"
 		"xpos"				"c-305"
@@ -136,9 +159,11 @@
 		"tall"				"400"
 		"bgcolor_override"	"16 20 24 224"
 		"paintbackgroundtype"	"2"
+		"navUp"				"BtnVideo"
 	}
 
-	"PnlAbout" {
+	"PnlAbout"
+	{
 		"ControlName"		"CRD_VGUI_Settings_About"
 		"fieldName"			"PnlAbout"
 		"xpos"				"c-305"
@@ -147,5 +172,6 @@
 		"tall"				"400"
 		"bgcolor_override"	"16 20 24 224"
 		"paintbackgroundtype"	"2"
+		"navUp"				"BtnAbout"
 	}
 }

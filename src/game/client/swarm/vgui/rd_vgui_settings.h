@@ -56,6 +56,7 @@ public:
 	CRD_VGUI_Settings_Panel_Base( vgui::Panel *parent, const char *panelName );
 
 	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+	void NavigateTo() override;
 
 	virtual void Activate() = 0;
 	virtual BaseModUI::BaseModHybridButton *GetButton( BaseModUI::CRD_VGUI_Settings *pSettings ) = 0;
@@ -76,6 +77,8 @@ public:
 	};
 
 	CRD_VGUI_Option( vgui::Panel *parent, const char *panelName, const char *szLabel, Mode_t eMode = MODE_RADIO );
+
+	void NavigateTo() override;
 
 	// for MODE_RADIO and MODE_DROPDOWN
 	// can also be used for MODE_SLIDER, but iOption must be outside of the slider range
@@ -161,6 +164,7 @@ public:
 	CRD_VGUI_Bind( vgui::Panel *parent, const char *panelName, const char *szLabel, const char *szBind, bool bUseRowLayout );
 
 	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+	void NavigateTo() override;
 	void OnThink() override;
 	void Paint() override;
 
@@ -169,7 +173,9 @@ public:
 	vgui::Label *m_pLblKeyboardIcon;
 	vgui::Label *m_pLblKeyboardIconLong;
 	vgui::Panel *m_pPnlControllerIcon;
+	vgui::ImagePanel *m_pImgClearBind;
 	vgui::Label *m_pLblDescription;
+	vgui::Label *m_pLblNotBound;
 	char m_szLabel[256];
 	char m_szBind[63];
 	bool m_bUseRowLayout;

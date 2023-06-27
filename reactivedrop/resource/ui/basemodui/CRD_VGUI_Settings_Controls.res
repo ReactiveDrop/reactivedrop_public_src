@@ -8,6 +8,10 @@
 		"ypos"				"50"
 		"wide"				"32"
 		"tall"				"32"
+		"tabPosition"		"1"
+		"navLeft"			"BindMoveForward"
+		"navRight"			"BindWalk"
+		"navDown"			"BindMoveBack"
 	}
 
 	"BindMoveLeft"
@@ -18,6 +22,10 @@
 		"ypos"				"84"
 		"wide"				"32"
 		"tall"				"32"
+		"navLeft"			"BindMoveLeft"
+		"navRight"			"BindMoveBack"
+		"navUp"				"BindMoveForward"
+		"navDown"			"BindTextChat"
 	}
 
 	"BindMoveBack"
@@ -28,6 +36,10 @@
 		"ypos"				"84"
 		"wide"				"32"
 		"tall"				"32"
+		"navLeft"			"BindMoveLeft"
+		"navRight"			"BindMoveRight"
+		"navUp"				"BindMoveForward"
+		"navDown"			"BindTextChat"
 	}
 
 	"BindMoveRight"
@@ -38,6 +50,10 @@
 		"ypos"				"84"
 		"wide"				"32"
 		"tall"				"32"
+		"navLeft"			"BindMoveBack"
+		"navRight"			"BindJump"
+		"navUp"				"BindMoveForward"
+		"navDown"			"BindTextChat"
 	}
 
 	"BindWalk"
@@ -48,6 +64,9 @@
 		"ypos"				"50"
 		"wide"				"32"
 		"tall"				"32"
+		"navLeft"			"BindMoveForward"
+		"navRight"			"SettingMovementStick"
+		"navDown"			"BindJump"
 	}
 
 	"BindJump"
@@ -58,42 +77,93 @@
 		"ypos"				"84"
 		"wide"				"32"
 		"tall"				"32"
+		"navLeft"			"BindMoveRight"
+		"navRight"			"SettingControllerGlyphs"
+		"navUp"				"BindWalk"
+		"navDown"			"BindTextChat"
 	}
 
 	"SettingMovementStick"
 	{
 		"ControlName"		"CRD_VGUI_Option"
 		"fieldName"			"SettingMovementStick"
+		"xpos"				"182"
+		"ypos"				"50"
+		"wide"				"220"
+		"tall"				"12"
+		"navLeft"			"BindWalk"
+		"navRight"			"BindPrimaryAttack"
+		"navDown"			"SettingAutoWalk"
 	}
 
 	"SettingAutoWalk"
 	{
 		"ControlName"		"CRD_VGUI_Option"
 		"fieldName"			"SettingAutoWalk"
+		"xpos"				"182"
+		"ypos"				"62"
+		"wide"				"220"
+		"tall"				"12"
+		"navLeft"			"BindWalk"
+		"navRight"			"BindPrimaryAttack"
+		"navUp"				"SettingMovementStick"
+		"navDown"			"SettingAutoAttack"
 	}
 
 	"SettingAutoAttack"
 	{
 		"ControlName"		"CRD_VGUI_Option"
 		"fieldName"			"SettingAutoAttack"
+		"xpos"				"182"
+		"ypos"				"74"
+		"wide"				"220"
+		"tall"				"12"
+		"navLeft"			"BindWalk"
+		"navRight"			"BindPrimaryAttack"
+		"navUp"				"SettingAutoWalk"
+		"navDown"			"SettingAimToMovement"
 	}
 
 	"SettingAimToMovement"
 	{
 		"ControlName"		"CRD_VGUI_Option"
 		"fieldName"			"SettingAimToMovement"
+		"xpos"				"182"
+		"ypos"				"86"
+		"wide"				"220"
+		"tall"				"12"
+		"navLeft"			"BindJump"
+		"navRight"			"BindSwapWeapons"
+		"navUp"				"SettingAutoAttack"
+		"navDown"			"SettingInvertY"
 	}
 
 	"SettingInvertY"
 	{
 		"ControlName"		"CRD_VGUI_Option"
 		"fieldName"			"SettingInvertY"
+		"xpos"				"182"
+		"ypos"				"98"
+		"wide"				"220"
+		"tall"				"12"
+		"navLeft"			"BindJump"
+		"navRight"			"BindSwapWeapons"
+		"navUp"				"SettingAimToMovement"
+		"navDown"			"SettingControllerGlyphs"
 	}
 
 	"SettingControllerGlyphs"
 	{
 		"ControlName"		"CRD_VGUI_Option"
 		"fieldName"			"SettingControllerGlyphs"
+		"xpos"				"182"
+		"ypos"				"110"
+		"wide"				"220"
+		"tall"				"12"
+		"navLeft"			"BindJump"
+		"navRight"			"BindSwapWeapons"
+		"navUp"				"SettingInvertY"
+		"navDown"			"BindActivatePrimary"
 	}
 
 	"BindPrimaryAttack"
@@ -104,6 +174,9 @@
 		"ypos"				"50"
 		"wide"				"32"
 		"tall"				"32"
+		"navLeft"			"SettingMovementStick"
+		"navRight"			"BindSecondaryAttack"
+		"navDown"			"BindSwapWeapons"
 	}
 
 	"BindSecondaryAttack"
@@ -114,6 +187,9 @@
 		"ypos"				"50"
 		"wide"				"32"
 		"tall"				"32"
+		"navLeft"			"BindPrimaryAttack"
+		"navRight"			"BindUse"
+		"navDown"			"BindMeleeAttack"
 	}
 
 	"BindUse"
@@ -124,6 +200,9 @@
 		"ypos"				"50"
 		"wide"				"32"
 		"tall"				"32"
+		"navLeft"			"BindSecondaryAttack"
+		"navRight"			"BindSelectPrimary"
+		"navDown"			"BindReload"
 	}
 
 	"BindSelectPrimary"
@@ -134,6 +213,9 @@
 		"ypos"				"50"
 		"wide"				"32"
 		"tall"				"32"
+		"navLeft"			"BindUse"
+		"navRight"			"BindDropWeapon"
+		"navDown"			"BindSelectSecondary"
 	}
 
 	"BindDropWeapon"
@@ -144,6 +226,9 @@
 		"ypos"				"50"
 		"wide"				"32"
 		"tall"				"32"
+		"navLeft"			"BindSelectPrimary"
+		"navRight"			"BindDropWeapon"
+		"navDown"			"BindDropEquipment"
 	}
 
 	"BindSwapWeapons"
@@ -154,6 +239,10 @@
 		"ypos"				"84"
 		"wide"				"32"
 		"tall"				"32"
+		"navLeft"			"SettingControllerGlyphs"
+		"navRight"			"BindMeleeAttack"
+		"navUp"				"BindPrimaryAttack"
+		"navDown"			"BindSelectMarine0"
 	}
 
 	"BindMeleeAttack"
@@ -164,6 +253,10 @@
 		"ypos"				"84"
 		"wide"				"32"
 		"tall"				"32"
+		"navLeft"			"BindSwapWeapons"
+		"navRight"			"BindReload"
+		"navUp"				"BindSecondaryAttack"
+		"navDown"			"BindSelectMarine0"
 	}
 
 	"BindReload"
@@ -174,6 +267,10 @@
 		"ypos"				"84"
 		"wide"				"32"
 		"tall"				"32"
+		"navLeft"			"BindMeleeAttack"
+		"navRight"			"BindSelectSecondary"
+		"navUp"				"BindUse"
+		"navDown"			"BindSelectMarine0"
 	}
 
 	"BindSelectSecondary"
@@ -184,6 +281,10 @@
 		"ypos"				"84"
 		"wide"				"32"
 		"tall"				"32"
+		"navLeft"			"BindReload"
+		"navRight"			"BindDropEquipment"
+		"navUp"				"BindSelectPrimary"
+		"navDown"			"BindSelectMarine0"
 	}
 
 	"BindDropEquipment"
@@ -194,6 +295,10 @@
 		"ypos"				"84"
 		"wide"				"32"
 		"tall"				"32"
+		"navLeft"			"BindSelectSecondary"
+		"navRight"			"BindDropEquipment"
+		"navUp"				"BindDropWeapon"
+		"navDown"			"BindSelectMarine0"
 	}
 
 	"BindTextChat"
@@ -204,6 +309,10 @@
 		"ypos"				"148"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindTextChat"
+		"navRight"			"BindActivatePrimary"
+		"navUp"				"BindMoveBack"
+		"navDown"			"BindVoiceChat"
 	}
 
 	"BindVoiceChat"
@@ -214,6 +323,10 @@
 		"ypos"				"160"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindVoiceChat"
+		"navRight"			"BindActivateSecondary"
+		"navUp"				"BindTextChat"
+		"navDown"			"BindWheelDefault"
 	}
 
 	"BindWheelDefault"
@@ -224,6 +337,10 @@
 		"ypos"				"172"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindWheelDefault"
+		"navRight"			"BindActivateEquipment0"
+		"navUp"				"BindVoiceChat"
+		"navDown"			"BindEmoteGo"
 	}
 
 	"BindEmoteGo"
@@ -234,6 +351,10 @@
 		"ypos"				"184"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindEmoteGo"
+		"navRight"			"BindActivateEquipment1"
+		"navUp"				"BindWheelDefault"
+		"navDown"			"BindEmoteStop"
 	}
 
 	"BindEmoteStop"
@@ -244,6 +365,10 @@
 		"ypos"				"196"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindEmoteStop"
+		"navRight"			"BindActivateEquipment2"
+		"navUp"				"BindEmoteGo"
+		"navDown"			"BindMarinePosition"
 	}
 
 	"BindMarinePosition"
@@ -254,6 +379,10 @@
 		"ypos"				"208"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindMarinePosition"
+		"navRight"			"BindActivateEquipment3"
+		"navUp"				"BindEmoteStop"
+		"navDown"			"BindEmoteMedic"
 	}
 
 	"BindEmoteMedic"
@@ -264,6 +393,10 @@
 		"ypos"				"220"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindEmoteMedic"
+		"navRight"			"BindActivateEquipment4"
+		"navUp"				"BindMarinePosition"
+		"navDown"			"BindEmoteAmmo"
 	}
 
 	"BindEmoteAmmo"
@@ -274,6 +407,10 @@
 		"ypos"				"232"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindEmoteAmmo"
+		"navRight"			"BindActivateEquipment5"
+		"navUp"				"BindEmoteMedic"
+		"navDown"			"BindEmoteQuestion"
 	}
 
 	"BindEmoteQuestion"
@@ -284,6 +421,10 @@
 		"ypos"				"244"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindEmoteQuestion"
+		"navRight"			"BindActivateEquipment6"
+		"navUp"				"BindEmoteAmmo"
+		"navDown"			"BindEmoteExclaim"
 	}
 
 	"BindEmoteExclaim"
@@ -294,6 +435,10 @@
 		"ypos"				"256"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindEmoteExclaim"
+		"navRight"			"BindActivateEquipment7"
+		"navUp"				"BindEmoteQuestion"
+		"navDown"			"BindVoteYes"
 	}
 
 	"BindVoteYes"
@@ -304,6 +449,10 @@
 		"ypos"				"268"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindVoteYes"
+		"navRight"			"BindWheelEquipment"
+		"navUp"				"BindEmoteExclaim"
+		"navDown"			"BindVoteNo"
 	}
 
 	"BindVoteNo"
@@ -314,6 +463,10 @@
 		"ypos"				"280"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindVoteNo"
+		"navRight"			"BindWheelEquipment1"
+		"navUp"				"BindVoteYes"
+		"navDown"			"BindMissionOverview"
 	}
 
 	"BindMissionOverview"
@@ -324,6 +477,24 @@
 		"ypos"				"292"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindMissionOverview"
+		"navRight"			"BindWheelEquipment2"
+		"navUp"				"BindVoteNo"
+		"navDown"			"BindPlayerList"
+	}
+
+	"BindPlayerList"
+	{
+		"ControlName"		"CRD_VGUI_Bind"
+		"fieldName"			"BindPlayerList"
+		"xpos"				"16"
+		"ypos"				"304"
+		"wide"				"176"
+		"tall"				"12"
+		"navLeft"			"BindPlayerList"
+		"navRight"			"BindWheelEquipment2"
+		"navUp"				"BindMissionOverview"
+		"navDown"			"BindRotateCameraLeft"
 	}
 
 	"BindRotateCameraLeft"
@@ -331,9 +502,13 @@
 		"ControlName"		"CRD_VGUI_Bind"
 		"fieldName"			"BindRotateCameraLeft"
 		"xpos"				"16"
-		"ypos"				"304"
+		"ypos"				"316"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindRotateCameraLeft"
+		"navRight"			"BindWheelEquipment2"
+		"navUp"				"BindPlayerList"
+		"navDown"			"BindRotateCameraRight"
 	}
 
 	"BindRotateCameraRight"
@@ -341,9 +516,13 @@
 		"ControlName"		"CRD_VGUI_Bind"
 		"fieldName"			"BindRotateCameraRight"
 		"xpos"				"16"
-		"ypos"				"316"
+		"ypos"				"328"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindRotateCameraRight"
+		"navRight"			"BindWheelEquipment2"
+		"navUp"				"BindRotateCameraLeft"
+		"navDown"			"BindSecondaryAttackAlt"
 	}
 
 	"BindSecondaryAttackAlt"
@@ -351,9 +530,13 @@
 		"ControlName"		"CRD_VGUI_Bind"
 		"fieldName"			"BindSecondaryAttackAlt"
 		"xpos"				"16"
-		"ypos"				"328"
+		"ypos"				"340"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindSecondaryAttackAlt"
+		"navRight"			"BindWheelEquipment2"
+		"navUp"				"BindRotateCameraRight"
+		"navDown"			"BindChooseMarine"
 	}
 
 	"BindChooseMarine"
@@ -361,9 +544,13 @@
 		"ControlName"		"CRD_VGUI_Bind"
 		"fieldName"			"BindChooseMarine"
 		"xpos"				"16"
-		"ypos"				"340"
+		"ypos"				"352"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindChooseMarine"
+		"navRight"			"BindWheelEquipment2"
+		"navUp"				"BindSecondaryAttackAlt"
+		"navDown"			"BtnResetDefaults"
 	}
 
 	"BindActivatePrimary"
@@ -374,6 +561,10 @@
 		"ypos"				"148"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindTextChat"
+		"navRight"			"BindSelectMarine0"
+		"navUp"				"SettingControllerGlyphs"
+		"navDown"			"BindActivateSecondary"
 	}
 
 	"BindActivateSecondary"
@@ -384,6 +575,10 @@
 		"ypos"				"160"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindVoiceChat"
+		"navRight"			"BindSelectMarine1"
+		"navUp"				"BindActivatePrimary"
+		"navDown"			"BindActivateEquipment0"
 	}
 
 	"BindActivateEquipment0"
@@ -394,6 +589,10 @@
 		"ypos"				"172"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindWheelDefault"
+		"navRight"			"BindSelectMarine2"
+		"navUp"				"BindActivateSecondary"
+		"navDown"			"BindActivateEquipment1"
 	}
 
 	"BindActivateEquipment1"
@@ -404,6 +603,10 @@
 		"ypos"				"184"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindEmoteGo"
+		"navRight"			"BindSelectMarine3"
+		"navUp"				"BindActivateEquipment0"
+		"navDown"			"BindActivateEquipment2"
 	}
 
 	"BindActivateEquipment2"
@@ -414,6 +617,10 @@
 		"ypos"				"196"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindEmoteStop"
+		"navRight"			"BindSelectMarine4"
+		"navUp"				"BindActivateEquipment1"
+		"navDown"			"BindActivateEquipment3"
 	}
 
 	"BindActivateEquipment3"
@@ -424,6 +631,10 @@
 		"ypos"				"208"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindMarinePosition"
+		"navRight"			"BindSelectMarine5"
+		"navUp"				"BindActivateEquipment2"
+		"navDown"			"BindActivateEquipment4"
 	}
 
 	"BindActivateEquipment4"
@@ -434,6 +645,10 @@
 		"ypos"				"220"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindEmoteMedic"
+		"navRight"			"BindSelectMarine6"
+		"navUp"				"BindActivateEquipment3"
+		"navDown"			"BindActivateEquipment5"
 	}
 
 	"BindActivateEquipment5"
@@ -444,6 +659,10 @@
 		"ypos"				"232"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindEmoteAmmo"
+		"navRight"			"BindSelectMarine7"
+		"navUp"				"BindActivateEquipment4"
+		"navDown"			"BindActivateEquipment6"
 	}
 
 	"BindActivateEquipment6"
@@ -454,6 +673,10 @@
 		"ypos"				"244"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindEmoteQuestion"
+		"navRight"			"BindWheelMarine"
+		"navUp"				"BindActivateEquipment5"
+		"navDown"			"BindActivateEquipment7"
 	}
 
 	"BindActivateEquipment7"
@@ -464,6 +687,10 @@
 		"ypos"				"256"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindEmoteExclaim"
+		"navRight"			"BindWheelMarine"
+		"navUp"				"BindActivateEquipment6"
+		"navDown"			"BindWheelEquipment"
 	}
 
 	"BindWheelEquipment"
@@ -474,6 +701,10 @@
 		"ypos"				"268"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindVoteYes"
+		"navRight"			"BtnCustomWheels"
+		"navUp"				"BindActivateEquipment7"
+		"navDown"			"BindWheelEquipment1"
 	}
 
 	"BindWheelEquipment1"
@@ -484,6 +715,10 @@
 		"ypos"				"280"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindVoteNo"
+		"navRight"			"BtnCustomWheels"
+		"navUp"				"BindWheelEquipment"
+		"navDown"			"BindWheelEquipment2"
 	}
 
 	"BindWheelEquipment2"
@@ -494,6 +729,10 @@
 		"ypos"				"292"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindMissionOverview"
+		"navRight"			"BtnCustomWheels"
+		"navUp"				"BindWheelEquipment1"
+		"navDown"			"BindWheelEquipment2"
 	}
 
 	"BindSelectMarine0"
@@ -504,6 +743,10 @@
 		"ypos"				"148"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindActivatePrimary"
+		"navRight"			"BindSelectMarine0"
+		"navUp"				"BindReload"
+		"navDown"			"BindSelectMarine1"
 	}
 
 	"BindSelectMarine1"
@@ -514,6 +757,10 @@
 		"ypos"				"160"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindActivateSecondary"
+		"navRight"			"BindSelectMarine1"
+		"navUp"				"BindSelectMarine0"
+		"navDown"			"BindSelectMarine2"
 	}
 
 	"BindSelectMarine2"
@@ -524,6 +771,10 @@
 		"ypos"				"172"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindActivateEquipment0"
+		"navRight"			"BindSelectMarine2"
+		"navUp"				"BindSelectMarine1"
+		"navDown"			"BindSelectMarine3"
 	}
 
 	"BindSelectMarine3"
@@ -534,6 +785,10 @@
 		"ypos"				"184"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindActivateEquipment1"
+		"navRight"			"BindSelectMarine3"
+		"navUp"				"BindSelectMarine2"
+		"navDown"			"BindSelectMarine4"
 	}
 
 	"BindSelectMarine4"
@@ -544,6 +799,10 @@
 		"ypos"				"196"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindActivateEquipment2"
+		"navRight"			"BindSelectMarine4"
+		"navUp"				"BindSelectMarine3"
+		"navDown"			"BindSelectMarine5"
 	}
 
 	"BindSelectMarine5"
@@ -554,6 +813,10 @@
 		"ypos"				"208"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindActivateEquipment3"
+		"navRight"			"BindSelectMarine5"
+		"navUp"				"BindSelectMarine4"
+		"navDown"			"BindSelectMarine6"
 	}
 
 	"BindSelectMarine6"
@@ -564,6 +827,10 @@
 		"ypos"				"220"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindActivateEquipment4"
+		"navRight"			"BindSelectMarine6"
+		"navUp"				"BindSelectMarine5"
+		"navDown"			"BindSelectMarine7"
 	}
 
 	"BindSelectMarine7"
@@ -574,6 +841,10 @@
 		"ypos"				"232"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindActivateEquipment5"
+		"navRight"			"BindSelectMarine7"
+		"navUp"				"BindSelectMarine6"
+		"navDown"			"BindWheelMarine"
 	}
 
 	"BindWheelMarine"
@@ -584,6 +855,10 @@
 		"ypos"				"244"
 		"wide"				"176"
 		"tall"				"12"
+		"navLeft"			"BindActivateEquipment6"
+		"navRight"			"BindWheelMarine"
+		"navUp"				"BindSelectMarine7"
+		"navDown"			"BtnCustomWheels"
 	}
 
 	"BtnCustomWheels"
@@ -596,6 +871,10 @@
 		"tall"				"48"
 		"label"				"#rd_manage_custom_chat_wheels"
 		"command"			"ManageWheels"
+		"navLeft"			"BindWheelEquipment2"
+		"navRight"			"BtnCustomWheels"
+		"navUp"				"BindWheelMarine"
+		"navDown"			"SettingDeveloperConsole"
 	}
 
 	"BtnResetDefaults"
@@ -605,9 +884,13 @@
 		"xpos"				"8"
 		"ypos"				"380"
 		"wide"				"200"
-		"tall"				"12"
+		"tall"				"18"
 		"label"				"#L4D360UI_Controller_Default"
 		"command"			"ResetDefaults"
+		"navLeft"			"BtnResetDefaults"
+		"navRight"			"SettingDeveloperConsole"
+		"navUp"				"BindChooseMarine"
+		"navDown"			"BtnResetDefaults"
 	}
 
 	"SettingDeveloperConsole"
@@ -617,6 +900,94 @@
 		"xpos"				"402"
 		"ypos"				"380"
 		"wide"				"200"
-		"tall"				"12"
+		"tall"				"18"
+		"navLeft"			"BtnResetDefaults"
+		"navRight"			"SettingDeveloperConsole"
+		"navUp"				"BtnCustomWheels"
+		"navDown"			"SettingDeveloperConsole"
+	}
+
+	"LblMovement"
+	{
+		"ControlName"		"Label"
+		"fieldName"			"LblMovement"
+		"xpos"				"8"
+		"ypos"				"32"
+		"zpos"				"-1"
+		"wide"				"158"
+		"tall"				"92"
+		"textAlignment"		"north-west"
+		"labelText"			"#rd_controls_category_movement"
+		"font"				"DefaultMedium"
+	}
+
+	"LblController"
+	{
+		"ControlName"		"Label"
+		"fieldName"			"LblController"
+		"xpos"				"174"
+		"ypos"				"32"
+		"zpos"				"-1"
+		"wide"				"236"
+		"tall"				"92"
+		"textAlignment"		"north-west"
+		"labelText"			"#rd_controls_category_controller"
+		"font"				"DefaultMedium"
+	}
+
+	"LblActions"
+	{
+		"ControlName"		"Label"
+		"fieldName"			"LblActions"
+		"xpos"				"418"
+		"ypos"				"32"
+		"zpos"				"-1"
+		"wide"				"184"
+		"tall"				"92"
+		"textAlignment"		"north-west"
+		"labelText"			"#rd_controls_category_actions"
+		"font"				"DefaultMedium"
+	}
+
+	"LblSocialExtras"
+	{
+		"ControlName"		"Label"
+		"fieldName"			"LblSocialExtras"
+		"xpos"				"8"
+		"ypos"				"132"
+		"zpos"				"-1"
+		"wide"				"192"
+		"tall"				"240"
+		"textAlignment"		"north-west"
+		"labelText"			"#rd_controls_category_social_and_extras"
+		"font"				"DefaultMedium"
+	}
+
+	"LblUseEquipment"
+	{
+		"ControlName"		"Label"
+		"fieldName"			"LblUseEquipment"
+		"xpos"				"209"
+		"ypos"				"132"
+		"zpos"				"-1"
+		"wide"				"192"
+		"tall"				"180"
+		"textAlignment"		"north-west"
+		"labelText"			"#rd_controls_category_use_equipment"
+		"font"				"DefaultMedium"
+	}
+
+	"LblSelectMarine"
+	{
+		"ControlName"		"Label"
+		"fieldName"			"LblSelectMarine"
+		"xpos"				"410"
+		"ypos"				"132"
+		"zpos"				"-1"
+		"wide"				"192"
+		"tall"				"132"
+		"textAlignment"		"north-west"
+		"labelText"			"#rd_controls_category_select_marine"
+		"font"				"DefaultMedium"
 	}
 }

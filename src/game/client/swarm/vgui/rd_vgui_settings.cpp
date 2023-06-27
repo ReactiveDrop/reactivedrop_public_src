@@ -50,6 +50,13 @@ void CRD_VGUI_Settings::ApplySchemeSettings( vgui::IScheme *pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
+	// I don't know why these aren't working from the .res file.
+	m_pBtnControls->SetNavUp( m_pTopBar );
+	m_pBtnOptions->SetNavUp( m_pTopBar );
+	m_pBtnAudio->SetNavUp( m_pTopBar );
+	m_pBtnVideo->SetNavUp( m_pTopBar );
+	m_pBtnAbout->SetNavUp( m_pTopBar );
+
 	if ( !V_stricmp( rd_settings_last_tab.GetString(), "controls" ) )
 	{
 		NavigateToTab( m_pBtnControls, m_pPnlControls, null );
@@ -108,6 +115,11 @@ void CRD_VGUI_Settings::NavigateToTab( BaseModHybridButton *pButton, CRD_VGUI_Se
 	m_pPnlAudio->SetVisible( m_pPnlAudio == pPanel );
 	m_pPnlVideo->SetVisible( m_pPnlVideo == pPanel );
 	m_pPnlAbout->SetVisible( m_pPnlAbout == pPanel );
+	m_pBtnControls->SetNavDown( pPanel );
+	m_pBtnOptions->SetNavDown( pPanel );
+	m_pBtnAudio->SetNavDown( pPanel );
+	m_pBtnVideo->SetNavDown( pPanel );
+	m_pBtnAbout->SetNavDown( pPanel );
 	NavigateToChild( pPanel );
 	pPanel->Activate();
 	pPanel->InvalidateLayout();
@@ -122,6 +134,7 @@ void CRD_VGUI_Settings::NavigateToTab( BaseModHybridButton *pButton, CRD_VGUI_Se
 CRD_VGUI_Settings_Panel_Base::CRD_VGUI_Settings_Panel_Base( vgui::Panel *parent, const char *panelName ) :
 	BaseClass( parent, panelName )
 {
+	SetConsoleStylePanel( true );
 }
 
 void CRD_VGUI_Settings_Panel_Base::ApplySchemeSettings( vgui::IScheme *pScheme )
@@ -133,12 +146,37 @@ void CRD_VGUI_Settings_Panel_Base::ApplySchemeSettings( vgui::IScheme *pScheme )
 	LoadControlSettings( szResourceFile, "GAME" );
 }
 
+void CRD_VGUI_Settings_Panel_Base::NavigateTo()
+{
+	// navigate twice so we end up on a button
+	if ( GetLastNavDirection() == ND_DOWN && NavigateDown() )
+	{
+		return;
+	}
+
+	if ( GetLastNavDirection() == ND_UP && NavigateUp() )
+	{
+		return;
+	}
+
+	BaseClass::NavigateTo();
+}
+
 CRD_VGUI_Option::CRD_VGUI_Option( vgui::Panel *parent, const char *panelName, const char *szLabel, Mode_t eMode ) :
 	BaseClass{ parent, panelName },
 	m_eMode{ eMode }
 {
+	SetConsoleStylePanel( true );
+
 	m_pLblFieldName = new vgui::Label( this, "LblFieldName", szLabel );
 	m_pLblHint = new vgui::Label( this, "LblHint", "" );
+}
+
+void CRD_VGUI_Option::NavigateTo()
+{
+	BaseClass::NavigateTo();
+
+	RequestFocus();
 }
 
 void CRD_VGUI_Option::RemoveAllOptions()
