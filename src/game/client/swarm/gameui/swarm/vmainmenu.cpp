@@ -1946,9 +1946,9 @@ void MainMenu::MaybeShowTooltip( vgui::Panel *pPanel, const char *szTitle, const
 	if ( !bFocused )
 		return;
 
-	g_hBriefingTooltip->SetTooltipIgnoresCursor( true );
-
 	BriefingTooltip::EnsureParent( this );
+	if ( g_hBriefingTooltip )
+		g_hBriefingTooltip->SetTooltipIgnoresCursor( true );
 	if ( g_hBriefingTooltip && g_hBriefingTooltip->GetTooltipPanel() != pPanel )
 	{
 		int x, y, w, t;
