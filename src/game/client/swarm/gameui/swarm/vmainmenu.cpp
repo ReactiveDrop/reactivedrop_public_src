@@ -77,6 +77,10 @@ static void ActivateMainMenuAgain( IConVar *pConVar, const char *szOldValue, flo
 	}
 }
 ConVar rd_hoiaf_leaderboard_friends_only( "rd_hoiaf_leaderboard_friends_only", "0", FCVAR_ARCHIVE, "Only show friends on the main menu HoIAF leaderboard?", ActivateMainMenuAgain );
+ConVar rd_main_menu_idle_timeout( "rd_main_menu_idle_timeout", "90", FCVAR_NONE );
+ConVar rd_main_menu_slide_in_time( "rd_main_menu_slide_in_time", "0.75", FCVAR_NONE );
+ConVar rd_main_menu_slide_out_time( "rd_main_menu_slide_out_time", "2.5", FCVAR_NONE );
+extern ConVar rd_reduce_motion;
 extern ConVar mm_max_players;
 ConVar rd_last_game_access( "rd_last_game_access", "public", FCVAR_ARCHIVE, "Remembers the last game access setting (public or friends) for a lobby created from the main menu." );
 ConVar rd_last_game_difficulty( "rd_last_game_difficulty", "normal", FCVAR_ARCHIVE, "Remembers the last game difficulty setting (easy/normal/hard/insane/imba) for a lobby created from the main menu." );
@@ -1078,6 +1082,105 @@ void MainMenu::OnThink()
 		m_iLastTimerUpdate = iCurrentMinute;
 	}
 
+	if ( m_bGrabPanelLocations )
+	{
+		int discard;
+
+		m_bHavePanelLocations = true;
+
+		// top
+		m_pTopBar->GetPos( discard, m_iTargetYTopBar );
+
+		// left
+		m_pCommanderProfile->GetPos( m_iTargetXCommanderProfile, discard );
+		m_pBtnMultiplayer->GetPos( m_iTargetXCreateLobby, discard );
+		m_pBtnSingleplayer->GetPos( m_iTargetXSingleplayer, discard );
+		m_pPnlQuickJoinPublic->GetPos( m_iTargetXQuickJoinPublic, discard );
+		m_pPnlQuickJoin->GetPos( m_iTargetXQuickJoinFriends, discard );
+		m_pBtnWorkshopShowcase->GetPos( m_iTargetXWorkshopShowcase, discard );
+
+		// right
+		for ( int i = 0; i < NELEMS( m_pTopLeaderboardEntries ); i++ )
+			m_pTopLeaderboardEntries[i]->GetPos( m_iTargetXHoIAFLeaderboard[i], discard );
+		m_pBtnHoIAFTimer->GetPos( m_iTargetXHoIAFTimer, discard );
+		for ( int i = 0; i < NELEMS( m_pBtnEventTimer ); i++ )
+			m_pBtnEventTimer[i]->GetPos( m_iTargetXEventTimer[i], discard );
+		m_pBtnNewsShowcase->GetPos( m_iTargetXNewsShowcase, discard );
+		m_pBtnUpdateNotes->GetPos( m_iTargetXUpdateNotes, discard );
+
+		// bottom
+		m_pStockTickerHelper->GetPos( discard, m_iTargetYStockTicker );
+	}
+
+	if ( g_pInputSystem->GetEventCount() )
+		m_flLastActiveTime = Plat_FloatTime();
+
+	if ( m_bHavePanelLocations )
+	{
+		bool bWasMin = m_iInactiveHideMainMenu == 0;
+		bool bWasMax = m_iInactiveHideMainMenu == 65535;
+		bool bMenuActive = rd_main_menu_idle_timeout.GetFloat() <= 0 || Plat_FloatTime() - m_flLastActiveTime < rd_main_menu_idle_timeout.GetFloat();
+		if ( rd_reduce_motion.GetBool() )
+		{
+			m_iInactiveHideMainMenu = bMenuActive ? 65535 : 0;
+		}
+		else
+		{
+			int iSlide = m_iInactiveHideMainMenu;
+			float flRampTime = bMenuActive ? rd_main_menu_slide_in_time.GetFloat() : rd_main_menu_slide_out_time.GetFloat();
+			if ( flRampTime <= 0 )
+				iSlide = bMenuActive ? 65535 : 0;
+			else if ( bMenuActive )
+				iSlide += gpGlobals->absoluteframetime / flRampTime * 65535;
+			else
+				iSlide -= gpGlobals->absoluteframetime / flRampTime * 65535;
+
+			m_iInactiveHideMainMenu = uint16( clamp<int>( iSlide, 0, 65535 ) );
+		}
+
+		m_InactiveHideQuickJoinPublic.Update( m_pPnlQuickJoinPublic->IsVisible() );
+		m_InactiveHideQuickJoinFriends.Update( m_pPnlQuickJoin->IsVisible() );
+
+		uint16 iSlideState = m_iInactiveHideMainMenu;
+		m_pBranchDisclaimer->SetAlpha( RemapValClamped( iSlideState, 32768, 65535, 0, 255 ) );
+
+		int x, y;
+		int offx = ScreenWidth() / 2;
+		int offy = ScreenHeight() / 8;
+#define UPDATE_PANEL_SLIDE( pPanel, iTarget, axis, sign, start, end ) \
+			if ( false ) ; \
+			else \
+			{ \
+				pPanel->GetPos( x, y ); \
+				axis = iTarget + RemapValClamped( iSlideState / 65535.0f, start, end, sign off##axis, 0 ); \
+				pPanel->SetPos( x, y ); \
+			}
+		if ( m_bGrabPanelLocations || ( !( bWasMin && iSlideState == 0 ) && !( bWasMax && iSlideState == 65535 ) ) )
+		{
+			UPDATE_PANEL_SLIDE( m_pTopBar, m_iTargetYTopBar, y, -, 0.65f, 0.95f );
+			UPDATE_PANEL_SLIDE( m_pCommanderProfile, m_iTargetXCommanderProfile, x, -, 0.2f, 0.8f );
+			UPDATE_PANEL_SLIDE( m_pBtnMultiplayer, m_iTargetXCreateLobby, x, -, 0.25f, 0.85f );
+			UPDATE_PANEL_SLIDE( m_pBtnSingleplayer, m_iTargetXSingleplayer, x, -, 0.3f, 0.9f );
+			UPDATE_PANEL_SLIDE( m_pBtnWorkshopShowcase, m_iTargetXWorkshopShowcase, x, -, 0.2f, 0.8f );
+			UPDATE_PANEL_SLIDE( m_pTopLeaderboardEntries[0], m_iTargetXHoIAFLeaderboard[0], x, +, 0.0f, 0.6f );
+			for ( int i = 1; i < NELEMS( m_pTopLeaderboardEntries ); i++ )
+				UPDATE_PANEL_SLIDE( m_pTopLeaderboardEntries[i], m_iTargetXHoIAFLeaderboard[i], x, +, 0.1f + 0.025f * i, 0.7f + 0.025f * i );
+			UPDATE_PANEL_SLIDE( m_pBtnHoIAFTimer, m_iTargetXHoIAFTimer, x, +, 0.4f, 1.0f );
+			for ( int i = 0; i < NELEMS( m_pBtnEventTimer ); i++ )
+				UPDATE_PANEL_SLIDE( m_pBtnEventTimer[i], m_iTargetXEventTimer[i], x, +, 0.1f + 0.1f * i, 0.7f + 0.1f * i );
+			UPDATE_PANEL_SLIDE( m_pBtnNewsShowcase, m_iTargetXNewsShowcase, x, +, 0.1f, 0.7f );
+			UPDATE_PANEL_SLIDE( m_pBtnUpdateNotes, m_iTargetXUpdateNotes, x, +, 0.1f, 0.7f );
+			UPDATE_PANEL_SLIDE( m_pStockTickerHelper, m_iTargetYStockTicker, y, +, 0.0f, 0.6f );
+		}
+
+		iSlideState = uint16( ( uint32( m_iInactiveHideMainMenu ) * uint32( m_InactiveHideQuickJoinPublic.m_iGlow ) ) >> 16 );
+		UPDATE_PANEL_SLIDE( m_pPnlQuickJoinPublic, m_iTargetXQuickJoinPublic, x, -, 0.35f, 0.95f );
+		iSlideState = uint16( ( uint32( m_iInactiveHideMainMenu ) * uint32( m_InactiveHideQuickJoinFriends.m_iGlow ) ) >> 16 );
+		UPDATE_PANEL_SLIDE( m_pPnlQuickJoin, m_iTargetXQuickJoinFriends, x, -, 0.4f, 1.0f );
+	}
+
+	m_bGrabPanelLocations = false;
+
 	BaseClass::OnThink();
 }
 
@@ -1316,6 +1419,8 @@ void MainMenu::Activate()
 		SteamAPICall_t hCall = pUGC->SendQueryUGCRequest( hQuery );
 		m_WorkshopTrendingItemsCallback.Set( hCall, this, &MainMenu::OnWorkshopTrendingItems );
 	}
+
+	m_flLastActiveTime = Plat_FloatTime();
 }
 
 //=============================================================================
@@ -1326,8 +1431,14 @@ void MainMenu::PaintBackground()
 
 	HUD_SHEET_DRAW_PANEL( m_pBtnMultiplayer, MainMenuSheet, UV_create_lobby );
 	HUD_SHEET_DRAW_PANEL( m_pBtnSingleplayer, MainMenuSheet, UV_singleplayer );
-	HUD_SHEET_DRAW_PANEL( m_pPnlQuickJoinPublic, MainMenuSheet, UV_quick_join );
-	HUD_SHEET_DRAW_PANEL( m_pPnlQuickJoin, MainMenuSheet, UV_quick_join );
+	{
+		// always draw quick join panel backgrounds (they are moved off the screen when inactive)
+		int x0, y0, x1, y1;
+		m_pPnlQuickJoinPublic->GetBounds( x0, y0, x1, y1 );
+		HUD_SHEET_DRAW_BOUNDS( MainMenuSheet, UV_quick_join );
+		m_pPnlQuickJoin->GetBounds( x0, y0, x1, y1 );
+		HUD_SHEET_DRAW_BOUNDS( MainMenuSheet, UV_quick_join );
+	}
 	HUD_SHEET_DRAW_PANEL( m_pBtnWorkshopShowcase, MainMenuSheet, UV_workshop );
 	for ( int i = 0; i < NELEMS( m_pTopLeaderboardEntries ); i++ )
 	{
@@ -1399,27 +1510,29 @@ void MainMenu::PaintBackground()
 	m_GlowNewsShowcase.Update( m_pBtnNewsShowcase->GetCurrentState() == BaseModHybridButton::Focus );
 	m_GlowUpdateNotes.Update( m_pBtnUpdateNotes->GetCurrentState() == BaseModHybridButton::Focus );
 
-	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnMultiplayer, MainMenuAdditive, UV_create_lobby_hover, m_GlowCreateLobby.Get() );
-	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnMultiplayer, MainMenuAdditive, UV_create_lobby_logo_hover, m_pTopBar->m_GlowLogo.Get() );
-	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnMultiplayer, MainMenuAdditive, UV_create_lobby_singleplayer_hover, m_GlowSingleplayer.Get() );
-	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnMultiplayer, MainMenuAdditive, UV_create_lobby_profile_hover, m_pCommanderProfile->m_GlowHover.Get() );
+	float flAlphaAdjust = RemapValClamped( m_iInactiveHideMainMenu, 49152.0f, 65535.0f, 0.0f, 1.0f );
+
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnMultiplayer, MainMenuAdditive, UV_create_lobby_hover, m_GlowCreateLobby.Get() * flAlphaAdjust );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnMultiplayer, MainMenuAdditive, UV_create_lobby_logo_hover, m_pTopBar->m_GlowLogo.Get() * flAlphaAdjust );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnMultiplayer, MainMenuAdditive, UV_create_lobby_singleplayer_hover, m_GlowSingleplayer.Get() * flAlphaAdjust );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnMultiplayer, MainMenuAdditive, UV_create_lobby_profile_hover, m_pCommanderProfile->m_GlowHover.Get() * flAlphaAdjust );
 	if ( m_pTopBar->m_hActiveButton.Get() == m_pTopBar->m_pBtnLogo )
-		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnMultiplayer, MainMenuAdditive, UV_create_lobby_logo_hover, 255 );
+		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnMultiplayer, MainMenuAdditive, UV_create_lobby_logo_hover, 255 * flAlphaAdjust );
 
-	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnSingleplayer, MainMenuAdditive, UV_singleplayer_hover, m_GlowSingleplayer.Get() );
-	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnSingleplayer, MainMenuAdditive, UV_singleplayer_create_lobby_hover, m_GlowCreateLobby.Get() );
-	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnSingleplayer, MainMenuAdditive, UV_singleplayer_quick_join_hover, m_GlowQuickJoinPublic.Get() );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnSingleplayer, MainMenuAdditive, UV_singleplayer_hover, m_GlowSingleplayer.Get() * flAlphaAdjust );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnSingleplayer, MainMenuAdditive, UV_singleplayer_create_lobby_hover, m_GlowCreateLobby.Get() * flAlphaAdjust );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnSingleplayer, MainMenuAdditive, UV_singleplayer_quick_join_hover, m_GlowQuickJoinPublic.Get() * flAlphaAdjust );
 
-	HUD_SHEET_DRAW_PANEL_ALPHA( m_pPnlQuickJoinPublic, MainMenuAdditive, UV_quick_join_hover, m_GlowQuickJoinPublic.Get() );
-	HUD_SHEET_DRAW_PANEL_ALPHA( m_pPnlQuickJoinPublic, MainMenuAdditive, UV_quick_join_below_hover, m_GlowQuickJoinFriends.Get() );
-	HUD_SHEET_DRAW_PANEL_ALPHA( m_pPnlQuickJoinPublic, MainMenuAdditive, UV_quick_join_singleplayer_hover, m_GlowSingleplayer.Get() );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pPnlQuickJoinPublic, MainMenuAdditive, UV_quick_join_hover, m_GlowQuickJoinPublic.Get() * flAlphaAdjust );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pPnlQuickJoinPublic, MainMenuAdditive, UV_quick_join_below_hover, m_GlowQuickJoinFriends.Get() * flAlphaAdjust );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pPnlQuickJoinPublic, MainMenuAdditive, UV_quick_join_singleplayer_hover, m_GlowSingleplayer.Get() * flAlphaAdjust );
 
-	HUD_SHEET_DRAW_PANEL_ALPHA( m_pPnlQuickJoin, MainMenuAdditive, UV_quick_join_hover, m_GlowQuickJoinFriends.Get() );
-	HUD_SHEET_DRAW_PANEL_ALPHA( m_pPnlQuickJoin, MainMenuAdditive, UV_quick_join_above_hover, m_GlowQuickJoinPublic.Get() );
-	HUD_SHEET_DRAW_PANEL_ALPHA( m_pPnlQuickJoin, MainMenuAdditive, UV_quick_join_below_hover, m_GlowWorkshopShowcase.Get() );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pPnlQuickJoin, MainMenuAdditive, UV_quick_join_hover, m_GlowQuickJoinFriends.Get() * flAlphaAdjust );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pPnlQuickJoin, MainMenuAdditive, UV_quick_join_above_hover, m_GlowQuickJoinPublic.Get() * flAlphaAdjust );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pPnlQuickJoin, MainMenuAdditive, UV_quick_join_below_hover, m_GlowWorkshopShowcase.Get() * flAlphaAdjust );
 
-	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnWorkshopShowcase, MainMenuAdditive, UV_workshop_hover, m_GlowWorkshopShowcase.Get() );
-	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnWorkshopShowcase, MainMenuAdditive, UV_workshop_quick_join_hover, m_GlowQuickJoinFriends.Get() );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnWorkshopShowcase, MainMenuAdditive, UV_workshop_hover, m_GlowWorkshopShowcase.Get() * flAlphaAdjust );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnWorkshopShowcase, MainMenuAdditive, UV_workshop_quick_join_hover, m_GlowQuickJoinFriends.Get() * flAlphaAdjust );
 
 	for ( int i = 0; i < NELEMS( m_pTopLeaderboardEntries ); i++ )
 	{
@@ -1432,80 +1545,80 @@ void MainMenu::PaintBackground()
 		y1 += 2;
 
 		if ( i == 0 )
-			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_1_hover, m_pTopLeaderboardEntries[i]->m_GlowHover.Update( m_pTopLeaderboardEntries[i]->GetCurrentState() == BaseModHybridButton::Focus ) );
+			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_1_hover, m_pTopLeaderboardEntries[i]->m_GlowHover.Update( m_pTopLeaderboardEntries[i]->GetCurrentState() == BaseModHybridButton::Focus ) * flAlphaAdjust );
 		else
-			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_hover, m_pTopLeaderboardEntries[i]->m_GlowHover.Update( m_pTopLeaderboardEntries[i]->GetCurrentState() == BaseModHybridButton::Focus ) );
+			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_hover, m_pTopLeaderboardEntries[i]->m_GlowHover.Update( m_pTopLeaderboardEntries[i]->GetCurrentState() == BaseModHybridButton::Focus ) * flAlphaAdjust );
 
 		if ( i == 0 )
-			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_1_quit_hover, m_pTopBar->m_GlowQuit.Get() );
+			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_1_quit_hover, m_pTopBar->m_GlowQuit.Get() * flAlphaAdjust );
 		else if ( i == 1 )
-			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_quit_hover_1, m_pTopBar->m_GlowQuit.Get() );
+			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_quit_hover_1, m_pTopBar->m_GlowQuit.Get() * flAlphaAdjust );
 		else if ( i == 2 )
-			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_quit_hover_2, m_pTopBar->m_GlowQuit.Get() );
+			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_quit_hover_2, m_pTopBar->m_GlowQuit.Get() * flAlphaAdjust );
 		else if ( i == 3 )
-			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_quit_hover_3, m_pTopBar->m_GlowQuit.Get() );
+			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_quit_hover_3, m_pTopBar->m_GlowQuit.Get() * flAlphaAdjust );
 		else if ( i == 4 )
-			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_quit_hover_4, m_pTopBar->m_GlowQuit.Get() );
+			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_quit_hover_4, m_pTopBar->m_GlowQuit.Get() * flAlphaAdjust );
 		else if ( i == 5 )
-			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_quit_hover_5, m_pTopBar->m_GlowQuit.Get() );
+			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_quit_hover_5, m_pTopBar->m_GlowQuit.Get() * flAlphaAdjust );
 		else if ( i == 6 )
-			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_quit_hover_6, m_pTopBar->m_GlowQuit.Get() );
+			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_quit_hover_6, m_pTopBar->m_GlowQuit.Get() * flAlphaAdjust );
 		else if ( i == 7 )
-			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_quit_hover_7, m_pTopBar->m_GlowQuit.Get() );
+			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_quit_hover_7, m_pTopBar->m_GlowQuit.Get() * flAlphaAdjust );
 		else if ( i == 8 )
-			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_quit_hover_8, m_pTopBar->m_GlowQuit.Get() );
+			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_quit_hover_8, m_pTopBar->m_GlowQuit.Get() * flAlphaAdjust );
 
 		// some of these are drawn one frame late, but that's also true of buttons in other PaintBackground scopes, so no point in adding more complex code for this.
 
 		if ( i == 0 )
-			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_1_below_hover, m_pTopLeaderboardEntries[1]->m_GlowHover.Get() );
+			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_1_below_hover, m_pTopLeaderboardEntries[1]->m_GlowHover.Get() * flAlphaAdjust );
 		if ( i < NELEMS( m_pTopLeaderboardEntries ) - 1 )
-			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_below_hover, m_pTopLeaderboardEntries[i + 1]->m_GlowHover.Get() );
+			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_below_hover, m_pTopLeaderboardEntries[i + 1]->m_GlowHover.Get() * flAlphaAdjust );
 		if ( i > 0 )
-			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_above_hover, m_pTopLeaderboardEntries[i - 1]->m_GlowHover.Get() );
+			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_above_hover, m_pTopLeaderboardEntries[i - 1]->m_GlowHover.Get() * flAlphaAdjust );
 		else if ( ( i == NELEMS( m_pTopLeaderboardEntries ) - 1 || !m_pTopLeaderboardEntries[i + 1]->IsVisible() ) )
-			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_hoiaf_timer_hover, m_GlowHoIAFTimer.Get() );
+			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_hoiaf_top_10_hoiaf_timer_hover, m_GlowHoIAFTimer.Get() * flAlphaAdjust );
 	}
 
-	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnHoIAFTimer, MainMenuAdditive, UV_hoiaf_timer_hover, m_GlowHoIAFTimer.Get() );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnHoIAFTimer, MainMenuAdditive, UV_hoiaf_timer_hover, m_GlowHoIAFTimer.Get() *flAlphaAdjust );
 	if ( m_pTopLeaderboardEntries[NELEMS( m_pTopLeaderboardEntries ) - 1]->IsVisible() )
-		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnHoIAFTimer, MainMenuAdditive, UV_hoiaf_timer_event_timer_hover, m_GlowEventTimer[NELEMS( m_GlowEventTimer ) - 1].Get() );
+		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnHoIAFTimer, MainMenuAdditive, UV_hoiaf_timer_event_timer_hover, m_GlowEventTimer[NELEMS( m_GlowEventTimer ) - 1].Get() * flAlphaAdjust );
 	if ( !m_pTopLeaderboardEntries[0]->IsVisible() )
-		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnHoIAFTimer, MainMenuAdditive, UV_hoiaf_top_1_quit_hover, m_pTopBar->m_GlowQuit.Get() );
+		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnHoIAFTimer, MainMenuAdditive, UV_hoiaf_top_1_quit_hover, m_pTopBar->m_GlowQuit.Get() * flAlphaAdjust );
 
 	for ( int i = NELEMS( m_pTopLeaderboardEntries ) - 1; i >= 0; i-- )
 	{
 		if ( m_pTopLeaderboardEntries[i]->IsVisible() )
 		{
-			HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnHoIAFTimer, MainMenuAdditive, UV_hoiaf_timer_hoiaf_top_10_hover, m_pTopLeaderboardEntries[i]->m_GlowHover.Get() );
+			HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnHoIAFTimer, MainMenuAdditive, UV_hoiaf_timer_hoiaf_top_10_hover, m_pTopLeaderboardEntries[i]->m_GlowHover.Get() * flAlphaAdjust );
 			break;
 		}
 	}
 
 	for ( int i = 0; i < NELEMS( m_pBtnEventTimer ); i++ )
 	{
-		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnEventTimer[i], MainMenuAdditive, UV_event_timer_hover, m_GlowEventTimer[i].Get() );
+		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnEventTimer[i], MainMenuAdditive, UV_event_timer_hover, m_GlowEventTimer[i].Get() * flAlphaAdjust );
 		if ( i == 0 )
-			HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnEventTimer[i], MainMenuAdditive, UV_event_timer_news_hover, m_GlowNewsShowcase.Get() );
+			HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnEventTimer[i], MainMenuAdditive, UV_event_timer_news_hover, m_GlowNewsShowcase.Get() * flAlphaAdjust );
 		if ( i == NELEMS( m_pBtnEventTimer ) - 1 && m_pTopLeaderboardEntries[NELEMS( m_pTopLeaderboardEntries ) - 1]->IsVisible() )
-			HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnEventTimer[i], MainMenuAdditive, UV_event_timer_hoiaf_timer_hover, m_GlowHoIAFTimer.Get() );
+			HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnEventTimer[i], MainMenuAdditive, UV_event_timer_hoiaf_timer_hover, m_GlowHoIAFTimer.Get() * flAlphaAdjust );
 		if ( i > 0 )
-			HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnEventTimer[i], MainMenuAdditive, UV_event_timer_below_hover, m_GlowEventTimer[i - 1].Get() );
+			HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnEventTimer[i], MainMenuAdditive, UV_event_timer_below_hover, m_GlowEventTimer[i - 1].Get() * flAlphaAdjust );
 		if ( i < NELEMS( m_pBtnEventTimer ) - 1 )
-			HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnEventTimer[i], MainMenuAdditive, UV_event_timer_above_hover, m_GlowEventTimer[i + 1].Get() );
+			HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnEventTimer[i], MainMenuAdditive, UV_event_timer_above_hover, m_GlowEventTimer[i + 1].Get() * flAlphaAdjust );
 	}
 
-	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnNewsShowcase, MainMenuAdditive, UV_news_hover, m_GlowNewsShowcase.Get() );
-	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnNewsShowcase, MainMenuAdditive, UV_news_update_hover, m_GlowUpdateNotes.Get() );
-	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnNewsShowcase, MainMenuAdditive, UV_news_event_timer_hover, m_GlowEventTimer[0].Get() );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnNewsShowcase, MainMenuAdditive, UV_news_hover, m_GlowNewsShowcase.Get() * flAlphaAdjust );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnNewsShowcase, MainMenuAdditive, UV_news_update_hover, m_GlowUpdateNotes.Get() * flAlphaAdjust );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnNewsShowcase, MainMenuAdditive, UV_news_event_timer_hover, m_GlowEventTimer[0].Get() * flAlphaAdjust );
 
-	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnUpdateNotes, MainMenuAdditive, UV_update_hover, m_GlowUpdateNotes.Get() );
-	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnUpdateNotes, MainMenuAdditive, UV_update_news_hover, m_GlowNewsShowcase.Get() );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnUpdateNotes, MainMenuAdditive, UV_update_hover, m_GlowUpdateNotes.Get() * flAlphaAdjust );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnUpdateNotes, MainMenuAdditive, UV_update_news_hover, m_GlowNewsShowcase.Get() * flAlphaAdjust );
 
-	m_pTopBar->m_iLeftGlow = m_pCommanderProfile->m_GlowHover.Get();
-	m_pTopBar->m_iRightGlow = m_pTopLeaderboardEntries[0]->IsVisible() ? m_pTopLeaderboardEntries[0]->m_GlowHover.Get() : m_GlowHoIAFTimer.Get();
-	m_pStockTickerHelper->m_iLeftGlow = m_GlowWorkshopShowcase.Get();
-	m_pStockTickerHelper->m_iRightGlow = m_GlowUpdateNotes.Get();
+	m_pTopBar->m_iLeftGlow = m_pCommanderProfile->m_GlowHover.Get() * flAlphaAdjust;
+	m_pTopBar->m_iRightGlow = ( m_pTopLeaderboardEntries[0]->IsVisible() ? m_pTopLeaderboardEntries[0]->m_GlowHover.Get() : m_GlowHoIAFTimer.Get() ) * flAlphaAdjust;
+	m_pStockTickerHelper->m_iLeftGlow = m_GlowWorkshopShowcase.Get() * flAlphaAdjust;
+	m_pStockTickerHelper->m_iRightGlow = m_GlowUpdateNotes.Get() * flAlphaAdjust;
 }
 
 void MainMenu::SetFooterState()
@@ -1710,19 +1823,19 @@ void MainMenu::ApplySchemeSettings( IScheme *pScheme )
 	}
 #endif
 
-	vgui::Label *pBranchDisclaimer = dynamic_cast< vgui::Label * >( FindChildByName( "LblBranchDisclaimer" ) );
+	m_pBranchDisclaimer = dynamic_cast< vgui::Label * >( FindChildByName( "LblBranchDisclaimer" ) );
 	ISteamApps *pApps = SteamApps();
-	if ( pBranchDisclaimer && pApps )
+	if ( m_pBranchDisclaimer && pApps )
 	{
 		char szBranch[256]{};
 		if ( !pApps->GetCurrentBetaName( szBranch, sizeof( szBranch ) ) )
 		{
-			pBranchDisclaimer->SetVisible( false );
+			m_pBranchDisclaimer->SetVisible( false );
 		}
 		else
 		{
-			pBranchDisclaimer->SetText( VarArgs( "#rd_branch_disclaimer_%s", szBranch ) );
-			pBranchDisclaimer->SetVisible( true );
+			m_pBranchDisclaimer->SetText( VarArgs( "#rd_branch_disclaimer_%s", szBranch ) );
+			m_pBranchDisclaimer->SetVisible( true );
 		}
 	}
 
@@ -1745,6 +1858,8 @@ void MainMenu::ApplySchemeSettings( IScheme *pScheme )
 		}
 		m_pBtnHoIAFTimer->SetPos( x, y );
 	}
+
+	m_bGrabPanelLocations = true;
 }
 
 void MainMenu::AcceptCommentaryRulesCallback() 

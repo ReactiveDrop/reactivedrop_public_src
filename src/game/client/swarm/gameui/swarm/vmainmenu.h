@@ -82,8 +82,11 @@ public:
 	BaseModHybridButton *m_pBtnEventTimer[3];
 	BaseModHybridButton *m_pBtnNewsShowcase;
 	BaseModHybridButton *m_pBtnUpdateNotes;
+	vgui::Label *m_pBranchDisclaimer{};
 	bool m_bIsStub{};
 	bool m_bIsLegacy{};
+	bool m_bGrabPanelLocations{};
+	bool m_bHavePanelLocations{};
 
 	HUDGlowHelper_t m_GlowCreateLobby;
 	HUDGlowHelper_t m_GlowSingleplayer;
@@ -107,6 +110,24 @@ public:
 	wchar_t m_wszWorkshopTrendingTitle[5][k_cchPublishedDocumentTitleMax]{};
 	UGCHandle_t m_hWorkshopTrendingPreview[5]{ k_UGCHandleInvalid, k_UGCHandleInvalid, k_UGCHandleInvalid, k_UGCHandleInvalid, k_UGCHandleInvalid };
 	CReactiveDropWorkshopPreviewImage *m_pWorkshopTrendingPreview[5]{};
+
+	int m_iTargetYTopBar;
+	int m_iTargetXCommanderProfile;
+	int m_iTargetXCreateLobby;
+	int m_iTargetXSingleplayer;
+	int m_iTargetXQuickJoinPublic;
+	int m_iTargetXQuickJoinFriends;
+	int m_iTargetXWorkshopShowcase;
+	int m_iTargetXHoIAFLeaderboard[10];
+	int m_iTargetXHoIAFTimer;
+	int m_iTargetXEventTimer[3];
+	int m_iTargetXNewsShowcase;
+	int m_iTargetXUpdateNotes;
+	int m_iTargetYStockTicker;
+	uint16 m_iInactiveHideMainMenu{};
+	HUDGlowHelper_t m_InactiveHideQuickJoinPublic;
+	HUDGlowHelper_t m_InactiveHideQuickJoinFriends;
+	float m_flLastActiveTime;
 
 	CCallResult<MainMenu, LeaderboardScoresDownloaded_t> m_HoIAFTop10Callback;
 	CCallResult<MainMenu, SteamUGCQueryCompleted_t> m_WorkshopTrendingItemsCallback;

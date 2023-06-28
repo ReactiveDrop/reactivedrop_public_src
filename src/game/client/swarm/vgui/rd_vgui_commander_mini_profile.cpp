@@ -89,6 +89,8 @@ void CRD_VGUI_Commander_Mini_Profile::PaintBackground()
 	x0 = y0 = 0;
 	GetSize( x1, y1 );
 
+	float flAlphaAdjust = 1.0f;
+
 	HUD_SHEET_DRAW_BOUNDS( MainMenuSheet, UV_profile );
 
 	CRD_VGUI_Main_Menu_Top_Bar *pTopBar = assert_cast< CRD_VGUI_Main_Menu_Top_Bar * >( FindSiblingByName( "TopBar" ) );
@@ -98,18 +100,20 @@ void CRD_VGUI_Commander_Mini_Profile::PaintBackground()
 
 	if ( pMainMenu )
 	{
-		HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_profile_create_lobby_hover, pMainMenu->m_GlowCreateLobby.Get() );
+		flAlphaAdjust = RemapValClamped( pMainMenu->m_iInactiveHideMainMenu, 49152.0f, 65535.0f, 0.0f, 1.0f );
+
+		HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_profile_create_lobby_hover, pMainMenu->m_GlowCreateLobby.Get() * flAlphaAdjust );
 	}
 
 	if ( pTopBar )
 	{
-		HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_profile_logo_hover, pTopBar->m_GlowLogo.Get() );
-		HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_profile_settings_hover, pTopBar->m_GlowSettings.Get() );
+		HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_profile_logo_hover, pTopBar->m_GlowLogo.Get() * flAlphaAdjust );
+		HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_profile_settings_hover, pTopBar->m_GlowSettings.Get() * flAlphaAdjust );
 
 		if ( pTopBar->m_hActiveButton.Get() == pTopBar->m_pBtnLogo )
-			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_profile_logo_hover, 255 );
+			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_profile_logo_hover, 255 * flAlphaAdjust );
 		if ( pTopBar->m_hActiveButton.Get() == pTopBar->m_pBtnSettings )
-			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_profile_settings_hover, 255 );
+			HUD_SHEET_DRAW_BOUNDS_ALPHA( MainMenuAdditive, UV_profile_settings_hover, 255 * flAlphaAdjust );
 	}
 }
 
