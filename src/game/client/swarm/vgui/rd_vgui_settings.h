@@ -183,8 +183,11 @@ public:
 	vgui::Label *m_pLblDescription;
 	vgui::Label *m_pLblNotBound;
 	char m_szLabel[256];
-	char m_szBind[63];
+	char m_szBind[64];
 	bool m_bUseRowLayout;
+	bool m_bCapturing;
+	static int s_iCursorX;
+	static int s_iCursorY;
 	CUtlStringList m_AlternateBind;
 
 	CPanelAnimationVar( vgui::HFont, m_hButtonFont, "buttonfont", "GameUIButtonsTinier" );
@@ -195,6 +198,7 @@ class CRD_VGUI_Settings_Controls : public CRD_VGUI_Settings_Panel_Base
 	DECLARE_CLASS_SIMPLE( CRD_VGUI_Settings_Controls, CRD_VGUI_Settings_Panel_Base );
 public:
 	CRD_VGUI_Settings_Controls( vgui::Panel *parent, const char *panelName );
+	~CRD_VGUI_Settings_Controls();
 
 	void Activate() override;
 	void OnThink() override;
@@ -209,8 +213,9 @@ public:
 	CRD_VGUI_Bind *m_pBindJump;
 	vgui::Label *m_pLblLeftStickAction;
 	vgui::Label *m_pLblRightStickAction;
-	bool m_bMoveStickLeft, m_bMoveStickRight;
-	bool m_bLookStickLeft, m_bLookStickRight;
+	bool m_bMoveStickLeft : 1, m_bMoveStickRight : 1;
+	bool m_bLookStickLeft : 1, m_bLookStickRight : 1;
+	bool m_bNeedWriteConfig : 1;
 
 	CRD_VGUI_Option *m_pSettingAutoWalk;
 	CRD_VGUI_Option *m_pSettingAutoAttack;

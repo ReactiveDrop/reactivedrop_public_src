@@ -1,5 +1,6 @@
 #include "cbase.h"
 #include "rd_vgui_settings.h"
+#include <vgui/IInput.h>
 #include <vgui/ILocalize.h>
 #include <vgui/ISurface.h>
 #include <vgui_controls/ImagePanel.h>
@@ -7,11 +8,15 @@
 #include "gameui/swarm/vhybridbutton.h"
 #include "gameui/cvartogglecheckbutton.h"
 #include "rd_steam_input.h"
+#include "inputsystem/iinputsystem.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 DECLARE_BUILD_FACTORY( CRD_VGUI_Settings_Controls );
+
+int CRD_VGUI_Bind::s_iCursorX;
+int CRD_VGUI_Bind::s_iCursorY;
 
 CRD_VGUI_Bind::CRD_VGUI_Bind( vgui::Panel *parent, const char *panelName, const char *szLabel, const char *szBind, bool bUseRowLayout ) :
 	BaseClass( parent, panelName )
@@ -23,6 +28,7 @@ CRD_VGUI_Bind::CRD_VGUI_Bind( vgui::Panel *parent, const char *panelName, const 
 	V_strncpy( m_szLabel, szLabel, sizeof( m_szLabel ) );
 	V_strncpy( m_szBind, szBind, sizeof( m_szBind ) );
 	m_bUseRowLayout = bUseRowLayout;
+	m_bCapturing = false;
 
 	m_pLblKeyboardIcon = new vgui::Label( this, "LblKeyboardIcon", "" );
 	m_pLblKeyboardIconLong = new vgui::Label( this, "LblKeyboardIconLong", "" );
@@ -149,6 +155,38 @@ void CRD_VGUI_Bind::OnThink()
 	BaseClass::OnThink();
 
 	const char *szKeyBind = g_RD_Steam_Input.Key_LookupBindingEx( m_szBind, -1, 0, 0 );
+	for ( int i = 0; i < m_AlternateBind.Count() && !szKeyBind; i++ )
+		szKeyBind = g_RD_Steam_Input.Key_LookupBindingEx( m_AlternateBind[i], -1, 0, 0 );
+
+	if ( m_bCapturing )
+	{
+		m_pLblKeyboardIcon->SetText( "" );
+		m_pLblKeyboardIconLong->SetText( "" );
+		m_pLblNotBound->SetVisible( false );
+		m_pImgClearBind->SetVisible( false );
+
+		ButtonCode_t code = BUTTON_CODE_INVALID;
+		if ( engine->CheckDoneKeyTrapping( code ) )
+		{
+			m_bCapturing = false;
+			vgui::input()->SetMouseCapture( NULL );
+			vgui::input()->SetCursorPos( s_iCursorX, s_iCursorY );
+
+			if ( code != BUTTON_CODE_NONE && code != BUTTON_CODE_INVALID && code != KEY_ESCAPE )
+			{
+				if ( szKeyBind )
+					ClearKeyboardBind();
+
+				int iSlot = GET_ACTIVE_SPLITSCREEN_SLOT();
+				engine->ClientCmd_Unrestricted( VarArgs( "cmd%d bind \"%s\" \"%s\"", iSlot + 1, g_pInputSystem->ButtonCodeToString( code ), m_szBind ) );
+				assert_cast< CRD_VGUI_Settings_Controls * >( GetParent() )->m_bNeedWriteConfig = true;
+			}
+
+			RequestFocus();
+		}
+
+		return;
+	}
 
 	m_pImgClearBind->SetVisible( HasFocus() && szKeyBind );
 
@@ -200,14 +238,16 @@ void CRD_VGUI_Bind::Paint()
 		const int nHighlight = 24;
 
 		Color c = m_pLblKeyboardIcon->GetBgColor();
-		if ( HasFocus() )
+		if ( m_bCapturing )
+			c.SetColor( c.r() + nHighlight * 2, c.g() + nHighlight * 2, c.b() + nHighlight * 2, c.a() );
+		else if ( HasFocus() )
 			c.SetColor( c.r() + nHighlight, c.g() + nHighlight, c.b() + nHighlight, c.a() );
 		m_pLblKeyboardIcon->GetBounds( x, y, w, t );
 		vgui::surface()->DrawSetColor( c );
 		vgui::surface()->DrawFilledRect( YRES( 1 ), y - YRES( 1 ), x + w + YRES( 1 ), y + t + YRES( 1 ) );
 
 		c = m_pLblDescription->GetBgColor();
-		if ( HasFocus() )
+		if ( HasFocus() && !m_bCapturing )
 			c.SetColor( c.r() + nHighlight, c.g() + nHighlight, c.b() + nHighlight, c.a() );
 		m_pLblDescription->GetBounds( x, y, w, t );
 		vgui::surface()->DrawSetColor( c );
@@ -244,18 +284,26 @@ void CRD_VGUI_Bind::AddFallbackBind( const char *szBind )
 
 void CRD_VGUI_Bind::StartKeyboardCapture()
 {
-
+	m_bCapturing = true;
+	vgui::input()->GetCursorPos( s_iCursorX, s_iCursorY );
+	vgui::input()->SetMouseFocus( GetVPanel() );
+	vgui::input()->SetMouseCapture( GetVPanel() );
+	engine->StartKeyTrapMode();
 }
 
 void CRD_VGUI_Bind::ClearKeyboardBind()
 {
 	const char *szKeyBind = g_RD_Steam_Input.Key_LookupBindingEx( m_szBind, -1, 0, 0 );
+	for ( int i = 0; i < m_AlternateBind.Count() && !szKeyBind; i++ )
+		szKeyBind = g_RD_Steam_Input.Key_LookupBindingEx( m_AlternateBind[i], -1, 0, 0 );
+
 	Assert( szKeyBind && *szKeyBind );
 	if ( !szKeyBind )
 		return;
 
 	int iSlot = BaseModUI::CBaseModPanel::GetSingleton().GetLastActiveUserId();
-	engine->ClientCmd_Unrestricted( VarArgs( "cmd%d unbind \"%s\"; host_writeconfig", iSlot + 1, szKeyBind ) );
+	engine->ClientCmd_Unrestricted( VarArgs( "cmd%d unbind \"%s\"", iSlot + 1, szKeyBind ) );
+	assert_cast< CRD_VGUI_Settings_Controls * >( GetParent() )->m_bNeedWriteConfig = true;
 }
 
 CRD_VGUI_Settings_Controls::CRD_VGUI_Settings_Controls( vgui::Panel *parent, const char *panelName ) :
@@ -344,6 +392,14 @@ CRD_VGUI_Settings_Controls::CRD_VGUI_Settings_Controls( vgui::Panel *parent, con
 	m_pBtnResetDefaults = new BaseModUI::BaseModHybridButton( this, "BtnResetDefaults", "#L4D360UI_Controller_Default", this, "ResetDefaults" );
 	m_pSettingDeveloperConsole = new CRD_VGUI_Option( this, "SettingDeveloperConsole", "#GameUI_DeveloperConsoleCheck", CRD_VGUI_Option::MODE_CHECKBOX );
 	m_pSettingDeveloperConsole->LinkToConVar( "con_enable", false );
+
+	m_bNeedWriteConfig = false;
+}
+
+CRD_VGUI_Settings_Controls::~CRD_VGUI_Settings_Controls()
+{
+	if ( m_bNeedWriteConfig )
+		engine->ClientCmd_Unrestricted( "host_writeconfig" );
 }
 
 void CRD_VGUI_Settings_Controls::Activate()
