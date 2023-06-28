@@ -17,7 +17,7 @@ CReactiveDropWorkshopPreviewImage::CReactiveDropWorkshopPreviewImage( const CUtl
 
 	if ( TryParseImage( buf ) )
 	{
-		m_SavedBuffer.Put( buf.Base(), buf.TellMaxPut() );
+		m_SavedBuffer.Put( buf.Base(), buf.TellPut() );
 	}
 }
 
@@ -121,7 +121,7 @@ struct RdJpegSource_t
 	{
 		RdJpegSource_t *pSource = Get( cinfo );
 		pSource->m_Base.next_input_byte = reinterpret_cast<const JOCTET *>( pSource->m_Buf.Base() );
-		pSource->m_Base.bytes_in_buffer = pSource->m_Buf.Size();
+		pSource->m_Base.bytes_in_buffer = pSource->m_Buf.TellPut();
 	}
 
 	static boolean FillInputBuffer( j_decompress_ptr cinfo )

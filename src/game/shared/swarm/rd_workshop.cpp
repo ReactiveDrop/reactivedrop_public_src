@@ -1419,7 +1419,8 @@ void CReactiveDropWorkshop::WorkshopPreviewRequest_t::Callback( RemoteStorageDow
 			}
 
 			CUtlBuffer buf;
-			SteamRemoteStorage()->UGCRead( m_nPreviewImage, buf.AccessForDirectRead( pResult->m_nSizeInBytes ), pResult->m_nSizeInBytes, 0, k_EUGCRead_Close );
+			int nRead = SteamRemoteStorage()->UGCRead( m_nPreviewImage, buf.AccessForDirectRead( pResult->m_nSizeInBytes ), pResult->m_nSizeInBytes, 0, k_EUGCRead_Close );
+			buf.SeekPut( CUtlBuffer::SEEK_HEAD, nRead );
 			g_ReactiveDropWorkshop.m_EnabledAddons[i].pPreviewImage = new CReactiveDropWorkshopPreviewImage( buf );
 			if ( g_ReactiveDropWorkshop.m_EnabledAddons[i].pPreviewImage->GetID() == -1 )
 			{
