@@ -15,6 +15,8 @@
 
 DECLARE_BUILD_FACTORY( CRD_VGUI_Settings_Controls );
 
+// When binding an action, we capture the mouse pointer so we can bind it to a mouse button or wheel direction.
+// When the binding capture state ends, we release the mouse pointer and move it back to where it was to avoid confusing the player.
 int CRD_VGUI_Bind::s_iCursorX;
 int CRD_VGUI_Bind::s_iCursorY;
 

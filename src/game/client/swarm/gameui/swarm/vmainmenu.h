@@ -44,14 +44,14 @@ public:
 
 	CPanelAnimationVarAliasType( int, m_iHoIAFTimerOffset, "hoiaf_timer_offset", "-1", "proportional_int" );
 
-	virtual void LoadLayout();
-	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
-	virtual void OnCommand( const char *command );
-	virtual void OnKeyCodePressed( vgui::KeyCode code );
-	virtual void OnThink();
-	virtual void OnOpen();
-	virtual void RunFrame();
-	virtual void PaintBackground();
+	void LoadLayout() override;
+	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+	void OnCommand( const char *command ) override;
+	void OnKeyCodePressed( vgui::KeyCode code ) override;
+	void OnThink() override;
+	void OnOpen() override;
+	void RunFrame() override;
+	void PaintBackground() override;
 
 	static void AcceptCommentaryRulesCallback();
 	static void AcceptSplitscreenDisableCallback();

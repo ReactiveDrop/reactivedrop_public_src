@@ -69,7 +69,14 @@ static ConVar ui_old_options_menu( "ui_old_options_menu", "0", FCVAR_HIDDEN, "Br
 static ConVar ui_play_online_browser( "ui_play_online_browser", "1", FCVAR_RELEASE, "Whether play online displays a browser or plain search dialog." );
 ConVar rd_trending_workshop_tags( "rd_trending_workshop_tags", "Campaign,Bonus,Endless,Challenge", FCVAR_NONE, "Trending addons must have at least one of these tags to appear on the main menu." );
 ConVar rd_hoiaf_leaderboard_on_main_menu( "rd_hoiaf_leaderboard_on_main_menu", "1", FCVAR_NONE, "Should we download HoIAF stats for the current season on the main menu?" );
-
+static void ActivateMainMenuAgain( IConVar *pConVar, const char *szOldValue, float flOldValue )
+{
+	if ( CBaseModPanel::GetSingleton().GetActiveWindowType() == WT_MAINMENU )
+	{
+		CBaseModPanel::GetSingleton().GetWindow( WT_MAINMENU )->Activate();
+	}
+}
+ConVar rd_hoiaf_leaderboard_friends_only( "rd_hoiaf_leaderboard_friends_only", "0", FCVAR_ARCHIVE, "Only show friends on the main menu HoIAF leaderboard?", ActivateMainMenuAgain );
 extern ConVar mm_max_players;
 ConVar rd_last_game_access( "rd_last_game_access", "public", FCVAR_ARCHIVE, "Remembers the last game access setting (public or friends) for a lobby created from the main menu." );
 ConVar rd_last_game_difficulty( "rd_last_game_difficulty", "normal", FCVAR_ARCHIVE, "Remembers the last game difficulty setting (easy/normal/hard/insane/imba) for a lobby created from the main menu." );
@@ -1290,7 +1297,7 @@ void MainMenu::Activate()
 	ISteamUserStats *pUserStats = SteamUserStats();
 	if ( pUserStats && rd_hoiaf_leaderboard_on_main_menu.GetBool() )
 	{
-		SteamAPICall_t hCall = pUserStats->DownloadLeaderboardEntries( STEAM_LEADERBOARD_HOIAF_CURRENT_SEASON, k_ELeaderboardDataRequestGlobal, 1, 10 );
+		SteamAPICall_t hCall = pUserStats->DownloadLeaderboardEntries( STEAM_LEADERBOARD_HOIAF_CURRENT_SEASON, rd_hoiaf_leaderboard_friends_only.GetBool() ? k_ELeaderboardDataRequestFriends : k_ELeaderboardDataRequestGlobal, 1, 10 );
 		m_HoIAFTop10Callback.Set( hCall, this, &MainMenu::OnHoIAFTop10ScoresDownloaded );
 	}
 
@@ -1797,12 +1804,8 @@ void MainMenu::OnHoIAFTop10ScoresDownloaded( LeaderboardScoresDownloaded_t *pPar
 
 	if ( !bIOFailure && !m_bIsStub )
 	{
-		for ( int i = 0; i < pParam->m_cEntryCount; i++ )
+		for ( int i = 0; i < pParam->m_cEntryCount && i < NELEMS( m_pTopLeaderboardEntries ); i++ )
 		{
-			Assert( i < NELEMS( m_pTopLeaderboardEntries ) );
-			if ( i >= NELEMS( m_pTopLeaderboardEntries ) )
-				break;
-
 			LeaderboardEntry_t entry;
 			LeaderboardScoreDetails_Points_t details;
 			bool bOK = SteamUserStats()->GetDownloadedLeaderboardEntry( pParam->m_hSteamLeaderboardEntries, i, &entry, reinterpret_cast< int32 * >( &details ), sizeof( details ) / sizeof( int32 ) );

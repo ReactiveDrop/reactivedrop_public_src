@@ -34,8 +34,8 @@ void CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry::PerformLayout()
 	m_pAvatar->SetPos( YRES( 1 ), YRES( 1 ) );
 	m_pAvatar->SetSize( GetTall() - YRES( 2 ), GetTall() - YRES( 1 ) );
 	m_pLblRankNumber->SetContentAlignment( vgui::Label::a_southeast );
-	m_pLblRankNumber->SetPos( GetWide() - GetTall(), 0 );
-	m_pLblRankNumber->SetSize( GetTall(), GetTall() );
+	m_pLblRankNumber->SetPos( GetWide() - YRES( 50 ), 0);
+	m_pLblRankNumber->SetSize( YRES( 50 ), GetTall() );
 	m_pLblScore->SetContentAlignment( vgui::Label::a_northeast );
 	m_pLblScore->SetPos( GetWide() - GetTall() * 3 - YRES( 1 ), 0 );
 	m_pLblScore->SetSize( GetTall() * 3, GetTall() );
