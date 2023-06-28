@@ -65,7 +65,7 @@
 		"wide"				"32"
 		"tall"				"32"
 		"navLeft"			"BindMoveForward"
-		"navRight"			"SettingMovementStick"
+		"navRight"			"SettingAutoWalk"
 		"navDown"			"BindJump"
 	}
 
@@ -83,17 +83,30 @@
 		"navDown"			"BindTextChat"
 	}
 
-	"SettingMovementStick"
+	"LblLeftStickAction"
 	{
-		"ControlName"		"CRD_VGUI_Option"
-		"fieldName"			"SettingMovementStick"
-		"xpos"				"182"
-		"ypos"				"50"
-		"wide"				"220"
-		"tall"				"12"
-		"navLeft"			"BindWalk"
-		"navRight"			"BindPrimaryAttack"
-		"navDown"			"SettingAutoWalk"
+		"ControlName"		"Label"
+		"fieldName"			"LblLeftStickAction"
+		"xpos"				"16"
+		"ypos"				"52"
+		"wide"				"32"
+		"tall"				"28"
+		"textAlignment"		"south"
+		"font"				"DefaultVerySmall"
+		"fgcolor_override"	"128 128 128 255"
+	}
+
+	"LblRightStickAction"
+	{
+		"ControlName"		"Label"
+		"fieldName"			"LblRightStickAction"
+		"xpos"				"84"
+		"ypos"				"52"
+		"wide"				"32"
+		"tall"				"28"
+		"textAlignment"		"south"
+		"font"				"DefaultVerySmall"
+		"fgcolor_override"	"128 128 128 255"
 	}
 
 	"SettingAutoWalk"
@@ -101,12 +114,11 @@
 		"ControlName"		"CRD_VGUI_Option"
 		"fieldName"			"SettingAutoWalk"
 		"xpos"				"182"
-		"ypos"				"62"
+		"ypos"				"50"
 		"wide"				"220"
 		"tall"				"12"
 		"navLeft"			"BindWalk"
 		"navRight"			"BindPrimaryAttack"
-		"navUp"				"SettingMovementStick"
 		"navDown"			"SettingAutoAttack"
 	}
 
@@ -115,7 +127,7 @@
 		"ControlName"		"CRD_VGUI_Option"
 		"fieldName"			"SettingAutoAttack"
 		"xpos"				"182"
-		"ypos"				"74"
+		"ypos"				"62"
 		"wide"				"220"
 		"tall"				"12"
 		"navLeft"			"BindWalk"
@@ -129,26 +141,12 @@
 		"ControlName"		"CRD_VGUI_Option"
 		"fieldName"			"SettingAimToMovement"
 		"xpos"				"182"
-		"ypos"				"86"
+		"ypos"				"74"
 		"wide"				"220"
 		"tall"				"12"
 		"navLeft"			"BindJump"
 		"navRight"			"BindSwapWeapons"
 		"navUp"				"SettingAutoAttack"
-		"navDown"			"SettingInvertY"
-	}
-
-	"SettingInvertY"
-	{
-		"ControlName"		"CRD_VGUI_Option"
-		"fieldName"			"SettingInvertY"
-		"xpos"				"182"
-		"ypos"				"98"
-		"wide"				"220"
-		"tall"				"12"
-		"navLeft"			"BindJump"
-		"navRight"			"BindSwapWeapons"
-		"navUp"				"SettingAimToMovement"
 		"navDown"			"SettingControllerGlyphs"
 	}
 
@@ -157,12 +155,12 @@
 		"ControlName"		"CRD_VGUI_Option"
 		"fieldName"			"SettingControllerGlyphs"
 		"xpos"				"182"
-		"ypos"				"110"
+		"ypos"				"86"
 		"wide"				"220"
 		"tall"				"12"
 		"navLeft"			"BindJump"
 		"navRight"			"BindSwapWeapons"
-		"navUp"				"SettingInvertY"
+		"navUp"				"SettingAimToMovement"
 		"navDown"			"BindActivatePrimary"
 	}
 
@@ -174,7 +172,7 @@
 		"ypos"				"50"
 		"wide"				"32"
 		"tall"				"32"
-		"navLeft"			"SettingMovementStick"
+		"navLeft"			"SettingAutoWalk"
 		"navRight"			"BindSecondaryAttack"
 		"navDown"			"BindSwapWeapons"
 	}

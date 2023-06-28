@@ -39,6 +39,102 @@ void CRD_VGUI_Bind::ApplySchemeSettings( vgui::IScheme *pScheme )
 	LoadControlSettings( m_bUseRowLayout ? "Resource/UI/BaseModUI/CRD_VGUI_Bind_Row.res" : "Resource/UI/BaseModUI/CRD_VGUI_Bind_Box.res" );
 
 	m_pLblDescription->SetText( m_szLabel );
+
+	m_pLblKeyboardIcon->SetMouseInputEnabled( false );
+	m_pLblKeyboardIconLong->SetMouseInputEnabled( false );
+	m_pPnlControllerIcon->SetMouseInputEnabled( false );
+	m_pImgClearBind->SetMouseInputEnabled( false );
+	m_pLblDescription->SetMouseInputEnabled( false );
+	m_pLblNotBound->SetMouseInputEnabled( false );
+}
+
+void CRD_VGUI_Bind::OnKeyCodePressed( vgui::KeyCode keycode )
+{
+	int lastUser = GetJoystickForCode( keycode );
+	BaseModUI::CBaseModPanel::GetSingleton().SetLastActiveUserId( lastUser );
+
+	vgui::KeyCode code = GetBaseButtonCode( keycode );
+
+	switch ( code )
+	{
+	case KEY_DELETE:
+		if ( m_pImgClearBind->IsVisible() )
+		{
+			ClearKeyboardBind();
+			break;
+		}
+
+		break;
+	case KEY_SPACE:
+	case KEY_ENTER:
+	case KEY_PAD_ENTER:
+		StartKeyboardCapture();
+
+		break;
+	default:
+		BaseClass::OnKeyCodePressed( keycode );
+		break;
+	}
+}
+
+void CRD_VGUI_Bind::OnKeyCodeTyped( vgui::KeyCode keycode )
+{
+	int lastUser = GetJoystickForCode( keycode );
+	BaseModUI::CBaseModPanel::GetSingleton().SetLastActiveUserId( lastUser );
+
+	vgui::KeyCode code = GetBaseButtonCode( keycode );
+
+	switch ( code )
+	{
+	case KEY_XBUTTON_A:
+		if ( !SteamInput() || !SteamInput()->ShowBindingPanel( g_RD_Steam_Input.m_hLastControllerWithEvent ) )
+		{
+			BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_INVALID );
+		}
+
+		break;
+	default:
+		BaseClass::OnKeyCodePressed( keycode );
+		break;
+	}
+}
+
+void CRD_VGUI_Bind::OnMouseReleased( vgui::MouseCode code )
+{
+	switch ( code )
+	{
+	case MOUSE_LEFT:
+		if ( m_pImgClearBind->IsVisible() && m_pImgClearBind->IsCursorOver() )
+		{
+			ClearKeyboardBind();
+			break;
+		}
+
+		if ( m_pPnlControllerIcon->IsCursorOver() && g_RD_Steam_Input.Key_LookupBindingEx( m_szBind, -1, 0, 1 ) )
+		{
+			if ( !SteamInput() || !SteamInput()->ShowBindingPanel( g_RD_Steam_Input.m_hLastControllerWithEvent ) )
+			{
+				BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_INVALID );
+			}
+
+			break;
+		}
+
+		StartKeyboardCapture();
+
+		break;
+	default:
+		BaseClass::OnMouseReleased( code );
+		break;
+	}
+}
+
+void CRD_VGUI_Bind::OnCursorEntered()
+{
+	BaseClass::OnCursorEntered();
+
+	if ( GetParent() )
+		NavigateToChild( this );
 }
 
 void CRD_VGUI_Bind::NavigateTo()
@@ -52,9 +148,10 @@ void CRD_VGUI_Bind::OnThink()
 {
 	BaseClass::OnThink();
 
-	m_pImgClearBind->SetVisible( false );
-
 	const char *szKeyBind = g_RD_Steam_Input.Key_LookupBindingEx( m_szBind, -1, 0, 0 );
+
+	m_pImgClearBind->SetVisible( HasFocus() && szKeyBind );
+
 	if ( szKeyBind )
 	{
 		if ( const wchar_t *wszTranslation = g_pVGuiLocalize->Find( szKeyBind ) )
@@ -100,12 +197,20 @@ void CRD_VGUI_Bind::Paint()
 	int x, y, w, t;
 	if ( m_bUseRowLayout )
 	{
+		const int nHighlight = 24;
+
+		Color c = m_pLblKeyboardIcon->GetBgColor();
+		if ( HasFocus() )
+			c.SetColor( c.r() + nHighlight, c.g() + nHighlight, c.b() + nHighlight, c.a() );
 		m_pLblKeyboardIcon->GetBounds( x, y, w, t );
-		vgui::surface()->DrawSetColor( 48, 56, 64, 255 );
+		vgui::surface()->DrawSetColor( c );
 		vgui::surface()->DrawFilledRect( YRES( 1 ), y - YRES( 1 ), x + w + YRES( 1 ), y + t + YRES( 1 ) );
 
+		c = m_pLblDescription->GetBgColor();
+		if ( HasFocus() )
+			c.SetColor( c.r() + nHighlight, c.g() + nHighlight, c.b() + nHighlight, c.a() );
 		m_pLblDescription->GetBounds( x, y, w, t );
-		vgui::surface()->DrawSetColor( 12, 16, 20, 255 );
+		vgui::surface()->DrawSetColor( c );
 		vgui::surface()->DrawFilledRect( x - YRES( 1 ), y - YRES( 1 ), x + w - YRES( 3 ), y + t + YRES( 1 ) );
 		vgui::surface()->DrawFilledRectFade( x + w - YRES( 3 ), y - YRES( 1 ), x + w + YRES( 1 ), y + t + YRES( 1 ), 255, 0, true );
 	}
@@ -126,9 +231,8 @@ void CRD_VGUI_Bind::Paint()
 		Assert( szKeyBind );
 		if ( szKeyBind )
 		{
-			int x, y;
-			m_pPnlControllerIcon->GetPos( x, y );
-			g_RD_Steam_Input.DrawLegacyControllerGlyph( szKeyBind, x, y, 0, 0, m_hButtonFont );
+			m_pPnlControllerIcon->GetBounds( x, y, w, t );
+			g_RD_Steam_Input.DrawLegacyControllerGlyph( szKeyBind, x + w / 2, y + t / 2, 1, 1, m_hButtonFont );
 		}
 	}
 }
@@ -136,6 +240,22 @@ void CRD_VGUI_Bind::Paint()
 void CRD_VGUI_Bind::AddFallbackBind( const char *szBind )
 {
 	m_AlternateBind.CopyAndAddToTail( szBind );
+}
+
+void CRD_VGUI_Bind::StartKeyboardCapture()
+{
+
+}
+
+void CRD_VGUI_Bind::ClearKeyboardBind()
+{
+	const char *szKeyBind = g_RD_Steam_Input.Key_LookupBindingEx( m_szBind, -1, 0, 0 );
+	Assert( szKeyBind && *szKeyBind );
+	if ( !szKeyBind )
+		return;
+
+	int iSlot = BaseModUI::CBaseModPanel::GetSingleton().GetLastActiveUserId();
+	engine->ClientCmd_Unrestricted( VarArgs( "cmd%d unbind \"%s\"; host_writeconfig", iSlot + 1, szKeyBind ) );
 }
 
 CRD_VGUI_Settings_Controls::CRD_VGUI_Settings_Controls( vgui::Panel *parent, const char *panelName ) :
@@ -149,22 +269,16 @@ CRD_VGUI_Settings_Controls::CRD_VGUI_Settings_Controls( vgui::Panel *parent, con
 	m_pBindMoveRight = new CRD_VGUI_Bind( this, "BindMoveRight", "#ASW_GameUI_MoveRight", "+moveright", false );
 	m_pBindWalk = new CRD_VGUI_Bind( this, "BindWalk", "#L4D360UI_Controller_Crouch", "+walk", false );
 	m_pBindJump = new CRD_VGUI_Bind( this, "BindJump", "#ASW_GameUI_MoveRoll", "+jump", false );
+	m_pLblLeftStickAction = new vgui::Label( this, "LblLeftStickAction", "" );
+	m_pLblRightStickAction = new vgui::Label( this, "LblRightStickAction", "" );
 
 	// Controller
-	m_pSettingMovementStick = new CRD_VGUI_Option( this, "SettingMovementStick", "#rd_controls_movement_stick" );
-	m_pSettingMovementStick->AddOption( 0, "#rd_controls_movement_stick_left", "" );
-	m_pSettingMovementStick->AddOption( 1, "#rd_controls_movement_stick_right", "" );
-	m_pSettingMovementStick->LinkToConVar( "joy_movement_stick", false );
 	m_pSettingAutoWalk = new CRD_VGUI_Option( this, "SettingAutoWalk", "#rd_controls_auto_walk", CRD_VGUI_Option::MODE_CHECKBOX );
 	m_pSettingAutoWalk->LinkToConVar( "joy_autowalk", false );
 	m_pSettingAutoAttack = new CRD_VGUI_Option( this, "SettingAutoAttack", "#rd_controls_auto_attack", CRD_VGUI_Option::MODE_CHECKBOX );
 	m_pSettingAutoAttack->LinkToConVar( "joy_autoattack", false );
 	m_pSettingAimToMovement = new CRD_VGUI_Option( this, "SettingAimToMovement", "#rd_controls_aim_to_movement", CRD_VGUI_Option::MODE_CHECKBOX );
 	m_pSettingAimToMovement->LinkToConVar( "joy_aim_to_movement", false );
-	m_pSettingInvertY = new CRD_VGUI_Option( this, "SettingInvertY", "#rd_controls_invert_y" );
-	m_pSettingInvertY->AddOption( 0, "#rd_controls_invert_y_disabled", "" );
-	m_pSettingInvertY->AddOption( 1, "#rd_controls_invert_y_enabled", "" );
-	m_pSettingInvertY->LinkToConVar( "joy_inverty", false );
 	m_pSettingControllerGlyphs = new CRD_VGUI_Option( this, "SettingControllerGlyphs", "#RD_AdvancedSettings_HUD_ControllerIcons", CRD_VGUI_Option::MODE_DROPDOWN );
 	m_pSettingControllerGlyphs->AddOption( -1, "#RD_AdvancedSettings_HUD_ControllerIcons_Default", "" );
 	m_pSettingControllerGlyphs->AddOption( k_ESteamInputType_XBoxOneController, "#RD_AdvancedSettings_HUD_ControllerIcons_XboxOne", "" );
@@ -235,4 +349,86 @@ CRD_VGUI_Settings_Controls::CRD_VGUI_Settings_Controls( vgui::Panel *parent, con
 void CRD_VGUI_Settings_Controls::Activate()
 {
 	NavigateToChild( m_pBindMoveForward );
+}
+
+void CRD_VGUI_Settings_Controls::OnThink()
+{
+	BaseClass::OnThink();
+
+	EInputActionOrigin eMove = g_RD_Steam_Input.OriginFromPlaceholderString( g_RD_Steam_Input.Key_LookupBindingEx( "xmove", -1, 0, 1 ) );
+	EInputActionOrigin eLook = g_RD_Steam_Input.OriginFromPlaceholderString( g_RD_Steam_Input.Key_LookupBindingEx( "xlook", -1, 0, 1 ) );
+
+	if ( !SteamInput() || ( eMove == k_EInputActionOrigin_None && eLook == k_EInputActionOrigin_None ) )
+	{
+		m_pLblLeftStickAction->SetVisible( false );
+		m_pLblRightStickAction->SetVisible( false );
+	}
+	else
+	{
+		EInputActionOrigin eDeckMove = SteamInput()->TranslateActionOrigin( k_ESteamInputType_SteamDeckController, eMove );
+		EInputActionOrigin eDeckLook = SteamInput()->TranslateActionOrigin( k_ESteamInputType_SteamDeckController, eLook );
+
+		m_bMoveStickLeft = eDeckMove == k_EInputActionOrigin_SteamDeck_LeftStick_Move || eDeckMove == k_EInputActionOrigin_SteamDeck_LeftPad_Swipe;
+		m_bMoveStickRight = eDeckMove == k_EInputActionOrigin_SteamDeck_RightStick_Move || eDeckMove == k_EInputActionOrigin_SteamDeck_RightPad_Swipe;
+		m_bLookStickLeft = eDeckLook == k_EInputActionOrigin_SteamDeck_LeftStick_Move || eDeckLook == k_EInputActionOrigin_SteamDeck_LeftPad_Swipe;
+		m_bLookStickRight = eDeckLook == k_EInputActionOrigin_SteamDeck_RightStick_Move || eDeckLook == k_EInputActionOrigin_SteamDeck_RightPad_Swipe;
+
+		if ( m_bMoveStickLeft == m_bLookStickLeft || m_bMoveStickRight == m_bLookStickRight )
+		{
+			m_bMoveStickLeft = m_bLookStickRight = true;
+			m_bMoveStickRight = m_bLookStickLeft = false;
+		}
+		else if ( !m_bMoveStickLeft && !m_bMoveStickRight )
+		{
+			m_bMoveStickLeft = !m_bLookStickLeft;
+			m_bMoveStickRight = !m_bLookStickRight;
+		}
+		else if ( !m_bLookStickLeft && !m_bLookStickRight )
+		{
+			m_bLookStickLeft = !m_bMoveStickLeft;
+			m_bLookStickRight = !m_bMoveStickRight;
+		}
+
+		m_pLblLeftStickAction->SetVisible( ( m_bMoveStickLeft ? eMove : eLook ) != k_EInputActionOrigin_None );
+		m_pLblRightStickAction->SetVisible( ( m_bMoveStickRight ? eMove : eLook ) != k_EInputActionOrigin_None );
+		m_pLblLeftStickAction->SetText( m_bMoveStickLeft ? "#rd_stick_move" : "#rd_stick_look" );
+		m_pLblRightStickAction->SetText( m_bMoveStickRight ? "#rd_stick_move" : "#rd_stick_look" );
+	}
+}
+
+void CRD_VGUI_Settings_Controls::Paint()
+{
+	BaseClass::Paint();
+
+	int iSlot = GET_ACTIVE_SPLITSCREEN_SLOT();
+
+	float flMoveX{}, flMoveY{}, flLookX{}, flLookY{};
+	g_RD_Steam_Input.GetGameAxes( iSlot, &flMoveX, &flMoveY, &flLookX, &flLookY );
+
+	int x, y, w, t;
+	if ( m_pLblLeftStickAction->IsVisible() )
+	{
+		Assert( m_bMoveStickLeft != m_bLookStickLeft );
+		const char *szBind = g_RD_Steam_Input.Key_LookupBindingEx( m_bMoveStickLeft ? "xmove" : "xlook", -1, 0, 1 );
+
+		m_pLblLeftStickAction->GetBounds( x, y, w, t );
+
+		int dx = ( m_bMoveStickLeft ? flMoveX : flLookX ) / MAX_BUTTONSAMPLE * m_flStickTestDistance;
+		int dy = ( m_bMoveStickLeft ? flMoveY : flLookY ) / MAX_BUTTONSAMPLE * m_flStickTestDistance;
+
+		g_RD_Steam_Input.DrawLegacyControllerGlyph( szBind, x + w / 2 + dx, y + dy, 1, 0, m_hButtonFont, 0, m_pLblLeftStickAction->GetFgColor() );
+	}
+
+	if ( m_pLblRightStickAction->IsVisible() )
+	{
+		Assert( m_bMoveStickRight != m_bLookStickRight );
+		const char *szBind = g_RD_Steam_Input.Key_LookupBindingEx( m_bMoveStickRight ? "xmove" : "xlook", -1, 0, 1 );
+
+		m_pLblRightStickAction->GetBounds( x, y, w, t );
+
+		int dx = ( m_bMoveStickRight ? flMoveX : flLookX ) / MAX_BUTTONSAMPLE * m_flStickTestDistance;
+		int dy = ( m_bMoveStickRight ? flMoveY : flLookY ) / MAX_BUTTONSAMPLE * m_flStickTestDistance;
+
+		g_RD_Steam_Input.DrawLegacyControllerGlyph( szBind, x + w / 2 + dx, y + dy, 1, 0, m_hButtonFont, 0, m_pLblRightStickAction->GetFgColor() );
+	}
 }

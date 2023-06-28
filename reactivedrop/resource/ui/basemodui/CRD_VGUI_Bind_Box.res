@@ -39,6 +39,19 @@
 		"tall"				"10"
 	}
 
+	"ImgClearBind"
+	{
+		"ControlName"		"ImagePanel"
+		"fieldName"			"ImgClearBind"
+		"xpos"				"22"
+		"ypos"				"22"
+		"zpos"				"1"
+		"wide"				"8"
+		"tall"				"8"
+		"image"				"resource/x_close"
+		"scaleImage"		"1"
+	}
+
 	"LblDescription"
 	{
 		"ControlName"		"Label"
@@ -52,7 +65,5 @@
 		"fgcolor_override"	"128 128 128 255"
 		"wrap"				"1"
 		"centerWrap"		"1"
-		"border"			"ASWBriefingButtonBorder"
-		"paintborderenabled"	"1"
 	}
 }

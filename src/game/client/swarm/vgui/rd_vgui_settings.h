@@ -164,11 +164,17 @@ public:
 	CRD_VGUI_Bind( vgui::Panel *parent, const char *panelName, const char *szLabel, const char *szBind, bool bUseRowLayout );
 
 	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+	void OnKeyCodePressed( vgui::KeyCode keycode ) override;
+	void OnKeyCodeTyped( vgui::KeyCode keycode ) override;
+	void OnMouseReleased( vgui::MouseCode code ) override;
+	void OnCursorEntered() override;
 	void NavigateTo() override;
 	void OnThink() override;
 	void Paint() override;
 
 	void AddFallbackBind( const char *szBind );
+	void StartKeyboardCapture();
+	void ClearKeyboardBind();
 
 	vgui::Label *m_pLblKeyboardIcon;
 	vgui::Label *m_pLblKeyboardIconLong;
@@ -191,6 +197,8 @@ public:
 	CRD_VGUI_Settings_Controls( vgui::Panel *parent, const char *panelName );
 
 	void Activate() override;
+	void OnThink() override;
+	void Paint() override;
 	BaseModUI::BaseModHybridButton *GetButton( BaseModUI::CRD_VGUI_Settings *pSettings ) override { return pSettings->m_pBtnControls; }
 
 	CRD_VGUI_Bind *m_pBindMoveForward;
@@ -199,12 +207,14 @@ public:
 	CRD_VGUI_Bind *m_pBindMoveRight;
 	CRD_VGUI_Bind *m_pBindWalk;
 	CRD_VGUI_Bind *m_pBindJump;
+	vgui::Label *m_pLblLeftStickAction;
+	vgui::Label *m_pLblRightStickAction;
+	bool m_bMoveStickLeft, m_bMoveStickRight;
+	bool m_bLookStickLeft, m_bLookStickRight;
 
-	CRD_VGUI_Option *m_pSettingMovementStick;
 	CRD_VGUI_Option *m_pSettingAutoWalk;
 	CRD_VGUI_Option *m_pSettingAutoAttack;
 	CRD_VGUI_Option *m_pSettingAimToMovement;
-	CRD_VGUI_Option *m_pSettingInvertY;
 	CRD_VGUI_Option *m_pSettingControllerGlyphs;
 
 	CRD_VGUI_Bind *m_pBindPrimaryAttack;
@@ -250,6 +260,9 @@ public:
 	BaseModUI::BaseModHybridButton *m_pBtnCustomWheels;
 	BaseModUI::BaseModHybridButton *m_pBtnResetDefaults;
 	CRD_VGUI_Option *m_pSettingDeveloperConsole;
+
+	CPanelAnimationVar( vgui::HFont, m_hButtonFont, "buttonfont", "GameUIButtonsTiny" );
+	CPanelAnimationVarAliasType( float, m_flStickTestDistance, "stick_test_distance", "4", "proportional_float" );
 };
 
 class CRD_VGUI_Settings_Options : public CRD_VGUI_Settings_Panel_Base

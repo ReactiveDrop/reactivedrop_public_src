@@ -110,6 +110,13 @@ void CRD_Steam_Input::PostInit()
 		AssertMsg1( pBind->m_hAction, "could not find digital action '%s'", pBind->m_szActionName );
 		if ( !pBind->m_hAction )
 			Warning( "Could not find Steam Input digital action '%s'\n", pBind->m_szActionName );
+
+		pBind->m_hForceActionSet = NULL;
+		if ( pBind->m_szForceActionSet )
+		{
+			pBind->m_hForceActionSet = pSteamInput->GetActionSetHandle( pBind->m_szForceActionSet );
+			AssertMsg2( pBind->m_hForceActionSet, "could not find action set '%s' for digital action '%s'", pBind->m_szForceActionSet, pBind->m_szActionName );
+		}
 	}
 
 	// Analog Actions
@@ -307,7 +314,7 @@ vgui::IImage *CRD_Steam_Input::GlyphImageForOrigin( EInputActionOrigin eOrigin )
 	return pImage;
 }
 
-static const char *OriginPlaceholderString( EInputActionOrigin eOrigin )
+const char *CRD_Steam_Input::OriginPlaceholderString( EInputActionOrigin eOrigin )
 {
 	static CStringPool s_PlaceholderStrings;
 
@@ -319,7 +326,7 @@ static const char *OriginPlaceholderString( EInputActionOrigin eOrigin )
 	return s_PlaceholderStrings.Allocate( szPlaceholder );
 }
 
-static EInputActionOrigin OriginFromPlaceholderString( const char *szKey )
+EInputActionOrigin CRD_Steam_Input::OriginFromPlaceholderString( const char *szKey )
 {
 	if ( !szKey || V_strncmp( szKey, "STEAM_INPUT_ORIGIN_", strlen( "STEAM_INPUT_ORIGIN_" ) ) )
 		return k_EInputActionOrigin_None;
@@ -339,32 +346,64 @@ const char *CRD_Steam_Input::Key_LookupBindingEx( const char *pBinding, int iUse
 	if ( iAllowJoystick != 0 && pSteamInput )
 	{
 		bool bAny = false;
+		InputAnalogActionHandle_t hAnalogAction = NULL;
 
-		for ( CRD_Steam_Input_Bind *pBind = CRD_Steam_Input_Bind::s_pBinds; pBind; pBind = pBind->m_pNext )
+		if ( !V_stricmp( pBinding, "xlook" ) )
 		{
-			if ( V_stricmp( pBinding, pBind->m_szBind ) && ( pBind->m_szBind[0] != '+' || V_stricmp( pBinding, pBind->m_szBind + 1 ) ) )
-				continue;
+			hAnalogAction = m_AnalogActions.Look;
+		}
+		else if ( !V_stricmp( pBinding, "xmove" ) )
+		{
+			hAnalogAction = m_AnalogActions.Move;
+		}
 
+		if ( hAnalogAction )
+		{
 			FOR_EACH_VEC( m_Controllers, i )
 			{
 				if ( !m_Controllers[i]->m_bConnected || m_Controllers[i]->m_SplitScreenPlayerIndex != iRealUserId )
 					continue;
 
+				bAny = true;
+
 				EInputActionOrigin origins[STEAM_INPUT_MAX_ORIGINS]{};
-				InputActionSetHandle_t hActionSet = pSteamInput->GetCurrentActionSet( m_Controllers[i]->m_hController );
-				int count = pSteamInput->GetDigitalActionOrigins( m_Controllers[i]->m_hController, hActionSet, pBind->m_hAction, origins );
+				int count = pSteamInput->GetAnalogActionOrigins( m_Controllers[i]->m_hController, m_ActionSets.InGame, hAnalogAction, origins );
 				if ( count > iStartCount )
 				{
 					return OriginPlaceholderString( origins[iStartCount] );
 				}
 
 				iStartCount -= count;
-				if ( count )
+			}
+		}
+		else
+		{
+			for ( CRD_Steam_Input_Bind *pBind = CRD_Steam_Input_Bind::s_pBinds; pBind; pBind = pBind->m_pNext )
+			{
+				if ( V_stricmp( pBinding, pBind->m_szBind ) && ( pBind->m_szBind[0] != '+' || V_stricmp( pBinding, pBind->m_szBind + 1 ) ) )
+					continue;
+
+				FOR_EACH_VEC( m_Controllers, i )
+				{
+					if ( !m_Controllers[i]->m_bConnected || m_Controllers[i]->m_SplitScreenPlayerIndex != iRealUserId )
+						continue;
+
 					bAny = true;
+
+					EInputActionOrigin origins[STEAM_INPUT_MAX_ORIGINS]{};
+					InputActionSetHandle_t hActionSet = pBind->m_hForceActionSet ? pBind->m_hForceActionSet : pSteamInput->GetCurrentActionSet( m_Controllers[i]->m_hController );
+					int count = pSteamInput->GetDigitalActionOrigins( m_Controllers[i]->m_hController, hActionSet, pBind->m_hAction, origins );
+					if ( count > iStartCount )
+					{
+						return OriginPlaceholderString( origins[iStartCount] );
+					}
+
+					iStartCount -= count;
+				}
 			}
 		}
 
-		// if we have Steam Input binds, don't show Source Engine controller binds for the same command.
+		// if we have Steam Input controllers, don't show Source Engine controller binds for the same command.
 		if ( bAny )
 		{
 			if ( iAllowJoystick > 0 )
@@ -426,7 +465,7 @@ const char *CRD_Steam_Input::NameForOrigin( const char *szKey )
 	return eOrigin ? NameForOrigin( eOrigin ) : NULL;
 }
 
-void CRD_Steam_Input::DrawLegacyControllerGlyph( const char *szKey, int x, int y, int iCenterX, int iCenterY, vgui::HFont hFont, int nSlot )
+void CRD_Steam_Input::DrawLegacyControllerGlyph( const char *szKey, int x, int y, int iCenterX, int iCenterY, vgui::HFont hFont, int nSlot, Color color )
 {
 	EInputActionOrigin eOrigin = OriginFromPlaceholderString( szKey );
 	EXboxOrigin eXboxOrigin = k_EXboxOrigin_Count;
@@ -457,7 +496,7 @@ void CRD_Steam_Input::DrawLegacyControllerGlyph( const char *szKey, int x, int y
 		if ( hTexture )
 		{
 			vgui::surface()->DrawSetTexture( hTexture );
-			vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
+			vgui::surface()->DrawSetColor( color );
 			vgui::surface()->DrawTexturedRect( x, y, x + tall, y + tall );
 
 			return;
@@ -479,7 +518,7 @@ void CRD_Steam_Input::DrawLegacyControllerGlyph( const char *szKey, int x, int y
 			if ( hTexture )
 			{
 				vgui::surface()->DrawSetTexture( hTexture );
-				vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
+				vgui::surface()->DrawSetColor( color );
 				vgui::surface()->DrawTexturedRect( x, y, x + tall, y + tall );
 
 				return;
@@ -488,7 +527,7 @@ void CRD_Steam_Input::DrawLegacyControllerGlyph( const char *szKey, int x, int y
 	}
 
 	vgui::surface()->DrawSetTextFont( hFont );
-	vgui::surface()->DrawSetTextColor( 255, 255, 255, 255 );
+	vgui::surface()->DrawSetTextColor( color );
 	vgui::surface()->DrawSetTextPos( x, y );
 	vgui::surface()->DrawPrintText( wszLegacy, V_wcslen( wszLegacy ) );
 }
@@ -639,6 +678,9 @@ void CRD_Steam_Controller::OnFrame( ISteamInput *pSteamInput )
 	if ( !m_bConnected )
 		return;
 
+	// disable source engine input handling so we don't get double inputs for xinput controllers
+	g_pInputSystem->EnableJoystickInput( pSteamInput->GetGamepadIndexForController( m_hController ), false );
+
 	// action set layers override what came before them, so we need to activate the most specific/useful layer LAST.
 	pSteamInput->DeactivateAllActionSetLayers( m_hController );
 
@@ -711,9 +753,10 @@ void CRD_Steam_Controller::OnAnalogAction( InputAnalogActionHandle_t hAction, EI
 CRD_Steam_Input_Bind *CRD_Steam_Input_Bind::s_pBinds = NULL;
 CRD_Steam_Input_Bind *CRD_Steam_Input_Bind::s_pLastBind = NULL;
 
-CRD_Steam_Input_Bind::CRD_Steam_Input_Bind( const char *szActionName, const char *szBind ) :
+CRD_Steam_Input_Bind::CRD_Steam_Input_Bind( const char *szActionName, const char *szBind, const char *szForceActionSet ) :
 	m_szActionName{ szActionName },
-	m_szBind{ szBind }
+	m_szBind{ szBind },
+	m_szForceActionSet{ szForceActionSet }
 {
 	m_pNext = NULL;
 

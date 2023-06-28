@@ -25,12 +25,14 @@ public:
 	int GetJoystickCount();
 	const char *Key_LookupBindingEx( const char *pBinding, int iUserId = -1, int iStartCount = 0, int iAllowJoystick = -1 );
 	bool IsSteamInputBind( const char *szBinding );
-	bool IsOriginPlaceholderString( const char *szKey );
-	const char *NameForOrigin( EInputActionOrigin eOrigin );
-	const char *NameForOrigin( const char *szKey );
+	static const char *OriginPlaceholderString( EInputActionOrigin eOrigin );
+	static EInputActionOrigin OriginFromPlaceholderString( const char *szKey );
+	static bool IsOriginPlaceholderString( const char *szKey );
+	static const char *NameForOrigin( EInputActionOrigin eOrigin );
+	static const char *NameForOrigin( const char *szKey );
 	vgui::HTexture GlyphForOrigin( EInputActionOrigin eOrigin );
 	vgui::IImage *GlyphImageForOrigin( EInputActionOrigin eOrigin );
-	void DrawLegacyControllerGlyph( const char *szKey, int x, int y, int iCenterX, int iCenterY, vgui::HFont hFont, int nSlot = GET_ACTIVE_SPLITSCREEN_SLOT() );
+	void DrawLegacyControllerGlyph( const char *szKey, int x, int y, int iCenterX, int iCenterY, vgui::HFont hFont, int nSlot = GET_ACTIVE_SPLITSCREEN_SLOT(), Color color = Color{ 255, 255, 255, 255 } );
 	bool GetGameAxes( int nSlot, float *flMoveX, float *flMoveY, float *flLookX, float *flLookY );
 
 	STEAM_CALLBACK( CRD_Steam_Input, OnSteamInputDeviceConnected, SteamInputDeviceConnected_t );
@@ -77,12 +79,14 @@ public:
 class CRD_Steam_Input_Bind final
 {
 public:
-	CRD_Steam_Input_Bind( const char *szActionName, const char *szBind );
+	CRD_Steam_Input_Bind( const char *szActionName, const char *szBind, const char *szForceActionSet );
 
 private:
 	const char *m_szActionName;
 	const char *m_szBind;
+	const char *m_szForceActionSet;
 	InputDigitalActionHandle_t m_hAction;
+	InputActionSetHandle_t m_hForceActionSet;
 
 	CRD_Steam_Input_Bind *m_pNext;
 	static CRD_Steam_Input_Bind *s_pBinds;
@@ -92,6 +96,6 @@ private:
 	friend class CRD_Steam_Controller;
 };
 
-#define RD_STEAM_INPUT_BIND( ActionName, szCommand ) CRD_Steam_Input_Bind SteamInputBind_##ActionName( #ActionName, szCommand )
+#define RD_STEAM_INPUT_BIND( ActionName, szCommand, szForceActionSet ) CRD_Steam_Input_Bind SteamInputBind_##ActionName( #ActionName, szCommand, szForceActionSet )
 
 extern CRD_Steam_Input g_RD_Steam_Input;
