@@ -1817,11 +1817,15 @@ CON_COMMAND( rd_dump_workshop_mapping_server, "" )
 	g_ReactiveDropWorkshop.DumpWorkshopMapping( szPrefix );
 }
 
-void CReactiveDropWorkshop::DumpWorkshopConflicts()
+void CReactiveDropWorkshop::DumpWorkshopConflicts( const char *szPrefix )
 {
 	FOR_EACH_VEC( m_FileConflicts, i )
 	{
-		CmdMsg( "CONFLICT: %s\n", m_FileConflicts[i]->FileName.Get() );
+		const char *szName = m_FileConflicts[i]->FileName.Get();
+		if ( !StringHasPrefix( szName, szPrefix ) )
+			continue;
+
+		CmdMsg( "CONFLICT: %s\n", szName );
 		CmdMsg( "Addon %llu \"%s\" overrides %llu \"%s\"\n",
 			m_FileConflicts[i]->ReplacingAddon, TryQueryAddon( m_FileConflicts[i]->ReplacingAddon ).details.m_rgchTitle,
 			m_FileConflicts[i]->HiddenAddon, TryQueryAddon( m_FileConflicts[i]->HiddenAddon ).details.m_rgchTitle );
@@ -1836,7 +1840,9 @@ CON_COMMAND( rd_dump_workshop_conflicts_client, "" )
 CON_COMMAND( rd_dump_workshop_conflicts_server, "" )
 #endif
 {
-	g_ReactiveDropWorkshop.DumpWorkshopConflicts();
+	const char *szPrefix = args.Arg( 1 );
+
+	g_ReactiveDropWorkshop.DumpWorkshopConflicts( szPrefix );
 }
 
 void CReactiveDropWorkshop::PrepareForUnloadCacheClear()

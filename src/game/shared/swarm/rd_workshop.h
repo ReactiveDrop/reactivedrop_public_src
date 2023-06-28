@@ -73,7 +73,7 @@ public:
 	void AddToFileNameAddonMapping( PublishedFileId_t id, const char *szDirName, IFileSystem *pFileSystem );
 	void SaveDisabledAddons();
 	void DumpWorkshopMapping( const char *szPrefix );
-	void DumpWorkshopConflicts();
+	void DumpWorkshopConflicts( const char *szPrefix );
 
 #ifdef GAME_DLL
 	void SetupThink();
