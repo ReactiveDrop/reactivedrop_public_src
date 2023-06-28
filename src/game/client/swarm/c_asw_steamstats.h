@@ -154,6 +154,10 @@ public:
 	void ReadDownloadedLeaderboard( CUtlVector<RD_LeaderboardEntry_t> & entries, SteamLeaderboardEntries_t hEntries, int nCount );
 	void ReadDownloadedLeaderboard( CUtlVector<RD_LeaderboardEntry_Points_t> & entries, SteamLeaderboardEntries_t hEntries, int nCount );
 
+	bool AreGlobalStatsReady();
+	bool AreGlobalStatsUpdating() const;
+	bool DidGlobalStatsUpdate( int &iUpdateCount );
+
 private:
 	int32 m_iTotalKills;
 	float32 m_fAccuracy;
@@ -253,6 +257,11 @@ private:
 
 	int32 m_iLeaderboardScore;
 	LeaderboardScoreDetails_v2_t m_LeaderboardScoreDetails;
+
+	CCallResult<CASW_Steamstats, GlobalStatsReceived_t> m_GlobalStatsReceivedCallback;
+	void GlobalStatsReceivedCallback( GlobalStatsReceived_t *pResult, bool bIOFailure );
+	RTime32 m_iNextGlobalStatsRefresh{};
+	int m_iGlobalStatsReceived{};
 };
 
 extern CASW_Steamstats g_ASW_Steamstats;

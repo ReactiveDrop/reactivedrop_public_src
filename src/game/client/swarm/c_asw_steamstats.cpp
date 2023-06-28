@@ -1845,6 +1845,41 @@ void CASW_Steamstats::ReadDownloadedLeaderboard( CUtlVector<RD_LeaderboardEntry_
 	}
 }
 
+bool CASW_Steamstats::AreGlobalStatsReady()
+{
+	ISteamUtils *pUtils = SteamUtils();
+	Assert( pUtils );
+
+	ISteamUserStats *pUserStats = SteamUserStats();
+	Assert( pUserStats );
+
+	if ( !m_GlobalStatsReceivedCallback.IsActive() && pUtils && pUserStats && pUtils->GetServerRealTime() >= m_iNextGlobalStatsRefresh )
+	{
+		// main menu ticker feed requires 60 days, so no point in requesting a variable amount
+		SteamAPICall_t hCall = pUserStats->RequestGlobalStats( 60 );
+		m_GlobalStatsReceivedCallback.Set( hCall, this, &CASW_Steamstats::GlobalStatsReceivedCallback );
+		// if our request fails for some reason, don't request again for 15 minutes
+		m_iNextGlobalStatsRefresh = pUtils->GetServerRealTime() + 900;
+	}
+
+	return m_iGlobalStatsReceived != 0;
+}
+
+bool CASW_Steamstats::AreGlobalStatsUpdating() const
+{
+	return m_GlobalStatsReceivedCallback.IsActive();
+}
+
+bool CASW_Steamstats::DidGlobalStatsUpdate( int &iUpdateCount )
+{
+	if ( AreGlobalStatsReady() && iUpdateCount != m_iGlobalStatsReceived )
+	{
+		iUpdateCount = m_iGlobalStatsReceived;
+		return true;
+	}
+
+	return false;
+}
 
 static const char *LB_whitelist[] =
 {
@@ -1989,4 +2024,18 @@ bool CASW_Steamstats::IsLBWhitelisted( const char *name )
 	}
 
 	return r;
+}
+
+void CASW_Steamstats::GlobalStatsReceivedCallback( GlobalStatsReceived_t *pResult, bool bIOFailure )
+{
+	if ( !bIOFailure && pResult->m_eResult == k_EResultOK )
+	{
+		// if we successfully retrieve stats, allow refreshing after a minute.
+		m_iNextGlobalStatsRefresh = SteamUtils()->GetServerRealTime() + 60;
+		m_iGlobalStatsReceived++;
+	}
+	else
+	{
+		Warning( "Failed to retrieve global stat history: %s\n", bIOFailure ? "IO Error" : UTIL_RD_EResultToString( pResult->m_eResult ) );
+	}
 }

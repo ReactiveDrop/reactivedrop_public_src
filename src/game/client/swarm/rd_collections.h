@@ -30,7 +30,7 @@ class CRD_Collection_StatLine : public vgui::EditablePanel
 public:
 	CRD_Collection_StatLine( vgui::Panel *parent, const char *panelName );
 
-	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 
 	void SetLabel( const char *szLabel );
 	void SetLabel( const wchar_t *wszLabel );
@@ -70,10 +70,10 @@ class CRD_Collection_Tab_Equipment : public TGD_Tab
 	DECLARE_CLASS_SIMPLE( CRD_Collection_Tab_Equipment, TGD_Tab );
 public:
 	CRD_Collection_Tab_Equipment( TabbedGridDetails *parent, const char *szLabel, CASW_Marine_Profile *pProfile, int nInventorySlot );
-	virtual ~CRD_Collection_Tab_Equipment();
+	~CRD_Collection_Tab_Equipment();
 
-	virtual TGD_Grid *CreateGrid() override;
-	virtual TGD_Details *CreateDetails() override;
+	TGD_Grid *CreateGrid() override;
+	TGD_Details *CreateDetails() override;
 
 	void SetBriefing( IBriefing *pBriefing, int nLobbySlot );
 
@@ -91,22 +91,17 @@ class CRD_Collection_Details_Equipment : public TGD_Details
 public:
 	CRD_Collection_Details_Equipment( CRD_Collection_Tab_Equipment *parent );
 
-	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
-	virtual void DisplayEntry( TGD_Entry *pEntry ) override;
-	virtual void OnThink() override;
-
-	void OnGlobalStatsReceived( GlobalStatsReceived_t *pParam, bool bIOError );
-
-	int m_nStatsDays;
-	bool m_bStatsReady;
-	CCallResult<CRD_Collection_Details_Equipment, GlobalStatsReceived_t> m_OnGlobalStatsReceived;
-	int m_nDisplayedFrames;
+	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+	void DisplayEntry( TGD_Entry *pEntry ) override;
+	void OnThink() override;
 
 	CRD_Swarmopedia_Model_Panel *m_pModelPanel;
 	vgui::Label *m_pWeaponNameLabel;
 	vgui::Label *m_pWeaponAttrLabel;
 	vgui::RichText *m_pWeaponDescLabel;
 	BaseModUI::GenericPanelList *m_pGplStats;
+	vgui::ImagePanel *m_pImgStatsUpdating;
+	int m_iStatsUpdateCount{};
 };
 
 class CRD_Collection_Entry_Equipment : public TGD_Entry
@@ -115,12 +110,12 @@ class CRD_Collection_Entry_Equipment : public TGD_Entry
 public:
 	CRD_Collection_Entry_Equipment( TGD_Grid *parent, const char *panelName, const RD_Swarmopedia::Weapon *pWeapon, const ReactiveDropInventory::ItemInstance_t &itemInstance );
 
-	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
-	virtual void OnKeyCodePressed( vgui::KeyCode keycode ) override;
-	virtual void OnCommand( const char *command ) override;
-	virtual void OnThink() override;
-	virtual void PostChildPaint() override;
-	virtual void ApplyEntry() override;
+	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+	void OnKeyCodePressed( vgui::KeyCode keycode ) override;
+	void OnCommand( const char *command ) override;
+	void OnThink() override;
+	void PostChildPaint() override;
+	void ApplyEntry() override;
 
 	const RD_Swarmopedia::Weapon *m_pWeapon;
 	ReactiveDropInventory::ItemInstance_t m_ItemInstance;
@@ -144,9 +139,9 @@ class CRD_Collection_Panel_Equipment : public vgui::EditablePanel
 public:
 	CRD_Collection_Panel_Equipment( vgui::Panel *parent, const char *panelName, CRD_Collection_Tab_Equipment *pTab, const RD_Swarmopedia::Weapon *pWeapon, const ReactiveDropInventory::ItemInstance_t &itemInstance );
 
-	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
-	virtual void OnCommand( const char *command ) override;
-	virtual void OnKeyCodePressed( vgui::KeyCode code ) override;
+	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+	void OnCommand( const char *command ) override;
+	void OnKeyCodePressed( vgui::KeyCode code ) override;
 
 	MESSAGE_FUNC_CHARPTR( OnItemSelected, "OnItemSelected", panelName );
 
@@ -165,10 +160,10 @@ class CRD_Collection_Tab_Inventory : public TGD_Tab
 	DECLARE_CLASS_SIMPLE( CRD_Collection_Tab_Inventory, TGD_Tab );
 public:
 	CRD_Collection_Tab_Inventory( TabbedGridDetails *parent, const char *szLabel, const char *szSlot );
-	virtual ~CRD_Collection_Tab_Inventory();
+	~CRD_Collection_Tab_Inventory();
 
-	virtual TGD_Details *CreateDetails() override;
-	virtual void OnThink() override;
+	TGD_Details *CreateDetails() override;
+	void OnThink() override;
 
 	void UpdateErrorMessage( TGD_Grid *pGrid );
 	void LoadCachedInventory();
@@ -185,9 +180,9 @@ class CRD_Collection_Details_Inventory : public TGD_Details
 public:
 	CRD_Collection_Details_Inventory( CRD_Collection_Tab_Inventory *parent );
 
-	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
-	virtual void OnThink() override;
-	virtual void DisplayEntry( TGD_Entry *pEntry ) override;
+	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+	void OnThink() override;
+	void DisplayEntry( TGD_Entry *pEntry ) override;
 
 	vgui::Panel *m_pIconBackground;
 	vgui::ImagePanel *m_pIcon;
@@ -202,8 +197,8 @@ public:
 	CRD_Collection_Entry_Inventory( TGD_Grid *parent, const char *panelName, SteamInventoryResult_t hResult, int index );
 	CRD_Collection_Entry_Inventory( TGD_Grid *parent, const char *panelName, KeyValues *pCached, int index );
 
-	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
-	virtual void ApplyEntry() override;
+	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+	void ApplyEntry() override;
 
 	CRD_Collection_Tab_Inventory *GetTab();
 
@@ -220,10 +215,10 @@ class CRD_Collection_Tab_Swarmopedia : public TGD_Tab
 	DECLARE_CLASS_SIMPLE( CRD_Collection_Tab_Swarmopedia, TGD_Tab );
 public:
 	CRD_Collection_Tab_Swarmopedia( TabbedGridDetails *parent, const char *szLabel );
-	virtual ~CRD_Collection_Tab_Swarmopedia();
+	~CRD_Collection_Tab_Swarmopedia();
 
-	virtual TGD_Grid *CreateGrid() override;
-	virtual TGD_Details *CreateDetails() override;
+	TGD_Grid *CreateGrid() override;
+	TGD_Details *CreateDetails() override;
 
 	RD_Swarmopedia::Collection *m_pCollection;
 };
@@ -234,23 +229,19 @@ class CRD_Collection_Details_Swarmopedia : public TGD_Details
 public:
 	CRD_Collection_Details_Swarmopedia( CRD_Collection_Tab_Swarmopedia *parent );
 
-	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
-	virtual void PerformLayout() override;
-	virtual void DisplayEntry( TGD_Entry *pEntry ) override;
-	virtual void OnThink() override;
+	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+	void PerformLayout() override;
+	void DisplayEntry( TGD_Entry *pEntry ) override;
+	void OnThink() override;
 
 	void DisplayEntryLocked( const RD_Swarmopedia::Alien *pAlien );
-	void OnGlobalStatsReceived( GlobalStatsReceived_t *pParam, bool bIOError );
-
-	int m_nStatsDays;
-	bool m_bStatsReady;
-	CCallResult<CRD_Collection_Details_Swarmopedia, GlobalStatsReceived_t> m_OnGlobalStatsReceived;
-	int m_nDisplayedFrames;
 
 	vgui::Label *m_pLblHeader;
 	vgui::Label *m_pLblAbilities;
 	vgui::Label *m_pLblError;
 	BaseModUI::GenericPanelList *m_pGplStats;
+	vgui::ImagePanel *m_pImgStatsUpdating;
+	int m_iStatsUpdateCount{};
 };
 
 class CRD_Collection_Entry_Swarmopedia : public TGD_Entry
@@ -259,8 +250,8 @@ class CRD_Collection_Entry_Swarmopedia : public TGD_Entry
 public:
 	CRD_Collection_Entry_Swarmopedia( TGD_Grid *parent, const char *panelName, const RD_Swarmopedia::Alien *pAlien );
 
-	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
-	virtual void ApplyEntry() override;
+	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+	void ApplyEntry() override;
 
 	vgui::ImagePanel *m_pIcon;
 	vgui::Panel *m_pUnlockProgress;
@@ -274,10 +265,10 @@ class CRD_Collection_Panel_Swarmopedia : public vgui::EditablePanel
 public:
 	CRD_Collection_Panel_Swarmopedia( vgui::Panel *parent, const char *panelName, const RD_Swarmopedia::Alien *pAlien );
 
-	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
-	virtual void PerformLayout() override;
-	virtual void OnCommand( const char *command ) override;
-	virtual void OnKeyCodePressed( vgui::KeyCode keycode ) override;
+	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+	void PerformLayout() override;
+	void OnCommand( const char *command ) override;
+	void OnKeyCodePressed( vgui::KeyCode keycode ) override;
 
 	CRD_Swarmopedia_Model_Panel *m_pModelPanel;
 	CNB_Button *m_pModelButton;

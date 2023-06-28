@@ -13,12 +13,12 @@
 #include "asw_util_shared.h"
 #include "gameui/swarm/basemodpanel.h"
 #include "gameui/swarm/vgenericpanellist.h"
+#include "c_asw_steamstats.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 ConVar rd_swarmopedia_global_stat_window_days( "rd_swarmopedia_global_stat_window_days", "30", FCVAR_ARCHIVE, "Number of days to sum for global stats in the Swarmopedia. 0 for all time.", true, 0, true, 60 );
-ConVar rd_swarmopedia_global_stat_update_seconds( "rd_swarmopedia_global_stat_update_seconds", "600", FCVAR_HIDDEN, "", true, 30, true, 10000000 );
 
 CRD_Collection_Tab_Swarmopedia::CRD_Collection_Tab_Swarmopedia( TabbedGridDetails *parent, const char *szLabel )
 	: BaseClass( parent, szLabel )
@@ -64,22 +64,7 @@ CRD_Collection_Details_Swarmopedia::CRD_Collection_Details_Swarmopedia( CRD_Coll
 	m_pLblAbilities = new vgui::Label( this, "LblAbilities", L"" );
 	m_pLblError = new vgui::Label( this, "LblError", L"" );
 	m_pGplStats = new BaseModUI::GenericPanelList( this, "GplStats", BaseModUI::GenericPanelList::ISM_ELEVATOR );
-
-	m_nDisplayedFrames = 0;
-
-	if ( SteamUserStats() )
-	{
-		m_nStatsDays = rd_swarmopedia_global_stat_window_days.GetInt();
-		m_bStatsReady = false;
-
-		SteamAPICall_t hAPICall = SteamUserStats()->RequestGlobalStats( rd_swarmopedia_global_stat_window_days.GetInt() );
-		m_OnGlobalStatsReceived.Set( hAPICall, this, &CRD_Collection_Details_Swarmopedia::OnGlobalStatsReceived );
-	}
-	else
-	{
-		m_nStatsDays = -1;
-		m_bStatsReady = true;
-	}
+	m_pImgStatsUpdating = new vgui::ImagePanel( this, "ImgStatsUpdating" );
 }
 
 void CRD_Collection_Details_Swarmopedia::ApplySchemeSettings( vgui::IScheme *pScheme )
@@ -164,52 +149,59 @@ void CRD_Collection_Details_Swarmopedia::DisplayEntry( TGD_Entry *pEntry )
 
 	m_pLblAbilities->SetText( buf );
 
-	if ( m_nStatsDays == -1 )
-	{
-		m_pLblError->SetText( "#rd_so_global_stat_failed" );
-	}
-	else if ( m_bStatsReady )
+	if ( rd_swarmopedia_global_stat_window_days.GetInt() < 0 )
 	{
 		m_pLblError->SetText( L"" );
-
-		Assert( SteamUserStats() );
-
-		wchar_t wszDays[4]{};
-		V_snwprintf( wszDays, ARRAYSIZE( wszDays ), L"%d", m_nStatsDays );
-
-		g_pVGuiLocalize->ConstructString( buf, sizeof( buf ),
-			g_pVGuiLocalize->FindSafe( m_nStatsDays ? "#rd_so_global_stat_days" : "#rd_so_global_stat_total" ), 1, wszDays );
-
-		vgui::Label *pDaysLabel = m_pGplStats->AddPanelItem<vgui::Label>( "DaysLabel", "" );
-		pDaysLabel->SetContentAlignment( vgui::Label::a_east );
-		pDaysLabel->SetText( buf );
-
-		FOR_EACH_VEC( pAlien->GlobalStats, i )
-		{
-			int nOK{};
-			int64 nStat[61]{};
-			if ( m_nStatsDays == 0 )
-			{
-				nOK = SteamUserStats()->GetGlobalStat( pAlien->GlobalStats[i]->StatName, &nStat[1] ) ? 1 : 0;
-			}
-			else
-			{
-				nOK = SteamUserStats()->GetGlobalStatHistory( pAlien->GlobalStats[i]->StatName, &nStat[1], sizeof( nStat ) - sizeof( nStat[0] ) );
-			}
-
-			for ( int j = 1; j <= nOK; j++ )
-			{
-				nStat[0] += nStat[j];
-			}
-
-			CRD_Collection_StatLine *pStatLine = m_pGplStats->AddPanelItem<CRD_Collection_StatLine>( "StatLine" );
-			pStatLine->SetLabel( g_pVGuiLocalize->FindSafe( pAlien->GlobalStats[i]->Caption ) );
-			pStatLine->SetValue( nStat[0] );
-		}
 	}
 	else
 	{
-		m_pLblError->SetText( "#rd_so_global_stat_loading" );
+		if ( g_ASW_Steamstats.AreGlobalStatsReady() )
+		{
+			m_pLblError->SetText( L"" );
+
+			Assert( SteamUserStats() );
+
+			wchar_t wszDays[4]{};
+			V_snwprintf( wszDays, ARRAYSIZE( wszDays ), L"%d", rd_swarmopedia_global_stat_window_days.GetInt() );
+
+			g_pVGuiLocalize->ConstructString( buf, sizeof( buf ),
+				g_pVGuiLocalize->FindSafe( rd_swarmopedia_global_stat_window_days.GetInt() ? "#rd_so_global_stat_days" : "#rd_so_global_stat_total" ), 1, wszDays );
+
+			vgui::Label *pDaysLabel = m_pGplStats->AddPanelItem<vgui::Label>( "DaysLabel", "" );
+			pDaysLabel->SetContentAlignment( vgui::Label::a_east );
+			pDaysLabel->SetText( buf );
+
+			FOR_EACH_VEC( pAlien->GlobalStats, i )
+			{
+				int nOK{};
+				int64 nStat[61]{};
+				if ( rd_swarmopedia_global_stat_window_days.GetInt() == 0 )
+				{
+					nOK = SteamUserStats()->GetGlobalStat( pAlien->GlobalStats[i]->StatName, &nStat[1] ) ? 1 : 0;
+				}
+				else
+				{
+					nOK = SteamUserStats()->GetGlobalStatHistory( pAlien->GlobalStats[i]->StatName, &nStat[1], sizeof( nStat ) - sizeof( nStat[0] ) );
+				}
+
+				for ( int j = 1; j <= nOK; j++ )
+				{
+					nStat[0] += nStat[j];
+				}
+
+				CRD_Collection_StatLine *pStatLine = m_pGplStats->AddPanelItem<CRD_Collection_StatLine>( "StatLine" );
+				pStatLine->SetLabel( g_pVGuiLocalize->FindSafe( pAlien->GlobalStats[i]->Caption ) );
+				pStatLine->SetValue( nStat[0] );
+			}
+		}
+		else if ( g_ASW_Steamstats.AreGlobalStatsUpdating() )
+		{
+			m_pLblError->SetText( "#rd_so_global_stat_loading" );
+		}
+		else
+		{
+			m_pLblError->SetText( "#rd_so_global_stat_failed" );
+		}
 	}
 
 	InvalidateLayout();
@@ -217,20 +209,16 @@ void CRD_Collection_Details_Swarmopedia::DisplayEntry( TGD_Entry *pEntry )
 
 void CRD_Collection_Details_Swarmopedia::OnThink()
 {
-	if ( !m_OnGlobalStatsReceived.IsActive() )
+	BaseClass::OnThink();
+
+	if ( rd_swarmopedia_global_stat_window_days.GetInt() >= 0 )
 	{
-		m_nDisplayedFrames++;
-
-		if ( m_nDisplayedFrames >= rd_swarmopedia_global_stat_update_seconds.GetInt() * 60 )
+		if ( g_ASW_Steamstats.DidGlobalStatsUpdate( m_iStatsUpdateCount ) )
 		{
-			m_nDisplayedFrames = 0;
-
-			m_nStatsDays = rd_swarmopedia_global_stat_window_days.GetInt();
-			m_bStatsReady = false;
-
-			SteamAPICall_t hAPICall = SteamUserStats()->RequestGlobalStats( rd_swarmopedia_global_stat_window_days.GetInt() );
-			m_OnGlobalStatsReceived.Set( hAPICall, this, &CRD_Collection_Details_Swarmopedia::OnGlobalStatsReceived );
+			DisplayEntry( GetCurrentEntry() );
 		}
+
+		m_pImgStatsUpdating->SetVisible( g_ASW_Steamstats.AreGlobalStatsUpdating() );
 	}
 }
 
@@ -269,18 +257,6 @@ void CRD_Collection_Details_Swarmopedia::DisplayEntryLocked( const RD_Swarmopedi
 	m_pLblError->SetText( buf );
 
 	InvalidateLayout();
-}
-
-void CRD_Collection_Details_Swarmopedia::OnGlobalStatsReceived( GlobalStatsReceived_t *pParam, bool bIOError )
-{
-	if ( bIOError || pParam->m_eResult != k_EResultOK )
-	{
-		Warning( "Failed to retrieve global stat history for Swarmopedia: %s\n", bIOError ? "IO Error" : UTIL_RD_EResultToString( pParam->m_eResult ) );
-		m_nStatsDays = -1;
-	}
-
-	m_bStatsReady = true;
-	DisplayEntry( GetCurrentEntry() );
 }
 
 CRD_Collection_Entry_Swarmopedia::CRD_Collection_Entry_Swarmopedia( TGD_Grid *parent, const char *panelName, const RD_Swarmopedia::Alien *pAlien )

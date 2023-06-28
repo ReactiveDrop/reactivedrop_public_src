@@ -52,13 +52,26 @@
 
 	"GplStats"
 	{
+		"ControlName"		"GenericPanelList"
 		"fieldName"			"GplStats"
 		"xpos"				"0"
 		"ypos"				"120"
 		"wide"				"165"
 		"tall"				"100"
-		"ControlName"		"GenericPanelList"
 		"panelBorder"		"0"
 		"bgcolor_override"	"0 0 0 0"
+	}
+
+	"ImgStatsUpdating"
+	{
+		"ControlName"		"ImagePanel"
+		"fieldName"			"ImgStatsUpdating"
+		"xpos"				"155"
+		"ypos"				"0"
+		"wide"				"10"
+		"tall"				"10"
+		"scaleImage"		"1"
+		"image"				"common/swarm_cycle"
+		"visible"			"0"
 	}
 }

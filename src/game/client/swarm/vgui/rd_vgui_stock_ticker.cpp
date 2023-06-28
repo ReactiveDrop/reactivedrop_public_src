@@ -7,6 +7,7 @@
 #include <vgui/ISurface.h>
 #include <ctime>
 #include "rd_hud_sheet.h"
+#include "c_asw_steamstats.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -384,10 +385,8 @@ void CRD_VGUI_Stock_Ticker::GenerateNextTickerText( wchar_t *&wszText, int &iIco
 		m_iPixelsUntilSaveResetTime = m_iTextTotalWidth + m_iTextStartX;
 		Assert( m_iPixelsUntilSaveResetTime > 0 );
 
-		if ( ISteamUserStats *pUserStats = SteamUserStats() )
-		{
-			( void )pUserStats->RequestGlobalStats( 60 );
-		}
+		// request a stats update when we update the seed
+		( void )g_ASW_Steamstats.AreGlobalStatsReady();
 	}
 
 	float flTotalWeight = m_flTotalWeight;

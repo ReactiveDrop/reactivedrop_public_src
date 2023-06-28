@@ -18,6 +18,7 @@
 #include "rd_steam_input.h"
 #include "briefingtooltip.h"
 #include "controller_focus.h"
+#include "c_asw_steamstats.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -33,7 +34,6 @@ extern ConVar rd_weapons_regular_class_unrestricted;
 extern ConVar rd_weapons_extra_class_unrestricted;
 extern ConVar rd_reduce_motion;
 extern ConVar rd_swarmopedia_global_stat_window_days;
-extern ConVar rd_swarmopedia_global_stat_update_seconds;
 
 static const char *CantEquipReason( CRD_Collection_Tab_Equipment *pTab, const RD_Swarmopedia::Weapon *pWeapon )
 {
@@ -247,22 +247,7 @@ CRD_Collection_Details_Equipment::CRD_Collection_Details_Equipment( CRD_Collecti
 	m_pWeaponDescLabel->SetDrawTextOnly();
 	m_pWeaponDescLabel->SetMouseInputEnabled( false );
 	m_pGplStats = new BaseModUI::GenericPanelList( this, "GplStats", BaseModUI::GenericPanelList::ISM_ELEVATOR );
-
-	m_nDisplayedFrames = 0;
-
-	if ( SteamUserStats() )
-	{
-		m_nStatsDays = rd_swarmopedia_global_stat_window_days.GetInt();
-		m_bStatsReady = false;
-
-		SteamAPICall_t hAPICall = SteamUserStats()->RequestGlobalStats( rd_swarmopedia_global_stat_window_days.GetInt() );
-		m_OnGlobalStatsReceived.Set( hAPICall, this, &CRD_Collection_Details_Equipment::OnGlobalStatsReceived );
-	}
-	else
-	{
-		m_nStatsDays = -1;
-		m_bStatsReady = true;
-	}
+	m_pImgStatsUpdating = new vgui::ImagePanel( this, "ImgStatsUpdating" );
 }
 
 void CRD_Collection_Details_Equipment::ApplySchemeSettings( vgui::IScheme *pScheme )
@@ -359,15 +344,15 @@ void CRD_Collection_Details_Equipment::DisplayEntry( TGD_Entry *pEntry )
 			m_pWeaponDescLabel->SetText( L"" );
 		}
 
-		if ( m_nStatsDays != -1 && m_bStatsReady )
+		if ( rd_swarmopedia_global_stat_window_days.GetInt() >= 0 && g_ASW_Steamstats.AreGlobalStatsReady() )
 		{
 			Assert( SteamUserStats() );
 
 			wchar_t wszDays[4]{};
-			V_snwprintf( wszDays, ARRAYSIZE( wszDays ), L"%d", m_nStatsDays );
+			V_snwprintf( wszDays, ARRAYSIZE( wszDays ), L"%d", rd_swarmopedia_global_stat_window_days.GetInt() );
 
 			g_pVGuiLocalize->ConstructString( buf, sizeof( buf ),
-				g_pVGuiLocalize->FindSafe( m_nStatsDays ? "#rd_so_global_stat_days" : "#rd_so_global_stat_total" ), 1, wszDays );
+				g_pVGuiLocalize->FindSafe( rd_swarmopedia_global_stat_window_days.GetInt() ? "#rd_so_global_stat_days" : "#rd_so_global_stat_total" ), 1, wszDays );
 
 			vgui::Label *pDaysLabel = m_pGplStats->AddPanelItem<vgui::Label>( "DaysLabel", "" );
 			pDaysLabel->SetContentAlignment( vgui::Label::a_east );
@@ -377,7 +362,7 @@ void CRD_Collection_Details_Equipment::DisplayEntry( TGD_Entry *pEntry )
 			{
 				int nOK{};
 				int64 nStat[61]{};
-				if ( m_nStatsDays == 0 )
+				if ( rd_swarmopedia_global_stat_window_days.GetInt() == 0 )
 				{
 					nOK = SteamUserStats()->GetGlobalStat( pEquip->m_pWeapon->GlobalStats[i]->StatName, &nStat[1] ) ? 1 : 0;
 				}
@@ -422,33 +407,17 @@ void CRD_Collection_Details_Equipment::DisplayEntry( TGD_Entry *pEntry )
 
 void CRD_Collection_Details_Equipment::OnThink()
 {
-	if ( !m_OnGlobalStatsReceived.IsActive() )
-	{
-		m_nDisplayedFrames++;
+	BaseClass::OnThink();
 
-		if ( m_nDisplayedFrames >= rd_swarmopedia_global_stat_update_seconds.GetInt() * 60 )
+	if ( rd_swarmopedia_global_stat_window_days.GetInt() >= 0 )
+	{
+		if ( g_ASW_Steamstats.DidGlobalStatsUpdate( m_iStatsUpdateCount ) )
 		{
-			m_nDisplayedFrames = 0;
-
-			m_nStatsDays = rd_swarmopedia_global_stat_window_days.GetInt();
-			m_bStatsReady = false;
-
-			SteamAPICall_t hAPICall = SteamUserStats()->RequestGlobalStats( rd_swarmopedia_global_stat_window_days.GetInt() );
-			m_OnGlobalStatsReceived.Set( hAPICall, this, &CRD_Collection_Details_Equipment::OnGlobalStatsReceived );
+			DisplayEntry( GetCurrentEntry() );
 		}
-	}
-}
 
-void CRD_Collection_Details_Equipment::OnGlobalStatsReceived( GlobalStatsReceived_t *pParam, bool bIOError )
-{
-	if ( bIOError || pParam->m_eResult != k_EResultOK )
-	{
-		Warning( "Failed to retrieve global stat history for Swarmopedia: %s\n", bIOError ? "IO Error" : UTIL_RD_EResultToString( pParam->m_eResult ) );
-		m_nStatsDays = -1;
+		m_pImgStatsUpdating->SetVisible( g_ASW_Steamstats.AreGlobalStatsUpdating() );
 	}
-
-	m_bStatsReady = true;
-	DisplayEntry( GetCurrentEntry() );
 }
 
 CRD_Collection_Entry_Equipment::CRD_Collection_Entry_Equipment( TGD_Grid *parent, const char *panelName, const RD_Swarmopedia::Weapon *pWeapon, const ReactiveDropInventory::ItemInstance_t &itemInstance )
