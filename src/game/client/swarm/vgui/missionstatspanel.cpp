@@ -245,37 +245,36 @@ void MissionStatsPanel::OnThink()
 
 	UpdateStatsLines();
 
-	if (!g_hBriefingTooltip.Get())
+	if ( !g_hBriefingTooltip.Get() )
 		return;
 
 	const char *szName = "";
 	const char *szDescription = "";
-	
+
 	vgui::Panel *pPanel = NULL;
-	if (m_pTimeTakenBar->IsCursorOver())
+	if ( m_pTimeTakenBar->IsCursorOver() )
 	{
 		pPanel = m_pTimeTakenBar;
 		szName = "#asw_stats_time"; szDescription = "#asw_stats_time_desc";
 	}
-	if (m_pTotalKillsBar->IsCursorOver())
+	if ( m_pTotalKillsBar->IsCursorOver() )
 	{
-		pPanel  = m_pTotalKillsBar;
+		pPanel = m_pTotalKillsBar;
 		szName = "#asw_stats_tkills"; szDescription = "#asw_stats_tkills_desc";
 	}
-	
-	if (pPanel && pPanel->IsFullyVisible())
+
+	if ( pPanel && pPanel->IsFullyVisible() )
 	{
-		if (g_hBriefingTooltip->GetTooltipPanel() != pPanel)
-		{	
+		if ( g_hBriefingTooltip->GetTooltipPanel() != pPanel )
+		{
 			int tx, ty, w, h;
 			tx = ty = 0;
-			pPanel->LocalToScreen(tx, ty);
-			pPanel->GetSize(w, h);
+			pPanel->LocalToScreen( tx, ty );
+			pPanel->GetSize( w, h );
 			tx += w * 0.5f;
 			ty += h * 2.5f;
-			
-			g_hBriefingTooltip->SetTooltip(pPanel, szName, szDescription,
-				tx, ty);
+
+			g_hBriefingTooltip->SetTooltip( pPanel, szName, szDescription, tx, ty );
 		}
 		return;
 	}

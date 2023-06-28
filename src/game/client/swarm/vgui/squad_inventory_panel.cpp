@@ -23,12 +23,7 @@ CSquad_Inventory_Panel::CSquad_Inventory_Panel( vgui::Panel *pParent, const char
 
 CSquad_Inventory_Panel::~CSquad_Inventory_Panel()
 {
-	if ( g_hBriefingTooltip.Get() )
-	{
-		g_hBriefingTooltip->MarkForDeletion();
-		g_hBriefingTooltip->SetVisible( false );
-		g_hBriefingTooltip = NULL;
-	}
+	BriefingTooltip::Free();
 }
 
 void CSquad_Inventory_Panel::ApplySchemeSettings( vgui::IScheme *pScheme )
@@ -68,16 +63,7 @@ void CSquad_Inventory_Panel::OnThink()
 	{
 		if ( m_pEntries[ i ]->IsCursorOver() )
 		{
-			// make sure tooltip is created and parented correctly
-			if ( !g_hBriefingTooltip.Get() )
-			{
-				g_hBriefingTooltip = new BriefingTooltip( GetParent(), "SquadInventoryTooltip" );
-				g_hBriefingTooltip->SetScheme( vgui::scheme()->LoadSchemeFromFile( "resource/SwarmSchemeNew.res", "SwarmSchemeNew" ) );
-			}
-			else if ( g_hBriefingTooltip->GetParent() != GetParent() )
-			{
-				g_hBriefingTooltip->SetParent( GetParent() );
-			}
+			BriefingTooltip::EnsureParent( GetParent() );
 
 			m_pEntries[ i ]->ShowTooltip();
 			break;
@@ -200,7 +186,7 @@ void CSquad_Inventory_Panel_Entry::ShowTooltip()
 	if ( !pWeapon )
 		return;
 
-	const CASW_WeaponInfo* pInfo = pWeapon->GetWeaponInfo();
+	const CASW_WeaponInfo *pInfo = pWeapon->GetWeaponInfo();
 	const CASW_EquipItem *pItem = pWeapon->GetEquipItem();
 	if ( !pInfo || !pItem || !pInfo->m_bOffhandActivate )		// TODO: Fix for sentry guns
 		return;
@@ -208,7 +194,7 @@ void CSquad_Inventory_Panel_Entry::ShowTooltip()
 	int x = GetWide() * 0.8f;
 	int y = GetTall() * 0.02f;
 	LocalToScreen( x, y );
-	g_hBriefingTooltip->SetTooltip( this, pItem->m_szShortName, "#asw_weapon_tooltip_activate", x, y, true );
+	g_hBriefingTooltip->SetTooltip( this, pItem->m_szShortName, "#asw_weapon_tooltip_activate", x, y, vgui::Label::a_northwest );
 }
 
 void CSquad_Inventory_Panel_Entry::ActivateItem()

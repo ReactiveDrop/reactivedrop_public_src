@@ -13,29 +13,20 @@ BriefingPropertySheet::BriefingPropertySheet(vgui::Panel *parent, const char *na
 {	
 	m_bPlayTabSounds = false;
 
-	if (!g_hBriefingTooltip.Get())
-	{
-		g_hBriefingTooltip = new BriefingTooltip(this, "BriefingTooltip");
-		g_hBriefingTooltip->SetTooltip(this, "INIT", "INIT", 0, 0);	// have to do this, as the tooltip "jumps" for one frame when it's first drawn (this makes the jump happen while the briefing is fading in)
-	}
+	BriefingTooltip::EnsureParent( this );
 }
 
 BriefingPropertySheet::~BriefingPropertySheet()
 {
-	if (g_hBriefingTooltip.Get())
+	BriefingTooltip::Free();
+	if ( GetControllerFocus() )
 	{
-		g_hBriefingTooltip->SetVisible(false);
-		g_hBriefingTooltip->MarkForDeletion();
-		g_hBriefingTooltip = NULL;
-	}
-	if (GetControllerFocus())
-	{
-		for (int i=0;i<GetNumPages();i++)
+		for ( int i = 0; i < GetNumPages(); i++ )
 		{
-			vgui::Panel* b = GetTab(i);
-			if (b)
+			vgui::Panel *b = GetTab( i );
+			if ( b )
 			{
-				GetControllerFocus()->RemoveFromFocusList(b);
+				GetControllerFocus()->RemoveFromFocusList( b );
 			}
 		}
 	}

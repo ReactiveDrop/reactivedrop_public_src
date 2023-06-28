@@ -703,11 +703,7 @@ CRD_Equipment_WeaponFact::~CRD_Equipment_WeaponFact()
 {
 	GetControllerFocus()->RemoveFromFocusList( m_pSkillIcon );
 
-	if ( g_hBriefingTooltip )
-	{
-		g_hBriefingTooltip->MarkForDeletion();
-		g_hBriefingTooltip = NULL;
-	}
+	BriefingTooltip::Free();
 }
 
 void CRD_Equipment_WeaponFact::ApplySchemeSettings( vgui::IScheme *pScheme )
@@ -1092,14 +1088,7 @@ void CRD_Equipment_WeaponFact::OnThink()
 
 	if ( m_pSkillIcon->IsCursorOver() || GetControllerFocus()->GetFocusPanel() == m_pSkillIcon )
 	{
-		if ( !g_hBriefingTooltip )
-		{
-			g_hBriefingTooltip = new BriefingTooltip( m_pTab->m_pParent->m_hOverridePanel, "MedalsTooltip" );
-		}
-		else if ( g_hBriefingTooltip->GetParent() != m_pTab->m_pParent->m_hOverridePanel )
-		{
-			g_hBriefingTooltip->SetParent( m_pTab->m_pParent->m_hOverridePanel );
-		}
+		BriefingTooltip::EnsureParent( m_pTab->m_pParent->m_hOverridePanel );
 
 		if ( g_hBriefingTooltip && IsFullyVisible() &&
 			g_hBriefingTooltip->GetTooltipPanel() != this )
@@ -1112,7 +1101,7 @@ void CRD_Equipment_WeaponFact::OnThink()
 			tx += w * 0.9f;
 			ty += h * 1.1f;
 
-			g_hBriefingTooltip->SetTooltip( this, MarineSkills()->GetSkillName( m_pFact->Skill ), MarineSkills()->GetSkillDescription( m_pFact->Skill ), tx, ty, true );
+			g_hBriefingTooltip->SetTooltip( this, MarineSkills()->GetSkillName( m_pFact->Skill ), MarineSkills()->GetSkillDescription( m_pFact->Skill ), tx, ty, vgui::Label::a_northwest );
 		}
 	}
 }

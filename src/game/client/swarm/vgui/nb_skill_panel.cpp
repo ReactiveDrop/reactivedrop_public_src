@@ -35,11 +35,7 @@ CNB_Skill_Panel::CNB_Skill_Panel( vgui::Panel *parent, const char *name ) : Base
 
 CNB_Skill_Panel::~CNB_Skill_Panel()
 {
-	if ( g_hBriefingTooltip.Get() )
-	{
-		g_hBriefingTooltip->MarkForDeletion();
-		g_hBriefingTooltip = NULL;
-	}
+	BriefingTooltip::Free();
 }
 
 void CNB_Skill_Panel::ApplySchemeSettings( vgui::IScheme *pScheme )
@@ -104,14 +100,7 @@ void CNB_Skill_Panel::OnThink()
 
 	if ( IsCursorOver() )
 	{
-		if (!g_hBriefingTooltip.Get())
-		{
-			g_hBriefingTooltip = new BriefingTooltip(GetParent(), "MedalsTooltip");
-		}	
-		else if ( g_hBriefingTooltip->GetParent() != GetParent() )
-		{
-			g_hBriefingTooltip->SetParent( GetParent() );
-		}
+		BriefingTooltip::EnsureParent( GetParent() );
 
 		if ( g_hBriefingTooltip.Get() && IsFullyVisible() &&
 			g_hBriefingTooltip.Get()->GetTooltipPanel() != this )

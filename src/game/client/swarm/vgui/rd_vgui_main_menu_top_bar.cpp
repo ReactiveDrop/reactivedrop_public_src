@@ -3,6 +3,7 @@
 #include "tabbedgriddetails.h"
 #include "rd_hud_sheet.h"
 #include "vgui/ISurface.h"
+#include "gameui/swarm/vmainmenu.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -83,6 +84,9 @@ void CRD_VGUI_Main_Menu_Top_Bar::OnCommand( const char *command )
 	{
 		DismissMainMenuScreens();
 		BaseModPanel.OpenFrontScreen();
+
+		MainMenu *pMainMenu = assert_cast< MainMenu * >( BaseModPanel.GetWindow( WT_MAINMENU ) );
+		pMainMenu->m_iInactiveHideMainMenu = 65535; // start fully slid in
 	}
 	else if ( !V_stricmp( command, "Loadout" ) )
 	{

@@ -106,66 +106,65 @@ void MissionCompleteStatsLine::PerformLayout()
 }
 
 void MissionCompleteStatsLine::OnThink()
-{	
+{
 	UpdateLabels();
 	// check tooltips
-	if (!g_hBriefingTooltip.Get())
+	if ( !g_hBriefingTooltip.Get() )
 		return;
 
 	const char *szName = "";
 	const char *szDescription = "";
-	for (int i=0;i<ASW_NUM_STATS_BARS;i++)
+	for ( int i = 0; i < ASW_NUM_STATS_BARS; i++ )
 	{
 		vgui::Panel *pPanel = NULL;
-		if (m_pStats[i]->IsCursorOver() && m_pStats[i]->IsFullyVisible())
+		if ( m_pStats[i]->IsCursorOver() && m_pStats[i]->IsFullyVisible() )
 			pPanel = m_pStats[i];
-		
-		if (pPanel)
+
+		if ( pPanel )
 		{
-			switch (i)
+			switch ( i )
 			{
 			case 0: szName = "#asw_stats_kills"; szDescription = "#asw_stats_kills_desc"; break;
 			case 1: szName = "#asw_stats_accuracy"; szDescription = "#asw_stats_accuracy_desc"; break;
 			case 2: szName = "#asw_stats_ff"; szDescription = "#asw_stats_ff_desc"; break;
-			case 3: szName = "#asw_stats_damage"; szDescription = "#asw_stats_damage_desc"; break;			
+			case 3: szName = "#asw_stats_damage"; szDescription = "#asw_stats_damage_desc"; break;
 			case 6: szName = "#asw_stats_skillpoints"; szDescription = "#asw_stats_skillpoints_desc"; break;
-			case 4: default:  szName = "#asw_stats_shots"; szDescription = "#asw_stats_shots_desc"; break;				
+			case 4: default:  szName = "#asw_stats_shots"; szDescription = "#asw_stats_shots_desc"; break;
 			}
-			if (i == 5)	// class specific
+			if ( i == 5 )	// class specific
 			{
 				szName = ""; szDescription = "";
-				if (m_iMarineIndex >= 0 && m_iMarineIndex < ASW_MAX_MARINE_RESOURCES
-					&& ASWGameResource())
+				if ( m_iMarineIndex >= 0 && m_iMarineIndex < ASW_MAX_MARINE_RESOURCES
+					&& ASWGameResource() )
 				{
-					C_ASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource(m_iMarineIndex);
-					if (pMR && pMR->GetProfile())
+					C_ASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( m_iMarineIndex );
+					if ( pMR && pMR->GetProfile() )
 					{
-						if (pMR->GetProfile()->GetMarineClass() == MARINE_CLASS_MEDIC)
+						if ( pMR->GetProfile()->GetMarineClass() == MARINE_CLASS_MEDIC )
 						{
-							szName= "#asw_stats_healed"; szDescription = "#asw_stats_healed_desc";
+							szName = "#asw_stats_healed"; szDescription = "#asw_stats_healed_desc";
 						}
-						else if (pMR->GetProfile()->GetMarineClass() == MARINE_CLASS_SPECIAL_WEAPONS)
+						else if ( pMR->GetProfile()->GetMarineClass() == MARINE_CLASS_SPECIAL_WEAPONS )
 						{
-							szName= "#asw_stats_burned"; szDescription = "#asw_stats_burned_desc";
+							szName = "#asw_stats_burned"; szDescription = "#asw_stats_burned_desc";
 						}
-						else if (pMR->GetProfile()->GetMarineClass() == MARINE_CLASS_TECH)
+						else if ( pMR->GetProfile()->GetMarineClass() == MARINE_CLASS_TECH )
 						{
 							szName = "#asw_stats_fasth"; szDescription = "#asw_stats_fasth";
 						}
 					}
 				}
 			}
-			if (g_hBriefingTooltip->GetTooltipPanel() != pPanel)
-			{	
+			if ( g_hBriefingTooltip->GetTooltipPanel() != pPanel )
+			{
 				int tx, ty, w, h;
 				tx = ty = 0;
-				pPanel->LocalToScreen(tx, ty);
-				pPanel->GetSize(w, h);
+				pPanel->LocalToScreen( tx, ty );
+				pPanel->GetSize( w, h );
 				tx += w * 0.5f;
 				ty -= h * 0.01f;
-				
-				g_hBriefingTooltip->SetTooltip(pPanel, szName, szDescription,
-					tx, ty);
+
+				g_hBriefingTooltip->SetTooltip( pPanel, szName, szDescription, tx, ty );
 			}
 			return;
 		}

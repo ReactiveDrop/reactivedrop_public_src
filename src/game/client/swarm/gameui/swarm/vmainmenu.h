@@ -31,10 +31,6 @@ public:
 	MainMenu( vgui::Panel *parent, const char *panelName );
 	~MainMenu();
 
-	void Activate();
-
-	void UpdateVisibility();
-
 	MESSAGE_FUNC_CHARPTR( OpenMainMenuJoinFailed, "OpenMainMenuJoinFailed", msg );
 
 	//flyout menu listener
@@ -44,6 +40,7 @@ public:
 
 	CPanelAnimationVarAliasType( int, m_iHoIAFTimerOffset, "hoiaf_timer_offset", "-1", "proportional_int" );
 
+	void Activate() override;
 	void LoadLayout() override;
 	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 	void OnCommand( const char *command ) override;
@@ -59,6 +56,7 @@ public:
 	static void AcceptQuitGameCallback();
 	void SetFooterState();
 	void OpenNewsURL( const char *szURL );
+	void MaybeShowTooltip( vgui::Panel *pPanel, const char *szTitle, const char *szDescription, float flWidthBias, float flHeightBias, vgui::Label::Alignment iAlignment );
 
 	enum MainMenuQuickJoinHelpText
 	{

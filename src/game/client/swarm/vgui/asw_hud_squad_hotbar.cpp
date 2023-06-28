@@ -65,11 +65,7 @@ CASW_Hud_Squad_Hotbar::CASW_Hud_Squad_Hotbar( const char *pElementName ) : CASW_
 
 CASW_Hud_Squad_Hotbar::~CASW_Hud_Squad_Hotbar()
 {
-	if ( g_hBriefingTooltip.Get() )
-	{
-		g_hBriefingTooltip->MarkForDeletion();
-		g_hBriefingTooltip = NULL;
-	}
+	BriefingTooltip::Free();
 }
 
 //-----------------------------------------------------------------------------
@@ -156,15 +152,7 @@ void CASW_Hud_Squad_Hotbar::OnThink()
 		if ( m_pEntries[ i ]->IsCursorOver() )
 		{
 			// make sure tooltip is created and parented correctly
-			if ( !g_hBriefingTooltip.Get() )
-			{
-				g_hBriefingTooltip = new BriefingTooltip( GetParent(), "SquadInventoryTooltip" );
-				g_hBriefingTooltip->SetScheme( vgui::scheme()->LoadSchemeFromFile("resource/SwarmSchemeNew.res", "SwarmSchemeNew") );
-			}
-			else if ( g_hBriefingTooltip->GetParent() != GetParent() )
-			{
-				g_hBriefingTooltip->SetParent( GetParent() );
-			}
+			BriefingTooltip::EnsureParent( GetParent() );
 
 			m_pEntries[ i ]->ShowTooltip();
 			break;
@@ -557,7 +545,7 @@ void CASW_Hotbar_Entry::ShowTooltip()
 	int x = GetWide() * 0.8f;
 	int y = GetTall() * 0.02f;
 	LocalToScreen( x, y );
-	g_hBriefingTooltip->SetTooltip( this, pItem->m_szShortName, " ", x, y, true );
+	g_hBriefingTooltip->SetTooltip( this, pItem->m_szShortName, " ", x, y, vgui::Label::a_northwest );
 }
 
 void CASW_Hotbar_Entry::ActivateItem()

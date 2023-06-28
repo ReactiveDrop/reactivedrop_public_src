@@ -181,11 +181,7 @@ MissionCompletePanel::MissionCompletePanel(Panel *parent, const char *name, bool
 
 	m_flForceVisibleButtonsTime = m_fNextStageTime + 6.0f;
 
-	if (!g_hBriefingTooltip.Get())
-	{
-		g_hBriefingTooltip = new BriefingTooltip(m_pMainElements, "BriefingTooltip");
-		g_hBriefingTooltip->SetTooltip(this, "INIT", "INIT", 0, 0);	// have to do this, as the tooltip "jumps" for one frame when it's first drawn (this makes the jump happen while the briefing is fading in)
-	}	
+	BriefingTooltip::EnsureParent( m_pMainElements );
 
 	m_pRestartButton = new CNB_Button( this, "RestartButton", "#asw_button_restart", this, "Restart" );
 	m_pReadyButton = new CNB_Button( this, "ReadyButton", "#asw_button_ready", this, "Ready" );
