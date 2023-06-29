@@ -109,10 +109,6 @@ void CASW_Weapon_Electrified_Armor::PrimaryAttack( void )
 	m_iClip1 -= 1;
 
 	m_flNextPrimaryAttack = gpGlobals->curtime + 4.0f;
-
-#ifdef GAME_DLL
-	DestroyIfEmpty( true );
-#endif
 }
 
 void CASW_Weapon_Electrified_Armor::Precache()
