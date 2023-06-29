@@ -59,7 +59,7 @@ void CRD_VGUI_Settings::ApplySchemeSettings( vgui::IScheme *pScheme )
 
 	if ( !V_stricmp( rd_settings_last_tab.GetString(), "controls" ) )
 	{
-		NavigateToTab( m_pBtnControls, m_pPnlControls, null );
+		NavigateToTab( m_pBtnControls, m_pPnlControls, NULL );
 	}
 	else if ( !V_stricmp( rd_settings_last_tab.GetString(), "options" ) )
 	{

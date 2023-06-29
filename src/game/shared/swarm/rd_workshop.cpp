@@ -1062,10 +1062,12 @@ bool CReactiveDropWorkshop::MaybeAddTemporaryAddon( PublishedFileId_t id, bool b
 		return false;
 	}
 
-	if ( m_TemporaryAddons.Find( id ) == -1 )
+	if ( m_TemporaryAddons.Find( id ) != -1 )
 	{
-		m_TemporaryAddons.AddToTail( id );
+		return false;
 	}
+
+	m_TemporaryAddons.AddToTail( id );
 
 	if ( rd_workshop_temp_subscribe.GetInt() == 0 )
 	{
