@@ -405,6 +405,18 @@ void CASW_Player::ItemPostFrame()
 		}
 	}
 
+	static int s_iLastL1Press = 0;
+	static int s_iLastL1Release = 0;
+
+	if ( m_afButtonPressed & IN_GRENADE1 )
+		s_iLastL1Press = gpGlobals->tickcount;
+	if ( m_afButtonReleased & IN_GRENADE1 )
+		s_iLastL1Release = gpGlobals->tickcount;
+
+	engine->Con_NPrintf( IsClientDll() ? 10 : 15, "%s.dll", IsClientDll() ? "client" : "server" );
+	engine->Con_NPrintf( IsClientDll() ? 11 : 16, "Have equipment? %s", pExtra ? pExtra->GetClassname() : "(no)" );
+	engine->Con_NPrintf( IsClientDll() ? 12 : 17, "L1 pressed %d frames ago", gpGlobals->tickcount - s_iLastL1Press );
+	engine->Con_NPrintf( IsClientDll() ? 13 : 18, "L1 released %d frames ago", gpGlobals->tickcount - s_iLastL1Release );
 
 	// check for offhand activation
 	if ( pExtra )
