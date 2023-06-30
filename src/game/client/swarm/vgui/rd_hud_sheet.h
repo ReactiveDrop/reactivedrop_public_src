@@ -93,6 +93,7 @@ public:
 		ADD_HUD_SHEET( Sheet_Stencil, "vgui/hud/sheet_stencil/sheet_stencil" );
 		ADD_HUD_SHEET( MainMenuSheet, "vgui/swarm/main_menu_sheet" );
 		ADD_HUD_SHEET( MainMenuAdditive, "vgui/swarm/main_menu_additive_sheet" );
+		ADD_HUD_SHEET( Controls, "vgui/swarm/controls_sheet" );
 
 		FOR_EACH_VEC( m_HudSheets, i )
 		{
@@ -229,6 +230,33 @@ public:
 		DECLARE_HUD_SHEET_UV( workshop_hover ),
 		DECLARE_HUD_SHEET_UV( workshop_quick_join_hover ),
 	END_HUD_SHEET( MainMenuAdditive );
+
+	// 2024 settings control icons
+	DECLARE_HUD_SHEET( Controls )
+		DECLARE_HUD_SHEET_UV( checkbox ),
+		DECLARE_HUD_SHEET_UV( checkbox_checked ),
+		DECLARE_HUD_SHEET_UV( checkbox_checked_hover ),
+		DECLARE_HUD_SHEET_UV( checkbox_focus ),
+		DECLARE_HUD_SHEET_UV( checkbox_hover ),
+		DECLARE_HUD_SHEET_UV( checkbox_ind ),
+		DECLARE_HUD_SHEET_UV( checkbox_ind_hover ),
+		DECLARE_HUD_SHEET_UV( radio ),
+		DECLARE_HUD_SHEET_UV( radio_checked ),
+		DECLARE_HUD_SHEET_UV( radio_checked_hover ),
+		DECLARE_HUD_SHEET_UV( radio_focus ),
+		DECLARE_HUD_SHEET_UV( radio_hover ),
+		DECLARE_HUD_SHEET_UV( radio_ind ),
+		DECLARE_HUD_SHEET_UV( radio_ind_hover ),
+		DECLARE_HUD_SHEET_UV( color_swatch ),
+		DECLARE_HUD_SHEET_UV( color_swatch_border ),
+		DECLARE_HUD_SHEET_UV( color_swatch_border_focus ),
+		DECLARE_HUD_SHEET_UV( color_swatch_border_hover ),
+		DECLARE_HUD_SHEET_UV( slider_bar ),
+		DECLARE_HUD_SHEET_UV( slider_bar_end ),
+		DECLARE_HUD_SHEET_UV( slider_handle ),
+		DECLARE_HUD_SHEET_UV( slider_handle_focus ),
+		DECLARE_HUD_SHEET_UV( slider_handle_hover ),
+	END_HUD_SHEET( Controls );
 
 	CUtlVector<HudSheet_t> m_HudSheets;
 } g_RD_HUD_Sheets;
