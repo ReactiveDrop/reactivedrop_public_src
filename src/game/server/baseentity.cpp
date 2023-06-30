@@ -1854,11 +1854,13 @@ int CBaseEntity::OnTakeDamage( const CTakeDamageInfo &info )
 
 	if ( m_takedamage != DAMAGE_EVENTS_ONLY )
 	{
-	// do the damage
+		// do the damage
+		bool bWasAlive = m_iHealth > 0;
 		m_iHealth -= info.GetDamage();
-		if (m_iHealth <= 0)
+		if ( m_iHealth <= 0 )
 		{
-			Event_Killed( info );
+			if ( bWasAlive )
+				Event_Killed( info );
 			return 0;
 		}
 	}
