@@ -33,6 +33,7 @@ public:
 	constexpr static const char *s_szCheat[] =
 	{
 		"buildcubemaps",
+		"lightprobe",
 	};
 
 	constexpr static const char *s_szRemoveArchive[] =
