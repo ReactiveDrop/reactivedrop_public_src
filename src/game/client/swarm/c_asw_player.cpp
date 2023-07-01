@@ -1442,9 +1442,6 @@ void C_ASW_Player::OnDataChanged( DataUpdateType_t updateType )
 			engine->ServerCmd( buffer );
 #endif
 
-			// tell other players that we're fully connected
-			engine->ServerCmd( "cl_fullyjoined\n" );
-
 			ASWInput()->UpdateASWControls();
 
 			GetClientModeASW()->ClearCurrentColorCorrection();
@@ -1460,15 +1457,18 @@ void C_ASW_Player::OnDataChanged( DataUpdateType_t updateType )
 
 		RequestExperience();
 
-#ifndef USE_XP_FROM_STEAM
 		if ( IsLocalPlayer( this ) )
 		{
+#ifndef USE_XP_FROM_STEAM
 			KeyValues *kv = new KeyValues( "XPUpdate" );
 			kv->SetInt( "xp", m_iExperience );
 			kv->SetInt( "pro", m_iPromotion );
 			engine->ServerCmdKeyValues( kv );		// kv gets deleted in here
-		}
 #endif
+
+			// tell other players that we're fully connected
+			engine->ServerCmd( "cl_fullyjoined\n" );
+		}
 
 		// We want to think every frame.
 		SetNextClientThink( CLIENT_THINK_ALWAYS );
