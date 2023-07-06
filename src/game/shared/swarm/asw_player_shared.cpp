@@ -95,6 +95,7 @@ static void ASWControlsChanged( IConVar *var, const char *pOldValue, float flOld
 
 ConVar asw_allow_detach( "asw_allow_detach", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Allow the camera to detach from the marine." );
 ConVar asw_DebugAutoAim( "asw_DebugAutoAim", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar rd_debug_equipment_button( "rd_debug_equipment_button", "0", FCVAR_REPLICATED );
 ConVar asw_marine_nearby_angle( "asw_marine_nearby_angle", "-75", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_vehicle_cam_shift_2_enable( "asw_vehicle_cam_shift_2_enable", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_rts_controls( "asw_rts_controls", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
@@ -405,18 +406,33 @@ void CASW_Player::ItemPostFrame()
 		}
 	}
 
-	static int s_iLastL1Press = 0;
-	static int s_iLastL1Release = 0;
+	if ( rd_debug_equipment_button.GetBool() )
+	{
+		static int s_iLastL1Press = 0;
+		static int s_iLastL1Release = 0;
 
-	if ( m_afButtonPressed & IN_GRENADE1 )
-		s_iLastL1Press = gpGlobals->tickcount;
-	if ( m_afButtonReleased & IN_GRENADE1 )
-		s_iLastL1Release = gpGlobals->tickcount;
+		if ( m_afButtonPressed & IN_GRENADE1 )
+			s_iLastL1Press = gpGlobals->tickcount;
+		if ( m_afButtonReleased & IN_GRENADE1 )
+			s_iLastL1Release = gpGlobals->tickcount;
 
-	engine->Con_NPrintf( IsClientDll() ? 10 : 15, "%s.dll", IsClientDll() ? "client" : "server" );
-	engine->Con_NPrintf( IsClientDll() ? 11 : 16, "Have equipment? %s", pExtra ? pExtra->GetClassname() : "(no)" );
-	engine->Con_NPrintf( IsClientDll() ? 12 : 17, "L1 pressed %d frames ago", gpGlobals->tickcount - s_iLastL1Press );
-	engine->Con_NPrintf( IsClientDll() ? 13 : 18, "L1 released %d frames ago", gpGlobals->tickcount - s_iLastL1Release );
+		engine->Con_NPrintf( IsClientDll() ? 10 : 15, "%s.dll", IsClientDll() ? "client" : "server" );
+		engine->Con_NPrintf( IsClientDll() ? 11 : 16, "Have equipment? %s", pExtra ? pExtra->GetClassname() : "(no)" );
+		engine->Con_NPrintf( IsClientDll() ? 12 : 17, "L1 pressed %d frames ago", gpGlobals->tickcount - s_iLastL1Press );
+		engine->Con_NPrintf( IsClientDll() ? 13 : 18, "L1 released %d frames ago", gpGlobals->tickcount - s_iLastL1Release );
+
+#ifdef CLIENT_DLL
+		if ( !engine->IsClientLocalToActiveServer() )
+		{
+			engine->Con_NPrintf( 15, "Cannot see server.dll information when you are not host.\n" );
+		}
+#else
+		if ( gpGlobals->maxClients == 1 )
+		{
+			engine->Con_NPrintf( 10, "Cannot see client.dll information in single-player.\n" );
+		}
+#endif
+	}
 
 	// check for offhand activation
 	if ( pExtra )
