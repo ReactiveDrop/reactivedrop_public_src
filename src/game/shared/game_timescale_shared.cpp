@@ -237,7 +237,9 @@ void CGameTimescale::UpdateRateChangedManually( IConVar *var, const char *pOldVa
 {
 	if ( !g_GameTimescale.m_bUpdatingRates )
 	{
-		g_GameTimescale.m_flBaseUpdateRate = ConVarRef( var ).GetFloat();
+		ConVarRef ref{ var };
+		DevMsg( "Update rate changed manually(?) from %f to %f\n", flOldValue, ref.GetFloat() );
+		g_GameTimescale.m_flBaseUpdateRate = ref.GetFloat();
 	}
 }
 
@@ -245,7 +247,9 @@ void CGameTimescale::CmdRateChangedManually( IConVar *var, const char *pOldValue
 {
 	if ( !g_GameTimescale.m_bUpdatingRates )
 	{
-		g_GameTimescale.m_flBaseCmdRate = ConVarRef( var ).GetFloat();
+		ConVarRef ref{ var };
+		DevMsg( "Command rate changed manually(?) from %f to %f\n", flOldValue, ref.GetFloat() );
+		g_GameTimescale.m_flBaseCmdRate = ref.GetFloat();
 	}
 }
 
