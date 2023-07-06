@@ -181,7 +181,7 @@ void CRD_VGUI_Bind::OnThink()
 
 				int iSlot = GET_ACTIVE_SPLITSCREEN_SLOT();
 				engine->ClientCmd_Unrestricted( VarArgs( "cmd%d bind \"%s\" \"%s\"", iSlot + 1, g_pInputSystem->ButtonCodeToString( code ), m_szBind ) );
-				assert_cast< CRD_VGUI_Settings_Controls * >( GetParent() )->m_bNeedWriteConfig = true;
+				BaseModUI::CRD_VGUI_Settings::s_bWantSave = true;
 			}
 
 			RequestFocus();
@@ -305,7 +305,7 @@ void CRD_VGUI_Bind::ClearKeyboardBind()
 
 	int iSlot = BaseModUI::CBaseModPanel::GetSingleton().GetLastActiveUserId();
 	engine->ClientCmd_Unrestricted( VarArgs( "cmd%d unbind \"%s\"", iSlot + 1, szKeyBind ) );
-	assert_cast< CRD_VGUI_Settings_Controls * >( GetParent() )->m_bNeedWriteConfig = true;
+	BaseModUI::CRD_VGUI_Settings::s_bWantSave = true;
 }
 
 CRD_VGUI_Settings_Controls::CRD_VGUI_Settings_Controls( vgui::Panel *parent, const char *panelName ) :
@@ -394,14 +394,6 @@ CRD_VGUI_Settings_Controls::CRD_VGUI_Settings_Controls( vgui::Panel *parent, con
 	m_pBtnResetDefaults = new BaseModUI::BaseModHybridButton( this, "BtnResetDefaults", "#L4D360UI_Controller_Default", this, "ResetDefaults" );
 	m_pSettingDeveloperConsole = new CRD_VGUI_Option( this, "SettingDeveloperConsole", "#GameUI_DeveloperConsoleCheck", CRD_VGUI_Option::MODE_CHECKBOX );
 	m_pSettingDeveloperConsole->LinkToConVar( "con_enable", false );
-
-	m_bNeedWriteConfig = false;
-}
-
-CRD_VGUI_Settings_Controls::~CRD_VGUI_Settings_Controls()
-{
-	if ( m_bNeedWriteConfig )
-		engine->ClientCmd_Unrestricted( "host_writeconfig" );
 }
 
 void CRD_VGUI_Settings_Controls::Activate()

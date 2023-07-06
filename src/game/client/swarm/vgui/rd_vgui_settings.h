@@ -25,7 +25,11 @@ class CRD_VGUI_Settings : public CBaseModFrame
 {
 	DECLARE_CLASS_SIMPLE( CRD_VGUI_Settings, CBaseModFrame );
 public:
+	// static so it can be set without having to find the panel
+	static bool s_bWantSave;
+
 	CRD_VGUI_Settings( vgui::Panel *parent, const char *panelName );
+	~CRD_VGUI_Settings();
 
 	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 	void OnCommand( const char *command ) override;
@@ -78,7 +82,13 @@ public:
 
 	CRD_VGUI_Option( vgui::Panel *parent, const char *panelName, const char *szLabel, Mode_t eMode = MODE_RADIO );
 
+	void OnCursorEntered() override;
 	void NavigateTo() override;
+	void PerformLayout() override;
+	void Paint() override;
+	void OnKeyCodeTyped( vgui::KeyCode code ) override;
+	void OnKeyCodePressed( vgui::KeyCode code ) override;
+	void OnMousePressed( vgui::MouseCode code ) override;
 
 	// for MODE_RADIO and MODE_DROPDOWN
 	// can also be used for MODE_SLIDER, but iOption must be outside of the slider range
@@ -110,6 +120,8 @@ public:
 	void LinkToConVarAdvanced( int iOption, const char *szName, int iValue );
 	void SetCurrentUsingConVars();
 	void SetRecommendedUsingConVars();
+
+	static void WriteConfig( bool bForce );
 
 private:
 	Mode_t m_eMode;
@@ -155,6 +167,9 @@ private:
 
 	vgui::Label *m_pLblFieldName;
 	vgui::Label *m_pLblHint;
+
+	static bool s_bCVarChanged;
+	void OnCheckboxClicked();
 };
 
 class CRD_VGUI_Bind : public vgui::EditablePanel
@@ -198,7 +213,6 @@ class CRD_VGUI_Settings_Controls : public CRD_VGUI_Settings_Panel_Base
 	DECLARE_CLASS_SIMPLE( CRD_VGUI_Settings_Controls, CRD_VGUI_Settings_Panel_Base );
 public:
 	CRD_VGUI_Settings_Controls( vgui::Panel *parent, const char *panelName );
-	~CRD_VGUI_Settings_Controls();
 
 	void Activate() override;
 	void OnThink() override;
@@ -215,7 +229,6 @@ public:
 	vgui::Label *m_pLblRightStickAction;
 	bool m_bMoveStickLeft : 1, m_bMoveStickRight : 1;
 	bool m_bLookStickLeft : 1, m_bLookStickRight : 1;
-	bool m_bNeedWriteConfig : 1;
 
 	CRD_VGUI_Option *m_pSettingAutoWalk;
 	CRD_VGUI_Option *m_pSettingAutoAttack;

@@ -2,9 +2,11 @@
 #include "rd_vgui_settings.h"
 #include "gameui/swarm/vhybridbutton.h"
 #include "gameui/swarm/basemodpanel.h"
+#include <vgui/ISurface.h>
 #include "asw_util_shared.h"
 #include "nb_header_footer.h"
 #include "rd_vgui_main_menu_top_bar.h"
+#include "rd_hud_sheet.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -15,6 +17,8 @@ DECLARE_BUILD_FACTORY( CRD_VGUI_Settings );
 DECLARE_BUILD_FACTORY_DEFAULT_TEXT( CRD_VGUI_Option, OptionNameMissing );
 
 ConVar rd_settings_last_tab( "rd_settings_last_tab", "controls", FCVAR_ARCHIVE, "Remembers the last-used tab on the settings window." );
+
+bool CRD_VGUI_Settings::s_bWantSave = false;
 
 CRD_VGUI_Settings::CRD_VGUI_Settings( vgui::Panel *parent, const char *panelName ) :
 	BaseClass( parent, panelName )
@@ -46,9 +50,17 @@ CRD_VGUI_Settings::CRD_VGUI_Settings( vgui::Panel *parent, const char *panelName
 	SetMoveable( false );
 }
 
+CRD_VGUI_Settings::~CRD_VGUI_Settings()
+{
+	CRD_VGUI_Option::WriteConfig( s_bWantSave );
+	s_bWantSave = false;
+}
+
 void CRD_VGUI_Settings::ApplySchemeSettings( vgui::IScheme *pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
+
+	g_RD_HUD_Sheets.VidInit();
 
 	// I don't know why these aren't working from the .res file.
 	m_pBtnControls->SetNavUp( m_pTopBar );
@@ -169,7 +181,20 @@ CRD_VGUI_Option::CRD_VGUI_Option( vgui::Panel *parent, const char *panelName, co
 	SetConsoleStylePanel( true );
 
 	m_pLblFieldName = new vgui::Label( this, "LblFieldName", szLabel );
+	m_pLblFieldName->SetMouseInputEnabled( false );
 	m_pLblHint = new vgui::Label( this, "LblHint", "" );
+	m_pLblHint->SetMouseInputEnabled( false );
+
+	m_bHaveCurrent = false;
+	m_bHaveRecommended = false;
+}
+
+void CRD_VGUI_Option::OnCursorEntered()
+{
+	BaseClass::OnCursorEntered();
+
+	if ( GetParent() )
+		NavigateToChild( this );
 }
 
 void CRD_VGUI_Option::NavigateTo()
@@ -177,6 +202,143 @@ void CRD_VGUI_Option::NavigateTo()
 	BaseClass::NavigateTo();
 
 	RequestFocus();
+}
+
+void CRD_VGUI_Option::PerformLayout()
+{
+	BaseClass::PerformLayout();
+
+	m_pLblFieldName->SizeToContents();
+
+	if ( m_eMode == MODE_CHECKBOX )
+		m_pLblFieldName->SetPos( YRES( 12 ), 0 );
+	else
+		m_pLblFieldName->SetPos( 0, 0 );
+}
+
+void CRD_VGUI_Option::Paint()
+{
+	BaseClass::PerformLayout();
+
+	int x0, y0, x1, y1;
+	x0 = y0 = 0;
+	x1 = y1 = YRES( 10 );
+	if ( m_eMode == MODE_RADIO )
+	{
+		HUD_SHEET_DRAW_BOUNDS( Controls, UV_radio );
+	}
+	else if ( m_eMode == MODE_DROPDOWN )
+	{
+		// TODO
+	}
+	else if ( m_eMode == MODE_CHECKBOX )
+	{
+		if ( HasFocus() )
+			HUD_SHEET_DRAW_BOUNDS( Controls, UV_checkbox_hover );
+		else if ( m_bHaveRecommended && ( !m_bHaveCurrent || m_Current.m_flValue != m_Recommended.m_flValue ) )
+			HUD_SHEET_DRAW_BOUNDS( Controls, UV_checkbox_focus );
+		else
+			HUD_SHEET_DRAW_BOUNDS( Controls, UV_checkbox );
+
+		if ( !m_bHaveCurrent )
+		{
+			if ( HasFocus() )
+				HUD_SHEET_DRAW_BOUNDS( Controls, UV_checkbox_ind_hover );
+			else
+				HUD_SHEET_DRAW_BOUNDS( Controls, UV_checkbox_ind );
+		}
+		else if ( m_Current.m_flValue == m_flMaxValue )
+		{
+			if ( HasFocus() )
+				HUD_SHEET_DRAW_BOUNDS( Controls, UV_checkbox_checked_hover );
+			else
+				HUD_SHEET_DRAW_BOUNDS( Controls, UV_checkbox_checked );
+		}
+		else if ( m_Current.m_flValue != m_flMinValue )
+		{
+			if ( HasFocus() )
+				HUD_SHEET_DRAW_BOUNDS( Controls, UV_checkbox_ind_hover );
+			else
+				HUD_SHEET_DRAW_BOUNDS( Controls, UV_checkbox_ind );
+		}
+	}
+	else if ( m_eMode == MODE_SLIDER )
+	{
+		HUD_SHEET_DRAW_BOUNDS( Controls, UV_slider_bar );
+	}
+	else if ( m_eMode == MODE_COLOR )
+	{
+		x1 = YRES( 20 );
+		x0 = GetWide() - x1;
+
+		Assert( m_pSliderLink );
+		if ( m_pSliderLink )
+		{
+			Color c = m_pSliderLink->GetColor();
+			vgui::surface()->DrawSetColor( c.r(), c.g(), c.b(), 255 );
+			vgui::surface()->DrawSetTexture( g_RD_HUD_Sheets.m_nControlsID );
+			vgui::surface()->DrawTexturedSubRect( x0, y0, x0 + x1, y0 + y1, HUD_UV_COORDS( Controls, UV_color_swatch ) );
+		}
+
+		if ( HasFocus() )
+			HUD_SHEET_DRAW_BOUNDS( Controls, UV_color_swatch_border_hover );
+		else
+			HUD_SHEET_DRAW_BOUNDS( Controls, UV_color_swatch_border );
+	}
+	else
+	{
+		Assert( m_eMode == MODE_CUSTOM );
+	}
+}
+
+void CRD_VGUI_Option::OnKeyCodeTyped( vgui::KeyCode code )
+{
+	if ( m_eMode == MODE_CHECKBOX )
+	{
+		switch ( code )
+		{
+		case KEY_XBUTTON_A:
+			OnCheckboxClicked();
+
+			return;
+		}
+	}
+
+	BaseClass::OnKeyCodeTyped( code );
+}
+
+void CRD_VGUI_Option::OnKeyCodePressed( vgui::KeyCode code )
+{
+	if ( m_eMode == MODE_CHECKBOX )
+	{
+		switch ( code )
+		{
+		case KEY_SPACE:
+		case KEY_ENTER:
+		case KEY_PAD_ENTER:
+			OnCheckboxClicked();
+
+			return;
+		}
+	}
+
+	BaseClass::OnKeyCodePressed( code );
+}
+
+void CRD_VGUI_Option::OnMousePressed( vgui::MouseCode code )
+{
+	if ( m_eMode == MODE_CHECKBOX )
+	{
+		switch ( code )
+		{
+		case MOUSE_LEFT:
+			OnCheckboxClicked();
+
+			return;
+		}
+	}
+
+	BaseClass::OnMousePressed( code );
 }
 
 void CRD_VGUI_Option::RemoveAllOptions()
@@ -367,7 +529,7 @@ void CRD_VGUI_Option::LinkToConVar( const char *szName, bool bSetRecommendedToDe
 		return;
 
 	Assert( m_pSliderLink == NULL );
-	if ( m_eMode == MODE_SLIDER || m_eMode == MODE_CHECKBOX )
+	if ( m_eMode == MODE_SLIDER || m_eMode == MODE_CHECKBOX || m_eMode == MODE_COLOR )
 	{
 		m_pSliderLink = pVar;
 	}
@@ -606,6 +768,15 @@ void CRD_VGUI_Option::SetRecommendedUsingConVars()
 	}
 }
 
+void CRD_VGUI_Option::WriteConfig( bool bForce )
+{
+	if ( s_bCVarChanged || bForce )
+	{
+		engine->ClientCmd_Unrestricted( "host_writeconfig" );
+		s_bCVarChanged = false;
+	}
+}
+
 CRD_VGUI_Option::ConVarLink_t::ConVarLink_t( ConVar *pConVar, const char *szValue )
 {
 	Assert( pConVar );
@@ -630,6 +801,25 @@ CRD_VGUI_Option::Option_t::Option_t( int iValue, const char *szLabel, const char
 	m_iValue = iValue;
 	TryLocalize( szLabel, m_wszLabel, sizeof( m_wszLabel ) );
 	TryLocalize( szHint, m_wszHint, sizeof( m_wszHint ) );
+}
+
+bool CRD_VGUI_Option::s_bCVarChanged = false;
+
+void CRD_VGUI_Option::OnCheckboxClicked()
+{
+	if ( m_bHaveCurrent && m_Current.m_flValue == m_flMinValue )
+		SetCurrentSliderValue( m_flMaxValue );
+	else
+		SetCurrentSliderValue( m_flMinValue );
+
+	Assert( m_bHaveCurrent && m_pSliderLink );
+	if ( m_bHaveCurrent && m_pSliderLink )
+	{
+		m_pSliderLink->SetValue( m_Current.m_flValue );
+		s_bCVarChanged = true;
+	}
+
+	CBaseModPanel::GetSingleton().PlayUISound( UISOUND_CLICK );
 }
 
 CON_COMMAND( rd_settings, "Opens the settings screen." )
