@@ -320,13 +320,13 @@ static void UpdateMatchmakingTagsCallback( IConVar *pConVar, const char *pOldVal
 		sv_tags.SetValue( buffer );
 	}
 #else
-	g_ReactiveDropWorkshop.CheckForRequiredAddons();
-
 	C_AlienSwarm *pAlienSwarm = ASWGameRules();
-	if ( !pAlienSwarm || !UTIL_RD_IsLobbyOwner() )
-	{
+	if ( !pAlienSwarm )
 		return;
-	}
+
+	g_ReactiveDropWorkshop.CheckForRequiredAddons();
+	if ( !UTIL_RD_IsLobbyOwner() )
+		return;
 
 	KeyValues *pSettings = g_pMatchFramework->GetMatchSession()->GetSessionSettings();
 

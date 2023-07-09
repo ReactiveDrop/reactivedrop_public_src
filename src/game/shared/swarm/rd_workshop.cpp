@@ -46,7 +46,8 @@
 #ifdef CLIENT_DLL
 ConVar rd_download_workshop_previews( "rd_download_workshop_previews", "1", FCVAR_ARCHIVE, "If 0 game will not download preview images for workshop add-ons, improving performance at startup" );
 ConVar cl_workshop_debug( "cl_workshop_debug", "0", FCVAR_NONE, "If 1 workshop debugging messages will be printed in console" );
-ConVar rd_workshop_temp_subscribe( "rd_workshop_temp_subscribe", "1", FCVAR_ARCHIVE, "Should the client download and load workshop addons the server needs?" );
+// 0 = don't download, 1 = download only when required, 2 = pre-download *all* server addons, 3 = pre-download challenges
+ConVar rd_workshop_temp_subscribe( "rd_workshop_temp_subscribe", "3", FCVAR_NONE, "Should the client download and load workshop addons the server needs?" );
 #define rd_workshop_debug cl_workshop_debug
 #else
 ConVar rd_workshop_update_every_round( "rd_workshop_update_every_round", "1", FCVAR_HIDDEN, "If 1 dedicated server will check for workshop items during each mission restart(workshop.cfg will be executed). If 0, workshop items will only update once during server startup" );
@@ -945,6 +946,8 @@ void CReactiveDropWorkshop::GetRequiredAddons( CUtlVector<PublishedFileId_t> &ad
 	{
 		if ( pAlienSwarm->m_iMissionWorkshopID.Get() && addons.Find( pAlienSwarm->m_iMissionWorkshopID.Get() ) == -1 )
 		{
+			if ( m_bStartingUp )
+				TryQueryAddon( pAlienSwarm->m_iMissionWorkshopID.Get() );
 			addons.AddToTail( pAlienSwarm->m_iMissionWorkshopID.Get() );
 		}
 
@@ -953,6 +956,8 @@ void CReactiveDropWorkshop::GetRequiredAddons( CUtlVector<PublishedFileId_t> &ad
 			const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( pAlienSwarm->m_szCycleNextMap.Get() );
 			if ( pMission && pMission->WorkshopID && addons.Find( pMission->WorkshopID ) == -1 )
 			{
+				if ( m_bStartingUp )
+					TryQueryAddon( pMission->WorkshopID );
 				addons.AddToTail( pMission->WorkshopID );
 			}
 		}
@@ -963,6 +968,8 @@ void CReactiveDropWorkshop::GetRequiredAddons( CUtlVector<PublishedFileId_t> &ad
 		const RD_Challenge_t *pChallenge = ReactiveDropChallenges::GetSummary( rd_challenge.GetString() );
 		if ( pChallenge && pChallenge->RequiredOnClient && pChallenge->WorkshopID && addons.Find( pChallenge->WorkshopID ) == -1 )
 		{
+			if ( m_bStartingUp )
+				TryQueryAddon( pChallenge->WorkshopID );
 			addons.AddToTail( pChallenge->WorkshopID );
 		}
 	}
@@ -978,6 +985,8 @@ void CReactiveDropWorkshop::GetRequiredAddons( CUtlVector<PublishedFileId_t> &ad
 			const RD_Campaign_t *pCampaign = ReactiveDropMissions::GetCampaign( i );
 			if ( pCampaign && pCampaign->WorkshopID && addons.Find( pCampaign->WorkshopID ) == -1 )
 			{
+				if ( m_bStartingUp )
+					TryQueryAddon( pCampaign->WorkshopID );
 				addons.AddToTail( pCampaign->WorkshopID );
 			}
 		}
@@ -987,15 +996,26 @@ void CReactiveDropWorkshop::GetRequiredAddons( CUtlVector<PublishedFileId_t> &ad
 			const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( i );
 			if ( pMission && pMission->WorkshopID && addons.Find( pMission->WorkshopID ) == -1 )
 			{
+				if ( m_bStartingUp )
+					TryQueryAddon( pMission->WorkshopID );
 				addons.AddToTail( pMission->WorkshopID );
 			}
 		}
+	}
 
+#ifdef CLIENT_DLL
+	if ( !bHighPriorityOnly && ( rd_workshop_temp_subscribe.GetInt() == 2 || rd_workshop_temp_subscribe.GetInt() == 3 ) )
+#else
+	if ( !bHighPriorityOnly )
+#endif
+	{
 		for ( int i = 0; i < ReactiveDropChallenges::Count(); i++ )
 		{
 			const RD_Challenge_t *pChallenge = ReactiveDropChallenges::GetSummary( i );
 			if ( pChallenge && pChallenge->RequiredOnClient && pChallenge->WorkshopID && addons.Find( pChallenge->WorkshopID ) == -1 )
 			{
+				if ( m_bStartingUp )
+					TryQueryAddon( pChallenge->WorkshopID );
 				addons.AddToTail( pChallenge->WorkshopID );
 			}
 		}
@@ -1005,26 +1025,14 @@ void CReactiveDropWorkshop::GetRequiredAddons( CUtlVector<PublishedFileId_t> &ad
 #ifdef CLIENT_DLL
 void CReactiveDropWorkshop::CheckForRequiredAddons()
 {
+	// request all the metadata now so we don't fire off a hundred requests later
+	Assert( !m_bStartingUp );
+	m_bStartingUp = true;
 	CUtlVector<PublishedFileId_t> required, optional;
 	GetRequiredAddons( required, true );
 	GetRequiredAddons( optional, false );
-
-	if ( rd_workshop_temp_subscribe.GetInt() != 0 )
-	{
-		// request all the metadata now so we don't fire off a hundred requests later
-		Assert( !m_bStartingUp );
-		m_bStartingUp = true;
-		FOR_EACH_VEC( required, i )
-		{
-			TryQueryAddon( required[i] );
-		}
-		FOR_EACH_VEC( optional, i )
-		{
-			TryQueryAddon( optional[i] );
-		}
-		m_bStartingUp = false;
-		RestartEnabledAddonsQuery();
-	}
+	m_bStartingUp = false;
+	RestartEnabledAddonsQuery();
 
 	Assert( !m_bStartingUp );
 	m_bStartingUp = true;
