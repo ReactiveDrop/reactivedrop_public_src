@@ -198,20 +198,7 @@ void BaseModUI::ReactiveDropChallengeSelectionListItem::PopulateChallenge( const
 
 const CReactiveDropWorkshop::WorkshopItem_t &BaseModUI::ReactiveDropChallengeSelectionListItem::GetWorkshopItem()
 {
-	FOR_EACH_VEC( g_ReactiveDropWorkshop.m_EnabledAddons, i )
-	{
-		const CReactiveDropWorkshop::WorkshopItem_t & enabledAddon = g_ReactiveDropWorkshop.m_EnabledAddons[i];
-		if ( enabledAddon.details.m_nPublishedFileId != m_nWorkshopID )
-		{
-			continue;
-		}
-
-		return enabledAddon;
-	}
-
-	static CReactiveDropWorkshop::WorkshopItem_t emptyWorkshopItem;
-
-	return emptyWorkshopItem;
+	return g_ReactiveDropWorkshop.TryQueryAddon( m_nWorkshopID );
 }
 
 BaseModUI::ReactiveDropChallengeSelection::ReactiveDropChallengeSelection( vgui::Panel *parent, const char *panelName, bool bDeathmatch ) : BaseClass( parent, panelName )
@@ -320,9 +307,9 @@ void BaseModUI::ReactiveDropChallengeSelection::PopulateChallenges()
 		const RD_Challenge_t *pChallenge = ReactiveDropChallenges::GetSummary( i );
 		if ( m_bDeathmatch ? pChallenge->AllowDeathmatch : pChallenge->AllowCoop )
 		{
-			ReactiveDropChallengeSelectionListItem *pChallenge = m_gplChallenges->AddPanelItem<ReactiveDropChallengeSelectionListItem>( "ReactiveDropChallengeSelectionListItem" );
-			pChallenge->PopulateChallenge( ReactiveDropChallenges::Name( i ) );
-			GetControllerFocus()->AddToFocusList( pChallenge, true, true );
+			ReactiveDropChallengeSelectionListItem *pItem = m_gplChallenges->AddPanelItem<ReactiveDropChallengeSelectionListItem>( "ReactiveDropChallengeSelectionListItem" );
+			pItem->PopulateChallenge( ReactiveDropChallenges::Name( i ) );
+			GetControllerFocus()->AddToFocusList( pItem, true, true );
 		}
 	}
 }
