@@ -30,6 +30,7 @@ BaseModUI::ReactiveDropChallengeSelectionListItem::ReactiveDropChallengeSelectio
 	m_nWorkshopID = k_PublishedFileIdInvalid;
 
 	m_bCurrentlySelected = false;
+	m_bWaitingForWorkshopData = false;
 }
 
 void BaseModUI::ReactiveDropChallengeSelectionListItem::OnMousePressed( vgui::MouseCode code )
@@ -95,6 +96,14 @@ void BaseModUI::ReactiveDropChallengeSelectionListItem::OnMessage( const KeyValu
 void BaseModUI::ReactiveDropChallengeSelectionListItem::Paint()
 {
 	BaseClass::Paint();
+
+	if ( m_bWaitingForWorkshopData && g_ReactiveDropWorkshop.TryQueryAddon( m_nWorkshopID ).details.m_nPublishedFileId )
+	{
+		m_bWaitingForWorkshopData = false;
+		CUtlString szChallengeName = m_szChallengeName;
+		PopulateChallenge( szChallengeName );
+		Assert( !m_bWaitingForWorkshopData );
+	}
 
 	// Draw the graded outline for the selected item only
 	if ( m_bCurrentlySelected )
@@ -198,7 +207,13 @@ void BaseModUI::ReactiveDropChallengeSelectionListItem::PopulateChallenge( const
 
 const CReactiveDropWorkshop::WorkshopItem_t &BaseModUI::ReactiveDropChallengeSelectionListItem::GetWorkshopItem()
 {
-	return g_ReactiveDropWorkshop.TryQueryAddon( m_nWorkshopID );
+	const CReactiveDropWorkshop::WorkshopItem_t &info = g_ReactiveDropWorkshop.TryQueryAddon( m_nWorkshopID );
+	if ( info.details.m_nPublishedFileId == 0L )
+	{
+		m_bWaitingForWorkshopData = true;
+	}
+
+	return info;
 }
 
 BaseModUI::ReactiveDropChallengeSelection::ReactiveDropChallengeSelection( vgui::Panel *parent, const char *panelName, bool bDeathmatch ) : BaseClass( parent, panelName )

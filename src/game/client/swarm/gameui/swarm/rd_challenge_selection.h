@@ -36,6 +36,7 @@ namespace BaseModUI
 		const CReactiveDropWorkshop::WorkshopItem_t &GetWorkshopItem();
 
 		bool m_bCurrentlySelected;
+		bool m_bWaitingForWorkshopData;
 		vgui::HFont	m_hTextFont;
 
 		vgui::Label *m_lblError;
