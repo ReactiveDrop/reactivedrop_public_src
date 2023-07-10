@@ -309,7 +309,6 @@ enum
 	ASW_COLLISION_GROUP_EXTINGUISHER_PELLETS,	// the pellets that the extinguisher shoots. Hits lots of things, but not other weapons
 	ASW_COLLISION_GROUP_BOTS,			// reactivedrop: collision group for bots
 	ASW_COLLISION_GROUP_BOT_MOVEMENT,
-	ASW_COLLISION_GROUP_CEILINGS,
 	ASW_COLLISION_GROUP_PASSABLE,		// asw (stuff you can walk through) NOTE: Has to be LAST!
 };
 

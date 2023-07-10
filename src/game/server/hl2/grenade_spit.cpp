@@ -21,6 +21,7 @@
 #include "ai_utils.h"
 #include "te_effect_dispatch.h"
 #include "asw_gamerules.h"
+#include "func_asw_fade.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -70,6 +71,7 @@ void CGrenadeSpit::Spawn( void )
 	SetFriction( 0.8f );
 
 	SetCollisionGroup( ASW_COLLISION_GROUP_NPC_GRENADES );
+	CFunc_ASW_Fade::DisableCollisionsWithGrenade( this );
 
 	AddEFlags( EFL_FORCE_CHECK_TRANSMIT );
 

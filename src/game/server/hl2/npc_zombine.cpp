@@ -33,6 +33,7 @@
 
 #include "basecombatweapon.h"
 #include "asw_grenade_vindicator.h"
+#include "func_asw_fade.h"
 
 #include "ai_interactions.h"
 
@@ -384,6 +385,7 @@ void CNPC_Zombine::DropGrenade( Vector vDir )
 		m_hGrenade->SetMoveType( MOVETYPE_VPHYSICS );
 		m_hGrenade->SetSolid( SOLID_VPHYSICS );
 		m_hGrenade->SetCollisionGroup( ASW_COLLISION_GROUP_GRENADES );
+		CFunc_ASW_Fade::DisableCollisionsWithGrenade( m_hGrenade );
 
 		m_hGrenade->CreateVPhysics();
 	}

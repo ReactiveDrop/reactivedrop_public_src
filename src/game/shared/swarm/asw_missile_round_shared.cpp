@@ -18,6 +18,7 @@
 #include "asw_game_resource.h"
 #include "asw_player.h"
 #include "inetchannelinfo.h"
+#include "func_asw_fade.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -94,6 +95,7 @@ void CASW_Missile_Round::Spawn( void )
 	SetSolid( SOLID_NONE );
 	SetGravity( m_ShotDef.m_flGravity );
 	SetCollisionGroup( ASW_COLLISION_GROUP_ALIEN_MISSILE );
+	CFunc_ASW_Fade::DisableCollisionsWithGrenade( this );
 
 	SetTouch( &CASW_Missile_Round::Touch );
 

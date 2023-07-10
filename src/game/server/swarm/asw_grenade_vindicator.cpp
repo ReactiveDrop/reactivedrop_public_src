@@ -13,6 +13,7 @@
 #include "asw_achievements.h"
 #include "asw_boomer_blob.h"
 #include "asw_fx_shared.h"
+#include "func_asw_fade.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -83,6 +84,7 @@ void CASW_Grenade_Vindicator::Spawn( void )
 	SetFriction( asw_vindicator_grenade_friction.GetFloat() );
 	SetElasticity( asw_vindicator_grenade_elasticity.GetFloat() );
 	SetCollisionGroup( ASW_COLLISION_GROUP_GRENADES );
+	CFunc_ASW_Fade::DisableCollisionsWithGrenade( this );
 	//CreateVPhysics();
 
 	SetTouch( &CASW_Grenade_Vindicator::VGrenadeTouch );

@@ -102,6 +102,7 @@ void CASW_Rocket::Spawn( void )
 	SetTouch( &CASW_Rocket::MissileTouch );
 
 	SetCollisionGroup( ASW_COLLISION_GROUP_PLAYER_MISSILE );
+	CFunc_ASW_Fade::DisableCollisionsWithGrenade( this );
 	SetMoveType( MOVETYPE_FLYGRAVITY, MOVECOLLIDE_FLY_BOUNCE );
 	SetThink( &CASW_Rocket::IgniteThink );
 	

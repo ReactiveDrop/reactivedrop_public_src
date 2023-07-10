@@ -12,7 +12,7 @@ LINK_ENTITY_TO_CLASS( func_asw_fade, CFunc_ASW_Fade );
 
 BEGIN_DATADESC( CFunc_ASW_Fade )
 	DEFINE_FIELD( m_bHasProxies, FIELD_BOOLEAN ),
-	DEFINE_KEYFIELD( m_bCollideWithGrenades, FIELD_BOOLEAN, "CollideWithGrenades" ),
+	DEFINE_KEYFIELD( m_iCollideWithGrenades, FIELD_CHARACTER, "CollideWithGrenades" ),
 	DEFINE_KEYFIELD( m_nFadeOpacity, FIELD_CHARACTER, "fade_opacity" ),
 	DEFINE_INPUT( m_bAllowFade, FIELD_BOOLEAN, "AllowFade" ),
 END_DATADESC()
@@ -26,7 +26,7 @@ END_SEND_TABLE()
 CFunc_ASW_Fade::CFunc_ASW_Fade()
 {
 	m_bHasProxies = false;
-	m_bCollideWithGrenades = false;
+	m_iCollideWithGrenades = 0;
 	m_nFadeOpacity = 0;
 	m_bAllowFade = true;
 }
@@ -35,7 +35,23 @@ void CFunc_ASW_Fade::Spawn()
 {
 	BaseClass::Spawn();
 
-	SetCollisionGroup( m_bCollideWithGrenades ? COLLISION_GROUP_NONE : ASW_COLLISION_GROUP_CEILINGS );
+	SetCollisionGroup( COLLISION_GROUP_NONE );
+	Assert( m_iCollideWithGrenades <= 2 );
+}
+
+void CFunc_ASW_Fade::DisableCollisionsWithGrenade( CBaseEntity *pGrenade )
+{
+	float flGrenadeZ = pGrenade->GetAbsOrigin().z;
+	string_t iszClassName = AllocPooledString( "func_asw_fade" );
+
+	CFunc_ASW_Fade *pCeiling = NULL;
+	while ( ( pCeiling = assert_cast< CFunc_ASW_Fade * >( gEntList.FindEntityByClassnameFast( pCeiling, iszClassName ) ) ) != NULL )
+	{
+		if ( ( pCeiling->m_iCollideWithGrenades == 0 && pCeiling->GetAbsOrigin().z >= flGrenadeZ ) || pCeiling->m_iCollideWithGrenades == 2 )
+		{
+			PhysDisableEntityCollisions( pCeiling, pGrenade );
+		}
+	}
 }
 
 bool CFunc_ASW_Fade::ShouldFade( CASW_Inhabitable_NPC *pNPC )

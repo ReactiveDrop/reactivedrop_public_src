@@ -14,6 +14,7 @@
 #include "asw_weapon_grenade_launcher.h"
 #include "asw_drone_advanced.h"
 #include "asw_buzzer.h"
+#include "func_asw_fade.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -95,6 +96,7 @@ void CASW_Grenade_Cluster::Spawn( void )
 	SetFriction( asw_vindicator_grenade_friction.GetFloat() );
 	SetElasticity( asw_vindicator_grenade_elasticity.GetFloat() );
 	SetCollisionGroup( ASW_COLLISION_GROUP_GRENADES );
+	CFunc_ASW_Fade::DisableCollisionsWithGrenade( this );
 
 	SetTouch( &CASW_Grenade_Cluster::VGrenadeTouch );
 
