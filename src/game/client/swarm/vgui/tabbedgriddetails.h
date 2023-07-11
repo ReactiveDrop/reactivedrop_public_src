@@ -21,6 +21,8 @@ public:
 
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 	virtual void PerformLayout() override;
+	virtual void OnMouseWheeled( int delta ) override;
+	MESSAGE_FUNC_INT( OnSliderMoved, "ScrollBarSliderMoved", position );
 	virtual void OnCommand( const char *command ) override;
 	virtual void OnKeyCodeTyped( vgui::KeyCode keycode ) override;
 	virtual void OnKeyCodePressed( vgui::KeyCode keycode ) override;
@@ -34,6 +36,7 @@ public:
 	void RemoveTab( TGD_Tab *pTab );
 	void ActivateTab( TGD_Tab *pTab );
 	void SetOverridePanel( vgui::Panel *pPanel );
+	void UseCombinedGrid();
 
 	CNB_Header_Footer *m_pHeaderFooter;
 	CNB_Button *m_pBackButton;
@@ -45,6 +48,8 @@ public:
 	vgui::PHandle m_hOverridePanel;
 	CRD_VGUI_Main_Menu_Top_Bar *m_pMainMenuBar;
 	CRD_VGUI_Stock_Ticker_Helper *m_pMainMenuTicker;
+	vgui::Panel *m_pGridParent;
+	vgui::ScrollBar *m_pCombinedScrollBar;
 
 	ConVar *m_pLastTabConVar;
 };
@@ -67,6 +72,7 @@ public:
 
 	virtual void ActivateTab();
 	virtual void DeactivateTab();
+	void InitCombinedGrid( vgui::Panel *pGridParent );
 
 	TabbedGridDetails *m_pParent;
 	vgui::Label *m_pLabel;
@@ -82,6 +88,7 @@ class TGD_Grid : public vgui::EditablePanel
 	DECLARE_CLASS_SIMPLE( TGD_Grid, vgui::EditablePanel );
 public:
 	explicit TGD_Grid( TGD_Tab *pTab );
+	~TGD_Grid();
 
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 	virtual void PerformLayout() override;
@@ -100,9 +107,11 @@ public:
 	TGD_Tab *m_pParent;
 	vgui::Dar<TGD_Entry *> m_Entries;
 	vgui::DHANDLE<TGD_Entry> m_hCurrentEntry;
+	vgui::Label *m_pTitle;
 	vgui::Label *m_pMessage;
 	vgui::ScrollBar *m_pScrollBar;
 	int m_iLastFocus;
+	int m_iScrollOffset;
 };
 
 abstract_class TGD_Entry : public vgui::EditablePanel
@@ -126,6 +135,7 @@ abstract_class TGD_Details : public vgui::EditablePanel
 	DECLARE_CLASS_SIMPLE( TGD_Details, vgui::EditablePanel );
 public:
 	explicit TGD_Details( TGD_Tab *pTab );
+	~TGD_Details();
 
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 	virtual void PerformLayout() override;

@@ -43,13 +43,18 @@ TabbedGridDetails::TabbedGridDetails() : BaseClass( NULL, "TabbedGridDetails" )
 	m_pMainMenuBar = NULL;
 	m_pMainMenuTicker = NULL;
 	m_pLastTabConVar = NULL;
+	m_pGridParent = NULL;
+	m_pCombinedScrollBar = NULL;
 }
 
 void TabbedGridDetails::ApplySchemeSettings( vgui::IScheme *pScheme )
 {
-	LoadControlSettings( "Resource/UI/TabbedGridDetails.res" );
+	LoadControlSettings( m_pCombinedScrollBar ? "Resource/UI/CombinedGridDetails.res" : "Resource/UI/TabbedGridDetails.res" );
 
 	BaseClass::ApplySchemeSettings( pScheme );
+
+	if ( m_pCombinedScrollBar )
+		m_pCombinedScrollBar->UseImages( "scroll_up", "scroll_down", "scroll_line", "scroll_box" );
 }
 
 void TabbedGridDetails::PerformLayout()
@@ -104,6 +109,46 @@ void TabbedGridDetails::PerformLayout()
 	if ( m_pMainMenuBar )
 	{
 		m_pBackButton->SetVisible( false );
+	}
+
+	if ( m_pCombinedScrollBar )
+	{
+		int yOrigin = -m_pCombinedScrollBar->GetValue();
+
+		int totalHeight = 0;
+		FOR_EACH_VEC( m_Tabs, i )
+		{
+			m_Tabs[i]->m_pGrid->m_iScrollOffset = totalHeight;
+			m_Tabs[i]->m_pGrid->SetPos( 0, yOrigin + totalHeight );
+			totalHeight += m_Tabs[i]->m_pGrid->GetTall();
+		}
+
+		m_pCombinedScrollBar->SetVisible( m_pGridParent->GetTall() < totalHeight );
+		m_pCombinedScrollBar->SetTall( m_pGridParent->GetTall() );
+		m_pCombinedScrollBar->SetButtonPressedScrollValue( m_pGridParent->GetTall() / 2 );
+		m_pCombinedScrollBar->SetRangeWindow( MIN( m_pGridParent->GetTall(), totalHeight ) );
+		m_pCombinedScrollBar->SetRange( 0, totalHeight );
+	}
+}
+
+void TabbedGridDetails::OnMouseWheeled( int delta )
+{
+	BaseClass::OnMouseWheeled( delta );
+
+	if ( !m_pCombinedScrollBar )
+		return;
+
+	int val = m_pCombinedScrollBar->GetValue();
+	val -= ( delta * 3 * 5 );
+	m_pCombinedScrollBar->SetValue( val );
+}
+
+void TabbedGridDetails::OnSliderMoved( int position )
+{
+	if ( m_pCombinedScrollBar )
+	{
+		InvalidateLayout();
+		Repaint();
 	}
 }
 
@@ -322,6 +367,11 @@ void TabbedGridDetails::AddTab( TGD_Tab *pTab )
 
 	pTab->SetVisible( true );
 
+	if ( m_pGridParent && pTab->m_pGrid->m_pScrollBar )
+	{
+		pTab->InitCombinedGrid( m_pGridParent );
+	}
+
 	InvalidateLayout();
 }
 
@@ -350,7 +400,8 @@ void TabbedGridDetails::RemoveTab( TGD_Tab *pTab )
 
 	Assert( m_hCurrentTab.Get() != pTab );
 
-	m_Tabs.FindAndFastRemove( pTab );
+	m_Tabs.FindAndRemove( pTab );
+	pTab->m_pGrid->SetVisible( false );
 
 	pTab->SetVisible( false );
 
@@ -391,6 +442,26 @@ void TabbedGridDetails::SetOverridePanel( vgui::Panel *pPanel )
 	{
 		NavigateToChild( pPanel );
 	}
+}
+
+void TabbedGridDetails::UseCombinedGrid()
+{
+	MakeReadyForUse();
+
+	Assert( !m_pGridParent );
+	m_pGridParent = new vgui::Panel( this, "GridParent" );
+	Assert( !m_pCombinedScrollBar );
+	m_pCombinedScrollBar = new vgui::ScrollBar( this, "ScrollBar", true );
+
+	FOR_EACH_VEC( m_Tabs, i )
+	{
+		m_Tabs[i]->InitCombinedGrid( m_pGridParent );
+	}
+
+	InvalidateLayout( true, true );
+
+	if ( m_hCurrentTab && m_hCurrentTab->m_pGrid->m_Entries.Count() )
+		m_hCurrentTab->m_pGrid->m_Entries[0]->m_pFocusHolder->RequestFocus();
 }
 
 TGD_Tab::TGD_Tab( TabbedGridDetails *parent )
@@ -484,7 +555,8 @@ TGD_Grid *TGD_Tab::CreateGrid()
 void TGD_Tab::ActivateTab()
 {
 	MakeReadyForUse();
-	m_pGrid->SetVisible( true );
+	if ( m_pGrid->m_pScrollBar )
+		m_pGrid->SetVisible( true );
 	m_pDetails->SetVisible( true );
 	m_pLabelHighlight->SetVisible( true );
 	m_pHighlight->SetVisible( true );
@@ -496,10 +568,24 @@ void TGD_Tab::ActivateTab()
 void TGD_Tab::DeactivateTab()
 {
 	MakeReadyForUse();
-	m_pGrid->SetVisible( false );
+	if ( m_pGrid->m_pScrollBar )
+		m_pGrid->SetVisible( false );
 	m_pDetails->SetVisible( false );
 	m_pLabelHighlight->SetVisible( false );
 	m_pHighlight->SetVisible( false );
+}
+
+void TGD_Tab::InitCombinedGrid( vgui::Panel *pGridParent )
+{
+	Assert( m_pGrid );
+	Assert( !m_pGrid->m_pTitle );
+	Assert( m_pGrid->m_pScrollBar );
+	char szTitle[1024];
+	m_pLabel->GetText( szTitle, sizeof( szTitle ) );
+	m_pGrid->m_pTitle = new vgui::Label( m_pGrid, "Title", szTitle );
+	m_pGrid->m_pScrollBar->MarkForDeletion();
+	m_pGrid->m_pScrollBar = NULL;
+	m_pGrid->SetParent( pGridParent );
 }
 
 TGD_Grid::TGD_Grid( TGD_Tab *pTab )
@@ -508,20 +594,28 @@ TGD_Grid::TGD_Grid( TGD_Tab *pTab )
 	SetConsoleStylePanel( true );
 
 	m_pParent = pTab;
+	m_pTitle = NULL;
 	m_pMessage = new vgui::Label( this, "Message", L"" );
 	m_pScrollBar = new vgui::ScrollBar( this, "ScrollBar", true );
 	m_pScrollBar->AddActionSignalTarget( this );
 
 	m_iLastFocus = 0;
+	m_iScrollOffset = 0;
+}
+
+TGD_Grid::~TGD_Grid()
+{
+	m_pParent->m_pGrid = NULL;
 }
 
 void TGD_Grid::ApplySchemeSettings( vgui::IScheme *pScheme )
 {
-	LoadControlSettings( "Resource/UI/TGD_Grid.res" );
+	LoadControlSettings( m_pScrollBar ? "Resource/UI/TGD_Grid.res" : "Resource/UI/CGD_Grid.res" );
 
 	BaseClass::ApplySchemeSettings( pScheme );
 
-	m_pScrollBar->UseImages( "scroll_up", "scroll_down", "scroll_line", "scroll_box" );
+	if ( m_pScrollBar )
+		m_pScrollBar->UseImages( "scroll_up", "scroll_down", "scroll_line", "scroll_box" );
 }
 
 void TGD_Grid::PerformLayout()
@@ -538,11 +632,14 @@ void TGD_Grid::PerformLayout()
 
 	if ( m_Entries.Count() == 0 )
 	{
-		m_pScrollBar->SetVisible( false );
+		if ( m_pScrollBar )
+			m_pScrollBar->SetVisible( false );
 		return;
 	}
 
-	int totalWide = GetWide() - m_pScrollBar->GetWide();
+	int totalWide = GetWide();
+	if ( m_pScrollBar )
+		totalWide -= m_pScrollBar->GetWide();
 	int totalTall = GetTall();
 
 	int eachWide, eachTall;
@@ -553,16 +650,51 @@ void TGD_Grid::PerformLayout()
 
 	int totalHeight = ( m_Entries.Count() + perRow - 1 ) / perRow * eachTall;
 
-	m_pScrollBar->SetVisible( totalTall < totalHeight );
-	m_pScrollBar->SetTall( totalTall );
-	m_pScrollBar->SetButtonPressedScrollValue( totalTall / 2 );
-	m_pScrollBar->SetRangeWindow( MIN( totalTall, totalHeight ) );
-	m_pScrollBar->SetRange( 0, totalHeight );
+	if ( m_pScrollBar )
+	{
+		m_pScrollBar->SetVisible( totalTall < totalHeight );
+		m_pScrollBar->SetTall( totalTall );
+		m_pScrollBar->SetButtonPressedScrollValue( totalTall / 2 );
+		m_pScrollBar->SetRangeWindow( MIN( totalTall, totalHeight ) );
+		m_pScrollBar->SetRange( 0, totalHeight );
+	}
+	else
+	{
+		totalHeight += m_pTitle->GetTall();
+		SetTall( totalHeight );
 
-	if ( m_pParent->m_pParent->m_pMainMenuBar )
+		if ( totalTall != totalHeight )
+			m_pParent->m_pParent->InvalidateLayout();
+	}
+
+	TGD_Grid *pGridUp = NULL, *pGridDown = NULL;
+	if ( m_pScrollBar == NULL )
+	{
+		int i = m_pParent->m_pParent->m_Tabs.Find( m_pParent );
+
+		for ( int j = i - 1; j >= 0; j-- )
+		{
+			if ( m_pParent->m_pParent->m_Tabs[j]->m_pGrid->m_Entries.Count() )
+			{
+				pGridUp = m_pParent->m_pParent->m_Tabs[j]->m_pGrid;
+				break;
+			}
+		}
+
+		for ( int j = i + 1; j < m_pParent->m_pParent->m_Tabs.Count(); j++ )
+		{
+			if ( m_pParent->m_pParent->m_Tabs[j]->m_pGrid->m_Entries.Count() )
+			{
+				pGridDown = m_pParent->m_pParent->m_Tabs[j]->m_pGrid;
+				break;
+			}
+		}
+	}
+
+	if ( m_pParent->m_pParent->m_pMainMenuBar && !pGridUp )
 		m_pParent->m_pParent->m_pMainMenuBar->SetNavDown( m_Entries[0]->m_pFocusHolder );
 
-	int yOffset = -m_pScrollBar->GetValue();
+	int yOffset = m_pScrollBar ? -m_pScrollBar->GetValue() : m_pTitle->GetTall();
 
 	bool bAnyFocus = false;
 
@@ -584,10 +716,10 @@ void TGD_Grid::PerformLayout()
 		int left = !bAllowWrapping && col == 0 ? -1 : col - 1 + row * perRow;
 		int right = !bAllowWrapping && col == perRow - 1 ? -1 : col + 1 + row * perRow;
 
-		m_Entries[i]->m_pFocusHolder->SetNavUp( up >= 0 && up < m_Entries.Count() ? m_Entries[up]->m_pFocusHolder : m_pParent->m_pParent->m_pMainMenuBar );
-		m_Entries[i]->m_pFocusHolder->SetNavDown( down >= 0 && down < m_Entries.Count() ? m_Entries[down]->m_pFocusHolder : NULL );
-		m_Entries[i]->m_pFocusHolder->SetNavLeft( left >= 0 && left < m_Entries.Count() ? m_Entries[left]->m_pFocusHolder : NULL );
-		m_Entries[i]->m_pFocusHolder->SetNavRight( right >= 0 && right < m_Entries.Count() ? m_Entries[right]->m_pFocusHolder : NULL );
+		m_Entries[i]->m_pFocusHolder->SetNavUp( up >= 0 && up < m_Entries.Count() ? m_Entries[up]->m_pFocusHolder : ( pGridUp ? pGridUp->m_Entries[pGridUp->m_Entries.Count() - 1]->m_pFocusHolder : m_pParent->m_pParent->m_pMainMenuBar ) );
+		m_Entries[i]->m_pFocusHolder->SetNavDown( down >= 0 && down < m_Entries.Count() ? m_Entries[down]->m_pFocusHolder : ( pGridDown ? pGridDown->m_Entries[0]->m_pFocusHolder : NULL ) );
+		m_Entries[i]->m_pFocusHolder->SetNavLeft( left >= 0 && left < m_Entries.Count() ? m_Entries[left]->m_pFocusHolder : ( pGridUp ? pGridUp->m_Entries[pGridUp->m_Entries.Count() - 1]->m_pFocusHolder : NULL ) );
+		m_Entries[i]->m_pFocusHolder->SetNavRight( right >= 0 && right < m_Entries.Count() ? m_Entries[right]->m_pFocusHolder : ( pGridDown ? pGridDown->m_Entries[0]->m_pFocusHolder : NULL ) );
 
 		if ( m_Entries[i]->m_pFocusHolder->HasFocus() )
 		{
@@ -615,6 +747,11 @@ void TGD_Grid::PerformLayout()
 
 void TGD_Grid::OnMouseWheeled( int delta )
 {
+	BaseClass::OnMouseWheeled( delta );
+
+	if ( !m_pScrollBar )
+		return;
+
 	int val = m_pScrollBar->GetValue();
 	val -= ( delta * 3 * 5 );
 	m_pScrollBar->SetValue( val );
@@ -694,6 +831,30 @@ void TGD_Grid::DisplayEntry( TGD_Entry *pEntry )
 	{
 		NavigateToChild( pEntry->m_pFocusHolder );
 	}
+
+	FOR_EACH_VEC( m_pParent->m_pParent->m_Tabs, i )
+	{
+		if ( m_pParent->m_pParent->m_Tabs[i]->m_pGrid != this )
+		{
+			m_pParent->m_pParent->m_Tabs[i]->m_pDetails->SetVisible( false );
+			m_pParent->m_pParent->m_Tabs[i]->m_pHighlight->SetVisible( false );
+			m_pParent->m_pParent->m_Tabs[i]->m_pLabelHighlight->SetVisible( false );
+		}
+	}
+
+	m_pParent->m_pDetails->SetVisible( true );
+	m_pParent->m_pHighlight->SetVisible( true );
+	m_pParent->m_pLabelHighlight->SetVisible( true );
+
+	if ( m_pParent->m_pParent->m_hCurrentTab != m_pParent )
+	{
+		m_pParent->m_pParent->m_hCurrentTab = m_pParent;
+		if ( m_pParent->m_pParent->m_pLastTabConVar )
+		{
+			m_pParent->m_pParent->m_pLastTabConVar->SetValue( m_pParent->m_pParent->m_Tabs.Find( m_pParent ) );
+			engine->ClientCmd_Unrestricted( "host_writeconfig\n" );
+		}
+	}
 }
 
 void TGD_Grid::SetMessage( const char *szMessage )
@@ -739,22 +900,27 @@ public:
 		if ( !m_bNoScrollOnFocus )
 		{
 			TGD_Grid *pGrid = pParent->m_pParent;
+			Assert( ( pGrid->m_pScrollBar == NULL ) != ( pGrid->m_pParent->m_pParent->m_pCombinedScrollBar == NULL ) );
+
+			vgui::ScrollBar *pScrollBar = pGrid->m_pScrollBar ? pGrid->m_pScrollBar : pGrid->m_pParent->m_pParent->m_pCombinedScrollBar;
 
 			int x, y;
 			pParent->GetPos( x, y );
+			y += pGrid->m_iScrollOffset;
 
-			int scroll = pGrid->m_pScrollBar->GetValue();
-			y += scroll;
+			int scroll = pScrollBar->GetValue();
+			if ( pGrid->m_pScrollBar )
+				y += scroll;
 
-			int minScroll = y + GetTall() * 1.5f - pGrid->m_pScrollBar->GetRangeWindow();
+			int minScroll = y + GetTall() * 1.5f - pScrollBar->GetRangeWindow();
 			int maxScroll = y - GetTall() * 0.5f;
 			if ( scroll < minScroll )
 			{
-				pGrid->m_pScrollBar->SetValue( minScroll );
+				pScrollBar->SetValue( minScroll );
 			}
 			else if ( scroll > maxScroll )
 			{
-				pGrid->m_pScrollBar->SetValue( maxScroll );
+				pScrollBar->SetValue( maxScroll );
 			}
 		}
 	}
@@ -855,6 +1021,11 @@ TGD_Details::TGD_Details( TGD_Tab *pTab )
 	SetConsoleStylePanel( true );
 
 	m_pParent = pTab;
+}
+
+TGD_Details::~TGD_Details()
+{
+	m_pParent->m_pDetails = NULL;
 }
 
 void TGD_Details::ApplySchemeSettings( vgui::IScheme *pScheme )

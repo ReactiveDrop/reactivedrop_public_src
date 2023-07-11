@@ -35,7 +35,7 @@ const char *const g_ASW_ChooserTypeName[] =
 
 static const char *const s_ChooserTabName[] =
 {
-	"#asw_start_campaign",
+	"#asw_campaigns",
 	"#asw_load_campaign",
 	"#asw_single_mission",
 	"#rd_campaign_name_rd_bonus_missions",
@@ -241,6 +241,8 @@ CASW_Mission_Chooser_Frame::CASW_Mission_Chooser_Frame( ASW_HOST_TYPE iHostType 
 			AddTab( pChooserList );
 		}
 	}
+
+	UseCombinedGrid();
 }
 
 void CASW_Mission_Chooser_Frame::OnCommand( const char *command )
