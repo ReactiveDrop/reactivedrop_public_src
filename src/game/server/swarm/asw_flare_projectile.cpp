@@ -187,7 +187,7 @@ void CASW_Flare_Projectile::Spawn( void )
 
 unsigned int CASW_Flare_Projectile::PhysicsSolidMaskForEntity( void ) const
 {
-	return MASK_SOLID;
+	return MASK_SOLID | CONTENTS_HITBOX;
 }
 
 void CASW_Flare_Projectile::FlareThink( void )
@@ -279,6 +279,8 @@ void CASW_Flare_Projectile::FlareTouch( CBaseEntity *pOther )
 		g_pEffects->Sparks( GetEffectOrigin() );
 	}
 
+	const trace_t &tr = CBaseEntity::GetTouchTrace();
+
 	//If the flare hit a person or NPC, do damage here.
 	if ( pOther && pOther->m_takedamage )
 	{
@@ -317,11 +319,9 @@ void CASW_Flare_Projectile::FlareTouch( CBaseEntity *pOther )
 
 		return;
 	}
-	else
+	else if ( tr.DidHit() )
 	{
 		// hit the world, check the material type here, see if the flare should stick.
-		trace_t tr;
-		tr = CBaseEntity::GetTouchTrace();
 
 		//Only do this on the first bounce
 		if ( m_nBounces == 0 )
