@@ -11,6 +11,7 @@
 #include "asw_marine.h"
 #include "asw_firewall_piece.h"
 #include "asw_marine_skills.h"
+#include "func_asw_fade.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -54,8 +55,8 @@ void CASW_Mine::Spawn( void )
 	SetSize( -Vector(1, 1, 1), Vector(1, 1, 1) );
 	SetSolid( SOLID_BBOX );
 	AddSolidFlags( FSOLID_TRIGGER );
-	//Orange. Best existing collision group to save old mine behavior and disable collision while in air.
-	SetCollisionGroup( ASW_COLLISION_GROUP_EXTINGUISHER_PELLETS );
+	SetCollisionGroup( ASW_COLLISION_GROUP_GRENADES );
+	CFunc_ASW_Fade::DisableCollisionsWithGrenade( this );
 	SetMoveType( MOVETYPE_FLYGRAVITY );
 	m_takedamage	= DAMAGE_NO;
 	m_bPrimed = false;

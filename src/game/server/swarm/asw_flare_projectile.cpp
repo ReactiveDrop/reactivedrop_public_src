@@ -8,6 +8,7 @@
 #include "weapon_flaregun.h"
 #include "decals.h"
 #include "asw_shareddefs.h"
+#include "func_asw_fade.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -160,8 +161,8 @@ void CASW_Flare_Projectile::Spawn( void )
 
 	AddFlag( FL_OBJECT );
 	
-	SetCollisionGroup( ASW_COLLISION_GROUP_IGNORE_NPCS );
-	//CreateVPhysics();
+	SetCollisionGroup( ASW_COLLISION_GROUP_GRENADES );
+	CFunc_ASW_Fade::DisableCollisionsWithGrenade( this );
 
 	// Tumble in air
 	QAngle vecAngVelocity( 0, random->RandomFloat ( -100, -500 ), 0 );

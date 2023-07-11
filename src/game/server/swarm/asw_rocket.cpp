@@ -13,6 +13,7 @@
 #include "asw_player.h"
 #include "asw_marine_resource.h"
 #include "asw_deathmatch_mode.h"
+#include "func_asw_fade.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"

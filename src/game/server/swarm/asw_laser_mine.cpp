@@ -17,6 +17,7 @@
 #include "asw_gamerules.h"
 #include "ndebugoverlay.h"
 #include "asw_door.h"
+#include "func_asw_fade.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -59,35 +60,36 @@ CASW_Laser_Mine::CASW_Laser_Mine()
 
 CASW_Laser_Mine::~CASW_Laser_Mine( void )
 {
-
 }
 
 void CASW_Laser_Mine::Spawn( void )
 {
-	Precache( );
+	Precache();
 	SetModel( ASW_LASER_MINE_MODEL );
 	SetSolid( SOLID_NONE );
 	AddSolidFlags( FSOLID_NOT_SOLID );
 	SetMoveType( MOVETYPE_NONE );
 
 	if ( rd_laser_mine_takes_damage.GetBool() )
-		m_takedamage	= DAMAGE_YES;
-	else 
-		m_takedamage	= DAMAGE_NO;
+		m_takedamage = DAMAGE_YES;
+	else
+		m_takedamage = DAMAGE_NO;
 
 	m_flDamageRadius = rd_laser_mine_dmg_radius.GetFloat();	// TODO: grab from marine skill
 	m_flDamage = rd_laser_mine_dmg.GetFloat();	// TODO: Grab from marine skill
 	m_bMineActive = false;
 	m_nSkin = 3;
 
-	AddEffects( EF_NOSHADOW|EF_NORECEIVESHADOW );
+	AddEffects( EF_NOSHADOW | EF_NORECEIVESHADOW );
+	SetCollisionGroup( ASW_COLLISION_GROUP_GRENADES );
+	CFunc_ASW_Fade::DisableCollisionsWithGrenade( this );
 
 	SetThink( &CASW_Laser_Mine::LaserThink );
 	SetNextThink( gpGlobals->curtime + 0.1f );
 
 	// set health to minimum value to explode on any damage
-	SetMaxHealth(1);
-	SetHealth(1);
+	SetMaxHealth( 1 );
+	SetHealth( 1 );
 }
 
 void CASW_Laser_Mine::LaserThink( void )
