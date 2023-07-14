@@ -168,6 +168,9 @@ object_motion_blur_ps2x.fxc
 particlesphere_ps2x.fxc
 particlesphere_vs20.fxc
 
+pbr_vs20.fxc
+pbr_ps20b.fxc
+
 projected_ps2x.fxc
 projected_vs20.fxc
 

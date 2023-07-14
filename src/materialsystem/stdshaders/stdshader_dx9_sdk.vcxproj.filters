@@ -50,6 +50,18 @@
     </None>
     <None Include="buildallshaders.bat" />
     <None Include="buildshaders.bat" />
+    <None Include="pbr_ps20b.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </None>
+    <None Include="pbr_ps30.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </None>
+    <None Include="pbr_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </None>
+    <None Include="pbr_vs30.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="aftershock.cpp">
@@ -349,6 +361,9 @@
     <ClCompile Include="writez_dx9.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="pbr_dx9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\..\dx9sdk\lib\d3dx9.lib">
@@ -480,6 +495,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="worldvertextransition_dx8_helper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pbr_common_ps2_3_x.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

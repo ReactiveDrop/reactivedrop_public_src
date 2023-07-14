@@ -41,6 +41,8 @@ multiblend_vs20.fxc
 multiblend_ps2x.fxc
 parallaxtest_vs30.fxc
 parallaxtest_ps30.fxc
+pbr_vs30.fxc
+pbr_ps30.fxc
 projected_vs20.fxc
 projected_ps2x.fxc
 shadowbuildtexture_ps2x.fxc

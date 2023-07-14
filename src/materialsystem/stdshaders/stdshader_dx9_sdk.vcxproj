@@ -928,6 +928,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </CustomBuild>
+    <None Include="pbr_ps20b.fxc" />
+    <None Include="pbr_ps30.fxc" />
+    <None Include="pbr_vs20.fxc" />
+    <None Include="pbr_vs30.fxc" />
     <None Include="stdshader_dx9.vpc" />
     <CustomBuild Include="teeth_bump_ps2x.fxc">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -1132,6 +1136,7 @@
     <ClCompile Include="particlelitgeneric_dx9.cpp" />
     <ClCompile Include="particlelitgeneric_dx9_helper.cpp" />
     <ClCompile Include="particlesphere_dx9.cpp" />
+    <ClCompile Include="pbr_dx9.cpp" />
     <ClCompile Include="phong_dx9_helper.cpp" />
     <ClCompile Include="projected.cpp" />
     <ClCompile Include="projected_dx9_helper.cpp" />
@@ -1205,6 +1210,7 @@
     <ClInclude Include="lightshafts_helper.h" />
     <ClInclude Include="multiblend_dx9_helper.h" />
     <ClInclude Include="particlelitgeneric_dx9_helper.h" />
+    <ClInclude Include="pbr_common_ps2_3_x.h" />
     <ClInclude Include="phong_dx9_helper.h" />
     <ClInclude Include="projected_dx9_helper.h" />
     <ClInclude Include="refract_dx9_helper.h" />
