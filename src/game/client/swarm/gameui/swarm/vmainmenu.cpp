@@ -1557,7 +1557,11 @@ void MainMenu::OnThink()
 		MaybeShowTooltip( m_pTopBar->m_pTopButton[CRD_VGUI_Main_Menu_Top_Bar::BTN_WORKSHOP], "#rd_main_menu_tip_workshop_title", "#rd_main_menu_tip_workshop", 0.5f, 1.0f, vgui::Label::a_north );
 		MaybeShowTooltip( m_pTopBar->m_pTopButton[CRD_VGUI_Main_Menu_Top_Bar::BTN_INVENTORY], "#rd_main_menu_tip_inventory_title", "#rd_main_menu_tip_inventory", 0.5f, 1.0f, vgui::Label::a_north );
 		MaybeShowTooltip( m_pTopBar->m_pBtnQuit, "#rd_main_menu_tip_quit_title", "#rd_main_menu_tip_quit", 1.0f, 1.0f, vgui::Label::a_northeast );
+#ifdef RD_7A_QUESTS
 		MaybeShowTooltip( m_pCommanderProfile, "#rd_main_menu_tip_commander_profile_title", "#rd_main_menu_tip_commander_profile", 1.0f, 0.5f, vgui::Label::a_west );
+#else
+		MaybeShowTooltip( m_pCommanderProfile, "#rd_main_menu_tip_commander_profile_title", "#rd_main_menu_tip_commander_profile_2024", 1.0f, 0.5f, vgui::Label::a_west );
+#endif
 		MaybeShowTooltip( m_pBtnSingleplayer, "#rd_main_menu_tip_single_player_title", "#rd_main_menu_tip_single_player", 1.0f, 0.5f, vgui::Label::a_west );
 		MaybeShowTooltip( m_pPnlQuickJoinPublic, "#rd_main_menu_tip_quick_join_public_title", "#rd_main_menu_tip_quick_join_public", 1.0f, 0.5f, vgui::Label::a_west );
 		MaybeShowTooltip( m_pPnlQuickJoin, "#rd_main_menu_tip_quick_join_friends_title", "#rd_main_menu_tip_quick_join_friends", 1.0f, 0.5f, vgui::Label::a_west );
