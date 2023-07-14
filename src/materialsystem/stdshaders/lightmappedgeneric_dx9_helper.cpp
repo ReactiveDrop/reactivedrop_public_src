@@ -161,6 +161,13 @@ void InitParamsLightmappedGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** pa
 	InitFloatParam( info.m_nEdgeSoftnessEnd, params, 0.5 );
 	InitFloatParam( info.m_nOutlineAlpha, params, 1.0 );
 
+	// From https://developer.valvesoftware.com/wiki/Parallax_Corrected_Cubemaps
+	// Cubemap parallax correction requires all 4 lines (if the 2nd, 3rd, or 4th are undef, undef the first one (checking done on first var)
+	if ( !( params[info.m_nEnvmapParallaxObb2]->IsDefined() && params[info.m_nEnvmapParallaxObb3]->IsDefined() && params[info.m_nEnvmapOrigin]->IsDefined() ) )
+	{
+		params[info.m_nEnvmapParallaxObb1]->SetUndefined();
+	}
+
 	// parallax mapping
 	InitFloatParam( info.m_nHeightScale, params, 0.1 );
 
@@ -211,6 +218,8 @@ void InitParamsLightmappedGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** pa
 void InitLightmappedGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** params, LightmappedGeneric_DX9_Vars_t &info )
 {
 	bool hasNormalMapAlphaEnvmapMask = g_pConfig->UseSpecular() && IS_FLAG_SET( MATERIAL_VAR_NORMALMAPALPHAENVMAPMASK );
+	// From https://developer.valvesoftware.com/wiki/Parallax_Corrected_Cubemaps
+	bool hasParallaxCorrection = params[info.m_nEnvmapParallaxObb1]->IsDefined();
 
 	if ( ( g_pConfig->UseBumpmapping() || hasNormalMapAlphaEnvmapMask ) && params[info.m_nBumpmap]->IsDefined() )
 	{
@@ -658,6 +667,11 @@ void DrawLightmappedGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** params, 
 #ifdef _X360
 					SET_STATIC_PIXEL_SHADER_COMBO( FLASHLIGHT, hasFlashlight);
 #endif
+
+					// From https://developer.valvesoftware.com/wiki/Parallax_Corrected_Cubemaps
+					// Parallax cubemaps enabled for 2_0b and onwards
+					SET_STATIC_PIXEL_SHADER_COMBO( PARALLAXCORRECT, hasParallaxCorrection );
+
 					SET_STATIC_PIXEL_SHADER_COMBO( PARALLAX_MAPPING, bParallaxMapping );
 					SET_STATIC_PIXEL_SHADER_COMBO( SHADER_SRGB_READ, bShaderSrgbRead );
 					SET_STATIC_PIXEL_SHADER_COMBO( LIGHTING_PREVIEW, nLightingPreviewMode );
@@ -685,6 +699,10 @@ void DrawLightmappedGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** params, 
 					SET_STATIC_PIXEL_SHADER_COMBO( OUTLINE, bHasOutline );
 					SET_STATIC_PIXEL_SHADER_COMBO( SOFTEDGES, bHasSoftEdges );
 					SET_STATIC_PIXEL_SHADER_COMBO( DETAIL_BLEND_MODE, nDetailBlendMode );
+
+					// From https://developer.valvesoftware.com/wiki/Parallax_Corrected_Cubemaps
+					SET_STATIC_PIXEL_SHADER_COMBO( PARALLAXCORRECT, 0 ); // No parallax cubemaps with ps_2_0 :(
+
 					SET_STATIC_PIXEL_SHADER_COMBO( PARALLAX_MAPPING, bParallaxMapping );
 					SET_STATIC_PIXEL_SHADER_COMBO( SHADER_SRGB_READ, bShaderSrgbRead );
 					SET_STATIC_PIXEL_SHADER_COMBO( LIGHTING_PREVIEW, nLightingPreviewMode );
@@ -1003,6 +1021,28 @@ void DrawLightmappedGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** params, 
 				state.m_bFlashlightNoLambert = false;
 				state.m_bSinglePassFlashlight = bSinglePassFlashlight;
 				pContextData->m_SemiStaticCmdsOut.SetPixelShaderFlashlightState( state );
+			}
+
+			// From https://developer.valvesoftware.com/wiki/Parallax_Corrected_Cubemaps
+			if ( hasParallaxCorrection )
+			{
+				pContextData->m_SemiStaticCmdsOut.SetPixelShaderConstant( 22, params[info.m_nEnvmapOrigin]->GetVecValue() );
+
+				const float *vecs[3];
+				vecs[0] = params[info.m_nEnvmapParallaxObb1]->GetVecValue();
+				vecs[1] = params[info.m_nEnvmapParallaxObb2]->GetVecValue();
+				vecs[2] = params[info.m_nEnvmapParallaxObb3]->GetVecValue();
+				float matrix[4][4];
+				for ( int i = 0; i < 3; i++ )
+				{
+					for ( int j = 0; j < 4; j++ )
+					{
+						matrix[i][j] = vecs[i][j];
+					}
+				}
+				matrix[3][0] = matrix[3][1] = matrix[3][2] = 0;
+				matrix[3][3] = 1;
+				pContextData->m_SemiStaticCmdsOut.SetPixelShaderConstant( 23, &matrix[0][0], 4 );
 			}
 
 			pContextData->m_SemiStaticCmdsOut.End();

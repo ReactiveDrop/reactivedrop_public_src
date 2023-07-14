@@ -120,6 +120,12 @@ const float4 g_ParallaxMappingControl : register( c20 );
 
 const float3 g_TintValuesWithoutLightmapScale	: register( c21 );
 
+// Adapated from https://developer.valvesoftware.com/wiki/Parallax_Corrected_Cubemaps
+#if (PARALLAXCORRECT)
+const float3 g_CubemapPos : register( c22 );
+const float4x4 g_ObbMatrix : register( c23 ); // Through c26
+#endif
+
 sampler BaseTextureSampler		: register( s0 );
 sampler LightmapSampler			: register( s1 );
 sampler EnvmapSampler			: register( s2 );
@@ -569,7 +575,27 @@ float4 main( PS_INPUT i ) : COLOR
 		float fresnel = 1.0 - dot( worldSpaceNormal, eyeVect );
 		fresnel = pow( fresnel, 5.0 );
 		fresnel = fresnel * g_OneMinusFresnelReflection + g_FresnelReflection;
-		
+
+		// From https://developer.valvesoftware.com/wiki/Parallax_Corrected_Cubemaps
+		// Parallax correction (2_0b and beyond)
+		// Adapted from http://seblagarde.wordpress.com/2012/09/29/image-based-lighting-approaches-and-parallax-corrected-cubemap/
+#if !( defined( SHADER_MODEL_PS_1_1 ) || defined( SHADER_MODEL_PS_1_4 ) || defined( SHADER_MODEL_PS_2_0 ) )
+#if ( PARALLAXCORRECT )
+		float3 worldPos = i.worldPos_projPosZ.xyz;
+		float3 positionLS = mul( float4( worldPos, 1 ), g_ObbMatrix );
+		float3 rayLS = mul( reflectVect, (float3x3)g_ObbMatrix );
+
+		float3 firstPlaneIntersect = ( float3( 1.0f, 1.0f, 1.0f ) - positionLS ) / rayLS;
+		float3 secondPlaneIntersect = ( -positionLS ) / rayLS;
+		float3 furthestPlane = max( firstPlaneIntersect, secondPlaneIntersect );
+		float distance = min( furthestPlane.x, min( furthestPlane.y, furthestPlane.z ) );
+
+		// Use distance in WS directly to recover intersection
+		float3 intersectPositionWS = worldPos + reflectVect * distance;
+		reflectVect = intersectPositionWS - g_CubemapPos;
+#endif
+#endif
+
 		specularLighting = ENV_MAP_SCALE * texCUBE( EnvmapSampler, reflectVect );
 #if (CUBEMAP == 2) //cubemap darkened by lightmap mode
 		specularLighting = lerp( specularLighting, specularLighting * saturate( diffuseLighting ), g_DiffuseCubemapScale ); //reduce the cubemap contribution when the pixel is in shadow
