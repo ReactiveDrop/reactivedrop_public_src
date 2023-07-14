@@ -13,11 +13,11 @@
 //#define RD__CAMPAIGNS_REDUCTION
 
 // 7th anniversary
-#define RD_7A_CRAFTING
+//#define RD_7A_CRAFTING
 //#define RD_7A_DROPS
 //#define RD_7A_ENEMIES
 //#define RD_7A_QUESTS
-#define RD_7A_WEAPONS
+//#define RD_7A_WEAPONS
 
 // features that are not ready for prime time
 //#define RD_USE_FONT_HACK

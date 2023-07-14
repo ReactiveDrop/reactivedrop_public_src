@@ -17,12 +17,14 @@ CRD_VGUI_Main_Menu_Top_Bar::CRD_VGUI_Main_Menu_Top_Bar( vgui::Panel *parent, con
 {
 	m_pBtnSettings = new BaseModHybridButton( this, "BtnSettings", "", this, "Settings" );
 	m_pBtnLogo = new BaseModHybridButton( this, "BtnLogo", "", this, "MainMenu" );
-	m_pTopButton[0] = new BaseModHybridButton( this, "BtnLoadout", "#rd_collection_inventory_loadout", this, "Loadout" );
-	m_pTopButton[1] = new BaseModHybridButton( this, "BtnContracts", "#rd_mainmenu_contracts", this, "Contracts" );
-	m_pTopButton[2] = new BaseModHybridButton( this, "BtnRecordings", "#rd_mainmenu_recordings", this, "Recordings" );
-	m_pTopButton[3] = new BaseModHybridButton( this, "BtnSwarmopedia", "#rd_collection_swarmopedia", this, "Swarmopedia" );
-	m_pTopButton[4] = new BaseModHybridButton( this, "BtnWorkshop", "#rd_mainmenu_workshop", this, "Workshop" );
-	m_pTopButton[5] = new BaseModHybridButton( this, "BtnInventory", "#rd_mainmenu_inventory", this, "Inventory" );
+	m_pTopButton[BTN_LOADOUTS] = new BaseModHybridButton( this, "BtnLoadout", "#rd_collection_inventory_loadout", this, "Loadout" );
+#ifdef RD_7A_QUESTS
+	m_pTopButton[BTN_CONTRACTS] = new BaseModHybridButton( this, "BtnContracts", "#rd_mainmenu_contracts", this, "Contracts" );
+#endif
+	m_pTopButton[BTN_RECORDINGS] = new BaseModHybridButton( this, "BtnRecordings", "#rd_mainmenu_recordings", this, "Recordings" );
+	m_pTopButton[BTN_SWARMOPEDIA] = new BaseModHybridButton( this, "BtnSwarmopedia", "#rd_collection_swarmopedia", this, "Swarmopedia" );
+	m_pTopButton[BTN_WORKSHOP] = new BaseModHybridButton(this, "BtnWorkshop", "#rd_mainmenu_workshop", this, "Workshop");
+	m_pTopButton[BTN_INVENTORY] = new BaseModHybridButton( this, "BtnInventory", "#rd_mainmenu_inventory", this, "Inventory" );
 	m_pBtnQuit = new BaseModHybridButton( this, "BtnQuit", "", this, "QuitGame" );
 
 	m_iLeftGlow = 0;
@@ -51,12 +53,14 @@ void CRD_VGUI_Main_Menu_Top_Bar::ApplySchemeSettings( vgui::IScheme *pScheme )
 
 	// We may have loaded localization files since we first initialized.
 	// Set the text again to grab updates if we have them.
-	m_pTopButton[0]->SetText( "#rd_collection_inventory_loadout" );
-	m_pTopButton[1]->SetText( "#rd_mainmenu_contracts" );
-	m_pTopButton[2]->SetText( "#rd_mainmenu_recordings" );
-	m_pTopButton[3]->SetText( "#rd_collection_swarmopedia" );
-	m_pTopButton[4]->SetText( "#rd_mainmenu_workshop" );
-	m_pTopButton[5]->SetText( "#rd_mainmenu_inventory" );
+	m_pTopButton[BTN_LOADOUTS]->SetText( "#rd_collection_inventory_loadout" );
+#ifdef RD_7A_QUESTS
+	m_pTopButton[BTN_CONTRACTS]->SetText( "#rd_mainmenu_contracts" );
+#endif
+	m_pTopButton[BTN_RECORDINGS]->SetText( "#rd_mainmenu_recordings" );
+	m_pTopButton[BTN_SWARMOPEDIA]->SetText( "#rd_collection_swarmopedia" );
+	m_pTopButton[BTN_WORKSHOP]->SetText( "#rd_mainmenu_workshop" );
+	m_pTopButton[BTN_INVENTORY]->SetText( "#rd_mainmenu_inventory" );
 }
 
 extern void LaunchCollectionsFrame();

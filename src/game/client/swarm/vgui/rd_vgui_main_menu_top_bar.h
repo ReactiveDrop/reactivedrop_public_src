@@ -19,11 +19,24 @@ public:
 
 	void DismissMainMenuScreens();
 
+	enum
+	{
+		BTN_LOADOUTS,
+#ifdef RD_7A_QUESTS
+		BTN_CONTRACTS,
+#endif
+		BTN_RECORDINGS,
+		BTN_SWARMOPEDIA,
+		BTN_WORKSHOP,
+		BTN_INVENTORY,
+		NUM_TOP_BUTTONS,
+	};
+
 	vgui::DHANDLE<BaseModUI::BaseModHybridButton> m_hActiveButton;
 
 	BaseModUI::BaseModHybridButton *m_pBtnSettings;
 	BaseModUI::BaseModHybridButton *m_pBtnLogo;
-	BaseModUI::BaseModHybridButton *m_pTopButton[6];
+	BaseModUI::BaseModHybridButton *m_pTopButton[NUM_TOP_BUTTONS];
 	BaseModUI::BaseModHybridButton *m_pBtnQuit;
 
 	HUDGlowHelper_t m_GlowSettings;

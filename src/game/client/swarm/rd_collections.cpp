@@ -5,6 +5,7 @@
 #include <vgui_controls/Label.h>
 #include <vgui_controls/TextImage.h>
 #include "animation.h"
+#include "rd_vgui_main_menu_top_bar.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -32,7 +33,7 @@ void LaunchCollectionsFrame()
 	pFrame->SetTitle( "#rd_collection_title", true );
 	pFrame->AddTab( new CRD_Collection_Tab_Inventory( pFrame, "#rd_collection_inventory_medals", "medal" ) );
 	pFrame->RememberTabIndex( &rd_collections_last_tab );
-	pFrame->UseMainMenuLayout( 5 );
+	pFrame->UseMainMenuLayout( CRD_VGUI_Main_Menu_Top_Bar::BTN_INVENTORY );
 	pFrame->ShowFullScreen();
 
 	g_hCollectionFrame = pFrame;
@@ -54,7 +55,7 @@ void LaunchSwarmopediaFrame()
 	pFrame->AddTab( new CRD_Collection_Tab_Equipment( pFrame, "#rd_collection_weapons", NULL, ASW_INVENTORY_SLOT_PRIMARY ) );
 	pFrame->AddTab( new CRD_Collection_Tab_Equipment( pFrame, "#rd_collection_equipment", NULL, ASW_INVENTORY_SLOT_EXTRA ) );
 	pFrame->RememberTabIndex( &rd_swarmopedia_last_tab );
-	pFrame->UseMainMenuLayout( 3 );
+	pFrame->UseMainMenuLayout( CRD_VGUI_Main_Menu_Top_Bar::BTN_SWARMOPEDIA );
 	pFrame->ShowFullScreen();
 
 	g_hCollectionFrame = pFrame;

@@ -1548,12 +1548,14 @@ void MainMenu::OnThink()
 	if ( m_iInactiveHideMainMenu == 65535 )
 	{
 		MaybeShowTooltip( m_pTopBar->m_pBtnSettings, "#rd_main_menu_tip_settings_title", "#rd_main_menu_tip_settings", 0.0f, 1.0f, vgui::Label::a_northwest );
-		MaybeShowTooltip( m_pTopBar->m_pTopButton[0], "#rd_main_menu_tip_loadout_title", "#rd_main_menu_tip_loadout", 0.5f, 1.0f, vgui::Label::a_north );
-		MaybeShowTooltip( m_pTopBar->m_pTopButton[1], "#rd_main_menu_tip_contracts_title", "#rd_main_menu_tip_contracts", 0.5f, 1.0f, vgui::Label::a_north );
-		MaybeShowTooltip( m_pTopBar->m_pTopButton[2], "#rd_main_menu_tip_recordings_title", "#rd_main_menu_tip_recordings", 0.5f, 1.0f, vgui::Label::a_north );
-		MaybeShowTooltip( m_pTopBar->m_pTopButton[3], "#rd_main_menu_tip_swarmopedia_title", "#rd_main_menu_tip_swarmopedia", 0.5f, 1.0f, vgui::Label::a_north );
-		MaybeShowTooltip( m_pTopBar->m_pTopButton[4], "#rd_main_menu_tip_workshop_title", "#rd_main_menu_tip_workshop", 0.5f, 1.0f, vgui::Label::a_north );
-		MaybeShowTooltip( m_pTopBar->m_pTopButton[5], "#rd_main_menu_tip_inventory_title", "#rd_main_menu_tip_inventory", 0.5f, 1.0f, vgui::Label::a_north );
+		MaybeShowTooltip( m_pTopBar->m_pTopButton[CRD_VGUI_Main_Menu_Top_Bar::BTN_LOADOUTS], "#rd_main_menu_tip_loadout_title", "#rd_main_menu_tip_loadout", 0.5f, 1.0f, vgui::Label::a_north );
+#ifdef RD_7A_QUESTS
+		MaybeShowTooltip( m_pTopBar->m_pTopButton[CRD_VGUI_Main_Menu_Top_Bar::BTN_CONTRACTS], "#rd_main_menu_tip_contracts_title", "#rd_main_menu_tip_contracts", 0.5f, 1.0f, vgui::Label::a_north );
+#endif
+		MaybeShowTooltip( m_pTopBar->m_pTopButton[CRD_VGUI_Main_Menu_Top_Bar::BTN_RECORDINGS], "#rd_main_menu_tip_recordings_title", "#rd_main_menu_tip_recordings", 0.5f, 1.0f, vgui::Label::a_north );
+		MaybeShowTooltip( m_pTopBar->m_pTopButton[CRD_VGUI_Main_Menu_Top_Bar::BTN_SWARMOPEDIA], "#rd_main_menu_tip_swarmopedia_title", "#rd_main_menu_tip_swarmopedia", 0.5f, 1.0f, vgui::Label::a_north );
+		MaybeShowTooltip( m_pTopBar->m_pTopButton[CRD_VGUI_Main_Menu_Top_Bar::BTN_WORKSHOP], "#rd_main_menu_tip_workshop_title", "#rd_main_menu_tip_workshop", 0.5f, 1.0f, vgui::Label::a_north );
+		MaybeShowTooltip( m_pTopBar->m_pTopButton[CRD_VGUI_Main_Menu_Top_Bar::BTN_INVENTORY], "#rd_main_menu_tip_inventory_title", "#rd_main_menu_tip_inventory", 0.5f, 1.0f, vgui::Label::a_north );
 		MaybeShowTooltip( m_pTopBar->m_pBtnQuit, "#rd_main_menu_tip_quit_title", "#rd_main_menu_tip_quit", 1.0f, 1.0f, vgui::Label::a_northeast );
 		MaybeShowTooltip( m_pCommanderProfile, "#rd_main_menu_tip_commander_profile_title", "#rd_main_menu_tip_commander_profile", 1.0f, 0.5f, vgui::Label::a_west );
 		MaybeShowTooltip( m_pBtnSingleplayer, "#rd_main_menu_tip_single_player_title", "#rd_main_menu_tip_single_player", 1.0f, 0.5f, vgui::Label::a_west );
