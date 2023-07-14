@@ -143,30 +143,28 @@ BEGIN_VS_SHADER(PBR, "PBR shader")
 		SetupVars(info);
 
 		Assert(info.flashlightTexture >= 0);
-		LoadTexture(info.flashlightTexture, TEXTUREFLAGS_SRGB);
+		LoadTexture(info.flashlightTexture);
 
 		Assert(info.bumpMap >= 0);
 		LoadBumpMap(info.bumpMap);
 
 		Assert(info.envMap >= 0);
-		int envMapFlags = g_pHardwareConfig->GetHDRType() == HDR_TYPE_NONE ? TEXTUREFLAGS_SRGB : 0;
-		envMapFlags |= TEXTUREFLAGS_ALL_MIPS;
-		LoadCubeMap(info.envMap, envMapFlags);
+		LoadCubeMap(info.envMap);
 
 		if (info.emissionTexture >= 0 && params[EMISSIONTEXTURE]->IsDefined())
-			LoadTexture(info.emissionTexture, TEXTUREFLAGS_SRGB);
+			LoadTexture(info.emissionTexture);
 
 		Assert(info.mraoTexture >= 0);
-		LoadTexture(info.mraoTexture, 0);
+		LoadTexture(info.mraoTexture);
 
 		if (params[info.baseTexture]->IsDefined())
 		{
-			LoadTexture(info.baseTexture, TEXTUREFLAGS_SRGB);
+			LoadTexture(info.baseTexture);
 		}
 
 		if (params[info.specularTexture]->IsDefined())
 		{
-			LoadTexture(info.specularTexture, TEXTUREFLAGS_SRGB);
+			LoadTexture(info.specularTexture);
 		}
 
 		if (IS_FLAG_SET(MATERIAL_VAR_MODEL)) // Set material var2 flags specific to models
@@ -294,7 +292,7 @@ BEGIN_VS_SHADER(PBR, "PBR shader")
 				useParallax = 0;
 			}
 
-			if (!g_pHardwareConfig->SupportsShaderModel_3_0() || mat_pbr_force_20b.GetBool())
+			if (!g_pHardwareConfig->HasFastVertexTextures() || mat_pbr_force_20b.GetBool())
 			{
 				// Setting up static vertex shader
 				DECLARE_STATIC_VERTEX_SHADER(pbr_vs20);
@@ -489,7 +487,7 @@ BEGIN_VS_SHADER(PBR, "PBR shader")
 			// Setting lightmap texture
 			s_pShaderAPI->BindStandardTexture(SAMPLER_LIGHTMAP, TEXTURE_LIGHTMAP_BUMPED);
 
-			if (!g_pHardwareConfig->SupportsShaderModel_3_0() || mat_pbr_force_20b.GetBool())
+			if (!g_pHardwareConfig->HasFastVertexTextures() || mat_pbr_force_20b.GetBool())
 			{
 				// Setting up dynamic vertex shader
 				DECLARE_DYNAMIC_VERTEX_SHADER(pbr_vs20);
@@ -533,14 +531,11 @@ BEGIN_VS_SHADER(PBR, "PBR shader")
 			// Setting up base texture transform
 			SetVertexShaderTextureTransform(VERTEX_SHADER_SHADER_SPECIFIC_CONST_0, info.baseTextureTransform);
 
-			// This is probably important
-			SetModulationPixelShaderDynamicState_LinearColorSpace(1);
-
 			// Send ambient cube to the pixel shader, force to black if not available
-			pShaderAPI->SetPixelShaderStateAmbientLightCube(PSREG_AMBIENT_CUBE, !lightState.m_bAmbientLight);
+			PI_SetPixelShaderAmbientLightCube( PSREG_AMBIENT_CUBE );
 
 			// Send lighting array to the pixel shader
-			pShaderAPI->CommitPixelShaderLighting(PSREG_LIGHT_INFO_ARRAY);
+			PI_SetPixelShaderLocalLighting( PSREG_LIGHT_INFO_ARRAY );
 
 			// Handle mat_fullbright 2 (diffuse lighting only)
 			if (bLightingOnly)
@@ -557,6 +552,7 @@ BEGIN_VS_SHADER(PBR, "PBR shader")
 			// Sending fog info to the pixel shader
 			pShaderAPI->SetPixelShaderFogParams(PSREG_FOG_PARAMS);
 
+#if 0
 			// Set up shader modulation color
 			float modulationColor[4] = { 1.0, 1.0, 1.0, 1.0 };
 			ComputeModulationColor(modulationColor);
@@ -565,6 +561,7 @@ BEGIN_VS_SHADER(PBR, "PBR shader")
 			modulationColor[1] *= flLScale;
 			modulationColor[2] *= flLScale;
 			pShaderAPI->SetPixelShaderConstant(PSREG_DIFFUSE_MODULATION, modulationColor);
+#endif
 
 			// More flashlight related stuff
 			if (bHasFlashlight)

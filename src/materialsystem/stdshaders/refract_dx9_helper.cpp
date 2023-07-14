@@ -9,7 +9,9 @@
 #include "refract_dx9_helper.h"
 #include "convar.h"
 #include "refract_vs20.inc"
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "refract_ps20.inc"
+#endif
 #include "refract_ps20b.inc"
 #include "cpp_shader_constant_register_map.h"
 
@@ -203,14 +205,14 @@ void DrawRefract_DX9( CBaseVSShader *pShader, IMaterialVar** params, IShaderDyna
 
 		pShaderShadow->VertexShaderVertexFormat( flags, nTexCoordCount, NULL, userDataSize );
 		
-		DECLARE_STATIC_VERTEX_SHADER( refract_vs20 );
+		DECLARE_STATIC_VERTEX_SHADER( Refract_vs20 );
 		SET_STATIC_VERTEX_SHADER_COMBO( MODEL,  bIsModel );
 		SET_STATIC_VERTEX_SHADER_COMBO( COLORMODULATE, bColorModulate );
-		SET_STATIC_VERTEX_SHADER( refract_vs20 );
+		SET_STATIC_VERTEX_SHADER( Refract_vs20 );
 
 		if ( g_pHardwareConfig->SupportsPixelShaders_2_b() )
 		{
-			DECLARE_STATIC_PIXEL_SHADER( refract_ps20b );
+			DECLARE_STATIC_PIXEL_SHADER( Refract_ps20b );
 			SET_STATIC_PIXEL_SHADER_COMBO( BLUR,  blurAmount );
 			SET_STATIC_PIXEL_SHADER_COMBO( FADEOUTONSILHOUETTE,  bFadeOutOnSilhouette );
 			SET_STATIC_PIXEL_SHADER_COMBO( CUBEMAP,  bHasEnvmap );
@@ -220,11 +222,12 @@ void DrawRefract_DX9( CBaseVSShader *pShader, IMaterialVar** params, IShaderDyna
 			SET_STATIC_PIXEL_SHADER_COMBO( SECONDARY_NORMAL, bSecondaryNormal );
 			SET_STATIC_PIXEL_SHADER_COMBO( MIRRORABOUTVIEWPORTEDGES, bMirrorAboutViewportEdges );
 			SET_STATIC_PIXEL_SHADER_COMBO( MAGNIFY, bUseMagnification );
-			SET_STATIC_PIXEL_SHADER( refract_ps20b );
+			SET_STATIC_PIXEL_SHADER( Refract_ps20b );
 		}
 		else
 		{
-			DECLARE_STATIC_PIXEL_SHADER( refract_ps20 );
+#ifdef RD_SUPPORT_SHADER_MODEL_20
+			DECLARE_STATIC_PIXEL_SHADER( Refract_ps20 );
 			SET_STATIC_PIXEL_SHADER_COMBO( BLUR,  blurAmount );
 			SET_STATIC_PIXEL_SHADER_COMBO( FADEOUTONSILHOUETTE,  bFadeOutOnSilhouette );
 			SET_STATIC_PIXEL_SHADER_COMBO( CUBEMAP,  bHasEnvmap );
@@ -234,7 +237,10 @@ void DrawRefract_DX9( CBaseVSShader *pShader, IMaterialVar** params, IShaderDyna
 			SET_STATIC_PIXEL_SHADER_COMBO( SECONDARY_NORMAL, bSecondaryNormal );
 			SET_STATIC_PIXEL_SHADER_COMBO( MIRRORABOUTVIEWPORTEDGES, bMirrorAboutViewportEdges );
 			SET_STATIC_PIXEL_SHADER_COMBO( MAGNIFY, bUseMagnification );
-			SET_STATIC_PIXEL_SHADER( refract_ps20 );
+			SET_STATIC_PIXEL_SHADER( Refract_ps20 );
+#else
+			RD_SHADER_MODEL_20_CRASH;
+#endif
 		}
 		pShader->DefaultFog();
 		if( bMasked )
@@ -274,21 +280,25 @@ void DrawRefract_DX9( CBaseVSShader *pShader, IMaterialVar** params, IShaderDyna
 			pShader->BindTexture( SHADER_SAMPLER5, info.m_nRefractTintTexture, info.m_nRefractTintTextureFrame );
 		}
 
-		DECLARE_DYNAMIC_VERTEX_SHADER( refract_vs20 );
+		DECLARE_DYNAMIC_VERTEX_SHADER( Refract_vs20 );
 		SET_DYNAMIC_VERTEX_SHADER_COMBO( SKINNING,  pShaderAPI->GetCurrentNumBones() > 0 );
 		SET_DYNAMIC_VERTEX_SHADER_COMBO( COMPRESSED_VERTS, (int)vertexCompression );
-		SET_DYNAMIC_VERTEX_SHADER( refract_vs20 );
+		SET_DYNAMIC_VERTEX_SHADER( Refract_vs20 );
 
 		if ( g_pHardwareConfig->SupportsPixelShaders_2_b() )
 		{
-			DECLARE_DYNAMIC_PIXEL_SHADER( refract_ps20b );
+			DECLARE_DYNAMIC_PIXEL_SHADER( Refract_ps20b );
 			SET_DYNAMIC_PIXEL_SHADER_COMBO( WRITE_DEPTH_TO_DESTALPHA, bWriteZ && bFullyOpaque && pShaderAPI->ShouldWriteDepthToDestAlpha() );
-			SET_DYNAMIC_PIXEL_SHADER( refract_ps20b );
+			SET_DYNAMIC_PIXEL_SHADER( Refract_ps20b );
 		}
 		else
 		{
-			DECLARE_DYNAMIC_PIXEL_SHADER( refract_ps20 );
-			SET_DYNAMIC_PIXEL_SHADER( refract_ps20 );
+#ifdef RD_SUPPORT_SHADER_MODEL_20
+			DECLARE_DYNAMIC_PIXEL_SHADER( Refract_ps20 );
+			SET_DYNAMIC_PIXEL_SHADER( Refract_ps20 );
+#else
+			RD_SHADER_MODEL_20_CRASH;
+#endif
 		}
 
 		pShader->SetVertexShaderTextureTransform( VERTEX_SHADER_SHADER_SPECIFIC_CONST_1, info.m_nBumpTransform );	// 1 & 2

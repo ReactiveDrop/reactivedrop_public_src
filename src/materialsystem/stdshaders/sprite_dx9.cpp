@@ -386,9 +386,13 @@ BEGIN_VS_SHADER( Sprite_DX9,
 					}
 					else
 					{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 						DECLARE_DYNAMIC_PIXEL_SHADER( sprite_ps20 );
 						SET_DYNAMIC_PIXEL_SHADER_COMBO( HDRENABLED,  IsHDREnabled() );
 						SET_DYNAMIC_PIXEL_SHADER( sprite_ps20 );
+#else
+						RD_SHADER_MODEL_20_CRASH;
+#endif
 					}
 
 					pShaderAPI->SetPixelShaderFogParams( PSREG_FOG_PARAMS );
@@ -438,9 +442,13 @@ BEGIN_VS_SHADER( Sprite_DX9,
 					}
 					else
 					{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 						DECLARE_DYNAMIC_PIXEL_SHADER( sprite_ps20 );
 						SET_DYNAMIC_PIXEL_SHADER_COMBO( HDRENABLED,  IsHDREnabled() );
 						SET_DYNAMIC_PIXEL_SHADER( sprite_ps20 );
+#else
+						RD_SHADER_MODEL_20_CRASH;
+#endif
 					}
 
 					pShaderAPI->SetPixelShaderFogParams( PSREG_FOG_PARAMS );
