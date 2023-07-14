@@ -1,9 +1,9 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
 // $NoKeywords: $
-//=============================================================================//
+//===========================================================================//
 
 #ifndef CSHADER_H
 #define CSHADER_H
@@ -78,28 +78,28 @@ inline bool CShader_IsFlagSet( IMaterialVar **params, MaterialVarFlags_t _flag )
 #define IS_PARAM_DEFINED( _param ) ( ( ( _param >= 0 ) && ( params[_param]->IsDefined() ) ) )
 
 #define SET_PARAM_STRING_IF_NOT_DEFINED( nParamIndex, kDefaultValue )     \
-	if ( ( nParamIndex != -1 ) && ( !params[nParamIndex]->IsDefined() ) ) \
+	if ( ( (nParamIndex) != -1 ) && ( !params[nParamIndex]->IsDefined() ) ) \
 	{																	  \
 		params[nParamIndex]->SetStringValue( kDefaultValue );			  \
 	}
 
-#define SET_PARAM_INT_IF_NOT_DEFINED( nParamIndex, kDefaultValue )			\
-	if ( ( nParamIndex != -1 ) && ( !params[nParamIndex]->IsDefined() ) )	\
-	{																		\
-		params[nParamIndex]->SetIntValue( kDefaultValue );					\
-	}
-
 #define SET_PARAM_FLOAT_IF_NOT_DEFINED( nParamIndex, kDefaultValue )      \
-	if ( ( nParamIndex != -1 ) && ( !params[nParamIndex]->IsDefined() ) ) \
+	if ( ( (nParamIndex) != -1 ) && ( !params[nParamIndex]->IsDefined() ) ) \
 	{																	  \
 		params[nParamIndex]->SetFloatValue( kDefaultValue );			  \
 	}
 
 #define SET_PARAM_VEC_IF_NOT_DEFINED( nParamIndex, kDefaultValue, nSize ) \
-	if ( ( nParamIndex != -1 ) && ( !params[nParamIndex]->IsDefined() ) ) \
+	if ( ( (nParamIndex) != -1 ) && ( !params[nParamIndex]->IsDefined() ) ) \
 	{																	  \
 		params[nParamIndex]->SetVecValue( kDefaultValue, nSize );		  \
 	}
+
+#define SET_PARAM_INT_IF_NOT_DEFINED( nParamIndex, kDefaultValue ) \
+	if ( ( (nParamIndex) != -1 ) && ( !params[nParamIndex]->IsDefined() ) ) \
+{																	  \
+	params[nParamIndex]->SetIntValue( kDefaultValue );		  \
+}
 
 // Typesafe flag setting
 inline void CShader_SetFlags2( IMaterialVar **params, MaterialVarFlags2_t _flag )
@@ -155,25 +155,9 @@ inline bool CShader_IsFlag2Set( IMaterialVar **params, MaterialVarFlags2_t _flag
 			{\
 				return m_Index;\
 			}\
-			const char *GetName()\
+			const ShaderParamInfo_t &GetInfo() const\
 			{\
-				return m_Info.m_pName;\
-			}\
-			ShaderParamType_t GetType()\
-			{\
-				return m_Info.m_Type;\
-			}\
-			const char *GetDefault()\
-			{\
-				return m_Info.m_pDefaultValue;\
-			}\
-			int GetFlags() const\
-			{\
-				return m_Info.m_nFlags;\
-			}\
-			const char *GetHelp()\
-			{\
-				return m_Info.m_pHelp;\
+				return m_Info;\
 			}\
 		private:\
 			ShaderParamInfo_t m_Info; \
@@ -223,64 +207,17 @@ inline bool CShader_IsFlag2Set( IMaterialVar **params, MaterialVarFlags2_t _flag
 	{									\
 		return s_nFlags;				\
 	}									\
-	int GetNumParams() const			\
+	int GetParamCount() const			\
 	{\
-		return CBaseClass::GetNumParams() + s_ShaderParams.Count();\
+		return CBaseClass::GetParamCount() + s_ShaderParams.Count();\
 	}\
-	char const* GetParamName( int param ) const \
+	const ShaderParamInfo_t& GetParamInfo( int param ) const \
 	{\
-		int nBaseClassParamCount = CBaseClass::GetNumParams();	\
+		int nBaseClassParamCount = CBaseClass::GetParamCount( );	\
 		if (param < nBaseClassParamCount)					\
-			return CBaseClass::GetParamName(param);			\
+			return CBaseClass::GetParamInfo( param );		\
 		else												\
-			return s_ShaderParams[param - nBaseClassParamCount]->GetName();	\
-	}\
-	char const* GetParamHelp( int param ) const \
-	{\
-		int nBaseClassParamCount = CBaseClass::GetNumParams();	\
-		if (param < nBaseClassParamCount)						\
-		{														\
-			if ( !s_pShaderParamOverrides[param] )				\
-				return CBaseClass::GetParamHelp( param );		\
-			else												\
-				return s_pShaderParamOverrides[param]->GetHelp(); \
-		}														\
-		else													\
-			return s_ShaderParams[param - nBaseClassParamCount]->GetHelp();		\
-	}\
-	ShaderParamType_t GetParamType( int param ) const \
-	{\
-		int nBaseClassParamCount = CBaseClass::GetNumParams();	\
-		if (param < nBaseClassParamCount)				\
-			return CBaseClass::GetParamType( param ); \
-		else \
-			return s_ShaderParams[param - nBaseClassParamCount]->GetType();		\
-	}\
-	char const* GetParamDefault( int param ) const \
-	{\
-		int nBaseClassParamCount = CBaseClass::GetNumParams();	\
-		if (param < nBaseClassParamCount)						\
-		{														\
-			if ( !s_pShaderParamOverrides[param] )				\
-				return CBaseClass::GetParamDefault( param );	\
-			else												\
-				return s_pShaderParamOverrides[param]->GetDefault(); \
-		}														\
-		else													\
-			return s_ShaderParams[param - nBaseClassParamCount]->GetDefault();	\
-	}\
-	int GetParamFlags( int param ) const \
-	{\
-		int nBaseClassParamCount = CBaseClass::GetNumParams();	\
-		if (param < nBaseClassParamCount)						\
-		{														\
-			if ( !s_pShaderParamOverrides[param] )				\
-				return CBaseClass::GetParamFlags( param );		\
-			else												\
-				return s_pShaderParamOverrides[param]->GetFlags(); \
-		}														\
-		else													\
-			return s_ShaderParams[param - nBaseClassParamCount]->GetFlags(); \
+			return s_ShaderParams[param - nBaseClassParamCount]->GetInfo();	\
 	}\
 	void OnInitShaderInstance( IMaterialVar **params, IShaderInit *pShaderInit, const char *pMaterialName )
 
@@ -312,12 +249,10 @@ inline bool CShader_IsFlag2Set( IMaterialVar **params, MaterialVarFlags2_t _flag
 // FIXME: There's a compiler bug preventing this from working. 
 // Maybe it'll work under VC7!
 
-/*
 //#define BEGIN_INHERITED_SHADER( name, _baseclass, help ) \
 //	namespace _baseclass \
 //	{\
 //	__BEGIN_SHADER_INTERNAL( _baseclass::CShader, name, help )
-*/
 
 //#define END_INHERITED_SHADER END_SHADER }
 
@@ -380,9 +315,10 @@ inline bool CShader_IsFlag2Set( IMaterialVar **params, MaterialVarFlags2_t _flag
 	_pshIndex.Set ## var( ( val ) ); \
 	constexpr int psh_forgot_to_set_dynamic_ ## var = 1
 
+// Same as SET_DYNAMIC_PIXEL_SHADER_COMBO, except doesn't set "psh_forgot_to_set_dynamic_*" since 
+// it isn't required to set a default variable, and we don't want an error when we do set it.
 #define SET_DYNAMIC_PIXEL_SHADER_COMBO_OVERRIDE_DEFAULT( var, val ) \
 	_pshIndex.Set ## var( ( val ) );
-
 
 // vsh_forgot_to_set_dynamic_ ## var is used to make sure that you set all
 // all combos.  If you don't, you will get an undefined variable used error 
@@ -394,17 +330,12 @@ inline bool CShader_IsFlag2Set( IMaterialVar **params, MaterialVarFlags2_t _flag
 #define SET_DYNAMIC_VERTEX_SHADER_COMBO_OVERRIDE_DEFAULT( var, val ) \
 	_vshIndex.Set ## var( ( val ) );
 
-
 // psh_forgot_to_set_static_ ## var is used to make sure that you set all
 // all combos.  If you don't, you will get an undefined variable used error 
 // in the SET_STATIC_PIXEL_SHADER block.
 #define SET_STATIC_PIXEL_SHADER_COMBO( var, val ) \
 	_pshIndex.Set ## var( ( val ) ); \
 	constexpr int psh_forgot_to_set_static_ ## var = 1
-
-#define SET_STATIC_PIXEL_SHADER_COMBO_OVERRIDE_DEFAULT( var, val ) \
-	_pshIndex.Set ## var( ( val ) );
-
 
 // vsh_forgot_to_set_static_ ## var is used to make sure that you set all
 // all combos.  If you don't, you will get an undefined variable used error 
@@ -413,8 +344,8 @@ inline bool CShader_IsFlag2Set( IMaterialVar **params, MaterialVarFlags2_t _flag
 	_vshIndex.Set ## var( ( val ) ); \
 	constexpr int vsh_forgot_to_set_static_ ## var = 1
 
-#define SET_STATIC_VERTEX_SHADER_COMBO_OVERRIDE_DEFAULT( var, val ) \
-	_vshIndex.Set ## var( ( val ) );
+#define SET_STATIC_VERTEX_SHADER_COMBO_HAS_DEFAULT( var, val ) \
+	_vshIndex.Set ## var( ( val ) ); 
 
 
 // psh_testAllCombos adds up all of the psh_forgot_to_set_dynamic_ ## var's from 
@@ -444,7 +375,7 @@ inline bool CShader_IsFlag2Set( IMaterialVar **params, MaterialVarFlags2_t _flag
 	pShaderAPI->SetVertexShaderIndex( _vshIndex.GetIndex() )
 
 #define SET_DYNAMIC_VERTEX_SHADER_CMD( cmdstream, shader ) \
-	static_assert( shaderDynamicTest_ ## shader != 0, "Missing combo!" ); \
+	static_assert( ( shaderDynamicTest_ ## shader ) != 0, "Missing combo!" ); \
 	static_assert( vsh ## shader != 0, "Not vertex shader!" ); \
 	cmdstream.SetVertexShaderIndex( _vshIndex.GetIndex() )
 
@@ -465,7 +396,7 @@ inline bool CShader_IsFlag2Set( IMaterialVar **params, MaterialVarFlags2_t _flag
 // vsh ## shader being set to itself ensures that DECLARE_STATIC_VERTEX_SHADER 
 // was called for this particular shader.
 #define SET_STATIC_VERTEX_SHADER( shader ) \
-	static_assert( shaderStaticTest_ ## shader != 0, "Missing combo!" ); \
+	static_assert( ( shaderStaticTest_ ## shader ) != 0, "Missing combo!" ); \
 	static_assert( vsh ## shader != 0, "Not vertex shader!" ); \
 	pShaderShadow->SetVertexShader( #shader, _vshIndex.GetIndex() )
 
