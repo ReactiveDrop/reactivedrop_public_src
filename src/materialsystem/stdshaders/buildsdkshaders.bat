@@ -14,7 +14,7 @@ rem == Note that this path needs does not support long file/directory names ==
 rem == So instead of a path such as "C:\Program Files\Steam\steamapps\mymod" ==
 rem == you need to find the 8.3 abbreviation for the directory name using 'dir /x' ==
 rem == and set the directory to something like C:\PROGRA~2\Steam\steamapps\sourcemods\mymod ==
-set GAMEDIR=
+set GAMEDIR=D:\Games\Steam\steamapps\common\asrdsymlink\reactivedrop
 
 rem == Set the relative path to steamapps\common\Alien Swarm\bin ==
 rem == As above, this path does not support long directory names or spaces ==
@@ -51,8 +51,8 @@ set BUILD_SHADER=call buildshaders.bat
 set ARG_EXTRA=
 
 %BUILD_SHADER% stdshader_dx9_20b		-game %GAMEDIR% -source %SOURCEDIR%
-%BUILD_SHADER% stdshader_dx9_20b_new		-game %GAMEDIR% -source %SOURCEDIR% -dx9_30
-%BUILD_SHADER% stdshader_dx9_30			-game %GAMEDIR% -source %SOURCEDIR% -dx9_30	-force30 
+%BUILD_SHADER% stdshader_dx9_20b_new		-game %GAMEDIR% -source %SOURCEDIR%
+%BUILD_SHADER% stdshader_dx9_30			-game %GAMEDIR% -source %SOURCEDIR%	-force30 
 
 
 rem echo.
