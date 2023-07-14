@@ -7,7 +7,9 @@
 
 #include "BaseVSShader.h"
 #include "common_hlsl_cpp_consts.h"
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "hdrcombineto16bit_ps20.inc"
+#endif
 #include "hdrcombineto16bit_ps20b.inc"
 #include "hdrcombineto16bit_vs20.inc"
 #include "convar.h"
@@ -44,36 +46,44 @@ BEGIN_VS_SHADER_FLAGS( HDRCombineTo16Bit, "Help for HDRCombineTo16Bit", SHADER_N
 			int fmt = VERTEX_POSITION;
 			pShaderShadow->VertexShaderVertexFormat( fmt, 1, 0, 0 );
 
-			DECLARE_STATIC_VERTEX_SHADER( hdrcombineto16bit_vs20 );
-			SET_STATIC_VERTEX_SHADER( hdrcombineto16bit_vs20 );
+			DECLARE_STATIC_VERTEX_SHADER( HDRCombineTo16Bit_vs20 );
+			SET_STATIC_VERTEX_SHADER( HDRCombineTo16Bit_vs20 );
 
 			if( g_pHardwareConfig->SupportsPixelShaders_2_b() )
 			{
-				DECLARE_STATIC_PIXEL_SHADER( hdrcombineto16bit_ps20b );
-				SET_STATIC_PIXEL_SHADER( hdrcombineto16bit_ps20b );
+				DECLARE_STATIC_PIXEL_SHADER( HDRCombineTo16Bit_ps20b );
+				SET_STATIC_PIXEL_SHADER( HDRCombineTo16Bit_ps20b );
 			}
 			else
 			{
-				DECLARE_STATIC_PIXEL_SHADER( hdrcombineto16bit_ps20 );
-				SET_STATIC_PIXEL_SHADER( hdrcombineto16bit_ps20 );
+#ifdef RD_SUPPORT_SHADER_MODEL_20
+				DECLARE_STATIC_PIXEL_SHADER( HDRCombineTo16Bit_ps20 );
+				SET_STATIC_PIXEL_SHADER( HDRCombineTo16Bit_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 		}
 
 		DYNAMIC_STATE
 		{
 			BindTexture( SHADER_SAMPLER0, SOURCEMRTRENDERTARGET, -1 );
-			DECLARE_DYNAMIC_VERTEX_SHADER( hdrcombineto16bit_vs20 );
-			SET_DYNAMIC_VERTEX_SHADER( hdrcombineto16bit_vs20 );
+			DECLARE_DYNAMIC_VERTEX_SHADER( HDRCombineTo16Bit_vs20 );
+			SET_DYNAMIC_VERTEX_SHADER( HDRCombineTo16Bit_vs20 );
 
 			if( g_pHardwareConfig->SupportsPixelShaders_2_b() )
 			{
-				DECLARE_DYNAMIC_PIXEL_SHADER( hdrcombineto16bit_ps20b );
-				SET_DYNAMIC_PIXEL_SHADER( hdrcombineto16bit_ps20b );
+				DECLARE_DYNAMIC_PIXEL_SHADER( HDRCombineTo16Bit_ps20b );
+				SET_DYNAMIC_PIXEL_SHADER( HDRCombineTo16Bit_ps20b );
 			}
 			else
 			{
-				DECLARE_DYNAMIC_PIXEL_SHADER( hdrcombineto16bit_ps20 );
-				SET_DYNAMIC_PIXEL_SHADER( hdrcombineto16bit_ps20 );
+#ifdef RD_SUPPORT_SHADER_MODEL_20
+				DECLARE_DYNAMIC_PIXEL_SHADER( HDRCombineTo16Bit_ps20 );
+				SET_DYNAMIC_PIXEL_SHADER( HDRCombineTo16Bit_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 		}
 		Draw();

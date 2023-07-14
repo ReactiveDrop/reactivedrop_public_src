@@ -5,7 +5,9 @@
 #include "common_hlsl_cpp_consts.h" // hack hack hack!
 
 #include "lightmappedreflective_vs20.inc"
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "lightmappedreflective_ps20.inc"
+#endif
 #include "lightmappedreflective_ps20b.inc"
 
 // NOTE: This has to be the last file included!
@@ -155,12 +157,16 @@ BEGIN_VS_SHADER( LightmappedReflective_DX90, "Help for Lightmapped Reflective" )
 			}
 			else
 			{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_STATIC_PIXEL_SHADER( lightmappedreflective_ps20 );
 				SET_STATIC_PIXEL_SHADER_COMBO( REFLECT, bReflection );
 				SET_STATIC_PIXEL_SHADER_COMBO( REFRACT, bRefraction );
 				SET_STATIC_PIXEL_SHADER_COMBO( BASETEXTURE, params[BASETEXTURE]->IsTexture() );
 				SET_STATIC_PIXEL_SHADER_COMBO( ENVMAPMASK, params[ENVMAPMASK]->IsTexture() && params[BASETEXTURE]->IsTexture() );
 				SET_STATIC_PIXEL_SHADER( lightmappedreflective_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 
 			FogToFogColor();
@@ -243,8 +249,12 @@ BEGIN_VS_SHADER( LightmappedReflective_DX90, "Help for Lightmapped Reflective" )
 			}
 			else
 			{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_DYNAMIC_PIXEL_SHADER( lightmappedreflective_ps20 );
 				SET_DYNAMIC_PIXEL_SHADER( lightmappedreflective_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 		}
 		Draw();

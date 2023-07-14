@@ -16,7 +16,9 @@
 #endif
 
 #include "lightmappedgeneric_vs20.inc"
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "worldtwotextureblend_ps20.inc"
+#endif
 #include "worldtwotextureblend_ps20b.inc"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -308,7 +310,7 @@ END_SHADER_PARAMS
 #endif
 			if ( g_pHardwareConfig->SupportsPixelShaders_2_b() )
 			{
-				DECLARE_STATIC_PIXEL_SHADER( worldtwotextureblend_ps20b );
+				DECLARE_STATIC_PIXEL_SHADER( WorldTwoTextureBlend_ps20b );
 				SET_STATIC_PIXEL_SHADER_COMBO( DETAILTEXTURE,  hasDetailTexture );
 				SET_STATIC_PIXEL_SHADER_COMBO( BUMPMAP,  hasBump );
 				SET_STATIC_PIXEL_SHADER_COMBO( DIFFUSEBUMPMAP,  hasDiffuseBumpmap );
@@ -319,11 +321,12 @@ END_SHADER_PARAMS
 				SET_STATIC_PIXEL_SHADER_COMBO( SEAMLESS,  bSeamlessMapping );
 				SET_STATIC_PIXEL_SHADER_COMBO( FLASHLIGHTDEPTHFILTERMODE, nShadowFilterMode );
 				SET_STATIC_PIXEL_SHADER_COMBO( SHADER_SRGB_READ, bShaderSrgbRead );
-				SET_STATIC_PIXEL_SHADER( worldtwotextureblend_ps20b );
+				SET_STATIC_PIXEL_SHADER( WorldTwoTextureBlend_ps20b );
 			}
 			else
 			{
-				DECLARE_STATIC_PIXEL_SHADER( worldtwotextureblend_ps20 );
+#ifdef RD_SUPPORT_SHADER_MODEL_20
+				DECLARE_STATIC_PIXEL_SHADER( WorldTwoTextureBlend_ps20 );
 				SET_STATIC_PIXEL_SHADER_COMBO( DETAILTEXTURE,  hasDetailTexture );
 				SET_STATIC_PIXEL_SHADER_COMBO( BUMPMAP,  hasBump );
 				SET_STATIC_PIXEL_SHADER_COMBO( DIFFUSEBUMPMAP,  hasDiffuseBumpmap );
@@ -333,7 +336,10 @@ END_SHADER_PARAMS
 				SET_STATIC_PIXEL_SHADER_COMBO( FLASHLIGHT,  hasFlashlight );
 				SET_STATIC_PIXEL_SHADER_COMBO( SEAMLESS,  bSeamlessMapping );
 				SET_STATIC_PIXEL_SHADER_COMBO( SHADER_SRGB_READ, bShaderSrgbRead );
-				SET_STATIC_PIXEL_SHADER( worldtwotextureblend_ps20 );
+				SET_STATIC_PIXEL_SHADER( WorldTwoTextureBlend_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 
 			// HACK HACK HACK - enable alpha writes all the time so that we have them for
@@ -500,22 +506,26 @@ END_SHADER_PARAMS
 #endif
 			if ( g_pHardwareConfig->SupportsPixelShaders_2_b() )
 			{
-				DECLARE_DYNAMIC_PIXEL_SHADER( worldtwotextureblend_ps20b );
+				DECLARE_DYNAMIC_PIXEL_SHADER( WorldTwoTextureBlend_ps20b );
 
 				// Don't write fog to alpha if we're using translucency
 				SET_DYNAMIC_PIXEL_SHADER_COMBO( WRITEWATERFOGTODESTALPHA, bWriteWaterFogToAlpha );
 				SET_DYNAMIC_PIXEL_SHADER_COMBO( WRITE_DEPTH_TO_DESTALPHA, bWriteDepthToAlpha );
 				SET_DYNAMIC_PIXEL_SHADER_COMBO( FLASHLIGHTSHADOWS, bFlashlightShadows );
-				SET_DYNAMIC_PIXEL_SHADER( worldtwotextureblend_ps20b );
+				SET_DYNAMIC_PIXEL_SHADER( WorldTwoTextureBlend_ps20b );
 			}
 			else
 			{
-				DECLARE_DYNAMIC_PIXEL_SHADER( worldtwotextureblend_ps20 );
+#ifdef RD_SUPPORT_SHADER_MODEL_20
+				DECLARE_DYNAMIC_PIXEL_SHADER( WorldTwoTextureBlend_ps20 );
 
 				// Don't write fog to alpha if we're using translucency
 				SET_DYNAMIC_PIXEL_SHADER_COMBO( WRITEWATERFOGTODESTALPHA, (fogType == MATERIAL_FOG_LINEAR_BELOW_FOG_Z) && 
 												(nBlendType != BT_BLENDADD) && (nBlendType != BT_BLEND) && !bIsAlphaTested );
-				SET_DYNAMIC_PIXEL_SHADER( worldtwotextureblend_ps20 );
+				SET_DYNAMIC_PIXEL_SHADER( WorldTwoTextureBlend_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 
 

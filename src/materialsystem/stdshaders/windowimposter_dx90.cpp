@@ -8,7 +8,9 @@
 #include "cpp_shader_constant_register_map.h"
 
 #include "windowimposter_vs20.inc"
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "windowimposter_ps20.inc"
+#endif
 #include "windowimposter_ps20b.inc"
 
 
@@ -59,8 +61,12 @@ BEGIN_VS_SHADER( WindowImposter_DX90,
 			}
 			else
 			{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_STATIC_PIXEL_SHADER( windowimposter_ps20 );
 				SET_STATIC_PIXEL_SHADER( windowimposter_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 
 			pShaderShadow->VertexShaderVertexFormat( VERTEX_POSITION, 1, 0, 0 );
@@ -84,8 +90,12 @@ BEGIN_VS_SHADER( WindowImposter_DX90,
 			}
 			else
 			{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_DYNAMIC_PIXEL_SHADER( windowimposter_ps20 );
 				SET_DYNAMIC_PIXEL_SHADER( windowimposter_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 
 			pShaderAPI->SetPixelShaderFogParams( PSREG_FOG_PARAMS );

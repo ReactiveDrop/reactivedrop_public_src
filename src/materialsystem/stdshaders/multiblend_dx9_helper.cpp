@@ -8,12 +8,14 @@
 #include "BaseVSShader.h"
 #include "shaderlib/commandbuilder.h"
 #include "multiblend_dx9_helper.h"
-#include "..\shaderapidx9\locald3dtypes.h"												   
+#include "..\shaderapidx9\locald3dtypes.h"
 #include "convar.h"
 #include "cpp_shader_constant_register_map.h"
 #include "multiblend_vs20.inc"
 #include "multiblend_vs30.inc"
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "multiblend_ps20.inc"
+#endif
 #include "multiblend_ps20b.inc"
 #include "multiblend_ps30.inc"
 
@@ -227,11 +229,15 @@ void DrawMultiblend_DX9( CBaseVSShader *pShader, IMaterialVar** params, IShaderD
 			}
 			else
 			{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_STATIC_PIXEL_SHADER( multiblend_ps20 );
 				SET_STATIC_PIXEL_SHADER_COMBO( LIGHTING_PREVIEW, nLightingPreviewMode );
 				SET_STATIC_PIXEL_SHADER_COMBO( FOW, bHasFoW );
 //				SET_STATIC_PIXEL_SHADER_COMBO( FLASHLIGHT, bHasFlashlight );
 				SET_STATIC_PIXEL_SHADER( multiblend_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 		}
 #ifndef _X360
@@ -437,9 +443,13 @@ void DrawMultiblend_DX9( CBaseVSShader *pShader, IMaterialVar** params, IShaderD
 			}
 			else
 			{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_DYNAMIC_PIXEL_SHADER( multiblend_ps20 );
 //				SET_DYNAMIC_PIXEL_SHADER_COMBO( FLASHLIGHTSHADOWS, bFlashlightShadows );
 				SET_DYNAMIC_PIXEL_SHADER( multiblend_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 		}
 #ifndef _X360

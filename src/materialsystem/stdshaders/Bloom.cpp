@@ -8,7 +8,9 @@
 #include "BaseVSShader.h"
 
 #include "screenspaceeffect_vs20.inc"
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "bloom_ps20.inc"
+#endif
 #include "bloom_ps20b.inc"
 
 // NOTE: This has to be the last file included!
@@ -55,13 +57,17 @@ BEGIN_VS_SHADER_FLAGS( Bloom, "Help for Bloom", SHADER_NOT_EDITABLE )
 
 			if( g_pHardwareConfig->SupportsPixelShaders_2_b() )
 			{
-				DECLARE_STATIC_PIXEL_SHADER( bloom_ps20b );
-				SET_STATIC_PIXEL_SHADER( bloom_ps20b );
+				DECLARE_STATIC_PIXEL_SHADER( Bloom_ps20b );
+				SET_STATIC_PIXEL_SHADER( Bloom_ps20b );
 			}
 			else
 			{
-				DECLARE_STATIC_PIXEL_SHADER( bloom_ps20 );
-				SET_STATIC_PIXEL_SHADER( bloom_ps20 );
+#ifdef RD_SUPPORT_SHADER_MODEL_20
+				DECLARE_STATIC_PIXEL_SHADER( Bloom_ps20 );
+				SET_STATIC_PIXEL_SHADER( Bloom_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 		}
 
@@ -74,13 +80,17 @@ BEGIN_VS_SHADER_FLAGS( Bloom, "Help for Bloom", SHADER_NOT_EDITABLE )
 
 			if( g_pHardwareConfig->SupportsPixelShaders_2_b() )
 			{
-				DECLARE_DYNAMIC_PIXEL_SHADER( bloom_ps20b );
-				SET_DYNAMIC_PIXEL_SHADER( bloom_ps20b );
+				DECLARE_DYNAMIC_PIXEL_SHADER( Bloom_ps20b );
+				SET_DYNAMIC_PIXEL_SHADER( Bloom_ps20b );
 			}
 			else
 			{
-				DECLARE_DYNAMIC_PIXEL_SHADER( bloom_ps20 );
-				SET_DYNAMIC_PIXEL_SHADER( bloom_ps20 );
+#ifdef RD_SUPPORT_SHADER_MODEL_20
+				DECLARE_DYNAMIC_PIXEL_SHADER( Bloom_ps20 );
+				SET_DYNAMIC_PIXEL_SHADER( Bloom_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 		}
 		Draw();

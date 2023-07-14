@@ -7,7 +7,9 @@
 
 #include "BaseVSShader.h"
 #include "motion_blur_vs20.inc"
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "motion_blur_ps20.inc"
+#endif
 #include "motion_blur_ps20b.inc"
 #include "convar.h"
 
@@ -61,8 +63,12 @@ BEGIN_VS_SHADER_FLAGS( MotionBlur_dx9, "Motion Blur", SHADER_NOT_EDITABLE )
 			}
 			else
 			{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_STATIC_PIXEL_SHADER( motion_blur_ps20 );
 				SET_STATIC_PIXEL_SHADER( motion_blur_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 
 			pShaderShadow->EnableDepthWrites( false );
@@ -130,9 +136,13 @@ BEGIN_VS_SHADER_FLAGS( MotionBlur_dx9, "Motion Blur", SHADER_NOT_EDITABLE )
 			}
 			else
 			{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_DYNAMIC_PIXEL_SHADER( motion_blur_ps20 );
 				SET_DYNAMIC_PIXEL_SHADER_COMBO( D_NUM_BLUR_SAMPLES, nNumBlurSamples );
 				SET_DYNAMIC_PIXEL_SHADER( motion_blur_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 		}
 

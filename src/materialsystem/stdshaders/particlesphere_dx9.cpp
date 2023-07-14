@@ -9,7 +9,9 @@
 #include "BaseVSShader.h"
 
 #include "particlesphere_vs20.inc"
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "particlesphere_ps20.inc"
+#endif
 #include "particlesphere_ps20b.inc"
 
 #include "cpp_shader_constant_register_map.h"
@@ -94,8 +96,12 @@ BEGIN_VS_SHADER_FLAGS( ParticleSphere_DX9, "Help for BumpmappedEnvMap", SHADER_N
 			}
 			else
 			{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_STATIC_PIXEL_SHADER( particlesphere_ps20 );
 				SET_STATIC_PIXEL_SHADER( particlesphere_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 
 			FogToFogColor();
@@ -163,8 +169,12 @@ BEGIN_VS_SHADER_FLAGS( ParticleSphere_DX9, "Help for BumpmappedEnvMap", SHADER_N
 			}
 			else
 			{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_DYNAMIC_PIXEL_SHADER( particlesphere_ps20 );
 				SET_DYNAMIC_PIXEL_SHADER( particlesphere_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 		}
 		Draw();

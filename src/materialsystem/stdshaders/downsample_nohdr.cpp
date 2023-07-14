@@ -8,7 +8,9 @@
 #include "common_hlsl_cpp_consts.h"
 #include "convar.h"
 
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "downsample_nohdr_ps20.inc"
+#endif
 #include "downsample_nohdr_ps20b.inc"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -66,15 +68,19 @@ BEGIN_VS_SHADER_FLAGS( Downsample_nohdr, "Help for Downsample_nohdr", SHADER_NOT
 			
 			if( g_pHardwareConfig->SupportsPixelShaders_2_b() )
 			{
-				DECLARE_STATIC_PIXEL_SHADER( downsample_nohdr_ps20b );
+				DECLARE_STATIC_PIXEL_SHADER( Downsample_nohdr_ps20b );
 				SET_STATIC_PIXEL_SHADER_COMBO( BLOOMTYPE, params[BLOOMTYPE]->GetIntValue() );
-				SET_STATIC_PIXEL_SHADER( downsample_nohdr_ps20b );
+				SET_STATIC_PIXEL_SHADER( Downsample_nohdr_ps20b );
 			}
 			else
 			{
-				DECLARE_STATIC_PIXEL_SHADER( downsample_nohdr_ps20 );
+#ifdef RD_SUPPORT_SHADER_MODEL_20
+				DECLARE_STATIC_PIXEL_SHADER( Downsample_nohdr_ps20 );
 				SET_STATIC_PIXEL_SHADER_COMBO( BLOOMTYPE, params[BLOOMTYPE]->GetIntValue() );
-				SET_STATIC_PIXEL_SHADER( downsample_nohdr_ps20 );
+				SET_STATIC_PIXEL_SHADER( Downsample_nohdr_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 		}
 
@@ -123,14 +129,18 @@ BEGIN_VS_SHADER_FLAGS( Downsample_nohdr, "Help for Downsample_nohdr", SHADER_NOT
 			{
 				int floatBackBuffer = ( ( g_pHardwareConfig->GetHDRType() == HDR_TYPE_FLOAT ) && !IsX360() ) ? 1 : 0;
 
-				DECLARE_DYNAMIC_PIXEL_SHADER( downsample_nohdr_ps20b );
+				DECLARE_DYNAMIC_PIXEL_SHADER( Downsample_nohdr_ps20b );
 				SET_DYNAMIC_PIXEL_SHADER_COMBO( FLOAT_BACK_BUFFER, floatBackBuffer );
-				SET_DYNAMIC_PIXEL_SHADER( downsample_nohdr_ps20b );
+				SET_DYNAMIC_PIXEL_SHADER( Downsample_nohdr_ps20b );
 			}
 			else
 			{
-				DECLARE_DYNAMIC_PIXEL_SHADER( downsample_nohdr_ps20 );
-				SET_DYNAMIC_PIXEL_SHADER( downsample_nohdr_ps20 );
+#ifdef RD_SUPPORT_SHADER_MODEL_20
+				DECLARE_DYNAMIC_PIXEL_SHADER( Downsample_nohdr_ps20 );
+				SET_DYNAMIC_PIXEL_SHADER( Downsample_nohdr_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 		}
 		Draw();

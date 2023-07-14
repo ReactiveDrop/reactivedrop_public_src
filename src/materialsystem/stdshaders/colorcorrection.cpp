@@ -8,7 +8,9 @@
 #include "basevsshader.h"
 
 #include "screenspaceeffect_vs20.inc"
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "colorcorrection_ps20.inc"
+#endif
 #include "colorcorrection_ps20b.inc"
 
 #include "..\materialsystem_global.h"
@@ -90,8 +92,12 @@ BEGIN_VS_SHADER_FLAGS( ColorCorrection, "Help for ColorCorrection", SHADER_NOT_E
 			}
 			else
 			{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_STATIC_PIXEL_SHADER( colorcorrection_ps20 );
 				SET_STATIC_PIXEL_SHADER( colorcorrection_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 			pShaderShadow->EnableSRGBWrite( false );
 		}
@@ -127,9 +133,13 @@ BEGIN_VS_SHADER_FLAGS( ColorCorrection, "Help for ColorCorrection", SHADER_NOT_E
 			}
 			else
 			{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_DYNAMIC_PIXEL_SHADER( colorcorrection_ps20 );
 				SET_DYNAMIC_PIXEL_SHADER_COMBO( NUM_LOOKUPS, params[ NUM_LOOKUPS ]->GetIntValue() );
 				SET_DYNAMIC_PIXEL_SHADER( colorcorrection_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 
 			DECLARE_DYNAMIC_VERTEX_SHADER( screenspaceeffect_vs20 );

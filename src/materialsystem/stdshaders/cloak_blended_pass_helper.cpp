@@ -136,7 +136,9 @@
 
 // Auto generated inc files
 #include "cloak_blended_pass_vs20.inc"
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "cloak_blended_pass_ps20.inc"
+#endif
 #include "cloak_blended_pass_ps20b.inc"
 
 #ifndef _X360
@@ -223,9 +225,13 @@ void DrawCloakBlendedPass( CBaseVSShader *pShader, IMaterialVar** params, IShade
 			}
 			else
 			{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_STATIC_PIXEL_SHADER( cloak_blended_pass_ps20 );
 				SET_STATIC_PIXEL_SHADER_COMBO( BUMPMAP, bBumpMapping ? 1 : 0 );
 				SET_STATIC_PIXEL_SHADER( cloak_blended_pass_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 		}
 #ifndef _X360
@@ -292,8 +298,12 @@ void DrawCloakBlendedPass( CBaseVSShader *pShader, IMaterialVar** params, IShade
 			}
 			else
 			{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_DYNAMIC_PIXEL_SHADER( cloak_blended_pass_ps20 );
 				SET_DYNAMIC_PIXEL_SHADER( cloak_blended_pass_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 		}
 #ifndef _X360

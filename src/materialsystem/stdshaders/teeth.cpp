@@ -10,11 +10,13 @@
 #include "teeth_vs20.inc"
 #include "teeth_flashlight_vs20.inc"
 #include "teeth_bump_vs20.inc"
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "teeth_ps20.inc"
-#include "teeth_ps20b.inc"
 #include "teeth_flashlight_ps20.inc"
-#include "teeth_flashlight_ps20b.inc"
 #include "teeth_bump_ps20.inc"
+#endif
+#include "teeth_ps20b.inc"
+#include "teeth_flashlight_ps20b.inc"
 #include "teeth_bump_ps20b.inc"
 
 #ifndef _X360
@@ -114,8 +116,12 @@ BEGIN_VS_SHADER( Teeth_DX9, "Help for Teeth_DX9" )
 					}
 					else
 					{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 						DECLARE_STATIC_PIXEL_SHADER( teeth_bump_ps20 );
 						SET_STATIC_PIXEL_SHADER( teeth_bump_ps20 );
+#else
+						RD_SHADER_MODEL_20_CRASH;
+#endif
 					}
 				}
 #ifndef _X360
@@ -150,8 +156,12 @@ BEGIN_VS_SHADER( Teeth_DX9, "Help for Teeth_DX9" )
 					}
 					else
 					{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 						DECLARE_STATIC_PIXEL_SHADER( teeth_ps20 );
 						SET_STATIC_PIXEL_SHADER( teeth_ps20 );
+#else
+						RD_SHADER_MODEL_20_CRASH;
+#endif
 					}
 				}
 #ifndef _X360
@@ -243,10 +253,14 @@ BEGIN_VS_SHADER( Teeth_DX9, "Help for Teeth_DX9" )
 					}
 					else
 					{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 						DECLARE_DYNAMIC_PIXEL_SHADER( teeth_bump_ps20 );
 						SET_DYNAMIC_PIXEL_SHADER_COMBO( NUM_LIGHTS, lightState.m_nNumLights );
 						SET_DYNAMIC_PIXEL_SHADER_COMBO( AMBIENT_LIGHT, lightState.m_bAmbientLight ? 1 : 0 );
 						SET_DYNAMIC_PIXEL_SHADER( teeth_bump_ps20 );
+#else
+						RD_SHADER_MODEL_20_CRASH;
+#endif
 					}
 				}
 #ifndef _X360
@@ -293,8 +307,12 @@ BEGIN_VS_SHADER( Teeth_DX9, "Help for Teeth_DX9" )
 					}
 					else
 					{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 						DECLARE_DYNAMIC_PIXEL_SHADER( teeth_ps20 );
 						SET_DYNAMIC_PIXEL_SHADER( teeth_ps20 );
+#else
+						RD_SHADER_MODEL_20_CRASH;
+#endif
 					}
 				}
 #ifndef _X360
@@ -375,8 +393,12 @@ BEGIN_VS_SHADER( Teeth_DX9, "Help for Teeth_DX9" )
 				}
 				else
 				{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 					DECLARE_STATIC_PIXEL_SHADER( teeth_flashlight_ps20 );
 					SET_STATIC_PIXEL_SHADER( teeth_flashlight_ps20 );
+#else
+					RD_SHADER_MODEL_20_CRASH;
+#endif
 				}
 			}
 #ifndef _X360
@@ -487,8 +509,12 @@ BEGIN_VS_SHADER( Teeth_DX9, "Help for Teeth_DX9" )
 				}
 				else
 				{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 					DECLARE_DYNAMIC_PIXEL_SHADER( teeth_flashlight_ps20 );
 					SET_DYNAMIC_PIXEL_SHADER( teeth_flashlight_ps20 );
+#else
+					RD_SHADER_MODEL_20_CRASH;
+#endif
 				}
 			}
 #ifndef _X360

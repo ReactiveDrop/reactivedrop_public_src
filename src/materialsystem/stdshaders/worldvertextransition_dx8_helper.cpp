@@ -5,6 +5,7 @@
 // $NoKeywords: $
 //=============================================================================
 
+#if 0
 #include "worldvertexTransition_DX8_helper.h"
 #include "BaseVSShader.h"
 
@@ -76,3 +77,4 @@ void DrawWorldVertexTransitionEditor_DX8( CBaseVSShader *pShader, IMaterialVar**
 	}
 	pShader->Draw();
 }
+#endif

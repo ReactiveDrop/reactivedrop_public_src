@@ -6,7 +6,9 @@
 
 #include "BaseVSShader.h"
 #include "unlittwotexture_vs20.inc"
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "monitorscreen_ps20.inc"
+#endif
 #include "monitorscreen_ps20b.inc"
 #include "cpp_shader_constant_register_map.h"
 
@@ -126,9 +128,13 @@ BEGIN_VS_SHADER( MonitorScreen_DX9,
 			}
 			else
 			{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_STATIC_PIXEL_SHADER( monitorscreen_ps20 );
 				SET_STATIC_PIXEL_SHADER_COMBO( TEXTURE2, (bHasTexture2)?(1):(0) );
 				SET_STATIC_PIXEL_SHADER( monitorscreen_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 
 			DefaultFog();
@@ -173,8 +179,12 @@ BEGIN_VS_SHADER( MonitorScreen_DX9,
 			}
 			else
 			{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_DYNAMIC_PIXEL_SHADER( monitorscreen_ps20 );
 				SET_DYNAMIC_PIXEL_SHADER( monitorscreen_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 		}
 		Draw();

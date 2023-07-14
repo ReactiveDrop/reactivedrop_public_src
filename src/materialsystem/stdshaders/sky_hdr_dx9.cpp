@@ -8,11 +8,13 @@
 
 #include "BaseVSShader.h"
 #include "sky_vs20.inc"
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "sky_ps20.inc"
-#include "sky_ps20b.inc"
 #include "sky_hdr_compressed_ps20.inc"
-#include "sky_hdr_compressed_ps20b.inc"
 #include "sky_hdr_compressed_rgbs_ps20.inc"
+#endif
+#include "sky_ps20b.inc"
+#include "sky_hdr_compressed_ps20b.inc"
 #include "sky_hdr_compressed_rgbs_ps20b.inc"
 
 #include "ConVar.h"
@@ -98,8 +100,12 @@ BEGIN_VS_SHADER( Sky_HDR_DX9, "Help for Sky_HDR_DX9 shader" )
 				}
 				else
 				{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 					DECLARE_STATIC_PIXEL_SHADER( sky_hdr_compressed_rgbs_ps20 );
 					SET_STATIC_PIXEL_SHADER( sky_hdr_compressed_rgbs_ps20 );
+#else
+					RD_SHADER_MODEL_20_CRASH;
+#endif
 				}
 			}
 			else
@@ -119,8 +125,12 @@ BEGIN_VS_SHADER( Sky_HDR_DX9, "Help for Sky_HDR_DX9 shader" )
 					}
 					else
 					{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 						DECLARE_STATIC_PIXEL_SHADER( sky_hdr_compressed_ps20 );
 						SET_STATIC_PIXEL_SHADER( sky_hdr_compressed_ps20 );
+#else
+						RD_SHADER_MODEL_20_CRASH;
+#endif
 					}
 				}
 				else
@@ -139,8 +149,12 @@ BEGIN_VS_SHADER( Sky_HDR_DX9, "Help for Sky_HDR_DX9 shader" )
 					}
 					else
 					{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 						DECLARE_STATIC_PIXEL_SHADER( sky_ps20 );
 						SET_STATIC_PIXEL_SHADER( sky_ps20 );
+#else
+						RD_SHADER_MODEL_20_CRASH;
+#endif
 					}
 				}
 			}
@@ -188,8 +202,12 @@ BEGIN_VS_SHADER( Sky_HDR_DX9, "Help for Sky_HDR_DX9 shader" )
 				}
 				else
 				{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 					DECLARE_DYNAMIC_PIXEL_SHADER( sky_hdr_compressed_rgbs_ps20 );
 					SET_DYNAMIC_PIXEL_SHADER( sky_hdr_compressed_rgbs_ps20 );
+#else
+					RD_SHADER_MODEL_20_CRASH;
+#endif
 				}
 			}
 			else
@@ -210,8 +228,12 @@ BEGIN_VS_SHADER( Sky_HDR_DX9, "Help for Sky_HDR_DX9 shader" )
 					}
 					else
 					{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 						DECLARE_DYNAMIC_PIXEL_SHADER( sky_hdr_compressed_ps20 );
 						SET_DYNAMIC_PIXEL_SHADER( sky_hdr_compressed_ps20 );
+#else
+						RD_SHADER_MODEL_20_CRASH;
+#endif
 					}
 
 				}
@@ -238,8 +260,12 @@ BEGIN_VS_SHADER( Sky_HDR_DX9, "Help for Sky_HDR_DX9 shader" )
 					}
 					else
 					{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 						DECLARE_DYNAMIC_PIXEL_SHADER( sky_ps20 );
 						SET_DYNAMIC_PIXEL_SHADER( sky_ps20 );
+#else
+						RD_SHADER_MODEL_20_CRASH;
+#endif
 					}
 				}
 			}

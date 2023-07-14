@@ -6,6 +6,7 @@
 // $NoKeywords: $
 //=============================================================================//
 
+#if 0
 //Note: Not upgraded to vs/ps 2.0 fxc's because this shader is unused and there are no test cases to verify against.
 #include "BaseVSShader.h"
 
@@ -144,5 +145,7 @@ SHADER_DRAW
 	Draw( false );
 }
 END_SHADER
+
+#endif
 
 #endif

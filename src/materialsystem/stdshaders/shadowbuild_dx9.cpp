@@ -11,7 +11,9 @@
 #include "mathlib/VMatrix.h"
 
 #include "unlitgeneric_vs20.inc"
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "shadowbuildtexture_ps20.inc"
+#endif
 #include "shadowbuildtexture_ps20b.inc"
 
 #if !defined( _X360 )
@@ -89,8 +91,12 @@ BEGIN_VS_SHADER_FLAGS( ShadowBuild_DX9, "Help for ShadowBuild", SHADER_NOT_EDITA
 				}
 				else
 				{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 					DECLARE_STATIC_PIXEL_SHADER( shadowbuildtexture_ps20 );
 					SET_STATIC_PIXEL_SHADER( shadowbuildtexture_ps20 );
+#else
+					RD_SHADER_MODEL_20_CRASH;
+#endif
 				}
 			}
 #ifndef _X360
@@ -165,8 +171,12 @@ BEGIN_VS_SHADER_FLAGS( ShadowBuild_DX9, "Help for ShadowBuild", SHADER_NOT_EDITA
 				}
 				else
 				{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 					DECLARE_DYNAMIC_PIXEL_SHADER( shadowbuildtexture_ps20 );
 					SET_DYNAMIC_PIXEL_SHADER( shadowbuildtexture_ps20 );
+#else
+					RD_SHADER_MODEL_20_CRASH;
+#endif
 				}
 			}
 #ifndef _X360

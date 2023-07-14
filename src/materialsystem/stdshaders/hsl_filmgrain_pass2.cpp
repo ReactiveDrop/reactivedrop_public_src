@@ -8,7 +8,9 @@
 #include "BaseVSShader.h"
 #include "convar.h"
 #include "filmgrain_vs20.inc"
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "hsl_filmgrain_pass2_ps20.inc"
+#endif
 #include "hsl_filmgrain_pass2_ps20b.inc"
 
 // NOTE: This has to be the last file included!
@@ -60,8 +62,12 @@ BEGIN_VS_SHADER( hsl_filmgrain_pass2, "Help for Film Grain" )
 			}
 			else
 			{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_STATIC_PIXEL_SHADER( hsl_filmgrain_pass2_ps20 );
 				SET_STATIC_PIXEL_SHADER( hsl_filmgrain_pass2_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 		}
 
@@ -79,8 +85,12 @@ BEGIN_VS_SHADER( hsl_filmgrain_pass2, "Help for Film Grain" )
 			}
 			else
 			{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_DYNAMIC_PIXEL_SHADER( hsl_filmgrain_pass2_ps20 );
 				SET_DYNAMIC_PIXEL_SHADER( hsl_filmgrain_pass2_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 		}
 		Draw();

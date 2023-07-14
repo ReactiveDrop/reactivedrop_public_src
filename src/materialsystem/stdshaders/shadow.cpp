@@ -8,7 +8,9 @@
 
 #include "BaseVSShader.h"
 
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "shadow_ps20.inc"
+#endif
 #include "shadow_ps20b.inc"
 #include "shadow_vs20.inc"
 
@@ -127,10 +129,14 @@ BEGIN_VS_SHADER_FLAGS( Shadow, "Help for Shadow", SHADER_NOT_EDITABLE )
 			}
 			else
 			{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_STATIC_PIXEL_SHADER( shadow_ps20 );
 				SET_STATIC_PIXEL_SHADER_COMBO( DEFERRED_SHADOWS, bDeferredShadows );
 				SET_STATIC_PIXEL_SHADER_COMBO( BLOBBY_SHADOWS, bBlobbyShadows );
 				SET_STATIC_PIXEL_SHADER( shadow_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 
 			pShaderShadow->EnableSRGBWrite( true );
@@ -188,8 +194,12 @@ BEGIN_VS_SHADER_FLAGS( Shadow, "Help for Shadow", SHADER_NOT_EDITABLE )
 			}
 			else
 			{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_DYNAMIC_PIXEL_SHADER( shadow_ps20 );
 				SET_DYNAMIC_PIXEL_SHADER( shadow_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 
 			float eyePos[4];

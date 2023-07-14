@@ -8,7 +8,9 @@
 #include "BaseVSShader.h"
 
 #include "screenspaceeffect_vs20.inc"
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "floatcombine_autoexpose_ps20.inc"
+#endif
 #include "floatcombine_autoexpose_ps20b.inc"
 
 // NOTE: This has to be the last file included!
@@ -78,8 +80,12 @@ BEGIN_VS_SHADER( floatcombine_autoexpose, "Help for floatcombine_autoexpose" )
 			}
 			else
 			{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_STATIC_PIXEL_SHADER( floatcombine_autoexpose_ps20 );
 				SET_STATIC_PIXEL_SHADER( floatcombine_autoexpose_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 		}
 
@@ -112,8 +118,12 @@ BEGIN_VS_SHADER( floatcombine_autoexpose, "Help for floatcombine_autoexpose" )
 			}
 			else
 			{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_DYNAMIC_PIXEL_SHADER( floatcombine_autoexpose_ps20 );
 				SET_DYNAMIC_PIXEL_SHADER( floatcombine_autoexpose_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 		}
 		Draw();

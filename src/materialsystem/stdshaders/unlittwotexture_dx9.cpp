@@ -11,7 +11,9 @@
 #include "cpp_shader_constant_register_map.h"
 
 #include "unlittwotexture_vs20.inc"
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "unlittwotexture_ps20.inc"
+#endif
 #include "unlittwotexture_ps20b.inc"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -194,10 +196,14 @@ BEGIN_VS_SHADER( UnlitTwoTexture_DX9, "Help for UnlitTwoTexture_DX9" )
 				}
 				else
 				{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 					DECLARE_STATIC_PIXEL_SHADER( unlittwotexture_ps20 );
 					SET_STATIC_PIXEL_SHADER_COMBO( TRANSLUCENT, bTranslucent );
 					SET_STATIC_PIXEL_SHADER_COMBO( LIGHTING_PREVIEW, nLightingPreviewMode );
 					SET_STATIC_PIXEL_SHADER( unlittwotexture_ps20 );
+#else
+					RD_SHADER_MODEL_20_CRASH;
+#endif
 				}
 
 				DefaultFog();
@@ -251,8 +257,12 @@ BEGIN_VS_SHADER( UnlitTwoTexture_DX9, "Help for UnlitTwoTexture_DX9" )
 				}
 				else
 				{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 					DECLARE_DYNAMIC_PIXEL_SHADER( unlittwotexture_ps20 );
 					SET_DYNAMIC_PIXEL_SHADER( unlittwotexture_ps20 );
+#else
+					RD_SHADER_MODEL_20_CRASH;
+#endif
 				}
 			}
 			Draw();

@@ -7,7 +7,9 @@
 
 #include "BaseVSShader.h"
 #include "screenspaceeffect_vs20.inc"
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "hsv_ps20.inc"
+#endif
 #include "hsv_ps20b.inc"
 
 // NOTE: This has to be the last file included!
@@ -50,8 +52,12 @@ BEGIN_VS_SHADER_FLAGS( HSV, "Help for HSV", SHADER_NOT_EDITABLE )
 			}
 			else
 			{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_STATIC_PIXEL_SHADER( hsv_ps20 );
 				SET_STATIC_PIXEL_SHADER( hsv_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 		}
 		DYNAMIC_STATE

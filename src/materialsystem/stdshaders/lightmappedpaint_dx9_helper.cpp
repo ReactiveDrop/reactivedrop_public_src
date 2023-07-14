@@ -11,7 +11,9 @@
 #include "shaderlib/commandbuilder.h"
 #include "convar.h"
 #include "lightmappedgeneric_vs20.inc"
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "lightmappedpaint_ps20.inc"
+#endif
 #include "lightmappedpaint_ps20b.inc"
 
 #include "tier0/vprof.h"
@@ -252,6 +254,7 @@ void DrawLightmappedPaint_DX9( CBaseVSShader *pShader, IMaterialVar** params, IS
 				}
 				else
 				{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 					DECLARE_STATIC_PIXEL_SHADER( lightmappedpaint_ps20 );
 					SET_STATIC_PIXEL_SHADER_COMBO( BUMPMAP,  bumpmap_variant );
 					SET_STATIC_PIXEL_SHADER_COMBO( CUBEMAP,  envmap_variant );
@@ -259,6 +262,9 @@ void DrawLightmappedPaint_DX9( CBaseVSShader *pShader, IMaterialVar** params, IS
 					SET_STATIC_PIXEL_SHADER_COMBO( FLASHLIGHT, hasFlashlight );
 					SET_STATIC_PIXEL_SHADER_COMBO( SHADER_SRGB_READ, bShaderSrgbRead );
 					SET_STATIC_PIXEL_SHADER( lightmappedpaint_ps20 );
+#else
+					RD_SHADER_MODEL_20_CRASH;
+#endif
 				}
 				// HACK HACK HACK - enable alpha writes all the time so that we have them for
 				// underwater stuff and writing depth to dest alpha
@@ -550,12 +556,14 @@ void DrawLightmappedPaint_DX9( CBaseVSShader *pShader, IMaterialVar** params, IS
 		}
 		else
 		{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 			DECLARE_DYNAMIC_PIXEL_SHADER( lightmappedpaint_ps20 );
 			SET_DYNAMIC_PIXEL_SHADER_COMBO( FASTPATH,  bPixelShaderFastPath );
 			SET_DYNAMIC_PIXEL_SHADER_COMBO( FASTPATHENVMAPCONTRAST,  bPixelShaderFastPath && envmapContrast == 1.0f );
 			
 			// Don't write fog to alpha if we're using translucency
 			SET_DYNAMIC_PIXEL_SHADER_CMD( DynamicCmdsOut, lightmappedpaint_ps20 );
+#endif
 		}
 
 		DynamicCmdsOut.End();

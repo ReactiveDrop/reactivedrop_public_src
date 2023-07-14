@@ -8,7 +8,9 @@
 
 #include "BaseVSShader.h"
 
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "treeleaf_ps20.inc"
+#endif
 #include "treeleaf_ps20b.inc"
 #include "treeleaf_vs20.inc"
 
@@ -65,8 +67,12 @@ BEGIN_VS_SHADER_FLAGS( TreeLeaf, "Help for TreeLeaf", SHADER_NOT_EDITABLE )
 			}
 			else
 			{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_STATIC_PIXEL_SHADER( treeleaf_ps20 );
 				SET_STATIC_PIXEL_SHADER( treeleaf_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 
 			// we are writing linear values from this shader.

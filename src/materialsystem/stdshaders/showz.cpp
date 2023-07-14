@@ -10,8 +10,10 @@
 #include "convar.h"
 #include "BaseVSShader.h"
 
-#include "showz_vs11.inc"
+#include "screenspaceeffect_vs20.inc"
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "showz_ps20.inc"
+#endif
 #include "showz_ps20b.inc"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -48,8 +50,8 @@ BEGIN_VS_SHADER_FLAGS( showz, "Help for ShowZ", SHADER_NOT_EDITABLE )
 		{
 			pShaderShadow->EnableTexture( SHADER_SAMPLER0, true );
 
-			DECLARE_STATIC_VERTEX_SHADER( showz_vs11 );
-			SET_STATIC_VERTEX_SHADER( showz_vs11 );
+			DECLARE_STATIC_VERTEX_SHADER( screenspaceeffect_vs20 );
+			SET_STATIC_VERTEX_SHADER( screenspaceeffect_vs20 );
 
 			int nShadowFilterMode = g_pHardwareConfig->GetShadowFilterMode();	// Based upon vendor and device dependent formats
 
@@ -62,9 +64,13 @@ BEGIN_VS_SHADER_FLAGS( showz, "Help for ShowZ", SHADER_NOT_EDITABLE )
 			}
 			else
 			{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_STATIC_PIXEL_SHADER( showz_ps20 );
 				SET_STATIC_PIXEL_SHADER_COMBO( DEPTH_IN_ALPHA, params[ALPHADEPTH]->GetIntValue() );
 				SET_STATIC_PIXEL_SHADER( showz_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 
 			pShaderShadow->VertexShaderVertexFormat( VERTEX_POSITION, 1, 0, 0 );
@@ -75,8 +81,8 @@ BEGIN_VS_SHADER_FLAGS( showz, "Help for ShowZ", SHADER_NOT_EDITABLE )
 		{
 			BindTexture( SHADER_SAMPLER0, BASETEXTURE, FRAME );	// Bind shadow depth map
 
-			DECLARE_DYNAMIC_VERTEX_SHADER( showz_vs11 );
-			SET_DYNAMIC_VERTEX_SHADER( showz_vs11 );
+			DECLARE_DYNAMIC_VERTEX_SHADER( screenspaceeffect_vs20 );
+			SET_DYNAMIC_VERTEX_SHADER( screenspaceeffect_vs20 );
 
 			if( g_pHardwareConfig->SupportsPixelShaders_2_b() )
 			{
@@ -85,8 +91,12 @@ BEGIN_VS_SHADER_FLAGS( showz, "Help for ShowZ", SHADER_NOT_EDITABLE )
 			}
 			else
 			{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_DYNAMIC_PIXEL_SHADER( showz_ps20 );
 				SET_DYNAMIC_PIXEL_SHADER( showz_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 
 			Vector4D C0;

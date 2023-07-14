@@ -6,7 +6,9 @@
 
 #include "BaseVSShader.h"
 #include "blurfilter_vs20.inc"
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "blurfilter_ps20.inc"
+#endif
 #include "blurfilter_ps20b.inc"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -14,7 +16,7 @@
 
 BEGIN_VS_SHADER_FLAGS( BlurFilterY, "Help for BlurFilterY", SHADER_NOT_EDITABLE )
 	BEGIN_SHADER_PARAMS
-        SHADER_PARAM( BLOOMAMOUNT, SHADER_PARAM_TYPE_FLOAT, "1.0", "" )
+		SHADER_PARAM( BLOOMAMOUNT, SHADER_PARAM_TYPE_FLOAT, "1.0", "" )
 		SHADER_PARAM( FRAMETEXTURE, SHADER_PARAM_TYPE_TEXTURE, "_rt_SmallHDR0", "" )
 		SHADER_PARAM( KERNEL, SHADER_PARAM_TYPE_INTEGER, "0", "Kernel type" )
 		SHADER_PARAM( ENABLECLEARCOLOR, SHADER_PARAM_TYPE_BOOL, "0", "clear RGB channels to a solid color" )
@@ -67,23 +69,27 @@ BEGIN_VS_SHADER_FLAGS( BlurFilterY, "Help for BlurFilterY", SHADER_NOT_EDITABLE 
 			pShaderShadow->EnableSRGBRead( SHADER_SAMPLER0, false );
 			pShaderShadow->EnableSRGBWrite( false );
 
-			DECLARE_STATIC_VERTEX_SHADER( blurfilter_vs20 );
+			DECLARE_STATIC_VERTEX_SHADER( BlurFilter_vs20 );
 			SET_STATIC_VERTEX_SHADER_COMBO( KERNEL, params[ KERNEL ]->GetIntValue() ? 1 : 0 );
-			SET_STATIC_VERTEX_SHADER( blurfilter_vs20 );
+			SET_STATIC_VERTEX_SHADER( BlurFilter_vs20 );
 
 			if( g_pHardwareConfig->SupportsPixelShaders_2_b() )
 			{
-				DECLARE_STATIC_PIXEL_SHADER( blurfilter_ps20b );
+				DECLARE_STATIC_PIXEL_SHADER( BlurFilter_ps20b );
 				SET_STATIC_PIXEL_SHADER_COMBO( KERNEL, params[ KERNEL ]->GetIntValue() );
 				SET_STATIC_PIXEL_SHADER_COMBO( CLEAR_COLOR, params[ ENABLECLEARCOLOR ]->GetIntValue() );
-				SET_STATIC_PIXEL_SHADER( blurfilter_ps20b );
+				SET_STATIC_PIXEL_SHADER( BlurFilter_ps20b );
 			}
 			else
 			{
-				DECLARE_STATIC_PIXEL_SHADER( blurfilter_ps20 );
+#ifdef RD_SUPPORT_SHADER_MODEL_20
+				DECLARE_STATIC_PIXEL_SHADER( BlurFilter_ps20 );
 				SET_STATIC_PIXEL_SHADER_COMBO( KERNEL, params[ KERNEL ]->GetIntValue() );
 				SET_STATIC_PIXEL_SHADER_COMBO( CLEAR_COLOR, params[ ENABLECLEARCOLOR ]->GetIntValue() );
-				SET_STATIC_PIXEL_SHADER( blurfilter_ps20 );
+				SET_STATIC_PIXEL_SHADER( BlurFilter_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 
 			if ( IS_FLAG_SET( MATERIAL_VAR_ADDITIVE ) )
@@ -135,18 +141,22 @@ BEGIN_VS_SHADER_FLAGS( BlurFilterY, "Help for BlurFilterY", SHADER_NOT_EDITABLE 
 			v[3] = 0.0f;
 			pShaderAPI->SetPixelShaderConstant( 5, v, 1 );
 
-			DECLARE_DYNAMIC_VERTEX_SHADER( blurfilter_ps20 );
-			SET_DYNAMIC_VERTEX_SHADER( blurfilter_ps20 );
+			DECLARE_DYNAMIC_VERTEX_SHADER( BlurFilter_vs20 );
+			SET_DYNAMIC_VERTEX_SHADER( BlurFilter_vs20 );
 
 			if( g_pHardwareConfig->SupportsPixelShaders_2_b() )
 			{
-				DECLARE_DYNAMIC_PIXEL_SHADER( blurfilter_ps20b );
-				SET_DYNAMIC_PIXEL_SHADER( blurfilter_ps20b );
+				DECLARE_DYNAMIC_PIXEL_SHADER( BlurFilter_ps20b );
+				SET_DYNAMIC_PIXEL_SHADER( BlurFilter_ps20b );
 			}
 			else
 			{
-				DECLARE_DYNAMIC_PIXEL_SHADER( blurfilter_ps20 );
-				SET_DYNAMIC_PIXEL_SHADER( blurfilter_ps20 );
+#ifdef RD_SUPPORT_SHADER_MODEL_20
+				DECLARE_DYNAMIC_PIXEL_SHADER( BlurFilter_ps20 );
+				SET_DYNAMIC_PIXEL_SHADER( BlurFilter_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 		}
 		Draw();

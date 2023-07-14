@@ -7,7 +7,7 @@
 
 #include "BaseVSShader.h"
 #include "gamecontrols_vs20.inc"
-#include "gamecontrols_ps20.inc"
+#include "gamecontrols_ps20b.inc"
 
 
 BEGIN_VS_SHADER_FLAGS( GAMECONTROLS, "Help for Game Controls", SHADER_NOT_EDITABLE )
@@ -44,8 +44,8 @@ BEGIN_VS_SHADER_FLAGS( GAMECONTROLS, "Help for Game Controls", SHADER_NOT_EDITAB
 			DECLARE_STATIC_VERTEX_SHADER( gamecontrols_vs20 );
 			SET_STATIC_VERTEX_SHADER( gamecontrols_vs20 );
 
-			DECLARE_STATIC_PIXEL_SHADER( gamecontrols_ps20 );
-			SET_STATIC_PIXEL_SHADER( gamecontrols_ps20 );
+			DECLARE_STATIC_PIXEL_SHADER( gamecontrols_ps20b );
+			SET_STATIC_PIXEL_SHADER( gamecontrols_ps20b );
 		}
 		DYNAMIC_STATE
 		{
@@ -54,8 +54,8 @@ BEGIN_VS_SHADER_FLAGS( GAMECONTROLS, "Help for Game Controls", SHADER_NOT_EDITAB
 			DECLARE_DYNAMIC_VERTEX_SHADER( gamecontrols_vs20 );
 			SET_DYNAMIC_VERTEX_SHADER( gamecontrols_vs20 );
 
-			DECLARE_DYNAMIC_PIXEL_SHADER( gamecontrols_ps20 );
-			SET_DYNAMIC_PIXEL_SHADER( gamecontrols_ps20 );
+			DECLARE_DYNAMIC_PIXEL_SHADER( gamecontrols_ps20b );
+			SET_DYNAMIC_PIXEL_SHADER( gamecontrols_ps20b );
 		}
 		Draw();
 	}

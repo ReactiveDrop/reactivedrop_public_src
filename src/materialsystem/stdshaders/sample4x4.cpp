@@ -62,7 +62,11 @@ BEGIN_VS_SHADER_FLAGS( Sample4x4, "Help for Sample4x4", SHADER_NOT_EDITABLE )
 			}
 			else
 			{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 				pShaderShadow->SetPixelShader( params[PIXSHADER]->GetStringValue(), 0 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 
 // 			if ( IsAlphaModulating() )

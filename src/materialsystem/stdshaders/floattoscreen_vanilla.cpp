@@ -8,9 +8,13 @@
 #include "BaseVSShader.h"
 
 #include "screenspaceeffect_vs20.inc"
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "floattoscreen_vanilla_ps20.inc"
+#endif
 #include "floattoscreen_vanilla_ps20b.inc"
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "floattoscreen_ps20.inc"
+#endif
 #include "floattoscreen_ps20b.inc"
 
 // NOTE: This has to be the last file included!
@@ -59,8 +63,12 @@ BEGIN_VS_SHADER_FLAGS( floattoscreen_vanilla, "Help for floattoscreen_vanilla", 
 			}
 			else
 			{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_STATIC_PIXEL_SHADER( floattoscreen_ps20 );
 				SET_STATIC_PIXEL_SHADER( floattoscreen_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 		}
 
@@ -77,8 +85,12 @@ BEGIN_VS_SHADER_FLAGS( floattoscreen_vanilla, "Help for floattoscreen_vanilla", 
 			}
 			else
 			{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_DYNAMIC_PIXEL_SHADER( floattoscreen_vanilla_ps20 );
 				SET_DYNAMIC_PIXEL_SHADER( floattoscreen_vanilla_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 		}
 		Draw();

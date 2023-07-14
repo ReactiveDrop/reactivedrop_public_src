@@ -12,9 +12,13 @@
 #include "vertexlit_and_unlit_generic_vs20.inc"
 #include "vertexlit_and_unlit_generic_bump_vs20.inc"
 
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "vertexlit_and_unlit_generic_ps20.inc"
+#endif
 #include "vertexlit_and_unlit_generic_ps20b.inc"
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "vertexlit_and_unlit_generic_bump_ps20.inc"
+#endif
 #include "vertexlit_and_unlit_generic_bump_ps20b.inc"
 
 #ifndef _X360
@@ -788,6 +792,7 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 					}
 					else // ps_2_0
 					{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 						DECLARE_STATIC_PIXEL_SHADER( vertexlit_and_unlit_generic_bump_ps20 );
 						SET_STATIC_PIXEL_SHADER_COMBO( CUBEMAP,  bHasEnvmap );
 						SET_STATIC_PIXEL_SHADER_COMBO( DIFFUSELIGHTING,  hasDiffuseLighting );
@@ -803,6 +808,9 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 						SET_STATIC_PIXEL_SHADER_COMBO( STATICLIGHT3, bStaticLight3Streams );
 						SET_STATIC_PIXEL_SHADER_COMBO( WORLD_NORMAL, 0 );
 						SET_STATIC_PIXEL_SHADER( vertexlit_and_unlit_generic_bump_ps20 );
+#else
+						RD_SHADER_MODEL_20_CRASH;
+#endif
 					}
 				}
 #ifndef _X360
@@ -905,6 +913,7 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 					}
 					else // ps_2_0
 					{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 						DECLARE_STATIC_PIXEL_SHADER( vertexlit_and_unlit_generic_ps20 );
 						SET_STATIC_PIXEL_SHADER_COMBO( SELFILLUM_ENVMAPMASK_ALPHA, bHasSelfIllumInEnvMapMask ); 
 						SET_STATIC_PIXEL_SHADER_COMBO( DETAILTEXTURE,  bHasDetailTexture );
@@ -929,6 +938,9 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 						SET_STATIC_PIXEL_SHADER_COMBO( LIGHTING_PREVIEW, nLightingPreviewMode );
 						SET_STATIC_PIXEL_SHADER_COMBO( FOW, bHasFoW );
 						SET_STATIC_PIXEL_SHADER( vertexlit_and_unlit_generic_ps20 );
+#else
+						RD_SHADER_MODEL_20_CRASH;
+#endif
 					}
 				}
 #ifndef _X360
@@ -1511,11 +1523,15 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 				}
 				else
 				{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 					DECLARE_DYNAMIC_PIXEL_SHADER( vertexlit_and_unlit_generic_bump_ps20 );
 					SET_DYNAMIC_PIXEL_SHADER_COMBO( NUM_LIGHTS, lightState.m_nNumLights );
 					SET_DYNAMIC_PIXEL_SHADER_COMBO( AMBIENT_LIGHT, lightState.m_bAmbientLight ? 1 : 0 );
 					SET_DYNAMIC_PIXEL_SHADER_COMBO( WRITEWATERFOGTODESTALPHA, bWriteWaterFogToAlpha );
 					SET_DYNAMIC_PIXEL_SHADER_CMD( DynamicCmdsOut, vertexlit_and_unlit_generic_bump_ps20 );
+#else
+					RD_SHADER_MODEL_20_CRASH;
+#endif
 				}
 			}
 #ifndef _X360
@@ -1575,9 +1591,13 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 				}
 				else
 				{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 					DECLARE_DYNAMIC_PIXEL_SHADER( vertexlit_and_unlit_generic_ps20 );
 					SET_DYNAMIC_PIXEL_SHADER_COMBO( WRITEWATERFOGTODESTALPHA, bWriteWaterFogToAlpha );
 					SET_DYNAMIC_PIXEL_SHADER_CMD( DynamicCmdsOut, vertexlit_and_unlit_generic_ps20 );
+#else
+					RD_SHADER_MODEL_20_CRASH;
+#endif
 				}
 			}
 #ifndef _X360

@@ -10,7 +10,9 @@
 #include "cpp_shader_constant_register_map.h"
 
 #include "decalmodulate_vs20.inc"
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "decalmodulate_ps20.inc"
+#endif
 #include "decalmodulate_ps20b.inc"
 
 #ifndef _X360
@@ -108,9 +110,13 @@ BEGIN_VS_SHADER( DecalModulate_dx9,
 				}
 				else
 				{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 					DECLARE_STATIC_PIXEL_SHADER( decalmodulate_ps20 );
 					SET_STATIC_PIXEL_SHADER_COMBO( VERTEXALPHA,  bHasVertexAlpha );
 					SET_STATIC_PIXEL_SHADER( decalmodulate_ps20 );
+#else
+					RD_SHADER_MODEL_20_CRASH;
+#endif
 				}
 			}
 #ifndef _X360
@@ -199,8 +205,12 @@ BEGIN_VS_SHADER( DecalModulate_dx9,
 				}
 				else
 				{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 					DECLARE_DYNAMIC_PIXEL_SHADER( decalmodulate_ps20 );
 					SET_DYNAMIC_PIXEL_SHADER( decalmodulate_ps20 );
+#else
+					RD_SHADER_MODEL_20_CRASH;
+#endif
 				}
 			}
 #ifndef _X360

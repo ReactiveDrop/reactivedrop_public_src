@@ -13,7 +13,9 @@
 #include "projected_vs20.inc"
 #include "projected_vs30.inc"
 
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "projected_ps20.inc"
+#endif
 #include "projected_ps20b.inc"
 #include "projected_ps30.inc"
 
@@ -92,9 +94,13 @@ void DrawProjected_DX9( CBaseVSShader *pShader, IMaterialVar** params, IShaderDy
 			}
 			else
 			{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_STATIC_PIXEL_SHADER( projected_ps20 );
 				SET_STATIC_PIXEL_SHADER_COMBO( FOW, bHasFoW );
 				SET_STATIC_PIXEL_SHADER( projected_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 		}
 #ifndef _X360
@@ -170,8 +176,12 @@ void DrawProjected_DX9( CBaseVSShader *pShader, IMaterialVar** params, IShaderDy
 			}
 			else
 			{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_DYNAMIC_PIXEL_SHADER( projected_ps20 );
 				SET_DYNAMIC_PIXEL_SHADER( projected_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 		}
 #ifndef _X360

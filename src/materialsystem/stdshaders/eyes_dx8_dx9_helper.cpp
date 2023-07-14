@@ -11,10 +11,14 @@
 #include "cpp_shader_constant_register_map.h"
 
 #include "eyes_vs20.inc"
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "eyes_ps20.inc"
+#endif
 #include "eyes_ps20b.inc"
 #include "eyes_flashlight_vs20.inc"
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "eyes_flashlight_ps20.inc"
+#endif
 #include "eyes_flashlight_ps20b.inc"
 
 #ifndef _X360
@@ -142,8 +146,12 @@ static void DrawFlashlight( bool bDX9, CBaseVSShader *pShader, IMaterialVar** pa
 			}
 			else
 			{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_STATIC_PIXEL_SHADER( eyes_flashlight_ps20 );
 				SET_STATIC_PIXEL_SHADER( eyes_flashlight_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 		}
 #ifndef _X360
@@ -244,8 +252,12 @@ static void DrawFlashlight( bool bDX9, CBaseVSShader *pShader, IMaterialVar** pa
 			}
 			else
 			{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_DYNAMIC_PIXEL_SHADER( eyes_flashlight_ps20 );
 				SET_DYNAMIC_PIXEL_SHADER( eyes_flashlight_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 		}
 #ifndef _X360
@@ -310,8 +322,12 @@ static void DrawUsingVertexShader( bool bDX9, CBaseVSShader *pShader, IMaterialV
 			}
 			else
 			{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_STATIC_PIXEL_SHADER( eyes_ps20 );
 				SET_STATIC_PIXEL_SHADER( eyes_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 		}
 #ifndef _X360
@@ -408,8 +424,12 @@ static void DrawUsingVertexShader( bool bDX9, CBaseVSShader *pShader, IMaterialV
 			}
 			else
 			{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_DYNAMIC_PIXEL_SHADER( eyes_ps20 );
 				SET_DYNAMIC_PIXEL_SHADER( eyes_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 		}
 #ifndef _X360

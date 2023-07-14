@@ -9,7 +9,9 @@
 #include "BaseVSShader.h"
 
 #include "cable_vs20.inc"
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "cable_ps20.inc"
+#endif
 #include "cable_ps20b.inc"
 #include "cpp_shader_constant_register_map.h"
 
@@ -78,8 +80,12 @@ BEGIN_VS_SHADER( Cable_DX9,
 			}
 			else
 			{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_STATIC_PIXEL_SHADER( cable_ps20 );
 				SET_STATIC_PIXEL_SHADER( cable_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 
 			// we are writing linear values from this shader.
@@ -124,8 +130,12 @@ BEGIN_VS_SHADER( Cable_DX9,
 			}
 			else
 			{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_DYNAMIC_PIXEL_SHADER( cable_ps20 );
 				SET_DYNAMIC_PIXEL_SHADER( cable_ps20 );
+#else
+				RD_SHADER_MODEL_20_CRASH;
+#endif
 			}
 		}
 		Draw();

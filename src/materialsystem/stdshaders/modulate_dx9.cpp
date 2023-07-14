@@ -8,7 +8,9 @@
 #include "convar.h"
 
 #include "unlitgeneric_vs20.inc"
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "modulate_ps20.inc"
+#endif
 #include "modulate_ps20b.inc"
 
 #include "cpp_shader_constant_register_map.h"
@@ -199,8 +201,12 @@ BEGIN_VS_SHADER( Modulate_DX9,
 					}
 					else
 					{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 						DECLARE_STATIC_PIXEL_SHADER( modulate_ps20 );
 						SET_STATIC_PIXEL_SHADER( modulate_ps20 );
+#else
+						RD_SHADER_MODEL_20_CRASH;
+#endif
 					}
 				}
 #ifndef _X360
@@ -285,8 +291,12 @@ BEGIN_VS_SHADER( Modulate_DX9,
 					}
 					else
 					{
+#ifdef RD_SUPPORT_SHADER_MODEL_20
 						DECLARE_DYNAMIC_PIXEL_SHADER( modulate_ps20 );
 						SET_DYNAMIC_PIXEL_SHADER( modulate_ps20 );
+#else
+						RD_SHADER_MODEL_20_CRASH;
+#endif
 					}
 				}
 #ifndef _X360
