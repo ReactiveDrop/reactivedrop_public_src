@@ -1,0 +1,1148 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="VPC Scripts">
+      <UniqueIdentifier>{0a2f89b3-e9f5-4e02-8011-dfb3e59cb106}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{9de9613b-6930-4e10-ae1f-c57e1ff99641}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Link Libraries">
+      <UniqueIdentifier>{e98a26d0-25a2-43d2-8471-33c8dc01bab0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{d35b64e4-ee9f-48dc-a329-c0dcc35312d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader Source">
+      <UniqueIdentifier>{77d6f127-f41e-466a-bbb0-9863bc981f81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader Source\fxc">
+      <UniqueIdentifier>{ba5baafc-92a4-4a8d-a661-e88fac16d8bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader Source\vsh">
+      <UniqueIdentifier>{29d7ceed-611c-47f9-9e4e-d31e791c234d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader Source\psh">
+      <UniqueIdentifier>{cf6150fd-b892-4f6b-b9b2-171573caed81}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\vpc_scripts\loadaddress.vpc">
+      <Filter>VPC Scripts</Filter>
+    </None>
+    <None Include="..\..\vpc_scripts\source_dll_base.vpc">
+      <Filter>VPC Scripts</Filter>
+    </None>
+    <None Include="..\..\vpc_scripts\source_dll_win32_base.vpc">
+      <Filter>VPC Scripts</Filter>
+    </None>
+    <None Include="..\..\vpc_scripts\source_dll_win32_debug.vpc">
+      <Filter>VPC Scripts</Filter>
+    </None>
+    <None Include="..\..\vpc_scripts\source_dll_win32_release.vpc">
+      <Filter>VPC Scripts</Filter>
+    </None>
+    <None Include="stdshader_dx9.vpc">
+      <Filter>VPC Scripts</Filter>
+    </None>
+    <None Include="..\..\vpc_scripts\version.vpc">
+      <Filter>VPC Scripts</Filter>
+    </None>
+    <None Include="buildallshaders.bat" />
+    <None Include="buildshaders.bat" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="aftershock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="aftershock_helper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseVSShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Bloom.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BlurFilterX.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BlurFilterY.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BufferClearObeyStencil_dx9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cable_dx9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cloak.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cloak_blended_pass_helper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cloak_dx9_helper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="colorcorrection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\debug_dll_check.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="debugmorphaccumulator_dx9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="debugmrttexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugTextureView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DecalModulate_dx9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DepthOfField_dx9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="depthwrite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Downsample.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="downsample_nohdr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="emissive_scroll_blended_pass_helper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine_Post_dx9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="eye_refract.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="eye_refract_helper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="eyeglint_dx9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="eyes_dx8_dx9_helper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="eyes_dx9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="filmdust.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="filmgrain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="flesh_dx9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="flesh_helper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="flesh_interior_blended_pass_helper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="floatcombine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="floatcombine_autoexpose.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="floattoscreen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="floattoscreen_vanilla.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gamecontrols.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HDRCombineTo16Bit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HDRSelectRange.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="hsl_filmgrain_pass1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="hsl_filmgrain_pass2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="hsv.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lightmappedgeneric_dx9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lightmappedgeneric_dx9_helper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lightmappedpaint_dx9_helper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lightmappedreflective.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lightshafts.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lightshafts_helper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\public\tier0\memoverride.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="modulate_dx9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MonitorScreen_dx9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="morphaccumulate_dx9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="morphweight_dx9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="motion_blur_dx9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="multiblend.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="multiblend_dx9_helper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="object_motion_blur_dx9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="occlusion_dx9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="parallaxtest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="particlelitgeneric_dx9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="particlelitgeneric_dx9_helper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="particlesphere_dx9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="phong_dx9_helper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="projected.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="projected_dx9_helper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prototype.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prototype_helper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="refract.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="refract_dx9_helper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sample4x4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sample4x4_blend.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="screenspace_general.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="shadow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="shadowbuild_dx9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="shadowmodel_dx9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="shatteredglass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="showz.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sky_hdr_dx9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="splinerope.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sprite_dx9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="spritecard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="teeth.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TreeLeaf.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="unlitgeneric_dx9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="unlittwotexture_dx9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vertexlitgeneric_dx9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vertexlitgeneric_dx9_helper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="volume_clouds.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="volume_clouds_helper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vortwarp_dx9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="water.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="windowimposter_dx90.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wireframe_dx9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="worldtwotextureblend.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="worldvertextransition.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="worldvertextransition_dx8_helper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="writestencil_dx9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="writez_dx9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\..\dx9sdk\lib\d3dx9.lib">
+      <Filter>Link Libraries</Filter>
+    </Library>
+    <Library Include="..\..\lib\public\interfaces.lib">
+      <Filter>Link Libraries</Filter>
+    </Library>
+    <Library Include="..\..\lib\public\mathlib.lib">
+      <Filter>Link Libraries</Filter>
+    </Library>
+    <Library Include="..\..\lib\public\shaderlib.lib">
+      <Filter>Link Libraries</Filter>
+    </Library>
+    <Library Include="..\..\lib\public\tier0.lib">
+      <Filter>Link Libraries</Filter>
+    </Library>
+    <Library Include="..\..\lib\public\tier1.lib">
+      <Filter>Link Libraries</Filter>
+    </Library>
+    <Library Include="..\..\lib\public\vstdlib.lib">
+      <Filter>Link Libraries</Filter>
+    </Library>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BaseVSShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cloak_dx9_helper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common_flashlight_fxc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common_fog_ps_forcevertexfog_fxc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common_fog_ps_fxc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common_fog_ps_supportsvertexfog_fxc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common_fog_vs_forcevertexfog_fxc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common_fog_vs_fxc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common_fog_vs_supportsvertexfog_fxc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common_fxc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common_hlsl_cpp_consts.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common_lightmappedgeneric_fxc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common_ps_fxc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common_splinerope_fxc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common_spritecard_fxc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common_vertexlitgeneric_dx9.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common_vs_fxc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="flesh_helper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fow_ps_fxc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fow_vs_fxc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lightmappedgeneric_dx9_helper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lightmappedgeneric_ps2_3_x.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lightmappedpaint_dx9_helper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lightshafts_helper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="multiblend_dx9_helper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="particlelitgeneric_dx9_helper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="phong_dx9_helper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="projected_dx9_helper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="refract_dx9_helper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shader_constant_register_map.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="spline_fxc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vertexlitgeneric_dx9_helper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="volume_clouds_helper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vortwarp_vs20_helper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="water_ps2x_helper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="worldvertextransition_dx8_helper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="stdshader_dx9_20b.txt">
+      <Filter>Shader Source</Filter>
+    </CustomBuild>
+    <CustomBuild Include="stdshader_dx9_20b_new.txt">
+      <Filter>Shader Source</Filter>
+    </CustomBuild>
+    <CustomBuild Include="stdshader_dx9_30.txt">
+      <Filter>Shader Source</Filter>
+    </CustomBuild>
+    <CustomBuild Include="AccumBuff4Sample_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="accumbuff5sample_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="aftershock_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="aftershock_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="appchooser360movie_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="bik_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="bik_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="blob_arm_ps20b.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="blob_arm_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="blob_ps30.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="blob_vs30.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Bloom_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="bloomadd_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="blurentity_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="BlurFilter_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="BlurFilter_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="blurgaussian_3x3_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="bufferclearobeystencil_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="bufferclearobeystencil_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="cable_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="cable_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="clearalpha_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="cloak_blended_pass_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="cloak_blended_pass_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="cloak_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="cloak_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="colorcorrection_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="compositedeferredshadow_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="constant_color_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="copy_fp_rt_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="customhero_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="customhero_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="DebugDrawDepth_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="DebugDrawDepth_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="DebugDrawEnvmapMask_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="DebugDrawEnvmapMask_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="debugluxel_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="debugluxel_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="debugmorphaccumulator_ps30.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="debugmorphaccumulator_vs30.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="debugmrttexture_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="debugmrttexture_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="debugtangentspace_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="DebugTextureView_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="DebugTextureView_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="decalmodulate_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="decalmodulate_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="depth_of_field_ps20b.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="depth_of_field_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="depthtodestalpha_ps20b.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="depthtodestalpha_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="depthwrite_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="depthwrite_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Downsample_nohdr_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Downsample_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Downsample_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="downsampledepth_extractnormal_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="emissive_scroll_blended_pass_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="emissive_scroll_blended_pass_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Engine_Post_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="eye_refract_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="eye_refract_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="eyeglint_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="eyeglint_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="eyes_flashlight_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="eyes_flashlight_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="eyes_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Eyes_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="fade_blur_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="fillrate_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="fillrate_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="filmdust_ps20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="filmgrain_ps20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="filmgrain_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="flashlight_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="flesh_interior_blended_pass_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="flesh_interior_blended_pass_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="flesh_ps30.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="flesh_vs30.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="floatcombine_autoexpose_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="floatcombine_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="floattoscreen_notonemap_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="floattoscreen_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="floattoscreen_vanilla_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="gamecontrols_ps20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="gamecontrols_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="haloadd_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="HDRCombineTo16Bit_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="HDRCombineTo16Bit_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="HDRSelectRange_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="HDRSelectRange_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="hsl_filmgrain_pass1_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="hsl_filmgrain_pass2_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="hsv_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="IceSurface_ps30.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="IceSurface_vs30.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="IntroScreenSpaceEffect_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="lightmappedgeneric_decal_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="lightmappedgeneric_decal_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="lightmappedgeneric_flashlight_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="lightmappedgeneric_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="lightmappedgeneric_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="lightmappedpaint_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="lightmappedreflective_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="lightmappedreflective_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="lightshafts_ps30.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="lightshafts_vs30.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="lpreview1_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="lpreview1_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="lpreview_output_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="luminance_compare_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="modulate_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="monitorscreen_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="morphaccumulate_ps30.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="morphaccumulate_vs30.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="morphweight_ps30.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="morphweight_vs30.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="motion_blur_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="motion_blur_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="multiblend_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="multiblend_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="object_motion_blur_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="object_motion_blur_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="paintblob_ps20b.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="paintblob_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="parallaxtest_ps30.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="parallaxtest_vs30.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="particlesphere_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="particlesphere_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="phong_ps20b.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="phong_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="portal_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="portal_refract_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="portal_refract_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="portal_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="portalstaticoverlay_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="portalstaticoverlay_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="projected_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="projected_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="proto_ice_ps20b.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="proto_ice_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="prototype_ps20b.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="prototype_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="refract_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Refract_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="rendertargetblit_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="rendertargetblit_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="sample4x4_blend_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="sample4x4_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="sample4x4delog_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="sample4x4log_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="sample4x4maxmin_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="screenspaceeffect_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="sfm_ambientocclusion_ps30.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="sfm_ambientocclusion_vs30.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="sfm_ao_blur_ps30.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="sfm_ao_blur_vs30.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="sfm_blur_ps30.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="sfm_combine_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="sfm_integercombine_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="sfm_screenspace_vs30.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="sfm_shape_ps30.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shadow_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shadow_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shadowbuildtexture_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ShatteredGlass_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ShatteredGlass_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="showz_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="showz_vs11.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="sky_hdr_compressed_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="sky_hdr_compressed_rgbs_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="sky_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="sky_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="splinecard_vsxx.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="splinerope_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="splinerope_vsxx.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="sprite_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="sprite_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="spritecard_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="spritecard_vsxx.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="teeth_bump_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="teeth_bump_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="teeth_flashlight_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="teeth_flashlight_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="teeth_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="teeth_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="TreeLeaf_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="TreeLeaf_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="unlitgeneric_notexture_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="unlitgeneric_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="unlitgeneric_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="unlittwotexture_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="unlittwotexture_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="vertexlit_and_unlit_generic_bump_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="vertexlit_and_unlit_generic_bump_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="vertexlit_and_unlit_generic_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="vertexlit_and_unlit_generic_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="vertexlitgeneric_flashlight_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="volume_clouds_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="volume_clouds_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="vortwarp_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="vortwarp_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="water_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Water_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="WaterCheap_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="WaterCheap_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="white_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="windowimposter_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="windowimposter_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="worldtwotextureblend_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="WorldVertexAlpha_ps2x.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="writez_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ShadowModel.vsh">
+      <Filter>Shader Source\vsh</Filter>
+    </CustomBuild>
+    <CustomBuild Include="vertexlitgeneric_flashlight_vs11.vsh">
+      <Filter>Shader Source\vsh</Filter>
+    </CustomBuild>
+    <CustomBuild Include="WorldVertexTransition.vsh">
+      <Filter>Shader Source\vsh</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ShadowModel.psh">
+      <Filter>Shader Source\psh</Filter>
+    </CustomBuild>
+    <CustomBuild Include="WorldVertexTransition_Editor.psh">
+      <Filter>Shader Source\psh</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>
