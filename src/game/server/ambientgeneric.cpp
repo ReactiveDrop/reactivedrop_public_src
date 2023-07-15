@@ -745,15 +745,25 @@ void CAmbientGeneric::SendSound( SoundFlags_t flags)
 	CBaseEntity* pSoundSource = m_hSoundSource;
 	if ( pSoundSource )
 	{
+		// Fix for unstoppable looping ambient_generics taken from the VDC:
+		// https://developer.valvesoftware.com/wiki/Ambient_generic:_stop_and_toggle_fix.
 		if ( flags == SND_STOP )
 		{
 			UTIL_EmitAmbientSound(pSoundSource->GetSoundSourceIndex(), pSoundSource->GetAbsOrigin(), szSoundFile, 
 				0, SNDLVL_NONE, flags, 0);
+			m_fActive = false;
 		}
 		else
 		{
 			UTIL_EmitAmbientSound(pSoundSource->GetSoundSourceIndex(), pSoundSource->GetAbsOrigin(), szSoundFile, 
 				(m_dpv.vol * 0.01), m_iSoundLevel, flags, m_dpv.pitch);
+
+			// Only mark active if this is a looping sound.
+			// If not looping, each trigger will cause the sound to play.
+			// If the sound is still playing from a previous trigger press, 
+			// it will be shut off and then restarted.
+			if (m_fLooping)
+				m_fActive = true;
 		}
 	}	
 	else
@@ -763,6 +773,7 @@ void CAmbientGeneric::SendSound( SoundFlags_t flags)
 		{
 			UTIL_EmitAmbientSound(m_nSoundSourceEntIndex, GetAbsOrigin(), szSoundFile, 
 				0, SNDLVL_NONE, flags, 0);
+			m_fActive = false;
 		}
 	}
 }
