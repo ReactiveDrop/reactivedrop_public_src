@@ -2293,8 +2293,6 @@ void CViewRender::FreezeFrame( float flFreezeTime )
 	}
 }
 
-const char *COM_GetModDirectory();
-
 void PositionHudPanels( CUtlVector< vgui::VPANEL > &list, const CViewSetup &view )
 {
 	for ( int i = 0; i < list.Count(); ++i )
@@ -2329,23 +2327,6 @@ void CViewRender::RenderView( const CViewSetup &view, const CViewSetup &hudViewS
 
 	C_BaseAnimating::AutoAllowBoneAccess boneaccess( true, true );
 	VPROF( "CViewRender::RenderView" );
-
-	// Don't want Left4Dead running less than DX 9
-	if ( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() < 90 )
-	{
-		// We know they were running at least 9.0 when the game started...we check the 
-		// value in ClientDLL_Init()...so they must be messing with their DirectX settings.
-		if ( Q_stricmp( COM_GetModDirectory(), "left4dead" ) == 0 )
-		{
-			static bool bFirstTime = true;
-			if ( bFirstTime )
-			{
-				bFirstTime = false;
-				Msg( "This game has a minimum requirement of Shader Model 2.0 to run properly.\n" );
-			}
-			return;
-		}
-	}
 
 	{
 		// HACK: server-side weapons use the viewmodel model, and client-side weapons swap that out for
