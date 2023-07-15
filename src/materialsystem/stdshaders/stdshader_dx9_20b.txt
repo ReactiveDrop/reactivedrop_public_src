@@ -205,7 +205,7 @@ DebugTextureView_vs20.fxc
 DebugTextureView_ps2x.fxc
 
 showz_ps2x.fxc
-showz_vs11.fxc
+//showz_vs11.fxc
 
 phong_ps20b.fxc
 phong_vs20.fxc
@@ -250,7 +250,7 @@ vertexlit_and_unlit_generic_bump_vs20.fxc
 vertexlit_and_unlit_generic_ps2x.fxc
 vertexlit_and_unlit_generic_vs20.fxc
 
-vertexlitgeneric_flashlight_vs11.vsh
+//vertexlitgeneric_flashlight_vs11.vsh
 volume_clouds_vs20.fxc
 volume_clouds_ps2x.fxc
 

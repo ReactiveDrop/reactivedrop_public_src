@@ -107,7 +107,7 @@ const float4 g_vMiscParams4					: register( SHADER_SPECIFIC_CONST_11 );
 	//		 cMorphTargetTextureDim.z = 4tuples/morph
 	#define cMorphTargetTextureDim g_vMiscParams3
 	#define cMorphSubrect g_vMiscParams4
-	sampler2D morphSampler						: register( D3DVERTEXTEXTURESAMPLER0, s0 );
+	sampler2D morphSampler						: register( s0 );
 #endif
 
 #if TESSELLATION
