@@ -6,6 +6,8 @@ param (
     [Parameter(Mandatory=$false)][System.UInt32]$Threads
 )
 
+$Optimize = 3
+
 if ($Version -notin @("20b", "30", "40", "41", "50", "51")) {
 	return
 }
@@ -22,10 +24,10 @@ while ($null -ne ($line = $fileList.ReadLine())) {
 	}
 
 	if ($Threads -ne 0) {
-		& "$PSScriptRoot\ShaderCompile" "-threads" $Threads "-ver" $Version "-shaderpath" $File.DirectoryName $line
+		& "$PSScriptRoot\ShaderCompile" "-threads" $Threads "-ver" $Version "-shaderpath" $File.DirectoryName "-optimize" $Optimize $line
 		continue
 	}
 
-	& "$PSScriptRoot\ShaderCompile" "-ver" $Version "-shaderpath" $File.DirectoryName $line
+	& "$PSScriptRoot\ShaderCompile" "-ver" $Version "-shaderpath" $File.DirectoryName "-optimize" $Optimize $line
 }
 $fileList.Close()
