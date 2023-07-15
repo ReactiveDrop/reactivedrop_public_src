@@ -974,7 +974,7 @@ void BaseModHybridButton::ApplySettings( KeyValues * inResourceData )
 		{
 			m_iUsablePlayerIndex = USE_NOBODY;
 		}
-		else if ( isdigit( pszValue[0] ) )
+		else if ( V_isdigit( pszValue[0] ) )
 		{
 			m_iUsablePlayerIndex = atoi( pszValue );
 		}

@@ -4328,7 +4328,7 @@ void C_BaseAnimating::FireObsoleteEvent( const Vector& origin, const QAngle& ang
 
 			if( token[0] )
 			{
-				if ( isdigit( *token ) )
+				if ( V_isdigit( *token ) )
 				{
 					iAttachment = atoi(token);
 				}
