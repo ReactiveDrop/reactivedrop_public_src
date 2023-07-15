@@ -52,8 +52,6 @@
 #include "vgui/ISurface.h"
 #include "c_asw_marine.h"
 
-#define PARTICLE_USAGE_DEMO									// uncomment to get particle bar thing
-
 // reactivedrop: if defined and blackskyfog is set as skybox then set r_skybox 0 and draw fog color instead of skybox
 // #define REACTIVEDROP_SKYBOX_FOG_HACK
 
@@ -2310,44 +2308,6 @@ void PositionHudPanels( CUtlVector< vgui::VPANEL > &list, const CViewSetup &view
 	}
 }
 
-#ifdef PARTICLE_USAGE_DEMO
-static ConVar r_particle_demo( "r_particle_demo", "0", FCVAR_CHEAT );
-static CNonDrawingParticleSystem *s_pDemoSystem = NULL;
-
-void ParticleUsageDemo( void )
-{
-	if ( r_particle_demo.GetInt() )
-	{
-		if ( ! s_pDemoSystem )
-		{
-			s_pDemoSystem = ParticleMgr()->CreateNonDrawingEffect( "christest" );
-		}
-		// draw a bunch of bars
-		CParticleCollection *pSystem = s_pDemoSystem->Get();
-		for( int i = 0; i < pSystem->m_nActiveParticles; i++ )
-		{
-			Vector vecColor = pSystem->GetVectorAttributeValue( PARTICLE_ATTRIBUTE_TINT_RGB, i );
-			vecColor *= 255.0;
-			float flRadius = *( pSystem->GetFloatAttributePtr( PARTICLE_ATTRIBUTE_RADIUS, i ) );
-			CMatRenderContextPtr pRenderContext( materials );
-			pRenderContext->ClearColor4ub( vecColor.x, vecColor.y, vecColor.z, 255 );
-			pRenderContext->Viewport( 0, i * 20, flRadius, 17 );
-			pRenderContext->ClearBuffers( true, true );
-		}
-	}
-	else
-	{
-		// its off
-		if ( s_pDemoSystem )
-		{
-			delete s_pDemoSystem;
-			s_pDemoSystem = NULL;
-		}
-
-	}
-}
-#endif
-
 
 //-----------------------------------------------------------------------------
 // Purpose: This renders the entire 3D view and the in-game hud/viewmodel
@@ -2802,10 +2762,6 @@ void CViewRender::RenderView( const CViewSetup &view, const CViewSetup &hudViewS
 	g_WorldListCache.Flush();
 
 	m_CurrentView = view;
-
-#ifdef PARTICLE_USAGE_DEMO
-	ParticleUsageDemo();
-#endif
 
 
 }
