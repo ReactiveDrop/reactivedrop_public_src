@@ -75,10 +75,10 @@ VS_OUTPUT main( const VS_INPUT v )
 	// Transform into projection space
 	float4 vProjPos = mul(float4(worldPos, 1), cViewProj);
 	o.projPosSetup = vProjPos;
-	vProjPos.z = dot(float4(worldPos, 1), cViewProjZ);
+	//vProjPos.z = dot(float4(worldPos, 1), cViewProjZ);
 
 	o.projPos = vProjPos.xyz;
-	o.fog = CalcFog(worldPos, vProjPos.xyz, g_FogType);
+	o.fog = CalcFixedFunctionFog(worldPos, g_FogType);
 
 	// Needed for water fog alpha and diffuse lighting 
 	o.worldPos = worldPos;
@@ -88,19 +88,19 @@ VS_OUTPUT main( const VS_INPUT v )
 	o.lightAtten = float4(0, 0, 0, 0);
 
 	#if (NUM_LIGHTS > 0)
-		o.lightAtten.x = GetVertexAttenForLight(worldPos, 0, false);
+		o.lightAtten.x = GetVertexAttenForLight(worldPos, 0);
 	#endif
 
 	#if (NUM_LIGHTS > 1)
-		o.lightAtten.y = GetVertexAttenForLight(worldPos, 1, false);
+		o.lightAtten.y = GetVertexAttenForLight(worldPos, 1);
 	#endif
 
 	#if (NUM_LIGHTS > 2)
-		o.lightAtten.z = GetVertexAttenForLight(worldPos, 2, false);
+		o.lightAtten.z = GetVertexAttenForLight(worldPos, 2);
 	#endif
 
 	#if (NUM_LIGHTS > 3)
-		o.lightAtten.w = GetVertexAttenForLight(worldPos, 3, false);
+		o.lightAtten.w = GetVertexAttenForLight(worldPos, 3);
 	#endif
 
 	// Base texture coordinate transform
