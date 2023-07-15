@@ -94,6 +94,9 @@ void CFogVolume::Spawn( void )
 	SetSolid( SOLID_BSP );
 	SetSolidFlags( FSOLID_NOT_SOLID );
 	SetModel( STRING( GetModelName() ) );
+
+	SetMoveType( MOVETYPE_NONE );
+	AddEffects( EF_NODRAW );
 }
 
 
