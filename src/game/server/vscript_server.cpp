@@ -1772,43 +1772,60 @@ bool VScriptServerInit()
 				g_pScriptVM->SetValue( "HUD_PRINTCONSOLE", HUD_PRINTCONSOLE );
 				g_pScriptVM->SetValue( "HUD_PRINTTALK", HUD_PRINTTALK );
 				g_pScriptVM->SetValue( "HUD_PRINTCENTER", HUD_PRINTCENTER );
-				g_pScriptVM->SetValue( "ASW_HUD_PRINTTALKANDCONSOLE", 5 );
+				g_pScriptVM->SetValue( "ASW_HUD_PRINTTALKANDCONSOLE", ASW_HUD_PRINTTALKANDCONSOLE );
 
 				// To be used with CScriptInfoNode::GetNodeType
-				g_pScriptVM->SetValue( "NODE_ANY", 0 );
-				g_pScriptVM->SetValue( "NODE_DELETED", 1 );
-				g_pScriptVM->SetValue( "NODE_GROUND", 2 );
-				g_pScriptVM->SetValue( "NODE_AIR", 3 );
-				g_pScriptVM->SetValue( "NODE_CLIMB", 4 );
-				g_pScriptVM->SetValue( "NODE_WATER", 5 );
+				g_pScriptVM->SetValue( "NODE_ANY", NODE_ANY );
+				g_pScriptVM->SetValue( "NODE_DELETED", NODE_DELETED );
+				g_pScriptVM->SetValue( "NODE_GROUND", NODE_GROUND );
+				g_pScriptVM->SetValue( "NODE_AIR", NODE_AIR );
+				g_pScriptVM->SetValue( "NODE_CLIMB", NODE_CLIMB );
+				g_pScriptVM->SetValue( "NODE_WATER", NODE_WATER );
 
 				// Types of hulls
-				g_pScriptVM->SetValue( "HULL_HUMAN", 0 );
-				g_pScriptVM->SetValue( "HULL_SMALL_CENTERED", 1 );
-				g_pScriptVM->SetValue( "HULL_WIDE_HUMAN", 2 );
-				g_pScriptVM->SetValue( "HULL_TINY", 3 );
-				g_pScriptVM->SetValue( "HULL_WIDE_SHORT", 4 );
-				g_pScriptVM->SetValue( "HULL_MEDIUM", 5 );
-				g_pScriptVM->SetValue( "HULL_TINY_CENTERED", 6 );
-				g_pScriptVM->SetValue( "HULL_LARGE", 7 );
-				g_pScriptVM->SetValue( "HULL_LARGE_CENTERED", 8 );
-				g_pScriptVM->SetValue( "HULL_MEDIUM_TALL", 9 );
-				g_pScriptVM->SetValue( "HULL_TINY_FLUID", 10 );
-				g_pScriptVM->SetValue( "HULL_MEDIUMBIG", 11 );
-				g_pScriptVM->SetValue( "HULL_HUGE", 12 );
+				g_pScriptVM->SetValue( "HULL_HUMAN", HULL_HUMAN );
+				g_pScriptVM->SetValue( "HULL_SMALL_CENTERED", HULL_SMALL_CENTERED );
+				g_pScriptVM->SetValue( "HULL_WIDE_HUMAN", HULL_WIDE_HUMAN );
+				g_pScriptVM->SetValue( "HULL_TINY", HULL_TINY );
+				g_pScriptVM->SetValue( "HULL_WIDE_SHORT", HULL_WIDE_SHORT );
+				g_pScriptVM->SetValue( "HULL_MEDIUM", HULL_MEDIUM );
+				g_pScriptVM->SetValue( "HULL_TINY_CENTERED", HULL_TINY_CENTERED );
+				g_pScriptVM->SetValue( "HULL_LARGE", HULL_LARGE );
+				g_pScriptVM->SetValue( "HULL_LARGE_CENTERED", HULL_LARGE_CENTERED );
+				g_pScriptVM->SetValue( "HULL_MEDIUM_TALL", HULL_MEDIUM_TALL );
+				g_pScriptVM->SetValue( "HULL_TINY_FLUID", HULL_TINY_FLUID );
+				g_pScriptVM->SetValue( "HULL_MEDIUMBIG", HULL_MEDIUMBIG );
+				g_pScriptVM->SetValue( "HULL_HUGE", HULL_HUGE );
 
 				// AI_ZoneIds_t enums for CAI_Node::GetZone and CAI_Node::SetZone
-				g_pScriptVM->SetValue( "AI_NODE_ZONE_UNKNOWN", 0 );
-				g_pScriptVM->SetValue( "AI_NODE_ZONE_SOLO", 1 );
-				g_pScriptVM->SetValue( "AI_NODE_ZONE_UNIVERSAL", 3 );
-				g_pScriptVM->SetValue( "AI_NODE_FIRST_ZONE", 4 );
+				g_pScriptVM->SetValue( "AI_NODE_ZONE_UNKNOWN", AI_NODE_ZONE_UNKNOWN );
+				g_pScriptVM->SetValue( "AI_NODE_ZONE_SOLO", AI_NODE_ZONE_SOLO );
+				g_pScriptVM->SetValue( "AI_NODE_ZONE_UNIVERSAL", AI_NODE_ZONE_UNIVERSAL );
+				g_pScriptVM->SetValue( "AI_NODE_FIRST_ZONE", AI_NODE_FIRST_ZONE );
 
 				// Link_Info_t enums for CAI_Link::ScriptGetLinkInfo and CAI_Link::ScriptSetLinkInfo
-				g_pScriptVM->SetValue( "bits_LINK_STALE_SUGGESTED", 0x01 );
-				g_pScriptVM->SetValue( "bits_LINK_OFF", 0x02 );
-				g_pScriptVM->SetValue( "bits_LINK_PRECISE_MOVEMENT", 0x04 );
-				g_pScriptVM->SetValue( "bits_PREFER_AVOID", 0x08 );
-				g_pScriptVM->SetValue( "bits_LINK_ASW_BASHABLE", 0x10 );
+				g_pScriptVM->SetValue( "bits_LINK_STALE_SUGGESTED", bits_LINK_STALE_SUGGESTED );
+				g_pScriptVM->SetValue( "bits_LINK_OFF", bits_LINK_OFF );
+				g_pScriptVM->SetValue( "bits_LINK_PRECISE_MOVEMENT", bits_LINK_PRECISE_MOVEMENT );
+				g_pScriptVM->SetValue( "bits_PREFER_AVOID", bits_PREFER_AVOID );
+				g_pScriptVM->SetValue( "bits_LINK_ASW_BASHABLE", bits_LINK_ASW_BASHABLE );
+
+				// sound emitter system enums for CBaseEntity::ScriptEmitSoundTable (decibel enums omitted as vscripts can just use an integer)
+				g_pScriptVM->SetValue( "SNDLVL_NONE", SNDLVL_NONE );
+				g_pScriptVM->SetValue( "SNDLVL_IDLE", SNDLVL_IDLE );
+				g_pScriptVM->SetValue( "SNDLVL_STATIC", SNDLVL_STATIC );
+				g_pScriptVM->SetValue( "SNDLVL_TALKING", SNDLVL_TALKING );
+				g_pScriptVM->SetValue( "SNDLVL_GUNFIRE", SNDLVL_GUNFIRE );
+				g_pScriptVM->SetValue( "PITCH_NORM", PITCH_NORM );
+				g_pScriptVM->SetValue( "PITCH_LOW", PITCH_LOW );
+				g_pScriptVM->SetValue( "PITCH_HIGH", PITCH_HIGH );
+				g_pScriptVM->SetValue( "CHAN_AUTO", CHAN_AUTO );
+				g_pScriptVM->SetValue( "CHAN_WEAPON", CHAN_WEAPON );
+				g_pScriptVM->SetValue( "CHAN_VOICE", CHAN_VOICE );
+				g_pScriptVM->SetValue( "CHAN_ITEM", CHAN_ITEM );
+				g_pScriptVM->SetValue( "CHAN_BODY", CHAN_BODY );
+				g_pScriptVM->SetValue( "CHAN_STREAM", CHAN_STREAM );
+				g_pScriptVM->SetValue( "CHAN_STATIC", CHAN_STATIC );
 
 				if ( scriptLanguage == SL_SQUIRREL )
 				{

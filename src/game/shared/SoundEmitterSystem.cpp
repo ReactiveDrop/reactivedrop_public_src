@@ -1591,6 +1591,125 @@ void CBaseEntity::ScriptEmitSound( const char *soundname )
 	EmitSound( soundname );
 }
 
+void CBaseEntity::ScriptEmitSoundTable( const char *soundname, HSCRIPT table )
+{
+	ABS_QUERY_GUARD( true );
+
+	CSoundParameters soundparam;
+	GetParametersForSound( soundname, soundparam, STRING( GetModelName() ) );
+
+	EmitSound_t params;
+	params.m_pSoundName = soundname;
+	params.m_nChannel = soundparam.channel;
+	params.m_SoundLevel = soundparam.soundlevel;
+	params.m_nPitch = soundparam.pitch;
+	params.m_flVolume = soundparam.volume;
+	params.m_bWarnOnDirectWaveReference = true;
+
+	ScriptVariant_t value;
+
+	if ( g_pScriptVM->GetValue( table, "delay", &value ) )
+	{
+		if ( !value.AssignTo( &params.m_flSoundTime ) )
+		{
+			Warning( "EmitSoundTable: unexpected type for delay (should be float)\n" );
+		}
+	}
+
+	if ( g_pScriptVM->GetValue( table, "volume", &value ) )
+	{
+		if ( !value.AssignTo( &params.m_flVolume ) )
+		{
+			Warning( "EmitSoundTable: unexpected type for volume (should be float, 1 = full volume)\n" );
+		}
+	}
+
+	if ( g_pScriptVM->GetValue( table, "caption", &value ) )
+	{
+		bool bCaption;
+		if ( value.AssignTo( &bCaption ) )
+		{
+			if ( bCaption )
+			{
+				params.m_bWarnOnMissingCloseCaption = true;
+			}
+			else
+			{
+				params.m_bEmitCloseCaption = false;
+			}
+		}
+		else
+		{
+			Warning( "EmitSoundTable: unexpected type for caption (should be boolean)\n" );
+		}
+	}
+
+	if ( g_pScriptVM->GetValue( table, "pitch", &value ) )
+	{
+		if ( !value.AssignTo( &params.m_nPitch ) )
+		{
+			Warning( "EmitSoundTable: unexpected type for pitch (should be integer, one of the PITCH_ constants or a number from 1 to 255, PITCH_NORM = 100)\n" );
+		}
+	}
+
+	if ( g_pScriptVM->GetValue( table, "channel", &value ) )
+	{
+		if ( !value.AssignTo( &params.m_nChannel ) )
+		{
+			Warning( "EmitSoundTable: unexpected type for channel (should be integer, one of the CHAN_ constants)\n" );
+		}
+	}
+
+	if ( g_pScriptVM->GetValue( table, "soundlevel", &value ) )
+	{
+		if ( !value.AssignTo( &params.m_SoundLevel ) )
+		{
+			Warning( "EmitSoundTable: unexpected type for soundlevel (should be integer, one of the SNDLVL_ constants or a number of decibels)\n" );
+		}
+	}
+
+	Vector origin = GetSoundEmissionOrigin();
+	if ( g_pScriptVM->GetValue( table, "origin", &value ) )
+	{
+		if ( value.AssignTo( &origin ) )
+		{
+			params.m_pOrigin = &origin;
+		}
+		else
+		{
+			Warning( "EmitSoundTable: unexpected type for origin (should be Vector)\n" );
+		}
+	}
+
+	if ( g_pScriptVM->GetValue( table, "recipient", &value ) && value.m_type == FIELD_HSCRIPT )
+	{
+		CBaseEntity *pEnt = ToEnt( value );
+		if ( pEnt && pEnt->IsPlayer() )
+		{
+			CSingleUserRecipientFilter filter( ToBasePlayer( pEnt ) );
+
+			EmitSound( filter, entindex(), params );
+
+			return;
+		}
+
+		if ( pEnt && pEnt->IsInhabitableNPC() )
+		{
+			CASW_ViewNPCRecipientFilter filter( assert_cast< CASW_Inhabitable_NPC * >( pEnt ), false );
+
+			EmitSound( filter, entindex(), params );
+
+			return;
+		}
+
+		Warning( "EmitSoundTable: unexpected type for recipient (should be player or character entity).\n" );
+	}
+
+	CPASAttenuationFilter filter( origin, params.m_SoundLevel );
+
+	EmitSound( filter, entindex(), params );
+}
+
 float CBaseEntity::ScriptSoundDuration( const char *soundname, const char *actormodel )
 {
 	float duration = CBaseEntity::GetSoundDuration( soundname, actormodel );
