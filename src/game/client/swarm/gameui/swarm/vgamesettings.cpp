@@ -926,7 +926,7 @@ void GameSettings::ApplySchemeSettings( vgui::IScheme *pScheme )
 		pConditions = new KeyValues( "", "?condition?singleplayer", 0 );
 
 	char szPath[MAX_PATH];
-	V_snprintf( szPath, sizeof( szPath ), "Resource/UI/BaseModUI/GameSettings.res" );
+	V_strncpy( szPath, "Resource/UI/BaseModUI/GameSettings.res", sizeof( szPath ) );
 
 	LoadControlSettings( szPath, NULL, NULL, pConditions );
 

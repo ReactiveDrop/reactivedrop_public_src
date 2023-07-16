@@ -476,7 +476,7 @@ void LoadingProgress::SetupControlStates()
 			int screenWide, screenTall;
 			surface()->GetScreenSize( screenWide, screenTall );
 			char filename[MAX_PATH];
-			V_snprintf( filename, sizeof( filename ), "console/background01rd_widescreen" ); // TODO: engine->GetStartupImage( filename, sizeof( filename ), screenWide, screenTall );
+			V_strncpy( filename, "console/background01rd_widescreen", sizeof( filename ) ); // TODO: engine->GetStartupImage( filename, sizeof( filename ), screenWide, screenTall );
 			m_pBGImage->SetImage( CFmtStr( "../%s", filename ) );
 		}
 

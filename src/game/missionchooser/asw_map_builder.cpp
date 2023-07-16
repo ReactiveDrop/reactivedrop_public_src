@@ -69,7 +69,7 @@ m_pMissionDefinition( NULL )
 	m_bRunningProcess = false;
 	m_bFinishedExecution = false;	
 
-	V_snprintf( m_szStatusMessage, sizeof( m_szStatusMessage ), "Generating map..." );
+	V_strncpy( m_szStatusMessage, "Generating map...", sizeof( m_szStatusMessage ) );
 
 	m_pMapBuilderOptions = new KeyValues( "map_builder_options" );
 	m_pMapBuilderOptions->LoadFromFile( g_pFullFileSystem, "resource/map_builder_options.txt", "GAME" );

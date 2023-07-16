@@ -468,7 +468,7 @@ void CASW_HUD_Use_Icon::FindUseKeyBind()
 		pchCommand = m_CurrentAction.szCommand;
 	}
 
-	V_snprintf( m_szUseKeyText, sizeof( m_szUseKeyText ), "%s", ASW_FindKeyBoundTo( pchCommand ) );
+	V_strncpy( m_szUseKeyText, ASW_FindKeyBoundTo(pchCommand), sizeof(m_szUseKeyText) );
 	if ( V_stricmp( m_szUseKeyText, szOldKey ) )
 	{
 		ClearUseAction();
