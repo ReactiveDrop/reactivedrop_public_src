@@ -2058,7 +2058,7 @@ const Vector &CClientShadowMgr::GetShadowDirection() const
 //-----------------------------------------------------------------------------
 float CClientShadowMgr::GetShadowDistance( IClientRenderable *pRenderable ) const
 {
-	float flDist = m_flShadowCastDist;
+	float flDist = GetShadowDistance();
 
 	// Allow the renderable to override the default
 	pRenderable->GetShadowCastDistance( &flDist, GetActualShadowCastType( pRenderable ) );
