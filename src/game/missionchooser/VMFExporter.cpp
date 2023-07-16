@@ -99,7 +99,7 @@ bool VMFExporter::ExportVMF( CMapLayout *pLayout, const char *mapname, bool bPop
 
 	if ( pLayout->m_PlacedRooms.Count() <= 0 )
 	{
-		V_snprintf( m_szLastExporterError, sizeof( m_szLastExporterError ), "Failed to export: No rooms placed in the map layout!\n" );
+		V_strncpy( m_szLastExporterError, "Failed to export: No rooms placed in the map layout!\n", sizeof( m_szLastExporterError ) );
 		return false;
 	}
 
@@ -125,7 +125,7 @@ bool VMFExporter::ExportVMF( CMapLayout *pLayout, const char *mapname, bool bPop
 	m_pExportWorldKeys = GetDefaultWorldChunk();
 	if ( !m_pExportWorldKeys )
 	{
-		V_snprintf( m_szLastExporterError, sizeof( m_szLastExporterError ), "Failed to save world chunk start\n" );
+		V_strncpy( m_szLastExporterError, "Failed to save world chunk start\n", sizeof( m_szLastExporterError ) );
 		return false;
 	}
 	m_pExportKeys->AddSubKey( m_pExportWorldKeys );
@@ -134,7 +134,7 @@ bool VMFExporter::ExportVMF( CMapLayout *pLayout, const char *mapname, bool bPop
 	// save out the big cube the whole level sits in	
 	if ( !AddLevelContainer() )
 	{
-		V_snprintf( m_szLastExporterError, sizeof( m_szLastExporterError ), "Failed to save level container\n" );
+		V_strncpy( m_szLastExporterError, "Failed to save level container\n", sizeof( m_szLastExporterError ) );
 		return false;
 	}
 
