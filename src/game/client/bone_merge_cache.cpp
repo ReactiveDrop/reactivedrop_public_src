@@ -142,14 +142,13 @@ void CBoneMergeCache::MergeMatchingBones( int boneMask, CBoneBitList &boneComput
 		if ( !( m_pOwnerHdr->boneFlags( iOwnerBone ) & boneMask ) )
 			continue;
 
-		// INFESTED_DLL temp comment
-		//MatrixCopy( m_pFollow->GetBone( iParentBone ), m_pOwner->GetBoneForWrite( iOwnerBone ) );
-
-		// INFESTED_DLL hack
+#ifndef INFESTED_DLL
+		MatrixCopy( m_pFollow->GetBone( iParentBone ), m_pOwner->GetBoneForWrite( iOwnerBone ) );
+#else
 		matrix3x4_t matPitchUp;
 		AngleMatrix( QAngle( 15, 0, 0 ), matPitchUp );
 		ConcatTransforms( m_pFollow->GetBone( iParentBone ), matPitchUp, m_pOwner->GetBoneForWrite( iOwnerBone ) );
-		
+#endif
 
 		boneComputed.Set( i );
 	}
