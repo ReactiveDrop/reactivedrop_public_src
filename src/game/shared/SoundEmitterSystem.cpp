@@ -1665,7 +1665,12 @@ void CBaseEntity::ScriptEmitSoundTable( const char *soundname, HSCRIPT table )
 
 	if ( g_pScriptVM->GetValue( table, "soundlevel", &value ) )
 	{
-		if ( !value.AssignTo( &params.m_SoundLevel ) )
+		int nSoundLevel;
+		if ( value.AssignTo( &nSoundLevel ) )
+		{
+			params.m_SoundLevel = soundlevel_t( nSoundLevel );
+		}
+		else
 		{
 			Warning( "EmitSoundTable: unexpected type for soundlevel (should be integer, one of the SNDLVL_ constants or a number of decibels)\n" );
 		}
@@ -1674,8 +1679,9 @@ void CBaseEntity::ScriptEmitSoundTable( const char *soundname, HSCRIPT table )
 	Vector origin = GetSoundEmissionOrigin();
 	if ( g_pScriptVM->GetValue( table, "origin", &value ) )
 	{
-		if ( value.AssignTo( &origin ) )
+		if ( value.m_type == FIELD_VECTOR )
 		{
+			origin = value;
 			params.m_pOrigin = &origin;
 		}
 		else
