@@ -96,9 +96,11 @@ void CPointDevShotCamera::DevShotThink_Setup( void )
 	// Hide stuff
 	engine->ClientCommand( pPlayer->edict(), "developer 0" );
 	engine->ClientCommand( pPlayer->edict(), "sv_cheats 1" );
+#ifdef INFESTED_DLL
 	engine->ClientCommand( pPlayer->edict(), "asw_draw_hud 0" );
 	engine->ClientCommand( pPlayer->edict(), "rd_draw_briefing_ui 0" );
 	engine->ClientCommand( pPlayer->edict(), "asw_god 1" );
+#endif // INFESTED_DLL
 
 	pPlayer->AddSolidFlags( FSOLID_NOT_SOLID );
 	pPlayer->EnableControl(FALSE);

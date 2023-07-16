@@ -97,7 +97,9 @@
 
 #include "env_debughistory.h"
 #include "collisionutils.h"
+#ifdef INFESTED_DLL
 #include "asw_marine.h"
+#endif // INFESTED_DLL
 
 extern ConVar sk_healthkit;
 
@@ -13157,13 +13159,14 @@ void CAI_BaseNPC::InputSetSpeedModifierRadius( inputdata_t &inputdata )
 void CAI_BaseNPC::InputSetSpeedModifierSpeed( inputdata_t &inputdata )
 {
 	m_iSpeedModSpeed = inputdata.value.Int();
-	
+#ifdef INFESTED_DLL
 	CASW_Marine* pMarine = dynamic_cast< CASW_Marine* >( this );
 	CBasePlayer* pPlayer = pMarine ? ( CBasePlayer* )pMarine->GetCommander() : NULL;
 	if ( pPlayer )
 	{
 		pPlayer->SetLaggedMovementValue( inputdata.value.Float() );
 	}
+#endif // INFESTED_DLL
 }
 
 //-----------------------------------------------------------------------------

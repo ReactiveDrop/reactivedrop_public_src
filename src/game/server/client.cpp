@@ -29,14 +29,13 @@
 #include "voice_gamemgr.h"
 #include "fmtstr.h"
 #include "videocfg/videocfg.h"
-#include "asw_gamerules.h"
-
 
 #ifdef HL2_DLL
 #include "weapon_physcannon.h"
 #endif
 
 #ifdef INFESTED_DLL
+#include "asw_gamerules.h"
 #include "asw_player.h"
 #include "asw_marine.h"
 #include "asw_equipment_list.h"
@@ -232,6 +231,7 @@ void Host_Say( edict_t *pEdict, const CCommand &args, bool teamonly )
 		}
 
 		const char* newText = text;
+#ifdef INFESTED_DLL
 		if ( CAlienSwarm *pAlienSwarm = ASWGameRules() )
 		{
 			ScriptVariant_t args[3];
@@ -247,6 +247,7 @@ void Host_Say( edict_t *pEdict, const CCommand &args, bool teamonly )
 				
 			newText = result.m_pszString;
 		}
+#endif // INFESTED_DLL
 
 		CSingleUserRecipientFilter user( client );
 		user.MakeReliable();
@@ -1016,6 +1017,7 @@ void DisableNoClip( CBasePlayer *pPlayer )
 	UTIL_LogPrintf( "%s left NOCLIP mode\n", GameLogSystem()->FormatPlayer( pPlayer ) );
 }
 
+#ifdef INFESTED_DLL
 void EnableRDNoClip( CASW_Inhabitable_NPC *pNPC )
 {
 	// Disengage from hierarchy
@@ -1064,12 +1066,10 @@ CON_COMMAND_F( rd_noclip, "Toggle. Marine becomes non-solid and flies.  Optional
 	if ( !pPlayer )
 		return;
 
-#ifdef INFESTED_DLL
 	CASW_Player *pASWPlayer = ToASW_Player( pPlayer );
 	CASW_Inhabitable_NPC *pNPC = pASWPlayer->GetNPC();
 	if ( !pNPC )
 		return;
-#endif
 
 	if ( args.ArgC() >= 2 )
 	{
@@ -1096,6 +1096,7 @@ CON_COMMAND_F( rd_noclip, "Toggle. Marine becomes non-solid and flies.  Optional
 		}
 	}
 }
+#endif // INFESTED_DLL
 
 CON_COMMAND_F( ent_setpos, "Move entity to position", FCVAR_CHEAT )
 {
