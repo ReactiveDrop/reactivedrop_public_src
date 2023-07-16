@@ -406,7 +406,12 @@ void C_EnvProjectedTexture::UpdateLight( void )
 	}
 
 	g_pClientShadowMgr->SetFlashlightLightWorld( m_LightHandle, m_bLightWorld );
-	g_pClientShadowMgr->UpdateProjectedTexture(m_LightHandle, true);
+
+	// The gigantic if-condition above handles a forced update.
+	// If we didn't run a forced update this frame, we need to do a cheaper regular update instead.
+	if (!m_bForceUpdate) {
+		g_pClientShadowMgr->UpdateProjectedTexture( m_LightHandle, true );
+	}
 }
 
 bool C_EnvProjectedTexture::Simulate( void )
