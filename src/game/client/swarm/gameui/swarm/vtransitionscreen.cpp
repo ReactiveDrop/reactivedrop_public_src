@@ -44,7 +44,7 @@ void CTransitionScreen::ApplySchemeSettings( vgui::IScheme *pScheme )
 	surface()->GetScreenSize( screenWide, screenTall );
 
 	char filename[MAX_PATH];
-	V_snprintf( filename, sizeof( filename ), "console/background01rd" ); // TODO: engine->GetStartupImage( filename, sizeof( filename ), screenWide, screenTall );
+	V_strncpy( filename, "console/background01rd", sizeof(filename) ); // TODO: engine->GetStartupImage( filename, sizeof( filename ), screenWide, screenTall );
 	m_iImageID = surface()->CreateNewTextureID();
 	surface()->DrawSetTextureFile( m_iImageID, filename, true, false );
 

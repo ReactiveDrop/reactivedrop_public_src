@@ -153,7 +153,6 @@ void C_EnvProjectedTexture::OnDataChanged( DataUpdateType_t updateType )
 	BaseClass::OnDataChanged( updateType );
 }
 
-static ConVar asw_perf_wtf("asw_perf_wtf", "0", FCVAR_DEVELOPMENTONLY, "Disable updating of projected shadow textures from UpdateLight" );
 void C_EnvProjectedTexture::UpdateLight( void )
 {
 	VPROF("C_EnvProjectedTexture::UpdateLight");
@@ -408,8 +407,9 @@ void C_EnvProjectedTexture::UpdateLight( void )
 
 	g_pClientShadowMgr->SetFlashlightLightWorld( m_LightHandle, m_bLightWorld );
 
-	if ( !asw_perf_wtf.GetBool() && !m_bForceUpdate )
-	{
+	// The gigantic if-condition above handles a forced update.
+	// If we didn't run a forced update this frame, we need to do a cheaper regular update instead.
+	if (!m_bForceUpdate) {
 		g_pClientShadowMgr->UpdateProjectedTexture( m_LightHandle, true );
 	}
 }

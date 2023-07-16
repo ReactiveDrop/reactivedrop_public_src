@@ -1272,9 +1272,11 @@ void CBaseHudChat::StartMessageMode( int iMessageModeType )
 	// reactivedrop: #iss-nohud-hanging if asw_draw_hud is 0 we don't 
 	// show chat input box, because this leads to input being stuck and 
 	// inability of client to open Esc menu or console
+#ifdef INFESTED_DLL
 	extern ConVar asw_draw_hud;
 	if (!asw_draw_hud.GetBool())
 		return;
+#endif // INFESTED_DLL
 	
 	m_nMessageMode = iMessageModeType;
 	cl_chat_active.SetValue( m_nMessageMode );

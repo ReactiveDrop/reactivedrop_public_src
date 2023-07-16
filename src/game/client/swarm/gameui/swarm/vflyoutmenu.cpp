@@ -311,7 +311,7 @@ void FlyoutMenu::ApplySettings( KeyValues* inResourceData )
 	const char* resFile = inResourceData->GetString( "ResourceFile", NULL );
 	if ( resFile )
 	{
-		V_snprintf( m_resFile, DEFAULT_STR_LEN, resFile );
+		V_strncpy( m_resFile, resFile, DEFAULT_STR_LEN );
 		LoadControlSettings( resFile );
 	}
 

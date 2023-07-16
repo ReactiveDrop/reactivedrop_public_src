@@ -14,7 +14,9 @@
 #include "text_message.h"
 #include "hud_macros.h"
 #include "iclientmode.h"
+#ifdef INFESTED_DLL
 #include "asw_gamerules.h"
+#endif // INFESTED_DLL
 
 #include <vgui/vgui.h>
 #include <vgui/ISurface.h>
@@ -186,7 +188,11 @@ void CHudMenu::Paint()
 	int wide = m_nMaxPixels + border;
 	int tall = m_nHeight + border;
 
+#ifdef INFESTED_DLL
 	int y = ( ScreenHeight() - tall ) * ( ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME ? 0.25f : 0.5f );
+#else
+	int y = (ScreenHeight() - tall) * 0.5f;
+#endif // INFESTED_DLL
 
 	DrawBox( x - border/2, y - border/2, wide, tall, m_BoxColor, m_flSelectionAlphaOverride / 255.0f );
 

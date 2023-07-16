@@ -10,7 +10,9 @@
 #include "filesystem.h"
 #include "utldict.h"
 #include "ammodef.h"
+#ifdef INFESTED_DLL
 #include "asw_weapon_parse.h"
+#endif // INFESTED_DLL
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -113,7 +115,11 @@ WEAPON_FILE_INFO_HANDLE LookupWeaponInfoSlot( const char *name )
 
 
 // FIXME, handle differently?
+#ifdef INFESTED_DLL
 static CASW_WeaponInfo gNullWeaponInfo;
+#else
+static FileWeaponInfo_t gNullWeaponInfo;
+#endif // INFESTED_DLL
 
 
 //-----------------------------------------------------------------------------
