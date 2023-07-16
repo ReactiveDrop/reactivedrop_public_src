@@ -548,7 +548,7 @@ const char* CClientTools::GetClassname( HTOOLHANDLE handle )
 	HToolEntry_t &entry = m_Handles[ idx ];
 	if ( entry.m_hEntity )
 	{
-		return STRING( entry.m_hEntity->GetClassname() );
+		return entry.m_hEntity->GetClassname();
 	}
 	Assert( 0 );
 	return NULL;

@@ -310,7 +310,7 @@ void CTextWindow::OnCommand( const char *command)
 
 void CTextWindow::SetData(KeyValues *data)
 {
-	if ( IsVisible() == true )
+	if ( IsVisible() == false )
 		return;
 
 	SetData( data->GetInt( "type" ), data->GetString( "title"), data->GetString( "msg" ), data->GetString( "cmd" ) );

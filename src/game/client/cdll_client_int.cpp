@@ -1760,6 +1760,13 @@ void ConfigureCurrentSystemLevel()
 		nGPUMemLevel = 360;
 	}
 
+	// This corresponds to hardcoded decryption keys defined in videocfg, used for applying default video settings from the filesystem.
+	// This is probably an anti-cheat measure.
+	// We don't really care for this setup (everybody's on modern system levels defined before these files were generated).
+	// However, the engine will get upset if you try to load video files intended for a different game.
+	// So, if you're using the Alien Swarm branch of the engine (and its accompanying files), keep this as 'swarm'.
+	// The files are encrypted with: https://developer.valvesoftware.com/wiki/ICE.
+	// Note that GameRules::GetEncryptionKey() is not relevant here, it's a different key.
 #if defined( SWARM_DLL )
 	char szModName[32] = "swarm";
 #elif defined ( HL2_EPISODIC )

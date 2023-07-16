@@ -119,7 +119,7 @@ bool CGlowOverlay::Update()
 	return true;
 }
 
-ConVar building_cubemaps( "building_cubemaps", "0" );
+ConVar building_cubemaps( "building_cubemaps", "0", FCVAR_DEVELOPMENTONLY );
 
 float CGlowOverlay::CalcGlowAspect()
 {

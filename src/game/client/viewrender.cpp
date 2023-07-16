@@ -52,8 +52,6 @@
 #include "vgui/ISurface.h"
 #include "c_asw_marine.h"
 
-#define PARTICLE_USAGE_DEMO									// uncomment to get particle bar thing
-
 // reactivedrop: if defined and blackskyfog is set as skybox then set r_skybox 0 and draw fog color instead of skybox
 // #define REACTIVEDROP_SKYBOX_FOG_HACK
 
@@ -2295,8 +2293,6 @@ void CViewRender::FreezeFrame( float flFreezeTime )
 	}
 }
 
-const char *COM_GetModDirectory();
-
 void PositionHudPanels( CUtlVector< vgui::VPANEL > &list, const CViewSetup &view )
 {
 	for ( int i = 0; i < list.Count(); ++i )
@@ -2309,44 +2305,6 @@ void PositionHudPanels( CUtlVector< vgui::VPANEL > &list, const CViewSetup &view
 		}
 	}
 }
-
-#ifdef PARTICLE_USAGE_DEMO
-static ConVar r_particle_demo( "r_particle_demo", "0", FCVAR_CHEAT );
-static CNonDrawingParticleSystem *s_pDemoSystem = NULL;
-
-void ParticleUsageDemo( void )
-{
-	if ( r_particle_demo.GetInt() )
-	{
-		if ( ! s_pDemoSystem )
-		{
-			s_pDemoSystem = ParticleMgr()->CreateNonDrawingEffect( "christest" );
-		}
-		// draw a bunch of bars
-		CParticleCollection *pSystem = s_pDemoSystem->Get();
-		for( int i = 0; i < pSystem->m_nActiveParticles; i++ )
-		{
-			Vector vecColor = pSystem->GetVectorAttributeValue( PARTICLE_ATTRIBUTE_TINT_RGB, i );
-			vecColor *= 255.0;
-			float flRadius = *( pSystem->GetFloatAttributePtr( PARTICLE_ATTRIBUTE_RADIUS, i ) );
-			CMatRenderContextPtr pRenderContext( materials );
-			pRenderContext->ClearColor4ub( vecColor.x, vecColor.y, vecColor.z, 255 );
-			pRenderContext->Viewport( 0, i * 20, flRadius, 17 );
-			pRenderContext->ClearBuffers( true, true );
-		}
-	}
-	else
-	{
-		// its off
-		if ( s_pDemoSystem )
-		{
-			delete s_pDemoSystem;
-			s_pDemoSystem = NULL;
-		}
-
-	}
-}
-#endif
 
 
 //-----------------------------------------------------------------------------
@@ -2369,23 +2327,6 @@ void CViewRender::RenderView( const CViewSetup &view, const CViewSetup &hudViewS
 
 	C_BaseAnimating::AutoAllowBoneAccess boneaccess( true, true );
 	VPROF( "CViewRender::RenderView" );
-
-	// Don't want Left4Dead running less than DX 9
-	if ( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() < 90 )
-	{
-		// We know they were running at least 9.0 when the game started...we check the 
-		// value in ClientDLL_Init()...so they must be messing with their DirectX settings.
-		if ( Q_stricmp( COM_GetModDirectory(), "left4dead" ) == 0 )
-		{
-			static bool bFirstTime = true;
-			if ( bFirstTime )
-			{
-				bFirstTime = false;
-				Msg( "This game has a minimum requirement of Shader Model 2.0 to run properly.\n" );
-			}
-			return;
-		}
-	}
 
 	{
 		// HACK: server-side weapons use the viewmodel model, and client-side weapons swap that out for
@@ -2802,10 +2743,6 @@ void CViewRender::RenderView( const CViewSetup &view, const CViewSetup &hudViewS
 	g_WorldListCache.Flush();
 
 	m_CurrentView = view;
-
-#ifdef PARTICLE_USAGE_DEMO
-	ParticleUsageDemo();
-#endif
 
 
 }

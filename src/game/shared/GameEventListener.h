@@ -26,7 +26,7 @@ public:
 		m_nDebugID = EVENT_DEBUG_ID_INIT;
 	}
 
-	~CGameEventListener()
+	virtual ~CGameEventListener()
 	{
 		m_nDebugID = EVENT_DEBUG_ID_SHUTDOWN;
 		StopListeningForAllEvents();
