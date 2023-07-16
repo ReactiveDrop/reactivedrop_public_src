@@ -15,15 +15,18 @@
 #include "tier0/vprof.h"
 #include "checksum_crc.h"
 #include "tier0/icommandline.h"
+#ifdef INFESTED_DLL
+#include "asw_util_shared.h"
 #include "rd_workshop.h"
+#ifndef CLIENT_DLL
+#include "asw_inhabitable_npc.h"
+#endif
+#endif
 
 #ifndef CLIENT_DLL
 #include "envmicrophone.h"
 #include "sceneentity.h"
 #include "closedcaptions.h"
-#ifdef INFESTED_DLL
-#include "asw_util_shared.h"
-#endif
 #else
 #include <vgui_controls/Controls.h>
 #include <vgui/IVgui.h>
