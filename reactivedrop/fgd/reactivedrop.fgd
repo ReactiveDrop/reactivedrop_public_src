@@ -105,7 +105,7 @@
 		1 : "Never Solid"
 		2 : "Always Solid"
 	]
-	CollideWithGrenades(choices) : "Collide With Grenades" : 0 : "If this entity is solid and this is not set, grenades will pass through it."
+	CollideWithGrenades(choices) : "Collide With Grenades" : 0 : "If this entity is solid and this is not set, grenades will pass through it." =
 	[
 		0 : "Don't collide with grenades thrown from below"
 		1 : "Always collide with grenades (if solid)"
