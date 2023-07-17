@@ -53,6 +53,7 @@ ConVar rd_workshop_temp_subscribe( "rd_workshop_temp_subscribe", "3", FCVAR_NONE
 ConVar rd_workshop_update_every_round( "rd_workshop_update_every_round", "1", FCVAR_HIDDEN, "If 1 dedicated server will check for workshop items during each mission restart(workshop.cfg will be executed). If 0, workshop items will only update once during server startup" );
 ConVar rd_workshop_use_reactivedrop_folder( "rd_workshop_use_reactivedrop_folder", "1", FCVAR_NONE, "If 1, use the reactivedrop folder. If 0, use the folder steam assigns by default", true, 0, true, 1 );
 ConVar rd_workshop_unconditional_download_item( "rd_workshop_unconditional_download_item", "0", FCVAR_NONE, "Dedicated server only. If nonzero, call ISteamUGC::DownloadItem every [number] map loads, even if the API reports it being up-to-date." );
+ConVar rd_workshop_unconditional_download_item_once( "rd_workshop_unconditional_download_item_once", "1", FCVAR_NONE, "Dedicated server only. If nonzero, try to download workshop items the first time they are requested even if Steam thinks the cache is up-to-date." );
 ConVar rd_workshop_query_cache( "rd_workshop_query_cache", "0", FCVAR_NONE, "If set, caches all calls to SteamUGC for given seconds. Can reduce SteamUGC network calls." );
 ConVar sv_workshop_debug( "sv_workshop_debug", "0", FCVAR_NONE, "If 1 workshop debugging messages will be printed in console" );
 #define rd_workshop_debug sv_workshop_debug
@@ -1927,6 +1928,21 @@ static bool ShouldUnconditionalDownload( PublishedFileId_t id )
 		return false;
 	}
 
+	if ( rd_workshop_unconditional_download_item_once.GetBool() )
+	{
+		static CUtlVector<PublishedFileId_t> s_DownloadedAddonOnce;
+
+		if ( !s_DownloadedAddonOnce.IsValidIndex( s_DownloadedAddonOnce.Find( id ) ) )
+		{
+			// Send a download request immediately (the caller will send another one).
+			SteamGameServerUGC()->DownloadItem( id, false );
+
+			s_DownloadedAddonOnce.AddToTail( id );
+
+			return true;
+		}
+	}
+
 	if ( rd_workshop_unconditional_download_item.GetBool() )
 	{
 		static CUtlMap<PublishedFileId_t, int> s_UnconditionalDownloadCooldown{ DefLessFunc( PublishedFileId_t ) };
@@ -1996,7 +2012,12 @@ bool CReactiveDropWorkshop::UpdateAndLoadAddon( PublishedFileId_t id, bool bHigh
 	}
 	else
 	{
-		Warning( "Download request for addon %llu failed!\n", id );
+		if ( rd_workshop_debug.GetBool() )
+		{
+			Msg( "DownloadItem request for addon %llu returned false. Assuming addon is ready-to-use.\n", id );
+		}
+
+		return LoadAddon( id, false );
 	}
 	return false;
 }
