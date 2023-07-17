@@ -231,6 +231,14 @@ char *V_pretifymem( float value, int digitsafterdecimal = 2, bool usebinaryonek 
 // Prints out a pretified integer with comma separators (eg, 7,233,270,000)
 char *V_pretifynum( int64 value );
 
+// helper to identify "mean" spaces, which we don't like in visible identifiers
+// such as player Name
+bool V_IsMeanSpaceW( wchar_t wch );
+
+// strips leading and trailing whitespace, also taking "aggressive" characters 
+// like punctuation spaces, non-breaking spaces, composing characters, and so on
+bool V_RemoveAllEvilCharacters( char *pch );
+
 // conversion functions wchar_t <-> char, returning the number of characters converted
 int V_UTF8ToUnicode( const char *pUTF8, wchar_t *pwchDest, int cubDestSizeInBytes );
 int V_UnicodeToUTF8( const wchar_t *pUnicode, char *pUTF8, int cubDestSizeInBytes );
@@ -526,6 +534,8 @@ inline BinString_t<T> MakeBinString( const T& that )
 #define Q_vsnprintf				V_vsnprintf
 #define Q_pretifymem			V_pretifymem
 #define Q_pretifynum			V_pretifynum
+#define Q_IsMeanSpaceW			V_IsMeanSpaceW
+#define Q_RemoveAllEvilCharacters	V_RemoveAllEvilCharacters
 #define Q_UTF8ToUnicode			V_UTF8ToUnicode
 #define Q_UnicodeToUTF8			V_UnicodeToUTF8
 #define Q_hextobinary			V_hextobinary
