@@ -131,7 +131,7 @@ void AchievementListItem::SetGamerScore(int score)
 {
 	m_GamerScore = score;
 
-	wchar_t buffer[10];
+	wchar_t buffer[64];
 	wchar_t num[5];
 
 	V_snwprintf( num, ARRAYSIZE(num), L"%d", m_GamerScore );
@@ -619,7 +619,7 @@ void Achievements::Activate()
 	// Construct gamerscore progress string
 	itoa( gamerScore, buffer, 10 );
 	V_UTF8ToUnicode( buffer, wGamerscore, sizeof( wGamerscore ) );
-	g_pVGuiLocalize->ConstructString( localizedGamerscoreProgress, sizeof( localizedGamerscoreProgress ), g_pVGuiLocalize->Find( "#L4D360UI_Gamerscore_Progress" ), 2, wGamerscore );
+	g_pVGuiLocalize->ConstructString( localizedGamerscoreProgress, sizeof( localizedGamerscoreProgress ), g_pVGuiLocalize->Find( "#L4D360UI_Gamerscore_Progress" ), 1, wGamerscore );
 	m_LblGamerscore->SetText( localizedGamerscoreProgress );
 
 	// Focus on the first item in the list
