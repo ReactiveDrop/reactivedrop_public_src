@@ -395,7 +395,8 @@ FORCEINLINE bool IsOpenGL( void )
 }
 
 #ifndef RD_SUPPORT_SHADER_MODEL_20
-#define RD_SHADER_MODEL_20_CRASH Error( "Alien Swarm: Reactive Drop requires a graphics card that supports at least DirectX 9 Shader Model 2.0b.\nIf you are seeing this error message with a graphics card made during this century, make sure you are not passing the wrong -dxlevel on the command line.\n" )
+// For some reason, the dedicated server runs the game shader DLL, so we need to allow materials to load even if they can't be rendered (such as on a headless system running Wine).
+#define RD_SHADER_MODEL_20_CRASH // Error( "Alien Swarm: Reactive Drop requires a graphics card that supports at least DirectX 9 Shader Model 2.0b.\nIf you are seeing this error message with a graphics card made during this century, make sure you are not passing the wrong -dxlevel on the command line.\n" )
 #endif
 
 #endif // BASEVSSHADER_H
