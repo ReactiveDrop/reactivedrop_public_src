@@ -164,10 +164,10 @@ void InitParamsLightmappedGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** pa
 	InitFloatParam( info.m_nOutlineAlpha, params, 1.0 );
 
 	// From https://developer.valvesoftware.com/wiki/Parallax_Corrected_Cubemaps
-	// Cubemap parallax correction requires all 4 lines (if the 2nd, 3rd, or 4th are undef, undef the first one (checking done on first var)
-	if ( info.m_nEnvmapParallaxObb1 != -1 && !( info.m_nEnvmapParallaxObb2 != -1 && params[info.m_nEnvmapParallaxObb2]->IsDefined() && info.m_nEnvmapParallaxObb3 != -1 && params[info.m_nEnvmapParallaxObb3]->IsDefined() && info.m_nEnvmapOrigin != -1 && params[info.m_nEnvmapOrigin]->IsDefined() ) )
+	// Cubemap parallax correction requires all 4 lines
+	if ( info.m_nEnvmapParallax != -1 && !( params[info.m_nEnvmapParallax]->IsDefined() && IS_PARAM_DEFINED( info.m_nEnvmapParallaxObb1 ) && IS_PARAM_DEFINED( info.m_nEnvmapParallaxObb2 ) && IS_PARAM_DEFINED( info.m_nEnvmapParallaxObb3 ) && IS_PARAM_DEFINED( info.m_nEnvmapOrigin ) ) )
 	{
-		params[info.m_nEnvmapParallaxObb1]->SetUndefined();
+		params[info.m_nEnvmapParallax]->SetIntValue( 0 );
 	}
 
 	// parallax mapping
@@ -356,7 +356,7 @@ void DrawLightmappedGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** params, 
 			(params[info.m_nBlendModulateTexture]->IsTexture() );
 		bool hasNormalMapAlphaEnvmapMask = g_pConfig->UseSpecular() && IS_FLAG_SET( MATERIAL_VAR_NORMALMAPALPHAENVMAPMASK );
 		// From https://developer.valvesoftware.com/wiki/Parallax_Corrected_Cubemaps
-		bool hasParallaxCorrection = info.m_nEnvmapParallaxObb1 != -1 && params[info.m_nEnvmapParallaxObb1]->IsDefined();
+		bool hasParallaxCorrection = info.m_nEnvmapParallax != -1 && params[info.m_nEnvmapParallax]->GetIntValue() != 0;
 
 		bool bParallaxMapping = false;
 		if ( g_pHardwareConfig->SupportsPixelShaders_2_b() )

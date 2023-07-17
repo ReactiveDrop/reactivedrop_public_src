@@ -80,6 +80,7 @@ BEGIN_VS_SHADER( LightmappedGeneric,
 		SHADER_PARAM( OUTLINEEND0, SHADER_PARAM_TYPE_FLOAT, "0.0", "inner end value for outline")
 		SHADER_PARAM( OUTLINEEND1, SHADER_PARAM_TYPE_FLOAT, "0.0", "outer end value for outline")
 
+		SHADER_PARAM( ENVMAPPARALLAX, SHADER_PARAM_TYPE_BOOL, "0", "Should envmap reflections be parallax-corrected?" )
 		// From https://developer.valvesoftware.com/wiki/Parallax_Corrected_Cubemaps
 		SHADER_PARAM( ENVMAPPARALLAXOBB1, SHADER_PARAM_TYPE_VEC4, "[1 0 0 0]", "The first line of the parallax correction OBB matrix" )
 		SHADER_PARAM( ENVMAPPARALLAXOBB2, SHADER_PARAM_TYPE_VEC4, "[0 1 0 0]", "The second line of the parallax correction OBB matrix" )
@@ -159,6 +160,7 @@ END_SHADER_PARAMS
 		info.m_nOutlineEnd0 = OUTLINEEND0;
 		info.m_nOutlineEnd1 = OUTLINEEND1;
 
+		info.m_nEnvmapParallax = ENVMAPPARALLAX;
 		// From https://developer.valvesoftware.com/wiki/Parallax_Corrected_Cubemaps
 		info.m_nEnvmapParallaxObb1 = ENVMAPPARALLAXOBB1;
 		info.m_nEnvmapParallaxObb2 = ENVMAPPARALLAXOBB2;
