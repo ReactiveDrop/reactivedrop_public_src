@@ -25,8 +25,28 @@ extern ConVar asw_marine_gun_offset_x;
 extern ConVar asw_marine_gun_offset_y;
 extern ConVar asw_marine_gun_offset_z;
 
-#define NUM_FEMALE_COLONIST_MODELS 7
-#define NUM_MALE_COLONIST_MODELS 9
+static const char *const s_szColonistModelFemale[] =
+{
+	"models/humans/group00/female_01.mdl",
+	"models/humans/group00/female_02.mdl",
+	"models/humans/group00/female_03.mdl",
+	"models/humans/group00/female_04.mdl",
+	"models/humans/group00/female_06.mdl",
+	"models/humans/group00/female_07.mdl",
+};
+
+static const char *const s_szColonistModelMale[] =
+{
+	"models/humans/group00/male_01.mdl",
+	"models/humans/group00/male_02.mdl",
+	"models/humans/group00/male_03.mdl",
+	"models/humans/group00/male_04.mdl",
+	"models/humans/group00/male_05.mdl",
+	"models/humans/group00/male_06.mdl",
+	"models/humans/group00/male_07.mdl",
+	"models/humans/group00/male_08.mdl",
+	"models/humans/group00/male_09.mdl",
+};
 
 LINK_ENTITY_TO_CLASS( asw_colonist, CASW_Colonist );
 
@@ -164,14 +184,14 @@ void CASW_Colonist::Precache()
 			m_Gender = RandomInt( 0, 1 ) ? GENDER_FEMALE : GENDER_MALE;
 		}
 
-		char szModelName[MAX_PATH];
+		const char *szModelName;
 		if ( m_Gender == GENDER_FEMALE )
 		{
-			V_snprintf( szModelName, sizeof( szModelName ), "models/humans/group00/female_%02d.mdl", RandomInt( 1, NUM_FEMALE_COLONIST_MODELS ) );
+			szModelName = s_szColonistModelFemale[RandomInt( 0, NELEMS( s_szColonistModelFemale ) - 1 )];
 		}
 		else
 		{
-			V_snprintf( szModelName, sizeof( szModelName ), "models/humans/group00/male_%02d.mdl", RandomInt( 1, NUM_MALE_COLONIST_MODELS ) );
+			szModelName = s_szColonistModelMale[RandomInt( 0, NELEMS( s_szColonistModelMale ) - 1 )];
 		}
 
 		SetModelName( AllocPooledString( szModelName ) );
@@ -180,17 +200,13 @@ void CASW_Colonist::Precache()
 	PrecacheModel( STRING( GetModelName() ) );
 
 	// always precache all random colonist model options at the start of the level to avoid hitches
-	for ( int i = 1; i <= NUM_FEMALE_COLONIST_MODELS; i++ )
+	for ( int i = 0; i < NELEMS( s_szColonistModelFemale ); i++ )
 	{
-		char szModelName[MAX_PATH];
-		V_snprintf( szModelName, sizeof( szModelName ), "models/humans/group00/female_%02d.mdl", i );
-		PrecacheModel( szModelName );
+		PrecacheModel( s_szColonistModelFemale[i] );
 	}
-	for ( int i = 1; i <= NUM_MALE_COLONIST_MODELS; i++ )
+	for ( int i = 0; i < NELEMS( s_szColonistModelMale ); i++ )
 	{
-		char szModelName[MAX_PATH];
-		V_snprintf( szModelName, sizeof( szModelName ), "models/humans/group00/male_%02d.mdl", i );
-		PrecacheModel( szModelName );
+		PrecacheModel( s_szColonistModelMale[i] );
 	}
 
 	PrecacheScriptSound( "NPC_Citizen.FootstepLeft" );
