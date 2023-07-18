@@ -78,6 +78,7 @@ const char *const CReactiveDropWorkshop::s_RDWorkshopMissionTags[] =
 	"endless", // browsable
 };
 
+static bool s_bClearingWorkshopCache = false;
 CReactiveDropWorkshop g_ReactiveDropWorkshop;
 
 bool CReactiveDropWorkshop::Init()
@@ -1874,11 +1875,42 @@ void CReactiveDropWorkshop::PrepareForUnloadCacheClear()
 void CReactiveDropWorkshop::ClearCaches( const char *szReason )
 {
 	if ( m_bStartingUp )
+		return;
+
+	DevMsg( "Workshop: clearing cache at end of frame: %s\n", szReason );
+
+	if ( s_bClearingWorkshopCache )
+		return;
+
+	s_bClearingWorkshopCache = true;
+
+#ifdef CLIENT_DLL
+	engine->ClientCmd_Unrestricted( "_rd_workshop_clear_cache_c" );
+#else
+	engine->ServerCommand( "_rd_workshop_clear_cache_s" );
+#endif
+}
+
+#ifdef CLIENT_DLL
+CON_COMMAND_F( _rd_workshop_clear_cache_c, "", FCVAR_HIDDEN )
+#else
+CON_COMMAND_F( _rd_workshop_clear_cache_s, "", FCVAR_HIDDEN )
+#endif
+{
+	g_ReactiveDropWorkshop.DoClearCaches();
+}
+
+void CReactiveDropWorkshop::DoClearCaches()
+{
+	if ( !s_bClearingWorkshopCache )
 	{
+		Warning( "Unexpected call to workshop clear cache concommand\n" );
 		return;
 	}
 
-	DevMsg( "Workshop: clearing cache: %s\n", szReason );
+	s_bClearingWorkshopCache = false;
+
+	DevMsg( "Workshop: clearing caches\n" );
 
 #ifdef CLIENT_DLL
 	ReactiveDropChallenges::ClearClientCache();

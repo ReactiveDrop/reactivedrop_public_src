@@ -61,6 +61,7 @@ public:
 
 	void PrepareForUnloadCacheClear();
 	void ClearCaches( const char *szReason );
+	void DoClearCaches();
 	void GetActiveAddons( CUtlVector<PublishedFileId_t> &active );
 	bool UpdateAndLoadAddon( PublishedFileId_t id, bool bHighPriority = false, bool bUnload = false );
 	void RealLoadAddon( PublishedFileId_t id );
