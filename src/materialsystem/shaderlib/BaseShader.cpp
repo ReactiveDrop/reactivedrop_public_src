@@ -60,6 +60,7 @@ static CInstanceCommandBufferBuilder< CFixedCommandStorageBuffer< 512 > > s_Inst
 
 bool g_shaderConfigDumpEnable = false; //true;		//DO NOT CHECK IN ENABLED FIXME
 static ConVar mat_fullbright( "mat_fullbright","0", FCVAR_CHEAT );
+static ConVar mat_force_alpha_to_coverage( "mat_force_alpha_to_coverage", "1", FCVAR_NONE, "make the default value of $allowalphatocoverage 1 if $alphatest is set" );
 	
 //-----------------------------------------------------------------------------
 // constructor
@@ -118,6 +119,12 @@ void CBaseShader::InitShaderParams( IMaterialVar** ppParams, const char *pMateri
 	Assert( !s_ppParams );
 
 	s_ppParams = ppParams;
+
+	if ( mat_force_alpha_to_coverage.GetBool() && ( ppParams[FLAGS]->GetIntValue() & MATERIAL_VAR_ALPHATEST ) && !( ppParams[FLAGS_DEFINED]->GetIntValue() & MATERIAL_VAR_ALLOWALPHATOCOVERAGE ) )
+	{
+		ppParams[FLAGS]->SetIntValue( ppParams[FLAGS]->GetIntValue() | MATERIAL_VAR_ALLOWALPHATOCOVERAGE );
+		ppParams[FLAGS_DEFINED]->SetIntValue( ppParams[FLAGS_DEFINED]->GetIntValue() | MATERIAL_VAR_ALLOWALPHATOCOVERAGE );
+	}
 
 	OnInitShaderParams( ppParams, pMaterialName );
 
