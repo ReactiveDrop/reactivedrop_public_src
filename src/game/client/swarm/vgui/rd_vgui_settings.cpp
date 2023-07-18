@@ -180,6 +180,8 @@ CRD_VGUI_Option::CRD_VGUI_Option( vgui::Panel *parent, const char *panelName, co
 {
 	SetConsoleStylePanel( true );
 
+	m_pInteractiveArea = new vgui::Panel( this, "InteractiveArea" );
+	m_pInteractiveArea->SetMouseInputEnabled( false );
 	m_pLblFieldName = new vgui::Label( this, "LblFieldName", szLabel );
 	m_pLblFieldName->SetMouseInputEnabled( false );
 	m_pLblHint = new vgui::Label( this, "LblHint", "" );
@@ -204,16 +206,20 @@ void CRD_VGUI_Option::NavigateTo()
 	RequestFocus();
 }
 
+void CRD_VGUI_Option::ApplySettings( KeyValues *pSettings )
+{
+	BaseClass::ApplySettings( pSettings );
+
+	const char *szResFile = pSettings->GetString( "ResourceFile", NULL );
+	if ( szResFile )
+	{
+		LoadControlSettings( szResFile );
+	}
+}
+
 void CRD_VGUI_Option::PerformLayout()
 {
 	BaseClass::PerformLayout();
-
-	m_pLblFieldName->SizeToContents();
-
-	if ( m_eMode == MODE_CHECKBOX )
-		m_pLblFieldName->SetPos( YRES( 12 ), 0 );
-	else
-		m_pLblFieldName->SetPos( 0, 0 );
 }
 
 void CRD_VGUI_Option::Paint()
@@ -221,15 +227,24 @@ void CRD_VGUI_Option::Paint()
 	BaseClass::PerformLayout();
 
 	int x0, y0, x1, y1;
-	x0 = y0 = 0;
-	x1 = y1 = YRES( 10 );
+	m_pInteractiveArea->GetBounds( x0, y0, x1, y1 );
 	if ( m_eMode == MODE_RADIO )
 	{
 		HUD_SHEET_DRAW_BOUNDS( Controls, UV_radio );
 	}
 	else if ( m_eMode == MODE_DROPDOWN )
 	{
-		// TODO
+		if ( m_bHaveCurrent )
+		{
+			Assert( m_Current.m_iOption >= 0 && m_Current.m_iOption < m_Options.Count() );
+			if ( m_Current.m_iOption >= 0 && m_Current.m_iOption < m_Options.Count() )
+			{
+				vgui::surface()->DrawSetTextColor( m_pInteractiveArea->GetFgColor() );
+				vgui::surface()->DrawSetTextFont( m_pLblFieldName->GetFont() );
+				vgui::surface()->DrawSetTextPos( x0, y0 + ( y1 - vgui::surface()->GetFontTall( m_pLblFieldName->GetFont() ) ) / 2 );
+				vgui::surface()->DrawUnicodeString( m_Options[m_Current.m_iOption]->m_wszLabel );
+			}
+		}
 	}
 	else if ( m_eMode == MODE_CHECKBOX )
 	{

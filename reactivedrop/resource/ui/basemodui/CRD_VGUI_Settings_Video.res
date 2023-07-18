@@ -1,0 +1,332 @@
+"Resource/UI/BaseModUI/CRD_VGUI_Settings_Video.res"
+{
+	"SettingScreenResolution"
+	{
+		"ControlName"		"CRD_VGUI_Option"
+		"fieldName"			"SettingScreenResolution"
+		"xpos"				"16"
+		"ypos"				"40"
+		"wide"				"270"
+		"tall"				"17"
+		"navLeft"			"SettingScreenResolution"
+		"navRight"			"SettingEffectDetail"
+		"navDown"			"SettingDisplayMode"
+	}
+
+	"SettingDisplayMode"
+	{
+		"ControlName"		"CRD_VGUI_Option"
+		"fieldName"			"SettingDisplayMode"
+		"xpos"				"16"
+		"ypos"				"62"
+		"wide"				"270"
+		"tall"				"36"
+		"navLeft"			"SettingDisplayMode"
+		"navRight"			"SettingShaderDetail"
+		"navUp"				"SettingScreenResolution"
+		"navDown"			"SettingScreenBrightness"
+	}
+
+	"SettingScreenBrightness"
+	{
+		"ControlName"		"CRD_VGUI_Option"
+		"fieldName"			"SettingScreenBrightness"
+		"xpos"				"16"
+		"ypos"				"99"
+		"wide"				"270"
+		"tall"				"36"
+		"navLeft"			"SettingScreenBrightness"
+		"navRight"			"SettingTextureDetail"
+		"navUp"				"SettingDisplayMode"
+		"navDown"			"SettingRenderingPipeline"
+	}
+
+	"SettingRenderingPipeline"
+	{
+		"ControlName"		"CRD_VGUI_Option"
+		"fieldName"			"SettingRenderingPipeline"
+		"xpos"				"16"
+		"ypos"				"136"
+		"wide"				"270"
+		"tall"				"36"
+		"navLeft"			"SettingRenderingPipeline"
+		"navRight"			"SettingAntiAliasing"
+		"navUp"				"SettingScreenBrightness"
+		"navDown"			"SettingVSync"
+	}
+
+	"SettingVSync"
+	{
+		"ControlName"		"CRD_VGUI_Option"
+		"fieldName"			"SettingVSync"
+		"xpos"				"16"
+		"ypos"				"173"
+		"wide"				"270"
+		"tall"				"36"
+		"navLeft"			"SettingVSync"
+		"navRight"			"SettingFiltering"
+		"navUp"				"SettingRenderingPipeline"
+		"navDown"			"SettingFilmGrain"
+	}
+
+	"LblFaster"
+	{
+		"ControlName"		"Label"
+		"fieldName"			"LblFaster"
+		"xpos"				"376"
+		"ypos"				"40"
+		"wide"				"96"
+		"tall"				"12"
+		"labelText"			"#rd_video_faster"
+		"textAlignment"		"west"
+	}
+
+	"LblHigherQuality"
+	{
+		"ControlName"		"Label"
+		"fieldName"			"LblHigherQuality"
+		"xpos"				"498"
+		"ypos"				"40"
+		"wide"				"96"
+		"tall"				"12"
+		"labelText"			"#rd_video_higher_quality"
+		"textAlignment"		"east"
+	}
+
+	"SettingEffectDetail"
+	{
+		"ControlName"		"CRD_VGUI_Option"
+		"fieldName"			"SettingEffectDetail"
+		"xpos"				"292"
+		"ypos"				"52"
+		"wide"				"302"
+		"tall"				"30"
+		"navLeft"			"SettingScreenResolution"
+		"navRight"			"SettingEffectDetail"
+		"navDown"			"SettingShaderDetail"
+	}
+
+	"SettingShaderDetail"
+	{
+		"ControlName"		"CRD_VGUI_Option"
+		"fieldName"			"SettingShaderDetail"
+		"xpos"				"292"
+		"ypos"				"83"
+		"wide"				"302"
+		"tall"				"30"
+		"navLeft"			"SettingDisplayMode"
+		"navRight"			"SettingShaderDetail"
+		"navUp"				"SettingEffectDetail"
+		"navDown"			"SettingTextureDetail"
+	}
+
+	"SettingTextureDetail"
+	{
+		"ControlName"		"CRD_VGUI_Option"
+		"fieldName"			"SettingTextureDetail"
+		"xpos"				"292"
+		"ypos"				"115"
+		"wide"				"302"
+		"tall"				"30"
+		"navLeft"			"SettingScreenBrightness"
+		"navRight"			"SettingTextureDetail"
+		"navUp"				"SettingShaderDetail"
+		"navDown"			"SettingAntiAliasing"
+	}
+
+	"SettingAntiAliasing"
+	{
+		"ControlName"		"CRD_VGUI_Option"
+		"fieldName"			"SettingAntiAliasing"
+		"xpos"				"292"
+		"ypos"				"147"
+		"wide"				"302"
+		"tall"				"30"
+		"navLeft"			"SettingRenderingPipeline"
+		"navRight"			"SettingAntiAliasing"
+		"navUp"				"SettingTextureDetail"
+		"navDown"			"SettingFiltering"
+	}
+
+	"SettingFiltering"
+	{
+		"ControlName"		"CRD_VGUI_Option"
+		"fieldName"			"SettingFiltering"
+		"xpos"				"292"
+		"ypos"				"179"
+		"wide"				"302"
+		"tall"				"30"
+		"navLeft"			"SettingVSync"
+		"navRight"			"SettingFiltering"
+		"navUp"				"SettingAntiAliasing"
+		"navDown"			"SettingHighQualityBeacons"
+	}
+
+	"SettingFilmGrain"
+	{
+		"ControlName"		"CRD_VGUI_Option"
+		"fieldName"			"SettingFilmGrain"
+		"xpos"				"16"
+		"ypos"				"216"
+		"wide"				"187"
+		"tall"				"42"
+		"navLeft"			"SettingFilmGrain"
+		"navRight"			"SettingBloomScale"
+		"navUp"				"SettingVSync"
+		"navDown"			"SettingLocalContrast"
+	}
+
+	"SettingLocalContrast"
+	{
+		"ControlName"		"CRD_VGUI_Option"
+		"fieldName"			"SettingLocalContrast"
+		"xpos"				"16"
+		"ypos"				"260"
+		"wide"				"187"
+		"tall"				"42"
+		"navLeft"			"SettingLocalContrast"
+		"navRight"			"SettingProjectedTextures"
+		"navUp"				"SettingFilmGrain"
+		"navDown"			"SettingDepthBlur"
+	}
+
+	"SettingDepthBlur"
+	{
+		"ControlName"		"CRD_VGUI_Option"
+		"fieldName"			"SettingDepthBlur"
+		"xpos"				"16"
+		"ypos"				"304"
+		"wide"				"187"
+		"tall"				"42"
+		"navLeft"			"SettingDepthBlur"
+		"navRight"			"SettingFlashlightShadows"
+		"navUp"				"SettingLocalContrast"
+		"navDown"			"SettingWeatherEffects"
+	}
+
+	"SettingWeatherEffects"
+	{
+		"ControlName"		"CRD_VGUI_Option"
+		"fieldName"			"SettingWeatherEffects"
+		"xpos"				"16"
+		"ypos"				"348"
+		"wide"				"187"
+		"tall"				"42"
+		"navLeft"			"SettingWeatherEffects"
+		"navRight"			"SettingFlashlightLightSpill"
+		"navUp"				"SettingDepthBlur"
+		"navDown"			"SettingWeatherEffects"
+	}
+
+	"SettingBloomScale"
+	{
+		"ControlName"		"CRD_VGUI_Option"
+		"fieldName"			"SettingBloomScale"
+		"xpos"				"211"
+		"ypos"				"216"
+		"wide"				"188"
+		"tall"				"42"
+		"navLeft"			"SettingFilmGrain"
+		"navRight"			"SettingHighQualityBeacons"
+		"navUp"				"SettingFiltering"
+		"navDown"			"SettingProjectedTextures"
+	}
+
+	"SettingProjectedTextures"
+	{
+		"ControlName"		"CRD_VGUI_Option"
+		"fieldName"			"SettingProjectedTextures"
+		"xpos"				"211"
+		"ypos"				"260"
+		"wide"				"188"
+		"tall"				"42"
+		"navLeft"			"SettingLocalContrast"
+		"navRight"			"SettingMuzzleFlashLights"
+		"navUp"				"SettingBloomScale"
+		"navDown"			"SettingFlashlightShadows"
+	}
+
+	"SettingFlashlightShadows"
+	{
+		"ControlName"		"CRD_VGUI_Option"
+		"fieldName"			"SettingFlashlightShadows"
+		"xpos"				"211"
+		"ypos"				"304"
+		"wide"				"188"
+		"tall"				"42"
+		"navLeft"			"SettingDepthBlur"
+		"navRight"			"SettingAlienShadows"
+		"navUp"				"SettingProjectedTextures"
+		"navDown"			"SettingFlashlightLightSpill"
+	}
+
+	"SettingFlashlightLightSpill"
+	{
+		"ControlName"		"CRD_VGUI_Option"
+		"fieldName"			"SettingFlashlightLightSpill"
+		"xpos"				"211"
+		"ypos"				"348"
+		"wide"				"188"
+		"tall"				"42"
+		"navLeft"			"SettingWeatherEffects"
+		"navRight"			"SettingLowHealthEffect"
+		"navUp"				"SettingFlashlightShadows"
+		"navDown"			"SettingFlashlightLightSpill"
+	}
+
+	"SettingHighQualityBeacons"
+	{
+		"ControlName"		"CRD_VGUI_Option"
+		"fieldName"			"SettingHighQualityBeacons"
+		"xpos"				"407"
+		"ypos"				"216"
+		"wide"				"187"
+		"tall"				"42"
+		"navLeft"			"SettingBloomScale"
+		"navRight"			"SettingHighQualityBeacons"
+		"navUp"				"SettingFiltering"
+		"navDown"			"SettingMuzzleFlashLights"
+	}
+
+	"SettingMuzzleFlashLights"
+	{
+		"ControlName"		"CRD_VGUI_Option"
+		"fieldName"			"SettingMuzzleFlashLights"
+		"xpos"				"407"
+		"ypos"				"260"
+		"wide"				"187"
+		"tall"				"42"
+		"navLeft"			"SettingProjectedTextures"
+		"navRight"			"SettingMuzzleFlashLights"
+		"navUp"				"SettingHighQualityBeacons"
+		"navDown"			"SettingAlienShadows"
+	}
+
+	"SettingAlienShadows"
+	{
+		"ControlName"		"CRD_VGUI_Option"
+		"fieldName"			"SettingAlienShadows"
+		"xpos"				"407"
+		"ypos"				"304"
+		"wide"				"187"
+		"tall"				"42"
+		"navLeft"			"SettingFlashlightShadows"
+		"navRight"			"SettingAlienShadows"
+		"navUp"				"SettingMuzzleFlashLights"
+		"navDown"			"SettingLowHealthEffect"
+	}
+
+	"SettingLowHealthEffect"
+	{
+		"ControlName"		"CRD_VGUI_Option"
+		"fieldName"			"SettingLowHealthEffect"
+		"xpos"				"407"
+		"ypos"				"348"
+		"wide"				"187"
+		"tall"				"42"
+		"navLeft"			"SettingFlashlightLightSpill"
+		"navRight"			"SettingLowHealthEffect"
+		"navUp"				"SettingAlienShadows"
+		"navDown"			"SettingLowHealthEffect"
+	}
+}

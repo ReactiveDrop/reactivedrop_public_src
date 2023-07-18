@@ -84,6 +84,7 @@ public:
 
 	void OnCursorEntered() override;
 	void NavigateTo() override;
+	void ApplySettings( KeyValues *pSettings ) override;
 	void PerformLayout() override;
 	void Paint() override;
 	void OnKeyCodeTyped( vgui::KeyCode code ) override;
@@ -165,6 +166,7 @@ private:
 	ConVar *m_pSliderLink{};
 	wchar_t m_wszDefaultHint[1024]{};
 
+	vgui::Panel *m_pInteractiveArea;
 	vgui::Label *m_pLblFieldName;
 	vgui::Label *m_pLblHint;
 
@@ -216,6 +218,7 @@ public:
 
 	void Activate() override;
 	void OnThink() override;
+	void OnCommand( const char *command ) override;
 	void Paint() override;
 	BaseModUI::BaseModHybridButton *GetButton( BaseModUI::CRD_VGUI_Settings *pSettings ) override { return pSettings->m_pBtnControls; }
 

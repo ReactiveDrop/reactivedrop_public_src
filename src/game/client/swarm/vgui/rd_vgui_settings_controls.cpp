@@ -446,6 +446,22 @@ void CRD_VGUI_Settings_Controls::OnThink()
 	}
 }
 
+void CRD_VGUI_Settings_Controls::OnCommand( const char *command )
+{
+	if ( FStrEq( command, "ResetDefaults" ) )
+	{
+		Assert( !"TODO: ResetDefaults" );
+	}
+	else if ( FStrEq( command, "ManageWheels" ) )
+	{
+		Assert( !"TODO: ManageWheels" );
+	}
+	else
+	{
+		BaseClass::OnCommand( command );
+	}
+}
+
 void CRD_VGUI_Settings_Controls::Paint()
 {
 	BaseClass::Paint();
