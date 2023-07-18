@@ -1885,9 +1885,9 @@ void CReactiveDropWorkshop::ClearCaches( const char *szReason )
 	s_bClearingWorkshopCache = true;
 
 #ifdef CLIENT_DLL
-	engine->ClientCmd_Unrestricted( "_rd_workshop_clear_cache_c" );
+	engine->ClientCmd_Unrestricted( "_rd_workshop_clear_cache_c\n" );
 #else
-	engine->ServerCommand( "_rd_workshop_clear_cache_s" );
+	engine->ServerCommand( "_rd_workshop_clear_cache_s\n" );
 #endif
 }
 
