@@ -287,7 +287,7 @@ void CRD_Collection_Details_Inventory::DisplayEntry( TGD_Entry *pEntry )
 
 CRD_Collection_Entry_Inventory::CRD_Collection_Entry_Inventory( TGD_Grid *parent, const char *panelName, SteamInventoryResult_t hResult, int index )
 	: BaseClass( parent, panelName ),
-	m_Details{ hResult, index }
+	m_Details{ hResult, uint32( index ) }
 {
 	m_pIconBackground = new vgui::Panel( this, "IconBackground" );
 	m_pIcon = new vgui::ImagePanel( this, "Icon" );
