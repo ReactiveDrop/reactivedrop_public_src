@@ -220,11 +220,28 @@ void CRD_VGUI_Option::ApplySettings( KeyValues *pSettings )
 void CRD_VGUI_Option::PerformLayout()
 {
 	BaseClass::PerformLayout();
+
+	if ( m_eMode == MODE_RADIO || m_eMode == MODE_DROPDOWN )
+	{
+		Assert( !m_bHaveCurrent || ( m_Current.m_iOption >= 0 && m_Current.m_iOption < m_Options.Count() ) );
+		if ( m_bHaveCurrent && m_Current.m_iOption >= 0 && m_Current.m_iOption < m_Options.Count() )
+		{
+			m_pLblHint->SetText( m_Options[m_Current.m_iOption]->m_wszHint );
+		}
+		else
+		{
+			m_pLblHint->SetText( m_wszDefaultHint );
+		}
+	}
+	else
+	{
+		m_pLblHint->SetText( m_wszDefaultHint );
+	}
 }
 
 void CRD_VGUI_Option::Paint()
 {
-	BaseClass::PerformLayout();
+	BaseClass::Paint();
 
 	int x0, y0, x1, y1;
 	m_pInteractiveArea->GetBounds( x0, y0, x1, y1 );
