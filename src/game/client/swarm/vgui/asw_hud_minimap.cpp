@@ -43,6 +43,7 @@ using namespace vgui;
 
 #include "c_asw_parasite.h"
 #include "asw_weapon_revive_tool_shared.h"
+#include "asw_util_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -801,7 +802,7 @@ void CASWHudMinimapFramePanel::Paint()
 {
 	VPROF_BUDGET( "CASWHudMinimapFramePanel::Paint", VPROF_BUDGETGROUP_ASW_CLIENT );
 	CASWHudMinimap *m_pMap = dynamic_cast< CASWHudMinimap * >( GetParent() );
-	if ( !m_pMap || !asw_draw_hud.GetBool() || !rd_draw_minimap.GetBool() )
+	if ( !m_pMap || !asw_draw_hud.GetBool() || rd_draw_minimap.GetFloat() <= 0 )
 		return;
 
 	int x, y, wide, tall;
@@ -884,7 +885,7 @@ void CASWHudMinimap::PaintMapSection()
 
 				ClipToSquare( nPoints, points, m_MapCornerInPanel, m_iMapSize );
 
-				surface()->DrawSetColor( 255, 255, 255, 255 );
+				surface()->DrawSetColor( 255, 255, 255, clamp<int>( rd_draw_minimap.GetFloat() * 255.0f, 0, 255 ) );
 				surface()->DrawSetTexture( m_nMapTextureID[iMapTextureIndex] );
 				surface()->DrawTexturedPolygon( nPoints, points );
 			}
@@ -1786,6 +1787,7 @@ void CASWHudMinimap::SetMap( const char *levelname )
 	}
 
 	surface()->DrawSetTextureFile( m_nMapTextureID[0], pOverview->Material, true, false );
+	UTIL_RD_ForceVGuiMaterialFlag( m_nMapTextureID[0], MATERIAL_VAR_VERTEXALPHA );
 
 	m_MapOrigin.x = pOverview->PosX;
 	m_MapOrigin.y = pOverview->PosY;
@@ -1859,6 +1861,7 @@ void CASWHudMinimap::SetMap( const char *levelname )
 
 		m_nMapTextureID[iMinIndex] = surface()->CreateNewTextureID();
 		surface()->DrawSetTextureFile( m_nMapTextureID[iMinIndex], pszMaterialName, true, false );
+		UTIL_RD_ForceVGuiMaterialFlag( m_nMapTextureID[iMinIndex], MATERIAL_VAR_VERTEXALPHA );
 		m_flMapMinZ[iMinIndex] = flMin;
 	}
 }
@@ -2205,7 +2208,7 @@ void CASWHudMinimap_Border::PaintBackground()
 	if ( m_pMinimap && !m_pMinimap->ShouldDraw() )
 		return;
 
-	if ( !asw_draw_hud.GetBool() || !rd_draw_minimap.GetBool() || m_nBlackBarTexture == -1 )
+	if ( !asw_draw_hud.GetBool() || rd_draw_minimap.GetFloat() <= 0 || m_nBlackBarTexture == -1 )
 	{
 		return;
 	}

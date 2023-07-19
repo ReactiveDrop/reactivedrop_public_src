@@ -1527,6 +1527,27 @@ const char *UTIL_RD_RandomBriefingMovie( const char *szMapName, int iSeed, const
 
 	return pSelected->GetString( "video", szDefault );
 }
+
+void UTIL_RD_ForceVGuiMaterialFlag( int iTexture, MaterialVarFlags_t iFlag, bool bValue )
+{
+	IVguiMatInfo *pInfo = vgui::surface()->DrawGetTextureMatInfoFactory( iTexture );
+	if ( !pInfo )
+		return;
+
+	IMaterial *pMaterial = ( reinterpret_cast< IMaterial ** >( pInfo ) )[1]; // HACK!
+	delete pInfo;
+
+	Assert( pMaterial );
+	if ( !pMaterial )
+		return;
+
+	if ( pMaterial->GetMaterialVarFlag( iFlag ) != bValue )
+	{
+		DevWarning( "Forcing material flag %s to %s in %s\n", materials->ShaderFlagName( Q_log2( iFlag ) ), bValue ? "1" : "0", pMaterial->GetName() );
+
+		pMaterial->SetMaterialVarFlag( iFlag, bValue );
+	}
+}
 #endif
 
 // attempts to localize a string

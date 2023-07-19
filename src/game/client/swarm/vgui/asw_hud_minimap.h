@@ -169,7 +169,7 @@ public:
 	virtual void OnThink();
 	virtual void Paint();
 	virtual void PaintMapSection();
-	virtual bool ShouldDraw( void ) { return asw_draw_hud.GetBool() && rd_draw_minimap.GetBool() && CASW_HudElement::ShouldDraw(); }
+	virtual bool ShouldDraw( void ) { return asw_draw_hud.GetBool() && rd_draw_minimap.GetFloat() >= 0 && CASW_HudElement::ShouldDraw(); }
 	//virtual void PaintFrame();
 	virtual void PaintObjectiveMarkers();
 	virtual void PaintBlips();
