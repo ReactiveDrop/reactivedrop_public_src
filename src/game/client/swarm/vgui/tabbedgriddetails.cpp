@@ -460,8 +460,10 @@ void TabbedGridDetails::UseCombinedGrid()
 
 	InvalidateLayout( true, true );
 
-	if ( m_hCurrentTab && m_hCurrentTab->m_pGrid->m_Entries.Count() )
-		m_hCurrentTab->m_pGrid->m_Entries[0]->m_pFocusHolder->RequestFocus();
+	if ( m_Tabs.Count() != 0 )
+	{
+		ActivateTab( m_Tabs[0] );
+	}
 }
 
 TGD_Tab::TGD_Tab( TabbedGridDetails *parent )
@@ -580,11 +582,14 @@ void TGD_Tab::InitCombinedGrid( vgui::Panel *pGridParent )
 	Assert( m_pGrid );
 	Assert( !m_pGrid->m_pTitle );
 	Assert( m_pGrid->m_pScrollBar );
+
 	char szTitle[1024];
 	m_pLabel->GetText( szTitle, sizeof( szTitle ) );
 	m_pGrid->m_pTitle = new vgui::Label( m_pGrid, "Title", szTitle );
+
 	m_pGrid->m_pScrollBar->MarkForDeletion();
 	m_pGrid->m_pScrollBar = NULL;
+
 	m_pGrid->SetParent( pGridParent );
 }
 
@@ -728,7 +733,7 @@ void TGD_Grid::PerformLayout()
 		}
 	}
 
-	if ( !bAnyFocus )
+	if ( !bAnyFocus && ( m_pScrollBar || m_pParent->m_pParent->m_hCurrentTab.Get() == m_pParent ) )
 	{
 		if ( m_Entries.Count() > m_iLastFocus )
 		{
