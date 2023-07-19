@@ -139,7 +139,7 @@ void TabbedGridDetails::OnMouseWheeled( int delta )
 		return;
 
 	int val = m_pCombinedScrollBar->GetValue();
-	val -= ( delta * 3 * 5 );
+	val -= ( delta * YRES( 15 ) );
 	m_pCombinedScrollBar->SetValue( val );
 }
 
@@ -753,7 +753,7 @@ void TGD_Grid::OnMouseWheeled( int delta )
 		return;
 
 	int val = m_pScrollBar->GetValue();
-	val -= ( delta * 3 * 5 );
+	val -= ( delta * YRES( 15 ) );
 	m_pScrollBar->SetValue( val );
 }
 
