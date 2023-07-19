@@ -221,6 +221,27 @@ void CRD_VGUI_Option::PerformLayout()
 {
 	BaseClass::PerformLayout();
 
+	vgui::HFont hFont = m_pLblFieldName->GetFont();
+	int iTotalWidth = 0;
+	FOR_EACH_VEC( m_Options, i )
+	{
+		int discard;
+		vgui::surface()->GetTextSize( hFont, m_Options[i]->m_wszLabel, m_Options[i]->m_iWidth, discard );
+		iTotalWidth += m_Options[i]->m_iWidth;
+	}
+
+	if ( m_eMode == MODE_RADIO && m_Options.Count() > 1 )
+	{
+		int iAvailableWidth = m_pInteractiveArea->GetWide() - ( m_pInteractiveArea->GetTall() + vgui::Label::Content * 2 ) * m_Options.Count();
+		int iRemainingWidth = iAvailableWidth - iTotalWidth;
+		int iAddWidth = iRemainingWidth / ( m_Options.Count() - 1 );
+		FOR_EACH_VEC( m_Options, i )
+		{
+			if ( i != m_Options.Count() - 1 )
+				m_Options[i]->m_iWidth += iAddWidth;
+		}
+	}
+
 	if ( m_eMode == MODE_RADIO || m_eMode == MODE_DROPDOWN )
 	{
 		Assert( !m_bHaveCurrent || ( m_Current.m_iOption >= 0 && m_Current.m_iOption < m_Options.Count() ) );
@@ -229,6 +250,27 @@ void CRD_VGUI_Option::PerformLayout()
 			m_pLblHint->SetText( m_Options[m_Current.m_iOption]->m_wszHint );
 		}
 		else
+		{
+			m_pLblHint->SetText( m_wszDefaultHint );
+		}
+	}
+	else if ( m_eMode == MODE_SLIDER )
+	{
+		bool bFound = false;
+		if ( m_bHaveCurrent )
+		{
+			FOR_EACH_VEC( m_Options, i )
+			{
+				if ( m_Options[i]->m_iValue == m_Current.m_flValue )
+				{
+					m_pLblHint->SetText( m_Options[i]->m_wszHint );
+					bFound = true;
+					break;
+				}
+			}
+		}
+
+		if ( !bFound )
 		{
 			m_pLblHint->SetText( m_wszDefaultHint );
 		}
@@ -247,7 +289,15 @@ void CRD_VGUI_Option::Paint()
 	m_pInteractiveArea->GetBounds( x0, y0, x1, y1 );
 	if ( m_eMode == MODE_RADIO )
 	{
-		HUD_SHEET_DRAW_BOUNDS( Controls, UV_radio );
+		FOR_EACH_VEC( m_Options, i )
+		{
+			HUD_SHEET_DRAW_RECT( x0, y0, x0 + y1, y0 + y1, Controls, UV_radio );
+			vgui::surface()->DrawSetTextColor( m_pInteractiveArea->GetFgColor() );
+			vgui::surface()->DrawSetTextFont( m_pLblFieldName->GetFont() );
+			vgui::surface()->DrawSetTextPos( x0 + y1 + vgui::Label::Content, y0 + ( y1 - vgui::surface()->GetFontTall( m_pLblFieldName->GetFont() ) ) / 2 );
+			vgui::surface()->DrawUnicodeString( m_Options[i]->m_wszLabel );
+			x0 += y1 + vgui::Label::Content * 2 + m_Options[i]->m_iWidth;
+		}
 	}
 	else if ( m_eMode == MODE_DROPDOWN )
 	{
@@ -256,9 +306,12 @@ void CRD_VGUI_Option::Paint()
 			Assert( m_Current.m_iOption >= 0 && m_Current.m_iOption < m_Options.Count() );
 			if ( m_Current.m_iOption >= 0 && m_Current.m_iOption < m_Options.Count() )
 			{
-				vgui::surface()->DrawSetTextColor( m_pInteractiveArea->GetFgColor() );
+				if ( HasFocus() )
+					vgui::surface()->DrawSetTextColor( 255, 255, 255, 255 );
+				else
+					vgui::surface()->DrawSetTextColor( m_pInteractiveArea->GetFgColor() );
 				vgui::surface()->DrawSetTextFont( m_pLblFieldName->GetFont() );
-				vgui::surface()->DrawSetTextPos( x0, y0 + ( y1 - vgui::surface()->GetFontTall( m_pLblFieldName->GetFont() ) ) / 2 );
+				vgui::surface()->DrawSetTextPos( x0 + vgui::Label::Content, y0 + ( y1 - vgui::surface()->GetFontTall( m_pLblFieldName->GetFont() ) ) / 2 );
 				vgui::surface()->DrawUnicodeString( m_Options[m_Current.m_iOption]->m_wszLabel );
 			}
 		}
@@ -296,7 +349,39 @@ void CRD_VGUI_Option::Paint()
 	}
 	else if ( m_eMode == MODE_SLIDER )
 	{
-		HUD_SHEET_DRAW_BOUNDS( Controls, UV_slider_bar );
+		if ( m_Options.Count() )
+		{
+			FOR_EACH_VEC( m_Options, i )
+			{
+				HUD_SHEET_DRAW_RECT( x0, y0, x0 + y1, y0 + y1, Controls, UV_radio );
+
+				x0 += y1;
+			}
+		}
+
+		int x = m_bHaveCurrent ? RemapValClamped( m_Current.m_flValue, m_flMinValue, m_flMaxValue, x0 + y1 / 2, x0 + x1 - y1 / 2 ) : x0 + x1 / 2;
+		const HudSheetTexture_t &Bar = g_RD_HUD_Sheets.m_Controls[CRD_HUD_Sheets::UV_slider_bar];
+		const HudSheetTexture_t &BarEnd = g_RD_HUD_Sheets.m_Controls[CRD_HUD_Sheets::UV_slider_bar_end];
+		vgui::surface()->DrawSetTexture( g_RD_HUD_Sheets.m_nControlsID );
+		vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
+		if ( !m_bHaveCurrent )
+			vgui::surface()->DrawSetColor( 128, 128, 128, 255 );
+		vgui::surface()->DrawTexturedSubRect( x0, y0, x0 + y1 / 2, y0 + y1, BarEnd.u, BarEnd.v, BarEnd.s, BarEnd.t );
+		vgui::surface()->DrawTexturedSubRect( x0 + y1 / 2, y0, x, y0 + y1, ( Bar.u + Bar.s ) / 2, Bar.v, ( Bar.u + Bar.s ) / 2, Bar.t );
+		vgui::surface()->DrawSetColor( 128, 128, 128, 255 );
+		vgui::surface()->DrawTexturedSubRect( x, y0, x0 + x1 - y1 / 2, y0 + y1, ( Bar.u + Bar.s ) / 2, Bar.v, ( Bar.u + Bar.s ) / 2, Bar.t );
+		vgui::surface()->DrawTexturedSubRect( x0 + x1 - y1 / 2, y0, x0 + x1, y0 + y1, BarEnd.s, BarEnd.v, BarEnd.u, BarEnd.t );
+		if ( m_bHaveRecommended )
+		{
+			vgui::surface()->DrawSetColor( 192, 224, 255, 255 );
+			int recommendedX = RemapValClamped( m_Recommended.m_flValue, m_flMinValue, m_flMaxValue, x0 + y1 / 2, x0 + x1 - y1 / 2 );
+			vgui::surface()->DrawTexturedSubRect( recommendedX - YRES( 0.5f ), y0, recommendedX + YRES( 0.5f ), y0 + y1, ( Bar.u + Bar.s ) / 2, Bar.v, ( Bar.u + Bar.s ) / 2, Bar.t);
+		}
+
+		if ( HasFocus() )
+			HUD_SHEET_DRAW_RECT( x - y1 / 4, y0, x + y1 / 4, y0 + y1, Controls, UV_slider_handle_hover );
+		else
+			HUD_SHEET_DRAW_RECT( x - y1 / 4, y0, x + y1 / 4, y0 + y1, Controls, UV_slider_handle );
 	}
 	else if ( m_eMode == MODE_COLOR )
 	{
@@ -833,6 +918,7 @@ CRD_VGUI_Option::Option_t::Option_t( int iValue, const char *szLabel, const char
 	m_iValue = iValue;
 	TryLocalize( szLabel, m_wszLabel, sizeof( m_wszLabel ) );
 	TryLocalize( szHint, m_wszHint, sizeof( m_wszHint ) );
+	m_iWidth = 30;
 }
 
 bool CRD_VGUI_Option::s_bCVarChanged = false;

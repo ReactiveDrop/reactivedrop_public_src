@@ -78,12 +78,13 @@
 	{
 		"ControlName"		"Label"
 		"fieldName"			"LblFaster"
-		"xpos"				"376"
+		"xpos"				"356"
 		"ypos"				"40"
 		"wide"				"96"
 		"tall"				"12"
 		"labelText"			"#rd_video_faster"
 		"textAlignment"		"west"
+		"fgcolor_override"	"64 64 64 255"
 	}
 
 	"LblHigherQuality"
@@ -96,6 +97,7 @@
 		"tall"				"12"
 		"labelText"			"#rd_video_higher_quality"
 		"textAlignment"		"east"
+		"fgcolor_override"	"64 64 64 255"
 	}
 
 	"SettingEffectDetail"

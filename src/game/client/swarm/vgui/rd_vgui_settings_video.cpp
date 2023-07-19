@@ -226,21 +226,21 @@ CRD_VGUI_Settings_Video::CRD_VGUI_Settings_Video( vgui::Panel *parent, const cha
 	m_pSettingFiltering->SetDefaultHint( "#rd_video_filtering_hint" );
 	m_pSettingFiltering->LinkToConVar( "mat_forceaniso", false );
 
-	m_pSettingFilmGrain = new CRD_VGUI_Option( this, "SettingFilmGrain", "#rd_video_film_grain" );
+	m_pSettingFilmGrain = new CRD_VGUI_Option( this, "SettingFilmGrain", "#rd_video_film_grain", CRD_VGUI_Option::MODE_DROPDOWN );
 	m_pSettingFilmGrain->AddOption( 0, "#rd_video_effect_disabled", "#rd_video_film_grain_hint" );
 	m_pSettingFilmGrain->AddOption( -1, "#rd_video_effect_enabled", "#rd_video_film_grain_hint" );
 	m_pSettingFilmGrain->SetDefaultHint( "#rd_video_film_grain_hint" );
-	m_pSettingLocalContrast = new CRD_VGUI_Option( this, "SettingLocalContrast", "#rd_video_local_contrast" );
+	m_pSettingLocalContrast = new CRD_VGUI_Option( this, "SettingLocalContrast", "#rd_video_local_contrast", CRD_VGUI_Option::MODE_DROPDOWN );
 	m_pSettingLocalContrast->AddOption( 0, "#rd_video_effect_disabled", "#rd_video_local_contrast_hint" );
 	m_pSettingLocalContrast->AddOption( 1, "#rd_video_effect_enabled", "#rd_video_local_contrast_hint" );
 	m_pSettingLocalContrast->SetDefaultHint( "#rd_video_local_contrast_hint" );
 	m_pSettingLocalContrast->LinkToConVar( "mat_local_contrast_enable", false );
-	m_pSettingDepthBlur = new CRD_VGUI_Option( this, "SettingDepthBlur", "#rd_video_depth_blur" );
+	m_pSettingDepthBlur = new CRD_VGUI_Option( this, "SettingDepthBlur", "#rd_video_depth_blur", CRD_VGUI_Option::MODE_DROPDOWN );
 	m_pSettingDepthBlur->AddOption( 0, "#rd_video_effect_disabled", "#rd_video_depth_blur_hint" );
 	m_pSettingDepthBlur->AddOption( -1, "#rd_video_effect_enabled", "#rd_video_depth_blur_hint" );
 	m_pSettingDepthBlur->SetDefaultHint( "#rd_video_depth_blur_hint" );
 	m_pSettingDepthBlur->LinkToConVar( "mat_depth_blur_strength_override", false );
-	m_pSettingWeatherEffects = new CRD_VGUI_Option( this, "SettingWeatherEffects", "#rd_video_weather_effects" );
+	m_pSettingWeatherEffects = new CRD_VGUI_Option( this, "SettingWeatherEffects", "#rd_video_weather_effects", CRD_VGUI_Option::MODE_DROPDOWN );
 	m_pSettingWeatherEffects->AddOption( 0, "#rd_video_effect_disabled", "#rd_video_weather_effects_hint" );
 	m_pSettingWeatherEffects->AddOption( 1, "#rd_video_effect_enabled", "#rd_video_weather_effects_hint" );
 	m_pSettingWeatherEffects->SetDefaultHint( "#rd_video_weather_effects_hint" );
@@ -249,32 +249,32 @@ CRD_VGUI_Settings_Video::CRD_VGUI_Settings_Video( vgui::Panel *parent, const cha
 	m_pSettingBloomScale->SetSliderMinMax( 0.0f, 2.0f );
 	m_pSettingBloomScale->SetDefaultHint( "#rd_video_bloom_scale_hint" );
 	m_pSettingBloomScale->LinkToConVar( "mat_bloom_scalefactor_scalar", false );
-	m_pSettingProjectedTextures = new CRD_VGUI_Option( this, "SettingProjectedTextures", "#rd_video_projected_textures" );
+	m_pSettingProjectedTextures = new CRD_VGUI_Option( this, "SettingProjectedTextures", "#rd_video_projected_textures", CRD_VGUI_Option::MODE_DROPDOWN );
 	m_pSettingProjectedTextures->AddOption( 0, "#rd_video_effect_disabled", "#rd_video_projected_textures_hint" );
 	m_pSettingProjectedTextures->AddOption( 1, "#rd_video_effect_enabled", "#rd_video_projected_textures_hint" );
 	m_pSettingProjectedTextures->SetDefaultHint( "#rd_video_projected_textures_hint" );
 	m_pSettingProjectedTextures->LinkToConVar( "rd_env_projectedtexture_enabled", false );
-	m_pSettingFlashlightShadows = new CRD_VGUI_Option( this, "SettingFlashlightShadows", "#rd_video_flashlight_shadows" );
+	m_pSettingFlashlightShadows = new CRD_VGUI_Option( this, "SettingFlashlightShadows", "#rd_video_flashlight_shadows", CRD_VGUI_Option::MODE_DROPDOWN );
 	m_pSettingFlashlightShadows->AddOption( 0, "#rd_video_effect_disabled", "#rd_video_flashlight_shadows_hint" );
 	m_pSettingFlashlightShadows->AddOption( 1, "#rd_video_effect_enabled", "#rd_video_flashlight_shadows_hint" );
 	m_pSettingFlashlightShadows->SetDefaultHint( "#rd_video_flashlight_shadows_hint" );
 	m_pSettingFlashlightShadows->LinkToConVar( "rd_flashlightshadows", false );
-	m_pSettingFlashlightLightSpill = new CRD_VGUI_Option( this, "SettingFlashlightLightSpill", "#rd_video_flashlight_light_spill" );
+	m_pSettingFlashlightLightSpill = new CRD_VGUI_Option( this, "SettingFlashlightLightSpill", "#rd_video_flashlight_light_spill", CRD_VGUI_Option::MODE_DROPDOWN );
 	m_pSettingFlashlightLightSpill->AddOption( 0, "#rd_video_effect_disabled", "#rd_video_flashlight_light_spill_hint" );
 	m_pSettingFlashlightLightSpill->AddOption( 1, "#rd_video_effect_enabled", "#rd_video_flashlight_light_spill_hint" );
 	m_pSettingFlashlightLightSpill->SetDefaultHint( "#rd_video_flashlight_light_spill_hint" );
 	m_pSettingFlashlightLightSpill->LinkToConVar( "rd_flashlight_dlight_enable", false );
-	m_pSettingHighQualityBeacons = new CRD_VGUI_Option( this, "SettingHighQualityBeacons", "#rd_video_high_quality_beacons" );
+	m_pSettingHighQualityBeacons = new CRD_VGUI_Option( this, "SettingHighQualityBeacons", "#rd_video_high_quality_beacons", CRD_VGUI_Option::MODE_DROPDOWN );
 	m_pSettingHighQualityBeacons->AddOption( 1, "#rd_video_effect_disabled", "#rd_video_high_quality_beacons_hint" );
 	m_pSettingHighQualityBeacons->AddOption( 0, "#rd_video_effect_enabled", "#rd_video_high_quality_beacons_hint" );
 	m_pSettingHighQualityBeacons->SetDefaultHint( "#rd_video_high_quality_beacons_hint" );
 	m_pSettingHighQualityBeacons->LinkToConVar( "rd_simple_beacons", false );
-	m_pSettingMuzzleFlashLights = new CRD_VGUI_Option( this, "SettingMuzzleFlashLights", "#rd_video_muzzle_flash_lights" );
+	m_pSettingMuzzleFlashLights = new CRD_VGUI_Option( this, "SettingMuzzleFlashLights", "#rd_video_muzzle_flash_lights", CRD_VGUI_Option::MODE_DROPDOWN );
 	m_pSettingMuzzleFlashLights->AddOption( 0, "#rd_video_effect_disabled", "#rd_video_muzzle_flash_lights_hint" );
 	m_pSettingMuzzleFlashLights->AddOption( 1, "#rd_video_effect_enabled", "#rd_video_muzzle_flash_lights_hint" );
 	m_pSettingMuzzleFlashLights->SetDefaultHint( "#rd_video_muzzle_flash_lights_hint" );
 	m_pSettingMuzzleFlashLights->LinkToConVar( "muzzleflash_light", false );
-	m_pSettingAlienShadows = new CRD_VGUI_Option( this, "SettingAlienShadows", "#rd_video_alien_shadows" );
+	m_pSettingAlienShadows = new CRD_VGUI_Option( this, "SettingAlienShadows", "#rd_video_alien_shadows", CRD_VGUI_Option::MODE_DROPDOWN );
 	m_pSettingAlienShadows->AddOption( 0, "#rd_video_effect_disabled", "#rd_video_alien_shadows_hint" );
 	m_pSettingAlienShadows->AddOption( 1, "#rd_video_effect_flashlight_only", "#rd_video_alien_shadows_hint" );
 	m_pSettingAlienShadows->AddOption( 2, "#rd_video_effect_enabled", "#rd_video_alien_shadows_hint" );
@@ -286,7 +286,7 @@ CRD_VGUI_Settings_Video::CRD_VGUI_Settings_Video( vgui::Panel *parent, const cha
 	m_pSettingAlienShadows->LinkToConVarAdvanced( 2, "asw_alien_shadows", 1 );
 	m_pSettingAlienShadows->SetCurrentUsingConVars();
 	m_pSettingAlienShadows->SetRecommendedUsingConVars();
-	m_pSettingLowHealthEffect = new CRD_VGUI_Option( this, "SettingLowHealthEffect", "#rd_video_low_health_effect" );
+	m_pSettingLowHealthEffect = new CRD_VGUI_Option( this, "SettingLowHealthEffect", "#rd_video_low_health_effect", CRD_VGUI_Option::MODE_DROPDOWN );
 	m_pSettingLowHealthEffect->AddOption( 0, "#rd_video_effect_disabled", "#rd_video_low_health_effect_hint" );
 	m_pSettingLowHealthEffect->AddOption( 1, "#rd_video_effect_enabled", "#rd_video_low_health_effect_hint" );
 	m_pSettingLowHealthEffect->SetDefaultHint( "#rd_video_low_health_effect_hint" );
@@ -429,7 +429,7 @@ void CRD_VGUI_Settings_Video::Activate()
 			continue;
 		}
 
-		m_pSettingAntiAliasing->AddOption( i, s_AAModes[i].m_szLabel, "#rd_video_aa_hint" );
+		m_pSettingAntiAliasing->AddOption( i, s_AAModes[i].m_szLabel, "#rd_video_anti_aliasing_hint" );
 		m_pSettingAntiAliasing->LinkToConVarAdvanced( i, "mat_antialias", s_AAModes[i].m_nNumSamples );
 		m_pSettingAntiAliasing->LinkToConVarAdvanced( i, "mat_aaquality", s_AAModes[i].m_nQualityLevel );
 

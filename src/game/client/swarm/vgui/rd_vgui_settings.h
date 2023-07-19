@@ -159,6 +159,7 @@ private:
 		int m_iValue;
 		wchar_t m_wszLabel[256]{};
 		wchar_t m_wszHint[1024]{};
+		int m_iWidth;
 
 		CUtlVector<ConVarLink_t> m_ConVars;
 	};

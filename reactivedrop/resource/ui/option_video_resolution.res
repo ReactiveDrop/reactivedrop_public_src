@@ -8,6 +8,7 @@
 		"ypos"				"1"
 		"wide"				"130"
 		"tall"				"15"
+		"bgcolor_override"	"64 64 64 64"
 	}
 
 	"LblFieldName"
