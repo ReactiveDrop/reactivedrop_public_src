@@ -292,6 +292,12 @@ void CRD_VGUI_Option::Paint()
 		FOR_EACH_VEC( m_Options, i )
 		{
 			HUD_SHEET_DRAW_RECT( x0, y0, x0 + y1, y0 + y1, Controls, UV_radio );
+
+			if ( !m_bHaveCurrent || m_Current.m_iOption < 0 || m_Current.m_iOption >= m_Options.Count() )
+				HUD_SHEET_DRAW_RECT( x0, y0, x0 + y1, y0 + y1, Controls, UV_radio_ind );
+			else if ( m_Current.m_iOption == i )
+				HUD_SHEET_DRAW_RECT( x0, y0, x0 + y1, y0 + y1, Controls, UV_radio_checked );
+
 			vgui::surface()->DrawSetTextColor( m_pInteractiveArea->GetFgColor() );
 			vgui::surface()->DrawSetTextFont( m_pLblFieldName->GetFont() );
 			vgui::surface()->DrawSetTextPos( x0 + y1 + vgui::Label::Content, y0 + ( y1 - vgui::surface()->GetFontTall( m_pLblFieldName->GetFont() ) ) / 2 );
