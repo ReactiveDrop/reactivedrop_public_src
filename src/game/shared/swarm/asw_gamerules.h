@@ -371,14 +371,14 @@ public:
 	void EnableChallenge( const char *szChallengeName );
 	void ApplyChallenge();
 
-	CUtlStringMap<string_t> m_SavedConvars_Challenge;
+	CUtlDict<CUtlString> m_SavedConvars_Challenge;
 	void ResetChallengeConVars();
 	void CheckChallengeConVars();
 	void ApplyChallengeConVars( KeyValues *pKV );
 
 #endif	// GAME_DLL above
 
-	CUtlStringMap<string_t> m_SavedConvars;
+	CUtlDict<CUtlString> m_SavedConvars;
 	bool HaveSavedConvar( const ConVarRef & cvar );
 	void SaveConvar( const ConVarRef & cvar );
 	void RevertSingleConvar( ConVarRef & cvar );

@@ -300,13 +300,17 @@ static void UpdateMatchmakingTagsCallback( IConVar *pConVar, const char *pOldVal
 {
 #ifdef GAME_DLL
 	// don't allow changing challenge convars from their desired values
-	if ( pConVar && ASWGameRules() && ASWGameRules()->m_SavedConvars_Challenge.Defined( pConVar->GetName() ) )
+	if ( pConVar && ASWGameRules() )
 	{
-		const char *pszDesiredValue = STRING( ASWGameRules()->m_SavedConvars_Challenge[pConVar->GetName()] );
-		if ( Q_strcmp( ConVarRef( pConVar->GetName() ).GetString(), pszDesiredValue ) )
+		unsigned index = ASWGameRules()->m_SavedConvars_Challenge.Find( pConVar->GetName() );
+		if ( ASWGameRules()->m_SavedConvars_Challenge.IsValidIndex( index ) )
 		{
-			pConVar->SetValue( pszDesiredValue );
-			return;
+			const char *pszDesiredValue = ASWGameRules()->m_SavedConvars_Challenge[index];
+			if ( V_strcmp( ConVarRef( pConVar->GetName() ).GetString(), pszDesiredValue ) )
+			{
+				pConVar->SetValue( pszDesiredValue );
+				return;
+			}
 		}
 	}
 
@@ -1948,14 +1952,14 @@ void CAlienSwarm::PlayerSpawn( CBasePlayer *pPlayer )
 		// BenLubar: Send saved replicated convars to the client so that it can reset them if the player disconnects during the mission.
 		CSingleUserRecipientFilter filter( pPlayer );
 		filter.MakeReliable();
-		for ( int i = 0; i < m_SavedConvars.GetNumStrings(); i++ )
+		for ( unsigned i = 0; i < m_SavedConvars.Count(); i++ )
 		{
-			const char *pszCVarName = m_SavedConvars.String( i );
-			if ( ConVarRef( pszCVarName ).IsFlagSet( FCVAR_REPLICATED ) )
+			const char *szName = m_SavedConvars.GetElementName( i );
+			if ( ConVarRef( szName ).IsFlagSet( FCVAR_REPLICATED ) )
 			{
 				UserMessageBegin( filter, "SavedConvar" );
-				WRITE_STRING( pszCVarName );
-				WRITE_STRING( STRING( m_SavedConvars[i] ) );
+					WRITE_STRING( szName );
+					WRITE_STRING( m_SavedConvars[i] );
 				MessageEnd();
 			}
 		}
@@ -5193,10 +5197,10 @@ void CAlienSwarm::BroadcastMapLine(CASW_Player *pPlayer, int linetype, int world
 	filter.RemoveRecipient(pPlayer);
 
 	UserMessageBegin( filter, "ASWMapLine" ); // create message 
-	WRITE_BYTE( (char) linetype );
-	WRITE_BYTE( pPlayer->entindex() );
-	WRITE_LONG( world_x );	// send the location of the map line dot
-	WRITE_LONG( world_y );
+		WRITE_BYTE( (char) linetype );
+		WRITE_BYTE( pPlayer->entindex() );
+		WRITE_LONG( world_x );	// send the location of the map line dot
+		WRITE_LONG( world_y );
 	MessageEnd(); //send message
 }
 
@@ -6623,8 +6627,8 @@ void CAlienSwarm::ShockNearbyAliens( CASW_Marine *pMarine, CASW_Weapon *pWeaponS
 		CRecipientFilter filter;
 		filter.AddAllPlayers();
 		UserMessageBegin( filter, "ASWEnemyZappedByThorns" );
-		WRITE_SHORT( pMarine->entindex() );
-		WRITE_SHORT( pNPC->entindex() );
+			WRITE_SHORT( pMarine->entindex() );
+			WRITE_SHORT( pNPC->entindex() );
 		MessageEnd();
 
 		ClearMultiDamage();	
@@ -9378,13 +9382,8 @@ bool CAlienSwarm::HaveSavedConvar( const ConVarRef & ref )
 {
 	Assert( ref.IsValid() );
 
-	UtlSymId_t iSymbol = m_SavedConvars.Find( ref.GetName() );
-	if ( iSymbol == m_SavedConvars.InvalidIndex() )
-	{
-		return false;
-	}
-
-	return m_SavedConvars[ iSymbol ] != NULL_STRING;
+	int index = m_SavedConvars.Find( ref.GetName() );
+	return m_SavedConvars.IsValidIndex( index );
 }
 
 #ifdef CLIENT_DLL
@@ -9432,43 +9431,42 @@ void CAlienSwarm::SaveConvar( const ConVarRef & ref )
 	{
 		CReliableBroadcastRecipientFilter filter;
 		UserMessageBegin( filter, "SavedConvar" );
-		WRITE_STRING( ref.GetName() );
-		WRITE_STRING( ref.GetString() );
+			WRITE_STRING( ref.GetName() );
+			WRITE_STRING( ref.GetString() );
 		MessageEnd();
 	}
 #endif
-	m_SavedConvars[ ref.GetName() ] = AllocPooledString( ref.GetString() );
+
+	m_SavedConvars.Insert( ref.GetName(), ref.GetString() );
 }
 
 void CAlienSwarm::RevertSingleConvar( ConVarRef & ref )
 {
 	Assert( ref.IsValid() );
 
-	if ( !HaveSavedConvar( ref ) )
+	int index = m_SavedConvars.Find( ref.GetName() );
+	if ( !m_SavedConvars.IsValidIndex( index ) )
 	{
 		// don't have a saved value
 		return;
 	}
 
-	string_t & saved = m_SavedConvars[ ref.GetName() ];
-	ref.SetValue( STRING( saved ) );
-	saved = NULL_STRING;
+	ref.SetValue( m_SavedConvars[index] );
+	m_SavedConvars.RemoveAt( index );
 }
 
 void CAlienSwarm::RevertSavedConvars()
 {
 	// revert saved convars
-	for ( int i = 0; i < m_SavedConvars.GetNumStrings(); i++ )
+	for ( unsigned i = 0; i < m_SavedConvars.Count(); i++ )
 	{
-		const char *pszName = m_SavedConvars.String( i );
-		string_t iszValue = m_SavedConvars[i];
+		const char *pszName = m_SavedConvars.GetElementName( i );
+		const char *szValue = m_SavedConvars[i];
 		ConVarRef ref( pszName );
 		Assert( ref.IsValid() );
-		if ( iszValue != NULL_STRING )
-		{
-			ref.SetValue( STRING( iszValue ) );
-		}
+		ref.SetValue( szValue );
 	}
+
 	m_SavedConvars.Purge();
 }
 
@@ -9553,10 +9551,10 @@ void CAlienSwarm::EnableChallenge( const char *szChallengeName )
 void CAlienSwarm::CheckChallengeConVars()
 {
 	// make sure none of the variables were changed
-	for ( int i = 0; i < m_SavedConvars_Challenge.GetNumStrings(); i++ )
+	for ( unsigned i = 0; i < m_SavedConvars_Challenge.Count(); i++ )
 	{
-		ConVarRef ref( m_SavedConvars_Challenge.String( i ) );
-		const char *pszDesiredValue = STRING( m_SavedConvars_Challenge[i] );
+		ConVarRef ref( m_SavedConvars_Challenge.GetElementName( i ) );
+		const char *pszDesiredValue = m_SavedConvars_Challenge[i];
 
 		if ( ref.IsValid() && Q_strcmp( ref.GetString(), pszDesiredValue ) )
 		{
@@ -9569,10 +9567,10 @@ void CAlienSwarm::CheckChallengeConVars()
 void CAlienSwarm::ResetChallengeConVars()
 {
 	CUtlStringList names;
-	names.EnsureCapacity( m_SavedConvars_Challenge.GetNumStrings() );
-	for ( int i = 0; i < m_SavedConvars_Challenge.GetNumStrings(); i++ )
+	names.EnsureCapacity( m_SavedConvars_Challenge.Count() );
+	for ( unsigned i = 0; i < m_SavedConvars_Challenge.Count(); i++ )
 	{
-		names.CopyAndAddToTail( m_SavedConvars_Challenge.String( i ) );
+		names.CopyAndAddToTail( m_SavedConvars_Challenge.GetElementName( i ) );
 	}
 
 	// purge before we reset the convars so the write protection doesn't trigger.
