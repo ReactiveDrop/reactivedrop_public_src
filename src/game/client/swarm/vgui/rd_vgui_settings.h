@@ -81,6 +81,7 @@ public:
 	};
 
 	CRD_VGUI_Option( vgui::Panel *parent, const char *panelName, const char *szLabel, Mode_t eMode = MODE_RADIO );
+	~CRD_VGUI_Option();
 
 	void OnCursorEntered() override;
 	void NavigateTo() override;
@@ -131,6 +132,8 @@ private:
 	// these fields are unused for MODE_COLOR and MODE_CUSTOM.
 	bool m_bHaveCurrent : 1;
 	bool m_bHaveRecommended : 1;
+	bool m_bSetUsingConVars : 1;
+	bool m_bReverseSlider : 1;
 	union
 	{
 		int m_iOption;

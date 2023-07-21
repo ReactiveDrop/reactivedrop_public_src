@@ -178,7 +178,7 @@ CRD_VGUI_Settings_Video::CRD_VGUI_Settings_Video( vgui::Panel *parent, const cha
 	m_pSettingDisplayMode->AddOption( 1, "#rd_video_display_mode_noborder", "#rd_video_display_mode_noborder_hint" );
 	m_pSettingDisplayMode->AddOption( 2, "#rd_video_display_mode_windowed", "#rd_video_display_mode_windowed_hint" );
 	m_pSettingScreenBrightness = new CRD_VGUI_Option( this, "SettingScreenBrightness", "#rd_video_screen_brightness", CRD_VGUI_Option::MODE_SLIDER );
-	m_pSettingScreenBrightness->SetSliderMinMax( 1.6f, 2.6f );
+	m_pSettingScreenBrightness->SetSliderMinMax( 2.6f, 1.6f );
 	m_pSettingScreenBrightness->SetDefaultHint( "#rd_video_screen_brightness_hint" );
 	m_pSettingScreenBrightness->LinkToConVar( "mat_monitorgamma", false );
 	m_pSettingRenderingPipeline = new CRD_VGUI_Option( this, "SettingRenderingPipeline", "#rd_video_rendering_pipeline", CRD_VGUI_Option::MODE_DROPDOWN );

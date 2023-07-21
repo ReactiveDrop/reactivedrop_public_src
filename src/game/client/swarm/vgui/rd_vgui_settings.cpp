@@ -20,6 +20,17 @@ ConVar rd_settings_last_tab( "rd_settings_last_tab", "controls", FCVAR_ARCHIVE, 
 
 bool CRD_VGUI_Settings::s_bWantSave = false;
 
+static CUtlVector<CRD_VGUI_Option *> s_OptionControls;
+
+static void SettingsConVarChangedCallback( IConVar *var, const char *pOldValue, float flOldValue )
+{
+	Assert( s_OptionControls.Count() );
+	FOR_EACH_VEC( s_OptionControls, i )
+	{
+		s_OptionControls[i]->InvalidateLayout();
+	}
+}
+
 CRD_VGUI_Settings::CRD_VGUI_Settings( vgui::Panel *parent, const char *panelName ) :
 	BaseClass( parent, panelName )
 {
@@ -189,6 +200,22 @@ CRD_VGUI_Option::CRD_VGUI_Option( vgui::Panel *parent, const char *panelName, co
 
 	m_bHaveCurrent = false;
 	m_bHaveRecommended = false;
+	m_bSetUsingConVars = false;
+	m_bReverseSlider = false;
+
+	if ( !s_OptionControls.Count() )
+		g_pCVar->InstallGlobalChangeCallback( &SettingsConVarChangedCallback );
+
+	s_OptionControls.AddToTail( this );
+}
+
+CRD_VGUI_Option::~CRD_VGUI_Option()
+{
+	bool bRemoved = s_OptionControls.FindAndFastRemove( this );
+	Assert( bRemoved );
+
+	if ( bRemoved && s_OptionControls.Count() == 0 )
+		g_pCVar->RemoveGlobalChangeCallback( &SettingsConVarChangedCallback );
 }
 
 void CRD_VGUI_Option::OnCursorEntered()
@@ -220,6 +247,9 @@ void CRD_VGUI_Option::ApplySettings( KeyValues *pSettings )
 void CRD_VGUI_Option::PerformLayout()
 {
 	BaseClass::PerformLayout();
+
+	if ( m_bSetUsingConVars )
+		SetCurrentUsingConVars();
 
 	vgui::HFont hFont = m_pLblFieldName->GetFont();
 	int iTotalWidth = 0;
@@ -285,18 +315,25 @@ void CRD_VGUI_Option::Paint()
 {
 	BaseClass::Paint();
 
+	float flMultiplier = IsEnabled() ? 1.0f : 0.25f;
+#define DRAW_CONTROL( x0, y0, x1, y1, full_texture_name, red, green, blue ) \
+	HUD_SHEET_DRAW_RECT_COLOR( ( x0 ), ( y0 ), ( x1 ), ( y1 ), Controls, full_texture_name, ( red ) * flMultiplier, ( green ) * flMultiplier, ( blue ) * flMultiplier, 255 )
+
 	int x0, y0, x1, y1;
 	m_pInteractiveArea->GetBounds( x0, y0, x1, y1 );
 	if ( m_eMode == MODE_RADIO )
 	{
 		FOR_EACH_VEC( m_Options, i )
 		{
-			HUD_SHEET_DRAW_RECT( x0, y0, x0 + y1, y0 + y1, Controls, UV_radio );
+			if ( HasFocus() && IsEnabled() && m_bHaveRecommended && m_Recommended.m_iOption == i )
+				DRAW_CONTROL( x0, y0, x0 + y1, y0 + y1, UV_radio, 192, 224, 255 );
+			else
+				DRAW_CONTROL( x0, y0, x0 + y1, y0 + y1, UV_radio, 255, 255, 255 );
 
 			if ( !m_bHaveCurrent || m_Current.m_iOption < 0 || m_Current.m_iOption >= m_Options.Count() )
-				HUD_SHEET_DRAW_RECT( x0, y0, x0 + y1, y0 + y1, Controls, UV_radio_ind );
+				DRAW_CONTROL( x0, y0, x0 + y1, y0 + y1, UV_radio_ind, 255, 255, 255 );
 			else if ( m_Current.m_iOption == i )
-				HUD_SHEET_DRAW_RECT( x0, y0, x0 + y1, y0 + y1, Controls, UV_radio_checked );
+				DRAW_CONTROL( x0, y0, x0 + y1, y0 + y1, UV_radio_checked, 255, 255, 255 );
 
 			vgui::surface()->DrawSetTextColor( m_pInteractiveArea->GetFgColor() );
 			vgui::surface()->DrawSetTextFont( m_pLblFieldName->GetFont() );
@@ -325,11 +362,11 @@ void CRD_VGUI_Option::Paint()
 	else if ( m_eMode == MODE_CHECKBOX )
 	{
 		if ( HasFocus() )
-			HUD_SHEET_DRAW_BOUNDS( Controls, UV_checkbox_hover );
+			DRAW_CONTROL( x0, y0, x0 + x1, y0 + y1, UV_checkbox_hover, 255, 255, 255 );
 		else if ( m_bHaveRecommended && ( !m_bHaveCurrent || m_Current.m_flValue != m_Recommended.m_flValue ) )
-			HUD_SHEET_DRAW_BOUNDS( Controls, UV_checkbox_focus );
+			DRAW_CONTROL( x0, y0, x0 + x1, y0 + y1, UV_checkbox_focus, 255, 255, 255 );
 		else
-			HUD_SHEET_DRAW_BOUNDS( Controls, UV_checkbox );
+			DRAW_CONTROL( x0, y0, x0 + x1, y0 + y1, UV_checkbox, 255, 255, 255 );
 
 		if ( !m_bHaveCurrent )
 		{
@@ -363,28 +400,35 @@ void CRD_VGUI_Option::Paint()
 
 				x0 += y1;
 			}
+
+			HUD_SHEET_DRAW_RECT( x0, y0, x0 + y1, y0 + y1, Controls, UV_radio );
+
+			x0 += y1;
 		}
 
-		int x = m_bHaveCurrent ? RemapValClamped( m_Current.m_flValue, m_flMinValue, m_flMaxValue, x0 + y1 / 2, x0 + x1 - y1 / 2 ) : x0 + x1 / 2;
+		float flMin = m_flMinValue, flMax = m_flMaxValue;
+		if ( m_bReverseSlider )
+			V_swap( flMin, flMax );
+		int x = m_bHaveCurrent ? RemapValClamped( m_Current.m_flValue, flMin, flMax, x0 + y1 / 2, x0 + x1 - y1 / 2 ) : x0 + x1 / 2;
 		const HudSheetTexture_t &Bar = g_RD_HUD_Sheets.m_Controls[CRD_HUD_Sheets::UV_slider_bar];
 		const HudSheetTexture_t &BarEnd = g_RD_HUD_Sheets.m_Controls[CRD_HUD_Sheets::UV_slider_bar_end];
 		vgui::surface()->DrawSetTexture( g_RD_HUD_Sheets.m_nControlsID );
-		vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
+		vgui::surface()->DrawSetColor( 255 * flMultiplier, 255 * flMultiplier, 255 * flMultiplier, 255 );
 		if ( !m_bHaveCurrent )
-			vgui::surface()->DrawSetColor( 128, 128, 128, 255 );
+			vgui::surface()->DrawSetColor( 128 * flMultiplier, 128 * flMultiplier, 128 * flMultiplier, 255 );
 		vgui::surface()->DrawTexturedSubRect( x0, y0, x0 + y1 / 2, y0 + y1, BarEnd.u, BarEnd.v, BarEnd.s, BarEnd.t );
 		vgui::surface()->DrawTexturedSubRect( x0 + y1 / 2, y0, x, y0 + y1, ( Bar.u + Bar.s ) / 2, Bar.v, ( Bar.u + Bar.s ) / 2, Bar.t );
-		vgui::surface()->DrawSetColor( 128, 128, 128, 255 );
+		vgui::surface()->DrawSetColor( 128 * flMultiplier, 128 * flMultiplier, 128 * flMultiplier, 255 );
 		vgui::surface()->DrawTexturedSubRect( x, y0, x0 + x1 - y1 / 2, y0 + y1, ( Bar.u + Bar.s ) / 2, Bar.v, ( Bar.u + Bar.s ) / 2, Bar.t );
 		vgui::surface()->DrawTexturedSubRect( x0 + x1 - y1 / 2, y0, x0 + x1, y0 + y1, BarEnd.s, BarEnd.v, BarEnd.u, BarEnd.t );
 		if ( m_bHaveRecommended )
 		{
-			vgui::surface()->DrawSetColor( 192, 224, 255, 255 );
-			int recommendedX = RemapValClamped( m_Recommended.m_flValue, m_flMinValue, m_flMaxValue, x0 + y1 / 2, x0 + x1 - y1 / 2 );
+			vgui::surface()->DrawSetColor( 192 * flMultiplier, 224 * flMultiplier, 255 * flMultiplier, 255 );
+			int recommendedX = RemapValClamped( m_Recommended.m_flValue, flMin, flMax, x0 + y1 / 2, x0 + x1 - y1 / 2 );
 			vgui::surface()->DrawTexturedSubRect( recommendedX - YRES( 0.5f ), y0, recommendedX + YRES( 0.5f ), y0 + y1, ( Bar.u + Bar.s ) / 2, Bar.v, ( Bar.u + Bar.s ) / 2, Bar.t);
 		}
 
-		if ( HasFocus() )
+		if ( IsEnabled() && HasFocus() )
 			HUD_SHEET_DRAW_RECT( x - y1 / 4, y0, x + y1 / 4, y0 + y1, Controls, UV_slider_handle_hover );
 		else
 			HUD_SHEET_DRAW_RECT( x - y1 / 4, y0, x + y1 / 4, y0 + y1, Controls, UV_slider_handle );
@@ -571,6 +615,10 @@ void CRD_VGUI_Option::SetRecommendedOption( int iRecommended )
 
 void CRD_VGUI_Option::SetSliderMinMax( float flMin, float flMax )
 {
+	m_bReverseSlider = flMax < flMin;
+	if ( m_bReverseSlider )
+		V_swap( flMin, flMax );
+
 #ifdef DBGFLAG_ASSERT
 	Assert( m_eMode == MODE_SLIDER || m_eMode == MODE_CHECKBOX );
 	Assert( m_eMode != MODE_CHECKBOX || flMin != flMax );
@@ -729,6 +777,8 @@ void CRD_VGUI_Option::LinkToConVarAdvanced( int iOption, const char *szName, int
 
 void CRD_VGUI_Option::SetCurrentUsingConVars()
 {
+	m_bSetUsingConVars = true;
+
 	Assert( m_eMode == MODE_CHECKBOX || m_eMode == MODE_RADIO || m_eMode == MODE_DROPDOWN || m_eMode == MODE_SLIDER );
 	if ( m_eMode == MODE_CHECKBOX )
 	{
@@ -895,6 +945,7 @@ void CRD_VGUI_Option::WriteConfig( bool bForce )
 {
 	if ( s_bCVarChanged || bForce )
 	{
+		engine->ClientCmd_Unrestricted( "mat_savechanges" );
 		engine->ClientCmd_Unrestricted( "host_writeconfig" );
 		s_bCVarChanged = false;
 	}

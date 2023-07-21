@@ -49,16 +49,18 @@ public:
 	g_RD_HUD_Sheets.m_##sheet[ full_texture_name ].s, \
 	g_RD_HUD_Sheets.m_##sheet[ full_texture_name ].t
 #define HUD_UV_COORDS( sheet, full_texture_name ) HUD_UV_COORDS_QUALIFIED( sheet, CRD_HUD_Sheets::UVs_##sheet::full_texture_name )
-#define HUD_SHEET_DRAW_RECT_ALPHA( x0, y0, x1, y1, sheet, full_texture_name, alpha ) \
+#define HUD_SHEET_DRAW_RECT_COLOR( x0, y0, x1, y1, sheet, full_texture_name, red, green, blue, alpha ) \
 	do \
 	{ \
 		if ( int iAlpha = ( alpha ) ) \
 		{ \
-			vgui::surface()->DrawSetColor( 255, 255, 255, iAlpha ); \
+			vgui::surface()->DrawSetColor( ( red ), ( green ), ( blue ), iAlpha ); \
 			vgui::surface()->DrawSetTexture( g_RD_HUD_Sheets.m_n##sheet##ID ); \
 			vgui::surface()->DrawTexturedSubRect( ( x0 ), ( y0 ), ( x1 ), ( y1 ), HUD_UV_COORDS( sheet, full_texture_name ) ); \
 		} \
 	} while ( 0 )
+#define HUD_SHEET_DRAW_RECT_ALPHA( x0, y0, x1, y1, sheet, full_texture_name, alpha ) \
+	HUD_SHEET_DRAW_RECT_COLOR( x0, y0, x1, y1, sheet, full_texture_name, 255, 255, 255, alpha )
 #define HUD_SHEET_DRAW_RECT( x0, y0, x1, y1, sheet, full_texture_name ) \
 	HUD_SHEET_DRAW_RECT_ALPHA( ( x0 ), ( y0 ), ( x1 ), ( y1 ), sheet, full_texture_name, 255 )
 #define HUD_SHEET_DRAW_BOUNDS_ALPHA( sheet, full_texture_name, alpha ) \
