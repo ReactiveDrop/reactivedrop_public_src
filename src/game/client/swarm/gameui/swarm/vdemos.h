@@ -4,6 +4,7 @@
 
 class CNB_Button;
 class CNB_Header_Footer;
+class CRD_VGUI_Main_Menu_Top_Bar;
 
 namespace BaseModUI
 {
@@ -27,6 +28,7 @@ public:
 	void PerformLayout() override;
 
 	CNB_Header_Footer *m_pHeaderFooter;
+	CRD_VGUI_Main_Menu_Top_Bar *m_pTopBar;
 	vgui::Label *m_LblNoRecordings;
 	GenericPanelList *m_GplRecordingList;
 	DropDownMenu *m_DrpAutoRecord;

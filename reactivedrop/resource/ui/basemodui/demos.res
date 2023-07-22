@@ -7,11 +7,19 @@
 		"ypos"		"0"
 		"wide"		"f0"
 		"tall"		"f0"
+		"navUp"		"GplRecordingList"
+		"navDown"		"GplRecordingList"
 		"autoResize"		"0"
 		"pinCorner"		"0"
 		"visible"		"1"
 		"enabled"		"1"
 		"tabPosition"		"0"
+	}
+
+	"TopBar" {
+		"ControlName"		"CRD_VGUI_Main_Menu_Top_Bar"
+		"fieldName"		"TopBar"
+		"navDown"		"GplRecordingList"
 	}
 
 	"Title" {
@@ -36,6 +44,8 @@
 		"wide"		"450"
 		"tall"		"270"
 		"zpos"		"1"
+		"navUp"		"TopBar"
+		"navDown"		"DrpAutoRecord"
 		"tabPosition"		"1"
 		"NoDrawPanel"		"1"
 	}

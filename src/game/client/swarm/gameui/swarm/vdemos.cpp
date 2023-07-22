@@ -13,6 +13,7 @@
 #include "vgui/ISurface.h"
 #include "vgui_controls/ImagePanel.h"
 #include "filesystem.h"
+#include "rd_vgui_main_menu_top_bar.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -20,6 +21,7 @@
 using namespace BaseModUI;
 
 extern ConVar rd_auto_record_lobbies;
+extern ConVar rd_legacy_ui;
 
 class DemoInfoPanel final : public vgui::EditablePanel, public IGenericPanelListItem
 {
@@ -234,6 +236,9 @@ Demos::Demos( vgui::Panel *parent, const char *panelName ) :
 	m_pHeaderFooter->SetHeaderEnabled( false );
 	m_pHeaderFooter->SetGradientBarEnabled( true );
 	m_pHeaderFooter->SetGradientBarPos( 75, 350 );
+
+	m_pTopBar = new CRD_VGUI_Main_Menu_Top_Bar( this, "TopBar" );
+	m_pTopBar->m_hActiveButton = m_pTopBar->m_pTopButton[CRD_VGUI_Main_Menu_Top_Bar::BTN_RECORDINGS];
 
 	m_LblNoRecordings = new vgui::Label( this, "LblNoRecordings", "#rd_demo_list_empty" );
 
@@ -514,6 +519,17 @@ void Demos::ApplySchemeSettings( vgui::IScheme *pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 	SetupAsDialogStyle();
+
+	if ( rd_legacy_ui.GetString()[0] == '\0' )
+	{
+		m_pTopBar->SetVisible( true );
+		m_BtnCancel->SetVisible( false );
+	}
+	else
+	{
+		m_pTopBar->SetVisible( false );
+		m_BtnCancel->SetVisible( true );
+	}
 }
 
 void Demos::PerformLayout()
