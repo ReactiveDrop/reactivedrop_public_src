@@ -9408,7 +9408,7 @@ void __MsgFunc_SavedConvar( bf_read &msg )
 		Assert( ref.IsFlagSet( FCVAR_REPLICATED ) );
 		if ( ref.IsValid() && ref.IsFlagSet( FCVAR_REPLICATED ) )
 		{
-			ASWGameRules()->m_SavedConvars[szKey] = AllocPooledString( szValue );
+			ASWGameRules()->m_SavedConvars.Insert( szKey, szValue );
 		}
 	}
 }
@@ -9599,7 +9599,7 @@ void CAlienSwarm::ApplyChallengeConVars( KeyValues *pKV )
 			SaveConvar( ref );
 			ref.SetValue( pCV->GetString() );
 			// use the actual value to make sure we don't run into issues with truncated values not being equal.
-			m_SavedConvars_Challenge[ref.GetName()] = AllocPooledString( ref.GetString() );
+			m_SavedConvars_Challenge.Insert( ref.GetName(), ref.GetString() );
 		}
 		else
 		{
