@@ -16,6 +16,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+ConVar rd_mission_chooser_scroll_speed( "rd_mission_chooser_scroll_speed", "30", FCVAR_NONE, "Scroll speed in the mission chooser window in pixels." );
 
 TabbedGridDetails::TabbedGridDetails() : BaseClass( NULL, "TabbedGridDetails" )
 {
@@ -139,7 +140,7 @@ void TabbedGridDetails::OnMouseWheeled( int delta )
 		return;
 
 	int val = m_pCombinedScrollBar->GetValue();
-	val -= ( delta * YRES( 15 ) );
+	val -= ( delta * YRES( rd_mission_chooser_scroll_speed.GetInt() ) );
 	m_pCombinedScrollBar->SetValue( val );
 }
 
