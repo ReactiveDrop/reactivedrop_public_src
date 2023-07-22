@@ -3,9 +3,11 @@ on:
   push:
     branches:
       - reactivedrop_public
+      - reactivedrop_beta
   pull_request:
     branches:
       - reactivedrop_public
+      - reactivedrop_beta
 
 # GitHub Actions usage is FREE for both public repositories and self-hosted runners.
 # We can use it to build our project and do some automated builds and in future quality tests.
@@ -87,4 +89,3 @@ jobs:
             reactivedrop/bin/missionchooser.dll
             reactivedrop/bin/server.dll
             reactivedrop/bin/client.dll
-
