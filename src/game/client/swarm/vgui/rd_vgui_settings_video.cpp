@@ -348,6 +348,7 @@ void CRD_VGUI_Settings_Video::Activate()
 	int iRecommendedDisplayMode = iRecommendedFullScreen != -1 ? iRecommendedFullScreen == 0 ? iRecommendedNoBorder ? 1 : 2 : 0 : -1;
 	int iCurrentDisplayMode = config.Windowed() ? config.NoWindowBorder() ? 1 : 2 : 0;
 	m_pSettingDisplayMode->SetCurrentAndRecommended( iCurrentDisplayMode, iRecommendedDisplayMode );
+	m_pSettingDisplayMode->InvalidateLayout();
 
 	// Screen Brightness [setting.mat_monitorgamma] [this setting is an adjustable bar]
 	// (Only works in Exclusive Full Screen mode.)

@@ -84,13 +84,16 @@ public:
 	~CRD_VGUI_Option();
 
 	void OnCursorEntered() override;
+	void OnCursorMoved( int x, int y ) override;
 	void NavigateTo() override;
+	void OnKillFocus() override;
 	void ApplySettings( KeyValues *pSettings ) override;
 	void PerformLayout() override;
+	void OnThink() override;
 	void Paint() override;
-	void OnKeyCodeTyped( vgui::KeyCode code ) override;
 	void OnKeyCodePressed( vgui::KeyCode code ) override;
 	void OnMousePressed( vgui::MouseCode code ) override;
+	void OnMouseReleased( vgui::MouseCode code ) override;
 
 	// for MODE_RADIO and MODE_DROPDOWN
 	// can also be used for MODE_SLIDER, but iOption must be outside of the slider range
@@ -134,6 +137,10 @@ private:
 	bool m_bHaveRecommended : 1;
 	bool m_bSetUsingConVars : 1;
 	bool m_bReverseSlider : 1;
+	bool m_bSliderActive : 1;
+	bool m_bSliderActiveMouse : 1;
+	bool m_bStartedSliderActiveAtRecommended : 1;
+	int m_iActiveOption;
 	union
 	{
 		int m_iOption;
@@ -175,7 +182,20 @@ private:
 	vgui::Label *m_pLblHint;
 
 	static bool s_bCVarChanged;
-	void OnCheckboxClicked();
+	static float s_flLastRepeatLEFT, s_flLastRepeatRIGHT;
+	static float s_flLastRepeatUP, s_flLastRepeatDOWN;
+	static int s_iRepeatCountLEFT, s_iRepeatCountRIGHT;
+	static int s_iRepeatCountUP, s_iRepeatCountDOWN;
+	bool OnActivateButton( bool bMouse );
+	bool OnDeactivateButton( bool bMouse );
+	bool OnMovementButton( int iDirection, bool bVertical );
+	void CheckButtonRepeat( float &flLastRepeat, int &iRepeatCount, int iDirection, bool bVertical, float flSpeed, float flAccel, int iMaxAccel );
+	void ToggleCheckbox();
+	void SelectActiveRadioButton();
+	void ChangeActiveRadioButton( int iActive );
+	void ToggleSliderActive( bool bMouse );
+	void ToggleColorActive();
+	void ToggleDropdownActive();
 };
 
 class CRD_VGUI_Bind : public vgui::EditablePanel

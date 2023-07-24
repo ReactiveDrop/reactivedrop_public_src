@@ -2,6 +2,7 @@
 #include "rd_vgui_settings.h"
 #include "gameui/swarm/vhybridbutton.h"
 #include "gameui/swarm/basemodpanel.h"
+#include <vgui/IInput.h>
 #include <vgui/ISurface.h>
 #include "asw_util_shared.h"
 #include "nb_header_footer.h"
@@ -17,6 +18,16 @@ DECLARE_BUILD_FACTORY( CRD_VGUI_Settings );
 DECLARE_BUILD_FACTORY_DEFAULT_TEXT( CRD_VGUI_Option, OptionNameMissing );
 
 ConVar rd_settings_last_tab( "rd_settings_last_tab", "controls", FCVAR_ARCHIVE, "Remembers the last-used tab on the settings window." );
+ConVar rd_option_slider_recommended_magnetism( "rd_option_slider_recommended_magnetism", "3", FCVAR_NONE, "How sticky the recommended value for a slider option is." );
+ConVar rd_option_radio_repeat_speed( "rd_option_radio_repeat_speed", "0.75", FCVAR_NONE, "Time between left/right key repeats on radio button settings." );
+ConVar rd_option_radio_repeat_accel( "rd_option_radio_repeat_accel", "0.5", FCVAR_NONE, "For each repeat, subtract this amount from the time between future repeats." );
+ConVar rd_option_radio_repeat_max_accel( "rd_option_radio_repeat_max_accel", "1", FCVAR_NONE, "Limit to the number of times rd_option_radio_repeat_accel can be applied." );
+ConVar rd_option_dropdown_repeat_speed( "rd_option_dropdown_repeat_speed", "0.75", FCVAR_NONE, "Time between up/down key repeats on dropdown settings." );
+ConVar rd_option_dropdown_repeat_accel( "rd_option_dropdown_repeat_accel", "0.5", FCVAR_NONE, "For each repeat, subtract this amount from the time between future repeats." );
+ConVar rd_option_dropdown_repeat_max_accel( "rd_option_dropdown_repeat_max_accel", "1", FCVAR_NONE, "Limit to the number of times rd_option_dropdown_repeat_accel can be applied." );
+ConVar rd_option_slider_repeat_speed( "rd_option_slider_repeat_speed", "0.5", FCVAR_NONE, "Time between left/right key repeats on slider settings." );
+ConVar rd_option_slider_repeat_accel( "rd_option_slider_repeat_accel", "0.0625", FCVAR_NONE, "For each repeat, subtract this amount from the time between future repeats." );
+ConVar rd_option_slider_repeat_max_accel( "rd_option_slider_repeat_max_accel", "7", FCVAR_NONE, "Limit to the number of times rd_option_slider_repeat_accel can be applied." );
 
 bool CRD_VGUI_Settings::s_bWantSave = false;
 
@@ -202,6 +213,10 @@ CRD_VGUI_Option::CRD_VGUI_Option( vgui::Panel *parent, const char *panelName, co
 	m_bHaveRecommended = false;
 	m_bSetUsingConVars = false;
 	m_bReverseSlider = false;
+	m_bSliderActive = false;
+	m_bSliderActiveMouse = false;
+	m_bStartedSliderActiveAtRecommended = false;
+	m_iActiveOption = -1;
 
 	if ( !s_OptionControls.Count() )
 		g_pCVar->InstallGlobalChangeCallback( &SettingsConVarChangedCallback );
@@ -226,11 +241,111 @@ void CRD_VGUI_Option::OnCursorEntered()
 		NavigateToChild( this );
 }
 
+void CRD_VGUI_Option::OnCursorMoved( int x, int y )
+{
+	BaseClass::OnCursorMoved( x, y );
+
+	int x0, y0, x1, y1;
+	m_pInteractiveArea->GetBounds( x0, y0, x1, y1 );
+
+	if ( m_eMode == MODE_SLIDER && m_bSliderActiveMouse )
+	{
+		float flMin = m_flMinValue, flMax = m_flMaxValue;
+		if ( m_bReverseSlider )
+			V_swap( flMin, flMax );
+
+		float flNewValue = RemapValClamped( x, x0 + y1 / 2, x0 + x1 - y1 / 2, flMin, flMax );
+		if ( !m_bStartedSliderActiveAtRecommended && m_bHaveRecommended && fabsf( x - RemapValClamped( m_Recommended.m_flValue, flMin, flMax, x0 + y1 / 2, x0 + x1 - y1 / 2 ) ) < YRES( rd_option_slider_recommended_magnetism.GetFloat() ) )
+			flNewValue = m_Recommended.m_flValue;
+
+		SetCurrentSliderValue( flNewValue );
+		if ( m_pSliderLink )
+		{
+			m_pSliderLink->SetValue( flNewValue );
+			s_bCVarChanged = true;
+		}
+
+		CBaseModPanel::GetSingleton().PlayUISound( UISOUND_FOCUS );
+
+		return;
+	}
+
+	if ( m_pInteractiveArea->IsCursorOver() )
+	{
+		if ( m_eMode == MODE_RADIO )
+		{
+			x0 -= vgui::Label::Content;
+
+			int iNewActive = -1;
+
+			FOR_EACH_VEC( m_Options, i )
+			{
+				if ( x0 > x )
+					break;
+
+				iNewActive = i;
+
+				x0 += y1 + vgui::Label::Content * 2 + m_Options[i]->m_iWidth;
+			}
+
+			if ( m_iActiveOption != iNewActive )
+				ChangeActiveRadioButton( iNewActive );
+		}
+	}
+}
+
 void CRD_VGUI_Option::NavigateTo()
 {
 	BaseClass::NavigateTo();
 
+	if ( m_eMode == MODE_RADIO )
+	{
+		if ( m_bHaveCurrent && m_Current.m_iOption >= 0 && m_Current.m_iOption < m_Options.Count() )
+			m_iActiveOption = m_Current.m_iOption;
+		else if ( m_bHaveRecommended )
+			m_iActiveOption = m_Recommended.m_iOption;
+		else
+			m_iActiveOption = 0;
+	}
+
+	if ( m_eMode == MODE_SLIDER )
+	{
+		int iCurrent = -1, iRecommended = -1;
+		FOR_EACH_VEC( m_Options, i )
+		{
+			if ( m_bHaveCurrent && m_Options[i]->m_iValue == m_Current.m_flValue )
+				iCurrent = i;
+			if ( m_bHaveRecommended && m_Options[i]->m_iValue == m_Recommended.m_flValue )
+				iRecommended = i;
+			if ( iCurrent != -1 && iRecommended != -1 )
+				break;
+		}
+
+		if ( iCurrent != -1 )
+			m_iActiveOption = iCurrent;
+		else if ( m_bHaveCurrent && m_Current.m_flValue >= m_flMinValue && m_Current.m_flValue <= m_flMaxValue )
+			m_iActiveOption = m_Options.Count();
+		else if ( iRecommended != -1 )
+			m_iActiveOption = iRecommended;
+		else
+			m_iActiveOption = m_Options.Count();
+	}
+
 	RequestFocus();
+
+	CBaseModPanel::GetSingleton().PlayUISound( UISOUND_FOCUS );
+}
+
+void CRD_VGUI_Option::OnKillFocus()
+{
+	BaseClass::OnKillFocus();
+
+	if ( m_bSliderActive )
+	{
+		ToggleSliderActive( false );
+	}
+
+	m_iActiveOption = -1;
 }
 
 void CRD_VGUI_Option::ApplySettings( KeyValues *pSettings )
@@ -311,6 +426,88 @@ void CRD_VGUI_Option::PerformLayout()
 	}
 }
 
+void CRD_VGUI_Option::OnThink()
+{
+	BaseClass::OnThink();
+
+	if ( !HasFocus() )
+		return;
+
+	bool bHorizontal = false, bVertical = false;
+	float flSpeed = 0.0f, flAccel = 0.0f;
+	int iMaxAccel = 0;
+
+	switch ( m_eMode )
+	{
+	case MODE_RADIO:
+		bHorizontal = true;
+		flSpeed = rd_option_radio_repeat_speed.GetFloat();
+		flAccel = rd_option_radio_repeat_accel.GetFloat();
+		iMaxAccel = rd_option_radio_repeat_max_accel.GetInt();
+		break;
+	case MODE_DROPDOWN:
+		if ( m_bSliderActive )
+		{
+			bVertical = true;
+			flSpeed = rd_option_dropdown_repeat_speed.GetFloat();
+			flAccel = rd_option_dropdown_repeat_accel.GetFloat();
+			iMaxAccel = rd_option_dropdown_repeat_max_accel.GetInt();
+		}
+		break;
+	case MODE_SLIDER:
+		if ( m_bSliderActive )
+		{
+			bHorizontal = true;
+			flSpeed = rd_option_slider_repeat_speed.GetFloat();
+			flAccel = rd_option_slider_repeat_accel.GetFloat();
+			iMaxAccel = rd_option_slider_repeat_max_accel.GetInt();
+		}
+		else
+		{
+			bHorizontal = true;
+			flSpeed = rd_option_radio_repeat_speed.GetFloat();
+			flAccel = rd_option_radio_repeat_accel.GetFloat();
+			iMaxAccel = rd_option_radio_repeat_max_accel.GetInt();
+		}
+		break;
+	case MODE_COLOR:
+		if ( m_bSliderActive )
+		{
+			Assert( !"TODO: button repeat for color" );
+		}
+		break;
+	default:
+		Assert( m_eMode == MODE_CHECKBOX || m_eMode == MODE_CUSTOM );
+		break;
+	}
+
+#define CHECK_BUTTON_REPEAT( DIR, arg1, arg2 ) \
+	if ( vgui::input()->IsKeyDown( KEY_##DIR ) || \
+		vgui::input()->IsKeyDown( ButtonCodeToJoystickButtonCode( KEY_XBUTTON_##DIR, CBaseModPanel::GetSingleton().GetLastActiveUserId() ) ) || \
+		vgui::input()->IsKeyDown( ButtonCodeToJoystickButtonCode( KEY_XSTICK1_##DIR, CBaseModPanel::GetSingleton().GetLastActiveUserId() ) ) || \
+		vgui::input()->IsKeyDown( ButtonCodeToJoystickButtonCode( KEY_XSTICK2_##DIR, CBaseModPanel::GetSingleton().GetLastActiveUserId() ) ) ) \
+	{ \
+		CheckButtonRepeat( s_flLastRepeat##DIR, s_iRepeatCount##DIR, arg1, arg2, flSpeed, flAccel, iMaxAccel ); \
+	} \
+	else \
+	{ \
+		s_flLastRepeat##DIR = 0.0f; \
+		s_iRepeatCount##DIR = 0; \
+	}
+
+	if ( bHorizontal )
+	{
+		CHECK_BUTTON_REPEAT( LEFT, -1, false );
+		CHECK_BUTTON_REPEAT( RIGHT, 1, false );
+	}
+
+	if ( bVertical )
+	{
+		CHECK_BUTTON_REPEAT( UP, -1, true );
+		CHECK_BUTTON_REPEAT( DOWN, 1, true );
+	}
+}
+
 void CRD_VGUI_Option::Paint()
 {
 	BaseClass::Paint();
@@ -319,22 +516,41 @@ void CRD_VGUI_Option::Paint()
 #define DRAW_CONTROL( x0, y0, x1, y1, full_texture_name, red, green, blue ) \
 	HUD_SHEET_DRAW_RECT_COLOR( ( x0 ), ( y0 ), ( x1 ), ( y1 ), Controls, full_texture_name, ( red ) * flMultiplier, ( green ) * flMultiplier, ( blue ) * flMultiplier, 255 )
 
+	bool bIsFocused = HasFocus() && IsEnabled();
+
 	int x0, y0, x1, y1;
 	m_pInteractiveArea->GetBounds( x0, y0, x1, y1 );
 	if ( m_eMode == MODE_RADIO )
 	{
+		bool bIsIndeterminate = !m_bHaveCurrent || m_Current.m_iOption < 0 || m_Current.m_iOption >= m_Options.Count();
 		FOR_EACH_VEC( m_Options, i )
 		{
-			if ( HasFocus() && IsEnabled() && m_bHaveRecommended && m_Recommended.m_iOption == i )
-				DRAW_CONTROL( x0, y0, x0 + y1, y0 + y1, UV_radio, 192, 224, 255 );
+			bool bIsActive = bIsFocused && m_iActiveOption == i;
+			bool bIsRecommended = bIsFocused && m_bHaveRecommended && m_Recommended.m_iOption == i;
+			bool bIsCurrent = m_bHaveCurrent && m_Current.m_iOption == i;
+			int r = 255, g = 255, b = 255;
+			if ( bIsRecommended )
+			{
+				r = 192;
+				g = 224;
+			}
+
+			if ( bIsActive )
+				DRAW_CONTROL( x0, y0, x0 + y1, y0 + y1, UV_radio_hover, r, g, b );
+			else if ( bIsFocused )
+				DRAW_CONTROL( x0, y0, x0 + y1, y0 + y1, UV_radio_focus, r, g, b );
 			else
-				DRAW_CONTROL( x0, y0, x0 + y1, y0 + y1, UV_radio, 255, 255, 255 );
+				DRAW_CONTROL( x0, y0, x0 + y1, y0 + y1, UV_radio, r, g, b );
 
-			if ( !m_bHaveCurrent || m_Current.m_iOption < 0 || m_Current.m_iOption >= m_Options.Count() )
+			if ( bIsActive && bIsIndeterminate )
+				DRAW_CONTROL( x0, y0, x0 + y1, y0 + y1, UV_radio_ind_hover, 255, 255, 255 );
+			else if ( bIsIndeterminate )
 				DRAW_CONTROL( x0, y0, x0 + y1, y0 + y1, UV_radio_ind, 255, 255, 255 );
-			else if ( m_Current.m_iOption == i )
+			else if ( bIsActive && bIsCurrent )
+				DRAW_CONTROL( x0, y0, x0 + y1, y0 + y1, UV_radio_checked_hover, 255, 255, 255 );
+			else if ( bIsCurrent )
 				DRAW_CONTROL( x0, y0, x0 + y1, y0 + y1, UV_radio_checked, 255, 255, 255 );
-
+			
 			vgui::surface()->DrawSetTextColor( m_pInteractiveArea->GetFgColor() );
 			vgui::surface()->DrawSetTextFont( m_pLblFieldName->GetFont() );
 			vgui::surface()->DrawSetTextPos( x0 + y1 + vgui::Label::Content, y0 + ( y1 - vgui::surface()->GetFontTall( m_pLblFieldName->GetFont() ) ) / 2 );
@@ -392,16 +608,11 @@ void CRD_VGUI_Option::Paint()
 	}
 	else if ( m_eMode == MODE_SLIDER )
 	{
-		if ( m_Options.Count() )
+		FOR_EACH_VEC( m_Options, i )
 		{
-			FOR_EACH_VEC( m_Options, i )
-			{
-				HUD_SHEET_DRAW_RECT( x0, y0, x0 + y1, y0 + y1, Controls, UV_radio );
-
-				x0 += y1;
-			}
-
 			HUD_SHEET_DRAW_RECT( x0, y0, x0 + y1, y0 + y1, Controls, UV_radio );
+
+			// TODO
 
 			x0 += y1;
 		}
@@ -421,23 +632,22 @@ void CRD_VGUI_Option::Paint()
 		vgui::surface()->DrawSetColor( 128 * flMultiplier, 128 * flMultiplier, 128 * flMultiplier, 255 );
 		vgui::surface()->DrawTexturedSubRect( x, y0, x0 + x1 - y1 / 2, y0 + y1, ( Bar.u + Bar.s ) / 2, Bar.v, ( Bar.u + Bar.s ) / 2, Bar.t );
 		vgui::surface()->DrawTexturedSubRect( x0 + x1 - y1 / 2, y0, x0 + x1, y0 + y1, BarEnd.s, BarEnd.v, BarEnd.u, BarEnd.t );
-		if ( m_bHaveRecommended )
+		if ( m_bHaveRecommended && m_Recommended.m_flValue >= m_flMinValue && m_Recommended.m_flValue <= m_flMaxValue )
 		{
 			vgui::surface()->DrawSetColor( 192 * flMultiplier, 224 * flMultiplier, 255 * flMultiplier, 255 );
 			int recommendedX = RemapValClamped( m_Recommended.m_flValue, flMin, flMax, x0 + y1 / 2, x0 + x1 - y1 / 2 );
-			vgui::surface()->DrawTexturedSubRect( recommendedX - YRES( 0.5f ), y0, recommendedX + YRES( 0.5f ), y0 + y1, ( Bar.u + Bar.s ) / 2, Bar.v, ( Bar.u + Bar.s ) / 2, Bar.t);
+			vgui::surface()->DrawTexturedSubRect( recommendedX - YRES( 0.5f ), y0, recommendedX + YRES( 0.5f ), y0 + y1, ( Bar.u + Bar.s ) / 2, Bar.v, ( Bar.u + Bar.s ) / 2, Bar.t );
 		}
 
-		if ( IsEnabled() && HasFocus() )
+		if ( bIsFocused && m_bSliderActive )
 			HUD_SHEET_DRAW_RECT( x - y1 / 4, y0, x + y1 / 4, y0 + y1, Controls, UV_slider_handle_hover );
+		else if ( bIsFocused && m_iActiveOption == m_Options.Count() )
+			HUD_SHEET_DRAW_RECT( x - y1 / 4, y0, x + y1 / 4, y0 + y1, Controls, UV_slider_handle_focus );
 		else
 			HUD_SHEET_DRAW_RECT( x - y1 / 4, y0, x + y1 / 4, y0 + y1, Controls, UV_slider_handle );
 	}
 	else if ( m_eMode == MODE_COLOR )
 	{
-		x1 = YRES( 20 );
-		x0 = GetWide() - x1;
-
 		Assert( m_pSliderLink );
 		if ( m_pSliderLink )
 		{
@@ -458,35 +668,63 @@ void CRD_VGUI_Option::Paint()
 	}
 }
 
-void CRD_VGUI_Option::OnKeyCodeTyped( vgui::KeyCode code )
-{
-	if ( m_eMode == MODE_CHECKBOX )
-	{
-		switch ( code )
-		{
-		case KEY_XBUTTON_A:
-			OnCheckboxClicked();
-
-			return;
-		}
-	}
-
-	BaseClass::OnKeyCodeTyped( code );
-}
-
 void CRD_VGUI_Option::OnKeyCodePressed( vgui::KeyCode code )
 {
-	if ( m_eMode == MODE_CHECKBOX )
-	{
-		switch ( code )
-		{
-		case KEY_SPACE:
-		case KEY_ENTER:
-		case KEY_PAD_ENTER:
-			OnCheckboxClicked();
+	int joystick = GetJoystickForCode( code );
+	if ( joystick != CBaseModPanel::GetSingleton().GetLastActiveUserId() )
+		return;
 
+	switch ( GetBaseButtonCode( code ) )
+	{
+	case KEY_ESCAPE:
+		if ( !m_bSliderActive )
+			break;
+
+		// fallthrough
+	case KEY_SPACE:
+	case KEY_ENTER:
+	case KEY_PAD_ENTER:
+	case KEY_XBUTTON_A:
+		if ( OnActivateButton( false ) )
 			return;
-		}
+
+		break;
+
+	case KEY_LEFT:
+	case KEY_XBUTTON_LEFT:
+	case KEY_XSTICK1_LEFT:
+	case KEY_XSTICK2_LEFT:
+		if ( OnMovementButton( -1, false ) )
+			return;
+
+		break;
+
+	case KEY_RIGHT:
+	case KEY_XBUTTON_RIGHT:
+	case KEY_XSTICK1_RIGHT:
+	case KEY_XSTICK2_RIGHT:
+		if ( OnMovementButton( 1, false ) )
+			return;
+
+		break;
+
+	case KEY_UP:
+	case KEY_XBUTTON_UP:
+	case KEY_XSTICK1_UP:
+	case KEY_XSTICK2_UP:
+		if ( OnMovementButton( -1, true ) )
+			return;
+
+		break;
+
+	case KEY_DOWN:
+	case KEY_XBUTTON_DOWN:
+	case KEY_XSTICK1_DOWN:
+	case KEY_XSTICK2_DOWN:
+		if ( OnMovementButton( 1, true ) )
+			return;
+
+		break;
 	}
 
 	BaseClass::OnKeyCodePressed( code );
@@ -494,18 +732,30 @@ void CRD_VGUI_Option::OnKeyCodePressed( vgui::KeyCode code )
 
 void CRD_VGUI_Option::OnMousePressed( vgui::MouseCode code )
 {
-	if ( m_eMode == MODE_CHECKBOX )
+	switch ( code )
 	{
-		switch ( code )
-		{
-		case MOUSE_LEFT:
-			OnCheckboxClicked();
-
+	case MOUSE_LEFT:
+		if ( OnActivateButton( true ) )
 			return;
-		}
+
+		break;
 	}
 
 	BaseClass::OnMousePressed( code );
+}
+
+void CRD_VGUI_Option::OnMouseReleased( vgui::MouseCode code )
+{
+	switch ( code )
+	{
+	case MOUSE_LEFT:
+		if ( OnDeactivateButton( true ) )
+			return;
+
+		break;
+	}
+
+	BaseClass::OnMouseReleased( code );
 }
 
 void CRD_VGUI_Option::RemoveAllOptions()
@@ -979,8 +1229,150 @@ CRD_VGUI_Option::Option_t::Option_t( int iValue, const char *szLabel, const char
 }
 
 bool CRD_VGUI_Option::s_bCVarChanged = false;
+float CRD_VGUI_Option::s_flLastRepeatLEFT = 0.0f, CRD_VGUI_Option::s_flLastRepeatRIGHT = 0.0f;
+float CRD_VGUI_Option::s_flLastRepeatUP = 0.0f, CRD_VGUI_Option::s_flLastRepeatDOWN = 0.0f;
+int CRD_VGUI_Option::s_iRepeatCountLEFT = 0, CRD_VGUI_Option::s_iRepeatCountRIGHT = 0;
+int CRD_VGUI_Option::s_iRepeatCountUP = 0, CRD_VGUI_Option::s_iRepeatCountDOWN = 0;
 
-void CRD_VGUI_Option::OnCheckboxClicked()
+bool CRD_VGUI_Option::OnActivateButton( bool bMouse )
+{
+	if ( !IsEnabled() )
+	{
+		return false;
+	}
+
+	// reset repeat timer on activate
+	s_flLastRepeatLEFT = s_flLastRepeatRIGHT = 0.0f;
+	s_flLastRepeatUP = s_flLastRepeatDOWN = 0.0f;
+	s_iRepeatCountLEFT = s_iRepeatCountRIGHT = 0;
+	s_iRepeatCountUP = s_iRepeatCountDOWN = 0;
+
+	if ( m_eMode == MODE_CHECKBOX )
+	{
+		ToggleCheckbox();
+
+		return true;
+	}
+
+	if ( ( m_eMode == MODE_RADIO || m_eMode == MODE_SLIDER || m_eMode == MODE_DROPDOWN ) && m_iActiveOption >= 0 && m_iActiveOption < m_Options.Count() )
+	{
+		SelectActiveRadioButton();
+
+		return true;
+	}
+
+	if ( m_eMode == MODE_SLIDER && m_iActiveOption == m_Options.Count() )
+	{
+		ToggleSliderActive( bMouse );
+
+		return true;
+	}
+
+	if ( m_eMode == MODE_COLOR )
+	{
+		ToggleColorActive();
+
+		return true;
+	}
+
+	if ( m_eMode == MODE_DROPDOWN )
+	{
+		ToggleDropdownActive();
+
+		return true;
+	}
+
+	return false;
+}
+
+bool CRD_VGUI_Option::OnDeactivateButton( bool bMouse )
+{
+	Assert( bMouse );
+
+	if ( !IsEnabled() )
+	{
+		return false;
+	}
+
+	if ( m_eMode == MODE_SLIDER && m_iActiveOption == m_Options.Count() && m_bSliderActive )
+	{
+		ToggleSliderActive( bMouse );
+
+		return true;
+	}
+
+	return false;
+}
+
+bool CRD_VGUI_Option::OnMovementButton( int iDirection, bool bVertical )
+{
+	if ( !IsEnabled() )
+		return false;
+
+	if ( !bVertical && ( m_eMode == MODE_RADIO || ( m_eMode == MODE_SLIDER && !m_bSliderActive ) ) && m_iActiveOption + iDirection >= 0 && m_iActiveOption + iDirection < m_Options.Count() + ( m_eMode == MODE_SLIDER ? 1 : 0 ) )
+	{
+		ChangeActiveRadioButton( m_iActiveOption + iDirection );
+
+		return true;
+	}
+
+	if ( !bVertical && m_eMode == MODE_SLIDER && m_bSliderActive )
+	{
+		float flMin = m_flMinValue, flMax = m_flMaxValue;
+		if ( m_bReverseSlider )
+			V_swap( flMin, flMax );
+
+		float flDelta = iDirection * ( flMax - flMin ) / m_pInteractiveArea->GetWide() / 480.0f * ScreenWidth();
+		float flAbsDelta = fabsf( flDelta );
+
+		float flNewValue = clamp( m_Current.m_flValue + flDelta, m_flMinValue, m_flMaxValue );
+		if ( m_bHaveRecommended && m_Recommended.m_flValue >= m_flMinValue && m_Recommended.m_flValue <= m_flMaxValue && !m_bStartedSliderActiveAtRecommended &&
+			!( m_Current.m_flValue >= m_Recommended.m_flValue - flAbsDelta * rd_option_slider_recommended_magnetism.GetFloat() && m_Current.m_flValue <= m_Recommended.m_flValue + flAbsDelta * rd_option_slider_recommended_magnetism.GetFloat() ) &&
+			flNewValue >= m_Recommended.m_flValue - flAbsDelta * rd_option_slider_recommended_magnetism.GetFloat() && flNewValue <= m_Recommended.m_flValue + flAbsDelta * rd_option_slider_recommended_magnetism.GetFloat() )
+			flNewValue = m_Recommended.m_flValue;
+
+		SetCurrentSliderValue( flNewValue );
+		m_bStartedSliderActiveAtRecommended = m_bHaveRecommended && flNewValue == m_Recommended.m_flValue;
+
+		Assert( m_bHaveCurrent && m_pSliderLink );
+		if ( m_bHaveCurrent && m_pSliderLink )
+		{
+			m_pSliderLink->SetValue( flNewValue );
+			s_bCVarChanged = true;
+		}
+
+		CBaseModPanel::GetSingleton().PlayUISound( UISOUND_FOCUS );
+
+		return true;
+	}
+
+	return false;
+}
+
+void CRD_VGUI_Option::CheckButtonRepeat( float &flLastRepeat, int &iRepeatCount, int iDirection, bool bVertical, float flSpeed, float flAccel, int iMaxAccel )
+{
+	float flNow = Plat_FloatTime();
+	if ( iRepeatCount <= 0 )
+	{
+		flLastRepeat = flNow;
+		iRepeatCount = 1;
+		return;
+	}
+
+	for ( ;; )
+	{
+		// limit repeat speed to once every 10ms
+		float flRepeatAfter = MAX( flSpeed - flAccel * MIN( iRepeatCount - 1, iMaxAccel ), 0.01f );
+		if ( flLastRepeat + flRepeatAfter > flNow )
+			break;
+
+		OnMovementButton( iDirection, bVertical );
+		flLastRepeat += flRepeatAfter;
+		iRepeatCount++;
+	}
+}
+
+void CRD_VGUI_Option::ToggleCheckbox()
 {
 	if ( m_bHaveCurrent && m_Current.m_flValue == m_flMinValue )
 		SetCurrentSliderValue( m_flMaxValue );
@@ -994,7 +1386,91 @@ void CRD_VGUI_Option::OnCheckboxClicked()
 		s_bCVarChanged = true;
 	}
 
-	CBaseModPanel::GetSingleton().PlayUISound( UISOUND_CLICK );
+	CBaseModPanel::GetSingleton().PlayUISound( UISOUND_ACCEPT );
+
+	InvalidateLayout();
+}
+
+void CRD_VGUI_Option::SelectActiveRadioButton()
+{
+	Assert( m_eMode == MODE_RADIO || m_eMode == MODE_SLIDER || m_eMode == MODE_DROPDOWN );
+
+	Assert( m_iActiveOption >= 0 && m_iActiveOption < m_Options.Count() );
+	if ( m_iActiveOption < 0 || m_iActiveOption >= m_Options.Count() )
+		return;
+
+	const CUtlVector<ConVarLink_t> &convars = m_Options[m_iActiveOption]->m_ConVars;
+	FOR_EACH_VEC( convars, i )
+	{
+		if ( convars[i].m_szValue )
+			convars[i].m_pConVar->SetValue( convars[i].m_szValue );
+		else
+			convars[i].m_pConVar->SetValue( convars[i].m_iValue );
+
+		s_bCVarChanged = true;
+	}
+
+	m_bHaveCurrent = true;
+	if ( m_eMode == MODE_SLIDER )
+		m_Current.m_flValue = m_Options[m_iActiveOption]->m_iValue;
+	else
+		m_Current.m_iOption = m_iActiveOption;
+
+	if ( m_eMode == MODE_DROPDOWN )
+		m_iActiveOption = -1;
+
+	CBaseModPanel::GetSingleton().PlayUISound( UISOUND_ACCEPT );
+
+	InvalidateLayout();
+}
+
+void CRD_VGUI_Option::ChangeActiveRadioButton( int iActive )
+{
+	Assert( m_eMode == MODE_RADIO || m_eMode == MODE_SLIDER );
+	Assert( iActive >= 0 && iActive < m_Options.Count() + ( m_eMode == MODE_SLIDER ? 1 : 0 ) );
+
+	m_iActiveOption = iActive;
+
+	CBaseModPanel::GetSingleton().PlayUISound( UISOUND_FOCUS );
+}
+
+void CRD_VGUI_Option::ToggleSliderActive( bool bMouse )
+{
+	Assert( m_eMode == MODE_SLIDER );
+	Assert( m_iActiveOption == m_Options.Count() );
+
+	if ( m_bSliderActive )
+	{
+		m_bSliderActive = false;
+		m_bSliderActiveMouse = false;
+
+		if ( vgui::input()->GetMouseCapture() == GetVPanel() )
+			vgui::input()->SetMouseCapture( NULL );
+	}
+	else
+	{
+		m_bSliderActive = true;
+		m_bSliderActiveMouse = bMouse;
+		m_bStartedSliderActiveAtRecommended = m_bHaveCurrent && m_bHaveRecommended && m_Current.m_flValue == m_Recommended.m_flValue;
+
+		if ( bMouse )
+			vgui::input()->SetMouseCapture( GetVPanel() );
+	}
+}
+
+void CRD_VGUI_Option::ToggleColorActive()
+{
+	Assert( m_eMode == MODE_COLOR );
+
+	Assert( !"TODO: ToggleColorActive" );
+}
+
+void CRD_VGUI_Option::ToggleDropdownActive()
+{
+	Assert( m_eMode == MODE_DROPDOWN );
+	Assert( m_iActiveOption == -1 );
+
+	Assert( !"TODO: ToggleDropdownActive" );
 }
 
 CON_COMMAND( rd_settings, "Opens the settings screen." )
