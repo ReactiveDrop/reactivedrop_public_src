@@ -37,6 +37,7 @@ public:
 
 #ifdef WIN32
 		DEVMODE devMode{};
+		devMode.dmSize = sizeof( devMode );
 		bool bSuccess = EnumDisplaySettings( NULL, ENUM_CURRENT_SETTINGS, &devMode );
 		Assert( bSuccess );
 		if ( !bSuccess )

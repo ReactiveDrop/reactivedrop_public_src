@@ -8,6 +8,7 @@
 		"ypos"				"0"
 		"wide"				"64"
 		"tall"				"12"
+		"navLeft"			"TextEntry"
 	}
 
 	"LblFieldName"
@@ -16,7 +17,7 @@
 		"fieldName"			"LblFieldName"
 		"xpos"				"0"
 		"ypos"				"0"
-		"wide"				"124"
+		"wide"				"94"
 		"tall"				"12"
 		"fgcolor_override"	"128 128 128 255"
 	}
@@ -33,5 +34,16 @@
 		"textAlignment"		"north-west"
 		"wrap"				"1"
 		"fgcolor_override"	"96 96 96 255"
+	}
+
+	"TextEntry"
+	{
+		"ControlName"		"TextEntry"
+		"fieldName"			"TextEntry"
+		"xpos"				"94"
+		"ypos"				"0"
+		"wide"				"30"
+		"tall"				"12"
+		"navRight"			"InteractiveArea"
 	}
 }

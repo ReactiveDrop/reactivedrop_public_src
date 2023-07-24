@@ -94,6 +94,8 @@ public:
 	void OnKeyCodePressed( vgui::KeyCode code ) override;
 	void OnMousePressed( vgui::MouseCode code ) override;
 	void OnMouseReleased( vgui::MouseCode code ) override;
+	MESSAGE_FUNC( OnTextChanged, "TextChanged" );
+	MESSAGE_FUNC( OnTextKillFocus, "TextKillFocus" );
 
 	// for MODE_RADIO and MODE_DROPDOWN
 	// can also be used for MODE_SLIDER, but iOption must be outside of the slider range
@@ -180,6 +182,7 @@ private:
 	vgui::Panel *m_pInteractiveArea;
 	vgui::Label *m_pLblFieldName;
 	vgui::Label *m_pLblHint;
+	vgui::TextEntry *m_pTextEntry;
 
 	static bool s_bCVarChanged;
 	static float s_flLastRepeatLEFT, s_flLastRepeatRIGHT;

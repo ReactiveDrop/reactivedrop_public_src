@@ -4,6 +4,7 @@
 #include "gameui/swarm/basemodpanel.h"
 #include <vgui/IInput.h>
 #include <vgui/ISurface.h>
+#include <vgui_controls/TextEntry.h>
 #include "asw_util_shared.h"
 #include "nb_header_footer.h"
 #include "rd_vgui_main_menu_top_bar.h"
@@ -32,9 +33,13 @@ ConVar rd_option_slider_repeat_max_accel( "rd_option_slider_repeat_max_accel", "
 bool CRD_VGUI_Settings::s_bWantSave = false;
 
 static CUtlVector<CRD_VGUI_Option *> s_OptionControls;
+static bool s_bSuppressTextEntryChange = false;
 
 static void SettingsConVarChangedCallback( IConVar *var, const char *pOldValue, float flOldValue )
 {
+	if ( s_bSuppressTextEntryChange )
+		return;
+
 	Assert( s_OptionControls.Count() );
 	FOR_EACH_VEC( s_OptionControls, i )
 	{
@@ -208,6 +213,12 @@ CRD_VGUI_Option::CRD_VGUI_Option( vgui::Panel *parent, const char *panelName, co
 	m_pLblFieldName->SetMouseInputEnabled( false );
 	m_pLblHint = new vgui::Label( this, "LblHint", "" );
 	m_pLblHint->SetMouseInputEnabled( false );
+	m_pTextEntry = eMode == MODE_SLIDER ? new vgui::TextEntry( this, "TextEntry" ) : NULL;
+	if ( m_pTextEntry )
+	{
+		m_pTextEntry->AddActionSignalTarget( this );
+		m_pTextEntry->SetAllowNumericInputOnly( true );
+	}
 
 	m_bHaveCurrent = false;
 	m_bHaveRecommended = false;
@@ -670,6 +681,9 @@ void CRD_VGUI_Option::Paint()
 
 void CRD_VGUI_Option::OnKeyCodePressed( vgui::KeyCode code )
 {
+	if ( m_pTextEntry && m_pTextEntry->HasFocus() )
+		return;
+
 	int joystick = GetJoystickForCode( code );
 	if ( joystick != CBaseModPanel::GetSingleton().GetLastActiveUserId() )
 		return;
@@ -732,6 +746,13 @@ void CRD_VGUI_Option::OnKeyCodePressed( vgui::KeyCode code )
 
 void CRD_VGUI_Option::OnMousePressed( vgui::MouseCode code )
 {
+	if ( m_pTextEntry && m_pTextEntry->HasFocus() )
+	{
+		BaseClass::OnMouseReleased( code );
+
+		return;
+	}
+
 	switch ( code )
 	{
 	case MOUSE_LEFT:
@@ -746,6 +767,13 @@ void CRD_VGUI_Option::OnMousePressed( vgui::MouseCode code )
 
 void CRD_VGUI_Option::OnMouseReleased( vgui::MouseCode code )
 {
+	if ( m_pTextEntry && m_pTextEntry->HasFocus() )
+	{
+		BaseClass::OnMouseReleased( code );
+
+		return;
+	}
+
 	switch ( code )
 	{
 	case MOUSE_LEFT:
@@ -756,6 +784,38 @@ void CRD_VGUI_Option::OnMouseReleased( vgui::MouseCode code )
 	}
 
 	BaseClass::OnMouseReleased( code );
+}
+
+void CRD_VGUI_Option::OnTextChanged()
+{
+	Assert( m_pTextEntry );
+	Assert( !s_bSuppressTextEntryChange );
+
+	float flNewValue = m_pTextEntry->GetValueAsFloat();
+	flNewValue = clamp( flNewValue, m_flMinValue, m_flMaxValue );
+
+	s_bSuppressTextEntryChange = true;
+	SetCurrentSliderValue( flNewValue );
+
+	Assert( m_bHaveCurrent && m_pSliderLink );
+	if ( m_bHaveCurrent && m_pSliderLink )
+	{
+		m_pSliderLink->SetValue( flNewValue );
+		s_bCVarChanged = true;
+	}
+	s_bSuppressTextEntryChange = false;
+}
+
+void CRD_VGUI_Option::OnTextKillFocus()
+{
+	Assert( m_pTextEntry );
+	Assert( !s_bSuppressTextEntryChange );
+
+	if ( m_bHaveCurrent )
+	{
+		// re-set slider value so the text box gets the correct (clamped) value
+		SetCurrentSliderValue( m_Current.m_flValue );
+	}
 }
 
 void CRD_VGUI_Option::RemoveAllOptions()
@@ -901,6 +961,15 @@ void CRD_VGUI_Option::SetCurrentSliderValue( float flValue )
 
 	m_bHaveCurrent = true;
 	m_Current.m_flValue = flValue;
+
+	if ( m_pTextEntry && !s_bSuppressTextEntryChange && !IsLayoutInvalid() )
+	{
+		m_pTextEntry->SetEnabled( IsEnabled() );
+
+		int iDigits = 1 - MIN( log10f( ( m_flMaxValue - m_flMinValue ) * YRES( 1 ) / m_pInteractiveArea->GetWide() ), 0 );
+
+		m_pTextEntry->SetText( VarArgs( "%.*f", iDigits, flValue ) );
+	}
 }
 
 void CRD_VGUI_Option::SetRecommendedSliderValue( float flValue )
@@ -1039,8 +1108,7 @@ void CRD_VGUI_Option::SetCurrentUsingConVars()
 
 			if ( m_flMinValue == flValue || m_flMaxValue == flValue )
 			{
-				m_bHaveCurrent = true;
-				m_Current.m_flValue = flValue;
+				SetCurrentSliderValue( flValue );
 
 				return;
 			}
@@ -1059,8 +1127,8 @@ void CRD_VGUI_Option::SetCurrentUsingConVars()
 			float flValue = m_pSliderLink->GetFloat();
 			if ( flValue >= m_flMinValue && flValue <= m_flMaxValue )
 			{
-				m_bHaveCurrent = true;
-				m_Current.m_flValue = flValue;
+				SetCurrentSliderValue( flValue );
+
 				return;
 			}
 		}
@@ -1312,6 +1380,20 @@ bool CRD_VGUI_Option::OnMovementButton( int iDirection, bool bVertical )
 	if ( !bVertical && ( m_eMode == MODE_RADIO || ( m_eMode == MODE_SLIDER && !m_bSliderActive ) ) && m_iActiveOption + iDirection >= 0 && m_iActiveOption + iDirection < m_Options.Count() + ( m_eMode == MODE_SLIDER ? 1 : 0 ) )
 	{
 		ChangeActiveRadioButton( m_iActiveOption + iDirection );
+
+		return true;
+	}
+
+	if ( !bVertical && m_pTextEntry && m_iActiveOption == 0 && iDirection == -1 && !m_pTextEntry->HasFocus() && m_pInteractiveArea->GetNavLeft() == m_pTextEntry )
+	{
+		NavigateToChild( m_pTextEntry );
+
+		return true;
+	}
+
+	if ( !bVertical && m_pTextEntry && m_iActiveOption == m_Options.Count() + ( m_eMode == MODE_SLIDER ? 1 : 0 ) && iDirection == 1 && !m_pTextEntry->HasFocus() && m_pInteractiveArea->GetNavRight() == m_pTextEntry )
+	{
+		NavigateToChild( m_pTextEntry );
 
 		return true;
 	}
