@@ -166,7 +166,7 @@ void CRD_VGUI_Settings::NavigateToTab( BaseModHybridButton *pButton, CRD_VGUI_Se
 	if ( szTabID )
 	{
 		rd_settings_last_tab.SetValue( szTabID );
-		engine->ClientCmd_Unrestricted( "host_writeconfig\n" );
+		s_bWantSave = true;
 	}
 }
 
