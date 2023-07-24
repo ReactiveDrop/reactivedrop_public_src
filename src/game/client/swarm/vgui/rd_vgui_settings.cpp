@@ -1536,7 +1536,14 @@ void CRD_VGUI_Option::ToggleSliderActive( bool bMouse )
 		m_bStartedSliderActiveAtRecommended = m_bHaveCurrent && m_bHaveRecommended && m_Current.m_flValue == m_Recommended.m_flValue;
 
 		if ( bMouse )
+		{
 			vgui::input()->SetMouseCapture( GetVPanel() );
+
+			int x, y;
+			vgui::input()->GetCursorPos( x, y );
+			ScreenToLocal( x, y );
+			OnCursorMoved( x, y );
+		}
 	}
 }
 
