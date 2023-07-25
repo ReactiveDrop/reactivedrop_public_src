@@ -9069,7 +9069,7 @@ void CAlienSwarm::LevelInitPostEntity()
 	}
 
 #ifndef CLIENT_DLL
-	engine->ServerCommand("exec newmapsettings\n");
+	engine->ServerCommand("execifexists newmapsettings\n");
 
 	m_bPlayedBlipSpeech = false;
 	m_bQuickStart = false;

@@ -818,7 +818,7 @@ void ClientModeASW::FireGameEvent( IGameEvent *event )
 	}
 	else if ( Q_strcmp( "game_newmap", eventname ) == 0 )
 	{
-		engine->ClientCmd("exec newmapsettings\n");
+		engine->ClientCmd("execifexists newmapsettings\n");
 
 		if ( rd_tree_sway_enabled.GetBool() )
 		{
