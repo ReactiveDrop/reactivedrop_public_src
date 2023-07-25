@@ -201,6 +201,124 @@ void CRD_VGUI_Settings_Panel_Base::NavigateTo()
 	BaseClass::NavigateTo();
 }
 
+class CRD_VGUI_Option_Dropdown : public vgui::EditablePanel
+{
+	DECLARE_CLASS_SIMPLE( CRD_VGUI_Option_Dropdown, vgui::EditablePanel );
+public:
+	CRD_VGUI_Option_Dropdown( CRD_VGUI_Option *parent, const char *panelName ) :
+		BaseClass{ parent, panelName }
+	{
+		m_hFont = vgui::INVALID_FONT;
+		MakePopup( false );
+	}
+
+	void PerformLayout() override
+	{
+		BaseClass::PerformLayout();
+
+		CRD_VGUI_Option *parent = assert_cast< CRD_VGUI_Option * >( GetParent() );
+
+		m_hFont = parent->m_pLblFieldName->GetFont();
+		SetFgColor( parent->m_pInteractiveArea->GetFgColor() );
+		SetBgColor( parent->m_pInteractiveArea->GetBgColor() );
+		SetPaintBackgroundEnabled( true );
+
+		int iMaxWidth = parent->m_pInteractiveArea->GetWide() - vgui::Label::Content * 2;
+		FOR_EACH_VEC( parent->m_Options, i )
+		{
+			iMaxWidth = MAX( iMaxWidth, parent->m_Options[i]->m_iWidth );
+		}
+
+		int x = 0, y = 0;
+		parent->m_pInteractiveArea->LocalToScreen( x, y );
+		SetPos( x, y );
+
+		SetWide( vgui::Label::Content * 2 + iMaxWidth );
+		SetTall( vgui::Label::Content + parent->m_Options.Count() * vgui::surface()->GetFontTall( m_hFont ) );
+
+		vgui::input()->GetCursorPos( x, y );
+		ScreenToLocal( x, y );
+		OnCursorMoved( x, y );
+	}
+
+	void Paint() override
+	{
+		CRD_VGUI_Option *parent = assert_cast< CRD_VGUI_Option * >( GetParent() );
+		Assert( parent && parent->m_iActiveOption != -1 );
+		if ( !parent || parent->m_iActiveOption == -1 )
+		{
+			SetVisible( false );
+			return;
+		}
+
+		BaseClass::Paint();
+
+		int x = vgui::Label::Content;
+		int y = vgui::Label::Content / 2;
+		int iLineHeight = vgui::surface()->GetFontTall( m_hFont );
+
+		vgui::surface()->DrawSetTextFont( m_hFont );
+
+		FOR_EACH_VEC( parent->m_Options, i )
+		{
+			const wchar_t *wszLabel = parent->m_Options[i]->m_wszLabel;
+			bool bRecommended = parent->m_bHaveRecommended && i == parent->m_Recommended.m_iOption;
+			bool bCurrent = parent->m_bHaveCurrent && i == parent->m_Current.m_iOption;
+			bool bActive = parent->m_iActiveOption == i;
+
+			if ( bActive )
+			{
+				vgui::surface()->DrawSetColor( 255, 255, 255, 32 );
+				vgui::surface()->DrawFilledRect( 0, y, GetWide(), y + iLineHeight );
+			}
+
+			vgui::surface()->DrawSetTextPos( x, y );
+			if ( bRecommended )
+				vgui::surface()->DrawSetTextColor( 192, 224, 255, 255 );
+			else if ( bCurrent )
+				vgui::surface()->DrawSetTextColor( 255, 255, 255, 255 );
+			else
+				vgui::surface()->DrawSetTextColor( GetFgColor() );
+			vgui::surface()->DrawUnicodeString( wszLabel );
+
+			y += iLineHeight;
+		}
+	}
+
+	void OnMousePressed( vgui::MouseCode code ) override
+	{
+		// forward mouse presses to parent; don't process here
+		GetParent()->OnMousePressed( code );
+	}
+
+	void OnMouseReleased( vgui::MouseCode code ) override
+	{
+		GetParent()->OnMouseReleased( code );
+	}
+
+	void OnCursorMoved( int x, int y ) override
+	{
+		BaseClass::OnCursorMoved( x, y );
+
+		CRD_VGUI_Option *parent = assert_cast< CRD_VGUI_Option * >( GetParent() );
+		Assert( parent );
+		if ( !parent )
+			return;
+
+		int iLineHeight = vgui::surface()->GetFontTall( m_hFont );
+		int iOption = ( y - vgui::Label::Content / 2 ) / iLineHeight;
+		if ( iOption >= 0 && iOption < parent->m_Options.Count() && parent->m_iActiveOption != iOption )
+		{
+			parent->m_iActiveOption = iOption;
+			Repaint();
+
+			CBaseModPanel::GetSingleton().PlayUISound( UISOUND_FOCUS );
+		}
+	}
+
+	vgui::HFont m_hFont;
+};
+
 CRD_VGUI_Option::CRD_VGUI_Option( vgui::Panel *parent, const char *panelName, const char *szLabel, Mode_t eMode ) :
 	BaseClass{ parent, panelName },
 	m_eMode{ eMode }
@@ -219,6 +337,7 @@ CRD_VGUI_Option::CRD_VGUI_Option( vgui::Panel *parent, const char *panelName, co
 		m_pTextEntry->AddActionSignalTarget( this );
 		m_pTextEntry->SetAllowNumericInputOnly( true );
 	}
+	m_pDropdown = NULL;
 
 	m_bHaveCurrent = false;
 	m_bHaveRecommended = false;
@@ -349,11 +468,23 @@ void CRD_VGUI_Option::NavigateTo()
 
 void CRD_VGUI_Option::OnKillFocus()
 {
+	vgui::Panel *pNewFocus = vgui::ipanel()->GetPanel( vgui::input()->GetCalculatedFocus(), GetModuleName() );
+	if ( m_pDropdown && pNewFocus == m_pDropdown )
+	{
+		RequestFocus();
+		return;
+	}
+
 	BaseClass::OnKillFocus();
 
 	if ( m_bSliderActive )
 	{
 		ToggleSliderActive( false );
+	}
+
+	if ( m_pDropdown )
+	{
+		m_pDropdown->SetVisible( false );
 	}
 
 	m_iActiveOption = -1;
@@ -623,7 +754,7 @@ void CRD_VGUI_Option::Paint()
 		{
 			HUD_SHEET_DRAW_RECT( x0, y0, x0 + y1, y0 + y1, Controls, UV_radio );
 
-			// TODO
+			Assert( !"TODO: slider with options" );
 
 			x0 += y1;
 		}
@@ -679,6 +810,28 @@ void CRD_VGUI_Option::Paint()
 	}
 }
 
+void CRD_VGUI_Option::OnKeyCodeTyped( vgui::KeyCode code )
+{
+	if ( code == KEY_ESCAPE )
+	{
+		if ( m_eMode == MODE_DROPDOWN && m_iActiveOption != -1 )
+		{
+			Assert( m_pDropdown );
+			m_iActiveOption = -1;
+			m_pDropdown->SetVisible( false );
+			return;
+		}
+
+		if ( m_bSliderActive )
+		{
+			if ( OnActivateButton( false ) )
+				return;
+		}
+	}
+
+	BaseClass::OnKeyCodeTyped( code );
+}
+
 void CRD_VGUI_Option::OnKeyCodePressed( vgui::KeyCode code )
 {
 	if ( m_pTextEntry && m_pTextEntry->HasFocus() )
@@ -690,11 +843,6 @@ void CRD_VGUI_Option::OnKeyCodePressed( vgui::KeyCode code )
 
 	switch ( GetBaseButtonCode( code ) )
 	{
-	case KEY_ESCAPE:
-		if ( !m_bSliderActive )
-			break;
-
-		// fallthrough
 	case KEY_SPACE:
 	case KEY_ENTER:
 	case KEY_PAD_ENTER:
@@ -869,6 +1017,9 @@ void CRD_VGUI_Option::SetCurrentOption( int iCurrent )
 {
 	Assert( m_eMode == MODE_RADIO || m_eMode == MODE_DROPDOWN );
 
+	KeyValues *pKV = new KeyValues( "CurrentOptionChanged" );
+	pKV->SetPtr( "panel", this );
+
 #ifdef DBGFLAG_ASSERT
 	bool bHaveNegativeOne = false;
 #endif
@@ -878,6 +1029,8 @@ void CRD_VGUI_Option::SetCurrentOption( int iCurrent )
 		{
 			m_bHaveCurrent = true;
 			m_Current.m_iOption = i;
+
+			PostActionSignal( pKV );
 
 			return;
 		}
@@ -892,6 +1045,8 @@ void CRD_VGUI_Option::SetCurrentOption( int iCurrent )
 
 	Assert( iCurrent == ( bHaveNegativeOne ? -2 : -1 ) );
 	m_bHaveCurrent = false;
+
+	PostActionSignal( pKV );
 }
 
 void CRD_VGUI_Option::SetRecommendedOption( int iRecommended )
@@ -970,6 +1125,10 @@ void CRD_VGUI_Option::SetCurrentSliderValue( float flValue )
 
 		m_pTextEntry->SetText( VarArgs( "%.*f", iDigits, flValue ) );
 	}
+
+	KeyValues *pKV = new KeyValues( "CurrentOptionChanged" );
+	pKV->SetPtr( "panel", this );
+	PostActionSignal( pKV );
 }
 
 void CRD_VGUI_Option::SetRecommendedSliderValue( float flValue )
@@ -1428,6 +1587,20 @@ bool CRD_VGUI_Option::OnMovementButton( int iDirection, bool bVertical )
 		return true;
 	}
 
+	if ( bVertical && m_pDropdown && m_pDropdown->IsVisible() )
+	{
+		int iNewOption = clamp<int>( m_iActiveOption + iDirection, 0, m_Options.Count() - 1 );
+		if ( iNewOption != m_iActiveOption )
+		{
+			m_iActiveOption = iNewOption;
+			m_pDropdown->Repaint();
+
+			CBaseModPanel::GetSingleton().PlayUISound( UISOUND_FOCUS );
+		}
+
+		return true;
+	}
+
 	return false;
 }
 
@@ -1494,12 +1667,15 @@ void CRD_VGUI_Option::SelectActiveRadioButton()
 
 	m_bHaveCurrent = true;
 	if ( m_eMode == MODE_SLIDER )
-		m_Current.m_flValue = m_Options[m_iActiveOption]->m_iValue;
+		SetCurrentSliderValue( m_Options[m_iActiveOption]->m_iValue );
 	else
-		m_Current.m_iOption = m_iActiveOption;
+		SetCurrentOption( m_Options[m_iActiveOption]->m_iValue );
 
 	if ( m_eMode == MODE_DROPDOWN )
+	{
+		m_pDropdown->SetVisible( false );
 		m_iActiveOption = -1;
+	}
 
 	CBaseModPanel::GetSingleton().PlayUISound( UISOUND_ACCEPT );
 
@@ -1559,7 +1735,32 @@ void CRD_VGUI_Option::ToggleDropdownActive()
 	Assert( m_eMode == MODE_DROPDOWN );
 	Assert( m_iActiveOption == -1 );
 
-	Assert( !"TODO: ToggleDropdownActive" );
+	if ( !m_pDropdown )
+	{
+		m_pDropdown = new CRD_VGUI_Option_Dropdown( this, "Dropdown" );
+		m_pDropdown->MakeReadyForUse();
+	}
+
+	if ( m_bHaveCurrent )
+	{
+		Assert( m_Current.m_iOption >= 0 && m_Current.m_iOption < m_Options.Count() );
+		m_iActiveOption = m_Current.m_iOption;
+	}
+	else if ( m_bHaveRecommended )
+	{
+		Assert( m_Recommended.m_iOption >= 0 && m_Recommended.m_iOption < m_Options.Count() );
+		m_iActiveOption = m_Recommended.m_iOption;
+	}
+	else
+	{
+		Assert( m_Options.Count() );
+		m_iActiveOption = 0;
+	}
+
+	m_pDropdown->SetVisible( true );
+	m_pDropdown->MoveToFront();
+	m_pDropdown->InvalidateLayout();
+	m_pDropdown->Repaint();
 }
 
 CON_COMMAND( rd_settings, "Opens the settings screen." )

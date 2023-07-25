@@ -12,6 +12,7 @@ namespace BaseModUI
 class CNB_Header_Footer;
 class CRD_VGUI_Main_Menu_Top_Bar;
 class CRD_VGUI_Microphone_Tester;
+class CRD_VGUI_Option_Dropdown;
 class CRD_VGUI_Settings_Panel_Base;
 class CRD_VGUI_Settings_Controls;
 class CRD_VGUI_Settings_Options;
@@ -91,6 +92,7 @@ public:
 	void PerformLayout() override;
 	void OnThink() override;
 	void Paint() override;
+	void OnKeyCodeTyped( vgui::KeyCode code ) override;
 	void OnKeyCodePressed( vgui::KeyCode code ) override;
 	void OnMousePressed( vgui::MouseCode code ) override;
 	void OnMouseReleased( vgui::MouseCode code ) override;
@@ -183,6 +185,9 @@ private:
 	vgui::Label *m_pLblFieldName;
 	vgui::Label *m_pLblHint;
 	vgui::TextEntry *m_pTextEntry;
+	CRD_VGUI_Option_Dropdown *m_pDropdown;
+
+	friend class CRD_VGUI_Option_Dropdown;
 
 	static bool s_bCVarChanged;
 	static float s_flLastRepeatLEFT, s_flLastRepeatRIGHT;
@@ -455,6 +460,7 @@ public:
 
 	void Activate() override;
 	BaseModUI::BaseModHybridButton *GetButton( BaseModUI::CRD_VGUI_Settings *pSettings ) override { return pSettings->m_pBtnVideo; }
+	MESSAGE_FUNC_PTR( OnCurrentOptionChanged, "CurrentOptionChanged", panel );
 
 	CRD_VGUI_Option *m_pSettingScreenResolution;
 	CRD_VGUI_Option *m_pSettingDisplayMode;

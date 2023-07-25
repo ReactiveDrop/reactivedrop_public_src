@@ -6,7 +6,7 @@
 		"fieldName"			"InteractiveArea"
 		"xpos"				"100"
 		"ypos"				"0"
-		"wide"				"f100"
+		"wide"				"90"
 		"tall"				"12"
 		"bgcolor_override"	"64 64 64 64"
 	}

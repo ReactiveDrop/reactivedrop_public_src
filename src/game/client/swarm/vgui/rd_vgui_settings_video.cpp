@@ -173,10 +173,12 @@ CRD_VGUI_Settings_Video::CRD_VGUI_Settings_Video( vgui::Panel *parent, const cha
 	BaseClass( parent, panelName )
 {
 	m_pSettingScreenResolution = new CRD_VGUI_Option( this, "SettingScreenResolution", "#rd_video_screen_resolution", CRD_VGUI_Option::MODE_DROPDOWN );
+	m_pSettingScreenResolution->AddActionSignalTarget( this );
 	m_pSettingDisplayMode = new CRD_VGUI_Option( this, "SettingDisplayMode", "#rd_video_display_mode", CRD_VGUI_Option::MODE_DROPDOWN );
 	m_pSettingDisplayMode->AddOption( 0, "#rd_video_display_mode_fullscreen", "#rd_video_display_mode_fullscreen_hint" );
 	m_pSettingDisplayMode->AddOption( 1, "#rd_video_display_mode_noborder", "#rd_video_display_mode_noborder_hint" );
 	m_pSettingDisplayMode->AddOption( 2, "#rd_video_display_mode_windowed", "#rd_video_display_mode_windowed_hint" );
+	m_pSettingDisplayMode->AddActionSignalTarget( this );
 	m_pSettingScreenBrightness = new CRD_VGUI_Option( this, "SettingScreenBrightness", "#rd_video_screen_brightness", CRD_VGUI_Option::MODE_SLIDER );
 	m_pSettingScreenBrightness->SetSliderMinMax( 2.6f, 1.6f );
 	m_pSettingScreenBrightness->SetDefaultHint( "#rd_video_screen_brightness_hint" );
@@ -507,4 +509,35 @@ void CRD_VGUI_Settings_Video::Activate()
 	// [0] Disabled [1] Enabled
 	// Controls whether guns light up nearby surfaces and objects when fired.
 	m_pSettingMuzzleFlashLights->SetRecommendedOption( bHaveRecommended ? pRecommended->GetInt( "setting.muzzleflash_light", 0 ) : -1 );
+}
+
+void CRD_VGUI_Settings_Video::OnCurrentOptionChanged( vgui::Panel *panel )
+{
+	int iPackedWidthHeight = m_pSettingScreenResolution->GetCurrentOption();
+	if ( iPackedWidthHeight == -1 )
+		return;
+
+	int iWidth = iPackedWidthHeight >> 16;
+	int iHeight = iPackedWidthHeight & 0xffff;
+
+	int iDisplayMode = m_pSettingDisplayMode->GetCurrentOption();
+	if ( iDisplayMode == -1 )
+		return;
+
+	bool bWindowed = iDisplayMode > 0;
+	bool bNoBorder = iDisplayMode == 1;
+
+	// Make sure there is a resolution change
+	const MaterialSystem_Config_t &config = materials->GetCurrentConfigForVideoCard();
+	if ( config.m_VideoMode.m_Width != iWidth ||
+		config.m_VideoMode.m_Height != iHeight ||
+		config.Windowed() != bWindowed ||
+		config.NoWindowBorder() != bNoBorder )
+	{
+		// set mode
+		char szCmd[256];
+		V_snprintf( szCmd, sizeof( szCmd ), "mat_setvideomode %i %i %i %i\n", iWidth, iHeight, bWindowed ? 1 : 0, bNoBorder ? 1 : 0 );
+
+		engine->ClientCmd_Unrestricted( szCmd );
+	}
 }
