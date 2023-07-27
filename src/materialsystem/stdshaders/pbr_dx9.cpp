@@ -30,7 +30,7 @@ const Sampler_t SAMPLER_SPECULAR = SHADER_SAMPLER12;
 
 // Convars
 static ConVar mat_fullbright( "mat_fullbright", "0", FCVAR_CHEAT );
-static ConVar mat_specular( "mat_specular", "1", FCVAR_CHEAT );
+static ConVar mat_specular( "mat_specular", "1" );
 static ConVar mat_pbr_force_20b( "mat_pbr_force_20b", "0", FCVAR_CHEAT );
 static ConVar mat_pbr_parallaxmap( "mat_pbr_parallaxmap", "1" );
 
