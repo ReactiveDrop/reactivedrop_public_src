@@ -372,12 +372,12 @@ bool CASW_Weapon_Heal_Gun::ShouldMarineMoveSlow()
 }
 
 #ifdef GAME_DLL
-void CASW_Weapon_Heal_Gun::GetButtons(bool& bAttack1, bool& bAttack2, bool& bReload, bool& bOldReload, bool& bOldAttack1 )
+void CASW_Weapon_Heal_Gun::GetButtons( bool &bAttack1, bool &bAttack2, bool &bReload, bool &bOldReload, bool &bOldAttack1 )
 {
 	CASW_Marine *pMarine = GetMarine();
 
 	// make AI fire this weapon whenever they have a heal target
-	if (pMarine && !pMarine->IsInhabited())
+	if ( pMarine && !pMarine->IsInhabited() && ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME )
 	{
 		bAttack1 = ( m_hHealEntity->Get() != NULL );
 		bAttack2 = false;
@@ -387,7 +387,7 @@ void CASW_Weapon_Heal_Gun::GetButtons(bool& bAttack1, bool& bAttack2, bool& bRel
 		return;
 	}
 
-	BaseClass::GetButtons(bAttack1, bAttack2, bReload, bOldReload, bOldAttack1);
+	BaseClass::GetButtons( bAttack1, bAttack2, bReload, bOldReload, bOldAttack1 );
 }
 #endif
 

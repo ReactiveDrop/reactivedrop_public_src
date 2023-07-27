@@ -394,12 +394,12 @@ bool CASW_Weapon_MedRifle::ShouldMarineMoveSlow()
 }
 
 #ifdef GAME_DLL
-void CASW_Weapon_MedRifle::GetButtons(bool& bAttack1, bool& bAttack2, bool& bReload, bool& bOldReload, bool& bOldAttack1 )
+void CASW_Weapon_MedRifle::GetButtons( bool &bAttack1, bool &bAttack2, bool &bReload, bool &bOldReload, bool &bOldAttack1 )
 {
 	CASW_Marine *pMarine = GetMarine();
 
 	// make AI fire this weapon whenever they have a heal target
-	if ( pMarine && !pMarine->IsInhabited() && m_hHealEntity->Get() != NULL )
+	if ( pMarine && !pMarine->IsInhabited() && m_hHealEntity->Get() != NULL && ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME )
 	{
 		bAttack1 = false;
 		bAttack2 = true;

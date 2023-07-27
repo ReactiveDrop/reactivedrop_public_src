@@ -715,19 +715,19 @@ void CASW_Weapon_Tesla_Gun::UpdateEffects()
 #endif
 
 #ifdef GAME_DLL
-void CASW_Weapon_Tesla_Gun::GetButtons(bool& bAttack1, bool& bAttack2, bool& bReload, bool& bOldReload, bool& bOldAttack1 )
+void CASW_Weapon_Tesla_Gun::GetButtons( bool &bAttack1, bool &bAttack2, bool &bReload, bool &bOldReload, bool &bOldAttack1 )
 {
 	CASW_Marine *pMarine = GetMarine();
 
 	// make AI fire this weapon whenever they have an enemy within a certain range
-	if (pMarine && !pMarine->IsInhabited())
+	if ( pMarine && !pMarine->IsInhabited() && ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME )
 	{
-		bool bHasEnemy = (pMarine->GetEnemy() && pMarine->GetEnemy()->GetAbsOrigin().DistTo(pMarine->GetAbsOrigin()) < 250.0f);
+		bool bHasEnemy = ( pMarine->GetEnemy() && pMarine->GetEnemy()->GetAbsOrigin().DistTo( pMarine->GetAbsOrigin() ) < 250.0f );
 
-		if (bHasEnemy)
+		if ( bHasEnemy )
 			m_fLastForcedFireTime = gpGlobals->curtime;
 
-		bAttack1 = (bHasEnemy || gpGlobals->curtime < m_fLastForcedFireTime + 1.0f);	// fire for 2 seconds after killing our enemy
+		bAttack1 = ( bHasEnemy || gpGlobals->curtime < m_fLastForcedFireTime + 1.0f );	// fire for a second after killing our enemy
 		bAttack2 = false;
 		bReload = false;
 		bOldReload = false;
@@ -735,7 +735,7 @@ void CASW_Weapon_Tesla_Gun::GetButtons(bool& bAttack1, bool& bAttack2, bool& bRe
 		return;
 	}
 
-	BaseClass::GetButtons(bAttack1, bAttack2, bReload, bOldReload, bOldAttack1);
+	BaseClass::GetButtons( bAttack1, bAttack2, bReload, bOldReload, bOldAttack1 );
 }
 #endif
 
