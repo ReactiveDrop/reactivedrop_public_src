@@ -16,8 +16,10 @@
 #include "ivrenderview.h"
 
 
+#ifndef INFESTED_DLL // defined via convar in AS:RD
 #define MAX_DEPTH_TEXTURE_SHADOWS 1
 #define MAX_DEPTH_TEXTURE_HIGHRES_SHADOWS 0
+#endif
 
 #define MAX_DEPTH_TEXTURE_SHADOWS_TOOLS 8
 #define MAX_DEPTH_TEXTURE_HIGHRES_SHADOWS_TOOLS 0

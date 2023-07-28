@@ -136,18 +136,6 @@ ConVar r_flashlightdepthtexture( "r_flashlightdepthtexture", "1" );
 ConVar rd_flashlightshadows( "rd_flashlightshadows", "0", FCVAR_NONE, "If 1 marine's flashlight will cast high quality shadows" );
 
 #if defined( _X360 )
-ConVar r_flashlightdepthreshigh( "r_flashlightdepthreshigh", "512" );
-#else
-ConVar r_flashlightdepthreshigh( "r_flashlightdepthreshigh", "2048" );
-#endif
-
-#if defined( _X360 )
-ConVar r_flashlightdepthres( "r_flashlightdepthres", "512" );
-#else
-ConVar r_flashlightdepthres( "r_flashlightdepthres", "1024" );
-#endif
-
-#if defined( _X360 )
 #define RTT_TEXTURE_SIZE_640
 #endif
 
@@ -1185,6 +1173,31 @@ private:
 static CClientShadowMgr s_ClientShadowMgr;
 IClientShadowMgr* g_pClientShadowMgr = &s_ClientShadowMgr;
 
+static void RDMaxDepthTextureShadowsChanged( IConVar *var, const char *pOldValue, float flOldValue )
+{
+	const char *pNewValue = ConVarRef{ var }.GetString();
+	DevMsg( "RE-INITIALIZING SHADOW DEPTH TEXTURES! (%s changed from %s to %s)\n", var->GetName(), pOldValue, pNewValue );
+	s_ClientShadowMgr.ShutdownDepthTextureShadows();
+	materials->ReEnableRenderTargetAllocation_IRealizeIfICallThisAllTexturesWillBeUnloadedAndLoadTimeWillSufferHorribly();
+	s_ClientShadowMgr.InitDepthTextureShadows();
+	materials->FinishRenderTargetAllocation();
+}
+
+#if defined( _X360 )
+ConVar r_flashlightdepthreshigh( "r_flashlightdepthreshigh", "512", FCVAR_NONE, "", RDMaxDepthTextureShadowsChanged );
+#else
+ConVar r_flashlightdepthreshigh( "r_flashlightdepthreshigh", "2048", FCVAR_NONE, "", RDMaxDepthTextureShadowsChanged );
+#endif
+
+#if defined( _X360 )
+ConVar r_flashlightdepthres( "r_flashlightdepthres", "512", FCVAR_NONE, "", RDMaxDepthTextureShadowsChanged );
+#else
+ConVar r_flashlightdepthres( "r_flashlightdepthres", "1024", FCVAR_NONE, "", RDMaxDepthTextureShadowsChanged );
+#endif
+
+ConVar rd_max_depth_texture_shadows( "rd_max_depth_texture_shadows", "1", FCVAR_NONE, "Specifies the maximum number of high quality shadows to render. Watch out for perfomance issues", RDMaxDepthTextureShadowsChanged );
+ConVar rd_max_depth_texture_highres_shadows( "rd_max_depth_texture_highres_shadows", "0", FCVAR_NONE, "", RDMaxDepthTextureShadowsChanged );
+
 
 //-----------------------------------------------------------------------------
 // Builds a list of potential shadows that lie within our PVS + view frustum
@@ -1403,13 +1416,17 @@ void CClientShadowMgr::CalculateRenderTargetsAndSizes( void )
 		
 	m_nDepthTextureResolution = r_flashlightdepthres.GetInt();
 	m_nDepthTextureResolutionHigh = r_flashlightdepthreshigh.GetInt();
-	if ( bTools )									// Higher resolution shadow maps in tools mode
+	if ( bTools )
 	{
-		char defaultRes[] = "2048";
-		m_nDepthTextureResolution = atoi( CommandLine()->ParmValue( "-sfm_shadowmapres", defaultRes ) );
+		// Higher resolution shadow maps in tools mode
+		m_nDepthTextureResolution = CommandLine()->ParmValue( "-sfm_shadowmapres", 2048 );
 	}
-	extern ConVar rd_max_depth_texture_shadows;
-	m_nMaxDepthTextureShadows = bTools ? MAX_DEPTH_TEXTURE_SHADOWS_TOOLS : CommandLine()->ParmValue( "-rd_max_depth_texture_shadows", MAX_DEPTH_TEXTURE_SHADOWS );	// Just one shadow depth texture in games, more in tools
+
+	// command line argument overrides convar; tools mode ignores both
+	m_nMaxDepthTextureShadows = bTools ? MAX_DEPTH_TEXTURE_SHADOWS_TOOLS : CommandLine()->ParmValue( "-rd_max_depth_texture_shadows", rd_max_depth_texture_shadows.GetInt() );
+	m_nLowResStart = bTools ? MAX_DEPTH_TEXTURE_HIGHRES_SHADOWS_TOOLS : rd_max_depth_texture_highres_shadows.GetInt();
+	if ( m_nLowResStart > m_nMaxDepthTextureShadows )
+		m_nLowResStart = m_nMaxDepthTextureShadows;
 }
 //-----------------------------------------------------------------------------
 // Constructor
@@ -1545,19 +1562,6 @@ bool CClientShadowMgr::Init()
 	return true;
 }
 
-static void RDMaxDepthTextureShadowsChanged( IConVar *var, const char *pOldValue, float flOldValue )
-{
-	if ( CommandLine()->CheckParm( "-tools" ) != NULL )
-	{
-		return;
-	}
-
-	s_ClientShadowMgr.ShutdownDepthTextureShadows();
-	s_ClientShadowMgr.InitDepthTextureShadows();
-}
-
-ConVar rd_max_depth_texture_shadows( "rd_max_depth_texture_shadows", "1", FCVAR_ARCHIVE | FCVAR_NOT_CONNECTED, "Specifies the maximum number of high quality shadows to render. Watch out for perfomance issues", RDMaxDepthTextureShadowsChanged );
-
 void CClientShadowMgr::InitRenderTargets()
 {
 	m_bRenderTargetNeedsClear = false;
@@ -1584,28 +1588,29 @@ void CClientShadowMgr::InitRenderTargets()
 
 	InitDepthTextureShadows();
 
-	r_flashlightdepthres.SetValue( m_nDepthTextureResolution );
-	r_flashlightdepthreshigh.SetValue( m_nDepthTextureResolutionHigh );
-
 	if ( m_DepthTextureCache.Count() )
 	{
-		bool bTools = CommandLine()->CheckParm( "-tools" ) != NULL;
-		int nNumShadows = bTools ? MAX_DEPTH_TEXTURE_SHADOWS_TOOLS : CommandLine()->ParmValue( "-rd_max_depth_texture_shadows", MAX_DEPTH_TEXTURE_SHADOWS );
-		m_nLowResStart = bTools ? MAX_DEPTH_TEXTURE_HIGHRES_SHADOWS_TOOLS : MAX_DEPTH_TEXTURE_HIGHRES_SHADOWS;
+		// Shadow may be resized during allocation (due to resolution constraints etc)
 
-		if ( m_nLowResStart > nNumShadows )
+		if ( m_nLowResStart < m_DepthTextureCache.Count() )
 		{
-			// All shadow slots filled with high res
-			m_nLowResStart = 0;
+			m_nDepthTextureResolution = m_DepthTextureCache[m_nLowResStart]->GetActualWidth();
+			r_flashlightdepthres.SetValue( m_nDepthTextureResolution );
 		}
 
-		// Shadow may be resized during allocation (due to resolution constraints etc)
-		m_nDepthTextureResolution = m_DepthTextureCache[ m_nLowResStart ]->GetActualWidth();
+		if ( m_nLowResStart > 0 )
+		{
+			m_nDepthTextureResolutionHigh = m_DepthTextureCache[0]->GetActualWidth();
+			r_flashlightdepthreshigh.SetValue( m_nDepthTextureResolutionHigh );
+		}
+	}
+
+	if ( r_flashlightdepthres.GetInt() != m_nDepthTextureResolution )
 		r_flashlightdepthres.SetValue( m_nDepthTextureResolution );
 
-		m_nDepthTextureResolutionHigh = m_DepthTextureCache[ 0 ]->GetActualWidth();
+	if ( r_flashlightdepthreshigh.GetInt() != m_nDepthTextureResolutionHigh )
 		r_flashlightdepthreshigh.SetValue( m_nDepthTextureResolutionHigh );
-	}
+
 	InitDeferredShadows();
 
 	materials->AddRestoreFunc( ShadowRestoreFunc );
@@ -1679,7 +1684,7 @@ void CClientShadowMgr::InitDepthTextureShadows()
 			char strRTName[64];
 			sprintf( strRTName, "_rt_ShadowDepthTexture_%d", i );
 
-			int nTextureResolution = ( i < MAX_DEPTH_TEXTURE_HIGHRES_SHADOWS ? m_nDepthTextureResolutionHigh : m_nDepthTextureResolution );
+			int nTextureResolution = ( i < m_nLowResStart ? m_nDepthTextureResolutionHigh : m_nDepthTextureResolution );
 
 #if defined( _X360 )
 			// create a render target to use as a resolve target to get the shared depth buffer
@@ -4249,7 +4254,7 @@ void CClientShadowMgr::ReprojectShadows()
 			 ( nDepthTextureResolution != m_nDepthTextureResolution || nDepthTextureResolutionHigh != m_nDepthTextureResolutionHigh ) )
 		{
 			// If shadow depth texturing remains on, but resolution changed, shut down and reinitialize depth textures
-			ShutdownDepthTextureShadows();	
+			ShutdownDepthTextureShadows();
 			InitDepthTextureShadows();
 		}
 		else
