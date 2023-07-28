@@ -521,6 +521,17 @@
 		}
 		TOGGLE
 		{
+			title "#RD_AdvancedSettings_VisualEffects_FlashlightShadows"
+			cvar "rd_flashlightshadows"
+			hide_unless "rd_env_projectedtexture_enabled"
+		}
+		TOGGLE
+		{
+			title "#RD_AdvancedSettings_VisualEffects_FlashlightAmbientLighting"
+			cvar "rd_flashlight_dlight_enable"
+		}
+		TOGGLE
+		{
 			title "#RD_AdvancedSettings_VisualEffects_OtherEffects"
 			cvar "rd_info_particle_system_enabled"
 		}
