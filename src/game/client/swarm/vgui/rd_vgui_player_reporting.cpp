@@ -16,6 +16,28 @@
 // - remember recent players on the last connected server so reports don't get prevented by a player exiting immediately after something worthy of a report or if a kick on the current player is report-worthy.
 // - add a method to access this from InGameMainMenu and one from out-of-gameplay.
 
+struct PlayerReportCategory_t
+{
+	const char *APIName;
+	const char *DisplayName;
+	const char *Hint;
+	bool RequiresServer : 1;
+	bool PlayerTarget : 1;
+};
+
+static const PlayerReportCategory_t s_ReportCategories[] =
+{
+	{ "my_account", "#rd_reporting_category_my_account", "#rd_reporting_category_my_account_desc", false, false },
+	{ "player_cheating", "#rd_reporting_category_player_cheating", "#rd_reporting_category_player_cheating_desc", true, true },
+	{ "player_abusive_gameplay", "#rd_reporting_category_player_abusive_gameplay", "#rd_reporting_category_player_abusive_gameplay_desc", true, true },
+	{ "player_abusive_communication", "#rd_reporting_category_player_abusive_communication", "#rd_reporting_category_player_abusive_communication_desc", true, true },
+	{ "server_technical", "#rd_reporting_category_server_technical", "#rd_reporting_category_server_technical_desc", true, false },
+	{ "server_abuse", "#rd_reporting_category_server_abuse", "#rd_reporting_category_server_abuse_desc", true, false },
+	{ "server_other", "#rd_reporting_category_server_other", "#rd_reporting_category_server_other_desc", true, false },
+	{ "game_bug", "#rd_reporting_category_game_bug", "#rd_reporting_category_game_bug_desc", false, false },
+	{ "other", "#rd_reporting_category_other", "#rd_reporting_category_other_desc", false, false },
+};
+
 CRD_VGUI_Player_Reporting::CRD_VGUI_Player_Reporting( vgui::Panel *parent, const char *panelName ) :
 	BaseClass{ parent, panelName }
 {

@@ -25,6 +25,12 @@ static void WriteJSONRaw( CUtlBuffer &buf, const char *szRaw )
 
 static void WriteJSONString( CUtlBuffer &buf, const char *szString )
 {
+	if ( !szString )
+	{
+		buf.PutString( "null" );
+		return;
+	}
+
 	int nBufLen = ( V_strlen( szString ) + 1 ) * sizeof( wchar_t );
 	wchar_t *wszString = static_cast< wchar_t * >( stackalloc( nBufLen ) );
 	V_UTF8ToUnicode( szString, wszString, nBufLen );
@@ -76,6 +82,119 @@ static void WriteJSONHex( CUtlBuffer &buf, const CUtlBuffer &data )
 	buf.PutChar( '"' );
 }
 
+static void WriteServerInfo( CUtlBuffer &buf )
+{
+	C_AlienSwarm *pAlienSwarm = ASWGameRules();
+	Assert( pAlienSwarm );
+	INetChannelInfo *pNCI = engine->GetNetChannelInfo();
+	Assert( pNCI );
+
+	// current map and challenge
+	extern ConVar rd_challenge;
+	char szChallengeFileName[MAX_PATH];
+	V_snprintf( szChallengeFileName, sizeof( szChallengeFileName ), "resource/challenges/%s.txt", rd_challenge.GetString() );
+	PublishedFileId_t nChallengeFileID = g_ReactiveDropWorkshop.FindAddonProvidingFile( szChallengeFileName );
+	if ( UTIL_RD_GetCurrentLobbyID().IsValid() )
+	{
+		const char *pszChallengeFileID = UTIL_RD_GetCurrentLobbyData( "game:challengeinfo:workshop", "" );
+		if ( *pszChallengeFileID )
+		{
+			nChallengeFileID = std::strtoull( pszChallengeFileID, NULL, 16 );
+		}
+	}
+
+	WriteJSONString( buf, "map" );
+	WriteJSONRaw( buf, ":{" );
+	WriteJSONString( buf, "name" );
+	WriteJSONRaw( buf, ":" );
+	WriteJSONString( buf, engine->GetLevelNameShort() );
+	WriteJSONRaw( buf, "," );
+	WriteJSONString( buf, "challenge" );
+	WriteJSONRaw( buf, ":" );
+	WriteJSONString( buf, rd_challenge.GetString() );
+	if ( pAlienSwarm && pAlienSwarm->m_iMissionWorkshopID != 0 && pAlienSwarm->m_iMissionWorkshopID != k_PublishedFileIdInvalid )
+	{
+		WriteJSONRaw( buf, "," );
+		WriteJSONString( buf, "map_workshop" );
+		WriteJSONFormat( buf, ":\"%llu\"", pAlienSwarm->m_iMissionWorkshopID );
+	}
+	if ( nChallengeFileID != 0 && nChallengeFileID != k_PublishedFileIdInvalid )
+	{
+		WriteJSONRaw( buf, "," );
+		WriteJSONString( buf, "challenge_workshop" );
+		WriteJSONFormat( buf, ":\"%llu\"", nChallengeFileID );
+	}
+	WriteJSONRaw( buf, "}," );
+
+	// current server IP and/or lobby id
+	WriteJSONString( buf, "server" );
+	WriteJSONRaw( buf, ":{" );
+	if ( pNCI )
+	{
+		WriteJSONString( buf, "ip" );
+		WriteJSONRaw( buf, ":" );
+		WriteJSONString( buf, pNCI->GetAddress() );
+		WriteJSONRaw( buf, "," );
+	}
+	WriteJSONString( buf, "lobby" );
+	WriteJSONFormat( buf, ":\"%llu\"", UTIL_RD_GetCurrentLobbyID().ConvertToUint64() );
+	WriteJSONRaw( buf, "}," );
+
+	// any other players connected to this host
+	WriteJSONString( buf, "witnesses" );
+	WriteJSONRaw( buf, ":[" );
+	bool bFirst = true;
+	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+	{
+		C_ASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
+		if ( pPlayer )
+		{
+			if ( bFirst )
+				bFirst = false;
+			else
+				WriteJSONRaw( buf, "," );
+			WriteJSONFormat( buf, "\"%llu\"", pPlayer->GetSteamID().ConvertToUint64() );
+		}
+	}
+	WriteJSONRaw( buf, "]," );
+
+	if ( pNCI )
+	{
+		// some network and latency info
+		float flServerFrameTime, flServerFrameTimeStdDev;
+		pNCI->GetRemoteFramerate( &flServerFrameTime, &flServerFrameTimeStdDev );
+
+		WriteJSONString( buf, "diagnostics" );
+		WriteJSONRaw( buf, ":{" );
+		WriteJSONString( buf, "client" );
+		WriteJSONRaw( buf, ":{" );
+		WriteJSONString( buf, "gametime" );
+		WriteJSONFormat( buf, ":%f,", gpGlobals->curtime );
+		WriteJSONString( buf, "latency" );
+		WriteJSONFormat( buf, ":%f,", pNCI->GetAvgLatency( FLOW_OUTGOING ) );
+		WriteJSONString( buf, "choke" );
+		WriteJSONFormat( buf, ":%f,", pNCI->GetAvgChoke( FLOW_OUTGOING ) );
+		WriteJSONString( buf, "loss" );
+		WriteJSONFormat( buf, ":%f,", pNCI->GetAvgLoss( FLOW_OUTGOING ) );
+		WriteJSONString( buf, "packets" );
+		WriteJSONFormat( buf, ":%f,", pNCI->GetAvgPackets( FLOW_OUTGOING ) );
+		WriteJSONString( buf, "frametime" );
+		WriteJSONFormat( buf, ":%f},", gpGlobals->frametime );
+		WriteJSONString( buf, "server" );
+		WriteJSONRaw( buf, ":{" );
+		WriteJSONString( buf, "latency" );
+		WriteJSONFormat( buf, ":%f,", pNCI->GetAvgLatency( FLOW_INCOMING ) );
+		WriteJSONString( buf, "choke" );
+		WriteJSONFormat( buf, ":%f,", pNCI->GetAvgChoke( FLOW_INCOMING ) );
+		WriteJSONString( buf, "loss" );
+		WriteJSONFormat( buf, ":%f,", pNCI->GetAvgLoss( FLOW_INCOMING ) );
+		WriteJSONString( buf, "packets" );
+		WriteJSONFormat( buf, ":%f,", pNCI->GetAvgPackets( FLOW_INCOMING ) );
+		WriteJSONString( buf, "frametime" );
+		WriteJSONFormat( buf, ":%f}},", flServerFrameTime );
+	}
+}
+
 bool CRD_Player_Reporting::IsInProgress()
 {
 	if ( m_hTicket != k_HAuthTicketInvalid )
@@ -87,6 +206,15 @@ bool CRD_Player_Reporting::IsInProgress()
 	return false;
 }
 
+void CRD_Player_Reporting::UpdateServerInfo( bool bForce )
+{
+	if ( !bForce && !engine->IsInGame() )
+		return;
+
+	m_ServerInfoCache.Purge();
+	WriteServerInfo( m_ServerInfoCache );
+}
+
 bool CRD_Player_Reporting::PrepareReportForSend( const char *szCategory, const char *szDescription, CSteamID reportedPlayer, CUtlVector<CUtlBuffer> &screenshots, bool bShowWaitScreen )
 {
 	Assert( !IsInProgress() );
@@ -95,10 +223,6 @@ bool CRD_Player_Reporting::PrepareReportForSend( const char *szCategory, const c
 	if ( IsInProgress() )
 		return false;
 
-	C_AlienSwarm *pAlienSwarm = ASWGameRules();
-	Assert( pAlienSwarm );
-	INetChannelInfo *pNCI = engine->GetNetChannelInfo();
-	Assert( pNCI );
 	ISteamUser *pSteamUser = SteamUser();
 	Assert( pSteamUser );
 	Assert( SteamHTTP() );
@@ -106,7 +230,7 @@ bool CRD_Player_Reporting::PrepareReportForSend( const char *szCategory, const c
 	m_bShowWaitScreen = bShowWaitScreen;
 
 	// we need to be connected to a game and also Steam in order to send a player report.
-	if ( !pAlienSwarm || !pNCI || !pSteamUser || !SteamHTTP() )
+	if ( !pSteamUser || !SteamHTTP() )
 	{
 		TryLocalize( "#rd_reporting_error_not_connected", m_wszLastMessage, sizeof( m_wszLastMessage ) );
 		ShowWaitScreen();
@@ -139,109 +263,12 @@ bool CRD_Player_Reporting::PrepareReportForSend( const char *szCategory, const c
 	WriteJSONString( m_Buffer, szDescription );
 	WriteJSONRaw( m_Buffer, "," );
 
-	// current map and challenge
-	extern ConVar rd_challenge;
-	char szChallengeFileName[MAX_PATH];
-	V_snprintf( szChallengeFileName, sizeof( szChallengeFileName ), "resource/challenges/%s.txt", rd_challenge.GetString() );
-	PublishedFileId_t nChallengeFileID = g_ReactiveDropWorkshop.FindAddonProvidingFile( szChallengeFileName );
-	if ( UTIL_RD_GetCurrentLobbyID().IsValid() )
-	{
-		const char *pszChallengeFileID = UTIL_RD_GetCurrentLobbyData( "game:challengeinfo:workshop", "" );
-		if ( *pszChallengeFileID )
-		{
-			nChallengeFileID = std::strtoull( pszChallengeFileID, NULL, 16 );
-		}
-	}
-
-	WriteJSONString( m_Buffer, "map" );
-	WriteJSONRaw( m_Buffer, ":{" );
-	WriteJSONString( m_Buffer, "name" );
-	WriteJSONRaw( m_Buffer, ":" );
-	WriteJSONString( m_Buffer, engine->GetLevelNameShort() );
-	WriteJSONRaw( m_Buffer, "," );
-	WriteJSONString( m_Buffer, "challenge" );
-	WriteJSONRaw( m_Buffer, ":" );
-	WriteJSONString( m_Buffer, rd_challenge.GetString() );
-	if ( pAlienSwarm->m_iMissionWorkshopID != 0 && pAlienSwarm->m_iMissionWorkshopID != k_PublishedFileIdInvalid )
-	{
-		WriteJSONRaw( m_Buffer, "," );
-		WriteJSONString( m_Buffer, "map_workshop" );
-		WriteJSONFormat( m_Buffer, ":\"%llu\"", pAlienSwarm->m_iMissionWorkshopID );
-	}
-	if ( nChallengeFileID != 0 && nChallengeFileID != k_PublishedFileIdInvalid )
-	{
-		WriteJSONRaw( m_Buffer, "," );
-		WriteJSONString( m_Buffer, "challenge_workshop" );
-		WriteJSONFormat( m_Buffer, ":\"%llu\"", nChallengeFileID );
-	}
-	WriteJSONRaw( m_Buffer, "}," );
-
-	// current server IP and/or lobby id
-	WriteJSONString( m_Buffer, "server" );
-	WriteJSONRaw( m_Buffer, ":{" );
-	WriteJSONString( m_Buffer, "ip" );
-	WriteJSONRaw( m_Buffer, ":" );
-	WriteJSONString( m_Buffer, pNCI->GetAddress() );
-	WriteJSONRaw( m_Buffer, "," );
-	WriteJSONString( m_Buffer, "lobby" );
-	WriteJSONFormat( m_Buffer, ":\"%llu\"", UTIL_RD_GetCurrentLobbyID().ConvertToUint64() );
-	WriteJSONRaw( m_Buffer, "}," );
-
-	// any other players connected to this host
-	WriteJSONString( m_Buffer, "witnesses" );
-	WriteJSONRaw( m_Buffer, ":[" );
-	bool bFirst = true;
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
-	{
-		C_ASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
-		if ( pPlayer )
-		{
-			if ( bFirst )
-				bFirst = false;
-			else
-				WriteJSONRaw( m_Buffer, "," );
-			WriteJSONFormat( m_Buffer, "\"%llu\"", pPlayer->GetSteamID().ConvertToUint64() );
-		}
-	}
-	WriteJSONRaw( m_Buffer, "]," );
-
-	// some network and latency info
-	float flServerFrameTime, flServerFrameTimeStdDev;
-	pNCI->GetRemoteFramerate( &flServerFrameTime, &flServerFrameTimeStdDev );
-
-	WriteJSONString( m_Buffer, "diagnostics" );
-	WriteJSONRaw( m_Buffer, ":{" );
-	WriteJSONString( m_Buffer, "client" );
-	WriteJSONRaw( m_Buffer, ":{" );
-	WriteJSONString( m_Buffer, "gametime" );
-	WriteJSONFormat( m_Buffer, ":%f,", gpGlobals->curtime );
-	WriteJSONString( m_Buffer, "latency" );
-	WriteJSONFormat( m_Buffer, ":%f,", pNCI->GetAvgLatency( FLOW_OUTGOING ) );
-	WriteJSONString( m_Buffer, "choke" );
-	WriteJSONFormat( m_Buffer, ":%f,", pNCI->GetAvgChoke( FLOW_OUTGOING ) );
-	WriteJSONString( m_Buffer, "loss" );
-	WriteJSONFormat( m_Buffer, ":%f,", pNCI->GetAvgLoss( FLOW_OUTGOING ) );
-	WriteJSONString( m_Buffer, "packets" );
-	WriteJSONFormat( m_Buffer, ":%f,", pNCI->GetAvgPackets( FLOW_OUTGOING ) );
-	WriteJSONString( m_Buffer, "frametime" );
-	WriteJSONFormat( m_Buffer, ":%f},", gpGlobals->frametime );
-	WriteJSONString( m_Buffer, "server" );
-	WriteJSONRaw( m_Buffer, ":{" );
-	WriteJSONString( m_Buffer, "latency" );
-	WriteJSONFormat( m_Buffer, ":%f,", pNCI->GetAvgLatency( FLOW_INCOMING ) );
-	WriteJSONString( m_Buffer, "choke" );
-	WriteJSONFormat( m_Buffer, ":%f,", pNCI->GetAvgChoke( FLOW_INCOMING ) );
-	WriteJSONString( m_Buffer, "loss" );
-	WriteJSONFormat( m_Buffer, ":%f,", pNCI->GetAvgLoss( FLOW_INCOMING ) );
-	WriteJSONString( m_Buffer, "packets" );
-	WriteJSONFormat( m_Buffer, ":%f,", pNCI->GetAvgPackets( FLOW_INCOMING ) );
-	WriteJSONString( m_Buffer, "frametime" );
-	WriteJSONFormat( m_Buffer, ":%f}},", flServerFrameTime );
+	m_Buffer.Put( m_ServerInfoCache.Base(), m_ServerInfoCache.TellPut() );
 
 	// attach any screenshots
 	WriteJSONString( m_Buffer, "screenshots" );
 	WriteJSONRaw( m_Buffer, ":[" );
-	bFirst = true;
+	bool bFirst = true;
 	FOR_EACH_VEC( screenshots, i )
 	{
 		if ( bFirst )

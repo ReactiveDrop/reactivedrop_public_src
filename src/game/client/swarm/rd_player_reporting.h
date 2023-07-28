@@ -8,6 +8,9 @@ public:
 	// Returns true if a report is currently being sent.
 	bool IsInProgress();
 
+	// Updates the cached server info. Call this before PrepareReportForSend while connected to a server.
+	void UpdateServerInfo( bool bForce = false );
+
 	// Prepares to send a user-provided category, description, and player ID,
 	// as well as zero or more JPEG screenshots, to the player reporting API.
 	//
@@ -24,6 +27,7 @@ public:
 private:
 	bool m_bShowWaitScreen{ false };
 	CUtlBuffer m_Buffer{ 0, 0, CUtlBuffer::TEXT_BUFFER };
+	CUtlBuffer m_ServerInfoCache{ 0, 0, CUtlBuffer::TEXT_BUFFER };
 	HAuthTicket m_hTicket{ k_HAuthTicketInvalid };
 
 	STEAM_CALLBACK( CRD_Player_Reporting, OnGetTicketForWebApiResponse, GetTicketForWebApiResponse_t );
