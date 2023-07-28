@@ -1,4 +1,4 @@
-//===== Copyright © 1996-2005, Valve Corporation, All rights reserved. ======//
+//===== Copyright Â© 1996-2005, Valve Corporation, All rights reserved. ======//
 //
 // Purpose: 
 //
@@ -1409,7 +1409,7 @@ void CClientShadowMgr::CalculateRenderTargetsAndSizes( void )
 		m_nDepthTextureResolution = atoi( CommandLine()->ParmValue( "-sfm_shadowmapres", defaultRes ) );
 	}
 	extern ConVar rd_max_depth_texture_shadows;
-	m_nMaxDepthTextureShadows = bTools ? MAX_DEPTH_TEXTURE_SHADOWS_TOOLS : CommandLine()->ParmValue( "-rd_max_depth_texture_shadows", MAX_DEPTH_TEXTURE_SHADOWS );	// Just one shadow depth texture in games, more in tools
+	m_nMaxDepthTextureShadows = bTools ? MAX_DEPTH_TEXTURE_SHADOWS_TOOLS : CommandLine()->ParmValue( "-rd_max_depth_texture_shadows", MAX_DEPTH_TEXTURE_SHADOWS );	// Limit shadow depth texture amount in games, more in tools
 }
 //-----------------------------------------------------------------------------
 // Constructor
@@ -1556,7 +1556,7 @@ static void RDMaxDepthTextureShadowsChanged( IConVar *var, const char *pOldValue
 	s_ClientShadowMgr.InitDepthTextureShadows();
 }
 
-ConVar rd_max_depth_texture_shadows( "rd_max_depth_texture_shadows", "1", FCVAR_ARCHIVE | FCVAR_NOT_CONNECTED, "Specifies the maximum number of high quality shadows to render. Watch out for perfomance issues", RDMaxDepthTextureShadowsChanged );
+ConVar rd_max_depth_texture_shadows( "rd_max_depth_texture_shadows", "10", FCVAR_NOT_CONNECTED, "Change via "-rd_max_depth_texture_shadows" at Command line. Specifies the maximum number of high quality shadows to render. Watch out for perfomance issues", RDMaxDepthTextureShadowsChanged );
 
 void CClientShadowMgr::InitRenderTargets()
 {
