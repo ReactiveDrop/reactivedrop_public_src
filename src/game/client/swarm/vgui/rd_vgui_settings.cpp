@@ -261,6 +261,12 @@ public:
 
 		FOR_EACH_VEC( parent->m_Options, i )
 		{
+			if ( parent->m_Options[i]->m_iFlags & CRD_VGUI_Option::FLAG_HIDDEN )
+			{
+				y += iLineHeight;
+				continue;
+			}
+
 			const wchar_t *wszLabel = parent->m_Options[i]->m_wszLabel;
 			bool bRecommended = parent->m_bHaveRecommended && i == parent->m_Recommended.m_iOption;
 			bool bCurrent = parent->m_bHaveCurrent && i == parent->m_Current.m_iOption;
@@ -273,7 +279,9 @@ public:
 			}
 
 			vgui::surface()->DrawSetTextPos( x, y );
-			if ( bRecommended )
+			if ( parent->m_Options[i]->m_iFlags & CRD_VGUI_Option::FLAG_DISABLED )
+				vgui::surface()->DrawSetTextColor( 64, 64, 64, 255 );
+			else if ( bRecommended )
 				vgui::surface()->DrawSetTextColor( 192, 224, 255, 255 );
 			else if ( bCurrent )
 				vgui::surface()->DrawSetTextColor( 255, 255, 255, 255 );
@@ -307,7 +315,7 @@ public:
 
 		int iLineHeight = vgui::surface()->GetFontTall( m_hFont );
 		int iOption = ( y - vgui::Label::Content / 2 ) / iLineHeight;
-		if ( iOption >= 0 && iOption < parent->m_Options.Count() && parent->m_iActiveOption != iOption )
+		if ( iOption >= 0 && iOption < parent->m_Options.Count() && parent->m_iActiveOption != iOption && !( parent->m_Options[iOption]->m_iFlags & CRD_VGUI_Option::FLAG_DISABLED ) )
 		{
 			parent->m_iActiveOption = iOption;
 			Repaint();
@@ -418,7 +426,7 @@ void CRD_VGUI_Option::OnCursorMoved( int x, int y )
 				x0 += y1 + vgui::Label::Content * 2 + m_Options[i]->m_iWidth;
 			}
 
-			if ( m_iActiveOption != iNewActive )
+			if ( m_iActiveOption != iNewActive && !( m_Options[iNewActive]->m_iFlags & FLAG_DISABLED ) )
 				ChangeActiveRadioButton( iNewActive );
 		}
 	}
@@ -667,6 +675,14 @@ void CRD_VGUI_Option::Paint()
 		bool bIsIndeterminate = !m_bHaveCurrent || m_Current.m_iOption < 0 || m_Current.m_iOption >= m_Options.Count();
 		FOR_EACH_VEC( m_Options, i )
 		{
+			if ( m_Options[i]->m_iFlags & FLAG_HIDDEN )
+			{
+				x0 += y1 + vgui::Label::Content * 2 + m_Options[i]->m_iWidth;
+				continue;
+			}
+
+			flMultiplier = IsEnabled() && !( m_Options[i]->m_iFlags & FLAG_DISABLED ) ? 1.0f : 0.25f;
+
 			bool bIsActive = bIsFocused && m_iActiveOption == i;
 			bool bIsRecommended = bIsFocused && m_bHaveRecommended && m_Recommended.m_iOption == i;
 			bool bIsCurrent = m_bHaveCurrent && m_Current.m_iOption == i;
@@ -979,7 +995,7 @@ void CRD_VGUI_Option::RemoveAllOptions()
 	InvalidateLayout();
 }
 
-void CRD_VGUI_Option::AddOption( int iOption, const char *szLabel, const char *szHint )
+void CRD_VGUI_Option::AddOption( int iOption, const char *szLabel, const char *szHint, int iFlags )
 {
 #ifdef DBGFLAG_ASSERT
 	Assert( m_eMode == MODE_RADIO || m_eMode == MODE_DROPDOWN || m_eMode == MODE_SLIDER );
@@ -990,8 +1006,27 @@ void CRD_VGUI_Option::AddOption( int iOption, const char *szLabel, const char *s
 	}
 #endif
 
-	m_Options.AddToTail( new Option_t{ iOption, szLabel, szHint } );
+	m_Options.AddToTail( new Option_t{ iOption, szLabel, szHint, iFlags } );
 	InvalidateLayout();
+}
+
+void CRD_VGUI_Option::SetOptionFlags( int iOption, int iFlags )
+{
+	Assert( m_eMode == MODE_RADIO || m_eMode == MODE_DROPDOWN || m_eMode == MODE_SLIDER );
+	Assert( m_eMode != MODE_SLIDER || iOption < m_flMinValue || iOption > m_flMaxValue );
+
+	FOR_EACH_VEC( m_Options, i )
+	{
+		if ( m_Options[i]->m_iValue == iOption )
+		{
+			m_Options[i]->m_iFlags = iFlags;
+			InvalidateLayout();
+
+			return;
+		}
+	}
+
+	Assert( !"option not found" );
 }
 
 void CRD_VGUI_Option::SetCurrentAndRecommended( int iCurrent, int iRecommended )
@@ -1447,11 +1482,12 @@ CRD_VGUI_Option::ConVarLink_t::ConVarLink_t( ConVar *pConVar, int iValue )
 	m_iValue = iValue;
 }
 
-CRD_VGUI_Option::Option_t::Option_t( int iValue, const char *szLabel, const char *szHint )
+CRD_VGUI_Option::Option_t::Option_t( int iValue, const char *szLabel, const char *szHint, int iFlags )
 {
 	m_iValue = iValue;
 	TryLocalize( szLabel, m_wszLabel, sizeof( m_wszLabel ) );
 	TryLocalize( szHint, m_wszHint, sizeof( m_wszHint ) );
+	m_iFlags = iFlags;
 	m_iWidth = 30;
 }
 
@@ -1536,13 +1572,30 @@ bool CRD_VGUI_Option::OnMovementButton( int iDirection, bool bVertical )
 	if ( !IsEnabled() )
 		return false;
 
-	if ( !bVertical && ( m_eMode == MODE_RADIO || ( m_eMode == MODE_SLIDER && !m_bSliderActive ) ) && m_iActiveOption + iDirection >= 0 && m_iActiveOption + iDirection < m_Options.Count() + ( m_eMode == MODE_SLIDER ? 1 : 0 ) )
+	if ( !bVertical && ( m_eMode == MODE_RADIO || ( m_eMode == MODE_SLIDER && !m_bSliderActive ) ) )
 	{
-		ChangeActiveRadioButton( m_iActiveOption + iDirection );
+		for ( int i = m_iActiveOption + iDirection; i >= 0 && i < m_Options.Count() + ( m_eMode == MODE_SLIDER ? 1 : 0 ); i += iDirection )
+		{
+			if ( i == m_Options.Count() )
+			{
+				Assert( m_eMode == MODE_SLIDER );
+				ChangeActiveRadioButton( i );
 
-		return true;
+				return true;
+			}
+
+			if ( m_Options[i]->m_iFlags & FLAG_DISABLED )
+			{
+				continue;
+			}
+
+			ChangeActiveRadioButton( i );
+
+			return true;
+		}
 	}
 
+	// FIXME: these next two don't properly handle disabled options, but it isn't an issue yet.
 	if ( !bVertical && m_pTextEntry && m_iActiveOption == 0 && iDirection == -1 && !m_pTextEntry->HasFocus() && m_pInteractiveArea->GetNavLeft() == m_pTextEntry )
 	{
 		NavigateToChild( m_pTextEntry );
@@ -1589,15 +1642,20 @@ bool CRD_VGUI_Option::OnMovementButton( int iDirection, bool bVertical )
 
 	if ( bVertical && m_pDropdown && m_pDropdown->IsVisible() )
 	{
-		int iNewOption = clamp<int>( m_iActiveOption + iDirection, 0, m_Options.Count() - 1 );
-		if ( iNewOption != m_iActiveOption )
+		for ( int i = m_iActiveOption + iDirection; i >= 0 && i < m_Options.Count(); i += iDirection )
 		{
-			m_iActiveOption = iNewOption;
+			if ( m_Options[i]->m_iFlags & FLAG_DISABLED )
+				continue;
+
+			m_iActiveOption = i;
 			m_pDropdown->Repaint();
 
 			CBaseModPanel::GetSingleton().PlayUISound( UISOUND_FOCUS );
+
+			return true;
 		}
 
+		// don't leave the dropdown menu until it is closed
 		return true;
 	}
 
@@ -1654,6 +1712,13 @@ void CRD_VGUI_Option::SelectActiveRadioButton()
 	if ( m_iActiveOption < 0 || m_iActiveOption >= m_Options.Count() )
 		return;
 
+	if ( m_Options[m_iActiveOption]->m_iFlags & FLAG_DISABLED )
+	{
+		CBaseModPanel::GetSingleton().PlayUISound( UISOUND_DENY );
+
+		return;
+	}
+
 	const CUtlVector<ConVarLink_t> &convars = m_Options[m_iActiveOption]->m_ConVars;
 	FOR_EACH_VEC( convars, i )
 	{
@@ -1686,6 +1751,7 @@ void CRD_VGUI_Option::ChangeActiveRadioButton( int iActive )
 {
 	Assert( m_eMode == MODE_RADIO || m_eMode == MODE_SLIDER );
 	Assert( iActive >= 0 && iActive < m_Options.Count() + ( m_eMode == MODE_SLIDER ? 1 : 0 ) );
+	Assert( !( m_Options[iActive]->m_iFlags & FLAG_DISABLED ) );
 
 	m_iActiveOption = iActive;
 

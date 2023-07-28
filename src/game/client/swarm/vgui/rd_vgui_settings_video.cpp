@@ -203,6 +203,8 @@ CRD_VGUI_Settings_Video::CRD_VGUI_Settings_Video( vgui::Panel *parent, const cha
 	m_pSettingEffectDetail->AddOption( 0, "#rd_video_level_low", "#rd_video_effect_detail_hint" );
 	m_pSettingEffectDetail->AddOption( 1, "#rd_video_level_medium", "#rd_video_effect_detail_hint" );
 	m_pSettingEffectDetail->AddOption( 2, "#rd_video_level_high", "#rd_video_effect_detail_hint" );
+	// Ultra Effect Detail is not a real option, but it is included here so the radio buttons line up cleanly.
+	m_pSettingEffectDetail->AddOption( 3, "#rd_video_level_ultra", "#rd_video_effect_detail_hint", CRD_VGUI_Option::FLAG_DISABLED | CRD_VGUI_Option::FLAG_HIDDEN );
 	m_pSettingEffectDetail->SetDefaultHint( "#rd_video_effect_detail_hint" );
 	m_pSettingEffectDetail->LinkToConVar( "cpu_level", false );
 	m_pSettingShaderDetail = new CRD_VGUI_Option( this, "SettingShaderDetail", "#rd_video_shader_detail" );

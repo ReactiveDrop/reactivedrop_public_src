@@ -1887,6 +1887,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="swarm\vgui\rd_vgui_leaderboard_panel.cpp" />
     <ClCompile Include="swarm\vgui\rd_vgui_main_menu_hoiaf_leaderboard_entry.cpp" />
     <ClCompile Include="swarm\vgui\rd_vgui_main_menu_top_bar.cpp" />
+    <ClCompile Include="swarm\vgui\rd_vgui_player_reporting.cpp" />
     <ClCompile Include="swarm\vgui\rd_vgui_settings.cpp" />
     <ClCompile Include="swarm\vgui\rd_vgui_settings_about.cpp" />
     <ClCompile Include="swarm\vgui\rd_vgui_settings_audio.cpp" />
@@ -3003,6 +3004,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="swarm\vgui\rd_vgui_leaderboard_panel.h" />
     <ClInclude Include="swarm\vgui\rd_vgui_main_menu_hoiaf_leaderboard_entry.h" />
     <ClInclude Include="swarm\vgui\rd_vgui_main_menu_top_bar.h" />
+    <ClInclude Include="swarm\vgui\rd_vgui_player_reporting.h" />
     <ClInclude Include="swarm\vgui\rd_vgui_settings.h" />
     <ClInclude Include="swarm\vgui\rd_vgui_stock_ticker.h" />
     <ClInclude Include="swarm\vgui\rd_vgui_workshop_download_progress.h" />

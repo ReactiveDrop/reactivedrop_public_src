@@ -13,8 +13,10 @@ public:
 	CRD_VGUI_Option_Mixer( vgui::Panel *parent, const char *panelName, const char *szLabel, const char *szExampleAudioLoop ) :
 		BaseClass{ parent, panelName, szLabel, MODE_SLIDER }
 	{
-		szExampleAudioLoop;
+		m_szExampleAudioLoop = szExampleAudioLoop;
 	}
+
+	const char *m_szExampleAudioLoop;
 };
 
 CRD_VGUI_Settings_Audio::CRD_VGUI_Settings_Audio( vgui::Panel *parent, const char *panelName ) :

@@ -99,10 +99,17 @@ public:
 	MESSAGE_FUNC( OnTextChanged, "TextChanged" );
 	MESSAGE_FUNC( OnTextKillFocus, "TextKillFocus" );
 
+	enum OptionFlags_t
+	{
+		FLAG_DISABLED = 0x0001, // cannot be selected; slightly faded
+		FLAG_HIDDEN   = 0x0002, // still takes up visual space, but not rendered
+	};
+
 	// for MODE_RADIO and MODE_DROPDOWN
 	// can also be used for MODE_SLIDER, but iOption must be outside of the slider range
 	void RemoveAllOptions();
-	void AddOption( int iOption, const char *szLabel, const char *szHint );
+	void AddOption( int iOption, const char *szLabel, const char *szHint, int iFlags = 0 );
+	void SetOptionFlags( int iOption, int iFlags );
 
 	// for MODE_RADIO, MODE_DROPDOWN, and MODE_CHECKBOX
 	void SetCurrentAndRecommended( int iCurrent, int iRecommended );
@@ -168,11 +175,12 @@ private:
 	};
 	struct Option_t
 	{
-		Option_t( int iValue, const char *szLabel, const char *szHint );
+		Option_t( int iValue, const char *szLabel, const char *szHint, int iFlags );
 
 		int m_iValue;
 		wchar_t m_wszLabel[256]{};
 		wchar_t m_wszHint[1024]{};
+		int m_iFlags;
 		int m_iWidth;
 
 		CUtlVector<ConVarLink_t> m_ConVars;
