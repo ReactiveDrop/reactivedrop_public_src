@@ -3,7 +3,7 @@
 #include "Sprite.h"
 #include "beam_shared.h"
 #include "takedamageinfo.h"
-#include "gamerules.h"
+#include "asw_gamerules.h"
 #include "in_buttons.h"
 #include "asw_weapon_parse.h"
 #include "asw_marine_skills.h"
