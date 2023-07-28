@@ -523,7 +523,6 @@
 		{
 			title "#RD_AdvancedSettings_VisualEffects_FlashlightShadows"
 			cvar "rd_flashlightshadows"
-			hide_unless "rd_env_projectedtexture_enabled"
 		}
 		TOGGLE
 		{
