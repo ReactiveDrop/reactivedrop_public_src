@@ -143,5 +143,4 @@ CRD_VGUI_Settings_Options::CRD_VGUI_Settings_Options( vgui::Panel *parent, const
 
 void CRD_VGUI_Settings_Options::Activate()
 {
-	Assert( !"TODO" );
 }
