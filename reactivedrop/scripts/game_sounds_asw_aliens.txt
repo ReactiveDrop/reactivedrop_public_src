@@ -1854,7 +1854,7 @@
 	"channel"		"CHAN_BODY"
 	"soundlevel"	"SNDLVL_130dB"
 	"volume"		"0.9, 1"
-	"pitch"			"95,100,105"
+	"pitch"			"95,100"
 	"wave"	"aliens\voc\shieldbug\roar.wav"
 }
 
