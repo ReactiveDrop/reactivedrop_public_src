@@ -4,23 +4,25 @@
 # - builds cubemaps: buildcubemaps
 # 
 import os,subprocess,shutil,sys
-from subprocess import call
+from subprocess import check_call
 
 os.environ["RD_STEAM"] = "D:/Program Files/Steam/steamapps/common/Alien Swarm Reactive Drop"
 os.environ["RD_DEV"] = "C:/Users/dmitriy/work/reactivedropgit"
 
 class MapInfo:
-	def __init__(self, name, radius_override="2500", buildcubemaps="1", vbsp=None, vvis=None, vrad=None):
+	def __init__(self, name, radius_override="2500", buildcubemaps="1", vbsp=None, vvis=None, vrad=None, postcompiler=None):
 		self.name = name.lower()
 		self.buildcubemaps = buildcubemaps
-		self.vbsp = vbsp or ["-alldetail"]
-		self.vvis = vvis or ["-radius_override", radius_override]
-		self.vrad = vrad or ["-final", "-textureshadows", "-StaticPropLighting", "-StaticPropPolys"]
+		self.vbsp = vbsp if vbsp is not None else ["-alldetail"]
+		self.vvis = vvis if vvis is not None else ["-radius_override", radius_override]
+		self.vrad = vrad if vrad is not None else ["-final", "-textureshadows", "-StaticPropLighting", "-StaticPropPolys"]
+		self.postcompiler = postcompiler if postcompiler is not None else ["--propcombine", "--dumpgroups"]
 
 vrad_notextureshadows = ["-final", "-StaticPropLighting", "-StaticPropPolys"]
 
 # list of maps to compile
 # each item is a MapInfo ("MapFileName", "radius_override", "buildcubemaps? 0 or 1 string")
+# can optionally override parameters for vbsp, vvis, vrad, or TeamSpen210's postcompiler
 VMFs = [
 ##		MapInfo("asi-jac1-landingbay_01", "3000", "0"),
 ##		MapInfo("asi-jac1-landingbay_02", "2500", "0"),
@@ -92,9 +94,9 @@ VMFs = [
 ##		MapInfo("rd-til7factory", "750", "0"),
 ##		MapInfo("rd-til8comcenter", "1500", "0"),
 ##		MapInfo("rd-til9syntekhospital", "750", "0"),
-##		MapInfo("rd-reduction1", "1000", "0"),
+##		MapInfo("rd-reduction1", "2500", "0"),
 ##		MapInfo("rd-reduction2", "4000", "0"),
-##		MapInfo("rd-reduction3", "5000", "0"),
+##		MapInfo("rd-reduction3", "7500", "0"),
 ##		MapInfo("rd-reduction4", "600", "0"),
 ##		MapInfo("rd-reduction5", "2500", "0"),
 ##		MapInfo("rd-reduction6", "3000", "0"),
@@ -123,6 +125,7 @@ game = os.environ["RD_STEAM"]
 vbsp = game + "/bin/vbsp.exe"
 vvis = game + "/bin/vvis.exe"
 vrad = game + "/bin/vrad.exe"
+postcompiler = game + "/bin/postcompiler/postcompiler.exe"
 gameexe = game + "/reactivedrop.exe"
 
 # mapsrc is a folder where VMF are
@@ -150,9 +153,11 @@ with open(build_all_maps_cfg, "w") as myfile:
 # compile maps and copy to the 'maps' folder
 for i, mapinfo in enumerate(VMFs):
 	name = mapsrc + "/" + mapinfo.name
-	call([vbsp] + mapinfo.vbsp + ["-game", moddir, name])
-	call([vvis] + mapinfo.vvis + ["-game", moddir, name])
-	call([vrad, "-low"] + mapinfo.vrad + ["-game", moddir, name])
+	check_call([vbsp] + mapinfo.vbsp + ["-game", moddir, name])
+	if mapinfo.postcompiler is not None:
+		check_call([postcompiler] + mapinfo.postcompiler + ["-game", moddir, name])
+	check_call([vvis] + mapinfo.vvis + ["-game", moddir, name])
+	check_call([vrad, "-low"] + mapinfo.vrad + ["-game", moddir, name])
 	try:
 		shutil.copy2(mapsrc + "/" + mapinfo.name + ".bsp", mapdir + "/" + mapinfo.name + ".bsp")
 	except:
@@ -178,4 +183,4 @@ with open(build_all_maps_cfg, "a") as myfile:
 # run the game and execute the cfg file
 # game will load each map and execute these commands using 
 # aliases and wait command: stringtabledictionary;buildcubemaps;
-call([gameexe, "-novid", "-windowed", "-w", "1280", "-h", "720", "-skiploadingworkshopaddons", "-game", moddir, "+exec build_all_maps"])
+check_call([gameexe, "-novid", "-windowed", "-w", "1280", "-h", "720", "-skiploadingworkshopaddons", "-game", moddir, "+exec build_all_maps"])
