@@ -16,7 +16,7 @@ class MapInfo:
 		self.vbsp = vbsp if vbsp is not None else ["-alldetail"]
 		self.vvis = vvis if vvis is not None else ["-radius_override", radius_override]
 		self.vrad = vrad if vrad is not None else ["-final", "-textureshadows", "-StaticPropLighting", "-StaticPropPolys"]
-		self.postcompiler = postcompiler if postcompiler is not None else ["--propcombine", "--dumpgroups"]
+		self.postcompiler = postcompiler if postcompiler is not None else ["--propcombine"]
 
 vrad_notextureshadows = ["-final", "-StaticPropLighting", "-StaticPropPolys"]
 
@@ -154,8 +154,7 @@ with open(build_all_maps_cfg, "w") as myfile:
 for i, mapinfo in enumerate(VMFs):
 	name = mapsrc + "/" + mapinfo.name
 	check_call([vbsp] + mapinfo.vbsp + ["-game", moddir, name])
-	if mapinfo.postcompiler is not None:
-		check_call([postcompiler] + mapinfo.postcompiler + ["-game", moddir, name])
+	check_call([postcompiler] + mapinfo.postcompiler + ["-game", moddir, name])
 	check_call([vvis] + mapinfo.vvis + ["-game", moddir, name])
 	check_call([vrad, "-low"] + mapinfo.vrad + ["-game", moddir, name])
 	try:
