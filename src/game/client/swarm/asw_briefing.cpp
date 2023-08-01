@@ -782,8 +782,7 @@ bool CASW_Briefing::CheckMissionRequirements()
 {
 	if ( ASWGameRules() && ASWGameRules()->GetGameState() < ASW_GS_DEBRIEF && ASWGameResource() )
 	{	
-		extern ConVar rd_techreq;
-		if ( ASWGameRules()->m_bMissionRequiresTech && rd_techreq.GetBool() )
+		if ( ASWGameRules()->MissionRequiresTech() )
 		{
 			bool bTech = false;
 			for (int i=0;i<ASWGameResource()->GetMaxMarineResources();i++)
