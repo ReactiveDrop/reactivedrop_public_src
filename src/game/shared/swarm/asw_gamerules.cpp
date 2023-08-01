@@ -6005,7 +6005,7 @@ bool CAlienSwarm::MarineCanPickup( CASW_Marine_Resource *pMarineResource, const 
 	if ( bCheckRestriction )
 	{
 		// check various class skills
-		if ( pItem->m_iRequiredClass == MARINE_CLASS_TECH && !pProfile->CanHack() )
+		if ( pItem->m_iRequiredClass == MARINE_CLASS_TECH && !pProfile->CanUseTechWeapons() )
 		{
 			V_strncpy( m_szPickupDenial, "#asw_requires_tech", sizeof( m_szPickupDenial ) );
 			return false;
