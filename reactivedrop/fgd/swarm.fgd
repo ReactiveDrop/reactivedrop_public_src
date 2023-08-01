@@ -2397,7 +2397,7 @@
 		3 : "Move To Nearest Marine"
 	]
 	AlienOrderTargetName(target_destination) : "Alien Orders Target Name": : "Name of the target object for our orders (used by move to and move to ignoring marines orders)."
-	AlienNameTag(string) : "Name to give spawned aliens": : "All aliens spawned by this spawner will be given this Name."
+	AlienNameTag(target_source) : "Name to give spawned aliens": : "All aliens spawned by this spawner will be given this Name."
 	ClearCheck(choices) : "Check Spawn Point Is Clear" : 1 =
 	[
 		0 : "No"
@@ -2422,42 +2422,15 @@
 		5 : "Brutal"
 	]
 
-	flammablesp(choices) : "Can be ignited by fire" : 1 : "If false, this alien will not be ignited by fire" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-
-	teslablesp(choices) : "Can be electro stunned by tesla gun" : 1 : "If true, this alien can be electro stunned by tesla gun" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-
-	freezablesp(choices) : "Can be frozen" : 1 : "If true, this alien can be frozen by freeze grenade or turret" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-
+	flammablesp(boolean) : "Can be ignited by fire" : 1 : "If false, this alien will not be ignited by fire"
+	teslablesp(boolean) : "Can be electro stunned by tesla gun" : 1 : "If true, this alien can be electro stunned by tesla gun"
+	freezablesp(boolean) : "Can be frozen" : 1 : "If true, this alien can be frozen by freeze grenade or turret"
 	freezeresistancesp(float) : "Freeze Resistance" : "0.0" : "Examples: 0.8 means unfreezes 5 times as fast, -1.0 means unfreezes 2 times as slow"
-
-	flinchablesp(choices) : "Can flinch" : 1 : "If true, this alien works as usual. If false, the alien doesn't flinch on taken damage. " =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-
-	reflectorsp(choices) : "Alien reflects grenades" : 0 : "If false, this alien works as usual. If true, grenades that hit the alien bounce off. " =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-
+	flinchablesp(boolean) : "Can flinch" : 1 : "If true, this alien works as usual. If false, the alien doesn't flinch on taken damage."
+	reflectorsp(boolean) : "Alien reflects grenades" : 0 : "If false, this alien works as usual. If true, grenades that hit the alien bounce off."
 	healthbonussp(integer) : "Health bonus" : 0 : "The ammount of health to add to an alien"
 
 	sizescalesp(float) : "Size scale" : "1.0" : "The factor used to scale alien size. Don't use 0"
-
 	speedscalesp(float) : "Run speed scale" : "1.0" : "The factor used to scale alien run speed. Don't use 0"
 
 	minoffset(vector) : "Minimum offset" : "0 0 0" : "X, Y, and Z offset from the spawner. Usually negative or 0."
