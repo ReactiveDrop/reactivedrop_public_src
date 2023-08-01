@@ -299,6 +299,7 @@ private:
 	bool m_bGuidingMarine;	// are we overriding the player's movement direction to guide him around an NPC?
 	Vector m_vecGuiding;
 	float	m_flStepSoundTime;
+	float m_flNextServerInfoUpdate;
 
 	void UpdateLocalMarineGlow();
 	dlight_t* m_pLocalMarineGlow;

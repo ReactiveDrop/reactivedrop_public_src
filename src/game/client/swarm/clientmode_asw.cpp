@@ -56,7 +56,6 @@
 #include "game_timescale_shared.h"
 #include "rd_demo_utils.h"
 #include "menu.h"
-#include "rd_player_reporting.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -757,9 +756,6 @@ void ClientModeASW::LevelShutdown( void )
 	m_aAwardedExperience.Purge();
 	// asw make sure the cam is in third person mode, so we don't load new maps with long laggy first person view
 	::input->CAM_ToThirdPerson();
-
-	// remember the server we were *just* connected to one frame ago for reporting purposes
-	g_RD_Player_Reporting.UpdateServerInfo( true );
 
 	m_fNextProgressUpdate = 0;
 }

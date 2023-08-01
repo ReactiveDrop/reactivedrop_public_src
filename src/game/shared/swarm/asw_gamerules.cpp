@@ -25,6 +25,7 @@
 	#include "c_asw_steamstats.h"
 	#include "rd_rich_presence.h"
 	#include "c_world.h"
+	#include "rd_player_reporting.h"
 #else
 	#include "asw_marine_resource.h"
 	#include "player.h"
@@ -329,6 +330,7 @@ static void UpdateMatchmakingTagsCallback( IConVar *pConVar, const char *pOldVal
 		return;
 
 	g_ReactiveDropWorkshop.CheckForRequiredAddons();
+	g_RD_Player_Reporting.UpdateServerInfo();
 	if ( !UTIL_RD_IsLobbyOwner() )
 		return;
 

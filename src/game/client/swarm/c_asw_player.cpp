@@ -98,6 +98,7 @@
 #include "rd_rich_presence.h"
 #include "inetchannel.h"
 #include <ctime>
+#include "rd_player_reporting.h"
 
 #if defined( CASW_Player )
 #undef CASW_Player
@@ -356,6 +357,7 @@ C_ASW_Player::C_ASW_Player() :
 	m_angMarineAutoAimFromClient = vec3_angle;
 	m_flInactiveKickWarning = 0.0f;
 	m_nLastInactiveKickWarning = 0;
+	m_flNextServerInfoUpdate = 0.0f;
 }
 
 
@@ -452,6 +454,11 @@ void C_ASW_Player::PostDataUpdate( DataUpdateType_t updateType )
 	{
 		ACTIVE_SPLITSCREEN_PLAYER_GUARD_ENT( this );
 		ASWInput()->UpdateASWControls();
+	}
+
+	if ( updateType == DATA_UPDATE_CREATED )
+	{
+		g_RD_Player_Reporting.UpdateServerInfo();
 	}
 
 	BaseClass::PostDataUpdate( updateType );
@@ -1190,6 +1197,12 @@ void C_ASW_Player::ClientThink()
 			PerformObstaclePushaway( pMarine );
 		}
 		m_fNextThinkPushAway = gpGlobals->curtime + PUSHAWAY_THINK_INTERVAL;
+	}
+
+	if ( m_flNextServerInfoUpdate <= Plat_FloatTime() )
+	{
+		g_RD_Player_Reporting.UpdateServerInfo();
+		m_flNextServerInfoUpdate = Plat_FloatTime() + 60.0f;
 	}
 
 	int nprintIndex = 0;

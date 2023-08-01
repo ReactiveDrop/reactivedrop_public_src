@@ -41,4 +41,16 @@ static const PlayerReportCategory_t s_ReportCategories[] =
 CRD_VGUI_Player_Reporting::CRD_VGUI_Player_Reporting( vgui::Panel *parent, const char *panelName ) :
 	BaseClass{ parent, panelName }
 {
+	m_pSettingReportCategory = new CRD_VGUI_Option( this, "SettingReportCategory", "#rd_reporting_category", CRD_VGUI_Option::MODE_DROPDOWN );
+	m_pSettingReportCategory->AddOption( -1, "#rd_reporting_select_category", "" );
+	m_pSettingReportCategory->SetCurrentOption( -1 );
+	m_pSettingReportCategory->SetOptionFlags( -1, CRD_VGUI_Option::FLAG_DISABLED );
+	m_pSettingReportCategory->AddActionSignalTarget( this );
+	for ( int i = 0; i < NELEMS( s_ReportCategories ); i++ )
+	{
+		if ( !s_ReportCategories[i].RequiresServer || g_RD_Player_Reporting.HasRecentServer() )
+		{
+			m_pSettingReportCategory->AddOption( i, s_ReportCategories[i].DisplayName, s_ReportCategories[i].Hint );
+		}
+	}
 }

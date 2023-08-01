@@ -16,6 +16,8 @@
 
 using namespace BaseModUI;
 
+#define REPORTING_SNAPSHOT_LIFETIME 300.0f
+
 CRD_Player_Reporting g_RD_Player_Reporting;
 
 static void WriteJSONRaw( CUtlBuffer &buf, const char *szRaw )
@@ -82,120 +84,118 @@ static void WriteJSONHex( CUtlBuffer &buf, const CUtlBuffer &data )
 	buf.PutChar( '"' );
 }
 
-static void WriteServerInfo( CUtlBuffer &buf )
+struct ReportingServerSnapshot_t
 {
-	C_AlienSwarm *pAlienSwarm = ASWGameRules();
-	Assert( pAlienSwarm );
-	INetChannelInfo *pNCI = engine->GetNetChannelInfo();
-	Assert( pNCI );
+	// snapshots expire after 5 minutes (counted from when the snapshot was taken to the start of the reporting process)
+	float RecordedAt;
 
-	// current map and challenge
-	extern ConVar rd_challenge;
-	char szChallengeFileName[MAX_PATH];
-	V_snprintf( szChallengeFileName, sizeof( szChallengeFileName ), "resource/challenges/%s.txt", rd_challenge.GetString() );
-	PublishedFileId_t nChallengeFileID = g_ReactiveDropWorkshop.FindAddonProvidingFile( szChallengeFileName );
-	if ( UTIL_RD_GetCurrentLobbyID().IsValid() )
-	{
-		const char *pszChallengeFileID = UTIL_RD_GetCurrentLobbyData( "game:challengeinfo:workshop", "" );
-		if ( *pszChallengeFileID )
-		{
-			nChallengeFileID = std::strtoull( pszChallengeFileID, NULL, 16 );
-		}
-	}
+	// diagnostic data about game state
+	CUtlString MissionName;
+	CUtlString ChallengeName;
+	PublishedFileId_t MissionWorkshop{ k_PublishedFileIdInvalid };
+	PublishedFileId_t ChallengeWorkshop{ k_PublishedFileIdInvalid };
 
-	WriteJSONString( buf, "map" );
-	WriteJSONRaw( buf, ":{" );
-	WriteJSONString( buf, "name" );
-	WriteJSONRaw( buf, ":" );
-	WriteJSONString( buf, engine->GetLevelNameShort() );
-	WriteJSONRaw( buf, "," );
-	WriteJSONString( buf, "challenge" );
-	WriteJSONRaw( buf, ":" );
-	WriteJSONString( buf, rd_challenge.GetString() );
-	if ( pAlienSwarm && pAlienSwarm->m_iMissionWorkshopID != 0 && pAlienSwarm->m_iMissionWorkshopID != k_PublishedFileIdInvalid )
-	{
-		WriteJSONRaw( buf, "," );
-		WriteJSONString( buf, "map_workshop" );
-		WriteJSONFormat( buf, ":\"%llu\"", pAlienSwarm->m_iMissionWorkshopID );
-	}
-	if ( nChallengeFileID != 0 && nChallengeFileID != k_PublishedFileIdInvalid )
-	{
-		WriteJSONRaw( buf, "," );
-		WriteJSONString( buf, "challenge_workshop" );
-		WriteJSONFormat( buf, ":\"%llu\"", nChallengeFileID );
-	}
-	WriteJSONRaw( buf, "}," );
+	// diagnostic data about the lobby
+	CUtlString ServerIP;
+	CSteamID LobbyID;
 
-	// current server IP and/or lobby id
-	WriteJSONString( buf, "server" );
-	WriteJSONRaw( buf, ":{" );
-	if ( pNCI )
+	// players who were online at the time of this snapshot
+	CUtlVector<CSteamID> Witnesses;
+
+	// diagnostic data about connection quality
+	bool HaveConnectionQuality{ false };
+	float CurTime{};
+	float AvgLatency[2]{};
+	float AvgChoke[2]{};
+	float AvgLoss[2]{};
+	float AvgPackets[2]{};
+	float FrameTime[2]{};
+
+	void WriteJSON( CUtlBuffer &buf ) const
 	{
-		WriteJSONString( buf, "ip" );
+		WriteJSONString( buf, "map" );
+		WriteJSONRaw( buf, ":{" );
+		WriteJSONString( buf, "name" );
 		WriteJSONRaw( buf, ":" );
-		WriteJSONString( buf, pNCI->GetAddress() );
+		WriteJSONString( buf, MissionName );
 		WriteJSONRaw( buf, "," );
-	}
-	WriteJSONString( buf, "lobby" );
-	WriteJSONFormat( buf, ":\"%llu\"", UTIL_RD_GetCurrentLobbyID().ConvertToUint64() );
-	WriteJSONRaw( buf, "}," );
-
-	// any other players connected to this host
-	WriteJSONString( buf, "witnesses" );
-	WriteJSONRaw( buf, ":[" );
-	bool bFirst = true;
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
-	{
-		C_ASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
-		if ( pPlayer )
+		WriteJSONString( buf, "challenge" );
+		WriteJSONRaw( buf, ":" );
+		WriteJSONString( buf, ChallengeName );
+		if ( MissionWorkshop != k_PublishedFileIdInvalid )
 		{
-			if ( bFirst )
-				bFirst = false;
-			else
-				WriteJSONRaw( buf, "," );
-			WriteJSONFormat( buf, "\"%llu\"", pPlayer->GetSteamID().ConvertToUint64() );
+			WriteJSONRaw( buf, "," );
+			WriteJSONString( buf, "map_workshop" );
+			WriteJSONFormat( buf, ":\"%llu\"", MissionWorkshop );
 		}
-	}
-	WriteJSONRaw( buf, "]," );
+		if ( ChallengeWorkshop != k_PublishedFileIdInvalid )
+		{
+			WriteJSONRaw( buf, "," );
+			WriteJSONString( buf, "challenge_workshop" );
+			WriteJSONFormat( buf, ":\"%llu\"", ChallengeWorkshop );
+		}
+		WriteJSONRaw( buf, "}," );
 
-	if ( pNCI )
-	{
-		// some network and latency info
-		float flServerFrameTime, flServerFrameTimeStdDev;
-		pNCI->GetRemoteFramerate( &flServerFrameTime, &flServerFrameTimeStdDev );
-
-		WriteJSONString( buf, "diagnostics" );
-		WriteJSONRaw( buf, ":{" );
-		WriteJSONString( buf, "client" );
-		WriteJSONRaw( buf, ":{" );
-		WriteJSONString( buf, "gametime" );
-		WriteJSONFormat( buf, ":%f,", gpGlobals->curtime );
-		WriteJSONString( buf, "latency" );
-		WriteJSONFormat( buf, ":%f,", pNCI->GetAvgLatency( FLOW_OUTGOING ) );
-		WriteJSONString( buf, "choke" );
-		WriteJSONFormat( buf, ":%f,", pNCI->GetAvgChoke( FLOW_OUTGOING ) );
-		WriteJSONString( buf, "loss" );
-		WriteJSONFormat( buf, ":%f,", pNCI->GetAvgLoss( FLOW_OUTGOING ) );
-		WriteJSONString( buf, "packets" );
-		WriteJSONFormat( buf, ":%f,", pNCI->GetAvgPackets( FLOW_OUTGOING ) );
-		WriteJSONString( buf, "frametime" );
-		WriteJSONFormat( buf, ":%f},", gpGlobals->frametime );
+		// current server IP and/or lobby id
 		WriteJSONString( buf, "server" );
 		WriteJSONRaw( buf, ":{" );
-		WriteJSONString( buf, "latency" );
-		WriteJSONFormat( buf, ":%f,", pNCI->GetAvgLatency( FLOW_INCOMING ) );
-		WriteJSONString( buf, "choke" );
-		WriteJSONFormat( buf, ":%f,", pNCI->GetAvgChoke( FLOW_INCOMING ) );
-		WriteJSONString( buf, "loss" );
-		WriteJSONFormat( buf, ":%f,", pNCI->GetAvgLoss( FLOW_INCOMING ) );
-		WriteJSONString( buf, "packets" );
-		WriteJSONFormat( buf, ":%f,", pNCI->GetAvgPackets( FLOW_INCOMING ) );
-		WriteJSONString( buf, "frametime" );
-		WriteJSONFormat( buf, ":%f}},", flServerFrameTime );
-	}
-}
+		if ( !ServerIP.IsEmpty() )
+		{
+			WriteJSONString( buf, "ip" );
+			WriteJSONRaw( buf, ":" );
+			WriteJSONString( buf, ServerIP );
+			WriteJSONRaw( buf, "," );
+		}
+		WriteJSONString( buf, "lobby" );
+		WriteJSONFormat( buf, ":\"%llu\"", LobbyID.ConvertToUint64() );
+		WriteJSONRaw( buf, "}," );
 
-bool CRD_Player_Reporting::IsInProgress()
+		WriteJSONString( buf, "witnesses" );
+		WriteJSONRaw( buf, ":[" );
+		FOR_EACH_VEC( Witnesses, i )
+		{
+			if ( i != 0 )
+				WriteJSONRaw( buf, "," );
+
+			WriteJSONFormat( buf, "\"%llu\"", Witnesses[i].ConvertToUint64() );
+		}
+		WriteJSONRaw( buf, "]," );
+
+		if ( HaveConnectionQuality )
+		{
+			WriteJSONString( buf, "diagnostics" );
+			WriteJSONRaw( buf, ":{" );
+			WriteJSONString( buf, "client" );
+			WriteJSONRaw( buf, ":{" );
+			WriteJSONString( buf, "gametime" );
+			WriteJSONFormat( buf, ":%f,", CurTime );
+			WriteJSONString( buf, "latency" );
+			WriteJSONFormat( buf, ":%f,", AvgLatency[FLOW_OUTGOING] );
+			WriteJSONString( buf, "choke" );
+			WriteJSONFormat( buf, ":%f,", AvgChoke[FLOW_OUTGOING] );
+			WriteJSONString( buf, "loss" );
+			WriteJSONFormat( buf, ":%f,", AvgLoss[FLOW_OUTGOING] );
+			WriteJSONString( buf, "packets" );
+			WriteJSONFormat( buf, ":%f,", AvgPackets[FLOW_OUTGOING] );
+			WriteJSONString( buf, "frametime" );
+			WriteJSONFormat( buf, ":%f},", FrameTime[FLOW_OUTGOING] );
+			WriteJSONString( buf, "server" );
+			WriteJSONRaw( buf, ":{" );
+			WriteJSONString( buf, "latency" );
+			WriteJSONFormat( buf, ":%f,", AvgLatency[FLOW_INCOMING] );
+			WriteJSONString( buf, "choke" );
+			WriteJSONFormat( buf, ":%f,", AvgChoke[FLOW_INCOMING] );
+			WriteJSONString( buf, "loss" );
+			WriteJSONFormat( buf, ":%f,", AvgLoss[FLOW_INCOMING] );
+			WriteJSONString( buf, "packets" );
+			WriteJSONFormat( buf, ":%f,", AvgPackets[FLOW_INCOMING] );
+			WriteJSONString( buf, "frametime" );
+			WriteJSONFormat( buf, ":%f}},", FrameTime[FLOW_INCOMING] );
+		}
+	}
+};
+
+bool CRD_Player_Reporting::IsInProgress() const
 {
 	if ( m_hTicket != k_HAuthTicketInvalid )
 		return true;
@@ -206,17 +206,53 @@ bool CRD_Player_Reporting::IsInProgress()
 	return false;
 }
 
-void CRD_Player_Reporting::UpdateServerInfo( bool bForce )
+bool CRD_Player_Reporting::HasRecentServer() const
 {
-	if ( !bForce && !engine->IsInGame() )
+	if ( m_RecentData.Count() == 0 )
+		return false;
+
+	// latest snapshot is always at the end
+	return m_RecentData[m_RecentData.Count() - 1]->RecordedAt > Plat_FloatTime() - REPORTING_SNAPSHOT_LIFETIME;
+}
+
+void CRD_Player_Reporting::UpdateServerInfo()
+{
+	if ( !engine->IsConnected() )
 		return;
 
-	m_ServerInfoCache.Purge();
-	WriteServerInfo( m_ServerInfoCache );
+	DeleteExpiredSnapshots();
+
+	ReportingServerSnapshot_t *pSnapshot = NewSnapshot();
+
+	// if the previous snapshot was the same server with the same players in the same order, delete it.
+	if ( m_RecentData.Count() != 0 && m_RecentData[m_RecentData.Count() - 1]->ServerIP == pSnapshot->ServerIP && m_RecentData[m_RecentData.Count() - 1]->Witnesses.Count() == pSnapshot->Witnesses.Count() )
+	{
+		bool bMismatch = false;
+		FOR_EACH_VEC( pSnapshot->Witnesses, i )
+		{
+			if ( pSnapshot->Witnesses[i] != m_RecentData[m_RecentData.Count() - 1]->Witnesses[i] )
+			{
+				bMismatch = true;
+				break;
+			}
+		}
+
+		if ( !bMismatch )
+		{
+			delete m_RecentData[m_RecentData.Count() - 1];
+			m_RecentData[m_RecentData.Count() - 1] = pSnapshot;
+
+			return;
+		}
+	}
+
+	m_RecentData.AddToTail( pSnapshot );
 }
 
 bool CRD_Player_Reporting::PrepareReportForSend( const char *szCategory, const char *szDescription, CSteamID reportedPlayer, CUtlVector<CUtlBuffer> &screenshots, bool bShowWaitScreen )
 {
+	Assert( szCategory );
+	Assert( szDescription || ( reportedPlayer.BIndividualAccount() && screenshots.Count() == 0 ) );
 	Assert( !IsInProgress() );
 
 	// can't queue multiple reports simultaneously. UI doesn't support this, so don't write an error message.
@@ -258,12 +294,18 @@ bool CRD_Player_Reporting::PrepareReportForSend( const char *szCategory, const c
 		WriteJSONFormat( m_Buffer, ":\"%llu\"", reportedPlayer.ConvertToUint64() );
 	}
 	WriteJSONRaw( m_Buffer, "}," );
-	WriteJSONString( m_Buffer, "description" );
-	WriteJSONRaw( m_Buffer, ":" );
-	WriteJSONString( m_Buffer, szDescription );
-	WriteJSONRaw( m_Buffer, "," );
+	if ( szDescription )
+	{
+		WriteJSONString( m_Buffer, "description" );
+		WriteJSONRaw( m_Buffer, ":" );
+		WriteJSONString( m_Buffer, szDescription );
+		WriteJSONRaw( m_Buffer, "," );
+	}
 
-	m_Buffer.Put( m_ServerInfoCache.Base(), m_ServerInfoCache.TellPut() );
+	if ( ReportingServerSnapshot_t *pSnapshot = GetRelevantOrLatestSnapshot( reportedPlayer ) )
+	{
+		pSnapshot->WriteJSON( m_Buffer );
+	}
 
 	// attach any screenshots
 	WriteJSONString( m_Buffer, "screenshots" );
@@ -426,5 +468,99 @@ void CRD_Player_Reporting::ShowWaitScreen()
 		}
 
 		m_bShowWaitScreen = false;
+	}
+}
+
+ReportingServerSnapshot_t *CRD_Player_Reporting::NewSnapshot() const
+{
+	C_AlienSwarm *pAlienSwarm = ASWGameRules();
+	Assert( pAlienSwarm );
+	INetChannelInfo *pNCI = engine->GetNetChannelInfo();
+	Assert( pNCI );
+
+	ReportingServerSnapshot_t *pSnapshot = new ReportingServerSnapshot_t();
+
+	pSnapshot->RecordedAt = Plat_FloatTime();
+
+	extern ConVar rd_challenge;
+	char szChallengeFileName[MAX_PATH];
+	V_snprintf( szChallengeFileName, sizeof( szChallengeFileName ), "resource/challenges/%s.txt", rd_challenge.GetString() );
+	PublishedFileId_t nChallengeFileID = g_ReactiveDropWorkshop.FindAddonProvidingFile( szChallengeFileName );
+	if ( UTIL_RD_GetCurrentLobbyID().IsValid() )
+	{
+		const char *pszChallengeFileID = UTIL_RD_GetCurrentLobbyData( "game:challengeinfo:workshop", "" );
+		if ( *pszChallengeFileID )
+		{
+			nChallengeFileID = std::strtoull( pszChallengeFileID, NULL, 16 );
+		}
+	}
+
+	pSnapshot->MissionName = engine->GetLevelNameShort();
+	pSnapshot->ChallengeName = rd_challenge.GetString();
+	if ( pAlienSwarm && pAlienSwarm->m_iMissionWorkshopID > 1000000 )
+		pSnapshot->MissionWorkshop = pAlienSwarm->m_iMissionWorkshopID;
+	if ( nChallengeFileID > 1000000 )
+		pSnapshot->ChallengeWorkshop = nChallengeFileID;
+
+	if ( pNCI )
+		pSnapshot->ServerIP = pNCI->GetAddress();
+	pSnapshot->LobbyID = UTIL_RD_GetCurrentLobbyID();
+
+	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+	{
+		C_ASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
+		if ( pPlayer && !pPlayer->IsAnyBot() )
+		{
+			Assert( pPlayer->GetSteamID().BIndividualAccount() );
+			pSnapshot->Witnesses.AddToTail( pPlayer->GetSteamID() );
+		}
+	}
+
+	if ( pNCI )
+	{
+		pSnapshot->HaveConnectionQuality = true;
+		pSnapshot->CurTime = gpGlobals->curtime;
+		pSnapshot->FrameTime[FLOW_OUTGOING] = gpGlobals->frametime;
+
+		float flServerFrameTime, flServerFrameTimeStdDev;
+		pNCI->GetRemoteFramerate( &flServerFrameTime, &flServerFrameTimeStdDev );
+		pSnapshot->FrameTime[FLOW_INCOMING] = flServerFrameTime;
+
+		for ( int flow = FLOW_OUTGOING; flow <= FLOW_INCOMING; flow++ )
+		{
+			pSnapshot->AvgLatency[flow] = pNCI->GetAvgLatency( flow );
+			pSnapshot->AvgChoke[flow] = pNCI->GetAvgChoke( flow );
+			pSnapshot->AvgLoss[flow] = pNCI->GetAvgLoss( flow );
+			pSnapshot->AvgPackets[flow] = pNCI->GetAvgPackets( flow );
+		}
+	}
+
+	return pSnapshot;
+}
+
+ReportingServerSnapshot_t *CRD_Player_Reporting::GetRelevantOrLatestSnapshot( CSteamID player ) const
+{
+	if ( m_RecentData.Count() == 0 )
+		return NULL;
+
+	FOR_EACH_VEC_BACK( m_RecentData, i )
+	{
+		if ( m_RecentData[i]->Witnesses.IsValidIndex( m_RecentData[i]->Witnesses.Find( player ) ) )
+		{
+			return m_RecentData[i];
+		}
+	}
+
+	Assert( !player.IsValid() );
+	return m_RecentData[m_RecentData.Count() - 1];
+}
+
+void CRD_Player_Reporting::DeleteExpiredSnapshots()
+{
+	float flExpireBefore = Plat_FloatTime() - REPORTING_SNAPSHOT_LIFETIME;
+	while ( m_RecentData.Count() != 0 && m_RecentData[0]->RecordedAt < flExpireBefore )
+	{
+		delete m_RecentData[0];
+		m_RecentData.Remove( 0 );
 	}
 }
