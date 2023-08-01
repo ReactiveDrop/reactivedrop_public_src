@@ -854,3 +854,19 @@ asw_pickup_50calmg : "50cal Machine Gun"
 [
 	client_vscript(script) : "Client Script" : "" : "Name of script file to run on clients."
 ]
+
+@PointClass base(Angles) iconsprite("editor/teamspen210/comp_propcombine_set") wirebox(mins, maxs) = comp_propcombine_set : "Specifies a group of props that will be combined together."
+[
+	mins(vector) : "BBox Mins" : "-32 -32 -32" : "Minimum offset from the entity, defining the shape."
+	maxs(vector) : "BBox Maxes" : "32 32 32" : "Maximum offset from the entity, defining the shape."
+	name(string) : "Name" : : "Two sets with the same name will be treated as one."
+	prop(studio) : "Model Filter" : : "If set, a combinable model used to filter which others will be combined. The propcombine set will only apply to models which could be combined with this one."
+	skin(integer) : "Skin Filter" : 0 : "The skin for the Model Filter."
+]
+
+@PointClass base(Angles) iconsprite("editor/teamspen210/comp_cubemap_parallax") wirebox(mins, maxs) sphere() = comp_cubemap_parallax : "Specifies the positions of the walls of a box-shaped room for parallax-corrected cubemaps."
+[
+	mins(vector) : "BBox Mins" : "-32 -32 -32" : "Minimum offset from the entity, defining the shape."
+	maxs(vector) : "BBox Maxes" : "32 32 32" : "Maximum offset from the entity, defining the shape."
+	radius(float) : "Cubemap Radius" : "32" : "Bounding radius to find env_cubemap entities to modify."
+]

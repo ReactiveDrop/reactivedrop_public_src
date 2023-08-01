@@ -46,7 +46,7 @@ using namespace vgui;
 
 int ScreenTransform( const Vector& point, Vector& screen );
 
-ConVar crosshair( "crosshair", "1", FCVAR_ARCHIVE );
+ConVar crosshair( "crosshair", "1", FCVAR_NONE );
 
 DECLARE_HUDELEMENT( CASWHudCrosshair );
 

@@ -3865,7 +3865,7 @@
 //
 //-------------------------------------------------------------------------
 
-@PointClass color(0 0 255) sidelist(sides) iconsprite("editor/env_cubemap.vmt") wirebox(box_mins, box_maxs) = env_cubemap :
+@PointClass color(0 0 255) sidelist(sides) iconsprite("editor/env_cubemap.vmt") = env_cubemap :
 	"An entity that creates a sample point for the Cubic Environment Map."
 [
 	cubemapsize(choices) : "Cubemap Size" : 0 =
@@ -3882,8 +3882,6 @@
 		9 : "256x256"
 	]
 	sides(sidelist) : "Brush faces": : "(Optional) Brushes faces to directly attach to the env_cubemap. Press Pick then click on faces in the 3D View to select them. Use CTRL while clicking to add or remove from the selection."
-	box_mins(vector) : "Box Projection Mins" : : "Not yet implemented."
-	box_maxs(vector) : "Box Projection Maxs" : : "Not yet implemented."
 ]
 
 @BaseClass = BModelParticleSpawner

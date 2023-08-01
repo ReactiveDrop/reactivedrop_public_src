@@ -16,7 +16,7 @@ class MapInfo:
 		self.vbsp = vbsp if vbsp is not None else ["-alldetail"]
 		self.vvis = vvis if vvis is not None else ["-radius_override", radius_override]
 		self.vrad = vrad if vrad is not None else ["-final", "-textureshadows", "-StaticPropLighting", "-StaticPropPolys"]
-		self.postcompiler = postcompiler if postcompiler is not None else ["--propcombine"]
+		self.postcompiler = postcompiler if postcompiler is not None else []
 
 vrad_notextureshadows = ["-final", "-StaticPropLighting", "-StaticPropPolys"]
 
