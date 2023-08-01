@@ -10,13 +10,48 @@
 #include "gameui/swarm/basemodpanel.h"
 #include "gameui/swarm/vgenericwaitscreen.h"
 #include "gameui/swarm/vgenericconfirmation.h"
+#include "filesystem.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 using namespace BaseModUI;
 
+// number of seconds a report can be filed after someone leaves the server
 #define REPORTING_SNAPSHOT_LIFETIME 300.0f
+// number of seconds a quick (descriptionless) report is considered to be "still active"
+#define REPORTING_QUICK_TIMEOUT 604800
+
+// CURRENTLY-DEFINED REPORT CATEGORIES
+//
+// my_account - for self-reported problems about items or achievements or whatever
+//
+// player_cheating - reporting a player for cheating
+// player_abusive_gameplay - reporting a player for griefing
+// player_abusive_communication - repoting a player for being abusive in text or voice chat or with another in-game communication tool
+// player_commend - reporting a player for doing something good
+//
+// server_technical - reporting a technical problem with a server
+// server_abuse - reporting an abusive server
+// server_other - reporting a server-specific issue that does not fit into the above catgories
+//
+// game_bug - reporting a bug in the game
+// other - any non-quick report that does not fit into the above categories
+//
+// Quick reports have no description and will tell the player they already filed one
+// if it's within a week of their last report on the player in the given category.
+//
+// quick_commend_friendly - reporting a player for being friendly
+// quick_commend_leader - reporting a player for being a good leader
+// quick_commend_teacher - reporting a player for being a good teacher
+//
+// quick_abusive_cheating - reporting a player for cheating
+// quick_abusive_gameplay - reporting a player for griefing
+// quick_abusive_communication - reporting a player for abusive text or voice chat or other communication tool abuse
+//
+// quick_auto_votekick - sent automatically when voting to kick a player on the scoreboard
+// quick_auto_voteleader - sent automatically when voting to make a player the leader on the scoreboard
+// quick_auto_mute - sent automatically when muting a player on the scoreboard
 
 CRD_Player_Reporting g_RD_Player_Reporting;
 
@@ -215,6 +250,51 @@ bool CRD_Player_Reporting::HasRecentServer() const
 	return m_RecentData[m_RecentData.Count() - 1]->RecordedAt > Plat_FloatTime() - REPORTING_SNAPSHOT_LIFETIME;
 }
 
+bool CRD_Player_Reporting::RecentlyReportedPlayer( const char *szCategory, CSteamID player )
+{
+	if ( m_pRecentReports == NULL )
+	{
+		if ( !SteamUser() )
+			return false;
+
+		CFmtStr szFileName{ "cfg/clientrqpr_%llu.dat", SteamUser()->GetSteamID().ConvertToUint64() };
+		CUtlBuffer buf;
+
+		m_pRecentReports.Assign( new KeyValues{ "RQPR" } );
+		if ( g_pFullFileSystem->ReadFile( szFileName, "MOD", buf ) )
+		{
+			m_pRecentReports->ReadAsBinary( buf );
+		}
+	}
+
+	CFmtStr szKey{ "%s/%llu", szCategory, player.ConvertToUint64() };
+	return SteamUtils() && uint64_t( SteamUtils()->GetServerRealTime() ) - REPORTING_QUICK_TIMEOUT < m_pRecentReports->GetUint64( szKey );
+}
+
+void CRD_Player_Reporting::GetRecentlyPlayedWith( CUtlVector<CSteamID> &players ) const
+{
+	CSteamID self = SteamUser() ? SteamUser()->GetSteamID() : k_steamIDNil;
+	float flExpireTime = Plat_FloatTime() - REPORTING_SNAPSHOT_LIFETIME;
+
+	FOR_EACH_VEC_BACK( m_RecentData, i )
+	{
+		if ( m_RecentData[i]->RecordedAt < flExpireTime )
+			break;
+
+		FOR_EACH_VEC_BACK( m_RecentData[i]->Witnesses, j )
+		{
+			CSteamID player = m_RecentData[i]->Witnesses[j];
+			if ( player == self )
+				continue;
+
+			if ( !players.IsValidIndex( players.Find( player ) ) )
+			{
+				players.AddToTail( player );
+			}
+		}
+	}
+}
+
 void CRD_Player_Reporting::UpdateServerInfo()
 {
 	if ( !engine->IsConnected() )
@@ -249,7 +329,7 @@ void CRD_Player_Reporting::UpdateServerInfo()
 	m_RecentData.AddToTail( pSnapshot );
 }
 
-bool CRD_Player_Reporting::PrepareReportForSend( const char *szCategory, const char *szDescription, CSteamID reportedPlayer, CUtlVector<CUtlBuffer> &screenshots, bool bShowWaitScreen )
+bool CRD_Player_Reporting::PrepareReportForSend( const char *szCategory, const char *szDescription, CSteamID reportedPlayer, const CUtlVector<CUtlBuffer> &screenshots, bool bShowWaitScreen )
 {
 	Assert( szCategory );
 	Assert( szDescription || ( reportedPlayer.BIndividualAccount() && screenshots.Count() == 0 ) );
@@ -272,6 +352,15 @@ bool CRD_Player_Reporting::PrepareReportForSend( const char *szCategory, const c
 		ShowWaitScreen();
 
 		return false;
+	}
+
+	if ( !szDescription )
+	{
+		V_snprintf( m_szQuickReport, sizeof( m_szQuickReport ), "%s/%llu", szCategory, reportedPlayer.ConvertToUint64() );
+	}
+	else
+	{
+		Assert( m_szQuickReport[0] == '\0' );
 	}
 
 	m_hTicket = pSteamUser->GetAuthTicketForWebApi( "playerreport" );
@@ -418,6 +507,50 @@ void CRD_Player_Reporting::OnHTTPRequestCompleted( HTTPRequestCompleted_t *pPara
 
 	if ( pParam->m_eStatusCode == k_EHTTPStatusCode200OK )
 	{
+		// remember that we successfully quick-reported this player so we can show that in the UI.
+		if ( m_szQuickReport[0] != '\0' )
+		{
+			RecentlyReportedPlayer( "", k_steamIDNil ); // call for side effect of initializing m_pRecentReports
+
+			Assert( SteamUtils() );
+			if ( m_pRecentReports != NULL && SteamUtils() )
+			{
+				uint64_t iNow = SteamUtils()->GetServerRealTime();
+				uint64_t iExpireBefore = iNow - REPORTING_QUICK_TIMEOUT;
+
+				FOR_EACH_SUBKEY( m_pRecentReports, pCategory )
+				{
+					KeyValues *pNext = pCategory->GetFirstSubKey();
+					while ( pNext )
+					{
+						KeyValues *pCur = pNext;
+						pNext = pNext->GetNextKey();
+
+						if ( pCur->GetUint64() < iExpireBefore )
+						{
+							pCategory->RemoveSubKey( pCur );
+							pCur->deleteThis();
+						}
+					}
+				}
+
+				m_pRecentReports->SetUint64( m_szQuickReport, iNow );
+
+				CUtlBuffer buf;
+				CFmtStr szFileName{ "cfg/clientrqpr_%llu.dat", SteamUser()->GetSteamID().ConvertToUint64() };
+				if ( !m_pRecentReports->WriteAsBinary( buf ) )
+				{
+					Warning( "Failed to encode quick report cache\n" );
+				}
+				else if ( !g_pFullFileSystem->WriteFile( szFileName, "MOD", buf ) )
+				{
+					Warning( "Failed to write quick report cache\n" );
+				}
+			}
+
+			m_szQuickReport[0] = '\0';
+		}
+
 		// report queued for processing
 		TryLocalize( "#rd_reporting_success", m_wszLastMessage, sizeof( m_wszLastMessage ) );
 		ShowWaitScreen();
@@ -435,6 +568,12 @@ void CRD_Player_Reporting::ShowWaitScreen()
 	char szMessageUTF8[2048];
 	V_UnicodeToUTF8( m_wszLastMessage, szMessageUTF8, sizeof( szMessageUTF8 ) );
 	Msg( "[Player Reporting] %s\n", szMessageUTF8 );
+
+	if ( !IsInProgress() )
+	{
+		// clear quick report key if we've exited the reporting process with an error
+		m_szQuickReport[0] = '\0';
+	}
 
 	if ( !m_bShowWaitScreen )
 		return;

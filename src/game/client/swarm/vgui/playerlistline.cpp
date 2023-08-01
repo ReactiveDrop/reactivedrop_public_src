@@ -14,6 +14,7 @@
 #include "c_playerresource.h"
 #include <vgui/ILocalize.h>
 #include "voice_status.h"
+#include "rd_player_reporting.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
@@ -112,10 +113,13 @@ void PlayerListLine::OnCommand( const char *command )
 {
 	if ( !Q_stricmp( command, "MuteButton" ) )
 	{
-		C_PlayerResource *p_GR = dynamic_cast< C_PlayerResource* >( GameResources() );
+		g_PR->TogglePlayerMuteState( m_iPlayerIndex, false );
 
-		if ( p_GR )
-			p_GR->TogglePlayerMuteState( m_iPlayerIndex, false );
+		C_ASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( m_iPlayerIndex ) );
+		if ( pPlayer && g_PR->IsMuted( m_iPlayerIndex ) && !g_RD_Player_Reporting.IsInProgress() && !g_RD_Player_Reporting.RecentlyReportedPlayer( "quick_auto_mute", pPlayer->GetSteamID() ) )
+		{
+			g_RD_Player_Reporting.PrepareReportForSend( "quick_auto_mute", NULL, pPlayer->GetSteamID(), CUtlVector<CUtlBuffer>{}, false );
+		}
 	}
 	else if ( !Q_stricmp( command, "PlayerLabel" )  )
 	{
@@ -450,14 +454,14 @@ bool PlayerListLine::SetPlayerIndex( int i )
 const wchar_t *PlayerListLine::GetFragsString()
 {
 	static wchar_t buffer[12];
-	Q_snwprintf( buffer, sizeof( buffer ), L"%d", g_PR->GetPlayerScore( m_iPlayerIndex ) );
+	V_snwprintf( buffer, NELEMS( buffer ), L"%d", g_PR->GetPlayerScore( m_iPlayerIndex ) );
 	return buffer;
 }
 
 const wchar_t *PlayerListLine::GetDeathsString()
 {
 	static wchar_t buffer[12];
-	Q_snwprintf( buffer, sizeof( buffer ), L"%d", g_PR->GetDeaths( m_iPlayerIndex ) );
+	V_snwprintf( buffer, NELEMS( buffer ), L"%d", g_PR->GetDeaths( m_iPlayerIndex ) );
 	return buffer;
 }
 
@@ -475,7 +479,7 @@ const wchar_t *PlayerListLine::GetPingString()
 		return L"";
 	}
 
-	Q_snwprintf( buffer, sizeof( buffer ), L"%d", g_PR->GetPing( m_iPlayerIndex ) );
+	V_snwprintf( buffer, NELEMS( buffer ), L"%d", g_PR->GetPing( m_iPlayerIndex ) );
 	return buffer;
 }
 

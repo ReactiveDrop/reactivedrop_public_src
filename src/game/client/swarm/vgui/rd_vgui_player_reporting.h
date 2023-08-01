@@ -11,4 +11,6 @@ public:
 	CRD_VGUI_Player_Reporting( vgui::Panel *parent, const char *panelName );
 
 	CRD_VGUI_Option *m_pSettingReportCategory;
+	CRD_VGUI_Option *m_pSettingReportPlayer;
+	vgui::TextEntry *m_pTxtDescription;
 };

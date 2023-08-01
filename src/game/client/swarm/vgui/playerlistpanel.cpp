@@ -30,6 +30,7 @@
 #include "asw_deathmatch_mode.h"
 #include "c_team.h"
 #include "gameui/swarm/vgenericpanellist.h"
+#include "rd_player_reporting.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
@@ -371,47 +372,59 @@ void PlayerListPanel::OnThink()
 }
 
 
-void PlayerListPanel::KickClicked(PlayerListLine* pLine)
+void PlayerListPanel::KickClicked( PlayerListLine *pLine )
 {
 	// unselect all the other check boxes
-	for (int i=0;i<m_PlayerLine.Count();i++)
+	for ( int i = 0; i < m_PlayerLine.Count(); i++ )
 	{
-		if (m_PlayerLine[i] == pLine)			
+		if ( m_PlayerLine[i] == pLine )
 		{
-			if (m_iKickVoteIndex != m_PlayerLine[i]->m_iPlayerIndex)
+			if ( m_iKickVoteIndex != m_PlayerLine[i]->m_iPlayerIndex )
 			{
 				char buffer[64];
-				Q_snprintf(buffer, sizeof(buffer), "cl_kickvote %d", m_PlayerLine[i]->m_iPlayerIndex);
-				engine->ClientCmd(buffer);
+				Q_snprintf( buffer, sizeof( buffer ), "cl_kickvote %d", m_PlayerLine[i]->m_iPlayerIndex );
+				engine->ClientCmd( buffer );
+
+				C_ASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( m_PlayerLine[i]->m_iPlayerIndex ) );
+				if ( pPlayer && !g_RD_Player_Reporting.IsInProgress() && !g_RD_Player_Reporting.RecentlyReportedPlayer( "quick_auto_votekick", pPlayer->GetSteamID() ) )
+				{
+					g_RD_Player_Reporting.PrepareReportForSend( "quick_auto_votekick", NULL, pPlayer->GetSteamID(), CUtlVector<CUtlBuffer>{}, false );
+				}
 			}
 			else	// we were already wanting to kick this player, so toggle it off
 			{
 				char buffer[64];
-				Q_snprintf(buffer, sizeof(buffer), "cl_kickvote -1");
-				engine->ClientCmd(buffer);
+				Q_snprintf( buffer, sizeof( buffer ), "cl_kickvote -1" );
+				engine->ClientCmd( buffer );
 			}
 		}
 	}
 }
 
-void PlayerListPanel::LeaderClicked(PlayerListLine* pLine)
+void PlayerListPanel::LeaderClicked( PlayerListLine *pLine )
 {
 	// unselect all the other check boxes
-	for (int i=0;i<m_PlayerLine.Count();i++)
+	for ( int i = 0; i < m_PlayerLine.Count(); i++ )
 	{
-		if (m_PlayerLine[i] == pLine)			
+		if ( m_PlayerLine[i] == pLine )
 		{
-			if (m_iLeaderVoteIndex != m_PlayerLine[i]->m_iPlayerIndex)
+			if ( m_iLeaderVoteIndex != m_PlayerLine[i]->m_iPlayerIndex )
 			{
 				char buffer[64];
-				Q_snprintf(buffer, sizeof(buffer), "cl_leadervote %d", m_PlayerLine[i]->m_iPlayerIndex);
-				engine->ClientCmd(buffer);
+				Q_snprintf( buffer, sizeof( buffer ), "cl_leadervote %d", m_PlayerLine[i]->m_iPlayerIndex );
+				engine->ClientCmd( buffer );
+
+				C_ASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( m_PlayerLine[i]->m_iPlayerIndex ) );
+				if ( pPlayer && !g_RD_Player_Reporting.IsInProgress() && !g_RD_Player_Reporting.RecentlyReportedPlayer( "quick_auto_voteleader", pPlayer->GetSteamID() ) )
+				{
+					g_RD_Player_Reporting.PrepareReportForSend( "quick_auto_voteleader", NULL, pPlayer->GetSteamID(), CUtlVector<CUtlBuffer>{}, false );
+				}
 			}
 			else	// we were already wanting to kick this play, so toggle it off
 			{
 				char buffer[64];
-				Q_snprintf(buffer, sizeof(buffer), "cl_leadervote -1");
-				engine->ClientCmd(buffer);
+				Q_snprintf( buffer, sizeof( buffer ), "cl_leadervote -1" );
+				engine->ClientCmd( buffer );
 			}
 		}
 	}

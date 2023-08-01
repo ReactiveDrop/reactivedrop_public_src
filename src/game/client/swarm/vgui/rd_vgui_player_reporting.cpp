@@ -2,6 +2,7 @@
 #include "rd_vgui_player_reporting.h"
 #include "rd_player_reporting.h"
 #include "rd_vgui_settings.h"
+#include <vgui_controls/TextEntry.h>
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -31,6 +32,7 @@ static const PlayerReportCategory_t s_ReportCategories[] =
 	{ "player_cheating", "#rd_reporting_category_player_cheating", "#rd_reporting_category_player_cheating_desc", true, true },
 	{ "player_abusive_gameplay", "#rd_reporting_category_player_abusive_gameplay", "#rd_reporting_category_player_abusive_gameplay_desc", true, true },
 	{ "player_abusive_communication", "#rd_reporting_category_player_abusive_communication", "#rd_reporting_category_player_abusive_communication_desc", true, true },
+	{ "player_commend", "#rd_reporting_category_player_commend", "#rd_reporting_category_player_commend_desc", true, true },
 	{ "server_technical", "#rd_reporting_category_server_technical", "#rd_reporting_category_server_technical_desc", true, false },
 	{ "server_abuse", "#rd_reporting_category_server_abuse", "#rd_reporting_category_server_abuse_desc", true, false },
 	{ "server_other", "#rd_reporting_category_server_other", "#rd_reporting_category_server_other_desc", true, false },
@@ -41,6 +43,9 @@ static const PlayerReportCategory_t s_ReportCategories[] =
 CRD_VGUI_Player_Reporting::CRD_VGUI_Player_Reporting( vgui::Panel *parent, const char *panelName ) :
 	BaseClass{ parent, panelName }
 {
+	CUtlVector<CSteamID> players;
+	g_RD_Player_Reporting.GetRecentlyPlayedWith( players );
+
 	m_pSettingReportCategory = new CRD_VGUI_Option( this, "SettingReportCategory", "#rd_reporting_category", CRD_VGUI_Option::MODE_DROPDOWN );
 	m_pSettingReportCategory->AddOption( -1, "#rd_reporting_select_category", "" );
 	m_pSettingReportCategory->SetCurrentOption( -1 );
@@ -48,9 +53,18 @@ CRD_VGUI_Player_Reporting::CRD_VGUI_Player_Reporting( vgui::Panel *parent, const
 	m_pSettingReportCategory->AddActionSignalTarget( this );
 	for ( int i = 0; i < NELEMS( s_ReportCategories ); i++ )
 	{
-		if ( !s_ReportCategories[i].RequiresServer || g_RD_Player_Reporting.HasRecentServer() )
+		if ( ( !s_ReportCategories[i].RequiresServer || g_RD_Player_Reporting.HasRecentServer() ) && ( !s_ReportCategories[i].PlayerTarget || players.Count() != 0 ) )
 		{
 			m_pSettingReportCategory->AddOption( i, s_ReportCategories[i].DisplayName, s_ReportCategories[i].Hint );
 		}
 	}
+
+	m_pSettingReportPlayer = new CRD_VGUI_Option( this, "SettingReportPlayer", "#rd_reporting_player", CRD_VGUI_Option::MODE_DROPDOWN );
+	FOR_EACH_VEC( players, i )
+	{
+		m_pSettingReportPlayer->AddOption( players[i].GetAccountID(), SteamFriends() ? SteamFriends()->GetFriendPersonaName( players[i] ) : "", NULL );
+	}
+
+	m_pTxtDescription = new vgui::TextEntry( this, "TxtDescription" );
+	m_pTxtDescription->SetMultiline( true );
 }

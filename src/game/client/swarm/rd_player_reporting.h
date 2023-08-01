@@ -18,6 +18,11 @@ public:
 	bool IsInProgress() const;
 	// Returns true if the player was connected to a server within the past 5 minutes.
 	bool HasRecentServer() const;
+	// Returns true if we recently filed a descriptionless report in the given category for the given player.
+	// Non-const because it loads a cache and therefore has side effects.
+	bool RecentlyReportedPlayer( const char *szCategory, CSteamID player );
+	// Fills a vector with a list of players seen in the past 5 minutes.
+	void GetRecentlyPlayedWith( CUtlVector<CSteamID> &players ) const;
 
 	// Update cached server info.
 	void UpdateServerInfo();
@@ -33,7 +38,7 @@ public:
 	// Can return false for two reasons:
 	// 1. Only one report can be in-transit at a time.
 	// 2. Can only send a report if we are connected to Steam.
-	bool PrepareReportForSend( const char *szCategory, const char *szDescription, CSteamID reportedPlayer, CUtlVector<CUtlBuffer> &screenshots, bool bShowWaitScreen );
+	bool PrepareReportForSend( const char *szCategory, const char *szDescription, CSteamID reportedPlayer, const CUtlVector<CUtlBuffer> &screenshots, bool bShowWaitScreen );
 
 	// Latest progress message.
 	wchar_t m_wszLastMessage[2048]{};
@@ -42,6 +47,8 @@ private:
 	bool m_bShowWaitScreen{ false };
 	CUtlBuffer m_Buffer{ 0, 0, CUtlBuffer::TEXT_BUFFER };
 	CUtlVectorAutoPurge<ReportingServerSnapshot_t *> m_RecentData;
+	char m_szQuickReport[256]{};
+	KeyValues::AutoDelete m_pRecentReports{ ( KeyValues * )NULL };
 	HAuthTicket m_hTicket{ k_HAuthTicketInvalid };
 
 	STEAM_CALLBACK( CRD_Player_Reporting, OnGetTicketForWebApiResponse, GetTicketForWebApiResponse_t );
