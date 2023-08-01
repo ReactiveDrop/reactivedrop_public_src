@@ -557,10 +557,33 @@ ReportingServerSnapshot_t *CRD_Player_Reporting::GetRelevantOrLatestSnapshot( CS
 
 void CRD_Player_Reporting::DeleteExpiredSnapshots()
 {
+	// remove snapshots that have expired from the start of the list
 	float flExpireBefore = Plat_FloatTime() - REPORTING_SNAPSHOT_LIFETIME;
 	while ( m_RecentData.Count() != 0 && m_RecentData[0]->RecordedAt < flExpireBefore )
 	{
 		delete m_RecentData[0];
 		m_RecentData.Remove( 0 );
+	}
+
+	// remove snapshots that have no new players from before the end of the list
+	CUtlVector<CSteamID> SeenWitnesses;
+	FOR_EACH_VEC_BACK( m_RecentData, i )
+	{
+		bool bAnyNew = false;
+		FOR_EACH_VEC( m_RecentData[i]->Witnesses, j )
+		{
+			if ( !SeenWitnesses.IsValidIndex( SeenWitnesses.Find( m_RecentData[i]->Witnesses[j] ) ) )
+			{
+				SeenWitnesses.AddToTail( m_RecentData[i]->Witnesses[j] );
+				bAnyNew = true;
+			}
+		}
+
+		// keep the latest snapshot (it should have players in it, but just in case)
+		if ( !bAnyNew && i != m_RecentData.Count() - 1 )
+		{
+			delete m_RecentData[i];
+			m_RecentData.Remove( i );
+		}
 	}
 }
