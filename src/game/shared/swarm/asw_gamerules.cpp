@@ -125,6 +125,7 @@
 #include "rd_workshop.h"
 #include "rd_lobby_utils.h"
 #include "matchmaking/imatchframework.h"
+#include "rd_lock.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1502,6 +1503,8 @@ const char* CAlienSwarm::GetGameDescription( void )
 CAlienSwarm::CAlienSwarm() : m_ActorSpeakingUntil( DefLessFunc( string_t ) )
 {
 	m_bShuttingDown = false;
+	
+	CreateAndLockExclusive();
 
 	// fixes a memory leak on dedicated server where model vertex data
 	// is not freed on map transition and remains locked, leading to increased
