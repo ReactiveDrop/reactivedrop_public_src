@@ -424,6 +424,8 @@ public:
 	CNetworkString(m_szCurrentVoteMapName, 128);
 	CNetworkString(m_szCurrentVoteCampaignName, 128);
 	CNetworkString( m_szCycleNextMap, MAX_MAP_NAME );
+
+	CNetworkVar(bool, m_bVoteStartedIngame);
 	CNetworkVar(int, m_iCurrentVoteYes);
 	CNetworkVar(int, m_iCurrentVoteNo);
 	CNetworkVar(int, m_iCurrentVoteType);

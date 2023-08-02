@@ -477,7 +477,7 @@ ConVar asw_cam_marine_dist( "asw_cam_marine_dist", "412", FCVAR_CHEAT | FCVAR_RE
 ConVar rd_allow_afk( "rd_allow_afk", "1", FCVAR_REPLICATED, "If set to 0 players cannot use asw_afk command or Esc - Take a Break" );
 // for deathmatch
 
-ConVar asw_vote_duration("asw_vote_duration", "30", FCVAR_REPLICATED, "Time allowed to vote on a map/campaign/saved game change.");
+ConVar asw_vote_duration("asw_vote_duration", "20", FCVAR_REPLICATED, "Time allowed to vote on a map/campaign/saved game change.");
 #ifdef CLIENT_DLL
 ConVar asw_marine_death_cam("asw_marine_death_cam", "1", FCVAR_ARCHIVE | FCVAR_DEMO, "Use death cam");
 #else
@@ -821,6 +821,7 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		RecvPropInt(RECVINFO(m_nFailAdvice)),
 		RecvPropInt(RECVINFO(m_iMissionDifficulty) ),
 		RecvPropInt(RECVINFO(m_iSkillLevel) ),
+		RecvPropBool(RECVINFO(m_bVoteStartedIngame) ),
 		RecvPropInt(RECVINFO(m_iCurrentVoteYes) ),
 		RecvPropInt(RECVINFO(m_iCurrentVoteNo) ),
 		RecvPropInt(RECVINFO(m_iCurrentVoteType) ),
@@ -860,6 +861,7 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		SendPropInt(SENDINFO(m_nFailAdvice)),
 		SendPropInt(SENDINFO(m_iMissionDifficulty) ),
 		SendPropInt(SENDINFO(m_iSkillLevel) ),
+		SendPropInt(SENDINFO(m_bVoteStartedIngame) ),
 		SendPropInt(SENDINFO(m_iCurrentVoteYes) ),
 		SendPropInt(SENDINFO(m_iCurrentVoteNo) ),
 		SendPropInt(SENDINFO(m_iCurrentVoteType) ),
@@ -7845,6 +7847,7 @@ void CAlienSwarm::StartVote( CASW_Player *pPlayer, int iVoteType, const char *sz
 	}
 
 	// start the new vote!
+	m_bVoteStartedIngame = GetGameState() == ASW_GS_INGAME;
 	m_iCurrentVoteType = iVoteType;
 	Q_strncpy( m_szCurrentVoteName, szVoteName, 128 );
 	// store a pretty description if we can
@@ -7994,7 +7997,7 @@ void CAlienSwarm::UpdateVote()
 
 	// reactivedrop:
 	// dont factor in non-voters (afk or undecided people)
-	if ( ( m_iCurrentVoteYes >= iNeededVotesInstant ) || ( ( gpGlobals->curtime >= m_fVoteEndTime || bEveryoneVoted ) && m_iCurrentVoteYes >= iNeededVotes ) )
+	if ( ( m_iCurrentVoteYes >= iNeededVotesInstant ) || ( !m_bVoteStartedIngame && ( gpGlobals->curtime >= m_fVoteEndTime || bEveryoneVoted ) && m_iCurrentVoteYes >= iNeededVotes ) )
 	{
 		if ( ASWGameResource() )
 			ASWGameResource()->RememberLeaderID();
