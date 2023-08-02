@@ -1605,7 +1605,7 @@
 //
 //-------------------------------------------------------------------------
 
-@PointClass base(EnvGlobal) size(-8 -8 -8, 8 8 8) = env_global : 
+@PointClass base(EnvGlobal) color(200 0 0) iconsprite("editor/teamspen210/env_global.vmt") = env_global : 
 	"An entity to control a game-specific global states."
 [
 	globalstate(choices) : "Global State to Set" =
@@ -4242,7 +4242,7 @@
 	input StopMusic(void) : "Stop the currently playing music."
 ]
 
-@PointClass base(Targetname) iconsprite("editor/info_target.vmt") = asw_director_control : 
+@PointClass base(Targetname) iconsprite("editor/teamspen210/info_director.vmt") = asw_director_control : 
 	"Alien Swarm Director Control"
 [
 	targetname(target_source) : "Name" : "@director" : "The name that other entities refer to this entity by."

@@ -1463,7 +1463,7 @@
 	input Shoot(void) : "Force the gibshooter to create and shoot a gib."
 ]
 
-@PointClass base(Targetname, Parentname, RenderFxChoices) size(-4 -4 -4, 4 4 4) line(255 255 255, targetname, LightningStart, targetname, LightningEnd) = env_beam : 
+@PointClass base(Targetname, Parentname, RenderFxChoices) color(200 200 0) iconsprite("editor/teamspen210/env_beam.vmt") line(255 255 255, targetname, LightningStart, targetname, LightningEnd) = env_beam : 
 	"An entity that creates a visible beam between two points. The points can be attached to entities to make the beam move around."
 [
 	renderamt(integer) : "Brightness (1 - 255)" : 100
@@ -1585,7 +1585,7 @@
 	]
 ]
 
-@PointClass base(Targetname, Parentname) size(-16 -16 -16, 16 16 16) color(255 0 0) = env_blood : 
+@PointClass base(Targetname, Parentname) color(255 0 0) iconsprite("editor/teamspen210/env_blood.vmt") = env_blood : 
 	"An entity used to spawn blood effects." 
 [
 	spraydir(angle) : "Spray Direction (Pitch Yaw Roll)" : "0 0 0" : "The general direction that the blood should spray and the direction to trace to apply the decal."
@@ -2498,21 +2498,21 @@
 	input DoSpark(void) : "Force a single arc."
 ]
 
-@PointClass base(Targetname) size(-8 -8 -8, 8 8 8) = point_clientcommand : 
+@PointClass base(Targetname) color(200 0 0) iconsprite("editor/teamspen210/point_clientcommand.vmt") = point_clientcommand : 
 	"An entity that issues commands to the client console, as if it was typed in by the player (if activator is a player, or the local player in single player)."
 [
 	// Inputs
 	input Command(string) : "Command to execute."
 ]
 
-@PointClass base(Targetname) size(-8 -8 -8, 8 8 8) = point_servercommand : 
+@PointClass base(Targetname) color(200 0 0) iconsprite("editor/teamspen210/point_servercommand.vmt") = point_servercommand : 
 	"An entity that issues commands to the server console."
 [
 	// Inputs
 	input Command(string) : "Command to execute."
 ]
 
-@PointClass base(Targetname) size(-8 -8 -8, 8 8 8) = point_broadcastclientcommand : 
+@PointClass base(Targetname) color(200 0 0) iconsprite("editor/teamspen210/point_broadcastclientcommand.vmt") = point_broadcastclientcommand : 
 	"An entity that issues commands to each valid client's console, as if it was typed in by that player locally."
 [
 	// Inputs
@@ -2902,13 +2902,13 @@
 [
 ]
 
-@PointClass base(Targetname) color(220 180 0) size(-8 -8 -8, 8 8 8) line(255 255 255, nodeid, StartNode, nodeid, EndNode) = info_node_link :
+@PointClass base(Targetname) color(220 180 0) line(255 255 255, nodeid, StartNode, nodeid, EndNode) iconsprite("editor/teamspen210/info_node_link.vmt") = info_node_link :
 	"A dynamic connection between two navigation nodes. You specify the node IDs of the start and end nodes, and then you can use entity I/O " +
 	"to turn on and off the connection. This could be used to create or destroy a connection in the nodegraph because of some event in your map " +
 	"(a bridge being created/destroyed, etc)."
 [
-    StartNode(node_dest) : "Start node ID" : : "The node ID of one end of the node connection."
-    EndNode(node_dest) : "End node ID" : : "The node ID of one end of the node connection."
+	StartNode(node_dest) : "Start node ID" : : "The node ID of one end of the node connection."
+	EndNode(node_dest) : "End node ID" : : "The node ID of one end of the node connection."
 	initialstate(choices) : "Initial State" : 1 =
 	[
 		0 : "Off"
@@ -2952,7 +2952,7 @@
 	input TurnOff(void) : "Turn the link off."
 ]
 
-@PointClass wirebox(mins, maxs) base(Targetname) = info_node_link_controller :
+@PointClass wirebox(mins, maxs) base(Targetname) color(220 180 0) iconsprite("editor/teamspen210/info_node_link_controller.vmt") = info_node_link_controller :
 	"An entity that controls all connections between nodes that intersect the controller's volume. "+
 	"This allows for mass enabling/disabling of all node connections through a volume."
 [
@@ -2983,7 +2983,7 @@
 	input SetInvert(integer) : "Change the invert exclusion rule"
 ]
 
-@PointClass sphere(radius) base(Targetname, Parentname) = info_radial_link_controller :
+@PointClass sphere(radius) base(Targetname, Parentname) color(220 180 0) iconsprite("editor/teamspen210/info_radial_link_controller.vmt") = info_radial_link_controller :
 	"This entity automatically severs node connections that pass through its radius. If it moves, it will restore those connections."
 [
 	radius(float) : "Radius (Use Helper!)" : 120
@@ -3412,12 +3412,12 @@
 	input Break(void) : "Break the rope, if it's marked to do so."
 ]
 
-@KeyFrameClass base(Targetname, Parentname, KeyFrame, RopeKeyFrame) studio("models/editor/axis_helper_thick.mdl") keyframe() = keyframe_rope : 
+@MoveClass base(Targetname, Parentname, KeyFrame, RopeKeyFrame) studio("models/editor/axis_helper_thick.mdl") iconsprite("editor/teamspen210/keyframe_rope.vmt") animator() keyframe() = keyframe_rope : 
 	"A node entity that marks a point in a rope. The first node in the rope should be a move_rope, followed by 1 or more keyframe_ropes."
 [
 ]
 
-@MoveClass base(Targetname, Parentname, KeyFrame, RopeKeyFrame) studio("models/editor/axis_helper.mdl") animator() = move_rope : 
+@MoveClass base(Targetname, Parentname, KeyFrame, RopeKeyFrame) studio("models/editor/axis_helper.mdl") iconsprite("editor/teamspen210/move_rope.vmt") animator() keyframe() = move_rope : 
 	"The first node in set of nodes that are used to place ropes in the world. It should connect to 1 or more keyframe_rope entities."
 [
 	PositionInterpolator(choices) : "Position Interpolator" : 2 : "Curve Type. Currently only type 2 (Rope) is fully supported." =
@@ -4610,7 +4610,7 @@
 	output OnEntitySpawned(void) : "Fired after spawning an instance of this template."
 ]
 
-@PointClass base(Targetname,Parentname,Angles) = env_entity_maker : 
+@PointClass base(Targetname,Parentname,Angles) iconsprite("editor/teamspen210/env_entity_maker.vmt") = env_entity_maker : 
 	"Spawns the specified entity template at its origin. If set to auto-spawn, it will spawn the template whenever there's room and the player "+
 	"is looking elsewhere." 
 [
