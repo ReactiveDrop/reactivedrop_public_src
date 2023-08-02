@@ -127,6 +127,8 @@ public:
 	virtual int GetHealth() const;
 	virtual int GetMaxHealth() const;
 
+	bool IsConnected() { return true; }
+
 // Called by shared code.
 public:
 	void ItemPostFrame();

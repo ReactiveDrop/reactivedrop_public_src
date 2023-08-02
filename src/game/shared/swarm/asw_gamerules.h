@@ -434,6 +434,7 @@ public:
 	int GetCurrentVoteType() { return m_iCurrentVoteType; }
 	int GetCurrentVoteYes() { return m_iCurrentVoteYes; }
 	int GetCurrentVoteNo() { return m_iCurrentVoteNo; }
+	int GetVotesRequired( bool bVoteStartedIngame );
 	const char* GetCurrentVoteMapName() { return m_szCurrentVoteMapName; }
 	const char* GetCurrentVoteDescription() { return m_szCurrentVoteDescription; }
 	const char* GetCurrentVoteCampaignName() { return m_szCurrentVoteCampaignName; }

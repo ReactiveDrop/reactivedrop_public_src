@@ -8000,6 +8000,35 @@ void CAlienSwarm::RemoveVote( CASW_Player *pPlayer )
 	UpdateVote();
 }
 
+#endif // #ifdef GAME_DLL
+
+int CAlienSwarm::GetVotesRequired( bool bVoteStartedIngame )
+{
+	if ( bVoteStartedIngame )
+	{
+		// check if a yes/no total has reached the amount needed to make a decision
+		int iNumPlayers = 0;
+		for ( int i = 1; i < gpGlobals->maxClients; i++ )
+		{
+			CASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
+			if ( pPlayer && pPlayer->IsConnected() && pPlayer->CanVote() )
+			{
+				iNumPlayers++;
+			}
+		}
+
+		return Ceil2Int( asw_vote_map_fraction.GetFloat() * iNumPlayers );
+	}
+	else
+	{
+		int iVoteCount = m_iCurrentVoteNo + m_iCurrentVoteYes;
+
+		return Ceil2Int( asw_vote_map_fraction.GetFloat() * iVoteCount );
+	}
+}
+
+#ifdef GAME_DLL
+
 void CAlienSwarm::UpdateVote()
 {
 	if ( m_iCurrentVoteType == ASW_VOTE_NONE )
@@ -8019,9 +8048,10 @@ void CAlienSwarm::UpdateVote()
 	}
 
 	int iVoteCount = m_iCurrentVoteNo + m_iCurrentVoteYes;
-	int iNeededVotesInstant = Ceil2Int( asw_vote_map_fraction.GetFloat() * iNumPlayers );
-	int iNeededVotes = Ceil2Int( asw_vote_map_fraction.GetFloat() * iVoteCount );
+	int iNeededVotesInstant = GetVotesRequired( true );
+	int iNeededVotes = GetVotesRequired( false );
 	bool bEveryoneVoted = iVoteCount >= iNumPlayers;
+	bool bVoteTimedOut = gpGlobals->curtime >= m_fVoteEndTime;
 	// make sure we're not rounding down the number of needed players
 	if ( iNeededVotesInstant < 1 )
 	{
@@ -8032,7 +8062,7 @@ void CAlienSwarm::UpdateVote()
 
 	// reactivedrop:
 	// dont factor in non-voters (afk or undecided people)
-	if ( ( m_iCurrentVoteYes >= iNeededVotesInstant ) || ( !m_bVoteStartedIngame && ( gpGlobals->curtime >= m_fVoteEndTime || bEveryoneVoted ) && m_iCurrentVoteYes >= iNeededVotes ) )
+	if ( ( m_iCurrentVoteYes >= iNeededVotesInstant ) || ( !m_bVoteStartedIngame && ( bVoteTimedOut || bEveryoneVoted ) && m_iCurrentVoteYes >= iNeededVotes ) )
 	{
 		if ( ASWGameResource() )
 			ASWGameResource()->RememberLeaderID();
@@ -8098,7 +8128,7 @@ void CAlienSwarm::UpdateVote()
 		m_fVoteEndTime = 0;
 		m_PlayersVoted.Purge();
 	}
-	else if ( asw_vote_map_fraction.GetFloat() <= 1.0f && ( m_iCurrentVoteNo >= iNeededVotesInstant ) || ( gpGlobals->curtime >= m_fVoteEndTime || bEveryoneVoted ) )
+	else if ( asw_vote_map_fraction.GetFloat() <= 1.0f && ( m_iCurrentVoteNo >= iNeededVotesInstant ) || ( bVoteTimedOut || bEveryoneVoted ) )
 	{
 		// the people decided against this vote, clear it all
 		UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_vote_failed" );

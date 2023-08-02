@@ -32,7 +32,8 @@ CNB_Vote_Panel::CNB_Vote_Panel( vgui::Panel *parent, const char *name ) : BaseCl
 	m_pPressToVoteYesLabel = new vgui::Label(this, "PressToVoteYesLabel", "");
 	m_pPressToVoteNoLabel = new vgui::Label(this, "PressToVoteNoLabel", "");
 	m_pYesVotesLabel = new vgui::Label(this, "YesCount", "");
-	m_pNoVotesLabel = new vgui::Label(this, "NoCount", "");	
+	m_pNoVotesLabel = new vgui::Label(this, "NoCount", "");
+	m_pRequiredVotesLabel = new vgui::Label(this, "RequiredCount", "");
 	m_pMapNameLabel = new vgui::WrappedLabel(this, "MapName", " ");
 	m_pCounterLabel = new vgui::Label(this, "Counter", "");
 
@@ -41,6 +42,7 @@ CNB_Vote_Panel::CNB_Vote_Panel( vgui::Panel *parent, const char *name ) : BaseCl
 	m_szMapName[0] = '\0';
 	m_iNoCount = -1;
 	m_iYesCount = -1;
+	m_iRequiredCount = -1;
 	m_iSecondsLeft = -1;
 	m_flCheckBindings = 0;
 	m_wszVoteYesKey[0] = 0;
@@ -171,6 +173,7 @@ void CNB_Vote_Panel::UpdateVoteLabels()
 	m_pMapNameLabel->SetVisible( true );
 	m_pYesVotesLabel->SetVisible( true );
 	m_pNoVotesLabel->SetVisible( true );
+	m_pRequiredVotesLabel->SetVisible( true );
 
 	m_pTitle->SetText( "#asw_vote_mission_title" );
 
@@ -253,6 +256,21 @@ void CNB_Vote_Panel::UpdateVoteLabels()
 			g_pVGuiLocalize->Find( "#asw_no_votes" ), 1,
 			wnumber );
 		m_pNoVotesLabel->SetText( wbuffer );
+	}
+	if ( m_iRequiredCount != ASWGameRules()->GetVotesRequired( ASWGameRules()->m_bVoteStartedIngame ) )
+	{
+		m_iRequiredCount = ASWGameRules()->GetVotesRequired( ASWGameRules()->m_bVoteStartedIngame );
+		char buffer[8];
+		Q_snprintf( buffer, sizeof( buffer ), "%d", m_iRequiredCount );
+
+		wchar_t wnumber[8];
+		g_pVGuiLocalize->ConvertANSIToUnicode( buffer, wnumber, sizeof( wnumber ) );
+
+		wchar_t wbuffer[96];
+		g_pVGuiLocalize->ConstructString( wbuffer, sizeof( wbuffer ),
+			g_pVGuiLocalize->Find( "#asw_required_votes" ), 1,
+			wnumber );
+		m_pRequiredVotesLabel->SetText( wbuffer );
 	}
 	if ( Q_strcmp( m_szMapName, ASWGameRules()->GetCurrentVoteDescription() ) )
 	{
@@ -357,6 +375,7 @@ void CNB_Vote_Panel::UpdateRestartLabels()
 	m_pMapNameLabel->SetVisible( false );
 	m_pYesVotesLabel->SetVisible( false );
 	m_pNoVotesLabel->SetVisible( false );
+	m_pRequiredVotesLabel->SetVisible( false );
 	m_pPressToVoteYesLabel->SetVisible( false );
 	m_pPressToVoteNoLabel->SetVisible( false );
 }
@@ -387,6 +406,7 @@ void CNB_Vote_Panel::UpdateTechFailLabels()
 	m_pMapNameLabel->SetVisible( true );
 	m_pYesVotesLabel->SetVisible( false );
 	m_pNoVotesLabel->SetVisible( false );
+	m_pRequiredVotesLabel->SetVisible( false );
 	m_pPressToVoteYesLabel->SetVisible( false );
 	m_pPressToVoteNoLabel->SetVisible( false );
 }

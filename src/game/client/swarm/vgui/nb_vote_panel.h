@@ -72,6 +72,7 @@ public:
 	
 	vgui::Label* m_pYesVotesLabel;
 	vgui::Label* m_pNoVotesLabel;
+	vgui::Label* m_pRequiredVotesLabel;
 	vgui::Label* m_pMapNameLabel;
 	vgui::Label* m_pCounterLabel;
 
@@ -85,6 +86,7 @@ public:
 	char m_szMapName[64];
 	int m_iNoCount;
 	int m_iYesCount;
+	int m_iRequiredCount;
 	int m_iSecondsLeft;
 	bool m_bVoteMapInstalled;
 
