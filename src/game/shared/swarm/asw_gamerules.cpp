@@ -478,6 +478,13 @@ ConVar rd_allow_afk( "rd_allow_afk", "1", FCVAR_REPLICATED, "If set to 0 players
 // for deathmatch
 
 ConVar asw_vote_duration("asw_vote_duration", "20", FCVAR_REPLICATED, "Time allowed to vote on a map/campaign/saved game change.");
+
+#ifdef GAME_DLL
+ConVar asw_vote_cooldown_duration("asw_vote_cooldown_duration", "75", FCVAR_NONE, "For how long to impose a cooldown to a player who has started map votes too often. Cooldown resets on map change.");
+ConVar asw_vote_limit("asw_vote_limit", "2", FCVAR_NONE, "How many recent map votes are considered to be vote spam and cooldown kicks in.", true, 2.0f, false, 1000.0f);
+ConVar asw_vote_spam_time("asw_vote_spam_time", "30", FCVAR_NONE, "How much time has to pass from previous map vote from the same user so that the next map vote does not count as recent (spam).", true, 1.0f, false, 1000.0f);
+#endif
+
 #ifdef CLIENT_DLL
 ConVar asw_marine_death_cam("asw_marine_death_cam", "1", FCVAR_ARCHIVE | FCVAR_DEMO, "Use death cam");
 #else
@@ -7846,7 +7853,35 @@ void CAlienSwarm::StartVote( CASW_Player *pPlayer, int iVoteType, const char *sz
 		}
 	}
 
+	if ( gpGlobals->realtime < pPlayer->m_fMapVoteCooldownEndTime )
+	{
+		char szCooldownTimeLeft[32];
+		V_snprintf( szCooldownTimeLeft, sizeof( szCooldownTimeLeft ), "%d", static_cast<int>( pPlayer->m_fMapVoteCooldownEndTime - gpGlobals->realtime ) );
+		ClientPrint( pPlayer, ASW_HUD_PRINTTALKANDCONSOLE, "#asw_vote_spam_cooldown_left", szCooldownTimeLeft );
+		return;
+	}
+
+	bool bRecentlyVoted = gpGlobals->realtime - pPlayer->m_fLastMapVoteTime < asw_vote_spam_time.GetFloat();
+	if ( bRecentlyVoted )
+		pPlayer->m_iRecentMapVotesCount++;
+	else
+		pPlayer->m_iRecentMapVotesCount -= ( gpGlobals->realtime - pPlayer->m_fLastMapVoteTime ) / asw_vote_spam_time.GetFloat();
+
+	pPlayer->m_iRecentMapVotesCount = clamp( pPlayer->m_iRecentMapVotesCount, 0, asw_vote_limit.GetInt() );
+
+	// player has been starting too many map votes recently, put him on a cooldown
+	if ( pPlayer->m_iRecentMapVotesCount >= asw_vote_limit.GetInt() )
+	{
+		pPlayer->m_fMapVoteCooldownEndTime = gpGlobals->realtime + asw_vote_cooldown_duration.GetFloat();
+		
+		char szCooldownTime[32];
+		V_snprintf( szCooldownTime, sizeof( szCooldownTime ), "%d", static_cast<int>( asw_vote_cooldown_duration.GetFloat() ) );
+		ClientPrint( pPlayer, ASW_HUD_PRINTTALKANDCONSOLE, "#asw_vote_spam_cooldown_start", szCooldownTime );
+		return;
+	}
+
 	// start the new vote!
+	pPlayer->m_fLastMapVoteTime = gpGlobals->realtime;
 	m_bVoteStartedIngame = GetGameState() == ASW_GS_INGAME;
 	m_iCurrentVoteType = iVoteType;
 	Q_strncpy( m_szCurrentVoteName, szVoteName, 128 );
