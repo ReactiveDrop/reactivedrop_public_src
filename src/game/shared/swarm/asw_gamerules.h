@@ -424,6 +424,8 @@ public:
 	CNetworkString(m_szCurrentVoteMapName, 128);
 	CNetworkString(m_szCurrentVoteCampaignName, 128);
 	CNetworkString( m_szCycleNextMap, MAX_MAP_NAME );
+
+	CNetworkVar(bool, m_bVoteStartedIngame);
 	CNetworkVar(int, m_iCurrentVoteYes);
 	CNetworkVar(int, m_iCurrentVoteNo);
 	CNetworkVar(int, m_iCurrentVoteType);
@@ -432,6 +434,7 @@ public:
 	int GetCurrentVoteType() { return m_iCurrentVoteType; }
 	int GetCurrentVoteYes() { return m_iCurrentVoteYes; }
 	int GetCurrentVoteNo() { return m_iCurrentVoteNo; }
+	int GetVotesRequired( bool bVoteStartedIngame );
 	const char* GetCurrentVoteMapName() { return m_szCurrentVoteMapName; }
 	const char* GetCurrentVoteDescription() { return m_szCurrentVoteDescription; }
 	const char* GetCurrentVoteCampaignName() { return m_szCurrentVoteCampaignName; }

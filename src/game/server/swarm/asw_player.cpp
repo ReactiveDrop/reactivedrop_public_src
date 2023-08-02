@@ -429,6 +429,10 @@ CASW_Player::CASW_Player()
 	m_flNextItemCounterCommit = -1;
 
 	m_iWantsAutoRecord = 0;
+
+	m_iRecentMapVotesCount = 0;
+	m_fMapVoteCooldownEndTime = 0.0f;
+	m_fLastMapVoteTime = -1000.0f;
 }
 
 

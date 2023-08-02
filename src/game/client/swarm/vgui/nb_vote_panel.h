@@ -85,6 +85,7 @@ public:
 	char m_szMapName[64];
 	int m_iNoCount;
 	int m_iYesCount;
+	int m_iRequiredCount;
 	int m_iSecondsLeft;
 	bool m_bVoteMapInstalled;
 

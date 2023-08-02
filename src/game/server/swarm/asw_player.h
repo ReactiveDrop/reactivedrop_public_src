@@ -207,6 +207,9 @@ public:
 	CNetworkVar(int, m_iLeaderVoteIndex);	// entindex of the player we want to be leader
 	CNetworkVar(int, m_iKickVoteIndex);		// entindex of the player we want to be kicked
 	const char* GetASWNetworkID();
+	int m_iRecentMapVotesCount;
+	float m_fLastMapVoteTime;
+	float m_fMapVoteCooldownEndTime;
 	CNetworkVar( int, m_iMapVoted );	// 0 = didn't vote, 1 = "no" vote, 2 = "yes" vote
 	bool CanVote();
 	bool CanBeKicked();
