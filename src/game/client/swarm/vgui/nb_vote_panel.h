@@ -72,7 +72,6 @@ public:
 	
 	vgui::Label* m_pYesVotesLabel;
 	vgui::Label* m_pNoVotesLabel;
-	vgui::Label* m_pRequiredVotesLabel;
 	vgui::Label* m_pMapNameLabel;
 	vgui::Label* m_pCounterLabel;
 

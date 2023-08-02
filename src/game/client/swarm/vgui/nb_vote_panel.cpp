@@ -33,7 +33,6 @@ CNB_Vote_Panel::CNB_Vote_Panel( vgui::Panel *parent, const char *name ) : BaseCl
 	m_pPressToVoteNoLabel = new vgui::Label(this, "PressToVoteNoLabel", "");
 	m_pYesVotesLabel = new vgui::Label(this, "YesCount", "");
 	m_pNoVotesLabel = new vgui::Label(this, "NoCount", "");
-	m_pRequiredVotesLabel = new vgui::Label(this, "RequiredCount", "");
 	m_pMapNameLabel = new vgui::WrappedLabel(this, "MapName", " ");
 	m_pCounterLabel = new vgui::Label(this, "Counter", "");
 
@@ -173,7 +172,6 @@ void CNB_Vote_Panel::UpdateVoteLabels()
 	m_pMapNameLabel->SetVisible( true );
 	m_pYesVotesLabel->SetVisible( true );
 	m_pNoVotesLabel->SetVisible( true );
-	m_pRequiredVotesLabel->SetVisible( true );
 
 	m_pTitle->SetText( "#asw_vote_mission_title" );
 
@@ -227,19 +225,26 @@ void CNB_Vote_Panel::UpdateVoteLabels()
 	m_pCounterLabel->SetText( "" );
 
 	// update count and other labels
-	if ( m_iYesCount != ASWGameRules()->GetCurrentVoteYes() )
+	if ( m_iYesCount != ASWGameRules()->GetCurrentVoteYes() || m_iRequiredCount != ASWGameRules()->GetVotesRequired( ASWGameRules()->m_bVoteStartedIngame ) )
 	{
 		m_iYesCount = ASWGameRules()->GetCurrentVoteYes();
+		m_iRequiredCount = ASWGameRules()->GetVotesRequired( ASWGameRules()->m_bVoteStartedIngame );
 		char buffer[8];
 		Q_snprintf( buffer, sizeof( buffer ), "%d", m_iYesCount );
 
 		wchar_t wnumber[8];
 		g_pVGuiLocalize->ConvertANSIToUnicode( buffer, wnumber, sizeof( wnumber ) );
 
+		char _buffer[8];
+		Q_snprintf( _buffer, sizeof( _buffer ), "%d", m_iRequiredCount );
+
+		wchar_t _wnumber[8];
+		g_pVGuiLocalize->ConvertANSIToUnicode( _buffer, _wnumber, sizeof( _wnumber ) );
+
 		wchar_t wbuffer[96];
 		g_pVGuiLocalize->ConstructString( wbuffer, sizeof( wbuffer ),
-			g_pVGuiLocalize->Find( "#asw_yes_votes" ), 1,
-			wnumber );
+			g_pVGuiLocalize->Find( "#asw_yes_votes" ), 2,
+			wnumber, _wnumber );
 		m_pYesVotesLabel->SetText( wbuffer );
 	}
 	if ( m_iNoCount != ASWGameRules()->GetCurrentVoteNo() )
@@ -256,21 +261,6 @@ void CNB_Vote_Panel::UpdateVoteLabels()
 			g_pVGuiLocalize->Find( "#asw_no_votes" ), 1,
 			wnumber );
 		m_pNoVotesLabel->SetText( wbuffer );
-	}
-	if ( m_iRequiredCount != ASWGameRules()->GetVotesRequired( ASWGameRules()->m_bVoteStartedIngame ) )
-	{
-		m_iRequiredCount = ASWGameRules()->GetVotesRequired( ASWGameRules()->m_bVoteStartedIngame );
-		char buffer[8];
-		Q_snprintf( buffer, sizeof( buffer ), "%d", m_iRequiredCount );
-
-		wchar_t wnumber[8];
-		g_pVGuiLocalize->ConvertANSIToUnicode( buffer, wnumber, sizeof( wnumber ) );
-
-		wchar_t wbuffer[96];
-		g_pVGuiLocalize->ConstructString( wbuffer, sizeof( wbuffer ),
-			g_pVGuiLocalize->Find( "#asw_required_votes" ), 1,
-			wnumber );
-		m_pRequiredVotesLabel->SetText( wbuffer );
 	}
 	if ( Q_strcmp( m_szMapName, ASWGameRules()->GetCurrentVoteDescription() ) )
 	{
@@ -375,7 +365,6 @@ void CNB_Vote_Panel::UpdateRestartLabels()
 	m_pMapNameLabel->SetVisible( false );
 	m_pYesVotesLabel->SetVisible( false );
 	m_pNoVotesLabel->SetVisible( false );
-	m_pRequiredVotesLabel->SetVisible( false );
 	m_pPressToVoteYesLabel->SetVisible( false );
 	m_pPressToVoteNoLabel->SetVisible( false );
 }
@@ -406,7 +395,6 @@ void CNB_Vote_Panel::UpdateTechFailLabels()
 	m_pMapNameLabel->SetVisible( true );
 	m_pYesVotesLabel->SetVisible( false );
 	m_pNoVotesLabel->SetVisible( false );
-	m_pRequiredVotesLabel->SetVisible( false );
 	m_pPressToVoteYesLabel->SetVisible( false );
 	m_pPressToVoteNoLabel->SetVisible( false );
 }
