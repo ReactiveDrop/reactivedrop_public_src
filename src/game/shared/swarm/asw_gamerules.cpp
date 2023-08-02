@@ -7980,16 +7980,21 @@ void CAlienSwarm::UpdateVote()
 		}
 	}
 
-	int iNeededVotes = Ceil2Int( asw_vote_map_fraction.GetFloat() * iNumPlayers );
+	int iVoteCount = m_iCurrentVoteNo + m_iCurrentVoteYes;
+	int iNeededVotesInstant = Ceil2Int( asw_vote_map_fraction.GetFloat() * iNumPlayers );
+	int iNeededVotes = Ceil2Int( asw_vote_map_fraction.GetFloat() * iVoteCount );
+	bool bEveryoneVoted = iVoteCount >= iNumPlayers;
 	// make sure we're not rounding down the number of needed players
-	if ( iNeededVotes < 1 )
+	if ( iNeededVotesInstant < 1 )
 	{
-		iNeededVotes = 1;
+		iNeededVotesInstant = 1;
 	}
 
 	bool bSinglePlayer = ASWGameResource() && ASWGameResource()->IsOfflineGame();
 
-	if ( m_iCurrentVoteYes >= iNeededVotes )
+	// reactivedrop:
+	// dont factor in non-voters (afk or undecided people)
+	if ( ( m_iCurrentVoteYes >= iNeededVotesInstant ) || ( ( gpGlobals->curtime >= m_fVoteEndTime || bEveryoneVoted ) && m_iCurrentVoteYes >= iNeededVotes ) )
 	{
 		if ( ASWGameResource() )
 			ASWGameResource()->RememberLeaderID();
@@ -8055,8 +8060,7 @@ void CAlienSwarm::UpdateVote()
 		m_fVoteEndTime = 0;
 		m_PlayersVoted.Purge();
 	}
-	else if ( asw_vote_map_fraction.GetFloat() <= 1.0f && ( m_iCurrentVoteNo >= iNeededVotes || gpGlobals->curtime >= m_fVoteEndTime		// check if vote has timed out also
-		|| ( m_iCurrentVoteNo + m_iCurrentVoteYes ) >= iNumPlayers ) )			// or if everyone's voted and it didn't trigger a yes
+	else if ( asw_vote_map_fraction.GetFloat() <= 1.0f && ( m_iCurrentVoteNo >= iNeededVotesInstant ) || ( gpGlobals->curtime >= m_fVoteEndTime || bEveryoneVoted ) )
 	{
 		// the people decided against this vote, clear it all
 		UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_vote_failed" );
