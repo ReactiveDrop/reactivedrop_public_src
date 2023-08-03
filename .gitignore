@@ -15,6 +15,9 @@
 *.vpk
 *.lnk
 contentsrc/mapsrc/*.bsp
+contentsrc/mapsrc/srctools.vdf
+contentsrc/mapsrc/srctools_paths.vdf
+contentsrc/mapsrc/srctools_*_data.dmx
 autoexec.cfg
 newmapsettings.cfg
 reactivedrop/addonlist.txt
