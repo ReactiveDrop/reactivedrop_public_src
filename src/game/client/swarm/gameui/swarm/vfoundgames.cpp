@@ -85,6 +85,26 @@ static char const * NoTeamGameMode( char const * szGameMode )
 		return szGameMode;
 }
 
+static void HandleJoinPlayerSession( FoundGameListItem::Info const &fi )
+{
+	if ( fi.mInfoType != FoundGameListItem::FGT_PLAYER )
+		return;
+
+	if ( fi.mbJoinServer )
+	{
+		// join the server the friend is on directly
+		IMatchServer *item = g_pMatchFramework->GetMatchSystem()->GetUserGroupsServerManager()->GetServerByOnlineId( fi.mServerXUID );
+		if ( item )
+			item->Join();
+	}
+	else
+	{
+		IPlayerFriend *item = g_pMatchFramework->GetMatchSystem()->GetPlayerManager()->GetFriendByXUID( fi.mFriendXUID );
+		if ( item )
+			item->Join();
+	}
+}
+
 bool BaseModUI::FoundGameListItem::Info::IsJoinable() const
 {
 	return mbInGame && mIsJoinable && !CompareMapVersion();
@@ -241,7 +261,46 @@ bool BaseModUI::FoundGameListItem::Info::IsDownloadable() const
 	return false;
 }
 
-const char * BaseModUI::FoundGameListItem::Info::GetJoinButtonHint() const
+const char *BaseModUI::FoundGameListItem::Info::GetNonJoinableShortHint( bool bWarnOnNoHint ) const
+{
+	if ( mpGameDetails ) //can be null for real in void FoundGameListItem::SetGameIndex( const Info& fi )
+	{
+		int numSlots = mpGameDetails->GetInt( "members/numSlots", 0 );
+		int numPlayers = mpGameDetails->GetInt( "members/numPlayers", 0 );
+
+		if ( !numSlots )
+			return ""; //#L4D360UI_Lobby_NotInJoinableGame";
+
+		if ( numPlayers >= numSlots )
+			return "#L4D360UI_WaitScreen_GameFull";
+
+		if ( !Q_stricmp( "private", mpGameDetails->GetString( "system/access", "" ) ) )
+			return "#L4D360UI_WaitScreen_GamePrivate";
+
+		if ( int iMapVersionDiff = CompareMapVersion() )
+		{
+			if ( iMapVersionDiff == INT_MIN )
+			{
+				return "#L4D360UI_Lobby_CampaignUnavailable";
+			}
+
+			if ( iMapVersionDiff < 0 )
+			{
+				return "#L4D360UI_Lobby_LocalMapNewer";
+			}
+
+			return "#L4D360UI_Lobby_LocalMapOlder";
+		}
+
+		if ( bWarnOnNoHint )
+		{
+			Assert( !"No specific hint for non-joinable lobby" );
+		}
+	}
+	return "";
+}
+
+const char *BaseModUI::FoundGameListItem::Info::GetJoinButtonHint() const
 {
 	if ( IsOtherTitle() )
 	{
@@ -275,7 +334,7 @@ const char * BaseModUI::FoundGameListItem::Info::GetJoinButtonHint() const
 
 	if ( numSlots <= 0 )
 		return "#L4D360UI_FoundGames_Join_Fail_Not_In_Joinable";
-	
+
 	if ( numPlayers >= numSlots )
 		return "#L4D360UI_FoundGames_Join_Fail_No_Slots";
 
@@ -285,43 +344,67 @@ const char * BaseModUI::FoundGameListItem::Info::GetJoinButtonHint() const
 	return "#L4D360UI_FoundGames_Join_Fail_Not_In_Joinable";
 }
 
-const char * BaseModUI::FoundGameListItem::Info::GetNonJoinableShortHint( bool bWarnOnNoHint ) const
+void FoundGameListItem::Info::SetPingDirect()
 {
-	if (mpGameDetails) //can be null for real in void FoundGameListItem::SetGameIndex( const Info& fi )
+	miPing = mpGameDetails ? mpGameDetails->GetInt( "system/ping", 0 ) : 0;
+	if ( miPing == 0 )
+		mPing = GP_NONE;
+	else if ( miPing < rd_lobby_ping_low.GetInt() )
+		mPing = GP_LOW;
+	else if ( miPing <= rd_lobby_ping_high.GetInt() )
+		mPing = GP_MEDIUM;
+	else
+		mPing = GP_HIGH;
+
+	if ( mpGameDetails && !V_stricmp( "lan", mpGameDetails->GetString( "system/network", "" ) ) )
+		mPing = GP_SYSTEMLINK;
+}
+
+void FoundGameListItem::Info::SetOtherTitleFromLobby()
+{
+	const char *szModDir = mpGameDetails ? mpGameDetails->GetString( "game/dir", "reactivedrop" ) : "reactivedrop";
+	if ( V_stricmp( szModDir, COM_GetModDirectory() ) )
 	{
-		int numSlots = mpGameDetails->GetInt("members/numSlots", 0);
-		int numPlayers = mpGameDetails->GetInt("members/numPlayers", 0);
+		V_strncpy( mchOtherTitle, szModDir, sizeof( mchOtherTitle ) );
+	}
+	else if ( mpGameDetails && V_strcmp( mpGameDetails->GetString( "system/game_version", engine->GetProductVersionString() ), engine->GetProductVersionString() ) )
+	{
+		V_strncpy( mchOtherTitle, mpGameDetails->GetString( "system/game_branch", mpGameDetails->GetString( "system/game_version", "?" ) ), sizeof( mchOtherTitle ) );
+	}
+}
 
-		if (!numSlots)
-			return ""; //#L4D360UI_Lobby_NotInJoinableGame";
-
-		if (numPlayers >= numSlots)
-			return "#L4D360UI_WaitScreen_GameFull";
-
-		if (!Q_stricmp("private", mpGameDetails->GetString("system/access", "")))
-			return "#L4D360UI_WaitScreen_GamePrivate";
-
-		if ( int iMapVersionDiff = CompareMapVersion() )
+void FoundGameListItem::Info::SetIsJoinableFromLobby()
+{
+	int numSlots = mpGameDetails ? mpGameDetails->GetInt( "members/numSlots", 0 ) : 0;
+	if ( IsDLC() || IsOtherTitle() )
+	{
+		mIsJoinable = false;
+	}
+	else if ( mbInGame && numSlots > 0 )
+	{
+		if ( !IsDownloadable() )
 		{
-			if ( iMapVersionDiff == INT_MIN )
+			char const *szHint = GetNonJoinableShortHint( false );
+			if ( !*szHint )
 			{
-				return "#L4D360UI_Lobby_CampaignUnavailable";
+				mIsJoinable = true;
+				mpfnJoinGame = HandleJoinPlayerSession;
 			}
-
-			if ( iMapVersionDiff < 0 )
-			{
-				return "#L4D360UI_Lobby_LocalMapNewer";
-			}
-
-			return "#L4D360UI_Lobby_LocalMapOlder";
 		}
-
-		if ( bWarnOnNoHint )
+		else
 		{
-			Assert( !"No specific hint for non-joinable lobby" );
+			mIsJoinable = false;
 		}
 	}
-	return "";
+	else
+	{
+		// This is the case when we technically already know the session ID,
+		// but the query to determine session details is still in progress
+		// and actually may fail due to firewalls/NATs, so we fake the details
+		// as if we do not know that the friend is in game yet.
+		mIsJoinable = false;
+		mbInGame = false;
+	}
 }
 
 //=============================================================================
@@ -1880,26 +1963,6 @@ static int __cdecl FoundFriendsSortFunc( vgui::Panel* const *a, vgui::Panel* con
 	return Q_stricmp( ia.Name, ib.Name );
 }
 
-static void HandleJoinPlayerSession( FoundGameListItem::Info const &fi )
-{
-	if ( fi.mInfoType != FoundGameListItem::FGT_PLAYER )
-		return;
-
-	if ( fi.mbJoinServer )
-	{
-		// BenLubar(dedicated-server-friends-list): join the server the friend is on directly
-		IMatchServer *item = g_pMatchFramework->GetMatchSystem()->GetUserGroupsServerManager()->GetServerByOnlineId( fi.mServerXUID );
-		if ( item )
-			item->Join();
-	}
-	else
-	{
-		IPlayerFriend *item = g_pMatchFramework->GetMatchSystem()->GetPlayerManager()->GetFriendByXUID( fi.mFriendXUID );
-		if ( item )
-			item->Join();
-	}
-}
-
 void FoundGames::StartSearching()
 {
 	g_pMatchFramework->GetMatchSystem()->GetPlayerManager()->EnableFriendsUpdate( true );
@@ -1908,15 +1971,18 @@ void FoundGames::StartSearching()
 
 void FoundGames::AddServersToList()
 {
+	AddFriendGamesToList();
+}
+
+void FoundGames::AddFriendGamesToList()
+{
 	IPlayerManager *mgr = g_pMatchFramework->GetMatchSystem()->GetPlayerManager();
-	IServerManager *srvMgr = g_pMatchFramework->GetMatchSystem()->GetUserGroupsServerManager(); // BenLubar(dedicated-server-friends-list)
-	
 	int numItems = mgr->GetNumFriends();
-	for( int i = 0; i < numItems; ++i )
+	for ( int i = 0; i < numItems; ++i )
 	{
 		IPlayerFriend *item = mgr->GetFriendByIndex( i );
-		KeyValues *pGameDetails = item->GetGameDetails();
 
+		KeyValues *pGameDetails = item->GetGameDetails();
 		if ( pGameDetails->GetUint64( "options/sessionid", 0 ) != 0 )
 		{
 			pGameDetails = UTIL_RD_LobbyToLegacyKeyValues( pGameDetails->GetUint64( "options/sessionid" ) );
@@ -1925,99 +1991,15 @@ void FoundGames::AddServersToList()
 		FoundGameListItem::Info fi;
 
 		fi.mbInGame = item->IsJoinable();
-
-		// BenLubar(dedicated-server-friends-list): if the friend is not in a lobby but they are on a dedicated server
-		// that we know information for, use the dedicated server's game details instead.
-		FriendGameInfo_t friendGameInfo;
-		if ( !pGameDetails && SteamFriends()->GetFriendGamePlayed( item->GetXUID(), &friendGameInfo ) )
-		{
-			int numServers = srvMgr->GetNumServers();
-			for ( int j = 0; j < numServers; j++ )
-			{
-				IMatchServer *pServer = srvMgr->GetServerByIndex( j );
-				KeyValues *pServerDetails = pServer->GetGameDetails();
-				const char *pszServerAddress = pServerDetails->GetString( "server/adronline" );
-				// BenLubar(dedicated-server-friends-list): Added ws2_32.lib. It is needed for netadr_t usage to compile. It provides several functions that are used to work with IP addresses.
-				if ( netadr_t( pszServerAddress ) == netadr_t( friendGameInfo.m_unGameIP, friendGameInfo.m_usGamePort ) )
-				{
-					pGameDetails = pServerDetails;
-					fi.mbInGame = pServer->IsJoinable();
-					fi.mServerXUID = pServer->GetOnlineId();
-					fi.mbJoinServer = true;
-					break;
-				}
-			}
-		}
-
 		fi.mInfoType = FoundGameListItem::FGT_PLAYER;
-		Q_strncpy( fi.Name, item->GetName(), sizeof( fi.Name ) );
-
-		fi.mIsJoinable = false;
-
-		fi.miPing = pGameDetails ? pGameDetails->GetInt( "system/ping", 0 ) : 0;
-
-		if ( fi.miPing == 0 )
-			fi.mPing = fi.GP_NONE;
-		else if ( fi.miPing < rd_lobby_ping_low.GetInt() )
-			fi.mPing = fi.GP_LOW;
-		else if ( fi.miPing <= rd_lobby_ping_high.GetInt() )
-			fi.mPing = fi.GP_MEDIUM;
-		else
-			fi.mPing = fi.GP_HIGH;
-
-		if ( pGameDetails && !Q_stricmp( "lan", pGameDetails->GetString( "system/network", "" ) ) )
-			fi.mPing = fi.GP_SYSTEMLINK;
-
+		V_strncpy( fi.Name, item->GetName(), sizeof( fi.Name ) );
 		fi.mpGameDetails = pGameDetails;
 		fi.mFriendXUID = item->GetXUID();
 
-		// On X360 check against our registered missions
-		KeyValues *pMissionMapInfo = NULL; pMissionMapInfo;
+		fi.SetPingDirect();
+		fi.SetOtherTitleFromLobby();
+		fi.SetIsJoinableFromLobby();
 
-		const char *szModDir = pGameDetails->GetString( "game/dir", "reactivedrop" );
-		if ( V_stricmp( szModDir, COM_GetModDirectory() ) )
-		{
-			V_strncpy( fi.mchOtherTitle, szModDir, sizeof( fi.mchOtherTitle ) );
-		}
-		else if ( V_strcmp( pGameDetails->GetString( "system/game_version", engine->GetProductVersionString() ), engine->GetProductVersionString() ) )
-		{
-			V_strncpy( fi.mchOtherTitle, pGameDetails->GetString( "system/game_branch", pGameDetails->GetString( "system/game_version", "?" ) ), sizeof( fi.mchOtherTitle ) );
-		}
-
-		//
-		// Check if this is actually a non-joinable game
-		//
-		int numSlots = fi.mpGameDetails ? fi.mpGameDetails->GetInt( "members/numSlots", 0 ) : 0;
-		if ( fi.IsDLC() || fi.IsOtherTitle() )
-		{
-			fi.mIsJoinable = false;
-		}
-		else if ( fi.mbInGame && numSlots > 0 )
-		{
-			if ( !fi.IsDownloadable() )
-			{
-				char const *szHint = fi.GetNonJoinableShortHint( false );
-				if ( !*szHint )
-				{
-					fi.mIsJoinable = true;
-					fi.mpfnJoinGame = HandleJoinPlayerSession;
-				}
-			}
-			else
-			{
-				fi.mIsJoinable = false;
-			}
-		}
-		else
-		{
-			// This is the case when we technically already know the session ID,
-			// but the query to determine session details is still in progress
-			// and actually may fail due to firewalls/NATs, so we fake the details
-			// as if we do not know that the friend is in game yet.
-			fi.mIsJoinable = false;
-			fi.mbInGame = false;
-		}
-		
 		AddGameFromDetails( fi );
 	}
 }

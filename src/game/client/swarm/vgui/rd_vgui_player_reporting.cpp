@@ -67,4 +67,9 @@ CRD_VGUI_Player_Reporting::CRD_VGUI_Player_Reporting( vgui::Panel *parent, const
 
 	m_pTxtDescription = new vgui::TextEntry( this, "TxtDescription" );
 	m_pTxtDescription->SetMultiline( true );
+
+	// TODO: attach screenshot from file
+	// TODO: take+attach screenshot
+
+	// TODO: submit button
 }

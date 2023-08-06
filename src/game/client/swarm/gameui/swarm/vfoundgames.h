@@ -44,7 +44,6 @@ public:
 		KeyValues *mpGameDetails;
 		XUID mFriendXUID;
 
-		// BenLubar(dedicated-server-friends-list)
 		XUID mServerXUID;
 		bool mbJoinServer;
 
@@ -74,11 +73,15 @@ public:
 		bool IsDLC() const;
 		bool HaveMap() const;
 		int CompareMapVersion() const;
-		char const * IsOtherTitle() const;
+		char const *IsOtherTitle() const;
 		PublishedFileId_t GetWorkshopID() const;
 
-		char const * GetNonJoinableShortHint( bool bWarnOnNoHint ) const;
-		char const * GetJoinButtonHint() const;
+		char const *GetNonJoinableShortHint( bool bWarnOnNoHint ) const;
+		char const *GetJoinButtonHint() const;
+
+		void SetPingDirect();
+		void SetOtherTitleFromLobby();
+		void SetIsJoinableFromLobby();
 	};
 
 public:
@@ -121,9 +124,6 @@ public:
 
 	bool HasMouseover( void ) { return m_bHasMouseover; }
 	void SetHasMouseover( bool bHasMouseover ) { m_bHasMouseover = bHasMouseover; }
-
-	void SetFocusBgColor( Color focusColor );
-	void SetOutOfFocusBgColor( Color outOfFocusBgColor );
 
 	bool IsHardcoreDifficulty();
 
@@ -221,6 +221,7 @@ protected:
 	virtual void StartSearching();
 	virtual void AddFakeServersToList();
 	virtual void AddServersToList();
+	virtual void AddFriendGamesToList();
 	virtual void SortListItems();
 	virtual char const * GetListHeaderText() { return NULL; }
 

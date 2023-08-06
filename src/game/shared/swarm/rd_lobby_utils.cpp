@@ -5,6 +5,7 @@
 
 #ifdef CLIENT_DLL
 #include "gameui/swarm/uigamedata.h"
+#include "filesystem.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -161,6 +162,47 @@ int UTIL_RD_PingLobby( CSteamID lobby )
 	return 0;
 }
 
+void UTIL_RD_ReadLobbyScoreboard( CSteamID lobby, CUtlVector<RD_Lobby_Scoreboard_Entry_t> &scoreboard )
+{
+	const char *szScoreboard = SteamMatchmaking()->GetLobbyData( lobby, "system:rd_players" );
+	if ( !szScoreboard || *szScoreboard == '\0' )
+		return;
+
+	CSplitString Players{ szScoreboard, "," };
+	FOR_EACH_VEC( Players, i )
+	{
+		CSplitString PlayerInfo{ Players[i], "|" };
+		Assert( PlayerInfo.Count() == 3 );
+		if ( PlayerInfo.Count() != 3 )
+			continue;
+
+		const char *szHexName = PlayerInfo[0];
+		if ( V_strstr( szHexName, "ffffff" ) )
+		{
+			// encoding problem in older versions of the game; work around it
+			static char s_szFixedHexName[k_cchPersonaNameMax * 2 + 1];
+			int j = 0;
+			for ( const char *psz = szHexName; psz[0] && psz[1]; psz += 2 )
+			{
+				if ( psz[0] == 'f' && psz[1] == 'f' && psz[2] == 'f' && psz[3] == 'f' && psz[4] == 'f' && psz[5] == 'f' && psz[6] && psz[7] )
+				{
+					psz += 6;
+					Assert( *psz == '8' || *psz == '9' || ( *psz >= 'a' && *psz <= 'f' ) );
+				}
+				s_szFixedHexName[j++] = psz[0];
+				s_szFixedHexName[j++] = psz[1];
+			}
+			s_szFixedHexName[j] = '\0';
+			szHexName = s_szFixedHexName;
+		}
+
+		int index = scoreboard.AddToTail();
+		V_hextobinary( szHexName, V_strlen( szHexName ), reinterpret_cast< byte * >( scoreboard[index].Name ), sizeof( scoreboard[index].Name ) );
+		scoreboard[index].Score = V_atoi( PlayerInfo[1] );
+		scoreboard[index].Connected = V_atof( PlayerInfo[2] );
+	}
+}
+
 static void DebugSpewLobby( CSteamID lobby )
 {
 	DevMsg( 2, "LOBBY: %llu\n", lobby.ConvertToUint64() );
@@ -182,7 +224,7 @@ static void DebugSpewLobby( CSteamID lobby )
 		}
 		else
 		{
-			DevMsg( 3, "no server!\n" );
+			DevMsg( 3, "no server info (expected)\n" );
 		}
 
 		if ( int iPing = UTIL_RD_PingLobby( lobby ) )
@@ -190,18 +232,25 @@ static void DebugSpewLobby( CSteamID lobby )
 			DevMsg( 3, "estimated ping: %dms\n", iPing );
 		}
 
-		CSteamID owner = SteamMatchmaking()->GetLobbyOwner( lobby );
-		DevMsg( 3, "owner: %llu \"%s\"\n", owner.ConvertToUint64(), owner.IsValid() ? SteamFriends()->GetFriendPersonaName( owner ) : "(invalid)" );
-
 		int iMembers = SteamMatchmaking()->GetNumLobbyMembers( lobby );
 		DevMsg( 3, "members: %d\n", iMembers );
 		if ( lobby == UTIL_RD_GetCurrentLobbyID() )
 		{
+			CSteamID owner = SteamMatchmaking()->GetLobbyOwner( lobby );
+			DevMsg( 3, "owner: %llu \"%s\"\n", owner.ConvertToUint64(), owner.IsValid() ? SteamFriends()->GetFriendPersonaName( owner ) : "(invalid)" );
+
 			for ( int i = 0; i < iMembers; i++ )
 			{
 				CSteamID member = SteamMatchmaking()->GetLobbyMemberByIndex( lobby, i );
 				DevMsg( 3, "member %d: %llu \"%s\"\n", i, member.ConvertToUint64(), SteamFriends()->GetFriendPersonaName( member ) );
 			}
+		}
+
+		CUtlVector<RD_Lobby_Scoreboard_Entry_t> scoreboard;
+		UTIL_RD_ReadLobbyScoreboard( lobby, scoreboard );
+		FOR_EACH_VEC( scoreboard, i )
+		{
+			DevMsg( 3, "player %d: \"%s\" | score: %d | connected for %d:%05.3f\n", i, scoreboard[i].Name, scoreboard[i].Score, int( scoreboard[i].Connected / 60 ), fmodf( scoreboard[i].Connected, 60.0f ) );
 		}
 
 		int iCount = SteamMatchmaking()->GetLobbyDataCount( lobby );
@@ -218,48 +267,27 @@ static void DebugSpewLobby( CSteamID lobby )
 }
 
 #ifdef CLIENT_DLL
-#define LOBBY_SEARCH_DISABLED -1
-#define LOBBY_SEARCH_INTERVAL 15.0f
-
-class CReactiveDropLobbySearchSystem : CAutoGameSystemPerFrame
-{
-public:
-	CReactiveDropLobbySearchSystem() :
-		CAutoGameSystemPerFrame( "CReativeDropLobbySearchSystem" )
-	{
-	}
-
-	CUtlVector<CReactiveDropLobbySearch *> m_Instances;
-
-	virtual void Update( float frameTime )
-	{
-		FOR_EACH_VEC( m_Instances, i )
-		{
-			m_Instances[i]->Update();
-		}
-	}
-};
-
-static CReactiveDropLobbySearchSystem g_ReactiveDropLobbySearchSystem;
+#define LOBBY_SEARCH_INTERVAL 30.0f
 
 CReactiveDropLobbySearch::CReactiveDropLobbySearch( const char *pszDebugName ) :
-	m_DistanceFilter( k_ELobbyDistanceFilterDefault ),
-	m_pszDebugName( pszDebugName ),
-	m_flNextUpdate( LOBBY_SEARCH_DISABLED )
+	m_DistanceFilter{ k_ELobbyDistanceFilterWorldwide },
+	m_pszDebugName{ pszDebugName },
+	m_flNextUpdate{}
 {
 }
 
 CReactiveDropLobbySearch::~CReactiveDropLobbySearch()
 {
-	g_ReactiveDropLobbySearchSystem.m_Instances.FindAndRemove( this );
 }
 
-void CReactiveDropLobbySearch::Update()
+void CReactiveDropLobbySearch::WantUpdatedLobbyList( bool bForce )
 {
-	if ( m_flNextUpdate == LOBBY_SEARCH_DISABLED || m_flNextUpdate > Plat_FloatTime() )
-	{
+	if ( !bForce && m_flNextUpdate > Plat_FloatTime() )
 		return;
-	}
+
+	// we need relay network access initialized to estimate lobby pings
+	if ( ISteamNetworkingUtils *pUtils = SteamNetworkingUtils() )
+		pUtils->InitRelayNetworkAccess();
 
 	m_flNextUpdate = Plat_FloatTime() + LOBBY_SEARCH_INTERVAL;
 
@@ -306,7 +334,8 @@ static const char *LobbyDistanceFilterName( ELobbyDistanceFilter distance )
 
 void CReactiveDropLobbySearch::UpdateSearch()
 {
-	if ( !SteamMatchmaking() )
+	ISteamMatchmaking *pMatchmaking = SteamMatchmaking();
+	if ( !pMatchmaking )
 	{
 		AssertOnce( !"Missing Steam Matchmaking context" );
 		return;
@@ -322,18 +351,18 @@ void CReactiveDropLobbySearch::UpdateSearch()
 
 	FOR_EACH_VEC( m_StringFilters, i )
 	{
-		SteamMatchmaking()->AddRequestLobbyListStringFilter( m_StringFilters[i].m_Name, m_StringFilters[i].m_Value, m_StringFilters[i].m_Compare );
+		pMatchmaking->AddRequestLobbyListStringFilter( m_StringFilters[i].m_Name, m_StringFilters[i].m_Value, m_StringFilters[i].m_Compare );
 		DevMsg( 3, "%s: filter: \"%s\" %s \"%s\"\n", m_pszDebugName, m_StringFilters[i].m_Name.Get(), LobbyComparisonName( m_StringFilters[i].m_Compare ), m_StringFilters[i].m_Value.Get() );
 	}
 	FOR_EACH_VEC( m_NumericalFilters, i )
 	{
-		SteamMatchmaking()->AddRequestLobbyListNumericalFilter( m_NumericalFilters[i].m_Name, m_NumericalFilters[i].m_Value, m_NumericalFilters[i].m_Compare );
+		pMatchmaking->AddRequestLobbyListNumericalFilter( m_NumericalFilters[i].m_Name, m_NumericalFilters[i].m_Value, m_NumericalFilters[i].m_Compare );
 		DevMsg( 3, "%s: filter: \"%s\" %s %d\n", m_pszDebugName, m_NumericalFilters[i].m_Name.Get(), LobbyComparisonName( m_NumericalFilters[i].m_Compare ), m_NumericalFilters[i].m_Value );
 	}
-	SteamMatchmaking()->AddRequestLobbyListDistanceFilter( m_DistanceFilter );
+	pMatchmaking->AddRequestLobbyListDistanceFilter( m_DistanceFilter );
 	DevMsg( 3, "%s: distance filter: %s\n", m_pszDebugName, LobbyDistanceFilterName( m_DistanceFilter ) );
 
-	SteamAPICall_t hAPICall = SteamMatchmaking()->RequestLobbyList();
+	SteamAPICall_t hAPICall = pMatchmaking->RequestLobbyList();
 	m_LobbyMatchListResult.Set( hAPICall, this, &CReactiveDropLobbySearch::LobbyMatchListResult );
 }
 
@@ -341,32 +370,7 @@ void CReactiveDropLobbySearch::Clear()
 {
 	m_StringFilters.Purge();
 	m_NumericalFilters.Purge();
-	m_DistanceFilter = k_ELobbyDistanceFilterDefault;
-}
-
-void CReactiveDropLobbySearch::StartSearching( bool bForceNow )
-{
-	if ( SteamNetworkingUtils() )
-	{
-		SteamNetworkingUtils()->InitRelayNetworkAccess();
-	}
-	m_flNextUpdate = Plat_FloatTime() + ( bForceNow ? 0 : LOBBY_SEARCH_INTERVAL );
-	if ( !g_ReactiveDropLobbySearchSystem.m_Instances.IsValidIndex( g_ReactiveDropLobbySearchSystem.m_Instances.Find( this ) ) )
-	{
-		g_ReactiveDropLobbySearchSystem.m_Instances.AddToTail( this );
-	}
-	if ( bForceNow )
-	{
-		m_LobbyMatchListResult.Cancel();
-		Update();
-	}
-}
-
-void CReactiveDropLobbySearch::StopSearching()
-{
-	m_flNextUpdate = LOBBY_SEARCH_DISABLED;
-	g_ReactiveDropLobbySearchSystem.m_Instances.FindAndRemove( this );
-	m_LobbyMatchListResult.Cancel();
+	m_DistanceFilter = k_ELobbyDistanceFilterWorldwide;
 }
 
 void CReactiveDropLobbySearch::LobbyMatchListResult( LobbyMatchList_t *pResult, bool bIOFailure )
@@ -374,36 +378,24 @@ void CReactiveDropLobbySearch::LobbyMatchListResult( LobbyMatchList_t *pResult, 
 	if ( bIOFailure )
 	{
 		DevWarning( 2, "%s: IO failure when searching for lobbies!\n", m_pszDebugName );
+		m_MatchingLobbies.Purge();
 		return;
 	}
 
-	CUtlVector<CSteamID> lobbies;
-	lobbies.EnsureCapacity( pResult->m_nLobbiesMatching );
+	ISteamMatchmaking *pMatchmaking = SteamMatchmaking();
+	Assert( pMatchmaking );
+
+	m_MatchingLobbies.SetCount( pResult->m_nLobbiesMatching );
 	for ( uint32 i = 0; i < pResult->m_nLobbiesMatching; i++ )
 	{
-		lobbies.AddToTail( SteamMatchmaking()->GetLobbyByIndex( i ) );
+		m_MatchingLobbies[i] = pMatchmaking->GetLobbyByIndex( i );
 	}
 
 	DevMsg( 2, "%s: matched %d lobbies:\n", m_pszDebugName, pResult->m_nLobbiesMatching );
-	FOR_EACH_VEC( lobbies, i )
+	FOR_EACH_VEC( m_MatchingLobbies, i )
 	{
-		DebugSpewLobby( lobbies[i] );
+		DebugSpewLobby( m_MatchingLobbies[i] );
 	}
-
-	FOR_EACH_VEC( m_Subscribers, i )
-	{
-		m_Subscribers[i]( lobbies );
-	}
-}
-
-void CReactiveDropLobbySearch::Subscribe( func_t fn )
-{
-	m_Subscribers.AddToTail( fn );
-}
-
-void CReactiveDropLobbySearch::Unsubscribe( func_t fn )
-{
-	m_Subscribers.FindAndRemove( fn );
 }
 
 static CReactiveDropLobbySearch s_DebugLobbySearch( "DebugLobbySearch" );
@@ -413,13 +405,9 @@ CON_COMMAND( rd_lobby_debug_current, "" )
 	DebugSpewLobby( UTIL_RD_GetCurrentLobbyID() );
 }
 
-CON_COMMAND( rd_lobby_debug_start_searching, "" )
+CON_COMMAND( rd_lobby_debug_search, "" )
 {
-	s_DebugLobbySearch.StartSearching( true );
-}
-CON_COMMAND( rd_lobby_debug_stop_searching, "" )
-{
-	s_DebugLobbySearch.StopSearching();
+	s_DebugLobbySearch.WantUpdatedLobbyList( true );
 }
 CON_COMMAND( rd_lobby_debug_clear, "" )
 {
@@ -502,5 +490,239 @@ CON_COMMAND( rd_lobby_debug_filter_distance, "1: close, 2: default, 3: far, 4: w
 		Warning( "invalid lobby distance filter\n" );
 		break;
 	}
+}
+
+#ifdef DBGFLAG_ASSERT
+// on debug builds, make sure that the participating servers file is up-to-date.
+// we don't do this on release builds because it'd just create a bunch of network traffic for no gain.
+static class CCheckHoIAFParticipatingServersFile : public CAutoGameSystem
+{
+public:
+	CCheckHoIAFParticipatingServersFile() : CAutoGameSystem( "CCheckHoIAFParticipatingServersFile" )
+	{
+	}
+
+	void PostInit() override
+	{
+		ISteamHTTP *pHTTP = SteamHTTP();
+		Assert( pHTTP );
+		if ( !pHTTP )
+			return;
+
+		HTTPRequestHandle hRequest = pHTTP->CreateHTTPRequest( k_EHTTPMethodGET, "https://stats.reactivedrop.com/hoiaf_participating_servers.bin" );
+		Assert( hRequest != INVALID_HTTPREQUEST_HANDLE );
+		SteamAPICall_t hCall{ k_uAPICallInvalid };
+		bool bOK = pHTTP->SendHTTPRequest( hRequest, &hCall );
+		Assert( bOK );
+
+		m_HTTPRequestCompleted.Set( hCall, this, &CCheckHoIAFParticipatingServersFile::OnHTTPRequestCompleted );
+	}
+
+	void OnHTTPRequestCompleted( HTTPRequestCompleted_t *pParam, bool bIOFailure )
+	{
+		Assert( !bIOFailure && pParam->m_bRequestSuccessful );
+		if ( bIOFailure || !pParam->m_bRequestSuccessful )
+			return;
+
+		Assert( pParam->m_eStatusCode == k_EHTTPStatusCode200OK );
+
+		CUtlBuffer localBuf;
+		bool bOK = g_pFullFileSystem->ReadFile( "resource/hoiaf_participating_servers.bin", "MOD", localBuf );
+		Assert( bOK );
+
+		Assert( localBuf.TellMaxPut() == int( pParam->m_unBodySize ) );
+
+		CUtlBuffer remoteBuf{ 0, int( pParam->m_unBodySize ), 0 };
+		bOK = SteamHTTP()->GetHTTPResponseBodyData( pParam->m_hRequest, ( uint8_t * )remoteBuf.Base(), pParam->m_unBodySize );
+		Assert( bOK );
+
+		Assert( !V_memcmp( localBuf.Base(), remoteBuf.Base(), MIN( localBuf.TellMaxPut(), int( pParam->m_unBodySize ) ) ) );
+		SteamHTTP()->ReleaseHTTPRequest( pParam->m_hRequest );
+	}
+
+	CCallResult<CCheckHoIAFParticipatingServersFile, HTTPRequestCompleted_t> m_HTTPRequestCompleted;
+} s_CheckHoIAFParticipatingServersFile;
+#endif
+
+CReactiveDropServerListHelper::~CReactiveDropServerListHelper()
+{
+	ISteamMatchmakingServers *pServers = SteamMatchmakingServers();
+	if ( pServers && m_hServerListRequest )
+	{
+		pServers->ReleaseRequest( m_hServerListRequest );
+		m_hServerListRequest = NULL;
+	}
+	if ( pServers && m_hServerListRequestNext )
+	{
+		pServers->ReleaseRequest( m_hServerListRequestNext );
+		m_hServerListRequestNext = NULL;
+	}
+}
+
+void CReactiveDropServerListHelper::WantUpdatedServerList()
+{
+	if ( m_hServerListRequestNext || m_flSoonestServerListRequest > Plat_FloatTime() )
+		return;
+
+	ISteamMatchmakingServers *pServers = SteamMatchmakingServers();
+	Assert( pServers );
+	if ( !pServers )
+		return;
+
+	static const AppId_t iAppID = SteamUtils()->GetAppID();
+
+	switch ( m_eMode )
+	{
+	case MODE_INTERNET:
+		m_hServerListRequestNext = pServers->RequestInternetServerList( iAppID, m_Filters.Base(), m_Filters.Count(), this );
+		break;
+	case MODE_LAN:
+		m_hServerListRequestNext = pServers->RequestLANServerList( iAppID, this );
+		break;
+	case MODE_FRIENDS:
+		m_hServerListRequestNext = pServers->RequestFriendsServerList( iAppID, m_Filters.Base(), m_Filters.Count(), this );
+		break;
+	case MODE_FAVORITES:
+		m_hServerListRequestNext = pServers->RequestFavoritesServerList( iAppID, m_Filters.Base(), m_Filters.Count(), this );
+		break;
+	case MODE_HISTORY:
+		m_hServerListRequestNext = pServers->RequestHistoryServerList( iAppID, m_Filters.Base(), m_Filters.Count(), this );
+		break;
+	case MODE_SPECTATOR:
+		m_hServerListRequestNext = pServers->RequestSpectatorServerList( iAppID, m_Filters.Base(), m_Filters.Count(), this );
+		break;
+	default:
+		Assert( 0 );
+		break;
+	}
+
+	m_flSoonestServerListRequest = Plat_FloatTime() + LOBBY_SEARCH_INTERVAL;
+}
+
+int CReactiveDropServerListHelper::Count() const
+{
+	ISteamMatchmakingServers *pServers = SteamMatchmakingServers();
+	Assert( pServers );
+	if ( !pServers || !m_hServerListRequest )
+		return 0;
+
+	return pServers->GetServerCount( m_hServerListRequest );
+}
+
+gameserveritem_t *CReactiveDropServerListHelper::GetDetails( int iServer ) const
+{
+	ISteamMatchmakingServers *pServers = SteamMatchmakingServers();
+	Assert( pServers );
+	if ( !pServers || !m_hServerListRequest )
+		return NULL;
+
+	gameserveritem_t *pDetails = pServers->GetServerDetails( m_hServerListRequest, iServer );
+	Assert( pDetails );
+
+	return pDetails;
+}
+
+bool CReactiveDropServerListHelper::IsHoIAFServer( int iServer ) const
+{
+	gameserveritem_t *pDetails = GetDetails( iServer );
+	if ( !pDetails )
+		return false;
+
+	CSplitString tags( pDetails->m_szGameTags, "," );
+	FOR_EACH_VEC( tags, i )
+	{
+		if ( !V_strcmp( tags[i], "HoIAF" ) )
+		{
+			return g_ReactiveDropServerList.IsHoIAFServerIP( pDetails->m_NetAdr.GetIP() );
+		}
+	}
+
+	return false;
+}
+
+bool CReactiveDropServerListHelper::IsVACSecure( int iServer ) const
+{
+	gameserveritem_t *pDetails = GetDetails( iServer );
+	return pDetails && pDetails->m_bSecure;
+}
+
+bool CReactiveDropServerListHelper::HasPassword( int iServer ) const
+{
+	gameserveritem_t *pDetails = GetDetails( iServer );
+	return pDetails && pDetails->m_bPassword;
+}
+
+int CReactiveDropServerListHelper::GetPing( int iServer ) const
+{
+	gameserveritem_t *pDetails = GetDetails( iServer );
+	return pDetails ? pDetails->m_nPing : 0;
+}
+
+const char *CReactiveDropServerListHelper::GetName( int iServer ) const
+{
+	gameserveritem_t *pDetails = GetDetails( iServer );
+	return pDetails ? pDetails->GetName() : "";
+}
+
+CSteamID CReactiveDropServerListHelper::GetSteamID( int iServer ) const
+{
+	gameserveritem_t *pDetails = GetDetails( iServer );
+	return pDetails ? pDetails->m_steamID : k_steamIDNil;
+}
+
+void CReactiveDropServerListHelper::ServerResponded( HServerListRequest hRequest, int iServer )
+{
+	Assert( m_hServerListRequestNext == hRequest );
+	
+}
+void CReactiveDropServerListHelper::ServerFailedToRespond( HServerListRequest hRequest, int iServer )
+{
+	Assert( m_hServerListRequestNext == hRequest );
+}
+void CReactiveDropServerListHelper::RefreshComplete( HServerListRequest hRequest, EMatchMakingServerResponse response )
+{
+	Assert( m_hServerListRequestNext == hRequest );
+
+	if ( m_hServerListRequest )
+		SteamMatchmakingServers()->ReleaseRequest( m_hServerListRequest );
+
+	m_hServerListRequest = m_hServerListRequestNext;
+	m_hServerListRequestNext = NULL;
+}
+
+CReactiveDropServerList g_ReactiveDropServerList;
+
+CReactiveDropServerList::CReactiveDropServerList() :
+	m_PublicLobbies{ "s_ReactiveDropServerList.m_PublicLobbies" }
+{
+	m_PublicServers.m_eMode = CReactiveDropServerListHelper::MODE_INTERNET;
+	m_PublicServers.m_Filters.AddToTail( new MatchMakingKeyValuePair_t{ "and", "6" } );
+	m_PublicServers.m_Filters.AddToTail( new MatchMakingKeyValuePair_t{ "secure", "" } );
+	m_PublicServers.m_Filters.AddToTail( new MatchMakingKeyValuePair_t{ "or", "4" } );
+	m_PublicServers.m_Filters.AddToTail( new MatchMakingKeyValuePair_t{ "and", "2" } );
+	m_PublicServers.m_Filters.AddToTail( new MatchMakingKeyValuePair_t{ "notfull", "" } );
+	m_PublicServers.m_Filters.AddToTail( new MatchMakingKeyValuePair_t{ "hasplayers", "" } );
+	m_PublicServers.m_Filters.AddToTail( new MatchMakingKeyValuePair_t{ "gametagsand", "HoIAF" } );
+
+	m_InternetServers.m_eMode = CReactiveDropServerListHelper::MODE_INTERNET;
+
+	m_FavoriteServers.m_eMode = CReactiveDropServerListHelper::MODE_FAVORITES;
+
+	m_LANServers.m_eMode = CReactiveDropServerListHelper::MODE_LAN;
+}
+
+bool CReactiveDropServerList::IsHoIAFServerIP( uint32_t ip )
+{
+	if ( m_ParticipatingServers.Count() == 0 )
+	{
+		CUtlBuffer buf;
+		if ( g_pFullFileSystem->ReadFile( "resource/hoiaf_participating_servers.bin", "MOD", buf ) )
+		{
+			m_ParticipatingServers.SetCount( buf.Size() / 4 );
+			V_memcpy( m_ParticipatingServers.Base(), buf.Base(), m_ParticipatingServers.Count() * 4 );
+		}
+	}
+
+	return m_ParticipatingServers.IsValidIndex( m_ParticipatingServers.Find( ip ) );
 }
 #endif

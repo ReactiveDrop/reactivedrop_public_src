@@ -36,8 +36,9 @@ namespace BaseModUI {
 		
 	protected:
 
-		virtual void StartSearching( void );
 		virtual void AddServersToList( void );
+		virtual void AddPublicGamesToList();
+		virtual void AddDedicatedServersToList();
 		virtual void SortListItems();
 		virtual bool IsADuplicateServer( FoundGameListItem *item, FoundGameListItem::Info const &fi );
 		virtual char const * GetListHeaderText();
@@ -69,9 +70,6 @@ namespace BaseModUI {
 		int m_numCurrentPlayers;
 		vgui::EditablePanel *m_pSupportRequiredPanel;
 		vgui::EditablePanel *m_pInstallingSupportPanel;
-	public:
-		CReactiveDropLobbySearch m_LobbySearch;
-		CUtlVector<CSteamID> m_Lobbies;
 	};
 
 };

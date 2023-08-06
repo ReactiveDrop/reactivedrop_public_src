@@ -41,20 +41,9 @@ ConVar ui_public_lobby_filter_dedicated_servers( "ui_public_lobby_filter_dedicat
 extern ConVar rd_lobby_ping_low;
 extern ConVar rd_lobby_ping_high;
 
-static void FoundPublicGamesLobbiesFunc( const CUtlVector<CSteamID> & lobbies )
-{
-	FoundPublicGames *pFPG = assert_cast<FoundPublicGames *>( CBaseModPanel::GetSingleton().GetWindow( WT_FOUNDPUBLICGAMES ) );
-	if ( pFPG )
-	{
-		pFPG->m_Lobbies = lobbies;
-		pFPG->UpdateGameDetails();
-	}
-}
-
 //=============================================================================
 FoundPublicGames::FoundPublicGames( Panel *parent, const char *panelName ) :
-	BaseClass( parent, panelName ),
-	m_LobbySearch( "FoundPublicGames::m_LobbySearch" )
+	BaseClass( parent, panelName )
 {
 	m_drpDifficulty = NULL;
 	m_drpOnslaught = NULL;
@@ -72,13 +61,10 @@ FoundPublicGames::FoundPublicGames( Panel *parent, const char *panelName ) :
 	// increase footer tall by 10 to fit Advanced button into it
 	CNB_Header_Footer *pHeaderFooter = dynamic_cast< CNB_Header_Footer* >( FindChildByName( "HeaderFooter" ) );
 	pHeaderFooter->SetGradientBarPos( 80, 325 );
-
-	m_LobbySearch.Subscribe( &FoundPublicGamesLobbiesFunc );
 }
 
 FoundPublicGames::~FoundPublicGames()
 {
-	m_LobbySearch.Unsubscribe( &FoundPublicGamesLobbiesFunc );
 }
 
 //=============================================================================
@@ -183,69 +169,8 @@ void FoundPublicGames::PaintBackground()
 }
 
 //=============================================================================
-void FoundPublicGames::StartSearching( void )
-{
-	m_LobbySearch.Clear();
-	m_Lobbies.Purge();
-
-	char const *szGameMode = m_pDataSettings->GetString( "game/mode", "" );
-	if ( szGameMode && *szGameMode )
-		m_LobbySearch.m_StringFilters.AddToTail( CReactiveDropLobbySearch::StringFilter_t( "game:mode", szGameMode ) );
-
-	char const *szDifficulty = ui_public_lobby_filter_difficulty2.GetString();
-	if ( szDifficulty && *szDifficulty && GameModeHasDifficulty( szGameMode ) )
-		m_LobbySearch.m_StringFilters.AddToTail( CReactiveDropLobbySearch::StringFilter_t( "game:difficulty", szDifficulty ) );
-
-	char const *szCampaign = ui_public_lobby_filter_campaign.GetString();
-	if ( szCampaign && !Q_stricmp( szCampaign, "official" ) )
-		m_LobbySearch.m_StringFilters.AddToTail( CReactiveDropLobbySearch::StringFilter_t( "game:missioninfo:official", "", k_ELobbyComparisonNotEqual ) );
-	else if ( szCampaign && *szCampaign )
-		m_LobbySearch.m_StringFilters.AddToTail( CReactiveDropLobbySearch::StringFilter_t( "game:missioninfo:workshop", "", k_ELobbyComparisonNotEqual ) );
-
-	char const *szOnslaught = ui_public_lobby_filter_onslaught.GetString();
-	if ( szOnslaught && *szOnslaught )
-		m_LobbySearch.m_StringFilters.AddToTail( CReactiveDropLobbySearch::StringFilter_t( "game:onslaught", szOnslaught ) );
-
-	char const *szStatus = ui_public_lobby_filter_status.GetString();
-	if ( szStatus && *szStatus )
-		m_LobbySearch.m_StringFilters.AddToTail( CReactiveDropLobbySearch::StringFilter_t( "game:state", szStatus ) );
-
-	char const *szChallenge = ui_public_lobby_filter_challenge.GetString();
-	if ( szChallenge && !Q_stricmp( szChallenge, "none" ) )
-		m_LobbySearch.m_StringFilters.AddToTail( CReactiveDropLobbySearch::StringFilter_t( "game:challenge", "0" ) );
-	else if ( szChallenge && *szChallenge )
-		m_LobbySearch.m_StringFilters.AddToTail( CReactiveDropLobbySearch::StringFilter_t( "game:challenge", "0", k_ELobbyComparisonNotEqual ) );
-
-	char const *szDeathmatch = ui_public_lobby_filter_deathmatch.GetString();
-	if ( szDeathmatch && !Q_stricmp( szDeathmatch, "any" ) )
-		m_LobbySearch.m_StringFilters.AddToTail( CReactiveDropLobbySearch::StringFilter_t( "game:deathmatch", "", k_ELobbyComparisonNotEqual ) );
-	else if ( szDeathmatch && !Q_stricmp( szDeathmatch, "none" ) )
-		m_LobbySearch.m_StringFilters.AddToTail( CReactiveDropLobbySearch::StringFilter_t( "game:challenge", "", k_ELobbyComparisonNotEqual ) );
-	else if ( szDeathmatch && *szDeathmatch )
-		m_LobbySearch.m_StringFilters.AddToTail( CReactiveDropLobbySearch::StringFilter_t( "game:deathmatch", szDeathmatch ) );
-
-	if ( !Q_stricmp( ui_public_lobby_filter_distance.GetString(), "close" ) )
-	{
-		m_LobbySearch.m_DistanceFilter = k_ELobbyDistanceFilterClose;
-	}
-	else if ( !Q_stricmp( ui_public_lobby_filter_distance.GetString(), "far" ) )
-	{
-		m_LobbySearch.m_DistanceFilter = k_ELobbyDistanceFilterFar;
-	}
-	else if ( !Q_stricmp( ui_public_lobby_filter_distance.GetString(), "worldwide" ) )
-	{
-		m_LobbySearch.m_DistanceFilter = k_ELobbyDistanceFilterWorldwide;
-	}
-
-	m_LobbySearch.StartSearching( true );
-}
-
-//=============================================================================
 bool FoundPublicGames::ShouldShowPublicGame( KeyValues *pGameDetails )
 {
-	DevMsg( "FoundPublicGames::ShouldShowPublicGame\n" );
-	KeyValuesDumpAsDevMsg( pGameDetails );
-
 	const char *szMode = pGameDetails->GetString( "game/mode", "campaign" );
 	if ( !Q_stricmp( szMode, "campaign" ) )
 	{
@@ -291,13 +216,18 @@ static void HandleJoinPublicGame( FoundGameListItem::Info const &fi )
 	UTIL_RD_JoinByLobbyID( fi.mFriendXUID );
 }
 
-//=============================================================================
-void FoundPublicGames::AddServersToList( void )
+void FoundPublicGames::AddServersToList()
 {
-	int numItems = m_Lobbies.Count();
-	for ( int i = 0; i < numItems; ++ i )
+	AddDedicatedServersToList();
+	AddPublicGamesToList();
+	AddFriendGamesToList();
+}
+
+void FoundPublicGames::AddPublicGamesToList()
+{
+	FOR_EACH_VEC( g_ReactiveDropServerList.m_PublicLobbies.m_MatchingLobbies, i )
 	{
-		CSteamID lobby = m_Lobbies[i];
+		CSteamID lobby = g_ReactiveDropServerList.m_PublicLobbies.m_MatchingLobbies[i];
 		KeyValues *pGameDetails = UTIL_RD_LobbyToLegacyKeyValues( lobby );
 		if ( !pGameDetails )
 			continue;
@@ -314,7 +244,7 @@ void FoundPublicGames::AddServersToList( void )
 		{
 			szDisplayName = "Unknown Mission";
 		}
-		Q_strncpy( fi.Name, szDisplayName, sizeof( fi.Name ) );
+		V_strncpy( fi.Name, szDisplayName, sizeof( fi.Name ) );
 
 		fi.mIsJoinable = true;
 		fi.mbInGame = true;
@@ -390,6 +320,11 @@ void FoundPublicGames::AddServersToList( void )
 
 		AddGameFromDetails( fi );
 	}
+}
+
+void FoundPublicGames::AddDedicatedServersToList()
+{
+	// TODO
 }
 
 bool FoundPublicGames::IsADuplicateServer( FoundGameListItem *item, FoundGameListItem::Info const &fi )
