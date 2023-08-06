@@ -23,7 +23,6 @@
 #include "tier1/strtools.h"
 #include "filesystem_init.h"
 #include "tier0/icommandline.h"
-#include "tier0/stacktools.h"
 #include "keyvalues.h"
 #include "appframework/iappsystemgroup.h"
 #include "tier1/smartptr.h"

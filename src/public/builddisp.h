@@ -23,6 +23,7 @@
 #include "disp_common.h"
 #include "bitvec.h"
 
+#define DISP_MULTIBLEND_PROP_THRESHOLD 2.0f
 #define DISP_ALPHA_PROP_DELTA		382.5f
 
 class CCoreDispInfo;

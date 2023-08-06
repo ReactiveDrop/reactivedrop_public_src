@@ -112,8 +112,8 @@ IBSPTreeData* CreateBSPTreeData()
 
 void DestroyBSPTreeData( IBSPTreeData* pTreeData )
 {
-	if (pTreeData)
-		delete pTreeData;
+	if ( pTreeData )
+		delete assert_cast< CBSPTreeData * >( pTreeData );
 }
 
 

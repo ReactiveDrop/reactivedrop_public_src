@@ -53,3 +53,5 @@ src/materialsystem/stdshaders/shaders/
 src/reactivedrop_vs13.opensdf
 src/.vs
 src/sourcelink.json
+src/utils/*/Debug/
+src/utils/*/Release/
