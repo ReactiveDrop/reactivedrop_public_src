@@ -1095,6 +1095,16 @@ void CRadialMenu::OnThink( void )
 void CRadialMenu::SendCommand( const char *commandStr ) const
 {
 	engine->ClientCmd( commandStr );
+
+	// If it's a + command, send the corresponding - command right after so it doesn't get stuck.
+	if ( commandStr[0] == '+' )
+	{
+		// We only handle a single + command here.
+		Assert( !V_strstr( commandStr, ";" ) );
+
+		CFmtStr szInvertedCommand{ "-%s", commandStr + 1 };
+		engine->ClientCmd( szInvertedCommand );
+	}
 }
 
 
@@ -1273,7 +1283,7 @@ void CRadialMenu::Update( void )
 	// if we only found one button, close the window...
 	ShowPanel( false );
 
-	// ... and execute it's command
+	// ... and execute its command
 	if ( firstButton )
 	{
 		KeyValues *command = firstButton->GetCommand();
@@ -1282,7 +1292,7 @@ void CRadialMenu::Update( void )
 			const char *commandStr = command->GetString( "command", NULL );
 			if ( commandStr )
 			{
-				engine->ClientCmd( commandStr );
+				SendCommand( commandStr );
 			}
 		}
 	}
