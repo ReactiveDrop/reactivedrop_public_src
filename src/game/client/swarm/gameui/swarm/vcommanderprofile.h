@@ -22,6 +22,9 @@ public:
 	void InitForLocalPlayer();
 	void InitForNetworkedPlayer( C_ASW_Player *pPlayer );
 	void InitForSteamID( CSteamID steamID );
+	void TempOpenStatsWebsiteAndClose();
+	int m_iTempCloseAfter{ 0 };
+	void OnThink() override;
 
 	void FetchLocalMedals();
 	void FetchSteamIDMedalsAndExperience();

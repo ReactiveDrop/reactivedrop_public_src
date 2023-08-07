@@ -77,11 +77,7 @@ void CommanderProfile::InitForLocalPlayer()
 	FetchLocalMedals();
 	FetchHoIAFSeasonStats();
 
-	// TODO FIXME: until the actual page is implemented, open the stats website in the Steam Overlay
-	char szStatsWeb[256];
-	V_snprintf( szStatsWeb, sizeof( szStatsWeb ), "https://stats.reactivedrop.com/profiles/%I64u?lang=%s&utm_source=profilewip", m_SteamID.ConvertToUint64(), SteamApps()->GetCurrentGameLanguage() );
-	BaseModUI::CUIGameData::Get()->ExecuteOverlayUrl( szStatsWeb );
-	BaseModUI::CBaseModPanel::GetSingleton().OpenFrontScreen();
+	TempOpenStatsWebsiteAndClose();
 }
 
 void CommanderProfile::InitForNetworkedPlayer( C_ASW_Player *pPlayer )
@@ -98,11 +94,7 @@ void CommanderProfile::InitForNetworkedPlayer( C_ASW_Player *pPlayer )
 
 	FetchHoIAFSeasonStats();
 
-	// TODO FIXME: until the actual page is implemented, open the stats website in the Steam Overlay
-	char szStatsWeb[256];
-	V_snprintf( szStatsWeb, sizeof( szStatsWeb ), "https://stats.reactivedrop.com/profiles/%I64u?lang=%s&utm_source=profilewip", m_SteamID.ConvertToUint64(), SteamApps()->GetCurrentGameLanguage() );
-	BaseModUI::CUIGameData::Get()->ExecuteOverlayUrl( szStatsWeb );
-	BaseModUI::CBaseModPanel::GetSingleton().OpenFrontScreen();
+	TempOpenStatsWebsiteAndClose();
 }
 
 void CommanderProfile::InitForSteamID( CSteamID steamID )
@@ -115,11 +107,32 @@ void CommanderProfile::InitForSteamID( CSteamID steamID )
 	FetchSteamIDMedalsAndExperience();
 	FetchHoIAFSeasonStats();
 
+	TempOpenStatsWebsiteAndClose();
+}
+
+void CommanderProfile::TempOpenStatsWebsiteAndClose()
+{
 	// TODO FIXME: until the actual page is implemented, open the stats website in the Steam Overlay
 	char szStatsWeb[256];
 	V_snprintf( szStatsWeb, sizeof( szStatsWeb ), "https://stats.reactivedrop.com/profiles/%I64u?lang=%s&utm_source=profilewip", m_SteamID.ConvertToUint64(), SteamApps()->GetCurrentGameLanguage() );
 	BaseModUI::CUIGameData::Get()->ExecuteOverlayUrl( szStatsWeb );
-	BaseModUI::CBaseModPanel::GetSingleton().OpenFrontScreen();
+
+	m_iTempCloseAfter = 5;
+}
+
+void CommanderProfile::OnThink()
+{
+	BaseClass::OnThink();
+
+	if ( m_iTempCloseAfter )
+	{
+		m_iTempCloseAfter--;
+
+		if ( m_iTempCloseAfter <= 0 )
+		{
+			BaseModUI::CBaseModPanel::GetSingleton().OpenFrontScreen();
+		}
+	}
 }
 
 void CommanderProfile::FetchLocalMedals()
