@@ -5,15 +5,24 @@
 #include <vgui/ISurface.h>
 #include <vgui_controls/ImagePanel.h>
 #include <vgui_controls/Label.h>
+#include "gameui/swarm/vgenericconfirmation.h"
 #include "gameui/swarm/vhybridbutton.h"
-#include "gameui/cvartogglecheckbutton.h"
 #include "rd_steam_input.h"
 #include "inputsystem/iinputsystem.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+using namespace BaseModUI;
+
 DECLARE_BUILD_FACTORY( CRD_VGUI_Settings_Controls );
+
+static void ResetControlsToDefaults()
+{
+	engine->ClientCmd_Unrestricted( "unbindall; exec config_default\n" );
+	CRD_VGUI_Settings::s_bWantSave = true;
+	CBaseModPanel::GetSingleton().PlayUISound( UISOUND_ACCEPT );
+}
 
 // When binding an action, we capture the mouse pointer so we can bind it to a mouse button or wheel direction.
 // When the binding capture state ends, we release the mouse pointer and move it back to where it was to avoid confusing the player.
@@ -59,7 +68,7 @@ void CRD_VGUI_Bind::ApplySchemeSettings( vgui::IScheme *pScheme )
 void CRD_VGUI_Bind::OnKeyCodePressed( vgui::KeyCode keycode )
 {
 	int lastUser = GetJoystickForCode( keycode );
-	BaseModUI::CBaseModPanel::GetSingleton().SetLastActiveUserId( lastUser );
+	CBaseModPanel::GetSingleton().SetLastActiveUserId( lastUser );
 
 	vgui::KeyCode code = GetBaseButtonCode( keycode );
 
@@ -88,7 +97,7 @@ void CRD_VGUI_Bind::OnKeyCodePressed( vgui::KeyCode keycode )
 void CRD_VGUI_Bind::OnKeyCodeTyped( vgui::KeyCode keycode )
 {
 	int lastUser = GetJoystickForCode( keycode );
-	BaseModUI::CBaseModPanel::GetSingleton().SetLastActiveUserId( lastUser );
+	CBaseModPanel::GetSingleton().SetLastActiveUserId( lastUser );
 
 	vgui::KeyCode code = GetBaseButtonCode( keycode );
 
@@ -97,7 +106,7 @@ void CRD_VGUI_Bind::OnKeyCodeTyped( vgui::KeyCode keycode )
 	case KEY_XBUTTON_A:
 		if ( !SteamInput() || !SteamInput()->ShowBindingPanel( g_RD_Steam_Input.m_hLastControllerWithEvent ) )
 		{
-			BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_INVALID );
+			CBaseModPanel::GetSingleton().PlayUISound( UISOUND_INVALID );
 		}
 
 		break;
@@ -122,7 +131,7 @@ void CRD_VGUI_Bind::OnMouseReleased( vgui::MouseCode code )
 		{
 			if ( !SteamInput() || !SteamInput()->ShowBindingPanel( g_RD_Steam_Input.m_hLastControllerWithEvent ) )
 			{
-				BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_INVALID );
+				CBaseModPanel::GetSingleton().PlayUISound( UISOUND_INVALID );
 			}
 
 			break;
@@ -181,7 +190,7 @@ void CRD_VGUI_Bind::OnThink()
 
 				int iSlot = GET_ACTIVE_SPLITSCREEN_SLOT();
 				engine->ClientCmd_Unrestricted( VarArgs( "cmd%d bind \"%s\" \"%s\"", iSlot + 1, g_pInputSystem->ButtonCodeToString( code ), m_szBind ) );
-				BaseModUI::CRD_VGUI_Settings::s_bWantSave = true;
+				CRD_VGUI_Settings::s_bWantSave = true;
 			}
 
 			RequestFocus();
@@ -303,9 +312,9 @@ void CRD_VGUI_Bind::ClearKeyboardBind()
 	if ( !szKeyBind )
 		return;
 
-	int iSlot = BaseModUI::CBaseModPanel::GetSingleton().GetLastActiveUserId();
+	int iSlot = CBaseModPanel::GetSingleton().GetLastActiveUserId();
 	engine->ClientCmd_Unrestricted( VarArgs( "cmd%d unbind \"%s\"", iSlot + 1, szKeyBind ) );
-	BaseModUI::CRD_VGUI_Settings::s_bWantSave = true;
+	CRD_VGUI_Settings::s_bWantSave = true;
 }
 
 CRD_VGUI_Settings_Controls::CRD_VGUI_Settings_Controls( vgui::Panel *parent, const char *panelName ) :
@@ -390,8 +399,9 @@ CRD_VGUI_Settings_Controls::CRD_VGUI_Settings_Controls( vgui::Panel *parent, con
 	}
 	m_pBindWheelMarine = new CRD_VGUI_Bind( this, "BindWheelMarine", "#rd_wheel_marine", "+mouse_menu ASW_SelectMarine", true );
 
-	m_pBtnCustomWheels = new BaseModUI::BaseModHybridButton( this, "BtnCustomWheels", "#rd_manage_custom_chat_wheels", this, "ManageWheels" );
-	m_pBtnResetDefaults = new BaseModUI::BaseModHybridButton( this, "BtnResetDefaults", "#L4D360UI_Controller_Default", this, "ResetDefaults" );
+	m_pBtnCustomWheels = new BaseModHybridButton( this, "BtnCustomWheels", "#rd_manage_custom_chat_wheels", this, "ManageWheels" );
+	m_pBtnCustomWheels->SetEnabled( false ); // TODO!
+	m_pBtnResetDefaults = new BaseModHybridButton( this, "BtnResetDefaults", "#L4D360UI_Controller_Default", this, "ResetDefaults" );
 	m_pSettingDeveloperConsole = new CRD_VGUI_Option( this, "SettingDeveloperConsole", "#GameUI_DeveloperConsoleCheck", CRD_VGUI_Option::MODE_CHECKBOX );
 	m_pSettingDeveloperConsole->LinkToConVar( "con_enable", false );
 }
@@ -450,7 +460,18 @@ void CRD_VGUI_Settings_Controls::OnCommand( const char *command )
 {
 	if ( FStrEq( command, "ResetDefaults" ) )
 	{
-		Assert( !"TODO: ResetDefaults" );
+		GenericConfirmation *confirmation = assert_cast< GenericConfirmation * >( CBaseModPanel::GetSingleton().OpenWindow( WT_GENERICCONFIRMATION, assert_cast< CRD_VGUI_Settings * >( GetParent() ), false ) );
+		Assert( confirmation );
+		if ( confirmation )
+		{
+			GenericConfirmation::Data_t data;
+			data.pWindowTitle = "#GameUI_KeyboardSettings";
+			data.pMessageText = "#GameUI_KeyboardSettingsText";
+			data.bOkButtonEnabled = true;
+			data.bCancelButtonEnabled = true;
+			data.pfnOkCallback = &ResetControlsToDefaults;
+			confirmation->SetUsageData( data );
+		}
 	}
 	else if ( FStrEq( command, "ManageWheels" ) )
 	{
