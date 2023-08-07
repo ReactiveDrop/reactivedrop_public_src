@@ -1154,7 +1154,18 @@ void CRD_VGUI_Option::SetCurrentSliderValue( float flValue )
 
 	if ( m_pTextEntry && !s_bSuppressTextEntryChange && !IsLayoutInvalid() )
 	{
-		m_pTextEntry->SetEnabled( IsEnabled() );
+		if ( IsEnabled() )
+		{
+			m_pTextEntry->SetEnabled( true );
+			m_pTextEntry->SetCursor( vgui::dc_ibeam );
+			m_pTextEntry->SetAlpha( 255 );
+		}
+		else
+		{
+			m_pTextEntry->SetEnabled( false );
+			m_pTextEntry->SetCursor( vgui::dc_arrow );
+			m_pTextEntry->SetAlpha( 64 );
+		}
 
 		int iDigits = 1 - MIN( log10f( ( m_flMaxValue - m_flMinValue ) * YRES( 1 ) / m_pInteractiveArea->GetWide() ), 0 );
 

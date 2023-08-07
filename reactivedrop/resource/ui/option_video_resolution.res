@@ -19,7 +19,7 @@
 		"ypos"				"1"
 		"wide"				"140"
 		"tall"				"15"
-		"fgcolor_override"	"128 128 128 255"
+		"fgcolor_override"	"192 192 192 255"
 		"font"				"DefaultBold"
 	}
 

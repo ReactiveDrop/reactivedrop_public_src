@@ -18,7 +18,7 @@
 		"ypos"				"0"
 		"wide"				"64"
 		"tall"				"12"
-		"fgcolor_override"	"128 128 128 255"
+		"fgcolor_override"	"192 192 192 255"
 	}
 
 	"LblHint"
@@ -32,6 +32,6 @@
 		"font"				"DefaultVerySmall"
 		"textAlignment"		"north-west"
 		"wrap"				"1"
-		"fgcolor_override"	"96 96 96 255"
+		"fgcolor_override"	"128 128 128 255"
 	}
 }

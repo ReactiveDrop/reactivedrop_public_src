@@ -1,5 +1,65 @@
 "Resource/UI/BaseModUI/CRD_VGUI_Settings_Video.res"
 {
+	"BackgroundResolution"
+	{
+		"ControlName"		"Panel"
+		"fieldName"			"BackgroundResolution"
+		"xpos"				"14"
+		"ypos"				"39"
+		"zpos"				"-1"
+		"wide"				"274"
+		"tall"				"19"
+		"bgcolor_override"	"0 0 0 192"
+	}
+
+	"BackgroundMode"
+	{
+		"ControlName"		"Panel"
+		"fieldName"			"BackgroundMode"
+		"xpos"				"14"
+		"ypos"				"60"
+		"zpos"				"-1"
+		"wide"				"274"
+		"tall"				"151"
+		"bgcolor_override"	"0 0 0 192"
+	}
+
+	"BackgroundDetail"
+	{
+		"ControlName"		"Panel"
+		"fieldName"			"BackgroundDetail"
+		"xpos"				"290"
+		"ypos"				"50"
+		"zpos"				"-1"
+		"wide"				"306"
+		"tall"				"161"
+		"bgcolor_override"	"0 0 0 192"
+	}
+
+	"BackgroundDetail1"
+	{
+		"ControlName"		"Panel"
+		"fieldName"			"BackgroundDetail1"
+		"xpos"				"353"
+		"ypos"				"39"
+		"zpos"				"-1"
+		"wide"				"243"
+		"tall"				"12"
+		"bgcolor_override"	"0 0 0 192"
+	}
+
+	"BackgroundExtra"
+	{
+		"ControlName"		"Panel"
+		"fieldName"			"BackgroundExtra"
+		"xpos"				"14"
+		"ypos"				"214"
+		"zpos"				"-1"
+		"wide"				"582"
+		"tall"				"178"
+		"bgcolor_override"	"0 0 0 192"
+	}
+
 	"SettingScreenResolution"
 	{
 		"ControlName"		"CRD_VGUI_Option"
@@ -84,7 +144,7 @@
 		"tall"				"12"
 		"labelText"			"#rd_video_faster"
 		"textAlignment"		"west"
-		"fgcolor_override"	"64 64 64 255"
+		"fgcolor_override"	"128 128 128 255"
 	}
 
 	"LblHigherQuality"
@@ -97,7 +157,7 @@
 		"tall"				"12"
 		"labelText"			"#rd_video_higher_quality"
 		"textAlignment"		"east"
-		"fgcolor_override"	"64 64 64 255"
+		"fgcolor_override"	"128 128 128 255"
 	}
 
 	"SettingEffectDetail"
