@@ -21,6 +21,22 @@
 ConVar asw_precache_speech("asw_precache_speech", "0", FCVAR_CHEAT, "If set, server will precache all speech files (increases load times a lot!)");
 #endif
 
+
+const char *const g_szMarineClassLabel[NUM_MARINE_CLASSES] =
+{
+	"#marine_class_officer",
+	"#marine_class_sw_short",
+	"#marine_class_medic",
+	"#marine_class_tech",
+};
+const char *const g_szMarineClassImage[NUM_MARINE_CLASSES] =
+{
+	"swarm/ClassIcons/NCOClassIcon",
+	"swarm/ClassIcons/SpecialWeaponsClassIcon",
+	"swarm/ClassIcons/MedicClassIcon",
+	"swarm/ClassIcons/TechClassIcon",
+};
+
 COMPILE_TIME_ASSERT( ASW_SKILL_SLOT_SPARE == ASW_NUM_SKILL_SLOTS - 1 );
 static const char *const s_szSkillNumber[ASW_NUM_MARINE_SKILLS]
 {

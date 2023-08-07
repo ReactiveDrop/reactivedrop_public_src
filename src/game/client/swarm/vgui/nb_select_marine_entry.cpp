@@ -65,14 +65,8 @@ void CNB_Select_Marine_Entry::OnThink()
 		return;
 
 	ASW_Marine_Class nMarineClass = pProfile->GetMarineClass();
-	switch( nMarineClass )
-	{
-	case MARINE_CLASS_NCO: m_pClassLabel->SetText( "#marine_class_officer" ); m_pClassImage->SetImage( "swarm/ClassIcons/NCOClassIcon" ); break;
-	case MARINE_CLASS_SPECIAL_WEAPONS: m_pClassLabel->SetText( "#marine_class_sw" ); m_pClassImage->SetImage( "swarm/ClassIcons/SpecialWeaponsClassIcon" ); break;
-	case MARINE_CLASS_MEDIC: m_pClassLabel->SetText( "#marine_class_medic" ); m_pClassImage->SetImage( "swarm/ClassIcons/MedicClassIcon" ); break;
-	case MARINE_CLASS_TECH: m_pClassLabel->SetText( "#marine_class_tech" ); m_pClassImage->SetImage( "swarm/ClassIcons/TechClassIcon" ); break;
-	default: m_pClassLabel->SetText( "" ); break;
-	}
+	m_pClassLabel->SetText( g_szMarineClassLabel[nMarineClass] );
+	m_pClassImage->SetImage( g_szMarineClassImage[nMarineClass] );
 	m_pNameLabel->SetText( pProfile->GetShortName() );
 
 	// assumes parent's parent is the horiz list!

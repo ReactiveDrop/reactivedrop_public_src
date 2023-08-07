@@ -37,6 +37,24 @@ extern ConVar rd_equipped_weapon_primary[ASW_NUM_MARINE_PROFILES];
 extern ConVar rd_equipped_weapon_secondary[ASW_NUM_MARINE_PROFILES];
 extern ConVar rd_equipped_weapon_extra[ASW_NUM_MARINE_PROFILES];
 
+static int GetWeaponIndex( ASW_Inventory_slot_t iSlot, int iWeapon, ASW_Marine_Profile iProfile )
+{
+	if ( iWeapon == -1 )
+	{
+		switch ( iSlot )
+		{
+		case ASW_INVENTORY_SLOT_PRIMARY:
+			return ReactiveDropLoadout::DefaultLoadout.Marines[iProfile].Primary;
+		case ASW_INVENTORY_SLOT_SECONDARY:
+			return ReactiveDropLoadout::DefaultLoadout.Marines[iProfile].Secondary;
+		case ASW_INVENTORY_SLOT_EXTRA:
+			return ReactiveDropLoadout::DefaultLoadout.Marines[iProfile].Extra;
+		}
+	}
+
+	return iWeapon;
+}
+
 Loadouts::Loadouts( Panel *parent, const char *panelName )
 	: BaseClass( parent, panelName )
 {
@@ -302,6 +320,7 @@ CRD_VGUI_Loadout_Marine::CRD_VGUI_Loadout_Marine( vgui::Panel *parent, const cha
 	BaseClass( parent, panelName )
 {
 	m_pModelPanel = new CRD_Swarmopedia_Model_Panel( this, "ModelPanel" );
+	m_pModelPanel->m_eMode = CRD_Swarmopedia_Model_Panel::MODE_FULLSCREEN_MOUSE;
 	m_pLblBiography = new vgui::RichText( this, "LblBiography" );
 	m_pLblBiography->SetPanelInteractive( false );
 	m_pLblBiography->SetCursor( vgui::dc_arrow );
@@ -311,6 +330,11 @@ CRD_VGUI_Loadout_Marine::CRD_VGUI_Loadout_Marine( vgui::Panel *parent, const cha
 	m_pWeapon[ASW_INVENTORY_SLOT_PRIMARY] = new CRD_VGUI_Loadout_Slot_Weapon( this, "WeaponSlot0", iProfile, &asw_default_primary[iProfile], &rd_equipped_weapon_primary[iProfile], ASW_INVENTORY_SLOT_PRIMARY );
 	m_pWeapon[ASW_INVENTORY_SLOT_SECONDARY] = new CRD_VGUI_Loadout_Slot_Weapon( this, "WeaponSlot1", iProfile, &asw_default_secondary[iProfile], &rd_equipped_weapon_secondary[iProfile], ASW_INVENTORY_SLOT_SECONDARY );
 	m_pWeapon[ASW_INVENTORY_SLOT_EXTRA] = new CRD_VGUI_Loadout_Slot_Weapon( this, "WeaponSlot2", iProfile, &asw_default_extra[iProfile], &rd_equipped_weapon_extra[iProfile], ASW_INVENTORY_SLOT_EXTRA );
+	m_pImgClass = new vgui::ImagePanel( this, "ImgClass" );
+	m_pLblClass = new vgui::Label( this, "LblClass", "" );
+	m_pLblMarine = new vgui::Label( this, "LblMarineSlot", "" );
+	for ( int i = 0; i < ASW_NUM_INVENTORY_SLOTS; i++ )
+		m_pLblWeapon[i] = new vgui::Label( this, VarArgs( "LblWeaponSlot%d", i ), "" );
 }
 
 void CRD_VGUI_Loadout_Marine::ApplySchemeSettings( vgui::IScheme *pScheme )
@@ -324,19 +348,43 @@ void CRD_VGUI_Loadout_Marine::ApplySchemeSettings( vgui::IScheme *pScheme )
 	if ( !pProfile )
 		return;
 
+	m_pLblClass->SetText( g_szMarineClassLabel[pProfile->m_iMarineClass] );
+	m_pImgClass->SetImage( g_szMarineClassImage[pProfile->m_iMarineClass] );
+
 	const ReactiveDropInventory::ItemInstance_t *pSuit = m_pMarine->GetItem();
 	if ( pSuit )
 	{
+		const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( pSuit->ItemDefID );
 		pSuit->FormatDescription( m_pLblBiography, false );
+		m_pLblMarine->SetText( pDef->Name );
+		m_pLblMarine->SetFgColor( pDef->NameColor );
 	}
 	else
 	{
 		m_pLblBiography->SetText( pProfile->m_Bio );
+		m_pLblMarine->SetText( pProfile->m_ShortName );
 	}
 
 	for ( int i = 0; i < ASW_NUM_SKILL_SLOTS - 1; i++ )
 	{
 		m_pSkillPanel[i]->SetSkillDetails( m_pMarine->m_iProfile, i, pProfile->GetStaticSkillPoints( i ), pProfile->GetSkillMapping( i ) );
+	}
+
+	for ( int iSlot = 0; iSlot < ASW_NUM_INVENTORY_SLOTS; iSlot++ )
+	{
+		const ReactiveDropInventory::ItemInstance_t *pWeapon = m_pWeapon[iSlot]->GetItem();
+		if ( pWeapon )
+		{
+			const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( pWeapon->ItemDefID );
+			m_pLblWeapon[iSlot]->SetText( pDef->Name );
+			m_pLblWeapon[iSlot]->SetFgColor( pDef->NameColor );
+		}
+		else
+		{
+			int iWeaponIndex = GetWeaponIndex( ASW_Inventory_slot_t( iSlot ), m_pWeapon[iSlot]->m_pWeaponVar->GetInt(), m_pMarine->m_iProfile );
+			CASW_EquipItem *pItem = g_ASWEquipmentList.GetItemForSlot( iSlot, iWeaponIndex );
+			m_pLblWeapon[iSlot]->SetText( pItem->m_szLongName );
+		}
 	}
 
 	SetupDisplay();
@@ -355,12 +403,13 @@ void CRD_VGUI_Loadout_Marine::SetupDisplay()
 	MarineDisplay.Models[0]->ModelName = pProfile->GetModelName();
 	MarineDisplay.Models[0]->Skin = pProfile->GetSkinNum();
 	MarineDisplay.Models[0]->BodyGroups.Insert( 1, pProfile->GetSkinNum() );
-	MarineDisplay.Models[0]->Animations.Insert( "idle_aiming_neutral", 1.0f );
+	MarineDisplay.Models[0]->Animations.Insert( "run_aiming_all", 1.0f );
 
 	//MarineDisplay.Models.AddToTail( new RD_Swarmopedia::Model() );
 	//MarineDisplay.Models[1]->ModelName = "models/error.mdl"; // TODO: room model
 
-	if ( CASW_WeaponInfo *pWeaponData = g_ASWEquipmentList.GetWeaponDataFor( g_ASWEquipmentList.GetRegular( m_pWeapon[0]->m_pWeaponVar->GetInt() )->m_szEquipClass ) )
+	ASW_Inventory_slot_t iDisplayedSlot = m_bSecondaryWeapon ? ASW_INVENTORY_SLOT_SECONDARY : ASW_INVENTORY_SLOT_PRIMARY;
+	if ( CASW_WeaponInfo *pWeaponData = g_ASWEquipmentList.GetWeaponDataFor( g_ASWEquipmentList.GetRegular( GetWeaponIndex( iDisplayedSlot, m_pWeapon[iDisplayedSlot]->m_pWeaponVar->GetInt(), m_pMarine->m_iProfile ) )->m_szEquipClass ) )
 	{
 		int i = MarineDisplay.Models.AddToTail( new RD_Swarmopedia::Model() );
 		MarineDisplay.Models[i]->ModelName = pWeaponData->szViewModel;
@@ -369,7 +418,7 @@ void CRD_VGUI_Loadout_Marine::SetupDisplay()
 		MarineDisplay.Models[i]->IsWeapon = true;
 	}
 
-	const CASW_EquipItem *pExtraInfo = g_ASWEquipmentList.GetExtra( m_pWeapon[2]->m_pWeaponVar->GetInt() );
+	const CASW_EquipItem *pExtraInfo = g_ASWEquipmentList.GetExtra( GetWeaponIndex( ASW_INVENTORY_SLOT_EXTRA, m_pWeapon[ASW_INVENTORY_SLOT_EXTRA]->m_pWeaponVar->GetInt(), m_pMarine->m_iProfile ) );
 	if ( pExtraInfo->m_bViewModelIsMarineAttachment )
 	{
 		if ( CASW_WeaponInfo *pExtraData = g_ASWEquipmentList.GetWeaponDataFor( pExtraInfo->m_szEquipClass ) )
@@ -385,15 +434,28 @@ void CRD_VGUI_Loadout_Marine::SetupDisplay()
 		}
 	}
 
-	FOR_EACH_VEC( MarineDisplay.Models, i )
-	{
-		// fudge the numbers so we get a better camera view.
-		MarineDisplay.Models[i]->Z += 32.0f;
-		MarineDisplay.Models[i]->Scale *= 0.5f;
-	}
-
 	MarineDisplay.LightingState = SwarmopediaDefaultLightingState();
+	m_pModelPanel->m_bUseTimeScale = false;
+	m_pModelPanel->m_bAutoPosition = false;
+	m_pModelPanel->m_vecCenter = Vector{ 0.0f, 0.0f, 32.0f };
+	m_pModelPanel->m_flRadius = 128.0f;
 	m_pModelPanel->SetDisplay( &MarineDisplay );
+}
+
+void CRD_VGUI_Loadout_Marine::OnThink()
+{
+	BaseClass::OnThink();
+
+	if ( m_pWeapon[ASW_INVENTORY_SLOT_PRIMARY]->HasFocus() && m_bSecondaryWeapon )
+	{
+		m_bSecondaryWeapon = false;
+		InvalidateLayout( true, true );
+	}
+	else if ( m_pWeapon[ASW_INVENTORY_SLOT_SECONDARY]->HasFocus() && !m_bSecondaryWeapon )
+	{
+		m_bSecondaryWeapon = true;
+		InvalidateLayout( true, true );
+	}
 }
 
 CRD_VGUI_Loadout_Slot::CRD_VGUI_Loadout_Slot( vgui::Panel *parent, const char *panelName, ConVar *pInventoryVar ) :
@@ -435,13 +497,16 @@ void CRD_VGUI_Loadout_Slot::Paint()
 		else
 		{
 			int y1 = t;
+#if 0
 			if ( nAccessories )
 				y1 -= qt;
+#endif
 
 			vgui::surface()->DrawTexturedRect( w - ht, y1 - ht, w, y1 );
 		}
 	}
 
+#if 0
 	for ( int i = 0, j = 0; i < RD_ITEM_MAX_ACCESSORIES; i++ )
 	{
 		if ( instance.m_iAccessory[i] )
@@ -459,6 +524,7 @@ void CRD_VGUI_Loadout_Slot::Paint()
 			j++;
 		}
 	}
+#endif
 }
 
 const ReactiveDropInventory::ItemInstance_t *CRD_VGUI_Loadout_Slot::GetItem()
@@ -500,6 +566,13 @@ void CRD_VGUI_Loadout_Slot_Marine::Paint()
 	BaseClass::Paint();
 }
 
+void CRD_VGUI_Loadout_Slot_Marine::OnCursorEntered()
+{
+	BaseClass::OnCursorEntered();
+
+	RequestFocus();
+}
+
 CRD_VGUI_Loadout_Slot_Weapon::CRD_VGUI_Loadout_Slot_Weapon( vgui::Panel *parent, const char *panelName, ASW_Marine_Profile iProfile, ConVar *pWeaponVar, ConVar *pInventoryVar, ASW_Inventory_slot_t iSlot ) :
 	BaseClass( parent, panelName, pInventoryVar )
 {
@@ -519,8 +592,15 @@ void CRD_VGUI_Loadout_Slot_Weapon::Paint()
 	GetSize( w, t );
 
 	vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
-	vgui::surface()->DrawSetTexture( g_ASWEquipmentList.GetEquipIconTexture( m_iSlot != ASW_INVENTORY_SLOT_EXTRA, m_pWeaponVar->GetInt() ) );
+	vgui::surface()->DrawSetTexture( g_ASWEquipmentList.GetEquipIconTexture( m_iSlot != ASW_INVENTORY_SLOT_EXTRA, GetWeaponIndex( m_iSlot, m_pWeaponVar->GetInt(), m_iProfile ) ) );
 	vgui::surface()->DrawTexturedRect( 0, 0, w, t );
 
 	BaseClass::Paint();
+}
+
+void CRD_VGUI_Loadout_Slot_Weapon::OnCursorEntered()
+{
+	BaseClass::OnCursorEntered();
+
+	RequestFocus();
 }

@@ -48,6 +48,22 @@ public:
 
 	void SetDisplay( const RD_Swarmopedia::Display *pDisplay );
 
+	enum Mode_t
+	{
+		MODE_SPINNER,
+		MODE_FULLSCREEN_MOUSE,
+	} m_eMode{ MODE_SPINNER };
+
+	float m_flPitchIntensity{ -45.0f };
+	float m_flYawIntensity{ 120.0f };
+	float m_flPanSpeed{ 2.5f };
+	QAngle m_angPanOrigin{ 15.0f, 0.0f, 0.0f };
+
+	bool m_bUseTimeScale{ true };
+	bool m_bAutoPosition{ true };
+	Vector m_vecCenter;
+	float m_flRadius;
+
 private:
 	void OnPaint3D() override;
 	void OnMouseDoublePressed( vgui::MouseCode code ) override;
@@ -63,6 +79,8 @@ private:
 
 	CUtlVector<RD_MDLData_t> m_Models;
 	bool m_bDisplayChanged;
+	float m_flSmoothXPan{};
+	float m_flSmoothYPan{};
 };
 
 class CRD_Collection_Tab_Equipment : public TGD_Tab

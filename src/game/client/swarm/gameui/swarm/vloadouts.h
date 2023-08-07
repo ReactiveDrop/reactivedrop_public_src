@@ -81,12 +81,18 @@ public:
 
 	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 	void SetupDisplay();
+	void OnThink() override;
 
 	CRD_Swarmopedia_Model_Panel *m_pModelPanel;
 	vgui::RichText *m_pLblBiography;
 	CNB_Skill_Panel *m_pSkillPanel[ASW_NUM_SKILL_SLOTS - 1];
+	vgui::ImagePanel *m_pImgClass;
 	CRD_VGUI_Loadout_Slot_Marine *m_pMarine;
 	CRD_VGUI_Loadout_Slot_Weapon *m_pWeapon[ASW_NUM_INVENTORY_SLOTS];
+	vgui::Label *m_pLblClass;
+	vgui::Label *m_pLblMarine;
+	vgui::Label *m_pLblWeapon[ASW_NUM_INVENTORY_SLOTS];
+	bool m_bSecondaryWeapon{ false };
 };
 
 class CRD_VGUI_Loadout_Slot : public vgui::EditablePanel
@@ -120,6 +126,7 @@ public:
 	CRD_VGUI_Loadout_Slot_Marine( vgui::Panel *parent, const char *panelName, ASW_Marine_Profile iProfile, ConVar *pInventoryVar );
 
 	void Paint() override;
+	void OnCursorEntered() override;
 
 	ASW_Marine_Profile m_iProfile;
 	char m_szSlot[64];
@@ -132,6 +139,7 @@ public:
 	CRD_VGUI_Loadout_Slot_Weapon( vgui::Panel *parent, const char *panelName, ASW_Marine_Profile iProfile, ConVar *pWeaponVar, ConVar *pInventoryVar, ASW_Inventory_slot_t iSlot );
 
 	void Paint() override;
+	void OnCursorEntered() override;
 
 	ASW_Marine_Profile m_iProfile;
 	ASW_Inventory_slot_t m_iSlot;

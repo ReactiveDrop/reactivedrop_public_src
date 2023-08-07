@@ -14,6 +14,9 @@
 #define NUM_CHATTER_LINES 124
 #define NUM_SUB_CHATTERS 18		// max variations allowed for a chatter line
 
+extern const char *const g_szMarineClassLabel[NUM_MARINE_CLASSES];
+extern const char *const g_szMarineClassImage[NUM_MARINE_CLASSES];
+
 enum ASW_Voice_Type
 {
 	ASW_VOICE_SARGE,

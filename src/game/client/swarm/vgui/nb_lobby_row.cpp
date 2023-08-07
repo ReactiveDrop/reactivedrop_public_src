@@ -296,24 +296,17 @@ void CNB_Lobby_Row::UpdateDetails()
 	}
 
 	ASW_Marine_Class nMarineClass = Briefing()->GetMarineClass( m_nLobbySlot );
-	switch ( nMarineClass )
-	{
-	case MARINE_CLASS_NCO: m_pClassLabel->SetText( "#marine_class_officer" ); break;
-	case MARINE_CLASS_SPECIAL_WEAPONS: m_pClassLabel->SetText( "#marine_class_sw_short" ); break;
-	case MARINE_CLASS_MEDIC: m_pClassLabel->SetText( "#marine_class_medic" ); break;
-	case MARINE_CLASS_TECH: m_pClassLabel->SetText( "#marine_class_tech" ); break;
-	default: m_pClassLabel->SetText( "" ); break;
-	}
+	m_pClassLabel->SetText( nMarineClass > MARINE_CLASS_UNDEFINED && nMarineClass < NUM_MARINE_CLASSES ? g_szMarineClassLabel[nMarineClass] : "" );
 	m_pClassLabel->SetVisible( true );
-
-	switch ( nMarineClass )
+	if ( nMarineClass > MARINE_CLASS_UNDEFINED && nMarineClass < NUM_MARINE_CLASSES )
 	{
-	case MARINE_CLASS_NCO: m_pClassImage->SetImage( "swarm/ClassIcons/NCOClassIcon" ); break;
-	case MARINE_CLASS_SPECIAL_WEAPONS: m_pClassImage->SetImage( "swarm/ClassIcons/SpecialWeaponsClassIcon" ); break;
-	case MARINE_CLASS_MEDIC: m_pClassImage->SetImage( "swarm/ClassIcons/MedicClassIcon" ); break;
-	case MARINE_CLASS_TECH: m_pClassImage->SetImage( "swarm/ClassIcons/TechClassIcon" ); break;
+		m_pClassImage->SetImage( g_szMarineClassImage[nMarineClass] );
+		m_pClassImage->SetVisible( true );
 	}
-	m_pClassImage->SetVisible( nMarineClass != MARINE_CLASS_UNDEFINED );
+	else
+	{
+		m_pClassImage->SetVisible( false );
+	}
 
 	if ( Briefing()->IsOfflineGame() && m_nLobbySlot != 0 )
 	{

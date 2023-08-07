@@ -2,10 +2,13 @@
 #include "rd_collections.h"
 #include "rd_swarmopedia.h"
 #include "asw_util_shared.h"
+#include <vgui/IInput.h>
 #include <vgui_controls/Label.h>
 #include <vgui_controls/TextImage.h>
 #include "animation.h"
 #include "rd_vgui_main_menu_top_bar.h"
+#include "convar_serverbounded.h"
+#include "rd_steam_input.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -17,6 +20,7 @@ ConVar rd_swarmopedia_last_tab( "rd_swarmopedia_last_tab", "0", FCVAR_ARCHIVE, "
 ConVar rd_collections_last_tab( "rd_collections_last_tab", "0", FCVAR_ARCHIVE, "Remembers last accessed tab index of the collections screen." );
 extern ConVar rd_reduce_motion;
 extern ConVar asw_weapon_pitch;
+extern ConVar_ServerBounded *m_pitch;
 
 vgui::DHANDLE<TabbedGridDetails> g_hCollectionFrame;
 void LaunchCollectionsFrame()
@@ -209,8 +213,58 @@ void CRD_Swarmopedia_Model_Panel::SetDisplay( const RD_Swarmopedia::Display *pDi
 
 void CRD_Swarmopedia_Model_Panel::OnPaint3D()
 {
-	float flTime = rd_reduce_motion.GetBool() ? 4.5f : Plat_FloatTime() * rd_swarmopedia_timescale.GetFloat();
-	SetModelAnglesAndPosition( QAngle( 0.0f, flTime * 30.0f, 0.0f ), vec3_origin );
+	float flTime = rd_reduce_motion.GetBool() ? 4.5f : Plat_FloatTime() * ( m_bUseTimeScale ? rd_swarmopedia_timescale.GetFloat() : 1.0f );
+	if ( m_eMode == MODE_SPINNER )
+	{
+		SetModelAnglesAndPosition( QAngle( 0.0f, flTime * 30.0f, 0.0f ), vec3_origin );
+	}
+	else if ( m_eMode == MODE_FULLSCREEN_MOUSE )
+	{
+		int x, y, w, h;
+		vgui::input()->GetCursorPos( x, y );
+		GetHudSize( w, h );
+
+		int iSlot = GET_ACTIVE_SPLITSCREEN_SLOT();
+
+		float flMoveX{}, flMoveY{}, flLookX{}, flLookY{};
+		g_RD_Steam_Input.GetGameAxes( iSlot, &flMoveX, &flMoveY, &flLookX, &flLookY );
+
+		float xPan = ( x - w / 2.0f ) / h + flLookX / MAX_BUTTONSAMPLE / 2.0f * w / h;
+		float yPan = ( y - h / 2.0f ) / h + flLookY / MAX_BUTTONSAMPLE / 2.0f;
+		if ( rd_reduce_motion.GetBool() )
+		{
+			xPan = roundf( xPan * 2.0f ) / 2.0f;
+			yPan = roundf( yPan * 2.0f ) / 2.0f;
+
+			m_flSmoothXPan = xPan;
+			m_flSmoothYPan = yPan;
+		}
+		else
+		{
+			m_flSmoothXPan = Lerp( MIN( gpGlobals->frametime * m_flPanSpeed, 1.0f ), m_flSmoothXPan, xPan );
+			m_flSmoothYPan = Lerp( MIN( gpGlobals->frametime * m_flPanSpeed, 1.0f ), m_flSmoothYPan, yPan );
+
+			xPan = m_flSmoothXPan;
+			yPan = m_flSmoothYPan;
+		}
+
+		float flPitchInvert = Sign( m_pitch->GetFloat() );
+
+		// we need to apply pitch *after* yaw or it looks weird.
+		VMatrix mat1, mat2, mat3;
+		MatrixFromAngles( m_angPanOrigin, mat1 );
+		MatrixFromAngles( QAngle{ yPan * m_flPitchIntensity * flPitchInvert, 0.0f, 0.0f }, mat2 );
+		MatrixMultiply( mat1, mat2, mat3 );
+
+		MatrixFromAngles( QAngle{ 0.0f, 180.0f + xPan * m_flYawIntensity, 0.0f }, mat2 );
+		MatrixMultiply( mat3, mat2, mat1 );
+
+		QAngle angle;
+		MatrixToAngles( mat1, angle );
+
+		Vector origin = mat1.ApplyRotation( -m_vecCenter ) + m_vecCenter;
+		SetModelAnglesAndPosition( angle, origin );
+	}
 
 	if ( m_bDisplayChanged )
 	{
@@ -221,18 +275,21 @@ void CRD_Swarmopedia_Model_Panel::OnPaint3D()
 		QAngle angRot( 32.0, 0.0, 0.0 );
 		AngleVectors( angRot, &vecOffset );
 
-		Vector vecMins, vecMaxs, vecOverallMins, vecOverallMaxs;
-		FOR_EACH_VEC( m_Models, i )
+		if ( m_bAutoPosition )
 		{
-			GetMDLBoundingBox( &vecMins, &vecMaxs, m_Models[i].m_MDL.m_MDLHandle, m_Models[i].m_MDL.m_nSequence );
-			vecOverallMins = i ? vecOverallMins.Min( vecMins ) : vecMins;
-			vecOverallMaxs = i ? vecOverallMaxs.Max( vecMaxs ) : vecMaxs;
+			Vector vecMins, vecMaxs, vecOverallMins, vecOverallMaxs;
+			FOR_EACH_VEC( m_Models, i )
+			{
+				GetMDLBoundingBox( &vecMins, &vecMaxs, m_Models[i].m_MDL.m_MDLHandle, m_Models[i].m_MDL.m_nSequence );
+				vecOverallMins = i ? vecOverallMins.Min( vecMins ) : vecMins;
+				vecOverallMaxs = i ? vecOverallMaxs.Max( vecMaxs ) : vecMaxs;
+			}
+
+			m_vecCenter = ( vecOverallMins + vecOverallMaxs ) * 0.5f;
+			m_flRadius = m_vecCenter.DistTo( vecOverallMaxs );
 		}
 
-		Vector vecCenter = ( vecOverallMins + vecOverallMaxs ) * 0.5f;
-		float flRadius = vecCenter.DistTo( vecOverallMaxs );
-
-		VectorMA( vecCenter, -3.5f * flRadius, vecOffset, vecPos );
+		VectorMA( m_vecCenter, -3.5f * m_flRadius, vecOffset, vecPos );
 
 		SetCameraPositionAndAngles( vecPos, angRot );
 
