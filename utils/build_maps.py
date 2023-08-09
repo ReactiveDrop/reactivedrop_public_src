@@ -103,9 +103,9 @@ VMFs = [
 ##		MapInfo("rd-nh01_logisticsarea", "2500", "1"),
 ##		MapInfo("rd-nh02_platformxvii", "2500", "1"),
 ##		MapInfo("rd-nh03_groundworklabs", "2500", "1"),
-##		MapInfo("rd-acc1_infodep", "1200", "0"),
-##		MapInfo("rd-acc2_powerhood", "900", "0"),
-##		MapInfo("rd-acc3_rescenter", "1500", "0", vrad=vrad_notextureshadows),
+##		MapInfo("rd-acc1_infodep", "1200", "1"),
+##		MapInfo("rd-acc2_powerhood", "1200", "1"),
+##		MapInfo("rd-acc3_rescenter", "1200", "1", vrad=vrad_notextureshadows),
 ##		MapInfo("rd-acc4_confacility", "900", "1", vrad=vrad_notextureshadows),
 ##		MapInfo("rd-acc5_j5connector", "1200", "1", vrad=vrad_notextureshadows),
 ##		MapInfo("rd-acc6_labruins", "1500", "1", vrad=vrad_notextureshadows),
@@ -145,7 +145,7 @@ if not os.path.exists(mapdir):
 # write first part of the cfg file
 with open(build_all_maps_cfg, "w") as myfile:
 	myfile.write("alias wait1 \"echo 10;wait 100;echo 9;wait 100;echo 8;wait 100;echo 7;wait 100;echo 6;wait 100;echo 5;wait 100;echo 4;wait 100;echo 3;wait 100;echo 2;wait 100;echo 1;wait 100;disconnect;buildnextmap\"\n")
-	myfile.write("alias buildcubemaps1 \"wait 1000;buildcubemaps 2;wait1\"\n")
+	myfile.write("alias buildcubemaps1 \"r_novis 1;wait 1000;buildcubemaps 2;wait1\"\n")
 	myfile.write("alias buildmap0 \"wait 1000;stringtabledictionary;wait 100;asw_restart_mission;wait1\"\n")
 	myfile.write("alias buildmap1 \"wait 1000;stringtabledictionary;wait 100;buildcubemaps1\"\n")
 	myfile.write("alias build_exit \"exit\"\n")
