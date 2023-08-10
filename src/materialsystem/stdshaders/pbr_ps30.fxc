@@ -10,7 +10,8 @@
 // STATIC: "USEENVAMBIENT"              "0..1"
 // STATIC: "EMISSIVE"                   "0..1"
 // STATIC: "SPECULAR"                   "0..1"
-// STATIC:  "PARALLAXOCCLUSION"         "0..1"
+// STATIC: "PARALLAXCORRECT"            "0..1"
+// STATIC: "PARALLAXOCCLUSION"          "0..1"
 
 // DYNAMIC: "WRITEWATERFOGTODESTALPHA"  "0..1"
 // DYNAMIC: "PIXELFOGTYPE"              "0..1"
@@ -24,6 +25,8 @@
 // SKIP: ( $FLASHLIGHT == 0 ) && ( $FLASHLIGHTSHADOWS == 1 )
 // Flashlight shadow filter mode is irrelevant if there is no flashlight
 // SKIP: ( $FLASHLIGHT == 0 ) && ( $FLASHLIGHTDEPTHFILTERMODE != 0 )
+// Parallax-corrected cubemaps only work on brushes
+// SKIP: ( $LIGHTMAPPED == 0 ) && ( $PARALLAXCORRECT != 0 )
 
 #include "common_ps_fxc.h"
 #include "common_flashlight_fxc.h"
@@ -43,8 +46,13 @@ const float4x4 g_FlashlightWorldToTexture       : register(PSREG_FLASHLIGHT_TO_W
 PixelShaderLightInfo cLightInfo[3]              : register(PSREG_LIGHT_INFO_ARRAY);         // 2 registers each - 6 registers total (4th light spread across w's)
 const float4 g_BaseColor                        : register(PSREG_SELFILLUMTINT);
 
+#if PARALLAXCORRECT
+const float3 g_CubemapPos : register( c3 );
+const float4x4 g_ObbMatrix : register( c26 ); // Through c29
+#endif
+
 #if PARALLAXOCCLUSION
-const float4 g_ParallaxParms                    : register( c27 );
+const float4 g_ParallaxParms                    : register( c32 );
 #define PARALLAX_DEPTH                          g_ParallaxParms.r
 #define PARALLAX_CENTER                         g_ParallaxParms.g
 #endif
@@ -122,6 +130,21 @@ float4 main(PS_INPUT i) : COLOR
 	float lightDirectionAngle = max(0, dot(normal, outgoingLightDirection)); // cosLo
 
 	float3 specularReflectionVector = 2.0 * lightDirectionAngle * normal - outgoingLightDirection; // Lr
+
+#if ( PARALLAXCORRECT )
+	float3 worldPos = i.worldPos.xyz;
+	float3 positionLS = mul( float4( worldPos, 1 ), g_ObbMatrix );
+	float3 rayLS = mul( specularReflectionVector, (float3x3)g_ObbMatrix );
+
+	float3 firstPlaneIntersect = ( float3( 1.0f, 1.0f, 1.0f ) - positionLS ) / rayLS;
+	float3 secondPlaneIntersect = ( -positionLS ) / rayLS;
+	float3 furthestPlane = max( firstPlaneIntersect, secondPlaneIntersect );
+	float distance = min( furthestPlane.x, min( furthestPlane.y, furthestPlane.z ) );
+
+	// Use distance in WS directly to recover intersection
+	float3 intersectPositionWS = worldPos + specularReflectionVector * distance;
+	specularReflectionVector = intersectPositionWS - g_CubemapPos;
+#endif
 
 #if SPECULAR
 	float3 fresnelReflectance = specular.rgb; // F0

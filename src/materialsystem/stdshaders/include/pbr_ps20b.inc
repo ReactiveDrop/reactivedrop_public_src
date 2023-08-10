@@ -2,6 +2,7 @@
 // ($PIXELFOGTYPE == 0) && ($WRITEWATERFOGTODESTALPHA != 0)
 // ( $FLASHLIGHT == 0 ) && ( $FLASHLIGHTSHADOWS == 1 )
 // ( $FLASHLIGHT == 0 ) && ( $FLASHLIGHTDEPTHFILTERMODE != 0 )
+// ( $LIGHTMAPPED == 0 ) && ( $PARALLAXCORRECT != 0 )
 // defined $PIXELFOGTYPE && defined $WRITEWATERFOGTODESTALPHA && ( $PIXELFOGTYPE != 1 ) && $WRITEWATERFOGTODESTALPHA
 // defined $LIGHTING_PREVIEW && defined $FASTPATHENVMAPTINT && $LIGHTING_PREVIEW && $FASTPATHENVMAPTINT
 // defined $LIGHTING_PREVIEW && defined $FASTPATHENVMAPCONTRAST && $LIGHTING_PREVIEW && $FASTPATHENVMAPCONTRAST
@@ -27,12 +28,14 @@ class pbr_ps20b_Static_Index
 	unsigned int m_nLIGHTMAPPED : 2;
 	unsigned int m_nEMISSIVE : 2;
 	unsigned int m_nSPECULAR : 2;
+	unsigned int m_nPARALLAXCORRECT : 2;
 #ifdef _DEBUG
 	bool m_bFLASHLIGHT : 1;
 	bool m_bFLASHLIGHTDEPTHFILTERMODE : 1;
 	bool m_bLIGHTMAPPED : 1;
 	bool m_bEMISSIVE : 1;
 	bool m_bSPECULAR : 1;
+	bool m_bPARALLAXCORRECT : 1;
 #endif	// _DEBUG
 public:
 	void SetFLASHLIGHT( int i )
@@ -80,6 +83,15 @@ public:
 #endif	// _DEBUG
 	}
 
+	void SetPARALLAXCORRECT( int i )
+	{
+		Assert( i >= 0 && i <= 1 );
+		m_nPARALLAXCORRECT = i;
+#ifdef _DEBUG
+		m_bPARALLAXCORRECT = true;
+#endif	// _DEBUG
+	}
+
 	pbr_ps20b_Static_Index( IShaderShadow* pShaderShadow, IMaterialVar** params )
 	{
 		m_nFLASHLIGHT = 0;
@@ -87,24 +99,27 @@ public:
 		m_nLIGHTMAPPED = 0;
 		m_nEMISSIVE = 0;
 		m_nSPECULAR = 0;
+		m_nPARALLAXCORRECT = 0;
 #ifdef _DEBUG
 		m_bFLASHLIGHT = false;
 		m_bFLASHLIGHTDEPTHFILTERMODE = false;
 		m_bLIGHTMAPPED = false;
 		m_bEMISSIVE = false;
 		m_bSPECULAR = false;
+		m_bPARALLAXCORRECT = false;
 #endif	// _DEBUG
 	}
 
 	int GetIndex() const
 	{
-		Assert( m_bFLASHLIGHT && m_bFLASHLIGHTDEPTHFILTERMODE && m_bLIGHTMAPPED && m_bEMISSIVE && m_bSPECULAR );
+		Assert( m_bFLASHLIGHT && m_bFLASHLIGHTDEPTHFILTERMODE && m_bLIGHTMAPPED && m_bEMISSIVE && m_bSPECULAR && m_bPARALLAXCORRECT );
 		AssertMsg( !( ( m_nFLASHLIGHT == 0 ) && ( m_nFLASHLIGHTDEPTHFILTERMODE != 0 ) ), "Invalid combo combination ( ( FLASHLIGHT == 0 ) && ( FLASHLIGHTDEPTHFILTERMODE != 0 ) )" );
-		return ( 80 * m_nFLASHLIGHT ) + ( 160 * m_nFLASHLIGHTDEPTHFILTERMODE ) + ( 480 * m_nLIGHTMAPPED ) + ( 960 * m_nEMISSIVE ) + ( 1920 * m_nSPECULAR ) + 0;
+		AssertMsg( !( ( m_nLIGHTMAPPED == 0 ) && ( m_nPARALLAXCORRECT != 0 ) ), "Invalid combo combination ( ( LIGHTMAPPED == 0 ) && ( PARALLAXCORRECT != 0 ) )" );
+		return ( 80 * m_nFLASHLIGHT ) + ( 160 * m_nFLASHLIGHTDEPTHFILTERMODE ) + ( 480 * m_nLIGHTMAPPED ) + ( 960 * m_nEMISSIVE ) + ( 1920 * m_nSPECULAR ) + ( 3840 * m_nPARALLAXCORRECT ) + 0;
 	}
 };
 
-#define shaderStaticTest_pbr_ps20b psh_forgot_to_set_static_FLASHLIGHT + psh_forgot_to_set_static_FLASHLIGHTDEPTHFILTERMODE + psh_forgot_to_set_static_LIGHTMAPPED + psh_forgot_to_set_static_EMISSIVE + psh_forgot_to_set_static_SPECULAR
+#define shaderStaticTest_pbr_ps20b psh_forgot_to_set_static_FLASHLIGHT + psh_forgot_to_set_static_FLASHLIGHTDEPTHFILTERMODE + psh_forgot_to_set_static_LIGHTMAPPED + psh_forgot_to_set_static_EMISSIVE + psh_forgot_to_set_static_SPECULAR + psh_forgot_to_set_static_PARALLAXCORRECT
 
 
 class pbr_ps20b_Dynamic_Index

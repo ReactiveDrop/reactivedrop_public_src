@@ -33,6 +33,7 @@ static ConVar mat_fullbright( "mat_fullbright", "0", FCVAR_CHEAT );
 static ConVar mat_specular( "mat_specular", "1" );
 static ConVar mat_pbr_force_20b( "mat_pbr_force_20b", "0", FCVAR_CHEAT );
 static ConVar mat_pbr_parallaxmap( "mat_pbr_parallaxmap", "1" );
+extern ConVar mat_allow_parallax_cubemaps;
 
 // Variables for this shader
 struct PBR_Vars_t
@@ -59,6 +60,12 @@ struct PBR_Vars_t
 	int mraoTexture;
 	int useEnvAmbient;
 	int specularTexture;
+
+	int m_nEnvmapParallax;
+	int m_nEnvmapParallaxObb1;
+	int m_nEnvmapParallaxObb2;
+	int m_nEnvmapParallaxObb3;
+	int m_nEnvmapOrigin;
 };
 
 // Beginning the shader
@@ -77,6 +84,13 @@ BEGIN_VS_SHADER(PBR, "PBR shader")
 		SHADER_PARAM(PARALLAX, SHADER_PARAM_TYPE_BOOL, "0", "Use Parallax Occlusion Mapping.");
 		SHADER_PARAM(PARALLAXDEPTH, SHADER_PARAM_TYPE_FLOAT, "0.0030", "Depth of the Parallax Map");
 		SHADER_PARAM(PARALLAXCENTER, SHADER_PARAM_TYPE_FLOAT, "0.5", "Center depth of the Parallax Map");
+
+		// Parallax-Corrected Cubemaps (ported from LightmappedGeneric)
+		SHADER_PARAM( ENVMAPPARALLAX, SHADER_PARAM_TYPE_BOOL, "0", "Should envmap reflections be parallax-corrected?" )
+		SHADER_PARAM( ENVMAPPARALLAXOBB1, SHADER_PARAM_TYPE_VEC4, "[1 0 0 0]", "The first line of the parallax correction OBB matrix" )
+		SHADER_PARAM( ENVMAPPARALLAXOBB2, SHADER_PARAM_TYPE_VEC4, "[0 1 0 0]", "The second line of the parallax correction OBB matrix" )
+		SHADER_PARAM( ENVMAPPARALLAXOBB3, SHADER_PARAM_TYPE_VEC4, "[0 0 1 0]", "The third line of the parallax correction OBB matrix" )
+		SHADER_PARAM( ENVMAPORIGIN, SHADER_PARAM_TYPE_VEC3, "[0 0 0]", "The world space position of the env_cubemap being corrected" )
 	END_SHADER_PARAMS;
 
 	// Setting up variables for this shader
@@ -99,6 +113,12 @@ BEGIN_VS_SHADER(PBR, "PBR shader")
 		info.useParallax = PARALLAX;
 		info.parallaxDepth = PARALLAXDEPTH;
 		info.parallaxCenter = PARALLAXCENTER;
+
+		info.m_nEnvmapParallax = ENVMAPPARALLAX;
+		info.m_nEnvmapParallaxObb1 = ENVMAPPARALLAXOBB1;
+		info.m_nEnvmapParallaxObb2 = ENVMAPPARALLAXOBB2;
+		info.m_nEnvmapParallaxObb3 = ENVMAPPARALLAXOBB3;
+		info.m_nEnvmapOrigin = ENVMAPORIGIN;
 	};
 
 	// Initializing parameters
@@ -184,6 +204,12 @@ BEGIN_VS_SHADER(PBR, "PBR shader")
 			SET_FLAGS2(MATERIAL_VAR2_SUPPORTS_FLASHLIGHT);              // Required for flashlight
 			SET_FLAGS2(MATERIAL_VAR2_USE_FLASHLIGHT);                   // Required for flashlight
 		}
+
+		// Cubemap parallax correction requires all 4 lines
+		if ( info.m_nEnvmapParallax != -1 && !( mat_allow_parallax_cubemaps.GetBool() && params[info.m_nEnvmapParallax]->IsDefined() && IS_PARAM_DEFINED( info.m_nEnvmapParallaxObb1 ) && IS_PARAM_DEFINED( info.m_nEnvmapParallaxObb2 ) && IS_PARAM_DEFINED( info.m_nEnvmapParallaxObb3 ) && IS_PARAM_DEFINED( info.m_nEnvmapOrigin ) ) )
+		{
+			params[info.m_nEnvmapParallax]->SetIntValue( 0 );
+		}
 	};
 
 	// Drawing the shader
@@ -204,6 +230,13 @@ BEGIN_VS_SHADER(PBR, "PBR shader")
 		bool bLightMapped = !IS_FLAG_SET(MATERIAL_VAR_MODEL);
 		bool bUseEnvAmbient = (info.useEnvAmbient != -1) && (params[info.useEnvAmbient]->GetIntValue() == 1);
 		bool bHasSpecularTexture = (info.specularTexture != -1) && params[info.specularTexture]->IsTexture();
+		bool hasParallaxCorrection = info.m_nEnvmapParallax != -1 && params[info.m_nEnvmapParallax]->GetIntValue() != 0;
+
+		int useParallax = params[info.useParallax]->GetIntValue();
+		if ( !mat_pbr_parallaxmap.GetBool() || !g_pHardwareConfig->HasFastVertexTextures() || mat_pbr_force_20b.GetBool() )
+		{
+			useParallax = 0;
+		}
 
 		// Determining whether we're dealing with a fully opaque material
 		BlendType_t nBlendType = EvaluateBlendRequirements(info.baseTexture, true);
@@ -285,12 +318,6 @@ BEGIN_VS_SHADER(PBR, "PBR shader")
 				// We only need one texcoord, in the default float2 size
 				pShaderShadow->VertexShaderVertexFormat(flags, 3, 0, 0);
 			}
-		
-			int useParallax = params[info.useParallax]->GetIntValue();
-			if (!mat_pbr_parallaxmap.GetBool())
-			{
-				useParallax = 0;
-			}
 
 			if (!g_pHardwareConfig->HasFastVertexTextures() || mat_pbr_force_20b.GetBool())
 			{
@@ -305,6 +332,7 @@ BEGIN_VS_SHADER(PBR, "PBR shader")
 				SET_STATIC_PIXEL_SHADER_COMBO(LIGHTMAPPED, bLightMapped);
 				SET_STATIC_PIXEL_SHADER_COMBO(EMISSIVE, bHasEmissionTexture);
 				SET_STATIC_PIXEL_SHADER_COMBO(SPECULAR, 0);
+				SET_STATIC_PIXEL_SHADER_COMBO(PARALLAXCORRECT, hasParallaxCorrection);
 				SET_STATIC_PIXEL_SHADER(pbr_ps20b);
 			}
 			else
@@ -322,6 +350,7 @@ BEGIN_VS_SHADER(PBR, "PBR shader")
 				SET_STATIC_PIXEL_SHADER_COMBO(EMISSIVE, bHasEmissionTexture);
 				SET_STATIC_PIXEL_SHADER_COMBO(SPECULAR, bHasSpecularTexture);
 				SET_STATIC_PIXEL_SHADER_COMBO(PARALLAXOCCLUSION, useParallax);
+				SET_STATIC_PIXEL_SHADER_COMBO(PARALLAXCORRECT, hasParallaxCorrection);
 				SET_STATIC_PIXEL_SHADER(pbr_ps30);
 			}
 
@@ -330,6 +359,40 @@ BEGIN_VS_SHADER(PBR, "PBR shader")
 
 			// HACK HACK HACK - enable alpha writes all the time so that we have them for underwater stuff
 			pShaderShadow->EnableAlphaWrites(bFullyOpaque);
+
+			if ( hasParallaxCorrection )
+			{
+				pShaderAPI->SetPixelShaderConstant( 3, params[info.m_nEnvmapOrigin]->GetVecValue() );
+
+				const float *vecs[3];
+				vecs[0] = params[info.m_nEnvmapParallaxObb1]->GetVecValue();
+				vecs[1] = params[info.m_nEnvmapParallaxObb2]->GetVecValue();
+				vecs[2] = params[info.m_nEnvmapParallaxObb3]->GetVecValue();
+				float matrix[4][4];
+				for ( int i = 0; i < 3; i++ )
+				{
+					for ( int j = 0; j < 4; j++ )
+					{
+						matrix[i][j] = vecs[i][j];
+					}
+				}
+				matrix[3][0] = matrix[3][1] = matrix[3][2] = 0;
+				matrix[3][3] = 1;
+				pShaderAPI->SetPixelShaderConstant( 26, &matrix[0][0], 4 );
+			}
+
+			PI_BeginCommandBuffer();
+
+			// Send ambient cube to the pixel shader, force to black if not available
+			PI_SetPixelShaderAmbientLightCube( PSREG_AMBIENT_CUBE );
+
+			// Send lighting array to the pixel shader
+			PI_SetPixelShaderLocalLighting( PSREG_LIGHT_INFO_ARRAY );
+
+			// Set up shader modulation color
+			PI_SetModulationPixelShaderDynamicState( PSREG_DIFFUSE_MODULATION );
+
+			PI_EndCommandBuffer();
 		}
 		else // Not snapshotting -- begin dynamic state
 		{
@@ -531,12 +594,6 @@ BEGIN_VS_SHADER(PBR, "PBR shader")
 			// Setting up base texture transform
 			SetVertexShaderTextureTransform(VERTEX_SHADER_SHADER_SPECIFIC_CONST_0, info.baseTextureTransform);
 
-			// Send ambient cube to the pixel shader, force to black if not available
-			PI_SetPixelShaderAmbientLightCube( PSREG_AMBIENT_CUBE );
-
-			// Send lighting array to the pixel shader
-			PI_SetPixelShaderLocalLighting( PSREG_LIGHT_INFO_ARRAY );
-
 			// Handle mat_fullbright 2 (diffuse lighting only)
 			if (bLightingOnly)
 			{
@@ -551,17 +608,6 @@ BEGIN_VS_SHADER(PBR, "PBR shader")
 
 			// Sending fog info to the pixel shader
 			pShaderAPI->SetPixelShaderFogParams(PSREG_FOG_PARAMS);
-
-#if 0
-			// Set up shader modulation color
-			float modulationColor[4] = { 1.0, 1.0, 1.0, 1.0 };
-			ComputeModulationColor(modulationColor);
-			float flLScale = pShaderAPI->GetLightMapScaleFactor();
-			modulationColor[0] *= flLScale;
-			modulationColor[1] *= flLScale;
-			modulationColor[2] *= flLScale;
-			pShaderAPI->SetPixelShaderConstant(PSREG_DIFFUSE_MODULATION, modulationColor);
-#endif
 
 			// More flashlight related stuff
 			if (bHasFlashlight)
@@ -596,13 +642,15 @@ BEGIN_VS_SHADER(PBR, "PBR shader")
 				pShaderAPI->SetPixelShaderConstant(PSREG_ENVMAP_TINT__SHADOW_TWEAKS, tweaks, 1);
 			}
 
-			float flParams[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-			// Parallax Depth (the strength of the effect)
-			flParams[0] = GetFloatParam(info.parallaxDepth, params, 3.0f);
-			// Parallax Center (the height at which it's not moved)
-			flParams[1] = GetFloatParam(info.parallaxCenter, params, 3.0f);
-			pShaderAPI->SetPixelShaderConstant(27, flParams, 1);
-
+			if ( g_pHardwareConfig->HasFastVertexTextures() )
+			{
+				float flParams[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+				// Parallax Depth (the strength of the effect)
+				flParams[0] = GetFloatParam( info.parallaxDepth, params, 3.0f );
+				// Parallax Center (the height at which it's not moved)
+				flParams[1] = GetFloatParam( info.parallaxCenter, params, 3.0f );
+				pShaderAPI->SetPixelShaderConstant( 32, flParams, 1 );
+			}
 		}
 
 		// Actually draw the shader

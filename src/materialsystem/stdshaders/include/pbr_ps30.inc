@@ -2,6 +2,7 @@
 // ($PIXELFOGTYPE == 0) && ($WRITEWATERFOGTODESTALPHA != 0)
 // ( $FLASHLIGHT == 0 ) && ( $FLASHLIGHTSHADOWS == 1 )
 // ( $FLASHLIGHT == 0 ) && ( $FLASHLIGHTDEPTHFILTERMODE != 0 )
+// ( $LIGHTMAPPED == 0 ) && ( $PARALLAXCORRECT != 0 )
 // defined $PIXELFOGTYPE && defined $WRITEWATERFOGTODESTALPHA && ( $PIXELFOGTYPE != 1 ) && $WRITEWATERFOGTODESTALPHA
 // defined $LIGHTING_PREVIEW && defined $FASTPATHENVMAPTINT && $LIGHTING_PREVIEW && $FASTPATHENVMAPTINT
 // defined $LIGHTING_PREVIEW && defined $FASTPATHENVMAPCONTRAST && $LIGHTING_PREVIEW && $FASTPATHENVMAPCONTRAST
@@ -28,6 +29,7 @@ class pbr_ps30_Static_Index
 	unsigned int m_nUSEENVAMBIENT : 2;
 	unsigned int m_nEMISSIVE : 2;
 	unsigned int m_nSPECULAR : 2;
+	unsigned int m_nPARALLAXCORRECT : 2;
 	unsigned int m_nPARALLAXOCCLUSION : 2;
 #ifdef _DEBUG
 	bool m_bFLASHLIGHT : 1;
@@ -36,6 +38,7 @@ class pbr_ps30_Static_Index
 	bool m_bUSEENVAMBIENT : 1;
 	bool m_bEMISSIVE : 1;
 	bool m_bSPECULAR : 1;
+	bool m_bPARALLAXCORRECT : 1;
 	bool m_bPARALLAXOCCLUSION : 1;
 #endif	// _DEBUG
 public:
@@ -93,6 +96,15 @@ public:
 #endif	// _DEBUG
 	}
 
+	void SetPARALLAXCORRECT( int i )
+	{
+		Assert( i >= 0 && i <= 1 );
+		m_nPARALLAXCORRECT = i;
+#ifdef _DEBUG
+		m_bPARALLAXCORRECT = true;
+#endif	// _DEBUG
+	}
+
 	void SetPARALLAXOCCLUSION( int i )
 	{
 		Assert( i >= 0 && i <= 1 );
@@ -110,6 +122,7 @@ public:
 		m_nUSEENVAMBIENT = 0;
 		m_nEMISSIVE = 0;
 		m_nSPECULAR = 0;
+		m_nPARALLAXCORRECT = 0;
 		m_nPARALLAXOCCLUSION = 0;
 #ifdef _DEBUG
 		m_bFLASHLIGHT = false;
@@ -118,19 +131,21 @@ public:
 		m_bUSEENVAMBIENT = false;
 		m_bEMISSIVE = false;
 		m_bSPECULAR = false;
+		m_bPARALLAXCORRECT = false;
 		m_bPARALLAXOCCLUSION = false;
 #endif	// _DEBUG
 	}
 
 	int GetIndex() const
 	{
-		Assert( m_bFLASHLIGHT && m_bFLASHLIGHTDEPTHFILTERMODE && m_bLIGHTMAPPED && m_bUSEENVAMBIENT && m_bEMISSIVE && m_bSPECULAR && m_bPARALLAXOCCLUSION );
+		Assert( m_bFLASHLIGHT && m_bFLASHLIGHTDEPTHFILTERMODE && m_bLIGHTMAPPED && m_bUSEENVAMBIENT && m_bEMISSIVE && m_bSPECULAR && m_bPARALLAXCORRECT && m_bPARALLAXOCCLUSION );
 		AssertMsg( !( ( m_nFLASHLIGHT == 0 ) && ( m_nFLASHLIGHTDEPTHFILTERMODE != 0 ) ), "Invalid combo combination ( ( FLASHLIGHT == 0 ) && ( FLASHLIGHTDEPTHFILTERMODE != 0 ) )" );
-		return ( 80 * m_nFLASHLIGHT ) + ( 160 * m_nFLASHLIGHTDEPTHFILTERMODE ) + ( 480 * m_nLIGHTMAPPED ) + ( 960 * m_nUSEENVAMBIENT ) + ( 1920 * m_nEMISSIVE ) + ( 3840 * m_nSPECULAR ) + ( 7680 * m_nPARALLAXOCCLUSION ) + 0;
+		AssertMsg( !( ( m_nLIGHTMAPPED == 0 ) && ( m_nPARALLAXCORRECT != 0 ) ), "Invalid combo combination ( ( LIGHTMAPPED == 0 ) && ( PARALLAXCORRECT != 0 ) )" );
+		return ( 80 * m_nFLASHLIGHT ) + ( 160 * m_nFLASHLIGHTDEPTHFILTERMODE ) + ( 480 * m_nLIGHTMAPPED ) + ( 960 * m_nUSEENVAMBIENT ) + ( 1920 * m_nEMISSIVE ) + ( 3840 * m_nSPECULAR ) + ( 7680 * m_nPARALLAXCORRECT ) + ( 15360 * m_nPARALLAXOCCLUSION ) + 0;
 	}
 };
 
-#define shaderStaticTest_pbr_ps30 psh_forgot_to_set_static_FLASHLIGHT + psh_forgot_to_set_static_FLASHLIGHTDEPTHFILTERMODE + psh_forgot_to_set_static_LIGHTMAPPED + psh_forgot_to_set_static_USEENVAMBIENT + psh_forgot_to_set_static_EMISSIVE + psh_forgot_to_set_static_SPECULAR + psh_forgot_to_set_static_PARALLAXOCCLUSION
+#define shaderStaticTest_pbr_ps30 psh_forgot_to_set_static_FLASHLIGHT + psh_forgot_to_set_static_FLASHLIGHTDEPTHFILTERMODE + psh_forgot_to_set_static_LIGHTMAPPED + psh_forgot_to_set_static_USEENVAMBIENT + psh_forgot_to_set_static_EMISSIVE + psh_forgot_to_set_static_SPECULAR + psh_forgot_to_set_static_PARALLAXCORRECT + psh_forgot_to_set_static_PARALLAXOCCLUSION
 
 
 class pbr_ps30_Dynamic_Index

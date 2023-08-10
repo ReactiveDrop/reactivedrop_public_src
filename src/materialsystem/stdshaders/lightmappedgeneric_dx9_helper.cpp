@@ -33,7 +33,7 @@ extern ConVar r_twopasspaint;
 
 
 static ConVar mat_force_vertexfog( "mat_force_vertexfog", "0", FCVAR_DEVELOPMENTONLY );
-static ConVar mat_allow_parallax_cubemaps( "mat_allow_parallax_cubemaps", "1" );
+ConVar mat_allow_parallax_cubemaps( "mat_allow_parallax_cubemaps", "1" );
 
 void InitParamsLightmappedGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** params, const char *pMaterialName, LightmappedGeneric_DX9_Vars_t &info )
 {
