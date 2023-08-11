@@ -101,7 +101,7 @@
       <ShowProgress>NotSet</ShowProgress>
       <OutputFile>$(OutDir)\vbsp.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <IgnoreSpecificDefaultLibraries>libc;libcd;libcmt;libcpmt;libcpmt1</IgnoreSpecificDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>libc;libcd;libcmtd;libcpmt;libcpmt1</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(IntDir)/$(TargetName).pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
@@ -201,7 +201,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <Library Include="..\..\lib\public\bitmap.lib" />
-    <Library Include="..\..\lib\public\fgdlib.lib" />
     <Library Include="..\..\lib\public\interfaces.lib" />
     <Library Include="..\..\lib\public\mathlib.lib" />
     <Library Include="..\..\lib\public\tier0.lib" />
@@ -288,6 +287,11 @@
     <ClInclude Include="..\common\tools_minidump.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\fgdlib\gamedata.cpp" />
+    <ClCompile Include="..\..\fgdlib\gdclass.cpp" />
+    <ClCompile Include="..\..\fgdlib\gdvar.cpp" />
+    <ClCompile Include="..\..\fgdlib\inputoutput.cpp" />
+    <ClCompile Include="..\..\fgdlib\wckeyvalues.cpp" />
     <ClCompile Include="boundbox.cpp" />
     <ClCompile Include="brushbsp.cpp" />
     <ClCompile Include="..\..\public\CollisionUtils.cpp" />
