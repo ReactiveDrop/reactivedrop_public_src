@@ -55,12 +55,13 @@ float		minchop = 4; // "-chop" tightest number of luxel widths for a patch, used
 float		dispchop = 8.0f;	// number of luxel widths for a patch
 float		g_MaxDispPatchRadius = 1500.0f;			// Maximum radius allowed for displacement patches
 qboolean	g_bDumpPatches;
-bool	    bDumpNormals = false;
+bool		bDumpNormals = false;
 bool		g_bDumpRtEnv = false;
 bool		bRed2Black = true;
 bool		g_bFastAmbient = false;
-bool        g_bNoSkyRecurse = false;
+bool		g_bNoSkyRecurse = false;
 bool		g_bDumpPropLightmaps = false;
+bool		g_bFiniteFalloff = false;
 
 
 int			junk;
@@ -84,7 +85,7 @@ char		incrementfile[_MAX_PATH] = "";
 IIncremental *g_pIncremental = 0;
 bool		g_bInterrupt = false;	// Wsed with background lighting in WC. Tells VRAD
 									// to stop lighting.
-float g_SunAngularExtent=0.0;
+float g_SunAngularExtent = -1.0f;
 
 float g_flSkySampleScale = 1.0;
 
@@ -116,9 +117,10 @@ qboolean	g_bLogHashData = false;
 bool		g_bNoDetailLighting = false;
 double		g_flStartTime;
 bool		g_bStaticPropLighting = false;
-bool        g_bStaticPropPolys = false;
-bool        g_bTextureShadows = false;
-bool        g_bDisablePropSelfShadowing = false;
+int			g_iStaticPropLightingNumberUNK = 1;
+bool		g_bStaticPropPolys = false;
+bool		g_bTextureShadows = false;
+bool		g_bDisablePropSelfShadowing = false;
 
 
 CUtlVector<byte> g_FacesVisibleToLights;
@@ -2367,14 +2369,19 @@ int ParseCommandLine( int argc, char **argv, bool *onlydetail )
 
 	int mapArg = -1;
 
-	// default to LDR
-	SetHDRMode( false );
+	// default to HDR
+	SetHDRMode( true );
 	int i;
 	for( i=1 ; i<argc ; i++ )
 	{
 		if ( !Q_stricmp( argv[i], "-StaticPropLighting" ) )
 		{
 			g_bStaticPropLighting = true;
+		}
+		else if ( !Q_stricmp( argv[i], "-StaticPropLighting3" ) )
+		{
+			g_bStaticPropLighting = true;
+			g_iStaticPropLightingNumberUNK = 3;
 		}
 		else if ( !stricmp( argv[i], "-StaticPropNormals" ) )
 		{
@@ -2498,6 +2505,10 @@ int ParseCommandLine( int argc, char **argv, bool *onlydetail )
 		else if (!Q_stricmp(argv[i],"-final"))
 		{
 			g_flSkySampleScale = 16.0;
+		}
+		else if (!Q_stricmp(argv[i],"-finitefalloff"))
+		{
+			g_bFiniteFalloff = true;
 		}
 		else if (!Q_stricmp(argv[i],"-extrasky"))
 		{
@@ -2792,7 +2803,7 @@ void PrintUsage( int argc, char **argv )
 {
 	PrintCommandLine( argc, argv );
 
-	Warning(	
+	Warning(
 		"usage  : vrad [options...] bspfile\n"
 		"example: vrad c:\\hl2\\hl2\\maps\\test\n"
 		"\n"
@@ -2803,6 +2814,7 @@ void PrintUsage( int argc, char **argv )
 		"  -fast           : Quick and dirty lighting.\n"
 		"  -fastambient    : Per-leaf ambient sampling is lower quality to save compute time.\n"
 		"  -final          : High quality processing. equivalent to -extrasky 16.\n"
+		"  -finitefalloff  : use an alternative falloff model that falls off to exactly zero at the zero_percent_distance.\n"
 		"  -extrasky n     : trace N times as many rays for indirect light and sky ambient.\n"
 		"  -low            : Run as an idle-priority process.\n"
 		"  -mpi            : Use VMPI to distribute computations.\n"
@@ -2825,6 +2837,8 @@ void PrintUsage( int argc, char **argv )
 		"                    supersampling.\n"
 		"  -smooth #       : Set the threshold for smoothing groups, in degrees\n"
 		"                    (default 45).\n"
+	);
+	Warning(
 		"  -dlightmap      : Force direct lighting into different lightmap than\n"
 		"                    radiosity.\n"
 		"  -stoponexit	   : Wait for a keypress on exit.\n"
@@ -2899,7 +2913,7 @@ int RunVRAD( int argc, char **argv )
 
 	bool onlydetail;
 	int i = ParseCommandLine( argc, argv, &onlydetail );
-	if (i == -1)
+	if (i != argc - 1)
 	{
 		PrintUsage( argc, argv );
 		DeleteCmdLine( argc, argv );

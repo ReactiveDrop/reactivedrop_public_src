@@ -61,6 +61,7 @@ struct colorVertex_t
 	bool	m_bValid;
 };
 
+#ifndef NO_PROP_LIGHTMAPS
 // a texel suitable for a model
 struct colorTexel_t
 {
@@ -70,8 +71,8 @@ struct colorTexel_t
 	float		m_fDistanceToTri; // If we are outside of the triangle, how far away is it?
 	bool		m_bValid;
 	bool		m_bPossiblyInteresting;
-
 };
+#endif
 
 class CComputeStaticPropLightingResults
 {
@@ -79,11 +80,15 @@ public:
 	~CComputeStaticPropLightingResults()
 	{
 		m_ColorVertsArrays.PurgeAndDeleteElements();
+#ifndef NO_PROP_LIGHTMAPS
 		m_ColorTexelsArrays.PurgeAndDeleteElements();
+#endif
 	}
 	
 	CUtlVector< CUtlVector<colorVertex_t>* > m_ColorVertsArrays;
+#ifndef NO_PROP_LIGHTMAPS
 	CUtlVector< CUtlVector<colorTexel_t>* > m_ColorTexelsArrays;
+#endif
 };
 
 #ifndef NO_PROP_LIGHTMAPS
@@ -232,6 +237,7 @@ CUtlSymbolTable g_ForcedTextureShadowsModels;
 // INSIDE PropTested_t.  USE THAT INSTEAD.
 IPhysicsCollision *s_pPhysCollision = NULL;
 
+#ifndef NO_PROP_LIGHTMAPS
 static void ConvertTexelDataToTexture(unsigned int _resX, unsigned int _resY, ImageFormat _destFmt, const CUtlVector<colorTexel_t>& _srcTexels, CUtlMemory<byte>* _outTexture);
 
 // Such a monstrosity. :(
@@ -242,6 +248,7 @@ static void GenerateLightmapSamplesForMesh( const matrix3x4_t& _matPos, const ma
 // Debug function, converts lightmaps to linear space then dumps them out. 
 // TODO: Write out the file in a .dds instead of a .tga, in whatever format we're supposed to use.
 static void DumpLightmapLinear( const char* _dstFilename, const CUtlVector<colorTexel_t>& _srcTexels, int _width, int _height );
+#endif
 
 
 //-----------------------------------------------------------------------------
@@ -533,7 +540,7 @@ bool LoadVTXFile( char const* pModelName, const studiohdr_t *pStudioHdr, CUtlBuf
 
 	// construct filename
 	Q_StripExtension( pModelName, filename, sizeof( filename ) );
-	strcat( filename, ".dx80.vtx" );
+	strcat( filename, ".dx90.vtx" );
 
 	if ( !LoadFile( filename, buf ) )
 	{
@@ -1218,7 +1225,11 @@ void ComputeDirectLightingAtPoint( Vector &position, Vector &normal, Vector &out
 //-----------------------------------------------------------------------------
 void CVradStaticPropMgr::ApplyLightingToStaticProp( int iStaticProp, CStaticProp &prop, const CComputeStaticPropLightingResults *pResults )
 {
+#ifndef NO_PROP_LIGHTMAPS
 	if ( pResults->m_ColorVertsArrays.Count() == 0 && pResults->m_ColorTexelsArrays.Count() == 0 )
+#else
+	if ( pResults->m_ColorVertsArrays.Count() == 0 )
+#endif
 		return;
 
 	StaticPropDict_t &dict = m_StaticPropDict[prop.m_ModelIdx];
@@ -1227,7 +1238,9 @@ void CVradStaticPropMgr::ApplyLightingToStaticProp( int iStaticProp, CStaticProp
 	Assert( pStudioHdr && pVtxHdr );
 
 	int iCurColorVertsArray = 0;
+#ifndef NO_PROP_LIGHTMAPS
 	int iCurColorTexelsArray = 0;
+#endif
 
 	for ( int bodyID = 0; bodyID < pStudioHdr->numbodyparts; ++bodyID )
 	{
@@ -1240,7 +1253,9 @@ void CVradStaticPropMgr::ApplyLightingToStaticProp( int iStaticProp, CStaticProp
 			mstudiomodel_t *pStudioModel = pBodyPart->pModel( modelID );
 						
 			const CUtlVector<colorVertex_t> *colorVerts = pResults->m_ColorVertsArrays.Count() ? pResults->m_ColorVertsArrays[iCurColorVertsArray++] : nullptr;
+#ifndef NO_PROP_LIGHTMAPS
 			const CUtlVector<colorTexel_t> *colorTexels = pResults->m_ColorTexelsArrays.Count() ? pResults->m_ColorTexelsArrays[iCurColorTexelsArray++] : nullptr;
+#endif
 			
 			for ( int nLod = 0; nLod < pVtxHdr->numLODs; nLod++ )
 			{
@@ -1331,13 +1346,15 @@ void CVradStaticPropMgr::ComputeLighting( CStaticProp &prop, int iThread, int pr
 	}
 
 	const bool withVertexLighting = (prop.m_Flags & STATIC_PROP_NO_PER_VERTEX_LIGHTING) == 0;
-#ifdef NO_PROP_LIGHTMAPS
-	const bool withTexelLighting = false;
-#else
+#ifndef NO_PROP_LIGHTMAPS
 	const bool withTexelLighting = (prop.m_Flags & STATIC_PROP_NO_PER_TEXEL_LIGHTING) == 0;
 #endif
 
-	if (!withVertexLighting && !withTexelLighting)
+#ifndef NO_PROP_LIGHTMAPS
+	if ( !withVertexLighting && !withTexelLighting )
+#else
+	if ( !withVertexLighting )
+#endif
 		return;
 
 	const int skip_prop = (g_bDisablePropSelfShadowing || (prop.m_Flags & STATIC_PROP_NO_SELF_SHADOWING)) ? prop_index : -1;
@@ -1359,11 +1376,13 @@ void CVradStaticPropMgr::ComputeLighting( CStaticProp &prop, int iThread, int pr
 			OptimizedModel::ModelHeader_t* pVtxModel = pVtxBodyPart->pModel(modelID);
 			mstudiomodel_t *pStudioModel = pBodyPart->pModel( modelID );
 
+#ifndef NO_PROP_LIGHTMAPS
 			if (withTexelLighting)
 			{
 				CUtlVector<colorTexel_t> *pColorTexelArray = new CUtlVector<colorTexel_t>;
 				pResults->m_ColorTexelsArrays.AddToTail(pColorTexelArray);
 			}
+#endif
 			
 			// light all unique vertexes
 			CUtlVector<colorVertex_t> *pColorVertsArray = new CUtlVector<colorVertex_t>;
@@ -1517,7 +1536,7 @@ void CVradStaticPropMgr::ComputeLighting( CStaticProp &prop, int iThread, int pr
 }
 
 //-----------------------------------------------------------------------------
-// Write the lighitng to bsp pak lump
+// Write the lighting to bsp pak lump
 //-----------------------------------------------------------------------------
 void CVradStaticPropMgr::SerializeLighting()
 {
@@ -1707,6 +1726,7 @@ void CVradStaticPropMgr::VMPI_ProcessStaticProp( int iThread, int iStaticProp, M
 		pBuf->write( curList.Base(), curList.Count() * sizeof( colorVertex_t ) );
 	}
 
+#ifndef NO_PROP_LIGHTMAPS
 	nLists = results.m_ColorTexelsArrays.Count();
 	pBuf->write(&nLists, sizeof(nLists));
 
@@ -1717,6 +1737,7 @@ void CVradStaticPropMgr::VMPI_ProcessStaticProp( int iThread, int iStaticProp, M
 		pBuf->write(&count, sizeof(count));
 		pBuf->write(curList.Base(), curList.Count() * sizeof(colorTexel_t));
 	}
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -1741,6 +1762,7 @@ void CVradStaticPropMgr::VMPI_ReceiveStaticPropResults( int iStaticProp, Message
 		pBuf->read( pList->Base(), count * sizeof( colorVertex_t ) );
 	}
 
+#ifndef NO_PROP_LIGHTMAPS
 	pBuf->read(&nLists, sizeof(nLists));
 
 	for (int i = 0; i < nLists; i++)
@@ -1753,7 +1775,8 @@ void CVradStaticPropMgr::VMPI_ReceiveStaticPropResults( int iStaticProp, Message
 		pList->SetSize(count);
 		pBuf->read(pList->Base(), count * sizeof(colorTexel_t));
 	}
-	
+#endif
+
 	// Apply the results.
 	ApplyLightingToStaticProp( iStaticProp, m_StaticProps[iStaticProp], &results );
 }
@@ -2459,7 +2482,6 @@ static void GenerateLightmapSamplesForMesh( const matrix3x4_t& _matPos, const ma
 		}
 	}
 }
-#endif
 
 // ------------------------------------------------------------------------------------------------
 static int GetTexelCount(unsigned int _resX, unsigned int _resY, bool _mipmaps)
@@ -2712,3 +2734,4 @@ static void DumpLightmapLinear( const char* _dstFilename, const CUtlVector<color
 	
 	TGAWriter::WriteTGAFile( _dstFilename, _width, _height, IMAGE_FORMAT_BGR888, (uint8*)(linearBuffer.Base()), _width * ImageLoader::SizeInBytes(IMAGE_FORMAT_BGR888) );
 }
+#endif

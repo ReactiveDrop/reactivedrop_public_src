@@ -261,6 +261,23 @@ BEGIN_BYTESWAP_DATADESC( dphysdisp_t )
 	DEFINE_FIELD( numDisplacements, FIELD_SHORT ),
 END_BYTESWAP_DATADESC()
 
+BEGIN_BYTESWAP_DATADESC( dprophull_t )
+	DEFINE_FIELD( m_nVertCount, FIELD_INTEGER ),
+	DEFINE_FIELD( m_nVertStart, FIELD_INTEGER ),
+	DEFINE_FIELD( m_nSurfaceProp, FIELD_INTEGER ),
+	DEFINE_FIELD( m_nContents, FIELD_INTEGER ),
+END_BYTESWAP_DATADESC()
+
+BEGIN_BYTESWAP_DATADESC( dprophulltris_t )
+	DEFINE_FIELD( m_nIndexStart, FIELD_INTEGER ),
+	DEFINE_FIELD( m_nIndexCount, FIELD_INTEGER ),
+END_BYTESWAP_DATADESC()
+
+BEGIN_BYTESWAP_DATADESC( dpropcollision_t )
+	DEFINE_FIELD( m_nHullCount, FIELD_INTEGER ),
+	DEFINE_FIELD( m_nHullStart, FIELD_INTEGER ),
+END_BYTESWAP_DATADESC()
+
 BEGIN_BYTESWAP_DATADESC( darea_t )
 	DEFINE_FIELD( numareaportals, FIELD_INTEGER ),
 	DEFINE_FIELD( firstareaportal, FIELD_INTEGER ),
@@ -272,6 +289,25 @@ BEGIN_BYTESWAP_DATADESC( dareaportal_t )
 	DEFINE_FIELD( m_FirstClipPortalVert, FIELD_SHORT ),
 	DEFINE_FIELD( m_nClipPortalVerts, FIELD_SHORT ),
 	DEFINE_FIELD( planenum, FIELD_INTEGER ),
+END_BYTESWAP_DATADESC()
+
+BEGIN_BYTESWAP_DATADESC( dworldlight_version0_t )
+	DEFINE_FIELD( origin, FIELD_VECTOR ),
+	DEFINE_FIELD( intensity, FIELD_VECTOR ),
+	DEFINE_FIELD( normal, FIELD_VECTOR ),
+	DEFINE_FIELD( cluster, FIELD_INTEGER ),
+	DEFINE_FIELD( type, FIELD_INTEGER ),	// enumeration
+	DEFINE_FIELD( style, FIELD_INTEGER ),
+	DEFINE_FIELD( stopdot, FIELD_FLOAT ),
+	DEFINE_FIELD( stopdot2, FIELD_FLOAT ),
+	DEFINE_FIELD( exponent, FIELD_FLOAT ),
+	DEFINE_FIELD( radius, FIELD_FLOAT ),
+	DEFINE_FIELD( constant_attn, FIELD_FLOAT ),
+	DEFINE_FIELD( linear_attn, FIELD_FLOAT ),
+	DEFINE_FIELD( quadratic_attn, FIELD_FLOAT ),
+	DEFINE_FIELD( flags, FIELD_INTEGER ),
+	DEFINE_FIELD( texinfo, FIELD_INTEGER ),
+	DEFINE_FIELD( owner, FIELD_INTEGER ),
 END_BYTESWAP_DATADESC()
 
 BEGIN_BYTESWAP_DATADESC( dworldlight_t )
@@ -779,11 +815,10 @@ CUtlVector<doccluderdata_t>	g_OccluderData( 256, 256 );
 CUtlVector<doccluderpolydata_t>	g_OccluderPolyData( 1024, 1024 );
 CUtlVector<int>	g_OccluderVertexIndices( 2048, 2048 );
 
-// TODO
-CUtlVector<byte[8]> g_PropCollision;
-CUtlVector<byte[16]> g_PropHulls;
-CUtlVector<byte[12]> g_PropHullVerts;
-CUtlVector<byte[8]> g_PropTris;
+CUtlVector<dpropcollision_t> g_PropCollision;
+CUtlVector<dprophull_t> g_PropHulls;
+CUtlVector<dvertex_t> g_PropHullVerts;
+CUtlVector<dprophulltris_t> g_PropTris;
 CUtlVector<byte> g_PropBlob;
 
 template <class T> static void WriteData( T *pData, int count = 1 );
@@ -2168,6 +2203,61 @@ int LoadLeafs( void )
 	}
 }
 
+int LoadWorldLights( int lump, dworldlight_t *dest )
+{
+	if ( lump != LUMP_WORLDLIGHTS && lump != LUMP_WORLDLIGHTS_HDR )
+	{
+		Error( "Unexpected worldlight lumpnum %d\n", lump );
+	}
+
+	if ( !HasLump( lump ) )
+	{
+		return 0;
+	}
+
+	int iVersion = LumpVersion( lump );
+	switch ( iVersion )
+	{
+	case 0:
+	{
+		dworldlight_version0_t *v0 = ( dworldlight_version0_t * )malloc( g_pBSPHeader->lumps[lump].filelen );
+		int count = CopyLump( lump, v0 );
+
+		for ( int i = 0; i < count; i++ )
+		{
+			dest[i].origin = v0[i].origin;
+			dest[i].intensity = v0[i].intensity;
+			dest[i].normal = v0[i].normal;
+			dest[i].shadow_cast_offset.Init( 0.0f, 0.0f, 0.0f );
+			dest[i].cluster = v0[i].cluster;
+			dest[i].type = v0[i].type;
+			dest[i].style = v0[i].style;
+			dest[i].stopdot = v0[i].stopdot;
+			dest[i].stopdot2 = v0[i].stopdot2;
+			dest[i].exponent = v0[i].exponent;
+			dest[i].radius = v0[i].radius;
+			dest[i].constant_attn = v0[i].constant_attn;
+			dest[i].linear_attn = v0[i].linear_attn;
+			dest[i].quadratic_attn = v0[i].quadratic_attn;
+			dest[i].flags = v0[i].flags;
+			dest[i].texinfo = v0[i].texinfo;
+			dest[i].owner = v0[i].owner;
+		}
+
+		free( v0 );
+		return count;
+	}
+
+	case 1:
+		return CopyLump( lump, dest );
+
+	default:
+		Assert( 0 );
+		Error( "Unexpected worldlights lump version %d\n", iVersion );
+		return 0;
+	}
+}
+
 void LoadLeafAmbientLighting( int numLeafs )
 {
 	if ( LumpVersion( LUMP_LEAFS ) == 0 )
@@ -2343,13 +2433,19 @@ void LoadBSPFile( const char *filename )
 	LoadLeafAmbientLighting( numleafs );
 
 	CopyLump( FIELD_CHARACTER, LUMP_ENTITIES, dentdata );
-	numworldlightsLDR = CopyLump( LUMP_WORLDLIGHTS, dworldlightsLDR );
-	numworldlightsHDR = CopyLump( LUMP_WORLDLIGHTS_HDR, dworldlightsHDR );
+	numworldlightsLDR = LoadWorldLights( LUMP_WORLDLIGHTS, dworldlightsLDR );
+	numworldlightsHDR = LoadWorldLights( LUMP_WORLDLIGHTS_HDR, dworldlightsHDR );
 	
 	numleafwaterdata = CopyLump( LUMP_LEAFWATERDATA, dleafwaterdata );
 	g_PhysCollideSize = CopyVariableLump<byte>( FIELD_CHARACTER, LUMP_PHYSCOLLIDE, ( void ** )&g_pPhysCollide );
 	g_PhysLevelSize = CopyVariableLump<byte>( FIELD_CHARACTER, LUMP_PHYSLEVEL, (void**)&g_pPhysLevel );
 	g_PhysDispSize = CopyVariableLump<byte>( FIELD_CHARACTER, LUMP_PHYSDISP, (void**)&g_pPhysDisp );
+
+	CopyLump( LUMP_PROPCOLLISION, g_PropCollision );
+	CopyLump( LUMP_PROPHULLS, g_PropHulls );
+	CopyLump( LUMP_PROPHULLVERTS, g_PropHullVerts );
+	CopyLump( LUMP_PROPTRIS, g_PropTris );
+	CopyLump( FIELD_CHARACTER, LUMP_PROP_BLOB, g_PropBlob );
 
 	g_numvertnormals = CopyLump( FIELD_VECTOR, LUMP_VERTNORMALS, (float*)g_vertnormals );
 	g_numvertnormalindices = CopyLump( FIELD_SHORT, LUMP_VERTNORMALINDICES, g_vertnormalindices );
@@ -2812,11 +2908,11 @@ void WriteBSPFile( const char *filename, char *pUnused )
 	AddLump( LUMP_FACEIDS, dfaceids, numfaceids );
 	AddLump( LUMP_ORIGINALFACES, dorigfaces, numorigfaces );     // original faces lump
 
-	AddLump( LUMP_PROPCOLLISION, g_PropCollision ); // sizeof element = 8
-	AddLump( LUMP_PROPHULLS, g_PropHulls ); // sizeof element = 16
-	AddLump( LUMP_PROPHULLVERTS, g_PropHullVerts ); // sizeof element = 12
-	AddLump( LUMP_PROPTRIS, g_PropTris ); // sizeof element = 8
-	AddLump( LUMP_PROP_BLOB, g_PropBlob ); // sizeof element = 1
+	AddLump( LUMP_PROPCOLLISION, g_PropCollision );
+	AddLump( LUMP_PROPHULLS, g_PropHulls );
+	AddLump( LUMP_PROPHULLVERTS, g_PropHullVerts );
+	AddLump( LUMP_PROPTRIS, g_PropTris );
+	AddLump( LUMP_PROP_BLOB, g_PropBlob );
 
 	// NOTE: This is just for debugging, so it is disabled in release maps
 #if 0
