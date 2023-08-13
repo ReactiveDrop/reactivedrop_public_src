@@ -341,6 +341,11 @@ static void UpdateMatchmakingTagsCallback( IConVar *pConVar, const char *pOldVal
 	{
 		KeyValues::AutoDelete pUpdate( "update" );
 		pUpdate->SetString( "update/options/server", pSettings->GetString( "server/server" ) );
+		if ( !V_strcmp( pSettings->GetString( "server/server" ), "dedicated" ) )
+		{
+			// If we're on a dedicated server, add its IP to the lobby info so we can deduplicate it in the lobby browser.
+			pUpdate->SetString( "update/system/rd_dedicated_server", pSettings->GetString( "server/adronline" ) );
+		}
 		g_pMatchFramework->GetMatchSession()->UpdateSessionSettings( pUpdate );
 	}
 
@@ -366,8 +371,6 @@ static void UpdateMatchmakingTagsCallback( IConVar *pConVar, const char *pOldVal
 	{
 		UTIL_RD_RemoveCurrentLobbyData( "game:missioninfo:official" );
 	}
-
-	UTIL_RD_UpdateCurrentLobbyData( "game:missioninfo:map_name", engine->GetLevelName() );
 
 	UTIL_RD_UpdateCurrentLobbyData( "system:game_version", engine->GetProductVersionString() );
 	UTIL_RD_UpdateCurrentLobbyData( "system:map_version", GetClientWorldEntity()->m_nMapVersion );

@@ -131,10 +131,6 @@ int BaseModUI::FoundGameListItem::Info::CompareMapVersion() const
 	{
 		V_snprintf( szBSPName, sizeof( szBSPName ), "maps/%s.bsp", mpGameDetails->GetString( "game/mission" ) );
 	}
-	else if ( const char *szName = mpGameDetails->GetString( "game/missioninfo/map_name", NULL ) )
-	{
-		V_strncpy( szBSPName, szName, sizeof( szBSPName ) );
-	}
 	else
 	{
 		return INT_MIN;
