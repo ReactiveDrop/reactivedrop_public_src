@@ -93,12 +93,6 @@ void CNB_Leaderboard_Panel_Points::OnCommand( const char *command )
 		OnKeyCodePressed( ButtonCodeToJoystickButtonCode( KEY_XBUTTON_B, CBaseModPanel::GetSingleton().GetLastActiveUserId() ) );
 		return;
 	}
-	if ( !Q_stricmp( command, "ServerList" ) )
-	{
-		OnKeyCodePressed( ButtonCodeToJoystickButtonCode( KEY_XBUTTON_B, CBaseModPanel::GetSingleton().GetLastActiveUserId() ) );
-		CBaseModPanel::GetSingleton().OpenWindow( WT_IAFRANKSSERVERS, this, true );
-		return;
-	}
 	if ( !V_stricmp( command, "StatsWebsite" ) )
 	{
 		if ( SteamApps() )

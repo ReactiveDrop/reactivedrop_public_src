@@ -44,7 +44,6 @@
 #include "VFoundGames.h"
 #include "VFoundGroupGames.h"
 #include "vfoundpublicgames.h"
-#include "VFoundGroupGames_IAFRanks.h"
 #include "VGameLobby.h"
 #include "VGameOptions.h"
 #include "VGameSettings.h"
@@ -536,10 +535,6 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 
 		case WT_IAFRANKS:
 			m_Frames[wt] = new CNB_Leaderboard_Panel_Points( this, "LeaderboardPanel" );
-			break;
-
-		case WT_IAFRANKSSERVERS:
-			m_Frames[wt] = new FoundGroupGamesIAFRanks( this, "FoundGames" );
 			break;
 
 		case WT_ADVANCEDSETTINGS:
