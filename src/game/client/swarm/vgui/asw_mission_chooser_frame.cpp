@@ -264,6 +264,8 @@ void CASW_Mission_Chooser_Frame::OnCommand( const char *command )
 		}
 
 		m_bViewingCampaign = false;
+
+		InvalidateLayout( true, true );
 	}
 	else
 	{
