@@ -24,7 +24,7 @@ int UTIL_RD_PingLobby( CSteamID lobby );
 
 struct RD_Lobby_Scoreboard_Entry_t
 {
-	char Name[k_cchPersonaNameMax];
+	wchar_t Name[k_cwchPersonaNameMax];
 	int Score;
 	float Connected;
 };
@@ -125,6 +125,7 @@ public:
 	int Count() const;
 	gameserveritem_t *GetDetails( int iServer ) const;
 	bool IsHoIAFServer( int iServer ) const;
+	bool IsHoIAFServer( gameserveritem_t *pDetails ) const;
 	bool IsVACSecure( int iServer ) const;
 	bool HasPassword( int iServer ) const;
 	int GetPing( int iServer ) const;

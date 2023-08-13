@@ -197,7 +197,9 @@ void UTIL_RD_ReadLobbyScoreboard( CSteamID lobby, CUtlVector<RD_Lobby_Scoreboard
 		}
 
 		int index = scoreboard.AddToTail();
-		V_hextobinary( szHexName, V_strlen( szHexName ), reinterpret_cast< byte * >( scoreboard[index].Name ), sizeof( scoreboard[index].Name ) );
+		char szName[k_cchPersonaNameMax];
+		V_hextobinary( szHexName, V_strlen( szHexName ), reinterpret_cast< byte * >( szName ), sizeof( szName ) );
+		V_UTF8ToUnicode( szName, scoreboard[index].Name, sizeof( scoreboard[index].Name ) );
 		scoreboard[index].Score = V_atoi( PlayerInfo[1] );
 		scoreboard[index].Connected = V_atof( PlayerInfo[2] );
 	}
@@ -624,7 +626,11 @@ gameserveritem_t *CReactiveDropServerListHelper::GetDetails( int iServer ) const
 
 bool CReactiveDropServerListHelper::IsHoIAFServer( int iServer ) const
 {
-	gameserveritem_t *pDetails = GetDetails( iServer );
+	return IsHoIAFServer( GetDetails( iServer ) );
+}
+
+bool CReactiveDropServerListHelper::IsHoIAFServer( gameserveritem_t *pDetails ) const
+{
 	if ( !pDetails )
 		return false;
 
@@ -673,7 +679,6 @@ CSteamID CReactiveDropServerListHelper::GetSteamID( int iServer ) const
 void CReactiveDropServerListHelper::ServerResponded( HServerListRequest hRequest, int iServer )
 {
 	Assert( m_hServerListRequestNext == hRequest );
-	
 }
 void CReactiveDropServerListHelper::ServerFailedToRespond( HServerListRequest hRequest, int iServer )
 {
@@ -693,7 +698,7 @@ void CReactiveDropServerListHelper::RefreshComplete( HServerListRequest hRequest
 CReactiveDropServerList g_ReactiveDropServerList;
 
 CReactiveDropServerList::CReactiveDropServerList() :
-	m_PublicLobbies{ "s_ReactiveDropServerList.m_PublicLobbies" }
+	m_PublicLobbies{ "g_ReactiveDropServerList.m_PublicLobbies" }
 {
 	m_PublicServers.m_eMode = CReactiveDropServerListHelper::MODE_INTERNET;
 	m_PublicServers.m_Filters.AddToTail( new MatchMakingKeyValuePair_t{ "and", "6" } );
@@ -705,6 +710,14 @@ CReactiveDropServerList::CReactiveDropServerList() :
 	m_PublicServers.m_Filters.AddToTail( new MatchMakingKeyValuePair_t{ "gametagsand", "HoIAF" } );
 
 	m_InternetServers.m_eMode = CReactiveDropServerListHelper::MODE_INTERNET;
+	// if we don't specify a filter at all, the API starts querying ten thousand random servers for any game on Steam,
+	// which isn't likely to give us useful results and it also takes several minutes to finish each refresh.
+	// since we don't want to filter servers on this list, we're allowing servers with at least one player or empty slot;
+	// this will allow servers with at least 1 max players, which is fine because you can't even network in source engine
+	// with max players set below 2.
+	m_InternetServers.m_Filters.AddToTail( new MatchMakingKeyValuePair_t{ "or", "2" } );
+	m_InternetServers.m_Filters.AddToTail( new MatchMakingKeyValuePair_t{ "notfull", "" } );
+	m_InternetServers.m_Filters.AddToTail( new MatchMakingKeyValuePair_t{ "hasplayers", "" } );
 
 	m_FavoriteServers.m_eMode = CReactiveDropServerListHelper::MODE_FAVORITES;
 
