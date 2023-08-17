@@ -56,7 +56,7 @@ float g_flDOFFarBlurRadius = 5.0f;
 bool g_bFlashlightIsOn = false;
 
 // hdr parameters
-ConVar mat_bloomscale( "mat_bloomscale", "1" );
+ConVar mat_bloomscale( "mat_bloomscale", "2" );
 
 ConVar mat_hdr_level( "mat_hdr_level", "2" );
 ConVar mat_bloomamount_rate( "mat_bloomamount_rate", "0.05f", FCVAR_CHEAT );
