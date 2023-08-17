@@ -35,7 +35,7 @@ void UTIL_RD_ReadLobbyScoreboard( CSteamID lobby, CUtlVector<RD_Lobby_Scoreboard
 class __single_inheritance CReactiveDropLobbySearch
 {
 public:
-	CReactiveDropLobbySearch( const char *pszDebugName = "unnamed lobby search" );
+	CReactiveDropLobbySearch( const char *pszDebugName );
 	~CReactiveDropLobbySearch();
 
 	struct StringFilter_t
@@ -104,6 +104,7 @@ private:
 class CReactiveDropServerListHelper : public ISteamMatchmakingServerListResponse
 {
 public:
+	CReactiveDropServerListHelper( const char *pszDebugName );
 	~CReactiveDropServerListHelper();
 
 	enum Mode_t
@@ -131,6 +132,8 @@ public:
 	int GetPing( int iServer ) const;
 	const char *GetName( int iServer ) const;
 	CSteamID GetSteamID( int iServer ) const;
+
+	const char *m_pszDebugName;
 
 	// ISteamMatchmakingServerListResponse implementation
 	void ServerResponded( HServerListRequest hRequest, int iServer ) override;

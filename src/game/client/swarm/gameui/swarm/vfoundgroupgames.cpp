@@ -8,6 +8,7 @@
 #include "EngineInterface.h"
 
 #include "fmtstr.h"
+#include "rd_lobby_utils.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -64,127 +65,47 @@ void FoundGroupGames::OnEvent( KeyValues *pEvent )
 }
 
 //=============================================================================
-void FoundGroupGames::StartSearching( void )
-{
-	 g_pMatchFramework->GetMatchSystem()->GetUserGroupsServerManager()->EnableServersUpdate( true );
-}
-
-static void HandleJoinServerSession( FoundGameListItem::Info const &fi )
-{
-	if ( fi.mInfoType != FoundGameListItem::FGT_SERVER )
-		return;
-
-	IMatchServer *pIMatchServer = g_pMatchFramework->GetMatchSystem()->GetUserGroupsServerManager()
-		->GetServerByOnlineId( fi.mFriendXUID );
-	if ( !pIMatchServer )
-		return;
-
-	pIMatchServer->Join();
-}
-
-//=============================================================================
 void FoundGroupGames::AddServersToList( void )
 {
-	IServerManager *mgr = g_pMatchFramework->GetMatchSystem()->GetUserGroupsServerManager();
+	ISteamFriends *pFriends = SteamFriends();
+	Assert( pFriends );
+	if ( !pFriends )
+		return;
 
-	int numItems = mgr->GetNumServers();
-	for( int i = 0; i < numItems; ++i )
+	CUtlVector<CSteamID> GroupIDs;
+	GroupIDs.SetCount( pFriends->GetClanCount() );
+	FOR_EACH_VEC( GroupIDs, i )
 	{
-		IMatchServer *item = mgr->GetServerByIndex( i );
-		KeyValues *pGameDetails = item->GetGameDetails();
-
-		if ( !ShouldAddServerToList( pGameDetails ) )
-			continue;
-
-		FoundGameListItem::Info fi;
-
-		fi.mInfoType = FoundGameListItem::FGT_SERVER;
-		Q_strncpy( fi.Name, pGameDetails->GetString( "server/name", "#L4D_Default_Hostname" ), sizeof( fi.Name ) );
-
-		fi.mIsJoinable = item->IsJoinable();
-		fi.mbInGame = true;
-
-		fi.miPing = pGameDetails->GetInt( "server/ping", 0 );
-
-		if ( fi.miPing == 0 )
-			fi.mPing = fi.GP_NONE;
-		else if ( fi.miPing < rd_lobby_ping_low.GetInt() )
-			fi.mPing = fi.GP_LOW;
-		else if ( fi.miPing <= rd_lobby_ping_high.GetInt() )
-			fi.mPing = fi.GP_MEDIUM;
-		else
-			fi.mPing = fi.GP_HIGH;
-
-		if ( !Q_stricmp( "lan", pGameDetails->GetString( "system/network", "" ) ) )
-			fi.mPing = fi.GP_SYSTEMLINK;
-
-		fi.mpGameDetails = pGameDetails;
-
-		fi.mFriendXUID = item->GetOnlineId();
-
-		const char *szModDir = pGameDetails->GetString( "game/dir", "swarm" );
-		if ( Q_stricmp( szModDir, COM_GetModDirectory() ) )
-		{
-			Q_snprintf( fi.mchOtherTitle, sizeof( fi.mchOtherTitle ), szModDir );
-		}
-
-		// Check if this is actually a non-joinable game
-		if ( fi.IsOtherTitle() )
-		{
-			fi.mIsJoinable = false;
-		}
-		else if ( fi.IsDownloadable() )
-		{
-			fi.mIsJoinable = false;
-		}
-		else if ( fi.mbInGame )
-		{
-			char const *szHint = fi.GetNonJoinableShortHint( false );
-			if ( !*szHint )
-			{
-				fi.mIsJoinable = true;
-				fi.mpfnJoinGame = HandleJoinServerSession;
-			}
-			else
-			{
-				fi.mIsJoinable = false;
-			}
-		}
-
-		AddGameFromDetails( fi );
-	}
-}
-
-bool FoundGroupGames::ShouldAddServerToList( KeyValues *pGameSettings )
-{
-	char const *szGameMode = m_pDataSettings->GetString( "game/mode", "" );
-	if ( !szGameMode || !*szGameMode )
-		return true;
-
-	char const *szServerGameMode = pGameSettings->GetString( "game/mode", "" );
-	return !Q_stricmp( szServerGameMode, szGameMode );
-}
-
-void FoundGroupGames::SortListItems()
-{
-	FoundGames::SortListItems();
-}
-
-//=============================================================================
-bool FoundGroupGames::IsADuplicateServer( FoundGameListItem *item, FoundGameListItem::Info const &fi )
-{
-	// Only check server address
-	FoundGameListItem::Info const &ii = item->GetFullInfo();
-	if ( ii.mFriendXUID == fi.mFriendXUID &&
-#if defined( _X360 )
-		1
-#else
-		ii.mpGameDetails->GetUint64( "player/xuidOnline" ) == fi.mpGameDetails->GetUint64( "player/xuidOnline" )
-#endif
-		 )
-	{
-		return true;
+		GroupIDs[i] = pFriends->GetClanByIndex( i );
 	}
 
-	return false;
+	g_ReactiveDropServerList.m_InternetServers.WantUpdatedServerList();
+
+	FOR_EACH_VEC( g_ReactiveDropServerList.m_InternetServers, i )
+	{
+		FoundGameListItem::Info info;
+		if ( info.SetFromServer( g_ReactiveDropServerList.m_InternetServers, i ) )
+		{
+			CSteamID group = V_atoui64( info.m_szGroupID );
+			if ( !group.BClanAccount() )
+				continue;
+
+			if ( GroupIDs.IsValidIndex( GroupIDs.Find( group ) ) )
+			{
+				AddGameFromDetails( info );
+			}
+		}
+	}
+
+	// now add lobbies that match the servers we just found to the list
+	g_ReactiveDropServerList.m_PublicLobbies.WantUpdatedLobbyList();
+
+	FOR_EACH_VEC( g_ReactiveDropServerList.m_PublicLobbies.m_MatchingLobbies, i )
+	{
+		FoundGameListItem::Info info;
+		if ( info.SetFromLobby( g_ReactiveDropServerList.m_PublicLobbies.m_MatchingLobbies[i] ) )
+			AddGameFromDetails( info, true );
+	}
+
+	AddFriendGamesToList( true );
 }
