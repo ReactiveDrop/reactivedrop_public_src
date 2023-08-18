@@ -1,6 +1,7 @@
 #include "cbase.h"
 #include "rd_vgui_main_menu_hoiaf_leaderboard_entry.h"
-#include "vgui/ISurface.h"
+#include <vgui/ILocalize.h>
+#include <vgui/ISurface.h>
 #include "c_asw_steamstats.h"
 #include "asw_util_shared.h"
 #include "vgui_avatarimage.h"
@@ -86,7 +87,7 @@ void CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry::SetFromEntry( const Leaderboard
 
 	m_pAvatar->SetAvatarBySteamID( &m_SteamID );
 	wchar_t wszRankNumber[32];
-	V_snwprintf( wszRankNumber, NELEMS( wszRankNumber ), L"#%s", UTIL_RD_CommaNumber( entry.m_nGlobalRank ) );
+	g_pVGuiLocalize->ConstructString( wszRankNumber, sizeof( wszRankNumber ), g_pVGuiLocalize->Find( "#rd_main_menu_hoiaf_place_number" ), 1, UTIL_RD_CommaNumber( entry.m_nGlobalRank ) );
 	m_pLblRankNumber->SetText( wszRankNumber );
 	m_pLblScore->SetText( UTIL_RD_CommaNumber( entry.m_nScore ) );
 }
