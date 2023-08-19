@@ -397,25 +397,32 @@ void CRD_VGUI_Loadout_Marine::SetupDisplay()
 	if ( !pProfile )
 		return;
 
-	RD_Swarmopedia::Display MarineDisplay;
+	const char *const szFileName = "resource/swarmopedia_loadout_display.txt";
 
-	MarineDisplay.Models.AddToTail( new RD_Swarmopedia::Model() );
-	MarineDisplay.Models[0]->ModelName = pProfile->GetModelName();
-	MarineDisplay.Models[0]->Skin = pProfile->GetSkinNum();
-	MarineDisplay.Models[0]->BodyGroups.Insert( 1, pProfile->GetSkinNum() );
-	MarineDisplay.Models[0]->Animations.Insert( "run_aiming_all", 1.0f );
+	KeyValues::AutoDelete pKV{ "Display" };
+	UTIL_RD_LoadKeyValuesFromFile( pKV, g_pFullFileSystem, szFileName, "GAME" );
 
-	//MarineDisplay.Models.AddToTail( new RD_Swarmopedia::Model() );
-	//MarineDisplay.Models[1]->ModelName = "models/error.mdl"; // TODO: room model
+	RD_Swarmopedia::Display *pDisplay = RD_Swarmopedia::Helpers::ReadFromFile< RD_Swarmopedia::Display>( szFileName, pKV );
+	if ( !pDisplay )
+		pDisplay = new RD_Swarmopedia::Display();
+
+	if ( pDisplay->Models.Count() == 0 )
+		pDisplay->Models.AddToTail( new RD_Swarmopedia::Model() );
+	pDisplay->Models[0]->ModelName = pProfile->GetModelName();
+	pDisplay->Models[0]->Skin = pProfile->GetSkinNum();
+	pDisplay->Models[0]->BodyGroups.Purge();
+	pDisplay->Models[0]->BodyGroups.Insert( 1, pProfile->GetSkinNum() );
+	pDisplay->Models[0]->Animations.Purge();
+	pDisplay->Models[0]->Animations.Insert( "run_aiming_all", 1.0f );
 
 	ASW_Inventory_slot_t iDisplayedSlot = m_bSecondaryWeapon ? ASW_INVENTORY_SLOT_SECONDARY : ASW_INVENTORY_SLOT_PRIMARY;
 	if ( CASW_WeaponInfo *pWeaponData = g_ASWEquipmentList.GetWeaponDataFor( g_ASWEquipmentList.GetRegular( GetWeaponIndex( iDisplayedSlot, m_pWeapon[iDisplayedSlot]->m_pWeaponVar->GetInt(), m_pMarine->m_iProfile ) )->m_szEquipClass ) )
 	{
-		int i = MarineDisplay.Models.AddToTail( new RD_Swarmopedia::Model() );
-		MarineDisplay.Models[i]->ModelName = pWeaponData->szViewModel;
-		MarineDisplay.Models[i]->Skin = pWeaponData->m_iPlayerModelSkin;
-		MarineDisplay.Models[i]->BoneMerge = 0;
-		MarineDisplay.Models[i]->IsWeapon = true;
+		int i = pDisplay->Models.AddToTail( new RD_Swarmopedia::Model() );
+		pDisplay->Models[i]->ModelName = pWeaponData->szViewModel;
+		pDisplay->Models[i]->Skin = pWeaponData->m_iPlayerModelSkin;
+		pDisplay->Models[i]->BoneMerge = 0;
+		pDisplay->Models[i]->IsWeapon = true;
 	}
 
 	const CASW_EquipItem *pExtraInfo = g_ASWEquipmentList.GetExtra( GetWeaponIndex( ASW_INVENTORY_SLOT_EXTRA, m_pWeapon[ASW_INVENTORY_SLOT_EXTRA]->m_pWeaponVar->GetInt(), m_pMarine->m_iProfile ) );
@@ -423,23 +430,23 @@ void CRD_VGUI_Loadout_Marine::SetupDisplay()
 	{
 		if ( CASW_WeaponInfo *pExtraData = g_ASWEquipmentList.GetWeaponDataFor( pExtraInfo->m_szEquipClass ) )
 		{
-			int i = MarineDisplay.Models.AddToTail( new RD_Swarmopedia::Model() );
-			MarineDisplay.Models[i]->ModelName = pExtraData->szViewModel;
-			MarineDisplay.Models[i]->Skin = pProfile->GetSkinNum();
-			MarineDisplay.Models[i]->BoneMerge = 0;
+			int i = pDisplay->Models.AddToTail( new RD_Swarmopedia::Model() );
+			pDisplay->Models[i]->ModelName = pExtraData->szViewModel;
+			pDisplay->Models[i]->Skin = pProfile->GetSkinNum();
+			pDisplay->Models[i]->BoneMerge = 0;
 			if ( pExtraInfo->m_bViewModelHidesMarineBodyGroup1 )
 			{
-				MarineDisplay.Models[0]->BodyGroups.InsertOrReplace( 1, 0 );
+				pDisplay->Models[0]->BodyGroups.InsertOrReplace( 1, 0 );
 			}
 		}
 	}
 
-	MarineDisplay.LightingState = SwarmopediaDefaultLightingState();
 	m_pModelPanel->m_bUseTimeScale = false;
 	m_pModelPanel->m_bAutoPosition = false;
-	m_pModelPanel->m_vecCenter = Vector{ 0.0f, 0.0f, 32.0f };
+	m_pModelPanel->m_vecCenter = Vector{ 0.0f, 0.0f, 48.0f };
 	m_pModelPanel->m_flRadius = 128.0f;
-	m_pModelPanel->SetDisplay( &MarineDisplay );
+	m_pModelPanel->SetDisplay( pDisplay );
+	delete pDisplay;
 }
 
 void CRD_VGUI_Loadout_Marine::OnThink()
