@@ -7,6 +7,7 @@
 #include "ibriefing.h"
 #include "asw_marine_profile.h"
 
+class CAvatarImagePanel;
 class CBitmapButton;
 class CNB_Header_Footer;
 class CNB_Skill_Panel;
@@ -109,10 +110,14 @@ public:
 	CRD_VGUI_Loadout_List_Item( vgui::Panel *parent, const char *panelName, const char *szName, const ReactiveDropLoadout::LoadoutData_t &loadout, PublishedFileId_t id = k_PublishedFileIdInvalid );
 
 	bool IsLabel() override { return false; }
+	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+	void Paint() override;
 
 	char m_szName[MAX_VALUE];
 	ReactiveDropLoadout::LoadoutData_t m_Loadout;
 	PublishedFileId_t m_iAddonID;
+
+	vgui::Label *m_pLblTitle;
 };
 
 class CRD_VGUI_Loadout_List_Addon_Header : public vgui::EditablePanel, public IGenericPanelListItem
@@ -122,8 +127,18 @@ public:
 	CRD_VGUI_Loadout_List_Addon_Header( vgui::Panel *parent, const char *panelName, PublishedFileId_t id );
 
 	bool IsLabel() override { return true; }
+	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+	void OnThink() override;
 
 	PublishedFileId_t m_iAddonID;
+
+	vgui::ImagePanel *m_pImgWorkshopIcon;
+	vgui::Label *m_pLblTitle;
+	CAvatarImagePanel *m_pImgAuthorAvatar;
+	vgui::Label *m_pLblAuthorName;
+	bool m_bLoadedAddonDetails;
+
+	STEAM_CALLBACK( CRD_VGUI_Loadout_List_Addon_Header, OnPersonaStateChange, PersonaStateChange_t );
 };
 
 class CRD_VGUI_Loadout_Marine : public vgui::EditablePanel
@@ -133,6 +148,7 @@ public:
 	CRD_VGUI_Loadout_Marine( vgui::Panel *parent, const char *panelName, ASW_Marine_Profile iProfile );
 
 	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+	void OnCommand( const char *command ) override;
 	void SetupDisplay();
 	void OnThink() override;
 	void NavigateTo() override;

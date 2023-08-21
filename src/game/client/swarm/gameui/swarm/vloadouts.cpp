@@ -22,6 +22,8 @@
 #include "asw_weapon_parse.h"
 #include "briefingtooltip.h"
 #include "asw_weapon_shared.h"
+#include "vgui_avatarimage.h"
+#include "rd_workshop_preview_image.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -39,6 +41,7 @@ extern ConVar rd_equipped_weapon_primary[ASW_NUM_MARINE_PROFILES];
 extern ConVar rd_equipped_weapon_secondary[ASW_NUM_MARINE_PROFILES];
 extern ConVar rd_equipped_weapon_extra[ASW_NUM_MARINE_PROFILES];
 extern ConVar asw_unlock_all_weapons;
+extern ConVar rd_loadout_load_medals;
 
 const IBriefing_ItemInstance Loadouts::s_EmptyItemInstance;
 
@@ -75,6 +78,7 @@ Loadouts::Loadouts( Panel *parent, const char *panelName )
 	ReactiveDropLoadout::InitLoadouts();
 
 	m_pGplSavedLoadouts = new GenericPanelList( this, "GplSavedLoadouts", GenericPanelList::ISM_PERITEM );
+	m_pGplSavedLoadouts->AddPanelItem( new CRD_VGUI_Loadout_List_Item( this, "LoadoutListItem", "", ReactiveDropLoadout::DefaultLoadout ), true );
 	for ( int i = 0; i < int( ReactiveDropLoadout::Loadouts.Count() ); i++ )
 	{
 		m_pGplSavedLoadouts->AddPanelItem( new CRD_VGUI_Loadout_List_Item( this, "LoadoutListItem", ReactiveDropLoadout::Loadouts.GetElementName( i ), ReactiveDropLoadout::Loadouts[i] ), true );
@@ -102,6 +106,8 @@ Loadouts::Loadouts( Panel *parent, const char *panelName )
 	for ( int i = 0; i < ASW_NUM_MARINE_PROFILES; i++ )
 	{
 		m_pBtnMarineLoadout[i] = new CBitmapButton( this, VarArgs( "BtnMarine%d", i ), "" );
+		m_pBtnMarineLoadout[i]->SetConsoleStylePanel( true );
+		m_pBtnMarineLoadout[i]->SetFocusOnNavigateTo( true );
 	}
 
 	SetTitle( "", false );
@@ -152,6 +158,12 @@ void Loadouts::ApplySchemeSettings( vgui::IScheme *pScheme )
 		{
 			iPromotion = pMedals->GetPromotion();
 		}
+	}
+
+	m_pGplSavedLoadouts->SetNavUp( m_pTopBar );
+	for ( int i = 0; i < 4; i++ )
+	{
+		m_pBtnMarineLoadout[i]->SetNavUp( m_pTopBar );
 	}
 
 	if ( iPromotion <= 0 || iPromotion > ASW_PROMOTION_CAP )
@@ -394,15 +406,171 @@ void Loadouts::SelectWeapon( int nProfileIndex, int nInventorySlot, int nEquipIn
 CRD_VGUI_Loadout_List_Item::CRD_VGUI_Loadout_List_Item( vgui::Panel *parent, const char *panelName, const char *szName, const ReactiveDropLoadout::LoadoutData_t &loadout, PublishedFileId_t id ) :
 	BaseClass( parent, panelName )
 {
+	SetConsoleStylePanel( true );
+
 	V_strncpy( m_szName, szName, sizeof( m_szName ) );
 	m_Loadout = loadout;
 	m_iAddonID = id;
+
+	wchar_t wszName[MAX_VALUE];
+	if ( szName[0] == '\0' )
+		TryLocalize( "#rd_loadout_default", wszName, sizeof( wszName ) );
+	else
+		V_UTF8ToUnicode( szName, wszName, sizeof( wszName ) );
+
+	m_pLblTitle = new vgui::Label( this, "LblTitle", wszName );
+}
+
+void CRD_VGUI_Loadout_List_Item::ApplySchemeSettings( vgui::IScheme *pScheme )
+{
+	BaseClass::ApplySchemeSettings( pScheme );
+
+	LoadControlSettings( "resource/ui/CRD_VGUI_Loadout_List_Item.res" );
+
+	SetTall( GetTall() + YRES( 10 ) * ( m_Loadout.NumMarinesIncluded() + 1 ) / 2 );
+
+	if ( rd_loadout_load_medals.GetBool() && m_Loadout.HasAnyMedal() )
+	{
+		SetTall( GetTall() + YRES( 10 ) );
+	}
+}
+
+void CRD_VGUI_Loadout_List_Item::Paint()
+{
+	BaseClass::Paint();
+
+	float flIconSize = YRES( 10 );
+	bool bHasMedals = rd_loadout_load_medals.GetBool() && m_Loadout.HasAnyMedal();
+
+	float y = int( GetTall() - flIconSize * ( m_Loadout.NumMarinesIncluded() + 1 ) / 2 );
+	if ( bHasMedals )
+		y = int( y - flIconSize );
+
+	int col = 0;
+	for ( int i = 0; i < ASW_NUM_MARINE_PROFILES; i++ )
+	{
+		if ( !m_Loadout.MarineIncluded[i] )
+			continue;
+
+		float x = ( ( GetWide() - flIconSize * 6 * 2 ) / ( 2 + 1 ) + flIconSize * 6 ) * ( col + 1 ) - flIconSize * 6;
+		vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
+		vgui::surface()->DrawSetTexture( MarineProfileList()->GetProfile( i )->m_nPortraitTextureID );
+		vgui::surface()->DrawTexturedRect( x, y, x + flIconSize, y + flIconSize );
+
+		x += flIconSize;
+		vgui::surface()->DrawSetTexture( g_ASWEquipmentList.GetEquipIconTexture( true, GetWeaponIndex( ASW_INVENTORY_SLOT_PRIMARY, m_Loadout.Marines[i].Primary, ASW_Marine_Profile( i ) ) ) );
+		vgui::surface()->DrawTexturedRect( x, y, x + flIconSize * 2, y + flIconSize );
+
+		x += flIconSize * 2;
+		vgui::surface()->DrawSetTexture( g_ASWEquipmentList.GetEquipIconTexture( true, GetWeaponIndex( ASW_INVENTORY_SLOT_SECONDARY, m_Loadout.Marines[i].Secondary, ASW_Marine_Profile( i ) ) ) );
+		vgui::surface()->DrawTexturedRect( x, y, x + flIconSize * 2, y + flIconSize );
+
+		x += flIconSize * 2;
+		vgui::surface()->DrawSetTexture( g_ASWEquipmentList.GetEquipIconTexture( false, GetWeaponIndex( ASW_INVENTORY_SLOT_EXTRA, m_Loadout.Marines[i].Extra, ASW_Marine_Profile( i ) ) ) );
+		vgui::surface()->DrawTexturedRect( x, y, x + flIconSize, y + flIconSize );
+
+		col++;
+		if ( col >= 2 )
+		{
+			col = 0;
+			y += flIconSize;
+		}
+	}
+
+	if ( col != 0 )
+	{
+		col = 0;
+		y += flIconSize;
+	}
+
+	if ( bHasMedals )
+	{
+		for ( int i = 0; i < RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS; i++ )
+		{
+			if ( const ReactiveDropInventory::ItemInstance_t *pInstance = ReactiveDropInventory::GetLocalItemCache( m_Loadout.Medals[i] ) )
+			{
+				if ( vgui::IImage *pIcon = pInstance->GetIcon() )
+				{
+					vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
+					vgui::surface()->DrawSetTexture( pIcon->GetID() );
+					int x = ( ( GetWide() - flIconSize * RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS ) / ( RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS + 1 ) + flIconSize ) * ( i + 1 ) - flIconSize;
+					vgui::surface()->DrawTexturedRect( x, y, x + flIconSize, y + flIconSize );
+				}
+			}
+		}
+	}
 }
 
 CRD_VGUI_Loadout_List_Addon_Header::CRD_VGUI_Loadout_List_Addon_Header( vgui::Panel *parent, const char *panelName, PublishedFileId_t id ) :
 	BaseClass( parent, panelName )
 {
 	m_iAddonID = id;
+
+	m_pImgWorkshopIcon = new vgui::ImagePanel( this, "ImgWorkshopIcon" );
+	m_pLblTitle = new vgui::Label( this, "LblTitle", VarArgs( "%llu", id ) );
+	m_pImgAuthorAvatar = new CAvatarImagePanel( this, "ImgAuthorAvatar" );
+	m_pLblAuthorName = new vgui::Label( this, "LblAuthorName", "" );
+
+	m_bLoadedAddonDetails = false;
+}
+
+void CRD_VGUI_Loadout_List_Addon_Header::ApplySchemeSettings( vgui::IScheme *pScheme )
+{
+	BaseClass::ApplySchemeSettings( pScheme );
+
+	LoadControlSettings( "resource/ui/CRD_VGUI_Loadout_List_Addon_Header.res" );
+}
+
+void CRD_VGUI_Loadout_List_Addon_Header::OnThink()
+{
+	BaseClass::OnThink();
+
+	if ( m_bLoadedAddonDetails )
+		return;
+
+	ISteamFriends *pFriends = SteamFriends();
+	Assert( pFriends );
+	if ( !pFriends )
+		return;
+
+	if ( const CReactiveDropWorkshop::WorkshopItem_t &item = g_ReactiveDropWorkshop.TryQueryAddon( m_iAddonID ) )
+	{
+		if ( vgui::IImage *pImage = const_cast<CReactiveDropWorkshopPreviewImage *>( item.pPreviewImage.GetObject() ) )
+		{
+			m_pImgWorkshopIcon->SetImage( pImage );
+			m_bLoadedAddonDetails = true;
+		}
+
+		wchar_t wszTitle[k_cchPublishedDocumentTitleMax];
+		V_UTF8ToUnicode( item.details.m_rgchTitle, wszTitle, sizeof( wszTitle ) );
+
+		m_pLblTitle->SetText( wszTitle );
+
+		CSteamID authorID( item.details.m_ulSteamIDOwner );
+		m_pImgAuthorAvatar->SetAvatarBySteamID( &authorID );
+
+		wchar_t wszPersonaName[k_cwchPersonaNameMax];
+		V_UTF8ToUnicode( pFriends->GetFriendPersonaName( authorID ), wszPersonaName, sizeof( wszPersonaName ) );
+		m_pLblAuthorName->SetText( wszPersonaName );
+	}
+}
+
+void CRD_VGUI_Loadout_List_Addon_Header::OnPersonaStateChange( PersonaStateChange_t *pParam )
+{
+	ISteamFriends *pFriends = SteamFriends();
+	Assert( pFriends );
+	if ( !pFriends )
+		return;
+
+	if ( !m_bLoadedAddonDetails )
+		return;
+
+	if ( g_ReactiveDropWorkshop.TryQueryAddon( m_iAddonID ).details.m_ulSteamIDOwner != pParam->m_ulSteamID )
+		return;
+
+	wchar_t wszPersonaName[k_cwchPersonaNameMax];
+	V_UTF8ToUnicode( pFriends->GetFriendPersonaName( pParam->m_ulSteamID ), wszPersonaName, sizeof( wszPersonaName ) );
+	m_pLblAuthorName->SetText( wszPersonaName );
 }
 
 CRD_VGUI_Loadout_Marine::CRD_VGUI_Loadout_Marine( vgui::Panel *parent, const char *panelName, ASW_Marine_Profile iProfile ) :
@@ -479,6 +647,20 @@ void CRD_VGUI_Loadout_Marine::ApplySchemeSettings( vgui::IScheme *pScheme )
 	SetupDisplay();
 }
 
+void CRD_VGUI_Loadout_Marine::OnCommand( const char *command )
+{
+	if ( !V_stricmp( command, "Back" ) )
+	{
+		CBaseModPanel::GetSingleton().PlayUISound( UISOUND_BACK );
+
+		MarkForDeletion();
+
+		return;
+	}
+
+	BaseClass::OnCommand( command );
+}
+
 void CRD_VGUI_Loadout_Marine::SetupDisplay()
 {
 	CASW_Marine_Profile *pProfile = MarineProfileList()->GetProfile( m_pMarine->m_iProfile );
@@ -491,7 +673,7 @@ void CRD_VGUI_Loadout_Marine::SetupDisplay()
 	KeyValues::AutoDelete pKV{ "Display" };
 	UTIL_RD_LoadKeyValuesFromFile( pKV, g_pFullFileSystem, szFileName, "GAME" );
 
-	RD_Swarmopedia::Display *pDisplay = RD_Swarmopedia::Helpers::ReadFromFile< RD_Swarmopedia::Display>( szFileName, pKV );
+	RD_Swarmopedia::Display *pDisplay = RD_Swarmopedia::Helpers::ReadFromFile<RD_Swarmopedia::Display>( szFileName, pKV );
 	if ( !pDisplay )
 		pDisplay = new RD_Swarmopedia::Display();
 

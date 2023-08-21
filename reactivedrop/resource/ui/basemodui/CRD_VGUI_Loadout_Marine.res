@@ -34,6 +34,20 @@
 		"tall"				"340"
 	}
 
+	"BtnBack"
+	{
+		"ControlName"		"BaseModHybridButton"
+		"fieldName"			"BtnBack"
+		"xpos"				"8"
+		"ypos"				"8"
+		"wide"				"100"
+		"tall"				"16"
+		"labelText"			"#asw_menu_back"
+		"command"			"Back"
+		"style"				"DialogButton"
+		"navDown"			"MarineSlot"
+	}
+
 	"BiographyBackground"
 	{
 		"ControlName"		"Panel"
@@ -155,6 +169,7 @@
 		"ypos"				"360"
 		"wide"				"75"
 		"tall"				"75"
+		"navUp"				"BtnBack"
 		"navRight"			"WeaponSlot0"
 	}
 
@@ -180,6 +195,7 @@
 		"ypos"				"360"
 		"wide"				"150"
 		"tall"				"75"
+		"navUp"				"BtnBack"
 		"navLeft"			"MarineSlot"
 		"navRight"			"WeaponSlot1"
 	}
@@ -206,6 +222,7 @@
 		"ypos"				"360"
 		"wide"				"150"
 		"tall"				"75"
+		"navUp"				"BtnBack"
 		"navLeft"			"WeaponSlot0"
 		"navRight"			"WeaponSlot2"
 	}
@@ -232,6 +249,7 @@
 		"ypos"				"360"
 		"wide"				"75"
 		"tall"				"75"
+		"navUp"				"BtnBack"
 		"navLeft"			"WeaponSlot1"
 	}
 

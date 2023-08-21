@@ -50,6 +50,8 @@ public:
 	void SetImageColor( ButtonImageType_t type, color32 color );
 	bool IsImageLoaded( ButtonImageType_t type ) const;
 
+	void SetFocusOnNavigateTo( bool bAutoFocus ) { m_bFocusOnNavigateTo = bAutoFocus; }
+
 	// initialization from build-mode dialog style .res files
 	virtual void ApplySettings(KeyValues *inResourceData);
 
@@ -59,12 +61,14 @@ public:
 	virtual void OnMouseDoublePressed( vgui::MouseCode code );
 	void SetDoublePressedCommand( const char *command );
 	void SetDoublePressedCommand( KeyValues *message );
+	void NavigateTo() override;
 
 private:
 
 	BitmapImage	m_pImage[BUTTON_STATE_COUNT];
 	bool m_bImageLoaded[BUTTON_STATE_COUNT];
 	KeyValues *_doublePressedActionMessage;
+	bool m_bFocusOnNavigateTo;
 };
 
 

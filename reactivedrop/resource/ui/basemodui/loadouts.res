@@ -34,7 +34,7 @@
 	{
 		"ControlName"		"GenericPanelList"
 		"fieldName"			"GplSavedLoadouts"
-		"xpos"				"c-300"
+		"xpos"				"c-290"
 		"ypos"				"40"
 		"wide"				"155"
 		"tall"				"414"
