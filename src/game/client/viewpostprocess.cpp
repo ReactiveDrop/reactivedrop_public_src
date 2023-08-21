@@ -2066,7 +2066,7 @@ EXPOSE_MATERIAL_PROXY( CMotionBlurMaterialProxy, MotionBlur );
 //=====================================================================================================================
 // Image-space Motion Blur ============================================================================================
 //=====================================================================================================================
-ConVar mat_motion_blur_enabled( "mat_motion_blur_enabled", "0" );
+ConVar mat_motion_blur_enabled( "mat_motion_blur_enabled", "0", FCVAR_CHEAT );
 
 ConVar mat_motion_blur_forward_enabled( "mat_motion_blur_forward_enabled", "0" );
 ConVar mat_motion_blur_falling_min( "mat_motion_blur_falling_min", "10.0" );
