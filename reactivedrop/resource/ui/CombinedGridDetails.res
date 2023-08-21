@@ -28,7 +28,8 @@
 	"TabStrip"
 	{
 		"fieldName"		"TabStrip"
-		"xpos"		"c-305"
+		"xpos"		"c-275"	[!$WIN32WIDE]
+		"xpos"		"c-305"	[$WIN32WIDE]
 		"ypos"		"40"
 		"wide"		"450"
 		"tall"		"12"
@@ -38,7 +39,8 @@
 	"TabLeftHint"
 	{
 		"fieldName"		"TabLeftHint"
-		"xpos"		"c-315"
+		"xpos"		"c-285"	[!$WIN32WIDE]
+		"xpos"		"c-315"	[$WIN32WIDE]
 		"ypos"		"40"
 		"wide"		"18"
 		"tall"		"12"
@@ -62,7 +64,8 @@
 	"ScrollBar"
 	{
 		"fieldName"		"ScrollBar"
-		"xpos"		"c130"
+		"xpos"		"c80"	[!$WIN32WIDE]
+		"xpos"		"c130"	[$WIN32WIDE]
 		"ypos"		"55"
 		"wide"		"20"
 		"tall"		"385"
@@ -72,9 +75,11 @@
 	"GridParent"
 	{
 		"fieldName"		"GridParent"
-		"xpos"		"c-315"
+		"xpos"		"c-285"	[!$WIN32WIDE]
+		"xpos"		"c-315"	[$WIN32WIDE]
 		"ypos"		"55"
-		"wide"		"450"
+		"wide"		"360"	[!$WIN32WIDE]
+		"wide"		"450"	[$WIN32WIDE]
 		"tall"		"395"
 		"ControlName"		"Panel"
 	}

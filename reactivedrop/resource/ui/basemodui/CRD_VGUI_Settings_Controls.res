@@ -113,7 +113,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Option"
 		"fieldName"			"SettingAutoWalk"
-		"xpos"				"182"
+		"xpos"				"167"	[!$WIN32WIDE]
+		"xpos"				"182"	[$WIN32WIDE]
 		"ypos"				"50"
 		"wide"				"220"
 		"tall"				"12"
@@ -127,7 +128,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Option"
 		"fieldName"			"SettingAutoAttack"
-		"xpos"				"182"
+		"xpos"				"167"	[!$WIN32WIDE]
+		"xpos"				"182"	[$WIN32WIDE]
 		"ypos"				"62"
 		"wide"				"220"
 		"tall"				"12"
@@ -142,7 +144,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Option"
 		"fieldName"			"SettingAimToMovement"
-		"xpos"				"182"
+		"xpos"				"167"	[!$WIN32WIDE]
+		"xpos"				"182"	[$WIN32WIDE]
 		"ypos"				"74"
 		"wide"				"220"
 		"tall"				"12"
@@ -157,7 +160,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Option"
 		"fieldName"			"SettingControllerGlyphs"
-		"xpos"				"182"
+		"xpos"				"167"	[!$WIN32WIDE]
+		"xpos"				"182"	[$WIN32WIDE]
 		"ypos"				"86"
 		"wide"				"220"
 		"tall"				"12"
@@ -172,7 +176,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Bind"
 		"fieldName"			"BindPrimaryAttack"
-		"xpos"				"426"
+		"xpos"				"396"	[!$WIN32WIDE]
+		"xpos"				"426"	[$WIN32WIDE]
 		"ypos"				"50"
 		"wide"				"32"
 		"tall"				"32"
@@ -185,7 +190,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Bind"
 		"fieldName"			"BindSecondaryAttack"
-		"xpos"				"460"
+		"xpos"				"430"	[!$WIN32WIDE]
+		"xpos"				"460"	[$WIN32WIDE]
 		"ypos"				"50"
 		"wide"				"32"
 		"tall"				"32"
@@ -198,7 +204,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Bind"
 		"fieldName"			"BindUse"
-		"xpos"				"494"
+		"xpos"				"464"	[!$WIN32WIDE]
+		"xpos"				"494"	[$WIN32WIDE]
 		"ypos"				"50"
 		"wide"				"32"
 		"tall"				"32"
@@ -211,7 +218,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Bind"
 		"fieldName"			"BindSelectPrimary"
-		"xpos"				"528"
+		"xpos"				"498"	[!$WIN32WIDE]
+		"xpos"				"528"	[$WIN32WIDE]
 		"ypos"				"50"
 		"wide"				"32"
 		"tall"				"32"
@@ -224,7 +232,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Bind"
 		"fieldName"			"BindDropWeapon"
-		"xpos"				"562"
+		"xpos"				"532"	[!$WIN32WIDE]
+		"xpos"				"562"	[$WIN32WIDE]
 		"ypos"				"50"
 		"wide"				"32"
 		"tall"				"32"
@@ -237,7 +246,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Bind"
 		"fieldName"			"BindSwapWeapons"
-		"xpos"				"426"
+		"xpos"				"396"	[!$WIN32WIDE]
+		"xpos"				"426"	[$WIN32WIDE]
 		"ypos"				"84"
 		"wide"				"32"
 		"tall"				"32"
@@ -251,7 +261,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Bind"
 		"fieldName"			"BindMeleeAttack"
-		"xpos"				"460"
+		"xpos"				"430"	[!$WIN32WIDE]
+		"xpos"				"460"	[$WIN32WIDE]
 		"ypos"				"84"
 		"wide"				"32"
 		"tall"				"32"
@@ -265,7 +276,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Bind"
 		"fieldName"			"BindReload"
-		"xpos"				"494"
+		"xpos"				"464"	[!$WIN32WIDE]
+		"xpos"				"494"	[$WIN32WIDE]
 		"ypos"				"84"
 		"wide"				"32"
 		"tall"				"32"
@@ -279,7 +291,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Bind"
 		"fieldName"			"BindSelectSecondary"
-		"xpos"				"528"
+		"xpos"				"498"	[!$WIN32WIDE]
+		"xpos"				"528"	[$WIN32WIDE]
 		"ypos"				"84"
 		"wide"				"32"
 		"tall"				"32"
@@ -293,7 +306,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Bind"
 		"fieldName"			"BindDropEquipment"
-		"xpos"				"562"
+		"xpos"				"532"	[!$WIN32WIDE]
+		"xpos"				"562"	[$WIN32WIDE]
 		"ypos"				"84"
 		"wide"				"32"
 		"tall"				"32"
@@ -559,7 +573,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Bind"
 		"fieldName"			"BindActivatePrimary"
-		"xpos"				"217"
+		"xpos"				"202"	[!$WIN32WIDE]
+		"xpos"				"217"	[$WIN32WIDE]
 		"ypos"				"148"
 		"wide"				"176"
 		"tall"				"12"
@@ -573,7 +588,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Bind"
 		"fieldName"			"BindActivateSecondary"
-		"xpos"				"217"
+		"xpos"				"202"	[!$WIN32WIDE]
+		"xpos"				"217"	[$WIN32WIDE]
 		"ypos"				"160"
 		"wide"				"176"
 		"tall"				"12"
@@ -587,7 +603,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Bind"
 		"fieldName"			"BindActivateEquipment0"
-		"xpos"				"217"
+		"xpos"				"202"	[!$WIN32WIDE]
+		"xpos"				"217"	[$WIN32WIDE]
 		"ypos"				"172"
 		"wide"				"176"
 		"tall"				"12"
@@ -601,7 +618,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Bind"
 		"fieldName"			"BindActivateEquipment1"
-		"xpos"				"217"
+		"xpos"				"202"	[!$WIN32WIDE]
+		"xpos"				"217"	[$WIN32WIDE]
 		"ypos"				"184"
 		"wide"				"176"
 		"tall"				"12"
@@ -615,7 +633,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Bind"
 		"fieldName"			"BindActivateEquipment2"
-		"xpos"				"217"
+		"xpos"				"202"	[!$WIN32WIDE]
+		"xpos"				"217"	[$WIN32WIDE]
 		"ypos"				"196"
 		"wide"				"176"
 		"tall"				"12"
@@ -629,7 +648,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Bind"
 		"fieldName"			"BindActivateEquipment3"
-		"xpos"				"217"
+		"xpos"				"202"	[!$WIN32WIDE]
+		"xpos"				"217"	[$WIN32WIDE]
 		"ypos"				"208"
 		"wide"				"176"
 		"tall"				"12"
@@ -643,7 +663,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Bind"
 		"fieldName"			"BindActivateEquipment4"
-		"xpos"				"217"
+		"xpos"				"202"	[!$WIN32WIDE]
+		"xpos"				"217"	[$WIN32WIDE]
 		"ypos"				"220"
 		"wide"				"176"
 		"tall"				"12"
@@ -657,7 +678,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Bind"
 		"fieldName"			"BindActivateEquipment5"
-		"xpos"				"217"
+		"xpos"				"202"	[!$WIN32WIDE]
+		"xpos"				"217"	[$WIN32WIDE]
 		"ypos"				"232"
 		"wide"				"176"
 		"tall"				"12"
@@ -671,7 +693,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Bind"
 		"fieldName"			"BindActivateEquipment6"
-		"xpos"				"217"
+		"xpos"				"202"	[!$WIN32WIDE]
+		"xpos"				"217"	[$WIN32WIDE]
 		"ypos"				"244"
 		"wide"				"176"
 		"tall"				"12"
@@ -685,7 +708,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Bind"
 		"fieldName"			"BindActivateEquipment7"
-		"xpos"				"217"
+		"xpos"				"202"	[!$WIN32WIDE]
+		"xpos"				"217"	[$WIN32WIDE]
 		"ypos"				"256"
 		"wide"				"176"
 		"tall"				"12"
@@ -699,7 +723,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Bind"
 		"fieldName"			"BindWheelEquipment"
-		"xpos"				"217"
+		"xpos"				"202"	[!$WIN32WIDE]
+		"xpos"				"217"	[$WIN32WIDE]
 		"ypos"				"268"
 		"wide"				"176"
 		"tall"				"12"
@@ -713,7 +738,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Bind"
 		"fieldName"			"BindWheelEquipment1"
-		"xpos"				"217"
+		"xpos"				"202"	[!$WIN32WIDE]
+		"xpos"				"217"	[$WIN32WIDE]
 		"ypos"				"280"
 		"wide"				"176"
 		"tall"				"12"
@@ -727,7 +753,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Bind"
 		"fieldName"			"BindWheelEquipment2"
-		"xpos"				"217"
+		"xpos"				"202"	[!$WIN32WIDE]
+		"xpos"				"217"	[$WIN32WIDE]
 		"ypos"				"292"
 		"wide"				"176"
 		"tall"				"12"
@@ -741,7 +768,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Bind"
 		"fieldName"			"BindSelectMarine0"
-		"xpos"				"418"
+		"xpos"				"388"	[!$WIN32WIDE]
+		"xpos"				"418"	[$WIN32WIDE]
 		"ypos"				"148"
 		"wide"				"176"
 		"tall"				"12"
@@ -755,7 +783,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Bind"
 		"fieldName"			"BindSelectMarine1"
-		"xpos"				"418"
+		"xpos"				"388"	[!$WIN32WIDE]
+		"xpos"				"418"	[$WIN32WIDE]
 		"ypos"				"160"
 		"wide"				"176"
 		"tall"				"12"
@@ -769,7 +798,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Bind"
 		"fieldName"			"BindSelectMarine2"
-		"xpos"				"418"
+		"xpos"				"388"	[!$WIN32WIDE]
+		"xpos"				"418"	[$WIN32WIDE]
 		"ypos"				"172"
 		"wide"				"176"
 		"tall"				"12"
@@ -783,7 +813,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Bind"
 		"fieldName"			"BindSelectMarine3"
-		"xpos"				"418"
+		"xpos"				"388"	[!$WIN32WIDE]
+		"xpos"				"418"	[$WIN32WIDE]
 		"ypos"				"184"
 		"wide"				"176"
 		"tall"				"12"
@@ -797,7 +828,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Bind"
 		"fieldName"			"BindSelectMarine4"
-		"xpos"				"418"
+		"xpos"				"388"	[!$WIN32WIDE]
+		"xpos"				"418"	[$WIN32WIDE]
 		"ypos"				"196"
 		"wide"				"176"
 		"tall"				"12"
@@ -811,7 +843,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Bind"
 		"fieldName"			"BindSelectMarine5"
-		"xpos"				"418"
+		"xpos"				"388"	[!$WIN32WIDE]
+		"xpos"				"418"	[$WIN32WIDE]
 		"ypos"				"208"
 		"wide"				"176"
 		"tall"				"12"
@@ -825,7 +858,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Bind"
 		"fieldName"			"BindSelectMarine6"
-		"xpos"				"418"
+		"xpos"				"388"	[!$WIN32WIDE]
+		"xpos"				"418"	[$WIN32WIDE]
 		"ypos"				"220"
 		"wide"				"176"
 		"tall"				"12"
@@ -839,7 +873,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Bind"
 		"fieldName"			"BindSelectMarine7"
-		"xpos"				"418"
+		"xpos"				"388"	[!$WIN32WIDE]
+		"xpos"				"418"	[$WIN32WIDE]
 		"ypos"				"232"
 		"wide"				"176"
 		"tall"				"12"
@@ -853,7 +888,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Bind"
 		"fieldName"			"BindWheelMarine"
-		"xpos"				"418"
+		"xpos"				"388"	[!$WIN32WIDE]
+		"xpos"				"418"	[$WIN32WIDE]
 		"ypos"				"244"
 		"wide"				"176"
 		"tall"				"12"
@@ -867,7 +903,8 @@
 	{
 		"ControlName"		"BaseModHybridButton"
 		"fieldName"			"BtnCustomWheels"
-		"xpos"				"442"
+		"xpos"				"412"	[!$WIN32WIDE]
+		"xpos"				"442"	[$WIN32WIDE]
 		"ypos"				"300"
 		"wide"				"128"
 		"tall"				"34"
@@ -901,7 +938,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Option"
 		"fieldName"			"SettingDeveloperConsole"
-		"xpos"				"452"
+		"xpos"				"422"	[!$WIN32WIDE]
+		"xpos"				"452"	[$WIN32WIDE]
 		"ypos"				"380"
 		"wide"				"150"
 		"tall"				"18"
@@ -930,7 +968,8 @@
 	{
 		"ControlName"		"Label"
 		"fieldName"			"LblController"
-		"xpos"				"174"
+		"xpos"				"159"	[!$WIN32WIDE]
+		"xpos"				"174"	[$WIN32WIDE]
 		"ypos"				"32"
 		"zpos"				"-1"
 		"wide"				"236"
@@ -944,7 +983,8 @@
 	{
 		"ControlName"		"Label"
 		"fieldName"			"LblActions"
-		"xpos"				"418"
+		"xpos"				"388"	[!$WIN32WIDE]
+		"xpos"				"418"	[$WIN32WIDE]
 		"ypos"				"32"
 		"zpos"				"-1"
 		"wide"				"184"
@@ -972,7 +1012,8 @@
 	{
 		"ControlName"		"Label"
 		"fieldName"			"LblUseEquipment"
-		"xpos"				"209"
+		"xpos"				"194"	[!$WIN32WIDE]
+		"xpos"				"209"	[$WIN32WIDE]
 		"ypos"				"132"
 		"zpos"				"-1"
 		"wide"				"192"
@@ -986,7 +1027,8 @@
 	{
 		"ControlName"		"Label"
 		"fieldName"			"LblSelectMarine"
-		"xpos"				"410"
+		"xpos"				"380"	[!$WIN32WIDE]
+		"xpos"				"410"	[$WIN32WIDE]
 		"ypos"				"132"
 		"zpos"				"-1"
 		"wide"				"192"

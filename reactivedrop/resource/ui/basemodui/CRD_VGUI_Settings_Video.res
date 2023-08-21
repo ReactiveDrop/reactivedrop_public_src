@@ -7,7 +7,8 @@
 		"xpos"				"14"
 		"ypos"				"39"
 		"zpos"				"-1"
-		"wide"				"274"
+		"wide"				"244"	[!$WIN32WIDE]
+		"wide"				"274"	[$WIN32WIDE]
 		"tall"				"19"
 		"bgcolor_override"	"0 0 0 192"
 	}
@@ -19,7 +20,8 @@
 		"xpos"				"14"
 		"ypos"				"60"
 		"zpos"				"-1"
-		"wide"				"274"
+		"wide"				"244"	[!$WIN32WIDE]
+		"wide"				"274"	[$WIN32WIDE]
 		"tall"				"151"
 		"bgcolor_override"	"0 0 0 192"
 	}
@@ -28,7 +30,8 @@
 	{
 		"ControlName"		"Panel"
 		"fieldName"			"BackgroundDetail"
-		"xpos"				"290"
+		"xpos"				"260"	[!$WIN32WIDE]
+		"xpos"				"290"	[$WIN32WIDE]
 		"ypos"				"50"
 		"zpos"				"-1"
 		"wide"				"306"
@@ -40,7 +43,8 @@
 	{
 		"ControlName"		"Panel"
 		"fieldName"			"BackgroundDetail1"
-		"xpos"				"353"
+		"xpos"				"323"	[!$WIN32WIDE]
+		"xpos"				"353"	[$WIN32WIDE]
 		"ypos"				"39"
 		"zpos"				"-1"
 		"wide"				"243"
@@ -55,7 +59,8 @@
 		"xpos"				"14"
 		"ypos"				"214"
 		"zpos"				"-1"
-		"wide"				"582"
+		"wide"				"552"	[!$WIN32WIDE]
+		"wide"				"582"	[$WIN32WIDE]
 		"tall"				"178"
 		"bgcolor_override"	"0 0 0 192"
 	}
@@ -66,7 +71,8 @@
 		"fieldName"			"SettingScreenResolution"
 		"xpos"				"16"
 		"ypos"				"40"
-		"wide"				"270"
+		"wide"				"240"	[!$WIN32WIDE]
+		"wide"				"270"	[$WIN32WIDE]
 		"tall"				"17"
 		"ResourceFile"		"resource/ui/option_video_resolution.res"
 		"navLeft"			"SettingScreenResolution"
@@ -80,7 +86,8 @@
 		"fieldName"			"SettingDisplayMode"
 		"xpos"				"16"
 		"ypos"				"62"
-		"wide"				"270"
+		"wide"				"240"	[!$WIN32WIDE]
+		"wide"				"270"	[$WIN32WIDE]
 		"tall"				"36"
 		"ResourceFile"		"resource/ui/option_video_mode.res"
 		"navLeft"			"SettingDisplayMode"
@@ -95,7 +102,8 @@
 		"fieldName"			"SettingScreenBrightness"
 		"xpos"				"16"
 		"ypos"				"99"
-		"wide"				"270"
+		"wide"				"240"	[!$WIN32WIDE]
+		"wide"				"270"	[$WIN32WIDE]
 		"tall"				"36"
 		"ResourceFile"		"resource/ui/option_video_mode_slider.res"
 		"navLeft"			"SettingScreenBrightness"
@@ -110,7 +118,8 @@
 		"fieldName"			"SettingRenderingPipeline"
 		"xpos"				"16"
 		"ypos"				"136"
-		"wide"				"270"
+		"wide"				"240"	[!$WIN32WIDE]
+		"wide"				"270"	[$WIN32WIDE]
 		"tall"				"36"
 		"ResourceFile"		"resource/ui/option_video_mode.res"
 		"navLeft"			"SettingRenderingPipeline"
@@ -125,7 +134,8 @@
 		"fieldName"			"SettingVSync"
 		"xpos"				"16"
 		"ypos"				"173"
-		"wide"				"270"
+		"wide"				"240"	[!$WIN32WIDE]
+		"wide"				"270"	[$WIN32WIDE]
 		"tall"				"36"
 		"ResourceFile"		"resource/ui/option_video_mode.res"
 		"navLeft"			"SettingVSync"
@@ -138,7 +148,8 @@
 	{
 		"ControlName"		"Label"
 		"fieldName"			"LblFaster"
-		"xpos"				"356"
+		"xpos"				"326"	[!$WIN32WIDE]
+		"xpos"				"356"	[$WIN32WIDE]
 		"ypos"				"40"
 		"wide"				"96"
 		"tall"				"12"
@@ -151,7 +162,8 @@
 	{
 		"ControlName"		"Label"
 		"fieldName"			"LblHigherQuality"
-		"xpos"				"498"
+		"xpos"				"468"	[!$WIN32WIDE]
+		"xpos"				"498"	[$WIN32WIDE]
 		"ypos"				"40"
 		"wide"				"96"
 		"tall"				"12"
@@ -164,7 +176,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Option"
 		"fieldName"			"SettingEffectDetail"
-		"xpos"				"292"
+		"xpos"				"262"	[!$WIN32WIDE]
+		"xpos"				"292"	[$WIN32WIDE]
 		"ypos"				"52"
 		"wide"				"302"
 		"tall"				"30"
@@ -178,7 +191,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Option"
 		"fieldName"			"SettingShaderDetail"
-		"xpos"				"292"
+		"xpos"				"262"	[!$WIN32WIDE]
+		"xpos"				"292"	[$WIN32WIDE]
 		"ypos"				"83"
 		"wide"				"302"
 		"tall"				"30"
@@ -193,7 +207,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Option"
 		"fieldName"			"SettingTextureDetail"
-		"xpos"				"292"
+		"xpos"				"262"	[!$WIN32WIDE]
+		"xpos"				"292"	[$WIN32WIDE]
 		"ypos"				"115"
 		"wide"				"302"
 		"tall"				"30"
@@ -208,7 +223,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Option"
 		"fieldName"			"SettingAntiAliasing"
-		"xpos"				"292"
+		"xpos"				"262"	[!$WIN32WIDE]
+		"xpos"				"292"	[$WIN32WIDE]
 		"ypos"				"147"
 		"wide"				"302"
 		"tall"				"30"
@@ -223,7 +239,8 @@
 	{
 		"ControlName"		"CRD_VGUI_Option"
 		"fieldName"			"SettingFiltering"
-		"xpos"				"292"
+		"xpos"				"262"	[!$WIN32WIDE]
+		"xpos"				"292"	[$WIN32WIDE]
 		"ypos"				"179"
 		"wide"				"302"
 		"tall"				"30"
@@ -240,7 +257,8 @@
 		"fieldName"			"SettingFilmGrain"
 		"xpos"				"16"
 		"ypos"				"216"
-		"wide"				"187"
+		"wide"				"177"	[!$WIN32WIDE]
+		"wide"				"187"	[$WIN32WIDE]
 		"tall"				"42"
 		"ResourceFile"		"resource/ui/option_video_extra.res"
 		"navLeft"			"SettingFilmGrain"
@@ -255,7 +273,8 @@
 		"fieldName"			"SettingLocalContrast"
 		"xpos"				"16"
 		"ypos"				"260"
-		"wide"				"187"
+		"wide"				"177"	[!$WIN32WIDE]
+		"wide"				"187"	[$WIN32WIDE]
 		"tall"				"42"
 		"ResourceFile"		"resource/ui/option_video_extra.res"
 		"navLeft"			"SettingLocalContrast"
@@ -270,7 +289,8 @@
 		"fieldName"			"SettingDepthBlur"
 		"xpos"				"16"
 		"ypos"				"304"
-		"wide"				"187"
+		"wide"				"177"	[!$WIN32WIDE]
+		"wide"				"187"	[$WIN32WIDE]
 		"tall"				"42"
 		"ResourceFile"		"resource/ui/option_video_extra.res"
 		"navLeft"			"SettingDepthBlur"
@@ -285,7 +305,8 @@
 		"fieldName"			"SettingWeatherEffects"
 		"xpos"				"16"
 		"ypos"				"348"
-		"wide"				"187"
+		"wide"				"177"	[!$WIN32WIDE]
+		"wide"				"187"	[$WIN32WIDE]
 		"tall"				"42"
 		"ResourceFile"		"resource/ui/option_video_extra.res"
 		"navLeft"			"SettingWeatherEffects"
@@ -298,9 +319,11 @@
 	{
 		"ControlName"		"CRD_VGUI_Option"
 		"fieldName"			"SettingBloomScale"
-		"xpos"				"211"
+		"xpos"				"201"	[!$WIN32WIDE]
+		"xpos"				"211"	[$WIN32WIDE]
 		"ypos"				"216"
-		"wide"				"188"
+		"wide"				"178"	[!$WIN32WIDE]
+		"wide"				"188"	[$WIN32WIDE]
 		"tall"				"42"
 		"ResourceFile"		"resource/ui/option_video_extra_slider.res"
 		"navLeft"			"SettingFilmGrain"
@@ -313,9 +336,11 @@
 	{
 		"ControlName"		"CRD_VGUI_Option"
 		"fieldName"			"SettingProjectedTextures"
-		"xpos"				"211"
+		"xpos"				"201"	[!$WIN32WIDE]
+		"xpos"				"211"	[$WIN32WIDE]
 		"ypos"				"260"
-		"wide"				"188"
+		"wide"				"178"	[!$WIN32WIDE]
+		"wide"				"188"	[$WIN32WIDE]
 		"tall"				"42"
 		"ResourceFile"		"resource/ui/option_video_extra.res"
 		"navLeft"			"SettingLocalContrast"
@@ -328,9 +353,11 @@
 	{
 		"ControlName"		"CRD_VGUI_Option"
 		"fieldName"			"SettingFlashlightShadows"
-		"xpos"				"211"
+		"xpos"				"201"	[!$WIN32WIDE]
+		"xpos"				"211"	[$WIN32WIDE]
 		"ypos"				"304"
-		"wide"				"188"
+		"wide"				"178"	[!$WIN32WIDE]
+		"wide"				"188"	[$WIN32WIDE]
 		"tall"				"42"
 		"ResourceFile"		"resource/ui/option_video_extra.res"
 		"navLeft"			"SettingDepthBlur"
@@ -343,9 +370,11 @@
 	{
 		"ControlName"		"CRD_VGUI_Option"
 		"fieldName"			"SettingFlashlightLightSpill"
-		"xpos"				"211"
+		"xpos"				"201"	[!$WIN32WIDE]
+		"xpos"				"211"	[$WIN32WIDE]
 		"ypos"				"348"
-		"wide"				"188"
+		"wide"				"178"	[!$WIN32WIDE]
+		"wide"				"188"	[$WIN32WIDE]
 		"tall"				"42"
 		"ResourceFile"		"resource/ui/option_video_extra.res"
 		"navLeft"			"SettingWeatherEffects"
@@ -358,9 +387,11 @@
 	{
 		"ControlName"		"CRD_VGUI_Option"
 		"fieldName"			"SettingHighQualityBeacons"
-		"xpos"				"407"
+		"xpos"				"387"	[!$WIN32WIDE]
+		"xpos"				"407"	[$WIN32WIDE]
 		"ypos"				"216"
-		"wide"				"187"
+		"wide"				"177"	[!$WIN32WIDE]
+		"wide"				"187"	[$WIN32WIDE]
 		"tall"				"42"
 		"ResourceFile"		"resource/ui/option_video_extra.res"
 		"navLeft"			"SettingBloomScale"
@@ -373,9 +404,11 @@
 	{
 		"ControlName"		"CRD_VGUI_Option"
 		"fieldName"			"SettingMuzzleFlashLights"
-		"xpos"				"407"
+		"xpos"				"387"	[!$WIN32WIDE]
+		"xpos"				"407"	[$WIN32WIDE]
 		"ypos"				"260"
-		"wide"				"187"
+		"wide"				"177"	[!$WIN32WIDE]
+		"wide"				"187"	[$WIN32WIDE]
 		"tall"				"42"
 		"ResourceFile"		"resource/ui/option_video_extra.res"
 		"navLeft"			"SettingProjectedTextures"
@@ -388,9 +421,11 @@
 	{
 		"ControlName"		"CRD_VGUI_Option"
 		"fieldName"			"SettingAlienShadows"
-		"xpos"				"407"
+		"xpos"				"387"	[!$WIN32WIDE]
+		"xpos"				"407"	[$WIN32WIDE]
 		"ypos"				"304"
-		"wide"				"187"
+		"wide"				"177"	[!$WIN32WIDE]
+		"wide"				"187"	[$WIN32WIDE]
 		"tall"				"42"
 		"ResourceFile"		"resource/ui/option_video_extra.res"
 		"navLeft"			"SettingFlashlightShadows"
@@ -403,9 +438,11 @@
 	{
 		"ControlName"		"CRD_VGUI_Option"
 		"fieldName"			"SettingLowHealthEffect"
-		"xpos"				"407"
+		"xpos"				"387"	[!$WIN32WIDE]
+		"xpos"				"407"	[$WIN32WIDE]
 		"ypos"				"348"
-		"wide"				"187"
+		"wide"				"177"	[!$WIN32WIDE]
+		"wide"				"187"	[$WIN32WIDE]
 		"tall"				"42"
 		"ResourceFile"		"resource/ui/option_video_extra.res"
 		"navLeft"			"SettingFlashlightLightSpill"

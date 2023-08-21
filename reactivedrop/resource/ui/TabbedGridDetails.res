@@ -28,7 +28,8 @@
 	"TabStrip"
 	{
 		"fieldName"		"TabStrip"
-		"xpos"		"c-305"
+		"xpos"		"c-275"	[!$WIN32WIDE]
+		"xpos"		"c-305"	[$WIN32WIDE]
 		"ypos"		"40"
 		"wide"		"450"
 		"tall"		"12"
@@ -38,7 +39,8 @@
 	"TabLeftHint"
 	{
 		"fieldName"		"TabLeftHint"
-		"xpos"		"c-315"
+		"xpos"		"c-285"	[!$WIN32WIDE]
+		"xpos"		"c-315"	[$WIN32WIDE]
 		"ypos"		"40"
 		"wide"		"18"
 		"tall"		"12"

@@ -396,7 +396,8 @@
 		"fieldName"			"LblBranchDisclaimer"
 		"xpos"				"160"
 		"ypos"				"40"
-		"wide"				"300"
+		"wide"				"225"	[!$WIN32WIDE]
+		"wide"				"300"	[$WIN32WIDE]
 		"tall"				"60"
 		"textAlignment"		"north-west"
 		"wrap"				"1"
