@@ -365,7 +365,7 @@ bool CASW_Briefing::IsLobbySlotBot( int nLobbySlot )
 	return !bHuman;
 }
 
-wchar_t* CASW_Briefing::GetMarineOrPlayerName( int nLobbySlot )
+const wchar_t *CASW_Briefing::GetMarineOrPlayerName( int nLobbySlot )
 {
 	if ( nLobbySlot < 0 || nLobbySlot >= NUM_BRIEFING_LOBBY_SLOTS || !IsLobbySlotOccupied( nLobbySlot ) )
 		return L"";
@@ -377,7 +377,7 @@ wchar_t* CASW_Briefing::GetMarineOrPlayerName( int nLobbySlot )
 
 	if ( pMR )
 	{
-		C_ASW_Player *pPlayer = m_LobbySlotMapping[ nLobbySlot ].m_hPlayer.Get();
+		C_ASW_Player *pPlayer = m_LobbySlotMapping[nLobbySlot].m_hPlayer.Get();
 		C_ASW_Marine_Resource *pFirstMR = pPlayer ? ASWGameResource()->GetFirstMarineResourceForPlayer( pPlayer ) : NULL;
 
 		if ( pFirstMR == pMR )
@@ -391,13 +391,13 @@ wchar_t* CASW_Briefing::GetMarineOrPlayerName( int nLobbySlot )
 		return L"";
 	}
 
-	
-	static wchar_t wszMarineNameResult[ 32 ];
+
+	static wchar_t wszMarineNameResult[32];
 
 	// if it's their first marine, show the commander name instead
 	if ( bUsePlayerName )
-	{		
-		C_ASW_Player *pPlayer = m_LobbySlotMapping[ nLobbySlot ].m_hPlayer.Get();
+	{
+		C_ASW_Player *pPlayer = m_LobbySlotMapping[nLobbySlot].m_hPlayer.Get();
 		if ( !pPlayer )
 			return L"";
 
@@ -405,12 +405,12 @@ wchar_t* CASW_Briefing::GetMarineOrPlayerName( int nLobbySlot )
 		g_pVGuiLocalize->ConvertANSIToUnicode( pszPlayerName ? pszPlayerName : "", wszMarineNameResult, sizeof( wszMarineNameResult ) );
 		return wszMarineNameResult;
 	}
-	
+
 	pMR->GetDisplayName( wszMarineNameResult, sizeof( wszMarineNameResult ) );
 	return wszMarineNameResult;
 }
 
-wchar_t* CASW_Briefing::GetMarineName( int nLobbySlot )
+const wchar_t *CASW_Briefing::GetMarineName( int nLobbySlot )
 {
 	if ( nLobbySlot < 0 || nLobbySlot >= NUM_BRIEFING_LOBBY_SLOTS || !IsLobbySlotOccupied( nLobbySlot ) )
 		return L"";
@@ -420,7 +420,7 @@ wchar_t* CASW_Briefing::GetMarineName( int nLobbySlot )
 	if ( !pMR )
 		return L"";
 
-	static wchar_t wszMarineNameResult[ 32 ];	
+	static wchar_t wszMarineNameResult[32];
 
 	pMR->GetDisplayName( wszMarineNameResult, sizeof( wszMarineNameResult ) );
 	return wszMarineNameResult;

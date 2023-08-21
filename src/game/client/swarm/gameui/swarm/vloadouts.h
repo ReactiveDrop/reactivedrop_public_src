@@ -4,6 +4,8 @@
 #include "vgenericpanellist.h"
 #include "asw_shareddefs.h"
 #include "rd_loadout.h"
+#include "ibriefing.h"
+#include "asw_marine_profile.h"
 
 class CBitmapButton;
 class CNB_Header_Footer;
@@ -22,7 +24,7 @@ class CRD_VGUI_Loadout_Slot_Inventory;
 class CRD_VGUI_Loadout_Slot_Marine;
 class CRD_VGUI_Loadout_Slot_Weapon;
 
-class Loadouts : public CBaseModFrame
+class Loadouts : public CBaseModFrame, public IBriefing
 {
 	DECLARE_CLASS_SIMPLE( Loadouts, CBaseModFrame );
 
@@ -48,6 +50,56 @@ public:
 	void StartPublishingLoadouts( const char *szTitle, const char *szDescription, const char *szPreviewFile, const CUtlDict<ReactiveDropLoadout::LoadoutData_t> &loadouts );
 	void OnRemoteStoragePublishFileResult( RemoteStoragePublishFileResult_t *pParam, bool bIOFailure );
 	CCallResult<Loadouts, RemoteStoragePublishFileResult_t> m_RemoteStoragePublishFileResult;
+
+	// IBriefing implementation
+	const char *GetLeaderName() override { return ""; }
+	const char *GetTeamName() override { return ""; }
+	Color GetTeamColor() override { return Color{}; }
+	bool IsLocalPlayerLeader() override { return true; }
+	void ToggleLocalPlayerReady() override {}
+	bool CheckMissionRequirements() override { return true; }
+	bool AreOtherPlayersReady() override { return true; }
+	void StartMission() override {}
+	bool IsLobbySlotOccupied( int nLobbySlot ) override { return false; }
+	bool IsLobbySlotLocal( int nLobbySlot ) override { return false; }
+	bool IsLobbySlotBot( int nLobbySlot ) override { return false; }
+	const wchar_t *GetMarineOrPlayerName( int nLobbySlot ) override { return L""; }
+	const wchar_t *GetMarineName( int nLobbySlot ) override { return L""; }
+	const char *GetPlayerNameForMarineProfile( int nProfileIndex ) override { return ""; }
+	int GetCommanderLevel( int nLobbySlot ) override { return 0; }
+	int GetCommanderXP( int nLobbySlot ) override { return 0; }
+	int GetCommanderPromotion( int nLobbySlot ) override { return 0; }
+	bool IsFullyConnected( int nLobbySlot ) override { return false; }
+	CSteamID GetCommanderSteamID( int nLobbySlot ) override { return k_steamIDNil; }
+	ASW_Marine_Class GetMarineClass( int nLobbySlot ) override { return GetMarineProfile( nLobbySlot )->GetMarineClass(); }
+	CASW_Marine_Profile *GetMarineProfile( int nLobbySlot ) override;
+	CASW_Marine_Profile *GetMarineProfileByProfileIndex( int nProfileIndex ) override;
+	int GetProfileSelectedWeapon( int nProfileIndex, int nWeaponSlot ) override;
+	int GetMarineSelectedWeapon( int nLobbySlot, int nWeaponSlot ) override { return GetProfileSelectedWeapon( nLobbySlot, nWeaponSlot ); }
+	const char *GetMarineWeaponClass( int nLobbySlot, int nWeaponSlot ) override;
+	int GetCommanderReady( int nLobbySlot ) override { return false; }
+	bool IsLeader( int nLobbySlot ) override { return false; }
+	int GetMarineSkillPoints( int nLobbySlot, int nSkillSlot ) override;
+	int GetProfileSkillPoints( int nProfileIndex, int nSkillSlot ) override;
+	bool IsWeaponUnlocked( const char *szWeaponClass ) override;
+	bool IsProfileSelectedBySomeoneElse( int nProfileIndex ) override { return false; }
+	bool IsProfileSelected( int nProfileIndex ) override { return true; }
+	int GetMaxPlayers() override { return ASW_NUM_MARINE_PROFILES; }
+	bool IsOfflineGame() override { return true; }
+	bool IsCampaignGame() override { return false; }
+	bool UsingFixedSkillPoints() override { return true; }
+	void SetChangingWeaponSlot( int nLobbySlot, int nWeaponSlot ) override {}
+	int GetChangingWeaponSlot( int nLobbySlot ) override { return -1; }
+	bool IsCommanderSpeaking( int nLobbySlot ) override { return false; }
+	void SelectMarine( int nOrder, int nProfileIndex, int nPreferredLobbySlot ) override {}
+	void SelectBot( int nOrder, int nProfileIndex ) override {}
+	void SelectWeapon( int nProfileIndex, int nInventorySlot, int nEquipIndex, SteamItemInstanceID_t iItemInstance ) override;
+	void AutoSelectFullSquadForSingleplayer( int nFirstSelectedProfileIndex ) override {}
+	void ResetLastChatterTime() override {}
+	const static IBriefing_ItemInstance s_EmptyItemInstance;
+	const IBriefing_ItemInstance &GetEquippedMedal( int nLobbySlot, int nMedalIndex ) override { return s_EmptyItemInstance; }
+	const IBriefing_ItemInstance &GetEquippedSuit( int nLobbySlot ) override { return s_EmptyItemInstance; }
+	const IBriefing_ItemInstance &GetEquippedWeapon( int nLobbySlot, int nWeaponSlot ) override { return s_EmptyItemInstance; }
 };
 
 class CRD_VGUI_Loadout_List_Item : public vgui::EditablePanel, public IGenericPanelListItem
@@ -143,6 +195,7 @@ public:
 	CRD_VGUI_Loadout_Slot_Weapon( vgui::Panel *parent, const char *panelName, ASW_Marine_Profile iProfile, ConVar *pWeaponVar, ConVar *pInventoryVar, ASW_Inventory_slot_t iSlot );
 
 	void Paint() override;
+	void OnCommand( const char *command ) override;
 
 	ASW_Marine_Profile m_iProfile;
 	ASW_Inventory_slot_t m_iSlot;

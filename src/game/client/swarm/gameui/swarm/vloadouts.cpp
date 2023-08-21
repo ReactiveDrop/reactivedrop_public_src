@@ -21,6 +21,7 @@
 #include "rd_swarmopedia.h"
 #include "asw_weapon_parse.h"
 #include "briefingtooltip.h"
+#include "asw_weapon_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -37,6 +38,9 @@ extern ConVar rd_equipped_marine[ASW_NUM_MARINE_PROFILES];
 extern ConVar rd_equipped_weapon_primary[ASW_NUM_MARINE_PROFILES];
 extern ConVar rd_equipped_weapon_secondary[ASW_NUM_MARINE_PROFILES];
 extern ConVar rd_equipped_weapon_extra[ASW_NUM_MARINE_PROFILES];
+extern ConVar asw_unlock_all_weapons;
+
+const IBriefing_ItemInstance Loadouts::s_EmptyItemInstance;
 
 static int GetWeaponIndex( ASW_Inventory_slot_t iSlot, int iWeapon, ASW_Marine_Profile iProfile )
 {
@@ -315,6 +319,78 @@ void Loadouts::OnRemoteStoragePublishFileResult( RemoteStoragePublishFileResult_
 	g_ReactiveDropWorkshop.OpenWorkshopPageForFile( pParam->m_nPublishedFileId );
 }
 
+CASW_Marine_Profile *Loadouts::GetMarineProfile( int nLobbySlot )
+{
+	return GetMarineProfileByProfileIndex( nLobbySlot );
+}
+
+CASW_Marine_Profile *Loadouts::GetMarineProfileByProfileIndex( int nProfileIndex )
+{
+	return MarineProfileList()->GetProfile( nProfileIndex );
+}
+
+int Loadouts::GetProfileSelectedWeapon( int nProfileIndex, int nWeaponSlot )
+{
+	if ( nWeaponSlot == ASW_INVENTORY_SLOT_PRIMARY )
+		return GetWeaponIndex( ASW_INVENTORY_SLOT_PRIMARY, asw_default_primary[nProfileIndex].GetInt(), ASW_Marine_Profile( nProfileIndex ) );
+	if ( nWeaponSlot == ASW_INVENTORY_SLOT_SECONDARY )
+		return GetWeaponIndex( ASW_INVENTORY_SLOT_SECONDARY, asw_default_secondary[nProfileIndex].GetInt(), ASW_Marine_Profile( nProfileIndex ) );
+	if ( nWeaponSlot == ASW_INVENTORY_SLOT_EXTRA )
+		return GetWeaponIndex( ASW_INVENTORY_SLOT_EXTRA, asw_default_extra[nProfileIndex].GetInt(), ASW_Marine_Profile( nProfileIndex ) );
+	return -1;
+}
+
+const char *Loadouts::GetMarineWeaponClass( int nLobbySlot, int nWeaponSlot )
+{
+	if ( nWeaponSlot == ASW_INVENTORY_SLOT_EXTRA )
+		return g_ASWEquipmentList.GetExtra( GetMarineSelectedWeapon( nLobbySlot, nWeaponSlot ) )->m_szEquipClass;
+	return g_ASWEquipmentList.GetRegular( GetMarineSelectedWeapon( nLobbySlot, nWeaponSlot ) )->m_szEquipClass;
+}
+
+int Loadouts::GetMarineSkillPoints( int nLobbySlot, int nSkillSlot )
+{
+	return GetProfileSkillPoints( nLobbySlot, nSkillSlot );
+}
+
+int Loadouts::GetProfileSkillPoints( int nProfileIndex, int nSkillSlot )
+{
+	return MarineProfileList()->GetProfile( nProfileIndex )->GetStaticSkillPoints( nSkillSlot );
+}
+
+bool Loadouts::IsWeaponUnlocked( const char *szWeaponClass )
+{
+	if ( asw_unlock_all_weapons.GetBool() )
+		return true;
+
+	return UTIL_ASW_CommanderLevelAtLeast( NULL, GetWeaponLevelRequirement( szWeaponClass ), -1 );
+}
+
+void Loadouts::SelectWeapon( int nProfileIndex, int nInventorySlot, int nEquipIndex, SteamItemInstanceID_t iItemInstance )
+{
+	if ( nInventorySlot == ASW_INVENTORY_SLOT_PRIMARY )
+	{
+		asw_default_primary[nProfileIndex].SetValue( nEquipIndex );
+		rd_equipped_weapon_primary[nProfileIndex].SetValue( VarArgs( "%llu", iItemInstance ) );
+	}
+	else if ( nInventorySlot == ASW_INVENTORY_SLOT_SECONDARY )
+	{
+		asw_default_secondary[nProfileIndex].SetValue( nEquipIndex );
+		rd_equipped_weapon_secondary[nProfileIndex].SetValue( VarArgs( "%llu", iItemInstance ) );
+	}
+	else if ( nInventorySlot == ASW_INVENTORY_SLOT_EXTRA )
+	{
+		asw_default_extra[nProfileIndex].SetValue( nEquipIndex );
+		rd_equipped_weapon_extra[nProfileIndex].SetValue( VarArgs( "%llu", iItemInstance ) );
+	}
+
+	engine->ClientCmd_Unrestricted( "host_writeconfig\n" );
+
+	if ( m_hSubScreen )
+	{
+		m_hSubScreen->InvalidateLayout( true, true );
+	}
+}
+
 CRD_VGUI_Loadout_List_Item::CRD_VGUI_Loadout_List_Item( vgui::Panel *parent, const char *panelName, const char *szName, const ReactiveDropLoadout::LoadoutData_t &loadout, PublishedFileId_t id ) :
 	BaseClass( parent, panelName )
 {
@@ -548,7 +624,6 @@ void CRD_VGUI_Loadout_Slot::NavigateTo()
 	RequestFocus();
 }
 
-
 const ReactiveDropInventory::ItemInstance_t *CRD_VGUI_Loadout_Slot::GetItem()
 {
 	SteamItemInstanceID_t id = V_atoui64( m_pInventoryVar->GetString() );
@@ -621,4 +696,26 @@ void CRD_VGUI_Loadout_Slot_Weapon::Paint()
 	vgui::surface()->DrawTexturedRect( 0, 0, w, t );
 
 	BaseClass::Paint();
+}
+
+void CRD_VGUI_Loadout_Slot_Weapon::OnCommand( const char *command )
+{
+	if ( !V_stricmp( command, "Click" ) )
+	{
+		TabbedGridDetails *pWeaponPanel = new TabbedGridDetails();
+		if ( m_iSlot == ASW_INVENTORY_SLOT_PRIMARY )
+			pWeaponPanel->SetTitle( "#nb_select_weapon_one", true );
+		else if ( m_iSlot == ASW_INVENTORY_SLOT_SECONDARY )
+			pWeaponPanel->SetTitle( "#nb_select_weapon_two", true );
+		else if ( m_iSlot == ASW_INVENTORY_SLOT_EXTRA )
+			pWeaponPanel->SetTitle( "#nb_select_offhand", true );
+
+		CRD_Collection_Tab_Equipment *pTab = new CRD_Collection_Tab_Equipment( pWeaponPanel, m_iSlot == ASW_INVENTORY_SLOT_EXTRA ? "#rd_collection_equipment" : "#rd_collection_weapons", MarineProfileList()->GetProfile( m_iProfile ), m_iSlot );
+		pTab->SetBriefing( assert_cast< Loadouts * >( CBaseModPanel::GetSingleton().GetWindow( WT_LOADOUTS ) ), m_iProfile );
+		pWeaponPanel->AddTab( pTab );
+
+		pWeaponPanel->ShowFullScreen();
+	}
+
+	BaseClass::OnCommand( command );
 }
