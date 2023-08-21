@@ -20,6 +20,7 @@
 #include "rd_collections.h"
 #include "rd_swarmopedia.h"
 #include "asw_weapon_parse.h"
+#include "briefingtooltip.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -193,6 +194,18 @@ void Loadouts::OnCommand( const char *command )
 	{
 		BaseClass::OnCommand( command );
 	}
+}
+
+void Loadouts::OnKeyCodeTyped( vgui::KeyCode code )
+{
+	if ( code == KEY_ESCAPE && m_hSubScreen )
+	{
+		m_hSubScreen->MarkForDeletion();
+
+		return;
+	}
+
+	BaseClass::OnKeyCodeTyped( code );
 }
 
 void Loadouts::DisplayPublishingError( const char *szMessage, int nArgs, const wchar_t *wszArg1, const wchar_t *wszArg2, const wchar_t *wszArg3, const wchar_t *wszArg4 )
@@ -443,10 +456,13 @@ void CRD_VGUI_Loadout_Marine::SetupDisplay()
 
 	m_pModelPanel->m_bUseTimeScale = false;
 	m_pModelPanel->m_bAutoPosition = false;
-	m_pModelPanel->m_vecCenter = Vector{ 0.0f, 0.0f, 48.0f };
+	m_pModelPanel->m_vecCenter = Vector{ 0.0f, 0.0f, 56.0f };
 	m_pModelPanel->m_flRadius = 128.0f;
 	m_pModelPanel->SetDisplay( pDisplay );
 	delete pDisplay;
+
+	if ( g_hBriefingTooltip )
+		g_hBriefingTooltip->SetTooltipIgnoresCursor( false );
 }
 
 void CRD_VGUI_Loadout_Marine::OnThink()
@@ -465,9 +481,19 @@ void CRD_VGUI_Loadout_Marine::OnThink()
 	}
 }
 
-CRD_VGUI_Loadout_Slot::CRD_VGUI_Loadout_Slot( vgui::Panel *parent, const char *panelName, ConVar *pInventoryVar ) :
-	BaseClass( parent, panelName )
+void CRD_VGUI_Loadout_Marine::NavigateTo()
 {
+	BaseClass::NavigateTo();
+
+	NavigateToChild( m_pWeapon[0] );
+}
+
+CRD_VGUI_Loadout_Slot::CRD_VGUI_Loadout_Slot( vgui::Panel *parent, const char *panelName, ConVar *pInventoryVar ) :
+	BaseClass( parent, panelName, "", this, "Click" )
+{
+	SetConsoleStylePanel( true );
+	SetPaintBackgroundEnabled( false );
+
 	m_pInventoryVar = pInventoryVar;
 }
 
@@ -480,7 +506,7 @@ void CRD_VGUI_Loadout_Slot::Paint()
 	int w, t;
 	GetSize( w, t );
 
-	int ht = t / 2, qt = t / 4;
+	int ht = t / 2;
 
 	CRD_ItemInstance instance{ *pItem };
 	int nAccessories = 0;
@@ -503,36 +529,25 @@ void CRD_VGUI_Loadout_Slot::Paint()
 		}
 		else
 		{
-			int y1 = t;
-#if 0
-			if ( nAccessories )
-				y1 -= qt;
-#endif
-
-			vgui::surface()->DrawTexturedRect( w - ht, y1 - ht, w, y1 );
+			vgui::surface()->DrawTexturedRect( w - ht, t - ht, w, t );
 		}
 	}
-
-#if 0
-	for ( int i = 0, j = 0; i < RD_ITEM_MAX_ACCESSORIES; i++ )
-	{
-		if ( instance.m_iAccessory[i] )
-		{
-			const ReactiveDropInventory::ItemDef_t *pAccessory = ReactiveDropInventory::GetItemDef( instance.m_iAccessory[i] );
-			Assert( pAccessory && pAccessory->Icon );
-
-			if ( pAccessory && pAccessory->Icon && pAccessory->Icon->GetNumFrames() )
-			{
-				vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
-				vgui::surface()->DrawSetTexture( pAccessory->Icon->GetID() );
-				vgui::surface()->DrawTexturedRect( w - ( nAccessories - j ) * qt, t - qt, w - ( nAccessories - j - 1 ) * qt, t );
-			}
-
-			j++;
-		}
-	}
-#endif
 }
+
+void CRD_VGUI_Loadout_Slot::OnCursorEntered()
+{
+	BaseClass::OnCursorEntered();
+
+	GetParent()->NavigateToChild( this );
+}
+
+void CRD_VGUI_Loadout_Slot::NavigateTo()
+{
+	BaseClass::NavigateTo();
+
+	RequestFocus();
+}
+
 
 const ReactiveDropInventory::ItemInstance_t *CRD_VGUI_Loadout_Slot::GetItem()
 {
@@ -567,7 +582,7 @@ void CRD_VGUI_Loadout_Slot_Marine::Paint()
 	GetSize( w, t );
 
 	vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
-	vgui::surface()->DrawSetTexture( pProfile->m_nPortraitTextureID );
+	vgui::surface()->DrawSetTexture( HasFocus() ? pProfile->m_nPortraitLitTextureID : pProfile->m_nPortraitTextureID );
 	vgui::surface()->DrawTexturedRect( 0, 0, w, t );
 
 	BaseClass::Paint();
@@ -598,16 +613,12 @@ void CRD_VGUI_Loadout_Slot_Weapon::Paint()
 	int w, t;
 	GetSize( w, t );
 
-	vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
+	if ( HasFocus() )
+		vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
+	else
+		vgui::surface()->DrawSetColor( 64, 96, 128, 255 );
 	vgui::surface()->DrawSetTexture( g_ASWEquipmentList.GetEquipIconTexture( m_iSlot != ASW_INVENTORY_SLOT_EXTRA, GetWeaponIndex( m_iSlot, m_pWeaponVar->GetInt(), m_iProfile ) ) );
 	vgui::surface()->DrawTexturedRect( 0, 0, w, t );
 
 	BaseClass::Paint();
-}
-
-void CRD_VGUI_Loadout_Slot_Weapon::OnCursorEntered()
-{
-	BaseClass::OnCursorEntered();
-
-	RequestFocus();
 }

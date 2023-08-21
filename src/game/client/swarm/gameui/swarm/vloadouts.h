@@ -32,6 +32,7 @@ public:
 
 	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 	void OnCommand( const char *command ) override;
+	void OnKeyCodeTyped( vgui::KeyCode code ) override;
 
 	CNB_Header_Footer *m_pHeaderFooter;
 	CRD_VGUI_Main_Menu_Top_Bar *m_pTopBar;
@@ -82,6 +83,7 @@ public:
 	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 	void SetupDisplay();
 	void OnThink() override;
+	void NavigateTo() override;
 
 	CRD_Swarmopedia_Model_Panel *m_pModelPanel;
 	vgui::RichText *m_pLblBiography;
@@ -95,13 +97,15 @@ public:
 	bool m_bSecondaryWeapon{ false };
 };
 
-class CRD_VGUI_Loadout_Slot : public vgui::EditablePanel
+class CRD_VGUI_Loadout_Slot : public vgui::Button
 {
-	DECLARE_CLASS_SIMPLE( CRD_VGUI_Loadout_Slot, vgui::EditablePanel );
+	DECLARE_CLASS_SIMPLE( CRD_VGUI_Loadout_Slot, vgui::Button );
 public:
 	CRD_VGUI_Loadout_Slot( vgui::Panel *parent, const char *panelName, ConVar *pInventoryVar );
 
 	void Paint() override;
+	void OnCursorEntered() override;
+	void NavigateTo() override;
 	virtual bool PaintItemFullSize() { return false; }
 	const ReactiveDropInventory::ItemInstance_t *GetItem();
 
@@ -139,7 +143,6 @@ public:
 	CRD_VGUI_Loadout_Slot_Weapon( vgui::Panel *parent, const char *panelName, ASW_Marine_Profile iProfile, ConVar *pWeaponVar, ConVar *pInventoryVar, ASW_Inventory_slot_t iSlot );
 
 	void Paint() override;
-	void OnCursorEntered() override;
 
 	ASW_Marine_Profile m_iProfile;
 	ASW_Inventory_slot_t m_iSlot;
