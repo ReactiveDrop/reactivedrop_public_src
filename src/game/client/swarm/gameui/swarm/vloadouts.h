@@ -111,6 +111,7 @@ public:
 
 	bool IsLabel() override { return false; }
 	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+	void ApplySettings( KeyValues *pSettings ) override;
 	void Paint() override;
 
 	char m_szName[MAX_VALUE];
@@ -118,6 +119,10 @@ public:
 	PublishedFileId_t m_iAddonID;
 
 	vgui::Label *m_pLblTitle;
+
+	CPanelAnimationVar( int, m_iNumColumns, "num_columns", "2" );
+	CPanelAnimationVarAliasType( int, m_iRowHeight, "row_height", "10", "proportional_int" );
+	CPanelAnimationVarAliasType( int, m_iMedalSize, "medal_size", "10", "proportional_int" );
 };
 
 class CRD_VGUI_Loadout_List_Addon_Header : public vgui::EditablePanel, public IGenericPanelListItem

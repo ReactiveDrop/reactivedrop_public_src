@@ -6,6 +6,9 @@
 		"fieldName"			"LoadoutListItem"
 		"wide"				"150"
 		"tall"				"20"
+		"num_columns"		"1"
+		"row_height"		"20"
+		"medal_size"		"20"
 	}
 
 	"LblTitle"

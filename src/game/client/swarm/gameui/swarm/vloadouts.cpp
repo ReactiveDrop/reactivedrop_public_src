@@ -426,12 +426,17 @@ void CRD_VGUI_Loadout_List_Item::ApplySchemeSettings( vgui::IScheme *pScheme )
 	BaseClass::ApplySchemeSettings( pScheme );
 
 	LoadControlSettings( "resource/ui/CRD_VGUI_Loadout_List_Item.res" );
+}
 
-	SetTall( GetTall() + YRES( 10 ) * ( m_Loadout.NumMarinesIncluded() + 1 ) / 2 );
+void CRD_VGUI_Loadout_List_Item::ApplySettings( KeyValues *pSettings )
+{
+	BaseClass::ApplySettings( pSettings );
+
+	SetTall( GetTall() + m_iRowHeight * ( m_Loadout.NumMarinesIncluded() + m_iNumColumns - 1 ) / m_iNumColumns );
 
 	if ( rd_loadout_load_medals.GetBool() && m_Loadout.HasAnyMedal() )
 	{
-		SetTall( GetTall() + YRES( 10 ) );
+		SetTall( GetTall() + m_iMedalSize );
 	}
 }
 
@@ -439,12 +444,11 @@ void CRD_VGUI_Loadout_List_Item::Paint()
 {
 	BaseClass::Paint();
 
-	float flIconSize = YRES( 10 );
 	bool bHasMedals = rd_loadout_load_medals.GetBool() && m_Loadout.HasAnyMedal();
 
-	float y = int( GetTall() - flIconSize * ( m_Loadout.NumMarinesIncluded() + 1 ) / 2 );
+	int y = GetTall() - m_iRowHeight * ( m_Loadout.NumMarinesIncluded() + m_iNumColumns - 1 ) / m_iNumColumns;
 	if ( bHasMedals )
-		y = int( y - flIconSize );
+		y -= m_iMedalSize;
 
 	int col = 0;
 	for ( int i = 0; i < ASW_NUM_MARINE_PROFILES; i++ )
@@ -452,35 +456,35 @@ void CRD_VGUI_Loadout_List_Item::Paint()
 		if ( !m_Loadout.MarineIncluded[i] )
 			continue;
 
-		float x = ( ( GetWide() - flIconSize * 6 * 2 ) / ( 2 + 1 ) + flIconSize * 6 ) * ( col + 1 ) - flIconSize * 6;
+		int x = ( ( GetWide() - m_iRowHeight * 6 * m_iNumColumns ) / ( m_iNumColumns + 1 ) + m_iRowHeight * 6 ) * ( col + 1 ) - m_iRowHeight * 6;
 		vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
 		vgui::surface()->DrawSetTexture( MarineProfileList()->GetProfile( i )->m_nPortraitTextureID );
-		vgui::surface()->DrawTexturedRect( x, y, x + flIconSize, y + flIconSize );
+		vgui::surface()->DrawTexturedRect( x, y, x + m_iRowHeight, y + m_iRowHeight );
 
-		x += flIconSize;
+		x += m_iRowHeight;
 		vgui::surface()->DrawSetTexture( g_ASWEquipmentList.GetEquipIconTexture( true, GetWeaponIndex( ASW_INVENTORY_SLOT_PRIMARY, m_Loadout.Marines[i].Primary, ASW_Marine_Profile( i ) ) ) );
-		vgui::surface()->DrawTexturedRect( x, y, x + flIconSize * 2, y + flIconSize );
+		vgui::surface()->DrawTexturedRect( x, y, x + m_iRowHeight * 2, y + m_iRowHeight );
 
-		x += flIconSize * 2;
+		x += m_iRowHeight * 2;
 		vgui::surface()->DrawSetTexture( g_ASWEquipmentList.GetEquipIconTexture( true, GetWeaponIndex( ASW_INVENTORY_SLOT_SECONDARY, m_Loadout.Marines[i].Secondary, ASW_Marine_Profile( i ) ) ) );
-		vgui::surface()->DrawTexturedRect( x, y, x + flIconSize * 2, y + flIconSize );
+		vgui::surface()->DrawTexturedRect( x, y, x + m_iRowHeight * 2, y + m_iRowHeight );
 
-		x += flIconSize * 2;
+		x += m_iRowHeight * 2;
 		vgui::surface()->DrawSetTexture( g_ASWEquipmentList.GetEquipIconTexture( false, GetWeaponIndex( ASW_INVENTORY_SLOT_EXTRA, m_Loadout.Marines[i].Extra, ASW_Marine_Profile( i ) ) ) );
-		vgui::surface()->DrawTexturedRect( x, y, x + flIconSize, y + flIconSize );
+		vgui::surface()->DrawTexturedRect( x, y, x + m_iRowHeight, y + m_iRowHeight );
 
 		col++;
-		if ( col >= 2 )
+		if ( col >= m_iNumColumns )
 		{
 			col = 0;
-			y += flIconSize;
+			y += m_iRowHeight;
 		}
 	}
 
 	if ( col != 0 )
 	{
 		col = 0;
-		y += flIconSize;
+		y += m_iRowHeight;
 	}
 
 	if ( bHasMedals )
@@ -493,8 +497,8 @@ void CRD_VGUI_Loadout_List_Item::Paint()
 				{
 					vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
 					vgui::surface()->DrawSetTexture( pIcon->GetID() );
-					int x = ( ( GetWide() - flIconSize * RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS ) / ( RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS + 1 ) + flIconSize ) * ( i + 1 ) - flIconSize;
-					vgui::surface()->DrawTexturedRect( x, y, x + flIconSize, y + flIconSize );
+					int x = ( ( GetWide() - m_iMedalSize * RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS ) / ( RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS + 1 ) + m_iMedalSize ) * ( i + 1 ) - m_iMedalSize;
+					vgui::surface()->DrawTexturedRect( x, y, x + m_iMedalSize, y + m_iMedalSize );
 				}
 			}
 		}
