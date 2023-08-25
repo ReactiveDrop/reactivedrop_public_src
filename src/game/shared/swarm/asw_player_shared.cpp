@@ -1438,3 +1438,13 @@ ASW_Controls_t CASW_Player::GetASWControls()
 	// otherwise, use the global controls setting.
 	return ( ASW_Controls_t )asw_controls.GetInt();
 }
+
+// plugin helper
+DLL_EXPORT ASW_Controls_t GetASWControlsForPlayer( CASW_Player *pPlayer )
+{
+	Assert( pPlayer );
+	if ( !pPlayer )
+		return ASWC_TOPDOWN;
+
+	return pPlayer->GetASWControls();
+}
