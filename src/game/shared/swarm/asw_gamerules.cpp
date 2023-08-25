@@ -9260,14 +9260,13 @@ void CAlienSwarm::LevelInitPostEntity()
 	m_hBriefingCamera = gEntList.FindEntityByClassname( NULL, "rd_briefing_camera" );
 	m_bHadBriefingCamera = !!m_hBriefingCamera;
 
-	if ( IsAnniversaryWeek() )
-	{
-		CreateCake( mapName );
-	}
-
 	if ( IsLobbyMap() )
 	{
 		OnServerHibernating();
+	}
+	else if ( IsAnniversaryWeek() )
+	{
+		CreateCake( mapName );
 	}
 #endif  // !CLIENT_DLL
 }

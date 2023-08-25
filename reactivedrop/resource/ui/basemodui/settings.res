@@ -34,7 +34,8 @@
 	{
 		"ControlName"		"BaseModHybridButton"
 		"fieldName"			"BtnControls"
-		"xpos"				"c-303"
+		"xpos"				"c-283"	[!$WIN32WIDE]
+		"xpos"				"c-303"	[$WIN32WIDE]
 		"ypos"				"42"
 		"zpos"				"5"
 		"wide"				"64"
@@ -51,7 +52,8 @@
 	{
 		"ControlName"		"BaseModHybridButton"
 		"fieldName"			"BtnOptions"
-		"xpos"				"c-237"
+		"xpos"				"c-217"	[!$WIN32WIDE]
+		"xpos"				"c-237"	[$WIN32WIDE]
 		"ypos"				"42"
 		"zpos"				"5"
 		"wide"				"64"
@@ -68,7 +70,8 @@
 	{
 		"ControlName"		"BaseModHybridButton"
 		"fieldName"			"BtnAudio"
-		"xpos"				"c-171"
+		"xpos"				"c-151"	[!$WIN32WIDE]
+		"xpos"				"c-171"	[$WIN32WIDE]
 		"ypos"				"42"
 		"zpos"				"5"
 		"wide"				"64"
@@ -85,7 +88,8 @@
 	{
 		"ControlName"		"BaseModHybridButton"
 		"fieldName"			"BtnVideo"
-		"xpos"				"c-105"
+		"xpos"				"c-85"	[!$WIN32WIDE]
+		"xpos"				"c-105"	[$WIN32WIDE]
 		"ypos"				"42"
 		"zpos"				"5"
 		"wide"				"64"
@@ -102,7 +106,8 @@
 	{
 		"ControlName"		"BaseModHybridButton"
 		"fieldName"			"BtnAbout"
-		"xpos"				"c239"
+		"xpos"				"c219"	[!$WIN32WIDE]
+		"xpos"				"c239"	[$WIN32WIDE]
 		"ypos"				"42"
 		"zpos"				"5"
 		"wide"				"64"
@@ -119,9 +124,11 @@
 	{
 		"ControlName"		"CRD_VGUI_Settings_Controls"
 		"fieldName"			"PnlControls"
-		"xpos"				"c-305"
+		"xpos"				"c-290"	[!$WIN32WIDE]
+		"xpos"				"c-305"	[$WIN32WIDE]
 		"ypos"				"40"
-		"wide"				"610"
+		"wide"				"580"	[!$WIN32WIDE]
+		"wide"				"610"	[$WIN32WIDE]
 		"tall"				"400"
 		"bgcolor_override"	"16 20 24 224"
 		"paintbackgroundtype"	"2"
@@ -132,9 +139,11 @@
 	{
 		"ControlName"		"CRD_VGUI_Settings_Options"
 		"fieldName"			"PnlOptions"
-		"xpos"				"c-305"
+		"xpos"				"c-290"	[!$WIN32WIDE]
+		"xpos"				"c-305"	[$WIN32WIDE]
 		"ypos"				"40"
-		"wide"				"610"
+		"wide"				"580"	[!$WIN32WIDE]
+		"wide"				"610"	[$WIN32WIDE]
 		"tall"				"400"
 		"bgcolor_override"	"16 20 24 224"
 		"paintbackgroundtype"	"2"
@@ -145,9 +154,11 @@
 	{
 		"ControlName"		"CRD_VGUI_Settings_Audio"
 		"fieldName"			"PnlAudio"
-		"xpos"				"c-305"
+		"xpos"				"c-290"	[!$WIN32WIDE]
+		"xpos"				"c-305"	[$WIN32WIDE]
 		"ypos"				"40"
-		"wide"				"610"
+		"wide"				"580"	[!$WIN32WIDE]
+		"wide"				"610"	[$WIN32WIDE]
 		"tall"				"400"
 		"bgcolor_override"	"16 20 24 224"
 		"paintbackgroundtype"	"2"
@@ -158,9 +169,11 @@
 	{
 		"ControlName"		"CRD_VGUI_Settings_Video"
 		"fieldName"			"PnlVideo"
-		"xpos"				"c-305"
+		"xpos"				"c-290"	[!$WIN32WIDE]
+		"xpos"				"c-305"	[$WIN32WIDE]
 		"ypos"				"40"
-		"wide"				"610"
+		"wide"				"580"	[!$WIN32WIDE]
+		"wide"				"610"	[$WIN32WIDE]
 		"tall"				"400"
 		"bgcolor_override"	"16 20 24 224"
 		"paintbackgroundtype"	"2"
@@ -171,9 +184,11 @@
 	{
 		"ControlName"		"CRD_VGUI_Settings_About"
 		"fieldName"			"PnlAbout"
-		"xpos"				"c-305"
+		"xpos"				"c-290"	[!$WIN32WIDE]
+		"xpos"				"c-305"	[$WIN32WIDE]
 		"ypos"				"40"
-		"wide"				"610"
+		"wide"				"580"	[!$WIN32WIDE]
+		"wide"				"610"	[$WIN32WIDE]
 		"tall"				"400"
 		"bgcolor_override"	"16 20 24 224"
 		"paintbackgroundtype"	"2"

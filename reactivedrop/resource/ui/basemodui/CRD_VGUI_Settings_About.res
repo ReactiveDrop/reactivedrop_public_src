@@ -6,7 +6,7 @@
 		"fieldName"			"LblBuildID"
 		"xpos"				"16"
 		"ypos"				"40"
-		"wide"				"270"
+		"wide"				"250"
 		"tall"				"10"
 		"fgcolor_override"	"224 224 224 255"
 	}
@@ -17,7 +17,7 @@
 		"fieldName"			"LblNetworkVersion"
 		"xpos"				"16"
 		"ypos"				"52"
-		"wide"				"270"
+		"wide"				"250"
 		"tall"				"10"
 		"fgcolor_override"	"224 224 224 255"
 	}
@@ -28,7 +28,7 @@
 		"fieldName"			"LblCurrentBranch"
 		"xpos"				"16"
 		"ypos"				"64"
-		"wide"				"270"
+		"wide"				"250"
 		"tall"				"10"
 		"fgcolor_override"	"224 224 224 255"
 	}
@@ -39,7 +39,7 @@
 		"fieldName"			"LblWineVersion"
 		"xpos"				"16"
 		"ypos"				"76"
-		"wide"				"270"
+		"wide"				"250"
 		"tall"				"10"
 		"fgcolor_override"	"224 224 224 255"
 	}
@@ -48,7 +48,8 @@
 	{
 		"ControlName"		"ImagePanel"
 		"fieldName"			"ImgSourceEngine"
-		"xpos"				"294"
+		"xpos"				"274"	[!$WIN32WIDE]
+		"xpos"				"294"	[$WIN32WIDE]
 		"ypos"				"40"
 		"wide"				"300"
 		"tall"				"75"
@@ -60,7 +61,8 @@
 	{
 		"ControlName"		"GenericPanelList"
 		"fieldName"			"CopyrightDisclaimers"
-		"xpos"				"294"
+		"xpos"				"274"	[!$WIN32WIDE]
+		"xpos"				"294"	[$WIN32WIDE]
 		"ypos"				"123"
 		"wide"				"300"
 		"tall"				"261"

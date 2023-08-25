@@ -9,8 +9,11 @@
 
 #include "basemodui.h"
 #include "matchmaking/imatchframework.h"
+#include "steam/steam_api_common.h"
 
+struct FriendGameInfo_t;
 class CNB_Header_Footer;
+class CReactiveDropServerListHelper;
 
 namespace BaseModUI {
 
@@ -25,63 +28,82 @@ class FoundGameListItem : public vgui::EditablePanel, public IBaseModFrameListen
 public:
 	enum Type_t
 	{
-		FGT_UNKNOWN,
-		FGT_PLAYER,
-		FGT_SERVER,
-		FGT_PUBLICGAME,
+		TYPE_UNKNOWN,
+		TYPE_LOBBY,
+		TYPE_SERVER,
+		TYPE_LANSERVER,
+		TYPE_FAVORITESERVER,
+		TYPE_INSECURESERVER,
+		TYPE_RANKEDSERVER,
 	};
 
 	struct Info
 	{
-		Type_t mInfoType;
-		char Name[64];
-		bool mIsJoinable;
-		bool mbDLC;
-		char mchOtherTitle[64];
-		bool mbInGame; // If I have a presence party
+		Type_t m_Type{ TYPE_UNKNOWN };
+		CSteamID m_LobbyID; // lobby only
+		servernetadr_t m_ServerIP; // server only
+		CCopyableUtlVector<CSteamID> m_Friends;
 
-		enum GAME_PING { GP_LOW, GP_MEDIUM, GP_HIGH, GP_SYSTEMLINK, GP_NONE } mPing;
-		KeyValues *mpGameDetails;
-		XUID mFriendXUID;
+		char m_szChallengeFile[64]{};
+		char m_szCampaignFile[64]{}; // lobby only
+		char m_szMissionFile[64]{};
 
-		XUID mServerXUID;
-		bool mbJoinServer;
+		char m_szMissionImage[256]{}; // lobby only
+		char m_szMissionWebsite[256]{}; // lobby only
+		char m_szMissionVersion[64]{}; // lobby only
+		float m_flMissionVersion{}; // lobby only
 
-		int miPing;		// actual ping value
+		wchar_t m_wszLobbyDisplayName[256]{}; // server only (for now)
+		wchar_t m_wszChallengeDisplayName[256]{};
+		wchar_t m_wszMissionDisplayName[256]{}; // lobby only
+		wchar_t m_wszAuthorName[256]{}; // lobby only
 
-		void (*mpfnJoinGame)( Info const& fi );
+		PublishedFileId_t m_iChallengeWorkshopID{ k_PublishedFileIdInvalid }; // lobby only
+		PublishedFileId_t m_iMissionWorkshopID{ k_PublishedFileIdInvalid }; // lobby only
+		CCopyableUtlVector<PublishedFileId_t> m_RequiredWorkshopItems; // lobby only
 
-		Info()
-		{
-			mInfoType = FGT_UNKNOWN;
-			Name[0] = 0;
-			mchOtherTitle[0] = 0;
-			mIsJoinable = false;
-			mbDLC = false;
-			mbInGame = false;
-			mPing = GP_NONE;
-			mFriendXUID = 0;
-			mServerXUID = 0;
-			mbJoinServer = false;
-			miPing = 0;
-			mpGameDetails = NULL;
-			mpfnJoinGame = NULL;
-		}
+		bool m_bMissionBuiltIn{ false }; // comes from mission file; lobby only
+		bool m_bMissionOfficial{ false }; // comes from (remote player's) game DLL; lobby only
+
+		enum GAME_MODE { MODE_UNKNOWN, MODE_CAMPAIGN, MODE_SINGLE_MISSION } m_eGameMode{ MODE_UNKNOWN }; // lobby only
+		enum GAME_STATE { STATE_BRIEFING, STATE_INGAME } m_eGameState{ STATE_INGAME };
+
+		enum GAME_DIFFICULTY { DIFFICULTY_EASY, DIFFICULTY_NORMAL, DIFFICULTY_HARD, DIFFICULTY_INSANE, DIFFICULTY_BRUTAL } m_eGameDifficulty{ DIFFICULTY_NORMAL };
+		bool m_bOnslaught{ false };
+		bool m_bHardcoreFF{ false };
+
+		enum SERVER_TYPE { SERVER_LISTEN, SERVER_DEDICATED } m_eServerType{ SERVER_LISTEN }; // SERVER_LISTEN is not used on dedicated servers (obviously)
+		enum LOBBY_ACCESS { ACCESS_PUBLIC, ACCESS_FRIENDS, ACCESS_PASSWORD } m_eLobbyAccess{ ACCESS_PUBLIC }; // ACCESS_FRIENDS is lobby only; ACCESS_PASSWORD is server only
+		char m_szModDir[64]{};
+		char m_szNetworkVersion[32]{};
+		char m_szGameBranch[32]{};
+		char m_szGroupID[64]{}; // server only
+		int m_iGameVersion{}; // lobby only
+		int m_iMapVersion{}; // lobby only
+
+		int m_iCurPlayers{};
+		int m_iMaxPlayers{};
+
+		SteamNetworkPingLocation_t m_PingLocation{}; // lobby only
+		int m_iPingMS{};
+		enum GAME_PING { PING_LOW, PING_MEDIUM, PING_HIGH, PING_SYSTEMLINK, PING_NONE } m_ePingCategory{ PING_NONE }; // PING_SYSTEMLINK means LAN server
+
+		bool SetFromFriend( CSteamID friendID, const FriendGameInfo_t &info );
+		bool SetFromLobby( CSteamID lobby );
+		bool SetFromServer( CReactiveDropServerListHelper &helper, int i, FoundGameListItem::Type_t eType = FoundGameListItem::TYPE_SERVER );
+		bool Merge( const Info &info );
+		void SetDefaultMissionData();
+
+		char m_szOtherTitle[64]{};
 
 		bool IsJoinable() const;
-		bool IsDownloadable() const;
-		bool IsDLC() const;
 		bool HaveMap() const;
 		int CompareMapVersion() const;
-		char const *IsOtherTitle() const;
-		PublishedFileId_t GetWorkshopID() const;
-
-		char const *GetNonJoinableShortHint( bool bWarnOnNoHint ) const;
-		char const *GetJoinButtonHint() const;
-
-		void SetPingDirect();
+		const char *IsOtherTitle() const;
+		bool IsDownloadable() const;
+		const char *GetNonJoinableShortHint( bool bWarnOnNoHint ) const;
+		const char *GetJoinButtonHint() const;
 		void SetOtherTitleFromLobby();
-		void SetIsJoinableFromLobby();
 	};
 
 public:
@@ -92,13 +114,12 @@ public:
 	void SetGameIndex( const Info& fi );
 	const Info& GetFullInfo();
 
-	void SetGamerTag( char const* gamerTag );
-	void SetAvatarXUID( XUID xuid );
+	void SetGamerTag( const wchar_t *gamerTag );
 
 	void SetGamePing( Info::GAME_PING ping );
-	void SetGameDifficulty( const char* difficultyName );
-	void SetGameChallenge( const char* challengeName );
-	void SetSwarmState( const char* szSwarmStateText );
+	void SetGameDifficulty( const char *difficultyName );
+	void SetGameChallenge( const wchar_t *challengeName );
+	void SetSwarmState( const char *szSwarmStateText );
 	void SetGamePlayerCount( int current, int max );
 
 	void DrawListItemLabel( vgui::Label* label, bool bSmallFont, bool bEastAligned = false );
@@ -112,10 +133,8 @@ public:
 	void OnKeyCodePressed( vgui::KeyCode code );
 	void OnKeyCodeTyped( vgui::KeyCode code );
 	void OnMousePressed( vgui::MouseCode code );
-	void OnMouseDoublePressed( vgui::MouseCode code );
 
 	virtual void OnCursorEntered();
-	//virtual void OnCursorExited() { SetHasMouseover( false ); }
 	virtual void NavigateTo( void );
 	virtual void NavigateFrom( void );
 
@@ -191,7 +210,6 @@ public:
 	void PaintBackground();
 	void LoadLayout();
 
-	void UpdateFooterButtons();
 	virtual void UpdateTitle();
 
 #ifdef _X360
@@ -202,12 +220,11 @@ public:
 
 	void SetDetailsPanelVisible( bool bIsVisible );
 
-	virtual bool AddGameFromDetails( const FoundGameListItem::Info &fi );
+	virtual bool AddGameFromDetails( const FoundGameListItem::Info &fi, bool bOnlyMerge = false );
 	void UpdateGameDetails();
 
 	MESSAGE_FUNC_CHARPTR( OnItemSelected, "OnItemSelected", panelName );
 
-protected:
 	void ApplySchemeSettings( vgui::IScheme *pScheme );
 	FoundGameListItem* GetGameItem( int index );
 
@@ -218,17 +235,16 @@ protected:
 
 	void OpenPlayerFlyout( BaseModHybridButton *button, uint64 playerId, int x, int y );
 
-	virtual void StartSearching();
 	virtual void AddFakeServersToList();
 	virtual void AddServersToList();
-	virtual void AddFriendGamesToList();
+	virtual void AddFriendGamesToList( bool bMergeOnly = false );
 	virtual void SortListItems();
 	virtual char const * GetListHeaderText() { return NULL; }
 
 	virtual bool IsADuplicateServer( FoundGameListItem *item, FoundGameListItem::Info const &fi );
+	virtual bool MergeServerEntry( FoundGameListItem *item, FoundGameListItem::Info const &fi );
 	virtual bool CanCreateGame();
 
-protected:
 	float m_flSearchStartedTime, m_flSearchEndTime;
 	float m_flScheduledUpdateGameDetails;
 
@@ -246,6 +262,7 @@ protected:
 	KeyValues *m_pDataSettings;
 
 	vgui::Label *m_pTitle;
+	vgui::Label *m_pSubTitle;
 	CNB_Header_Footer *m_pHeaderFooter;
 };
 

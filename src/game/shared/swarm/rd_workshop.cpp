@@ -80,12 +80,12 @@ const char *const CReactiveDropWorkshop::s_RDWorkshopMissionTags[] =
 static bool s_bClearingWorkshopCache = false;
 CReactiveDropWorkshop g_ReactiveDropWorkshop;
 
-bool CReactiveDropWorkshop::Init()
+void CReactiveDropWorkshop::PostInit()
 {
 #ifdef GAME_DLL
 	if ( engine->IsDedicatedServer() )
 	{
-		return true;
+		return;
 	}
 #endif
 
@@ -95,7 +95,7 @@ bool CReactiveDropWorkshop::Init()
 	if ( !pSteamUGC )
 	{
 		Warning( "No Steam connection. Skipping workshop.\n" );
-		return true;
+		return;
 	}
 
 	uint32 nSubscribed = pSteamUGC->GetNumSubscribedItems();
@@ -118,6 +118,7 @@ bool CReactiveDropWorkshop::Init()
 		ConVarRef cl_cloud_settings( "cl_cloud_settings" );
 		bool bLoaded = false;
 		ISteamRemoteStorage *pSteamRemoteStorage = SteamRemoteStorage();
+		Assert( pSteamRemoteStorage );
 		if ( ( cl_cloud_settings.GetInt() & STEAMREMOTESTORAGE_CLOUD_DISABLED_WORKSHOP_ITEMS ) && pSteamRemoteStorage && pSteamRemoteStorage->FileExists( WORKSHOP_DISABLED_ADDONS_FILENAME ) )
 		{
 			CUtlBuffer buf;
@@ -170,8 +171,6 @@ bool CReactiveDropWorkshop::Init()
 	m_iPublishedAddonsPage = 0;
 	RequestNextPublishedAddonsPage();
 #endif
-
-	return true;
 }
 
 void CReactiveDropWorkshop::InitNonWorkshopAddons()

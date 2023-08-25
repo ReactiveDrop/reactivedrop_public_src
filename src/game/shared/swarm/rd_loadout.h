@@ -37,6 +37,8 @@ namespace ReactiveDropLoadout
 
 		void ToKeyValues( KeyValues *pKV, bool bBinary, bool bForSharing = false ) const;
 		void FromKeyValues( KeyValues *pKV, bool bBinary );
+		int NumMarinesIncluded() const;
+		bool HasAnyMedal() const;
 #ifdef CLIENT_DLL
 		void CopyToLive();
 		void CopyFromLive();

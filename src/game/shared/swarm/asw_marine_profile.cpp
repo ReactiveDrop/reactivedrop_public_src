@@ -264,8 +264,11 @@ void CASW_Marine_Profile::LoadTextures()
 		char buffer[64];
 		// load the portrait textures
 		m_nPortraitTextureID = vgui::surface()->CreateNewTextureID();
-		Q_snprintf(buffer, sizeof(buffer), "vgui/briefing/face_%s", m_PortraitName);		
+		Q_snprintf(buffer, sizeof(buffer), "vgui/briefing/face_%s", m_PortraitName);
 		vgui::surface()->DrawSetTextureFile( m_nPortraitTextureID, buffer, true, false);
+		m_nPortraitLitTextureID = vgui::surface()->CreateNewTextureID();
+		Q_snprintf(buffer, sizeof(buffer), "vgui/briefing/face_%s_lit", m_PortraitName);
+		vgui::surface()->DrawSetTextureFile( m_nPortraitLitTextureID, buffer, true, false);
 		
 		if (GetMarineClass() == MARINE_CLASS_NCO)
 			Q_snprintf(buffer, sizeof(buffer), "vgui/swarm/ClassIcons/NCOClassIcon");

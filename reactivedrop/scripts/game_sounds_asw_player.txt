@@ -517,7 +517,7 @@
 	"channel"		"CHAN_AUTO"
 	"soundlevel"	"SNDLVL_GUNFIRE"
 	"pitch"			"95, 105"
-	"volume"		"0.9, 1.0"
+	"volume"		"0.3, 0.35"
 	"wave"			")weapons/leader_shot.wav"
 }
 
@@ -526,6 +526,6 @@
 	"channel"		"CHAN_AUTO"
 	"soundlevel"	"SNDLVL_GUNFIRE"
 	"pitch"			"85, 115"
-	"volume"		"0.6, 1.0"
+	"volume"		"0.35, 0.4"
 	"wave"			")weapons/leader_resist.wav"
 }

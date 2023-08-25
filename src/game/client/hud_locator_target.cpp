@@ -41,8 +41,8 @@
 #define MIN_ICON_ALPHA 0.5
 #define MAX_ICON_ALPHA 1
 
-ConVar locator_icon_min_size_non_ss( "locator_icon_min_size_non_ss", "1.0", FCVAR_NONE, "Minimum scale of the icon on the screen" );
-ConVar locator_icon_max_size_non_ss( "locator_icon_max_size_non_ss", "1.75", FCVAR_NONE, "Maximum scale of the icon on the screen" );
+ConVar locator_icon_min_size_non_ss( "locator_icon_min_size_non_ss", "0.85", FCVAR_NONE, "Minimum scale of the icon on the screen" );
+ConVar locator_icon_max_size_non_ss( "locator_icon_max_size_non_ss", "1.5", FCVAR_NONE, "Maximum scale of the icon on the screen" );
 
 #define MIN_ICON_SCALE			( ( VGui_IsSplitScreen() && !ss_verticalsplit.GetBool() ) ? ( locator_icon_min_size_non_ss.GetFloat() * 0.78 ) : ( locator_icon_min_size_non_ss.GetFloat() ) )
 #define MAX_ICON_SCALE			( ( VGui_IsSplitScreen() && !ss_verticalsplit.GetBool() ) ? ( locator_icon_max_size_non_ss.GetFloat() * 0.78 ) : ( locator_icon_max_size_non_ss.GetFloat() ) )
@@ -59,29 +59,29 @@ enum
 };
 
 ConVar locator_fade_time( "locator_fade_time", "0.3", FCVAR_NONE, "Number of seconds it takes for a lesson to fully fade in/out." );
-ConVar locator_lerp_speed( "locator_lerp_speed", "5.0f", FCVAR_NONE, "Speed that static lessons move along the Y axis." );
-ConVar locator_lerp_rest( "locator_lerp_rest", "2.25f", FCVAR_NONE, "Number of seconds before moving from the center." );
-ConVar locator_lerp_time( "locator_lerp_time", "1.75f", FCVAR_NONE, "Number of seconds to lerp before reaching final destination" );
-ConVar locator_pulse_time( "locator_pulse_time", "1.0f", FCVAR_NONE, "Number of seconds to pulse after changing icon or position" );
+ConVar locator_lerp_speed( "locator_lerp_speed", "5.0", FCVAR_NONE, "Speed that static lessons move along the Y axis." );
+ConVar locator_lerp_rest( "locator_lerp_rest", "0.0", FCVAR_NONE, "Number of seconds before moving from the center." );
+ConVar locator_lerp_time( "locator_lerp_time", "1.75", FCVAR_NONE, "Number of seconds to lerp before reaching final destination" );
+ConVar locator_pulse_time( "locator_pulse_time", "1.0", FCVAR_NONE, "Number of seconds to pulse after changing icon or position" );
 ConVar locator_start_at_crosshair( "locator_start_at_crosshair", "0", FCVAR_NONE, "Start position at the crosshair instead of the top middle of the screen." );
 
-ConVar locator_topdown_style( "locator_topdown_style", "0", FCVAR_NONE, "Topdown games set this to handle distance and offscreen location differently." );
+ConVar locator_topdown_style( "locator_topdown_style", "1", FCVAR_NONE, "Topdown games set this to handle distance and offscreen location differently." );
 
-ConVar locator_background_style( "locator_background_style", "0", FCVAR_NONE, "Setting this to 1 will show rectangle backgrounds behind the items word-bubble pointers." );
-ConVar locator_background_color( "locator_background_color", "255 255 255 5", FCVAR_NONE, "The default color for the background." );
-ConVar locator_background_border_color( "locator_background_border_color", "255 255 255 15", FCVAR_NONE, "The default color for the border." );
-ConVar locator_background_thickness_x( "locator_background_thickness_x", "8", FCVAR_NONE, "How many pixels the background borders the left and right." );
+ConVar locator_background_style( "locator_background_style", "1", FCVAR_NONE, "Setting this to 1 will show rectangle backgrounds behind the items word-bubble pointers." );
+ConVar locator_background_color( "locator_background_color", "0 0 0 128", FCVAR_NONE, "The default color for the background." );
+ConVar locator_background_border_color( "locator_background_border_color", "30 30 30 128", FCVAR_NONE, "The default color for the border." );
+ConVar locator_background_thickness_x( "locator_background_thickness_x", "4", FCVAR_NONE, "How many pixels the background borders the left and right." );
 ConVar locator_background_thickness_y( "locator_background_thickness_y", "0", FCVAR_NONE, "How many pixels the background borders the top and bottom." );
 ConVar locator_background_shift_x( "locator_background_shift_x", "3", FCVAR_NONE, "How many pixels the background is shifted right." );
 ConVar locator_background_shift_y( "locator_background_shift_y", "1", FCVAR_NONE, "How many pixels the background is shifted down." );
-ConVar locator_background_border_thickness( "locator_background_border_thickness", "3", FCVAR_NONE, "How many pixels the background borders the left and right." );
+ConVar locator_background_border_thickness( "locator_background_border_thickness", "2", FCVAR_NONE, "How many pixels the background borders the left and right." );
 
-ConVar locator_target_offset_x( "locator_target_offset_x", "0", FCVAR_NONE, "How many pixels to offset the locator from the target position." );
-ConVar locator_target_offset_y( "locator_target_offset_y", "0", FCVAR_NONE, "How many pixels to offset the locator from the target position." );
+ConVar locator_target_offset_x( "locator_target_offset_x", "-75", FCVAR_NONE, "How many pixels to offset the locator from the target position." );
+ConVar locator_target_offset_y( "locator_target_offset_y", "-110", FCVAR_NONE, "How many pixels to offset the locator from the target position." );
 
-ConVar locator_text_drop_shadow( "locator_text_drop_shadow", "1", FCVAR_NONE, "If enabled, a drop shadow is drawn behind caption text.  PC only." );
-ConVar locator_text_glow( "locator_text_glow", "0", FCVAR_NONE, "If enabled, a glow is drawn behind caption text" );
-ConVar locator_text_glow_color( "locator_text_glow_color", "255 255 255 255", FCVAR_NONE, "Color of text glow" );
+ConVar locator_text_drop_shadow( "locator_text_drop_shadow", "0", FCVAR_NONE, "If enabled, a drop shadow is drawn behind caption text.  PC only." );
+ConVar locator_text_glow( "locator_text_glow", "1", FCVAR_NONE, "If enabled, a glow is drawn behind caption text" );
+ConVar locator_text_glow_color( "locator_text_glow_color", "35 214 250 128", FCVAR_NONE, "Color of text glow" );
 
 ConVar locator_split_maxwide_percent( "locator_split_maxwide_percent", "0.80f", FCVAR_CHEAT );
 ConVar locator_split_len( "locator_split_len", "0.5f", FCVAR_CHEAT );

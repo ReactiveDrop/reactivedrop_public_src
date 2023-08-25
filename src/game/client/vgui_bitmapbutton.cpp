@@ -27,6 +27,7 @@ CBitmapButton::CBitmapButton( vgui::Panel *pParent, const char *pName, const cha
 		m_bImageLoaded[i] = false;
 	}
 	_doublePressedActionMessage = NULL;
+	m_bFocusOnNavigateTo = false;
 }
 
 CBitmapButton::~CBitmapButton()
@@ -107,7 +108,7 @@ void CBitmapButton::Paint( void )
 {
 	// Determine the image to use based on the state
 	int nCurrentImage = BUTTON_ENABLED;
-	if (IsArmed())
+	if (IsArmed() || HasFocus())
 	{
 		if (IsDepressed())
 		{
@@ -161,4 +162,12 @@ void CBitmapButton::SetDoublePressedCommand( KeyValues *message )
 	}
 
 	_doublePressedActionMessage = message;
+}
+
+void CBitmapButton::NavigateTo()
+{
+	BaseClass::NavigateTo();
+
+	if ( m_bFocusOnNavigateTo )
+		RequestFocus();
 }

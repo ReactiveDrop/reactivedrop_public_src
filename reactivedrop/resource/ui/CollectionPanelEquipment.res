@@ -3,7 +3,8 @@
 	"EquipmentPanel"
 	{
 		"fieldName"			"EquipmentPanel"
-		"xpos"				"c-310"
+		"xpos"				"c-280"	[!$WIN32WIDE]
+		"xpos"				"c-310"	[$WIN32WIDE]
 		"ypos"				"40"
 		"wide"				"630" // 450, but it expands over the details pane too
 		"tall"				"440" // 410, but it expands to the bottom of the screen
@@ -22,7 +23,8 @@
 	"BtnEquip"
 	{
 		"fieldName"			"BtnEquip"
-		"xpos"				"476"
+		"xpos"				"416"	[!$WIN32WIDE]
+		"xpos"				"476"	[$WIN32WIDE]
 		"ypos"				"385"
 		"wide"				"117"
 		"tall"				"27"

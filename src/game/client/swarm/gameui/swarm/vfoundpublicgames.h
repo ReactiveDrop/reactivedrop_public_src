@@ -27,8 +27,7 @@ namespace BaseModUI {
 	public:
 		FoundPublicGames( vgui::Panel *parent, const char *panelName );
 		~FoundPublicGames();
-	
-		virtual void PaintBackground();
+
 		virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
 		virtual void OnCommand( const char *command );
 		virtual void Activate();
@@ -39,14 +38,11 @@ namespace BaseModUI {
 		virtual void AddServersToList( void );
 		virtual void AddPublicGamesToList();
 		virtual void AddDedicatedServersToList();
-		virtual void SortListItems();
-		virtual bool IsADuplicateServer( FoundGameListItem *item, FoundGameListItem::Info const &fi );
 		virtual char const * GetListHeaderText();
 
 		virtual void UpdateTitle();
 
 	private:
-		bool ShouldShowPublicGame( KeyValues *pGameDetails );
 		void UpdateFilters( bool newState );
 		bool CanCreateGame();
 
@@ -55,21 +51,7 @@ namespace BaseModUI {
 		void Steam_OnNumberOfCurrentPlayers( NumberOfCurrentPlayers_t *pResult, bool bError );
 #endif
 
-		DropDownMenu* m_drpDifficulty;
-		DropDownMenu* m_drpOnslaught;
-		DropDownMenu* m_drpGameStatus;
-		DropDownMenu* m_drpCampaign;
-		DropDownMenu* m_drpDistance;
-		DropDownMenu* m_drpChallenge;
-		DropDownMenu* m_drpDeathmatch;
-		BaseModUI::BaseModHybridButton *m_btnFilters;
-
-		vgui::Label *m_pSupportRequiredDetails;
-		BaseModUI::BaseModHybridButton *m_pInstallSupportBtn;
-
 		int m_numCurrentPlayers;
-		vgui::EditablePanel *m_pSupportRequiredPanel;
-		vgui::EditablePanel *m_pInstallingSupportPanel;
 	};
 
 };

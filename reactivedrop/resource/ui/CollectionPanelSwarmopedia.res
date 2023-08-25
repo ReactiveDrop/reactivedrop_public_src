@@ -3,7 +3,8 @@
 	"SwarmopediaPanel"
 	{
 		"fieldName"			"SwarmopediaPanel"
-		"xpos"				"c-310"
+		"xpos"				"c-280"	[!$WIN32WIDE]
+		"xpos"				"c-310"	[$WIN32WIDE]
 		"ypos"				"40"
 		"wide"				"630" // 450, but it expands over the details pane too
 		"tall"				"440" // 410, but it expands to the bottom of the screen
@@ -13,7 +14,8 @@
 	"ModelPanel"
 	{
 		"fieldName"			"ModelPanel"
-		"xpos"				"460"
+		"xpos"				"400"	[!$WIN32WIDE]
+		"xpos"				"460"	[$WIN32WIDE]
 		"ypos"				"250"
 		"wide"				"170"
 		"tall"				"170"
@@ -23,7 +25,8 @@
 	"ModelButton"
 	{
 		"fieldName"			"ModelButton"
-		"xpos"				"476"
+		"xpos"				"416"	[!$WIN32WIDE]
+		"xpos"				"476"	[$WIN32WIDE]
 		"ypos"				"390"
 		"wide"				"117"
 		"tall"				"27"
@@ -52,7 +55,8 @@
 		"fieldName"			"Content"
 		"xpos"				"0"
 		"ypos"				"0"
-		"wide"				"450"
+		"wide"				"380"	[!$WIN32WIDE]
+		"wide"				"450"	[$WIN32WIDE]
 		"tall"				"410"
 		"ControlName"		"RichText"
 		"bgcolor_override"	"0 0 0 0"

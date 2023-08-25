@@ -207,6 +207,16 @@ void UTIL_RD_ReadLobbyScoreboard( CSteamID lobby, CUtlVector<RD_Lobby_Scoreboard
 
 static void DebugSpewLobby( CSteamID lobby )
 {
+	ISteamMatchmaking *pMatchmaking = SteamMatchmaking();
+	Assert( pMatchmaking );
+	if ( !pMatchmaking )
+		return;
+
+	ISteamFriends *pFriends = SteamFriends();
+	Assert( pFriends );
+	if ( !pFriends )
+		return;
+
 	DevMsg( 2, "LOBBY: %llu\n", lobby.ConvertToUint64() );
 	if ( developer.GetInt() >= 3 )
 	{
@@ -219,7 +229,7 @@ static void DebugSpewLobby( CSteamID lobby )
 		uint32 serverIP;
 		uint16 serverPort;
 		CSteamID serverID;
-		if ( SteamMatchmaking()->GetLobbyGameServer( lobby, &serverIP, &serverPort, &serverID ) )
+		if ( pMatchmaking->GetLobbyGameServer( lobby, &serverIP, &serverPort, &serverID ) )
 		{
 			netadr_t serverAddr( serverIP, serverPort );
 			DevMsg( 3, "server: %s (%llu)\n", serverAddr.ToString(), serverID.ConvertToUint64() );
@@ -234,17 +244,17 @@ static void DebugSpewLobby( CSteamID lobby )
 			DevMsg( 3, "estimated ping: %dms\n", iPing );
 		}
 
-		int iMembers = SteamMatchmaking()->GetNumLobbyMembers( lobby );
+		int iMembers = pMatchmaking->GetNumLobbyMembers( lobby );
 		DevMsg( 3, "members: %d\n", iMembers );
 		if ( lobby == UTIL_RD_GetCurrentLobbyID() )
 		{
-			CSteamID owner = SteamMatchmaking()->GetLobbyOwner( lobby );
-			DevMsg( 3, "owner: %llu \"%s\"\n", owner.ConvertToUint64(), owner.IsValid() ? SteamFriends()->GetFriendPersonaName( owner ) : "(invalid)" );
+			CSteamID owner = pMatchmaking->GetLobbyOwner( lobby );
+			DevMsg( 3, "owner: %llu \"%s\"\n", owner.ConvertToUint64(), owner.IsValid() ? pFriends->GetFriendPersonaName( owner ) : "(invalid)" );
 
 			for ( int i = 0; i < iMembers; i++ )
 			{
-				CSteamID member = SteamMatchmaking()->GetLobbyMemberByIndex( lobby, i );
-				DevMsg( 3, "member %d: %llu \"%s\"\n", i, member.ConvertToUint64(), SteamFriends()->GetFriendPersonaName( member ) );
+				CSteamID member = pMatchmaking->GetLobbyMemberByIndex( lobby, i );
+				DevMsg( 3, "member %d: %llu \"%s\"\n", i, member.ConvertToUint64(), pFriends->GetFriendPersonaName( member ) );
 			}
 		}
 
@@ -252,16 +262,18 @@ static void DebugSpewLobby( CSteamID lobby )
 		UTIL_RD_ReadLobbyScoreboard( lobby, scoreboard );
 		FOR_EACH_VEC( scoreboard, i )
 		{
-			DevMsg( 3, "player %d: \"%s\" | score: %d | connected for %d:%05.3f\n", i, scoreboard[i].Name, scoreboard[i].Score, int( scoreboard[i].Connected / 60 ), fmodf( scoreboard[i].Connected, 60.0f ) );
+			char szName[k_cchPersonaNameMax];
+			V_UnicodeToUTF8( scoreboard[i].Name, szName, sizeof( szName ) );
+			DevMsg( 3, "player %d: \"%s\" | score: %d | connected for %d:%05.3f\n", i, szName, scoreboard[i].Score, int( scoreboard[i].Connected / 60 ), fmodf( scoreboard[i].Connected, 60.0f ) );
 		}
 
-		int iCount = SteamMatchmaking()->GetLobbyDataCount( lobby );
+		int iCount = pMatchmaking->GetLobbyDataCount( lobby );
 		for ( int i = 0; i < iCount; i++ )
 		{
 			char szKey[k_nMaxLobbyKeyLength];
 			char szValue[1]; // only big enough to hold the null terminator
-			SteamMatchmaking()->GetLobbyDataByIndex( lobby, i, szKey, sizeof( szKey ), szValue, sizeof( szValue ) );
-			const char *pszValue = SteamMatchmaking()->GetLobbyData( lobby, szKey );
+			pMatchmaking->GetLobbyDataByIndex( lobby, i, szKey, sizeof( szKey ), szValue, sizeof( szValue ) );
+			const char *pszValue = pMatchmaking->GetLobbyData( lobby, szKey );
 
 			DevMsg( 3, "\"%s\" \"%s\"\n", szKey, pszValue );
 		}
@@ -546,6 +558,11 @@ public:
 } s_CheckHoIAFParticipatingServersFile;
 #endif
 
+CReactiveDropServerListHelper::CReactiveDropServerListHelper( const char *szDebugName )
+{
+	m_pszDebugName = szDebugName;
+}
+
 CReactiveDropServerListHelper::~CReactiveDropServerListHelper()
 {
 	ISteamMatchmakingServers *pServers = SteamMatchmakingServers();
@@ -698,7 +715,11 @@ void CReactiveDropServerListHelper::RefreshComplete( HServerListRequest hRequest
 CReactiveDropServerList g_ReactiveDropServerList;
 
 CReactiveDropServerList::CReactiveDropServerList() :
-	m_PublicLobbies{ "g_ReactiveDropServerList.m_PublicLobbies" }
+	m_PublicLobbies{ "g_ReactiveDropServerList.m_PublicLobbies" },
+	m_PublicServers{ "g_ReactiveDropServerList.m_PublicServers" },
+	m_InternetServers{ "g_ReactiveDropServerList.m_InternetServers" },
+	m_FavoriteServers{ "g_ReactiveDropServerList.m_FavoriteServers" },
+	m_LANServers{ "g_ReactiveDropServerList.m_LANServers" }
 {
 	m_PublicServers.m_eMode = CReactiveDropServerListHelper::MODE_INTERNET;
 	m_PublicServers.m_Filters.AddToTail( new MatchMakingKeyValuePair_t{ "and", "6" } );

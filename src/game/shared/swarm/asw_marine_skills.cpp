@@ -646,10 +646,9 @@ const char *CASW_Marine_Skills::GetSkillDescription( ASW_Skill nSkillIndex )
 int CASW_Marine_Skills::GetSkillPoints( CASW_Marine_Profile *pProfile, ASW_Skill iSkillIndex )
 {
 	CASW_Game_Resource *pGameResource = ASWGameResource();
-	Assert( pGameResource );
 	Assert( MarineProfileList() );
 	Assert( pProfile );
-	if ( !pGameResource || !MarineProfileList() || ( !pProfile ) )
+	if ( !MarineProfileList() || ( !pProfile ) )
 		return 0;
 
 	int iProfileIndex = pProfile->m_ProfileIndex;
@@ -657,11 +656,24 @@ int CASW_Marine_Skills::GetSkillPoints( CASW_Marine_Profile *pProfile, ASW_Skill
 	if ( iProfileIndex < 0 || iProfileIndex >= ASW_NUM_MARINE_PROFILES )
 		return 0;
 
-	int nSkillSlot = pGameResource->GetSlotForSkill( iProfileIndex, iSkillIndex );
-	if ( nSkillSlot != -1 )
+	if ( pGameResource )
 	{
-		// get the skill points from the ASWGameResource
-		return pGameResource->GetMarineSkill( iProfileIndex, nSkillSlot );
+		int nSkillSlot = pGameResource->GetSlotForSkill( iProfileIndex, iSkillIndex );
+		if ( nSkillSlot != -1 )
+		{
+			// get the skill points from the ASWGameResource
+			return pGameResource->GetMarineSkill( iProfileIndex, nSkillSlot );
+		}
+	}
+	else
+	{
+		for ( int i = 0; i < ASW_NUM_SKILL_SLOTS - 1; i++ )
+		{
+			if ( pProfile->GetSkillMapping( i ) == iSkillIndex )
+			{
+				return pProfile->GetStaticSkillPoints( i );
+			}
+		}
 	}
 
 	return 0; // assume zero skill points if the marine doesn't have this skill

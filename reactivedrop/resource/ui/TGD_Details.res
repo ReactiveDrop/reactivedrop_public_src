@@ -3,7 +3,8 @@
 	"Details"
 	{
 		"fieldName"		"Details"
-		"xpos"		"c150"
+		"xpos"		"c110"	[!$WIN32WIDE]
+		"xpos"		"c150"	[$WIN32WIDE]
 		"ypos"		"40"
 		"wide"		"170"
 		"tall"		"410"

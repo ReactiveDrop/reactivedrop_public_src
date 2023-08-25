@@ -1,0 +1,612 @@
+"Display" {
+	"Model" {
+		"ModelName" "models/swarm/marine/marine.mdl"
+	}
+	"Model" {
+		"ModelName" "models/swarm/hangar/hangar.mdl"
+		"Animation" "BindPose"
+	}
+	"Model" {
+		"ModelName" "models/props/techdeco/computers/suspendedmonitor1.mdl"
+		"Animation" "ref"
+		"X" "-128.034"
+		"Y" "64.6843"
+		"Z" "121.762"
+		"Yaw" "322.431"
+	}
+	"Model" {
+		"ModelName" "models/items/itembox/itemboxlarge.mdl"
+		"Skin" "0"
+		"Animation" "BindPose"
+		"X" "-107.121"
+		"Y" "-78.896"
+		"Z" "0.274451"
+		"Yaw" "360"
+	}
+	"Model" {
+		"ModelName" "models/items/itembox/itemboxlarge.mdl"
+		"Skin" "1"
+		"Animation" "BindPose"
+		"X" "-136.735"
+		"Y" "-46.4338"
+		"Z" "0.274451"
+		"Yaw" "90"
+	}
+	"Model" {
+		"ModelName" "models/items/itembox/itemboxsmall.mdl"
+		"Skin" "7"
+		"Animation" "BindPose"
+		"X" "-95.0193"
+		"Y" "-77.5556"
+		"Z" "8.82824"
+		"Yaw" "0"
+	}
+	"Model" {
+		"ModelName" "models/items/itembox/itemboxsmall.mdl"
+		"Skin" "3"
+		"Animation" "BindPose"
+		"X" "-119.914"
+		"Y" "-77.5556"
+		"Z" "8.82824"
+		"Yaw" "0"
+	}
+	"Model" {
+		"ModelName" "models/items/itembox/itemboxsmall.mdl"
+		"Skin" "8"
+		"Animation" "BindPose"
+		"X" "-134.009"
+		"Y" "-63.6526"
+		"Z" "16.936"
+		"Yaw" "292.033"
+	}
+	"Model" {
+		"ModelName" "models/items/itembox/itemboxsmall.mdl"
+		"Skin" "2"
+		"Animation" "BindPose"
+		"X" "-135.166"
+		"Y" "-55.2414"
+		"Z" "8.82824"
+		"Yaw" "101.976"
+	}
+	"Model" {
+		"ModelName" "models/items/itembox/itemboxsmall.mdl"
+		"Skin" "4"
+		"Animation" "BindPose"
+		"X" "-135.166"
+		"Y" "-30.2241"
+		"Z" "8.82824"
+		"Yaw" "252.047"
+	}
+	"Model" {
+		"ModelName" "models/items/mine/mine.mdl"
+		"Skin" "0"
+		"Animation" "BindPose"
+		"X" "-10.7329"
+		"Y" "80.7437"
+		"Z" "3.20982"
+		"Yaw" "270"
+	}
+	"Model" {
+		"ModelName" "models/items/personalmedkit/personalmedkit.mdl"
+		"Skin" "0"
+		"Animation" "BindPose"
+		"X" "3.08047"
+		"Y" "72.9397"
+		"Z" "42.6324"
+		"Yaw" "136.759"
+	}
+	"Model" {
+		"ModelName" "models/swarm/ammo/ammoar2.mdl"
+		"Skin" "0"
+		"Animation" "idle"
+		"X" "-46.311"
+		"Y" "-79.425"
+		"Z" "28.9634"
+		"Yaw" "270"
+	}
+	"Model" {
+		"ModelName" "models/swarm/ammo/ammoshotgun.mdl"
+		"Skin" "0"
+		"Animation" "idle"
+		"X" "-204.787"
+		"Y" "24.862"
+		"Z" "5.05159"
+		"Yaw" "284.693"
+		"Scale" "0.671"
+	}
+	"Model" {
+		"ModelName" "models/swarm/ammo/ammosniperrifle.mdl"
+		"Skin" "0"
+		"Animation" "idle"
+		"X" "-61.5251"
+		"Y" "-77.089"
+		"Z" "31.8003"
+		"Yaw" "90"
+	}
+	"Model" {
+		"ModelName" "models/swarm/flashlight/flashlightpickup.mdl"
+		"Skin" "0"
+		"Animation" "idle"
+		"X" "-32.3591"
+		"Y" "77.4312"
+		"Z" "45.3125"
+		"Yaw" "52.6259"
+	}
+	"Model" {
+		"ModelName" "models/swarm/grenades/grenadebox.mdl"
+		"Skin" "4"
+		"Animation" "idle"
+		"X" "-77.8937"
+		"Y" "-74.7667"
+		"Z" "8.60385"
+		"Yaw" "0"
+	}
+	"Model" {
+		"ModelName" "models/swarm/grenades/grenadebox.mdl"
+		"Skin" "3"
+		"Animation" "idle"
+		"X" "-67.0608"
+		"Y" "-74.7667"
+		"Z" "8.60385"
+		"Yaw" "0"
+	}
+	"Model" {
+		"ModelName" "models/swarm/grenades/grenadebox.mdl"
+		"Skin" "2"
+		"Animation" "idle"
+		"X" "-55.1525"
+		"Y" "-74.7667"
+		"Z" "8.60385"
+		"Yaw" "0"
+	}
+	"Model" {
+		"ModelName" "models/swarm/grenades/grenadebox.mdl"
+		"Skin" "1"
+		"Animation" "idle"
+		"X" "-43.9311"
+		"Y" "-74.7667"
+		"Z" "8.60385"
+		"Yaw" "0"
+	}
+	"Model" {
+		"ModelName" "models/swarm/grenades/grenadebox.mdl"
+		"Skin" "0"
+		"Animation" "idle"
+		"X" "-32.9826"
+		"Y" "-74.7667"
+		"Z" "8.60385"
+		"Yaw" "0"
+	}
+	"Model" {
+		"ModelName" "models/swarm/marine/attachments/electrified_armor.mdl"
+		"Skin" "2"
+		"Animation" "BindPose"
+		"X" "-116.107"
+		"Y" "78.648"
+		"Z" "-21.489"
+		"Pitch" "90"
+		"Roll" "90"
+	}
+	"Model" {
+		"ModelName" "models/swarm/hangar/marine_anim_helper.mdl"
+		"Animation" "torso_only"
+		"X" "-87.3179"
+		"Y" "89.7358"
+		"Z" "5.94226"
+		"Yaw" "90"
+	}
+	"Model" {
+		"ModelName" "models/swarm/marine/attachments/jetpack.mdl"
+		"Skin" "4"
+		"Animation" "ragdoll"
+		"BoneMerge" "22"
+	}
+	"Model" {
+		"ModelName" "models/swarm/marine/attachments/night_vision.mdl"
+		"Skin" "2"
+		"Animation" "BindPose"
+		"X" "-114.498"
+		"Y" "87.9401"
+		"Z" "-6.85085"
+		"Pitch" "90"
+		"Roll" "90"
+	}
+	"Model" {
+		"ModelName" "models/swarm/marine/attachments/night_vision.mdl"
+		"Skin" "2"
+		"Animation" "BindPose"
+		"X" "-114.498"
+		"Y" "87.9401"
+		"Z" "-6.85085"
+		"Pitch" "90"
+		"Roll" "90"
+		"BodyGroup" {
+			"Group" "0"
+			"Value" "1"
+		}
+	}
+	"Model" {
+		"ModelName" "models/swarm/hangar/marine_anim_helper.mdl"
+		"Animation" "torso_only"
+		"X" "-87.6396"
+		"Y" "78.0341"
+		"Z" "-20.185"
+		"Yaw" "270"
+	}
+	"Model" {
+		"ModelName" "models/swarm/marine/attachments/normal_armor.mdl"
+		"Skin" "3"
+		"Animation" "BindPose"
+		"BoneMerge" "26"
+	}
+	"Model" {
+		"ModelName" "models/swarm/welder/welder.mdl"
+		"Skin" "0"
+		"Animation" "BindPose"
+		"X" "-26.8933"
+		"Y" "-82.454"
+		"Z" "29.7173"
+		"Pitch" "33"
+		"Yaw" "180"
+	}
+	"Model" {
+		"ModelName" "models/weapons/50calmg/50calmg.mdl"
+		"Skin" "0"
+		"Animation" "BindPose"
+		"X" "1.36415"
+		"Y" "-82.1674"
+		"Z" "73.1149"
+		"Yaw" "90"
+	}
+	"Model" {
+		"ModelName" "models/weapons/autogun/autogun.mdl"
+		"Skin" "0"
+		"Animation" "BindPose"
+		"X" "-71.4164"
+		"Y" "-81.4627"
+		"Z" "71.3498"
+		"Yaw" "90"
+	}
+	"Model" {
+		"ModelName" "models/weapons/chainsaw/chainsaw.mdl"
+		"Skin" "0"
+		"Animation" "BindPose"
+		"X" "-135.423"
+		"Y" "7.3335"
+		"Z" "86.296"
+		"Yaw" "0"
+	}
+	"Model" {
+		"ModelName" "models/weapons/combatrifle/combatrifle.mdl"
+		"Skin" "0"
+		"Animation" "BindPose"
+		"X" "-117.454"
+		"Y" "-73.3181"
+		"Z" "43.0102"
+		"Roll" "90"
+	}
+	"Model" {
+		"ModelName" "models/weapons/combatrifle/combatrifle.mdl"
+		"Skin" "0"
+		"Animation" "BindPose"
+		"X" "-124.023"
+		"Y" "-73.3181"
+		"Z" "43.0102"
+		"Roll" "90"
+	}
+	"Model" {
+		"ModelName" "models/weapons/combatrifle/combatrifle.mdl"
+		"Skin" "0"
+		"Animation" "BindPose"
+		"X" "-129.85"
+		"Y" "-73.3181"
+		"Z" "43.0102"
+		"Roll" "90"
+	}
+	"Model" {
+		"ModelName" "models/weapons/cryocannon/cryocannon.mdl"
+		"Skin" "0"
+		"Animation" "BindPose"
+		"X" "-135.942"
+		"Y" "-51.8861"
+		"Z" "86.634"
+		"Yaw" "0"
+	}
+	"Model" {
+		"ModelName" "models/weapons/deagle/deagle.mdl"
+		"Skin" "0"
+		"Animation" "BindPose"
+		"X" "17.9988"
+		"Y" "87.65"
+		"Z" "64.6805"
+		"Roll" "-33"
+		"Yaw" "90"
+		"BodyGroup" {
+			"Group" "1"
+			"Value" "1"
+		}
+	}
+	"Model" {
+		"ModelName" "models/weapons/devastator/devastator.mdl"
+		"Skin" "0"
+		"Animation" "BindPose"
+		"X" "-142.0"
+		"Y" "-5.4562"
+		"Z" "59.9456"
+		"Yaw" "0"
+	}
+	"Model" {
+		"ModelName" "models/weapons/flamethrower/flamethrower.mdl"
+		"Skin" "0"
+		"Animation" "BindPose"
+		"X" "-140.11"
+		"Y" "-53.1395"
+		"Z" "56.7648"
+		"Yaw" "0"
+	}
+	"Model" {
+		"ModelName" "models/weapons/flechette/flechette.mdl"
+		"Skin" "0"
+		"Animation" "BindPose"
+		"X" "-86.4692"
+		"Y" "-84.1453"
+		"Z" "91.2572"
+		"Yaw" "90"
+	}
+	"Model" {
+		"ModelName" "models/weapons/grenadelauncher/grenadelauncher.mdl"
+		"Skin" "0"
+		"Animation" "BindPose"
+		"X" "3.74996"
+		"Y" "-83.1859"
+		"Z" "53.7375"
+		"Yaw" "90"
+	}
+	"Model" {
+		"ModelName" "models/weapons/grenadelauncher/grenadelauncher.mdl"
+		"Skin" "0"
+		"Animation" "BindPose"
+		"X" "-76.6497"
+		"Y" "76.7487"
+		"Z" "94.0682"
+		"Roll" "90"
+		"Yaw" "180"
+	}
+	"Model" {
+		"ModelName" "models/weapons/grenadelauncher/grenadelauncher.mdl"
+		"Skin" "0"
+		"Animation" "BindPose"
+		"X" "-84.2666"
+		"Y" "76.7487"
+		"Z" "94.0682"
+		"Roll" "90"
+		"Yaw" "180"
+	}
+	"Model" {
+		"ModelName" "models/weapons/grenadelauncher/grenadelauncher.mdl"
+		"Skin" "0"
+		"Animation" "BindPose"
+		"X" "-92.389"
+		"Y" "76.7487"
+		"Z" "94.0682"
+		"Roll" "90"
+		"Yaw" "180"
+	}
+	"Model" {
+		"ModelName" "models/weapons/grenadelauncher/grenadelauncher.mdl"
+		"Skin" "0"
+		"Animation" "BindPose"
+		"X" "-100.275"
+		"Y" "76.7487"
+		"Z" "94.0682"
+		"Roll" "90"
+		"Yaw" "180"
+	}
+	"Model" {
+		"ModelName" "models/weapons/grenadelauncher/grenadelauncher.mdl"
+		"Skin" "0"
+		"Animation" "BindPose"
+		"X" "-108.261"
+		"Y" "76.7487"
+		"Z" "94.0682"
+		"Roll" "90"
+		"Yaw" "180"
+	}
+	"Model" {
+		"ModelName" "models/weapons/hackpad/hackpad.mdl"
+		"Skin" "3"
+		"Animation" "BindPose"
+		"X" "-53.8797"
+		"Y" "50.6931"
+		"Z" "39.0702"
+		"Roll" "-67.4028"
+		"Yaw" "3.18839"
+	}
+	"Model" {
+		"ModelName" "models/weapons/healgun/healgun.mdl"
+		"Skin" "0"
+		"Animation" "BindPose"
+		"X" "-141.671"
+		"Y" "49.1975"
+		"Z" "59.4199"
+		"Yaw" "0"
+	}
+	"Model" {
+		"ModelName" "models/weapons/heavyrifle/heavyrifle.mdl"
+		"Skin" "0"
+		"Animation" "BindPose"
+		"X" "-111.963"
+		"Y" "-70.7172"
+		"Z" "40.2286"
+		"Roll" "90"
+	}
+	"Model" {
+		"ModelName" "models/weapons/heavyrifle/heavyrifle.mdl"
+		"Skin" "0"
+		"Animation" "BindPose"
+		"X" "-100.982"
+		"Y" "-70.7172"
+		"Z" "40.2286"
+		"Roll" "90"
+	}
+	"Model" {
+		"ModelName" "models/weapons/heavyrifle/heavyrifle.mdl"
+		"Skin" "0"
+		"Animation" "BindPose"
+		"X" "-91.0683"
+		"Y" "-70.7172"
+		"Z" "40.2286"
+		"Roll" "90"
+	}
+	"Model" {
+		"ModelName" "models/weapons/marksmanrifle/marksmanrifle.mdl"
+		"Skin" "0"
+		"Animation" "BindPose"
+		"X" "-1.14096"
+		"Y" "-83.8884"
+		"Z" "91.0078"
+		"Yaw" "90"
+	}
+	"Model" {
+		"ModelName" "models/weapons/medrifle/medrifle.mdl"
+		"Skin" "0"
+		"Animation" "BindPose"
+		"X" "-50.3652"
+		"Y" "-82.8264"
+		"Z" "90.2141"
+		"Yaw" "90"
+	}
+	"Model" {
+		"ModelName" "models/weapons/minigun/minigun.mdl"
+		"Skin" "0"
+		"Animation" "BindPose"
+		"X" "-0.566085"
+		"Y" "-80.313"
+		"Z" "31.8795"
+		"Yaw" "90"
+	}
+	"Model" {
+		"ModelName" "models/weapons/mininglaser/mininglaser.mdl"
+		"Skin" "0"
+		"Animation" "BindPose"
+		"X" "-141.899"
+		"Y" "-0.693747"
+		"Z" "32.5656"
+		"Yaw" "0"
+	}
+	"Model" {
+		"ModelName" "models/weapons/pdw/pdw_single.mdl"
+		"Skin" "0"
+		"Animation" "BindPose"
+		"X" "8.50756"
+		"Y" "88.983"
+		"Z" "90.8032"
+		"Roll" "-33"
+		"Yaw" "90"
+	}
+	// TODO: reposition this one so it isn't clipping
+	"Model" {
+		"ModelName" "models/weapons/pistol/pistol.mdl"
+		"Skin" "0"
+		"Animation" "BindPose"
+		"X" "13.7317"
+		"Y" "87.1554"
+		"Z" "83.1057"
+		"Pitch" "44.2592"
+		"Roll" "92.2975"
+		"Yaw" "183.959"
+		"BodyGroup" {
+			"Group" "1"
+			"Value" "1"
+		}
+	}
+	"Model" {
+		"ModelName" "models/weapons/plasmalauncher/plasmalauncher.mdl"
+		"Skin" "0"
+		"Animation" "BindPose"
+		"X" "-142.66"
+		"Y" "-54.742"
+		"Z" "27.2455"
+		"Yaw" "0"
+	}
+	"Model" {
+		"ModelName" "models/weapons/prototype/prototyperifle.mdl"
+		"Skin" "0"
+		"Animation" "BindPose"
+		"X" "-32.4558"
+		"Y" "-83.4578"
+		"Z" "49.505"
+		"Yaw" "90"
+	}
+	"Model" {
+		"ModelName" "models/weapons/railgun/railgun.mdl"
+		"Skin" "0"
+		"Animation" "BindPose"
+		"X" "-142.402"
+		"Y" "49.3742"
+		"Z" "33.749"
+		"Yaw" "0"
+	}
+	"Model" {
+		"ModelName" "models/weapons/revivetool/blackbox_key.mdl"
+		"Skin" "0"
+		"Animation" "idle"
+		"X" "-52.9253"
+		"Y" "81.6268"
+		"Z" "47.1713"
+		"Roll" "90"
+		"Yaw" "320.617"
+	}
+	"Model" {
+		"ModelName" "models/weapons/ricochet/ricochet.mdl"
+		"Skin" "0"
+		"Animation" "BindPose"
+		"X" "-18.8884"
+		"Y" "87.8819"
+		"Z" "94.6208"
+		"Roll" "-33"
+		"Yaw" "90"
+	}
+	"Model" {
+		"ModelName" "models/weapons/shotgun/shotgun.mdl"
+		"Skin" "0"
+		"Animation" "BindPose"
+		"X" "-14.4545"
+		"Y" "87.9651"
+		"Z" "77.6448"
+		"Roll" "-33"
+		"Yaw" "90"
+	}
+	"Model" {
+		"ModelName" "models/weapons/vindicator/vindicator.mdl"
+		"Skin" "0"
+		"Animation" "BindPose"
+		"X" "-47.7684"
+		"Y" "87.9946"
+		"Z" "95.917"
+		"Roll" "-33"
+		"Yaw" "90"
+	}
+	"Ambient" "13 13 13"
+	"LightPoint" {
+		"X" "-145.31"
+		"Y" "60.9955"
+		"Z" "7.99054"
+		"Color" "255 255 255"
+		"Boost" "3"
+	}
+	"LightPoint" {
+		"X" "1.17648"
+		"Y" "-85.5368"
+		"Z" "7.99054"
+		"Color" "255 255 255"
+		"Boost" "3"
+	}
+	"LightDirectional" {
+		"X" "0"
+		"Y" "0"
+		"Z" "-1"
+		"Color" "255 255 255"
+		"Boost" "1"
+	}
+}

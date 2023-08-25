@@ -215,6 +215,7 @@ public:
 
 	// portraits
 	int m_nPortraitTextureID{ -1 }; // regular small portrait texture ID
+	int m_nPortraitLitTextureID{ -1 };
 	int m_nClassTextureID{ -1 }; // class icon
 
 	// chatter stuff

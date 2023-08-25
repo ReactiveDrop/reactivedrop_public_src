@@ -75,7 +75,7 @@ extern ConVar mat_object_motion_blur_enable;
 ConVar asw_reconnect_after_outro( "asw_reconnect_after_outro", "0", 0, "If set, client will reconnect to server after outro" );
 ConVar asw_hear_from_marine( "asw_hear_from_marine", "0", FCVAR_NONE, "Audio hearing position is at current marine's ears" );
 ConVar asw_hear_pos_debug("asw_hear_pos_debug", "0", FCVAR_NONE, "Shows audio hearing position" );
-ConVar asw_hear_height("asw_hear_height", "0", FCVAR_NONE, "If set, hearing audio position is this many units above the marine.  If number is negative, then hear position is number of units below the camera." );
+ConVar asw_hear_height("asw_hear_height", "256", FCVAR_NONE, "If set, hearing audio position is this many units above the marine.  If number is negative, then hear position is number of units below the camera." );
 ConVar asw_hear_fixed("asw_hear_fixed", "0", FCVAR_NONE, "If set, hearing audio position is locked in place.  Use asw_set_hear_pos to set the fixed position to the current audio location." );
 
 ConVar rd_tree_sway_enabled("rd_tree_sway_enabled", "1", FCVAR_NONE, "If set, some trees sway in the wind.", true, 0, true, 1);

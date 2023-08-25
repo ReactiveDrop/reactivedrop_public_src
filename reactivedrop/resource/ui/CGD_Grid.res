@@ -5,7 +5,8 @@
 		"fieldName"		"Grid"
 		"xpos"		"0"
 		"ypos"		"0"
-		"wide"		"450"
+		"wide"		"360"	[!$WIN32WIDE]
+		"wide"		"450"	[$WIN32WIDE]
 	}
 
 	"Title"
@@ -13,7 +14,8 @@
 		"fieldName"		"Title"
 		"xpos"		"0"
 		"ypos"		"0"
-		"wide"		"450"
+		"wide"		"360"	[!$WIN32WIDE]
+		"wide"		"450"	[$WIN32WIDE]
 		"tall"		"20"
 		"ControlName"		"Label"
 		"font"		"DefaultLarge"
@@ -25,7 +27,8 @@
 		"fieldName"		"Message"
 		"xpos"		"0"
 		"ypos"		"175"
-		"wide"		"470"
+		"wide"		"380"	[!$WIN32WIDE]
+		"wide"		"470"	[$WIN32WIDE]
 		"tall"		"50"
 		"zpos"		"1"
 		"ControlName"		"Label"

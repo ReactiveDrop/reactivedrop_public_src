@@ -34,7 +34,7 @@ ConVar asw_night_vision_self_illum_multiplier( "asw_night_vision_self_illum_mult
 ConVar asw_sniper_scope_self_illum_multiplier( "asw_sniper_scope_self_illum_multiplier", "0.5", FCVAR_CHEAT, "For materials that use the NightVision proxy, multiply the result (normally in the [0,1] range) by this value." );
 
 // @TODO: move this parameter to an entity property rather than convar
-ConVar mat_dest_alpha_range( "mat_dest_alpha_range", "1000", 0, "Amount to scale depth values before writing into destination alpha ([0,1] range)." );
+ConVar mat_dest_alpha_range( "mat_dest_alpha_range", "3000", 0, "Amount to scale depth values before writing into destination alpha ([0,1] range)." );
 
 PRECACHE_REGISTER_BEGIN( GLOBAL, ASWPrecacheViewRender )
 	PRECACHE( MATERIAL, "swarm/effects/frontbuffer" )

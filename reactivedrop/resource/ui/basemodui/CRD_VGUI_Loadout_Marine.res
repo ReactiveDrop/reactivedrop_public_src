@@ -17,9 +17,9 @@
 		"fieldName"			"Background"
 		"xpos"				"0"
 		"ypos"				"0"
+		"zpos"				"-5"
 		"wide"				"f0"
 		"tall"				"f0"
-		"zpos"				"-2"
 		"bgcolor_override"	"16 20 24 255"
 	}
 
@@ -29,9 +29,36 @@
 		"fieldName"			"ModelPanel"
 		"xpos"				"5"
 		"ypos"				"5"
+		"zpos"				"-2"
 		"wide"				"f10"
 		"tall"				"340"
+	}
+
+	"BtnBack"
+	{
+		"ControlName"		"BaseModHybridButton"
+		"fieldName"			"BtnBack"
+		"xpos"				"8"
+		"ypos"				"8"
+		"wide"				"100"
+		"tall"				"16"
+		"labelText"			"#asw_menu_back"
+		"command"			"Back"
+		"style"				"DialogButton"
+		"navDown"			"MarineSlot"
+	}
+
+	"BiographyBackground"
+	{
+		"ControlName"		"Panel"
+		"fieldName"			"BiographyBackground"
+		"xpos"				"-10"
+		"ypos"				"245"
 		"zpos"				"-1"
+		"wide"				"330"
+		"tall"				"120"
+		"bgcolor_override"	"16 20 24 255"
+		"paintbackgroundtype"	"2"
 	}
 
 	"LblBiography"
@@ -69,6 +96,19 @@
 		"font"				"DefaultBold"
 		"textAlignment"		"west"
 		"fgcolor_override"	"192 192 192 255"
+	}
+
+	"SkillPanelBackground"
+	{
+		"ControlName"		"Panel"
+		"fieldName"			"SkillPanelBackground"
+		"xpos"				"r170"
+		"ypos"				"190"
+		"zpos"				"-1"
+		"wide"				"180"
+		"tall"				"170"
+		"bgcolor_override"	"16 20 24 255"
+		"paintbackgroundtype"	"2"
 	}
 
 	"SkillPanel0"
@@ -129,18 +169,21 @@
 		"ypos"				"360"
 		"wide"				"75"
 		"tall"				"75"
+		"navUp"				"BtnBack"
+		"navRight"			"WeaponSlot0"
 	}
 
 	"LblMarineSlot"
 	{
 		"ControlName"		"Label"
 		"fieldName"			"LblMarineSlot"
-		"xpos"				"c-317"
+		"xpos"				"c-315"
 		"ypos"				"435"
-		"wide"				"150"
+		"wide"				"146"
 		"tall"				"20"
-		"textAlignment"		"center"
+		"textAlignment"		"north"
 		"font"				"DefaultBold"
+		"centerWrap"		"1"
 		"fgcolor_override"	"192 192 192 255"
 	}
 
@@ -152,17 +195,21 @@
 		"ypos"				"360"
 		"wide"				"150"
 		"tall"				"75"
+		"navUp"				"BtnBack"
+		"navLeft"			"MarineSlot"
+		"navRight"			"WeaponSlot1"
 	}
 
 	"LblWeaponSlot0"
 	{
 		"ControlName"		"Label"
 		"fieldName"			"LblWeaponSlot0"
-		"xpos"				"c-180"
+		"xpos"				"c-178"
 		"ypos"				"435"
-		"wide"				"150"
+		"wide"				"146"
 		"tall"				"20"
-		"textAlignment"		"center"
+		"textAlignment"		"north"
+		"centerWrap"		"1"
 		"font"				"DefaultBold"
 		"fgcolor_override"	"192 192 192 255"
 	}
@@ -175,17 +222,21 @@
 		"ypos"				"360"
 		"wide"				"150"
 		"tall"				"75"
+		"navUp"				"BtnBack"
+		"navLeft"			"WeaponSlot0"
+		"navRight"			"WeaponSlot2"
 	}
 
 	"LblWeaponSlot1"
 	{
 		"ControlName"		"Label"
 		"fieldName"			"LblWeaponSlot1"
-		"xpos"				"c-5"
+		"xpos"				"c-3"
 		"ypos"				"435"
-		"wide"				"150"
+		"wide"				"146"
 		"tall"				"20"
-		"textAlignment"		"center"
+		"textAlignment"		"north"
+		"centerWrap"		"1"
 		"font"				"DefaultBold"
 		"fgcolor_override"	"192 192 192 255"
 	}
@@ -198,17 +249,20 @@
 		"ypos"				"360"
 		"wide"				"75"
 		"tall"				"75"
+		"navUp"				"BtnBack"
+		"navLeft"			"WeaponSlot1"
 	}
 
 	"LblWeaponSlot2"
 	{
 		"ControlName"		"Label"
 		"fieldName"			"LblWeaponSlot2"
-		"xpos"				"c133"
+		"xpos"				"c135"
 		"ypos"				"435"
-		"wide"				"150"
-		"tall"				"20"
-		"textAlignment"		"center"
+		"wide"				"146"
+		"tall"				"60"
+		"textAlignment"		"north"
+		"centerWrap"		"1"
 		"font"				"DefaultBold"
 		"fgcolor_override"	"192 192 192 255"
 	}

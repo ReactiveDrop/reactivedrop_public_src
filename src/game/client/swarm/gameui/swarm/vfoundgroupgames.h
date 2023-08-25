@@ -31,13 +31,7 @@ namespace BaseModUI {
 		virtual bool CanCreateGame() { return false; }
 		
 	protected:
-
-		virtual void StartSearching( void );
 		virtual void AddServersToList( void );
-		virtual void SortListItems();
-		virtual bool IsADuplicateServer( FoundGameListItem *item, FoundGameListItem::Info const &fi );
-
-		bool ShouldAddServerToList( KeyValues *pGameSettings );
 	};
 
 };

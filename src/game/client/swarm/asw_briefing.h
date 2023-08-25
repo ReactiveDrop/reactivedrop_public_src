@@ -35,9 +35,9 @@ public:
 	virtual bool IsLobbySlotOccupied( int nLobbySlot );
 	virtual bool IsLobbySlotLocal( int nLobbySlot );
 	virtual bool IsLobbySlotBot( int nLobbySlot );
-	virtual wchar_t* GetMarineOrPlayerName( int nLobbySlot );
-	virtual wchar_t* GetMarineName( int nLobbySlot );		// always returns the marine's profile name
-	virtual const char* GetPlayerNameForMarineProfile( int nProfileIndex );
+	virtual const wchar_t *GetMarineOrPlayerName( int nLobbySlot );
+	virtual const wchar_t *GetMarineName( int nLobbySlot );		// always returns the marine's profile name
+	virtual const char *GetPlayerNameForMarineProfile( int nProfileIndex );
 	virtual int GetCommanderLevel( int nLobbySlot );
 	virtual int GetCommanderXP( int nLobbySlot );
 	virtual int GetCommanderPromotion( int nLobbySlot );

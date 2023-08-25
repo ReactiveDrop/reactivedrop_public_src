@@ -446,7 +446,7 @@ void CRD_Player_Reporting::OnGetTicketForWebApiResponse( GetTicketForWebApiRespo
 		ISteamHTTP *pSteamHTTP = SteamHTTP();
 		Assert( pSteamHTTP );
 
-		HTTPRequestHandle hRequest = pSteamHTTP->CreateHTTPRequest( k_EHTTPMethodPOST, "https://reporting.reactivedrop.com/playerreport" );
+		HTTPRequestHandle hRequest = pSteamHTTP->CreateHTTPRequest( k_EHTTPMethodPOST, "https://gamereport.reactivedrop.com/playerreport" );
 		pSteamHTTP->SetHTTPRequestUserAgentInfo( hRequest, "RDPlayerReporting" );
 		pSteamHTTP->SetHTTPRequestRawPostBody( hRequest, "application/json", static_cast< uint8 * >( m_Buffer.Base() ), m_Buffer.TellPut() );
 

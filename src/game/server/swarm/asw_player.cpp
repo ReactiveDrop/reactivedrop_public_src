@@ -445,7 +445,8 @@ CASW_Player::~CASW_Player()
 	// free inventory handle
 	for ( int i = 0; i < 2; i++ )
 	{
-		ReactiveDropInventory::DecodeItemData( m_EquippedItemsResult[i], "" );
+		if ( m_EquippedItemsResult[i] != k_SteamInventoryResultInvalid )
+			ReactiveDropInventory::DecodeItemData( m_EquippedItemsResult[i], "" );
 	}
 }
 

@@ -331,6 +331,29 @@ namespace ReactiveDropLoadout
 		ReadMarine( pKV, bBinary, "6", "Marines/Bastille", Marines[ASW_MARINE_PROFILE_BASTILLE], MarineIncluded[ASW_MARINE_PROFILE_BASTILLE] );
 		ReadMarine( pKV, bBinary, "7", "Marines/Vegas", Marines[ASW_MARINE_PROFILE_VEGAS], MarineIncluded[ASW_MARINE_PROFILE_VEGAS] );
 	}
+	int LoadoutData_t::NumMarinesIncluded() const
+	{
+		int iCount = 0;
+		for ( int i = 0; i < ASW_NUM_MARINE_PROFILES; i++ )
+		{
+			if ( MarineIncluded[i] )
+				iCount++;
+		}
+
+		return iCount;
+	}
+	bool LoadoutData_t::HasAnyMedal() const
+	{
+		for ( int i = 0; i < RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS; i++ )
+		{
+			if ( Medals[i] != k_SteamItemInstanceIDInvalid )
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
 
 #ifdef CLIENT_DLL
 	CUtlDict<LoadoutData_t> Loadouts;

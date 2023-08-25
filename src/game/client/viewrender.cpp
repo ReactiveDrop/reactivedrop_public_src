@@ -182,7 +182,7 @@ static void FogOverrideCallback( IConVar *pConVar, char const *pOldString, float
 //-----------------------------------------------------------------------------
 static ConVar r_debugcheapwater( "r_debugcheapwater", "0", FCVAR_CHEAT );
 #ifndef _X360
-static ConVar r_waterforceexpensive( "r_waterforceexpensive", "0" );
+static ConVar r_waterforceexpensive( "r_waterforceexpensive", "1", FCVAR_CHEAT );
 #endif
 static ConVar r_waterforcereflectentities( "r_waterforcereflectentities", "0" );
 static ConVar r_WaterDrawRefraction( "r_WaterDrawRefraction", "1", 0, "Enable water refraction" );
