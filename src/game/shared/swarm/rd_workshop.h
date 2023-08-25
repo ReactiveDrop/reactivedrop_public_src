@@ -53,7 +53,7 @@ public:
 #endif
 	static const char *const s_RDWorkshopMissionTags[RD_NUM_WORKSHOP_MISSION_TAGS];
 
-	virtual bool Init();
+	virtual void PostInit();
 	void InitNonWorkshopAddons();
 	void OnMissionStart();
 	virtual void LevelInitPostEntity();
