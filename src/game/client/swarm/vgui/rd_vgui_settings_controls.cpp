@@ -400,7 +400,6 @@ CRD_VGUI_Settings_Controls::CRD_VGUI_Settings_Controls( vgui::Panel *parent, con
 	m_pBindWheelMarine = new CRD_VGUI_Bind( this, "BindWheelMarine", "#rd_wheel_marine", "+mouse_menu ASW_SelectMarine", true );
 
 	m_pBtnCustomWheels = new BaseModHybridButton( this, "BtnCustomWheels", "#rd_manage_custom_chat_wheels", this, "ManageWheels" );
-	m_pBtnCustomWheels->SetEnabled( false ); // TODO!
 	m_pBtnResetDefaults = new BaseModHybridButton( this, "BtnResetDefaults", "#L4D360UI_Controller_Default", this, "ResetDefaults" );
 	m_pSettingDeveloperConsole = new CRD_VGUI_Option( this, "SettingDeveloperConsole", "#GameUI_DeveloperConsoleCheck", CRD_VGUI_Option::MODE_CHECKBOX );
 	m_pSettingDeveloperConsole->LinkToConVar( "con_enable", false );
@@ -409,6 +408,8 @@ CRD_VGUI_Settings_Controls::CRD_VGUI_Settings_Controls( vgui::Panel *parent, con
 void CRD_VGUI_Settings_Controls::Activate()
 {
 	NavigateToChild( m_pBindMoveForward );
+
+	m_pBtnCustomWheels->SetEnabled( false ); // TODO!
 }
 
 void CRD_VGUI_Settings_Controls::OnThink()
