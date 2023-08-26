@@ -570,7 +570,8 @@
 {
 	"channel"		"CHAN_AUTO"
 	"soundlevel"	"SNDLVL_80dB"
-	"pitch"			"90,100"
+	"volume"		"0.6, 0.85"
+	"pitch"			"90,120"
 	"rndwave"
 	{
 		"wave"		"weapons/3D/tesla/Teslacoil_zap01.wav"
