@@ -24,7 +24,7 @@ WeaponData
 		
 	// asw properties
 	"reload_time"			"1.3"
-	"base_damage"			"75"
+	"base_damage"			"105"
 	"fire_rate"				"0"
 	"equipicon"			"swarm/EquipIcons/EquipRailgun"
 	"equiplongname"			"#asw_weaponl_railgun"
