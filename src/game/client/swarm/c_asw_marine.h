@@ -423,6 +423,7 @@ public:
 	CNetworkVar( int, m_iForcedActionRequest );
 	static C_ASW_Marine* GetLocalMarine();
 	static C_ASW_Marine* GetViewMarine();
+	bool IsViewMarine() const { return GetViewMarine() == this; }
 
 	Vector m_vecMarineColor;
 

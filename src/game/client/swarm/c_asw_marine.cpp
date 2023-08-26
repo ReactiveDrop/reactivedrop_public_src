@@ -86,6 +86,7 @@ ConVar rd_marine_gib_lifetime( "rd_marine_gib_lifetime", "36000.0", FCVAR_NONE, 
 ConVar rd_marine_gib_lifetime_dm( "rd_marine_gib_lifetime_dm", "15.0", FCVAR_NONE, "number of seconds before marine gibs fade in deathmatch mode" );
 ConVar rd_marine_gib_spin( "rd_marine_gib_spin", "500", FCVAR_NONE, "how much do marine gibs spin?" );
 ConVar rd_client_marine_backpacks( "rd_client_marine_backpacks", "0", FCVAR_NONE, "Show marine's un-equipped weapon on their back." );
+ConVar rd_projected_texture_min_z( "rd_projected_texture_min_z", "-64", FCVAR_REPLICATED | FCVAR_CHEAT, "Projected textures that do not reach at least as high as this distance from the current marine's feet are considered non-visible." );
 
 extern ConVar asw_DebugAutoAim;
 extern ConVar rd_revive_duration;
@@ -573,11 +574,12 @@ C_ASW_Marine::~C_ASW_Marine()
 
 void C_ASW_Marine::PhysicsSimulate( void )
 {
-	if (ShouldPredict())
+	if ( ShouldPredict() )
 	{
 		m_nSimulationTick = gpGlobals->tickcount;
 		return;
 	}
+
 	BaseClass::PhysicsSimulate();
 }
 
@@ -611,27 +613,11 @@ void C_ASW_Marine::UpdateClientSideAnimation()
 }
 
 
-const Vector& C_ASW_Marine::GetRenderOrigin()
+const Vector &C_ASW_Marine::GetRenderOrigin()
 {
 	m_vecCustomRenderOrigin = GetAbsOrigin();
 
-	/*
-	if (m_PlayerAnimState && !m_PlayerAnimState->IsAnimatingJump())
-	{
-		C_BaseEntity *pEnt = cl_entitylist->FirstBaseEntity();
-		while (pEnt)
-		{
-			if (FClassnameIs(pEnt, "class C_DynamicProp"))
-			{
-				//Msg("Setting z to %f\n", pEnt->GetAbsOrigin().z + 10);
-				m_vecCustomRenderOrigin.z = pEnt->GetAbsOrigin().z + 10;			
-				break;
-			}
-			pEnt = cl_entitylist->NextBaseEntity( pEnt );
-		}
-	}
-	*/
-	if (IsInhabited())
+	if ( IsInhabited() )
 	{
 		Vector vSmoothOffset;
 		GetPredictionErrorSmoothingVector( vSmoothOffset );
@@ -680,23 +666,16 @@ void C_ASW_Marine::GetPredictionErrorSmoothingVector( Vector &vOffset )
 	vOffset = m_vecPredictionError * errorAmount;
 }
 
-const QAngle& C_ASW_Marine::GetRenderAngles()
+const QAngle &C_ASW_Marine::GetRenderAngles()
 {
-	//if (ShouldPredict())
+	if ( IsRagdoll() )
 	{
-		if ( IsRagdoll() )
-		{
-			return vec3_angle;
-		}
-		else
-		{
-			return m_PlayerAnimState->GetRenderAngles();
-		}
+		return vec3_angle;
 	}
-	//else
-	//{
-		//return BaseClass::GetRenderAngles();
-	//}
+	else
+	{
+		return m_PlayerAnimState->GetRenderAngles();
+	}
 }
 
 C_ASW_Marine_Resource *C_ASW_Marine::GetMarineResource()
@@ -762,10 +741,10 @@ void C_ASW_Marine::ClientThink()
 	VPROF_BUDGET( "C_ASW_Marine::ClientThink", VPROF_BUDGETGROUP_ASW_CLIENT );
 	BaseClass::ClientThink();
 
-	if ( ShouldPredict() )
+	if ( IsViewMarine() )
 	{
 		// Update projected texture culling helper
-		C_EnvProjectedTexture::SetVisibleBBoxMinHeight( GetAbsOrigin().z - 64.0f );
+		C_EnvProjectedTexture::SetVisibleBBoxMinHeight( GetAbsOrigin().z + rd_projected_texture_min_z.GetFloat() );
 	}
 
 	if (asw_DebugAutoAim.GetInt() == 3)
@@ -893,9 +872,9 @@ void C_ASW_Marine::ClientThink()
 			CreateBackpack( GetASWWeapon(0) );
 	}
 
-	if (ShouldPredict() && rd_hearbeat.GetBool())
+	if ( IsViewMarine() && rd_hearbeat.GetBool() )
 	{
-		UpdateHeartbeat();		
+		UpdateHeartbeat();
 	}
 
 	if ( IsAlive() )
@@ -2009,7 +1988,7 @@ void C_ASW_Marine::DoImpactEffect( trace_t &tr, int nDamageType )
 
 void C_ASW_Marine::UpdateHeartbeat()
 {
-	if ( !ShouldPredict() || !GetMarineResource() )
+	if ( !IsViewMarine() || !GetMarineResource() )
 		return;
 
 	if (GetHealth() > 0 && GetMarineResource()->GetHealthPercent() < 0.6f)
