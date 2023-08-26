@@ -76,6 +76,7 @@ public:
 	int m_iStage;
 	float m_fNextStageTime;
 	bool m_bViewedStatsPage;
+	char m_szStatsMusic[MAX_PATH];
 
 	BriefingPropertySheet *m_PropertySheet;
 	CExperienceReport *m_pExperienceReport;

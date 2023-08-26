@@ -45,8 +45,8 @@ ConVar rd_show_leaderboard_debrief( "rd_show_leaderboard_debrief", "0", FCVAR_AR
 ConVar rd_suggest_difficulty( "rd_suggest_difficulty", "1", FCVAR_NONE, "Suggest increasing or decreasing difficulty." );
 ConVar rd_fail_advice( "rd_fail_advice", "1", FCVAR_ARCHIVE, "Show advice on mission failed." );
 
-MissionCompletePanel::MissionCompletePanel(Panel *parent, const char *name, bool bSuccess) : vgui::EditablePanel(parent, name)
-{	
+MissionCompletePanel::MissionCompletePanel( Panel *parent, const char *name, bool bSuccess ) : vgui::EditablePanel( parent, name )
+{
 	m_pResultImage = NULL;
 	m_bViewedStatsPage = false;
 
@@ -63,7 +63,7 @@ MissionCompletePanel::MissionCompletePanel(Panel *parent, const char *name, bool
 
 	m_hLeaderboard = 0;
 	m_bLeaderboardReady = false;
-	
+
 	if ( !bSuccess )
 	{
 		m_pFailedHeaderFooter = new CNB_Header_Footer( this, "FailedHeaderFooter" );
@@ -76,7 +76,7 @@ MissionCompletePanel::MissionCompletePanel(Panel *parent, const char *name, bool
 	m_pHeaderFooter = new CNB_Header_Footer( this, "HeaderFooter" );
 	if ( ASWGameRules() && !ASWGameRules()->GetMissionSuccess() )
 	{
-		m_pHeaderFooter->SetTitle("#asw_mission_failed");
+		m_pHeaderFooter->SetTitle( "#asw_mission_failed" );
 		m_pHeaderFooter->SetBackgroundStyle( NB_BACKGROUND_TRANSPARENT_BLUE );
 		m_pFailedHeaderFooter->SetAlpha( 0 );
 	}
@@ -90,10 +90,10 @@ MissionCompletePanel::MissionCompletePanel(Panel *parent, const char *name, bool
 	CASWHudMinimap *pMap = GET_HUDELEMENT( CASWHudMinimap );
 	if ( pMap )
 	{
-		m_pMissionName->SetText(pMap->m_szMissionTitle);
+		m_pMissionName->SetText( pMap->m_szMissionTitle );
 	}
 	m_pMissionName->SetAlpha( 0 );
-	
+
 	//m_pHeaderFooter->SetBackgroundStyle( NB_BACKGROUND_NONE );
 	m_pMainElements = new vgui::Panel( this, "MainElements" );
 
@@ -119,14 +119,14 @@ MissionCompletePanel::MissionCompletePanel(Panel *parent, const char *name, bool
 		// don't default to Valve credits for custom missions
 		m_bCreditsSeen = true;
 	}
-	
-	vgui::Panel *pParent = m_pMainElements;
-	vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFile("resource/SwarmSchemeNew.res", "SwarmSchemeNew");
 
-	m_PropertySheet = new BriefingPropertySheet( m_pMainElements, "MissionCompleteSheet");
-	m_PropertySheet->SetPos(0,0);
-	m_PropertySheet->SetSize(ScreenWidth(), ScreenHeight());
-	m_PropertySheet->SetVisible(true);
+	vgui::Panel *pParent = m_pMainElements;
+	vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFile( "resource/SwarmSchemeNew.res", "SwarmSchemeNew" );
+
+	m_PropertySheet = new BriefingPropertySheet( m_pMainElements, "MissionCompleteSheet" );
+	m_PropertySheet->SetPos( 0, 0 );
+	m_PropertySheet->SetSize( ScreenWidth(), ScreenHeight() );
+	m_PropertySheet->SetVisible( true );
 	m_PropertySheet->SetShowTabs( false );
 
 	pParent = m_PropertySheet;
@@ -142,9 +142,9 @@ MissionCompletePanel::MissionCompletePanel(Panel *parent, const char *name, bool
 		m_pExperienceReport->Init();	// causes XP to be awarded
 	}
 	m_pStatsPanel = new StatsReport( pParent, "StatsReport" );
-	
+
 	// if we're showing the debrief text tab, we need a property sheet to be the parent of all this stuff
-	m_PropertySheet->SetTabWidth(ScreenWidth()/5.0f);
+	m_PropertySheet->SetTabWidth( ScreenWidth() / 5.0f );
 
 	if ( !ASWGameRules()->IsTutorialMap() )
 	{
@@ -170,11 +170,11 @@ MissionCompletePanel::MissionCompletePanel(Panel *parent, const char *name, bool
 	{
 		m_PropertySheet->SetActivePage( m_pStatsPanel );
 	}
-						
-	SetKeyBoardInputEnabled(false);	
-	
+
+	SetKeyBoardInputEnabled( false );
+
 	m_iStage = MCP_STAGE_INITIAL_DELAY;
-	if (bSuccess)
+	if ( bSuccess )
 		m_fNextStageTime = gpGlobals->curtime;
 	else
 		m_fNextStageTime = gpGlobals->curtime + 0.6f;
@@ -188,8 +188,8 @@ MissionCompletePanel::MissionCompletePanel(Panel *parent, const char *name, bool
 	m_pReadyCheckImage = new vgui::ImagePanel( this, "ReadyCheckImage" );
 	m_pContinueButton = new CNB_Button( this, "ContinueButton", "#asw_button_continue", this, "Continue" );
 
-	m_pTab[ 0 ] = new CNB_Button( this, "XPTab", "#asw_summary", this, "XPTab" );
-	m_pTab[ 1 ] = new CNB_Button( this, "StatsTab", "#asw_stats_tab", this, "StatsTab" );
+	m_pTab[0] = new CNB_Button( this, "XPTab", "#asw_summary", this, "XPTab" );
+	m_pTab[1] = new CNB_Button( this, "StatsTab", "#asw_stats_tab", this, "StatsTab" );
 
 	m_pNextButton = new CNB_Button( this, "NextButton", "#asw_button_next", this, "StatsTab" );
 
@@ -197,21 +197,23 @@ MissionCompletePanel::MissionCompletePanel(Panel *parent, const char *name, bool
 	m_pVotePanel->m_VotePanelType = VPT_DEBRIEF;
 	m_pVotePanel->SetZPos( 101 );
 
-	SetAlpha(0);
+	SetAlpha( 0 );
+
+	m_szStatsMusic[0] = '\0';
 }
 
 MissionCompletePanel::~MissionCompletePanel()
 {
-	BriefingTooltip *pTooltip = g_hBriefingTooltip;
-	if ( pTooltip )
-	{
-		pTooltip->SetVisible( false );
-		pTooltip->MarkForDeletion();
-	}
+	BriefingTooltip::Free();
+
+	if ( m_szStatsMusic[0] != '\0' )
+		C_BaseEntity::StopSound( 0, m_szStatsMusic );
 }
 
 void MissionCompletePanel::ShowImageAndPlaySound()
 {
+	C_AlienSwarm *pGameRules = ASWGameRules();
+
 	if ( m_pResultImage )
 	{
 		m_pResultImage->MarkForDeletion();
@@ -231,7 +233,7 @@ void MissionCompletePanel::ShowImageAndPlaySound()
 	}
 	else
 	{
-		m_pFailAdvice->SetText( ASWGameRules()->GetFailAdviceText() );
+		m_pFailAdvice->SetText( pGameRules->GetFailAdviceText() );
 		m_pHeaderFooter->SetAlpha( 0 );
 	}
 
@@ -242,50 +244,46 @@ void MissionCompletePanel::ShowImageAndPlaySound()
 		const char *szStatsMusic = ASWGameRules()->m_szStatsMusicOverride.Get();
 		if ( szStatsMusic[0] != '\0' )
 		{
+			V_strncpy( m_szStatsMusic, szStatsMusic, sizeof( m_szStatsMusic ) );
 			C_BaseEntity::PrecacheScriptSound( szStatsMusic );
 		}
-		else if ( m_bSuccess )
+		else if ( !m_bSuccess )
 		{
-			szStatsMusic = ASWGameRules()->IsCampaignGame() && ASWGameRules()->CampaignMissionsLeft() <= 1 ? "asw_song.StatsSuccessCampaign" : "asw_song.StatsSuccess";
+			V_strncpy( m_szStatsMusic, "asw_song.StatsFail", sizeof( m_szStatsMusic ) );
+		}
+		else if ( pGameRules->IsCampaignGame() && pGameRules->CampaignMissionsLeft() <= 1 )
+		{
+			V_strncpy( m_szStatsMusic, "asw_song.StatsSuccessCampaign", sizeof( m_szStatsMusic ) );
 		}
 		else
 		{
-			szStatsMusic = "asw_song.StatsFail";
+			V_strncpy( m_szStatsMusic, "asw_song.StatsSuccess", sizeof( m_szStatsMusic ) );
 		}
 
-		if ( m_bSuccess )
-		{
-			pPlayer->EmitSound( "Game.MissionWon" );
-			CLocalPlayerFilter filter;
-			C_BaseEntity::EmitSound( filter, pPlayer->entindex(), szStatsMusic, NULL, gpGlobals->curtime + asw_success_sound_delay.GetFloat() );
-		}
-		else
-		{
-			pPlayer->EmitSound( "Game.MissionLost" );
-			CLocalPlayerFilter filter;
-			C_BaseEntity::EmitSound( filter, pPlayer->entindex(), szStatsMusic, NULL, gpGlobals->curtime + asw_fail_sound_delay.GetFloat() );
-		}
-	}	
+		pPlayer->EmitSound( m_bSuccess ? "Game.MissionWon" : "Game.MissionLost" );
+		CLocalPlayerFilter filter;
+		C_BaseEntity::EmitSound( filter, 0, m_szStatsMusic, NULL, gpGlobals->curtime + ( m_bSuccess ? asw_success_sound_delay.GetFloat() : asw_fail_sound_delay.GetFloat() ) );
+	}
 
-	m_pFailAdvice->SetAlpha(0);
+	m_pFailAdvice->SetAlpha( 0 );
 	m_pFailAdvice->SetVisible( rd_fail_advice.GetBool() );
 
-	m_pIconForwardArrow->SetAlpha(0);
+	m_pIconForwardArrow->SetAlpha( 0 );
 	m_pIconForwardArrow->SetVisible( rd_fail_advice.GetBool() );
 
-	vgui::GetAnimationController()->RunAnimationCommand(this, "alpha", 255, 0, 1.5f, vgui::AnimationController::INTERPOLATOR_LINEAR);	
-	vgui::GetAnimationController()->RunAnimationCommand(m_pFailAdvice, "alpha", 255, 1.5f, 2.0f, vgui::AnimationController::INTERPOLATOR_LINEAR);	
+	vgui::GetAnimationController()->RunAnimationCommand( this, "alpha", 255, 0, 1.5f, vgui::AnimationController::INTERPOLATOR_LINEAR );
+	vgui::GetAnimationController()->RunAnimationCommand( m_pFailAdvice, "alpha", 255, 1.5f, 2.0f, vgui::AnimationController::INTERPOLATOR_LINEAR );
 	if ( m_pFailedHeaderFooter )
 	{
-		vgui::GetAnimationController()->RunAnimationCommand(m_pIconForwardArrow, "alpha", 255, 1.5f, 2.0f, vgui::AnimationController::INTERPOLATOR_LINEAR);	
-		vgui::GetAnimationController()->RunAnimationCommand(m_pFailedHeaderFooter, "alpha", 255, 0.0f, 1.0f, vgui::AnimationController::INTERPOLATOR_LINEAR);	
+		vgui::GetAnimationController()->RunAnimationCommand( m_pIconForwardArrow, "alpha", 255, 1.5f, 2.0f, vgui::AnimationController::INTERPOLATOR_LINEAR );
+		vgui::GetAnimationController()->RunAnimationCommand( m_pFailedHeaderFooter, "alpha", 255, 0.0f, 1.0f, vgui::AnimationController::INTERPOLATOR_LINEAR );
 	}
-	MissionCompleteFrame *pFrame = dynamic_cast<MissionCompleteFrame*>(GetParent());
+	MissionCompleteFrame *pFrame = dynamic_cast< MissionCompleteFrame * >( GetParent() );
 	if ( pFrame )
 	{
 		pFrame->m_bFadeInBackground = true;
 	}
-	m_pMainElements->SetAlpha(0);	// hide everything else for now
+	m_pMainElements->SetAlpha( 0 );	// hide everything else for now
 	m_pHeaderFooter->m_pTitle->SetAlpha( 0 );
 	m_pMissionName->SetAlpha( 0 );
 
@@ -313,10 +311,10 @@ void MissionCompletePanel::PerformLayout()
 {
 	int width = ScreenWidth();
 	int height = ScreenHeight();
-	SetPos(0,0);	
-	SetSize(width + 1, height + 1);
+	SetPos( 0, 0 );
+	SetSize( width + 1, height + 1 );
 
-	m_pMainElements->SetBounds(0, 0, GetWide(), GetTall());
+	m_pMainElements->SetBounds( 0, 0, GetWide(), GetTall() );
 
 	if ( m_pFailAdvice )
 	{
@@ -330,69 +328,69 @@ void MissionCompletePanel::PerformLayout()
 
 void MissionCompletePanel::OnThink()
 {
-	if (m_fNextStageTime!=0 && gpGlobals->curtime > m_fNextStageTime)
+	if ( m_fNextStageTime != 0 && gpGlobals->curtime > m_fNextStageTime )
 	{
 		// go to next stage
-		switch (m_iStage)
+		switch ( m_iStage )
 		{
 		case MCP_STAGE_INITIAL_DELAY:
-			{
-				ShowImageAndPlaySound();
-				m_iStage = MCP_STAGE_FAILSUCCESS;
-				break;
-			}
+		{
+			ShowImageAndPlaySound();
+			m_iStage = MCP_STAGE_FAILSUCCESS;
+			break;
+		}
 		case MCP_STAGE_FAILSUCCESS:
-			{ 
-				// fade out the fail or success image
-				m_iStage = MCP_STAGE_FAILSUCCESS_FADE;
-				float fDuration = 1.0f;
-				vgui::GetAnimationController()->RunAnimationCommand( m_pResultImage, "alpha", 0, 0, fDuration, vgui::AnimationController::INTERPOLATOR_LINEAR );
-				vgui::GetAnimationController()->RunAnimationCommand( m_pFailAdvice, "alpha", 0, 0, fDuration, vgui::AnimationController::INTERPOLATOR_LINEAR );
-				vgui::GetAnimationController()->RunAnimationCommand( m_pIconForwardArrow, "alpha", 0, 0, fDuration, vgui::AnimationController::INTERPOLATOR_LINEAR );
-				if ( m_pFailedHeaderFooter )
-				{
-					vgui::GetAnimationController()->RunAnimationCommand( m_pFailedHeaderFooter, "alpha", 0, 0, fDuration, vgui::AnimationController::INTERPOLATOR_LINEAR );
-				}
-				
-				m_fNextStageTime = gpGlobals->curtime + 2.0f;
-
-				if ( gpGlobals->maxClients > 1 || asw_show_stats_in_singleplayer.GetBool() )
-				{
-					// fade in all the main elements
-					vgui::GetAnimationController()->RunAnimationCommand(m_pMissionName, "alpha", 255.0f, 0, fDuration, vgui::AnimationController::INTERPOLATOR_LINEAR);
-					vgui::GetAnimationController()->RunAnimationCommand(m_pHeaderFooter, "alpha", 255.0f, 0, fDuration, vgui::AnimationController::INTERPOLATOR_LINEAR);
-					vgui::GetAnimationController()->RunAnimationCommand(m_pMainElements, "alpha", 255.0f, 0, fDuration, vgui::AnimationController::INTERPOLATOR_LINEAR);
-					vgui::GetAnimationController()->RunAnimationCommand(m_pHeaderFooter->m_pTitle, "alpha", 255.0f, 0, fDuration, vgui::AnimationController::INTERPOLATOR_LINEAR);
-
-					// create the restart button and fade it in
-					vgui::GetAnimationController()->RunAnimationCommand(m_pRestartButton, "alpha", 255.0f, 0, fDuration, vgui::AnimationController::INTERPOLATOR_LINEAR);
-					//C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
-					//bool bLeader = (pPlayer && ASWGameResource() && (pPlayer == ASWGameResource()->GetLeader()));
-					//if (ASWGameRules() && ASWGameRules()->IsCampaignGame() && bLeader)
-						//vgui::GetAnimationController()->RunAnimationCommand(m_pCampaignMapButton, "alpha", 255.0f, 0, fDuration, vgui::AnimationController::INTERPOLATOR_LINEAR);				
-
-					//m_pStatsPanel->ShowStats(m_bSuccess);				
-					if (ASWGameRules() && ASWGameRules()->GetMissionSuccess())	// show debrief?
-						vgui::GetAnimationController()->RunAnimationCommand(m_PropertySheet, "alpha", 255.0f, 0, fDuration, vgui::AnimationController::INTERPOLATOR_LINEAR);
-				}
-				
-				break;
-			}
-		case MCP_STAGE_FAILSUCCESS_FADE:
+		{
+			// fade out the fail or success image
+			m_iStage = MCP_STAGE_FAILSUCCESS_FADE;
+			float fDuration = 1.0f;
+			vgui::GetAnimationController()->RunAnimationCommand( m_pResultImage, "alpha", 0, 0, fDuration, vgui::AnimationController::INTERPOLATOR_LINEAR );
+			vgui::GetAnimationController()->RunAnimationCommand( m_pFailAdvice, "alpha", 0, 0, fDuration, vgui::AnimationController::INTERPOLATOR_LINEAR );
+			vgui::GetAnimationController()->RunAnimationCommand( m_pIconForwardArrow, "alpha", 0, 0, fDuration, vgui::AnimationController::INTERPOLATOR_LINEAR );
+			if ( m_pFailedHeaderFooter )
 			{
-				if ( gpGlobals->maxClients > 1 || asw_show_stats_in_singleplayer.GetBool() )
-				{
-					m_iStage = MCP_STAGE_STATS;
-					LeaderboardReady(); // if we haven't finished uploading stats by now, show an incomplete leaderboard instead of no leaderboard.
-				}
-				else
-				{
-					// restart mission
-					engine->ClientCmd( "cl_restart_mission" );
-				}
-				m_fNextStageTime = 0;
-				break;
+				vgui::GetAnimationController()->RunAnimationCommand( m_pFailedHeaderFooter, "alpha", 0, 0, fDuration, vgui::AnimationController::INTERPOLATOR_LINEAR );
 			}
+
+			m_fNextStageTime = gpGlobals->curtime + 2.0f;
+
+			if ( gpGlobals->maxClients > 1 || asw_show_stats_in_singleplayer.GetBool() )
+			{
+				// fade in all the main elements
+				vgui::GetAnimationController()->RunAnimationCommand( m_pMissionName, "alpha", 255.0f, 0, fDuration, vgui::AnimationController::INTERPOLATOR_LINEAR );
+				vgui::GetAnimationController()->RunAnimationCommand( m_pHeaderFooter, "alpha", 255.0f, 0, fDuration, vgui::AnimationController::INTERPOLATOR_LINEAR );
+				vgui::GetAnimationController()->RunAnimationCommand( m_pMainElements, "alpha", 255.0f, 0, fDuration, vgui::AnimationController::INTERPOLATOR_LINEAR );
+				vgui::GetAnimationController()->RunAnimationCommand( m_pHeaderFooter->m_pTitle, "alpha", 255.0f, 0, fDuration, vgui::AnimationController::INTERPOLATOR_LINEAR );
+
+				// create the restart button and fade it in
+				vgui::GetAnimationController()->RunAnimationCommand( m_pRestartButton, "alpha", 255.0f, 0, fDuration, vgui::AnimationController::INTERPOLATOR_LINEAR );
+				//C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
+				//bool bLeader = (pPlayer && ASWGameResource() && (pPlayer == ASWGameResource()->GetLeader()));
+				//if (ASWGameRules() && ASWGameRules()->IsCampaignGame() && bLeader)
+					//vgui::GetAnimationController()->RunAnimationCommand(m_pCampaignMapButton, "alpha", 255.0f, 0, fDuration, vgui::AnimationController::INTERPOLATOR_LINEAR);				
+
+				//m_pStatsPanel->ShowStats(m_bSuccess);				
+				if ( ASWGameRules() && ASWGameRules()->GetMissionSuccess() )	// show debrief?
+					vgui::GetAnimationController()->RunAnimationCommand( m_PropertySheet, "alpha", 255.0f, 0, fDuration, vgui::AnimationController::INTERPOLATOR_LINEAR );
+			}
+
+			break;
+		}
+		case MCP_STAGE_FAILSUCCESS_FADE:
+		{
+			if ( gpGlobals->maxClients > 1 || asw_show_stats_in_singleplayer.GetBool() )
+			{
+				m_iStage = MCP_STAGE_STATS;
+				LeaderboardReady(); // if we haven't finished uploading stats by now, show an incomplete leaderboard instead of no leaderboard.
+			}
+			else
+			{
+				// restart mission
+				engine->ClientCmd( "cl_restart_mission" );
+			}
+			m_fNextStageTime = 0;
+			break;
+		}
 		};
 	}
 
@@ -415,20 +413,20 @@ void MissionCompletePanel::UpdateVisibleButtons()
 		m_pReadyButton->SetVisible( false );
 		m_pReadyCheckImage->SetVisible( false );
 		m_pContinueButton->SetVisible( false );
-		m_pTab[ 0 ]->SetVisible( false );
-		m_pTab[ 1 ]->SetVisible( false );
+		m_pTab[0]->SetVisible( false );
+		m_pTab[1]->SetVisible( false );
 		return;
 	}
 
-	C_ASW_Player* player = C_ASW_Player::GetLocalASWPlayer();
-	if (!player || !ASWGameRules())
+	C_ASW_Player *player = C_ASW_Player::GetLocalASWPlayer();
+	if ( !player || !ASWGameRules() )
 		return;
 
 	C_ASW_Game_Resource *pGameResource = ASWGameResource();
-	if (!pGameResource)
+	if ( !pGameResource )
 		return;
 
-	bool bLeader = (player == pGameResource->GetLeader());
+	bool bLeader = ( player == pGameResource->GetLeader() );
 
 	if ( !m_bViewedStatsPage )
 	{
@@ -446,8 +444,8 @@ void MissionCompletePanel::UpdateVisibleButtons()
 		m_pReadyButton->SetVisible( false );
 		m_pReadyCheckImage->SetVisible( false );
 		m_pContinueButton->SetVisible( false );
-		m_pTab[ 0 ]->SetVisible( false );
-		m_pTab[ 1 ]->SetVisible( false );
+		m_pTab[0]->SetVisible( false );
+		m_pTab[1]->SetVisible( false );
 	}
 	else
 	{
@@ -518,8 +516,8 @@ void MissionCompletePanel::UpdateVisibleButtons()
 				m_pReadyCheckImage->SetImage( "swarm/HUD/TickBoxEmpty" );
 			}
 		}
-		m_pTab[ 0 ]->SetVisible( true );
-		m_pTab[ 1 ]->SetVisible( true );
+		m_pTab[0]->SetVisible( true );
+		m_pTab[1]->SetVisible( true );
 	}
 }
 
@@ -545,9 +543,9 @@ void MissionCompletePanel::ApplySchemeSettings( vgui::IScheme *scheme )
 	UpdateVisibleButtons();
 }
 
-void MissionCompletePanel::OnCommand(const char* command)
+void MissionCompletePanel::OnCommand( const char *command )
 {
-	C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	if ( !pPlayer || !ASWGameRules() )
 		return;
 
@@ -562,7 +560,7 @@ void MissionCompletePanel::OnCommand(const char* command)
 		m_PropertySheet->SetActivePage( m_PropertySheet->GetPage( 0 ) );
 		if ( !ASWGameRules()->GetMissionSuccess() )
 		{
-			m_pHeaderFooter->SetTitle("#asw_mission_failed");
+			m_pHeaderFooter->SetTitle( "#asw_mission_failed" );
 		}
 		else
 		{
@@ -588,8 +586,8 @@ void MissionCompletePanel::OnCommand(const char* command)
 		else
 		{
 			// ForceReadyPanel* pForceReady = 
-			engine->ClientCmd("cl_wants_restart"); // notify other players that we're waiting on them
-			new ForceReadyPanel(GetParent(), "ForceReady", "#asw_force_restartm", ASW_FR_RESTART);
+			engine->ClientCmd( "cl_wants_restart" ); // notify other players that we're waiting on them
+			new ForceReadyPanel( GetParent(), "ForceReady", "#asw_force_restartm", ASW_FR_RESTART );
 		}
 	}
 	else if ( !Q_stricmp( command, "Ready" ) )
@@ -638,16 +636,16 @@ void MissionCompletePanel::OnCommand(const char* command)
 				if ( ASWGameRules()->GetMissionSuccess() )
 				{
 					// ForceReadyPanel* pForceReady = 
-					engine->ClientCmd("cl_wants_continue");	// notify other players that we're waiting on them
-					new ForceReadyPanel(GetParent(), "ForceReady", "#asw_force_continuem", ASW_FR_CONTINUE);
+					engine->ClientCmd( "cl_wants_continue" );	// notify other players that we're waiting on them
+					new ForceReadyPanel( GetParent(), "ForceReady", "#asw_force_continuem", ASW_FR_CONTINUE );
 				}
 				else
 				{
 					// TODO: Proceed to the next mission, pop up a mission selection dialog, etc?
 					// just do a restart for now
 					// ForceReadyPanel* pForceReady = 
-					engine->ClientCmd("cl_wants_restart"); // notify other players that we're waiting on them
-					new ForceReadyPanel(GetParent(), "ForceReady", "#asw_force_restartm", ASW_FR_RESTART);
+					engine->ClientCmd( "cl_wants_restart" ); // notify other players that we're waiting on them
+					new ForceReadyPanel( GetParent(), "ForceReady", "#asw_force_restartm", ASW_FR_RESTART );
 				}
 			}
 		}
@@ -655,7 +653,7 @@ void MissionCompletePanel::OnCommand(const char* command)
 		return;
 	}
 
-	BaseClass::OnCommand(command);
+	BaseClass::OnCommand( command );
 }
 
 void MissionCompletePanel::OnWeaponUnlocked( const char *pszWeaponClass )
@@ -741,7 +739,7 @@ void MissionCompletePanel::LeaderboardReady()
 
 void __MsgFunc_RDLeaderboardReady( bf_read &msg )
 {
-	MissionCompleteFrame *pMissionCompleteFrame = GetClientModeASW() ? assert_cast<MissionCompleteFrame *>( GetClientModeASW()->m_hMissionCompleteFrame.Get() ) : NULL;
+	MissionCompleteFrame *pMissionCompleteFrame = GetClientModeASW() ? assert_cast< MissionCompleteFrame * >( GetClientModeASW()->m_hMissionCompleteFrame.Get() ) : NULL;
 	MissionCompletePanel *pMissionCompletePanel = pMissionCompleteFrame ? pMissionCompleteFrame->m_pMissionCompletePanel : NULL;
 	if ( pMissionCompletePanel )
 	{
@@ -764,7 +762,7 @@ void MissionCompletePanel::LeaderboardDownloadedCallback( LeaderboardScoresDownl
 	m_pExperienceReport->m_pLeaderboard->SetVisible( rd_show_leaderboard_debrief.GetBool() );
 }
 
-void MissionCompletePanel::OnLeaderboardScoreUploaded( const RD_LeaderboardEntry_t & entry, int nGlobalRankPrevious )
+void MissionCompletePanel::OnLeaderboardScoreUploaded( const RD_LeaderboardEntry_t &entry, int nGlobalRankPrevious )
 {
 	m_pExperienceReport->m_pLeaderboard->OverrideEntry( entry );
 	m_pExperienceReport->m_pLeaderboard->SetVisible( rd_show_leaderboard_debrief.GetBool() );
@@ -780,4 +778,4 @@ void ShowCompleteMessage()
 	GetClientModeASW()->m_bLaunchedDebrief = false;
 }
 
-static ConCommand showcompletemessage("showcompletemessage", ShowCompleteMessage, "Shows the mission complete message again", 0);
+static ConCommand showcompletemessage( "showcompletemessage", ShowCompleteMessage, "Shows the mission complete message again", 0 );
