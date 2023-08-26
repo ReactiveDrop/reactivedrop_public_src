@@ -651,7 +651,6 @@ CASW_Marine::CASW_Marine() : m_RecentMeleeHits( 16, 16 )
 		m_flFailedPathingTime[i] = FLT_MIN;
 	}
 
-	m_BackPackWeaponBaseEntity = NULL;
 	m_bAirStrafeUsed = false;
 
 	m_nIndexActWeapBeforeTempPickup = 0;
