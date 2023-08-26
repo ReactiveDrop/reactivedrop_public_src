@@ -468,20 +468,27 @@ void PlayerListPanel::UpdateVoteButtons()
 	}	
 
 	// update count and other labels
-	if (m_iYesCount != ASWGameRules()->GetCurrentVoteYes())
+	if ( m_iYesCount != ASWGameRules()->GetCurrentVoteYes() || m_iRequiredCount != ASWGameRules()->GetVotesRequired( ASWGameRules()->m_bVoteStartedIngame ) )
 	{
 		m_iYesCount = ASWGameRules()->GetCurrentVoteYes();
+		m_iRequiredCount = ASWGameRules()->GetVotesRequired( ASWGameRules()->m_bVoteStartedIngame );
 		char buffer[8];
-		Q_snprintf(buffer, sizeof(buffer), "%d", m_iYesCount);
+		Q_snprintf( buffer, sizeof( buffer ), "%d", m_iYesCount );
 
 		wchar_t wnumber[8];
-		g_pVGuiLocalize->ConvertANSIToUnicode(buffer, wnumber, sizeof( wnumber ));
+		g_pVGuiLocalize->ConvertANSIToUnicode( buffer, wnumber, sizeof( wnumber ) );
 
-		wchar_t wbuffer[96];		
-		g_pVGuiLocalize->ConstructString( wbuffer, sizeof(wbuffer),
-			g_pVGuiLocalize->Find("#asw_yes_votes"), 1,
-				wnumber);
-		m_pYesVotesLabel->SetText(wbuffer);
+		char _buffer[8];
+		Q_snprintf( _buffer, sizeof( _buffer ), "%d", m_iRequiredCount );
+
+		wchar_t _wnumber[8];
+		g_pVGuiLocalize->ConvertANSIToUnicode( _buffer, _wnumber, sizeof( _wnumber ) );
+
+		wchar_t wbuffer[96];
+		g_pVGuiLocalize->ConstructString( wbuffer, sizeof( wbuffer ),
+			g_pVGuiLocalize->Find( "#asw_yes_votes" ), 2,
+			wnumber, _wnumber );
+		m_pYesVotesLabel->SetText( wbuffer );
 	}
 	if (m_iNoCount != ASWGameRules()->GetCurrentVoteNo())
 	{
