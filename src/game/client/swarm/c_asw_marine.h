@@ -125,8 +125,6 @@ public:
 	CNetworkVar( float, m_flPreventLaserSightTime );
 
 	// shadow
-	Vector m_ShadowDirection;
-	bool GetShadowCastDirection( Vector *pDirection, ShadowType_t shadowType ) const;	
 	ShadowType_t ShadowCastType();
 
 	// commander/inhabiting
@@ -403,10 +401,9 @@ public:
 	EHANDLE m_hShoulderCone;
 
 	// backpack
-	virtual void CreateBackpack( C_BaseCombatWeapon *pWeapon );
+	virtual void CreateBackpack( C_ASW_Weapon *pWeapon );
 	virtual void RemoveBackpack();
-	EHANDLE m_hBackpack;
-	const char *m_sBackpackModel;
+	CHandle<C_BaseAnimating> m_hBackpack;
 
 	// accessories (strange devices)
 	CHandle<C_RD_Weapon_Accessory> m_hWeaponAccessory[RD_ITEM_MAX_ACCESSORIES + 1];

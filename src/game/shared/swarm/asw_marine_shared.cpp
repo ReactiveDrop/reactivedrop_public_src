@@ -98,7 +98,6 @@ ConVar rd_explosive_railgun_bullets( "rd_explosive_railgun_bullets", "0", FCVAR_
 ConVar rd_explosive_bullets( "rd_explosive_bullets", "0", FCVAR_CHEAT);
 ConVar rd_explosive_bullets_dmg( "rd_explosive_bullets_dmg", "50", FCVAR_CHEAT);
 ConVar rd_explosive_bullets_radius( "rd_explosive_bullets_radius", "200", FCVAR_CHEAT);
-extern ConVar rd_server_marine_backpacks;
 #endif
 
 #ifdef CLIENT_DLL
@@ -126,9 +125,8 @@ bool CASW_Marine::Weapon_Switch( CBaseCombatWeapon *pWeapon, int viewmodelindex 
 		m_bLastWeaponBeforeTempWasSecondary = GetActiveASWWeapon() == pWeaponSec;
 	}
 
-#if CLIENT_DLL
-	C_BaseCombatWeapon *pActiveWeapon = GetActiveWeapon();
-	CreateBackpack( pActiveWeapon );
+#ifdef CLIENT_DLL
+	CreateBackpack( GetActiveASWWeapon() );
 #endif
 
 	//Orange. BaseClass::Weapon_Switch() overrides m_flNextPrimaryAttack of the pWeapon later in CBaseCombatWeapon::DefaultDeploy()
@@ -147,39 +145,6 @@ bool CASW_Marine::Weapon_Switch( CBaseCombatWeapon *pWeapon, int viewmodelindex 
 		CBaseCombatWeapon *pLast = GetLastWeaponSwitchedTo();
 		if ( pWeapon != pLast && ASWGameRules() && ASWGameRules()->GetGameState() >= ASW_GS_INGAME )
 		{
-#ifdef GAME_DLL
-			if ( rd_server_marine_backpacks.GetBool() && !m_bKnockedOut ) // do not allow backpack switch when incapacitated with reviving enabled
-			{
-				CASW_Weapon* pTempWeapon = GetASWWeapon(ASW_TEMPORARY_WEAPON_SLOT);
-
-				//this related to first keyboard weapon switch and first weapon pickup that changes some gun (not a pickup into empty slot)
-				if ( !pLast && pWeaponPri && pWeaponSec )
-				{
-					if ( !pTempWeapon ) //do not do anything with backpack if we grabbed temp weapon, also temp weapon supposed to be active so check can be like pTempWeapon != pActive
-					{
-						RemoveBackPackModel();
-						CASW_Weapon* pActive = GetActiveASWWeapon();
-						if ( pWeaponPri == pActive )
-							CreateBackPackModel( pWeaponSec );
-						else if ( pWeaponSec == pActive )
-							CreateBackPackModel( pWeaponPri );
-					}
-				}
-
-				if ( pLast )
-				{
-					CASW_Weapon *pPrevWeapon = assert_cast<CASW_Weapon *>(pLast);
-					if ( !pTempWeapon )//do not do anything with backpack if we grabbed temp weapon
-					{
-						if ( pWeaponPri == pPrevWeapon || pWeaponSec == pPrevWeapon )
-						{
-							RemoveBackPackModel();
-							CreateBackPackModel( pPrevWeapon );
-						}
-					}
-				}
-			}
-#endif
 			m_hLastWeaponSwitchedTo = pWeapon;
 			DoAnimationEvent( PLAYERANIMEVENT_WEAPON_SWITCH );
 		}

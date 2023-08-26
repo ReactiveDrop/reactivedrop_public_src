@@ -86,6 +86,7 @@ ConVar rd_marine_gib_lifetime( "rd_marine_gib_lifetime", "36000.0", FCVAR_NONE, 
 ConVar rd_marine_gib_lifetime_dm( "rd_marine_gib_lifetime_dm", "15.0", FCVAR_NONE, "number of seconds before marine gibs fade in deathmatch mode" );
 ConVar rd_marine_gib_spin( "rd_marine_gib_spin", "500", FCVAR_NONE, "how much do marine gibs spin?" );
 ConVar rd_client_marine_backpacks( "rd_client_marine_backpacks", "0", FCVAR_NONE, "Show marine's un-equipped weapon on their back." );
+ConVar rd_server_marine_backpacks( "rd_server_marine_backpacks", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Attach unactive weapon model to marine's back" );
 ConVar rd_projected_texture_min_z( "rd_projected_texture_min_z", "-64", FCVAR_REPLICATED | FCVAR_CHEAT, "Projected textures that do not reach at least as high as this distance from the current marine's feet are considered non-visible." );
 
 extern ConVar asw_DebugAutoAim;
@@ -430,20 +431,16 @@ C_ASW_Marine::C_ASW_Marine() :
 {
 	m_hShoulderCone = NULL;
 	m_hBackpack = NULL;
-	m_sBackpackModel = "";
 	m_flNextChatter = 0;
 	m_PlayerAnimState = CreatePlayerAnimState(this, this, LEGANIM_9WAY, false);
 	SetPredictionEligible( true );
 	m_Commander = NULL;
 	m_hMarineResource = NULL;
 	m_fPoison = 0;
-	m_ShadowDirection.x = 0;
-	m_ShadowDirection.y = 0;
-	m_ShadowDirection.z = -1;	
 	m_CurrentBlipStrength = 0;
 	m_CurrentBlipDirection = 1;
 	m_LastThinkTime = gpGlobals->curtime;
-	m_fLastYawHack = m_fLastPitchHack = 0;	
+	m_fLastYawHack = m_fLastPitchHack = 0;
 	m_bStepSideLeft = true;
 	//m_fAmbientLight = asw_marine_ambient.GetFloat();
 	//m_fLightingScale = asw_marine_lightscale.GetFloat();
@@ -502,63 +499,59 @@ C_ASW_Marine::C_ASW_Marine() :
 
 C_ASW_Marine::~C_ASW_Marine()
 {
-	//Msg("Destructor C_ASW_Marine::~C_ASW_Marine() \n");
-
 	m_PlayerAnimState->Release();
-	if (m_pFlashlight)
+	if ( m_pFlashlight )
 	{
-		//Msg("Deleting m_pFlashlight \n");
 		delete m_pFlashlight;
 	}
-	StopFlamerLoop();	//Msg("StopFlamerLoop \n");
-	StopFireExtinguisherLoop();	//Msg("StopFireExtinguisherLoop \n");
+
+	StopFlamerLoop();
+	StopFireExtinguisherLoop();
 	m_bOnFire = false;
 	UpdateFireEmitters();
 	g_fMarinePoisonDuration = 0;
-	if (m_hOrderArrow.Get())
+
+	if ( m_hOrderArrow.Get() )
+	{
 		m_hOrderArrow->Release();
+	}
 
 	if ( m_hLowHeathEffect )
 	{
-		//Msg("Stopping m_hLowHeathEffect \n");
-
 		m_hLowHeathEffect->StopEmission(false, false , true);
 		m_hLowHeathEffect = NULL;
-
-		//Msg("m_hLowHeathEffect is Stopped \n");
 	}
 
 	if ( m_hCriticalHeathEffect )
 	{
-		//Msg("Stopping m_hCriticalHeathEffect \n");
 		m_hCriticalHeathEffect->StopEmission(false, false , true);
 		m_hCriticalHeathEffect = NULL;
-		//Msg("m_hCriticalHeathEffect is Stopped \n");
 	}
 
 	if ( m_hSentryBuildDisplay )
 	{
-		//Msg("Stopping m_hSentryBuildDisplay \n");
-
 		m_hSentryBuildDisplay->StopEmission(false, false , true);
 		m_hSentryBuildDisplay = NULL;
-
-		//Msg("m_hSentryBuildDisplay is Stopped \n");
 	}
-	// reactivedrop: jump jet loop sound needs to be stopped if marine dies 
-	if (m_pJumpJetEffect[0])
+
+	if ( m_pJumpJetEffect[0] )
 	{
 		StopJumpJetEffects();
 	}
 
-	if (IsElectrifiedArmorActive()) 
+	if ( IsElectrifiedArmorActive() )
 	{
 		bool bLocalPlayer = false;
 		C_ASW_Player *pPlayer = GetCommander();
 		C_ASW_Player *pLocalPlayer = C_ASW_Player::GetLocalASWPlayer();
-		if (pPlayer == pLocalPlayer && IsInhabited())
+		if ( pPlayer == pLocalPlayer && IsInhabited() )
 			bLocalPlayer = true;
-		StopElectifiedArmorEffects(bLocalPlayer);
+		StopElectifiedArmorEffects( bLocalPlayer );
+	}
+
+	if ( m_hBackpack )
+	{
+		RemoveBackpack();
 	}
 
 	for ( int i = 0; i < NELEMS( m_hWeaponAccessory ); i++ )
@@ -715,17 +708,6 @@ C_ASW_Marine_Resource *C_ASW_Marine::GetMarineResource()
 	}
 
 	return NULL;
-}
-
-// shadow direction test
-bool C_ASW_Marine::GetShadowCastDirection( Vector *pDirection, ShadowType_t shadowType ) const			
-{ 	
-	return false;
-	pDirection->x = m_ShadowDirection.x;
-	pDirection->y = m_ShadowDirection.y;
-	pDirection->z = m_ShadowDirection.z;	
-
-	return true;
 }
 
 ShadowType_t C_ASW_Marine::ShadowCastType()
@@ -2495,11 +2477,9 @@ void C_ASW_Marine::CreateShoulderCone()
 	m_hShoulderCone = pEnt;
 }
 
-void C_ASW_Marine::CreateBackpack( C_BaseCombatWeapon *pWeapon )
+void C_ASW_Marine::CreateBackpack( C_ASW_Weapon *pWeapon )
 {
-	ConVarRef rd_server_marine_backpacks( "rd_server_marine_backpacks" );
-
-	if ( rd_client_marine_backpacks.GetInt() != 1 || rd_server_marine_backpacks.GetBool() )
+	if ( !rd_client_marine_backpacks.GetBool() && !rd_server_marine_backpacks.GetBool() )
 	{
 		RemoveBackpack();
 		return;
@@ -2514,11 +2494,10 @@ void C_ASW_Marine::CreateBackpack( C_BaseCombatWeapon *pWeapon )
 
 	if ( m_hBackpack.Get() )
 	{
-		bool isBackpack = !Q_strcmp( pWeapon->GetWorldModel(), m_sBackpackModel );
-		if ( isBackpack )
+		if ( !V_stricmp( pWeapon->GetWorldModel(), STRING( m_hBackpack->GetModelName() ) ) && pWeapon->GetSkin() == m_hBackpack->GetSkin() )
 			return;
-		else
-			RemoveBackpack();
+
+		RemoveBackpack();
 	}
 
 	int iAttachment = LookupAttachment( "jump_jet_r" );
@@ -2541,69 +2520,38 @@ void C_ASW_Marine::CreateBackpack( C_BaseCombatWeapon *pWeapon )
 		pEnt->Release();
 		return;
 	}
-	
+
+	pEnt->SetModelName( pWeapon->GetWorldModel() );
 	pEnt->SetParent( this, iAttachment );
 	pEnt->SetModelScale( 0.75 );
 
-	int skin = 0;
-	bool shouldRotate = false;
-	Vector adjustPosition = Vector( 0, 0, 0 );
-
-	if ( !Q_strcmp( pWeapon->GetClassname(), "asw_weapon_ammo_bag" ) ||
-		 !Q_strcmp( pWeapon->GetClassname(), "asw_weapon_ammo_satchel" ) ||
-		 !Q_strcmp( pWeapon->GetClassname(), "asw_weapon_fire_extinguisher" ) )
+	if ( !V_stricmp( pWeapon->GetClassname(), "asw_weapon_ammo_bag" ) ||
+		!V_stricmp( pWeapon->GetClassname(), "asw_weapon_medical_satchel" ) ||
+		!V_stricmp( pWeapon->GetClassname(), "asw_weapon_fire_extinguisher" ) ||
+		!V_stricmp( pWeapon->GetWorldModel(), "models/items/ItemBox/ItemBoxLarge.mdl" ) )
 	{
-		shouldRotate = true;
+		// bulky non-weapons
+		pEnt->SetLocalOrigin( Vector( 5, 0, 5 ) );
+		pEnt->SetLocalAngles( QAngle( 0, 0, 90 ) );
 	}
-	else if ( !Q_strcmp( pWeapon->GetClassname(), "asw_weapon_pdw" ) ||
-		!Q_strcmp( pWeapon->GetClassname(), "asw_weapon_pistol" ) )
+	else if ( pWeapon->DisplayClipsDoubled() )
 	{
-		adjustPosition = Vector(0, -5, 0);
-		shouldRotate = true;
-	}
-	else if ( !Q_strcmp( pWeapon->GetClassname(), "asw_weapon_heal_grenade" ) || 
-		!Q_strcmp( pWeapon->GetClassname(), "asw_weapon_medical_satchel" ) )
-	{
-		skin = 1;
-		shouldRotate = true;
-	}
-	else if ( !Q_strcmp( pWeapon->GetClassname(), "asw_weapon_sentry" ) )
-	{
-		skin = 2;
-		shouldRotate = true;
-	}
-	else if ( !Q_strcmp( pWeapon->GetClassname(), "asw_weapon_sentry_freeze" ) )
-	{
-		skin = 3;
-		shouldRotate = true;
-	}
-	else if ( !Q_strcmp( pWeapon->GetClassname(), "asw_weapon_sentry_flamer" ) )
-	{
-		skin = 4;
-		shouldRotate = true;
-	}
-	else if ( !Q_strcmp( pWeapon->GetClassname(), "asw_weapon_sentry_cannon" ) )
-	{
-		skin = 5;
-		shouldRotate = true;
-	}
-
-	if ( shouldRotate )
-	{
-		pEnt->SetLocalOrigin( Vector( 5, 0, 5 ) + adjustPosition );
+		// dual-wield weapons
+		pEnt->SetLocalOrigin( Vector( 5, -5, 5 ) );
 		pEnt->SetLocalAngles( QAngle( 0, 0, 90 ) );
 	}
 	else
 	{
+		// standard weapons
 		pEnt->SetLocalOrigin( Vector( 0, -5, 0 ) );
 		pEnt->SetLocalAngles( QAngle( 0, 90, 0 ) );
 	}
-	pEnt->SetSkin( skin );
+
+	pEnt->SetSkin( pWeapon->GetSkin() );
 	pEnt->SetSolid( SOLID_NONE );
 	pEnt->RemoveEFlags( EFL_USE_PARTITION_WHEN_NOT_SOLID );
 
 	m_hBackpack = pEnt;
-	m_sBackpackModel = pWeapon->GetWorldModel();
 }
 
 void C_ASW_Marine::RemoveBackpack()
@@ -2612,7 +2560,6 @@ void C_ASW_Marine::RemoveBackpack()
 	{
 		UTIL_Remove( m_hBackpack );
 		m_hBackpack = NULL;
-		m_sBackpackModel = "";
 	}
 }
 

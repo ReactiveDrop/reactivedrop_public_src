@@ -81,7 +81,6 @@ END_SCRIPTDESC()
 
 ConVar asw_weapon_safety_hull("asw_weapon_safety_hull", "0", FCVAR_CHEAT, "Size of hull used to check for AI shots going too near a friendly");
 extern ConVar asw_debug_alien_damage;
-extern ConVar rd_server_marine_backpacks;
 
 CASW_Weapon::CASW_Weapon()
 {
@@ -299,10 +298,6 @@ bool CASW_Weapon::DestroyIfEmpty( bool bDestroyWhenActive, bool bCheckSecondaryA
 	// riflemod: commented weapon destruction on empty
 	if ( rm_destroy_empty_weapon.GetBool() && !m_iClip1 && ( !UsesClipsForAmmo1() || pMarine->GetAmmoCount( m_iPrimaryAmmoType ) <= 0 ) )
 	{
-
-		if ( rd_server_marine_backpacks.GetBool() && pMarine->GetASWWeapon(2) != this && pMarine->GetASWWeapon(ASW_TEMPORARY_WEAPON_SLOT) != this )
-			pMarine->RemoveBackPackModel();
-
 		pMarine->Weapon_Detach(this);
 		if (bActive)
 			pMarine->SwitchToNextBestWeapon(NULL);

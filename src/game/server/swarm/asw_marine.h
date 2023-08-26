@@ -765,15 +765,11 @@ public:
 	float m_flNextStumbleTime;
 
 	void StrafePush(void);
-	void CreateBackPackModel(CASW_Weapon *pWeapon);
-	void RemoveBackPackModel();
-	CBaseEntity* GetBackPackModel();
 
 	void InputAddPoints( inputdata_t &inputdata );
 	COutputInt m_TotalPoints;
 private:
 	float m_flNextBreadcrumbTime;
-	EHANDLE m_BackPackWeaponBaseEntity;
 
 	bool m_bAirStrafeUsed;
 };
