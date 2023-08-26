@@ -16,7 +16,7 @@ class MapInfo:
 		self.vbsp = vbsp if vbsp is not None else ["-alldetail"]
 		self.vvis = vvis if vvis is not None else ["-radius_override", radius_override]
 		self.vrad = vrad if vrad is not None else ["-final", "-textureshadows", "-StaticPropLighting", "-StaticPropPolys"]
-		self.postcompiler = postcompiler if postcompiler is not None else []
+		self.postcompiler = postcompiler if postcompiler is not None else ["--propcombine"]
 
 vrad_notextureshadows = ["-final", "-StaticPropLighting", "-StaticPropPolys"]
 
@@ -77,7 +77,7 @@ VMFs = [
 ##		MapInfo("rd-par2hostile_places", "750", "1"),
 ##		MapInfo("rd-par3close_contact", "750", "1"),
 ##		MapInfo("rd-par4high_tension", "1500", "1"),
-##		MapInfo("rd-par5crucial_point", "1500", "1"),
+##		MapInfo("rd-par5crucial_point", "1500", "1", postcompiler=False),
 ##		MapInfo("rd-res1forestentrance", "750", "0"),
 ##		MapInfo("rd-res2research7", "1500", "0"),
 ##		MapInfo("rd-res3miningcamp", "1500", "0"),
@@ -154,9 +154,12 @@ with open(build_all_maps_cfg, "w") as myfile:
 for i, mapinfo in enumerate(VMFs):
 	name = mapsrc + "/" + mapinfo.name
 	check_call([vbsp] + mapinfo.vbsp + ["-game", moddir, name])
-	check_call([postcompiler] + mapinfo.postcompiler + ["-game", moddir, name])
-	check_call([vvis] + mapinfo.vvis + ["-game", moddir, name])
-	check_call([vrad, "-low"] + mapinfo.vrad + ["-game", moddir, name])
+	if mapinfo.postcompiler is not False:
+		check_call([postcompiler] + mapinfo.postcompiler + ["-game", moddir, name])
+	if mapinfo.vvis is not False:
+		check_call([vvis] + mapinfo.vvis + ["-game", moddir, name])
+	if mapinfo.vrad is not False:
+		check_call([vrad, "-low"] + mapinfo.vrad + ["-game", moddir, name])
 	try:
 		shutil.copy2(mapsrc + "/" + mapinfo.name + ".bsp", mapdir + "/" + mapinfo.name + ".bsp")
 	except:
@@ -182,4 +185,4 @@ with open(build_all_maps_cfg, "a") as myfile:
 # run the game and execute the cfg file
 # game will load each map and execute these commands using 
 # aliases and wait command: stringtabledictionary;buildcubemaps;
-check_call([gameexe, "-novid", "-windowed", "-w", "1280", "-h", "720", "-skiploadingworkshopaddons", "-game", moddir, "+exec build_all_maps"])
+check_call([gameexe, "-novid", "-windowed", "-w", "1280", "-h", "720", "-skiploadingworkshopaddons", "-hushasserts", "-game", moddir, "+exec build_all_maps"])

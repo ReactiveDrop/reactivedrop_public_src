@@ -1,0 +1,11 @@
+// This config contains a list of directories which can be referenced by the main config.
+// Keeping this a separate file allows the main config to be shared in a mod team, while this
+// config is customised for each user's installation locations.
+// The keys here are then referenced by specifying "|key|" at the start of a path.
+// If no root is specified, paths are relative to these configs.
+// Some names are predefined: |gameinfo_path| and |mapdir_path|.
+"Paths"
+    {
+    // For example this makes "|hl2|/episodic/ep1_pak_dir.vpk" valid in searchpaths.
+    // "hl2" "C:/Program Files/Steam/SteamApps/common/Half Life 2/"
+    }
