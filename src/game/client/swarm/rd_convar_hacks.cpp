@@ -4,6 +4,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+extern void RDMixerInit();
+
 static class CRD_Convar_Hacks final : public CAutoGameSystem
 {
 public:
@@ -62,6 +64,7 @@ public:
 		}
 
 		ApplyShowBudgetHack();
+		ApplySndRestartHack();
 
 		for ( int i = 0; i < NELEMS( s_szCheat ); i++ )
 		{
@@ -103,5 +106,35 @@ public:
 		pThink[21] = 0xEB;
 		VirtualProtect( pThink + 21, 1, oldProtect, &oldProtect );
 		FlushInstructionCache( GetCurrentProcess(), pThink, 22 );
+	}
+
+	void ApplySndRestartHack()
+	{
+		// snd_restart undoes the changes made by _rd_mixer_init, so re-run _rd_mixer_init whenever the player runs snd_restart.
+		ConCommand *pCmd = g_pCVar->FindCommand( "snd_restart" );
+		byte *pCallback = *reinterpret_cast< byte *const * >( reinterpret_cast< const byte * >( pCmd ) + sizeof( ConCommandBase ) );
+
+		// function starts at 10053fc0
+		// ret instruction at 100540e6
+		// after that, we have 9 bytes of padding to work with
+		byte *pRet = pCallback + 0x126;
+
+		Assert( pRet[0] == 0xc3 );
+		Assert( pRet[1] == 0xcc );
+		Assert( pRet[2] == 0xcc );
+		Assert( pRet[3] == 0xcc );
+		Assert( pRet[4] == 0xcc );
+		Assert( pRet[5] == 0xcc );
+		Assert( pRet[6] == 0xcc );
+		Assert( pRet[7] == 0xcc );
+		Assert( pRet[8] == 0xcc );
+		Assert( pRet[9] == 0xcc );
+
+		DWORD oldProtect{};
+		VirtualProtect( pRet, 5, PAGE_EXECUTE_READWRITE, &oldProtect );
+		pRet[0] = 0xE9;
+		*reinterpret_cast< uintptr_t * >( &pRet[1] ) = uintptr_t( &RDMixerInit ) - uintptr_t( pRet + 5 );
+		VirtualProtect( pRet, 5, oldProtect, &oldProtect );
+		FlushInstructionCache( GetCurrentProcess(), pRet, 5 );
 	}
 } s_RD_Convar_Hacks;

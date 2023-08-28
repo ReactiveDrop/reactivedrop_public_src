@@ -398,7 +398,7 @@ static void MusicVolumeMultiplierChanged( IConVar *var, const char *pOldValue, f
 	rd_mixer_volume_music_menus.SetValue( flTarget );
 }
 
-CON_COMMAND_F( _rd_mixer_init, "Deferred mixer volume initialization.", FCVAR_HIDDEN )
+void RDMixerInit()
 {
 	if ( !InitDefaultMixLevels() )
 	{
@@ -420,6 +420,12 @@ CON_COMMAND_F( _rd_mixer_init, "Deferred mixer volume initialization.", FCVAR_HI
 		Warning( "Both new (rd_mixer_volume_music_ingame/rd_mixer_volume_music_menus) and old (snd_musicvolume) music volume settings are set. Music volume will be scaled twice!\n" );
 	}
 
+	if ( ConVar *pLegacyMusicVolume = g_pCVar->FindVar( "snd_musicvolume" ) )
+	{
+		// avoid players setting this in configs and causing the UI music sliders to break
+		pLegacyMusicVolume->AddFlags( FCVAR_DEVELOPMENTONLY );
+	}
+
 	Assert( !s_bIgnoreMusicVolumeChange );
 	s_bIgnoreMusicVolumeChange = true;
 	for ( int i = 0; i < NELEMS( s_MixerVars ); i++ )
@@ -427,6 +433,11 @@ CON_COMMAND_F( _rd_mixer_init, "Deferred mixer volume initialization.", FCVAR_HI
 		MixerVolumeMultiplierChanged( &s_MixerVars[i].var, "1", 1.0f );
 	}
 	s_bIgnoreMusicVolumeChange = false;
+}
+
+CON_COMMAND_F( _rd_mixer_init, "Deferred mixer volume initialization.", FCVAR_HIDDEN )
+{
+	RDMixerInit();
 }
 
 // This member is static so that the updated audio language can be referenced during shutdown

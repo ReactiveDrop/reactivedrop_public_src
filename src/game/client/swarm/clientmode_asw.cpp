@@ -721,6 +721,9 @@ void ClientModeASW::LevelInit( const char *newmap )
 	enginesound->SetRoomType( filter, 0 );
 	enginesound->SetPlayerDSP( filter, 0, true );
 
+	// Re-apply mixer convars.
+	engine->ClientCmd_Unrestricted( "_rd_mixer_init\n" );
+
 	if ( Briefing() )
 	{
 		Briefing()->ResetLastChatterTime();
