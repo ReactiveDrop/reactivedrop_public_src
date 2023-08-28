@@ -8,8 +8,8 @@
 //  STATIC: "VERTEXCOLOR"				"0..1"
 //  STATIC: "VERTEXALPHATEXBLENDFACTOR"	"0..1"
 //  STATIC: "PARALLAX_MAPPING"			"0..1"
-//  STATIC: "SEAMLESS"                  "0..1"
-//  STATIC: "BUMPMASK"                  "0..1"
+//  STATIC: "SEAMLESS"					"0..1"
+//  STATIC: "BUMPMASK"					"0..1"
 //	STATIC: "FLASHLIGHT"				"0..1"	[XBOX]
 //	STATIC: "FANCY_BLENDING"			"0..1"
 //	STATIC: "SELFILLUM"					"0..1"
