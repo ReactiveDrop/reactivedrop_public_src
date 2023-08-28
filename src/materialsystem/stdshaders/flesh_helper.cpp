@@ -15,6 +15,8 @@
 #include "shaderlib/commandbuilder.h"
 
 
+ConVar mat_flesh_flashlight( "mat_flesh_flashlight", "0" ); // disabled for now because it crashes
+
 void InitParamsFlesh( CBaseVSShader *pShader, IMaterialVar** params, const char *pMaterialName, FleshVars_t &info )
 {
 	// Set material parameter default values
@@ -496,7 +498,7 @@ void DrawFlesh(  CBaseVSShader *pShader, IMaterialVar** params, IShaderDynamicAP
 
 		// flashlightfixme: put this in common code.
 		bool bFlashlightShadows = false;
-		if ( bHasFlashlight )
+		if ( bHasFlashlight && mat_flesh_flashlight.GetBool() )
 		{
 			Assert( info.m_nFlashlightTexture >= 0 && info.m_nFlashlightTextureFrame >= 0 );
 			VMatrix worldToTexture;
