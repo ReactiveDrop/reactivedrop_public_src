@@ -75,8 +75,8 @@ public:
 	{
 		MODE_RADIO,    // all options displayed in a row
 		MODE_DROPDOWN, // only current option is displayed; when active all options displayed in a column
-		MODE_CHECKBOX, // value is either 0 or 1; checkbox displayed before label
-		MODE_SLIDER,   // value is a float
+		MODE_CHECKBOX, // value is either min or max; checkbox displayed before label
+		MODE_SLIDER,   // value is a float; can have specific options outside of min-max range
 		MODE_COLOR,    // no recommended/current value support; must be linked to convar
 		MODE_CUSTOM,   // no value; still handles label, hint, etc.
 	};
