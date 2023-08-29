@@ -151,6 +151,7 @@ private:
 	bool m_bSliderActive : 1;
 	bool m_bSliderActiveMouse : 1;
 	bool m_bStartedSliderActiveAtRecommended : 1;
+	bool m_bDisplayAsPercentage : 1;
 	int m_iActiveOption;
 	union
 	{
@@ -423,6 +424,7 @@ public:
 	CRD_VGUI_Settings_Audio( vgui::Panel *parent, const char *panelName );
 
 	void Activate() override;
+	void OnCommand( const char *command ) override;
 	BaseModUI::BaseModHybridButton *GetButton( BaseModUI::CRD_VGUI_Settings *pSettings ) override { return pSettings->m_pBtnAudio; }
 
 	CRD_VGUI_Option *m_pMixerOverallVolume;
@@ -434,9 +436,9 @@ public:
 	CRD_VGUI_Option *m_pMixerInterface;
 	CRD_VGUI_Option *m_pMixerEnvironmentAmbient;
 	CRD_VGUI_Option *m_pMixerEnvironmentPhysics;
+	CRD_VGUI_Option *m_pMixerExplosions;
 	CRD_VGUI_Option *m_pMixerCombatDamage;
 	CRD_VGUI_Option *m_pMixerCombatWeapons;
-	CRD_VGUI_Option *m_pMixerExplosions;
 	CRD_VGUI_Option *m_pMixerOther;
 
 	CRD_VGUI_Option *m_pSettingSpeakerConfiguration;

@@ -354,6 +354,7 @@ CRD_VGUI_Option::CRD_VGUI_Option( vgui::Panel *parent, const char *panelName, co
 	m_bSliderActive = false;
 	m_bSliderActiveMouse = false;
 	m_bStartedSliderActiveAtRecommended = false;
+	m_bDisplayAsPercentage = false;
 	m_iActiveOption = -1;
 
 	if ( !s_OptionControls.Count() )
@@ -376,7 +377,7 @@ void CRD_VGUI_Option::OnCursorEntered()
 	BaseClass::OnCursorEntered();
 
 	if ( GetParent() )
-		NavigateToChild( this );
+		GetParent()->NavigateToChild( this );
 }
 
 void CRD_VGUI_Option::OnCursorMoved( int x, int y )
@@ -507,6 +508,8 @@ void CRD_VGUI_Option::ApplySettings( KeyValues *pSettings )
 	{
 		LoadControlSettings( szResFile );
 	}
+
+	m_bDisplayAsPercentage = pSettings->GetBool( "percentage", m_bDisplayAsPercentage );
 }
 
 void CRD_VGUI_Option::PerformLayout()
@@ -956,6 +959,8 @@ void CRD_VGUI_Option::OnTextChanged()
 	Assert( !s_bSuppressTextEntryChange );
 
 	float flNewValue = m_pTextEntry->GetValueAsFloat();
+	if ( m_bDisplayAsPercentage )
+		flNewValue /= 100;
 	flNewValue = clamp( flNewValue, m_flMinValue, m_flMaxValue );
 
 	s_bSuppressTextEntryChange = true;
@@ -1168,6 +1173,11 @@ void CRD_VGUI_Option::SetCurrentSliderValue( float flValue )
 		}
 
 		int iDigits = 1 - MIN( log10f( ( m_flMaxValue - m_flMinValue ) * YRES( 1 ) / m_pInteractiveArea->GetWide() ), 0 );
+		if ( m_bDisplayAsPercentage )
+		{
+			iDigits = MAX( iDigits - 2, 1 );
+			flValue *= 100;
+		}
 
 		m_pTextEntry->SetText( VarArgs( "%.*f", iDigits, flValue ) );
 	}
@@ -1535,7 +1545,7 @@ bool CRD_VGUI_Option::OnActivateButton( bool bMouse )
 		return true;
 	}
 
-	if ( m_eMode == MODE_SLIDER && m_iActiveOption == m_Options.Count() )
+	if ( m_eMode == MODE_SLIDER && m_iActiveOption == m_Options.Count() && ( !bMouse || m_bSliderActive || m_pInteractiveArea->IsCursorOver() ) )
 	{
 		ToggleSliderActive( bMouse );
 
