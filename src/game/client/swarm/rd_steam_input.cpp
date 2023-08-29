@@ -70,6 +70,7 @@ void CRD_Steam_Input::PostInit()
 		return;
 	}
 
+#ifdef RD_STEAM_INPUT_ACTIONS
 	ISteamInput *pSteamInput = SteamInput();
 	Assert( pSteamInput );
 	if ( !pSteamInput )
@@ -80,7 +81,6 @@ void CRD_Steam_Input::PostInit()
 	if ( !bSuccess )
 		Warning( "ISteamInput::Init returned failure status\n" );
 
-#ifdef RD_STEAM_INPUT_ACTIONS
 	char szCWD[MAX_PATH];
 	V_GetCurrentDirectory( szCWD, sizeof( szCWD ) );
 	CUtlString szInputActionManifest = CUtlString::PathJoin( szCWD, "steam_input/steam_input_manifest.vdf" );
@@ -88,12 +88,10 @@ void CRD_Steam_Input::PostInit()
 	Assert( bSuccess );
 	if ( !bSuccess )
 		Warning( "ISteamInput::SetInputActionManifestFilePath returned failure status\n" );
-#endif
 
 	pSteamInput->EnableDeviceCallbacks();
 	pSteamInput->EnableActionEventCallbacks( &OnActionEvent );
 
-#ifdef RD_STEAM_INPUT_ACTIONS
 #define INIT_ACTION_SET( name ) { m_ActionSets.name = pSteamInput->GetActionSetHandle( #name ); Assert( m_ActionSets.name ); if ( !m_ActionSets.name ) Warning( "Could not find Steam Input action set '%s'\n", #name ); }
 #define INIT_ACTION_SET_LAYER( name ) { m_ActionSetLayers.name = pSteamInput->GetActionSetHandle( #name ); Assert( m_ActionSetLayers.name ); if ( !m_ActionSetLayers.name ) Warning( "Could not find Steam Input action layer '%s'\n", #name ); }
 #define INIT_ANALOG_ACTION( name ) { m_AnalogActions.name = pSteamInput->GetAnalogActionHandle( #name ); Assert( m_AnalogActions.name ); if ( !m_AnalogActions.name ) Warning( "Could not find Steam Input analog action '%s'\n", #name ); }
@@ -122,9 +120,9 @@ void CRD_Steam_Input::PostInit()
 	// Analog Actions
 	INIT_ANALOG_ACTION( Move );
 	INIT_ANALOG_ACTION( Look );
-#endif
 
 	m_bInitialized = true;
+#endif
 }
 
 void CRD_Steam_Input::Shutdown()
