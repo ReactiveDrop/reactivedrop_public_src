@@ -2138,6 +2138,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="swarm\iasw_fade_list.cpp" />
+    <ClCompile Include="swarm\rd_audio_mixers.cpp" />
     <ClCompile Include="swarm\rd_collections.cpp" />
     <ClCompile Include="swarm\rd_collections_equipment.cpp" />
     <ClCompile Include="swarm\rd_collections_inventory.cpp" />
