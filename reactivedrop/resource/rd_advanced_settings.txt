@@ -448,7 +448,7 @@
 			cvar "tf_dingalingaling_effect"
 			options
 			{
-				"0" "#tf_dingalingaling_Default"
+				"0" "#tf_dingalingaling_DefaultDing"
 				"1" "#tf_dingalingaling_Electro"
 				"2" "#tf_dingalingaling_Notes"
 				"3" "#tf_dingalingaling_Percussion"
@@ -487,7 +487,7 @@
 			cvar "tf_dingalingaling_last_effect"
 			options
 			{
-				"0" "#tf_dingalingaling_Default"
+				"0" "#tf_dingalingaling_DefaultDing"
 				"1" "#tf_dingalingaling_Electro"
 				"2" "#tf_dingalingaling_Notes"
 				"3" "#tf_dingalingaling_Percussion"
