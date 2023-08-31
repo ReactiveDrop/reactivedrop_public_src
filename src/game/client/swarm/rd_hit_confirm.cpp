@@ -12,7 +12,7 @@
 #include <tier0/memdbgon.h>
 
 
-constexpr const char *const s_DingalingSounds[] =
+const char *const s_DingalingSounds[] =
 {
 	"DefaultDing",
 	"Electro",

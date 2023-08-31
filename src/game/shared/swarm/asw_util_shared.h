@@ -90,6 +90,8 @@ float UTIL_ASW_CalcFastDoorHackTime(int iNumRows, int iNumColumns, int iNumWires
 
 	void UTIL_RD_HitConfirm( CBaseEntity *pTarget, int iHealthBefore, const CTakeDamageInfo &info );
 #else
+	extern const char *const s_DingalingSounds[10];
+
 	bool UTIL_ASW_ClientsideGib(C_BaseAnimating* pEnt);
 	CNewParticleEffect *UTIL_ASW_CreateFireEffect( C_BaseEntity *pEntity );
 	void UTIL_ASW_ClientFloatingDamageNumber( const CTakeDamageInfo &info );
