@@ -237,6 +237,7 @@ CRD_VGUI_Settings_Video::CRD_VGUI_Settings_Video( vgui::Panel *parent, const cha
 	m_pSettingFilmGrain->AddOption( 0, "#rd_video_effect_disabled", "#rd_video_film_grain_hint" );
 	m_pSettingFilmGrain->AddOption( -1, "#rd_video_effect_enabled", "#rd_video_film_grain_hint" );
 	m_pSettingFilmGrain->SetDefaultHint( "#rd_video_film_grain_hint" );
+	m_pSettingFilmGrain->LinkToConVar( "mat_grain_scale_override", false );
 	m_pSettingLocalContrast = new CRD_VGUI_Option( this, "SettingLocalContrast", "#rd_video_local_contrast", CRD_VGUI_Option::MODE_DROPDOWN );
 	m_pSettingLocalContrast->AddOption( 0, "#rd_video_effect_disabled", "#rd_video_local_contrast_hint" );
 	m_pSettingLocalContrast->AddOption( 1, "#rd_video_effect_enabled", "#rd_video_local_contrast_hint" );
