@@ -426,6 +426,7 @@ public:
 	void Activate() override;
 	void OnCommand( const char *command ) override;
 	BaseModUI::BaseModHybridButton *GetButton( BaseModUI::CRD_VGUI_Settings *pSettings ) override { return pSettings->m_pBtnAudio; }
+	MESSAGE_FUNC_PTR( OnCurrentOptionChanged, "CurrentOptionChanged", panel );
 
 	CRD_VGUI_Option *m_pMixerOverallVolume;
 	CRD_VGUI_Option *m_pMixerMusicMenus;
@@ -450,8 +451,8 @@ public:
 	BaseModUI::BaseModHybridButton *m_pBtnCustomizeCombatMusic;
 
 	CRD_VGUI_Option *m_pSettingVoiceChat;
-	CRD_VGUI_Option *m_pSettingVoiceIconPosition;
 	CRD_VGUI_Option *m_pSettingVoiceSensitivity;
+	CRD_VGUI_Option *m_pSettingVoiceIconPosition;
 	CRD_VGUI_Option *m_pSettingBoostMicrophoneGain;
 	CRD_VGUI_Microphone_Tester *m_pTestMicrophone;
 

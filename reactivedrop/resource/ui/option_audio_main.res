@@ -4,11 +4,9 @@
 	{
 		"ControlName"		"Panel"
 		"fieldName"			"InteractiveArea"
-		"xpos"				"120"	[!$WIN32WIDE]
-		"xpos"				"140"	[$WIN32WIDE]
+		"xpos"				"140"
 		"ypos"				"0"
-		"wide"				"120"	[!$WIN32WIDE]
-		"wide"				"130"	[$WIN32WIDE]
+		"wide"				"130"
 		"tall"				"15"
 		"navLeft"			"TextEntry"
 	}
@@ -19,8 +17,7 @@
 		"fieldName"			"LblFieldName"
 		"xpos"				"0"
 		"ypos"				"0"
-		"wide"				"90"	[!$WIN32WIDE]
-		"wide"				"110"	[$WIN32WIDE]
+		"wide"				"110"
 		"tall"				"15"
 		"font"				"DefaultBold"
 		"fgcolor_override"	"192 192 192 255"
@@ -37,8 +34,7 @@
 	{
 		"ControlName"		"TextEntry"
 		"fieldName"			"TextEntry"
-		"xpos"				"90"	[!$WIN32WIDE]
-		"xpos"				"110"	[$WIN32WIDE]
+		"xpos"				"110"
 		"ypos"				"0"
 		"wide"				"30"
 		"tall"				"15"

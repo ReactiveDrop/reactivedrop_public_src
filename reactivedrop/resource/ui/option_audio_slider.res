@@ -1,10 +1,11 @@
-"resource/ui/option_audio_mixer.res"
+"resource/ui/option_audio_slider.res"
 {
 	"InteractiveArea"
 	{
 		"ControlName"		"Panel"
 		"fieldName"			"InteractiveArea"
-		"xpos"				"140"
+		"xpos"				"130"	[!$WIN32WIDE]
+		"xpos"				"140"	[$WIN32WIDE]
 		"ypos"				"0"
 		"wide"				"130"
 		"tall"				"12"
@@ -17,23 +18,10 @@
 		"fieldName"			"LblFieldName"
 		"xpos"				"0"
 		"ypos"				"0"
-		"wide"				"110"
+		"wide"				"100"	[!$WIN32WIDE]
+		"wide"				"110"	[$WIN32WIDE]
 		"tall"				"12"
 		"fgcolor_override"	"192 192 192 255"
-	}
-
-	"ImgSoundPlaying"
-	{
-		"ControlName"		"ImagePanel"
-		"fieldName"			"ImgSoundPlaying"
-		"xpos"				"100"
-		"ypos"				"1"
-		"zpos"				"1"
-		"wide"				"10"
-		"tall"				"10"
-		"image"				"../voice/voice_icon_hud"
-		"scaleImage"		"1"
-		"visible"			"0"
 	}
 
 	"LblHint"
@@ -42,7 +30,8 @@
 		"fieldName"			"LblHint"
 		"xpos"				"0"
 		"ypos"				"12"
-		"wide"				"270"
+		"wide"				"260"	[!$WIN32WIDE]
+		"wide"				"270"	[$WIN32WIDE]
 		"tall"				"12"
 		"font"				"DefaultVerySmall"
 		"textAlignment"		"north-west"
@@ -54,7 +43,8 @@
 	{
 		"ControlName"		"TextEntry"
 		"fieldName"			"TextEntry"
-		"xpos"				"110"
+		"xpos"				"100"	[!$WIN32WIDE]
+		"xpos"				"110"	[$WIN32WIDE]
 		"ypos"				"0"
 		"wide"				"30"
 		"tall"				"12"
