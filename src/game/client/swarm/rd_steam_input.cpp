@@ -13,9 +13,13 @@
 #include "c_asw_marine.h"
 #include "asw_marine_profile.h"
 #include "inputsystem/iinputsystem.h"
+#include "gameui/swarm/basemodpanel.h"
+#include "gameui/swarm/basemodframe.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
+using namespace BaseModUI;
 
 #define RD_INPUT_GLYPH_SIZE k_ESteamInputGlyphSize_Medium
 #define RD_INPUT_GLYPH_STYLE ESteamInputGlyphStyle_Light
@@ -98,6 +102,7 @@ void CRD_Steam_Input::PostInit()
 
 	// Action Sets
 	INIT_ACTION_SET( InGame );
+	INIT_ACTION_SET( Menus );
 
 	// Action Set Layers
 
@@ -593,6 +598,17 @@ bool CRD_Steam_Input::GetGameAxes( int nSlot, float *flMoveX, float *flMoveY, fl
 	return bFoundMove || bFoundLook;
 }
 
+InputActionSetHandle_t CRD_Steam_Input::DetermineActionSet( CUtlVector<InputActionSetHandle_t> *pLayers, int nSlot )
+{
+	CBaseModFrame *pFrame = CBaseModPanel::GetSingleton().GetWindow( CBaseModPanel::GetSingleton().GetActiveWindowType() );
+	if ( pFrame && pFrame->IsFullyVisible() )
+		return m_ActionSets.Menus;
+
+	// Action set layers override what came before them, so we need to add the most specific/useful layer LAST.
+
+	return m_ActionSets.InGame;
+}
+
 void CRD_Steam_Input::OnSteamInputDeviceConnected( SteamInputDeviceConnected_t *pParam )
 {
 	CRD_Steam_Controller *pController = FindOrAddController( pParam->m_ulConnectedDeviceHandle );
@@ -679,16 +695,17 @@ void CRD_Steam_Controller::OnFrame( ISteamInput *pSteamInput )
 	// disable source engine input handling so we don't get double inputs for xinput controllers
 	g_pInputSystem->EnableJoystickInput( pSteamInput->GetGamepadIndexForController( m_hController ), false );
 
-	// action set layers override what came before them, so we need to activate the most specific/useful layer LAST.
-	pSteamInput->DeactivateAllActionSetLayers( m_hController );
-
-#define ACTIVATE_SET( name ) pSteamInput->ActivateActionSet( m_hController, g_RD_Steam_Input.m_ActionSets.name )
-#define ACTIVATE_LAYER( name ) pSteamInput->ActivateActionSetLayer( m_hController, g_RD_Steam_Input.m_ActionSetLayers.name )
-
 	C_ASW_Player *pPlayer = m_SplitScreenPlayerIndex == -1 ? NULL : C_ASW_Player::GetLocalASWPlayer( m_SplitScreenPlayerIndex );
 
-	// for now, we only have one mode
-	ACTIVATE_SET( InGame );
+	CUtlVector<InputActionSetHandle_t> layers;
+	InputActionSetHandle_t hSet = g_RD_Steam_Input.DetermineActionSet( &layers, m_SplitScreenPlayerIndex );
+
+	pSteamInput->DeactivateAllActionSetLayers( m_hController );
+	pSteamInput->ActivateActionSet( m_hController, hSet );
+	FOR_EACH_VEC( layers, i )
+	{
+		pSteamInput->ActivateActionSetLayer( m_hController, layers[i] );
+	}
 
 	if ( rd_gamepad_player_color.GetBool() )
 	{
@@ -711,15 +728,10 @@ void CRD_Steam_Controller::OnDigitalAction( InputDigitalActionHandle_t hAction, 
 {
 	Assert( m_bConnected );
 
-	C_ASW_Player *pPlayer = m_SplitScreenPlayerIndex == -1 ? NULL : C_ASW_Player::GetLocalASWPlayer( m_SplitScreenPlayerIndex );
-
 	for ( CRD_Steam_Input_Bind *pBind = CRD_Steam_Input_Bind::s_pBinds; pBind; pBind = pBind->m_pNext )
 	{
 		if ( pBind->m_hAction != hAction )
 			continue;
-
-		if ( !pPlayer )
-			return;
 
 		char szCommand[1024];
 

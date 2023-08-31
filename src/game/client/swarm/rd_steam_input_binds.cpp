@@ -1,6 +1,7 @@
 #include "cbase.h"
 #include "rd_steam_input.h"
 #include "asw_shareddefs.h"
+#include "inputsystem/iinputsystem.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -85,3 +86,59 @@ RD_STEAM_INPUT_BIND( SelectMarine5, "+selectmarine5", "InGame" );
 RD_STEAM_INPUT_BIND( SelectMarine6, "+selectmarine6", "InGame" );
 RD_STEAM_INPUT_BIND( SelectMarine7, "+selectmarine7", "InGame" );
 RD_STEAM_INPUT_BIND( SelectMarine8, "+selectmarine8", "InGame" );
+
+static void SendMenuButton( ButtonCode_t eButton )
+{
+	Assert( !g_pInputSystem->IsButtonDown( eButton ) );
+	InputActionSetHandle_t hActionSet = g_RD_Steam_Input.DetermineActionSet( NULL );
+	Assert( hActionSet == g_RD_Steam_Input.m_ActionSets.Menus );
+	if ( hActionSet != g_RD_Steam_Input.m_ActionSets.Menus )
+		return; // avoid allowing this function to affect gameplay
+
+	InputEvent_t e;
+	e.m_nType = IE_ButtonPressed;
+	e.m_nTick = g_pInputSystem->GetPollTick();
+	e.m_nData = eButton;
+	e.m_nData2 = eButton;
+	e.m_nData3 = 0;
+	g_pInputSystem->PostUserEvent( e );
+
+	e.m_nType = IE_ButtonReleased;
+	g_pInputSystem->PostUserEvent( e );
+}
+
+#define RD_STEAM_INPUT_MENU_BIND( ActionName, ConCommandName, eButton, szForceActionSet ) \
+	CON_COMMAND_F( ConCommandName, "helper command for " #eButton, FCVAR_HIDDEN ) \
+	{ \
+		SendMenuButton( eButton ); \
+	} \
+	RD_STEAM_INPUT_BIND( ActionName, #ConCommandName, szForceActionSet )
+
+RD_STEAM_INPUT_MENU_BIND( MenuConfirm, rd_menu_confirm, KEY_XBUTTON_A, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuBack, rd_menu_back, KEY_XBUTTON_B, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuSpecial1, rd_menu_special_1, KEY_XBUTTON_X, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuSpecial2, rd_menu_special_2, KEY_XBUTTON_Y, "Menus" );
+
+RD_STEAM_INPUT_MENU_BIND( MenuL1, rd_menu_left_bumper, KEY_XBUTTON_LEFT_SHOULDER, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuR1, rd_menu_right_bumper, KEY_XBUTTON_RIGHT_SHOULDER, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuL2, rd_menu_left_trigger, KEY_XBUTTON_LTRIGGER, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuR2, rd_menu_right_trigger, KEY_XBUTTON_RTRIGGER, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuL3, rd_menu_left_stick, KEY_XBUTTON_STICK1, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuR3, rd_menu_right_stick, KEY_XBUTTON_STICK2, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuSelect, rd_menu_select, KEY_XBUTTON_BACK, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuStart, rd_menu_start, KEY_XBUTTON_START, "Menus" );
+
+RD_STEAM_INPUT_MENU_BIND( MenuLeft, rd_menu_left, KEY_XBUTTON_LEFT, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuRight, rd_menu_right, KEY_XBUTTON_RIGHT, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuUp, rd_menu_up, KEY_XBUTTON_UP, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuDown, rd_menu_down, KEY_XBUTTON_DOWN, "Menus" );
+
+RD_STEAM_INPUT_MENU_BIND( MenuLeftStickLeft, rd_menu_left_stick_left, KEY_XSTICK1_LEFT, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuLeftStickRight, rd_menu_left_stick_right, KEY_XSTICK1_RIGHT, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuLeftStickUp, rd_menu_left_stick_up, KEY_XSTICK1_UP, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuLeftStickDown, rd_menu_left_stick_down, KEY_XSTICK1_DOWN, "Menus" );
+
+RD_STEAM_INPUT_MENU_BIND( MenuRightStickLeft, rd_menu_right_stick_left, KEY_XSTICK2_LEFT, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuRightStickRight, rd_menu_right_stick_right, KEY_XSTICK2_RIGHT, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuRightStickUp, rd_menu_right_stick_up, KEY_XSTICK2_UP, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuRightStickDown, rd_menu_right_stick_down, KEY_XSTICK2_DOWN, "Menus" );
