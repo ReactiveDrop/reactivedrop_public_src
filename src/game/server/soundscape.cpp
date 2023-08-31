@@ -311,22 +311,22 @@ void CEnvSoundscape::UpdateForPlayer( ss_update_t &update )
 			{
 				if ( InRangeOfPlayer( update.pPlayer ) )
 				{
-					NDebugOverlay::Line( GetAbsOrigin(), update.pPlayer->WorldSpaceCenter(), 255, 255, 255, true, NDEBUG_PERSIST_TILL_NEXT_SERVER );
+					NDebugOverlay::Line( GetAbsOrigin(), update.pPlayer->EarPosition(), 255, 255, 255, true, NDEBUG_PERSIST_TILL_NEXT_SERVER );
 				}
 				else
 				{
-					NDebugOverlay::Line( GetAbsOrigin(), update.pPlayer->WorldSpaceCenter(), 255, 0, 0, true, NDEBUG_PERSIST_TILL_NEXT_SERVER  );
+					NDebugOverlay::Line( GetAbsOrigin(), update.pPlayer->EarPosition(), 255, 0, 0, true, NDEBUG_PERSIST_TILL_NEXT_SERVER  );
 				}
 			}
 			else
 			{
 				if ( InRangeOfPlayer( update.pPlayer ) )
 				{
-					NDebugOverlay::Line( GetAbsOrigin(), update.pPlayer->WorldSpaceCenter(), 0, 255, 0, true, NDEBUG_PERSIST_TILL_NEXT_SERVER  );
+					NDebugOverlay::Line( GetAbsOrigin(), update.pPlayer->EarPosition(), 0, 255, 0, true, NDEBUG_PERSIST_TILL_NEXT_SERVER  );
 				}
   				else
 				{
-					NDebugOverlay::Line( GetAbsOrigin(), update.pPlayer->WorldSpaceCenter(), 255, 170, 0, true, NDEBUG_PERSIST_TILL_NEXT_SERVER  );
+					NDebugOverlay::Line( GetAbsOrigin(), update.pPlayer->EarPosition(), 255, 170, 0, true, NDEBUG_PERSIST_TILL_NEXT_SERVER  );
 				}
 
 				// also draw lines to each sound position.
