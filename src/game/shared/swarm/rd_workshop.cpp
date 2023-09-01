@@ -3147,6 +3147,20 @@ CON_COMMAND_F( ugc_update, "Usage: ugc_update 826481632 \"C:\\Path\\to\\content.
 	g_ReactiveDropWorkshop.UpdateWorkshopItem( nFileID, args[2], args[3], changeDescription );
 }
 
+CON_COMMAND( rd_workshop_list_vpk_paths, "" )
+{
+	CUtlVector<CUtlString> paths;
+
+	if ( filesystem )
+	{
+		filesystem->GetVPKFileNames( paths );
+		FOR_EACH_VEC( paths, i )
+		{
+			Msg( "%s\n", paths[i].Get() );
+		}
+	}
+}
+
 void CReactiveDropWorkshop::CreateItemResultCallbackCurated( CreateItemResult_t *pResult, bool bIOFailure )
 {
 	if ( bIOFailure )
