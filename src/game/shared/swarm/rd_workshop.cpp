@@ -80,12 +80,12 @@ const char *const CReactiveDropWorkshop::s_RDWorkshopMissionTags[] =
 static bool s_bClearingWorkshopCache = false;
 CReactiveDropWorkshop g_ReactiveDropWorkshop;
 
-void CReactiveDropWorkshop::PostInit()
+bool CReactiveDropWorkshop::Init()
 {
 #ifdef GAME_DLL
 	if ( engine->IsDedicatedServer() )
 	{
-		return;
+		return true;
 	}
 #endif
 
@@ -95,7 +95,7 @@ void CReactiveDropWorkshop::PostInit()
 	if ( !pSteamUGC )
 	{
 		Warning( "No Steam connection. Skipping workshop.\n" );
-		return;
+		return true;
 	}
 
 	uint32 nSubscribed = pSteamUGC->GetNumSubscribedItems();
@@ -171,6 +171,8 @@ void CReactiveDropWorkshop::PostInit()
 	m_iPublishedAddonsPage = 0;
 	RequestNextPublishedAddonsPage();
 #endif
+
+	return true;
 }
 
 void CReactiveDropWorkshop::InitNonWorkshopAddons()
