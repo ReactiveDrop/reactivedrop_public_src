@@ -1356,6 +1356,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClCompile Include="swarm\rd_boss_bar.cpp" />
     <ClCompile Include="swarm\asw_trigger_marine_melee.cpp" />
     <ClCompile Include="swarm\rd_func_jumpjet.cpp" />
+    <ClCompile Include="swarm\rd_memlimit.cpp" />
     <ClCompile Include="tanktrain.cpp" />
     <ClCompile Include="te.cpp" />
     <ClCompile Include="team.cpp" />

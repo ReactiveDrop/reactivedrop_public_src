@@ -1,4 +1,5 @@
 #include "cbase.h"
+#include "highres_timer.h"
 #include <windows.h>
 
 #pragma comment(lib, "ntdll.lib")
