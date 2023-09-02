@@ -15,6 +15,7 @@
 #include "inputsystem/iinputsystem.h"
 #include "gameui/swarm/basemodpanel.h"
 #include "gameui/swarm/basemodframe.h"
+#include "controller_focus.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -600,8 +601,13 @@ bool CRD_Steam_Input::GetGameAxes( int nSlot, float *flMoveX, float *flMoveY, fl
 
 InputActionSetHandle_t CRD_Steam_Input::DetermineActionSet( CUtlVector<InputActionSetHandle_t> *pLayers, int nSlot )
 {
-	CBaseModFrame *pFrame = CBaseModPanel::GetSingleton().GetWindow( CBaseModPanel::GetSingleton().GetActiveWindowType() );
-	if ( pFrame && pFrame->IsFullyVisible() )
+	if ( !engine->IsInGame() )
+		return m_ActionSets.Menus;
+
+	if ( CBaseModPanel::GetSingleton().IsVisible() )
+		return m_ActionSets.Menus;
+
+	if ( GetControllerFocus()->GetFocusPanel() )
 		return m_ActionSets.Menus;
 
 	// Action set layers override what came before them, so we need to add the most specific/useful layer LAST.
@@ -661,6 +667,8 @@ void CRD_Steam_Input::OnActionEvent( SteamInputActionEvent_t *pEvent )
 CRD_Steam_Controller::CRD_Steam_Controller( InputHandle_t hController ) :
 	m_hController{ hController },
 	m_bConnected{ false },
+	m_bJustChangedActionSet{ false },
+	m_hLastActionSet{ NULL },
 	m_SplitScreenPlayerIndex{ -1 },
 	m_LastPlayerColor{}
 {
@@ -699,6 +707,8 @@ void CRD_Steam_Controller::OnFrame( ISteamInput *pSteamInput )
 
 	CUtlVector<InputActionSetHandle_t> layers;
 	InputActionSetHandle_t hSet = g_RD_Steam_Input.DetermineActionSet( &layers, m_SplitScreenPlayerIndex );
+	m_bJustChangedActionSet = m_hLastActionSet != hSet;
+	m_hLastActionSet = hSet;
 
 	pSteamInput->DeactivateAllActionSetLayers( m_hController );
 	pSteamInput->ActivateActionSet( m_hController, hSet );
@@ -733,6 +743,9 @@ void CRD_Steam_Controller::OnDigitalAction( InputDigitalActionHandle_t hAction, 
 		if ( pBind->m_hAction != hAction )
 			continue;
 
+		if ( m_bJustChangedActionSet && pBind->m_bIgnoreOnActionSetChange && bState )
+			return;
+
 		char szCommand[1024];
 
 		bool bIsToggle = pBind->m_szBind[0] == '+';
@@ -763,10 +776,11 @@ void CRD_Steam_Controller::OnAnalogAction( InputAnalogActionHandle_t hAction, EI
 CRD_Steam_Input_Bind *CRD_Steam_Input_Bind::s_pBinds = NULL;
 CRD_Steam_Input_Bind *CRD_Steam_Input_Bind::s_pLastBind = NULL;
 
-CRD_Steam_Input_Bind::CRD_Steam_Input_Bind( const char *szActionName, const char *szBind, const char *szForceActionSet ) :
+CRD_Steam_Input_Bind::CRD_Steam_Input_Bind( const char *szActionName, const char *szBind, const char *szForceActionSet, bool bIgnoreOnActionSetChange ) :
 	m_szActionName{ szActionName },
 	m_szBind{ szBind },
-	m_szForceActionSet{ szForceActionSet }
+	m_szForceActionSet{ szForceActionSet },
+	m_bIgnoreOnActionSetChange{ bIgnoreOnActionSetChange }
 {
 	m_pNext = NULL;
 

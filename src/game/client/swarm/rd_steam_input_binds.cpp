@@ -1,6 +1,7 @@
 #include "cbase.h"
 #include "rd_steam_input.h"
 #include "asw_shareddefs.h"
+#include "asw_input.h"
 #include "inputsystem/iinputsystem.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -62,7 +63,7 @@ RD_STEAM_INPUT_BIND( VoteNo, "vote_no", "InGame" );
 // UI
 RD_STEAM_INPUT_BIND( PlayerList, "playerlist", "InGame" );
 RD_STEAM_INPUT_BIND( InGameBriefing, "ingamebriefing", "InGame" );
-RD_STEAM_INPUT_BIND( Menu, "gameui_activate", "InGame" );
+RD_STEAM_INPUT_BIND( Menu, "gameui_activate", "InGame", true );
 RD_STEAM_INPUT_BIND( RotateCameraLeft, "rotatecameraleft", "InGame" );
 RD_STEAM_INPUT_BIND( RotateCameraRight, "rotatecameraright", "InGame" );
 RD_STEAM_INPUT_BIND( SelectMarineDeathmatch, "cl_select_loadout", "InGame" );
@@ -87,32 +88,35 @@ RD_STEAM_INPUT_BIND( SelectMarine6, "+selectmarine6", "InGame" );
 RD_STEAM_INPUT_BIND( SelectMarine7, "+selectmarine7", "InGame" );
 RD_STEAM_INPUT_BIND( SelectMarine8, "+selectmarine8", "InGame" );
 
-static void SendMenuButton( ButtonCode_t eButton )
+static void SendMenuButton( InputEventType_t eType, ButtonCode_t eButton )
 {
 	Assert( !g_pInputSystem->IsButtonDown( eButton ) );
 	InputActionSetHandle_t hActionSet = g_RD_Steam_Input.DetermineActionSet( NULL );
 	Assert( hActionSet == g_RD_Steam_Input.m_ActionSets.Menus );
-	if ( hActionSet != g_RD_Steam_Input.m_ActionSets.Menus )
+	if ( eType != IE_ButtonReleased && hActionSet != g_RD_Steam_Input.m_ActionSets.Menus )
 		return; // avoid allowing this function to affect gameplay
 
 	InputEvent_t e;
-	e.m_nType = IE_ButtonPressed;
+	e.m_nType = eType;
 	e.m_nTick = g_pInputSystem->GetPollTick();
 	e.m_nData = eButton;
 	e.m_nData2 = eButton;
 	e.m_nData3 = 0;
 	g_pInputSystem->PostUserEvent( e );
-
-	e.m_nType = IE_ButtonReleased;
-	g_pInputSystem->PostUserEvent( e );
 }
 
-#define RD_STEAM_INPUT_MENU_BIND( ActionName, ConCommandName, eButton, szForceActionSet ) \
-	CON_COMMAND_F( ConCommandName, "helper command for " #eButton, FCVAR_HIDDEN ) \
+#define RD_STEAM_INPUT_MENU_BIND( ActionName, ConCommandName, eButton, ... ) \
+	static void ConCommandName##_press( const CCommand &args ) \
 	{ \
-		SendMenuButton( eButton ); \
+		SendMenuButton( IE_ButtonPressed, eButton ); \
 	} \
-	RD_STEAM_INPUT_BIND( ActionName, #ConCommandName, szForceActionSet )
+	ConCommand ConCommandName##_press_command( "+" #ConCommandName, &ConCommandName##_press, "helper command for " #eButton, FCVAR_HIDDEN ); \
+	static void ConCommandName##_release( const CCommand &args ) \
+	{ \
+		SendMenuButton( IE_ButtonReleased, eButton ); \
+	} \
+	ConCommand ConCommandName##_release_command( "-" #ConCommandName, &ConCommandName##_release, "helper command for " #eButton, FCVAR_HIDDEN ); \
+	RD_STEAM_INPUT_BIND( ActionName, "+" #ConCommandName, __VA_ARGS__ )
 
 RD_STEAM_INPUT_MENU_BIND( MenuConfirm, rd_menu_confirm, KEY_XBUTTON_A, "Menus" );
 RD_STEAM_INPUT_MENU_BIND( MenuBack, rd_menu_back, KEY_XBUTTON_B, "Menus" );
@@ -126,7 +130,7 @@ RD_STEAM_INPUT_MENU_BIND( MenuR2, rd_menu_right_trigger, KEY_XBUTTON_RTRIGGER, "
 RD_STEAM_INPUT_MENU_BIND( MenuL3, rd_menu_left_stick, KEY_XBUTTON_STICK1, "Menus" );
 RD_STEAM_INPUT_MENU_BIND( MenuR3, rd_menu_right_stick, KEY_XBUTTON_STICK2, "Menus" );
 RD_STEAM_INPUT_MENU_BIND( MenuSelect, rd_menu_select, KEY_XBUTTON_BACK, "Menus" );
-RD_STEAM_INPUT_MENU_BIND( MenuStart, rd_menu_start, KEY_XBUTTON_START, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuStart, rd_menu_start, KEY_XBUTTON_START, "Menus", true );
 
 RD_STEAM_INPUT_MENU_BIND( MenuLeft, rd_menu_left, KEY_XBUTTON_LEFT, "Menus" );
 RD_STEAM_INPUT_MENU_BIND( MenuRight, rd_menu_right, KEY_XBUTTON_RIGHT, "Menus" );

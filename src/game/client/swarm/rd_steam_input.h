@@ -74,6 +74,8 @@ public:
 
 	const InputHandle_t m_hController;
 	bool m_bConnected;
+	bool m_bJustChangedActionSet;
+	InputActionSetHandle_t m_hLastActionSet;
 	int m_SplitScreenPlayerIndex;
 	Color m_LastPlayerColor;
 };
@@ -81,7 +83,7 @@ public:
 class CRD_Steam_Input_Bind final
 {
 public:
-	CRD_Steam_Input_Bind( const char *szActionName, const char *szBind, const char *szForceActionSet );
+	CRD_Steam_Input_Bind( const char *szActionName, const char *szBind, const char *szForceActionSet, bool bIgnoreOnActionSetChange = false );
 
 private:
 	const char *m_szActionName;
@@ -89,6 +91,7 @@ private:
 	const char *m_szForceActionSet;
 	InputDigitalActionHandle_t m_hAction;
 	InputActionSetHandle_t m_hForceActionSet;
+	bool m_bIgnoreOnActionSetChange;
 
 	CRD_Steam_Input_Bind *m_pNext;
 	static CRD_Steam_Input_Bind *s_pBinds;
@@ -98,6 +101,6 @@ private:
 	friend class CRD_Steam_Controller;
 };
 
-#define RD_STEAM_INPUT_BIND( ActionName, szCommand, szForceActionSet ) CRD_Steam_Input_Bind SteamInputBind_##ActionName( #ActionName, szCommand, szForceActionSet )
+#define RD_STEAM_INPUT_BIND( ActionName, ... ) CRD_Steam_Input_Bind SteamInputBind_##ActionName( #ActionName, __VA_ARGS__ )
 
 extern CRD_Steam_Input g_RD_Steam_Input;
