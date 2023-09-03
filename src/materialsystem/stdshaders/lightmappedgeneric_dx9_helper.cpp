@@ -172,7 +172,11 @@ void InitParamsLightmappedGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** pa
 
 	// From https://developer.valvesoftware.com/wiki/Parallax_Corrected_Cubemaps
 	// Cubemap parallax correction requires all 4 lines
-	if ( info.m_nEnvmapParallax != -1 && !( mat_allow_parallax_cubemaps.GetBool() && params[info.m_nEnvmapParallax]->IsDefined() && IS_PARAM_DEFINED( info.m_nEnvmapParallaxObb1 ) && IS_PARAM_DEFINED( info.m_nEnvmapParallaxObb2 ) && IS_PARAM_DEFINED( info.m_nEnvmapParallaxObb3 ) && IS_PARAM_DEFINED( info.m_nEnvmapOrigin ) ) )
+	if ( info.m_nEnvmapParallax != -1 && !( mat_allow_parallax_cubemaps.GetBool()
+		&& params[info.m_nEnvmapParallax]->IsDefined() && IS_PARAM_DEFINED( info.m_nEnvmapParallaxObb1 )
+		&& IS_PARAM_DEFINED( info.m_nEnvmapParallaxObb2 ) && IS_PARAM_DEFINED( info.m_nEnvmapParallaxObb3 )
+		&& IS_PARAM_DEFINED( info.m_nEnvmapOrigin ) && g_pConfig->UseSpecular()
+		&& IS_PARAM_DEFINED( info.m_nEnvmap ) ) )
 	{
 		params[info.m_nEnvmapParallax]->SetIntValue( 0 );
 	}
