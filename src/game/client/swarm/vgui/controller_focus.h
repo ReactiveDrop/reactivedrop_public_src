@@ -18,8 +18,8 @@
 
 // responds to controller codes to move this focus about and cause mouseclicks when a confirm button is pressed
 
-#define JF_KEY_REPEAT_DELAY 400
-#define JF_KEY_REPEAT_INTERVAL 150
+#define JF_KEY_REPEAT_DELAY 0.400f
+#define JF_KEY_REPEAT_INTERVAL 0.150f
 
 namespace vgui
 {
@@ -72,27 +72,32 @@ public:
 	int FindNextPanel(vgui::Panel *pSource, float angle);	
 
 	// clicking
-	bool OnControllerButtonPressed(ButtonCode_t keynum);	
+	bool OnControllerButtonPressed(ButtonCode_t keynum);
 	bool OnControllerButtonReleased(ButtonCode_t keynum);
 	void CheckKeyRepeats();
+	void UpdateMenuNavigation();
 	void ClickFocusPanel(bool bDown, bool bRightMouse);
 	void DoubleClickFocusPanel(bool bRightMouse);
-	
+
 	void SetControllerCodes(ButtonCode_t iUpCode, ButtonCode_t iDownCode, ButtonCode_t iLeftCode, ButtonCode_t iRightCode, ButtonCode_t iConfirmCode, ButtonCode_t iCancelCode);	
 	void SetControllerMode(bool b) { m_bControllerMode = b; }
 	bool IsControllerMode() { return m_bControllerMode; }
+	bool HasAnyPanel() { return m_FocusAreas.Count() != 0; }
 
 	// checks a panel and all its parents are visible
 	static bool IsPanelReallyVisible(vgui::Panel *pPanel);
 
 	void PrintFocusListToConsole();
-	
-	// KF_ numbers for the controller buttons
+
+	// KEY_ numbers for the controller buttons
 	ButtonCode_t m_KeyNum[NUM_JF_KEYS];
 
 	// status of the controller buttons
 	bool m_bKeyDown[NUM_JF_KEYS];
 	float m_fNextKeyRepeatTime[NUM_JF_KEYS];
+
+	int m_iNavigations;
+	float m_flLastNavigation;
 
 	// list of panels that have registered themselves for controller focus
 	CUtlVector<FocusArea> m_FocusAreas;
@@ -102,7 +107,6 @@ public:
 	int m_iModal;	// how many modal-type focus panels we have.  If there are more than 1, all non-modal panels will be ignored when moving around
 	int m_iModalScope; // only pay attention to focus panels with the same modal scope setting.
 	bool m_bControllerMode;
-	bool m_bDebugOutput;
 };
 
 CControllerFocus* GetControllerFocus();

@@ -106,6 +106,7 @@ void CRD_Steam_Input::PostInit()
 	INIT_ACTION_SET( Menus );
 
 	// Action Set Layers
+	INIT_ACTION_SET_LAYER( InGameMenus );
 
 	// Digital Actions
 	for ( CRD_Steam_Input_Bind *pBind = CRD_Steam_Input_Bind::s_pBinds; pBind; pBind = pBind->m_pNext )
@@ -126,6 +127,7 @@ void CRD_Steam_Input::PostInit()
 	// Analog Actions
 	INIT_ANALOG_ACTION( Move );
 	INIT_ANALOG_ACTION( Look );
+	INIT_ANALOG_ACTION( MenuNavigate );
 
 	m_bInitialized = true;
 #endif
@@ -599,6 +601,49 @@ bool CRD_Steam_Input::GetGameAxes( int nSlot, float *flMoveX, float *flMoveY, fl
 	return bFoundMove || bFoundLook;
 }
 
+bool CRD_Steam_Input::GetMenuNavigateOffset( int nSlot, float *flMenuNavigateX, float *flMenuNavigateY )
+{
+	ISteamInput *pSteamInput = SteamInput();
+	Assert( pSteamInput );
+	if ( !pSteamInput )
+		return false;
+
+	bool bFoundMenuNavigate = false;
+
+#ifdef RD_STEAM_INPUT_ACTIONS
+	FOR_EACH_VEC( m_Controllers, i )
+	{
+		if ( !m_Controllers[i]->m_bConnected || m_Controllers[i]->m_SplitScreenPlayerIndex != nSlot )
+		{
+			continue;
+		}
+
+		InputAnalogActionData_t data = pSteamInput->GetAnalogActionData( m_Controllers[i]->m_hController, m_AnalogActions.MenuNavigate );
+		if ( data.bActive )
+		{
+			if ( !bFoundMenuNavigate )
+			{
+				bFoundMenuNavigate = true;
+				*flMenuNavigateX = 0;
+				*flMenuNavigateY = 0;
+			}
+
+			*flMenuNavigateX += data.x * MAX_BUTTONSAMPLE;
+			*flMenuNavigateY -= data.y * MAX_BUTTONSAMPLE;
+		}
+	}
+#endif
+
+	// ensure added values from multiple controllers are within expected range
+	if ( bFoundMenuNavigate )
+	{
+		*flMenuNavigateX = clamp<float>( *flMenuNavigateX, -MAX_BUTTONSAMPLE, MAX_BUTTONSAMPLE );
+		*flMenuNavigateY = clamp<float>( *flMenuNavigateY, -MAX_BUTTONSAMPLE, MAX_BUTTONSAMPLE );
+	}
+
+	return bFoundMenuNavigate;
+}
+
 InputActionSetHandle_t CRD_Steam_Input::DetermineActionSet( CUtlVector<InputActionSetHandle_t> *pLayers, int nSlot )
 {
 	if ( !engine->IsInGame() )
@@ -607,10 +652,10 @@ InputActionSetHandle_t CRD_Steam_Input::DetermineActionSet( CUtlVector<InputActi
 	if ( CBaseModPanel::GetSingleton().IsVisible() )
 		return m_ActionSets.Menus;
 
-	if ( GetControllerFocus()->GetFocusPanel() )
-		return m_ActionSets.Menus;
-
 	// Action set layers override what came before them, so we need to add the most specific/useful layer LAST.
+
+	if ( GetControllerFocus()->HasAnyPanel() && pLayers )
+		pLayers->AddToTail( m_ActionSetLayers.InGameMenus );
 
 	return m_ActionSets.InGame;
 }

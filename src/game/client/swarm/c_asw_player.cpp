@@ -966,6 +966,8 @@ void C_ASW_Player::ClientThink()
 
 	ACTIVE_SPLITSCREEN_PLAYER_GUARD_ENT( this );
 
+	GetControllerFocus()->UpdateMenuNavigation();
+
 	float flInactiveKickAfter = m_flInactiveKickWarning - gpGlobals->curtime;
 	if ( flInactiveKickAfter < 0 )
 	{

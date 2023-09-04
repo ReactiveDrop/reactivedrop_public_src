@@ -6,16 +6,22 @@
 #include <vgui/ISurface.h>
 #include <vgui/IInput.h>
 #include <vgui/IInputInternal.h>
+#include "rd_steam_input.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 extern vgui::IInputInternal *g_InputInternal;
 
+ConVar rd_debug_controller_focus( "rd_debug_controller_focus", "1" );
+ConVar rd_controller_focus_deadzone( "rd_controller_focus_deadzone", "2048", FCVAR_NONE, "minimum joystick deflection before controller focus changes", true, 0, true, MAX_BUTTONSAMPLE );
+ConVar rd_controller_focus_repeat_slow( "rd_controller_focus_repeat_slow", "1.5", FCVAR_NONE, "time in seconds between controller focus change repeats at edge of dead zone" );
+ConVar rd_controller_focus_repeat_fast( "rd_controller_focus_repeat_fast", "0.5", FCVAR_NONE, "time in seconds between controller focus change repeats at maximum deflection" );
+ConVar rd_controller_focus_repeat_first( "rd_controller_focus_repeat_first", "1.0", FCVAR_NONE, "minimum delay in seconds before first controller focus change repeat" );
+
 CControllerFocus::CControllerFocus()
 {
 	m_bControllerMode = false;
-	m_bDebugOutput = false;
 	m_iModal = 0;
 	m_iModalScope = 0;
 
@@ -26,7 +32,7 @@ CControllerFocus::CControllerFocus()
 	m_KeyNum[JF_KEY_UP] = KEY_XSTICK1_UP;
 	m_KeyNum[JF_KEY_DOWN] = KEY_XSTICK1_DOWN;
 	m_KeyNum[JF_KEY_LEFT] = KEY_XSTICK1_LEFT;
-	m_KeyNum[JF_KEY_RIGHT] = KEY_XSTICK2_RIGHT;
+	m_KeyNum[JF_KEY_RIGHT] = KEY_XSTICK1_RIGHT;
 	m_KeyNum[JF_KEY_CONFIRM] = KEY_XBUTTON_A;
 	m_KeyNum[JF_KEY_CANCEL] = KEY_XBUTTON_B;
 
@@ -50,6 +56,9 @@ CControllerFocus::CControllerFocus()
 		m_bKeyDown[i] = false;
 		m_fNextKeyRepeatTime[i] = 0;
 	}
+
+	m_iNavigations = 0;
+	m_flLastNavigation = 0.0f;
 }
 
 void CControllerFocus::SetControllerCodes(ButtonCode_t iUpCode, ButtonCode_t iDownCode, ButtonCode_t iLeftCode, ButtonCode_t iRightCode, ButtonCode_t iConfirmCode, ButtonCode_t iCancelCode)
@@ -83,8 +92,8 @@ void CControllerFocus::AddToFocusList(vgui::Panel* pPanel, bool bClickOnFocus, b
 		if (hOtherPanel.Get() == Focus.hPanel.Get())	// check if it's already here
 			return;
 	}
-	if (m_bDebugOutput)
-		Msg("adding panel to controller focus list: %s:%s\n", pPanel->GetName(), pPanel->GetClassName());
+	if ( rd_debug_controller_focus.GetBool() )
+		Msg( "[CF] adding panel to controller focus list: %s:%s\n", pPanel->GetName(), pPanel->GetClassName() );
 	//if (GetFocusPanel() == NULL)
 	//{
 		//SetFocusPanel(pPanel, bClickOnFocus);
@@ -107,18 +116,18 @@ void CControllerFocus::SetFocusPanel(vgui::Panel* pPanel, bool bClickOnFocus)
 	m_CurrentFocus.bClickOnFocus = bClickOnFocus;
 	if (pPanel)
 	{
-		if (m_bDebugOutput)
-			Msg("Setcur jfocus: %s:%s ", pPanel->GetName(), pPanel->GetClassName());
+		if ( rd_debug_controller_focus.GetBool() )
+			Msg("[CF] Setcur jfocus: %s:%s ", pPanel->GetName(), pPanel->GetClassName());
 		if (!m_hOutline.Get())
 		{
 			CControllerOutline *pOutline = new CControllerOutline(NULL, "ControllerOutline");
 			m_hOutline = pOutline;
-			if (m_bDebugOutput)
+			if ( rd_debug_controller_focus.GetBool() )
 			{
 				if (pOutline)
-					Msg("spawned outline\n");
+					Msg("[CF] spawned outline\n");
 				else
-					Msg("Outline is zero!!\n");
+					Msg("[CF] Outline is zero!!\n");
 			}
 		}
 		if (m_hOutline.Get())
@@ -148,8 +157,8 @@ void CControllerFocus::SetFocusPanel(vgui::Panel* pPanel, bool bClickOnFocus)
 	}
 	else
 	{
-		if (m_bDebugOutput)
-			Msg("Cleared currently focused controller panel\n");
+		if ( rd_debug_controller_focus.GetBool() )
+			Msg("[CF] Cleared currently focused controller panel\n");
 	}
 }
 
@@ -162,8 +171,8 @@ void CControllerFocus::RemoveFromFocusList(vgui::Panel* pPanel)
 {
 	if (!pPanel)
 		return;
-	if (m_bDebugOutput)
-		Msg("removing panel from controller focus list: %s:%s\n", pPanel->GetName(), pPanel->GetClassName());
+	if ( rd_debug_controller_focus.GetBool() )
+		Msg( "[CF] removing panel from controller focus list: %s:%s\n", pPanel->GetName(), pPanel->GetClassName() );
 	vgui::PHandle hPanel;
 	hPanel = pPanel;
 	for (int i=m_FocusAreas.Count()-1;i>=0;i--)
@@ -186,17 +195,17 @@ void CControllerFocus::RemoveFromFocusList(vgui::Panel* pPanel)
 
 void CControllerFocus::PushModal()
 {
-	if ( m_bDebugOutput )
-		Msg( "Entering modal scope...\n" );
+	if ( rd_debug_controller_focus.GetBool() )
+		Msg( "[CF] Entering modal scope...\n" );
 	m_iModalScope++;
-	if ( m_bDebugOutput )
-		Msg( "Modal scope increased to %d\n", m_iModalScope );
+	if ( rd_debug_controller_focus.GetBool() )
+		Msg( "[CF] Modal scope increased to %d\n", m_iModalScope );
 }
 
 void CControllerFocus::PopModal()
 {
-	if ( m_bDebugOutput )
-		Msg( "Leaving modal scope...\n" );
+	if ( rd_debug_controller_focus.GetBool() )
+		Msg( "[CF] Leaving modal scope...\n" );
 
 	Assert( m_iModalScope > 0 );
 	FOR_EACH_VEC_BACK( m_FocusAreas, i )
@@ -217,8 +226,8 @@ void CControllerFocus::PopModal()
 	}
 
 	m_iModalScope--;
-	if ( m_bDebugOutput )
-		Msg( "Modal scope decreased to %d\n", m_iModalScope );
+	if ( rd_debug_controller_focus.GetBool() )
+		Msg( "[CF] Modal scope decreased to %d\n", m_iModalScope );
 }
 
 bool CControllerFocus::OnControllerButtonPressed(ButtonCode_t keynum)
@@ -305,7 +314,7 @@ bool CControllerFocus::OnControllerButtonPressed(ButtonCode_t keynum)
 			if (m_KeyNum[i] == keynum)
 			{
 				m_bKeyDown[i] = true;
-				m_fNextKeyRepeatTime[i] = vgui::system()->GetTimeMillis() + JF_KEY_REPEAT_DELAY;
+				m_fNextKeyRepeatTime[i] = Plat_FloatTime() + JF_KEY_REPEAT_DELAY;
 			}
 		}
 		return true;
@@ -344,18 +353,79 @@ bool CControllerFocus::OnControllerButtonReleased(ButtonCode_t keynum)
 
 void CControllerFocus::CheckKeyRepeats()
 {
-	float curtime = vgui::system()->GetTimeMillis();
-	for (int i=0;i<NUM_JF_KEYS;i++)
+	float curtime = Plat_FloatTime();
+	for ( int i = 0; i < NUM_JF_KEYS; i++ )
 	{
-		if ( m_fNextKeyRepeatTime[i]!=0 && curtime > m_fNextKeyRepeatTime[i] )
+		if ( m_fNextKeyRepeatTime[i] != 0 && curtime > m_fNextKeyRepeatTime[i] )
 		{
 			// player is holding down the specified key, send another press
-			if (m_bDebugOutput)
-				Msg("Sending key repeat\n");
+			if ( rd_debug_controller_focus.GetBool() )
+				Msg( "[CF] Sending key repeat\n" );
 			OnControllerButtonPressed( m_KeyNum[i] );
 			m_fNextKeyRepeatTime[i] = curtime + JF_KEY_REPEAT_INTERVAL;
 		}
-	}	
+	}
+}
+
+void CControllerFocus::UpdateMenuNavigation()
+{
+	HACK_GETLOCALPLAYER_GUARD( "CControllerFocus::UpdateMenuNavigation" );
+
+	float curtime = Plat_FloatTime();
+	float flMenuNavigateX, flMenuNavigateY;
+	if ( !g_RD_Steam_Input.GetMenuNavigateOffset( GET_ACTIVE_SPLITSCREEN_SLOT(), &flMenuNavigateX, &flMenuNavigateY ) )
+	{
+		flMenuNavigateX = 0.0f;
+		flMenuNavigateY = 0.0f;
+	}
+
+	float flDeflection = MAX( fabsf( flMenuNavigateX ), fabsf( flMenuNavigateY ) );
+	if ( flDeflection < rd_controller_focus_deadzone.GetFloat() )
+	{
+		if ( rd_debug_controller_focus.GetBool() && m_iNavigations != 0 )
+			Msg( "[CF] Controller focus entered deadzone (%f, %f) after %d navigation(s), %f sec; deadzone is %f\n", flMenuNavigateX, flMenuNavigateY, m_iNavigations, curtime - m_flLastNavigation, rd_controller_focus_deadzone.GetFloat() );
+
+		m_iNavigations = 0;
+	}
+	else if ( m_iNavigations == 0 )
+	{
+		float flAngle = RAD2DEG( atan2f( flMenuNavigateY, flMenuNavigateX ) );
+
+		if ( rd_debug_controller_focus.GetBool() )
+			Msg( "[CF] Controller focus left deadzone (%f, %f) at %f deg; deadzone is %f\n", flMenuNavigateX, flMenuNavigateY, flAngle, rd_controller_focus_deadzone.GetFloat() );
+
+		m_iNavigations = 1;
+		m_flLastNavigation = curtime;
+
+		int index = FindNextPanel( GetFocusPanel(), flAngle );
+		if ( index != -1 )
+			SetFocusPanel( index );
+	}
+	else
+	{
+		float flRepeatDelay = RemapValClamped( flDeflection, rd_controller_focus_deadzone.GetFloat(), MAX_BUTTONSAMPLE, rd_controller_focus_repeat_fast.GetFloat(), rd_controller_focus_repeat_slow.GetFloat() );
+		float flDelay = flRepeatDelay;
+		if ( m_iNavigations == 1 )
+			flDelay = rd_controller_focus_repeat_first.GetFloat();
+
+		while ( m_flLastNavigation + flDelay < curtime )
+		{
+			float flAngle = RAD2DEG( atan2f( flMenuNavigateY, flMenuNavigateX ) );
+
+			if ( rd_debug_controller_focus.GetBool() )
+				Msg( "[CF] Controller focus repeating motion (%f, %f) at %f deg; deadzone is %f, repeat time %f sec\n", flMenuNavigateX, flMenuNavigateY, flAngle, rd_controller_focus_deadzone.GetFloat(), flDelay );
+
+			m_iNavigations++;
+			m_flLastNavigation += flDelay;
+
+			int index = FindNextPanel( GetFocusPanel(), flAngle );
+			if ( index == -1 )
+				break;
+			SetFocusPanel( index );
+
+			flDelay = flRepeatDelay;
+		}
+	}
 }
 
 void CControllerFocus::ClickFocusPanel(bool bDown, bool bRightMouse)
@@ -415,12 +485,12 @@ int CControllerFocus::FindNextPanel( vgui::Panel *pSource, float angle )
 		return iBestIndex;
 	}
 
-	if ( m_bDebugOutput )
-		Msg( "angle = %f ", angle );
+	if ( rd_debug_controller_focus.GetBool() )
+		Msg( "[CF] angle = %f ", angle );
 	float radangle = DEG2RAD( angle );
 	float xdir, ydir;
 	SinCos( radangle, &ydir, &xdir );
-	if ( m_bDebugOutput )
+	if ( rd_debug_controller_focus.GetBool() )
 		Msg( "xdir = %f ydir = %f\n", xdir, ydir );
 
 	//Vector2D dir(xdir, ydir);
@@ -486,8 +556,8 @@ int CControllerFocus::FindNextPanel( vgui::Panel *pSource, float angle )
 		//difference = vecOther - vecSource;
 		//Vector2D diffnorm = difference;
 		//diffnorm.NormalizeInPlace();
-		if ( m_bDebugOutput )
-			Msg( "Checking panel %i (%s). diff=%f,%f dir=%f, %f dot=%f\n", i, pOther->GetClassName(), diffx, diffy, xdir, ydir, the_dot );
+		if ( rd_debug_controller_focus.GetBool() )
+			Msg( "[CF] Checking panel %i (%s). diff=%f,%f dir=%f, %f dot=%f\n", i, pOther->GetClassName(), diffx, diffy, xdir, ydir, the_dot );
 
 		if ( the_dot > 0.3f )
 		{
@@ -499,29 +569,29 @@ int CControllerFocus::FindNextPanel( vgui::Panel *pSource, float angle )
 				// double perpendicular distance cost
 				if ( angle == 90 || angle == 270 )
 				{
-					if ( m_bDebugOutput )
+					if ( rd_debug_controller_focus.GetBool() )
 						Msg( "  vertical rating: %f * 3 + %f\n", fabs( diffx ), fabs( diffy ) );
 					fRating = fabs( diffy ) + ( fabs( diffx ) * 3.0f );
 				}
 				else
 				{
-					if ( m_bDebugOutput )
+					if ( rd_debug_controller_focus.GetBool() )
 						Msg( "  horiz rating: %f + %f * 3\n", fabs( diffx ), fabs( diffy ) );
 					fRating = fabs( diffx ) + ( fabs( diffy ) * 3.0f );
 				}
 			}
 			else	// strange angle, just rate based on distance
 			{
-				if ( m_bDebugOutput )
+				if ( rd_debug_controller_focus.GetBool() )
 					Msg( "  distancebased rating\n" );
 				fRating = diff_len;
 			}
-			if ( m_bDebugOutput )
+			if ( rd_debug_controller_focus.GetBool() )
 				Msg( "  Panel is in right dir, rating = %f\n", fRating );
 			// if this panel is better, remember it
 			if ( pBest == NULL || ( fRating != -1 && fRating < fBestRating ) )
 			{
-				if ( m_bDebugOutput )
+				if ( rd_debug_controller_focus.GetBool() )
 					Msg( "  this is the new best!\n" );
 				pBest = pOther;
 				iBestIndex = i;

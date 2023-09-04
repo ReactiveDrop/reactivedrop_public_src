@@ -2,7 +2,8 @@
 #include "rd_steam_input.h"
 #include "asw_shareddefs.h"
 #include "asw_input.h"
-#include "inputsystem/iinputsystem.h"
+#include "controller_focus.h"
+#include "vgui/IInputInternal.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -88,32 +89,19 @@ RD_STEAM_INPUT_BIND( SelectMarine6, "+selectmarine6", "InGame" );
 RD_STEAM_INPUT_BIND( SelectMarine7, "+selectmarine7", "InGame" );
 RD_STEAM_INPUT_BIND( SelectMarine8, "+selectmarine8", "InGame" );
 
-static void SendMenuButton( InputEventType_t eType, ButtonCode_t eButton )
-{
-	Assert( !g_pInputSystem->IsButtonDown( eButton ) );
-	InputActionSetHandle_t hActionSet = g_RD_Steam_Input.DetermineActionSet( NULL );
-	Assert( hActionSet == g_RD_Steam_Input.m_ActionSets.Menus );
-	if ( eType != IE_ButtonReleased && hActionSet != g_RD_Steam_Input.m_ActionSets.Menus )
-		return; // avoid allowing this function to affect gameplay
-
-	InputEvent_t e;
-	e.m_nType = eType;
-	e.m_nTick = g_pInputSystem->GetPollTick();
-	e.m_nData = eButton;
-	e.m_nData2 = eButton;
-	e.m_nData3 = 0;
-	g_pInputSystem->PostUserEvent( e );
-}
+extern vgui::IInputInternal *g_InputInternal;
 
 #define RD_STEAM_INPUT_MENU_BIND( ActionName, ConCommandName, eButton, ... ) \
 	static void ConCommandName##_press( const CCommand &args ) \
 	{ \
-		SendMenuButton( IE_ButtonPressed, eButton ); \
+		g_InputInternal->InternalKeyCodePressed( eButton ); \
+		GetControllerFocus()->OnControllerButtonPressed( eButton ); \
 	} \
 	ConCommand ConCommandName##_press_command( "+" #ConCommandName, &ConCommandName##_press, "helper command for " #eButton, FCVAR_HIDDEN ); \
 	static void ConCommandName##_release( const CCommand &args ) \
 	{ \
-		SendMenuButton( IE_ButtonReleased, eButton ); \
+		g_InputInternal->InternalKeyCodeReleased( eButton ); \
+		GetControllerFocus()->OnControllerButtonReleased( eButton ); \
 	} \
 	ConCommand ConCommandName##_release_command( "-" #ConCommandName, &ConCommandName##_release, "helper command for " #eButton, FCVAR_HIDDEN ); \
 	RD_STEAM_INPUT_BIND( ActionName, "+" #ConCommandName, __VA_ARGS__ )

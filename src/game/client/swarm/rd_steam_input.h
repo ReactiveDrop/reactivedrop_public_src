@@ -34,6 +34,7 @@ public:
 	vgui::IImage *GlyphImageForOrigin( EInputActionOrigin eOrigin );
 	void DrawLegacyControllerGlyph( const char *szKey, int x, int y, int iCenterX, int iCenterY, vgui::HFont hFont, int nSlot = GET_ACTIVE_SPLITSCREEN_SLOT(), Color color = Color{ 255, 255, 255, 255 } );
 	bool GetGameAxes( int nSlot, float *flMoveX, float *flMoveY, float *flLookX, float *flLookY );
+	bool GetMenuNavigateOffset( int nSlot, float *flMenuNavigateX, float *flMenuNavigateY );
 	InputActionSetHandle_t DetermineActionSet( CUtlVector<InputActionSetHandle_t> *pLayers, int nSlot = GET_ACTIVE_SPLITSCREEN_SLOT() );
 
 	STEAM_CALLBACK( CRD_Steam_Input, OnSteamInputDeviceConnected, SteamInputDeviceConnected_t );
@@ -50,11 +51,13 @@ public:
 	} m_ActionSets;
 	struct
 	{
+		InputActionSetHandle_t InGameMenus;
 	} m_ActionSetLayers;
 	struct
 	{
 		InputAnalogActionHandle_t Move;
 		InputAnalogActionHandle_t Look;
+		InputAnalogActionHandle_t MenuNavigate;
 	} m_AnalogActions;
 	InputHandle_t m_hLastControllerWithEvent{};
 };
