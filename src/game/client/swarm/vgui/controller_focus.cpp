@@ -13,7 +13,7 @@
 
 extern vgui::IInputInternal *g_InputInternal;
 
-ConVar rd_debug_controller_focus( "rd_debug_controller_focus", "1" );
+ConVar rd_debug_controller_focus( "rd_debug_controller_focus", "0" );
 ConVar rd_controller_focus_deadzone( "rd_controller_focus_deadzone", "2048", FCVAR_NONE, "minimum joystick deflection before controller focus changes", true, 0, true, MAX_BUTTONSAMPLE );
 ConVar rd_controller_focus_repeat_slow( "rd_controller_focus_repeat_slow", "1.5", FCVAR_NONE, "time in seconds between controller focus change repeats at edge of dead zone" );
 ConVar rd_controller_focus_repeat_fast( "rd_controller_focus_repeat_fast", "0.5", FCVAR_NONE, "time in seconds between controller focus change repeats at maximum deflection" );
