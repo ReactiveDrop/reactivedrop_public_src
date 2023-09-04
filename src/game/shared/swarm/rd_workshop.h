@@ -274,7 +274,7 @@ public:
 	// True if the page was opened in the overlay, false if the page was opened in the browser.
 	bool OpenWorkshopPageForFile( PublishedFileId_t nPublishedFileID );
 private:
-	bool PrepareWorkshopVPK( const char *pszContentPath, CUtlString *pszDisallowedFiles = NULL );
+	bool PrepareWorkshopVPK( PublishedFileId_t nFileID, const char *pszContentPath, CUtlString *pszDisallowedFiles = NULL );
 	void RemoveDuplicateTags();
 	void SetWorkshopKeyValues( UGCUpdateHandle_t hUpdate );
 	CUtlString m_szContentPath;

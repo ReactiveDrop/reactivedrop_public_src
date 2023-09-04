@@ -516,7 +516,7 @@ void ReactiveDropWorkshop::OnFileSelected( const char *fullpath, const char *fil
 		}
 		g_ReactiveDropWorkshop.m_szContentPath.Clear();
 		CUtlString szDisallowedFiles;
-		if ( !g_ReactiveDropWorkshop.PrepareWorkshopVPK( fullpath, &szDisallowedFiles ) )
+		if ( !g_ReactiveDropWorkshop.PrepareWorkshopVPK( m_nEditingWorkshopID, fullpath, &szDisallowedFiles ) )
 		{
 			m_pBtnEditContent->SetText( "#rd_workshop_choose_vpk" );
 			if ( !szDisallowedFiles.IsEmpty() )

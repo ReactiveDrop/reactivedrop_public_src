@@ -2373,7 +2373,7 @@ static const char *s_BlacklistedAddonFileNames[] =
 	"resource/alien_selection.txt",
 };
 
-bool CReactiveDropWorkshop::PrepareWorkshopVPK( const char *pszContentPath, CUtlString *pszDisallowedFiles )
+bool CReactiveDropWorkshop::PrepareWorkshopVPK( PublishedFileId_t nFileID, const char *pszContentPath, CUtlString *pszDisallowedFiles )
 {
 	if ( !m_szContentPath.IsEmpty() )
 	{
@@ -2424,6 +2424,27 @@ bool CReactiveDropWorkshop::PrepareWorkshopVPK( const char *pszContentPath, CUtl
 		}
 	}
 
+	CFmtStr szAllowedConfigName{ "cfg/autoexec_%llu.cfg", nFileID };
+	CUtlStringList configs;
+	vpk.GetFileList( "cfg/*.*", configs, false, true );
+	if ( configs.Count() != 0 && ( configs.Count() > 1 || V_stricmp( configs[0], szAllowedConfigName ) ) )
+	{
+		bAnyBlacklistedFileNames = true;
+		Warning( "Your addon contains configuration files. If you need to set convars or run commands, they should be in \"%s\". Remove these files:\n", szAllowedConfigName.Access() );
+		FOR_EACH_VEC( configs, i )
+		{
+			if ( V_stricmp( configs[i], szAllowedConfigName ) )
+			{
+				Warning( "%s\n", configs[i] );
+				if ( pszDisallowedFiles )
+				{
+					*pszDisallowedFiles += configs[i];
+					*pszDisallowedFiles += "\n";
+				}
+			}
+		}
+	}
+
 	if ( bAnyBlacklistedFileNames )
 	{
 		return false;
@@ -2435,6 +2456,12 @@ bool CReactiveDropWorkshop::PrepareWorkshopVPK( const char *pszContentPath, CUtl
 	vpk.GetFileList( filenames, false, false );
 	FOR_EACH_VEC( filenames, i )
 	{
+		if ( StringHasPrefix( filenames[i], "cfg/" ) )
+		{
+			bHaveAutoTag = true;
+			m_aszTags.CopyAndAddToTail( "Config" );
+		}
+
 		if ( StringHasPrefix( filenames[i], "resource/campaigns/" ) )
 		{
 			char szFileName[MAX_PATH];
@@ -2648,11 +2675,7 @@ bool CReactiveDropWorkshop::PrepareWorkshopVPK( const char *pszContentPath, CUtl
 
 void CReactiveDropWorkshop::UploadWorkshopItem( const char *pszContentPath, const char *pszPreviewImagePath, const char *pszTitle, const char *pszDescription, const CUtlVector<const char *> & tags )
 {
-	if ( !PrepareWorkshopVPK( pszContentPath ) )
-	{
-		return;
-	}
-
+	m_szContentPath = pszContentPath;
 	m_szPreviewImagePath = pszPreviewImagePath;
 	m_szTitle = pszTitle;
 	m_szDescription = pszDescription;
@@ -2887,6 +2910,11 @@ void CReactiveDropWorkshop::CreateItemResultCallback( CreateItemResult_t *pResul
 		Warning( "Your addon will not be visible until you accept the Steam Workshop legal agreement. https://steamcommunity.com/sharedfiles/workshoplegalagreement?appid=563560\n" );
 	}
 
+	if ( !PrepareWorkshopVPK( pResult->m_nPublishedFileId, m_szContentPath ) )
+	{
+		return;
+	}
+
 	m_nLastPublishedFileID = pResult->m_nPublishedFileId;
 	Msg( "Workshop assigned published file ID: %llu\n", pResult->m_nPublishedFileId );
 	UGCUpdateHandle_t hUpdate = SteamUGC()->StartItemUpdate( SteamUtils()->GetAppID(), pResult->m_nPublishedFileId );
@@ -3020,7 +3048,7 @@ CON_COMMAND_F( _ugc_update_progress, "", FCVAR_HIDDEN )
 
 void CReactiveDropWorkshop::UpdateWorkshopItem( PublishedFileId_t nFileID, const char *pszContentPath, const char *pszPreviewImagePath, const char *pszChangeDescription )
 {
-	if ( !PrepareWorkshopVPK( pszContentPath ) )
+	if ( !PrepareWorkshopVPK( nFileID, pszContentPath ) )
 	{
 		return;
 	}
@@ -3299,7 +3327,7 @@ public:
 		V_ComposeFileName( szFolder, "addon.vpk", szVPK, sizeof( szVPK ) );
 
 		g_ReactiveDropWorkshop.m_szContentPath.Purge();
-		if ( !g_ReactiveDropWorkshop.PrepareWorkshopVPK( szVPK ) )
+		if ( !g_ReactiveDropWorkshop.PrepareWorkshopVPK( m_nFile, szVPK ) )
 		{
 			Warning( "Failed to apply fix: PrepareWorkshopVPK failed for %llu\n", m_nFile );
 			delete this;
