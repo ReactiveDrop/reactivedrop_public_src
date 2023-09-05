@@ -22,7 +22,7 @@ static bool IsAlphabet( char category )
 		}
 
 		const char *szLang = SteamApps()->GetCurrentGameLanguage();
-		if ( !V_strcmp( szLang, "english" ) || !V_strcmp( szLang, "german" ) || !V_strcmp( szLang, "italian" ) )
+		if ( !V_strcmp( szLang, "english" ) || !V_strcmp( szLang, "german" ) || !V_strcmp( szLang, "italian" ) || !V_strcmp( szLang, "vietnamese" ) )
 		{
 			s_chAlphabet = 'L'; // Latin
 		}
@@ -62,9 +62,19 @@ PRECACHE_REGISTER_BEGIN( GLOBAL, PrecacheASWScalableText )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_s", IsAlphabet( 'L' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_t", IsAlphabet( 'L' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_u", IsAlphabet( 'L' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_v", IsAlphabet( 'L' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_z", IsAlphabet( 'L' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_0020", IsAlphabet( 'L' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_00c0", IsAlphabet( 'L' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_00c3", IsAlphabet( 'L' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_00cd", IsAlphabet( 'L' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_0110", IsAlphabet( 'L' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_1ea0", IsAlphabet( 'L' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_1ea4", IsAlphabet( 'L' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_1ebe", IsAlphabet( 'L' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_1ec6", IsAlphabet( 'L' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_1eca", IsAlphabet( 'L' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_1ee4", IsAlphabet( 'L' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_a_glow", IsAlphabet( 'L' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_b_glow", IsAlphabet( 'L' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_c_glow", IsAlphabet( 'L' ) )
@@ -83,9 +93,19 @@ PRECACHE_REGISTER_BEGIN( GLOBAL, PrecacheASWScalableText )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_s_glow", IsAlphabet( 'L' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_t_glow", IsAlphabet( 'L' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_u_glow", IsAlphabet( 'L' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_v_glow", IsAlphabet( 'L' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_z_glow", IsAlphabet( 'L' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_0020_glow", IsAlphabet( 'L' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_00c0_glow", IsAlphabet( 'L' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_00c3_glow", IsAlphabet( 'L' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_00cd_glow", IsAlphabet( 'L' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_0110_glow", IsAlphabet( 'L' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_1ea0_glow", IsAlphabet( 'L' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_1ea4_glow", IsAlphabet( 'L' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_1ebe_glow", IsAlphabet( 'L' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_1ec6_glow", IsAlphabet( 'L' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_1eca_glow", IsAlphabet( 'L' ) )
+	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_1ee4_glow", IsAlphabet( 'L' ) )
 	
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_0410", IsAlphabet( 'C' ) )
 	PRECACHE_CONDITIONAL( MATERIAL, "vgui/letters/letter_0412", IsAlphabet( 'C' ) )
@@ -234,93 +254,109 @@ float CASW_Scalable_Text::GetLetterWidth( wchar_t ch )
 	/*
 	// To get letter widths:
 	var ctx = document.createElement("canvas").getContext("2d");
-	ctx.font = 'bold 155px "Neo Sans Pro"'; // Latin/Cyrillic
-	ctx.font = 'bold 155px "Noto Sans CJK SC"'; // Han
-	(ctx.measureText("A").width / 100).toFixed(3);
+	ctx.font = '900 224px "Noto Sans CJK SC"';
+	(ctx.measureText("A").width / 144).toFixed(3);
 
-	// To create 256x256 textures, use fonts listed above in GIMP in white at size 224.
-	// Align with 32px below top edge, flush with all other edges for Latin/Cyrillic;
-	// align flush with all edges for Han. To create glow version, clone letter layer,
-	// gaussian blur stddev 7.5, duplicate blurred layer twice, and merge all four layers.
+	// To create textures and materials, run create_scalable_letter.py.
 	*/
 
 	switch ( ch )
 	{
+	case L' ':
+		return 0.356f;
 	case L'A':
-		return 1.037f;
+		return 1.027f;
 	case L'B':
-		return 1.037f;
+		return 1.081f;
 	case L'C':
-		return 0.869f;
-	case L'D':
-		return 1.057f;
-	case L'E':
-		return 0.899f;
-	case L'F':
-		return 0.901f;
-	case L'G':
-		return 1.000f;
-	case L'H':
-		return 1.130f;
-	case L'I':
-		return 0.482f;
-	case L'L':
-		return 0.804f;
-	case L'M':
-		return 1.265f;
-	case L'N':
-		return 1.130f;
-	case L'O':
-		return 1.082f;
-	case L'P':
-		return 1.009f;
-	case L'R':
-		return 1.054f;
-	case L'S':
-		return 0.911f;
-	case L'T':
-		return 0.910f;
-	case L'U':
-		return 1.102f;
-	case L'Z':
-		return 0.953f;
-	case L'Ã':
 		return 1.037f;
+	case L'D':
+		return 1.134f;
+	case L'E':
+		return 0.980f;
+	case L'F':
+		return 0.940f;
+	case L'G':
+		return 1.140f;
+	case L'H':
+		return 1.204f;
+	case L'I':
+		return 0.544f;
+	case L'L':
+		return 0.929f;
+	case L'M':
+		return 1.364f;
+	case L'N':
+		return 1.188f;
+	case L'O':
+		return 1.223f;
+	case L'P':
+		return 1.069f;
+	case L'R':
+		return 1.101f;
+	case L'S':
+		return 0.994f;
+	case L'T':
+		return 0.996f;
+	case L'U':
+		return 1.187f;
+	case L'V':
+		return 1.000f;
+	case L'Z':
+		return 0.963f;
+	case L'À':
+		return 1.027f;
+	case L'Ã':
+		return 1.027f;
 	case L'Í':
-		return 0.482f;
+		return 0.544f;
+	case L'Đ':
+		return 1.179f;
 	case L'А':
-		return 1.012f;
+		return 1.027f;
 	case L'В':
-		return 0.986f;
+		return 1.081f;
 	case L'Е':
-		return 0.885f;
+		return 0.980f;
 	case L'З':
-		return 0.938f;
+		return 1.006f;
 	case L'И':
-		return 1.085f;
+		return 1.209f;
 	case L'К':
-		return 0.972f;
+		return 1.117f;
 	case L'Л':
-		return 1.012f;
+		return 1.176f;
 	case L'М':
-		return 1.211f;
+		return 1.364f;
 	case L'Н':
-		return 1.085f;
+		return 1.204f;
 	case L'О':
-		return 1.056f;
+		return 1.223f;
 	case L'П':
-		return 1.085f;
+		return 1.184f;
 	case L'Р':
-		return 0.942f;
+		return 1.069f;
 	case L'С':
-		return 0.876f;
+		return 1.037f;
 	case L'Ш':
-		return 1.477f;
+		return 1.630f;
 	case L'Я':
-		return 1.014f;
+		return 1.104f;
+	case L'Ạ':
+		return 1.027f;
+	case L'Ấ':
+		return 1.027f;
+	case L'Ế':
+		return 0.980f;
+	case L'Ệ':
+		return 0.980f;
+	case L'Ị':
+		return 0.544f;
+	case L'Ụ':
+		return 1.187f;
 	default:
 		if ( ch >= 0x2E80 )
-			return 1.550f;
+			return 1.556f;
 		else
 			return 1.0f;
 	}
