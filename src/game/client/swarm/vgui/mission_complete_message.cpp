@@ -122,6 +122,10 @@ void CMission_Complete_Message::AddWord( const wchar_t *wszWord, int row_middle_
 
 void CMission_Complete_Message::AddLetter( wchar_t letter, int x, int y, float letter_offset, float flStartTime )
 {
+	// no need to animate spaces
+	if ( letter == L' ' )
+		return;
+
 	const float letter_end_spacing = YRES( 50 );
 	const float letter_start_spacing = YRES( 100 );
 	const float flAnimTime = 0.35f;
