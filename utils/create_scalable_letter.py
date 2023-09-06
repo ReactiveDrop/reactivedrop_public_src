@@ -7,7 +7,7 @@ out_dir = "../reactivedrop/materials/vgui/letters"
 
 for letter in sys.argv[1:]:
 	codepoint = letter.upper()
-	smooth = ["-blur", "0x5", "-threshold", "50%", "-blur", "0x1"]
+	smooth = ["-blur", "0x10", "-threshold", "50%", "-blur", "0x1"]
 	if len(letter) == 1:
 		if ord(letter) < 97 or ord(letter) > 122:
 			raise Exception("invalid single letter (must be ASCII and lowercase; otherwise use a codepoint)")
@@ -17,13 +17,13 @@ for letter in sys.argv[1:]:
 		codepoint = bytes.fromhex(letter).decode("utf-16be")
 		if ord(codepoint) >= 0x2E80:
 			# more complicated letters get messed up by rounding; don't do it for CJK
-			smooth = []
+			smooth = ["-threshold", "50%", "-blur", "0x1"]
 
 	with open("letter.utf8", "w", encoding="utf-8") as f:
 		f.write(codepoint)
 
-	check_call(["magick", "-background", "#00000000", "-fill", "#ffffff", "-font", "Noto-Sans-CJK-SC-Black", "-pointsize", "224", "-gravity", "south", "-size", "256x256", "label:@letter.utf8"] + smooth + ["xc:#fff", "-channel", "RGB", "-clut", "letter_" + letter + ".tga"])
-	check_call(["magick", "-background", "#00000000", "-fill", "#ffffff", "-font", "Noto-Sans-CJK-SC-Black", "-pointsize", "224", "-gravity", "south", "-size", "256x256", "label:@letter.utf8"] + smooth + ["(", "-clone", "0", "-blur", "0x7.5", "-clone", "0,0,0,0,0", "-composite", ")", "-composite", "xc:#fff", "-channel", "RGB", "-clut", "letter_" + letter + "_glow.tga"])
+	check_call(["magick", "-background", "#000", "-fill", "#fff", "-font", "Noto-Sans-CJK-SC-Black", "-pointsize", "448", "-gravity", "south", "-size", "512x512", "label:@letter.utf8"] + smooth + ["-resize", "256x256", "xc:#fff", "-channel", "RGB", "-clut", "letter_" + letter + ".tga"])
+	check_call(["magick", "-background", "#000", "-fill", "#fff", "-font", "Noto-Sans-CJK-SC-Black", "-pointsize", "448", "-gravity", "south", "-size", "512x512", "label:@letter.utf8"] + smooth + ["(", "-clone", "0", "-blur", "0x15", "-clone", "0,0,0,0,0", "-composite", ")", "-composite", "-resize", "256x256", "xc:#fff", "-channel", "RGB", "-clut", "letter_" + letter + "_glow.tga"])
 	check_call([vtex_exe, "-game", game_dir, "-outdir", out_dir, "-nopause", "letter_" + letter + ".tga"])
 	check_call([vtex_exe, "-game", game_dir, "-outdir", out_dir, "-nopause", "letter_" + letter + "_glow.tga"])
 	os.unlink("letter_" + letter + ".tga")
