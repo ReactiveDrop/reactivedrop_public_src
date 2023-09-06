@@ -2200,7 +2200,7 @@
 	"volume"	"1.00"
 	"pitch"	"PITCH_NORM"
 	"soundlevel"	"SNDLVL_95dB"
-	"wave"   "vo\bastille\bastille_death1.wav"
+	"wave"   "vo\bastille\bastille_death2.wav"
 }
 
 "bastille.OnFire0"
