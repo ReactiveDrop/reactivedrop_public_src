@@ -191,7 +191,7 @@ void CASWHudCrosshair::Paint( void )
 		}
 		else
 		{
-			DrawDirectionalCrosshair( x, y, YRES( asw_crosshair_progress_size.GetInt() ) );
+			DrawDirectionalCrosshair( x, y, YRES( asw_crosshair_progress_size.GetFloat() ) );
 		}
 	}
 	else if ( nCrosshair != -1 )

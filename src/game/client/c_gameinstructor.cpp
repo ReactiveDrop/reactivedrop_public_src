@@ -791,6 +791,21 @@ void C_GameInstructor::ResetDisplaysAndSuccesses( void )
 	m_bDirtySaveData = false;
 }
 
+bool C_GameInstructor::EverShowedAnyLesson( void )
+{
+	ACTIVE_SPLITSCREEN_PLAYER_GUARD( m_nSplitScreenSlot );
+	if ( !ReadSaveData() )
+		return false;
+
+	for ( int i = 0; i < m_Lessons.Count(); ++i )
+	{
+		if ( m_Lessons[i]->GetDisplayCount() > 0 || m_Lessons[i]->GetSuccessCount() > 0 )
+			return true;
+	}
+
+	return false;
+}
+
 void C_GameInstructor::MarkDisplayed( const char *pchLessonName )
 {
 	ACTIVE_SPLITSCREEN_PLAYER_GUARD( m_nSplitScreenSlot );

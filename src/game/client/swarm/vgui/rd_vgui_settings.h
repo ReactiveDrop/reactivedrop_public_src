@@ -334,26 +334,9 @@ public:
 	CRD_VGUI_Settings_Options( vgui::Panel *parent, const char *panelName );
 
 	void Activate() override;
+	void OnCommand( const char *command ) override;
 	BaseModUI::BaseModHybridButton *GetButton( BaseModUI::CRD_VGUI_Settings *pSettings ) override { return pSettings->m_pBtnOptions; }
-
-	CRD_VGUI_Option *m_pSettingasw_medic_under_marine;
-	CRD_VGUI_Option *m_pSettingasw_medic_under_marine_frequency;
-	CRD_VGUI_Option *m_pSettingasw_medic_under_marine_offscreen;
-	CRD_VGUI_Option *m_pSettingasw_medic_under_marine_recall_time;
-	CRD_VGUI_Option *m_pSettingrd_health_counter_under_marine;
-	CRD_VGUI_Option *m_pSettingrd_health_counter_under_marine_alignment;
-	CRD_VGUI_Option *m_pSettingrd_health_counter_under_marine_show_max_health;
-	CRD_VGUI_Option *m_pSettingasw_world_healthbar_class_icon;
-	CRD_VGUI_Option *m_pSettingrd_draw_marine_health_counter;
-
-	CRD_VGUI_Option *m_pSettingasw_magazine_under_marine;
-	CRD_VGUI_Option *m_pSettingasw_magazine_under_marine_frequency;
-	CRD_VGUI_Option *m_pSettingasw_magazine_under_marine_offscreen;
-	CRD_VGUI_Option *m_pSettingasw_magazine_under_marine_recall_time;
-	CRD_VGUI_Option *m_pSettingrd_ammo_under_marine;
-	CRD_VGUI_Option *m_pSettingrd_ammo_counter_under_marine;
-	CRD_VGUI_Option *m_pSettingrd_ammo_counter_under_marine_alignment;
-	CRD_VGUI_Option *m_pSettingrd_ammo_counter_under_marine_show_max_ammo;
+	MESSAGE_FUNC_PTR( OnCurrentOptionChanged, "CurrentOptionChanged", panel );
 
 	CRD_VGUI_Option *m_pSettingPlayerNameMode;
 	CRD_VGUI_Option *m_pSettingPlayerChatColor;
@@ -378,8 +361,8 @@ public:
 	CRD_VGUI_Option *m_pSettingControlsHorizontalAutoAim;
 
 	CRD_VGUI_Option *m_pSettingCrosshairMarineLabelDist;
-	CRD_VGUI_Option *m_pSettingCrosshairSize;
 	CRD_VGUI_Option *m_pSettingCrosshairType;
+	CRD_VGUI_Option *m_pSettingCrosshairSize;
 	CRD_VGUI_Option *m_pSettingCrosshairLaserSight;
 
 	CRD_VGUI_Option *m_pSettingReloadAuto;
@@ -389,7 +372,6 @@ public:
 
 	CRD_VGUI_Option *m_pSettingDamageNumbers;
 	CRD_VGUI_Option *m_pSettingStrangeRankUp;
-	CRD_VGUI_Option *m_pSettingItemDropNotify;
 
 	CRD_VGUI_Option *m_pSettingSpeedTimer;
 	CRD_VGUI_Option *m_pSettingSpeedTimerColor;

@@ -1,38 +1,23 @@
 #include "cbase.h"
 #include "rd_vgui_settings.h"
+#include "gameui/swarm/vgenericconfirmation.h"
+#include "gameui/swarm/vhybridbutton.h"
+#include "c_gameinstructor.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+using namespace BaseModUI;
+
 DECLARE_BUILD_FACTORY( CRD_VGUI_Settings_Options );
+
+extern ConVar asw_crosshair_use_perspective;
+extern ConVar asw_fast_reload_under_marine;
+extern ConVar rd_draw_timer;
 
 CRD_VGUI_Settings_Options::CRD_VGUI_Settings_Options( vgui::Panel *parent, const char *panelName ) :
 	BaseClass( parent, panelName )
 {
-	/*
-	TODO
-	Health
-	[asw_medic_under_marine]
-	[asw_medic_under_marine_frequency]
-	[asw_medic_under_marine_offscreen]
-	[asw_medic_under_marine_recall_time]
-	[rd_health_counter_under_marine]
-	[rd_health_counter_under_marine_alignment]
-	[rd_health_counter_under_marine_show_max_health]
-	[asw_world_healthbar_class_icon]
-	[rd_draw_marine_health_counter]
-
-	Ammo
-	[asw_magazine_under_marine]
-	[asw_magazine_under_marine_frequency]
-	[asw_magazine_under_marine_offscreen]
-	[asw_magazine_under_marine_recall_time]
-	[rd_ammo_under_marine]
-	[rd_ammo_counter_under_marine]
-	[rd_ammo_counter_under_marine_alignment]
-	[rd_ammo_counter_under_marine_show_max_ammo]
-	*/
-
 	// Players
 	m_pSettingPlayerNameMode = new CRD_VGUI_Option( this, "SettingPlayerNameMode", "#rd_option_player_name_mode" );
 	m_pSettingPlayerNameMode->AddOption( 0, "#rd_option_player_name_mode_none", "" );
@@ -52,50 +37,111 @@ CRD_VGUI_Settings_Options::CRD_VGUI_Settings_Options( vgui::Panel *parent, const
 	m_pSettingPlayerDeathmatchDrawTopScoreboard->LinkToConVar( "rd_draw_avatars_with_frags", true );
 
 	// Hints
-	// TODO: [rd_fail_advice]
-	// TODO: [gameinstructor_enable]
-	// TODO: [rd_deathmatch_respawn_hints]
-	// TODO: [rd_swarmopedia_grid]
-	// TODO: [rd_swarmopedia_units_preference]
+	m_pSettingHintsFailAdvice = new CRD_VGUI_Option( this, "SettingHintsFailAdvice", "#rd_option_hints_fail_advice", CRD_VGUI_Option::MODE_CHECKBOX );
+	m_pSettingHintsFailAdvice->LinkToConVar( "rd_fail_advice", true );
+	m_pSettingHintsGameInstructor = new CRD_VGUI_Option( this, "SettingHintsGameInstructor", "#rd_option_hints_game_instructor", CRD_VGUI_Option::MODE_CHECKBOX );
+	m_pSettingHintsGameInstructor->LinkToConVar( "gameinstructor_enable", true );
+	m_pBtnResetGameInstructor = new BaseModHybridButton( this, "BtnResetGameInstructor", "#rd_reset_game_instructor_progress", this, "ResetGameInstructorCounts" );
+	m_pSettingHintsDeathmatchRespawn = new CRD_VGUI_Option( this, "SettingHintsDeathmatchRespawn", "#rd_option_hints_deathmatch_respawn", CRD_VGUI_Option::MODE_CHECKBOX );
+	m_pSettingHintsDeathmatchRespawn->LinkToConVar( "rd_deathmatch_respawn_hints", true );
+	m_pSettingHintsSwarmopediaGrid = new CRD_VGUI_Option( this, "SettingHintsSwarmopediaGrid", "#rd_option_hints_swarmopedia_grid", CRD_VGUI_Option::MODE_CHECKBOX );
+	m_pSettingHintsSwarmopediaGrid->LinkToConVar( "rd_swarmopedia_grid", true );
+	m_pSettingHintsSwarmopediaUnits = new CRD_VGUI_Option( this, "SettingHintsSwarmopediaUnits", "#RD_AdvancedSettings_Misc_SwarmopediaUnits", CRD_VGUI_Option::MODE_DROPDOWN );
+	m_pSettingHintsSwarmopediaUnits->AddOption( 0, "#RD_AdvancedSettings_Misc_SwarmopediaUnits_Hammer", "" );
+	m_pSettingHintsSwarmopediaUnits->AddOption( 1, "#RD_AdvancedSettings_Misc_SwarmopediaUnits_Metric", "" );
+	m_pSettingHintsSwarmopediaUnits->AddOption( 2, "#RD_AdvancedSettings_Misc_SwarmopediaUnits_Imperial", "" );
+	m_pSettingHintsSwarmopediaUnits->LinkToConVar( "rd_swarmopedia_units_preference", false );
 
 	// Death
-	// TODO: [asw_marine_death_cam]
-	// TODO: [asw_marine_death_cam_slowdown]
-	// TODO: [rd_marine_explodes_into_gibs]
+	m_pSettingDeathCamTakeover = new CRD_VGUI_Option( this, "SettingDeathCamTakeover", "#rd_option_death_cam_takeover", CRD_VGUI_Option::MODE_CHECKBOX );
+	m_pSettingDeathCamTakeover->LinkToConVar( "asw_marine_death_cam", true );
+	m_pSettingDeathCamSlowdown = new CRD_VGUI_Option( this, "SettingDeathCamSlowdown", "#rd_option_death_cam_slowdown", CRD_VGUI_Option::MODE_CHECKBOX );
+	m_pSettingDeathCamSlowdown->LinkToConVar( "asw_marine_death_cam_slowdown", true );
+	m_pSettingDeathMarineGibs = new CRD_VGUI_Option( this, "SetitngDeathMarineGibs", "#rd_option_death_marine_gibs", CRD_VGUI_Option::MODE_CHECKBOX );
+	m_pSettingDeathMarineGibs->LinkToConVar( "rd_marine_explodes_into_gibs", true );
 
 	// Advanced Controls
-	// TODO: [rd_wire_tile_alternate]
-	// TODO: [rd_sniper_scope_weapon_switch]
-	// TODO: [in_lock_mouse_to_window]
-	// TODO: [asw_horizontal_autoaim]
+	m_pSettingControlsRightClickWireHack = new CRD_VGUI_Option( this, "SettingControlsRightClickWireHack", "#RD_AdvancedSettings_Misc_WireHackClick", CRD_VGUI_Option::MODE_DROPDOWN );
+	m_pSettingControlsRightClickWireHack->AddOption( 0, "#RD_AdvancedSettings_Misc_WireHackClick_BothSame", "" );
+	m_pSettingControlsRightClickWireHack->AddOption( 1, "#RD_AdvancedSettings_Misc_WireHackClick_RightRev", "" );
+	m_pSettingControlsRightClickWireHack->AddOption( 2, "#RD_AdvancedSettings_Misc_WireHackClick_LeftRev", "" );
+	m_pSettingControlsRightClickWireHack->LinkToConVar( "rd_wire_tile_alternate", true );
+	m_pSettingControlsSniperSwapWeapons = new CRD_VGUI_Option( this, "SettingControlsSniperSwapWeapons", "#rd_option_controls_sniper_swap_weapons", CRD_VGUI_Option::MODE_CHECKBOX );
+	m_pSettingControlsSniperSwapWeapons->LinkToConVar( "rd_sniper_scope_weapon_switch", false );
+	m_pSettingControlsLockMouseToWindow = new CRD_VGUI_Option( this, "SettingControlsLockMouseToWindow", "#rd_option_controls_lock_mouse_to_window", CRD_VGUI_Option::MODE_CHECKBOX );
+	m_pSettingControlsLockMouseToWindow->LinkToConVar( "in_lock_mouse_to_window", true );
+	m_pSettingControlsHorizontalAutoAim = new CRD_VGUI_Option( this, "SettingControlsHorizontalAutoAim", "#rd_optioncontrols_horizontal_auto_aim", CRD_VGUI_Option::MODE_CHECKBOX );
+	m_pSettingControlsHorizontalAutoAim->LinkToConVar( "asw_horizontal_autoaim", true );
 
 	// Crosshair
-	// TODO: [asw_marine_labels_cursor_maxdist]
-	// TODO: [asw_crosshair_progress_size]
-	// TODO: [asw_crosshair_use_perspective]
-	// TODO: [asw_laser_sight]
+	m_pSettingCrosshairMarineLabelDist = new CRD_VGUI_Option( this, "SettingCrosshairMarineLabelDist", "#rd_setting_crosshair_marine_label_dist", CRD_VGUI_Option::MODE_SLIDER );
+	m_pSettingCrosshairMarineLabelDist->AddOption( -1, "#rd_setting_crosshair_marine_label_dist_unlimited", "" );
+	m_pSettingCrosshairMarineLabelDist->SetSliderMinMax( 0.0f, 500.0f );
+	m_pSettingCrosshairMarineLabelDist->LinkToConVar( "asw_marine_labels_cursor_maxdist", true );
+	m_pSettingCrosshairType = new CRD_VGUI_Option( this, "SettingCrosshairType", "#RD_AdvancedSettings_HUD_CrosshairStyle", CRD_VGUI_Option::MODE_DROPDOWN );
+	m_pSettingCrosshairType->AddOption( 0, "#RD_AdvancedSettings_HUD_CrosshairStyle_Cross", "" );
+	m_pSettingCrosshairType->AddOption( 1, "#RD_AdvancedSettings_HUD_CrosshairStyle_Crescent", "" );
+	m_pSettingCrosshairType->LinkToConVar( "asw_crosshair_use_perspective", true );
+	m_pSettingCrosshairSize = new CRD_VGUI_Option( this, "SettingCrosshairSize", "#rd_setting_crosshair_size", CRD_VGUI_Option::MODE_SLIDER );
+	m_pSettingCrosshairSize->SetSliderMinMax( 5.0f, 50.0f );
+	m_pSettingCrosshairSize->LinkToConVar( "asw_crosshair_progress_size", true );
+	m_pSettingCrosshairLaserSight = new CRD_VGUI_Option( this, "SettingCrosshairLaserSight", "#RD_AdvancedSettings_HUD_LaserSight", CRD_VGUI_Option::MODE_CHECKBOX );
+	m_pSettingCrosshairLaserSight->LinkToConVar( "asw_laser_sight", true );
 
 	// Reloading
-	// TODO: [asw_auto_reload]
-	// TODO: [asw_fast_reload_under_marine]
-	// TODO: [rd_fast_reload_under_marine_scale]
-	// TODO: [rd_fast_reload_under_marine_height_scale]
+	m_pSettingReloadAuto = new CRD_VGUI_Option( this, "SettingReloadAuto", "#rd_option_reload_auto", CRD_VGUI_Option::MODE_CHECKBOX );
+	m_pSettingReloadAuto->LinkToConVar( "asw_auto_reload", true );
+	m_pSettingReloadFastUnderMarine = new CRD_VGUI_Option( this, "SettingReloadFastUnderMarine", "#RD_AdvancedSettings_Ammo_FastReloadUnderMarine", CRD_VGUI_Option::MODE_CHECKBOX );
+	m_pSettingReloadFastUnderMarine->LinkToConVar( "asw_fast_reload_under_marine", false );
+	m_pSettingReloadFastWide = new CRD_VGUI_Option( this, "SettingReloadFastWide", "#RD_AdvancedSettings_Ammo_FastReloadUnderMarineWScale", CRD_VGUI_Option::MODE_SLIDER );
+	m_pSettingReloadFastWide->SetSliderMinMax( 0.1f, 15.0f );
+	m_pSettingReloadFastWide->LinkToConVar( "rd_fast_reload_under_marine_scale", true );
+	m_pSettingReloadFastTall = new CRD_VGUI_Option( this, "SettingReloadFastTall", "#RD_AdvancedSettings_Ammo_FastReloadUnderMarineHScale", CRD_VGUI_Option::MODE_SLIDER );
+	m_pSettingReloadFastTall->SetSliderMinMax( 0.1f, 15.0f );
+	m_pSettingReloadFastTall->AddOption( -1, "#RD_AdvancedSettings_Ammo_FastReloadUnderMarineHScale_SameAsW", "" );
+	m_pSettingReloadFastTall->LinkToConVar( "rd_fast_reload_under_marine_height_scale", true );
 
-	// Damage Numbers
-	// TODO: [asw_floating_number_type]
-	// TODO: [asw_floating_number_combine]
+	// Floating Text
+	m_pSettingDamageNumbers = new CRD_VGUI_Option( this, "SettingDamageNumbers", "#rd_option_damage_numbers", CRD_VGUI_Option::MODE_DROPDOWN );
+	m_pSettingDamageNumbers->AddOption( 0, "#rd_option_damge_numbers_disabled", "" );
+	m_pSettingDamageNumbers->LinkToConVarAdvanced( 0, "asw_floating_number_type", 0 );
+	m_pSettingDamageNumbers->AddOption( 1, "#rd_option_damge_numbers_separate", "" );
+	m_pSettingDamageNumbers->LinkToConVarAdvanced( 1, "asw_floating_number_type", 2 );
+	m_pSettingDamageNumbers->LinkToConVarAdvanced( 1, "asw_floating_number_combine", 0 );
+	m_pSettingDamageNumbers->AddOption( 2, "#rd_option_damge_numbers_combined", "" );
+	m_pSettingDamageNumbers->LinkToConVarAdvanced( 2, "asw_floating_number_type", 2 );
+	m_pSettingDamageNumbers->LinkToConVarAdvanced( 2, "asw_floating_number_combine", 1 );
+	m_pSettingDamageNumbers->SetCurrentUsingConVars();
+	m_pSettingStrangeRankUp = new CRD_VGUI_Option( this, "SettingStrangeRankUp", "#rd_option_strange_rank_up", CRD_VGUI_Option::MODE_DROPDOWN );
+	m_pSettingStrangeRankUp->AddOption( 0, "#rd_option_strange_rank_up_disabled", "" );
+	m_pSettingStrangeRankUp->AddOption( 1, "#rd_option_strange_rank_up_enabled", "" );
+	m_pSettingStrangeRankUp->AddOption( 2, "#rd_option_strange_rank_up_only_self", "" );
+	m_pSettingStrangeRankUp->LinkToConVar( "rd_strange_device_tier_notifications", false );
 
 	// Speed Running
-	// TODO: [rd_draw_timer]
-	// TODO: [rd_draw_timer_color]
-	// TODO: [rda_print_chat_objective_completion_time]
-	// TODO: [rda_print_console_objective_completion_time]
-	// TODO: [cl_auto_restart_mission]
+	m_pSettingSpeedTimer = new CRD_VGUI_Option( this, "SettingSpeedTimer", "#rd_option_speed_timer", CRD_VGUI_Option::MODE_CHECKBOX );
+	m_pSettingSpeedTimer->LinkToConVar( "rd_draw_timer", false );
+	m_pSettingSpeedTimerColor = new CRD_VGUI_Option( this, "SettingSpeedTimerColor", "#rd_option_speed_timer_color", CRD_VGUI_Option::MODE_COLOR );
+	m_pSettingSpeedTimerColor->LinkToConVar( "rd_draw_timer_color", false );
+	m_pSettingSpeedObjectivesInChat = new CRD_VGUI_Option( this, "SettingSpeedObjectivesInChat", "#rd_option_speed_objectives_in_chat", CRD_VGUI_Option::MODE_DROPDOWN );
+	m_pSettingSpeedObjectivesInChat->AddOption( 0, "#rd_option_speed_objectives_disabled", "" );
+	m_pSettingSpeedObjectivesInChat->LinkToConVarAdvanced( 0, "rda_print_chat_objective_completion_time", 0 );
+	m_pSettingSpeedObjectivesInChat->LinkToConVarAdvanced( 0, "rda_print_console_objective_completion_time", 0 );
+	m_pSettingSpeedObjectivesInChat->AddOption( 1, "#rd_option_speed_objectives_in_console", "" );
+	m_pSettingSpeedObjectivesInChat->LinkToConVarAdvanced( 1, "rda_print_chat_objective_completion_time", 0 );
+	m_pSettingSpeedObjectivesInChat->LinkToConVarAdvanced( 1, "rda_print_console_objective_completion_time", 1 );
+	m_pSettingSpeedObjectivesInChat->AddOption( 2, "#rd_option_speed_objectives_in_chat", "" );
+	m_pSettingSpeedObjectivesInChat->LinkToConVarAdvanced( 2, "rda_print_chat_objective_completion_time", 1 );
+	m_pSettingSpeedAutoRestartMission = new CRD_VGUI_Option( this, "SettingSpeedAutoRestartMission", "#rd_option_speed_auto_restart_mission", CRD_VGUI_Option::MODE_CHECKBOX);
+	m_pSettingSpeedAutoRestartMission->LinkToConVar( "cl_auto_restart_mission", false );
 
 	// Leaderboards
-	// TODO: [rd_leaderboard_enabled_client]
-	// TODO: [rd_show_leaderboard_loading]
-	// TODO: [rd_show_leaderboard_debrief]
+	m_pSettingLeaderboardSend = new CRD_VGUI_Option( this, "SettingLeaderboardSend", "#rd_option_leaderboard_send", CRD_VGUI_Option::MODE_CHECKBOX );
+	m_pSettingLeaderboardSend->LinkToConVar( "rd_leaderboard_enabled_client", true );
+	m_pSettingLeaderboardLoading = new CRD_VGUI_Option( this, "SettingLeaderboardLoading", "#rd_option_leaderboard_loading", CRD_VGUI_Option::MODE_CHECKBOX );
+	m_pSettingLeaderboardLoading->LinkToConVar( "rd_show_leaderboard_loading", false );
+	m_pSettingLeaderboardDebrief = new CRD_VGUI_Option( this, "SettingLeaderboardDebrief", "#rd_option_leaderboard_debrief", CRD_VGUI_Option::MODE_CHECKBOX );
+	m_pSettingLeaderboardLoading->LinkToConVar( "rd_show_leaderboard_debrief", false );
 
 	// Loading
 	m_pSettingLoadingMissionIcons = new CRD_VGUI_Option( this, "SettingLoadingMissionIcons", "#rd_option_loading_mission_icons", CRD_VGUI_Option::MODE_CHECKBOX );
@@ -143,4 +189,63 @@ CRD_VGUI_Settings_Options::CRD_VGUI_Settings_Options( vgui::Panel *parent, const
 
 void CRD_VGUI_Settings_Options::Activate()
 {
+	bool bEverShowedLesson = false;
+	for ( int i = 0; i < MAX_SPLITSCREEN_PLAYERS; ++i )
+	{
+		ACTIVE_SPLITSCREEN_PLAYER_GUARD( i );
+		bEverShowedLesson = GetGameInstructor().EverShowedAnyLesson();
+		if ( bEverShowedLesson )
+			break;
+	}
+	m_pBtnResetGameInstructor->SetEnabled( bEverShowedLesson );
+
+	m_pSettingCrosshairSize->SetEnabled( asw_crosshair_use_perspective.GetBool() );
+	m_pSettingReloadFastWide->SetEnabled( asw_fast_reload_under_marine.GetBool() );
+	m_pSettingReloadFastTall->SetEnabled( asw_fast_reload_under_marine.GetBool() );
+	m_pSettingSpeedTimerColor->SetEnabled( rd_draw_timer.GetBool() );
+}
+
+static void ResetGameInstructorCountsHelper()
+{
+	for ( int i = 0; i < MAX_SPLITSCREEN_PLAYERS; i++ )
+	{
+		ACTIVE_SPLITSCREEN_PLAYER_GUARD( i );
+		GetGameInstructor().ResetDisplaysAndSuccesses();
+		GetGameInstructor().WriteSaveData();
+	}
+
+	if ( CRD_VGUI_Settings *pSettings = assert_cast< CRD_VGUI_Settings * >( CBaseModPanel::GetSingleton().GetWindow( WT_SETTINGS ) ) )
+	{
+		pSettings->m_pPnlOptions->Activate();
+	}
+}
+
+void CRD_VGUI_Settings_Options::OnCommand( const char *command )
+{
+	if ( !V_stricmp( command, "ResetGameInstructorCounts" ) )
+	{
+		GenericConfirmation *pConfirm = assert_cast< GenericConfirmation * >( CBaseModPanel::GetSingleton().OpenWindow( WT_GENERICCONFIRMATION, assert_cast< CRD_VGUI_Settings * >( GetParent() ), false ) );
+		Assert( pConfirm );
+		if ( pConfirm )
+		{
+			CBaseModPanel::GetSingleton().PlayUISound( UISOUND_CLICK );
+			GenericConfirmation::Data_t data;
+			data.pWindowTitle = "#rd_reset_game_instructor_progress_title";
+			data.pMessageText = "#rd_reset_game_instructor_progress_desc";
+			data.bOkButtonEnabled = true;
+			data.pfnOkCallback = &ResetGameInstructorCountsHelper;
+			data.bCancelButtonEnabled = true;
+
+			pConfirm->SetUsageData( data );
+		}
+
+		return;
+	}
+
+	BaseClass::OnCommand( command );
+}
+
+void CRD_VGUI_Settings_Options::OnCurrentOptionChanged( vgui::Panel *panel )
+{
+	Activate();
 }

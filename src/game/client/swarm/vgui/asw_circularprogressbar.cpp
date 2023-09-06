@@ -166,7 +166,7 @@ void ASWCircularProgressBar::PaintBackground()
 			x = ScreenWidth() / 2;
 			y = ScreenHeight() / 2;
 		}
-		w = (YRES( asw_crosshair_progress_size.GetInt() ) * 2) * m_flScale;
+		w = (YRES( asw_crosshair_progress_size.GetFloat() ) * 2) * m_flScale;
 		h = w;
 	
 		// do the rotation to match the crosshair
@@ -239,7 +239,7 @@ void ASWCircularProgressBar::Paint()
 			x = ScreenWidth() / 2;
 			y = ScreenHeight() / 2;
 		}
-		w = YRES( asw_crosshair_progress_size.GetInt() ) * m_flScale;
+		w = YRES( asw_crosshair_progress_size.GetFloat() ) * m_flScale;
 		h = w;
 	}
 	else

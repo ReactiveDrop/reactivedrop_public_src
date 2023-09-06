@@ -58,6 +58,7 @@ public:
 	bool WriteSaveData( void );
 	void RefreshDisplaysAndSuccesses( void );
 	void ResetDisplaysAndSuccesses( void );
+	bool EverShowedAnyLesson( void );
 	void MarkDisplayed( const char *pchLessonName );
 	void MarkSucceeded( const char *pchLessonName );
 
