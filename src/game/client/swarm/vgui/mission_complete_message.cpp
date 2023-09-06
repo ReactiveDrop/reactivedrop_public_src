@@ -27,6 +27,9 @@ void CMission_Complete_Message::PerformLayout()
 {
 	BaseClass::PerformLayout();
 
+	m_flStartWidth = m_flStartHeight = YRES( 400 );
+	m_flEndWidth = m_flEndHeight = YRES( 105 );
+
 	SetBounds( 0, 0, ScreenWidth(), ScreenHeight() );
 }
 
@@ -119,12 +122,8 @@ void CMission_Complete_Message::AddWord( const wchar_t *wszWord, int row_middle_
 
 void CMission_Complete_Message::AddLetter( wchar_t letter, int x, int y, float letter_offset, float flStartTime )
 {
-	const int letter_end_spacing = YRES( 50 );
-	const int letter_start_spacing = YRES( 100 );
-	const int letter_start_width = 300;
-	const int letter_start_height = letter_start_width;
-	const int letter_end_width = 80;
-	const int letter_end_height = letter_end_width;
+	const float letter_end_spacing = YRES( 50 );
+	const float letter_start_spacing = YRES( 100 );
 	const float flAnimTime = 0.35f;
 
 	CAnimating_Letter *pLetter = new CAnimating_Letter;
@@ -132,14 +131,10 @@ void CMission_Complete_Message::AddLetter( wchar_t letter, int x, int y, float l
 	pLetter->m_flStartTime = flStartTime;
 	pLetter->m_flEndTime = flStartTime + flAnimTime;
 
-	pLetter->m_nStartX = x + letter_offset * letter_start_spacing;
-	pLetter->m_nStartY = y;
-	pLetter->m_nEndX = x + letter_offset * letter_end_spacing;
-	pLetter->m_nEndY = y;
-	pLetter->m_nStartWidth = letter_start_width;
-	pLetter->m_nStartHeight = letter_start_height;
-	pLetter->m_nEndWidth = letter_end_width;
-	pLetter->m_nEndHeight = letter_end_height;
+	pLetter->m_flStartX = x + letter_offset * letter_start_spacing;
+	pLetter->m_flStartY = y;
+	pLetter->m_flEndX = x + letter_offset * letter_end_spacing;
+	pLetter->m_flEndY = y;
 
 	m_aAnimatingLetters.AddToTail( pLetter );
 }
@@ -164,10 +159,10 @@ void CMission_Complete_Message::PaintLetter( CAnimating_Letter *pLetter, bool bG
 	flLerpAmount *= flLerpAmount;
 	flLerpAmount *= flLerpAmount;
 
-	float flX = ( float )pLetter->m_nStartX + ( ( float )pLetter->m_nEndX - ( float )pLetter->m_nStartX ) * flLerpAmount;
-	float flY = ( float )pLetter->m_nStartY + ( ( float )pLetter->m_nEndY - ( float )pLetter->m_nStartY ) * flLerpAmount;
-	float flWidth = ( float )YRES( pLetter->m_nStartWidth ) + ( ( float )YRES( pLetter->m_nEndWidth ) - ( float )YRES( pLetter->m_nStartWidth ) ) * flLerpAmount;
-	float flHeight = ( float )YRES( pLetter->m_nStartHeight ) + ( ( float )YRES( pLetter->m_nEndHeight ) - ( float )YRES( pLetter->m_nStartHeight ) ) * flLerpAmount;
+	float flX = pLetter->m_flStartX + ( pLetter->m_flEndX - pLetter->m_flStartX ) * flLerpAmount;
+	float flY = pLetter->m_flStartY + ( pLetter->m_flEndY - pLetter->m_flStartY ) * flLerpAmount;
+	float flWidth = m_flStartWidth + ( m_flEndWidth - m_flStartWidth ) * flLerpAmount;
+	float flHeight = m_flStartHeight + ( m_flEndHeight - m_flStartHeight ) * flLerpAmount;
 	flWidth *= 0.5f;
 	flHeight *= 0.5f;
 

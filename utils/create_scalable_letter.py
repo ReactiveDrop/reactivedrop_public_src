@@ -22,8 +22,8 @@ for letter in sys.argv[1:]:
 	with open("letter.utf8", "w", encoding="utf-8") as f:
 		f.write(codepoint)
 
-	check_call(["magick", "-background", "#000", "-fill", "#fff", "-font", "Noto-Sans-CJK-SC-Black", "-pointsize", "448", "-gravity", "south", "-size", "512x512", "label:@letter.utf8"] + smooth + ["-resize", "256x256", "xc:#fff", "-channel", "RGB", "-clut", "letter_" + letter + ".tga"])
-	check_call(["magick", "-background", "#000", "-fill", "#fff", "-font", "Noto-Sans-CJK-SC-Black", "-pointsize", "448", "-gravity", "south", "-size", "512x512", "label:@letter.utf8"] + smooth + ["(", "-clone", "0", "-blur", "0x15", "-clone", "0,0,0,0,0", "-composite", ")", "-composite", "-resize", "256x256", "xc:#fff", "-channel", "RGB", "-clut", "letter_" + letter + "_glow.tga"])
+	check_call(["magick", "-background", "#000", "-fill", "#fff", "-font", "Noto-Sans-CJK-SC-Black", "-pointsize", "336", "-gravity", "center", "-size", "512x512", "label:@letter.utf8"] + smooth + ["-resize", "256x256", "xc:#fff", "-channel", "RGB", "-clut", "letter_" + letter + ".tga"])
+	check_call(["magick", "-background", "#000", "-fill", "#fff", "-font", "Noto-Sans-CJK-SC-Black", "-pointsize", "336", "-gravity", "center", "-size", "512x512", "label:@letter.utf8"] + smooth + ["(", "-clone", "0", "-blur", "0x15", "-clone", "0,0,0,0,0", "-composite", ")", "-composite", "-resize", "256x256", "xc:#fff", "-channel", "RGB", "-clut", "letter_" + letter + "_glow.tga"])
 	check_call([vtex_exe, "-game", game_dir, "-outdir", out_dir, "-nopause", "letter_" + letter + ".tga"])
 	check_call([vtex_exe, "-game", game_dir, "-outdir", out_dir, "-nopause", "letter_" + letter + "_glow.tga"])
 	os.unlink("letter_" + letter + ".tga")

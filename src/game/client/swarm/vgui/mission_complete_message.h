@@ -15,14 +15,10 @@ struct CAnimating_Letter
 {
 	float m_flStartTime;
 	float m_flEndTime;
-	int m_nStartX;
-	int m_nStartY;
-	int m_nEndX;
-	int m_nEndY;
-	int m_nStartWidth;
-	int m_nStartHeight;
-	int m_nEndWidth;	
-	int m_nEndHeight;
+	float m_flStartX;
+	float m_flStartY;
+	float m_flEndX;
+	float m_flEndY;
 	wchar_t m_chLetter;
 };
 
@@ -45,6 +41,10 @@ public:
 	bool m_bSuccess;
 	float m_flMessageBackgroundStartTime;
 	float m_flMessageBackgroundFadeDuration;
+	float m_flStartWidth;
+	float m_flStartHeight;
+	float m_flEndWidth;
+	float m_flEndHeight;
 	
 	CUtlVector<CAnimating_Letter*> m_aAnimatingLetters;
 };
