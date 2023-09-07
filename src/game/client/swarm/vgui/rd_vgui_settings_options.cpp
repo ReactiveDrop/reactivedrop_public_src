@@ -141,7 +141,7 @@ CRD_VGUI_Settings_Options::CRD_VGUI_Settings_Options( vgui::Panel *parent, const
 	m_pSettingLeaderboardLoading = new CRD_VGUI_Option( this, "SettingLeaderboardLoading", "#rd_option_leaderboard_loading", CRD_VGUI_Option::MODE_CHECKBOX );
 	m_pSettingLeaderboardLoading->LinkToConVar( "rd_show_leaderboard_loading", false );
 	m_pSettingLeaderboardDebrief = new CRD_VGUI_Option( this, "SettingLeaderboardDebrief", "#rd_option_leaderboard_debrief", CRD_VGUI_Option::MODE_CHECKBOX );
-	m_pSettingLeaderboardLoading->LinkToConVar( "rd_show_leaderboard_debrief", false );
+	m_pSettingLeaderboardDebrief->LinkToConVar( "rd_show_leaderboard_debrief", false );
 
 	// Loading
 	m_pSettingLoadingMissionIcons = new CRD_VGUI_Option( this, "SettingLoadingMissionIcons", "#rd_option_loading_mission_icons", CRD_VGUI_Option::MODE_CHECKBOX );
