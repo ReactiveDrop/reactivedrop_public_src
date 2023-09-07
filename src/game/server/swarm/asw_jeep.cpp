@@ -151,10 +151,7 @@ BEGIN_ENT_SCRIPTDESC( CASW_PropJeep, CBaseAnimating, "Vehicles" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptBoostTimeLeft, "BoostTimeLeft", "vehicle statistics" )
 END_SCRIPTDESC();
 
-// This is overriden for the episodic jeep
-#ifndef HL2_EPISODIC
 LINK_ENTITY_TO_CLASS( asw_vehicle_jeep, CASW_PropJeep );
-#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: 
