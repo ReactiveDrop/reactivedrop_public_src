@@ -71,7 +71,7 @@ void StatGraphPlayer::PerformLayout()
 	{
 		m_pStatGraphs[ i ]->SetPos( nGraphX, nGraphY + i * 1 );
 		m_pStatGraphs[ i ]->SetSize( nGraphW, nGraphH );
-		m_pStatGraphs[ i ]->SetVerticalPixelSeparation( ASW_STATS_REPORT_MAX_PLAYERS * 1 );
+		m_pStatGraphs[ i ]->SetVerticalPixelSeparation( 4 ); // squads of up to this many marines are guaranteed to not overlap on the graph
 	}
 
 	int nValueBoxX, nValueBoxY, nValueBoxW, nValueBoxH;
