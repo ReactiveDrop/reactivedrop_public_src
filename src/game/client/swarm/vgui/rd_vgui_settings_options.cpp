@@ -27,7 +27,7 @@ CRD_VGUI_Settings_Options::CRD_VGUI_Settings_Options( vgui::Panel *parent, const
 	m_pSettingPlayerNameMode->LinkToConVar( "asw_player_names", true );
 	m_pSettingPlayerChatColor = new CRD_VGUI_Option( this, "SettingPlayerChatColor", "#rd_option_player_chat_color", CRD_VGUI_Option::MODE_COLOR );
 	m_pSettingPlayerChatColor->LinkToConVar( "cl_chatcolor", true );
-	m_pSettingPlayerChatNamesUseColors = new CRD_VGUI_Option( this, "SettingPlayerChatNameUsesColors", "#rd_option_player_chat_name_uses_colors", CRD_VGUI_Option::MODE_CHECKBOX );
+	m_pSettingPlayerChatNamesUseColors = new CRD_VGUI_Option( this, "SettingPlayerChatNamesUseColors", "#rd_option_player_chat_names_use_colors", CRD_VGUI_Option::MODE_CHECKBOX );
 	m_pSettingPlayerChatNamesUseColors->LinkToConVar( "rd_chat_colorful_player_names", true );
 	m_pSettingPlayerDeathmatchTeamColorMode = new CRD_VGUI_Option( this, "SettingPlayerDeathmatchTeamColorMode", "#rd_option_player_deathmatch_team_color_mode" );
 	m_pSettingPlayerDeathmatchTeamColorMode->AddOption( 1, "#rd_option_player_deathmatch_team_color_mode_ally_enemy", "" );
@@ -57,7 +57,7 @@ CRD_VGUI_Settings_Options::CRD_VGUI_Settings_Options( vgui::Panel *parent, const
 	m_pSettingDeathCamTakeover->LinkToConVar( "asw_marine_death_cam", true );
 	m_pSettingDeathCamSlowdown = new CRD_VGUI_Option( this, "SettingDeathCamSlowdown", "#rd_option_death_cam_slowdown", CRD_VGUI_Option::MODE_CHECKBOX );
 	m_pSettingDeathCamSlowdown->LinkToConVar( "asw_marine_death_cam_slowdown", true );
-	m_pSettingDeathMarineGibs = new CRD_VGUI_Option( this, "SetitngDeathMarineGibs", "#rd_option_death_marine_gibs", CRD_VGUI_Option::MODE_CHECKBOX );
+	m_pSettingDeathMarineGibs = new CRD_VGUI_Option( this, "SettingDeathMarineGibs", "#rd_option_death_marine_gibs", CRD_VGUI_Option::MODE_CHECKBOX );
 	m_pSettingDeathMarineGibs->LinkToConVar( "rd_marine_explodes_into_gibs", true );
 
 	// Advanced Controls
