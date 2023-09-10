@@ -393,6 +393,9 @@ void CRD_VGUI_Option::OnCursorMoved( int x, int y )
 		if ( m_bReverseSlider )
 			V_swap( flMin, flMax );
 
+		x0 += y1 * m_Options.Count();
+		x1 -= y1 * m_Options.Count();
+
 		float flNewValue = RemapValClamped( x, x0 + y1 / 2, x0 + x1 - y1 / 2, flMin, flMax );
 		if ( !m_bStartedSliderActiveAtRecommended && m_bHaveRecommended && fabsf( x - RemapValClamped( m_Recommended.m_flValue, flMin, flMax, x0 + y1 / 2, x0 + x1 - y1 / 2 ) ) < YRES( rd_option_slider_recommended_magnetism.GetFloat() ) )
 			flNewValue = m_Recommended.m_flValue;
@@ -411,7 +414,7 @@ void CRD_VGUI_Option::OnCursorMoved( int x, int y )
 
 	if ( m_pInteractiveArea->IsCursorOver() )
 	{
-		if ( m_eMode == MODE_RADIO || m_eMode == MODE_SLIDER )
+		if ( m_eMode == MODE_RADIO || ( m_eMode == MODE_SLIDER && !m_bSliderActiveMouse ) )
 		{
 			x0 -= vgui::Label::Content;
 
@@ -775,13 +778,14 @@ void CRD_VGUI_Option::Paint()
 	}
 	else if ( m_eMode == MODE_SLIDER )
 	{
+		bool bCurrentIsOption = false;
 		FOR_EACH_VEC( m_Options, i )
 		{
 			flMultiplier = IsEnabled() && !( m_Options[i]->m_iFlags & FLAG_DISABLED ) ? 1.0f : 0.25f;
 
 			bool bIsActive = bIsFocused && m_iActiveOption == i;
 			bool bIsRecommended = bIsFocused && m_bHaveRecommended && m_Recommended.m_flValue == m_Options[i]->m_iValue;
-			bool bIsCurrent = m_bHaveCurrent && m_Current.m_flValue == m_Options[i]->m_iValue;
+			bool bIsCurrent = m_bHaveCurrent && m_Current.m_flValue == m_Options[i]->m_iValue && !m_bSliderActive;
 			int r = 255, g = 255, b = 255;
 			if ( bIsRecommended )
 			{
@@ -802,6 +806,10 @@ void CRD_VGUI_Option::Paint()
 				DRAW_CONTROL( x0, y0, x0 + y1, y0 + y1, UV_radio_checked, 255, 255, 255 );
 
 			x0 += y1;
+			x1 -= y1;
+
+			if ( bIsCurrent )
+				bCurrentIsOption = true;
 
 			if ( bIsCurrent || bIsActive )
 			{
@@ -810,6 +818,7 @@ void CRD_VGUI_Option::Paint()
 				vgui::surface()->DrawSetTextPos( x0 + vgui::Label::Content, y0 + ( y1 - vgui::surface()->GetFontTall( m_pLblFieldName->GetFont() ) ) / 2 );
 				vgui::surface()->DrawUnicodeString( m_Options[i]->m_wszLabel );
 				x0 += vgui::Label::Content * 2 + m_Options[i]->m_iWidth;
+				x1 -= vgui::Label::Content * 2 + m_Options[i]->m_iWidth;
 			}
 		}
 
@@ -823,7 +832,7 @@ void CRD_VGUI_Option::Paint()
 		const HudSheetTexture_t &BarEnd = g_RD_HUD_Sheets.m_Controls[CRD_HUD_Sheets::UV_slider_bar_end];
 		vgui::surface()->DrawSetTexture( g_RD_HUD_Sheets.m_nControlsID );
 		vgui::surface()->DrawSetColor( 255 * flMultiplier, 255 * flMultiplier, 255 * flMultiplier, 255 );
-		if ( !m_bHaveCurrent )
+		if ( !m_bHaveCurrent || bCurrentIsOption )
 			vgui::surface()->DrawSetColor( 128 * flMultiplier, 128 * flMultiplier, 128 * flMultiplier, 255 );
 		vgui::surface()->DrawTexturedSubRect( x0, y0, x0 + y1 / 2, y0 + y1, BarEnd.u, BarEnd.v, BarEnd.s, BarEnd.t );
 		vgui::surface()->DrawTexturedSubRect( x0 + y1 / 2, y0, x, y0 + y1, ( Bar.u + Bar.s ) / 2, Bar.v, ( Bar.u + Bar.s ) / 2, Bar.t );
@@ -841,7 +850,7 @@ void CRD_VGUI_Option::Paint()
 			HUD_SHEET_DRAW_RECT( x - y1 / 4, y0, x + y1 / 4, y0 + y1, Controls, UV_slider_handle_hover );
 		else if ( bIsFocused && m_iActiveOption == m_Options.Count() )
 			HUD_SHEET_DRAW_RECT( x - y1 / 4, y0, x + y1 / 4, y0 + y1, Controls, UV_slider_handle_focus );
-		else
+		else if ( !bCurrentIsOption )
 			HUD_SHEET_DRAW_RECT( x - y1 / 4, y0, x + y1 / 4, y0 + y1, Controls, UV_slider_handle );
 	}
 	else if ( m_eMode == MODE_COLOR )
@@ -1196,6 +1205,8 @@ void CRD_VGUI_Option::SetCurrentSliderValue( float flValue )
 
 	if ( m_pTextEntry && !s_bSuppressTextEntryChange && !IsLayoutInvalid() )
 	{
+		m_pTextEntry->SetVisible( m_flMinValue <= flValue && flValue <= m_flMaxValue );
+
 		if ( IsEnabled() )
 		{
 			m_pTextEntry->SetEnabled( true );
@@ -1793,7 +1804,7 @@ void CRD_VGUI_Option::SelectActiveRadioButton()
 		if ( convars[i].m_szValue )
 			convars[i].m_pConVar->SetValue( convars[i].m_szValue );
 		else
-			convars[i].m_pConVar->SetValue( convars[i].m_iValue );
+			convars[i].m_pConVar->SetValue( CFmtStr{ "%d", convars[i].m_iValue } ); // convert to string to ensure setting a variable that starts at 0.5 to 0 actually changes it
 
 		s_bCVarChanged = true;
 	}
