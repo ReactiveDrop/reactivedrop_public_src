@@ -411,7 +411,7 @@ void CRD_VGUI_Option::OnCursorMoved( int x, int y )
 
 	if ( m_pInteractiveArea->IsCursorOver() )
 	{
-		if ( m_eMode == MODE_RADIO )
+		if ( m_eMode == MODE_RADIO || m_eMode == MODE_SLIDER )
 		{
 			x0 -= vgui::Label::Content;
 
@@ -424,10 +424,16 @@ void CRD_VGUI_Option::OnCursorMoved( int x, int y )
 
 				iNewActive = i;
 
-				x0 += y1 + vgui::Label::Content * 2 + m_Options[i]->m_iWidth;
+				if ( m_eMode != MODE_SLIDER || ( m_bHaveCurrent && m_Current.m_flValue == m_Options[i]->m_iValue ) )
+					x0 += y1 + vgui::Label::Content * 2 + m_Options[i]->m_iWidth;
+				else
+					x0 += y1;
 			}
 
-			if ( m_iActiveOption != iNewActive && !( m_Options[iNewActive]->m_iFlags & FLAG_DISABLED ) )
+			if ( m_eMode == MODE_SLIDER && x0 <= x )
+				iNewActive = m_Options.Count();
+
+			if ( m_iActiveOption != iNewActive && ( iNewActive == -1 || iNewActive == m_Options.Count() || !( m_Options[iNewActive]->m_iFlags & FLAG_DISABLED ) ) )
 				ChangeActiveRadioButton( iNewActive );
 		}
 	}
@@ -711,7 +717,7 @@ void CRD_VGUI_Option::Paint()
 				DRAW_CONTROL( x0, y0, x0 + y1, y0 + y1, UV_radio_checked_hover, 255, 255, 255 );
 			else if ( bIsCurrent )
 				DRAW_CONTROL( x0, y0, x0 + y1, y0 + y1, UV_radio_checked, 255, 255, 255 );
-			
+
 			vgui::surface()->DrawSetTextColor( m_pInteractiveArea->GetFgColor() );
 			vgui::surface()->DrawSetTextFont( m_pLblFieldName->GetFont() );
 			vgui::surface()->DrawSetTextPos( x0 + y1 + vgui::Label::Content, y0 + ( y1 - vgui::surface()->GetFontTall( m_pLblFieldName->GetFont() ) ) / 2 );
@@ -771,12 +777,43 @@ void CRD_VGUI_Option::Paint()
 	{
 		FOR_EACH_VEC( m_Options, i )
 		{
-			HUD_SHEET_DRAW_RECT( x0, y0, x0 + y1, y0 + y1, Controls, UV_radio );
+			flMultiplier = IsEnabled() && !( m_Options[i]->m_iFlags & FLAG_DISABLED ) ? 1.0f : 0.25f;
 
-			Assert( !"TODO: slider with options" );
+			bool bIsActive = bIsFocused && m_iActiveOption == i;
+			bool bIsRecommended = bIsFocused && m_bHaveRecommended && m_Recommended.m_flValue == m_Options[i]->m_iValue;
+			bool bIsCurrent = m_bHaveCurrent && m_Current.m_flValue == m_Options[i]->m_iValue;
+			int r = 255, g = 255, b = 255;
+			if ( bIsRecommended )
+			{
+				r = 192;
+				g = 224;
+			}
+
+			if ( bIsActive )
+				DRAW_CONTROL( x0, y0, x0 + y1, y0 + y1, UV_radio_hover, r, g, b );
+			else if ( bIsFocused )
+				DRAW_CONTROL( x0, y0, x0 + y1, y0 + y1, UV_radio_focus, r, g, b );
+			else
+				DRAW_CONTROL( x0, y0, x0 + y1, y0 + y1, UV_radio, r, g, b );
+
+			if ( bIsActive && bIsCurrent )
+				DRAW_CONTROL( x0, y0, x0 + y1, y0 + y1, UV_radio_checked_hover, 255, 255, 255 );
+			else if ( bIsCurrent )
+				DRAW_CONTROL( x0, y0, x0 + y1, y0 + y1, UV_radio_checked, 255, 255, 255 );
 
 			x0 += y1;
+
+			if ( bIsCurrent || bIsActive )
+			{
+				vgui::surface()->DrawSetTextColor( m_pInteractiveArea->GetFgColor() );
+				vgui::surface()->DrawSetTextFont( m_pLblFieldName->GetFont() );
+				vgui::surface()->DrawSetTextPos( x0 + vgui::Label::Content, y0 + ( y1 - vgui::surface()->GetFontTall( m_pLblFieldName->GetFont() ) ) / 2 );
+				vgui::surface()->DrawUnicodeString( m_Options[i]->m_wszLabel );
+				x0 += vgui::Label::Content * 2 + m_Options[i]->m_iWidth;
+			}
 		}
+
+		flMultiplier = IsEnabled();
 
 		float flMin = m_flMinValue, flMax = m_flMaxValue;
 		if ( m_bReverseSlider )
@@ -1340,6 +1377,16 @@ void CRD_VGUI_Option::SetCurrentUsingConVars()
 		if ( m_pSliderLink )
 		{
 			float flValue = m_pSliderLink->GetFloat();
+			FOR_EACH_VEC( m_Options, i )
+			{
+				if ( flValue == m_Options[i]->m_iValue )
+				{
+					SetCurrentSliderValue( flValue );
+
+					return;
+				}
+			}
+
 			if ( flValue >= m_flMinValue && flValue <= m_flMaxValue )
 			{
 				SetCurrentSliderValue( flValue );
@@ -1772,7 +1819,7 @@ void CRD_VGUI_Option::ChangeActiveRadioButton( int iActive )
 {
 	Assert( m_eMode == MODE_RADIO || m_eMode == MODE_SLIDER );
 	Assert( iActive >= 0 && iActive < m_Options.Count() + ( m_eMode == MODE_SLIDER ? 1 : 0 ) );
-	Assert( !( m_Options[iActive]->m_iFlags & FLAG_DISABLED ) );
+	Assert( m_eMode == MODE_SLIDER || !( m_Options[iActive]->m_iFlags & FLAG_DISABLED ) );
 
 	m_iActiveOption = iActive;
 
