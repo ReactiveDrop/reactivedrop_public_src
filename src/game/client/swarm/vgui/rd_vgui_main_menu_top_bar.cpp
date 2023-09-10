@@ -71,6 +71,7 @@ void CRD_VGUI_Main_Menu_Top_Bar::OnCommand( const char *command )
 	if ( !V_stricmp( command, "QuitGame" ) )
 	{
 		DismissMainMenuScreens();
+		BaseModPanel.OpenFrontScreen();
 
 		CBaseModFrame *pMainMenu = BaseModPanel.GetWindow( WT_MAINMENU );
 		Assert( pMainMenu );
@@ -82,7 +83,7 @@ void CRD_VGUI_Main_Menu_Top_Bar::OnCommand( const char *command )
 	else if ( !V_stricmp( command, "Settings" ) )
 	{
 		DismissMainMenuScreens();
-		BaseModPanel.OpenWindow( WT_SETTINGS, BaseModPanel.GetWindow( BaseModPanel.GetActiveWindowType() ) );
+		BaseModPanel.OpenWindow( WT_SETTINGS, BaseModPanel.GetWindow( WT_MAINMENU ) );
 	}
 	else if ( !V_stricmp( command, "MainMenu" ) )
 	{
@@ -95,17 +96,17 @@ void CRD_VGUI_Main_Menu_Top_Bar::OnCommand( const char *command )
 	else if ( !V_stricmp( command, "Loadout" ) )
 	{
 		DismissMainMenuScreens();
-		BaseModPanel.OpenWindow( WT_LOADOUTS, BaseModPanel.GetWindow( BaseModPanel.GetActiveWindowType() ) );
+		BaseModPanel.OpenWindow( WT_LOADOUTS, BaseModPanel.GetWindow( WT_MAINMENU ) );
 	}
 	else if ( !V_stricmp( command, "Contracts" ) )
 	{
 		DismissMainMenuScreens();
-		BaseModPanel.OpenWindow( WT_CONTRACTS, BaseModPanel.GetWindow( BaseModPanel.GetActiveWindowType() ) );
+		BaseModPanel.OpenWindow( WT_CONTRACTS, BaseModPanel.GetWindow( WT_MAINMENU ) );
 	}
 	else if ( !V_stricmp( command, "Recordings" ) )
 	{
 		DismissMainMenuScreens();
-		BaseModPanel.OpenWindow( WT_DEMOS, BaseModPanel.GetWindow( BaseModPanel.GetActiveWindowType() ) );
+		BaseModPanel.OpenWindow( WT_DEMOS, BaseModPanel.GetWindow( WT_MAINMENU ) );
 	}
 	else if ( !V_stricmp( command, "Swarmopedia" ) )
 	{
@@ -115,7 +116,7 @@ void CRD_VGUI_Main_Menu_Top_Bar::OnCommand( const char *command )
 	else if ( !V_stricmp( command, "Workshop" ) )
 	{
 		DismissMainMenuScreens();
-		BaseModPanel.OpenWindow( WT_WORKSHOP, BaseModPanel.GetWindow( BaseModPanel.GetActiveWindowType() ) );
+		BaseModPanel.OpenWindow( WT_WORKSHOP, BaseModPanel.GetWindow( WT_MAINMENU ) );
 	}
 	else if ( !V_stricmp( command, "Inventory" ) )
 	{
