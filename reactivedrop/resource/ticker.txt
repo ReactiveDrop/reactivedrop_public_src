@@ -37,7 +37,7 @@
 		"weight"		"3"
 	}
 	"stock" {
-		"symbol"		"ENIG"
+		"symbol"		"NGMA"
 		"name"		"#asw_so_enigma"
 		"base"		"96"
 		"weight"		"3"
