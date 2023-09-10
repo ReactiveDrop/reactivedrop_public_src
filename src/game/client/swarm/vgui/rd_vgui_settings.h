@@ -396,6 +396,7 @@ public:
 	CRD_VGUI_Option *m_pSettingAccessibilityMoveRelativeToAim;
 
 	CRD_VGUI_Option *m_pSettingNetworkInterpolation;
+	CRD_VGUI_Option *m_pSettingNetworkRate;
 	CRD_VGUI_Option *m_pSettingNetworkAllowRelay;
 };
 
