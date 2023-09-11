@@ -2347,6 +2347,7 @@ static const char *const s_AutoTags[] =
 	"Deathmatch",
 	"Bonus",
 	"Endless",
+	"Config",
 	"Other",
 };
 
