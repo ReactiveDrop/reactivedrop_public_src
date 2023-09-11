@@ -48,20 +48,38 @@
 		"navUp"				"TopBar"
 	}
 
-	"BtnOptions"
+	"BtnOptions1"
 	{
 		"ControlName"		"BaseModHybridButton"
-		"fieldName"			"BtnOptions"
+		"fieldName"			"BtnOptions1"
 		"xpos"				"c-217"	[!$WIN32WIDE]
 		"xpos"				"c-237"	[$WIN32WIDE]
 		"ypos"				"42"
 		"zpos"				"5"
 		"wide"				"64"
 		"tall"				"20"
-		"labelText"			"#rd_settings_options"
+		"labelText"			"#rd_settings_options_1"
 		"style"				"ReactiveDropMainMenuTop"
-		"command"			"Options"
+		"command"			"Options1"
 		"navLeft"			"BtnControls"
+		"navRight"			"BtnOptions2"
+		"navUp"				"TopBar"
+	}
+
+	"BtnOptions2"
+	{
+		"ControlName"		"BaseModHybridButton"
+		"fieldName"			"BtnOptions2"
+		"xpos"				"c-151"	[!$WIN32WIDE]
+		"xpos"				"c-171"	[$WIN32WIDE]
+		"ypos"				"42"
+		"zpos"				"5"
+		"wide"				"64"
+		"tall"				"20"
+		"labelText"			"#rd_settings_options_2"
+		"style"				"ReactiveDropMainMenuTop"
+		"command"			"Options2"
+		"navLeft"			"BtnOptions1"
 		"navRight"			"BtnAudio"
 		"navUp"				"TopBar"
 	}
@@ -70,8 +88,8 @@
 	{
 		"ControlName"		"BaseModHybridButton"
 		"fieldName"			"BtnAudio"
-		"xpos"				"c-151"	[!$WIN32WIDE]
-		"xpos"				"c-171"	[$WIN32WIDE]
+		"xpos"				"c-85"	[!$WIN32WIDE]
+		"xpos"				"c-105"	[$WIN32WIDE]
 		"ypos"				"42"
 		"zpos"				"5"
 		"wide"				"64"
@@ -88,8 +106,8 @@
 	{
 		"ControlName"		"BaseModHybridButton"
 		"fieldName"			"BtnVideo"
-		"xpos"				"c-85"	[!$WIN32WIDE]
-		"xpos"				"c-105"	[$WIN32WIDE]
+		"xpos"				"c-19"	[!$WIN32WIDE]
+		"xpos"				"c-39"	[$WIN32WIDE]
 		"ypos"				"42"
 		"zpos"				"5"
 		"wide"				"64"
@@ -135,10 +153,10 @@
 		"navUp"				"BtnControls"
 	}
 
-	"PnlOptions"
+	"PnlOptions1"
 	{
-		"ControlName"		"CRD_VGUI_Settings_Options"
-		"fieldName"			"PnlOptions"
+		"ControlName"		"CRD_VGUI_Settings_Options_1"
+		"fieldName"			"PnlOptions1"
 		"xpos"				"c-290"	[!$WIN32WIDE]
 		"xpos"				"c-305"	[$WIN32WIDE]
 		"ypos"				"40"
@@ -147,7 +165,22 @@
 		"tall"				"400"
 		"bgcolor_override"	"16 20 24 224"
 		"paintbackgroundtype"	"2"
-		"navUp"				"BtnOptions"
+		"navUp"				"BtnOptions1"
+	}
+
+	"PnlOptions2"
+	{
+		"ControlName"		"CRD_VGUI_Settings_Options_2"
+		"fieldName"			"PnlOptions2"
+		"xpos"				"c-290"	[!$WIN32WIDE]
+		"xpos"				"c-305"	[$WIN32WIDE]
+		"ypos"				"40"
+		"wide"				"580"	[!$WIN32WIDE]
+		"wide"				"610"	[$WIN32WIDE]
+		"tall"				"400"
+		"bgcolor_override"	"16 20 24 224"
+		"paintbackgroundtype"	"2"
+		"navUp"				"BtnOptions2"
 	}
 
 	"PnlAudio"

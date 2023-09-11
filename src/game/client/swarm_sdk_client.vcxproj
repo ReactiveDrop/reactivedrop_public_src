@@ -2299,7 +2299,8 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="swarm\vgui\rd_vgui_settings_about.cpp" />
     <ClCompile Include="swarm\vgui\rd_vgui_settings_audio.cpp" />
     <ClCompile Include="swarm\vgui\rd_vgui_settings_controls.cpp" />
-    <ClCompile Include="swarm\vgui\rd_vgui_settings_options.cpp" />
+    <ClCompile Include="swarm\vgui\rd_vgui_settings_options_1.cpp" />
+    <ClCompile Include="swarm\vgui\rd_vgui_settings_options_2.cpp" />
     <ClCompile Include="swarm\vgui\rd_vgui_settings_video.cpp" />
     <ClCompile Include="swarm\vgui\rd_vgui_stock_ticker.cpp" />
     <ClCompile Include="swarm\vgui\rd_vgui_workshop_download_progress.cpp" />

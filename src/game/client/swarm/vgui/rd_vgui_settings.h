@@ -15,7 +15,8 @@ class CRD_VGUI_Microphone_Tester;
 class CRD_VGUI_Option_Dropdown;
 class CRD_VGUI_Settings_Panel_Base;
 class CRD_VGUI_Settings_Controls;
-class CRD_VGUI_Settings_Options;
+class CRD_VGUI_Settings_Options_1;
+class CRD_VGUI_Settings_Options_2;
 class CRD_VGUI_Settings_Audio;
 class CRD_VGUI_Settings_Video;
 class CRD_VGUI_Settings_About;
@@ -41,13 +42,15 @@ public:
 	CRD_VGUI_Main_Menu_Top_Bar *m_pTopBar;
 
 	BaseModHybridButton *m_pBtnControls;
-	BaseModHybridButton *m_pBtnOptions;
+	BaseModHybridButton *m_pBtnOptions1;
+	BaseModHybridButton *m_pBtnOptions2;
 	BaseModHybridButton *m_pBtnAudio;
 	BaseModHybridButton *m_pBtnVideo;
 	BaseModHybridButton *m_pBtnAbout;
 
 	CRD_VGUI_Settings_Controls *m_pPnlControls;
-	CRD_VGUI_Settings_Options *m_pPnlOptions;
+	CRD_VGUI_Settings_Options_1 *m_pPnlOptions1;
+	CRD_VGUI_Settings_Options_2 *m_pPnlOptions2;
 	CRD_VGUI_Settings_Audio *m_pPnlAudio;
 	CRD_VGUI_Settings_Video *m_pPnlVideo;
 	CRD_VGUI_Settings_About *m_pPnlAbout;
@@ -151,7 +154,6 @@ private:
 	bool m_bSliderActive : 1;
 	bool m_bSliderActiveMouse : 1;
 	bool m_bStartedSliderActiveAtRecommended : 1;
-	bool m_bDisplayAsPercentage : 1;
 	int m_iActiveOption;
 	union
 	{
@@ -195,6 +197,10 @@ private:
 	vgui::Label *m_pLblHint;
 	vgui::TextEntry *m_pTextEntry;
 	CRD_VGUI_Option_Dropdown *m_pDropdown;
+
+	float m_flDisplayMultiplier;
+	int m_nDecimalDigits;
+	char m_szDisplaySuffix[64];
 
 	friend class CRD_VGUI_Option_Dropdown;
 
@@ -327,15 +333,15 @@ public:
 	CPanelAnimationVarAliasType( float, m_flStickTestDistance, "stick_test_distance", "4", "proportional_float" );
 };
 
-class CRD_VGUI_Settings_Options : public CRD_VGUI_Settings_Panel_Base
+class CRD_VGUI_Settings_Options_1 : public CRD_VGUI_Settings_Panel_Base
 {
-	DECLARE_CLASS_SIMPLE( CRD_VGUI_Settings_Options, CRD_VGUI_Settings_Panel_Base );
+	DECLARE_CLASS_SIMPLE( CRD_VGUI_Settings_Options_1, CRD_VGUI_Settings_Panel_Base );
 public:
-	CRD_VGUI_Settings_Options( vgui::Panel *parent, const char *panelName );
+	CRD_VGUI_Settings_Options_1( vgui::Panel *parent, const char *panelName );
 
 	void Activate() override;
 	void OnCommand( const char *command ) override;
-	BaseModUI::BaseModHybridButton *GetButton( BaseModUI::CRD_VGUI_Settings *pSettings ) override { return pSettings->m_pBtnOptions; }
+	BaseModUI::BaseModHybridButton *GetButton( BaseModUI::CRD_VGUI_Settings *pSettings ) override { return pSettings->m_pBtnOptions1; }
 	MESSAGE_FUNC_PTR( OnCurrentOptionChanged, "CurrentOptionChanged", panel );
 
 	CRD_VGUI_Option *m_pSettingPlayerNameMode;
@@ -369,6 +375,17 @@ public:
 	CRD_VGUI_Option *m_pSettingReloadFastUnderMarine;
 	CRD_VGUI_Option *m_pSettingReloadFastWide;
 	CRD_VGUI_Option *m_pSettingReloadFastTall;
+};
+
+class CRD_VGUI_Settings_Options_2 : public CRD_VGUI_Settings_Panel_Base
+{
+	DECLARE_CLASS_SIMPLE( CRD_VGUI_Settings_Options_2, CRD_VGUI_Settings_Panel_Base );
+public:
+	CRD_VGUI_Settings_Options_2( vgui::Panel *parent, const char *panelName );
+
+	void Activate() override;
+	BaseModUI::BaseModHybridButton *GetButton( BaseModUI::CRD_VGUI_Settings *pSettings ) override { return pSettings->m_pBtnOptions2; }
+	MESSAGE_FUNC_PTR( OnCurrentOptionChanged, "CurrentOptionChanged", panel );
 
 	CRD_VGUI_Option *m_pSettingDamageNumbers;
 	CRD_VGUI_Option *m_pSettingStrangeRankUp;

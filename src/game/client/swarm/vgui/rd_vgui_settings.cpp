@@ -4,6 +4,7 @@
 #include "gameui/swarm/basemodpanel.h"
 #include <vgui/IInput.h>
 #include <vgui/ISurface.h>
+#include <vgui_controls/ScrollBar.h>
 #include <vgui_controls/TextEntry.h>
 #include "asw_util_shared.h"
 #include "nb_header_footer.h"
@@ -60,13 +61,15 @@ CRD_VGUI_Settings::CRD_VGUI_Settings( vgui::Panel *parent, const char *panelName
 	m_pTopBar->m_hActiveButton = m_pTopBar->m_pBtnSettings;
 
 	m_pBtnControls = new BaseModHybridButton( this, "BtnControls", "#rd_settings_controls", this, "Controls" );
-	m_pBtnOptions = new BaseModHybridButton( this, "BtnOptions", "#rd_settings_options", this, "Options" );
+	m_pBtnOptions1 = new BaseModHybridButton( this, "BtnOptions1", "#rd_settings_options_1", this, "Options1" );
+	m_pBtnOptions2 = new BaseModHybridButton( this, "BtnOptions2", "#rd_settings_options_2", this, "Options2" );
 	m_pBtnAudio = new BaseModHybridButton( this, "BtnAudio", "#rd_settings_audio", this, "Audio" );
 	m_pBtnVideo = new BaseModHybridButton( this, "BtnVideo", "#rd_settings_video", this, "Video" );
 	m_pBtnAbout = new BaseModHybridButton( this, "BtnAbout", "#rd_settings_about", this, "About" );
 
 	m_pPnlControls = new CRD_VGUI_Settings_Controls( this, "PnlControls" );
-	m_pPnlOptions = new CRD_VGUI_Settings_Options( this, "PnlOptions" );
+	m_pPnlOptions1 = new CRD_VGUI_Settings_Options_1( this, "PnlOptions1" );
+	m_pPnlOptions2 = new CRD_VGUI_Settings_Options_2( this, "PnlOptions2" );
 	m_pPnlAudio = new CRD_VGUI_Settings_Audio( this, "PnlAudio" );
 	m_pPnlVideo = new CRD_VGUI_Settings_Video( this, "PnlVideo" );
 	m_pPnlAbout = new CRD_VGUI_Settings_About( this, "PnlAbout" );
@@ -91,7 +94,8 @@ void CRD_VGUI_Settings::ApplySchemeSettings( vgui::IScheme *pScheme )
 
 	// I don't know why these aren't working from the .res file.
 	m_pBtnControls->SetNavUp( m_pTopBar );
-	m_pBtnOptions->SetNavUp( m_pTopBar );
+	m_pBtnOptions1->SetNavUp( m_pTopBar );
+	m_pBtnOptions2->SetNavUp( m_pTopBar );
 	m_pBtnAudio->SetNavUp( m_pTopBar );
 	m_pBtnVideo->SetNavUp( m_pTopBar );
 	m_pBtnAbout->SetNavUp( m_pTopBar );
@@ -100,9 +104,13 @@ void CRD_VGUI_Settings::ApplySchemeSettings( vgui::IScheme *pScheme )
 	{
 		NavigateToTab( m_pBtnControls, m_pPnlControls, NULL );
 	}
-	else if ( !V_stricmp( rd_settings_last_tab.GetString(), "options" ) )
+	else if ( !V_stricmp( rd_settings_last_tab.GetString(), "options1" ) )
 	{
-		NavigateToTab( m_pBtnOptions, m_pPnlOptions, NULL );
+		NavigateToTab( m_pBtnOptions1, m_pPnlOptions1, NULL );
+	}
+	else if ( !V_stricmp( rd_settings_last_tab.GetString(), "options2" ) )
+	{
+		NavigateToTab( m_pBtnOptions2, m_pPnlOptions2, NULL );
 	}
 	else if ( !V_stricmp( rd_settings_last_tab.GetString(), "audio" ) )
 	{
@@ -124,9 +132,13 @@ void CRD_VGUI_Settings::OnCommand( const char *command )
 	{
 		NavigateToTab( m_pBtnControls, m_pPnlControls, "controls" );
 	}
-	else if ( !V_stricmp( command, "Options" ) )
+	else if ( !V_stricmp( command, "Options1" ) )
 	{
-		NavigateToTab( m_pBtnOptions, m_pPnlOptions, "options" );
+		NavigateToTab( m_pBtnOptions1, m_pPnlOptions1, "options1" );
+	}
+	else if ( !V_stricmp( command, "Options2" ) )
+	{
+		NavigateToTab( m_pBtnOptions2, m_pPnlOptions2, "options2" );
 	}
 	else if ( !V_stricmp( command, "Audio" ) )
 	{
@@ -150,12 +162,14 @@ void CRD_VGUI_Settings::NavigateToTab( BaseModHybridButton *pButton, CRD_VGUI_Se
 {
 	pButton->SetOpen();
 	m_pPnlControls->SetVisible( m_pPnlControls == pPanel );
-	m_pPnlOptions->SetVisible( m_pPnlOptions == pPanel );
+	m_pPnlOptions1->SetVisible( m_pPnlOptions1 == pPanel );
+	m_pPnlOptions2->SetVisible( m_pPnlOptions2 == pPanel );
 	m_pPnlAudio->SetVisible( m_pPnlAudio == pPanel );
 	m_pPnlVideo->SetVisible( m_pPnlVideo == pPanel );
 	m_pPnlAbout->SetVisible( m_pPnlAbout == pPanel );
 	m_pBtnControls->SetNavDown( pPanel );
-	m_pBtnOptions->SetNavDown( pPanel );
+	m_pBtnOptions1->SetNavDown( pPanel );
+	m_pBtnOptions2->SetNavDown( pPanel );
 	m_pBtnAudio->SetNavDown( pPanel );
 	m_pBtnVideo->SetNavDown( pPanel );
 	m_pBtnAbout->SetNavDown( pPanel );
@@ -354,8 +368,10 @@ CRD_VGUI_Option::CRD_VGUI_Option( vgui::Panel *parent, const char *panelName, co
 	m_bSliderActive = false;
 	m_bSliderActiveMouse = false;
 	m_bStartedSliderActiveAtRecommended = false;
-	m_bDisplayAsPercentage = false;
 	m_iActiveOption = -1;
+	m_flDisplayMultiplier = 1.0f;
+	m_nDecimalDigits = -1;
+	m_szDisplaySuffix[0] = '\0';
 
 	if ( !s_OptionControls.Count() )
 		g_pCVar->InstallGlobalChangeCallback( &SettingsConVarChangedCallback );
@@ -518,7 +534,9 @@ void CRD_VGUI_Option::ApplySettings( KeyValues *pSettings )
 		LoadControlSettings( szResFile );
 	}
 
-	m_bDisplayAsPercentage = pSettings->GetBool( "percentage", m_bDisplayAsPercentage );
+	m_flDisplayMultiplier = pSettings->GetFloat( "displayMultiplier", 1.0f );
+	m_nDecimalDigits = pSettings->GetInt( "decimalDigits", -1 );
+	V_strncpy( m_szDisplaySuffix, pSettings->GetString( "displaySuffix", "" ), sizeof( m_szDisplaySuffix ) );
 }
 
 void CRD_VGUI_Option::PerformLayout()
@@ -1005,8 +1023,7 @@ void CRD_VGUI_Option::OnTextChanged()
 	Assert( !s_bSuppressTextEntryChange );
 
 	float flNewValue = m_pTextEntry->GetValueAsFloat();
-	if ( m_bDisplayAsPercentage )
-		flNewValue /= 100;
+	flNewValue /= m_flDisplayMultiplier;
 	flNewValue = clamp( flNewValue, m_flMinValue, m_flMaxValue );
 
 	s_bSuppressTextEntryChange = true;
@@ -1220,14 +1237,13 @@ void CRD_VGUI_Option::SetCurrentSliderValue( float flValue )
 			m_pTextEntry->SetAlpha( 64 );
 		}
 
-		int iDigits = 1 - MIN( log10f( ( m_flMaxValue - m_flMinValue ) * YRES( 1 ) / m_pInteractiveArea->GetWide() ), 0 );
-		if ( m_bDisplayAsPercentage )
-		{
-			iDigits = MAX( iDigits - 2, 1 );
-			flValue *= 100;
-		}
+		int iDigits = m_nDecimalDigits;
+		if ( iDigits == -1 )
+			iDigits = 1 - MIN( log10f( ( m_flMaxValue - m_flMinValue ) * m_flDisplayMultiplier * YRES( 1 ) / m_pInteractiveArea->GetWide() ), 0 );
 
-		m_pTextEntry->SetText( VarArgs( "%.*f", iDigits, flValue ) );
+		flValue *= m_flDisplayMultiplier;
+
+		m_pTextEntry->SetText( VarArgs( "%.*f%s", iDigits, flValue, m_szDisplaySuffix ) );
 	}
 
 	KeyValues *pKV = new KeyValues( "CurrentOptionChanged" );
