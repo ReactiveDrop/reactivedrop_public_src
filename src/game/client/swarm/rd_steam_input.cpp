@@ -16,6 +16,7 @@
 #include "gameui/swarm/basemodpanel.h"
 #include "gameui/swarm/basemodframe.h"
 #include "controller_focus.h"
+#include "gameui_interface.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -737,6 +738,13 @@ void CRD_Steam_Controller::OnDisconnected()
 	Assert( m_bConnected );
 
 	m_bConnected = false;
+
+	// CERT: "When the controller is disconnected, the game must pause unless it's a multiplayer game."
+	if ( engine->IsInGame() && gpGlobals->maxClients == 1 && !engine->IsPaused() )
+	{
+		ACTIVE_SPLITSCREEN_PLAYER_GUARD( m_SplitScreenPlayerIndex );
+		GameUI().ActivateGameUI();
+	}
 }
 
 void CRD_Steam_Controller::OnFrame( ISteamInput *pSteamInput )
@@ -744,6 +752,8 @@ void CRD_Steam_Controller::OnFrame( ISteamInput *pSteamInput )
 #ifdef RD_STEAM_INPUT_ACTIONS
 	if ( !m_bConnected )
 		return;
+
+	ACTIVE_SPLITSCREEN_PLAYER_GUARD( m_SplitScreenPlayerIndex );
 
 	// disable source engine input handling so we don't get double inputs for xinput controllers
 	g_pInputSystem->EnableJoystickInput( pSteamInput->GetGamepadIndexForController( m_hController ), false );
@@ -807,15 +817,13 @@ void CRD_Steam_Controller::OnDigitalAction( InputDigitalActionHandle_t hAction, 
 
 		return;
 	}
-
-	//Assert( !"unexpected digital action event type" );
 }
 
 void CRD_Steam_Controller::OnAnalogAction( InputAnalogActionHandle_t hAction, EInputSourceMode mode, float x, float y )
 {
 	Assert( m_bConnected );
 
-	//Assert( !"unexpected analog action event type" );
+	// analog actions are handled per-frame, not per-input.
 }
 
 CRD_Steam_Input_Bind *CRD_Steam_Input_Bind::s_pBinds = NULL;
