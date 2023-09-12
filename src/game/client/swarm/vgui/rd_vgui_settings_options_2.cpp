@@ -15,12 +15,12 @@ CRD_VGUI_Settings_Options_2::CRD_VGUI_Settings_Options_2( vgui::Panel *parent, c
 {
 	// Floating Text
 	m_pSettingDamageNumbers = new CRD_VGUI_Option( this, "SettingDamageNumbers", "#rd_option_damage_numbers", CRD_VGUI_Option::MODE_DROPDOWN );
-	m_pSettingDamageNumbers->AddOption( 0, "#rd_option_damge_numbers_disabled", "#rd_option_damge_numbers_hint" );
+	m_pSettingDamageNumbers->AddOption( 0, "#rd_option_damage_numbers_disabled", "#rd_option_damage_numbers_hint" );
 	m_pSettingDamageNumbers->LinkToConVarAdvanced( 0, "asw_floating_number_type", 0 );
-	m_pSettingDamageNumbers->AddOption( 1, "#rd_option_damge_numbers_separate", "#rd_option_damge_numbers_hint" );
+	m_pSettingDamageNumbers->AddOption( 1, "#rd_option_damage_numbers_separate", "#rd_option_damage_numbers_hint" );
 	m_pSettingDamageNumbers->LinkToConVarAdvanced( 1, "asw_floating_number_type", 2 );
 	m_pSettingDamageNumbers->LinkToConVarAdvanced( 1, "asw_floating_number_combine", 0 );
-	m_pSettingDamageNumbers->AddOption( 2, "#rd_option_damge_numbers_combined", "#rd_option_damge_numbers_hint" );
+	m_pSettingDamageNumbers->AddOption( 2, "#rd_option_damage_numbers_combined", "#rd_option_damage_numbers_hint" );
 	m_pSettingDamageNumbers->LinkToConVarAdvanced( 2, "asw_floating_number_type", 2 );
 	m_pSettingDamageNumbers->LinkToConVarAdvanced( 2, "asw_floating_number_combine", 1 );
 	m_pSettingDamageNumbers->SetCurrentUsingConVars();
