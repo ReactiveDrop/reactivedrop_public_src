@@ -21,6 +21,7 @@
 
 extern ConVar asw_vote_kick_fraction;
 extern ConVar asw_vote_leader_fraction;
+extern ConVar rd_report_voted_players;
 
 #define MUTE_BUTTON_ICON "voice/voice_icon_hud"
 
