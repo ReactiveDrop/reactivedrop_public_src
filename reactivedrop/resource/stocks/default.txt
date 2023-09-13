@@ -11,7 +11,7 @@
 	"Change2"		"-1.46"
 	"Volume2"		"88564432"
 
-	"Symbol3"		"ENIG"
+	"Symbol3"		"NGMA"
 	"Name3"		"#asw_so_enigma"
 	"Value3"		"95.01"
 	"Change3"		"-1.92"
