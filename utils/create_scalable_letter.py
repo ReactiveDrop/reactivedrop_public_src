@@ -7,7 +7,8 @@ out_dir = "../reactivedrop/materials/vgui/letters"
 
 for letter in sys.argv[1:]:
 	codepoint = letter.upper()
-	smooth = ["-blur", "0x10", "-threshold", "50%", "-blur", "0x1"]
+	#smooth = ["-blur", "0x10", "-threshold", "50%", "-blur", "0x1"]
+	smooth = ["-threshold", "50%", "-blur", "0x1"]
 	if len(letter) == 1:
 		if ord(letter) < 97 or ord(letter) > 122:
 			raise Exception("invalid single letter (must be ASCII and lowercase; otherwise use a codepoint)")
