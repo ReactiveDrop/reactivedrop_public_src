@@ -39,6 +39,8 @@ using BaseModUI::GenericPanelList;
 
 int g_asw_iPlayerListOpen = 0;
 
+ConVar rd_report_voted_players( "rd_report_voted_players", "0", FCVAR_ARCHIVE, "Automatically send a report when voting or muting a player on the player list." );
+
 PlayerListPanel::PlayerListPanel(vgui::Panel *parent, const char *name) :
 	vgui::EditablePanel(parent, name)
 {
@@ -386,7 +388,7 @@ void PlayerListPanel::KickClicked( PlayerListLine *pLine )
 				engine->ClientCmd( buffer );
 
 				C_ASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( m_PlayerLine[i]->m_iPlayerIndex ) );
-				if ( pPlayer && !g_RD_Player_Reporting.IsInProgress() && !g_RD_Player_Reporting.RecentlyReportedPlayer( "quick_auto_votekick", pPlayer->GetSteamID() ) )
+				if ( pPlayer && !g_RD_Player_Reporting.IsInProgress() && !g_RD_Player_Reporting.RecentlyReportedPlayer( "quick_auto_votekick", pPlayer->GetSteamID() ) && rd_report_voted_players.GetBool() )
 				{
 					g_RD_Player_Reporting.PrepareReportForSend( "quick_auto_votekick", NULL, pPlayer->GetSteamID(), CUtlVector<CUtlBuffer>{}, false );
 				}
@@ -415,7 +417,7 @@ void PlayerListPanel::LeaderClicked( PlayerListLine *pLine )
 				engine->ClientCmd( buffer );
 
 				C_ASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( m_PlayerLine[i]->m_iPlayerIndex ) );
-				if ( pPlayer && !g_RD_Player_Reporting.IsInProgress() && !g_RD_Player_Reporting.RecentlyReportedPlayer( "quick_auto_voteleader", pPlayer->GetSteamID() ) )
+				if ( pPlayer && !g_RD_Player_Reporting.IsInProgress() && !g_RD_Player_Reporting.RecentlyReportedPlayer( "quick_auto_voteleader", pPlayer->GetSteamID() ) && rd_report_voted_players.GetBool() )
 				{
 					g_RD_Player_Reporting.PrepareReportForSend( "quick_auto_voteleader", NULL, pPlayer->GetSteamID(), CUtlVector<CUtlBuffer>{}, false );
 				}
