@@ -1,6 +1,5 @@
 # Set the default behavior, in case people don't have core.autocrlf set.
 * text=auto
-
 # Explicitly declare text files you want to always be normalized and converted
 # to native line endings on checkout.
 *.c text
@@ -11,12 +10,10 @@
 *.fgd text
 # *.txt text # Warning! Do not enable this or it corrupts our unicode TXT files, e.g. resource/ReactiveDrop_english.txt
 *.vmf text
-
 # Declare files that will always have CRLF line endings on checkout.
 *.sln text eol=crlf
 *.vcproj text eol=crlf
 *.vcxproj text eol=crlf
-
 # Denote all files that are truly binary and should not be modified.
 *.blend binary
 *.jpg binary
@@ -27,3 +24,6 @@
 *.xcf binary
 *.bin binary
 *.ekv binary
+
+*.ttf filter=lfs diff=lfs merge=lfs -text
+*.ttc filter=lfs diff=lfs merge=lfs -text

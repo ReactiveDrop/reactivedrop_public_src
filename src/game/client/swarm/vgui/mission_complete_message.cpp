@@ -28,7 +28,7 @@ void CMission_Complete_Message::PerformLayout()
 	BaseClass::PerformLayout();
 
 	m_flStartWidth = m_flStartHeight = YRES( 400 );
-	m_flEndWidth = m_flEndHeight = YRES( 105 );
+	m_flEndWidth = m_flEndHeight = YRES( 100 );
 
 	SetBounds( 0, 0, ScreenWidth(), ScreenHeight() );
 }

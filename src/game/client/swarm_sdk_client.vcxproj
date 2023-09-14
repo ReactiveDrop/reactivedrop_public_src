@@ -399,6 +399,9 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <None Include="..\..\vpc_scripts\loadaddress.vpc" />
     <None Include="client_base.vpc" />
     <None Include="client_swarm.vpc" />
+    <ClInclude Include="swarm\vgui\asw_scalable_text.inc">
+      <FileType>Document</FileType>
+    </ClInclude>
     <None Include="vscript_client.nut" />
   </ItemGroup>
   <ItemGroup>
