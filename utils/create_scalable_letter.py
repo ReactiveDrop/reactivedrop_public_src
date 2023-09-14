@@ -8,8 +8,8 @@ out_dir = "../reactivedrop/materials/vgui/letters"
 out_inc = "../src/game/client/swarm/vgui/asw_scalable_text.inc"
 font_latin = "fonts/Play-Bold.ttf"
 font_cyrillic = "fonts/Play-Bold.ttf"
-#font_han = "fonts/NotoSansCJK-Bold.ttc"
-font_han = "fonts/ZCOOLQingKeHuangYou-Regular.ttf"
+font_han = "fonts/NotoSansCJK-Bold.ttc"
+#font_han = "fonts/ZCOOLQingKeHuangYou-Regular.ttf"
 
 font_latin_ttf = ImageFont.truetype(font_latin, 336)
 font_cyrillic_ttf = ImageFont.truetype(font_cyrillic, 336)
