@@ -12,6 +12,8 @@ DECLARE_BUILD_FACTORY( CRD_VGUI_Main_Menu_Top_Bar );
 
 using namespace BaseModUI;
 
+static int s_nMainMenuTopBarCount = 0;
+
 CRD_VGUI_Main_Menu_Top_Bar::CRD_VGUI_Main_Menu_Top_Bar( vgui::Panel *parent, const char *panelName ) :
 	BaseClass( parent, panelName )
 {
@@ -31,10 +33,22 @@ CRD_VGUI_Main_Menu_Top_Bar::CRD_VGUI_Main_Menu_Top_Bar( vgui::Panel *parent, con
 	m_iRightGlow = 0;
 
 	g_RD_HUD_Sheets.VidInit();
+
+	if ( !s_nMainMenuTopBarCount && SteamUtils() )
+	{
+		SteamUtils()->SetOverlayNotificationInset( 0, YRES( 24 ) );
+	}
+	s_nMainMenuTopBarCount++;
 }
 
 CRD_VGUI_Main_Menu_Top_Bar::~CRD_VGUI_Main_Menu_Top_Bar()
 {
+	Assert( s_nMainMenuTopBarCount > 0 );
+	s_nMainMenuTopBarCount--;
+	if ( !s_nMainMenuTopBarCount && SteamUtils() )
+	{
+		SteamUtils()->SetOverlayNotificationInset( 0, 0 );
+	}
 }
 
 void CRD_VGUI_Main_Menu_Top_Bar::ApplySchemeSettings( vgui::IScheme *pScheme )
