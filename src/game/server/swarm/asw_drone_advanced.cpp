@@ -84,6 +84,7 @@ ConVar asw_new_drone("asw_new_drone", "1", FCVAR_CHEAT, "Set to 1 to use the new
 ConVar rd_drone_uber_knockdown( "rd_drone_uber_knockdown", "0", FCVAR_CHEAT, "Set to 1 to make uber drones knock down marines like shieldbugs do" );
 ConVar rd_drone_uber_knockdown_force( "rd_drone_uber_knockdown_force", "10", FCVAR_CHEAT, "Magnitude of knockdown force for uber drone's melee attack, only works if rd_drone_uber_knockdown 1" );
 ConVar rd_drone_uber_knockdown_lift( "rd_drone_uber_knockdown_lift", "10", FCVAR_CHEAT, "Upwards force for uber drone's melee attack, only works if rd_drone_uber_knockdown 1" );
+ConVar rd_drone_flinch_resets_attack( "rd_drone_flinch_resets_attack", "0", FCVAR_CHEAT, "Set to 1 to revert the fix for drones being able to attack immediately after a flinch interrupts an attack animation" );
 ConVar rd_pistols_uber_drone_additional_damage_health_percent("rd_pistols_uber_drone_additional_damage_health_percent", "12", FCVAR_CHEAT, "Special pistol bullets provide additional damage over heavy drones");
 ConVar rd_pistols_drone_dualshot_health_bound("rd_pistols_drone_dualshot_health_bound", "105", FCVAR_CHEAT, "Drones below this health guaranteed to die in two (or one) pistol shots");
 extern ConVar asw_debug_alien_damage;
@@ -961,7 +962,8 @@ void CASW_Drone_Advanced::MeleeAttack( float distance, float damage, QAngle &vie
 	m_bHasAttacked = true;
 
 	// Prevent drone from attacking again before this animation would have finished.
-	SetNextAttack( gpGlobals->curtime + SequenceDuration() / GetPlaybackRate() - GetCycle() );
+	if ( !rd_drone_flinch_resets_attack.GetBool() )
+		SetNextAttack( gpGlobals->curtime + SequenceDuration() / GetPlaybackRate() - GetCycle() );
 
 	// Always hurt bullseyes for now
 	if ( ( GetEnemy() != NULL ) && ( GetEnemy()->Classify() == CLASS_BULLSEYE ) )
