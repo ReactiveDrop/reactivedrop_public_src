@@ -90,6 +90,11 @@
 [
 ]
 
+@FilterClass base(BaseFilter) iconsprite("editor/filter_name.vmt") = asw_filter_incapacitated :
+	"A filter that selects revivable marines."
+[
+]
+
 @SolidClass base(Targetname, Parentname, Origin, RenderFields, Global, Inputfilter, EnableDisable, Shadow) = func_asw_fade : 
 	"A func_brush that fades when the camera is third person and the marine is below the origin." 
 [
