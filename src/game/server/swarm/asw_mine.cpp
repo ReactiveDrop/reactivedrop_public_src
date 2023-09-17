@@ -232,6 +232,9 @@ bool CASW_Mine::ValidMineTarget(CBaseEntity *pOther)
 	if ( pOther && pOther->Classify() == CLASS_ASW_COLONIST ) 
 		return false;
 
+	if ( pOther && pOther->m_takedamage == DAMAGE_NO )
+		return false;
+
 	if ( pOther && pOther->IsNPC() )
 		return true;
 
