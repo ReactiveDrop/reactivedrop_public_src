@@ -9,6 +9,7 @@
 #include "object_motion_blur_effect.h"
 #include "asw_player_shared.h"
 #include "iasw_client_aim_target.h"
+#include "asw_shareddefs.h"
 
 class C_ASW_Player;
 class C_ASW_Weapon;
