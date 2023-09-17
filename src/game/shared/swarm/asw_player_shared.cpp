@@ -836,12 +836,26 @@ void CASW_Player::SortUsePair( CBaseEntity **pEnt1, CBaseEntity **pEnt2, int *pn
 }
 
 // returns the priority of a usable entity
-int CASW_Player::GetUsePriority( CBaseEntity* pEnt )
+int CASW_Player::GetUsePriority( CBaseEntity *pEnt )
 {
 	if ( !pEnt )
 		return 0;
 
-	if ( !pEnt->IsEffectActive( EF_NODRAW ) )
+	CBaseEntity *pTargetEnt = pEnt;
+	if ( pEnt->Classify() == CLASS_ASW_BUTTON_PANEL )
+	{
+		pTargetEnt = assert_cast< CASW_Button_Area * >( pEnt )->m_hUseTarget;
+		if ( !pTargetEnt )
+			pTargetEnt = pEnt;
+	}
+	else if ( pEnt->Classify() == CLASS_ASW_COMPUTER_AREA )
+	{
+		pTargetEnt = assert_cast< CASW_Computer_Area * >( pEnt )->m_hUseTarget;
+		if ( !pTargetEnt )
+			pTargetEnt = pEnt;
+	}
+
+	if ( !pTargetEnt->IsEffectActive( EF_NODRAW ) )
 	{
 		Vector vTracePos =
 #ifdef GAME_DLL
@@ -850,7 +864,7 @@ int CASW_Player::GetUsePriority( CBaseEntity* pEnt )
 			ASWInput()->GetCrosshairTracePos();
 #endif
 
-		CCollisionProperty *pMyProp = pEnt->CollisionProp();
+		CCollisionProperty *pMyProp = pTargetEnt->CollisionProp();
 		Ray_t ray;
 		ray.Init( vTracePos + Vector( 0.0f, 0.0f, -10.0f ), vTracePos + Vector( 0.0f, 0.0f, 10.0f ) );
 
@@ -868,7 +882,7 @@ int CASW_Player::GetUsePriority( CBaseEntity* pEnt )
 
 	if ( pEnt->Classify() == CLASS_ASW_BUTTON_PANEL )
 	{
-		CASW_Button_Area *pButton = static_cast< CASW_Button_Area* >( pEnt );
+		CASW_Button_Area *pButton = static_cast< CASW_Button_Area * >( pEnt );
 		if ( pButton->IsWaitingForInput() )
 		{
 			// Button wants to be pushed oh so badly
@@ -880,7 +894,7 @@ int CASW_Player::GetUsePriority( CBaseEntity* pEnt )
 
 	if ( pEnt->Classify() == CLASS_ASW_COMPUTER_AREA )
 	{
-		CASW_Computer_Area *pComputer = static_cast< CASW_Computer_Area* >( pEnt );
+		CASW_Computer_Area *pComputer = static_cast< CASW_Computer_Area * >( pEnt );
 		if ( pComputer->IsWaitingForInput() )
 		{
 			// Button wants to be pushed oh so badly
@@ -891,9 +905,9 @@ int CASW_Player::GetUsePriority( CBaseEntity* pEnt )
 	}
 
 	CASW_Marine *pMarine = CASW_Marine::AsMarine( GetNPC() );
-	
+
 	// check if this item is usable by a marine
-	CASW_Weapon *pWeapon = dynamic_cast< CASW_Weapon* >( pEnt );
+	CASW_Weapon *pWeapon = dynamic_cast< CASW_Weapon * >( pEnt );
 	if ( pWeapon )
 	{
 		if ( pWeapon->AllowedToPickup( pMarine ) )
@@ -907,7 +921,7 @@ int CASW_Player::GetUsePriority( CBaseEntity* pEnt )
 	}
 
 	// check if this item is usable by a marine
-	CASW_Pickup *pPickup = dynamic_cast< CASW_Pickup* >( pEnt );
+	CASW_Pickup *pPickup = dynamic_cast< CASW_Pickup * >( pEnt );
 	if ( pPickup )
 	{
 		if ( pPickup->AllowedToPickup( pMarine ) )
@@ -921,7 +935,7 @@ int CASW_Player::GetUsePriority( CBaseEntity* pEnt )
 	}
 
 	// check if this item is usable by a marine
-	CASW_Ammo_Drop *pAmmoDrop = dynamic_cast< CASW_Ammo_Drop* >( pEnt );
+	CASW_Ammo_Drop *pAmmoDrop = dynamic_cast< CASW_Ammo_Drop * >( pEnt );
 	if ( pAmmoDrop )
 	{
 		if ( pAmmoDrop->AllowedToPickup( pMarine ) )
