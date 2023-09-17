@@ -19,7 +19,7 @@ public:
 	void	Spawn( void );
 	void	Precache( void );
 
-	unsigned int PhysicsSolidMaskForEntity() const { return (MASK_NPCSOLID & ~CONTENTS_MONSTERCLIP); }
+	unsigned int PhysicsSolidMaskForEntity() const { return MASK_SOLID; }
 	void	BaitTouch( CBaseEntity *pOther );
 	void	LayFlat();
 

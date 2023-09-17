@@ -72,7 +72,7 @@ void CASW_Mine::Spawn( void )
 
 unsigned int CASW_Mine::PhysicsSolidMaskForEntity( void ) const
 {
-	return (MASK_NPCSOLID & ~CONTENTS_MONSTERCLIP);
+	return MASK_SOLID;
 }
 
 void CASW_Mine::MineThink( void )

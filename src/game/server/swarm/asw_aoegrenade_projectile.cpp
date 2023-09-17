@@ -213,7 +213,7 @@ const Vector& CASW_AOEGrenade_Projectile::GetEffectOrigin()
 
 unsigned int CASW_AOEGrenade_Projectile::PhysicsSolidMaskForEntity( void ) const
 {
-	return (MASK_NPCSOLID & ~CONTENTS_MONSTERCLIP);
+	return MASK_SOLID;
 }
 
 void CASW_AOEGrenade_Projectile::AOEGrenadeTouch( CBaseEntity *pOther )
