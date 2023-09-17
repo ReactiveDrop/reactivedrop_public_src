@@ -8,6 +8,7 @@
 #include "c_asw_marine.h"
 #include "prediction.h"
 #include "c_te_effect_dispatch.h"
+#define CASW_Inhabitable_NPC C_ASW_Inhabitable_NPC
 #else
 #include "asw_marine.h"
 #include "asw_player.h"
@@ -86,8 +87,9 @@ ConVar rd_grenade_launcher_num_clusters( "rd_grenade_launcher_num_clusters", "0"
 ConVar rd_grenade_launcher_grenade_preview( "rd_grenade_launcher_grenade_preview", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "Draw a predictive arc for a grenade launcher" );
 ConVar asw_grenade_launcher_gravity( "asw_grenade_launcher_gravity", "2.4", FCVAR_CHEAT | FCVAR_REPLICATED, "Gravity of grenade launcher grenades" );
 ConVar asw_grenade_launcher_velocity( "asw_grenade_launcher_velocity", "28.0", FCVAR_CHEAT | FCVAR_REPLICATED, "Velocity multiplier for grenade launcher grenades" );
-ConVar rd_grenade_launcher_far_below_distance( "rd_grenade_launcher_far_below_distance", "256", FCVAR_CHEAT | FCVAR_REPLICATED, "How far below the grenade's starting position the target has to be to use the arc modifier." );
-ConVar rd_grenade_launcher_far_below_arc_modifier( "rd_grenade_launcher_far_below_arc_modifier", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "A time value to force grenades launched \"far below\" to use while calculating the arc." );
+ConVar rd_grenade_launcher_far_below_require_hit_world( "rd_grenade_launcher_far_below_require_hit_world", "128", FCVAR_CHEAT | FCVAR_REPLICATED, "Only use the \"far below\" logic if the grenade would hit a static part of the world more than this many units away from the target." );
+ConVar rd_grenade_launcher_far_below_distance( "rd_grenade_launcher_far_below_distance", "512", FCVAR_CHEAT | FCVAR_REPLICATED, "How far below the grenade's starting position the target has to be to use the arc modifier." );
+ConVar rd_grenade_launcher_far_below_arc_modifier( "rd_grenade_launcher_far_below_arc_modifier", "1.5", FCVAR_CHEAT | FCVAR_REPLICATED, "A time value to force grenades launched \"far below\" to use while calculating the arc." );
 
 void CASW_Weapon_Grenade_Launcher::PrimaryAttack( void )
 {
@@ -99,36 +101,26 @@ void CASW_Weapon_Grenade_Launcher::PrimaryAttack( void )
 #ifndef CLIENT_DLL
 	pMarine->GetMarineSpeech()->Chatter(CHATTER_GRENADE);
 
-	Vector	vecSrc		= pMarine->Weapon_ShootPosition( );
-	// check it fits where we want to spawn it
-	Ray_t ray;
-	trace_t pm;
-	ray.Init( pMarine->WorldSpaceCenter(), vecSrc, -Vector(4,4,4), Vector(4,4,4) );
-	UTIL_TraceRay( ray, MASK_SOLID, pMarine, COLLISION_GROUP_PROJECTILE, &pm );
-	if (pm.fraction < 1.0f)
-		vecSrc = pm.endpos;
+	Vector vecSrc;
+	Vector vecLaunch = IdealLaunchVelocity( vecSrc );
 
-	CASW_Player *pPlayer = GetCommander();
-	Vector vecDest = (pPlayer && pMarine->IsInhabited()) ? pPlayer->GetCrosshairTracePos() : pMarine->GetEnemyLKP();
-	Vector newVel = UTIL_LaunchVector( vecSrc, vecDest, asw_grenade_launcher_gravity.GetFloat(), vecSrc.z > vecDest.z + rd_grenade_launcher_far_below_distance.GetFloat() ? rd_grenade_launcher_far_below_arc_modifier.GetFloat() * asw_grenade_launcher_velocity.GetFloat() : 0.0f ) * asw_grenade_launcher_velocity.GetFloat();
-
-	float fGrenadeDamage = GetWeaponDamage();	
-	float fGrenadeRadius = MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_RADIUS);
-	int iClusters = rd_grenade_launcher_num_clusters.GetInt(); //MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_CLUSTERS);
-	if (asw_debug_marine_damage.GetBool())
+	float fGrenadeDamage = GetWeaponDamage();
+	float fGrenadeRadius = MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_RADIUS );
+	int iClusters = rd_grenade_launcher_num_clusters.GetInt();
+	if ( asw_debug_marine_damage.GetBool() )
 	{
-		Msg("Grenade launcher damage = %f radius = %f clusters = %d\n", fGrenadeDamage, fGrenadeRadius, iClusters);
+		Msg( "Grenade launcher damage = %f radius = %f clusters = %d\n", fGrenadeDamage, fGrenadeRadius, iClusters );
 	}
 
 	if (ASWGameRules())
 		ASWGameRules()->m_fLastFireTime = gpGlobals->curtime;
 
-	CASW_Grenade_Cluster *pGrenade = 
+	CASW_Grenade_Cluster *pGrenade =
 		CASW_Grenade_Cluster::Cluster_Grenade_Create(
 			fGrenadeDamage,
 			fGrenadeRadius,
 			iClusters,
-			vecSrc, pMarine->EyeAngles(), newVel, AngularImpulse(0,0,0), pMarine, this );
+			vecSrc, pMarine->EyeAngles(), vecLaunch, AngularImpulse( 0, 0, 0 ), pMarine, this );
 	if ( pGrenade )
 	{
 		pGrenade->SetGravity( asw_grenade_launcher_gravity.GetFloat() );
@@ -184,6 +176,54 @@ void CASW_Weapon_Grenade_Launcher::ItemPostFrame( void )
 	Preview();
 }
 
+Vector CASW_Weapon_Grenade_Launcher::IdealLaunchVelocity( Vector &vecSrc )
+{
+	CBaseCombatCharacter *pOwner = GetOwner();
+	Assert( pOwner && pOwner->IsInhabitableNPC() );
+	if ( !pOwner || !pOwner->IsInhabitableNPC() )
+		return vec3_origin;
+
+	CASW_Inhabitable_NPC *pNPC = assert_cast< CASW_Inhabitable_NPC * >( pOwner );
+	CASW_Player *pPlayer = pNPC->GetCommander();
+
+	vecSrc = pNPC->Weapon_ShootPosition();
+	// check it fits where we want to spawn it
+	Ray_t ray;
+	trace_t pm;
+	ray.Init( pNPC->WorldSpaceCenter(), vecSrc, -Vector( 4, 4, 4 ), Vector( 4, 4, 4 ) );
+	UTIL_TraceRay( ray, MASK_SOLID, pNPC, ASW_COLLISION_GROUP_GRENADES, &pm );
+	if ( pm.fraction < 1.0f )
+		vecSrc = pm.endpos;
+
+	Vector vecDest;
+#ifdef CLIENT_DLL
+	Assert( pNPC->IsInhabited() && pPlayer );
+	if ( !pNPC->IsInhabited() || !pPlayer )
+		return vec3_origin;
+#else
+	vecDest = pNPC->GetEnemyLKP();
+#endif
+
+	if ( pNPC->IsInhabited() )
+	{
+		Assert( pPlayer );
+		if ( pPlayer )
+			vecDest = pPlayer->GetCrosshairTracePos();
+	}
+
+	Vector vecLaunch = UTIL_LaunchVector( vecSrc, vecDest, asw_grenade_launcher_gravity.GetFloat() ) * asw_grenade_launcher_velocity.GetFloat();
+	if ( vecSrc.z > vecDest.z + rd_grenade_launcher_far_below_distance.GetFloat() )
+	{
+		Vector vecEndPos = UTIL_Check_Throw( vecSrc, vecLaunch, asw_grenade_launcher_gravity.GetFloat(), -Vector( 4, 4, 4 ), Vector( 4, 4, 4 ), MASK_SOLID, ASW_COLLISION_GROUP_GRENADES, pNPC );
+		if ( vecDest.DistToSqr( vecEndPos ) > Square( rd_grenade_launcher_far_below_require_hit_world.GetFloat() ) )
+		{
+			vecLaunch = UTIL_LaunchVector( vecSrc, vecDest, asw_grenade_launcher_gravity.GetFloat(), rd_grenade_launcher_far_below_arc_modifier.GetFloat() * asw_grenade_launcher_velocity.GetFloat() ) * asw_grenade_launcher_velocity.GetFloat();
+		}
+	}
+
+	return vecLaunch;
+}
+
 void CASW_Weapon_Grenade_Launcher::Preview()
 {
 	if ( !rd_grenade_launcher_grenade_preview.GetBool() )
@@ -195,12 +235,10 @@ void CASW_Weapon_Grenade_Launcher::Preview()
 
 	if ( pMarine && pMarine == pLocalMarine && pMarine->IsInhabited() )
 	{
-		CASW_Player *pPlayer = pMarine->GetCommander();
-		Vector vecSrc = pMarine->Weapon_ShootPosition();
-		Vector vecDest = pPlayer->GetCrosshairTracePos();
-		Vector vecThrowVelocity = UTIL_LaunchVector( vecSrc, vecDest, asw_grenade_launcher_gravity.GetFloat(), vecSrc.z > vecDest.z + rd_grenade_launcher_far_below_distance.GetFloat() ? rd_grenade_launcher_far_below_arc_modifier.GetFloat() * asw_grenade_launcher_velocity.GetFloat() : 0.0f ) * asw_grenade_launcher_velocity.GetFloat();
-		Vector vecEndPos = UTIL_Check_Throw( vecSrc, vecThrowVelocity, asw_grenade_launcher_gravity.GetFloat(), -Vector(4, 4, 4), Vector(4, 4, 4), MASK_SOLID, ASW_COLLISION_GROUP_GRENADES, pMarine, true );
-		debugoverlay->AddBoxOverlay( vecEndPos, Vector(-1, -1, -1), Vector(1, 1, 1), QAngle(0, 0, 0), 255, 0, 0, 127, NDEBUG_PERSIST_TILL_NEXT_SERVER );
+		Vector vecSrc;
+		Vector vecLaunch = IdealLaunchVelocity( vecSrc );
+		Vector vecEndPos = UTIL_Check_Throw( vecSrc, vecLaunch, asw_grenade_launcher_gravity.GetFloat(), -Vector( 4, 4, 4 ), Vector( 4, 4, 4 ), MASK_SOLID, ASW_COLLISION_GROUP_GRENADES, pMarine, true );
+		debugoverlay->AddBoxOverlay( vecEndPos, Vector( -1, -1, -1 ), Vector( 1, 1, 1 ), QAngle( 0, 0, 0 ), 255, 0, 0, 127, NDEBUG_PERSIST_TILL_NEXT_SERVER );
 	}
 #endif
 }

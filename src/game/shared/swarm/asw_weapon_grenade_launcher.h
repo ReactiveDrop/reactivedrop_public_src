@@ -55,8 +55,9 @@ public:
 	#endif
 
 	virtual bool IsOffensiveWeapon() { return true; }
-	
-	void 	Preview();
+
+	Vector	IdealLaunchVelocity( Vector &vecSrc );
+	void	Preview();
 
 	float	m_flSoonestPrimaryAttack;
 
