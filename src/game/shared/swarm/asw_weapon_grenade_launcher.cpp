@@ -110,7 +110,7 @@ void CASW_Weapon_Grenade_Launcher::PrimaryAttack( void )
 
 	CASW_Player *pPlayer = GetCommander();
 	Vector vecDest = (pPlayer && pMarine->IsInhabited()) ? pPlayer->GetCrosshairTracePos() : pMarine->GetEnemyLKP();
-	Vector newVel = UTIL_LaunchVector( vecSrc, vecDest, asw_grenade_launcher_gravity.GetFloat(), vecSrc.z > vecDest.z + rd_grenade_launcher_far_below_distance.GetFloat() ? rd_grenade_launcher_far_below_arc_modifier.GetFloat() / asw_grenade_launcher_velocity.GetFloat() : 0.0f ) * asw_grenade_launcher_velocity.GetFloat();
+	Vector newVel = UTIL_LaunchVector( vecSrc, vecDest, asw_grenade_launcher_gravity.GetFloat(), vecSrc.z > vecDest.z + rd_grenade_launcher_far_below_distance.GetFloat() ? rd_grenade_launcher_far_below_arc_modifier.GetFloat() * asw_grenade_launcher_velocity.GetFloat() : 0.0f ) * asw_grenade_launcher_velocity.GetFloat();
 
 	float fGrenadeDamage = GetWeaponDamage();	
 	float fGrenadeRadius = MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_RADIUS);
@@ -198,7 +198,7 @@ void CASW_Weapon_Grenade_Launcher::Preview()
 		CASW_Player *pPlayer = pMarine->GetCommander();
 		Vector vecSrc = pMarine->Weapon_ShootPosition();
 		Vector vecDest = pPlayer->GetCrosshairTracePos();
-		Vector vecThrowVelocity = UTIL_LaunchVector( vecSrc, vecDest, asw_grenade_launcher_gravity.GetFloat(), vecSrc.z > vecDest.z + rd_grenade_launcher_far_below_distance.GetFloat() ? rd_grenade_launcher_far_below_arc_modifier.GetFloat() / asw_grenade_launcher_velocity.GetFloat() : 0.0f ) * asw_grenade_launcher_velocity.GetFloat();
+		Vector vecThrowVelocity = UTIL_LaunchVector( vecSrc, vecDest, asw_grenade_launcher_gravity.GetFloat(), vecSrc.z > vecDest.z + rd_grenade_launcher_far_below_distance.GetFloat() ? rd_grenade_launcher_far_below_arc_modifier.GetFloat() * asw_grenade_launcher_velocity.GetFloat() : 0.0f ) * asw_grenade_launcher_velocity.GetFloat();
 		Vector vecEndPos = UTIL_Check_Throw( vecSrc, vecThrowVelocity, asw_grenade_launcher_gravity.GetFloat(), -Vector(4, 4, 4), Vector(4, 4, 4), MASK_SOLID, ASW_COLLISION_GROUP_GRENADES, pMarine, true );
 		debugoverlay->AddBoxOverlay( vecEndPos, Vector(-1, -1, -1), Vector(1, 1, 1), QAngle(0, 0, 0), 255, 0, 0, 127, NDEBUG_PERSIST_TILL_NEXT_SERVER );
 	}
