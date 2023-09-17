@@ -1648,7 +1648,6 @@ static ConCommand asw_shake_setscratch("asw_shake_setscratch", CC_ASW_Shake_SetS
 
 #endif //#ifndef CLIENT_DLL
 
-
 /// get a parabola that goes from source to destination in specified time
 Vector UTIL_LaunchVector( const Vector &src, const Vector &dest, float gravity, float flightTime )
 {
@@ -1734,7 +1733,7 @@ Vector UTIL_Check_Throw( const Vector &vecSrc, const Vector &vecThrowVelocity, f
 
 		if ( bDrawArc )
 		{
-			debugoverlay->AddLineOverlay( vecPos, vecNewPos, 65, 65, 255, true, 3.0f );
+			debugoverlay->AddLineOverlay( vecPos, vecNewPos, 65, 65, 255, true, NDEBUG_PERSIST_TILL_NEXT_SERVER );
 		}
 
 		if ( tr.fraction < 1.0f || tr.startsolid )
