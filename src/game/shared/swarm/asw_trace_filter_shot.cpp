@@ -20,9 +20,11 @@
 //-----------------------------------------------------------------------------
 // Trace filter that skips two entities
 //-----------------------------------------------------------------------------
-CASWTraceFilterShot::CASWTraceFilterShot( const IHandleEntity *passentity, const IHandleEntity *passentity2, int collisionGroup ) :
-	BaseClass( passentity, collisionGroup ), m_pPassEnt2(passentity2)
+CASWTraceFilterShot::CASWTraceFilterShot( IHandleEntity *passentity, IHandleEntity *passentity2, int collisionGroup ) :
+	BaseClass( collisionGroup )
 {
+	SetPassEntity( passentity );
+	AddEntityToIgnore( passentity2 );
 	m_bSkipMarines = true;
 	m_bSkipRollingMarines = false;
 	m_bSkipMarinesReflectingProjectiles = false;
@@ -32,11 +34,8 @@ CASWTraceFilterShot::CASWTraceFilterShot( const IHandleEntity *passentity, const
 bool CASWTraceFilterShot::ShouldHitEntity( IHandleEntity *pHandleEntity, int contentsMask )
 {
 	Assert( pHandleEntity );
-	if ( !PassServerEntityFilter( pHandleEntity, m_pPassEnt2 ) )
-		return false;
-	
-	CBaseEntity *pEntity = EntityFromEntityHandle( pHandleEntity );
 
+	CBaseEntity *pEntity = EntityFromEntityHandle( pHandleEntity );
 	if ( !pEntity )
 		return false;
 

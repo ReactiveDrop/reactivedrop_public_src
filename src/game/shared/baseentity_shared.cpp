@@ -33,7 +33,10 @@
 	#include "GameStats.h"
 	#include "globalstate.h"
 	#include "world.h"
+#endif
 
+#ifdef INFESTED_DLL
+#include "asw_trace_filter_shot.h"
 #endif
 
 #ifdef HL2_EPISODIC
@@ -1793,11 +1796,17 @@ void CBaseEntity::FireBullets( const FireBulletsInfo_t &info )
 
 	Vector vecDir;
 	Vector vecEnd;
-	
+
+#ifdef INFESTED_DLL
+	CASWTraceFilterShot traceFilter( this, info.m_pAdditionalIgnoreEnt, COLLISION_GROUP_NONE );
+	traceFilter.SetSkipMarines( false );
+	traceFilter.SetSkipRollingMarines( true );
+#else
 	// Skip multiple entities when tracing
 	CBulletsTraceFilter traceFilter( COLLISION_GROUP_NONE );
 	traceFilter.SetPassEntity( this ); // Standard pass entity for THIS so that it can be easily removed from the list after passing through a portal
 	traceFilter.AddEntityToIgnore( info.m_pAdditionalIgnoreEnt );
+#endif
 
 #if defined( HL2_EPISODIC ) && defined( GAME_DLL )
 	// FIXME: We need to emulate this same behavior on the client as well -- jdw
