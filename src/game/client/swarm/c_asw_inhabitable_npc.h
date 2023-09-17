@@ -100,7 +100,7 @@ public:
 	IMPLEMENT_AUTO_LIST_GET();
 
 	virtual float GetRadius() { return 23; }
-	virtual bool IsAimTarget() { return GetHealth() > 0; }
+	virtual bool IsAimTarget() { return GetHealth() > 0 && GetCollisionGroup() != ASW_COLLISION_GROUP_PASSABLE; }
 	virtual const Vector &GetAimTargetPos( const Vector &vecFiringSrc, bool bWeaponPrefersFlatAiming ) { return m_vecLastRenderedPos; }
 	virtual const Vector &GetAimTargetRadiusPos( const Vector &vecFiringSrc ) { return m_vecAutoTargetRadiusPos; }
 	virtual Vector GetLocalAutoTargetRadiusPos() { return m_vecLastRenderedPos; }
