@@ -63,7 +63,7 @@ private:
 	void RemoveMusicFromPlaylist( const char* szHexnameToRemove );
 	void LoadPlaylistKV( void );
 	void ExportPlayistKV( void );
-	void PlayRandomTrack( float fadeInTime = 1.0f, const char *szDefaultTrack = NULL, const char *szTrackName = NULL, const char *szAlbumName = NULL, const char *szArtistName = NULL );
+	void PlayRandomTrack( float fadeInTime = 1.0f, const char *szDefaultTrack = NULL, const char *szTrackName = NULL, const char *szAlbumName = NULL, const char *szArtistName = NULL, bool bInterruptCustomTrack = true );
 
 	typedef CUtlVector< TrackInfo_t > TrackList_t;
 	TrackList_t		m_CombatMusicPlaylist;

@@ -18,6 +18,7 @@ protected:
 	string_t m_szTrackName{ NULL_STRING };
 	string_t m_szAlbumName{ NULL_STRING };
 	string_t m_szArtistName{ NULL_STRING };
+	bool m_bInterruptCustomTrack{ true };
 };
 
 #endif // #ifndef _DEFINED_ASW_JUKEBOX_H

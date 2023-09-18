@@ -4234,9 +4234,10 @@
 	FadeInTime(float): "Fade In Time": "1.0" : "The amount of time it takes for the music to fade in to 100% volume (in seconds.)"
 	FadeOutTime(float): "Fade Out Time": "1.0" : "The amount of time it takes for the music to fade out to 0 volume (in seconds.)"
 	DefaultMusic(sound) : "Default Music" : "" : "Default music to play if no custom combat music has been imported."
-	TrackName(string) : "Track Name" : "" : "Name of the default music track."
+	TrackName(string) : "Track Name" : "" : "Name of the default music track. If this is blank, no 'now playing' notification will be shown unless a custom combat track is being played."
 	AlbumName(string) : "Album Name" : "" : "Album or collection name of the default music track."
 	ArtistName(string) : "Artist Name" : "" : "Artist name of the default music track."
+	InterruptCustomTrack(boolean) : "Start New Custom Track" : "1" : "By default, if the player has custom combat music, a new track will be started, replacing the previous track. If the default music for this jukebox is a continuation of the previous jukebox that played, such as dynamic music for a multi-stage boss fight, disabling this will prevent custom combat music from resetting unless it is not currently playing."
 	// Inputs
 	input StartMusic(void) : "Start a random music track from the user's playlist."
 	input StopMusic(void) : "Stop the currently playing music."

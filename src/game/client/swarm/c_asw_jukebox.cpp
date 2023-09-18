@@ -3,7 +3,6 @@
 #include "soundenvelope.h"
 #include "filesystem.h"
 #include "KeyValues.h"
-#include "gamestringpool.h"
 #include "fmtstr.h"
 #include "asw_util_shared.h"
 
@@ -30,8 +29,8 @@ void TrackInfo_t::PrepareKVForListView( KeyValues *kv )
 {
 	// add the file to the list
 	kv->SetWString( "text", m_wszTrackName );
-	kv->SetWString("artist", m_wszArtist );
-	kv->SetWString("album", m_wszAlbum );
+	kv->SetWString( "artist", m_wszArtist );
+	kv->SetWString( "album", m_wszAlbum );
 }
 
 bool TrackInfo_t::operator==( const TrackInfo_t& rhs ) const
@@ -100,7 +99,8 @@ void CASWJukeboxPlaylist::FireGameEvent( IGameEvent *event )
 		const char *szTrackName = event->GetString( "trackname" );
 		const char *szAlbumName = event->GetString( "albumname" );
 		const char *szArtistName = event->GetString( "artistname" );
-		PlayRandomTrack( fadeInTime, szDefaultTrack, szTrackName, szAlbumName, szArtistName );
+		bool bInterruptCustomTrack = event->GetBool( "interruptcustom" );
+		PlayRandomTrack( fadeInTime, szDefaultTrack, szTrackName, szAlbumName, szArtistName, bInterruptCustomTrack );
 	}
 	else if( FStrEq( event->GetName(), "jukebox_stop" ) )
 	{
@@ -110,7 +110,7 @@ void CASWJukeboxPlaylist::FireGameEvent( IGameEvent *event )
 	}
 }
 
-void CASWJukeboxPlaylist::PlayRandomTrack( float fadeInTime, const char *szDefaultTrack, const char *szTrackName, const char *szAlbumName, const char *szArtistName )
+void CASWJukeboxPlaylist::PlayRandomTrack( float fadeInTime, const char *szDefaultTrack, const char *szTrackName, const char *szAlbumName, const char *szArtistName, bool bInterruptCustomTrack )
 {
 	// Choose a random track to play
 	int count = m_CombatMusicPlaylist.Count();
@@ -130,6 +130,9 @@ void CASWJukeboxPlaylist::PlayRandomTrack( float fadeInTime, const char *szDefau
 	}
 	else
 	{
+		if ( m_pCombatMusic && !bInterruptCustomTrack )
+			return;
+
 		// If there's more than one track, randomize it so the current track doesn't repeat itself
 		if ( count > 1 )
 		{

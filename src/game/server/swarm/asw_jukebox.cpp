@@ -1,7 +1,5 @@
 #include "cbase.h"
 #include "asw_jukebox.h"
-#include "entityinput.h"
-#include "entityoutput.h"
 #include "asw_gamerules.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -16,6 +14,7 @@ BEGIN_DATADESC( CASW_Jukebox )
 	DEFINE_KEYFIELD( m_szTrackName, FIELD_STRING, "TrackName" ),
 	DEFINE_KEYFIELD( m_szAlbumName, FIELD_STRING, "AlbumName" ),
 	DEFINE_KEYFIELD( m_szArtistName, FIELD_STRING, "ArtistName" ),
+	DEFINE_KEYFIELD( m_bInterruptCustomTrack, FIELD_BOOLEAN, "InterruptCustomTrack" ),
 
 	DEFINE_INPUTFUNC( FIELD_VOID, "StartMusic", InputMusicStart ),
 	DEFINE_INPUTFUNC( FIELD_VOID, "StopMusic", InputMusicStop ),
@@ -46,6 +45,7 @@ void CASW_Jukebox::InputMusicStart( inputdata_t &inputdata )
 			event->SetString( "albumname", STRING( m_szAlbumName ) );
 		if ( m_szArtistName != NULL_STRING )
 			event->SetString( "artistname", STRING( m_szArtistName ) );
+		event->SetBool( "interruptcustom", m_bInterruptCustomTrack );
 		gameeventmanager->FireEvent( event );
 
 		// Stop stim music if it's playing

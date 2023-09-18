@@ -545,6 +545,7 @@
 		"trackname"		"string"
 		"albumname"		"string"
 		"artistname"	"string"
+		"interruptcustom"	"bool"
 	}
 	"jukebox_stop"
 	{
