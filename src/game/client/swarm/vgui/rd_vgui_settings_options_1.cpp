@@ -76,14 +76,11 @@ CRD_VGUI_Settings_Options_1::CRD_VGUI_Settings_Options_1( vgui::Panel *parent, c
 	m_pSettingControlsRightClickWireHack->AddOption( 2, "#RD_AdvancedSettings_Misc_WireHackClick_LeftRev", "#rd_option_controls_right_click_wire_hack_hint" );
 	m_pSettingControlsRightClickWireHack->LinkToConVar( "rd_wire_tile_alternate", true );
 	m_pSettingControlsSniperSwapWeapons = new CRD_VGUI_Option( this, "SettingControlsSniperSwapWeapons", "#rd_option_controls_sniper_swap_weapons", CRD_VGUI_Option::MODE_CHECKBOX );
-	m_pSettingControlsSniperSwapWeapons->SetDefaultHint( "#rd_option_controls_sniper_swap_weapons" );
+	m_pSettingControlsSniperSwapWeapons->SetDefaultHint( "#rd_option_controls_sniper_swap_weapons_hint" );
 	m_pSettingControlsSniperSwapWeapons->LinkToConVar( "rd_sniper_scope_weapon_switch", false );
 	m_pSettingControlsLockMouseToWindow = new CRD_VGUI_Option( this, "SettingControlsLockMouseToWindow", "#rd_option_controls_lock_mouse_to_window", CRD_VGUI_Option::MODE_CHECKBOX );
 	m_pSettingControlsLockMouseToWindow->SetDefaultHint( "#rd_option_controls_lock_mouse_to_window_hint" );
 	m_pSettingControlsLockMouseToWindow->LinkToConVar( "in_lock_mouse_to_window", true );
-	m_pSettingControlsHorizontalAutoAim = new CRD_VGUI_Option( this, "SettingControlsHorizontalAutoAim", "#rd_option_controls_horizontal_auto_aim", CRD_VGUI_Option::MODE_CHECKBOX );
-	m_pSettingControlsHorizontalAutoAim->SetDefaultHint( "#rd_option_controls_horizontal_auto_aim_hint" );
-	m_pSettingControlsHorizontalAutoAim->LinkToConVar( "asw_horizontal_autoaim", true );
 
 	// Crosshair
 	m_pSettingCrosshairMarineLabelDist = new CRD_VGUI_Option( this, "SettingCrosshairMarineLabelDist", "#rd_option_crosshair_marine_label_dist", CRD_VGUI_Option::MODE_SLIDER );

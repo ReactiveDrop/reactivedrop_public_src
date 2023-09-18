@@ -49,9 +49,9 @@ ConVar joy_autowalk_threshold( "joy_autowalk_threshold", "0.3", FCVAR_ARCHIVE, "
 ConVar joy_aim_to_movement( "joy_aim_to_movement", "1", FCVAR_ARCHIVE, "Aim in the direction of movement if the aiming stick is not in use" );
 ConVar joy_aim_to_movement_time( "joy_aim_to_movement_time", "1.0f", FCVAR_ARCHIVE, "Time before the player automatically aims in the direction of movement." );
 ConVar joy_tilted_view( "joy_tilted_view", "0", FCVAR_ARCHIVE, "Set to 1 when using maps with tilted view to rotate player movement." );
-ConVar asw_horizontal_autoaim( "asw_horizontal_autoaim", "1", FCVAR_ARCHIVE, "Applies horizontal correction towards best aim ent." );
+ConVar asw_horizontal_autoaim( "asw_horizontal_autoaim", "1", FCVAR_NONE, "Applies horizontal correction towards best aim ent." );
 
-ConVar joy_disable_movement_in_ui( "joy_disable_movement_in_ui", "1", 0, "Disables joystick character movement when UI is active." );
+ConVar joy_disable_movement_in_ui( "joy_disable_movement_in_ui", "1", FCVAR_NONE, "Disables joystick character movement when UI is active." );
 
 extern kbutton_t in_attack;
 extern kbutton_t in_walk;

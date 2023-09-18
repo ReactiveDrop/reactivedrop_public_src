@@ -280,23 +280,6 @@
 		"navLeft"			"SettingPlayerChatNamesUseColors"
 		"navRight"			"SettingControlsLockMouseToWindow"
 		"navUp"				"SettingControlsSniperSwapWeapons"
-		"navDown"			"SettingControlsHorizontalAutoAim"
-	}
-
-	"SettingControlsHorizontalAutoAim"
-	{
-		"ControlName"		"CRD_VGUI_Option"
-		"fieldName"			"SettingControlsHorizontalAutoAim"
-		"wide"				"260"	[!$WIN32WIDE]
-		"wide"				"270"	[$WIN32WIDE]
-		"tall"				"24"
-		"pin_to_sibling"	"SettingControlsLockMouseToWindow"
-		"pin_corner_to_sibling"	"0"
-		"pin_to_sibling_corner"	"2"
-		"ResourceFile"		"resource/ui/option_setting_checkbox.res"
-		"navLeft"			"SettingPlayerDeathmatchTeamColorMode"
-		"navRight"			"SettingControlsHorizontalAutoAim"
-		"navUp"				"SettingControlsLockMouseToWindow"
 		"navDown"			"SettingCrosshairMarineLabelDist"
 	}
 
@@ -306,14 +289,14 @@
 		"fieldName"			"SettingCrosshairMarineLabelDist"
 		"xpos"				"300"	[!$WIN32WIDE]
 		"xpos"				"310"	[$WIN32WIDE]
-		"ypos"				"144"
+		"ypos"				"120"
 		"wide"				"260"	[!$WIN32WIDE]
 		"wide"				"270"	[$WIN32WIDE]
 		"tall"				"24"
 		"ResourceFile"		"resource/ui/option_setting_slider.res"
 		"navLeft"			"SettingPlayerDeathmatchDrawTopScoreboard"
 		"navRight"			"SettingCrosshairMarineLabelDist"
-		"navUp"				"SettingControlsHorizontalAutoAim"
+		"navUp"				"SettingControlsLockMouseToWindow"
 		"navDown"			"SettingCrosshairType"
 	}
 
@@ -374,7 +357,7 @@
 		"fieldName"			"SettingReloadAuto"
 		"xpos"				"300"	[!$WIN32WIDE]
 		"xpos"				"310"	[$WIN32WIDE]
-		"ypos"				"248"
+		"ypos"				"224"
 		"wide"				"260"	[!$WIN32WIDE]
 		"wide"				"270"	[$WIN32WIDE]
 		"tall"				"24"

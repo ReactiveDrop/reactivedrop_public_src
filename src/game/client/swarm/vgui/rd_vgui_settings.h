@@ -364,7 +364,6 @@ public:
 	CRD_VGUI_Option *m_pSettingControlsRightClickWireHack;
 	CRD_VGUI_Option *m_pSettingControlsSniperSwapWeapons;
 	CRD_VGUI_Option *m_pSettingControlsLockMouseToWindow;
-	CRD_VGUI_Option *m_pSettingControlsHorizontalAutoAim;
 
 	CRD_VGUI_Option *m_pSettingCrosshairMarineLabelDist;
 	CRD_VGUI_Option *m_pSettingCrosshairType;
