@@ -5,6 +5,7 @@
 #include "KeyValues.h"
 #include "fmtstr.h"
 #include "asw_util_shared.h"
+#include "rd_hud_now_playing.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -182,7 +183,14 @@ void CASWJukeboxPlaylist::PlayRandomTrack( float fadeInTime, const char *szDefau
 	m_pCombatMusic = pNewSound;
 	m_iCurrentTrack = index;
 
-	// TODO: show "now playing" vgui panel after flDelay seconds
+	if ( m_wszTrackName[0] != L'\0' )
+	{
+		CRD_HUD_Now_Playing *pNowPlaying = GET_FULLSCREEN_HUDELEMENT( CRD_HUD_Now_Playing );
+		if ( pNowPlaying )
+		{
+			pNowPlaying->ShowAfterDelay( flDelay );
+		}
+	}
 }
 
 void CASWJukeboxPlaylist::StopTrack( bool immediate /*= true*/, float fadeOutTime /*= 1.0f */ )
@@ -196,6 +204,12 @@ void CASWJukeboxPlaylist::StopTrack( bool immediate /*= true*/, float fadeOutTim
 
 		m_pCombatMusic = NULL;
 		m_iCurrentTrack = -1;
+
+		CRD_HUD_Now_Playing *pNowPlaying = GET_FULLSCREEN_HUDELEMENT( CRD_HUD_Now_Playing );
+		if ( pNowPlaying )
+		{
+			pNowPlaying->HideEarly();
+		}
 	}
 }
 
@@ -311,6 +325,12 @@ void CASWJukeboxPlaylist::LevelInitPostEntity( void )
 	RemoveAllMusic();
 	// Load the saved playlist
 	LoadPlaylistKV();
+
+	CRD_HUD_Now_Playing *pNowPlaying = GET_FULLSCREEN_HUDELEMENT( CRD_HUD_Now_Playing );
+	if ( pNowPlaying )
+	{
+		pNowPlaying->HideImmediately();
+	}
 }
 
 void CASWJukeboxPlaylist::RemoveAllMusic( void )

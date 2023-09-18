@@ -72,6 +72,7 @@ private:
 	wchar_t			m_wszTrackName[256]{};
 	wchar_t			m_wszAlbumName[256]{};
 	wchar_t			m_wszArtistName[256]{};
+	friend class CRD_HUD_Now_Playing;
 };
 
 extern CASWJukeboxPlaylist g_ASWJukebox;
