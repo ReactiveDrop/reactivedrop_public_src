@@ -112,7 +112,7 @@ void CRD_HUD_VScript::OnDataChanged( DataUpdateType_t type )
 		m_ScriptScope.Init( m_iszScriptId );
 		m_ScriptScope.SetValue( "self", hInstance );
 
-		VScriptRunScript( m_szClientVScript, m_ScriptScope, true );
+		VScriptRunScript( m_szClientVScript.Get(), m_ScriptScope, true );
 
 		m_hUpdateFunc = m_ScriptScope.LookupFunction( "OnUpdate" );
 		m_hPaintFunc = m_ScriptScope.LookupFunction( "Paint" );
@@ -147,7 +147,7 @@ void CRD_HUD_VScript::Paint()
 int CRD_HUD_VScript::Script_LookupTexture( const char *name )
 {
 	if ( m_bIsPainting )
-		DevWarning( "rd_hud_vscript (%s): LookupTexture should not be called during Paint!\n", m_szClientVScript );
+		DevWarning( "rd_hud_vscript (%s): LookupTexture should not be called during Paint!\n", m_szClientVScript.Get() );
 
 	int i = m_Textures.Find( name );
 	if ( !m_Textures.IsValidIndex( i ) )
@@ -163,7 +163,7 @@ int CRD_HUD_VScript::Script_LookupTexture( const char *name )
 int CRD_HUD_VScript::Script_LookupFont( const char *name )
 {
 	if ( m_bIsPainting )
-		DevWarning( "rd_hud_vscript (%s): LookupFont should not be called during Paint!\n", m_szClientVScript );
+		DevWarning( "rd_hud_vscript (%s): LookupFont should not be called during Paint!\n", m_szClientVScript.Get() );
 
 	vgui::HScheme hScheme = vgui::scheme()->LoadSchemeFromFile( "resource/SwarmSchemeNew.res", "SwarmSchemeNew" );
 	vgui::IScheme *pScheme = vgui::scheme()->GetIScheme( hScheme );
@@ -174,7 +174,7 @@ int CRD_HUD_VScript::Script_LookupFont( const char *name )
 	vgui::HFont hFont = pScheme->GetFont( name, true );
 	if ( !hFont )
 	{
-		Warning( "rd_hud_vscript (%s): LookupFont did not find a font named %s\n", m_szClientVScript, name );
+		Warning( "rd_hud_vscript (%s): LookupFont did not find a font named %s\n", m_szClientVScript.Get(), name );
 	}
 
 	return hFont;
@@ -200,7 +200,7 @@ void CRD_HUD_VScript::Script_PaintText( int x, int y, int r, int g, int b, int a
 {
 	if ( !m_bIsPainting )
 	{
-		Warning( "rd_hud_vscript (%s): PaintText cannot be called outside of Paint!\n", m_szClientVScript );
+		Warning( "rd_hud_vscript (%s): PaintText cannot be called outside of Paint!\n", m_szClientVScript.Get() );
 		return;
 	}
 
@@ -217,7 +217,7 @@ void CRD_HUD_VScript::Script_PaintRectangle( int x0, int y0, int x1, int y1, int
 {
 	if ( !m_bIsPainting )
 	{
-		Warning( "rd_hud_vscript (%s): PaintRectangle cannot be called outside of Paint!\n", m_szClientVScript );
+		Warning( "rd_hud_vscript (%s): PaintRectangle cannot be called outside of Paint!\n", m_szClientVScript.Get() );
 		return;
 	}
 
@@ -229,7 +229,7 @@ void CRD_HUD_VScript::Script_PaintRectangleFade( int x0, int y0, int x1, int y1,
 {
 	if ( !m_bIsPainting )
 	{
-		Warning( "rd_hud_vscript (%s): PaintRectangleFade cannot be called outside of Paint!\n", m_szClientVScript );
+		Warning( "rd_hud_vscript (%s): PaintRectangleFade cannot be called outside of Paint!\n", m_szClientVScript.Get() );
 		return;
 	}
 
@@ -241,7 +241,7 @@ void CRD_HUD_VScript::Script_PaintTexturedRectangle( int x0, int y0, int x1, int
 {
 	if ( !m_bIsPainting )
 	{
-		Warning( "rd_hud_vscript (%s): PaintTexturedRectangle cannot be called outside of Paint!\n", m_szClientVScript );
+		Warning( "rd_hud_vscript (%s): PaintTexturedRectangle cannot be called outside of Paint!\n", m_szClientVScript.Get() );
 		return;
 	}
 
@@ -254,7 +254,7 @@ void CRD_HUD_VScript::Script_PaintTexturedRectangleAdvanced( HSCRIPT table )
 {
 	if ( !m_bIsPainting )
 	{
-		Warning( "rd_hud_vscript (%s): PaintTexturedRectangleAdvanced cannot be called outside of Paint!\n", m_szClientVScript );
+		Warning( "rd_hud_vscript (%s): PaintTexturedRectangleAdvanced cannot be called outside of Paint!\n", m_szClientVScript.Get() );
 		return;
 	}
 
