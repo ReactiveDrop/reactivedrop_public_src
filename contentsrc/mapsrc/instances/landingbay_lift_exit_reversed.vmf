@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "2159"
+	"mapversion" "2160"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -50,7 +50,7 @@ viewsettings
 world
 {
 	"id" "394754"
-	"mapversion" "2159"
+	"mapversion" "2160"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -23457,7 +23457,6 @@ entity
 	{
 		"OnButtonActivated" "relay_lift_but_failTrigger0-1"
 		"OnButtonActivated" "relay_lift_but_succeedTrigger0-1"
-		"OnButtonActivated" "cargo_elevator_objectiveSetComplete0-1"
 	}
 	solid
 	{
@@ -56432,7 +56431,7 @@ entity
 	"duration" "1"
 	"frequency" "5"
 	"radius" "500"
-	"spawnflags" "1"
+	"spawnflags" "65"
 	"targetname" "shake_elevator_start"
 	"origin" "-3488 7040 801"
 	editor
@@ -57738,6 +57737,7 @@ entity
 		"OnTrigger" "ins_para3_spawnStartSpawning17-1"
 		"OnTrigger" "ExitSpawnerStopSpawning0-1"
 		"OnTrigger" "start_area_alien_killerEnable4-1"
+		"OnTrigger" "cargo_elevator_objectiveSetComplete0-1"
 	}
 	"origin" "-3520 7216 905"
 	editor
@@ -58300,7 +58300,7 @@ entity
 	"origin" "-3944 7048 804"
 	editor
 	{
-		"color" "220 30 220"
+		"color" "220 180 0"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[0 13000]"
@@ -58321,7 +58321,7 @@ entity
 	"origin" "-3136 7040 804"
 	editor
 	{
-		"color" "220 30 220"
+		"color" "220 180 0"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[0 13000]"
@@ -62004,6 +62004,7 @@ entity
 {
 	"id" "2180497"
 	"classname" "asw_marker"
+	"angles" "0 0 0"
 	"mapheight" "1024"
 	"mapwidth" "1024"
 	"objectivename" "cargo_elevator_objective"
@@ -63645,8 +63646,8 @@ cameras
 	"activecamera" "0"
 	camera
 	{
-		"position" "[-3805.25 6939.49 922.167]"
-		"look" "[-3902.92 7120.11 749.877]"
+		"position" "[-3482.91 7178.43 888.042]"
+		"look" "[-3562.36 7419.62 802.242]"
 	}
 	camera
 	{
