@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "594"
+	"mapversion" "595"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -32,7 +32,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "594"
+	"mapversion" "595"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -93538,7 +93538,7 @@ entity
 	"duration" "5"
 	"frequency" "128"
 	"radius" "5000"
-	"spawnflags" "0"
+	"spawnflags" "64"
 	"targetname" "tntshake"
 	"origin" "-1834.21 -142.762 3.71265"
 	editor
@@ -129292,6 +129292,7 @@ entity
 {
 	"id" "296526"
 	"classname" "asw_marker"
+	"angles" "0 0 0"
 	"mapheight" "512"
 	"mapwidth" "512"
 	"objectivename" "obj3"
@@ -129309,6 +129310,7 @@ entity
 {
 	"id" "296560"
 	"classname" "asw_marker"
+	"angles" "0 0 0"
 	"mapheight" "512"
 	"mapwidth" "512"
 	"objectivename" "obj9"
@@ -129327,6 +129329,7 @@ entity
 {
 	"id" "296650"
 	"classname" "asw_marker"
+	"angles" "0 0 0"
 	"mapheight" "256"
 	"mapwidth" "256"
 	"objectivename" "obj11"
@@ -129345,6 +129348,7 @@ entity
 {
 	"id" "296668"
 	"classname" "asw_marker"
+	"angles" "0 0 0"
 	"mapheight" "512"
 	"mapwidth" "512"
 	"objectivename" "obj12"
@@ -129363,6 +129367,7 @@ entity
 {
 	"id" "296682"
 	"classname" "asw_marker"
+	"angles" "0 0 0"
 	"mapheight" "768"
 	"mapwidth" "768"
 	"objectivename" "obj13"
@@ -129389,7 +129394,7 @@ entity
 	"origin" "-1904.38 -147.366 37"
 	editor
 	{
-		"color" "220 30 220"
+		"color" "220 180 0"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[0 0]"
