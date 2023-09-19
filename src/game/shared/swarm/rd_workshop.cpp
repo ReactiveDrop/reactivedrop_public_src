@@ -1929,13 +1929,15 @@ void CReactiveDropWorkshop::DoClearCaches()
 	missionchooser->LocalMissionSource()->ClearCache();
 
 #ifdef GAME_DLL
+	ISteamUGC *pUGC = SteamGameServerUGC();
+	Assert( pUGC );
 	extern CServerGameDLL g_ServerGameDLL;
-	if ( engine->IsDedicatedServer() && g_ServerGameDLL.m_bIsHibernating )
+	if ( engine->IsDedicatedServer() && g_ServerGameDLL.m_bIsHibernating && pUGC )
 	{
 		bool bCanReload = true;
 		FOR_EACH_VEC( m_ServerWorkshopAddons, i )
 		{
-			uint32 iItemState = SteamGameServerUGC()->GetItemState( m_ServerWorkshopAddons[i] );
+			uint32 iItemState = pUGC->GetItemState( m_ServerWorkshopAddons[i] );
 			if ( iItemState & k_EItemStateDownloadPending )
 			{
 				Msg( "Not restarting server: waiting for download of addon %llu\n", m_ServerWorkshopAddons[i] );
