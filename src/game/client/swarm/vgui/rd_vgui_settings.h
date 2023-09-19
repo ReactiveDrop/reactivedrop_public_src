@@ -394,6 +394,7 @@ public:
 	CRD_VGUI_Option *m_pSettingSpeedObjectivesInChat;
 	CRD_VGUI_Option *m_pSettingSpeedAutoRestartMission;
 
+	CRD_VGUI_Option *m_pSettingLeaderboardPrivateStats;
 	CRD_VGUI_Option *m_pSettingLeaderboardSend;
 	CRD_VGUI_Option *m_pSettingLeaderboardLoading;
 	CRD_VGUI_Option *m_pSettingLeaderboardDebrief;

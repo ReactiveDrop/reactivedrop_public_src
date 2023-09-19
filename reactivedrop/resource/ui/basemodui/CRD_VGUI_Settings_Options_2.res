@@ -96,6 +96,22 @@
 		"navLeft"			"SettingSpeedAutoRestartMission"
 		"navRight"			"SettingAccessibilityCameraShake"
 		"navUp"				"SettingSpeedObjectivesInChat"
+		"navDown"			"SettingLeaderboardPrivateStats"
+	}
+
+	"SettingLeaderboardPrivateStats"
+	{
+		"ControlName"		"CRD_VGUI_Option"
+		"fieldName"			"SettingLeaderboardPrivateStats"
+		"xpos"				"16"
+		"ypos"				"176"
+		"wide"				"260"	[!$WIN32WIDE]
+		"wide"				"270"	[$WIN32WIDE]
+		"tall"				"24"
+		"ResourceFile"		"resource/ui/option_setting_checkbox.res"
+		"navLeft"			"SettingLeaderboardPrivateStats"
+		"navRight"			"SettingAccessibilityMinimapClicks"
+		"navUp"				"SettingSpeedAutoRestartMission"
 		"navDown"			"SettingLeaderboardSend"
 	}
 
@@ -103,15 +119,16 @@
 	{
 		"ControlName"		"CRD_VGUI_Option"
 		"fieldName"			"SettingLeaderboardSend"
-		"xpos"				"16"
-		"ypos"				"176"
 		"wide"				"260"	[!$WIN32WIDE]
 		"wide"				"270"	[$WIN32WIDE]
 		"tall"				"24"
+		"pin_to_sibling"	"SettingLeaderboardPrivateStats"
+		"pin_corner_to_sibling"	"0"
+		"pin_to_sibling_corner"	"2"
 		"ResourceFile"		"resource/ui/option_setting_checkbox.res"
 		"navLeft"			"SettingLeaderboardSend"
-		"navRight"			"SettingAccessibilityCameraShift"
-		"navUp"				"SettingSpeedAutoRestartMission"
+		"navRight"			"SettingAccessibilityMoveRelativeToAim"
+		"navUp"				"SettingLeaderboardPrivateStats"
 		"navDown"			"SettingLeaderboardLoading"
 	}
 
@@ -127,7 +144,7 @@
 		"pin_to_sibling_corner"	"2"
 		"ResourceFile"		"resource/ui/option_setting_checkbox.res"
 		"navLeft"			"SettingLeaderboardLoading"
-		"navRight"			"SettingAccessibilityMinimapClicks"
+		"navRight"			"SettingNetworkInterpolation"
 		"navUp"				"SettingLeaderboardSend"
 		"navDown"			"SettingLeaderboardDebrief"
 	}
@@ -144,7 +161,7 @@
 		"pin_to_sibling_corner"	"2"
 		"ResourceFile"		"resource/ui/option_setting_checkbox.res"
 		"navLeft"			"SettingLeaderboardDebrief"
-		"navRight"			"SettingAccessibilityMoveRelativeToAim"
+		"navRight"			"SettingNetworkRate"
 		"navUp"				"SettingLeaderboardLoading"
 		"navDown"			"SettingLoadingMissionIcons"
 	}
@@ -154,13 +171,13 @@
 		"ControlName"		"CRD_VGUI_Option"
 		"fieldName"			"SettingLoadingMissionIcons"
 		"xpos"				"16"
-		"ypos"				"256"
+		"ypos"				"280"
 		"wide"				"260"	[!$WIN32WIDE]
 		"wide"				"270"	[$WIN32WIDE]
 		"tall"				"24"
 		"ResourceFile"		"resource/ui/option_setting_checkbox.res"
 		"navLeft"			"SettingLoadingMissionIcons"
-		"navRight"			"SettingNetworkInterpolation"
+		"navRight"			"SettingNetworkAllowRelay"
 		"navUp"				"SettingLeaderboardDebrief"
 		"navDown"			"SettingLoadingMissionScreens"
 	}
@@ -177,7 +194,7 @@
 		"pin_to_sibling_corner"	"2"
 		"ResourceFile"		"resource/ui/option_setting_checkbox.res"
 		"navLeft"			"SettingLoadingMissionScreens"
-		"navRight"			"SettingNetworkRate"
+		"navRight"			"SettingNetworkAllowRelay"
 		"navUp"				"SettingLoadingMissionIcons"
 		"navDown"			"SettingLoadingStatusText"
 	}
@@ -294,7 +311,7 @@
 		"pin_corner_to_sibling"	"0"
 		"pin_to_sibling_corner"	"2"
 		"ResourceFile"		"resource/ui/option_setting_checkbox.res"
-		"navLeft"			"SettingLeaderboardSend"
+		"navLeft"			"SettingSpeedAutoRestartMission"
 		"navRight"			"SettingAccessibilityCameraShift"
 		"navUp"				"SettingAccessibilityCameraShake"
 		"navDown"			"SettingAccessibilityMinimapClicks"
@@ -311,7 +328,7 @@
 		"pin_corner_to_sibling"	"0"
 		"pin_to_sibling_corner"	"2"
 		"ResourceFile"		"resource/ui/option_setting_checkbox.res"
-		"navLeft"			"SettingLeaderboardLoading"
+		"navLeft"			"SettingLeaderboardPrivateStats"
 		"navRight"			"SettingAccessibilityMinimapClicks"
 		"navUp"				"SettingAccessibilityCameraShift"
 		"navDown"			"SettingAccessibilityMoveRelativeToAim"
@@ -328,7 +345,7 @@
 		"pin_corner_to_sibling"	"0"
 		"pin_to_sibling_corner"	"2"
 		"ResourceFile"		"resource/ui/option_setting_checkbox.res"
-		"navLeft"			"SettingLeaderboardDebrief"
+		"navLeft"			"SettingLeaderboardSend"
 		"navRight"			"SettingAccessibilityMoveRelativeToAim"
 		"navUp"				"SettingAccessibilityMinimapClicks"
 		"navDown"			"SettingNetworkInterpolation"
@@ -348,7 +365,7 @@
 		"displayMultiplier"	"1000"
 		"decimalDigits"		"0"
 		"displaySuffix"		" ms"
-		"navLeft"			"SettingLoadingMissionIcons"
+		"navLeft"			"SettingLeaderboardLoading"
 		"navRight"			"SettingNetworkInterpolation"
 		"navUp"				"SettingAccessibilityMoveRelativeToAim"
 		"navDown"			"SettingNetworkRate"
@@ -366,7 +383,7 @@
 		"pin_to_sibling_corner"	"2"
 		"ResourceFile"		"resource/ui/option_setting_slider.res"
 		"displayMultiplier"	"0.0009765625"
-		"navLeft"			"SettingLoadingMissionScreens"
+		"navLeft"			"SettingLeaderboardDebrief"
 		"navRight"			"SettingNetworkRate"
 		"navUp"				"SettingNetworkInterpolation"
 		"navDown"			"SettingNetworkAllowRelay"
@@ -383,7 +400,7 @@
 		"pin_corner_to_sibling"	"0"
 		"pin_to_sibling_corner"	"2"
 		"ResourceFile"		"resource/ui/option_setting_dropdown.res"
-		"navLeft"			"SettingLoadingStatusText"
+		"navLeft"			"SettingLoadingMissionIcons"
 		"navRight"			"SettingNetworkAllowRelay"
 		"navUp"				"SettingNetworkRate"
 		"navDown"			"SettingNetworkAllowRelay"

@@ -52,6 +52,9 @@ CRD_VGUI_Settings_Options_2::CRD_VGUI_Settings_Options_2( vgui::Panel *parent, c
 	m_pSettingSpeedAutoRestartMission->LinkToConVar( "cl_auto_restart_mission", false );
 
 	// Leaderboards
+	m_pSettingLeaderboardPrivateStats = new CRD_VGUI_Option( this, "SettingLeaderboardPrivateStats", "#rd_option_leaderboard_private_stats", CRD_VGUI_Option::MODE_CHECKBOX );
+	m_pSettingLeaderboardPrivateStats->SetDefaultHint( "#rd_option_leaderboard_private_stats" );
+	m_pSettingLeaderboardPrivateStats->SetEnabled( false );
 	m_pSettingLeaderboardSend = new CRD_VGUI_Option( this, "SettingLeaderboardSend", "#rd_option_leaderboard_send", CRD_VGUI_Option::MODE_CHECKBOX );
 	m_pSettingLeaderboardSend->SetDefaultHint( "#rd_option_leaderboard_send_hint" );
 	m_pSettingLeaderboardSend->LinkToConVar( "rd_leaderboard_enabled_client", true );
@@ -112,9 +115,9 @@ CRD_VGUI_Settings_Options_2::CRD_VGUI_Settings_Options_2( vgui::Panel *parent, c
 	m_pSettingNetworkRate->LinkToConVar( "rate", true );
 	m_pSettingNetworkAllowRelay = new CRD_VGUI_Option( this, "SettingNetworkAllowRelay", "#rd_option_network_allow_relay", CRD_VGUI_Option::MODE_DROPDOWN );
 	m_pSettingNetworkAllowRelay->AddOption( 0, "#rd_option_network_allow_relay_disabled", "#rd_option_network_allow_relay_disabled_hint" );
-	m_pSettingNetworkAllowRelay->AddOption( 1, "#rd_option_network_allow_relay_enabled", "#rd_option_network_allow_relay_enabled_hint" );
 	m_pSettingNetworkAllowRelay->LinkToConVarAdvanced( 0, "net_steamcnx_allowrelay", 0 );
 	m_pSettingNetworkAllowRelay->LinkToConVarAdvanced( 0, "net_steamcnx_enabled", 1 );
+	m_pSettingNetworkAllowRelay->AddOption( 1, "#rd_option_network_allow_relay_enabled", "#rd_option_network_allow_relay_enabled_hint" );
 	m_pSettingNetworkAllowRelay->LinkToConVarAdvanced( 1, "net_steamcnx_allowrelay", 1 );
 	m_pSettingNetworkAllowRelay->LinkToConVarAdvanced( 1, "net_steamcnx_enabled", 2 );
 	m_pSettingNetworkAllowRelay->SetCurrentUsingConVars();
@@ -124,11 +127,38 @@ void CRD_VGUI_Settings_Options_2::Activate()
 {
 	m_pSettingSpeedTimerColor->SetEnabled( rd_draw_timer.GetBool() );
 
+	ISteamUserStats *pUserStats = SteamUserStats();
+	Assert( pUserStats );
+	int32_t iStatsOptOut = 0;
+	if ( !m_pSettingLeaderboardPrivateStats->IsEnabled() && pUserStats && pUserStats->GetStat( "stats_display_opt_out", &iStatsOptOut ) )
+	{
+		m_pSettingLeaderboardPrivateStats->SetCurrentSliderValue( iStatsOptOut );
+		m_pSettingLeaderboardPrivateStats->SetEnabled( true );
+	}
+
 	// not ready yet
 	m_pSettingStrangeRankUp->SetVisible( false );
 }
 
 void CRD_VGUI_Settings_Options_2::OnCurrentOptionChanged( vgui::Panel *panel )
 {
+	if ( panel == m_pSettingLeaderboardPrivateStats )
+	{
+		ISteamUserStats *pUserStats = SteamUserStats();
+		Assert( pUserStats );
+		if ( pUserStats )
+		{
+			int32_t iStatsOptOutNew = int32_t( m_pSettingLeaderboardPrivateStats->GetCurrentSliderValue() );
+			int32_t iStatsOptOutOld = 0;
+			if ( pUserStats->GetStat( "stats_display_opt_out", &iStatsOptOutOld ) && iStatsOptOutOld != iStatsOptOutNew )
+			{
+				Msg( "Setting stats_display_opt_out to %d\n", iStatsOptOutNew );
+				pUserStats->SetStat( "stats_display_opt_out", iStatsOptOutNew );
+				pUserStats->StoreStats();
+				m_pSettingLeaderboardPrivateStats->SetEnabled( false );
+			}
+		}
+	}
+
 	Activate();
 }
