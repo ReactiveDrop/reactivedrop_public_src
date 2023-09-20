@@ -86,7 +86,7 @@ ConVar asw_marine_gun_offset_y( "asw_marine_gun_offset_y", "4", FCVAR_REPLICATED
 ConVar asw_marine_gun_offset_z( "asw_marine_gun_offset_z", "34", FCVAR_REPLICATED | FCVAR_CHEAT );
 // reactivedrop: setting to 0, this prevents killing shieldbug from front using shotguns 
 ConVar asw_allow_hull_shots("asw_allow_hull_shots", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar rd_difficulty_tier( "rd_difficulty_tier", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Used to make difficulties higher then Brutal. 0 - default difficulties, 1 - Easy is as hard as Brutal + 1, 2 - Easy is as hard as Brutal + 6" );
+ConVar rd_difficulty_tier( "rd_difficulty_tier", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Used to make difficulties higher than Brutal. 0 - default difficulties, 1 - Easy is as hard as Brutal + 1, 2 - Easy is as hard as Brutal + 6" );
 #ifdef GAME_DLL
 extern ConVar ai_show_hull_attacks;
 ConVar asw_melee_knockback_up_force( "asw_melee_knockback_up_force", "1.0", FCVAR_CHEAT );
