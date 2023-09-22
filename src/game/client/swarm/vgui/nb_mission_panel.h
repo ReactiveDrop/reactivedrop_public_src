@@ -38,8 +38,10 @@ public:
 	virtual void OnThink();
 	virtual void OnCommand( const char *command );
 
+	bool ForceDifficulty();
 	bool ForceHardcoreFF();
 	bool ForceOnslaught();
+	bool ForceChallenge();
 	
 	// == MANAGED_MEMBER_POINTERS_START: Do not edit by hand ==
 	vgui::Label	*m_pRetriesLabel;	

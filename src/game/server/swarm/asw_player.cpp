@@ -72,6 +72,9 @@ extern ConVar asw_DebugAutoAim;
 extern ConVar asw_debug_marine_damage;
 extern ConVar rd_respawn_time;
 extern ConVar asw_default_campaign;
+extern ConVar rd_lock_onslaught;
+extern ConVar rd_lock_hardcoreff;
+extern ConVar rd_lock_challenge;
 
 ConVar rm_welcome_message("rm_welcome_message", "", FCVAR_NONE, "This message is displayed to a player after they join the game");
 ConVar rm_welcome_message_delay("rm_welcome_message_delay", "10", FCVAR_NONE, "The number of seconds the welcome message is delayed.", true, 0, true, 30);
@@ -939,7 +942,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 					return false;
 				}
 
-				if ( ASWGameResource() && ASWGameResource()->GetLeader() == this )
+				if ( ASWGameResource() && ASWGameResource()->GetLeader() == this && !rd_lock_hardcoreff.GetBool() )
 				{
 					bool bOldHardcoreMode = CAlienSwarm::IsHardcoreFF();
 					int nHardcore = atoi( args[1] );
@@ -966,21 +969,21 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 				}
 				return true;
 			}
-			else if (FStrEq(pcmd, "rd_set_challenge"))
+			else if ( FStrEq( pcmd, "rd_set_challenge" ) )
 			{
-				if (args.ArgC() < 2)
+				if ( args.ArgC() < 2 )
 				{
-					Warning("Player sent a bad rd_set_challenge command\n");
+					Warning( "Player sent a bad rd_set_challenge command\n" );
 					return false;
 				}
 
-				if (ASWGameResource() && ASWGameResource()->GetLeader() == this)
+				if ( ASWGameResource() && ASWGameResource()->GetLeader() == this && !rd_lock_challenge.GetBool() )
 				{
 					const char *szChallengeName = args[1];
 
-					if (ASWGameRules())
+					if ( ASWGameRules() )
 					{
-						ASWGameRules()->EnableChallenge(szChallengeName);
+						ASWGameRules()->EnableChallenge( szChallengeName );
 					}
 				}
 				return true;
@@ -1491,7 +1494,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 				return false;
 			}
 
-			if ( ASWGameResource() && ASWGameResource()->GetLeader() == this )
+			if ( ASWGameResource() && ASWGameResource()->GetLeader() == this && !rd_lock_onslaught.GetBool() )
 			{
 				bool bOldOnslaughtMode = CAlienSwarm::IsOnslaught();
 				int nOnslaught = atoi( args[1] );

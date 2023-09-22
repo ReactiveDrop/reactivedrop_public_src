@@ -330,6 +330,8 @@ BEGIN_SCRIPTDESC_ROOT_NAMED( CASW_Director_VScript, "CDirector", SCRIPT_SINGLETO
 	DEFINE_SCRIPTFUNC( IsSpawningHorde, "Get the number of aliens remaining to spawn in the current horde" )
 END_SCRIPTDESC();
 
+extern bool ChallengeCanSetConVar( const char *szName );
+
 // Implemented based on the description from https://developer.valvesoftware.com/wiki/List_of_L4D2_Script_Functions#Convars
 class CASW_Convars_VScript
 {
@@ -367,7 +369,7 @@ public:
 	void SetValue( const char *name, float value )
 	{
 		ConVarRef ref( name );
-		if ( !ref.IsValid() )
+		if ( !ref.IsValid() || !ChallengeCanSetConVar( name ) )
 		{
 			return;
 		}
@@ -380,7 +382,7 @@ public:
 	void SetValueString( const char *name, const char *value )
 	{
 		ConVarRef ref( name );
-		if ( !ref.IsValid() )
+		if ( !ref.IsValid() || !ChallengeCanSetConVar( name ) )
 		{
 			return;
 		}
@@ -411,7 +413,7 @@ BEGIN_SCRIPTDESC_ROOT_NAMED( CASW_Convars_VScript, "Convars", SCRIPT_SINGLETON "
 	DEFINE_SCRIPTFUNC( GetFloat, "Returns the convar as a float. May return null if no such convar." )
 	DEFINE_SCRIPTFUNC( SetValue, "Sets the value of the convar to a numeric value." )
 	DEFINE_SCRIPTFUNC( SetValueString, "Sets the value of the convar to a string." )
-	DEFINE_SCRIPTFUNC( ExecuteConCommand, "Executes the convar command." )
+	DEFINE_SCRIPTFUNC( ExecuteConCommand, "Executes a console command, ignoring requirements like sv_cheats." )
 END_SCRIPTDESC();
 
 class CASW_Mission_Chooser_VScript

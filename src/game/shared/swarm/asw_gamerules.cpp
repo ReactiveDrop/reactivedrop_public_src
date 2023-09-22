@@ -523,6 +523,10 @@ ConVar asw_marine_ff_absorption( "asw_marine_ff_absorption", "1", FCVAR_REPLICAT
 ConVar asw_horde_override( "asw_horde_override", "0", FCVAR_REPLICATED, "Forces hordes to spawn", UpdateMatchmakingTagsCallback );
 ConVar asw_wanderer_override( "asw_wanderer_override", "0", FCVAR_REPLICATED, "Forces wanderers to spawn", UpdateMatchmakingTagsCallback );
 ConVar rd_challenge( "rd_challenge", "0", FCVAR_REPLICATED | FCVAR_DEMO, "Activates a challenge by ID", UpdateMatchmakingTagsCallback );
+ConVar rd_lock_difficulty( "rd_lock_difficulty", "0", FCVAR_REPLICATED, "If 1, the lobby leader cannot change the difficulty level." );
+ConVar rd_lock_onslaught( "rd_lock_onslaught", "0", FCVAR_REPLICATED, "If 1, the lobby leader cannot change the onslaught setting." );
+ConVar rd_lock_hardcoreff( "rd_lock_hardcoreff", "0", FCVAR_REPLICATED, "If 1, the lobby leader cannot change the hardcore friendly fire setting." );
+ConVar rd_lock_challenge( "rd_lock_challenge", "0", FCVAR_REPLICATED, "If 1, the lobby leader cannot change the challenge." );
 ConVar rd_techreq( "rd_techreq", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "If 0 tech will be not required to start a mission. Mission will not restart if tech dies. 1 is default" );
 ConVar rd_hackall( "rd_hackall", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "If 1 all marines can hack doors and computers" );
 ConVar rd_weapons_show_hidden( "rd_weapons_show_hidden", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "If 1 will show the hidden weapons and extra items at briefing" );
@@ -7268,7 +7272,7 @@ void CAlienSwarm::RequestSkill( CASW_Player *pPlayer, int nSkill )
 	if ( !( m_iGameState == ASW_GS_BRIEFING || m_iGameState == ASW_GS_DEBRIEF ) )	// don't allow skill change outside of briefing
 		return;
 
-	if ( nSkill >= 1 && nSkill <= 5 && ASWGameResource() && ASWGameResource()->GetLeader() == pPlayer )
+	if ( nSkill >= 1 && nSkill <= 5 && ASWGameResource() && ASWGameResource()->GetLeader() == pPlayer && !rd_lock_difficulty.GetBool() )
 	{
 		ConVar *var = (ConVar *)cvar->FindVar( "asw_skill" );
 		if (var)
@@ -9652,6 +9656,30 @@ void CAlienSwarm::ResetChallengeConVars()
 	}
 }
 
+static const char *const s_szNoChallengeConVars[] =
+{
+	"hostname",
+	"rd_challenge",
+	"rd_lock_challenge",
+	"rd_lock_difficulty",
+	"rd_lock_hardcoreff",
+	"rd_lock_onslaught",
+	"sv_tags",
+};
+
+bool ChallengeCanSetConVar( const char *szName )
+{
+	for ( int i = 0; i < NELEMS( s_szNoChallengeConVars ); i++ )
+	{
+		if ( !V_stricmp( szName, s_szNoChallengeConVars[i] ) )
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
 void CAlienSwarm::ApplyChallengeConVars( KeyValues *pKV )
 {
 	KeyValues *pConVars = pKV->FindKey( "convars" );
@@ -9663,7 +9691,7 @@ void CAlienSwarm::ApplyChallengeConVars( KeyValues *pKV )
 	FOR_EACH_VALUE( pConVars, pCV )
 	{
 		ConVarRef ref( pCV->GetName() );
-		if ( ref.IsValid() )
+		if ( ChallengeCanSetConVar( pCV->GetName() ) && ref.IsValid() )
 		{
 			SaveConvar( ref );
 			ref.SetValue( pCV->GetString() );

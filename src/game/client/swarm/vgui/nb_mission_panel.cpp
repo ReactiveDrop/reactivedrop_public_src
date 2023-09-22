@@ -36,6 +36,11 @@ using namespace vgui;
 
 #define MAP_SIZE 0.66666f
 
+extern ConVar rd_lock_difficulty;
+extern ConVar rd_lock_onslaught;
+extern ConVar rd_lock_hardcoreff;
+extern ConVar rd_lock_challenge;
+
 CNB_Mission_Panel::CNB_Mission_Panel( vgui::Panel *parent, const char *name ) : BaseClass( parent, name )
 {
 	m_pHeaderFooter = new CNB_Header_Footer( this, "HeaderFooter" );
@@ -216,11 +221,11 @@ void CNB_Mission_Panel::OnThink()
 
 	const bool bDeathmatchIngame =  ASWDeathmatchMode() && ASWGameRules()->GetGameState() == ASW_GS_INGAME;
 	const bool bInBriefing = ASWGameRules()->GetGameState() == ASW_GS_BRIEFING;
-	m_drpDifficulty->SetEnabled( bInBriefing && bLeader );
+	m_drpDifficulty->SetEnabled( bInBriefing && bLeader && !ForceDifficulty() );
 	m_drpGameMode->SetEnabled( ( bDeathmatchIngame || bInBriefing ) && bLeader );
 	m_drpOnslaught->SetEnabled( ( bDeathmatchIngame || bInBriefing ) && bLeader && !ForceOnslaught() );
 	m_drpFriendlyFire->SetEnabled( bInBriefing && bLeader && !ForceHardcoreFF() );
-	m_drpChallenge->SetEnabled( ( bDeathmatchIngame || bInBriefing ) && bLeader );
+	m_drpChallenge->SetEnabled( ( bDeathmatchIngame || bInBriefing ) && bLeader && !ForceChallenge() );
 	m_drpFixedSkillPoints->SetEnabled( false );
 
 	if ( m_iLastSkillLevel != ASWGameRules()->GetSkillLevel() )
@@ -471,8 +476,16 @@ void CNB_Mission_Panel::OnCommand( const char *command )
 	BaseClass::OnCommand( command );
 }
 
+bool CNB_Mission_Panel::ForceDifficulty()
+{
+	return rd_lock_difficulty.GetBool();
+}
+
 bool CNB_Mission_Panel::ForceHardcoreFF()
 {
+	if ( rd_lock_hardcoreff.GetBool() )
+		return true;
+
 	extern ConVar rd_challenge;
 
 	if ( const RD_Challenge_t *pChallenge = ReactiveDropChallenges::GetSummary( rd_challenge.GetString() ) )
@@ -485,6 +498,9 @@ bool CNB_Mission_Panel::ForceHardcoreFF()
 
 bool CNB_Mission_Panel::ForceOnslaught()
 {
+	if ( rd_lock_onslaught.GetBool() )
+		return true;
+
 	extern ConVar rd_challenge;
 
 	if ( const RD_Challenge_t *pChallenge = ReactiveDropChallenges::GetSummary( rd_challenge.GetString() ) )
@@ -495,6 +511,10 @@ bool CNB_Mission_Panel::ForceOnslaught()
 	return false;
 }
 
+bool CNB_Mission_Panel::ForceChallenge()
+{
+	return rd_lock_challenge.GetBool();
+}
 
 // ================================== Frame container ==================================================
 
