@@ -13,12 +13,12 @@ inline unsigned int MemoryExceededShutdown( void* pParam )
 
 	// during a level change, the server doesn't always respond
 	// repeat this command
-	for ( int i = 0; i <= 10; i++ ) 
+	for ( int i = 0; i <= 32; i++ ) 
 	{
-		ConMsg("Requesting exit due memory limit exceeded.\n", delay);
-		engine->ServerCommand("quit\n");
+		ConMsg( "Requesting exit due memory limit exceeded.\n", delay );
+		engine->ServerCommand( "quit\n" );
 
-		ThreadSleep(delay);
+		ThreadSleep( delay );
 	}
 
 	return 0;
