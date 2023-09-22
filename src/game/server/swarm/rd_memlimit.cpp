@@ -9,13 +9,13 @@
 
 inline unsigned int MemoryExceededShutdown( void* pParam )
 {
-	const float delay = gpGlobals->interval_per_tick * 5000;
+	const unsigned int delay = gpGlobals->interval_per_tick * 100000;
 
 	// during a level change, the server doesn't always respond
 	// repeat this command
 	for ( int i = 0; i <= 32; i++ ) 
 	{
-		ConMsg( "Requesting exit due memory limit exceeded.\n", delay );
+		ConMsg( "Requesting exit due memory limit exceeded.\n" );
 		engine->ServerCommand( "quit\n" );
 
 		ThreadSleep( delay );
