@@ -44,6 +44,7 @@ ConVar asw_show_stats_in_singleplayer( "asw_show_stats_in_singleplayer", "1", FC
 ConVar rd_show_leaderboard_debrief( "rd_show_leaderboard_debrief", "0", FCVAR_ARCHIVE, "Show leaderboard during debriefing" );
 ConVar rd_suggest_difficulty( "rd_suggest_difficulty", "1", FCVAR_NONE, "Suggest increasing or decreasing difficulty." );
 ConVar rd_fail_advice( "rd_fail_advice", "1", FCVAR_ARCHIVE, "Show advice on mission failed." );
+extern ConVar rd_lock_difficulty;
 
 MissionCompletePanel::MissionCompletePanel( Panel *parent, const char *name, bool bSuccess ) : vgui::EditablePanel( parent, name )
 {
@@ -687,7 +688,7 @@ void MissionCompletePanel::UpdateQueuedUnlocks()
 
 void MissionCompletePanel::OnSuggestDifficulty( bool bIncrease )
 {
-	if ( !rd_suggest_difficulty.GetBool() )
+	if ( !rd_suggest_difficulty.GetBool() || rd_lock_difficulty.GetBool() )
 		return;
 
 	if ( m_hSubScreen.Get() )
