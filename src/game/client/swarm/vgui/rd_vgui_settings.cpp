@@ -371,7 +371,7 @@ CRD_VGUI_Option::CRD_VGUI_Option( vgui::Panel *parent, const char *panelName, co
 	m_iActiveOption = -1;
 	m_flDisplayMultiplier = 1.0f;
 	m_nDecimalDigits = -1;
-	m_szDisplaySuffix[0] = '\0';
+	m_wszDisplaySuffix[0] = L'\0';
 
 	if ( !s_OptionControls.Count() )
 		g_pCVar->InstallGlobalChangeCallback( &SettingsConVarChangedCallback );
@@ -536,7 +536,7 @@ void CRD_VGUI_Option::ApplySettings( KeyValues *pSettings )
 
 	m_flDisplayMultiplier = pSettings->GetFloat( "displayMultiplier", 1.0f );
 	m_nDecimalDigits = pSettings->GetInt( "decimalDigits", -1 );
-	V_strncpy( m_szDisplaySuffix, pSettings->GetString( "displaySuffix", "" ), sizeof( m_szDisplaySuffix ) );
+	TryLocalize( pSettings->GetString( "displaySuffix", "" ), m_wszDisplaySuffix, sizeof( m_wszDisplaySuffix ) );
 }
 
 void CRD_VGUI_Option::PerformLayout()
@@ -1243,7 +1243,9 @@ void CRD_VGUI_Option::SetCurrentSliderValue( float flValue )
 
 		flValue *= m_flDisplayMultiplier;
 
-		m_pTextEntry->SetText( VarArgs( "%.*f%s", iDigits, flValue, m_szDisplaySuffix ) );
+		wchar_t wszFormat[255];
+		V_snwprintf( wszFormat, NELEMS( wszFormat ), L"%.*f%s", iDigits, flValue, m_wszDisplaySuffix );
+		m_pTextEntry->SetText( wszFormat );
 	}
 
 	KeyValues *pKV = new KeyValues( "CurrentOptionChanged" );

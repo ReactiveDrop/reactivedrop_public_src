@@ -365,7 +365,7 @@
 		"ResourceFile"		"resource/ui/option_setting_slider.res"
 		"displayMultiplier"	"1000"
 		"decimalDigits"		"0"
-		"displaySuffix"		" ms"
+		"displaySuffix"		"#rd_option_suffix_milliseconds"
 		"navLeft"			"SettingLeaderboardLoading"
 		"navRight"			"SettingNetworkInterpolation"
 		"navUp"				"SettingAccessibilityMoveRelativeToAim"

@@ -200,7 +200,7 @@ private:
 
 	float m_flDisplayMultiplier;
 	int m_nDecimalDigits;
-	char m_szDisplaySuffix[64];
+	wchar_t m_wszDisplaySuffix[64];
 
 	friend class CRD_VGUI_Option_Dropdown;
 
