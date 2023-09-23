@@ -125,6 +125,8 @@ CRD_VGUI_Settings_Options_2::CRD_VGUI_Settings_Options_2( vgui::Panel *parent, c
 
 void CRD_VGUI_Settings_Options_2::Activate()
 {
+	NavigateToChild( m_pSettingDamageNumbers );
+
 	m_pSettingSpeedTimerColor->SetEnabled( rd_draw_timer.GetBool() );
 
 	ISteamUserStats *pUserStats = SteamUserStats();

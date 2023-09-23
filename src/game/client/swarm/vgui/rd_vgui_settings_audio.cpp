@@ -418,6 +418,8 @@ CRD_VGUI_Settings_Audio::CRD_VGUI_Settings_Audio( vgui::Panel *parent, const cha
 
 void CRD_VGUI_Settings_Audio::Activate()
 {
+	NavigateToChild( m_pMixerOverallVolume );
+
 	m_pSettingVoiceSensitivity->SetEnabled( m_pSettingVoiceChat->GetCurrentOption() == 2 );
 	m_pSettingVoiceIconPosition->SetEnabled( m_pSettingVoiceChat->GetCurrentOption() != 0 );
 	m_pTestMicrophone->SetEnabled( m_pSettingVoiceChat->GetCurrentOption() != 0 );

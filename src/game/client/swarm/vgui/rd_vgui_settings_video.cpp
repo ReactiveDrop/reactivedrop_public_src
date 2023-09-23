@@ -306,6 +306,8 @@ CRD_VGUI_Settings_Video::CRD_VGUI_Settings_Video( vgui::Panel *parent, const cha
 
 void CRD_VGUI_Settings_Video::Activate()
 {
+	NavigateToChild( m_pSettingScreenResolution );
+
 	const MaterialSystem_Config_t &config = materials->GetCurrentConfigForVideoCard();
 
 	KeyValues::AutoDelete pRecommended{ "VideoConfig" };
