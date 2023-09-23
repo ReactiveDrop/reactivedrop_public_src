@@ -210,8 +210,11 @@ CRD_VGUI_Settings_Video::CRD_VGUI_Settings_Video( vgui::Panel *parent, const cha
 	m_pSettingShaderDetail = new CRD_VGUI_Option( this, "SettingShaderDetail", "#rd_video_shader_detail" );
 	m_pSettingShaderDetail->AddOption( 0, "#rd_video_level_low", "#rd_video_shader_detail_hint" );
 	m_pSettingShaderDetail->AddOption( 1, "#rd_video_level_medium", "#rd_video_shader_detail_hint" );
-	m_pSettingShaderDetail->AddOption( 2, "#rd_video_level_high", "#rd_video_shader_detail_hint" );
-	m_pSettingShaderDetail->AddOption( 3, "#rd_video_level_ultra", "#rd_video_shader_detail_hint" );
+	// These modes won't crash the game on lower-end systems (they can still be selected by setting gpu_level in the console directly),
+	// but the fallback shaders don't work with some of the alien material parameters, causing them to glow in ways that aren't intended.
+	int iHighShaderFlags = g_pMaterialSystem->GetCurrentConfigForVideoCard().dxSupportLevel >= 92 ? 0 : CRD_VGUI_Option::FLAG_DISABLED;
+	m_pSettingShaderDetail->AddOption( 2, "#rd_video_level_high", "#rd_video_shader_detail_hint", iHighShaderFlags );
+	m_pSettingShaderDetail->AddOption( 3, "#rd_video_level_ultra", "#rd_video_shader_detail_hint", iHighShaderFlags );
 	m_pSettingShaderDetail->SetDefaultHint( "#rd_video_shader_detail_hint" );
 	m_pSettingShaderDetail->LinkToConVar( "gpu_level", false );
 	m_pSettingTextureDetail = new CRD_VGUI_Option( this, "SettingTextureDetail", "#rd_video_texture_detail" );
