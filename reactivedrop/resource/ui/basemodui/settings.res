@@ -44,7 +44,7 @@
 		"style"				"ReactiveDropMainMenuTop"
 		"command"			"Controls"
 		"navLeft"			"BtnControls"
-		"navRight"			"BtnOptions"
+		"navRight"			"BtnOptions1"
 		"navUp"				"TopBar"
 	}
 
@@ -97,7 +97,7 @@
 		"labelText"			"#rd_settings_audio"
 		"style"				"ReactiveDropMainMenuTop"
 		"command"			"Audio"
-		"navLeft"			"BtnOptions"
+		"navLeft"			"BtnOptions2"
 		"navRight"			"BtnVideo"
 		"navUp"				"TopBar"
 	}

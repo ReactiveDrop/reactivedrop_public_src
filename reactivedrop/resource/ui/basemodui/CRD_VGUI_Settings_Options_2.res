@@ -9,6 +9,7 @@
 		"wide"				"260"	[!$WIN32WIDE]
 		"wide"				"270"	[$WIN32WIDE]
 		"tall"				"24"
+		"tabIndex"			"1"
 		"ResourceFile"		"resource/ui/option_setting_dropdown.res"
 		"navLeft"			"SettingDamageNumbers"
 		"navRight"			"SettingAccessibilityTracerTintSelf"

@@ -74,6 +74,7 @@
 		"wide"				"240"	[!$WIN32WIDE]
 		"wide"				"270"	[$WIN32WIDE]
 		"tall"				"17"
+		"tabIndex"			"1"
 		"ResourceFile"		"resource/ui/option_video_resolution.res"
 		"navLeft"			"SettingScreenResolution"
 		"navRight"			"SettingEffectDetail"

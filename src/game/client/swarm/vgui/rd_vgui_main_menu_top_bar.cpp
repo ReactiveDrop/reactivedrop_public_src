@@ -85,7 +85,6 @@ void CRD_VGUI_Main_Menu_Top_Bar::OnCommand( const char *command )
 	if ( !V_stricmp( command, "QuitGame" ) )
 	{
 		DismissMainMenuScreens();
-		BaseModPanel.OpenFrontScreen();
 
 		CBaseModFrame *pMainMenu = BaseModPanel.GetWindow( WT_MAINMENU );
 		Assert( pMainMenu );
@@ -258,4 +257,7 @@ void CRD_VGUI_Main_Menu_Top_Bar::DismissMainMenuScreens()
 		g_hCollectionFrame->MarkForDeletion();
 		g_hCollectionFrame = NULL;
 	}
+
+	CBaseModPanel::GetSingleton().CloseAllWindows();
+	CBaseModPanel::GetSingleton().OpenFrontScreen();
 }

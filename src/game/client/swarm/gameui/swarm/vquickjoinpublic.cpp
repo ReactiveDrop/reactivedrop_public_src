@@ -43,7 +43,7 @@ void QuickJoinPublicPanel::OnCommand(const char *command)
 		// relay the command up to our parent
 		if ( Panel *pParent = GetParent() )
 		{
-			pParent->OnCommand( command );
+			pParent->OnCommand( "CustomMatch_" );
 		}
 	}
 }

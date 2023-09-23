@@ -1061,7 +1061,7 @@ void FoundGameListItem::OnKeyCodeTyped( vgui::KeyCode code )
 		break;
 
 	default:
-		BaseClass::OnKeyCodePressed( code );
+		BaseClass::OnKeyCodeTyped( code );
 		break;
 	}
 }

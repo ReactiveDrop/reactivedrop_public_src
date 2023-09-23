@@ -272,7 +272,8 @@ void CBaseModFrame::OnKeyCodeTyped( vgui::KeyCode code )
 		break;
 	}
 
-	BaseClass::OnKeyTyped( code );}
+	BaseClass::OnKeyCodeTyped( code );
+}
 #endif
 
 

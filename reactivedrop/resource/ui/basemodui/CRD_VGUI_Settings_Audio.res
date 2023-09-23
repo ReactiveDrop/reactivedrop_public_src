@@ -164,6 +164,7 @@
 		"tall"				"15"
 		"displayMultiplier"	"100"
 		"displaySuffix"		"%"
+		"tabPosition"		"1"
 		"ResourceFile"		"resource/ui/option_audio_main.res"
 		"navLeft"			"MixerOverallVolume"
 		"navRight"			""
