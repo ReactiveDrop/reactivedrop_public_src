@@ -755,10 +755,6 @@ void DrawLightmappedGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** params, 
 						SET_STATIC_PIXEL_SHADER_COMBO( OUTLINE, bHasOutline );
 						SET_STATIC_PIXEL_SHADER_COMBO( SOFTEDGES, bHasSoftEdges );
 						SET_STATIC_PIXEL_SHADER_COMBO( DETAIL_BLEND_MODE, nDetailBlendMode );
-
-						// From https://developer.valvesoftware.com/wiki/Parallax_Corrected_Cubemaps
-						SET_STATIC_PIXEL_SHADER_COMBO( PARALLAXCORRECT, 0 ); // No parallax cubemaps with ps_2_0 :(
-
 						SET_STATIC_PIXEL_SHADER_COMBO( PARALLAX_MAPPING, bParallaxMapping );
 						SET_STATIC_PIXEL_SHADER_COMBO( SHADER_SRGB_READ, bShaderSrgbRead );
 						SET_STATIC_PIXEL_SHADER_COMBO( LIGHTING_PREVIEW, nLightingPreviewMode );

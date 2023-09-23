@@ -71,7 +71,7 @@
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\..\common;..\..\public;..\..\public\tier0;..\..\public\tier1;include;..\..\dx9sdk\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WIN32;_DEBUG;DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;DLLNAME=stdshader_dx9;VPCGAME=valve;VPCGAMECAPS=VALVE;_DLL_EXT=.dll;COMPILER_MSVC32;VPCGAME=valve;VPCGAMECAPS=VALVE;_DLL_EXT=.dll;COMPILER_MSVC;MEMOVERRIDE_MODULE=stdshader_dx9;_DLL_EXT=.dll;VPCGAME=valve;VPCGAMECAPS=VALVE;_DLL_EXT=.dll;DLLNAME=stdshader_dx9;VPCGAME=valve;VPCGAMECAPS=VALVE;_DLL_EXT=.dll;STDSHADER_DX9_DLL_EXPORT;FAST_MATERIALVAR_ACCESS;VPCGAME=valve;VPCGAMECAPS=VALVE;_DLL_EXT=.dll;USE_ACTUAL_DX;VPCGAME=valve;VPCGAMECAPS=VALVE;_DLL_EXT=.dll;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WIN32;RD_SUPPORT_SHADER_MODEL_20;_DEBUG;DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;DLLNAME=stdshader_dx9;VPCGAME=valve;VPCGAMECAPS=VALVE;_DLL_EXT=.dll;COMPILER_MSVC32;VPCGAME=valve;VPCGAMECAPS=VALVE;_DLL_EXT=.dll;COMPILER_MSVC;MEMOVERRIDE_MODULE=stdshader_dx9;_DLL_EXT=.dll;VPCGAME=valve;VPCGAMECAPS=VALVE;_DLL_EXT=.dll;DLLNAME=stdshader_dx9;VPCGAME=valve;VPCGAMECAPS=VALVE;_DLL_EXT=.dll;STDSHADER_DX9_DLL_EXPORT;FAST_MATERIALVAR_ACCESS;VPCGAME=valve;VPCGAMECAPS=VALVE;_DLL_EXT=.dll;USE_ACTUAL_DX;VPCGAME=valve;VPCGAMECAPS=VALVE;_DLL_EXT=.dll;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>true</MinimalRebuild>
       <ExceptionHandling />
@@ -143,7 +143,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <AdditionalIncludeDirectories>..\..\common;..\..\public;..\..\public\tier0;..\..\public\tier1;include;..\..\dx9sdk\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WIN32;NDEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;DLLNAME=stdshader_dx9;VPCGAME=valve;VPCGAMECAPS=VALVE;_DLL_EXT=.dll;COMPILER_MSVC32;VPCGAME=valve;VPCGAMECAPS=VALVE;_DLL_EXT=.dll;COMPILER_MSVC;MEMOVERRIDE_MODULE=stdshader_dx9;_DLL_EXT=.dll;VPCGAME=valve;VPCGAMECAPS=VALVE;_DLL_EXT=.dll;DLLNAME=stdshader_dx9;VPCGAME=valve;VPCGAMECAPS=VALVE;_DLL_EXT=.dll;STDSHADER_DX9_DLL_EXPORT;FAST_MATERIALVAR_ACCESS;VPCGAME=valve;VPCGAMECAPS=VALVE;_DLL_EXT=.dll;USE_ACTUAL_DX;VPCGAME=valve;VPCGAMECAPS=VALVE;_DLL_EXT=.dll;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WIN32;RD_SUPPORT_SHADER_MODEL_20;NDEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;DLLNAME=stdshader_dx9;VPCGAME=valve;VPCGAMECAPS=VALVE;_DLL_EXT=.dll;COMPILER_MSVC32;VPCGAME=valve;VPCGAMECAPS=VALVE;_DLL_EXT=.dll;COMPILER_MSVC;MEMOVERRIDE_MODULE=stdshader_dx9;_DLL_EXT=.dll;VPCGAME=valve;VPCGAMECAPS=VALVE;_DLL_EXT=.dll;DLLNAME=stdshader_dx9;VPCGAME=valve;VPCGAMECAPS=VALVE;_DLL_EXT=.dll;STDSHADER_DX9_DLL_EXPORT;FAST_MATERIALVAR_ACCESS;VPCGAME=valve;VPCGAMECAPS=VALVE;_DLL_EXT=.dll;USE_ACTUAL_DX;VPCGAME=valve;VPCGAMECAPS=VALVE;_DLL_EXT=.dll;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling />
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
