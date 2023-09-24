@@ -1887,6 +1887,34 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 
 			ApplyAbsVelocityImpulse( vecImpulse );
 		}
+
+		if ( bFriendlyFire )
+		{
+			CASW_Marine *pOtherMarine = AsMarine( pAttacker );
+			Assert( pOtherMarine );
+			if ( pOtherMarine )
+			{
+				UTIL_LogPrintf( "\"%s<%i><%s><%s>\" [%.0f %.0f %.0f] attacked \"%s<%i><%s><%s>\" [%.0f %.0f %.0f] with \"%s\" (damage \"%.0f\") (adjusted_damage \"%.0f\") (health \"%d\")\n",
+					pOtherMarine->IsInhabited() ? pOtherMarine->GetCommander()->GetPlayerName() : pOtherMarine->Script_GetMarineName(),
+					pOtherMarine->IsInhabited() ? pOtherMarine->GetCommander()->GetUserID() : -1,
+					pOtherMarine->IsInhabited() ? pOtherMarine->GetCommander()->GetASWNetworkID() : "BOT",
+					pOtherMarine->GetMarineProfile()->m_PortraitName,
+					pOtherMarine->GetAbsOrigin().x,
+					pOtherMarine->GetAbsOrigin().y,
+					pOtherMarine->GetAbsOrigin().z,
+					IsInhabited() ? GetCommander()->GetPlayerName() : Script_GetMarineName(),
+					IsInhabited() ? GetCommander()->GetUserID() : -1,
+					IsInhabited() ? GetCommander()->GetASWNetworkID() : "BOT",
+					GetMarineProfile()->m_PortraitName,
+					GetAbsOrigin().x,
+					GetAbsOrigin().y,
+					GetAbsOrigin().z,
+					newInfo.GetWeapon() ? newInfo.GetWeapon()->GetEntityNameAsCStr() : "(none)",
+					info.GetDamage(),
+					newInfo.GetDamage(),
+					GetHealth() );
+			}
+		}
 	}
 
 	return result;
