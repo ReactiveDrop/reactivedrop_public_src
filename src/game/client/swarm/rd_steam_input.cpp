@@ -69,6 +69,9 @@ CRD_Steam_Input::CRD_Steam_Input() :
 
 void CRD_Steam_Input::PostInit()
 {
+	if ( CommandLine()->FindParm( "-nojoy" ) )
+		return;
+
 	Assert( !m_bInitialized );
 	if ( m_bInitialized )
 	{
@@ -237,6 +240,9 @@ CRD_Steam_Controller *CRD_Steam_Input::FindOrAddController( InputHandle_t hContr
 
 int CRD_Steam_Input::GetJoystickCount()
 {
+	if ( CommandLine()->FindParm( "-nojoy" ) )
+		return 0;
+
 	int iCount = 0;
 	FOR_EACH_VEC( m_Controllers, i )
 	{
