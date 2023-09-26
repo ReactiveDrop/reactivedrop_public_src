@@ -117,6 +117,49 @@ void CRD_VGUI_Commander_Mini_Profile::PaintBackground()
 	}
 }
 
+void CRD_VGUI_Commander_Mini_Profile::OnCommand( const char *command )
+{
+	if ( FStrEq( command, "OpenProfile" ) )
+	{
+		BaseModUI::CBaseModFrame *pCaller = BaseModUI::CBaseModPanel::GetSingleton().GetWindow( BaseModUI::CBaseModPanel::GetSingleton().GetActiveWindowType() );
+		KeyValues::AutoDelete pSettings{ "settings" };
+		if ( m_bShowLocalPlayer )
+			pSettings->SetBool( "showLocalPlayer", true );
+		else
+			pSettings->SetUint64( "steamid", m_SteamID.ConvertToUint64() );
+		BaseModUI::CBaseModPanel::GetSingleton().OpenWindow( BaseModUI::WT_COMMANDERPROFILE, pCaller, true, pSettings );
+	}
+	else
+	{
+		BaseClass::OnCommand( command );
+	}
+}
+
+void CRD_VGUI_Commander_Mini_Profile::OnMousePressed( vgui::MouseCode code )
+{
+	if ( code == MOUSE_LEFT )
+	{
+		OnCommand( "OpenProfile" );
+	}
+	else
+	{
+		BaseClass::OnMousePressed( code );
+	}
+}
+
+void CRD_VGUI_Commander_Mini_Profile::OnKeyCodePressed( vgui::KeyCode code )
+{
+	switch ( GetBaseButtonCode( code ) )
+	{
+	case KEY_XBUTTON_A:
+		OnCommand( "OpenProfile" );
+		break;
+	default:
+		BaseClass::OnKeyCodePressed( code );
+		break;
+	}
+}
+
 void CRD_VGUI_Commander_Mini_Profile::InitForLocalPlayer()
 {
 	ISteamUser *pSteamUser = SteamUser();

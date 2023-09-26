@@ -22,6 +22,9 @@ public:
 	void NavigateTo() override;
 	void OnCursorEntered() override;
 	void PaintBackground() override;
+	void OnCommand( const char *command ) override;
+	void OnMousePressed( vgui::MouseCode code ) override;
+	void OnKeyCodePressed( vgui::KeyCode code ) override;
 
 	void InitForLocalPlayer();
 	void InitShared( CSteamID steamID );

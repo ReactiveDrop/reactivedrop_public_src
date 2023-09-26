@@ -31,7 +31,7 @@
 		"pinCorner"				"0"
 		"visible"				"1"
 		"enabled"				"1"
-		"tabPosition"			"0"
+		"tabPosition"			"1"
 		"navDown"				"BtnQuit"
 		"labelText"				"NO STEAM"
 		"tooltiptext"			"Failed to connect to Steam"

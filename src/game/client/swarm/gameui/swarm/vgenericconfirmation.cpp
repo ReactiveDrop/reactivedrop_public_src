@@ -43,6 +43,7 @@ GenericConfirmation::GenericConfirmation( Panel *parent, const char *panelName )
 	m_pCheckBox( 0 )
 {
 	SetProportional( true );
+	SetConsoleStylePanel( true );
 
 	m_pLblOkButton = new vgui::Label( this, "LblOkButton", "#GameUI_Icons_A_3DBUTTON" );
 	m_pLblOkText = new vgui::Label( this, "LblOkText", "#L4D360UI_Ok" );
@@ -487,6 +488,7 @@ void GenericConfirmation::PaintBackground()
 	if ( m_bNeedsMoveToFront )
 	{
 		vgui::ipanel()->MoveToFront( GetVPanel() );
+		RequestFocus();
 		m_bNeedsMoveToFront = false;
 	}
 }

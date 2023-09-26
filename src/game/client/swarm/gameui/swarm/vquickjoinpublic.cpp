@@ -38,12 +38,12 @@ QuickJoinPublicPanel::~QuickJoinPublicPanel()
 
 void QuickJoinPublicPanel::OnCommand(const char *command)
 {
-	if ( StringHasPrefix( command, "GroupServer_" ) )
+	if ( StringHasPrefix( command, "CustomMatch_" ) )
 	{
 		// relay the command up to our parent
 		if ( Panel *pParent = GetParent() )
 		{
-			pParent->OnCommand( "CustomMatch_" );
+			pParent->OnCommand( command );
 		}
 	}
 }

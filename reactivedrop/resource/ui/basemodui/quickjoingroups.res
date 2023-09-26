@@ -20,7 +20,7 @@
 		"fgcolor_override"		"255 255 255 255"
 		
 		"style"						"ReactiveDropMainMenuTop"
-		"command"					"GroupServer_"
+		"command"					"CustomMatch_"
 		"ActivationType"			"1"				
 		"FocusDisabledBorderSize"	"1"				
 	}

@@ -111,6 +111,8 @@ extern const char *( *const wine_get_version )( void );
 const char *( *const wine_get_version )( void ) = static_cast< const char *( * )( void ) >( Plat_GetProcAddress( "ntdll.dll", "wine_get_version" ) );
 #endif
 
+static bool s_bMainMenuShown = false;
+
 //=============================================================================
 MainMenu::MainMenu( Panel *parent, const char *panelName ):
 	BaseClass( parent, panelName, true, true, false, false )
@@ -1499,6 +1501,8 @@ void MainMenu::OnThink()
 			m_iInactiveHideMainMenu = uint16( clamp<int>( iSlide, 0, 65535 ) );
 		}
 
+		s_bMainMenuShown = m_iInactiveHideMainMenu == 65535;
+
 		m_InactiveHideQuickJoinPublic.Update( m_pPnlQuickJoinPublic->IsVisible() );
 		m_InactiveHideQuickJoinFriends.Update( m_pPnlQuickJoin->IsVisible() );
 
@@ -1629,6 +1633,10 @@ void MainMenu::OnOpen()
 		// clear the convar so we don't try to join that lobby every time we return to the main menu
 		connect_lobby.SetValue( "" );
 	}
+
+	m_iInactiveHideMainMenu = s_bMainMenuShown ? 65535 : 0;
+	if ( s_bMainMenuShown )
+		m_flLastActiveTime = Plat_FloatTime();
 
 	BaseClass::OnOpen();
 

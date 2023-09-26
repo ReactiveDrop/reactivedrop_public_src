@@ -91,17 +91,27 @@ RD_STEAM_INPUT_BIND( SelectMarine8, "+selectmarine8", "InGame" );
 
 extern vgui::IInputInternal *g_InputInternal;
 
+static void ButtonPressHelper( ButtonCode_t eButton )
+{
+	g_InputInternal->InternalKeyCodePressed( eButton );
+	GetControllerFocus()->OnControllerButtonPressed( eButton );
+}
+
+static void ButtonReleaseHelper( ButtonCode_t eButton )
+{
+	g_InputInternal->InternalKeyCodeReleased( eButton );
+	GetControllerFocus()->OnControllerButtonReleased( eButton );
+}
+
 #define RD_STEAM_INPUT_MENU_BIND( ActionName, ConCommandName, eButton, ... ) \
 	static void ConCommandName##_press( const CCommand &args ) \
 	{ \
-		g_InputInternal->InternalKeyCodePressed( eButton ); \
-		GetControllerFocus()->OnControllerButtonPressed( eButton ); \
+		ButtonPressHelper( eButton ); \
 	} \
 	ConCommand ConCommandName##_press_command( "+" #ConCommandName, &ConCommandName##_press, "helper command for " #eButton, FCVAR_HIDDEN ); \
 	static void ConCommandName##_release( const CCommand &args ) \
 	{ \
-		g_InputInternal->InternalKeyCodeReleased( eButton ); \
-		GetControllerFocus()->OnControllerButtonReleased( eButton ); \
+		ButtonReleaseHelper( eButton ); \
 	} \
 	ConCommand ConCommandName##_release_command( "-" #ConCommandName, &ConCommandName##_release, "helper command for " #eButton, FCVAR_HIDDEN ); \
 	RD_STEAM_INPUT_BIND( ActionName, "+" #ConCommandName, __VA_ARGS__ )
