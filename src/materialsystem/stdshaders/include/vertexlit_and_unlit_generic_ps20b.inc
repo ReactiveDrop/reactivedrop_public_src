@@ -67,6 +67,7 @@ class vertexlit_and_unlit_generic_ps20b_Static_Index
 	unsigned int m_nLIGHTING_PREVIEW : 3;
 	unsigned int m_nENVMAPFRESNEL : 2;
 	unsigned int m_nFOW : 2;
+	unsigned int m_nTINTMASKTEXTURE : 1;
 	unsigned int m_nDOPIXELFOG : 2;
 #ifdef _DEBUG
 	bool m_bDETAILTEXTURE : 1;
@@ -92,6 +93,7 @@ class vertexlit_and_unlit_generic_ps20b_Static_Index
 	bool m_bLIGHTING_PREVIEW : 1;
 	bool m_bENVMAPFRESNEL : 1;
 	bool m_bFOW : 1;
+	bool m_bTINTMASKTEXTURE : 1;
 #endif	// _DEBUG
 public:
 	void SetDETAILTEXTURE( int i )
@@ -301,6 +303,15 @@ public:
 #endif	// _DEBUG
 	}
 
+	void SetTINTMASKTEXTURE( int i )
+	{
+		Assert( i >= 0 && i <= 0 );
+		m_nTINTMASKTEXTURE = i;
+#ifdef _DEBUG
+		m_bTINTMASKTEXTURE = true;
+#endif	// _DEBUG
+	}
+
 	void SetDOPIXELFOG( int i )
 	{
 		Assert( i >= 0 && i <= 1 );
@@ -332,6 +343,7 @@ public:
 		m_nLIGHTING_PREVIEW = 0;
 		m_nENVMAPFRESNEL = 0;
 		m_nFOW = 0;
+		m_nTINTMASKTEXTURE = 0;
 		m_nDOPIXELFOG = !IS_FLAG_SET( MATERIAL_VAR_VERTEXFOG ) ? 1 : 0 ;
 #ifdef _DEBUG
 		m_bDETAILTEXTURE = false;
@@ -357,12 +369,13 @@ public:
 		m_bLIGHTING_PREVIEW = false;
 		m_bENVMAPFRESNEL = false;
 		m_bFOW = false;
+		m_bTINTMASKTEXTURE = false;
 #endif	// _DEBUG
 	}
 
 	int GetIndex() const
 	{
-		Assert( m_bDETAILTEXTURE && m_bCUBEMAP && m_bDIFFUSELIGHTING && m_bENVMAPMASK && m_bBASEALPHAENVMAPMASK && m_bSELFILLUM && m_bVERTEXCOLOR && m_bFLASHLIGHT && m_bSELFILLUM_ENVMAPMASK_ALPHA && m_bDETAIL_BLEND_MODE && m_bSEAMLESS_BASE && m_bSEAMLESS_DETAIL && m_bDISTANCEALPHA && m_bDISTANCEALPHAFROMDETAIL && m_bSOFT_MASK && m_bOUTLINE && m_bOUTER_GLOW && m_bFLASHLIGHTDEPTHFILTERMODE && m_bSHADER_SRGB_READ && m_bDESATURATEWITHBASEALPHA && m_bLIGHTING_PREVIEW && m_bENVMAPFRESNEL && m_bFOW );
+		Assert( m_bDETAILTEXTURE && m_bCUBEMAP && m_bDIFFUSELIGHTING && m_bENVMAPMASK && m_bBASEALPHAENVMAPMASK && m_bSELFILLUM && m_bVERTEXCOLOR && m_bFLASHLIGHT && m_bSELFILLUM_ENVMAPMASK_ALPHA && m_bDETAIL_BLEND_MODE && m_bSEAMLESS_BASE && m_bSEAMLESS_DETAIL && m_bDISTANCEALPHA && m_bDISTANCEALPHAFROMDETAIL && m_bSOFT_MASK && m_bOUTLINE && m_bOUTER_GLOW && m_bFLASHLIGHTDEPTHFILTERMODE && m_bSHADER_SRGB_READ && m_bDESATURATEWITHBASEALPHA && m_bLIGHTING_PREVIEW && m_bENVMAPFRESNEL && m_bFOW && m_bTINTMASKTEXTURE );
 		AssertMsg( !( ( m_nFLASHLIGHT == 1 ) && ( m_nCUBEMAP == 1 ) ), "Invalid combo combination ( ( FLASHLIGHT == 1 ) && ( CUBEMAP == 1 ) )" );
 		AssertMsg( !( ( m_nDETAILTEXTURE == 0 ) && ( m_nDETAIL_BLEND_MODE != 0 ) ), "Invalid combo combination ( ( DETAILTEXTURE == 0 ) && ( DETAIL_BLEND_MODE != 0 ) )" );
 		AssertMsg( !( ( m_nDETAILTEXTURE == 0 ) && m_nSEAMLESS_DETAIL ), "Invalid combo combination ( ( DETAILTEXTURE == 0 ) && SEAMLESS_DETAIL )" );
@@ -385,11 +398,11 @@ public:
 		AssertMsg( !( ( m_nFOW == 1 ) && ( m_nSEAMLESS_DETAIL == 1 ) ), "Invalid combo combination ( ( FOW == 1 ) && ( SEAMLESS_DETAIL == 1 ) )" );
 		AssertMsg( !( ( m_nFOW == 1 ) && ( m_nSEAMLESS_BASE == 1 ) ), "Invalid combo combination ( ( FOW == 1 ) && ( SEAMLESS_BASE == 1 ) )" );
 		AssertMsg( !( ( m_nFOW == 1 ) && ( m_nDESATURATEWITHBASEALPHA == 1 ) ), "Invalid combo combination ( ( FOW == 1 ) && ( DESATURATEWITHBASEALPHA == 1 ) )" );
-		return ( 8 * m_nDETAILTEXTURE ) + ( 16 * m_nCUBEMAP ) + ( 32 * m_nDIFFUSELIGHTING ) + ( 64 * m_nENVMAPMASK ) + ( 128 * m_nBASEALPHAENVMAPMASK ) + ( 256 * m_nSELFILLUM ) + ( 512 * m_nVERTEXCOLOR ) + ( 1024 * m_nFLASHLIGHT ) + ( 2048 * m_nSELFILLUM_ENVMAPMASK_ALPHA ) + ( 4096 * m_nDETAIL_BLEND_MODE ) + ( 40960 * m_nSEAMLESS_BASE ) + ( 81920 * m_nSEAMLESS_DETAIL ) + ( 163840 * m_nDISTANCEALPHA ) + ( 327680 * m_nDISTANCEALPHAFROMDETAIL ) + ( 655360 * m_nSOFT_MASK ) + ( 1310720 * m_nOUTLINE ) + ( 2621440 * m_nOUTER_GLOW ) + ( 5242880 * m_nFLASHLIGHTDEPTHFILTERMODE ) + ( 15728640 * m_nSHADER_SRGB_READ ) + ( 15728640 * m_nDESATURATEWITHBASEALPHA ) + ( 31457280 * m_nLIGHTING_PREVIEW ) + ( 125829120 * m_nENVMAPFRESNEL ) + ( 251658240 * m_nFOW ) + ( 503316480 * m_nDOPIXELFOG ) + 0;
+		return ( 8 * m_nDETAILTEXTURE ) + ( 16 * m_nCUBEMAP ) + ( 32 * m_nDIFFUSELIGHTING ) + ( 64 * m_nENVMAPMASK ) + ( 128 * m_nBASEALPHAENVMAPMASK ) + ( 256 * m_nSELFILLUM ) + ( 512 * m_nVERTEXCOLOR ) + ( 1024 * m_nFLASHLIGHT ) + ( 2048 * m_nSELFILLUM_ENVMAPMASK_ALPHA ) + ( 4096 * m_nDETAIL_BLEND_MODE ) + ( 40960 * m_nSEAMLESS_BASE ) + ( 81920 * m_nSEAMLESS_DETAIL ) + ( 163840 * m_nDISTANCEALPHA ) + ( 327680 * m_nDISTANCEALPHAFROMDETAIL ) + ( 655360 * m_nSOFT_MASK ) + ( 1310720 * m_nOUTLINE ) + ( 2621440 * m_nOUTER_GLOW ) + ( 5242880 * m_nFLASHLIGHTDEPTHFILTERMODE ) + ( 15728640 * m_nSHADER_SRGB_READ ) + ( 15728640 * m_nDESATURATEWITHBASEALPHA ) + ( 31457280 * m_nLIGHTING_PREVIEW ) + ( 125829120 * m_nENVMAPFRESNEL ) + ( 251658240 * m_nFOW ) + ( 503316480 * m_nTINTMASKTEXTURE ) + ( 503316480 * m_nDOPIXELFOG ) + 0;
 	}
 };
 
-#define shaderStaticTest_vertexlit_and_unlit_generic_ps20b psh_forgot_to_set_static_DETAILTEXTURE + psh_forgot_to_set_static_CUBEMAP + psh_forgot_to_set_static_DIFFUSELIGHTING + psh_forgot_to_set_static_ENVMAPMASK + psh_forgot_to_set_static_BASEALPHAENVMAPMASK + psh_forgot_to_set_static_SELFILLUM + psh_forgot_to_set_static_VERTEXCOLOR + psh_forgot_to_set_static_FLASHLIGHT + psh_forgot_to_set_static_SELFILLUM_ENVMAPMASK_ALPHA + psh_forgot_to_set_static_DETAIL_BLEND_MODE + psh_forgot_to_set_static_SEAMLESS_BASE + psh_forgot_to_set_static_SEAMLESS_DETAIL + psh_forgot_to_set_static_DISTANCEALPHA + psh_forgot_to_set_static_DISTANCEALPHAFROMDETAIL + psh_forgot_to_set_static_SOFT_MASK + psh_forgot_to_set_static_OUTLINE + psh_forgot_to_set_static_OUTER_GLOW + psh_forgot_to_set_static_FLASHLIGHTDEPTHFILTERMODE + psh_forgot_to_set_static_SHADER_SRGB_READ + psh_forgot_to_set_static_DESATURATEWITHBASEALPHA + psh_forgot_to_set_static_LIGHTING_PREVIEW + psh_forgot_to_set_static_ENVMAPFRESNEL + psh_forgot_to_set_static_FOW
+#define shaderStaticTest_vertexlit_and_unlit_generic_ps20b psh_forgot_to_set_static_DETAILTEXTURE + psh_forgot_to_set_static_CUBEMAP + psh_forgot_to_set_static_DIFFUSELIGHTING + psh_forgot_to_set_static_ENVMAPMASK + psh_forgot_to_set_static_BASEALPHAENVMAPMASK + psh_forgot_to_set_static_SELFILLUM + psh_forgot_to_set_static_VERTEXCOLOR + psh_forgot_to_set_static_FLASHLIGHT + psh_forgot_to_set_static_SELFILLUM_ENVMAPMASK_ALPHA + psh_forgot_to_set_static_DETAIL_BLEND_MODE + psh_forgot_to_set_static_SEAMLESS_BASE + psh_forgot_to_set_static_SEAMLESS_DETAIL + psh_forgot_to_set_static_DISTANCEALPHA + psh_forgot_to_set_static_DISTANCEALPHAFROMDETAIL + psh_forgot_to_set_static_SOFT_MASK + psh_forgot_to_set_static_OUTLINE + psh_forgot_to_set_static_OUTER_GLOW + psh_forgot_to_set_static_FLASHLIGHTDEPTHFILTERMODE + psh_forgot_to_set_static_SHADER_SRGB_READ + psh_forgot_to_set_static_DESATURATEWITHBASEALPHA + psh_forgot_to_set_static_LIGHTING_PREVIEW + psh_forgot_to_set_static_ENVMAPFRESNEL + psh_forgot_to_set_static_FOW + psh_forgot_to_set_static_TINTMASKTEXTURE
 
 
 class vertexlit_and_unlit_generic_ps20b_Dynamic_Index

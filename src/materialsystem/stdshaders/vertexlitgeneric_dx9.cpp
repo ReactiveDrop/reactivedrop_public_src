@@ -38,7 +38,7 @@ BEGIN_VS_SHADER( VertexLitGeneric, "Help for VertexLitGeneric" )
 		SHADER_PARAM( BUMPTRANSFORM, SHADER_PARAM_TYPE_MATRIX, "center .5 .5 scale 1 1 rotate 0 translate 0 0", "$bumpmap texcoord transform" )
 		SHADER_PARAM( ENVMAPCONTRAST, SHADER_PARAM_TYPE_FLOAT, "0.0", "contrast 0 == normal 1 == color*color" )
 		SHADER_PARAM( ENVMAPSATURATION, SHADER_PARAM_TYPE_FLOAT, "1.0", "saturation 0 == greyscale 1 == normal" )
- 	    SHADER_PARAM( SELFILLUM_ENVMAPMASK_ALPHA, SHADER_PARAM_TYPE_FLOAT,"0.0","defines that self illum value comes from env map mask alpha" )
+		SHADER_PARAM( SELFILLUM_ENVMAPMASK_ALPHA, SHADER_PARAM_TYPE_FLOAT,"0.0","defines that self illum value comes from env map mask alpha" )
 		SHADER_PARAM( SELFILLUMFRESNEL, SHADER_PARAM_TYPE_BOOL, "0", "Self illum fresnel" )
 		SHADER_PARAM( SELFILLUMFRESNELMINMAXEXP, SHADER_PARAM_TYPE_VEC4, "0", "Self illum fresnel min, max, exp" )
 		SHADER_PARAM( SELFILLUMMASKSCALE, SHADER_PARAM_TYPE_FLOAT, "0", "Scale self illum effect strength" )
@@ -63,8 +63,8 @@ BEGIN_VS_SHADER( VertexLitGeneric, "Help for VertexLitGeneric" )
 		SHADER_PARAM( SELFILLUMMASK, SHADER_PARAM_TYPE_TEXTURE, "shadertest/BaseTexture", "If we bind a texture here, it overrides base alpha (if any) for self illum" )
 		SHADER_PARAM( BASEMAPLUMINANCEPHONGMASK, SHADER_PARAM_TYPE_INTEGER, "0", "indicates that the base luminance should be used to mask phong" )
 
-	    // detail texturing
-	    SHADER_PARAM( DETAILBLENDMODE, SHADER_PARAM_TYPE_INTEGER, "0", "mode for combining detail texture with base. 0=normal, 1= additive, 2=alpha blend detail over base, 3=crossfade" )
+		// detail texturing
+		SHADER_PARAM( DETAILBLENDMODE, SHADER_PARAM_TYPE_INTEGER, "0", "mode for combining detail texture with base. 0=normal, 1= additive, 2=alpha blend detail over base, 3=crossfade" )
 		SHADER_PARAM( DETAILBLENDFACTOR, SHADER_PARAM_TYPE_FLOAT, "1", "blend amount for detail texture." )
 		SHADER_PARAM( DETAILTINT, SHADER_PARAM_TYPE_COLOR, "[1 1 1]", "detail texture tint" )
 		SHADER_PARAM( DETAILTEXTURETRANSFORM, SHADER_PARAM_TYPE_MATRIX, "center .5 .5 scale 1 1 rotate 0 translate 0 0", "$detail texcoord transform" )
@@ -75,10 +75,10 @@ BEGIN_VS_SHADER( VertexLitGeneric, "Help for VertexLitGeneric" )
 		SHADER_PARAM( RIMLIGHTBOOST, SHADER_PARAM_TYPE_FLOAT, "1.0", "Boost for rim lights" )
 		SHADER_PARAM( RIMMASK, SHADER_PARAM_TYPE_BOOL, "0", "Indicates whether or not to use alpha channel of exponent texture to mask the rim term" )
 
-	    // Seamless mapping scale
+		// Seamless mapping scale
 		SHADER_PARAM( SEAMLESS_BASE, SHADER_PARAM_TYPE_BOOL, "0", "whether to apply seamless mapping to the base texture. requires a smooth model." )
 		SHADER_PARAM( SEAMLESS_DETAIL, SHADER_PARAM_TYPE_BOOL, "0", "where to apply seamless mapping to the detail texture." )
-	    SHADER_PARAM( SEAMLESS_SCALE, SHADER_PARAM_TYPE_FLOAT, "1.0", "the scale for the seamless mapping. # of repetions of texture per inch." )
+		SHADER_PARAM( SEAMLESS_SCALE, SHADER_PARAM_TYPE_FLOAT, "1.0", "the scale for the seamless mapping. # of repetions of texture per inch." )
 
 		// Emissive Scroll Pass
 		SHADER_PARAM( EMISSIVEBLENDENABLED, SHADER_PARAM_TYPE_BOOL, "0", "Enable emissive blend pass" )
@@ -161,6 +161,8 @@ BEGIN_VS_SHADER( VertexLitGeneric, "Help for VertexLitGeneric" )
 		SHADER_PARAM( TREESWAYSCRUMBLEFALLOFFEXP, SHADER_PARAM_TYPE_FLOAT, "1.0", "" );
 		SHADER_PARAM( TREESWAYSPEEDLERPSTART, SHADER_PARAM_TYPE_FLOAT, "3", "" );
 		SHADER_PARAM( TREESWAYSPEEDLERPEND, SHADER_PARAM_TYPE_FLOAT, "6", "" );
+
+		SHADER_PARAM( TINTMASKTEXTURE, SHADER_PARAM_TYPE_TEXTURE, "", "Separate tint mask texture (as opposed to using basetexture alpha)" )
 	END_SHADER_PARAMS
 
 	void SetupVars( VertexLitGeneric_DX9_Vars_t& info )
@@ -270,6 +272,8 @@ BEGIN_VS_SHADER( VertexLitGeneric, "Help for VertexLitGeneric" )
 		info.m_nTreeSwayScrumbleFalloffExp = TREESWAYSCRUMBLEFALLOFFEXP;		
 		info.m_nTreeSwaySpeedLerpStart = TREESWAYSPEEDLERPSTART;
 		info.m_nTreeSwaySpeedLerpEnd = TREESWAYSPEEDLERPEND;
+
+		info.m_nTintMaskTexture = TINTMASKTEXTURE;
 	}
 
 	// Cloak Pass

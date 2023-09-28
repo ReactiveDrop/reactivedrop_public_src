@@ -21,6 +21,8 @@
 // STATIC: "WORLD_NORMAL"				"0..0"						[ps20b] [PC]
 // STATIC: "WORLD_NORMAL"				"0..1"						[ps30] [PC]
 // STATIC: "WORLD_NORMAL"				"0..0"						[XBOX]
+// STATIC: "TINTMASKTEXTURE"			"0..1"						[ps30]
+// STATIC: "TINTMASKTEXTURE"			"0..0"						[ps20] [ps20b]
 
 // DYNAMIC: "WRITEWATERFOGTODESTALPHA"	"0..1"
 // DYNAMIC: "NUM_LIGHTS"				"0..2"						[ps20]
@@ -128,6 +130,10 @@ sampler RandRotSampler						: register( s6 );	// RandomRotation sampler
 sampler FlashlightSampler					: register( s7 );
 sampler ShadowDepthSampler					: register( s8 );	// Flashlight shadow depth map sampler
 sampler DiffuseWarpSampler					: register( s9 );	// Lighting warp sampler (1D texture for diffuse lighting modification)
+
+#if ( TINTMASKTEXTURE )
+	sampler TintMaskSampler		: register( s13 );
+#endif
 
 struct PS_INPUT
 {
@@ -288,6 +294,16 @@ float4 main( PS_INPUT i ) : COLOR
 	
 	// Optionally use basealpha to blend in the diffuse modulation (saturated add of g_fInverseBlendTintByBaseAlpha turns this on/off)
 	diffuseLighting *= lerp( float3( 1.0f, 1.0f, 1.0f ), g_DiffuseModulation.rgb, saturate( baseColor.a + g_fInverseBlendTintByBaseAlpha ) );
+
+	#if ( TINTMASKTEXTURE )
+		// Optionally use inverseblendtint texture to blend in the diffuse modulation (saturated add of g_fInverseBlendTintByBaseAlpha turns this on/off)
+		float4 tintMask = tex2D( TintMaskSampler, i.baseTexCoord2_light0e01.xy ); // use g channel since common use will be mono or dxt1 (greater precision in g).
+		// g_fInverseBlendTintByBaseAlpha will be 0 in this combo so that tintMask.g has an effect, or -1 if notint is set in the material
+		diffuseLighting *= lerp( float3( 1.0h, 1.0h, 1.0h ), g_DiffuseModulation.rgb, saturate( tintMask.g + g_fInverseBlendTintByBaseAlpha ) );
+	#else
+		// Optionally use basealpha to blend in the diffuse modulation (saturated add of g_fInverseBlendTintByBaseAlpha turns this on/off)
+		diffuseLighting *= lerp( float3( 1.0f, 1.0f, 1.0f ), g_DiffuseModulation.rgb, saturate( baseColor.a + g_fInverseBlendTintByBaseAlpha ) );
+	#endif
 
 	alpha *= g_DiffuseModulation.a;
 

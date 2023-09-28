@@ -48,7 +48,7 @@ BEGIN_VS_SHADER( UnlitGeneric, "Help for UnlitGeneric" )
 
 		SHADER_PARAM( SOFTEDGES, SHADER_PARAM_TYPE_BOOL, "0", "Enable soft edges to distance coded textures.")
 		SHADER_PARAM( SCALEEDGESOFTNESSBASEDONSCREENRES, SHADER_PARAM_TYPE_BOOL, "0", "Scale the size of the soft edges based upon resolution. 1024x768 = nominal.")
-	    SHADER_PARAM( EDGESOFTNESSSTART, SHADER_PARAM_TYPE_FLOAT, "0.6", "Start value for soft edges for distancealpha.");
+		SHADER_PARAM( EDGESOFTNESSSTART, SHADER_PARAM_TYPE_FLOAT, "0.6", "Start value for soft edges for distancealpha.");
 		SHADER_PARAM( EDGESOFTNESSEND, SHADER_PARAM_TYPE_FLOAT, "0.5", "End value for soft edges for distancealpha.");
 
 		SHADER_PARAM( GLOW, SHADER_PARAM_TYPE_BOOL, "0", "Enable glow/shadow for distance coded textures.")
@@ -77,7 +77,9 @@ BEGIN_VS_SHADER( UnlitGeneric, "Help for UnlitGeneric" )
 		SHADER_PARAM( SINGLEPASSFLASHLIGHT, SHADER_PARAM_TYPE_INTEGER, "0", "Flags this material as possibly being run through single pass flashlight code" )
 		SHADER_PARAM( DISPLACEMENTMAP, SHADER_PARAM_TYPE_TEXTURE, "shadertest/BaseTexture", "Displacement map" )
 
-		SHADER_PARAM( SHADERSRGBREAD360, SHADER_PARAM_TYPE_BOOL, "0", "Simulate srgb read in shader code")
+		SHADER_PARAM( SHADERSRGBREAD360, SHADER_PARAM_TYPE_BOOL, "0", "Simulate srgb read in shader code" )
+
+		SHADER_PARAM( TINTMASKTEXTURE, SHADER_PARAM_TYPE_TEXTURE, "", "Separate tint mask texture (as opposed to using basetexture alpha)" )
 	END_SHADER_PARAMS
 
 	void SetupVars( VertexLitGeneric_DX9_Vars_t& info )
@@ -161,6 +163,8 @@ BEGIN_VS_SHADER( UnlitGeneric, "Help for UnlitGeneric" )
 
 		info.m_nShaderSrgbRead360 = SHADERSRGBREAD360;
 		info.m_nDisplacementMap = DISPLACEMENTMAP;
+
+		info.m_nTintMaskTexture = TINTMASKTEXTURE;
 	}
 
 	SHADER_INIT_PARAMS()
