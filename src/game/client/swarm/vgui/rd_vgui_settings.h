@@ -12,6 +12,7 @@ namespace BaseModUI
 class CNB_Header_Footer;
 class CRD_VGUI_Main_Menu_Top_Bar;
 class CRD_VGUI_Microphone_Tester;
+class CRD_VGUI_Option_Color;
 class CRD_VGUI_Option_Dropdown;
 class CRD_VGUI_Settings_Panel_Base;
 class CRD_VGUI_Settings_Controls;
@@ -127,9 +128,11 @@ public:
 	void ClearRecommendedSliderValue();
 	float GetCurrentSliderValue();
 
-	// for MODE_CHECKBOX, MODE_SLIDER, and MODE_CUSTOM
+	// for MODE_CHECKBOX, MODE_SLIDER, MODE_COLOR, and MODE_CUSTOM
 	// as well as MODE_RADIO and MODE_DROPDOWN when no option is current.
 	void SetDefaultHint( const char *szHint );
+	// for MODE_COLOR
+	void SetColorImageHint( const char *szBackMaterial, const char *szFrontMaterial, float flAspectRatio );
 
 	// if we are MODE_CHECKBOX, the slider min/max are the values used for the off/on state.
 	// if we're MODE_CUSTOM, this does nothing. otherwise, the values are used as-is.
@@ -196,12 +199,17 @@ private:
 	vgui::Label *m_pLblFieldName;
 	vgui::Label *m_pLblHint;
 	vgui::TextEntry *m_pTextEntry;
-	CRD_VGUI_Option_Dropdown *m_pDropdown;
+	union
+	{
+		CRD_VGUI_Option_Color *m_pColor;
+		CRD_VGUI_Option_Dropdown *m_pDropdown;
+	} m_PopOut;
 
 	float m_flDisplayMultiplier;
 	int m_nDecimalDigits;
 	wchar_t m_wszDisplaySuffix[64];
 
+	friend class CRD_VGUI_Option_Color;
 	friend class CRD_VGUI_Option_Dropdown;
 
 	static bool s_bCVarChanged;

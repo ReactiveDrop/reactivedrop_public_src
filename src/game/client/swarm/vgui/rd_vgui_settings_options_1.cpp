@@ -26,6 +26,7 @@ CRD_VGUI_Settings_Options_1::CRD_VGUI_Settings_Options_1( vgui::Panel *parent, c
 	m_pSettingPlayerNameMode->LinkToConVar( "asw_player_names", true );
 	m_pSettingPlayerChatColor = new CRD_VGUI_Option( this, "SettingPlayerChatColor", "#rd_option_player_chat_color", CRD_VGUI_Option::MODE_COLOR );
 	m_pSettingPlayerChatColor->SetDefaultHint( "#rd_option_player_chat_color_hint" );
+	m_pSettingPlayerChatColor->SetColorImageHint( "vgui/swarm/option_hints/chat_background", "vgui/swarm/option_hints/chat_color", 8.0f / 1.0f );
 	m_pSettingPlayerChatColor->LinkToConVar( "cl_chatcolor", true );
 	m_pSettingPlayerChatNamesUseColors = new CRD_VGUI_Option( this, "SettingPlayerChatNamesUseColors", "#rd_option_player_chat_names_use_colors", CRD_VGUI_Option::MODE_CHECKBOX );
 	m_pSettingPlayerChatNamesUseColors->SetDefaultHint( "#rd_option_player_chat_names_use_colors_hint" );

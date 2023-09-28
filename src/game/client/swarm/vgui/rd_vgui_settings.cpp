@@ -215,6 +215,233 @@ void CRD_VGUI_Settings_Panel_Base::NavigateTo()
 	BaseClass::NavigateTo();
 }
 
+class CRD_VGUI_Option_Color : public vgui::EditablePanel
+{
+	DECLARE_CLASS_SIMPLE( CRD_VGUI_Option_Color, vgui::EditablePanel );
+public:
+	CRD_VGUI_Option_Color( CRD_VGUI_Option *parent, const char *panelName ) :
+		BaseClass{ parent, panelName }
+	{
+		MakePopup( false );
+	}
+
+	~CRD_VGUI_Option_Color()
+	{
+		if ( vgui::surface() && m_hPreviewBackgroundTexture )
+		{
+			vgui::surface()->DestroyTextureID( m_hPreviewBackgroundTexture );
+			m_hPreviewBackgroundTexture = NULL;
+		}
+
+		if ( vgui::surface() && m_hPreviewTexture )
+		{
+			vgui::surface()->DestroyTextureID( m_hPreviewTexture );
+			m_hPreviewTexture = NULL;
+		}
+	}
+
+	void PerformLayout() override
+	{
+		BaseClass::PerformLayout();
+
+		CRD_VGUI_Option *parent = assert_cast< CRD_VGUI_Option * >( GetParent() );
+
+		int x, y;
+		parent->m_pInteractiveArea->GetPos( x, y );
+
+		SetBgColor( parent->m_pInteractiveArea->GetBgColor() );
+		SetPaintBackgroundEnabled( true );
+
+		int wide = parent->GetWide() - x + vgui::Label::Content * 2;
+		m_iPreviewTall = m_hPreviewTexture ? MAX( int( wide / m_flPreviewAspectRatio ), 0 ) : 0;
+		int tall = parent->m_pInteractiveArea->GetTall() * 3 + m_iPreviewTall + vgui::Label::Content * 2;
+
+		SetSize( wide, tall );
+
+		parent->LocalToScreen( x, y );
+		SetPos( x, y );
+
+		vgui::input()->GetCursorPos( x, y );
+		ScreenToLocal( x, y );
+		OnCursorMoved( x, y );
+	}
+
+	void Paint() override
+	{
+		Color c;
+		CRD_VGUI_Option *parent = assert_cast< CRD_VGUI_Option * >( GetParent() );
+		Assert( parent && parent->m_pSliderLink );
+		if ( parent && parent->m_pSliderLink )
+			c = parent->m_pSliderLink->GetColor();
+
+		c[3] = 255; // always full opacity
+
+		int w, t;
+		GetSize( w, t );
+
+		if ( m_hPreviewBackgroundTexture )
+		{
+			vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
+			vgui::surface()->DrawSetTexture( m_hPreviewBackgroundTexture );
+			vgui::surface()->DrawTexturedRect( 0, 0, w, m_iPreviewTall );
+		}
+
+		if ( m_hPreviewTexture )
+		{
+			vgui::surface()->DrawSetColor( c );
+			vgui::surface()->DrawSetTexture( m_hPreviewTexture );
+			vgui::surface()->DrawTexturedRect( 0, 0, w, m_iPreviewTall );
+		}
+
+		int iLineHeight = parent->m_pInteractiveArea->GetTall();
+		int iCapWidth = iLineHeight / 2;
+
+		int x0 = vgui::Label::Content / 2;
+		int y0 = m_iPreviewTall + vgui::Label::Content / 2;
+		int x1 = w - vgui::Label::Content / 2;
+		int y1 = y0 + iLineHeight;
+
+		int iLineGap = iLineHeight + vgui::Label::Content / 2;
+
+		Assert( x0 + iCapWidth < x1 - iCapWidth );
+
+		vgui::surface()->DrawSetTexture( g_RD_HUD_Sheets.m_nControlsID );
+
+		vgui::DrawTexturedRectParms_t rect[6];
+		// left cap, base color
+		rect[0].x0 = x0;
+		rect[0].x1 = x0 + iCapWidth;
+		rect[0].y0 = y0;
+		rect[0].y1 = y1;
+		rect[0].s0 = g_RD_HUD_Sheets.m_Controls[CRD_HUD_Sheets::UV_slider_bar_end].u;
+		rect[0].s1 = g_RD_HUD_Sheets.m_Controls[CRD_HUD_Sheets::UV_slider_bar_end].s;
+		rect[0].t0 = g_RD_HUD_Sheets.m_Controls[CRD_HUD_Sheets::UV_slider_bar_end].t;
+		rect[0].t1 = g_RD_HUD_Sheets.m_Controls[CRD_HUD_Sheets::UV_slider_bar_end].v;
+		// middle, base color
+		rect[1].x0 = x0 + iCapWidth;
+		rect[1].x1 = x1 - iCapWidth;
+		rect[1].y0 = y0;
+		rect[1].y1 = y1;
+		rect[1].s0 = rect[1].s1 = ( g_RD_HUD_Sheets.m_Controls[CRD_HUD_Sheets::UV_slider_bar].s + g_RD_HUD_Sheets.m_Controls[CRD_HUD_Sheets::UV_slider_bar].u ) / 2;
+		rect[1].t0 = g_RD_HUD_Sheets.m_Controls[CRD_HUD_Sheets::UV_slider_bar].t;
+		rect[1].t1 = g_RD_HUD_Sheets.m_Controls[CRD_HUD_Sheets::UV_slider_bar].v;
+		// right cap, base color
+		rect[2].x0 = x1 - iCapWidth;
+		rect[2].x1 = x1;
+		rect[2].y0 = y0;
+		rect[2].y1 = y1;
+		rect[2].s0 = g_RD_HUD_Sheets.m_Controls[CRD_HUD_Sheets::UV_slider_bar_end].s;
+		rect[2].s1 = g_RD_HUD_Sheets.m_Controls[CRD_HUD_Sheets::UV_slider_bar_end].u;
+		rect[2].t0 = g_RD_HUD_Sheets.m_Controls[CRD_HUD_Sheets::UV_slider_bar_end].t;
+		rect[2].t1 = g_RD_HUD_Sheets.m_Controls[CRD_HUD_Sheets::UV_slider_bar_end].v;
+		// next three are the same, but with alpha modulation.
+		V_memcpy( &rect[3], &rect[0], sizeof( rect[0] ) * 3 );
+		rect[3].alpha_ul = rect[3].alpha_ll = 0;
+		rect[3].alpha_ur = rect[3].alpha_lr = rect[4].alpha_ul = rect[4].alpha_ll = 0; // TODO
+		rect[4].alpha_ur = rect[4].alpha_lr = rect[5].alpha_ul = rect[5].alpha_ll = 255; // TODO
+		rect[5].alpha_ur = rect[5].alpha_lr = 255;
+
+		for ( int component = 0; component < 3; component++ )
+		{
+			Color c0 = c, c1 = c;
+			c0[component] = 0;
+			c1[component] = 255;
+
+			vgui::surface()->DrawSetColor( c0 );
+
+			vgui::surface()->DrawTexturedRectEx( &rect[0] );
+			vgui::surface()->DrawTexturedRectEx( &rect[1] );
+			vgui::surface()->DrawTexturedRectEx( &rect[2] );
+
+			vgui::surface()->DrawSetColor( c1 );
+
+			vgui::surface()->DrawTexturedRectEx( &rect[3] );
+			vgui::surface()->DrawTexturedRectEx( &rect[4] );
+			vgui::surface()->DrawTexturedRectEx( &rect[5] );
+
+			float flMin = 0, flMax = 255;
+			int x = RemapValClamped( c[component], 0, 255, x0 + iCapWidth, x1 - iCapWidth );
+			const HudSheetTexture_t &Bar = g_RD_HUD_Sheets.m_Controls[CRD_HUD_Sheets::UV_slider_bar];
+			const HudSheetTexture_t &BarEnd = g_RD_HUD_Sheets.m_Controls[CRD_HUD_Sheets::UV_slider_bar_end];
+
+			bool bIsFocused = parent->HasFocus();
+			if ( bIsFocused && parent->m_bSliderActive )
+				HUD_SHEET_DRAW_RECT( x - iLineHeight / 4, y0, x + iLineHeight / 4, y1, Controls, UV_slider_handle_hover );
+			else if ( bIsFocused && parent->m_iActiveOption == component )
+				HUD_SHEET_DRAW_RECT( x - iLineHeight / 4, y0, x + iLineHeight / 4, y1, Controls, UV_slider_handle_focus );
+			else
+				HUD_SHEET_DRAW_RECT( x - iLineHeight / 4, y0, x + iLineHeight / 4, y1, Controls, UV_slider_handle );
+
+			y0 += iLineGap;
+			y1 += iLineGap;
+
+			for ( int i = 0; i < NELEMS( rect ); i++ )
+			{
+				rect[i].y0 = y0;
+				rect[i].y1 = y1;
+			}
+		}
+
+		vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
+	}
+
+	void OnMousePressed( vgui::MouseCode code ) override
+	{
+		// forward mouse presses to parent; don't process here
+		GetParent()->OnMousePressed( code );
+	}
+
+	void OnMouseReleased( vgui::MouseCode code ) override
+	{
+		GetParent()->OnMouseReleased( code );
+	}
+
+	void OnCursorMoved( int x, int y ) override
+	{
+		BaseClass::OnCursorMoved( x, y );
+
+		CRD_VGUI_Option *parent = assert_cast< CRD_VGUI_Option * >( GetParent() );
+		Assert( parent );
+		if ( !parent )
+			return;
+
+		Assert( !"TODO: CRD_VGUI_Option_Color::OnCursorMoved" );
+	}
+
+	void SetColorImageHint( const char *szBackMaterial, const char *szFrontMaterial, float flAspectRatio )
+	{
+		if ( m_hPreviewBackgroundTexture )
+			vgui::surface()->DestroyTextureID( m_hPreviewBackgroundTexture );
+		if ( m_hPreviewTexture )
+			vgui::surface()->DestroyTextureID( m_hPreviewTexture );
+
+		if ( szBackMaterial )
+		{
+			m_hPreviewBackgroundTexture = vgui::surface()->CreateNewTextureID();
+			vgui::surface()->DrawSetTextureFile( m_hPreviewBackgroundTexture, szBackMaterial, true, false );
+		}
+		else
+		{
+			m_hPreviewBackgroundTexture = NULL;
+		}
+
+		Assert( szFrontMaterial );
+		m_hPreviewTexture = vgui::surface()->CreateNewTextureID();
+		vgui::surface()->DrawSetTextureFile( m_hPreviewTexture, szFrontMaterial, true, false );
+
+		Assert( flAspectRatio > 0 && isfinite( flAspectRatio ) );
+		m_flPreviewAspectRatio = flAspectRatio;
+
+		InvalidateLayout();
+		Repaint();
+	}
+
+	vgui::HTexture m_hPreviewBackgroundTexture{ NULL };
+	vgui::HTexture m_hPreviewTexture{ NULL };
+	float m_flPreviewAspectRatio{ 1.0f };
+	int m_iPreviewTall{ 0 };
+};
+
 class CRD_VGUI_Option_Dropdown : public vgui::EditablePanel
 {
 	DECLARE_CLASS_SIMPLE( CRD_VGUI_Option_Dropdown, vgui::EditablePanel );
@@ -359,7 +586,8 @@ CRD_VGUI_Option::CRD_VGUI_Option( vgui::Panel *parent, const char *panelName, co
 		m_pTextEntry->AddActionSignalTarget( this );
 		m_pTextEntry->SetAllowNumericInputOnly( true );
 	}
-	m_pDropdown = NULL;
+	m_PopOut.m_pColor = NULL;
+	m_PopOut.m_pDropdown = NULL;
 
 	m_bHaveCurrent = false;
 	m_bHaveRecommended = false;
@@ -503,7 +731,8 @@ void CRD_VGUI_Option::NavigateTo()
 void CRD_VGUI_Option::OnKillFocus()
 {
 	vgui::Panel *pNewFocus = vgui::ipanel()->GetPanel( vgui::input()->GetCalculatedFocus(), GetModuleName() );
-	if ( m_pDropdown && pNewFocus == m_pDropdown )
+	if ( ( m_eMode == MODE_DROPDOWN && m_PopOut.m_pDropdown && pNewFocus == m_PopOut.m_pDropdown ) ||
+		( m_eMode == MODE_COLOR && m_PopOut.m_pColor && pNewFocus == m_PopOut.m_pColor ) )
 	{
 		RequestFocus();
 		return;
@@ -516,9 +745,14 @@ void CRD_VGUI_Option::OnKillFocus()
 		ToggleSliderActive( false );
 	}
 
-	if ( m_pDropdown )
+	if ( m_eMode == MODE_COLOR && m_PopOut.m_pColor )
 	{
-		m_pDropdown->SetVisible( false );
+		m_PopOut.m_pColor->SetVisible( false );
+	}
+
+	if ( m_eMode == MODE_DROPDOWN && m_PopOut.m_pDropdown )
+	{
+		m_PopOut.m_pDropdown->SetVisible( false );
 	}
 
 	m_iActiveOption = -1;
@@ -899,9 +1133,10 @@ void CRD_VGUI_Option::OnKeyCodeTyped( vgui::KeyCode code )
 	{
 		if ( m_eMode == MODE_DROPDOWN && m_iActiveOption != -1 )
 		{
-			Assert( m_pDropdown );
+			Assert( m_PopOut.m_pDropdown );
+			if ( m_PopOut.m_pDropdown )
+				m_PopOut.m_pDropdown->SetVisible( false );
 			m_iActiveOption = -1;
-			m_pDropdown->SetVisible( false );
 			return;
 		}
 
@@ -909,6 +1144,15 @@ void CRD_VGUI_Option::OnKeyCodeTyped( vgui::KeyCode code )
 		{
 			if ( OnActivateButton( false ) )
 				return;
+		}
+
+		if ( m_eMode == MODE_COLOR && m_iActiveOption != -1 )
+		{
+			Assert( m_PopOut.m_pColor );
+			if ( m_PopOut.m_pColor )
+				m_PopOut.m_pColor->SetVisible( false );
+			m_iActiveOption = -1;
+			return;
 		}
 	}
 
@@ -1289,6 +1533,19 @@ void CRD_VGUI_Option::SetDefaultHint( const char *szHint )
 {
 	TryLocalize( szHint, m_wszDefaultHint, sizeof( m_wszDefaultHint ) );
 	InvalidateLayout();
+}
+
+void CRD_VGUI_Option::SetColorImageHint( const char *szBackMaterial, const char *szFrontMaterial, float flAspectRatio )
+{
+	Assert( m_eMode == MODE_COLOR );
+	if ( !m_PopOut.m_pColor )
+	{
+		m_PopOut.m_pColor = new CRD_VGUI_Option_Color( this, "Color" );
+		m_PopOut.m_pColor->MakeReadyForUse();
+		m_PopOut.m_pColor->SetVisible( false );
+	}
+
+	m_PopOut.m_pColor->SetColorImageHint( szBackMaterial, szFrontMaterial, flAspectRatio );
 }
 
 void CRD_VGUI_Option::LinkToConVar( const char *szName, bool bSetRecommendedToDefaultValue )
@@ -1737,7 +1994,7 @@ bool CRD_VGUI_Option::OnMovementButton( int iDirection, bool bVertical )
 		return true;
 	}
 
-	if ( bVertical && m_pDropdown && m_pDropdown->IsVisible() )
+	if ( bVertical && m_eMode == MODE_DROPDOWN && m_PopOut.m_pDropdown && m_PopOut.m_pDropdown->IsVisible() )
 	{
 		for ( int i = m_iActiveOption + iDirection; i >= 0 && i < m_Options.Count(); i += iDirection )
 		{
@@ -1745,7 +2002,7 @@ bool CRD_VGUI_Option::OnMovementButton( int iDirection, bool bVertical )
 				continue;
 
 			m_iActiveOption = i;
-			m_pDropdown->Repaint();
+			m_PopOut.m_pDropdown->Repaint();
 
 			CBaseModPanel::GetSingleton().PlayUISound( UISOUND_FOCUS );
 
@@ -1753,6 +2010,42 @@ bool CRD_VGUI_Option::OnMovementButton( int iDirection, bool bVertical )
 		}
 
 		// don't leave the dropdown menu until it is closed
+		return true;
+	}
+
+	if ( !bVertical && m_eMode == MODE_COLOR && m_bSliderActive )
+	{
+		Assert( m_iActiveOption >= 0 && m_iActiveOption < 3 );
+		Assert( m_pSliderLink );
+		if ( m_pSliderLink )
+		{
+			Color c = m_pSliderLink->GetColor();
+			c[m_iActiveOption] = clamp<int>( c[m_iActiveOption] + iDirection * 5, 0, 255 );
+			c[3] = 255; // we always want full alpha when set from the UI
+			m_pSliderLink->SetValue( c );
+			s_bCVarChanged = true;
+		}
+
+		Assert( m_PopOut.m_pColor );
+		if ( m_PopOut.m_pColor )
+			m_PopOut.m_pColor->Repaint();
+
+		CBaseModPanel::GetSingleton().PlayUISound( UISOUND_FOCUS );
+
+		return true;
+	}
+
+	if ( bVertical && m_eMode == MODE_COLOR && m_PopOut.m_pColor && m_PopOut.m_pColor->IsVisible() )
+	{
+		Assert( m_iActiveOption >= 0 && m_iActiveOption < 3 );
+		if ( !m_bSliderActive )
+		{
+			m_iActiveOption = ( m_iActiveOption + iDirection + 3 ) % 3;
+			m_PopOut.m_pColor->Repaint();
+
+			CBaseModPanel::GetSingleton().PlayUISound( UISOUND_FOCUS );
+		}
+
 		return true;
 	}
 
@@ -1835,7 +2128,9 @@ void CRD_VGUI_Option::SelectActiveRadioButton()
 
 	if ( m_eMode == MODE_DROPDOWN )
 	{
-		m_pDropdown->SetVisible( false );
+		Assert( m_PopOut.m_pDropdown );
+		if ( m_PopOut.m_pDropdown )
+			m_PopOut.m_pDropdown->SetVisible( false );
 		m_iActiveOption = -1;
 	}
 
@@ -1889,8 +2184,20 @@ void CRD_VGUI_Option::ToggleSliderActive( bool bMouse )
 void CRD_VGUI_Option::ToggleColorActive()
 {
 	Assert( m_eMode == MODE_COLOR );
+	Assert( m_iActiveOption == -1 );
 
-	Assert( !"TODO: ToggleColorActive" );
+	m_iActiveOption = 0;
+
+	if ( !m_PopOut.m_pColor )
+	{
+		m_PopOut.m_pColor = new CRD_VGUI_Option_Color( this, "Color" );
+		m_PopOut.m_pColor->MakeReadyForUse();
+	}
+
+	m_PopOut.m_pColor->SetVisible( true );
+	m_PopOut.m_pColor->MoveToFront();
+	m_PopOut.m_pColor->InvalidateLayout();
+	m_PopOut.m_pColor->Repaint();
 }
 
 void CRD_VGUI_Option::ToggleDropdownActive()
@@ -1898,10 +2205,10 @@ void CRD_VGUI_Option::ToggleDropdownActive()
 	Assert( m_eMode == MODE_DROPDOWN );
 	Assert( m_iActiveOption == -1 );
 
-	if ( !m_pDropdown )
+	if ( !m_PopOut.m_pDropdown )
 	{
-		m_pDropdown = new CRD_VGUI_Option_Dropdown( this, "Dropdown" );
-		m_pDropdown->MakeReadyForUse();
+		m_PopOut.m_pDropdown = new CRD_VGUI_Option_Dropdown( this, "Dropdown" );
+		m_PopOut.m_pDropdown->MakeReadyForUse();
 	}
 
 	if ( m_bHaveCurrent )
@@ -1920,10 +2227,10 @@ void CRD_VGUI_Option::ToggleDropdownActive()
 		m_iActiveOption = 0;
 	}
 
-	m_pDropdown->SetVisible( true );
-	m_pDropdown->MoveToFront();
-	m_pDropdown->InvalidateLayout();
-	m_pDropdown->Repaint();
+	m_PopOut.m_pDropdown->SetVisible( true );
+	m_PopOut.m_pDropdown->MoveToFront();
+	m_PopOut.m_pDropdown->InvalidateLayout();
+	m_PopOut.m_pDropdown->Repaint();
 }
 
 CON_COMMAND( rd_settings, "Opens the settings screen." )
