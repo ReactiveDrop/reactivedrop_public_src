@@ -359,13 +359,12 @@ public:
 			const HudSheetTexture_t &Bar = g_RD_HUD_Sheets.m_Controls[CRD_HUD_Sheets::UV_slider_bar];
 			const HudSheetTexture_t &BarEnd = g_RD_HUD_Sheets.m_Controls[CRD_HUD_Sheets::UV_slider_bar_end];
 
-			bool bIsFocused = parent->HasFocus();
-			if ( bIsFocused && parent->m_bSliderActive )
-				HUD_SHEET_DRAW_RECT( x - iLineHeight / 4, y0, x + iLineHeight / 4, y1, Controls, UV_slider_handle_hover );
-			else if ( bIsFocused && parent->m_iActiveOption == component )
-				HUD_SHEET_DRAW_RECT( x - iLineHeight / 4, y0, x + iLineHeight / 4, y1, Controls, UV_slider_handle_focus );
-			else
+			if ( parent->m_iActiveOption != component )
 				HUD_SHEET_DRAW_RECT( x - iLineHeight / 4, y0, x + iLineHeight / 4, y1, Controls, UV_slider_handle );
+			else if ( parent->m_bSliderActive )
+				HUD_SHEET_DRAW_RECT( x - iLineHeight / 4, y0, x + iLineHeight / 4, y1, Controls, UV_slider_handle_hover );
+			else
+				HUD_SHEET_DRAW_RECT( x - iLineHeight / 4, y0, x + iLineHeight / 4, y1, Controls, UV_slider_handle_focus );
 
 			y0 += iLineGap;
 			y1 += iLineGap;
@@ -391,6 +390,14 @@ public:
 		GetParent()->OnMouseReleased( code );
 	}
 
+	void OnKillFocus() override
+	{
+		if ( GetParent()->HasFocus() )
+			BaseClass::OnKillFocus();
+		else
+			GetParent()->OnKillFocus();
+	}
+
 	void OnCursorMoved( int x, int y ) override
 	{
 		BaseClass::OnCursorMoved( x, y );
@@ -399,8 +406,57 @@ public:
 		Assert( parent );
 		if ( !parent )
 			return;
+		Assert( parent->m_pSliderLink );
+		if ( !parent->m_pSliderLink )
+			return;
 
-		Assert( !"TODO: CRD_VGUI_Option_Color::OnCursorMoved" );
+		int w, t;
+		GetSize( w, t );
+
+		int iLineHeight = parent->m_pInteractiveArea->GetTall();
+		int iCapWidth = iLineHeight / 2;
+
+		int x0 = vgui::Label::Content / 2;
+		int y0 = m_iPreviewTall + vgui::Label::Content / 2;
+		int x1 = w - vgui::Label::Content / 2;
+		int y1 = y0 + iLineHeight;
+
+		int iLineGap = iLineHeight + vgui::Label::Content / 2;
+
+		if ( parent->m_bSliderActiveMouse )
+		{
+			Assert( parent->m_iActiveOption >= 0 && parent->m_iActiveOption < 3 );
+			Color c = parent->m_pSliderLink->GetColor();
+			c[parent->m_iActiveOption] = RemapValClamped( x, x0 + iCapWidth, x1 - iCapWidth, 0, 255 );
+			parent->m_pSliderLink->SetValue( c );
+			CRD_VGUI_Option::s_bCVarChanged = true;
+
+			CBaseModPanel::GetSingleton().PlayUISound( UISOUND_FOCUS );
+
+			Repaint();
+
+			return;
+		}
+
+		if ( x >= 0 && x < w )
+		{
+			for ( int component = 0; component < 3; component++ )
+			{
+				if ( y >= y0 - vgui::Label::Content / 4 && y < y1 + vgui::Label::Content / 4 )
+				{
+					parent->m_iActiveOption = component;
+
+					CBaseModPanel::GetSingleton().PlayUISound( UISOUND_FOCUS );
+
+					Repaint();
+
+					return;
+				}
+
+				y0 += iLineGap;
+				y1 += iLineGap;
+			}
+		}
 	}
 
 	void SetColorImageHint( const char *szBackMaterial, const char *szFrontMaterial, float flAspectRatio )
@@ -538,6 +594,14 @@ public:
 	void OnMouseReleased( vgui::MouseCode code ) override
 	{
 		GetParent()->OnMouseReleased( code );
+	}
+
+	void OnKillFocus() override
+	{
+		if ( GetParent()->HasFocus() )
+			BaseClass::OnKillFocus();
+		else
+			GetParent()->OnKillFocus();
 	}
 
 	void OnCursorMoved( int x, int y ) override
@@ -839,7 +903,12 @@ void CRD_VGUI_Option::OnThink()
 {
 	BaseClass::OnThink();
 
-	if ( !HasFocus() )
+	bool bHasFocus = HasFocus();
+	if ( m_eMode == MODE_COLOR && m_PopOut.m_pColor && m_PopOut.m_pColor->HasFocus() )
+		bHasFocus = true;
+	if ( m_eMode == MODE_DROPDOWN && m_PopOut.m_pDropdown && m_PopOut.m_pDropdown->HasFocus() )
+		bHasFocus = true;
+	if ( !bHasFocus )
 		return;
 
 	bool bHorizontal = false, bVertical = false;
@@ -882,7 +951,17 @@ void CRD_VGUI_Option::OnThink()
 	case MODE_COLOR:
 		if ( m_bSliderActive )
 		{
-			Assert( !"TODO: button repeat for color" );
+			bHorizontal = true;
+			flSpeed = rd_option_slider_repeat_speed.GetFloat();
+			flAccel = rd_option_slider_repeat_accel.GetFloat();
+			iMaxAccel = rd_option_slider_repeat_max_accel.GetInt();
+		}
+		else
+		{
+			bHorizontal = false;
+			flSpeed = rd_option_radio_repeat_speed.GetFloat();
+			flAccel = rd_option_radio_repeat_accel.GetFloat();
+			iMaxAccel = rd_option_radio_repeat_max_accel.GetInt();
 		}
 		break;
 	default:
@@ -1111,7 +1190,7 @@ void CRD_VGUI_Option::Paint()
 			vgui::surface()->DrawTexturedSubRect( x0, y0, x0 + x1, y0 + y1, HUD_UV_COORDS( Controls, UV_color_swatch ) );
 		}
 
-		if ( HasFocus() )
+		if ( bIsFocused )
 			HUD_SHEET_DRAW_BOUNDS( Controls, UV_color_swatch_border_hover );
 		else
 			HUD_SHEET_DRAW_BOUNDS( Controls, UV_color_swatch_border );
@@ -1882,7 +1961,7 @@ bool CRD_VGUI_Option::OnActivateButton( bool bMouse )
 
 	if ( m_eMode == MODE_COLOR )
 	{
-		ToggleColorActive();
+		ToggleColorActive( bMouse );
 
 		return true;
 	}
@@ -1906,7 +1985,7 @@ bool CRD_VGUI_Option::OnDeactivateButton( bool bMouse )
 		return false;
 	}
 
-	if ( m_eMode == MODE_SLIDER && m_iActiveOption == m_Options.Count() && m_bSliderActive )
+	if ( m_bSliderActive )
 	{
 		ToggleSliderActive( bMouse );
 
@@ -2147,15 +2226,19 @@ void CRD_VGUI_Option::ChangeActiveRadioButton( int iActive )
 
 void CRD_VGUI_Option::ToggleSliderActive( bool bMouse )
 {
-	Assert( m_eMode == MODE_SLIDER );
-	Assert( m_iActiveOption == m_Options.Count() );
+	Assert( m_eMode == MODE_SLIDER || m_eMode == MODE_COLOR );
+	Assert( m_eMode != MODE_SLIDER || m_iActiveOption == m_Options.Count() );
+	Assert( m_eMode != MODE_COLOR || ( m_iActiveOption >= 0 && m_iActiveOption < 3 ) );
+	Assert( m_eMode != MODE_COLOR || ( m_PopOut.m_pColor && m_PopOut.m_pColor->IsVisible() ) );
+
+	vgui::VPANEL hPanel = m_eMode == MODE_COLOR ? m_PopOut.m_pColor->GetVPanel() : GetVPanel();
 
 	if ( m_bSliderActive )
 	{
 		m_bSliderActive = false;
 		m_bSliderActiveMouse = false;
 
-		if ( vgui::input()->GetMouseCapture() == GetVPanel() )
+		if ( vgui::input()->GetMouseCapture() == hPanel )
 			vgui::input()->SetMouseCapture( NULL );
 	}
 	else
@@ -2166,33 +2249,46 @@ void CRD_VGUI_Option::ToggleSliderActive( bool bMouse )
 
 		if ( bMouse )
 		{
-			vgui::input()->SetMouseCapture( GetVPanel() );
+			vgui::input()->SetMouseCapture( hPanel );
 
-			int x, y;
-			vgui::input()->GetCursorPos( x, y );
-			ScreenToLocal( x, y );
-			OnCursorMoved( x, y );
+			vgui::Panel *pPanel = vgui::ipanel()->GetPanel( hPanel, GetModuleName() );
+			Assert( pPanel );
+			if ( pPanel )
+			{
+				int x, y;
+				vgui::input()->GetCursorPos( x, y );
+				pPanel->ScreenToLocal( x, y );
+				pPanel->OnCursorMoved( x, y );
+			}
 		}
 	}
 }
 
-void CRD_VGUI_Option::ToggleColorActive()
+void CRD_VGUI_Option::ToggleColorActive( bool bMouse )
 {
 	Assert( m_eMode == MODE_COLOR );
-	Assert( m_iActiveOption == -1 );
 
-	m_iActiveOption = 0;
-
-	if ( !m_PopOut.m_pColor )
+	if ( m_iActiveOption == -1 )
 	{
-		m_PopOut.m_pColor = new CRD_VGUI_Option_Color( this, "Color" );
-		m_PopOut.m_pColor->MakeReadyForUse();
-	}
+		m_iActiveOption = 0;
 
-	m_PopOut.m_pColor->SetVisible( true );
-	m_PopOut.m_pColor->MoveToFront();
-	m_PopOut.m_pColor->InvalidateLayout();
-	m_PopOut.m_pColor->Repaint();
+		if ( !m_PopOut.m_pColor )
+		{
+			m_PopOut.m_pColor = new CRD_VGUI_Option_Color( this, "Color" );
+			m_PopOut.m_pColor->MakeReadyForUse();
+		}
+
+		m_PopOut.m_pColor->SetVisible( true );
+		m_PopOut.m_pColor->MoveToFront();
+		m_PopOut.m_pColor->InvalidateLayout();
+		m_PopOut.m_pColor->Repaint();
+	}
+	else
+	{
+		Assert( m_PopOut.m_pColor && m_PopOut.m_pColor->IsVisible() );
+
+		ToggleSliderActive( bMouse );
+	}
 }
 
 void CRD_VGUI_Option::ToggleDropdownActive()

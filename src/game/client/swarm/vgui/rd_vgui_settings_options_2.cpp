@@ -36,8 +36,8 @@ CRD_VGUI_Settings_Options_2::CRD_VGUI_Settings_Options_2( vgui::Panel *parent, c
 	m_pSettingSpeedTimer->LinkToConVar( "rd_draw_timer", false );
 	m_pSettingSpeedTimerColor = new CRD_VGUI_Option( this, "SettingSpeedTimerColor", "#rd_option_speed_timer_color", CRD_VGUI_Option::MODE_COLOR );
 	m_pSettingSpeedTimerColor->SetDefaultHint( "#rd_option_speed_timer_color_hint" );
-	m_pSettingSpeedTimerColor->SetColorImageHint( "vgui/swarm/option_hints/speed_timer_background", "vgui/swarm/option_hints/speed_timer_color", 4.0f / 1.0f );
 	m_pSettingSpeedTimerColor->LinkToConVar( "rd_draw_timer_color", false );
+	m_pSettingSpeedTimerColor->SetColorImageHint( "vgui/swarm/option_hints/speed_timer_background", "vgui/swarm/option_hints/speed_timer_color", 4.0f / 1.0f );
 	m_pSettingSpeedObjectivesInChat = new CRD_VGUI_Option( this, "SettingSpeedObjectivesInChat", "#rd_option_speed_objectives", CRD_VGUI_Option::MODE_DROPDOWN );
 	m_pSettingSpeedObjectivesInChat->AddOption( 0, "#rd_option_speed_objectives_disabled", "#rd_option_speed_objectives_hint" );
 	m_pSettingSpeedObjectivesInChat->LinkToConVarAdvanced( 0, "rda_print_chat_objective_completion_time", 0 );
@@ -54,7 +54,7 @@ CRD_VGUI_Settings_Options_2::CRD_VGUI_Settings_Options_2( vgui::Panel *parent, c
 
 	// Leaderboards
 	m_pSettingLeaderboardPrivateStats = new CRD_VGUI_Option( this, "SettingLeaderboardPrivateStats", "#rd_option_leaderboard_private_stats", CRD_VGUI_Option::MODE_CHECKBOX );
-	m_pSettingLeaderboardPrivateStats->SetDefaultHint( "#rd_option_leaderboard_private_stats" );
+	m_pSettingLeaderboardPrivateStats->SetDefaultHint( "#rd_option_leaderboard_private_stats_hint" );
 	m_pSettingLeaderboardPrivateStats->SetEnabled( false );
 	m_pSettingLeaderboardSend = new CRD_VGUI_Option( this, "SettingLeaderboardSend", "#rd_option_leaderboard_send", CRD_VGUI_Option::MODE_CHECKBOX );
 	m_pSettingLeaderboardSend->SetDefaultHint( "#rd_option_leaderboard_send_hint" );
@@ -80,12 +80,12 @@ CRD_VGUI_Settings_Options_2::CRD_VGUI_Settings_Options_2( vgui::Panel *parent, c
 	// Accessibility
 	m_pSettingAccessibilityTracerTintSelf = new CRD_VGUI_Option( this, "SettingAccessibilityTracerTintSelf", "#rd_option_accessibility_tracer_tint_self", CRD_VGUI_Option::MODE_COLOR );
 	m_pSettingAccessibilityTracerTintSelf->SetDefaultHint( "#rd_option_accessibility_tracer_tint_self_hint" );
-	m_pSettingAccessibilityTracerTintSelf->SetColorImageHint( "vgui/swarm/option_hints/tracer_tint_background", "vgui/swarm/option_hints/tracer_tint_foreground", 16.0f / 9.0f );
 	m_pSettingAccessibilityTracerTintSelf->LinkToConVar( "rd_tracer_tint_self", true );
+	m_pSettingAccessibilityTracerTintSelf->SetColorImageHint( "vgui/swarm/option_hints/tracer_tint_background", "vgui/swarm/option_hints/tracer_tint_foreground", 16.0f / 9.0f );
 	m_pSettingAccessibilityTracerTintOther = new CRD_VGUI_Option( this, "SettingAccessibilityTracerTintOther", "#rd_option_accessibility_tracer_tint_other", CRD_VGUI_Option::MODE_COLOR );
 	m_pSettingAccessibilityTracerTintOther->SetDefaultHint( "#rd_option_accessibility_tracer_tint_other_hint" );
-	m_pSettingAccessibilityTracerTintOther->SetColorImageHint( "vgui/swarm/option_hints/tracer_tint_background", "vgui/swarm/option_hints/tracer_tint_foreground", 16.0f / 9.0f );
 	m_pSettingAccessibilityTracerTintOther->LinkToConVar( "rd_tracer_tint_other", true );
+	m_pSettingAccessibilityTracerTintOther->SetColorImageHint( "vgui/swarm/option_hints/tracer_tint_background", "vgui/swarm/option_hints/tracer_tint_foreground", 16.0f / 9.0f );
 	m_pSettingAccessibilityHighlightActiveCharacter = new CRD_VGUI_Option( this, "SettingAccessibilityHighlightActiveCharacter", "#RD_AdvancedSettings_Misc_HighlightActiveCharacter", CRD_VGUI_Option::MODE_CHECKBOX );
 	m_pSettingAccessibilityHighlightActiveCharacter->SetDefaultHint( "#rd_option_accessibility_highlight_active_character_hint" );
 	m_pSettingAccessibilityHighlightActiveCharacter->LinkToConVar( "rd_highlight_active_character", false );

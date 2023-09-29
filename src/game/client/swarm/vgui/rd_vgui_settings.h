@@ -225,7 +225,7 @@ private:
 	void SelectActiveRadioButton();
 	void ChangeActiveRadioButton( int iActive );
 	void ToggleSliderActive( bool bMouse );
-	void ToggleColorActive();
+	void ToggleColorActive( bool bMouse );
 	void ToggleDropdownActive();
 };
 
