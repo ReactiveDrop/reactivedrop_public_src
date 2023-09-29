@@ -66,7 +66,7 @@ class vertexlit_and_unlit_generic_ps20b_Static_Index
 	unsigned int m_nDESATURATEWITHBASEALPHA : 2;
 	unsigned int m_nLIGHTING_PREVIEW : 3;
 	unsigned int m_nENVMAPFRESNEL : 2;
-	unsigned int m_nFOW : 2;
+	unsigned int m_nFOW : 1;
 	unsigned int m_nTINTMASKTEXTURE : 1;
 	unsigned int m_nDOPIXELFOG : 2;
 #ifdef _DEBUG
@@ -296,7 +296,7 @@ public:
 
 	void SetFOW( int i )
 	{
-		Assert( i >= 0 && i <= 1 );
+		Assert( i >= 0 && i <= 0 );
 		m_nFOW = i;
 #ifdef _DEBUG
 		m_bFOW = true;
@@ -398,7 +398,7 @@ public:
 		AssertMsg( !( ( m_nFOW == 1 ) && ( m_nSEAMLESS_DETAIL == 1 ) ), "Invalid combo combination ( ( FOW == 1 ) && ( SEAMLESS_DETAIL == 1 ) )" );
 		AssertMsg( !( ( m_nFOW == 1 ) && ( m_nSEAMLESS_BASE == 1 ) ), "Invalid combo combination ( ( FOW == 1 ) && ( SEAMLESS_BASE == 1 ) )" );
 		AssertMsg( !( ( m_nFOW == 1 ) && ( m_nDESATURATEWITHBASEALPHA == 1 ) ), "Invalid combo combination ( ( FOW == 1 ) && ( DESATURATEWITHBASEALPHA == 1 ) )" );
-		return ( 8 * m_nDETAILTEXTURE ) + ( 16 * m_nCUBEMAP ) + ( 32 * m_nDIFFUSELIGHTING ) + ( 64 * m_nENVMAPMASK ) + ( 128 * m_nBASEALPHAENVMAPMASK ) + ( 256 * m_nSELFILLUM ) + ( 512 * m_nVERTEXCOLOR ) + ( 1024 * m_nFLASHLIGHT ) + ( 2048 * m_nSELFILLUM_ENVMAPMASK_ALPHA ) + ( 4096 * m_nDETAIL_BLEND_MODE ) + ( 40960 * m_nSEAMLESS_BASE ) + ( 81920 * m_nSEAMLESS_DETAIL ) + ( 163840 * m_nDISTANCEALPHA ) + ( 327680 * m_nDISTANCEALPHAFROMDETAIL ) + ( 655360 * m_nSOFT_MASK ) + ( 1310720 * m_nOUTLINE ) + ( 2621440 * m_nOUTER_GLOW ) + ( 5242880 * m_nFLASHLIGHTDEPTHFILTERMODE ) + ( 15728640 * m_nSHADER_SRGB_READ ) + ( 15728640 * m_nDESATURATEWITHBASEALPHA ) + ( 31457280 * m_nLIGHTING_PREVIEW ) + ( 125829120 * m_nENVMAPFRESNEL ) + ( 251658240 * m_nFOW ) + ( 503316480 * m_nTINTMASKTEXTURE ) + ( 503316480 * m_nDOPIXELFOG ) + 0;
+		return ( 8 * m_nDETAILTEXTURE ) + ( 16 * m_nCUBEMAP ) + ( 32 * m_nDIFFUSELIGHTING ) + ( 64 * m_nENVMAPMASK ) + ( 128 * m_nBASEALPHAENVMAPMASK ) + ( 256 * m_nSELFILLUM ) + ( 512 * m_nVERTEXCOLOR ) + ( 1024 * m_nFLASHLIGHT ) + ( 2048 * m_nSELFILLUM_ENVMAPMASK_ALPHA ) + ( 4096 * m_nDETAIL_BLEND_MODE ) + ( 40960 * m_nSEAMLESS_BASE ) + ( 81920 * m_nSEAMLESS_DETAIL ) + ( 163840 * m_nDISTANCEALPHA ) + ( 327680 * m_nDISTANCEALPHAFROMDETAIL ) + ( 655360 * m_nSOFT_MASK ) + ( 1310720 * m_nOUTLINE ) + ( 2621440 * m_nOUTER_GLOW ) + ( 5242880 * m_nFLASHLIGHTDEPTHFILTERMODE ) + ( 15728640 * m_nSHADER_SRGB_READ ) + ( 15728640 * m_nDESATURATEWITHBASEALPHA ) + ( 31457280 * m_nLIGHTING_PREVIEW ) + ( 125829120 * m_nENVMAPFRESNEL ) + ( 251658240 * m_nFOW ) + ( 251658240 * m_nTINTMASKTEXTURE ) + ( 251658240 * m_nDOPIXELFOG ) + 0;
 	}
 };
 

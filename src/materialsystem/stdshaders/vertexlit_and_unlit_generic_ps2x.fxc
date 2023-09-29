@@ -27,7 +27,7 @@
 // STATIC: "LIGHTING_PREVIEW"			"0..3"	[PC]
 // STATIC: "LIGHTING_PREVIEW"			"0..0"	[XBOX]
 // STATIC: "ENVMAPFRESNEL"				"0..1"
-// STATIC: "FOW"						"0..1"
+// STATIC: "FOW"						"0..0"
 // STATIC: "TINTMASKTEXTURE"			"0..1"	[ps30]
 // STATIC: "TINTMASKTEXTURE"			"0..0"	[ps20] [ps20b]
 
@@ -389,7 +389,14 @@ float4 main( PS_INPUT i ) : COLOR
 	float3 diffuseLighting = float3( 1.0f, 1.0f, 1.0f );
 	#if ( DIFFUSELIGHTING || VERTEXCOLOR && !( VERTEXCOLOR && DIFFUSELIGHTING ) )
 	{
-		diffuseLighting = i.color.rgb;
+		#if ( VERTEXCOLOR && TINTMASKTEXTURE )
+			// Optionally use inverseblendtint texture to blend in the diffuse modulation (saturated add of g_fInverseBlendTintByBaseAlpha turns this on/off)
+			float4 tintMask = tex2D( TintMaskSampler, i.baseTexCoord.xy ).rgba; // use g channel since common use will be mono or dxt1 (greater precision in g).
+			// g_fInverseBlendTintByBaseAlpha will be 0 in this combo so that tintMask.g has an effect, or -1 if notint is set in the material
+			diffuseLighting = lerp( float3( 1.0f, 1.0f, 1.0f ), i.color.rgb, saturate( tintMask.g + g_fInverseBlendTintByBaseAlpha ) );
+		#else
+			diffuseLighting = i.color.rgb;
+		#endif
 	}
 	#endif
 
