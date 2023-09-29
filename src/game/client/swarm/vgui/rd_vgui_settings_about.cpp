@@ -103,7 +103,6 @@ void CRD_VGUI_Settings_About::ApplySchemeSettings( vgui::IScheme *pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
-
 	for ( int i = 0; i < m_pCopyrightDisclaimers->GetPanelItemCount(); i++ )
 	{
 		m_pCopyrightDisclaimers->GetPanelItem( i )->SetFgColor( m_pCopyrightDisclaimers->GetFgColor() );

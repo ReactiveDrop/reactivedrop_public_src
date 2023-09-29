@@ -121,7 +121,10 @@ CRD_VGUI_Settings_Options_1::CRD_VGUI_Settings_Options_1( vgui::Panel *parent, c
 
 void CRD_VGUI_Settings_Options_1::Activate()
 {
-	NavigateToChild( m_pSettingPlayerNameMode );
+	if ( m_bActivateWithoutNavigate )
+		m_bActivateWithoutNavigate = false;
+	else
+		NavigateToChild( m_pSettingPlayerNameMode );
 
 	bool bEverShowedLesson = false;
 	for ( int i = 0; i < MAX_SPLITSCREEN_PLAYERS; ++i )
@@ -180,5 +183,6 @@ void CRD_VGUI_Settings_Options_1::OnCommand( const char *command )
 
 void CRD_VGUI_Settings_Options_1::OnCurrentOptionChanged( vgui::Panel *panel )
 {
+	m_bActivateWithoutNavigate = true;
 	Activate();
 }

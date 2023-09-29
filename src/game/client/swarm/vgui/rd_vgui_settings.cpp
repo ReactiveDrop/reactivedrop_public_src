@@ -2023,21 +2023,6 @@ bool CRD_VGUI_Option::OnMovementButton( int iDirection, bool bVertical )
 		}
 	}
 
-	// FIXME: these next two don't properly handle disabled options, but it isn't an issue yet.
-	if ( !bVertical && m_pTextEntry && m_iActiveOption == 0 && iDirection == -1 && !m_pTextEntry->HasFocus() && m_pInteractiveArea->GetNavLeft() == m_pTextEntry )
-	{
-		NavigateToChild( m_pTextEntry );
-
-		return true;
-	}
-
-	if ( !bVertical && m_pTextEntry && m_iActiveOption == m_Options.Count() + ( m_eMode == MODE_SLIDER ? 1 : 0 ) && iDirection == 1 && !m_pTextEntry->HasFocus() && m_pInteractiveArea->GetNavRight() == m_pTextEntry )
-	{
-		NavigateToChild( m_pTextEntry );
-
-		return true;
-	}
-
 	if ( !bVertical && m_eMode == MODE_SLIDER && m_bSliderActive )
 	{
 		float flMin = m_flMinValue, flMax = m_flMaxValue;
@@ -2064,6 +2049,21 @@ bool CRD_VGUI_Option::OnMovementButton( int iDirection, bool bVertical )
 		}
 
 		CBaseModPanel::GetSingleton().PlayUISound( UISOUND_FOCUS );
+
+		return true;
+	}
+
+	// FIXME: these next two don't properly handle disabled options, but it isn't an issue yet.
+	if ( !bVertical && m_pTextEntry && m_iActiveOption == 0 && iDirection == -1 && !m_pTextEntry->HasFocus() && m_pInteractiveArea->GetNavLeft() == m_pTextEntry )
+	{
+		NavigateToChild( m_pTextEntry );
+
+		return true;
+	}
+
+	if ( !bVertical && m_pTextEntry && m_iActiveOption == m_Options.Count() + ( m_eMode == MODE_SLIDER ? 1 : 0 ) && iDirection == 1 && !m_pTextEntry->HasFocus() && m_pInteractiveArea->GetNavRight() == m_pTextEntry )
+	{
+		NavigateToChild( m_pTextEntry );
 
 		return true;
 	}

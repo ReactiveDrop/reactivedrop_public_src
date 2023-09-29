@@ -418,7 +418,10 @@ CRD_VGUI_Settings_Audio::CRD_VGUI_Settings_Audio( vgui::Panel *parent, const cha
 
 void CRD_VGUI_Settings_Audio::Activate()
 {
-	NavigateToChild( m_pMixerOverallVolume );
+	if ( m_bActivateWithoutNavigate )
+		m_bActivateWithoutNavigate = false;
+	else
+		NavigateToChild( m_pMixerOverallVolume );
 
 	m_pSettingVoiceSensitivity->SetEnabled( m_pSettingVoiceChat->GetCurrentOption() == 2 );
 	m_pSettingVoiceIconPosition->SetEnabled( m_pSettingVoiceChat->GetCurrentOption() != 0 );
@@ -448,5 +451,6 @@ void CRD_VGUI_Settings_Audio::OnCurrentOptionChanged( vgui::Panel *panel )
 		dsp_enhance_stereo.SetValue( m_pSettingSpeakerConfiguration->GetCurrentOption() == 0 && m_pSettingSoundQuality->GetCurrentOption() == 2 );
 	}
 
+	m_bActivateWithoutNavigate = true;
 	Activate();
 }

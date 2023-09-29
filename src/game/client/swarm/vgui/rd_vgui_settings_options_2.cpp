@@ -128,7 +128,10 @@ CRD_VGUI_Settings_Options_2::CRD_VGUI_Settings_Options_2( vgui::Panel *parent, c
 
 void CRD_VGUI_Settings_Options_2::Activate()
 {
-	NavigateToChild( m_pSettingDamageNumbers );
+	if ( m_bActivateWithoutNavigate )
+		m_bActivateWithoutNavigate = false;
+	else
+		NavigateToChild( m_pSettingDamageNumbers );
 
 	m_pSettingSpeedTimerColor->SetEnabled( rd_draw_timer.GetBool() );
 
@@ -165,5 +168,6 @@ void CRD_VGUI_Settings_Options_2::OnCurrentOptionChanged( vgui::Panel *panel )
 		}
 	}
 
+	m_bActivateWithoutNavigate = true;
 	Activate();
 }

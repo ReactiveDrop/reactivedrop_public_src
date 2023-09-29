@@ -69,6 +69,8 @@ public:
 
 	virtual void Activate() = 0;
 	virtual BaseModUI::BaseModHybridButton *GetButton( BaseModUI::CRD_VGUI_Settings *pSettings ) = 0;
+
+	bool m_bActivateWithoutNavigate{ false };
 };
 
 class CRD_VGUI_Option : public vgui::EditablePanel
