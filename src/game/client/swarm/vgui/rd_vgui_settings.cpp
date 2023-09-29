@@ -307,8 +307,8 @@ public:
 
 		vgui::surface()->DrawSetTexture( g_RD_HUD_Sheets.m_nControlsID );
 
-		vgui::DrawTexturedRectParms_t rect[6];
-		// left cap, base color
+		vgui::DrawTexturedRectParms_t rect[4];
+		// left cap, low color
 		rect[0].x0 = x0;
 		rect[0].x1 = x0 + iCapWidth;
 		rect[0].y0 = y0;
@@ -317,7 +317,7 @@ public:
 		rect[0].s1 = g_RD_HUD_Sheets.m_Controls[CRD_HUD_Sheets::UV_slider_bar_end].s;
 		rect[0].t0 = g_RD_HUD_Sheets.m_Controls[CRD_HUD_Sheets::UV_slider_bar_end].t;
 		rect[0].t1 = g_RD_HUD_Sheets.m_Controls[CRD_HUD_Sheets::UV_slider_bar_end].v;
-		// middle, base color
+		// middle, low color
 		rect[1].x0 = x0 + iCapWidth;
 		rect[1].x1 = x1 - iCapWidth;
 		rect[1].y0 = y0;
@@ -325,21 +325,18 @@ public:
 		rect[1].s0 = rect[1].s1 = ( g_RD_HUD_Sheets.m_Controls[CRD_HUD_Sheets::UV_slider_bar].s + g_RD_HUD_Sheets.m_Controls[CRD_HUD_Sheets::UV_slider_bar].u ) / 2;
 		rect[1].t0 = g_RD_HUD_Sheets.m_Controls[CRD_HUD_Sheets::UV_slider_bar].t;
 		rect[1].t1 = g_RD_HUD_Sheets.m_Controls[CRD_HUD_Sheets::UV_slider_bar].v;
-		// right cap, base color
-		rect[2].x0 = x1 - iCapWidth;
-		rect[2].x1 = x1;
-		rect[2].y0 = y0;
-		rect[2].y1 = y1;
-		rect[2].s0 = g_RD_HUD_Sheets.m_Controls[CRD_HUD_Sheets::UV_slider_bar_end].s;
-		rect[2].s1 = g_RD_HUD_Sheets.m_Controls[CRD_HUD_Sheets::UV_slider_bar_end].u;
-		rect[2].t0 = g_RD_HUD_Sheets.m_Controls[CRD_HUD_Sheets::UV_slider_bar_end].t;
-		rect[2].t1 = g_RD_HUD_Sheets.m_Controls[CRD_HUD_Sheets::UV_slider_bar_end].v;
-		// next three are the same, but with alpha modulation.
-		V_memcpy( &rect[3], &rect[0], sizeof( rect[0] ) * 3 );
-		rect[3].alpha_ul = rect[3].alpha_ll = 0;
-		rect[3].alpha_ur = rect[3].alpha_lr = rect[4].alpha_ul = rect[4].alpha_ll = 0; // TODO
-		rect[4].alpha_ur = rect[4].alpha_lr = rect[5].alpha_ul = rect[5].alpha_ll = 255; // TODO
-		rect[5].alpha_ur = rect[5].alpha_lr = 255;
+		// middle again, this time with high color and a fade
+		rect[2] = rect[1];
+		rect[2].alpha_ul = rect[2].alpha_ll = 0;
+		// right cap, high color
+		rect[3].x0 = x1 - iCapWidth;
+		rect[3].x1 = x1;
+		rect[3].y0 = y0;
+		rect[3].y1 = y1;
+		rect[3].s0 = g_RD_HUD_Sheets.m_Controls[CRD_HUD_Sheets::UV_slider_bar_end].s;
+		rect[3].s1 = g_RD_HUD_Sheets.m_Controls[CRD_HUD_Sheets::UV_slider_bar_end].u;
+		rect[3].t0 = g_RD_HUD_Sheets.m_Controls[CRD_HUD_Sheets::UV_slider_bar_end].t;
+		rect[3].t1 = g_RD_HUD_Sheets.m_Controls[CRD_HUD_Sheets::UV_slider_bar_end].v;
 
 		for ( int component = 0; component < 3; component++ )
 		{
@@ -351,13 +348,11 @@ public:
 
 			vgui::surface()->DrawTexturedRectEx( &rect[0] );
 			vgui::surface()->DrawTexturedRectEx( &rect[1] );
-			vgui::surface()->DrawTexturedRectEx( &rect[2] );
 
 			vgui::surface()->DrawSetColor( c1 );
 
+			vgui::surface()->DrawTexturedRectEx( &rect[2] );
 			vgui::surface()->DrawTexturedRectEx( &rect[3] );
-			vgui::surface()->DrawTexturedRectEx( &rect[4] );
-			vgui::surface()->DrawTexturedRectEx( &rect[5] );
 
 			float flMin = 0, flMax = 255;
 			int x = RemapValClamped( c[component], 0, 255, x0 + iCapWidth, x1 - iCapWidth );
