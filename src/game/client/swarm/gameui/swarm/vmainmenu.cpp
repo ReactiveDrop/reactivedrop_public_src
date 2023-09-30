@@ -295,7 +295,7 @@ void MainMenu::Activate()
 			m_pBtnUpdateNotes->SetText( wszPatchText );
 		}
 
-		m_pBtnUpdateNotes->SetVisible( true );
+		m_pBtnUpdateNotes->SetVisible( !m_bIsStub && rd_legacy_ui.GetString()[0] == '\0' );
 
 		for ( int i = 0; i < NELEMS( m_wszNewsTitle ); i++ )
 		{
@@ -373,6 +373,9 @@ void MainMenu::LoadLayout()
 				pChild->SetVisible( false );
 			}
 		}
+
+		// go ahead and just click the button to ask for help on behalf of the user.
+		PostMessage( this, new KeyValues( "Command", "command", "BtnStub" ), 0.5f );
 	}
 
 	V_strncpy( m_ResourceName, pSettings, sizeof( m_ResourceName ) );
