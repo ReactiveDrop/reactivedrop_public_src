@@ -261,9 +261,12 @@ public:
 		parent->LocalToScreen( x, y );
 		SetPos( x, y );
 
-		vgui::input()->GetCursorPos( x, y );
-		ScreenToLocal( x, y );
-		OnCursorMoved( x, y );
+		if ( IsVisible() )
+		{
+			vgui::input()->GetCursorPos( x, y );
+			ScreenToLocal( x, y );
+			OnCursorMoved( x, y );
+		}
 	}
 
 	void Paint() override
@@ -1615,8 +1618,8 @@ void CRD_VGUI_Option::SetColorImageHint( const char *szBackMaterial, const char 
 	if ( !m_PopOut.m_pColor )
 	{
 		m_PopOut.m_pColor = new CRD_VGUI_Option_Color( this, "Color" );
-		m_PopOut.m_pColor->MakeReadyForUse();
 		m_PopOut.m_pColor->SetVisible( false );
+		m_PopOut.m_pColor->MakeReadyForUse();
 	}
 
 	m_PopOut.m_pColor->SetColorImageHint( szBackMaterial, szFrontMaterial, flAspectRatio );
