@@ -551,7 +551,4 @@ void CRD_VGUI_Settings_Video::OnCurrentOptionChanged( vgui::Panel *panel )
 
 		engine->ClientCmd_Unrestricted( szCmd );
 	}
-
-	m_bActivateWithoutNavigate = true;
-	Activate();
 }
