@@ -1894,7 +1894,7 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 			Assert( pOtherMarine );
 			if ( pOtherMarine )
 			{
-				UTIL_LogPrintf( "\"%s<%i><%s><%s>\" [%.0f %.0f %.0f] attacked \"%s<%i><%s><%s>\" [%.0f %.0f %.0f] with \"%s\" (damage \"%.0f\") (adjusted_damage \"%.0f\") (health \"%d\")\n",
+				UTIL_LogPrintf( "\"%s<%i><%s><%s>\" [%.0f %.0f %.0f] attacked \"%s<%i><%s><%s>\" [%.0f %.0f %.0f] with \"%s\" (damage \"%.0f\") (adjusted_damage \"%.0f\") (health \"%d\")%s\n",
 					pOtherMarine->IsInhabited() ? pOtherMarine->GetCommander()->GetPlayerName() : pOtherMarine->Script_GetMarineName(),
 					pOtherMarine->IsInhabited() ? pOtherMarine->GetCommander()->GetUserID() : -1,
 					pOtherMarine->IsInhabited() ? pOtherMarine->GetCommander()->GetASWNetworkID() : "BOT",
@@ -1912,7 +1912,8 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 					newInfo.GetWeapon() ? newInfo.GetWeapon()->GetEntityNameAsCStr() : "(none)",
 					info.GetDamage(),
 					newInfo.GetDamage(),
-					GetHealth() );
+					GetHealth(),
+					IsInfested() ? " (infested)" : "" );
 			}
 		}
 	}
