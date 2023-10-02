@@ -133,6 +133,7 @@ public:
 	CHandle<CASW_Marine_Resource> m_MarineResource;
 	CASW_Marine_Profile *GetMarineProfile();
 	CNetworkVar( int, m_nMarineProfile );
+	void ChangeTeam( int iTeamNum ) override;
 
 	// Commander/Inhabiting
 	bool IsInhabited();

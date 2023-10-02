@@ -1956,6 +1956,17 @@ bool CASW_Marine::IsWounded() const
 	return ( ( float(GetHealth()) / float(GetMaxHealth()) ) < 0.6f );
 }
 
+void CASW_Marine::ChangeTeam( int iTeamNum )
+{
+	BaseClass::ChangeTeam( iTeamNum );
+
+	CASW_Marine_Resource *pMR = GetMarineResource();
+	if ( pMR && pMR->GetTeamNumber() != iTeamNum )
+	{
+		pMR->ChangeTeam( iTeamNum );
+	}
+}
+
 // asw todo: fix this!
 bool CASW_Marine::IsAlienNear()
 {

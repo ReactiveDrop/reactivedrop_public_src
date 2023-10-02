@@ -281,6 +281,17 @@ CASW_Player *CASW_Marine_Resource::GetCommander()
 	return m_Commander;
 }
 
+void CASW_Marine_Resource::ChangeTeam( int iTeamNum )
+{
+	BaseClass::ChangeTeam( iTeamNum );
+
+	CASW_Marine *pMarine = GetMarineEntity();
+	if ( pMarine && pMarine->GetTeamNumber() != iTeamNum )
+	{
+		pMarine->ChangeTeam( iTeamNum );
+	}
+}
+
 void CASW_Marine_Resource::GetDisplayName( char *pchDisplayName, int nMaxBytes )
 {
 	wchar_t wszDisplayName[256];

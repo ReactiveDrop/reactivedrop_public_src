@@ -81,6 +81,7 @@ public:
 	virtual int				ShouldTransmit( const CCheckTransmitInfo *pInfo );
 	void SetCommander(CASW_Player* commander);
 	CASW_Player* GetCommander();
+	void ChangeTeam( int iTeamNum ) override;
 
 	void GetDisplayName( char *pchDisplayName, int nMaxBytes );
 	void GetDisplayName( wchar_t *pwchDisplayName, int nMaxBytes );
