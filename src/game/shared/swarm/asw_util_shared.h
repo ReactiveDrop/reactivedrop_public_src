@@ -89,6 +89,7 @@ float UTIL_ASW_CalcFastDoorHackTime(int iNumRows, int iNumColumns, int iNumWires
 	};
 
 	void UTIL_RD_HitConfirm( CBaseEntity *pTarget, int iHealthBefore, const CTakeDamageInfo &info );
+	void UTIL_RD_ExitOnLevelChange();
 #else
 	extern const char *const s_DingalingSounds[10];
 

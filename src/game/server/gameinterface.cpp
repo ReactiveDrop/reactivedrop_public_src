@@ -119,6 +119,9 @@
 #include "IGameUIFuncs.h"
 #endif
 
+#include "winlite.h"
+#undef CreateEvent
+
 #ifndef CLIENT_DLL
 // expose server helper interface
 #include "serverhelper.h"
@@ -213,6 +216,7 @@ static float fTickInterval = NULL;
 ConVar sv_draw_debug_overlays_release("sv_draw_debug_overlays_release", "1", FCVAR_NONE, "To Allow drawing debug overlays in release builds");
 ConVar rd_override_fps_max("rd_override_fps_max", "-1", FCVAR_NONE, "overrides fps_max, this option sticks across map changes without touching newmapsettings", true, -1, true, 1000);
 ConVar sv_frametime_limit("sv_frametime_limit", "3.0", FCVAR_CHEAT, "When exceed this number of frames, switch to more efficient ai");
+ConVar rd_server_restart_on_update( "rd_server_restart_on_update", "1", FCVAR_NONE, "Automatically shut down dedicated server at the end of the level if an update is available." );
 
 
 // String tables
@@ -1434,8 +1438,51 @@ void CServerGameDLL::PreClientUpdate( bool simulating )
 	anim->DrawServerHitboxes();
 }
 
+static void OnServerUpdateRequested()
+{
+	Assert( engine->IsDedicatedServer() );
+	if ( !CommandLine()->FindParm( "-console" ) )
+	{
+		// This is only relevant for the VGUI dedicated server mode.
+		Msg( "\x03MasterRequestRestart\n" );
+	}
+
+	if ( !rd_server_restart_on_update.GetBool() )
+		return;
+
+	Msg( "Your server is out of date and will be shutdown during hibernation or changelevel, whichever comes first.\n" );
+
+	UTIL_RD_ExitOnLevelChange();
+}
+
 void CServerGameDLL::Think( bool finalTick )
 {
+	static bool s_bUpdateCheckInit = engine->IsDedicatedServer();
+	if ( s_bUpdateCheckInit )
+	{
+		const byte *pParent1 = reinterpret_cast< const byte * >( _ReturnAddress() );
+		const byte *pParent2 = pParent1 + 103 + *reinterpret_cast< const uintptr_t * >( pParent1 + 99 );
+		const byte *pParent3 = pParent2 + 84 + *reinterpret_cast< const uintptr_t * >( pParent2 + 80 );
+		byte *pCheckRestart = const_cast< byte * >( pParent3 + 113 + *reinterpret_cast< const uintptr_t * >( pParent3 + 109 ) );
+
+		// We've got 9 bytes to work with starting 37 bytes into the function.
+		// That section of the function writes the MasterRequestRestart message.
+		// A call instruction takes five bytes, and the next four can be NOPs.
+
+		DWORD oldProtect{};
+		VirtualProtect( pCheckRestart + 37, 9, PAGE_EXECUTE_READWRITE, &oldProtect );
+		pCheckRestart[37] = 0xe8;
+		*reinterpret_cast< uintptr_t * >( &pCheckRestart[38] ) = uintptr_t( &OnServerUpdateRequested ) - uintptr_t( &pCheckRestart[30] );
+		pCheckRestart[42] = 0x90;
+		pCheckRestart[43] = 0x90;
+		pCheckRestart[44] = 0x90;
+		pCheckRestart[45] = 0x90;
+		VirtualProtect( pCheckRestart + 37, 9, oldProtect, &oldProtect );
+		FlushInstructionCache( GetCurrentProcess(), pCheckRestart, 46 );
+
+		s_bUpdateCheckInit = false;
+	}
+
 	WorkshopSetupThink();
 
 	/*

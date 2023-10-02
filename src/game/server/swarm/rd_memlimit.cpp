@@ -3,22 +3,10 @@
 #include "winlite.h"
 #include <psapi.h>
 #endif
+#include "asw_util_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
-
-inline unsigned int MemoryExceededShutdown( void* pParam )
-{
-	const float delay = gpGlobals->interval_per_tick * 1000;
-	DevMsg( "Shutdown delayed: %f ms\n", delay );
-	ThreadSleep( delay );
-
-	// send quit and execute command within the same frame
-	engine->ServerCommand( "quit\n" );
-	engine->ServerExecute();
-
-	return 0;
-}
 
 class CRD_MemLimit : public CAutoGameSystem
 {
@@ -65,7 +53,7 @@ public:
 		if ( nMegaBytes > iLimit )
 		{
 			Warning( "Memory limit exceeded. Requesting exit.\n" );
-			CreateSimpleThread( MemoryExceededShutdown, engine );
+			UTIL_RD_ExitOnLevelChange();
 		}
 	}
 

@@ -754,6 +754,26 @@ void UTIL_RD_HitConfirm( CBaseEntity *pTarget, int iHealthBefore, const CTakeDam
 
 	ReactiveDropInventory::OnHitConfirm( pAttacker, pTarget, vecDamagePosition, bKilled, bDamageOverTime, bBlastDamage, iDisposition, flDamage, pWeapon );
 }
+
+void UTIL_RD_ExitOnLevelChange()
+{
+	Assert( engine->IsDedicatedServer() );
+	if ( !engine->IsDedicatedServer() )
+		return;
+
+	static bool &s_bExitOnLevelChange = reinterpret_cast< bool *const * >( *reinterpret_cast< const byte *const * >( engine ) + 1 )[0][68];
+	if ( !s_bExitOnLevelChange )
+	{
+		Msg( "Server will exit on next level change.\n" );
+		s_bExitOnLevelChange = true;
+
+		// handle the case where the server hibernates rather than changing level:
+		engine->ServerCommand( "sv_shutdown\n" );
+	}
+
+	// assert that it wasn't some other nonzero value
+	Assert( s_bExitOnLevelChange == true );
+}
 #endif
 
 //-----------------------------------------------------------------------------
