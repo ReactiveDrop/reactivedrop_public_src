@@ -106,19 +106,15 @@ static bool GamepadIgnoreMenus()
 
 static void ButtonPressHelper( ButtonCode_t eButton )
 {
-	if ( GamepadIgnoreMenus() )
-		return;
-
-	g_InputInternal->InternalKeyCodePressed( eButton );
+	if ( !GamepadIgnoreMenus() )
+		g_InputInternal->InternalKeyCodePressed( eButton );
 	GetControllerFocus()->OnControllerButtonPressed( eButton );
 }
 
 static void ButtonReleaseHelper( ButtonCode_t eButton )
 {
-	if ( GamepadIgnoreMenus() )
-		return;
-
-	g_InputInternal->InternalKeyCodeReleased( eButton );
+	if ( !GamepadIgnoreMenus() )
+		g_InputInternal->InternalKeyCodeReleased( eButton );
 	GetControllerFocus()->OnControllerButtonReleased( eButton );
 }
 
