@@ -198,8 +198,8 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Marine, DT_ASW_Marine)
 
 	SendPropFloat		( SENDINFO(m_fAIPitch), 0, SPROP_NOSCALE),
 	SendPropInt		(SENDINFO(m_fFlags), PLAYER_FLAG_BITS, SPROP_UNSIGNED|SPROP_CHANGES_OFTEN, SendProxy_CropMarineFlagsToPlayerFlagBitsLength ),
-	SendPropInt		(SENDINFO(m_iHealth), 10 ),
-	SendPropInt( SENDINFO(m_iMaxHealth), 10 ),	
+	SendPropInt		(SENDINFO(m_iHealth), ASW_ALIEN_HEALTH_BITS ),
+	SendPropInt( SENDINFO(m_iMaxHealth), ASW_ALIEN_HEALTH_BITS ),
 	SendPropFloat	(SENDINFO(m_fInfestedTime),		6,	SPROP_UNSIGNED,	0.0f,	64.0f ),
 	SendPropFloat	(SENDINFO(m_fInfestedStartTime), 0, SPROP_NOSCALE ),
 	SendPropInt		(SENDINFO(m_ASWOrders), 4),
