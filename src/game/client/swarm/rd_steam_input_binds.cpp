@@ -3,6 +3,7 @@
 #include "asw_shareddefs.h"
 #include "asw_input.h"
 #include "controller_focus.h"
+#include "inputsystem/iinputsystem.h"
 #include "vgui/IInputInternal.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -90,15 +91,33 @@ RD_STEAM_INPUT_BIND( SelectMarine7, "+selectmarine7", "InGame" );
 RD_STEAM_INPUT_BIND( SelectMarine8, "+selectmarine8", "InGame" );
 
 extern vgui::IInputInternal *g_InputInternal;
+extern ConVar rd_gamepad_ignore_menus;
+
+static bool GamepadIgnoreMenus()
+{
+	if ( rd_gamepad_ignore_menus.GetInt() == -1 )
+	{
+		DevMsg( "detected xbox gamepad count: %d; updating rd_gamepad_ignore_menus\n", g_pInputSystem->GetJoystickCount() );
+		rd_gamepad_ignore_menus.SetValue( g_pInputSystem->GetJoystickCount() != 0 );
+	}
+
+	return rd_gamepad_ignore_menus.GetBool();
+}
 
 static void ButtonPressHelper( ButtonCode_t eButton )
 {
+	if ( GamepadIgnoreMenus() )
+		return;
+
 	g_InputInternal->InternalKeyCodePressed( eButton );
 	GetControllerFocus()->OnControllerButtonPressed( eButton );
 }
 
 static void ButtonReleaseHelper( ButtonCode_t eButton )
 {
+	if ( GamepadIgnoreMenus() )
+		return;
+
 	g_InputInternal->InternalKeyCodeReleased( eButton );
 	GetControllerFocus()->OnControllerButtonReleased( eButton );
 }

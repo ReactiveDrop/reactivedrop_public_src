@@ -29,6 +29,7 @@ using namespace BaseModUI;
 ConVar rd_gamepad_soft_keyboard( "rd_gamepad_soft_keyboard", "1", FCVAR_ARCHIVE, "Automatically open Steam Deck style keyboard when focusing a text field." );
 ConVar rd_force_controller_glyph_set( "rd_force_controller_glyph_set", "-1", FCVAR_ARCHIVE, "Use a specific controller button set for UI hints. 3=xbox, 10=switch, 13=ps5, 14=steam deck", true, -1, true, k_ESteamInputType_Count - 1 );
 ConVar rd_gamepad_player_color( "rd_gamepad_player_color", "1", FCVAR_ARCHIVE, "Set controller LED color to player color when controlling a marine." );
+ConVar rd_gamepad_ignore_menus( "rd_gamepad_ignore_menus", "-1", FCVAR_NONE, "Ignore Steam Input menu actions. If this is -1, it will automatically be set to 1 if the game sees an xbox controller and 0 otherwise." );
 
 CRD_Steam_Input g_RD_Steam_Input;
 
