@@ -61,7 +61,7 @@ extern ConVar rd_show_arrow_to_marine;
 
 ConVar asw_voice_side_icon( "asw_voice_side_icon", "0", FCVAR_ARCHIVE, "Set to 1 to use the voice indicators on the side of the screen instead of the ones next to the 3d player names" );
 ConVar asw_player_names( "asw_player_names", "3", FCVAR_ARCHIVE, "0 = no names / 1 = player only / 2 = marine only / 3 = both" );
-ConVar asw_player_name_colors( "asw_player_name_colors", "1", FCVAR_NONE, "Use player colors for names (0 = only self/other colors)" );
+ConVar asw_player_name_colors( "asw_player_name_colors", "1", FCVAR_NONE, "Use player colors for names (0 = only self/other colors; 2 = even if only one name is shown)" );
 ConVar asw_marine_edge_names( "asw_marine_edge_names", "1", FCVAR_NONE, "Prevent marine names from going off the edge of the screen" );
 ConVar asw_marine_labels_cursor_maxdist( "asw_marine_labels_cursor_maxdist", "70", FCVAR_ARCHIVE, "Only marines within this distance of the cursor will get their health bar drawn" );
 ConVar asw_fast_reload_under_marine( "asw_fast_reload_under_marine", "1", FCVAR_ARCHIVE, "Draw the active reload bar under the marine?" );
@@ -539,7 +539,7 @@ void CASWHud3DMarineNames::PaintMarineLabel( int iMyMarineNum, C_ASW_Marine *RES
 		MarineNameColor2.SetColor( 0, 144, 188, 255 );
 	}
 
-	if ( !asw_player_name_colors.GetBool() )
+	if ( !asw_player_name_colors.GetBool() || ( ( !bDrawMarineName || !bDrawPlayerName ) && asw_player_name_colors.GetInt() < 2 ) )
 	{
 		MarineNameColor1 = MarineNameColor2;
 	}
