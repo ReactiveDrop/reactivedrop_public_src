@@ -96,7 +96,7 @@
 	"soundlevel"	"SNDLVL_110dB"
 	"pitch"			"95,105"
 
-	"wave"			"weapons/3d/rifle/fire_grenade.wav"
+	"wave"			"^weapons/3d/rifle/fire_grenade.wav"
 }
 
 "ASW_Weapon_Prototype.Grenade"
@@ -106,7 +106,7 @@
 	"soundlevel"	"SNDLVL_110dB"
 	"pitch"			"95,105"
 
-	"wave"			"weapons/3d/prifle/fire_grenade.wav"
+	"wave"			"^weapons/3d/prifle/fire_grenade.wav"
 }
 
 "ASW_Weapon_Vindicator.Grenade"
@@ -116,7 +116,7 @@
 	"soundlevel"	"SNDLVL_110dB"
 	"pitch"			"95,105"
 
-	"wave"			"weapons/3d/vindicator/fire_grenade.wav"
+	"wave"			"^weapons/3d/vindicator/fire_grenade.wav"
 }
 
 "ASW_Weapon_CombatRifle.Grenade"
@@ -126,7 +126,7 @@
 	"soundlevel"	"SNDLVL_110dB"
 	"pitch"			"95,105"
 
-	"wave"			"weapons/3d/Combatrifle/fire_buckshot.wav"
+	"wave"			"^weapons/3d/Combatrifle/fire_buckshot.wav"
 }
 
 "ASW_Weapon_Minigun.Single"
