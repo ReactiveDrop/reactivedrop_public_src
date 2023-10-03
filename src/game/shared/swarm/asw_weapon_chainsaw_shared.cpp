@@ -49,6 +49,24 @@
 extern ConVar sk_plr_dmg_asw_cs;
 extern int	g_sModelIndexSmoke;			// (in combatweapon.cpp) holds the index for the smoke cloud
 
+ConVar asw_chainsaw_pitch_bite_rate( "asw_chainsaw_pitch_bite_rate", "50.0", FCVAR_CHEAT | FCVAR_REPLICATED, "How quickly the chainsaw pitch changes when attack hits somethings" );
+ConVar asw_chainsaw_pitch_return_rate( "asw_chainsaw_pitch_return_rate", "50.0", FCVAR_CHEAT | FCVAR_REPLICATED, "How quickly the pitch returns to normal when attacking chainsaw doesn't hit anything" );
+ConVar asw_chainsaw_pitch_return_delay( "asw_chainsaw_pitch_return_delay", "1.0", FCVAR_CHEAT | FCVAR_REPLICATED, "How long after attacking something before the chainsaw pitch returns to normal" );
+ConVar asw_chainsaw_pitch_target( "asw_chainsaw_pitch_target", "95.0", FCVAR_CHEAT | FCVAR_REPLICATED, "Target pitch when chainsaw starts to attack something" );
+ConVar asw_chainsaw_pitch_range( "asw_chainsaw_pitch_range", "5.0", FCVAR_CHEAT | FCVAR_REPLICATED, "Random variation applied above and below target pitch" );
+ConVar asw_chainsaw_attack_fade_time( "asw_chainsaw_attack_fade_time", "0.5", FCVAR_CHEAT | FCVAR_REPLICATED, "Time for chainsaw attack sound to fade out" );
+
+ConVar asw_chainsaw_shake_amplitude( "asw_chainsaw_shake_amplitude", "12.5", FCVAR_CHEAT | FCVAR_REPLICATED );
+ConVar asw_chainsaw_shake_frequency( "asw_chainsaw_shake_frequency", "100.0", FCVAR_CHEAT | FCVAR_REPLICATED );
+ConVar asw_chainsaw_debug( "asw_chainsaw_debug", "0", FCVAR_CHEAT | FCVAR_REPLICATED );
+
+#ifdef CLIENT_DLL
+ConVar asw_chainsaw_shake_duration( "asw_chainsaw_shake_duration", "1.0", FCVAR_CHEAT );
+#endif
+
+ConVar rd_chainsaw_slows_down( "rd_chainsaw_slows_down", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "If 0 chainsaw doesn't slow down when firing" );
+ConVar rd_chainsaw_idle_sound( "rd_chainsaw_idle_sound", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "If 0, the chainsaw will not play an idle sound loop." );
+
 IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Weapon_Chainsaw, DT_ASW_Weapon_Chainsaw );
 
 BEGIN_NETWORK_TABLE( CASW_Weapon_Chainsaw, DT_ASW_Weapon_Chainsaw )
@@ -146,7 +164,8 @@ bool CASW_Weapon_Chainsaw::Deploy( void )
 	SetFiringState(FIRE_OFF);
 
 	m_bPlayedIdleSound = true;
-	EmitSound( "ASW_Chainsaw.Start" );
+	if ( rd_chainsaw_idle_sound.GetBool() )
+		EmitSound( "ASW_Chainsaw.Start" );
 	SetWeaponIdleTime( gpGlobals->curtime + 0.7f );
 
 	return BaseClass::Deploy();
@@ -424,7 +443,8 @@ void CASW_Weapon_Chainsaw::Drop( const Vector &vecVelocity )
 	StopChainsawSound( true );
 	StopAttackOffSound();
 	StopSound( "ASW_Chainsaw.Start" );
-	EmitSound( "ASW_Chainsaw.Stop" );
+	if ( rd_chainsaw_idle_sound.GetBool() )
+		EmitSound( "ASW_Chainsaw.Stop" );
 
 	BaseClass::Drop( vecVelocity );
 }
@@ -439,7 +459,8 @@ bool CASW_Weapon_Chainsaw::Holster( CBaseCombatWeapon *pSwitchingTo )
 	StopChainsawSound( true );
 	StopAttackOffSound();
 	StopSound( "ASW_Chainsaw.Start" );
-	EmitSound( "ASW_Chainsaw.Stop" );
+	if ( rd_chainsaw_idle_sound.GetBool() )
+		EmitSound( "ASW_Chainsaw.Stop" );
 
 	return BaseClass::Holster( pSwitchingTo );
 }
@@ -467,8 +488,6 @@ void CASW_Weapon_Chainsaw::SetFiringState( CHAINSAW_FIRE_STATE state )
 {
 	m_fireState = state;
 }
-
-ConVar rd_chainsaw_slows_down( "rd_chainsaw_slows_down", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "If 0 chainsaw doesn't slow down when firing");
 
 bool CASW_Weapon_Chainsaw::ShouldMarineMoveSlow()
 {
@@ -511,21 +530,6 @@ void CASW_Weapon_Chainsaw::ItemPostFrame()
 		StopChainsawSound();
 	}
 }
-
-ConVar asw_chainsaw_pitch_bite_rate( "asw_chainsaw_pitch_bite_rate", "50.0", FCVAR_CHEAT | FCVAR_REPLICATED, "How quickly the chainsaw pitch changes when attack hits somethings" );
-ConVar asw_chainsaw_pitch_return_rate( "asw_chainsaw_pitch_return_rate", "50.0", FCVAR_CHEAT | FCVAR_REPLICATED, "How quickly the pitch returns to normal when attacking chainsaw doesn't hit anything" );
-ConVar asw_chainsaw_pitch_return_delay( "asw_chainsaw_pitch_return_delay", "1.0", FCVAR_CHEAT | FCVAR_REPLICATED, "How long after attacking something before the chainsaw pitch returns to normal" );
-ConVar asw_chainsaw_pitch_target( "asw_chainsaw_pitch_target", "95.0", FCVAR_CHEAT | FCVAR_REPLICATED, "Target pitch when chainsaw starts to attack something" );
-ConVar asw_chainsaw_pitch_range( "asw_chainsaw_pitch_range", "5.0", FCVAR_CHEAT | FCVAR_REPLICATED, "Random variation applied above and below target pitch" );
-ConVar asw_chainsaw_attack_fade_time( "asw_chainsaw_attack_fade_time", "0.5", FCVAR_CHEAT | FCVAR_REPLICATED, "Time for chainsaw attack sound to fade out" );
-
-ConVar asw_chainsaw_shake_amplitude( "asw_chainsaw_shake_amplitude", "12.5", FCVAR_CHEAT | FCVAR_REPLICATED );
-ConVar asw_chainsaw_shake_frequency( "asw_chainsaw_shake_frequency", "100.0", FCVAR_CHEAT | FCVAR_REPLICATED );
-ConVar asw_chainsaw_debug( "asw_chainsaw_debug", "0", FCVAR_CHEAT | FCVAR_REPLICATED );
-
-#ifdef CLIENT_DLL
-ConVar asw_chainsaw_shake_duration( "asw_chainsaw_shake_duration", "1.0", FCVAR_CHEAT );
-#endif
 
 void CASW_Weapon_Chainsaw::AdjustChainsawPitch()
 {
@@ -627,7 +631,7 @@ void CASW_Weapon_Chainsaw::StopChainsawSound( bool bForce /*= false*/ )
 	{
 		if ( asw_chainsaw_debug.GetBool() )
 		{
-			DevMsg( "Stop Chainsaw Attach Sound\n" );
+			DevMsg( "Stop Chainsaw Attack Sound\n" );
 		}
 
 		float fVolume = bForce ? 0.0f : CSoundEnvelopeController::GetController().SoundGetVolume( m_pChainsawAttackSound );
