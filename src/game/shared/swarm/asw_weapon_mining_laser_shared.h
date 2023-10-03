@@ -101,6 +101,10 @@ private:
 	CUtlReference<CNewParticleEffect>	m_pLaserEffect;
 	CUtlReference<CNewParticleEffect>	m_pChargeEffect;
 	bool m_bLastHadTarget;
+	int m_iSequenceIdle;
+	int m_iSequenceStart;
+	int m_iSequenceLoop;
+	int m_iSequenceEnd;
 #endif
 
 };

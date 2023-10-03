@@ -95,6 +95,13 @@ CASW_Weapon_Tesla_Gun::CASW_Weapon_Tesla_Gun( void )
 	m_flLastDischargeTime = 0.0f;
 
 	m_fMaxRange1 = ASW_TG_RANGE;
+
+#ifdef CLIENT_DLL
+	m_iSequenceIdle = ACT_INVALID;
+	m_iSequenceLoop = ACT_INVALID;
+
+	UseClientSideAnimation();
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -627,6 +634,18 @@ const char* CASW_Weapon_Tesla_Gun::GetPartialReloadSound(int iPart)
 
 void CASW_Weapon_Tesla_Gun::UpdateEffects()
 {
+#ifdef CLIENT_DLL
+	if ( m_iSequenceIdle == ACT_INVALID )
+		m_iSequenceIdle = LookupSequence( "BindPose" );
+	if ( m_iSequenceLoop == ACT_INVALID )
+		m_iSequenceLoop = LookupSequence( "Tesla_fire_alt" );
+
+	if ( m_FireState == ASW_TG_FIRE_OFF )
+		SetSequence( m_iSequenceIdle );
+	else
+		SetSequence( m_iSequenceLoop );
+#endif
+
 	switch( m_FireState )
 	{
 		case ASW_TG_FIRE_OFF:
@@ -678,7 +697,7 @@ void CASW_Weapon_Tesla_Gun::UpdateEffects()
 			}
 
 			if ( !m_pDischargeEffect )
-			{				
+			{
 				m_pDischargeEffect = ParticleProp()->Create( "electric_weapon_shot_continuous", PATTACH_POINT_FOLLOW, "muzzle" ); 
 			}
 

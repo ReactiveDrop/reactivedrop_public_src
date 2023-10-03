@@ -41,6 +41,12 @@
 
 
 ConVar asw_mininglaser_damage_snd_interval("asw_mininglaser_damage_snd_interval", "1.0", FCVAR_CHEAT | FCVAR_REPLICATED, "How often to play the damage sound when the laser beam is on");
+
+ConVar asw_mining_laser_start_run_fade( "asw_mining_laser_start_run_fade", "0.1", FCVAR_CHEAT | FCVAR_REPLICATED, "Crossfade time between mining laser's charge and run sound" );
+ConVar asw_mining_laser_run_fade( "asw_mining_laser_run_fade", "0.05", FCVAR_CHEAT | FCVAR_REPLICATED, "Fade time for mining laser run sound" );
+
+ConVar rd_mininglaser_slows_down( "rd_mininglaser_slows_down", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "If 0 mining laser doesn't slow down when firing" );
+
 extern ConVar sk_plr_dmg_asw_ml;
 extern int	g_sModelIndexSmoke;			// (in combatweapon.cpp) holds the index for the smoke cloud
 
@@ -56,7 +62,7 @@ BEGIN_NETWORK_TABLE( CASW_Weapon_Mining_Laser, DT_ASW_Weapon_Mining_Laser )
 	SendPropBool( SENDINFO( m_bCutting ) ),
 	SendPropFloat( SENDINFO( m_flStartFireTime ) )
 #endif
-END_NETWORK_TABLE()    
+END_NETWORK_TABLE()
 
 LINK_ENTITY_TO_CLASS( asw_weapon_mining_laser, CASW_Weapon_Mining_Laser );
 PRECACHE_WEAPON_REGISTER( asw_weapon_mining_laser );
@@ -74,7 +80,7 @@ BEGIN_PREDICTION_DATA( CASW_Weapon_Mining_Laser )
 END_PREDICTION_DATA()
 #endif
 
-    /*
+/*
 BEGIN_DATADESC( CASW_Weapon_Mining_Laser )
 	DEFINE_FIELD( m_fireState, FIELD_INTEGER ),
 	DEFINE_FIELD( m_flAmmoUseTime, FIELD_TIME ),
@@ -85,7 +91,7 @@ BEGIN_DATADESC( CASW_Weapon_Mining_Laser )
 	DEFINE_FIELD( m_hBeam, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_hNoise, FIELD_EHANDLE ),
 END_DATADESC()
-    */
+*/
 
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
@@ -106,6 +112,12 @@ CASW_Weapon_Mining_Laser::CASW_Weapon_Mining_Laser( void )
 
 #ifdef CLIENT_DLL
 	m_bLastHadTarget = false;
+	m_iSequenceIdle = ACT_INVALID;
+	m_iSequenceStart = ACT_INVALID;
+	m_iSequenceLoop = ACT_INVALID;
+	m_iSequenceEnd = ACT_INVALID;
+
+	UseClientSideAnimation();
 #endif
 }
 
@@ -119,14 +131,14 @@ CASW_Weapon_Mining_Laser::~CASW_Weapon_Mining_Laser()
 //-----------------------------------------------------------------------------
 void CASW_Weapon_Mining_Laser::Precache( void )
 {
-    PrecacheScriptSound( "ASW_Mining_Laser.Start" );
-    PrecacheScriptSound( "ASW_Mining_Laser.Run" );
+	PrecacheScriptSound( "ASW_Mining_Laser.Start" );
+	PrecacheScriptSound( "ASW_Mining_Laser.Run" );
 	PrecacheScriptSound( "ASW_Mining_Laser.Cut" );
-    PrecacheScriptSound( "ASW_Mining_Laser.Off" );
-	PrecacheScriptSound("ASW_MiningLaser.ReloadA");
-	PrecacheScriptSound("ASW_MiningLaser.ReloadB");
-	PrecacheScriptSound("ASW_MiningLaser.ReloadC");
-	PrecacheScriptSound("ASW_Mining_Laser.Damage");
+	PrecacheScriptSound( "ASW_Mining_Laser.Off" );
+	PrecacheScriptSound( "ASW_MiningLaser.ReloadA" );
+	PrecacheScriptSound( "ASW_MiningLaser.ReloadB" );
+	PrecacheScriptSound( "ASW_MiningLaser.ReloadC" );
+	PrecacheScriptSound( "ASW_Mining_Laser.Damage" );
 	PrecacheParticleSystem( "mining_laser_beam" );
 	PrecacheParticleSystem( "mining_laser_charging" );
 	PrecacheParticleSystem( "mining_laser_exhaust" );
@@ -148,6 +160,15 @@ void CASW_Weapon_Mining_Laser::ClientThink()
 {
 	BaseClass::ClientThink();
 
+	if ( m_iSequenceIdle == ACT_INVALID )
+		m_iSequenceIdle = LookupSequence( "BindPose" );
+	if ( m_iSequenceStart == ACT_INVALID )
+		m_iSequenceStart = LookupSequence( "Laser_Charge" );
+	if ( m_iSequenceLoop == ACT_INVALID )
+		m_iSequenceLoop = LookupSequence( "Laser_Fire" );
+	if ( m_iSequenceEnd == ACT_INVALID )
+		m_iSequenceEnd = LookupSequence( "Laser_Off" );
+
 	C_ASW_Marine *pMarine = GetMarine();
 	if ( !pMarine )
 	{
@@ -155,13 +176,14 @@ void CASW_Weapon_Mining_Laser::ClientThink()
 		{
 			m_pLaserEffect->StopEmission(false, true, false);
 			m_pLaserEffect = NULL;
-		}	
+		}
 		if ( m_pChargeEffect )
 		{
 			m_pChargeEffect->StopEmission(false, true, false);
 			m_pChargeEffect = NULL;
 		}
 		StopRunSound();
+		SetSequence( m_iSequenceIdle );
 		return;
 	}
 
@@ -258,16 +280,19 @@ void CASW_Weapon_Mining_Laser::ClientThink()
 		UTIL_TraceLine( vecShootPos, vecEnd, MASK_SHOT, pMarine, COLLISION_GROUP_NONE, &tr );
 
 		if ( m_pChargeEffect )
-		{		
+		{
 			float flTotalCharge = (gpGlobals->curtime - m_flStartFireTime) + ASW_MINING_LASER_CHARGE_UP_TIME;
 			float flChargeAmt = 1 - (ASW_MINING_LASER_CHARGE_UP_TIME / flTotalCharge);
 			//m_pChargeEffect->SetControlPoint( 0, startPoint );
 			m_pChargeEffect->SetControlPoint( 1, tr.endpos );
 			m_pChargeEffect->SetControlPoint( 2, Vector( flChargeAmt, flChargeAmt * flCharging, 0 ) );
+
+			SetSequence( m_iSequenceStart );
+			SetCycle( ( gpGlobals->curtime - m_flStartFireTime ) / ASW_MINING_LASER_CHARGE_UP_TIME );
 		}
 
 		if ( m_pLaserEffect )
-		{		
+		{
 			//m_pLaserEffect->SetControlPoint( 0, startPoint );
 			m_pLaserEffect->SetControlPoint( 1, tr.endpos );
 			QAngle	vecAngles;
@@ -275,6 +300,8 @@ void CASW_Weapon_Mining_Laser::ClientThink()
 			Vector vecForward, vecRight, vecUp;
 			AngleVectors( vecAngles, &vecForward, &vecRight, &vecUp );
 			m_pLaserEffect->SetControlPointOrientation( 1, vecForward, vecRight, vecUp );
+
+			SetSequence( m_iSequenceLoop );
 		}
 	}
 	else
@@ -287,9 +314,15 @@ void CASW_Weapon_Mining_Laser::ClientThink()
 
 		if ( m_pLaserEffect )
 		{
-			m_pLaserEffect->StopEmission(false, true, false);
+			m_pLaserEffect->StopEmission( false, true, false );
 			m_pLaserEffect = NULL;
 			DispatchParticleEffect( "mining_laser_exhaust", PATTACH_POINT_FOLLOW, this, "eject1" );
+			SetSequence( m_iSequenceEnd );
+		}
+
+		if ( GetSequence() != m_iSequenceEnd || GetCycle() >= 1.0f )
+		{
+			SetSequence( m_iSequenceIdle );
 		}
 	}
 }
@@ -379,13 +412,13 @@ void CASW_Weapon_Mining_Laser::PrimaryAttack( void )
 			StartChargingSound();
 
 			SendWeaponAnim( ACT_VM_PRIMARYATTACK );
-						
+
 			m_flShakeTime = 0;
 			m_flStartFireTime = gpGlobals->curtime;
 
 			SetWeaponIdleTime( gpGlobals->curtime + 0.1 );
 
-			m_flDmgTime = gpGlobals->curtime + ASW_MINING_LASER_PULSE_INTERVAL;			
+			m_flDmgTime = gpGlobals->curtime + ASW_MINING_LASER_PULSE_INTERVAL;
 			SetFiringState(FIRE_STARTUP);
 		}
 		break;
@@ -397,9 +430,9 @@ void CASW_Weapon_Mining_Laser::PrimaryAttack( void )
 
 			if ( gpGlobals->curtime >= ( m_flStartFireTime + ASW_MINING_LASER_CHARGE_UP_TIME ) )
 			{
-				m_bPlayingCuttingSound = false;	
+				m_bPlayingCuttingSound = false;
 				StartRunSound();
-				
+
 				SetFiringState(FIRE_LASER);
 			}
 
@@ -439,11 +472,11 @@ void CASW_Weapon_Mining_Laser::PrimaryAttack( void )
 			}
 			else if (!bFiredRecently && m_bPlayingCuttingSound)
 			{
-				StopSound("ASW_Mining_Laser.Cut");				
+				StopSound("ASW_Mining_Laser.Cut");
 				StartRunSound();
 				m_bPlayingCuttingSound = false;
 			}
-		
+
 			if ( !HasAmmo() )
 			{
 				EndAttack();
@@ -464,8 +497,8 @@ bool CASW_Weapon_Mining_Laser::Fire( const Vector &vecOrigSrc, const Vector &vec
 	}
 
 	//CSoundEnt::InsertSound( SOUND_COMBAT, GetAbsOrigin(), 450, 0.1 );
-    //WeaponSound( SINGLE );
-	
+	//WeaponSound( SINGLE );
+
 	Vector vecDest;
 	GetLaserEndPosition( vecOrigSrc, vecDir, &vecDest );
 
@@ -506,7 +539,7 @@ bool CASW_Weapon_Mining_Laser::Fire( const Vector &vecOrigSrc, const Vector &vec
 		// radius damage a little more potent in multiplayer.
 #ifndef CLIENT_DLL
 		//RadiusDamage( CTakeDamageInfo( this, pMarine, sk_plr_dmg_asw_ml.GetFloat() * g_pGameRules->GetDamageMultiplier() / 4, DMG_ENERGYBEAM | DMG_BLAST | DMG_ALWAYSGIB ), tr.endpos, 128, CLASS_NONE, NULL );
-#endif		
+#endif
 
 		if ( !pMarine->IsAlive() )
 			return false;
@@ -539,7 +572,7 @@ bool CASW_Weapon_Mining_Laser::Fire( const Vector &vecOrigSrc, const Vector &vec
 			pMarine->OnWeaponFired(this, 1);
 #endif
 		}
-		
+
 
 		m_flDmgTime = gpGlobals->curtime + ASW_MINING_LASER_DISCHARGE_INTERVAL;
 		if ( m_flShakeTime < gpGlobals->curtime )
@@ -565,10 +598,10 @@ void CASW_Weapon_Mining_Laser::EndAttack( void )
 
 	StopRunSound();
 	StopSound( "ASW_Mining_Laser.Cut" );
-	
+
 	if ( m_fireState != FIRE_OFF )
 	{
-        EmitSound( "ASW_Mining_Laser.Off" );
+		EmitSound( "ASW_Mining_Laser.Off" );
 
 		/*
 		Vector vecEjectPos, vecEjectPos2;
@@ -579,7 +612,7 @@ void CASW_Weapon_Mining_Laser::EndAttack( void )
 		unsigned char color[3];
 		color[0] = 50;
 		color[1] = 128;
-		color[2] = 50;		
+		color[2] = 50;
 
 		iAttachment = LookupAttachment( "eject2" );
 		GetAttachment( iAttachment, vecEjectPos2, angEject2 );
@@ -599,13 +632,13 @@ void CASW_Weapon_Mining_Laser::EndAttack( void )
 	m_flNextPrimaryAttack = gpGlobals->curtime + GetWeaponInfo()->m_flFireRate;
 	m_flNextSecondaryAttack = gpGlobals->curtime + GetWeaponInfo()->m_flFireRate;
 
-	SetFiringState(FIRE_OFF);	
+	SetFiringState(FIRE_OFF);
 
 	ClearIsFiring();
 }
 
 void CASW_Weapon_Mining_Laser::Drop( const Vector &vecVelocity )
-{	
+{
 	EndAttack();
 
 	BaseClass::Drop( vecVelocity );
@@ -613,7 +646,7 @@ void CASW_Weapon_Mining_Laser::Drop( const Vector &vecVelocity )
 
 bool CASW_Weapon_Mining_Laser::Holster( CBaseCombatWeapon *pSwitchingTo )
 {
-    EndAttack();
+	EndAttack();
 
 	return BaseClass::Holster( pSwitchingTo );
 }
@@ -646,7 +679,7 @@ void CASW_Weapon_Mining_Laser::WeaponIdle( void )
 
 	if ( m_fireState != FIRE_OFF )
 		 EndAttack();
-	
+
 	float flIdleTime = gpGlobals->curtime + 5.0;
 
 	SetWeaponIdleTime( flIdleTime );
@@ -661,8 +694,6 @@ void CASW_Weapon_Mining_Laser::SetFiringState(MININGLASER_FIRE_STATE state)
 #endif
 	m_fireState = state;
 }
-
-ConVar rd_mininglaser_slows_down( "rd_mininglaser_slows_down", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "If 0 mining laser doesn't slow down when firing");
 
 bool CASW_Weapon_Mining_Laser::ShouldMarineMoveSlow()
 {
@@ -709,10 +740,6 @@ void CASW_Weapon_Mining_Laser::GetButtons( bool &bAttack1, bool &bAttack2, bool 
 	BaseClass::GetButtons( bAttack1, bAttack2, bReload, bOldReload, bOldAttack1 );
 }
 #endif
-
-ConVar asw_mining_laser_start_run_fade( "asw_mining_laser_start_run_fade", "0.1", FCVAR_CHEAT | FCVAR_REPLICATED, "Crossfade time between mining laser's charge and run sound" );
-ConVar asw_mining_laser_run_fade( "asw_mining_laser_run_fade", "0.05", FCVAR_CHEAT | FCVAR_REPLICATED, "Fade time for mining laser run sound" );
-
 
 void CASW_Weapon_Mining_Laser::StartChargingSound()
 {

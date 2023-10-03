@@ -84,6 +84,8 @@ private:
 
 #ifdef CLIENT_DLL
 	CUtlReference<CNewParticleEffect>	m_pDischargeEffect;
+	int m_iSequenceIdle;
+	int m_iSequenceLoop;
 #endif
 
 	CNetworkVar(unsigned char, m_FireState);	// one of the ASW_Weapon_TeslaGunFireState_t enums
