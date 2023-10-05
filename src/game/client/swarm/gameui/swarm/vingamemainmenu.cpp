@@ -26,6 +26,7 @@
 
 #include "gameui_util.h"
 #include "vguisystemmoduleloader.h"
+#include "rd_steam_input.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -484,6 +485,7 @@ void InGameMainMenu::OnThink()
 		{
 			const MaterialSystem_Config_t &config = materials->GetCurrentConfigForVideoCard();
 			pFlyout->SetControlEnabled( "BtnBrightness", !config.Windowed() );
+			pFlyout->SetControlEnabled( "BtnController", g_RD_Steam_Input.GetJoystickCount() != 0 );
 		}
 	}
 
