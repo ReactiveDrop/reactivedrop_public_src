@@ -283,6 +283,8 @@ static void DebugSpewLobby( CSteamID lobby )
 #ifdef CLIENT_DLL
 #define LOBBY_SEARCH_INTERVAL 30.0f
 
+ConVar rd_lobby_search_debug( "rd_lobby_search_debug", "0" );
+
 CReactiveDropLobbySearch::CReactiveDropLobbySearch( const char *pszDebugName ) :
 	m_DistanceFilter{ k_ELobbyDistanceFilterWorldwide },
 	m_pszDebugName{ pszDebugName },
@@ -357,24 +359,29 @@ void CReactiveDropLobbySearch::UpdateSearch()
 
 	if ( m_LobbyMatchListResult.IsActive() )
 	{
-		DevWarning( 2, "%s: LobbyMatchResult has not received a value yet. Waiting until next tick.\n", m_pszDebugName );
+		if ( rd_lobby_search_debug.GetBool() )
+			DevWarning( 2, "%s: LobbyMatchResult has not received a value yet. Waiting until next tick.\n", m_pszDebugName );
 		return;
 	}
 
-	DevMsg( 3, "%s: searching for lobbies\n", m_pszDebugName );
+	if ( rd_lobby_search_debug.GetBool() )
+		DevMsg( 3, "%s: searching for lobbies\n", m_pszDebugName );
 
 	FOR_EACH_VEC( m_StringFilters, i )
 	{
 		pMatchmaking->AddRequestLobbyListStringFilter( m_StringFilters[i].m_Name, m_StringFilters[i].m_Value, m_StringFilters[i].m_Compare );
-		DevMsg( 3, "%s: filter: \"%s\" %s \"%s\"\n", m_pszDebugName, m_StringFilters[i].m_Name.Get(), LobbyComparisonName( m_StringFilters[i].m_Compare ), m_StringFilters[i].m_Value.Get() );
+		if ( rd_lobby_search_debug.GetBool() )
+			DevMsg( 3, "%s: filter: \"%s\" %s \"%s\"\n", m_pszDebugName, m_StringFilters[i].m_Name.Get(), LobbyComparisonName( m_StringFilters[i].m_Compare ), m_StringFilters[i].m_Value.Get() );
 	}
 	FOR_EACH_VEC( m_NumericalFilters, i )
 	{
 		pMatchmaking->AddRequestLobbyListNumericalFilter( m_NumericalFilters[i].m_Name, m_NumericalFilters[i].m_Value, m_NumericalFilters[i].m_Compare );
-		DevMsg( 3, "%s: filter: \"%s\" %s %d\n", m_pszDebugName, m_NumericalFilters[i].m_Name.Get(), LobbyComparisonName( m_NumericalFilters[i].m_Compare ), m_NumericalFilters[i].m_Value );
+		if ( rd_lobby_search_debug.GetBool() )
+			DevMsg( 3, "%s: filter: \"%s\" %s %d\n", m_pszDebugName, m_NumericalFilters[i].m_Name.Get(), LobbyComparisonName( m_NumericalFilters[i].m_Compare ), m_NumericalFilters[i].m_Value );
 	}
 	pMatchmaking->AddRequestLobbyListDistanceFilter( m_DistanceFilter );
-	DevMsg( 3, "%s: distance filter: %s\n", m_pszDebugName, LobbyDistanceFilterName( m_DistanceFilter ) );
+	if ( rd_lobby_search_debug.GetBool() )
+		DevMsg( 3, "%s: distance filter: %s\n", m_pszDebugName, LobbyDistanceFilterName( m_DistanceFilter ) );
 
 	SteamAPICall_t hAPICall = pMatchmaking->RequestLobbyList();
 	m_LobbyMatchListResult.Set( hAPICall, this, &CReactiveDropLobbySearch::LobbyMatchListResult );
@@ -391,7 +398,8 @@ void CReactiveDropLobbySearch::LobbyMatchListResult( LobbyMatchList_t *pResult, 
 {
 	if ( bIOFailure )
 	{
-		DevWarning( 2, "%s: IO failure when searching for lobbies!\n", m_pszDebugName );
+		if ( rd_lobby_search_debug.GetBool() )
+			DevWarning( 2, "%s: IO failure when searching for lobbies!\n", m_pszDebugName );
 		m_MatchingLobbies.Purge();
 		return;
 	}
@@ -405,10 +413,13 @@ void CReactiveDropLobbySearch::LobbyMatchListResult( LobbyMatchList_t *pResult, 
 		m_MatchingLobbies[i] = pMatchmaking->GetLobbyByIndex( i );
 	}
 
-	DevMsg( 2, "%s: matched %d lobbies:\n", m_pszDebugName, pResult->m_nLobbiesMatching );
-	FOR_EACH_VEC( m_MatchingLobbies, i )
+	if ( rd_lobby_search_debug.GetBool() )
 	{
-		DebugSpewLobby( m_MatchingLobbies[i] );
+		DevMsg( 2, "%s: matched %d lobbies:\n", m_pszDebugName, pResult->m_nLobbiesMatching );
+		FOR_EACH_VEC( m_MatchingLobbies, i )
+		{
+			DebugSpewLobby( m_MatchingLobbies[i] );
+		}
 	}
 }
 
@@ -421,6 +432,7 @@ CON_COMMAND( rd_lobby_debug_current, "" )
 
 CON_COMMAND( rd_lobby_debug_search, "" )
 {
+	rd_lobby_search_debug.SetValue( true );
 	s_DebugLobbySearch.WantUpdatedLobbyList( true );
 }
 CON_COMMAND( rd_lobby_debug_clear, "" )
