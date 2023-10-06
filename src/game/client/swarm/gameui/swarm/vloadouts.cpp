@@ -444,11 +444,36 @@ void CRD_VGUI_Loadout_List_Item::Paint()
 {
 	BaseClass::Paint();
 
+	bool bHasFocus = HasFocus();
 	bool bHasMedals = rd_loadout_load_medals.GetBool() && m_Loadout.HasAnyMedal();
 
-	int y = GetTall() - m_iRowHeight * ( m_Loadout.NumMarinesIncluded() + m_iNumColumns - 1 ) / m_iNumColumns;
+	Color color{ 255, 255, 255, 255 };
+	if ( !bHasFocus )
+		color = Color{ 192, 192, 192, 255 };
+
+	int wide, tall;
+	GetSize( wide, tall );
+	int y = tall - m_iRowHeight * ( m_Loadout.NumMarinesIncluded() + m_iNumColumns - 1 ) / m_iNumColumns - YRES( 2 );
 	if ( bHasMedals )
 		y -= m_iMedalSize;
+
+	if ( bHasFocus )
+	{
+		vgui::IScheme *pScheme = vgui::scheme()->GetIScheme( GetScheme() );
+		Color blotchColor = pScheme->GetColor( "HybridButton.BlotchColor", Color( 0, 0, 0, 255 ) );
+		Color borderColor = pScheme->GetColor( "HybridButton.BorderColor", Color( 0, 0, 0, 255 ) );
+
+		int blotchWide = wide - YRES( 40 );
+		vgui::surface()->DrawSetColor( blotchColor );
+		vgui::surface()->DrawFilledRectFade( 0, y - YRES( 2 ), blotchWide / 4, tall, 0, 150, true );
+		vgui::surface()->DrawFilledRectFade( blotchWide / 4, y - YRES( 2 ), blotchWide, tall, 150, 0, true );
+
+		vgui::surface()->DrawSetColor( borderColor );
+		vgui::surface()->DrawFilledRectFade( 0, y - 2 - YRES( 2 ), wide / 2, y - YRES( 2 ), 0, 255, true );
+		vgui::surface()->DrawFilledRectFade( wide / 2, y - 2 - YRES( 2 ), wide, y - YRES( 2 ), 255, 0, true );
+		vgui::surface()->DrawFilledRectFade( 0, tall - 2, wide / 2, tall, 0, 255, true );
+		vgui::surface()->DrawFilledRectFade( wide / 2, tall - 2, wide, tall, 255, 0, true );
+	}
 
 	int col = 0;
 	for ( int i = 0; i < ASW_NUM_MARINE_PROFILES; i++ )
@@ -457,7 +482,7 @@ void CRD_VGUI_Loadout_List_Item::Paint()
 			continue;
 
 		int x = ( ( GetWide() - m_iRowHeight * 6 * m_iNumColumns ) / ( m_iNumColumns + 1 ) + m_iRowHeight * 6 ) * ( col + 1 ) - m_iRowHeight * 6;
-		vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
+		vgui::surface()->DrawSetColor( color );
 		vgui::surface()->DrawSetTexture( MarineProfileList()->GetProfile( i )->m_nPortraitTextureID );
 		vgui::surface()->DrawTexturedRect( x, y, x + m_iRowHeight, y + m_iRowHeight );
 
@@ -495,7 +520,7 @@ void CRD_VGUI_Loadout_List_Item::Paint()
 			{
 				if ( vgui::IImage *pIcon = pInstance->GetIcon() )
 				{
-					vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
+					vgui::surface()->DrawSetColor( color );
 					vgui::surface()->DrawSetTexture( pIcon->GetID() );
 					int x = ( ( GetWide() - m_iMedalSize * RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS ) / ( RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS + 1 ) + m_iMedalSize ) * ( i + 1 ) - m_iMedalSize;
 					vgui::surface()->DrawTexturedRect( x, y, x + m_iMedalSize, y + m_iMedalSize );
