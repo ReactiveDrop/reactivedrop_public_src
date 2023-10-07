@@ -70,15 +70,13 @@ static const char *const s_WorkshopChooserTypeTag[] =
 	"Endless",
 };
 
-vgui::DHANDLE<CASW_Mission_Chooser_Frame> g_hChooserFrame;
 static void LaunchMissionChooser( ASW_HOST_TYPE iHostType, ASW_CHOOSER_TYPE iChooserType, const char *szCampaignName )
 {
-	CASW_Mission_Chooser_Frame *pFrame = g_hChooserFrame;
+	CASW_Mission_Chooser_Frame *pFrame = assert_cast< CASW_Mission_Chooser_Frame * >( BaseModUI::CBaseModPanel::GetSingleton().GetWindow( BaseModUI::WT_MISSIONCHOOSER ) );
 	if ( pFrame )
 	{
 		pFrame->SetVisible( false );
-		pFrame->MarkForDeletion();
-		g_hChooserFrame = NULL;
+		pFrame->Close();
 	}
 
 	if ( iHostType == ASW_HOST_TYPE::NUM_TYPES )
@@ -86,8 +84,8 @@ static void LaunchMissionChooser( ASW_HOST_TYPE iHostType, ASW_CHOOSER_TYPE iCho
 		return;
 	}
 
-	pFrame = new CASW_Mission_Chooser_Frame( iHostType );
-	pFrame->ShowFullScreen();
+	pFrame = assert_cast< CASW_Mission_Chooser_Frame * >( BaseModUI::CBaseModPanel::GetSingleton().OpenWindow( BaseModUI::WT_MISSIONCHOOSER, NULL ) );
+	pFrame->Init( iHostType );
 
 	if ( iChooserType != ASW_CHOOSER_TYPE::NUM_TYPES )
 	{
@@ -99,7 +97,7 @@ static void LaunchMissionChooser( ASW_HOST_TYPE iHostType, ASW_CHOOSER_TYPE iCho
 		pFrame->ApplyCampaign( iChooserType, szCampaignName );
 	}
 
-	g_hChooserFrame = pFrame;
+	pFrame->ShowFullScreen();
 }
 
 static int asw_mission_chooser_completion( const char *partial, char commands[COMMAND_COMPLETION_MAXITEMS][COMMAND_COMPLETION_ITEM_LENGTH] )
@@ -202,7 +200,11 @@ CON_COMMAND_F_COMPLETION( asw_mission_chooser, "asw_mission_chooser host [choose
 	Msg( "Invalid host type.\n" );
 }
 
-CASW_Mission_Chooser_Frame::CASW_Mission_Chooser_Frame( ASW_HOST_TYPE iHostType )
+CASW_Mission_Chooser_Frame::CASW_Mission_Chooser_Frame()
+{
+}
+
+void CASW_Mission_Chooser_Frame::Init( ASW_HOST_TYPE iHostType )
 {
 	m_HostType = iHostType;
 	m_bViewingCampaign = false;

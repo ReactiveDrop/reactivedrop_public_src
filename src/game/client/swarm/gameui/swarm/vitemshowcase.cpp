@@ -230,6 +230,7 @@ void ItemShowcase::OnThink()
 
 	if ( m_iRepositionDescription > 0 && --m_iRepositionDescription == 0 )
 	{
+		static_cast< vgui::Panel * >( m_pDescriptionArea )->OnThink();
 		m_pDescriptionArea->SetToFullHeight();
 		int x, y;
 		m_pDescriptionArea->GetPos( x, y );

@@ -18,7 +18,7 @@
 
 ConVar rd_mission_chooser_scroll_speed( "rd_mission_chooser_scroll_speed", "30", FCVAR_NONE, "Scroll speed in the mission chooser window in pixels." );
 
-TabbedGridDetails::TabbedGridDetails() : BaseClass( NULL, "TabbedGridDetails" )
+TabbedGridDetails::TabbedGridDetails() : BaseClass( BaseModUI::CBaseModPanel::GetSingletonPtr(), "TabbedGridDetails" )
 {
 	SetConsoleStylePanel( true );
 	SetProportional( true );
@@ -295,12 +295,7 @@ void TabbedGridDetails::ShowFullScreen()
 {
 	if ( engine->IsConnected() )
 	{
-		SetParent( GetClientMode()->GetViewport() );
-	}
-	else
-	{
-		vgui::VPANEL rootpanel = enginevgui->GetPanel( PANEL_GAMEUIDLL );
-		SetParent( rootpanel );
+		SetParent( GetFullscreenClientMode()->GetViewport() );
 	}
 
 	SetVisible( true );

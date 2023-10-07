@@ -185,6 +185,7 @@ public:
 
 	void UpdateErrorMessage( TGD_Grid *pGrid );
 	void LoadCachedInventory();
+	void ForceRefreshItems( SteamInventoryResult_t hResult );
 
 	const char *m_szSlot;
 	SteamInventoryResult_t m_hResult;
@@ -199,13 +200,14 @@ public:
 	CRD_Collection_Details_Inventory( CRD_Collection_Tab_Inventory *parent );
 
 	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
-	void OnThink() override;
 	void DisplayEntry( TGD_Entry *pEntry ) override;
+	void SetItemStyleOverride( TGD_Entry *pEntry, int iStyle );
 
 	vgui::Panel *m_pIconBackground;
 	vgui::ImagePanel *m_pIcon;
 	vgui::RichText *m_pTitle;
 	vgui::RichText *m_pDescription;
+	int m_iStyleOverride;
 };
 
 class CRD_Collection_Entry_Inventory : public TGD_Entry
@@ -217,6 +219,7 @@ public:
 
 	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 	void ApplyEntry() override;
+	void OnCommand( const char *command ) override;
 
 	CRD_Collection_Tab_Inventory *GetTab();
 

@@ -85,6 +85,8 @@ namespace BaseModUI
 		WT_SETTINGS,
 		WT_LOADOUTS,
 		WT_CONTRACTS,
+		WT_COLLECTIONS,
+		WT_MISSIONCHOOSER,
 		WT_WINDOW_COUNT // WT_WINDOW_COUNT must be last in the list!
 	};
 

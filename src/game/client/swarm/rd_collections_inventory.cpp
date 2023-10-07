@@ -6,12 +6,15 @@
 #include <vgui_controls/RichText.h>
 #include "fmtstr.h"
 #include "filesystem.h"
+#include "gameui/swarm/basemodpanel.h"
+#include "gameui/swarm/vhybridbutton.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 
 ConVar rd_briefing_item_details_displaytype( "rd_briefing_item_details_displaytype", "170 170 170 255" );
+extern ConVar rd_equipped_medal[RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS];
 
 CRD_Collection_Tab_Inventory::CRD_Collection_Tab_Inventory( TabbedGridDetails *parent, const char *szLabel, const char *szSlot )
 	: BaseClass( parent, szLabel )
@@ -194,6 +197,39 @@ void CRD_Collection_Tab_Inventory::LoadCachedInventory()
 	}
 }
 
+void CRD_Collection_Tab_Inventory::ForceRefreshItems( SteamInventoryResult_t hResult )
+{
+	Assert( m_pGrid );
+	if ( !m_pGrid )
+		return;
+
+	SteamInventoryResult_t hPreviousResult = m_hResult;
+	m_hResult = hResult;
+	m_bForceUpdateMessage = true;
+	m_bUnavailable = false;
+
+	SteamItemInstanceID_t iSelectedItem = k_SteamItemInstanceIDInvalid;
+	if ( m_pGrid->m_hCurrentEntry )
+	{
+		iSelectedItem = assert_cast< CRD_Collection_Entry_Inventory * >( m_pGrid->m_hCurrentEntry.Get() )->m_Details.ItemID;
+	}
+
+	m_pGrid->DeleteAllEntries();
+
+	OnThink();
+
+	m_hResult = hPreviousResult;
+
+	FOR_EACH_VEC( m_pGrid->m_Entries, i )
+	{
+		if ( assert_cast< CRD_Collection_Entry_Inventory * >( m_pGrid->m_Entries[i] )->m_Details.ItemID == iSelectedItem )
+		{
+			m_pGrid->m_Entries[i]->m_pFocusHolder->RequestFocus();
+			break;
+		}
+	}
+}
+
 CRD_Collection_Details_Inventory::CRD_Collection_Details_Inventory( CRD_Collection_Tab_Inventory *parent )
 	: BaseClass( parent )
 {
@@ -218,22 +254,21 @@ void CRD_Collection_Details_Inventory::ApplySchemeSettings( vgui::IScheme *pSche
 	m_pTitle->SetFont( pScheme->GetFont( "DefaultMedium", IsProportional() ) );
 }
 
-void CRD_Collection_Details_Inventory::OnThink()
-{
-	BaseClass::OnThink();
-
-	m_pTitle->SetToFullHeight();
-
-	int x, y0, y1;
-	m_pTitle->GetPos( x, y0 );
-	m_pDescription->GetPos( x, y1 );
-	int iTall = y1 - y0 + m_pDescription->GetTall();
-	m_pDescription->SetPos( x, y0 + m_pTitle->GetTall() );
-	m_pDescription->SetTall( iTall - m_pTitle->GetTall() );
-}
-
 void CRD_Collection_Details_Inventory::DisplayEntry( TGD_Entry *pEntry )
 {
+	m_iStyleOverride = -2;
+
+	SetItemStyleOverride( pEntry, -1 );
+}
+
+void CRD_Collection_Details_Inventory::SetItemStyleOverride( TGD_Entry *pEntry, int iStyle )
+{
+	if ( m_iStyleOverride == iStyle )
+	{
+		return;
+	}
+
+	m_iStyleOverride = iStyle;
 	SetPaintBackgroundEnabled( false );
 	m_pIcon->SetVisible( false );
 	m_pTitle->SetText( L"" );
@@ -245,7 +280,15 @@ void CRD_Collection_Details_Inventory::DisplayEntry( TGD_Entry *pEntry )
 		return;
 	}
 
-	const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( pInvEntry->m_Details.ItemDefID );
+	ReactiveDropInventory::ItemInstance_t details{ pInvEntry->m_Details };
+	if ( iStyle != -1 )
+	{
+		char szStyle[32];
+		V_snprintf( szStyle, sizeof( szStyle ), "%d", iStyle );
+		details.DynamicProps[details.DynamicProps.AddString( "style" )] = szStyle;
+	}
+
+	const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( details.ItemDefID );
 	Assert( pDef );
 	if ( !pDef )
 	{
@@ -257,7 +300,7 @@ void CRD_Collection_Details_Inventory::DisplayEntry( TGD_Entry *pEntry )
 	m_pIconBackground->SetPaintBackgroundType( 2 );
 
 	m_pIcon->SetVisible( true );
-	m_pIcon->SetImage( pInvEntry->m_Details.GetIcon() );
+	m_pIcon->SetImage( details.GetIcon() );
 
 	wchar_t wszBuf[2048];
 
@@ -270,20 +313,132 @@ void CRD_Collection_Details_Inventory::DisplayEntry( TGD_Entry *pEntry )
 	m_pTitle->InsertColorChange( rd_briefing_item_details_displaytype.GetColor() );
 	m_pTitle->InsertString( wszBuf );
 
-	pInvEntry->m_Details.FormatDescription( m_pDescription );
+	details.FormatDescription( m_pDescription );
 
 	CRD_Collection_Tab_Inventory *pTab = assert_cast< CRD_Collection_Tab_Inventory * >( m_pParent );
 
 	ConVarRef equipID( VarArgs( "rd_equipped_%s", pTab->m_szSlot ) );
-	if ( pInvEntry->m_Details.ItemID == strtoull( equipID.GetString(), NULL, 10 ) )
+	bool bEquipped = strtoull( equipID.GetString(), NULL, 10 ) == details.ItemID;
+
+	for ( int i = 0; i < NELEMS( ReactiveDropInventory::g_InventorySlotAliases ) && !bEquipped; i++ )
+	{
+		if ( !V_strcmp( ReactiveDropInventory::g_InventorySlotAliases[i][1], pTab->m_szSlot ) )
+		{
+			ConVarRef equipAliasID( VarArgs( "rd_equipped_%s", ReactiveDropInventory::g_InventorySlotAliases[i][0] ) );
+			Assert( equipAliasID.IsValid() );
+			bEquipped = strtoull( equipAliasID.GetString(), NULL, 10 ) == details.ItemID;
+		}
+	}
+
+	if ( bEquipped )
 	{
 		m_pDescription->InsertColorChange( Color( 255, 255, 255, 255 ) );
 		m_pDescription->InsertString( L"\n\n" );
 		m_pDescription->InsertString( "#rd_collection_inventory_item_equipped" );
 	}
 
+	static_cast< vgui::Panel * >( m_pTitle )->OnThink();
+	static_cast< vgui::Panel * >( m_pDescription )->OnThink();
+	m_pTitle->SetToFullHeight();
+
+	int x, y0, y1;
+	m_pTitle->GetPos( x, y0 );
+	m_pDescription->GetPos( x, y1 );
+	int iTall = y1 - y0 + m_pDescription->GetTall();
+	m_pDescription->SetPos( x, y0 + m_pTitle->GetTall() );
+	m_pDescription->SetTall( iTall - m_pTitle->GetTall() );
+
 	InvalidateLayout();
 }
+
+class CRD_Collection_Panel_Inventory : public vgui::EditablePanel
+{
+	DECLARE_CLASS_SIMPLE( CRD_Collection_Panel_Inventory, vgui::EditablePanel );
+public:
+	CRD_Collection_Panel_Inventory( vgui::Panel *parent, const char *panelName, CRD_Collection_Entry_Inventory *pEntry ) :
+		BaseClass{ parent, panelName }
+	{
+		m_pEntry = pEntry;
+
+		for ( int i = 0; i < NELEMS( m_pButton ); i++ )
+		{
+			m_pButton[i] = new BaseModUI::BaseModHybridButton( this, VarArgs( "BtnOption%d", i ), "", this, NULL );
+			m_iStyle[i] = -1;
+		}
+
+		m_nOptions = 0;
+	}
+
+	void AddOption( const char *szCommand, const char *szDescription, int iNumFormatParameters = 0, const wchar_t *wszParam1 = NULL, const wchar_t *wszParam2 = NULL, const wchar_t *wszParam3 = NULL, const wchar_t *wszParam4 = NULL )
+	{
+		MakeReadyForUse();
+
+		Assert( m_nOptions < NELEMS( m_pButton ) );
+		if ( m_nOptions >= NELEMS( m_pButton ) )
+			return;
+
+		m_pButton[m_nOptions]->SetCommand( szCommand );
+		m_pButton[m_nOptions]->SetEnabled( szCommand != NULL );
+
+		wchar_t wszDescription[1024];
+		g_pVGuiLocalize->ConstructString( wszDescription, sizeof( wszDescription ),
+			g_pVGuiLocalize->Find( szDescription ), iNumFormatParameters, wszParam1, wszParam2, wszParam3, wszParam4 );
+
+		m_pButton[m_nOptions]->SetText( wszDescription );
+		m_pButton[m_nOptions]->SetVisible( true );
+
+		m_nOptions++;
+	}
+
+	void SetOptionStyleID( int i )
+	{
+		Assert( m_nOptions );
+		m_iStyle[m_nOptions - 1] = i;
+	}
+
+	void ApplySchemeSettings( vgui::IScheme *pScheme ) override
+	{
+		BaseClass::ApplySchemeSettings( pScheme );
+
+		LoadControlSettings( "Resource/UI/CollectionPanelInventory.res" );
+	}
+
+	void PerformLayout() override
+	{
+		BaseClass::PerformLayout();
+	}
+
+	void OnThink() override
+	{
+		BaseClass::OnThink();
+
+		int iStyleOverride = -1;
+
+		for ( int i = 0; i < m_nOptions; i++ )
+		{
+			if ( m_pButton[i]->GetCurrentState() == BaseModUI::BaseModHybridButton::Focus || m_pButton[i]->GetCurrentState() == BaseModUI::BaseModHybridButton::FocusDisabled )
+			{
+				iStyleOverride = m_iStyle[i];
+				break;
+			}
+		}
+
+		assert_cast< CRD_Collection_Details_Inventory * >( m_pEntry->GetTab()->m_pDetails )->SetItemStyleOverride( m_pEntry, iStyleOverride );
+	}
+
+	void OnCommand( const char *command ) override
+	{
+		assert_cast< TabbedGridDetails * >( GetParent() )->SetOverridePanel( NULL );
+		MarkForDeletion();
+
+		m_pEntry->OnCommand( command );
+	}
+
+	CRD_Collection_Entry_Inventory *m_pEntry;
+	BaseModUI::BaseModHybridButton *m_pButton[10];
+	int m_iStyle[10];
+	int m_nOptions;
+};
 
 CRD_Collection_Entry_Inventory::CRD_Collection_Entry_Inventory( TGD_Grid *parent, const char *panelName, SteamInventoryResult_t hResult, int index )
 	: BaseClass( parent, panelName ),
@@ -320,17 +475,136 @@ void CRD_Collection_Entry_Inventory::ApplySchemeSettings( vgui::IScheme *pScheme
 
 	ConVarRef equipID( VarArgs( "rd_equipped_%s", GetTab()->m_szSlot ) );
 	Assert( equipID.IsValid() );
-	m_pEquippedMarker->SetVisible( strtoull( equipID.GetString(), NULL, 10 ) == m_Details.ItemID );
+	bool bEquipped = strtoull( equipID.GetString(), NULL, 10 ) == m_Details.ItemID;
+
+	for ( int i = 0; i < NELEMS( ReactiveDropInventory::g_InventorySlotAliases ) && !bEquipped; i++ )
+	{
+		if ( !V_strcmp( ReactiveDropInventory::g_InventorySlotAliases[i][1], GetTab()->m_szSlot ) )
+		{
+			ConVarRef equipAliasID( VarArgs( "rd_equipped_%s", ReactiveDropInventory::g_InventorySlotAliases[i][0] ) );
+			Assert( equipAliasID.IsValid() );
+			bEquipped = strtoull( equipAliasID.GetString(), NULL, 10 ) == m_Details.ItemID;
+		}
+	}
+
+	m_pEquippedMarker->SetVisible( bEquipped );
 }
 
 void CRD_Collection_Entry_Inventory::ApplyEntry()
 {
-	ConVarRef equipID( VarArgs( "rd_equipped_%s", GetTab()->m_szSlot ) );
-	Assert( equipID.IsValid() );
+	const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( m_Details.ItemDefID );
+	Assert( pDef );
+	if ( !pDef )
+	{
+		BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_INVALID );
+		return;
+	}
 
-	const char *szValue = VarArgs( "%llu", m_Details.ItemID );
-	equipID.SetValue( V_strcmp( equipID.GetString(), szValue ) ? szValue : "0" );
-	engine->ClientCmd( "host_writeconfig\n" );
+	TabbedGridDetails *pTGD = m_pParent->m_pParent->m_pParent;
+	CRD_Collection_Panel_Inventory *pModal = new CRD_Collection_Panel_Inventory( pTGD, "OptionsModal", this );
+
+	if ( !V_strcmp( pDef->ItemSlot, "medal" ) )
+	{
+		// There are three medal slots.
+		bool bEquipped = false;
+		for ( int i = 0; i < RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS; i++ )
+		{
+			if ( strtoull( rd_equipped_medal[i].GetString(), NULL, 10 ) == m_Details.ItemID )
+			{
+				bEquipped = true;
+				break;
+			}
+		}
+
+		if ( bEquipped )
+		{
+			pModal->AddOption( "UnequipMedal", "#rd_inventory_verb_unequip" );
+		}
+		else
+		{
+			pModal->AddOption( "Equip_medal", "#rd_inventory_verb_equip_0" );
+			pModal->AddOption( "Equip_medal1", "#rd_inventory_verb_equip_1" );
+			pModal->AddOption( "Equip_medal2", "#rd_inventory_verb_equip_2" );
+		}
+	}
+
+	if ( pDef->StyleNames.Count() )
+	{
+		int iStyle = m_Details.GetStyle();
+		wchar_t wszStyleName[1024];
+
+		FOR_EACH_VEC( pDef->StyleNames, i )
+		{
+			V_UTF8ToUnicode( pDef->StyleNames[i], wszStyleName, sizeof( wszStyleName ) );
+
+			if ( i == iStyle )
+				pModal->AddOption( NULL, "#rd_inventory_verb_style_current", 1, wszStyleName );
+			else
+				pModal->AddOption( VarArgs( "SetStyle%d", i ), "#rd_inventory_verb_style", 1, wszStyleName );
+			pModal->SetOptionStyleID( i );
+		}
+	}
+
+	// TODO: rd_inventory_verb_accessory
+	// TODO: rd_inventory_verb_open
+
+	// TODO: make this selectable
+	pModal->AddOption( NULL, "#rd_inventory_verb_delete" );
+
+	pModal->AddOption( "Back", "#asw_menu_back" );
+
+	pTGD->SetOverridePanel( pModal );
+}
+
+void CRD_Collection_Entry_Inventory::OnCommand( const char *command )
+{
+	if ( const char *szStyleNumber = StringAfterPrefix( command, "SetStyle" ) )
+	{
+		int iStyle = V_atoi( szStyleNumber );
+
+		ReactiveDropInventory::ChangeItemStyle( m_Details.ItemID, iStyle );
+	}
+	else if ( const char *szEquipSlot = StringAfterPrefix( command, "Equip_" ) )
+	{
+		char szItemID[32];
+		V_snprintf( szItemID, sizeof( szItemID ), "%llu", m_Details.ItemID );
+
+		ConVarRef equipID{ VarArgs( "rd_equipped_%s", szEquipSlot ) };
+		Assert( equipID.IsValid() );
+		if ( equipID.IsValid() )
+		{
+			equipID.SetValue( szItemID );
+			engine->ClientCmd( "host_writeconfig\n" );
+
+			BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_ACCEPT );
+		}
+	}
+	else if ( !V_strcmp( command, "UnequipMedal" ) )
+	{
+		char szItemID[32];
+		V_snprintf( szItemID, sizeof( szItemID ), "%llu", m_Details.ItemID );
+
+		for ( int i = 0; i < RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS; i++ )
+		{
+			if ( !V_strcmp( rd_equipped_medal[i].GetString(), szItemID ) )
+			{
+				rd_equipped_medal[i].SetValue( "0" );
+				engine->ClientCmd( "host_writeconfig\n" );
+
+				BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_ACCEPT );
+			}
+		}
+	}
+	else if ( !V_strcmp( command, "Back" ) )
+	{
+		// do nothing
+	}
+	else
+	{
+		BaseClass::OnCommand( command );
+
+		return;
+	}
 
 	m_pParent->InvalidateLayout( true, true );
 	m_pFocusHolder->OnSetFocus();

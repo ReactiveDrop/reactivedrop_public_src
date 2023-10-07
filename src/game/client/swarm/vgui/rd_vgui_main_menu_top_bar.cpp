@@ -248,16 +248,8 @@ void CRD_VGUI_Main_Menu_Top_Bar::NavigateTo()
 	BaseClass::NavigateTo();
 }
 
-extern vgui::DHANDLE<TabbedGridDetails> g_hCollectionFrame;
 void CRD_VGUI_Main_Menu_Top_Bar::DismissMainMenuScreens()
 {
-	if ( g_hCollectionFrame )
-	{
-		g_hCollectionFrame->SetVisible( false );
-		g_hCollectionFrame->MarkForDeletion();
-		g_hCollectionFrame = NULL;
-	}
-
 	CBaseModPanel::GetSingleton().CloseAllWindows();
 	CBaseModPanel::GetSingleton().OpenFrontScreen();
 }

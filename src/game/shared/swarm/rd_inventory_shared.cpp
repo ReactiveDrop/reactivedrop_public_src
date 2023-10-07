@@ -33,6 +33,7 @@
 #include "filesystem.h"
 #include "c_user_message_register.h"
 #include "asw_hud_3dmarinenames.h"
+#include "rd_collections.h"
 #define CASW_Sentry_Base C_ASW_Sentry_Base
 #else
 #include "asw_player.h"
@@ -1408,8 +1409,10 @@ public:
 		CRAFT_PROMO,
 		// retrieving item data. may not be ours. notification when complete.
 		CRAFT_INSPECT,
-		// updating dynamic properties for an item (ex. at the end of a mission). no notifications.
+		// updating dynamic properties for an item (eg. at the end of a mission). no notifications.
 		CRAFT_DYNAMIC_PROPERTY_UPDATE,
+		// updating user-modifiable dynamic properties for an item (eg. style). modal while in progress.
+		CRAFT_USER_DYNAMIC_PROPERTY_UPDATE,
 	};
 	struct CraftItemTask_t
 	{
@@ -1462,6 +1465,7 @@ public:
 			case CRAFT_CLAIM_MINOR:
 			case CRAFT_CLAIM_MAJOR:
 			case CRAFT_DYNAMIC_PROPERTY_INIT:
+			case CRAFT_USER_DYNAMIC_PROPERTY_UPDATE:
 				return true;
 			case CRAFT_BTS:
 			case CRAFT_DROP:
@@ -1487,6 +1491,7 @@ public:
 		case CRAFT_CLAIM_MINOR:
 		case CRAFT_CLAIM_MAJOR:
 		case CRAFT_INSPECT:
+		case CRAFT_USER_DYNAMIC_PROPERTY_UPDATE:
 			return true;
 		case CRAFT_DYNAMIC_PROPERTY_INIT:
 			return pTask->m_iAccessoryDef != BaseModUI::ItemShowcase::MODE_ITEM_DROP;
@@ -1585,6 +1590,8 @@ public:
 				CommitDynamicProperties();
 				m_bWantExtraDynamicPropertyCommit = false;
 			}
+			break;
+		case CRAFT_USER_DYNAMIC_PROPERTY_UPDATE:
 			break;
 		default:
 			Assert( !"unhandled crafting task type" );
@@ -1833,6 +1840,16 @@ public:
 		if ( pParam->m_handle == m_GetFullInventoryForCacheResult )
 		{
 			CacheUserInventory( m_GetFullInventoryForCacheResult );
+
+			TabbedGridDetails *pCollections = assert_cast< TabbedGridDetails * >( BaseModUI::CBaseModPanel::GetSingleton().GetWindow( BaseModUI::WT_COLLECTIONS ) );
+			if ( pCollections && pCollections->m_hCurrentTab )
+			{
+				CRD_Collection_Tab_Inventory *pInventoryTab = dynamic_cast< CRD_Collection_Tab_Inventory * >( pCollections->m_hCurrentTab.Get() );
+				if ( pInventoryTab )
+				{
+					pInventoryTab->ForceRefreshItems( m_GetFullInventoryForCacheResult );
+				}
+			}
 
 			pInventory->DestroyResult( m_GetFullInventoryForCacheResult );
 			m_GetFullInventoryForCacheResult = k_SteamInventoryResultInvalid;
@@ -3542,6 +3559,25 @@ namespace ReactiveDropInventory
 
 		return bAnyChanged;
 	}
+
+	void ChangeItemStyle( SteamItemInstanceID_t id, int iStyle )
+	{
+		GET_INVENTORY_OR_BAIL;
+
+		SteamInventoryUpdateHandle_t hUpdate = pInventory->StartUpdateProperties();
+		Assert( hUpdate != k_SteamInventoryUpdateHandleInvalid );
+
+		bool bOK = pInventory->SetProperty( hUpdate, id, "style", int64( iStyle ) );
+		Assert( bOK );
+		if ( !bOK )
+			Warning( "Inventory item style property update failed!\n" );
+
+		bOK = pInventory->SubmitUpdateProperties( hUpdate, s_RD_Inventory_Manager.AddCraftItemTask( CRD_Inventory_Manager::CRAFT_USER_DYNAMIC_PROPERTY_UPDATE ) );
+		Assert( bOK );
+		if ( !bOK )
+			Warning( "Inventory item style update submit failed!\n" );
+	}
+
 #endif
 
 	void OnHitConfirm( CBaseEntity *pAttacker, CBaseEntity *pTarget, Vector vecDamagePosition, bool bKilled, bool bDamageOverTime, bool bBlastDamage, int iDisposition, float flDamage, CBaseEntity *pWeapon )

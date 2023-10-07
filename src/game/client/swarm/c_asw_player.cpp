@@ -128,9 +128,9 @@ ConVar asw_marine_switch_blend_speed( "asw_marine_switch_blend_speed", "2.5", 0,
 ConVar asw_marine_switch_blend_max_dist( "asw_marine_switch_blend_max_dist", "1500", 0, "Maximum distance apart marines can be for a camera blend to occur" );
 
 // default inventory convars
-extern ConVar asw_default_primary[ASW_NUM_MARINE_PROFILES + 1];
-extern ConVar asw_default_secondary[ASW_NUM_MARINE_PROFILES + 1];
-extern ConVar asw_default_extra[ASW_NUM_MARINE_PROFILES + 1];
+extern ConVar asw_default_primary[ASW_NUM_MARINE_PROFILES];
+extern ConVar asw_default_secondary[ASW_NUM_MARINE_PROFILES];
+extern ConVar asw_default_extra[ASW_NUM_MARINE_PROFILES];
 extern ConVar rd_equipped_weapon_primary[ASW_NUM_MARINE_PROFILES];
 extern ConVar rd_equipped_weapon_secondary[ASW_NUM_MARINE_PROFILES];
 extern ConVar rd_equipped_weapon_extra[ASW_NUM_MARINE_PROFILES];

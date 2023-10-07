@@ -22,38 +22,33 @@ extern ConVar rd_reduce_motion;
 extern ConVar asw_weapon_pitch;
 extern ConVar_ServerBounded *m_pitch;
 
-vgui::DHANDLE<TabbedGridDetails> g_hCollectionFrame;
 void LaunchCollectionsFrame()
 {
-	TabbedGridDetails *pFrame = g_hCollectionFrame;
+	TabbedGridDetails *pFrame = assert_cast< TabbedGridDetails * >( BaseModUI::CBaseModPanel::GetSingleton().GetWindow( BaseModUI::WT_COLLECTIONS ) );
 	if ( pFrame )
 	{
 		pFrame->SetVisible( false );
-		pFrame->MarkForDeletion();
-		g_hCollectionFrame = NULL;
+		pFrame->Close();
 	}
 
-	pFrame = new TabbedGridDetails();
+	pFrame = assert_cast< TabbedGridDetails * >( BaseModUI::CBaseModPanel::GetSingleton().OpenWindow( BaseModUI::WT_COLLECTIONS, NULL ) );
 	pFrame->SetTitle( "#rd_collection_title", true );
 	pFrame->AddTab( new CRD_Collection_Tab_Inventory( pFrame, "#rd_collection_inventory_medals", "medal" ) );
 	pFrame->RememberTabIndex( &rd_collections_last_tab );
 	pFrame->UseMainMenuLayout( CRD_VGUI_Main_Menu_Top_Bar::BTN_INVENTORY );
 	pFrame->ShowFullScreen();
-
-	g_hCollectionFrame = pFrame;
 }
 
 void LaunchSwarmopediaFrame()
 {
-	TabbedGridDetails *pFrame = g_hCollectionFrame;
+	TabbedGridDetails *pFrame = assert_cast< TabbedGridDetails * >( BaseModUI::CBaseModPanel::GetSingleton().GetWindow( BaseModUI::WT_COLLECTIONS ) );
 	if ( pFrame )
 	{
 		pFrame->SetVisible( false );
-		pFrame->MarkForDeletion();
-		g_hCollectionFrame = NULL;
+		pFrame->Close();
 	}
 
-	pFrame = new TabbedGridDetails();
+	pFrame = assert_cast< TabbedGridDetails * >( BaseModUI::CBaseModPanel::GetSingleton().OpenWindow( BaseModUI::WT_COLLECTIONS, NULL ) );
 	pFrame->SetTitle( "#rd_collection_title", true );
 	pFrame->AddTab( new CRD_Collection_Tab_Swarmopedia( pFrame, "#rd_collection_swarmopedia" ) );
 	pFrame->AddTab( new CRD_Collection_Tab_Equipment( pFrame, "#rd_collection_weapons", NULL, ASW_INVENTORY_SLOT_PRIMARY ) );
@@ -61,8 +56,6 @@ void LaunchSwarmopediaFrame()
 	pFrame->RememberTabIndex( &rd_swarmopedia_last_tab );
 	pFrame->UseMainMenuLayout( CRD_VGUI_Main_Menu_Top_Bar::BTN_SWARMOPEDIA );
 	pFrame->ShowFullScreen();
-
-	g_hCollectionFrame = pFrame;
 }
 
 static int rd_collections_completion( const char *partial, char commands[COMMAND_COMPLETION_MAXITEMS][COMMAND_COMPLETION_ITEM_LENGTH] )

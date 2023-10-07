@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vgui_controls/Frame.h>
+#include <gameui/swarm/basemodframe.h>
 
 class TGD_Tab;
 class TGD_Grid;
@@ -13,46 +13,51 @@ class CNB_Header_Footer;
 class CRD_VGUI_Main_Menu_Top_Bar;
 class CRD_VGUI_Stock_Ticker_Helper;
 
-class TabbedGridDetails : public vgui::Frame
+namespace BaseModUI
 {
-	DECLARE_CLASS_SIMPLE( TabbedGridDetails, vgui::Frame );
-public:
-	explicit TabbedGridDetails();
+	class TabbedGridDetails : public CBaseModFrame
+	{
+		DECLARE_CLASS_SIMPLE( TabbedGridDetails, CBaseModFrame );
+	public:
+		explicit TabbedGridDetails();
 
-	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
-	virtual void PerformLayout() override;
-	virtual void OnMouseWheeled( int delta ) override;
-	MESSAGE_FUNC_INT( OnSliderMoved, "ScrollBarSliderMoved", position );
-	virtual void OnCommand( const char *command ) override;
-	virtual void OnKeyCodeTyped( vgui::KeyCode keycode ) override;
-	virtual void OnKeyCodePressed( vgui::KeyCode keycode ) override;
-	virtual void SetTitle( const char *title, bool surfaceTitle ) override;
-	virtual void SetTitle( const wchar_t *title, bool surfaceTitle ) override;
+		virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+		virtual void PerformLayout() override;
+		virtual void OnMouseWheeled( int delta ) override;
+		MESSAGE_FUNC_INT( OnSliderMoved, "ScrollBarSliderMoved", position );
+		virtual void OnCommand( const char *command ) override;
+		virtual void OnKeyCodeTyped( vgui::KeyCode keycode ) override;
+		virtual void OnKeyCodePressed( vgui::KeyCode keycode ) override;
+		virtual void SetTitle( const char *title, bool surfaceTitle ) override;
+		virtual void SetTitle( const wchar_t *title, bool surfaceTitle ) override;
 
-	void ShowFullScreen();
-	void UseMainMenuLayout( int iTopButtonIndex );
-	void RememberTabIndex( ConVar *pCVar );
-	void AddTab( TGD_Tab *pTab );
-	void RemoveTab( TGD_Tab *pTab );
-	void ActivateTab( TGD_Tab *pTab );
-	void SetOverridePanel( vgui::Panel *pPanel );
-	void UseCombinedGrid();
+		void ShowFullScreen();
+		void UseMainMenuLayout( int iTopButtonIndex );
+		void RememberTabIndex( ConVar *pCVar );
+		void AddTab( TGD_Tab *pTab );
+		void RemoveTab( TGD_Tab *pTab );
+		void ActivateTab( TGD_Tab *pTab );
+		void SetOverridePanel( vgui::Panel *pPanel );
+		void UseCombinedGrid();
 
-	CNB_Header_Footer *m_pHeaderFooter;
-	CNB_Button *m_pBackButton;
-	vgui::Panel *m_pTabStrip;
-	vgui::Label *m_pTabLeftHint;
-	vgui::Label *m_pTabRightHint;
-	vgui::Dar<TGD_Tab *> m_Tabs;
-	vgui::DHANDLE<TGD_Tab> m_hCurrentTab;
-	vgui::PHandle m_hOverridePanel;
-	CRD_VGUI_Main_Menu_Top_Bar *m_pMainMenuBar;
-	CRD_VGUI_Stock_Ticker_Helper *m_pMainMenuTicker;
-	vgui::Panel *m_pGridParent;
-	vgui::ScrollBar *m_pCombinedScrollBar;
+		CNB_Header_Footer *m_pHeaderFooter;
+		CNB_Button *m_pBackButton;
+		vgui::Panel *m_pTabStrip;
+		vgui::Label *m_pTabLeftHint;
+		vgui::Label *m_pTabRightHint;
+		vgui::Dar<TGD_Tab *> m_Tabs;
+		vgui::DHANDLE<TGD_Tab> m_hCurrentTab;
+		vgui::PHandle m_hOverridePanel;
+		CRD_VGUI_Main_Menu_Top_Bar *m_pMainMenuBar;
+		CRD_VGUI_Stock_Ticker_Helper *m_pMainMenuTicker;
+		vgui::Panel *m_pGridParent;
+		vgui::ScrollBar *m_pCombinedScrollBar;
 
-	ConVar *m_pLastTabConVar;
-};
+		ConVar *m_pLastTabConVar;
+	};
+}
+
+using TabbedGridDetails = BaseModUI::TabbedGridDetails;
 
 abstract_class TGD_Tab : public vgui::EditablePanel
 {

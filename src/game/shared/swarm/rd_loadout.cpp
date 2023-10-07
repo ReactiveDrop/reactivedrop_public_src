@@ -14,7 +14,7 @@
 
 #ifdef CLIENT_DLL
 // current loadout equip slots
-ConVar asw_default_primary[ASW_NUM_MARINE_PROFILES + 1]
+ConVar asw_default_primary[ASW_NUM_MARINE_PROFILES]
 {
 	{ "asw_default_primary_0", "-1", FCVAR_ARCHIVE, "Default primary equip for Sarge" },
 	{ "asw_default_primary_1", "-1", FCVAR_ARCHIVE, "Default primary equip for Wildcat" },
@@ -24,10 +24,8 @@ ConVar asw_default_primary[ASW_NUM_MARINE_PROFILES + 1]
 	{ "asw_default_primary_5", "-1", FCVAR_ARCHIVE, "Default primary equip for Wolfe" },
 	{ "asw_default_primary_6", "-1", FCVAR_ARCHIVE, "Default primary equip for Bastille" },
 	{ "asw_default_primary_7", "-1", FCVAR_ARCHIVE, "Default primary equip for Vegas" },
-	// we don't have Flynn, but this convar has existed for a while so keep it as FCVAR_ARCHIVE in case anyone is really attached to the number they put there
-	{ "asw_default_primary_8", "-1", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Default primary equip for Flynn" },
 };
-ConVar asw_default_secondary[ASW_NUM_MARINE_PROFILES + 1]
+ConVar asw_default_secondary[ASW_NUM_MARINE_PROFILES]
 {
 	{ "asw_default_secondary_0", "-1", FCVAR_ARCHIVE, "Default secondary equip for Sarge" },
 	{ "asw_default_secondary_1", "-1", FCVAR_ARCHIVE, "Default secondary equip for Wildcat" },
@@ -37,9 +35,8 @@ ConVar asw_default_secondary[ASW_NUM_MARINE_PROFILES + 1]
 	{ "asw_default_secondary_5", "-1", FCVAR_ARCHIVE, "Default secondary equip for Wolfe" },
 	{ "asw_default_secondary_6", "-1", FCVAR_ARCHIVE, "Default secondary equip for Bastille" },
 	{ "asw_default_secondary_7", "-1", FCVAR_ARCHIVE, "Default secondary equip for Vegas" },
-	{ "asw_default_secondary_8", "-1", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Default secondary equip for Flynn" },
 };
-ConVar asw_default_extra[ASW_NUM_MARINE_PROFILES + 1]
+ConVar asw_default_extra[ASW_NUM_MARINE_PROFILES]
 {
 	{ "asw_default_extra_0", "-1", FCVAR_ARCHIVE, "Default extra equip for Sarge" },
 	{ "asw_default_extra_1", "-1", FCVAR_ARCHIVE, "Default extra equip for Wildcat" },
@@ -49,7 +46,6 @@ ConVar asw_default_extra[ASW_NUM_MARINE_PROFILES + 1]
 	{ "asw_default_extra_5", "-1", FCVAR_ARCHIVE, "Default extra equip for Wolfe" },
 	{ "asw_default_extra_6", "-1", FCVAR_ARCHIVE, "Default extra equip for Bastille" },
 	{ "asw_default_extra_7", "-1", FCVAR_ARCHIVE, "Default extra equip for Vegas" },
-	{ "asw_default_extra_8", "-1", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Default extra equip for Flynn" },
 };
 extern ConVar rd_equipped_medal[RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS];
 extern ConVar rd_equipped_marine[ASW_NUM_MARINE_PROFILES];

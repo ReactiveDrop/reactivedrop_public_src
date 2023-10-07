@@ -32,9 +32,9 @@ using namespace vgui;
 using namespace BaseModUI;
 
 extern ConVar rd_override_commander_promotion;
-extern ConVar asw_default_primary[ASW_NUM_MARINE_PROFILES + 1];
-extern ConVar asw_default_secondary[ASW_NUM_MARINE_PROFILES + 1];
-extern ConVar asw_default_extra[ASW_NUM_MARINE_PROFILES + 1];
+extern ConVar asw_default_primary[ASW_NUM_MARINE_PROFILES];
+extern ConVar asw_default_secondary[ASW_NUM_MARINE_PROFILES];
+extern ConVar asw_default_extra[ASW_NUM_MARINE_PROFILES];
 extern ConVar rd_equipped_medal[RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS];
 extern ConVar rd_equipped_marine[ASW_NUM_MARINE_PROFILES];
 extern ConVar rd_equipped_weapon_primary[ASW_NUM_MARINE_PROFILES];

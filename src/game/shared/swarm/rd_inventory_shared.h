@@ -134,6 +134,7 @@ namespace ReactiveDropInventory
 	int AllocateDynamicItemSlot( int iPlayer, SteamItemInstanceID_t iItemInstanceID, int iMarineProfile = -1, int iInventorySlot = -1 );
 	void ResendDynamicEquipNotification( int iPlayer, bool bForce = false );
 	bool CheckMedalEquipCache();
+	void ChangeItemStyle( SteamItemInstanceID_t id, int iStyle );
 #endif
 	void OnHitConfirm( CBaseEntity *pAttacker, CBaseEntity *pTarget, Vector vecDamagePosition, bool bKilled, bool bDamageOverTime, bool bBlastDamage, int iDisposition, float flDamage, CBaseEntity *pWeapon );
 }

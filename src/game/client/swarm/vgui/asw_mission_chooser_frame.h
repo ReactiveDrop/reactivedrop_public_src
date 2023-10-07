@@ -41,21 +41,27 @@ enum class ASW_HOST_TYPE
 
 extern const char *const g_ASW_HostTypeName[int( ASW_HOST_TYPE::NUM_TYPES )];
 
-class CASW_Mission_Chooser_Frame : public TabbedGridDetails
+namespace BaseModUI
 {
-	DECLARE_CLASS_SIMPLE( CASW_Mission_Chooser_Frame, TabbedGridDetails );
-public:
-	CASW_Mission_Chooser_Frame( ASW_HOST_TYPE iHostType );
+	class CASW_Mission_Chooser_Frame : public TabbedGridDetails
+	{
+		DECLARE_CLASS_SIMPLE( CASW_Mission_Chooser_Frame, TabbedGridDetails );
+	public:
+		explicit CASW_Mission_Chooser_Frame();
+		void Init( ASW_HOST_TYPE iHostType );
 
-	virtual void OnCommand( const char *command ) override;
+		virtual void OnCommand( const char *command ) override;
 
-	void ApplyCampaign( ASW_CHOOSER_TYPE iChooserType, const char *szCampaignName );
-	bool SelectTab( ASW_CHOOSER_TYPE iChooserType );
+		void ApplyCampaign( ASW_CHOOSER_TYPE iChooserType, const char *szCampaignName );
+		bool SelectTab( ASW_CHOOSER_TYPE iChooserType );
 
-	ASW_HOST_TYPE m_HostType;
-	CUtlVector<CASW_Mission_Chooser_Tab *> m_MainTabs;
-	bool m_bViewingCampaign;
-};
+		ASW_HOST_TYPE m_HostType;
+		CUtlVector<CASW_Mission_Chooser_Tab *> m_MainTabs;
+		bool m_bViewingCampaign;
+	};
+}
+
+using CASW_Mission_Chooser_Frame = BaseModUI::CASW_Mission_Chooser_Frame;
 
 class CASW_Mission_Chooser_Tab : public TGD_Tab
 {

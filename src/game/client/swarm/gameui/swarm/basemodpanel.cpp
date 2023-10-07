@@ -25,6 +25,7 @@
 #endif
 
 // BaseModUI High-level windows
+#include "TabbedGridDetails.h"
 #include "VTransitionScreen.h"
 #include "VAchievements.h"
 #include "vaddonassociation.h"
@@ -73,6 +74,7 @@
 #include "vjukebox.h"
 #include "rd_workshop_frame.h"
 #include "vgamepad.h"
+#include "asw_mission_chooser_frame.h"
 #include "gameconsole.h"
 #include "vgui/ISystem.h"
 #include "vgui/ISurface.h"
@@ -310,15 +312,15 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 		switch ( wt )
 		{
 		case WT_ACHIEVEMENTS:
-			m_Frames[wt] = new Achievements(this, "Achievements");
+			m_Frames[wt] = new Achievements( this, "Achievements" );
 			break;
 
 		case WT_AUDIO:
-			m_Frames[wt] = new Audio(this, "Audio");
+			m_Frames[wt] = new Audio( this, "Audio" );
 			break;
 
 		case WT_AUDIOVIDEO:
-			m_Frames[wt] = new AudioVideo(this, "AudioVideo");
+			m_Frames[wt] = new AudioVideo( this, "AudioVideo" );
 			break;
 
 		case WT_CLOUD:
@@ -327,20 +329,20 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 			Assert( 0 );
 			break;
 #else
-			m_Frames[wt] = new Cloud(this, "Cloud");
+			m_Frames[wt] = new Cloud( this, "Cloud" );
 #endif
 			break;
 
 		case WT_CONTROLLER:
-			m_Frames[wt] = new ControllerOptions(this, "ControllerOptions");
+			m_Frames[wt] = new ControllerOptions( this, "ControllerOptions" );
 			break;
 
 		case WT_CONTROLLER_STICKS:
-			m_Frames[wt] = new ControllerOptionsSticks(this, "ControllerOptionsSticks");
+			m_Frames[wt] = new ControllerOptionsSticks( this, "ControllerOptionsSticks" );
 			break;
 
 		case WT_CONTROLLER_BUTTONS:
-			m_Frames[wt] = new ControllerOptionsButtons(this, "ControllerOptionsButtons");
+			m_Frames[wt] = new ControllerOptionsButtons( this, "ControllerOptionsButtons" );
 			break;
 
 		case WT_DOWNLOADS:
@@ -349,44 +351,44 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 			Assert( 0 );
 			break;
 #else
-			m_Frames[wt] = new Downloads(this, "Downloads");
+			m_Frames[wt] = new Downloads( this, "Downloads" );
 #endif
 			break;
 
 		case WT_GAMELOBBY:
-			m_Frames[wt] = new GameLobby(this, "GameLobby");
+			m_Frames[wt] = new GameLobby( this, "GameLobby" );
 			break;
 
 		case WT_GAMEOPTIONS:
-			m_Frames[wt] = new GameOptions(this, "GameOptions");
+			m_Frames[wt] = new GameOptions( this, "GameOptions" );
 			break;
 
 		case WT_GAMESETTINGS:
-			m_Frames[wt] = new GameSettings(this, "GameSettings");
+			m_Frames[wt] = new GameSettings( this, "GameSettings" );
 			break;
 
 		case WT_GENERICCONFIRMATION:
-			m_Frames[wt] = new GenericConfirmation(this, "GenericConfirmation");
+			m_Frames[wt] = new GenericConfirmation( this, "GenericConfirmation" );
 			break;
 
 		case WT_INGAMEDIFFICULTYSELECT:
-			m_Frames[wt] = new InGameDifficultySelect(this, "InGameDifficultySelect");
+			m_Frames[wt] = new InGameDifficultySelect( this, "InGameDifficultySelect" );
 			break;
 
 		case WT_INGAMEMAINMENU:
-			m_Frames[wt] = new InGameMainMenu(this, "InGameMainMenu");
+			m_Frames[wt] = new InGameMainMenu( this, "InGameMainMenu" );
 			break;
 
 		case WT_INGAMECHAPTERSELECT:
-			m_Frames[wt] = new InGameChapterSelect(this, "InGameChapterSelect");
+			m_Frames[wt] = new InGameChapterSelect( this, "InGameChapterSelect" );
 			break;
 
 		case WT_INGAMEKICKPLAYERLIST:
-			m_Frames[wt] = new InGameKickPlayerList(this, "InGameKickPlayerList");
+			m_Frames[wt] = new InGameKickPlayerList( this, "InGameKickPlayerList" );
 			break;
 
 		case WT_VOTEOPTIONS:
-			m_Frames[wt] = new VoteOptions(this, "VoteOptions");
+			m_Frames[wt] = new VoteOptions( this, "VoteOptions" );
 			break;
 
 		case WT_KEYBOARDMOUSE:
@@ -395,7 +397,7 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 			Assert( 0 );
 			break;
 #else
-			m_Frames[wt] = new VKeyboard(this, "VKeyboard");
+			m_Frames[wt] = new VKeyboard( this, "VKeyboard" );
 #endif
 			break;
 
@@ -408,39 +410,39 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 			break;
 
 		case WT_MAINMENU:
-			m_Frames[wt] = new MainMenu(this, "MainMenu");
+			m_Frames[wt] = new MainMenu( this, "MainMenu" );
 			break;
 
 		case WT_MULTIPLAYER:
-			m_Frames[wt] = new Multiplayer(this, "Multiplayer");
+			m_Frames[wt] = new Multiplayer( this, "Multiplayer" );
 			break;
 
 		case WT_OPTIONS:
-			m_Frames[wt] = new Options(this, "Options");
+			m_Frames[wt] = new Options( this, "Options" );
 			break;
 
 		case WT_SIGNINDIALOG:
-			m_Frames[wt] = new SignInDialog(this, "SignInDialog");
+			m_Frames[wt] = new SignInDialog( this, "SignInDialog" );
 			break;
 
 		case WT_GENERICWAITSCREEN:
-			m_Frames[ wt ] = new GenericWaitScreen( this, "GenericWaitScreen" );
+			m_Frames[wt] = new GenericWaitScreen( this, "GenericWaitScreen" );
 			break;
 
 		case WT_PASSWORDENTRY:
-			m_Frames[ wt ] = new PasswordEntry( this, "PasswordEntry" );
+			m_Frames[wt] = new PasswordEntry( this, "PasswordEntry" );
 			break;
 
 		case WT_ATTRACTSCREEN:
-			m_Frames[ wt ] = new CAttractScreen( this, "AttractScreen" );
+			m_Frames[wt] = new CAttractScreen( this, "AttractScreen" );
 			break;
 
 		case WT_ALLGAMESEARCHRESULTS:
-			m_Frames[ wt ] = new FoundGames( this, "FoundGames" );
+			m_Frames[wt] = new FoundGames( this, "FoundGames" );
 			break;
 
 		case WT_FOUNDPUBLICGAMES:
-			m_Frames[ wt ] = new FoundPublicGames( this, "FoundPublicGames" );
+			m_Frames[wt] = new FoundPublicGames( this, "FoundPublicGames" );
 			break;
 
 		case WT_TRANSITIONSCREEN:
@@ -448,7 +450,7 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 			break;
 
 		case WT_VIDEO:
-			m_Frames[wt] = new Video(this, "video");
+			m_Frames[wt] = new Video( this, "video" );
 			break;
 
 		case WT_STEAMCLOUDCONFIRM:
@@ -457,12 +459,12 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 			Assert( 0 );
 			break;
 #else
-			m_Frames[wt] = new SteamCloudConfirmation(this, "SteamCloudConfirmation");
+			m_Frames[wt] = new SteamCloudConfirmation( this, "SteamCloudConfirmation" );
 #endif
 			break;
 
 		case WT_STEAMGROUPSERVERS:
-			m_Frames[ wt ] = new FoundGroupGames( this, "FoundGames" );
+			m_Frames[wt] = new FoundGroupGames( this, "FoundGames" );
 			break;
 
 		case WT_CUSTOMCAMPAIGNS:
@@ -471,7 +473,7 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 			Assert( 0 );
 			break;
 #else
-			m_Frames[ wt ] = new CustomCampaigns( this, "CustomCampaigns" );
+			m_Frames[wt] = new CustomCampaigns( this, "CustomCampaigns" );
 #endif
 			break;
 
@@ -481,7 +483,7 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 			Assert( 0 );
 			break;
 #else
-			m_Frames[ wt ] = new DownloadCampaign( this, "DownloadCampaign" );
+			m_Frames[wt] = new DownloadCampaign( this, "DownloadCampaign" );
 #endif
 			break;
 
@@ -567,6 +569,14 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 
 		case WT_CONTRACTS:
 			m_Frames[wt] = new Contracts( this, "Contracts" );
+			break;
+
+		case WT_COLLECTIONS:
+			m_Frames[wt] = new TabbedGridDetails();
+			break;
+
+		case WT_MISSIONCHOOSER:
+			m_Frames[wt] = new CASW_Mission_Chooser_Frame();
 			break;
 
 		default:
