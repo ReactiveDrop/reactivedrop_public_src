@@ -6001,23 +6001,23 @@ CON_COMMAND( cl_loadout_random, "Get a random loadout." )
 		if ( !pMR )
 			continue;
 
-		if ( pMR->GetCommander() == pPlayer )
-		{
-			int iProfileIndex = pMR->GetProfileIndex();
-			if ( iProfileIndex == -1 )
-				continue;
+		if ( pMR->GetCommander() != pPlayer )
+			continue;
 
-			int iWpn0 = ASWGameRules()->GetRandomValidWeaponSelectionRegular( pMR );
-			CASW_EquipItem *pEquip0 = g_ASWEquipmentList.GetRegular( iWpn0 );
+		int iProfileIndex = pMR->GetProfileIndex();
+		if ( iProfileIndex == -1 )
+			continue;
 
-			// check for uniques in this way, since we are changing both regular slots at once, MarineCanSelectInLobby will not work
-			int iWpn1 = ASWGameRules()->GetRandomValidWeaponSelectionRegular( pMR, pEquip0->m_bIsUnique ? iWpn0 : -1 );
-			int iWpn2 = ASWGameRules()->GetRandomValidWeaponSelectionExtra( pMR );
+		int iWpn0 = ASWGameRules()->GetRandomValidWeaponSelectionRegular( pMR );
+		CASW_EquipItem *pEquip0 = g_ASWEquipmentList.GetRegular( iWpn0 );
 
-			char buffer[64];
-			V_snprintf( buffer, sizeof(buffer), "cl_loadouta %d %d %d %d %d %d %d %d", iProfileIndex, -1, iWpn0, iWpn1, iWpn2, -1, -1, -1 );
-			engine->ClientCmd( buffer );
-		}
+		// check for uniques in this way, since we are changing both regular slots at once, MarineCanSelectInLobby will not work
+		int iWpn1 = ASWGameRules()->GetRandomValidWeaponSelectionRegular( pMR, pEquip0->m_bIsUnique ? iWpn0 : -1 );
+		int iWpn2 = ASWGameRules()->GetRandomValidWeaponSelectionExtra( pMR );
+
+		char buffer[64];
+		V_snprintf( buffer, sizeof(buffer), "cl_loadouta %d %d %d %d %d %d %d %d", iProfileIndex, -1, iWpn0, iWpn1, iWpn2, -1, -1, -1 );
+		engine->ClientCmd( buffer );
 	}
 }
 
