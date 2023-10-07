@@ -1480,38 +1480,6 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 		else 
 			return false;
 	}
-	else if ( FStrEq( pcmd, "cl_loadout_random" ) )
-	{
-		if ( ASWDeathmatchMode() || ASWGameRules()->GetGameState() == ASW_GS_BRIEFING )
-		{
-			for ( int i = 0; i < ASWGameResource()->GetMaxMarineResources(); i++ )
-			{
-				CASW_Marine_Resource* pMR = ASWGameResource()->GetMarineResource( i );
-				if ( !pMR )
-					continue;
-
-				if ( pMR->GetCommander() == this )
-				{
-					int iProfileIndex = pMR->GetProfileIndex();
-					if ( iProfileIndex == -1 )
-						continue;
-					
-					int iEquipIndex = ASWGameRules()->GetRandomValidWeaponSelectionRegular( pMR );
-					ASWGameRules()->LoadoutSelect( this, iProfileIndex, 0, iEquipIndex, -1 );
-
-					iEquipIndex = ASWGameRules()->GetRandomValidWeaponSelectionRegular( pMR );
-					ASWGameRules()->LoadoutSelect( this, iProfileIndex, 1, iEquipIndex, -1 );
-
-					iEquipIndex = ASWGameRules()->GetRandomValidWeaponSelectionExtra( pMR );
-					ASWGameRules()->LoadoutSelect( this, iProfileIndex, 2, iEquipIndex, -1 );
-				}
-			}
-
-			return true;
-		}
-		else 
-			return false;
-	}
 	// reactivedrop: moved here from case ASW_GS_BRIEFING
 	// to allow onlsaught toggling in PvP
 	else if ( FStrEq( pcmd, "cl_onslaught") )

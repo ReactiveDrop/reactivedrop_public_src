@@ -454,7 +454,7 @@ public:
 	CNetworkVar(bool, m_bCheated);
 	
 	// pickups
-	int GetRandomValidWeaponSelectionRegular(CASW_Marine_Resource* pMarineResource);
+	int GetRandomValidWeaponSelectionRegular(CASW_Marine_Resource* pMarineResource, int nNotAllowed = -1 );
 	int GetRandomValidWeaponSelectionExtra(CASW_Marine_Resource* pMarineResource);
 	virtual bool MarineCanPickup(CASW_Marine_Resource* pMarineResource, const char* szWeaponClass, const char* szSwappingClass=NULL);
 	virtual bool MarineCanSelectInLobby(CASW_Marine_Resource* pMarineResource, const char* szWeaponClass, const char* szSwappingClass = NULL);

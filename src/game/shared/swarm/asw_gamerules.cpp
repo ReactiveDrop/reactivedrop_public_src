@@ -26,6 +26,7 @@
 	#include "rd_rich_presence.h"
 	#include "c_world.h"
 	#include "rd_player_reporting.h"
+	#include "asw_util_shared.h"
 #else
 	#include "asw_marine_resource.h"
 	#include "player.h"
@@ -5985,9 +5986,44 @@ static bool CanPickupUnrestrictedWeapon( int iWeaponIndex, const ConVar &unrestr
 	return false;
 }
 
-#ifdef GAME_DLL
+#ifdef CLIENT_DLL
 
-int CAlienSwarm::GetRandomValidWeaponSelectionRegular( CASW_Marine_Resource *pMarineResource )
+CON_COMMAND( cl_loadout_random, "Get a random loadout." )
+{
+	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+
+	if ( ASWDeathmatchMode() || ASWGameRules()->GetGameState() == ASW_GS_BRIEFING )
+	{
+		for ( int i = 0; i < ASWGameResource()->GetMaxMarineResources(); i++ )
+		{
+			CASW_Marine_Resource* pMR = ASWGameResource()->GetMarineResource( i );
+			if ( !pMR )
+				continue;
+
+			if ( pMR->GetCommander() == pPlayer )
+			{
+				int iProfileIndex = pMR->GetProfileIndex();
+				if ( iProfileIndex == -1 )
+					continue;
+
+				int iWpn0 = ASWGameRules()->GetRandomValidWeaponSelectionRegular( pMR );
+				CASW_EquipItem *pEquip0 = g_ASWEquipmentList.GetRegular( iWpn0 );
+
+				// check for uniques in this way, since we are changing both regular slots at once, MarineCanSelectInLobby will not work
+				int iWpn1 = ASWGameRules()->GetRandomValidWeaponSelectionRegular( pMR, pEquip0->m_bIsUnique ? iWpn0 : -1 );
+				int iWpn2 = ASWGameRules()->GetRandomValidWeaponSelectionExtra( pMR );
+
+				char buffer[64];
+				V_snprintf( buffer, sizeof(buffer), "cl_loadouta %d %d %d %d %d %d %d %d", iProfileIndex, -1, iWpn0, iWpn1, iWpn2, -1, -1, -1 );
+				engine->ClientCmd( buffer );
+			}
+		}
+	}
+}
+
+extern ConVar asw_unlock_all_weapons;
+
+int CAlienSwarm::GetRandomValidWeaponSelectionRegular( CASW_Marine_Resource *pMarineResource, int nNotAllowed )
 {
 	int nRegular = g_ASWEquipmentList.GetNumRegular( true );
 
@@ -5997,13 +6033,30 @@ int CAlienSwarm::GetRandomValidWeaponSelectionRegular( CASW_Marine_Resource *pMa
 		i++;
 
 		int nRandom = random->RandomInt( 0, nRegular - 1 );
+		CASW_EquipItem *pRegular = g_ASWEquipmentList.GetRegular( nRandom );
 
+		// check for hidden weapons
+		if ( !pRegular->m_bSelectableInBriefing && !rd_weapons_show_hidden.GetBool() )
+			continue;
+
+		if ( nRandom == nNotAllowed )
+			continue;
+
+		bool bLevelLocked = !asw_unlock_all_weapons.GetBool() && !UTIL_ASW_CommanderLevelAtLeast( NULL, GetWeaponLevelRequirement( pRegular->m_szEquipClass ) - 1, -1 );
+
+		// check for level requirement
+		if ( bLevelLocked )
+			continue;
+
+		// check for selection rules - weapon requirement and convars
 		if ( nRandom != ApplyWeaponSelectionRules( 0, nRandom ) )
 			continue;
 
-		CASW_EquipItem *pRegular = g_ASWEquipmentList.GetRegular( nRandom );
-		if ( MarineCanSelectInLobby( pMarineResource, pRegular->m_szEquipClass, NULL ) )
-			return nRandom;
+		// check for class requirements and uniques
+		if ( !MarineCanSelectInLobby( pMarineResource, pRegular->m_szEquipClass, NULL ) )
+			continue;
+
+		return nRandom;
 	}
 
 	return 0;
@@ -6019,19 +6072,33 @@ int CAlienSwarm::GetRandomValidWeaponSelectionExtra( CASW_Marine_Resource *pMari
 		i++;
 		
 		int nRandom = random->RandomInt( 0, nExtra - 1 );
+		CASW_EquipItem *pExtra = g_ASWEquipmentList.GetExtra( nRandom );
 
+		// check for hidden weapons
+		if ( !pExtra->m_bSelectableInBriefing )
+			continue;
+
+		bool bLevelLocked = !asw_unlock_all_weapons.GetBool() && !UTIL_ASW_CommanderLevelAtLeast( NULL, GetWeaponLevelRequirement( pExtra->m_szEquipClass ) - 1, -1 );
+
+		// check for level requirement
+		if ( bLevelLocked )
+			continue;
+
+		// check for selection rules - weapon requirement and convars
 		if ( nRandom != ApplyWeaponSelectionRules( 2, nRandom ) )
 			continue;
 
-		CASW_EquipItem *pExtra = g_ASWEquipmentList.GetExtra( nRandom );
-		if ( MarineCanSelectInLobby( pMarineResource, pExtra->m_szEquipClass, NULL ) )
-			return nRandom;
+		// check for class requirements
+		if ( !MarineCanSelectInLobby( pMarineResource, pExtra->m_szEquipClass, NULL ) )
+			continue;
+
+		return nRandom;
 	}
 
 	return 0;
 }
 
-#endif	// GAME_DLL
+#endif // CLIENT_DLL
 
 bool CAlienSwarm::MarineCanPickup( CASW_Marine_Resource *pMarineResource, const char *szWeaponClass, const char *szSwappingClass )
 {
