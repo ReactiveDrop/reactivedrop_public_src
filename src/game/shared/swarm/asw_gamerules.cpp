@@ -5985,6 +5985,54 @@ static bool CanPickupUnrestrictedWeapon( int iWeaponIndex, const ConVar &unrestr
 	return false;
 }
 
+#ifdef GAME_DLL
+
+int CAlienSwarm::GetRandomValidWeaponSelectionRegular( CASW_Marine_Resource *pMarineResource )
+{
+	int nRegular = g_ASWEquipmentList.GetNumRegular( true );
+
+	int i = 0;
+	while ( i < 100 )	// 100 attempts to get a valid index
+	{
+		i++;
+
+		int nRandom = random->RandomInt( 0, nRegular - 1 );
+
+		if ( nRandom != ApplyWeaponSelectionRules( 0, nRandom ) )
+			continue;
+
+		CASW_EquipItem *pRegular = g_ASWEquipmentList.GetRegular( nRandom );
+		if ( MarineCanSelectInLobby( pMarineResource, pRegular->m_szEquipClass, NULL ) )
+			return nRandom;
+	}
+
+	return 0;
+}
+
+int CAlienSwarm::GetRandomValidWeaponSelectionExtra( CASW_Marine_Resource *pMarineResource )
+{
+	int nExtra = g_ASWEquipmentList.GetNumExtra( true );
+
+	int i = 0;
+	while ( i < 100 )	// 100 attempts to get a valid index
+	{
+		i++;
+		
+		int nRandom = random->RandomInt( 0, nExtra - 1 );
+
+		if ( nRandom != ApplyWeaponSelectionRules( 2, nRandom ) )
+			continue;
+
+		CASW_EquipItem *pExtra = g_ASWEquipmentList.GetExtra( nRandom );
+		if ( MarineCanSelectInLobby( pMarineResource, pExtra->m_szEquipClass, NULL ) )
+			return nRandom;
+	}
+
+	return 0;
+}
+
+#endif	// GAME_DLL
+
 bool CAlienSwarm::MarineCanPickup( CASW_Marine_Resource *pMarineResource, const char *szWeaponClass, const char *szSwappingClass )
 {
 	if ( !pMarineResource )
