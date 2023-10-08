@@ -354,7 +354,8 @@ void QuickJoinPanel::OnThink()
 
 		UpdateNumGamesFoundLabel();
 
-		SetVisible( m_FriendInfo.Count() > 0 );
+		MainMenu *pMainMenu = dynamic_cast< MainMenu * >( GetParent() );
+		SetVisible( m_FriendInfo.Count() > 0 && ( !pMainMenu || !pMainMenu->m_bIsStub ) );
 
 		// Fade out last item completely since we wrapped around and done!
 		pItem = m_GplQuickJoinList->GetPanelItem( ( iNumItems > 1 ) ? ( iNumItems - 1 ) : ( 1 ) );

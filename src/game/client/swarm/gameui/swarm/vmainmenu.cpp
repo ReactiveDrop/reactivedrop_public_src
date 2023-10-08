@@ -359,7 +359,7 @@ void MainMenu::LoadLayout()
 		m_bIsLegacy = true;
 	}
 
-	if ( !g_pMatchFramework || !g_pMatchFramework->GetMatchSystem() || !g_pMatchFramework->GetMatchSystem()->GetPlayerManager() || !g_pMatchFramework->GetMatchSystem()->GetPlayerManager()->GetLocalPlayer( 0 ) || !SteamApps() || !SteamFriends() || !SteamHTTP() || !SteamInput() || !SteamMatchmaking() || !SteamMatchmakingServers() || !SteamRemoteStorage() || !SteamUGC() || !SteamUser() || !SteamUserStats() || !SteamUtils() )
+	if ( CommandLine()->FindParm( "-teststeamapiloadfail" ) || !g_pMatchFramework || !g_pMatchFramework->GetMatchSystem() || !g_pMatchFramework->GetMatchSystem()->GetPlayerManager() || !g_pMatchFramework->GetMatchSystem()->GetPlayerManager()->GetLocalPlayer(0) || !SteamApps() || !SteamFriends() || !SteamHTTP() || !SteamInput() || !SteamMatchmaking() || !SteamMatchmakingServers() || !SteamRemoteStorage() || !SteamUGC() || !SteamUser() || !SteamUserStats() || !SteamUtils())
 	{
 		pSettings = "Resource/UI/BaseModUI/MainMenuStub.res";
 		m_bIsStub = true;
@@ -692,7 +692,7 @@ void MainMenu::OnCommand( const char *command )
 		data.pWindowTitle = "#rd_no_steam_service";
 		data.pMessageText = "#rd_no_steam_solutions";
 
-		if ( SteamApps() && SteamFriends() && SteamHTTP() && SteamInput() && SteamMatchmaking() && SteamMatchmakingServers() && SteamRemoteStorage() && SteamUGC() && SteamUser() && SteamUserStats() && SteamUtils() )
+		if ( !CommandLine()->FindParm( "-teststeamapiloadfail" ) && SteamApps() && SteamFriends() && SteamHTTP() && SteamInput() && SteamMatchmaking() && SteamMatchmakingServers() && SteamRemoteStorage() && SteamUGC() && SteamUser() && SteamUserStats() && SteamUtils() )
 		{
 			// The NO STEAM main menu is active, but the Steam API is available. This should never happen. Please contact https://reactivedrop.com/feedback
 			data.pMessageText = "#rd_no_steam_solutions_api";

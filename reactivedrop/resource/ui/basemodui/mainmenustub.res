@@ -52,7 +52,7 @@
 		"pinCorner"				"0"
 		"visible"				"1"
 		"enabled"				"1"
-		"tabPosition"			"0"
+		"tabPosition"			"1"
 		"navUp"					"BtnStub"
 		"labelText"				"#L4D360UI_MainMenu_Quit"
 		"tooltiptext"			"#L4D360UI_MainMenu_Quit_Tip"
