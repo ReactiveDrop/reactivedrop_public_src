@@ -413,17 +413,24 @@ public:
 		BaseClass::OnThink();
 
 		int iStyleOverride = -1;
+		bool bAnyFocus = false;
 
 		for ( int i = 0; i < m_nOptions; i++ )
 		{
 			if ( m_pButton[i]->GetCurrentState() == BaseModUI::BaseModHybridButton::Focus || m_pButton[i]->GetCurrentState() == BaseModUI::BaseModHybridButton::FocusDisabled )
 			{
 				iStyleOverride = m_iStyle[i];
+				bAnyFocus = true;
 				break;
 			}
 		}
 
 		assert_cast< CRD_Collection_Details_Inventory * >( m_pEntry->GetTab()->m_pDetails )->SetItemStyleOverride( m_pEntry, iStyleOverride );
+
+		if ( !bAnyFocus )
+		{
+			m_pButton[0]->RequestFocus();
+		}
 	}
 
 	void OnCommand( const char *command ) override
