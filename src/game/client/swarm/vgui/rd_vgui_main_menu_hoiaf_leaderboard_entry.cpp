@@ -1,5 +1,6 @@
 #include "cbase.h"
 #include "rd_vgui_main_menu_hoiaf_leaderboard_entry.h"
+#include "rd_vgui_main_menu_top_bar.h"
 #include <vgui/ILocalize.h>
 #include <vgui/ISurface.h>
 #include "c_asw_steamstats.h"
@@ -125,4 +126,16 @@ void CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry_Large::ApplySettings( KeyValues 
 		m_nTextFontHeight = vgui::surface()->GetFontTall( m_hTextFont );
 		SetFont( m_hTextFont );
 	}
+}
+
+vgui::Panel *CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry_Large::NavigateUp()
+{
+	vgui::Panel *target = BaseClass::NavigateUp();
+	if ( CRD_VGUI_Main_Menu_Top_Bar *pTopBar = dynamic_cast< CRD_VGUI_Main_Menu_Top_Bar * >( target ) )
+	{
+		// since we're on the right side of the screen, navigate to the right side of the top bar.
+		pTopBar->NavigateToChild( pTopBar->m_pBtnQuit );
+	}
+
+	return target;
 }

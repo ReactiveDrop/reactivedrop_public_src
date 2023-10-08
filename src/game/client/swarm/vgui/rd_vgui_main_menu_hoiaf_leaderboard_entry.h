@@ -40,5 +40,6 @@ public:
 	~CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry_Large();
 
 	void ApplySettings( KeyValues *pSettings ) override;
+	vgui::Panel *NavigateUp() override;
 };
 }
