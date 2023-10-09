@@ -5,6 +5,7 @@
 #include "asw_marine_skills.h"
 #include "asw_marine_profile.h"
 #include "asw_weapon_parse.h"
+#include "asw_equipment_list.h"
 #include "util_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -125,12 +126,16 @@ bool CASW_Weapon::KeyValue( const char *szKeyName, const char *szValue )
 	}
 	if ( !V_stricmp( szKeyName, "Clips" ) )
 	{
-		SetPrimaryAmmoCount( V_atoi( szValue ) * GetMaxClip1() );
+		// we don't have m_pEquipItem set at this point, so we need to get it ourselves rather than calling GetMaxClip1.
+		CASW_EquipItem *pEquipItem = g_ASWEquipmentList.GetEquipItemFor( GetClassname() );
+		Assert( pEquipItem );
+		if ( pEquipItem )
+			SetPrimaryAmmoCount( V_atoi( szValue ) * pEquipItem->MaxAmmo1() );
 		return true;
 	}
 	if ( !V_stricmp( szKeyName, "SecondaryBullets" ) )
 	{
-		SetClip1( V_atoi( szValue ) );
+		SetClip2( V_atoi( szValue ) );
 		return true;
 	}
 
