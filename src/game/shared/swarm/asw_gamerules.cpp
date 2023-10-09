@@ -3613,7 +3613,7 @@ bool CAlienSwarm::SpawnMarineAt( CASW_Marine_Resource * RESTRICT pMR, const Vect
 
 	pMR->SetMarineEntity(pMarine);
 
-	if ( ASWHoldoutMode() && bResurrection )
+	if ( bResurrection )
 	{
 		// give the pMarine the equipment selected on the briefing screen
 		for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++ iWpnSlot )
@@ -3664,10 +3664,14 @@ bool CAlienSwarm::SpawnMarineAt( CASW_Marine_Resource * RESTRICT pMR, const Vect
 			}
 		}
 
-		// store off his initial equip selection for stats tracking
-		for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++ iWpnSlot )
+		// store off the initial equip selection for stats tracking
+		// in deathmatch, only do this if we don't already have stored values
+		for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++iWpnSlot )
 		{
-			pMR->m_iInitialWeaponsInSlots.Set( iWpnSlot, pMR->m_iWeaponsInSlots.Get( iWpnSlot ) );
+			if ( pMR->m_iInitialWeaponsInSlots[iWpnSlot] == -1 || !ASWDeathmatchMode() )
+			{
+				pMR->m_iInitialWeaponsInSlots.Set( iWpnSlot, pMR->m_iWeaponsInSlots.Get( iWpnSlot ) );
+			}
 		}
 	}
 
