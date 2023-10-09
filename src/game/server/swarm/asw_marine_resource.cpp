@@ -12,6 +12,7 @@
 #include "asw_gamerules.h"
 #include "vgui/ILocalize.h"
 #include "particle_parse.h"
+#include "asw_deathmatch_mode_light.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -380,18 +381,21 @@ void CASW_Marine_Resource::UpdateWeaponIndices()
 	if ( !m_MarineEntity )
 		return;
 
-	for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++iWpnSlot )
+	if ( !ASWDeathmatchMode() )
 	{
-		int idx = -1;
-		if ( CBaseCombatWeapon *pWpn = m_MarineEntity->GetWeapon( iWpnSlot ) )
+		for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++iWpnSlot )
 		{
-			const char *szClassName = pWpn->GetClassname();
-			idx = g_ASWEquipmentList.GetIndexForSlot( iWpnSlot, szClassName );
-
-			// updating current weapon into m_iWeaponsInSlots
-			if ( idx != m_iWeaponsInSlots.Get( iWpnSlot ) )
+			int idx = -1;
+			if ( CBaseCombatWeapon *pWpn = m_MarineEntity->GetWeapon( iWpnSlot ) )
 			{
-				m_iWeaponsInSlots.Set( iWpnSlot, idx );
+				const char *szClassName = pWpn->GetClassname();
+				idx = g_ASWEquipmentList.GetIndexForSlot( iWpnSlot, szClassName );
+
+				// updating current weapon into m_iWeaponsInSlots
+				if ( idx != m_iWeaponsInSlots.Get( iWpnSlot ) )
+				{
+					m_iWeaponsInSlots.Set( iWpnSlot, idx );
+				}
 			}
 		}
 	}
