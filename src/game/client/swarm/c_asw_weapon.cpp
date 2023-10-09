@@ -537,6 +537,19 @@ void C_ASW_Weapon::ClientThink()
 	{
 		SetBodygroup( m_nMagazineBodyGroup, IsReloading() ? 1 : 0 );
 	}
+
+	if ( ASWDeathmatchMode() && ViewModelIsMarineAttachment() )
+	{
+		C_ASW_Marine *pMarine = GetMarine();
+		if ( pMarine )
+		{
+			SetRenderColor( pMarine->GetRenderColorR(), pMarine->GetRenderColorG(), pMarine->GetRenderColorB() );
+		}
+		else
+		{
+			SetRenderColor( 255, 255, 255 );
+		}
+	}
 }
 
 bool C_ASW_Weapon::ShouldDraw()
