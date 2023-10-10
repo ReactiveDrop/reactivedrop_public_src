@@ -112,6 +112,11 @@ const char *( *const wine_get_version )( void ) = static_cast< const char *( * )
 #endif
 
 static bool s_bMainMenuShown = false;
+static uint16_t s_iLastQuickJoinPublicVisible = 0;
+static uint16_t s_iLastQuickJoinFriendsVisible = 0;
+static int s_nHoIAFCachedEntries = 0;
+static LeaderboardEntry_t s_HoIAFLeaderboardEntryCache[10];
+static LeaderboardScoreDetails_Points_t s_HoIAFLeaderboardDetailsCache[10];
 
 //=============================================================================
 MainMenu::MainMenu( Panel *parent, const char *panelName ):
@@ -321,8 +326,19 @@ void MainMenu::Activate()
 	}
 
 	ISteamUserStats *pUserStats = SteamUserStats();
-	if ( pUserStats && rd_hoiaf_leaderboard_on_main_menu.GetBool() )
+	if ( pUserStats && !m_bIsLegacy && rd_hoiaf_leaderboard_on_main_menu.GetBool() )
 	{
+		for ( int i = 0; i < s_nHoIAFCachedEntries; i++ )
+		{
+			m_pTopLeaderboardEntries[i]->SetFromEntry( s_HoIAFLeaderboardEntryCache[i], s_HoIAFLeaderboardDetailsCache[i] );
+			m_pTopLeaderboardEntries[i]->SetVisible( true );
+		}
+
+		for ( int i = s_nHoIAFCachedEntries; i < NELEMS( m_pTopLeaderboardEntries ); i++ )
+		{
+			m_pTopLeaderboardEntries[i]->SetVisible( false );
+		}
+
 		SteamAPICall_t hCall = pUserStats->DownloadLeaderboardEntries( STEAM_LEADERBOARD_HOIAF_CURRENT_SEASON, rd_hoiaf_leaderboard_friends_only.GetBool() ? k_ELeaderboardDataRequestFriends : k_ELeaderboardDataRequestGlobal, 1, 10 );
 		m_HoIAFTop10Callback.Set( hCall, this, &MainMenu::OnHoIAFTop10ScoresDownloaded );
 	}
@@ -1509,6 +1525,9 @@ void MainMenu::OnThink()
 		m_InactiveHideQuickJoinPublic.Update( m_pPnlQuickJoinPublic->IsVisible() );
 		m_InactiveHideQuickJoinFriends.Update( m_pPnlQuickJoin->IsVisible() );
 
+		s_iLastQuickJoinPublicVisible = m_InactiveHideQuickJoinPublic.m_iGlow;
+		s_iLastQuickJoinFriendsVisible = m_InactiveHideQuickJoinFriends.m_iGlow;
+
 		uint16 iSlideState = m_iInactiveHideMainMenu;
 		m_pBranchDisclaimer->SetAlpha( RemapValClamped( iSlideState, 32768, 65535, 0, 255 ) );
 
@@ -1638,6 +1657,8 @@ void MainMenu::OnOpen()
 	}
 
 	m_iInactiveHideMainMenu = s_bMainMenuShown ? 65535 : 0;
+	m_InactiveHideQuickJoinPublic.m_iGlow = s_iLastQuickJoinPublicVisible;
+	m_InactiveHideQuickJoinFriends.m_iGlow = s_iLastQuickJoinFriendsVisible;
 	if ( s_bMainMenuShown )
 		m_flLastActiveTime = Plat_FloatTime();
 
@@ -2017,23 +2038,22 @@ void MainMenu::MaybeShowTooltip( vgui::Panel *pPanel, const char *szTitle, const
 
 void MainMenu::OnHoIAFTop10ScoresDownloaded( LeaderboardScoresDownloaded_t *pParam, bool bIOFailure )
 {
+	s_nHoIAFCachedEntries = 0;
 	for ( int i = 0; i < NELEMS( m_pTopLeaderboardEntries ); i++ )
 	{
-		m_pTopLeaderboardEntries[i]->ClearData();
 		m_pTopLeaderboardEntries[i]->SetVisible( false );
 	}
 
 	if ( !bIOFailure && !m_bIsStub )
 	{
+		s_nHoIAFCachedEntries = MIN( pParam->m_cEntryCount, NELEMS( m_pTopLeaderboardEntries ) );
 		for ( int i = 0; i < pParam->m_cEntryCount && i < NELEMS( m_pTopLeaderboardEntries ); i++ )
 		{
-			LeaderboardEntry_t entry;
-			LeaderboardScoreDetails_Points_t details;
-			bool bOK = SteamUserStats()->GetDownloadedLeaderboardEntry( pParam->m_hSteamLeaderboardEntries, i, &entry, reinterpret_cast< int32 * >( &details ), sizeof( details ) / sizeof( int32 ) );
+			bool bOK = SteamUserStats()->GetDownloadedLeaderboardEntry( pParam->m_hSteamLeaderboardEntries, i, &s_HoIAFLeaderboardEntryCache[i], reinterpret_cast< int32 * >( &s_HoIAFLeaderboardDetailsCache[i] ), sizeof( s_HoIAFLeaderboardDetailsCache[i] ) / sizeof( int32 ) );
 			Assert( bOK );
-			Assert( entry.m_cDetails == sizeof( details ) / sizeof( int32 ) );
+			Assert( s_HoIAFLeaderboardEntryCache[i].m_cDetails == sizeof( s_HoIAFLeaderboardDetailsCache[i] ) / sizeof( int32 ) );
 
-			m_pTopLeaderboardEntries[i]->SetFromEntry( entry, details );
+			m_pTopLeaderboardEntries[i]->SetFromEntry( s_HoIAFLeaderboardEntryCache[i], s_HoIAFLeaderboardDetailsCache[i] );
 			m_pTopLeaderboardEntries[i]->SetVisible( !m_bIsLegacy );
 		}
 	}

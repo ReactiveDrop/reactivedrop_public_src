@@ -91,6 +91,8 @@ void CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry::SetFromEntry( const Leaderboard
 	g_pVGuiLocalize->ConstructString( wszRankNumber, sizeof( wszRankNumber ), g_pVGuiLocalize->Find( "#rd_main_menu_hoiaf_place_number" ), 1, UTIL_RD_CommaNumber( entry.m_nGlobalRank ) );
 	m_pLblRankNumber->SetText( wszRankNumber );
 	m_pLblScore->SetText( UTIL_RD_CommaNumber( entry.m_nScore ) );
+
+	InvalidateLayout();
 }
 
 void CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry::ClearData()
@@ -100,6 +102,8 @@ void CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry::ClearData()
 	m_pAvatar->SetAvatarBySteamID( NULL );
 	m_pLblRankNumber->SetText( L"" );
 	m_pLblScore->SetText( L"" );
+
+	InvalidateLayout();
 }
 
 CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry_Large::CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry_Large( vgui::Panel *parent, const char *panelName, vgui::Panel *pActionSignalTarget, const char *pCmd ) :

@@ -592,7 +592,11 @@ TGD_Grid::~TGD_Grid()
 
 void TGD_Grid::ApplySchemeSettings( vgui::IScheme *pScheme )
 {
+	bool bWasVisible = IsVisible();
+
 	LoadControlSettings( m_pScrollBar ? "Resource/UI/TGD_Grid.res" : "Resource/UI/CGD_Grid.res" );
+
+	SetVisible( bWasVisible );
 
 	BaseClass::ApplySchemeSettings( pScheme );
 
@@ -710,7 +714,7 @@ void TGD_Grid::PerformLayout()
 		}
 	}
 
-	if ( !bAnyFocus && ( m_pScrollBar || m_pParent->m_pParent->m_hCurrentTab.Get() == m_pParent ) )
+	if ( !bAnyFocus && m_pParent->m_pParent->m_hCurrentTab.Get() == m_pParent )
 	{
 		if ( m_Entries.Count() > m_iLastFocus )
 		{
