@@ -190,6 +190,7 @@ class CRD_VGUI_Loadout_Slot_Inventory : public CRD_VGUI_Loadout_Slot
 public:
 	CRD_VGUI_Loadout_Slot_Inventory( vgui::Panel *parent, const char *panelName, ConVar *pInventoryVar, const char *szSlot );
 
+	void OnCommand( const char *command ) override;
 	bool PaintItemFullSize() override { return true; }
 
 	char m_szSlot[64];

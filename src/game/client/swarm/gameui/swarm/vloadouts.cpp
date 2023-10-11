@@ -824,6 +824,76 @@ CRD_VGUI_Loadout_Slot_Inventory::CRD_VGUI_Loadout_Slot_Inventory( vgui::Panel *p
 	V_strncpy( m_szSlot, szSlot, sizeof( m_szSlot ) );
 }
 
+void CRD_VGUI_Loadout_Slot_Inventory::OnCommand( const char *command )
+{
+	if ( !V_stricmp( command, "Click" ) )
+	{
+		CBaseModFrame *pCaller = CBaseModPanel::GetSingleton().GetWindow( WT_LOADOUTS );
+		LaunchCollectionsFrame();
+
+		TabbedGridDetails *pCollections = assert_cast< TabbedGridDetails * >( CBaseModPanel::GetSingleton().GetWindow( WT_COLLECTIONS ) );
+		Assert( pCollections );
+		if ( pCollections )
+		{
+			Assert( pCaller );
+			if ( pCaller )
+			{
+				pCollections->SetNavBack( pCaller );
+			}
+
+			CRD_Collection_Tab_Inventory *pFoundTab = NULL;
+
+			FOR_EACH_VEC( pCollections->m_Tabs, i )
+			{
+				CRD_Collection_Tab_Inventory *pTab = assert_cast< CRD_Collection_Tab_Inventory * >( pCollections->m_Tabs[i] );
+				if ( !V_strcmp( pTab->m_szSlot, m_szSlot ) )
+				{
+					pCollections->ActivateTab( pTab );
+					pFoundTab = pTab;
+
+					break;
+				}
+
+				for ( int j = 0; j < NELEMS( ReactiveDropInventory::g_InventorySlotAliases ); j++ )
+				{
+					if ( !V_strcmp( m_szSlot, ReactiveDropInventory::g_InventorySlotAliases[j][0] ) &&
+						!V_strcmp( pTab->m_szSlot, ReactiveDropInventory::g_InventorySlotAliases[j][1] ) )
+					{
+						pCollections->ActivateTab( pTab );
+						pFoundTab = pTab;
+						break;
+					}
+				}
+
+				if ( pFoundTab )
+				{
+					break;
+				}
+			}
+
+			if ( pFoundTab )
+			{
+				SteamItemInstanceID_t id = V_atoui64( m_pInventoryVar->GetString() );
+
+				FOR_EACH_VEC( pFoundTab->m_pGrid->m_Entries, i )
+				{
+					CRD_Collection_Entry_Inventory *pEntry = assert_cast< CRD_Collection_Entry_Inventory * >( pFoundTab->m_pGrid->m_Entries[i] );
+					if ( pEntry && pEntry->m_Details.ItemID == id )
+					{
+						pEntry->m_pFocusHolder->RequestFocus();
+
+						break;
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		BaseClass::OnCommand( command );
+	}
+}
+
 CRD_VGUI_Loadout_Slot_Marine::CRD_VGUI_Loadout_Slot_Marine( vgui::Panel *parent, const char *panelName, ASW_Marine_Profile iProfile, ConVar *pInventoryVar ) :
 	BaseClass( parent, panelName, pInventoryVar )
 {
