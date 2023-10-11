@@ -29,7 +29,6 @@ namespace ReactiveDropLoadout
 	};
 	struct LoadoutData_t
 	{
-		SteamItemInstanceID_t Medals[RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS]{ k_SteamItemInstanceIDInvalid, k_SteamItemInstanceIDInvalid, k_SteamItemInstanceIDInvalid };
 		LoadoutMarineData_t Marines[ASW_NUM_MARINE_PROFILES]{};
 		bool MarineIncluded[ASW_NUM_MARINE_PROFILES]{};
 		uint32 LastModified{};
@@ -38,7 +37,6 @@ namespace ReactiveDropLoadout
 		void ToKeyValues( KeyValues *pKV, bool bBinary, bool bForSharing = false ) const;
 		void FromKeyValues( KeyValues *pKV, bool bBinary );
 		int NumMarinesIncluded() const;
-		bool HasAnyMedal() const;
 #ifdef CLIENT_DLL
 		void CopyToLive();
 		void CopyFromLive();

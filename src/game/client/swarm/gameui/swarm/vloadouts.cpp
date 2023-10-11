@@ -41,7 +41,6 @@ extern ConVar rd_equipped_weapon_primary[ASW_NUM_MARINE_PROFILES];
 extern ConVar rd_equipped_weapon_secondary[ASW_NUM_MARINE_PROFILES];
 extern ConVar rd_equipped_weapon_extra[ASW_NUM_MARINE_PROFILES];
 extern ConVar asw_unlock_all_weapons;
-extern ConVar rd_loadout_load_medals;
 
 const IBriefing_ItemInstance Loadouts::s_EmptyItemInstance;
 
@@ -433,11 +432,6 @@ void CRD_VGUI_Loadout_List_Item::ApplySettings( KeyValues *pSettings )
 	BaseClass::ApplySettings( pSettings );
 
 	SetTall( GetTall() + m_iRowHeight * ( m_Loadout.NumMarinesIncluded() + m_iNumColumns - 1 ) / m_iNumColumns );
-
-	if ( rd_loadout_load_medals.GetBool() && m_Loadout.HasAnyMedal() )
-	{
-		SetTall( GetTall() + m_iMedalSize );
-	}
 }
 
 void CRD_VGUI_Loadout_List_Item::Paint()
@@ -445,7 +439,6 @@ void CRD_VGUI_Loadout_List_Item::Paint()
 	BaseClass::Paint();
 
 	bool bHasFocus = HasFocus();
-	bool bHasMedals = rd_loadout_load_medals.GetBool() && m_Loadout.HasAnyMedal();
 
 	Color color{ 255, 255, 255, 255 };
 	if ( !bHasFocus )
@@ -454,8 +447,6 @@ void CRD_VGUI_Loadout_List_Item::Paint()
 	int wide, tall;
 	GetSize( wide, tall );
 	int y = tall - m_iRowHeight * ( m_Loadout.NumMarinesIncluded() + m_iNumColumns - 1 ) / m_iNumColumns - YRES( 2 );
-	if ( bHasMedals )
-		y -= m_iMedalSize;
 
 	if ( bHasFocus )
 	{
@@ -510,23 +501,6 @@ void CRD_VGUI_Loadout_List_Item::Paint()
 	{
 		col = 0;
 		y += m_iRowHeight;
-	}
-
-	if ( bHasMedals )
-	{
-		for ( int i = 0; i < RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS; i++ )
-		{
-			if ( const ReactiveDropInventory::ItemInstance_t *pInstance = ReactiveDropInventory::GetLocalItemCache( m_Loadout.Medals[i] ) )
-			{
-				if ( vgui::IImage *pIcon = pInstance->GetIcon() )
-				{
-					vgui::surface()->DrawSetColor( color );
-					vgui::surface()->DrawSetTexture( pIcon->GetID() );
-					int x = ( ( GetWide() - m_iMedalSize * RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS ) / ( RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS + 1 ) + m_iMedalSize ) * ( i + 1 ) - m_iMedalSize;
-					vgui::surface()->DrawTexturedRect( x, y, x + m_iMedalSize, y + m_iMedalSize );
-				}
-			}
-		}
 	}
 }
 

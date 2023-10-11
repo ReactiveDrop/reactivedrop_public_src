@@ -122,7 +122,6 @@ public:
 
 	CPanelAnimationVar( int, m_iNumColumns, "num_columns", "2" );
 	CPanelAnimationVarAliasType( int, m_iRowHeight, "row_height", "10", "proportional_int" );
-	CPanelAnimationVarAliasType( int, m_iMedalSize, "medal_size", "10", "proportional_int" );
 };
 
 class CRD_VGUI_Loadout_List_Addon_Header : public vgui::EditablePanel, public IGenericPanelListItem

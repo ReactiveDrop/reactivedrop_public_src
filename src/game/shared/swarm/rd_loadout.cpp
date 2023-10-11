@@ -85,7 +85,6 @@ ConVar rd_equipped_weapon_extra[ASW_NUM_MARINE_PROFILES]
 
 // preferences
 ConVar rd_loadout_auto_update( "rd_loadout_auto_update", "1", FCVAR_ARCHIVE, "Should the current loadout be updated when an item is selected during briefing?" );
-ConVar rd_loadout_load_medals( "rd_loadout_load_medals", "1", FCVAR_ARCHIVE, "Should medals be included when loading a saved loadout?" );
 ConVar rd_loadout_track_last_used( "rd_loadout_track_last_used", "1", FCVAR_NONE, "Should loadouts remember when they were last loaded?" );
 
 // commands
@@ -131,11 +130,6 @@ namespace ReactiveDropLoadout
 {
 	const LoadoutData_t DefaultLoadout
 	{
-		{
-			k_SteamItemInstanceIDInvalid,
-			k_SteamItemInstanceIDInvalid,
-			k_SteamItemInstanceIDInvalid,
-		},
 		{
 			{ ASW_EQUIP_RIFLE, ASW_EQUIP_VINDICATOR, ASW_EQUIP_FLARES }, // Sarge
 			{ ASW_EQUIP_AUTOGUN, ASW_EQUIP_RIFLE, ASW_EQUIP_FLARES }, // Wildcat
@@ -294,11 +288,6 @@ namespace ReactiveDropLoadout
 				pKV->SetInt( bBinary ? "mt" : "LastModified", LastModified );
 			if ( LastUsed )
 				pKV->SetInt( bBinary ? "at" : "LastUsed", LastUsed );
-
-			for ( int i = 0; i < RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS; i++ )
-			{
-				WriteItemID( pKV, bBinary, CFmtStr{ "m%d", i }, CFmtStr{ "Medals/Slot%d", i + 1 }, Medals[i] );
-			}
 		}
 
 		WriteMarine( pKV, bBinary, "0", "Marines/Sarge", Marines[ASW_MARINE_PROFILE_SARGE], MarineIncluded[ASW_MARINE_PROFILE_SARGE] );
@@ -314,9 +303,6 @@ namespace ReactiveDropLoadout
 	{
 		LastModified = pKV->GetInt( bBinary ? "mt" : "LastModified" );
 		LastUsed = pKV->GetInt( bBinary ? "at" : "LastUsed" );
-
-		for ( int i = 0; i < RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS; i++ )
-			Medals[i] = ReadItemID( pKV, bBinary, CFmtStr{ "m%d", i }, CFmtStr{ "Medals/Slot%d", i + 1 } );
 
 		ReadMarine( pKV, bBinary, "0", "Marines/Sarge", Marines[ASW_MARINE_PROFILE_SARGE], MarineIncluded[ASW_MARINE_PROFILE_SARGE] );
 		ReadMarine( pKV, bBinary, "1", "Marines/Wildcat", Marines[ASW_MARINE_PROFILE_WILDCAT], MarineIncluded[ASW_MARINE_PROFILE_WILDCAT] );
@@ -337,18 +323,6 @@ namespace ReactiveDropLoadout
 		}
 
 		return iCount;
-	}
-	bool LoadoutData_t::HasAnyMedal() const
-	{
-		for ( int i = 0; i < RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS; i++ )
-		{
-			if ( Medals[i] != k_SteamItemInstanceIDInvalid )
-			{
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 #ifdef CLIENT_DLL
@@ -511,14 +485,6 @@ namespace ReactiveDropLoadout
 
 	void LoadoutData_t::CopyToLive()
 	{
-		if ( rd_loadout_load_medals.GetBool() )
-		{
-			for ( int i = 0; i < RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS; i++ )
-			{
-				rd_equipped_medal[i].SetValue( CFmtStr{ "%llu", Medals[i] } );
-			}
-		}
-
 		for ( int i = 0; i < ASW_NUM_MARINE_PROFILES; i++ )
 		{
 			if ( MarineIncluded[i] )
@@ -536,13 +502,6 @@ namespace ReactiveDropLoadout
 	}
 	void LoadoutData_t::CopyFromLive()
 	{
-		for ( int i = 0; i < RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS; i++ )
-		{
-			Medals[i] = strtoull( rd_equipped_medal[i].GetString(), NULL, 10 );
-			if ( Medals[i] == 0 )
-				Medals[i] = k_SteamItemInstanceIDInvalid;
-		}
-
 		for ( int i = 0; i < ASW_NUM_MARINE_PROFILES; i++ )
 		{
 			Marines[i].CopyFromLive( ASW_Marine_Profile( i ) );
@@ -556,9 +515,6 @@ namespace ReactiveDropLoadout
 	bool LoadoutData_t::ReplaceItemID( SteamItemInstanceID_t oldID, SteamItemInstanceID_t newID, const char *szDebugLoadoutName )
 	{
 		bool bAnyChanged = false;
-
-		for ( int i = 0; i < RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS; i++ )
-			ReplaceItemIDHelper( bAnyChanged, Medals[i], oldID, newID, szDebugLoadoutName, CFmtStr{ "medal %d", i + 1 } );
 
 		bAnyChanged = Marines[ASW_MARINE_PROFILE_SARGE].ReplaceItemID( oldID, newID, szDebugLoadoutName, "Sarge" ) || bAnyChanged;
 		bAnyChanged = Marines[ASW_MARINE_PROFILE_WILDCAT].ReplaceItemID( oldID, newID, szDebugLoadoutName, "Wildcat" ) || bAnyChanged;
