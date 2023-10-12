@@ -74,24 +74,7 @@ Loadouts::Loadouts( Panel *parent, const char *panelName )
 	m_pTopBar = new CRD_VGUI_Main_Menu_Top_Bar( this, "TopBar" );
 	m_pTopBar->m_hActiveButton = m_pTopBar->m_pTopButton[CRD_VGUI_Main_Menu_Top_Bar::BTN_LOADOUTS];
 
-	ReactiveDropLoadout::InitLoadouts();
-
 	m_pGplSavedLoadouts = new GenericPanelList( this, "GplSavedLoadouts", GenericPanelList::ISM_PERITEM );
-	m_pGplSavedLoadouts->AddPanelItem( new CRD_VGUI_Loadout_List_Item( this, "LoadoutListItem", "", ReactiveDropLoadout::DefaultLoadout ), true );
-	for ( int i = 0; i < int( ReactiveDropLoadout::Loadouts.Count() ); i++ )
-	{
-		m_pGplSavedLoadouts->AddPanelItem( new CRD_VGUI_Loadout_List_Item( this, "LoadoutListItem", ReactiveDropLoadout::Loadouts.GetElementName( i ), ReactiveDropLoadout::Loadouts[i] ), true );
-	}
-	PublishedFileId_t nPrevFileID = k_PublishedFileIdInvalid;
-	FOR_EACH_VEC( ReactiveDropLoadout::GuideLoadouts, i )
-	{
-		if ( nPrevFileID != ReactiveDropLoadout::GuideLoadouts[i].FileID )
-		{
-			nPrevFileID = ReactiveDropLoadout::GuideLoadouts[i].FileID;
-			m_pGplSavedLoadouts->AddPanelItem( new CRD_VGUI_Loadout_List_Addon_Header( this, "LoadoutListAddonHeader", nPrevFileID ), true );
-		}
-		m_pGplSavedLoadouts->AddPanelItem( new CRD_VGUI_Loadout_List_Item( this, "LoadoutListItem", ReactiveDropLoadout::GuideLoadouts[i].Name, ReactiveDropLoadout::GuideLoadouts[i].Loadout, nPrevFileID ), true );
-	}
 
 	for ( int i = 0; i < RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS; i++ )
 	{
@@ -104,6 +87,7 @@ Loadouts::Loadouts( Panel *parent, const char *panelName )
 
 	for ( int i = 0; i < ASW_NUM_MARINE_PROFILES; i++ )
 	{
+		m_pLblMarineName[i] = new vgui::Label( this, VarArgs( "LblMarine%d", i ), "" );
 		m_pBtnMarineLoadout[i] = new CBitmapButton( this, VarArgs( "BtnMarine%d", i ), "" );
 		m_pBtnMarineLoadout[i]->SetConsoleStylePanel( true );
 		m_pBtnMarineLoadout[i]->SetFocusOnNavigateTo( true );
@@ -195,6 +179,16 @@ void Loadouts::ApplySchemeSettings( vgui::IScheme *pScheme )
 			m_pLblMedal[i]->SetVisible( false );
 		}
 	}
+
+	m_pTopBar->SetNavUp( m_pTopBar->m_pTopButton[CRD_VGUI_Main_Menu_Top_Bar::BTN_LOADOUTS] );
+}
+
+void Loadouts::OnOpen()
+{
+	BaseClass::OnOpen();
+
+	InitLoadoutList();
+	NavigateToChild( m_pBtnMarineLoadout[0] );
 }
 
 void Loadouts::OnCommand( const char *command )
@@ -221,6 +215,45 @@ void Loadouts::OnKeyCodeTyped( vgui::KeyCode code )
 	}
 
 	BaseClass::OnKeyCodeTyped( code );
+}
+
+void Loadouts::InitLoadoutList()
+{
+	ReactiveDropLoadout::InitLoadouts();
+
+	m_pGplSavedLoadouts->RemoveAllPanelItems();
+
+	char szLoadoutName[128];
+	V_UnicodeToUTF8( g_pVGuiLocalize->Find( "#rd_loadout_current" ), szLoadoutName, sizeof( szLoadoutName ) );
+	ReactiveDropLoadout::LoadoutData_t CurrentLoadout;
+	CurrentLoadout.CopyFromLive();
+	m_pGplSavedLoadouts->AddPanelItem( new CRD_VGUI_Loadout_List_Item( this, "LoadoutListItem", szLoadoutName, CurrentLoadout ), true );
+
+	V_UnicodeToUTF8( g_pVGuiLocalize->Find( "#rd_loadout_default" ), szLoadoutName, sizeof( szLoadoutName ) );
+	m_pGplSavedLoadouts->AddPanelItem( new CRD_VGUI_Loadout_List_Item( this, "LoadoutListItem", szLoadoutName, ReactiveDropLoadout::DefaultLoadout ), true );
+
+	for ( int i = 0; i < int( ReactiveDropLoadout::Loadouts.Count() ); i++ )
+	{
+		m_pGplSavedLoadouts->AddPanelItem( new CRD_VGUI_Loadout_List_Item( this, "LoadoutListItem", ReactiveDropLoadout::Loadouts.GetElementName( i ), ReactiveDropLoadout::Loadouts[i] ), true );
+	}
+
+	PublishedFileId_t nPrevFileID = k_PublishedFileIdInvalid;
+	FOR_EACH_VEC( ReactiveDropLoadout::GuideLoadouts, i )
+	{
+		if ( nPrevFileID != ReactiveDropLoadout::GuideLoadouts[i].FileID )
+		{
+			nPrevFileID = ReactiveDropLoadout::GuideLoadouts[i].FileID;
+			m_pGplSavedLoadouts->AddPanelItem( new CRD_VGUI_Loadout_List_Addon_Header( this, "LoadoutListAddonHeader", nPrevFileID ), true );
+		}
+		m_pGplSavedLoadouts->AddPanelItem( new CRD_VGUI_Loadout_List_Item( this, "LoadoutListItem", ReactiveDropLoadout::GuideLoadouts[i].Name, ReactiveDropLoadout::GuideLoadouts[i].Loadout, nPrevFileID ), true );
+	}
+
+	m_pGplSavedLoadouts->RelinkNavigation();
+	m_pGplSavedLoadouts->SelectPanelItem( 0 );
+}
+
+void Loadouts::ShowLoadoutItem( CRD_VGUI_Loadout_List_Item *pItem )
+{
 }
 
 void Loadouts::DisplayPublishingError( const char *szMessage, int nArgs, const wchar_t *wszArg1, const wchar_t *wszArg2, const wchar_t *wszArg3, const wchar_t *wszArg4 )
@@ -425,12 +458,10 @@ CRD_VGUI_Loadout_List_Item::CRD_VGUI_Loadout_List_Item( vgui::Panel *parent, con
 	m_iAddonID = id;
 
 	wchar_t wszName[MAX_VALUE];
-	if ( szName[0] == '\0' )
-		TryLocalize( "#rd_loadout_default", wszName, sizeof( wszName ) );
-	else
-		V_UTF8ToUnicode( szName, wszName, sizeof( wszName ) );
+	V_UTF8ToUnicode( szName, wszName, sizeof( wszName ) );
 
 	m_pLblTitle = new vgui::Label( this, "LblTitle", wszName );
+	m_bSelected = false;
 }
 
 void CRD_VGUI_Loadout_List_Item::ApplySchemeSettings( vgui::IScheme *pScheme )
@@ -451,21 +482,24 @@ void CRD_VGUI_Loadout_List_Item::Paint()
 {
 	BaseClass::Paint();
 
-	bool bHasFocus = HasFocus();
-
 	Color color{ 255, 255, 255, 255 };
-	if ( !bHasFocus )
+	if ( !m_bSelected )
 		color = Color{ 192, 192, 192, 255 };
 
 	int wide, tall;
 	GetSize( wide, tall );
 	int y = tall - m_iRowHeight * ( m_Loadout.NumMarinesIncluded() + m_iNumColumns - 1 ) / m_iNumColumns - YRES( 2 );
 
-	if ( bHasFocus )
+	if ( m_bSelected )
 	{
 		vgui::IScheme *pScheme = vgui::scheme()->GetIScheme( GetScheme() );
 		Color blotchColor = pScheme->GetColor( "HybridButton.BlotchColor", Color( 0, 0, 0, 255 ) );
 		Color borderColor = pScheme->GetColor( "HybridButton.BorderColor", Color( 0, 0, 0, 255 ) );
+
+		if ( HasFocus() )
+		{
+			borderColor = Color{ 255, 255, 255, 255 };
+		}
 
 		int blotchWide = wide - YRES( 40 );
 		vgui::surface()->DrawSetColor( blotchColor );
@@ -515,6 +549,36 @@ void CRD_VGUI_Loadout_List_Item::Paint()
 		col = 0;
 		y += m_iRowHeight;
 	}
+}
+
+void CRD_VGUI_Loadout_List_Item::NavigateTo()
+{
+	BaseClass::NavigateTo();
+
+	RequestFocus();
+}
+
+void CRD_VGUI_Loadout_List_Item::OnSetFocus()
+{
+	BaseClass::OnSetFocus();
+
+	GenericPanelList *pGPL = assert_cast< GenericPanelList * >( GetParent()->GetParent() );
+	pGPL->SelectPanelItemByPanel( this );
+
+	SetNavLeft( pGPL->GetNavLeft() );
+	SetNavRight( pGPL->GetNavRight() );
+
+	assert_cast< Loadouts * >( pGPL->GetParent() )->ShowLoadoutItem( this );
+}
+
+void CRD_VGUI_Loadout_List_Item::OnPanelSelected()
+{
+	m_bSelected = true;
+}
+
+void CRD_VGUI_Loadout_List_Item::OnPanelUnSelected()
+{
+	m_bSelected = false;
 }
 
 CRD_VGUI_Loadout_List_Addon_Header::CRD_VGUI_Loadout_List_Addon_Header( vgui::Panel *parent, const char *panelName, PublishedFileId_t id ) :
@@ -798,7 +862,10 @@ void CRD_VGUI_Loadout_Slot::Paint()
 	IImage *pIcon = pItem->GetIcon();
 	if ( pIcon )
 	{
-		vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
+		if ( HasFocus() )
+			vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
+		else
+			vgui::surface()->DrawSetColor( 128, 128, 128, 255 );
 		vgui::surface()->DrawSetTexture( pIcon->GetID() );
 		if ( PaintItemFullSize() )
 		{

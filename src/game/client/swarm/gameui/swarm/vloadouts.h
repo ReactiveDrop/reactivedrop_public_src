@@ -34,6 +34,7 @@ public:
 	~Loadouts();
 
 	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+	void OnOpen() override;
 	void OnCommand( const char *command ) override;
 	void OnKeyCodeTyped( vgui::KeyCode code ) override;
 
@@ -44,9 +45,12 @@ public:
 	vgui::Label *m_pLblMedal[RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS];
 	vgui::ImagePanel *m_pImgPromotionIcon;
 	vgui::Label *m_pLblPromotion;
+	vgui::Label *m_pLblMarineName[ASW_NUM_MARINE_PROFILES];
 	CBitmapButton *m_pBtnMarineLoadout[ASW_NUM_MARINE_PROFILES];
 	vgui::PHandle m_hSubScreen;
 
+	void InitLoadoutList();
+	void ShowLoadoutItem( CRD_VGUI_Loadout_List_Item *pItem );
 	void DisplayPublishingError( const char *szMessage, int nArgs = 0, const wchar_t *wszArg1 = NULL, const wchar_t *wszArg2 = NULL, const wchar_t *wszArg3 = NULL, const wchar_t *wszArg4 = NULL );
 	void StartPublishingLoadouts( const char *szTitle, const char *szDescription, const char *szPreviewFile, const CUtlDict<ReactiveDropLoadout::LoadoutData_t> &loadouts );
 	void OnRemoteStoragePublishFileResult( RemoteStoragePublishFileResult_t *pParam, bool bIOFailure );
@@ -113,12 +117,18 @@ public:
 	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 	void ApplySettings( KeyValues *pSettings ) override;
 	void Paint() override;
+	void NavigateTo() override;
+	void OnSetFocus() override;
 
 	char m_szName[MAX_VALUE];
 	ReactiveDropLoadout::LoadoutData_t m_Loadout;
 	PublishedFileId_t m_iAddonID;
 
 	vgui::Label *m_pLblTitle;
+	bool m_bSelected;
+
+	MESSAGE_FUNC( OnPanelSelected, "PanelSelected" );
+	MESSAGE_FUNC( OnPanelUnSelected, "PanelUnSelected" );
 
 	CPanelAnimationVar( int, m_iNumColumns, "num_columns", "2" );
 	CPanelAnimationVarAliasType( int, m_iRowHeight, "row_height", "10", "proportional_int" );

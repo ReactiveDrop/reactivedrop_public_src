@@ -873,7 +873,7 @@ public:
 		m_bNoScrollOnFocus = false;
 	}
 
-	virtual void NavigateTo() override
+	void NavigateTo() override
 	{
 		BaseClass::NavigateTo();
 
@@ -881,7 +881,7 @@ public:
 		RequestFocus();
 	}
 
-	virtual void OnSetFocus() override
+	void OnSetFocus() override
 	{
 		BaseClass::OnSetFocus();
 
@@ -917,7 +917,7 @@ public:
 		}
 	}
 
-	virtual void OnKillFocus() override
+	void OnKillFocus() override
 	{
 		BaseClass::OnKillFocus();
 
@@ -927,7 +927,7 @@ public:
 		pParent->m_pHighlight->SetVisible( false );
 	}
 
-	virtual void OnCursorMoved( int x, int y ) override
+	void OnCursorMoved( int x, int y ) override
 	{
 		m_bNoScrollOnFocus = true;
 
@@ -937,7 +937,7 @@ public:
 			NavigateTo();
 	}
 
-	virtual void OnMousePressed( vgui::MouseCode code ) override
+	void OnMousePressed( vgui::MouseCode code ) override
 	{
 		if ( code == MOUSE_LEFT && HasFocus() )
 		{
@@ -948,7 +948,7 @@ public:
 		BaseClass::OnMousePressed( code );
 	}
 
-	virtual void OnMouseReleased( vgui::MouseCode code ) override
+	void OnMouseReleased( vgui::MouseCode code ) override
 	{
 		if ( code == MOUSE_LEFT && m_bMousePressed )
 		{
@@ -959,6 +959,18 @@ public:
 		}
 
 		BaseClass::OnMouseReleased( code );
+	}
+
+	void OnKeyCodePressed( vgui::KeyCode code ) override
+	{
+		if ( code == KEY_ENTER || code == KEY_SPACE )
+		{
+			TGD_Entry *pParent = assert_cast< TGD_Entry * >( GetParent() );
+			pParent->ApplyEntry();
+			return;
+		}
+
+		BaseClass::OnKeyCodePressed( code );
 	}
 
 	bool m_bMousePressed;

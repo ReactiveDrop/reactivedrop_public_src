@@ -84,7 +84,7 @@ ConVar rd_equipped_weapon_extra[ASW_NUM_MARINE_PROFILES]
 };
 
 // preferences
-ConVar rd_loadout_auto_update( "rd_loadout_auto_update", "1", FCVAR_ARCHIVE, "Should the current loadout be updated when an item is selected during briefing?" );
+ConVar rd_loadout_auto_update( "rd_loadout_auto_update", "1", FCVAR_NONE, "Should the current loadout be updated when an item is selected during briefing?" );
 ConVar rd_loadout_track_last_used( "rd_loadout_track_last_used", "1", FCVAR_NONE, "Should loadouts remember when they were last loaded?" );
 
 // commands
