@@ -161,6 +161,9 @@ CASW_Equip_Req* C_ASW_Equip_Req::FindEquipReq()
 
 bool C_ASW_Equip_Req::ForceWeaponUnlocked( const char *szWeaponClass )
 {
+	if ( !engine->IsConnected() )
+		return false;
+
 	unsigned int c = ClientEntityList().GetHighestEntityIndex();
 	for ( unsigned int i = 0; i <= c; i++ )
 	{
