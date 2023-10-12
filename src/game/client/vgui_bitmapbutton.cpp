@@ -119,7 +119,7 @@ void CBitmapButton::Paint( void )
 			nCurrentImage = BUTTON_ENABLED_MOUSE_OVER;
 		}
 	}
-	else if (!IsEnabled())
+	if (!IsEnabled())
 	{
 		nCurrentImage = BUTTON_DISABLED;
 	}

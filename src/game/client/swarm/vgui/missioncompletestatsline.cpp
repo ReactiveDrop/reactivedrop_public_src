@@ -474,7 +474,7 @@ void MissionCompletePlayerStatsLine::UpdateLabels()
 
 	wchar_t wszPlayerStatus[ 64 ];
 	wszPlayerStatus[ 0 ] = L'\0';
-	if ( m_iPlayerIndex == pGameResource->GetLeaderEntIndex() )
+	if ( pPlayer == pGameResource->GetLeader() )
 	{				
 		V_wcsncpy( wszPlayerStatus, g_pVGuiLocalize->Find( "#asw_stats_player_status_leader" ), sizeof( wszPlayerStatus ) );
 	}

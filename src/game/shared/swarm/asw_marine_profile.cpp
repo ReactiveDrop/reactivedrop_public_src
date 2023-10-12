@@ -199,42 +199,42 @@ static CASW_Marine_ProfileList s_MarineProfileList
 {
 	{
 		{
-			ASW_MARINE_PROFILE_SARGE, MARINE_CLASS_NCO, ASW_VOICE_SARGE,
+			ASW_MARINE_PROFILE_SARGE, MARINE_CLASS_NCO, ASW_VOICE_SARGE, ASW_MARINE_PROFILE_SARGE,
 			MARINE_HELPER( sarge ), true, 43, false,
 			"Officer1", "models/swarm/marine/femalemarine.mdl", 1,
 		},
 		{
-			ASW_MARINE_PROFILE_WILDCAT, MARINE_CLASS_SPECIAL_WEAPONS, ASW_VOICE_WILDCAT,
+			ASW_MARINE_PROFILE_WILDCAT, MARINE_CLASS_SPECIAL_WEAPONS, ASW_VOICE_WILDCAT, ASW_MARINE_PROFILE_WILDCAT,
 			MARINE_HELPER( wildcat ), true, 23, true,
 			"Spec1", "models/swarm/marine/femalemarine.mdl", 3,
 		},
 		{
-			ASW_MARINE_PROFILE_FAITH, MARINE_CLASS_MEDIC, ASW_VOICE_FAITH,
+			ASW_MARINE_PROFILE_FAITH, MARINE_CLASS_MEDIC, ASW_VOICE_FAITH, ASW_MARINE_PROFILE_FAITH,
 			MARINE_HELPER( faith ), true, 28, true,
 			"Medic1", "models/swarm/marine/femalemarine.mdl", 2,
 		},
 		{
-			ASW_MARINE_PROFILE_CRASH, MARINE_CLASS_TECH, ASW_VOICE_CRASH,
+			ASW_MARINE_PROFILE_CRASH, MARINE_CLASS_TECH, ASW_VOICE_CRASH, ASW_MARINE_PROFILE_CRASH,
 			MARINE_HELPER( crash ), true, 22, false,
 			"Tech1", "models/swarm/marine/femalemarine.mdl", 4,
 		},
 		{
-			ASW_MARINE_PROFILE_JAEGER, MARINE_CLASS_NCO, ASW_VOICE_JAEGER,
+			ASW_MARINE_PROFILE_JAEGER, MARINE_CLASS_NCO, ASW_VOICE_JAEGER, ASW_MARINE_PROFILE_JAEGER,
 			MARINE_HELPER( jaeger ), false, 32, false,
 			"Officer2", "models/swarm/marine/marine.mdl", 1,
 		},
 		{
-			ASW_MARINE_PROFILE_WOLFE, MARINE_CLASS_SPECIAL_WEAPONS, ASW_VOICE_WOLFE,
+			ASW_MARINE_PROFILE_WOLFE, MARINE_CLASS_SPECIAL_WEAPONS, ASW_VOICE_WOLFE, ASW_MARINE_PROFILE_WOLFE,
 			MARINE_HELPER( wolfe ), false, 26, false,
 			"Spec2", "models/swarm/marine/marine.mdl", 3,
 		},
 		{
-			ASW_MARINE_PROFILE_BASTILLE, MARINE_CLASS_MEDIC, ASW_VOICE_BASTILLE,
+			ASW_MARINE_PROFILE_BASTILLE, MARINE_CLASS_MEDIC, ASW_VOICE_BASTILLE, ASW_MARINE_PROFILE_BASTILLE,
 			MARINE_HELPER( bastille ), false, 32, false,
 			"Medic2", "models/swarm/marine/marine.mdl", 2,
 		},
 		{
-			ASW_MARINE_PROFILE_VEGAS, MARINE_CLASS_TECH, ASW_VOICE_VEGAS,
+			ASW_MARINE_PROFILE_VEGAS, MARINE_CLASS_TECH, ASW_VOICE_VEGAS, ASW_MARINE_PROFILE_VEGAS,
 			MARINE_HELPER( vegas ), true, 34, false,
 			"Tech3", "models/swarm/marine/marine.mdl", 4,
 		},
@@ -250,6 +250,8 @@ CASW_Marine_ProfileList *MarineProfileList()
 			CASW_Marine_Profile *pProfile = &s_MarineProfileList.m_Profiles[i];
 			pProfile->InitChatterNames( GetVoiceShortName( pProfile->m_VoiceType ) );
 			pProfile->LoadTextures();
+
+			Assert( pProfile->m_iDefaultLoadoutIndex >= 0 && pProfile->m_iDefaultLoadoutIndex < 8 );
 		}
 
 		s_MarineProfileList.m_bInitOnce = true;

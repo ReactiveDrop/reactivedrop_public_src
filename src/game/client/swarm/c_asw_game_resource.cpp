@@ -12,43 +12,40 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-IMPLEMENT_CLIENTCLASS_DT(C_ASW_Game_Resource, DT_ASW_Game_Resource, CASW_Game_Resource)
-	RecvPropArray3( RECVINFO_ARRAY(m_MarineResources), RecvPropEHandle( RECVINFO( m_MarineResources[0] ) ) ),
-	RecvPropArray3( RECVINFO_ARRAY(m_Objectives), RecvPropEHandle( RECVINFO( m_Objectives[0] ) ) ),
-	RecvPropArray3		( RECVINFO_ARRAY(m_iRosterSelected), RecvPropInt( RECVINFO(m_iRosterSelected[0])) ),
-	
-	RecvPropArray3		( RECVINFO_ARRAY(m_bPlayerReady), RecvPropBool( RECVINFO(m_bPlayerReady[0])) ),
-	
-	RecvPropEHandle (RECVINFO(m_Leader) ),
-	RecvPropInt(RECVINFO(m_iLeaderIndex)),
-	RecvPropEHandle (RECVINFO(m_hScannerInfo) ),
-	RecvPropEHandle (RECVINFO(m_hCampaignSave) ),
-	RecvPropInt(RECVINFO(m_iCampaignGame)),
-	RecvPropBool(RECVINFO(m_bOneMarineEach)),
-	RecvPropInt(RECVINFO(m_iMaxMarines)),
-	RecvPropBool(RECVINFO(m_bOfflineGame)),
+IMPLEMENT_CLIENTCLASS_DT( C_ASW_Game_Resource, DT_ASW_Game_Resource, CASW_Game_Resource )
+	RecvPropArray3( RECVINFO_ARRAY( m_MarineResources ), RecvPropEHandle( RECVINFO( m_MarineResources[0] ) ) ),
+	RecvPropArray3( RECVINFO_ARRAY( m_Objectives ), RecvPropEHandle( RECVINFO( m_Objectives[0] ) ) ),
+
+	RecvPropArray3( RECVINFO_ARRAY( m_bPlayerReady ), RecvPropBool( RECVINFO( m_bPlayerReady[0] ) ) ),
+
+	RecvPropEHandle( RECVINFO( m_Leader ) ),
+	RecvPropEHandle( RECVINFO( m_hScannerInfo ) ),
+	RecvPropEHandle( RECVINFO( m_hCampaignSave ) ),
+	RecvPropInt( RECVINFO( m_iCampaignGame ) ),
+	RecvPropBool( RECVINFO( m_bOneMarineEach ) ),
+	RecvPropInt( RECVINFO( m_iMaxMarines ) ),
+	RecvPropBool( RECVINFO( m_bOfflineGame ) ),
 
 	// marine skills
-	RecvPropArray3( RECVINFO_ARRAY(m_iSkillSlot0), RecvPropInt( RECVINFO(m_iSkillSlot0[0]))),
-	RecvPropArray3( RECVINFO_ARRAY(m_iSkillSlot1), RecvPropInt( RECVINFO(m_iSkillSlot1[0]))),
-	RecvPropArray3( RECVINFO_ARRAY(m_iSkillSlot2), RecvPropInt( RECVINFO(m_iSkillSlot2[0]))),
-	RecvPropArray3( RECVINFO_ARRAY(m_iSkillSlot3), RecvPropInt( RECVINFO(m_iSkillSlot3[0]))),
-	RecvPropArray3( RECVINFO_ARRAY(m_iSkillSlot4), RecvPropInt( RECVINFO(m_iSkillSlot4[0]))),
-	RecvPropArray3( RECVINFO_ARRAY(m_iSkillSlotSpare), RecvPropInt( RECVINFO(m_iSkillSlotSpare[0]))),
+	RecvPropArray( RecvPropInt( RECVINFO( m_iSkillSlot0[0] ) ), m_iSkillSlot0 ),
+	RecvPropArray( RecvPropInt( RECVINFO( m_iSkillSlot1[0] ) ), m_iSkillSlot1 ),
+	RecvPropArray( RecvPropInt( RECVINFO( m_iSkillSlot2[0] ) ), m_iSkillSlot2 ),
+	RecvPropArray( RecvPropInt( RECVINFO( m_iSkillSlot3[0] ) ), m_iSkillSlot3 ),
+	RecvPropArray( RecvPropInt( RECVINFO( m_iSkillSlot4[0] ) ), m_iSkillSlot4 ),
+	RecvPropArray( RecvPropInt( RECVINFO( m_iSkillSlotSpare[0] ) ), m_iSkillSlotSpare ),
 
-	RecvPropArray( RecvPropString( RECVINFO( m_iszPlayerMedals[0]) ), m_iszPlayerMedals ),
+	RecvPropArray( RecvPropString( RECVINFO( m_iszPlayerMedals[0] ) ), m_iszPlayerMedals ),
 
-	RecvPropArray3( RECVINFO_ARRAY(m_iKickVotes), RecvPropInt( RECVINFO(m_iKickVotes[0]))),
-	RecvPropArray3( RECVINFO_ARRAY(m_iLeaderVotes), RecvPropInt( RECVINFO(m_iLeaderVotes[0]))),
+	RecvPropArray3( RECVINFO_ARRAY( m_iKickVotes ), RecvPropInt( RECVINFO( m_iKickVotes[0] ) ) ),
+	RecvPropArray3( RECVINFO_ARRAY( m_iLeaderVotes ), RecvPropInt( RECVINFO( m_iLeaderVotes[0] ) ) ),
 
-	RecvPropInt(RECVINFO(m_iMoney)),
-	RecvPropInt(RECVINFO(m_iNextCampaignMission)),
+	RecvPropInt( RECVINFO( m_iMoney ) ),
+	RecvPropInt( RECVINFO( m_iNextCampaignMission ) ),
+	RecvPropInt( RECVINFO( m_nDifficultySuggestion ) ),
 
-	RecvPropInt(RECVINFO(m_nDifficultySuggestion)),
-
-	RecvPropFloat( RECVINFO(m_fMapGenerationProgress) ),
-	RecvPropString( RECVINFO(m_szMapGenerationStatus) ),
-	RecvPropInt( RECVINFO(m_iRandomMapSeed) ),
+	RecvPropFloat( RECVINFO( m_fMapGenerationProgress ) ),
+	RecvPropString( RECVINFO( m_szMapGenerationStatus ) ),
+	RecvPropInt( RECVINFO( m_iRandomMapSeed ) ),
 END_RECV_TABLE()
 
 C_ASW_Game_Resource *g_pASWGameResource = NULL;
@@ -64,10 +61,6 @@ C_ASW_Game_Resource::C_ASW_Game_Resource()
 	for ( int i = 0; i < ASW_MAX_OBJECTIVES; i++ )
 	{
 		m_Objectives.Set( i, NULL );
-	}
-	for ( int i = 0; i < ASW_NUM_MARINE_PROFILES; i++ )
-	{
-		m_iRosterSelected.Set( i, 0 );
 	}
 	m_iCampaignGame = -1;
 	m_iNumEnumeratedMarines = NULL;

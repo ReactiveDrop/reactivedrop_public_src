@@ -131,7 +131,7 @@ public:
 	bool m_bShuttingDown;
 
 	// briefing roster functions
-	virtual bool			RosterSelect( CASW_Player *pPlayer, int RosterIndex, int nPreferredSlot=-1 );
+	virtual bool			RosterSelect( CASW_Player *pPlayer, int iProfileIndex, int nPreferredSlot = -1 );
 	virtual void			RosterDeselect( CASW_Player *pPlayer, int RosterIndex);
 	virtual void			ReassignMarines(CASW_Player *pPlayer);	// reassigns all this player's marines to someone else
 	virtual void			RosterDeselectAll( CASW_Player *pPlayer );
@@ -139,11 +139,6 @@ public:
 	virtual void			ReviveDeadMarines();
 	virtual void			EnforceFairMarineRules();
 	virtual void			EnforceMaxMarines();
-	
-	virtual void			ReserveMarines();
-	virtual void			UnreserveMarines();
-	virtual void			AutoselectMarines(CASW_Player *pPlayer);
-	float m_fReserveMarinesEndTime;
 
 	// loadout/equip
 	virtual void			LoadoutSelect( CASW_Player *pPlayer, int iRosterIndex, int iInvSlot, int iEquipIndex, int iDynamicIndex );
@@ -383,6 +378,12 @@ public:
 	void SaveConvar( const ConVarRef & cvar );
 	void RevertSingleConvar( ConVarRef & cvar );
 	void RevertSavedConvars();
+
+#ifdef GAME_DLL
+	void ReserveMarines();
+	void AutoSelectMarines( CASW_Player *pPlayer );
+#endif
+	CNetworkVar( float, m_fReserveMarinesEndTime );
 
 	// stim music
 	bool	ShouldPlayStimMusic();

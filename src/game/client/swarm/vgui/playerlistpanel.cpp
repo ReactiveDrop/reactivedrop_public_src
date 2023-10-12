@@ -362,7 +362,7 @@ void PlayerListPanel::OnThink()
 	}
 
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	bool bShowRestart = pPlayer && ASWGameResource() && (ASWGameResource()->GetLeaderEntIndex() == pPlayer->entindex());
+	bool bShowRestart = pPlayer && ASWGameResource() && ASWGameResource()->GetLeader() == pPlayer;
 	//Msg("bLeader = %d leaderentindex=%d player entindex=%d\n", bLeader, ASWGameResource()->GetLeaderEntIndex(), pPlayer->entindex());
 	m_pRestartMissionButton->SetVisible(bShowRestart);
 	m_pLeaderButtonsBackground->SetVisible(bShowRestart);	
@@ -629,7 +629,7 @@ void PlayerListPanel::OnCommand( char const *cmd )
 		C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 		if ( !pPlayer )
 			return;
-		bool bLeader = pPlayer && ASWGameResource() && ASWGameResource()->GetLeaderEntIndex() == pPlayer->entindex();
+		bool bLeader = pPlayer && ASWGameResource() && ASWGameResource()->GetLeader() == pPlayer;
 		if ( !bLeader )
 			return;
 

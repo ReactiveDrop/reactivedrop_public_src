@@ -571,7 +571,7 @@ void CNB_Main_Panel::OnCommand( const char *command )
 	}
 	else if ( !Q_stricmp( command, "DeselectMarines" ) )
 	{
-		engine->ClientCmd( "cl_dselectm 0;cl_dselectm 1;cl_dselectm 2;cl_dselectm 3;cl_dselectm 4;cl_dselectm 5;cl_dselectm 6;cl_dselectm 7;" );
+		engine->ClientCmd( "cl_dselectallm" );
 	}
 	else if ( !Q_stricmp( command, "PromotionButton" ) )
 	{

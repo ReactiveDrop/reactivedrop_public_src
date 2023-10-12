@@ -17,7 +17,7 @@ public:
 	/// local compiler constants
 	enum 
 	{
-		MAX_SQUAD_SIZE = ASW_NUM_MARINE_PROFILES - 1, ///< NOT including the leader.
+		MAX_SQUAD_SIZE = ASW_MAX_MARINE_RESOURCES - 1, ///< NOT including the leader.
 		INVALID_SQUADDIE,
 	};
 

@@ -174,7 +174,7 @@ void PlayerListLine::OnThink()
 		V_UTF8ToUnicode( szName, wszName, sizeof( wszName ) );
 
 		const wchar_t *wszNameFormat = L"%s1";
-		if (m_iPlayerIndex == ASWGameResource()->GetLeaderEntIndex())
+		if ( ASWGameResource()->GetLeader() && m_iPlayerIndex == ASWGameResource()->GetLeader()->entindex() )
 		{
 			wszNameFormat = g_pVGuiLocalize->FindSafe( "#asw_player_list_name_leader" );
 		}

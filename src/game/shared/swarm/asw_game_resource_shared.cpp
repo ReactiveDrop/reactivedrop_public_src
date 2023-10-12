@@ -149,23 +149,23 @@ int CASW_Game_Resource::CountAllAliveMarines( void )
 }
 
 // uses the marine list to quickly find all marines within a box
-int CASW_Game_Resource::EnumerateMarinesInBox(Vector &mins, Vector &maxs)
+int CASW_Game_Resource::EnumerateMarinesInBox( const Vector &mins, const Vector &maxs )
 {
 	m_iNumEnumeratedMarines = 0;
-	for (int i=0;i<GetMaxMarineResources();i++)
+	for ( int i = 0; i < GetMaxMarineResources(); i++ )
 	{
-		CASW_Marine_Resource *pMR = GetMarineResource(i);
-		if (!pMR)
+		CASW_Marine_Resource *pMR = GetMarineResource( i );
+		if ( !pMR )
 			continue;
 
 		CASW_Marine *pMarine = pMR->GetMarineEntity();
-		if (!pMarine)
+		if ( !pMarine )
 			continue;
 
 #ifdef CLIENT_DLL
-		if (asw_debug_clientside_avoidance.GetBool())
+		if ( asw_debug_clientside_avoidance.GetBool() )
 		{
-			Vector mid = (pMarine->WorldAlignMins() + pMarine->WorldAlignMaxs()) / 2.0f;
+			Vector mid = ( pMarine->WorldAlignMins() + pMarine->WorldAlignMaxs() ) / 2.0f;
 			Vector omin = pMarine->WorldAlignMins() - mid;
 			Vector omax = pMarine->WorldAlignMaxs() - mid;
 			debugoverlay->AddBoxOverlay( mid, omin, omax, vec3_angle, 0, 0, 255, true, 0 );
@@ -174,11 +174,11 @@ int CASW_Game_Resource::EnumerateMarinesInBox(Vector &mins, Vector &maxs)
 
 		Vector omins = pMarine->WorldAlignMins() + pMarine->GetAbsOrigin();
 		Vector omaxs = pMarine->WorldAlignMaxs() + pMarine->GetAbsOrigin();
-		if (IsBoxIntersectingBox(mins, maxs, omins, omaxs))
+		if ( IsBoxIntersectingBox( mins, maxs, omins, omaxs ) )
 		{
 			m_pEnumeratedMarines[m_iNumEnumeratedMarines] = pMR->GetMarineEntity();
 			m_iNumEnumeratedMarines++;
-			if (m_iNumEnumeratedMarines >=12)
+			if ( m_iNumEnumeratedMarines >= NELEMS( m_pEnumeratedMarines ) )
 				break;
 		}
 	}
@@ -195,36 +195,26 @@ CASW_Marine * CASW_Game_Resource::EnumeratedMarine(int i)
 
 bool CASW_Game_Resource::IsRosterSelected( int i )
 {
-	// allow any marine selection for deathmatch
-	if ( ASWDeathmatchMode() )
-		return false;
-
-	if ( i < 0 || i >= ASW_NUM_MARINE_PROFILES )
-		return false;
-
-	return m_iRosterSelected[i] == 1;
-}
-
-bool CASW_Game_Resource::IsRosterReserved( int i )
-{
-	// allow any marine selection for deathmatch
-	if ( ASWDeathmatchMode() )
-		return false;
-
-	if ( i < 0 || i >= ASW_NUM_MARINE_PROFILES )
-		return false;
-
-	return m_iRosterSelected[i] == 2;
+	int m = GetMaxMarineResources();
+	for ( int j = 0; j < m; j++ )
+	{
+		CASW_Marine_Resource *pMR = GetMarineResource( j );
+		if ( pMR && pMR->GetProfileIndex() == i )
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 // returns true if at least one marine has been selected
 bool CASW_Game_Resource::AtLeastOneMarine()
 {
 	int m = GetMaxMarineResources();
-	for (int i=0;i<m;i++)
+	for ( int i = 0; i < m; i++ )
 	{
-		if (GetMarineResource(i))
-		{				
+		if ( GetMarineResource( i ) )
+		{
 			return true;
 		}
 	}

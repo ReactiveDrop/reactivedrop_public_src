@@ -24,6 +24,8 @@
 #include "tier0/memdbgon.h"
 
 extern ConVar asw_ignore_need_two_player_requirement;
+extern ConVar asw_marines_max_per_profile;
+extern ConVar asw_marines_max_by_class[NUM_MARINE_CLASSES];
 
 CASW_Briefing* g_pBriefing = NULL;
 
@@ -863,13 +865,22 @@ void CASW_Briefing::StartMission()
 bool CASW_Briefing::IsProfileSelectedBySomeoneElse( int nProfileIndex )
 {
 	// allow any marine selection for deathmatch
-	if (ASWDeathmatchMode())
+	if ( ASWDeathmatchMode() )
 		return false;
 
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	if ( !pPlayer )
 		return false;
-	
+
+	CASW_Marine_Profile *pProfile = MarineProfileList()->GetProfile( nProfileIndex );
+	Assert( pProfile );
+	if ( !pProfile )
+		return false;
+
+	ASW_Marine_Class iProfileClass = pProfile->GetMarineClass();
+
+	int nSelectedProfile = 0;
+	int nSelectedClass = 0;
 	for ( int i = 0; i < ASWGameResource()->GetMaxMarineResources(); i++ )
 	{
 		C_ASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( i );
@@ -878,23 +889,36 @@ bool CASW_Briefing::IsProfileSelectedBySomeoneElse( int nProfileIndex )
 
 		if ( pMR->GetProfileIndex() == nProfileIndex )
 		{
-			return ( pMR->GetCommander() != pPlayer );
+			if ( pMR->GetCommander() == pPlayer )
+				return false;
+
+			nSelectedProfile++;
+		}
+
+		if ( pMR->GetProfile()->GetMarineClass() == iProfileClass )
+		{
+			nSelectedClass++;
 		}
 	}
 
-	return false;
+	return nSelectedProfile >= asw_marines_max_per_profile.GetInt() || nSelectedClass >= asw_marines_max_by_class[iProfileClass].GetInt();
 }
 
 bool CASW_Briefing::IsProfileSelected( int nProfileIndex )
 {
 	// allow any marine selection for deathmatch
-	if (ASWDeathmatchMode())
+	if ( ASWDeathmatchMode() )
 		return false;
 
-	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if ( !pPlayer )
+	CASW_Marine_Profile *pProfile = MarineProfileList()->GetProfile( nProfileIndex );
+	Assert( pProfile );
+	if ( !pProfile )
 		return false;
 
+	ASW_Marine_Class iProfileClass = pProfile->GetMarineClass();
+
+	int nSelectedProfile = 0;
+	int nSelectedClass = 0;
 	for ( int i = 0; i < ASWGameResource()->GetMaxMarineResources(); i++ )
 	{
 		C_ASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( i );
@@ -903,11 +927,16 @@ bool CASW_Briefing::IsProfileSelected( int nProfileIndex )
 
 		if ( pMR->GetProfileIndex() == nProfileIndex )
 		{
-			return true;
+			nSelectedProfile++;
+		}
+
+		if ( pMR->GetProfile()->GetMarineClass() == iProfileClass )
+		{
+			nSelectedClass++;
 		}
 	}
 
-	return false;
+	return nSelectedProfile >= asw_marines_max_per_profile.GetInt() || nSelectedClass >= asw_marines_max_by_class[iProfileClass].GetInt();
 }
 
 int CASW_Briefing::GetMaxPlayers()

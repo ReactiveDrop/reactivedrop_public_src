@@ -215,9 +215,8 @@ void CNB_Mission_Panel::OnThink()
 	m_bIgnoreSelections = true;
 
 	// disable mission settings flyouts if not leader or the mission has started
-	int iLeaderIndex = ASWGameResource() ? ASWGameResource()->GetLeaderEntIndex() : -1;
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	bool bLeader = ( pPlayer && (pPlayer->entindex() == iLeaderIndex ) );
+	bool bLeader = pPlayer && ASWGameResource() && ASWGameResource()->GetLeader() == pPlayer;
 
 	const bool bDeathmatchIngame =  ASWDeathmatchMode() && ASWGameRules()->GetGameState() == ASW_GS_INGAME;
 	const bool bInBriefing = ASWGameRules()->GetGameState() == ASW_GS_BRIEFING;

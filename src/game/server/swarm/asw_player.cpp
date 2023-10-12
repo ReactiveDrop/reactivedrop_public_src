@@ -837,9 +837,18 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 
 				return true;
 			}
+			else if ( FStrEq( pcmd, "cl_dselectallm" ) )
+			{
+				if ( !ASWGameRules() )
+					return false;
+
+				ASWGameRules()->RosterDeselectAll( this );
+
+				return true;
+			}
 			else if ( FStrEq( pcmd, "cl_revive" ) )			// revive all dead marines, leader only
 			{
-				if (ASWGameResource() && ASWGameResource()->m_iLeaderIndex == entindex() && ASWGameRules())
+				if (ASWGameResource() && ASWGameResource()->GetLeader() == this && ASWGameRules())
 				{
 					ASWGameRules()->ReviveDeadMarines();
 				}
@@ -848,7 +857,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			}
 			else if ( FStrEq( pcmd, "cl_wants_start" ) )			// print a message telling the other players that you want to start
 			{
-				if (ASWGameResource() && ASWGameResource()->m_iLeaderIndex == entindex() && ASWGameRules())
+				if (ASWGameResource() && ASWGameResource()->GetLeader() == this && ASWGameRules() )
 				{
 					if (ASWGameRules()->GetGameState() == ASW_GS_BRIEFING)
 					{
@@ -1343,7 +1352,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 		{
 			if ( FStrEq( pcmd, "cl_wants_continue" ) )			// print a message telling the other players that you want to start
 			{
-				if (ASWGameResource() && ASWGameResource()->m_iLeaderIndex == entindex() && ASWGameRules())
+				if (ASWGameResource() && ASWGameResource()->GetLeader() == this && ASWGameRules() )
 				{
 					if (ASWGameRules()->GetGameState() == ASW_GS_DEBRIEF)
 					{
@@ -1358,7 +1367,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			}
 			else if ( FStrEq( pcmd, "cl_wants_returnmap" ) )			// print a message telling the other players that you want to start
 			{
-				if (ASWGameResource() && ASWGameResource()->m_iLeaderIndex == entindex() && ASWGameRules())
+				if (ASWGameResource() && ASWGameResource()->GetLeader() == this && ASWGameRules() )
 				{
 					if (ASWGameRules()->GetGameState() == ASW_GS_DEBRIEF)
 					{
@@ -1526,7 +1535,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 	}
 	else if ( FStrEq( pcmd, "cl_wants_restart" ) )			// print a message telling the other players that you want to start
 	{
-		if (ASWGameResource() && ASWGameResource()->m_iLeaderIndex == entindex() && ASWGameRules())
+		if (ASWGameResource() && ASWGameResource()->GetLeader() == this && ASWGameRules() )
 		{
 			if (ASWGameRules()->GetGameState() == ASW_GS_DEBRIEF)
 			{
@@ -1582,7 +1591,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			return false;
 		}
 		// make sure we're leader
-		if ( ASWGameResource() && ASWGameResource()->m_iLeaderIndex == entindex() )
+		if ( ASWGameResource() && ASWGameResource()->GetLeader() == this )
 		{
 			int iTargetMission = atoi( args[1] );
 			const RD_Campaign_t *pCampaign = ASWGameRules()->GetCampaignInfo();
@@ -1613,7 +1622,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 	else if ( FStrEq( pcmd, "cl_forcelaunch") )
 	{
 		// make sure we're leader
-		if (ASWGameResource() && ASWGameResource()->m_iLeaderIndex == entindex())
+		if (ASWGameResource() && ASWGameResource()->GetLeader() == this )
 		{
 			if ( ASWGameRules() && ASWGameRules()->GetCampaignSave() )
 			{

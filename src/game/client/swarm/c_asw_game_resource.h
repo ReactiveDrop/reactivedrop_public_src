@@ -20,49 +20,45 @@ class CASW_Marine_Profile;
 
 class C_ASW_Game_Resource : public C_BaseEntity
 {
-public:
 	DECLARE_CLASS( C_ASW_Game_Resource, C_BaseEntity );
+public:
 	DECLARE_CLIENTCLASS();
 
-					C_ASW_Game_Resource();
-	virtual			~C_ASW_Game_Resource();
+	C_ASW_Game_Resource();
+	virtual ~C_ASW_Game_Resource();
 
 	CNetworkArray( CHandle<C_ASW_Marine_Resource>, m_MarineResources, ASW_MAX_MARINE_RESOURCES );
 	CNetworkArray( CHandle<C_ASW_Objective>, m_Objectives, ASW_MAX_OBJECTIVES );
-	CNetworkArray( int, m_iRosterSelected, ASW_NUM_MARINE_PROFILES);
 	CNetworkVar( bool, m_bOneMarineEach );
 	CNetworkVar( int, m_iMaxMarines );
 
 	// which player is the leader
-	CNetworkHandle (C_ASW_Player, m_Leader);
-	CNetworkVar(int, m_iLeaderIndex);
+	CNetworkHandle( C_ASW_Player, m_Leader );
+	C_ASW_Player *GetLeader();
 	CNetworkArray( bool, m_bPlayerReady, ASW_MAX_READY_PLAYERS );
-	bool IsPlayerReady(C_ASW_Player *pPlayer);
-	bool IsPlayerReady(int iPlayerEntIndex);
+	bool IsPlayerReady( C_ASW_Player *pPlayer );
+	bool IsPlayerReady( int iPlayerEntIndex );
 
-	C_ASW_Scanner_Info* GetScannerInfo();
-	CNetworkHandle (C_ASW_Scanner_Info, m_hScannerInfo);
+	C_ASW_Scanner_Info *GetScannerInfo();
+	CNetworkHandle( C_ASW_Scanner_Info, m_hScannerInfo );
 
 	bool IsOfflineGame() const { return m_bOfflineGame || ( gpGlobals->maxClients == 1 ); }
 	CNetworkVar( bool, m_bOfflineGame );
 		
 	int IsCampaignGame() { return m_iCampaignGame; }
-	CNetworkVar(int, m_iCampaignGame);	// is this a campaign game?  -1 = unknown, 0 = single mission, 1 = campaign
+	CNetworkVar( int, m_iCampaignGame );	// is this a campaign game?  -1 = unknown, 0 = single mission, 1 = campaign
 
-	C_ASW_Objective* GetObjective(int i);
-	C_ASW_Marine_Resource* GetMarineResource(int i);
-	int GetIndexFor(C_ASW_Marine_Resource* pMarineResource);
-	bool IsRosterSelected(int i);
-	bool IsRosterReserved(int i);
+	C_ASW_Objective *GetObjective( int i );
+	C_ASW_Marine_Resource *GetMarineResource( int i );
+	int GetIndexFor( C_ASW_Marine_Resource *pMarineResource );
+	bool IsRosterSelected( int i );
 	int GetMarineResourceIndex( C_ASW_Marine_Resource *pMR );
 	bool AtLeastOneMarine();	// is at least one marine selected?
 
 	int GetMaxMarineResources() { return ASW_MAX_MARINE_RESOURCES; }
-	int GetNumMarines(C_ASW_Player *pPlayer, bool bAliveOnly=false);	// returns how many marines this player has selected
-	C_ASW_Player* GetLeader();
-	int GetLeaderEntIndex() { return m_iLeaderIndex; }
+	int GetNumMarines( C_ASW_Player *pPlayer, bool bAliveOnly = false );	// returns how many marines this player has selected
 	int GetNumMarineResources();
-	C_ASW_Marine_Resource* GetFirstMarineResourceForPlayer( C_ASW_Player *pPlayer );	// returns the first marine resource controlled by this player
+	C_ASW_Marine_Resource *GetFirstMarineResourceForPlayer( C_ASW_Player *pPlayer );	// returns the first marine resource controlled by this player
 
 	C_ASW_Campaign_Save* GetCampaignSave();
 	CNetworkHandle(C_ASW_Campaign_Save, m_hCampaignSave);
@@ -90,9 +86,9 @@ public:
 	int CountAllAliveMarines( void );
 
 	// returns count of all marines in these bounds;
-	int EnumerateMarinesInBox(Vector &mins, Vector &maxs);	
-	C_ASW_Marine* EnumeratedMarine(int i);
-	C_ASW_Marine* m_pEnumeratedMarines[12];
+	int EnumerateMarinesInBox( const Vector &mins, const Vector &maxs );
+	C_ASW_Marine *EnumeratedMarine( int i );
+	C_ASW_Marine *m_pEnumeratedMarines[ASW_MAX_MARINE_RESOURCES];
 	int m_iNumEnumeratedMarines;
 
 	// a convenient means of finding which marines are closest

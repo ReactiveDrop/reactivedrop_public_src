@@ -18,47 +18,40 @@ LINK_ENTITY_TO_CLASS( asw_game_resource, CASW_Game_Resource );
 
 extern void SendProxy_String_tToString( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID );
 
-IMPLEMENT_SERVERCLASS_ST(CASW_Game_Resource, DT_ASW_Game_Resource)	
-	//SendPropArray( SendPropEHandle( SENDINFO_ARRAY(m_MarineResources) ), m_MarineResources ),
-	SendPropArray3( SENDINFO_ARRAY3(m_MarineResources), SendPropEHandle( SENDINFO_ARRAY(m_MarineResources) ) ),
-	//SendPropArray( SendPropEHandle( SENDINFO_ARRAY(m_Objectives) ),	m_Objectives ),
-	SendPropArray3( SENDINFO_ARRAY3(m_Objectives), SendPropEHandle( SENDINFO_ARRAY(m_Objectives) ) ),		
-	//SendPropArray( SendPropBool( SENDINFO_ARRAY(m_bRosterSelected) ), m_bRosterSelected	),
-	SendPropArray3	( SENDINFO_ARRAY3(m_iRosterSelected), SendPropInt( SENDINFO_ARRAY(m_iRosterSelected) ) ),
-	SendPropArray3	( SENDINFO_ARRAY3(m_bPlayerReady), SendPropBool( SENDINFO_ARRAY(m_bPlayerReady) ) ),
-	
-	
-	SendPropEHandle (SENDINFO(m_Leader) ),
-	SendPropInt(SENDINFO(m_iLeaderIndex), 8),
-	SendPropEHandle (SENDINFO(m_hScannerInfo) ),
-	SendPropInt(SENDINFO(m_iCampaignGame), 4),
-	SendPropEHandle (SENDINFO(m_hCampaignSave) ),
-	SendPropBool (SENDINFO(m_bOneMarineEach)),
-	SendPropInt(SENDINFO(m_iMaxMarines)),
-	SendPropBool (SENDINFO(m_bOfflineGame)),
+IMPLEMENT_SERVERCLASS_ST( CASW_Game_Resource, DT_ASW_Game_Resource )
+	SendPropArray3( SENDINFO_ARRAY3( m_MarineResources ), SendPropEHandle( SENDINFO_ARRAY( m_MarineResources ) ) ),
+	SendPropArray3( SENDINFO_ARRAY3( m_Objectives ), SendPropEHandle( SENDINFO_ARRAY( m_Objectives ) ) ),
+	SendPropArray3( SENDINFO_ARRAY3( m_bPlayerReady ), SendPropBool( SENDINFO_ARRAY( m_bPlayerReady ) ) ),
+
+	SendPropEHandle( SENDINFO( m_Leader ) ),
+	SendPropEHandle( SENDINFO( m_hScannerInfo ) ),
+	SendPropInt( SENDINFO( m_iCampaignGame ), 2 ),
+	SendPropEHandle( SENDINFO( m_hCampaignSave ) ),
+	SendPropBool( SENDINFO( m_bOneMarineEach ) ),
+	SendPropInt( SENDINFO( m_iMaxMarines ) ),
+	SendPropBool( SENDINFO( m_bOfflineGame ) ),
 
 	// marine skills
-	SendPropArray3( SENDINFO_ARRAY3( m_iSkillSlot0 ), SendPropInt( SENDINFO_ARRAY( m_iSkillSlot0 ), ASW_NUM_MARINE_PROFILES, SPROP_UNSIGNED ) ),
-	SendPropArray3( SENDINFO_ARRAY3( m_iSkillSlot1 ), SendPropInt( SENDINFO_ARRAY( m_iSkillSlot1 ), ASW_NUM_MARINE_PROFILES, SPROP_UNSIGNED ) ),
-	SendPropArray3( SENDINFO_ARRAY3( m_iSkillSlot2 ), SendPropInt( SENDINFO_ARRAY( m_iSkillSlot2 ), ASW_NUM_MARINE_PROFILES, SPROP_UNSIGNED ) ),
-	SendPropArray3( SENDINFO_ARRAY3( m_iSkillSlot3 ), SendPropInt( SENDINFO_ARRAY( m_iSkillSlot3 ), ASW_NUM_MARINE_PROFILES, SPROP_UNSIGNED ) ),
-	SendPropArray3( SENDINFO_ARRAY3( m_iSkillSlot4 ), SendPropInt( SENDINFO_ARRAY( m_iSkillSlot4 ), ASW_NUM_MARINE_PROFILES, SPROP_UNSIGNED ) ),
-	SendPropArray3( SENDINFO_ARRAY3( m_iSkillSlotSpare ), SendPropInt( SENDINFO_ARRAY( m_iSkillSlotSpare ), ASW_NUM_MARINE_PROFILES, SPROP_UNSIGNED ) ),
+	SendPropArray( SendPropInt( SENDINFO_ARRAY( m_iSkillSlot0 ), 3, SPROP_UNSIGNED ), m_iSkillSlot0 ),
+	SendPropArray( SendPropInt( SENDINFO_ARRAY( m_iSkillSlot1 ), 3, SPROP_UNSIGNED ), m_iSkillSlot1 ),
+	SendPropArray( SendPropInt( SENDINFO_ARRAY( m_iSkillSlot2 ), 3, SPROP_UNSIGNED ), m_iSkillSlot2 ),
+	SendPropArray( SendPropInt( SENDINFO_ARRAY( m_iSkillSlot3 ), 3, SPROP_UNSIGNED ), m_iSkillSlot3 ),
+	SendPropArray( SendPropInt( SENDINFO_ARRAY( m_iSkillSlot4 ), 3, SPROP_UNSIGNED ), m_iSkillSlot4 ),
+	SendPropArray( SendPropInt( SENDINFO_ARRAY( m_iSkillSlotSpare ), 3, SPROP_UNSIGNED ), m_iSkillSlotSpare ),
 
 	// player specific medals
 	SendPropArray( SendPropString( SENDINFO_ARRAY( m_iszPlayerMedals ), 0, SendProxy_String_tToString ), m_iszPlayerMedals ),
 
-	SendPropArray3( SENDINFO_ARRAY3( m_iKickVotes ), SendPropInt( SENDINFO_ARRAY( m_iKickVotes ), ASW_MAX_READY_PLAYERS, SPROP_UNSIGNED ) ),
-	SendPropArray3( SENDINFO_ARRAY3( m_iLeaderVotes ), SendPropInt( SENDINFO_ARRAY( m_iLeaderVotes ), ASW_MAX_READY_PLAYERS, SPROP_UNSIGNED ) ),
+	SendPropArray3( SENDINFO_ARRAY3( m_iKickVotes ), SendPropInt( SENDINFO_ARRAY( m_iKickVotes ), NumBitsForCount( ASW_MAX_READY_PLAYERS ), SPROP_UNSIGNED ) ),
+	SendPropArray3( SENDINFO_ARRAY3( m_iLeaderVotes ), SendPropInt( SENDINFO_ARRAY( m_iLeaderVotes ), NumBitsForCount( ASW_MAX_READY_PLAYERS ), SPROP_UNSIGNED ) ),
 
-	SendPropInt(SENDINFO(m_iMoney)),
-	SendPropInt(SENDINFO(m_iNextCampaignMission)),
+	SendPropInt( SENDINFO( m_iMoney ) ),
+	SendPropInt( SENDINFO( m_iNextCampaignMission ) ),
+	SendPropInt( SENDINFO( m_nDifficultySuggestion ), 2, SPROP_UNSIGNED ),
 
-	SendPropInt(SENDINFO(m_nDifficultySuggestion)),
-
-	SendPropFloat( SENDINFO(m_fMapGenerationProgress) ),
-	SendPropString( SENDINFO(m_szMapGenerationStatus) ),
-	SendPropInt( SENDINFO(m_iRandomMapSeed) ),
+	SendPropFloat( SENDINFO( m_fMapGenerationProgress ) ),
+	SendPropString( SENDINFO( m_szMapGenerationStatus ) ),
+	SendPropInt( SENDINFO( m_iRandomMapSeed ) ),
 END_SEND_TABLE()
 
 //---------------------------------------------------------
@@ -67,11 +60,9 @@ END_SEND_TABLE()
 BEGIN_DATADESC( CASW_Game_Resource )
 	DEFINE_AUTO_ARRAY( m_MarineResources, FIELD_EHANDLE ),
 	DEFINE_AUTO_ARRAY( m_Objectives, FIELD_EHANDLE ),
-	DEFINE_AUTO_ARRAY( m_iRosterSelected, FIELD_INTEGER ),	
-	DEFINE_AUTO_ARRAY( m_bPlayerReady, FIELD_BOOLEAN ),	
+	DEFINE_AUTO_ARRAY( m_bPlayerReady, FIELD_BOOLEAN ),
 	DEFINE_AUTO_ARRAY( m_iCampaignVote, FIELD_INTEGER ),
 	DEFINE_FIELD( m_Leader, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_iLeaderIndex, FIELD_INTEGER ),
 	DEFINE_FIELD( m_hScannerInfo, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_NumObjectives, FIELD_INTEGER ),
 	DEFINE_FIELD( m_iCampaignGame, FIELD_INTEGER ),
@@ -160,8 +151,10 @@ CASW_Game_Resource::CASW_Game_Resource()
 
 CASW_Game_Resource::~CASW_Game_Resource()
 {
-	if (m_hScannerInfo.Get())
-		delete m_hScannerInfo.Get();
+	if ( m_hScannerInfo.Get() )
+	{
+		UTIL_Remove( m_hScannerInfo.Get() );
+	}
 
 	if ( g_pASWGameResource == this )
 	{
@@ -183,10 +176,10 @@ CASW_Objective *CASW_Game_Resource::GetObjective( int i )
 	return m_Objectives[i];
 }
 
-void CASW_Game_Resource::FindObjectivesOfClass(const char *szClass)
+void CASW_Game_Resource::FindObjectivesOfClass( const char *szClass )
 {
-	CBaseEntity* pEntity = NULL;
-	while ((pEntity = gEntList.FindEntityByClassname( pEntity, szClass )) != NULL)
+	CBaseEntity *pEntity = NULL;
+	while ( ( pEntity = gEntList.FindEntityByClassname( pEntity, szClass ) ) != NULL )
 	{
 		if ( m_NumObjectives >= ASW_MAX_OBJECTIVES )
 		{
@@ -229,26 +222,6 @@ void CASW_Game_Resource::FindObjectives()
 	}
 }
 
-void CASW_Game_Resource::SetRosterSelected(int i, int iSelected)
-{
-	if (i<0 || i>=ASW_NUM_MARINE_PROFILES)
-		return;
-	
-	if (iSelected != m_iRosterSelected[i])
-	{
-		// update num selected
-		if (iSelected == 1 && m_iRosterSelected[i] != 1)
-		{
-			m_iNumMarinesSelected++;
-		}
-		else if (iSelected != 1 && m_iRosterSelected[i] == 1)
-		{
-			m_iNumMarinesSelected--;
-		}
-		m_iRosterSelected.Set(i, iSelected);
-	}
-}
-
 // unselects a single marine
 // tries to pick the player with the most marines selected
 void CASW_Game_Resource::RemoveAMarine()
@@ -256,118 +229,120 @@ void CASW_Game_Resource::RemoveAMarine()
 	int iHighest = 0;
 	CASW_Player *pChosen = NULL;
 
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )	
+	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 	{
-		CASW_Player* pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(i));
+		CASW_Player *pOtherPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
 
 		if ( pOtherPlayer && pOtherPlayer->IsConnected() )
 		{
-			int iMarines = GetNumMarines(pOtherPlayer);
-			if (iHighest == 0 || iMarines > iHighest)
+			int iMarines = GetNumMarines( pOtherPlayer );
+			if ( iHighest == 0 || iMarines > iHighest )
 			{
 				iHighest = iMarines;
 				pChosen = pOtherPlayer;
 			}
-		}		
+		}
 	}
-	RemoveAMarineFor(pChosen);
+	RemoveAMarineFor( pChosen );
 }
 
-void CASW_Game_Resource::RemoveAMarineFor(CASW_Player *pPlayer)
+void CASW_Game_Resource::RemoveAMarineFor( CASW_Player *pPlayer )
 {
-	if (!pPlayer || !ASWGameRules())
+	if ( !pPlayer || !ASWGameRules() )
 		return;
 
 	// find this player's first marine and remove it
 	int m = GetMaxMarineResources();
-	for (int i=0;i<m;i++)
+	for ( int i = 0; i < m; i++ )
 	{
-		if (GetMarineResource(i) && GetMarineResource(i)->GetCommander() == pPlayer)
+		if ( GetMarineResource( i ) && GetMarineResource( i )->GetCommander() == pPlayer )
 		{
-			ASWGameRules()->RosterDeselect(pPlayer, GetMarineResource(i)->GetProfileIndex());
+			ASWGameRules()->RosterDeselect( pPlayer, GetMarineResource( i )->GetProfileIndex() );
 			return;
 		}
 	}
 }
 
-
 bool CASW_Game_Resource::AddMarineResource( CASW_Marine_Resource *m, int nPreferredSlot )
 {
 	if ( nPreferredSlot != -1 )
 	{
-		CASW_Marine_Resource *pExisting = static_cast<CASW_Marine_Resource*>( m_MarineResources[ nPreferredSlot ].Get() );
+		CASW_Marine_Resource *pExisting = static_cast< CASW_Marine_Resource * >( m_MarineResources[nPreferredSlot].Get() );
 		if ( pExisting != NULL )
 		{
 			// if the existing is owned by someone else, then we abort
 			if ( pExisting->GetCommander() != m->GetCommander() )
 				return false;
 
-			SetRosterSelected( pExisting->GetProfileIndex(), 0 );
+			m_iNumMarinesSelected--;
 			UTIL_Remove( pExisting );
 		}
 
+		m_iNumMarinesSelected++;
 		m_MarineResources.Set( nPreferredSlot, m );
 
 		// the above causes strange cases where the client copy of this networked array is incorrect
 		// so we flag each element dirty to cause a complete update, which seems to fix the problem
-		for (int k=0;k<ASW_MAX_MARINE_RESOURCES;k++)
+		for ( int k = 0; k < ASW_MAX_MARINE_RESOURCES; k++ )
 		{
-			m_MarineResources.GetForModify(k);
+			m_MarineResources.GetForModify( k );
 		}
 		return true;
 	}
 
-	for (int i=0;i<ASW_MAX_MARINE_RESOURCES;i++)
+	for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
 	{
-		if (m_MarineResources[i] == NULL)	// found a free slot
+		if ( m_MarineResources[i] == NULL )	// found a free slot
 		{
-			m_MarineResources.Set(i, m);
+			m_iNumMarinesSelected++;
+			m_MarineResources.Set( i, m );
 
 			// the above causes strange cases where the client copy of this networked array is incorrect
 			// so we flag each element dirty to cause a complete update, which seems to fix the problem
-			for (int k=0;k<ASW_MAX_MARINE_RESOURCES;k++)
+			for ( int k = 0; k < ASW_MAX_MARINE_RESOURCES; k++ )
 			{
-				m_MarineResources.GetForModify(k);
+				m_MarineResources.GetForModify( k );
 			}
 			return true;
 		}
 	}
-	Msg("Couldn't add new marine resource to list as no free slots\n");
+	Msg( "Couldn't add new marine resource to list as no free slots\n" );
 	return false;
 }
 
-void CASW_Game_Resource::DeleteMarineResource(CASW_Marine_Resource *m)
+void CASW_Game_Resource::DeleteMarineResource( CASW_Marine_Resource *m )
 {
-	for (int i=0;i<ASW_MAX_MARINE_RESOURCES;i++)
+	for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
 	{
-		if (GetMarineResource(i) == m)
+		if ( GetMarineResource( i ) == m )
 		{
-			m_MarineResources.Set(i, NULL);
-			UTIL_Remove(m);
+			m_iNumMarinesSelected--;
+			m_MarineResources.Set( i, NULL );
+			UTIL_Remove( m );
 			// need to shuffle all others up
-			for (int k=i;k<(ASW_MAX_MARINE_RESOURCES-1);k++)
+			for ( int k = i; k < ( ASW_MAX_MARINE_RESOURCES - 1 ); k++ )
 			{
-				CASW_Marine_Resource *other = GetMarineResource(k+1);
-				m_MarineResources.Set(k, other);
-				m_MarineResources.Set(k+1, NULL);
+				CASW_Marine_Resource *other = GetMarineResource( k + 1 );
+				m_MarineResources.Set( k, other );
+				m_MarineResources.Set( k + 1, NULL );
 			}
 		}
 	}
 	// the above causes strange cases where the client copy of this networked array is incorrect
 	// so we flag each element dirty to cause a complete update, which seems to fix the problem
-	for (int i=0;i<ASW_MAX_MARINE_RESOURCES;i++)
+	for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
 	{
-		m_MarineResources.GetForModify(i);
+		m_MarineResources.GetForModify( i );
 	}
 }
 
-CASW_Marine_Resource* CASW_Game_Resource::GetMarineResource(int i)
+CASW_Marine_Resource *CASW_Game_Resource::GetMarineResource( int i )
 {
-	if (i<0 || i>=ASW_MAX_MARINE_RESOURCES || m_MarineResources[i] == NULL)
-		return NULL;
+	Assert( i >= 0 && i < ASW_MAX_MARINE_RESOURCES );
+	if ( i >= 0 && i < ASW_MAX_MARINE_RESOURCES )
+		return m_MarineResources[i].Get();
 
-	CBaseEntity* c = m_MarineResources[i].Get();
-	return static_cast<CASW_Marine_Resource*>(c);
+	return NULL;
 }
 
 CASW_Scanner_Info* CASW_Game_Resource::GetScannerInfo()
@@ -379,29 +354,29 @@ void CASW_Game_Resource::SetLeader(CASW_Player *pPlayer)
 {
 	extern ConVar rd_ready_mark_override;
 	// check for auto-readying our old leader
-	if (m_Leader.Get() && m_Leader.Get() != pPlayer && ASWGameRules() && 
-		(m_Leader->m_bRequestedSpectator || rd_ready_mark_override.GetBool()))
+	if ( m_Leader.Get() && m_Leader.Get() != pPlayer && ASWGameRules() &&
+		( m_Leader->m_bRequestedSpectator || rd_ready_mark_override.GetBool() ) )
 	{
 		int iPlayerIndex = m_Leader->entindex() - 1;
-		if (ASWGameRules()->GetGameState() == ASW_GS_BRIEFING || ASWGameRules()->GetGameState()==ASW_GS_DEBRIEF)
+		if ( ASWGameRules()->GetGameState() == ASW_GS_BRIEFING || ASWGameRules()->GetGameState() == ASW_GS_DEBRIEF )
 		{
 			// player index is out of range
-			if (iPlayerIndex >= 0 && iPlayerIndex < ASW_MAX_READY_PLAYERS)
+			if ( iPlayerIndex >= 0 && iPlayerIndex < ASW_MAX_READY_PLAYERS )
 			{
 				//Msg("Autoreadying old leader, who wanted to be a spectator\n");
-				m_bPlayerReady.Set(iPlayerIndex, true);
+				m_bPlayerReady.Set( iPlayerIndex, true );
 			}
 		}
-		else if (ASWGameRules()->GetGameState() == ASW_GS_CAMPAIGNMAP && ASWGameRules()->GetCampaignSave())
+		else if ( ASWGameRules()->GetGameState() == ASW_GS_CAMPAIGNMAP && ASWGameRules()->GetCampaignSave() )
 		{
-			Msg(" old leader telling campaign save that we're spectating\n", iPlayerIndex);
-			ASWGameRules()->GetCampaignSave()->PlayerSpectating(m_Leader.Get());
+			Msg( " old leader telling campaign save that we're spectating\n", iPlayerIndex );
+			ASWGameRules()->GetCampaignSave()->PlayerSpectating( m_Leader.Get() );
 		}
 	}
-	if (!pPlayer)
+
+	if ( !pPlayer )
 	{
 		m_Leader = NULL;
-		m_iLeaderIndex = -1;
 		return;
 	}
 
@@ -413,22 +388,20 @@ void CASW_Game_Resource::SetLeader(CASW_Player *pPlayer)
 	}
 
 	m_Leader = pPlayer;
-	m_iLeaderIndex = pPlayer->entindex();
 	
 	if ( ASWGameRules() && (ASWGameRules()->GetGameState() == ASW_GS_BRIEFING || ASWGameRules()->GetGameState() == ASW_GS_DEBRIEF) )
 	{
 		// unready leader
-		int iPlayerIndex = m_iLeaderIndex - 1;
-
-		// player index is out of range
-		if (iPlayerIndex >= 0 && iPlayerIndex < ASW_MAX_READY_PLAYERS)
+		int iPlayerIndex = pPlayer->entindex() - 1;
+		Assert( iPlayerIndex >= 0 && iPlayerIndex < ASW_MAX_READY_PLAYERS );
+		if ( iPlayerIndex >= 0 && iPlayerIndex < ASW_MAX_READY_PLAYERS )
 		{
-			m_bPlayerReady.Set(iPlayerIndex, false);
+			m_bPlayerReady.Set( iPlayerIndex, false );
 		}
 	}
 }
 
-CASW_Campaign_Save* CASW_Game_Resource::GetCampaignSave()
+CASW_Campaign_Save *CASW_Game_Resource::GetCampaignSave()
 {
 	return m_hCampaignSave.Get();
 }
@@ -515,14 +488,14 @@ CASW_Player* CASW_Game_Resource::GetLeader()
 	return m_Leader.Get();
 }
 
-CASW_Marine* CASW_Game_Resource::FindMarineByVoiceType( ASW_Voice_Type voice )
+CASW_Marine *CASW_Game_Resource::FindMarineByVoiceType( ASW_Voice_Type voice )
 {
-	int m = GetMaxMarineResources();	
-	for (int i=0;i<m;i++)
+	int m = GetMaxMarineResources();
+	for ( int i = 0; i < m; i++ )
 	{
-		if (GetMarineResource(i) && GetMarineResource(i)->GetProfile() && GetMarineResource(i)->GetProfile()->m_VoiceType == voice)
+		if ( GetMarineResource( i ) && GetMarineResource( i )->GetProfile() && GetMarineResource( i )->GetProfile()->m_VoiceType == voice )
 		{
-			return GetMarineResource(i)->GetMarineEntity();
+			return GetMarineResource( i )->GetMarineEntity();
 		}
 	}
 	return NULL;
@@ -530,26 +503,26 @@ CASW_Marine* CASW_Game_Resource::FindMarineByVoiceType( ASW_Voice_Type voice )
 
 void CASW_Game_Resource::RememberLeaderID()
 {
-	if (GetLeader())
+	if ( GetLeader() )
 	{
-		SetLastLeaderNetworkID(GetLeader()->GetASWNetworkID());
+		SetLastLeaderNetworkID( GetLeader()->GetASWNetworkID() );
 	}
 }
 
-const char* CASW_Game_Resource::GetLastLeaderNetworkID()
+const char *CASW_Game_Resource::GetLastLeaderNetworkID()
 {
 	return s_szLastLeaderNetworkID;
 }
 
-void CASW_Game_Resource::SetLastLeaderNetworkID(const char* szID)
+void CASW_Game_Resource::SetLastLeaderNetworkID( const char *szID )
 {
-	Q_snprintf(s_szLastLeaderNetworkID, sizeof(s_szLastLeaderNetworkID), "%s", szID);
+	Q_snprintf( s_szLastLeaderNetworkID, sizeof( s_szLastLeaderNetworkID ), "%s", szID );
 }
 
 int CASW_Game_Resource::GetAliensKilledInThisMission()
 {
 	int nCount = 0;
-	int m = GetMaxMarineResources();	
+	int m = GetMaxMarineResources();
 	for ( int i = 0; i < m; i++ )
 	{
 		CASW_Marine_Resource *pMR = GetMarineResource( i );

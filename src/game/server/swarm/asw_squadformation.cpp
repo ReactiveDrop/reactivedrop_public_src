@@ -42,8 +42,32 @@ ConVar rd_follow_hint_pathfind_bad( "rd_follow_hint_pathfind_bad", "2.5", FCVAR_
 
 bool FireSystem_IsValidFirePosition( const Vector &position, float testRadius );
 
-static const int s_SquadDebugColors[7][3] =
+static const int s_SquadDebugColors[CASW_SquadFormation::MAX_SQUAD_SIZE][3] =
 {
+	{ 225, 60, 60 },
+	{ 200, 200, 60 },
+	{ 60, 225, 60 },
+	{ 30, 90, 225 },
+	{ 225, 150, 30 },
+	{ 225, 60, 150 },
+	{ 120, 80, 250 },
+	{ 80, 120, 250 },
+	{ 225, 60, 60 },
+	{ 200, 200, 60 },
+	{ 60, 225, 60 },
+	{ 30, 90, 225 },
+	{ 225, 150, 30 },
+	{ 225, 60, 150 },
+	{ 120, 80, 250 },
+	{ 80, 120, 250 },
+	{ 225, 60, 60 },
+	{ 200, 200, 60 },
+	{ 60, 225, 60 },
+	{ 30, 90, 225 },
+	{ 225, 150, 30 },
+	{ 225, 60, 150 },
+	{ 120, 80, 250 },
+	{ 80, 120, 250 },
 	{ 225, 60, 60 },
 	{ 200, 200, 60 },
 	{ 60, 225, 60 },
@@ -137,15 +161,40 @@ bool CASW_SquadFormation::Remove( CASW_Marine *pMarine, bool bIgnoreAssert )
 	}
 }
 
-const  Vector CASW_SquadFormation::s_MarineFollowOffset[MAX_SQUAD_SIZE]=
+const  Vector CASW_SquadFormation::s_MarineFollowOffset[MAX_SQUAD_SIZE] =
 {
-	Vector(-60, -70, 0),
-	Vector(-120, 0, 0),
-	Vector(-60, 70, 0),
-	Vector(-100, 50, 0),
-	Vector(-100, -50, 0),
-	Vector(-20, 50, 0),
-	Vector(-20, -50, 0)
+	Vector( -60, -70, 0 ),
+	Vector( -120, 0, 0 ),
+	Vector( -60, 70, 0 ),
+	Vector( -100, 50, 0 ),
+	Vector( -100, -50, 0 ),
+	Vector( -20, 50, 0 ),
+	Vector( -20, -50, 0 ),
+	// TODO: squads with more than 8 marines
+	Vector( 0, 0, 0 ),
+	Vector( -60, -70, 0 ),
+	Vector( -120, 0, 0 ),
+	Vector( -60, 70, 0 ),
+	Vector( -100, 50, 0 ),
+	Vector( -100, -50, 0 ),
+	Vector( -20, 50, 0 ),
+	Vector( -20, -50, 0 ),
+	Vector( 0, 0, 0 ),
+	Vector( -60, -70, 0 ),
+	Vector( -120, 0, 0 ),
+	Vector( -60, 70, 0 ),
+	Vector( -100, 50, 0 ),
+	Vector( -100, -50, 0 ),
+	Vector( -20, 50, 0 ),
+	Vector( -20, -50, 0 ),
+	Vector( 0, 0, 0 ),
+	Vector( -60, -70, 0 ),
+	Vector( -120, 0, 0 ),
+	Vector( -60, 70, 0 ),
+	Vector( -100, 50, 0 ),
+	Vector( -100, -50, 0 ),
+	Vector( -20, 50, 0 ),
+	Vector( -20, -50, 0 ),
 };
 
 const  float CASW_SquadFormation::s_MarineFollowDirection[MAX_SQUAD_SIZE]=
@@ -156,19 +205,69 @@ const  float CASW_SquadFormation::s_MarineFollowDirection[MAX_SQUAD_SIZE]=
 	125,
 	-125,
 	35,
-	-35
+	-35,
+	// TODO: squads with more than 8 marines
+	0,
+	-70,
+	180,
+	70,
+	125,
+	-125,
+	35,
+	-35,
+	0,
+	-70,
+	180,
+	70,
+	125,
+	-125,
+	35,
+	-35,
+	0,
+	-70,
+	180,
+	70,
+	125,
+	-125,
+	35,
+	-35,
 };
 
 // position offsets when standing around a heal beacon
-const  Vector CASW_SquadFormation::s_MarineBeaconOffset[MAX_SQUAD_SIZE]=
+const  Vector CASW_SquadFormation::s_MarineBeaconOffset[MAX_SQUAD_SIZE] =
 {
-	Vector(30, -52, 0),
-	Vector(-52, 0, 0),
-	Vector(30, 52, 0),
-	Vector(-30, 40, 0),
-	Vector(-30, -40, 0),
-	Vector(-20, 40, 0),
-	Vector(-20, -40, 0)
+	Vector( 30, -52, 0 ),
+	Vector( -52, 0, 0 ),
+	Vector( 30, 52, 0 ),
+	Vector( -30, 40, 0 ),
+	Vector( -30, -40, 0 ),
+	Vector( -20, 40, 0 ),
+	Vector( -20, -40, 0 ),
+	// TODO: squads with more than 8 marines
+	Vector( 0, 0, 0 ),
+	Vector( 30, -52, 0 ),
+	Vector( -52, 0, 0 ),
+	Vector( 30, 52, 0 ),
+	Vector( -30, 40, 0 ),
+	Vector( -30, -40, 0 ),
+	Vector( -20, 40, 0 ),
+	Vector( -20, -40, 0 ),
+	Vector( 0, 0, 0 ),
+	Vector( 30, -52, 0 ),
+	Vector( -52, 0, 0 ),
+	Vector( 30, 52, 0 ),
+	Vector( -30, 40, 0 ),
+	Vector( -30, -40, 0 ),
+	Vector( -20, 40, 0 ),
+	Vector( -20, -40, 0 ),
+	Vector( 0, 0, 0 ),
+	Vector( 30, -52, 0 ),
+	Vector( -52, 0, 0 ),
+	Vector( 30, 52, 0 ),
+	Vector( -30, 40, 0 ),
+	Vector( -30, -40, 0 ),
+	Vector( -20, 40, 0 ),
+	Vector( -20, -40, 0 ),
 };
 
 const  float CASW_SquadFormation::s_MarineBeaconDirection[MAX_SQUAD_SIZE]=
@@ -179,7 +278,32 @@ const  float CASW_SquadFormation::s_MarineBeaconDirection[MAX_SQUAD_SIZE]=
 	125,
 	-125,
 	35,
-	-35
+	-35,
+	// TODO: squads with more than 8 marines
+	0,
+	-70,
+	180,
+	70,
+	125,
+	-125,
+	35,
+	-35,
+	0,
+	-70,
+	180,
+	70,
+	125,
+	-125,
+	35,
+	-35,
+	0,
+	-70,
+	180,
+	70,
+	125,
+	-125,
+	35,
+	-35,
 };
 
 float CASW_SquadFormation::GetYaw( unsigned slotnum )
@@ -204,13 +328,15 @@ float CASW_SquadFormation::GetYaw( unsigned slotnum )
 	return anglemod( m_flCurrentForwardAbsoluteEulerYaw + s_MarineFollowDirection[ slotnum ] );
 }
 
-void CASW_SquadFormation::RecomputeFollowerOrder(  const Vector &vProjectedLeaderPos, QAngle qLeaderAim )  ///< reorganize the follower slots so that each follower has the least distance to move
+void CASW_SquadFormation::RecomputeFollowerOrder( const Vector &vProjectedLeaderPos, QAngle qLeaderAim )  ///< reorganize the follower slots so that each follower has the least distance to move
 {
-	VPROF("CASW_Marine::RecomputeFollowerOrder");
+	VPROF( "CASW_Marine::RecomputeFollowerOrder" );
 
-//#pragma message("TODO: this algorithm should be SIMD optimized.")
-	// all the possible orderings of three followers ( 3! == 6 )
-	const static uint8 sFollowerOrderings[6][MAX_SQUAD_SIZE] =
+#define MAX_SQUAD_SIZE_FOR_ALGORITHM 3
+
+	//#pragma message("TODO: this algorithm should be SIMD optimized.")
+		// all the possible orderings of three followers ( 3! == 6 )
+	const static uint8 sFollowerOrderings[6][MAX_SQUAD_SIZE_FOR_ALGORITHM] =
 	{
 		{ 0, 1, 2 },
 		{ 0, 2, 1 },
@@ -220,16 +346,16 @@ void CASW_SquadFormation::RecomputeFollowerOrder(  const Vector &vProjectedLeade
 		{ 2, 1, 0 }
 	};
 	// keep track of how well each order scored
-	float fOrderingScores[6] = { FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX }; 
+	float fOrderingScores[6] = { FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX };
 
 	// score each permutation in turn. (This is an experimental dirty algo,
 	// and will be SIMDied if we actually go this route)
-	qLeaderAim[ PITCH ] = 0;
+	qLeaderAim[PITCH] = 0;
 	matrix3x4_t matLeader;
 
 	Vector vecLeaderAim = GetLdrAnglMatrix( vProjectedLeaderPos, qLeaderAim, &matLeader );
-	Vector vProjectedFollowPos[ MAX_SQUAD_SIZE ];
-	for ( int i = 0 ; i < MAX_SQUAD_SIZE ; ++i )
+	Vector vProjectedFollowPos[MAX_SQUAD_SIZE];
+	for ( int i = 0; i < MAX_SQUAD_SIZE; ++i )
 	{
 		if ( m_bLevelHasFollowHints && m_flUseHintsAfter < gpGlobals->curtime && asw_follow_use_hints.GetBool() && m_hLeader.Get() && ( m_hLeader->IsInCombat() || asw_follow_use_hints.GetInt() == 2 ) )
 		{
@@ -254,58 +380,58 @@ void CASW_SquadFormation::RecomputeFollowerOrder(  const Vector &vProjectedLeade
 		}
 	}
 
-	for ( int permute = 0 ; permute < 6 ; ++permute )
+	for ( int permute = 0; permute < 6; ++permute )
 	{
 		// each marine is scored by how far he'd have to move to get to his follow position.
 		// movement perpendicular to the leader's aim vector is weighed more heavily than 
 		// movement along it. lowest score wins.
 		float score = 0;
-		for ( int follower = 0 ; follower < MAX_SQUAD_SIZE ; ++follower )
+		for ( int follower = 0; follower < MAX_SQUAD_SIZE_FOR_ALGORITHM; ++follower )
 		{
 			const int iFollowSlot = sFollowerOrderings[permute][follower];
-			const CASW_Marine * RESTRICT pFollower = Squaddie(follower);
+			const CASW_Marine *RESTRICT pFollower = Squaddie( follower );
 			if ( pFollower )
 			{
 				/*
 				Vector vecTransformedOffset;
-				
+
 				VectorTransform( s_MarineFollowOffset[iFollowSlot], matLeader, vecTransformedOffset );
 				Vector traverse = vecTransformedOffset - pFollower->GetAbsOrigin();
 				*/
 				Vector traverse = vProjectedFollowPos[iFollowSlot] - pFollower->GetAbsOrigin();
 				// score += traverse.Length2D();
 				traverse.z = 0;
-				score += ( traverse + traverse - traverse.ProjectOnto(vecLeaderAim) ).Length();
+				score += ( traverse + traverse - traverse.ProjectOnto( vecLeaderAim ) ).Length();
 			}
 		}
-		fOrderingScores[ permute ] = score;
+		fOrderingScores[permute] = score;
 	}
 
 	// once done, figure out the best scoring alternative,
-	int iBestPermute = 0; 
-	for ( int ii = 1 ; ii < 6 ; ++ii )
+	int iBestPermute = 0;
+	for ( int ii = 1; ii < 6; ++ii )
 	{
-		iBestPermute = ( fOrderingScores[ ii ] >= fOrderingScores[ iBestPermute ] ) ? iBestPermute : ii;
+		iBestPermute = ( fOrderingScores[ii] >= fOrderingScores[iBestPermute] ) ? iBestPermute : ii;
 	}
 	// and use it
 	if ( iBestPermute != 0 )
 	{	// (some change is needed)
-		CASW_Marine * RESTRICT pOldFollowers[ MAX_SQUAD_SIZE ] = {0};
-		for ( int ii = 0 ; ii < MAX_SQUAD_SIZE ; ++ii ) // copy off the current array as we're about to permute it
+		CASW_Marine *RESTRICT pOldFollowers[MAX_SQUAD_SIZE] = { 0 };
+		for ( int ii = 0; ii < MAX_SQUAD_SIZE; ++ii ) // copy off the current array as we're about to permute it
 		{
 			pOldFollowers[ii] = m_hSquad[ii];
 		}
-		for ( int ii = 0 ; ii < MAX_SQUAD_SIZE ; ++ii )
+		for ( int ii = 0; ii < MAX_SQUAD_SIZE; ++ii )
 		{
-			m_hSquad[ii] = pOldFollowers[ sFollowerOrderings[iBestPermute][ii] ];
+			m_hSquad[ii] = pOldFollowers[sFollowerOrderings[iBestPermute][ii]];
 		}
 		// Msg( "\n" );
 
 		if ( asw_debug_marine_ai_followspot.GetBool() )
 		{
-			for ( int ii = 0 ; ii < MAX_SQUAD_SIZE ; ++ii )
+			for ( int ii = 0; ii < MAX_SQUAD_SIZE; ++ii )
 			{
-				NDebugOverlay::HorzArrow( m_hSquad[ii]->GetAbsOrigin(), m_vFollowPositions[ii], 3, 
+				NDebugOverlay::HorzArrow( m_hSquad[ii]->GetAbsOrigin(), m_vFollowPositions[ii], 3,
 					s_SquadDebugColors[ii][0], s_SquadDebugColors[ii][1], s_SquadDebugColors[ii][2], 196, true, 0.35f );
 			}
 		}

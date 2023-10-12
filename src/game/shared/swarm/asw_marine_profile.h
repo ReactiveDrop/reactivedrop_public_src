@@ -176,6 +176,7 @@ public:
 	int m_ProfileIndex;
 	ASW_Marine_Class m_iMarineClass;
 	ASW_Voice_Type m_VoiceType;
+	int m_iDefaultLoadoutIndex;
 
 	// Accessors
 	inline bool CanHack( void );						///< Can this character type hack computers? (In general -- the marine may be unable to do it at this moment due to combat, distance, etc)
