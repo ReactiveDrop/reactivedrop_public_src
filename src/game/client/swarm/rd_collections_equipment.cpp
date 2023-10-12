@@ -19,6 +19,7 @@
 #include "briefingtooltip.h"
 #include "controller_focus.h"
 #include "c_asw_steamstats.h"
+#include "engine/IEngineSound.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1149,8 +1150,19 @@ void CRD_Collection_Panel_Equipment::OnCommand( const char *command )
 			return;
 		}
 
-		CLocalPlayerFilter filter;
-		C_BaseEntity::EmitSound( filter, -1 /*SOUND_FROM_LOCAL_PLAYER*/, "ASWInterface.SelectWeapon" );
+		if ( engine->IsConnected() )
+		{
+			CLocalPlayerFilter filter;
+			C_BaseEntity::EmitSound( filter, -1 /*SOUND_FROM_LOCAL_PLAYER*/, "ASWInterface.SelectWeapon" );
+		}
+		else
+		{
+			CSoundParameters params;
+			if ( soundemitterbase->GetParametersForSound( "ASWInterface.SelectWeapon", params, GENDER_NONE, true ) )
+			{
+				enginesound->EmitAmbientSound( params.soundname, params.volume, params.pitch );
+			}
+		}
 
 		if ( C_ASW_Medal_Store *pMedalStore = GetMedalStore() )
 		{
