@@ -732,8 +732,9 @@ void CRD_VGUI_Loadout_Marine::SetupDisplay()
 	m_pModelPanel->m_bAutoPosition = false;
 	m_pModelPanel->m_vecCenter = Vector{ 0.0f, 0.0f, 56.0f };
 	m_pModelPanel->m_flRadius = 128.0f;
-	m_pModelPanel->m_flPitchIntensity = -30.0f;
-	m_pModelPanel->m_flYawIntensity = 45.0f;
+	m_pModelPanel->m_flPitchIntensity = -15.0f;
+	m_pModelPanel->m_flYawIntensity = 10.0f;
+	m_pModelPanel->m_angPanOrigin.Init( 25.0f, 0.0f, 0.0f );
 	m_pModelPanel->SetDisplay( pDisplay );
 	delete pDisplay;
 

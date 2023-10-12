@@ -226,11 +226,8 @@ void CRD_Swarmopedia_Model_Panel::OnPaint3D()
 		float yPan = ( y - h / 2.0f ) / h + flLookY / MAX_BUTTONSAMPLE / 2.0f;
 		if ( rd_reduce_motion.GetBool() )
 		{
-			xPan = roundf( xPan * 2.0f ) / 2.0f;
-			yPan = roundf( yPan * 2.0f ) / 2.0f;
-
-			m_flSmoothXPan = xPan;
-			m_flSmoothYPan = yPan;
+			m_flSmoothXPan = xPan = 0.0f;
+			m_flSmoothYPan = yPan = 0.0f;
 		}
 		else
 		{
