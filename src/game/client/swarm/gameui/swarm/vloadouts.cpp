@@ -399,6 +399,19 @@ void Loadouts::SelectWeapon( int nProfileIndex, int nInventorySlot, int nEquipIn
 	if ( m_hSubScreen )
 	{
 		m_hSubScreen->InvalidateLayout( true, true );
+
+		if ( vgui::Panel *pSlot = m_hSubScreen->FindChildByName( VarArgs( "WeaponSlot%d", nInventorySlot ) ) )
+		{
+			pSlot->RequestFocus();
+		}
+		else
+		{
+			m_hSubScreen->RequestFocus();
+		}
+	}
+	else
+	{
+		RequestFocus();
 	}
 }
 

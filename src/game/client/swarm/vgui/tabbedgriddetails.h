@@ -20,6 +20,7 @@ namespace BaseModUI
 		DECLARE_CLASS_SIMPLE( TabbedGridDetails, CBaseModFrame );
 	public:
 		explicit TabbedGridDetails();
+		~TabbedGridDetails();
 
 		virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 		virtual void PerformLayout() override;

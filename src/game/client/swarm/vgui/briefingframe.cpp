@@ -50,8 +50,6 @@ BriefingFrame::BriefingFrame(Panel *parent, const char *panelName, bool showTask
 	RequestFocus();
 	SetVisible(true);
 	SetEnabled(true);
-	// ASWTODO: this causes an assert, but without it, F1 doesn't work
-	SetKeyBoardInputEnabled(false);
 	SetZPos(200);
 	SetAlpha(0);
 

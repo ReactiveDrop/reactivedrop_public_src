@@ -35,7 +35,8 @@ TabbedGridDetails::TabbedGridDetails() : BaseClass( BaseModUI::CBaseModPanel::Ge
 	m_pHeaderFooter->SetTitle( L"" );
 
 	m_pBackButton = new CNB_Button( this, "BackButton", "#L4D360UI_Back_Caps", this, "BackButton" );
-	m_pBackButton->SetControllerButton( KEY_XBUTTON_B );
+	if ( !engine->IsConnected() )
+		m_pBackButton->SetControllerButton( KEY_XBUTTON_B );
 
 	m_pTabStrip = new vgui::Panel( this, "TabStrip" );
 	m_pTabLeftHint = new vgui::Label( this, "TabLeftHint", "#GameUI_Icons_LEFT_BUMPER" );
@@ -46,6 +47,10 @@ TabbedGridDetails::TabbedGridDetails() : BaseClass( BaseModUI::CBaseModPanel::Ge
 	m_pLastTabConVar = NULL;
 	m_pGridParent = NULL;
 	m_pCombinedScrollBar = NULL;
+}
+
+TabbedGridDetails::~TabbedGridDetails()
+{
 }
 
 void TabbedGridDetails::ApplySchemeSettings( vgui::IScheme *pScheme )
@@ -568,6 +573,7 @@ void TGD_Tab::InitCombinedGrid( vgui::Panel *pGridParent )
 	m_pGrid->m_pScrollBar = NULL;
 
 	m_pGrid->SetParent( pGridParent );
+	m_pGrid->SetVisible( true );
 }
 
 TGD_Grid::TGD_Grid( TGD_Tab *pTab )

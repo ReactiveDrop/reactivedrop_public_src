@@ -79,15 +79,15 @@ CNB_Main_Panel::CNB_Main_Panel( vgui::Panel *parent, const char *name ) : BaseCl
 	// == MANAGED_MEMBER_CREATION_START: Do not edit by hand ==
 	m_pHeaderFooter = new CNB_Header_Footer( this, "HeaderFooter" );
 	m_pLeaderLabel = new vgui::Label( this, "LeaderLabel", "" );
-    m_pTeamLabel = new vgui::Label( this, "TeamLabel", "" );
+	m_pTeamLabel = new vgui::Label( this, "TeamLabel", "" );
 	m_pReadyCheckImage = new vgui::ImagePanel( this, "ReadyCheckImage" );
 	m_pLobbyRow0 = new CNB_Lobby_Row( this, "LobbyRow0" );
 	m_pLobbyTooltip = new CNB_Lobby_Tooltip( this, "LobbyTooltip" );
 	m_pMissionSummary = new CNB_Mission_Summary( this, "MissionSummary" );
 	// == MANAGED_MEMBER_CREATION_END ==
 
-    m_pLobbyRowsScroll = new GenericPanelList( this, "LobbyRowsScroll", GenericPanelList::ISM_ELEVATOR );
-    m_pLobbyRowsScroll->SetBgColor( Color( 0, 0, 0, 0 ) );
+	m_pLobbyRowsScroll = new GenericPanelList( this, "LobbyRowsScroll", GenericPanelList::ISM_ELEVATOR );
+	m_pLobbyRowsScroll->SetBgColor( Color( 0, 0, 0, 0 ) );
 	m_pLobbyRowsScroll->SetScrollArrowsVisible( false );
 
 	m_pVotePanel = new CNB_Vote_Panel( this, "VotePanel" );
@@ -113,7 +113,7 @@ CNB_Main_Panel::CNB_Main_Panel( vgui::Panel *parent, const char *name ) : BaseCl
 	m_pChangeMissionButton = new CNB_Button( this, "ChangeMissionButton", "", this, "ChangeMissionButton" );
 
 	m_pPromotionButton = new CNB_Button( this, "PromotionButton", "", this, "PromotionButton" );
-    m_pTeamChangeButtonButton = new CNB_Button( this, "TeamChangeButton", "", this, "TeamChangeButton" );
+	m_pTeamChangeButtonButton = new CNB_Button( this, "TeamChangeButton", "", this, "TeamChangeButton" );
 
 	m_pHeaderFooter->SetTitle( "#nb_mission_prep" );
 	m_pHeaderFooter->SetBriefingCameraEnabled( true );
@@ -259,25 +259,25 @@ void CNB_Main_Panel::OnThink()
 		m_pLeaderLabel->SetVisible( false );
 	}
 
-    const char *pszTeamname = Briefing()->GetTeamName();
-    if ( pszTeamname )
-    {
-        m_pTeamLabel->SetVisible( ASWDeathmatchMode() && GAMEMODE_TEAMDEATHMATCH == ASWDeathmatchMode()->GetGameMode() );
+	const char *pszTeamname = Briefing()->GetTeamName();
+	if ( pszTeamname )
+	{
+		m_pTeamLabel->SetVisible( ASWDeathmatchMode() && GAMEMODE_TEAMDEATHMATCH == ASWDeathmatchMode()->GetGameMode() );
 
-        wchar_t wszTeamName[32];
-        g_pVGuiLocalize->ConvertANSIToUnicode( pszTeamname, wszTeamName, sizeof(wszTeamName));
+		wchar_t wszTeamName[32];
+		g_pVGuiLocalize->ConvertANSIToUnicode( pszTeamname, wszTeamName, sizeof( wszTeamName ) );
 
-        wchar_t wszBuffer[128];
-        g_pVGuiLocalize->ConstructString( wszBuffer, sizeof(wszBuffer), g_pVGuiLocalize->Find( "#rd_str_team" ), 1, wszTeamName );  // Team: %s1
+		wchar_t wszBuffer[128];
+		g_pVGuiLocalize->ConstructString( wszBuffer, sizeof( wszBuffer ), g_pVGuiLocalize->Find( "#rd_str_team" ), 1, wszTeamName );  // Team: %s1
 
-        m_pTeamLabel->SetText( wszBuffer );
+		m_pTeamLabel->SetText( wszBuffer );
 
-        m_pTeamLabel->SetFgColor( Briefing()->GetTeamColor() );
-    }
-    else
-    {
-        m_pTeamLabel->SetVisible( false );
-    }
+		m_pTeamLabel->SetFgColor( Briefing()->GetTeamColor() );
+	}
+	else
+	{
+		m_pTeamLabel->SetVisible( false );
+	}
 
 	if ( !m_hSubScreen.Get() )
 	{
@@ -462,7 +462,10 @@ void CNB_Main_Panel::ChangeWeapon( int nLobbySlot, int nInventorySlot )
 	pTab->SetBriefing( Briefing(), nLobbySlot );
 	pWeaponPanel->AddTab( pTab );
 
-	pWeaponPanel->ShowFullScreen();
+	pWeaponPanel->SetParent( this );
+	pWeaponPanel->SetVisible( true );
+	pWeaponPanel->SetZPos( 1000 );
+	pWeaponPanel->MoveToFront();
 
 	m_hSubScreen = pWeaponPanel;
 }
