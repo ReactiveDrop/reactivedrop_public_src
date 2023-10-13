@@ -68,7 +68,7 @@ public:
 
 	virtual void SelectMarine( int nOrder, int nProfileIndex, int nPreferredLobbySlot );
 	virtual void SelectBot( int nOrder, int nProfileIndex );
-	virtual void SelectWeapon( int nProfileIndex, int nInventorySlot, int nEquipIndex, SteamItemInstanceID_t iItemInstance );
+	virtual void SelectWeapon( int nMarineIndex, int nInventorySlot, int nEquipIndex, SteamItemInstanceID_t iItemInstance );
 	virtual void AutoSelectFullSquadForSingleplayer( int nFirstSelectedProfileIndex );
 
 	virtual void ResetLastChatterTime() { m_flLastSelectionChatterTime = 0.0f; }

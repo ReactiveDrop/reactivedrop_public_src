@@ -98,7 +98,7 @@ public:
 	bool IsCommanderSpeaking( int nLobbySlot ) override { return false; }
 	void SelectMarine( int nOrder, int nProfileIndex, int nPreferredLobbySlot ) override {}
 	void SelectBot( int nOrder, int nProfileIndex ) override {}
-	void SelectWeapon( int nProfileIndex, int nInventorySlot, int nEquipIndex, SteamItemInstanceID_t iItemInstance ) override;
+	void SelectWeapon( int nMarineIndex, int nInventorySlot, int nEquipIndex, SteamItemInstanceID_t iItemInstance ) override;
 	void AutoSelectFullSquadForSingleplayer( int nFirstSelectedProfileIndex ) override {}
 	void ResetLastChatterTime() override {}
 	const static IBriefing_ItemInstance s_EmptyItemInstance;

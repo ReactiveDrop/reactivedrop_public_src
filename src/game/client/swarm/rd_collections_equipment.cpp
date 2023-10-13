@@ -1169,7 +1169,7 @@ void CRD_Collection_Panel_Equipment::OnCommand( const char *command )
 			pMedalStore->OnSelectedEquipment( m_pWeapon->Extra, m_pWeapon->EquipIndex );
 		}
 
-		m_pTab->m_pBriefing->SelectWeapon( m_pTab->m_pProfile->m_ProfileIndex, m_pTab->m_nInventorySlot, m_pWeapon->EquipIndex, m_ItemInstance.ItemID );
+		m_pTab->m_pBriefing->SelectWeapon( m_pTab->m_nLobbySlot, m_pTab->m_nInventorySlot, m_pWeapon->EquipIndex, m_ItemInstance.ItemID );
 
 		m_pTab->m_pParent->MarkForDeletion();
 	}

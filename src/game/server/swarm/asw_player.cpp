@@ -887,7 +887,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 					}
 				}
 				CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( iMarineIndex );
-				if ( !pMR || pMR->GetCommander() != this || pMR->GetProfileIndex() == iProfileIndex )
+				if ( !pMR || pMR->GetCommander() != this || pMR->GetProfileIndex() != iProfileIndex )
 				{
 					Warning( "Player sent bad loadouta command\n" );
 					return false;

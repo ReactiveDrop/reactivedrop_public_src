@@ -411,22 +411,22 @@ bool Loadouts::IsWeaponUnlocked( const char *szWeaponClass )
 	return UTIL_ASW_CommanderLevelAtLeast( NULL, GetWeaponLevelRequirement( szWeaponClass ), -1 );
 }
 
-void Loadouts::SelectWeapon( int nProfileIndex, int nInventorySlot, int nEquipIndex, SteamItemInstanceID_t iItemInstance )
+void Loadouts::SelectWeapon( int nMarineIndex, int nInventorySlot, int nEquipIndex, SteamItemInstanceID_t iItemInstance )
 {
 	if ( nInventorySlot == ASW_INVENTORY_SLOT_PRIMARY )
 	{
-		asw_default_primary[nProfileIndex].SetValue( nEquipIndex );
-		rd_equipped_weapon_primary[nProfileIndex].SetValue( VarArgs( "%llu", iItemInstance ) );
+		asw_default_primary[nMarineIndex].SetValue( nEquipIndex );
+		rd_equipped_weapon_primary[nMarineIndex].SetValue( VarArgs( "%llu", iItemInstance ) );
 	}
 	else if ( nInventorySlot == ASW_INVENTORY_SLOT_SECONDARY )
 	{
-		asw_default_secondary[nProfileIndex].SetValue( nEquipIndex );
-		rd_equipped_weapon_secondary[nProfileIndex].SetValue( VarArgs( "%llu", iItemInstance ) );
+		asw_default_secondary[nMarineIndex].SetValue( nEquipIndex );
+		rd_equipped_weapon_secondary[nMarineIndex].SetValue( VarArgs( "%llu", iItemInstance ) );
 	}
 	else if ( nInventorySlot == ASW_INVENTORY_SLOT_EXTRA )
 	{
-		asw_default_extra[nProfileIndex].SetValue( nEquipIndex );
-		rd_equipped_weapon_extra[nProfileIndex].SetValue( VarArgs( "%llu", iItemInstance ) );
+		asw_default_extra[nMarineIndex].SetValue( nEquipIndex );
+		rd_equipped_weapon_extra[nMarineIndex].SetValue( VarArgs( "%llu", iItemInstance ) );
 	}
 
 	engine->ClientCmd_Unrestricted( "host_writeconfig\n" );
