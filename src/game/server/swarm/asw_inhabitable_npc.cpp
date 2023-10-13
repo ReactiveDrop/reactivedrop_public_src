@@ -279,7 +279,7 @@ HSCRIPT CASW_Inhabitable_NPC::ScriptGetCommander() const
 // store ASWNetworkID of first commander
 void CASW_Inhabitable_NPC::SetInitialCommander( CASW_Player *player )
 {
-	Q_snprintf( m_szInitialCommanderNetworkID, sizeof( m_szInitialCommanderNetworkID ), "%s", player ? player->GetASWNetworkID() : "None" );
+	V_strncpy( m_szInitialCommanderNetworkID, player ? player->GetASWNetworkID() : "None", sizeof( m_szInitialCommanderNetworkID ) );
 	DevMsg( " %s %d:%s SetInitialCommander id to %s\n", GetClassname(), entindex(), GetEntityNameAsCStr(), m_szInitialCommanderNetworkID );
 }
 

@@ -48,14 +48,16 @@ static int GetWeaponIndex( ASW_Inventory_slot_t iSlot, int iWeapon, ASW_Marine_P
 {
 	if ( iWeapon == -1 )
 	{
+		CASW_Marine_Profile *pProfile = MarineProfileList()->GetProfile( iProfile );
+
 		switch ( iSlot )
 		{
 		case ASW_INVENTORY_SLOT_PRIMARY:
-			return ReactiveDropLoadout::DefaultLoadout.Marines[iProfile].Primary;
+			return ReactiveDropLoadout::DefaultLoadout.Marines[pProfile->m_iDefaultLoadoutIndex].Primary;
 		case ASW_INVENTORY_SLOT_SECONDARY:
-			return ReactiveDropLoadout::DefaultLoadout.Marines[iProfile].Secondary;
+			return ReactiveDropLoadout::DefaultLoadout.Marines[pProfile->m_iDefaultLoadoutIndex].Secondary;
 		case ASW_INVENTORY_SLOT_EXTRA:
-			return ReactiveDropLoadout::DefaultLoadout.Marines[iProfile].Extra;
+			return ReactiveDropLoadout::DefaultLoadout.Marines[pProfile->m_iDefaultLoadoutIndex].Extra;
 		}
 	}
 

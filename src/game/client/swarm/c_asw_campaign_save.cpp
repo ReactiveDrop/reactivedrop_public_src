@@ -17,6 +17,7 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_Campaign_Save, DT_ASW_Campaign_Save, CASW_Campai
 	RecvPropArray3( RECVINFO_ARRAY( m_bMarineWounded ), RecvPropBool( RECVINFO( m_bMarineWounded[0] ) ) ),
 	RecvPropArray3( RECVINFO_ARRAY( m_bMarineDead ), RecvPropBool( RECVINFO( m_bMarineDead[0] ) ) ),
 	
+	RecvPropArray( RecvPropString( RECVINFO( m_LastCommanders[0]) ), m_LastCommanders ),
 	RecvPropArray( RecvPropString( RECVINFO( m_MissionsCompleteNames[0]) ), m_MissionsCompleteNames ),
 	RecvPropArray( RecvPropString( RECVINFO( m_Medals[0]) ), m_Medals ),
 	RecvPropBool(RECVINFO(m_bMultiplayerGame)),

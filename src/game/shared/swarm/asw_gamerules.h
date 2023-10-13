@@ -131,8 +131,8 @@ public:
 	bool m_bShuttingDown;
 
 	// briefing roster functions
-	virtual bool			RosterSelect( CASW_Player *pPlayer, int iProfileIndex, int nPreferredSlot = -1 );
-	virtual void			RosterDeselect( CASW_Player *pPlayer, int RosterIndex);
+	virtual CASW_Marine_Resource *RosterSelect( CASW_Player *pPlayer, int iProfileIndex, int nPreferredSlot = -1 );
+	virtual void			RosterDeselect( CASW_Player *pPlayer, int iProfileIndex );
 	virtual void			ReassignMarines(CASW_Player *pPlayer);	// reassigns all this player's marines to someone else
 	virtual void			RosterDeselectAll( CASW_Player *pPlayer );
 	virtual void			SetMaxMarines( CASW_Player *pException = NULL );
@@ -141,7 +141,7 @@ public:
 	virtual void			EnforceMaxMarines();
 
 	// loadout/equip
-	virtual void			LoadoutSelect( CASW_Player *pPlayer, int iRosterIndex, int iInvSlot, int iEquipIndex, int iDynamicIndex );
+	virtual void			LoadoutSelect( CASW_Marine_Resource *pMR, int iInvSlot, int iEquipIndex, int iDynamicIndex );
 	virtual bool			CanHaveAmmo( CBaseCombatCharacter *pPlayer, int iAmmoIndex );
 	void GiveStartingWeaponToMarine( CASW_Marine *pMarine, int iEquipIndex, int iSlot, int iDynamicItemSlot );	// gives the specified marine the specified starting gun and default ammo
 	void AddBonusChargesToPickups();

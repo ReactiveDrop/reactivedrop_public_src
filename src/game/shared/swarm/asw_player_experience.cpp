@@ -826,20 +826,6 @@ void CASW_Player::AcceptPromotion()
 	CLocalPlayerFilter filter;
 	C_BaseEntity::EmitSound( filter, -1 /*SOUND_FROM_LOCAL_PLAYER*/, "ASW_XP.LevelUp" );
 	engine->ServerCmd( VarArgs( "cl_promoted %d", m_iPromotion ) );
-
-	// reset the player's selected equipment
-	if ( !ASWGameResource() )
-		return;
-
-	C_ASW_Marine_Resource *pMR = ASWGameResource()->GetFirstMarineResourceForPlayer( this );
-	if ( !pMR )
-		return;
-
-	int iProfile = pMR->GetProfileIndex();
-
-	engine->ServerCmd( VarArgs( "cl_loadout %d %d %d %d\n", iProfile, ASW_INVENTORY_SLOT_PRIMARY, ReactiveDropLoadout::DefaultLoadout.Marines[iProfile].Primary, -1 ) );
-	engine->ServerCmd( VarArgs( "cl_loadout %d %d %d %d\n", iProfile, ASW_INVENTORY_SLOT_SECONDARY, ReactiveDropLoadout::DefaultLoadout.Marines[iProfile].Secondary, -1 ) );
-	engine->ServerCmd( VarArgs( "cl_loadout %d %d %d %d\n", iProfile, ASW_INVENTORY_SLOT_EXTRA, ReactiveDropLoadout::DefaultLoadout.Marines[iProfile].Extra, -1 ) );
 }
 
 #else

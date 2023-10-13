@@ -664,7 +664,7 @@ void C_ASW_Player::LoadoutSelectEquip( int iMarineIndex, int iInvSlot, int iEqui
 		int iAllocatedDynamicSlot = ReactiveDropInventory::AllocateDynamicItemSlot( GetSplitScreenPlayerSlot(), iItemInstanceID, iProfileIndex, iInvSlot );
 
 		char buffer[64];
-		Q_snprintf( buffer, sizeof( buffer ), "cl_loadout %d %d %d %d", iProfileIndex, iInvSlot, iEquipIndex, iAllocatedDynamicSlot );
+		Q_snprintf( buffer, sizeof( buffer ), "cl_loadoutm %d %d %d %d", iMarineIndex, iInvSlot, iEquipIndex, iAllocatedDynamicSlot );
 		engine->ServerCmd( buffer );
 
 		ReactiveDropInventory::ResendDynamicEquipNotification( GetSplitScreenPlayerSlot() );
@@ -676,7 +676,7 @@ void C_ASW_Player::LoadoutSendStored( C_ASW_Marine_Resource *pMR )
 	if ( !pMR )
 		return;
 
-	SendRosterSelectCommand( "cl_loadouta", pMR->GetProfileIndex() );
+	SendRosterSelectCommand( "cl_loadouta", pMR->GetProfileIndex(), ASWGameResource()->GetMarineResourceIndex( pMR ) );
 }
 
 void C_ASW_Player::StartReady()

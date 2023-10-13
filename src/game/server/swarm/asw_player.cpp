@@ -784,24 +784,11 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 
 				int iRosterIndex = clamp(atoi( args[1] ), 0, ASW_NUM_MARINE_PROFILES-1);
 				int nPreferredSlot = atoi( args[2] );
-				if (ASWGameRules()->RosterSelect( this, iRosterIndex, nPreferredSlot ) )
+				if (CASW_Marine_Resource *pMR = ASWGameRules()->RosterSelect( this, iRosterIndex, nPreferredSlot ) )
 				{
 					// did they specify a previous inventory selection too?
 					if ( args.ArgC() == 9 )
 					{
-						int iMarineResource = -1;
-						for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
-						{
-							CASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
-							if ( pMR && pMR->GetProfileIndex() == iRosterIndex )
-							{
-								iMarineResource = i;
-								break;
-							}
-						}
-						if ( iMarineResource == -1 )
-							return true;
-
 						m_bRequestedSpectator = false;
 						int primary = atoi( args[3] );
 						int secondary = atoi( args[4] );
@@ -811,11 +798,11 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 						int iDynamicExtra = atoi( args[8] );
 
 						if ( primary != -1 )
-							ASWGameRules()->LoadoutSelect( this, iRosterIndex, 0, primary, iDynamicPrimary );
+							ASWGameRules()->LoadoutSelect( pMR, ASW_INVENTORY_SLOT_PRIMARY, primary, iDynamicPrimary );
 						if ( secondary != -1 )
-							ASWGameRules()->LoadoutSelect( this, iRosterIndex, 1, secondary, iDynamicSecondary );
+							ASWGameRules()->LoadoutSelect( pMR, ASW_INVENTORY_SLOT_SECONDARY, secondary, iDynamicSecondary );
 						if ( extra != -1 )
-							ASWGameRules()->LoadoutSelect( this, iRosterIndex, 2, extra, iDynamicExtra );
+							ASWGameRules()->LoadoutSelect( pMR, ASW_INVENTORY_SLOT_EXTRA, extra, iDynamicExtra );
 					}
 				}
 
@@ -879,7 +866,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 				}
 
 				int iProfileIndex = clamp( atoi( args[1] ), 0, ASW_NUM_MARINE_PROFILES - 1 );
-				Assert( atoi( args[2] ) == -1 ); // dummy arg so that the arg count is the same as for other loadout commands
+				int iMarineIndex = atoi( args[2] );
 				int iPrimary = atoi( args[3] );
 				int iSecondary = atoi( args[4] );
 				int iExtra = atoi( args[5] );
@@ -887,12 +874,31 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 				int iDynamicSecondary = atoi( args[7] );
 				int iDynamicExtra = atoi( args[8] );
 
+				if ( iMarineIndex == -1 )
+				{
+					for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
+					{
+						CASW_Marine_Resource *pMarineResource = ASWGameResource()->GetMarineResource( i );
+						if ( pMarineResource && pMarineResource->GetCommander() == this && pMarineResource->GetProfileIndex() == iProfileIndex )
+						{
+							iMarineIndex = i;
+							break;
+						}
+					}
+				}
+				CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( iMarineIndex );
+				if ( !pMR || pMR->GetCommander() != this || pMR->GetProfileIndex() == iProfileIndex )
+				{
+					Warning( "Player sent bad loadouta command\n" );
+					return false;
+				}
+
 				if ( iPrimary >= 0 )
-					ASWGameRules()->LoadoutSelect( this, iProfileIndex, 0, iPrimary, iDynamicPrimary );
+					ASWGameRules()->LoadoutSelect( pMR, ASW_INVENTORY_SLOT_PRIMARY, iPrimary, iDynamicPrimary );
 				if ( iSecondary >= 0 )
-					ASWGameRules()->LoadoutSelect( this, iProfileIndex, 1, iSecondary, iDynamicSecondary );
+					ASWGameRules()->LoadoutSelect( pMR, ASW_INVENTORY_SLOT_SECONDARY, iSecondary, iDynamicSecondary );
 				if ( iExtra >= 0 )
-					ASWGameRules()->LoadoutSelect( this, iProfileIndex, 2, iExtra, iDynamicExtra );
+					ASWGameRules()->LoadoutSelect( pMR, ASW_INVENTORY_SLOT_EXTRA, iExtra, iDynamicExtra );
 
 				return true;
 			}
@@ -1422,7 +1428,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( i );
 			if ( !pMR )
 				break;
-			// BenLubar: Don't deselect bots when chaning marine
+			// BenLubar: Don't deselect bots when changing marine
 			if ( pMR->GetCommander() == this && pMR->IsInhabited() )
 			{
 				ASWGameRules()->RosterDeselect( this, pMR->GetProfileIndex() );
@@ -1431,24 +1437,11 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 
 		// now select the new marine
 		int iRosterIndex = clamp(atoi( args[1] ), 0, ASW_NUM_MARINE_PROFILES-1);
-		if ( ASWGameRules()->RosterSelect( this, iRosterIndex, -2 ) )
+		if ( CASW_Marine_Resource *pMR = ASWGameRules()->RosterSelect( this, iRosterIndex, -2 ) )
 		{
 			// did they specify a previous inventory selection too?
 			if (args.ArgC() == 8)
 			{
-				int iMarineResource = -1;
-				for (int i=0;i<pGameResource->GetMaxMarineResources();i++)
-				{
-					CASW_Marine_Resource *pMR = pGameResource->GetMarineResource(i);
-					if (pMR && pMR->GetProfileIndex() == iRosterIndex)
-					{
-						iMarineResource = i;
-						break;
-					}
-				}
-				if (iMarineResource == -1)
-					return true;
-
 				m_bRequestedSpectator = false;
 				int primary = atoi( args[2] );
 				int secondary = atoi( args[3] );
@@ -1458,11 +1451,11 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 				int iDynamicExtra = atoi( args[7] );
 
 				if ( primary != -1 )
-					ASWGameRules()->LoadoutSelect( this, iRosterIndex, 0, primary, iDynamicPrimary );
+					ASWGameRules()->LoadoutSelect( pMR, ASW_INVENTORY_SLOT_PRIMARY, primary, iDynamicPrimary );
 				if ( secondary != -1 )
-					ASWGameRules()->LoadoutSelect( this, iRosterIndex, 1, secondary, iDynamicSecondary );
+					ASWGameRules()->LoadoutSelect( pMR, ASW_INVENTORY_SLOT_SECONDARY, secondary, iDynamicSecondary );
 				if ( extra != -1 )
-					ASWGameRules()->LoadoutSelect( this, iRosterIndex, 2, extra, iDynamicExtra );
+					ASWGameRules()->LoadoutSelect( pMR, ASW_INVENTORY_SLOT_EXTRA, extra, iDynamicExtra );
 			}
 		}
 
@@ -1478,15 +1471,55 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 				return false;
 			}
 
+			// legacy loadout command for people who have it in configs; doesn't work with multiple copies of the same marine for the same commander
+
 			int iProfileIndex = clamp(atoi( args[1] ), 0, ASW_NUM_MARINE_PROFILES-1);
 			int iInvSlot = atoi( args[2] );
 			int iEquipIndex = atoi( args[3] );
 			int iDynamicIndex = atoi( args[4] );
 
-			ASWGameRules()->LoadoutSelect( this, iProfileIndex, iInvSlot, iEquipIndex, iDynamicIndex );
+			for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
+			{
+				CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( i );
+				if ( pMR && pMR->GetCommander() == this && pMR->GetProfileIndex() == iProfileIndex )
+				{
+
+					ASWGameRules()->LoadoutSelect( pMR, iInvSlot, iEquipIndex, iDynamicIndex );
+					return true;
+				}
+			}
+
 			return true;
 		}
 		else 
+			return false;
+	}
+	else if ( FStrEq( pcmd, "cl_loadoutm" ) )
+	{
+		if ( ASWDeathmatchMode() || ASWGameRules()->GetGameState() == ASW_GS_BRIEFING )
+		{
+			if ( args.ArgC() < 5 )
+			{
+				Warning( "Player sent bad loadoutm command\n" );
+				return false;
+			}
+
+			int iMarineResource = atoi( args[1] );
+			int iInvSlot = atoi( args[2] );
+			int iEquipIndex = atoi( args[3] );
+			int iDynamicIndex = atoi( args[4] );
+
+			CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( iMarineResource );
+			if ( !pMR || pMR->GetCommander() != this )
+			{
+				Warning( "Player sent bad loadoutm command\n" );
+				return false;
+			}
+
+			ASWGameRules()->LoadoutSelect( pMR, iInvSlot, iEquipIndex, iDynamicIndex );
+			return true;
+		}
+		else
 			return false;
 	}
 	// reactivedrop: moved here from case ASW_GS_BRIEFING
@@ -2570,7 +2603,7 @@ void CASW_Player::OnFullyJoined( bool bSendGameEvent )
 			}
 
 			// if we're meant to be leader then make it so
-			if ( ASWGameResource() && !Q_strcmp( GetASWNetworkID(), ASWGameResource()->GetLastLeaderNetworkID() ) && ASWGameResource()->GetLeader() != this )
+			if ( ASWGameResource() && !V_strcmp( GetASWNetworkID(), ASWGameResource()->GetLastLeaderNetworkID() ) && ASWGameResource()->GetLeader() != this )
 			{
 				ASWGameResource()->SetLeader( this );
 				if ( bSendGameEvent )

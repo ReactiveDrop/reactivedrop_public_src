@@ -751,7 +751,11 @@ bool CASW_Steamstats::FetchStats( CSteamID playerSteamID, CASW_Player *pPlayer )
 		int32 iTempCount;
 		FETCH_STEAM_STATS( CFmtStr( "marines.%i.total", i ), iTempCount );
 		m_MarineSelectionCounts.AddToTail( iTempCount );
-		FETCH_STEAM_STATS( CFmtStr( "player_count.%d.missions", i + 1 ), iTempCount );
+	}
+	for ( int i = 1; i <= ASW_MAX_MARINE_RESOURCES; i++ )
+	{
+		int32 iTempCount;
+		FETCH_STEAM_STATS( CFmtStr( "player_count.%d.missions", i ), iTempCount );
 		m_MissionPlayerCounts.AddToTail( iTempCount );
 	}
 

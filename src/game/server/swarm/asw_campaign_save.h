@@ -85,7 +85,7 @@ public:
 	CUtlVector<string_t> m_PlayerIDs;
 	CUtlVector<string_t> m_PlayerNames;
 
-	string_t m_LastCommanders[ ASW_NUM_MARINE_PROFILES ];	// player name + network ID combo of commanders who used these marines last
+	CNetworkArray( string_t, m_LastCommanders, ASW_NUM_MARINE_PROFILES );	// player name + network ID combo of commanders who used these marines last
 	int	m_LastMarineResourceSlot[ ASW_NUM_MARINE_PROFILES ];		// MR last occupied by this profile.  Used for preserving order with autoselection.
 
 	// todo:  any extra data, such as optional objectives complete, fancy stuff unlocked?

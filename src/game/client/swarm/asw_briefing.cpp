@@ -915,6 +915,15 @@ bool CASW_Briefing::IsProfileSelected( int nProfileIndex )
 	if ( !pProfile )
 		return false;
 
+	if ( ASWGameRules() && ASWGameRules()->m_fReserveMarinesEndTime > gpGlobals->curtime )
+	{
+		C_ASW_Campaign_Save *pCampaignSave = ASWGameResource()->GetCampaignSave();
+		if ( pCampaignSave )
+		{
+			pCampaignSave->m_LastCommanders[nProfileIndex];
+		}
+	}
+
 	ASW_Marine_Class iProfileClass = pProfile->GetMarineClass();
 
 	int nSelectedProfile = 0;

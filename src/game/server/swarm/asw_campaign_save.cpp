@@ -23,29 +23,30 @@ void ASWSendProxy_String_tToString( const SendProp *pProp, const void *pStruct, 
 }
 
 IMPLEMENT_SERVERCLASS_ST( CASW_Campaign_Save, DT_ASW_Campaign_Save )
-SendPropString( SENDINFO( m_CampaignName ) ),
-SendPropInt( SENDINFO( m_iCurrentPosition ) ),
-SendPropInt( SENDINFO( m_iNumMissionsComplete ) ),
-SendPropArray3( SENDINFO_ARRAY3( m_MissionComplete ), SendPropInt( SENDINFO_ARRAY( m_MissionComplete ), 8, SPROP_UNSIGNED ) ),
-SendPropArray3( SENDINFO_ARRAY3( m_NumRetries ), SendPropInt( SENDINFO_ARRAY( m_NumRetries ), 9, SPROP_UNSIGNED ) ),
+	SendPropString( SENDINFO( m_CampaignName ) ),
+	SendPropInt( SENDINFO( m_iCurrentPosition ) ),
+	SendPropInt( SENDINFO( m_iNumMissionsComplete ) ),
+	SendPropArray3( SENDINFO_ARRAY3( m_MissionComplete ), SendPropInt( SENDINFO_ARRAY( m_MissionComplete ), 8, SPROP_UNSIGNED ) ),
+	SendPropArray3( SENDINFO_ARRAY3( m_NumRetries ), SendPropInt( SENDINFO_ARRAY( m_NumRetries ), 9, SPROP_UNSIGNED ) ),
 
-SendPropArray3( SENDINFO_ARRAY3( m_bMarineWounded ), SendPropBool( SENDINFO_ARRAY( m_bMarineWounded ) ) ),
-SendPropArray3( SENDINFO_ARRAY3( m_bMarineDead ), SendPropBool( SENDINFO_ARRAY( m_bMarineDead ) ) ),
+	SendPropArray3( SENDINFO_ARRAY3( m_bMarineWounded ), SendPropBool( SENDINFO_ARRAY( m_bMarineWounded ) ) ),
+	SendPropArray3( SENDINFO_ARRAY3( m_bMarineDead ), SendPropBool( SENDINFO_ARRAY( m_bMarineDead ) ) ),
 
-SendPropArray( SendPropString( SENDINFO_ARRAY( m_MissionsCompleteNames ), 0, ASWSendProxy_String_tToString ), m_MissionsCompleteNames ),
-SendPropArray( SendPropString( SENDINFO_ARRAY( m_Medals ), 0, ASWSendProxy_String_tToString ), m_Medals ),
-SendPropBool( SENDINFO( m_bMultiplayerGame ) ),
-SendPropString( SENDINFO( m_DateTime ) ),
+	SendPropArray( SendPropString( SENDINFO_ARRAY( m_LastCommanders ), 0, ASWSendProxy_String_tToString ), m_LastCommanders ),
+	SendPropArray( SendPropString( SENDINFO_ARRAY( m_MissionsCompleteNames ), 0, ASWSendProxy_String_tToString ), m_MissionsCompleteNames ),
+	SendPropArray( SendPropString( SENDINFO_ARRAY( m_Medals ), 0, ASWSendProxy_String_tToString ), m_Medals ),
+	SendPropBool( SENDINFO( m_bMultiplayerGame ) ),
+	SendPropString( SENDINFO( m_DateTime ) ),
 
-SendPropArray3( SENDINFO_ARRAY3( m_NumVotes ), SendPropInt( SENDINFO_ARRAY( m_NumVotes ), 8, SPROP_UNSIGNED ) ),
-SendPropFloat( SENDINFO( m_fVoteEndTime ) ),
-SendPropBool( SENDINFO( m_bFixedSkillPoints ) ),
+	SendPropArray3( SENDINFO_ARRAY3( m_NumVotes ), SendPropInt( SENDINFO_ARRAY( m_NumVotes ), 8, SPROP_UNSIGNED ) ),
+	SendPropFloat( SENDINFO( m_fVoteEndTime ) ),
+	SendPropBool( SENDINFO( m_bFixedSkillPoints ) ),
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Campaign_Save )
-DEFINE_THINKFUNC( MoveThink ),
-DEFINE_THINKFUNC( VoteEndThink ),
-DEFINE_FIELD( m_bNextMissionVoteEnded, FIELD_BOOLEAN )
+	DEFINE_THINKFUNC( MoveThink ),
+	DEFINE_THINKFUNC( VoteEndThink ),
+	DEFINE_FIELD( m_bNextMissionVoteEnded, FIELD_BOOLEAN )
 END_DATADESC()
 
 CASW_Campaign_Save::CASW_Campaign_Save()
@@ -78,7 +79,7 @@ CASW_Campaign_Save::CASW_Campaign_Save()
 		m_Medals.Set( i, NULL_STRING );
 		m_bMarineDead.Set( i, false );
 		m_bMarineWounded.Set( i, false );
-		m_LastCommanders[i] = NULL_STRING;
+		m_LastCommanders.Set( i, NULL_STRING );
 		m_LastMarineResourceSlot[i] = 0;
 
 		for ( int k = 0; k < ASW_NUM_SKILL_SLOTS; k++ )
@@ -197,7 +198,7 @@ bool CASW_Campaign_Save::LoadGameFromFile( const char *szFileName )
 						char buffer[16];
 						Q_snprintf( buffer, sizeof( buffer ), "Comm%d", i );
 						string_t stringID = AllocPooledString( pkvSubSection->GetString( buffer ) );
-						m_LastCommanders[i] = stringID;
+						m_LastCommanders.Set( i, stringID );
 						Q_snprintf( buffer, sizeof( buffer ), "Slot%d", i );
 						m_LastMarineResourceSlot[i] = pkvSubSection->GetInt( buffer );
 					}
@@ -435,8 +436,8 @@ void CASW_Campaign_Save::UpdateLastCommanders()
 				if ( pPlayer )
 				{
 					// store the commander who has this marine
-					Q_snprintf( buffer, sizeof( buffer ), "%s%s", pPlayer->GetPlayerName(), pPlayer->GetASWNetworkID() );
-					m_LastCommanders[i] = AllocPooledString( buffer );
+					Q_snprintf( buffer, sizeof( buffer ), "%s\x01%s", pPlayer->GetASWNetworkID(), pPlayer->GetPlayerName() );
+					m_LastCommanders.Set( i, AllocPooledString( buffer ) );
 					m_LastMarineResourceSlot[i] = k;
 					bFound = true;
 					break;
@@ -445,7 +446,7 @@ void CASW_Campaign_Save::UpdateLastCommanders()
 		}
 		if ( !bFound )
 		{
-			m_LastCommanders[i] = AllocPooledString( "" );
+			m_LastCommanders.Set( i, NULL_STRING );
 			m_LastMarineResourceSlot[i] = 0;
 		}
 	}
@@ -603,7 +604,7 @@ void CASW_Campaign_Save::ReviveMarine( int nProfileIndex )
 	m_iParasitesKilled[nProfileIndex] = 0;
 	m_MissionsCompleteNames.Set( nProfileIndex, NULL_STRING );
 	m_Medals.Set( nProfileIndex, NULL_STRING );
-	m_LastCommanders[nProfileIndex] = NULL_STRING;
+	m_LastCommanders.Set( nProfileIndex, NULL_STRING );
 	m_LastMarineResourceSlot[nProfileIndex] = 0;
 }
 

@@ -51,6 +51,7 @@ public:
 	bool IsMarineAlive(int iProfileIndex);
 
 	// data specific to each marine that needs to be saved
+	char	m_LastCommanders[ ASW_NUM_MARINE_PROFILES ][255];
 	char	m_MissionsCompleteNames[ ASW_NUM_MARINE_PROFILES ][255];
 	char	m_Medals[ ASW_NUM_MARINE_PROFILES ][255];
 	

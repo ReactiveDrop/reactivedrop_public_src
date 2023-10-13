@@ -516,7 +516,7 @@ const char *CASW_Game_Resource::GetLastLeaderNetworkID()
 
 void CASW_Game_Resource::SetLastLeaderNetworkID( const char *szID )
 {
-	Q_snprintf( s_szLastLeaderNetworkID, sizeof( s_szLastLeaderNetworkID ), "%s", szID );
+	V_strncpy( s_szLastLeaderNetworkID, szID, sizeof( s_szLastLeaderNetworkID ) );
 }
 
 int CASW_Game_Resource::GetAliensKilledInThisMission()

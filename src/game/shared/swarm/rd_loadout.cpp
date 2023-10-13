@@ -440,7 +440,7 @@ namespace ReactiveDropLoadout
 				C_ASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
 				if ( pMR && pMR->GetCommander() == pPlayer )
 				{
-					pPlayer->SendRosterSelectCommand( "cl_loadouta", pMR->GetProfileIndex() );
+					pPlayer->SendRosterSelectCommand( "cl_loadouta", pMR->GetProfileIndex(), i );
 				}
 			}
 		}

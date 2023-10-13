@@ -233,13 +233,13 @@ extern ConVar old_radius_damage;
 					continue;
 
 				CASW_Player *pPlayer = pMR->GetCommander();
-				int iProfile = pMR->GetProfileIndex();
-				if ( !pPlayer )
+				CASW_Marine_Profile *pProfile = pMR->GetProfile();
+				if ( !pPlayer || !pProfile )
 					continue;
 
-				engine->ClientCommand( pPlayer->edict(), "cl_loadout %d %d %d %d\n", iProfile, ASW_INVENTORY_SLOT_PRIMARY, ReactiveDropLoadout::DefaultLoadout.Marines[iProfile].Primary, -1 );
-				engine->ClientCommand( pPlayer->edict(), "cl_loadout %d %d %d %d\n", iProfile, ASW_INVENTORY_SLOT_SECONDARY, ReactiveDropLoadout::DefaultLoadout.Marines[iProfile].Secondary, -1 );
-				engine->ClientCommand( pPlayer->edict(), "cl_loadout %d %d %d %d\n", iProfile, ASW_INVENTORY_SLOT_EXTRA, ReactiveDropLoadout::DefaultLoadout.Marines[iProfile].Extra, -1 );
+				engine->ClientCommand( pPlayer->edict(), "cl_loadoutm %d %d %d %d\n", i, ASW_INVENTORY_SLOT_PRIMARY, ReactiveDropLoadout::DefaultLoadout.Marines[pProfile->m_iDefaultLoadoutIndex].Primary, -1 );
+				engine->ClientCommand( pPlayer->edict(), "cl_loadoutm %d %d %d %d\n", i, ASW_INVENTORY_SLOT_SECONDARY, ReactiveDropLoadout::DefaultLoadout.Marines[pProfile->m_iDefaultLoadoutIndex].Secondary, -1 );
+				engine->ClientCommand( pPlayer->edict(), "cl_loadoutm %d %d %d %d\n", i, ASW_INVENTORY_SLOT_EXTRA, ReactiveDropLoadout::DefaultLoadout.Marines[pProfile->m_iDefaultLoadoutIndex].Extra, -1 );
 			}
 		}
 	}
@@ -1889,12 +1889,15 @@ void CAlienSwarm::AutoSelectMarines( CASW_Player *pPlayer )
 		return;
 
 	char szReservation[256];
-	V_snprintf( szReservation, sizeof( szReservation ), "%s%s", pPlayer->GetPlayerName(), pPlayer->GetASWNetworkID() );
-	for ( int i = 0; i < ASW_NUM_MARINE_PROFILES; i++ )
+	V_snprintf( szReservation, sizeof( szReservation ), "%s\x01%s", pPlayer->GetASWNetworkID(), pPlayer->GetPlayerName() );
+	for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
 	{
-		if ( pCampaignSave->m_LastCommanders[i] != NULL_STRING && !V_strcmp( szReservation, STRING( pCampaignSave->m_LastCommanders[i] ) ) )
+		for ( int j = 0; j < ASW_NUM_MARINE_PROFILES; j++ )
 		{
-			RosterSelect( pPlayer, i );
+			if ( pCampaignSave->m_LastMarineResourceSlot[j] == i && pCampaignSave->m_LastCommanders[j] != NULL_STRING && !V_strcmp( szReservation, STRING( pCampaignSave->m_LastCommanders[j] ) ) )
+			{
+				RosterSelect( pPlayer, j );
+			}
 		}
 	}
 }
@@ -2098,10 +2101,10 @@ static void PrintMaxMarinesCapError( CASW_Player *pPlayer, bool cappedByChalleng
 	}
 }
 
-bool CAlienSwarm::RosterSelect( CASW_Player *pPlayer, int iProfileIndex, int nPreferredSlot )
+CASW_Marine_Resource *CAlienSwarm::RosterSelect( CASW_Player *pPlayer, int iProfileIndex, int nPreferredSlot )
 {
 	if ( !ASWGameResource() )
-		return false;
+		return NULL;
 
 	CASW_Game_Resource &GameResource = *ASWGameResource();
 
@@ -2118,11 +2121,11 @@ bool CAlienSwarm::RosterSelect( CASW_Player *pPlayer, int iProfileIndex, int nPr
 
 	// can't select marines in co-op outside of briefing.
 	if ( !ASWDeathmatchMode() && GetGameState() != ASW_GS_BRIEFING )
-		return false;
+		return NULL;
 
 	// profile index must be valid
 	if ( iProfileIndex < 0 || iProfileIndex >= ASW_NUM_MARINE_PROFILES )
-		return false;
+		return NULL;
 
 	// too many selected?
 	if ( GameResource.m_iNumMarinesSelected >= GameResource.m_iMaxMarines )
@@ -2130,7 +2133,7 @@ bool CAlienSwarm::RosterSelect( CASW_Player *pPlayer, int iProfileIndex, int nPr
 		if ( nPreferredSlot == -1 )
 		{
 			PrintMaxMarinesCapError( pPlayer, HaveSavedConvar( ConVarRef( "rd_max_marines" ) ), GameResource.m_iMaxMarines );
-			return false;
+			return NULL;
 		}
 
 		// if we're not swapping out for another then abort
@@ -2138,7 +2141,7 @@ bool CAlienSwarm::RosterSelect( CASW_Player *pPlayer, int iProfileIndex, int nPr
 		if ( !pExisting || pExisting->GetCommander() != pPlayer )
 		{
 			PrintMaxMarinesCapError( pPlayer, HaveSavedConvar( ConVarRef( "rd_max_marines" ) ), GameResource.m_iMaxMarines );
-			return false;
+			return NULL;
 		}
 	}
 
@@ -2150,31 +2153,31 @@ bool CAlienSwarm::RosterSelect( CASW_Player *pPlayer, int iProfileIndex, int nPr
 			if ( !rd_player_bots_allowed.GetBool() )
 				ClientPrint( pPlayer, HUD_PRINTTALK, "#rd_no_bots_allowed" );
 
-			return false;
+			return NULL;
 		}
 
 		CASW_Marine_Resource *pExisting = ASWGameResource()->GetMarineResource( nPreferredSlot );		// if we're not swapping out for another then abort
 		if ( pExisting && pExisting->GetCommander() != pPlayer )
 		{
-			return false;
+			return NULL;
 		}
 		else if ( !rd_player_bots_allowed.GetBool() && !pExisting )
 		{
 			ClientPrint( pPlayer, HUD_PRINTTALK, "#rd_no_bots_allowed" );
-			return false;
+			return NULL;
 		}
 	}
 
 	CASW_Marine_Profile *pProfile = MarineProfileList()->GetProfile( iProfileIndex );
 	Assert( pProfile );
 	if ( !pProfile )
-		return false;
+		return NULL;
 
 	// always allow to select every marine for deathmatch
 	if ( !ASWDeathmatchMode() )
 	{
 		char szReservation[256];
-		V_snprintf( szReservation, sizeof( szReservation ), "%s%s", pPlayer->GetPlayerName(), pPlayer->GetASWNetworkID() );
+		V_snprintf( szReservation, sizeof( szReservation ), "%s\x01%s", pPlayer->GetASWNetworkID(), pPlayer->GetPlayerName() );
 
 		CASW_Campaign_Save *pSave = GetCampaignSave();
 		if ( pSave && m_fReserveMarinesEndTime > gpGlobals->curtime && pSave->m_LastCommanders[iProfileIndex] != NULL_STRING && V_strcmp( STRING( pSave->m_LastCommanders[iProfileIndex] ), szReservation ) )
@@ -2183,7 +2186,7 @@ bool CAlienSwarm::RosterSelect( CASW_Player *pPlayer, int iProfileIndex, int nPr
 			V_snprintf( szSecondsRemaining, sizeof( szSecondsRemaining ), "%i", int( m_fReserveMarinesEndTime - gpGlobals->curtime ) );
 			ClientPrint( pPlayer, HUD_PRINTTALK, "#rd_chat_marine_reserved", szSecondsRemaining );
 
-			return false;
+			return NULL;
 		}
 
 		int nProfileSelected = 0;
@@ -2205,14 +2208,14 @@ bool CAlienSwarm::RosterSelect( CASW_Player *pPlayer, int iProfileIndex, int nPr
 		{
 			ClientPrint( pPlayer, HUD_PRINTTALK, "#rd_chat_marine_profile_in_use" );
 
-			return false;
+			return NULL;
 		}
 
 		if ( nClassSelected >= asw_marines_max_by_class[iProfileClass].GetInt() )
 		{
 			ClientPrint( pPlayer, HUD_PRINTTALK, CFmtStr( "#rd_chat_marine_class_in_use_%d", iProfileClass ) );
 
-			return false;
+			return NULL;
 		}
 	}
 
@@ -2273,39 +2276,39 @@ bool CAlienSwarm::RosterSelect( CASW_Player *pPlayer, int iProfileIndex, int nPr
 	if ( !ASWGameResource()->AddMarineResource( pMR, nPreferredSlot ) )
 	{
 		UTIL_Remove( pMR );
-		return false;
+		return NULL;
 	}
 
-	return true;
+	return pMR;
 }
 
-void CAlienSwarm::RosterDeselect( CASW_Player *pPlayer, int RosterIndex)
+void CAlienSwarm::RosterDeselect( CASW_Player *pPlayer, int iProfileIndex )
 {
-	if (!ASWGameResource())
+	if ( !ASWGameResource() )
 		return;
 
 	if ( !ASWDeathmatchMode() )
 	{
 		// only allow roster deselection during briefing
-		if (GetGameState() != ASW_GS_BRIEFING)
+		if ( GetGameState() != ASW_GS_BRIEFING )
 			return;
 
-		if (!ASWGameResource()->IsRosterSelected(RosterIndex))		// if not already selected
+		if ( !ASWGameResource()->IsRosterSelected( iProfileIndex ) )		// if not already selected
 			return;
 	}
 
 	// check if this marine is selected by this player
-	for (int i=0;i<ASWGameResource()->GetMaxMarineResources();i++)
+	for ( int i = 0; i < ASWGameResource()->GetMaxMarineResources(); i++ )
 	{
-		CASW_Marine_Resource* pMR = ASWGameResource()->GetMarineResource(i);
-		if (pMR && pMR->GetCommander() == pPlayer && pMR->GetProfileIndex() == RosterIndex)
+		CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( i );
+		if ( pMR && pMR->GetCommander() == pPlayer && pMR->GetProfileIndex() == iProfileIndex )
 		{
 			// if controls marine kill the marine first before choosing new
-			if ( ASWDeathmatchMode() && pPlayer->GetNPC() && pPlayer->GetNPC()->GetHealth() > 0 ) 
+			if ( ASWDeathmatchMode() && pPlayer->GetNPC() && pPlayer->GetNPC()->GetHealth() > 0 )
 			{
 				pPlayer->GetNPC()->Suicide();
 			}
-			ASWGameResource()->DeleteMarineResource(pMR);
+			ASWGameResource()->DeleteMarineResource( pMR );
 			return;
 		}
 	}
@@ -2516,33 +2519,13 @@ void CAlienSwarm::ReviveDeadMarines()
 	}	
 }
 
-void CAlienSwarm::LoadoutSelect( CASW_Player *pPlayer, int iRosterIndex, int iInvSlot, int iEquipIndex, int iDynamicIndex)
+void CAlienSwarm::LoadoutSelect( CASW_Marine_Resource *pMR, int iInvSlot, int iEquipIndex, int iDynamicIndex )
 {
-	if (!ASWGameResource())
+	Assert( pMR );
+	if ( !pMR )
 		return;
 
 	if ( iInvSlot < 0 || iInvSlot >= ASW_MAX_EQUIP_SLOTS )
-		return;
-
-	// find the appropriate marine resource
-	int iMarineIndex = -1;
-	for ( int i = 0; i < ASWGameResource()->GetMaxMarineResources(); i++ )
-	{
-		CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( i );
-		if ( !pMR )
-			continue;
-
-		if ( pMR->GetProfileIndex() == iRosterIndex && pMR->GetCommander() == pPlayer )
-		{
-			iMarineIndex = i;
-			break;
-		}
-	}
-	if ( iMarineIndex == -1 )
-		return;
-
-	CASW_Marine_Resource *pMarineResource = ASWGameResource()->GetMarineResource( iMarineIndex );
-	if ( !pMarineResource )
 		return;
 
 	// reactivedrop: check whether this weapon is allowed, if not, returns an ID of alternative
@@ -2559,24 +2542,24 @@ void CAlienSwarm::LoadoutSelect( CASW_Player *pPlayer, int iRosterIndex, int iIn
 		return;
 
 	// Figure out if the marine is already carrying an item in the slot
-	CASW_EquipItem *pOldItem = g_ASWEquipmentList.GetItemForSlot( iInvSlot, pMarineResource->m_iWeaponsInSlots.Get( iInvSlot ) );
+	CASW_EquipItem *pOldItem = g_ASWEquipmentList.GetItemForSlot( iInvSlot, pMR->m_iWeaponsInSlots.Get( iInvSlot ) );
 	// Can swap the old item for new one?
-	if ( !MarineCanSelectInLobby( pMarineResource,
+	if ( !MarineCanSelectInLobby( pMR,
 		pNewItem ? STRING( pNewItem->m_EquipClass ) : NULL,
 		pOldItem ? STRING( pOldItem->m_EquipClass ) : NULL ) )
 		return;
 
-	pMarineResource->m_iWeaponsInSlots.Set( iInvSlot, iEquipIndex );
-	pMarineResource->m_iWeaponsInSlotsDynamic.Set( iInvSlot, iDynamicIndex );
+	pMR->m_iWeaponsInSlots.Set( iInvSlot, iEquipIndex );
+	pMR->m_iWeaponsInSlotsDynamic.Set( iInvSlot, iDynamicIndex );
 
 	if ( ASWDeathmatchMode() )
 	{
-		pMarineResource->m_iInitialWeaponsInSlots.Set( iInvSlot, iEquipIndex );
+		pMR->m_iInitialWeaponsInSlots.Set( iInvSlot, iEquipIndex );
 	}
 
 	if ( ASWHoldoutMode() )
 	{
-		ASWHoldoutMode()->LoadoutSelect( pMarineResource, iEquipIndex, iInvSlot );
+		ASWHoldoutMode()->LoadoutSelect( pMR, iEquipIndex, iInvSlot );
 	}
 }
 
@@ -2680,31 +2663,19 @@ void CAlienSwarm::StartMission()
 		// find out the actual number of marines, if the number is less than 4 then
 		// add marines for leader player 
 		
-		/* // skip this code, stupidly add 4 bots to leader 
-		int num_selected_marines = 0;
-		for (int i = 0; i < ASW_MAX_MARINE_RESOURCES; ++i)
-		{
-			CASW_Marine_Resource* pMR = ASWGameResource()->GetMarineResource(i);
-			if (pMR)
-				++num_selected_marines;
-		}
-		int num_bots_to_add = 4 - num_selected_marines;
-		//*/
 		CASW_Player *pLeader = ASWGameResource() ? ASWGameResource()->GetLeader() : NULL;
-		int nPreferredSlot = -1; // we don't care which slot will it take 
 		for ( int i = 0; i < 4; ++i )
 		{
-			if ( RosterSelect( pLeader, i, nPreferredSlot ) )
+			if ( CASW_Marine_Resource *pMR = RosterSelect( pLeader, i, -1 ) )
 			{
-				// 0 is Sarge, select fire mines(11) for him
-				if ( 0 == i )
-					LoadoutSelect( pLeader, i, 2, ASW_EQUIP_MINES, -1 );	// Sarge has asw_weapon_mines
-				if ( 1 == i )
-					LoadoutSelect( pLeader, i, 2, ASW_EQUIP_HORNET_BARRAGE, -1 );	// Wildcat has asw_weapon_hornet_barrage
-				if ( 2 == i )
-					LoadoutSelect( pLeader, i, 2, ASW_EQUIP_FREEZE_GRENADES, -1 );	// Faith has asw_weapon_freeze_grenades
-				if ( 3 == i )
-					LoadoutSelect( pLeader, i, 2, ASW_EQUIP_ELECTRIFIED_ARMOR, -1 );	// Tech has asw_weapon_electrified_armor
+				if ( ASW_MARINE_PROFILE_SARGE == i )
+					LoadoutSelect( pMR, ASW_INVENTORY_SLOT_EXTRA, ASW_EQUIP_MINES, -1 );
+				if ( ASW_MARINE_PROFILE_WILDCAT == i )
+					LoadoutSelect( pMR, ASW_INVENTORY_SLOT_EXTRA, ASW_EQUIP_HORNET_BARRAGE, -1 );
+				if ( ASW_MARINE_PROFILE_FAITH == i )
+					LoadoutSelect( pMR, ASW_INVENTORY_SLOT_EXTRA, ASW_EQUIP_FREEZE_GRENADES, -1 );
+				if ( ASW_MARINE_PROFILE_CRASH == i )
+					LoadoutSelect( pMR, ASW_INVENTORY_SLOT_EXTRA, ASW_EQUIP_ELECTRIFIED_ARMOR, -1 );
 			}
 		}
 		// end of riflemod code
@@ -5976,8 +5947,8 @@ CON_COMMAND( cl_loadout_random, "Get a random loadout." )
 		int iWpn2 = ASWGameRules()->GetRandomValidWeaponSelectionExtra( pMR );
 
 		char buffer[64];
-		V_snprintf( buffer, sizeof(buffer), "cl_loadouta %d %d %d %d %d %d %d %d", iProfileIndex, -1, iWpn0, iWpn1, iWpn2, -1, -1, -1 );
-		engine->ClientCmd( buffer );
+		V_snprintf( buffer, sizeof(buffer), "cl_loadouta %d %d %d %d %d %d %d %d", iProfileIndex, i, iWpn0, iWpn1, iWpn2, -1, -1, -1 );
+		engine->ServerCmd( buffer );
 	}
 }
 
@@ -8537,10 +8508,10 @@ void CAlienSwarm::OnPlayerFullyJoined( CASW_Player *pPlayer )
 	if ( GetCampaignSave() )
 	{
 		char buffer[256];
-		Q_snprintf(buffer, sizeof(buffer), "%s%s", pPlayer->GetPlayerName(), pPlayer->GetASWNetworkID());
+		V_snprintf( buffer, sizeof( buffer ), "%s\x01%s", pPlayer->GetASWNetworkID(), pPlayer->GetPlayerName() );
 		for ( int i = 0; i < ASW_NUM_MARINE_PROFILES; i++ )
 		{
-			if ( !Q_strcmp( buffer, STRING( GetCampaignSave()->m_LastCommanders[i] ) ) )
+			if ( GetCampaignSave()->m_LastCommanders[i] != NULL_STRING && !V_strcmp( buffer, STRING( GetCampaignSave()->m_LastCommanders[i] ) ) )
 			{
 				bHadMarinesLastRound = true;
 				break;
