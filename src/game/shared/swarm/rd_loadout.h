@@ -29,10 +29,9 @@ namespace ReactiveDropLoadout
 	};
 	struct LoadoutData_t
 	{
-		LoadoutMarineData_t Marines[ASW_NUM_MARINE_PROFILES]{};
-		bool MarineIncluded[ASW_NUM_MARINE_PROFILES]{};
+		LoadoutMarineData_t Marines[ASW_NUM_MARINES_PER_LOADOUT]{};
+		bool MarineIncluded[ASW_NUM_MARINES_PER_LOADOUT]{};
 		uint32 LastModified{};
-		uint32 LastUsed{};
 
 		void ToKeyValues( KeyValues *pKV, bool bBinary, bool bForSharing = false ) const;
 		void FromKeyValues( KeyValues *pKV, bool bBinary );

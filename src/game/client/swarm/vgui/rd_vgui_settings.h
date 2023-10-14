@@ -327,12 +327,12 @@ public:
 
 	CRD_VGUI_Bind *m_pBindActivatePrimary;
 	CRD_VGUI_Bind *m_pBindActivateSecondary;
-	CRD_VGUI_Bind *m_pBindActivateEquipment[ASW_NUM_MARINE_PROFILES];
+	CRD_VGUI_Bind *m_pBindActivateEquipment[8];
 	CRD_VGUI_Bind *m_pBindWheelEquipment;
 	CRD_VGUI_Bind *m_pBindWheelEquipment1;
 	CRD_VGUI_Bind *m_pBindWheelEquipment2;
 
-	CRD_VGUI_Bind *m_pBindSelectMarine[ASW_NUM_MARINE_PROFILES];
+	CRD_VGUI_Bind *m_pBindSelectMarine[8];
 	CRD_VGUI_Bind *m_pBindWheelMarine;
 
 	BaseModUI::BaseModHybridButton *m_pBtnCustomWheels;

@@ -50,7 +50,7 @@
 
 
 COMPILE_TIME_ASSERT( RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MEDAL + RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS == RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE );
-COMPILE_TIME_ASSERT( RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + ASW_NUM_MARINE_PROFILES == RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC );
+COMPILE_TIME_ASSERT( RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + ASW_NUM_MARINES_PER_LOADOUT == RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC );
 COMPILE_TIME_ASSERT( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC == 24 ); // if this assert fails, fix network table and update assert
 #pragma warning(push)
 #pragma warning(disable: 4130) // we're comparing string literals, but if the comparison fails due to memory weirdness, it'll fail at compile time, so it's fine
@@ -66,9 +66,9 @@ ConVar rd_debug_inventory( "cl_debug_inventory", "0", FCVAR_NONE, "print debuggi
 	if ( !pInventory ) \
 		return
 
-extern ConVar rd_equipped_weapon_primary[ASW_NUM_MARINE_PROFILES];
-extern ConVar rd_equipped_weapon_secondary[ASW_NUM_MARINE_PROFILES];
-extern ConVar rd_equipped_weapon_extra[ASW_NUM_MARINE_PROFILES];
+extern ConVar rd_equipped_weapon_primary[ASW_NUM_MARINES_PER_LOADOUT];
+extern ConVar rd_equipped_weapon_secondary[ASW_NUM_MARINES_PER_LOADOUT];
+extern ConVar rd_equipped_weapon_extra[ASW_NUM_MARINES_PER_LOADOUT];
 extern ConVar rd_strange_device_tier_notifications;
 #else
 ConVar rd_debug_inventory( "sv_debug_inventory", "0", FCVAR_NONE, "print debugging messages about inventory service calls" );
@@ -320,7 +320,7 @@ public:
 			m_PlayerLocal[iPlayer].m_LocalEquipCacheDynamic[i] = ReactiveDropInventory::ItemInstance_t{};
 		}
 
-		for ( int i = 0; i < ASW_NUM_MARINE_PROFILES; i++ )
+		for ( int i = 0; i < ASW_NUM_MARINES_PER_LOADOUT; i++ )
 		{
 			AllocateDynamicItemSlot( iPlayer, strtoull( rd_equipped_weapon_primary[i].GetString(), NULL, 10 ), i, ASW_INVENTORY_SLOT_PRIMARY );
 			AllocateDynamicItemSlot( iPlayer, strtoull( rd_equipped_weapon_secondary[i].GetString(), NULL, 10 ), i, ASW_INVENTORY_SLOT_SECONDARY );
@@ -2093,7 +2093,7 @@ ConVar rd_equipped_medal[RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS]
 	{ "rd_equipped_medal1", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped medal.", RD_Equipped_Item_Changed },
 	{ "rd_equipped_medal2", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped medal.", RD_Equipped_Item_Changed },
 };
-ConVar rd_equipped_marine[ASW_NUM_MARINE_PROFILES]
+ConVar rd_equipped_marine[ASW_NUM_MARINES_PER_LOADOUT]
 {
 	{ "rd_equipped_marine0", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Sarge's suit.", RD_Equipped_Item_Changed },
 	{ "rd_equipped_marine1", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Wildcat's suit.", RD_Equipped_Item_Changed },

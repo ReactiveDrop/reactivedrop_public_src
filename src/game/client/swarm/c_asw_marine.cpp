@@ -1091,6 +1091,7 @@ void C_ASW_Marine::OnDataChanged( DataUpdateType_t updateType )
 
 			int iProfile = pMR->GetProfileIndex();
 			Assert( iProfile >= 0 && iProfile < ASW_NUM_MARINE_PROFILES );
+			COMPILE_TIME_ASSERT( ASW_NUM_MARINE_PROFILES == 8 );
 
 			C_RD_Weapon_Accessory::CreateWeaponAccessories( this, pMR->m_OriginalCommander->m_EquippedItemDataStatic[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + iProfile], m_hWeaponAccessory, s_pKVAccessoryPosition[iProfile], s_szAccessoryPositionFiles[iProfile] );
 		}

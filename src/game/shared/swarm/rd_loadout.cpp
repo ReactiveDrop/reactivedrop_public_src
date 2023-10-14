@@ -14,7 +14,7 @@
 
 #ifdef CLIENT_DLL
 // current loadout equip slots
-ConVar asw_default_primary[ASW_NUM_MARINE_PROFILES]
+ConVar asw_default_primary[ASW_NUM_MARINES_PER_LOADOUT]
 {
 	{ "asw_default_primary_0", "-1", FCVAR_ARCHIVE, "Default primary equip for Sarge" },
 	{ "asw_default_primary_1", "-1", FCVAR_ARCHIVE, "Default primary equip for Wildcat" },
@@ -25,7 +25,7 @@ ConVar asw_default_primary[ASW_NUM_MARINE_PROFILES]
 	{ "asw_default_primary_6", "-1", FCVAR_ARCHIVE, "Default primary equip for Bastille" },
 	{ "asw_default_primary_7", "-1", FCVAR_ARCHIVE, "Default primary equip for Vegas" },
 };
-ConVar asw_default_secondary[ASW_NUM_MARINE_PROFILES]
+ConVar asw_default_secondary[ASW_NUM_MARINES_PER_LOADOUT]
 {
 	{ "asw_default_secondary_0", "-1", FCVAR_ARCHIVE, "Default secondary equip for Sarge" },
 	{ "asw_default_secondary_1", "-1", FCVAR_ARCHIVE, "Default secondary equip for Wildcat" },
@@ -36,7 +36,7 @@ ConVar asw_default_secondary[ASW_NUM_MARINE_PROFILES]
 	{ "asw_default_secondary_6", "-1", FCVAR_ARCHIVE, "Default secondary equip for Bastille" },
 	{ "asw_default_secondary_7", "-1", FCVAR_ARCHIVE, "Default secondary equip for Vegas" },
 };
-ConVar asw_default_extra[ASW_NUM_MARINE_PROFILES]
+ConVar asw_default_extra[ASW_NUM_MARINES_PER_LOADOUT]
 {
 	{ "asw_default_extra_0", "-1", FCVAR_ARCHIVE, "Default extra equip for Sarge" },
 	{ "asw_default_extra_1", "-1", FCVAR_ARCHIVE, "Default extra equip for Wildcat" },
@@ -48,8 +48,8 @@ ConVar asw_default_extra[ASW_NUM_MARINE_PROFILES]
 	{ "asw_default_extra_7", "-1", FCVAR_ARCHIVE, "Default extra equip for Vegas" },
 };
 extern ConVar rd_equipped_medal[RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS];
-extern ConVar rd_equipped_marine[ASW_NUM_MARINE_PROFILES];
-ConVar rd_equipped_weapon_primary[ASW_NUM_MARINE_PROFILES]
+extern ConVar rd_equipped_marine[ASW_NUM_MARINES_PER_LOADOUT];
+ConVar rd_equipped_weapon_primary[ASW_NUM_MARINES_PER_LOADOUT]
 {
 	{ "rd_equipped_weapon_primary0", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current primary weapon for Sarge" },
 	{ "rd_equipped_weapon_primary1", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current primary weapon for Wildcat" },
@@ -60,7 +60,7 @@ ConVar rd_equipped_weapon_primary[ASW_NUM_MARINE_PROFILES]
 	{ "rd_equipped_weapon_primary6", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current primary weapon for Bastille" },
 	{ "rd_equipped_weapon_primary7", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current primary weapon for Vegas" },
 };
-ConVar rd_equipped_weapon_secondary[ASW_NUM_MARINE_PROFILES]
+ConVar rd_equipped_weapon_secondary[ASW_NUM_MARINES_PER_LOADOUT]
 {
 	{ "rd_equipped_weapon_secondary0", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current secondary weapon for Sarge" },
 	{ "rd_equipped_weapon_secondary1", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current secondary weapon for Wildcat" },
@@ -71,7 +71,7 @@ ConVar rd_equipped_weapon_secondary[ASW_NUM_MARINE_PROFILES]
 	{ "rd_equipped_weapon_secondary6", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current secondary weapon for Bastille" },
 	{ "rd_equipped_weapon_secondary7", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current secondary weapon for Vegas" },
 };
-ConVar rd_equipped_weapon_extra[ASW_NUM_MARINE_PROFILES]
+ConVar rd_equipped_weapon_extra[ASW_NUM_MARINES_PER_LOADOUT]
 {
 	{ "rd_equipped_weapon_extra0", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current extra weapon for Sarge" },
 	{ "rd_equipped_weapon_extra1", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current extra weapon for Wildcat" },
@@ -85,7 +85,6 @@ ConVar rd_equipped_weapon_extra[ASW_NUM_MARINE_PROFILES]
 
 // preferences
 ConVar rd_loadout_auto_update( "rd_loadout_auto_update", "1", FCVAR_NONE, "Should the current loadout be updated when an item is selected during briefing?" );
-ConVar rd_loadout_track_last_used( "rd_loadout_track_last_used", "1", FCVAR_NONE, "Should loadouts remember when they were last loaded?" );
 
 // commands
 CON_COMMAND( rd_loadout_save, "Save the current loadout with the specified name." )
@@ -286,8 +285,6 @@ namespace ReactiveDropLoadout
 			// well, you've probably got more important problems
 			if ( LastModified )
 				pKV->SetInt( bBinary ? "mt" : "LastModified", LastModified );
-			if ( LastUsed )
-				pKV->SetInt( bBinary ? "at" : "LastUsed", LastUsed );
 		}
 
 		WriteMarine( pKV, bBinary, "0", "Marines/Sarge", Marines[ASW_MARINE_PROFILE_SARGE], MarineIncluded[ASW_MARINE_PROFILE_SARGE] );
@@ -302,7 +299,6 @@ namespace ReactiveDropLoadout
 	void LoadoutData_t::FromKeyValues( KeyValues *pKV, bool bBinary )
 	{
 		LastModified = pKV->GetInt( bBinary ? "mt" : "LastModified" );
-		LastUsed = pKV->GetInt( bBinary ? "at" : "LastUsed" );
 
 		ReadMarine( pKV, bBinary, "0", "Marines/Sarge", Marines[ASW_MARINE_PROFILE_SARGE], MarineIncluded[ASW_MARINE_PROFILE_SARGE] );
 		ReadMarine( pKV, bBinary, "1", "Marines/Wildcat", Marines[ASW_MARINE_PROFILE_WILDCAT], MarineIncluded[ASW_MARINE_PROFILE_WILDCAT] );
@@ -316,7 +312,7 @@ namespace ReactiveDropLoadout
 	int LoadoutData_t::NumMarinesIncluded() const
 	{
 		int iCount = 0;
-		for ( int i = 0; i < ASW_NUM_MARINE_PROFILES; i++ )
+		for ( int i = 0; i < ASW_NUM_MARINES_PER_LOADOUT; i++ )
 		{
 			if ( MarineIncluded[i] )
 				iCount++;
@@ -485,24 +481,17 @@ namespace ReactiveDropLoadout
 
 	void LoadoutData_t::CopyToLive()
 	{
-		for ( int i = 0; i < ASW_NUM_MARINE_PROFILES; i++ )
+		for ( int i = 0; i < ASW_NUM_MARINES_PER_LOADOUT; i++ )
 		{
 			if ( MarineIncluded[i] )
 				Marines[i].CopyToLive( ASW_Marine_Profile( i ) );
-		}
-
-		ISteamUtils *pUtils = SteamUtils();
-		if ( rd_loadout_track_last_used.GetInt() > 0 && pUtils && LastUsed <= pUtils->GetServerRealTime() - rd_loadout_track_last_used.GetInt() )
-		{
-			LastUsed = pUtils->GetServerRealTime();
-			WriteLoadouts();
 		}
 
 		engine->ClientCmd_Unrestricted( "host_writeconfig\n" );
 	}
 	void LoadoutData_t::CopyFromLive()
 	{
-		for ( int i = 0; i < ASW_NUM_MARINE_PROFILES; i++ )
+		for ( int i = 0; i < ASW_NUM_MARINES_PER_LOADOUT; i++ )
 		{
 			Marines[i].CopyFromLive( ASW_Marine_Profile( i ) );
 			MarineIncluded[i] = true;
@@ -602,13 +591,13 @@ namespace ReactiveDropLoadout
 		{
 			ReplaceItemIDCVarHelper( bAnyChanged, &rd_equipped_medal[i], oldID, szNewValue );
 		}
-		for ( int i = 0; i < ASW_NUM_MARINE_PROFILES; i++ )
+		for ( int i = 0; i < ASW_NUM_MARINES_PER_LOADOUT; i++ )
 		{
 			ReplaceItemIDCVarHelper( bAnyChanged, &rd_equipped_marine[i], oldID, szNewValue );
 		}
 
 		// current loadout (weapons)
-		for ( int i = 0; i < ASW_NUM_MARINE_PROFILES; i++ )
+		for ( int i = 0; i < ASW_NUM_MARINES_PER_LOADOUT; i++ )
 		{
 			ReplaceItemIDCVarHelper( bAnyChanged, &rd_equipped_weapon_primary[i], oldID, szNewValue );
 			ReplaceItemIDCVarHelper( bAnyChanged, &rd_equipped_weapon_secondary[i], oldID, szNewValue );

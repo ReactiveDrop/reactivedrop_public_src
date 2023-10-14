@@ -169,6 +169,14 @@ enum {
 	CHATTER_MISC,								// 124th chatter line
 };
 
+enum ASW_Pronouns
+{
+	ASW_PRONOUNS_HE,
+	ASW_PRONOUNS_SHE,
+	ASW_PRONOUNS_IT_ROBOT,
+	ASW_PRONOUNS_IT_ANIMAL,
+};
+
 class CASW_Marine_Profile
 {
 public:
@@ -192,7 +200,6 @@ public:
 
 	// personnel data
 	const char *GetShortName() { return m_ShortName; }
-	bool IsFemale() { return m_bFemale; }
 
 	char	m_RankName[24];
 	char	m_Bio[24];
@@ -204,7 +211,7 @@ public:
 	// is the shortname a nickname to be put in quotes between 1st and last?
 	bool	m_bNickname;
 	int		m_Age;
-	bool	m_bFemale;
+	ASW_Pronouns m_Pronouns;
 	// used for the "who" fact
 	char	m_ResponseRulesName[24];
 

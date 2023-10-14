@@ -71,8 +71,6 @@ RD_STEAM_INPUT_BIND( RotateCameraRight, "rotatecameraright", "InGame" );
 RD_STEAM_INPUT_BIND( SelectMarineDeathmatch, "cl_select_loadout", "InGame" );
 
 // per-marine
-COMPILE_TIME_ASSERT( ASW_NUM_MARINE_PROFILES == 8 );
-
 RD_STEAM_INPUT_BIND( SquadOffhand2, "asw_squad_hotbar 1", "InGame" );
 RD_STEAM_INPUT_BIND( SquadOffhand3, "asw_squad_hotbar 2", "InGame" );
 RD_STEAM_INPUT_BIND( SquadOffhand4, "asw_squad_hotbar 3", "InGame" );

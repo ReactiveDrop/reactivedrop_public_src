@@ -45,8 +45,8 @@ public:
 	vgui::Label *m_pLblMedal[RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS];
 	vgui::ImagePanel *m_pImgPromotionIcon;
 	vgui::Label *m_pLblPromotion;
-	vgui::Label *m_pLblMarineName[ASW_NUM_MARINE_PROFILES];
-	CBitmapButton *m_pBtnMarineLoadout[ASW_NUM_MARINE_PROFILES];
+	vgui::Label *m_pLblMarineName[ASW_NUM_MARINES_PER_LOADOUT];
+	CBitmapButton *m_pBtnMarineLoadout[ASW_NUM_MARINES_PER_LOADOUT];
 	vgui::PHandle m_hSubScreen;
 
 	void InitLoadoutList();
@@ -80,7 +80,7 @@ public:
 	CASW_Marine_Profile *GetMarineProfile( int nLobbySlot ) override;
 	CASW_Marine_Profile *GetMarineProfileByProfileIndex( int nProfileIndex ) override;
 	int GetProfileSelectedWeapon( int nProfileIndex, int nWeaponSlot ) override;
-	int GetMarineSelectedWeapon( int nLobbySlot, int nWeaponSlot ) override { return GetProfileSelectedWeapon( nLobbySlot, nWeaponSlot ); }
+	int GetMarineSelectedWeapon( int nLobbySlot, int nWeaponSlot ) override;
 	const char *GetMarineWeaponClass( int nLobbySlot, int nWeaponSlot ) override;
 	int GetCommanderReady( int nLobbySlot ) override { return false; }
 	bool IsLeader( int nLobbySlot ) override { return false; }
@@ -89,7 +89,7 @@ public:
 	bool IsWeaponUnlocked( const char *szWeaponClass ) override;
 	bool IsProfileSelectedBySomeoneElse( int nProfileIndex ) override { return false; }
 	bool IsProfileSelected( int nProfileIndex ) override { return true; }
-	int GetMaxPlayers() override { return ASW_NUM_MARINE_PROFILES; }
+	int GetMaxPlayers() override { return ASW_NUM_MARINES_PER_LOADOUT; }
 	bool IsOfflineGame() override { return true; }
 	bool IsCampaignGame() override { return false; }
 	bool UsingFixedSkillPoints() override { return true; }
@@ -120,12 +120,25 @@ public:
 	void NavigateTo() override;
 	void OnSetFocus() override;
 
+	bool IsLoadoutReadOnly();
+	int GetSlotByMarineProfile( ASW_Marine_Profile iProfile );
+	ASW_Marine_Profile GetMarineProfileForSlot( int iSlot );
+	SteamItemDef_t GetMarineItemDefID( int iSlot );
+	SteamItemInstanceID_t GetMarineItemID( int iSlot );
+	int GetWeaponForSlot( int iSlot, ASW_Inventory_slot_t iEquipSlot );
+	SteamItemDef_t GetWeaponItemDefID( int iSlot, ASW_Inventory_slot_t iEquipSlot );
+	SteamItemInstanceID_t GetWeaponItemID( int iSlot, ASW_Inventory_slot_t iEquipSlot );
+	bool SetMarineForSlot( int iSlot, SteamItemInstanceID_t iItemInstance );
+	bool SetWeaponForSlot( int iSlot, ASW_Inventory_slot_t iEquipSlot, int iEquipIndex, SteamItemInstanceID_t iItemInstance );
+
 	char m_szName[MAX_VALUE];
 	ReactiveDropLoadout::LoadoutData_t m_Loadout;
 	PublishedFileId_t m_iAddonID;
 
 	vgui::Label *m_pLblTitle;
 	bool m_bSelected;
+	bool m_bCurrentLoadout;
+	bool m_bDefaultLoadout;
 
 	MESSAGE_FUNC( OnPanelSelected, "PanelSelected" );
 	MESSAGE_FUNC( OnPanelUnSelected, "PanelUnSelected" );
@@ -159,7 +172,7 @@ class CRD_VGUI_Loadout_Marine : public vgui::EditablePanel
 {
 	DECLARE_CLASS_SIMPLE( CRD_VGUI_Loadout_Marine, vgui::EditablePanel );
 public:
-	CRD_VGUI_Loadout_Marine( vgui::Panel *parent, const char *panelName, ASW_Marine_Profile iProfile );
+	CRD_VGUI_Loadout_Marine( vgui::Panel *parent, const char *panelName, int iSlot, CRD_VGUI_Loadout_List_Item *pLoadout );
 
 	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 	void OnCommand( const char *command ) override;
@@ -167,6 +180,8 @@ public:
 	void OnThink() override;
 	void NavigateTo() override;
 
+	KeyValues::AutoDelete m_pKVDisplay{ "Display" };
+	vgui::DHANDLE<CRD_VGUI_Loadout_List_Item> m_hLoadout;
 	CRD_Swarmopedia_Model_Panel *m_pModelPanel;
 	vgui::RichText *m_pLblBiography;
 	CNB_Skill_Panel *m_pSkillPanel[ASW_NUM_SKILL_SLOTS - 1];
@@ -183,15 +198,21 @@ class CRD_VGUI_Loadout_Slot : public vgui::Button
 {
 	DECLARE_CLASS_SIMPLE( CRD_VGUI_Loadout_Slot, vgui::Button );
 public:
-	CRD_VGUI_Loadout_Slot( vgui::Panel *parent, const char *panelName, ConVar *pInventoryVar );
+	CRD_VGUI_Loadout_Slot( vgui::Panel *parent, const char *panelName );
 
 	void Paint() override;
 	void OnCursorEntered() override;
 	void NavigateTo() override;
+	void OnCommand( const char *command ) override;
 	virtual bool PaintItemFullSize() { return false; }
+	const ReactiveDropInventory::ItemDef_t *GetItemDef();
 	const ReactiveDropInventory::ItemInstance_t *GetItem();
 
-	ConVar *m_pInventoryVar;
+	virtual SteamItemDef_t GetItemDefID() = 0;
+	virtual SteamItemInstanceID_t GetItemInstanceID() = 0;
+	virtual void OnClick() = 0;
+
+	char m_szSlot[64];
 };
 
 class CRD_VGUI_Loadout_Slot_Inventory : public CRD_VGUI_Loadout_Slot
@@ -200,39 +221,46 @@ class CRD_VGUI_Loadout_Slot_Inventory : public CRD_VGUI_Loadout_Slot
 public:
 	CRD_VGUI_Loadout_Slot_Inventory( vgui::Panel *parent, const char *panelName, ConVar *pInventoryVar, const char *szSlot );
 
-	void OnCommand( const char *command ) override;
 	bool PaintItemFullSize() override { return true; }
 
-	char m_szSlot[64];
+	SteamItemDef_t GetItemDefID() override;
+	SteamItemInstanceID_t GetItemInstanceID() override;
+	void OnClick() override;
+
+	ConVar *m_pInventoryVar;
 };
 
 class CRD_VGUI_Loadout_Slot_Marine : public CRD_VGUI_Loadout_Slot
 {
 	DECLARE_CLASS_SIMPLE( CRD_VGUI_Loadout_Slot_Marine, CRD_VGUI_Loadout_Slot );
 public:
-	CRD_VGUI_Loadout_Slot_Marine( vgui::Panel *parent, const char *panelName, ASW_Marine_Profile iProfile, ConVar *pInventoryVar );
+	CRD_VGUI_Loadout_Slot_Marine( CRD_VGUI_Loadout_Marine *parent, const char *panelName, int iMarineSlot );
 
 	void Paint() override;
-	void OnCursorEntered() override;
+	SteamItemDef_t GetItemDefID() override;
+	SteamItemInstanceID_t GetItemInstanceID() override;
+	void OnClick() override;
 
-	ASW_Marine_Profile m_iProfile;
-	char m_szSlot[64];
+	CASW_Marine_Profile *GetProfile();
+
+	int m_iMarineSlot;
 };
 
 class CRD_VGUI_Loadout_Slot_Weapon : public CRD_VGUI_Loadout_Slot
 {
 	DECLARE_CLASS_SIMPLE( CRD_VGUI_Loadout_Slot_Weapon, CRD_VGUI_Loadout_Slot );
 public:
-	CRD_VGUI_Loadout_Slot_Weapon( vgui::Panel *parent, const char *panelName, ASW_Marine_Profile iProfile, ConVar *pWeaponVar, ConVar *pInventoryVar, ASW_Inventory_slot_t iSlot );
+	CRD_VGUI_Loadout_Slot_Weapon( CRD_VGUI_Loadout_Marine *parent, const char *panelName, int iMarineSlot, ASW_Inventory_slot_t iSlot );
 
 	void Paint() override;
-	void OnCommand( const char *command ) override;
+	SteamItemDef_t GetItemDefID() override;
+	SteamItemInstanceID_t GetItemInstanceID() override;
+	void OnClick() override;
 
-	ASW_Marine_Profile m_iProfile;
+	int GetEquipIndex( int iDefaultLoadoutSlot );
+
+	int m_iMarineSlot;
 	ASW_Inventory_slot_t m_iSlot;
-	ConVar *m_pWeaponVar;
-	ConVar *m_pInventoryVar;
-	char m_szSlot[64];
 };
 
 }

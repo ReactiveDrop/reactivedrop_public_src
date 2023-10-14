@@ -128,12 +128,12 @@ ConVar asw_marine_switch_blend_speed( "asw_marine_switch_blend_speed", "2.5", 0,
 ConVar asw_marine_switch_blend_max_dist( "asw_marine_switch_blend_max_dist", "1500", 0, "Maximum distance apart marines can be for a camera blend to occur" );
 
 // default inventory convars
-extern ConVar asw_default_primary[ASW_NUM_MARINE_PROFILES];
-extern ConVar asw_default_secondary[ASW_NUM_MARINE_PROFILES];
-extern ConVar asw_default_extra[ASW_NUM_MARINE_PROFILES];
-extern ConVar rd_equipped_weapon_primary[ASW_NUM_MARINE_PROFILES];
-extern ConVar rd_equipped_weapon_secondary[ASW_NUM_MARINE_PROFILES];
-extern ConVar rd_equipped_weapon_extra[ASW_NUM_MARINE_PROFILES];
+extern ConVar asw_default_primary[ASW_NUM_MARINES_PER_LOADOUT];
+extern ConVar asw_default_secondary[ASW_NUM_MARINES_PER_LOADOUT];
+extern ConVar asw_default_extra[ASW_NUM_MARINES_PER_LOADOUT];
+extern ConVar rd_equipped_weapon_primary[ASW_NUM_MARINES_PER_LOADOUT];
+extern ConVar rd_equipped_weapon_secondary[ASW_NUM_MARINES_PER_LOADOUT];
+extern ConVar rd_equipped_weapon_extra[ASW_NUM_MARINES_PER_LOADOUT];
 extern ConVar rd_loadout_auto_update;
 
 ConVar asw_particle_count( "asw_particle_count", "0", 0, "Shows how many particles are being drawn" );
@@ -508,6 +508,7 @@ void C_ASW_Player::SendRosterSelectCommand( const char *command, int i, int nPre
 	char buffer[64];
 	if ( i >= 0 && i < ASW_NUM_MARINE_PROFILES )
 	{
+		COMPILE_TIME_ASSERT( ASW_NUM_MARINE_PROFILES == 8 );
 		// grab default inventory numbers
 		int iPrimary = asw_default_primary[i].GetInt();
 		int iSecondary = asw_default_secondary[i].GetInt();
@@ -629,6 +630,7 @@ void C_ASW_Player::LoadoutSelectEquip( int iMarineIndex, int iInvSlot, int iEqui
 			iProfileIndex = pMR->GetProfileIndex();
 			if ( iProfileIndex >= 0 && iProfileIndex < ASW_NUM_MARINE_PROFILES && iInvSlot >= 0 && iInvSlot <= 2 )
 			{
+				COMPILE_TIME_ASSERT( ASW_NUM_MARINE_PROFILES == 8 );
 				ConVar *pEquipIndex = NULL, *pItemInstanceID = NULL;
 				if ( iInvSlot == 0 )
 				{

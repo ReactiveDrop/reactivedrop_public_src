@@ -73,6 +73,6 @@ public:
 	virtual const IBriefing_ItemInstance &GetEquippedWeapon( int nLobbySlot, int nWeaponSlot ) = 0;
 };
 
-#define NUM_BRIEFING_LOBBY_SLOTS MAX( ASW_MAX_MARINE_RESOURCES, MAX_PLAYERS + ASW_NUM_MARINE_PROFILES - 1 ) // was 9, was 4
+#define NUM_BRIEFING_LOBBY_SLOTS ( ASW_MAX_MARINE_RESOURCES + MAX_PLAYERS - 1 ) // was 9, was 4
 
 #endif // _INCLUDED_IBRIEFING_H

@@ -181,6 +181,8 @@ enum ASW_Marine_Profile
 	ASW_NUM_MARINE_PROFILES,
 };
 
+#define ASW_NUM_MARINES_PER_LOADOUT 8
+
 // !!NOTE!! - these numbers are hardcoded into engine's Host_cmd.cpp too :(
 #define ASW_MAX_PLAYERS_PER_SAVE 10
 #define ASW_MAX_MISSIONS_PER_CAMPAIGN 32

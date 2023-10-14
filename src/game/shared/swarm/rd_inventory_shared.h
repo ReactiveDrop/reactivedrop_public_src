@@ -39,8 +39,34 @@ namespace ReactiveDropInventory
 	constexpr const char *const g_InventorySlotAliases[][2] =
 	{
 		// first value is the name from g_InventorySlotNames, second value is the value to also accept from item definitions.
+
+		// all three medal slots share an allowed item list
 		{ "medal1", "medal" },
 		{ "medal2", "medal" },
+
+		// pseudo-slot used for generating a list of marine suits
+		{ "marine_any", "marine0" },
+		{ "marine_any", "marine1" },
+		{ "marine_any", "marine2" },
+		{ "marine_any", "marine3" },
+		{ "marine_any", "marine4" },
+		{ "marine_any", "marine5" },
+		{ "marine_any", "marine6" },
+		{ "marine_any", "marine7" },
+		{ "marine_any", "marine_nco" },
+		{ "marine_any", "marine_sw" },
+		{ "marine_any", "marine_medic" },
+		{ "marine_any", "marine_tech" },
+
+		// allow equipping unlockable officer marines in either Sarge or Jaeger's slot, etc.
+		{ "marine0", "marine_nco" },
+		{ "marine1", "marine_sw" },
+		{ "marine2", "marine_medic" },
+		{ "marine3", "marine_tech" },
+		{ "marine4", "marine_nco" },
+		{ "marine5", "marine_sw" },
+		{ "marine6", "marine_medic" },
+		{ "marine7", "marine_tech" },
 	};
 
 	// Data extracted from the Steam Inventory Service Schema.

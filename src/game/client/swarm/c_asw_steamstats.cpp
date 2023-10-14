@@ -1593,6 +1593,16 @@ void CASW_Steamstats::PrepStatsForSend_Leaderboard( CASW_Player *pPlayer, bool b
 		C_ASW_Marine_Resource *pSquadMR = ASWGameResource()->GetMarineResource( i );
 		if ( pSquadMR && pSquadMR != pMR )
 		{
+			if ( iSquadPosition >= NELEMS( m_LeaderboardScoreDetails.m_iSquadMarine ) )
+			{
+				if ( asw_stats_leaderboard_debug.GetBool() )
+				{
+					DevWarning( "Not sending leaderboard entry: too many marines!\n" );
+				}
+				engine->ServerCmd( "cl_leaderboard_ready\n" );
+				return;
+			}
+
 			C_ASW_Player *pCommander = pSquadMR->GetCommander();
 			if ( pCommander && ASWGameResource()->GetFirstMarineResourceForPlayer( pCommander ) == pSquadMR )
 			{

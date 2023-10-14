@@ -109,7 +109,6 @@ struct LeaderboardScoreDetails_Points_t
 #pragma pack(pop)
 ASSERT_INVARIANT( sizeof( LeaderboardScoreDetails_v1_t ) % sizeof( int32 ) == 0 );
 ASSERT_INVARIANT( sizeof( LeaderboardScoreDetails_v1_t ) / sizeof( int32 ) <= k_cLeaderboardDetailsMax );
-ASSERT_INVARIANT( ASW_NUM_MARINE_PROFILES - 1 == 7 );
 ASSERT_INVARIANT( sizeof( LeaderboardScoreDetails_v2_t ) % sizeof( int32 ) == 0 );
 ASSERT_INVARIANT( sizeof( LeaderboardScoreDetails_v2_t ) / sizeof( int32 ) <= k_cLeaderboardDetailsMax );
 ASSERT_INVARIANT( sizeof( LeaderboardScoreDetails_Points_t ) % sizeof( int32 ) == 0 );								// jh: what is this i dont know, but i copypaste and hope it work!

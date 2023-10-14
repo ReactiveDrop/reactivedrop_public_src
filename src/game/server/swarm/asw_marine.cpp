@@ -1223,10 +1223,21 @@ int CASW_Marine::OnTakeDamage( const CTakeDamageInfo &info )
 
 							if ( pOtherMarine == this )
 							{
-								if ( GetMarineProfile()->m_bFemale )
-									UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#rd_suicide_female_revivable", szName );
-								else
-									UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#rd_suicide_male_revivable", szName );
+								switch ( GetMarineProfile()->m_Pronouns )
+								{
+								case ASW_PRONOUNS_HE:
+									UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_suicide_male_revivable", szName );
+									break;
+								case ASW_PRONOUNS_SHE:
+									UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_suicide_female_revivable", szName );
+									break;
+								case ASW_PRONOUNS_IT_ROBOT:
+									UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_suicide_robot_revivable", szName );
+									break;
+								case ASW_PRONOUNS_IT_ANIMAL:
+									UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_suicide_animal_revivable", szName );
+									break;
+								}
 							}
 							else
 							{
@@ -4299,10 +4310,21 @@ void CASW_Marine::Event_Killed( const CTakeDamageInfo &info )
 
 				if ( pOtherMarine == this )
 				{
-					if ( GetMarineProfile()->m_bFemale )
-						UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_suicide_female", szName );
-					else
+					switch ( GetMarineProfile()->m_Pronouns )
+					{
+					case ASW_PRONOUNS_HE:
 						UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_suicide_male", szName );
+						break;
+					case ASW_PRONOUNS_SHE:
+						UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_suicide_female", szName );
+						break;
+					case ASW_PRONOUNS_IT_ROBOT:
+						UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_suicide_robot", szName );
+						break;
+					case ASW_PRONOUNS_IT_ANIMAL:
+						UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_suicide_animal", szName );
+						break;
+					}
 				}
 				else
 				{
