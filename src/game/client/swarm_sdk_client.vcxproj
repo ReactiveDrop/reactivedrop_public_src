@@ -399,6 +399,32 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <None Include="..\..\vpc_scripts\loadaddress.vpc" />
     <None Include="client_base.vpc" />
     <None Include="client_swarm.vpc" />
+    <ClInclude Include="..\..\public\steam\isteamapps.h" />
+    <ClInclude Include="..\..\public\steam\isteamclient.h" />
+    <ClInclude Include="..\..\public\steam\isteamfriends.h" />
+    <ClInclude Include="..\..\public\steam\isteamhttp.h" />
+    <ClInclude Include="..\..\public\steam\isteaminput.h" />
+    <ClInclude Include="..\..\public\steam\isteaminventory.h" />
+    <ClInclude Include="..\..\public\steam\isteammatchmaking.h" />
+    <ClInclude Include="..\..\public\steam\isteamnetworking.h" />
+    <ClInclude Include="..\..\public\steam\isteamnetworkingmessages.h" />
+    <ClInclude Include="..\..\public\steam\isteamnetworkingsockets.h" />
+    <ClInclude Include="..\..\public\steam\isteamnetworkingutils.h" />
+    <ClInclude Include="..\..\public\steam\isteamremotestorage.h" />
+    <ClInclude Include="..\..\public\steam\isteamscreenshots.h" />
+    <ClInclude Include="..\..\public\steam\isteamugc.h" />
+    <ClInclude Include="..\..\public\steam\isteamuser.h" />
+    <ClInclude Include="..\..\public\steam\isteamuserstats.h" />
+    <ClInclude Include="..\..\public\steam\isteamutils.h" />
+    <ClInclude Include="..\..\public\steam\matchmakingtypes.h" />
+    <ClInclude Include="..\..\public\steam\steamclientpublic.h" />
+    <ClInclude Include="..\..\public\steam\steamhttpenums.h" />
+    <ClInclude Include="..\..\public\steam\steamnetworkingfakeip.h" />
+    <ClInclude Include="..\..\public\steam\steamnetworkingtypes.h" />
+    <ClInclude Include="..\..\public\steam\steamtypes.h" />
+    <ClInclude Include="..\..\public\steam\steamuniverse.h" />
+    <ClInclude Include="..\..\public\steam\steam_api_common.h" />
+    <ClInclude Include="..\..\public\steam\steam_api_internal.h" />
     <ClInclude Include="swarm\vgui\asw_scalable_text.inc">
       <FileType>Document</FileType>
     </ClInclude>

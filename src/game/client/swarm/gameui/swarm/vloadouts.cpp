@@ -12,6 +12,7 @@
 #include "vgui_controls/RichText.h"
 #include "vgenericwaitscreen.h"
 #include "vgenericconfirmation.h"
+#include "vpasswordentry.h"
 #include "rd_workshop.h"
 #include "asw_marine_profile.h"
 #include "vgui_bitmapbutton.h"
@@ -75,6 +76,7 @@ Loadouts::Loadouts( Panel *parent, const char *panelName )
 	m_pTopBar->m_hActiveButton = m_pTopBar->m_pTopButton[CRD_VGUI_Main_Menu_Top_Bar::BTN_LOADOUTS];
 
 	m_pGplSavedLoadouts = new GenericPanelList( this, "GplSavedLoadouts", GenericPanelList::ISM_PERITEM );
+	m_pGplSavedLoadouts->SetScrollBarVisible( true );
 
 	for ( int i = 0; i < RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS; i++ )
 	{
@@ -92,6 +94,17 @@ Loadouts::Loadouts( Panel *parent, const char *panelName )
 		m_pBtnMarineLoadout[i]->SetConsoleStylePanel( true );
 		m_pBtnMarineLoadout[i]->SetFocusOnNavigateTo( true );
 	}
+
+	m_pLblMarines = new vgui::Label( this, "LblMarines", "#rd_loadout_equipped_marines" );
+	m_pLblMedals = new vgui::Label( this, "LblMedals", "#rd_loadout_equipped_medals" );
+
+	m_pBtnCreateLoadout = new BaseModHybridButton( this, "BtnCreateLoadout", "#rd_loadout_new", this, "CreateNewLoadout" );
+	m_pBtnDeleteLoadout = new BaseModHybridButton( this, "BtnDeleteLoadout", "#rd_loadout_delete", this, "DeleteLoadout" );
+	m_pBtnCopyFromLive = new BaseModHybridButton( this, "BtnCopyFromLive", "#rd_loadout_save", this, "CopyFromLive" );
+	m_pBtnCopyToLive = new BaseModHybridButton( this, "BtnCopyToLive", "#rd_loadout_load", this, "CopyToLive" );
+	m_pBtnViewOnWorkshop = new BaseModHybridButton( this, "BtnViewOnWorkshop", "#rd_loadout_view_on_workshop", this, "ViewOnWorkshop" );
+	m_pBtnBrowseWorkshop = new BaseModHybridButton( this, "BtnBrowseWorkshop", "#rd_loadout_browse_workshop", this, "FindLoadoutsOnWorkshop" );
+	m_pBtnShare = new BaseModHybridButton( this, "BtnShare", "#rd_loadout_share_start", this, "ShareLoadoutsOnWorkshop" );
 
 	SetTitle( "", false );
 	SetDeleteSelfOnClose( true );
@@ -143,7 +156,6 @@ void Loadouts::ApplySchemeSettings( vgui::IScheme *pScheme )
 		}
 	}
 
-	m_pGplSavedLoadouts->SetNavUp( m_pTopBar );
 	for ( int i = 0; i < 4; i++ )
 	{
 		m_pBtnMarineLoadout[i]->SetNavUp( m_pTopBar );
@@ -187,15 +199,175 @@ void Loadouts::OnOpen()
 {
 	BaseClass::OnOpen();
 
-	InitLoadoutList();
-	NavigateToChild( m_pBtnMarineLoadout[0] );
+	MakeReadyForUse();
+
+	OnLoadoutsUpdated();
+}
+
+static void CreateLoadoutHelper()
+{
+	PasswordEntry *pEntry = assert_cast< PasswordEntry * >( CBaseModPanel::GetSingleton().GetWindow( WT_PASSWORDENTRY ) );
+	Assert( pEntry );
+	Loadouts *pLoadouts = assert_cast< Loadouts * >( CBaseModPanel::GetSingleton().GetWindow( WT_LOADOUTS ) );
+	Assert( pLoadouts );
+	if ( !pEntry || !pLoadouts )
+		return;
+
+	char szName[MAX_VALUE];
+	pEntry->GetPassword( szName, sizeof( szName ) );
+	if ( ReactiveDropLoadout::Loadouts.IsValidIndex( ReactiveDropLoadout::Loadouts.Find( szName ) ) )
+	{
+		PasswordEntry::Data_t data;
+
+		data.pWindowTitle = "#rd_loadout_new";
+		data.pMessageText = "#rd_loadout_name_in_use";
+		data.m_szCurrentPW.Set( szName );
+		data.bOkButtonEnabled = true;
+		data.bCancelButtonEnabled = true;
+		data.bShowPassword = true;
+		data.pfnOkCallback = &CreateLoadoutHelper;
+
+		pEntry->SetUsageData( data );
+
+		return;
+	}
+
+	pEntry->Close();
+
+	ReactiveDropLoadout::Loadouts.Insert( szName, ReactiveDropLoadout::LoadoutData_t{} );
+	ReactiveDropLoadout::WriteLoadouts();
+	pLoadouts->InitLoadoutList();
+
+	int nCount = pLoadouts->m_pGplSavedLoadouts->GetPanelItemCount();
+	for ( int i = 0; i < nCount; i++ )
+	{
+		CRD_VGUI_Loadout_List_Item *pLoadout = dynamic_cast< CRD_VGUI_Loadout_List_Item * >( pLoadouts->m_pGplSavedLoadouts->GetPanelItem( i ) );
+		if ( !pLoadout )
+			continue;
+
+		if ( pLoadout->m_bCurrentLoadout || pLoadout->m_bDefaultLoadout || pLoadout->m_iAddonID != k_PublishedFileIdInvalid )
+			continue;
+
+		if ( V_strcmp( pLoadout->m_szName, szName ) )
+			continue;
+
+		pLoadouts->m_pGplSavedLoadouts->SelectPanelItem( i );
+		pLoadouts->ShowLoadoutItem( pLoadout );
+		return;
+	}
+
+	Assert( !"didn't find new loadout in list" );
+}
+
+static void DeleteLoadoutConfirmHelper()
+{
+	Loadouts *pLoadouts = assert_cast< Loadouts * >( CBaseModPanel::GetSingleton().GetWindow( WT_LOADOUTS ) );
+	Assert( pLoadouts );
+	if ( pLoadouts )
+	{
+		pLoadouts->OnCommand( "DeleteLoadoutNoConfirm" );
+	}
 }
 
 void Loadouts::OnCommand( const char *command )
 {
+	CRD_VGUI_Loadout_List_Item *pLoadout = assert_cast< CRD_VGUI_Loadout_List_Item * >( m_pGplSavedLoadouts->GetSelectedPanelItem() );
+	Assert( pLoadout );
 	if ( const char *szMarineNumber = StringAfterPrefix( command, "MarineLoadout" ) )
 	{
-		m_hSubScreen = new CRD_VGUI_Loadout_Marine( this, "LoadoutMarine", V_atoi( szMarineNumber ), assert_cast< CRD_VGUI_Loadout_List_Item * >( m_pGplSavedLoadouts->GetSelectedPanelItem() ) );
+		int iSlot = V_atoi( szMarineNumber );
+		if ( !pLoadout->m_Loadout.MarineIncluded[iSlot] )
+		{
+			if ( pLoadout->m_iAddonID != k_PublishedFileIdInvalid )
+			{
+				return;
+			}
+
+			// TODO: this should be an item selection screen; same for marine button in the screen we're about to open
+			pLoadout->SetMarineForSlot( iSlot, k_SteamItemInstanceIDInvalid );
+		}
+
+		m_hSubScreen = new CRD_VGUI_Loadout_Marine( this, "LoadoutMarine", iSlot, pLoadout );
+		m_hSubScreen->MakeReadyForUse();
+		NavigateToChild( m_hSubScreen );
+	}
+	else if ( !V_stricmp( command, "CreateNewLoadout" ) )
+	{
+		PasswordEntry *pEntry = assert_cast< PasswordEntry * >( CBaseModPanel::GetSingleton().OpenWindow( WT_PASSWORDENTRY, this, false ) );
+
+		PasswordEntry::Data_t data;
+
+		data.pWindowTitle = "#rd_loadout_new";
+		data.pMessageText = "#rd_loadout_name_initial";
+		data.bOkButtonEnabled = true;
+		data.bCancelButtonEnabled = true;
+		data.bShowPassword = true;
+		data.pfnOkCallback = &CreateLoadoutHelper;
+
+		pEntry->SetUsageData( data );
+	}
+	else if ( !V_stricmp( command, "DeleteLoadout" ) )
+	{
+		Assert( !pLoadout->IsLoadoutReadOnly() );
+		Assert( !pLoadout->m_bCurrentLoadout );
+
+		GenericConfirmation *pConfirm = assert_cast< GenericConfirmation * >( CBaseModPanel::GetSingleton().OpenWindow( WT_GENERICCONFIRMATION, this, false ) );
+
+		GenericConfirmation::Data_t data;
+
+		wchar_t wszLoadoutTitle[MAX_VALUE];
+		V_UTF8ToUnicode( pLoadout->m_szName, wszLoadoutTitle, sizeof( wszLoadoutTitle ) );
+		wchar_t wszWindowTitle[1024];
+		g_pVGuiLocalize->ConstructString( wszWindowTitle, sizeof( wszWindowTitle ), g_pVGuiLocalize->Find( "#rd_loadout_delete_title" ), 1, wszLoadoutTitle );
+		char szWindowTitle[1024];
+		V_UnicodeToUTF8( wszWindowTitle, szWindowTitle, sizeof( szWindowTitle ) );
+
+		data.pWindowTitle = szWindowTitle;
+		data.pMessageText = "#rd_loadout_delete_desc";
+		data.bOkButtonEnabled = true;
+		data.bCancelButtonEnabled = true;
+		data.pfnOkCallback = &DeleteLoadoutConfirmHelper;
+
+		pConfirm->SetUsageData( data );
+	}
+	else if ( !V_stricmp( command, "DeleteLoadoutNoConfirm" ) )
+	{
+		Assert( !pLoadout->IsLoadoutReadOnly() );
+		Assert( !pLoadout->m_bCurrentLoadout );
+
+		ReactiveDropLoadout::Delete( pLoadout->m_szName );
+		OnLoadoutsUpdated();
+	}
+	else if ( !V_stricmp( command, "CopyToLive" ) )
+	{
+		Assert( !pLoadout->m_bCurrentLoadout );
+
+		pLoadout->m_Loadout.CopyToLive();
+		OnLoadoutsUpdated();
+	}
+	else if ( !V_stricmp( command, "CopyFromLive" ) )
+	{
+		Assert( !pLoadout->IsLoadoutReadOnly() );
+		Assert( !pLoadout->m_bCurrentLoadout );
+
+		ReactiveDropLoadout::Save( pLoadout->m_szName );
+		OnLoadoutsUpdated();
+	}
+	else if ( !V_stricmp( command, "ViewOnWorkshop" ) )
+	{
+		Assert( pLoadout->m_iAddonID != k_PublishedFileIdInvalid );
+
+		char szURL[255];
+		V_snprintf( szURL, sizeof( szURL ), "https://steamcommunity.com/sharedfiles/filedetails/?id=%llu", pLoadout->m_iAddonID );
+		CUIGameData::Get()->ExecuteOverlayUrl( szURL );
+	}
+	else if ( !V_stricmp( command, "FindLoadoutsOnWorkshop" ) )
+	{
+		CUIGameData::Get()->ExecuteOverlayUrl( "https://steamcommunity.com/app/563560/guides/?browsefilter=trend&requiredtags[]=Loadouts&filetype=12", true );
+	}
+	else if ( !V_stricmp( command, "ShareLoadoutsOnWorkshop" ) )
+	{
+		m_hSubScreen = new CRD_VGUI_Loadout_Share( this, "ShareLoadouts" );
 		m_hSubScreen->MakeReadyForUse();
 		NavigateToChild( m_hSubScreen );
 	}
@@ -215,6 +387,55 @@ void Loadouts::OnKeyCodeTyped( vgui::KeyCode code )
 	}
 
 	BaseClass::OnKeyCodeTyped( code );
+}
+
+void Loadouts::OnLoadoutsUpdated()
+{
+	bool bHadPreviousLoadout = false;
+	bool bPreviousLoadoutWasCurrent = false;
+	bool bPreviousLoadoutWasDefault = false;
+	PublishedFileId_t iPreviousLoadoutAddon = k_PublishedFileIdInvalid;
+	char szLoadoutName[MAX_VALUE]{};
+	CRD_VGUI_Loadout_List_Item *pPreviousSelection = assert_cast< CRD_VGUI_Loadout_List_Item * >( m_pGplSavedLoadouts->GetSelectedPanelItem() );
+	if ( pPreviousSelection )
+	{
+		bHadPreviousLoadout = true;
+		bPreviousLoadoutWasCurrent = pPreviousSelection->m_bCurrentLoadout;
+		bPreviousLoadoutWasDefault = pPreviousSelection->m_bDefaultLoadout;
+		iPreviousLoadoutAddon = pPreviousSelection->m_iAddonID;
+		V_strncpy( szLoadoutName, pPreviousSelection->m_szName, sizeof( szLoadoutName ) );
+	}
+
+	InitLoadoutList();
+
+	if ( bHadPreviousLoadout )
+	{
+		int nCount = m_pGplSavedLoadouts->GetPanelItemCount();
+		for ( int i = 0; i < nCount; i++ )
+		{
+			CRD_VGUI_Loadout_List_Item *pLoadout = dynamic_cast< CRD_VGUI_Loadout_List_Item * >( m_pGplSavedLoadouts->GetPanelItem( i ) );
+			if ( !pLoadout )
+				continue;
+
+			if ( bPreviousLoadoutWasCurrent && pLoadout->m_bCurrentLoadout )
+			{
+				m_pGplSavedLoadouts->SelectPanelItem( i );
+				break;
+			}
+
+			if ( bPreviousLoadoutWasDefault && pLoadout->m_bDefaultLoadout )
+			{
+				m_pGplSavedLoadouts->SelectPanelItem( i );
+				break;
+			}
+
+			if ( iPreviousLoadoutAddon == pLoadout->m_iAddonID && !V_strcmp( szLoadoutName, pLoadout->m_szName ) )
+			{
+				m_pGplSavedLoadouts->SelectPanelItem( i );
+				break;
+			}
+		}
+	}
 }
 
 void Loadouts::InitLoadoutList()
@@ -253,19 +474,21 @@ void Loadouts::InitLoadoutList()
 	}
 
 	m_pGplSavedLoadouts->RelinkNavigation();
+	m_pGplSavedLoadouts->GetPanelItem( 0 )->SetNavUp( m_pBtnCreateLoadout );
+	m_pGplSavedLoadouts->GetPanelItem( m_pGplSavedLoadouts->GetPanelItemCount() - 1 )->SetNavDown( m_pBtnBrowseWorkshop );
 	m_pGplSavedLoadouts->SelectPanelItem( 0 );
 }
 
-void Loadouts::ShowLoadoutItem( CRD_VGUI_Loadout_List_Item *pItem )
+void Loadouts::ShowLoadoutItem( CRD_VGUI_Loadout_List_Item *pLoadout )
 {
 	for ( int i = 0; i < ASW_NUM_MARINES_PER_LOADOUT; i++ )
 	{
-		if ( pItem->m_Loadout.MarineIncluded[i] )
+		if ( pLoadout->m_Loadout.MarineIncluded[i] )
 		{
 			int iProfile = i;
-			if ( pItem->m_Loadout.Marines[i].SuitDef != 0 )
+			if ( pLoadout->m_Loadout.Marines[i].SuitDef != 0 )
 			{
-				const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( pItem->m_Loadout.Marines[i].SuitDef );
+				const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( pLoadout->m_Loadout.Marines[i].SuitDef );
 				Assert( pDef );
 				if ( pDef )
 				{
@@ -296,6 +519,22 @@ void Loadouts::ShowLoadoutItem( CRD_VGUI_Loadout_List_Item *pItem )
 			m_pLblMarineName[i]->SetVisible( false );
 		}
 	}
+
+	m_pLblMedals->SetVisible( pLoadout->m_bCurrentLoadout );
+	for ( int i = 0; i < RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS; i++ )
+	{
+		m_pMedalSlot[i]->SetVisible( pLoadout->m_bCurrentLoadout );
+		m_pLblMedal[i]->SetVisible( pLoadout->m_bCurrentLoadout );
+	}
+	m_pImgPromotionIcon->SetVisible( pLoadout->m_bCurrentLoadout );
+	m_pLblPromotion->SetVisible( pLoadout->m_bCurrentLoadout );
+
+	m_pBtnDeleteLoadout->SetVisible( pLoadout->m_iAddonID == k_PublishedFileIdInvalid && !pLoadout->m_bCurrentLoadout );
+	m_pBtnDeleteLoadout->SetEnabled( !pLoadout->m_bDefaultLoadout );
+	m_pBtnViewOnWorkshop->SetVisible( pLoadout->m_iAddonID != k_PublishedFileIdInvalid );
+	m_pBtnCopyFromLive->SetVisible( !pLoadout->m_bCurrentLoadout );
+	m_pBtnCopyFromLive->SetEnabled( !pLoadout->IsLoadoutReadOnly() );
+	m_pBtnCopyToLive->SetVisible( !pLoadout->m_bCurrentLoadout );
 }
 
 void Loadouts::DisplayPublishingError( const char *szMessage, int nArgs, const wchar_t *wszArg1, const wchar_t *wszArg2, const wchar_t *wszArg3, const wchar_t *wszArg4 )
@@ -1037,6 +1276,14 @@ CRD_VGUI_Loadout_Marine::CRD_VGUI_Loadout_Marine( vgui::Panel *parent, const cha
 		m_pLblWeapon[i] = new vgui::Label( this, VarArgs( "LblWeaponSlot%d", i ), "" );
 }
 
+CRD_VGUI_Loadout_Marine::~CRD_VGUI_Loadout_Marine()
+{
+	if ( Loadouts *pLoadouts = assert_cast< Loadouts * >( GetParent() ) )
+	{
+		pLoadouts->OnLoadoutsUpdated();
+	}
+}
+
 void CRD_VGUI_Loadout_Marine::ApplySchemeSettings( vgui::IScheme *pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
@@ -1058,13 +1305,13 @@ void CRD_VGUI_Loadout_Marine::ApplySchemeSettings( vgui::IScheme *pScheme )
 		m_pLblMarine->SetText( pDef->Name );
 		m_pLblMarine->SetFgColor( pDef->NameColor );
 	}
-	else if ( const ReactiveDropInventory::ItemDef_t *pSuit = m_pMarine->GetItemDef() )
+	else if ( const ReactiveDropInventory::ItemDef_t *pDef = m_pMarine->GetItemDef() )
 	{
 		CRD_ItemInstance dummyInstance;
-		dummyInstance.m_iItemDefID = pSuit->ID;
+		dummyInstance.m_iItemDefID = pDef->ID;
 		dummyInstance.FormatDescription( m_pLblBiography, false );
-		m_pLblMarine->SetText( pSuit->Name );
-		m_pLblMarine->SetFgColor( pSuit->NameColor );
+		m_pLblMarine->SetText( pDef->Name );
+		m_pLblMarine->SetFgColor( pDef->NameColor );
 	}
 	else
 	{
@@ -1515,4 +1762,20 @@ int CRD_VGUI_Loadout_Slot_Weapon::GetEquipIndex( int iDefaultLoadoutSlot )
 		return -1;
 
 	return pLoadout->GetWeaponForSlot( m_iMarineSlot, m_iSlot );
+}
+
+CRD_VGUI_Loadout_Share::CRD_VGUI_Loadout_Share( vgui::Panel *parent, const char *panelName ) :
+	BaseClass( parent, panelName )
+{
+	MarkForDeletion();
+
+	GenericConfirmation *pConfirm = assert_cast< GenericConfirmation * >( CBaseModPanel::GetSingleton().OpenWindow( WT_GENERICCONFIRMATION, assert_cast< Loadouts * >( parent ) ) );
+
+	GenericConfirmation::Data_t data;
+
+	data.pWindowTitle = "#rd_beta_coming_soon";
+	data.pMessageText = "#rd_beta_coming_soon_desc";
+	data.bOkButtonEnabled = true;
+
+	pConfirm->SetUsageData( data );
 }

@@ -18,7 +18,7 @@
 		"fieldName"				"TopBar"
 		"visible"				"1"
 		"enabled"				"1"
-		"navUp"					"BtnLogo"
+		"navUp"					"BtnLoadouts"
 		"navDown"				"BtnMarine0"
 	}
 
@@ -35,14 +35,13 @@
 		"ControlName"		"GenericPanelList"
 		"fieldName"			"GplSavedLoadouts"
 		"xpos"				"c-290"
-		"ypos"				"40"
+		"ypos"				"60"
 		"wide"				"155"
-		"tall"				"414"
+		"tall"				"354"
 		"bgcolor_override"	"0 0 0 0"
-		"navLeft"			"GplSavedLoadouts"
 		"navRight"			"BtnMarine0"
-		"navUp"				"TopBar"
-		"navDown"			"GplSavedLoadouts"
+		"navUp"				"BtnCreateLoadout"
+		"navDown"			"BtnBrowseWorkshop"
 	}
 
 	"LblMedals"
@@ -67,10 +66,10 @@
 		"ypos"				"345"
 		"wide"				"75"
 		"tall"				"75"
-		"navLeft"			"GplSavedLoadouts"
-		"navRight"			"MedalSlot1"
+		"navLeft"			"BtnBrowseWorkshop"
+		"navRight"			"BtnDeleteLoadout"
 		"navUp"				"BtnMarine4"
-		"navDown"			"MedalSlot0"
+		"navDown"			"BtnDeleteLoadout"
 	}
 
 	"LblMedal0"
@@ -96,10 +95,10 @@
 		"ypos"				"345"
 		"wide"				"75"
 		"tall"				"75"
-		"navLeft"			"MedalSlot0"
-		"navRight"			"MedalSlot2"
+		"navLeft"			"BtnViewOnWorkshop"
+		"navRight"			"BtnCopyToLive"
 		"navUp"				"BtnMarine5"
-		"navDown"			"MedalSlot1"
+		"navDown"			"BtnCopyToLive"
 	}
 
 	"LblMedal1"
@@ -125,10 +124,10 @@
 		"ypos"				"345"
 		"wide"				"75"
 		"tall"				"75"
-		"navLeft"			"MedalSlot1"
-		"navRight"			"MedalSlot2"
+		"navLeft"			"BtnCopyToLive"
+		"navRight"			"BtnCopyFromLive"
 		"navUp"				"BtnMarine6"
-		"navDown"			"MedalSlot2"
+		"navDown"			"BtnCopyFromLive"
 	}
 
 	"LblMedal2"
@@ -649,5 +648,110 @@
 		"font"				"DefaultMedium"
 		"labelText"			"#asw_name_vegas"
 		"fgcolor_override"	"192 192 192 255"
+	}
+
+	"BtnCreateLoadout"
+	{
+		"ControlName"		"BaseModHybridButton"
+		"fieldName"			"BtnCreateLoadout"
+		"xpos"				"c-290"
+		"ypos"				"40"
+		"wide"				"155"
+		"tall"				"20"
+		"labelText"			"#rd_loadout_new"
+		"command"			"CreateNewLoadout"
+		"navUp"				"TopBar"
+		"navDown"			"GplSavedLoadouts"
+		"navLeft"			"BtnCreateLoadout"
+		"navRight"			"BtnMarine0"
+	}
+
+	"BtnDeleteLoadout"
+	{
+		"ControlName"		"BaseModHybridButton"
+		"fieldName"			"BtnDeleteLoadout"
+		"xpos"				"c-100"
+		"ypos"				"345"
+		"wide"				"110"
+		"tall"				"20"
+		"labelText"			"#rd_loadout_delete"
+		"command"			"DeleteLoadout"
+		"navUp"				"MedalSlot0"
+		"navDown"			"BtnViewOnWorkshop"
+		"navLeft"			"MedalSlot0"
+		"navRight"			"BtnViewOnWorkshop"
+	}
+
+	"BtnCopyToLive"
+	{
+		"ControlName"		"BaseModHybridButton"
+		"fieldName"			"BtnCopyToLive"
+		"xpos"				"c20"
+		"ypos"				"345"
+		"wide"				"110"
+		"tall"				"20"
+		"labelText"			"#rd_loadout_load"
+		"command"			"CopyToLive"
+		"navUp"				"MedalSlot1"
+		"navLeft"			"MedalSlot1"
+		"navRight"			"MedalSlot2"
+	}
+
+	"BtnCopyFromLive"
+	{
+		"ControlName"		"BaseModHybridButton"
+		"fieldName"			"BtnCopyFromLive"
+		"xpos"				"c150"
+		"ypos"				"345"
+		"wide"				"110"
+		"tall"				"20"
+		"labelText"			"#rd_loadout_save"
+		"command"			"CopyFromLive"
+		"navUp"				"MedalSlot2"
+		"navLeft"			"MedalSlot2"
+	}
+
+	"BtnViewOnWorkshop"
+	{
+		"ControlName"		"BaseModHybridButton"
+		"fieldName"			"BtnViewOnWorkshop"
+		"xpos"				"c-100"
+		"ypos"				"345"
+		"wide"				"110"
+		"tall"				"20"
+		"labelText"			"#rd_loadout_view_on_workshop"
+		"command"			"ViewOnWorkshop"
+		"navUp"				"BtnDeleteLoadout"
+		"navLeft"			"BtnDeleteLoadout"
+		"navRight"			"MedalSlot1"
+	}
+
+	"BtnBrowseWorkshop"
+	{
+		"ControlName"		"BaseModHybridButton"
+		"fieldName"			"BtnBrowseWorkshop"
+		"xpos"				"c-290"
+		"ypos"				"414"
+		"wide"				"155"
+		"tall"				"20"
+		"labelText"			"#rd_loadout_browse_workshop"
+		"command"			"FindLoadoutsOnWorkshop"
+		"navUp"				"GplSavedLoadouts"
+		"navDown"			"BtnShare"
+		"navRight"			"MedalSlot0"
+	}
+
+	"BtnShare"
+	{
+		"ControlName"		"BaseModHybridButton"
+		"fieldName"			"BtnShare"
+		"xpos"				"c-290"
+		"ypos"				"434"
+		"wide"				"155"
+		"tall"				"20"
+		"labelText"			"#rd_loadout_share_start"
+		"command"			"ShareLoadoutsOnWorkshop"
+		"navUp"				"BtnBrowseWorkshop"
+		"navRight"			"MedalSlot0"
 	}
 }

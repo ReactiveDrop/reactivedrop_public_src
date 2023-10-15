@@ -47,8 +47,18 @@ public:
 	vgui::Label *m_pLblPromotion;
 	vgui::Label *m_pLblMarineName[ASW_NUM_MARINES_PER_LOADOUT];
 	CBitmapButton *m_pBtnMarineLoadout[ASW_NUM_MARINES_PER_LOADOUT];
+	vgui::Label *m_pLblMarines;
+	vgui::Label *m_pLblMedals;
+	BaseModHybridButton *m_pBtnCreateLoadout;
+	BaseModHybridButton *m_pBtnDeleteLoadout;
+	BaseModHybridButton *m_pBtnCopyFromLive;
+	BaseModHybridButton *m_pBtnCopyToLive;
+	BaseModHybridButton *m_pBtnViewOnWorkshop;
+	BaseModHybridButton *m_pBtnBrowseWorkshop;
+	BaseModHybridButton *m_pBtnShare;
 	vgui::PHandle m_hSubScreen;
 
+	void OnLoadoutsUpdated();
 	void InitLoadoutList();
 	void ShowLoadoutItem( CRD_VGUI_Loadout_List_Item *pItem );
 	void DisplayPublishingError( const char *szMessage, int nArgs = 0, const wchar_t *wszArg1 = NULL, const wchar_t *wszArg2 = NULL, const wchar_t *wszArg3 = NULL, const wchar_t *wszArg4 = NULL );
@@ -173,6 +183,7 @@ class CRD_VGUI_Loadout_Marine : public vgui::EditablePanel
 	DECLARE_CLASS_SIMPLE( CRD_VGUI_Loadout_Marine, vgui::EditablePanel );
 public:
 	CRD_VGUI_Loadout_Marine( vgui::Panel *parent, const char *panelName, int iSlot, CRD_VGUI_Loadout_List_Item *pLoadout );
+	~CRD_VGUI_Loadout_Marine();
 
 	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 	void OnCommand( const char *command ) override;
@@ -261,6 +272,13 @@ public:
 
 	int m_iMarineSlot;
 	ASW_Inventory_slot_t m_iSlot;
+};
+
+class CRD_VGUI_Loadout_Share : public vgui::EditablePanel
+{
+	DECLARE_CLASS_SIMPLE( CRD_VGUI_Loadout_Share, vgui::EditablePanel );
+public:
+	CRD_VGUI_Loadout_Share( vgui::Panel *parent, const char *panelName );
 };
 
 }
