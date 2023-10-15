@@ -101,7 +101,11 @@ static void OnLegacyUIChanged( IConVar *var, const char *pOldValue, float flOldV
 	// reset UI scripts
 	engine->ClientCmd_Unrestricted( "ui_reloadscheme; hud_reloadscheme\n" );
 }
-ConVar rd_legacy_ui( "rd_legacy_ui", "", FCVAR_ARCHIVE, "Set to 2004 or 2010 to use simulated versions of previous user interfaces.", OnLegacyUIChanged );
+#if RD_IS_RELEASE
+ConVar rd_legacy_ui( "rd_legacy_ui", "2017", FCVAR_DEVELOPMENTONLY, "Set to 2004, 2010, or 2017 to use simulated versions of previous user interfaces.", OnLegacyUIChanged );
+#else
+ConVar rd_legacy_ui( "rd_legacy_ui", "", FCVAR_ARCHIVE, "Set to 2004, 2010, or 2017 to use simulated versions of previous user interfaces.", OnLegacyUIChanged );
+#endif
 
 void Demo_DisableButton( Button *pButton );
 void OpenGammaDialog( VPANEL parent );
@@ -369,7 +373,7 @@ void MainMenu::LoadLayout()
 	const char *pSettings = "Resource/UI/BaseModUI/MainMenu.res";
 	m_bIsLegacy = false;
 
-	if ( !V_strcmp( rd_legacy_ui.GetString(), "2004" ) || !V_strcmp( rd_legacy_ui.GetString(), "2010" ) )
+	if ( !V_strcmp( rd_legacy_ui.GetString(), "2004" ) || !V_strcmp( rd_legacy_ui.GetString(), "2010" ) || !V_strcmp( rd_legacy_ui.GetString(), "2017" ) )
 	{
 		pSettings = "Resource/UI/BaseModUI/MainMenuLegacy.res";
 		m_bIsLegacy = true;

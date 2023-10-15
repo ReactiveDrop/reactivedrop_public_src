@@ -19,6 +19,7 @@ ConVar rd_swarmopedia_grid( "rd_swarmopedia_grid", "0", FCVAR_ARCHIVE, "Draw a g
 ConVar rd_swarmopedia_last_tab( "rd_swarmopedia_last_tab", "0", FCVAR_ARCHIVE, "Remembers last accessed tab index of the Swarmopedia screen." );
 ConVar rd_collections_last_tab( "rd_collections_last_tab", "0", FCVAR_ARCHIVE, "Remembers last accessed tab index of the collections screen." );
 extern ConVar rd_reduce_motion;
+extern ConVar rd_legacy_ui;
 extern ConVar asw_weapon_pitch;
 extern ConVar_ServerBounded *m_pitch;
 
@@ -34,8 +35,17 @@ void LaunchCollectionsFrame()
 	pFrame = assert_cast< TabbedGridDetails * >( BaseModUI::CBaseModPanel::GetSingleton().OpenWindow( BaseModUI::WT_COLLECTIONS, NULL ) );
 	pFrame->SetTitle( "#rd_collection_title", true );
 	pFrame->AddTab( new CRD_Collection_Tab_Inventory( pFrame, "#rd_collection_inventory_medals", "medal" ) );
+	if ( rd_legacy_ui.GetString()[0] != '\0' )
+	{
+		pFrame->AddTab( new CRD_Collection_Tab_Equipment( pFrame, "#rd_collection_weapons", NULL, ASW_INVENTORY_SLOT_PRIMARY ) );
+		pFrame->AddTab( new CRD_Collection_Tab_Equipment( pFrame, "#rd_collection_equipment", NULL, ASW_INVENTORY_SLOT_EXTRA ) );
+		pFrame->AddTab( new CRD_Collection_Tab_Swarmopedia( pFrame, "#rd_collection_swarmopedia" ) );
+	}
+	else
+	{
+		pFrame->UseMainMenuLayout( CRD_VGUI_Main_Menu_Top_Bar::BTN_INVENTORY );
+	}
 	pFrame->RememberTabIndex( &rd_collections_last_tab );
-	pFrame->UseMainMenuLayout( CRD_VGUI_Main_Menu_Top_Bar::BTN_INVENTORY );
 	pFrame->ShowFullScreen();
 }
 
