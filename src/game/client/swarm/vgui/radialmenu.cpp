@@ -1450,6 +1450,11 @@ public:
 			if ( !pMR )
 				continue;
 
+			if ( pMR->GetCommander() != pPlayer )
+				continue;
+
+			num++;
+
 			C_ASW_Marine *pMarine = pMR->GetMarineEntity();
 			if ( !pMarine || pMarine->GetHealth() <= 0 )
 				continue;
@@ -1459,15 +1464,11 @@ public:
 			if ( !pProfile )
 				continue;
 
-			if ( pMR->GetCommander() != pPlayer )
-				continue;
-
 			KeyValues *pDirection = m_specialMenu->FindKey( CRadialMenu::ButtonNameFromDir( pProfile->m_ProfileIndex < NELEMS( s_MarineProfileToDir ) ? s_MarineProfileToDir[pProfile->m_ProfileIndex] : CRadialMenu::CENTER ), true );
 			Assert( pDirection );
 			if ( !pDirection )
 				continue;
 
-			num++;
 			pDirection->SetString( "command", VarArgs( "+selectmarine%d", num ) );
 
 			if ( pMR->GetCommander() == pPlayer )
