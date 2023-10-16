@@ -115,9 +115,7 @@ namespace
 #endif
 		"tilarus5",
 		"rd_lanasescape_campaign",
-#ifdef RD__CAMPAIGNS_REDUCTION
 		"rd_reduction_campaign",
-#endif
 		"rd_paranoia",
 		"rd_nh_campaigns",
 		"rd_biogen_corporation",
@@ -172,14 +170,12 @@ namespace
 		"rd-lan3_maintenance",
 		"rd-lan4_vent",
 		"rd-lan5_complex",
-#ifdef RD__CAMPAIGNS_REDUCTION
 		"rd-reduction1",
 		"rd-reduction2",
 		"rd-reduction3",
 		"rd-reduction4",
 		"rd-reduction5",
 		"rd-reduction6",
-#endif
 		"rd-par1unexpected_encounter",
 		"rd-par2hostile_places",
 		"rd-par3close_contact",

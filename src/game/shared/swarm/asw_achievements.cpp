@@ -349,14 +349,12 @@ static const char *g_szAchievementMapNamesAllCoop[] =
 	"rd-lan3_maintenance",
 	"rd-lan4_vent",
 	"rd-lan5_complex",
-#ifdef RD__CAMPAIGNS_REDUCTION
 	"rd-reduction1",
 	"rd-reduction2",
 	"rd-reduction3",
 	"rd-reduction4",
 	"rd-reduction5",
 	"rd-reduction6",
-#endif
 	"rd-par1unexpected_encounter",
 	"rd-par2hostile_places",
 	"rd-par3close_contact",
@@ -467,7 +465,6 @@ static const char *g_szAchievementMapNamesLana[] =
 	"rd-lan5_complex",
 };
 
-#ifdef RD__CAMPAIGNS_REDUCTION
 static const char *g_szAchievementMapNamesReduction[] =
 {
 	"rd-reduction1",
@@ -477,7 +474,6 @@ static const char *g_szAchievementMapNamesReduction[] =
 	"rd-reduction5",
 	"rd-reduction6",
 };
-#endif
 
 static const char *g_szAchievementMapNamesPAR[] =
 {

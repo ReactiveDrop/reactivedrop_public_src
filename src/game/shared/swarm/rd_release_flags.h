@@ -10,7 +10,6 @@
 // new campaigns
 //#define RD_6A_CAMPAIGNS_ADANAXIS
 //#define RD__CAMPAIGNS_DEADCITY
-//#define RD__CAMPAIGNS_REDUCTION
 
 // 7th anniversary
 //#define RD_7A_CRAFTING
