@@ -850,6 +850,12 @@ void CNPC_AntlionGuard::Spawn( void )
 		m_hCaveGlow[1] = NULL;
 	}
 
+	if ( ClassMatches( "npc_antlionguard" ) )
+	{
+		// swap our classname for stats (needs to happen before BaseClass::Spawn)
+		SetClassname( m_bCavernBreed ? "npc_antlionguard_cavern" : "npc_antlionguard_normal" );
+	}
+
 	SetHullType( HULL_LARGE );
 	SetHullSizeNormal();
 	SetDefaultEyeOffset();
@@ -932,12 +938,6 @@ void CNPC_AntlionGuard::Spawn( void )
 	Vector absMax = Vector(100,100,128);
 
 	CollisionProp()->SetSurroundingBoundsType( USE_SPECIFIED_BOUNDS, &absMin, &absMax );
-
-	if ( ClassMatches( "npc_antlionguard" ) )
-	{
-		// swap our classname for stats
-		SetClassname( m_bCavernBreed ? "npc_antlionguard_cavern" : "npc_antlionguard_normal" );
-	}
 }
 
 int CNPC_AntlionGuard::GetBaseHealth()
