@@ -495,8 +495,6 @@ void CHudChat::ShowChatPanel()
 	m_pChatInput->SetPaintBorderEnabled( true );
 }
 
-extern int g_asw_iPlayerListOpen;
-
 void CHudChat::FadeChatHistory()
 {
 	// don't fade out chat during the briefing/debrief
@@ -504,23 +502,6 @@ void CHudChat::FadeChatHistory()
 		( ASWGameRules()->GetGameState() == ASW_GS_BRIEFING || ASWGameRules()->GetGameState() == ASW_GS_LAUNCHING ) && GetChatHistory() )
 	{
 		SetBriefingPosition( true );
-		/*
-		CNB_Main_Panel *pMainPanel = dynamic_cast<CNB_Main_Panel*>( GetClientMode()->GetViewport()->FindChildByName( "MainPanel", true ) );
-		if ( pMainPanel && !pMainPanel->m_hSubScreen.Get() && g_asw_iPlayerListOpen == 0 )
-		{
-			// fade in
-			SetAlpha( 255 );
-			GetChatHistory()->SetBgColor( Color( 0, 0, 0, 255 ) );
-			//SetBgColor( Color( GetBgColor().r(), GetBgColor().g(), GetBgColor().b(), 255 ) );
-			m_pChatInput->GetPrompt()->SetAlpha( 255 );
-			m_pChatInput->GetInputPanel()->SetAlpha( 255 );
-			m_pFiltersButton->SetAlpha( 255 );
-			SetBriefingPosition( true );
-			//SetKeyBoardInputEnabled( true );
-			SetMouseInputEnabled( true );
-			return;
-		}
-		*/
 	}
 	else
 	{

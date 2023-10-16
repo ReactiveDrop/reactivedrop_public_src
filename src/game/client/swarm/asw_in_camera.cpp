@@ -414,6 +414,7 @@ void CASWInput::CAM_ToFirstPerson(void)
 }
 
 extern int g_asw_iPlayerListOpen;
+extern int g_asw_iTabbedGridDetailsOpen;
 
 //-----------------------------------------------------------------------------
 // Purpose:
@@ -431,7 +432,7 @@ void CASWInput::CalculateCameraShift( C_ASW_Player *pPlayer, float flDeltaX, flo
 	if ( pMarine && pMarine->IsInVehicle() && !asw_vehicle_cam_shift_enable.GetBool() )
 		return;
 
-	if ( m_bCameraFixed || Holdout_Resupply_Frame::HasResupplyFrameOpen() || g_asw_iPlayerListOpen > 0 || ( pPlayer && pPlayer->GetSpectatingNPC() && !pPlayer->GetSpectatingNPC()->IsInhabited() ) )
+	if ( m_bCameraFixed || Holdout_Resupply_Frame::HasResupplyFrameOpen() || g_asw_iPlayerListOpen > 0 || g_asw_iTabbedGridDetailsOpen > 0 || ( pPlayer && pPlayer->GetSpectatingNPC() && !pPlayer->GetSpectatingNPC()->IsInhabited() ) )
 	{
 		m_fShiftFraction = Approach( 0.0f, m_fShiftFraction, gpGlobals->frametime );
 	}

@@ -1890,10 +1890,11 @@ void CASW_Hud_Master::MsgFunc_ASWInvalidDesination( bf_read &msg )
 }
 
 extern int g_asw_iPlayerListOpen;
+extern int g_asw_iTabbedGridDetailsOpen;
 
 bool CASW_Hud_Master::ShouldDraw()
 {
-	if ( g_asw_iPlayerListOpen > 0 )
+	if ( g_asw_iPlayerListOpen > 0 || g_asw_iTabbedGridDetailsOpen > 0 )
 		return false;
 
 	return CASW_HudElement::ShouldDraw();

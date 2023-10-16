@@ -5,7 +5,7 @@
 #include "ienginevgui.h"
 #include "nb_button.h"
 #include "nb_header_footer.h"
-#include "iclientmode.h"
+#include "clientmode_asw.h"
 #include "gameui/swarm/basemodui.h"
 #include "inputsystem/iinputsystem.h"
 #include <vgui/IInput.h>
@@ -18,6 +18,8 @@
 
 ConVar rd_mission_chooser_scroll_speed( "rd_mission_chooser_scroll_speed", "30", FCVAR_NONE, "Scroll speed in the mission chooser window in pixels." );
 
+int g_asw_iTabbedGridDetailsOpen = 0;
+
 TabbedGridDetails::TabbedGridDetails() : BaseClass( BaseModUI::CBaseModPanel::GetSingletonPtr(), "TabbedGridDetails" )
 {
 	SetConsoleStylePanel( true );
@@ -25,6 +27,9 @@ TabbedGridDetails::TabbedGridDetails() : BaseClass( BaseModUI::CBaseModPanel::Ge
 	SetSizeable( false );
 	SetCloseButtonVisible( false );
 	SetMenuButtonVisible( false );
+	SetDeleteSelfOnClose( true );
+
+	g_asw_iTabbedGridDetailsOpen++;
 
 	vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFile( "resource/SwarmSchemeNew.res", "SwarmSchemeNew" );
 	SetScheme( scheme );
@@ -51,6 +56,7 @@ TabbedGridDetails::TabbedGridDetails() : BaseClass( BaseModUI::CBaseModPanel::Ge
 
 TabbedGridDetails::~TabbedGridDetails()
 {
+	g_asw_iTabbedGridDetailsOpen--;
 }
 
 void TabbedGridDetails::ApplySchemeSettings( vgui::IScheme *pScheme )
@@ -296,14 +302,32 @@ void TabbedGridDetails::SetTitle( const wchar_t *title, bool surfaceTitle )
 	m_pHeaderFooter->SetTitle( title );
 }
 
+extern vgui::DHANDLE<vgui::Frame> g_hBriefingFrame;
+
 void TabbedGridDetails::ShowFullScreen()
 {
-	if ( engine->IsConnected() )
+	if ( g_hBriefingFrame )
 	{
-		SetParent( GetFullscreenClientMode()->GetViewport() );
+		SetParent( g_hBriefingFrame );
+	}
+	else if ( GetClientModeASW()->m_hCampaignFrame )
+	{
+		SetParent( GetClientModeASW()->m_hCampaignFrame );
+	}
+	else if ( GetClientModeASW()->m_hMissionCompleteFrame )
+	{
+		SetParent( GetClientModeASW()->m_hMissionCompleteFrame );
+	}
+	else if ( engine->IsConnected() )
+	{
+		SetParent( GetClientMode()->GetViewport() );
+		MakePopup( false );
 	}
 
 	SetVisible( true );
+	SetMouseInputEnabled( true );
+	SetKeyBoardInputEnabled( true );
+	SetZPos( 500 );
 }
 
 void TabbedGridDetails::UseMainMenuLayout( int iTopButtonIndex )

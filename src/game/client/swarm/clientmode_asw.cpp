@@ -965,22 +965,20 @@ void ClientModeASW::StartBriefingMusic()
 	}
 }
 
-void ClientModeASW::StopBriefingMusic(bool bInstantly)
+void ClientModeASW::StopBriefingMusic( bool bInstantly )
 {
-	if (m_pBriefingMusic)
+	if ( m_pBriefingMusic )
 	{
-		if (bInstantly)
+		CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
+		if ( bInstantly )
 		{
-			CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
 			controller.SoundDestroy( m_pBriefingMusic );
-			m_pBriefingMusic = NULL;
 		}
 		else
 		{
-			CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
 			controller.SoundFadeOut( m_pBriefingMusic, 1.0, true );
-			m_pBriefingMusic = NULL;
 		}
+		m_pBriefingMusic = NULL;
 	}
 }
 
@@ -991,35 +989,42 @@ int	ClientModeASW::KeyInput( int down, ButtonCode_t keynum, const char *pszCurre
 
 	// annoyingly we can't intercept ESC here, it'll still bring up the gameui stuff
 	//  but we'll use it for a couple of things anyway
-	if (keynum == KEY_ESCAPE)
+	if ( keynum == KEY_ESCAPE )
 	{
 		// ESC can be used up to close an info message
-		if (CASW_VGUI_Info_Message::CloseInfoMessage())
+		if ( CASW_VGUI_Info_Message::CloseInfoMessage() )
 			return 0;
 
 		// or closing the F1 panel
-		if (GetViewport())
+		if ( vgui::Panel *pViewport = GetViewport() )
 		{
-			vgui::Panel *pPanel = GetViewport()->FindChildByName("g_PlayerListFrame", true);
-			if (pPanel)	
+			vgui::Panel *pPanel = pViewport->FindChildByName( "g_PlayerListFrame", true );
+			if ( pPanel )
 			{
-				pPanel->SetVisible(false);
+				pPanel->SetVisible( false );
+				pPanel->MarkForDeletion();
+				return 0;
+			}
+
+			pPanel = pViewport->FindChildByName( "TabbedGridDetails", true );
+			if ( pPanel )
+			{
+				pPanel->SetVisible( false );
+				pPanel->MarkForDeletion();
+				return 0;
+			}
+
+			pPanel = pViewport->FindChildByName( "InGameBriefingContainer", true );
+			if ( pPanel )
+			{
+				pPanel->SetVisible( false );
 				pPanel->MarkForDeletion();
 				return 0;
 			}
 		}
-
-		vgui::Panel *pContainer = GetClientMode()->GetViewport()->FindChildByName("InGameBriefingContainer", true);
-		if (pContainer)	
-		{
-			pContainer->SetVisible(false);
-			pContainer->MarkForDeletion();
-			pContainer = NULL;
-			return 0;
-		}
 	}
 
-	return BaseClass::KeyInput(down, keynum, pszCurrentBinding);
+	return BaseClass::KeyInput( down, keynum, pszCurrentBinding );
 }
 
 void asw_set_hear_pos_cc()

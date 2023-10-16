@@ -56,6 +56,7 @@ ConVar joy_disable_movement_in_ui( "joy_disable_movement_in_ui", "1", FCVAR_NONE
 extern kbutton_t in_attack;
 extern kbutton_t in_walk;
 extern int g_asw_iPlayerListOpen;
+extern int g_asw_iTabbedGridDetailsOpen;
 extern ConVar asw_DebugAutoAim;
 extern ConVar in_forceuser;
 extern ConVar asw_item_hotbar_hud;
@@ -1350,7 +1351,7 @@ bool MarineBusy()
 	if ( pPlayer && pPlayer->GetNPC() )
 	{
 		//|| pPlayer->GetMarine()->IsUsingComputerOrButtonPanel()
-		if ( g_asw_iPlayerListOpen > 0 || CASW_VGUI_Info_Message::HasInfoMessageOpen() )
+		if ( g_asw_iPlayerListOpen > 0 || g_asw_iTabbedGridDetailsOpen > 0 || CASW_VGUI_Info_Message::HasInfoMessageOpen() )
 			return true;
 	}
 
