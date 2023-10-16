@@ -44,6 +44,7 @@ static const char *s_szCampaignNamesFirst[] =
 	"rd_biogen_corporation",
 	"rd_research7",
 	"rd_lanasescape_campaign",
+	"rd_reduction_campaign",
 };
 
 static const char *s_szMissionNamesFirst[] =
