@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "35"
+	"mapversion" "36"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -20,7 +20,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "35"
+	"mapversion" "36"
 	"classname" "worldspawn"
 	"comment" "Decompiled by BSPSource v1.3.6 from ocs_2.bsp"
 	"detailmaterial" "detail/detailsprites"
@@ -83037,20 +83037,6 @@ entity
 }
 entity
 {
-	"id" "38600"
-	"classname" "info_player_start"
-	"angles" "0 0 0"
-	"origin" "3876.28 -139.49 -23"
-	editor
-	{
-		"color" "0 255 0"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[0 0]"
-	}
-}
-entity
-{
 	"id" "38746"
 	"classname" "light"
 	"_constant_attn" "0"
@@ -84050,8 +84036,8 @@ cameras
 	"activecamera" "0"
 	camera
 	{
-		"position" "[2849.2 -1036.85 843.008]"
-		"look" "[3004.08 -919.697 660.644]"
+		"position" "[4214.15 -138.404 257.471]"
+		"look" "[3970.33 -195.158 166.356]"
 	}
 	camera
 	{
