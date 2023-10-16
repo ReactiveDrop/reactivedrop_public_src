@@ -373,9 +373,14 @@ void TabbedGridDetails::AddTab( TGD_Tab *pTab )
 
 	pTab->SetVisible( true );
 
-	if ( m_pGridParent && pTab->m_pGrid->m_pScrollBar )
+	if ( m_pGridParent )
 	{
-		pTab->InitCombinedGrid( m_pGridParent );
+		if ( pTab->m_pGrid->m_pScrollBar )
+		{
+			pTab->InitCombinedGrid( m_pGridParent );
+		}
+
+		pTab->m_pGrid->SetVisible( true );
 	}
 
 	InvalidateLayout();
