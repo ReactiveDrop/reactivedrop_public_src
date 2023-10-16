@@ -15,7 +15,7 @@
 		"enabled"						"1"
 		"tabPosition"					"0"
 	}
-	
+
 	"Title"
 	{
 		"fieldName"		"Title"
@@ -29,7 +29,7 @@
 		"ControlName"		"Label"
 		"fgcolor_override"		"224 224 224 255"
 	}
-	
+
 	"SubTitle"
 	{
 		"fieldName"		"SubTitle"
@@ -43,7 +43,7 @@
 		"ControlName"		"Label"
 		"fgcolor_override"		"224 224 224 255"
 	}
-	
+
 	"ImgBackground" [$WIN32]
 	{
 		"ControlName"			"L4DMenuBackground"
@@ -60,7 +60,7 @@
 		"tabPosition"			"0"
 		"fillColor"				"0 0 0 0"
 	}
-	
+
 	"LblCampaign"
 	{
 		"ControlName"					"Label"
@@ -82,7 +82,7 @@
 		"Font"							"DefaultMedium"
 		//"fgcolor_override"				"TextYellow"
 	}
-		
+
 	"ImgLevelImage"
 	{
 		"ControlName"			"ImagePanel"
@@ -99,7 +99,7 @@
 		"tabPosition"			"0"
 		"image"					"maps/any"
 		"scaleImage"			"1"
-	}	
+	}
 	"ImgFrame"
 	{
 		"ControlName"			"Panel"
@@ -117,7 +117,7 @@
 		//"image"					"campaignFrame"
 		//"scaleImage"			"1"
 	}
-		
+
 	"LblAuthor" [$WIN32]
 	{
 		"ControlName"				"Label"
@@ -137,7 +137,7 @@
 		"Font"						"Default"
 		//"fgcolor_override"			"TextYellow"
 	}
-	
+
 	"LblGameDifficulty"
 	{
 		"ControlName"				"Label"
@@ -179,7 +179,7 @@
 		"Font"						"Default"
 		//"fgcolor_override"			"TextYellow"
 	}
-	
+
 // 	"LblGameStatus"
 // 	{
 // 		"ControlName"				"Label"
@@ -201,7 +201,7 @@
 // 		"Font"						"Default"
 // 		//"fgcolor_override"			"TextYellow"
 // 	}
-// 	
+// 
 // 	"LblGameStatus2"	[$X360]
 // 	{
 // 		"ControlName"				"Label"
@@ -221,7 +221,7 @@
 // 		"Font"						"Default"
 // 		//"fgcolor_override"			"TextYellow"
 // 	}
-	
+
 	"LblNewVersion" [$WIN32]
 	{
 		"ControlName"				"Label"
@@ -241,7 +241,7 @@
 		"Font"						"Default"
 		//"fgcolor_override"			"TextYellow"
 	}
-	
+
 	"BtnWebsite" [$WIN32]
 	{
 		"ControlName"				"BaseModHybridButton"
@@ -263,7 +263,7 @@
 		"navLeft"					"GplGames"
 		"navDown"					"BtnJoinSelected"
 	}
-	
+
 // 	"BtnJoinSelected" [$WIN32]
 // 	{
 // 		"ControlName"			"BaseModHybridButton"
@@ -291,7 +291,7 @@
 // 		"navUp"					"BtnWebsite"
 // 		"navDown"				"BtnDownloadSelected"
 // 	}
-		
+
 	"BtnDownloadSelected" [$WIN32]
 	{
 		"ControlName"			"BaseModHybridButton"
@@ -319,7 +319,7 @@
 		"navUp"					"BtnJoinSelected"
 		"navDown"				"BtnWebsite"
 	}
-		
+
 	"SearchingIcon"
 	{
 		"ControlName"			"ImagePanel"
@@ -337,7 +337,7 @@
 		"scaleImage"			"1"
 		"image"					"common/swarm_cycle"
 	}
-	
+
 	"LblPressX"		[$X360]
 	{
 		"ControlName"					"Label"
@@ -355,7 +355,7 @@
 		"Font"							"GameUIButtonsTiny"
 		"labelText"						"#GameUI_Icons_X_3DButton"
 	}
-		
+
 	"LblNoGamesFound"
 	{
 		"ControlName"					"Label"
@@ -401,7 +401,7 @@
 		"Font"							"MainBold"		[$WIN32]
 		"Font"							"FrameTitle"	[$X360]
 	}
-	
+
 	// top line
 	"Divider1" [$WIN32]
 	{
@@ -420,7 +420,7 @@
 		"image"					"divider_gradient"
 		"scaleImage"			"1"
 	}
-	
+
 	// bottom line
 	"Divider2" [$WIN32]
 	{
@@ -440,417 +440,6 @@
 		"scaleImage"			"1"
 	}
 
-	"DrpFilterCampaign" [$WIN32]
-	{
-		"ControlName"			"DropDownMenu"
-		"fieldName"				"DrpFilterCampaign"
-		"xpos"					"c-265"
-		"ypos"					"335"
-		"zpos"					"1"
-		"wide"					"320"
-		"tall"					"15"
-		"visible"				"1"
-		"enabled"				"1"
-		"navUp"					"DrpFilterDistance"
-		"navDown"				"DrpFilterDifficulty"
-		
-		// button and label
-		"BtnDropButton"
-		{
-			"ControlName"		"BaseModHybridButton"
-			"fieldName"			"BtnDropButton"
-			"xpos"				"0"
-			"ypos"				"0"
-			"zpos"				"2"
-			"wide"				"320"
-			"wideatopen"		"200"
-			"tall"				"15"
-			"autoResize"		"1"
-			"pinCorner"			"0"
-			"visible"			"1"
-			"enabled"			"1"
-			"tabPosition"		"0"
-			"labelText"			"#L4D360UI_FoundPublicGames_Filter_Campaign"
-			"tooltiptext"		"#L4D360UI_FoundPublicGames_Filter_Campaign_Tip"
-			"style"				"DropDownButton"
-			"command"			"FlmFilterCampaign"
-			"allcaps"			"1"
-		}
-	}
-
-	"FlmFilterCampaign" [$WIN32]
-	{
-		"ControlName"		"FlyoutMenu"
-		"fieldName"			"FlmFilterCampaign"
-		"visible"			"0"
-		"wide"				"0"
-		"tall"				"0"
-		"zpos"				"4"
-		"InitialFocus"		"BtnAny"
-		"ResourceFile"		"resource/UI/basemodui/DropDownFoundGamesFilterCampaign.res"
-	}
-
-	"DrpFilterDifficulty" [$WIN32]
-	{
-		"ControlName"		"DropDownMenu"
-		"fieldName"			"DrpFilterDifficulty"
-		"xpos"				"c-265"
-		"ypos"				"350"
-		"zpos"				"1"
-		"wide"				"320"
-		"tall"				"15"
-		"visible"			"1"
-		"enabled"			"1"
-		"navUp"				"DrpFilterCampaign"
-		"navDown"			"DrpFilterOnslaught"
-		
-		// button and label
-		"BtnDropButton"
-		{
-			"ControlName"	"BaseModHybridButton"
-			"fieldName"		"BtnDropButton"
-			"xpos"			"0"
-			"ypos"			"0"
-			"zpos"			"2"
-			"wide"			"320"
-			"wideatopen"	"200"
-			"tall"			"15"
-			"autoResize"	"1"
-			"pinCorner"		"0"
-			"visible"		"1"
-			"enabled"		"1"
-			"tabPosition"	"0"
-			"labelText"		"#L4D360UI_FoundPublicGames_Filter_Difficulty"
-			"tooltiptext"	"#L4D360UI_FoundPublicGames_Filter_Difficulty_Tip"
-			"style"			"DropDownButton"
-			"command"		"FlmFilterDifficulty"
-			"allcaps"			"1"
-		}
-	}
-
-	"FlmFilterDifficulty" [$WIN32]
-	{
-		"ControlName"		"FlyoutMenu"
-		"fieldName"			"FlmFilterDifficulty"
-		"visible"			"0"
-		"wide"				"0"
-		"tall"				"0"
-		"zpos"				"4"
-		"InitialFocus"		"BtnAny"
-		"ResourceFile"		"resource/UI/basemodui/DropDownFoundGamesFilterDifficulty.res"
-	}
-	
-	"DrpFilterOnslaught" [$WIN32]
-	{
-		"ControlName"		"DropDownMenu"
-		"fieldName"			"DrpFilterOnslaught"
-		"xpos"				"c-265"
-		"ypos"				"365"
-		"zpos"				"1"
-		"wide"				"320"
-		"tall"				"15"
-		"visible"			"1"
-		"enabled"			"1"
-		"navUp"				"DrpFilterDifficulty"
-		"navDown"			"BtnAdvanced"
-		
-		// button and label
-		"BtnDropButton"
-		{
-			"ControlName"	"BaseModHybridButton"
-			"fieldName"		"BtnDropButton"
-			"xpos"			"0"
-			"ypos"			"0"
-			"zpos"			"2"
-			"wide"			"320"
-			"wideatopen"	"200"
-			"tall"			"15"
-			"autoResize"	"1"
-			"pinCorner"		"0"
-			"visible"		"1"
-			"enabled"		"1"
-			"tabPosition"	"0"
-			"labelText"		"#L4D360UI_FoundPublicGames_Filter_Onslaught"
-			"tooltiptext"	"#L4D360UI_FoundPublicGames_Filter_Onslaught_Tip"
-			"style"			"DropDownButton"
-			"command"		"FlmFilterOnslaught"
-			"allcaps"			"1"
-		}
-	}
-
-	"FlmFilterOnslaught" [$WIN32]
-	{
-		"ControlName"		"FlyoutMenu"
-		"fieldName"			"FlmFilterOnslaught"
-		"visible"			"0"
-		"wide"				"0"
-		"tall"				"0"
-		"zpos"				"4"
-		"InitialFocus"		"BtnAny"
-		"ResourceFile"		"resource/UI/basemodui/DropDownFoundGamesFilterOnslaught.res"
-	}
-
-	"BtnAdvanced"
-	{
-		"ControlName"			"BaseModHybridButton"
-		"fieldName"				"BtnAdvanced"
-		"xpos"					"c-265"
-		"ypos"					"380"
-		"zpos"					"1"
-		"wide"					"320"
-		"tall"					"15"
-		"autoResize"			"1"
-		"pinCorner"				"0"
-		"visible"				"1"
-		"enabled"				"1"
-		"tabPosition"			"0"
-		"wrap"					"1"
-		"navUp"					"DrpFilterOnslaught"
-		"navDown"				"DrpFilterChallenge"
-		"AllCaps"				"1"
-		"labelText"				"#L4D_advanced_settings"
-		"tooltiptext"			"#L4D_advanced_settings_tip"
-		"style"					"DefaultButton"
-		"command"				"ShowAdvanced"
-		EnabledTextInsetX		"2"
-		DisabledTextInsetX		"2"
-		FocusTextInsetX			"2"
-		OpenTextInsetX			"2"
-	}
-
-	"DrpFilterChallenge" [$WIN32]
-	{
-		"ControlName"		"DropDownMenu"
-		"fieldName"			"DrpFilterChallenge"
-		"xpos"				"c-265"
-		"ypos"				"380"
-		"zpos"				"1"
-		"wide"				"320"
-		"tall"				"15"
-		"visible"			"0"
-		"enabled"			"1"
-		"navUp"				"BtnAdvanced"
-		"navDown"			"DrpFilterDeathmatch"
-
-		// button and label
-		"BtnDropButton"
-		{
-			"ControlName"	"BaseModHybridButton"
-			"fieldName"		"BtnDropButton"
-			"xpos"			"0"
-			"ypos"			"0"
-			"zpos"			"2"
-			"wide"			"320"
-			"wideatopen"	"200"
-			"tall"			"15"
-			"autoResize"	"1"
-			"pinCorner"		"0"
-			"visible"		"1"
-			"enabled"		"1"
-			"tabPosition"	"0"
-			"labelText"		"#L4D360UI_FoundPublicGames_Filter_Challenge"
-			"tooltiptext"	"#L4D360UI_FoundPublicGames_Filter_Challenge_Tip"
-			"style"			"DropDownButton"
-			"command"		"FlmFilterChallenge"
-			"allcaps"		"1"
-		}
-	}
-
-	"FlmFilterChallenge" [$WIN32]
-	{
-		"ControlName"		"FlyoutMenu"
-		"fieldName"			"FlmFilterChallenge"
-		"visible"			"0"
-		"wide"				"0"
-		"tall"				"0"
-		"zpos"				"4"
-		"InitialFocus"		"BtnAny"
-		"ResourceFile"		"resource/UI/basemodui/DropDownFoundGamesFilterChallenge.res"
-	}
-
-	"DrpFilterDeathmatch" [$WIN32]
-	{
-		"ControlName"		"DropDownMenu"
-		"fieldName"			"DrpFilterDeathmatch"
-		"xpos"				"c-265"
-		"ypos"				"395"
-		"zpos"				"1"
-		"wide"				"320"
-		"tall"				"15"
-		"visible"			"0"
-		"enabled"			"1"
-		"navUp"				"DrpFilterChallenge"
-		"navDown"			"DrpFilterDistance"
-
-		// button and label
-		"BtnDropButton"
-		{
-			"ControlName"	"BaseModHybridButton"
-			"fieldName"		"BtnDropButton"
-			"xpos"			"0"
-			"ypos"			"0"
-			"zpos"			"2"
-			"wide"			"320"
-			"wideatopen"	"200"
-			"tall"			"15"
-			"autoResize"	"1"
-			"pinCorner"		"0"
-			"visible"		"1"
-			"enabled"		"1"
-			"tabPosition"	"0"
-			"labelText"		"#L4D360UI_FoundPublicGames_Filter_Deathmatch"
-			"tooltiptext"	"#L4D360UI_FoundPublicGames_Filter_Deathmatch_Tip"
-			"style"			"DropDownButton"
-			"command"		"FlmFilterDeathmatch"
-			"allcaps"		"1"
-		}
-	}
-
-	"FlmFilterDeathmatch" [$WIN32]
-	{
-		"ControlName"		"FlyoutMenu"
-		"fieldName"			"FlmFilterDeathmatch"
-		"visible"			"0"
-		"wide"				"0"
-		"tall"				"0"
-		"zpos"				"4"
-		"InitialFocus"		"BtnNoPreference"
-		"ExpandUp"			"1"
-		"ResourceFile"		"resource/UI/basemodui/DropDownFoundGamesFilterDeathmatch.res"
-	}
-
-	"DrpFilterDistance" [$WIN32]
-	{
-		"ControlName"		"DropDownMenu"
-		"fieldName"			"DrpFilterDistance"
-		"xpos"				"c-265"
-		"ypos"				"410"
-		"zpos"				"1"
-		"wide"				"320"
-		"tall"				"15"
-		"visible"			"0"
-		"enabled"			"1"
-		"navUp"				"DrpFilterDeathmatch"
-		"navDown"			"DrpFilterCampaign"
-
-		// button and label
-		"BtnDropButton"
-		{
-			"ControlName"	"BaseModHybridButton"
-			"fieldName"		"BtnDropButton"
-			"xpos"			"0"
-			"ypos"			"0"
-			"zpos"			"2"
-			"wide"			"320"
-			"wideatopen"	"200"
-			"tall"			"15"
-			"autoResize"	"1"
-			"pinCorner"		"0"
-			"visible"		"1"
-			"enabled"		"1"
-			"tabPosition"	"0"
-			"labelText"		"#L4D360UI_FoundPublicGames_Filter_Distance"
-			"tooltiptext"	"#L4D360UI_FoundPublicGames_Filter_Distance_Tip"
-			"style"			"DropDownButton"
-			"command"		"FlmFilterDistance"
-			"allcaps"			"1"
-		}
-	}
-
-	"FlmFilterDistance" [$WIN32]
-	{
-		"ControlName"		"FlyoutMenu"
-		"fieldName"			"FlmFilterDistance"
-		"visible"			"0"
-		"wide"				"0"
-		"tall"				"0"
-		"zpos"				"4"
-		"InitialFocus"		"BtnDefault"
-		"ExpandUp"			"1"
-		"ResourceFile"		"resource/UI/basemodui/DropDownFoundGamesFilterDistance.res"
-	}
-
-// 	"DrpCreateGame"
-// 	{
-// 		"ControlName"			"BaseModHybridButton"
-// 		"fieldName"				"DrpCreateGame"
-// 		"xpos"					"c-265" [$WIN32]
-// 		"ypos"					"375"	[$WIN32]
-// 		"wide"					"290"	[$WIN32]
-// 		"tall"					"15"	[$WIN32]
-// 		"xpos"					"100"	[$X360]
-// 		"ypos"					"317"	[$X360]
-// 		"wide"					"180"	[$X360]
-// 		"tall"					"20"	[$X360]
-// 		"autoResize"			"1"
-// 		"pinCorner"				"0"
-// 		"visible"				"1"
-// 		"enabled"				"1"
-// 		"tabPosition"			"0"
-// 		"wrap"					"1"
-// 		EnabledTextInsetX		"2"	[$WIN32]
-// 		DisabledTextInsetX		"2"	[$WIN32]
-// 		FocusTextInsetX			"2"	[$WIN32]
-// 		OpenTextInsetX			"2"	[$WIN32]
-// 		"navRight"				"BtnJoinSelected" [$WIN32]
-// 		"navLeft"				"GplGames" [$WIN32]
-// 		"navUp"					"DrpFilterDifficulty" [$WIN32]
-// 		"navDown"				"BtnCancel" [$WIN32]
-// 		//button and label
-// 		"labelText"				"#L4D360UI_GameSettings_Create_Lobby"
-// 		"style"					"DropDownButton" [$X360]
-// 		"style"					"MainMenuSmallButton" [$WIN32]
-// 		"command"				"CreateGame"
-// 		"ActivationType"		"1" [$X360]
-// 		"allcaps"				"1" [$WIN32]
-// 	}
-
-
-//     "IconBackArrow" [$WIN32]
-// 	{
-// 		"ControlName"			"ImagePanel"
-// 		"fieldName"				"IconBackArrow"
-// 		"xpos"					"c-295"
-// 		"ypos"					"415"
-// 		"wide"					"15"
-// 		"tall"					"15"
-// 		"scaleImage"			"1"
-// 		"pinCorner"				"0"
-// 		"visible"				"1"
-// 		"enabled"				"1"
-// 		"tabPosition"			"0"
-// 		"image"					"icon_button_arrow_left"
-// 		"scaleImage"			"1"
-// 	}
-
-// 	"BtnCancel" [$WIN32]
-// 	{
-// 		"ControlName"			"BaseModHybridButton"
-// 		"fieldName"				"BtnCancel"
-// 		"xpos"					"c-280"
-// 		"ypos"					"415"
-// 		"zpos"					"1"
-// 		"wide"					"180"
-// 		"tall"					"15"
-// 		"autoResize"			"1"
-// 		"pinCorner"				"0"
-// 		"visible"				"1"
-// 		"enabled"				"1"
-// 		"tabPosition"			"0"
-// 		"wrap"					"1"
-// 		"labelText"				"#L4D360UI_Back_Caps"
-// 		"tooltiptext"			"#L4D360UI_Tooltip_Back"
-// 		"style"					"MainMenuSmallButton"
-// 		"command"				"Back"
-// 		EnabledTextInsetX		"2"
-// 		DisabledTextInsetX		"2"
-// 		FocusTextInsetX			"2"
-// 		OpenTextInsetX			"2"
-// 		"navRight"				"BtnJoinSelected"
-// 		"navUp"					"DrpCreateGame"
-// 		"navDown"				"GplGames"
-// 	}
-	
 	"GplGames"
 	{
 		"ControlName"			"GenericPanelList"
@@ -859,7 +448,7 @@
 		"ypos"					"110"		[$WIN32]
 		"zpos"					"0"
 		"wide"					"440"		[$WIN32]
-		"tall"					"217"		[$WIN32]
+		"tall"					"260"		[$WIN32]
 		"xpos"					"45"		[$X360 && $X360WIDE]
 		"xpos"					"20"		[$X360 && !$X360WIDE]
 		"ypos"					"124"		[$X360]
@@ -878,7 +467,7 @@
 		"navDown"				"BtnFilters" [$WIN32]
 		"navUp"					"BtnCancel" [$WIN32]
 	}
-	
+
 	"BtnCreateNewGame" [$WIN32]
 	{
 		"ControlName"			"CNB_Button"
@@ -896,7 +485,7 @@
 		"font"		"DefaultMedium"
 		"fgcolor_override"		"113 142 181 255"
 	}
-	
+
 	"BtnJoinSelected" [$WIN32]
 	{
 		"ControlName"			"CNB_Button"
@@ -914,8 +503,8 @@
 		"font"		"DefaultMedium"
 		"labelText"	"#L4D360UI_FoundGames_JoinGame"
 		"fgcolor_override"		"113 142 181 255"
-	}	
-	
+	}
+
 	"BtnCancel" [$WIN32]
 	{
 		"ControlName"			"CNB_Button"
@@ -934,7 +523,7 @@
 		"font"		"DefaultMedium"
 		"fgcolor_override"		"113 142 181 255"
 	}
-	
+
 	"LblSupportRequiredDetails"
 	{
 		"ControlName"		"Label"
@@ -954,8 +543,8 @@
 		"labelText"			"#L4D360UI_FOUNDGAMES_ADDON_SUPPORT_REQUIRED"	//"Add-on support is required to play third party campaigns"
 		"fgcolor_override"	"MediumGray"
 		"wrap"				"1"
-	}	
-	
+	}
+
 	"BtnInstallSupport"
 	{
 		"ControlName"			"BaseModHybridButton"
@@ -981,8 +570,8 @@
 		FocusTextInsetX			"2"
 		OpenTextInsetX			"2"
 		"allcaps"				"1"
-	}	
-	
+	}
+
 	"LblInstalling"
 	{
 		"ControlName"		"Label"
@@ -1002,7 +591,7 @@
 		"textAlignment"		"west"
 		"labelText"			"#L4D360UI_ADDON_SUPPORT_INSTALLING"	//"INSTALLING ADD-ON SUPPORT..."
 	}
-	
+
 	"LblInstallingDetails"
 	{
 		"ControlName"		"Label"
