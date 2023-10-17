@@ -371,9 +371,9 @@ static const CRD_ItemInstance &GetItemInstanceFromRenderable( IClientRenderable 
 	if ( C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pEnt ) )
 	{
 		C_ASW_Marine_Resource *pMR = pMarine->GetMarineResource();
-		if ( pMR && pMR->m_OriginalCommander )
+		if ( pMR && pMR->m_OriginalCommander && pMR->m_MarineProfileIndexDynamic >= 0 && pMR->m_MarineProfileIndexDynamic < ASW_NUM_MARINES_PER_LOADOUT )
 		{
-			return pMR->m_OriginalCommander->m_EquippedItemDataStatic[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + pMR->GetProfileIndex()];
+			return pMR->m_OriginalCommander->m_EquippedItemDataStatic[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + pMR->m_MarineProfileIndexDynamic];
 		}
 	}
 

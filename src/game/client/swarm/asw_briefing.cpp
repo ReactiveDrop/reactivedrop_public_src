@@ -1040,10 +1040,10 @@ const CRD_ItemInstance &CASW_Briefing::GetEquippedSuit( int nLobbySlot )
 
 	C_ASW_Player *pPlayer = m_LobbySlotMapping[nLobbySlot].m_hPlayer.Get();
 	C_ASW_Marine_Resource *pMR = m_LobbySlotMapping[nLobbySlot].m_hMR.Get();
-	if ( !pPlayer || !pMR )
+	if ( !pPlayer || !pMR || pMR->m_MarineProfileIndexDynamic < 0 || pMR->m_MarineProfileIndexDynamic >= ASW_NUM_MARINES_PER_LOADOUT )
 		return s_empty;
 
-	return pPlayer->m_EquippedItemDataStatic[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + pMR->GetProfileIndex()];
+	return pPlayer->m_EquippedItemDataStatic[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + pMR->m_MarineProfileIndexDynamic];
 }
 
 const CRD_ItemInstance &CASW_Briefing::GetEquippedWeapon( int nLobbySlot, int nWeaponSlot )

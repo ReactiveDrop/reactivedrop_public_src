@@ -34,6 +34,7 @@ END_RECV_TABLE();
 IMPLEMENT_CLIENTCLASS_DT( C_ASW_Marine_Resource, DT_ASW_Marine_Resource, CASW_Marine_Resource )
 	RecvPropDataTable( "mr_timelines", 0, 0, &REFERENCE_RECV_TABLE( DT_MR_Timelines ) ),
 	RecvPropIntWithMinusOneFlag( RECVINFO( m_MarineProfileIndex ) ),
+	RecvPropIntWithMinusOneFlag( RECVINFO( m_MarineProfileIndexDynamic ) ),
 	RecvPropEHandle( RECVINFO( m_MarineEntity ) ),
 	RecvPropEHandle( RECVINFO( m_OriginalCommander ) ),
 	RecvPropEHandle( RECVINFO( m_Commander ) ),
@@ -62,6 +63,7 @@ extern ConVar asw_skill_healing_charges_step;
 C_ASW_Marine_Resource::C_ASW_Marine_Resource()
 {
 	m_MarineProfileIndex = -1;
+	m_MarineProfileIndexDynamic = -1;
 	m_iScannerSoundSkip = 3;
 	m_fScannerTime = RandomFloat(1.0f, 2.5f);
 	m_bPlayedBlipSound = false;

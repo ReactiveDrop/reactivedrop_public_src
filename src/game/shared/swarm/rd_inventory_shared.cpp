@@ -924,13 +924,23 @@ public:
 			if ( !pPlayer )
 				continue;
 
+			for ( int i = 0; i < RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS; i++ )
+			{
+				CRD_ItemInstance &medalInstance = pPlayer->m_EquippedItemDataStatic[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MEDAL + i];
+
+				ModifyAccessoryDynamicPropValue( pPlayer->GetNPC(), pPlayer, medalInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
+			}
+
 			CASW_Marine_Resource *pMR = pGameResource->GetFirstMarineResourceForPlayer( pPlayer );
 			if ( !pMR || pMR->m_OriginalCommander.Get() != pPlayer || ( !pMR->IsInhabited() && pMR->GetHealthPercent() > 0 ) )
 				continue;
 
-			CRD_ItemInstance &suitInstance = pPlayer->m_EquippedItemDataStatic[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + pMR->GetProfileIndex()];
+			if ( pMR->m_MarineProfileIndexDynamic >= 0 && pMR->m_MarineProfileIndexDynamic < ASW_NUM_MARINES_PER_LOADOUT )
+			{
+				CRD_ItemInstance &suitInstance = pPlayer->m_EquippedItemDataStatic[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + pMR->m_MarineProfileIndexDynamic];
 
-			ModifyAccessoryDynamicPropValue( pMR->GetMarineEntity(), pPlayer, suitInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
+				ModifyAccessoryDynamicPropValue( pMR->GetMarineEntity(), pPlayer, suitInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
+			}
 
 			for ( int j = 0; j < ASW_NUM_INVENTORY_SLOTS; j++ )
 			{
@@ -961,12 +971,19 @@ public:
 			return;
 #endif
 
+		for ( int i = 0; i < RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS; i++ )
+		{
+			CRD_ItemInstance &medalInstance = pNPC->GetCommander()->m_EquippedItemDataStatic[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MEDAL + i];
+
+			ModifyAccessoryDynamicPropValue( pNPC, pNPC->GetCommander(), medalInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
+		}
+
 		if ( CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC ) )
 		{
 			CASW_Marine_Resource *pMR = pMarine->GetMarineResource();
-			if ( pMR && pMR->m_OriginalCommander.Get() == pMR->m_Commander.Get() )
+			if ( pMR && pMR->m_OriginalCommander.Get() == pMR->m_Commander.Get() && pMR->m_MarineProfileIndexDynamic >= 0 && pMR->m_MarineProfileIndexDynamic < ASW_NUM_MARINES_PER_LOADOUT )
 			{
-				CRD_ItemInstance &suitInstance = pMR->m_OriginalCommander->m_EquippedItemDataStatic[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + pMR->GetProfileIndex()];
+				CRD_ItemInstance &suitInstance = pMR->m_OriginalCommander->m_EquippedItemDataStatic[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + pMR->m_MarineProfileIndexDynamic];
 
 				ModifyAccessoryDynamicPropValue( pNPC, pMR->m_OriginalCommander, suitInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
 			}
@@ -997,6 +1014,13 @@ public:
 			return;
 #endif
 
+		for ( int i = 0; i < RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS; i++ )
+		{
+			CRD_ItemInstance &medalInstance = pNPC->GetCommander()->m_EquippedItemDataStatic[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MEDAL + i];
+
+			ModifyAccessoryDynamicPropValue( pNPC, pNPC->GetCommander(), medalInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
+		}
+
 		if ( CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC ) )
 		{
 			CASW_Marine_Resource *pMR = pMarine->GetMarineResource();
@@ -1006,9 +1030,12 @@ public:
 #endif
 				)
 			{
-				CRD_ItemInstance &suitInstance = pMR->m_OriginalCommander->m_EquippedItemDataStatic[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + pMR->GetProfileIndex()];
+				if ( pMR->m_MarineProfileIndexDynamic >= 0 && pMR->m_MarineProfileIndexDynamic < ASW_NUM_MARINES_PER_LOADOUT )
+				{
+					CRD_ItemInstance &suitInstance = pMR->m_OriginalCommander->m_EquippedItemDataStatic[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + pMR->m_MarineProfileIndexDynamic];
 
-				ModifyAccessoryDynamicPropValue( pMarine, pMR->m_OriginalCommander, suitInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
+					ModifyAccessoryDynamicPropValue( pMarine, pMR->m_OriginalCommander, suitInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
+				}
 			}
 		}
 

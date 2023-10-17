@@ -29,7 +29,8 @@ public:
 	CASW_Marine_Resource();
 	virtual ~CASW_Marine_Resource();
 
-	CNetworkVar( int,  m_MarineProfileIndex );	
+	CNetworkVar( int, m_MarineProfileIndex );
+	CNetworkVar( int, m_MarineProfileIndexDynamic );
 
 	CNetworkHandle (CASW_Marine, m_MarineEntity); 	// the actual marine
 	CNetworkHandle (CASW_Player, m_OriginalCommander);	// the player who was first in charge of this marine
@@ -88,7 +89,7 @@ public:
 
 	void SetMarineEntity(CASW_Marine* marine);
 	CASW_Marine* GetMarineEntity();
-	void SetProfileIndex(int ProfileIndex);
+	void SetProfileIndex( int ProfileIndex, int DynamicIndex );
 	int GetProfileIndex();
 	CASW_Marine_Profile* GetProfile();
 	bool IsInfested() { return m_bInfested; }

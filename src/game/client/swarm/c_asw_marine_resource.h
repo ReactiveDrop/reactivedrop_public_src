@@ -26,6 +26,7 @@ public:
 	CASW_Marine_Profile* GetProfile(void);
 	int GetProfileIndex() {	return m_MarineProfileIndex; }
 	int	m_MarineProfileIndex;
+	int m_MarineProfileIndexDynamic;
 	C_ASW_Marine* GetMarineEntity();
 	C_ASW_Player* GetCommander();
 	int GetCommanderIndex() { return m_iCommanderIndex; }

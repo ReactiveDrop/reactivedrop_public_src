@@ -1074,26 +1074,17 @@ void C_ASW_Marine::OnDataChanged( DataUpdateType_t updateType )
 		CreateBackpack( GetASWWeapon( GetActiveASWWeapon() == GetASWWeapon( 0 ) ? 1 : 0 ) );
 
 		C_ASW_Marine_Resource *pMR = GetMarineResource();
-		if ( pMR && pMR->m_OriginalCommander )
+		if ( pMR && pMR->m_OriginalCommander && pMR->m_MarineProfileIndexDynamic >= 0 && pMR->m_MarineProfileIndexDynamic < ASW_NUM_MARINES_PER_LOADOUT )
 		{
 			static KeyValues *s_pKVAccessoryPosition[ASW_NUM_MARINE_PROFILES]{};
-			constexpr const char *const s_szAccessoryPositionFiles[ASW_NUM_MARINE_PROFILES] =
-			{
-				"scripts/strange_device_positions_marine_sarge.txt",
-				"scripts/strange_device_positions_marine_wildcat.txt",
-				"scripts/strange_device_positions_marine_faith.txt",
-				"scripts/strange_device_positions_marine_crash.txt",
-				"scripts/strange_device_positions_marine_jaeger.txt",
-				"scripts/strange_device_positions_marine_wolfe.txt",
-				"scripts/strange_device_positions_marine_bastille.txt",
-				"scripts/strange_device_positions_marine_vegas.txt",
-			};
 
 			int iProfile = pMR->GetProfileIndex();
 			Assert( iProfile >= 0 && iProfile < ASW_NUM_MARINE_PROFILES );
-			COMPILE_TIME_ASSERT( ASW_NUM_MARINE_PROFILES == 8 );
 
-			C_RD_Weapon_Accessory::CreateWeaponAccessories( this, pMR->m_OriginalCommander->m_EquippedItemDataStatic[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + iProfile], m_hWeaponAccessory, s_pKVAccessoryPosition[iProfile], s_szAccessoryPositionFiles[iProfile] );
+			char szFileName[MAX_PATH];
+			V_snprintf( szFileName, sizeof( szFileName ), "scripts/strange_device_positions_marine_%s.txt", pMR->GetProfile()->m_PortraitName );
+
+			C_RD_Weapon_Accessory::CreateWeaponAccessories( this, pMR->m_OriginalCommander->m_EquippedItemDataStatic[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + pMR->m_MarineProfileIndexDynamic], m_hWeaponAccessory, s_pKVAccessoryPosition[iProfile], szFileName );
 		}
 
 		// We want to think every frame.

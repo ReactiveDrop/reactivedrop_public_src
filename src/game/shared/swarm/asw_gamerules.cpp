@@ -2221,7 +2221,8 @@ CASW_Marine_Resource *CAlienSwarm::RosterSelect( CASW_Player *pPlayer, int iProf
 
 	CASW_Marine_Resource *pMR = ( CASW_Marine_Resource * )CreateEntityByName( "asw_marine_resource" );
 	pMR->SetCommander( pPlayer );
-	pMR->SetProfileIndex( iProfileIndex );
+	COMPILE_TIME_ASSERT( ASW_NUM_MARINE_PROFILES == ASW_NUM_MARINES_PER_LOADOUT ); // TODO
+	pMR->SetProfileIndex( iProfileIndex, iProfileIndex );
 	if ( bForceInhabited )
 	{
 		pMR->SetInhabited( true );

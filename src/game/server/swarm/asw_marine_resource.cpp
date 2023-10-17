@@ -24,6 +24,7 @@ LINK_ENTITY_TO_CLASS( asw_marine_resource, CASW_Marine_Resource );
 //---------------------------------------------------------
 BEGIN_DATADESC( CASW_Marine_Resource )
 	DEFINE_FIELD( m_MarineProfileIndex, FIELD_INTEGER ),
+	DEFINE_FIELD( m_MarineProfileIndexDynamic, FIELD_INTEGER ),
 	DEFINE_FIELD( m_MarineEntity, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_OriginalCommander, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_bHadOriginalCommander, FIELD_BOOLEAN ),
@@ -107,6 +108,7 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Marine_Resource, DT_ASW_Marine_Resource )
 	// Timeline data only gets sent at mission end
 	SendPropDataTable( "mr_timelines", 0, &REFERENCE_SEND_TABLE( DT_MR_Timelines ), SendProxy_SendMarineResourceTimelinesDataTable ),
 	SendPropIntWithMinusOneFlag( SENDINFO( m_MarineProfileIndex ), NumBitsForCount( ASW_NUM_MARINE_PROFILES + 1 ) ),
+	SendPropIntWithMinusOneFlag( SENDINFO( m_MarineProfileIndexDynamic ), NumBitsForCount( ASW_NUM_MARINES_PER_LOADOUT + 1 ) ),
 	SendPropEHandle( SENDINFO( m_MarineEntity ) ),
 	SendPropEHandle( SENDINFO( m_OriginalCommander ) ),
 	SendPropEHandle( SENDINFO( m_Commander ) ),
@@ -138,6 +140,7 @@ CASW_Marine_Resource::CASW_Marine_Resource()
 {
 	m_bAwardedMedals = false;
 	m_MarineProfileIndex = -1;
+	m_MarineProfileIndexDynamic = -1;
 	m_bInfested = false;
 	m_bHadOriginalCommander = false;
 	m_OriginalCommander = NULL;
@@ -352,9 +355,10 @@ void CASW_Marine_Resource::SetMarineEntity(CASW_Marine* marine)
 	m_MarineEntity = marine;
 }
 
-void CASW_Marine_Resource::SetProfileIndex(int ProfileIndex)
+void CASW_Marine_Resource::SetProfileIndex( int ProfileIndex, int DynamicIndex = -1 )
 {
 	m_MarineProfileIndex = ProfileIndex;
+	m_MarineProfileIndexDynamic = DynamicIndex;
 }
 
 int CASW_Marine_Resource::GetProfileIndex()
@@ -362,13 +366,12 @@ int CASW_Marine_Resource::GetProfileIndex()
 	return m_MarineProfileIndex;
 }
 
-CASW_Marine_Profile* CASW_Marine_Resource::GetProfile()
+CASW_Marine_Profile *CASW_Marine_Resource::GetProfile()
 {
 	Assert( MarineProfileList() );
 
 	return MarineProfileList()->GetProfile( m_MarineProfileIndex );
 }
-
 
 CASW_Marine* CASW_Marine_Resource::GetMarineEntity()
 {
