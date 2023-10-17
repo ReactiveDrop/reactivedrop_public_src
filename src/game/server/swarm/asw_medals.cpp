@@ -295,6 +295,10 @@ void CASW_Medals::AwardMedalsTo(CASW_Marine_Resource *pMR)
 			{
 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_ACC );
 			}
+			else if ( !Q_stricmp( pszCampaignName, "rd_reduction_campaign" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_CAMPAIGN_NO_DEATHS_REDUCTION );
+			}
 #ifdef RD_6A_CAMPAIGNS_ADANAXIS
 			else if ( !Q_stricmp( pszCampaignName, "rd_adanaxis" ) )
 			{
@@ -831,6 +835,30 @@ void CASW_Medals::AwardMedalsTo(CASW_Marine_Resource *pMR)
 			else if ( !Q_stricmp( mapName, "rd-acc_complex" ) )
 			{
 				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_ACC_COMPLEX );
+			}
+			else if ( !Q_stricmp( mapName, "rd-reduction1" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_REDUCTION_SILENTSTATION );
+			}
+			else if ( !Q_stricmp( mapName, "rd-reduction2" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_REDUCTION_OPSANDSTORM );
+			}
+			else if ( !Q_stricmp( mapName, "rd-reduction3" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_REDUCTION_FALLENCITY );
+			}
+			else if ( !Q_stricmp( mapName, "rd-reduction4" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_REDUCTION_STOWAWAY );
+			}
+			else if ( !Q_stricmp( mapName, "rd-reduction5" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_REDUCTION_INEVITABLEESCALATION );
+			}
+			else if ( !Q_stricmp( mapName, "rd-reduction6" ) )
+			{
+				pPlayer->AwardAchievement( ACHIEVEMENT_RD_SPEEDRUN_REDUCTION_NUCLEARESCORT );
 			}
 #ifdef RD_6A_CAMPAIGNS_ADANAXIS
 			else if ( !Q_stricmp( mapName, "rd-ada_sector_a9" ) )
