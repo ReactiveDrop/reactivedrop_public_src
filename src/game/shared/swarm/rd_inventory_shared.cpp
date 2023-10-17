@@ -3621,7 +3621,23 @@ namespace ReactiveDropInventory
 			}
 
 			if ( !pAttacker || !pAttacker->IsInhabitableNPC() )
+			{
+				if ( pTarget && pTarget->IsInhabitableNPC() && !V_stricmp( IGameSystem::MapName(), "rd-reduction2" ) && !V_strcmp( pAttacker->GetClassname(), "trigger_hurt" ) && !V_strcmp( STRING( pAttacker->GetEntityName() ), "trigger_pitworm_hitbox" ) )
+				{
+#ifdef CLIENT_DLL
+					static bool s_bRequestedWormToucherMedal = false;
+					if ( !s_bRequestedWormToucherMedal )
+					{
+						AddPromoItem( 42 );
+						s_bRequestedWormToucherMedal = true;
+					}
+#endif
+
+					s_RD_Inventory_Manager.IncrementStrangePropertyOnEquippedItems( assert_cast< CASW_Inhabitable_NPC * >( pTarget ), 42, 1 );
+				}
+
 				return;
+			}
 
 			CASW_Inhabitable_NPC *pInhabitableAttacker = assert_cast< CASW_Inhabitable_NPC * >( pAttacker );
 			if ( pTarget && pTarget->IsAlien() && bKilled )
