@@ -9095,6 +9095,30 @@ static void CreateCake( const char *mapname )
 	{
 		origin = Vector( -8196, 9568, 122 );
 	}
+	else if ( FStrEq( mapname, "rd-reduction1" ) )
+	{
+		origin = Vector( -2351, 248, 13 );
+	}
+	else if ( FStrEq( mapname, "rd-reduction2" ) )
+	{
+		origin = Vector( -397, -8455, -1175 );
+	}
+	else if ( FStrEq( mapname, "rd-reduction3" ) )
+	{
+		origin = Vector( -512, 2018, -2534 );
+	}
+	else if ( FStrEq( mapname, "rd-reduction4" ) )
+	{
+		origin = Vector( 10676, 0, 220 );
+	}
+	else if ( FStrEq( mapname, "rd-reduction5" ) )
+	{
+		origin = Vector( 10144, -10545, -9111 );
+	}
+	else if ( FStrEq( mapname, "rd-reduction6" ) )
+	{
+		origin = Vector( 1448, 5818, 2454 );
+	}
 #ifdef RD_6A_CAMPAIGNS_ADANAXIS
 	else if ( FStrEq( mapname, "rd-ada_sector_a9" ) )
 	{
