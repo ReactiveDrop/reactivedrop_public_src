@@ -50,6 +50,8 @@ BriefingFrame::BriefingFrame(Panel *parent, const char *panelName, bool showTask
 	RequestFocus();
 	SetVisible(true);
 	SetEnabled(true);
+	// this causes an assert, but without it, binds don't work
+	SetKeyBoardInputEnabled(false);
 	SetZPos(200);
 	SetAlpha(0);
 

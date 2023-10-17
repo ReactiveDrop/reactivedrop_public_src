@@ -321,6 +321,10 @@ void TabbedGridDetails::ShowFullScreen()
 	else if ( engine->IsConnected() )
 	{
 		SetParent( GetClientMode()->GetViewport() );
+	}
+
+	if ( engine->IsConnected() )
+	{
 		MakePopup( false );
 	}
 
