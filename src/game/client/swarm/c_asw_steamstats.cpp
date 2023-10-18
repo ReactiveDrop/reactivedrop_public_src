@@ -1028,7 +1028,7 @@ void CASW_Steamstats::PrepStatsForSend( CASW_Player *pPlayer )
 	}
 
 	// Drops!
-	ReactiveDropInventory::CheckPlaytimeItemGenerators( MarineProfileList()->GetProfile( iMarineProfileIndex )->GetMarineClass() );
+	ReactiveDropInventory::CheckPlaytimeItemGenerators();
 
 	char szBetaBranch[256]{};
 	if ( SteamInventory() && SteamApps()->GetCurrentBetaName( szBetaBranch, sizeof( szBetaBranch ) ) && !V_stricmp( szBetaBranch, "beta" ) )

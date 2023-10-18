@@ -150,6 +150,10 @@ public:
 
 	CNetworkVar( int, m_nDifficultySuggestion );
 
+#ifdef RD_7A_DROPS
+	CNetworkVarEmbedded( CRD_CraftingMaterialInfo, m_CraftingMaterialInfo );
+#endif
+
 protected:
 	CMarineToCrosshairInfo m_marineToCrosshairInfo;
 

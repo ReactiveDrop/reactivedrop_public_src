@@ -152,7 +152,7 @@ namespace ReactiveDropInventory
 #ifdef CLIENT_DLL
 	void AddPromoItem( SteamItemDef_t id );
 	void RequestGenericPromoItems();
-	void CheckPlaytimeItemGenerators( int iMarineClass );
+	void CheckPlaytimeItemGenerators();
 	void CommitDynamicProperties();
 	const ItemInstance_t *GetLocalItemCache( SteamItemInstanceID_t id );
 	void GetItemsForSlot( CUtlVector<ItemInstance_t> &instances, const char *szRequiredSlot );

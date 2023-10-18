@@ -16,6 +16,10 @@ static char s_szLastLeaderNetworkID[ASW_LEADERID_LEN] = {0};
 
 LINK_ENTITY_TO_CLASS( asw_game_resource, CASW_Game_Resource );
 
+#ifdef RD_7A_DROPS
+EXTERN_SEND_TABLE( DT_RD_CraftingMaterialInfo );
+#endif
+
 extern void SendProxy_String_tToString( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID );
 
 IMPLEMENT_SERVERCLASS_ST( CASW_Game_Resource, DT_ASW_Game_Resource )
@@ -52,6 +56,10 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Game_Resource, DT_ASW_Game_Resource )
 	SendPropFloat( SENDINFO( m_fMapGenerationProgress ) ),
 	SendPropString( SENDINFO( m_szMapGenerationStatus ) ),
 	SendPropInt( SENDINFO( m_iRandomMapSeed ) ),
+
+#ifdef RD_7A_DROPS
+	SendPropDataTable( SENDINFO_DT( m_CraftingMaterialInfo ), &REFERENCE_SEND_TABLE( DT_RD_CraftingMaterialInfo ) ),
+#endif
 END_SEND_TABLE()
 
 //---------------------------------------------------------

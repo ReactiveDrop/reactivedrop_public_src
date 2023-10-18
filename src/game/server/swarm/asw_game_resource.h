@@ -155,6 +155,10 @@ public:
 	static int s_nNumConsecutiveFailures;
 	static bool s_bLeaderGivenDifficultySuggestion;
 
+#ifdef RD_7A_DROPS
+	CNetworkVarEmbedded( CRD_CraftingMaterialInfo, m_CraftingMaterialInfo );
+#endif
+
 private:
 	// skillslots
 	CNetworkArray(int, m_iSkillSlot0, ASW_NUM_MARINE_PROFILES);
