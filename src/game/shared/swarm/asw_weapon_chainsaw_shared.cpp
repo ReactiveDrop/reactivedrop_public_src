@@ -129,6 +129,7 @@ CASW_Weapon_Chainsaw::~CASW_Weapon_Chainsaw()
 {
 	StopChainsawSound( true );
 	StopAttackOffSound();
+	StopSound( "ASW_Chainsaw.Start" );
 }
 
 //-----------------------------------------------------------------------------
