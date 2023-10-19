@@ -2116,20 +2116,20 @@ static void RD_Equipped_Item_Changed( IConVar *var, const char *pOldValue, float
 }
 ConVar rd_equipped_medal[RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS]
 {
-	{ "rd_equipped_medal", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped medal.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_medal1", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped medal.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_medal2", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped medal.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_medal", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped medal.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_medal1", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped medal.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_medal2", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped medal.", RD_Equipped_Item_Changed },
 };
 ConVar rd_equipped_marine[ASW_NUM_MARINES_PER_LOADOUT]
 {
-	{ "rd_equipped_marine0", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Sarge's suit.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_marine1", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Wildcat's suit.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_marine2", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Faith's suit.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_marine3", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Crash's suit.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_marine4", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Jaeger's suit.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_marine5", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Wolfe's suit.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_marine6", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Bastille's suit.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_marine7", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of equipped replacement for Vegas's suit.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_marine0", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for Sarge's suit.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_marine1", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for Wildcat's suit.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_marine2", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for Faith's suit.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_marine3", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for Crash's suit.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_marine4", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for Jaeger's suit.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_marine5", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for Wolfe's suit.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_marine6", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for Bastille's suit.", RD_Equipped_Item_Changed },
+	{ "rd_equipped_marine7", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for Vegas's suit.", RD_Equipped_Item_Changed },
 };
 
 CON_COMMAND( rd_debug_print_inventory, "" )

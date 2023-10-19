@@ -51,36 +51,36 @@ extern ConVar rd_equipped_medal[RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS];
 extern ConVar rd_equipped_marine[ASW_NUM_MARINES_PER_LOADOUT];
 ConVar rd_equipped_weapon_primary[ASW_NUM_MARINES_PER_LOADOUT]
 {
-	{ "rd_equipped_weapon_primary0", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current primary weapon for Sarge" },
-	{ "rd_equipped_weapon_primary1", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current primary weapon for Wildcat" },
-	{ "rd_equipped_weapon_primary2", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current primary weapon for Faith" },
-	{ "rd_equipped_weapon_primary3", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current primary weapon for Crash" },
-	{ "rd_equipped_weapon_primary4", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current primary weapon for Jaeger" },
-	{ "rd_equipped_weapon_primary5", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current primary weapon for Wolfe" },
-	{ "rd_equipped_weapon_primary6", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current primary weapon for Bastille" },
-	{ "rd_equipped_weapon_primary7", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current primary weapon for Vegas" },
+	{ "rd_equipped_weapon_primary0", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current primary weapon for Sarge" },
+	{ "rd_equipped_weapon_primary1", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current primary weapon for Wildcat" },
+	{ "rd_equipped_weapon_primary2", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current primary weapon for Faith" },
+	{ "rd_equipped_weapon_primary3", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current primary weapon for Crash" },
+	{ "rd_equipped_weapon_primary4", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current primary weapon for Jaeger" },
+	{ "rd_equipped_weapon_primary5", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current primary weapon for Wolfe" },
+	{ "rd_equipped_weapon_primary6", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current primary weapon for Bastille" },
+	{ "rd_equipped_weapon_primary7", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current primary weapon for Vegas" },
 };
 ConVar rd_equipped_weapon_secondary[ASW_NUM_MARINES_PER_LOADOUT]
 {
-	{ "rd_equipped_weapon_secondary0", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current secondary weapon for Sarge" },
-	{ "rd_equipped_weapon_secondary1", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current secondary weapon for Wildcat" },
-	{ "rd_equipped_weapon_secondary2", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current secondary weapon for Faith" },
-	{ "rd_equipped_weapon_secondary3", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current secondary weapon for Crash" },
-	{ "rd_equipped_weapon_secondary4", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current secondary weapon for Jaeger" },
-	{ "rd_equipped_weapon_secondary5", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current secondary weapon for Wolfe" },
-	{ "rd_equipped_weapon_secondary6", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current secondary weapon for Bastille" },
-	{ "rd_equipped_weapon_secondary7", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current secondary weapon for Vegas" },
+	{ "rd_equipped_weapon_secondary0", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current secondary weapon for Sarge" },
+	{ "rd_equipped_weapon_secondary1", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current secondary weapon for Wildcat" },
+	{ "rd_equipped_weapon_secondary2", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current secondary weapon for Faith" },
+	{ "rd_equipped_weapon_secondary3", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current secondary weapon for Crash" },
+	{ "rd_equipped_weapon_secondary4", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current secondary weapon for Jaeger" },
+	{ "rd_equipped_weapon_secondary5", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current secondary weapon for Wolfe" },
+	{ "rd_equipped_weapon_secondary6", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current secondary weapon for Bastille" },
+	{ "rd_equipped_weapon_secondary7", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current secondary weapon for Vegas" },
 };
 ConVar rd_equipped_weapon_extra[ASW_NUM_MARINES_PER_LOADOUT]
 {
-	{ "rd_equipped_weapon_extra0", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current extra weapon for Sarge" },
-	{ "rd_equipped_weapon_extra1", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current extra weapon for Wildcat" },
-	{ "rd_equipped_weapon_extra2", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current extra weapon for Faith" },
-	{ "rd_equipped_weapon_extra3", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current extra weapon for Crash" },
-	{ "rd_equipped_weapon_extra4", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current extra weapon for Jaeger" },
-	{ "rd_equipped_weapon_extra5", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current extra weapon for Wolfe" },
-	{ "rd_equipped_weapon_extra6", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current extra weapon for Bastille" },
-	{ "rd_equipped_weapon_extra7", "0", FCVAR_ARCHIVE | FCVAR_HIDDEN, "Steam inventory item ID of current extra weapon for Vegas" },
+	{ "rd_equipped_weapon_extra0", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current extra weapon for Sarge" },
+	{ "rd_equipped_weapon_extra1", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current extra weapon for Wildcat" },
+	{ "rd_equipped_weapon_extra2", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current extra weapon for Faith" },
+	{ "rd_equipped_weapon_extra3", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current extra weapon for Crash" },
+	{ "rd_equipped_weapon_extra4", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current extra weapon for Jaeger" },
+	{ "rd_equipped_weapon_extra5", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current extra weapon for Wolfe" },
+	{ "rd_equipped_weapon_extra6", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current extra weapon for Bastille" },
+	{ "rd_equipped_weapon_extra7", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current extra weapon for Vegas" },
 };
 
 // preferences
