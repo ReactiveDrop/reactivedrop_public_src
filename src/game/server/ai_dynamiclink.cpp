@@ -572,6 +572,7 @@ CAI_DynamicLink::CAI_DynamicLink(void)
 	m_nDestID			= NO_NODE;
 	m_nLinkState		= LINK_OFF;
 	m_nLinkType			= bits_CAP_MOVE_GROUND;
+	m_strAllowUse		= NULL_STRING;
 	m_bInvertAllow		= false;
 
 	// -------------------------------------
