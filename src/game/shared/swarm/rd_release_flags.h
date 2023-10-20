@@ -16,6 +16,7 @@
 //#define RD_7A_DROPS
 //#define RD_7A_ENEMIES
 //#define RD_7A_QUESTS
+#define RD_7A_UI_REVAMP
 //#define RD_7A_WEAPONS
 
 // features that are not ready for prime time

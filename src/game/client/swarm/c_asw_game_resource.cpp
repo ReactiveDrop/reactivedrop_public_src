@@ -180,3 +180,20 @@ void C_ASW_Game_Resource::CMarineToCrosshairInfo::RecomputeCache()
 	m_iLastFrameCached = gpGlobals->framecount;
 }
 #pragma warning(pop)
+
+#ifdef RD_7A_DROPS
+BEGIN_RECV_TABLE_NOBASE( C_RD_CraftingMaterialInfo, DT_RD_CraftingMaterialInfo )
+	RecvPropInt( RECVINFO( m_nSpawnLocations ) ),
+	RecvPropArray( RecvPropVector( RECVINFO( m_SpawnLocationOrigins[0] ) ), m_SpawnLocationOrigins ),
+END_RECV_TABLE()
+
+C_RD_CraftingMaterialInfo::C_RD_CraftingMaterialInfo()
+{
+	m_nSpawnLocations.Set( 0 );
+
+	for ( int i = 0; i < RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS; i++ )
+	{
+		m_SpawnLocationOrigins.Set( 0, vec3_origin );
+	}
+}
+#endif

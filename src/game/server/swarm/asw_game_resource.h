@@ -6,7 +6,6 @@
 #include "asw_shareddefs.h"
 #include "asw_marine_profile.h"
 #include "rd_missions_shared.h"
-#include "rd_inventory_shared.h"
 
 class CASW_Marine_Resource;
 class CASW_Objective;
@@ -17,6 +16,24 @@ class CASW_Marine_Profile;
 class CASW_Marine;
 
 #define ASW_LEADERID_LEN 128
+
+#ifdef RD_7A_DROPS
+#define RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS 5
+
+class CRD_CraftingMaterialInfo
+{
+public:
+	DECLARE_CLASS_NOBASE( CRD_CraftingMaterialInfo );
+	DECLARE_EMBEDDED_NETWORKVAR();
+
+	CRD_CraftingMaterialInfo();
+
+	void GenerateSpawnLocations();
+
+	CNetworkVar( int, m_nSpawnLocations );
+	CNetworkArray( Vector, m_SpawnLocationOrigins, RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS );
+};
+#endif
 
 // This class holds central game data that all clients should know about
 class CASW_Game_Resource : public CBaseEntity

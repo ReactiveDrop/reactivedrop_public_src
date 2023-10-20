@@ -8,6 +8,7 @@
 #include "asw_marine_profile.h"
 #include "asw_gamerules.h"
 #include "asw_deathmatch_mode.h"
+#include "asw_marine_hint.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -563,3 +564,99 @@ void CASW_Game_Resource::OnMissionCompleted( bool bWellDone )
 
 	s_nNumConsecutiveFailures = 0;
 }
+
+#ifdef RD_7A_DROPS
+BEGIN_SEND_TABLE_NOBASE( CRD_CraftingMaterialInfo, DT_RD_CraftingMaterialInfo )
+	SendPropInt( SENDINFO( m_nSpawnLocations ), NumBitsForCount( RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS ), SPROP_UNSIGNED ),
+	SendPropArray( SendPropVector( SENDINFO_ARRAY( m_SpawnLocationOrigins ) ), m_SpawnLocationOrigins ),
+END_SEND_TABLE()
+
+CRD_CraftingMaterialInfo::CRD_CraftingMaterialInfo()
+{
+	m_nSpawnLocations.Set( 0 );
+
+	for ( int i = 0; i < RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS; i++ )
+	{
+		m_SpawnLocationOrigins.Set( 0, vec3_origin );
+	}
+}
+
+void CRD_CraftingMaterialInfo::GenerateSpawnLocations()
+{
+	CASW_Marine_Hint_Manager *pMarineHintManager = MarineHintManager();
+	if ( !pMarineHintManager )
+	{
+		DevWarning( "Could not generate material spawn locations: missing marine hint manager\n" );
+		return;
+	}
+
+	if ( pMarineHintManager->GetHintCount() == 0 )
+	{
+		DevWarning( "Could not generate material spawn locations: no marine hints in level\n" );
+		return;
+	}
+
+	constexpr int nMaxAttempts = 100;
+	constexpr float flTooClose = 768.0f * 768.0f;
+
+	m_nSpawnLocations = 0;
+	for ( int iAttempt = 0; iAttempt < nMaxAttempts && m_nSpawnLocations < RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS; iAttempt++ )
+	{
+		int iHint = RandomInt( 0, pMarineHintManager->GetHintCount() - 1 );
+		// ignore hints that can move or hints that no longer exist
+		if ( pMarineHintManager->GetHintFlags( iHint ) & ( HintData_t::HINT_DELETED | HintData_t::HINT_DYNAMIC ) )
+			continue;
+
+		trace_t tr;
+
+		Vector vecHintOrigin = pMarineHintManager->GetHintPosition( iHint );
+		UTIL_TraceHull( vecHintOrigin + Vector( 0, 0, 20 ), vecHintOrigin + Vector( 0, 0, 21 ), Vector( -64, -64, 0 ), Vector( 64, 64, 72 ), MASK_PLAYERSOLID, NULL, COLLISION_GROUP_PLAYER_MOVEMENT, &tr );
+
+		// if the hint is too close to obstructions, ignore it
+		if ( tr.DidHit() )
+			continue;
+
+		Vector vecSpawnOffset( RandomFloat( -50, 50 ), RandomFloat( -50, 50 ), 20 );
+		UTIL_TraceHull( vecHintOrigin + vecSpawnOffset, vecHintOrigin + vecSpawnOffset + Vector( 0, 0, -40 ), Vector( -12, -12, 0 ), Vector( 12, 12, 24 ), MASK_PLAYERSOLID, NULL, COLLISION_GROUP_PLAYER_MOVEMENT, &tr );
+
+		// we need to hit the floor but not go too far down
+		if ( tr.startsolid || tr.allsolid || tr.fraction >= 1.0f )
+			continue;
+
+		// final check: we can't be too close to another material spawn point
+		bool bTooClose = false;
+		for ( int i = 0; i < m_nSpawnLocations; i++ )
+		{
+			if ( m_SpawnLocationOrigins[i].DistToSqr( tr.endpos ) < flTooClose )
+			{
+				bTooClose = true;
+				break;
+			}
+		}
+
+		if ( !bTooClose )
+		{
+			m_SpawnLocationOrigins.Set( m_nSpawnLocations, tr.endpos );
+			m_nSpawnLocations++;
+		}
+	}
+}
+
+CON_COMMAND( rd_debug_material_spawn_locations, "Generate and display crafting material spawn locations (requires developer and listen server)." )
+{
+	// doesn't work for non-listen server host anyway, so don't waste time generating positions
+	if ( engine->IsDedicatedServer() || !UTIL_IsCommandIssuedByServerAdmin() )
+		return;
+
+	CRD_CraftingMaterialInfo info;
+
+	info.GenerateSpawnLocations();
+
+	Msg( "Generated %d/%d locations:\n", info.m_nSpawnLocations.Get(), RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS );
+	for ( int i = 0; i < info.m_nSpawnLocations; i++ )
+	{
+		Msg( "(%f, %f, %f)\n", VectorExpand( info.m_SpawnLocationOrigins[i] ) );
+		NDebugOverlay::Cross3D( info.m_SpawnLocationOrigins[i], 16.0f, 255, 255, 255, false, 120.0f );
+	}
+}
+#endif
