@@ -12,10 +12,6 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-#ifdef RD_7A_DROPS
-EXTERN_RECV_TABLE( DT_RD_CraftingMaterialInfo );
-#endif
-
 IMPLEMENT_CLIENTCLASS_DT( C_ASW_Game_Resource, DT_ASW_Game_Resource, CASW_Game_Resource )
 	RecvPropArray3( RECVINFO_ARRAY( m_MarineResources ), RecvPropEHandle( RECVINFO( m_MarineResources[0] ) ) ),
 	RecvPropArray3( RECVINFO_ARRAY( m_Objectives ), RecvPropEHandle( RECVINFO( m_Objectives[0] ) ) ),

@@ -6,6 +6,7 @@
 #include "asw_shareddefs.h"
 #include "asw_marine_profile.h"
 #include "rd_missions_shared.h"
+#include "rd_inventory_shared.h"
 
 class CASW_Marine_Resource;
 class CASW_Objective;

@@ -4054,6 +4054,18 @@ void CRD_ProjectileData::SetFromWeapon( CBaseEntity *pCreator )
 }
 #endif
 
+#ifdef RD_7A_DROPS
+BEGIN_NETWORK_TABLE_NOBASE( CRD_CraftingMaterialInfo, DT_RD_CraftingMaterialInfo )
+#ifdef CLIENT_DLL
+#else
+#endif
+END_NETWORK_TABLE()
+
+CRD_CraftingMaterialInfo::CRD_CraftingMaterialInfo()
+{
+}
+#endif
+
 #ifdef CLIENT_DLL
 CON_COMMAND_F( rd_load_all_inventory_defs, "load data and icons for all defined AS:RD inventory items", FCVAR_HIDDEN | FCVAR_NOT_CONNECTED )
 {

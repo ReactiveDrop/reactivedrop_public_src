@@ -15,6 +15,9 @@ namespace vgui
 #define CRD_ItemInstances_Static C_RD_ItemInstances_Static
 #define CRD_ItemInstances_Dynamic C_RD_ItemInstances_Dynamic
 #define CRD_ProjectileData C_RD_ProjectileData
+#ifdef RD_7A_DROPS
+#define CRD_CraftingMaterialInfo C_RD_CraftingMaterialInfo
+#endif
 #endif
 
 class CASW_Player;
@@ -178,6 +181,9 @@ EXTERN_RECV_TABLE( DT_RD_ItemInstance );
 EXTERN_RECV_TABLE( DT_RD_ItemInstances_Static );
 EXTERN_RECV_TABLE( DT_RD_ItemInstances_Dynamic );
 EXTERN_RECV_TABLE( DT_RD_ProjectileData );
+#ifdef RD_7A_DROPS
+EXTERN_RECV_TABLE( DT_RD_CraftingMaterialInfo );
+#endif
 
 namespace vgui
 {
@@ -188,6 +194,9 @@ EXTERN_SEND_TABLE( DT_RD_ItemInstance );
 EXTERN_SEND_TABLE( DT_RD_ItemInstances_Static );
 EXTERN_SEND_TABLE( DT_RD_ItemInstances_Dynamic );
 EXTERN_SEND_TABLE( DT_RD_ProjectileData );
+#ifdef RD_7A_DROPS
+EXTERN_SEND_TABLE( DT_RD_CraftingMaterialInfo );
+#endif
 #endif
 
 // A reduced network-friendly version of the ItemInstance_t that can be transmitted from server to client.
@@ -302,3 +311,13 @@ abstract_class IRD_Has_Projectile_Data
 public:
 	virtual const CRD_ProjectileData *GetProjectileData() const = 0;
 };
+
+#ifdef RD_7A_DROPS
+class CRD_CraftingMaterialInfo
+{
+	DECLARE_CLASS_NOBASE( CRD_CraftingMaterialInfo );
+	DECLARE_EMBEDDED_NETWORKVAR();
+
+	CRD_CraftingMaterialInfo();
+};
+#endif

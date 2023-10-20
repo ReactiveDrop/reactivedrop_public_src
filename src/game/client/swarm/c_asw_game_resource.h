@@ -6,6 +6,7 @@
 #include "asw_shareddefs.h"
 #include "asw_marine_skills.h"
 #include "rd_missions_shared.h"
+#include "rd_inventory_shared.h"
 
 class C_ASW_Objective;
 class C_ASW_Marine_Resource;
