@@ -4133,6 +4133,9 @@ void CASW_MarineGameMovement::CategorizePosition( void )
 //-----------------------------------------------------------------------------
 void CASW_MarineGameMovement::CheckFalling( void )
 {
+	if ( !player )
+		return;
+
 	float fFallVel = player->m_Local.m_flFallVelocity;
 	//Msg("Checking falling, fall vel = %f\n", fFallVel);
 	if ( marine->GetGroundEntity() != NULL &&
