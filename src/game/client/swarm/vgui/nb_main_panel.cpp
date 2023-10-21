@@ -462,10 +462,8 @@ void CNB_Main_Panel::ChangeWeapon( int nLobbySlot, int nInventorySlot )
 	pTab->SetBriefing( Briefing(), nLobbySlot );
 	pWeaponPanel->AddTab( pTab );
 
+	pWeaponPanel->ShowFullScreen();
 	pWeaponPanel->SetParent( this );
-	pWeaponPanel->SetVisible( true );
-	pWeaponPanel->SetZPos( 1000 );
-	pWeaponPanel->MoveToFront();
 
 	m_hSubScreen = pWeaponPanel;
 }
