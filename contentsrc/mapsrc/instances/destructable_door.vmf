@@ -1,8 +1,8 @@
 versioninfo
 {
 	"editorversion" "400"
-	"editorbuild" "5032"
-	"mapversion" "9"
+	"editorbuild" "7397"
+	"mapversion" "12"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -20,7 +20,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "9"
+	"mapversion" "401"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -208,7 +208,9 @@ entity
 	"angles" "0 90 0"
 	"autoopen" "1"
 	"CanCloseToWeld" "1"
+	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"dentamount" "0"
 	"disableshadows" "1"
 	"distance" "130"
@@ -219,7 +221,7 @@ entity
 	"doortype" "0"
 	"forceclosed" "1"
 	"model" "models/props/doors/heavy_doors/doorleft.mdl"
-	"rendercolor" "46 139 53"
+	"rendercolor" "166 102 83"
 	"returndelay" "5"
 	"showsonscanner" "1"
 	"skin" "0"
