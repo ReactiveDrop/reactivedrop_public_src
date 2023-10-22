@@ -17,15 +17,18 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-CASW_Trace_Filter::CASW_Trace_Filter( CBasePlayer *pPlayer, Collision_Group_t collisionGroup )
+CASW_Trace_Filter::CASW_Trace_Filter( CASW_Player *pPlayer, Collision_Group_t collisionGroup )
 	: BaseClass( NULL, collisionGroup )
 {
-	m_pNPC = assert_cast<CASW_Player *>( pPlayer )->GetViewNPC();
+	m_pPlayer = pPlayer;
+	m_pNPC = m_pPlayer->GetViewNPC();
 }
 
 CASW_Trace_Filter::CASW_Trace_Filter( CASW_Inhabitable_NPC *pNPC, Collision_Group_t collisionGroup )
-	: BaseClass( NULL, collisionGroup ), m_pNPC( pNPC )
+	: BaseClass( NULL, collisionGroup )
 {
+	m_pPlayer = pNPC->IsInhabited() ? pNPC->GetCommander() : NULL;
+	m_pNPC = pNPC;
 }
 
 bool CASW_Trace_Filter::ShouldHitEntity(IHandleEntity *pServerEntity, int contentsMask)
@@ -35,7 +38,7 @@ bool CASW_Trace_Filter::ShouldHitEntity(IHandleEntity *pServerEntity, int conten
 		return BaseClass::ShouldHitEntity( pServerEntity, contentsMask );
 	}
 
-	if ( !m_pNPC->IsInhabited() || !m_pNPC->GetCommander() || m_pNPC->GetCommander()->GetASWControls() != ASWC_TOPDOWN )
+	if ( !m_pPlayer || m_pPlayer->GetASWControls() != ASWC_TOPDOWN )
 	{
 		if ( pServerEntity == m_pNPC )
 		{

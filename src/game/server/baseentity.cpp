@@ -73,6 +73,7 @@
 #include "videocfg/videocfg.h"
 #ifdef INFESTED_DLL
 #include "asw_trace_filter.h"
+#include "asw_player.h"
 #include "rd_cause_of_death.h"
 #endif
 
@@ -8656,7 +8657,7 @@ void CC_Ent_Create( const CCommand& args )
 			pPlayer->EyeVectors( &forward );
 #ifdef INFESTED_DLL
 			// BenLubar(sd2-ceiling-ents): use CASW_Trace_Filter to handle *_asw_fade properly
-			CASW_Trace_Filter filter( pPlayer, COLLISION_GROUP_NONE );
+			CASW_Trace_Filter filter( assert_cast< CASW_Player * >( pPlayer ), COLLISION_GROUP_NONE );
 			UTIL_TraceLine( pPlayer->EyePosition(),
 				pPlayer->EyePosition() + forward * MAX_TRACE_LENGTH, MASK_SOLID,
 				&filter, &tr );

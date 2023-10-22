@@ -402,7 +402,7 @@ C_BaseEntity* HUDToWorld(float screenx, float screeny,
 	vTraceEnd = vCameraLocation + vWorldSpaceCameraToCursor * ASW_MAX_AIM_TRACE;
 
 	// BenLubar(sd2-ceiling-ents): use CASW_Trace_Filter to handle *_asw_fade properly
-	CASW_Trace_Filter filter( pNPC, COLLISION_GROUP_NONE );
+	CASW_Trace_Filter filter( pPlayer, COLLISION_GROUP_NONE );
 	// do a trace into the world to see what we've pointing directly at
 	UTIL_TraceLine( vCameraLocation, vTraceEnd, nTraceMask, &filter, &tr );
 	if ( tr.fraction >= 1.0f )

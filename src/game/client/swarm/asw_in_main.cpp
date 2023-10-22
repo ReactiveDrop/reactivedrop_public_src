@@ -565,7 +565,7 @@ void CASWInput::CreateMove( int sequence_number, float input_sample_frametime, b
 		AngleVectors( cmd->viewangles, &vecFacing );
 
 		trace_t tr;
-		CASW_Trace_Filter filter( pMarine, COLLISION_GROUP_NONE );
+		CASW_Trace_Filter filter( pPlayer, COLLISION_GROUP_NONE );
 		UTIL_TraceLine( pPlayer->EyePosition(), pPlayer->EyePosition() + vecFacing * ASW_MAX_AIM_TRACE, MASK_VISIBLE_AND_NPCS | CONTENTS_HITBOX, &filter, &tr );
 
 		cmd->crosshairtrace = tr.endpos;
