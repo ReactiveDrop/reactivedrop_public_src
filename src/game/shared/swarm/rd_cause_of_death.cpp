@@ -135,6 +135,7 @@ const char *const g_szDeathCauseStatName[] =
 	"cause_of_death.ricochet_bullet",
 	"cause_of_death.bleed_out",
 	"cause_of_death.marineacademy_lava",
+	"cause_of_death.remote_turret",
 };
 
 #ifndef CLIENT_DLL
@@ -334,6 +335,11 @@ RD_Cause_of_Death_t GetCauseOfDeath( CBaseEntity *pVictim, const CTakeDamageInfo
 	if ( ( info.GetDamageType() & DMG_BLAST ) && info.GetInflictor() && dynamic_cast< CBaseProp * >( info.GetInflictor() ) )
 	{
 		return ( pVictim == info.GetAttacker() ) ? DEATHCAUSE_EXPLOSIVE_PROP_SELF : DEATHCAUSE_EXPLOSIVE_PROP;
+	}
+
+	if ( info.GetInflictor() && info.GetInflictor()->Classify() == CLASS_ASW_REMOTE_TURRET )
+	{
+		return DEATHCAUSE_REMOTE_TURRET;
 	}
 
 	if ( pMarineVictim && pMarineVictim->GetGroundEntity() && pMarineVictim->GetGroundEntity() == info.GetAttacker() && ( info.GetDamageType() & DMG_SLASH ) )
