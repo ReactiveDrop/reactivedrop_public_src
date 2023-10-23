@@ -22,13 +22,14 @@ public:
 	bool ShouldFade( CASW_Inhabitable_NPC *pNPC );
 
 	static void DisableCollisionsWithGrenade( CBaseEntity *pGrenade );
+	static void DisableCollisionsWithMarine( CBaseEntity *pMarine );
 
 	CNetworkVar( bool, m_bHasProxies );
-protected:
 	// 0 = only when grenade spawns above the brush
 	// 1 = always
 	// 2 = never
 	byte m_iCollideWithGrenades;
+	CNetworkVar( bool, m_bCollideWithMarines );
 	CNetworkVar( byte, m_nFadeOpacity );
 	CNetworkVar( bool, m_bAllowFade );
 };

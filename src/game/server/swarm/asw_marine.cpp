@@ -91,6 +91,7 @@
 #include "npc_zombine.h"
 #include "asw_weapon_revive_tool_shared.h"
 #include "asw_tech_marine_req.h"
+#include "func_asw_fade.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -869,6 +870,8 @@ void CASW_Marine::Spawn( void )
 	}
 
 	UTIL_SetSize( this, GetHullMins(), GetHullMaxs() );
+
+	CFunc_ASW_Fade::DisableCollisionsWithMarine( this );
 }
 
 unsigned int CASW_Marine::PhysicsSolidMaskForEntity( void ) const 

@@ -3,17 +3,20 @@
 	#include "c_asw_player.h"
 	#include "c_asw_marine.h"
 	#include "c_asw_weapon.h"
+	#include "c_func_asw_fade.h"
 	#include "prediction.h"
 	#define CASW_Inhabitable_NPC C_ASW_Inhabitable_NPC
 	#define CASW_Player C_ASW_Player
 	#define CASW_Marine C_ASW_Marine
 	#define CASW_Weapon C_ASW_Weapon
+	#define CFunc_ASW_Fade C_Func_ASW_Fade
 #else
 	#include "asw_marine.h"
 	#include "asw_player.h"
 	#include "asw_weapon.h"
 	#include "asw_alien.h"
 	#include "asw_drone_advanced.h"
+	#include "func_asw_fade.h"
 	#include "takedamageinfo.h"
 	#include "ndebugoverlay.h"
 	#include "world.h"
@@ -272,7 +275,23 @@ enum
 	MAX_NESTING = 8
 };
 
-static CTraceFilterSkipTwoEntities s_TraceFilter[MAX_NESTING];
+class CASW_TraceFilterMarineMovement : public CTraceFilterSkipTwoEntities
+{
+public:
+	bool ShouldHitEntity( IHandleEntity *pHandleEntity, int contentsMask ) override
+	{
+		CBaseEntity *pEnt = EntityFromEntityHandle( pHandleEntity );
+		if ( CFunc_ASW_Fade *pFade = dynamic_cast< CFunc_ASW_Fade * >( pEnt ) )
+		{
+			if ( !pFade->m_bCollideWithMarines )
+				return false;
+		}
+
+		return CTraceFilterSkipTwoEntities::ShouldHitEntity( pHandleEntity, contentsMask );
+	}
+};
+
+static CASW_TraceFilterMarineMovement s_TraceFilter[MAX_NESTING];
 static int s_nTraceFilterCount = 0;
 
 ITraceFilter *CASW_MarineGameMovement::LockTraceFilter( int collisionGroup )
@@ -438,6 +457,10 @@ static bool CanMarineGetStuckInEntity( IHandleEntity *pHandleEntity, int content
 
 	// These die if they touch something, so it's impossible for us to be stuck in them.
 	if ( pEntity->GetCollisionGroup() == ASW_COLLISION_GROUP_EXTINGUISHER_PELLETS && !rd_marine_stuck_in_extinguisher_pellets.GetBool() )
+		return false;
+
+	CFunc_ASW_Fade *pFade = dynamic_cast< CFunc_ASW_Fade * >( pEntity );
+	if ( pFade && !pFade->m_bCollideWithMarines )
 		return false;
 
 	return true;

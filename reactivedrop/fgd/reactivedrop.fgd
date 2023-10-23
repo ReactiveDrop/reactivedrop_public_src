@@ -116,7 +116,8 @@
 		1 : "Always collide with grenades (if solid)"
 		2 : "Never collide with grenades"
 	]
-	excludednpc(string) : "NPC class excluded from collisions" : "" : "If an NPC classname is specified here, NPCs of that type won't collide with these brushes. In Episodic, you may also specify an individual entity's name."
+	CollideWithMarines(boolean) : "Collide With Marines" : 1 : "Disable to allow marines to pass through the ceiling. Useful for retrofitting a level with existing speedrun out of bounds exploits with ceilings without affecting the speedruns."
+	excludednpc(string) : "NPC class excluded from collisions" : "" : "If an NPC classname is specified here, NPCs of that type won't see these brushes when pathfinding. In Episodic, you may also specify an individual entity's name."
 	invert_exclusion(choices) : "Invert NPC class exclusion" : 0 : "If set, then the excluded NPC class will consider this brush solid, and all other NPC classes will consider it non-solid." =
 	[
 		0 : "No"
