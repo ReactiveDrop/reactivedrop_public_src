@@ -413,7 +413,7 @@ public:
 
 void CLocalTimeProxy_Month::OnBind( void *pC_BaseEntity )
 {
-	Assert( m_pResult && m_pTexture );
+	Assert( m_pResult );
 	Assert( m_pResult->GetType() == MATERIAL_VAR_TYPE_INT );
 	
 	struct tm time;
@@ -447,7 +447,7 @@ public:
 
 void CLocalTimeProxy_Day::OnBind( void *pC_BaseEntity )
 {
-	Assert( m_pResult && m_pTexture );
+	Assert( m_pResult );
 	Assert( m_pResult->GetType() == MATERIAL_VAR_TYPE_INT );
 	
 	struct tm time;
@@ -481,7 +481,7 @@ public:
 
 void CLocalTimeProxy_Hour::OnBind( void *pC_BaseEntity )
 {
-	Assert( m_pResult && m_pTexture );
+	Assert( m_pResult );
 	Assert( m_pResult->GetType() == MATERIAL_VAR_TYPE_INT );
 	
 	struct tm time;
