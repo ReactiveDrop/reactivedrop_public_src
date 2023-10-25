@@ -390,6 +390,108 @@ void CLanguagePreferenceProxy::OnBind( void *pC_BaseEntity )
 
 EXPOSE_MATERIAL_PROXY( CLanguagePreferenceProxy, LanguagePreference );
 
+// Material proxy for setting the frame of an animated texture to the current month
+// Example:
+// UnlitGeneric {
+//     $basetexture "example/animated_concrete"
+//     $frame 0
+// 
+//     Proxies 
+//     {
+//         LocalTime_Month
+//         {
+//             resultvar "$frame"
+//         }
+//     }
+// }
+// The animated texture has to have 12 frames. It will set $frame to 0 when its january, to 1 when its february, etc.
+class CLocalTimeProxy_Month : public CResultProxy
+{
+public:
+	void OnBind( void* pC_BaseEntity ) override;
+};
+
+void CLocalTimeProxy_Month::OnBind( void *pC_BaseEntity )
+{
+	Assert( m_pResult && m_pTexture );
+	Assert( m_pResult->GetType() == MATERIAL_VAR_TYPE_INT );
+	
+	struct tm time;
+	Plat_GetLocalTime( &time );
+
+	m_pResult->SetIntValue( time.tm_mon );
+}
+
+EXPOSE_MATERIAL_PROXY( CLocalTimeProxy_Month, LocalTime_Month );
+
+// Material proxy for setting the frame of an animated texture to the current day of the month
+// Example:
+// UnlitGeneric {
+//     $basetexture "example/animated_concrete"
+//     $frame 0
+// 
+//     Proxies 
+//     {
+//         LocalTime_Day
+//         {
+//             resultvar "$frame"
+//         }
+//     }
+// }
+// The animated texture has to have 31 frames. It will set $frame to 0 when its day 1 of the month, to 1 when its day 2, etc.
+class CLocalTimeProxy_Day : public CResultProxy
+{
+public:
+	void OnBind( void* pC_BaseEntity ) override;
+};
+
+void CLocalTimeProxy_Day::OnBind( void *pC_BaseEntity )
+{
+	Assert( m_pResult && m_pTexture );
+	Assert( m_pResult->GetType() == MATERIAL_VAR_TYPE_INT );
+	
+	struct tm time;
+	Plat_GetLocalTime( &time );
+
+	m_pResult->SetIntValue( time.tm_mday - 1 );
+}
+
+EXPOSE_MATERIAL_PROXY( CLocalTimeProxy_Day, LocalTime_Day );
+
+// Material proxy for setting the frame of an animated texture to the current hour of the day
+// Example:
+// UnlitGeneric {
+//     $basetexture "example/animated_concrete"
+//     $frame 0
+// 
+//     Proxies 
+//     {
+//         LocalTime_Hour
+//         {
+//             resultvar "$frame"
+//         }
+//     }
+// }
+// The animated texture has to have 24 frames. It will set $frame to 0 when its hour 0, to 1 when its hour 1, etc.
+class CLocalTimeProxy_Hour : public CResultProxy
+{
+public:
+	void OnBind( void* pC_BaseEntity ) override;
+};
+
+void CLocalTimeProxy_Hour::OnBind( void *pC_BaseEntity )
+{
+	Assert( m_pResult && m_pTexture );
+	Assert( m_pResult->GetType() == MATERIAL_VAR_TYPE_INT );
+	
+	struct tm time;
+	Plat_GetLocalTime( &time );
+
+	m_pResult->SetIntValue( time.tm_hour );
+}
+
+EXPOSE_MATERIAL_PROXY( CLocalTimeProxy_Hour, LocalTime_Hour );
+
 // Set to true by the client mode when rendering glows, false when done
 bool g_bRenderingGlows;
 
