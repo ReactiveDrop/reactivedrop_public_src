@@ -436,7 +436,12 @@ void ItemShowcase::ShowItems( SteamInventoryResult_t hResult, int iStart, int iC
 			delete pInstance;
 			continue;
 		}
-		( void )ReactiveDropInventory::GetItemDef( pInstance->ItemDefID );
+		const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( pInstance->ItemDefID );
+		if ( !pDef || pDef->GameOnly )
+		{
+			delete pInstance;
+			continue;
+		}
 		pItemShowcase->m_Queue.AddToTail( pInstance );
 		pItemShowcase->m_QueueExtra.AddToTail( 0 );
 		pItemShowcase->m_QueueType.AddToTail( mode );

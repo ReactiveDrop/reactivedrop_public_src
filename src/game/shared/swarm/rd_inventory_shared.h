@@ -97,6 +97,7 @@ namespace ReactiveDropInventory
 		bool HasInGameDescription : 1;
 		bool HasBorder : 1;
 		bool IsBasic : 1;
+		bool GameOnly : 1;
 #ifdef CLIENT_DLL
 		vgui::IImage *Icon{};
 		CUtlVector<vgui::IImage *> StyleIcons{};
