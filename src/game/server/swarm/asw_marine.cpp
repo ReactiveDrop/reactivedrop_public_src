@@ -1229,16 +1229,16 @@ int CASW_Marine::OnTakeDamage( const CTakeDamageInfo &info )
 								switch ( GetMarineProfile()->m_Pronouns )
 								{
 								case ASW_PRONOUNS_HE:
-									UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_suicide_male_revivable", szName );
+									UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#rd_suicide_male_revivable", szName );
 									break;
 								case ASW_PRONOUNS_SHE:
-									UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_suicide_female_revivable", szName );
+									UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#rd_suicide_female_revivable", szName );
 									break;
 								case ASW_PRONOUNS_IT_ROBOT:
-									UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_suicide_robot_revivable", szName );
+									UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#rd_suicide_robot_revivable", szName );
 									break;
 								case ASW_PRONOUNS_IT_ANIMAL:
-									UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_suicide_animal_revivable", szName );
+									UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#rd_suicide_animal_revivable", szName );
 									break;
 								}
 							}
