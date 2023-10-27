@@ -120,6 +120,22 @@ void CASW_Spawn_Manager::OnAlienSleeping( CASW_Alien *pAlien )
 	}
 }
 
+CTriggerMultiple *CASW_Spawn_Manager::EscapeTriggerAtPoint( const Vector &vecPos, bool bAllowDisabledTrigger )
+{
+	FOR_EACH_VEC( m_EscapeTriggers, i )
+	{
+		CTriggerMultiple *pTrigger = m_EscapeTriggers[i];
+		Assert( pTrigger );
+
+		if ( ( bAllowDisabledTrigger || !pTrigger->m_bDisabled ) && pTrigger->CollisionProp()->IsPointInBounds( vecPos ) )
+		{
+			return pTrigger;
+		}
+	}
+
+	return NULL;
+}
+
 // finds all trigger_multiples linked to asw_objective_escape entities
 void CASW_Spawn_Manager::FindEscapeTriggers()
 {
@@ -546,20 +562,8 @@ void CASW_Spawn_Manager::UpdateCandidateNodes()
 			continue;
 
 		// check node isn't in an exit trigger
-		if ( !rd_horde_from_exit.GetBool() )
-		{
-			bool bInsideEscapeArea = false;
-			for ( int d = 0; d < m_EscapeTriggers.Count(); d++ )
-			{
-				if ( !m_EscapeTriggers[d]->m_bDisabled && m_EscapeTriggers[d]->CollisionProp()->IsPointInBounds( vecPos ) )
-				{
-					bInsideEscapeArea = true;
-					break;
-				}
-			}
-			if ( bInsideEscapeArea )
-				continue;
-		}
+		if ( !rd_horde_from_exit.GetBool() && EscapeTriggerAtPoint( vecPos, false ) != NULL )
+			continue;
 
 		if ( vecPos.y >= vecSouthMarine.y )
 		{
@@ -1516,28 +1520,20 @@ CASW_Open_Area* CASW_Spawn_Manager::FindNearbyOpenArea( const Vector &vecSearchO
 			continue;
 
 		// discard if node is inside an escape area
-		bool bInsideEscapeArea = false;
-		for ( int d=0; d<m_EscapeTriggers.Count(); d++ )
-		{
-			if ( !m_EscapeTriggers[d]->m_bDisabled && m_EscapeTriggers[d]->CollisionProp()->IsPointInBounds( vecPos ) )
-			{
-				bInsideEscapeArea = true;
-				break;
-			}
-		}
-		if ( bInsideEscapeArea )
+		if ( EscapeTriggerAtPoint( vecPos, false ) != NULL )
 			continue;
 
+		bool bInsideNoDirectorArea = false;
 		FOR_EACH_VEC( IRD_No_Director_Aliens::AutoList(), d )
 		{
 			CRD_No_Director_Aliens *pNoDirectorAliens = assert_cast<CRD_No_Director_Aliens *>( IRD_No_Director_Aliens::AutoList()[d] );
 			if ( !pNoDirectorAliens->m_bDisabled && pNoDirectorAliens->CollisionProp()->IsPointInBounds( vecPos ) )
 			{
-				bInsideEscapeArea = true;
+				bInsideNoDirectorArea = true;
 				break;
 			}
 		}
-		if ( bInsideEscapeArea )
+		if ( bInsideNoDirectorArea )
 			continue;
 
 		// count links that drones could follow
@@ -1593,16 +1589,7 @@ CASW_Open_Area* CASW_Spawn_Manager::FindNearbyOpenArea( const Vector &vecSearchO
 			continue;
 
 		// discard if node is inside an escape area
-		bool bInsideEscapeArea = false;
-		for ( int d=0; d<m_EscapeTriggers.Count(); d++ )
-		{
-			if ( !m_EscapeTriggers[d]->m_bDisabled && m_EscapeTriggers[d]->CollisionProp()->IsPointInBounds( vecPos ) )
-			{
-				bInsideEscapeArea = true;
-				break;
-			}
-		}
-		if ( bInsideEscapeArea )
+		if ( EscapeTriggerAtPoint( vecPos, false ) != NULL )
 			continue;
 
 		// count links that drones could follow

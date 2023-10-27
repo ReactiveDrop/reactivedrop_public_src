@@ -8,12 +8,19 @@
 #include "asw_marine_profile.h"
 #include "asw_gamerules.h"
 #include "asw_deathmatch_mode.h"
+#ifdef RD_7A_DROPS
 #include "asw_marine_hint.h"
+#include "asw_spawn_manager.h"
+#endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 static char s_szLastLeaderNetworkID[ASW_LEADERID_LEN] = {0};
+
+#ifdef RD_7A_DROPS
+ConVar rd_debug_material_spawns( "rd_debug_material_spawns", "0", FCVAR_NONE );
+#endif
 
 LINK_ENTITY_TO_CLASS( asw_game_resource, CASW_Game_Resource );
 
@@ -596,49 +603,146 @@ void CRD_CraftingMaterialInfo::GenerateSpawnLocations()
 		return;
 	}
 
-	constexpr int nMaxAttempts = 100;
-	constexpr float flTooClose = 768.0f * 768.0f;
+	constexpr float flMinDistanceFromStart = 1536.0f;
+	constexpr float flMinSpacing = 768.0f;
+	constexpr int nDirections = 8;
+	constexpr float flMaxOffset = 128.0f;
+	constexpr float flSweepDist = 20.0f;
+
+	CUtlVector<int> HintOrder;
+	HintOrder.SetCount( pMarineHintManager->GetHintCount() );
+	FOR_EACH_VEC( HintOrder, i )
+	{
+		HintOrder[i] = i;
+	}
+
+	// shuffle hint order
+	FOR_EACH_VEC_BACK( HintOrder, i )
+	{
+		if ( i )
+		{
+			int j = RandomInt( 0, i );
+			V_swap( HintOrder[i], HintOrder[j] );
+		}
+	}
+
+	string_t iszInfoPlayerStart = AllocPooledString( "info_player_start" );
 
 	m_nSpawnLocations = 0;
-	for ( int iAttempt = 0; iAttempt < nMaxAttempts && m_nSpawnLocations < RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS; iAttempt++ )
+	FOR_EACH_VEC( HintOrder, iHintOrder )
 	{
-		int iHint = RandomInt( 0, pMarineHintManager->GetHintCount() - 1 );
+		if ( m_nSpawnLocations >= RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS )
+			break;
+
+		int iHint = HintOrder[iHintOrder];
 		// ignore hints that can move or hints that no longer exist
 		if ( pMarineHintManager->GetHintFlags( iHint ) & ( HintData_t::HINT_DELETED | HintData_t::HINT_DYNAMIC ) )
 			continue;
 
-		trace_t tr;
-
 		Vector vecHintOrigin = pMarineHintManager->GetHintPosition( iHint );
-		UTIL_TraceHull( vecHintOrigin + Vector( 0, 0, 20 ), vecHintOrigin + Vector( 0, 0, 21 ), Vector( -64, -64, 0 ), Vector( 64, 64, 72 ), MASK_PLAYERSOLID, NULL, COLLISION_GROUP_PLAYER_MOVEMENT, &tr );
 
-		// if the hint is too close to obstructions, ignore it
-		if ( tr.DidHit() )
+		// ignore hints that are too close to marine spawn locations
+		if ( CBaseEntity *pEnt = gEntList.FindEntityByClassnameNearestFast( iszInfoPlayerStart, vecHintOrigin, flMinDistanceFromStart ) )
+		{
+			if ( rd_debug_material_spawns.GetBool() )
+			{
+				NDebugOverlay::Line( vecHintOrigin, pEnt->GetAbsOrigin(), 255, 127, 127, false, 120.0f );
+				NDebugOverlay::Text( vecHintOrigin, "Too close to marine spawn location", false, 120.0f );
+			}
+
 			continue;
+		}
+		// check for an active escape trigger (some maps use disabled escape triggers covering the entire playable space)
+		if ( CTriggerMultiple *pEnt = ASWSpawnManager()->EscapeTriggerAtPoint( vecHintOrigin, false ) )
+		{
+			if ( rd_debug_material_spawns.GetBool() )
+			{
+				NDebugOverlay::Line( vecHintOrigin, pEnt->GetAbsOrigin(), 255, 127, 127, false, 120.0f );
+				NDebugOverlay::Text( vecHintOrigin, "Within bounds of escape trigger", false, 120.0f );
+			}
 
-		Vector vecSpawnOffset( RandomFloat( -50, 50 ), RandomFloat( -50, 50 ), 20 );
-		UTIL_TraceHull( vecHintOrigin + vecSpawnOffset, vecHintOrigin + vecSpawnOffset + Vector( 0, 0, -40 ), Vector( -12, -12, 0 ), Vector( 12, 12, 24 ), MASK_PLAYERSOLID, NULL, COLLISION_GROUP_PLAYER_MOVEMENT, &tr );
-
-		// we need to hit the floor but not go too far down
-		if ( tr.startsolid || tr.allsolid || tr.fraction >= 1.0f )
 			continue;
-
-		// final check: we can't be too close to another material spawn point
+		}
+		// another material spawn point
 		bool bTooClose = false;
 		for ( int i = 0; i < m_nSpawnLocations; i++ )
 		{
-			if ( m_SpawnLocationOrigins[i].DistToSqr( tr.endpos ) < flTooClose )
+			if ( m_SpawnLocationOrigins[i].DistToSqr( vecHintOrigin ) < flMinSpacing * flMinSpacing )
 			{
 				bTooClose = true;
+
+				if ( rd_debug_material_spawns.GetBool() )
+				{
+					NDebugOverlay::Line( vecHintOrigin, m_SpawnLocationOrigins[i], 255, 127, 127, false, 120.0f );
+					NDebugOverlay::Text( vecHintOrigin, "Too close to other material spawn", false, 120.0f );
+				}
+
+				break;
+			}
+		}
+		if ( bTooClose )
+			continue;
+
+		trace_t tr;
+		Vector vecBestPos = vecHintOrigin;
+		float flBestFraction = 1.0f;
+
+		for ( int dir = 0; dir < nDirections; dir++ )
+		{
+			float flSin, flCos;
+			SinCos( dir * M_PI * 2.0f / nDirections, &flSin, &flCos );
+
+			// marine hull with padded sides and trimmed top and bottom
+			Vector vecOffsetOrigin = vecHintOrigin + Vector( flCos * flMaxOffset, flSin * flMaxOffset, 0.0f );
+			UTIL_TraceHull( vecHintOrigin, vecOffsetOrigin, Vector( -16, -16, 16 ), Vector( 16, 16, 56 ), MASK_PLAYERSOLID, NULL, COLLISION_GROUP_PLAYER_MOVEMENT, &tr );
+
+			if ( tr.startsolid || tr.allsolid || tr.fraction >= 1.0f )
+				continue;
+
+			if ( flBestFraction > tr.fraction )
+			{
+				vecBestPos = tr.endpos;
+				flBestFraction = tr.fraction;
+			}
+		}
+
+		if ( flBestFraction >= 1.0f )
+		{
+			NDebugOverlay::Text( vecHintOrigin, "No nearby walls", false, 120.0f );
+			continue;
+		}
+
+		// now we sweep towards the place we found, making sure we have relatively level floor the entire way
+		int nIterations = Ceil2Int( flBestFraction * flMaxOffset / flSweepDist );
+		bool bSweepFailed = false;
+		for ( int i = 0; i < nIterations; i++ )
+		{
+			Vector vecStepStart = Lerp( ( i + 0.5f ) / nIterations, vecHintOrigin, vecBestPos ) + Vector( 0.0f, 0.0f, 48.0f );
+			UTIL_TraceHull( vecStepStart, vecStepStart - Vector( 0.0f, 0.0f, 64.0f ), Vector( -12.0f, -12.0f, 0.0f ), Vector( 12.0f, 12.0f, 24.0f ), MASK_PLAYERSOLID, NULL, COLLISION_GROUP_PLAYER_MOVEMENT, &tr );
+
+			if ( tr.startsolid || tr.allsolid || tr.fraction >= 1.0f )
+			{
+				bSweepFailed = true;
+
+				if ( rd_debug_material_spawns.GetBool() )
+				{
+					NDebugOverlay::Text( vecHintOrigin, "Floor check failed", false, 120.0f );
+				}
+
 				break;
 			}
 		}
 
-		if ( !bTooClose )
+		if ( bSweepFailed )
+			continue;
+
+		if ( rd_debug_material_spawns.GetBool() )
 		{
-			m_SpawnLocationOrigins.Set( m_nSpawnLocations, tr.endpos );
-			m_nSpawnLocations++;
+			NDebugOverlay::Box( tr.endpos, Vector( -12, -12, 0 ), Vector( 12, 12, 24 ), 255, 255, 255, false, 120.0f );
 		}
+
+		m_SpawnLocationOrigins.Set( m_nSpawnLocations, tr.endpos );
+		m_nSpawnLocations++;
 	}
 }
 
@@ -656,7 +760,6 @@ CON_COMMAND( rd_debug_material_spawn_locations, "Generate and display crafting m
 	for ( int i = 0; i < info.m_nSpawnLocations; i++ )
 	{
 		Msg( "(%f, %f, %f)\n", VectorExpand( info.m_SpawnLocationOrigins[i] ) );
-		NDebugOverlay::Cross3D( info.m_SpawnLocationOrigins[i], 16.0f, 255, 255, 255, false, 120.0f );
 	}
 }
 #endif

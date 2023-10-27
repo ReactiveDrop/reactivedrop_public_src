@@ -80,6 +80,8 @@ public:
 	int GetNumAlienClasses();
 	const ASW_Alien_Class_Entry* GetAlienClass( int i );
 
+	CTriggerMultiple *EscapeTriggerAtPoint( const Vector &vecPos, bool bAllowDisabledTrigger );
+
 private:
 	template <typename Alien> int SpawnAlienBatch(Alien szAlienClass, int iNumAliens, const Vector &vecPosition, const QAngle &angFacing, float flMarinesBeyondDist, const Vector & vecMins, const Vector & vecMaxs);
 	void UpdateCandidateNodes();
