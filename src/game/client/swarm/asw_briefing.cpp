@@ -760,7 +760,7 @@ void CASW_Briefing::SelectWeapon( int nMarineIndex, int nInventorySlot, int nEqu
 	if ( !pPlayer )
 		return;
 
-	C_ASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( nMarineIndex );
+	C_ASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( LobbySlotToMarineResourceIndex( nMarineIndex ) );
 	if ( !pMR )
 		return;
 
