@@ -621,14 +621,14 @@ void C_ASW_Player::LoadoutSelectEquip( int iMarineIndex, int iInvSlot, int iEqui
 	}
 
 	int iProfileIndex = -1;
-	if ( ASWGameResource() && rd_loadout_auto_update.GetBool() )
+	if ( ASWGameResource() )
 	{
 		C_ASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( iMarineIndex );
 		if ( pMR )
 		{
 			// save this loadout selection, to be autoselected next time we pick this marine
 			iProfileIndex = pMR->GetProfileIndex();
-			if ( iProfileIndex >= 0 && iProfileIndex < ASW_NUM_MARINE_PROFILES && iInvSlot >= 0 && iInvSlot <= 2 )
+			if ( iProfileIndex >= 0 && iProfileIndex < ASW_NUM_MARINE_PROFILES && iInvSlot >= 0 && iInvSlot <= 2 && rd_loadout_auto_update.GetBool() )
 			{
 				COMPILE_TIME_ASSERT( ASW_NUM_MARINE_PROFILES == 8 );
 				ConVar *pEquipIndex = NULL, *pItemInstanceID = NULL;
