@@ -47,5 +47,6 @@ const RD_Crafting_Material_Info g_RD_Crafting_Material_Info[] =
 	{ "unopened_synup_cola", 7025, 7049, 4023, RD_CRAFTING_MATERIAL_RARITY_REGIONAL, "models/swarm/crafting/unopened_synup_cola.mdl" },
 	{ "roll_of_vent_tape", 7026, 7050, 4024, RD_CRAFTING_MATERIAL_RARITY_REGIONAL, "models/swarm/crafting/roll_of_vent_tape.mdl" },
 	{ "isotopes", 7027, 7051, 4025, RD_CRAFTING_MATERIAL_RARITY_REGIONAL, "models/swarm/crafting/isotopes.mdl" },
+	{ "cryotic", 7071, 7072, 4026, RD_CRAFTING_MATERIAL_RARITY_REGIONAL, "models/swarm/crafting/cryotic.mdl" },
 };
 #endif
