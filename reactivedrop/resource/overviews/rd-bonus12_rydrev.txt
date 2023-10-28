@@ -14,5 +14,6 @@ GAME
 	"website"		""
 	"builtin"		"1"
 	"tag"			"bonus"
+	"regional_material"	"isotopes"
 	"CustomCreditsFile"		"resource/rd_bonus_missions_credits"
 }

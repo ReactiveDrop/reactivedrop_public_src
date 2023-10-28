@@ -16,5 +16,6 @@ GAME
 	"website"		""
 	"builtin"		"1"
 	"tag"			"bonus"
+	"regional_material"	"retrieved_documents"
 	"CustomCreditsFile"		"resource/rd_bonus_missions_credits"
 }

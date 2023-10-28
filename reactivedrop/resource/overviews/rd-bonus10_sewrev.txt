@@ -15,5 +15,6 @@ GAME
 	"website"		""
 	"builtin"		"1"
 	"tag"			"bonus"
+	"regional_material"	"corrosive_fluid_sample"
 	"CustomCreditsFile"		"resource/rd_bonus_missions_credits"
 }
