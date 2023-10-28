@@ -789,6 +789,21 @@ const RD_Mission_t *ReactiveDropMissions::GetMission( int index )
 			}
 
 			bool bFound = false;
+			FOR_EACH_VEC( pMission->RegionalMaterials, i )
+			{
+				if ( !V_stricmp( pValue->GetString(), g_RD_Crafting_Material_Info[pMission->RegionalMaterials[i]].m_szName ) )
+				{
+					DevWarning( "Mission \"%s\" contains multiple copies of the regional material \"%s\"", pMission->BaseName, g_RD_Crafting_Material_Info[pMission->RegionalMaterials[i]].m_szName );
+					bFound = true;
+					break;
+				}
+			}
+
+			if ( bFound )
+			{
+				continue;
+			}
+
 			for ( int i = 0; i < NUM_RD_CRAFTING_MATERIALS; i++ )
 			{
 				if ( g_RD_Crafting_Material_Info[i].m_iRarity != RD_CRAFTING_MATERIAL_RARITY_REGIONAL )
