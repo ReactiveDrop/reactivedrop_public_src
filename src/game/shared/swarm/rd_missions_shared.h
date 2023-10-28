@@ -13,6 +13,9 @@ struct RD_Campaign_t;
 struct RD_Campaign_Mission_t;
 struct RD_Mission_t;
 struct RD_Mission_MinimapSlice_t;
+#ifdef RD_7A_DROPS
+enum RD_Crafting_Material_t;
+#endif
 
 namespace ReactiveDropMissions
 {
@@ -180,6 +183,9 @@ struct RD_Mission_t
 	bool Builtin{};
 
 	CUtlVector<string_t> Tags{};
+#ifdef RD_7A_DROPS
+	CUtlVector<RD_Crafting_Material_t> RegionalMaterials{};
+#endif
 
 	bool HasTag( const char *tag ) const;
 };

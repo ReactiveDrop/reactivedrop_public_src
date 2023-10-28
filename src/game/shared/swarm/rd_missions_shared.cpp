@@ -9,6 +9,9 @@
 #include "fmtstr.h"
 #include "rd_workshop.h"
 #include "asw_util_shared.h"
+#ifdef RD_7A_DROPS
+#include "rd_crafting_defs.h"
+#endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -775,6 +778,37 @@ const RD_Mission_t *ReactiveDropMissions::GetMission( int index )
 		{
 			pMission->Tags.AddToTail( AllocMissionsPooledString( pValue->GetString() ) );
 		}
+
+#ifdef RD_7A_DROPS
+		if ( !V_stricmp( pValue->GetName(), "regional_material" ) )
+		{
+			if ( pMission->RegionalMaterials.Count() >= 3 )
+			{
+				DevWarning( "Mission \"%s\" contains more than three regional materials (ignoring \"%s\")\n", pMission->BaseName, pValue->GetString() );
+				continue;
+			}
+
+			bool bFound = false;
+			for ( int i = 0; i < NUM_RD_CRAFTING_MATERIALS; i++ )
+			{
+				if ( g_RD_Crafting_Material_Info[i].m_iRarity != RD_CRAFTING_MATERIAL_RARITY_REGIONAL )
+					continue;
+
+				if ( V_stricmp( pValue->GetString(), g_RD_Crafting_Material_Info[i].m_szName ) )
+					continue;
+
+				bFound = true;
+				pMission->RegionalMaterials.AddToTail( RD_Crafting_Material_t( i ) );
+
+				break;
+			}
+
+			if ( !bFound )
+			{
+				DevWarning( "Mission \"%s\" requests unknown regional material \"%s\"\n", pMission->BaseName, pValue->GetString() );
+			}
+		}
+#endif
 	}
 
 	if ( info.bAdminOverrideDeathmatch && !V_strnicmp( pMission->BaseName, "dm_", 3 ) )
