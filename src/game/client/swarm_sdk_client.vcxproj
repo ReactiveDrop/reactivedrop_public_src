@@ -425,6 +425,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="..\..\public\steam\steamuniverse.h" />
     <ClInclude Include="..\..\public\steam\steam_api_common.h" />
     <ClInclude Include="..\..\public\steam\steam_api_internal.h" />
+    <ClInclude Include="..\shared\swarm\rd_crafting_defs.h" />
     <ClInclude Include="swarm\vgui\asw_scalable_text.inc">
       <FileType>Document</FileType>
     </ClInclude>
@@ -869,6 +870,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="..\shared\swarm\rd_cause_of_death.cpp" />
     <ClCompile Include="..\shared\swarm\rd_challenges_shared.cpp" />
     <ClCompile Include="..\shared\swarm\rd_convar_printdescription_hack.cpp" />
+    <ClCompile Include="..\shared\swarm\rd_crafting_defs.cpp" />
     <ClCompile Include="..\shared\swarm\rd_hud_counter_shared.cpp" />
     <ClCompile Include="..\shared\swarm\rd_hud_vscript_shared.cpp" />
     <ClCompile Include="..\shared\swarm\rd_inventory_shared.cpp" />
