@@ -710,14 +710,14 @@ bool Loadouts::IsWeaponUnlocked( const char *szWeaponClass )
 	return UTIL_ASW_CommanderLevelAtLeast( NULL, GetWeaponLevelRequirement( szWeaponClass ), -1 );
 }
 
-void Loadouts::SelectWeapon( int nMarineIndex, int nInventorySlot, int nEquipIndex, SteamItemInstanceID_t iItemInstance )
+void Loadouts::SelectWeapon( int nLobbySlot, int nInventorySlot, int nEquipIndex, SteamItemInstanceID_t iItemInstance )
 {
 	CRD_VGUI_Loadout_List_Item *pLoadout = assert_cast< CRD_VGUI_Loadout_List_Item * >( m_pGplSavedLoadouts->GetSelectedPanelItem() );
 	Assert( pLoadout );
 	if ( !pLoadout )
 		return;
 
-	pLoadout->SetWeaponForSlot( nMarineIndex, ASW_Inventory_slot_t( nInventorySlot ), nEquipIndex, iItemInstance );
+	pLoadout->SetWeaponForSlot( nLobbySlot, ASW_Inventory_slot_t( nInventorySlot ), nEquipIndex, iItemInstance );
 
 	if ( m_hSubScreen )
 	{

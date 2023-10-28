@@ -754,17 +754,18 @@ bool CASW_Briefing::IsWeaponUnlocked( const char *szWeaponClass )
 	return pPlayer->IsWeaponUnlocked( szWeaponClass );
 }
 
-void CASW_Briefing::SelectWeapon( int nMarineIndex, int nInventorySlot, int nEquipIndex, SteamItemInstanceID_t iItemInstance )
+void CASW_Briefing::SelectWeapon( int nLobbySlot, int nInventorySlot, int nEquipIndex, SteamItemInstanceID_t iItemInstance )
 {
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	if ( !pPlayer )
 		return;
 
-	C_ASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( LobbySlotToMarineResourceIndex( nMarineIndex ) );
+	int nMarineResourceIndex = LobbySlotToMarineResourceIndex( nLobbySlot );
+	C_ASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( nMarineResourceIndex );
 	if ( !pMR )
 		return;
 
-	pPlayer->LoadoutSelectEquip( nMarineIndex, nInventorySlot, nEquipIndex, iItemInstance );
+	pPlayer->LoadoutSelectEquip( nMarineResourceIndex, nInventorySlot, nEquipIndex, iItemInstance );
 }
 
 void CASW_Briefing::ToggleLocalPlayerReady()
