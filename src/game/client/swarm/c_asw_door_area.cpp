@@ -7,6 +7,8 @@
 #include "asw_weapon_welder_shared.h"
 #include "asw_util_shared.h"
 #include "asw_hud_master.h"
+#include "asw_input.h"
+#include "rd_steam_input.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -52,6 +54,18 @@ bool C_ASW_Door_Area::GetUseAction( ASWUseAction &action, C_ASW_Inhabitable_NPC 
 				else
 				{
 					V_snprintf( action.szCommand, sizeof( action.szCommand ), "asw_squad_hotbar %i", nWelderPosition + 1 );
+				}
+
+				// if we don't have a direct bind, try asking for a radial menu instead
+				if ( !g_RD_Steam_Input.Key_LookupBindingEx( action.szCommand, -1, 0, ASWInput()->ControllerModeActive() ) )
+				{
+					V_snprintf( action.szCommand, sizeof( action.szCommand ), "+mouse_menu ASW_UseExtra%d", nWelderPosition >= 100 ? 2 : 1 );
+
+					if ( !g_RD_Steam_Input.Key_LookupBindingEx( action.szCommand, -1, 0, ASWInput()->ControllerModeActive() ) )
+					{
+						// final attempt: use the version of the radial menu that is affected by the +walk command
+						V_strncpy( action.szCommand, "+mouse_menu ASW_UseExtra", sizeof( action.szCommand ) );
+					}
 				}
 			}
 		}
