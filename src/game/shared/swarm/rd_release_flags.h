@@ -32,5 +32,8 @@
 // after which point they are put in approximate order of difficulty
 #define RD_NEW_CAMPAIGN_SPOTLIGHT
 
+// testing in production, starting november 1st 2023
+#define RD_STEAM_INPUT_ACTIONS
+
 #define RD_IS_RELEASE 1
 #endif
