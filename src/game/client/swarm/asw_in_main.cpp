@@ -312,14 +312,14 @@ int CASWInput::KeyEvent( int down, ButtonCode_t code, const char *pszCurrentBind
 	// asw - grab joypad presses here
 	if ( code >= JOYSTICK_FIRST && code <= KEY_XSTICK2_UP && GetControllerFocus() )
 	{
-		if ( down == IE_ButtonPressed )
+		if ( down == 1 )
 		{
 			if ( GetControllerFocus()->OnControllerButtonPressed( code ) )
 			{
 				return 0;
 			}
 		}
-		else if ( down == IE_ButtonReleased )
+		else if ( down == 0 )
 		{
 			if ( GetControllerFocus()->OnControllerButtonReleased( code ) )
 			{
@@ -341,13 +341,13 @@ int CASWInput::KeyEvent( int down, ButtonCode_t code, const char *pszCurrentBind
 	}
 
 	// use key: if we have any info messages up, close them and leave as that's our keypress used
-	if ( down == IE_ButtonPressed && pszCurrentBinding && Q_strcmp( pszCurrentBinding, "+use" ) == 0 && CASW_VGUI_Info_Message::CloseInfoMessage() )
+	if ( down == 1 && pszCurrentBinding && Q_strcmp( pszCurrentBinding, "+use" ) == 0 && CASW_VGUI_Info_Message::CloseInfoMessage() )
 		return false;
 
 	CHudMenu *pMenu = GET_FULLSCREEN_HUDELEMENT( CHudMenu );
 	if ( pMenu && pMenu->IsMenuOpen() && code >= KEY_F1 && code <= KEY_F10 )
 	{
-		if ( down == IE_ButtonPressed )
+		if ( down == 1 )
 			pMenu->SelectMenuItem( code - KEY_F1 + 1 );
 		return false;
 	}

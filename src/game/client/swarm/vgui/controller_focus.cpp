@@ -38,20 +38,20 @@ CControllerFocus::CControllerFocus()
 
 	if ( IsX360() )
 	{
-		m_KeyNum[JF_KEY_UP_ALT]		= KEY_XBUTTON_UP;
-		m_KeyNum[JF_KEY_DOWN_ALT]	= KEY_XBUTTON_DOWN;
-		m_KeyNum[JF_KEY_LEFT_ALT]	= KEY_XBUTTON_LEFT;
-		m_KeyNum[JF_KEY_RIGHT_ALT]	= KEY_XBUTTON_RIGHT;
+		m_KeyNum[JF_KEY_UP_ALT] = KEY_XBUTTON_UP;
+		m_KeyNum[JF_KEY_DOWN_ALT] = KEY_XBUTTON_DOWN;
+		m_KeyNum[JF_KEY_LEFT_ALT] = KEY_XBUTTON_LEFT;
+		m_KeyNum[JF_KEY_RIGHT_ALT] = KEY_XBUTTON_RIGHT;
 	}
 	else
 	{
-		m_KeyNum[JF_KEY_UP_ALT]		= BUTTON_CODE_INVALID;
-		m_KeyNum[JF_KEY_DOWN_ALT]	= BUTTON_CODE_INVALID;
-		m_KeyNum[JF_KEY_LEFT_ALT]	= BUTTON_CODE_INVALID;
-		m_KeyNum[JF_KEY_RIGHT_ALT]	= BUTTON_CODE_INVALID;
+		m_KeyNum[JF_KEY_UP_ALT] = BUTTON_CODE_INVALID;
+		m_KeyNum[JF_KEY_DOWN_ALT] = BUTTON_CODE_INVALID;
+		m_KeyNum[JF_KEY_LEFT_ALT] = BUTTON_CODE_INVALID;
+		m_KeyNum[JF_KEY_RIGHT_ALT] = BUTTON_CODE_INVALID;
 	}
 
-	for (int i=0;i<NUM_JF_KEYS;i++)
+	for ( int i = 0; i < NUM_JF_KEYS; i++ )
 	{
 		m_bKeyDown[i] = false;
 		m_fNextKeyRepeatTime[i] = 0;
@@ -61,19 +61,19 @@ CControllerFocus::CControllerFocus()
 	m_flLastNavigation = 0.0f;
 }
 
-void CControllerFocus::SetControllerCodes(ButtonCode_t iUpCode, ButtonCode_t iDownCode, ButtonCode_t iLeftCode, ButtonCode_t iRightCode, ButtonCode_t iConfirmCode, ButtonCode_t iCancelCode)
-{	
+void CControllerFocus::SetControllerCodes( ButtonCode_t iUpCode, ButtonCode_t iDownCode, ButtonCode_t iLeftCode, ButtonCode_t iRightCode, ButtonCode_t iConfirmCode, ButtonCode_t iCancelCode )
+{
 	m_KeyNum[JF_KEY_UP] = iUpCode;
 	m_KeyNum[JF_KEY_DOWN] = iDownCode;
 	m_KeyNum[JF_KEY_LEFT] = iLeftCode;
 	m_KeyNum[JF_KEY_RIGHT] = iRightCode;
 	m_KeyNum[JF_KEY_CONFIRM] = iConfirmCode;
-	m_KeyNum[JF_KEY_CANCEL] = iCancelCode;	
+	m_KeyNum[JF_KEY_CANCEL] = iCancelCode;
 }
 
-void CControllerFocus::AddToFocusList(vgui::Panel* pPanel, bool bClickOnFocus, bool bModal)
+void CControllerFocus::AddToFocusList( vgui::Panel *pPanel, bool bClickOnFocus, bool bModal )
 {
-	if (!pPanel)
+	if ( !pPanel )
 		return;
 
 	Assert( bModal || !m_iModalScope );
@@ -83,13 +83,13 @@ void CControllerFocus::AddToFocusList(vgui::Panel* pPanel, bool bClickOnFocus, b
 	Focus.iModalScope = m_iModalScope;
 	Focus.bClickOnFocus = bClickOnFocus;
 	Focus.bModal = bModal;
-	if (bModal)
+	if ( bModal )
 		m_iModal++;
 	vgui::PHandle hOtherPanel;
-	for (int i=0;i<m_FocusAreas.Count();i++)
+	for ( int i = 0; i < m_FocusAreas.Count(); i++ )
 	{
 		hOtherPanel = m_FocusAreas[i].hPanel;
-		if (hOtherPanel.Get() == Focus.hPanel.Get())	// check if it's already here
+		if ( hOtherPanel.Get() == Focus.hPanel.Get() )	// check if it's already here
 			return;
 	}
 	if ( rd_debug_controller_focus.GetBool() )
@@ -98,97 +98,97 @@ void CControllerFocus::AddToFocusList(vgui::Panel* pPanel, bool bClickOnFocus, b
 	//{
 		//SetFocusPanel(pPanel, bClickOnFocus);
 	//}
-	m_FocusAreas.AddToTail(Focus);
+	m_FocusAreas.AddToTail( Focus );
 }
 
 // sets focus to one of the panels in the list of focus areas
-void CControllerFocus::SetFocusPanel(int index)
+void CControllerFocus::SetFocusPanel( int index )
 {
-	if (index < 0 || index >= m_FocusAreas.Count())
+	if ( index < 0 || index >= m_FocusAreas.Count() )
 		return;
 
-	SetFocusPanel(m_FocusAreas[index].hPanel, m_FocusAreas[index].bClickOnFocus);
+	SetFocusPanel( m_FocusAreas[index].hPanel, m_FocusAreas[index].bClickOnFocus );
 }
 
-void CControllerFocus::SetFocusPanel(vgui::Panel* pPanel, bool bClickOnFocus)
+void CControllerFocus::SetFocusPanel( vgui::Panel *pPanel, bool bClickOnFocus )
 {
 	m_CurrentFocus.hPanel = pPanel;
 	m_CurrentFocus.bClickOnFocus = bClickOnFocus;
-	if (pPanel)
+	if ( pPanel )
 	{
 		if ( rd_debug_controller_focus.GetBool() )
-			Msg("[CF] Setcur jfocus: %s:%s ", pPanel->GetName(), pPanel->GetClassName());
-		if (!m_hOutline.Get())
+			Msg( "[CF] Setcur jfocus: %s:%s \n", pPanel->GetName(), pPanel->GetClassName() );
+		if ( !m_hOutline.Get() )
 		{
-			CControllerOutline *pOutline = new CControllerOutline(NULL, "ControllerOutline");
+			CControllerOutline *pOutline = new CControllerOutline( NULL, "ControllerOutline" );
 			m_hOutline = pOutline;
-			if ( rd_debug_controller_focus.GetBool() )
+			if ( rd_debug_controller_focus.GetInt() >= 2 )
 			{
-				if (pOutline)
-					Msg("[CF] spawned outline\n");
+				if ( pOutline )
+					Msg( "[CF] spawned outline\n" );
 				else
-					Msg("[CF] Outline is zero!!\n");
+					Msg( "[CF] Outline is zero!!\n" );
 			}
 		}
-		if (m_hOutline.Get())
+		if ( m_hOutline.Get() )
 		{
-			if (pPanel->GetParent())
-				m_hOutline->SetParent(pPanel->GetParent());
+			if ( pPanel->GetParent() )
+				m_hOutline->SetParent( pPanel->GetParent() );
 			else
-				m_hOutline->SetParent(pPanel);
+				m_hOutline->SetParent( pPanel );
 			int x, y, w, t;
 			// JOYPAD REMOVED - this is a way for a panel to have a custom outline size.  If we need this, create an interface that our custom panels can implement
 			//pPanel->GetJoypadCursorBounds(x, y, w, t);
-			pPanel->GetBounds(x, y, w, t);
+			pPanel->GetBounds( x, y, w, t );
 
 			int screenX = w / 2, screenY = t / 2;
 			pPanel->LocalToScreen( screenX, screenY );
 			g_InputInternal->InternalCursorMoved( screenX, screenY );
-			
+
 			m_hOutline->MoveToFront();
-			m_hOutline->SizeTo(x, y, w, t);
-			m_hOutline->SetMouseInputEnabled(false);
+			m_hOutline->SizeTo( x, y, w, t );
+			m_hOutline->SetMouseInputEnabled( false );
 		}
-		if (bClickOnFocus)
+		if ( bClickOnFocus )
 		{
-			ClickFocusPanel(true, false);
-			ClickFocusPanel(false, false);
+			ClickFocusPanel( true, false );
+			ClickFocusPanel( false, false );
 		}
 	}
 	else
 	{
 		if ( rd_debug_controller_focus.GetBool() )
-			Msg("[CF] Cleared currently focused controller panel\n");
+			Msg( "[CF] Cleared currently focused controller panel\n" );
 	}
 }
 
-vgui::Panel* CControllerFocus::GetFocusPanel()
+vgui::Panel *CControllerFocus::GetFocusPanel()
 {
 	return m_CurrentFocus.hPanel;
 }
 
-void CControllerFocus::RemoveFromFocusList(vgui::Panel* pPanel)
+void CControllerFocus::RemoveFromFocusList( vgui::Panel *pPanel )
 {
-	if (!pPanel)
+	if ( !pPanel )
 		return;
 	if ( rd_debug_controller_focus.GetBool() )
 		Msg( "[CF] removing panel from controller focus list: %s:%s\n", pPanel->GetName(), pPanel->GetClassName() );
 	vgui::PHandle hPanel;
 	hPanel = pPanel;
-	for (int i=m_FocusAreas.Count()-1;i>=0;i--)
+	for ( int i = m_FocusAreas.Count() - 1; i >= 0; i-- )
 	{
-		if (m_FocusAreas[i].hPanel.Get() == hPanel.Get())
+		if ( m_FocusAreas[i].hPanel.Get() == hPanel.Get() )
 		{
-			if (m_FocusAreas[i].bModal)
+			if ( m_FocusAreas[i].bModal )
 				m_iModal--;
-			m_FocusAreas.Remove(i);
+			m_FocusAreas.Remove( i );
 		}
 	}
 	if ( m_CurrentFocus.hPanel == pPanel )
 	{
 		m_CurrentFocus.hPanel = NULL;
 		int index = FindNextPanel( NULL, 0 );
-		if (index != -1)
+		if ( index != -1 )
 			SetFocusPanel( index );
 	}
 }
@@ -230,33 +230,36 @@ void CControllerFocus::PopModal()
 		Msg( "[CF] Modal scope decreased to %d\n", m_iModalScope );
 }
 
-bool CControllerFocus::OnControllerButtonPressed(ButtonCode_t keynum)
+bool CControllerFocus::OnControllerButtonPressed( ButtonCode_t keynum )
 {
-	if (!IsControllerMode())
+	if ( !IsControllerMode() )
 		return false;
 
 	// don't allow multiple direction presses at once
 	int iDirectionPress = -1;
-	
-	for (int i=0;i<4;i++)
+
+	for ( int i = 0; i < 4; i++ )
 	{
-		if (m_KeyNum[i] == keynum)
-			iDirectionPress = i;		
+		if ( m_KeyNum[i] == keynum )
+		{
+			iDirectionPress = i;
+			break;
+		}
 	}
 	bool bDirectionAlreadyDown = false;
-	if (iDirectionPress != -1)
-	{		
-		for (int i=0;i<4;i++)
+	if ( iDirectionPress != -1 )
+	{
+		for ( int i = 0; i < 4; i++ )
 		{
-			if (m_bKeyDown[i] && i != iDirectionPress)	// if it's a direction we're already pushing, we allow it?
-				bDirectionAlreadyDown = true;		
-		}		
+			if ( m_bKeyDown[i] && i != iDirectionPress )	// if it's a direction we're already pushing, we allow it?
+				bDirectionAlreadyDown = true;
+		}
 		// abort if we're pushing a direction and another direction is already down
-		if (bDirectionAlreadyDown)
+		if ( bDirectionAlreadyDown )
 		{
 			return true;
 		}
-	}	
+	}
 
 	// clear current focus panel if it's now hidden
 	if ( GetFocusPanel() && !IsPanelReallyVisible( GetFocusPanel() ) )
@@ -265,54 +268,57 @@ bool CControllerFocus::OnControllerButtonPressed(ButtonCode_t keynum)
 	}
 
 	bool bSwallowKey = false;
-	if (keynum == m_KeyNum[JF_KEY_UP] || keynum == m_KeyNum[JF_KEY_UP_ALT])
+	if ( keynum == m_KeyNum[JF_KEY_UP] || keynum == m_KeyNum[JF_KEY_UP_ALT] )
 	{
-		int index = FindNextPanel(GetFocusPanel(), 270);
-		if (index != -1)
-			SetFocusPanel(index);
-		bSwallowKey = (GetFocusPanel() != NULL);
+		int index = FindNextPanel( GetFocusPanel(), 270 );
+		if ( index != -1 )
+			SetFocusPanel( index );
+		bSwallowKey = ( GetFocusPanel() != NULL );
 	}
-	else if (keynum == m_KeyNum[JF_KEY_DOWN] || keynum == m_KeyNum[JF_KEY_DOWN_ALT])
+	else if ( keynum == m_KeyNum[JF_KEY_DOWN] || keynum == m_KeyNum[JF_KEY_DOWN_ALT] )
 	{
-		int index = FindNextPanel(GetFocusPanel(), 90);
-		if (index != -1)
-			SetFocusPanel(index);
-		bSwallowKey = (GetFocusPanel() != NULL);
+		int index = FindNextPanel( GetFocusPanel(), 90 );
+		if ( index != -1 )
+			SetFocusPanel( index );
+		bSwallowKey = ( GetFocusPanel() != NULL );
 	}
-	else if (keynum == m_KeyNum[JF_KEY_LEFT] || keynum == m_KeyNum[JF_KEY_LEFT_ALT])
+	else if ( keynum == m_KeyNum[JF_KEY_LEFT] || keynum == m_KeyNum[JF_KEY_LEFT_ALT] )
 	{
-		int index = FindNextPanel(GetFocusPanel(), 180);
-		if (index != -1)
-			SetFocusPanel(index);
-		bSwallowKey = (GetFocusPanel() != NULL);
+		int index = FindNextPanel( GetFocusPanel(), 180 );
+		if ( index != -1 )
+			SetFocusPanel( index );
+		bSwallowKey = ( GetFocusPanel() != NULL );
 	}
-	else if (keynum == m_KeyNum[JF_KEY_RIGHT] || keynum == m_KeyNum[JF_KEY_RIGHT_ALT])
+	else if ( keynum == m_KeyNum[JF_KEY_RIGHT] || keynum == m_KeyNum[JF_KEY_RIGHT_ALT] )
 	{
-		int index = FindNextPanel(GetFocusPanel(), 0);
-		if (index != -1)
-			SetFocusPanel(index);
-		bSwallowKey = (GetFocusPanel() != NULL);
+		int index = FindNextPanel( GetFocusPanel(), 0 );
+		if ( index != -1 )
+			SetFocusPanel( index );
+		bSwallowKey = ( GetFocusPanel() != NULL );
 	}
-	else if (keynum == m_KeyNum[JF_KEY_CONFIRM])
+	else if ( keynum == m_KeyNum[JF_KEY_CONFIRM] )
 	{
-		if (m_CurrentFocus.bClickOnFocus)
-			DoubleClickFocusPanel(false);
+		if ( m_CurrentFocus.bClickOnFocus )
+			DoubleClickFocusPanel( false );
 		else
-			ClickFocusPanel(true, false);
+			ClickFocusPanel( true, false );
 
-		bSwallowKey = (GetFocusPanel() != NULL);
+		bSwallowKey = ( GetFocusPanel() != NULL );
 	}
-	else if (keynum == m_KeyNum[JF_KEY_CANCEL])
-	{		
-		ClickFocusPanel(true, true);
-		bSwallowKey = (GetFocusPanel() != NULL);
+	else if ( keynum == m_KeyNum[JF_KEY_CANCEL] )
+	{
+		ClickFocusPanel( true, true );
+		bSwallowKey = ( GetFocusPanel() != NULL );
 	}
 	if ( bSwallowKey )
 	{
-		for (int i=0;i<NUM_JF_KEYS;i++)
+		for ( int i = 0; i < NUM_JF_KEYS; i++ )
 		{
-			if (m_KeyNum[i] == keynum)
+			if ( m_KeyNum[i] == keynum )
 			{
+				if ( rd_debug_controller_focus.GetBool() && !m_bKeyDown[i] )
+					Msg( "[CF] press dir %d\n", iDirectionPress );
+
 				m_bKeyDown[i] = true;
 				m_fNextKeyRepeatTime[i] = Plat_FloatTime() + JF_KEY_REPEAT_DELAY;
 			}
@@ -323,29 +329,31 @@ bool CControllerFocus::OnControllerButtonPressed(ButtonCode_t keynum)
 	return false;
 }
 
-bool CControllerFocus::OnControllerButtonReleased(ButtonCode_t keynum)
+bool CControllerFocus::OnControllerButtonReleased( ButtonCode_t keynum )
 {
-	if (!IsControllerMode())
+	if ( !IsControllerMode() )
 		return false;
 
-	for (int i=0;i<NUM_JF_KEYS;i++)
+	for ( int i = 0; i < NUM_JF_KEYS; i++ )
 	{
-		if (m_KeyNum[i] == keynum)
+		if ( m_KeyNum[i] == keynum )
 		{
+			if ( rd_debug_controller_focus.GetBool() && m_bKeyDown[i] )
+				Msg( "[CF] release dir %d\n", i );
 			m_bKeyDown[i] = false;
 			m_fNextKeyRepeatTime[i] = 0;
 		}
 	}
 
-	if (keynum == m_KeyNum[JF_KEY_CONFIRM])
+	if ( keynum == m_KeyNum[JF_KEY_CONFIRM] )
 	{
-		ClickFocusPanel(false, false);
-		return (GetFocusPanel() != NULL);
+		ClickFocusPanel( false, false );
+		return ( GetFocusPanel() != NULL );
 	}
-	else if (keynum == m_KeyNum[JF_KEY_CANCEL])
+	else if ( keynum == m_KeyNum[JF_KEY_CANCEL] )
 	{
-		ClickFocusPanel(false, true);
-		return (GetFocusPanel() != NULL);
+		ClickFocusPanel( false, true );
+		return ( GetFocusPanel() != NULL );
 	}
 	// don't swallow non confirm/cancel buttons
 	return false;
@@ -360,7 +368,7 @@ void CControllerFocus::CheckKeyRepeats()
 		{
 			// player is holding down the specified key, send another press
 			if ( rd_debug_controller_focus.GetBool() )
-				Msg( "[CF] Sending key repeat\n" );
+				Msg( "[CF] Sending key repeat %d\n", i );
 			OnControllerButtonPressed( m_KeyNum[i] );
 			m_fNextKeyRepeatTime[i] = curtime + JF_KEY_REPEAT_INTERVAL;
 		}
@@ -428,24 +436,24 @@ void CControllerFocus::UpdateMenuNavigation()
 	}
 }
 
-void CControllerFocus::ClickFocusPanel(bool bDown, bool bRightMouse)
-{	
+void CControllerFocus::ClickFocusPanel( bool bDown, bool bRightMouse )
+{
 	vgui::Panel *pOther = GetFocusPanel();
-	if (pOther)
+	if ( pOther )
 	{
-		if (bDown)
-			pOther->OnMousePressed(bRightMouse ? MOUSE_RIGHT : MOUSE_LEFT);
+		if ( bDown )
+			pOther->OnMousePressed( bRightMouse ? MOUSE_RIGHT : MOUSE_LEFT );
 		else
-			pOther->OnMouseReleased(bRightMouse ? MOUSE_RIGHT : MOUSE_LEFT);
+			pOther->OnMouseReleased( bRightMouse ? MOUSE_RIGHT : MOUSE_LEFT );
 	}
 }
 
-void CControllerFocus::DoubleClickFocusPanel(bool bRightMouse)
+void CControllerFocus::DoubleClickFocusPanel( bool bRightMouse )
 {
 	vgui::Panel *pOther = GetFocusPanel();
-	if (pOther)
+	if ( pOther )
 	{
-		pOther->OnMouseDoublePressed(bRightMouse ? MOUSE_RIGHT : MOUSE_LEFT);
+		pOther->OnMouseDoublePressed( bRightMouse ? MOUSE_RIGHT : MOUSE_LEFT );
 	}
 }
 
@@ -485,12 +493,12 @@ int CControllerFocus::FindNextPanel( vgui::Panel *pSource, float angle )
 		return iBestIndex;
 	}
 
-	if ( rd_debug_controller_focus.GetBool() )
+	if ( rd_debug_controller_focus.GetInt() >= 2 )
 		Msg( "[CF] angle = %f ", angle );
 	float radangle = DEG2RAD( angle );
 	float xdir, ydir;
 	SinCos( radangle, &ydir, &xdir );
-	if ( rd_debug_controller_focus.GetBool() )
+	if ( rd_debug_controller_focus.GetInt() >= 2 )
 		Msg( "xdir = %f ydir = %f\n", xdir, ydir );
 
 	//Vector2D dir(xdir, ydir);
@@ -556,7 +564,7 @@ int CControllerFocus::FindNextPanel( vgui::Panel *pSource, float angle )
 		//difference = vecOther - vecSource;
 		//Vector2D diffnorm = difference;
 		//diffnorm.NormalizeInPlace();
-		if ( rd_debug_controller_focus.GetBool() )
+		if ( rd_debug_controller_focus.GetInt() >= 2 )
 			Msg( "[CF] Checking panel %i (%s). diff=%f,%f dir=%f, %f dot=%f\n", i, pOther->GetClassName(), diffx, diffy, xdir, ydir, the_dot );
 
 		if ( the_dot > 0.3f )
@@ -569,29 +577,29 @@ int CControllerFocus::FindNextPanel( vgui::Panel *pSource, float angle )
 				// double perpendicular distance cost
 				if ( angle == 90 || angle == 270 )
 				{
-					if ( rd_debug_controller_focus.GetBool() )
+					if ( rd_debug_controller_focus.GetInt() >= 2 )
 						Msg( "  vertical rating: %f * 3 + %f\n", fabs( diffx ), fabs( diffy ) );
 					fRating = fabs( diffy ) + ( fabs( diffx ) * 3.0f );
 				}
 				else
 				{
-					if ( rd_debug_controller_focus.GetBool() )
+					if ( rd_debug_controller_focus.GetInt() >= 2 )
 						Msg( "  horiz rating: %f + %f * 3\n", fabs( diffx ), fabs( diffy ) );
 					fRating = fabs( diffx ) + ( fabs( diffy ) * 3.0f );
 				}
 			}
 			else	// strange angle, just rate based on distance
 			{
-				if ( rd_debug_controller_focus.GetBool() )
+				if ( rd_debug_controller_focus.GetInt() >= 2 )
 					Msg( "  distancebased rating\n" );
 				fRating = diff_len;
 			}
-			if ( rd_debug_controller_focus.GetBool() )
+			if ( rd_debug_controller_focus.GetInt() >= 2 )
 				Msg( "  Panel is in right dir, rating = %f\n", fRating );
 			// if this panel is better, remember it
 			if ( pBest == NULL || ( fRating != -1 && fRating < fBestRating ) )
 			{
-				if ( rd_debug_controller_focus.GetBool() )
+				if ( rd_debug_controller_focus.GetInt() >= 2 )
 					Msg( "  this is the new best!\n" );
 				pBest = pOther;
 				iBestIndex = i;
@@ -602,12 +610,12 @@ int CControllerFocus::FindNextPanel( vgui::Panel *pSource, float angle )
 	return iBestIndex;
 }
 
-bool CControllerFocus::IsPanelReallyVisible(vgui::Panel *pPanel)
+bool CControllerFocus::IsPanelReallyVisible( vgui::Panel *pPanel )
 {
 	while ( pPanel->IsVisible() && pPanel->GetAlpha() > 0 )	// todo: make required alpha an arg
-	{	
+	{
 		pPanel = pPanel->GetParent();
-		if (!pPanel)
+		if ( !pPanel )
 			return true;		// got to the top without hitting something that wasn't visible
 	}
 	return false;
@@ -615,11 +623,11 @@ bool CControllerFocus::IsPanelReallyVisible(vgui::Panel *pPanel)
 
 // ================================================================================
 
-CControllerFocus* g_pJoypadFocus = NULL;
+CControllerFocus *g_pJoypadFocus = NULL;
 
-CControllerFocus* GetControllerFocus()
+CControllerFocus *GetControllerFocus()
 {
-	if (g_pJoypadFocus == NULL)
+	if ( g_pJoypadFocus == NULL )
 	{
 		g_pJoypadFocus = new CControllerFocus();
 	}
@@ -628,10 +636,10 @@ CControllerFocus* GetControllerFocus()
 
 // ================================================================================
 
-CControllerOutline::CControllerOutline(vgui::Panel *parent, const char *name) : vgui::Panel(parent, name)
+CControllerOutline::CControllerOutline( vgui::Panel *parent, const char *name ) : vgui::Panel( parent, name )
 {
-	SetMouseInputEnabled(false);
-	SetAlpha(0);
+	SetMouseInputEnabled( false );
+	SetAlpha( 0 );
 	m_hLastFocusPanel = NULL;
 	SetZPos( 250 );
 	//m_pImagePanel = new vgui::ImagePanelColored(this, "ImagePanel");
@@ -639,37 +647,37 @@ CControllerOutline::CControllerOutline(vgui::Panel *parent, const char *name) : 
 	//m_pImagePanel->SetShouldScaleImage(true);	
 }
 
-void CControllerOutline::ApplySchemeSettings(vgui::IScheme* pScheme)
+void CControllerOutline::ApplySchemeSettings( vgui::IScheme *pScheme )
 {
-	BaseClass::ApplySchemeSettings(pScheme);
+	BaseClass::ApplySchemeSettings( pScheme );
 
-	SetPaintBackgroundEnabled(false);
+	SetPaintBackgroundEnabled( false );
 	//SetPaintBackgroundType(0);
 	//SetBgColor(Color(255,0,0,64));
 }
 
 void CControllerOutline::Paint()
-{			
+{
 	long curtime = vgui::system()->GetTimeMillis();
 	int pulse_time = 1000;
 	int half_pulse_time = pulse_time / 2;
 	long remainder = curtime % pulse_time;
-	if (remainder > half_pulse_time)
-		remainder = half_pulse_time - (remainder - half_pulse_time);
-	float fWhite = float(remainder) / float(half_pulse_time);
+	if ( remainder > half_pulse_time )
+		remainder = half_pulse_time - ( remainder - half_pulse_time );
+	float fWhite = float( remainder ) / float( half_pulse_time );
 	//int red = 66.0f + (255.0f - 66.0f) * fWhite;
 	//int green = 142.0f  + (255.0f - 142.0f) * fWhite;
 	//int blue = 192.0f + (255.0f - 192.0f) * fWhite;
-	int red = 255.0f + (255.0f - 255) * fWhite;
-	int green = 0  + (255.0f - 0) * fWhite;
+	int red = 255.0f + ( 255.0f - 255 ) * fWhite;
+	int green = 0 + ( 255.0f - 0 ) * fWhite;
 	int blue = 0;
-	Color col(red, green, blue, 255);	
+	Color col( red, green, blue, 255 );
 	DrawBox( 0, 0, GetWide(), GetTall(), col, 0.8f, true );
 }
 
-void CControllerOutline::GetCornerTextureSize( int& w, int& h )
+void CControllerOutline::GetCornerTextureSize( int &w, int &h )
 {
-	BaseClass::GetCornerTextureSize(w, h);
+	BaseClass::GetCornerTextureSize( w, h );
 
 	int sw, sh;
 	vgui::surface()->GetScreenSize( sw, sh );
@@ -681,43 +689,43 @@ void CControllerOutline::GetCornerTextureSize( int& w, int& h )
 // hide/show us and position us over the focused panel
 void CControllerOutline::OnThink()
 {
-	if (!GetControllerFocus())
+	if ( !GetControllerFocus() )
 		return;
-	
-	vgui::Panel* pFocus = GetControllerFocus()->GetFocusPanel();
+
+	vgui::Panel *pFocus = GetControllerFocus()->GetFocusPanel();
 	//Msg("outline thinking, focus = %s\n", pFocus ? pFocus->GetClassName() : "none");
-	if (pFocus && GetControllerFocus()->IsControllerMode())
+	if ( pFocus && GetControllerFocus()->IsControllerMode() )
 	{
-		if (pFocus != m_hLastFocusPanel.Get())
+		if ( pFocus != m_hLastFocusPanel.Get() )
 		{
 			m_hLastFocusPanel = pFocus;
 		}
-		SetAlpha(255);
-		if (pFocus->GetParent())
-			SetParent(pFocus->GetParent());
+		SetAlpha( 255 );
+		if ( pFocus->GetParent() )
+			SetParent( pFocus->GetParent() );
 		else
-			SetParent(pFocus);
+			SetParent( pFocus );
 		// make sure we're positioned over the focused panel
 		int x, y, w, t;
 		// JOYPAD REMOVED
 		//pFocus->GetJoypadCursorBounds(x, y, w, t);
 		pFocus->GetBounds( x, y, w, t );
-		SizeTo(x, y, w, t);
+		SizeTo( x, y, w, t );
 
 		GetControllerFocus()->CheckKeyRepeats();
 
-		SetMouseInputEnabled(false);
+		SetMouseInputEnabled( false );
 	}
 	else
 	{
-		SetAlpha(0);
-		SetMouseInputEnabled(false);
+		SetAlpha( 0 );
+		SetMouseInputEnabled( false );
 	}
 }
 
-void CControllerOutline::SizeTo(int x, int y, int w, int t)
+void CControllerOutline::SizeTo( int x, int y, int w, int t )
 {
-	SetBounds(x, y, w, t);
+	SetBounds( x, y, w, t );
 	//m_pImagePanel->SetBounds(0, 0, w, t);
 }
 
@@ -728,7 +736,7 @@ void CControllerFocus::PrintFocusListToConsole()
 	for ( int i = 0; i < m_FocusAreas.Count(); i++ )
 	{
 		pPanel = m_FocusAreas[i].hPanel.Get();
-		Msg( "Focus[%d] %s (%s) [%d]\n", i, pPanel ? pPanel->GetName() : "Unknown", pPanel ? pPanel->GetClassName() : "Unknown", *(int32*)&m_FocusAreas[i].hPanel );
+		Msg( "Focus[%d] %s (%s) [%d]\n", i, pPanel ? pPanel->GetName() : "Unknown", pPanel ? pPanel->GetClassName() : "Unknown", *( int32 * )&m_FocusAreas[i].hPanel );
 	}
 }
 

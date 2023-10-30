@@ -106,14 +106,14 @@ static void ButtonPressHelper( ButtonCode_t eButton )
 {
 	if ( !GamepadIgnoreMenus() )
 		g_InputInternal->InternalKeyCodePressed( eButton );
-	GetControllerFocus()->OnControllerButtonPressed( eButton );
+	//GetControllerFocus()->OnControllerButtonPressed( eButton );
 }
 
 static void ButtonReleaseHelper( ButtonCode_t eButton )
 {
 	if ( !GamepadIgnoreMenus() )
 		g_InputInternal->InternalKeyCodeReleased( eButton );
-	GetControllerFocus()->OnControllerButtonReleased( eButton );
+	//GetControllerFocus()->OnControllerButtonReleased( eButton );
 }
 
 #define RD_STEAM_INPUT_MENU_BIND( ActionName, ConCommandName, eButton, ... ) \
