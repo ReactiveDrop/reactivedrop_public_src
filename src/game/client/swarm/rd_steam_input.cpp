@@ -787,6 +787,14 @@ void CRD_Steam_Controller::OnFrame( ISteamInput *pSteamInput )
 		}
 	}
 
+#ifdef DBGFLAG_ASSERT
+	Assert( pSteamInput->GetCurrentActionSet( m_hController ) == hSet );
+	InputActionSetHandle_t ActiveLayers[STEAM_INPUT_MAX_ACTIVE_LAYERS];
+	int nActiveLayers = pSteamInput->GetActiveActionSetLayers( m_hController, ActiveLayers );
+	Assert( nActiveLayers == layers.Count() );
+	Assert( !V_memcmp( ActiveLayers, layers.Base(), layers.Count() * sizeof( layers[0] ) ) );
+#endif
+
 	if ( rd_gamepad_player_color.GetBool() )
 	{
 		Color PlayerColor{};
