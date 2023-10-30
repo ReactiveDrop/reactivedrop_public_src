@@ -79,6 +79,7 @@ public:
 	bool m_bConnected;
 	bool m_bJustChangedActionSet;
 	InputActionSetHandle_t m_hLastActionSet;
+	CUtlVector<InputActionSetHandle_t> m_LastActionSetLayers;
 	int m_SplitScreenPlayerIndex;
 	Color m_LastPlayerColor;
 };

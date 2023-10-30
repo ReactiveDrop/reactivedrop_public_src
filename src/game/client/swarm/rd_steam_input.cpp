@@ -745,6 +745,8 @@ void CRD_Steam_Controller::OnDisconnected()
 	Assert( m_bConnected );
 
 	m_bConnected = false;
+	m_hLastActionSet = NULL;
+	m_LastActionSetLayers.Purge();
 
 	// CERT: "When the controller is disconnected, the game must pause unless it's a multiplayer game."
 	if ( engine->IsInGame() && gpGlobals->maxClients == 1 && !engine->IsPaused() )
@@ -772,11 +774,17 @@ void CRD_Steam_Controller::OnFrame( ISteamInput *pSteamInput )
 	m_bJustChangedActionSet = m_hLastActionSet != hSet;
 	m_hLastActionSet = hSet;
 
-	pSteamInput->DeactivateAllActionSetLayers( m_hController );
-	pSteamInput->ActivateActionSet( m_hController, hSet );
-	FOR_EACH_VEC( layers, i )
+	if ( m_bJustChangedActionSet || layers.Count() != m_LastActionSetLayers.Count() || V_memcmp( layers.Base(), m_LastActionSetLayers.Base(), layers.Count() * sizeof( layers[0] ) ) )
 	{
-		pSteamInput->ActivateActionSetLayer( m_hController, layers[i] );
+		m_LastActionSetLayers.RemoveAll();
+		m_LastActionSetLayers.AddVectorToTail( layers );
+
+		pSteamInput->DeactivateAllActionSetLayers( m_hController );
+		pSteamInput->ActivateActionSet( m_hController, hSet );
+		FOR_EACH_VEC( layers, i )
+		{
+			pSteamInput->ActivateActionSetLayer( m_hController, layers[i] );
+		}
 	}
 
 	if ( rd_gamepad_player_color.GetBool() )
