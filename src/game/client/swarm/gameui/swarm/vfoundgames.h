@@ -181,6 +181,7 @@ private:
 	vgui::HFont	m_hSmallTextBlurFont;
 
 	CPanelAnimationVar( Color, m_SelectedColor, "selected_color", "255 0 0 128" );
+	int m_iBaseTall;
 	bool m_sweep : 1;
 	bool m_bSelected : 1;
 	bool m_bHasMouseover : 1;

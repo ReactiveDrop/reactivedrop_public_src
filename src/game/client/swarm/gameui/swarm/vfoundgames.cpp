@@ -656,6 +656,7 @@ FoundGameListItem::FoundGameListItem( vgui::Panel *parent, const char *panelName
 
 	SetPaintBackgroundEnabled( true );
 
+	m_iBaseTall = 10;
 	m_sweep = 0;
 	m_bSelected = false;
 	m_bHasMouseover = false;
@@ -856,8 +857,7 @@ void FoundGameListItem::SetGamePlayerCount( int current, int max )
 //=============================================================================
 void FoundGameListItem::DrawListItemLabel( vgui::Label* label, bool bSmallFont, bool bEastAligned /* = false */ )
 {
-	int panelWide, panelTall;
-	GetSize( panelWide, panelTall );
+	int panelTall = m_iBaseTall;
 
 	if ( label )
 	{
@@ -990,6 +990,49 @@ void FoundGameListItem::PaintBackground()
 	{
 		DrawListItemLabel( m_pLblNotJoinable, true );
 	}
+
+	if ( m_FullInfo.m_Friends.Count() )
+	{
+		int wide = GetWide();
+		int iFriendLabelX = wide;
+		int iFriendLabelY = m_iBaseTall - YRES( 12 );
+		int iFriendLabelXOffset, discard;
+		m_pLblPlayerGamerTag->GetPos( iFriendLabelXOffset, discard );
+		Color FriendColor = HasFocus() || HasMouseover() || IsSelected() ? Color( 255, 255, 255, 255 ) : Color( 100, 100, 100, 255 );
+		if ( ISteamFriends *pSteamFriends = SteamFriends() )
+		{
+			vgui::surface()->DrawSetTextFont( m_hTextFont );
+			vgui::surface()->DrawSetTextColor( FriendColor );
+
+			FOR_EACH_VEC( m_FullInfo.m_Friends, i )
+			{
+				wchar_t wszFriendName[k_cwchPersonaNameMax];
+				V_UTF8ToUnicode( pSteamFriends->GetFriendPersonaName( m_FullInfo.m_Friends[i] ), wszFriendName, sizeof( wszFriendName ) );
+
+				int w, t;
+				vgui::surface()->GetTextSize( m_hTextFont, wszFriendName, w, t );
+				int iFriendLabelWide = YRES( 16 ) + w;
+				if ( iFriendLabelX + iFriendLabelWide > wide )
+				{
+					iFriendLabelY += YRES( 10 );
+					iFriendLabelX = iFriendLabelXOffset;
+				}
+
+				vgui::IImage *pAvatarImage = CUIGameData::Get()->GetAvatarImage( m_FullInfo.m_Friends[i].ConvertToUint64() );
+				if ( pAvatarImage )
+				{
+					pAvatarImage->SetPos( iFriendLabelX + YRES( 2 ), iFriendLabelY );
+					pAvatarImage->SetSize( YRES( 10 ), YRES( 10 ) );
+					pAvatarImage->SetColor( FriendColor );
+					pAvatarImage->Paint();
+				}
+
+				vgui::surface()->DrawSetTextPos( iFriendLabelX + YRES( 14 ), iFriendLabelY );
+				vgui::surface()->DrawUnicodeString( wszFriendName );
+				iFriendLabelX += iFriendLabelWide;
+			}
+		}
+	}
 }
 
 //=============================================================================
@@ -1097,7 +1140,9 @@ void FoundGameListItem::ApplySchemeSettings( IScheme *pScheme )
 	BaseClass::ApplySchemeSettings( pScheme );
 
 	LoadControlSettings( CFmtStr( "Resource/UI/BaseModUI/%s.res", GetName() ) );
-	
+
+	m_iBaseTall = GetTall();
+
 	//////////////////////////////////////////////////////
 	// !!!!! THE ENABLED STATES CONTROL VISIBILITY !!!! //
 	//////////////////////////////////////////////////////
@@ -1177,6 +1222,32 @@ void FoundGameListItem::PerformLayout()
 		Assert( panel );
 		panel->SetMouseInputEnabled( false );
 	}
+
+	int wide = GetWide();
+	int iFriendLabelX = wide;
+	int iFriendLabelTall = m_FullInfo.m_Friends.Count() ? YRES( 2 ) : 0;
+	int iFriendLabelXOffset, discard;
+	m_pLblPlayerGamerTag->GetPos( iFriendLabelXOffset, discard );
+	if ( ISteamFriends *pSteamFriends = SteamFriends() )
+	{
+		FOR_EACH_VEC( m_FullInfo.m_Friends, i )
+		{
+			wchar_t wszFriendName[k_cwchPersonaNameMax];
+			V_UTF8ToUnicode( pSteamFriends->GetFriendPersonaName( m_FullInfo.m_Friends[i] ), wszFriendName, sizeof( wszFriendName ) );
+
+			int w, t;
+			vgui::surface()->GetTextSize( m_hTextFont, wszFriendName, w, t );
+			int iFriendLabelWide = YRES( 16 ) + w;
+			if ( iFriendLabelX + iFriendLabelWide > wide )
+			{
+				iFriendLabelTall += YRES( 10 );
+				iFriendLabelX = iFriendLabelXOffset;
+			}
+			iFriendLabelX += iFriendLabelWide;
+		}
+	}
+
+	SetTall( m_iBaseTall + iFriendLabelTall );
 }
 
 //=============================================================================
