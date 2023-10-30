@@ -145,6 +145,7 @@ public:
 	void SetCameraFixed( bool bFixed ) { m_bCameraFixed = bFixed; }
 
 	void UpdateASWControls();
+	void EngageControllerMode();
 
 private:
 	float		m_fCurrentCameraPitch;
@@ -159,8 +160,6 @@ private:
 
 	void CalculateCameraShift( C_ASW_Player *pPlayer, float flDeltaX, float flDeltaY, float &flShiftX, float &flShiftY );
 	void SmoothCamera( C_ASW_Player *pPlayer, Vector &vecCameraLocation );
-
-	void EngageControllerMode();
 
 	int m_iOrderingMarine;	// entindex of marine we're ordering around
 

@@ -434,6 +434,15 @@ void CControllerFocus::UpdateMenuNavigation()
 			flDelay = flRepeatDelay;
 		}
 	}
+
+	FOR_EACH_VEC_BACK( m_FocusAreas, i )
+	{
+		Assert( m_FocusAreas[i].hPanel );
+		if ( !m_FocusAreas[i].hPanel )
+		{
+			m_FocusAreas.Remove( i );
+		}
+	}
 }
 
 void CControllerFocus::ClickFocusPanel( bool bDown, bool bRightMouse )

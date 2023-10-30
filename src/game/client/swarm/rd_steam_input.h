@@ -78,8 +78,6 @@ public:
 	const InputHandle_t m_hController;
 	bool m_bConnected;
 	bool m_bJustChangedActionSet;
-	InputActionSetHandle_t m_hLastActionSet;
-	CUtlVector<InputActionSetHandle_t> m_LastActionSetLayers;
 	int m_SplitScreenPlayerIndex;
 	Color m_LastPlayerColor;
 };
@@ -87,7 +85,7 @@ public:
 class CRD_Steam_Input_Bind final
 {
 public:
-	CRD_Steam_Input_Bind( const char *szActionName, const char *szBind, const char *szForceActionSet, bool bIgnoreOnActionSetChange = false );
+	CRD_Steam_Input_Bind( const char *szActionName, const char *szBind, const char *szForceActionSet, bool bIgnoreCommandOnXboxControllers = false, bool bIgnoreOnActionSetChange = false );
 
 private:
 	const char *m_szActionName;
@@ -95,6 +93,7 @@ private:
 	const char *m_szForceActionSet;
 	InputDigitalActionHandle_t m_hAction;
 	InputActionSetHandle_t m_hForceActionSet;
+	bool m_bIgnoreCommandOnXboxControllers;
 	bool m_bIgnoreOnActionSetChange;
 
 	CRD_Steam_Input_Bind *m_pNext;

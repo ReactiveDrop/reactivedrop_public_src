@@ -29,7 +29,6 @@ using namespace BaseModUI;
 ConVar rd_gamepad_soft_keyboard( "rd_gamepad_soft_keyboard", "1", FCVAR_ARCHIVE, "Automatically open Steam Deck style keyboard when focusing a text field." );
 ConVar rd_force_controller_glyph_set( "rd_force_controller_glyph_set", "-1", FCVAR_ARCHIVE, "Use a specific controller button set for UI hints. 3=xbox, 10=switch, 13=ps5, 14=steam deck", true, -1, true, k_ESteamInputType_Count - 1 );
 ConVar rd_gamepad_player_color( "rd_gamepad_player_color", "1", FCVAR_ARCHIVE, "Set controller LED color to player color when controlling a marine." );
-ConVar rd_gamepad_ignore_menus( "rd_gamepad_ignore_menus", "-1", FCVAR_NONE, "Ignore Steam Input menu actions. If this is -1, it will automatically be set to 1 if the game sees an xbox controller and 0 otherwise." );
 ConVar rd_gamepad_rumble_intensity( "rd_gamepad_rumble_intensity", "0.0", FCVAR_ARCHIVE, "Multiplies controller rumble intensity. 1.0 is \"normal\". Currently, there is no rumble." );
 
 CRD_Steam_Input g_RD_Steam_Input;
@@ -722,7 +721,6 @@ CRD_Steam_Controller::CRD_Steam_Controller( InputHandle_t hController ) :
 	m_hController{ hController },
 	m_bConnected{ false },
 	m_bJustChangedActionSet{ false },
-	m_hLastActionSet{ NULL },
 	m_SplitScreenPlayerIndex{ -1 },
 	m_LastPlayerColor{}
 {
@@ -746,8 +744,6 @@ void CRD_Steam_Controller::OnDisconnected()
 	Assert( m_bConnected );
 
 	m_bConnected = false;
-	m_hLastActionSet = NULL;
-	m_LastActionSetLayers.Purge();
 
 	// CERT: "When the controller is disconnected, the game must pause unless it's a multiplayer game."
 	if ( engine->IsInGame() && gpGlobals->maxClients == 1 && !engine->IsPaused() )
@@ -770,31 +766,23 @@ void CRD_Steam_Controller::OnFrame( ISteamInput *pSteamInput )
 
 	C_ASW_Player *pPlayer = m_SplitScreenPlayerIndex == -1 ? NULL : C_ASW_Player::GetLocalASWPlayer( m_SplitScreenPlayerIndex );
 
-	CUtlVector<InputActionSetHandle_t> layers;
-	InputActionSetHandle_t hSet = g_RD_Steam_Input.DetermineActionSet( &layers, m_SplitScreenPlayerIndex );
-	m_bJustChangedActionSet = m_hLastActionSet != hSet;
-	m_hLastActionSet = hSet;
-
-	if ( m_bJustChangedActionSet || layers.Count() != m_LastActionSetLayers.Count() || V_memcmp( layers.Base(), m_LastActionSetLayers.Base(), layers.Count() * sizeof( layers[0] ) ) )
-	{
-		m_LastActionSetLayers.RemoveAll();
-		m_LastActionSetLayers.AddVectorToTail( layers );
-
-		pSteamInput->DeactivateAllActionSetLayers( m_hController );
-		pSteamInput->ActivateActionSet( m_hController, hSet );
-		FOR_EACH_VEC( layers, i )
-		{
-			pSteamInput->ActivateActionSetLayer( m_hController, layers[i] );
-		}
-	}
-
-#ifdef DBGFLAG_ASSERT
-	Assert( pSteamInput->GetCurrentActionSet( m_hController ) == hSet );
+	InputActionSetHandle_t hLastActionSet = pSteamInput->GetCurrentActionSet( m_hController );
 	InputActionSetHandle_t ActiveLayers[STEAM_INPUT_MAX_ACTIVE_LAYERS];
 	int nActiveLayers = pSteamInput->GetActiveActionSetLayers( m_hController, ActiveLayers );
-	Assert( nActiveLayers == layers.Count() );
-	Assert( !V_memcmp( ActiveLayers, layers.Base(), layers.Count() * sizeof( layers[0] ) ) );
-#endif
+
+	CUtlVector<InputActionSetHandle_t> RequestedLayers;
+	InputActionSetHandle_t hSet = g_RD_Steam_Input.DetermineActionSet( &RequestedLayers, m_SplitScreenPlayerIndex );
+	m_bJustChangedActionSet = hLastActionSet != hSet;
+
+	if ( m_bJustChangedActionSet || RequestedLayers.Count() != nActiveLayers || V_memcmp( RequestedLayers.Base(), ActiveLayers, nActiveLayers * sizeof( ActiveLayers[0] ) ) )
+	{
+		pSteamInput->DeactivateAllActionSetLayers( m_hController );
+		pSteamInput->ActivateActionSet( m_hController, hSet );
+		FOR_EACH_VEC( RequestedLayers, i )
+		{
+			pSteamInput->ActivateActionSetLayer( m_hController, RequestedLayers[i] );
+		}
+	}
 
 	if ( rd_gamepad_player_color.GetBool() )
 	{
@@ -817,12 +805,18 @@ void CRD_Steam_Controller::OnDigitalAction( InputDigitalActionHandle_t hAction, 
 {
 	Assert( m_bConnected );
 
+	if ( ASWInput() && bState )
+		ASWInput()->EngageControllerMode();
+
 	for ( CRD_Steam_Input_Bind *pBind = CRD_Steam_Input_Bind::s_pBinds; pBind; pBind = pBind->m_pNext )
 	{
 		if ( pBind->m_hAction != hAction )
 			continue;
 
 		if ( m_bJustChangedActionSet && pBind->m_bIgnoreOnActionSetChange && bState )
+			return;
+
+		if ( pBind->m_bIgnoreCommandOnXboxControllers && SteamInput()->GetGamepadIndexForController( m_hController ) != -1 )
 			return;
 
 		char szCommand[1024];
@@ -847,16 +841,20 @@ void CRD_Steam_Controller::OnAnalogAction( InputAnalogActionHandle_t hAction, EI
 {
 	Assert( m_bConnected );
 
+	if ( ASWInput() && ( x != 0 || y != 0 ) )
+		ASWInput()->EngageControllerMode();
+
 	// analog actions are handled per-frame, not per-input.
 }
 
 CRD_Steam_Input_Bind *CRD_Steam_Input_Bind::s_pBinds = NULL;
 CRD_Steam_Input_Bind *CRD_Steam_Input_Bind::s_pLastBind = NULL;
 
-CRD_Steam_Input_Bind::CRD_Steam_Input_Bind( const char *szActionName, const char *szBind, const char *szForceActionSet, bool bIgnoreOnActionSetChange ) :
+CRD_Steam_Input_Bind::CRD_Steam_Input_Bind( const char *szActionName, const char *szBind, const char *szForceActionSet, bool bIgnoreCommandOnXboxControllers, bool bIgnoreOnActionSetChange ) :
 	m_szActionName{ szActionName },
 	m_szBind{ szBind },
 	m_szForceActionSet{ szForceActionSet },
+	m_bIgnoreCommandOnXboxControllers{ bIgnoreCommandOnXboxControllers },
 	m_bIgnoreOnActionSetChange{ bIgnoreOnActionSetChange }
 {
 	m_pNext = NULL;
