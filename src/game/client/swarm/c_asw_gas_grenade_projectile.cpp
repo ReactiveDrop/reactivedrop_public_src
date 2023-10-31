@@ -15,7 +15,6 @@
 #include "tier0/memdbgon.h"
 
 extern ConVar asw_gas_grenade_fuse;
-extern ConVar asw_gas_grenade_duration;
 
 //Precahce the effects
 //PRECACHE_REGISTER_BEGIN( GLOBAL, ASWPrecacheEffectFlares )
