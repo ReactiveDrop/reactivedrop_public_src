@@ -15,6 +15,7 @@
 #include "tier0/memdbgon.h"
 
 extern ConVar asw_gas_grenade_fuse;
+extern ConVar asw_gas_grenade_duration;
 
 //Precahce the effects
 //PRECACHE_REGISTER_BEGIN( GLOBAL, ASWPrecacheEffectFlares )
@@ -24,6 +25,7 @@ extern ConVar asw_gas_grenade_fuse;
 IMPLEMENT_CLIENTCLASS_DT( C_ASW_Gas_Grenade_Projectile, DT_ASW_Gas_Grenade_Projectile, CASW_Gas_Grenade_Projectile )
 	RecvPropFloat( RECVINFO( m_flTimeBurnOut ) ),
 	RecvPropFloat( RECVINFO( m_flScale ) ),
+	RecvPropFloat( RECVINFO( m_flTimeDetonated ) ),
 	RecvPropInt( RECVINFO( m_bSmoke ) ),
 	RecvPropDataTable( RECVINFO_DT( m_ProjectileData ), 0, &REFERENCE_RECV_TABLE( DT_RD_ProjectileData ) ),
 END_RECV_TABLE()
@@ -35,6 +37,7 @@ C_ASW_Gas_Grenade_Projectile::C_ASW_Gas_Grenade_Projectile()
 {
 	m_flTimeBurnOut	= 0.0f;
 	m_flTimeCreated = gpGlobals->curtime;
+	m_flTimeDetonated = 1000000.f;
 
 	m_bSmoke		= true;
 	m_bStopped		= false;
@@ -98,11 +101,14 @@ void C_ASW_Gas_Grenade_Projectile::ClientThink( void )
 {
 	float baseScale = m_flScale;
 
-	if ( m_pGasCloudEffect.GetObject() == NULL && gpGlobals->curtime - m_flTimeCreated >= asw_gas_grenade_fuse.GetFloat() )
+	if ( m_flTimeBurnOut > gpGlobals->curtime && m_pGasCloudEffect.GetObject() == NULL && m_flTimeDetonated <= gpGlobals->curtime )
 	{
 		m_pGasCloudEffect = ParticleProp()->Create( "grenade_gas_cloud", PATTACH_ABSORIGIN_FOLLOW );
 		Assert( m_pGasCloudEffect.GetObject() != NULL );
 	}
+
+	if ( m_flTimeBurnOut <= gpGlobals->curtime && m_pGasCloudEffect.GetObject() )
+		ParticleProp()->StopEmission( m_pGasCloudEffect );
 
 	//Account for fading out
 	if ( ( m_flTimeBurnOut != -1.0f ) && ( ( m_flTimeBurnOut - gpGlobals->curtime ) <= 10.0f ) )

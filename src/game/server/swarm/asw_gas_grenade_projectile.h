@@ -57,6 +57,7 @@ public:
 	int			m_nBounces;			// how many times has this flare bounced?
 	CNetworkVar( float, m_flTimeBurnOut );	// when will the flare burn out?
 	CNetworkVar( float, m_flScale );
+	CNetworkVar( float, m_flTimeDetonated );
 	float		m_flDuration;
 	float		m_flNextDamage;
 	

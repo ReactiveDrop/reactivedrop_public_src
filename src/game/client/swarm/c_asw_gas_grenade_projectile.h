@@ -25,6 +25,7 @@ public:
 	float	m_flTimeBurnOut;
 	float	m_flScale;
 	float	m_flTimeCreated;
+	float	m_flTimeDetonated;
 	bool	m_bSmoke;
 	bool	m_bStopped;
 	pixelvis_handle_t m_queryHandle;
