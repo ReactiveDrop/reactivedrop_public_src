@@ -205,8 +205,6 @@ void CASW_Gas_Grenade_Projectile::Detonate()
 	// Reset our angles so the particle effect renders right-side up.
 	SetAbsAngles( QAngle( 0, GetAbsAngles().y, 0 ) );
 
-	// also spawn our big cloud marking out the area of radiation
-	DispatchParticleEffect( "grenade_gas_cloud", WorldSpaceCenter(), QAngle( 0, 0, 0 ), PATTACH_CUSTOMORIGIN_FOLLOW, this );
 	EmitSound( "ASW_GasGrenade.Explode" );
 
 	//StartRadLoopSound();

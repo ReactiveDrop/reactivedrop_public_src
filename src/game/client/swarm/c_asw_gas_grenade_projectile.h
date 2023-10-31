@@ -39,6 +39,7 @@ private:
 	C_ASW_Gas_Grenade_Projectile( const C_ASW_Gas_Grenade_Projectile & );
 
 	CUtlReference<CNewParticleEffect> m_pTrailEffect;
+	CUtlReference<CNewParticleEffect> m_pGasCloudEffect;
 };
 
 #endif // _INCLUDED_C_ASW_GAS_GRENADE_PROJECTILE_H

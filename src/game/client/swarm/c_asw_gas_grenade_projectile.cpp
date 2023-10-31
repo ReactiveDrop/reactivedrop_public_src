@@ -14,6 +14,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+extern ConVar asw_gas_grenade_fuse;
+
 //Precahce the effects
 //PRECACHE_REGISTER_BEGIN( GLOBAL, ASWPrecacheEffectFlares )
 //PRECACHE_REGISTER_END()
@@ -95,6 +97,12 @@ const Vector& C_ASW_Gas_Grenade_Projectile::GetEffectOrigin()
 void C_ASW_Gas_Grenade_Projectile::ClientThink( void )
 {
 	float baseScale = m_flScale;
+
+	if ( m_pGasCloudEffect.GetObject() == NULL && gpGlobals->curtime - m_flTimeCreated >= asw_gas_grenade_fuse.GetFloat() )
+	{
+		m_pGasCloudEffect = ParticleProp()->Create( "grenade_gas_cloud", PATTACH_ABSORIGIN_FOLLOW );
+		Assert( m_pGasCloudEffect.GetObject() != NULL );
+	}
 
 	//Account for fading out
 	if ( ( m_flTimeBurnOut != -1.0f ) && ( ( m_flTimeBurnOut - gpGlobals->curtime ) <= 10.0f ) )
