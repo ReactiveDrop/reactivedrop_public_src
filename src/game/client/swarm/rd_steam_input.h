@@ -36,6 +36,8 @@ public:
 	bool GetGameAxes( int nSlot, float *flMoveX, float *flMoveY, float *flLookX, float *flLookY );
 	bool GetMenuNavigateOffset( int nSlot, float *flMenuNavigateX, float *flMenuNavigateY );
 	InputActionSetHandle_t DetermineActionSet( CUtlVector<InputActionSetHandle_t> *pLayers, int nSlot = GET_ACTIVE_SPLITSCREEN_SLOT() );
+	void SetRumble( float fLeftMotor, float fRightMotor, int userId = INVALID_USER_ID );
+	void StopRumble( int userId = INVALID_USER_ID );
 
 	STEAM_CALLBACK( CRD_Steam_Input, OnSteamInputDeviceConnected, SteamInputDeviceConnected_t );
 	STEAM_CALLBACK( CRD_Steam_Input, OnSteamInputDeviceDisconnected, SteamInputDeviceDisconnected_t );
@@ -60,6 +62,7 @@ public:
 		InputAnalogActionHandle_t MenuNavigate;
 	} m_AnalogActions;
 	InputHandle_t m_hLastControllerWithEvent{};
+	float m_flLastInputTime{};
 };
 
 // CRD_Steam_Controller: a gamepad/controller accessed via the Steam Input API. not necessarily a Steam controller.

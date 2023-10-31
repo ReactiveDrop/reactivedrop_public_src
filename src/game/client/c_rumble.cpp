@@ -10,13 +10,17 @@
 #include "c_rumble.h"
 #include "rumble_shared.h"
 #include "inputsystem/iinputsystem.h"
+#ifdef INFESTED_DLL
+#include "rd_steam_input.h"
+#define XBX_GetSlotByUserId( x ) ( x )
+#endif
 
 // NOTE: This has to be the last file included!
 #include "tier0/memdbgon.h"
 
 void StopAllRumbleEffects( int userID );
 
-#if !defined( _X360 )
+#if !defined( _X360 ) && !defined( INFESTED_DLL )
 
 // Stub these to nothing on the PC.
 void RumbleEffect( int userID, unsigned char effectIndex, unsigned char rumbleData, unsigned char rumbleFlags ) {};
@@ -27,7 +31,7 @@ void StopAllRumbleEffects( int userID )																			{};
 #else
 
 ConVar cl_rumblescale( "cl_rumblescale", "1.0", FCVAR_ARCHIVE | FCVAR_ARCHIVE_XBOX | FCVAR_SS, "Scale sensitivity of rumble effects (0 to 1.0)" ); 
-ConVar cl_debugrumble( "cl_debugrumble", "0", FCVAR_ARCHIVE, "Turn on rumble debugging spew" );
+ConVar cl_debugrumble( "cl_debugrumble", "0", FCVAR_NONE, "Turn on rumble debugging spew" );
 
 #define MAX_RUMBLE_CHANNELS 3	// Max concurrent rumble effects per player
 #define NUM_WAVE_SAMPLES 30		// Effects play at 10hz
@@ -791,6 +795,9 @@ void CRumbleEffects::UpdateEffects( int userID, float curtime )
 		fRightMotor = 0.0f;
 	}
 
+#ifdef INFESTED_DLL
+	g_RD_Steam_Input.SetRumble( fLeftMotor, fRightMotor, userID );
+#endif
 	inputsystem->SetRumble( fLeftMotor, fRightMotor, userID );
 }
 
@@ -802,6 +809,9 @@ void StopAllRumbleEffects( int userID )
 	// and stop the motors. 
 	g_RumbleEffects.StopAllEffects( userID );
 
+#ifdef INFESTED_DLL
+	g_RD_Steam_Input.StopRumble( userID );
+#endif
 	inputsystem->StopRumble( userID );
 }
 

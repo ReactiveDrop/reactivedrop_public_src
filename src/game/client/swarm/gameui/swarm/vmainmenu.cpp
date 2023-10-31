@@ -1500,6 +1500,7 @@ void MainMenu::OnThink()
 
 	if ( g_pInputSystem->GetEventCount() )
 		m_flLastActiveTime = Plat_FloatTime();
+	m_flLastActiveTime = MAX( m_flLastActiveTime, g_RD_Steam_Input.m_flLastInputTime );
 
 	if ( m_bHavePanelLocations )
 	{

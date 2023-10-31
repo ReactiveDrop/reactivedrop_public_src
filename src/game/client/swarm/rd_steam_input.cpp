@@ -29,7 +29,6 @@ using namespace BaseModUI;
 ConVar rd_gamepad_soft_keyboard( "rd_gamepad_soft_keyboard", "1", FCVAR_ARCHIVE, "Automatically open Steam Deck style keyboard when focusing a text field." );
 ConVar rd_force_controller_glyph_set( "rd_force_controller_glyph_set", "-1", FCVAR_ARCHIVE, "Use a specific controller button set for UI hints. 3=xbox, 10=switch, 13=ps5, 14=steam deck", true, -1, true, k_ESteamInputType_Count - 1 );
 ConVar rd_gamepad_player_color( "rd_gamepad_player_color", "1", FCVAR_ARCHIVE, "Set controller LED color to player color when controlling a marine." );
-ConVar rd_gamepad_rumble_intensity( "rd_gamepad_rumble_intensity", "0.0", FCVAR_ARCHIVE, "Multiplies controller rumble intensity. 1.0 is \"normal\". Currently, there is no rumble." );
 
 CRD_Steam_Input g_RD_Steam_Input;
 
@@ -668,6 +667,27 @@ InputActionSetHandle_t CRD_Steam_Input::DetermineActionSet( CUtlVector<InputActi
 	return m_ActionSets.InGame;
 }
 
+void CRD_Steam_Input::SetRumble( float fLeftMotor, float fRightMotor, int userId )
+{
+	ISteamInput *pSteamInput = SteamInput();
+	Assert( pSteamInput );
+	if ( !pSteamInput )
+		return;
+
+	FOR_EACH_VEC( m_Controllers, i )
+	{
+		if ( m_Controllers[i]->m_bConnected && m_Controllers[i]->m_SplitScreenPlayerIndex == userId )
+		{
+			pSteamInput->TriggerVibration( m_Controllers[i]->m_hController, clamp( fLeftMotor, 0.0f, 1.0f ) * UINT16_MAX, clamp( fRightMotor, 0.0f, 1.0f ) * UINT16_MAX );
+		}
+	}
+}
+
+void CRD_Steam_Input::StopRumble( int userId )
+{
+	SetRumble( 0.0f, 0.0f, userId );
+}
+
 void CRD_Steam_Input::OnSteamInputDeviceConnected( SteamInputDeviceConnected_t *pParam )
 {
 	CRD_Steam_Controller *pController = FindOrAddController( pParam->m_ulConnectedDeviceHandle );
@@ -690,6 +710,7 @@ void CRD_Steam_Input::OnSteamInputDeviceDisconnected( SteamInputDeviceDisconnect
 void CRD_Steam_Input::OnActionEvent( SteamInputActionEvent_t *pEvent )
 {
 	g_RD_Steam_Input.m_hLastControllerWithEvent = pEvent->controllerHandle;
+	g_RD_Steam_Input.m_flLastInputTime = Plat_FloatTime();
 
 	// don't print warnings while we're starting up
 	if ( !g_RD_Steam_Input.m_Controllers.Count() )

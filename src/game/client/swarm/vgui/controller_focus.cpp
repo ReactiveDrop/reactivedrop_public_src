@@ -7,6 +7,7 @@
 #include <vgui/IInput.h>
 #include <vgui/IInputInternal.h>
 #include "rd_steam_input.h"
+#include "gameui/swarm/basemodpanel.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -77,6 +78,11 @@ void CControllerFocus::AddToFocusList( vgui::Panel *pPanel, bool bClickOnFocus, 
 		return;
 
 	Assert( bModal || !m_iModalScope );
+
+	Assert( engine->IsInGame() );
+	Assert( !BaseModUI::CBaseModPanel::GetSingleton().IsVisible() );
+	if ( !engine->IsInGame() || BaseModUI::CBaseModPanel::GetSingleton().IsVisible() )
+		return;
 
 	FocusArea Focus;
 	Focus.hPanel = pPanel;
