@@ -39,6 +39,7 @@ BEGIN_DATADESC( CASW_Gas_Grenade_Projectile )
 	DEFINE_FIELD( m_flFuse, FIELD_FLOAT ),
 	DEFINE_FIELD( m_nBounces, FIELD_INTEGER ),
 	DEFINE_FIELD( m_flTimeBurnOut, FIELD_TIME ),
+	DEFINE_FIELD( m_flTimeDetonated, FIELD_TIME ),
 	DEFINE_FIELD( m_flScale, FIELD_FLOAT ),
 	DEFINE_FIELD( m_flDuration, FIELD_FLOAT ),
 	DEFINE_FIELD( m_bFading, FIELD_BOOLEAN ),
@@ -48,6 +49,7 @@ END_DATADESC()
 IMPLEMENT_SERVERCLASS_ST( CASW_Gas_Grenade_Projectile, DT_ASW_Gas_Grenade_Projectile )
 	SendPropFloat( SENDINFO( m_flTimeBurnOut ), 0,	SPROP_NOSCALE ),
 	SendPropFloat( SENDINFO( m_flScale ), 0, SPROP_NOSCALE ),
+	SendPropFloat( SENDINFO( m_flTimeDetonated ), 0, SPROP_NOSCALE ),
 	SendPropInt( SENDINFO( m_bSmoke ), 1, SPROP_UNSIGNED ),
 	SendPropDataTable( SENDINFO_DT( m_ProjectileData ), &REFERENCE_SEND_TABLE( DT_RD_ProjectileData ) ),
 END_SEND_TABLE()
@@ -55,6 +57,7 @@ END_SEND_TABLE()
 CASW_Gas_Grenade_Projectile::CASW_Gas_Grenade_Projectile()
 {
 	m_flScale		= 2.0f;
+	m_flTimeDetonated = 1000000.f;
 	m_nBounces		= 0;
 	m_bFading		= false;
 	m_bSmoke		= true;
@@ -205,9 +208,9 @@ void CASW_Gas_Grenade_Projectile::Detonate()
 	// Reset our angles so the particle effect renders right-side up.
 	SetAbsAngles( QAngle( 0, GetAbsAngles().y, 0 ) );
 
-	// also spawn our big cloud marking out the area of radiation
-	DispatchParticleEffect( "grenade_gas_cloud", WorldSpaceCenter(), QAngle( 0, 0, 0 ), PATTACH_CUSTOMORIGIN_FOLLOW, this );
 	EmitSound( "ASW_GasGrenade.Explode" );
+
+	m_flTimeDetonated = gpGlobals->curtime;
 
 	//StartRadLoopSound();
 
