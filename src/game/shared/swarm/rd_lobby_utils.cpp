@@ -650,6 +650,11 @@ gameserveritem_t *CReactiveDropServerListHelper::GetDetails( int iServer ) const
 	gameserveritem_t *pDetails = pServers->GetServerDetails( m_hServerListRequest, iServer );
 	Assert( pDetails );
 
+	// favorite servers aren't filtering (bug in Steam API)
+	Assert( SteamUtils() && pDetails->m_nAppID == SteamUtils()->GetAppID() );
+	if ( SteamUtils() && pDetails->m_nAppID != SteamUtils()->GetAppID() )
+		return NULL;
+
 	return pDetails;
 }
 
