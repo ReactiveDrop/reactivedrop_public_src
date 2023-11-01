@@ -35,15 +35,16 @@ void PlayerListContainer::PerformLayout()
 // ================================== Frame version ==================================================
 
 PlayerListContainerFrame::PlayerListContainerFrame(Panel *parent, const char *panelName, bool showTaskbarIcon) :
-	vgui::Frame(parent, panelName, showTaskbarIcon)
+	vgui::Frame( parent, panelName, showTaskbarIcon )
 {
-	SetMoveable(false);
-	SetSizeable(false);
-	SetMenuButtonVisible(false);
-	SetMaximizeButtonVisible(false);
-	SetMinimizeToSysTrayButtonVisible(false);
-	SetCloseButtonVisible(true);
-	SetTitleBarVisible(false);
+	SetMoveable( false );
+	SetSizeable( false );
+	SetMenuButtonVisible( false );
+	SetMaximizeButtonVisible( false );
+	SetMinimizeToSysTrayButtonVisible( false );
+	SetCloseButtonVisible( true );
+	SetTitleBarVisible( false );
+	SetKeyBoardInputEnabled( false );
 }
 
 PlayerListContainerFrame::~PlayerListContainerFrame()
