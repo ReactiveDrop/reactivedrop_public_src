@@ -415,6 +415,11 @@ void CASWMap::PaintMarineBlips( bool bRotate )
 						}
 					}
 
+					if ( rd_paint_marine_blips.GetInt() == 3 && ASWDeathmatchMode() && ASWDeathmatchMode()->GetGameMode() == GAMEMODE_TEAMDEATHMATCH )
+					{
+						blipColor.SetColor( pMarine->GetRenderColorR(), pMarine->GetRenderColorG(), pMarine->GetRenderColorB(), 255 );
+					}
+
 					Color blipColorTr = Color( blipColor.r(), blipColor.g(), blipColor.b(), 255 - 127.0f * pMarine->GetBlipStrength() );
 
 					PaintWorldBlip( pMarine->GetAbsOrigin(), pMarine->GetBlipStrength(), blipColor );
