@@ -760,6 +760,14 @@ void CTriggerHurt::NavThink( void )
 	}
 }
 
+int CTriggerHurt::UpdateTransmitState()
+{
+	// HACK! Cull the worm trigger against the PVS rather than hiding it due to EF_NODRAW
+	if ( !V_stricmp( STRING( gpGlobals->mapname ), "rd-reduction2" ) && !V_stricmp( GetEntityNameAsCStr(), "trigger_pitworm_hitbox" ) )
+		return SetTransmitState( FL_EDICT_PVSCHECK );
+
+	return BaseClass::UpdateTransmitState();
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: Trigger hurt that causes radiation will do a radius check and set

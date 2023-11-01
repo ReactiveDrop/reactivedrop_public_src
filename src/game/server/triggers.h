@@ -181,6 +181,7 @@ public:
 	int HurtAllTouchers( float dt );
 
 	void NavThink( void );
+	int UpdateTransmitState() override;
 
 	DECLARE_DATADESC();
 
