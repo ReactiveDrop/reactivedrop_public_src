@@ -354,6 +354,7 @@ void AdvancedSettings::OnCommand( const char *command )
 	if ( const char *szConCommand = StringAfterPrefix( command, "RunCmd" ) )
 	{
 		engine->ExecuteClientCmd( szConCommand );
+		engine->ExecuteClientCmd( "mat_savechanges" );
 		engine->ExecuteClientCmd( "host_writeconfig" );
 		InvalidateLayout();
 	}
