@@ -38,6 +38,7 @@ particles_manifest
 	"file"		"particles/asw_welding_fx.pcf"
 	"file"		"particles/freeze_fx.pcf"
 	"file"		"particles/asw_precipitation.pcf"
+	"file"		"particles/asw_queen.pcf"
 	"file"		"particles/ranger_fx.pcf"  
 	"file"		"particles/shieldbug_fx.pcf"
 	"file"		"!particles/buff_fx.pcf"
