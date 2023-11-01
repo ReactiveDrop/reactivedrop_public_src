@@ -3450,7 +3450,7 @@ namespace ReactiveDropInventory
 
 			if ( !pAttacker || !pAttacker->IsInhabitableNPC() )
 			{
-				if ( pAttacker && pTarget && pTarget->IsInhabitableNPC() && !V_stricmp( IGameSystem::MapName(), "rd-reduction2" ) && !V_strcmp( pAttacker->GetClassname(), "trigger_hurt" ) && !V_strcmp( STRING( pAttacker->GetEntityName() ), "trigger_pitworm_hitbox" ) )
+				if ( pAttacker && pTarget && pTarget->IsInhabitableNPC() && !V_stricmp( IGameSystem::MapName(), "rd-reduction2" ) && !V_strcmp( STRING( pAttacker->GetEntityName() ), "trigger_pitworm_hitbox" ) )
 				{
 #ifdef CLIENT_DLL
 					static bool s_bRequestedWormToucherMedal = false;
