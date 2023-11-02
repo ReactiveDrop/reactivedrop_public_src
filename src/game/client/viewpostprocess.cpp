@@ -2100,8 +2100,6 @@ struct MotionBlurHistory_t
 
 void DoImageSpaceMotionBlur( const CViewSetup &view )
 {
-
-
 	if ( ( !mat_motion_blur_enabled.GetInt() ) || ( view.m_nMotionBlurMode == MOTION_BLUR_DISABLE ) )
 	{
 		return;

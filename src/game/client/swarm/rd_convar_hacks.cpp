@@ -37,6 +37,8 @@ public:
 		"buildcubemaps",
 		"envmap",
 		"lightprobe",
+		// our convar is getting overridden by the engine parent var
+		"mat_motion_blur_enabled",
 	};
 
 	constexpr static const char *s_szRemoveArchive[] =
@@ -65,6 +67,7 @@ public:
 
 		ApplyShowBudgetHack();
 		ApplySndRestartHack();
+		ApplyMotionBlurDefaultHack();
 
 		for ( int i = 0; i < NELEMS( s_szCheat ); i++ )
 		{
@@ -136,5 +139,26 @@ public:
 		*reinterpret_cast< uintptr_t * >( &pRet[1] ) = uintptr_t( &RDMixerInit ) - uintptr_t( pRet + 5 );
 		VirtualProtect( pRet, 5, oldProtect, &oldProtect );
 		FlushInstructionCache( GetCurrentProcess(), pRet, 5 );
+	}
+
+	void ApplyMotionBlurDefaultHack()
+	{
+		ConVar *pMotionBlur = g_pCVar->FindVar( "mat_motion_blur_enabled" );
+		Assert( pMotionBlur );
+
+		static_assert( sizeof( ConCommandBase ) == 24, "unexpected ConCommandBase size" );
+		static_assert( sizeof( ConVar ) == 88, "unexpected ConVar size" );
+
+		// ConVar *ConVar::m_pParent
+		ConVar *pMotionBlurParent = reinterpret_cast< ConVar ** >( pMotionBlur )[7];
+		Assert( pMotionBlurParent == pMotionBlur );
+
+		// const char *ConVar::m_pszDefaultValue
+		const char **ppMotionBlurDefault = &reinterpret_cast< const char ** >( pMotionBlurParent )[8];
+		Assert( pMotionBlurParent->GetDefault() == *ppMotionBlurDefault );
+
+		// Set new default and current value to false, overriding engine default of true.
+		*ppMotionBlurDefault = "0";
+		pMotionBlur->SetValue( false );
 	}
 } s_RD_Convar_Hacks;
