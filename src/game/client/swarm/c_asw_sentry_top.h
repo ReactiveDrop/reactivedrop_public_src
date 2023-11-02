@@ -25,6 +25,8 @@ public:
 	virtual bool HasPilotLight() { return false; }
 
 	int GetSentryAngle( void );
+	float GetScanAngle();
+	void UpdatePose();
 	void Scan( void );
 	void CreateRadiusBeamEdges( const Vector &vecStart, const Vector &vecDir, int iControlPoint );
 
@@ -44,10 +46,20 @@ private:
 	CNetworkVar( int, m_iSentryAngle );
 	CNetworkVar( float, m_fDeployYaw );
 	CNetworkVar( float, m_fCenterAimYaw );
+	float m_fAimPitch;
+	float m_fCameraYaw;
+	CNetworkVar( float, m_fGoalPitch );
+	CNetworkVar( float, m_fGoalYaw );
 	CNetworkVar( bool, m_bLowAmmo );
 	float GetDeployYaw();
 
 	CInterpolatedVar<float> m_iv_fCenterAimYaw;
+	CInterpolatedVar<float> m_iv_fGoalYaw;
+	CInterpolatedVar<float> m_iv_fGoalPitch;
+
+	int m_iPoseParamPitch;
+	int m_iPoseParamYaw;
+	int m_iPoseParamFireRate;
 
 	bool m_bSpawnedDisplayEffects;
 	CUtlReference<CNewParticleEffect> m_hRadiusDisplay;

@@ -22,6 +22,7 @@
 #include "c_asw_marine.h"
 #include "c_asw_weapon.h"
 #include "c_asw_sentry_base.h"
+#include "c_asw_sentry_top.h"
 #include "c_asw_game_resource.h"
 #include "asw_equipment_list.h"
 #include "rd_workshop.h"
@@ -35,6 +36,7 @@
 #include "asw_hud_3dmarinenames.h"
 #include "rd_collections.h"
 #define CASW_Sentry_Base C_ASW_Sentry_Base
+#define CASW_Sentry_Top C_ASW_Sentry_Top
 #else
 #include "asw_player.h"
 #include "asw_marine_resource.h"
@@ -1057,6 +1059,13 @@ public:
 		else if ( CASW_Sentry_Base *pSentry = dynamic_cast< CASW_Sentry_Base * >( pWeapon ) )
 		{
 			s_RD_Inventory_Manager.IncrementStrangePropertyOnWeaponAndGlobals( pNPC, pSentry, iAccessoryID, iAmount, iPropertyIndex, bRelative );
+		}
+		else if ( CASW_Sentry_Top *pSentry = dynamic_cast< CASW_Sentry_Top * >( pWeapon ) )
+		{
+			if ( CASW_Sentry_Base *pBase = pSentry->GetSentryBase() )
+			{
+				s_RD_Inventory_Manager.IncrementStrangePropertyOnWeaponAndGlobals( pNPC, pBase, iAccessoryID, iAmount, iPropertyIndex, bRelative );
+			}
 		}
 		else if ( IRD_Has_Projectile_Data *pProjectile = dynamic_cast< IRD_Has_Projectile_Data * >( pWeapon ) )
 		{

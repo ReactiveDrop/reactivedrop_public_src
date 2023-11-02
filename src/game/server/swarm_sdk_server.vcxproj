@@ -715,6 +715,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClCompile Include="..\shared\swarm\asw_queen_grabber_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_remote_turret_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_scanner_objects_enumerator.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_sentry_top_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_shareddefs.cpp" />
     <ClCompile Include="..\shared\swarm\asw_shieldbug_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_target_dummy_shared.cpp" />

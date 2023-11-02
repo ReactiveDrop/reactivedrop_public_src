@@ -47,7 +47,7 @@ CASW_Sentry_Top_Icer::CASW_Sentry_Top_Icer() : CASW_Sentry_Top_Flamer(CASW_Weapo
 {
 	m_flShootRange = 300;
 	// increase turn rate until I get better leading code in (so it can actually hit something)
-	m_fTurnRate *= 3.0f;
+	m_iEnemyTurnRate *= 3;
 
 	m_flEnemyOverfreezePermittedUntil = gpGlobals->curtime;
 }

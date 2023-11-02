@@ -48,12 +48,6 @@ void C_ASW_Sentry_Top_Flamer::OnDataChanged( DataUpdateType_t updateType )
 
 	if ( updateType == DATA_UPDATE_CREATED )
 	{
-		//CreateObsoleteEmitters();
-
-		SetNextClientThink(gpGlobals->curtime);
-		// We might want to think every frame.
-		// SetNextClientThink( CLIENT_THINK_ALWAYS );
-
 		m_bFiringShadow = m_bFiring;
 
 		if ( HasPilotLight() && !m_hPilotLight )
@@ -82,91 +76,6 @@ void C_ASW_Sentry_Top_Flamer::OnDataChanged( DataUpdateType_t updateType )
 		}
 	}
 }
-
-void C_ASW_Sentry_Top_Flamer::ClientThink( void )
-{
-	BaseClass::ClientThink();
-/*
-	// walk emitters and turn them on or off as appropriate, then call their thinks.
-	if ( m_OldStyleEmitters.Count() > 0 )
-	{
-		// a turret with old school emitters must think every frame. 
-		// we need to forcibly reset this because the base class sets a longer
-		// think interval.
-		SetNextClientThink( CLIENT_THINK_ALWAYS );
-
-		bool bWantEmitters = ShouldEmittersBeOn();
-
-		Vector vecMuzzle = GetAbsOrigin()+Vector(0,0,30);
-		QAngle angMuzzle;
-
-		GetAttachment( GetMuzzleAttachment(), vecMuzzle, angMuzzle );
-
-		Vector vForward; AngleVectors(angMuzzle, &vForward);
-		angMuzzle.x = m_flPitchHack;
-		vecMuzzle += vForward * 36;
-
-		for ( int i = 0 ; i < m_OldStyleEmitters.Count() ; ++i )
-		{
-			CSmartPtr<CASWGenericEmitter> &hEmitter = m_OldStyleEmitters[i];
-			Assert( hEmitter.IsValid() );
-			if ( hEmitter.IsValid() )
-			{
-				if ( hEmitter->GetActive() != bWantEmitters )
-				{
-					hEmitter->SetActive( bWantEmitters );
-				}
-
-				// now think them so they have the correct orientation
-				hEmitter->Think(gpGlobals->frametime, vecMuzzle, angMuzzle);
-			}
-		}
-	}
-	*/
-}
-
-/*
-void C_ASW_Sentry_Top_Flamer::CreateObsoleteEmitters( void )
-{
-	AssertMsg( m_OldStyleEmitters.Count() == 0, "Flame turret tried to create emitters when it already had some!" );
-
-	// create two emitter handles (use default constructor to pull them to NULL to begin with)
-	m_OldStyleEmitters.EnsureCount(2);
-
-	CSmartPtr<CASWGenericEmitter> &m_hFlameEmitter = m_OldStyleEmitters[0];
-	CSmartPtr<CASWGenericEmitter> &m_hFlameStreamEmitter = m_OldStyleEmitters[1];
-
-	m_hFlameEmitter = CASWGenericEmitter::Create( "asw_emitter" );
-	if ( m_hFlameEmitter.IsValid() )
-	{			
-		m_hFlameEmitter->UseTemplate("flamer5");
-		m_hFlameEmitter->SetActive(false);
-		m_hFlameEmitter->m_hCollisionIgnoreEntity = this;
-		m_hFlameEmitter->SetCustomCollisionGroup(ASW_COLLISION_GROUP_IGNORE_NPCS);
-		//m_hFlameEmitter->SetGlowMaterial("swarm/sprites/aswredglow2");
-	}
-	else
-	{
-		AssertMsg( false, "m_hFlameEmitter.IsValid()" );
-		Warning("Failed to create a turret's flame emitter\n");
-	}
-
-	m_hFlameStreamEmitter = CASWGenericEmitter::Create( "asw_emitter" );
-	if ( m_hFlameStreamEmitter.IsValid() )
-	{			
-		m_hFlameStreamEmitter->UseTemplate("flamerstream1");
-		m_hFlameStreamEmitter->SetActive(false);
-		m_hFlameStreamEmitter->m_hCollisionIgnoreEntity = this;
-		m_hFlameStreamEmitter->SetCustomCollisionGroup(ASW_COLLISION_GROUP_IGNORE_NPCS);
-		//m_hFlameEmitter->SetGlowMaterial("swarm/sprites/aswredglow2");
-	}
-	else
-	{
-		AssertMsg( false, "m_hFlameStreamEmitter.IsValid()" );
-		Warning("Failed to create a turret's flame stream emitter\n");
-	}
-}
-*/
 
 void C_ASW_Sentry_Top_Flamer::OnStartFiring()
 {

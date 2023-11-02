@@ -44,6 +44,7 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Sentry_Base, DT_ASW_Sentry_Base )
 	SendPropInt( SENDINFO( m_nGunType ), NumBitsForCount( kGUNTYPE_MAX ), SPROP_UNSIGNED ),
 	SendPropEHandle( SENDINFO( m_hOriginalOwnerPlayer ) ),
 	SendPropIntWithMinusOneFlag( SENDINFO( m_iInventoryEquipSlot ), NumBitsForCount( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC + 1 ) ),
+	SendPropEHandle( SENDINFO( m_hLastDisassembler ) ),
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Sentry_Base )
@@ -54,6 +55,7 @@ BEGIN_DATADESC( CASW_Sentry_Base )
 	DEFINE_FIELD( m_fAssembleProgress, FIELD_FLOAT ),
 	DEFINE_FIELD( m_fAssembleCompleteTime, FIELD_TIME ),
 	DEFINE_FIELD( m_hDeployer, FIELD_EHANDLE ),
+	DEFINE_FIELD( m_hLastDisassembler, FIELD_EHANDLE ),
 END_DATADESC()
 
 BEGIN_ENT_SCRIPTDESC( CASW_Sentry_Base, CBaseAnimating, "sentry" )
@@ -89,6 +91,7 @@ CASW_Sentry_Base::CASW_Sentry_Base()
 	}
 	m_hOriginalOwnerPlayer = NULL;
 	m_iInventoryEquipSlot = -1;
+	m_hLastDisassembler = NULL;
 }
 
 
@@ -217,8 +220,13 @@ void CASW_Sentry_Base::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldTyp
 	{
 		if ( nHoldType == ASW_USE_HOLD_START )
 		{
+			bool bAlreadyUsing = pMarine->m_hUsingEntity.Get() == this;
 			pMarine->StartUsing( this );
-			pMarine->GetMarineSpeech()->Chatter( CHATTER_USE );
+
+			m_hLastDisassembler = pMarine;
+
+			if ( !bAlreadyUsing )
+				pMarine->GetMarineSpeech()->Chatter( CHATTER_USE );
 		}
 		else if ( nHoldType == ASW_USE_HOLD_RELEASE_FULL )
 		{
@@ -226,7 +234,6 @@ void CASW_Sentry_Base::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldTyp
 
 			if ( !m_bAlreadyTaken )
 			{
-				//Msg( "Disassembling sentry gun!\n" );
 				IGameEvent *event = gameeventmanager->CreateEvent( "sentry_dismantled" );
 				if ( event )
 				{
@@ -250,19 +257,10 @@ void CASW_Sentry_Base::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldTyp
 				UTIL_Remove( this );
 				m_bAlreadyTaken = true;
 			}
-
-			// TODO: just have the marine pick it up now and let that logic deal with the slot?
-
-			// TODO: Find an empty inv slot. Or default to 2nd.
-			//       Drop whatever's in that slot currently
-			//		 Create a new sentry gun weapon with our ammo amount and give it to the marine
-			//		 Destroy ourselves
 		}
 		else if ( nHoldType == ASW_USE_RELEASE_QUICK )
 		{
 			pMarine->StopUsing();
-
-			pMarine->GetMarineSpeech()->Chatter( CHATTER_USE );
 
 			IGameEvent *event = gameeventmanager->CreateEvent( "sentry_rotated" );
 			if ( event )

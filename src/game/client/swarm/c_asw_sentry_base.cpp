@@ -33,6 +33,7 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_Sentry_Base, DT_ASW_Sentry_Base, CASW_Sentry_Bas
 	RecvPropInt( RECVINFO( m_nGunType ) ),
 	RecvPropEHandle( RECVINFO( m_hOriginalOwnerPlayer ) ),
 	RecvPropIntWithMinusOneFlag( RECVINFO( m_iInventoryEquipSlot ) ),
+	RecvPropEHandle( RECVINFO( m_hLastDisassembler ) ),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_ASW_Sentry_Base )
@@ -40,6 +41,17 @@ BEGIN_PREDICTION_DATA( C_ASW_Sentry_Base )
 END_PREDICTION_DATA()
 
 CUtlVector<C_ASW_Sentry_Base*>	g_SentryGuns;
+
+static const char *const s_szSentryTopBuildModels[] =
+{
+	"models/sentry_gun/machinegun_top.mdl",
+	"models/sentry_gun/grenade_top.mdl",
+	"models/sentry_gun/flame_top.mdl",
+	"models/sentry_gun/freeze_top.mdl",
+#ifdef RD_7A_WEAPONS
+	"models/sentry_gun/railgun_top.mdl",
+#endif
+};
 
 vgui::HFont C_ASW_Sentry_Base::s_hAmmoFont = vgui::INVALID_FONT;
 
@@ -53,24 +65,80 @@ C_ASW_Sentry_Base::C_ASW_Sentry_Base()
 	m_nUseIconTextureID = -1;
 	m_hOriginalOwnerPlayer = NULL;
 	m_iInventoryEquipSlot = -1;
+	m_hLastDisassembler = NULL;
 }
-
 
 C_ASW_Sentry_Base::~C_ASW_Sentry_Base()
 {
+	if ( m_hBuildTop.Get() )
+	{
+		UTIL_Remove( m_hBuildTop.Get() );
+		m_hBuildTop = NULL;
+	}
+
 	g_SentryGuns.FindAndRemove( this );
 }
 
-bool C_ASW_Sentry_Base::ShouldDraw()
+void C_ASW_Sentry_Base::OnDataChanged( DataUpdateType_t updateType )
 {
-	return true;
+	BaseClass::OnDataChanged( updateType );
+
+	if ( updateType == DATA_UPDATE_CREATED )
+	{
+		SetNextClientThink( CLIENT_THINK_ALWAYS );
+	}
 }
 
-int C_ASW_Sentry_Base::DrawModel( int flags, const RenderableInstance_t &instance )
+void C_ASW_Sentry_Base::ClientThink()
 {
-	int d = BaseClass::DrawModel(flags, instance);
+	BaseClass::ClientThink();
 
-	return d;
+	if ( m_bAssembled )
+	{
+		if ( m_hBuildTop.Get() )
+		{
+			UTIL_Remove( m_hBuildTop.Get() );
+			m_hBuildTop = NULL;
+		}
+
+		SetNextClientThink( CLIENT_THINK_NEVER );
+
+		return;
+	}
+
+	if ( !m_hBuildTop.Get() )
+	{
+		C_BaseAnimating *pBuildTop = new C_BaseAnimating;
+		Assert( pBuildTop );
+		if ( !pBuildTop )
+		{
+			return;
+		}
+
+		if ( !pBuildTop->InitializeAsClientEntity( s_szSentryTopBuildModels[m_nGunType], false ) )
+		{
+			Assert( !"sentry top build model failed to spawn" );
+			UTIL_Remove( pBuildTop );
+			SetNextClientThink( CLIENT_THINK_NEVER );
+			return;
+		}
+
+		pBuildTop->SetOwnerEntity( this );
+		pBuildTop->SetParent( this );
+		pBuildTop->SetLocalOrigin( vec3_origin );
+		pBuildTop->SetLocalAngles( vec3_angle );
+		pBuildTop->SetSolid( SOLID_NONE );
+		pBuildTop->SetPoseParameter( "aim_pitch", -30.0f ); // should match the spawn value for m_fAimPitch on both client and server
+		pBuildTop->SetSequence( pBuildTop->SelectWeightedSequence( ACT_OBJ_ASSEMBLING ) );
+		pBuildTop->SetPlaybackRate( 0.0f );
+
+		m_hBuildTop = pBuildTop;
+	}
+
+	if ( m_hBuildTop )
+	{
+		m_hBuildTop->SetCycle( m_fAssembleProgress );
+	}
 }
 
 int C_ASW_Sentry_Base::GetSentryIconTextureID()
@@ -123,7 +191,7 @@ bool C_ASW_Sentry_Base::GetUseAction(ASWUseAction &action, C_ASW_Inhabitable_NPC
 			action.bShowHoldButtonUseKey = true;
 			action.bShowUseKey = true;
 		}
-		action.iUseIconTexture = GetSentryIconTextureID();		
+		action.iUseIconTexture = GetSentryIconTextureID();
 		action.UseTarget = this;
 	}
 	else
@@ -139,7 +207,7 @@ bool C_ASW_Sentry_Base::GetUseAction(ASWUseAction &action, C_ASW_Inhabitable_NPC
 			TryLocalize( "#asw_assemble_sentry", action.wszText, sizeof( action.wszText ) );
 			action.bShowUseKey = true;
 		}
-		action.iUseIconTexture = GetSentryIconTextureID();		
+		action.iUseIconTexture = GetSentryIconTextureID();
 		action.UseTarget = this;
 		action.fProgress = GetAssembleProgress();
 	}
@@ -184,14 +252,17 @@ void C_ASW_Sentry_Base::CustomPaint( int ix, int iy, int alpha, vgui::Panel *pUs
 	}
 }
 
-const char* C_ASW_Sentry_Base::GetWeaponClass()
+const char *C_ASW_Sentry_Base::GetWeaponClass()
 {
-	switch( m_nGunType.Get() )
+	switch ( m_nGunType.Get() )
 	{
-		case 0: return "asw_weapon_sentry";
-		case 1: return "asw_weapon_sentry_cannon";
-		case 2: return "asw_weapon_sentry_flamer";
-		case 3: return "asw_weapon_sentry_freeze";
+	case 0: return "asw_weapon_sentry";
+	case 1: return "asw_weapon_sentry_cannon";
+	case 2: return "asw_weapon_sentry_flamer";
+	case 3: return "asw_weapon_sentry_freeze";
+#ifdef RD_7A_WEAPONS
+	case 4: return "asw_weapon_sentry_railgun";
+#endif
 	}
 	return "asw_weapon_sentry";
 }

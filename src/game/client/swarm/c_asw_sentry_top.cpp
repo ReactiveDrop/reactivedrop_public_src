@@ -18,6 +18,8 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_Sentry_Top, DT_ASW_Sentry_Top, CASW_Sentry_Top )
 	RecvPropInt( RECVINFO( m_iSentryAngle ) ),
 	RecvPropFloat( RECVINFO( m_fDeployYaw ) ),
 	RecvPropFloat( RECVINFO( m_fCenterAimYaw ) ),
+	RecvPropFloat( RECVINFO( m_fGoalPitch ) ),
+	RecvPropFloat( RECVINFO( m_fGoalYaw ) ),
 	RecvPropBool( RECVINFO( m_bLowAmmo ) ),
 END_RECV_TABLE()
 
@@ -26,11 +28,21 @@ BEGIN_PREDICTION_DATA( C_ASW_Sentry_Top )
 END_PREDICTION_DATA()
 
 C_ASW_Sentry_Top::C_ASW_Sentry_Top() :
-	m_iv_fCenterAimYaw( "C_ASW_Sentry_Top::m_iv_fCenterAimYaw" )
+	m_iv_fCenterAimYaw( "C_ASW_Sentry_Top::m_iv_fCenterAimYaw" ),
+	m_iv_fGoalYaw( "C_ASW_Sentry_Top::m_iv_fGoalYaw" ),
+	m_iv_fGoalPitch( "C_ASW_Sentry_Top::m_iv_fGoalPitch" )
 {
+	UseClientSideAnimation();
+
 	AddVar( &m_fCenterAimYaw, &m_iv_fCenterAimYaw, LATCH_SIMULATION_VAR );
+	AddVar( &m_fGoalYaw, &m_iv_fGoalYaw, LATCH_SIMULATION_VAR );
+	AddVar( &m_fGoalPitch, &m_iv_fGoalPitch, LATCH_SIMULATION_VAR );
 
 	m_bSpawnedDisplayEffects = false;
+
+	m_iPoseParamPitch = -2;
+	m_iPoseParamYaw = -2;
+	m_iPoseParamFireRate = -2;
 }
 
 C_ASW_Sentry_Top::~C_ASW_Sentry_Top()
@@ -85,7 +97,10 @@ void C_ASW_Sentry_Top::OnDataChanged( DataUpdateType_t updateType )
 			C_RD_Weapon_Accessory::CreateWeaponAccessories( this, pBase->m_hOriginalOwnerPlayer->m_EquippedItemDataDynamic[pBase->m_iInventoryEquipSlot], m_hWeaponAccessory, s_pKVAccessoryPosition[pBase->m_nGunType], s_szAccessoryPositionFiles[pBase->m_nGunType] );
 		}
 
-		SetNextClientThink( gpGlobals->curtime );
+		m_fAimPitch = -30.0f; // should match the angle that the build animation uses
+		m_fCameraYaw = 0.0f;
+
+		SetNextClientThink( CLIENT_THINK_ALWAYS );
 	}
 
 	if ( m_bLowAmmo && !m_hWarningLight )
@@ -136,9 +151,8 @@ void C_ASW_Sentry_Top::ClientThink()
 {
 	BaseClass::ClientThink();
 
+	UpdatePose();
 	Scan();
-
-	SetNextClientThink( gpGlobals->curtime + 0.05f );
 }
 
 int C_ASW_Sentry_Top::GetMuzzleAttachment( void )
@@ -207,11 +221,6 @@ USER_MESSAGE_REGISTER( ASWSentryTracer );
 C_ASW_Sentry_Base *C_ASW_Sentry_Top::GetSentryBase()
 {
 	return m_hSentryBase.Get();
-}
-
-int C_ASW_Sentry_Top::GetSentryAngle( void )
-{
-	return m_iSentryAngle;
 }
 
 void C_ASW_Sentry_Top::Scan()
@@ -311,7 +320,7 @@ void C_ASW_Sentry_Top::Scan()
 		AdjustRadiusBeamEdges( vecEye, forward, 3 );
 
 		scanAngle = baseAngle;
-		scanAngle.y += GetSentryAngle() * sin( gpGlobals->curtime * 3.0f );
+		scanAngle.y += GetScanAngle();
 
 		Vector	vecBase = pBase->GetAbsOrigin() + Vector( 0, 0, 2 );// + m_vecLightOffset;
 		AngleVectors( scanAngle, &forward, NULL, NULL );

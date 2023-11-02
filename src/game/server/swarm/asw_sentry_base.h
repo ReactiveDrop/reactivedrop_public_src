@@ -87,6 +87,8 @@ public:
 	// so this is not something we should spend resources trying to prevent.
 	bool IsInventoryEquipSlotValid() const { return !!m_hOriginalOwnerPlayer && m_iInventoryEquipSlot != -1; }
 
+	CNetworkHandle( CASW_Inhabitable_NPC, m_hLastDisassembler );
+
 protected:
 	
 	CNetworkVar( int, m_nGunType );

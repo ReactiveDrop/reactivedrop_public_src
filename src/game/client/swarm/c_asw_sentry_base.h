@@ -15,9 +15,8 @@ public:
 					C_ASW_Sentry_Base();
 	virtual			~C_ASW_Sentry_Base();
 
-	bool ShouldDraw();
-
-	virtual int DrawModel( int flags, const RenderableInstance_t &instance );
+	void OnDataChanged( DataUpdateType_t updateType ) override;
+	void ClientThink() override;
 
 	bool IsAssembled() const { return m_bAssembled; }
 	bool IsInUse() const { return m_bIsInUse; }
@@ -44,8 +43,13 @@ public:
 	CNetworkVar( int, m_iInventoryEquipSlot );
 	bool IsInventoryEquipSlotValid() const { return !!m_hOriginalOwnerPlayer && m_iInventoryEquipSlot != -1; }
 
+	CNetworkHandle( C_ASW_Inhabitable_NPC, m_hLastDisassembler );
+
 	// class of the weapon that created us
 	const char* GetWeaponClass();
+
+	// fake sentry top for building animation
+	CHandle<C_BaseAnimating> m_hBuildTop;
 
 	// IASW_Client_Usable_Entity
 	virtual C_BaseEntity* GetEntity() { return this; }

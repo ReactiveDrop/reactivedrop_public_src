@@ -25,6 +25,8 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Sentry_Top, DT_ASW_Sentry_Top )
 	SendPropInt( SENDINFO( m_iSentryAngle ) ),
 	SendPropAngle( SENDINFO( m_fDeployYaw ), 11 ),
 	SendPropAngle( SENDINFO( m_fCenterAimYaw ), 11, SPROP_CHANGES_OFTEN ),
+	SendPropAngle( SENDINFO( m_fGoalPitch ), 11, SPROP_CHANGES_OFTEN ),
+	SendPropAngle( SENDINFO( m_fGoalYaw ), 11, SPROP_CHANGES_OFTEN ),
 	SendPropBool( SENDINFO( m_bLowAmmo ) ),
 END_SEND_TABLE()
 
@@ -39,11 +41,12 @@ extern ConVar asw_sentry_friendly_fire_scale;
 BEGIN_DATADESC( CASW_Sentry_Top )
 	DEFINE_THINKFUNC( AnimThink ),
 
-	DEFINE_FIELD( m_fTurnRate, FIELD_FLOAT ),
 	DEFINE_FIELD( m_flTimeFirstFired, FIELD_TIME ),
 	DEFINE_FIELD( m_fLastThinkTime, FIELD_TIME ),
 	DEFINE_FIELD( m_fNextFireTime, FIELD_TIME ),
+	DEFINE_FIELD( m_fGoalPitch, FIELD_FLOAT ),
 	DEFINE_FIELD( m_fGoalYaw, FIELD_FLOAT ),
+	DEFINE_FIELD( m_fAimPitch, FIELD_FLOAT ),
 	DEFINE_FIELD( m_fDeployYaw, FIELD_FLOAT ),
 	DEFINE_FIELD( m_fCenterAimYaw, FIELD_FLOAT ),
 	DEFINE_FIELD( m_fCurrentYaw, FIELD_FLOAT ),
@@ -53,10 +56,9 @@ BEGIN_DATADESC( CASW_Sentry_Top )
 	DEFINE_FIELD( m_flNextTurnSound, FIELD_TIME ),
 	DEFINE_FIELD( m_hSentryBase, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_iBaseTurnRate, FIELD_INTEGER ),
+	DEFINE_FIELD( m_iEnemyTurnRate, FIELD_INTEGER ),
 	DEFINE_FIELD( m_iSentryAngle, FIELD_INTEGER ),
-	DEFINE_FIELD( m_fTurnRate, FIELD_FLOAT ),
 	DEFINE_KEYFIELD( m_flShootRange, FIELD_FLOAT, "TurretRange" ),
-	DEFINE_FIELD( m_bHasHysteresis, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bLowAmmo, FIELD_BOOLEAN ),	
 END_DATADESC()
 
@@ -69,10 +71,18 @@ END_SCRIPTDESC()
 
 CASW_Sentry_Top::CASW_Sentry_Top()
 {
+	UseClientSideAnimation();
+
 	m_flShootRange = ASW_SENTRY_RANGE;
 	m_iAmmoType = GetAmmoDef()->Index( "ASW_R" );
-	m_iBaseTurnRate = ASW_SENTRY_TURNRATE;
+	m_iBaseTurnRate = ASW_SENTRY_TURNRATE / 2;
+	m_iEnemyTurnRate = ASW_SENTRY_TURNRATE;
 	m_iSentryAngle = ASW_SENTRY_ANGLE;
+
+	m_iPoseParamPitch = -2;
+	m_iPoseParamYaw = -2;
+	m_iPoseParamFireRate = -2;
+
 	m_bLowAmmo = false;
 }
 
@@ -104,11 +114,15 @@ void CASW_Sentry_Top::Spawn( void )
 	m_fCenterAimYaw = GetAbsAngles().y;
 	m_fCurrentYaw = GetAbsAngles().y;
 
+	m_fAimPitch = -30.0f; // should match the angle that the build animation uses
+	m_fCameraYaw = 0.0f;
+
 	if ( GetMoveParent() )
 	{
 		m_fDeployYaw -= GetMoveParent()->GetAbsAngles().y;
 	}
 
+	m_fLastThinkTime = gpGlobals->curtime;
 	SetThink( &CASW_Sentry_Top::AnimThink );
 	SetNextThink( gpGlobals->curtime + 0.01f );
 }
@@ -169,6 +183,7 @@ void CASW_Sentry_Top::AnimThink( void )
 
 	UpdateGoal();
 	TurnToGoal(deltatime);
+	UpdatePose();
 	CheckFiring();
 	StudioFrameAdvance();
 }
@@ -207,12 +222,20 @@ void CASW_Sentry_Top::UpdateGoal()
 {
 	if ( !m_hEnemy.IsValid() || !m_hEnemy.Get() )
 	{
+		if ( HasHysteresis() )
+		{
+			// leave goal unchanged during over-shoot
+			return;
+		}
+
 		m_fGoalYaw = GetDeployYaw();
+		m_fGoalPitch = 0.0f;
 	}
 	else
 	{
 		// set our goal yaw to point at the enemy
 		m_fGoalYaw = GetYawTo( m_hEnemy );
+		m_fGoalPitch = UTIL_VecToPitch( m_hEnemy->WorldSpaceCenter() - WorldSpaceCenter() );
 	}
 }
 
@@ -234,9 +257,9 @@ void CASW_Sentry_Top::TurnToGoal( float deltatime )
 		}
 
 		// set our turn rate depending on if we have an enemy or not
-		float fTurnRate = ASW_SENTRY_TURNRATE * 0.5f;
+		float fTurnRate = m_iBaseTurnRate;
 		if ( m_hEnemy.IsValid() && m_hEnemy.Get() )
-			fTurnRate = ASW_SENTRY_TURNRATE;
+			fTurnRate = m_iEnemyTurnRate;
 
 		if ( fabsf( fDist ) < deltatime * fTurnRate )
 		{
@@ -244,7 +267,7 @@ void CASW_Sentry_Top::TurnToGoal( float deltatime )
 		}
 		else
 		{
-			// turn it		
+			// turn it
 			m_fCurrentYaw += deltatime * fTurnRate * ( fDist > 0.0f ? 1.0f : -1.0f );
 
 			if ( m_fCurrentYaw < -180.0f )
@@ -433,7 +456,7 @@ bool CASW_Sentry_Top::CanSee( CBaseEntity *pEnt )
 	if ( fYawDiff > 360.0f )
 		fYawDiff -= 360.0f;
 
-	if ( fabs( fYawDiff ) > ASW_SENTRY_ANGLE )
+	if ( fabs( fYawDiff ) > GetSentryAngle() )
 	{
 		m_iCanSeeError = 1;
 		return false;
@@ -505,12 +528,12 @@ bool CASW_Sentry_Top::IsValidEnemy( CAI_BaseNPC *pNPC )
 
 void CASW_Sentry_Top::CheckFiring()
 {
-	if ( gpGlobals->curtime > m_fNextFireTime && HasAmmo() && ( m_bHasHysteresis || m_hEnemy.Get() ) )
+	if ( gpGlobals->curtime > m_fNextFireTime && HasAmmo() && ( HasHysteresis() || m_hEnemy.Get() ) )
 	{
 		float flDist = fabs( m_fGoalYaw - m_fCurrentYaw );
 		flDist = fsel( flDist - 180, 360 - flDist, flDist );
 
-		if ( ( flDist < ASW_SENTRY_FIRE_ANGLE_THRESHOLD ) || ( m_bHasHysteresis && !m_hEnemy ) )
+		if ( ( flDist < ASW_SENTRY_FIRE_ANGLE_THRESHOLD ) || ( HasHysteresis() && !m_hEnemy ) )
 		{
 			Fire();
 		}

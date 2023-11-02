@@ -8,16 +8,16 @@ class CASW_Sentry_Top_Machinegun : public CASW_Sentry_Top
 {
 public:
 	DECLARE_CLASS( CASW_Sentry_Top_Machinegun, CASW_Sentry_Top );
-	// DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
 
-	virtual void Spawn( void );
+	void Spawn( void ) override;
 
-	virtual void Fire();
-	virtual void SetTopModel();
+	void SetTopModel() override;
+	bool HasHysteresis() override;
+	void Fire() override;
 
 	// Classification
-	virtual Class_T Classify( void ) { return (Class_T) CLASS_ASW_SENTRY_GUN; }
+	Class_T Classify( void ) override { return (Class_T) CLASS_ASW_SENTRY_GUN; }
 
 protected:
 	float m_flFireHysteresisTime; // some turrets have a mechanism to continue shooting without an enemy

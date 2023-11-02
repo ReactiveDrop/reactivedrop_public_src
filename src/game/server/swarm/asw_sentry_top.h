@@ -32,10 +32,14 @@ public:
 	void PlayTurnSound();
 
 	void UpdateGoal();
+	int GetSentryAngle();
+	float GetScanAngle();
+	void UpdatePose();
 	void TurnToGoal( float deltatime );
 	void FindEnemy();
 	virtual bool IsValidEnemy( CAI_BaseNPC *pNPC );
 	virtual void CheckFiring();
+	virtual bool HasHysteresis() { return false; } // if true, CheckFiring() will be called even if there is no m_hEnemy
 	virtual void Fire( void );
 	virtual void MakeTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType );
 	virtual void OnUsedQuarterAmmo( void );
@@ -50,8 +54,11 @@ public:
 	
 	float m_fLastThinkTime;
 	float m_fNextFireTime;
-	float m_fGoalYaw, m_fCurrentYaw;
-
+	float m_fCurrentYaw;
+	float m_fAimPitch;
+	float m_fCameraYaw;
+	CNetworkVar( float, m_fGoalPitch );
+	CNetworkVar( float, m_fGoalYaw );
 	CNetworkVar( float, m_fDeployYaw );
 	CNetworkVar( float, m_fCenterAimYaw );
 	CNetworkVar( bool, m_bLowAmmo );
@@ -61,13 +68,17 @@ public:
 	int m_iCanSeeError;
 	int m_iAmmoType;
 	int m_iBaseTurnRate; // angles per second
+	int m_iEnemyTurnRate;
 	CNetworkVar( int, m_iSentryAngle );
-	float m_fTurnRate; // actual turn rate
 
 	float m_flTimeFirstFired;
 	
 	// sound stuff
 	float m_flNextTurnSound;
+
+	int m_iPoseParamPitch;
+	int m_iPoseParamYaw;
+	int m_iPoseParamFireRate;
 
 	virtual const Vector &GetBulletSpread( void )
 	{
@@ -99,7 +110,6 @@ protected:
 	virtual CAI_BaseNPC *SelectOptimalEnemy() ;
 
 	float m_flShootRange;
-	bool  m_bHasHysteresis; // if true, CheckFiring() will be called even if there is no m_hEnemy
 };
 
 
@@ -107,6 +117,5 @@ inline float CASW_Sentry_Top::GetRange()
 {
 	return m_flShootRange;
 }
-
 
 #endif /* _DEFINED_ASW_SENTRY_TOP_H */

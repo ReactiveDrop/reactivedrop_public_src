@@ -49,7 +49,7 @@ CASW_Sentry_Top_Flamer::CASW_Sentry_Top_Flamer(  int projectileVelocity  ) : m_b
 	m_flShootRange = 375.0f;
 
 	// increase turn rate until I get better leading code in (so it can actually hit something)
-	m_fTurnRate *= 3.0f;
+	m_iEnemyTurnRate *= 3;
 
 	m_flFireHysteresisTime = gpGlobals->curtime;
 }
@@ -111,6 +111,10 @@ void CASW_Sentry_Top_Flamer::CheckFiring()
 	}
 }
 
+bool CASW_Sentry_Top_Flamer::HasHysteresis()
+{
+	return m_flFireHysteresisTime > gpGlobals->curtime;
+}
 
 //ITraceFilter *CASW_Sentry_Top_Flamer::GetVisibilityTraceFilter()
 //{
@@ -285,7 +289,7 @@ Vector ProjectileIntercept( const Vector &vProjectileOrigin, const float fProjec
 						   const Vector &vTargetOrigin, const Vector &vTargetDirection,
 						   float * RESTRICT pflTime  )
 {
-#pragma message("TODO: make SIMD")
+//#pragma message("TODO: make SIMD")
 	/* math:
 	let	B	= (A - S)
 	|P|	= Q

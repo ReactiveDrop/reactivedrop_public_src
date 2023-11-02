@@ -18,6 +18,7 @@ public:
 	/// Override this because flamer-style turrets don't have discrete fire,
 	/// but rather start and stop firing continuously.
 	virtual void CheckFiring();
+	bool HasHysteresis() override;
 
 	virtual float GetYawTo(CBaseEntity* pEnt);
 
