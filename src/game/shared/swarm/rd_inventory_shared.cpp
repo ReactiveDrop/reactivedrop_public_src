@@ -1203,6 +1203,12 @@ public:
 	{
 		int64_t iCounterBefore = instance.m_nCounter[iCombinedIndex];
 #ifdef CLIENT_DLL
+		if ( engine->IsPlayingDemo() )
+		{
+			// watching a recording
+			return;
+		}
+
 		PendingDynamicPropertyUpdate_t *pUpdate = NULL;
 		FOR_EACH_VEC( m_PendingDynamicPropertyUpdates, j )
 		{
@@ -3446,6 +3452,13 @@ namespace ReactiveDropInventory
 
 	void OnHitConfirm( CBaseEntity *pAttacker, CBaseEntity *pTarget, Vector vecDamagePosition, bool bKilled, bool bDamageOverTime, bool bBlastDamage, int iDisposition, float flDamage, CBaseEntity *pWeapon )
 	{
+#ifdef CLIENT_DLL
+		if ( engine->IsPlayingDemo() )
+		{
+			return;
+		}
+#endif
+
 		CASW_Game_Resource *pGameResource = ASWGameResource();
 		if ( !pGameResource )
 			return;
@@ -3461,16 +3474,18 @@ namespace ReactiveDropInventory
 			{
 				if ( pAttacker && pTarget && pTarget->IsInhabitableNPC() && !V_stricmp( IGameSystem::MapName(), "rd-reduction2" ) && !V_strcmp( STRING( pAttacker->GetEntityName() ), "trigger_pitworm_hitbox" ) )
 				{
+					CASW_Inhabitable_NPC *pTargetNPC = assert_cast< CASW_Inhabitable_NPC * >( pTarget );
+
 #ifdef CLIENT_DLL
 					static bool s_bRequestedWormToucherMedal = false;
-					if ( !s_bRequestedWormToucherMedal )
+					if ( !s_bRequestedWormToucherMedal && pTargetNPC->IsInhabited() && pTargetNPC->GetCommander() && pTargetNPC->GetCommander()->IsLocalPlayer() )
 					{
 						AddPromoItem( 42 );
 						s_bRequestedWormToucherMedal = true;
 					}
 #endif
 
-					s_RD_Inventory_Manager.IncrementStrangePropertyOnEquippedItems( assert_cast< CASW_Inhabitable_NPC * >( pTarget ), 42, 1 );
+					s_RD_Inventory_Manager.IncrementStrangePropertyOnEquippedItems( pTargetNPC, 42, 1 );
 				}
 
 				return;
