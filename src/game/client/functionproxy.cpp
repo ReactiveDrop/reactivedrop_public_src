@@ -192,7 +192,7 @@ void CResultProxy::SetVecResult( float x, float y, float z, float w )
 C_BaseEntity *CResultProxy::BindArgToEntity( void *pArg )
 {
 	IClientRenderable *pRend = (IClientRenderable *)pArg;
-	return pRend->GetIClientUnknown()->GetBaseEntity();
+	return pRend ? pRend->GetIClientUnknown()->GetBaseEntity() : NULL;
 }
 
 IMaterial *CResultProxy::GetMaterial()

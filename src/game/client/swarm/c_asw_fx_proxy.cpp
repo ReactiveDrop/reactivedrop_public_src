@@ -340,7 +340,7 @@ static const CRD_ItemInstance &GetItemInstanceFromRenderable( IClientRenderable 
 {
 	static const CRD_ItemInstance s_EmptyInstance;
 
-	C_BaseEntity *pEnt = pRenderable->GetIClientUnknown()->GetBaseEntity();
+	C_BaseEntity *pEnt = pRenderable ? pRenderable->GetIClientUnknown()->GetBaseEntity() : NULL;
 
 	if ( C_RD_Weapon_Accessory *pAccessory = dynamic_cast< C_RD_Weapon_Accessory * >( pEnt ) )
 	{
@@ -587,13 +587,13 @@ void CRD_StatTrakIcon_Proxy::OnBind( void *pRenderable )
 	const CRD_ItemInstance &instance = GetItemInstanceFromRenderable( static_cast< IClientRenderable * >( pRenderable ) );
 	if ( !instance.IsSet() || iAccessory < -1 || iAccessory >= RD_ITEM_MAX_ACCESSORIES || ( iAccessory >= 0 && instance.m_iAccessory[iAccessory] == 0 ) )
 	{
-		m_pBaseTextureVar->SetTextureValue( NULL );
 		return;
 	}
 
 	const ReactiveDropInventory::ItemDef_t *pDef = iAccessory == -1 ? ReactiveDropInventory::GetItemDef( instance.m_iItemDefID ) : ReactiveDropInventory::GetItemDef( instance.m_iAccessory[iAccessory] );
-
-	m_pBaseTextureVar->SetTextureValue( pDef ? pDef->GetAccessoryIcon() : NULL);
+	ITexture *pIcon = pDef ? pDef->GetAccessoryIcon() : NULL;
+	if ( pIcon )
+		m_pBaseTextureVar->SetTextureValue( pIcon );
 }
 
 IMaterial *CRD_StatTrakIcon_Proxy::GetMaterial()
