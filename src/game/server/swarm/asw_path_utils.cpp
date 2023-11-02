@@ -7,6 +7,7 @@
 #include "asw_shareddefs.h"
 #include "asw_trace_filter_doors.h"
 #include "ai_network.h"
+#include "asw_gamerules.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -34,6 +35,9 @@ void CASW_Path_Utils_NPC::Spawn()
 
 	SetModel( SWARM_NEW_DRONE_MODEL );
 	NPCInit();
+	ChangeFaction( FACTION_ALIENS );
+	SetSleepState( AISS_WAITING_FOR_INPUT );
+	SetEfficiency( AIE_DORMANT );
 
 	SetHullType( HULL_MEDIUMBIG );
 	UTIL_SetSize(this, NAI_Hull::Mins(HULL_MEDIUMBIG), NAI_Hull::Maxs(HULL_MEDIUMBIG));
@@ -65,7 +69,7 @@ CASW_Path_Utils_NPC* CASW_Path_Utils::GetPathfinderNPC()
 	{
 		// BenLubar: spawn at a node instead of the origin, as a valid
 		// node is guaranteed to be inside the map.
-		m_hPathfinderNPC = dynamic_cast<CASW_Path_Utils_NPC*>( CBaseEntity::Create( "asw_pathfinder_npc", g_pBigAINet->GetNodePosition( HULL_MEDIUMBIG, 0 ), vec3_angle, NULL ) );
+		m_hPathfinderNPC = assert_cast<CASW_Path_Utils_NPC*>( CBaseEntity::Create( "asw_pathfinder_npc", g_pBigAINet->GetNodePosition( HULL_MEDIUMBIG, 0 ), vec3_angle, NULL ) );
 	}
 
 	return m_hPathfinderNPC.Get();
