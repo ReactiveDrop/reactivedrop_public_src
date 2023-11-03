@@ -307,7 +307,7 @@ DECLARE_ACHIEVEMENT_ORDER( CAchievement_ ## DifficultyName ## _Campaign_ ## Camp
 	DIFFICULTY_CAMPAIGN_ACHIEVEMENT(INSANE, Insane, iOffset, 4, PREFIX, SUFFIX, CampaignName); \
 	DIFFICULTY_CAMPAIGN_ACHIEVEMENT(IMBA, Imba, iOffset, 5, PREFIX, SUFFIX, CampaignName)
 
-static const char *g_szAchievementMapNamesAllCoop[] =
+static const char *const g_szAchievementMapNamesAllCoop[] =
 {
 	"asi-jac1-landingbay_01",
 	"asi-jac1-landingbay_02",
@@ -393,7 +393,12 @@ static const char *g_szAchievementMapNamesAllCoop[] =
 	"rd-bonus_mission7",
 };
 
-static const char *g_szAchievementMapNamesJacob[] =
+static const char *const g_szAchievementMapNamesNoHardcore[] =
+{
+	"rd-reduction5",
+};
+
+static const char *const g_szAchievementMapNamesJacob[] =
 {
 	"asi-jac1-landingbay_01",
 	"asi-jac1-landingbay_02",
@@ -404,14 +409,14 @@ static const char *g_szAchievementMapNamesJacob[] =
 	"asi-jac7-timorstation",
 };
 
-static const char *g_szAchievementMapNamesOCS[] =
+static const char *const g_szAchievementMapNamesOCS[] =
 {
 	"rd-ocs1storagefacility",
 	"rd-ocs2landingbay7",
 	"rd-ocs3uscmedusa",
 };
 
-static const char *g_szAchievementMapNamesRES[] =
+static const char *const g_szAchievementMapNamesRES[] =
 {
 	"rd-res1forestentrance",
 	"rd-res2research7",
@@ -419,7 +424,7 @@ static const char *g_szAchievementMapNamesRES[] =
 	"rd-res4mines",
 };
 
-static const char *g_szAchievementMapNamesArea9800[] =
+static const char *const g_szAchievementMapNamesArea9800[] =
 {
 	"rd-area9800LZ",
 	"rd-area9800PP1",
@@ -427,7 +432,7 @@ static const char *g_szAchievementMapNamesArea9800[] =
 	"rd-area9800WL",
 };
 
-static const char *g_szAchievementMapNamesTFT[] =
+static const char *const g_szAchievementMapNamesTFT[] =
 {
 	"rd-tft1desertoutpost",
 	"rd-tft2abandonedmaintenance",
@@ -435,7 +440,7 @@ static const char *g_szAchievementMapNamesTFT[] =
 };
 
 #ifdef RD__CAMPAIGNS_DEADCITY
-static const char *g_szAchievementMapNamesDC[] =
+static const char *const g_szAchievementMapNamesDC[] =
 {
 	"rd-dc1_omega_city",
 	"rd-dc2_breaking_an_entry",
@@ -443,7 +448,7 @@ static const char *g_szAchievementMapNamesDC[] =
 };
 #endif
 
-static const char *g_szAchievementMapNamesTIL[] =
+static const char *const g_szAchievementMapNamesTIL[] =
 {
 	"rd-til1midnightport",
 	"rd-til2roadtodawn",
@@ -456,7 +461,7 @@ static const char *g_szAchievementMapNamesTIL[] =
 	"rd-til9syntekhospital",
 };
 
-static const char *g_szAchievementMapNamesLana[] =
+static const char *const g_szAchievementMapNamesLana[] =
 {
 	"rd-lan1_bridge",
 	"rd-lan2_sewer",
@@ -465,7 +470,7 @@ static const char *g_szAchievementMapNamesLana[] =
 	"rd-lan5_complex",
 };
 
-static const char *g_szAchievementMapNamesReduction[] =
+static const char *const g_szAchievementMapNamesReduction[] =
 {
 	"rd-reduction1",
 	"rd-reduction2",
@@ -475,7 +480,7 @@ static const char *g_szAchievementMapNamesReduction[] =
 	"rd-reduction6",
 };
 
-static const char *g_szAchievementMapNamesPAR[] =
+static const char *const g_szAchievementMapNamesPAR[] =
 {
 	"rd-par1unexpected_encounter",
 	"rd-par2hostile_places",
@@ -484,21 +489,21 @@ static const char *g_szAchievementMapNamesPAR[] =
 	"rd-par5crucial_point",
 };
 
-static const char *g_szAchievementMapNamesNH[] =
+static const char *const g_szAchievementMapNamesNH[] =
 {
 	"rd-nh01_logisticsarea",
 	"rd-nh02_platformxvii",
 	"rd-nh03_groundworklabs",
 };
 
-static const char *g_szAchievementMapNamesBIO[] =
+static const char *const g_szAchievementMapNamesBIO[] =
 {
 	"rd-bio1operationx5",
 	"rd-bio2invisiblethreat",
 	"rd-bio3biogenlabs",
 };
 
-static const char *g_szAchievementMapNamesACC[] =
+static const char *const g_szAchievementMapNamesACC[] =
 {
 	"rd-acc1_infodep",
 	"rd-acc2_powerhood",
@@ -509,7 +514,7 @@ static const char *g_szAchievementMapNamesACC[] =
 };
 
 #ifdef RD_6A_CAMPAIGNS_ADANAXIS
-static const char *g_szAchievementMapNamesADA[] =
+static const char *const g_szAchievementMapNamesADA[] =
 {
 	"rd-ada_sector_a9",
 	"rd-ada_nexus_subnode",
@@ -1137,7 +1142,7 @@ class CAchievement_Hardcore : public CASW_Achievement
 				return;
 
 			// reactivedrop: if player's marine didn't survive, don't award Hardcore achievement
-			C_ASW_Player *pLocalPlayer = static_cast< C_ASW_Player* >( C_BasePlayer::GetLocalPlayer() );
+			C_ASW_Player *pLocalPlayer = ToASW_Player( C_BasePlayer::GetLocalPlayer() );
 			if ( !pLocalPlayer )
 				return;
 
@@ -1145,6 +1150,13 @@ class CAchievement_Hardcore : public CASW_Achievement
 				return;
 
 			const char *szMapName = event->GetString( "strMapName" );
+			for ( int i = 0; i < NELEMS( g_szAchievementMapNamesNoHardcore ); i++ )
+			{
+				if ( !Q_stricmp( szMapName, g_szAchievementMapNamesNoHardcore[i] ) )
+				{
+					break;
+				}
+			}
 			for ( int i = 0; i < NELEMS( g_szAchievementMapNamesAllCoop ); i++ )
 			{
 				if ( !Q_stricmp( szMapName, g_szAchievementMapNamesAllCoop[i] ) )
