@@ -66,7 +66,8 @@ public:
 	Vector m_vecOutOfAmmoSpot;
 	int m_iHealCount;	// how many times this marine received a heal
 	int m_iDamageTakenDuringHack;
-	CNetworkVar( int, m_iBotFrags ); // BenLubar(deathmatch-improvements): bots store pvp frags here
+	CNetworkVar( int, m_iBotFrags );
+	CNetworkVar( int, m_iBotDeaths );
 
 	CNetworkVarEmbedded( CTimeline, m_TimelineFriendlyFire );
 	CNetworkVarEmbedded( CTimeline, m_TimelineKillsTotal );

@@ -42,6 +42,7 @@ public:
 	float m_fDamageTaken;
 	int m_iAliensKilled;
 	int m_iBotFrags;
+	int m_iBotDeaths;
 
 	CNetworkVarEmbedded( CTimeline, m_TimelineFriendlyFire );
 	CNetworkVarEmbedded( CTimeline, m_TimelineKillsTotal );

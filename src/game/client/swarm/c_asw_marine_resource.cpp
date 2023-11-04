@@ -52,6 +52,7 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_Marine_Resource, DT_ASW_Marine_Resource, CASW_Ma
 	RecvPropEHandle( RECVINFO( m_hWeldingDoor ) ),
 	RecvPropBool( RECVINFO( m_bUsingEngineeringAura ) ),
 	RecvPropInt( RECVINFO( m_iBotFrags ) ),
+	RecvPropInt( RECVINFO( m_iBotDeaths ) ),
 	RecvPropIntWithMinusOneFlag( RECVINFO( m_iScore ) ),
 	RecvPropFloat( RECVINFO( m_flFinishedMissionTime ) ),
 END_RECV_TABLE();
@@ -77,6 +78,7 @@ C_ASW_Marine_Resource::C_ASW_Marine_Resource()
 	m_MedalsAwarded[0] = '\0';
 	m_bUsingEngineeringAura = false;
 	m_iBotFrags = 0;
+	m_iBotDeaths = 0;
 	m_Commander = NULL;
 	m_iCommanderIndex = -1;
 	m_iScore = -1;

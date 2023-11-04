@@ -1827,6 +1827,12 @@ bool VScriptServerInit()
 				g_pScriptVM->SetValue( "CHAN_STREAM", CHAN_STREAM );
 				g_pScriptVM->SetValue( "CHAN_STATIC", CHAN_STATIC );
 
+				// team ids
+				g_pScriptVM->SetValue( "TEAM_UNASSIGNED", TEAM_UNASSIGNED );
+				g_pScriptVM->SetValue( "TEAM_SPECTATOR", TEAM_SPECTATOR );
+				g_pScriptVM->SetValue( "TEAM_ALPHA", FIRST_GAME_TEAM );
+				g_pScriptVM->SetValue( "TEAM_BETA", FIRST_GAME_TEAM + 1 );
+
 				if ( scriptLanguage == SL_SQUIRREL )
 				{
 					g_pScriptVM->Run( g_Script_vscript_server );

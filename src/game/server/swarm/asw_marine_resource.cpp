@@ -126,6 +126,7 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Marine_Resource, DT_ASW_Marine_Resource )
 	SendPropEHandle( SENDINFO( m_hWeldingDoor ) ),
 	SendPropBool( SENDINFO( m_bUsingEngineeringAura ) ),
 	SendPropInt( SENDINFO( m_iBotFrags ) ),
+	SendPropInt( SENDINFO( m_iBotDeaths ) ),
 	SendPropIntWithMinusOneFlag( SENDINFO( m_iScore ) ),
 	SendPropFloat( SENDINFO( m_flFinishedMissionTime ) ),
 END_SEND_TABLE();
@@ -158,6 +159,7 @@ CASW_Marine_Resource::CASW_Marine_Resource()
 	m_bDealtNonMeleeDamage = false;
 	m_iDamageTakenDuringHack = 0;
 	m_iBotFrags = 0;
+	m_iBotDeaths = 0;
 	m_iAliensBurned = 0;
 	m_iAmmoDeployed = 0;
 	m_iSentryGunsDeployed = 0;

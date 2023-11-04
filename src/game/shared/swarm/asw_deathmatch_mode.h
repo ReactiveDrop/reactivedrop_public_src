@@ -75,10 +75,12 @@ public:
 
 	void SpawnMarine( CASW_Player *player );
 	void BroadcastLoadoutScreen();
+	bool CheckFragLimit( CASW_Marine_Resource *pMR );
 	void PlayRoundEndMusic();
 
 	void KillingSpreeIncrease( CASW_Marine_Resource *pMR );
 	void KillingSpreeReset( CASW_Marine_Resource *pMR );
+	int GetKillingSpree( CASW_Marine_Resource *pMR );
 	void IncrementFragCount( CASW_Marine_Resource *pMR, int iAmount );
 	void IncrementDeathCount( CASW_Marine_Resource *pMR, int iAmount );
 
@@ -102,7 +104,6 @@ private:
 			s_bPlayedFragLimitSound[i] = false;
 	}
 
-	int m_iBotDeaths[ASW_MAX_MARINE_RESOURCES];
 	float m_flBotLastFragTime[ASW_MAX_MARINE_RESOURCES];
 	int m_iBotKillingSpree[ASW_MAX_MARINE_RESOURCES];
 #endif // #ifdef GAME_DLL
@@ -110,6 +111,7 @@ private:
 	// shared code
 public:
 	int GetFragCount( CASW_Marine_Resource *pMR );
+	int GetDeathCount( CASW_Marine_Resource *pMR );
 	int GetSmallestTeamNumber();
 	int GetWeaponIndexByFragsCount( int nFrags );
 
@@ -125,6 +127,8 @@ private:
 #ifdef GAME_DLL
 	bool s_bPlayedFragLimitSound[RD_FRAGS_LEFT_SIZE];
 #endif // #ifdef GAME_DLL
+
+	friend class CASW_Deathmatch_VScript;
 };
 
 #endif // asw_deathmatch_mode_h__

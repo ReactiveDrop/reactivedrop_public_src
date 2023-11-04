@@ -23,6 +23,8 @@
 #include "asw_achievements.h"
 #include "asw_player.h"
 #include "ScriptGameEventListener.h"
+#include "asw_deathmatch_mode.h"
+#include "team.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -715,6 +717,185 @@ BEGIN_SCRIPTDESC_ROOT_NAMED( CASW_Mission_Chooser_VScript, "MissionChooser", SCR
 	DEFINE_SCRIPTFUNC( GetCurrentMission, "Creates a table containing mission overview data for the current mission." )
 END_SCRIPTDESC();
 
+class CASW_Deathmatch_VScript
+{
+public:
+	void ResetScores()
+	{
+		CASW_Deathmatch_Mode *pDM = ASWDeathmatchMode();
+		if ( pDM )
+			pDM->ResetScores();
+	}
+
+	int GetKills( HSCRIPT hMarineOrResource )
+	{
+		CASW_Deathmatch_Mode *pDM = ASWDeathmatchMode();
+		if ( !pDM )
+			return 0;
+
+		CBaseEntity *pEnt = ToEnt( hMarineOrResource );
+		if ( CASW_Marine *pMarine = CASW_Marine::AsMarine( pEnt ) )
+			pEnt = pMarine->GetMarineResource();
+
+		CASW_Marine_Resource *pMR = dynamic_cast< CASW_Marine_Resource * >( pEnt );
+		if ( !pMR )
+			return 0;
+
+		return pDM->GetFragCount( pMR );
+	}
+
+	void SetKills( HSCRIPT hMarineOrResource, int iKills )
+	{
+		CASW_Deathmatch_Mode *pDM = ASWDeathmatchMode();
+		if ( !pDM )
+			return;
+
+		CBaseEntity *pEnt = ToEnt( hMarineOrResource );
+		if ( CASW_Marine *pMarine = CASW_Marine::AsMarine( pEnt ) )
+			pEnt = pMarine->GetMarineResource();
+
+		CASW_Marine_Resource *pMR = dynamic_cast< CASW_Marine_Resource * >( pEnt );
+		if ( !pMR )
+			return;
+
+		pDM->IncrementFragCount( pMR, iKills - pDM->GetFragCount( pMR ) );
+	}
+
+	int GetDeaths( HSCRIPT hMarineOrResource )
+	{
+		CASW_Deathmatch_Mode *pDM = ASWDeathmatchMode();
+		if ( !pDM )
+			return 0;
+
+		CBaseEntity *pEnt = ToEnt( hMarineOrResource );
+		if ( CASW_Marine *pMarine = CASW_Marine::AsMarine( pEnt ) )
+			pEnt = pMarine->GetMarineResource();
+
+		CASW_Marine_Resource *pMR = dynamic_cast< CASW_Marine_Resource * >( pEnt );
+		if ( !pMR )
+			return 0;
+
+		return pDM->GetDeathCount( pMR );
+	}
+
+	void SetDeaths( HSCRIPT hMarineOrResource, int iDeaths )
+	{
+		CASW_Deathmatch_Mode *pDM = ASWDeathmatchMode();
+		if ( !pDM )
+			return;
+
+		CBaseEntity *pEnt = ToEnt( hMarineOrResource );
+		if ( CASW_Marine *pMarine = CASW_Marine::AsMarine( pEnt ) )
+			pEnt = pMarine->GetMarineResource();
+
+		CASW_Marine_Resource *pMR = dynamic_cast< CASW_Marine_Resource * >( pEnt );
+		if ( !pMR )
+			return;
+
+		pDM->IncrementDeathCount( pMR, iDeaths - pDM->GetDeathCount( pMR ) );
+	}
+
+	int GetTeamScore( int iTeamNumber )
+	{
+		CTeam *pTeam = GetGlobalTeam( iTeamNumber );
+		if ( pTeam )
+			return pTeam->GetScore();
+
+		return 0;
+	}
+
+	void SetTeamScore( int iTeamNumber, int iScore )
+	{
+		CTeam *pTeam = GetGlobalTeam( iTeamNumber );
+		if ( pTeam )
+		{
+			pTeam->SetScore( iScore );
+		}
+	}
+
+	bool CheckFragLimit( HSCRIPT hMarineOrResource )
+	{
+		CASW_Deathmatch_Mode *pDM = ASWDeathmatchMode();
+		if ( !pDM )
+			return false;
+
+		CBaseEntity *pEnt = ToEnt( hMarineOrResource );
+		if ( CASW_Marine *pMarine = CASW_Marine::AsMarine( pEnt ) )
+			pEnt = pMarine->GetMarineResource();
+
+		CASW_Marine_Resource *pMR = dynamic_cast< CASW_Marine_Resource * >( pEnt );
+		if ( !pMR )
+			return false;
+
+		return pDM->CheckFragLimit( pMR );
+	}
+
+	void ResetKillingSpree( HSCRIPT hMarineOrResource )
+	{
+		CASW_Deathmatch_Mode *pDM = ASWDeathmatchMode();
+		if ( !pDM )
+			return;
+
+		CBaseEntity *pEnt = ToEnt( hMarineOrResource );
+		if ( CASW_Marine *pMarine = CASW_Marine::AsMarine( pEnt ) )
+			pEnt = pMarine->GetMarineResource();
+
+		CASW_Marine_Resource *pMR = dynamic_cast< CASW_Marine_Resource * >( pEnt );
+		if ( !pMR )
+			return;
+
+		pDM->KillingSpreeReset( pMR );
+	}
+
+	void IncreaseKillingSpree( HSCRIPT hMarineOrResource )
+	{
+		CASW_Deathmatch_Mode *pDM = ASWDeathmatchMode();
+		if ( !pDM )
+			return;
+
+		CBaseEntity *pEnt = ToEnt( hMarineOrResource );
+		if ( CASW_Marine *pMarine = CASW_Marine::AsMarine( pEnt ) )
+			pEnt = pMarine->GetMarineResource();
+
+		CASW_Marine_Resource *pMR = dynamic_cast< CASW_Marine_Resource * >( pEnt );
+		if ( !pMR )
+			return;
+
+		pDM->KillingSpreeIncrease( pMR );
+	}
+
+	int GetKillingSpree( HSCRIPT hMarineOrResource )
+	{
+		CASW_Deathmatch_Mode *pDM = ASWDeathmatchMode();
+		if ( !pDM )
+			return 0;
+
+		CBaseEntity *pEnt = ToEnt( hMarineOrResource );
+		if ( CASW_Marine *pMarine = CASW_Marine::AsMarine( pEnt ) )
+			pEnt = pMarine->GetMarineResource();
+
+		CASW_Marine_Resource *pMR = dynamic_cast< CASW_Marine_Resource * >( pEnt );
+		if ( !pMR )
+			return 0;
+
+		return pDM->GetKillingSpree( pMR );
+	}
+} g_ASWDeathmatchVScript;
+
+BEGIN_SCRIPTDESC_ROOT_NAMED( CASW_Deathmatch_VScript, "Deathmatch", SCRIPT_SINGLETON "Allows challenge modes to modify deathmatch scores." )
+	DEFINE_SCRIPTFUNC( ResetScores, "Clears all scores." )
+	DEFINE_SCRIPTFUNC( GetKills, "Returns a marine's kill count." )
+	DEFINE_SCRIPTFUNC( SetKills, "Overrides a marine's kill count." )
+	DEFINE_SCRIPTFUNC( GetDeaths, "Returns a marine's death count." )
+	DEFINE_SCRIPTFUNC( SetDeaths, "Overrides a marine's death count." )
+	DEFINE_SCRIPTFUNC( GetTeamScore, "Returns a team's score." )
+	DEFINE_SCRIPTFUNC( SetTeamScore, "Overrides a team's score." )
+	DEFINE_SCRIPTFUNC( CheckFragLimit, "Checks if a player or their team should win the match." )
+	DEFINE_SCRIPTFUNC( ResetKillingSpree, "Reset a marine's killing spree counter." )
+	DEFINE_SCRIPTFUNC( IncreaseKillingSpree, "Record a kill for a marine's killing spree counter." )
+	DEFINE_SCRIPTFUNC( GetKillingSpree, "Get a marine's current killing spree counter." )
+END_SCRIPTDESC();
+
 HSCRIPT Grenade_Cluster_Create_VScript( float flDamage, float flRadius, int iClusters, Vector position, Vector angles, Vector velocity, Vector angVelocity )
 {
 	CASW_Grenade_Cluster *pCluster = CASW_Grenade_Cluster::Cluster_Grenade_Create( flDamage, flRadius, iClusters, position, QAngle( VectorExpand( angles ) ), velocity, angVelocity, NULL, NULL );
@@ -1035,6 +1216,7 @@ void CAlienSwarm::RegisterScriptFunctions()
 	g_pScriptVM->RegisterInstance( &g_ASWDirectorVScript, "Director" );
 	g_pScriptVM->RegisterInstance( &g_ASWConvarsVScript, "Convars" );
 	g_pScriptVM->RegisterInstance( &g_ASWMissionChooserVScript, "MissionChooser" );
+	g_pScriptVM->RegisterInstance( &g_ASWDeathmatchVScript, "Deathmatch" );
 	ScriptRegisterFunctionNamed( g_pScriptVM, Grenade_Cluster_Create_VScript, "CreateGrenadeCluster", "create grenade cluster (damage, radius, count, position, angles, velocity, angularVelocity)" );
 	ScriptRegisterFunctionNamed( g_pScriptVM, Script_DropFreezeGrenade, "DropFreezeGrenade", "Drops a freeze grenade (damage, freezeAmount, radius, position)" );
 	ScriptRegisterFunctionNamed( g_pScriptVM, Script_PlaceHealBeacon, "PlaceHealBeacon", "Places a heal beacon (healAmount, healthPerSecond, infestationCureAmount, duration, radius, position)" );

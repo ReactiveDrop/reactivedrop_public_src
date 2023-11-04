@@ -281,7 +281,7 @@ void CASW_Deathmatch_Mode::IncrementDeathCount( CASW_Marine_Resource *pMR, int i
 	}
 	else
 	{
-		m_iBotDeaths[ASWGameResource()->GetMarineResourceIndex( pMR )] += iAmount;
+		pMR->m_iBotDeaths += iAmount;
 	}
 }
 
@@ -332,69 +332,7 @@ void CASW_Deathmatch_Mode::OnMarineKilled( const CTakeDamageInfo &info, CASW_Mar
 			KillingSpreeIncrease( pOtherMR );
 		}
 
-		int iFragsLeft = rd_frags_limit.GetInt() - GetFragCount( pOtherMR );
-
-		if ( IsGunGameEnabled() )
-		{
-			Assert( m_iGunGameWeaponCount > 0 );
-			iFragsLeft = m_iGunGameWeaponCount - GetFragCount( pOtherMR );
-		}
-		else if ( GAMEMODE_TEAMDEATHMATCH == GetGameMode() )
-		{
-			if ( GetGlobalTeam( TEAM_ALPHA ) && GetGlobalTeam( TEAM_BETA ) )
-			{
-				int team1frags = GetGlobalTeam( TEAM_ALPHA )->GetScore();
-				int team2frags = GetGlobalTeam( TEAM_BETA )->GetScore();
-				iFragsLeft = rd_frags_limit.GetInt() - MAX( team1frags, team2frags );
-			}
-			else
-			{
-				Warning( "Can't find one of the teams TEAM_ALPHA or TEAM_BETA\n" );
-			}
-		}
-
-		switch ( iFragsLeft )
-		{
-		case 0:
-			ASWGameRules()->FinishDeathmatchRound( pOtherMR );
-			PlayRoundEndMusic();
-			break;
-		case 1:
-			if ( !s_bPlayedFragLimitSound[1] )
-			{
-				ASWGameRules()->BroadcastSound( "DM.one_frag_left" );
-				s_bPlayedFragLimitSound[1] = true;
-			}
-			break;
-		case 2:
-			if ( !s_bPlayedFragLimitSound[2] )
-			{
-				ASWGameRules()->BroadcastSound( "DM.two_frags_left" );
-				s_bPlayedFragLimitSound[2] = true;
-			}
-			break;
-		case 3:
-			if ( !s_bPlayedFragLimitSound[3] )
-			{
-				ASWGameRules()->BroadcastSound( "DM.three_frags_left" );
-				s_bPlayedFragLimitSound[3] = true;
-			}
-			break;
-		case 4:
-			if ( !s_bPlayedFragLimitSound[4] )
-			{
-				ASWGameRules()->BroadcastSound( "DM.four_frags_left" );
-				s_bPlayedFragLimitSound[4] = true;
-			}
-			break;
-		case 5:
-			if ( !s_bPlayedFragLimitSound[5] )
-			{
-				ASWGameRules()->BroadcastSound( "DM.five_frags_left" );
-				s_bPlayedFragLimitSound[5] = true;
-			}
-			break;
-		}
+		CheckFragLimit( pOtherMR );
 
 		// remove current weapon and give new one
 		if ( ASWDeathmatchMode()->IsGunGameEnabled() )
@@ -908,6 +846,75 @@ void CASW_Deathmatch_Mode::BroadcastLoadoutScreen()
 	MessageEnd();
 }
 
+bool CASW_Deathmatch_Mode::CheckFragLimit( CASW_Marine_Resource *pMR )
+{
+	int iFragsLeft = rd_frags_limit.GetInt() - GetFragCount( pMR );
+
+	if ( IsGunGameEnabled() )
+	{
+		Assert( m_iGunGameWeaponCount > 0 );
+		iFragsLeft = m_iGunGameWeaponCount - GetFragCount( pMR );
+	}
+	else if ( GAMEMODE_TEAMDEATHMATCH == GetGameMode() )
+	{
+		if ( GetGlobalTeam( TEAM_ALPHA ) && GetGlobalTeam( TEAM_BETA ) )
+		{
+			int team1frags = GetGlobalTeam( TEAM_ALPHA )->GetScore();
+			int team2frags = GetGlobalTeam( TEAM_BETA )->GetScore();
+			iFragsLeft = rd_frags_limit.GetInt() - MAX( team1frags, team2frags );
+		}
+		else
+		{
+			Warning( "Can't find one of the teams TEAM_ALPHA or TEAM_BETA\n" );
+		}
+	}
+
+	switch ( iFragsLeft )
+	{
+	case 0:
+		ASWGameRules()->FinishDeathmatchRound( pMR );
+		PlayRoundEndMusic();
+		return true;
+	case 1:
+		if ( !s_bPlayedFragLimitSound[1] )
+		{
+			ASWGameRules()->BroadcastSound( "DM.one_frag_left" );
+			s_bPlayedFragLimitSound[1] = true;
+		}
+		break;
+	case 2:
+		if ( !s_bPlayedFragLimitSound[2] )
+		{
+			ASWGameRules()->BroadcastSound( "DM.two_frags_left" );
+			s_bPlayedFragLimitSound[2] = true;
+		}
+		break;
+	case 3:
+		if ( !s_bPlayedFragLimitSound[3] )
+		{
+			ASWGameRules()->BroadcastSound( "DM.three_frags_left" );
+			s_bPlayedFragLimitSound[3] = true;
+		}
+		break;
+	case 4:
+		if ( !s_bPlayedFragLimitSound[4] )
+		{
+			ASWGameRules()->BroadcastSound( "DM.four_frags_left" );
+			s_bPlayedFragLimitSound[4] = true;
+		}
+		break;
+	case 5:
+		if ( !s_bPlayedFragLimitSound[5] )
+		{
+			ASWGameRules()->BroadcastSound( "DM.five_frags_left" );
+			s_bPlayedFragLimitSound[5] = true;
+		}
+		break;
+	}
+
+	return false;
+}
+
 void CASW_Deathmatch_Mode::PlayRoundEndMusic()
 {
 	// Pick random wav on server so every client gets the same song.
@@ -935,8 +942,8 @@ void CASW_Deathmatch_Mode::ResetScores()
 		if ( pMR )
 		{
 			pMR->m_iBotFrags = 0;
+			pMR->m_iBotDeaths = 0;
 		}
-		m_iBotDeaths[i] = 0;
 		m_flBotLastFragTime[i] = 0.0f;
 		m_iBotKillingSpree[i] = 0;
 	}
@@ -1021,6 +1028,45 @@ void CASW_Deathmatch_Mode::KillingSpreeReset( CASW_Marine_Resource *pMR )
 		int index = ASWGameResource()->GetMarineResourceIndex( pMR );
 		m_iBotKillingSpree[index] = 0;
 		m_flBotLastFragTime[index] = 0.0f;
+	}
+}
+
+int CASW_Deathmatch_Mode::GetKillingSpree( CASW_Marine_Resource *pMR )
+{
+	if ( !rd_quake_sounds.GetBool() )
+		return 0;
+
+	float *pflLastFragTime = NULL;
+	int *piKillingSpree = NULL;
+
+	if ( pMR->IsInhabited() )
+	{
+		CASW_Player *pPlayer = pMR->GetCommander();
+		if ( pPlayer )
+		{
+			pflLastFragTime = &pPlayer->m_fLastFragTime;
+			piKillingSpree = &pPlayer->m_iKillingSpree;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+	else
+	{
+		int index = ASWGameResource()->GetMarineResourceIndex( pMR );
+
+		pflLastFragTime = &m_flBotLastFragTime[index];
+		piKillingSpree = &m_iBotKillingSpree[index];
+	}
+
+	if ( gpGlobals->curtime - *pflLastFragTime < rd_killingspree_time_limit.GetFloat() )
+	{
+		return *piKillingSpree;
+	}
+	else
+	{
+		return 0;
 	}
 }
 
@@ -1148,6 +1194,24 @@ int CASW_Deathmatch_Mode::GetFragCount( CASW_Marine_Resource *pMR )
 		return 0;
 	}
 	return pMR->m_iBotFrags;
+}
+
+int CASW_Deathmatch_Mode::GetDeathCount( CASW_Marine_Resource *pMR )
+{
+	if ( pMR->IsInhabited() )
+	{
+		CASW_Player *pPlayer = pMR->GetCommander();
+		if ( pPlayer )
+		{
+#ifdef GAME_DLL
+			return pPlayer->DeathCount();
+#else
+			return g_PR->GetDeaths( pPlayer->index );
+#endif
+		}
+		return 0;
+	}
+	return pMR->m_iBotDeaths;
 }
 
 int CASW_Deathmatch_Mode::GetSmallestTeamNumber()
