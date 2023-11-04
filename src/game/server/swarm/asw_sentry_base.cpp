@@ -84,7 +84,6 @@ CASW_Sentry_Base::CASW_Sentry_Base()
 	m_bSkillMarineHelping = false;
 	m_fDamageScale = 1.0f;
 	m_nGunType = kAUTOGUN;
-	m_bAlreadyTaken = false;
 	for ( int i = 0; i < NELEMS( m_hBait ); i++ )
 	{
 		m_hBait[i] = NULL;
@@ -232,31 +231,28 @@ void CASW_Sentry_Base::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldTyp
 		{
 			pMarine->StopUsing();
 
-			if ( !m_bAlreadyTaken )
+			IGameEvent *event = gameeventmanager->CreateEvent( "sentry_dismantled" );
+			if ( event )
 			{
-				IGameEvent *event = gameeventmanager->CreateEvent( "sentry_dismantled" );
-				if ( event )
-				{
-					CBasePlayer *pPlayer = pMarine->GetCommander();
-					event->SetInt( "userid", ( pPlayer ? pPlayer->GetUserID() : 0 ) );
-					event->SetInt( "entindex", entindex() );
+				CBasePlayer *pPlayer = pMarine->GetCommander();
+				event->SetInt( "userid", ( pPlayer ? pPlayer->GetUserID() : 0 ) );
+				event->SetInt( "entindex", entindex() );
 
-					gameeventmanager->FireEvent( event );
-				}
-
-				CASW_Weapon_Sentry *pWeapon = assert_cast< CASW_Weapon_Sentry * >( Create( GetWeaponNameForGunType( GetGunType() ), WorldSpaceCenter(), GetAbsAngles(), NULL ) );
-				if ( !rd_sentry_refilled_by_dismantling.GetBool() )
-				{
-					pWeapon->SetSentryAmmo( m_iAmmo );
-				}
-				pWeapon->m_hOriginalOwnerPlayer = m_hOriginalOwnerPlayer;
-				pWeapon->m_iInventoryEquipSlot = m_iInventoryEquipSlot;
-
-				pMarine->TakeWeaponPickup( pWeapon );
-				EmitSound( "ASW_Sentry.Dismantled" );
-				UTIL_Remove( this );
-				m_bAlreadyTaken = true;
+				gameeventmanager->FireEvent( event );
 			}
+
+			CASW_Weapon_Sentry *pWeapon = assert_cast< CASW_Weapon_Sentry * >( Create( GetWeaponNameForGunType( GetGunType() ), WorldSpaceCenter(), GetAbsAngles(), NULL ) );
+			if ( !rd_sentry_refilled_by_dismantling.GetBool() )
+			{
+				pWeapon->SetSentryAmmo( m_iAmmo );
+			}
+			pWeapon->m_hOriginalOwnerPlayer = m_hOriginalOwnerPlayer;
+			pWeapon->m_iInventoryEquipSlot = m_iInventoryEquipSlot;
+
+			pMarine->TakeWeaponPickup( pWeapon );
+			EmitSound( "ASW_Sentry.Dismantled" );
+			UTIL_Remove( GetSentryTop() );
+			UTIL_Remove( this );
 		}
 		else if ( nHoldType == ASW_USE_RELEASE_QUICK )
 		{

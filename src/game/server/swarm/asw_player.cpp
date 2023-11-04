@@ -3215,7 +3215,7 @@ void CASW_Player::ActivateUseIcon( int iUseEntityIndex, int nHoldType )
 		return;
 
 	CBaseEntity *pEnt = CBaseEntity::Instance(iUseEntityIndex);
-	if (!pEnt)
+	if ( !pEnt || pEnt->IsMarkedForDeletion() )
 	{
 		return;
 	}
