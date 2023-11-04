@@ -27,7 +27,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-#define	SWARM_QUEEN_MODEL	"models/swarm/Queen/Queen.mdl"
+#define	SWARM_QUEEN_MODEL_OLD	"models/swarm/Queen/Queen.mdl"
+#define	SWARM_QUEEN_MODEL_NEW	"models/aliens/Queen/RD_Queen.mdl"
 #define ASW_QUEEN_MAX_ATTACK_DISTANCE 1500
 
 // go big or go home
@@ -112,6 +113,7 @@ ConVar asw_queen_diver_interval( "asw_queen_diver_interval", "20", FCVAR_CHEAT, 
 ConVar asw_queen_spit_interval( "asw_queen_spit_interval", "30", FCVAR_CHEAT, "Time it takes the queen to ready another spit" );
 ConVar asw_queen_parasite_interval( "asw_queen_parasite_interval", "45", FCVAR_CHEAT, "Time it takes for queen to ready more parasites" );
 ConVar asw_queen_max_parasites( "asw_queen_max_parasites", "5", FCVAR_CHEAT, "Max live parasites for queen" );
+ConVar asw_new_queen( "asw_new_queen", "1", FCVAR_CHEAT, "Set to 1 to use the new queen model" );
 
 extern ConVar rd_deagle_bigalien_dmg_scale;
 extern ConVar asw_fist_finisher_damage_scale;
@@ -148,7 +150,7 @@ CASW_Queen::CASW_Queen()
 	m_fLayParasiteTime = 0;
 	m_iCrittersSpawnedRecently = 0;
 
-	m_pszAlienModelName = SWARM_QUEEN_MODEL;
+	m_pszAlienModelName = asw_new_queen.GetBool() ? SWARM_QUEEN_MODEL_NEW : SWARM_QUEEN_MODEL_OLD;
 	m_nAlienCollisionGroup = ASW_COLLISION_GROUP_ALIEN;
 	m_bHealthBarEnabled = true;
 }
