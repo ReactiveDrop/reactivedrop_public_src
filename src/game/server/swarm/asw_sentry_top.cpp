@@ -81,7 +81,7 @@ CASW_Sentry_Top::CASW_Sentry_Top()
 
 	m_iPoseParamPitch = -2;
 	m_iPoseParamYaw = -2;
-	m_iPoseParamFireRate = -2;
+	m_iPoseParamAmmoRemaining = -2;
 
 	m_bLowAmmo = false;
 }
@@ -585,4 +585,6 @@ void CASW_Sentry_Top::MakeTracer( const Vector &vecTracerSrc, const trace_t &tr,
 		WRITE_FLOAT( tr.endpos.y );
 		WRITE_FLOAT( tr.endpos.z );
 	MessageEnd();
+
+	ResetSequence( SelectWeightedSequence( ACT_OBJ_RUNNING ) );
 }

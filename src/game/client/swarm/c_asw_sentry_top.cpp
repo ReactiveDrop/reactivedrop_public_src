@@ -42,7 +42,7 @@ C_ASW_Sentry_Top::C_ASW_Sentry_Top() :
 
 	m_iPoseParamPitch = -2;
 	m_iPoseParamYaw = -2;
-	m_iPoseParamFireRate = -2;
+	m_iPoseParamAmmoRemaining = -2;
 }
 
 C_ASW_Sentry_Top::~C_ASW_Sentry_Top()
@@ -199,6 +199,8 @@ void C_ASW_Sentry_Top::ASWSentryTracer( const Vector &vecEnd )
 	ASWDoParticleTracer( "tracer_autogun", vecStart, vecEnd );
 
 	C_BaseAnimating::PopBoneAccess( "sentgun" );
+
+	ResetSequence( SelectWeightedSequence( ACT_OBJ_RUNNING ) );
 }
 
 void __MsgFunc_ASWSentryTracer( bf_read &msg )

@@ -59,7 +59,7 @@ private:
 
 	int m_iPoseParamPitch;
 	int m_iPoseParamYaw;
-	int m_iPoseParamFireRate;
+	int m_iPoseParamAmmoRemaining;
 
 	bool m_bSpawnedDisplayEffects;
 	CUtlReference<CNewParticleEffect> m_hRadiusDisplay;

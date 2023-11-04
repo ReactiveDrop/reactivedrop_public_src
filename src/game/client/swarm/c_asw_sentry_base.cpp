@@ -128,6 +128,7 @@ void C_ASW_Sentry_Base::ClientThink()
 		pBuildTop->SetLocalOrigin( vec3_origin );
 		pBuildTop->SetLocalAngles( vec3_angle );
 		pBuildTop->SetSolid( SOLID_NONE );
+		pBuildTop->SetPoseParameter( "ammo_remaining", GetAmmo() );
 		pBuildTop->SetPoseParameter( "aim_pitch", -30.0f ); // should match the spawn value for m_fAimPitch on both client and server
 		pBuildTop->SetSequence( pBuildTop->SelectWeightedSequence( ACT_OBJ_ASSEMBLING ) );
 		pBuildTop->SetPlaybackRate( 0.0f );

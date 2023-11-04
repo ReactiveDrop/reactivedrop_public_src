@@ -32,8 +32,8 @@ void CASW_Sentry_Top::UpdatePose()
 		m_iPoseParamPitch = LookupPoseParameter( "aim_pitch" );
 	if ( m_iPoseParamYaw == -2 )
 		m_iPoseParamYaw = LookupPoseParameter( "aim_yaw" );
-	if ( m_iPoseParamFireRate == -2 )
-		m_iPoseParamFireRate = LookupPoseParameter( "fire_rate" );
+	if ( m_iPoseParamAmmoRemaining == -2 )
+		m_iPoseParamAmmoRemaining = LookupPoseParameter( "ammo_remaining" );
 
 	bool bReturning = AlmostEqual( m_fGoalYaw, m_fCenterAimYaw );
 	QAngle angles = GetAbsAngles();
@@ -41,9 +41,9 @@ void CASW_Sentry_Top::UpdatePose()
 	float flTargetPitch = bReturning ? 0.0f : ( m_fGoalPitch - angles.x );
 	float flTargetYaw = bReturning ? 0.0f : ( m_fGoalYaw - angles.y );
 
+	CASW_Sentry_Base *pBase = GetSentryBase();
 	if ( bReturning )
 	{
-		CASW_Sentry_Base *pBase = GetSentryBase();
 		CASW_Marine *pLastDisassembler = pBase ? CASW_Marine::AsMarine( pBase->m_hLastDisassembler ) : NULL;
 		CASW_Player *pDisassemblePlayer = pLastDisassembler && pLastDisassembler->IsInhabited() && pLastDisassembler->GetUsingEntity() == pBase ? pLastDisassembler->GetCommander() : NULL;
 		if ( pDisassemblePlayer )
@@ -63,6 +63,6 @@ void CASW_Sentry_Top::UpdatePose()
 		SetPoseParameter( m_iPoseParamPitch, m_fAimPitch );
 	if ( m_iPoseParamYaw != -1 )
 		SetPoseParameter( m_iPoseParamYaw, m_fCameraYaw );
-	if ( m_iPoseParamFireRate != -1 )
-		SetPoseParameter( m_iPoseParamFireRate, bReturning || fabsf( flTargetYaw ) > 10.0f ? 0.0f : 1.0f );
+	if ( m_iPoseParamAmmoRemaining != -1 )
+		SetPoseParameter( m_iPoseParamAmmoRemaining, pBase ? pBase->GetAmmo() : 999999 );
 }

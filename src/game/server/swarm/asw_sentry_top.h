@@ -78,7 +78,7 @@ public:
 
 	int m_iPoseParamPitch;
 	int m_iPoseParamYaw;
-	int m_iPoseParamFireRate;
+	int m_iPoseParamAmmoRemaining;
 
 	virtual const Vector &GetBulletSpread( void )
 	{
