@@ -15,6 +15,9 @@ $attachment "atttach_camera" "ValveBiped.sentrygun_camera_lense2" 0 0 0 rotate 0
 $attachment "eject1" "ValveBiped.sentrygun_eject1" 0 0 0 rotate 0 0 -90
 $attachment "attach_light" "ValveBiped.sentrygun_screen" -2 0 -2 rotate 180 90 0
 
+$poseparameter "aim_yaw" -120 120 loop 360
+$poseparameter "aim_pitch" -90 45 loop 360
+
 $sequence "bindpose" {
 	"sentry_anims/bindpose.dmx"
 	activity ACT_OBJ_IDLE 1
@@ -52,6 +55,8 @@ $animation "disassemble" "sentry_anims/railgun_disassemble.dmx" {
 $sequence "sentry_fire" {
 	"sentry_anims/railgun_sentry_fire.dmx"
 	activity ACT_OBJ_RUNNING 1
+	fadein 0
+	fadeout 0
 }
 
 $sequence "sentry_build" {

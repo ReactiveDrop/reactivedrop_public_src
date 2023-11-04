@@ -113,9 +113,10 @@ void CASW_Sentry_Top::Spawn( void )
 	m_fDeployYaw = GetAbsAngles().y;
 	m_fCenterAimYaw = GetAbsAngles().y;
 	m_fCurrentYaw = GetAbsAngles().y;
+	m_fGoalYaw = GetAbsAngles().y;
 
 	m_fAimPitch = -30.0f; // should match the angle that the build animation uses
-	m_fCameraYaw = 0.0f;
+	m_fCameraYaw = GetAbsAngles().y;
 
 	if ( GetMoveParent() )
 	{
@@ -235,7 +236,7 @@ void CASW_Sentry_Top::UpdateGoal()
 	{
 		// set our goal yaw to point at the enemy
 		m_fGoalYaw = GetYawTo( m_hEnemy );
-		m_fGoalPitch = UTIL_VecToPitch( m_hEnemy->WorldSpaceCenter() - WorldSpaceCenter() );
+		m_fGoalPitch = UTIL_VecToPitch( WorldSpaceCenter() - m_hEnemy->WorldSpaceCenter() );
 	}
 }
 
@@ -587,4 +588,5 @@ void CASW_Sentry_Top::MakeTracer( const Vector &vecTracerSrc, const trace_t &tr,
 	MessageEnd();
 
 	ResetSequence( SelectWeightedSequence( ACT_OBJ_RUNNING ) );
+	SetCycle( 0.0f );
 }

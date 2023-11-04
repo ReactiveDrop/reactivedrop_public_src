@@ -17,12 +17,12 @@ class CASW_Path_Utils_NPC : public CAI_BaseNPC
 public:
 	DECLARE_CLASS( CASW_Path_Utils_NPC, CAI_BaseNPC );
 
-	// BenLubar: don't send asw_pathfinder_npc to clients
-	virtual int UpdateTransmitState() { return SetTransmitState( FL_EDICT_DONTSEND ); }
-	void	Precache( void );
-	void	Spawn( void );
-	float	MaxYawSpeed( void ) { return 90.0f; }
-	Class_T Classify ( void ) { return CLASS_NONE; }
+	int UpdateTransmitState() override { return SetTransmitState( FL_EDICT_DONTSEND ); }
+	void	Precache( void ) override;
+	void	Spawn( void ) override;
+	int		SelectSchedule() override { return SCHED_WAIT_FOR_SCRIPT; }
+	float	MaxYawSpeed( void ) override { return 90.0f; }
+	Class_T Classify ( void ) override { return CLASS_NONE; }
 };
 
 LINK_ENTITY_TO_CLASS( asw_pathfinder_npc, CASW_Path_Utils_NPC );

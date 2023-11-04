@@ -17,7 +17,7 @@ public:
 	virtual			~C_ASW_Sentry_Top();
 	virtual void OnDataChanged( DataUpdateType_t updateType );
 	virtual void UpdateOnRemove();
-	virtual void		ClientThink( void );
+	virtual bool Simulate( void );
 	virtual void ProcessMuzzleFlashEvent();
 	float GetMuzzleFlashScale();
 	int GetMuzzleAttachment();

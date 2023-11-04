@@ -33,6 +33,7 @@ C_ASW_Sentry_Top::C_ASW_Sentry_Top() :
 	m_iv_fGoalPitch( "C_ASW_Sentry_Top::m_iv_fGoalPitch" )
 {
 	UseClientSideAnimation();
+	AddToEntityList( ENTITY_LIST_SIMULATE );
 
 	AddVar( &m_fCenterAimYaw, &m_iv_fCenterAimYaw, LATCH_SIMULATION_VAR );
 	AddVar( &m_fGoalYaw, &m_iv_fGoalYaw, LATCH_SIMULATION_VAR );
@@ -98,7 +99,7 @@ void C_ASW_Sentry_Top::OnDataChanged( DataUpdateType_t updateType )
 		}
 
 		m_fAimPitch = -30.0f; // should match the angle that the build animation uses
-		m_fCameraYaw = 0.0f;
+		m_fCameraYaw = GetAbsAngles().y;
 
 		SetNextClientThink( CLIENT_THINK_ALWAYS );
 	}
@@ -147,12 +148,14 @@ void C_ASW_Sentry_Top::UpdateOnRemove()
 	}
 }
 
-void C_ASW_Sentry_Top::ClientThink()
+bool C_ASW_Sentry_Top::Simulate()
 {
-	BaseClass::ClientThink();
+	BaseClass::Simulate();
 
 	UpdatePose();
 	Scan();
+
+	return true;
 }
 
 int C_ASW_Sentry_Top::GetMuzzleAttachment( void )
@@ -201,6 +204,7 @@ void C_ASW_Sentry_Top::ASWSentryTracer( const Vector &vecEnd )
 	C_BaseAnimating::PopBoneAccess( "sentgun" );
 
 	ResetSequence( SelectWeightedSequence( ACT_OBJ_RUNNING ) );
+	SetCycle( 0.0f );
 }
 
 void __MsgFunc_ASWSentryTracer( bf_read &msg )

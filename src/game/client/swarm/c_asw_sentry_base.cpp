@@ -55,8 +55,13 @@ static const char *const s_szSentryTopBuildModels[] =
 
 vgui::HFont C_ASW_Sentry_Base::s_hAmmoFont = vgui::INVALID_FONT;
 
-C_ASW_Sentry_Base::C_ASW_Sentry_Base()
+C_ASW_Sentry_Base::C_ASW_Sentry_Base() :
+	m_iv_fAssembleProgress( "C_ASW_Sentry_Base::m_iv_fAssembleProgress" )
 {
+	AddToEntityList( ENTITY_LIST_SIMULATE );
+
+	AddVar( &m_fAssembleProgress, &m_iv_fAssembleProgress, LATCH_SIMULATION_VAR );
+
 	m_bAssembled = false;
 	m_bIsInUse = false;
 	m_fAssembleProgress = 0;
@@ -79,19 +84,9 @@ C_ASW_Sentry_Base::~C_ASW_Sentry_Base()
 	g_SentryGuns.FindAndRemove( this );
 }
 
-void C_ASW_Sentry_Base::OnDataChanged( DataUpdateType_t updateType )
+bool C_ASW_Sentry_Base::Simulate()
 {
-	BaseClass::OnDataChanged( updateType );
-
-	if ( updateType == DATA_UPDATE_CREATED )
-	{
-		SetNextClientThink( CLIENT_THINK_ALWAYS );
-	}
-}
-
-void C_ASW_Sentry_Base::ClientThink()
-{
-	BaseClass::ClientThink();
+	bool bRet = BaseClass::Simulate();
 
 	if ( m_bAssembled )
 	{
@@ -101,9 +96,7 @@ void C_ASW_Sentry_Base::ClientThink()
 			m_hBuildTop = NULL;
 		}
 
-		SetNextClientThink( CLIENT_THINK_NEVER );
-
-		return;
+		return bRet;
 	}
 
 	if ( !m_hBuildTop.Get() )
@@ -112,15 +105,14 @@ void C_ASW_Sentry_Base::ClientThink()
 		Assert( pBuildTop );
 		if ( !pBuildTop )
 		{
-			return;
+			return bRet;
 		}
 
 		if ( !pBuildTop->InitializeAsClientEntity( s_szSentryTopBuildModels[m_nGunType], false ) )
 		{
 			Assert( !"sentry top build model failed to spawn" );
 			UTIL_Remove( pBuildTop );
-			SetNextClientThink( CLIENT_THINK_NEVER );
-			return;
+			return bRet;
 		}
 
 		pBuildTop->SetOwnerEntity( this );
@@ -139,7 +131,11 @@ void C_ASW_Sentry_Base::ClientThink()
 	if ( m_hBuildTop )
 	{
 		m_hBuildTop->SetCycle( m_fAssembleProgress );
+
+		bRet = true;
 	}
+
+	return bRet;
 }
 
 int C_ASW_Sentry_Base::GetSentryIconTextureID()

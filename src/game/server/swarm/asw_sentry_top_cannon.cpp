@@ -21,6 +21,9 @@ ConVar asw_sentry_top_cannon_dmg_override( "asw_sentry_top_cannon_dmg_override",
 ConVar asw_sentry_top_cannon_fire_rate( "asw_sentry_top_cannon_fire_rate", "1.75", FCVAR_CHEAT, "Time in seconds between each shot of sentry cannon", true, 0.001f, true, 999.0f );
 extern ConVar asw_sentry_friendly_target;
 
+extern Vector ProjectileIntercept( const Vector &vProjectileOrigin, const float fProjectileVelocity,
+	const Vector &vTargetOrigin, const Vector &vTargetDirection,
+	float *RESTRICT pflTime );
 
 LINK_ENTITY_TO_CLASS( asw_sentry_top_cannon, CASW_Sentry_Top_Cannon );
 PRECACHE_REGISTER( asw_sentry_top_cannon );
@@ -53,9 +56,10 @@ void CASW_Sentry_Top_Cannon::Fire()
 
 	BaseClass::Fire();
 
-	Vector diff = m_hEnemy->WorldSpaceCenter() - GetFiringPosition();
+	Vector diff = ProjectileIntercept( GetFiringPosition(), 1000.0f, m_hEnemy->WorldSpaceCenter(), m_hEnemy->GetAbsVelocity(), NULL );
+	if ( diff.IsZero() )
+		diff = m_hEnemy->WorldSpaceCenter() - GetFiringPosition();
 	diff.NormalizeInPlace();
-	//FireBulletsInfo_t( int nShots, const Vector &vecSrc, const Vector &vecDir, const Vector &vecSpread, float flDistance, int nAmmoType, bool bPrimaryAttack = true )
 
 	Vector launchVector = diff * 1000.0f;
 
@@ -95,9 +99,11 @@ void CASW_Sentry_Top_Cannon::Fire()
 	else
 		owner = this;
 
+	Vector vecOrigin = GetFiringPosition() + ( diff * ( WorldAlignSize().Length() * 0.5f ) );
+
 	CASW_Rifle_Grenade::Rifle_Grenade_Create(
 		fGrenadeDamage, fGrenadeRadius,
-		GetFiringPosition() + ( diff * ( WorldAlignSize().Length() * 0.5f ) ),
+		vecOrigin,
 		GetAbsAngles(), launchVector, AngularImpulse( 0, 0, 0 ),
 		owner, this );
 
@@ -105,6 +111,10 @@ void CASW_Sentry_Top_Cannon::Fire()
 		pMarineDeployer->OnWeaponFired( this, 1 );
 
 	EmitSound( "ASW_Sentry.CannonFire" );
+
+	trace_t tr;
+	tr.endpos = vecOrigin;
+	MakeTracer( vecOrigin, tr, TRACER_NONE );
 
 	m_fNextFireTime = gpGlobals->curtime + m_flFireRate;
 

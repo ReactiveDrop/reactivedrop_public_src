@@ -35,11 +35,11 @@ void CASW_Sentry_Top::UpdatePose()
 	if ( m_iPoseParamAmmoRemaining == -2 )
 		m_iPoseParamAmmoRemaining = LookupPoseParameter( "ammo_remaining" );
 
-	bool bReturning = AlmostEqual( m_fGoalYaw, m_fCenterAimYaw );
+	bool bReturning = AlmostEqual( m_fGoalYaw, GetDeployYaw() );
 	QAngle angles = GetAbsAngles();
 
 	float flTargetPitch = bReturning ? 0.0f : ( m_fGoalPitch - angles.x );
-	float flTargetYaw = bReturning ? 0.0f : ( m_fGoalYaw - angles.y );
+	float flTargetYaw = bReturning ? angles.y : m_fGoalYaw;
 
 	CASW_Sentry_Base *pBase = GetSentryBase();
 	if ( bReturning )
@@ -53,16 +53,31 @@ void CASW_Sentry_Top::UpdatePose()
 		}
 	}
 
-	float flPitchSpeed = ( bReturning ? 15.0f : 150.0f ) * gpGlobals->frametime;
-	float flYawSpeed = ( bReturning ? 15.0f : 150.0f ) * gpGlobals->frametime;
+	float flPitchSpeed = ( bReturning ? 30.0f : 45.0f ) * gpGlobals->frametime;
+	float flYawSpeed = ( bReturning ? 15.0f : 540.0f ) * gpGlobals->frametime;
 
 	m_fAimPitch = ApproachAngle( flTargetPitch, m_fAimPitch, flPitchSpeed );
 	m_fCameraYaw = ApproachAngle( flTargetYaw, m_fCameraYaw, flYawSpeed );
 
+	int iAmmo = pBase ? pBase->GetAmmo() : 999999;
+	// if we're doing an animation, assume it's the firing animation unless it's the first one defined (bindpose)
+	if ( !SequenceLoops() && GetSequence() != 0 )
+	{
+		if ( IsSequenceFinished() )
+		{
+			// return to bindpose
+			ResetSequence( 0 );
+		}
+		else
+		{
+			iAmmo++;
+		}
+	}
+
 	if ( m_iPoseParamPitch != -1 )
-		SetPoseParameter( m_iPoseParamPitch, m_fAimPitch );
+		SetPoseParameter( m_iPoseParamPitch, AngleNormalize( m_fAimPitch ) );
 	if ( m_iPoseParamYaw != -1 )
-		SetPoseParameter( m_iPoseParamYaw, m_fCameraYaw );
+		SetPoseParameter( m_iPoseParamYaw, AngleNormalize( m_fCameraYaw - angles.y ) );
 	if ( m_iPoseParamAmmoRemaining != -1 )
-		SetPoseParameter( m_iPoseParamAmmoRemaining, pBase ? pBase->GetAmmo() : 999999 );
+		SetPoseParameter( m_iPoseParamAmmoRemaining, iAmmo );
 }

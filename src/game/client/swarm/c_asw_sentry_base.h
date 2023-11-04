@@ -15,8 +15,7 @@ public:
 					C_ASW_Sentry_Base();
 	virtual			~C_ASW_Sentry_Base();
 
-	void OnDataChanged( DataUpdateType_t updateType ) override;
-	void ClientThink() override;
+	bool Simulate() override;
 
 	bool IsAssembled() const { return m_bAssembled; }
 	bool IsInUse() const { return m_bIsInUse; }
@@ -60,6 +59,8 @@ public:
 	virtual bool NeedsLOSCheck() { return true; }
 
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_SENTRY_BASE; }
+
+	CInterpolatedVar<float> m_iv_fAssembleProgress;
 
 	static vgui::HFont s_hAmmoFont;
 	int m_nUseIconTextureID;

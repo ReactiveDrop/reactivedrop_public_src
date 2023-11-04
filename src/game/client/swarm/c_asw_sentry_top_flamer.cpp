@@ -101,6 +101,8 @@ void C_ASW_Sentry_Top_Flamer::OnStartFiring()
 	{
 		m_hFiringEffect = ParticleProp()->Create( m_szParticleEffectFireName, PATTACH_POINT_FOLLOW, "muzzle" );
 	}
+
+	ResetSequence( SelectWeightedSequence( ACT_OBJ_RUNNING ) );
 }
 
 void C_ASW_Sentry_Top_Flamer::OnStopFiring()
@@ -123,6 +125,11 @@ void C_ASW_Sentry_Top_Flamer::OnStopFiring()
 
 	if ( m_hPilotLight )
 		m_hPilotLight->SetControlPoint( 1, Vector( 1, 0, 0 ) );
+
+	if ( GetSentryBase() && GetSentryBase()->GetAmmo() <= 1 && m_hPilotLight )
+		m_hPilotLight->SetControlPoint( 1, Vector( 0, 0, 0 ) );
+
+	ResetSequence( SelectWeightedSequence( ACT_OBJ_IDLE ) );
 }
 
 void C_ASW_Sentry_Top_Flamer::UpdateOnRemove()
