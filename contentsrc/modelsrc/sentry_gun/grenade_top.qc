@@ -15,7 +15,7 @@ $attachment "attach_light" "ValveBiped.sentrygun_screen" -2 0 -2 rotate 180 90 0
 
 $poseparameter "aim_yaw" -120 120 loop 360
 $poseparameter "aim_pitch" -90 45 loop 360
-$poseparameter "ammo_remaining" 0 19
+$poseparameter "ammo_remaining" 1 20
 
 $sequence "bindpose" {
 	"sentry_anims/bindpose.dmx"
