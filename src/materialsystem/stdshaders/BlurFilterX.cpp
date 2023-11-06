@@ -7,9 +7,7 @@
 
 #include "BaseVSShader.h"
 #include "blurfilter_vs20.inc"
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "blurfilter_ps20.inc"
-#endif
 #include "blurfilter_ps20b.inc"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -63,14 +61,10 @@ BEGIN_VS_SHADER_FLAGS( BlurFilterX, "Help for BlurFilterX", SHADER_NOT_EDITABLE 
 			}
 			else
 			{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_STATIC_PIXEL_SHADER( BlurFilter_ps20 );
 				SET_STATIC_PIXEL_SHADER_COMBO( KERNEL, params[ KERNEL ]->GetIntValue() );
 				SET_STATIC_PIXEL_SHADER_COMBO( CLEAR_COLOR, false );
 				SET_STATIC_PIXEL_SHADER( BlurFilter_ps20 );
-#else
-				RD_SHADER_MODEL_20_CRASH;
-#endif
 			}
 
 			if ( IS_FLAG_SET( MATERIAL_VAR_ADDITIVE ) )
@@ -128,12 +122,8 @@ BEGIN_VS_SHADER_FLAGS( BlurFilterX, "Help for BlurFilterX", SHADER_NOT_EDITABLE 
 			}
 			else
 			{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_DYNAMIC_PIXEL_SHADER( BlurFilter_ps20 );
 				SET_DYNAMIC_PIXEL_SHADER( BlurFilter_ps20 );
-#else
-				RD_SHADER_MODEL_20_CRASH;
-#endif
 			}
 		}
 		Draw();

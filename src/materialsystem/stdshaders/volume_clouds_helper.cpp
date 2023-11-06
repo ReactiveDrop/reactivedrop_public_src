@@ -7,9 +7,7 @@
 
 // Auto generated inc files
 #include "volume_clouds_vs20.inc"
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "volume_clouds_ps20.inc"
-#endif
 #include "volume_clouds_ps20b.inc"
 
 // NOTE: This has to be the last file included!
@@ -70,12 +68,8 @@ void DrawVolumeClouds( CBaseVSShader *pShader, IMaterialVar** params, IShaderDyn
 		}
 		else
 		{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 			DECLARE_STATIC_PIXEL_SHADER( volume_clouds_ps20 );
 			SET_STATIC_PIXEL_SHADER( volume_clouds_ps20 );
-#else
-			RD_SHADER_MODEL_20_CRASH;
-#endif
 		}
 
 		// Textures
@@ -124,12 +118,8 @@ void DrawVolumeClouds( CBaseVSShader *pShader, IMaterialVar** params, IShaderDyn
 		}
 		else
 		{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 			DECLARE_DYNAMIC_PIXEL_SHADER( volume_clouds_ps20 );
 			SET_DYNAMIC_PIXEL_SHADER( volume_clouds_ps20 );
-#else
-			RD_SHADER_MODEL_20_CRASH;
-#endif
 		}
 
 		// Bind textures

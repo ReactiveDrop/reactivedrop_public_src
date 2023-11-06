@@ -7,9 +7,7 @@
 #include "cpp_shader_constant_register_map.h"
 
 #include "eye_refract_vs20.inc"
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "eye_refract_ps20.inc"
-#endif
 #include "eye_refract_ps20b.inc"
 
 #ifndef _X360
@@ -183,15 +181,11 @@ void Draw_Eyes_Refract_Internal( CBaseVSShader *pShader, IMaterialVar** params, 
 			}
 			else
 			{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_STATIC_PIXEL_SHADER( eye_refract_ps20 );
 				SET_STATIC_PIXEL_SHADER_COMBO( FLASHLIGHT, bDrawFlashlightAdditivePass ? 1 : 0 );
 				SET_STATIC_PIXEL_SHADER_COMBO( LIGHTWARPTEXTURE, bDiffuseWarp ? 1 : 0 );
 				SET_STATIC_PIXEL_SHADER_COMBO( WORLD_NORMAL, 0 );
 				SET_STATIC_PIXEL_SHADER( eye_refract_ps20 );
-#else
-				RD_SHADER_MODEL_20_CRASH;
-#endif
 			}
 		}
 #ifndef _X360
@@ -448,13 +442,9 @@ void Draw_Eyes_Refract_Internal( CBaseVSShader *pShader, IMaterialVar** params, 
 			}
 			else // ps.2.0
 			{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_DYNAMIC_PIXEL_SHADER( eye_refract_ps20 );
 				SET_DYNAMIC_PIXEL_SHADER_COMBO( NUM_LIGHTS, lightState.m_nNumLights );
 				SET_DYNAMIC_PIXEL_SHADER( eye_refract_ps20 );
-#else
-				RD_SHADER_MODEL_20_CRASH;
-#endif
 			}
 		}
 #ifndef _X360

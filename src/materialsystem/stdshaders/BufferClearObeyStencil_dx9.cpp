@@ -7,9 +7,7 @@
 #include "BaseVSShader.h"
 
 #include "bufferclearobeystencil_vs20.inc"
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "bufferclearobeystencil_ps20.inc"
-#endif
 #include "bufferclearobeystencil_ps20b.inc"
 
 
@@ -74,12 +72,8 @@ BEGIN_VS_SHADER_FLAGS( BufferClearObeyStencil_DX9, "", SHADER_NOT_EDITABLE )
 				}
 				else
 				{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 					DECLARE_STATIC_PIXEL_SHADER( bufferclearobeystencil_ps20 );
 					SET_STATIC_PIXEL_SHADER( bufferclearobeystencil_ps20 );
-#else
-					RD_SHADER_MODEL_20_CRASH;
-#endif
 				}
 			}
 		}
@@ -99,12 +93,8 @@ BEGIN_VS_SHADER_FLAGS( BufferClearObeyStencil_DX9, "", SHADER_NOT_EDITABLE )
 				}
 				else
 				{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 					DECLARE_DYNAMIC_PIXEL_SHADER( bufferclearobeystencil_ps20 );
 					SET_DYNAMIC_PIXEL_SHADER( bufferclearobeystencil_ps20 );
-#else
-					RD_SHADER_MODEL_20_CRASH;
-#endif
 				}
 			}
 		}

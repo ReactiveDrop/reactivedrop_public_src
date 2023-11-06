@@ -11,9 +11,7 @@
 #include "convar.h"
 #include "cpp_shader_constant_register_map.h"
 #include "cloak_vs20.inc"
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "cloak_ps20.inc"
-#endif
 #include "cloak_ps20b.inc"
 
 #ifndef _X360
@@ -128,13 +126,9 @@ void DrawCloak_DX9( CBaseVSShader *pShader, IMaterialVar** params, IShaderDynami
 			}
 			else
 			{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_STATIC_PIXEL_SHADER( cloak_ps20 );
 				SET_STATIC_PIXEL_SHADER_COMBO( LIGHTWARPTEXTURE, hasDiffuseWarp );
 				SET_STATIC_PIXEL_SHADER( cloak_ps20 );
-#else
-				RD_SHADER_MODEL_20_CRASH;
-#endif
 			}
 		}
 #ifndef _X360
@@ -213,7 +207,6 @@ void DrawCloak_DX9( CBaseVSShader *pShader, IMaterialVar** params, IShaderDynami
 			}
 			else
 			{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 				// JasonM Hack
 				//
 				// In general, cloaking on ps_2_0 needs re-working for multipass...yuck...
@@ -223,9 +216,6 @@ void DrawCloak_DX9( CBaseVSShader *pShader, IMaterialVar** params, IShaderDynami
 				SET_DYNAMIC_PIXEL_SHADER_COMBO( NUM_LIGHTS, nPS20NumLights );
 				SET_DYNAMIC_PIXEL_SHADER_COMBO( WRITEWATERFOGTODESTALPHA,  fogType == MATERIAL_FOG_LINEAR_BELOW_FOG_Z );
 				SET_DYNAMIC_PIXEL_SHADER( cloak_ps20 );
-#else
-				RD_SHADER_MODEL_20_CRASH;
-#endif
 			}
 		}
 #ifndef _X360

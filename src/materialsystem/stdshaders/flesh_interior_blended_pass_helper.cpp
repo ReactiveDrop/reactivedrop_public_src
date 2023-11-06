@@ -125,9 +125,7 @@
 
 // Auto generated inc files
 #include "flesh_interior_blended_pass_vs20.inc"
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "flesh_interior_blended_pass_ps20.inc"
-#endif
 #include "flesh_interior_blended_pass_ps20b.inc"
 
 // NOTE: This has to be the last file included!
@@ -193,12 +191,8 @@ void DrawFleshInteriorBlendedPass( CBaseVSShader *pShader, IMaterialVar** params
 		}
 		else
 		{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 			DECLARE_STATIC_PIXEL_SHADER( flesh_interior_blended_pass_ps20 );
 			SET_STATIC_PIXEL_SHADER( flesh_interior_blended_pass_ps20 );
-#else
-			RD_SHADER_MODEL_20_CRASH;
-#endif
 		}
 
 		// Textures
@@ -310,12 +304,8 @@ void DrawFleshInteriorBlendedPass( CBaseVSShader *pShader, IMaterialVar** params
 		}
 		else
 		{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 			DECLARE_DYNAMIC_PIXEL_SHADER( flesh_interior_blended_pass_ps20 );
 			SET_DYNAMIC_PIXEL_SHADER( flesh_interior_blended_pass_ps20 );
-#else
-			RD_SHADER_MODEL_20_CRASH;
-#endif
 		}
 
 		// Bind textures

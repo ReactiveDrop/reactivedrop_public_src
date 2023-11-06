@@ -35,7 +35,6 @@
 		}
 
 // useful pixel shader declaration macro for ps20/20b c++ code
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 #define SET_STATIC_PS2X_PIXEL_SHADER_NO_COMBOS( basename )		\
 		if( g_pHardwareConfig->SupportsPixelShaders_2_b() )		\
 		{														\
@@ -47,20 +46,7 @@
 			DECLARE_STATIC_PIXEL_SHADER( basename##_ps20 );		\
 			SET_STATIC_PIXEL_SHADER( basename##_ps20 );			\
 		}
-#else
-#define SET_STATIC_PS2X_PIXEL_SHADER_NO_COMBOS( basename )		\
-		if( g_pHardwareConfig->SupportsPixelShaders_2_b() )		\
-		{														\
-			DECLARE_STATIC_PIXEL_SHADER( basename##_ps20b );	\
-			SET_STATIC_PIXEL_SHADER( basename##_ps20b );		\
-		}														\
-		else													\
-		{														\
-			RD_SHADER_MODEL_20_CRASH;							\
-		}
-#endif
 
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 #define SET_DYNAMIC_PS2X_PIXEL_SHADER_NO_COMBOS( basename )		\
 		if( g_pHardwareConfig->SupportsPixelShaders_2_b() )		\
 		{														\
@@ -72,18 +58,7 @@
 			DECLARE_DYNAMIC_PIXEL_SHADER( basename##_ps20 );	\
 			SET_DYNAMIC_PIXEL_SHADER( basename##_ps20 );		\
 		}
-#else
-#define SET_DYNAMIC_PS2X_PIXEL_SHADER_NO_COMBOS( basename )		\
-		if( g_pHardwareConfig->SupportsPixelShaders_2_b() )		\
-		{														\
-			DECLARE_DYNAMIC_PIXEL_SHADER( basename##_ps20b );	\
-			SET_DYNAMIC_PIXEL_SHADER( basename##_ps20b );		\
-		}														\
-		else													\
-		{														\
-			RD_SHADER_MODEL_20_CRASH;							\
-		}
-#endif
+
 
 //-----------------------------------------------------------------------------
 // Base class for shaders, contains helper methods.
@@ -393,10 +368,5 @@ FORCEINLINE bool IsOpenGL( void )
 {
 	return IsPosix() || r_emulategl.GetBool();
 }
-
-#ifndef RD_SUPPORT_SHADER_MODEL_20
-// For some reason, the dedicated server runs the game shader DLL, so we need to allow materials to load even if they can't be rendered (such as on a headless system running Wine).
-#define RD_SHADER_MODEL_20_CRASH AssertMsg1( false, "Tried to use PS2.0 shader in %s", __FUNCTION__ ) // Error( "Alien Swarm: Reactive Drop requires a graphics card that supports at least DirectX 9 Shader Model 2.0b.\nIf you are seeing this error message with a graphics card made during this century, make sure you are not passing the wrong -maxdxlevel on the command line.\n" )
-#endif
 
 #endif // BASEVSSHADER_H

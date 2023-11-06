@@ -11,14 +11,10 @@
 #include "convar.h"
 
 #include "watercheap_vs20.inc"
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "watercheap_ps20.inc"
-#endif
 #include "watercheap_ps20b.inc"
 #include "water_vs20.inc"
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "water_ps20.inc"
-#endif
 #include "water_ps20b.inc"
 #include "shaderlib/commandbuilder.h"
 
@@ -330,7 +326,6 @@ BEGIN_VS_SHADER( Water_DX90,
 			}
 			else
 			{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_STATIC_PIXEL_SHADER( Water_ps20 );
 				SET_STATIC_PIXEL_SHADER_COMBO( REFLECT,  bReflection );
 				SET_STATIC_PIXEL_SHADER_COMBO( REFRACT,  bRefraction );
@@ -341,9 +336,6 @@ BEGIN_VS_SHADER( Water_DX90,
 				SET_STATIC_PIXEL_SHADER_COMBO( FLOW_DEBUG, clamp( params[ FLOW_DEBUG ]->GetIntValue(), 0, 2 ) );
 				SET_STATIC_PIXEL_SHADER_COMBO( FORCEFRESNEL, bForceFresnel );
 				SET_STATIC_PIXEL_SHADER( Water_ps20 );
-#else
-				RD_SHADER_MODEL_20_CRASH;
-#endif
 			}
 
 			FogToFogColor();
@@ -578,12 +570,8 @@ BEGIN_VS_SHADER( Water_DX90,
 			}
 			else
 			{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_DYNAMIC_PIXEL_SHADER( Water_ps20 );
 				SET_DYNAMIC_PIXEL_SHADER( Water_ps20 );
-#else
-				RD_SHADER_MODEL_20_CRASH;
-#endif
 			}
 
 			DynamicCmdsOut.End();
@@ -652,7 +640,6 @@ BEGIN_VS_SHADER( Water_DX90,
 			}
 			else
 			{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_STATIC_PIXEL_SHADER( WaterCheap_ps20 );
 				SET_STATIC_PIXEL_SHADER_COMBO( FRESNEL,  params[NOFRESNEL]->GetIntValue() == 0 );
 				SET_STATIC_PIXEL_SHADER_COMBO( BLEND,  bBlend );
@@ -664,9 +651,6 @@ BEGIN_VS_SHADER( Water_DX90,
 				SET_STATIC_PIXEL_SHADER_COMBO( FLOWMAP, bHasFlowmap );
 				SET_STATIC_PIXEL_SHADER_COMBO( FLOW_DEBUG, clamp( params[ FLOW_DEBUG ]->GetIntValue(), 0, 2 ) );
 				SET_STATIC_PIXEL_SHADER( WaterCheap_ps20 );
-#else
-				RD_SHADER_MODEL_20_CRASH;
-#endif
 			}
 
 			// HDRFIXME: test cheap water!
@@ -772,13 +756,9 @@ BEGIN_VS_SHADER( Water_DX90,
 			}
 			else
 			{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_DYNAMIC_PIXEL_SHADER( WaterCheap_ps20 );
 				SET_DYNAMIC_PIXEL_SHADER_COMBO( HDRENABLED,  IsHDREnabled() );
 				SET_DYNAMIC_PIXEL_SHADER( WaterCheap_ps20 );
-#else
-				RD_SHADER_MODEL_20_CRASH;
-#endif
 			}
 		}
 		Draw();

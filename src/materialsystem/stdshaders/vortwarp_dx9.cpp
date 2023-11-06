@@ -9,9 +9,7 @@
 #include "BaseVSShader.h"
 #include "vertexlitgeneric_dx9_helper.h"
 #include "vortwarp_vs20.inc"
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "vortwarp_ps20.inc"
-#endif
 #include "vortwarp_ps20b.inc"
 #include "convar.h"
 
@@ -211,7 +209,6 @@ void DrawVortWarp_DX9( CBaseVSShader *pShader, IMaterialVar** params, IShaderDyn
 			}
 			else
 			{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_STATIC_PIXEL_SHADER( vortwarp_ps20 );
 				SET_STATIC_PIXEL_SHADER_COMBO( BASETEXTURE,  hasBaseTexture );
 				SET_STATIC_PIXEL_SHADER_COMBO( CUBEMAP,  hasEnvmap );
@@ -221,9 +218,6 @@ void DrawVortWarp_DX9( CBaseVSShader *pShader, IMaterialVar** params, IShaderDyn
 				SET_STATIC_PIXEL_SHADER_COMBO( FLASHLIGHT,  hasFlashlight );
 				SET_STATIC_PIXEL_SHADER_COMBO( TRANSLUCENT, blendType == BT_BLEND );
 				SET_STATIC_PIXEL_SHADER( vortwarp_ps20 );
-#else
-				RD_SHADER_MODEL_20_CRASH;
-#endif
 			}
 		}
 #ifndef _X360
@@ -368,7 +362,6 @@ void DrawVortWarp_DX9( CBaseVSShader *pShader, IMaterialVar** params, IShaderDyn
 			}
 			else
 			{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_DYNAMIC_PIXEL_SHADER( vortwarp_ps20 );
 				SET_DYNAMIC_PIXEL_SHADER_COMBO( NUM_LIGHTS, lightState.m_nNumLights );
 				SET_DYNAMIC_PIXEL_SHADER_COMBO( AMBIENT_LIGHT, lightState.m_bAmbientLight ? 1 : 0 );
@@ -379,9 +372,6 @@ void DrawVortWarp_DX9( CBaseVSShader *pShader, IMaterialVar** params, IShaderDyn
 		//		DevMsg( 1, "warpParam: %f %f\n", warpParam, selfIllumTint );
 				SET_DYNAMIC_PIXEL_SHADER_COMBO( WARPINGIN, warpParam > 0.0f && warpParam < 1.0f );
 				SET_DYNAMIC_PIXEL_SHADER( vortwarp_ps20 );
-#else
-				RD_SHADER_MODEL_20_CRASH;
-#endif
 			}
 		}
 #ifndef _X360

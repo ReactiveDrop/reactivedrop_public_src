@@ -16,9 +16,7 @@
 #include "tier0/memdbgon.h"
 
 #include "sprite_vs20.inc"
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "sprite_ps20.inc"
-#endif
 #include "sprite_ps20b.inc"
 
 // WARNING!  Change these in engine/SpriteGn.h if you change them here!
@@ -146,16 +144,12 @@ BEGIN_VS_SHADER( Sprite_DX9,
 		}
 		else
 		{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 			DECLARE_STATIC_PIXEL_SHADER( sprite_ps20 );
 			SET_STATIC_PIXEL_SHADER_COMBO( VERTEXCOLOR,  ( shaderFlags &  SHADER_USE_VERTEX_COLOR ) ? true : false );
 			SET_STATIC_PIXEL_SHADER_COMBO( CONSTANTCOLOR,  ( shaderFlags & SHADER_USE_CONSTANT_COLOR ) ? true : false );
 			SET_STATIC_PIXEL_SHADER_COMBO( HDRTYPE,  g_pHardwareConfig->GetHDRType() );
 			SET_STATIC_PIXEL_SHADER_COMBO( SRGB, bSRGB );
 			SET_STATIC_PIXEL_SHADER( sprite_ps20 );
-#else
-			RD_SHADER_MODEL_20_CRASH;
-#endif
 		}
 
 		s_pShaderShadow->EnableSRGBWrite( bSRGB );
@@ -179,13 +173,9 @@ BEGIN_VS_SHADER( Sprite_DX9,
 		}
 		else
 		{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 			DECLARE_DYNAMIC_PIXEL_SHADER( sprite_ps20 );
 			SET_DYNAMIC_PIXEL_SHADER_COMBO( HDRENABLED, IsHDREnabled() );
 			SET_DYNAMIC_PIXEL_SHADER( sprite_ps20 );
-#else
-			RD_SHADER_MODEL_20_CRASH;
-#endif
 		}
 
 		pShaderAPI->SetPixelShaderFogParams( PSREG_FOG_PARAMS );
@@ -386,13 +376,9 @@ BEGIN_VS_SHADER( Sprite_DX9,
 					}
 					else
 					{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 						DECLARE_DYNAMIC_PIXEL_SHADER( sprite_ps20 );
 						SET_DYNAMIC_PIXEL_SHADER_COMBO( HDRENABLED,  IsHDREnabled() );
 						SET_DYNAMIC_PIXEL_SHADER( sprite_ps20 );
-#else
-						RD_SHADER_MODEL_20_CRASH;
-#endif
 					}
 
 					pShaderAPI->SetPixelShaderFogParams( PSREG_FOG_PARAMS );
@@ -442,13 +428,9 @@ BEGIN_VS_SHADER( Sprite_DX9,
 					}
 					else
 					{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 						DECLARE_DYNAMIC_PIXEL_SHADER( sprite_ps20 );
 						SET_DYNAMIC_PIXEL_SHADER_COMBO( HDRENABLED,  IsHDREnabled() );
 						SET_DYNAMIC_PIXEL_SHADER( sprite_ps20 );
-#else
-						RD_SHADER_MODEL_20_CRASH;
-#endif
 					}
 
 					pShaderAPI->SetPixelShaderFogParams( PSREG_FOG_PARAMS );

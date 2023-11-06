@@ -8,9 +8,7 @@
 #include "common_hlsl_cpp_consts.h"
 #include "convar.h"
 
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "downsample_nohdr_ps20.inc"
-#endif
 #include "downsample_nohdr_ps20b.inc"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -74,13 +72,9 @@ BEGIN_VS_SHADER_FLAGS( Downsample_nohdr, "Help for Downsample_nohdr", SHADER_NOT
 			}
 			else
 			{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_STATIC_PIXEL_SHADER( Downsample_nohdr_ps20 );
 				SET_STATIC_PIXEL_SHADER_COMBO( BLOOMTYPE, params[BLOOMTYPE]->GetIntValue() );
 				SET_STATIC_PIXEL_SHADER( Downsample_nohdr_ps20 );
-#else
-				RD_SHADER_MODEL_20_CRASH;
-#endif
 			}
 		}
 
@@ -135,12 +129,8 @@ BEGIN_VS_SHADER_FLAGS( Downsample_nohdr, "Help for Downsample_nohdr", SHADER_NOT
 			}
 			else
 			{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_DYNAMIC_PIXEL_SHADER( Downsample_nohdr_ps20 );
 				SET_DYNAMIC_PIXEL_SHADER( Downsample_nohdr_ps20 );
-#else
-				RD_SHADER_MODEL_20_CRASH;
-#endif
 			}
 		}
 		Draw();

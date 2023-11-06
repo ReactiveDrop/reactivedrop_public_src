@@ -8,9 +8,7 @@
 
 #include "BaseVSShader.h"
 
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "debugmrttexture_ps20.inc"
-#endif
 #include "debugmrttexture_ps20b.inc"
 #include "debugmrttexture_vs20.inc"
 
@@ -56,13 +54,9 @@ BEGIN_VS_SHADER_FLAGS( DebugMRTTexture, "Help for DebugMRTTexture", SHADER_NOT_E
 			}
 			else
 			{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_STATIC_PIXEL_SHADER( debugmrttexture_ps20 );
 				SET_STATIC_PIXEL_SHADER_COMBO( MRTINDEX,  params[MRTINDEX]->GetIntValue() );
 				SET_STATIC_PIXEL_SHADER( debugmrttexture_ps20 );
-#else
-				RD_SHADER_MODEL_20_CRASH;
-#endif
 			}
 
 			int numTexCoords = 2;
@@ -82,12 +76,8 @@ BEGIN_VS_SHADER_FLAGS( DebugMRTTexture, "Help for DebugMRTTexture", SHADER_NOT_E
 			}
 			else
 			{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_DYNAMIC_PIXEL_SHADER( debugmrttexture_ps20 );
 				SET_DYNAMIC_PIXEL_SHADER( debugmrttexture_ps20 );
-#else
-				RD_SHADER_MODEL_20_CRASH;
-#endif
 			}
 		}
 		Draw();

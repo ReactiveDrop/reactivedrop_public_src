@@ -10,9 +10,7 @@
 #include "convar.h"
 
 // STDSHADER_DX9_DLL_EXPORT
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "spritecard_ps20.inc"
-#endif
 #include "spritecard_ps20b.inc"
 #include "spritecard_vs20.inc"
 #include "splinecard_vs20.inc"
@@ -422,7 +420,6 @@ BEGIN_VS_SHADER_FLAGS( Spritecard, "Help for Spritecard", SHADER_NOT_EDITABLE )
 			}
 			else
 			{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_STATIC_PIXEL_SHADER( spritecard_ps20 );
 				SET_STATIC_PIXEL_SHADER_COMBO( ADDBASETEXTURE2, bAdditive2ndTexture );
 				SET_STATIC_PIXEL_SHADER_COMBO( DUALSEQUENCE, bSecondSequence );
@@ -443,9 +440,6 @@ BEGIN_VS_SHADER_FLAGS( Spritecard, "Help for Spritecard", SHADER_NOT_EDITABLE )
 				SET_STATIC_PIXEL_SHADER_COMBO( OUTLINE, bOutLine );
 				SET_STATIC_PIXEL_SHADER_COMBO( SOFTEDGES, bSoftEdges );
 				SET_STATIC_PIXEL_SHADER( spritecard_ps20 );
-#else
-				RD_SHADER_MODEL_20_CRASH;
-#endif
 			}
 
 			if ( bShadowDepth )
@@ -600,12 +594,8 @@ BEGIN_VS_SHADER_FLAGS( Spritecard, "Help for Spritecard", SHADER_NOT_EDITABLE )
 			}
 			else
 			{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_DYNAMIC_PIXEL_SHADER( spritecard_ps20 );
 				SET_DYNAMIC_PIXEL_SHADER( spritecard_ps20 );
-#else
-				RD_SHADER_MODEL_20_CRASH;
-#endif
 			}
 		}
 		Draw( );

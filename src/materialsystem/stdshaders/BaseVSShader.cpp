@@ -25,9 +25,7 @@
 #endif
 
 #include "lightmappedgeneric_flashlight_vs20.inc"
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "flashlight_ps20.inc"
-#endif
 #include "flashlight_ps20b.inc"
 #include "vertexlitgeneric_flashlight_vs20.inc"
 
@@ -921,7 +919,6 @@ void CBaseVSShader::DrawFlashlight_dx90( IMaterialVar** params, IShaderDynamicAP
 		}
 		else
 		{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 			DECLARE_STATIC_PIXEL_SHADER( flashlight_ps20 );
 			SET_STATIC_PIXEL_SHADER_COMBO( NORMALMAP, nBumpMapVariant );
 			SET_STATIC_PIXEL_SHADER_COMBO( NORMALMAP2, bBump2 );
@@ -930,9 +927,6 @@ void CBaseVSShader::DrawFlashlight_dx90( IMaterialVar** params, IShaderDynamicAP
 			SET_STATIC_PIXEL_SHADER_COMBO( DETAILTEXTURE, bDetail );
 			SET_STATIC_PIXEL_SHADER_COMBO( DETAIL_BLEND_MODE, nDetailBlendMode );
 			SET_STATIC_PIXEL_SHADER( flashlight_ps20 );
-#else
-			RD_SHADER_MODEL_20_CRASH;
-#endif
 		}
 		FogToBlack();
 
@@ -1098,12 +1092,8 @@ void CBaseVSShader::DrawFlashlight_dx90( IMaterialVar** params, IShaderDynamicAP
 		}
 		else
 		{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 			DECLARE_DYNAMIC_PIXEL_SHADER( flashlight_ps20 );
 			SET_DYNAMIC_PIXEL_SHADER( flashlight_ps20 );
-#else
-			RD_SHADER_MODEL_20_CRASH;
-#endif
 		}
 
 		float atten[4];										// Set the flashlight attenuation factors

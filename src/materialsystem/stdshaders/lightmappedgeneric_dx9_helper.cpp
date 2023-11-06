@@ -10,9 +10,7 @@
 #include "BaseVSShader.h"
 #include "shaderlib/commandbuilder.h"
 #include "convar.h"
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "lightmappedgeneric_ps20.inc"
-#endif
 #include "lightmappedgeneric_vs20.inc"
 #include "lightmappedgeneric_ps20b.inc"
 #include "lightmappedgeneric_vs30.inc"
@@ -734,7 +732,6 @@ void DrawLightmappedGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** params, 
 					}
 					else
 					{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 						DECLARE_STATIC_PIXEL_SHADER( lightmappedgeneric_ps20 );
 						SET_STATIC_PIXEL_SHADER_COMBO( BASETEXTURE2, hasBaseTexture2 );
 						SET_STATIC_PIXEL_SHADER_COMBO( BUMPMAP, bumpmap_variant );
@@ -759,9 +756,6 @@ void DrawLightmappedGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** params, 
 						SET_STATIC_PIXEL_SHADER_COMBO( SHADER_SRGB_READ, bShaderSrgbRead );
 						SET_STATIC_PIXEL_SHADER_COMBO( LIGHTING_PREVIEW, nLightingPreviewMode );
 						SET_STATIC_PIXEL_SHADER( lightmappedgeneric_ps20 );
-#else
-						RD_SHADER_MODEL_20_CRASH;
-#endif
 					}
 				}
 				// HACK HACK HACK - enable alpha writes all the time so that we have them for
@@ -1232,7 +1226,6 @@ void DrawLightmappedGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** params, 
 		}
 		else
 		{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 			DECLARE_DYNAMIC_PIXEL_SHADER( lightmappedgeneric_ps20 );
 			SET_DYNAMIC_PIXEL_SHADER_COMBO( FASTPATH,  bPixelShaderFastPath );
 			SET_DYNAMIC_PIXEL_SHADER_COMBO( FASTPATHENVMAPCONTRAST,  bPixelShaderFastPath && envmapContrast == 1.0f );
@@ -1240,9 +1233,6 @@ void DrawLightmappedGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** params, 
 			// Don't write fog to alpha if we're using translucency
 			SET_DYNAMIC_PIXEL_SHADER_COMBO( WRITEWATERFOGTODESTALPHA, bWriteWaterFogToAlpha );
 			SET_DYNAMIC_PIXEL_SHADER_CMD( DynamicCmdsOut, lightmappedgeneric_ps20 );
-#else
-			RD_SHADER_MODEL_20_CRASH;
-#endif
 		}
 
 		DynamicCmdsOut.End();

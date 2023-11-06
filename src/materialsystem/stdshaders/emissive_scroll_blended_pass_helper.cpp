@@ -91,9 +91,7 @@
 
 // Auto generated inc files
 #include "emissive_scroll_blended_pass_vs20.inc"
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "emissive_scroll_blended_pass_ps20.inc"
-#endif
 #include "emissive_scroll_blended_pass_ps20b.inc"
 
 #ifndef _X360
@@ -165,12 +163,8 @@ void DrawEmissiveScrollBlendedPass( CBaseVSShader *pShader, IMaterialVar** param
 			}
 			else
 			{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_STATIC_PIXEL_SHADER( emissive_scroll_blended_pass_ps20 );
 				SET_STATIC_PIXEL_SHADER( emissive_scroll_blended_pass_ps20 );
-#else
-				RD_SHADER_MODEL_20_CRASH;
-#endif
 			}
 		}
 #ifndef _X360
@@ -226,12 +220,8 @@ void DrawEmissiveScrollBlendedPass( CBaseVSShader *pShader, IMaterialVar** param
 			}
 			else
 			{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_DYNAMIC_PIXEL_SHADER( emissive_scroll_blended_pass_ps20 );
 				SET_DYNAMIC_PIXEL_SHADER( emissive_scroll_blended_pass_ps20 );
-#else
-				RD_SHADER_MODEL_20_CRASH;
-#endif
 			}
 		}
 #ifndef _X360

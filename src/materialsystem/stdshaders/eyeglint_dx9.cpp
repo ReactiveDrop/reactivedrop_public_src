@@ -10,9 +10,7 @@
 #include "shaderlib/CShader.h"
 
 #include "eyeglint_vs20.inc"
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "eyeglint_ps20.inc"
-#endif
 #include "eyeglint_ps20b.inc"
 
 // NOTE: This has to be the last file included!

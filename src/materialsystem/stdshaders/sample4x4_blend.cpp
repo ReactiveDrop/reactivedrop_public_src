@@ -62,11 +62,7 @@ BEGIN_VS_SHADER( Sample4x4_Blend, "Help for Sample4x4_Blend" )
 			}
 			else
 			{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 				pShaderShadow->SetPixelShader( params[PIXSHADER]->GetStringValue(), 0 );
-#else
-				RD_SHADER_MODEL_20_CRASH;
-#endif
 			}
 
 			pShaderShadow->EnableBlending( true );

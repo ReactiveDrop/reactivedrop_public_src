@@ -9,9 +9,7 @@
 #include "refract_dx9_helper.h"
 #include "convar.h"
 #include "refract_vs20.inc"
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "refract_ps20.inc"
-#endif
 #include "refract_ps20b.inc"
 #include "cpp_shader_constant_register_map.h"
 
@@ -226,7 +224,6 @@ void DrawRefract_DX9( CBaseVSShader *pShader, IMaterialVar** params, IShaderDyna
 		}
 		else
 		{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 			DECLARE_STATIC_PIXEL_SHADER( Refract_ps20 );
 			SET_STATIC_PIXEL_SHADER_COMBO( BLUR,  blurAmount );
 			SET_STATIC_PIXEL_SHADER_COMBO( FADEOUTONSILHOUETTE,  bFadeOutOnSilhouette );
@@ -238,9 +235,6 @@ void DrawRefract_DX9( CBaseVSShader *pShader, IMaterialVar** params, IShaderDyna
 			SET_STATIC_PIXEL_SHADER_COMBO( MIRRORABOUTVIEWPORTEDGES, bMirrorAboutViewportEdges );
 			SET_STATIC_PIXEL_SHADER_COMBO( MAGNIFY, bUseMagnification );
 			SET_STATIC_PIXEL_SHADER( Refract_ps20 );
-#else
-			RD_SHADER_MODEL_20_CRASH;
-#endif
 		}
 		pShader->DefaultFog();
 		if( bMasked )
@@ -293,12 +287,8 @@ void DrawRefract_DX9( CBaseVSShader *pShader, IMaterialVar** params, IShaderDyna
 		}
 		else
 		{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 			DECLARE_DYNAMIC_PIXEL_SHADER( Refract_ps20 );
 			SET_DYNAMIC_PIXEL_SHADER( Refract_ps20 );
-#else
-			RD_SHADER_MODEL_20_CRASH;
-#endif
 		}
 
 		pShader->SetVertexShaderTextureTransform( VERTEX_SHADER_SHADER_SPECIFIC_CONST_1, info.m_nBumpTransform );	// 1 & 2

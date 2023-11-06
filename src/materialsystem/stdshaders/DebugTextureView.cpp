@@ -4,9 +4,7 @@
 #include "shaderlib/CShader.h"
 
 #include "debugtextureview_vs20.inc"
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "debugtextureview_ps20.inc"
-#endif
 #include "debugtextureview_ps20b.inc"
 
 // NOTE: This has to be the last file included!
@@ -58,13 +56,9 @@ BEGIN_VS_SHADER( DebugTextureView_dx9, "Help for DebugTextureView" )
 			}
 			else
 			{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_STATIC_PIXEL_SHADER( DebugTextureView_ps20 );
 				SET_STATIC_PIXEL_SHADER_COMBO( SHOWALPHA, params[SHOWALPHA]->GetIntValue() != 0 );
 				SET_STATIC_PIXEL_SHADER( DebugTextureView_ps20 );
-#else
-				RD_SHADER_MODEL_20_CRASH;
-#endif
 			}
 		}
 
@@ -100,13 +94,9 @@ BEGIN_VS_SHADER( DebugTextureView_dx9, "Help for DebugTextureView" )
 			}
 			else
 			{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_DYNAMIC_PIXEL_SHADER( DebugTextureView_ps20 );
 				SET_DYNAMIC_PIXEL_SHADER_COMBO( ISCUBEMAP, pTexture->IsCubeMap() );
 				SET_DYNAMIC_PIXEL_SHADER( DebugTextureView_ps20 );
-#else
-				RD_SHADER_MODEL_20_CRASH;
-#endif
 			}
 		}
 		Draw();

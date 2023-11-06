@@ -8,9 +8,7 @@
 #include "BaseVSShader.h"
 
 #include "screenspaceeffect_vs20.inc"
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "bloom_ps20.inc"
-#endif
 #include "bloom_ps20b.inc"
 
 // NOTE: This has to be the last file included!
@@ -62,12 +60,8 @@ BEGIN_VS_SHADER_FLAGS( Bloom, "Help for Bloom", SHADER_NOT_EDITABLE )
 			}
 			else
 			{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_STATIC_PIXEL_SHADER( Bloom_ps20 );
 				SET_STATIC_PIXEL_SHADER( Bloom_ps20 );
-#else
-				RD_SHADER_MODEL_20_CRASH;
-#endif
 			}
 		}
 
@@ -85,12 +79,8 @@ BEGIN_VS_SHADER_FLAGS( Bloom, "Help for Bloom", SHADER_NOT_EDITABLE )
 			}
 			else
 			{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_DYNAMIC_PIXEL_SHADER( Bloom_ps20 );
 				SET_DYNAMIC_PIXEL_SHADER( Bloom_ps20 );
-#else
-				RD_SHADER_MODEL_20_CRASH;
-#endif
 			}
 		}
 		Draw();

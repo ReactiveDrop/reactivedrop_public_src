@@ -8,9 +8,7 @@
 #include "BaseVSShader.h"
 
 #include "screenspaceeffect_vs20.inc"
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "floattoscreen_ps20.inc"
-#endif
 #include "floattoscreen_ps20b.inc"
 #include "convar.h"
 
@@ -80,11 +78,7 @@ BEGIN_VS_SHADER_FLAGS( floattoscreen, "Help for floattoscreen", SHADER_NOT_EDITA
 			}
 			else
 			{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 				pShaderShadow->SetPixelShader( params[PIXSHADER]->GetStringValue(), 0 );
-#else
-				RD_SHADER_MODEL_20_CRASH;
-#endif
 			}
 		}
 

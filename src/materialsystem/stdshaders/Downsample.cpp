@@ -8,9 +8,7 @@
 #include "BaseVSShader.h"
 #include "common_hlsl_cpp_consts.h"
 
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "downsample_ps20.inc"
-#endif
 #include "downsample_ps20b.inc"
 
 // NOTE: This has to be the last file included!
@@ -55,12 +53,8 @@ BEGIN_VS_SHADER_FLAGS( Downsample, "Help for Downsample", SHADER_NOT_EDITABLE )
 			}
 			else
 			{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_STATIC_PIXEL_SHADER( Downsample_ps20 );
 				SET_STATIC_PIXEL_SHADER( Downsample_ps20 );
-#else
-				RD_SHADER_MODEL_20_CRASH;
-#endif
 			}
 		}
 
@@ -102,12 +96,8 @@ BEGIN_VS_SHADER_FLAGS( Downsample, "Help for Downsample", SHADER_NOT_EDITABLE )
 			}
 			else
 			{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_DYNAMIC_PIXEL_SHADER( Downsample_ps20 );
 				SET_DYNAMIC_PIXEL_SHADER( Downsample_ps20 );
-#else
-				RD_SHADER_MODEL_20_CRASH;
-#endif
 			}
 		}
 		Draw();

@@ -3,9 +3,7 @@
 #include "BaseVSShader.h"
 #include "convar.h"
 
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "splinerope_ps20.inc"
-#endif
 #include "splinerope_ps20b.inc"
 #include "splinerope_vs20.inc"
 
@@ -103,14 +101,10 @@ BEGIN_VS_SHADER( SplineRope, "Help for SplineRope" )
 			}
 			else
 			{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_STATIC_PIXEL_SHADER( splinerope_ps20 );
 				SET_STATIC_PIXEL_SHADER_COMBO( SHADER_SRGB_READ, bShaderSrgbRead );
 				SET_STATIC_PIXEL_SHADER_COMBO( SHADOWDEPTH, bShadowDepth );
 				SET_STATIC_PIXEL_SHADER( splinerope_ps20 );
-#else
-				RD_SHADER_MODEL_20_CRASH;
-#endif
 			}
 		}
 		DYNAMIC_STATE
@@ -158,13 +152,9 @@ BEGIN_VS_SHADER( SplineRope, "Help for SplineRope" )
 			}
 			else
 			{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_DYNAMIC_PIXEL_SHADER( splinerope_ps20 );
 				SET_DYNAMIC_PIXEL_SHADER_COMBO( WRITE_DEPTH_TO_DESTALPHA, pShaderAPI->ShouldWriteDepthToDestAlpha() );
 				SET_DYNAMIC_PIXEL_SHADER( splinerope_ps20 );
-#else
-				RD_SHADER_MODEL_20_CRASH;
-#endif
 			}
 		}
 		Draw( );

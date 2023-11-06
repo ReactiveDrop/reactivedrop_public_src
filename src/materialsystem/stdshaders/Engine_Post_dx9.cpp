@@ -8,9 +8,7 @@
 #include "basevsshader.h"
 
 #include "screenspaceeffect_vs20.inc"
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "Engine_Post_ps20.inc"
-#endif
 #include "Engine_Post_ps20b.inc"
 
 #include "..\materialsystem_global.h"
@@ -349,14 +347,10 @@ BEGIN_VS_SHADER_FLAGS( Engine_Post_dx9, "Engine post-processing effects (softwar
 			}
 			else
 			{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_STATIC_PIXEL_SHADER( Engine_Post_ps20 );
 				SET_STATIC_PIXEL_SHADER_COMBO( TOOL_MODE, bToolMode );
 				SET_STATIC_PIXEL_SHADER_COMBO( DEPTH_BLUR_ENABLE, false );
 				SET_STATIC_PIXEL_SHADER( Engine_Post_ps20 );
-#else
-				RD_SHADER_MODEL_20_CRASH;
-#endif
 			}
 		}
 		DYNAMIC_STATE
@@ -649,15 +643,11 @@ BEGIN_VS_SHADER_FLAGS( Engine_Post_dx9, "Engine post-processing effects (softwar
 			}
 			else
 			{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_DYNAMIC_PIXEL_SHADER( Engine_Post_ps20 );
 				SET_DYNAMIC_PIXEL_SHADER_COMBO( AA_ENABLE,						aaEnabled );
 				SET_DYNAMIC_PIXEL_SHADER_COMBO( COL_CORRECT_NUM_LOOKUPS,		colCorrectNumLookups );
 				SET_DYNAMIC_PIXEL_SHADER_COMBO( VOMIT_ENABLE,					bVomitEnable );
 				SET_DYNAMIC_PIXEL_SHADER( Engine_Post_ps20 );
-#else
-				RD_SHADER_MODEL_20_CRASH;
-#endif
 			}
 
 			DECLARE_DYNAMIC_VERTEX_SHADER( screenspaceeffect_vs20 );

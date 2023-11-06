@@ -8,9 +8,7 @@
 
 #include "BaseVSShader.h"
 
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 #include "shatteredglass_ps20.inc"
-#endif
 #include "shatteredglass_ps20b.inc"
 #include "shatteredglass_vs20.inc"
 
@@ -212,7 +210,6 @@ BEGIN_VS_SHADER( ShatteredGlass,
 			}
 			else
 			{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_STATIC_PIXEL_SHADER( ShatteredGlass_ps20 );
 				SET_STATIC_PIXEL_SHADER_COMBO( CUBEMAP,  bHasEnvmap );
 				SET_STATIC_PIXEL_SHADER_COMBO( VERTEXCOLOR,  bHasVertexColor );
@@ -220,9 +217,6 @@ BEGIN_VS_SHADER( ShatteredGlass,
 				SET_STATIC_PIXEL_SHADER_COMBO( BASEALPHAENVMAPMASK,  bHasBaseAlphaEnvmapMask );
 				SET_STATIC_PIXEL_SHADER_COMBO( HDRTYPE,  g_pHardwareConfig->GetHDRType() );
 				SET_STATIC_PIXEL_SHADER( ShatteredGlass_ps20 );
-#else
-				RD_SHADER_MODEL_20_CRASH;
-#endif
 			}
 
 			DefaultFog();
@@ -261,12 +255,8 @@ BEGIN_VS_SHADER( ShatteredGlass,
 			}
 			else
 			{
-#ifdef RD_SUPPORT_SHADER_MODEL_20
 				DECLARE_DYNAMIC_PIXEL_SHADER( ShatteredGlass_ps20 );
 				SET_DYNAMIC_PIXEL_SHADER( ShatteredGlass_ps20 );
-#else
-				RD_SHADER_MODEL_20_CRASH;
-#endif
 			}
 
 			SetEnvMapTintPixelShaderDynamicState( 0, ENVMAPTINT, -1 );
