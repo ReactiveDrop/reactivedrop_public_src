@@ -64,9 +64,10 @@ public:
 		// 0. mat_local_contrast_enable
 		// 1. rd_func_precipitation_enable
 		// 2. mat_bloom_scalefactor_scalar
-		// 3. rd_env_projectedtexture_enabled
-		// 4. rd_flashlightshadows
-		// 5. rd_flashlight_dlight_enable
+		// 3. mat_depth_blur_strength_override
+		// 4. rd_env_projectedtexture_enabled
+		// 5. rd_flashlightshadows
+		// 6. rd_flashlight_dlight_enable
 		// 7. rd_simple_beacons
 		// 8. muzzleflash_light
 		//
@@ -87,7 +88,7 @@ public:
 		Assert( !V_strcmp( s_pVideoConfigSettingsWhitelist[21].m_szName, "setting.preferhardwaresync" ) );
 		s_pVideoConfigSettingsWhitelist[21] = VideoConfigSetting_t{ "setting.mat_bloom_scalefactor_scalar", true, true, true, false };
 		Assert( !V_strcmp( s_pVideoConfigSettingsWhitelist[22].m_szName, "setting.centroidhack" ) );
-		s_pVideoConfigSettingsWhitelist[22] = VideoConfigSetting_t{ "setting.", true, true, true, false };
+		s_pVideoConfigSettingsWhitelist[22] = VideoConfigSetting_t{ "setting.mat_depth_blur_strength_override", false, true, true, false };
 		Assert( !V_strcmp( s_pVideoConfigSettingsWhitelist[23].m_szName, "setting.preferzprepass" ) );
 		s_pVideoConfigSettingsWhitelist[23] = VideoConfigSetting_t{ "setting.rd_env_projectedtexture_enabled", true, true, true, false };
 		Assert( !V_strcmp( s_pVideoConfigSettingsWhitelist[24].m_szName, "setting.prefertexturesinhwmemory" ) );
