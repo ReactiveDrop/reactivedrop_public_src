@@ -1175,3 +1175,12 @@ bool ToolsEnabled()
 	static bool bToolsMode = ( CommandLine()->CheckParm( "-tools" ) != NULL );
 	return bToolsMode;
 }
+
+static struct ForceShaderDllToStayLoaded
+{
+	ForceShaderDllToStayLoaded()
+	{
+		// add an extra reference to our DLL so the engine doesn't crash by unloading us early
+		Sys_LoadModule( "game_shader_dx9.dll" );
+	}
+} s_ForceShaderDllToStayLoaded;
