@@ -8,10 +8,14 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-static class VideoConfigVariableListHack_t
+static class CRD_VideoConfigVariableListHack : public CAutoGameSystem
 {
 public:
-	VideoConfigVariableListHack_t()
+	CRD_VideoConfigVariableListHack() : CAutoGameSystem{ "CRD_VideoConfigVariableListHack" }
+	{
+	}
+
+	void PostInit() override
 	{
 		// videocfg.lib is statically linked, but the variable we need is marked as static, so we can't reference it using an extern.
 		// Instead, we have to do this garbage:
@@ -28,7 +32,17 @@ public:
 			bool m_bSave;
 			bool m_bIsConVar;
 			bool m_bAuto;
-		} *s_pVideoConfigSettingsWhitelist = *reinterpret_cast< VideoConfigSetting_t *const * >( pUpdateCurrentVideoConfig + 51 );
+		};
+		VideoConfigSetting_t *s_pVideoConfigSettingsWhitelistStatic = *reinterpret_cast< VideoConfigSetting_t *const * >( pUpdateCurrentVideoConfig + 51 );
+
+		// We also need to edit the engine's copy of the static library, so let's grab that now.
+		ConCommand *pMatSaveChanges = g_pCVar->FindCommand( "mat_savechanges" );
+		Assert( pMatSaveChanges );
+		const byte *pMatSaveChangesFunc = *reinterpret_cast< const byte *const * >( reinterpret_cast< const byte * >( pMatSaveChanges ) + sizeof( ConCommandBase ) );
+		Assert( pMatSaveChangesFunc[74] == 0xE8 );
+		pMatSaveChangesFunc += 79 + *reinterpret_cast< const intptr_t * >( pMatSaveChangesFunc + 75 );
+		Assert( pMatSaveChangesFunc[50] == 0xBE );
+		VideoConfigSetting_t *s_pVideoConfigSettingsWhitelistEngine = *reinterpret_cast< VideoConfigSetting_t *const * >( pMatSaveChangesFunc + 51 );
 
 		// We can just barely fit our new variables into the videocfg.lib array due to unused names:
 		// [0] setting.cpu_level
@@ -77,28 +91,48 @@ public:
 		// - rd_health_effect
 
 		// But before we get to that: videocfg.lib was built with setting.mat_grain_scale_override set to 1 for enabled, but we use -1.
-		Assert( !V_strcmp( s_pVideoConfigSettingsWhitelist[7].m_szName, "setting.mat_grain_scale_override" ) );
-		s_pVideoConfigSettingsWhitelist[7].m_bUseMin = false;
+		Assert( !V_strcmp( s_pVideoConfigSettingsWhitelistEngine[7].m_szName, "setting.mat_grain_scale_override" ) );
+		Assert( !V_strcmp( s_pVideoConfigSettingsWhitelistStatic[7].m_szName, "setting.mat_grain_scale_override" ) );
+		s_pVideoConfigSettingsWhitelistEngine[7].m_bUseMin = false;
+		s_pVideoConfigSettingsWhitelistStatic[7].m_bUseMin = false;
 
 		// Now we go through and replace the unused keys with our keys.
-		Assert( !V_strcmp( s_pVideoConfigSettingsWhitelist[18].m_szName, "setting.dxlevel" ) );
-		s_pVideoConfigSettingsWhitelist[18] = VideoConfigSetting_t{ "setting.mat_local_contrast_enable", true, true, true, false };
-		Assert( !V_strcmp( s_pVideoConfigSettingsWhitelist[19].m_szName, "setting.mindxlevel" ) );
-		s_pVideoConfigSettingsWhitelist[19] = VideoConfigSetting_t{ "setting.rd_func_precipitation_enable", true, true, true, false };
-		Assert( !V_strcmp( s_pVideoConfigSettingsWhitelist[21].m_szName, "setting.preferhardwaresync" ) );
-		s_pVideoConfigSettingsWhitelist[21] = VideoConfigSetting_t{ "setting.mat_bloom_scalefactor_scalar", true, true, true, false };
-		Assert( !V_strcmp( s_pVideoConfigSettingsWhitelist[22].m_szName, "setting.centroidhack" ) );
-		s_pVideoConfigSettingsWhitelist[22] = VideoConfigSetting_t{ "setting.mat_depth_blur_strength_override", false, true, true, false };
-		Assert( !V_strcmp( s_pVideoConfigSettingsWhitelist[23].m_szName, "setting.preferzprepass" ) );
-		s_pVideoConfigSettingsWhitelist[23] = VideoConfigSetting_t{ "setting.rd_env_projectedtexture_enabled", true, true, true, false };
-		Assert( !V_strcmp( s_pVideoConfigSettingsWhitelist[24].m_szName, "setting.prefertexturesinhwmemory" ) );
-		s_pVideoConfigSettingsWhitelist[24] = VideoConfigSetting_t{ "setting.rd_flashlightshadows", true, true, true, false };
-		Assert( !V_strcmp( s_pVideoConfigSettingsWhitelist[25].m_szName, "setting.laptop" ) );
-		s_pVideoConfigSettingsWhitelist[25] = VideoConfigSetting_t{ "setting.rd_flashlight_dlight_enable", true, true, true, false };
-		Assert( !V_strcmp( s_pVideoConfigSettingsWhitelist[26].m_szName, "setting.suppresspixelshadercentroidhackfixup" ) );
-		s_pVideoConfigSettingsWhitelist[26] = VideoConfigSetting_t{ "setting.rd_simple_beacons", false, true, true, false };
-		Assert( !V_strcmp( s_pVideoConfigSettingsWhitelist[27].m_szName, "setting.nouserclipplanes" ) );
-		s_pVideoConfigSettingsWhitelist[27] = VideoConfigSetting_t{ "setting.muzzleflash_light", true, true, true, false };
+		Assert( !V_strcmp( s_pVideoConfigSettingsWhitelistEngine[18].m_szName, "setting.dxlevel" ) );
+		Assert( !V_strcmp( s_pVideoConfigSettingsWhitelistStatic[18].m_szName, "setting.dxlevel" ) );
+		s_pVideoConfigSettingsWhitelistEngine[18] = VideoConfigSetting_t{ "setting.mat_local_contrast_enable", true, true, true, false };
+		s_pVideoConfigSettingsWhitelistStatic[18] = VideoConfigSetting_t{ "setting.mat_local_contrast_enable", true, true, true, false };
+		Assert( !V_strcmp( s_pVideoConfigSettingsWhitelistEngine[19].m_szName, "setting.mindxlevel" ) );
+		Assert( !V_strcmp( s_pVideoConfigSettingsWhitelistStatic[19].m_szName, "setting.mindxlevel" ) );
+		s_pVideoConfigSettingsWhitelistEngine[19] = VideoConfigSetting_t{ "setting.rd_func_precipitation_enable", true, true, true, false };
+		s_pVideoConfigSettingsWhitelistStatic[19] = VideoConfigSetting_t{ "setting.rd_func_precipitation_enable", true, true, true, false };
+		Assert( !V_strcmp( s_pVideoConfigSettingsWhitelistEngine[21].m_szName, "setting.preferhardwaresync" ) );
+		Assert( !V_strcmp( s_pVideoConfigSettingsWhitelistStatic[21].m_szName, "setting.preferhardwaresync" ) );
+		s_pVideoConfigSettingsWhitelistEngine[21] = VideoConfigSetting_t{ "setting.mat_bloom_scalefactor_scalar", true, true, true, false };
+		s_pVideoConfigSettingsWhitelistStatic[21] = VideoConfigSetting_t{ "setting.mat_bloom_scalefactor_scalar", true, true, true, false };
+		Assert( !V_strcmp( s_pVideoConfigSettingsWhitelistEngine[22].m_szName, "setting.centroidhack" ) );
+		Assert( !V_strcmp( s_pVideoConfigSettingsWhitelistStatic[22].m_szName, "setting.centroidhack" ) );
+		s_pVideoConfigSettingsWhitelistEngine[22] = VideoConfigSetting_t{ "setting.mat_depth_blur_strength_override", false, true, true, false };
+		s_pVideoConfigSettingsWhitelistStatic[22] = VideoConfigSetting_t{ "setting.mat_depth_blur_strength_override", false, true, true, false };
+		Assert( !V_strcmp( s_pVideoConfigSettingsWhitelistEngine[23].m_szName, "setting.preferzprepass" ) );
+		Assert( !V_strcmp( s_pVideoConfigSettingsWhitelistStatic[23].m_szName, "setting.preferzprepass" ) );
+		s_pVideoConfigSettingsWhitelistEngine[23] = VideoConfigSetting_t{ "setting.rd_env_projectedtexture_enabled", true, true, true, false };
+		s_pVideoConfigSettingsWhitelistStatic[23] = VideoConfigSetting_t{ "setting.rd_env_projectedtexture_enabled", true, true, true, false };
+		Assert( !V_strcmp( s_pVideoConfigSettingsWhitelistEngine[24].m_szName, "setting.prefertexturesinhwmemory" ) );
+		Assert( !V_strcmp( s_pVideoConfigSettingsWhitelistStatic[24].m_szName, "setting.prefertexturesinhwmemory" ) );
+		s_pVideoConfigSettingsWhitelistEngine[24] = VideoConfigSetting_t{ "setting.rd_flashlightshadows", true, true, true, false };
+		s_pVideoConfigSettingsWhitelistStatic[24] = VideoConfigSetting_t{ "setting.rd_flashlightshadows", true, true, true, false };
+		Assert( !V_strcmp( s_pVideoConfigSettingsWhitelistEngine[25].m_szName, "setting.laptop" ) );
+		Assert( !V_strcmp( s_pVideoConfigSettingsWhitelistStatic[25].m_szName, "setting.laptop" ) );
+		s_pVideoConfigSettingsWhitelistEngine[25] = VideoConfigSetting_t{ "setting.rd_flashlight_dlight_enable", true, true, true, false };
+		s_pVideoConfigSettingsWhitelistStatic[25] = VideoConfigSetting_t{ "setting.rd_flashlight_dlight_enable", true, true, true, false };
+		Assert( !V_strcmp( s_pVideoConfigSettingsWhitelistEngine[26].m_szName, "setting.suppresspixelshadercentroidhackfixup" ) );
+		Assert( !V_strcmp( s_pVideoConfigSettingsWhitelistStatic[26].m_szName, "setting.suppresspixelshadercentroidhackfixup" ) );
+		s_pVideoConfigSettingsWhitelistEngine[26] = VideoConfigSetting_t{ "setting.rd_simple_beacons", false, true, true, false };
+		s_pVideoConfigSettingsWhitelistStatic[26] = VideoConfigSetting_t{ "setting.rd_simple_beacons", false, true, true, false };
+		Assert( !V_strcmp( s_pVideoConfigSettingsWhitelistEngine[27].m_szName, "setting.nouserclipplanes" ) );
+		Assert( !V_strcmp( s_pVideoConfigSettingsWhitelistStatic[27].m_szName, "setting.nouserclipplanes" ) );
+		s_pVideoConfigSettingsWhitelistEngine[27] = VideoConfigSetting_t{ "setting.muzzleflash_light", true, true, true, false };
+		s_pVideoConfigSettingsWhitelistStatic[27] = VideoConfigSetting_t{ "setting.muzzleflash_light", true, true, true, false };
 	}
 } s_VideoConfigVariableListHack;
 
