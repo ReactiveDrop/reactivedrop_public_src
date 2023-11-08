@@ -23,6 +23,7 @@ IMPLEMENT_SERVERCLASS_ST_NOBASE(CPlayerResource, DT_PlayerResource)
 	SendPropArray3( SENDINFO_ARRAY3(m_iTeam), SendPropInt( SENDINFO_ARRAY(m_iTeam), 4 ) ),
 	SendPropArray3( SENDINFO_ARRAY3(m_bAlive), SendPropInt( SENDINFO_ARRAY(m_bAlive), 1, SPROP_UNSIGNED ) ),
 	SendPropArray3( SENDINFO_ARRAY3(m_iHealth), SendPropInt( SENDINFO_ARRAY(m_iHealth), 10, SPROP_UNSIGNED ) ),
+	SendPropArray3( SENDINFO_ARRAY3(m_iCountryCode), SendPropInt( SENDINFO_ARRAY(m_iCountryCode), 10, SPROP_UNSIGNED ) ),
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CPlayerResource )
@@ -60,6 +61,7 @@ void CPlayerResource::Spawn( void )
 		m_bConnected.Set( i, 0 );
 		m_iTeam.Set( i, 0 );
 		m_bAlive.Set( i, 0 );
+		m_iCountryCode.Set( i, ( 'X' - 'A' ) + ( 'X' - 'A' ) * 26 );
 	}
 
 	SetThink( &CPlayerResource::ResourceThink );
@@ -108,18 +110,23 @@ void CPlayerResource::UpdatePlayerData( void )
 
 			// Don't update ping / packetloss everytime
 
-			if ( !(m_nUpdateCounter%20) )
+			if ( !( m_nUpdateCounter % 20 ) )
 			{
-				// update ping all 20 think ticks = (20*0.1=2seconds)
+				// update ping every 20 think ticks = (20*0.1=2seconds)
 				int ping, packetloss;
 				UTIL_GetPlayerConnectionInfo( i, ping, packetloss );
-				
-				// calc avg for scoreboard so it's not so jittery
-				ping = 0.8f * m_iPing.Get(i) + 0.2f * ping;
 
-				
+				// calc avg for scoreboard so it's not so jittery
+				ping = 0.8f * m_iPing.Get( i ) + 0.2f * ping;
+
+
 				m_iPing.Set( i, ping );
 				// m_iPacketloss.Set( i, packetloss );
+
+				const char *szCountryCode = engine->GetClientConVarValue( pPlayer->entindex(), "rd_represented_country" );
+				if ( !szCountryCode || szCountryCode[0] < 'A' || szCountryCode[0] > 'Z' || szCountryCode[1] < 'A' || szCountryCode[1] > 'Z' || szCountryCode[2] != '\0' )
+					szCountryCode = "XX";
+				m_iCountryCode.Set( i, ( szCountryCode[0] - 'A' ) + ( szCountryCode[1] - 'A' ) * 26 );
 			}
 		}
 		else

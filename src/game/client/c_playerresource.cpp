@@ -44,6 +44,7 @@ IMPLEMENT_CLIENTCLASS_DT_NOBASE(C_PlayerResource, DT_PlayerResource, CPlayerReso
 	RecvPropArray3( RECVINFO_ARRAY(m_iTeam), RecvPropInt( RECVINFO(m_iTeam[0]), 0, RecvProxy_ChangedTeam )),
 	RecvPropArray3( RECVINFO_ARRAY(m_bAlive), RecvPropInt( RECVINFO(m_bAlive[0]))),
 	RecvPropArray3( RECVINFO_ARRAY(m_iHealth), RecvPropInt( RECVINFO(m_iHealth[0]))),
+	RecvPropArray3( RECVINFO_ARRAY(m_iCountryCode), RecvPropInt( RECVINFO(m_iCountryCode[0]))),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_PlayerResource )
@@ -56,6 +57,7 @@ BEGIN_PREDICTION_DATA( C_PlayerResource )
 	DEFINE_PRED_ARRAY( m_iTeam, FIELD_INTEGER, MAX_PLAYERS+1, FTYPEDESC_PRIVATE ),
 	DEFINE_PRED_ARRAY( m_bAlive, FIELD_BOOLEAN, MAX_PLAYERS+1, FTYPEDESC_PRIVATE ),
 	DEFINE_PRED_ARRAY( m_iHealth, FIELD_INTEGER, MAX_PLAYERS+1, FTYPEDESC_PRIVATE ),
+	DEFINE_PRED_ARRAY( m_iCountryCode, FIELD_INTEGER, MAX_PLAYERS + 1, FTYPEDESC_PRIVATE ),
 
 END_PREDICTION_DATA()	
 
@@ -71,6 +73,7 @@ C_PlayerResource::C_PlayerResource()
 	for ( int i=0; i<ARRAYSIZE(m_szName); ++i )
 	{
 		m_szName[i] = AllocPooledString( PLAYER_UNCONNECTED_NAME );
+		m_iCountryCode[i] = ( 'X' - 'A' ) + ( 'X' - 'A' ) * 26;
 	}
 	memset( m_iPing, 0, sizeof( m_iPing ) );
 //	memset( m_iPacketloss, 0, sizeof( m_iPacketloss ) );
@@ -116,6 +119,8 @@ void C_PlayerResource::OnDataChanged(DataUpdateType_t updateType)
 			if ( IsConnected( slot ) && engine->GetPlayerInfo( slot, &info ) && !info.fakeplayer && !info.ishltv && !info.isreplay )
 			{
 				int score = g_PR->GetPlayerScore( slot );
+				char szCountryCode[3]{};
+				g_PR->GetCountryCode( slot, szCountryCode );
 				CBasePlayer *pPlayer = UTIL_PlayerByIndex( slot );
 				if ( pPlayer )
 				{
@@ -127,7 +132,7 @@ void C_PlayerResource::OnDataChanged(DataUpdateType_t updateType)
 					{
 						playerIDs.AppendFormat( "%02x", byte( *psz ) );
 					}
-					playerIDs.AppendFormat( "|%d|%f", score, gpGlobals->curtime - pPlayer->GetConnectionTime() );
+					playerIDs.AppendFormat( "|%d|%f|%s", score, gpGlobals->curtime - pPlayer->GetConnectionTime(), szCountryCode );
 				}
 			}
 		}
@@ -417,6 +422,21 @@ const Color &C_PlayerResource::GetTeamColor(int index )
 	{
 		return m_Colors[index];
 	}
+}
+
+void C_PlayerResource::GetCountryCode( int iIndex, char( &szCountryCode )[3] )
+{
+	if ( !IsConnected( iIndex ) )
+	{
+		szCountryCode[0] = 'X';
+		szCountryCode[1] = 'X';
+		szCountryCode[2] = '\0';
+		return;
+	}
+
+	szCountryCode[0] = ( m_iCountryCode[iIndex] % 26 ) + 'A';
+	szCountryCode[1] = ( m_iCountryCode[iIndex] / 26 ) + 'A';
+	szCountryCode[2] = '\0';
 }
 
 //-----------------------------------------------------------------------------

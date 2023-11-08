@@ -172,36 +172,27 @@ void UTIL_RD_ReadLobbyScoreboard( CSteamID lobby, CUtlVector<RD_Lobby_Scoreboard
 	FOR_EACH_VEC( Players, i )
 	{
 		CSplitString PlayerInfo{ Players[i], "|" };
-		Assert( PlayerInfo.Count() == 3 );
-		if ( PlayerInfo.Count() != 3 )
+		Assert( PlayerInfo.Count() == 4 );
+		if ( PlayerInfo.Count() != 4 )
 			continue;
-
-		const char *szHexName = PlayerInfo[0];
-		if ( V_strstr( szHexName, "ffffff" ) )
-		{
-			// encoding problem in older versions of the game; work around it
-			static char s_szFixedHexName[k_cchPersonaNameMax * 2 + 1];
-			int j = 0;
-			for ( const char *psz = szHexName; psz[0] && psz[1]; psz += 2 )
-			{
-				if ( psz[0] == 'f' && psz[1] == 'f' && psz[2] == 'f' && psz[3] == 'f' && psz[4] == 'f' && psz[5] == 'f' && psz[6] && psz[7] )
-				{
-					psz += 6;
-					Assert( *psz == '8' || *psz == '9' || ( *psz >= 'a' && *psz <= 'f' ) );
-				}
-				s_szFixedHexName[j++] = psz[0];
-				s_szFixedHexName[j++] = psz[1];
-			}
-			s_szFixedHexName[j] = '\0';
-			szHexName = s_szFixedHexName;
-		}
 
 		int index = scoreboard.AddToTail();
 		char szName[k_cchPersonaNameMax];
-		V_hextobinary( szHexName, V_strlen( szHexName ), reinterpret_cast< byte * >( szName ), sizeof( szName ) );
+		V_hextobinary( PlayerInfo[0], V_strlen( PlayerInfo[0] ), reinterpret_cast< byte * >( szName ), sizeof( szName ) );
 		V_UTF8ToUnicode( szName, scoreboard[index].Name, sizeof( scoreboard[index].Name ) );
 		scoreboard[index].Score = V_atoi( PlayerInfo[1] );
 		scoreboard[index].Connected = V_atof( PlayerInfo[2] );
+		if ( V_strlen( PlayerInfo[3] ) == 2 )
+		{
+			scoreboard[index].CountryCode[0] = PlayerInfo[3][0];
+			scoreboard[index].CountryCode[1] = PlayerInfo[3][1];
+		}
+		else
+		{
+			scoreboard[index].CountryCode[0] = 'X';
+			scoreboard[index].CountryCode[1] = 'X';
+		}
+		scoreboard[index].CountryCode[2] = '\0';
 	}
 }
 

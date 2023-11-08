@@ -54,6 +54,9 @@ public : // IGameResources intreface
 	virtual	void	OnDataChanged(DataUpdateType_t updateType);
 	virtual void	TeamChanged( void ){ }
 
+	// added after all the other virtual functions to avoid breaking sourcemod
+	virtual void	GetCountryCode( int index, char( &szCountryCode )[3] );
+
 	void	TogglePlayerMuteState( int slot, bool bMuteDontCache );
 	bool	IsMuted( int slot );
 
@@ -70,6 +73,7 @@ protected:
 	int		m_iTeam[MAX_PLAYERS+1];
 	bool	m_bAlive[MAX_PLAYERS+1];
 	int		m_iHealth[MAX_PLAYERS+1];
+	short	m_iCountryCode[MAX_PLAYERS+1];
 	Color	m_Colors[MAX_TEAMS];
 
 };

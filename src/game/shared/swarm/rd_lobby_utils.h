@@ -27,6 +27,7 @@ struct RD_Lobby_Scoreboard_Entry_t
 	wchar_t Name[k_cwchPersonaNameMax];
 	int Score;
 	float Connected;
+	char CountryCode[3];
 };
 void UTIL_RD_ReadLobbyScoreboard( CSteamID lobby, CUtlVector<RD_Lobby_Scoreboard_Entry_t> &scoreboard );
 
