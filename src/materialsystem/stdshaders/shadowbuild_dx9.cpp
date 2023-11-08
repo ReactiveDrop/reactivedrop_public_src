@@ -22,7 +22,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-static ConVar mat_displacementmap( "mat_displacementmap", "1" );
+static ConVar mat_displacementmap( "mat_displacementmap", "1", FCVAR_CHEAT );
 
 DEFINE_FALLBACK_SHADER( ShadowBuild, ShadowBuild_DX9 )
 

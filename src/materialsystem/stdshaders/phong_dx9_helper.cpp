@@ -23,7 +23,7 @@
 #include "tier0/memdbgon.h"
 
 static ConVar mat_fullbright( "mat_fullbright", "0", FCVAR_CHEAT );
-static ConVar mat_displacementmap( "mat_displacementmap", "1" );
+static ConVar mat_displacementmap( "mat_displacementmap", "1", FCVAR_CHEAT );
 static ConVar r_lightwarpidentity( "r_lightwarpidentity", "0", FCVAR_CHEAT );
 static ConVar r_rimlight( "r_rimlight", "1", FCVAR_CHEAT );
 
