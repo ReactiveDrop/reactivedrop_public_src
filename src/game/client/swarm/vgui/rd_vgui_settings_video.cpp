@@ -133,6 +133,9 @@ public:
 		Assert( !V_strcmp( s_pVideoConfigSettingsWhitelistStatic[27].m_szName, "setting.nouserclipplanes" ) );
 		s_pVideoConfigSettingsWhitelistEngine[27] = VideoConfigSetting_t{ "setting.muzzleflash_light", true, true, true, false };
 		s_pVideoConfigSettingsWhitelistStatic[27] = VideoConfigSetting_t{ "setting.muzzleflash_light", true, true, true, false };
+
+		// re-run the video settings loading code to make sure it grabs all the variables we just added to the whitelist
+		UpdateVideoConfigConVars( NULL );
 	}
 } s_VideoConfigVariableListHack;
 
