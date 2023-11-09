@@ -29,6 +29,8 @@ class C_EnvScreenOverlay : public C_BaseEntity
 public:
 	DECLARE_CLIENTCLASS();
 
+	~C_EnvScreenOverlay();
+
 	void	PreDataUpdate( DataUpdateType_t updateType );
 	void	PostDataUpdate( DataUpdateType_t updateType );
 
@@ -57,6 +59,14 @@ IMPLEMENT_CLIENTCLASS_DT( C_EnvScreenOverlay, DT_EnvScreenOverlay, CEnvScreenOve
 	RecvPropInt( RECVINFO( m_iDesiredOverlay ) ),
 	RecvPropBool( RECVINFO( m_bIsActive ) ),
 END_RECV_TABLE()
+
+C_EnvScreenOverlay::~C_EnvScreenOverlay()
+{
+	m_bWasActive = m_bIsActive;
+	m_bIsActive = false;
+
+	StopOverlays();
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: 
