@@ -129,6 +129,17 @@ void FoundPublicGames::AddPublicGamesToList()
 
 void FoundPublicGames::AddDedicatedServersToList()
 {
+	if ( !g_ReactiveDropServerList.m_InternetServers.Count() )
+	{
+		// While we're doing our first unfiltered query, show the filtered server list we retrieved on the main menu.
+		FOR_EACH_VEC( g_ReactiveDropServerList.m_PublicServers, i )
+		{
+			FoundGameListItem::Info info;
+			if ( info.SetFromServer( g_ReactiveDropServerList.m_PublicServers, i ) )
+				AddGameFromDetails( info );
+		}
+	}
+
 	g_ReactiveDropServerList.m_InternetServers.WantUpdatedServerList();
 
 	FOR_EACH_VEC( g_ReactiveDropServerList.m_InternetServers, i )
