@@ -27,6 +27,7 @@
 	#include "c_world.h"
 	#include "rd_player_reporting.h"
 	#include "asw_util_shared.h"
+	#include "asw_hud_minimap.h"
 #else
 	#include "asw_marine_resource.h"
 	#include "player.h"
@@ -352,6 +353,16 @@ static void UpdateMatchmakingTagsCallback( IConVar *pConVar, const char *pOldVal
 	// mm_max_players gets updated after it's read for the lobby, so we need to update the slot count here as well.
 	SteamMatchmaking()->SetLobbyMemberLimit( UTIL_RD_GetCurrentLobbyID(), gpGlobals->maxClients );
 	UTIL_RD_UpdateCurrentLobbyData( "members:numSlots", gpGlobals->maxClients );
+
+	{
+		HACK_GETLOCALPLAYER_GUARD( "need minimap for hostname" );
+		CASWHudMinimap *pMinimap = GET_HUDELEMENT( CASWHudMinimap );
+		Assert( pMinimap );
+		if ( pMinimap )
+		{
+			UTIL_RD_UpdateCurrentLobbyData( "system:hostname", pMinimap->m_szServerName );
+		}
+	}
 
 	PublishedFileId_t missionAddonID = pAlienSwarm->m_iMissionWorkshopID.Get();
 	if ( missionAddonID == k_PublishedFileIdInvalid )
@@ -9731,6 +9742,7 @@ static const char *const s_szNoChallengeConVars[] =
 {
 	"hostname",
 	"rd_challenge",
+	"rd_lobby_hostname",
 	"rd_lock_challenge",
 	"rd_lock_difficulty",
 	"rd_lock_hardcoreff",

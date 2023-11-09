@@ -233,7 +233,7 @@ public:
 	float m_fLastMinimapDrawSound;
 
 	// store the servername here (used by PlayerListPanel)
-	char m_szServerName[128];
+	char m_szServerName[256];
 
 private:
 };

@@ -45,6 +45,7 @@
 
 ConVar ui_game_allow_create_public( "ui_game_allow_create_public", IsPC() ? "1" : "0", FCVAR_DEVELOPMENTONLY, "When set user can create public lobbies instead of matching" );
 ConVar ui_game_allow_create_random( "ui_game_allow_create_random", "1", FCVAR_DEVELOPMENTONLY, "When set, creating a game will pick a random mission" );
+ConVar rd_lobby_hostname( "rd_lobby_hostname", "", FCVAR_ARCHIVE, "Sets the hostname of a lobby when creating a listen server. If empty, your Steam display name will be used." );
 extern ConVar mm_max_players;
 extern ConVar rd_last_game_access;
 extern ConVar rd_last_game_difficulty;
@@ -661,6 +662,12 @@ void GameSettings::OnCommand(const char *command)
 	}
 	else if( V_strcmp( command, "StartGame" ) == 0 )
 	{
+		static ConVarRef hostname{ "hostname" };
+		if ( rd_lobby_hostname.GetString()[0] != '\0' )
+			hostname.SetValue( rd_lobby_hostname.GetString() );
+		else if ( SteamFriends() )
+			hostname.SetValue( SteamFriends()->GetPersonaName() );
+
 		char const *szNetwork = m_pSettings->GetString( "system/network", "offline" );
 		if ( !Q_stricmp( szNetwork, "offline" ) )
 		{
