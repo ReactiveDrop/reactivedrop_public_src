@@ -447,7 +447,8 @@ bool FoundGameListItem::Info::SetFromLobby( CSteamID lobby )
 		netadr_t ip{ LOBBY_DATA( "system:rd_dedicated_server" ) };
 		if ( ip.IsValid() )
 		{
-			m_ServerIP.Init( ip.GetIP(), ip.GetPort(), ip.GetPort() );
+			// netadr_t wants big endian, but servernetadr_t wants little endian.
+			m_ServerIP.Init( DWordSwap( ip.GetIP() ), ip.GetPort(), ip.GetPort() );
 		}
 	}
 	TryParseEnum( m_eLobbyAccess, s_szLobbyAccessNames, LOBBY_DATA( "system:access" ), ACCESS_PUBLIC );
@@ -589,8 +590,6 @@ bool FoundGameListItem::Info::Merge( const Info &info )
 			m_Friends.AddToTail( info.m_Friends[i] );
 		}
 	}
-
-	Assert( m_Type == info.m_Type );
 
 	if ( m_Type == TYPE_LOBBY )
 	{
