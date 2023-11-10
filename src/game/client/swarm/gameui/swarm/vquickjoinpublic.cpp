@@ -81,13 +81,25 @@ void QuickJoinPublicPanel::AddServersToList( void )
 		V_UTF8ToUnicode( g_ReactiveDropServerList.m_PublicServers.GetName( iServer ), m_FriendInfo[iInfo].m_wszName, sizeof( m_FriendInfo[iInfo].m_wszName ) );
 	}
 
-	int nLobbies = g_ReactiveDropServerList.m_PublicLobbies.m_MatchingLobbies.Count();
-	if ( nLobbies > 0 )
+	if ( ISteamMatchmaking *pMatchmaking = SteamMatchmaking() )
 	{
-		int iInfo = m_FriendInfo.AddToTail();
-		m_FriendInfo[iInfo].m_eType = QuickInfo::TYPE_PUBLIC_LOBBY_COUNT_PLACEHOLDER;
-		m_FriendInfo[iInfo].m_xuid = nLobbies;
-		g_pVGuiLocalize->ConstructString( m_FriendInfo[iInfo].m_wszName, sizeof( m_FriendInfo[iInfo].m_wszName ), g_pVGuiLocalize->Find( "#L4D360UI_MainMenu_PublicLobbies_More" ), 1, UTIL_RD_CommaNumber( nLobbies ) );
+		int nLobbies = 0;
+		FOR_EACH_VEC( g_ReactiveDropServerList.m_PublicLobbies.m_MatchingLobbies, i )
+		{
+			// skip lobbies on dedicated servers in the count
+			if ( !V_strcmp( pMatchmaking->GetLobbyData( g_ReactiveDropServerList.m_PublicLobbies.m_MatchingLobbies[i], "options:server" ), "listen" ) )
+			{
+				nLobbies++;
+			}
+		}
+
+		if ( nLobbies > 0 )
+		{
+			int iInfo = m_FriendInfo.AddToTail();
+			m_FriendInfo[iInfo].m_eType = QuickInfo::TYPE_PUBLIC_LOBBY_COUNT_PLACEHOLDER;
+			m_FriendInfo[iInfo].m_xuid = nLobbies;
+			g_pVGuiLocalize->ConstructString( m_FriendInfo[iInfo].m_wszName, sizeof( m_FriendInfo[iInfo].m_wszName ), g_pVGuiLocalize->Find( "#L4D360UI_MainMenu_PublicLobbies_More" ), 1, UTIL_RD_CommaNumber( nLobbies ) );
+		}
 	}
 
 	RefreshQuery();
