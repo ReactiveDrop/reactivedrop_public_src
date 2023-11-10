@@ -10,7 +10,7 @@
 
 
 #ifdef CLIENT_DLL
-IMPLEMENT_AUTO_LIST( IRDMapTexture );
+IMPLEMENT_AUTO_LIST( IRDMapTextures );
 #else
 LINK_ENTITY_TO_CLASS( rd_map_texture, CRD_Map_Texture );
 
