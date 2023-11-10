@@ -1,5 +1,6 @@
 #include "cbase.h"
 #include "rd_hud_vscript_shared.h"
+#include "rd_font_zbalermorna.h"
 #include <vgui/IScheme.h>
 #include <vgui/ISurface.h>
 #include <vgui_controls/Controls.h>
@@ -47,6 +48,8 @@ BEGIN_ENT_SCRIPTDESC( CRD_HUD_VScript, CBaseEntity, "Alien Swarm: Reactive Drop 
 	DEFINE_SCRIPTFUNC_NAMED( Script_GetFontTall, "GetFontTall", "Returns the height of a font in pixels" )
 	DEFINE_SCRIPTFUNC_NAMED( Script_GetTextWide, "GetTextWide", "Returns the width of the given text in pixels" )
 	DEFINE_SCRIPTFUNC_NAMED( Script_PaintText, "PaintText", "Draw text on the heads-up display. Can only be called during Paint" )
+	DEFINE_SCRIPTFUNC_NAMED( Script_GetZbalermornaTextWide, "GetZbalermornaTextWide", "Returns the width of the given text in pixels" )
+	DEFINE_SCRIPTFUNC_NAMED( Script_PaintZbalermornaText, "PaintZbalermornaText", "Draw text on the heads-up display. Can only be called during Paint" )
 	DEFINE_SCRIPTFUNC_NAMED( Script_PaintRectangle, "PaintRectangle", "Draw a solid-colored rectangle on the heads-up display. Can only be called during Paint" )
 	DEFINE_SCRIPTFUNC_NAMED( Script_PaintRectangleFade, "PaintRectangleFade", "Draw a solid-colored rectangle with a gradient of opacity on the heads-up display. Can only be called during Paint" )
 	DEFINE_SCRIPTFUNC_NAMED( Script_PaintTexturedRectangle, "PaintTexturedRectangle", "Draw a textured rectangle on the heads-up display. Can only be called during Paint" )
@@ -211,6 +214,27 @@ void CRD_HUD_VScript::Script_PaintText( int x, int y, int r, int g, int b, int a
 	vgui::surface()->DrawSetTextColor( r, g, b, a );
 	vgui::surface()->DrawSetTextPos( x, y );
 	vgui::surface()->DrawUnicodeString( wsz );
+}
+
+float CRD_HUD_VScript::Script_GetZbalermornaTextWide( int font, const char *text )
+{
+	float wide, tall;
+	int fontTall = vgui::surface()->GetFontTall( font );
+	zbalermorna::MeasureText( text, fontTall, wide, tall );
+
+	return wide;
+}
+
+void CRD_HUD_VScript::Script_PaintZbalermornaText( float x, float y, int r, int g, int b, int a, int font, const char *text )
+{
+	if ( !m_bIsPainting )
+	{
+		Warning( "rd_hud_vscript (%s): PaintZbalermornaText cannot be called outside of Paint!\n", m_szClientVScript.Get() );
+		return;
+	}
+
+	int fontTall = vgui::surface()->GetFontTall( font );
+	zbalermorna::PaintText( x, y, text, fontTall, Color{ r, g, b, a } );
 }
 
 void CRD_HUD_VScript::Script_PaintRectangle( int x0, int y0, int x1, int y1, int r, int g, int b, int a )

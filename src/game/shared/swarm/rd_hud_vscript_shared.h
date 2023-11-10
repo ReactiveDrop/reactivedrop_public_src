@@ -25,6 +25,8 @@ public:
 	int Script_GetFontTall( int font );
 	int Script_GetTextWide( int font, const char *text );
 	void Script_PaintText( int x, int y, int r, int g, int b, int a, int font, const char *text );
+	float Script_GetZbalermornaTextWide( int font, const char *text );
+	void Script_PaintZbalermornaText( float x, float y, int r, int g, int b, int a, int font, const char *text );
 	void Script_PaintRectangle( int x0, int y0, int x1, int y1, int r, int g, int b, int a );
 	void Script_PaintRectangleFade( int x0, int y0, int x1, int y1, int r, int g, int b, int a0, int a1, int fadeStart, int fadeEnd, bool horizontal );
 	void Script_PaintTexturedRectangle( int x0, int y0, int x1, int y1, int r, int g, int b, int a, int texture );
