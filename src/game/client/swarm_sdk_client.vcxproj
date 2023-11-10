@@ -2179,6 +2179,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="swarm\rd_convar_hacks.cpp" />
     <ClCompile Include="swarm\rd_demo_utils.cpp" />
     <ClCompile Include="swarm\rd_font_hack.cpp" />
+    <ClCompile Include="swarm\rd_font_zbalermorna.cpp" />
     <ClCompile Include="swarm\rd_fps_max_hack.cpp" />
     <ClCompile Include="swarm\rd_hit_confirm.cpp" />
     <ClCompile Include="swarm\rd_hud_boss_bar.cpp" />
