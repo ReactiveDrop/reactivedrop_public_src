@@ -44,6 +44,7 @@ using namespace vgui;
 #include "c_asw_parasite.h"
 #include "asw_weapon_revive_tool_shared.h"
 #include "asw_util_shared.h"
+#include "rd_map_texture_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -840,6 +841,8 @@ void CASWHudMinimap::GetScaledOffset( int &ox, int &oy )
 
 void CASWHudMinimap::PaintMapSection()
 {
+	ISurface *pSurface = surface();
+
 	int wide, tall;
 	GetSize( wide, tall );
 	wide *= asw_hud_scale.GetFloat();
@@ -855,6 +858,8 @@ void CASWHudMinimap::PaintMapSection()
 
 	m_pLinePanel->SetBounds( m_MapCornerInPanel.x, m_MapCornerInPanel.y,
 		m_MapCornerInPanel.x + m_iMapSize, m_MapCornerInPanel.y + m_iMapSize );
+
+	int alpha = clamp<int>( rd_draw_minimap.GetFloat() * 255.0f, 0, 255 );
 
 	C_ASW_Player *local = C_ASW_Player::GetLocalASWPlayer();
 	if ( local )
@@ -890,9 +895,34 @@ void CASWHudMinimap::PaintMapSection()
 
 				ClipToSquare( nPoints, points, m_MapCornerInPanel, m_iMapSize );
 
-				surface()->DrawSetColor( 255, 255, 255, clamp<int>( rd_draw_minimap.GetFloat() * 255.0f, 0, 255 ) );
-				surface()->DrawSetTexture( m_nMapTextureID[iMapTextureIndex] );
-				surface()->DrawTexturedPolygon( nPoints, points );
+				pSurface->DrawSetColor( 255, 255, 255, alpha );
+				pSurface->DrawSetTexture( m_nMapTextureID[iMapTextureIndex] );
+				pSurface->DrawTexturedPolygon( nPoints, points );
+
+				FOR_EACH_VEC( IRDMapTextures::AutoList(), i )
+				{
+					C_RD_Map_Texture *pTexture = assert_cast< C_RD_Map_Texture * >( IRDMapTextures::AutoList()[i]->GetEntity() );
+					Assert( pTexture );
+					if ( !pTexture || pTexture->m_bDisabled )
+						continue;
+
+					if ( !pTexture->m_hVGuiTexture )
+					{
+						pTexture->m_hVGuiTexture = pSurface->CreateNewTextureID();
+						pSurface->DrawSetTextureFile( pTexture->m_hVGuiTexture, pTexture->m_szMaterialName, 1, false );
+					}
+
+					nPoints = 4;
+					points[0].Init( MapTextureToPanel( WorldToMapTexture( pTexture->GetTopLeftCorner() ) ), Vector2D( 0, 0 ) );
+					points[1].Init( MapTextureToPanel( WorldToMapTexture( pTexture->GetTopRightCorner() ) ), Vector2D( 1, 0 ) );
+					points[2].Init( MapTextureToPanel( WorldToMapTexture( pTexture->GetBottomRightCorner() ) ), Vector2D( 1, 1 ) );
+					points[3].Init( MapTextureToPanel( WorldToMapTexture( pTexture->GetBottomLeftCorner() ) ), Vector2D( 0, 1 ) );
+
+					ClipToSquare( nPoints, points, m_MapCornerInPanel, m_iMapSize );
+
+					pSurface->DrawSetTexture( pTexture->m_hVGuiTexture );
+					pSurface->DrawTexturedPolygon( nPoints, points );
+				}
 			}
 			else
 			{
@@ -912,9 +942,9 @@ void CASWHudMinimap::PaintMapSection()
 					{ Vector2D( map_left, map_bottom ),  Vector2D( 0, 1 ) },
 				};
 
-				surface()->DrawSetColor( 255, 255, 255, 255 );
-				surface()->DrawSetTexture( m_nMapTextureID[iMapTextureIndex] );
-				surface()->DrawTexturedPolygon( 4, points );
+				pSurface->DrawSetColor( 255, 255, 255, alpha );
+				pSurface->DrawSetTexture( m_nMapTextureID[iMapTextureIndex] );
+				pSurface->DrawTexturedPolygon( 4, points );
 			}
 		}
 	}
@@ -1296,7 +1326,7 @@ void CASWHudMinimapLinePanel::PaintScannerRing()
 
 									C_BaseEntity::EmitSound( filter, -1 /*SOUND_FROM_LOCAL_PLAYER*/, ep );
 									// if the tech is ours, then check for saying something about the incoming aliens
-									if ( pPlayer->entindex() == pMR->GetCommanderIndex() && m_pMap && pScanner->m_BlipType[k] == 0 )	// only do the speech when it's an alien, not a door
+									if ( pPlayer->entindex() == pMR->GetCommanderIndex() && pScanner->m_BlipType[k] == 0 )	// only do the speech when it's an alien, not a door
 									{
 										//Msg("client checking blip speech %d\n", i);
 										m_pMap->CheckBlipSpeech( i );
@@ -1324,12 +1354,12 @@ void CASWHudMinimapLinePanel::PaintScannerRing()
 						float ring_center_x = 0;
 						float ring_center_y = 0;
 						TextureToLinePanel( m_pMap, marine_pos, ring_center_x, ring_center_y );
-						Vertex_t points[4] =
+						Vertex_t points[4]
 						{
-						Vertex_t( Vector2D( ring_center_x - scanner_range, ring_center_y - scanner_range ), Vector2D( 0,0 ) ),
-						Vertex_t( Vector2D( ring_center_x + scanner_range, ring_center_y - scanner_range ), Vector2D( 1,0 ) ),
-						Vertex_t( Vector2D( ring_center_x + scanner_range, ring_center_y + scanner_range ), Vector2D( 1,1 ) ),
-						Vertex_t( Vector2D( ring_center_x - scanner_range, ring_center_y + scanner_range ), Vector2D( 0,1 ) )
+							{ { ring_center_x - scanner_range, ring_center_y - scanner_range }, { 0, 0 } },
+							{ { ring_center_x + scanner_range, ring_center_y - scanner_range }, { 1, 0 } },
+							{ { ring_center_x + scanner_range, ring_center_y + scanner_range }, { 1, 1 } },
+							{ { ring_center_x - scanner_range, ring_center_y + scanner_range }, { 0, 1 } },
 						};
 						surface()->DrawTexturedPolygon( 4, points );
 					}
@@ -2214,21 +2244,12 @@ void CASWHudMinimap_Border::PaintBackground()
 		return;
 
 	if ( !asw_draw_hud.GetBool() || rd_draw_minimap.GetFloat() <= 0 || m_nBlackBarTexture == -1 )
-	{
 		return;
-	}
+
 	if ( !asw_scanner_background.GetBool() )
 		return;
-	//BaseClass::PaintBackground();
 
 	vgui::surface()->DrawSetColor( Color( 255, 255, 255, asw_hud_alpha.GetInt() ) );
 	vgui::surface()->DrawSetTexture( m_nBlackBarTexture );
-	vgui::Vertex_t points[4] =
-	{
-	vgui::Vertex_t( Vector2D( 0, 0 ),										Vector2D( 0,0 ) ),
-	vgui::Vertex_t( Vector2D( GetWide(), 0 ),									Vector2D( 1,0 ) ),
-	vgui::Vertex_t( Vector2D( GetWide(), GetTall() ),		Vector2D( 1,1 ) ),
-	vgui::Vertex_t( Vector2D( 0, GetTall() ),		Vector2D( 0,1 ) )
-	};
-	vgui::surface()->DrawTexturedPolygon( 4, points );
+	vgui::surface()->DrawTexturedRect( 0, 0, GetWide(), GetTall() );
 }

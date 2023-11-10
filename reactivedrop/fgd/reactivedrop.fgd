@@ -876,3 +876,10 @@ asw_pickup_50calmg : "50cal Machine Gun"
 	maxs(vector) : "BBox Maxes" : "32 32 32" : "Maximum offset from the entity, defining the shape."
 	radius(float) : "Cubemap Radius" : "32" : "Bounding radius to find env_cubemap entities to modify."
 ]
+
+@PointClass base(Targetname, Parentname, EnableDisable, Angles) iconsprite("editor/asw_objective_dummy.vmt") obb(mins, maxs) = rd_map_texture : "Overlays a texture on top of the minimap. Can be used for moving or toggleable terrain."
+[
+	material(material) : "Material" : "" : "Texture to draw over the minimap."
+	mins(vector) : "Top Left Corner" : "-128 -128 0" : "Top left corner of the texture, in world coordinates relative to this entity."
+	maxs(vector) : "Bottom Right Corner" : "128 128 0" : "Bottom right corner of the texture, in world coordinates relative to this entity."
+]
