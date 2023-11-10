@@ -1,4 +1,5 @@
 #include "cbase.h"
+#include "rd_font_zbalermorna.h"
 #include <vgui_controls/Controls.h>
 #include <vgui/ISurface.h>
 
@@ -152,90 +153,152 @@ constexpr struct zbalermorna_glyph
 	{ 1, 127, 127, 0, 0, 0, 0, 0, 0, 0 }, // SPACE " "
 };
 
+constexpr static float s_flSizeCorrectiveFactor = 0.8f;
+constexpr static float s_flFirstLineYOffset = 1.0f;
+constexpr static float s_flLineHeight = 1.177f;
+constexpr static float s_flCombiningOffsetBelow = 0.05f;
+constexpr static float s_flCombiningOffsetAbove = -0.4f;
+constexpr static float s_flCombiningOffsetAboveBlank = -0.35f;
+
 static vgui::HTexture s_hFontTexture = NULL;
 
-void RD_RenderZbalermornaText( float x0, float y0, float flTextSize, const char *szText, const Color &color )
+namespace zbalermorna
 {
-	if ( !s_hFontTexture )
+	void PaintText( float x0, float y0, const char *szText, float flTextSize, const Color &color )
 	{
-		s_hFontTexture = vgui::surface()->CreateNewTextureID();
-		vgui::surface()->DrawSetTextureFile( s_hFontTexture, "vgui/fonts/manri", 1, false );
+		vgui::ISurface *pSurface = vgui::surface();
+		Assert( pSurface );
+		if ( !s_hFontTexture )
+		{
+			s_hFontTexture = pSurface->CreateNewTextureID();
+			pSurface->DrawSetTextureFile( s_hFontTexture, "vgui/fonts/manri", 1, false );
+		}
+
+		pSurface->DrawSetColor( color );
+		pSurface->DrawSetTexture( s_hFontTexture );
+
+		flTextSize *= s_flSizeCorrectiveFactor;
+
+		float x = x0;
+		float y = y0 + s_flFirstLineYOffset * flTextSize;
+		float mid = x;
+		float ascenderBlank = y + s_flCombiningOffsetAboveBlank * flTextSize;
+		float ascenderGlyph = y + s_flCombiningOffsetAbove * flTextSize;
+		float ascender = ascenderBlank;
+		float descender = y + s_flCombiningOffsetBelow * flTextSize;
+
+		for ( const char *psz = szText; *psz; psz++ )
+		{
+			if ( *psz == '\n' )
+			{
+				x = x0;
+				mid = x;
+				y += s_flLineHeight * flTextSize;
+				ascenderBlank = y + s_flCombiningOffsetAboveBlank * flTextSize;
+				ascenderGlyph = y + s_flCombiningOffsetAbove * flTextSize;
+				ascender = ascenderBlank;
+				descender = y + s_flCombiningOffsetBelow * flTextSize;
+
+				continue;
+			}
+
+			int iGlyph = s_zbalermornaIndex[*psz];
+			Assert( iGlyph );
+
+			const zbalermorna_glyph &glyph = s_zbalermornaGlyphs[iGlyph];
+
+			if ( glyph.s1 )
+			{
+				float glyphX = x, glyphY = y;
+				if ( glyph.special == 2 )
+				{
+					glyphX = mid;
+					glyphY = ascender;
+				}
+				else if ( glyph.special == 3 )
+				{
+					glyphX = mid;
+					glyphY = descender;
+				}
+				else
+				{
+					mid = x + s_zbalermornaAdvance2[glyph.advance] * flTextSize;
+					ascender = ascenderGlyph;
+				}
+
+				float s0 = ( glyph.s0 + 0.5f ) / 128.0f;
+				float t0 = ( glyph.t0 + 0.5f ) / 128.0f;
+				float s1 = ( glyph.s0 + glyph.s1 + 0.5f ) / 128.0f;
+				float t1 = ( glyph.t0 + glyph.t1 + 0.5f ) / 128.0f;
+
+				float gx0 = glyphX + s_zbalermornaOffset[glyph.x0] * flTextSize;
+				float gy0 = glyphY + s_zbalermornaOffset[glyph.y0] * flTextSize;
+				float gx1 = glyphX + s_zbalermornaOffset[glyph.x1] * flTextSize;
+				float gy1 = glyphY + s_zbalermornaOffset[glyph.y1] * flTextSize;
+
+				vgui::Vertex_t quad[4]
+				{
+					{ { gx0, gy0 }, { s0, t0 } },
+					{ { gx1, gy0 }, { s1, t0 } },
+					{ { gx1, gy1 }, { s1, t1 } },
+					{ { gx0, gy1 }, { s0, t1 } },
+				};
+				if ( glyph.special == 1 )
+				{
+					// rotate counter-clockwise 90 degrees
+					quad[0].m_TexCoord.x = s1;
+					quad[1].m_TexCoord.y = t1;
+					quad[2].m_TexCoord.x = s0;
+					quad[3].m_TexCoord.y = t0;
+				}
+
+				pSurface->DrawTexturedPolygon( NELEMS( quad ), quad );
+			}
+			else
+			{
+				mid = x + s_zbalermornaAdvance1[glyph.advance] * flTextSize;
+				ascender = ascenderBlank;
+			}
+
+			x += s_zbalermornaAdvance1[glyph.advance] * flTextSize;
+		}
 	}
 
-	vgui::surface()->DrawSetColor( color );
-	vgui::surface()->DrawSetTexture( s_hFontTexture );
-
-	flTextSize *= 0.8f;
-
-	float x = x0;
-	float y = y0 + 1.0f * flTextSize;
-	float mid = x;
-	float ascender = y - 0.35f * flTextSize;
-	float descender = y + 0.05f * flTextSize;
-	vgui::Vertex_t quad[4];
-
-	for ( const char *psz = szText; *psz; psz++ )
+	void MeasureText( const char *szText, float flTextSize, float &flWide, float &flTall, bool bLastLineWide )
 	{
-		if ( *psz == '\n' )
-		{
-			x = x0;
-			mid = x;
-			y += 1.177f * flTextSize;
-			ascender = y - 0.35f * flTextSize;
-			descender = y + 0.05f * flTextSize;
+		float flCurrentLineWide = 0.0f;
+		flTall = s_flFirstLineYOffset;
 
-			continue;
+		for ( const char *psz = szText; *psz; psz++ )
+		{
+			if ( *psz == '\n' )
+			{
+				if ( flWide < flCurrentLineWide )
+				{
+					flWide = flCurrentLineWide;
+				}
+
+				flTall += s_flLineHeight;
+				flCurrentLineWide = 0.0f;
+
+				continue;
+			}
+
+			int iGlyph = s_zbalermornaIndex[*psz];
+			Assert( iGlyph );
+
+			const zbalermorna_glyph &glyph = s_zbalermornaGlyphs[iGlyph];
+
+			flCurrentLineWide += s_zbalermornaAdvance1[glyph.advance];
 		}
 
-		int iGlyph = s_zbalermornaIndex[*psz];
-		Assert( iGlyph );
-
-		const zbalermorna_glyph &glyph = s_zbalermornaGlyphs[iGlyph];
-
-		if ( glyph.s1 )
+		if ( flWide < flCurrentLineWide || bLastLineWide )
 		{
-			float glyphX = x, glyphY = y;
-			if ( glyph.special == 2 )
-			{
-				glyphX = mid;
-				glyphY = ascender;
-				ascender -= 0.1f * flTextSize;
-			}
-			else if ( glyph.special == 3 )
-			{
-				glyphX = mid;
-				glyphY = descender;
-				descender += 0.1f * flTextSize;
-			}
-			else
-			{
-				mid = x + s_zbalermornaAdvance2[glyph.advance] * flTextSize;
-				ascender = y - 0.4f * flTextSize;
-				descender = y + 0.05f * flTextSize;
-			}
-
-			quad[0].Init( Vector2D{ glyphX + s_zbalermornaOffset[glyph.x0] * flTextSize, glyphY + s_zbalermornaOffset[glyph.y0] * flTextSize }, Vector2D{ ( glyph.s0 + 0.5f ) / 128.0f, ( glyph.t0 + 0.5f ) / 128.0f } );
-			quad[1].Init( Vector2D{ glyphX + s_zbalermornaOffset[glyph.x1] * flTextSize, glyphY + s_zbalermornaOffset[glyph.y0] * flTextSize }, Vector2D{ ( glyph.s0 + glyph.s1 + 0.5f ) / 128.0f, ( glyph.t0 + 0.5f ) / 128.0f } );
-			quad[2].Init( Vector2D{ glyphX + s_zbalermornaOffset[glyph.x1] * flTextSize, glyphY + s_zbalermornaOffset[glyph.y1] * flTextSize }, Vector2D{ ( glyph.s0 + glyph.s1 + 0.5f ) / 128.0f, ( glyph.t0 + glyph.t1 + 0.5f ) / 128.0f } );
-			if ( glyph.special == 1 )
-			{
-				V_memmove( &quad[1], &quad[0], sizeof( quad[0] ) * 3 );
-				quad[0].Init( Vector2D{ glyphX + s_zbalermornaOffset[glyph.x0] * flTextSize, glyphY + s_zbalermornaOffset[glyph.y1] * flTextSize }, Vector2D{ ( glyph.s0 + 0.5f ) / 128.0f, ( glyph.t0 + glyph.t1 + 0.5f ) / 128.0f } );
-			}
-			else
-			{
-				quad[3].Init( Vector2D{ glyphX + s_zbalermornaOffset[glyph.x0] * flTextSize, glyphY + s_zbalermornaOffset[glyph.y1] * flTextSize }, Vector2D{ ( glyph.s0 + 0.5f ) / 128.0f, ( glyph.t0 + glyph.t1 + 0.5f ) / 128.0f } );
-			}
-
-			vgui::surface()->DrawTexturedPolygon( 4, quad );
-		}
-		else
-		{
-			mid = x + s_zbalermornaAdvance1[glyph.advance] * flTextSize;
-			ascender = y - 0.35f * flTextSize;
-			descender = y + 0.05f * flTextSize;
+			flWide = flCurrentLineWide;
 		}
 
-		x += s_zbalermornaAdvance1[glyph.advance] * flTextSize;
+		flTextSize *= s_flSizeCorrectiveFactor;
+		flWide *= flTextSize;
+		flTall *= flTextSize;
 	}
 }

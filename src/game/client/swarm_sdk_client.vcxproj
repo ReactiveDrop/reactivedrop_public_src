@@ -426,6 +426,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="..\..\public\steam\steam_api_common.h" />
     <ClInclude Include="..\..\public\steam\steam_api_internal.h" />
     <ClInclude Include="..\shared\swarm\rd_crafting_defs.h" />
+    <ClInclude Include="swarm\rd_font_zbalermorna.h" />
     <ClInclude Include="swarm\vgui\asw_scalable_text.inc">
       <FileType>Document</FileType>
     </ClInclude>
