@@ -1,6 +1,8 @@
 #include "cbase.h"
 #include "rd_hud_vscript_shared.h"
+#ifdef CLIENT_DLL
 #include "rd_font_zbalermorna.h"
+#endif
 #include <vgui/IScheme.h>
 #include <vgui/ISurface.h>
 #include <vgui_controls/Controls.h>
