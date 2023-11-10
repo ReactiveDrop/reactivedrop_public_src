@@ -1121,14 +1121,6 @@ void CAlienSwarmProxy::InputModifyDifficulty( inputdata_t & inputdata )
 
 void CAlienSwarmProxy::InputMarineFinishedMission( inputdata_t & inputdata )
 {
-	CBaseEntity *pEnt = inputdata.value.Entity();
-	CASW_Marine *pMarine = CASW_Marine::AsMarine( pEnt );
-	if ( !pMarine )
-	{
-		Warning( "Cannot MarineFinishedMission on something that is not a marine (%s)\n", pEnt ? pEnt->GetDebugName() : "<<NULL>>" );
-		return;
-	}
-
 	CAlienSwarm *pGameRules = ASWGameRules();
 	Assert( pGameRules );
 	if ( !pGameRules || pGameRules->GetGameState() != ASW_GS_INGAME )
@@ -1137,9 +1129,25 @@ void CAlienSwarmProxy::InputMarineFinishedMission( inputdata_t & inputdata )
 		return;
 	}
 
-	CASW_Marine_Resource *pMR = pMarine->GetMarineResource();
-	if ( pMR )
+	CBaseEntity *pEnt = NULL;
+	while ( ( pEnt = gEntList.FindEntityByName( pEnt, inputdata.value.String(), this, inputdata.pActivator, inputdata.pCaller ) ) != NULL )
 	{
+		CASW_Marine_Resource *pMR = dynamic_cast< CASW_Marine_Resource * >( pEnt );
+		if ( !pMR )
+		{
+			CASW_Marine *pMarine = CASW_Marine::AsMarine( pEnt );
+			if ( pMarine )
+			{
+				pMR = pMarine->GetMarineResource();
+			}
+		}
+
+		if ( !pMR )
+		{
+			Warning( "Cannot MarineFinishedMission on something that is not a marine (%s)\n", pEnt ? pEnt->GetDebugName() : "<<NULL>>" );
+			continue;
+		}
+
 		pMR->m_flFinishedMissionTime = gpGlobals->curtime - pGameRules->m_fMissionStartedTime;
 	}
 }
