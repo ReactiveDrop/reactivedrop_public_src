@@ -28,6 +28,8 @@ struct RD_Lobby_Scoreboard_Entry_t
 	int Score;
 	float Connected;
 	char CountryCode[3];
+
+	void CountryCodeTexCoords( float &s0, float &t0, float &s1, float &t1 );
 };
 void UTIL_RD_ReadLobbyScoreboard( CSteamID lobby, CUtlVector<RD_Lobby_Scoreboard_Entry_t> &scoreboard );
 

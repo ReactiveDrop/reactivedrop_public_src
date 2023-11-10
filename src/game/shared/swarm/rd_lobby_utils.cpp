@@ -162,6 +162,22 @@ int UTIL_RD_PingLobby( CSteamID lobby )
 	return 0;
 }
 
+void RD_Lobby_Scoreboard_Entry_t::CountryCodeTexCoords( float &s0, float &t0, float &s1, float &t1 )
+{
+	Assert( CountryCode[0] >= 'A' && CountryCode[0] <= 'Z' );
+	Assert( CountryCode[1] >= 'A' && CountryCode[1] <= 'Z' );
+	Assert( CountryCode[2] == '\0' );
+
+	// country code texture is laid out with 32 flags per row in AA AB AC AD... order.
+	// each flag is 16x11 and the full texture is 512x256.
+	// inset each side of the bounding box by half a texel to avoid color bleed.
+	int index = ( CountryCode[0] - 'A' ) + ( CountryCode[1] - 'A' ) * 26;
+	s0 = ( index % 32 ) * ( 16.0f / 512.0f ) + ( 0.5f / 512.0f );
+	t0 = ( index / 32 ) * ( 11.0f / 256.0f ) + ( 0.5f / 256.0f );
+	s1 = s0 + ( 15.0f / 512.0f );
+	t1 = t0 + ( 10.0f / 256.0f );
+}
+
 void UTIL_RD_ReadLobbyScoreboard( CSteamID lobby, CUtlVector<RD_Lobby_Scoreboard_Entry_t> &scoreboard )
 {
 	const char *szScoreboard = SteamMatchmaking()->GetLobbyData( lobby, "system:rd_players" );
