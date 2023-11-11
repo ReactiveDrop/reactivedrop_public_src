@@ -943,7 +943,7 @@ BEGIN_DATADESC( CAlienSwarmProxy )
 	DEFINE_INPUTFUNC( FIELD_INTEGER, "SetTutorialStage", InputSetTutorialStage ),
 	DEFINE_INPUTFUNC( FIELD_INTEGER, "AddPoints", InputAddPoints ),
 	DEFINE_INPUTFUNC( FIELD_INTEGER, "ModifyDifficulty", InputModifyDifficulty ),
-	DEFINE_INPUTFUNC( FIELD_EHANDLE, "MarineFinishedMission", InputMarineFinishedMission ),
+	DEFINE_INPUTFUNC( FIELD_STRING, "MarineFinishedMission", InputMarineFinishedMission ),
 	DEFINE_OUTPUT( m_OnDifficulty, "OnDifficulty" ),
 	DEFINE_OUTPUT( m_OnOnslaught, "OnOnslaught" ),
 	DEFINE_OUTPUT( m_OnFriendlyFire, "OnFriendlyFire" ),

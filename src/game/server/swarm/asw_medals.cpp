@@ -569,9 +569,13 @@ void CASW_Medals::AwardMedalsTo(CASW_Marine_Resource *pMR)
 		}
 
 		int iCompleteSeconds = gpGlobals->curtime - m_fStartMissionTime;
+		if ( pMR->m_flFinishedMissionTime >= 0 )
+		{
+			iCompleteSeconds = pMR->m_flFinishedMissionTime;
+		}
 
 		bool bHaveSpeedrunTime = false;
-		int speedrun_time = 240;
+		int speedrun_time = 180;
 		if ( GetWorldEntity() && ASWGameRules()->GetSpeedrunTime() > 0 )
 		{
 			speedrun_time = ASWGameRules()->GetSpeedrunTime();
