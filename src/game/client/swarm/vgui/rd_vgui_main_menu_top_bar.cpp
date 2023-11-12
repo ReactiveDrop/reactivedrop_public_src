@@ -75,6 +75,10 @@ void CRD_VGUI_Main_Menu_Top_Bar::ApplySchemeSettings( vgui::IScheme *pScheme )
 	m_pTopButton[BTN_SWARMOPEDIA]->SetText( "#rd_collection_swarmopedia" );
 	m_pTopButton[BTN_WORKSHOP]->SetText( "#rd_mainmenu_workshop" );
 	m_pTopButton[BTN_INVENTORY]->SetText( "#rd_mainmenu_inventory" );
+
+#ifndef RD_7A_LOADOUTS
+	m_pTopButton[BTN_LOADOUTS]->SetVisible( false );
+#endif
 }
 
 extern void LaunchCollectionsFrame();

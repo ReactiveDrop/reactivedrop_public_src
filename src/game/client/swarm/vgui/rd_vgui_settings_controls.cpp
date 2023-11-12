@@ -409,7 +409,11 @@ void CRD_VGUI_Settings_Controls::Activate()
 {
 	NavigateToChild( m_pBindMoveForward );
 
+#ifdef RD_7A_CHATWHEEL
 	m_pBtnCustomWheels->SetEnabled( false ); // TODO!
+#else
+	m_pBtnCustomWheels->SetVisible( false );
+#endif
 }
 
 void CRD_VGUI_Settings_Controls::OnThink()
