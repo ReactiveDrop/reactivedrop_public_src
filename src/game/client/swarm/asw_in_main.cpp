@@ -308,6 +308,15 @@ Return 1 to allow engine to process the key, otherwise, act on it as needed
 */
 int CASWInput::KeyEvent( int down, ButtonCode_t code, const char *pszCurrentBinding )
 {
+	if ( code >= KEY_FIRST && code <= KEY_LAST )
+	{
+		SetControllerModeKeyboard( false );
+	}
+	else if ( code >= JOYSTICK_FIRST && code <= JOYSTICK_LAST )
+	{
+		EngageControllerMode();
+	}
+
 	// JOYPAD ADDED
 	// asw - grab joypad presses here
 	if ( code >= JOYSTICK_FIRST && code <= KEY_XSTICK2_UP && GetControllerFocus() )
@@ -715,6 +724,7 @@ void CASWInput::Init_All( void )
 	if ( IsX360() || ( SteamUtils() && SteamUtils()->IsSteamInBigPictureMode() ) )
 	{
 		EngageControllerMode();
+		SetControllerModeMouse( true );
 	}
 }
 

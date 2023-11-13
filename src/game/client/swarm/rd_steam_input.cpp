@@ -883,7 +883,12 @@ void CRD_Steam_Controller::OnAnalogAction( InputAnalogActionHandle_t hAction, EI
 	Assert( m_bConnected );
 
 	if ( ASWInput() && ( x != 0 || y != 0 ) )
-		ASWInput()->EngageControllerMode();
+	{
+		if ( hAction == g_RD_Steam_Input.m_AnalogActions.Look )
+			ASWInput()->SetControllerModeMouse( true );
+		else
+			ASWInput()->EngageControllerMode();
+	}
 
 	// analog actions are handled per-frame, not per-input.
 }

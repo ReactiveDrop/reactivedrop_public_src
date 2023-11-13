@@ -1812,21 +1812,6 @@ bool C_ASW_Player::CreateMove( float flInputSampleTime, CUserCmd *pCmd )
 		pMarine->GetRemoteTurret()->CreateMove( flInputSampleTime, pCmd );
 	}
 
-	// check if the marine is meant to be standing still	
-	if ( pMarine &&
-		( gpGlobals->curtime < pMarine->GetStopTime() || pMarine->m_bPreventMovement
-			|| CASW_VGUI_Info_Message::HasInfoMessageOpen()
-			|| ( ASWInput()->ControllerModeActive() && pMarine->IsUsingComputerOrButtonPanel() )
-			|| pMarine->IsUsingComputerOrButtonPanel()
-			) )
-	{
-		// asw temp comment
-		/*
-		pCmd->forwardmove = 0;
-		pCmd->sidemove = 0;
-		*/
-	}
-
 	if ( !pNPC && asw_rts_controls.GetBool() )
 	{
 		// set forward/side move to scroll the screen when mouse is at the edges

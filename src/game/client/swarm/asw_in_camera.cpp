@@ -515,7 +515,7 @@ void CASWInput::ASW_GetCameraLocation( C_ASW_Player *pPlayer, Vector &vecCameraL
 	// Calculate the movement delta - only needed for mouse control or controller with pan enabled.
 	int nDeltaX = 0;
 	int nDeltaY = 0;
-	if ( !ASWInput()->ControllerModeActive() || joy_pan_camera.GetBool() )
+	if ( !ASWInput()->ControllerModeActiveMouse() || joy_pan_camera.GetBool() )
 	{
 		nDeltaX = nMouseX - nCenterX;
 		nDeltaY = nMouseY - nCenterY;

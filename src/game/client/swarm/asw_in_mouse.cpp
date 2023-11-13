@@ -85,7 +85,7 @@ void CASWInput::ApplyMouse( int nSlot, QAngle& viewangles, CUserCmd *cmd, float 
 	int current_posx, current_posy;
 	GetMousePos(current_posx, current_posy);
 
-	if ( ASWInput()->ControllerModeActive() )
+	if ( ASWInput()->ControllerModeActiveMouse() )
 		return;
 
 	if ( MarineControllingTurret() )

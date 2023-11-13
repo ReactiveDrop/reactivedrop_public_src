@@ -456,7 +456,7 @@ C_BaseEntity* HUDToWorld(float screenx, float screeny,
 		ASW_StoreClearAll();
 
 	// if we have our cursor over a target (and not using the controller), make sure we have LOS to him before we continue
-	if ( !ASWInput()->ControllerModeActive() && pBestAlien )
+	if ( !ASWInput()->ControllerModeActiveMouse() && pBestAlien )
 	{
 		// check we have LOS to the target
 		CTraceFilterLOS traceFilter( pNPC, COLLISION_GROUP_NONE );
@@ -518,7 +518,7 @@ C_BaseEntity* HUDToWorld(float screenx, float screeny,
 			debugoverlay->ScreenPosition( vecAlienPos, alienScreenPos );
 
 			Vector AlienEdgeScreenPos;
-			float flRadiusScale = ASWInput()->ControllerModeActive() ? 2.0f : 1.0f;
+			float flRadiusScale = ASWInput()->ControllerModeActiveMouse() ? 2.0f : 1.0f;
 			flRadiusScale *= flWeaponRadiusScale;
 			bool bFlareAutoaim = false;
 			if ( !bWeaponHasRadiusScale )
@@ -611,7 +611,7 @@ C_BaseEntity* HUDToWorld(float screenx, float screeny,
 	}
 
 	// in controller mode, if we have an alien to autoaim at, then aim directly at it
-	if ( ASWInput()->ControllerModeActive() && pBestAlien )
+	if ( ASWInput()->ControllerModeActiveMouse() && pBestAlien )
 	{
 		HitLocation = pBestAlien->GetAimTargetPos( vecWeaponPos, bPreferFlatAiming );
 
@@ -1260,7 +1260,7 @@ void CASWInput::GetSimulatedFullscreenMousePos( int *mx, int *my, int *unclamped
 		*mx = (int) pViewPlayer->m_iMouseX * ScreenWidth() / (int) pViewPlayer->m_iScreenWidth;
 		*my = (int) pViewPlayer->m_iMouseY * ScreenHeight() / (int) pViewPlayer->m_iScreenHeight;
 	}
-	else if ( ASWInput()->ControllerModeActive() )
+	else if ( ASWInput()->ControllerModeActiveMouse() )
 	{
 		GetSimulatedFullscreenMousePosFromController( mx, my, m_fJoypadPitch, m_fJoypadYaw );
 	}
@@ -1472,7 +1472,7 @@ void ASW_AdjustViewAngleForGroundShooting( QAngle &viewangles )
 	// now find a spot to aim at
 	int mousex, mousey;
 	mousex = mousey = 0;
-	if ( ASWInput()->ControllerModeActive() )
+	if ( ASWInput()->ControllerModeActiveMouse() )
 	{
 		ASWInput()->GetSimulatedFullscreenMousePos( &mousex, &mousey );
 	}
@@ -1596,7 +1596,7 @@ void CASWInput::ControllerMove( int nSlot, float frametime, CUserCmd *cmd )
 				}
 			}
 
-			if (ASWInput()->ControllerModeActive())
+			if (ASWInput()->ControllerModeActiveMouse())
 			{				
 				// accumulate mouse movements and if we go over a certain threshold, switch out of controller mode
 				float mouse_x_diff = current_posx - m_flJoypadStartMouseX;
@@ -1605,8 +1605,8 @@ void CASWInput::ControllerMove( int nSlot, float frametime, CUserCmd *cmd )
 				//Msg("total_mouse_move = %f\n", total_mouse_move);
 				if (total_mouse_move > 1000)
 				{
-					ASWInput()->SetControllerMode( false );
-					if (GetControllerFocus())
+					ASWInput()->SetControllerModeMouse( false );
+					if ( GetControllerFocus() )
 						GetControllerFocus()->SetControllerMode( false );
 				}
 			}
@@ -1630,25 +1630,41 @@ void CASWInput::ControllerMove( int nSlot, float frametime, CUserCmd *cmd )
 	UpdateHighlightEntity();
 }
 
-void CASWInput::SetControllerMode( bool bControllerMode ) 
+void CASWInput::SetControllerModeMouse( bool bControllerMode )
 {
-	if ( m_bControllerMode == bControllerMode )
+	if ( m_bControllerModeMouse == bControllerMode )
 		return;
 
-	m_bControllerMode = bControllerMode;
+	m_bControllerModeMouse = bControllerMode;
 	if ( bControllerMode )
 	{
-		Msg("[Controller] Starting controller mode\n");
+		Msg( "[Controller] Starting controller mode (mouse)\n" );
 	}
 	else
 	{
-		Msg("[Controller] Leaving controller mode\n");
+		Msg( "[Controller] Leaving controller mode (mouse)\n" );
+	}
+}
+
+void CASWInput::SetControllerModeKeyboard( bool bControllerMode )
+{
+	if ( m_bControllerModeKeyboard == bControllerMode )
+		return;
+
+	m_bControllerModeKeyboard = bControllerMode;
+	if ( bControllerMode )
+	{
+		Msg( "[Controller] Starting controller mode (keyboard)\n" );
+	}
+	else
+	{
+		Msg( "[Controller] Leaving controller mode (keyboard)\n" );
 	}
 }
 
 void CASWInput::EngageControllerMode() 
 {
-	ASWInput()->SetControllerMode( true );
+	ASWInput()->SetControllerModeKeyboard( true );
 	if ( GetControllerFocus() )
 	{
 		GetControllerFocus()->SetControllerMode( true );
@@ -1679,7 +1695,7 @@ void CASWInput::JoyStickForwardSideControl( float forward, float side, float &jo
 
 	CInput::JoyStickForwardSideControl( flAdjustedForward, flAdjustedSide, joyForwardMove, joySideMove );
 
-	if (fabs(joyForwardMove) > 150  || fabs(joySideMove) > 150)
+	if ( fabs( joyForwardMove ) > 150 || fabs( joySideMove ) > 150 )
 	{
 		EngageControllerMode();
 	}
@@ -1702,15 +1718,24 @@ void CASWInput::JoyStickForwardSideControl( float forward, float side, float &jo
 		}
 		else
 		{
-			m_fJoypadPitch = forward;	
+			m_fJoypadPitch = forward;
 			m_fJoypadYaw = side;
+
+
+			if ( fabs( joyForwardMove ) > 150 || fabs( joySideMove ) > 150 )
+			{
+				SetControllerModeMouse( true );
+			}
 		}
 	}
 }
 
 void CASWInput::JoyStickTurn( CUserCmd *cmd, float &yaw, float &pitch, float frametime, bool bAbsoluteYaw, bool bAbsolutePitch )
 {
-	if ( !ASWInput()->ControllerModeActive() )
+	if ( fabsf( yaw ) > 0.1f || fabsf( pitch ) > 0.1f )
+		SetControllerModeMouse( true );
+
+	if ( !ASWInput()->ControllerModeActiveMouse() )
 		return;
 
 	// Player is operating UI of some kind

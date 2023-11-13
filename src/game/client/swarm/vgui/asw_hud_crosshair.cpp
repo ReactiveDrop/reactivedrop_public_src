@@ -196,7 +196,7 @@ void CASWHudCrosshair::Paint( void )
 	}
 	else if ( nCrosshair != -1 )
 	{
-		if ( !ASWInput()->ControllerModeActive() || !GetControllerFocus()->GetFocusPanel() )
+		if ( !ASWInput()->ControllerModeActiveMouse() || !GetControllerFocus()->GetFocusPanel() )
 		{
 			const float fCrosshairScale = 1.0f;
 			int w = YRES( 20 ) * fCrosshairScale;
@@ -695,18 +695,6 @@ void CASWHudCrosshair::DrawDirectionalCrosshair( int x, int y, int iSize )
 	vecFacing.x = screenPos.x - current_posx;
 	vecFacing.y = screenPos.y - current_posy;
 	float fFacingYaw = -UTIL_VecToYaw( vecFacing );
-
-	/*
-	if ( ASWInput()->ControllerModeActive() )
-	{
-		int current_posx = 0;
-		int current_posy = 0;
-		ASWInput()->GetSimulatedFullscreenMousePos( &current_posx, &current_posy );
-		vecFacing.x = screenPos.x - current_posx;
-		vecFacing.y = screenPos.y - current_posy;
-		fFacingYaw = -UTIL_VecToYaw( vecFacing );
-	}
-	*/
 
 	// rotate it by our facing yaw
 	QAngle angFacing( 0, -fFacingYaw + 90.0, 0 );

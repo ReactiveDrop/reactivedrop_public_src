@@ -59,7 +59,9 @@ public:
 	void				TurnTowardController(QAngle& viewangles);	// asw	
 	bool				IsAttacking();
 	virtual void		ControllerMove( int nSlot, float frametime, CUserCmd *cmd );
-	virtual bool		ControllerModeActive() { return m_bControllerMode; }
+	virtual bool		ControllerModeActive() { return m_bControllerModeKeyboard; }
+	virtual bool		ControllerModeActiveMouse() { return m_bControllerModeMouse; }
+	virtual bool		ControllerModeActiveKeyboard() { return m_bControllerModeKeyboard; }
 	virtual bool		JoyStickActive();
 	virtual void		JoyStickTurn( CUserCmd *cmd, float &yaw, float &pitch, float frametime, bool bAbsoluteYaw, bool bAbsolutePitch );
 	virtual void		JoyStickForwardSideControl( float forward, float side, float &joyForwardMove, float &joySideMove );
@@ -137,7 +139,8 @@ public:
 	C_BaseEntity* GetAutoaimEntity() { return m_hAutoaimEnt.Get(); }
 	
 	// controller mode
-	void SetControllerMode( bool bControllerMode );
+	void SetControllerModeMouse( bool bControllerMode );
+	void SetControllerModeKeyboard( bool bControllerMode );
 
 	virtual void OnEntityDeleted( C_BaseEntity *pEntity );
 
@@ -175,7 +178,8 @@ private:
 	CGlowObject m_HighLightGlowObject;
 	CGlowObject m_UseGlowObject;
 
-	bool m_bControllerMode;
+	bool m_bControllerModeMouse;
+	bool m_bControllerModeKeyboard;
 };
 
 extern CASWInput *ASWInput();
