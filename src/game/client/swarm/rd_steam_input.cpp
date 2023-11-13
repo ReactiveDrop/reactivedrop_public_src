@@ -416,6 +416,19 @@ const char *CRD_Steam_Input::Key_LookupBindingEx( const char *pBinding, int iUse
 			}
 		}
 
+		// extra check just in case it's not a Steam Input bind so we don't get legacy controller binds when we don't want them.
+		if ( !bAny )
+		{
+			FOR_EACH_VEC( m_Controllers, i )
+			{
+				if ( !m_Controllers[i]->m_bConnected || m_Controllers[i]->m_SplitScreenPlayerIndex != iRealUserId )
+					continue;
+
+				bAny = true;
+				break;
+			}
+		}
+
 		// if we have Steam Input controllers, don't show Source Engine controller binds for the same command.
 		if ( bAny )
 		{
