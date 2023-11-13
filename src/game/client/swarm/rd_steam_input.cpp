@@ -707,6 +707,13 @@ void CRD_Steam_Input::OnSteamInputDeviceConnected( SteamInputDeviceConnected_t *
 	Assert( pController );
 
 	pController->OnConnected();
+
+	if ( g_RD_Steam_Input.m_bInitialized && g_RD_Steam_Input.m_AnalogActions.Look == g_RD_Steam_Input.m_AnalogActions.Move )
+	{
+		// we failed to initialize the first time, possibly due to there being no controllers, which causes Steam Input to avoid initializing. re-init.
+		g_RD_Steam_Input.Shutdown();
+		g_RD_Steam_Input.PostInit();
+	}
 }
 
 void CRD_Steam_Input::OnSteamInputDeviceDisconnected( SteamInputDeviceDisconnected_t *pParam )
