@@ -712,7 +712,7 @@ void CASWInput::Init_All( void )
 	CInput::Init_All();
 	m_iOrderingMarine = 0;
 
-	if ( IsX360() )
+	if ( IsX360() || ( SteamUtils() && SteamUtils()->IsSteamInBigPictureMode() ) )
 	{
 		EngageControllerMode();
 	}
