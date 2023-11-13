@@ -205,7 +205,7 @@ void CRD_VGUI_Bind::OnThink()
 	{
 		if ( const wchar_t *wszTranslation = g_pVGuiLocalize->Find( szKeyBind ) )
 		{
-			if ( V_wcslen( wszTranslation ) > 2 )
+			if ( V_wcslen( wszTranslation ) > 1 )
 			{
 				m_pLblKeyboardIcon->SetText( "" );
 				m_pLblKeyboardIconLong->SetText( wszTranslation );
