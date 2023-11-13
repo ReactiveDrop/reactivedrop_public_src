@@ -296,6 +296,8 @@
 		"tall"					"300"
 		"xpos"					"c-200"
 		"ypos"					"r75"
+		"navLeft"				"PnlQuickJoinPublic"
+		"navRight"				"PnlQuickJoinPublic"
 	}
 	
 	"PnlQuickJoinPublic"
@@ -308,6 +310,8 @@
 		"tall"					"300"
 		"xpos"					"c0"
 		"ypos"					"r75"
+		"navLeft"				"PnlQuickJoin"
+		"navRight"				"PnlQuickJoin"
 	}
 
 	"WorkshopDownloadProgress"

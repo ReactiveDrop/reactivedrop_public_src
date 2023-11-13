@@ -54,6 +54,7 @@ LINK_ENTITY_TO_CLASS( asw_weapon_ricochet, CASW_Weapon_Ricochet );
 PRECACHE_WEAPON_REGISTER( asw_weapon_ricochet );
 
 extern ConVar asw_weapon_max_shooting_distance;
+extern ConVar asw_controls;
 
 #ifndef CLIENT_DLL
 extern ConVar asw_debug_marine_damage;
@@ -62,13 +63,18 @@ extern ConVar asw_laser_sight_min_distance;
 #endif
 
 ConVar rd_ricochet_bounces( "rd_ricochet_bounces", "3", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar rd_ricochet_bounce_world_only( "rd_ricochet_bounce_world_only", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar rd_ricochet_bounce_horiz( "rd_ricochet_bounce_horiz", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar rd_ricochet_shotgun_bounces( "rd_ricochet_shotgun_bounces", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar rd_ricochet_shotgun_pellets( "rd_ricochet_shotgun_pellets", "7", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar rd_ricochet_shotgun_damage_scale( "rd_ricochet_shotgun_damage_scale", "0.3", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar rd_ricochet_shotgun_spread( "rd_ricochet_shotgun_spread", "20", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar rd_ricochet_shotgun_fire_rate( "rd_ricochet_shotgun_fire_rate", "10.0", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar rd_ricochet_max_distance( "rd_ricochet_max_distance", "3.0", FCVAR_REPLICATED | FCVAR_CHEAT );
 
 CASW_Weapon_Ricochet::CASW_Weapon_Ricochet()
 {
+	m_flNextEmptySoundTime = FLT_MAX;
 }
 
 CASW_Weapon_Ricochet::~CASW_Weapon_Ricochet()
@@ -135,13 +141,15 @@ void CASW_Weapon_Ricochet::PrimaryAttack()
 #endif
 		}
 
-		info.m_flDistance = asw_weapon_max_shooting_distance.GetFloat();
+		info.m_flDistance = asw_weapon_max_shooting_distance.GetFloat() * rd_ricochet_max_distance.GetFloat();
 		info.m_iTracerFreq = 1;  // asw tracer test everytime
 
 		// To make the firing framerate independent, we may have to fire more than one bullet here on low-framerate systems, 
 		// especially if the weapon we're firing has a really fast rate of fire.
 		info.m_iShots = 0;
-		float fireRate = bAttack2 ? 1.0f : GetFireRate();
+		float fireRate = GetFireRate();
+		if ( bAttack2 )
+			fireRate *= rd_ricochet_shotgun_fire_rate.GetFloat();
 		while ( m_flNextPrimaryAttack <= gpGlobals->curtime )
 		{
 			m_flNextPrimaryAttack = m_flNextPrimaryAttack + fireRate;
@@ -210,7 +218,7 @@ void CASW_Weapon_Ricochet::PrimaryAttack()
 		pMarine->GetMarineResource()->OnFired_ScaleDamage( info );
 #endif
 
-		pMarine->FireBouncingBullets( info, nBounces );
+		pMarine->FireBouncingBullets( info, nBounces, 0, false, rd_ricochet_bounce_world_only.GetBool(), rd_ricochet_bounce_horiz.GetInt() == 2 ? ( pPlayer && pMarine->IsInhabited() ? pPlayer->GetASWControls() == ASWC_TOPDOWN : asw_controls.GetInt() == 1 ) : rd_ricochet_bounce_horiz.GetBool() );
 
 		// increment shooting stats
 #ifndef CLIENT_DLL
@@ -240,20 +248,22 @@ void CASW_Weapon_Ricochet::UpdateBounceLaser()
 	if ( !pPlayer || !pMarine || !pMarine->IsInhabited() || !m_bLocalPlayerControlling )
 		return;
 
-	Vector vecSrc = pMarine->WorldSpaceCenter();
+	Vector vecSrc = pMarine->Weapon_ShootPosition();
 	Vector vecDir = pPlayer->GetAutoaimVectorForMarine( pMarine, GetAutoAimAmount(), GetVerticalAdjustOnlyAutoAimAmount() );
 	if ( pMarine->m_flLaserSightLength > asw_laser_sight_min_distance.GetFloat() )
 	{
 		vecDir = pMarine->m_vLaserSightCorrection;
 	}
 
-	float flRemainingDist = asw_weapon_max_shooting_distance.GetFloat();
+	float flRemainingDist = asw_weapon_max_shooting_distance.GetFloat() * rd_ricochet_max_distance.GetFloat();
 
 	trace_t tr;
 	UTIL_TraceLine( vecSrc, vecSrc + vecDir * flRemainingDist, MASK_SHOT, pMarine, COLLISION_GROUP_NONE, &tr );
 
 	bool bAttack1, bAttack2, bReload, bOldReload, bOldAttack1;
 	GetButtons( bAttack1, bAttack2, bReload, bOldReload, bOldAttack1 );
+
+	bool bNoReflectZ = rd_ricochet_bounce_horiz.GetInt() == 2 ? ( pPlayer && pMarine->IsInhabited() ? pPlayer->GetASWControls() == ASWC_TOPDOWN : asw_controls.GetInt() == 1 ) : rd_ricochet_bounce_horiz.GetBool();
 
 	int nBounces = bAttack2 ? rd_ricochet_shotgun_bounces.GetInt() : rd_ricochet_bounces.GetInt();
 	for ( int i = 0; i < 5; i++ )
@@ -269,8 +279,14 @@ void CASW_Weapon_Ricochet::UpdateBounceLaser()
 			VectorMA( vecNewDir, -proj * 2, tr.plane.normal, vecNewDir );
 			vecDir.x = vecNewDir.x;
 			vecDir.y = vecNewDir.y;
+			if ( !bNoReflectZ )
+				vecDir.z = vecNewDir.z;
 
 			UTIL_TraceLine( vecSrc, vecSrc + vecDir * flRemainingDist, MASK_SHOT, NULL, COLLISION_GROUP_NONE, &tr );
+
+			// If we're going to hit a marine after a bounce, make sure the base laser pointer code knows that.
+			if ( tr.m_pEnt && tr.m_pEnt->Classify() == CLASS_ASW_MARINE )
+				m_hLaserTargetEntity = tr.m_pEnt;
 		}
 
 		m_pLaserPointerEffect->SetControlPoint( i + 10, vecSrc );

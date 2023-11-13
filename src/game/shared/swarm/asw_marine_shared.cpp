@@ -1592,7 +1592,7 @@ void CASW_Marine::FirePenetratingBullets( const FireBulletsInfo_t &info, int iMa
 #endif
 }
 
-void CASW_Marine::FireBouncingBullets( const FireBulletsInfo_t &info, int iMaxBounce, int iSeedPlus, bool bAllowHittingAttacker )
+void CASW_Marine::FireBouncingBullets( const FireBulletsInfo_t &info, int iMaxBounce, int iSeedPlus, bool bAllowHittingAttacker, bool bBounceWorldOnly, bool bNoReflectZ )
 {
 	if ( iMaxBounce < 0 )
 		return;
@@ -1887,7 +1887,7 @@ void CASW_Marine::FireBouncingBullets( const FireBulletsInfo_t &info, int iMaxBo
 		}
 #endif
 
-		if ( tr.DidHitWorld() )
+		if ( bBounceWorldOnly ? tr.DidHitWorld() : tr.DidHit() )
 		{
 			// Refire the round, bouncing off the surface
 			FireBulletsInfo_t BouncingShotInfo(info);
@@ -1896,18 +1896,19 @@ void CASW_Marine::FireBouncingBullets( const FireBulletsInfo_t &info, int iMaxBo
 			BouncingShotInfo.m_vecDirShooting = vecDir;
 			// reflect the X+Y off the surface (leave Z intact so the shot is more likely to stay flat and hit enemies)
 			float proj = (BouncingShotInfo.m_vecDirShooting).Dot( tr.plane.normal );
-			VectorMA( BouncingShotInfo.m_vecDirShooting, -proj*2, tr.plane.normal, BouncingShotInfo.m_vecDirShooting );
-			BouncingShotInfo.m_vecDirShooting.z = vecDir.z;
+			VectorMA( BouncingShotInfo.m_vecDirShooting, -proj * 2, tr.plane.normal, BouncingShotInfo.m_vecDirShooting );
+			if ( bNoReflectZ )
+				BouncingShotInfo.m_vecDirShooting.z = vecDir.z;
 
 			BouncingShotInfo.m_vecSpread = vec3_origin;
-			BouncingShotInfo.m_flDistance = info.m_flDistance*( 1.0f - tr.fraction );
-			BouncingShotInfo.m_pAdditionalIgnoreEnt = NULL;			
+			BouncingShotInfo.m_flDistance = info.m_flDistance * ( 1.0f - tr.fraction );
+			BouncingShotInfo.m_pAdditionalIgnoreEnt = NULL;
 
 #ifdef GAME_DLL
 			ApplyMultiDamage();		// apply the previous damage, since it'll get cleared when we refire
 			int iAliensKilledBeforeBounce = GetMarineResource() ? GetMarineResource()->m_iAliensKilled.Get() : 0;
 #endif
-			FireBouncingBullets( BouncingShotInfo, iMaxBounce - 1, 0, true );
+			FireBouncingBullets( BouncingShotInfo, iMaxBounce - 1, 0, true, bBounceWorldOnly, bNoReflectZ );
 
 #ifdef GAME_DLL
 			if (GetMarineResource())

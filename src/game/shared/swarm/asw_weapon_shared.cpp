@@ -46,9 +46,9 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-ConVar asw_weapon_max_shooting_distance( "asw_weapon_max_shooting_distance", "1500", FCVAR_REPLICATED, "Maximum distance of the hitscan weapons." );
-ConVar asw_weapon_force_scale("asw_weapon_force_scale", "1.0f", FCVAR_REPLICATED, "Force of weapon shots");
-ConVar asw_fast_reload_enabled( "asw_fast_reload_enabled", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "Use fast reload mechanic?" );
+ConVar asw_weapon_max_shooting_distance( "asw_weapon_max_shooting_distance", "1500", FCVAR_REPLICATED | FCVAR_CHEAT, "Maximum distance of the hitscan weapons." );
+ConVar asw_weapon_force_scale("asw_weapon_force_scale", "1.0f", FCVAR_REPLICATED | FCVAR_CHEAT, "Force of weapon shots");
+ConVar asw_fast_reload_enabled( "asw_fast_reload_enabled", "1", FCVAR_REPLICATED | FCVAR_CHEAT, "Use fast reload mechanic?" );
 #ifdef GAME_DLL
 ConVar rd_fast_reload_explode_chance( "rd_fast_reload_explode_chance", "0.0f", FCVAR_CHEAT, "0-1 chance for marine to explode on failed fast reload" );
 ConVar rd_fast_reload_explode_damage( "rd_fast_reload_explode_damage", "50.0f", FCVAR_CHEAT, "Damage of the fast reload fail explosion" );

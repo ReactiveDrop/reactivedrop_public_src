@@ -403,7 +403,7 @@ Color CHudChat::GetTextColorForClient( TextColor colorNum, int clientIndex )
 			CASW_Player *pPlayer = dynamic_cast< CASW_Player * >( UTIL_PlayerByIndex( clientIndex ) );
 			CASW_Marine *pMarine = pPlayer ? CASW_Marine::AsMarine( pPlayer->GetNPC() ) : NULL;
 
-			if ( ASWDeathmatchMode() && ASWDeathmatchMode()->IsTeamDeathmatchEnabled() )
+			if ( ASWDeathmatchMode() && ASWDeathmatchMode()->IsTeamDeathmatchEnabled() && pPlayer )
 			{
 				c = pPlayer->GetTeamNumber() == TEAM_ALPHA ? g_ColorRed : g_ColorBlue;
 				break;

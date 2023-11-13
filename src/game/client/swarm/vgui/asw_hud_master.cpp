@@ -26,6 +26,7 @@
 #include "asw_gamerules.h"
 #include "rd_hud_sheet.h"
 #include "rd_hud_vscript_shared.h"
+#include "c_asw_debrief_stats.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -221,6 +222,18 @@ void CASW_Hud_Master::OnThink()
 	if ( rd_draw_timer.GetBool() && ASWGameRules() )
 	{
 		int iMissionTimeMS = ( gpGlobals->curtime - ASWGameRules()->m_fMissionStartedTime ) * 1000;
+		if ( C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pPlayer->GetViewNPC() ) )
+		{
+			C_ASW_Marine_Resource *pMR = pMarine->GetMarineResource();
+			if ( pMR && pMR->m_flFinishedMissionTime >= 0.0f )
+			{
+				iMissionTimeMS = pMR->m_flFinishedMissionTime * 1000;
+			}
+			else if ( C_ASW_Debrief_Stats *pDebriefStats = GetDebriefStats() )
+			{
+				iMissionTimeMS = pDebriefStats->GetTimeTaken() * 1000;
+			}
+		}
 		int iMinutes = iMissionTimeMS / 1000 / 60;
 		int iSeconds = ( iMissionTimeMS / 1000 ) % 60;
 		int iMilliseconds = iMissionTimeMS % 1000;

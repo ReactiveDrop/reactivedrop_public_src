@@ -9,7 +9,7 @@
 	"major4_url"	""
 	"major5_title"	""
 	"major5_url"	""
-	"patch"	"20230701"
+	"patch"	"20231201"
 	"event1_title"	"#rd_event_mapping_competition"
 	"event1_url"	"https://stats.reactivedrop.com/leaderboards/by-tag/bossfight2023?lang=%s"
 	"event1_starts"	"1682010000"

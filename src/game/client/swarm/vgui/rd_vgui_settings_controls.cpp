@@ -205,7 +205,7 @@ void CRD_VGUI_Bind::OnThink()
 	{
 		if ( const wchar_t *wszTranslation = g_pVGuiLocalize->Find( szKeyBind ) )
 		{
-			if ( V_wcslen( wszTranslation ) > 2 )
+			if ( V_wcslen( wszTranslation ) > 1 )
 			{
 				m_pLblKeyboardIcon->SetText( "" );
 				m_pLblKeyboardIconLong->SetText( wszTranslation );
@@ -409,7 +409,11 @@ void CRD_VGUI_Settings_Controls::Activate()
 {
 	NavigateToChild( m_pBindMoveForward );
 
+#ifdef RD_7A_CHATWHEEL
 	m_pBtnCustomWheels->SetEnabled( false ); // TODO!
+#else
+	m_pBtnCustomWheels->SetVisible( false );
+#endif
 }
 
 void CRD_VGUI_Settings_Controls::OnThink()

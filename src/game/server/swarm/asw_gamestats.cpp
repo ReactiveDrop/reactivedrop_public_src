@@ -454,6 +454,10 @@ void CASWGameStats::Event_MarineWeaponFired( const CBaseEntity *pWeapon, const C
 		{
 			weaponClass = ( Class_T )CLASS_ASW_COMBINE_BALL;
 		}
+		else if ( weaponClass == CLASS_ASW_RICOCHET )
+		{
+			weaponClass = ( Class_T )CLASS_ASW_RICOCHET_SHOTGUN;
+		}
 		else if ( weaponClass == CLASS_ASW_PLASMA_THROWER )
 		{
 			weaponClass = ( Class_T )CLASS_ASW_PLASMA_THROWER_AIRBLAST;

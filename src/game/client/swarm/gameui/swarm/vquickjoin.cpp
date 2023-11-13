@@ -501,10 +501,10 @@ void QuickJoinPanel::NavigateTo()
 	BaseModHybridButton *title = dynamic_cast< BaseModHybridButton* >( FindChildByName( "LblTitle" ) );
 	if ( title )
 	{
-		title->SetNavLeft( GetNavLeftPanel() );
-		title->SetNavRight( GetNavRightPanel() );
-		title->SetNavUp( GetNavUpPanel() );
-		title->SetNavDown( GetNavDownPanel() );
+		title->SetNavLeft( GetNavLeft() );
+		title->SetNavRight( GetNavRight() );
+		title->SetNavUp( GetNavUp() );
+		title->SetNavDown( GetNavDown() );
 		if ( m_bHasMouseover && title->IsVisible() && ( title->GetCurrentState() == BaseModHybridButton::Enabled || title->GetCurrentState() == BaseModHybridButton::Disabled ) )
 		{
 			title->NavigateTo();
