@@ -108,19 +108,20 @@ void C_ASW_Hack_Wire_Tile::FrameDeleted(vgui::Panel *pPanel)
 void C_ASW_Hack_Wire_Tile::ClientThink()
 {
 	HACK_GETLOCALPLAYER_GUARD( "Need to support launching multiple hack panels on one machine (1 for each splitscreen player) for this to make sense." );
-	if (m_bLaunchedHackPanel)	// if we've launched our hack window, but the hack has lost its hacking marine, then close our window down
-	{		
+	C_ASW_Marine *pMarine = C_ASW_Marine::GetViewMarine();
+	if ( m_bLaunchedHackPanel )	// if we've launched our hack window, but the hack has lost its hacking marine, then close our window down
+	{
 		bool bStillUsing = true;
-		if (!GetHackerMarineResource())
+		if ( !GetHackerMarineResource() )
 			bStillUsing = false;
 
-		if (!bStillUsing)
+		if ( !bStillUsing )
 		{
 			//Msg("wire hack has lost his hacking marine\n");
 			m_bLaunchedHackPanel = false;
-			if (m_hFrame.Get())
+			if ( m_hFrame.Get() )
 			{
-				m_hFrame->SetVisible(false);
+				m_hFrame->SetVisible( false );
 				m_hFrame->MarkForDeletion();
 				m_hFrame = NULL;
 			}
@@ -128,31 +129,30 @@ void C_ASW_Hack_Wire_Tile::ClientThink()
 		}
 	}
 	// if we haven't launched the window and data is all present, launch it
-	if (!m_bLaunchedHackPanel && m_iNumWires > 0 && GetHackerMarineResource() != NULL)
+	if ( !m_bLaunchedHackPanel && m_iNumWires > 0 && GetHackerMarineResource() != NULL && GetHackerMarineResource()->GetMarineEntity() == pMarine )
 	{
-		vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFile("resource/SwarmSchemeNew.res", "SwarmSchemeNew");
+		vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFile( "resource/SwarmSchemeNew.res", "SwarmSchemeNew" );
 
 		vgui::Panel *pOldFrame = GetClientMode()->GetPanelFromViewport( "WireTileContainer" );
 		Assert( !pOldFrame );
 		if ( pOldFrame )
 			pOldFrame->MarkForDeletion();
 
-		m_hFrame = new CASW_VGUI_Hack_Wire_Tile_Container( GetClientMode()->GetViewport(), "WireTileContainer", this);
-		m_hFrame->SetScheme(scheme);					
+		m_hFrame = new CASW_VGUI_Hack_Wire_Tile_Container( GetClientMode()->GetViewport(), "WireTileContainer", this );
+		m_hFrame->SetScheme( scheme );
 
-		CASW_VGUI_Hack_Wire_Tile* pHackWireFrame = new CASW_VGUI_Hack_Wire_Tile( m_hFrame.Get(), "HackWireTile", this );
-		pHackWireFrame->SetScheme(scheme);	
-		pHackWireFrame->ASWInit();	
+		CASW_VGUI_Hack_Wire_Tile *pHackWireFrame = new CASW_VGUI_Hack_Wire_Tile( m_hFrame.Get(), "HackWireTile", this );
+		pHackWireFrame->SetScheme( scheme );
+		pHackWireFrame->ASWInit();
 		pHackWireFrame->MoveToFront();
 		pHackWireFrame->RequestFocus();
-		pHackWireFrame->SetVisible(true);
-		pHackWireFrame->SetEnabled(true);
+		pHackWireFrame->SetVisible( true );
+		pHackWireFrame->SetEnabled( true );
 		m_bLaunchedHackPanel = true;
 	}
 	// check for hiding the panel if the player has a different marine selected, or if the selected marine is remote controlling a turret
 	if ( m_bLaunchedHackPanel && GetHackerMarineResource() && m_hFrame.Get() )
 	{
-		C_ASW_Marine *pMarine = C_ASW_Marine::GetViewMarine();
 		if ( !pMarine )
 		{
 			m_hFrame->SetVisible( false );
@@ -181,7 +181,7 @@ void C_ASW_Hack_Wire_Tile::ClientThink()
 				m_hFrame->SetVisible( false );
 			}
 		}
-	}	
+	}
 }
 
 void C_ASW_Hack_Wire_Tile::OnDataChanged( DataUpdateType_t updateType )
