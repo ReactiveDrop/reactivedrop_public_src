@@ -588,12 +588,14 @@ bool FoundGameListItem::Info::Merge( const Info &info )
 		if ( !m_Friends.IsValidIndex( m_Friends.Find( info.m_Friends[i] ) ) )
 		{
 			m_Friends.AddToTail( info.m_Friends[i] );
+			bChanged = true;
 		}
 	}
 
-	if ( m_Type == TYPE_LOBBY )
+	if ( m_Type == TYPE_LOBBY && info.m_Type != TYPE_LOBBY )
 	{
 		m_Type = info.m_Type;
+		bChanged = true;
 	}
 	else
 	{
