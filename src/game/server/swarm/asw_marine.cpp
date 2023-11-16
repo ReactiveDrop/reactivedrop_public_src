@@ -1923,7 +1923,7 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 					GetAbsOrigin().x,
 					GetAbsOrigin().y,
 					GetAbsOrigin().z,
-					newInfo.GetWeapon() ? newInfo.GetWeapon()->GetEntityNameAsCStr() : "(none)",
+					newInfo.GetWeapon() ? newInfo.GetWeapon()->GetClassname() : "(none)",
 					info.GetDamage(),
 					newInfo.GetDamage(),
 					GetHealth(),
