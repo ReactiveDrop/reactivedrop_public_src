@@ -943,7 +943,7 @@ bool CASW_Weapon::ASWReload( int iClipSize1, int iClipSize2, int iActivity )
 	m_bFastReloadFailure = false;
 
 #ifndef CLIENT_DLL
-	if ( GetMaxClip1() > 1 )
+	if ( GetMaxClip1() >= 1 )
 	{
 		// Fire event when a player reloads a weapon with more than a bullet per clip
 		IGameEvent * event = gameeventmanager->CreateEvent( "weapon_reload" );
@@ -969,7 +969,7 @@ bool CASW_Weapon::ASWReload( int iClipSize1, int iClipSize2, int iActivity )
 			}
 			if ( pAmmoBag && this != pAmmoBag )
 			{
-				nClips += pAmmoBag->NumClipsForWeapon( this );					
+				nClips += pAmmoBag->NumClipsForWeapon( this );
 			}
 
 			event->SetInt( "userid", ( pPlayer ? pPlayer->GetUserID() : 0 ) );
