@@ -583,7 +583,10 @@ void CASWInput::CreateMove( int sequence_number, float input_sample_frametime, b
 		Vector vecHitLocation;
 		IASW_Client_Aim_Target *pAutoAimEnt = NULL;
 		C_BaseEntity *pAimEnt = HUDToWorld( 0, 0, vecHitLocation, pAutoAimEnt );
-		NOTE_UNUSED( pAimEnt );
+		if ( !pAimEnt && pAutoAimEnt )
+			SetMouseOverEntity( pAutoAimEnt->GetEntity() );
+		else
+			SetMouseOverEntity( pAimEnt );
 
 		if ( asw_DebugAutoAim.GetInt() >= 1 )
 		{
