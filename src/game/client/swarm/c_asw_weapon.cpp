@@ -459,6 +459,8 @@ void C_ASW_Weapon::DropMagazineGib()
 	if ( !rd_drop_magazine.GetBool() )
 		return;
 
+	C_BaseAnimating::PushAllowBoneAccess( true, false, "C_ASW_Weapon::DropMagazineGib" );
+
 	Vector vecHand;
 	QAngle angHand;
 	Vector vecHandForward;
@@ -489,6 +491,8 @@ void C_ASW_Weapon::DropMagazineGib()
 			pGib->SetSkin( GetMagazineGibModelSkin() );
 		}
 	}
+
+	C_BaseAnimating::PopBoneAccess( "C_ASW_Weapon::DropMagazineGib" );
 }
 
 bool C_ASW_Weapon::Simulate()
