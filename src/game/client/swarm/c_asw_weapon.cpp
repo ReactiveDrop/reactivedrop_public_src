@@ -156,8 +156,9 @@ m_GlowObject( this, glow_outline_color_weapon.GetColorAsVector(), 1.0f, false, t
 	m_bWeaponCreated = false;
 	m_nMuzzleAttachment = 0;
 	m_nLastMuzzleAttachment = 0;
-	m_nMagazineBodyGroup = -2;
 	m_nLaserBodyGroup = -2;
+	m_nMagazineBodyGroup = -2;
+	m_nScreenBodyGroup = -2;
 	m_bLocalPlayerControlling = false;
 
 	m_fMuzzleFlashTime = 0.0f;
@@ -536,6 +537,17 @@ void C_ASW_Weapon::ClientThink()
 	if ( m_nMagazineBodyGroup != -1 )
 	{
 		SetBodygroup( m_nMagazineBodyGroup, IsReloading() ? 1 : 0 );
+	}
+
+	if ( m_nScreenBodyGroup == -2 )
+	{
+		m_nScreenBodyGroup = FindBodygroupByName( "screen" );
+		Assert( m_nScreenBodyGroup == -1 || GetBodygroupCount( m_nScreenBodyGroup ) == 2 );
+	}
+
+	if ( m_nScreenBodyGroup != -1 )
+	{
+		SetBodygroup( m_nScreenBodyGroup, GetOwner() ? 1 : 0 );
 	}
 
 	if ( ASWDeathmatchMode() && ViewModelIsMarineAttachment() )

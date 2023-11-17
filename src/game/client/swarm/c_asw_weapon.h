@@ -185,8 +185,9 @@ public:
 	int m_nMuzzleAttachment;
 	int m_nLastMuzzleAttachment;
 	// body groups
-	int m_nMagazineBodyGroup;
 	int m_nLaserBodyGroup;
+	int m_nMagazineBodyGroup;
+	int m_nScreenBodyGroup;
 
 	// ground shooting (aiming at the ground)
 	virtual bool SupportsGroundShooting() { return rd_ground_shooting.GetBool(); } // was false
