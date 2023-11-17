@@ -768,6 +768,7 @@ void CASW_Weapon::PrimaryAttack( void )
 #ifndef CLIENT_DLL
 	if ( asw_debug_marine_damage.GetBool() )
 		Msg( "Weapon dmg = %f\n", info.m_flDamage );
+	Assert( SupportsDamageModifiers() );
 	if ( pMarine && pMarine->GetMarineResource() )
 		pMarine->GetMarineResource()->OnFired_ScaleDamage( info );
 	if ( asw_DebugAutoAim.GetBool() )

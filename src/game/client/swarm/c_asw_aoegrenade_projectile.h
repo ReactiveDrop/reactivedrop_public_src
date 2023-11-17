@@ -36,8 +36,9 @@ public:
 	virtual const char* GetStartSoundName( void ) { return "ASW_BuffGrenade.StartBuff"; }
 	virtual const char* GetActivateSoundName( void ) { return "ASW_BuffGrenade.GrenadeActivate"; }
 	virtual const char* GetPingEffectName( void ) { return "buffgrenade_pulse"; }
-	virtual const char* GetArcEffectName( void ) { return "buffgrenade_attach_arc"; }
+	virtual const char* GetArcEffectName( int index ) { return "buffgrenade_attach_arc"; }
 	virtual const char* GetArcAttachmentName( void ) { return "weapon_aim_attachment"; }
+	virtual int GetArcEffectIndex( C_BaseEntity *pEnt ) { return 0; }
 	virtual bool ShouldAttachEffectToWeapon( void ) { return false; }
 	virtual bool ShouldSpawnSphere( void ) { return false; }
 	virtual float GetSphereScale( void ) { return 1.0f; }
@@ -82,6 +83,7 @@ private:
 	{
 		CHandle<C_BaseEntity>		hTarget;
 		CUtlReference<CNewParticleEffect> pEffect;
+		int iEffectIndex;
 		CSoundPatch		*pBuffLoopSound;
 #ifdef DEBUG
 		AOETargetEffects_t * me;
@@ -90,6 +92,7 @@ private:
 		{
 			hTarget = NULL;
 			pEffect = NULL;
+			iEffectIndex = 0;
 			pBuffLoopSound  = NULL;
 #ifdef DEBUG
 			me = this;

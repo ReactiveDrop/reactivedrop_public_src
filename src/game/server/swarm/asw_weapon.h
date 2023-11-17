@@ -107,6 +107,7 @@ public:
 	virtual bool			AllowsAutoSwitchFrom( void ) const;
 	virtual bool WeaponLOSCondition( const Vector &ownerPos, const Vector &targetPos, bool bSetConditions );
 	virtual bool CanDoForcedAction( int iForcedAction ) { return true; }		// check if we're allowed to perform a forced action (certain abilities limit this)
+	virtual bool SupportsDamageModifiers() { return false; } // true if this (bullet-based) weapon calls OnFired_ScaleDamage
 	virtual float GetPassiveMeleeDamageScale() { return 1.0f; }
 
 	CNetworkVar(bool, m_bIsFiring);	

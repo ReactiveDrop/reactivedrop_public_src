@@ -35,6 +35,7 @@ particles_manifest
 	"file"		"particles/explosion_fx.pcf"
 	"file"		"!particles/buff_medic_fx.pcf"
 	"file"		"!particles/buffgrenade_fx.pcf"
+	"file"		"!particles/buffgrenade_noconnect.pcf"
 	"file"		"particles/asw_welding_fx.pcf"
 	"file"		"particles/freeze_fx.pcf"
 	"file"		"particles/asw_precipitation.pcf"

@@ -17,8 +17,9 @@ public:
 	virtual const char* GetStartSoundName( void ) { return "ASW_BuffGrenade.StartBuff"; }
 	virtual const char* GetActivateSoundName( void ) { return "ASW_BuffGrenade.GrenadeActivate"; }
 	virtual const char* GetPingEffectName( void ) { return "buffgrenade_pulse"; }
-	virtual const char* GetArcEffectName( void ) { return "buffgrenade_attach_arc"; }
+	virtual const char* GetArcEffectName( int index ) { return index == 1 ? "buffgrenade_noconnect" : "buffgrenade_attach_arc"; }
 	virtual const char* GetArcAttachmentName( void ) { return "beam_attach"; }
+	virtual int GetArcEffectIndex( C_BaseEntity *pEnt );
 	virtual bool ShouldAttachEffectToWeapon( void ) { return true; }
 	virtual bool ShouldSpawnSphere( void ) { return true; }
 	virtual float GetSphereScale( void ) { return 0.98f; }

@@ -29,7 +29,7 @@ public:
 	virtual const char* GetStartSoundName( void ) { return "ASW_MedGrenade.StartBuff"; }
 	virtual const char* GetActivateSoundName( void ) { return "ASW_MedGrenade.GrenadeActivate"; }
 	virtual const char* GetPingEffectName( void ) { return "medgrenade_pulse"; }
-	virtual const char* GetArcEffectName( void ) { return "medgrenade_attach_arc"; }
+	virtual const char* GetArcEffectName( int index ) { return "medgrenade_attach_arc"; }
 	virtual const char* GetArcAttachmentName( void ) { return "zipline"; }
 	virtual bool ShouldSpawnSphere( void ) { return true; }
 	virtual float GetSphereScale( void ) { return 0.9f; }

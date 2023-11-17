@@ -47,6 +47,7 @@ public:
 
 	virtual const float GetAutoAimAmount() { return 0.26; }
 	virtual bool ShouldFlareAutoaim() { return true; }
+	virtual bool SupportsDamageModifiers() { return true; }
 
 	virtual const Vector& GetBulletSpread()
 	{

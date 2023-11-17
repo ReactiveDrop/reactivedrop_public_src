@@ -41,6 +41,7 @@ public:
 
 	virtual const float GetAutoAimAmount() { return AUTOAIM_2DEGREES * 0.3f; }
 	virtual bool ShouldFlareAutoaim() { return true; }
+	virtual bool SupportsDamageModifiers() { return true; }
 
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_RIFLE; }

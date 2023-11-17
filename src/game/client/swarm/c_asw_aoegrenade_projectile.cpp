@@ -176,9 +176,10 @@ void C_ASW_AOEGrenade_Projectile::UpdateTargetAOEEffects( void )
 		// Are we still buffing this target?
 		for ( int target = 0; target < m_hAOETargets.Count(); target++ )
 		{
-			if ( m_hAOETargets[target] && m_hAOETargets[target] == aoeTargetEffect.hTarget.Get() )
+			C_BaseEntity *pTarget = m_hAOETargets[target].Get();
+			if ( pTarget && pTarget == aoeTargetEffect.hTarget.Get() )
 			{
-				bStillAOEGren = true;
+				bStillAOEGren = GetArcEffectIndex( pTarget ) == aoeTargetEffect.iEffectIndex;
 				break;
 			}
 		}
@@ -234,11 +235,13 @@ void C_ASW_AOEGrenade_Projectile::UpdateTargetAOEEffects( void )
 
 			if ( !bHaveEffect )
 			{
-				CNewParticleEffect *pEffect = ParticleProp()->Create( GetArcEffectName(), PATTACH_ABSORIGIN_FOLLOW );
+				int iEffectIndex = GetArcEffectIndex( pTarget );
+				CNewParticleEffect *pEffect = ParticleProp()->Create( GetArcEffectName( iEffectIndex ), PATTACH_ABSORIGIN_FOLLOW );
 
 				AOEGrenTargetFXList_t::IndexLocalType_t iIndex = m_hAOETargetEffects.AddToTail();
 				m_hAOETargetEffects[iIndex].hTarget = pTarget;
 				m_hAOETargetEffects[iIndex].pEffect = pEffect;
+				m_hAOETargetEffects[iIndex].iEffectIndex = iEffectIndex;
 				Assert( m_hAOETargetEffects[iIndex].me == &m_hAOETargetEffects[iIndex] );
 
 				UpdateParticleAttachments( m_hAOETargetEffects[iIndex].pEffect, pTarget );

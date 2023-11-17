@@ -24,6 +24,7 @@ public:
 
 	virtual const float GetAutoAimAmount() { return AUTOAIM_2DEGREES * 0.3f; }
 	virtual bool ShouldFlareAutoaim() { return true; }
+	virtual bool SupportsDamageModifiers() { return true; }
 	virtual void SecondaryAttack();
 	virtual bool SupportsBayonet();
 	virtual bool HasSecondaryExplosive( void ) const { return true; }
