@@ -8,6 +8,7 @@
 
 #include "steam/steam_api.h"
 
+void UTIL_RD_InitSteamNetworking();
 CSteamID UTIL_RD_GetCurrentLobbyID();
 #ifdef CLIENT_DLL
 void UTIL_RD_JoinByLobbyID( CSteamID lobby );

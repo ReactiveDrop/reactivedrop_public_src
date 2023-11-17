@@ -11,6 +11,37 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+static void SDRDebugCallback( ESteamNetworkingSocketsDebugOutputType nType, const char *pszMsg )
+{
+	if ( nType <= k_ESteamNetworkingSocketsDebugOutputType_Warning )
+		Warning( "[SteamNetworkingSockets] %s\n", pszMsg );
+	else
+		Msg( "[SteamNetworkingSockets] %s\n", pszMsg );
+}
+
+void SDRSpewLevelChanged( IConVar *var, const char *pOldValue, float flOldValue )
+{
+	if ( ISteamNetworkingUtils *pUtils = SteamNetworkingUtils() )
+	{
+		ESteamNetworkingSocketsDebugOutputType level = ESteamNetworkingSocketsDebugOutputType( ConVarRef( var ).GetInt() );
+		pUtils->SetDebugOutputFunction( level, &SDRDebugCallback );
+	}
+}
+
+ConVar sdr_spew_level( "sdr_spew_level", "5", FCVAR_NONE, "Verbosity level for SteamNetworkingSockets spew.  4=warning, 5=msg, 6=verbose, 7=debug", true, k_ESteamNetworkingSocketsDebugOutputType_None, true, k_ESteamNetworkingSocketsDebugOutputType_Everything, SDRSpewLevelChanged );
+
+void UTIL_RD_InitSteamNetworking()
+{
+	ISteamNetworkingUtils *pUtils = SteamNetworkingUtils();
+	Assert( pUtils );
+	if ( !pUtils )
+		return;
+
+	pUtils->InitRelayNetworkAccess();
+	ESteamNetworkingSocketsDebugOutputType level = ESteamNetworkingSocketsDebugOutputType( sdr_spew_level.GetInt() );
+	pUtils->SetDebugOutputFunction( level, &SDRDebugCallback );
+}
+
 CSteamID UTIL_RD_GetCurrentLobbyID()
 {
 	if ( !g_pMatchFramework || !g_pMatchFramework->GetMatchSession() )

@@ -57,6 +57,7 @@
 #include "rd_vgui_stock_ticker.h"
 #include "nb_header_footer.h"
 #include "briefingtooltip.h"
+#include "rd_lobby_utils.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -238,11 +239,8 @@ void MainMenu::Activate()
 	static bool s_bRunOnce = true;
 	if ( s_bRunOnce )
 	{
-		if ( SteamNetworkingUtils() )
-		{
-			// need to know our ping location to show pings in the lobby browser
-			SteamNetworkingUtils()->InitRelayNetworkAccess();
-		}
+		// need to know our ping location to show pings in the lobby browser
+		UTIL_RD_InitSteamNetworking();
 
 		if ( ConVarRef( "net_steamcnx_allowrelay" ).GetBool() )
 		{
