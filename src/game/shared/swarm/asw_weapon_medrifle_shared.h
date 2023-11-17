@@ -60,6 +60,8 @@ public:
 		virtual float GetLaserPointerRange( void ) { return 240; }// Give a chance for non-local weapons to update their effects on the client
 	#endif
 	virtual bool ShouldHealSelfOnInvalidTarget( CBaseEntity *pTarget );
+	virtual bool IsFiring();
+	virtual void ClearIsFiring();
 	virtual const char *GetMagazineGibModelName() const override { return "models/weapons/empty_clips/medrifle_empty_clip.mdl"; }
 
 	// Classification
@@ -89,6 +91,7 @@ protected:
 
 #ifdef CLIENT_DLL
 	CUtlReference<CNewParticleEffect>	m_pDischargeEffect;
+	bool m_bPlayingHealAnimation;
 #endif
 
 	CNetworkVar(unsigned char, m_FireState);	// one of the ASW_Weapon_HealGunFireState_t enums

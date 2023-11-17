@@ -44,6 +44,10 @@ protected:
 	void	StartSearchSound();
 
 	CNetworkVar( bool, m_bIsBuffing );			// true if we are not healing but buffing (like damage amplifier)
+
+#ifdef CLIENT_DLL
+	bool m_bPlayingAmpAnimation;
+#endif
 };
 
 #endif // !ASW_WEAPON_HEALAMP_GUN_SHARED_HEADER_INCLUDED__

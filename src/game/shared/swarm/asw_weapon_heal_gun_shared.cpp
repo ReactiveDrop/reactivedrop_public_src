@@ -91,6 +91,10 @@ CASW_Weapon_Heal_Gun::CASW_Weapon_Heal_Gun( void )
 
 	m_pSearchSound = NULL;
 	m_pHealSound = NULL;
+
+#ifdef CLIENT_DLL
+	m_bPlayingHealAnimation = false;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -471,16 +475,9 @@ void CASW_Weapon_Heal_Gun::HealEntity( void )
 {
 	// verify target
 	CASW_Marine *pMarine = GetMarine();
-	EHANDLE hHealEntity = m_hHealEntity.Get();
-	Assert( hHealEntity && hHealEntity->m_takedamage != DAMAGE_NO && pMarine );
-	if ( !pMarine )
-		return;
-
-	if ( hHealEntity.Get()->Classify() != CLASS_ASW_MARINE )
-		return;
-
-	CASW_Marine *pTarget = static_cast<CASW_Marine*>( static_cast<CBaseEntity*>( hHealEntity.Get() ) );
-	if ( !pTarget )
+	CASW_Marine *pTarget = CASW_Marine::AsMarine( m_hHealEntity.Get() );
+	Assert( pMarine && pTarget && pTarget->m_takedamage != DAMAGE_NO );
+	if ( !pMarine || !pTarget )
 		return;
 
 	if ( m_iClip1 <= 0 )
@@ -524,11 +521,11 @@ void CASW_Weapon_Heal_Gun::HealEntity( void )
 
 #endif
 
-    if ( false == rd_medgun_infinite_ammo.GetBool() )
-    {
-	    // decrement ammo
-	    m_iClip1 -= 1;
-    }
+	if ( !rd_medgun_infinite_ammo.GetBool() )
+	{
+		// decrement ammo
+		m_iClip1 -= 1;
+	}
 
 	// emit heal sound
 	StartHealSound();
@@ -941,7 +938,26 @@ const char* CASW_Weapon_Heal_Gun::GetPartialReloadSound(int iPart)
 
 void CASW_Weapon_Heal_Gun::UpdateEffects()
 {
-	if ( !m_hHealEntity.Get() || m_hHealEntity.Get()->Classify() != CLASS_ASW_MARINE || !GetMarine() )
+	if ( m_FireState == ASW_HG_FIRE_OFF )
+	{
+		if ( m_bPlayingHealAnimation )
+		{
+			ResetSequence( 0 );
+			m_bPlayingHealAnimation = false;
+		}
+	}
+	else if ( !m_bPlayingHealAnimation || IsSequenceFinished() )
+	{
+		int nSequence = SelectWeightedSequence( ACT_VM_PRIMARYATTACK );
+		if ( nSequence != ACT_INVALID )
+		{
+			ResetSequence( nSequence );
+			SetCycle( 0.0f );
+			m_bPlayingHealAnimation = true;
+		}
+	}
+
+	if ( ( m_FireState != ASW_HG_FIRE_DISCHARGE && ( !m_hHealEntity.Get() || m_hHealEntity.Get()->Classify() != CLASS_ASW_MARINE ) ) || !GetMarine() )
 	{
 		if ( m_pDischargeEffect )
 		{
@@ -951,7 +967,7 @@ void CASW_Weapon_Heal_Gun::UpdateEffects()
 		return;
 	}
 
-	C_ASW_Marine* pMarine = static_cast<C_ASW_Marine*>( static_cast<C_BaseEntity*>( m_hHealEntity.Get() ) );
+	C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( m_hHealEntity.Get() );
 	bool bHealingSelf = pMarine ? (pMarine == GetMarine()) : false;
 
 	if ( bHealingSelf && m_pDischargeEffect )
@@ -1023,10 +1039,7 @@ void CASW_Weapon_Heal_Gun::UpdateEffects()
 	
 			if ( m_pDischargeEffect->GetControlPointEntity( 1 ) == NULL )
 			{
-				float flHeight = pMarine->BoundingRadius();
-				Vector vOffset( 0.0f, 0.0f, flHeight * 0.25 );
-
-				ParticleProp()->AddControlPoint( m_pDischargeEffect, 1, pMarine, PATTACH_ABSORIGIN_FOLLOW, NULL, vOffset );
+				ParticleProp()->AddControlPoint( m_pDischargeEffect, 1, pMarine, PATTACH_POINT_FOLLOW, "beam_attach" );
 				m_pDischargeEffect->SetControlPointOrientation( 0, GetMarine()->Forward(), -GetMarine()->Left(), GetMarine()->Up() );
 			}
 
@@ -1039,4 +1052,14 @@ void CASW_Weapon_Heal_Gun::UpdateEffects()
 bool CASW_Weapon_Heal_Gun::ShouldHealSelfOnInvalidTarget( CBaseEntity *pTarget )
 {
 	return false;
+}
+
+bool CASW_Weapon_Heal_Gun::IsFiring()
+{
+	return m_FireState != ASW_HG_FIRE_OFF;
+}
+
+void CASW_Weapon_Heal_Gun::ClearIsFiring()
+{
+	BaseClass::ClearIsFiring();
 }

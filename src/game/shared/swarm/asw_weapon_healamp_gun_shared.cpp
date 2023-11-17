@@ -61,7 +61,11 @@ END_PREDICTION_DATA()
 
 CASW_Weapon_HealAmp_Gun::CASW_Weapon_HealAmp_Gun(void)
 {
-	m_bIsBuffing = false; 
+	m_bIsBuffing = false;
+
+#ifdef CLIENT_DLL
+	m_bPlayingAmpAnimation = false;
+#endif
 }
 
 void CASW_Weapon_HealAmp_Gun::Precache(void)
@@ -75,6 +79,8 @@ void CASW_Weapon_HealAmp_Gun::Precache(void)
 
 	PrecacheScriptSound( "ASW_Weapon.Empty" );
 
+	PrecacheParticleSystem( "buffgrenade_attach_arc" );
+	PrecacheParticleSystem( "buffgrenade_noconnect" );
 }
 
 void CASW_Weapon_HealAmp_Gun::SetFiringState(ASW_Weapon_HealGunFireState_t state)
@@ -164,16 +170,9 @@ void CASW_Weapon_HealAmp_Gun::HealEntity( void )
 {
 	// verify target
 	CASW_Marine *pMarine = GetMarine();
-	EHANDLE hHealEntity = m_hHealEntity.Get();
-	Assert( hHealEntity && hHealEntity->m_takedamage != DAMAGE_NO && pMarine );
-	if ( !pMarine )
-		return;
-
-	if ( hHealEntity.Get()->Classify() != CLASS_ASW_MARINE )
-		return;
-
-	CASW_Marine *pTarget = static_cast<CASW_Marine*>( static_cast<CBaseEntity*>( hHealEntity.Get() ) );
-	if ( !pTarget )
+	CASW_Marine *pTarget = CASW_Marine::AsMarine( m_hHealEntity.Get() );
+	Assert( pMarine && pTarget && pTarget->m_takedamage != DAMAGE_NO );
+	if ( !pMarine || !pTarget )
 		return;
 
 #ifdef GAME_DLL
@@ -432,15 +431,13 @@ void CASW_Weapon_HealAmp_Gun::MouseOverEntity(C_BaseEntity *pEnt, Vector vecWorl
 		if (dist < GetWeaponRange() )
 		{
 			bool bCanGiveHealth = ( pOtherMarine->GetHealth() > 1 && ( pOtherMarine->GetHealth() + pOtherMarine->m_iSlowHealAmount ) < pOtherMarine->GetMaxHealth() && m_iClip1 > 0 );
-			bool bCanHighlight = ( pOtherMarine->GetHealth() > 1 && ( pOtherMarine != pMarine || bCanGiveHealth ) && m_iClip1 > 0 );
+			bool bCanHighlight = ( pOtherMarine->GetHealth() > 1 && ( pOtherMarine != pMarine || bCanGiveHealth ) && m_iClip1 > 0 && pOtherMarine->GetActiveASWWeapon() && pOtherMarine->GetActiveASWWeapon()->SupportsDamageModifiers() );
 			ASWInput()->SetHighlightEntity( pOtherMarine, bCanHighlight );
-			if ( bCanGiveHealth )		// if he needs healing, show the give health cursor
+			// if he needs healing, show the give health cursor
+			CASWHudCrosshair *pCrosshair = GET_HUDELEMENT( CASWHudCrosshair );
+			if ( pCrosshair )
 			{
-				CASWHudCrosshair *pCrosshair = GET_HUDELEMENT( CASWHudCrosshair );
-				if ( pCrosshair )
-				{
-					pCrosshair->SetShowGiveHealth(true);
-				}
+				pCrosshair->SetShowGiveHealth( bCanGiveHealth );
 			}
 		}
 	}
@@ -448,7 +445,52 @@ void CASW_Weapon_HealAmp_Gun::MouseOverEntity(C_BaseEntity *pEnt, Vector vecWorl
 
 void CASW_Weapon_HealAmp_Gun::UpdateEffects()
 {
-	if ( !m_hHealEntity.Get() || m_hHealEntity.Get()->Classify() != CLASS_ASW_MARINE || !GetMarine() )
+	if ( m_bIsBuffing )
+	{
+		if ( m_FireState == ASW_HG_FIRE_OFF )
+		{
+			if ( m_bPlayingAmpAnimation )
+			{
+				ResetSequence( 0 );
+				m_bPlayingAmpAnimation = false;
+			}
+		}
+		else if ( !m_bPlayingHealAnimation || IsSequenceFinished() )
+		{
+			int nSequence = SelectWeightedSequence( ACT_VM_SECONDARYATTACK );
+			if ( nSequence != ACT_INVALID )
+			{
+				ResetSequence( nSequence );
+				SetCycle( 0.0f );
+				m_bPlayingHealAnimation = false;
+				m_bPlayingAmpAnimation = true;
+			}
+		}
+	}
+	else
+	{
+		if ( m_FireState == ASW_HG_FIRE_OFF )
+		{
+			if ( m_bPlayingHealAnimation )
+			{
+				ResetSequence( 0 );
+				m_bPlayingHealAnimation = false;
+			}
+		}
+		else if ( !m_bPlayingHealAnimation || IsSequenceFinished() )
+		{
+			int nSequence = SelectWeightedSequence( ACT_VM_PRIMARYATTACK );
+			if ( nSequence != ACT_INVALID )
+			{
+				ResetSequence( nSequence );
+				SetCycle( 0.0f );
+				m_bPlayingHealAnimation = true;
+				m_bPlayingAmpAnimation = false;
+			}
+		}
+	}
+
+	if ( ( m_FireState != ASW_HG_FIRE_DISCHARGE && ( !m_hHealEntity.Get() || m_hHealEntity.Get()->Classify() != CLASS_ASW_MARINE ) ) || !GetMarine() )
 	{
 		if ( m_pDischargeEffect )
 		{
@@ -493,7 +535,7 @@ void CASW_Weapon_HealAmp_Gun::UpdateEffects()
 
 			if ( !m_pDischargeEffect )
 			{
-				m_pDischargeEffect = ParticleProp()->Create( "heal_gun_noconnect", PATTACH_POINT_FOLLOW, "muzzle" ); 
+				m_pDischargeEffect = ParticleProp()->Create( m_bIsBuffing ? "buffgrenade_noconnect" : "heal_gun_noconnect", PATTACH_POINT_FOLLOW, "muzzle" );
 			}
 
 			m_pDischargeEffect->SetControlPoint( 1, m_vecHealPos );
