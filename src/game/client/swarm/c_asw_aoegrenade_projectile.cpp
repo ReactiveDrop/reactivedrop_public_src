@@ -427,28 +427,27 @@ void C_ASW_AOEGrenade_Projectile::ClientThink( void )
 
 	}
 
-
 	// spehere bubble models
-	if ( !ShouldSpawnSphere() || !m_hSphereModel.Get() )
-		return;
-
-	C_BaseAnimating *pSphere = static_cast<C_BaseAnimating*>( m_hSphereModel.Get() );
-	if ( pSphere )
+	if ( ShouldSpawnSphere() && m_hSphereModel.Get() )
 	{
-		float flScale = GetSphereScale();
+		C_BaseAnimating *pSphere = static_cast< C_BaseAnimating * >( m_hSphereModel.Get() );
+		if ( pSphere )
+		{
+			float flScale = GetSphereScale();
 
-		if ( m_flTimeCreated > 0 && ( gpGlobals->curtime - m_flTimeCreated ) < 0.25f )
-		{
-			pSphere->SetModelScale( MIN( ((gpGlobals->curtime - m_flTimeCreated)/0.25f)*flScale, 1.0f ) );
-		}
-		else
-		{
-			pSphere->SetModelScale( flScale );
-		}
+			if ( m_flTimeCreated > 0 && ( gpGlobals->curtime - m_flTimeCreated ) < 0.25f )
+			{
+				pSphere->SetModelScale( MIN( ( ( gpGlobals->curtime - m_flTimeCreated ) / 0.25f ) * flScale, 1.0f ) );
+			}
+			else
+			{
+				pSphere->SetModelScale( flScale );
+			}
 
-		if ( flTimeLeft < 0.25f )
-		{
-			pSphere->SetModelScale( MAX( (flTimeLeft/0.25f)*flScale, 0.01f ) );
+			if ( flTimeLeft < 0.25f )
+			{
+				pSphere->SetModelScale( MAX( ( flTimeLeft / 0.25f ) * flScale, 0.01f ) );
+			}
 		}
 	}
 
@@ -468,29 +467,8 @@ void C_ASW_AOEGrenade_Projectile::ClientThink( void )
 			i = m_hAOETargetEffects.Next( i );
 		}
 
-		/*
-		for ( int i = 0; i < m_hAOETargets.Count(); i++ )
-		{
-			C_BaseEntity *pTarget = m_hAOETargets[i].Get();
-
-			// Loops through the aoe targets, and make sure we have an effect for each of them
-			if ( pTarget )
-			{
-				bool bHaveEffect = false;
-
-				for ( AOEGrenTargetFXList_t::IndexLocalType_t j = m_hAOETargetEffects.Head() ;
-					m_hAOETargetEffects.IsValidIndex(j) ;
-					i = m_hAOETargetEffects.Next(j) )
-				{
-					if ( m_hAOETargetEffects[j].hTarget.Get() == pTarget && m_hAOETargetEffects[j].pEffect )
-					{
-						UpdateParticleAttachments( m_hAOETargetEffects[j].pEffect, pTarget );
-						break;
-					}
-				}
-			}
-		}
-		*/
+		// Double-check that we have the correct particle effects for aoegrenades that have multiple attach particle effects.
+		UpdateTargetAOEEffects();
 
 		m_fUpdateAttachFXTime = gpGlobals->curtime + 0.5f;
 	}
