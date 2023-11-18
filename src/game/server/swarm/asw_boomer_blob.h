@@ -25,6 +25,7 @@ public:
 
 	virtual void	Spawn( );
 	virtual void	Detonate( );
+	virtual int		OnTakeDamage( const CTakeDamageInfo &info );
 	virtual void	Precache( );
 	virtual void	SetFuseLength( float fSeconds );
 	virtual void	SetClusters(int iClusters, bool bMaster = false);
