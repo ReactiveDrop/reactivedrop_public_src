@@ -1,0 +1,49 @@
+"CHALLENGE" {
+	"name"	"Infection"
+	"description"	"Human team wins by surviving. Zombie team wins by infecting all human players."
+	"allowed_mode"	"deathmatch"
+
+	"required_on_client" "1"
+
+	"convars" {
+		"asw_marine_collision" "1"
+		"rd_hud_hide_clips" "1"
+		"rd_notify_about_out_of_ammo" "0"
+
+		"rd_frags_limit" "-99999"
+
+		"rd_weapons_regular_allowed_inverted" "1"
+		"rd_weapons_regular_allowed" "5 6 7 11 14 17 19 24"
+		"rd_weapons_extra_allowed_inverted" "1"
+		"rd_weapons_extra_allowed" "0 1 2 4 7 8 9 10"
+
+		"asw_marine_names" "1"
+		"asw_marine_death_cam_slowdown" "0"
+		"asw_marine_speed_scale_easy" "1.0"
+		"asw_marine_speed_scale_normal" "1.0"
+		"asw_marine_speed_scale_hard" "1.0"
+		"asw_marine_speed_scale_insane" "1.0"
+		"rd_chainsaw_slows_down" "0"
+		"rd_show_others_laser_pointer" "1"
+
+		"asw_skill_health_step" "0"
+		"asw_skill_agility_movespeed_base" "330"
+		"asw_skill_agility_movespeed_step" "0"
+		"asw_skill_grenades_clusters_step" "0"
+		"rd_deathmatch_team_colors" "2"
+
+		"asw_cluster_grenade_fuse" "1"
+
+		"asw_instant_restart" "0"
+
+		"asw_skill_accuracy_rifle_dmg_step" "2"
+		"asw_skill_accuracy_prifle_dmg_step" "2"
+		"rd_rifle_dmg_base" "10"
+		"rd_combat_rifle_dmg_base" "10"
+		"rd_autogun_dmg_base" "10"
+		"rd_pistol_dmg_base" "35"
+		"rd_pistols_min_delay" "0.1"
+		"asw_skill_grenades_dmg_base" "800"
+		"rd_deagle_dmg_base" "104"
+	}
+}
