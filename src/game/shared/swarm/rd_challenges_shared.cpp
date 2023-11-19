@@ -377,6 +377,9 @@ static const char *s_szOfficialChallenges[] =
 	"riflemod_classic",
 	"rd_first_person",
 	"rd_third_person",
+	"asw_infection",
+	"asw_infection_fp",
+	"asw_infection_tp",
 };
 
 bool ReactiveDropChallenges::IsOfficial( const char *pszChallengeName )
