@@ -45,6 +45,7 @@ public:
 
 	EHANDLE m_hFirer;
 
+	bool m_bDamagedByExplosions;
 	bool m_bKicked;
 	bool m_bExplodeOnWorldContact;
 

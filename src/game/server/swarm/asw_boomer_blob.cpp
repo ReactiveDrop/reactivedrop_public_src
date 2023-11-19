@@ -26,6 +26,9 @@ static ConVar asw_boomer_blob_radius_check_scale( "asw_boomer_blob_radius_check_
 static ConVar asw_boomer_blob_child_fuse_min( "asw_boomer_blob_child_fuse_min", "0.5", FCVAR_CHEAT, "Cluster grenade child cluster's minimum fuse length" );
 static ConVar asw_boomer_blob_child_fuse_max( "asw_boomer_blob_child_fuse_max", "1.0", FCVAR_CHEAT, "Cluster grenade child cluster's maximum fuse length" );
 static ConVar asw_boomer_blob_gravity( "asw_boomer_blob_gravity", "0.8f", FCVAR_CHEAT, "Gravity of mortar bug's mortar" );
+static ConVar rd_boomer_blob_push_force_multiplier( "rd_boomer_blob_push_force_multiplier", "1.0", FCVAR_CHEAT, "General force multiplier at which boomer blobs get pushed" );
+static ConVar rd_boomer_blob_punch_force_multiplier( "rd_boomer_blob_punch_force_multiplier", "0.6", FCVAR_CHEAT, "Multiplier for the force at which boomer blobs get pushed by marine's melee attacks" );
+static ConVar rd_boomer_blob_pushed_by_everything( "rd_boomer_blob_pushed_by_everything", "0", FCVAR_CHEAT, "If set, boomer blobs get pushed by anything that does damage to them" );
 
 CUtlVector<CBaseEntity*> g_aExplosiveProjectiles;
 
@@ -63,8 +66,9 @@ void CASW_Boomer_Blob::Spawn( void )
 
 	m_flDamage		= 80;
 	m_DmgRadius		= 165.0f;  // NOTE: this gets overriden
+	m_bDamagedByExplosions = true;	// NOTE: needs rd_boomer_blob_pushed_by_everything set to actually work
 
-	m_takedamage	= DAMAGE_NO;
+	m_takedamage	= DAMAGE_YES;
 	m_iHealth = 1;
 
 	m_bModelOpening = false;
@@ -74,7 +78,7 @@ void CASW_Boomer_Blob::Spawn( void )
 	SetGravity( asw_boomer_blob_gravity.GetFloat() );
 	SetFriction( asw_boomer_blob_friction.GetFloat() );
 	SetElasticity( asw_vindicator_grenade_elasticity.GetFloat() );
-	SetCollisionGroup( ASW_COLLISION_GROUP_PASSABLE );
+	SetCollisionGroup( ASW_COLLISION_GROUP_GRENADES );
 
 	SetTouch( &CASW_Boomer_Blob::Touch );
 
@@ -305,6 +309,24 @@ void CASW_Boomer_Blob::DoExplosion( )
 
 	// damage to nearby things
 	ASWGameRules()->RadiusDamage( CTakeDamageInfo( this, m_hFirer.Get(), m_flDamage, DMG_BLAST ), GetAbsOrigin(), m_DmgRadius, CLASS_NONE, NULL );
+}
+
+int CASW_Boomer_Blob::OnTakeDamage( const CTakeDamageInfo &info )
+{
+	bool bMeleePunch = !( info.GetDamageType() & DMG_CLUB ) || !info.GetAttacker() || V_strcmp( info.GetAttacker()->GetClassname(), "asw_marine" );
+	
+	// filter everything except melee punch from marine
+	if ( !rd_boomer_blob_pushed_by_everything.GetBool() && bMeleePunch )
+		return 0;
+
+	CTakeDamageInfo newInfo = info;
+
+	if ( bMeleePunch )
+		newInfo.ScaleDamageForce( rd_boomer_blob_punch_force_multiplier.GetFloat() );
+
+	newInfo.ScaleDamageForce( rd_boomer_blob_push_force_multiplier.GetFloat() );
+
+	return BaseClass::OnTakeDamage( newInfo );
 }
 
 void CASW_Boomer_Blob::Detonate( )

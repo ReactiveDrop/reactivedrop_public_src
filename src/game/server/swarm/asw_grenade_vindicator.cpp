@@ -25,6 +25,7 @@ ConVar asw_vindicator_grenade_elasticity("asw_vindicator_grenade_elasticity", "1
 ConVar asw_vindicator_grenade_min_detonation_time("asw_vindicator_grenade_min_detonation_time", "0.05f", FCVAR_CHEAT, "Minimum before this grenade can detonate");
 ConVar asw_vindicator_grenade_mass("asw_vindicator_grenade_mass", "10", FCVAR_CHEAT, "Mass of indendiary/cluster grenade");
 ConVar asw_vindicator_grenade_fuse("asw_vindicator_grenade_fuse", "3", FCVAR_CHEAT, "Fuse time on incendiary grenades");
+ConVar rd_vindicator_grenade_pushed_by_explosions("rd_vindicator_grenade_pushed_by_explosions", "0", FCVAR_CHEAT, "If set, vindicator grenade gets pushed by explosions");
 ConVar rd_grenade_collision_fix("rd_grenade_collision_fix", "1", FCVAR_CHEAT, "Set to 1 to not impact on dropped weapons & items");	//DRAVEN ~FIXGLITEMCOLLISION~ Added check to exclude item drops
 ConVar rd_grenade_launcher_arm_time( "rd_grenade_launcher_arm_time", "0", FCVAR_CHEAT, "Time in seconds until grenade launcher grenade is armed and can explode" );
 ConVar rd_grenade_launcher_projectile_direct_dmg( "rd_grenade_launcher_projectile_direct_dmg", "256", FCVAR_CHEAT, "The direct damage caused by non exploded grenade from GL" );
@@ -73,6 +74,7 @@ void CASW_Grenade_Vindicator::Spawn( void )
 
 	m_flDamage		= sk_plr_dmg_asw_r_g.GetFloat();
 	m_DmgRadius		= 220.0f;
+	m_bDamagedByExplosions = rd_vindicator_grenade_pushed_by_explosions.GetBool();
 
 	Ignite(3.0, false, 0, false);
 
@@ -414,7 +416,7 @@ int	CASW_Grenade_Vindicator::OnTakeDamage_Dying( const CTakeDamageInfo &info )
 int	CASW_Grenade_Vindicator::OnTakeDamage( const CTakeDamageInfo &info )
 {
 	// don't allow grenades to be damaged by other grenade explosions
-	if (info.GetDamageType() & DMG_BLAST)
+	if ( !m_bDamagedByExplosions && info.GetDamageType() & DMG_BLAST )
 	{
 		return 0;
 	}
