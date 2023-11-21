@@ -8,8 +8,6 @@
 		"ypos"					"0"
 		"wide"					"f0"
 		"tall"					"32"
-		"visible"				"1"
-		"enabled"				"1"
 		"tabPosition"			"0"
 		"PaintBackground"		"1"
 		"navLeft"				"BtnSettings"

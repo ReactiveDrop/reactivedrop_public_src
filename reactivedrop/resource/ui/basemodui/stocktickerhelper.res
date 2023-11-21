@@ -8,8 +8,6 @@
 		"ypos"				"r20"
 		"wide"				"f0"
 		"tall"				"20"
-		"visible"			"1"
-		"enabled"			"1"
 		"mouseinputenabled"	"0"
 		"PaintBackground"	"1"
 	}
