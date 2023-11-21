@@ -294,6 +294,7 @@ public:
 	virtual int GetSkin()			{ return m_nSkin; }
 
 	bool							IsOnFire() { return ( (GetFlags() & FL_ONFIRE) != 0 ); }
+	bool							IsFrozen() { return m_flFrozen >= 1.0f; }
 	float							GetFrozenAmount() { return m_flFrozen; }
 
 	inline float					GetPlaybackRate() const;

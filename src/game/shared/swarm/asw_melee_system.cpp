@@ -256,7 +256,8 @@ void CASW_Melee_System::ProcessMovement( CASW_Marine *pMarine, CMoveData *pMoveD
 		return;
 	}
 
-	if (pMarine->GetFlags() & FL_FROZEN)
+	// only check debug-freeze; allow forced actions to occur even when ice-frozen
+	if ( pMarine->GetFlags() & FL_FROZEN )
 		return;
 
 	CASW_MoveData *pASWMove = static_cast<CASW_MoveData*>( pMoveData );
@@ -517,7 +518,7 @@ void CASW_Melee_System::OnMeleePressed( CASW_Marine *pMarine, CMoveData *pMoveDa
 	if ( !pMarine || !pMoveData || !pMarine->GetMarineProfile() )
 		return;
 
-	if (pMarine->GetFlags() & FL_FROZEN)
+	if ( ( pMarine->GetFlags() & FL_FROZEN ) || pMarine->IsFrozen() )
 		return;
 
 	CASW_Melee_Attack *pCurrentAttack = pMarine->GetCurrentMeleeAttack();
@@ -574,7 +575,7 @@ void CASW_Melee_System::OnJumpPressed( CASW_Marine *pMarine, CMoveData *pMoveDat
 	if ( !pMarine->m_bRolls )
 		return;
 
-	if (pMarine->GetFlags() & FL_FROZEN)	// no jumping when frozen
+	if ( ( pMarine->GetFlags() & FL_FROZEN ) || pMarine->IsFrozen() )	// no jumping when frozen
 		return;
 
 	// no rolling if in the middle of an attack

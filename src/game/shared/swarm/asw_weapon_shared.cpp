@@ -341,7 +341,7 @@ void CASW_Weapon::ItemPostFrame( void )
 	GetButtons( bAttack1, bAttack2, bReload, bOldReload, bOldAttack1 );
 
 	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
-	if ( pMarine && ( pMarine->IsHacking() || pMarine->GetForcedActionRequest() ) )
+	if ( pMarine && ( pMarine->IsHacking() || pMarine->GetForcedActionRequest() || pMarine->IsFrozen() ) )
 	{
 		bThisActive = bAttack1 = bAttack2 = bReload = false;
 	}
