@@ -156,6 +156,7 @@ public:
 	CUtlVector<uint32_t> m_ParticipatingServers;
 
 	CReactiveDropLobbySearch m_PublicLobbies;
+	CReactiveDropLobbySearch m_PublicDistanceLobbies;
 
 	CReactiveDropServerListHelper m_PublicServers;   // servers with players or HoIAF servers
 	CReactiveDropServerListHelper m_InternetServers; // unfiltered public servers

@@ -52,6 +52,15 @@ ConVar ui_foundgames_fake_count( "ui_foundgames_fake_count", "0", FCVAR_DEVELOPM
 ConVar rd_lobby_ping_low( "rd_lobby_ping_low", "120", FCVAR_NONE, "lobbies with an estimated ping below this many milliseconds are considered \"low ping\"." );
 ConVar rd_lobby_ping_high( "rd_lobby_ping_high", "250", FCVAR_NONE, "lobbies with an estimated ping above this many milliseconds are considered \"high ping\"." );
 
+ConVar rd_lobby_filter_difficulty_min( "rd_lobby_filter_difficulty_min", "1", FCVAR_ARCHIVE, "minimum difficulty for searched lobbies. 1=easy,2=normal,3=hard,4=insane,5=brutal", true, 1, true, 5 );
+ConVar rd_lobby_filter_difficulty_max( "rd_lobby_filter_difficulty_max", "5", FCVAR_ARCHIVE, "maximum difficulty for searched lobbies. 1=easy,2=normal,3=hard,4=insane,5=brutal", true, 1, true, 5 );
+ConVar rd_lobby_filter_onslaught( "rd_lobby_filter_onslaught", "-1", FCVAR_ARCHIVE, "onslaught preference for searched lobbies. -1=don't care, 0=only off, 1=only on", true, -1, true, 1 );
+ConVar rd_lobby_filter_hardcoreff( "rd_lobby_filter_hardcoreff", "-1", FCVAR_ARCHIVE, "hardcore friendly fire preference for searched lobbies. -1=don't care, 0=only off, 1=only on", true, -1, true, 1 );
+ConVar rd_lobby_filter_dedicated( "rd_lobby_filter_dedicated", "-1", FCVAR_ARCHIVE, "dedicated server preference for searched lobbies. -1=don't care, 0=only listen, 1=only dedicated", true, -1, true, 1 );
+ConVar rd_lobby_filter_installed( "rd_lobby_filter_installed", "-1", FCVAR_ARCHIVE, "installed mission preference for searched lobbies. -1=don't care, 0=only non-installed or version mismatch, 1=only installed", true, -1, true, 1 );
+ConVar rd_lobby_filter_challenge( "rd_lobby_filter_challenge", "-1", FCVAR_ARCHIVE, "challenge preference for searched lobbies. -1=don't care, 0=only off, 1=only on", true, -1, true, 1 );
+ConVar rd_lobby_filter_always_friends( "rd_lobby_filter_always_friends", "1", FCVAR_ARCHIVE, "always show lobbies with Steam friends in them" );
+
 void Demo_DisableButton( Button *pButton );
 
 const char *COM_GetModDirectory();
@@ -1715,6 +1724,24 @@ void FoundGames::SetFoundDesiredText( bool bFoundGame )
 
 bool FoundGames::AddGameFromDetails( const FoundGameListItem::Info &fi, bool bOnlyMerge )
 {
+	if ( !rd_lobby_filter_always_friends.GetBool() || fi.m_Friends.Count() == 0 )
+	{
+		if ( fi.m_eGameDifficulty < rd_lobby_filter_difficulty_min.GetInt() - 1 )
+			bOnlyMerge = true;
+		else if ( fi.m_eGameDifficulty > rd_lobby_filter_difficulty_max.GetInt() - 1 )
+			bOnlyMerge = true;
+		else if ( rd_lobby_filter_onslaught.GetInt() != -1 && fi.m_bOnslaught != rd_lobby_filter_onslaught.GetBool() )
+			bOnlyMerge = true;
+		else if ( rd_lobby_filter_hardcoreff.GetInt() != -1 && fi.m_bHardcoreFF != rd_lobby_filter_hardcoreff.GetBool() )
+			bOnlyMerge = true;
+		else if ( rd_lobby_filter_dedicated.GetInt() != -1 && ( rd_lobby_filter_dedicated.GetBool() ? fi.m_eServerType != fi.SERVER_DEDICATED : fi.m_eServerType != fi.SERVER_LISTEN ) )
+			bOnlyMerge = true;
+		else if ( rd_lobby_filter_installed.GetInt() != -1 && rd_lobby_filter_installed.GetBool() != ( fi.CompareMapVersion() == 0 ) )
+			bOnlyMerge = true;
+		else if ( rd_lobby_filter_challenge.GetInt() != -1 && !!V_strcmp( fi.m_szChallengeFile, "0" ) != rd_lobby_filter_challenge.GetBool() )
+			bOnlyMerge = true;
+	}
+
 	FoundGameListItem *pGame = NULL;
 
 	for ( int i = 0; i < m_GplGames->GetPanelItemCount(); i++ )
@@ -1731,7 +1758,7 @@ bool FoundGames::AddGameFromDetails( const FoundGameListItem::Info &fi, bool bOn
 		}
 	}
 
-	if ( !pGame && bOnlyMerge )
+	if ( ( !pGame || pGame->IsSweep() ) && bOnlyMerge )
 		return false;
 
 	if ( !pGame )

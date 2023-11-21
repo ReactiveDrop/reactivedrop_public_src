@@ -771,6 +771,7 @@ CReactiveDropServerList g_ReactiveDropServerList;
 
 CReactiveDropServerList::CReactiveDropServerList() :
 	m_PublicLobbies{ "g_ReactiveDropServerList.m_PublicLobbies" },
+	m_PublicDistanceLobbies{ "g_ReactiveDropServerList.m_PublicDistanceLobbies" },
 	m_PublicServers{ "g_ReactiveDropServerList.m_PublicServers" },
 	m_InternetServers{ "g_ReactiveDropServerList.m_InternetServers" },
 	m_FavoriteServers{ "g_ReactiveDropServerList.m_FavoriteServers" },

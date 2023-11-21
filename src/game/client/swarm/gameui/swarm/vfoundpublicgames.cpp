@@ -33,6 +33,8 @@ using namespace BaseModUI;
 extern ConVar rd_lobby_ping_low;
 extern ConVar rd_lobby_ping_high;
 
+ConVar rd_lobby_filter_distance( "rd_lobby_filter_distance", "3", FCVAR_ARCHIVE, "maximum distance for player-hosted lobbies. does not affect lobbies on dedicated servers. 0=only own region, 1=nearby regions, 2=about half of the world, 3=return all lobbies", true, k_ELobbyDistanceFilterClose, true, k_ELobbyDistanceFilterWorldwide );
+
 //=============================================================================
 FoundPublicGames::FoundPublicGames( Panel *parent, const char *panelName ) :
 	BaseClass( parent, panelName )
@@ -110,20 +112,33 @@ void FoundPublicGames::UpdateTitle()
 
 void FoundPublicGames::AddServersToList()
 {
+	AddFriendGamesToList();
 	AddDedicatedServersToList();
 	AddPublicGamesToList();
-	AddFriendGamesToList();
 }
 
 void FoundPublicGames::AddPublicGamesToList()
 {
+	bool bUsingDistanceFilter = rd_lobby_filter_distance.GetInt() != k_ELobbyDistanceFilterWorldwide;
 	g_ReactiveDropServerList.m_PublicLobbies.WantUpdatedLobbyList();
+	if ( bUsingDistanceFilter )
+	{
+		g_ReactiveDropServerList.m_PublicDistanceLobbies.m_DistanceFilter = ELobbyDistanceFilter( rd_lobby_filter_distance.GetInt() );
+		g_ReactiveDropServerList.m_PublicDistanceLobbies.WantUpdatedLobbyList();
+
+		FOR_EACH_VEC( g_ReactiveDropServerList.m_PublicDistanceLobbies.m_MatchingLobbies, i )
+		{
+			FoundGameListItem::Info info;
+			if ( info.SetFromLobby( g_ReactiveDropServerList.m_PublicDistanceLobbies.m_MatchingLobbies[i] ) )
+				AddGameFromDetails( info );
+		}
+	}
 
 	FOR_EACH_VEC( g_ReactiveDropServerList.m_PublicLobbies.m_MatchingLobbies, i )
 	{
 		FoundGameListItem::Info info;
 		if ( info.SetFromLobby( g_ReactiveDropServerList.m_PublicLobbies.m_MatchingLobbies[i] ) )
-			AddGameFromDetails( info );
+			AddGameFromDetails( info, bUsingDistanceFilter );
 	}
 }
 
