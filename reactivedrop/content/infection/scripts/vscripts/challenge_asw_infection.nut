@@ -335,7 +335,7 @@ function Update()
 			}
 			else
 			{
-				if (!(g_lastStand) && (CountMarine() >= 3) && (g_teamHuman.len() <= g_prime.len() || g_teamHuman.len() <= g_primeZombies.len()))
+				if (!(g_lastStand) && (CountMarine() > 4) && (g_teamHuman.len() <= g_prime.len() || g_teamHuman.len() <= g_primeZombies.len()))
 				{
 					LastStand();
 				}
@@ -623,7 +623,6 @@ function OnTakeDamage_Alive_Any( victim, inflictor, attacker, weapon, damage, da
 			PlayZombieSound(attacker, "attack");
 			Deathmatch.SetKills(attacker, Deathmatch.GetKills(attacker)+1);
 			Deathmatch.IncreaseKillingSpree(attacker);
-			Deathmatch.CheckFragLimit(attacker);
 		}
 		else if (inflictor && inflictor == attacker && damageType && damageType == 128)
 		{
@@ -1000,6 +999,7 @@ function UseLastStand(hMarine)
 	{
 		return;
 	}
+	AddTime(60);
 	hMarine.DropWeapon(0);
 	hMarine.DropWeapon(1);
 	hMarine.GiveWeapon("asw_weapon_chainsaw", 0);
@@ -1013,6 +1013,7 @@ function UseLastStand(hMarine)
 	g_lastHuman[hMarine] <- hBubble;
 	hMarine.SetHealth(GetNewHealth(hMarine));
 	ClientPrint(null, 3, NameFeed(hMarine) + " activated Last Stand mode.");
+	ClientPrint(null, 3, "+60 seconds to the match timer.");
 }
 
 function OnGameEvent_player_say(params)
@@ -1138,6 +1139,18 @@ function Heal(ent, amt)
 	{
 		ent.SetHealth(newHealth);
 	}
+}
+
+function AddTime(sec)
+{
+	local newTime = g_matchTimer + sec*10;
+	if (newTime >= g_matchLength)
+	{
+		g_matchTimer = g_matchLength-1;
+		return;
+	}
+	g_matchTimer = newTime;
+	return;
 }
 
 function GetSlotWeapon(hMarine, slot)
