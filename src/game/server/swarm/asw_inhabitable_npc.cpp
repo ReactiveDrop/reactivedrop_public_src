@@ -127,6 +127,7 @@ BEGIN_ENT_SCRIPTDESC( CASW_Inhabitable_NPC, CBaseCombatCharacter, "Alien Swarm I
 	DEFINE_SCRIPTFUNC_NAMED( ScriptChaseNearestMarine, "ChaseNearestMarine", "order the alien to chase the nearest marine" )
 	DEFINE_SCRIPTFUNC( Extinguish, "Extinguish a burning alien." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptIgnite, "Ignite", "Ignites the alien into flames." )
+	DEFINE_SCRIPTFUNC( Thaw, "Thaws a frozen alien." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptFreeze, "Freeze", "Freezes the alien." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptElectroStun, "ElectroStun", "Stuns the alien." )
 	DEFINE_SCRIPTFUNC( Wake, "Wake up the alien." )
