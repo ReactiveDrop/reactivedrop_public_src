@@ -36,6 +36,8 @@
 
 // testing in production, starting november 1st 2023
 #define RD_STEAM_INPUT_ACTIONS
+// testing in production, starting december 1st 2023
+#define RD_7A_UI_REVAMP
 
 #define RD_IS_RELEASE 1
 #endif
