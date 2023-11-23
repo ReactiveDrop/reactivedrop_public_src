@@ -400,7 +400,8 @@ BEGIN_ENT_SCRIPTDESC( CASW_Marine, CASW_Inhabitable_NPC, "Marine" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptSwitchWeapon, "SwitchWeapon", "Make the marine switch to a weapon" )
 	DEFINE_SCRIPTFUNC_NAMED( Script_GetInvTable, "GetInvTable", "Returns a table of the marine's inventory data." )
 	DEFINE_SCRIPTFUNC_NAMED( Script_GetInventoryTable, "GetInventoryTable", "Fills the passed table with the marine's inventory." )
-	DEFINE_SCRIPTFUNC_NAMED( Script_GetMarineName, "GetMarineName", "Returns the marine's name." )
+	DEFINE_SCRIPTFUNC_NAMED( Script_GetMarineName, "GetMarineName", "Returns the marine's name, translated to the host's language." )
+	DEFINE_SCRIPTFUNC_NAMED( Script_GetMarineProfile, "GetMarineProfile", "Returns the marine's profile index (ASW_MARINE_PROFILE_SARGE, etc.)" )
 	DEFINE_SCRIPTFUNC_NAMED( Script_Speak, "Speak", "Makes the marine speak a response rules concept." )
 	DEFINE_SCRIPTFUNC( IsInfested, "Returns true if the marine is infested." )
 	DEFINE_SCRIPTFUNC( IsElectrifiedArmorActive, "Returns true if the marine currently has electrified armor (the effect, not the item)." )
@@ -3565,15 +3566,25 @@ void CASW_Marine::Script_GetInventoryTable( HSCRIPT hTable )
 
 const char* CASW_Marine::Script_GetMarineName()
 {
-	if ( !GetMarineResource() )
+	CASW_Marine_Profile *pProfile = GetMarineProfile();
+	if ( !pProfile )
 		return "";
 
 	wchar_t wszName[256];
-	TryLocalize( GetMarineResource()->GetProfile()->m_ShortName, wszName, sizeof( wszName ) );
+	TryLocalize( pProfile->m_ShortName, wszName, sizeof( wszName ) );
 	static char s_szName[256];
 	V_UnicodeToUTF8( wszName, s_szName, sizeof( s_szName ) );
 
 	return s_szName;
+}
+
+int CASW_Marine::Script_GetMarineProfile()
+{
+	CASW_Marine_Profile *pProfile = GetMarineProfile();
+	if ( !pProfile )
+		return -1;
+
+	return pProfile->m_ProfileIndex;
 }
 
 void CASW_Marine::Script_Speak( const char *pszConcept, float delay, const char *pszCriteria )

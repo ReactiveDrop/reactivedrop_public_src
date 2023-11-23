@@ -1833,6 +1833,17 @@ bool VScriptServerInit()
 				g_pScriptVM->SetValue( "TEAM_ALPHA", FIRST_GAME_TEAM );
 				g_pScriptVM->SetValue( "TEAM_BETA", FIRST_GAME_TEAM + 1 );
 
+				// marine profile IDs
+				COMPILE_TIME_ASSERT( ASW_NUM_MARINE_PROFILES == 8 );
+				g_pScriptVM->SetValue( "ASW_MARINE_PROFILE_SARGE", ASW_MARINE_PROFILE_SARGE );
+				g_pScriptVM->SetValue( "ASW_MARINE_PROFILE_WILDCAT", ASW_MARINE_PROFILE_WILDCAT );
+				g_pScriptVM->SetValue( "ASW_MARINE_PROFILE_FAITH", ASW_MARINE_PROFILE_FAITH );
+				g_pScriptVM->SetValue( "ASW_MARINE_PROFILE_CRASH", ASW_MARINE_PROFILE_CRASH );
+				g_pScriptVM->SetValue( "ASW_MARINE_PROFILE_JAEGER", ASW_MARINE_PROFILE_JAEGER );
+				g_pScriptVM->SetValue( "ASW_MARINE_PROFILE_WOLFE", ASW_MARINE_PROFILE_WOLFE );
+				g_pScriptVM->SetValue( "ASW_MARINE_PROFILE_BASTILLE", ASW_MARINE_PROFILE_BASTILLE );
+				g_pScriptVM->SetValue( "ASW_MARINE_PROFILE_VEGAS", ASW_MARINE_PROFILE_VEGAS );
+
 				if ( scriptLanguage == SL_SQUIRREL )
 				{
 					g_pScriptVM->Run( g_Script_vscript_server );

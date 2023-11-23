@@ -556,7 +556,8 @@ public:
 	// DEPRECATED - Use Script_GetInventoryTable instead!
 	ScriptVariant_t Script_GetInvTable();
 	void Script_GetInventoryTable( HSCRIPT hTable );
-	const char* Script_GetMarineName();
+	const char *Script_GetMarineName();
+	int Script_GetMarineProfile();
 	void Script_Speak( const char *pszConcept, float delay, const char *pszCriteria );
 	void SetMarineRolls( bool bRolls );
 
