@@ -267,17 +267,17 @@ function Paint()
 	local creditScript = "Scripter: ModdedMarionette";
 	local creditModel = "Modeler: Beka";
 	self.PaintText(
-		ScreenPosX( 0.6000 ),
-		ScreenPosY( 0.9880 ) - self.GetFontTall(FONT_DEFAULTLARGE)*2,
+		ScreenPosX( 0.8900 ),
+		ScreenPosY( 0.8000 ) - self.GetFontTall(FONT_DEFAULT)*2,
 		255, 255, 255, 255,
-		FONT_DEFAULTLARGE,
+		FONT_DEFAULT,
 		creditScript
 	);
 	self.PaintText(
-		ScreenPosX( 0.6000 ),
-		ScreenPosY( 0.9900 ) - self.GetFontTall(FONT_DEFAULTLARGE),
+		ScreenPosX( 0.8900 ),
+		ScreenPosY( 0.8020 ) - self.GetFontTall(FONT_DEFAULT),
 		255, 255, 255, 255,
-		FONT_DEFAULTLARGE,
+		FONT_DEFAULT,
 		creditModel
 	);
 }
