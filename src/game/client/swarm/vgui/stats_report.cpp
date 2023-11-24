@@ -19,6 +19,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
 
+ConVar rd_debrief_timelines( "rd_debrief_timelines", "1", FCVAR_REPLICATED, "Send friendly fire, kills, health, ammo, position, score timelines at end of mission." );
+
 Color g_rgbaStatsReportPlayerColors[] =
 {
 	Color( 225, 60, 60, 255 ),
@@ -115,12 +117,22 @@ void StatsReport::PerformLayout()
 	m_pCategoryButtons[ 0 ]->SizeToContents();
 	m_pCategoryButtons[ 0 ]->SetTall( nCategoryButtonY );
 	m_pCategoryButtons[ 0 ]->GetBounds( nCategoryButtonX, nCategoryButtonY, nCategoryButtonW, nCategoryButtonH );
+	if ( !rd_debrief_timelines.GetBool() )
+	{
+		m_pCategoryButtons[0]->SetVisible( false );
+	}
 
 	nCategoryButtonX += nCategoryButtonW + padding;
 
 	// align stat lines in a vertical list one after the other
 	for ( int i = 1; i < ASW_STATS_REPORT_CATEGORIES; i++ )
 	{
+		if ( !rd_debrief_timelines.GetBool() )
+		{
+			m_pCategoryButtons[i]->SetVisible( false );
+			continue;
+		}
+
 		if ( i == 4 )
 		{
 			const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( engine->GetLevelNameShort() );
@@ -208,17 +220,20 @@ void StatsReport::OnThink()
 
 	for ( int i = 0; i < pGameResource->GetMaxMarineResources() && nMarine < ASW_STATS_REPORT_MAX_PLAYERS; i++ )
 	{
-		CASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
+		C_ASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
 		if ( pMR )
 		{
-			Vector vPos;
-			vPos.x = pMR->m_TimelinePosX.GetValueAtInterp( m_pStatGraphPlayer->m_fTimeInterp );
-			vPos.y = pMR->m_TimelinePosY.GetValueAtInterp( m_pStatGraphPlayer->m_fTimeInterp );
-			vPos.z = 0.0f;
+			if ( rd_debrief_timelines.GetBool() )
+			{
+				Vector vPos;
+				vPos.x = pMR->m_TimelinePosX.GetValueAtInterp( m_pStatGraphPlayer->m_fTimeInterp );
+				vPos.y = pMR->m_TimelinePosY.GetValueAtInterp( m_pStatGraphPlayer->m_fTimeInterp );
+				vPos.z = 0.0f;
 
-			bool bDead = ( pMR->m_TimelineHealth.GetValueAtInterp( m_pStatGraphPlayer->m_fTimeInterp ) <= 0.0f );
-			
-			m_pObjectiveMap->AddBlip( MapBlip_t( vPos, bDead ? Color( 255, 255, 255, 255 ) : g_rgbaStatsReportPlayerColors[ nMarine ], bDead ? MAP_BLIP_TEXTURE_DEATH : MAP_BLIP_TEXTURE_NORMAL ) );
+				bool bDead = ( pMR->m_TimelineHealth.GetValueAtInterp( m_pStatGraphPlayer->m_fTimeInterp ) <= 0.0f );
+
+				m_pObjectiveMap->AddBlip( MapBlip_t( vPos, bDead ? Color( 255, 255, 255, 255 ) : g_rgbaStatsReportPlayerColors[nMarine], bDead ? MAP_BLIP_TEXTURE_DEATH : MAP_BLIP_TEXTURE_NORMAL ) );
+			}
 
 			if ( m_pReadyCheckImages[ nMarine ]->IsVisible() )
 			{
@@ -287,7 +302,7 @@ void StatsReport::SetStatCategory( int nCategory )
 
 	for ( int i = 0; i < pGameResource->GetMaxMarineResources() && nMarine < ASW_STATS_REPORT_MAX_PLAYERS; i++ )
 	{
-		CASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
+		C_ASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
 		if ( pMR )
 		{
 			switch ( nCategory )
@@ -353,6 +368,7 @@ void StatsReport::SetStatCategory( int nCategory )
 		vgui::GetAnimationController()->RunAnimationCommand( m_pReadyCheckImages[ nRankOrder[ i ] ], "alpha", i < 4 ? 255 : 0, 0, 0.25f, vgui::AnimationController::INTERPOLATOR_LINEAR );
 	}
 
+	m_pStatGraphPlayer->SetVisible( rd_debrief_timelines.GetBool() );
 	m_pStatGraphPlayer->InvalidateLayout( true );
 }
 

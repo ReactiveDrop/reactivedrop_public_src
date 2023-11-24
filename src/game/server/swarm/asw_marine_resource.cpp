@@ -17,6 +17,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+ConVar rd_debrief_timelines( "rd_debrief_timelines", "1", FCVAR_REPLICATED, "Send friendly fire, kills, health, ammo, position, score timelines at end of mission." );
+
 LINK_ENTITY_TO_CLASS( asw_marine_resource, CASW_Marine_Resource );
 
 //---------------------------------------------------------
@@ -86,6 +88,11 @@ static void *SendProxy_SendMarineResourceTimelinesDataTable( const SendProp *pPr
 	if ( ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME )
 	{
 		// Don't send timeline data while in the mission
+		pRecipients->ClearAllRecipients();
+	}
+	else if ( !rd_debrief_timelines.GetBool() )
+	{
+		// Don't send timeline data if it's disabled
 		pRecipients->ClearAllRecipients();
 	}
 

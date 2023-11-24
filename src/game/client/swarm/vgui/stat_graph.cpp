@@ -6,6 +6,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
 
+extern ConVar rd_debrief_timelines;
 
 StatGraph::StatGraph( vgui::Panel *parent, const char *name ) :
 	vgui::Panel( parent, name )
@@ -98,6 +99,9 @@ void StatGraph::Paint()
 		return;
 
 	if ( m_nNumTimelineValues <= 0 )
+		return;
+
+	if ( !rd_debrief_timelines.GetBool() )
 		return;
 
 	float fRange = m_fMaxValue - m_fMinValue;
