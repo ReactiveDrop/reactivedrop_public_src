@@ -80,8 +80,8 @@ function Credit()
 {
 	ClientPrint(null, 2, " ");
 	ClientPrint(null, 2, "==========");
-	ClientPrint(null, 2, "Challenge Script by ModdedMarionette");
-	ClientPrint(null, 2, "Custom Zombie Models by Beka");
+	ClientPrint(null, 2, "#asw_infection_credit_script");
+	ClientPrint(null, 2, "#asw_infection_credit_model");
 	ClientPrint(null, 2, "==========");
 	ClientPrint(null, 2, " ");
 }
@@ -208,7 +208,7 @@ function Update()
 				}
 				else
 				{
-					ClientPrint(hPlayer, 4, "Press Melee key to activate Last Stand mode");
+					ClientPrint(hPlayer, 4, "#asw_infection_lastStand_key");
 				}
 			}
 		}
@@ -322,7 +322,7 @@ function Update()
 			ClientPrint(null, 3, " ");
 			ClientPrint(null, 3, " ");
 			Credit();
-			ClientPrint(null, 3, "New round begins...");
+			ClientPrint(null, 3, "#asw_infection_newRound");
 		}
 	}
 	if (g_matchTimer > 0)
@@ -346,7 +346,7 @@ function Update()
 	{
 		if (g_idleTimer <= 0)
 		{
-			ClientPrint(null, 4, "Waiting for Players...");
+			ClientPrint(null, 4, "#asw_infection_waiting");
 		}
 	}
 	local hMarine = null;
@@ -558,7 +558,6 @@ function Update()
 				{
 					local hPlayer = picker[random].GetCommander();
 					g_previous[hPlayer] <- 0;
-					ClientPrint(hPlayer, 3, "You became a zombie! Go infect human players!");
 				}
 				PlayZombieSound(picker[random], "alert");
 			}
@@ -612,13 +611,13 @@ function OnTakeDamage_Alive_Any( victim, inflictor, attacker, weapon, damage, da
 			damage = 500 * (damage / 30.5);
 		}
 	}
-	if ( victim in g_teamHuman && !(victim in g_lastHuman) && attacker && attacker in g_teamZombie )
+	if ( victim in g_teamHuman && attacker && attacker in g_teamZombie )
 	{
-		if (weapon && weapon.GetClassname() == "asw_weapon_chainsaw")
+		if (!(victim in g_lastHuman) && weapon && weapon.GetClassname() == "asw_weapon_chainsaw")
 		{
 			damage = 0;
 			JoinZombie(victim);
-			ClientPrint(null, 3, NameFeed(victim) + " was infected by " + NameFeed(attacker) + ".");
+			ClientPrint(null, 3, "#asw_infection_infected", NameFeed(victim), NameFeed(attacker));
 			PlayZombieSound(attacker, "claw");
 			PlayZombieSound(attacker, "attack");
 			Deathmatch.SetKills(attacker, Deathmatch.GetKills(attacker)+1);
@@ -626,7 +625,14 @@ function OnTakeDamage_Alive_Any( victim, inflictor, attacker, weapon, damage, da
 		}
 		else if (inflictor && inflictor == attacker && damageType && damageType == 128)
 		{
-			damage = victim.GetHealth()*5;
+			if (victim in g_lastHuman)
+			{
+				damage = damage*10;
+			}
+			else
+			{
+				damage = victim.GetHealth()*5;
+			}
 		}
 	}
 	if ( attacker && attacker in g_teamZombie && (victim in g_teamHuman || victim == attacker) && inflictor && inflictor.GetClassname() == "asw_grenade_cluster" )
@@ -750,7 +756,7 @@ function StopRound()
 	if (g_teamHuman.len() > 0)
 	{
 		g_victoryStatus = 1;
-		ClientPrint(null, 3, "Humans win!");
+		ClientPrint(null, 3, "#asw_infection_win_human");
 		local survivorList = "";
 		local l = [];
 		local pts = g_teamZombie.len();
@@ -767,12 +773,12 @@ function StopRound()
 				survivorList = survivorList + ", ";
 			}
 		}
-		ClientPrint(null, 3, "Survivors: " + survivorList + ".");
+		ClientPrint(null, 3, "#asw_infection_survivors", survivorList);
 	}
 	else
 	{
 		g_victoryStatus = 0;
-		ClientPrint(null, 3, "Zombies win!");
+		ClientPrint(null, 3, "#asw_infection_win_zombie");
 	}
 }
 
@@ -986,7 +992,7 @@ function BecomePrime(hMarine)
 function LastStand()
 {
 	g_lastStand = true;
-	ClientPrint(null, 3, "Last Stand mode is now available to the Humans.");
+	ClientPrint(null, 3, "#asw_infection_lastStand_on");
 }
 
 function UseLastStand(hMarine)
@@ -1012,8 +1018,8 @@ function UseLastStand(hMarine)
 	hBubble.Activate();
 	g_lastHuman[hMarine] <- hBubble;
 	hMarine.SetHealth(GetNewHealth(hMarine));
-	ClientPrint(null, 3, NameFeed(hMarine) + " activated Last Stand mode.");
-	ClientPrint(null, 3, "+60 seconds to the match timer.");
+	ClientPrint(null, 3, "#asw_infection_lastStand_used", NameFeed(hMarine));
+	ClientPrint(null, 3, "#asw_infection_lastStand_timeAdd");
 }
 
 function OnGameEvent_player_say(params)
@@ -1105,13 +1111,13 @@ function GetNewHealth(hMarine)
 {
 	if (hMarine)
 	{
-		switch(hMarine.GetMarineName())
+		switch(hMarine.GetName())
 		{
-			case "Sarge":
+			case "#asw_name_sarge":
 				return 1400;
-			case "Vegas":
-			case "Jaeger":
-			case "Wolfe":
+			case "#asw_name_vegas":
+			case "#asw_name_jaeger":
+			case "#asw_name_wolfe":
 				return 1250;
 			default:
 				return 800;
