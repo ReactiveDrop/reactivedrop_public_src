@@ -1,6 +1,6 @@
 "CHALLENGE" {
-	"name"	"Infection Third Person"
-	"description"	"Human team wins by surviving. Zombie team wins by infecting all human players."
+	"name"	"#asw_infection_tp"
+	"description"	"#asw_infection_desc"
 	"allowed_mode"	"deathmatch"
 
 	"required_on_client" "1"
