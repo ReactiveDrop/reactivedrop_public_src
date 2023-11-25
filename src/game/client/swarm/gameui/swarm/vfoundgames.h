@@ -12,6 +12,7 @@
 #include "steam/steam_api_common.h"
 
 struct FriendGameInfo_t;
+struct RD_Lobby_Scoreboard_Entry_t;
 class CNB_Header_Footer;
 class CReactiveDropServerListHelper;
 
@@ -69,6 +70,7 @@ public:
 		enum GAME_STATE { STATE_BRIEFING, STATE_INGAME } m_eGameState{ STATE_INGAME };
 
 		enum GAME_DIFFICULTY { DIFFICULTY_EASY, DIFFICULTY_NORMAL, DIFFICULTY_HARD, DIFFICULTY_INSANE, DIFFICULTY_BRUTAL } m_eGameDifficulty{ DIFFICULTY_NORMAL };
+		enum GAME_DEATHMATCH { DEATHMATCH_NONE, DEATHMATCH_FFA, DEATHMATCH_INSTAGIB, DEATHMATCH_GUNGAME, DEATHMATCH_TEAMDEATHMATCH } m_eGameDeathmatch{ DEATHMATCH_NONE };
 		bool m_bOnslaught{ false };
 		bool m_bHardcoreFF{ false };
 
@@ -87,6 +89,8 @@ public:
 		SteamNetworkPingLocation_t m_PingLocation{}; // lobby only
 		int m_iPingMS{};
 		enum GAME_PING { PING_LOW, PING_MEDIUM, PING_HIGH, PING_SYSTEMLINK, PING_NONE } m_ePingCategory{ PING_NONE }; // PING_SYSTEMLINK means LAN server
+
+		CCopyableUtlVector<RD_Lobby_Scoreboard_Entry_t> m_Scoreboard; // lobby only
 
 		bool SetFromFriend( CSteamID friendID, const FriendGameInfo_t &info );
 		bool SetFromLobby( CSteamID lobby );
@@ -117,19 +121,20 @@ public:
 	void SetGamerTag( const wchar_t *gamerTag );
 
 	void SetGamePing( Info::GAME_PING ping );
-	void SetGameDifficulty( const char *difficultyName );
+	void SetGameDifficulty( const char *difficultySuffix, bool bOnslaught, bool bHardcoreFF );
 	void SetGameChallenge( const wchar_t *challengeName );
 	void SetSwarmState( const char *szSwarmStateText );
 	void SetGamePlayerCount( int current, int max );
 
-	void DrawListItemLabel( vgui::Label* label, bool bSmallFont, bool bEastAligned = false );
+	void DrawListItemLabel( vgui::Label *label, bool bLargeFont, bool bEastAligned = false );
 
 	void SetSweep( bool sweep );
 	bool IsSweep() const;
 
 	void RunFrame() {};
 
-	virtual void PaintBackground();
+	void PaintBackground() override;
+	void PostChildPaint() override;
 	void OnKeyCodePressed( vgui::KeyCode code );
 	void OnKeyCodeTyped( vgui::KeyCode code );
 	void OnMousePressed( vgui::MouseCode code );
@@ -139,14 +144,19 @@ public:
 	virtual void NavigateFrom( void );
 
 	bool IsSelected( void ) { return m_bSelected; }
-	void SetSelected( bool bSelected ) { m_bSelected = bSelected; }
+	void SetSelected( bool bSelected )
+	{
+		m_bSelected = bSelected;
+
+		// we need to change the size of our panel and re-layout the list
+		InvalidateLayout( true );
+		GetParent()->GetParent()->InvalidateLayout();
+	}
 
 	bool HasMouseover( void ) { return m_bHasMouseover; }
 	void SetHasMouseover( bool bHasMouseover ) { m_bHasMouseover = bHasMouseover; }
 
 	bool IsHardcoreDifficulty();
-
-	wchar_t m_wszChallengeName[256];
 
 protected:
 	void ApplySettings( KeyValues *inResourceData );
@@ -168,21 +178,27 @@ private:
 	vgui::ImagePanel	*m_pImgPingSmall;
 	vgui::Label			*m_pLblPing;
 	vgui::Label			*m_pLblPlayerGamerTag;
-	vgui::Label			*m_pLblDifficulty;
+	vgui::ImagePanel	*m_pImgDifficulty;
+	vgui::ImagePanel	*m_pImgOnslaught;
+	vgui::ImagePanel	*m_pImgHardcoreFF;
+	vgui::ImagePanel	*m_pImgChallenge;
 	vgui::Label			*m_pLblChallenge;
 	vgui::Label			*m_pLblSwarmState;
 	vgui::Label			*m_pLblPlayers;
 	vgui::Label			*m_pLblNotJoinable;
 
-	vgui::HFont	m_hTextFont;
-	vgui::HFont	m_hTextBlurFont;
-
 	vgui::HFont	m_hSmallTextFont;
 	vgui::HFont	m_hSmallTextBlurFont;
 
+	vgui::HFont	m_hTextFont;
+	vgui::HFont	m_hTextBlurFont;
+
+	vgui::HFont	m_hLargeTextFont;
+	vgui::HFont	m_hLargeTextBlurFont;
+
 	CPanelAnimationVar( Color, m_SelectedColor, "selected_color", "255 0 0 128" );
 	int m_iBaseTall;
-	bool m_sweep : 1;
+	bool m_bSweep : 1;
 	bool m_bSelected : 1;
 	bool m_bHasMouseover : 1;
 

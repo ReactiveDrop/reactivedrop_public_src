@@ -38,6 +38,7 @@
 #include "rd_lobby_utils.h"
 #include "mapentities_shared.h"
 #include "asw_util_shared.h"
+#include "rd_text_filtering.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -51,6 +52,7 @@ ConVar ui_foundgames_fake_content( "ui_foundgames_fake_content", "0", FCVAR_DEVE
 ConVar ui_foundgames_fake_count( "ui_foundgames_fake_count", "0", FCVAR_DEVELOPMENTONLY );
 ConVar rd_lobby_ping_low( "rd_lobby_ping_low", "120", FCVAR_NONE, "lobbies with an estimated ping below this many milliseconds are considered \"low ping\"." );
 ConVar rd_lobby_ping_high( "rd_lobby_ping_high", "250", FCVAR_NONE, "lobbies with an estimated ping above this many milliseconds are considered \"high ping\"." );
+extern ConVar rd_reduce_motion;
 
 ConVar rd_lobby_filter_difficulty_min( "rd_lobby_filter_difficulty_min", "1", FCVAR_ARCHIVE, "minimum difficulty for searched lobbies. 1=easy,2=normal,3=hard,4=insane,5=brutal", true, 1, true, 5 );
 ConVar rd_lobby_filter_difficulty_max( "rd_lobby_filter_difficulty_max", "5", FCVAR_ARCHIVE, "maximum difficulty for searched lobbies. 1=easy,2=normal,3=hard,4=insane,5=brutal", true, 1, true, 5 );
@@ -285,6 +287,7 @@ static void TryLocalizeWithFallback( const char *szTokenOrLocalizedString, const
 	if ( szTokenOrLocalizedString[0] != '#' )
 	{
 		V_UTF8ToUnicode( szTokenOrLocalizedString, wszDest, nDestSizeInBytes );
+		g_RDTextFiltering.FilterTextName( wszDest, nDestSizeInBytes );
 	}
 	else if ( const wchar_t *wszLocalized = g_pVGuiLocalize->Find( szTokenOrLocalizedString ) )
 	{
@@ -293,6 +296,7 @@ static void TryLocalizeWithFallback( const char *szTokenOrLocalizedString, const
 	else
 	{
 		V_UTF8ToUnicode( szFallbackString, wszDest, nDestSizeInBytes );
+		g_RDTextFiltering.FilterTextName( wszDest, nDestSizeInBytes );
 	}
 }
 
@@ -364,6 +368,7 @@ static FoundGameListItem::Info::GAME_PING GetPingCategory( int ms )
 static const char *const s_szGameModeNames[] = { "", "campaign", "single_mission" };
 static const char *const s_szGameStateNames[] = { "ingame", "briefing" };
 static const char *const s_szGameDifficultyNames[] = { "easy", "normal", "hard", "insane", "imba" };
+static const char *const s_szGameDeathmatchNames[] = { "", "deathmatch", "instagib", "gungame", "teamdeathmatch" };
 static const char *const s_szServerTypeNames[] = { "listen", "dedicated" };
 static const char *const s_szLobbyAccessNames[] = { "public", "friends" };
 
@@ -422,7 +427,8 @@ bool FoundGameListItem::Info::SetFromLobby( CSteamID lobby )
 	TryLocalizeWithFallback( LOBBY_DATA( "game:missioninfo:displaytitle" ), m_szMissionFile, m_wszMissionDisplayName, sizeof( m_wszMissionDisplayName ) );
 	TryLocalize( LOBBY_DATA( "game:missioninfo:author" ), m_wszAuthorName, sizeof( m_wszAuthorName ) );
 
-	V_wcsncpy( m_wszLobbyDisplayName, m_wszMissionDisplayName, sizeof( m_wszLobbyDisplayName ) );
+	V_UTF8ToUnicode( LOBBY_DATA( "system:hostname" ), m_wszLobbyDisplayName, sizeof( m_wszLobbyDisplayName ) );
+	g_RDTextFiltering.FilterTextName( m_wszLobbyDisplayName );
 
 	TryParseWorkshopID( m_iChallengeWorkshopID, LOBBY_DATA( "game:challengeinfo:workshop" ) );
 	TryParseWorkshopID( m_iMissionWorkshopID, LOBBY_DATA( "game:missioninfo:workshop" ) );
@@ -447,6 +453,7 @@ bool FoundGameListItem::Info::SetFromLobby( CSteamID lobby )
 	TryParseEnum( m_eGameState, s_szGameStateNames, LOBBY_DATA( "game:swarmstate" ), STATE_INGAME );
 
 	TryParseEnum( m_eGameDifficulty, s_szGameDifficultyNames, LOBBY_DATA( "game:difficulty" ), DIFFICULTY_NORMAL );
+	TryParseEnum( m_eGameDeathmatch, s_szGameDeathmatchNames, LOBBY_DATA( "game:deathmatch" ), DEATHMATCH_NONE );
 	TryParseBoolean( m_bOnslaught, LOBBY_DATA( "game:onslaught" ) );
 	TryParseBoolean( m_bHardcoreFF, LOBBY_DATA( "game:hardcoreFF" ) );
 
@@ -480,6 +487,8 @@ bool FoundGameListItem::Info::SetFromLobby( CSteamID lobby )
 
 	m_ePingCategory = GetPingCategory( m_iPingMS );
 
+	UTIL_RD_ReadLobbyScoreboard( lobby, m_Scoreboard );
+
 	return true;
 }
 
@@ -505,8 +514,10 @@ bool FoundGameListItem::Info::SetFromServer( CReactiveDropServerListHelper &help
 	V_strncpy( m_szMissionFile, pDetails->m_szMap, sizeof( m_szMissionFile ) );
 
 	V_UTF8ToUnicode( pDetails->GetName(), m_wszLobbyDisplayName, sizeof( m_wszLobbyDisplayName ) );
+	g_RDTextFiltering.FilterTextName( m_wszLobbyDisplayName );
 	if ( V_strcmp( pDetails->m_szGameDescription, "Alien Swarm: Reactive Drop" ) )
 		V_UTF8ToUnicode( pDetails->m_szGameDescription, m_wszChallengeDisplayName, sizeof( m_wszChallengeDisplayName ) );
+	g_RDTextFiltering.FilterTextName( m_wszChallengeDisplayName );
 
 	m_eServerType = SERVER_DEDICATED;
 	m_eLobbyAccess = pDetails->m_bPassword ? ACCESS_PASSWORD : ACCESS_PUBLIC;
@@ -611,6 +622,24 @@ bool FoundGameListItem::Info::Merge( const Info &info )
 		Assert( m_Type == info.m_Type || info.m_Type == TYPE_LOBBY );
 	}
 
+	if ( !m_LobbyID.IsValid() && info.m_LobbyID.IsValid() )
+	{
+		m_LobbyID = info.m_LobbyID;
+		bChanged = true;
+	}
+
+	if ( m_wszLobbyDisplayName[0] == L'\0' && info.m_wszLobbyDisplayName[0] != L'\0' )
+	{
+		V_wcsncpy( m_wszLobbyDisplayName, info.m_wszLobbyDisplayName, sizeof( m_wszLobbyDisplayName ) );
+		bChanged = true;
+	}
+
+	if ( !m_Scoreboard.Count() && info.m_Scoreboard.Count() )
+	{
+		m_Scoreboard = info.m_Scoreboard;
+		bChanged = true;
+	}
+
 	return bChanged;
 }
 
@@ -637,9 +666,6 @@ void FoundGameListItem::Info::SetDefaultMissionData()
 
 		if ( pMission->MissionTitle != NULL_STRING && m_wszMissionDisplayName[0] == L'\0' )
 			TryLocalize( STRING( pMission->MissionTitle ), m_wszMissionDisplayName, sizeof( m_wszMissionDisplayName ) );
-
-		if ( m_wszLobbyDisplayName[0] == L'\0' )
-			V_wcsncpy( m_wszLobbyDisplayName, m_wszMissionDisplayName, sizeof( m_wszLobbyDisplayName ) );
 	}
 }
 
@@ -654,20 +680,22 @@ FoundGameListItem::FoundGameListItem( vgui::Panel *parent, const char *panelName
 	m_pImgPingSmall = NULL;
 	m_pLblPing = NULL;
 	m_pLblPlayerGamerTag = NULL;
-	m_pLblDifficulty = NULL;
+	m_pImgDifficulty = NULL;
+	m_pImgOnslaught = NULL;
+	m_pImgHardcoreFF = NULL;
+	m_pImgChallenge = NULL;
 	m_pLblChallenge = NULL;
 	m_pLblSwarmState = NULL;
 	m_pLblPlayers = NULL;
 	m_pLblNotJoinable = NULL;
 
-	m_wszChallengeName[0] = 0;
-
 	SetProportional( true );
 
 	SetPaintBackgroundEnabled( true );
+	SetPostChildPaintEnabled( true );
 
 	m_iBaseTall = 10;
-	m_sweep = 0;
+	m_bSweep = false;
 	m_bSelected = false;
 	m_bHasMouseover = false;
 
@@ -682,12 +710,12 @@ FoundGameListItem::~FoundGameListItem()
 
 void FoundGameListItem::SetSweep( bool sweep )
 {
-	m_sweep = sweep;
+	m_bSweep = sweep;
 }
 
 bool FoundGameListItem::IsSweep() const
 {
-	return m_sweep;
+	return m_bSweep;
 }
 
 void FoundGameListItem::SetGameIndex( const Info& fi )
@@ -725,7 +753,7 @@ void FoundGameListItem::SetGameIndex( const Info& fi )
 			imgAvatar->SetImage( "icon_server_favorite" );
 			break;
 		case TYPE_INSECURESERVER:
-			imgAvatar->SetImage( "swarm/ticker/warning" );
+			imgAvatar->SetImage( "icon_server_insecure" );
 			break;
 		case TYPE_RANKEDSERVER:
 			imgAvatar->SetImage( "icon_server_ranked" );
@@ -752,11 +780,13 @@ void FoundGameListItem::SetGameIndex( const Info& fi )
 	{
 		SetGamePlayerCount( fi.m_iCurPlayers, fi.m_iMaxPlayers );
 
-		char buf[64];
-		V_snprintf( buf, sizeof( buf ), "#L4D360UI_Difficulty_%s_%s", s_szGameDifficultyNames[fi.m_eGameDifficulty], "campaign" );
-		SetGameDifficulty( buf );
+		if ( fi.m_eGameDeathmatch != fi.DEATHMATCH_NONE )
+			SetGameDifficulty( s_szGameDeathmatchNames[fi.m_eGameDeathmatch], fi.m_bOnslaught, false );
+		else
+			SetGameDifficulty( s_szGameDifficultyNames[fi.m_eGameDifficulty], fi.m_bOnslaught, fi.m_bHardcoreFF );
 		SetGameChallenge( fi.m_wszChallengeDisplayName );
 
+		char buf[64];
 		V_snprintf( buf, sizeof( buf ), "#L4D360UI_%s", s_szGameStateNames[fi.m_eGameState] );
 		SetSwarmState( buf );
 	}
@@ -819,21 +849,33 @@ void FoundGameListItem::SetGamePing( Info::GAME_PING ping )
 }
 
 //=============================================================================
-void FoundGameListItem::SetGameDifficulty( const char *difficultyName )
+void FoundGameListItem::SetGameDifficulty( const char *difficultySuffix, bool bOnslaught, bool bHardcoreFF )
 {
-	if( m_pLblDifficulty )
+	if ( m_pImgDifficulty )
 	{
-		m_pLblDifficulty->SetText( difficultyName ? difficultyName : "" );
+		m_pImgDifficulty->SetImage( VarArgs( "resource/difficulty_%s", difficultySuffix ) );
+		m_pImgDifficulty->SetVisible( true );
+	}
+	if ( m_pImgOnslaught )
+	{
+		m_pImgOnslaught->SetVisible( bOnslaught );
+	}
+	if ( m_pImgHardcoreFF )
+	{
+		m_pImgHardcoreFF->SetVisible( bHardcoreFF );
 	}
 }
 
 //=============================================================================
 void FoundGameListItem::SetGameChallenge( const wchar_t *challengeName )
 {
-	V_wcsncpy( m_wszChallengeName, challengeName, sizeof( m_wszChallengeName ) );
+	if ( m_pImgChallenge )
+	{
+		m_pImgChallenge->SetVisible( challengeName[0] != L'\0' );
+	}
 	if ( m_pLblChallenge )
 	{
-		m_pLblChallenge->SetText( m_wszChallengeName );
+		m_pLblChallenge->SetText( challengeName );
 	}
 }
 
@@ -853,19 +895,19 @@ void FoundGameListItem::SetGamePlayerCount( int current, int max )
 	{
 		if ( current >= 0 && max != 0 )
 		{
-			char countText[256];
-			V_snprintf( countText, 256, "%d/%d", current, max );
+			wchar_t countText[8];
+			V_snwprintf( countText, NELEMS( countText ), L"%d/%d", current, max );
 			m_pLblPlayers->SetText( countText );
 		}
 		else
 		{
-			m_pLblPlayers->SetText( "" );
+			m_pLblPlayers->SetText( L"" );
 		}
 	}
 }
 
 //=============================================================================
-void FoundGameListItem::DrawListItemLabel( vgui::Label* label, bool bSmallFont, bool bEastAligned /* = false */ )
+void FoundGameListItem::DrawListItemLabel( vgui::Label* label, bool bLargeFont, bool bEastAligned /* = false */ )
 {
 	int panelTall = m_iBaseTall;
 
@@ -878,10 +920,6 @@ void FoundGameListItem::DrawListItemLabel( vgui::Label* label, bool bSmallFont, 
 		{
 			col.SetColor( 255, 255, 255, 255 );
 		}
-		if ( m_wszChallengeName[0] )
-		{
-			col.SetColor( col.r(), col.g(), 0, col.a() );
-		}
 
 		int x, y;
 		wchar_t szUnicode[512];
@@ -889,8 +927,8 @@ void FoundGameListItem::DrawListItemLabel( vgui::Label* label, bool bSmallFont, 
 		label->GetText( szUnicode, sizeof( szUnicode ) );
 		label->GetPos( x, y );
 
-		HFont drawFont = ( bSmallFont ) ? ( m_hSmallTextFont ) : ( m_hTextFont );
-		HFont blurFont = ( bSmallFont ) ? ( m_hSmallTextBlurFont ) : ( m_hTextBlurFont );
+		HFont drawFont = ( bLargeFont ) ? ( m_hLargeTextFont ) : ( m_hSmallTextFont );
+		HFont blurFont = ( bLargeFont ) ? ( m_hLargeTextBlurFont ) : ( m_hSmallTextBlurFont );
 
 		int len = V_wcslen( szUnicode );
 		int textWide, textTall;
@@ -928,9 +966,6 @@ void FoundGameListItem::DrawListItemLabel( vgui::Label* label, bool bSmallFont, 
 			}
 		}
 
-		// vertical center
-		y = ( panelTall - textTall ) / 2;
-
 		if ( bEastAligned )
 		{
 			x += labelWide - textWide;
@@ -944,7 +979,7 @@ void FoundGameListItem::DrawListItemLabel( vgui::Label* label, bool bSmallFont, 
 		if ( bHasFocus )
 		{
 			// draw glow
-			int alpha = 60.0f + 30.0f * sin( Plat_FloatTime() * 4.0f );
+			int alpha = 60.0f + 30.0f * sin( rd_reduce_motion.GetBool() ? 0 : ( Plat_FloatTime() * 4.0f ) );
 			vgui::surface()->DrawSetTextColor( Color( 255, 255, 255, alpha ) );
 			vgui::surface()->DrawSetTextFont( blurFont );
 			vgui::surface()->DrawSetTextPos( x, y );
@@ -953,9 +988,10 @@ void FoundGameListItem::DrawListItemLabel( vgui::Label* label, bool bSmallFont, 
 	}
 }
 
-//=============================================================================
 void FoundGameListItem::PaintBackground()
 {
+	BaseClass::PaintBackground();
+
 	if ( !m_pListCtrlr->IsPanelItemVisible( this ) )
 		return;
 
@@ -971,37 +1007,66 @@ void FoundGameListItem::PaintBackground()
 
 		// draw border lines
 		surface()->DrawSetColor( Color( 65, 74, 96, 255 ) );
-		surface()->DrawFilledRectFade( x, y, x + 0.5f * wide, y+2, 0, 255, true );
-		surface()->DrawFilledRectFade( x + 0.5f * wide, y, x + wide, y+2, 255, 0, true );
-		surface()->DrawFilledRectFade( x, y+tall-2, x + 0.5f * wide, y+tall, 0, 255, true );
-		surface()->DrawFilledRectFade( x + 0.5f * wide, y+tall-2, x + wide, y+tall, 255, 0, true );
+		surface()->DrawFilledRectFade( x, y, x + 0.5f * wide, y + 2, 0, 255, true );
+		surface()->DrawFilledRectFade( x + 0.5f * wide, y, x + wide, y + 2, 255, 0, true );
+		surface()->DrawFilledRectFade( x, y + tall - 2, x + 0.5f * wide, y + tall, 0, 255, true );
+		surface()->DrawFilledRectFade( x + 0.5f * wide, y + tall - 2, x + wide, y + tall, 255, 0, true );
 
 		int blotchWide = GetWide();
 		int blotchX = 0;
-		surface()->DrawFilledRectFade( blotchX, y, blotchX + 0.25f * blotchWide, y+tall, 0, 150, true );
-		surface()->DrawFilledRectFade( blotchX + 0.25f * blotchWide, y, blotchX + blotchWide, y+tall, 150, 0, true );
+		surface()->DrawFilledRectFade( blotchX, y, blotchX + 0.25f * blotchWide, y + tall, 0, 150, true );
+		surface()->DrawFilledRectFade( blotchX + 0.25f * blotchWide, y, blotchX + blotchWide, y + tall, 150, 0, true );
 	}
+}
 
-	DrawListItemLabel( m_pLblPing, true, !IsPC() );
+//=============================================================================
+void FoundGameListItem::PostChildPaint()
+{
+	BaseClass::PostChildPaint();
 
+	if ( !m_pListCtrlr->IsPanelItemVisible( this ) )
+		return;
+
+	DrawListItemLabel( m_pLblPing, true, true );
 	DrawListItemLabel( m_pLblPlayerGamerTag, true );
+	DrawListItemLabel( m_pLblPlayers, true, true );
 
 	// Depending on the game info different labels get rendered in the list
 	const Info &fi = m_FullInfo;
 
 	if ( fi.IsJoinable() || fi.IsDownloadable() )
 	{
-		DrawListItemLabel( m_pLblDifficulty, true );
-		DrawListItemLabel( m_pLblChallenge, true );
-		DrawListItemLabel( m_pLblPlayers, true );
-		DrawListItemLabel( m_pLblSwarmState, true );
+		DrawListItemLabel( m_pLblChallenge, false );
 	}
 	else
 	{
 		DrawListItemLabel( m_pLblNotJoinable, true );
 	}
 
-	if ( m_FullInfo.m_Friends.Count() )
+	if ( IsSelected() && m_FullInfo.m_Scoreboard.Count() )
+	{
+		static vgui::IImage *s_pCountryFlagsTexture = vgui::scheme()->GetImage( "resource/iso_countryflags", true );
+
+		int iLineHeight = vgui::surface()->GetFontTall( m_hTextFont ) + YRES( 1 );
+		int iFlagTall = vgui::surface()->GetFontTall( m_hTextFont );
+		int iFlagWide = 16.0f / 11.0f * iFlagTall;
+		vgui::surface()->DrawSetTextFont( m_hTextFont );
+		vgui::surface()->DrawSetTextColor( 255, 255, 255, 255 );
+		FOR_EACH_VEC( m_FullInfo.m_Scoreboard, i )
+		{
+			int y = m_iBaseTall + i * iLineHeight;
+			vgui::surface()->DrawSetTextPos( YRES( 32 ) + iFlagWide, y );
+			vgui::surface()->DrawUnicodeString( m_FullInfo.m_Scoreboard[i].Name );
+
+			float s0, t0, s1, t1;
+			UTIL_RD_CountryCodeTexCoords( m_FullInfo.m_Scoreboard[i].CountryCode[0], m_FullInfo.m_Scoreboard[i].CountryCode[1], s0, t0, s1, t1 );
+			vgui::surface()->DrawSetTexture( s_pCountryFlagsTexture->GetID() );
+			vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
+			vgui::surface()->DrawTexturedSubRect( YRES( 30 ), y, YRES( 30 ) + iFlagWide, y + iFlagTall, s0, t0, s1, t1 );
+
+		}
+	}
+	else if ( m_FullInfo.m_Friends.Count() )
 	{
 		int wide = GetWide();
 		int iFriendLabelX = wide;
@@ -1018,6 +1083,7 @@ void FoundGameListItem::PaintBackground()
 			{
 				wchar_t wszFriendName[k_cwchPersonaNameMax];
 				V_UTF8ToUnicode( pSteamFriends->GetFriendPersonaName( m_FullInfo.m_Friends[i] ), wszFriendName, sizeof( wszFriendName ) );
+				g_RDTextFiltering.FilterTextName( wszFriendName, m_FullInfo.m_Friends[i] );
 
 				int w, t;
 				vgui::surface()->GetTextSize( m_hTextFont, wszFriendName, w, t );
@@ -1179,10 +1245,25 @@ void FoundGameListItem::ApplySchemeSettings( IScheme *pScheme )
 	{
 		m_pLblPlayerGamerTag->SetVisible( false );
 	}
-	m_pLblDifficulty = dynamic_cast< vgui::Label * > ( FindChildByName( "LblDifficulty" ) );
-	if ( m_pLblDifficulty )
+	m_pImgDifficulty = dynamic_cast< vgui::ImagePanel * > ( FindChildByName( "ImgDifficulty" ) );
+	if ( m_pImgDifficulty )
 	{
-		m_pLblDifficulty->SetVisible( false );
+		m_pImgDifficulty->SetVisible( false );
+	}
+	m_pImgOnslaught = dynamic_cast< vgui::ImagePanel * > ( FindChildByName( "ImgOnslaught" ) );
+	if ( m_pImgOnslaught )
+	{
+		m_pImgOnslaught->SetVisible( false );
+	}
+	m_pImgHardcoreFF = dynamic_cast< vgui::ImagePanel * > ( FindChildByName( "ImgHardcoreFF" ) );
+	if ( m_pImgHardcoreFF )
+	{
+		m_pImgHardcoreFF->SetVisible( false );
+	}
+	m_pImgChallenge = dynamic_cast< vgui::ImagePanel * > ( FindChildByName( "ImgChallenge" ) );
+	if ( m_pImgChallenge )
+	{
+		m_pImgChallenge->SetVisible( false );
 	}
 	m_pLblChallenge = dynamic_cast< vgui::Label * > ( FindChildByName( "LblChallenge" ) );
 	if ( m_pLblChallenge )
@@ -1205,12 +1286,15 @@ void FoundGameListItem::ApplySchemeSettings( IScheme *pScheme )
 	{
 		m_pLblNotJoinable->SetVisible( false );
 	}
-	
+
+	m_hSmallTextFont = pScheme->GetFont( "DefaultSmall", true );
+	m_hSmallTextBlurFont = pScheme->GetFont( "DefaultSmallBlur", true );
+
 	m_hTextFont = pScheme->GetFont( "Default", true );
 	m_hTextBlurFont = pScheme->GetFont( "DefaultBlur", true );
 
-	m_hSmallTextFont = pScheme->GetFont( "DefaultMedium", true );
-	m_hSmallTextBlurFont = pScheme->GetFont( "DefaultMediumBlur", true );
+	m_hLargeTextFont = pScheme->GetFont( "DefaultMedium", true );
+	m_hLargeTextBlurFont = pScheme->GetFont( "DefaultMediumBlur", true );
 
 	if ( m_FullInfo.m_Type != TYPE_UNKNOWN )
 	{
@@ -1234,30 +1318,38 @@ void FoundGameListItem::PerformLayout()
 	}
 
 	int wide = GetWide();
-	int iFriendLabelX = wide;
-	int iFriendLabelTall = m_FullInfo.m_Friends.Count() ? YRES( 2 ) : 0;
-	int iFriendLabelXOffset, discard;
-	m_pLblPlayerGamerTag->GetPos( iFriendLabelXOffset, discard );
-	if ( ISteamFriends *pSteamFriends = SteamFriends() )
+	int iAdditionalTall = 0;
+	if ( IsSelected() && m_FullInfo.m_Scoreboard.Count() )
 	{
-		FOR_EACH_VEC( m_FullInfo.m_Friends, i )
+		iAdditionalTall = ( vgui::surface()->GetFontTall( m_hTextFont ) + YRES( 1 ) ) * ( 1 + m_FullInfo.m_Scoreboard.Count() );
+	}
+	else if ( m_FullInfo.m_Friends.Count() )
+	{
+		int iFriendLabelX = wide;
+		int iFriendLabelXOffset, discard;
+		m_pLblPlayerGamerTag->GetPos( iFriendLabelXOffset, discard );
+		iAdditionalTall = YRES( 2 );
+		if ( ISteamFriends *pSteamFriends = SteamFriends() )
 		{
-			wchar_t wszFriendName[k_cwchPersonaNameMax];
-			V_UTF8ToUnicode( pSteamFriends->GetFriendPersonaName( m_FullInfo.m_Friends[i] ), wszFriendName, sizeof( wszFriendName ) );
-
-			int w, t;
-			vgui::surface()->GetTextSize( m_hTextFont, wszFriendName, w, t );
-			int iFriendLabelWide = YRES( 16 ) + w;
-			if ( iFriendLabelX + iFriendLabelWide > wide )
+			FOR_EACH_VEC( m_FullInfo.m_Friends, i )
 			{
-				iFriendLabelTall += YRES( 10 );
-				iFriendLabelX = iFriendLabelXOffset;
+				wchar_t wszFriendName[k_cwchPersonaNameMax];
+				V_UTF8ToUnicode( pSteamFriends->GetFriendPersonaName( m_FullInfo.m_Friends[i] ), wszFriendName, sizeof( wszFriendName ) );
+
+				int w, t;
+				vgui::surface()->GetTextSize( m_hTextFont, wszFriendName, w, t );
+				int iFriendLabelWide = YRES( 16 ) + w;
+				if ( iFriendLabelX + iFriendLabelWide > wide )
+				{
+					iAdditionalTall += YRES( 10 );
+					iFriendLabelX = iFriendLabelXOffset;
+				}
+				iFriendLabelX += iFriendLabelWide;
 			}
-			iFriendLabelX += iFriendLabelWide;
 		}
 	}
 
-	SetTall( m_iBaseTall + iFriendLabelTall );
+	SetTall( m_iBaseTall + iAdditionalTall );
 }
 
 //=============================================================================
@@ -2121,7 +2213,7 @@ void FoundGames::OnItemSelected( const char *panelName )
 					imgAvatar->SetImage( "icon_server_favorite" );
 					break;
 				case FoundGameListItem::TYPE_INSECURESERVER:
-					imgAvatar->SetImage( "swarm/ticker/warning" );
+					imgAvatar->SetImage( "icon_server_insecure" );
 					break;
 				case FoundGameListItem::TYPE_RANKEDSERVER:
 					imgAvatar->SetImage( "icon_server_ranked" );
@@ -2349,7 +2441,7 @@ void FoundGames::OnItemSelected( const char *panelName )
 
 	if ( lblGameChallenge )
 	{
-		lblGameChallenge->SetText( gameListItem ? gameListItem->m_wszChallengeName : L"" );
+		lblGameChallenge->SetText( gameListItem ? gameListItem->GetFullInfo().m_wszChallengeDisplayName : L"" );
 	}
 
 	vgui::Label *lblNumPlayers = dynamic_cast< vgui::Label * >( FindChildByName( "LblNumPlayers" ) );
