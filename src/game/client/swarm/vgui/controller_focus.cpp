@@ -79,9 +79,8 @@ void CControllerFocus::AddToFocusList( vgui::Panel *pPanel, bool bClickOnFocus, 
 
 	Assert( bModal || !m_iModalScope );
 
-	Assert( engine->IsInGame() );
-	Assert( !BaseModUI::CBaseModPanel::GetSingleton().IsVisible() );
-	if ( !engine->IsInGame() || BaseModUI::CBaseModPanel::GetSingleton().IsVisible() )
+	Assert( IsInGame() );
+	if ( !IsInGame() )
 		return;
 
 	FocusArea Focus;
@@ -623,6 +622,17 @@ int CControllerFocus::FindNextPanel( vgui::Panel *pSource, float angle )
 		}
 	}
 	return iBestIndex;
+}
+
+bool CControllerFocus::IsInGame()
+{
+	if ( !engine->IsInGame() )
+		return false;
+
+	if ( BaseModUI::CBaseModPanel::GetSingleton().IsVisible() )
+		return false;
+
+	return true;
 }
 
 bool CControllerFocus::IsPanelReallyVisible( vgui::Panel *pPanel )

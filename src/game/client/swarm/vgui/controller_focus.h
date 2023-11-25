@@ -82,6 +82,7 @@ public:
 	void SetControllerCodes(ButtonCode_t iUpCode, ButtonCode_t iDownCode, ButtonCode_t iLeftCode, ButtonCode_t iRightCode, ButtonCode_t iConfirmCode, ButtonCode_t iCancelCode);	
 	void SetControllerMode(bool b) { m_bControllerMode = b; }
 	bool IsControllerMode() { return m_bControllerMode; }
+	bool IsInGame();
 	bool HasAnyPanel() { return m_FocusAreas.Count() != 0; }
 
 	// checks a panel and all its parents are visible

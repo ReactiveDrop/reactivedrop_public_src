@@ -19,7 +19,9 @@ CNB_Button::CNB_Button(Panel *parent, const char *panelName, const char *text, P
 	// == MANAGED_MEMBER_CREATION_START: Do not edit by hand ==
 	// == MANAGED_MEMBER_CREATION_END ==
 
-	GetControllerFocus()->AddToFocusList( this );
+	m_bAddedToControllerFocus = GetControllerFocus()->IsInGame();
+	if ( m_bAddedToControllerFocus )
+		GetControllerFocus()->AddToFocusList( this );
 
 	m_hButtonFont = INVALID_FONT;
 	m_szControllerButton = NULL;
@@ -27,7 +29,9 @@ CNB_Button::CNB_Button(Panel *parent, const char *panelName, const char *text, P
 CNB_Button::CNB_Button(Panel *parent, const char *panelName, const wchar_t *text, Panel *pActionSignalTarget, const char *pCmd)
 : BaseClass( parent, panelName, text, pActionSignalTarget, pCmd )
 {
-	GetControllerFocus()->AddToFocusList( this );
+	m_bAddedToControllerFocus = GetControllerFocus()->IsInGame();
+	if ( m_bAddedToControllerFocus )
+		GetControllerFocus()->AddToFocusList( this );
 
 	m_hButtonFont = INVALID_FONT;
 	m_szControllerButton = NULL;
@@ -35,7 +39,9 @@ CNB_Button::CNB_Button(Panel *parent, const char *panelName, const wchar_t *text
 
 CNB_Button::~CNB_Button()
 {
-	GetControllerFocus()->RemoveFromFocusList( this );
+	Assert( m_bAddedToControllerFocus == GetControllerFocus()->IsInGame() );
+	if ( m_bAddedToControllerFocus )
+		GetControllerFocus()->RemoveFromFocusList( this );
 }
 
 void CNB_Button::ApplySchemeSettings( vgui::IScheme *pScheme )
@@ -135,7 +141,6 @@ void CNB_Button::DrawRoundedBox( int x, int y, int wide, int tall, Color color, 
 		surface()->DrawFilledRectFade( x + wide * 0.5f, y, x + wide - cornerWide, y + tall, 255, 0, true );
 	}
 
-	// TODO: is there a better way of knowing out-of-game whether a controller is active than just whether it's plugged in?
 	if ( m_szControllerButton && g_RD_Steam_Input.GetJoystickCount() )
 	{
 		int padding = ( tall - surface()->GetFontTall( m_hButtonFont ) ) / 2;

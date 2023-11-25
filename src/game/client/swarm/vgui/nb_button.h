@@ -31,6 +31,7 @@ public:
 
 	vgui::HFont m_hButtonFont;
 	const char *m_szControllerButton;
+	bool m_bAddedToControllerFocus;
 
 	CPanelAnimationVarAliasType( int, m_nNBBgTextureId1, "NBTexture1", "vgui/hud/800corner1", "textureid" );
 	CPanelAnimationVarAliasType( int, m_nNBBgTextureId2, "NBTexture2", "vgui/hud/800corner2", "textureid" );
