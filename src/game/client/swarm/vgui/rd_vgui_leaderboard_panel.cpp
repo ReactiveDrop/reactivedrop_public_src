@@ -2,9 +2,12 @@
 #include "rd_vgui_leaderboard_panel.h"
 #include <vgui_controls/ImagePanel.h>
 #include <vgui_controls/AnimationController.h>
+#include <vgui/IScheme.h>
+#include <vgui/ISurface.h>
 #include "asw_marine_profile.h"
 #include "asw_equipment_list.h"
 #include "c_asw_steamstats.h"
+#include "rd_lobby_utils.h"
 #include "rd_text_filtering.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -114,6 +117,20 @@ void CReactiveDrop_VGUI_Leaderboard_Panel::SetScrollable( bool bScrollable )
 	m_gplLeaderboard->SetScrollBarVisible( bScrollable );
 }
 
+void CRD_VGUI_CountryCodeImage::Paint()
+{
+	vgui::surface()->DrawSetTexture( GetID() );
+	vgui::surface()->DrawSetColor( m_color );
+	vgui::surface()->DrawTexturedSubRect( m_x, m_y, m_x + m_wide, m_y + m_tall, s0, t0, s1, t1 );
+}
+
+vgui::HTexture CRD_VGUI_CountryCodeImage::GetID()
+{
+	static vgui::IImage *s_pCountryFlagsTexture = vgui::scheme()->GetImage( "resource/iso_countryflags", true );
+
+	return s_pCountryFlagsTexture ? s_pCountryFlagsTexture->GetID() : NULL;
+}
+
 CReactiveDrop_VGUI_Leaderboard_Entry::CReactiveDrop_VGUI_Leaderboard_Entry( vgui::Panel *parent, const char *panelName ) : BaseClass( parent, panelName )
 {
 	m_nRank = 0;
@@ -127,10 +144,10 @@ CReactiveDrop_VGUI_Leaderboard_Entry::CReactiveDrop_VGUI_Leaderboard_Entry( vgui
 	m_imgSecondaryWeapon = new vgui::ImagePanel( this, "ImgSecondaryWeapon" );
 	m_imgExtraWeapon = new vgui::ImagePanel( this, "ImgExtraWeapon" );
 	m_lblSquadMembers = new vgui::Label( this, "LblSquadMembers", "" );
-	m_lblCountry = new vgui::Label( this, "LblCountry", "" );
-	m_lblDifficulty = new vgui::Label( this, "LblDifficulty", "" );
-	m_lblOnslaught = new vgui::Label( this, "LblOnslaught", "#nb_onslaught_title" );
-	m_lblHardcoreFF = new vgui::Label( this, "LblHardcoreFF", "#L4D360UI_HardcoreFF" );
+	m_imgCountry = new vgui::ImagePanel( this, "ImgCountry" );
+	m_imgDifficulty = new vgui::ImagePanel( this, "ImgDifficulty" );
+	m_imgOnslaught = new vgui::ImagePanel( this, "ImgOnslaught" );
+	m_imgHardcoreFF = new vgui::ImagePanel( this, "ImgHardcoreFF" );
 	m_eDisplayType = k_ELeaderboardDisplayTypeTimeMilliSeconds;
 }
 
@@ -224,30 +241,32 @@ void CReactiveDrop_VGUI_Leaderboard_Entry::SetEntry( const RD_LeaderboardEntry_t
 		{
 			m_lblSquadMembers->SetText( VarArgs( "+%d", entry.details.v1.m_iSquadSize - 1 ) );
 		}
-		wchar_t wszCountry[3] = { 0 };
-		wszCountry[0] = entry.details.v1.m_CountryCode[0];
-		wszCountry[1] = entry.details.v1.m_CountryCode[1];
-		m_lblCountry->SetText( wszCountry );
+
+		if ( UTIL_RD_CountryCodeTexCoords( entry.details.v1.m_CountryCode[0], entry.details.v1.m_CountryCode[1], m_CountryCodeImage.s0, m_CountryCodeImage.t0, m_CountryCodeImage.s1, m_CountryCodeImage.t1 ) )
+		{
+			m_imgCountry->SetImage( &m_CountryCodeImage );
+		}
+
 		switch ( entry.details.v1.m_iDifficulty )
 		{
 		case 1:
-			m_lblDifficulty->SetText( "#L4D360UI_Difficulty_easy" );
+			m_imgDifficulty->SetImage( "resource/difficulty_easy" );
 			break;
 		case 2:
-			m_lblDifficulty->SetText( "#L4D360UI_Difficulty_normal" );
+			m_imgDifficulty->SetImage( "resource/difficulty_normal" );
 			break;
 		case 3:
-			m_lblDifficulty->SetText( "#L4D360UI_Difficulty_hard" );
+			m_imgDifficulty->SetImage( "resource/difficulty_hard" );
 			break;
 		case 4:
-			m_lblDifficulty->SetText( "#L4D360UI_Difficulty_insane" );
+			m_imgDifficulty->SetImage( "resource/difficulty_insane" );
 			break;
 		case 5:
-			m_lblDifficulty->SetText( "#L4D360UI_Difficulty_imba" );
+			m_imgDifficulty->SetImage( "resource/difficulty_brutal" );
 			break;
 		}
-		m_lblOnslaught->SetVisible( ( entry.details.v1.m_iModeFlags & 1 ) != 0 );
-		m_lblHardcoreFF->SetVisible( ( entry.details.v1.m_iModeFlags & 2 ) != 0 );
+		m_imgOnslaught->SetVisible( ( entry.details.v1.m_iModeFlags & 1 ) != 0 );
+		m_imgHardcoreFF->SetVisible( ( entry.details.v1.m_iModeFlags & 2 ) != 0 );
 	}
 	break;
 
@@ -273,192 +292,34 @@ void CReactiveDrop_VGUI_Leaderboard_Entry::SetEntry( const RD_LeaderboardEntry_t
 		{
 			m_lblSquadMembers->SetText( VarArgs( "+%d", entry.details.v2.m_iSquadSize - 1 ) );
 		}
-		wchar_t wszCountry[3] = { 0 };
-		wszCountry[0] = entry.details.v2.m_CountryCode[0];
-		wszCountry[1] = entry.details.v2.m_CountryCode[1];
-		m_lblCountry->SetText( wszCountry );
+
+		if ( UTIL_RD_CountryCodeTexCoords( entry.details.v2.m_CountryCode[0], entry.details.v2.m_CountryCode[1], m_CountryCodeImage.s0, m_CountryCodeImage.t0, m_CountryCodeImage.s1, m_CountryCodeImage.t1 ) )
+		{
+			m_imgCountry->SetImage( &m_CountryCodeImage );
+		}
+
 		switch ( entry.details.v2.m_iDifficulty )
 		{
 		case 1:
-			m_lblDifficulty->SetText( "#L4D360UI_Difficulty_easy" );
+			m_imgDifficulty->SetImage( "resource/difficulty_easy" );
 			break;
 		case 2:
-			m_lblDifficulty->SetText( "#L4D360UI_Difficulty_normal" );
+			m_imgDifficulty->SetImage( "resource/difficulty_normal" );
 			break;
 		case 3:
-			m_lblDifficulty->SetText( "#L4D360UI_Difficulty_hard" );
+			m_imgDifficulty->SetImage( "resource/difficulty_hard" );
 			break;
 		case 4:
-			m_lblDifficulty->SetText( "#L4D360UI_Difficulty_insane" );
+			m_imgDifficulty->SetImage( "resource/difficulty_insane" );
 			break;
 		case 5:
-			m_lblDifficulty->SetText( "#L4D360UI_Difficulty_imba" );
+			m_imgDifficulty->SetImage( "resource/difficulty_brutal" );
 			break;
 		}
-		m_lblOnslaught->SetVisible( ( entry.details.v2.m_iModeFlags & 1 ) != 0 );
-		m_lblHardcoreFF->SetVisible( ( entry.details.v2.m_iModeFlags & 2 ) != 0 );
+		m_imgOnslaught->SetVisible( ( entry.details.v2.m_iModeFlags & 1 ) != 0 );
+		m_imgHardcoreFF->SetVisible( ( entry.details.v2.m_iModeFlags & 2 ) != 0 );
 		// TODO: do something if mission failed ( ( entry.details.v1.m_iModeFlags & 4 ) != 0 )
 	}
 	break;
 	}
-}
-
-CReactiveDrop_VGUI_Leaderboard_Panel_Points::CReactiveDrop_VGUI_Leaderboard_Panel_Points( vgui::Panel *parent, const char *panelName ) : BaseClass( parent, panelName )
-{
-	m_lblTitle = new vgui::Label( this, "LblTitle", "Leaderboard" );
-	m_gplLeaderboard = new BaseModUI::GenericPanelList( this, "GplLeaderboard", BaseModUI::GenericPanelList::ISM_ELEVATOR );
-	m_bOverrideEntry = false;
-}
-
-CReactiveDrop_VGUI_Leaderboard_Panel_Points::~CReactiveDrop_VGUI_Leaderboard_Panel_Points()
-{
-}
-
-void CReactiveDrop_VGUI_Leaderboard_Panel_Points::ApplySchemeSettings( vgui::IScheme *scheme )
-{
-	BaseClass::ApplySchemeSettings( scheme );
-
-	LoadControlSettings( "resource/UI/RDLeaderboardPanel_Points.res" );
-}
-
-void CReactiveDrop_VGUI_Leaderboard_Panel_Points::SetTitle( const char *szTitle )
-{
-	m_lblTitle->SetText( szTitle );
-}
-
-void CReactiveDrop_VGUI_Leaderboard_Panel_Points::SetTitle( const wchar_t *wszTitle )
-{
-	m_lblTitle->SetText( wszTitle );
-}
-
-void CReactiveDrop_VGUI_Leaderboard_Panel_Points::SetEntries( const CUtlVector<RD_LeaderboardEntry_Points_t> & entries )
-{
-	CSteamID localUserID = SteamUser()->GetSteamID();
-
-	m_gplLeaderboard->RemoveAllPanelItems();
-
-	FOR_EACH_VEC( entries, i )
-	{
-		CReactiveDrop_VGUI_Leaderboard_Entry_Points *pEntry = m_gplLeaderboard->AddPanelItem<CReactiveDrop_VGUI_Leaderboard_Entry_Points>( "Entry" );
-		pEntry->SetEntry( entries[ i ] );
-
-		if ( entries[ i ].entry.m_steamIDUser == localUserID )
-		{
-			m_gplLeaderboard->ScrollToPanelItem( i );
-		}
-	}
-
-	if ( m_bOverrideEntry )
-	{
-		DoOverrideEntry();
-	}
-}
-
-void CReactiveDrop_VGUI_Leaderboard_Panel_Points::OverrideEntry( const RD_LeaderboardEntry_Points_t & entry )
-{
-	Assert( !m_bOverrideEntry );
-	m_OverrideEntry = entry;
-	m_bOverrideEntry = true;
-
-	DoOverrideEntry();
-}
-
-static int __cdecl SortByRank_Points( vgui::Panel *const*a, vgui::Panel *const*b )
-{
-	return assert_cast<CReactiveDrop_VGUI_Leaderboard_Entry_Points *>(*a)->m_nRank - assert_cast<CReactiveDrop_VGUI_Leaderboard_Entry_Points *>(*b)->m_nRank;
-}
-
-void CReactiveDrop_VGUI_Leaderboard_Panel_Points::DoOverrideEntry()
-{
-	CReactiveDrop_VGUI_Leaderboard_Entry_Points *pEntry = NULL;
-
-	for ( unsigned short i = 0; i < m_gplLeaderboard->GetPanelItemCount(); i++ )
-	{
-		CReactiveDrop_VGUI_Leaderboard_Entry_Points *pPanel = assert_cast<CReactiveDrop_VGUI_Leaderboard_Entry_Points *>(m_gplLeaderboard->GetPanelItem( i ));
-		if ( pPanel->m_SteamID == m_OverrideEntry.entry.m_steamIDUser )
-		{
-			pEntry = pPanel;
-			break;
-		}
-	}
-
-	if ( !pEntry )
-	{
-		pEntry = m_gplLeaderboard->AddPanelItem<CReactiveDrop_VGUI_Leaderboard_Entry_Points>( "Entry" );
-	}
-
-	pEntry->SetBgColor( Color( 0, 0, 0, 175 ) );
-
-	pEntry->SetEntry( m_OverrideEntry );
-
-	m_gplLeaderboard->SortPanelItems( &SortByRank_Points );
-
-	unsigned short index;
-	if ( m_gplLeaderboard->GetPanelItemIndex( pEntry, index ) )
-	{
-		m_gplLeaderboard->ScrollToPanelItem( index );
-	}
-}
-
-void CReactiveDrop_VGUI_Leaderboard_Panel_Points::SetScrollable( bool bScrollable )
-{
-	m_gplLeaderboard->SetScrollBarVisible( bScrollable );
-}
-
-CReactiveDrop_VGUI_Leaderboard_Entry_Points::CReactiveDrop_VGUI_Leaderboard_Entry_Points( vgui::Panel *parent, const char *panelName ) : BaseClass( parent, panelName )
-{
-	m_nRank = 0;
-	m_nScore = 0;
-	m_lblRank = new vgui::Label(this, "LblRank", "");
-	m_imgAvatar = new CAvatarImagePanel(this, "ImgAvatar");
-	m_lblName = new vgui::Label(this, "LblName", "");
-	m_lblScore_Points = new vgui::Label(this, "LblScore_Points", "");
-	m_lblScore_AlienKills = new vgui::Label(this, "LblScore_AlienKills", "");
-	m_lblScore_PlayerKills = new vgui::Label(this, "LblScore_PlayerKills", "");
-	m_lblScore_GamesWon = new vgui::Label(this, "LblScore_GamesWon", "");
-	m_lblScore_GamesLost = new vgui::Label(this, "LblScore_GamesLost", "");
-	m_lblScore_GamesTotal = new vgui::Label(this, "LblScore_GamesTotal", "");
-	m_lblCountry = new vgui::Label( this, "LblCountry", "" );
-}
-
-CReactiveDrop_VGUI_Leaderboard_Entry_Points::~CReactiveDrop_VGUI_Leaderboard_Entry_Points()
-{
-}
-
-void CReactiveDrop_VGUI_Leaderboard_Entry_Points::ApplySchemeSettings( vgui::IScheme *scheme )
-{
-	BaseClass::ApplySchemeSettings(scheme);
-
-	LoadControlSettings("resource/UI/RDLeaderboardEntry_Points.res");
-}
-
-void CReactiveDrop_VGUI_Leaderboard_Entry_Points::SetEntry( const RD_LeaderboardEntry_Points_t & entry )
-{
-	m_nRank = entry.entry.m_nGlobalRank;
-	m_nScore = entry.entry.m_nScore;
-	m_SteamID = entry.entry.m_steamIDUser;
-
-	m_lblRank->SetText(VarArgs("%d", entry.entry.m_nGlobalRank));
-
-	CSteamID steamIDCopy = entry.entry.m_steamIDUser;
-	m_imgAvatar->SetAvatarBySteamID(&steamIDCopy);
-
-	wchar_t wszName[k_cwchPersonaNameMax];
-	Q_UTF8ToUnicode(SteamFriends()->GetFriendPersonaName(entry.entry.m_steamIDUser), wszName, sizeof(wszName));
-	g_RDTextFiltering.FilterTextName( wszName, entry.entry.m_steamIDUser );
-	m_lblName->SetText(wszName);
-
-	m_lblScore_Points->SetText( VarArgs( "%d", m_nScore ) );
-
-	wchar_t wszCountry[ 3 ];
-	wszCountry[ 0 ] = entry.details.m_CountryCode[ 0 ];
-	wszCountry[ 1 ] = entry.details.m_CountryCode[ 1 ];
-	wszCountry[ 2 ] = 0;
-	m_lblCountry->SetText( wszCountry );
-
-	m_lblScore_AlienKills->SetText( VarArgs( "%d", entry.details.m_iAlienKills));
-	m_lblScore_PlayerKills->SetText( VarArgs( "%d", entry.details.m_iPlayerKills ) );
-	m_lblScore_GamesWon->SetText( VarArgs( "%d", entry.details.m_iGamesWon ) );
-	m_lblScore_GamesLost->SetText( VarArgs( "%d", entry.details.m_iGamesLost ) );
-	m_lblScore_GamesTotal->SetText( VarArgs( "%d", entry.details.m_iGamesWon + entry.details.m_iGamesLost ) );
 }

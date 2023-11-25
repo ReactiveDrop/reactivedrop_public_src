@@ -5,6 +5,7 @@
 
 #ifdef CLIENT_DLL
 #include "gameui/swarm/uigamedata.h"
+#include "rd_text_filtering.h"
 #include "filesystem.h"
 #endif
 
@@ -192,21 +193,21 @@ int UTIL_RD_PingLobby( CSteamID lobby )
 
 	return 0;
 }
-
-void RD_Lobby_Scoreboard_Entry_t::CountryCodeTexCoords( float &s0, float &t0, float &s1, float &t1 )
+bool UTIL_RD_CountryCodeTexCoords( char chFirstLetter, char chSecondLetter, float &s0, float &t0, float &s1, float &t1 )
 {
-	Assert( CountryCode[0] >= 'A' && CountryCode[0] <= 'Z' );
-	Assert( CountryCode[1] >= 'A' && CountryCode[1] <= 'Z' );
-	Assert( CountryCode[2] == '\0' );
+	Assert( chFirstLetter >= 'A' && chFirstLetter <= 'Z' );
+	Assert( chSecondLetter >= 'A' && chSecondLetter <= 'Z' );
 
 	// country code texture is laid out with 32 flags per row in AA AB AC AD... order.
 	// each flag is 16x11 and the full texture is 512x256.
-	// inset each side of the bounding box by half a texel to avoid color bleed.
-	int index = ( CountryCode[0] - 'A' ) + ( CountryCode[1] - 'A' ) * 26;
-	s0 = ( index % 32 ) * ( 16.0f / 512.0f ) + ( 0.5f / 512.0f );
-	t0 = ( index / 32 ) * ( 11.0f / 256.0f ) + ( 0.5f / 256.0f );
-	s1 = s0 + ( 15.0f / 512.0f );
-	t1 = t0 + ( 10.0f / 256.0f );
+	// inset each side of the bounding box by a quarter of a texel to avoid color bleed.
+	int index = ( chFirstLetter - 'A' ) * 26 + ( chSecondLetter - 'A' );
+	s0 = ( index % 32 ) * ( 16.0f / 512.0f ) + ( 0.25f / 512.0f );
+	t0 = ( index / 32 ) * ( 11.0f / 256.0f ) + ( 0.25f / 256.0f );
+	s1 = s0 + ( 15.5f / 512.0f );
+	t1 = t0 + ( 10.5f / 256.0f );
+
+	return chFirstLetter >= 'A' && chFirstLetter <= 'Z' && chSecondLetter >= 'A' && chSecondLetter <= 'Z';
 }
 
 void UTIL_RD_ReadLobbyScoreboard( CSteamID lobby, CUtlVector<RD_Lobby_Scoreboard_Entry_t> &scoreboard )
@@ -219,6 +220,11 @@ void UTIL_RD_ReadLobbyScoreboard( CSteamID lobby, CUtlVector<RD_Lobby_Scoreboard
 	FOR_EACH_VEC( Players, i )
 	{
 		CSplitString PlayerInfo{ Players[i], "|" };
+		if ( PlayerInfo.Count() == 3 )
+		{
+			// temp add a dummy country code to get scoreboards working before release
+			PlayerInfo.AddToTail( "XX" );
+		}
 		Assert( PlayerInfo.Count() == 4 );
 		if ( PlayerInfo.Count() != 4 )
 			continue;
@@ -227,6 +233,9 @@ void UTIL_RD_ReadLobbyScoreboard( CSteamID lobby, CUtlVector<RD_Lobby_Scoreboard
 		char szName[k_cchPersonaNameMax];
 		V_hextobinary( PlayerInfo[0], V_strlen( PlayerInfo[0] ), reinterpret_cast< byte * >( szName ), sizeof( szName ) );
 		V_UTF8ToUnicode( szName, scoreboard[index].Name, sizeof( scoreboard[index].Name ) );
+#ifdef CLIENT_DLL
+		g_RDTextFiltering.FilterTextName( scoreboard[index].Name );
+#endif
 		scoreboard[index].Score = V_atoi( PlayerInfo[1] );
 		scoreboard[index].Connected = V_atof( PlayerInfo[2] );
 		if ( V_strlen( PlayerInfo[3] ) == 2 )

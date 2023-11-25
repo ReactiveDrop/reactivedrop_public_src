@@ -141,7 +141,7 @@ void CAvatarImage::Paint( void )
 {
 	if ( m_bValid )
 	{
-		if ( m_bFriend && m_pFriendIcon )
+		if ( m_bFriend && m_pFriendIcon && m_bLegacyPadding )
 		{
 			m_pFriendIcon->DrawSelf( m_nX, m_nY, m_nWide, m_nTall, m_Color );
 		}
@@ -243,6 +243,10 @@ void CAvatarImagePanel::SetAvatarBySteamID( const CSteamID *friendsID )
 	int iIndent = 2;
 	pImage->SetPos( iIndent, iIndent );
 	int wide = GetWide() - ( iIndent * 2 );
+
+	// fix aspect ratio
+	if ( m_bLegacyPadding )
+		wide += AVATAR_INDENT_Y - AVATAR_INDENT_X;
 
 	pImage->SetAvatarSize( ( wide > 32 ) ? k_EAvatarSize64x64 : k_EAvatarSize32x32 );
 	if ( friendsID )

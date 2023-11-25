@@ -89,7 +89,6 @@
 #include "smartptr.h"
 #include "nb_header_footer.h"
 #include "asw_util_shared.h"
-#include "nb_leaderboard_panel_points.h"
 #include "vadvancedsettings.h"
 #include "baseviewport.h"
 #include "asw_hud_chat.h"
@@ -533,10 +532,6 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 
 		case WT_GAMEPAD:
 			m_Frames[wt] = new Gamepad( this, "Gamepad" );
-			break;
-
-		case WT_IAFRANKS:
-			m_Frames[wt] = new CNB_Leaderboard_Panel_Points( this, "LeaderboardPanel" );
 			break;
 
 		case WT_ADVANCEDSETTINGS:

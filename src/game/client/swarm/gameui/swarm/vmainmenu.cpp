@@ -1170,7 +1170,7 @@ void MainMenu::OnCommand( const char *command )
 	}
 	else if ( !Q_strcmp( command, "IafRanks" ) )
 	{
-		CBaseModPanel::GetSingleton().OpenWindow( WT_IAFRANKS, this, true );
+		OpenNewsURL( "https://stats.reactivedrop.com/heroes?l=%s" );
 	}
 	else if ( !Q_strcmp( command, "CreateGame" ) )
 	{

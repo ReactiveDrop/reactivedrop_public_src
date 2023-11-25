@@ -2293,7 +2293,6 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="swarm\vgui\nb_horiz_list.cpp" />
     <ClCompile Include="swarm\vgui\nb_island.cpp" />
     <ClCompile Include="swarm\vgui\nb_leaderboard_panel.cpp" />
-    <ClCompile Include="swarm\vgui\nb_leaderboard_panel_points.cpp" />
     <ClCompile Include="swarm\vgui\nb_lobby_row.cpp" />
     <ClCompile Include="swarm\vgui\nb_lobby_row_small.cpp" />
     <ClCompile Include="swarm\vgui\nb_lobby_tooltip.cpp" />
@@ -3411,7 +3410,6 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="swarm\vgui\nb_horiz_list.h" />
     <ClInclude Include="swarm\vgui\nb_island.h" />
     <ClInclude Include="swarm\vgui\nb_leaderboard_panel.h" />
-    <ClInclude Include="swarm\vgui\nb_leaderboard_panel_points.h" />
     <ClInclude Include="swarm\vgui\nb_lobby_row.h" />
     <ClInclude Include="swarm\vgui\nb_lobby_row_small.h" />
     <ClInclude Include="swarm\vgui\nb_lobby_tooltip.h" />

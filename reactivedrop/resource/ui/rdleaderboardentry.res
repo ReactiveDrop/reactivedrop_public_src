@@ -5,7 +5,7 @@
 		"fieldName"		"Entry"
 		"xpos"			"0"
 		"ypos"			"0"
-		"wide"			"540"
+		"wide"			"500"
 		"tall"			"20"
 		"ControlName"	"Panel"
 	}
@@ -15,8 +15,8 @@
 		"fieldName"					"Background"
 		"xpos"						"0"
 		"ypos"						"0"
-		"wide"						"f0"
-		"tall"						"f0"
+		"wide"						"500"
+		"tall"						"20"
 		"zpos"						"-1"
 		"PaintBackgroundEnabled"	"1"
 		"bgcolor_override"			"0 0 0 192"
@@ -32,6 +32,8 @@
 		"tall"			"20"
 		"textAlignment"	"center"
 		"ControlName"	"Label"
+		"font"			"DefaultSmall"
+		"fgcolor_override"	"192 192 192 255"
 	}
 
 	"ImgAvatar"
@@ -55,6 +57,7 @@
 		"tall"			"20"
 		"textAlignment"	"west"
 		"ControlName"	"Label"
+		"font"			"Default"
 	}
 
 	"LblScore"
@@ -66,6 +69,8 @@
 		"tall"			"20"
 		"textAlignment"	"center"
 		"ControlName"	"Label"
+		"font"			"Default"
+		"fgcolor_override"	"255 255 255 255"
 	}
 
 	"ImgMarine"
@@ -115,57 +120,61 @@
 	"LblSquadMembers"
 	{
 		"fieldName"		"LblSquadMembers"
-		"xpos"			"360"
+		"xpos"			"365"
 		"ypos"			"0"
 		"wide"			"20"
 		"tall"			"20"
 		"textAlignment"	"west"
 		"ControlName"	"Label"
+		"fgcolor_override"	"192 192 192 255"
 	}
 
-	"LblCountry"
+	"ImgCountry"
 	{
-		"fieldName"		"LblCountry"
-		"xpos"			"380"
-		"ypos"			"0"
-		"wide"			"20"
-		"tall"			"20"
-		"textAlignment"	"center"
-		"ControlName"	"Label"
+		"fieldName"		"ImgCountry"
+		"xpos"			"475"
+		"ypos"			"5"
+		"wide"			"16"
+		"tall"			"11"
+		"scaleImage"	"1"
+		"ControlName"	"ImagePanel"
 	}
 
-	"LblDifficulty"
+	"ImgDifficulty"
 	{
-		"fieldName"		"LblDifficulty"
+		"fieldName"		"ImgDifficulty"
+		"xpos"			"420"
+		"ypos"			"2"
+		"wide"			"16"
+		"tall"			"16"
+		"image"			"resource/difficulty_normal"
+		"scaleImage"	"1"
+		"ControlName"	"ImagePanel"
+	}
+
+	"ImgOnslaught"
+	{
+		"fieldName"		"ImgOnslaught"
+		"xpos"			"440"
+		"ypos"			"2"
+		"wide"			"16"
+		"tall"			"16"
+		"image"			"resource/difficulty_onslaught"
+		"visible"		"0"
+		"scaleImage"	"1"
+		"ControlName"	"ImagePanel"
+	}
+
+	"ImgHardcoreFF"
+	{
+		"fieldName"		"ImgHardcoreFF"
 		"xpos"			"400"
-		"ypos"			"0"
-		"wide"			"60"
-		"tall"			"20"
-		"textAlignment"	"center"
-		"ControlName"	"Label"
-	}
-
-	"LblOnslaught"
-	{
-		"fieldName"		"LblOnslaught"
-		"xpos"			"460"
-		"ypos"			"0"
-		"wide"			"40"
-		"tall"			"20"
+		"ypos"			"2"
+		"wide"			"16"
+		"tall"			"16"
+		"image"			"resource/difficulty_hardcore"
 		"visible"		"0"
-		"textAlignment"	"center"
-		"ControlName"	"Label"
-	}
-
-	"LblHardcoreFF"
-	{
-		"fieldName"		"LblHardcoreFF"
-		"xpos"			"500"
-		"ypos"			"0"
-		"wide"			"40"
-		"tall"			"20"
-		"visible"		"0"
-		"textAlignment"	"center"
-		"ControlName"	"Label"
+		"scaleImage"	"1"
+		"ControlName"	"ImagePanel"
 	}
 }
