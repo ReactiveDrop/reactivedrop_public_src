@@ -21,9 +21,9 @@
 	{
 		"fieldName"		"Title"
 		"xpos"		"c-266"
-		"ypos"		"123"
+		"ypos"		"88"
 		"wide"		"250"
-		"tall"		"19"
+		"tall"		"20"
 		"zpos"		"5"
 		"font"		"DefaultExtraLarge"
 		"textAlignment"		"west"
@@ -37,7 +37,7 @@
 		"ControlName"			"L4DMenuBackground"
 		"fieldName"				"ImgBackground"
 		"xpos"					"0"
-		"ypos"					"189"
+		"ypos"					"179"
 		"zpos"					"-1"
 		"wide"					"f0"
 		"tall"					"144"
@@ -55,7 +55,7 @@
 		"ControlName"			"ImagePanel"
 		"fieldName"				"ImgLevelImage"
 		"xpos"					"c52"
-		"ypos"					"173"
+		"ypos"					"153"
 		"wide"					"133"
 		"tall"					"100"
 		"zpos"					"1"
@@ -72,7 +72,7 @@
 		"ControlName"			"Panel"
 		"fieldName"				"ImgLevelImageFrame"
 		"xpos"					"c51"
-		"ypos"					"172"
+		"ypos"					"152"
 		"wide"					"135"
 		"tall"					"102"
 		"scaleImage"			"1"
@@ -98,6 +98,46 @@
 		"textAlignment"		"west"
 		"fgcolor_override"		"83 148 192 255"
 	}
+
+	"LblLobbyName"
+	{
+		"ControlName"			"Label"
+		"fieldName"				"LblLobbyName"
+		"xpos"					"c-250"
+		"ypos"					"125"
+		"wide"					"280"
+		"tall"					"15"
+		"labelText"				"#ASUI_LobbyName"
+		"font"					"DefaultLarge"
+		"textAlignment"			"west"
+	}
+	"TxtLobbyName"
+	{
+		"ControlName"			"TextEntry"
+		"fieldName"				"TxtLobbyName"
+		"xpos"					"c-100"
+		"ypos"					"125"
+		"zpos"					"5"
+		"wide"					"286"
+		"tall"					"15"
+		"font"					"DefaultLarge"
+		"navUp"					"DrpGameAccess"
+		"navDown"				"DrpGameType"
+	}
+	"LblLobbyPlaceholder"
+	{
+		"ControlName"			"Label"
+		"fieldName"				"LblLobbyPlaceholder"
+		"xpos"					"c-98"
+		"ypos"					"125"
+		"wide"					"282"
+		"tall"					"15"
+		"labelText"				""
+		"textAlignment"			"west"
+		"fgcolor_override"		"128 128 128 255"
+		"mouseinputenabled"		"0"
+	}
+
 	// Campaign dropdown
 	"DrpGameType"
 	{
@@ -111,8 +151,8 @@
 		"tall"					"20"			[$X360]
 		"visible"				"0"
 		"enabled"				"1"
-		"navUp"					"DrpGameAccess"
-		"navDown"				"DrpChapter"
+		"navUp"					"TxtLobbyName"
+		"navDown"				"DrpSelectMission"
 		
 		//button and label
 		"BtnDropButton"
@@ -594,7 +634,7 @@
 		"visible"				"1"
 		"enabled"				"1"
 		"navUp"					"DrpNumSlots"
-		"navDown"				"DrpServerType"
+		"navDown"				"TxtLobbyName"
 		
 		//button and label
 		"BtnDropButton"

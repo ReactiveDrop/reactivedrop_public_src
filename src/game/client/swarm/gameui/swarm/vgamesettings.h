@@ -43,6 +43,8 @@ protected:
 	virtual void OnClose();
 
 	void Navigate();
+	void OnNavigateTo( const char *panelName );
+	MESSAGE_FUNC( OnTextChanged, "TextChanged" );
 
 	bool IsCustomMatchSearchCriteria();
 	bool IsEditingExistingLobby();
@@ -65,11 +67,14 @@ private:
 
 	KeyValues *m_pSettings;
 	KeyValues::AutoDelete m_autodelete_pSettings;
-	
+
 	bool m_bEditingSession;
 	bool m_bPreventSessionModifications;
 	void UpdateSessionSettings( KeyValues *pUpdate );
 
+	vgui::Label *m_pLobbyNameLabel;
+	vgui::TextEntry *m_txtLobbyName;
+	vgui::Label *m_pLobbyNamePlaceholder;
 	DropDownMenu* m_drpDifficulty;
 	DropDownMenu* m_drpGameType;
 	DropDownMenu* m_drpGameAccess;
@@ -82,8 +87,11 @@ private:
 	CNB_Header_Footer *m_pHeaderFooter;
 	vgui::Label *m_pTitle;
 
+	int m_iTitleYPosition;
+
 	bool m_bBackButtonMeansDone;
 	bool m_bCloseSessionOnClose;
+	bool m_bWriteConfigOnClose;
 	bool m_bAllowChangeToCustomCampaign;
 
 	bool m_bWantHardcoreFF;

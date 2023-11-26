@@ -19,8 +19,9 @@
 #include "VLoadingProgress.h"
 #include "VGenericConfirmation.h"
 
-#include "vgui_controls/ImagePanel.h"
 #include "vgui_controls/Button.h"
+#include "vgui_controls/ImagePanel.h"
+#include "vgui_controls/TextEntry.h"
 
 #include "fmtstr.h"
 #include "smartptr.h"
@@ -82,8 +83,14 @@ GameSettings::GameSettings( vgui::Panel *parent, const char *panelName ):
 	m_pHeaderFooter->SetTitle( "" );
 	m_pHeaderFooter->SetHeaderEnabled( false );
 	m_pHeaderFooter->SetGradientBarEnabled( true );
-	m_pHeaderFooter->SetGradientBarPos( 140, 190 );
+	m_pHeaderFooter->SetGradientBarPos( 110, 220 );
+	m_pLobbyNameLabel = new vgui::Label( this, "LblLobbyName", "#ASUI_LobbyName" );
+	m_txtLobbyName = new vgui::TextEntry( this, "TxtLobbyName" );
+	m_txtLobbyName->SetAllowNonAsciiCharacters( true );
+	m_txtLobbyName->AddActionSignalTarget( this );
+	m_pLobbyNamePlaceholder = new vgui::Label( this, "LblLobbyPlaceholder", "" );
 	m_pTitle = new vgui::Label( this, "Title", "" );
+	m_iTitleYPosition = 0;
 	SetDeleteSelfOnClose(true);
 	SetProportional( true );
 	SetLowerGarnishEnabled( true );
@@ -93,6 +100,11 @@ GameSettings::GameSettings( vgui::Panel *parent, const char *panelName ):
 //=============================================================================
 GameSettings::~GameSettings()
 {
+	if ( m_bWriteConfigOnClose )
+	{
+		engine->ClientCmd_Unrestricted( "host_writeconfig\n" );
+		m_bWriteConfigOnClose = false;
+	}
 }
 
 void GameSettings::SetDataSettings( KeyValues *pSettings )
@@ -301,39 +313,6 @@ void GameSettings::Activate()
 		button->SetControllerButton( KEY_XBUTTON_X );
 	}
 
-	/*
-	BaseModHybridButton *button = dynamic_cast< BaseModHybridButton* >( FindChildByName( "BtnStartGame" ) );
-	if( button )
-	{
-		button->SetVisible( showSinglePlayerControls );
-		SetControlVisible( "IconForwardArrow", showSinglePlayerControls );
-
-		if ( IsX360() && button->IsVisible() )
-		{
-			button->NavigateTo();
-		}
-	}
-
-	button = dynamic_cast< BaseModHybridButton* > ( FindChildByName( "BtnJoinStart" ) );
-	if ( button )
-	{
-		if ( IsX360() && button->IsVisible() )
-		{
-			button->NavigateTo();
-		}
-	}
-
-	button = dynamic_cast< BaseModHybridButton* > ( FindChildByName( "BtnStartLobby" ) );
-	if ( button )
-	{
-		button->SetVisible( showGameAccess );
-		if ( IsX360() && button->IsVisible() )
-		{
-			button->NavigateTo();
-		}
-	}
-	*/
-
 	if ( IsPC() )
 	{
 		SetControlVisible( "BtnCancel", true );
@@ -379,17 +358,32 @@ void GameSettings::Activate()
 			flyout->CloseMenu( NULL );
 	}
 
+	int x, discard;
+	m_pTitle->GetPos( x, discard );
+	m_pLobbyNameLabel->SetVisible( showGameAccess );
+	m_txtLobbyName->SetVisible( showGameAccess );
+	m_pLobbyNamePlaceholder->SetVisible( showGameAccess && m_txtLobbyName->GetTextLength() == 0 );
+
 	if ( showGameAccess )
 	{
-		m_pHeaderFooter->SetGradientBarPos( 140, 210 );
-	}
-	else if ( showNumSlots )
-	{
-		m_pHeaderFooter->SetGradientBarPos( 140, 185 );
+		m_pTitle->SetPos( x, m_iTitleYPosition );
+		m_pHeaderFooter->SetGradientBarPos( 110, 240 );
+
+		wchar_t wszPlayerName[k_cwchPersonaNameMax];
+		V_UTF8ToUnicode( SteamFriends() ? SteamFriends()->GetPersonaName() : "", wszPlayerName, sizeof( wszPlayerName ) );
+		m_pLobbyNamePlaceholder->SetText( wszPlayerName );
 	}
 	else
 	{
-		m_pHeaderFooter->SetGradientBarPos( 140, 160 );
+		m_pTitle->SetPos( x, m_iTitleYPosition + YRES( 30 ) );
+		if ( showNumSlots )
+		{
+			m_pHeaderFooter->SetGradientBarPos( 140, 185 );
+		}
+		else
+		{
+			m_pHeaderFooter->SetGradientBarPos( 140, 160 );
+		}
 	}
 
 	UpdateMissionImage();
@@ -494,6 +488,7 @@ void GameSettings::SelectNetworkAccess( char const *szNetworkType, char const *s
 	pSettings->SetString( "update/system/access", szAccessType );
 
 	rd_last_game_access.SetValue( szAccessType );
+	m_bWriteConfigOnClose = true;
 
 	UpdateSessionSettings( pSettings );
 
@@ -647,6 +642,7 @@ void GameSettings::OnCommand(const char *command)
 		pSettings->SetString( "update/game/challenge", szChallengeSelected );
 
 		rd_last_game_challenge.SetValue( szChallengeSelected );
+		m_bWriteConfigOnClose = true;
 		UpdateSessionSettings( pSettings );
 
 		if ( m_drpChallenge )
@@ -743,6 +739,7 @@ void GameSettings::OnCommand(const char *command)
 		pSettings->SetString( "update/game/difficulty", szDifficultyValue );
 
 		rd_last_game_difficulty.SetValue( szDifficultyValue );
+		m_bWriteConfigOnClose = true;
 		UpdateSessionSettings( pSettings );
 
 		if( m_drpDifficulty )
@@ -766,6 +763,7 @@ void GameSettings::OnCommand(const char *command)
 		pSettings->SetInt( "update/game/hardcoreFF", 0 );
 
 		rd_last_game_hardcoreff.SetValue( 0 );
+		m_bWriteConfigOnClose = true;
 		UpdateSessionSettings( pSettings );
 
 		if( m_drpFriendlyFire )
@@ -792,6 +790,7 @@ void GameSettings::OnCommand(const char *command)
 		pSettings->SetInt( "update/game/hardcoreFF", 1 );
 
 		rd_last_game_hardcoreff.SetValue( 1 );
+		m_bWriteConfigOnClose = true;
 		UpdateSessionSettings( pSettings );
 
 		if( m_drpFriendlyFire )
@@ -818,6 +817,7 @@ void GameSettings::OnCommand(const char *command)
 		pSettings->SetInt( "update/game/onslaught", 0 );
 
 		rd_last_game_onslaught.SetValue( 0 );
+		m_bWriteConfigOnClose = true;
 		UpdateSessionSettings( pSettings );
 
 		if( m_drpOnslaught )
@@ -844,6 +844,7 @@ void GameSettings::OnCommand(const char *command)
 		pSettings->SetInt( "update/game/onslaught", 1 );
 
 		rd_last_game_onslaught.SetValue( 1 );
+		m_bWriteConfigOnClose = true;
 		UpdateSessionSettings( pSettings );
 
 		if( m_drpOnslaught )
@@ -898,21 +899,25 @@ void GameSettings::OnCommand(const char *command)
 	{
 		mm_max_players.SetValue( 4 );
 		rd_last_game_maxplayers.SetValue( 4 );
+		m_bWriteConfigOnClose = true;
 	}
 	else if ( !Q_strcmp( command, "#rd_ui_8_slots" ) )
 	{
 		mm_max_players.SetValue( 8 );
 		rd_last_game_maxplayers.SetValue( 8 );
+		m_bWriteConfigOnClose = true;
 	}
 	else if ( !Q_strcmp( command, "#rd_ui_12_slots" ) )
 	{
 		mm_max_players.SetValue( 12 );
 		rd_last_game_maxplayers.SetValue( 12 );
+		m_bWriteConfigOnClose = true;
 	}
 	else if ( !Q_strcmp( command, "#rd_ui_16_slots" ) )
 	{
 		mm_max_players.SetValue( 16 );
 		rd_last_game_maxplayers.SetValue( 16 );
+		m_bWriteConfigOnClose = true;
 	}
 	else
 	{
@@ -927,6 +932,8 @@ void GameSettings::ApplySchemeSettings( vgui::IScheme *pScheme )
 	char const *szNetwork = m_pSettings->GetString( "system/network", "LIVE" );
 	char const *szAccess = m_pSettings->GetString( "system/access", "public" );
 
+	int discard;
+	m_pTitle->GetPos( discard, m_iTitleYPosition );
 
 	KeyValues *pConditions = NULL;
 	if ( !Q_stricmp( "offline", szNetwork ) )
@@ -1068,6 +1075,26 @@ void GameSettings::Navigate()
 		Assert( !"unreachable" );
 		NavigateBack();
 	}
+}
+
+void GameSettings::OnNavigateTo( const char *panelName )
+{
+	if ( !V_strcmp( m_txtLobbyName->GetName(), panelName ) )
+	{
+		m_txtLobbyName->RequestFocus();
+	}
+
+	BaseClass::OnNavigateTo( panelName );
+}
+
+void GameSettings::OnTextChanged()
+{
+	char szHostname[256];
+	m_txtLobbyName->GetText( szHostname, sizeof( szHostname ) );
+	rd_lobby_hostname.SetValue( szHostname );
+	m_bWriteConfigOnClose = true;
+
+	m_pLobbyNamePlaceholder->SetVisible( m_txtLobbyName->IsVisible() && szHostname[0] == '\0' );
 }
 
 void GameSettings::OnNotifyChildFocus( vgui::Panel* child )
