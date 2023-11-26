@@ -262,7 +262,7 @@ void CReactiveDrop_VGUI_Leaderboard_Entry::SetEntry( const RD_LeaderboardEntry_t
 			m_imgDifficulty->SetImage( "resource/difficulty_insane" );
 			break;
 		case 5:
-			m_imgDifficulty->SetImage( "resource/difficulty_brutal" );
+			m_imgDifficulty->SetImage( "resource/difficulty_imba" );
 			break;
 		}
 		m_imgOnslaught->SetVisible( ( entry.details.v1.m_iModeFlags & 1 ) != 0 );
@@ -313,7 +313,7 @@ void CReactiveDrop_VGUI_Leaderboard_Entry::SetEntry( const RD_LeaderboardEntry_t
 			m_imgDifficulty->SetImage( "resource/difficulty_insane" );
 			break;
 		case 5:
-			m_imgDifficulty->SetImage( "resource/difficulty_brutal" );
+			m_imgDifficulty->SetImage( "resource/difficulty_imba" );
 			break;
 		}
 		m_imgOnslaught->SetVisible( ( entry.details.v2.m_iModeFlags & 1 ) != 0 );
