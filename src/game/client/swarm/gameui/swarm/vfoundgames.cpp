@@ -52,7 +52,7 @@ ConVar ui_foundgames_fake_content( "ui_foundgames_fake_content", "0", FCVAR_DEVE
 ConVar ui_foundgames_fake_count( "ui_foundgames_fake_count", "0", FCVAR_DEVELOPMENTONLY );
 ConVar rd_lobby_ping_low( "rd_lobby_ping_low", "120", FCVAR_NONE, "lobbies with an estimated ping below this many milliseconds are considered \"low ping\"." );
 ConVar rd_lobby_ping_high( "rd_lobby_ping_high", "250", FCVAR_NONE, "lobbies with an estimated ping above this many milliseconds are considered \"high ping\"." );
-ConVar rd_lobby_name_mode( "rd_lobby_name_mode", "1", FCVAR_ARCHIVE, "0=show mission, 1=show hostname, 2=show both" );
+ConVar rd_lobby_name_mode( "rd_lobby_name_mode", "2", FCVAR_ARCHIVE, "0=show mission, 1=show hostname, 2=show both" );
 extern ConVar rd_reduce_motion;
 
 ConVar rd_lobby_filter_difficulty_min( "rd_lobby_filter_difficulty_min", "1", FCVAR_ARCHIVE, "minimum difficulty for searched lobbies. 1=easy,2=normal,3=hard,4=insane,5=brutal", true, 1, true, 5 );
