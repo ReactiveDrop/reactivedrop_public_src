@@ -119,6 +119,7 @@ public:
 	const Info& GetFullInfo();
 
 	void SetGamerTag( const wchar_t *gamerTag );
+	void SetMissionName( const wchar_t *missionName );
 
 	void SetGamePing( Info::GAME_PING ping );
 	void SetGameDifficulty( const char *difficultySuffix, bool bOnslaught, bool bHardcoreFF );
@@ -178,10 +179,13 @@ private:
 	vgui::ImagePanel	*m_pImgPingSmall;
 	vgui::Label			*m_pLblPing;
 	vgui::Label			*m_pLblPlayerGamerTag;
+	vgui::Label			*m_pLblPlayerGamerTagSmall1;
+	vgui::Label			*m_pLblPlayerGamerTagSmall2;
 	vgui::ImagePanel	*m_pImgDifficulty;
 	vgui::ImagePanel	*m_pImgOnslaught;
 	vgui::ImagePanel	*m_pImgHardcoreFF;
 	vgui::ImagePanel	*m_pImgChallenge;
+	vgui::Panel			*m_pPnlChallenge;
 	vgui::Label			*m_pLblChallenge;
 	vgui::Label			*m_pLblSwarmState;
 	vgui::Label			*m_pLblPlayers;

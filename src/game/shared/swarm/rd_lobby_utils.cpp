@@ -193,6 +193,7 @@ int UTIL_RD_PingLobby( CSteamID lobby )
 
 	return 0;
 }
+
 bool UTIL_RD_CountryCodeTexCoords( char chFirstLetter, char chSecondLetter, float &s0, float &t0, float &s1, float &t1 )
 {
 	Assert( chFirstLetter >= 'A' && chFirstLetter <= 'Z' );
@@ -200,23 +201,34 @@ bool UTIL_RD_CountryCodeTexCoords( char chFirstLetter, char chSecondLetter, floa
 
 	// country code texture is laid out with 32 flags per row in AA AB AC AD... order.
 	// each flag is 16x11 and the full texture is 512x256.
-	// inset each side of the bounding box by a quarter of a texel to avoid color bleed.
+	// inset each side of the bounding box by a half a texel to avoid color bleed.
 	int index = ( chFirstLetter - 'A' ) * 26 + ( chSecondLetter - 'A' );
-	s0 = ( index % 32 ) * ( 16.0f / 512.0f ) + ( 0.25f / 512.0f );
-	t0 = ( index / 32 ) * ( 11.0f / 256.0f ) + ( 0.25f / 256.0f );
-	s1 = s0 + ( 15.5f / 512.0f );
-	t1 = t0 + ( 10.5f / 256.0f );
+	s0 = ( index % 32 ) * ( 16.0f / 512.0f ) + ( 0.5f / 512.0f );
+	t0 = ( index / 32 ) * ( 11.0f / 256.0f ) + ( 0.5f / 256.0f );
+	s1 = s0 + ( 15.0f / 512.0f );
+	t1 = t0 + ( 10.0f / 256.0f );
 
 	return chFirstLetter >= 'A' && chFirstLetter <= 'Z' && chSecondLetter >= 'A' && chSecondLetter <= 'Z';
 }
 
-void UTIL_RD_ReadLobbyScoreboard( CSteamID lobby, CUtlVector<RD_Lobby_Scoreboard_Entry_t> &scoreboard )
+static int __cdecl SortScoreboardPlayersByTime( const RD_Lobby_Scoreboard_Entry_t *a, const RD_Lobby_Scoreboard_Entry_t *b )
+{
+	float diff = b->Connected - a->Connected;
+	if ( diff < 0 )
+		return -1;
+	if ( diff > 0 )
+		return 1;
+	return 0;
+}
+
+void UTIL_RD_ReadLobbyScoreboard( CSteamID lobby, CUtlVector<RD_Lobby_Scoreboard_Entry_t> &scoreboard, bool bSortPlayersByTime )
 {
 	const char *szScoreboard = SteamMatchmaking()->GetLobbyData( lobby, "system:rd_players" );
 	if ( !szScoreboard || *szScoreboard == '\0' )
 		return;
 
 	CSplitString Players{ szScoreboard, "," };
+	scoreboard.EnsureCapacity( Players.Count() );
 	FOR_EACH_VEC( Players, i )
 	{
 		CSplitString PlayerInfo{ Players[i], "|" };
@@ -249,6 +261,11 @@ void UTIL_RD_ReadLobbyScoreboard( CSteamID lobby, CUtlVector<RD_Lobby_Scoreboard
 			scoreboard[index].CountryCode[1] = 'X';
 		}
 		scoreboard[index].CountryCode[2] = '\0';
+	}
+
+	if ( bSortPlayersByTime )
+	{
+		scoreboard.Sort( &SortScoreboardPlayersByTime );
 	}
 }
 

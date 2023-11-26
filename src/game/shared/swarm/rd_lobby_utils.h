@@ -31,7 +31,7 @@ struct RD_Lobby_Scoreboard_Entry_t
 	char CountryCode[3];
 };
 bool UTIL_RD_CountryCodeTexCoords( char chFirstLetter, char chSecondLetter, float &s0, float &t0, float &s1, float &t1 );
-void UTIL_RD_ReadLobbyScoreboard( CSteamID lobby, CUtlVector<RD_Lobby_Scoreboard_Entry_t> &scoreboard );
+void UTIL_RD_ReadLobbyScoreboard( CSteamID lobby, CUtlVector<RD_Lobby_Scoreboard_Entry_t> &scoreboard, bool bSortPlayersByTime = false );
 
 #ifdef CLIENT_DLL
 // without __single_inheritance, if this file is included in anything vgui-related, this class becomes 12 bytes larger and breaks everything

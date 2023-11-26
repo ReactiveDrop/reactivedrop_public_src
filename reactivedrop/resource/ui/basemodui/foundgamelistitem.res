@@ -16,7 +16,7 @@
 		"rightFadeWidth"				"50"
 		"selected_color"				"168 26 26 255"
 	}
-	
+
 	"ImgPing"
 	{
 		"ControlName"					"ImagePanel"
@@ -33,7 +33,7 @@
 		"bgcolor_override"				"255 255 255 255"
 		"scaleImage"					"1"
 	}	
-	
+
 	"ImgAvatarBG"
 	{
 		"ControlName"			"Panel"
@@ -49,7 +49,7 @@
 		"tabPosition"			"0"
 		"bgcolor_override"		"80 80 80 255"
 	}
-	
+
 	"PnlGamerPic"
 	{
 		"ControlName"					"ImagePanel"
@@ -62,7 +62,7 @@
 		"bgcolor_override"				"255 255 255 255"
 		"scaleImage"					"1"
 	}
-		
+
 	"PnlModPic"
 	{
 		"ControlName"					"ImagePanel"
@@ -75,16 +75,15 @@
 		"bgcolor_override"				"255 255 255 255"
 		"scaleImage"					"1"
 	}
-		
-		
+
 	"LblGamerTag"
 	{
 		"ControlName"					"Label"
 		"fieldName"						"LblGamerTag"
 		"xpos"							"41"
 		"ypos"							"7"
-		"wide"							"250"
-		"tall"							"16"
+		"wide"							"235"
+		"tall"							"14"
 		"autoResize"					"0"
 		"pinCorner"						"0"
 		"visible"						"1"
@@ -95,25 +94,93 @@
 		"textAlignment"					"west"
 		"noshortcutsyntax"		"1"
 	}
-	
-	"LblDifficulty"
+
+	"LblGamerTagSmall1"
 	{
 		"ControlName"					"Label"
-		"fieldName"						"LblDifficulty"
-		"xpos"							"130"
-		"ypos"							"7"
-		"wide"							"60"
-		"tall"							"16"
+		"fieldName"						"LblGamerTagSmall1"
+		"xpos"							"41"
+		"ypos"							"3"
+		"wide"							"235"
+		"tall"							"10"
 		"autoResize"					"0"
 		"pinCorner"						"0"
 		"visible"						"1"
 		"enabled"						"1"
 		"tabPosition"					"0"
 		"labelText"						""
-		"Font"							"DefaultMedium"
+		"Font"							"DefaultSmall"
 		"textAlignment"					"west"
+		"noshortcutsyntax"		"1"
 	}
-	
+
+	"LblGamerTagSmall2"
+	{
+		"ControlName"					"Label"
+		"fieldName"						"LblGamerTagSmall2"
+		"xpos"							"41"
+		"ypos"							"12"
+		"wide"							"235"
+		"tall"							"10"
+		"autoResize"					"0"
+		"pinCorner"						"0"
+		"visible"						"1"
+		"enabled"						"1"
+		"tabPosition"					"0"
+		"labelText"						""
+		"Font"							"DefaultSmall"
+		"textAlignment"					"west"
+		"noshortcutsyntax"		"1"
+	}
+
+	"ImgDifficulty"
+	{
+		"ControlName"					"ImagePanel"
+		"fieldName"						"ImgDifficulty"
+		"xpos"							"294"
+		"ypos"							"4"
+		"wide"							"16"
+		"tall"							"16"
+		"scaleImage"					"1"
+		"image"							"resource/difficulty_normal"
+	}
+
+	"ImgOnslaught"
+	{
+		"ControlName"					"ImagePanel"
+		"fieldName"						"ImgOnslaught"
+		"xpos"							"311"
+		"ypos"							"4"
+		"wide"							"16"
+		"tall"							"16"
+		"scaleImage"					"1"
+		"image"							"resource/difficulty_onslaught"
+	}
+
+	"ImgHardcoreFF"
+	{
+		"ControlName"					"ImagePanel"
+		"fieldName"						"ImgHardcoreFF"
+		"xpos"							"277"
+		"ypos"							"4"
+		"wide"							"16"
+		"tall"							"16"
+		"scaleImage"					"1"
+		"image"							"resource/difficulty_hardcore"
+	}
+
+	"ImgChallenge"
+	{
+		"ControlName"					"ImagePanel"
+		"fieldName"						"ImgChallenge"
+		"xpos"							"328"
+		"ypos"							"4"
+		"wide"							"16"
+		"tall"							"16"
+		"scaleImage"					"1"
+		"image"							"resource/difficulty_challenge"
+	}
+
 	"LblNotJoinable"
 	{
 		"ControlName"					"Label"
@@ -121,7 +188,7 @@
 		"xpos"							"130"
 		"ypos"							"7"
 		"wide"							"200"
-		"tall"							"16"
+		"tall"							"14"
 		"autoResize"					"0"
 		"pinCorner"						"0"
 		"visible"						"0"
@@ -132,13 +199,25 @@
 		"textAlignment"					"west"
 	}
 
+	"PnlChallenge"
+	{
+		"ControlName"					"Panel"
+		"fieldName"						"PnlChallenge"
+		"xpos"							"275"
+		"ypos"							"9"
+		"wide"							"80"
+		"tall"							"11"
+		"paintbackgroundtype"			"2"
+		"bgcolor_override"				"0 0 0 224"
+	}
+
 	"LblChallenge"
 	{
 		"ControlName"					"Label"
 		"fieldName"						"LblChallenge"
 		"xpos"							"280"
 		"ypos"							"10"
-		"wide"							"80"
+		"wide"							"72"
 		"tall"							"10"
 		"autoResize"					"0"
 		"pinCorner"						"0"
@@ -157,7 +236,7 @@
 		"xpos"							"354"
 		"ypos"							"7"
 		"wide"							"30"
-		"tall"							"16"
+		"tall"							"14"
 		"autoResize"					"0"
 		"pinCorner"						"0"
 		"visible"						"1"
@@ -167,7 +246,7 @@
 		"Font"							"DefaultMedium"
 		"textAlignment"					"east"
 	}
-		
+
 	"LblPing"
 	{
 		"ControlName"					"Label"
@@ -175,7 +254,7 @@
 		"xpos"							"386"
 		"ypos"							"7"
 		"wide"							"24"
-		"tall"							"16"
+		"tall"							"14"
 		"autoResize"					"0"
 		"pinCorner"						"0"
 		"visible"						"1"
@@ -184,7 +263,7 @@
 		"labelText"						""
 		"textAlignment"					"east"
 	}
-	
+
 	"ImgPingSmall"
 	{
 		"ControlName"					"ImagePanel"

@@ -52,6 +52,7 @@ ConVar ui_foundgames_fake_content( "ui_foundgames_fake_content", "0", FCVAR_DEVE
 ConVar ui_foundgames_fake_count( "ui_foundgames_fake_count", "0", FCVAR_DEVELOPMENTONLY );
 ConVar rd_lobby_ping_low( "rd_lobby_ping_low", "120", FCVAR_NONE, "lobbies with an estimated ping below this many milliseconds are considered \"low ping\"." );
 ConVar rd_lobby_ping_high( "rd_lobby_ping_high", "250", FCVAR_NONE, "lobbies with an estimated ping above this many milliseconds are considered \"high ping\"." );
+ConVar rd_lobby_name_mode( "rd_lobby_name_mode", "1", FCVAR_ARCHIVE, "0=show mission, 1=show hostname, 2=show both" );
 extern ConVar rd_reduce_motion;
 
 ConVar rd_lobby_filter_difficulty_min( "rd_lobby_filter_difficulty_min", "1", FCVAR_ARCHIVE, "minimum difficulty for searched lobbies. 1=easy,2=normal,3=hard,4=insane,5=brutal", true, 1, true, 5 );
@@ -389,6 +390,10 @@ bool FoundGameListItem::Info::SetFromFriend( CSteamID friendID, const FriendGame
 		return false;
 	}
 
+	servernetadr_t adr;
+	adr.SetIP( info.m_unGameIP );
+	adr.SetConnectionPort( info.m_usGamePort );
+	adr.SetQueryPort( info.m_usQueryPort );
 	Assert( !"TODO: handle friend in non-lobby server?" );
 
 	return false;
@@ -487,7 +492,7 @@ bool FoundGameListItem::Info::SetFromLobby( CSteamID lobby )
 
 	m_ePingCategory = GetPingCategory( m_iPingMS );
 
-	UTIL_RD_ReadLobbyScoreboard( lobby, m_Scoreboard );
+	UTIL_RD_ReadLobbyScoreboard( lobby, m_Scoreboard, true );
 
 	return true;
 }
@@ -680,10 +685,13 @@ FoundGameListItem::FoundGameListItem( vgui::Panel *parent, const char *panelName
 	m_pImgPingSmall = NULL;
 	m_pLblPing = NULL;
 	m_pLblPlayerGamerTag = NULL;
+	m_pLblPlayerGamerTagSmall1 = NULL;
+	m_pLblPlayerGamerTagSmall2 = NULL;
 	m_pImgDifficulty = NULL;
 	m_pImgOnslaught = NULL;
 	m_pImgHardcoreFF = NULL;
 	m_pImgChallenge = NULL;
+	m_pPnlChallenge = NULL;
 	m_pLblChallenge = NULL;
 	m_pLblSwarmState = NULL;
 	m_pLblPlayers = NULL;
@@ -731,6 +739,7 @@ void FoundGameListItem::SetGameIndex( const Info& fi )
 		SetControlVisible( "ImgPingSmall", ( fi.m_iPingMS > 0 ) );
 
 	SetGamerTag( fi.m_wszLobbyDisplayName );
+	SetMissionName( fi.m_wszMissionDisplayName );
 
 	vgui::ImagePanel *imgAvatar = dynamic_cast< vgui::ImagePanel * >( FindChildByName( "PnlGamerPic" ) );
 	if ( imgAvatar )
@@ -812,9 +821,27 @@ const FoundGameListItem::Info& FoundGameListItem::GetFullInfo()
 //=============================================================================
 void FoundGameListItem::SetGamerTag( const wchar_t *gamerTag )
 {
-	if ( m_pLblPlayerGamerTag )
+	if ( m_pLblPlayerGamerTag && rd_lobby_name_mode.GetInt() != 0 )
 	{
-		m_pLblPlayerGamerTag->SetText( gamerTag ? gamerTag : L"" );
+		m_pLblPlayerGamerTag->SetText( gamerTag && rd_lobby_name_mode.GetInt() == 1 ? gamerTag : L"" );
+	}
+
+	if ( m_pLblPlayerGamerTagSmall1 )
+	{
+		m_pLblPlayerGamerTagSmall1->SetText( gamerTag && rd_lobby_name_mode.GetInt() == 2 ? gamerTag : L"" );
+	}
+}
+
+void FoundGameListItem::SetMissionName( const wchar_t *missionName )
+{
+	if ( m_pLblPlayerGamerTag && rd_lobby_name_mode.GetInt() != 1 )
+	{
+		m_pLblPlayerGamerTag->SetText( missionName && rd_lobby_name_mode.GetInt() == 0 ? missionName : L"" );
+	}
+
+	if ( m_pLblPlayerGamerTagSmall2 )
+	{
+		m_pLblPlayerGamerTagSmall2->SetText( missionName && rd_lobby_name_mode.GetInt() == 2 ? missionName : L"" );
 	}
 }
 
@@ -872,6 +899,10 @@ void FoundGameListItem::SetGameChallenge( const wchar_t *challengeName )
 	if ( m_pImgChallenge )
 	{
 		m_pImgChallenge->SetVisible( challengeName[0] != L'\0' );
+	}
+	if ( m_pPnlChallenge )
+	{
+		m_pPnlChallenge->SetVisible( challengeName[0] != L'\0' );
 	}
 	if ( m_pLblChallenge )
 	{
@@ -1001,7 +1032,7 @@ void FoundGameListItem::PaintBackground()
 		int y;
 		int x;
 		GetPos( x, y );
-		int tall = GetTall() * 0.9;
+		int tall = GetTall() - m_iBaseTall / 10;
 		y = ( GetTall() - tall ) / 2;
 		int wide = GetWide();
 
@@ -1028,7 +1059,6 @@ void FoundGameListItem::PostChildPaint()
 		return;
 
 	DrawListItemLabel( m_pLblPing, true, true );
-	DrawListItemLabel( m_pLblPlayerGamerTag, true );
 	DrawListItemLabel( m_pLblPlayers, true, true );
 
 	// Depending on the game info different labels get rendered in the list
@@ -1036,6 +1066,9 @@ void FoundGameListItem::PostChildPaint()
 
 	if ( fi.IsJoinable() || fi.IsDownloadable() )
 	{
+		DrawListItemLabel( m_pLblPlayerGamerTag, true );
+		DrawListItemLabel( m_pLblPlayerGamerTagSmall1, false );
+		DrawListItemLabel( m_pLblPlayerGamerTagSmall2, false );
 		DrawListItemLabel( m_pLblChallenge, false );
 	}
 	else
@@ -1043,6 +1076,7 @@ void FoundGameListItem::PostChildPaint()
 		DrawListItemLabel( m_pLblNotJoinable, true );
 	}
 
+	int wide = GetWide();
 	if ( IsSelected() && m_FullInfo.m_Scoreboard.Count() )
 	{
 		static vgui::IImage *s_pCountryFlagsTexture = vgui::scheme()->GetImage( "resource/iso_countryflags", true );
@@ -1064,11 +1098,26 @@ void FoundGameListItem::PostChildPaint()
 			vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
 			vgui::surface()->DrawTexturedSubRect( YRES( 30 ), y, YRES( 30 ) + iFlagWide, y + iFlagTall, s0, t0, s1, t1 );
 
+			wchar_t wszTime[32];
+			int iConnectedSeconds = Floor2Int( m_FullInfo.m_Scoreboard[i].Connected );
+			if ( iConnectedSeconds >= 3600 )
+				V_snwprintf( wszTime, NELEMS( wszTime ), L"%d:%02d:%02d", iConnectedSeconds / 3600, iConnectedSeconds / 60 % 60, iConnectedSeconds % 60 );
+			else
+				V_snwprintf( wszTime, NELEMS( wszTime ), L"%d:%02d", iConnectedSeconds / 60, iConnectedSeconds % 60 );
+
+			int textWide, textTall;
+			vgui::surface()->GetTextSize( m_hTextFont, wszTime, textWide, textTall );
+			vgui::surface()->DrawSetTextPos( wide * 2 / 4 - textWide, y );
+			vgui::surface()->DrawUnicodeString( wszTime );
+
+			const wchar_t *wszScore = UTIL_RD_CommaNumber( m_FullInfo.m_Scoreboard[i].Score );
+			vgui::surface()->GetTextSize( m_hTextFont, wszScore, textWide, textTall );
+			vgui::surface()->DrawSetTextPos( wide * 3 / 4 - textWide, y );
+			vgui::surface()->DrawUnicodeString( wszScore );
 		}
 	}
 	else if ( m_FullInfo.m_Friends.Count() )
 	{
-		int wide = GetWide();
 		int iFriendLabelX = wide;
 		int iFriendLabelY = m_iBaseTall - YRES( 12 );
 		int iFriendLabelXOffset, discard;
@@ -1245,6 +1294,16 @@ void FoundGameListItem::ApplySchemeSettings( IScheme *pScheme )
 	{
 		m_pLblPlayerGamerTag->SetVisible( false );
 	}
+	m_pLblPlayerGamerTagSmall1 = dynamic_cast< vgui::Label * > ( FindChildByName( "LblGamerTagSmall1" ) );
+	if ( m_pLblPlayerGamerTagSmall1 )
+	{
+		m_pLblPlayerGamerTagSmall1->SetVisible( false );
+	}
+	m_pLblPlayerGamerTagSmall2 = dynamic_cast< vgui::Label * > ( FindChildByName( "LblGamerTagSmall2" ) );
+	if ( m_pLblPlayerGamerTagSmall2 )
+	{
+		m_pLblPlayerGamerTagSmall2->SetVisible( false );
+	}
 	m_pImgDifficulty = dynamic_cast< vgui::ImagePanel * > ( FindChildByName( "ImgDifficulty" ) );
 	if ( m_pImgDifficulty )
 	{
@@ -1264,6 +1323,11 @@ void FoundGameListItem::ApplySchemeSettings( IScheme *pScheme )
 	if ( m_pImgChallenge )
 	{
 		m_pImgChallenge->SetVisible( false );
+	}
+	m_pPnlChallenge = FindChildByName( "PnlChallenge" );
+	if ( m_pPnlChallenge )
+	{
+		m_pPnlChallenge->SetVisible( false );
 	}
 	m_pLblChallenge = dynamic_cast< vgui::Label * > ( FindChildByName( "LblChallenge" ) );
 	if ( m_pLblChallenge )
