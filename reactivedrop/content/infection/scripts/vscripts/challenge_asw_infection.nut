@@ -627,7 +627,7 @@ function OnTakeDamage_Alive_Any( victim, inflictor, attacker, weapon, damage, da
 		{
 			if (victim in g_lastHuman)
 			{
-				damage = damage*10;
+				damage = damage*5;
 			}
 			else
 			{
