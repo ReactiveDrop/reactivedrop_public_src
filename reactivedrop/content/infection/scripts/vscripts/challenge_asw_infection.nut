@@ -90,6 +90,11 @@ function OnEnable()
 {
 	Credit();
 	PropInit();
+	local hHud = null;
+	while((hHud = Entities.FindByClassname(hHud, "rd_hud_vscript")) != null)
+	{
+		hHud.Destroy();
+	}
 }
 
 function Update()
