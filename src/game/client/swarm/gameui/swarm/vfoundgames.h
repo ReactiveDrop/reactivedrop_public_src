@@ -117,6 +117,7 @@ public:
 public:
 	void SetGameIndex( const Info& fi );
 	const Info& GetFullInfo();
+	void UpdateTooltip();
 
 	void SetGamerTag( const wchar_t *gamerTag );
 	void SetMissionName( const wchar_t *missionName );
@@ -139,6 +140,7 @@ public:
 	void OnKeyCodePressed( vgui::KeyCode code );
 	void OnKeyCodeTyped( vgui::KeyCode code );
 	void OnMousePressed( vgui::MouseCode code );
+	void OnCursorMoved( int x, int y );
 
 	virtual void OnCursorEntered();
 	virtual void NavigateTo( void );
@@ -175,6 +177,7 @@ private:
 	Color m_FocusBgColor;
 
 	GenericPanelList	*m_pListCtrlr;
+	vgui::ImagePanel	*m_pPnlGamerPic;
 	vgui::ImagePanel	*m_pImgPing;
 	vgui::ImagePanel	*m_pImgPingSmall;
 	vgui::Label			*m_pLblPing;

@@ -11,6 +11,9 @@
 #include "VFoundGames.h"
 #include "rd_lobby_utils.h"
 
+class CRD_VGUI_Option;
+class CNB_Button;
+
 namespace BaseModUI {
 
 	class GenericPanelList;
@@ -32,7 +35,23 @@ namespace BaseModUI {
 		virtual void OnCommand( const char *command );
 		virtual void Activate();
 		virtual void OnKeyCodePressed( vgui::KeyCode code );
-		
+
+		MESSAGE_FUNC_CHARPTR( OnItemSelected, "OnItemSelected", panelName );
+		MESSAGE_FUNC_PTR( OnCurrentOptionChanged, "CurrentOptionChanged", panel );
+
+		CRD_VGUI_Option *m_pOptionNameMode;
+		CRD_VGUI_Option *m_pOptionDifficultyMin;
+		CRD_VGUI_Option *m_pOptionDifficultyMax;
+		CRD_VGUI_Option *m_pOptionOnslaught;
+		CRD_VGUI_Option *m_pOptionHardcoreFF;
+		CRD_VGUI_Option *m_pOptionDedicated;
+		CRD_VGUI_Option *m_pOptionInstalled;
+		CRD_VGUI_Option *m_pOptionChallenge;
+		CRD_VGUI_Option *m_pOptionAlwaysFriends;
+		CRD_VGUI_Option *m_pOptionDistance;
+		CNB_Button *m_pBtnFilters;
+		bool m_bFiltersVisible;
+
 	protected:
 
 		virtual void AddServersToList( void );
@@ -43,7 +62,7 @@ namespace BaseModUI {
 		virtual void UpdateTitle();
 
 	private:
-		void UpdateFilters( bool newState );
+		void UpdateDifficultyMinMaxLock();
 		bool CanCreateGame();
 
 #if !defined( _X360 ) && !defined( NO_STEAM )

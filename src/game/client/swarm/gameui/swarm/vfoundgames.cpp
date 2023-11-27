@@ -39,6 +39,7 @@
 #include "mapentities_shared.h"
 #include "asw_util_shared.h"
 #include "rd_text_filtering.h"
+#include "briefingtooltip.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -410,11 +411,13 @@ bool FoundGameListItem::Info::SetFromLobby( CSteamID lobby )
 
 #define LOBBY_DATA( key ) pMatchmaking->GetLobbyData( lobby, key )
 
+#ifndef _DEBUG
 	if ( V_strcmp( LOBBY_DATA( "game:dlcrequired" ), "0" ) || V_strcmp( LOBBY_DATA( "game:state" ), "game" ) || V_strcmp( LOBBY_DATA( "system:lock" ), "" ) || V_strcmp( LOBBY_DATA( "system:network" ), "LIVE" ) )
 	{
 		// Lobby is not from AS:RD (might be a mod or someone running a different game with the wrong AppID)
 		return false;
 	}
+#endif
 
 	m_Type = FoundGameListItem::TYPE_LOBBY;
 	m_LobbyID = lobby;
@@ -681,6 +684,7 @@ FoundGameListItem::FoundGameListItem( vgui::Panel *parent, const char *panelName
 	BaseClass( parent, panelName ),
 	m_pListCtrlr( ( GenericPanelList * ) parent )
 {
+	m_pPnlGamerPic = NULL;
 	m_pImgPing = NULL;
 	m_pImgPingSmall = NULL;
 	m_pLblPing = NULL;
@@ -741,34 +745,33 @@ void FoundGameListItem::SetGameIndex( const Info& fi )
 	SetGamerTag( fi.m_wszLobbyDisplayName );
 	SetMissionName( fi.m_wszMissionDisplayName );
 
-	vgui::ImagePanel *imgAvatar = dynamic_cast< vgui::ImagePanel * >( FindChildByName( "PnlGamerPic" ) );
-	if ( imgAvatar )
+	if ( m_pPnlGamerPic )
 	{
 		SetControlVisible( "ImgAvatarBG", false );
 
-		imgAvatar->SetVisible( true );
+		m_pPnlGamerPic->SetVisible( true );
 		switch ( fi.m_Type )
 		{
 		case TYPE_LOBBY:
-			imgAvatar->SetImage( "icon_lobby" );
+			m_pPnlGamerPic->SetImage( "icon_lobby" );
 			break;
 		case TYPE_SERVER:
-			imgAvatar->SetImage( "icon_server" );
+			m_pPnlGamerPic->SetImage( "icon_server" );
 			break;
 		case TYPE_LANSERVER:
-			imgAvatar->SetImage( "icon_lan" );
+			m_pPnlGamerPic->SetImage( "icon_lan" );
 			break;
 		case TYPE_FAVORITESERVER:
-			imgAvatar->SetImage( "icon_server_favorite" );
+			m_pPnlGamerPic->SetImage( "icon_server_favorite" );
 			break;
 		case TYPE_INSECURESERVER:
-			imgAvatar->SetImage( "icon_server_insecure" );
+			m_pPnlGamerPic->SetImage( "icon_server_insecure" );
 			break;
 		case TYPE_RANKEDSERVER:
-			imgAvatar->SetImage( "icon_server_ranked" );
+			m_pPnlGamerPic->SetImage( "icon_server_ranked" );
 			break;
 		default:
-			imgAvatar->SetVisible( false );
+			m_pPnlGamerPic->SetVisible( false );
 			break;
 		}
 	}
@@ -784,6 +787,21 @@ void FoundGameListItem::SetGameIndex( const Info& fi )
 
 			m_pLblNotJoinable->SetText( finalString ); 
 		}
+
+		if ( m_pImgDifficulty )
+		{
+			m_pImgDifficulty->SetVisible( false );
+		}
+		if ( m_pImgOnslaught )
+		{
+			m_pImgOnslaught->SetVisible( false );
+		}
+		if ( m_pImgHardcoreFF )
+		{
+			m_pImgHardcoreFF->SetVisible( false );
+		}
+
+		SetGameChallenge( L"" );
 	}
 	else if ( fi.IsJoinable() || fi.IsDownloadable() )
 	{
@@ -809,16 +827,105 @@ void FoundGameListItem::SetGameIndex( const Info& fi )
 
 			m_pLblNotJoinable->SetText( szHint );
 		}
+
+		if ( m_pImgDifficulty )
+		{
+			m_pImgDifficulty->SetVisible( false );
+		}
+		if ( m_pImgOnslaught )
+		{
+			m_pImgOnslaught->SetVisible( false );
+		}
+		if ( m_pImgHardcoreFF )
+		{
+			m_pImgHardcoreFF->SetVisible( false );
+		}
+
+		SetGameChallenge( L"" );
 	}
+
+	UpdateTooltip();
 }
 
-//=============================================================================
 const FoundGameListItem::Info& FoundGameListItem::GetFullInfo()
 {
 	return m_FullInfo;
 }
 
-//=============================================================================
+void FoundGameListItem::UpdateTooltip()
+{
+	if ( !g_hBriefingTooltip )
+		return;
+
+	int x = YRES( -5 ), y = YRES( -5 );
+#define CHECK_TOOLTIP_BEGIN( control ) \
+	if ( vgui::Panel *pControl = ( control ) ) \
+	{ \
+		if ( !m_pListCtrlr->IsEnabled() ) \
+		{ \
+			if ( g_hBriefingTooltip->GetTooltipPanel() == pControl ) \
+			{ \
+				g_hBriefingTooltip->SetVisible( false ); \
+			} \
+		} \
+		else if ( !pControl->IsFullyVisible() || !pControl->IsCursorOver() ) \
+		{ \
+		}
+#define CHECK_TOOLTIP_OPTION( test, title, desc ) \
+		else if ( ( test ) ) \
+		{ \
+			pControl->LocalToScreen( x, y ); \
+			g_hBriefingTooltip->SetTooltip( pControl, ( title ), ( desc ), x, y, vgui::Label::a_southwest ); \
+			g_hBriefingTooltip->SetTooltipIgnoresCursor( false ); \
+		}
+#define CHECK_TOOLTIP_END() \
+		else if ( g_hBriefingTooltip->GetTooltipPanel() == pControl ) \
+		{ \
+			g_hBriefingTooltip->SetVisible( false ); \
+		} \
+	}
+
+	CHECK_TOOLTIP_BEGIN( m_pPnlGamerPic )
+	CHECK_TOOLTIP_OPTION( m_FullInfo.m_Type == TYPE_LOBBY, "#rd_lobby_tooltip_type_lobby_title", "#rd_lobby_tooltip_type_lobby_desc" )
+	CHECK_TOOLTIP_OPTION( m_FullInfo.m_Type == TYPE_SERVER, "#rd_lobby_tooltip_type_server_title", "#rd_lobby_tooltip_type_server_desc" )
+	CHECK_TOOLTIP_OPTION( m_FullInfo.m_Type == TYPE_LANSERVER, "#rd_lobby_tooltip_type_lan_server_title", "#rd_lobby_tooltip_type_lan_server_desc" )
+	CHECK_TOOLTIP_OPTION( m_FullInfo.m_Type == TYPE_FAVORITESERVER, "#rd_lobby_tooltip_type_favorite_server_title", "#rd_lobby_tooltip_type_favorite_server_desc" )
+	CHECK_TOOLTIP_OPTION( m_FullInfo.m_Type == TYPE_INSECURESERVER, "#rd_lobby_tooltip_type_insecure_server_title", "#rd_lobby_tooltip_type_insecure_server_desc" )
+	CHECK_TOOLTIP_OPTION( m_FullInfo.m_Type == TYPE_RANKEDSERVER, "#rd_lobby_tooltip_type_ranked_server_title", "#rd_lobby_tooltip_type_ranked_server_desc" )
+	CHECK_TOOLTIP_END()
+
+	CHECK_TOOLTIP_BEGIN( m_pImgDifficulty )
+	CHECK_TOOLTIP_OPTION( m_FullInfo.m_eGameDeathmatch == m_FullInfo.DEATHMATCH_FFA, "#rd_lobby_tooltip_difficulty_deathmatch_title", "#rd_lobby_tooltip_difficulty_deathmatch_desc" )
+	CHECK_TOOLTIP_OPTION( m_FullInfo.m_eGameDeathmatch == m_FullInfo.DEATHMATCH_TEAMDEATHMATCH, "#rd_lobby_tooltip_difficulty_team_deathmatch_title", "#rd_lobby_tooltip_difficulty_team_deathmatch_desc" )
+	CHECK_TOOLTIP_OPTION( m_FullInfo.m_eGameDeathmatch == m_FullInfo.DEATHMATCH_GUNGAME, "#rd_lobby_tooltip_difficulty_gungame_title", "#rd_lobby_tooltip_difficulty_gungame_desc" )
+	CHECK_TOOLTIP_OPTION( m_FullInfo.m_eGameDeathmatch == m_FullInfo.DEATHMATCH_INSTAGIB, "#rd_lobby_tooltip_difficulty_instagib_title", "#rd_lobby_tooltip_difficulty_instagib_desc" )
+	CHECK_TOOLTIP_OPTION( m_FullInfo.m_eGameDeathmatch == m_FullInfo.DEATHMATCH_NONE && m_FullInfo.m_eGameDifficulty == m_FullInfo.DIFFICULTY_EASY, "#rd_lobby_tooltip_difficulty_easy_title", "#rd_lobby_tooltip_difficulty_easy_desc" )
+	CHECK_TOOLTIP_OPTION( m_FullInfo.m_eGameDeathmatch == m_FullInfo.DEATHMATCH_NONE && m_FullInfo.m_eGameDifficulty == m_FullInfo.DIFFICULTY_NORMAL, "#rd_lobby_tooltip_difficulty_normal_title", "#rd_lobby_tooltip_difficulty_normal_desc" )
+	CHECK_TOOLTIP_OPTION( m_FullInfo.m_eGameDeathmatch == m_FullInfo.DEATHMATCH_NONE && m_FullInfo.m_eGameDifficulty == m_FullInfo.DIFFICULTY_HARD, "#rd_lobby_tooltip_difficulty_hard_title", "#rd_lobby_tooltip_difficulty_hard_desc" )
+	CHECK_TOOLTIP_OPTION( m_FullInfo.m_eGameDeathmatch == m_FullInfo.DEATHMATCH_NONE && m_FullInfo.m_eGameDifficulty == m_FullInfo.DIFFICULTY_INSANE, "#rd_lobby_tooltip_difficulty_insane_title", "#rd_lobby_tooltip_difficulty_insane_desc" )
+	CHECK_TOOLTIP_OPTION( m_FullInfo.m_eGameDeathmatch == m_FullInfo.DEATHMATCH_NONE && m_FullInfo.m_eGameDifficulty == m_FullInfo.DIFFICULTY_BRUTAL, "#rd_lobby_tooltip_difficulty_brutal_title", "#rd_lobby_tooltip_difficulty_brutal_desc" )
+	CHECK_TOOLTIP_END()
+
+	CHECK_TOOLTIP_BEGIN( m_pImgOnslaught )
+	CHECK_TOOLTIP_OPTION( m_FullInfo.m_bOnslaught, "#rd_lobby_tooltip_onslaught_title", "#rd_lobby_tooltip_onslaught_desc" )
+	CHECK_TOOLTIP_END()
+
+	CHECK_TOOLTIP_BEGIN( m_pImgHardcoreFF )
+	CHECK_TOOLTIP_OPTION( m_FullInfo.m_bHardcoreFF, "#rd_lobby_tooltip_hardcoreff_title", "#rd_lobby_tooltip_hardcoreff_desc" )
+	CHECK_TOOLTIP_END()
+
+	CHECK_TOOLTIP_BEGIN( m_pImgChallenge )
+	CHECK_TOOLTIP_OPTION( m_FullInfo.m_wszChallengeDisplayName[0] != L'\0', "#rd_lobby_tooltip_challenge_title", "#rd_lobby_tooltip_challenge_desc" )
+	CHECK_TOOLTIP_END()
+
+	CHECK_TOOLTIP_BEGIN( m_pImgPingSmall )
+	CHECK_TOOLTIP_OPTION( m_FullInfo.m_ePingCategory == m_FullInfo.PING_LOW, "#rd_lobby_tooltip_ping_title", "#rd_lobby_tooltip_ping_low_desc" )
+	CHECK_TOOLTIP_OPTION( m_FullInfo.m_ePingCategory == m_FullInfo.PING_MEDIUM, "#rd_lobby_tooltip_ping_title", "#rd_lobby_tooltip_ping_medium_desc" )
+	CHECK_TOOLTIP_OPTION( m_FullInfo.m_ePingCategory == m_FullInfo.PING_HIGH, "#rd_lobby_tooltip_ping_title", "#rd_lobby_tooltip_ping_high_desc" )
+	CHECK_TOOLTIP_OPTION( m_FullInfo.m_ePingCategory == m_FullInfo.PING_SYSTEMLINK, "#rd_lobby_tooltip_ping_title", "#rd_lobby_tooltip_ping_lan_desc" )
+	CHECK_TOOLTIP_END()
+}
+
 void FoundGameListItem::SetGamerTag( const wchar_t *gamerTag )
 {
 	if ( m_pLblPlayerGamerTag && rd_lobby_name_mode.GetInt() != 0 )
@@ -940,11 +1047,11 @@ void FoundGameListItem::SetGamePlayerCount( int current, int max )
 //=============================================================================
 void FoundGameListItem::DrawListItemLabel( vgui::Label* label, bool bLargeFont, bool bEastAligned /* = false */ )
 {
-	int panelTall = m_iBaseTall;
-
 	if ( label )
 	{
 		bool bHasFocus = HasFocus() || HasMouseover() || IsSelected();
+		if ( !m_pListCtrlr->IsEnabled() )
+			bHasFocus = false;
 
 		Color col( 100, 100, 100, 255 );
 		if ( bHasFocus )
@@ -1234,9 +1341,14 @@ void FoundGameListItem::OnKeyCodeTyped( vgui::KeyCode code )
 	}
 }
 
-//=============================================================================
 void FoundGameListItem::OnMousePressed( vgui::MouseCode code )
 {
+	if ( !m_pListCtrlr->IsEnabled() )
+	{
+		BaseClass::OnMousePressed( code );
+		return;
+	}
+
 	FlyoutMenu::CloseActiveMenu();
 	switch ( code )
 	{
@@ -1245,6 +1357,13 @@ void FoundGameListItem::OnMousePressed( vgui::MouseCode code )
 		break;
 	}
 	BaseClass::OnMousePressed( code );
+}
+
+void FoundGameListItem::OnCursorMoved( int x, int y )
+{
+	UpdateTooltip();
+
+	BaseClass::OnCursorMoved( x, y );
 }
 
 bool FoundGameListItem::IsHardcoreDifficulty()
@@ -1273,6 +1392,8 @@ void FoundGameListItem::ApplySchemeSettings( IScheme *pScheme )
 	//////////////////////////////////////////////////////
 	// We paint the controls ourselves to achieve the new look, so they must be non-visible to allow that	
 	// Toggle the enabled to make them draw/notdraw
+
+	m_pPnlGamerPic = dynamic_cast< vgui::ImagePanel * >( FindChildByName( "PnlGamerPic" ) );
 
 	m_pImgPing = dynamic_cast< vgui::ImagePanel * > ( FindChildByName( "ImgPing" ) );
 	if ( m_pImgPing )
@@ -1494,6 +1615,7 @@ FoundGames::~FoundGames()
 	delete m_GplGames;
 
 	RemoveFrameListener( this );
+	BriefingTooltip::Free();
 }
 
 //=============================================================================
@@ -1504,6 +1626,7 @@ void FoundGames::Activate()
 	m_bShowHardcoreDifficulties = true;
 
 	AddFrameListener( this );
+	BriefingTooltip::EnsureParent( this );
 
 	UpdateGameDetails();
 	m_GplGames->NavigateTo();
@@ -1970,6 +2093,7 @@ void FoundGames::SetDetailsPanelVisible( bool bIsVisible )
 {
 	SetControlVisible( "LblCampaign", bIsVisible );
 	SetControlVisible( "LblChapter", bIsVisible );
+	SetControlVisible( "LblAuthor", bIsVisible );
 	SetControlVisible( "LblPlayerAccess", bIsVisible );
 	SetControlVisible( "LblPlayerAccessText", bIsVisible );
 	SetControlVisible( "LblGameDifficulty", bIsVisible );

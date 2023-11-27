@@ -19,9 +19,11 @@
 #include "vfoundpublicgames.h"
 
 #include "nb_header_footer.h"
+#include "nb_button.h"
 
 #include "rd_missions_shared.h"
 #include "asw_util_shared.h"
+#include "rd_vgui_settings.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -44,10 +46,77 @@ FoundPublicGames::FoundPublicGames( Panel *parent, const char *panelName ) :
 	// increase footer tall by 10 to fit Advanced button into it
 	CNB_Header_Footer *pHeaderFooter = dynamic_cast< CNB_Header_Footer* >( FindChildByName( "HeaderFooter" ) );
 	pHeaderFooter->SetGradientBarPos( 80, 325 );
+
+	m_pOptionNameMode = new CRD_VGUI_Option( this, "OptionNameMode", "#rd_lobby_option_name_mode_title" );
+	m_pOptionNameMode->AddOption( 0, "#rd_lobby_option_name_mode_mission", "#rd_lobby_option_name_mode_mission_hint" );
+	m_pOptionNameMode->AddOption( 1, "#rd_lobby_option_name_mode_lobby", "#rd_lobby_option_name_mode_lobby_hint" );
+	m_pOptionNameMode->AddOption( 2, "#rd_lobby_option_name_mode_both", "#rd_lobby_option_name_mode_both_hint" );
+	m_pOptionNameMode->LinkToConVar( "rd_lobby_name_mode", false );
+	m_pOptionNameMode->AddActionSignalTarget( this );
+	m_pOptionDifficultyMin = new CRD_VGUI_Option( this, "OptionDifficultyMin", "#rd_lobby_option_difficulty_min_title" );
+	m_pOptionDifficultyMin->AddOption( 1, "#asw_difficulty_easy", "#rd_lobby_option_difficulty_min_hint" );
+	m_pOptionDifficultyMin->AddOption( 2, "#asw_difficulty_normal", "#rd_lobby_option_difficulty_min_hint" );
+	m_pOptionDifficultyMin->AddOption( 3, "#asw_difficulty_hard", "#rd_lobby_option_difficulty_min_hint" );
+	m_pOptionDifficultyMin->AddOption( 4, "#asw_difficulty_insane", "#rd_lobby_option_difficulty_min_hint" );
+	m_pOptionDifficultyMin->AddOption( 5, "#asw_difficulty_imba", "#rd_lobby_option_difficulty_min_hint" );
+	m_pOptionDifficultyMin->LinkToConVar( "rd_lobby_filter_difficulty_min", false );
+	m_pOptionDifficultyMin->AddActionSignalTarget( this );
+	m_pOptionDifficultyMax = new CRD_VGUI_Option( this, "OptionDifficultyMax", "#rd_lobby_option_difficulty_max_title" );
+	m_pOptionDifficultyMax->AddOption( 1, "#asw_difficulty_easy", "#rd_lobby_option_difficulty_max_hint" );
+	m_pOptionDifficultyMax->AddOption( 2, "#asw_difficulty_normal", "#rd_lobby_option_difficulty_max_hint" );
+	m_pOptionDifficultyMax->AddOption( 3, "#asw_difficulty_hard", "#rd_lobby_option_difficulty_max_hint" );
+	m_pOptionDifficultyMax->AddOption( 4, "#asw_difficulty_insane", "#rd_lobby_option_difficulty_max_hint" );
+	m_pOptionDifficultyMax->AddOption( 5, "#asw_difficulty_imba", "#rd_lobby_option_difficulty_max_hint" );
+	m_pOptionDifficultyMax->LinkToConVar( "rd_lobby_filter_difficulty_max", false );
+	m_pOptionDifficultyMax->AddActionSignalTarget( this );
+	m_pOptionOnslaught = new CRD_VGUI_Option( this, "OptionOnslaught", "#rd_lobby_option_onslaught_title" );
+	m_pOptionOnslaught->AddOption( -1, "#rd_lobby_option_onslaught_any", "#rd_lobby_option_onslaught_any_hint" );
+	m_pOptionOnslaught->AddOption( 0, "#rd_lobby_option_onslaught_forbidden", "#rd_lobby_option_onslaught_forbidden_hint" );
+	m_pOptionOnslaught->AddOption( 1, "#rd_lobby_option_onslaught_required", "#rd_lobby_option_onslaught_required_hint" );
+	m_pOptionOnslaught->LinkToConVar( "rd_lobby_filter_onslaught", false );
+	m_pOptionOnslaught->AddActionSignalTarget( this );
+	m_pOptionHardcoreFF = new CRD_VGUI_Option( this, "OptionHardcoreFF", "#rd_lobby_option_hardcoreff_title" );
+	m_pOptionHardcoreFF->AddOption( -1, "#rd_lobby_option_hardcoreff_any", "#rd_lobby_option_hardcoreff_any_hint" );
+	m_pOptionHardcoreFF->AddOption( 0, "#rd_lobby_option_hardcoreff_forbidden", "#rd_lobby_option_hardcoreff_forbidden_hint" );
+	m_pOptionHardcoreFF->AddOption( 1, "#rd_lobby_option_hardcoreff_required", "#rd_lobby_option_hardcoreff_required_hint" );
+	m_pOptionHardcoreFF->LinkToConVar( "rd_lobby_filter_hardcoreff", false );
+	m_pOptionHardcoreFF->AddActionSignalTarget( this );
+	m_pOptionDedicated = new CRD_VGUI_Option( this, "OptionDedicated", "#rd_lobby_option_dedicated_title" );
+	m_pOptionDedicated->AddOption( -1, "#rd_lobby_option_dedicated_any", "#rd_lobby_option_dedicated_any_hint" );
+	m_pOptionDedicated->AddOption( 0, "#rd_lobby_option_dedicated_forbidden", "#rd_lobby_option_dedicated_forbidden_hint" );
+	m_pOptionDedicated->AddOption( 1, "#rd_lobby_option_dedicated_required", "#rd_lobby_option_dedicated_required_hint" );
+	m_pOptionDedicated->LinkToConVar( "rd_lobby_filter_dedicated", false );
+	m_pOptionDedicated->AddActionSignalTarget( this );
+	m_pOptionInstalled = new CRD_VGUI_Option( this, "OptionInstalled", "#rd_lobby_option_installed_title" );
+	m_pOptionInstalled->AddOption( -1, "#rd_lobby_option_installed_any", "#rd_lobby_option_installed_any_hint" );
+	m_pOptionInstalled->AddOption( 0, "#rd_lobby_option_installed_forbidden", "#rd_lobby_option_installed_forbidden_hint" );
+	m_pOptionInstalled->AddOption( 1, "#rd_lobby_option_installed_required", "#rd_lobby_option_installed_required_hint" );
+	m_pOptionInstalled->LinkToConVar( "rd_lobby_filter_installed", false );
+	m_pOptionInstalled->AddActionSignalTarget( this );
+	m_pOptionChallenge = new CRD_VGUI_Option( this, "OptionChallenge", "#rd_lobby_option_challenge_title" );
+	m_pOptionChallenge->AddOption( -1, "#rd_lobby_option_challenge_any", "#rd_lobby_option_challenge_any_hint" );
+	m_pOptionChallenge->AddOption( 0, "#rd_lobby_option_challenge_forbidden", "#rd_lobby_option_challenge_forbidden_hint" );
+	m_pOptionChallenge->AddOption( 1, "#rd_lobby_option_challenge_required", "#rd_lobby_option_challenge_required_hint" );
+	m_pOptionChallenge->LinkToConVar( "rd_lobby_filter_challenge", false );
+	m_pOptionChallenge->AddActionSignalTarget( this );
+	m_pOptionDistance = new CRD_VGUI_Option( this, "OptionDistance", "#rd_lobby_option_distance_title" );
+	m_pOptionDistance->AddOption( k_ELobbyDistanceFilterClose, "#L4D360UI_FoundPublicGames_Filter_Distance_Close", "#rd_lobby_option_distance_close_hint" );
+	m_pOptionDistance->AddOption( k_ELobbyDistanceFilterDefault, "#L4D360UI_FoundPublicGames_Filter_Distance_Default", "#rd_lobby_option_distance_default_hint" );
+	m_pOptionDistance->AddOption( k_ELobbyDistanceFilterFar, "#L4D360UI_FoundPublicGames_Filter_Distance_Far", "#rd_lobby_option_distance_far_hint" );
+	m_pOptionDistance->AddOption( k_ELobbyDistanceFilterWorldwide, "#L4D360UI_FoundPublicGames_Filter_Distance_Worldwide", "#rd_lobby_option_distance_worldwide_hint" );
+	m_pOptionDistance->LinkToConVar( "rd_lobby_filter_distance", false );
+	m_pOptionDistance->AddActionSignalTarget( this );
+	m_pOptionAlwaysFriends = new CRD_VGUI_Option( this, "OptionAlwaysFriends", "#rd_lobby_option_always_friends_title", CRD_VGUI_Option::MODE_CHECKBOX );
+	m_pOptionAlwaysFriends->SetDefaultHint( "#rd_lobby_option_always_friends_hint" );
+	m_pOptionAlwaysFriends->LinkToConVar( "rd_lobby_filter_always_friends", false );
+	m_pOptionAlwaysFriends->AddActionSignalTarget( this );
+	m_pBtnFilters = new CNB_Button( this, "BtnFilters", "#rd_lobby_options_button_active", this, "ToggleFilters" );
+	m_pBtnFilters->SetControllerButton( KEY_XBUTTON_Y );
 }
 
 FoundPublicGames::~FoundPublicGames()
 {
+	CRD_VGUI_Option::WriteConfig( false );
 }
 
 //=============================================================================
@@ -75,13 +144,18 @@ static void AdjustButtonY( Panel *btn, int yOffset )
 	}
 }
 
-//=============================================================================
-
-void FoundPublicGames::UpdateFilters( bool newState )
+void FoundPublicGames::UpdateDifficultyMinMaxLock()
 {
-}
+	// We don't want players to set minimum difficulty above maximum difficulty because that rules out every lobby.
+	int iMin = m_pOptionDifficultyMin->GetCurrentOption();
+	int iMax = m_pOptionDifficultyMax->GetCurrentOption();
 
-//=============================================================================
+	for ( int i = 1; i <= 5; i++ )
+	{
+		m_pOptionDifficultyMin->SetOptionFlags( i, iMax >= i ? 0 : CRD_VGUI_Option::FLAG_DISABLED );
+		m_pOptionDifficultyMax->SetOptionFlags( i, iMin <= i ? 0 : CRD_VGUI_Option::FLAG_DISABLED );
+	}
+}
 
 void FoundPublicGames::ApplySchemeSettings( IScheme *pScheme )
 {
@@ -238,6 +312,45 @@ void FoundPublicGames::OnCommand( const char *command )
 		CBaseModPanel::GetSingleton().CloseAllWindows();
 		CBaseModPanel::GetSingleton().OpenWindow( WT_GAMESETTINGS, NULL, true, pSettings );
 	}
+	else if ( !V_strcmp( command, "ToggleFilters" ) )
+	{
+		m_bFiltersVisible = !m_bFiltersVisible;
+		if ( m_bFiltersVisible )
+		{
+			m_pBtnFilters->SetText( "#rd_lobby_options_button_active" );
+
+			OnItemSelected( "" );
+
+			NavigateToChild( m_pOptionNameMode );
+		}
+		else
+		{
+			int nFiltersActive = 0;
+			if ( m_pOptionDifficultyMin->GetCurrentOption() != 1 || m_pOptionDifficultyMax->GetCurrentOption() != 5 )
+				nFiltersActive++;
+			if ( m_pOptionOnslaught->GetCurrentOption() != -1 )
+				nFiltersActive++;
+			if ( m_pOptionHardcoreFF->GetCurrentOption() != -1 )
+				nFiltersActive++;
+			if ( m_pOptionDedicated->GetCurrentOption() != -1 )
+				nFiltersActive++;
+			if ( m_pOptionInstalled->GetCurrentOption() != -1 )
+				nFiltersActive++;
+			if ( m_pOptionChallenge->GetCurrentOption() != -1 )
+				nFiltersActive++;
+			if ( m_pOptionDistance->GetCurrentOption() != k_ELobbyDistanceFilterWorldwide )
+				nFiltersActive++;
+
+			wchar_t wszText[256];
+			g_pVGuiLocalize->ConstructString( wszText, sizeof( wszText ), g_pVGuiLocalize->Find( "#rd_lobby_options_button_inactive" ), 1, UTIL_RD_CommaNumber( nFiltersActive ) );
+
+			m_pBtnFilters->SetText( wszText, true );
+
+			UpdateGameDetails();
+
+			NavigateToChild( m_GplGames );
+		}
+	}
 	else
 	{
 		BaseClass::OnCommand( command );
@@ -267,6 +380,9 @@ void FoundPublicGames::Activate()
 		m_callbackNumberOfCurrentPlayers.Set( hSteamAPICall, this, &FoundPublicGames::Steam_OnNumberOfCurrentPlayers );
 	}
 #endif
+
+	m_bFiltersVisible = true;
+	OnCommand( "ToggleFilters" );
 }
 
 bool FoundPublicGames::CanCreateGame()
@@ -289,10 +405,59 @@ void FoundPublicGames::OnKeyCodePressed( vgui::KeyCode code )
 		OnCommand( "CreateGame" );
 		break;
 
+	case KEY_XBUTTON_Y:
+		OnCommand( "ToggleFilters" );
+		break;
+
 	default:
 		BaseClass::OnKeyCodePressed( code );
 		break;
 	}
+}
+
+void FoundPublicGames::OnItemSelected( const char *panelName )
+{
+	SetControlVisible( "PnlFiltersBackground", m_bFiltersVisible );
+	m_pOptionNameMode->SetVisible( m_bFiltersVisible );
+	m_pOptionDifficultyMin->SetVisible( m_bFiltersVisible );
+	m_pOptionDifficultyMax->SetVisible( m_bFiltersVisible );
+	m_pOptionOnslaught->SetVisible( m_bFiltersVisible );
+	m_pOptionHardcoreFF->SetVisible( m_bFiltersVisible );
+	m_pOptionDedicated->SetVisible( m_bFiltersVisible );
+	m_pOptionInstalled->SetVisible( m_bFiltersVisible );
+	m_pOptionChallenge->SetVisible( m_bFiltersVisible );
+	m_pOptionAlwaysFriends->SetVisible( m_bFiltersVisible );
+	m_pOptionDistance->SetVisible( m_bFiltersVisible );
+	UpdateDifficultyMinMaxLock();
+
+	m_GplGames->SetEnabled( !m_bFiltersVisible );
+	SetDetailsPanelVisible( !m_bFiltersVisible );
+
+	if ( m_bFiltersVisible )
+	{
+		if ( m_pPreviousSelectedItem )
+		{
+			for ( int i = 0; i < m_GplGames->GetPanelItemCount(); i++ )
+			{
+				FoundGameListItem *pItem = dynamic_cast< FoundGameListItem * >( m_GplGames->GetPanelItem( i ) );
+
+				if ( pItem )
+				{
+					pItem->SetSelected( false );
+				}
+			}
+			m_pPreviousSelectedItem = NULL;
+		}
+	}
+	else
+	{
+		BaseClass::OnItemSelected( panelName );
+	}
+}
+
+void FoundPublicGames::OnCurrentOptionChanged( vgui::Panel *panel )
+{
+	UpdateGameDetails();
 }
 
 //=============================================================================
