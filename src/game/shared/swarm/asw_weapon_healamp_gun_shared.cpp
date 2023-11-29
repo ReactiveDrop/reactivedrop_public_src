@@ -178,6 +178,10 @@ void CASW_Weapon_HealAmp_Gun::HealEntity( void )
 #ifdef GAME_DLL
 	if ( m_bIsBuffing )
 	{
+		// don't use up amp ammo if a marine has no weapon or weapon can't be buffed
+		if ( !pTarget->GetActiveASWWeapon() || !pTarget->GetActiveASWWeapon()->SupportsDamageModifiers() )
+			return;
+		
 		if ( m_iClip2 <= 0 )
 			return;
 
@@ -577,6 +581,19 @@ void CASW_Weapon_HealAmp_Gun::UpdateEffects()
 			// don't create the effect if you are healing yourself
 			if ( bHealingSelf )
 				break;
+
+			// don't create the effect if a marine has no weapon or weapon can't be buffed
+			if ( m_bIsBuffing && ( !pMarine->GetActiveASWWeapon() || !pMarine->GetActiveASWWeapon()->SupportsDamageModifiers() ) )
+			{
+				// fix discharge effect staying when trying to buff a marine with no weapons
+				if ( m_pDischargeEffect )
+				{
+					m_pDischargeEffect->StopEmission();
+					m_pDischargeEffect = NULL;
+				}
+
+				break;
+			}
 
 			if ( !m_pDischargeEffect )
 			{				
