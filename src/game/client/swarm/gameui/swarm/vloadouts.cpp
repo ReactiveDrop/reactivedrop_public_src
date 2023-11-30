@@ -43,6 +43,8 @@ extern ConVar rd_equipped_weapon_secondary[ASW_NUM_MARINES_PER_LOADOUT];
 extern ConVar rd_equipped_weapon_extra[ASW_NUM_MARINES_PER_LOADOUT];
 extern ConVar asw_unlock_all_weapons;
 
+ConVar rd_loadout_temp_animation( "rd_loadout_temp_animation", "run_aiming_all" );
+
 const IBriefing_ItemInstance Loadouts::s_EmptyItemInstance;
 
 static int GetWeaponIndex( ASW_Inventory_slot_t iSlot, int iWeapon, int iDefaultLoadoutIndex )
@@ -1384,7 +1386,7 @@ void CRD_VGUI_Loadout_Marine::SetupDisplay()
 	pDisplay->Models[0]->BodyGroups.Purge();
 	pDisplay->Models[0]->BodyGroups.Insert( 1, pProfile->GetSkinNum() );
 	pDisplay->Models[0]->Animations.Purge();
-	pDisplay->Models[0]->Animations.Insert( "run_aiming_all", 1.0f );
+	pDisplay->Models[0]->Animations.Insert( rd_loadout_temp_animation.GetString(), 1.0f);
 
 	ASW_Inventory_slot_t iDisplayedSlot = m_bSecondaryWeapon ? ASW_INVENTORY_SLOT_SECONDARY : ASW_INVENTORY_SLOT_PRIMARY;
 	CASW_EquipItem *pWeaponInfo = g_ASWEquipmentList.GetRegular( m_pWeapon[iDisplayedSlot]->GetEquipIndex( pProfile->m_iDefaultLoadoutIndex ) );
