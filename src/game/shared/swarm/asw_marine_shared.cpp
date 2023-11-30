@@ -57,6 +57,7 @@
 #include "asw_trace_filter_shot.h"
 #include "asw_deathmatch_mode_light.h"
 #include "asw_weapon_sniper_rifle.h"
+#include "asw_fx_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1420,7 +1421,6 @@ void CASW_Marine::FirePenetratingBullets( const FireBulletsInfo_t &info, int iMa
 					CPASFilter filter( data.m_vOrigin );
 					//filter.SetIgnorePredictionCull(true);
 					DispatchEffect( filter, 0.0, "PierceSpark", data );
-					//TODO this effect should be red, not green for marines and colonists
 				}
 			}
 			else
@@ -1567,17 +1567,37 @@ void CASW_Marine::FirePenetratingBullets( const FireBulletsInfo_t &info, int iMa
 					else
 					{
 						if ( bSegmentTracer )
-							MakeUnattachedTracer( vecTracerSrc, Tracer, pAmmoDef->TracerType(info.m_iAmmoType), nDamageType );
-						QAngle	vecAngles;
-						VectorAngles( vecFinalDir, vecAngles );
-						DispatchParticleEffect( "drone_shot_exit", vecTracerSrc, vecAngles );
-#ifdef CLIENT_DLL
-						//CLocalPlayerFilter filter;
-						//CBaseEntity::EmitSound( filter, entindex(), "ASW_Alien.Penetrate_Flesh" );
-#endif //CLIENT_DLL
+							MakeUnattachedTracer( vecTracerSrc, Tracer, pAmmoDef->TracerType( info.m_iAmmoType ), nDamageType );
+
+						Ray_t ray;
+						ray.Init( vecTracerSrc + vecDir * 32.0f, vecTracerSrc - vecDir * 32.0f );
+
+						trace_t reverseImpact;
+
+						QAngle vecAngles;
+						if ( info.m_pAdditionalIgnoreEnt && info.m_pAdditionalIgnoreEnt->BloodColor() == BLOOD_COLOR_RED )
+						{
+							enginetrace->ClipRayToEntity( ray, MASK_SHOT, info.m_pAdditionalIgnoreEnt, &reverseImpact );
+							VectorAngles( -vecDir, vecAngles );
+							DispatchParticleEffect( "marine_hit_blood_ff", reverseImpact.endpos, vecAngles );
+						}
+						else if ( info.m_pAdditionalIgnoreEnt && info.m_pAdditionalIgnoreEnt->BloodColor() == BLOOD_COLOR_GREEN )
+						{
+							enginetrace->ClipRayToEntity( ray, MASK_SHOT, info.m_pAdditionalIgnoreEnt, &reverseImpact );
+							VectorAngles( vecDir, vecAngles );
+							DispatchParticleEffect( "drone_shot_exit", reverseImpact.endpos, vecAngles );
+						}
+						else
+						{
+							CASWTraceFilterShot traceFilterNoIgnore( this, NULL, COLLISION_GROUP_NONE );
+							traceFilterNoIgnore.SetSkipMarines( false );
+							traceFilterNoIgnore.SetSkipRollingMarines( true );
+
+							UTIL_TraceRay( ray, MASK_SHOT, &traceFilterNoIgnore, &reverseImpact );
+							UTIL_ImpactTrace( &reverseImpact, nDamageType );
+						}
 					}
 				}
-
 			}
 		}
 		// if we're a child call, then let our parent know where our tracer ended
