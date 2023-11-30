@@ -604,6 +604,8 @@ public:
 
 	// health related
 	void AddSlowHeal(int iHealAmount, float flHealRateScale, CASW_Marine *pMedic, CBaseEntity* pHealingWeapon = NULL );
+	void ScriptAddSlowHeal( int iHealAmount, float flHealRateScale, HSCRIPT hMedic, HSCRIPT hHealingWeapon );
+	void SetHealRateScale( float flHealRateScale ) { m_flHealRateScale = flHealRateScale; }
 	CNetworkVar(bool, m_bSlowHeal);
 	CNetworkVar(int, m_iSlowHealAmount);
 	float m_flHealRateScale;

@@ -415,6 +415,8 @@ BEGIN_ENT_SCRIPTDESC( CASW_Marine, CASW_Inhabitable_NPC, "Marine" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptOrderFollowSquadLeader, "OrderFollowSquadLeader", "Order the marine to follow the squad leader" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptOrderHoldPosition, "OrderHoldPosition", "Order the marine to stop moving" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptOrderMoveTo, "OrderMoveTo", "Order the marine to move to a specified position" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptAddSlowHeal, "AddSlowHeal", "Heal a marine over time." )
+	DEFINE_SCRIPTFUNC( SetHealRateScale, "Set heal rate scale; you should do this in the marine_healed game event. Default heal rate scale is 2 for guns and 1 for other healing items." )
 END_SCRIPTDESC()
 
 extern ConVar weapon_showproficiency;
@@ -3683,6 +3685,15 @@ void CASW_Marine::AddSlowHeal( int iHealAmount, float flHealRateScale, CASW_Mari
 		// Fire heal event for stat tracking
 		CASW_GameStats.Event_MarineHealed( this , iHealAmount, pHealingWeapon );
 	}
+}
+
+void CASW_Marine::ScriptAddSlowHeal( int iHealAmount, float flHealRateScale, HSCRIPT hMedic, HSCRIPT hHealingWeapon )
+{
+	CBaseEntity *pMedicEnt = ToEnt( hMedic );
+	Assert( !pMedicEnt || pMedicEnt->Classify() == CLASS_ASW_MARINE );
+	CASW_Marine *pMedic = CASW_Marine::AsMarine( pMedicEnt );
+	CBaseEntity *pHealingWeapon = ToEnt( hHealingWeapon );
+	AddSlowHeal( iHealAmount, flHealRateScale, pMedic, pHealingWeapon );
 }
 
 void CASW_Marine::StopUsing()
