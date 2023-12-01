@@ -88,6 +88,7 @@ GameSettings::GameSettings( vgui::Panel *parent, const char *panelName ):
 	m_txtLobbyName = new vgui::TextEntry( this, "TxtLobbyName" );
 	m_txtLobbyName->SetAllowNonAsciiCharacters( true );
 	m_txtLobbyName->AddActionSignalTarget( this );
+	m_txtLobbyName->SetText( rd_lobby_hostname.GetString() );
 	m_pLobbyNamePlaceholder = new vgui::Label( this, "LblLobbyPlaceholder", "" );
 	m_pTitle = new vgui::Label( this, "Title", "" );
 	m_iTitleYPosition = 0;
