@@ -1240,6 +1240,18 @@ void MainMenu::OnCommand( const char *command )
 			OpenNewsURL( "https://steamcommunity.com/app/563560/allnews/?l=%s" );
 		}
 	}
+	else if ( !V_stricmp( command, "Settings" ) || !V_stricmp( command, "Loadout" ) || !V_stricmp( command, "Contracts" ) || !V_stricmp( command, "Recordings" ) || !V_stricmp( command, "Swarmopedia" ) || !V_stricmp( command, "Workshop" ) || !V_stricmp( command, "Inventory" ) )
+	{
+		// forward to top bar so modded main menus can use these commands
+		static bool s_bReentrant = false;
+		Assert( !s_bReentrant );
+		if ( !s_bReentrant )
+		{
+			s_bReentrant = true;
+			m_pTopBar->OnCommand( command );
+			s_bReentrant = false;
+		}
+	}
 	else
 	{
 		// does this command match a flyout menu?
