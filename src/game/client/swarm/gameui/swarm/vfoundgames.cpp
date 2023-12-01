@@ -2213,6 +2213,11 @@ static int __cdecl CompareListItem( vgui::Panel *const *a, vgui::Panel *const *b
 	// finally, sort by ping
 	if ( ia.m_ePingCategory < ia.PING_SYSTEMLINK && ib.m_ePingCategory < ib.PING_SYSTEMLINK )
 	{
+		// ping=0 sorts last rather than first
+		if ( ia.m_iPingMS == 0 && ib.m_iPingMS != 0 )
+			return 1;
+		if ( ia.m_iPingMS != 0 && ib.m_iPingMS == 0 )
+			return -1;
 		return ia.m_iPingMS - ib.m_iPingMS;
 	}
 
