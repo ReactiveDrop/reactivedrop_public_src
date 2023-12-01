@@ -43,9 +43,9 @@ public:
 	DECLARE_NETWORKCLASS(); 
 	DECLARE_PREDICTABLE();
 
-    CASW_Weapon_Heal_Gun(void);
+	CASW_Weapon_Heal_Gun( void );
 
-    virtual void    Precache( void );
+	virtual void	Precache( void );
 
 	virtual void	PrimaryAttack( void );
 	virtual void	SecondaryAttack();
@@ -76,6 +76,7 @@ public:
 	virtual const char* GetPartialReloadSound( int iPart );
 	virtual void UpdateEffects();	
 	virtual bool ShouldShowLaserPointer();
+	virtual bool ShouldDimLaserPointer();
 	virtual float GetLaserPointerRange( void ) { return 240; }// Give a chance for non-local weapons to update their effects on the client
 #else
 	int		CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }

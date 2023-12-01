@@ -217,15 +217,16 @@ public:
 	// laser pointer
 	virtual bool ShouldShowLaserPointer();
 	virtual bool ShouldAlignWeaponToLaserPointer();
+	virtual bool ShouldDimLaserPointer();
 	virtual const char *GetLaserPointerEffectName() const { return "weapon_laser_sight"; }
 	void SimulateLaserPointer();
-	void CreateLaserPointerEffect( bool bLocalPlayer, int iAttachment );
+	void CreateLaserPointerEffect( bool bIsViewMarine, int iAttachment );
 	void RemoveLaserPointerEffect();
 	CUtlReference<CNewParticleEffect> m_pLaserPointerEffect;
 	virtual float GetLaserPointerRange( void ) { return 600; }
 	void SetLaserTargetEntity( C_BaseEntity* pEnt ) { m_hLaserTargetEntity = pEnt; }
 	C_BaseEntity* GetLaserTargetEntity() { return m_hLaserTargetEntity.Get(); }
-	bool m_bLocalPlayerControlling;
+	bool m_bUsingViewMarineLaserPointer;
 	EHANDLE m_hLaserTargetEntity;
 	Vector m_vecLaserPointerDirection;
 

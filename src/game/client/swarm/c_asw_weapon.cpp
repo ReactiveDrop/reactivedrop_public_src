@@ -159,7 +159,7 @@ m_GlowObject( this, glow_outline_color_weapon.GetColorAsVector(), 1.0f, false, t
 	m_nLaserBodyGroup = -2;
 	m_nMagazineBodyGroup = -2;
 	m_nScreenBodyGroup = -2;
-	m_bLocalPlayerControlling = false;
+	m_bUsingViewMarineLaserPointer = false;
 
 	m_fMuzzleFlashTime = 0.0f;
 
@@ -921,6 +921,11 @@ bool C_ASW_Weapon::ShouldAlignWeaponToLaserPointer()
 	return true;
 }
 
+bool C_ASW_Weapon::ShouldDimLaserPointer()
+{
+	return IsFiring();
+}
+
 //--------------------------------------------------------------------------------------------------------
 void C_ASW_Weapon::SimulateLaserPointer()
 {
@@ -949,14 +954,14 @@ void C_ASW_Weapon::SimulateLaserPointer()
 		return;
 	}
 
-	bool bLocalPlayer = false;
+	bool bIsViewMarine = false;
 	C_ASW_Player *pPlayer = GetCommander();
 	C_ASW_Player *pLocalPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if ( pPlayer == pLocalPlayer && pMarine->IsInhabited() )
-		bLocalPlayer = true;
+	if ( pLocalPlayer && pLocalPlayer->GetViewNPC() == pMarine )
+		bIsViewMarine = true;
 
 	// don't show laser pointers of non local players
-	if (rd_show_others_laser_pointer.GetBool() == 0 && bLocalPlayer == false)
+	if ( rd_show_others_laser_pointer.GetBool() == 0 && !bIsViewMarine )
 	{
 		RemoveLaserPointerEffect();
 		return;
@@ -974,17 +979,15 @@ void C_ASW_Weapon::SimulateLaserPointer()
 	}
 
 	Vector vecDirShooting;
-	if ( bLocalPlayer )
+	if ( bIsViewMarine && pPlayer && pMarine->IsInhabited() )
 	{
-		vecDirShooting = pLocalPlayer->GetAutoaimVectorForMarine(pMarine, GetAutoAimAmount(), GetVerticalAdjustOnlyAutoAimAmount());	// 45 degrees = 0.707106781187
+		vecDirShooting = pPlayer->GetAutoaimVectorForMarine( pMarine, GetAutoAimAmount(), GetVerticalAdjustOnlyAutoAimAmount() );
 	}
 	else
 	{
 		QAngle angMarine = pMarine->ASWEyeAngles();
 
-		Vector vRight;
-		Vector vUp;
-		AngleVectors( angMarine, &vecDirShooting, &vRight, &vUp );
+		AngleVectors( angMarine, &vecDirShooting );
 	}
 
 	GetAttachment( iAttachment, vecOrigin, angWeapon );
@@ -993,7 +996,7 @@ void C_ASW_Weapon::SimulateLaserPointer()
 	float alpha = 0.65f;
 	float alphaFF = 0;
 	
-	if ( !bLocalPlayer )
+	if ( !bIsViewMarine )
 	{
 		flDistance = 100;
 		alpha = 0.3f;
@@ -1014,14 +1017,14 @@ void C_ASW_Weapon::SimulateLaserPointer()
 		alpha = 0;
 		alphaFF = 0;
 	}
-	else if ( IsFiring() )
+	else if ( ShouldDimLaserPointer() )
 	{
 		alpha *= 0.06f;
 		alphaFF *= 1.5f;
 	}
 
 	// Only apply the new laser sight correction code if dealing with a local player
-	if ( bLocalPlayer )
+	if ( bIsViewMarine )
 	{
 		if ( pMarine->m_flLaserSightLength > asw_laser_sight_min_distance.GetFloat() )
 		{
@@ -1046,21 +1049,21 @@ void C_ASW_Weapon::SimulateLaserPointer()
 
 	if ( !m_pLaserPointerEffect )
 	{
-		CreateLaserPointerEffect( bLocalPlayer, iAttachment );
+		CreateLaserPointerEffect( bIsViewMarine, iAttachment );
 	}
 
 	if ( m_pLaserPointerEffect )
 	{
 		// if we switched which marine we are controlling, destroy the old effect and create the new one
-		if ( m_bLocalPlayerControlling != bLocalPlayer )
+		if ( m_bUsingViewMarineLaserPointer != bIsViewMarine )
 		{
-			CreateLaserPointerEffect( bLocalPlayer, iAttachment );
+			CreateLaserPointerEffect( bIsViewMarine, iAttachment );
 		}
 
 		m_pLaserPointerEffect->SetControlPoint( 1, vecOrigin );
 		m_pLaserPointerEffect->SetControlPoint( 2, tr.endpos );
 		m_vecLaserPointerDirection = vecDirShooting;
-		m_pLaserPointerEffect->SetControlPointForwardVector ( 1, vecDirShooting );
+		m_pLaserPointerEffect->SetControlPointForwardVector( 1, vecDirShooting );
 		Vector vecImpactY, vecImpactZ;
 		VectorVectors( tr.plane.normal, vecImpactY, vecImpactZ ); 
 		vecImpactY *= -1.0f;
@@ -1087,10 +1090,10 @@ void C_ASW_Weapon::SimulateLaserPointer()
 		//m_pMuzzleFlashEffect->SetControlPoint( 15, Vector( fAlpha, 0.0f, 0.0f ) );
 	}
 
-	m_bLocalPlayerControlling = bLocalPlayer;
+	m_bUsingViewMarineLaserPointer = bIsViewMarine;
 }
 
-void C_ASW_Weapon::CreateLaserPointerEffect( bool bLocalPlayer, int iAttachment )
+void C_ASW_Weapon::CreateLaserPointerEffect( bool bIsViewMarine, int iAttachment )
 {
 	if ( m_pLaserPointerEffect )
 	{
@@ -1099,7 +1102,7 @@ void C_ASW_Weapon::CreateLaserPointerEffect( bool bLocalPlayer, int iAttachment 
 
 	if ( !m_pLaserPointerEffect )
 	{
-		if ( bLocalPlayer )
+		if ( bIsViewMarine )
 			m_pLaserPointerEffect = ParticleProp()->Create( GetLaserPointerEffectName(), PATTACH_POINT_FOLLOW, iAttachment);
 		else
 			m_pLaserPointerEffect = ParticleProp()->Create( "weapon_laser_sight_other", PATTACH_POINT_FOLLOW, iAttachment );

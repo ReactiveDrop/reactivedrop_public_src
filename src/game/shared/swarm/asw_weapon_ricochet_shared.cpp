@@ -245,7 +245,7 @@ void CASW_Weapon_Ricochet::UpdateBounceLaser()
 
 	CASW_Player *pPlayer = GetCommander();
 	CASW_Marine *pMarine = GetMarine();
-	if ( !pPlayer || !pMarine || !pMarine->IsInhabited() || !m_bLocalPlayerControlling )
+	if ( !pPlayer || !pMarine || !pMarine->IsInhabited() || !m_bUsingViewMarineLaserPointer )
 		return;
 
 	Vector vecSrc = pMarine->Weapon_ShootPosition();

@@ -856,6 +856,11 @@ bool CASW_Weapon_Heal_Gun::ShouldShowLaserPointer()
 	return ( pMarine && pMarine->GetActiveWeapon() == this );
 }
 
+bool CASW_Weapon_Heal_Gun::ShouldDimLaserPointer()
+{
+	return BaseClass::ShouldDimLaserPointer() || m_FireState != ASW_HG_FIRE_OFF;
+}
+
 // if the player has his mouse over another marine, highlight it, cos he's the one we can give health to
 void CASW_Weapon_Heal_Gun::MouseOverEntity( C_BaseEntity *pEnt, Vector vecWorldCursor )
 {

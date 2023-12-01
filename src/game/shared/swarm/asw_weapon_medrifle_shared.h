@@ -57,6 +57,7 @@ public:
 		//virtual const char* GetPartialReloadSound( int iPart );
 		virtual void UpdateEffects();
 		virtual bool ShouldShowLaserPointer();
+		virtual bool ShouldDimLaserPointer();
 		virtual float GetLaserPointerRange( void ) { return 240; }// Give a chance for non-local weapons to update their effects on the client
 	#endif
 	virtual bool ShouldHealSelfOnInvalidTarget( CBaseEntity *pTarget );
