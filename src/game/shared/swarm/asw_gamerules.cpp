@@ -2208,6 +2208,12 @@ CASW_Marine_Resource *CAlienSwarm::RosterSelect( CASW_Player *pPlayer, int iProf
 			return NULL;
 		}
 
+		if ( pSave )
+		{
+			// clear the reservation if it's our own
+			pSave->m_LastCommanders.Set( iProfileIndex, NULL_STRING );
+		}
+
 		int nProfileSelected = 0;
 		int nClassSelected = 0;
 		ASW_Marine_Class iProfileClass = pProfile->GetMarineClass();
