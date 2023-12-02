@@ -901,8 +901,12 @@ function JoinHuman(hMarine)
 	hSprite.Activate();
 	g_teamHuman[hMarine] <- [hSprite];
 	hMarine.SetTeam(1);
-	hMarine.SetMaxHealth(GetNewHealth(hMarine));
-	hMarine.SetHealth(GetNewHealth(hMarine));
+	local newHealth = GetNewHealth(hMarine);
+	if (hMarine.GetMaxHealth() != newHealth)
+	{
+		hMarine.SetMaxHealth(newHealth);
+		hMarine.SetHealth(newHealth);
+	}
 	return;
 }
 
@@ -922,10 +926,14 @@ function JoinZombie(hMarine)
 	}
 	hMarine.RemoveWeapon(0);
 	hMarine.RemoveWeapon(1);
-	hMarine.RemoveWeapon(2);
 	hMarine.GiveWeapon("asw_weapon_chainsaw", 0);
-	hMarine.GiveWeapon("asw_weapon_grenades", 2);
-	GetSlotWeapon(hMarine, 2).SetClip1(0);
+	local newHealth = GetNewHealth(hMarine)*2;
+	if (hMarine.GetMaxHealth() != newHealth)
+	{
+		hMarine.RemoveWeapon(2);
+		hMarine.GiveWeapon("asw_weapon_grenades", 2);
+		GetSlotWeapon(hMarine, 2).SetClip1(0);
+	}
  	local hSprite = Entities.CreateByClassname( "env_sprite" );
 	hSprite.__KeyValueFromInt( "spawnflags", 1 );
 	hSprite.__KeyValueFromString( "Model", "materials/Sprites/light_glow03.vmt" );
@@ -945,8 +953,11 @@ function JoinZombie(hMarine)
 	hSprite.Activate();
 	g_teamZombie[hMarine] <- [hSprite, GetSlotWeapon(hMarine, 0), GetSlotWeapon(hMarine, 2), 200, 0];
 	hMarine.SetTeam(2);
-	hMarine.SetMaxHealth(GetNewHealth(hMarine)*2);
-	hMarine.SetHealth(GetNewHealth(hMarine)*2);
+	if (hMarine.GetMaxHealth() != newHealth)
+	{
+		hMarine.SetMaxHealth(newHealth);
+		hMarine.SetHealth(newHealth);
+	}
 	hMarine.SetModel("models/swarm/marine/infected_marine.mdl");
 	return;
 }
@@ -1022,7 +1033,14 @@ function UseLastStand(hMarine)
 	hBubble.Spawn();
 	hBubble.Activate();
 	g_lastHuman[hMarine] <- hBubble;
-	hMarine.SetHealth(GetNewHealth(hMarine));
+	local mod = 0.7 + 0.3*g_teamZombie.len();
+	if (mod < 1)
+	{
+		mod = 1.0;
+	}
+	local newHealth = GetNewHealth(hMarine)*mod;
+	hMarine.SetMaxHealth(newHealth);
+	hMarine.SetHealth(newHealth);
 	ClientPrint(null, 3, "#asw_infection_lastStand_used", NameFeed(hMarine));
 	ClientPrint(null, 3, "#asw_infection_lastStand_timeAdd");
 }
