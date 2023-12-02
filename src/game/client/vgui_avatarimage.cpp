@@ -87,9 +87,10 @@ bool CAvatarImage::SetAvatarSteamID( CSteamID steamIDUser, bool bFetch )
 		if ( SteamUtils()->GetImageSize( iAvatar, &wide, &tall ) )
 		{
 			int cubImage = wide * tall * 4;
-			byte *rgubDest = ( byte * )_alloca( cubImage );
+			byte *rgubDest = new byte[cubImage];
 			SteamUtils()->GetImageRGBA( iAvatar, rgubDest, cubImage );
 			InitFromRGBA( rgubDest, wide, tall );
+			delete[] rgubDest;
 		}
 
 		UpdateFriendStatus();
@@ -121,11 +122,12 @@ void CAvatarImage::UpdateFriendStatus( void )
 //-----------------------------------------------------------------------------
 void CAvatarImage::InitFromRGBA( const byte *rgba, int width, int height )
 {
-	if ( m_iTextureID == -1 )
+	if ( m_iTextureID != -1 )
 	{
-		m_iTextureID = vgui::surface()->CreateNewTextureID( true );
+		vgui::surface()->DestroyTextureID( m_iTextureID );
 	}
 
+	m_iTextureID = vgui::surface()->CreateNewTextureID( true );
 	vgui::surface()->DrawSetTextureRGBA( m_iTextureID, rgba, width, height );
 	m_nWide = YRES( width );
 	m_nTall = YRES( height );
