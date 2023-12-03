@@ -2929,3 +2929,113 @@ void CmdMsg( _Printf_format_string_ const char *pszFormat, ... )
 		Msg( "%s", szString );
 	}
 }
+
+ConVarUnicode::ConVarUnicode( const char *pName, const char *pDefaultValue, int flags ) : ConVar( pName, pDefaultValue, flags )
+{
+	m_szUTF8 = NULL;
+	m_wszWide = NULL;
+}
+ConVarUnicode::ConVarUnicode( const char *pName, const char *pDefaultValue, int flags, const char *pHelpString ) : ConVar( pName, pDefaultValue, flags, pHelpString )
+{
+	m_szUTF8 = NULL;
+	m_wszWide = NULL;
+}
+ConVarUnicode::ConVarUnicode( const char *pName, const char *pDefaultValue, int flags, const char *pHelpString, FnChangeCallback_t callback ) : ConVar( pName, pDefaultValue, flags, pHelpString, callback )
+{
+	m_szUTF8 = NULL;
+	m_wszWide = NULL;
+}
+
+ConVarUnicode::~ConVarUnicode()
+{
+	if ( m_szUTF8 )
+		delete[] m_szUTF8;
+
+	if ( m_wszWide )
+		delete[] m_wszWide;
+}
+
+const char *ConVarUnicode::GetString()
+{
+	if ( m_szUTF8 )
+	{
+		delete[] m_szUTF8;
+		m_szUTF8 = NULL;
+	}
+
+	const char *szBaseValue = ConVar::GetString();
+	int nEncodedLen = V_strlen( szBaseValue );
+	if ( ( nEncodedLen & 1 ) != 0 || !StringHasPrefixCaseSensitive( szBaseValue, "$0x" ) || szBaseValue[nEncodedLen - 1] != 'h' )
+	{
+		return szBaseValue;
+	}
+
+	int nDecodedLen = nEncodedLen / 2 - 2;
+	m_szUTF8 = new char[nDecodedLen + 1];
+	m_szUTF8[nDecodedLen] = '\0';
+	V_hextobinary( szBaseValue + 3, nEncodedLen - 4, reinterpret_cast< byte * >( m_szUTF8 ), nDecodedLen );
+
+	return m_szUTF8;
+}
+
+const wchar_t *ConVarUnicode::GetWString()
+{
+	if ( m_wszWide )
+		delete[] m_wszWide;
+
+	const char *szUTF8 = GetString();
+	int len = V_strlen( szUTF8 );
+	m_wszWide = new wchar_t[len + 1];
+	V_UTF8ToUnicode( szUTF8, m_wszWide, ( len + 1 ) * sizeof( wchar_t ) );
+
+	return m_wszWide;
+}
+
+void ConVarUnicode::SetValue( const char *value, bool bSetWithoutEncoding )
+{
+	// check if we're ASCII
+	bool bIsASCII = true;
+	int len = 0;
+	while ( value[len] != '\0' )
+	{
+		if ( value[len] & 0x80 )
+		{
+			bIsASCII = false;
+		}
+
+		len++;
+	}
+
+	if ( bIsASCII && StringHasPrefixCaseSensitive( value, "$0x" ) && value[len - 1] == 'h' )
+	{
+		// final check, if we're being set to a valid encoded string, encode it again.
+		bIsASCII = false;
+	}
+
+	if ( bIsASCII || bSetWithoutEncoding )
+	{
+		// no change needed
+		ConVar::SetValue( value );
+		return;
+	}
+
+	char *buf = ( char * )stackalloc( len * 2 + 5 );
+	buf[0] = '$';
+	buf[1] = '0';
+	buf[2] = 'x';
+	V_binarytohex( reinterpret_cast< const byte * >( value ), len, buf + 3, len * 2 + 2 );
+	buf[len * 2 + 3] = 'h';
+	buf[len * 2 + 4] = '\0';
+
+	ConVar::SetValue( buf );
+}
+
+void ConVarUnicode::SetValue( const wchar_t *value )
+{
+	int nWideLen = V_wcslen( value );
+	// allocate a buffer that is 3x the length (so 1.5x the bytes) to be safe
+	char *buf = ( char * )stackalloc( nWideLen * 3 + 1 );
+
+	V_UnicodeToUTF8( value, buf, nWideLen * 3 + 1 );
+	SetValue( buf );
+}

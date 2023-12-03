@@ -46,7 +46,7 @@
 
 ConVar ui_game_allow_create_public( "ui_game_allow_create_public", IsPC() ? "1" : "0", FCVAR_DEVELOPMENTONLY, "When set user can create public lobbies instead of matching" );
 ConVar ui_game_allow_create_random( "ui_game_allow_create_random", "1", FCVAR_DEVELOPMENTONLY, "When set, creating a game will pick a random mission" );
-ConVar rd_lobby_hostname( "rd_lobby_hostname", "", FCVAR_ARCHIVE, "Sets the hostname of a lobby when creating a listen server. If empty, your Steam display name will be used." );
+ConVarUnicode rd_lobby_hostname( "rd_lobby_hostname", "", FCVAR_ARCHIVE, "Sets the hostname of a lobby when creating a listen server. If empty, your Steam display name will be used." );
 extern ConVar mm_max_players;
 extern ConVar rd_last_game_access;
 extern ConVar rd_last_game_difficulty;
@@ -88,7 +88,7 @@ GameSettings::GameSettings( vgui::Panel *parent, const char *panelName ):
 	m_txtLobbyName = new vgui::TextEntry( this, "TxtLobbyName" );
 	m_txtLobbyName->SetAllowNonAsciiCharacters( true );
 	m_txtLobbyName->AddActionSignalTarget( this );
-	m_txtLobbyName->SetText( rd_lobby_hostname.GetString() );
+	m_txtLobbyName->SetText( rd_lobby_hostname.GetWString() );
 	m_pLobbyNamePlaceholder = new vgui::Label( this, "LblLobbyPlaceholder", "" );
 	m_pTitle = new vgui::Label( this, "Title", "" );
 	m_iTitleYPosition = 0;
@@ -1090,12 +1090,12 @@ void GameSettings::OnNavigateTo( const char *panelName )
 
 void GameSettings::OnTextChanged()
 {
-	char szHostname[256];
-	m_txtLobbyName->GetText( szHostname, sizeof( szHostname ) );
-	rd_lobby_hostname.SetValue( szHostname );
+	wchar_t wszHostname[256];
+	m_txtLobbyName->GetText( wszHostname, sizeof( wszHostname ) );
+	rd_lobby_hostname.SetValue( wszHostname );
 	m_bWriteConfigOnClose = true;
 
-	m_pLobbyNamePlaceholder->SetVisible( m_txtLobbyName->IsVisible() && szHostname[0] == '\0' );
+	m_pLobbyNamePlaceholder->SetVisible( m_txtLobbyName->IsVisible() && wszHostname[0] == L'\0' );
 }
 
 void GameSettings::OnNotifyChildFocus( vgui::Panel* child )

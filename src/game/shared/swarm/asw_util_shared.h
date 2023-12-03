@@ -160,4 +160,25 @@ int UTIL_RD_GetCurrentHoIAFSeason( int *pDaysRemaining = NULL, int *pHoursRemain
 
 void CmdMsg( _Printf_format_string_ const char *pszFormat, ... );
 
+// ConVar that is either a normal ASCII string or a UTF-8 string encoded in hex with $0x at the start and h at the end.
+// This allows us to save Unicode strings in convars without modifying the engine.
+// See https://github.com/ReactiveDrop/reactivedrop_public_src/issues/664
+class ConVarUnicode : public ConVar
+{
+public:
+	ConVarUnicode( const char *pName, const char *pDefaultValue, int flags = 0 );
+	ConVarUnicode( const char *pName, const char *pDefaultValue, int flags, const char *pHelpString );
+	ConVarUnicode( const char *pName, const char *pDefaultValue, int flags, const char *pHelpString, FnChangeCallback_t callback );
+	~ConVarUnicode();
+
+	const char *GetString();
+	const wchar_t *GetWString();
+	void SetValue( const char *value, bool bSetWithoutEncoding = false );
+	void SetValue( const wchar_t *value );
+
+private:
+	char *m_szUTF8;
+	wchar_t *m_wszWide;
+};
+
 #endif // _INCLUDE_ASW_UTIL_SHARED_H
