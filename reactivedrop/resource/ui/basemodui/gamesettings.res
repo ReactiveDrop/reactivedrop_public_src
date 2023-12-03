@@ -121,6 +121,7 @@
 		"wide"					"286"
 		"tall"					"15"
 		"font"					"DefaultLarge"
+		"unicode"				"1"
 		"navUp"					"DrpGameAccess"
 		"navDown"				"DrpGameType"
 	}
@@ -500,7 +501,7 @@
 		"navUp"					"DrpChallenge"
 		"navDown"				"DrpGameAccess"
 
-                // button and label
+		// button and label
 		"BtnDropButton"
 		{
 			"ControlName"					"BaseModHybridButton"
