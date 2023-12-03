@@ -31,6 +31,7 @@ public:
 	void Script_PaintRectangleFade( int x0, int y0, int x1, int y1, int r, int g, int b, int a0, int a1, int fadeStart, int fadeEnd, bool horizontal );
 	void Script_PaintTexturedRectangle( int x0, int y0, int x1, int y1, int r, int g, int b, int a, int texture );
 	void Script_PaintTexturedRectangleAdvanced( HSCRIPT table );
+	void Script_PaintPolygon( HSCRIPT vertices, int r, int g, int b, int a, int texture );
 
 	CNetworkString( m_szClientVScript, 64 );
 	CScriptScope m_ScriptScope;

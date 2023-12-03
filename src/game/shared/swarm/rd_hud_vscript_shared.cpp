@@ -56,6 +56,7 @@ BEGIN_ENT_SCRIPTDESC( CRD_HUD_VScript, CBaseEntity, "Alien Swarm: Reactive Drop 
 	DEFINE_SCRIPTFUNC_NAMED( Script_PaintRectangleFade, "PaintRectangleFade", "Draw a solid-colored rectangle with a gradient of opacity on the heads-up display. Can only be called during Paint" )
 	DEFINE_SCRIPTFUNC_NAMED( Script_PaintTexturedRectangle, "PaintTexturedRectangle", "Draw a textured rectangle on the heads-up display. Can only be called during Paint" )
 	DEFINE_SCRIPTFUNC_NAMED( Script_PaintTexturedRectangleAdvanced, "PaintTexturedRectangleAdvanced", "Draw a textured rectangle with advanced settings on the heads-up display. Can only be called during Paint" )
+	DEFINE_SCRIPTFUNC_NAMED( Script_PaintPolygon, "PaintPolygon", "Draw an arbitrary polygon on the heads-up display. Vertices must be in clockwise order; shape should be convex. Can only be called during Paint" )
 #else
 	DEFINE_SCRIPTFUNC( SetEntity, "Set the value of an entity parameter." )
 	DEFINE_SCRIPTFUNC( SetInt, "Set the value of an integer parameter." )
@@ -343,6 +344,74 @@ void CRD_HUD_VScript::Script_PaintTexturedRectangleAdvanced( HSCRIPT table )
 	vgui::surface()->DrawSetColor( r, g, b, 255 );
 	vgui::surface()->DrawSetTexture( texture );
 	vgui::surface()->DrawTexturedRectEx( &params );
+}
+
+void CRD_HUD_VScript::Script_PaintPolygon( HSCRIPT vertices, int r, int g, int b, int a, int texture )
+{
+	if ( !m_bIsPainting )
+	{
+		Warning( "%s (%s): PaintPolygon cannot be called outside of Paint!\n", GetDebugClassname(), m_szClientVScript.Get() );
+		return;
+	}
+
+	int nVerts = ArrayLength( vertices );
+	Assert( nVerts >= 3 );
+	if ( nVerts < 3 )
+	{
+		Warning( "%s (%s): Cannot PaintPolygon with fewer than 3 vertices!\n", GetDebugClassname(), m_szClientVScript.Get() );
+		return;
+	}
+
+	CUtlMemory<vgui::Vertex_t> convertedVertices{ 0, nVerts };
+
+	for ( int i = 0; i < nVerts; i++ )
+	{
+		ScriptVariant_t vertex;
+		ArrayGet( vertex, vertices, i );
+
+		Assert( vertex.m_type == FIELD_HSCRIPT );
+		if ( vertex.m_type != FIELD_HSCRIPT )
+		{
+			Warning( "%s (%s): Vertex %d is not a table!\n", GetDebugClassname(), m_szClientVScript.Get(), i );
+			return;
+		}
+
+		ScriptVariant_t x, y, s, t;
+		bool ok = g_pScriptVM->GetValue( vertex, "x", &x );
+		ok = ok && g_pScriptVM->GetValue( vertex, "y", &y );
+		ok = ok && g_pScriptVM->GetValue( vertex, "s", &s );
+		ok = ok && g_pScriptVM->GetValue( vertex, "t", &t );
+		if ( !ok )
+		{
+			Warning( "%s (%s): Vertex %d table is missing at least one of these coordinates: x, y, s, t\n", GetDebugClassname(), m_szClientVScript.Get(), i );
+			return;
+		}
+
+		if ( !x.AssignTo( &convertedVertices[i].m_Position.x ) || isnan( convertedVertices[i].m_Position.x ) )
+		{
+			Warning( "%s (%s): Vertex %d x coordinate is not a number!\n", GetDebugClassname(), m_szClientVScript.Get(), i );
+			return;
+		}
+		if ( !y.AssignTo( &convertedVertices[i].m_Position.y ) || isnan( convertedVertices[i].m_Position.y ) )
+		{
+			Warning( "%s (%s): Vertex %d y coordinate is not a number!\n", GetDebugClassname(), m_szClientVScript.Get(), i );
+			return;
+		}
+		if ( !s.AssignTo( &convertedVertices[i].m_TexCoord.x ) || isnan( convertedVertices[i].m_TexCoord.x ) )
+		{
+			Warning( "%s (%s): Vertex %d s coordinate is not a number!\n", GetDebugClassname(), m_szClientVScript.Get(), i );
+			return;
+		}
+		if ( !t.AssignTo( &convertedVertices[i].m_TexCoord.y ) || isnan( convertedVertices[i].m_TexCoord.y ) )
+		{
+			Warning( "%s (%s): Vertex %d t coordinate is not a number!\n", GetDebugClassname(), m_szClientVScript.Get(), i );
+			return;
+		}
+	}
+
+	vgui::surface()->DrawSetColor( r, g, b, a );
+	vgui::surface()->DrawSetTexture( texture );
+	vgui::surface()->DrawTexturedPolygon( nVerts, convertedVertices.Base() );
 }
 #else
 int CRD_HUD_VScript::ShouldTransmit( const CCheckTransmitInfo *pInfo )
