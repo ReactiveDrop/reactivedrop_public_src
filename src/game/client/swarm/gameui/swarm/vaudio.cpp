@@ -146,6 +146,9 @@ void Audio::Activate()
 		case 5:
 			m_drpSpeakerConfiguration->SetCurrentSelection( "#GameUI_5Speakers" );
 			break;
+		case 7:
+			m_drpSpeakerConfiguration->SetCurrentSelection( "#GameUI_7Speakers" );
+			break;
 		case 0:
 		default:
 			m_drpSpeakerConfiguration->SetCurrentSelection( "#GameUI_Headphones" );
@@ -680,6 +683,15 @@ void Audio::OnCommand(const char *command)
 	{
 		CGameUIConVarRef snd_surround_speakers("Snd_Surround_Speakers");
 		snd_surround_speakers.SetValue( "5" );
+
+		// headphones at high quality get enhanced stereo turned on
+		CGameUIConVarRef dsp_enhance_stereo( "dsp_enhance_stereo" );
+		dsp_enhance_stereo.SetValue( 0 );
+	}
+	else if( Q_stricmp( "#GameUI_7Speakers", command ) == 0 )
+	{
+		CGameUIConVarRef snd_surround_speakers("Snd_Surround_Speakers");
+		snd_surround_speakers.SetValue( "7" );
 
 		// headphones at high quality get enhanced stereo turned on
 		CGameUIConVarRef dsp_enhance_stereo( "dsp_enhance_stereo" );
