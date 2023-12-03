@@ -124,11 +124,11 @@ void CRD_HUD_VScript::OnDataChanged( DataUpdateType_t type )
 
 		if ( !m_hUpdateFunc || m_hUpdateFunc == INVALID_HSCRIPT )
 		{
-			DevWarning( "rd_hud_vscript (%s) does not have an OnUpdate function in its script scope.\n", m_szClientVScript.Get() );
+			DevWarning( "%s (%s) does not have an OnUpdate function in its script scope.\n", GetDebugClassname(), m_szClientVScript.Get() );
 		}
 		if ( !m_hPaintFunc || m_hPaintFunc == INVALID_HSCRIPT )
 		{
-			Warning( "rd_hud_vscript (%s) does not have a Paint function in its script scope.\n", m_szClientVScript.Get() );
+			Warning( "%s (%s) does not have a Paint function in its script scope.\n", GetDebugClassname(), m_szClientVScript.Get() );
 		}
 	}
 
@@ -152,7 +152,7 @@ void CRD_HUD_VScript::Paint()
 int CRD_HUD_VScript::Script_LookupTexture( const char *name )
 {
 	if ( m_bIsPainting )
-		DevWarning( "rd_hud_vscript (%s): LookupTexture should not be called during Paint!\n", m_szClientVScript.Get() );
+		DevWarning( "%s (%s): LookupTexture should not be called during Paint!\n", GetDebugClassname(), m_szClientVScript.Get() );
 
 	int i = m_Textures.Find( name );
 	if ( !m_Textures.IsValidIndex( i ) )
@@ -168,7 +168,7 @@ int CRD_HUD_VScript::Script_LookupTexture( const char *name )
 int CRD_HUD_VScript::Script_LookupFont( const char *name )
 {
 	if ( m_bIsPainting )
-		DevWarning( "rd_hud_vscript (%s): LookupFont should not be called during Paint!\n", m_szClientVScript.Get() );
+		DevWarning( "%s (%s): LookupFont should not be called during Paint!\n", GetDebugClassname(), m_szClientVScript.Get() );
 
 	vgui::HScheme hScheme = vgui::scheme()->LoadSchemeFromFile( "resource/SwarmSchemeNew.res", "SwarmSchemeNew" );
 	vgui::IScheme *pScheme = vgui::scheme()->GetIScheme( hScheme );
@@ -179,7 +179,7 @@ int CRD_HUD_VScript::Script_LookupFont( const char *name )
 	vgui::HFont hFont = pScheme->GetFont( name, true );
 	if ( !hFont )
 	{
-		Warning( "rd_hud_vscript (%s): LookupFont did not find a font named %s\n", m_szClientVScript.Get(), name );
+		Warning( "%s (%s): LookupFont did not find a font named %s\n", GetDebugClassname(), m_szClientVScript.Get(), name );
 	}
 
 	return hFont;
@@ -205,7 +205,7 @@ void CRD_HUD_VScript::Script_PaintText( int x, int y, int r, int g, int b, int a
 {
 	if ( !m_bIsPainting )
 	{
-		Warning( "rd_hud_vscript (%s): PaintText cannot be called outside of Paint!\n", m_szClientVScript.Get() );
+		Warning( "%s (%s): PaintText cannot be called outside of Paint!\n", GetDebugClassname(), m_szClientVScript.Get() );
 		return;
 	}
 
@@ -231,7 +231,7 @@ void CRD_HUD_VScript::Script_PaintZbalermornaText( float x, float y, int r, int 
 {
 	if ( !m_bIsPainting )
 	{
-		Warning( "rd_hud_vscript (%s): PaintZbalermornaText cannot be called outside of Paint!\n", m_szClientVScript.Get() );
+		Warning( "%s (%s): PaintZbalermornaText cannot be called outside of Paint!\n", GetDebugClassname(), m_szClientVScript.Get() );
 		return;
 	}
 
@@ -243,7 +243,7 @@ void CRD_HUD_VScript::Script_PaintRectangle( int x0, int y0, int x1, int y1, int
 {
 	if ( !m_bIsPainting )
 	{
-		Warning( "rd_hud_vscript (%s): PaintRectangle cannot be called outside of Paint!\n", m_szClientVScript.Get() );
+		Warning( "%s (%s): PaintRectangle cannot be called outside of Paint!\n", GetDebugClassname(), m_szClientVScript.Get() );
 		return;
 	}
 
@@ -255,7 +255,7 @@ void CRD_HUD_VScript::Script_PaintRectangleFade( int x0, int y0, int x1, int y1,
 {
 	if ( !m_bIsPainting )
 	{
-		Warning( "rd_hud_vscript (%s): PaintRectangleFade cannot be called outside of Paint!\n", m_szClientVScript.Get() );
+		Warning( "%s (%s): PaintRectangleFade cannot be called outside of Paint!\n", GetDebugClassname(), m_szClientVScript.Get() );
 		return;
 	}
 
@@ -267,7 +267,7 @@ void CRD_HUD_VScript::Script_PaintTexturedRectangle( int x0, int y0, int x1, int
 {
 	if ( !m_bIsPainting )
 	{
-		Warning( "rd_hud_vscript (%s): PaintTexturedRectangle cannot be called outside of Paint!\n", m_szClientVScript.Get() );
+		Warning( "%s (%s): PaintTexturedRectangle cannot be called outside of Paint!\n", GetDebugClassname(), m_szClientVScript.Get() );
 		return;
 	}
 
@@ -280,7 +280,7 @@ void CRD_HUD_VScript::Script_PaintTexturedRectangleAdvanced( HSCRIPT table )
 {
 	if ( !m_bIsPainting )
 	{
-		Warning( "rd_hud_vscript (%s): PaintTexturedRectangleAdvanced cannot be called outside of Paint!\n", m_szClientVScript.Get() );
+		Warning( "%s (%s): PaintTexturedRectangleAdvanced cannot be called outside of Paint!\n", GetDebugClassname(), m_szClientVScript.Get() );
 		return;
 	}
 
@@ -359,7 +359,7 @@ void CRD_HUD_VScript::SetEntity( int i, HSCRIPT entity )
 {
 	if ( i != 0 )
 	{
-		Warning( "Entity index %d is not allowed for rd_hud_vscript (%s)\n", i, STRING( m_szClientVScript.Get() ) );
+		Warning( "Entity index %d is not allowed for %s (%s)\n", i, GetDebugClassname(), STRING( m_szClientVScript.Get() ) );
 		return;
 	}
 
@@ -370,7 +370,7 @@ void CRD_HUD_VScript::SetInt( int i, int value )
 {
 	if ( i < 0 || i >= m_iDataInt.Count() )
 	{
-		Warning( "Integer index %d is not allowed for rd_hud_vscript (%s)\n", i, STRING( m_szClientVScript.Get() ) );
+		Warning( "Integer index %d is not allowed for %s (%s)\n", i, GetDebugClassname(), STRING( m_szClientVScript.Get() ) );
 		return;
 	}
 
@@ -381,7 +381,7 @@ void CRD_HUD_VScript::SetFloat( int i, float value )
 {
 	if ( i < 0 || i >= m_flDataFloat.Count() )
 	{
-		Warning( "Float index %d is not allowed for rd_hud_vscript (%s)\n", i, STRING( m_szClientVScript.Get() ) );
+		Warning( "Float index %d is not allowed for %s (%s)\n", i, GetDebugClassname(), STRING( m_szClientVScript.Get() ) );
 		return;
 	}
 
@@ -392,7 +392,7 @@ void CRD_HUD_VScript::SetString( int i, const char *string )
 {
 	if ( i != 0 )
 	{
-		Warning( "String index %d is not allowed for rd_hud_vscript (%s)\n", i, STRING( m_szClientVScript.Get() ) );
+		Warning( "String index %d is not allowed for %s (%s)\n", i, GetDebugClassname(), STRING( m_szClientVScript.Get() ) );
 		return;
 	}
 
@@ -407,7 +407,7 @@ HSCRIPT CRD_HUD_VScript::GetEntity( int i ) const
 {
 	if ( i != 0 )
 	{
-		Warning( "Entity index %d is not allowed for rd_hud_vscript (%s)\n", i, STRING( m_szClientVScript.Get() ) );
+		Warning( "Entity index %d is not allowed for %s (%s)\n", i, GetDebugClassname(), STRING( m_szClientVScript.Get() ) );
 		return NULL;
 	}
 
@@ -418,7 +418,7 @@ int CRD_HUD_VScript::GetInt( int i ) const
 {
 	if ( i < 0 || i >= m_iDataInt.Count() )
 	{
-		Warning( "Integer index %d is not allowed for rd_hud_vscript (%s)\n", i, STRING( m_szClientVScript.Get() ) );
+		Warning( "Integer index %d is not allowed for %s (%s)\n", i, GetDebugClassname(), STRING( m_szClientVScript.Get() ) );
 		return 0;
 	}
 
@@ -429,7 +429,7 @@ float CRD_HUD_VScript::GetFloat( int i ) const
 {
 	if ( i < 0 || i >= m_flDataFloat.Count() )
 	{
-		Warning( "Float index %d is not allowed for rd_hud_vscript (%s)\n", i, STRING( m_szClientVScript.Get() ) );
+		Warning( "Float index %d is not allowed for %s (%s)\n", i, GetDebugClassname(), STRING( m_szClientVScript.Get() ) );
 		return 0.0f;
 	}
 
@@ -440,7 +440,7 @@ const char *CRD_HUD_VScript::GetString( int i ) const
 {
 	if ( i != 0 )
 	{
-		Warning( "String index %d is not allowed for rd_hud_vscript (%s)\n", i, STRING( m_szClientVScript.Get() ) );
+		Warning( "String index %d is not allowed for %s (%s)\n", i, GetDebugClassname(), STRING( m_szClientVScript.Get() ) );
 		return "";
 	}
 

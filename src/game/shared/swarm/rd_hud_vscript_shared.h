@@ -18,7 +18,7 @@ public:
 	static CUtlVector<CRD_HUD_VScript *> s_HUDEntities;
 
 	void OnDataChanged( DataUpdateType_t type ) override;
-	void Paint();
+	virtual void Paint();
 
 	int Script_LookupTexture( const char *name );
 	int Script_LookupFont( const char *name );
@@ -56,6 +56,8 @@ public:
 	int GetInt( int i ) const;
 	float GetFloat( int i ) const;
 	const char *GetString( int i ) const;
+
+	virtual const char *GetDebugClassname() const { return "rd_hud_vscript"; }
 
 	CNetworkHandle( CBaseEntity, m_hDataEntity );
 	CNetworkString( m_szDataString, 256 );
