@@ -162,6 +162,106 @@ bool VScriptRunScript( const char *pszScriptName, HSCRIPT hScope, bool bWarnMiss
 	return bSuccess;
 }
 
+static HSCRIPT s_newArrayFunc = NULL;
+static HSCRIPT s_arrayPushFunc = NULL;
+static HSCRIPT s_arrayGetFunc = NULL;
+static HSCRIPT s_arrayLengthFunc = NULL;
+static bool VScriptInitArray()
+{
+	if ( !g_pScriptVM )
+		return false;
+
+	if ( s_newArrayFunc )
+		return true;
+
+	// The VScript API doesn't support arrays, but Squirrel does, and we want to use them. Make some helper functions that we can call later:
+	HSCRIPT arrayHelperScript = g_pScriptVM->CompileScript(
+		"function newArray() { return [] }\n"
+		"function arrayPush(a, v) { a.push(v); return a }\n"
+		"function arrayGet(a, i) { return a[i] }\n"
+		"function arrayLength(a) { return a.len() }\n"
+	);
+	HSCRIPT arrayHelperScope = g_pScriptVM->CreateScope( "arrayhelpers" );
+	ScriptStatus_t status = g_pScriptVM->Run( arrayHelperScript, arrayHelperScope, false );
+	Assert( status == SCRIPT_DONE );
+	( void )status;
+	g_pScriptVM->ReleaseScript( arrayHelperScript );
+
+	ScriptVariant_t result;
+	bool bSuccess = g_pScriptVM->GetValue( arrayHelperScope, "newArray", &result );
+	Assert( bSuccess );
+	( void )bSuccess;
+	s_newArrayFunc = result;
+	Assert( s_newArrayFunc );
+
+	bSuccess = g_pScriptVM->GetValue( arrayHelperScope, "arrayPush", &result );
+	Assert( bSuccess );
+	( void )bSuccess;
+	s_arrayPushFunc = result;
+	Assert( s_arrayPushFunc );
+
+	bSuccess = g_pScriptVM->GetValue( arrayHelperScope, "arrayGet", &result );
+	Assert( bSuccess );
+	( void )bSuccess;
+	s_arrayGetFunc = result;
+	Assert( s_arrayGetFunc );
+
+	bSuccess = g_pScriptVM->GetValue( arrayHelperScope, "arrayLength", &result );
+	Assert( bSuccess );
+	( void )bSuccess;
+	s_arrayLengthFunc = result;
+	Assert( s_arrayLengthFunc );
+
+	g_pScriptVM->ReleaseScope( arrayHelperScope );
+
+	return true;
+}
+void CreateArray( ScriptVariant_t &array )
+{
+	if ( !VScriptInitArray() )
+		return;
+
+	Assert( array.m_type == FIELD_VOID );
+	ScriptStatus_t status = g_pScriptVM->Call( s_newArrayFunc, NULL, false, &array );
+	Assert( status == SCRIPT_DONE );
+	( void )status;
+}
+void ArrayPush( ScriptVariant_t &array, const ScriptVariant_t &item )
+{
+	if ( !VScriptInitArray() )
+		return;
+
+	ScriptStatus_t status = g_pScriptVM->Call( s_arrayPushFunc, NULL, false, &array, array, item );
+	Assert( status == SCRIPT_DONE );
+	( void )status;
+}
+void ArrayGet( ScriptVariant_t &result, const ScriptVariant_t &array, const ScriptVariant_t &index )
+{
+	if ( !VScriptInitArray() )
+		return;
+
+	ScriptStatus_t status = g_pScriptVM->Call( s_arrayGetFunc, NULL, false, &result, array, index );
+	Assert( status == SCRIPT_DONE );
+	( void )status;
+}
+int ArrayLength( const ScriptVariant_t &array )
+{
+	if ( !VScriptInitArray() )
+		return 0;
+
+	ScriptVariant_t result;
+	ScriptStatus_t status = g_pScriptVM->Call( s_arrayLengthFunc, NULL, false, &result, array );
+	Assert( status == SCRIPT_DONE );
+	( void )status;
+
+	int length = 0;
+	bool ok = result.AssignTo( &length );
+	Assert( ok );
+	( void )ok;
+
+	return length;
+}
+
 #ifdef CLIENT_DLL
 CON_COMMAND_F( script_client, "Run the text as a script", FCVAR_CHEAT )
 #else

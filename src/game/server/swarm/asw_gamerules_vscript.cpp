@@ -31,32 +31,6 @@
 
 extern ConVar rd_challenge;
 
-static ScriptVariant_t s_newArrayFunc;
-static ScriptVariant_t s_arrayPushFunc;
-static ScriptVariant_t s_arrayGetFunc;
-static void CreateArray( ScriptVariant_t &array )
-{
-	if ( !g_pScriptVM ) return;
-	Assert( array.m_type == FIELD_VOID );
-	ScriptStatus_t status = g_pScriptVM->Call( s_newArrayFunc, NULL, false, &array );
-	Assert( status == SCRIPT_DONE );
-	( void )status;
-}
-static void ArrayPush( ScriptVariant_t &array, ScriptVariant_t item )
-{
-	if ( !g_pScriptVM ) return;
-	ScriptStatus_t status = g_pScriptVM->Call( s_arrayPushFunc, NULL, false, &array, array, item );
-	Assert( status == SCRIPT_DONE );
-	( void )status;
-}
-static void ArrayGet( ScriptVariant_t &result, ScriptVariant_t array, ScriptVariant_t index )
-{
-	if ( !g_pScriptVM ) return;
-	ScriptStatus_t status = g_pScriptVM->Call( s_arrayGetFunc, NULL, false, &result, array, index );
-	Assert( status == SCRIPT_DONE );
-	( void )status;
-}
-
 // BenLubar(key-values-director): this class provides the Director object for vscripts
 class CASW_Director_VScript
 {
@@ -1194,24 +1168,6 @@ bool Script_IsAnniversaryWeek()
 void CAlienSwarm::RegisterScriptFunctions()
 {
 	if ( !g_pScriptVM ) return;
-
-	// The VScript API doesn't support arrays, but Squirrel does, and we want to use them. Make some helper functions that we can call later:
-	HSCRIPT arrayHelperScript = g_pScriptVM->CompileScript( "function newArray() { return [] }\nfunction arrayPush(a, v) { a.push(v); return a }\nfunction arrayGet(a, i) { return a[i] }\n" );
-	HSCRIPT arrayHelperScope = g_pScriptVM->CreateScope( "arrayhelpers" );
-	ScriptStatus_t status = g_pScriptVM->Run( arrayHelperScript, arrayHelperScope, false );
-	Assert( status == SCRIPT_DONE );
-	( void )status;
-	g_pScriptVM->ReleaseScript( arrayHelperScript );
-	bool bSuccess = g_pScriptVM->GetValue( arrayHelperScope, "newArray", &s_newArrayFunc );
-	Assert( bSuccess );
-	( void )bSuccess;
-	bSuccess = g_pScriptVM->GetValue( arrayHelperScope, "arrayPush", &s_arrayPushFunc );
-	Assert( bSuccess );
-	( void )bSuccess;
-	bSuccess = g_pScriptVM->GetValue( arrayHelperScope, "arrayGet", &s_arrayGetFunc );
-	Assert( bSuccess );
-	( void )bSuccess;
-	g_pScriptVM->ReleaseScope( arrayHelperScope );
 
 	g_pScriptVM->RegisterInstance( &g_ASWDirectorVScript, "Director" );
 	g_pScriptVM->RegisterInstance( &g_ASWConvarsVScript, "Convars" );
