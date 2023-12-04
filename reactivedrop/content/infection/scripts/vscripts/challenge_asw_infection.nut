@@ -216,6 +216,10 @@ function Update()
 					ClientPrint(hPlayer, 4, "#asw_infection_lastStand_key");
 				}
 			}
+			else
+			{
+				ClientPrint(hPlayer, 4, " ");
+			}
 		}
 	}
 	foreach (hPlayer, hHud in g_hud)
@@ -1033,7 +1037,7 @@ function UseLastStand(hMarine)
 	hBubble.Spawn();
 	hBubble.Activate();
 	g_lastHuman[hMarine] <- hBubble;
-	local mod = 0.7 + 0.3*g_teamZombie.len();
+	local mod = 0.3*g_teamZombie.len();
 	if (mod < 1)
 	{
 		mod = 1.0;
