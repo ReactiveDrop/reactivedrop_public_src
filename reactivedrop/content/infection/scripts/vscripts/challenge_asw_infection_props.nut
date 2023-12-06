@@ -75,6 +75,14 @@ function PropInit()
 		SpawnProp("fence_long", Vector(-1296, -400, 144), Vector(0, 0, 0));
 
 		SpawnProp("fence_long", Vector(-1900, 1808, 148), Vector(0, 90, 0));
+
+		SpawnProp("crate_large", Vector(1168, 1160, 40), Vector(90, 315, 0));
+
+		SpawnProp("pipe_medium", Vector(1888, 2848, -88), Vector(0, 0, 45));
+		SpawnProp("pipe_medium", Vector(1776, 2248, -64), Vector(0, 0, -45));
+		SpawnProp("crate_large", Vector(1856, 1880, 24), Vector(-90, 0, 0));
+		SpawnProp("crate_large", Vector(1760, 1848, -40), Vector(0, 90, 0));
+		SpawnProp("pipe_medium", Vector(1888, 1064, -80), Vector(0, 0, -45));
 	}
 
 	if (g_mapName == "dm_residential")
