@@ -34,6 +34,11 @@ CAvatarImage::CAvatarImage( void )
 	m_nY = 0;
 }
 
+CAvatarImage::~CAvatarImage()
+{
+	Evict();
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -117,6 +122,19 @@ void CAvatarImage::UpdateFriendStatus( void )
 	}
 }
 
+bool CAvatarImage::Evict()
+{
+	if ( m_iTextureID != -1 )
+	{
+		vgui::surface()->DestroyTextureID( m_iTextureID );
+		m_iTextureID = -1;
+
+		return true;
+	}
+
+	return false;
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -159,7 +177,7 @@ void CAvatarImage::Paint( void )
 
 void CAvatarImage::OnPersonaStateChange( PersonaStateChange_t *pParam )
 {
-	if ( m_steamIDUser == pParam->m_ulSteamID )
+	if ( m_steamIDUser == pParam->m_ulSteamID && ( pParam->m_nChangeFlags & k_EPersonaChangeAvatar ) )
 	{
 		// re-init
 		m_bValid = false;
@@ -172,6 +190,14 @@ void CAvatarImage::OnPersonaStateChange( PersonaStateChange_t *pParam )
 //-----------------------------------------------------------------------------
 CAvatarImagePanel::CAvatarImagePanel( vgui::Panel *parent, const char *name ) : vgui::ImagePanel( parent, name )
 {
+}
+
+CAvatarImagePanel::~CAvatarImagePanel()
+{
+	if ( vgui::IImage *pImage = GetImage() )
+	{
+		delete pImage;
+	}
 }
 
 //-----------------------------------------------------------------------------

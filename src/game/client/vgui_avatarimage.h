@@ -35,6 +35,7 @@ class CAvatarImage : public vgui::IImage
 {
 public:
 	CAvatarImage( void );
+	~CAvatarImage();
 
 	// Call this to set the steam ID associated with the avatar
 	bool SetAvatarSteamID( CSteamID steamIDUser, bool bFetch = true );
@@ -96,7 +97,7 @@ public:
 
 	bool IsValid( void ) { return m_bValid; }
 
-	virtual bool Evict() { return false; }
+	virtual bool Evict();
 	virtual int GetNumFrames() { return 0; }
 	virtual void SetFrame( int nFrame ) {}
 	virtual vgui::HTexture GetID() { return m_iTextureID; }
@@ -132,6 +133,7 @@ public:
 	DECLARE_CLASS_SIMPLE( CAvatarImagePanel, vgui::ImagePanel );
 
 	CAvatarImagePanel( vgui::Panel *parent, const char *name );
+	~CAvatarImagePanel();
 
 	// Set the player that this Avatar should display for
 	void SetPlayer( C_BasePlayer *pPlayer );
