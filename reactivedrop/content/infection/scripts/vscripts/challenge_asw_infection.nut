@@ -449,10 +449,6 @@ function Update()
 			{
 				hWeapon.SetClips(1);
 			}
-			if (hWeapon.GetClassname() == "asw_weapon_medrifle")
-			{
-				hWeapon.SetClip2(0);
-			}
 		}
 		if (g_killAltitude != false)
 		{
@@ -614,10 +610,18 @@ function OnTakeDamage_Alive_Any( victim, inflictor, attacker, weapon, damage, da
 			{
 				damage = damage * 10;
 			}
+			if (inflictor.GetClassname() == "asw_laser_mine")
+			{
+				damage = damage * 10;
+			}
 		}
 		if (weapon && weapon.GetClassname() == "asw_weapon_chainsaw")
 		{
-			damage = 500 * (damage / 30.5);
+			damage = 300 * (damage / 30.5);
+			if (!(attacker in g_lastHuman))
+			{
+				damage = damage*2;
+			}
 		}
 	}
 	if ( victim in g_teamHuman && attacker && attacker in g_teamZombie )
@@ -848,6 +852,7 @@ function CleanUp()
 	RemoveEntitiesByClassName( "asw_weapon_stim" );
 	RemoveEntitiesByClassName( "asw_weapon_welder" );
 	RemoveEntitiesByClassName( "asw_weapon_flares" );
+	RemoveEntitiesByClassName( "asw_weapon_freeze_grenades" );
 	RemoveEntitiesByClassName( "asw_weapon_sentry" );
 	RemoveEntitiesByClassName( "asw_weapon_sentry_cannon" );
 	RemoveEntitiesByClassName( "asw_weapon_sentry_flamer" );
@@ -861,6 +866,7 @@ function CleanUp()
 	RemoveEntitiesByClassName( "asw_pickup_stim" );
 	RemoveEntitiesByClassName( "asw_pickup_welder" );
 	RemoveEntitiesByClassName( "asw_pickup_flares" );
+	RemoveEntitiesByClassName( "asw_pickup_freeze_grenades" );
 	RemoveEntitiesByClassName( "asw_pickup_sentry" );
 	RemoveEntitiesByClassName( "asw_pickup_sentry_cannon" );
 	RemoveEntitiesByClassName( "asw_pickup_sentry_flamer" );
