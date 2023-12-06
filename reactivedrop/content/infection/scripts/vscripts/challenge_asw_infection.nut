@@ -449,6 +449,10 @@ function Update()
 			{
 				hWeapon.SetClips(1);
 			}
+			if (hWeapon.GetClassname() == "asw_weapon_medrifle")
+			{
+				hWeapon.SetClip2(0);
+			}
 		}
 		if (g_killAltitude != false)
 		{
