@@ -21,6 +21,7 @@
 #include "asw_trace_filter.h"
 #include "menu.h"
 #include "rd_vgui_vscript_shared.h"
+#include "rd_steam_input.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -320,7 +321,7 @@ int CASWInput::KeyEvent( int down, ButtonCode_t code, const char *pszCurrentBind
 
 	// JOYPAD ADDED
 	// asw - grab joypad presses here
-	if ( code >= JOYSTICK_FIRST && code <= KEY_XSTICK2_UP && GetControllerFocus() )
+	if ( code >= JOYSTICK_FIRST && code <= KEY_XSTICK2_UP && GetControllerFocus() && !g_RD_Steam_Input.m_bInitialized )
 	{
 		if ( down == 1 )
 		{
