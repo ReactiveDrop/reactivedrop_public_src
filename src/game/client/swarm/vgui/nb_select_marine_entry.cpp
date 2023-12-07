@@ -132,6 +132,7 @@ void CNB_Select_Marine_Entry::OnCommand( const char *command )
 		else if ( !Q_stricmp( command, "AcceptButton" ) )
 		{
 			CNB_Select_Marine_Panel* pParent = dynamic_cast<CNB_Select_Marine_Panel*>( GetParent() );
+			pParent->SetHighlight( m_nProfileIndex );
 			pParent->OnCommand( command );
 			return;
 		}
