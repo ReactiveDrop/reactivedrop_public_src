@@ -140,36 +140,43 @@ bool CASW_Hack_Computer::InitHack( CASW_Player *pHackingPlayer, CASW_Marine *pHa
 	{
 		Assert( !pComputer->m_hCustomHack->m_hHack || pComputer->m_hCustomHack->m_hHack.Get() == this );
 		pComputer->m_hCustomHack->m_hHack = this;
+		pComputer->m_hCustomHack->m_hInteracter = pHackingMarine;
 	}
 	if ( pComputer->m_hCustomScreen1 )
 	{
 		Assert( !pComputer->m_hCustomScreen1->m_hHack || pComputer->m_hCustomScreen1->m_hHack.Get() == this );
 		pComputer->m_hCustomScreen1->m_hHack = this;
+		pComputer->m_hCustomScreen1->m_hInteracter = pHackingMarine;
 	}
 	if ( pComputer->m_hCustomScreen2 )
 	{
 		Assert( !pComputer->m_hCustomScreen2->m_hHack || pComputer->m_hCustomScreen2->m_hHack.Get() == this );
 		pComputer->m_hCustomScreen2->m_hHack = this;
+		pComputer->m_hCustomScreen2->m_hInteracter = pHackingMarine;
 	}
 	if ( pComputer->m_hCustomScreen3 )
 	{
 		Assert( !pComputer->m_hCustomScreen3->m_hHack || pComputer->m_hCustomScreen3->m_hHack.Get() == this );
 		pComputer->m_hCustomScreen3->m_hHack = this;
+		pComputer->m_hCustomScreen3->m_hInteracter = pHackingMarine;
 	}
 	if ( pComputer->m_hCustomScreen4 )
 	{
 		Assert( !pComputer->m_hCustomScreen4->m_hHack || pComputer->m_hCustomScreen4->m_hHack.Get() == this );
 		pComputer->m_hCustomScreen4->m_hHack = this;
+		pComputer->m_hCustomScreen4->m_hInteracter = pHackingMarine;
 	}
 	if ( pComputer->m_hCustomScreen5 )
 	{
 		Assert( !pComputer->m_hCustomScreen5->m_hHack || pComputer->m_hCustomScreen5->m_hHack.Get() == this );
 		pComputer->m_hCustomScreen5->m_hHack = this;
+		pComputer->m_hCustomScreen5->m_hInteracter = pHackingMarine;
 	}
 	if ( pComputer->m_hCustomScreen6 )
 	{
 		Assert( !pComputer->m_hCustomScreen6->m_hHack || pComputer->m_hCustomScreen6->m_hHack.Get() == this );
 		pComputer->m_hCustomScreen6->m_hHack = this;
+		pComputer->m_hCustomScreen6->m_hInteracter = pHackingMarine;
 	}
 
 	return BaseClass::InitHack( pHackingPlayer, pHackingMarine, pHackTarget );

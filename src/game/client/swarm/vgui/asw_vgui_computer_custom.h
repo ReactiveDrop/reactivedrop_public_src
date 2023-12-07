@@ -16,7 +16,9 @@ public:
 	void ASWInit();
 	void ASWClose();
 	void PerformLayout() override;
+	void OnThink() override;
 	void Paint() override;
+	bool MouseClick( int x, int y, bool bRightClick, bool bDown ) override;
 
 	// current computer hack
 	CHandle<C_ASW_Hack_Computer> m_hHackComputer;

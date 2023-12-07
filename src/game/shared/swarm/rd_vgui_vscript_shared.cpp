@@ -90,25 +90,32 @@ public:
 		SetBounds( m_pDef->m_x, m_pDef->m_y, m_pDef->m_wide, m_pDef->m_tall );
 	}
 
-	void OnCursorMoved( int x, int y ) override
+	void CursorThink( int x, int y, bool bOverParent )
 	{
-		BaseClass::OnCursorMoved( x, y );
+		int localX = x - m_pDef->m_x;
+		int localY = y - m_pDef->m_y;
 
-		m_pDef->OnCursorMoved( x, y );
-	}
+		bool bLastOver = m_bLastCursorOver;
+		bool bMoved = x != m_iLastX || y != m_iLastY;
+		bool bOver = bOverParent && localX >= 0 && localY >= 0 && localX < m_pDef->m_wide && localY < m_pDef->m_tall;
 
-	void OnCursorEntered() override
-	{
-		BaseClass::OnCursorEntered();
+		m_iLastX = x;
+		m_iLastY = y;
+		m_bLastCursorOver = bOver;
 
-		m_pDef->OnCursorEntered();
-	}
+		if ( bLastOver && !bOver )
+		{
+			m_pDef->OnCursorExited();
+		}
+		else if ( bOver && !bLastOver )
+		{
+			m_pDef->OnCursorEntered();
+		}
 
-	void OnCursorExited() override
-	{
-		BaseClass::OnCursorExited();
-
-		m_pDef->OnCursorExited();
+		if ( bMoved && bOver )
+		{
+			m_pDef->OnCursorMoved( x, y );
+		}
 	}
 
 	void OnMousePressed( vgui::MouseCode code ) override
@@ -119,6 +126,8 @@ public:
 	}
 
 	CRD_VGui_VScript_Button *m_pDef;
+	int m_iLastX{ 0 }, m_iLastY{ 0 };
+	bool m_bLastCursorOver{ false };
 };
 
 static const struct VScriptAllowedButton_t
@@ -153,7 +162,7 @@ CRD_VGui_VScript::CRD_VGui_VScript()
 	SetPredictionEligible( true );
 #else
 	// random check number to make it slightly harder to write a script that interacts with custom screens directly
-	m_iRandomCheck = RandomInt( INT32_MIN, INT32_MAX );
+	m_iRandomCheck = RandomInt( 0, INT32_MAX );
 #endif
 }
 
@@ -312,7 +321,9 @@ void CRD_VGui_VScript::PhysicsSimulate()
 	if ( ShouldPredict() && m_QueuedInputsForPrediction.Count() && m_hInputFunc && m_hInputFunc != INVALID_HSCRIPT )
 	{
 		Assert( !m_bIsPredicting );
+		Assert( !m_bIsInput );
 		m_bIsPredicting = true;
+		m_bIsInput = true;
 
 		FOR_EACH_VEC( m_QueuedInputsForPrediction, i )
 		{
@@ -321,6 +332,7 @@ void CRD_VGui_VScript::PhysicsSimulate()
 		m_QueuedInputsForPrediction.RemoveAll();
 
 		m_bIsPredicting = false;
+		m_bIsInput = false;
 
 		if ( m_hUpdateFunc && m_hUpdateFunc != INVALID_HSCRIPT )
 		{
@@ -360,7 +372,13 @@ bool CRD_VGui_VScript::InterceptButtonPress( ButtonCode_t iButton )
 
 void CRD_VGui_VScript::RunControlFunction( ButtonCode_t iButton )
 {
-	if ( !AllowedToInteract() || !m_hControlFunc || m_hControlFunc == INVALID_HSCRIPT )
+	if ( !AllowedToInteract() )
+		return;
+
+	if ( ( iButton == MOUSE_LEFT || iButton == MOUSE_RIGHT ) && m_iControllerFocusIndex != -1 )
+		m_ButtonDefs[m_iControllerFocusIndex]->OnMousePressed( iButton == MOUSE_RIGHT );
+
+	if ( !m_hControlFunc || m_hControlFunc == INVALID_HSCRIPT )
 		return;
 
 	UpdateControlTable( iButton );
@@ -423,6 +441,11 @@ void CRD_VGui_VScript::InitButtonPanels( vgui::Panel *pParent )
 	Assert( !m_hButtonPanelParent );
 	Assert( !m_ButtonPanels.Count() );
 
+	if ( m_hButtonPanelParent && m_ButtonPanels.Count() == m_ButtonDefs.Count() )
+	{
+		ClearButtonPanels();
+	}
+
 	m_hButtonPanelParent = pParent;
 
 	m_ButtonPanels.SetCount( m_ButtonDefs.Count() );
@@ -448,6 +471,14 @@ void CRD_VGui_VScript::ClearButtonPanels()
 		}
 	}
 	m_ButtonPanels.Purge();
+}
+
+void CRD_VGui_VScript::CursorThink( int x, int y, bool bOverParent )
+{
+	FOR_EACH_VEC( m_ButtonPanels, i )
+	{
+		assert_cast< CRD_VGui_VScript_Button_Panel * >( m_ButtonPanels[i].Get() )->CursorThink( x, y, bOverParent );
+	}
 }
 
 HSCRIPT CRD_VGui_VScript::CreateButton()
@@ -587,6 +618,46 @@ void CRD_VGui_VScript_Button::SetTall( int tall )
 		m_hPanel->InvalidateLayout();
 }
 
+void CRD_VGui_VScript_Button::SetOnCursorMoved( HSCRIPT callback )
+{
+	char buf[256];
+	g_pScriptVM->GenerateUniqueKey( "ButtonOnCursorMoved", buf, sizeof( buf ) );
+	g_pScriptVM->SetValue( m_pOwner->m_ScriptScope, buf, callback );
+	ScriptVariant_t ref;
+	g_pScriptVM->GetValue( m_pOwner->m_ScriptScope, buf, &ref );
+	m_hCursorMovedCallback = ref;
+}
+
+void CRD_VGui_VScript_Button::SetOnCursorEntered( HSCRIPT callback )
+{
+	char buf[256];
+	g_pScriptVM->GenerateUniqueKey( "ButtonOnCursorEntered", buf, sizeof( buf ) );
+	g_pScriptVM->SetValue( m_pOwner->m_ScriptScope, buf, callback );
+	ScriptVariant_t ref;
+	g_pScriptVM->GetValue( m_pOwner->m_ScriptScope, buf, &ref );
+	m_hCursorEnteredCallback = ref;
+}
+
+void CRD_VGui_VScript_Button::SetOnCursorExited( HSCRIPT callback )
+{
+	char buf[256];
+	g_pScriptVM->GenerateUniqueKey( "ButtonOnCursorExited", buf, sizeof( buf ) );
+	g_pScriptVM->SetValue( m_pOwner->m_ScriptScope, buf, callback );
+	ScriptVariant_t ref;
+	g_pScriptVM->GetValue( m_pOwner->m_ScriptScope, buf, &ref );
+	m_hCursorExitedCallback = ref;
+}
+
+void CRD_VGui_VScript_Button::SetOnMousePressed( HSCRIPT callback )
+{
+	char buf[256];
+	g_pScriptVM->GenerateUniqueKey( "ButtonOnMousePressed", buf, sizeof( buf ) );
+	g_pScriptVM->SetValue( m_pOwner->m_ScriptScope, buf, callback );
+	ScriptVariant_t ref;
+	g_pScriptVM->GetValue( m_pOwner->m_ScriptScope, buf, &ref );
+	m_hMousePressedCallback = ref;
+}
+
 void CRD_VGui_VScript_Button::OnCursorMoved( int x, int y )
 {
 	if ( !m_hCursorMovedCallback || m_hCursorMovedCallback == INVALID_HSCRIPT )
@@ -617,7 +688,6 @@ void CRD_VGui_VScript_Button::OnCursorEntered()
 void CRD_VGui_VScript_Button::OnCursorExited()
 {
 	int i = m_pOwner->m_ButtonDefs.Find( this );
-	Assert( m_pOwner->m_iControllerFocusIndex == i );
 	if ( m_pOwner->m_iControllerFocusIndex == i )
 		m_pOwner->m_iControllerFocusIndex = -1;
 

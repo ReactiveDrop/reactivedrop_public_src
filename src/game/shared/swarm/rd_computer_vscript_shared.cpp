@@ -58,6 +58,8 @@ CRD_Computer_VScript::CRD_Computer_VScript()
 #ifdef CLIENT_DLL
 	// remove us from the "always draw" list that our parent parent constructor added us to
 	s_HUDEntities.FindAndRemove( this );
+	// we don't need to be in the global interactive list either
+	s_InteractiveHUDEntities.FindAndRemove( this );
 #endif
 }
 

@@ -52,10 +52,38 @@ void CASW_VGUI_Computer_Custom::PerformLayout()
 	SetBounds( 0, 0, w, t );
 }
 
+void CASW_VGUI_Computer_Custom::OnThink()
+{
+	BaseClass::OnThink();
+
+	if ( C_RD_Computer_VScript *pCustom = m_hCustom )
+	{
+		int x = m_iMouseX, y = m_iMouseY;
+		ScreenToLocal( x, y );
+		pCustom->CursorThink( x, y, m_bMouseIsOver );
+		pCustom->RunControlFunction();
+	}
+}
+
 void CASW_VGUI_Computer_Custom::Paint()
 {
+	BaseClass::Paint();
+
 	if ( C_RD_Computer_VScript *pCustom = m_hCustom )
 	{
 		pCustom->Paint();
 	}
+}
+
+bool CASW_VGUI_Computer_Custom::MouseClick( int x, int y, bool bRightClick, bool bDown )
+{
+	if ( C_RD_Computer_VScript *pCustom = m_hCustom )
+	{
+		if ( bDown )
+		{
+			pCustom->InterceptButtonPress( bRightClick ? MOUSE_RIGHT : MOUSE_LEFT );
+		}
+	}
+
+	return CASW_VGUI_Ingame_Panel::MouseClick( x, y, bRightClick, bDown );
 }

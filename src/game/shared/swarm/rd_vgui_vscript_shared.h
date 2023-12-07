@@ -52,6 +52,7 @@ public:
 	int m_iControllerFocusIndex{ -1 };
 	void InitButtonPanels( vgui::Panel *pParent );
 	void ClearButtonPanels();
+	void CursorThink( int x, int y, bool bOverParent );
 	HSCRIPT CreateButton();
 
 	bool m_bIsControlling{ false };
@@ -96,10 +97,10 @@ public:
 	void SetPos( int x, int y ) { SetX( x ); SetY( y ); }
 	void SetSize( int wide, int tall ) { SetWide( wide ); SetTall( tall ); }
 	void SetBounds( int x, int y, int wide, int tall ) { SetPos( x, y ); SetSize( wide, tall ); }
-	void SetOnCursorMoved( HSCRIPT callback ) { m_hCursorMovedCallback = callback; }
-	void SetOnCursorEntered( HSCRIPT callback ) { m_hCursorEnteredCallback = callback; }
-	void SetOnCursorExited( HSCRIPT callback ) { m_hCursorExitedCallback = callback; }
-	void SetOnMousePressed( HSCRIPT callback ) { m_hMousePressedCallback = callback; }
+	void SetOnCursorMoved( HSCRIPT callback );
+	void SetOnCursorEntered( HSCRIPT callback );
+	void SetOnCursorExited( HSCRIPT callback );
+	void SetOnMousePressed( HSCRIPT callback );
 
 	// callbacks
 	void OnCursorMoved( int x, int y );
