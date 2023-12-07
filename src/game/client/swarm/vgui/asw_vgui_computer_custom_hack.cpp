@@ -8,35 +8,10 @@
 #include "tier0/memdbgon.h"
 
 CASW_VGUI_Computer_Custom_Hack::CASW_VGUI_Computer_Custom_Hack( vgui::Panel *pParent, const char *pElementName, C_ASW_Hack_Computer *pHackComputer, C_RD_Computer_VScript *pCustom ) :
-	BaseClass( pParent, pElementName ),
-	CASW_VGUI_Ingame_Panel(),
-	m_hHackComputer( pHackComputer ),
-	m_hCustom( pCustom )
+	BaseClass( pParent, pElementName, pHackComputer, pCustom )
 {
 }
 
 CASW_VGUI_Computer_Custom_Hack::~CASW_VGUI_Computer_Custom_Hack()
 {
-	CASW_VGUI_Computer_Frame *pComputerFrame = dynamic_cast< CASW_VGUI_Computer_Frame * >( GetClientMode()->GetPanelFromViewport( "ComputerContainer/VGUIComputerFrame" ) );
-	if ( pComputerFrame )
-	{
-		pComputerFrame->m_bHideLogoffButton = false;
-	}
-}
-
-void CASW_VGUI_Computer_Custom_Hack::PerformLayout()
-{
-	BaseClass::PerformLayout();
-
-	int w, t;
-	GetParent()->GetSize( w, t );
-	SetBounds( 0, 0, w, t );
-}
-
-void CASW_VGUI_Computer_Custom_Hack::Paint()
-{
-	if ( C_RD_Computer_VScript *pCustom = m_hCustom )
-	{
-		pCustom->Paint();
-	}
 }

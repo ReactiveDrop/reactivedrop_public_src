@@ -104,14 +104,18 @@ static void ButtonReleaseHelper( ButtonCode_t eButton )
 }
 
 #define RD_STEAM_INPUT_MENU_BIND( ActionName, ConCommandName, eButton, ... ) \
+	static bool s_b##eButton##WasPressed = false; \
 	static void ConCommandName##_press( const CCommand &args ) \
 	{ \
+		s_b##eButton##WasPressed = true; \
 		ButtonPressHelper( eButton ); \
 	} \
 	ConCommand ConCommandName##_press_command( "+" #ConCommandName, &ConCommandName##_press, "helper command for " #eButton, FCVAR_HIDDEN ); \
 	static void ConCommandName##_release( const CCommand &args ) \
 	{ \
-		ButtonReleaseHelper( eButton ); \
+		if ( s_b##eButton##WasPressed ) \
+			ButtonReleaseHelper( eButton ); \
+		s_b##eButton##WasPressed = false; \
 	} \
 	ConCommand ConCommandName##_release_command( "-" #ConCommandName, &ConCommandName##_release, "helper command for " #eButton, FCVAR_HIDDEN ); \
 	RD_STEAM_INPUT_BIND( ActionName, "+" #ConCommandName, __VA_ARGS__ )

@@ -4,14 +4,19 @@
 #include <vgui/ISurface.h>
 #ifdef CLIENT_DLL
 #include "c_asw_inhabitable_npc.h"
+#include "c_asw_hack_computer.h"
 #else
 #include "asw_inhabitable_npc.h"
+#include "asw_hack_computer.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 #ifdef CLIENT_DLL
+BEGIN_PREDICTION_DATA( CRD_Computer_VScript )
+	DEFINE_PRED_FIELD( m_flHackProgress, FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
+END_PREDICTION_DATA();
 #else
 LINK_ENTITY_TO_CLASS( rd_computer_vscript, CRD_Computer_VScript );
 
@@ -25,9 +30,13 @@ BEGIN_NETWORK_TABLE( CRD_Computer_VScript, DT_RD_Computer_VScript )
 #ifdef CLIENT_DLL
 	RecvPropString( RECVINFO( m_szLabel ) ),
 	RecvPropString( RECVINFO( m_szIconName ) ),
+	RecvPropFloat( RECVINFO( m_flHackProgress ) ),
+	RecvPropEHandle( RECVINFO( m_hHack ) ),
 #else
 	SendPropString( SENDINFO( m_szLabel ) ),
 	SendPropString( SENDINFO( m_szIconName ) ),
+	SendPropFloat( SENDINFO( m_flHackProgress ), 10, 0, 0.0f, 1.0f ),
+	SendPropEHandle( SENDINFO( m_hHack ) ),
 #endif
 END_NETWORK_TABLE();
 
@@ -37,12 +46,14 @@ BEGIN_ENT_SCRIPTDESC( CRD_Computer_VScript, CRD_VGui_VScript, "Alien Swarm: Reac
 	DEFINE_SCRIPTFUNC( HackCompleted, "Call when the player has completed the hack." )
 #endif
 	DEFINE_SCRIPTFUNC( Back, "Call to close the computer screen and return to the menu." )
+	DEFINE_SCRIPTFUNC( SetHackProgress, "Set the hack progress between 0 (just started) and 1 (ready to call HackCompleted). Can only be called from Input." )
 END_SCRIPTDESC();
 
 CRD_Computer_VScript::CRD_Computer_VScript()
 {
 	m_szLabel.GetForModify()[0] = '\0';
 	m_szIconName.GetForModify()[0] = '\0';
+	m_flHackProgress = 0.0f;
 
 #ifdef CLIENT_DLL
 	// remove us from the "always draw" list that our parent parent constructor added us to
@@ -138,4 +149,16 @@ void CRD_Computer_VScript::Back()
 {
 	// TODO
 	DebuggerBreakIfDebugging();
+}
+
+void CRD_Computer_VScript::SetHackProgress( float flProgress )
+{
+	Assert( m_bIsInput );
+	if ( !m_bIsInput )
+	{
+		Warning( "%s (%s): Cannot call SetHackProgress outside of Input function.\n", GetDebugClassname(), STRING( m_szClientVScript.Get() ) );
+		return;
+	}
+
+	m_flHackProgress.Set( clamp( flProgress, 0.0f, 1.0f ) );
 }

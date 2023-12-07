@@ -1,5 +1,6 @@
 #include "cbase.h"
 #include "asw_marine_profile.h"
+#include "rd_computer_vscript_shared.h"
 #ifdef CLIENT_DLL
 	#include "c_asw_marine_resource.h"
 	#include "c_asw_player.h"
@@ -318,24 +319,32 @@ bool CASW_Hack_Computer::IsTumblerCorrect(int i)
 
 float CASW_Hack_Computer::GetTumblerProgress()
 {
-	int iCorrect = 0;
-	for (int k=0;k<m_iNumTumblers;k++)
+	if ( CASW_Computer_Area *pArea = GetComputerArea() )
 	{
-		if (IsTumblerCorrect(k))
+		if ( CRD_Computer_VScript *pCustomHack = pArea->m_hCustomHack )
+		{
+			return pCustomHack->m_flHackProgress;
+		}
+	}
+
+	int iCorrect = 0;
+	for ( int k = 0; k < m_iNumTumblers; k++ )
+	{
+		if ( IsTumblerCorrect( k ) )
 		{
 			iCorrect++;
 		}
 	}
-	if (m_iNumTumblers <= 0)
+	if ( m_iNumTumblers <= 0 )
 		return 0;
 
-	if (iCorrect >= m_iNumTumblers)
+	if ( iCorrect >= m_iNumTumblers )
 		return 0;	// don't show any bar if we're finished
 
-	if (iCorrect == 1 && m_iNumTumblers > 2)	// bump the number correct up slightly since 1 correct tumbler means two aligned and the progress bar looks better this way
+	if ( iCorrect == 1 && m_iNumTumblers > 2 )	// bump the number correct up slightly since 1 correct tumbler means two aligned and the progress bar looks better this way
 		iCorrect++;
 
-	return (float(iCorrect) / float(m_iNumTumblers));
+	return ( float( iCorrect ) / float( m_iNumTumblers ) );
 }
 
 void CASW_Hack_Computer::UpdateCorrectStatus(CASW_Player *pPlayer, CASW_Marine *pMarine, int iNumWrong)

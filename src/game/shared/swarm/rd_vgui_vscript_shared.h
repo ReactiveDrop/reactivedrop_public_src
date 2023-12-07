@@ -5,6 +5,10 @@
 #ifdef CLIENT_DLL
 #define CRD_VGui_VScript C_RD_VGui_VScript
 #define CASW_Inhabitable_NPC C_ASW_Inhabitable_NPC
+class CRD_VGui_VScript_Button;
+class CRD_VGui_VScript_Button_Panel;
+
+#include <vgui_controls/PHandle.h>
 #endif
 class CASW_Inhabitable_NPC;
 
@@ -35,13 +39,21 @@ public:
 	bool ShouldPredict() override;
 	C_BasePlayer *GetPredictionOwner() override;
 	void PhysicsSimulate() override;
-	virtual bool AllowedToInteract() { return ShouldPredict(); }
+	virtual bool AllowedToInteract();
 	virtual bool InterceptButtonPress( ButtonCode_t iButton );
 	virtual void RunControlFunction( ButtonCode_t iButton = BUTTON_CODE_NONE );
 	virtual void UpdateControlTable( ButtonCode_t iButton );
 
 	CUtlVector<int> m_QueuedInputsForPrediction;
+
+	CUtlVectorAutoPurge<CRD_VGui_VScript_Button *> m_ButtonDefs;
+	CUtlVector<vgui::DHANDLE<CRD_VGui_VScript_Button_Panel>> m_ButtonPanels;
+	vgui::PHandle m_hButtonPanelParent;
 	int m_iControllerFocusIndex{ -1 };
+	void InitButtonPanels( vgui::Panel *pParent );
+	void ClearButtonPanels();
+	HSCRIPT CreateButton();
+
 	bool m_bIsControlling{ false };
 	bool m_bIsPredicting{ false };
 #else
@@ -52,8 +64,6 @@ public:
 	virtual bool AllowSetInteracter() { return true; }
 
 	void RunVScripts() override;
-
-	bool m_bIsInput{ false };
 #endif
 
 	HSCRIPT m_hInputFunc{ INVALID_HSCRIPT };
@@ -62,5 +72,48 @@ public:
 	CNetworkVar( int, m_iRandomCheck );
 	CNetworkHandle( CASW_Inhabitable_NPC, m_hInteracter );
 
+	bool m_bIsInput{ false };
+
 	const char *GetDebugClassname() const override { return "rd_vgui_vscript"; }
 };
+
+#ifdef CLIENT_DLL
+class CRD_VGui_VScript_Button
+{
+public:
+	CRD_VGui_VScript_Button( CRD_VGui_VScript *pOwner );
+	~CRD_VGui_VScript_Button();
+
+	// script functions
+	int GetX() const { return m_x; }
+	int GetY() const { return m_y; }
+	int GetWide() const { return m_wide; }
+	int GetTall() const { return m_tall; }
+	void SetX( int x);
+	void SetY(int y);
+	void SetWide( int wide );
+	void SetTall( int tall );
+	void SetPos( int x, int y ) { SetX( x ); SetY( y ); }
+	void SetSize( int wide, int tall ) { SetWide( wide ); SetTall( tall ); }
+	void SetBounds( int x, int y, int wide, int tall ) { SetPos( x, y ); SetSize( wide, tall ); }
+	void SetOnCursorMoved( HSCRIPT callback ) { m_hCursorMovedCallback = callback; }
+	void SetOnCursorEntered( HSCRIPT callback ) { m_hCursorEnteredCallback = callback; }
+	void SetOnCursorExited( HSCRIPT callback ) { m_hCursorExitedCallback = callback; }
+	void SetOnMousePressed( HSCRIPT callback ) { m_hMousePressedCallback = callback; }
+
+	// callbacks
+	void OnCursorMoved( int x, int y );
+	void OnCursorEntered();
+	void OnCursorExited();
+	void OnMousePressed( bool right );
+
+	HSCRIPT m_hThis;
+	CRD_VGui_VScript *m_pOwner;
+	int m_x, m_y, m_wide, m_tall;
+	vgui::DHANDLE<CRD_VGui_VScript_Button_Panel> m_hPanel;
+	HSCRIPT m_hCursorMovedCallback{ INVALID_HSCRIPT };
+	HSCRIPT m_hCursorEnteredCallback{ INVALID_HSCRIPT };
+	HSCRIPT m_hCursorExitedCallback{ INVALID_HSCRIPT };
+	HSCRIPT m_hMousePressedCallback{ INVALID_HSCRIPT };
+};
+#endif

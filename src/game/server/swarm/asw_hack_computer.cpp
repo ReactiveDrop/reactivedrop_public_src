@@ -48,9 +48,11 @@ CASW_Hack_Computer::CASW_Hack_Computer()
 
 bool CASW_Hack_Computer::InitHack( CASW_Player *pHackingPlayer, CASW_Marine *pHackingMarine, CBaseEntity *pHackTarget )
 {
+	Assert( pHackTarget );
 	if ( !pHackTarget )
 		return false;
 
+	Assert( pHackTarget->Classify() == CLASS_ASW_COMPUTER_AREA );
 	if ( pHackTarget->Classify() != CLASS_ASW_COMPUTER_AREA )
 		return false;
 
@@ -58,34 +60,37 @@ bool CASW_Hack_Computer::InitHack( CASW_Player *pHackingPlayer, CASW_Marine *pHa
 		return false;
 
 	CASW_Computer_Area *pComputer = assert_cast< CASW_Computer_Area * >( pHackTarget );
-
 	if ( !m_bSetupComputer )
 	{
 		m_bSetupComputer = true;
+
 		m_iNumTumblers = pComputer->m_iHackLevel;	// hack level controls how many tumblers there should be
 		if ( m_iNumTumblers <= 1 )
 			m_iNumTumblers = 5;
 		if ( m_iNumTumblers > ASW_HACK_COMPUTER_MAX_TUMBLERS )
 			m_iNumTumblers = ASW_HACK_COMPUTER_MAX_TUMBLERS;
-		m_iEntriesPerTumbler = pComputer->m_iNumEntriesPerTumbler;	// temp for now
+
+		m_iEntriesPerTumbler = pComputer->m_iNumEntriesPerTumbler;
 		if ( m_iEntriesPerTumbler <= ASW_MIN_ENTRIES_PER_TUMBLER )
 			m_iEntriesPerTumbler = ASW_MIN_ENTRIES_PER_TUMBLER;
 		if ( m_iEntriesPerTumbler >= ASW_MAX_ENTRIES_PER_TUMBLER )
 			m_iEntriesPerTumbler = ASW_MAX_ENTRIES_PER_TUMBLER;
+
 		// check it's an odd number
 		int r = m_iEntriesPerTumbler % 2;
 		if ( r != 1 )
 			r -= 1;
+
 		m_fMoveInterval = pComputer->m_fMoveInterval;	// idle gap between slides (slides are 0.5f seconds long themselves)
+
 		if ( m_fMoveInterval <= 0.3 )
 			m_fMoveInterval = 0.3f;
 		if ( m_fMoveInterval > 2.0f )
 			m_fMoveInterval = 2.0f;
 
 		if ( m_iEntriesPerTumbler % 2 > 0 )
-		{
 			m_iEntriesPerTumbler++;
-		}
+
 		if ( m_iNumTumblers <= 3 )
 			m_iNumTumblers = 3;
 
@@ -97,6 +102,7 @@ bool CASW_Hack_Computer::InitHack( CASW_Player *pHackingPlayer, CASW_Marine *pHa
 				m_iTumblerDirection.Set( i, -1 );
 			else
 				m_iTumblerDirection.Set( i, 1 );
+
 			m_iTumblerPosition.Set( i, random->RandomInt( 0, m_iEntriesPerTumbler - 1 ) );
 			m_iTumblerCorrectNumber.Set( i, random->RandomInt( 0, m_iEntriesPerTumbler - 1 ) );
 
@@ -111,6 +117,7 @@ bool CASW_Hack_Computer::InitHack( CASW_Player *pHackingPlayer, CASW_Marine *pHa
 			}
 			m_iNewTumblerDirection[i] = 0;
 		}
+
 		k++;
 		bIncomplete = ( GetTumblerProgress() < 1.0f );
 
@@ -122,20 +129,47 @@ bool CASW_Hack_Computer::InitHack( CASW_Player *pHackingPlayer, CASW_Marine *pHa
 				m_iTumblerDirection.Set( i, -m_iTumblerDirection[i] );
 			}
 		}
-
-		// have to set this before checking if it's a PDA
-		m_hHackTarget = pHackTarget;
-
-		SetDefaultHackOption();
 	}
-	else
+
+	// have to set this before checking if it's a PDA
+	m_hHackTarget = pHackTarget;
+
+	SetDefaultHackOption();
+
+	if ( pComputer->m_hCustomHack )
 	{
-		// make sure we're back on the right page
-
-		// have to set this before checking if it's a PDA
-		m_hHackTarget = pHackTarget;
-
-		SetDefaultHackOption();
+		Assert( !pComputer->m_hCustomHack->m_hHack || pComputer->m_hCustomHack->m_hHack.Get() == this );
+		pComputer->m_hCustomHack->m_hHack = this;
+	}
+	if ( pComputer->m_hCustomScreen1 )
+	{
+		Assert( !pComputer->m_hCustomScreen1->m_hHack || pComputer->m_hCustomScreen1->m_hHack.Get() == this );
+		pComputer->m_hCustomScreen1->m_hHack = this;
+	}
+	if ( pComputer->m_hCustomScreen2 )
+	{
+		Assert( !pComputer->m_hCustomScreen2->m_hHack || pComputer->m_hCustomScreen2->m_hHack.Get() == this );
+		pComputer->m_hCustomScreen2->m_hHack = this;
+	}
+	if ( pComputer->m_hCustomScreen3 )
+	{
+		Assert( !pComputer->m_hCustomScreen3->m_hHack || pComputer->m_hCustomScreen3->m_hHack.Get() == this );
+		pComputer->m_hCustomScreen3->m_hHack = this;
+	}
+	if ( pComputer->m_hCustomScreen4 )
+	{
+		Assert( !pComputer->m_hCustomScreen4->m_hHack || pComputer->m_hCustomScreen4->m_hHack.Get() == this );
+		pComputer->m_hCustomScreen4->m_hHack = this;
+	}
+	if ( pComputer->m_hCustomScreen5 )
+	{
+		Assert( !pComputer->m_hCustomScreen5->m_hHack || pComputer->m_hCustomScreen5->m_hHack.Get() == this );
+		pComputer->m_hCustomScreen5->m_hHack = this;
+	}
+	if ( pComputer->m_hCustomScreen6 )
+	{
+		Assert( !pComputer->m_hCustomScreen6->m_hHack || pComputer->m_hCustomScreen6->m_hHack.Get() == this );
+		pComputer->m_hCustomScreen6->m_hHack = this;
 	}
 
 	return BaseClass::InitHack( pHackingPlayer, pHackingMarine, pHackTarget );

@@ -28,7 +28,19 @@ CASW_VGUI_Computer_Custom::~CASW_VGUI_Computer_Custom()
 void CASW_VGUI_Computer_Custom::ASWInit()
 {
 	if ( C_RD_Computer_VScript *pCustom = m_hCustom )
+	{
 		pCustom->OnOpened( C_ASW_Marine::GetViewMarine() );
+		pCustom->InitButtonPanels( this );
+	}
+}
+
+void CASW_VGUI_Computer_Custom::ASWClose()
+{
+	if ( C_RD_Computer_VScript *pCustom = m_hCustom )
+	{
+		pCustom->OnClosed();
+		pCustom->ClearButtonPanels();
+	}
 }
 
 void CASW_VGUI_Computer_Custom::PerformLayout()

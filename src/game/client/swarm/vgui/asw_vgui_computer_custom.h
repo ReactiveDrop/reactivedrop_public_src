@@ -14,6 +14,7 @@ public:
 	virtual ~CASW_VGUI_Computer_Custom();
 
 	void ASWInit();
+	void ASWClose();
 	void PerformLayout() override;
 	void Paint() override;
 

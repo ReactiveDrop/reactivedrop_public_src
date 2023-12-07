@@ -6,6 +6,8 @@
 #include "asw_input.h"
 #include "rd_steam_input.h"
 #include "inputsystem/iinputsystem.h"
+#include "controller_focus.h"
+#include <vgui_controls/Panel.h>
 #else
 #include "asw_inhabitable_npc.h"
 #include "asw_player.h"
@@ -49,6 +51,7 @@ BEGIN_ENT_SCRIPTDESC( CRD_VGui_VScript, CRD_HUD_VScript, "Alien Swarm: Reactive 
 	DEFINE_SCRIPTFUNC( SetInt, "Predict a change to the value of an integer parameter. (Only during Input.)" )
 	DEFINE_SCRIPTFUNC( SetFloat, "Predict a change to the value of a float parameter. (Only during Input.)" )
 	DEFINE_SCRIPTFUNC( SetString, "Predict a change to the value of a string parameter. (Only during Input.)" )
+	DEFINE_SCRIPTFUNC( CreateButton, "Creates a button that can be targeted by both the mouse and the controller." )
 #else
 	DEFINE_SCRIPTFUNC( SetInteracter, "Sets the character who is allowed to interact with this screen." )
 #endif
@@ -56,6 +59,68 @@ BEGIN_ENT_SCRIPTDESC( CRD_VGui_VScript, CRD_HUD_VScript, "Alien Swarm: Reactive 
 END_SCRIPTDESC();
 
 #ifdef CLIENT_DLL
+class CRD_VGui_VScript_Button_Panel : public vgui::Panel
+{
+	DECLARE_CLASS_SIMPLE( CRD_VGui_VScript_Button_Panel, vgui::Panel );
+public:
+	CRD_VGui_VScript_Button_Panel( vgui::Panel *parent, const char *panelName, CRD_VGui_VScript_Button *pDef ) : BaseClass( parent, panelName )
+	{
+		Assert( !pDef->m_hPanel );
+		pDef->m_hPanel = this;
+
+		m_pDef = pDef;
+
+		GetControllerFocus()->AddToFocusList( this );
+
+		SetKeyBoardInputEnabled( false );
+	}
+
+	~CRD_VGui_VScript_Button_Panel()
+	{
+		Assert( m_pDef->m_hPanel.Get() == this );
+		m_pDef->m_hPanel = NULL;
+
+		GetControllerFocus()->RemoveFromFocusList( this );
+	}
+
+	void PerformLayout() override
+	{
+		BaseClass::PerformLayout();
+
+		SetBounds( m_pDef->m_x, m_pDef->m_y, m_pDef->m_wide, m_pDef->m_tall );
+	}
+
+	void OnCursorMoved( int x, int y ) override
+	{
+		BaseClass::OnCursorMoved( x, y );
+
+		m_pDef->OnCursorMoved( x, y );
+	}
+
+	void OnCursorEntered() override
+	{
+		BaseClass::OnCursorEntered();
+
+		m_pDef->OnCursorEntered();
+	}
+
+	void OnCursorExited() override
+	{
+		BaseClass::OnCursorExited();
+
+		m_pDef->OnCursorExited();
+	}
+
+	void OnMousePressed( vgui::MouseCode code ) override
+	{
+		BaseClass::OnMousePressed( code );
+
+		m_pDef->OnMousePressed( code == MOUSE_RIGHT );
+	}
+
+	CRD_VGui_VScript_Button *m_pDef;
+};
+
 static const struct VScriptAllowedButton_t
 {
 	ButtonCode_t code;
@@ -96,6 +161,11 @@ CRD_VGui_VScript::~CRD_VGui_VScript()
 {
 #ifdef CLIENT_DLL
 	s_InteractiveHUDEntities.FindAndRemove( this );
+
+	if ( m_hButtonPanelParent )
+	{
+		ClearButtonPanels();
+	}
 #endif
 
 	if ( m_ScriptScope.IsInitialized() )
@@ -216,7 +286,7 @@ void CRD_VGui_VScript::OnDataChanged( DataUpdateType_t type )
 		}
 		if ( !m_hInputFunc || m_hInputFunc == INVALID_HSCRIPT )
 		{
-			Warning( "%s (%s) does not have an Input function in its script scope. (This function should match on the client and the server.)\n", GetDebugClassname(), STRING( m_szClientVScript.Get() ) );
+			Warning( "%s (%s) does not have an Input function in its client script scope. (This function should match on the client and the server.)\n", GetDebugClassname(), STRING( m_szClientVScript.Get() ) );
 		}
 	}
 }
@@ -259,6 +329,15 @@ void CRD_VGui_VScript::PhysicsSimulate()
 	}
 
 	BaseClass::PhysicsSimulate();
+}
+
+bool CRD_VGui_VScript::AllowedToInteract()
+{
+	ASSERT_LOCAL_PLAYER_RESOLVABLE();
+
+	C_BaseEntity *pOwner = GetPredictionOwner();
+
+	return pOwner && pOwner == C_BasePlayer::GetLocalPlayer();
 }
 
 bool CRD_VGui_VScript::InterceptButtonPress( ButtonCode_t iButton )
@@ -335,7 +414,55 @@ void CRD_VGui_VScript::UpdateControlTable( ButtonCode_t iButton )
 	g_pScriptVM->SetValue( m_hControlTable, "look_x", flLookX / MAX_BUTTONSAMPLE );
 	g_pScriptVM->SetValue( m_hControlTable, "look_y", flLookY / MAX_BUTTONSAMPLE );
 
-	g_pScriptVM->SetValue( m_hControlTable, "focus", m_iControllerFocusIndex );
+	g_pScriptVM->SetValue( m_hControlTable, "focus", m_iControllerFocusIndex == -1 ? SCRIPT_VARIANT_NULL : m_ButtonDefs[m_iControllerFocusIndex]->m_hThis );
+}
+
+void CRD_VGui_VScript::InitButtonPanels( vgui::Panel *pParent )
+{
+	Assert( pParent );
+	Assert( !m_hButtonPanelParent );
+	Assert( !m_ButtonPanels.Count() );
+
+	m_hButtonPanelParent = pParent;
+
+	m_ButtonPanels.SetCount( m_ButtonDefs.Count() );
+	FOR_EACH_VEC( m_ButtonDefs, i )
+	{
+		m_ButtonPanels[i] = new CRD_VGui_VScript_Button_Panel( pParent, "VScriptButtonPanel", m_ButtonDefs[i] );
+	}
+}
+
+void CRD_VGui_VScript::ClearButtonPanels()
+{
+	Assert( m_hButtonPanelParent );
+	Assert( m_ButtonPanels.Count() == m_ButtonDefs.Count() );
+
+	m_hButtonPanelParent = NULL;
+	FOR_EACH_VEC( m_ButtonPanels, i )
+	{
+		vgui::Panel *pPanel = m_ButtonPanels[i];
+		Assert( pPanel );
+		if ( pPanel )
+		{
+			pPanel->MarkForDeletion();
+		}
+	}
+	m_ButtonPanels.Purge();
+}
+
+HSCRIPT CRD_VGui_VScript::CreateButton()
+{
+	CRD_VGui_VScript_Button *pButton = new CRD_VGui_VScript_Button( this );
+	int i = m_ButtonDefs.AddToTail( pButton );
+
+	if ( m_hButtonPanelParent )
+	{
+		int j = m_ButtonPanels.AddToTail();
+		Assert( i == j );
+		m_ButtonPanels[j] = new CRD_VGui_VScript_Button_Panel( m_hButtonPanelParent, "VScriptButtonPanel", pButton );
+	}
+
+	return pButton->m_hThis;
 }
 #else
 void CRD_VGui_VScript::OnInput( int value )
@@ -380,7 +507,7 @@ void CRD_VGui_VScript::RunVScripts()
 	m_hInputFunc = m_ScriptScope.IsInitialized() ? m_ScriptScope.LookupFunction( "Input" ) : INVALID_HSCRIPT;
 	if ( !m_hInputFunc || m_hInputFunc == INVALID_HSCRIPT )
 	{
-		Warning( "%s (%s) does not have an Input function in its script scope. (This function should match on the client and the server.)\n", GetDebugClassname(), STRING( m_szClientVScript.Get() ) );
+		Warning( "%s (%s) does not have an Input function in its server script scope. (This function should match on the client and the server.)\n", GetDebugClassname(), STRING( m_szClientVScript.Get() ) );
 	}
 }
 #endif
@@ -389,3 +516,128 @@ HSCRIPT CRD_VGui_VScript::GetInteracter()
 {
 	return ToHScript( m_hInteracter );
 }
+
+#ifdef CLIENT_DLL
+BEGIN_SCRIPTDESC_ROOT( CRD_VGui_VScript_Button, "Alien Swarm: Reactive Drop scriptable interactive UI button" )
+	DEFINE_SCRIPTFUNC( GetX, "Gets the x position of the button." )
+	DEFINE_SCRIPTFUNC( GetY, "Gets the x position of the button." )
+	DEFINE_SCRIPTFUNC( GetWide, "Gets the width of the button." )
+	DEFINE_SCRIPTFUNC( GetTall, "Gets the height of the button." )
+	DEFINE_SCRIPTFUNC( SetX, "Sets the y position of the button." )
+	DEFINE_SCRIPTFUNC( SetY, "Sets the y position of the button." )
+	DEFINE_SCRIPTFUNC( SetWide, "Sets the width of the button." )
+	DEFINE_SCRIPTFUNC( SetTall, "Sets the height of the button." )
+	DEFINE_SCRIPTFUNC( SetPos, "Sets the x and y position of the button." )
+	DEFINE_SCRIPTFUNC( SetSize, "Sets the width and height of the button." )
+	DEFINE_SCRIPTFUNC( SetBounds, "Sets the x and y position and width and height of the button." )
+	DEFINE_SCRIPTFUNC( SetOnCursorMoved, "Sets a function that will be called when the cursor is moved over this button." )
+	DEFINE_SCRIPTFUNC( SetOnCursorEntered, "Sets a function that will be called when the cursor moves onto this button." )
+	DEFINE_SCRIPTFUNC( SetOnCursorExited, "Sets a function that will be called when the cursor moves off of this button." )
+	DEFINE_SCRIPTFUNC( SetOnMousePressed, "Sets a function that will be called when a mouse button is pressed on this button." )
+END_SCRIPTDESC();
+
+CRD_VGui_VScript_Button::CRD_VGui_VScript_Button( CRD_VGui_VScript *pOwner )
+{
+	m_hThis = g_pScriptVM->RegisterInstance( this );
+	m_pOwner = pOwner;
+	m_x = 0;
+	m_y = 0;
+	m_wide = YRES( 30 );
+	m_tall = YRES( 10 );
+}
+
+CRD_VGui_VScript_Button::~CRD_VGui_VScript_Button()
+{
+	if ( m_hThis )
+	{
+		g_pScriptVM->RemoveInstance( m_hThis );
+	}
+	m_hThis = NULL;
+}
+
+void CRD_VGui_VScript_Button::SetX( int x )
+{
+	m_x = x;
+
+	if ( m_hPanel )
+		m_hPanel->InvalidateLayout();
+}
+
+void CRD_VGui_VScript_Button::SetY( int y )
+{
+	m_y = y;
+
+	if ( m_hPanel )
+		m_hPanel->InvalidateLayout();
+}
+
+void CRD_VGui_VScript_Button::SetWide( int wide )
+{
+	m_wide = wide;
+
+	if ( m_hPanel )
+		m_hPanel->InvalidateLayout();
+}
+
+void CRD_VGui_VScript_Button::SetTall( int tall )
+{
+	m_tall = tall;
+
+	if ( m_hPanel )
+		m_hPanel->InvalidateLayout();
+}
+
+void CRD_VGui_VScript_Button::OnCursorMoved( int x, int y )
+{
+	if ( !m_hCursorMovedCallback || m_hCursorMovedCallback == INVALID_HSCRIPT )
+		return;
+
+	Assert( !m_pOwner->m_bIsControlling );
+	m_pOwner->m_bIsControlling = true;
+	g_pScriptVM->Call( m_hCursorMovedCallback, m_pOwner->m_ScriptScope, true, NULL, x, y );
+	m_pOwner->m_bIsControlling = false;
+}
+
+void CRD_VGui_VScript_Button::OnCursorEntered()
+{
+	int i = m_pOwner->m_ButtonDefs.Find( this );
+	Assert( m_pOwner->m_iControllerFocusIndex != i );
+	m_pOwner->m_iControllerFocusIndex = i;
+	Assert( m_pOwner->m_iControllerFocusIndex != -1 );
+
+	if ( !m_hCursorEnteredCallback || m_hCursorEnteredCallback == INVALID_HSCRIPT )
+		return;
+
+	Assert( !m_pOwner->m_bIsControlling );
+	m_pOwner->m_bIsControlling = true;
+	g_pScriptVM->Call( m_hCursorEnteredCallback, m_pOwner->m_ScriptScope );
+	m_pOwner->m_bIsControlling = false;
+}
+
+void CRD_VGui_VScript_Button::OnCursorExited()
+{
+	int i = m_pOwner->m_ButtonDefs.Find( this );
+	Assert( m_pOwner->m_iControllerFocusIndex == i );
+	if ( m_pOwner->m_iControllerFocusIndex == i )
+		m_pOwner->m_iControllerFocusIndex = -1;
+
+	if ( !m_hCursorExitedCallback || m_hCursorExitedCallback == INVALID_HSCRIPT )
+		return;
+
+	Assert( !m_pOwner->m_bIsControlling );
+	m_pOwner->m_bIsControlling = true;
+	g_pScriptVM->Call( m_hCursorExitedCallback, m_pOwner->m_ScriptScope );
+	m_pOwner->m_bIsControlling = false;
+}
+
+void CRD_VGui_VScript_Button::OnMousePressed( bool right )
+{
+	if ( !m_hMousePressedCallback || m_hMousePressedCallback == INVALID_HSCRIPT )
+		return;
+
+	Assert( !m_pOwner->m_bIsControlling );
+	m_pOwner->m_bIsControlling = true;
+	g_pScriptVM->Call( m_hMousePressedCallback, m_pOwner->m_ScriptScope, true, NULL, right );
+	m_pOwner->m_bIsControlling = false;
+}
+#endif

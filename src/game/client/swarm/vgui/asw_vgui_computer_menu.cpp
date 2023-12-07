@@ -422,6 +422,11 @@ void CASW_VGUI_Computer_Menu::OnThink()
 	{
 		if ( m_hCurrentPage.Get() == NULL || m_hCurrentPage->GetAlpha() <= 0 )
 		{
+			if ( CASW_VGUI_Computer_Custom *pCustom = dynamic_cast< CASW_VGUI_Computer_Custom * >( m_hCurrentPage.Get() ) )
+			{
+				pCustom->ASWClose();
+			}
+
 			m_hCurrentPage->SetVisible( false );
 			m_hCurrentPage->MarkForDeletion();
 			m_hCurrentPage = NULL;
@@ -605,6 +610,7 @@ void CASW_VGUI_Computer_Menu::LaunchHackOption( int iOption )
 		{
 			CASW_VGUI_Computer_Custom_Hack *pPage = new CASW_VGUI_Computer_Custom_Hack( this, "ComputerCustomHack", m_hHackComputer, pArea->m_hCustomHack );
 			pPage->SetPos( 0, 0 );
+			pPage->ASWInit();
 			m_hCurrentPage = pPage;
 		}
 		else

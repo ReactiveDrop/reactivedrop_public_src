@@ -52,6 +52,8 @@ ConVar joy_tilted_view( "joy_tilted_view", "0", FCVAR_ARCHIVE, "Set to 1 when us
 ConVar asw_horizontal_autoaim( "asw_horizontal_autoaim", "1", FCVAR_NONE, "Applies horizontal correction towards best aim ent." );
 
 ConVar joy_disable_movement_in_ui( "joy_disable_movement_in_ui", "1", FCVAR_NONE, "Disables joystick character movement when UI is active." );
+ConVar rd_input_controller_mode_mouse( "rd_input_controller_mode_mouse", "-1", FCVAR_NONE );
+ConVar rd_input_controller_mode_keyboard( "rd_input_controller_mode_keyboard", "-1", FCVAR_NONE );
 
 extern kbutton_t in_attack;
 extern kbutton_t in_walk;
@@ -1632,6 +1634,9 @@ void CASWInput::ControllerMove( int nSlot, float frametime, CUserCmd *cmd )
 
 void CASWInput::SetControllerModeMouse( bool bControllerMode )
 {
+	if ( rd_input_controller_mode_mouse.GetInt() != -1 )
+		bControllerMode = rd_input_controller_mode_mouse.GetBool();
+
 	if ( m_bControllerModeMouse == bControllerMode )
 		return;
 
@@ -1648,6 +1653,9 @@ void CASWInput::SetControllerModeMouse( bool bControllerMode )
 
 void CASWInput::SetControllerModeKeyboard( bool bControllerMode )
 {
+	if ( rd_input_controller_mode_keyboard.GetInt() != -1 )
+		bControllerMode = rd_input_controller_mode_keyboard.GetBool();
+
 	if ( m_bControllerModeKeyboard == bControllerMode )
 		return;
 
