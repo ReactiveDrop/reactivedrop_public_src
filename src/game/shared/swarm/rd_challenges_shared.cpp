@@ -380,6 +380,9 @@ static const char *s_szOfficialChallenges[] =
 	"asw_infection",
 	"asw_infection_fp",
 	"asw_infection_tp",
+	"asw_infectionclassic",
+	"asw_infectionclassic_fp",
+	"asw_infectionclassic_tp",
 };
 
 bool ReactiveDropChallenges::IsOfficial( const char *pszChallengeName )
