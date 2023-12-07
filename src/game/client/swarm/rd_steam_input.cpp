@@ -94,7 +94,7 @@ void CRD_Steam_Input::PostInit()
 	V_GetCurrentDirectory( szCWD, sizeof( szCWD ) );
 	CUtlString szInputActionManifest = CUtlString::PathJoin( szCWD, "steam_input/steam_input_manifest.vdf" );
 	bSuccess = pSteamInput->SetInputActionManifestFilePath( szInputActionManifest );
-	Assert( bSuccess );
+	//Assert( bSuccess );
 	if ( !bSuccess )
 		Warning( "ISteamInput::SetInputActionManifestFilePath returned failure status\n" );
 

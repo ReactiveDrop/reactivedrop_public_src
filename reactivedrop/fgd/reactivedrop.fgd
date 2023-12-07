@@ -861,6 +861,18 @@ asw_pickup_50calmg : "50cal Machine Gun"
 	client_vscript(script) : "Client Script" : "" : "Name of script file to run on clients."
 ]
 
+@PointClass base(Targetname) = rd_vgui_vscript : "VScript-driven HUD (interactive)"
+[
+	client_vscript(script) : "Client Script" : "" : "Name of script file to run on clients."
+]
+
+@PointClass base(Targetname) = rd_computer_vscript : "VScript-driven computer screen"
+[
+	client_vscript(script) : "Client Script" : "" : "Name of script file to run on clients."
+	Label(string) : "Label" : "" : "Label on the computer menu"
+	IconName(material) : "Icon Name" : "" : "The name of the material for the icon on the computer menu. A material with the same name plus Striped is used as well."
+]
+
 @PointClass base(Angles) iconsprite("editor/teamspen210/comp_propcombine_set") wirebox(mins, maxs) = comp_propcombine_set : "Specifies a group of props that will be combined together."
 [
 	mins(vector) : "BBox Mins" : "-32 -32 -32" : "Minimum offset from the entity, defining the shape."

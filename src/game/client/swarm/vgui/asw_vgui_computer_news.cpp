@@ -25,7 +25,8 @@
 CASW_VGUI_Computer_News::CASW_VGUI_Computer_News( vgui::Panel *pParent, const char *pElementName, C_ASW_Hack_Computer *pHackComputer ) :
 	BaseClass( pParent, pElementName ),
 	CASW_VGUI_Ingame_Panel(),
-	m_pHackComputer( pHackComputer )
+	m_hHackComputer( pHackComputer ),
+	m_pKeyValues( ( KeyValues * )NULL )
 {
 	CASW_VGUI_Computer_Frame *pComputerFrame = dynamic_cast< CASW_VGUI_Computer_Frame * >( GetClientMode()->GetPanelFromViewport( "ComputerContainer/VGUIComputerFrame" ) );
 	if ( pComputerFrame )
@@ -39,17 +40,13 @@ CASW_VGUI_Computer_News::CASW_VGUI_Computer_News( vgui::Panel *pParent, const ch
 	m_pBackButton = new ImageButton( this, "BackButton", "#asw_SynTekBackButton" );
 	m_pBackButton->SetContentAlignment( vgui::Label::a_center );
 	m_pBackButton->AddActionSignalTarget( this );
-	KeyValues *msg = new KeyValues( "Command" );
-	msg->SetString( "command", "Back" );
-	m_pBackButton->SetCommand( msg->MakeCopy() );
-	m_pBackButton->SetCancelCommand( msg );
+	m_pBackButton->SetCommand( new KeyValues( "Command", "command", "Back" ) );
+	m_pBackButton->SetCancelCommand( new KeyValues( "Command", "command", "Back" ) );
 	m_pBackButton->SetAlpha( 0 );
 
 	m_pMoreButton = new ImageButton( this, "BackButton", "#asw_SynTekMoreButton" );
 	m_pMoreButton->AddActionSignalTarget( this );
-	KeyValues *moremsg = new KeyValues( "Command" );
-	moremsg->SetString( "command", "More" );
-	m_pMoreButton->SetCommand( moremsg );
+	m_pMoreButton->SetCommand( new KeyValues( "Command", "command", "More" ) );
 	m_pMoreButton->SetAlpha( 0 );
 
 	m_pTitleLabel = new vgui::Label( this, "TitleLabel", "#asw_SynTekNews" );
@@ -73,7 +70,6 @@ CASW_VGUI_Computer_News::CASW_VGUI_Computer_News( vgui::Panel *pParent, const ch
 	m_pHeadline = new vgui::Label( this, "Headline", "" );
 	m_pHeadlineDate = new vgui::Label( this, "HeadlineDate", "" );
 
-	m_pKeyValues = NULL;
 	SetLabelsFromFile();
 
 	if ( GetControllerFocus() )
@@ -92,9 +88,6 @@ CASW_VGUI_Computer_News::~CASW_VGUI_Computer_News()
 		pComputerFrame->m_bHideLogoffButton = false;
 	}
 
-	if ( m_pKeyValues )
-		m_pKeyValues->deleteThis();
-
 	if ( GetControllerFocus() )
 	{
 		GetControllerFocus()->RemoveFromFocusList( m_pBackButton );
@@ -104,10 +97,7 @@ CASW_VGUI_Computer_News::~CASW_VGUI_Computer_News()
 
 void CASW_VGUI_Computer_News::SetLabelsFromFile()
 {
-	if ( !m_pHackComputer )
-		return;
-
-	C_ASW_Computer_Area *pArea = m_pHackComputer->GetComputerArea();
+	C_ASW_Computer_Area *pArea = m_hHackComputer ? m_hHackComputer->GetComputerArea() : NULL;
 	if ( !pArea )
 		return;
 
@@ -125,11 +115,11 @@ void CASW_VGUI_Computer_News::SetLabelsFromFile()
 		V_strncpy( uilanguage, SteamApps()->GetCurrentGameLanguage(), sizeof( uilanguage ) );
 	}
 
-	Q_snprintf( buffer, sizeof( buffer ), "resource/news/%s_%s.txt", pszNewsFile, uilanguage );
+	V_snprintf( buffer, sizeof( buffer ), "resource/news/%s_%s.txt", pszNewsFile, uilanguage );
 	if ( m_pKeyValues )
 		m_pKeyValues->deleteThis();
 
-	m_pKeyValues = new KeyValues( "News" );
+	m_pKeyValues.Assign( new KeyValues( "News" ) );
 
 	if ( !UTIL_RD_LoadKeyValuesFromFile( m_pKeyValues, filesystem, buffer, "GAME" ) )
 	{
@@ -162,41 +152,39 @@ void CASW_VGUI_Computer_News::PerformLayout()
 {
 	m_fScale = ScreenHeight() / 768.0f;
 
-	int w = GetParent()->GetWide();
-	int h = GetParent()->GetTall();
-	SetWide( w );
-	SetTall( h );
-	SetPos( 0, 0 );
+	int w, t;
+	GetParent()->GetSize( w, t );
+	SetBounds( 0, 0, w, t );
 
-	m_pBackButton->SetPos( w * 0.75, h * 0.9 );
+	m_pBackButton->SetPos( w * 0.75, t * 0.9 );
 	m_pBackButton->SetSize( 128 * m_fScale, 28 * m_fScale );
 
-	m_pMoreButton->SetBounds( w * 0.75 - 136 * m_fScale, h * 0.9, 128 * m_fScale, 28 * m_fScale );
+	m_pMoreButton->SetBounds( w * 0.75 - 136 * m_fScale, t * 0.9, 128 * m_fScale, 28 * m_fScale );
 
 	m_pTitleLabel->SetContentAlignment( vgui::Label::a_center );
 
-	m_pTitleLabel->SetSize( w, h * 0.2f );
+	m_pTitleLabel->SetSize( w, t * 0.2f );
 	m_pTitleLabel->SetContentAlignment( vgui::Label::a_center );
 	m_pTitleLabel->SetPos( 0, 0 );
 	m_pTitleLabel->SetZPos( 160 );
 
-	const float ypos = 0.3f * h;
-	m_pHeadline->SetPos( 0.2f * w, 0.15f * h );
-	m_pHeadline->SetSize( 0.75f * w, 0.1f * h );
+	const float ypos = 0.3f * t;
+	m_pHeadline->SetPos( 0.2f * w, 0.15f * t );
+	m_pHeadline->SetSize( 0.75f * w, 0.1f * t );
 	m_pHeadline->SetContentAlignment( vgui::Label::a_center );
-	m_pHeadlineBackdrop->SetPos( 0.2f * w, 0.15f * h );
-	m_pHeadlineBackdrop->SetSize( 0.75f * w, 0.11f * h );
+	m_pHeadlineBackdrop->SetPos( 0.2f * w, 0.15f * t );
+	m_pHeadlineBackdrop->SetSize( 0.75f * w, 0.11f * t );
 
-	m_pHeadlineDate->SetPos( 0.2f * w, 0.16f * h );
-	m_pHeadlineDate->SetSize( 0.75f * w, 0.1f * h );
+	m_pHeadlineDate->SetPos( 0.2f * w, 0.16f * t );
+	m_pHeadlineDate->SetSize( 0.75f * w, 0.1f * t );
 	m_pHeadlineDate->SetContentAlignment( vgui::Label::a_southeast );
 
 	m_pTitleIcon->SetShouldScaleImage( true );
 	int ix, iy, iw, it;
 	ix = w * 0.05f;
-	iy = h * 0.05f;
+	iy = t * 0.05f;
 	iw = w * 0.5f;
-	it = h * 0.5f;
+	it = t * 0.5f;
 	m_pTitleIcon->SetPos( ix, iy );
 	m_pTitleIcon->SetSize( iw, it );
 	m_pTitleIcon->SetZPos( 160 );
@@ -215,15 +203,15 @@ void CASW_VGUI_Computer_News::PerformLayout()
 	for ( int i = 0; i < 4; i++ )
 	{
 		// todo: resize these based on their content
-		const float yypos = 0.3f * h + i * 0.12f;
+		const float yypos = 0.3f * t + i * 0.12f;
 		m_pBody[i]->SetPos( left_edge, yypos );
-		m_pBody[i]->SetSize( full_width, 0.7f * h - yypos );
+		m_pBody[i]->SetSize( full_width, 0.7f * t - yypos );
 		m_pBody[i]->InvalidateLayout();
 	}
 
 	m_pBodyList->SetFirstColumnWidth( 0 );
 	m_pBodyList->SetPos( left_edge, ypos );
-	m_pBodyList->SetSize( full_width, 0.85f * h - ypos );
+	m_pBodyList->SetSize( full_width, 0.85f * t - ypos );
 
 	// make sure all the labels expand to cover the new sizes	 
 	m_pBodyList->InvalidateLayout();
@@ -231,7 +219,6 @@ void CASW_VGUI_Computer_News::PerformLayout()
 	m_pHeadline->InvalidateLayout();
 	m_pHeadlineDate->InvalidateLayout();
 }
-
 
 void CASW_VGUI_Computer_News::ASWInit()
 {
@@ -340,7 +327,6 @@ void CASW_VGUI_Computer_News::ApplySettingAndFadeLabelIn( vgui::Panel *pLabel )
 	}
 }
 
-
 void CASW_VGUI_Computer_News::OnThink()
 {
 	int w, t;
@@ -426,7 +412,7 @@ bool CASW_VGUI_Computer_News::MouseClick( int x, int y, bool bRightClick, bool b
 
 void CASW_VGUI_Computer_News::OnCommand( char const *command )
 {
-	if ( !Q_strcmp( command, "Back" ) )
+	if ( FStrEq( command, "Back" ) )
 	{
 		// fade out and reshow menu
 		CASW_VGUI_Computer_Menu *pMenu = dynamic_cast< CASW_VGUI_Computer_Menu * >( GetParent() );
@@ -436,7 +422,7 @@ void CASW_VGUI_Computer_News::OnCommand( char const *command )
 		}
 		return;
 	}
-	else if ( !Q_strcmp( command, "More" ) )
+	else if ( FStrEq( command, "More" ) )
 	{
 		ScrollNews();
 		return;

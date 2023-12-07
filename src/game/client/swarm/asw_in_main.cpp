@@ -20,6 +20,7 @@
 #include "holdout_resupply_frame.h"
 #include "asw_trace_filter.h"
 #include "menu.h"
+#include "rd_vgui_vscript_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -361,6 +362,18 @@ int CASWInput::KeyEvent( int down, ButtonCode_t code, const char *pszCurrentBind
 		return false;
 	}
 
+	if ( down == 1 )
+	{
+		FOR_EACH_VEC( CRD_VGui_VScript::s_InteractiveHUDEntities, i )
+		{
+			CRD_VGui_VScript *pUI = CRD_VGui_VScript::s_InteractiveHUDEntities[i];
+			if ( pUI && pUI->InterceptButtonPress( code ) )
+			{
+				return false;
+			}
+		}
+	}
+
 	return CInput::KeyEvent( down, code, pszCurrentBinding );
 }
 
@@ -675,6 +688,15 @@ void CASWInput::CreateMove( int sequence_number, float input_sample_frametime, b
 
 	pVerified->m_cmd = *cmd;
 	pVerified->m_crc = cmd->GetChecksum();
+
+	FOR_EACH_VEC( CRD_VGui_VScript::s_InteractiveHUDEntities, i )
+	{
+		CRD_VGui_VScript *pUI = CRD_VGui_VScript::s_InteractiveHUDEntities[i];
+		if ( pUI )
+		{
+			pUI->RunControlFunction();
+		}
+	}
 }
 
 // asw

@@ -1,26 +1,21 @@
 #include "cbase.h"
 #include "asw_vgui_computer_mail.h"
-#include "asw_vgui_computer_menu.h"
-#include "vgui/ISurface.h"
-#include "c_asw_hack_computer.h"
-#include "c_asw_computer_area.h"
-#include <vgui/IInput.h>
-#include <vgui_controls/AnimationController.h>
-#include <vgui_controls/ImagePanel.h>
-#include "vgui_controls/TextImage.h"
-#include "vgui/ILocalize.h"
-#include "WrappedLabel.h"
-#include "filesystem.h"
-#include <keyvalues.h>
-#include "controller_focus.h"
-#include "vgui_controls\PanelListPanel.h"
-#include "ImageButton.h"
-#include <vgui_controls/ScrollBar.h>
-#include <vgui_controls/Button.h>
 #include "asw_vgui_computer_frame.h"
-#include "clientmode_asw.h"
-#include "c_asw_player.h"
+#include "asw_vgui_computer_menu.h"
+#include <vgui_controls/AnimationController.h>
+#include <vgui_controls/Button.h>
+#include <vgui_controls/ImagePanel.h>
+#include <vgui_controls/ScrollBar.h>
+#include <vgui_controls/TextImage.h>
+#include <vgui/ILocalize.h>
+#include "clientmode.h"
+#include "imagebutton.h"
+#include "wrappedlabel.h"
+#include "c_asw_computer_area.h"
+#include "c_asw_hack_computer.h"
+#include "asw_computer_area_shared.h"
 #include "asw_util_shared.h"
+#include "controller_focus.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -28,7 +23,8 @@
 CASW_VGUI_Computer_Mail::CASW_VGUI_Computer_Mail( vgui::Panel *pParent, const char *pElementName, C_ASW_Hack_Computer *pHackComputer ) :
 	BaseClass( pParent, pElementName ),
 	CASW_VGUI_Ingame_Panel(),
-	m_pHackComputer( pHackComputer )
+	m_hHackComputer( pHackComputer ),
+	m_pMailKeyValues( ( KeyValues * )NULL )
 {
 	CASW_VGUI_Computer_Frame *pComputerFrame = dynamic_cast< CASW_VGUI_Computer_Frame * >( GetClientMode()->GetPanelFromViewport( "ComputerContainer/VGUIComputerFrame" ) );
 	if ( pComputerFrame )
@@ -36,15 +32,15 @@ CASW_VGUI_Computer_Mail::CASW_VGUI_Computer_Mail( vgui::Panel *pParent, const ch
 		pComputerFrame->m_bHideLogoffButton = true;
 	}
 
+	C_ASW_Computer_Area *pArea = pHackComputer ? pHackComputer->GetComputerArea() : NULL;
+
 	m_bMouseOverBackButton = false;
 
 	m_pBackButton = new ImageButton( this, "BackButton", "#asw_SynTekBackButton" );
 	m_pBackButton->SetContentAlignment( vgui::Label::a_center );
 	m_pBackButton->AddActionSignalTarget( this );
-	KeyValues *msg = new KeyValues( "Command" );
-	msg->SetString( "command", "Back" );
-	m_pBackButton->SetCommand( msg->MakeCopy() );
-	m_pBackButton->SetCancelCommand( msg );
+	m_pBackButton->SetCommand( new KeyValues( "Command", "command", "Back" ) );
+	m_pBackButton->SetCancelCommand( new KeyValues( "Command", "command", "Back" ) );
 	m_pBackButton->SetAlpha( 0 );
 
 	if ( IsPDA() )
@@ -64,18 +60,11 @@ CASW_VGUI_Computer_Mail::CASW_VGUI_Computer_Mail( vgui::Panel *pParent, const ch
 	m_pTitleIconShadow = new vgui::ImagePanel( this, "TitleIconShadow" );
 	if ( IsPDA() )
 	{
-		if ( m_pHackComputer && m_pHackComputer->GetComputerArea() )
+		if ( pArea )
 		{
 			// set the label based on PDA name
 			wchar_t wnamebuffer[64];
-			if ( const wchar_t *pwszName = g_pVGuiLocalize->Find( m_pHackComputer->GetComputerArea()->m_PDAName.Get() ) )
-			{
-				V_wcsncpy( wnamebuffer, pwszName, sizeof( wnamebuffer ) );
-			}
-			else
-			{
-				g_pVGuiLocalize->ConvertANSIToUnicode( m_pHackComputer->GetComputerArea()->m_PDAName.Get(), wnamebuffer, sizeof( wnamebuffer ) );
-			}
+			TryLocalize( m_hHackComputer->GetComputerArea()->m_PDAName, wnamebuffer, sizeof( wnamebuffer ) );
 
 			wchar_t wbuffer[256];
 			g_pVGuiLocalize->ConstructString( wbuffer, sizeof( wbuffer ),
@@ -95,11 +84,7 @@ CASW_VGUI_Computer_Mail::CASW_VGUI_Computer_Mail( vgui::Panel *pParent, const ch
 		m_pMailDate[i] = new vgui::Label( this, "MailDate", "#asw_SynTekMailDate" );
 		m_pMailSubject[i] = new ImageButton( this, "MailSubject", "#asw_SynTekMailSubject" );
 		m_pMailSubject[i]->AddActionSignalTarget( this );
-		KeyValues *msg = new KeyValues( "Command" );
-		char buffer[32];
-		Q_snprintf( buffer, sizeof( buffer ), "Mail%d\n", i );
-		msg->SetString( "command", buffer );
-		m_pMailSubject[i]->SetCommand( msg );
+		m_pMailSubject[i]->SetCommand( new KeyValues( "Command", "command", VarArgs( "Mail%d\n", i ) ) );
 	}
 
 	m_pBodyList = new vgui::PanelListPanel( this, "BodyList" );
@@ -121,8 +106,17 @@ CASW_VGUI_Computer_Mail::CASW_VGUI_Computer_Mail( vgui::Panel *pParent, const ch
 	m_pAccountLabel->SetVisible( false );
 	m_pName->SetVisible( false );
 
-	m_pMailKeyValues = NULL;
-	ShowMail( 0 );
+	if ( !pArea || !( pArea->m_iLockedScreens & ( 1 << COMPUTER_LOCKED_MAIL_1 ) ) )
+		ShowMail( 0 );
+	else if ( !( pArea->m_iLockedScreens & ( 1 << COMPUTER_LOCKED_MAIL_2 ) ) )
+		ShowMail( 1 );
+	else if ( !( pArea->m_iLockedScreens & ( 1 << COMPUTER_LOCKED_MAIL_3 ) ) )
+		ShowMail( 2 );
+	else if ( !( pArea->m_iLockedScreens & ( 1 << COMPUTER_LOCKED_MAIL_4 ) ) )
+		ShowMail( 3 );
+	else
+		ShowMail( 0 );
+
 	for ( int k = 0; k < ASW_MAIL_ROWS; k++ )
 	{
 		m_pMailFrom[k]->SetAlpha( 0 );
@@ -147,9 +141,6 @@ CASW_VGUI_Computer_Mail::~CASW_VGUI_Computer_Mail()
 	{
 		pComputerFrame->m_bHideLogoffButton = false;
 	}
-
-	if ( m_pMailKeyValues )
-		m_pMailKeyValues->deleteThis();
 
 	if ( GetControllerFocus() )
 	{
@@ -176,20 +167,20 @@ void CASW_VGUI_Computer_Mail::ShowMail( int i )
 
 	// set the body text
 	char buffer[64];
-	Q_snprintf( buffer, sizeof( buffer ), "MailBody%dA", i + 1 );
+	V_snprintf( buffer, sizeof( buffer ), "MailBody%dA", i + 1 );
 	m_pBody[0]->SetText( m_pMailKeyValues->GetWString( buffer ) );
-	Q_snprintf( buffer, sizeof( buffer ), "MailBody%dB", i + 1 );
+	V_snprintf( buffer, sizeof( buffer ), "MailBody%dB", i + 1 );
 	m_pBody[1]->SetText( m_pMailKeyValues->GetWString( buffer ) );
-	Q_snprintf( buffer, sizeof( buffer ), "MailBody%dC", i + 1 );
+	V_snprintf( buffer, sizeof( buffer ), "MailBody%dC", i + 1 );
 	m_pBody[2]->SetText( m_pMailKeyValues->GetWString( buffer ) );
-	Q_snprintf( buffer, sizeof( buffer ), "MailBody%dD", i + 1 );
+	V_snprintf( buffer, sizeof( buffer ), "MailBody%dD", i + 1 );
 	m_pBody[3]->SetText( m_pMailKeyValues->GetWString( buffer ) );
-	Q_snprintf( buffer, sizeof( buffer ), "MailBody%dImageWide", i + 1 );
+	V_snprintf( buffer, sizeof( buffer ), "MailBody%dImageWide", i + 1 );
 	m_pBodyImage->SetWide( vgui::scheme()->GetProportionalScaledValue( m_pMailKeyValues->GetInt( buffer ) ) );
-	Q_snprintf( buffer, sizeof( buffer ), "MailBody%dImageTall", i + 1 );
+	V_snprintf( buffer, sizeof( buffer ), "MailBody%dImageTall", i + 1 );
 	m_pBodyImage->SetTall( vgui::scheme()->GetProportionalScaledValue( m_pMailKeyValues->GetInt( buffer ) ) );
 	m_pBodyImageWrapper->SetTall( m_pBodyImage->GetTall() );
-	Q_snprintf( buffer, sizeof( buffer ), "MailBody%dImage", i + 1 );
+	V_snprintf( buffer, sizeof( buffer ), "MailBody%dImage", i + 1 );
 	m_pBodyImage->SetImage( m_pMailKeyValues->GetString( buffer, "white" ) );
 
 	// todo: stop these lines all overlapping
@@ -208,16 +199,16 @@ void CASW_VGUI_Computer_Mail::ShowMail( int i )
 	m_iSelectedMail = i;
 
 	// let the server know we looked at a mail
-	Q_snprintf( buffer, sizeof( buffer ), "cl_viewmail %d\n", i + 1 );
-	engine->ClientCmd( buffer );
+	V_snprintf( buffer, sizeof( buffer ), "cl_viewmail %d\n", i + 1 );
+	engine->ServerCmd( buffer );
 }
 
 void CASW_VGUI_Computer_Mail::SetLabelsFromMailFile()
 {
-	if ( !m_pHackComputer )
+	if ( !m_hHackComputer )
 		return;
 
-	C_ASW_Computer_Area *pArea = m_pHackComputer->GetComputerArea();
+	C_ASW_Computer_Area *pArea = m_hHackComputer->GetComputerArea();
 	if ( !pArea )
 		return;
 
@@ -234,19 +225,19 @@ void CASW_VGUI_Computer_Mail::SetLabelsFromMailFile()
 		V_strncpy( uilanguage, SteamApps()->GetCurrentGameLanguage(), sizeof( uilanguage ) );
 	}
 
-	Q_snprintf( buffer, sizeof( buffer ), "resource/mail/%s_%s.txt", pszMailFile, uilanguage );
+	V_snprintf( buffer, sizeof( buffer ), "resource/mail/%s_%s.txt", pszMailFile, uilanguage );
 	if ( m_pMailKeyValues )
 		m_pMailKeyValues->deleteThis();
 
-	m_pMailKeyValues = new KeyValues( "Mail" );
+	m_pMailKeyValues.Assign( new KeyValues( "Mail" ) );
 
 	if ( !UTIL_RD_LoadKeyValuesFromFile( m_pMailKeyValues, filesystem, buffer, "GAME" ) )
 	{
 		// if we failed, fall back to the english file
-		Q_snprintf( buffer, sizeof( buffer ), "resource/mail/%s_english.txt", pszMailFile );
+		V_snprintf( buffer, sizeof( buffer ), "resource/mail/%s_english.txt", pszMailFile );
 		if ( !UTIL_RD_LoadKeyValuesFromFile( m_pMailKeyValues, filesystem, buffer, "GAME" ) )
 		{
-			DevMsg( 1, "CASW_VGUI_Computer_Mail::SetLabelsFromMailFile failed to load %s\n", buffer );
+			Warning( "CASW_VGUI_Computer_Mail::SetLabelsFromMailFile failed to load %s\n", buffer );
 			return;
 		}
 	}
@@ -255,11 +246,11 @@ void CASW_VGUI_Computer_Mail::SetLabelsFromMailFile()
 	char keybuffer[64];
 	for ( int i = 0; i < ASW_MAIL_ROWS; i++ )
 	{
-		Q_snprintf( keybuffer, sizeof( keybuffer ), "MailFrom%d", i + 1 );
+		V_snprintf( keybuffer, sizeof( keybuffer ), "MailFrom%d", i + 1 );
 		m_pMailFrom[i]->SetText( m_pMailKeyValues->GetWString( keybuffer ) );
-		Q_snprintf( keybuffer, sizeof( keybuffer ), "MailDate%d", i + 1 );
+		V_snprintf( keybuffer, sizeof( keybuffer ), "MailDate%d", i + 1 );
 		m_pMailDate[i]->SetText( m_pMailKeyValues->GetWString( keybuffer ) );
-		Q_snprintf( keybuffer, sizeof( keybuffer ), "MailSubject%d", i + 1 );
+		V_snprintf( keybuffer, sizeof( keybuffer ), "MailSubject%d", i + 1 );
 		const wchar_t *subject = m_pMailKeyValues->GetWString( keybuffer );
 		m_pMailSubject[i]->SetText( subject );
 		m_pMailSubject[i]->SetActivationType( ImageButton::ACTIVATE_ONPRESSED );
@@ -354,9 +345,9 @@ void CASW_VGUI_Computer_Mail::PerformLayout()
 	for ( int i = 0; i < 4; i++ )
 	{
 		// these get resized these based on their content in onthink
-		const float ypos = rows_top + row_height * ( ASW_MAIL_ROWS )+i * 0.12f;
+		const float para_ypos = rows_top + row_height * ( ASW_MAIL_ROWS )+i * 0.12f;
 		float body_width = m_pBodyList->GetWide() - ( m_pBodyList->GetScrollBar()->GetWide() + 15 );
-		m_pBody[i]->SetSize( body_width, 0.7f * h - ypos );
+		m_pBody[i]->SetSize( body_width, 0.7f * h - para_ypos );
 		m_pBody[i]->GetTextImage()->SetDrawWidth( body_width );
 		int texwide, texttall;
 		m_pBody[i]->GetTextImage()->GetContentSize( texwide, texttall );
@@ -641,7 +632,7 @@ bool CASW_VGUI_Computer_Mail::MouseClick( int x, int y, bool bRightClick, bool b
 
 void CASW_VGUI_Computer_Mail::OnCommand( char const *command )
 {
-	if ( !Q_strcmp( command, "Back" ) )
+	if ( FStrEq( command, "Back" ) )
 	{
 		if ( IsPDA() )
 		{
@@ -658,7 +649,7 @@ void CASW_VGUI_Computer_Mail::OnCommand( char const *command )
 		}
 		return;
 	}
-	else if ( !Q_strnicmp( command, "Mail", 4 ) )
+	else if ( !V_strnicmp( command, "Mail", 4 ) )
 	{
 		int iMail = atoi( command + 4 );
 		ShowMail( iMail );
@@ -666,9 +657,10 @@ void CASW_VGUI_Computer_Mail::OnCommand( char const *command )
 		C_BaseEntity::EmitSound( filter, -1 /*SOUND_FROM_LOCAL_PLAYER*/, "ASWComputer.MenuButton" );
 		return;
 	}
-	else if ( !Q_strcmp( command, "More" ) )
+	else if ( FStrEq( command, "More" ) )
 	{
 		ScrollMail();
+		return;
 	}
 
 	BaseClass::OnCommand( command );
@@ -691,8 +683,8 @@ void CASW_VGUI_Computer_Mail::ScrollMail()
 
 bool CASW_VGUI_Computer_Mail::IsPDA()
 {
-	if ( m_pHackComputer && m_pHackComputer->GetComputerArea() )
-		return m_pHackComputer->GetComputerArea()->IsPDA();
+	if ( m_hHackComputer && m_hHackComputer->GetComputerArea() )
+		return m_hHackComputer->GetComputerArea()->IsPDA();
 
 	return false;
 }

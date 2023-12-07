@@ -1,7 +1,6 @@
 #include "cbase.h"
 #ifdef CLIENT_DLL
 	#define CBaseAnimating C_BaseAnimating
-	#define CASW_Remote_Turret C_ASW_Remote_Turret
 	#include "c_asw_player.h"
 	#include "c_asw_marine.h"
 	#include "fx.h"

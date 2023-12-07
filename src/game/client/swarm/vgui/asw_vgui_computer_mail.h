@@ -1,18 +1,10 @@
 #ifndef _INCLUDED_ASW_VGUI_COMPUTER_MAIL_H
 #define _INCLUDED_ASW_VGUI_COMPUTER_MAIL_H
 
-#include <vgui_controls/Frame.h>
-#include <vgui_controls/PropertyPage.h>
-#include <vgui_controls/Slider.h>
-#include <vgui/IScheme.h>
-#include "vgui_controls/PanelListPanel.h"
-#include "vgui_controls/ComboBox.h"
-#include "vgui/IScheme.h"
 #include "asw_vgui_ingame_panel.h"
 
 class C_ASW_Hack_Computer;
 class ImageButton;
-class vgui::PanelListPanel;
 
 #define ASW_MAIL_ROWS 4
 
@@ -37,7 +29,7 @@ class CASW_VGUI_Computer_Mail : public vgui::Panel, public CASW_VGUI_Ingame_Pane
 	bool IsPDA();
 
 	// current computer hack
-	C_ASW_Hack_Computer *m_pHackComputer;
+	CHandle<C_ASW_Hack_Computer> m_hHackComputer;
 	ImageButton *m_pBackButton;
 	vgui::Label *m_pTitleLabel;
 	vgui::ImagePanel *m_pTitleIcon;
@@ -61,7 +53,7 @@ class CASW_VGUI_Computer_Mail : public vgui::Panel, public CASW_VGUI_Ingame_Pane
 
 	bool m_bMouseOverBackButton;
 
-	KeyValues *m_pMailKeyValues;	// key values describing the current mail being read
+	KeyValues::AutoDelete m_pMailKeyValues;	// key values describing the current mail being read
 
 	// overall scale of this window
 	float m_fScale;

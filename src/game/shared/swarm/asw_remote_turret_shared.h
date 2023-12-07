@@ -3,22 +3,18 @@
 #pragma once
 
 #ifdef CLIENT_DLL
+#define CASW_Remote_Turret C_ASW_Remote_Turret
 class C_BasePlayer;
+class C_ASW_Marine;
 #else
 class CBasePlayer;
+class CASW_Marine;
 #endif
 class CUserCmd;
 class IMoveHelper;
 class CMoveData;
 
-#ifdef CLIENT_DLL
-class C_ASW_Marine;
-#else
-class CASW_Marine;
-#endif
-
 // a turret in the world that can be remote controlled by a player (from a computer).
-
 class CASW_Remote_Turret : public CBaseAnimating
 {
 public:

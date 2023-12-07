@@ -1,13 +1,6 @@
 #ifndef _INCLUDED_ASW_VGUI_COMPUTER_NEWS_H
 #define _INCLUDED_ASW_VGUI_COMPUTER_NEWS_H
 
-#include <vgui_controls/Frame.h>
-#include <vgui_controls/PropertyPage.h>
-#include <vgui_controls/Slider.h>
-#include <vgui/IScheme.h>
-#include "vgui_controls/PanelListPanel.h"
-#include "vgui_controls/ComboBox.h"
-#include "vgui/IScheme.h"
 #include "asw_vgui_ingame_panel.h"
 
 class C_ASW_Hack_Computer;
@@ -19,7 +12,7 @@ class ImageButton;
 class CASW_VGUI_Computer_News : public vgui::Panel, public CASW_VGUI_Ingame_Panel
 {
 	DECLARE_CLASS_SIMPLE( CASW_VGUI_Computer_News, vgui::Panel );
-
+public:
 	CASW_VGUI_Computer_News( vgui::Panel *pParent, const char *pElementName, C_ASW_Hack_Computer *pHackDoor );
 	virtual ~CASW_VGUI_Computer_News();
 
@@ -34,7 +27,7 @@ class CASW_VGUI_Computer_News : public vgui::Panel, public CASW_VGUI_Ingame_Pane
 	void ScrollNews();
 
 	// current computer hack
-	C_ASW_Hack_Computer *m_pHackComputer;
+	CHandle<C_ASW_Hack_Computer> m_hHackComputer;
 	ImageButton *m_pBackButton;
 	ImageButton *m_pMoreButton;
 	vgui::Label *m_pTitleLabel;
@@ -51,7 +44,7 @@ class CASW_VGUI_Computer_News : public vgui::Panel, public CASW_VGUI_Ingame_Pane
 
 	bool m_bMouseOverBackButton;
 
-	KeyValues *m_pKeyValues;	// key values describing the current text being read
+	KeyValues::AutoDelete m_pKeyValues;	// key values describing the current text being read
 
 	// overall scale of this window
 	float m_fScale;

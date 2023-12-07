@@ -23,16 +23,16 @@ public:
 	void OnDataChanged( DataUpdateType_t updateType );
 	void ClientThink();
 	bool ShouldPredict();
-	C_ASW_Computer_Area* GetComputerArea();
+	C_ASW_Computer_Area *GetComputerArea();
 	float GetNextMoveTime() { return m_fNextMoveTime.Get(); }
 	float GetTumblerDiffTime();
 	float m_fTumblerDiffTime;	// difference between curtime and movetime, calculated in our predicted function (since predicted code seems to run out of time with drawing code)
 
-	virtual void ASWPostThink(C_ASW_Player *pPlayer, C_ASW_Marine *pMarine,  CUserCmd *ucmd, float fDeltaTime);
-	virtual void ReverseTumbler(int i, C_ASW_Marine *pMarine);
-	
-	CNetworkVar( int,  m_iNumTumblers );		// how many tumblers this hack puzzle has
-	CNetworkVar( int,  m_iEntriesPerTumbler );	
+	virtual void ASWPostThink( C_ASW_Player *pPlayer, C_ASW_Marine *pMarine, CUserCmd *ucmd, float fDeltaTime );
+	virtual void ReverseTumbler( int i, C_ASW_Marine *pMarine );
+
+	CNetworkVar( int, m_iNumTumblers );		// how many tumblers this hack puzzle has
+	CNetworkVar( int, m_iEntriesPerTumbler );
 	CNetworkVar( float, m_fNextMoveTime );
 	CNetworkVar( float, m_fMoveInterval );
 	CNetworkArray( int, m_iTumblerPosition, ASW_HACK_COMPUTER_MAX_TUMBLERS );
@@ -43,16 +43,16 @@ public:
 	virtual bool CanOverrideHack();
 
 	// returns the tumbler position, using the clientside ones (NewTumblerPosition) if they're set
-	int GetTumblerPosition(int iIndex);
+	int GetTumblerPosition( int iIndex );
 
-	virtual void FrameDeleted(vgui::Panel *pPanel);	
+	virtual void FrameDeleted( vgui::Panel *pPanel );
 
-	virtual bool IsTumblerCorrect(int iTumbler);
+	virtual bool IsTumblerCorrect( int iTumbler );
 	virtual float GetTumblerProgress();
 	bool m_bLastAllCorrect;
 	int m_iLastNumWrong;
 	bool m_bLastHalfCorrect;
-	void UpdateCorrectStatus(CASW_Player *pPlayer, C_ASW_Marine *pMarine, int iNumWrong);
+	void UpdateCorrectStatus( CASW_Player *pPlayer, C_ASW_Marine *pMarine, int iNumWrong );
 
 	bool m_bLaunchedHackPanel;
 	int m_iOldShowOption;

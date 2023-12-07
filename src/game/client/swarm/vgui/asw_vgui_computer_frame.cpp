@@ -1,14 +1,13 @@
 #include "cbase.h"
 #include "asw_vgui_computer_frame.h"
-#include "asw_vgui_computer_splash.h"
 #include "asw_vgui_computer_menu.h"
-#include "vgui/ISurface.h"
-#include "c_asw_hack_computer.h"
-#include "c_asw_computer_area.h"
-#include <vgui/IInput.h>
+#include "asw_vgui_computer_splash.h"
 #include <vgui_controls/AnimationController.h>
 #include <vgui_controls/ImagePanel.h>
-#include "ImageButton.h"
+#include <vgui/ISurface.h>
+#include "imagebutton.h"
+#include "c_asw_computer_area.h"
+#include "c_asw_hack_computer.h"
 #include "controller_focus.h"
 #include "asw_gamerules.h"
 
@@ -18,7 +17,7 @@
 CASW_VGUI_Computer_Frame::CASW_VGUI_Computer_Frame( vgui::Panel *pParent, const char *pElementName, C_ASW_Hack_Computer* pHackComputer ) 
 	: vgui::Panel( pParent, pElementName ),
 	CASW_VGUI_Ingame_Panel(),
-	m_pHackComputer( pHackComputer )
+	m_hHackComputer( pHackComputer )
 {
 	m_bHideLogoffButton = false;
 
@@ -68,19 +67,19 @@ CASW_VGUI_Computer_Frame::~CASW_VGUI_Computer_Frame()
 	}
 }
 
-void CASW_VGUI_Computer_Frame::SetBackdrop(int iBackdropType)
+void CASW_VGUI_Computer_Frame::SetBackdrop( int iBackdropType )
 {
-	if (m_iBackdropType == iBackdropType)
+	if ( m_iBackdropType == iBackdropType )
 		return;
 
 	m_iBackdropType = iBackdropType;
-	if (iBackdropType == 0)
+	if ( iBackdropType == 0 )
 	{
-		m_pBackdropImage->SetImage("swarm/Computer/ComputerBackdrop");
+		m_pBackdropImage->SetImage( "swarm/Computer/ComputerBackdrop" );
 	}
 	else
 	{
-		m_pBackdropImage->SetImage("swarm/Computer/ComputerBackdropRed");
+		m_pBackdropImage->SetImage( "swarm/Computer/ComputerBackdropRed" );
 	}
 }
 
@@ -107,7 +106,7 @@ void CASW_VGUI_Computer_Frame::ASWInit()
 
 	m_iScanHeight = 0;
 
-	m_pMenuPanel = new CASW_VGUI_Computer_Menu( this, "ComputerMenu", m_pHackComputer );
+	m_pMenuPanel = new CASW_VGUI_Computer_Menu( this, "ComputerMenu", m_hHackComputer );
 	m_pMenuPanel->ASWInit();
 	m_pMenuPanel->SetPos( 0, 0 );
 
@@ -123,7 +122,7 @@ void CASW_VGUI_Computer_Frame::ASWInit()
 	}
 	else
 	{
-		m_pSplash = new CASW_VGUI_Computer_Splash( this, "ComputerSplash", m_pHackComputer );
+		m_pSplash = new CASW_VGUI_Computer_Splash( this, "ComputerSplash", m_hHackComputer );
 		m_pSplash->ASWInit();
 		m_pSplash->SetPos( 0, 0 );
 		m_pCurrentPanel = m_pSplash;
@@ -140,8 +139,8 @@ void CASW_VGUI_Computer_Frame::ASWInit()
 
 bool CASW_VGUI_Computer_Frame::IsPDA()
 {
-	if ( m_pHackComputer && m_pHackComputer->GetComputerArea() )
-		return m_pHackComputer->GetComputerArea()->IsPDA();
+	if ( m_hHackComputer && m_hHackComputer->GetComputerArea() )
+		return m_hHackComputer->GetComputerArea()->IsPDA();
 
 	return false;
 }
@@ -149,81 +148,80 @@ bool CASW_VGUI_Computer_Frame::IsPDA()
 void CASW_VGUI_Computer_Frame::PerformLayout()
 {
 	m_fScale = ScreenHeight() / 768.0f;
-	int w = m_fScale * (0.65f * 1024);
-	int h = m_fScale * (0.65f * 768);
-	SetWide(w);
-	SetTall(h);
+	int w = m_fScale * ( 0.65f * 1024 );
+	int h = m_fScale * ( 0.65f * 768 );
+	SetWide( w );
+	SetTall( h );
 	int frame_border = 10.0f * m_fScale;
 	int frame_title_border = 40.0f * m_fScale;
-	SetPos(frame_border,frame_title_border);	// assumes its inside an asw_vgui_frame..
+	SetPos( frame_border, frame_title_border );	// assumes its inside an asw_vgui_frame..
 
-	if (m_pCurrentPanel)
-		m_pCurrentPanel->SetPos(0,0);
-	if (m_pSplash)
-		m_pSplash->SetPos(0,0);
+	if ( m_pCurrentPanel )
+		m_pCurrentPanel->SetPos( 0, 0 );
+	if ( m_pSplash )
+		m_pSplash->SetPos( 0, 0 );
 
 	m_iScanHeight = 0.166667f * 768 * m_fScale;
-	for (int i=0;i<3;i++)
+	for ( int i = 0; i < 3; i++ )
 	{
-		m_pScan[i]->SetSize(w, m_iScanHeight);
-		m_pScan[i]->SetPos(0,-m_iScanHeight);
-		m_pScan[i]->SetZPos(200);	// make sure scan lines are on top of everything (or should they be under?)
+		m_pScan[i]->SetSize( w, m_iScanHeight );
+		m_pScan[i]->SetPos( 0, -m_iScanHeight );
+		m_pScan[i]->SetZPos( 200 );	// make sure scan lines are on top of everything (or should they be under?)
 	}
 
-	m_pBackdropImage->SetShouldScaleImage(true);
-	m_pBackdropImage->SetPos(0,0);
-	m_pBackdropImage->SetSize(w, h);
+	m_pBackdropImage->SetShouldScaleImage( true );
+	m_pBackdropImage->SetPos( 0, 0 );
+	m_pBackdropImage->SetSize( w, h );
 
-	if (m_pMenuPanel)
-		m_pMenuPanel->InvalidateLayout(true);
+	if ( m_pMenuPanel )
+		m_pMenuPanel->InvalidateLayout( true );
 
-	m_pLogoffLabel->SetSize(128 * m_fScale, 28 * m_fScale);
-	//m_pLogoffLabel->SetPos(w*0.05, h*0.9);
-	m_pLogoffLabel->SetPos( w * 0.75, h*0.9 );
-	m_pLogoffLabel->SetZPos(200);
+	m_pLogoffLabel->SetSize( 128 * m_fScale, 28 * m_fScale );
+	m_pLogoffLabel->SetPos( w * 0.75, h * 0.9 );
+	m_pLogoffLabel->SetZPos( 200 );
 }
 
-void CASW_VGUI_Computer_Frame::ApplySchemeSettings(vgui::IScheme *pScheme)
+void CASW_VGUI_Computer_Frame::ApplySchemeSettings( vgui::IScheme *pScheme )
 {
-	BaseClass::ApplySchemeSettings(pScheme);
+	BaseClass::ApplySchemeSettings( pScheme );
 
-	SetPaintBackgroundType(0);
-	SetPaintBackgroundEnabled(true);
-	SetBgColor( Color(0,0,0,255) );
-	SetMouseInputEnabled(true);
+	SetPaintBackgroundType( 0 );
+	SetPaintBackgroundEnabled( true );
+	SetBgColor( Color( 0, 0, 0, 255 ) );
+	SetMouseInputEnabled( true );
 
 	vgui::HFont LabelFont = pScheme->GetFont( "Default", IsProportional() );
-	Color white(255,255,255,255);
-	Color blue(19,20,40, 255);
-	m_pLogoffLabel->SetFont(LabelFont);
-	m_pLogoffLabel->SetPaintBackgroundEnabled(true);
-	m_pLogoffLabel->SetContentAlignment(vgui::Label::a_center);
-	m_pLogoffLabel->SetBgColor(Color(19,20,40,255));
-	m_pLogoffLabel->SetBorders("TitleButtonBorder", "TitleButtonBorder");
-	m_pLogoffLabel->SetColors(white, white, white, white, blue);
-	m_pLogoffLabel->SetPaintBackgroundType(2);
+	Color white( 255, 255, 255, 255 );
+	Color blue( 19, 20, 40, 255 );
+	m_pLogoffLabel->SetFont( LabelFont );
+	m_pLogoffLabel->SetPaintBackgroundEnabled( true );
+	m_pLogoffLabel->SetContentAlignment( vgui::Label::a_center );
+	m_pLogoffLabel->SetBgColor( Color( 19, 20, 40, 255 ) );
+	m_pLogoffLabel->SetBorders( "TitleButtonBorder", "TitleButtonBorder" );
+	m_pLogoffLabel->SetColors( white, white, white, white, blue );
+	m_pLogoffLabel->SetPaintBackgroundType( 2 );
 
 	// fade scanlines in
-	if (!m_bSetAlpha)
+	if ( !m_bSetAlpha )
 	{
 		m_bSetAlpha = true;
-		m_pScan[0]->SetAlpha(0);
-		m_pScan[1]->SetAlpha(0);
-		m_pScan[2]->SetAlpha(0);
+		m_pScan[0]->SetAlpha( 0 );
+		m_pScan[1]->SetAlpha( 0 );
+		m_pScan[2]->SetAlpha( 0 );
 		// alphas were 85 170 255
-		vgui::GetAnimationController()->RunAnimationCommand(m_pScan[0], "Alpha", 42, 0, 2.0f, vgui::AnimationController::INTERPOLATOR_LINEAR);
-		vgui::GetAnimationController()->RunAnimationCommand(m_pScan[1], "Alpha", 85, 0, 2.0f, vgui::AnimationController::INTERPOLATOR_LINEAR);
-		vgui::GetAnimationController()->RunAnimationCommand(m_pScan[2], "Alpha", 128, 0, 2.0f, vgui::AnimationController::INTERPOLATOR_LINEAR);
+		vgui::GetAnimationController()->RunAnimationCommand( m_pScan[0], "Alpha", 42, 0, 2.0f, vgui::AnimationController::INTERPOLATOR_LINEAR );
+		vgui::GetAnimationController()->RunAnimationCommand( m_pScan[1], "Alpha", 85, 0, 2.0f, vgui::AnimationController::INTERPOLATOR_LINEAR );
+		vgui::GetAnimationController()->RunAnimationCommand( m_pScan[2], "Alpha", 128, 0, 2.0f, vgui::AnimationController::INTERPOLATOR_LINEAR );
 
-		m_pBackdropImage->SetAlpha(0);
-		vgui::GetAnimationController()->RunAnimationCommand(m_pBackdropImage, "Alpha", 255, 0, 2.0f, vgui::AnimationController::INTERPOLATOR_LINEAR);
+		m_pBackdropImage->SetAlpha( 0 );
+		vgui::GetAnimationController()->RunAnimationCommand( m_pBackdropImage, "Alpha", 255, 0, 2.0f, vgui::AnimationController::INTERPOLATOR_LINEAR );
 	}
 	else
 	{
-		m_pScan[0]->SetAlpha(42);
-		m_pScan[1]->SetAlpha(85);
-		m_pScan[2]->SetAlpha(128);
-		m_pBackdropImage->SetAlpha(255);
+		m_pScan[0]->SetAlpha( 42 );
+		m_pScan[1]->SetAlpha( 85 );
+		m_pScan[2]->SetAlpha( 128 );
+		m_pBackdropImage->SetAlpha( 255 );
 	}
 }
 
@@ -262,7 +260,7 @@ void CASW_VGUI_Computer_Frame::OnThink()
 	if ( m_bPlayingSplash )
 	{
 		// If an override happened, kill the splash screen.
-		C_ASW_Computer_Area *pArea = m_pHackComputer ? m_pHackComputer->GetComputerArea() : NULL;
+		C_ASW_Computer_Area *pArea = m_hHackComputer ? m_hHackComputer->GetComputerArea() : NULL;
 		if ( pArea && pArea->IsLoggedIn() && !pArea->IsLocked() )
 		{
 			SetTitleHidden( true );
@@ -277,7 +275,7 @@ void CASW_VGUI_Computer_Frame::OnCommand( const char *pCommand )
 {
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 
-	if ( !Q_stricmp( pCommand, "Cancel" ) )
+	if ( FStrEq( pCommand, "Cancel" ) )
 	{
 		if ( m_pMenuPanel && m_pMenuPanel->m_hCurrentPage.Get() )
 		{
@@ -291,7 +289,7 @@ void CASW_VGUI_Computer_Frame::OnCommand( const char *pCommand )
 			}
 		}
 	}
-	else if ( !Q_stricmp( pCommand, "Logoff" ) )
+	else if ( FStrEq( pCommand, "Logoff" ) )
 	{
 		if ( pPlayer )
 		{
@@ -312,12 +310,12 @@ void CASW_VGUI_Computer_Frame::PaintBackground()
 	BaseClass::PaintBackground();
 }
 
-bool CASW_VGUI_Computer_Frame::MouseClick(int x, int y, bool bRightClick, bool bDown)
+bool CASW_VGUI_Computer_Frame::MouseClick( int x, int y, bool bRightClick, bool bDown )
 {
-	if (m_pLogoffLabel->IsCursorOver() && m_pLogoffLabel->IsVisible() )
+	if ( m_pLogoffLabel->IsCursorOver() && m_pLogoffLabel->IsVisible() )
 	{
 		C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-		if (pPlayer)
+		if ( pPlayer )
 			pPlayer->StopUsing();
 		return true;
 	}
@@ -325,24 +323,24 @@ bool CASW_VGUI_Computer_Frame::MouseClick(int x, int y, bool bRightClick, bool b
 	return true;	// swallow click
 }
 
-void CASW_VGUI_Computer_Frame::SetTitleHidden(bool bHidden)
+void CASW_VGUI_Computer_Frame::SetTitleHidden( bool bHidden )
 {
-	if (m_pSplash)
-		m_pSplash->SetHidden(bHidden);
+	if ( m_pSplash )
+		m_pSplash->SetHidden( bHidden );
 }
 
-void CASW_VGUI_Computer_Frame::SetHackOption(int iOption)
+void CASW_VGUI_Computer_Frame::SetHackOption( int iOption )
 {
 	if ( iOption == ASW_HACK_OPTION_OVERRIDE )
 		SetBackdrop( 1 );
-	if (m_pMenuPanel)
-		m_pMenuPanel->SetHackOption(iOption);
+	if ( m_pMenuPanel )
+		m_pMenuPanel->SetHackOption( iOption );
 }
 
 // ================================== Container ==================================================
 
-CASW_VGUI_Computer_Container::CASW_VGUI_Computer_Container(Panel *parent, const char *panelName, const char* pszTitle) :
-	CASW_VGUI_Frame(parent, panelName, pszTitle)
+CASW_VGUI_Computer_Container::CASW_VGUI_Computer_Container( Panel *parent, const char *panelName, const char *pszTitle ) :
+	CASW_VGUI_Frame( parent, panelName, pszTitle )
 {
 }
 
@@ -354,31 +352,29 @@ void CASW_VGUI_Computer_Container::PerformLayout()
 {
 	BaseClass::PerformLayout();
 
-	float fScale = ScreenHeight() / 768.0f;			
+	float fScale = ScreenHeight() / 768.0f;
 	int border = 10.0f * fScale;
 	int title_border = 40.0f * fScale;
-	if (m_bFrameMinimized)
+	if ( m_bFrameMinimized )
 	{
 		int w = fScale * 0.3f * 1024.0f;
 		vgui::HFont title_font = m_pTitleLabel->GetFont();
-		int title_tall = vgui::surface()->GetFontTall(title_font);
+		int title_tall = vgui::surface()->GetFontTall( title_font );
 		int h = title_tall * 1.2f;
 
-		SetBounds((ScreenWidth() * 0.5f) - (w * 0.5f), (ScreenHeight() * 0.08f), 
-									w , h);
+		SetBounds( ( ScreenWidth() * 0.5f ) - ( w * 0.5f ), ( ScreenHeight() * 0.08f ), w, h );
 	}
 	else
 	{
-		int w = fScale * (0.65f * 1024) + border * 2;
-		int h = fScale * (0.65f * 768) + border + title_border;
-		SetBounds((ScreenWidth() * 0.5f) - (w * 0.5f), (ScreenHeight() * 0.5f) - (h * 0.5f), 
-									w , h);
+		int w = fScale * ( 0.65f * 1024 ) + border * 2;
+		int h = fScale * ( 0.65f * 768 ) + border + title_border;
+		SetBounds( ( ScreenWidth() * 0.5f ) - ( w * 0.5f ), ( ScreenHeight() * 0.5f ) - ( h * 0.5f ), w, h );
 	}
 }
 
-void CASW_VGUI_Computer_Container::ApplySchemeSettings(vgui::IScheme *scheme)
+void CASW_VGUI_Computer_Container::ApplySchemeSettings( vgui::IScheme *scheme )
 {
-	BaseClass::ApplySchemeSettings(scheme);
+	BaseClass::ApplySchemeSettings( scheme );
 }
 
 void CASW_VGUI_Computer_Container::OnThink()
@@ -390,11 +386,11 @@ void CASW_VGUI_Computer_Container::OnThink()
 	if ( fDeathCamInterp > 0.0f && GetAlpha() >= 255 )
 	{
 		SetAlpha( 254 );
-		vgui::GetAnimationController()->RunAnimationCommand(this, "Alpha", 0, 0, 0.5f, vgui::AnimationController::INTERPOLATOR_LINEAR);
+		vgui::GetAnimationController()->RunAnimationCommand( this, "Alpha", 0, 0, 0.5f, vgui::AnimationController::INTERPOLATOR_LINEAR );
 	}
 	else if ( fDeathCamInterp <= 0.0f && GetAlpha() <= 0 )
 	{
 		SetAlpha( 1 );
-		vgui::GetAnimationController()->RunAnimationCommand(this, "Alpha", 255, 0, 0.5f, vgui::AnimationController::INTERPOLATOR_LINEAR);
+		vgui::GetAnimationController()->RunAnimationCommand( this, "Alpha", 255, 0, 0.5f, vgui::AnimationController::INTERPOLATOR_LINEAR );
 	}
 }

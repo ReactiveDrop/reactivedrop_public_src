@@ -1,6 +1,6 @@
 #include "cbase.h"
-
 #include "asw_computer_area.h"
+#include "asw_computer_area_shared.h"
 #include "asw_player.h"
 #include "asw_marine.h"
 #include "asw_marine_profile.h"
@@ -17,6 +17,7 @@
 #include "asw_achievements.h"
 #include "cvisibilitymonitor.h"
 #include "asw_remote_turret_shared.h"
+#include "rd_computer_vscript_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -32,8 +33,8 @@ extern ConVar asw_tech_order_hack_range;
 LINK_ENTITY_TO_CLASS( trigger_asw_computer_area, CASW_Computer_Area );
 
 BEGIN_DATADESC( CASW_Computer_Area )
-	DEFINE_KEYFIELD(m_bIsLocked, FIELD_BOOLEAN, "locked" ),
-	DEFINE_KEYFIELD(m_bUseAfterHack, FIELD_BOOLEAN, "useafterhack" ),
+	DEFINE_KEYFIELD( m_bIsLocked, FIELD_BOOLEAN, "locked" ),
+	DEFINE_KEYFIELD( m_bUseAfterHack, FIELD_BOOLEAN, "useafterhack" ),
 
 	DEFINE_KEYFIELD( m_SecurityCam1Name, FIELD_STRING, "SecurityCam1Name" ),
 	DEFINE_KEYFIELD( m_SecurityCam2Name, FIELD_STRING, "SecurityCam2Name" ),
@@ -48,7 +49,15 @@ BEGIN_DATADESC( CASW_Computer_Area )
 	DEFINE_KEYFIELD( m_PlantFile, FIELD_STRING, "PlantFile" ),
 	DEFINE_KEYFIELD( m_PDAName, FIELD_STRING, "PDAName" ),
 	DEFINE_KEYFIELD( m_DownloadObjectiveName, FIELD_STRING, "DownloadObjectiveName" ),
+	DEFINE_KEYFIELD( m_CustomHackName, FIELD_STRING, "CustomHackName" ),
+	DEFINE_KEYFIELD( m_CustomScreen1Name, FIELD_STRING, "CustomScreen1Name" ),
+	DEFINE_KEYFIELD( m_CustomScreen2Name, FIELD_STRING, "CustomScreen2Name" ),
+	DEFINE_KEYFIELD( m_CustomScreen3Name, FIELD_STRING, "CustomScreen3Name" ),
+	DEFINE_KEYFIELD( m_CustomScreen4Name, FIELD_STRING, "CustomScreen4Name" ),
+	DEFINE_KEYFIELD( m_CustomScreen5Name, FIELD_STRING, "CustomScreen5Name" ),
+	DEFINE_KEYFIELD( m_CustomScreen6Name, FIELD_STRING, "CustomScreen6Name" ),
 
+	DEFINE_KEYFIELD( m_bDownloadLocked, FIELD_BOOLEAN, "DownloadLocked" ),
 	DEFINE_KEYFIELD( m_bSecurityCam1Locked, FIELD_BOOLEAN, "SecurityCam1Locked" ),
 	DEFINE_KEYFIELD( m_bSecurityCam2Locked, FIELD_BOOLEAN, "SecurityCam2Locked" ),
 	DEFINE_KEYFIELD( m_bSecurityCam3Locked, FIELD_BOOLEAN, "SecurityCam3Locked" ),
@@ -56,15 +65,25 @@ BEGIN_DATADESC( CASW_Computer_Area )
 	DEFINE_KEYFIELD( m_bTurret2Locked, FIELD_BOOLEAN, "Turret2Locked" ),
 	DEFINE_KEYFIELD( m_bTurret3Locked, FIELD_BOOLEAN, "Turret3Locked" ),
 	DEFINE_KEYFIELD( m_bMailFileLocked, FIELD_BOOLEAN, "MailFileLocked" ),
+	DEFINE_KEYFIELD( m_bMail1Locked, FIELD_BOOLEAN, "Mail1Locked" ),
+	DEFINE_KEYFIELD( m_bMail2Locked, FIELD_BOOLEAN, "Mail2Locked" ),
+	DEFINE_KEYFIELD( m_bMail3Locked, FIELD_BOOLEAN, "Mail3Locked" ),
+	DEFINE_KEYFIELD( m_bMail4Locked, FIELD_BOOLEAN, "Mail4Locked" ),
 	DEFINE_KEYFIELD( m_bNewsFileLocked, FIELD_BOOLEAN, "NewsFileLocked" ),
 	DEFINE_KEYFIELD( m_bStocksFileLocked, FIELD_BOOLEAN, "StocksFileLocked" ),
 	DEFINE_KEYFIELD( m_bWeatherFileLocked, FIELD_BOOLEAN, "WeatherFileLocked" ),
 	DEFINE_KEYFIELD( m_bPlantFileLocked, FIELD_BOOLEAN, "PlantFileLocked" ),
+	DEFINE_KEYFIELD( m_bCustomScreen1Locked, FIELD_BOOLEAN, "CustomScreen1Locked" ),
+	DEFINE_KEYFIELD( m_bCustomScreen2Locked, FIELD_BOOLEAN, "CustomScreen2Locked" ),
+	DEFINE_KEYFIELD( m_bCustomScreen3Locked, FIELD_BOOLEAN, "CustomScreen3Locked" ),
+	DEFINE_KEYFIELD( m_bCustomScreen4Locked, FIELD_BOOLEAN, "CustomScreen4Locked" ),
+	DEFINE_KEYFIELD( m_bCustomScreen5Locked, FIELD_BOOLEAN, "CustomScreen5Locked" ),
+	DEFINE_KEYFIELD( m_bCustomScreen6Locked, FIELD_BOOLEAN, "CustomScreen6Locked" ),
 
-	DEFINE_KEYFIELD(m_iHackLevel, FIELD_INTEGER, "HackDifficulty"),	
-	DEFINE_KEYFIELD(m_iNumEntriesPerTumbler, FIELD_INTEGER, "EntriesPerTumbler"),
-	DEFINE_KEYFIELD(m_fMoveInterval, FIELD_FLOAT, "TumblerMoveInterval"),	
-	DEFINE_KEYFIELD(m_fDownloadTime, FIELD_FLOAT, "DownloadTime"),
+	DEFINE_KEYFIELD( m_iHackLevel, FIELD_INTEGER, "HackDifficulty" ),
+	DEFINE_KEYFIELD( m_iNumEntriesPerTumbler, FIELD_INTEGER, "EntriesPerTumbler" ),
+	DEFINE_KEYFIELD( m_fMoveInterval, FIELD_FLOAT, "TumblerMoveInterval" ),
+	DEFINE_KEYFIELD( m_fDownloadTime, FIELD_FLOAT, "DownloadTime" ),
 	
 	DEFINE_FIELD( m_bWaitingForInput, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bWasLocked, FIELD_BOOLEAN ),
@@ -78,18 +97,15 @@ BEGIN_DATADESC( CASW_Computer_Area )
 	DEFINE_FIELD( m_hTurret1, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_hTurret2, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_hTurret3, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_SecurityCamLabel1, FIELD_STRING ),
-	DEFINE_FIELD( m_SecurityCamLabel2, FIELD_STRING ),
-	DEFINE_FIELD( m_SecurityCamLabel3, FIELD_STRING ),
-	DEFINE_FIELD( m_TurretLabel1, FIELD_STRING ),
-	DEFINE_FIELD( m_TurretLabel2, FIELD_STRING ),
-	DEFINE_FIELD( m_TurretLabel3, FIELD_STRING ),
+	DEFINE_AUTO_ARRAY( m_SecurityCamLabel1, FIELD_CHARACTER ),
+	DEFINE_AUTO_ARRAY( m_SecurityCamLabel2, FIELD_CHARACTER ),
+	DEFINE_AUTO_ARRAY( m_SecurityCamLabel3, FIELD_CHARACTER ),
 	DEFINE_FIELD( m_bDownloadedDocs, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bDoSecureShout, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bPlayedHalfwayChatter, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bViewingMail, FIELD_BOOLEAN ),
-	DEFINE_FIELD(m_fAutoOverrideTime, FIELD_FLOAT),
-	DEFINE_FIELD(m_fLastButtonUseTime, FIELD_TIME),
+	DEFINE_FIELD( m_fAutoOverrideTime, FIELD_FLOAT ),
+	DEFINE_FIELD( m_fLastButtonUseTime, FIELD_TIME ),
 	DEFINE_FIELD( m_iReactorState, FIELD_CHARACTER ),
 	DEFINE_SOUNDPATCH( m_pDownloadingSound ),
 	DEFINE_SOUNDPATCH( m_pComputerInUseSound ),
@@ -106,28 +122,32 @@ BEGIN_DATADESC( CASW_Computer_Area )
 	DEFINE_OUTPUT( m_OnComputerViewMail4, "OnComputerViewMail4" ),
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST(CASW_Computer_Area, DT_ASW_Computer_Area)	
-	SendPropInt			(SENDINFO(m_iHackLevel)),
-	SendPropFloat		(SENDINFO(m_fDownloadTime)),
-	SendPropBool		(SENDINFO(m_bIsLocked)),
-	SendPropBool		(SENDINFO(m_bWaitingForInput)),
-	SendPropBool		(SENDINFO(m_bIsInUse)),
-	SendPropBool		(SENDINFO(m_bLoggedIn)),
-	SendPropFloat		(SENDINFO(m_fDownloadProgress)),
+IMPLEMENT_SERVERCLASS_ST( CASW_Computer_Area, DT_ASW_Computer_Area )
+	SendPropInt( SENDINFO( m_iHackLevel ) ),
+	SendPropFloat(SENDINFO( m_fDownloadTime ) ),
+	SendPropBool(SENDINFO( m_bIsLocked ) ),
+	SendPropBool(SENDINFO( m_bWaitingForInput ) ),
+	SendPropBool(SENDINFO( m_bIsInUse ) ),
+	SendPropBool(SENDINFO( m_bLoggedIn ) ),
+	SendPropFloat(SENDINFO( m_fDownloadProgress ) ),
 
+	SendPropEHandle( SENDINFO( m_hCustomHack ) ),
 	SendPropEHandle( SENDINFO( m_hSecurityCam1 ) ),
 	SendPropEHandle( SENDINFO( m_hSecurityCam2 ) ),
 	SendPropEHandle( SENDINFO( m_hSecurityCam3 ) ),
 	SendPropEHandle( SENDINFO( m_hTurret1 ) ),
 	SendPropEHandle( SENDINFO( m_hTurret2 ) ),
 	SendPropEHandle( SENDINFO( m_hTurret3 ) ),
+	SendPropEHandle( SENDINFO( m_hCustomScreen1 ) ),
+	SendPropEHandle( SENDINFO( m_hCustomScreen2 ) ),
+	SendPropEHandle( SENDINFO( m_hCustomScreen3 ) ),
+	SendPropEHandle( SENDINFO( m_hCustomScreen4 ) ),
+	SendPropEHandle( SENDINFO( m_hCustomScreen5 ) ),
+	SendPropEHandle( SENDINFO( m_hCustomScreen6 ) ),
 
 	SendPropString( SENDINFO( m_SecurityCamLabel1 ) ),
 	SendPropString( SENDINFO( m_SecurityCamLabel2 ) ),
 	SendPropString( SENDINFO( m_SecurityCamLabel3 ) ),
-	SendPropString( SENDINFO( m_TurretLabel1 ) ),
-	SendPropString( SENDINFO( m_TurretLabel2 ) ),
-	SendPropString( SENDINFO( m_TurretLabel3 ) ),
 
 	SendPropString( SENDINFO( m_MailFile ) ),
 	SendPropString( SENDINFO( m_NewsFile ) ),
@@ -137,44 +157,112 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Computer_Area, DT_ASW_Computer_Area)
 	SendPropString( SENDINFO( m_PDAName ) ),
 
 	SendPropString( SENDINFO( m_DownloadObjectiveName ) ),
-	SendPropBool		(SENDINFO(m_bDownloadedDocs)),
+	SendPropBool( SENDINFO( m_bDownloadedDocs ) ),
 
-	SendPropBool		(SENDINFO(m_bSecurityCam1Locked)),
-	SendPropBool		(SENDINFO(m_bSecurityCam2Locked)),
-	SendPropBool		(SENDINFO(m_bSecurityCam3Locked)),
-	SendPropBool		(SENDINFO(m_bTurret1Locked)),
-	SendPropBool		(SENDINFO(m_bTurret2Locked)),
-	SendPropBool		(SENDINFO(m_bTurret3Locked)),
-	SendPropBool		(SENDINFO(m_bMailFileLocked)),
-	SendPropBool		(SENDINFO(m_bNewsFileLocked)),
-	SendPropBool		(SENDINFO(m_bStocksFileLocked)),
-	SendPropBool		(SENDINFO(m_bWeatherFileLocked)),
-	SendPropBool		(SENDINFO(m_bPlantFileLocked)),
+	SendPropInt( SENDINFO( m_iLockedScreens ), COMPUTER_LOCKED_SCREEN_NUM_BITS, SPROP_UNSIGNED ),
 
 	SendPropInt( SENDINFO( m_iReactorState ) ),
 END_SEND_TABLE()
 
 CASW_Computer_Area::CASW_Computer_Area()
 {
-	//Msg("[S] CASW_Computer_Area created\n");
 	m_hComputerHack = NULL;
 	AddEFlags( EFL_FORCE_CHECK_TRANSMIT );
 
+	m_bViewingMail = false;
+
+	m_iHackLevel = 5;
+	m_fDownloadTime = 10.0f;
+	m_bIsLocked = true;
+	m_bWaitingForInput = false;
+	m_bLoggedIn = false;
+	m_hComputerHack = NULL;
+
+	m_CustomHackName = NULL_STRING;
+	m_SecurityCam1Name = NULL_STRING;
+	m_SecurityCam2Name = NULL_STRING;
+	m_SecurityCam3Name = NULL_STRING;
+	m_Turret1Name = NULL_STRING;
+	m_Turret2Name = NULL_STRING;
+	m_Turret3Name = NULL_STRING;
+	m_CustomScreen1Name = NULL_STRING;
+	m_CustomScreen2Name = NULL_STRING;
+	m_CustomScreen3Name = NULL_STRING;
+	m_CustomScreen4Name = NULL_STRING;
+	m_CustomScreen5Name = NULL_STRING;
+	m_CustomScreen6Name = NULL_STRING;
+
+	m_MailFile.GetForModify()[0] = '\0';
+	m_NewsFile.GetForModify()[0] = '\0';
+	m_StocksSeed.GetForModify()[0] = '\0';
+	m_WeatherSeed.GetForModify()[0] = '\0';
+	m_PlantFile.GetForModify()[0] = '\0';
+	m_PDAName.GetForModify()[0] = '\0';
+
+	m_SecurityCamLabel1.GetForModify()[0] = '\0';
+	m_SecurityCamLabel2.GetForModify()[0] = '\0';
+	m_SecurityCamLabel3.GetForModify()[0] = '\0';
+
+	m_DownloadObjectiveName.GetForModify()[0] = '\0';
+	m_bDownloadedDocs = false;
+
+	m_bDownloadLocked = false;
+	m_bSecurityCam1Locked = false;
+	m_bSecurityCam2Locked = false;
+	m_bSecurityCam3Locked = false;
+	m_bTurret1Locked = false;
+	m_bTurret2Locked = false;
+	m_bTurret3Locked = false;
+	m_bMailFileLocked = false;
+	m_bMail1Locked = false;
+	m_bMail2Locked = false;
+	m_bMail3Locked = false;
+	m_bMail4Locked = false;
+	m_bNewsFileLocked = false;
+	m_bStocksFileLocked = false;
+	m_bWeatherFileLocked = false;
+	m_bPlantFileLocked = false;
+	m_bCustomScreen1Locked = false;
+	m_bCustomScreen2Locked = false;
+	m_bCustomScreen3Locked = false;
+	m_bCustomScreen4Locked = false;
+	m_bCustomScreen5Locked = false;
+	m_bCustomScreen6Locked = false;
+
+	m_hCustomHack = NULL;
+	m_hSecurityCam1 = NULL;
+	m_hSecurityCam2 = NULL;
+	m_hSecurityCam3 = NULL;
+	m_hTurret1 = NULL;
+	m_hTurret2 = NULL;
+	m_hTurret3 = NULL;
+	m_hCustomScreen1 = NULL;
+	m_hCustomScreen2 = NULL;
+	m_hCustomScreen3 = NULL;
+	m_hCustomScreen4 = NULL;
+	m_hCustomScreen5 = NULL;
+	m_hCustomScreen6 = NULL;
+
+	m_iActiveCam = -1;
+	m_iReactorState = -1;
+
+	m_iNumEntriesPerTumbler = 5;
+	m_fMoveInterval = 0.5f;
+
 	m_bIsInUse = false;
 	m_fDownloadProgress = 0;
-	m_bDownloadedDocs = false;
-	m_bDoSecureShout = true;
-	m_bLoggedIn = false;
-	m_iActiveCam = 0;
-	m_fNextSecureShoutCheck = 0;
-	m_flStopUsingTime = 0.0f;
+	m_bUseAfterHack = true;
+	m_fAutoOverrideTime = -1.0f;
+	m_fLastButtonUseTime = -1.0f;
+	m_iAliensKilledBeforeHack = 0;
+	m_flStopUsingTime = -1.0f;
 
+	m_fLastPositiveSoundTime = -1.0f;
+	m_bPlayedHalfwayChatter = false;
+	m_bDoSecureShout = true;
+	m_fNextSecureShoutCheck = -1.0f;
 	m_pDownloadingSound = NULL;
 	m_pComputerInUseSound = NULL;
-	m_fLastPositiveSoundTime = 0;
-	m_iAliensKilledBeforeHack = 0;
-
-	m_iReactorState = -1;
 }
 
 //-----------------------------------------------------------------------------
@@ -182,8 +270,6 @@ CASW_Computer_Area::CASW_Computer_Area()
 //-----------------------------------------------------------------------------
 void CASW_Computer_Area::Spawn( void )
 {
-	//CBaseEntity *pTarget;
-
 	BaseClass::Spawn();
 	Precache();
 
@@ -196,18 +282,20 @@ void CASW_Computer_Area::Spawn( void )
 
 	UpdateWaitingForInput();
 	UpdatePanelSkin();
+	UpdateLockedScreensBits();
 }
 
 void CASW_Computer_Area::Precache()
 {
 	BaseClass::Precache();
 
-	PrecacheScriptSound("ASWComputer.Downloading");
-	PrecacheScriptSound("ASWComputer.MenuButton");	
-	PrecacheScriptSound("ASWComputer.NumberAligned");
-	PrecacheScriptSound("ASWComputer.Loop");
-	PrecacheScriptSound("ASWComputer.ColumnTick");
-	PrecacheScriptSound("ASWComputer.TimeOut");
+	PrecacheScriptSound( "ASWComputer.AccessDenied" );
+	PrecacheScriptSound( "ASWComputer.Downloading" );
+	PrecacheScriptSound( "ASWComputer.MenuButton" );
+	PrecacheScriptSound( "ASWComputer.NumberAligned" );
+	PrecacheScriptSound( "ASWComputer.Loop" );
+	PrecacheScriptSound( "ASWComputer.ColumnTick" );
+	PrecacheScriptSound( "ASWComputer.TimeOut" );
 }
 
 void CASW_Computer_Area::FindTurretsAndCams()
@@ -234,6 +322,15 @@ void CASW_Computer_Area::FindTurretsAndCams()
 	FIND_CAMERA( m_Turret1Name, CASW_Remote_Turret, m_hTurret1 );
 	FIND_CAMERA( m_Turret2Name, CASW_Remote_Turret, m_hTurret2 );
 	FIND_CAMERA( m_Turret3Name, CASW_Remote_Turret, m_hTurret3 );
+
+	// also find custom screens
+	FIND_CAMERA( m_CustomHackName, CRD_Computer_VScript, m_hCustomHack );
+	FIND_CAMERA( m_CustomScreen1Name, CRD_Computer_VScript, m_hCustomScreen1 );
+	FIND_CAMERA( m_CustomScreen2Name, CRD_Computer_VScript, m_hCustomScreen2 );
+	FIND_CAMERA( m_CustomScreen3Name, CRD_Computer_VScript, m_hCustomScreen3 );
+	FIND_CAMERA( m_CustomScreen4Name, CRD_Computer_VScript, m_hCustomScreen4 );
+	FIND_CAMERA( m_CustomScreen5Name, CRD_Computer_VScript, m_hCustomScreen5 );
+	FIND_CAMERA( m_CustomScreen6Name, CRD_Computer_VScript, m_hCustomScreen6 );
 
 #undef FIND_CAMERA
 
@@ -281,11 +378,11 @@ void CASW_Computer_Area::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldT
 	if ( !pMarine || !pMarine->GetMarineProfile() )
 		return;
 
-	if (m_bIsInUse && pMarine->m_hUsingEntity.Get() == this)
+	if ( m_bIsInUse && pMarine->m_hUsingEntity.Get() == this )
 	{
 		// check overriding
-		if (pMarine->GetMarineProfile()->CanHack() && GetCurrentHack() && m_bIsLocked
-				&& GetCurrentHack()->m_iShowOption.Get() != ASW_HACK_OPTION_OVERRIDE)
+		if ( pMarine->GetMarineProfile()->CanHack() && GetCurrentHack() && m_bIsLocked
+			&& GetCurrentHack()->m_iShowOption.Get() != ASW_HACK_OPTION_OVERRIDE )
 		{
 			Override( pMarine );
 			return;
@@ -296,7 +393,7 @@ void CASW_Computer_Area::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldT
 			GetCurrentHack()->SelectHackOption( ASW_HACK_OPTION_OVERRIDE );
 			return;
 		}
-		
+
 		pMarine->StopUsing();
 
 		return;
@@ -311,7 +408,7 @@ void CASW_Computer_Area::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldT
 			{
 				if ( !m_bIsLocked )
 				{
-					pMarine->GetMarineSpeech()->Chatter(CHATTER_USE);
+					pMarine->GetMarineSpeech()->Chatter( CHATTER_USE );
 				}
 				else
 				{
@@ -322,15 +419,15 @@ void CASW_Computer_Area::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldT
 					m_iAliensKilledBeforeHack = ASWGameResource() ? ASWGameResource()->GetAliensKilledInThisMission() : 0;
 				}
 
-				m_OnComputerActivated.FireOutput(pMarine, this);
+				m_OnComputerActivated.FireOutput( pMarine, this );
 				m_fAutoOverrideTime = gpGlobals->curtime + asw_auto_override_computer_delay.GetFloat();
 
 				// if doing complex hacking, launch the interface for it
 				if ( ShouldShowComputer() && pMarine->IsInhabited() )
 				{
-					if (!GetCurrentHack())	// if we haven't created a hack object for this computer yet, then create one
-						m_hComputerHack = (CASW_Hack_Computer*) CreateEntityByName( "asw_hack_computer" );
-					if (GetCurrentHack())
+					if ( !GetCurrentHack() )	// if we haven't created a hack object for this computer yet, then create one
+						m_hComputerHack = ( CASW_Hack_Computer * )CreateEntityByName( "asw_hack_computer" );
+					if ( GetCurrentHack() )
 					{
 						GetCurrentHack()->InitHack( pMarine->GetCommander(), pMarine, this );
 					}
@@ -341,7 +438,7 @@ void CASW_Computer_Area::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldT
 	else
 	{
 		// can't hack
-		EmitSound("ASWComputer.AccessDenied");
+		EmitSound( "ASWComputer.AccessDenied" );
 
 		// check for a nearby AI tech marine
 		float flMarineDistance;
@@ -364,7 +461,7 @@ bool CASW_Computer_Area::ShouldShowComputer()
 	return GetNumMenuOptions() > 0;
 }
 
-void CASW_Computer_Area::ActivateUnlockedComputer(CASW_Marine* pMarine)
+void CASW_Computer_Area::ActivateUnlockedComputer( CASW_Marine *pMarine )
 {
 	if ( !pMarine )
 		return;
@@ -372,10 +469,10 @@ void CASW_Computer_Area::ActivateUnlockedComputer(CASW_Marine* pMarine)
 	m_fLastButtonUseTime = gpGlobals->curtime;
 
 	// send our 'activated' output
-	m_OnComputerActivated.FireOutput(pMarine, this);
+	m_OnComputerActivated.FireOutput( pMarine, this );
 
 	// Fire event
-	IGameEvent * event = gameeventmanager->CreateEvent( "button_area_used" );
+	IGameEvent *event = gameeventmanager->CreateEvent( "button_area_used" );
 	if ( event )
 	{
 		CASW_Player *pPlayer = pMarine->GetCommander();
@@ -386,14 +483,13 @@ void CASW_Computer_Area::ActivateUnlockedComputer(CASW_Marine* pMarine)
 	}
 }
 
-
-CASW_Hack_Computer* CASW_Computer_Area::GetCurrentHack()
+CASW_Hack_Computer *CASW_Computer_Area::GetCurrentHack()
 {
 	return m_hComputerHack.Get();
 }
 
 // traditional Swarm hacking
-void CASW_Computer_Area::NPCUsing(CASW_Inhabitable_NPC *pNPC, float deltatime)
+void CASW_Computer_Area::NPCUsing( CASW_Inhabitable_NPC *pNPC, float deltatime )
 {
 	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
 	if ( !pMarine )
@@ -403,12 +499,14 @@ void CASW_Computer_Area::NPCUsing(CASW_Inhabitable_NPC *pNPC, float deltatime)
 
 	if ( asw_simple_hacking.GetBool() || !pMarine->IsInhabited() )
 	{
+		// TODO: handle m_bDownloadLocked for AI marines
+		// TODO: handle simple hack timing for locked computers with no download
 		if ( m_bIsInUse && ( m_bIsLocked || ( m_DownloadObjectiveName.Get()[0] != '\0' && GetDownloadProgress() < 1.0f ) ) )
 		{
 			float flOldHackProgress = m_fDownloadProgress;
 			float fTime = deltatime / ( MAX( m_bIsLocked ? m_iHackLevel : 1, 1 ) / asw_ai_computer_hacking_scale.GetFloat() + MAX( m_DownloadObjectiveName.Get()[0] != '\0' ? m_fDownloadTime : 0, 0 ) / asw_ai_computer_data_download_scale.GetFloat() );
 			// boost fTime by the marine's hack skill
-			fTime *= MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_HACKING, ASW_MARINE_SUBSKILL_HACKING_SPEED_SCALE);
+			fTime *= MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_HACKING, ASW_MARINE_SUBSKILL_HACKING_SPEED_SCALE );
 			m_fDownloadProgress += fTime;
 
 			if ( GetDownloadProgress() > 0.0f && flOldHackProgress == 0.0f )
@@ -423,18 +521,18 @@ void CASW_Computer_Area::NPCUsing(CASW_Inhabitable_NPC *pNPC, float deltatime)
 			{
 				m_OnComputerHackCompleted.FireOutput( pMarine, this );
 			}
-			
+
 			if ( m_fDownloadProgress >= 1.0f )
 			{
 				m_fDownloadProgress = 1.0f;
-				
+
 				pMarine->StopUsing();
 
-				if (GetCurrentHack())
+				if ( GetCurrentHack() )
 					GetCurrentHack()->OnHackComplete();
 
 				// unlock it
-				m_OnComputerHackCompleted.FireOutput(pMarine, this);
+				m_OnComputerHackCompleted.FireOutput( pMarine, this );
 				m_bIsLocked = false;
 				UpdateWaitingForInput();
 				UpdatePanelSkin();
@@ -442,29 +540,29 @@ void CASW_Computer_Area::NPCUsing(CASW_Inhabitable_NPC *pNPC, float deltatime)
 				// if set to use on unlock, then do so
 				if ( m_bUseAfterHack )
 				{
-					ActivateUnlockedComputer(pMarine);
+					ActivateUnlockedComputer( pMarine );
 				}
 
 				OnComputerDataDownloaded( pMarine );
 
 				StopDownloadingSound();
-				EmitSound("ASWComputer.MenuButton");
+				EmitSound( "ASWComputer.MenuButton" );
 			}
 		}
 	}
-	else if (GetCurrentHack())
+	else if ( GetCurrentHack() )
 	{
-		if (GetCurrentHack()->IsDownloadingFiles() && m_fDownloadProgress < 1.0f)
+		if ( GetCurrentHack()->IsDownloadingFiles() && m_fDownloadProgress < 1.0f )
 		{
-			float fTime = (deltatime * (1.0f/((float)m_fDownloadTime)));
+			float fTime = ( deltatime * ( 1.0f / ( ( float )m_fDownloadTime ) ) );
 			// boost fTime by the marine's hack skill
-			bool bTech = (pMarine->GetMarineProfile() && pMarine->GetMarineProfile()->CanHack());
-			if (bTech)
-				fTime *= MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_HACKING, ASW_MARINE_SUBSKILL_HACKING_SPEED_SCALE);
+			bool bTech = ( pMarine->GetMarineProfile() && pMarine->GetMarineProfile()->CanHack() );
+			if ( bTech )
+				fTime *= MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_HACKING, ASW_MARINE_SUBSKILL_HACKING_SPEED_SCALE );
 			else
 				fTime *= 0.5f;
 			m_fDownloadProgress += fTime;
-			if (m_fDownloadProgress >= 1.0f)
+			if ( m_fDownloadProgress >= 1.0f )
 			{
 				m_fDownloadProgress = 1.0f;
 
@@ -472,7 +570,7 @@ void CASW_Computer_Area::NPCUsing(CASW_Inhabitable_NPC *pNPC, float deltatime)
 				OnComputerDataDownloaded( pMarine );
 
 				StopDownloadingSound();
-				EmitSound("ASWComputer.MenuButton");
+				EmitSound( "ASWComputer.MenuButton" );
 			}
 			else
 			{
@@ -529,12 +627,15 @@ void CASW_Computer_Area::NPCStoppedUsing( CASW_Inhabitable_NPC *pNPC )
 	{
 		GetCurrentHack()->MarineStoppedUsing( pMarine );
 	}
+
 	if ( m_pComputerInUseSound )
 	{
 		CSoundEnvelopeController::GetController().SoundDestroy( m_pComputerInUseSound );
 		m_pComputerInUseSound = NULL;
 	}
+
 	StopDownloadingSound();
+
 	CASW_PointCamera *pCam = GetActiveCam();
 	if ( pCam )
 	{
@@ -545,18 +646,17 @@ void CASW_Computer_Area::NPCStoppedUsing( CASW_Inhabitable_NPC *pNPC )
 
 void CASW_Computer_Area::StartDownloadingSound()
 {
-	if( !m_pDownloadingSound )
+	if ( !m_pDownloadingSound )
 	{
 		// Don't set this up until the code calls for it.
-		const char *pszSound = "ASWComputer.Downloading"; //GetMoanSound( m_iMoanSound );
+		const char *pszSound = "ASWComputer.Downloading";
 
 		CPASAttenuationFilter filter( this );
 		m_pDownloadingSound = CSoundEnvelopeController::GetController().SoundCreate( filter, entindex(), CHAN_STATIC, pszSound, ATTN_NORM );
 
 		CSoundEnvelopeController::GetController().Play( m_pDownloadingSound, 0.1, 100 );
-		if (m_pDownloadingSound)
+		if ( m_pDownloadingSound )
 		{
-			//CSoundEnvelopeController::GetController().SoundChangePitch( m_pDownloadingSound, 120, 1.0 );
 			CSoundEnvelopeController::GetController().SoundChangeVolume( m_pDownloadingSound, 1, 1.5 );
 		}
 	}
@@ -564,8 +664,8 @@ void CASW_Computer_Area::StartDownloadingSound()
 
 void CASW_Computer_Area::StopDownloadingSound()
 {
-	if (m_pDownloadingSound)
-	{		
+	if ( m_pDownloadingSound )
+	{
 		CSoundEnvelopeController::GetController().SoundDestroy( m_pDownloadingSound );
 		m_pDownloadingSound = NULL;
 	}
@@ -575,72 +675,75 @@ bool CASW_Computer_Area::KeyValue( const char *szKeyName, const char *szValue )
 {
 	if ( FStrEq( szKeyName, "MailFile" ) )
 	{
-		Q_strncpy( m_MailFile.GetForModify(), szValue, 255 );
+		V_strncpy( m_MailFile.GetForModify(), szValue, sizeof( m_MailFile ) );
 		return true;
 	}
 	if ( FStrEq( szKeyName, "NewsFile" ) )
 	{
-		Q_strncpy( m_NewsFile.GetForModify(), szValue, 255 );
+		V_strncpy( m_NewsFile.GetForModify(), szValue, sizeof( m_NewsFile ) );
 		return true;
 	}
 	if ( FStrEq( szKeyName, "StocksSeed" ) )
 	{
-		Q_strncpy( m_StocksSeed.GetForModify(), szValue, 255 );
+		V_strncpy( m_StocksSeed.GetForModify(), szValue, sizeof( m_StocksSeed ) );
 		return true;
 	}
 	if ( FStrEq( szKeyName, "WeatherSeed" ) )
 	{
-		Q_strncpy( m_WeatherSeed.GetForModify(), szValue, 255 );
+		V_strncpy( m_WeatherSeed.GetForModify(), szValue, sizeof( m_WeatherSeed ) );
 		return true;
 	}
 	if ( FStrEq( szKeyName, "PlantFile" ) )
 	{
-		Q_strncpy( m_PlantFile.GetForModify(), szValue, 255 );
+		V_strncpy( m_PlantFile.GetForModify(), szValue, sizeof( m_PlantFile ) );
 		return true;
 	}
 	if ( FStrEq( szKeyName, "PDAName" ) )
 	{
-		Q_strncpy( m_PDAName.GetForModify(), szValue, 255 );
+		V_strncpy( m_PDAName.GetForModify(), szValue, sizeof( m_PDAName ) );
 		return true;
 	}
 	if ( FStrEq( szKeyName, "SecurityCam1Label" ) )
 	{
-		Q_strncpy( m_SecurityCamLabel1.GetForModify(), szValue, 255 );
+		V_strncpy( m_SecurityCamLabel1.GetForModify(), szValue, sizeof( m_SecurityCamLabel1 ) );
 		return true;
 	}
 	if ( FStrEq( szKeyName, "SecurityCam2Label" ) )
 	{
-		Q_strncpy( m_SecurityCamLabel2.GetForModify(), szValue, 255 );
+		V_strncpy( m_SecurityCamLabel2.GetForModify(), szValue, sizeof( m_SecurityCamLabel2 ) );
 		return true;
 	}
 	if ( FStrEq( szKeyName, "SecurityCam3Label" ) )
 	{
-		Q_strncpy( m_SecurityCamLabel3.GetForModify(), szValue, 255 );
+		V_strncpy( m_SecurityCamLabel3.GetForModify(), szValue, sizeof( m_SecurityCamLabel3 ) );
 		return true;
 	}
 	if ( FStrEq( szKeyName, "DownloadObjectiveName" ) )
 	{
-		Q_strncpy( m_DownloadObjectiveName.GetForModify(), szValue, 255 );
+		V_strncpy( m_DownloadObjectiveName.GetForModify(), szValue, sizeof( m_DownloadObjectiveName ) );
 		return true;
 	}
-	return BaseClass::KeyValue( szKeyName, szValue );
+	bool ok = BaseClass::KeyValue( szKeyName, szValue );
+	UpdateLockedScreensBits();
+	return ok;
 }
 
 void CASW_Computer_Area::OnComputerDataDownloaded( CASW_Marine *pMarine )
 {
 	// check haven't already downloaded them
-	if (m_bDownloadedDocs)
+	if ( m_bDownloadedDocs )
 		return;
+
 	if ( HasDownloadObjective() )
 	{
 		// flag objective as complete
-		CBaseEntity *pEntity = gEntList.FindEntityByName( NULL, m_DownloadObjectiveName.Get());
-		if (pEntity)
+		CBaseEntity *pEntity = gEntList.FindEntityByName( NULL, m_DownloadObjectiveName.Get() );
+		if ( pEntity )
 		{
-			CASW_Objective_Triggered* pObj = dynamic_cast<CASW_Objective_Triggered*>(pEntity);
-			if (pObj)
+			CASW_Objective_Triggered *pObj = dynamic_cast< CASW_Objective_Triggered * >( pEntity );
+			if ( pObj )
 			{
-				pObj->SetComplete(true);
+				pObj->SetComplete( true );
 			}
 		}
 	}
@@ -650,7 +753,7 @@ void CASW_Computer_Area::OnComputerDataDownloaded( CASW_Marine *pMarine )
 		int nAliensKilled = ASWGameResource() ? ASWGameResource()->GetAliensKilledInThisMission() : 0;
 		if ( ( nAliensKilled - m_iAliensKilledBeforeHack ) > 10 )
 		{
-			for ( int i = 1; i <= gpGlobals->maxClients; i++ )	
+			for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 			{
 				CASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
 				CASW_Marine *pPlayerMarine = pPlayer ? CASW_Marine::AsMarine( pPlayer->GetNPC() ) : NULL;
@@ -667,8 +770,8 @@ void CASW_Computer_Area::OnComputerDataDownloaded( CASW_Marine *pMarine )
 	}
 
 	// fire output
-	m_OnComputerDataDownloaded.FireOutput(this, this);
-	m_bDownloadedDocs = true;	
+	m_OnComputerDataDownloaded.FireOutput( this, this );
+	m_bDownloadedDocs = true;
 
 	// auto close the computer if it only contained a download
 	if ( GetNumMenuOptions() <= 1 && pMarine )
@@ -677,25 +780,34 @@ void CASW_Computer_Area::OnComputerDataDownloaded( CASW_Marine *pMarine )
 	}
 }
 
-void CASW_Computer_Area::OnViewMail(CASW_Marine *pMarine, int iMail)
+void CASW_Computer_Area::OnViewMail( CASW_Marine *pMarine, int iMail )
 {
-	bool bIsPDA = (m_PDAName.Get()[0] != 0);
-	if (!pMarine || iMail < 1 || iMail > 4 || (!m_bViewingMail && !bIsPDA))
+	bool bIsPDA = ( m_PDAName.Get()[0] != 0 );
+	if ( !pMarine || iMail < 1 || iMail > 4 || ( !m_bViewingMail && !bIsPDA ) )
 		return;
 
-	switch (iMail)
+	switch ( iMail )
 	{
-		case 4:	m_OnComputerViewMail4.FireOutput(pMarine, this);	break;
-		case 3:	m_OnComputerViewMail3.FireOutput(pMarine, this);	break;
-		case 2:	m_OnComputerViewMail2.FireOutput(pMarine, this);	break;
-		case 1:	default: m_OnComputerViewMail1.FireOutput(pMarine, this);	break;
+	default:
+	case 1:
+		m_OnComputerViewMail1.FireOutput( pMarine, this );
+		break;
+	case 2:
+		m_OnComputerViewMail2.FireOutput( pMarine, this );
+		break;
+	case 3:
+		m_OnComputerViewMail3.FireOutput( pMarine, this );
+		break;
+	case 4:
+		m_OnComputerViewMail4.FireOutput( pMarine, this );
+		break;
 	}
 }
 
 // computer has been unlocked from the hacking puzzle
-void CASW_Computer_Area::UnlockFromHack(CASW_Marine *pMarine)
+void CASW_Computer_Area::UnlockFromHack( CASW_Marine *pMarine )
 {
-	if (m_bIsLocked)
+	if ( m_bIsLocked )
 	{
 		m_bIsLocked = false;
 
@@ -704,12 +816,12 @@ void CASW_Computer_Area::UnlockFromHack(CASW_Marine *pMarine)
 
 		bool bFast = false;
 		if ( pMarine )
-		{			
+		{
 			// was this a fast hack?
-			if (pMarine->GetMarineResource() && GetCurrentHack())
+			if ( pMarine->GetMarineResource() && GetCurrentHack() )
 			{
-				if (gpGlobals->curtime <= GetCurrentHack()->m_fFastFinishTime
-						&& GetCurrentHack()->m_iNumTumblers.Get() >= ASW_MIN_TUMBLERS_FAST_HACK)	// has to be more than x tumblers to quality for the medal
+				if ( gpGlobals->curtime <= GetCurrentHack()->m_fFastFinishTime
+					&& GetCurrentHack()->m_iNumTumblers.Get() >= ASW_MIN_TUMBLERS_FAST_HACK )	// has to be more than x tumblers to quality for the medal
 				{
 					pMarine->GetMarineResource()->m_iFastComputerHacks++;
 					if ( pMarine->IsInhabited() && pMarine->GetCommander() )
@@ -717,7 +829,7 @@ void CASW_Computer_Area::UnlockFromHack(CASW_Marine *pMarine)
 						pMarine->GetCommander()->AwardAchievement( ACHIEVEMENT_ASW_FAST_COMPUTER_HACKS );
 					}
 					bFast = true;
-					pMarine->GetMarineSpeech()->QueueChatter(CHATTER_HACK_FINISHED, gpGlobals->curtime + 2.0f, gpGlobals->curtime + 3.0f);
+					pMarine->GetMarineSpeech()->QueueChatter( CHATTER_HACK_FINISHED, gpGlobals->curtime + 2.0f, gpGlobals->curtime + 3.0f );
 
 					IGameEvent *pEvent = gameeventmanager->CreateEvent( "fast_hack_success" );
 					if ( pEvent )
@@ -729,86 +841,86 @@ void CASW_Computer_Area::UnlockFromHack(CASW_Marine *pMarine)
 				}
 			}
 		}
-		m_OnComputerHackCompleted.FireOutput(pMarine, this);
+		m_OnComputerHackCompleted.FireOutput( pMarine, this );
 	}
 }
 
 // hack puzzle has 50% or more of the tumblers correct
-void CASW_Computer_Area::HackHalfway(CASW_Marine *pMarine)
+void CASW_Computer_Area::HackHalfway( CASW_Marine *pMarine )
 {
-	if (pMarine && !m_bPlayedHalfwayChatter)
+	if ( pMarine && !m_bPlayedHalfwayChatter )
 	{
-		pMarine->GetMarineSpeech()->Chatter(CHATTER_HACK_HALFWAY);
+		pMarine->GetMarineSpeech()->Chatter( CHATTER_HACK_HALFWAY );
 		m_bPlayedHalfwayChatter = true;
 	}
-	m_OnComputerHackHalfway.FireOutput(pMarine, this);
+	m_OnComputerHackHalfway.FireOutput( pMarine, this );
 }
 
-void CASW_Computer_Area::ActivateMultiTrigger(CBaseEntity *pActivator)
+void CASW_Computer_Area::ActivateMultiTrigger( CBaseEntity *pActivator )
 {
-	if (GetNextThink() > gpGlobals->curtime)
-		return;         // still waiting for reset time
+	if ( GetNextThink() > gpGlobals->curtime )
+		return; // still waiting for reset time
 
-	BaseClass::ActivateMultiTrigger(pActivator);
+	BaseClass::ActivateMultiTrigger( pActivator );
 
 	// check for shouting out about a locked computer
-	if (m_bDoSecureShout && m_bIsLocked)
+	if ( m_bDoSecureShout && m_bIsLocked )
 	{
-		if (gpGlobals->curtime > m_fNextSecureShoutCheck)
+		if ( gpGlobals->curtime > m_fNextSecureShoutCheck )
 		{
 			CASW_Marine *pMarine = CASW_Marine::AsMarine( pActivator );
 			if ( pMarine )
 			{
 				// techs doesn't call for help, cos he's got the skillz already
-				if (pMarine->GetMarineProfile() && pMarine->GetMarineProfile()->CanHack())
+				if ( pMarine->GetMarineProfile() && pMarine->GetMarineProfile()->CanHack() )
 					return;
 				// check if there's a hacker nearby
 				CASW_Game_Resource *pGameResource = ASWGameResource();
-				if (pGameResource)
+				if ( pGameResource )
 				{
 					int iFound = 0;
-					for (int i=0;i<pGameResource->GetMaxMarineResources();i++)
+					for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
 					{
-						CASW_Marine_Resource *pMR = pGameResource->GetMarineResource(i);
+						CASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
 						CASW_Marine *pOtherMarine = pMR ? pMR->GetMarineEntity() : NULL;
-						if (pOtherMarine && pActivator != pOtherMarine
-									&& (pMarine->GetAbsOrigin().DistTo(pOtherMarine->GetAbsOrigin()) < 800)
-									&& pOtherMarine->GetMarineProfile() && pOtherMarine->GetMarineProfile()->CanHack() )
+						if ( pOtherMarine && pActivator != pOtherMarine
+							&& ( pMarine->GetAbsOrigin().DistTo( pOtherMarine->GetAbsOrigin() ) < 800 )
+							&& pOtherMarine->GetMarineProfile() && pOtherMarine->GetMarineProfile()->CanHack() )
 						{
 							iFound++;
 						}
 					}
-					if (iFound <= 0)
+					if ( iFound <= 0 )
 					{
 						m_fNextSecureShoutCheck = gpGlobals->curtime + 10.0f;
 						return;
 					}
 
-					int iChosen = random->RandomInt(0, iFound-1);
-					for (int i=0;i<pGameResource->GetMaxMarineResources();i++)
+					int iChosen = random->RandomInt( 0, iFound - 1 );
+					for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
 					{
-						CASW_Marine_Resource *pMR = pGameResource->GetMarineResource(i);
+						CASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
 						CASW_Marine *pOtherMarine = pMR ? pMR->GetMarineEntity() : NULL;
-						if (pOtherMarine && pActivator != pOtherMarine
-									&& (pMarine->GetAbsOrigin().DistTo(pOtherMarine->GetAbsOrigin()) < 800)
-									&& pOtherMarine->GetMarineProfile() && pOtherMarine->GetMarineProfile()->CanHack() )
+						if ( pOtherMarine && pActivator != pOtherMarine
+							&& ( pMarine->GetAbsOrigin().DistTo( pOtherMarine->GetAbsOrigin() ) < 800 )
+							&& pOtherMarine->GetMarineProfile() && pOtherMarine->GetMarineProfile()->CanHack() )
 						{
-							if (iChosen <= 0)
+							if ( iChosen <= 0 )
 							{
 								int iChatter = CHATTER_LOCKED_TERMINAL;
 								// shout to this marine
-								if (random->RandomFloat() < 0.5f)	// do a specific call 50% of the time
+								if ( random->RandomFloat() < 0.5f )	// do a specific call 50% of the time
 								{
-									if (pOtherMarine->GetMarineProfile()->m_VoiceType == ASW_VOICE_CRASH)
+									if ( pOtherMarine->GetMarineProfile()->m_VoiceType == ASW_VOICE_CRASH )
 										iChatter = CHATTER_LOCKED_TERMINAL_CRASH;
-									else if (pOtherMarine->GetMarineProfile()->m_VoiceType == ASW_VOICE_FLYNN)
+									else if ( pOtherMarine->GetMarineProfile()->m_VoiceType == ASW_VOICE_FLYNN )
 										iChatter = CHATTER_LOCKED_TERMINAL_FLYNN;
-									else if (pOtherMarine->GetMarineProfile()->m_VoiceType == ASW_VOICE_VEGAS)
+									else if ( pOtherMarine->GetMarineProfile()->m_VoiceType == ASW_VOICE_VEGAS )
 										iChatter = CHATTER_LOCKED_TERMINAL_VEGAS;
 								}
-	
-								pMarine->GetMarineSpeech()->QueueChatter(iChatter, gpGlobals->curtime + 0.8f, gpGlobals->curtime + 1.0f);
-								m_bDoSecureShout = false;								
+
+								pMarine->GetMarineSpeech()->QueueChatter( iChatter, gpGlobals->curtime + 0.8f, gpGlobals->curtime + 1.0f );
+								m_bDoSecureShout = false;
 								//m_fNextSecureShoutCheck = gpGlobals->curtime + 2.0f;	// check again sooner if we tried to say the line but couldn't for some reason
 								return;
 							}
@@ -816,53 +928,53 @@ void CASW_Computer_Area::ActivateMultiTrigger(CBaseEntity *pActivator)
 						}
 					}
 					m_fNextSecureShoutCheck = gpGlobals->curtime + 10.0f;
-				}				
+				}
 			}
 		}
 	}
 }
 
-void CASW_Computer_Area::StopLoopingSounds(void)
+void CASW_Computer_Area::StopLoopingSounds( void )
 {
 	BaseClass::StopLoopingSounds();
-	
+
 	CSoundEnvelopeController::GetController().SoundDestroy( m_pDownloadingSound );
 	m_pDownloadingSound = NULL;
 	CSoundEnvelopeController::GetController().SoundDestroy( m_pComputerInUseSound );
 	m_pComputerInUseSound = NULL;
 }
 
-void CASW_Computer_Area::PlayPositiveSound(CASW_Player *pHackingPlayer)
+void CASW_Computer_Area::PlayPositiveSound( CASW_Player *pHackingPlayer )
 {
-	if (pHackingPlayer && 
-		gpGlobals->curtime > m_fLastPositiveSoundTime + 0.6f)
+	if ( pHackingPlayer &&
+		gpGlobals->curtime > m_fLastPositiveSoundTime + 0.6f )
 	{
 		m_fLastPositiveSoundTime = gpGlobals->curtime;
 		CPASFilter filter( GetAbsOrigin() );
-		if (gpGlobals->maxClients > 1)	// in multiplayer games, the hacking client will play this sounds clientside
+		if ( gpGlobals->maxClients > 1 )	// in multiplayer games, the hacking client will play this sounds clientside
 			filter.RemoveRecipient( pHackingPlayer );
-		EmitSound(filter, entindex(), "ASWComputer.NumberAligned");
+		EmitSound( filter, entindex(), "ASWComputer.NumberAligned" );
 	}
 }
 
-void CASW_Computer_Area::PlayNegativeSound(CASW_Player *pHackingPlayer)
+void CASW_Computer_Area::PlayNegativeSound( CASW_Player *pHackingPlayer )
 {
 	// none atm
 }
 
 bool CASW_Computer_Area::WaitingForInputVismonEvaluator( CBaseEntity *pVisibleEntity, CBasePlayer *pViewingPlayer )
 {
-	CASW_Computer_Area *pComputerArea = static_cast< CASW_Computer_Area* >( pVisibleEntity );
+	CASW_Computer_Area *pComputerArea = static_cast< CASW_Computer_Area * >( pVisibleEntity );
 	return pComputerArea->m_bWaitingForInput && pComputerArea->m_bUseAreaEnabled;
 }
 
 bool CASW_Computer_Area::WaitingForInputVismonCallback( CBaseEntity *pVisibleEntity, CBasePlayer *pViewingPlayer )
 {
-	CASW_Computer_Area *pComputerArea = static_cast< CASW_Computer_Area* >( pVisibleEntity );
+	CASW_Computer_Area *pComputerArea = static_cast< CASW_Computer_Area * >( pVisibleEntity );
 	if ( !pComputerArea->m_bUseAreaEnabled )
 		return false;
 
-	IGameEvent * event = gameeventmanager->CreateEvent( "button_area_active" );
+	IGameEvent *event = gameeventmanager->CreateEvent( "button_area_active" );
 	if ( event )
 	{
 		event->SetInt( "userid", pViewingPlayer->GetUserID() );
@@ -879,8 +991,8 @@ void CASW_Computer_Area::UpdateWaitingForInput()
 {
 	bool bOldWaitingForInput = m_bWaitingForInput;
 
-	m_bWaitingForInput = ASWGameRules()->GetGameState() == ASW_GS_INGAME && 
-						 ( !m_bIsInUse && ( m_bIsLocked || ( !m_bWasLocked && m_DownloadObjectiveName.Get()[ 0 ] != '\0' && m_fLastButtonUseTime == 0 ) ) );
+	m_bWaitingForInput = ASWGameRules()->GetGameState() == ASW_GS_INGAME &&
+		( !m_bIsInUse && ( m_bIsLocked || ( !m_bWasLocked && m_DownloadObjectiveName.Get()[0] != '\0' && m_fLastButtonUseTime == 0 ) ) );
 
 	if ( !bOldWaitingForInput && m_bWaitingForInput )
 	{
@@ -890,7 +1002,7 @@ void CASW_Computer_Area::UpdateWaitingForInput()
 	{
 		VisibilityMonitor_RemoveEntity( this );
 
-		IGameEvent * event = gameeventmanager->CreateEvent( "button_area_inactive" );
+		IGameEvent *event = gameeventmanager->CreateEvent( "button_area_inactive" );
 		if ( event )
 		{
 			event->SetInt( "entindex", entindex() );
@@ -902,23 +1014,23 @@ void CASW_Computer_Area::UpdateWaitingForInput()
 // updates the panel prop (if any) with a skin to reflect the button's state
 void CASW_Computer_Area::UpdatePanelSkin()
 {
-	CBaseEntity* pPanel = m_hPanelProp.Get();
-	
+	CBaseEntity *pPanel = m_hPanelProp.Get();
+
 	if ( !pPanel )
 		return;
 
 	CBaseAnimating *pAnim = pPanel->GetBaseAnimating();
 	CBaseEntity *pFindAnim = NULL;
-	while (pAnim)
+	while ( pAnim )
 	{
-		if (m_bIsLocked)
+		if ( m_bIsLocked )
 			pAnim->m_nSkin = 0;	// locked skin
 		else
-			pAnim->m_nSkin = 1;	// unlocked skin	
+			pAnim->m_nSkin = 1;	// unlocked skin
 
-		if (m_bMultiplePanelProps)
+		if ( m_bMultiplePanelProps )
 		{
-			pFindAnim = gEntList.FindEntityByName(pAnim, m_szPanelPropName);
+			pFindAnim = gEntList.FindEntityByName( pAnim, m_szPanelPropName );
 			pAnim = pFindAnim ? pFindAnim->GetBaseAnimating() : NULL;
 		}
 		else
@@ -926,25 +1038,84 @@ void CASW_Computer_Area::UpdatePanelSkin()
 	}
 }
 
+void CASW_Computer_Area::UpdateLockedScreensBits()
+{
+	unsigned bits = 0;
+
+	if ( m_bDownloadLocked )
+		bits |= 1 << COMPUTER_LOCKED_DOWNLOAD;
+	if ( m_bSecurityCam1Locked )
+		bits |= 1 << COMPUTER_LOCKED_SECURITY_CAM_1;
+	if ( m_bSecurityCam2Locked )
+		bits |= 1 << COMPUTER_LOCKED_SECURITY_CAM_2;
+	if ( m_bSecurityCam3Locked )
+		bits |= 1 << COMPUTER_LOCKED_SECURITY_CAM_3;
+	if ( m_bTurret1Locked )
+		bits |= 1 << COMPUTER_LOCKED_TURRET_1;
+	if ( m_bTurret2Locked )
+		bits |= 1 << COMPUTER_LOCKED_TURRET_2;
+	if ( m_bTurret3Locked )
+		bits |= 1 << COMPUTER_LOCKED_TURRET_3;
+	if ( m_bMailFileLocked )
+		bits |= 1 << COMPUTER_LOCKED_MAIL;
+	if ( m_bMail1Locked )
+		bits |= 1 << COMPUTER_LOCKED_MAIL_1;
+	if ( m_bMail2Locked )
+		bits |= 1 << COMPUTER_LOCKED_MAIL_2;
+	if ( m_bMail3Locked )
+		bits |= 1 << COMPUTER_LOCKED_MAIL_3;
+	if ( m_bMail4Locked )
+		bits |= 1 << COMPUTER_LOCKED_MAIL_4;
+	if ( m_bNewsFileLocked )
+		bits |= 1 << COMPUTER_LOCKED_NEWS;
+	if ( m_bStocksFileLocked )
+		bits |= 1 << COMPUTER_LOCKED_STOCKS;
+	if ( m_bWeatherFileLocked )
+		bits |= 1 << COMPUTER_LOCKED_WEATHER;
+	if ( m_bPlantFileLocked )
+		bits |= 1 << COMPUTER_LOCKED_PLANT;
+	if ( m_bCustomScreen1Locked )
+		bits |= 1 << COMPUTER_LOCKED_CUSTOM_SCREEN_1;
+	if ( m_bCustomScreen2Locked )
+		bits |= 1 << COMPUTER_LOCKED_CUSTOM_SCREEN_2;
+	if ( m_bCustomScreen3Locked )
+		bits |= 1 << COMPUTER_LOCKED_CUSTOM_SCREEN_3;
+	if ( m_bCustomScreen4Locked )
+		bits |= 1 << COMPUTER_LOCKED_CUSTOM_SCREEN_4;
+	if ( m_bCustomScreen5Locked )
+		bits |= 1 << COMPUTER_LOCKED_CUSTOM_SCREEN_5;
+	if ( m_bCustomScreen6Locked )
+		bits |= 1 << COMPUTER_LOCKED_CUSTOM_SCREEN_6;
+
+	m_iLockedScreens.Set( bits );
+}
+
 int CASW_Computer_Area::GetNumMenuOptions()
 {
-	int n=0;
+	int n = 0;
 
-	if (m_DownloadObjectiveName.Get()[0] != 0 && GetDownloadProgress() < 1.0f) n++;
-	if (m_MailFile.Get()[0] != 0) n++;
-	if (m_NewsFile.Get()[0] != 0) n++;
-	if (m_StocksSeed.Get()[0] != 0) n++;
-	if (m_WeatherSeed.Get()[0] != 0) n++;
-	if (m_PlantFile.Get()[0] != 0) n++;
+	if ( m_DownloadObjectiveName.Get()[0] != 0 && GetDownloadProgress() < 1.0f ) n++;
+	if ( m_MailFile.Get()[0] != 0 ) n++;
+	if ( m_NewsFile.Get()[0] != 0 ) n++;
+	if ( m_StocksSeed.Get()[0] != 0 ) n++;
+	if ( m_WeatherSeed.Get()[0] != 0 ) n++;
+	if ( m_PlantFile.Get()[0] != 0 ) n++;
 
-	if (m_hSecurityCam1.Get() != NULL) n++;
-	if (m_hSecurityCam2.Get() != NULL) n++;
-	if (m_hSecurityCam3.Get() != NULL) n++;
-	if (m_hTurret1.Get() != NULL) n++;
-	if (m_hTurret2.Get() != NULL) n++;
-	if (m_hTurret3.Get() != NULL) n++;
+	if ( m_hSecurityCam1.Get() != NULL ) n++;
+	if ( m_hSecurityCam2.Get() != NULL ) n++;
+	if ( m_hSecurityCam3.Get() != NULL ) n++;
+	if ( m_hTurret1.Get() != NULL ) n++;
+	if ( m_hTurret2.Get() != NULL ) n++;
+	if ( m_hTurret3.Get() != NULL ) n++;
 
-	if (n > 6)	// clamp it to 6 options, since that's all our UI supports
+	if ( m_hCustomScreen1.Get() != NULL ) n++;
+	if ( m_hCustomScreen2.Get() != NULL ) n++;
+	if ( m_hCustomScreen3.Get() != NULL ) n++;
+	if ( m_hCustomScreen4.Get() != NULL ) n++;
+	if ( m_hCustomScreen5.Get() != NULL ) n++;
+	if ( m_hCustomScreen6.Get() != NULL ) n++;
+
+	if ( n > 6 )	// clamp it to 6 options, since that's all our UI supports
 		n = 6;
 
 	return n;
@@ -957,7 +1128,7 @@ bool CASW_Computer_Area::HasDownloadObjective()
 
 CASW_PointCamera *CASW_Computer_Area::GetActiveCam()
 {
-	switch (m_iActiveCam)
+	switch ( m_iActiveCam )
 	{
 	case 1:
 		return m_hSecurityCam1;

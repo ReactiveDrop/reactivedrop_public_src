@@ -55,6 +55,7 @@
 #include "fogvolume.h"
 #include "missionchooser/iasw_mission_chooser.h"
 #include "missionchooser/iasw_mission_chooser_source.h"
+#include "rd_vgui_vscript_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -778,7 +779,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 
 				if ( args.ArgC() < 3 )
 				{
-					Warning( "Player sent bad cl_selectm command\n" );
+					Warning( "Player %s sent bad cl_selectm command\n", GetASWNetworkID() );
 					return false;
 				}
 
@@ -812,7 +813,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			{
 				if ( args.ArgC() < 2 )
 				{
-					Warning( "Player sent bad cl_dselectm command\n" );
+					Warning( "Player %s sent bad cl_dselectm command\n", GetASWNetworkID() );
 					return false;
 				}
 
@@ -861,7 +862,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			{
 				if ( args.ArgC() < 9 )
 				{
-					Warning( "Player sent bad loadouta command\n" );
+					Warning( "Player %s sent bad loadouta command\n", GetASWNetworkID() );
 					return false;
 				}
 
@@ -918,7 +919,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			{	
 				if ( args.ArgC() < 3 )
 				{
-					Warning("Player sent a bad cl_spendskill command\n");
+					Warning( "Player %s sent a bad cl_spendskill command\n", GetASWNetworkID() );
 					return false;
 				}
 
@@ -939,7 +940,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			{
 				if ( args.ArgC() < 2 )
 				{
-					Warning("Player sent a bad cl_undoskill command\n");
+					Warning( "Player %s sent a bad cl_undoskill command\n", GetASWNetworkID() );
 					return false;
 				}
 				int iProfileIndex = atoi(args[1]);
@@ -953,7 +954,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			{
 				if ( args.ArgC() < 2 )
 				{
-					Warning("Player sent a bad cl_hardcore_ff command\n");
+					Warning( "Player %s sent a bad cl_hardcore_ff command\n", GetASWNetworkID() );
 					return false;
 				}
 
@@ -988,7 +989,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			{
 				if ( args.ArgC() < 2 )
 				{
-					Warning( "Player sent a bad rd_set_challenge command\n" );
+					Warning( "Player %s sent a bad rd_set_challenge command\n", GetASWNetworkID() );
 					return false;
 				}
 
@@ -1047,7 +1048,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			{
 				if ( args.ArgC() < 3 )
 				{
-					Warning("Player sent a bad cl_editing_slot command\n");
+					Warning( "Player %s sent a bad cl_editing_slot command\n", GetASWNetworkID() );
 					return false;
 				}
 				m_nChangingMR = atoi( args[1] );
@@ -1059,7 +1060,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			{
 				if ( args.ArgC() < 2 )
 				{
-					Warning("Player sent a bad cl_promoted command\n");
+					Warning( "Player %s sent a bad cl_promoted command\n", GetASWNetworkID() );
 					return false;
 				}
 				if ( !m_bSentPromotedMessage )
@@ -1108,7 +1109,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			{
 				if ( args.ArgC() < 6 )
 				{
-					Warning( "Player sent bad marine face command\n" );
+					Warning( "Player %s sent bad marine face command\n", GetASWNetworkID() );
 					return false;
 				}
 
@@ -1129,7 +1130,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			{
 				if ( args.ArgC() < 1 )
 				{
-					Warning( "Player sent bad cl_orderfollow command\n" );
+					Warning( "Player %s sent bad cl_orderfollow command\n", GetASWNetworkID() );
 				}
 
 				OrderNearbyMarines(this, ASW_ORDER_FOLLOW);
@@ -1140,7 +1141,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			{
 				if ( args.ArgC() < 1 )
 				{
-					Warning( "Player sent bad cl_orderhold command\n" );
+					Warning( "Player %s sent bad cl_orderhold command\n", GetASWNetworkID() );
 				}
 
 				OrderNearbyMarines(this, ASW_ORDER_HOLD_POSITION);
@@ -1151,7 +1152,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			{
 				if ( args.ArgC() < 2 )
 				{
-					Warning( "Player sent bad cl_mread command\n" );
+					Warning( "Player %s sent bad cl_mread command\n", GetASWNetworkID() );
 					return false;
 				}
 
@@ -1169,7 +1170,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			{
 				if ( args.ArgC() < 2 )
 				{
-					Warning("Player sent a bad cl_emote command\n");
+					Warning( "Player %s sent a bad cl_emote command\n", GetASWNetworkID() );
 					return false;
 				}
 				int iEmote = atoi( args[1] );
@@ -1184,7 +1185,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			{
 				if ( args.ArgC() < 2 )
 				{
-					Warning("Player sent a bad cl_chatter command\n");
+					Warning( "Player %s sent a bad cl_chatter command\n", GetASWNetworkID() );
 					return false;
 				}
 				int iChatter = atoi( args[1] );
@@ -1204,7 +1205,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			{
 				if ( args.ArgC() < 4 )
 				{
-					Warning("Player sent a bad cl_freecam command\n");
+					Warning( "Player %s sent a bad cl_freecam command\n", GetASWNetworkID() );
 					return false;
 				}
 
@@ -1219,7 +1220,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			{
 				if ( args.ArgC() < 2 )
 				{
-					Warning("Player sent a bad cl_selecthack command\n");
+					Warning( "Player %s sent a bad cl_selecthack command\n", GetASWNetworkID() );
 					return false;
 				}
 
@@ -1246,7 +1247,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			{
 				if ( args.ArgC() < 2 )
 				{
-					Warning("Player sent a bad cl_blipspeech command\n");
+					Warning( "Player %s sent a bad cl_blipspeech command\n", GetASWNetworkID() );
 					return false;
 				}
 				int iTargetMarine = atoi( args[1] );
@@ -1258,7 +1259,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			{
 				if ( args.ArgC() < 2 )
 				{
-					Warning("Player sent a bad cl_viewmail command\n");
+					Warning( "Player %s sent a bad cl_viewmail command\n", GetASWNetworkID() );
 					return false;
 				}
 				CASW_Marine *pMarine = CASW_Marine::AsMarine( GetNPC() );
@@ -1278,7 +1279,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			{			
 				if ( args.ArgC() < 2 )
 				{
-					Warning("Player sent a bad cl_offhand command\n");
+					Warning( "Player %s sent a bad cl_offhand command\n", GetASWNetworkID() );
 					return false;
 				}
 				int slot = clamp(atoi(args[1]), 0, 3);
@@ -1313,7 +1314,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			{			
 				if ( args.ArgC() < 3 )
 				{
-					Warning("Player sent a bad cl_ai_offhand command\n");
+					Warning( "Player %s sent a bad cl_ai_offhand command\n", GetASWNetworkID() );
 					return false;
 				}
 				int slot = clamp( atoi( args[1] ), 0, 2 );
@@ -1334,7 +1335,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			{
 				if ( args.ArgC() < 2 )
 				{
-					Warning( "Player sent a bad rd_set_challenge command\n" );
+					Warning( "Player %s sent a bad rd_set_challenge command\n", GetASWNetworkID() );
 					return false;
 				}
 
@@ -1348,6 +1349,28 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 						ASWGameRules()->ApplyChallenge();
 					}
 				}
+				return true;
+			}
+			else if ( FStrEq( pcmd, "cl_vgui_vscript_input" ) )
+			{
+				if ( args.ArgC() != 4 )
+				{
+					Warning( "Player %s sent a bad cl_vgui_vscript_input command\n", GetASWNetworkID() );
+					return false;
+				}
+
+				int iEntity = V_atoi( args[1] );
+				int iCheck = V_atoi( args[2] );
+				int iValue = V_atoi( args[3] );
+
+				CRD_VGui_VScript *pEnt = dynamic_cast< CRD_VGui_VScript * >( CBaseEntity::Instance( iEntity ) );
+				if ( !pEnt || pEnt->m_iRandomCheck != iCheck || !pEnt->m_hInteracter || GetNPC() != pEnt->m_hInteracter )
+				{
+					Warning( "Player %s sent a bad cl_vgui_vscript_input command\n", GetASWNetworkID() );
+					return false;
+				}
+
+				pEnt->OnInput( iValue );
 				return true;
 			}
 
@@ -1418,7 +1441,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 
 		if ( args.ArgC() < 2 )
 		{
-			Warning( "Player sent bad cl_selectsinglem command\n" );
+			Warning( "Player %s sent bad cl_selectsinglem command\n", GetASWNetworkID() );
 			return false;
 		}
 
@@ -1467,7 +1490,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 		{
 			if ( args.ArgC() < 5 )
 			{
-				Warning( "Player sent bad loadout command\n" );
+				Warning( "Player %s sent bad cl_loadout command\n", GetASWNetworkID() );
 				return false;
 			}
 
@@ -1500,7 +1523,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 		{
 			if ( args.ArgC() < 5 )
 			{
-				Warning( "Player sent bad loadoutm command\n" );
+				Warning( "Player %s sent bad cl_loadoutm command\n", GetASWNetworkID() );
 				return false;
 			}
 
@@ -1512,7 +1535,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( iMarineResource );
 			if ( !pMR || pMR->GetCommander() != this )
 			{
-				Warning( "Player sent bad loadoutm command\n" );
+				Warning( "Player %s sent bad cl_loadoutm command\n", GetASWNetworkID() );
 				return false;
 			}
 
@@ -1532,7 +1555,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 		{
 			if ( args.ArgC() < 2 )
 			{
-				Warning("Player sent a bad cl_onslaught command\n");
+				Warning("Player %s sent a bad cl_onslaught command\n", GetASWNetworkID() );
 				return false;
 			}
 
@@ -1585,7 +1608,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 	{
 		if ( args.ArgC() < 2 )
 		{
-			Warning( "Player sent bad switch marine command\n" );
+			Warning( "Player %s sent bad cl_switchm command\n", GetASWNetworkID() );
 			return false;
 		}
 
@@ -1603,7 +1626,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 	{
 		if ( args.ArgC() < 4 )
 		{
-			Warning("Player sent a bad cl_mapline command\n");
+			Warning( "Player %s sent a bad cl_mapline command\n", GetASWNetworkID() );
 			return false;
 		}
 		int linetype = clamp(atoi( args[1] ), 0, 1);
@@ -1620,7 +1643,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 	{
 		if ( args.ArgC() < 2 )
 		{
-			Warning("Player sent a bad cl_campaignnext command\n");
+			Warning( "Player %s sent a bad cl_campaignnext command\n", GetASWNetworkID() );
 			return false;
 		}
 		// make sure we're leader
@@ -1643,7 +1666,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 	{
 		if ( args.ArgC() < 2 )
 		{
-			Warning("Player sent a bad cl_skill command\n");
+			Warning( "Player %s sent a bad cl_skill command\n", GetASWNetworkID() );
 			return false;
 		}
 		if ( ASWGameRules() )
@@ -1678,7 +1701,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 	{
 		if ( args.ArgC() < 2 || !ASWGameResource() || ASWGameResource()->GetLeader() != this || !ASWGameRules())
 		{
-			Warning("Player sent a bad cl_forceready command\n");
+			Warning( "Player %s sent a bad cl_forceready command\n", GetASWNetworkID() );
 			return false;
 		}
 
@@ -1700,7 +1723,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 	{	
 		if ( args.ArgC() < 1 )
 		{
-			Warning("Player sent a bad cl_ready command\n");
+			Warning( "Player %s sent a bad cl_ready command\n", GetASWNetworkID() );
 			return false;
 		}
 
@@ -1735,7 +1758,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 	{	
 		if ( args.ArgC() < 1 )
 		{
-			Warning("Player sent a bad cl_spectating command\n");
+			Warning( "Player %s sent a bad cl_spectating command\n", GetASWNetworkID() );
 			return false;
 		}
 		Msg("cl_spectating get game resource=%d\n", ASWGameResource());
@@ -1797,7 +1820,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 	{
 		if ( args.ArgC() < 2 )
 		{
-			Warning("Player sent a bad cl_leadervote command\n");
+			Warning( "Player %s sent a bad cl_leadervote command\n", GetASWNetworkID() );
 			return false;
 		}
 		int iTargetPlayer = clamp(atoi(args[1]), -1, gpGlobals->maxClients);
@@ -1808,7 +1831,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 	{
 		if ( args.ArgC() < 2 )
 		{
-			Warning("Player sent a bad cl_kickvote command\n");
+			Warning( "Player %s sent a bad cl_kickvote command\n", GetASWNetworkID() );
 			return false;
 		}
 		int iTargetPlayer = clamp(atoi(args[1]), -1, gpGlobals->maxClients);
@@ -1821,7 +1844,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 #if 0
 		if ( args.ArgC() < 2 )
 		{
-			Warning("Player sent a bad asw_vote_saved_campaign command\n");
+			Warning( "Player %s sent a bad asw_vote_saved_campaign command\n", GetASWNetworkID() );
 			return false;
 		}		
 		
@@ -1834,7 +1857,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 	{
 		if ( args.ArgC() < 3 )
 		{
-			Warning("Player sent a bad asw_vote_campaign command\n");
+			Warning( "Player %s sent a bad asw_vote_campaign command\n", GetASWNetworkID() );
 			return false;
 		}	
 		int nCampaignIndex = atoi( args[1] );
@@ -1846,7 +1869,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 	{
 		if ( args.ArgC() < 2 )
 		{
-			Warning("Player sent a bad asw_vote_mission command\n");
+			Warning( "Player %s sent a bad asw_vote_mission command\n", GetASWNetworkID() );
 			return false;
 		}		
 		if (ASWGameRules())
@@ -1869,7 +1892,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 	{
 		if ( args.ArgC() < 4 )
 		{
-			Warning("Player sent a bad cl_ccounts command\n");
+			Warning( "Player %s sent a bad cl_ccounts command\n", GetASWNetworkID() );
 			return false;
 		}
 		m_iClientMissionsCompleted = atoi(args[1]);
@@ -1887,7 +1910,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 	{
 		if ( args.ArgC() < 2 )
 		{
-			Warning("Player sent a bad cl_gen_progress command\n");
+			Warning( "Player %s sent a bad cl_gen_progress command\n", GetASWNetworkID() );
 			return false;
 		}
 		m_fMapGenerationProgress = clamp(atof(args[1]), 0.0f, 1.0f);

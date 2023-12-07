@@ -791,6 +791,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClCompile Include="..\shared\swarm\asw_weapon_welder_shared.cpp" />
     <ClCompile Include="..\shared\swarm\rd_cause_of_death.cpp" />
     <ClCompile Include="..\shared\swarm\rd_challenges_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\rd_computer_vscript_shared.cpp" />
     <ClCompile Include="..\shared\swarm\rd_convar_printdescription_hack.cpp" />
     <ClCompile Include="..\shared\swarm\rd_crafting_defs.cpp" />
     <ClCompile Include="..\shared\swarm\rd_hud_counter_shared.cpp" />
@@ -800,6 +801,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClCompile Include="..\shared\swarm\rd_lobby_utils.cpp" />
     <ClCompile Include="..\shared\swarm\rd_map_texture_shared.cpp" />
     <ClCompile Include="..\shared\swarm\rd_missions_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\rd_vgui_vscript_shared.cpp" />
     <ClCompile Include="..\shared\swarm\rd_weapon_generic_object_shared.cpp" />
     <ClCompile Include="..\shared\swarm\rd_workshop.cpp" />
     <ClCompile Include="..\shared\takedamageinfo.cpp" />
@@ -1722,6 +1724,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="..\shared\swarm\asw_alien_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_ammo_drop_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_bouncing_pellet_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_computer_area_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_deathmatch_mode_light.h" />
     <ClInclude Include="..\shared\swarm\asw_equipment_list.h" />
     <ClInclude Include="..\shared\swarm\asw_equip_req.h" />
@@ -1828,6 +1831,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="..\shared\swarm\rd_boss_bar_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_cause_of_death.h" />
     <ClInclude Include="..\shared\swarm\rd_challenges_shared.h" />
+    <ClInclude Include="..\shared\swarm\rd_computer_vscript_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_crafting_defs.h" />
     <ClInclude Include="..\shared\swarm\rd_hud_vscript_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_inventory_shared.h" />
@@ -1836,6 +1840,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="..\shared\swarm\rd_map_texture_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_missions_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_release_flags.h" />
+    <ClInclude Include="..\shared\swarm\rd_vgui_vscript_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_weapon_generic_object_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_workshop.h" />
     <ClInclude Include="..\shared\takedamageinfo.h" />
