@@ -988,6 +988,10 @@ function BecomePrime(hMarine)
 	}
 	local newHealth = GetNewHealth(hMarine)*4;
 	local shield = newHealth*0.1;
+	if (g_classic)
+	{
+		shield = 0;
+	}
 	g_prime[hMarine] <- [shield, 0, shield, null];
 	if (g_teamZombie[hMarine][0].IsValid())
 	{
