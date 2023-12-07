@@ -1021,6 +1021,10 @@ function BecomePrime(hMarine)
 
 function LastStand()
 {
+	if (g_classic)
+	{
+		return;
+	}
 	g_lastStand = true;
 	ClientPrint(null, 3, "#asw_infection_lastStand_on");
 }
