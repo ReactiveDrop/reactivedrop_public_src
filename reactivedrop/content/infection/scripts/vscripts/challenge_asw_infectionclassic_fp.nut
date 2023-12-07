@@ -1,1 +1,1 @@
-IncludeScript("challenge_asw_infection");
+IncludeScript("challenge_asw_infectionclassic");
