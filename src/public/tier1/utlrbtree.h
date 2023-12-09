@@ -670,7 +670,7 @@ I  CUtlRBTree<T, I, L, M>::NewNode()
 			Assert( m_Elements.IsValidIterator( it ) );
 			if ( !m_Elements.IsValidIterator( it ) )
 			{
-				Error( "CUtlRBTree overflow!\n" );
+				Error( "CUtlRBTree overflow! (type=%s)\n", MEM_ALLOC_CLASSNAME( T ) );
 			}
 		}
 		m_LastAlloc = it;
