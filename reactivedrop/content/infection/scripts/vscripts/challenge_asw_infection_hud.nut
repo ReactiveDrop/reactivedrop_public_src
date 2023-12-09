@@ -253,7 +253,7 @@ function Paint()
 					{
 						self.PaintText(
 							ScreenPosX( 0.5000 ) - self.GetTextWide(FONT_COUNTDOWNBLUR, distText)*0.5,
-							ScreenPosY( 0.9000 ),
+							ScreenPosY( 0.8250 ),
 							0, 255, 0, 255,
 							FONT_COUNTDOWNBLUR,
 							distText
