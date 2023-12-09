@@ -41,6 +41,17 @@ public:
 		"mat_motion_blur_enabled",
 	};
 
+	constexpr static const char *s_ChangeDefault[][2] =
+	{
+		{ "mat_motion_blur_enabled", "0" },
+		{ "rate", "100000" },
+	};
+
+	constexpr static const char *s_szAddArchive[] =
+	{
+		"rate",
+	};
+
 	constexpr static const char *s_szRemoveArchive[] =
 	{
 		// These are very advanced settings, and if a player changes a setting
@@ -67,7 +78,6 @@ public:
 
 		ApplyShowBudgetHack();
 		ApplySndRestartHack();
-		ApplyMotionBlurDefaultHack();
 
 		for ( int i = 0; i < NELEMS( s_szCheat ); i++ )
 		{
@@ -77,6 +87,21 @@ public:
 				continue;
 
 			pCmd->AddFlags( FCVAR_CHEAT );
+		}
+
+		for ( int i = 0; i < NELEMS( s_ChangeDefault ); i++ )
+		{
+			ApplyDefaultValueHack( s_ChangeDefault[i][0], s_ChangeDefault[i][1] );
+		}
+
+		for ( int i = 0; i < NELEMS( s_szAddArchive ); i++ )
+		{
+			ConCommandBase *pCmd = g_pCVar->FindCommandBase( s_szAddArchive[i] );
+			Assert( pCmd );
+			if ( !pCmd )
+				continue;
+
+			pCmd->AddFlags( FCVAR_ARCHIVE );
 		}
 
 		for ( int i = 0; i < NELEMS( s_szRemoveArchive ); i++ )
@@ -141,24 +166,23 @@ public:
 		FlushInstructionCache( GetCurrentProcess(), pRet, 5 );
 	}
 
-	void ApplyMotionBlurDefaultHack()
+	void ApplyDefaultValueHack( const char *szName, const char *szNewDefault )
 	{
-		ConVar *pMotionBlur = g_pCVar->FindVar( "mat_motion_blur_enabled" );
-		Assert( pMotionBlur );
+		ConVar *pConVar = g_pCVar->FindVar( szName );
+		Assert( pConVar );
 
 		static_assert( sizeof( ConCommandBase ) == 24, "unexpected ConCommandBase size" );
 		static_assert( sizeof( ConVar ) == 88, "unexpected ConVar size" );
 
 		// ConVar *ConVar::m_pParent
-		ConVar *pMotionBlurParent = reinterpret_cast< ConVar ** >( pMotionBlur )[7];
-		Assert( pMotionBlurParent == pMotionBlur );
+		ConVar *pConVarParent = reinterpret_cast< ConVar ** >( pConVar )[7];
+		Assert( pConVarParent == pConVar );
 
 		// const char *ConVar::m_pszDefaultValue
-		const char **ppMotionBlurDefault = &reinterpret_cast< const char ** >( pMotionBlurParent )[8];
-		Assert( pMotionBlurParent->GetDefault() == *ppMotionBlurDefault );
+		const char **ppConVarDefault = &reinterpret_cast< const char ** >( pConVarParent )[8];
+		Assert( pConVarParent->GetDefault() == *ppConVarDefault );
 
-		// Set new default and current value to false, overriding engine default of true.
-		*ppMotionBlurDefault = "0";
-		pMotionBlur->SetValue( false );
+		*ppConVarDefault = szNewDefault;
+		pConVar->SetValue( szNewDefault );
 	}
 } s_RD_Convar_Hacks;
