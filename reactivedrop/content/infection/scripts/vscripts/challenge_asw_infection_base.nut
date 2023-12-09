@@ -287,6 +287,7 @@ function Update()
 					}
 					else
 					{
+						hHud.SetInt(7, -1);
 						hHud.SetFloat(0, 0);
 						hHud.SetFloat(1, 0);
 					}
