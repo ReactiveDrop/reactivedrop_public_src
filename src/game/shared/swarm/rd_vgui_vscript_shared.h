@@ -44,7 +44,13 @@ public:
 	virtual void RunControlFunction( ButtonCode_t iButton = BUTTON_CODE_NONE );
 	virtual void UpdateControlTable( ButtonCode_t iButton );
 
-	CUtlVector<int> m_QueuedInputsForPrediction;
+	struct QueuedInput_t
+	{
+		int sequence;
+		int value;
+	};
+	CUtlVector<QueuedInput_t> m_QueuedInputsForPrediction;
+	int m_iNextSequence;
 
 	CUtlVectorAutoPurge<CRD_VGui_VScript_Button *> m_ButtonDefs;
 	CUtlVector<vgui::DHANDLE<CRD_VGui_VScript_Button_Panel>> m_ButtonPanels;
@@ -60,7 +66,7 @@ public:
 #else
 	DECLARE_DATADESC();
 
-	virtual void OnInput( int value );
+	virtual void OnInput( int sequence, int value );
 	void SetInteracter( HSCRIPT interacter );
 	virtual bool AllowSetInteracter() { return true; }
 
@@ -72,6 +78,7 @@ public:
 
 	CNetworkVar( int, m_iRandomCheck );
 	CNetworkHandle( CASW_Inhabitable_NPC, m_hInteracter );
+	CNetworkVar( int, m_iSequenceAck );
 
 	bool m_bIsInput{ false };
 
