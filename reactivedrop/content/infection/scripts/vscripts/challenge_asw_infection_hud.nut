@@ -247,13 +247,16 @@ function Paint()
 						ScreenPosY( 0.6550 ),
 						200, 255, 255, 255
 					);
-					local dist = self.GetInt(7);
+				}
+				local dist = self.GetInt(7);
+				if (dist >= 0)
+				{
 					local distText = "⌕ " + dist;
 					for (local i = 0; i < 2; i++)
 					{
 						self.PaintText(
 							ScreenPosX( 0.5000 ) - self.GetTextWide(FONT_COUNTDOWNBLUR, distText)*0.5,
-							ScreenPosY( 0.9000 ),
+							ScreenPosY( 0.8250 ),
 							0, 255, 0, 255,
 							FONT_COUNTDOWNBLUR,
 							distText

@@ -287,6 +287,7 @@ function Update()
 					}
 					else
 					{
+						hHud.SetInt(7, -1);
 						hHud.SetFloat(0, 0);
 						hHud.SetFloat(1, 0);
 					}
@@ -973,7 +974,7 @@ function JoinZombie(hMarine)
 		hMarine.SetHealth(newHealth);
 	}
 	hMarine.SetModel("models/swarm/marine/infected_marine.mdl");
-	hMarine.SetOrigin(hMarine.GetOrigin() + Vector(0, 0, 16));
+	hMarine.SetOrigin(hMarine.GetOrigin() + Vector(0, 0, 32));
 	return;
 }
 
