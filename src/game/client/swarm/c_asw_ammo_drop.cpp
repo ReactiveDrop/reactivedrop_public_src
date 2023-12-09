@@ -49,18 +49,6 @@ C_ASW_Ammo_Drop::~C_ASW_Ammo_Drop()
 	g_AmmoDrops.FindAndRemove( this );
 }
 
-bool C_ASW_Ammo_Drop::ShouldDraw()
-{
-	return true;
-}
-
-int C_ASW_Ammo_Drop::DrawModel( int flags, const RenderableInstance_t &instance )
-{
-	int d = BaseClass::DrawModel(flags, instance);
-
-	return d;
-}
-
 int C_ASW_Ammo_Drop::GetAmmoDropIconTextureID()
 {
 	if (!s_bLoadedUseActionIcons)

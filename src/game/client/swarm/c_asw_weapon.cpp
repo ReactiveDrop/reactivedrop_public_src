@@ -574,18 +574,16 @@ bool C_ASW_Weapon::ShouldDraw()
 	C_BaseCombatCharacter* pCombatCharOwner = GetOwner();
 	if ( pCombatCharOwner && pCombatCharOwner->Classify() == CLASS_ASW_MARINE )
 	{
-		C_ASW_Marine* pMarine = assert_cast<C_ASW_Marine*>(pCombatCharOwner);
-		if (pMarine->IsEffectActive(EF_NODRAW))
+		C_ASW_Marine *pMarine = assert_cast< C_ASW_Marine * >( pCombatCharOwner );
+		if ( pMarine->IsEffectActive( EF_NODRAW ) )
 		{
 			return false;
 		}
-		return (pMarine->GetActiveWeapon() == this) || ( rd_marine_gear.GetBool() && ViewModelIsMarineAttachment() && pMarine->GetRenderAlpha() > 0 );
+
+		return ( pMarine->GetActiveWeapon() == this ) || ( rd_marine_gear.GetBool() && ViewModelIsMarineAttachment() && pMarine->GetRenderAlpha() > 0 );
 	}
-	if (!BaseClass::ShouldDraw())
-	{
-		return false;
-	}
-	return true;
+
+	return BaseClass::ShouldDraw();
 }
 
 //-----------------------------------------------------------------------------

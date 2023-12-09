@@ -19,12 +19,8 @@ public:
 					C_ASW_Ammo_Drop();
 	virtual			~C_ASW_Ammo_Drop();
 
-	bool ShouldDraw();
-
 	virtual void OnDataChanged( DataUpdateType_t updateType );
 	void ClientThink();
-
-	virtual int DrawModel( int flags, const RenderableInstance_t &instance );
 
 	int GetAmmoDropIconTextureID();	
  	static bool s_bLoadedUseActionIcons;

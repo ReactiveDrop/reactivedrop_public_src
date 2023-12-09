@@ -371,8 +371,8 @@ bool C_BaseCombatWeapon::ShouldDraw( void )
 
 #ifdef INFESTED_DLL
 	//skip the rest
-	return true;
-#endif
+	return BaseClass::ShouldDraw();
+#else
 	C_BaseCombatCharacter *pOwner = GetOwner();
 
 	// weapon has no owner, always draw it
@@ -407,6 +407,7 @@ bool C_BaseCombatWeapon::ShouldDraw( void )
 	// FIXME: We may want to only show active weapons on NPCs
 	// These are carried by AIs; always show them
 	return true;
+#endif
 }
 
 #ifndef INFESTED_DLL
