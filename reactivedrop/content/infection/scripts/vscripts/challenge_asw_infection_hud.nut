@@ -247,7 +247,10 @@ function Paint()
 						ScreenPosY( 0.6550 ),
 						200, 255, 255, 255
 					);
-					local dist = self.GetInt(7);
+				}
+				local dist = self.GetInt(7);
+				if (dist >= 0)
+				{
 					local distText = "⌕ " + dist;
 					for (local i = 0; i < 2; i++)
 					{
