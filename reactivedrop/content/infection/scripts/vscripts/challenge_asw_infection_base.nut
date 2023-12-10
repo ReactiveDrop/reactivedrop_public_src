@@ -1147,13 +1147,13 @@ function GetNewHealth(hMarine)
 {
 	if (hMarine)
 	{
-		switch(hMarine.GetName())
+		switch(hMarine.GetMarineProfile())
 		{
-			case "#asw_name_sarge":
+			case ASW_MARINE_PROFILE_SARGE:
 				return 1400;
-			case "#asw_name_vegas":
-			case "#asw_name_jaeger":
-			case "#asw_name_wolfe":
+			case ASW_MARINE_PROFILE_VEGAS:
+			case ASW_MARINE_PROFILE_JAEGER:
+			case ASW_MARINE_PROFILE_WOLFE:
 				return 1250;
 			default:
 				return 800;
