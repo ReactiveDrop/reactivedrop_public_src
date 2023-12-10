@@ -1,4 +1,3 @@
-info_target_precache <- Entities.CreateByClassname("info_target");
 IncludeScript("challenge_asw_infection_props");
 
 g_enabled <- false;
@@ -70,11 +69,11 @@ foreach (category, soundList in g_zombieSound)
 {
 	foreach (soundScript in soundList)
 	{
-		info_target_precache.PrecacheSoundScript(soundScript);
+		self.PrecacheSoundScript(soundScript);
 	}
 }
-info_target_precache.PrecacheModel("models/swarm/marine/infected_marine.mdl");
-info_target_precache.PrecacheModel("models/items/shield_bubble/shield_bubble.mdl");
+self.PrecacheModel("models/swarm/marine/infected_marine.mdl");
+self.PrecacheModel("models/items/shield_bubble/shield_bubble.mdl");
 
 function Credit()
 {

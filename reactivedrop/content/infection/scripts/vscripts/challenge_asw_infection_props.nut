@@ -16,7 +16,7 @@ g_propLibrary <- {
 
 foreach (prop, model in g_propLibrary)
 {
-	info_target_precache.PrecacheModel(model);
+	self.PrecacheModel(model);
 }
 
 function PropInit()
