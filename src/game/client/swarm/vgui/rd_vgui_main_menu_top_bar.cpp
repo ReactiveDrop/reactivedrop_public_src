@@ -12,6 +12,8 @@ DECLARE_BUILD_FACTORY( CRD_VGUI_Main_Menu_Top_Bar );
 
 using namespace BaseModUI;
 
+ConVar rd_last_addons_page( "rd_last_addons_page", "installed", FCVAR_ARCHIVE );
+
 static int s_nMainMenuTopBarCount = 0;
 
 CRD_VGUI_Main_Menu_Top_Bar::CRD_VGUI_Main_Menu_Top_Bar( vgui::Panel *parent, const char *panelName ) :
@@ -133,7 +135,12 @@ void CRD_VGUI_Main_Menu_Top_Bar::OnCommand( const char *command )
 	else if ( !V_stricmp( command, "Workshop" ) )
 	{
 		DismissMainMenuScreens();
-		BaseModPanel.OpenWindow( WT_WORKSHOP, BaseModPanel.GetWindow( WT_MAINMENU ) );
+		if ( !V_stricmp( rd_last_addons_page.GetString(), "installed" ) )
+			BaseModPanel.OpenWindow( WT_ADDONS, BaseModPanel.GetWindow( WT_MAINMENU ) );
+		else if ( !V_stricmp( rd_last_addons_page.GetString(), "publish" ) )
+			BaseModPanel.OpenWindow( WT_WORKSHOP, BaseModPanel.GetWindow( WT_MAINMENU ) );
+		else
+			BaseModPanel.OpenWindow( WT_ADDONS, BaseModPanel.GetWindow( WT_MAINMENU ) );
 	}
 	else if ( !V_stricmp( command, "Inventory" ) )
 	{

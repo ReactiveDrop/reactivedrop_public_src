@@ -54,11 +54,12 @@ namespace BaseModUI
 		ReactiveDropWorkshop( vgui::Panel *parent, const char *panelName );
 		virtual ~ReactiveDropWorkshop();
 
-		virtual void Activate();
-		virtual void PerformLayout();
-		virtual void OnCommand( const char *command );
-		virtual void OnThink();
-		virtual void OnClose();
+		void Activate() override;
+		void PerformLayout() override;
+		void OnKeyCodePressed( vgui::KeyCode code ) override;
+		void OnCommand( const char *command ) override;
+		void OnThink() override;
+		void OnClose() override;
 
 		void OnWorkshopPreviewReady( PublishedFileId_t nFileID, CReactiveDropWorkshopPreviewImage *pPreviewImage );
 		MESSAGE_FUNC_CHARPTR( OnItemSelected, "OnItemSelected", panelName );
@@ -98,6 +99,7 @@ namespace BaseModUI
 		CNB_Button *m_pBtnCancel;
 		CNB_Button *m_pBtnSubmit;
 		CNB_Button *m_pBtnOpen;
+		CNB_Button *m_pBtnInstalled;
 
 		CUtlReference<CReactiveDropWorkshopPreviewImage> m_pFreePreviewImage;
 

@@ -51,6 +51,9 @@
 using namespace vgui;
 using namespace BaseModUI;
 
+extern ConVar rd_last_addons_page;
+extern ConVar rd_legacy_ui;
+
 #define ADDONLIST_FILENAME			"addonlist.txt"
 #define ADDONINFO_FILENAME			"addoninfo.txt"
 #define ADDONS_DIRNAME				"addons"
@@ -279,45 +282,45 @@ void AddonListItem::ShowWorkshopStatistic()
 		}
 		case 2:
 		{
-			V_snwprintf( wszParameter1, ARRAYSIZE( wszParameter1 ), L"%d", item.nPlaytimeSessions );
+			V_snwprintf( wszParameter1, ARRAYSIZE( wszParameter1 ), L"%llu", item.nPlaytimeSessions );
 			pszTranslationKey = "#workshop_stat_play_sessions";
-			V_snprintf( szTranslationKeySpecific, sizeof( szTranslationKeySpecific ), "%s_%d", pszTranslationKey, item.nPlaytimeSessions );
+			V_snprintf( szTranslationKeySpecific, sizeof( szTranslationKeySpecific ), "%s_%llu", pszTranslationKey, item.nPlaytimeSessions );
 			break;
 		}
 		case 3:
 		{
 			if ( item.nSecondsPlayed >= 2 * 60 * 60 )
 			{
-				V_snwprintf( wszParameter1, ARRAYSIZE( wszParameter1 ), L"%d", item.nSecondsPlayed / 60 / 60 );
+				V_snwprintf( wszParameter1, ARRAYSIZE( wszParameter1 ), L"%llu", item.nSecondsPlayed / 60 / 60 );
 				pszTranslationKey = "#workshop_stat_play_time_hours";
-				V_snprintf( szTranslationKeySpecific, sizeof( szTranslationKeySpecific ), "%s_%d", pszTranslationKey, item.nSecondsPlayed / 60 / 60 );
+				V_snprintf( szTranslationKeySpecific, sizeof( szTranslationKeySpecific ), "%s_%llu", pszTranslationKey, item.nSecondsPlayed / 60 / 60 );
 			}
 			else if ( item.nSecondsPlayed >= 2 * 60 )
 			{
-				V_snwprintf( wszParameter1, ARRAYSIZE( wszParameter1 ), L"%d", item.nSecondsPlayed / 60 );
+				V_snwprintf( wszParameter1, ARRAYSIZE( wszParameter1 ), L"%llu", item.nSecondsPlayed / 60 );
 				pszTranslationKey = "#workshop_stat_play_time_minutes";
-				V_snprintf( szTranslationKeySpecific, sizeof( szTranslationKeySpecific ), "%s_%d", pszTranslationKey, item.nSecondsPlayed / 60 );
+				V_snprintf( szTranslationKeySpecific, sizeof( szTranslationKeySpecific ), "%s_%llu", pszTranslationKey, item.nSecondsPlayed / 60 );
 			}
 			else
 			{
-				V_snwprintf( wszParameter1, ARRAYSIZE( wszParameter1 ), L"%d", item.nSecondsPlayed );
+				V_snwprintf( wszParameter1, ARRAYSIZE( wszParameter1 ), L"%llu", item.nSecondsPlayed );
 				pszTranslationKey = "#workshop_stat_play_time_seconds";
-				V_snprintf( szTranslationKeySpecific, sizeof( szTranslationKeySpecific ), "%s_%d", pszTranslationKey, item.nSecondsPlayed );
+				V_snprintf( szTranslationKeySpecific, sizeof( szTranslationKeySpecific ), "%s_%llu", pszTranslationKey, item.nSecondsPlayed );
 			}
 			break;
 		}
 		case 4:
 		{
-			V_snwprintf( wszParameter1, ARRAYSIZE( wszParameter1 ), L"%d", item.nSubscriptions );
+			V_snwprintf( wszParameter1, ARRAYSIZE( wszParameter1 ), L"%llu", item.nSubscriptions );
 			pszTranslationKey = "#workshop_stat_current_subscribers";
-			V_snprintf( szTranslationKeySpecific, sizeof( szTranslationKeySpecific ), "%s_%d", pszTranslationKey, item.nSubscriptions );
+			V_snprintf( szTranslationKeySpecific, sizeof( szTranslationKeySpecific ), "%s_%llu", pszTranslationKey, item.nSubscriptions );
 			break;
 		}
 		case 5:
 		{
-			V_snwprintf( wszParameter1, ARRAYSIZE( wszParameter1 ), L"%d", item.nUniqueWebsiteViews );
+			V_snwprintf( wszParameter1, ARRAYSIZE( wszParameter1 ), L"%llu", item.nUniqueWebsiteViews );
 			pszTranslationKey = "#workshop_stat_unique_viewers";
-			V_snprintf( szTranslationKeySpecific, sizeof( szTranslationKeySpecific ), "%s_%d", pszTranslationKey, item.nUniqueWebsiteViews );
+			V_snprintf( szTranslationKeySpecific, sizeof( szTranslationKeySpecific ), "%s_%llu", pszTranslationKey, item.nUniqueWebsiteViews );
 			break;
 		}
 		case 6:
@@ -465,6 +468,11 @@ Addons::Addons( Panel *parent, const char *panelName ) :
 	m_ImgAddonIcon = new ImagePanel( this, "ImgAddonIcon" );
 	m_LblAuthor = new Label( this, "LblAuthor", "" );
 
+	m_pBtnPublish = new CNB_Button( this, "BtnPublish", "#rd_workshop_publish_short", this, "Publish" );
+	m_pBtnPublish->SetControllerButton( KEY_XBUTTON_X );
+	if ( rd_legacy_ui.GetString()[0] != '\0' )
+		m_pBtnPublish->SetVisible( false );
+
 	m_pSupportRequiredPanel = NULL;
 	m_pInstallingSupportPanel = NULL;
 
@@ -478,6 +486,8 @@ Addons::Addons( Panel *parent, const char *panelName ) :
 	SetLowerGarnishEnabled( true );
 	m_pAddonList = NULL;
 	m_ActiveControl = m_GplAddons;
+
+	rd_last_addons_page.SetValue( "installed" );
 
 	LoadControlSettings( "Resource/UI/BaseModUI/Addons.res" );
 
@@ -709,10 +719,9 @@ void Addons::PaintBackground()
 	//BaseClass::DrawDialogBackground( "#L4D360UI_My_Addons", NULL, "#L4D360UI_My_Addons_Desc", NULL );
 }
 
-//=============================================================================
-void Addons::OnCommand( const char *command )
+void Addons::OnKeyCodePressed( vgui::KeyCode code )
 {
-	if ( V_strcmp( command, "Back" ) == 0 )
+	if ( GetBaseButtonCode( code ) == KEY_XBUTTON_B || GetBaseButtonCode( code ) == KEY_XBUTTON_X )
 	{
 		int i = 0;
 		for ( KeyValues *pCur = m_pAddonList->GetFirstValue(); pCur; pCur = pCur->GetNextValue() )
@@ -745,9 +754,29 @@ void Addons::OnCommand( const char *command )
 		{
 			m_pDoNotAskForAssociation->ApplyChanges();
 		}
+	}
 
+	if ( GetBaseButtonCode( code ) == KEY_XBUTTON_X )
+	{
+		BaseClass::OnKeyCodePressed( KEY_XBUTTON_B );
+		CBaseModPanel::GetSingleton().OpenWindow( WT_WORKSHOP, CBaseModPanel::GetSingleton().GetWindow( CBaseModPanel::GetSingleton().GetActiveWindowType() ) );
+		return;
+	}
+
+	BaseClass::OnKeyCodePressed( code );
+}
+
+//=============================================================================
+void Addons::OnCommand( const char *command )
+{
+	if ( V_strcmp( command, "Back" ) == 0 )
+	{
 		// Act as though 360 back button was pressed
 		OnKeyCodePressed( KEY_XBUTTON_B );
+	}
+	else if ( V_strcmp( command, "Publish" ) == 0 )
+	{
+		OnKeyCodePressed( KEY_XBUTTON_X );
 	}
 	else if ( V_strcmp( command, "InstallSupport" ) == 0 )
 	{

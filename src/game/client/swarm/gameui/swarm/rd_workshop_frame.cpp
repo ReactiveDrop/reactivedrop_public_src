@@ -18,6 +18,9 @@
 using namespace vgui;
 using namespace BaseModUI;
 
+extern ConVar rd_last_addons_page;
+extern ConVar rd_legacy_ui;
+
 DECLARE_BUILD_FACTORY( ReactiveDropWorkshopListItem );
 DECLARE_BUILD_FACTORY( ReactiveDropWorkshop );
 
@@ -192,7 +195,14 @@ ReactiveDropWorkshop::ReactiveDropWorkshop( Panel *parent, const char *panelName
 	m_pBtnSubmit = new CNB_Button( this, "BtnSubmit", "#rd_workshop_submit_edit", this, "SubmitEdit" );
 	m_pBtnOpen = new CNB_Button( this, "BtnOpen", "#rd_workshop_open", this, "OpenInWorkshop" );
 
+	m_pBtnInstalled = new CNB_Button( this, "BtnInstalled", "#rd_workshop_installed_short", this, "Installed" );
+	m_pBtnInstalled->SetControllerButton( KEY_XBUTTON_X );
+	if ( rd_legacy_ui.GetString()[0] != '\0' )
+		m_pBtnInstalled->SetVisible( false );
+
 	m_pFreePreviewImage = NULL;
+
+	rd_last_addons_page.SetValue( "publish" );
 
 	LoadControlSettings( "Resource/UI/BaseModUI/RDWorkshop.res" );
 }
@@ -226,12 +236,28 @@ void ReactiveDropWorkshop::PerformLayout()
 	BaseClass::PerformLayout();
 }
 
+void ReactiveDropWorkshop::OnKeyCodePressed( vgui::KeyCode code )
+{
+	if ( GetBaseButtonCode( code ) == KEY_XBUTTON_X )
+	{
+		BaseClass::OnKeyCodePressed( KEY_XBUTTON_B );
+		CBaseModPanel::GetSingleton().OpenWindow( WT_ADDONS, CBaseModPanel::GetSingleton().GetWindow( CBaseModPanel::GetSingleton().GetActiveWindowType() ) );
+		return;
+	}
+
+	BaseClass::OnKeyCodePressed( code );
+}
+
 void ReactiveDropWorkshop::OnCommand( const char *command )
 {
 	if ( !V_strcmp( command, "Back" ) )
 	{
 		// Act as though 360 back button was pressed
 		OnKeyCodePressed( ButtonCodeToJoystickButtonCode( KEY_XBUTTON_B, CBaseModPanel::GetSingleton().GetLastActiveUserId() ) );
+	}
+	else if ( !V_strcmp( command, "Installed" ) )
+	{
+		OnKeyCodePressed( ButtonCodeToJoystickButtonCode( KEY_XBUTTON_X, CBaseModPanel::GetSingleton().GetLastActiveUserId() ) );
 	}
 	else if ( !V_strcmp( command, "CreateWorkshopItem" ) )
 	{

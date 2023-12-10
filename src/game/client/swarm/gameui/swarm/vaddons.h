@@ -68,12 +68,13 @@ class Addons : public CBaseModFrame
 public:
 	Addons(vgui::Panel *parent, const char *panelName);
 	~Addons();
-	void Activate();
-	void PaintBackground( void );
-	void OnCommand(const char *command);
-	virtual void OnMessage(const KeyValues *params, vgui::VPANEL ifromPanel);
+	void Activate() override;
+	void PaintBackground() override;
+	void OnKeyCodePressed( vgui::KeyCode code ) override;
+	void OnCommand( const char *command ) override;
+	void OnMessage( const KeyValues *params, vgui::VPANEL ifromPanel ) override;
 
-	virtual void OnThink();
+	void OnThink() override;
 
 	void OnWorkshopPreviewReady( PublishedFileId_t nFileID, CReactiveDropWorkshopPreviewImage *pPreviewImage );
 
@@ -97,6 +98,7 @@ private:
 	vgui::Label *m_LblAuthor;
 	vgui::Label *m_LblDescription;
 	vgui::ImagePanel *m_ImgAddonIcon;
+	CNB_Button *m_pBtnPublish;
 	CNB_Header_Footer *m_pHeaderFooter;
 	vgui::CvarToggleCheckButton<CGameUIConVarRef> *m_pDoNotAskForAssociation;
 
