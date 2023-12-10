@@ -2874,12 +2874,10 @@ void C_ASW_Marine::StopElectifiedArmorEffects(bool bLocalPlayer)
 
 bool C_ASW_Marine::IsAimTarget()
 { 
-	if ( ASWDeathmatchMode() || rd_aim_marines.GetBool() )
+	if ( ASWDeathmatchMode() )
 	{
-		return true;
+		return !ASWDeathmatchMode()->IsTeamDeathmatchEnabled() || !InLocalTeam();
 	}
-	else
-	{
-		return false;
-	}
+
+	return rd_aim_marines.GetBool();
 }
