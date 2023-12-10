@@ -7,14 +7,12 @@
 #include "c_asw_fx.h"
 #include "asw_util_shared.h"
 #include "asw_marine_shared.h"
-#include "imaterialproxydict.h"
-#include "proxyentity.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 
-ConVar rd_highlight_active_character( "rd_highlight_active_character", "0", FCVAR_ARCHIVE );
+extern ConVar rd_highlight_active_character;
 extern ConVar glow_outline_color_alien;
 extern ConVar asw_controls;
 
@@ -356,48 +354,3 @@ void C_ASW_Inhabitable_NPC::UpdateFireEmitters( void )
 		}
 	}
 }
-
-class CASW_Character_Proxy : public CEntityMaterialProxy
-{
-public:
-	CASW_Character_Proxy();
-	bool Init( IMaterial *pMaterial, KeyValues *pKeyValues ) override;
-	void OnBind( C_BaseEntity *pEnt ) override;
-	IMaterial *GetMaterial() override;
-
-private:
-	IMaterial *m_pMaterial;
-};
-
-CASW_Character_Proxy::CASW_Character_Proxy()
-{
-	m_pMaterial = NULL;
-}
-bool CASW_Character_Proxy::Init( IMaterial *pMaterial, KeyValues *pKeyValues )
-{
-	Assert( !V_stricmp( pMaterial->GetShaderName(), "Character" ) );
-	if ( V_stricmp( pMaterial->GetShaderName(), "Character" ) )
-	{
-		Warning( "Character material proxy used with unexpected shader %s in material %s\n", pMaterial->GetShaderName(), pMaterial->GetName() );
-		return false;
-	}
-
-	m_pMaterial = pMaterial;
-
-	return true;
-}
-void CASW_Character_Proxy::OnBind( C_BaseEntity *pEnt )
-{
-	if ( !pEnt || !pEnt->IsInhabitableNPC() )
-		return;
-
-	C_ASW_Inhabitable_NPC *pNPC = assert_cast< C_ASW_Inhabitable_NPC * >( pEnt );
-	( void )pNPC;
-}
-IMaterial *CASW_Character_Proxy::GetMaterial()
-{
-	return m_pMaterial;
-}
-
-
-EXPOSE_MATERIAL_PROXY( CASW_Character_Proxy, Character );

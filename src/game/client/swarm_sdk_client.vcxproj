@@ -1278,6 +1278,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="swarm\c_asw_hack.cpp" />
     <ClCompile Include="swarm\c_asw_hack_computer.cpp" />
     <ClCompile Include="swarm\c_asw_hack_wire_tile.cpp" />
+    <ClCompile Include="swarm\c_asw_inhabitable_npc_proxy.cpp" />
     <ClCompile Include="swarm\c_asw_jeep.cpp" />
     <ClCompile Include="swarm\c_asw_juggernaut.cpp" />
     <ClCompile Include="swarm\c_asw_jukebox.cpp" />
