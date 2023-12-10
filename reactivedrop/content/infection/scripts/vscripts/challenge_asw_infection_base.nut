@@ -353,7 +353,7 @@ function Update()
 	{
 		if (hMarine in g_teamHuman)
 		{
-			hMarine.SetTeam(1);
+			hMarine.SetTeam(TEAM_BETA);
 			if (g_lastStand && !(hMarine.IsInhabited()))
 			{
 				UseLastStand(hMarine);
@@ -361,7 +361,7 @@ function Update()
 		}
 		else if (hMarine in g_teamZombie)
 		{
-			hMarine.SetTeam(2);
+			hMarine.SetTeam(TEAM_ALPHA);
 			if (GetSlotWeapon(hMarine, 0) != g_teamZombie[hMarine][1])
 			{
 				hMarine.DropWeapon(0);
@@ -904,7 +904,7 @@ function JoinHuman(hMarine)
 	hSprite.Spawn();
 	hSprite.Activate();
 	g_teamHuman[hMarine] <- [hSprite];
-	hMarine.SetTeam(1);
+	hMarine.SetTeam(TEAM_BETA);
 	local newHealth = GetNewHealth(hMarine);
 	if (hMarine.GetMaxHealth() != newHealth)
 	{
@@ -956,7 +956,7 @@ function JoinZombie(hMarine)
 	hSprite.Spawn();
 	hSprite.Activate();
 	g_teamZombie[hMarine] <- [hSprite, GetSlotWeapon(hMarine, 0), GetSlotWeapon(hMarine, 2), 200, 0];
-	hMarine.SetTeam(2);
+	hMarine.SetTeam(TEAM_ALPHA);
 	if (hMarine.GetMaxHealth() != newHealth)
 	{
 		hMarine.SetMaxHealth(newHealth);
