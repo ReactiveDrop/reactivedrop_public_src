@@ -188,14 +188,14 @@ void CASWHudOverlayMessages::PaintAmmoDrops()
 	for ( int i = 0; i < nDrops; i++ )
 	{
 		C_ASW_Ammo_Drop *pDrop = g_AmmoDrops[i];
-		if ( !pDrop )
+		if ( !pDrop || pDrop->IsDormant() || !pDrop->ShouldDraw() )
 			continue;
 		
 		C_ASW_Player *pLocal = C_ASW_Player::GetLocalASWPlayer();
 		if ( pLocal )
 			if ( pDrop->GetAbsOrigin().DistTo( pLocal->EyePosition() ) > 1024 )
 				continue;
-		
+
 		Vector vecWorldPos = pDrop->GetRenderOrigin() + vecOffset;
 
 		const int nMaxX = ScreenWidth() - 150;

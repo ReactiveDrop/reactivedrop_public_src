@@ -116,7 +116,7 @@ private:
 
 	struct GlowObjectDefinition_t
 	{
-		bool ShouldDraw( int nSlot ) const { return m_pEntity && ( m_nSplitScreenSlot == GLOW_FOR_ALL_SPLIT_SCREEN_SLOTS || m_nSplitScreenSlot == nSlot ) && ( m_bRenderWhenOccluded || m_bRenderWhenUnoccluded ) && m_pEntity->ShouldDraw(); }
+		bool ShouldDraw( int nSlot ) const { return m_pEntity && ( m_nSplitScreenSlot == GLOW_FOR_ALL_SPLIT_SCREEN_SLOTS || m_nSplitScreenSlot == nSlot ) && ( m_bRenderWhenOccluded || m_bRenderWhenUnoccluded ) && !m_pEntity->IsDormant() && m_pEntity->ShouldDraw(); }
 		bool IsUnused() const { return m_nNextFreeSlot != GlowObjectDefinition_t::ENTRY_IN_USE; }
 		void DrawModel();
 
