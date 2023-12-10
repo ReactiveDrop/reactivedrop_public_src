@@ -553,6 +553,17 @@ Scheme
 				"antialias"	"1"
 			}
 		}
+		"CountdownSmall"
+		{
+			"1"
+			{
+				"name"		"Verdana"	
+				"tall"		"18"
+				"weight"	"900"
+				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
+				"antialias"	"1"
+			}
+		}
 		"CountdownBlur"
 		{
 			"1"

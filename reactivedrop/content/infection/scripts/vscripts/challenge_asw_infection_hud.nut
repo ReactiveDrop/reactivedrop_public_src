@@ -2,6 +2,7 @@ FONT_DEFAULT <- self.LookupFont( "Default" );
 FONT_DEFAULTLARGE <- self.LookupFont( "DefaultLarge" );
 FONT_DEFAULTEXTRALARGE <- self.LookupFont( "DefaultExtraLarge" );
 FONT_COUNTDOWN <- self.LookupFont( "Countdown" );
+FONT_COUNTDOWNSMALL <- self.LookupFont( "CountdownSmall" );
 FONT_COUNTDOWNBLUR <- self.LookupFont( "CountdownBlur" );
 
 function Paint()
