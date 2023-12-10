@@ -30,51 +30,46 @@ function Paint()
 			winColor = [0, 100, 200];
 			winColorAlt = [0, 50, 100];
 		}
+		local winTextWide = self.GetTextWide(FONT_COUNTDOWN, winText);
 		self.PaintRectangle
 		(
-			ScreenPosX( 0.4875 ) - self.GetTextWide(FONT_COUNTDOWN, winText)*0.5,
-			ScreenPosY( 0.3000 ) - ScreenPosX( 0.0125 ),
-			ScreenPosX( 0.5125 ) + self.GetTextWide(FONT_COUNTDOWN, winText)*0.5,
-			ScreenPosY( 0.3000 ) + ScreenPosX( 0.0125 ) + self.GetFontTall(FONT_COUNTDOWN),
+			XRes( 312 ) - winTextWide*0.5,
+			YRes( 144 ) - XRes( 8 ),
+			XRes( 328 ) + winTextWide*0.5,
+			YRes( 144 ) + XRes( 8 ) + self.GetFontTall(FONT_COUNTDOWN),
 			200, 200, 200, 255
 		);
 		self.PaintRectangleFade
 		(
-			ScreenPosX( 0.4875 ) - self.GetTextWide(FONT_COUNTDOWN, winText)*0.5,
-			ScreenPosY( 0.3000 ) - ScreenPosX( 0.0125 ),
-			ScreenPosX( 0.5125 ) + self.GetTextWide(FONT_COUNTDOWN, winText)*0.5,
-			ScreenPosY( 0.3000 ) + ScreenPosX( 0.0125 ) + self.GetFontTall(FONT_COUNTDOWN),
+			XRes( 312 ) - winTextWide*0.5,
+			YRes( 144 ) - XRes( 8 ),
+			XRes( 328 ) + winTextWide*0.5,
+			YRes( 144 ) + XRes( 8 ) + self.GetFontTall(FONT_COUNTDOWN),
 			0, 0, 0, 0, 255,
-			ScreenPosY( 0.3000 ) - ScreenPosX( 0.0125 ),
-			ScreenPosY( 0.3000 ) + ScreenPosX( 0.0125 ) + self.GetFontTall(FONT_COUNTDOWN),
+			YRes( 144 ) - XRes( 8 ),
+			YRes( 144 ) + XRes( 8 ) + self.GetFontTall(FONT_COUNTDOWN),
 			false
 		);
 		self.PaintRectangle
 		(
-			ScreenPosX( 0.4900 ) - self.GetTextWide(FONT_COUNTDOWN, winText)*0.5,
-			ScreenPosY( 0.3000 ) - ScreenPosX( 0.0100 ),
-			ScreenPosX( 0.5100 ) + self.GetTextWide(FONT_COUNTDOWN, winText)*0.5,
-			ScreenPosY( 0.3000 ) + ScreenPosX( 0.0100 ) + self.GetFontTall(FONT_COUNTDOWN),
+			XRes( 313.6 ) - winTextWide*0.5,
+			YRes( 144 ) - XRes( 6.4 ),
+			XRes( 326.4 ) + winTextWide*0.5,
+			YRes( 144 ) + XRes( 6.4 ) + self.GetFontTall(FONT_COUNTDOWN),
 			winColorAlt[0], winColorAlt[1], winColorAlt[2], 255
 		);
 		self.PaintRectangleFade
 		(
-			ScreenPosX( 0.4900 ) - self.GetTextWide(FONT_COUNTDOWN, winText)*0.5,
-			ScreenPosY( 0.3000 ) - ScreenPosX( 0.0100 ),
-			ScreenPosX( 0.5100 ) + self.GetTextWide(FONT_COUNTDOWN, winText)*0.5,
-			ScreenPosY( 0.3000 ) + ScreenPosX( 0.0100 ) + self.GetFontTall(FONT_COUNTDOWN),
+			XRes( 313.6 ) - winTextWide*0.5,
+			YRes( 144 ) - XRes( 6.4 ),
+			XRes( 326.4 ) + winTextWide*0.5,
+			YRes( 144 ) + XRes( 6.4 ) + self.GetFontTall(FONT_COUNTDOWN),
 			winColor[0], winColor[1], winColor[2], 255, 0,
-			ScreenPosY( 0.3000 ) - ScreenPosX( 0.0100 ),
-			ScreenPosY( 0.3000 ) + ScreenPosX( 0.0100 ) + self.GetFontTall(FONT_COUNTDOWN),
+			YRes( 144 ) - XRes( 6.4 ),
+			YRes( 144 ) + XRes( 6.4 ) + self.GetFontTall(FONT_COUNTDOWN),
 			false
 		);
-		self.PaintText(
-			ScreenPosX( 0.5000 ) - self.GetTextWide(FONT_COUNTDOWN, winText)*0.5,
-			ScreenPosY( 0.3000 ),
-			255, 255, 255, 255,
-			FONT_COUNTDOWN,
-			winText
-		);
+		PaintScanlineText(XRes(320), YRes(144), 255, 255, 255, 255, winText);
 	}
 	else
 	{
@@ -82,39 +77,40 @@ function Paint()
 		{
 			local virusText = TryLocalize("#asw_infection_starts_in");
 			virusText = virusText.slice(0, virusText.find("%s1")) + virus.tostring() + virusText.slice(virusText.find("%s1") + 3);
+			local virusTextWide = self.GetTextWide(FONT_DEFAULT, virusText);
 			self.PaintRectangle
 			(
-				ScreenPosX( 0.4975 ) - self.GetTextWide(FONT_DEFAULT, virusText)*0.5,
-				ScreenPosY( 0.7000 ) - ScreenPosX( 0.0025 ),
-				ScreenPosX( 0.5025 ) + self.GetTextWide(FONT_DEFAULT, virusText)*0.5,
-				ScreenPosY( 0.7000 ) + ScreenPosX( 0.0025 ) + self.GetFontTall(FONT_DEFAULT),
+				XRes( 318.4 ) - virusTextWide*0.5,
+				YRes( 336 ) - XRes( 1.6 ),
+				XRes( 321.6 ) + virusTextWide*0.5,
+				YRes( 336 ) + XRes( 1.6 ) + self.GetFontTall(FONT_DEFAULT),
 				0, 0, 0, 200
 			);
 			self.PaintRectangleFade
 			(
-				ScreenPosX( 0.4475 ) - self.GetTextWide(FONT_DEFAULT, virusText)*0.5,
-				ScreenPosY( 0.7000 ) - ScreenPosX( 0.0025 ),
-				ScreenPosX( 0.4975 ) - self.GetTextWide(FONT_DEFAULT, virusText)*0.5,
-				ScreenPosY( 0.7000 ) + ScreenPosX( 0.0025 ) + self.GetFontTall(FONT_DEFAULT),
+				XRes( 286.4 ) - virusTextWide*0.5,
+				YRes( 336 ) - XRes( 1.6 ),
+				XRes( 318.4 ) - virusTextWide*0.5,
+				YRes( 336 ) + XRes( 1.6 ) + self.GetFontTall(FONT_DEFAULT),
 				0, 0, 0, 0, 200,
-				ScreenPosX( 0.4475 ) - self.GetTextWide(FONT_DEFAULT, virusText)*0.5,
-				ScreenPosX( 0.4975 ) - self.GetTextWide(FONT_DEFAULT, virusText)*0.5,
+				XRes( 286.4 ) - virusTextWide*0.5,
+				XRes( 318.4 ) - virusTextWide*0.5,
 				true
 			);
 			self.PaintRectangleFade
 			(
-				ScreenPosX( 0.5025 ) + self.GetTextWide(FONT_DEFAULT, virusText)*0.5,
-				ScreenPosY( 0.7000 ) - ScreenPosX( 0.0025 ),
-				ScreenPosX( 0.5525 ) + self.GetTextWide(FONT_DEFAULT, virusText)*0.5,
-				ScreenPosY( 0.7000 ) + ScreenPosX( 0.0025 ) + self.GetFontTall(FONT_DEFAULT),
+				XRes( 321.6 ) + virusTextWide*0.5,
+				YRes( 336 ) - XRes( 1.6 ),
+				XRes( 353.6 ) + virusTextWide*0.5,
+				YRes( 336 ) + XRes( 1.6 ) + self.GetFontTall(FONT_DEFAULT),
 				0, 0, 0, 225, 0,
-				ScreenPosX( 0.5025 ) + self.GetTextWide(FONT_DEFAULT, virusText)*0.5,
-				ScreenPosX( 0.5525 ) + self.GetTextWide(FONT_DEFAULT, virusText)*0.5,
+				XRes( 321.6 ) + virusTextWide*0.5,
+				XRes( 353.6 ) + virusTextWide*0.5,
 				true
 			);
 			self.PaintText(
-				ScreenPosX( 0.5000 ) - self.GetTextWide(FONT_DEFAULT, virusText)*0.5,
-				ScreenPosY( 0.7000 ),
+				XRes( 320 ) - virusTextWide*0.5,
+				YRes( 336 ),
 				255, 200, 0, 255,
 				FONT_DEFAULT,
 				virusText
@@ -139,62 +135,45 @@ function Paint()
 				local timeText = minText + ":" + secText;
 				local zombieText = zombieCount.tostring();
 				local humanText = humanCount.tostring();
+				local timeTextWide = self.GetTextWide(FONT_COUNTDOWNBLUR, timeText);
+				local zombieTextWide = self.GetTextWide(FONT_COUNTDOWNBLUR, zombieText);
+				local humanTextWide = self.GetTextWide(FONT_COUNTDOWNBLUR, humanText);
+				local textTall = self.GetFontTall(FONT_COUNTDOWNBLUR);
 				self.PaintRectangle
 				(
-					ScreenPosX( 0.4675 ) - self.GetTextWide(FONT_COUNTDOWNBLUR, timeText)*0.5 - self.GetTextWide(FONT_COUNTDOWNBLUR, zombieText),
-					ScreenPosY( 0.2000 ) - self.GetFontTall(FONT_COUNTDOWNBLUR) - ScreenPosX( 0.0100 ),
-					ScreenPosX( 0.5325 ) + self.GetTextWide(FONT_COUNTDOWNBLUR, timeText)*0.5 + self.GetTextWide(FONT_COUNTDOWNBLUR, humanText),
-					ScreenPosY( 0.2000 ) + ScreenPosX( 0.0100 ),
+					XRes( 299.2 ) - timeTextWide*0.5 - zombieTextWide,
+					YRes( 96 ) - textTall - XRes( 6.4 ),
+					XRes( 340.8 ) + timeTextWide*0.5 + humanTextWide,
+					YRes( 96 ) + XRes( 6.4 ),
 					0, 0, 0, 100
 				);
 				self.PaintRectangle
 				(
-					ScreenPosX( 0.4925 ) - self.GetTextWide(FONT_COUNTDOWNBLUR, timeText)*0.5,
-					ScreenPosY( 0.2000 ) - self.GetFontTall(FONT_COUNTDOWNBLUR) - ScreenPosX( 0.0050 ),
-					ScreenPosX( 0.5075 ) + self.GetTextWide(FONT_COUNTDOWNBLUR, timeText)*0.5,
-					ScreenPosY( 0.2000 ) + ScreenPosX( 0.0050 ),
+					XRes( 315.2 ) - timeTextWide*0.5,
+					YRes( 96 ) - textTall - XRes( 3.2 ),
+					XRes( 324.8 ) + timeTextWide*0.5,
+					YRes( 96 ) + XRes( 3.2 ),
 					50, 50, 50, 200
 				);
 				self.PaintRectangle
 				(
-					ScreenPosX( 0.4725 ) - self.GetTextWide(FONT_COUNTDOWNBLUR, timeText)*0.5 - self.GetTextWide(FONT_COUNTDOWNBLUR, zombieText),
-					ScreenPosY( 0.2000 ) - self.GetFontTall(FONT_COUNTDOWNBLUR) - ScreenPosX( 0.0050 ),
-					ScreenPosX( 0.4875 ) - self.GetTextWide(FONT_COUNTDOWNBLUR, timeText)*0.5,
-					ScreenPosY( 0.2000 ) + ScreenPosX( 0.0050 ),
+					XRes( 302.4 ) - timeTextWide*0.5 - zombieTextWide,
+					YRes( 96 ) - textTall - XRes( 3.2 ),
+					XRes( 312 ) - timeTextWide*0.5,
+					YRes( 96 ) + XRes( 3.2 ),
 					50, 0, 0, 200
 				);
 				self.PaintRectangle
 				(
-					ScreenPosX( 0.5125 ) + self.GetTextWide(FONT_COUNTDOWNBLUR, timeText)*0.5,
-					ScreenPosY( 0.2000 ) - self.GetFontTall(FONT_COUNTDOWNBLUR) - ScreenPosX( 0.0050 ),
-					ScreenPosX( 0.5275 ) + self.GetTextWide(FONT_COUNTDOWNBLUR, timeText)*0.5 + self.GetTextWide(FONT_COUNTDOWNBLUR, humanText),
-					ScreenPosY( 0.2000 ) + ScreenPosX( 0.0050 ),
+					XRes( 328 ) + timeTextWide*0.5,
+					YRes( 96 ) - textTall - XRes( 3.2 ),
+					XRes( 337.6 ) + timeTextWide*0.5 + humanTextWide,
+					YRes( 96 ) + XRes( 3.2 ),
 					0, 50, 50, 200
 				);
-				for (local i = 0; i < 2; i++)
-				{
-					self.PaintText(
-						ScreenPosX( 0.5000 ) - self.GetTextWide(FONT_COUNTDOWNBLUR, timeText)*0.5,
-						ScreenPosY( 0.2000 ) - self.GetFontTall(FONT_COUNTDOWNBLUR),
-						255, 255, 255, 255,
-						FONT_COUNTDOWNBLUR,
-						timeText
-					);
-					self.PaintText(
-						ScreenPosX( 0.4800 ) - self.GetTextWide(FONT_COUNTDOWNBLUR, timeText)*0.5 - self.GetTextWide(FONT_COUNTDOWNBLUR, zombieText),
-						ScreenPosY( 0.2000 ) - self.GetFontTall(FONT_COUNTDOWNBLUR),
-						255, 225, 225, 255,
-						FONT_COUNTDOWNBLUR,
-						zombieText
-					);
-					self.PaintText(
-						ScreenPosX( 0.5200 ) + self.GetTextWide(FONT_COUNTDOWNBLUR, timeText)*0.5,
-						ScreenPosY( 0.2000 ) - self.GetFontTall(FONT_COUNTDOWNBLUR),
-						225, 255, 255, 255,
-						FONT_COUNTDOWNBLUR,
-						humanText
-					);
-				}
+				PaintScanlineText(XRes(320), YRes(96) - textTall, 255, 255, 255, 255, timeText);
+				PaintScanlineText(XRes(307.2) - timeTextWide * 0.5 - zombieTextWide * 0.5, YRes(96) - textTall, 255, 225, 225, 255, zombieText);
+				PaintScanlineText(XRes(332.8) + timeTextWide * 0.5 + humanTextWide * 0.5, YRes(96) - textTall, 225, 255, 255, 255, humanText);
 			}
 
 			local teamIndex = self.GetInt(6);
@@ -213,16 +192,7 @@ function Paint()
 				}
 				rageText = rageText.slice(0, rageText.find("%s1")) + rageMeter + rageText.slice(rageText.find("%s1") + 3);
 				rageText = rageText.slice(0, rageText.find("%s2")) + (100*rage).tointeger().tostring() + rageText.slice(rageText.find("%s2") + 3);
-				for (local i = 0; i < 2; i++)
-				{
-					self.PaintText(
-						ScreenPosX( 0.5000 ) - self.GetTextWide(FONT_COUNTDOWNBLUR, rageText)*0.5,
-						ScreenPosY( 0.8000 ),
-						255, 0, (255*rage).tointeger(), 255,
-						FONT_COUNTDOWNBLUR,
-						rageText
-					);
-				}
+				PaintScanlineText(XRes(320), YRes(384), 255, 0, (255*rage).tointeger(), 255 rageText);
 			}
 			else if (teamIndex == 1)
 			{
@@ -237,18 +207,18 @@ function Paint()
 					}
 					self.PaintRectangle
 					(
-						ScreenPosX( 0.4740 ),
-						ScreenPosY( 0.6500 ) - ScreenPosX( 0.0010 ),
-						ScreenPosX( 0.5260 ),
-						ScreenPosY( 0.6550 ) + ScreenPosX( 0.0010 ),
+						XRes( 303.36 ),
+						YRes( 312 ) - XRes( 0.64 ),
+						XRes( 336.64 ),
+						YRes( 314.4 ) + XRes( 0.64 ),
 						0, 0, 0, a
 					);
 					self.PaintRectangle
 					(
-						ScreenPosX( 0.4750 ),
-						ScreenPosY( 0.6500 ),
-						ScreenPosX( 0.4750 ) + ScreenPosX( 0.0500 * (shield/shieldMax) ),
-						ScreenPosY( 0.6550 ),
+						XRes( 304 ),
+						YRes( 312 ),
+						XRes( 304 ) + XRes( 32 * (shield/shieldMax) ),
+						YRes( 314.4 ),
 						200, 255, 255, 255
 					);
 				}
@@ -256,16 +226,7 @@ function Paint()
 				if (dist >= 0)
 				{
 					local distText = "⌕ " + dist;
-					for (local i = 0; i < 2; i++)
-					{
-						self.PaintText(
-							ScreenPosX( 0.5000 ) - self.GetTextWide(FONT_COUNTDOWNBLUR, distText)*0.5,
-							ScreenPosY( 0.8250 ),
-							0, 255, 0, 255,
-							FONT_COUNTDOWNBLUR,
-							distText
-						);
-					}
+					PaintScanlineText(XRes( 320 ), YRes( 396 ), 0, 255, 0, 255, distText);
 				}
 			}
 		}
@@ -274,27 +235,33 @@ function Paint()
 	local creditScript = "Scripter: ModdedMarionette";
 	local creditModel = "Modeler: Beka";
 	self.PaintText(
-		ScreenPosX( 0.8900 ),
-		ScreenPosY( 0.8000 ) - self.GetFontTall(FONT_DEFAULT)*2,
+		XRes( 569.6 ),
+		YRes( 384 ) - self.GetFontTall(FONT_DEFAULT)*2,
 		255, 255, 255, 255,
 		FONT_DEFAULT,
 		creditScript
 	);
 	self.PaintText(
-		ScreenPosX( 0.8900 ),
-		ScreenPosY( 0.8020 ) - self.GetFontTall(FONT_DEFAULT),
+		XRes( 569.6 ),
+		YRes( 384.96 ) - self.GetFontTall(FONT_DEFAULT),
 		255, 255, 255, 255,
 		FONT_DEFAULT,
 		creditModel
 	);
 }
 
-function ScreenPosX( fFraction )
-{
-	return ScreenWidth() * fFraction;
-}
-
-function ScreenPosY( fFraction )
-{
-	return ScreenHeight() * fFraction;
+function PaintScanlineText(x, y, r, g, b, a, text) {
+	local wide = self.GetTextWide(FONT_COUNTDOWNBLUR, text);
+	self.PaintText(
+		x - wide * 0.5, y,
+		r, g, b, a,
+		FONT_COUNTDOWNBLUR,
+		text
+	);
+	self.PaintText(
+		x - wide * 0.5, y,
+		r, g, b, a,
+		FONT_COUNTDOWNSMALL,
+		text
+	);
 }
