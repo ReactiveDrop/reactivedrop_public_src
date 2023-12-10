@@ -432,6 +432,14 @@ int CASW_Marine::SelectSchedule()
 
 			return SCHED_ESTABLISH_LINE_OF_FIRE;
 		}
+
+		if ( !GetEnemy() )
+		{
+			SetPoseParameter( "move_x", 1.0f );
+			SetPoseParameter( "move_y", 0.0f );
+
+			return SCHED_RUN_RANDOM;
+		}
 	}
 
 	//Msg("Marine's select schedule returning SCHED_ASW_HOLD_POSITION\n");
@@ -487,7 +495,7 @@ void CASW_Marine::TaskFail( AI_TaskFailureCode_t code )
 		m_hPhysicsPropTarget = NULL;
 	}
 
-	if ( rd_stuck_bot_teleport.GetBool() && IsPathTaskFailure( code ) && !ASWDeathmatchMode() )
+	if ( rd_stuck_bot_teleport.GetBool() && IsPathTaskFailure( code ) )
 	{
 		// teleport to the squad leader if we're stuck
 		for ( int i = 1; i < NELEMS( m_flFailedPathingTime ); i++ )
@@ -502,7 +510,11 @@ void CASW_Marine::TaskFail( AI_TaskFailureCode_t code )
 
 			Vector vecPrevOrigin = GetAbsOrigin();
 
-			if ( !pLeader || !pLeader->IsInhabited() )
+			if ( ASWDeathmatchMode() )
+			{
+				TeleportToFreeNode( this, rd_stuck_bot_teleport_max_range.GetFloat() );
+			}
+			else if ( !pLeader || !pLeader->IsInhabited() )
 			{
 				DevMsg( this, "Could not find an inhabited marine to teleport to.\n" );
 			}

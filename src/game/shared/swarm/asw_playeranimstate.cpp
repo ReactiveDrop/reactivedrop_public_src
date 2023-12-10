@@ -16,6 +16,7 @@
  
 #include "asw_weapon_ammo_bag_shared.h"
 #include "asw_weapon_parse.h"
+#include "asw_deathmatch_mode_light.h"
 #ifdef CLIENT_DLL
 	#include "c_asw_player.h"
 	#include "bone_setup.h"
@@ -1120,7 +1121,7 @@ Activity CASWPlayerAnimState::CalcMainActivity()
 			else
 			{
 				// TODO: Move CROUCHIDLE to activity modifiers, if we want to keep this AI behavior
-				if (pMarine->GetASWOrders() == ASW_ORDER_HOLD_POSITION && !pMarine->IsInhabited())
+				if ( pMarine->GetASWOrders() == ASW_ORDER_HOLD_POSITION && !pMarine->IsInhabited() && !ASWDeathmatchMode() )
 				{
 #ifdef CLIENT_DLL
 					if (asw_prevent_ai_crouch.GetBool() && ASWGameResource())
