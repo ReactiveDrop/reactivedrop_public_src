@@ -1072,6 +1072,8 @@ int CASW_Deathmatch_Mode::GetKillingSpree( CASW_Marine_Resource *pMR )
 
 void CASW_Deathmatch_Mode::DeathmatchThink()
 {
+	float flThinkDelay = 1.0f;
+
 	// respawn bots
 	int iFilledMarineResources = 0;
 	for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
@@ -1105,6 +1107,7 @@ void CASW_Deathmatch_Mode::DeathmatchThink()
 					}
 
 					iFilledMarineResources = -1;
+					flThinkDelay = 0.01f;
 					break;
 				}
 				continue;
@@ -1127,7 +1130,10 @@ void CASW_Deathmatch_Mode::DeathmatchThink()
 			}
 
 			iFilledMarineResources = -1;
-			break; // don't do two in a frame
+
+			// don't do two in a frame
+			flThinkDelay = 0.01f;
+			break;
 		}
 	}
 
@@ -1167,7 +1173,7 @@ void CASW_Deathmatch_Mode::DeathmatchThink()
 	}
 
 	SetThink( &CASW_Deathmatch_Mode::DeathmatchThink );
-	SetNextThink( gpGlobals->curtime + 1.0f );
+	SetNextThink( gpGlobals->curtime + flThinkDelay );
 }
 
 void CASW_Deathmatch_Mode::LevelInitPostEntity()
