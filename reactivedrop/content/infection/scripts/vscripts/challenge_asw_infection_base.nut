@@ -316,12 +316,12 @@ function Update()
 		if (CountMarine() >= 2)
 		{
 			StartNewRound();
-			ClientPrint(null, 3, " ");
-			ClientPrint(null, 3, " ");
-			ClientPrint(null, 3, " ");
-			ClientPrint(null, 3, " ");
+			ClientPrint(null, HUD_PRINTTALK, " ");
+			ClientPrint(null, HUD_PRINTTALK, " ");
+			ClientPrint(null, HUD_PRINTTALK, " ");
+			ClientPrint(null, HUD_PRINTTALK, " ");
 			Credit();
-			ClientPrint(null, 3, "#asw_infection_newRound");
+			ClientPrint(null, HUD_PRINTTALK, "#asw_infection_newRound");
 		}
 	}
 	if (g_matchTimer > 0)
@@ -345,7 +345,7 @@ function Update()
 	{
 		if (g_idleTimer <= 0)
 		{
-			ClientPrint(null, 4, "#asw_infection_waiting");
+			ClientPrint(null, HUD_PRINTCENTER, "#asw_infection_waiting");
 		}
 	}
 	local hMarine = null;
@@ -624,7 +624,7 @@ function OnTakeDamage_Alive_Any( victim, inflictor, attacker, weapon, damage, da
 		{
 			damage = 0;
 			JoinZombie(victim);
-			ClientPrint(null, 3, "#asw_infection_infected", NameFeed(victim), NameFeed(attacker));
+			ClientPrint(null, HUD_PRINTTALK, "#asw_infection_infected", NameFeed(victim), NameFeed(attacker));
 			PlayZombieSound(attacker, "claw");
 			PlayZombieSound(attacker, "attack");
 			Deathmatch.SetKills(attacker, Deathmatch.GetKills(attacker)+1);
@@ -728,7 +728,7 @@ function Respawned(hMarine)
 
 function StartNewRound()
 {
-	ClientPrint(null, 4, " ");
+	ClientPrint(null, HUD_PRINTCENTER, " ");
 	g_matchTimer = g_matchLength + 200;
 	foreach (hMarine, weapons in g_teamZombie)
 	{
@@ -763,7 +763,7 @@ function StopRound()
 	if (g_teamHuman.len() > 0)
 	{
 		g_victoryStatus = 1;
-		ClientPrint(null, 3, "#asw_infection_win_human");
+		ClientPrint(null, HUD_PRINTTALK, "#asw_infection_win_human");
 		local survivorList = "";
 		local l = [];
 		local pts = g_teamZombie.len();
@@ -780,18 +780,18 @@ function StopRound()
 				survivorList = survivorList + ", ";
 			}
 		}
-		ClientPrint(null, 3, "#asw_infection_survivors", survivorList);
+		ClientPrint(null, HUD_PRINTTALK, "#asw_infection_survivors", survivorList);
 	}
 	else
 	{
 		g_victoryStatus = 0;
-		ClientPrint(null, 3, "#asw_infection_win_zombie");
+		ClientPrint(null, HUD_PRINTTALK, "#asw_infection_win_zombie");
 	}
 }
 
 function ResetGame()
 {
-	ClientPrint(null, 4, " ");
+	ClientPrint(null, HUD_PRINTCENTER, " ");
 	local hMine = null;
 	while((hMine = Entities.FindByClassname(hMine, "asw_laser_mine")) != null)
 	{
@@ -1021,7 +1021,7 @@ function LastStand()
 		return;
 	}
 	g_lastStand = true;
-	ClientPrint(null, 3, "#asw_infection_lastStand_on");
+	ClientPrint(null, HUD_PRINTTALK, "#asw_infection_lastStand_on");
 }
 
 function UseLastStand(hMarine)
@@ -1054,8 +1054,8 @@ function UseLastStand(hMarine)
 	local newHealth = GetNewHealth(hMarine)*mod;
 	hMarine.SetMaxHealth(newHealth);
 	hMarine.SetHealth(newHealth);
-	ClientPrint(null, 3, "#asw_infection_lastStand_used", NameFeed(hMarine));
-	ClientPrint(null, 3, "#asw_infection_lastStand_timeAdd");
+	ClientPrint(null, HUD_PRINTTALK, "#asw_infection_lastStand_used", NameFeed(hMarine));
+	ClientPrint(null, HUD_PRINTTALK, "#asw_infection_lastStand_timeAdd");
 }
 
 function OnGameEvent_player_say(params)
