@@ -26,6 +26,7 @@
 		"asw_marine_speed_scale_hard" "1.0"
 		"asw_marine_speed_scale_insane" "1.0"
 		"rd_chainsaw_slows_down" "0"
+		"rd_chainsaw_idle_sound" "0"
 		"rd_show_others_laser_pointer" "1"
 
 		"asw_skill_health_step" "0"
