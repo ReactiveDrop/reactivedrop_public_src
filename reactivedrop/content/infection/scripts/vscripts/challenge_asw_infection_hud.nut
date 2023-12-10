@@ -21,12 +21,12 @@ function Paint()
 
 	if (win > 0)
 	{
-		local winText = "Zombies Win";
+		local winText = TryLocalize("#asw_infection_win_zombie");
 		local winColor = [200, 0, 0];
 		local winColorAlt = [100, 0, 0];
 		if (win == 2)
 		{
-			winText = "Humans Win";
+			winText = TryLocalize("#asw_infection_win_human");
 			winColor = [0, 100, 200];
 			winColorAlt = [0, 50, 100];
 		}
@@ -80,7 +80,8 @@ function Paint()
 	{
 		if (virus > 0)
 		{
-			local virusText = "First zombie appears in: " + virus.tostring();
+			local virusText = TryLocalize("#asw_infection_starts_in");
+			virusText = virusText.slice(0, virusText.find("%s1")) + virus.tostring() + virusText.slice(virusText.find("%s1") + 3);
 			self.PaintRectangle
 			(
 				ScreenPosX( 0.4975 ) - self.GetTextWide(FONT_DEFAULT, virusText)*0.5,
@@ -200,16 +201,18 @@ function Paint()
 			if (teamIndex == 2)
 			{
 				local rage = self.GetFloat(0);
-				local rageText = "Rage: ";
+				local rageText = TryLocalize("#asw_infection_rage_meter");
+				local rageMeter = "";
 				for (local i = 0; i < (10*rage).tointeger(); i++)
 				{
-					rageText = rageText + "█";
+					rageMeter = rageMeter + "█";
 				}
 				for (local i = 0; i < 10-(10*rage).tointeger(); i++)
 				{
-					rageText = rageText + "  ";
+					rageMeter = rageMeter + "  ";
 				}
-				rageText = rageText + " " + (100*rage).tointeger().tostring() + "%";
+				rageText = rageText.slice(0, rageText.find("%s1")) + rageMeter + rageText.slice(rageText.find("%s1") + 3);
+				rageText = rageText.slice(0, rageText.find("%s2")) + (100*rage).tointeger().tostring() + rageText.slice(rageText.find("%s2") + 3);
 				for (local i = 0; i < 2; i++)
 				{
 					self.PaintText(
