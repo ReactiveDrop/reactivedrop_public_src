@@ -192,7 +192,7 @@ function Paint()
 				}
 				rageText = rageText.slice(0, rageText.find("%s1")) + rageMeter + rageText.slice(rageText.find("%s1") + 3);
 				rageText = rageText.slice(0, rageText.find("%s2")) + (100*rage).tointeger().tostring() + rageText.slice(rageText.find("%s2") + 3);
-				PaintScanlineText(XRes(320), YRes(384), 255, 0, (255*rage).tointeger(), 255 rageText);
+				PaintScanlineText(XRes(320), YRes(384), 255, 0, (255*rage).tointeger(), 200, rageText);
 			}
 			else if (teamIndex == 1)
 			{
@@ -226,7 +226,7 @@ function Paint()
 				if (dist >= 0)
 				{
 					local distText = "⌕ " + dist;
-					PaintScanlineText(XRes( 320 ), YRes( 396 ), 0, 255, 0, 255, distText);
+					PaintScanlineText(XRes( 320 ), YRes( 396 ), 0, 255, 0, 200, distText);
 				}
 			}
 		}
