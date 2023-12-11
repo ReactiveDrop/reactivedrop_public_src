@@ -639,7 +639,10 @@ function OnTakeDamage_Alive_Any( victim, inflictor, attacker, weapon, damage, da
 			PlayZombieSound(attacker, "attack");
 			Deathmatch.SetKills(attacker, Deathmatch.GetKills(attacker)+1);
 			Deathmatch.IncreaseKillingSpree(attacker);
-			UpdateStatMarine(attacker, 0);
+			if (victim.IsInhabited())
+			{
+				UpdateStatMarine(attacker, 0);
+			}
 		}
 		else if (inflictor && inflictor == attacker && damageType && damageType == 128)
 		{
@@ -713,7 +716,7 @@ function OnGameEvent_entity_killed( params )
 		{
 			g_teamHuman[victim][0].Destroy();
 		}
-		if (attacker && attacker in g_teamZombie && attacker != victim)
+		if (victim.IsInhabited() && attacker && attacker in g_teamZombie && attacker != victim)
 		{
 			UpdateStatMarine(attacker, 0);
 		}
@@ -725,7 +728,7 @@ function OnGameEvent_entity_killed( params )
 			g_teamZombie[victim][0].Destroy();
 		}
 		PlayZombieSound(victim, "die");
-		if (attacker && attacker in g_lastHuman)
+		if (victim.IsInhabited() && attacker && attacker in g_lastHuman)
 		{
 			UpdateStatMarine(attacker, 1);
 		}
