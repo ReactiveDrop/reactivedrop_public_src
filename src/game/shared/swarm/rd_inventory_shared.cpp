@@ -3323,7 +3323,7 @@ namespace ReactiveDropInventory
 #endif
 	}
 
-	void IncrementStrangePropertyOnStartingItems( SteamItemDef_t iAccessoryID, int64_t iAmount, int iPropertyIndex = 0, bool bRelative = true, bool bAllowCheating = false )
+	void IncrementStrangePropertyOnStartingItems( SteamItemDef_t iAccessoryID, int64_t iAmount, int iPropertyIndex, bool bRelative, bool bAllowCheating )
 	{
 		s_RD_Inventory_Manager.IncrementStrangePropertyOnStartingItems( iAccessoryID, iAmount, iPropertyIndex, bRelative, bAllowCheating );
 	}
