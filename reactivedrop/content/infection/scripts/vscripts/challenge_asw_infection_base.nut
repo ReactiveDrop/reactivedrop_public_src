@@ -984,9 +984,9 @@ function JoinZombie(hMarine)
 	{
 		hMarine.SetMaxHealth(newHealth);
 		hMarine.SetHealth(newHealth);
+		hMarine.SetModel("models/swarm/marine/infected_marine.mdl");
+		hMarine.SetOrigin(hMarine.GetOrigin() + Vector(0, 0, 32));
 	}
-	hMarine.SetModel("models/swarm/marine/infected_marine.mdl");
-	hMarine.SetOrigin(hMarine.GetOrigin() + Vector(0, 0, 32));
 	return;
 }
 
