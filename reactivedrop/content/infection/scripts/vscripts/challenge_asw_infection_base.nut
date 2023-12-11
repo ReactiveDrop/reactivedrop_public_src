@@ -1290,7 +1290,7 @@ function UpdateStatTrack(hPlayer)
 {
 	if (!(hPlayer in g_statTrack))
 	{
-		g_statTrack[hPlayer] <- [0, 0];
+		g_statTrack[hPlayer] <- [0, 0, 0];
 	}
 	if (!(hPlayer in g_hud))
 	{
@@ -1298,6 +1298,34 @@ function UpdateStatTrack(hPlayer)
 	}
 	g_hud[hPlayer].SetInt(8, g_statTrack[hPlayer][0]);
 	g_hud[hPlayer].SetInt(9, g_statTrack[hPlayer][1]);
+	g_statTrack[hPlayer][2] = 0;
+	local hMarine = hPlayer.GetMarine();
+	if (hMarine)
+	{
+		if (hMarine in g_teamZombie)
+		{
+			if (hMarine in g_prime)
+			{
+				g_statTrack[hPlayer][2] = 1;
+			}
+			else
+			{
+				g_statTrack[hPlayer][2] = 2;
+			}
+		}
+		if (hMarine in g_teamHuman)
+		{
+			if (hMarine in g_lastHuman)
+			{
+				g_statTrack[hPlayer][2] = 4;
+			}
+			else
+			{
+				g_statTrack[hPlayer][2] = 3;
+			}
+		}
+	}
+	g_hud[hPlayer].SetInt(10, g_statTrack[hPlayer][2]);
 }
 
 function UpdateStat(hPlayer, index, delta=1)
