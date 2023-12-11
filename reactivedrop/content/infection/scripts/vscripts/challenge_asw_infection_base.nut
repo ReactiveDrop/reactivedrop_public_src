@@ -713,7 +713,10 @@ function OnGameEvent_entity_killed( params )
 		{
 			g_teamHuman[victim][0].Destroy();
 		}
-		UpdateStatMarine(attacker, 0);
+		if (attacker != victim)
+		{
+			UpdateStatMarine(attacker, 0);
+		}
 	}
 	if (victim in g_teamZombie)
 	{
