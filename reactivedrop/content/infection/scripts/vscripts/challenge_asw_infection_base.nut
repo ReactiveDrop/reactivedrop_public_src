@@ -16,6 +16,8 @@ g_previous <- {};
 g_victoryStatus <- -1;
 g_killAltitude <- false;
 
+g_statTrack <- {};
+
 g_alienClassnames <- [
 	"asw_drone",
 	"asw_buzzer",
@@ -94,6 +96,13 @@ function Update()
 		g_enabled = true;
 	}
 	Convars.ExecuteConCommand( "rd_TeamDeathmatch_enable" );
+	foreach (hPlayer, stat in g_statTrack)
+	{
+		if (!(hPlayer.IsValid()))
+		{
+			g_statTrack.rawdelete(hPlayer);
+		}
+	}
 	CleanUp();
 	if (g_matchTimer > 0 && g_matchTimer < g_matchLength)
 	{
@@ -210,6 +219,7 @@ function Update()
 				ClientPrint(hPlayer, 4, " ");
 			}
 		}
+		UpdateStatTrack(hPlayer);
 	}
 	foreach (hPlayer, hHud in g_hud)
 	{
@@ -629,6 +639,10 @@ function OnTakeDamage_Alive_Any( victim, inflictor, attacker, weapon, damage, da
 			PlayZombieSound(attacker, "attack");
 			Deathmatch.SetKills(attacker, Deathmatch.GetKills(attacker)+1);
 			Deathmatch.IncreaseKillingSpree(attacker);
+			if (victim.IsInhabited())
+			{
+				UpdateStatMarine(attacker, 0);
+			}
 		}
 		else if (inflictor && inflictor == attacker && damageType && damageType == 128)
 		{
@@ -702,6 +716,10 @@ function OnGameEvent_entity_killed( params )
 		{
 			g_teamHuman[victim][0].Destroy();
 		}
+		if (victim.IsInhabited() && attacker && attacker in g_teamZombie && attacker != victim)
+		{
+			UpdateStatMarine(attacker, 0);
+		}
 	}
 	if (victim in g_teamZombie)
 	{
@@ -710,6 +728,10 @@ function OnGameEvent_entity_killed( params )
 			g_teamZombie[victim][0].Destroy();
 		}
 		PlayZombieSound(victim, "die");
+		if (victim.IsInhabited() && attacker && attacker in g_lastHuman)
+		{
+			UpdateStatMarine(attacker, 1);
+		}
 	}
 }
 
@@ -822,6 +844,7 @@ function ResetGame()
 	g_primeZombies.clear();
 	g_matchTimer = -1;
 	g_lastStand = false;
+	ResetStatTrackGlobal();
 }
 
 function CountMarine()
@@ -961,9 +984,9 @@ function JoinZombie(hMarine)
 	{
 		hMarine.SetMaxHealth(newHealth);
 		hMarine.SetHealth(newHealth);
+		hMarine.SetModel("models/swarm/marine/infected_marine.mdl");
+		hMarine.SetOrigin(hMarine.GetOrigin() + Vector(0, 0, 32));
 	}
-	hMarine.SetModel("models/swarm/marine/infected_marine.mdl");
-	hMarine.SetOrigin(hMarine.GetOrigin() + Vector(0, 0, 32));
 	return;
 }
 
@@ -1264,4 +1287,94 @@ function IsOnGround(ent)
 		return false;
 	}
 	return true;
+}
+
+function UpdateStatTrack(hPlayer)
+{
+	if (!(hPlayer in g_statTrack))
+	{
+		g_statTrack[hPlayer] <- [0, 0, 0];
+	}
+	if (!(hPlayer in g_hud))
+	{
+		return;
+	}
+	g_hud[hPlayer].SetInt(8, g_statTrack[hPlayer][0]);
+	g_hud[hPlayer].SetInt(9, g_statTrack[hPlayer][1]);
+	g_statTrack[hPlayer][2] = 0;
+	local hMarine = hPlayer.GetMarine();
+	if (hMarine)
+	{
+		if (hMarine in g_teamZombie)
+		{
+			if (hMarine in g_prime)
+			{
+				g_statTrack[hPlayer][2] = 1;
+			}
+			else
+			{
+				g_statTrack[hPlayer][2] = 2;
+			}
+		}
+		if (hMarine in g_teamHuman)
+		{
+			if (hMarine in g_lastHuman)
+			{
+				g_statTrack[hPlayer][2] = 4;
+			}
+			else
+			{
+				g_statTrack[hPlayer][2] = 3;
+			}
+		}
+	}
+	g_hud[hPlayer].SetInt(10, g_statTrack[hPlayer][2]);
+}
+
+function UpdateStat(hPlayer, index, delta=1)
+{
+	if (hPlayer in g_statTrack)
+	{
+		g_statTrack[hPlayer][index] = g_statTrack[hPlayer][index] + delta;
+	}
+}
+
+function UpdateStatMarine(hMarine, index, delta=1)
+{
+	if (!hMarine)
+	{
+		return;
+	}
+	if (!(hMarine.IsValid()))
+	{
+		return;
+	}
+	if (hMarine.GetClassname() != "asw_marine")
+	{
+		return;
+	}
+	if (hMarine.IsInhabited())
+	{
+		UpdateStat(hMarine.GetCommander(), index, delta);
+	}
+}
+
+function ResetStatTrack(hPlayer)
+{
+	if (hPlayer in g_statTrack)
+	{
+		for (local i = 0; i < g_statTrack[hPlayer].len(); i++)
+		{
+			g_statTrack[hPlayer][i] = 0;
+		}
+	}
+}
+
+function ResetStatTrackGlobal()
+{
+	local hPlayer = null;
+	while((hPlayer = Entities.FindByClassname(hPlayer, "player")) != null)
+	{
+		ResetStatTrack(hPlayer);
+	}
 }
