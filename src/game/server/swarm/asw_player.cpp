@@ -3609,7 +3609,7 @@ void CASW_Player::HandleEquippedItemsNotification( KeyValues *pKeyValues, bool b
 		return;
 	}
 
-	if ( iOffset == 0 && ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME )
+	if ( iOffset == 0 && ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME && !ASWDeathmatchMode() )
 	{
 		// allow receiving data after mission start if the transfer as at least started beforehand
 		DevWarning( "Ignoring equipped items notification (%s) from player %s as the mission is in-progress.\n", bDynamic ? "dynamic" : "static", GetASWNetworkID() );

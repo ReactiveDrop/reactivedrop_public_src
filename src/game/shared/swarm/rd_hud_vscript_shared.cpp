@@ -2,6 +2,7 @@
 #include "rd_hud_vscript_shared.h"
 #ifdef CLIENT_DLL
 #include "rd_font_zbalermorna.h"
+#include "c_rd_infection_deathmatch_stats.h"
 #endif
 #include <vgui/IScheme.h>
 #include <vgui/ISurface.h>
@@ -91,6 +92,12 @@ CRD_HUD_VScript::~CRD_HUD_VScript()
 #ifdef CLIENT_DLL
 	s_HUDEntities.FindAndRemove( this );
 
+	if ( m_pInfectionDeathmatchStats )
+	{
+		delete m_pInfectionDeathmatchStats;
+		m_pInfectionDeathmatchStats = NULL;
+	}
+
 	if ( m_ScriptScope.IsInitialized() )
 	{
 		m_ScriptScope.ReleaseFunction( m_hUpdateFunc );
@@ -131,12 +138,34 @@ void CRD_HUD_VScript::OnDataChanged( DataUpdateType_t type )
 		{
 			Warning( "%s (%s) does not have a Paint function in its script scope.\n", GetDebugClassname(), m_szClientVScript.Get() );
 		}
+
+		Assert( !m_pInfectionDeathmatchStats );
+		if ( CRD_Infection_Deathmatch_Stats::ShouldInit( this ) )
+		{
+			m_pInfectionDeathmatchStats = new CRD_Infection_Deathmatch_Stats();
+		}
+	}
+
+	if ( m_pInfectionDeathmatchStats )
+	{
+		m_pInfectionDeathmatchStats->OnUpdate( this );
 	}
 
 	if ( m_hUpdateFunc != INVALID_HSCRIPT )
 	{
 		g_pScriptVM->Call( m_hUpdateFunc, m_ScriptScope );
 	}
+}
+
+void CRD_HUD_VScript::OnSetDormant( bool bDormant )
+{
+	if ( bDormant && m_pInfectionDeathmatchStats )
+	{
+		delete m_pInfectionDeathmatchStats;
+		m_pInfectionDeathmatchStats = NULL;
+	}
+
+	BaseClass::OnSetDormant( bDormant );
 }
 
 void CRD_HUD_VScript::Paint()

@@ -2,6 +2,7 @@
 
 #ifdef CLIENT_DLL
 #define CRD_HUD_VScript C_RD_HUD_VScript
+class CRD_Infection_Deathmatch_Stats;
 #endif
 
 class CRD_HUD_VScript : public CBaseEntity
@@ -18,6 +19,7 @@ public:
 	static CUtlVector<CRD_HUD_VScript *> s_HUDEntities;
 
 	void OnDataChanged( DataUpdateType_t type ) override;
+	void OnSetDormant( bool bDormant ) override;
 	virtual void Paint();
 
 	int Script_LookupTexture( const char *name );
@@ -39,6 +41,7 @@ public:
 	HSCRIPT m_hPaintFunc{ INVALID_HSCRIPT };
 	CUtlDict<int> m_Textures;
 	bool m_bIsPainting{ false };
+	CRD_Infection_Deathmatch_Stats *m_pInfectionDeathmatchStats{};
 #else
 	DECLARE_DATADESC();
 

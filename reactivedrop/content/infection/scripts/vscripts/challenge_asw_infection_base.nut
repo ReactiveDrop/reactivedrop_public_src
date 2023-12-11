@@ -728,7 +728,7 @@ function OnGameEvent_entity_killed( params )
 			g_teamZombie[victim][0].Destroy();
 		}
 		PlayZombieSound(victim, "die");
-		if (victim.IsInhabited() && attacker && attacker in g_lastHuman)
+		if (victim.IsInhabited() && attacker && attacker in g_teamHuman)
 		{
 			UpdateStatMarine(attacker, 1);
 		}

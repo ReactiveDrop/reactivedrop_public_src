@@ -256,7 +256,7 @@ public:
 			return;
 		}
 
-		if ( ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME )
+		if ( ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME && !ASWDeathmatchMode() )
 		{
 			// we'll try again on map load or instant restart
 			return;
@@ -417,7 +417,7 @@ public:
 			return;
 		}
 
-		if ( ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME )
+		if ( ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME && !ASWDeathmatchMode() )
 		{
 			// we'll try again on map load or instant restart
 			return;
@@ -3321,6 +3321,11 @@ namespace ReactiveDropInventory
 		pInventory->TriggerItemDrop( s_RD_Inventory_Manager.AddCraftItemTask( CRD_Inventory_Manager::CRAFT_DROP ), 7000 ); // Playtime Random Material Tokens Weekly
 		pInventory->TriggerItemDrop( s_RD_Inventory_Manager.AddCraftItemTask( CRD_Inventory_Manager::CRAFT_DROP ), 7002 ); // Playtime Random Material Tokens Extended
 #endif
+	}
+
+	void IncrementStrangePropertyOnStartingItems( SteamItemDef_t iAccessoryID, int64_t iAmount, int iPropertyIndex = 0, bool bRelative = true, bool bAllowCheating = false )
+	{
+		s_RD_Inventory_Manager.IncrementStrangePropertyOnStartingItems( iAccessoryID, iAmount, iPropertyIndex, bRelative, bAllowCheating );
 	}
 
 	void CommitDynamicProperties()

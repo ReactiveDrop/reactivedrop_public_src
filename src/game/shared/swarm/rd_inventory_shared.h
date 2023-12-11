@@ -154,6 +154,7 @@ namespace ReactiveDropInventory
 	void AddPromoItem( SteamItemDef_t id );
 	void RequestGenericPromoItems();
 	void CheckPlaytimeItemGenerators();
+	void IncrementStrangePropertyOnStartingItems( SteamItemDef_t iAccessoryID, int64_t iAmount, int iPropertyIndex = 0, bool bRelative = true, bool bAllowCheating = false );
 	void CommitDynamicProperties();
 	const ItemInstance_t *GetLocalItemCache( SteamItemInstanceID_t id );
 	void GetItemsForSlot( CUtlVector<ItemInstance_t> &instances, const char *szRequiredSlot );

@@ -430,6 +430,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="..\shared\swarm\rd_crafting_defs.h" />
     <ClInclude Include="..\shared\swarm\rd_map_texture_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_vgui_vscript_shared.h" />
+    <ClInclude Include="swarm\c_rd_infection_deathmatch_stats.h" />
     <ClInclude Include="swarm\rd_font_zbalermorna.h" />
     <ClInclude Include="swarm\vgui\asw_scalable_text.inc">
       <FileType>Document</FileType>
@@ -1345,6 +1346,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="swarm\c_func_asw_fade.cpp" />
     <ClCompile Include="swarm\c_prop_asw_fade.cpp" />
     <ClCompile Include="swarm\c_rd_boss_bar.cpp" />
+    <ClCompile Include="swarm\c_rd_infection_deathmatch_stats.cpp" />
     <ClCompile Include="swarm\gameui\backgroundmenubutton.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
