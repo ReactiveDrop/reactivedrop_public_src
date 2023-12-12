@@ -91,7 +91,8 @@ void CRD_Infection_Deathmatch_Stats::OnUpdate( C_RD_HUD_VScript *pHUD )
 			if ( m_iLastNonZeroPlayerType != IPT_NONE )
 			{
 				// if we were playing and the round ended, regardless of whether we are eligible for stats, check if we need to spawn the medal.
-				ReactiveDropInventory::AddPromoItem( 43 );
+				if ( iCurrentPlayerType == IPT_HUMAN || iCurrentPlayerType == IPT_HUMAN_LAST_STAND || iKillCountZombie > 0 )
+					ReactiveDropInventory::AddPromoItem( 43 );
 
 				// record our win or loss in the pending array
 				bool bWasInHumanTeam = m_iLastNonZeroPlayerType == IPT_HUMAN || m_iLastNonZeroPlayerType == IPT_HUMAN_LAST_STAND;
