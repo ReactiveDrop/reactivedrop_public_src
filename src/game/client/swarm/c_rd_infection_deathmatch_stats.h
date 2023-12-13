@@ -20,6 +20,7 @@ public:
 	int m_iLastHumanKills{};
 	bool m_bWasDead{};
 	bool m_bEnoughPlayersThisRound{};
+	bool m_bAtLeastTwoHumansThisRound{};
 
 	bool m_bStatsRequested{};
 	bool m_bStatsLoaded{};

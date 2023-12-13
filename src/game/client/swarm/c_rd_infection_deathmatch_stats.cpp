@@ -91,7 +91,7 @@ void CRD_Infection_Deathmatch_Stats::OnUpdate( C_RD_HUD_VScript *pHUD )
 			if ( m_iLastNonZeroPlayerType != IPT_NONE )
 			{
 				// if we were playing and the round ended, regardless of whether we are eligible for stats, check if we need to spawn the medal.
-				if ( iCurrentPlayerType == IPT_HUMAN || iCurrentPlayerType == IPT_HUMAN_LAST_STAND || iKillCountZombie > 0 )
+				if ( m_bAtLeastTwoHumansThisRound && ( iCurrentPlayerType == IPT_HUMAN || iCurrentPlayerType == IPT_HUMAN_LAST_STAND || iKillCountZombie > 0 ) )
 					ReactiveDropInventory::AddPromoItem( 43 );
 
 				// record our win or loss in the pending array
@@ -152,6 +152,7 @@ void CRD_Infection_Deathmatch_Stats::OnUpdate( C_RD_HUD_VScript *pHUD )
 			// reset eligibility for the next round
 			m_iLastNonZeroPlayerType = IPT_NONE;
 			m_bEnoughPlayersThisRound = false;
+			m_bAtLeastTwoHumansThisRound = false;
 			m_iLastZombieKills = 0;
 			m_iLastHumanKills = 0;
 			V_memset( m_KillsPending, 0, sizeof( m_KillsPending ) );
@@ -167,6 +168,7 @@ void CRD_Infection_Deathmatch_Stats::OnUpdate( C_RD_HUD_VScript *pHUD )
 			Assert( m_iLastHumanKills == 0 );
 			Assert( m_bWasDead );
 			Assert( !m_bEnoughPlayersThisRound );
+			Assert( !m_bAtLeastTwoHumansThisRound );
 		}
 	}
 
@@ -185,6 +187,11 @@ void CRD_Infection_Deathmatch_Stats::OnUpdate( C_RD_HUD_VScript *pHUD )
 					{
 						iPlayerCount++;
 					}
+				}
+
+				if ( iPlayerCount >= 2 )
+				{
+					m_bAtLeastTwoHumansThisRound = true;
 				}
 
 				if ( iPlayerCount >= 5 )
