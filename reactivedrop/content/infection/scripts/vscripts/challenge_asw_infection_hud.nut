@@ -69,7 +69,7 @@ function Paint()
 			YRes( 144 ) + XRes( 6.4 ) + self.GetFontTall(FONT_COUNTDOWN),
 			false
 		);
-		PaintScanlineText(XRes(320), YRes(144), 255, 255, 255, 255, winText);
+		PaintScanlineText(XRes(320), YRes(145), 255, 255, 255, 255, winText);
 	}
 	else
 	{

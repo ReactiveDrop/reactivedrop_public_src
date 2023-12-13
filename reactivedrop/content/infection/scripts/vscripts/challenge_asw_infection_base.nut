@@ -597,6 +597,10 @@ function OnTakeDamage_Alive_Any( victim, inflictor, attacker, weapon, damage, da
 	{
 		g_teamZombie[victim][4] = 70;
 		damage = damage * (1.0 + GetRage());
+		if (NetProps.GetPropBool(victim, "m_bElectroStunned"))
+		{
+			damage = damage * 2;
+		}
 		if (inflictor)
 		{
 			if (attacker in g_lastHuman && inflictor == attacker && damageType && damageType == 128)
@@ -615,6 +619,14 @@ function OnTakeDamage_Alive_Any( victim, inflictor, attacker, weapon, damage, da
 				damage = damage * 10;
 			}
 			if (inflictor.GetClassname() == "asw_laser_mine")
+			{
+				damage = damage * 10;
+			}
+			if (inflictor.GetClassname() == "asw_radiation_volume")
+			{
+				damage = damage * 10;
+			}
+			if (weapon && weapon.GetClassname() == "asw_weapon_mines" && inflictor.GetClassname() == "asw_burning")
 			{
 				damage = damage * 10;
 			}
