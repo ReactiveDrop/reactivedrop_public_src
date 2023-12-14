@@ -462,6 +462,16 @@ function Update()
 			}
 		}
 	}
+	local hGrenade = null;
+	while((hGrenade = Entities.FindByClassname(hGrenade, "asw_grenade_cluster")) != null)
+	{
+		local hOwner = hGrenade.GetOwner();
+		if (hOwner && hOwner in g_teamZombie)
+		{
+			hGrenade.SetModel("models/aliens/parasite/parasite.mdl");
+			EntFireByHandle(hGrenade, "SetBodyGroup", "1", 0, self, self);
+		}
+	}
 	foreach (name in g_alienClassnames)
 	{
 		local hAlien = null;
