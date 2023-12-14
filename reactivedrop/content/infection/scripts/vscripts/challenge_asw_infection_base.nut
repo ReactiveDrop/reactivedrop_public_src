@@ -38,22 +38,32 @@ g_alienClassnames <- [
 
 g_zombieSound <- {
 	pain = [
-		"Zombie.Pain"
+		"npc/zombie/zombie_pain1.wav",
+		"npc/zombie/zombie_pain2.wav",
+		"npc/zombie/zombie_pain3.wav",
+		"npc/zombie/zombie_pain4.wav",
+		"npc/zombie/zombie_pain5.wav"
 	]
 	die = [
-		"Zombie.Die"
+		"npc/zombie/zombie_die1.wav",
+		"npc/zombie/zombie_die3.wav"
 	]
 	attack = [
-		"Zombie.Attack"
+		"npc/zombie/zo_attack1.wav",
+		"npc/zombie/zo_attack2.wav"
 	]
 	claw = [
-		"Zombie.AttackHit"
+		"npc/zombie/claw_strike1.wav",
+		"npc/zombie/claw_strike2.wav",
+		"npc/zombie/claw_strike3.wav"
 	]
 	alert = [
-		"Zombie.Alert"
+		"npc/zombie/zombie_alert1.wav",
+		"npc/zombie/zombie_alert2.wav",
+		"npc/zombie/zombie_alert3.wav"
 	]
 	hit = [
-		"NPC_BaseZombie.Swat"
+		"npc/zombie/zombie_hit.wav"
 	]
 };
 
@@ -462,6 +472,16 @@ function Update()
 			}
 		}
 	}
+	local hGrenade = null;
+	while((hGrenade = Entities.FindByClassname(hGrenade, "asw_grenade_cluster")) != null)
+	{
+		local hOwner = hGrenade.GetOwner();
+		if (hOwner && hOwner in g_teamZombie)
+		{
+			hGrenade.SetModel("models/aliens/parasite/parasite.mdl");
+			EntFireByHandle(hGrenade, "SetBodyGroup", "1", 0, self, self);
+		}
+	}
 	foreach (name in g_alienClassnames)
 	{
 		local hAlien = null;
@@ -595,7 +615,7 @@ function OnTakeDamage_Alive_Any( victim, inflictor, attacker, weapon, damage, da
 	}
 	if ( victim in g_teamZombie && attacker && attacker in g_teamHuman )
 	{
-		g_teamZombie[victim][4] = 70;
+		g_teamZombie[victim][4] = GetRegenCD(victim);
 		damage = damage * (1.0 + GetRage());
 		if (NetProps.GetPropBool(victim, "m_bElectroStunned"))
 		{
@@ -1195,6 +1215,40 @@ function GetNewHealth(hMarine)
 		}
 	}
 	return 0;
+}
+
+function GetMedicID(hMarine)
+{
+	if (hMarine)
+	{
+		switch(hMarine.GetMarineProfile())
+		{
+			case ASW_MARINE_PROFILE_FAITH:
+				return 1;
+			case ASW_MARINE_PROFILE_BASTILLE:
+				return 2;
+			default:
+				return 0;
+		}
+	}
+	return 0;
+}
+
+function GetRegenCD(hMarine)
+{
+	if (hMarine)
+	{
+		switch(GetMedicID(hMarine))
+		{
+			case 1:
+				return 40;
+			case 2:
+				return 60;
+			default:
+				return 70;
+		}
+	}
+	return 70;
 }
 
 function Heal(ent, amt)
