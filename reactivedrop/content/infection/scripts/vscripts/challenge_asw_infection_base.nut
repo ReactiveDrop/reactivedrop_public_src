@@ -38,22 +38,32 @@ g_alienClassnames <- [
 
 g_zombieSound <- {
 	pain = [
-		"Zombie.Pain"
+		"npc/zombie/zombie_pain1.wav",
+		"npc/zombie/zombie_pain2.wav",
+		"npc/zombie/zombie_pain3.wav",
+		"npc/zombie/zombie_pain4.wav",
+		"npc/zombie/zombie_pain5.wav"
 	]
 	die = [
-		"Zombie.Die"
+		"npc/zombie/zombie_die1.wav",
+		"npc/zombie/zombie_die3.wav"
 	]
 	attack = [
-		"Zombie.Attack"
+		"npc/zombie/zo_attack1.wav",
+		"npc/zombie/zo_attack2.wav"
 	]
 	claw = [
-		"Zombie.AttackHit"
+		"npc/zombie/claw_strike1.wav",
+		"npc/zombie/claw_strike2.wav",
+		"npc/zombie/claw_strike3.wav"
 	]
 	alert = [
-		"Zombie.Alert"
+		"npc/zombie/zombie_alert1.wav",
+		"npc/zombie/zombie_alert2.wav",
+		"npc/zombie/zombie_alert3.wav"
 	]
 	hit = [
-		"NPC_BaseZombie.Swat"
+		"npc/zombie/zombie_hit.wav"
 	]
 };
 
