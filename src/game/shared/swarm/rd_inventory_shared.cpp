@@ -897,6 +897,11 @@ public:
 			Warning( "ISteamInventory::SubmitUpdateProperties returned false\n" );
 		}
 
+		if ( rd_debug_inventory.GetBool() )
+		{
+			Msg( "[C] Item property update handle is %08x\n", m_DynamicPropertyUpdateResult );
+		}
+
 		m_PendingDynamicPropertyUpdates.Purge();
 	}
 #endif
@@ -1800,54 +1805,54 @@ public:
 
 		uint32_t count{};
 		if ( pInventory->GetResultItems( hResult, NULL, &count ) )
-		{
 			Msg( "Result %08x (%s, age %d sec) has %d items:\n", hResult, UTIL_RD_EResultToString( pInventory->GetResultStatus( hResult ) ), SteamUtils()->GetServerRealTime() - pInventory->GetResultTimestamp( hResult ), count );
+		else
+			Msg( "Result %08x (%s, age %d sec) has ERR items:\n", hResult, UTIL_RD_EResultToString( pInventory->GetResultStatus( hResult ) ), SteamUtils()->GetServerRealTime() - pInventory->GetResultTimestamp( hResult ) );
 
-			uint32 nSerializedBufferSize{};
-			if ( pInventory->SerializeResult( hResult, NULL, &nSerializedBufferSize ) )
+		uint32 nSerializedBufferSize{};
+		if ( pInventory->SerializeResult( hResult, NULL, &nSerializedBufferSize ) )
+		{
+			byte *pSerialized = ( byte * )stackalloc( nSerializedBufferSize );
+			pInventory->SerializeResult( hResult, pSerialized, &nSerializedBufferSize );
+			char *szSerialized = ( char * )stackalloc( nSerializedBufferSize * 2 + 1 );
+			V_binarytohex( pSerialized, nSerializedBufferSize, szSerialized, nSerializedBufferSize * 2 + 1 );
+			Msg( "Serialized (%d bytes): %s\n", nSerializedBufferSize, szSerialized );
+		}
+
+		CUtlMemory<SteamItemDetails_t> itemDetails( 0, count );
+		if ( !pInventory->GetResultItems( hResult, itemDetails.Base(), &count ) )
+		{
+			Warning( "Failed to get item details for result.\n" );
+			count = 0;
+		}
+
+		CUtlMemory<char> szStringBuf( 0, 1024 );
+		uint32_t size{};
+
+		FOR_EACH_VEC( itemDetails, i )
+		{
+			Msg( "Item %llu (def %d qty %d flags %x)\n", itemDetails[i].m_itemId, itemDetails[i].m_iDefinition, itemDetails[i].m_unQuantity, itemDetails[i].m_unFlags );
+
+			szStringBuf[0] = '\0';
+
 			{
-				byte *pSerialized = ( byte * )stackalloc( nSerializedBufferSize );
-				pInventory->SerializeResult( hResult, pSerialized, &nSerializedBufferSize );
-				char *szSerialized = ( char * )stackalloc( nSerializedBufferSize * 2 + 1 );
-				V_binarytohex( pSerialized, nSerializedBufferSize, szSerialized, nSerializedBufferSize * 2 + 1 );
-				Msg( "Serialized (%d bytes): %s\n", nSerializedBufferSize, szSerialized );
-			}
-
-			CUtlMemory<SteamItemDetails_t> itemDetails( 0, count );
-			if ( !pInventory->GetResultItems( hResult, itemDetails.Base(), &count ) )
-			{
-				Warning( "Failed to get item details for result.\n" );
-				count = 0;
-			}
-
-			CUtlMemory<char> szStringBuf( 0, 1024 );
-			uint32_t size{};
-
-			FOR_EACH_VEC( itemDetails, i )
-			{
-				Msg( "Item %llu (def %d qty %d flags %x)\n", itemDetails[i].m_itemId, itemDetails[i].m_iDefinition, itemDetails[i].m_unQuantity, itemDetails[i].m_unFlags );
-
-				szStringBuf[0] = '\0';
-
+				pInventory->GetResultItemProperty( hResult, i, NULL, NULL, &size );
+				szStringBuf.EnsureCapacity( size + 1 );
+				size = szStringBuf.Count();
+				pInventory->GetResultItemProperty( hResult, i, NULL, szStringBuf.Base(), &size );
+				Msg( "ResultProperties: %s\n", szStringBuf.Base() );
+				CSplitString propertyNames( szStringBuf.Base(), "," );
+				FOR_EACH_VEC( propertyNames, j )
 				{
-					pInventory->GetResultItemProperty( hResult, i, NULL, NULL, &size );
+					pInventory->GetResultItemProperty( hResult, i, propertyNames[j], NULL, &size );
 					szStringBuf.EnsureCapacity( size + 1 );
 					size = szStringBuf.Count();
-					pInventory->GetResultItemProperty( hResult, i, NULL, szStringBuf.Base(), &size );
-					Msg( "ResultProperties: %s\n", szStringBuf.Base() );
-					CSplitString propertyNames( szStringBuf.Base(), "," );
-					FOR_EACH_VEC( propertyNames, j )
-					{
-						pInventory->GetResultItemProperty( hResult, i, propertyNames[j], NULL, &size );
-						szStringBuf.EnsureCapacity( size + 1 );
-						size = szStringBuf.Count();
-						pInventory->GetResultItemProperty( hResult, i, propertyNames[j], szStringBuf.Base(), &size );
-						Msg( "ResultProperties[%s] = %s\n", propertyNames[j], szStringBuf.Base() );
-					}
+					pInventory->GetResultItemProperty( hResult, i, propertyNames[j], szStringBuf.Base(), &size );
+					Msg( "ResultProperties[%s] = %s\n", propertyNames[j], szStringBuf.Base() );
 				}
-
-				Msg( "\n" );
 			}
+
+			Msg( "\n" );
 		}
 	}
 
@@ -1876,6 +1881,11 @@ public:
 			m_DebugPrintInventoryResult = k_SteamInventoryResultInvalid;
 
 			return;
+		}
+
+		if ( pParam->m_result != k_EResultOK && rd_debug_inventory.GetBool() )
+		{
+			DebugPrintResult( pParam->m_handle );
 		}
 
 #ifdef CLIENT_DLL
