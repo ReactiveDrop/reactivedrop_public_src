@@ -83,7 +83,7 @@ void CRD_PNG_Texture::SetRotation( int iRotation )
 {
 }
 
-bool CRD_PNG_Texture::Init( const char *szDirectory, uint32_t iHash )
+bool CRD_PNG_Texture::Init( const char *szDirectory, uint32_t iHash, bool bForceLoadRemote )
 {
 	Assert( !m_iTextureID );
 	Assert( !m_bReady );
@@ -92,6 +92,9 @@ bool CRD_PNG_Texture::Init( const char *szDirectory, uint32_t iHash )
 
 	V_snprintf( m_szFileNameVMT, sizeof( m_szFileNameVMT ), "materials/%s/%08x.vmt", szDirectory, iHash );
 	V_snprintf( m_szFileNameVTF, sizeof( m_szFileNameVTF ), "materials/%s/%08x.vtf", szDirectory, iHash );
+
+	if ( bForceLoadRemote )
+		return false;
 
 	if ( !g_pFullFileSystem->FileExists( m_szFileNameVMT, "GAME" ) || !g_pFullFileSystem->FileExists( m_szFileNameVTF, "GAME" ) )
 		return false;

@@ -23,7 +23,7 @@ protected:
 	// Init should be called in the constructor by derived classes.
 	//
 	// If Init returns false, the caller should fetch the PNG data and call either OnPNGDataReady or OnFailedToLoadData.
-	bool Init( const char *szDirectory, uint32_t iHash );
+	bool Init( const char *szDirectory, uint32_t iHash, bool bForceLoadRemote = false );
 
 	void OnPNGDataReady( const void *pData, size_t nDataSize, const char *szIconDebugName = "icon" );
 	void OnFailedToLoadData( const char *szReason, const char *szIconDebugName = "icon" );

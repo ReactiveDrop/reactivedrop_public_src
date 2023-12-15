@@ -2183,10 +2183,10 @@ CON_COMMAND( rd_econ_item_preview, "inspect an item using a code from the Steam 
 class CSteamItemIcon : public CRD_PNG_Texture
 {
 public:
-	CSteamItemIcon( const char *szURL ) :
+	CSteamItemIcon( const char *szURL, bool bForceLoadRemote ) :
 		m_URLHash{ CRC32_ProcessSingleBuffer( szURL, V_strlen( szURL ) ) }
 	{
-		if ( Init( "vgui/inventory/cache", m_URLHash ) )
+		if ( Init( "vgui/inventory/cache", m_URLHash, bForceLoadRemote ) )
 			return;
 
 		char szDebugName[512];
@@ -2225,7 +2225,7 @@ public:
 		}
 	}
 
-	static CSteamItemIcon *Get( const char *szURL )
+	static CSteamItemIcon *Get( const char *szURL, bool bForceLoadRemote = false )
 	{
 #ifdef DBGFLAG_ASSERT
 		static CUtlMap<CRC32_t, CUtlString> s_HashToURL( DefLessFunc( CRC32_t ) );
@@ -2246,10 +2246,14 @@ public:
 		UtlSymId_t index = s_ItemIcons.Find( szURL );
 		if ( index != s_ItemIcons.InvalidIndex() )
 		{
+			if ( bForceLoadRemote )
+			{
+				Warning( "Loading icon for URL %s: already loaded; cannot create new icon\n", szURL );
+			}
 			return s_ItemIcons[index];
 		}
 
-		return s_ItemIcons[szURL] = new CSteamItemIcon( szURL );
+		return s_ItemIcons[szURL] = new CSteamItemIcon( szURL, bForceLoadRemote );
 	}
 
 	const CRC32_t m_URLHash;
@@ -4207,5 +4211,10 @@ CON_COMMAND_F( rd_load_all_inventory_defs, "load data and icons for all defined 
 	}
 
 	Msg( "async loading icons: %d\n", iLoading );
+}
+
+CON_COMMAND_F( rd_inventory_create_icon_from_url, "Create a cache file for an inventory item icon. For dev use only. Put URL in quotes or it will interpret // as a comment.", FCVAR_NOT_CONNECTED | FCVAR_HIDDEN )
+{
+	CSteamItemIcon::Get( args[1], true );
 }
 #endif
