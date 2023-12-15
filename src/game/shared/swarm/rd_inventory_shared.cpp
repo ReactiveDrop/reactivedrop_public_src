@@ -926,9 +926,9 @@ public:
 			if ( !pPlayer )
 				continue;
 
-			for ( int i = 0; i < RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS; i++ )
+			for ( int j = 0; j < RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS; j++ )
 			{
-				CRD_ItemInstance &medalInstance = pPlayer->m_EquippedItemDataStatic[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MEDAL + i];
+				CRD_ItemInstance &medalInstance = pPlayer->m_EquippedItemDataStatic[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MEDAL + j];
 
 				ModifyAccessoryDynamicPropValue( pPlayer->GetNPC(), pPlayer, medalInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
 			}
@@ -1060,9 +1060,9 @@ public:
 		{
 			s_RD_Inventory_Manager.IncrementStrangePropertyOnWeaponAndGlobals( pNPC, pSentry, iAccessoryID, iAmount, iPropertyIndex, bRelative );
 		}
-		else if ( CASW_Sentry_Top *pSentry = dynamic_cast< CASW_Sentry_Top * >( pWeapon ) )
+		else if ( CASW_Sentry_Top *pTop = dynamic_cast< CASW_Sentry_Top * >( pWeapon ) )
 		{
-			if ( CASW_Sentry_Base *pBase = pSentry->GetSentryBase() )
+			if ( CASW_Sentry_Base *pBase = pTop->GetSentryBase() )
 			{
 				s_RD_Inventory_Manager.IncrementStrangePropertyOnWeaponAndGlobals( pNPC, pBase, iAccessoryID, iAmount, iPropertyIndex, bRelative );
 			}
