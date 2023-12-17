@@ -120,7 +120,7 @@ void CNB_Lobby_Row::ApplySchemeSettings( vgui::IScheme *pScheme )
 	if ( rd_legacy_ui.GetString()[0] != '\0' )
 		LoadControlSettings( "resource/ui/nb_lobby_row.res" );
 	else
-		LoadControlSettings( "resource/ui/nb_lobby_row_new.res" );
+		LoadControlSettings( "resource/ui/nb_lobby_row_2024.res" );
 
 	for ( int i = 0;i < ASW_NUM_INVENTORY_SLOTS; i++ )
 	{
