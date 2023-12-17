@@ -17,12 +17,20 @@
 #include "materialsystem/imaterialsystemhardwareconfig.h"
 #include "filesystem.h"
 #include "../common/xbox/xboxstubs.h"
+#ifdef INFESTED_DLL
+#include "c_asw_player.h"
+#include "c_asw_inhabitable_npc.h"
+#endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 static ConVar cl_showfps( "cl_showfps", "0", FCVAR_RELEASE, "Draw fps meter at top of screen (1 = fps, 2 = smooth fps, 3 = server MS, 4 = Show FPS and Log to file )" );
-static ConVar cl_showpos( "cl_showpos", "0", FCVAR_RELEASE, "Draw current position at top of screen" );
+static ConVar cl_showpos( "cl_showpos", "0", FCVAR_RELEASE, "Draw current position at top of screen (1 = eyes, 2 = feet)" );
+#ifdef INFESTED_DLL
+static ConVar cl_showpos_npc( "cl_showpos_npc", "-1", FCVAR_NONE, "If the player is controlling or spectating an NPC, use the NPC's position, angles, and velocity instead; -1 = 1 if asw_allow_detach is 0, 0 otherwise" );
+extern ConVar asw_allow_detach;
+#endif
 
 extern bool g_bDisplayParticlePerformance;
 int GetParticlePerformance();
@@ -98,9 +106,9 @@ CFPSPanel::CFPSPanel( vgui::VPANEL parent ) : BaseClass( NULL, "CFPSPanel" )
 
 	SetFgColor( Color( 0, 0, 0, 255 ) );
 	SetPaintBackgroundEnabled( false );
-					    
+
 	m_hFont = 0;
-	m_nLinesNeeded = 5;		  
+	m_nLinesNeeded = 5;
 
 	ComputeSize();
 
@@ -441,13 +449,17 @@ void CFPSPanel::Paint()
 	{
 		FOR_EACH_VALID_SPLITSCREEN_PLAYER( hh )
 		{
-			Vector vecOrigin = MainViewOrigin(hh);
-			QAngle angles = MainViewAngles(hh);
+			Vector vecOrigin = MainViewOrigin( hh );
+			QAngle angles = MainViewAngles( hh );
 			Vector vel( 0, 0, 0 );
 
-			char szName[ 32 ] = { 0 };
+			char szName[k_cchPersonaNameMax] = { 0 };
 
+#ifdef INFESTED_DLL
+			C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer( hh );
+#else
 			C_BasePlayer *pPlayer = C_BasePlayer::GetLocalPlayer(hh);
+#endif
 			if ( pPlayer )
 			{
 				Q_strncpy( szName, pPlayer->GetPlayerName(), sizeof( szName ) );
@@ -459,6 +471,24 @@ void CFPSPanel::Paint()
 				vecOrigin = pPlayer->GetAbsOrigin();
 				angles = pPlayer->GetAbsAngles();
 			}
+
+#ifdef INFESTED_DLL
+			if ( cl_showpos_npc.GetInt() == -1 ? !asw_allow_detach.GetBool() : cl_showpos_npc.GetBool() )
+			{
+				if ( C_ASW_Inhabitable_NPC *pNPC = pPlayer ? pPlayer->GetViewNPC() : NULL )
+				{
+					vecOrigin = pNPC->EyePosition();
+					angles = pNPC->EyeAngles();
+					vel = pNPC->GetLocalVelocity();
+
+					if ( nShowPosMode == 2 )
+					{
+						vecOrigin = pNPC->GetAbsOrigin();
+						angles = pNPC->GetAbsAngles();
+					}
+				}
+			}
+#endif
 
 			i++;
 
