@@ -219,9 +219,13 @@ function Update()
 				{
 					UseLastStand(hMarine);
 				}
-				else
+				else if (g_matchTimer > 0 && g_matchTimer < g_matchLength)
 				{
 					ClientPrint(hPlayer, 4, "#asw_infection_lastStand_key");
+				}
+				else
+				{
+					ClientPrint(hPlayer, 4, " ");
 				}
 			}
 			else
@@ -1081,6 +1085,10 @@ function LastStand()
 
 function UseLastStand(hMarine)
 {
+	if (!(g_matchTimer > 0 && g_matchTimer < g_matchLength))
+	{
+		return;
+	}
 	if (!(hMarine in g_teamHuman))
 	{
 		return;
