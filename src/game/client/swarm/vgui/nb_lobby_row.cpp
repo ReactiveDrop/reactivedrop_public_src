@@ -24,6 +24,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+extern ConVar rd_legacy_ui;
+
 using namespace BaseModUI;
 
 CNB_Lobby_Row::CNB_Lobby_Row( vgui::Panel *parent, const char *name ) : BaseClass( parent, name )
@@ -115,7 +117,10 @@ void CNB_Lobby_Row::ApplySchemeSettings( vgui::IScheme *pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 	
-	LoadControlSettings( "resource/ui/nb_lobby_row.res" );
+	if ( rd_legacy_ui.GetString()[0] != '\0' )
+		LoadControlSettings( "resource/ui/nb_lobby_row.res" );
+	else
+		LoadControlSettings( "resource/ui/nb_lobby_row_2024.res" );
 
 	for ( int i = 0;i < ASW_NUM_INVENTORY_SLOTS; i++ )
 	{

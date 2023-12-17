@@ -49,6 +49,7 @@
 extern ConVar mp_gamemode;
 extern ConVar mm_max_players;
 extern ConVar rd_player_bots_allowed;
+extern ConVar rd_legacy_ui;
 ConVar rd_draw_briefing_ui( "rd_draw_briefing_ui", "1", FCVAR_CHEAT );
 
 using BaseModUI::GenericPanelList;
@@ -164,7 +165,10 @@ void CNB_Main_Panel::ApplySchemeSettings( vgui::IScheme *pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 	
-	LoadControlSettings( "resource/ui/nb_main_panel.res" );
+	if ( rd_legacy_ui.GetString()[0] != '\0' )
+		LoadControlSettings( "resource/ui/nb_main_panel.res" );
+	else
+		LoadControlSettings( "resource/ui/nb_main_panel_2024.res" );
 
 	color32 white;
 	white.r = 255;

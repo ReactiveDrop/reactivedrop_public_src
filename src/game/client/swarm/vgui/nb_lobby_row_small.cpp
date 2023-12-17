@@ -8,6 +8,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+extern ConVar rd_legacy_ui;
+
 CNB_Lobby_Row_Small::CNB_Lobby_Row_Small( vgui::Panel *parent, const char *name ) : BaseClass( parent, name )
 {
 	// == MANAGED_MEMBER_CREATION_START: Do not edit by hand ==
@@ -26,7 +28,10 @@ void CNB_Lobby_Row_Small::ApplySchemeSettings( vgui::IScheme *pScheme )
 {
 	BaseClass::BaseClass::ApplySchemeSettings( pScheme );
 	
-	LoadControlSettings( "resource/ui/nb_lobby_row_small.res" );
+	if ( rd_legacy_ui.GetString()[0] != '\0' )
+		LoadControlSettings( "resource/ui/nb_lobby_row_small.res" );
+	else
+		LoadControlSettings( "resource/ui/nb_lobby_row_small_2024.res" );
 
 	for ( int i = 0;i < ASW_NUM_INVENTORY_SLOTS; i++ )
 	{
