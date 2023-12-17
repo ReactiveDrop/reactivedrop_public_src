@@ -5,6 +5,7 @@
 //=====================================================================================//
 
 #include "cbase.h"
+#include "c_asw_marine.h"
 #include "ifpspanel.h"
 #include <vgui_controls/Panel.h>
 #include "view.h"
@@ -23,6 +24,7 @@
 
 static ConVar cl_showfps( "cl_showfps", "0", FCVAR_RELEASE, "Draw fps meter at top of screen (1 = fps, 2 = smooth fps, 3 = server MS, 4 = Show FPS and Log to file )" );
 static ConVar cl_showpos( "cl_showpos", "0", FCVAR_RELEASE, "Draw current position at top of screen" );
+static ConVar cl_asw_showpos( "cl_asw_showpos", "0", FCVAR_RELEASE, "Draw current view marine position at top of screen" );
 
 extern bool g_bDisplayParticlePerformance;
 int GetParticlePerformance();
@@ -176,7 +178,8 @@ bool CFPSPanel::ShouldDraw( void )
 	if ( g_bDisplayParticlePerformance )
 		return true;
 	if ( ( !cl_showfps.GetInt() || ( gpGlobals->absoluteframetime <= 0 ) ) &&
-		 ( !cl_showpos.GetInt() ) )
+		 ( !cl_showpos.GetInt() ) && 
+		 ( !cl_asw_showpos.GetInt() ) )
 	{
 		m_bLastDraw = false;
 		return false;
@@ -458,6 +461,53 @@ void CFPSPanel::Paint()
 			{
 				vecOrigin = pPlayer->GetAbsOrigin();
 				angles = pPlayer->GetAbsAngles();
+			}
+
+			i++;
+
+			g_pMatSystemSurface->DrawColoredText( m_hFont, x, 2 + i * lineHeight, 
+													255, 255, 255, 255, 
+													"name: %s", szName );
+
+			i++;
+
+			g_pMatSystemSurface->DrawColoredText( m_hFont, x, 2+ i * lineHeight, 
+												  255, 255, 255, 255, 
+												  "pos:  %.02f %.02f %.02f", 
+												  vecOrigin.x, vecOrigin.y, vecOrigin.z );
+			i++;
+
+			g_pMatSystemSurface->DrawColoredText( m_hFont, x, 2 + i * lineHeight, 
+												  255, 255, 255, 255, 
+												  "ang:  %.02f %.02f %.02f", 
+												  angles.x, angles.y, angles.z );
+			i++;
+
+			g_pMatSystemSurface->DrawColoredText( m_hFont, x, 2 + i * lineHeight, 
+												  255, 255, 255, 255, 
+												  "vel:  %.2f", 
+												  vel.Length() );
+		}
+	}
+
+	int nShowPosASWMode = cl_asw_showpos.GetInt();
+	if ( nShowPosASWMode > 0 )
+	{
+		FOR_EACH_VALID_SPLITSCREEN_PLAYER( hh )
+		{
+			Vector vecOrigin( 0, 0, 0 );
+			QAngle angles( 0, 0, 0 );
+			Vector vel( 0, 0, 0 );
+
+			char szName[ 32 ] = { 0 };
+
+			C_ASW_Marine *pMarine = C_ASW_Marine::GetViewMarine();
+			if ( pMarine )
+			{
+				Q_strncpy( szName, pMarine->GetEntityName(), sizeof( szName ) );
+				vel = pMarine->GetLocalVelocity();
+				vecOrigin = pMarine->GetAbsOrigin();
+				angles = pMarine->GetAbsAngles();
 			}
 
 			i++;
