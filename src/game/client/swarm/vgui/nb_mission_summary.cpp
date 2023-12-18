@@ -123,16 +123,10 @@ void CNB_Mission_Summary::OnThink()
 		pDifficulty = L"";
 	}
 
-	if ( CAlienSwarm::IsOnslaught() )
-	{
-		wchar_t wszText[ 128 ];
-		V_snwprintf( wszText, ARRAYSIZE( wszText ), L"%s %s", pDifficulty, g_pVGuiLocalize->FindSafe( "#nb_onslaught_title" ) );
-		m_pDifficultyLabel->SetText( wszText );
-	}
-	else
-	{
-		m_pDifficultyLabel->SetText( pDifficulty );
-	}
+	wchar_t wszText[ 128 ];
+	//                                                feels like its weird to do it like this
+	V_snwprintf( wszText, ARRAYSIZE( wszText ), CAlienSwarm::IsHardcoreFF() ? L"%s %s %s" : L"%s%s %s", CAlienSwarm::IsHardcoreFF() ? g_pVGuiLocalize->FindSafe("#nb_hardcore_title") : L"", pDifficulty, CAlienSwarm::IsOnslaught() ? g_pVGuiLocalize->FindSafe("#nb_onslaught_title") : L"");
+	m_pDifficultyLabel->SetText( wszText );
 
 	CASWHudMinimap *pMap = GET_HUDELEMENT( CASWHudMinimap );
 	if ( pMap )
