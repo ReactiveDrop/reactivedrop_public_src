@@ -25,6 +25,11 @@ function PropInit()
 
 	if (g_mapName == "dm_desert")
 	{
+		if (Convars.GetFloat( "asw_controls" ) == 1)
+		{
+			SpawnProp("fence_long", Vector(463, 4114, 124), Vector(0, 90, 0));
+		}
+
 		SpawnProp("platform", Vector(570, 2654, 172), Vector(0, 0, 0));
 
 		SpawnProp("pipe_long", Vector(286, 2366, 210), Vector(90, 0, 0));
