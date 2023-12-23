@@ -144,12 +144,12 @@ CASW_Alien::CASW_Alien( void ) :
 
 	m_fLastMarineCanSeeTime = -100;
 	m_bLastMarineCanSee = false;
-	//m_bGibber = false;
 	m_bTimeToRagdoll = false;
 	m_iDeadBodyGroup = 1;
 	m_bNeverRagdoll = false;
 	m_bNeverInstagib = false;
 	m_nDeathStyle = kDIE_RAGDOLLFADE;
+	m_bStartBurrowed = false;
 	m_flAlienWalkSpeed = 0.0f;
 	m_bInhabitedMovementAllowed = false;
 	m_bNoTranslateNextSchedule = false;

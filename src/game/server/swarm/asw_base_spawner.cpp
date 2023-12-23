@@ -13,10 +13,11 @@
 #include "asw_director.h"
 #include "asw_fail_advice.h"
 #include "asw_spawn_selection.h"
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-ConVar asw_debug_spawners("asw_debug_spawners", "0", FCVAR_CHEAT, "Displays debug messages for the asw_spawners");
+ConVar asw_debug_spawners( "asw_debug_spawners", "0", FCVAR_CHEAT, "Displays debug messages for the asw_spawners" );
 
 BEGIN_DATADESC( CASW_Base_Spawner )
 	DEFINE_KEYFIELD( m_bSpawnIfMarinesAreNear,	FIELD_BOOLEAN,	"SpawnIfMarinesAreNear" ),
@@ -86,7 +87,6 @@ CASW_Base_Spawner::CASW_Base_Spawner()
 
 CASW_Base_Spawner::~CASW_Base_Spawner()
 {
-
 }
 
 void CASW_Base_Spawner::Spawn()
@@ -113,12 +113,12 @@ bool CASW_Base_Spawner::CanSpawn( const Vector &vecHullMins, const Vector &vecHu
 
 	// is a marine too near?
 	if ( !m_bSpawnIfMarinesAreNear && m_flNearDistance > 0 )
-	{		
-		CASW_Game_Resource* pGameResource = ASWGameResource();
+	{
+		CASW_Game_Resource *pGameResource = ASWGameResource();
 		float distance = 0.0f;
 		for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
 		{
-			CASW_Marine_Resource* pMR = pGameResource->GetMarineResource(i);
+			CASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
 			if ( pMR && pMR->GetMarineEntity() && pMR->GetMarineEntity()->GetHealth() > 0 )
 			{
 				distance = pMR->GetMarineEntity()->GetAbsOrigin().DistTo( m_vecCurrentSpawnPosition );
@@ -145,7 +145,7 @@ bool CASW_Base_Spawner::CanSpawn( const Vector &vecHullMins, const Vector &vecHu
 	Vector mins = m_vecCurrentSpawnPosition - Vector( 23, 23, 0 );
 	Vector maxs = m_vecCurrentSpawnPosition + Vector( 23, 23, 0 );
 	CBaseEntity *pList[128];
-	int count = UTIL_EntitiesInBox( pList, 128, mins, maxs, FL_CLIENT|FL_NPC );
+	int count = UTIL_EntitiesInBox( pList, 128, mins, maxs, FL_CLIENT | FL_NPC );
 	if ( count )
 	{
 		//Iterate through the list and check the results
@@ -162,37 +162,37 @@ bool CASW_Base_Spawner::CanSpawn( const Vector &vecHullMins, const Vector &vecHu
 				// Find the ground under me and see if a human hull would fit there.
 				trace_t tr;
 				UTIL_TraceHull( m_vecCurrentSpawnPosition + Vector( 0, 0, 1 ),
-								m_vecCurrentSpawnPosition - Vector( 0, 0, 1 ),
-								vecHullMins,
-								vecHullMaxs,
-								MASK_NPCSOLID,
-								NULL,
-								COLLISION_GROUP_NONE,
-								&tr );
+					m_vecCurrentSpawnPosition - Vector( 0, 0, 1 ),
+					vecHullMins,
+					vecHullMaxs,
+					MASK_NPCSOLID,
+					NULL,
+					COLLISION_GROUP_NONE,
+					&tr );
 
-				if (tr.fraction < 1.0f && tr.DidHitNonWorldEntity())
+				if ( tr.fraction < 1.0f && tr.DidHitNonWorldEntity() )
 				{
 					// some non-world entity is blocking the spawn point, so don't spawn
 					// riflemod: Cargo Elevator railing spawn fix for carnage
 					// added && tr.m_pEnt->Classify() != CLASS_ASW_DRONE
-					if (tr.m_pEnt && tr.m_pEnt->Classify() != CLASS_ASW_DRONE)
+					if ( tr.m_pEnt && tr.m_pEnt->Classify() != CLASS_ASW_DRONE )
 					{
 						if ( m_iMoveAsideCount < 6 )	// don't send 'move aside' commands more than 5 times in a row, else you'll stop blocked NPCs going to sleep.
 						{
-							IASW_Spawnable_NPC *pSpawnable = dynamic_cast<IASW_Spawnable_NPC*>(tr.m_pEnt);
-							if (pSpawnable)
+							IASW_Spawnable_NPC *pSpawnable = dynamic_cast< IASW_Spawnable_NPC * >( tr.m_pEnt );
+							if ( pSpawnable )
 							{
 								pSpawnable->MoveAside();		// try and make him move aside
 								m_iMoveAsideCount++;
 							}
 						}
-						if (asw_debug_spawners.GetBool())
-							Msg("asw_spawner(%s): Alien can't spawn because a non-world entity is blocking the spawn point: %s\n", GetEntityNameAsCStr(), tr.m_pEnt->GetClassname());
+						if ( asw_debug_spawners.GetBool() )
+							Msg( "asw_spawner(%s): Alien can't spawn because a non-world entity is blocking the spawn point: %s\n", GetEntityNameAsCStr(), tr.m_pEnt->GetClassname() );
 					}
 					else
 					{
-						if (asw_debug_spawners.GetBool())
-							Msg("asw_spawner(%s): Alien can't spawn because a non-world entity is blocking the spawn point.\n", GetEntityNameAsCStr());
+						if ( asw_debug_spawners.GetBool() )
+							Msg( "asw_spawner(%s): Alien can't spawn because a non-world entity is blocking the spawn point.\n", GetEntityNameAsCStr() );
 					}
 
 					if ( asw_debug_spawners.GetBool() && tr.m_pEnt && tr.m_pEnt->CollisionProp() )
@@ -216,24 +216,24 @@ bool CASW_Base_Spawner::CanSpawn( const Vector &vecHullMins, const Vector &vecHu
 	{
 		if ( asw_debug_spawners.GetBool() )
 		{
-			Msg("Checking spawn is clear...\n");
+			Msg( "Checking spawn is clear...\n" );
 		}
 
 		trace_t tr;
 		UTIL_TraceHull( m_vecCurrentSpawnPosition,
-					m_vecCurrentSpawnPosition + Vector( 0, 0, 1 ),
-					vecHullMins,
-					vecHullMaxs,
-					MASK_NPCSOLID,
-					this,
-					COLLISION_GROUP_NONE,
-					&tr );
+			m_vecCurrentSpawnPosition + Vector( 0, 0, 1 ),
+			vecHullMins,
+			vecHullMaxs,
+			MASK_NPCSOLID,
+			this,
+			COLLISION_GROUP_NONE,
+			&tr );
 
-		if( tr.fraction != 1.0 )
+		if ( tr.fraction != 1.0 )
 		{
 			if ( asw_debug_spawners.GetBool() )
 			{
-				Msg( "asw_spawner(%s): Alien can't spawn because he wouldn't fit in the spawn point.\n", GetEntityNameAsCStr() );
+				Warning( "asw_spawner(%s): Alien can't spawn because he wouldn't fit in the spawn point.\n", GetEntityNameAsCStr() );
 
 				if ( tr.m_pEnt && tr.m_pEnt->CollisionProp() )
 				{
@@ -257,13 +257,13 @@ void CASW_Base_Spawner::RemoveObstructingProps( CBaseEntity *pChild )
 	{
 		trace_t tr;
 		UTIL_TraceHull( pChild->GetAbsOrigin(), pChild->GetAbsOrigin(), pChild->WorldAlignMins(), pChild->WorldAlignMaxs(), MASK_NPCSOLID, pChild, COLLISION_GROUP_NONE, &tr );
-		if (asw_debug_spawners.GetBool())
+		if ( asw_debug_spawners.GetBool() )
 		{
 			NDebugOverlay::Box( pChild->GetAbsOrigin(), pChild->WorldAlignMins(), pChild->WorldAlignMaxs(), 0, 255, 0, 32, 5.0 );
 		}
 		if ( tr.fraction != 1.0 && tr.m_pEnt )
 		{
-			if ( dynamic_cast<CBaseProp*>(tr.m_pEnt) )
+			if ( dynamic_cast< CBaseProp * >( tr.m_pEnt ) )
 			{
 				// Set to non-solid so this loop doesn't keep finding it
 				tr.m_pEnt->AddSolidFlags( FSOLID_NOT_SOLID );
@@ -276,29 +276,29 @@ void CASW_Base_Spawner::RemoveObstructingProps( CBaseEntity *pChild )
 	}
 }
 
-CBaseEntity* CASW_Base_Spawner::GetOrderTarget()
+CBaseEntity *CASW_Base_Spawner::GetOrderTarget()
 {
 	// find entity with name m_AlienOrderTargetName
-	if (GetAlienOrderTarget() == NULL &&
-		(m_AlienOrders == AOT_MoveTo || m_AlienOrders == AOT_MoveToIgnoringMarines )
+	if ( GetAlienOrderTarget() == NULL &&
+		( m_AlienOrders == AOT_MoveTo || m_AlienOrders == AOT_MoveToIgnoringMarines )
 		)
 	{
 		m_hAlienOrderTarget = gEntList.FindEntityByName( NULL, m_AlienOrderTargetName, NULL );
 
-		if( !GetAlienOrderTarget() )
+		if ( !GetAlienOrderTarget() )
 		{
-			DevWarning("%s: asw_spawner can't find order object: %s\n", GetDebugName(), STRING(m_AlienOrderTargetName) );
+			DevWarning( "%s: asw_spawner can't find order object: %s\n", GetDebugName(), STRING( m_AlienOrderTargetName ) );
 			return NULL;
 		}
 	}
 	return GetAlienOrderTarget();
 }
 
-IASW_Spawnable_NPC* CASW_Base_Spawner::SpawnAlien( const char *szAlienClassName, const Vector &vecHullMins, const Vector &vecHullMaxs, CASW_Spawn_NPC *pDirectorNPC )
+IASW_Spawnable_NPC *CASW_Base_Spawner::SpawnAlien( const char *szAlienClassName, const Vector &vecHullMins, const Vector &vecHullMaxs, CASW_Spawn_NPC *pDirectorNPC )
 {
 	if ( !IsValidOnThisSkillLevel() )
 	{
-		UTIL_Remove(this);		// delete ourself if this spawner isn't valid on this difficulty level
+		UTIL_Remove( this );		// delete ourself if this spawner isn't valid on this difficulty level
 		return NULL;
 	}
 
@@ -307,12 +307,9 @@ IASW_Spawnable_NPC* CASW_Base_Spawner::SpawnAlien( const char *szAlienClassName,
 	m_vecCurrentSpawnPosition.y += RandomFloat( m_vecMinOffset.y, m_vecMaxOffset.y );
 	m_vecCurrentSpawnPosition.z += RandomFloat( m_vecMinOffset.z, m_vecMaxOffset.z );
 
-	// reactivedrop: added + Vector(0, 0, vecHullMaxs.z - vecHullMins.z)
-	// raise the position of spawned alien by it's hull because otherwise it
-	// falls through displacement
-	// make this workaround only for parasites, because other aliens seems to
-	// spawn ok
-	if ( !Q_strcmp( "asw_parasite", szAlienClassName ) )
+	// HACK: Raise spawn position of parasites by their hull size to avoid them falling through displacements.
+	// Other aliens seem to spawn okay without this.
+	if ( !V_strcmp( "asw_parasite", szAlienClassName ) )
 	{
 		m_vecCurrentSpawnPosition.z += vecHullMaxs.z - vecHullMins.z;
 	}
@@ -324,61 +321,47 @@ IASW_Spawnable_NPC* CASW_Base_Spawner::SpawnAlien( const char *szAlienClassName,
 	if ( !CanSpawn( vecHullMins, vecHullMaxs, pDirectorNPC ) )	// this may turn off m_bCurrentlySpawningUber if there's no room
 		return NULL;
 
-	CBaseEntity	*pEntity = CreateEntityByName( szAlienClassName );
+	CBaseEntity *pEntity = CreateEntityByName( szAlienClassName );
 	if ( !pEntity )
 	{
-		Msg( "Failed to spawn %s\n", szAlienClassName );
+		Warning( "[%s @ %f %f %f] Failed to spawn %s\n", GetDebugName(), VectorExpand( GetAbsOrigin() ), szAlienClassName );
 		return NULL;
 	}
 
-	if ( pEntity->IsAlienClassType() )
+	if ( pEntity->IsInhabitableNPC() )
 	{
-		CASW_Alien* pAlien = assert_cast<CASW_Alien*>(pEntity);
+		CASW_Inhabitable_NPC *pNPC = assert_cast< CASW_Inhabitable_NPC * >( pEntity );
 
-		if (pDirectorNPC)
+		if ( pDirectorNPC )
 		{
-			pAlien->m_bFlammable = pDirectorNPC->m_bFlammable;
-			pAlien->m_bTeslable = pDirectorNPC->m_bTeslable;
-			pAlien->m_bFreezable = pDirectorNPC->m_bFreezable;
-			pAlien->m_flFreezeResistance = pDirectorNPC->m_flFreezeResistance;
-			pAlien->m_bFlinchable = pDirectorNPC->m_bFlinches;
-			pAlien->m_bGrenadeReflector = pDirectorNPC->m_bGrenadeReflector;
-			pAlien->m_iHealthBonus = pDirectorNPC->m_iHealthBonus;
-			pAlien->m_fSizeScale = pDirectorNPC->m_flSizeScale;
-			pAlien->m_fSpeedScale = pDirectorNPC->m_flSpeedScale;
+			pNPC->m_bFlammable = pDirectorNPC->m_bFlammable;
+			pNPC->m_bTeslable = pDirectorNPC->m_bTeslable;
+			pNPC->m_bFreezable = pDirectorNPC->m_bFreezable;
+			pNPC->m_flFreezeResistance = pDirectorNPC->m_flFreezeResistance;
+			pNPC->m_bFlinchable = pDirectorNPC->m_bFlinches;
+			pNPC->m_bGrenadeReflector = pDirectorNPC->m_bGrenadeReflector;
+			pNPC->m_iHealthBonus = pDirectorNPC->m_iHealthBonus;
+			pNPC->m_fSizeScale = pDirectorNPC->m_flSizeScale;
+			pNPC->m_fSpeedScale = pDirectorNPC->m_flSpeedScale;
 		}
 		else
 		{
-			pAlien->m_bFlammable = m_bFlammableSp;
-			pAlien->m_bTeslable = m_bTeslableSp;
-			pAlien->m_bFreezable = m_bFreezableSp;
-			pAlien->m_flFreezeResistance = m_flFreezeResistanceSp;
-			pAlien->m_bFlinchable = m_bFlinchableSp;
-			pAlien->m_bGrenadeReflector = m_bGrenadeReflectorSp;
-			pAlien->m_iHealthBonus = m_iHealthBonusSp;
-			pAlien->m_fSizeScale = m_fSizeScaleSp;
-			pAlien->m_fSpeedScale = m_fSpeedScaleSp;
+			pNPC->m_bFlammable = m_bFlammableSp;
+			pNPC->m_bTeslable = m_bTeslableSp;
+			pNPC->m_bFreezable = m_bFreezableSp;
+			pNPC->m_flFreezeResistance = m_flFreezeResistanceSp;
+			pNPC->m_bFlinchable = m_bFlinchableSp;
+			pNPC->m_bGrenadeReflector = m_bGrenadeReflectorSp;
+			pNPC->m_iHealthBonus = m_iHealthBonusSp;
+			pNPC->m_fSizeScale = m_fSizeScaleSp;
+			pNPC->m_fSpeedScale = m_fSpeedScaleSp;
 		}
 	}
 
-	if ( pEntity->Classify() == CLASS_ASW_BUZZER )
-	{
-		CASW_Buzzer* pBuzzer = assert_cast<CASW_Buzzer*>(pEntity);
-		pBuzzer->m_bFlammable = m_bFlammableSp;
-		pBuzzer->m_bTeslable = m_bTeslableSp;
-		pBuzzer->m_bFreezable = m_bFreezableSp;
-		pBuzzer->m_flFreezeResistance = m_flFreezeResistanceSp;
-		pBuzzer->m_bFlinchable = m_bFlinchableSp;
-		pBuzzer->m_bGrenadeReflector = m_bGrenadeReflectorSp;
-		pBuzzer->m_iHealthBonus = m_iHealthBonusSp;
-		pBuzzer->m_fSizeScale = m_fSizeScaleSp;
-		pBuzzer->m_fSpeedScale = m_fSpeedScaleSp;
-	}
-
-	CAI_BaseNPC	*pNPC = pEntity->MyNPCPointer();
+	CAI_BaseNPC *pNPC = pEntity->MyNPCPointer();
 	if ( pNPC )
 	{
-		pNPC->AddSpawnFlags( SF_NPC_FALL_TO_GROUND );		
+		pNPC->AddSpawnFlags( SF_NPC_FALL_TO_GROUND );
 	}
 
 	// check if he can see far
@@ -391,8 +374,8 @@ IASW_Spawnable_NPC* CASW_Base_Spawner::SpawnAlien( const char *szAlienClassName,
 	pEntity->SetAbsOrigin( m_vecCurrentSpawnPosition );
 	pEntity->SetAbsAngles( m_angCurrentSpawnAngles );
 
-	IASW_Spawnable_NPC* pSpawnable = dynamic_cast<IASW_Spawnable_NPC*>(pEntity);
-	Assert( pSpawnable );	
+	IASW_Spawnable_NPC *pSpawnable = dynamic_cast< IASW_Spawnable_NPC * >( pEntity );
+	Assert( pSpawnable );
 	if ( !pSpawnable )
 	{
 		Warning( "NULL Spawnable Ent in asw_spawner! AlienClass = %s\n", szAlienClassName );
@@ -409,16 +392,15 @@ IASW_Spawnable_NPC* CASW_Base_Spawner::SpawnAlien( const char *szAlienClassName,
 	if ( m_bStartBurrowed )
 	{
 		pSpawnable->StartBurrowed();
-	}
-
-	if ( m_bStartBurrowed )
-	{
 		pSpawnable->SetUnburrowIdleActivity( m_UnburrowIdleActivity );
 		pSpawnable->SetUnburrowActivity( m_UnburrowActivity );
 	}
 
-	pEntity->m_iszVScripts = m_iszAlienVScripts;
-	pEntity->m_iszScriptThinkFunction = m_iszAlienScriptThinkFunction;
+	if ( !pDirectorNPC )
+	{
+		pEntity->m_iszVScripts = m_iszAlienVScripts;
+		pEntity->m_iszScriptThinkFunction = m_iszAlienScriptThinkFunction;
+	}
 
 	DoDispatchSpawn( pEntity, pDirectorNPC );
 
@@ -448,13 +430,13 @@ IASW_Spawnable_NPC* CASW_Base_Spawner::SpawnAlien( const char *szAlienClassName,
 		// give our aliens the orders
 		pSpawnable->SetAlienOrders( m_AlienOrders, vec3_origin, GetOrderTarget() );
 
-		m_OnSpawned.FireOutput(pEntity, this);
+		m_OnSpawned.FireOutput( pEntity, this );
 	}
 
 	return pSpawnable;
 }
 
-CBaseEntity* CASW_Base_Spawner::GetAlienOrderTarget()
+CBaseEntity *CASW_Base_Spawner::GetAlienOrderTarget()
 {
 	return m_hAlienOrderTarget.Get();
 }
@@ -470,8 +452,7 @@ bool CASW_Base_Spawner::IsValidOnThisSkillLevel()
 
 	if ( m_iMinSkillLevel > 0 && nSkillLevel < m_iMinSkillLevel )
 		return false;
-	if ( m_iMaxSkillLevel > 0 && m_iMaxSkillLevel < 10
-			&& nSkillLevel > m_iMaxSkillLevel )
+	if ( m_iMaxSkillLevel > 0 && m_iMaxSkillLevel < 10 && nSkillLevel > m_iMaxSkillLevel )
 		return false;
 	return true;
 }
