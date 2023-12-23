@@ -62,6 +62,12 @@
     <None Include="pbr_vs30.fxc">
       <Filter>Shader Source\fxc</Filter>
     </None>
+    <None Include="character_ps20b.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </None>
+    <None Include="character_vs20.fxc">
+      <Filter>Shader Source\fxc</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="aftershock.cpp">
@@ -367,6 +373,9 @@
     <ClCompile Include="character_dx9.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="character_dx9_helper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\..\dx9sdk\lib\d3dx9.lib">
@@ -501,6 +510,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="pbr_common_ps2_3_x.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="character_dx9_helper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

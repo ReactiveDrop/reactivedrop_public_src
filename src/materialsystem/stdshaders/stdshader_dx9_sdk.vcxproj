@@ -929,6 +929,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </CustomBuild>
+    <None Include="character_ps20b.fxc" />
+    <None Include="character_vs20.fxc" />
     <None Include="pbr_ps20b.fxc" />
     <None Include="pbr_ps30.fxc" />
     <None Include="pbr_vs20.fxc" />
@@ -1085,6 +1087,7 @@
     <ClCompile Include="BufferClearObeyStencil_dx9.cpp" />
     <ClCompile Include="cable_dx9.cpp" />
     <ClCompile Include="character_dx9.cpp" />
+    <ClCompile Include="character_dx9_helper.cpp" />
     <ClCompile Include="cloak.cpp" />
     <ClCompile Include="cloak_blended_pass_helper.cpp" />
     <ClCompile Include="cloak_dx9_helper.cpp" />
@@ -1187,6 +1190,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BaseVSShader.h" />
+    <ClInclude Include="character_dx9_helper.h" />
     <ClInclude Include="cloak_dx9_helper.h" />
     <ClInclude Include="common_flashlight_fxc.h" />
     <ClInclude Include="common_fog_ps_forcevertexfog_fxc.h" />

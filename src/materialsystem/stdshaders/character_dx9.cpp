@@ -1,5 +1,5 @@
 // Character shader for Alien Swarm: Reactive Drop.
-// For most purposes, this shader is identical to VertexLitGeneric.
+// For most purposes, this shader is identical to VertexLitGeneric / Phong.
 //
 // In the future, the goal is to convert some of AS:RD's features that
 // have to be implemented via a mix of proxies and material variables
@@ -12,7 +12,7 @@
 // proxy, which allows it to receive data from entities.
 
 #include "BaseVSShader.h"
-#include "vertexlitgeneric_dx9_helper.h"
+#include "character_dx9_helper.h"
 #include "emissive_scroll_blended_pass_helper.h"
 #include "cloak_blended_pass_helper.h"
 #include "flesh_interior_blended_pass_helper.h"
@@ -40,14 +40,13 @@ BEGIN_VS_SHADER( Character, "Alien Swarm: Reactive Drop character shader" )
 		SHADER_PARAM( BUMPCOMPRESS, SHADER_PARAM_TYPE_TEXTURE, "models/shadertest/shader3_normal", "compression bump map" )
 		SHADER_PARAM( BUMPSTRETCH, SHADER_PARAM_TYPE_TEXTURE, "models/shadertest/shader1_normal", "expansion bump map" )
 		SHADER_PARAM( BUMPFRAME, SHADER_PARAM_TYPE_INTEGER, "0", "frame number for $bumpmap" )
-		SHADER_PARAM( BUMPTRANSFORM, SHADER_PARAM_TYPE_MATRIX, "center .5 .5 scale 1 1 rotate 0 translate 0 0", "$bumpmap texcoord transform" )
 		SHADER_PARAM( ENVMAPCONTRAST, SHADER_PARAM_TYPE_FLOAT, "0.0", "contrast 0 == normal 1 == color*color" )
 		SHADER_PARAM( ENVMAPSATURATION, SHADER_PARAM_TYPE_FLOAT, "1.0", "saturation 0 == greyscale 1 == normal" )
-		SHADER_PARAM( SELFILLUM_ENVMAPMASK_ALPHA, SHADER_PARAM_TYPE_FLOAT,"0.0","defines that self illum value comes from env map mask alpha" )
+		SHADER_PARAM( SELFILLUM_ENVMAPMASK_ALPHA, SHADER_PARAM_TYPE_FLOAT, "0.0", "defines that self illum value comes from env map mask alpha" )
 		SHADER_PARAM( SELFILLUMFRESNEL, SHADER_PARAM_TYPE_BOOL, "0", "Self illum fresnel" )
 		SHADER_PARAM( SELFILLUMFRESNELMINMAXEXP, SHADER_PARAM_TYPE_VEC4, "0", "Self illum fresnel min, max, exp" )
 		SHADER_PARAM( SELFILLUMMASKSCALE, SHADER_PARAM_TYPE_FLOAT, "0", "Scale self illum effect strength" )
-		SHADER_PARAM( ALPHATESTREFERENCE, SHADER_PARAM_TYPE_FLOAT, "0.0", "" )	
+		SHADER_PARAM( ALPHATESTREFERENCE, SHADER_PARAM_TYPE_FLOAT, "0.0", "" )
 		SHADER_PARAM( FLASHLIGHTNOLAMBERT, SHADER_PARAM_TYPE_BOOL, "0", "Flashlight pass sets N.L=1.0" )
 
 		// Debugging term for visualizing ambient data on its own
@@ -61,7 +60,6 @@ BEGIN_VS_SHADER( Character, "Alien Swarm: Reactive Drop character shader" )
 		SHADER_PARAM( PHONGFRESNELRANGES, SHADER_PARAM_TYPE_VEC3, "[0  0.5  1]", "Parameters for remapping fresnel output" )
 		SHADER_PARAM( PHONGBOOST, SHADER_PARAM_TYPE_FLOAT, "1.0", "Phong overbrightening factor (specular mask channel should be authored to account for this)" )
 		SHADER_PARAM( PHONGEXPONENTTEXTURE, SHADER_PARAM_TYPE_TEXTURE, "shadertest/BaseTexture", "Phong Exponent map" )
-		SHADER_PARAM( PHONG, SHADER_PARAM_TYPE_BOOL, "0", "enables phong lighting" )
 		SHADER_PARAM( BASEMAPALPHAPHONGMASK, SHADER_PARAM_TYPE_INTEGER, "0", "indicates that there is no normal map and that the phong mask is in base alpha" )
 		SHADER_PARAM( INVERTPHONGMASK, SHADER_PARAM_TYPE_INTEGER, "0", "invert the phong mask (0=full phong, 1=no phong)" )
 		SHADER_PARAM( ENVMAPFRESNEL, SHADER_PARAM_TYPE_FLOAT, "0", "Degree to which Fresnel should be applied to env map" )
@@ -79,11 +77,6 @@ BEGIN_VS_SHADER( Character, "Alien Swarm: Reactive Drop character shader" )
 		SHADER_PARAM( RIMLIGHTEXPONENT, SHADER_PARAM_TYPE_FLOAT, "4.0", "Exponent for rim lights" )
 		SHADER_PARAM( RIMLIGHTBOOST, SHADER_PARAM_TYPE_FLOAT, "1.0", "Boost for rim lights" )
 		SHADER_PARAM( RIMMASK, SHADER_PARAM_TYPE_BOOL, "0", "Indicates whether or not to use alpha channel of exponent texture to mask the rim term" )
-
-		// Seamless mapping scale
-		SHADER_PARAM( SEAMLESS_BASE, SHADER_PARAM_TYPE_BOOL, "0", "whether to apply seamless mapping to the base texture. requires a smooth model." )
-		SHADER_PARAM( SEAMLESS_DETAIL, SHADER_PARAM_TYPE_BOOL, "0", "where to apply seamless mapping to the detail texture." )
-		SHADER_PARAM( SEAMLESS_SCALE, SHADER_PARAM_TYPE_FLOAT, "1.0", "the scale for the seamless mapping. # of repetions of texture per inch." )
 
 		// Emissive Scroll Pass
 		SHADER_PARAM( EMISSIVEBLENDENABLED, SHADER_PARAM_TYPE_BOOL, "0", "Enable emissive blend pass" )
@@ -126,18 +119,18 @@ BEGIN_VS_SHADER( Character, "Alien Swarm: Reactive Drop character shader" )
 		SHADER_PARAM( SEPARATEDETAILUVS, SHADER_PARAM_TYPE_BOOL, "0", "Use texcoord1 for detail texture" )
 		SHADER_PARAM( LINEARWRITE, SHADER_PARAM_TYPE_INTEGER, "0", "Disables SRGB conversion of shader results." )
 
-		SHADER_PARAM( SHADERSRGBREAD360, SHADER_PARAM_TYPE_BOOL, "0", "Simulate srgb read in shader code")
+		SHADER_PARAM( SHADERSRGBREAD360, SHADER_PARAM_TYPE_BOOL, "0", "Simulate srgb read in shader code" )
 
-		SHADER_PARAM( AMBIENTOCCLUSION, SHADER_PARAM_TYPE_FLOAT, "0.0", "Amount of screen space ambient occlusion to use (0..1 range)")
+		SHADER_PARAM( AMBIENTOCCLUSION, SHADER_PARAM_TYPE_FLOAT, "0.0", "Amount of screen space ambient occlusion to use (0..1 range)" )
 
 		SHADER_PARAM( DISPLACEMENTMAP, SHADER_PARAM_TYPE_TEXTURE, "shadertest/BaseTexture", "Displacement map" )
-		SHADER_PARAM( DISPLACEMENTWRINKLE, SHADER_PARAM_TYPE_BOOL, "0", "Displacement map contains wrinkle displacements")
+		SHADER_PARAM( DISPLACEMENTWRINKLE, SHADER_PARAM_TYPE_BOOL, "0", "Displacement map contains wrinkle displacements" )
 
-		SHADER_PARAM( BLENDTINTBYBASEALPHA, SHADER_PARAM_TYPE_BOOL, "0", "Use the base alpha to blend in the $color modulation")
+		SHADER_PARAM( BLENDTINTBYBASEALPHA, SHADER_PARAM_TYPE_BOOL, "0", "Use the base alpha to blend in the $color modulation" )
 
-		SHADER_PARAM( DESATURATEWITHBASEALPHA, SHADER_PARAM_TYPE_FLOAT, "0.0", "Use the base alpha to desaturate the base texture.  Set to non-zero to enable, value gets multiplied into the alpha channel before desaturating.")
+		SHADER_PARAM( DESATURATEWITHBASEALPHA, SHADER_PARAM_TYPE_FLOAT, "0.0", "Use the base alpha to desaturate the base texture.  Set to non-zero to enable, value gets multiplied into the alpha channel before desaturating." )
 
-		SHADER_PARAM( ALLOWDIFFUSEMODULATION, SHADER_PARAM_TYPE_BOOL, "1", "Allow per-instance color modulation")
+		SHADER_PARAM( ALLOWDIFFUSEMODULATION, SHADER_PARAM_TYPE_BOOL, "1", "Allow per-instance color modulation" )
 
 		// vertexlitgeneric envmap fresnel control
 		SHADER_PARAM( ENVMAPFRESNELMINMAXEXP, SHADER_PARAM_TYPE_VEC3, "[0.0 1.0 2.0]", "Min/max fresnel range and exponent for vertexlitgeneric" )
@@ -146,31 +139,15 @@ BEGIN_VS_SHADER( Character, "Alien Swarm: Reactive Drop character shader" )
 		// This is to allow phong materials to disable half lambert. Half lambert has always been forced on in phong,
 		// so the only safe way to allow artists to disable half lambert is to create this param that disables the
 		// default behavior of forcing half lambert on.
-		SHADER_PARAM( PHONGDISABLEHALFLAMBERT, SHADER_PARAM_TYPE_BOOL, "0", "Disable half lambert for phong")
-
-		SHADER_PARAM( FOW, SHADER_PARAM_TYPE_TEXTURE, "", "FoW Render Target" )
-
-		// vertexlitgeneric tree sway animation control
-		SHADER_PARAM( TREESWAY, SHADER_PARAM_TYPE_INTEGER, "0", "" );
-		SHADER_PARAM( TREESWAYHEIGHT, SHADER_PARAM_TYPE_FLOAT, "1000", "" );
-		SHADER_PARAM( TREESWAYSTARTHEIGHT, SHADER_PARAM_TYPE_FLOAT, "0.2", "" );
-		SHADER_PARAM( TREESWAYRADIUS, SHADER_PARAM_TYPE_FLOAT, "300", "" );
-		SHADER_PARAM( TREESWAYSTARTRADIUS, SHADER_PARAM_TYPE_FLOAT, "0.1", "" );
-		SHADER_PARAM( TREESWAYSPEED, SHADER_PARAM_TYPE_FLOAT, "1", "" );
-		SHADER_PARAM( TREESWAYSPEEDHIGHWINDMULTIPLIER, SHADER_PARAM_TYPE_FLOAT, "2", "" );
-		SHADER_PARAM( TREESWAYSTRENGTH, SHADER_PARAM_TYPE_FLOAT, "10", "" );
-		SHADER_PARAM( TREESWAYSCRUMBLESPEED, SHADER_PARAM_TYPE_FLOAT, "0.1", "" );
-		SHADER_PARAM( TREESWAYSCRUMBLESTRENGTH, SHADER_PARAM_TYPE_FLOAT, "0.1", "" );
-		SHADER_PARAM( TREESWAYSCRUMBLEFREQUENCY, SHADER_PARAM_TYPE_FLOAT, "0.1", "" );
-		SHADER_PARAM( TREESWAYFALLOFFEXP, SHADER_PARAM_TYPE_FLOAT, "1.5", "" );
-		SHADER_PARAM( TREESWAYSCRUMBLEFALLOFFEXP, SHADER_PARAM_TYPE_FLOAT, "1.0", "" );
-		SHADER_PARAM( TREESWAYSPEEDLERPSTART, SHADER_PARAM_TYPE_FLOAT, "3", "" );
-		SHADER_PARAM( TREESWAYSPEEDLERPEND, SHADER_PARAM_TYPE_FLOAT, "6", "" );
+		SHADER_PARAM( PHONGDISABLEHALFLAMBERT, SHADER_PARAM_TYPE_BOOL, "0", "Disable half lambert for phong" )
 
 		SHADER_PARAM( TINTMASKTEXTURE, SHADER_PARAM_TYPE_TEXTURE, "", "Separate tint mask texture (as opposed to using basetexture alpha)" )
+
+		SHADER_PARAM( CHARACTER_TEAM_COLOR, SHADER_PARAM_TYPE_COLOR, "[0 0 0 0]", "Glow color and intensity for team highlights." )
+		SHADER_PARAM( CHARACTER_STATUS_FX, SHADER_PARAM_TYPE_VEC4, "[0 0 0 0]", "Intensity for fire, ice, shock, and night vision effects." )
 	END_SHADER_PARAMS
 
-	void SetupVars( VertexLitGeneric_DX9_Vars_t& info )
+	void SetupVars( Character_DX9_Vars_t &info )
 	{
 		info.m_nBaseTexture = BASETEXTURE;
 		info.m_nWrinkle = COMPRESS;
@@ -214,7 +191,6 @@ BEGIN_VS_SHADER( Character, "Alien Swarm: Reactive Drop character shader" )
 		info.m_nPhongWarpTexture = PHONGWARPTEXTURE;
 		info.m_nPhongBoost = PHONGBOOST;
 		info.m_nPhongFresnelRanges = PHONGFRESNELRANGES;
-		info.m_nPhong = PHONG;
 		info.m_nBaseMapAlphaPhongMask = BASEMAPALPHAPHONGMASK;
 		info.m_nEnvmapFresnel = ENVMAPFRESNEL;
 		info.m_nDetailTextureCombineMode = DETAILBLENDMODE;
@@ -229,10 +205,7 @@ BEGIN_VS_SHADER( Character, "Alien Swarm: Reactive Drop character shader" )
 		info.m_nRimLightBoost = RIMLIGHTBOOST;
 		info.m_nRimMask = RIMMASK;
 
-		// seamless
-		info.m_nSeamlessScale = SEAMLESS_SCALE;
-		info.m_nSeamlessDetail = SEAMLESS_DETAIL;
-		info.m_nSeamlessBase = SEAMLESS_BASE;
+		info.m_nTime = TIME;
 
 		info.m_nSeparateDetailUVs = SEPARATEDETAILUVS;
 
@@ -260,25 +233,10 @@ BEGIN_VS_SHADER( Character, "Alien Swarm: Reactive Drop character shader" )
 
 		info.m_nPhongDisableHalfLambert = PHONGDISABLEHALFLAMBERT;
 
-		info.m_nFoW = FOW;
-		
-		info.m_nTreeSway = TREESWAY;
-		info.m_nTreeSwayHeight = TREESWAYHEIGHT;
-		info.m_nTreeSwayStartHeight = TREESWAYSTARTHEIGHT;
-		info.m_nTreeSwayRadius = TREESWAYRADIUS;
-		info.m_nTreeSwayStartRadius = TREESWAYSTARTRADIUS;
-		info.m_nTreeSwaySpeed = TREESWAYSPEED;
-		info.m_nTreeSwaySpeedHighWindMultiplier = TREESWAYSPEEDHIGHWINDMULTIPLIER;
-		info.m_nTreeSwayStrength = TREESWAYSTRENGTH;
-		info.m_nTreeSwayScrumbleSpeed = TREESWAYSCRUMBLESPEED;
-		info.m_nTreeSwayScrumbleStrength = TREESWAYSCRUMBLESTRENGTH;
-		info.m_nTreeSwayScrumbleFrequency = TREESWAYSCRUMBLEFREQUENCY;
-		info.m_nTreeSwayFalloffExp = TREESWAYFALLOFFEXP;
-		info.m_nTreeSwayScrumbleFalloffExp = TREESWAYSCRUMBLEFALLOFFEXP;		
-		info.m_nTreeSwaySpeedLerpStart = TREESWAYSPEEDLERPSTART;
-		info.m_nTreeSwaySpeedLerpEnd = TREESWAYSPEEDLERPEND;
-
 		info.m_nTintMaskTexture = TINTMASKTEXTURE;
+
+		info.m_nCharacterTeamColor = CHARACTER_TEAM_COLOR;
+		info.m_nCharacterStatusFx = CHARACTER_STATUS_FX;
 	}
 
 	// Cloak Pass
@@ -294,8 +252,8 @@ BEGIN_VS_SHADER( Character, "Alien Swarm: Reactive Drop character shader" )
 		info.m_nBumpTransform = BUMPTRANSFORM;
 	}
 
-	bool NeedsPowerOfTwoFrameBufferTexture( IMaterialVar **params, bool bCheckSpecificToThisFrame ) const 
-	{ 
+	bool NeedsPowerOfTwoFrameBufferTexture( IMaterialVar **params, bool bCheckSpecificToThisFrame ) const
+	{
 		if ( params[CLOAKPASSENABLED]->GetIntValue() ) // If material supports cloaking
 		{
 			if ( bCheckSpecificToThisFrame == false ) // For setting model flag at load time
@@ -306,7 +264,7 @@ BEGIN_VS_SHADER( Character, "Alien Swarm: Reactive Drop character shader" )
 		}
 
 		// Check flag2 if not drawing cloak pass
-		return IS_FLAG2_SET( MATERIAL_VAR2_NEEDS_POWER_OF_TWO_FRAME_BUFFER_TEXTURE ); 
+		return IS_FLAG2_SET( MATERIAL_VAR2_NEEDS_POWER_OF_TWO_FRAME_BUFFER_TEXTURE );
 	}
 
 	bool IsTranslucent( IMaterialVar **params ) const
@@ -319,7 +277,7 @@ BEGIN_VS_SHADER( Character, "Alien Swarm: Reactive Drop character shader" )
 		}
 
 		// Check flag if not drawing cloak pass
-		return IS_FLAG_SET( MATERIAL_VAR_TRANSLUCENT ); 
+		return IS_FLAG_SET( MATERIAL_VAR_TRANSLUCENT );
 	}
 
 	// Emissive Scroll Pass
@@ -364,9 +322,9 @@ BEGIN_VS_SHADER( Character, "Alien Swarm: Reactive Drop character shader" )
 
 	SHADER_INIT_PARAMS()
 	{
-		VertexLitGeneric_DX9_Vars_t vars;
+		Character_DX9_Vars_t vars;
 		SetupVars( vars );
-		InitParamsVertexLitGeneric_DX9( this, params, pMaterialName, true, vars );
+		InitParamsCharacter_DX9( this, params, pMaterialName, vars );
 
 		// Cloak Pass
 		if ( !params[CLOAKPASSENABLED]->IsDefined() )
@@ -407,14 +365,16 @@ BEGIN_VS_SHADER( Character, "Alien Swarm: Reactive Drop character shader" )
 
 	SHADER_FALLBACK
 	{
+		if ( !g_pHardwareConfig->SupportsPixelShaders_2_b() )
+			return "VertexLitGeneric";
 		return 0;
 	}
 
 	SHADER_INIT
 	{
-		VertexLitGeneric_DX9_Vars_t vars;
+		Character_DX9_Vars_t vars;
 		SetupVars( vars );
-		InitVertexLitGeneric_DX9( this, params, true, vars );
+		InitCharacter_DX9( this, params, vars );
 
 		// Cloak Pass
 		if ( params[CLOAKPASSENABLED]->GetIntValue() )
@@ -458,9 +418,9 @@ BEGIN_VS_SHADER( Character, "Alien Swarm: Reactive Drop character shader" )
 		// Standard rendering pass
 		if ( bDrawStandardPass )
 		{
-			VertexLitGeneric_DX9_Vars_t vars;
+			Character_DX9_Vars_t vars;
 			SetupVars( vars );
-			DrawVertexLitGeneric_DX9( this, params, pShaderAPI, pShaderShadow, true, vars, vertexCompression, pContextDataPtr );
+			DrawCharacter_DX9( this, params, pShaderAPI, pShaderShadow, vars, vertexCompression, pContextDataPtr );
 		}
 		else
 		{
@@ -472,7 +432,7 @@ BEGIN_VS_SHADER( Character, "Alien Swarm: Reactive Drop character shader" )
 		if ( params[CLOAKPASSENABLED]->GetIntValue() )
 		{
 			// If ( snapshotting ) or ( we need to draw this frame )
- 			if ( ( pShaderShadow != NULL ) || ( ( params[CLOAKFACTOR]->GetFloatValue() > 0.0f ) && ( params[CLOAKFACTOR]->GetFloatValue() < 1.0f ) ) )
+			if ( ( pShaderShadow != NULL ) || ( ( params[CLOAKFACTOR]->GetFloatValue() > 0.0f ) && ( params[CLOAKFACTOR]->GetFloatValue() < 1.0f ) ) )
 			{
 				CloakBlendedPassVars_t info;
 				SetupVarsCloakBlendedPass( info );

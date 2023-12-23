@@ -50,6 +50,8 @@ private:
 
 	static float GetNightVisionAmount();
 
+	// $time variable (so we don't need to also have the CurrentTime proxy)
+	IMaterialVar *m_pTime{};
 	// team color (RGBA)
 	IMaterialVar *m_pTeamColor{};
 	// status effect FX (fire, ice, shock, night vision)
@@ -67,6 +69,10 @@ bool CASW_Character_Proxy::Init( IMaterial *pMaterial, KeyValues *pKeyValues )
 
 	bool bFound;
 
+	m_pTime = pMaterial->FindVar( "$time", &bFound );
+	if ( !bFound )
+		return false;
+
 	m_pTeamColor = pMaterial->FindVar( "$character_team_color", &bFound );
 	if ( !bFound )
 		return false;
@@ -82,7 +88,7 @@ void CASW_Character_Proxy::OnBind( void *pRenderable )
 {
 	if ( !pRenderable )
 	{
-		OnBindNull();
+		OnBind( ( C_BaseEntity * )NULL );
 		return;
 	}
 
@@ -91,6 +97,8 @@ void CASW_Character_Proxy::OnBind( void *pRenderable )
 
 void CASW_Character_Proxy::OnBind( C_BaseEntity *pEnt )
 {
+	m_pTime->SetFloatValue( gpGlobals->curtime );
+
 	if ( !pEnt )
 	{
 		OnBindNull();
