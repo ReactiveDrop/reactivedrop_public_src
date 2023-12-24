@@ -152,7 +152,6 @@ public:
 	CReactiveDropServerList();
 
 	bool IsHoIAFServerIP( uint32_t ip );
-	CUtlVector<uint32_t> m_ParticipatingServers;
 
 	CReactiveDropLobbySearch m_PublicLobbies;
 	CReactiveDropLobbySearch m_PublicDistanceLobbies;

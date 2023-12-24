@@ -7,6 +7,7 @@
 #include "gameui/swarm/uigamedata.h"
 #include "rd_text_filtering.h"
 #include "filesystem.h"
+#include "rd_hoiaf_utils.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -582,58 +583,6 @@ CON_COMMAND( rd_lobby_debug_filter_distance, "1: close, 2: default, 3: far, 4: w
 	}
 }
 
-#ifdef DBGFLAG_ASSERT
-// on debug builds, make sure that the participating servers file is up-to-date.
-// we don't do this on release builds because it'd just create a bunch of network traffic for no gain.
-static class CCheckHoIAFParticipatingServersFile : public CAutoGameSystem
-{
-public:
-	CCheckHoIAFParticipatingServersFile() : CAutoGameSystem( "CCheckHoIAFParticipatingServersFile" )
-	{
-	}
-
-	void PostInit() override
-	{
-		ISteamHTTP *pHTTP = SteamHTTP();
-		Assert( pHTTP );
-		if ( !pHTTP )
-			return;
-
-		HTTPRequestHandle hRequest = pHTTP->CreateHTTPRequest( k_EHTTPMethodGET, "https://stats.reactivedrop.com/hoiaf_participating_servers.bin" );
-		Assert( hRequest != INVALID_HTTPREQUEST_HANDLE );
-		SteamAPICall_t hCall{ k_uAPICallInvalid };
-		bool bOK = pHTTP->SendHTTPRequest( hRequest, &hCall );
-		Assert( bOK );
-
-		m_HTTPRequestCompleted.Set( hCall, this, &CCheckHoIAFParticipatingServersFile::OnHTTPRequestCompleted );
-	}
-
-	void OnHTTPRequestCompleted( HTTPRequestCompleted_t *pParam, bool bIOFailure )
-	{
-		Assert( !bIOFailure && pParam->m_bRequestSuccessful );
-		if ( bIOFailure || !pParam->m_bRequestSuccessful )
-			return;
-
-		Assert( pParam->m_eStatusCode == k_EHTTPStatusCode200OK );
-
-		CUtlBuffer localBuf;
-		bool bOK = g_pFullFileSystem->ReadFile( "resource/hoiaf_participating_servers.bin", "MOD", localBuf );
-		Assert( bOK );
-
-		Assert( localBuf.TellMaxPut() == int( pParam->m_unBodySize ) );
-
-		CUtlBuffer remoteBuf{ 0, int( pParam->m_unBodySize ), 0 };
-		bOK = SteamHTTP()->GetHTTPResponseBodyData( pParam->m_hRequest, ( uint8_t * )remoteBuf.Base(), pParam->m_unBodySize );
-		Assert( bOK );
-
-		Assert( !V_memcmp( localBuf.Base(), remoteBuf.Base(), MIN( localBuf.TellMaxPut(), int( pParam->m_unBodySize ) ) ) );
-		SteamHTTP()->ReleaseHTTPRequest( pParam->m_hRequest );
-	}
-
-	CCallResult<CCheckHoIAFParticipatingServersFile, HTTPRequestCompleted_t> m_HTTPRequestCompleted;
-} s_CheckHoIAFParticipatingServersFile;
-#endif
-
 CReactiveDropServerListHelper::CReactiveDropServerListHelper( const char *szDebugName )
 {
 	m_pszDebugName = szDebugName;
@@ -829,16 +778,6 @@ CReactiveDropServerList::CReactiveDropServerList() :
 
 bool CReactiveDropServerList::IsHoIAFServerIP( uint32_t ip )
 {
-	if ( m_ParticipatingServers.Count() == 0 )
-	{
-		CUtlBuffer buf;
-		if ( g_pFullFileSystem->ReadFile( "resource/hoiaf_participating_servers.bin", "MOD", buf ) )
-		{
-			m_ParticipatingServers.SetCount( buf.Size() / 4 );
-			V_memcpy( m_ParticipatingServers.Base(), buf.Base(), m_ParticipatingServers.Count() * 4 );
-		}
-	}
-
-	return m_ParticipatingServers.IsValidIndex( m_ParticipatingServers.Find( ip ) );
+	return HoIAF()->IsRankedServerIP( ip );
 }
 #endif

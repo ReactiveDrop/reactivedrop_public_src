@@ -428,6 +428,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="..\shared\swarm\asw_computer_area_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_computer_vscript_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_crafting_defs.h" />
+    <ClInclude Include="..\shared\swarm\rd_hoiaf_utils.h" />
     <ClInclude Include="..\shared\swarm\rd_map_texture_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_vgui_vscript_shared.h" />
     <ClInclude Include="swarm\c_rd_infection_deathmatch_stats.h" />
@@ -879,6 +880,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="..\shared\swarm\rd_computer_vscript_shared.cpp" />
     <ClCompile Include="..\shared\swarm\rd_convar_printdescription_hack.cpp" />
     <ClCompile Include="..\shared\swarm\rd_crafting_defs.cpp" />
+    <ClCompile Include="..\shared\swarm\rd_hoiaf_utils.cpp" />
     <ClCompile Include="..\shared\swarm\rd_hud_counter_shared.cpp" />
     <ClCompile Include="..\shared\swarm\rd_hud_vscript_shared.cpp" />
     <ClCompile Include="..\shared\swarm\rd_inventory_shared.cpp" />
