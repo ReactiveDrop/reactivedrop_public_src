@@ -96,14 +96,6 @@ public:
 	HUDGlowHelper_t m_GlowNewsShowcase;
 	HUDGlowHelper_t m_GlowUpdateNotes;
 
-	int m_iNewsImageTexture[5]{ -1, -1, -1, -1, -1 };
-	wchar_t m_wszNewsTitle[5][256]{};
-	char m_szNewsURL[5][256]{};
-	wchar_t m_wszEventTitle[3][256]{};
-	char m_szEventURL[3][256]{};
-	uint32 m_iEventStarts[3]{};
-	uint32 m_iEventEnds[3]{};
-
 	PublishedFileId_t m_iWorkshopTrendingFileID[5]{ k_PublishedFileIdInvalid, k_PublishedFileIdInvalid, k_PublishedFileIdInvalid, k_PublishedFileIdInvalid, k_PublishedFileIdInvalid };
 	wchar_t m_wszWorkshopTrendingTitle[5][k_cchPublishedDocumentTitleMax]{};
 	UGCHandle_t m_hWorkshopTrendingPreview[5]{ k_UGCHandleInvalid, k_UGCHandleInvalid, k_UGCHandleInvalid, k_UGCHandleInvalid, k_UGCHandleInvalid };

@@ -4,6 +4,7 @@
 #include "steam/steam_api.h"
 
 #ifdef CLIENT_DLL
+#include <vgui/ISurface.h>
 #include "gameui/swarm/basemodpanel.h"
 #include "gameui/swarm/basemodframe.h"
 #endif
@@ -56,10 +57,107 @@ bool CRD_HoIAF_System::IsRankedServerIP( uint32_t ip ) const
 	return m_RankedServerIPs.IsValidIndex( m_RankedServerIPs.Find( ip ) );
 }
 
+bool CRD_HoIAF_System::GetLastUpdateDate( int &year, int &month, int &day ) const
+{
+	int date = m_iLatestPatch;
+	if ( !date )
+	{
+		return false;
+	}
+
+	day = date % 100;
+	Assert( day >= 1 && day <= 31 );
+	date /= 100;
+	month = date % 100;
+	Assert( month >= 1 && month <= 12 );
+	date /= 100;
+	year = date;
+	Assert( year >= 2023 && year < 10000 );
+
+	return true;
+}
+
+int CRD_HoIAF_System::CountFeaturedNews() const
+{
+	return m_FeaturedNews.Count();
+}
+
+const char *CRD_HoIAF_System::GetFeaturedNewsCaption( int index ) const
+{
+	if ( index < 0 || index >= CountFeaturedNews() )
+		return NULL;
+
+	return m_FeaturedNews[index]->Caption;
+}
+
+const char *CRD_HoIAF_System::GetFeaturedNewsURL( int index ) const
+{
+	if ( index < 0 || index >= CountFeaturedNews() )
+		return NULL;
+
+	return m_FeaturedNews[index]->URL;
+}
+
+#ifdef CLIENT_DLL
+vgui::HTexture CRD_HoIAF_System::GetFeaturedNewsTexture( int index ) const
+{
+	if ( index < 0 || index >= CountFeaturedNews() )
+		return NULL;
+
+	return m_FeaturedNews[index]->TextureHandle;
+}
+#endif
+
+int CRD_HoIAF_System::CountEventTimers() const
+{
+	return m_EventTimers.Count();
+}
+
+bool CRD_HoIAF_System::IsEventTimerActive( int index ) const
+{
+	int64_t iCurrentTime = SteamUtils() ? SteamUtils()->GetServerRealTime() : 0;
+	return GetEventStartTime( index ) <= iCurrentTime || GetEventEndTime( index ) >= iCurrentTime;
+}
+
+const char *CRD_HoIAF_System::GetEventTimerCaption( int index ) const
+{
+	if ( index < 0 || index >= CountEventTimers() )
+		return NULL;
+
+	return m_EventTimers[index]->Caption;
+}
+
+const char *CRD_HoIAF_System::GetEventTimerURL( int index ) const
+{
+	if ( index < 0 || index >= CountEventTimers() )
+		return NULL;
+
+	return m_EventTimers[index]->URL;
+}
+
+int64_t CRD_HoIAF_System::GetEventStartTime( int index ) const
+{
+	if ( index < 0 || index >= CountEventTimers() )
+		return NULL;
+
+	return m_EventTimers[index]->Starts;
+}
+
+int64_t CRD_HoIAF_System::GetEventEndTime( int index ) const
+{
+	if ( index < 0 || index >= CountEventTimers() )
+		return NULL;
+
+	return m_EventTimers[index]->Ends;
+}
+
 void CRD_HoIAF_System::ParseIAFIntel()
 {
 	m_iExpireAt = int64_t( m_pIAFIntel->GetUint64( "expires" ) );
 	m_RankedServerIPs.Purge();
+	m_iLatestPatch = m_pIAFIntel->GetInt( "latestPatch" );
+	m_FeaturedNews.PurgeAndDeleteElements();
+	m_EventTimers.PurgeAndDeleteElements();
 
 	FOR_EACH_SUBKEY( m_pIAFIntel, pCommand )
 	{
@@ -73,6 +171,65 @@ void CRD_HoIAF_System::ParseIAFIntel()
 		{
 			Assert( pCommand->GetDataType() == KeyValues::TYPE_INT );
 			m_RankedServerIPs.AddToTail( uint32_t( pCommand->GetInt() ) );
+		}
+		else if ( !V_stricmp( szName, "latestPatch" ) )
+		{
+			Assert( pCommand->GetDataType() == KeyValues::TYPE_INT );
+			// already handled above
+		}
+		else if ( !V_stricmp( szName, "featuredNews" ) )
+		{
+			Assert( pCommand->GetDataType() == KeyValues::TYPE_NONE );
+			Assert( m_FeaturedNews.Count() < 5 );
+
+			FeaturedNews_t *pNews = new FeaturedNews_t;
+
+			LoadTranslatedString( pNews->Caption, pCommand, "caption_%s" );
+			pNews->URL = pCommand->GetString( "url" );
+
+#ifdef CLIENT_DLL
+			const char *szTextureURL = pCommand->GetString( "texture_url" );
+			pNews->TextureCRC = pCommand->GetInt( "texture_crc" );
+			pNews->TextureIndex = pCommand->GetInt( "texture_index" );
+			Assert( pNews->TextureIndex >= 1 && pNews->TextureIndex <= 5 );
+
+			char szTextureName[MAX_PATH];
+			V_snprintf( szTextureName, sizeof( szTextureName ), "materials/vgui/swarm/news_showcase_%d.vtf", pNews->TextureIndex );
+
+			CUtlBuffer buf;
+			if ( g_pFullFileSystem->ReadFile( szTextureName, "GAME", buf ) && CRC32_ProcessSingleBuffer( buf.Base(), buf.TellPut() ) == pNews->TextureCRC )
+			{
+				pNews->TextureHandle = vgui::surface()->CreateNewTextureID();
+				vgui::surface()->DrawSetTextureFile( pNews->TextureHandle, &szTextureName[strlen( "materials/" )], 1, false );
+			}
+			else if ( ISteamHTTP *pHTTP = SteamHTTP() )
+			{
+				pNews->m_hTextureRequest = pHTTP->CreateHTTPRequest( k_EHTTPMethodGET, szTextureURL );
+				pHTTP->SetHTTPRequestUserAgentInfo( pNews->m_hTextureRequest, "Reactive Drop News Showcase Icon Fetch" );
+
+				SteamAPICall_t hCall = k_uAPICallInvalid;
+				if ( pHTTP->SendHTTPRequest( pNews->m_hTextureRequest, &hCall ) )
+				{
+					pNews->m_TextureRequestFinished.Set( hCall, pNews, &CRD_HoIAF_System::FeaturedNews_t::OnHTTPRequestCompleted );
+				}
+			}
+#endif
+
+			m_FeaturedNews.AddToTail( pNews );
+		}
+		else if ( !V_stricmp( szName, "eventTimer" ) )
+		{
+			Assert( pCommand->GetDataType() == KeyValues::TYPE_NONE );
+			Assert( m_EventTimers.Count() < 3 );
+
+			EventTimer_t *pTimer = new EventTimer_t;
+
+			LoadTranslatedString( pTimer->Caption, pCommand, "caption_%s" );
+			pTimer->URL = pCommand->GetString( "url" );
+			pTimer->Starts = pCommand->GetUint64( "starts" );
+			pTimer->Ends = pCommand->GetUint64( "ends" );
+
+			m_EventTimers.AddToTail( pTimer );
 		}
 		else
 		{
@@ -282,6 +439,93 @@ void CRD_HoIAF_System::OnRequestFailed()
 	// if we can't get the current time, give up until the game is restarted
 	m_iBackoffUntil = pUtils ? ( pUtils->GetServerRealTime() + ( 1 << m_iExponentialBackoff ) ) : ~0u;
 }
+
+#ifdef CLIENT_DLL
+void CRD_HoIAF_System::LoadTranslatedString( CUtlString &str, KeyValues *pKV, const char *szTemplate )
+{
+	char szLocalized[256], szEnglish[256];
+	V_snprintf( szLocalized, sizeof( szLocalized ), szTemplate, SteamApps() ? SteamApps()->GetCurrentGameLanguage() : "" );
+	V_snprintf( szEnglish, sizeof( szEnglish ), szTemplate, "english" );
+	str = pKV->GetString( szLocalized, pKV->GetString( szEnglish ) );
+}
+#endif
+
+CRD_HoIAF_System::FeaturedNews_t::~FeaturedNews_t()
+{
+#ifdef CLIENT_DLL
+	if ( TextureHandle && vgui::surface() )
+	{
+		vgui::surface()->DestroyTextureID( TextureHandle );
+		TextureHandle = NULL;
+	}
+
+	if ( m_hTextureRequest != INVALID_HTTPREQUEST_HANDLE && SteamHTTP() )
+	{
+		SteamHTTP()->ReleaseHTTPRequest( m_hTextureRequest );
+		m_hTextureRequest = INVALID_HTTPREQUEST_HANDLE;
+	}
+#endif
+}
+
+#ifdef CLIENT_DLL
+void CRD_HoIAF_System::FeaturedNews_t::OnHTTPRequestCompleted( HTTPRequestCompleted_t *pParam, bool bIOFailure )
+{
+	ISteamHTTP *pHTTP = SteamHTTP();
+	if ( bIOFailure )
+	{
+		Warning( "[HoIAF:%c] Failed to download icon for featured news item with URL %s (IO failure)\n", IsClientDll() ? 'C' : 'S', URL.Get() );
+		m_hTextureRequest = INVALID_HTTPREQUEST_HANDLE;
+		return;
+	}
+
+	Assert( m_hTextureRequest == pParam->m_hRequest );
+
+	ISteamHTTP *pHTTP = SteamHTTP();
+	Assert( pHTTP );
+	if ( !pHTTP )
+	{
+		Warning( "[HoIAF:%c] Failed to download icon for featured news item with URL %s (lost ISteamHTTP interface!)\n", IsClientDll() ? 'C' : 'S', URL.Get() );
+		// can't release request or get body, so just give up
+		m_hTextureRequest = INVALID_HTTPREQUEST_HANDLE;
+		return;
+	}
+
+	if ( !pParam->m_bRequestSuccessful )
+	{
+		Warning( "[HoIAF:%c] Failed to download icon for featured news item with URL %s (network failure)\n", IsClientDll() ? 'C' : 'S', URL.Get() );
+		goto cleanup;
+	}
+
+	{
+		CUtlBuffer body{ 0, int( pParam->m_unBodySize ) };
+		body.SeekPut( CUtlBuffer::SEEK_HEAD, pParam->m_unBodySize );
+		if ( !pHTTP->GetHTTPResponseBodyData( m_hTextureRequest, ( uint8 * )body.Base(), pParam->m_unBodySize ) )
+		{
+			Warning( "[HoIAF:%c] Failed to download icon for featured news item with URL %s (GetHTTPResponseBodyData failed)\n", IsClientDll() ? 'C' : 'S', URL.Get() );
+			goto cleanup;
+		}
+
+		Assert( CRC32_ProcessSingleBuffer( body.Base(), body.TellPut() ) == TextureCRC );
+
+		char szTextureName[MAX_PATH];
+		V_snprintf( szTextureName, sizeof( szTextureName ), "materials/vgui/swarm/news_showcase_%d.vtf", TextureIndex );
+
+		g_pFullFileSystem->WriteFile( szTextureName, "MOD", body );
+		TextureHandle = vgui::surface()->CreateNewTextureID();
+		vgui::surface()->DrawSetTextureFile( TextureHandle, &szTextureName[strlen( "materials/" )], 1, false );
+
+		BaseModUI::CBaseModFrame *pMainMenu = BaseModUI::CBaseModPanel::GetSingleton().GetWindow( BaseModUI::WT_MAINMENU );
+		if ( pMainMenu && pMainMenu->IsVisible() )
+		{
+			pMainMenu->Activate();
+		}
+	}
+
+cleanup:
+	pHTTP->ReleaseHTTPRequest( m_hTextureRequest );
+	m_hTextureRequest = INVALID_HTTPREQUEST_HANDLE;
+}
+#endif
 
 static CRD_HoIAF_System s_HoIAFSystem;
 

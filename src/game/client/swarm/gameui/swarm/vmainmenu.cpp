@@ -58,6 +58,7 @@
 #include "nb_header_footer.h"
 #include "briefingtooltip.h"
 #include "rd_lobby_utils.h"
+#include "rd_hoiaf_utils.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -173,14 +174,6 @@ MainMenu::~MainMenu()
 {
 	RemoveFrameListener( this );
 
-	for ( int i = 0; i < NELEMS( m_iNewsImageTexture ); i++ )
-	{
-		if ( vgui::surface() && m_iNewsImageTexture[i] != -1 )
-		{
-			vgui::surface()->DestroyTextureID( m_iNewsImageTexture[i] );
-		}
-	}
-
 	for ( int i = 0; i < NELEMS( m_pWorkshopTrendingPreview ); i++ )
 	{
 		delete m_pWorkshopTrendingPreview[i];
@@ -260,12 +253,8 @@ void MainMenu::Activate()
 		s_bRunOnce = false;
 	}
 
-	KeyValues::AutoDelete pLatestUpdate{ "RDLatestUpdate" };
-	if ( !UTIL_RD_LoadKeyValuesFromFile( pLatestUpdate, g_pFullFileSystem, "resource/rd_event_config.txt", "GAME" ) )
-	{
-		Warning( "Failed to load resource/rd_event_config.txt!\n" );
-	}
-	else
+	int iPatchYear, iPatchMonth, iPatchDay;
+	if ( HoIAF()->GetLastUpdateDate( iPatchYear, iPatchMonth, iPatchDay ) )
 	{
 		char szBranchName[64]{};
 		if ( SteamApps() && SteamApps()->GetCurrentBetaName( szBranchName, sizeof(szBranchName) ) && szBranchName[0] != '\0' )
@@ -276,16 +265,6 @@ void MainMenu::Activate()
 		}
 		else
 		{
-			int iPatchDate = pLatestUpdate->GetInt( "patch" );
-			int iPatchDay = iPatchDate % 100;
-			Assert( iPatchDay >= 1 && iPatchDay <= 31 );
-			iPatchDate /= 100;
-			int iPatchMonth = iPatchDate % 100;
-			Assert( iPatchMonth >= 1 && iPatchMonth <= 12 );
-			iPatchDate /= 100;
-			int iPatchYear = iPatchDate;
-			Assert( iPatchYear >= 2023 && iPatchYear < 10000 );
-
 			wchar_t wszPatchDay1[3];
 			wchar_t wszPatchDay2[3];
 			wchar_t wszPatchMonth1[3];
@@ -303,25 +282,6 @@ void MainMenu::Activate()
 		}
 
 		m_pBtnUpdateNotes->SetVisible( !m_bIsStub && rd_legacy_ui.GetString()[0] == '\0' );
-
-		for ( int i = 0; i < NELEMS( m_wszNewsTitle ); i++ )
-		{
-			TryLocalize( pLatestUpdate->GetString( VarArgs( "major%d_title", i + 1 ) ), m_wszNewsTitle[i], sizeof( m_wszNewsTitle[i] ) );
-			V_strncpy( m_szNewsURL[i], pLatestUpdate->GetString( VarArgs( "major%d_url", i + 1 ) ), sizeof( m_szNewsURL[i] ) );
-			if ( m_wszNewsTitle[i][0] != L'\0' && m_iNewsImageTexture[i] == -1 )
-			{
-				m_iNewsImageTexture[i] = vgui::surface()->CreateNewTextureID();
-				vgui::surface()->DrawSetTextureFile( m_iNewsImageTexture[i], CFmtStr{ "vgui/swarm/news_showcase_%d", i + 1 }, 1, false );
-			}
-		}
-
-		for ( int i = 0; i < NELEMS( m_wszEventTitle ); i++ )
-		{
-			TryLocalize( pLatestUpdate->GetString( VarArgs( "event%d_title", i + 1 ) ), m_wszEventTitle[i], sizeof( m_wszEventTitle[i] ) );
-			V_strncpy( m_szEventURL[i], pLatestUpdate->GetString( VarArgs( "event%d_url", i + 1 ) ), sizeof( m_szEventURL[i] ) );
-			m_iEventStarts[i] = pLatestUpdate->GetInt( VarArgs( "event%d_starts", i + 1 ) );
-			m_iEventEnds[i] = pLatestUpdate->GetInt( VarArgs( "event%d_ends", i + 1 ) );
-		}
 
 		// force an update
 		m_iLastTimerUpdate = 0;
@@ -1204,28 +1164,17 @@ void MainMenu::OnCommand( const char *command )
 	{
 		OpenNewsURL( "https://stats.reactivedrop.com/heroes?lang=%s" );
 	}
-	else if ( !V_stricmp( command, "EventTimer1" ) )
+	else if ( const char *szEventNumber = StringAfterPrefix( command, "EventTimer" ) )
 	{
-		OpenNewsURL( m_szEventURL[0] );
-	}
-	else if ( !V_stricmp( command, "EventTimer2" ) )
-	{
-		OpenNewsURL( m_szEventURL[1] );
-	}
-	else if ( !V_stricmp( command, "EventTimer3" ) )
-	{
-		OpenNewsURL( m_szEventURL[2] );
+		OpenNewsURL( HoIAF()->GetEventTimerURL( V_atoi( szEventNumber ) - 1 ) );
 	}
 	else if ( !V_stricmp( command, "NewsShowcase" ) )
 	{
-		int iNumNewsShowcases = 0;
-		while ( iNumNewsShowcases < NELEMS( m_wszNewsTitle ) && m_wszNewsTitle[iNumNewsShowcases][0] != L'\0' )
-			iNumNewsShowcases++;
-
+		int iNumNewsShowcases = HoIAF()->CountFeaturedNews();
 		if ( iNumNewsShowcases )
 		{
 			int iCurrentMinute = ( std::time( NULL ) / 60 );
-			OpenNewsURL( m_szNewsURL[iCurrentMinute % iNumNewsShowcases] );
+			OpenNewsURL( HoIAF()->GetFeaturedNewsURL( iCurrentMinute %iNumNewsShowcases ) );
 		}
 	}
 	else if ( !V_stricmp( command, "UpdateNotes" ) )
@@ -1420,26 +1369,29 @@ void MainMenu::OnThink()
 		return;
 	}
 
-	uint32 iCurrentTime = std::time( NULL );
+	uint32 iCurrentTime = SteamUtils() ? SteamUtils()->GetServerRealTime() : std::time( NULL );
 	uint32 iCurrentMinute = iCurrentTime / 60;
 	if ( m_iLastTimerUpdate != iCurrentMinute )
 	{
 		wchar_t wszTimerText[1024];
-		for ( int i = NELEMS( m_iEventStarts ) - 1; i >= 0; i-- )
+		for ( int i = NELEMS( m_pBtnEventTimer ) - 1; i >= 0; i-- )
 		{
-			if ( m_iEventStarts[i] > iCurrentTime || m_iEventEnds[i] < iCurrentTime )
+			if ( HoIAF()->IsEventTimerActive( i ) )
 			{
 				m_pBtnEventTimer[i]->SetVisible( false );
 				continue;
 			}
 
-			uint32 iTimeLeftHours = ( m_iEventEnds[i] - iCurrentTime ) / 3600;
+			wchar_t wszEventTitle[1024];
+			V_UTF8ToUnicode( HoIAF()->GetEventTimerCaption( i ), wszEventTitle, sizeof( wszEventTitle ) );
+
+			uint32 iTimeLeftHours = ( HoIAF()->GetEventEndTime( i ) - iCurrentTime ) / 3600;
 			if ( iTimeLeftHours > 23 )
-				g_pVGuiLocalize->ConstructString( wszTimerText, sizeof( wszTimerText ), g_pVGuiLocalize->Find( "#rd_event_timer_days" ), 2, m_wszEventTitle[i], UTIL_RD_CommaNumber( iTimeLeftHours / 24 ) );
+				g_pVGuiLocalize->ConstructString( wszTimerText, sizeof( wszTimerText ), g_pVGuiLocalize->Find( "#rd_event_timer_days" ), 2, wszEventTitle, UTIL_RD_CommaNumber( iTimeLeftHours / 24 ) );
 			else if ( iTimeLeftHours > 0 )
-				g_pVGuiLocalize->ConstructString( wszTimerText, sizeof( wszTimerText ), g_pVGuiLocalize->Find( "#rd_event_timer_hours" ), 2, m_wszEventTitle[i], UTIL_RD_CommaNumber( iTimeLeftHours ) );
+				g_pVGuiLocalize->ConstructString( wszTimerText, sizeof( wszTimerText ), g_pVGuiLocalize->Find( "#rd_event_timer_hours" ), 2, wszEventTitle, UTIL_RD_CommaNumber( iTimeLeftHours ) );
 			else
-				g_pVGuiLocalize->ConstructString( wszTimerText, sizeof( wszTimerText ), g_pVGuiLocalize->Find( "#rd_event_timer_soon" ), 1, m_wszEventTitle[i] );
+				g_pVGuiLocalize->ConstructString( wszTimerText, sizeof( wszTimerText ), g_pVGuiLocalize->Find( "#rd_event_timer_soon" ), 1, wszEventTitle );
 
 			m_pBtnEventTimer[i]->SetText( wszTimerText );
 			m_pBtnEventTimer[i]->SetVisible( true );
@@ -1461,17 +1413,16 @@ void MainMenu::OnThink()
 		m_pBtnWorkshopShowcase->SetText( m_wszWorkshopTrendingTitle[iCurrentMinute % NELEMS( m_wszWorkshopTrendingTitle )] );
 		m_pBtnWorkshopShowcase->SetVisible( true );
 
-		int iNumNewsShowcases = 0;
-		while ( iNumNewsShowcases < NELEMS( m_wszNewsTitle ) && m_wszNewsTitle[iNumNewsShowcases][0] != L'\0' )
-			iNumNewsShowcases++;
-
+		int iNumNewsShowcases = HoIAF()->CountFeaturedNews();
 		if ( iNumNewsShowcases == 0 )
 		{
 			m_pBtnNewsShowcase->SetVisible( false );
 		}
 		else
 		{
-			m_pBtnNewsShowcase->SetText( m_wszNewsTitle[iCurrentMinute % iNumNewsShowcases] );
+			wchar_t wszNewsTitle[1024];
+			V_UTF8ToUnicode( HoIAF()->GetFeaturedNewsCaption( iCurrentMinute % iNumNewsShowcases ), wszNewsTitle, sizeof( wszNewsTitle ) );
+			m_pBtnNewsShowcase->SetText( wszNewsTitle );
 			m_pBtnNewsShowcase->SetVisible( true );
 		}
 
@@ -1759,13 +1710,10 @@ void MainMenu::PaintBackground()
 
 	int iCurrentMinute = ( std::time( NULL ) / 60 );
 
-	int iNumNewsShowcases = 0;
-	while ( iNumNewsShowcases < NELEMS( m_wszNewsTitle ) && m_wszNewsTitle[iNumNewsShowcases][0] != L'\0' )
-		iNumNewsShowcases++;
-
+	int iNumNewsShowcases = HoIAF()->CountFeaturedNews();
 	if ( iNumNewsShowcases && m_pBtnNewsShowcase->IsVisible() )
 	{
-		vgui::surface()->DrawSetTexture( m_iNewsImageTexture[iCurrentMinute % iNumNewsShowcases] );
+		vgui::surface()->DrawSetTexture( HoIAF()->GetFeaturedNewsTexture( iCurrentMinute % iNumNewsShowcases ) );
 		vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
 
 		int x0, y0, x1, y1;
@@ -1979,6 +1927,9 @@ void MainMenu::SetFooterState()
 
 void MainMenu::OpenNewsURL( const char *szURL )
 {
+	if ( !szURL )
+		return;
+
 	char szFormattedURL[1024];
 	V_snprintf( szFormattedURL, sizeof( szFormattedURL ), szURL, SteamApps() ? SteamApps()->GetCurrentGameLanguage() : "" );
 	CUIGameData::Get()->ExecuteOverlayUrl( szFormattedURL );
