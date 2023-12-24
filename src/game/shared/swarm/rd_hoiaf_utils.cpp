@@ -3,6 +3,11 @@
 #include "filesystem.h"
 #include "steam/steam_api.h"
 
+#ifdef CLIENT_DLL
+#include "gameui/swarm/basemodpanel.h"
+#include "gameui/swarm/basemodframe.h"
+#endif
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -75,7 +80,13 @@ void CRD_HoIAF_System::ParseIAFIntel()
 		}
 	}
 
-	m_RankedServerIPs.AddToTail();
+#ifdef CLIENT_DLL
+	BaseModUI::CBaseModFrame *pMainMenu = BaseModUI::CBaseModPanel::GetSingleton().GetWindow( BaseModUI::WT_MAINMENU );
+	if ( pMainMenu && pMainMenu->IsVisible() )
+	{
+		pMainMenu->Activate();
+	}
+#endif
 }
 
 void CRD_HoIAF_System::LoadCachedIAFIntel()
@@ -90,7 +101,7 @@ void CRD_HoIAF_System::LoadCachedIAFIntel()
 		m_pIAFIntel->Clear();
 		if ( !m_pIAFIntel->ReadAsBinary( buf ) )
 		{
-			DevMsg( "[HoIAF:%c] Failed to load cached IAF Intel continuing regardless.\n", IsClientDll() ? 'C' : 'S' );
+			DevMsg( "[HoIAF:%c] Failed to load cached IAF Intel. Continuing regardless.\n", IsClientDll() ? 'C' : 'S' );
 		}
 	}
 	else
