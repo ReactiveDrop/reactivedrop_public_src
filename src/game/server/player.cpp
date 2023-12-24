@@ -629,6 +629,9 @@ CBasePlayer::CBasePlayer( )
 
 	m_hPostProcessCtrl.Set( NULL );
 	m_hColorCorrectionCtrl.Set( NULL );
+
+	V_memset( m_CmdNumStorage, 0, sizeof( m_CmdNumStorage ) );
+	m_iNextCmdNumStorage = 0;
 }
 
 CBasePlayer::~CBasePlayer( )
@@ -3599,6 +3602,7 @@ bool CBasePlayer::HasQueuedUsercmds( void ) const
 	return GetCommandContextCount() > 0;
 }
 
+ConVar sv_max_usercmd_past_ticks( "sv_max_usercmd_past_ticks", "240", 0, "Prevents clients from running usercmds too far in the past." );
 ConVar sv_max_usercmd_future_ticks( "sv_max_usercmd_future_ticks", "8", 0, "Prevents clients from running usercmds too far in the future. Prevents speed hacks." );
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -3608,14 +3612,22 @@ ConVar sv_max_usercmd_future_ticks( "sv_max_usercmd_future_ticks", "8", 0, "Prev
 void CBasePlayer::PlayerRunCommand(CUserCmd *ucmd, IMoveHelper *moveHelper)
 {
 	// don't run commands in the future
-	if ( !IsEngineThreaded() && ( ucmd->tick_count > ( gpGlobals->tickcount + sv_max_usercmd_future_ticks.GetInt() ) ) )
+	if ( !IsEngineThreaded() && ( ucmd->tick_count < ( gpGlobals->tickcount - sv_max_usercmd_past_ticks.GetInt() ) || ucmd->tick_count >( gpGlobals->tickcount + sv_max_usercmd_future_ticks.GetInt() ) ) )
 	{
-		//Msg( "Client cmd out of sync (delta %i).\n", ucmd->tick_count - gpGlobals->tickcount );
-		//char text[256];
-		//Q_snprintf( text, sizeof( text ), "Client cmd out of sync (delta %i).\n", ucmd->tick_count - gpGlobals->tickcount );
-		//UTIL_ClientPrintAll( 5, text );
+		Msg( "Client cmd out of sync (delta %i).\n", ucmd->tick_count - gpGlobals->tickcount );
 		return;
 	}
+
+	// don't let players reuse tick numbers for usercmds.
+	for ( int i = 0; i < NELEMS( m_CmdNumStorage ); i++ )
+	{
+		if ( m_CmdNumStorage[i] == ucmd->tick_count )
+		{
+			return;
+		}
+	}
+	m_CmdNumStorage[m_iNextCmdNumStorage++] = ucmd->tick_count;
+	m_iNextCmdNumStorage %= NELEMS( m_CmdNumStorage );
 
 	m_touchedPhysObject = false;
 

@@ -1076,6 +1076,8 @@ protected:
 	// Last received usercmd (in case we drop a lot of packets )
 	CUserCmd				m_LastCmd;
 	CUserCmd				*m_pCurrentCommand;
+	int						m_CmdNumStorage[256];
+	int						m_iNextCmdNumStorage;
 
 	float					m_flStepSoundTime;	// time to check for next footstep sound
 
