@@ -470,7 +470,6 @@ CRD_HoIAF_System::FeaturedNews_t::~FeaturedNews_t()
 #ifdef CLIENT_DLL
 void CRD_HoIAF_System::FeaturedNews_t::OnHTTPRequestCompleted( HTTPRequestCompleted_t *pParam, bool bIOFailure )
 {
-	ISteamHTTP *pHTTP = SteamHTTP();
 	if ( bIOFailure )
 	{
 		Warning( "[HoIAF:%c] Failed to download icon for featured news item with URL %s (IO failure)\n", IsClientDll() ? 'C' : 'S', URL.Get() );
