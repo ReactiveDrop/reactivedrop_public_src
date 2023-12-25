@@ -51,6 +51,10 @@ BEGIN_DATADESC( CASW_Grenade_Vindicator )
 	DEFINE_OUTPUT(m_OnDamaged, "OnDamaged"),
 END_DATADESC()
 
+IMPLEMENT_SERVERCLASS_ST( CASW_Grenade_Vindicator, DT_ASW_Grenade_Vindicator )
+
+END_SEND_TABLE()
+
 extern int	g_sModelIndexFireball;			// (in combatweapon.cpp) holds the index for the smoke cloud
 
 CASW_Grenade_Vindicator::CASW_Grenade_Vindicator()
@@ -370,42 +374,7 @@ void CASW_Grenade_Vindicator::KillEffects()
 
 void CASW_Grenade_Vindicator::CreateEffects()
 {
-	// Start up the eye glow
-	/*
-	m_pMainGlow = CSprite::SpriteCreate( "sprites/redglow1.vmt", GetLocalOrigin(), false );
 
-	int	nAttachment = LookupAttachment( "fuse" );
-
-	if ( m_pMainGlow != NULL )
-	{
-		m_pMainGlow->FollowEntity( this );
-		m_pMainGlow->SetAttachment( this, nAttachment );
-		m_pMainGlow->SetTransparency( kRenderGlow, 255, 255, 255, 200, kRenderFxNoDissipation );
-		m_pMainGlow->SetScale( 0.2f );
-		m_pMainGlow->SetGlowProxySize( 4.0f );
-	}
-
-	// Start up the eye trail
-	m_pGlowTrail	= CSpriteTrail::SpriteTrailCreate( "sprites/bluelaser1.vmt", GetLocalOrigin(), false );
-
-	if ( m_pGlowTrail != NULL )
-	{
-		m_pGlowTrail->FollowEntity( this );
-		m_pGlowTrail->SetAttachment( this, nAttachment );
-		m_pGlowTrail->SetTransparency( kRenderTransAdd, 255, 0, 0, 255, kRenderFxNone );
-		m_pGlowTrail->SetStartWidth( 8.0f );
-		m_pGlowTrail->SetEndWidth( 1.0f );
-		m_pGlowTrail->SetLifeTime( 0.5f );
-	}
-	*/
-
-	CEffectData	data;
-	data.m_vOrigin = GetAbsOrigin();
-	//data.m_vNormal = dir;
-	//data.m_flScale = (float)amount;
-	CPASFilter filter( data.m_vOrigin );
-	filter.SetIgnorePredictionCull(true);
-	DispatchParticleEffect( "rocket_trail_small", PATTACH_ABSORIGIN_FOLLOW, this, "fuse", false, -1, &filter );
 }
 
 int	CASW_Grenade_Vindicator::OnTakeDamage_Dying( const CTakeDamageInfo &info )

@@ -2,20 +2,14 @@
 #define _DEFINED_ASW_GRENADE_VINDICATOR_H
 #pragma once
 
-#ifdef CLIENT_DLL
-#define CBaseEntity C_BaseEntity
-#endif
-
 #include "asw_rifle_grenade.h"
 
 class CASW_Grenade_Vindicator : public CASW_Rifle_Grenade
 {
 public:
 	DECLARE_CLASS( CASW_Grenade_Vindicator, CASW_Rifle_Grenade );
-
-#if !defined( CLIENT_DLL )
+	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
-#endif
 					
 	CASW_Grenade_Vindicator();
 	virtual ~CASW_Grenade_Vindicator( void );
