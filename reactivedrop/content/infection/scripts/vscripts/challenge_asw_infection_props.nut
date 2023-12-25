@@ -93,6 +93,8 @@ function PropInit()
 	if (g_mapName == "dm_residential")
 	{
 		g_killAltitude = -1000;
+
+		Director.RestartMission();
 	}
 }
 
