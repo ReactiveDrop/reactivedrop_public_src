@@ -1708,7 +1708,7 @@ void MainMenu::PaintBackground()
 	HUD_SHEET_DRAW_PANEL( m_pBtnNewsShowcase, MainMenuSheet, UV_news );
 	HUD_SHEET_DRAW_PANEL( m_pBtnUpdateNotes, MainMenuSheet, UV_update );
 
-	int iCurrentMinute = ( std::time( NULL ) / 60 );
+	int iCurrentMinute = ( ( SteamUtils() ? SteamUtils()->GetServerRealTime() : std::time( NULL ) ) / 60 );
 
 	int iNumNewsShowcases = HoIAF()->CountFeaturedNews();
 	if ( iNumNewsShowcases && m_pBtnNewsShowcase->IsVisible() )
