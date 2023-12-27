@@ -110,6 +110,7 @@ function SpawnProp(prop, vecPos, vecAng)
 	hProp.SetOrigin( vecPos );
 	hProp.SetAnglesVector( vecAng );
 	NetProps.SetPropInt( hProp, "m_spawnflags", 11 );
+	hProp.__KeyValueFromString("disableshadows", "1");
 	hProp.SetName("asw_infection_prop");
 	hProp.Spawn();
 	hProp.Activate();
