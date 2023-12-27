@@ -2461,7 +2461,7 @@ bool CReactiveDropWorkshop::PrepareWorkshopVPK( PublishedFileId_t nFileID, const
 	{
 		if ( StringHasPrefix( filenames[i], "cfg/" ) )
 		{
-			bHaveAutoTag = true;
+			// Don't count this as an auto-tag; allow Config to also be Other.
 			m_aszTags.CopyAndAddToTail( "Config" );
 		}
 
