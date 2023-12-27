@@ -772,6 +772,25 @@ const RD_Mission_t *ReactiveDropMissions::GetMission( int index )
 		}
 	}
 
+#ifdef RD_7A_DROPS
+	// pre-pass to catch endless and deathmatch missions before we parse materials
+	bool bIsEndlessOrDeathmatch = info.bAdminOverrideDeathmatch && !V_strnicmp( pMission->BaseName, "dm_", 3 );
+	FOR_EACH_VALUE( pKV, pValue )
+	{
+		if ( !V_stricmp( pValue->GetName(), "tag" ) && ( !V_stricmp( pValue->GetString(), "deathmatch" ) || !V_stricmp( pValue->GetString(), "endless" ) ) )
+		{
+			bIsEndlessOrDeathmatch = true;
+			break;
+		}
+	}
+
+	if ( bIsEndlessOrDeathmatch )
+	{
+		Assert( pMission->RegionalMaterials.Count() == 0 );
+		pMission->RegionalMaterials.AddToTail( RD_CRAFTING_MATERIAL_ARGON_CANISTER );
+	}
+#endif
+
 	FOR_EACH_VALUE( pKV, pValue )
 	{
 		if ( !V_stricmp( pValue->GetName(), "tag" ) )
@@ -785,6 +804,10 @@ const RD_Mission_t *ReactiveDropMissions::GetMission( int index )
 			if ( pMission->RegionalMaterials.Count() >= 3 )
 			{
 				DevWarning( "Mission \"%s\" contains more than three regional materials (ignoring \"%s\")\n", pMission->BaseName, pValue->GetString() );
+				if ( bIsEndlessOrDeathmatch )
+				{
+					DevWarning( "Note: endless and deathmatch missions automatically have \"argon_canister\" as a regional material.\n" );
+				}
 				continue;
 			}
 
@@ -806,7 +829,7 @@ const RD_Mission_t *ReactiveDropMissions::GetMission( int index )
 
 			for ( int i = 0; i < NUM_RD_CRAFTING_MATERIALS; i++ )
 			{
-				if ( g_RD_Crafting_Material_Info[i].m_iRarity != RD_CRAFTING_MATERIAL_RARITY_REGIONAL )
+				if ( g_RD_Crafting_Material_Info[i].m_iRarity != RD_CRAFTING_MATERIAL_RARITY_REGIONAL || i == RD_CRAFTING_MATERIAL_ARGON_CANISTER )
 					continue;
 
 				if ( V_stricmp( pValue->GetString(), g_RD_Crafting_Material_Info[i].m_szName ) )
@@ -828,11 +851,11 @@ const RD_Mission_t *ReactiveDropMissions::GetMission( int index )
 
 	if ( info.bAdminOverrideDeathmatch && !V_strnicmp( pMission->BaseName, "dm_", 3 ) )
 	{
-		pMission->Tags.AddToTail( MAKE_STRING( "deathmatch" ) );
+		pMission->Tags.AddToTail( AllocMissionsPooledString( "deathmatch" ) );
 	}
 	else if ( info.bAdminOverrideBonus )
 	{
-		pMission->Tags.AddToTail( MAKE_STRING( "bonus" ) );
+		pMission->Tags.AddToTail( AllocMissionsPooledString( "bonus" ) );
 	}
 
 	return pMission;
