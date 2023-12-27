@@ -25,6 +25,8 @@ function PropInit()
 
 	if (g_mapName == "dm_desert")
 	{
+		DoEntFire( "relay_night", "Trigger", "", 0.0, null, null );
+
 		if (Convars.GetFloat( "asw_controls" ) == 1)
 		{
 			SpawnProp("fence_long", Vector(463, 4114, 124), Vector(0, 90, 0));
