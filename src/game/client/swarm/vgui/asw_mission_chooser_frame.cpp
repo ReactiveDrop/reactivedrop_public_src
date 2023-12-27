@@ -277,6 +277,11 @@ void CASW_Mission_Chooser_Frame::OnCommand( const char *command )
 
 void CASW_Mission_Chooser_Frame::ApplyCampaign( ASW_CHOOSER_TYPE iChooserType, const char *szCampaignName )
 {
+	if ( m_bViewingCampaign )
+	{
+		return;
+	}
+
 	PublishedFileId_t iWorkshopID = ReactiveDropMissions::CampaignWorkshopID( ReactiveDropMissions::GetCampaignIndex( szCampaignName ) );
 	if ( iWorkshopID && !g_ReactiveDropWorkshop.IsAddonEnabled( iWorkshopID ) )
 	{
