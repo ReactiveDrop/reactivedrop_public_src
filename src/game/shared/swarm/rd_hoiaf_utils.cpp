@@ -509,6 +509,7 @@ void CRD_HoIAF_System::FeaturedNews_t::OnHTTPRequestCompleted( HTTPRequestComple
 		char szTextureName[MAX_PATH];
 		V_snprintf( szTextureName, sizeof( szTextureName ), "materials/vgui/swarm/news_showcase_%d.vtf", TextureIndex );
 
+		g_pFullFileSystem->CreateDirHierarchy( "materials/vgui/swarm", "MOD" );
 		g_pFullFileSystem->WriteFile( szTextureName, "MOD", body );
 		TextureHandle = vgui::surface()->CreateNewTextureID();
 		vgui::surface()->DrawSetTextureFile( TextureHandle, &szTextureName[strlen( "materials/" )], 1, false );
