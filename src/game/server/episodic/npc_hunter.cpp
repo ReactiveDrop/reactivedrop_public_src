@@ -1670,6 +1670,7 @@ void CNPC_Hunter::Precache()
 	UTIL_PrecacheOther( "hunter_flechette" );
 	UTIL_PrecacheOther( "sparktrail" );
 
+	PrecacheEffect( "HunterDamage" );
 	PrecacheEffect( "HunterMuzzleFlash" );
 
 	m_bInLargeOutdoorMap = false;
