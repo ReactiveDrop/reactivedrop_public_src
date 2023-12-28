@@ -3329,7 +3329,7 @@ namespace ReactiveDropInventory
 
 	void CheckPlaytimeItemGenerators()
 	{
-#ifdef RD_7A_DROPS
+#if defined( RD_7A_DROPS ) || defined( RD_7A_DROPS_PRE )
 		GET_INVENTORY_OR_BAIL;
 
 		pInventory->TriggerItemDrop( s_RD_Inventory_Manager.AddCraftItemTask( CRD_Inventory_Manager::CRAFT_DROP ), 7000 ); // Playtime Random Material Tokens Weekly

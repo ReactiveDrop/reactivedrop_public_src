@@ -15,6 +15,7 @@
 #define RD_7A_CHATWHEEL
 //#define RD_7A_CRAFTING
 //#define RD_7A_DROPS
+#define RD_7A_DROPS_PRE
 //#define RD_7A_ENEMIES
 #define RD_7A_LOADOUTS
 //#define RD_7A_QUESTS
@@ -38,6 +39,8 @@
 #define RD_STEAM_INPUT_ACTIONS
 // testing in production, starting december 1st 2023
 #define RD_7A_UI_REVAMP
+// testing in production, starting january 1st 2024
+#define RD_7A_DROPS_PRE
 
 #define RD_IS_RELEASE 1
 #endif
