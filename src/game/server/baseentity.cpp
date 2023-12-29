@@ -2455,6 +2455,11 @@ BEGIN_ENT_SCRIPTDESC_ROOT( CBaseEntity, "Root class of all server-side entities"
 	DEFINE_SCRIPTFUNC_NAMED( ScriptSoundDuration, "GetSoundDuration", "Returns float duration of the sound. Takes soundname and optional actormodelname.")
 	DEFINE_SCRIPTFUNC_NAMED( ScriptStopSound, "StopSound", "Stops a sound from this entity." )
 
+	DEFINE_SCRIPTFUNC_NAMED( ScriptDispatchParticleEffect, "DispatchParticleEffect", "Spawns a particle effect that follows the origin of this entity." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptDispatchParticleEffectLink, "DispatchParticleEffectLink", "Spawns a particle effect that follows the origin of this entity and has another entity's origin as control point 1." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptDispatchParticleEffectCP1, "DispatchParticleEffectCP1", "Spawns a particle effect at the origin of this entity with a specific offset for control point 1." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptStopParticleEffect, "StopParticleEffect", "Removes a particle effect from this entity by name." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptStopParticleEffects, "StopParticleEffects", "Removes all particle effects from this entity." )
 
 	DEFINE_SCRIPTFUNC( GetClassname, "" )
 	DEFINE_SCRIPTFUNC_NAMED( GetEntityNameAsCStr, "GetName", "" )

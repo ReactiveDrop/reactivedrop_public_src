@@ -1334,6 +1334,13 @@ public:
 	void					StopSound( const char *soundname, HSOUNDSCRIPTHANDLE& handle );
 	void					GenderExpandString( char const *in, char *out, int maxlen );
 
+	// See particle_parse.cpp
+	void ScriptDispatchParticleEffect( const char *name );
+	void ScriptDispatchParticleEffectLink( const char *name, HSCRIPT otherEntity );
+	void ScriptDispatchParticleEffectCP1( const char *name, Vector cp1 );
+	void ScriptStopParticleEffect( const char *name );
+	void ScriptStopParticleEffects();
+
 
 	static float GetSoundDuration( const char *soundname, char const *actormodel );
 

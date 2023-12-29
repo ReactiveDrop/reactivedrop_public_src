@@ -297,6 +297,8 @@ BEGIN_ENT_SCRIPTDESC( CBaseAnimating, CBaseEntity, "Animating models" )
 	DEFINE_SCRIPTFUNC( GetAttachmentBone, "Gets the bone for an attachment" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetBoneOrigin, "GetBoneOrigin", "Get the bone id's origin vector" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetBoneAngles, "GetBoneAngles", "Get the bone id's angles" )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptDispatchParticleEffectAttachment, "DispatchParticleEffectAttachment", "Spawns a particle effect that follows an attachment point of this entity." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptDispatchParticleEffectAttachmentLink, "DispatchParticleEffectAttachmentLink", "Spawns a particle effect that follows an attachment point of this entity and has another entity's origin as control point 1." )
 END_SCRIPTDESC();
 
 CBaseAnimating::CBaseAnimating()

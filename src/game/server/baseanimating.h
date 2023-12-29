@@ -358,7 +358,9 @@ public:
 
 	bool PrefetchSequence( int iSequence );
 
-
+	// See particle_parse.cpp
+	void ScriptDispatchParticleEffectAttachment( const char *name, const char *attachment );
+	void ScriptDispatchParticleEffectAttachmentLink( const char *name, const char *attachment, HSCRIPT otherEntity );
 
 
 private:

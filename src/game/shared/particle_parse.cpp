@@ -404,7 +404,7 @@ void StopParticleEffect( CBaseEntity *pEntity, const char *pszParticleName )
 }
 
 
-#ifndef CLIENT_DLL
+#ifdef GAME_DLL
 
 	extern CBaseEntity *GetNextCommandEntity( CBasePlayer *pPlayer, const char *name, CBaseEntity *ent );
 
@@ -471,4 +471,58 @@ void StopParticleEffect( CBaseEntity *pEntity, const char *pszParticleName )
 	}
 	static ConCommand particle_test_stop("particle_test_stop", CC_Particle_Test_Stop, "Stops all particle systems on the selected entities.\n\tArguments:   	{entity_name} / {class_name} / no argument picks what player is looking at ", FCVAR_CHEAT);
 
-#endif	//CLIENT_DLL
+void Script_DispatchParticleEffect( const char *name, Vector origin, Vector angles )
+{
+	QAngle angAngles{ VectorExpand( angles ) };
+	DispatchParticleEffect( name, origin, angAngles );
+}
+
+void Script_DispatchParticleEffectCP1( const char *name, Vector origin, Vector angles, Vector cp1 )
+{
+	QAngle angAngles{ VectorExpand( angles ) };
+	DispatchParticleEffect( name, origin, cp1, angAngles );
+}
+
+void CBaseEntity::ScriptDispatchParticleEffect( const char *name )
+{
+	DispatchParticleEffect( name, PATTACH_ABSORIGIN_FOLLOW, this, -1 );
+}
+
+void CBaseEntity::ScriptDispatchParticleEffectLink( const char *name, HSCRIPT otherEntity )
+{
+	DispatchParticleEffectLink( name, PATTACH_ABSORIGIN_FOLLOW, this, ToEnt( otherEntity ) );
+}
+
+void CBaseEntity::ScriptDispatchParticleEffectCP1( const char *name, Vector cp1 )
+{
+	DispatchParticleEffect( name, GetAbsOrigin(), cp1, GetAbsAngles(), this );
+}
+
+void CBaseAnimating::ScriptDispatchParticleEffectAttachment( const char *name, const char *attachment )
+{
+	DispatchParticleEffect( name, PATTACH_POINT_FOLLOW, this, attachment );
+}
+
+void CBaseAnimating::ScriptDispatchParticleEffectAttachmentLink( const char *name, const char *attachment, HSCRIPT otherEntity )
+{
+	int iAttachment = LookupAttachment( attachment );
+	if ( iAttachment == -1 )
+	{
+		Warning( "Model '%s' doesn't have attachment '%s' to attach particle system '%s' to.\n", STRING( GetModelName() ), attachment, name );
+		return;
+	}
+
+	DispatchParticleEffectLink( name, PATTACH_POINT_FOLLOW, this, ToEnt( otherEntity ), iAttachment );
+}
+
+void CBaseEntity::ScriptStopParticleEffect( const char *name )
+{
+	StopParticleEffect( this, name );
+}
+
+void CBaseEntity::ScriptStopParticleEffects()
+{
+	StopParticleEffects( this );
+}
+
+#endif // GAME_DLL

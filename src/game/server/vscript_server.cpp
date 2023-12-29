@@ -1658,6 +1658,10 @@ static int Script_GetDecalIndexForName( const char *decalName )
 	return decalsystem->GetDecalIndexForName( decalName );
 }
 
+// defined in particle_parse.cpp
+void Script_DispatchParticleEffect( const char *name, Vector origin, Vector angles );
+void Script_DispatchParticleEffectCP1( const char *name, Vector origin, Vector angles, Vector cp1 );
+
 bool VScriptServerInit()
 {
 	VMPROF_START
@@ -1748,6 +1752,8 @@ bool VScriptServerInit()
 				ScriptRegisterFunction( g_pScriptVM, GetEffectIndex, "Converts a previously precached effect into an index" );
 				ScriptRegisterFunction( g_pScriptVM, GetEffectNameFromIndex, "Converts a previously precached effect index into a string" );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_GetDecalIndexForName, "GetDecalIndexForName", "Get decal index from a string" );
+				ScriptRegisterFunctionNamed( g_pScriptVM, Script_DispatchParticleEffect, "DispatchParticleEffect", "Spawns a particle effect in the world." );
+				ScriptRegisterFunctionNamed( g_pScriptVM, Script_DispatchParticleEffectCP1, "DispatchParticleEffectCP1", "Spawns a particle effect in the world with a specific offset for control point 1." );
 
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_PlayerInstanceFromIndex, "PlayerInstanceFromIndex", "Get a script handle of a player using the player index." );
 				ScriptRegisterFunctionNamed( g_pScriptVM, Script_GetPlayerFromUserID, "GetPlayerFromUserID", "Given a user id, return the entity, or null." );
