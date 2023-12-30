@@ -21,12 +21,12 @@ function Paint()
 
 	if (win > 0)
 	{
-		local winText = TryLocalize("#asw_infection_win_zombie");
+		local winText = TryLocalize("#asw_infection_win_zombie_hud");
 		local winColor = [200, 0, 0];
 		local winColorAlt = [100, 0, 0];
 		if (win == 2)
 		{
-			winText = TryLocalize("#asw_infection_win_human");
+			winText = TryLocalize("#asw_infection_win_human_hud");
 			winColor = [0, 100, 200];
 			winColorAlt = [0, 50, 100];
 		}
