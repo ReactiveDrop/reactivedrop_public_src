@@ -301,4 +301,15 @@ namespace zbalermorna
 		flWide *= flTextSize;
 		flTall *= flTextSize;
 	}
+
+	float MeasureChar( char ch, float flTextSize )
+	{
+		int iGlyph = s_zbalermornaIndex[ch];
+		Assert( iGlyph );
+
+		const zbalermorna_glyph &glyph = s_zbalermornaGlyphs[iGlyph];
+
+		flTextSize *= s_flSizeCorrectiveFactor;
+		return s_zbalermornaAdvance1[glyph.advance] * flTextSize;
+	}
 }

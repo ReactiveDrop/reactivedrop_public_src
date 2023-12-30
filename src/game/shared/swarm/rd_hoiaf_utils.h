@@ -4,6 +4,8 @@
 
 #ifdef CLIENT_DLL
 #include <vgui/VGUI.h>
+
+class CBaseHudChat;
 #endif
 
 class SINGLE_INHERITANCE CRD_HoIAF_System : public CAutoGameSystemPerFrame
@@ -40,6 +42,11 @@ public:
 	const char *GetEventTimerURL( int index ) const;
 	int64_t GetEventStartTime( int index ) const;
 	int64_t GetEventEndTime( int index ) const;
+
+	// Chat Announcements
+#ifdef CLIENT_DLL
+	void InsertChatMessages( CBaseHudChat *pChat );
+#endif
 
 private:
 	void ParseIAFIntel();
@@ -86,6 +93,22 @@ private:
 		int64_t Ends;
 	};
 	CUtlVectorAutoPurge<EventTimer_t *> m_EventTimers;
+	struct ChatAnnouncement_t
+	{
+		CUtlString ID;
+		CUtlString Text;
+		CUtlString Zbalermorna;
+		int64_t NotBefore;
+		int64_t NotAfter;
+		Color Color;
+#ifdef CLIENT_DLL
+		vgui::HFont Font;
+#endif
+	};
+	CUtlVectorAutoPurge<ChatAnnouncement_t *> m_ChatAnnouncements;
+#ifdef CLIENT_DLL
+	CUtlSymbolTable m_ChatAnnouncementSeen;
+#endif
 };
 
 CRD_HoIAF_System *HoIAF();

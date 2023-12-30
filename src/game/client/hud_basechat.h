@@ -25,6 +25,13 @@ class CBaseHudChatInputLine;
 class CBaseHudChatEntry;
 class CHudChatFilterPanel;
 
+#ifdef INFESTED_DLL
+#include "MultiFontRichText.h"
+typedef vgui::MultiFontRichText CBaseHudChatRichText;
+#else
+typedef vgui::RichText CBaseHudChatRichText;
+#endif
+
 namespace vgui
 {
 	class IScheme;
@@ -92,9 +99,9 @@ inline wchar_t *CloneWString( const wchar_t *str )
 //-----------------------------------------------------------------------------
 // Purpose: An output/display line of the chat interface
 //-----------------------------------------------------------------------------
-class CBaseHudChatLine : public vgui::RichText
+class CBaseHudChatLine : public CBaseHudChatRichText
 {
-	typedef vgui::RichText BaseClass;
+	typedef CBaseHudChatRichText BaseClass;
 
 public:
 	CBaseHudChatLine( vgui::Panel *parent, const char *panelName );
@@ -137,6 +144,7 @@ protected:
 
 	CUtlVector< TextRange > m_textRanges;
 	wchar_t					*m_text;
+	friend class CRD_HoIAF_System;
 
 	int				m_iNameStart;
 	
@@ -152,9 +160,9 @@ private:
 };
 
 
-class CHudChatHistory : public vgui::RichText
+class CHudChatHistory : public CBaseHudChatRichText
 {
-	DECLARE_CLASS_SIMPLE( CHudChatHistory, vgui::RichText );
+	DECLARE_CLASS_SIMPLE( CHudChatHistory, CBaseHudChatRichText );
 public:
 
 	CHudChatHistory( vgui::Panel *pParent, const char *panelName );
@@ -295,6 +303,7 @@ public:
 
 protected:
 	CBaseHudChatLine		*FindUnusedChatLine( void );
+	friend class CRD_HoIAF_System;
 
 	CBaseHudChatInputLine	*m_pChatInput;
 	CBaseHudChatLine		*m_ChatLine;

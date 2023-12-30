@@ -5,6 +5,7 @@
 
 #ifdef CLIENT_DLL
 #include <vgui/ISurface.h>
+#include "hud_basechat.h"
 #include "gameui/swarm/basemodpanel.h"
 #include "gameui/swarm/basemodframe.h"
 #endif
@@ -13,6 +14,10 @@
 #include "tier0/memdbgon.h"
 
 // Note: This system is documented in more detail at <https://developer.reactivedrop.com/iaf-intel.html>.
+
+#ifdef CLIENT_DLL
+extern ConVar hud_saytext_time;
+#endif
 
 CRD_HoIAF_System::CRD_HoIAF_System() :
 	CAutoGameSystemPerFrame{ IsClientDll() ? "CRD_HoIAF_System (client)" : "CRD_HoIAF_System (server)" },
@@ -151,6 +156,68 @@ int64_t CRD_HoIAF_System::GetEventEndTime( int index ) const
 	return m_EventTimers[index]->Ends;
 }
 
+#ifdef CLIENT_DLL
+void CRD_HoIAF_System::InsertChatMessages( CBaseHudChat *pChat )
+{
+	int64_t iCurrentTime = SteamUtils() ? SteamUtils()->GetServerRealTime() : 0;
+	FOR_EACH_VEC( m_ChatAnnouncements, i )
+	{
+		if ( m_ChatAnnouncements[i]->NotBefore > iCurrentTime )
+			continue;
+		if ( m_ChatAnnouncements[i]->NotAfter < iCurrentTime )
+			continue;
+		if ( m_ChatAnnouncementSeen.Find( m_ChatAnnouncements[i]->ID ).IsValid() )
+			continue;
+
+		m_ChatAnnouncementSeen.AddString( m_ChatAnnouncements[i]->ID );
+
+		CBaseHudChatLine *line = pChat->FindUnusedChatLine();
+		if ( !line )
+			line = pChat->FindUnusedChatLine();
+		Assert( line );
+		if ( !line )
+			continue;
+
+		line->SetText( "" );
+		line->SetExpireTime();
+
+		line->SetVisible( false );
+		line->SetNameStart( 0 );
+		line->SetNameLength( 0 );
+
+		if ( m_ChatAnnouncements[i]->Zbalermorna.IsEmpty() )
+		{
+			wchar_t wbuf[2048];
+			V_UTF8ToUnicode( m_ChatAnnouncements[i]->Text, wbuf, sizeof( wbuf ) );
+
+			if ( line->m_text )
+			{
+				delete[] line->m_text;
+			}
+			line->m_text = CloneWString( wbuf );
+			line->m_textRanges.RemoveAll();
+
+			TextRange range;
+			range.start = 0;
+			range.end = V_wcslen( wbuf );
+			range.color = m_ChatAnnouncements[i]->Color;
+			line->m_textRanges.AddToTail( range );
+
+			line->Colorize();
+		}
+		else if ( pChat->GetChatHistory() )
+		{
+			pChat->GetChatHistory()->InsertString( "\n" );
+			pChat->GetChatHistory()->InsertColorChange( m_ChatAnnouncements[i]->Color );
+			pChat->GetChatHistory()->InsertFontChange( m_ChatAnnouncements[i]->Font );
+			pChat->GetChatHistory()->InsertFade( hud_saytext_time.GetFloat(), CHAT_HISTORY_IDLE_FADE_TIME );
+			pChat->GetChatHistory()->InsertZbalermornaString( m_ChatAnnouncements[i]->Zbalermorna );
+			pChat->GetChatHistory()->InsertFade( -1, -1 );
+		}
+	}
+}
+#endif
+
 void CRD_HoIAF_System::ParseIAFIntel()
 {
 	m_iExpireAt = int64_t( m_pIAFIntel->GetUint64( "expires" ) );
@@ -158,6 +225,7 @@ void CRD_HoIAF_System::ParseIAFIntel()
 	m_iLatestPatch = m_pIAFIntel->GetInt( "latestPatch" );
 	m_FeaturedNews.PurgeAndDeleteElements();
 	m_EventTimers.PurgeAndDeleteElements();
+	m_ChatAnnouncements.PurgeAndDeleteElements();
 
 	FOR_EACH_SUBKEY( m_pIAFIntel, pCommand )
 	{
@@ -230,6 +298,26 @@ void CRD_HoIAF_System::ParseIAFIntel()
 			pTimer->Ends = pCommand->GetUint64( "ends" );
 
 			m_EventTimers.AddToTail( pTimer );
+		}
+		else if ( !V_stricmp( szName, "chatAnnouncement" ) )
+		{
+			Assert( pCommand->GetDataType() == KeyValues::TYPE_NONE );
+
+			ChatAnnouncement_t *pAnnouncement = new ChatAnnouncement_t;
+
+			pAnnouncement->ID = pCommand->GetString( "id" );
+			LoadTranslatedString( pAnnouncement->Text, pCommand, "text_%s" );
+			pAnnouncement->Zbalermorna = pCommand->GetString( "text_zbalermorna" );
+			pAnnouncement->NotBefore = pCommand->GetUint64( "not_before" );
+			pAnnouncement->NotAfter = pCommand->GetUint64( "not_after" );
+			pAnnouncement->Color = pCommand->GetColor( "color", Color{ 255, 0, 0, 255 } );
+#ifdef CLIENT_DLL
+			vgui::HScheme hScheme = vgui::scheme()->LoadSchemeFromFileEx( NULL, "resource/ChatScheme.res", "ChatScheme" );
+			vgui::IScheme *pScheme = vgui::scheme()->GetIScheme( hScheme );
+			pAnnouncement->Font = pScheme->GetFont( pCommand->GetString( "font", "ChatFont" ), false );
+#endif
+
+			m_ChatAnnouncements.AddToTail( pAnnouncement );
 		}
 		else
 		{

@@ -22,6 +22,7 @@
 #include "c_asw_marine.h"
 #include "c_asw_game_resource.h"
 #include "rd_text_filtering.h"
+#include "rd_hoiaf_utils.h"
 
 DECLARE_HUDELEMENT_FLAGS( CHudChat, HUDELEMENT_SS_FULLSCREEN_ONLY );
 
@@ -506,7 +507,12 @@ void CHudChat::FadeChatHistory()
 	else
 	{
 		SetBriefingPosition( false );
-	}	
+	}
+
+	if ( engine->IsInGame() )
+	{
+		HoIAF()->InsertChatMessages( this );
+	}
 
 	BaseClass::FadeChatHistory();
 

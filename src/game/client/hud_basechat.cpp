@@ -293,7 +293,7 @@ wchar_t* ReadChatTextString( bf_read &msg, wchar_t *pOut, int outSize, bool stri
 //			*panelName - 
 //-----------------------------------------------------------------------------
 CBaseHudChatLine::CBaseHudChatLine( vgui::Panel *parent, const char *panelName ) : 
-	vgui::RichText( parent, panelName )
+	CBaseHudChatRichText( parent, panelName )
 {
 	m_hFont = m_hFontMarlett = 0;
 	m_flExpireTime = 0.0f;
@@ -318,7 +318,7 @@ void CBaseHudChatLine::ApplySchemeSettings(vgui::IScheme *pScheme)
 {
 	BaseClass::ApplySchemeSettings(pScheme);
 
-	m_hFont = pScheme->GetFont( "Default" );
+	m_hFont = pScheme->GetFont( "ChatFont" );
 
 	SetBgColor( Color( 0, 0, 0, 100 ) );
 
@@ -368,6 +368,7 @@ void CBaseHudChatLine::PerformFadeout( void )
 		SetText( "" );
 
 		InsertColorChange( Color( r, g, b, 255 ) );
+		InsertFontChange( m_hFont );
 		InsertString( wbuf );
 	}
 	else if ( curtime <= m_flExpireTime && curtime > m_flExpireTime - CHATLINE_FADE_TIME )
@@ -382,6 +383,7 @@ void CBaseHudChatLine::PerformFadeout( void )
 		SetText( "" );
 
 		InsertColorChange( Color( lr * frac, lg * frac, lb * frac, alpha ) );
+		InsertFontChange( m_hFont );
 		InsertString( wbuf );
 	}
 	else
@@ -391,6 +393,7 @@ void CBaseHudChatLine::PerformFadeout( void )
 		SetText( "" );
 
 		InsertColorChange( Color( lr, lg, lb, 255 ) );
+		InsertFontChange( m_hFont );
 		InsertString( wbuf );
 	}
 
@@ -2204,6 +2207,7 @@ void CBaseHudChatLine::Colorize( int alpha )
 			color = m_textRanges[i].color;
 			color[3] = alpha;
 			InsertColorChange( color );
+			InsertFontChange( m_hFont );
 			InsertString( wText );
 
 			// BenLubar(chat-log-unicode): ConColorMsg does not handle %ls correctly for non-ASCII characters. Convert to UTF-8 and write the string directly.
@@ -2216,6 +2220,7 @@ void CBaseHudChatLine::Colorize( int alpha )
 			if ( pChat && pChat->GetChatHistory() )
 			{	
 				pChat->GetChatHistory()->InsertColorChange( color );
+				pChat->GetChatHistory()->InsertFontChange( m_hFont );
 				pChat->GetChatHistory()->InsertString( wText );
 				pChat->GetChatHistory()->InsertFade( hud_saytext_time.GetFloat(), CHAT_HISTORY_IDLE_FADE_TIME );
 
