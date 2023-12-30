@@ -954,6 +954,7 @@ void asw_suicide_f()
 	}
 }
 ConCommand asw_suicide( "asw_suicide", asw_suicide_f, "Kills your current marine", 0 );
+ConCommand kill( "kill", asw_suicide_f, "Kills your current marine", 0 );
 
 void asw_hide_marine_f()
 {
