@@ -873,279 +873,279 @@ const int g_nNumFlavorSpeech = 25;
 MarineFlavorSpeech g_MarineFlavorSpeech[ g_nNumFlavorSpeech ][ ASW_VOICE_TYPE_TOTAL ] =
 {
 	{
-		{ 44, 1 }, // Sarge
-		{ 1,0 }, // Jaeger
-		{ 3,1 }, // Wildcat
-		{ 0,0 }, // Wolf
-		{ 0,1 }, // Faith
-		{ 2,2 }, // Bastille
-		{ 0,1 }, // Crash
-		{ 0,0 }, // Flynn
-		{ 0,1 }, // Vegas
+		{ CHATTER_BIOMASS, 1 }, // Sarge: Signs of infestation.
+		{ CHATTER_SELECTION_INJURED, 0 }, // Jaeger: Never thought it would end like this.
+		{ CHATTER_IDLE, 1 }, // Wildcat: I say we set some T-75 explosives and get the hell out!
+		{ CHATTER_SELECTION, 0 }, // Wolfe: Locked and loaded.
+		{ CHATTER_SELECTION, 1 }, // Faith: What do you need?
+		{ CHATTER_USE, 2 }, // Bastille: Good thinking.
+		{ CHATTER_SELECTION, 1 }, // Crash: Ready to get it on!
+		{ CHATTER_SELECTION, 0 }, // Flynn
+		{ CHATTER_SELECTION, 1 }, // Vegas: Wanna play a little game?
 	},
 	{
-		{ 123, 0 }, // Sarge
-		{ 3,5 }, // Jaeger
-		{ 3,2 }, // Wildcat
-		{ 1,0 }, // Wolf
-		{ 1,3 }, // Faith
-		{ 2,3 }, // Bastille
-		{ 1,1 }, // Crash
-		{ 1,1 }, // Flynn
-		{ 1,2 }, // Vegas
+		{ CHATTER_MISC, 0 }, // Sarge: Squad, form up.
+		{ CHATTER_IDLE, 5 }, // Jaeger: I've got a bad feeling about this place.
+		{ CHATTER_IDLE, 2 }, // Wildcat: Let's get this party started.
+		{ CHATTER_SELECTION_INJURED, 0 }, // Wolfe: Ain't got time to bleed.
+		{ CHATTER_SELECTION_INJURED, 3 }, // Faith: Let's be careful, okay?
+		{ CHATTER_USE, 3 }, // Bastille: Immediatement.
+		{ CHATTER_SELECTION_INJURED, 1 }, // Crash: I didn't sign up for this!
+		{ CHATTER_SELECTION_INJURED, 1 }, // Flynn
+		{ CHATTER_SELECTION_INJURED, 2 }, // Vegas: I still got an ace up my sleeve.
 	},
 	{
-		{ 123, 2 }, // Sarge
-		{ 3,10 }, // Jaeger
-		{ 3,4 }, // Wildcat
-		{ 1,3 }, // Wolf
-		{ 2,2 }, // Faith
-		{ 3,0 }, // Bastille
-		{ 2,0 }, // Crash
-		{ 3,0 }, // Flynn
-		{ 2,1 }, // Vegas
+		{ CHATTER_MISC, 2 }, // Sarge: Marines, into positions.
+		{ CHATTER_IDLE, 10 }, // Jaeger: There's no bug trouble that can't be cured by a large case of explosives.
+		{ CHATTER_IDLE, 4 }, // Wildcat: Peace through superior firepower.
+		{ CHATTER_SELECTION_INJURED, 3 }, // Wolfe: It's time we hit em where it hurts most. All over.
+		{ CHATTER_USE, 2 }, // Faith: Excellent.
+		{ CHATTER_IDLE, 0 }, // Bastille: Careful, they could be anywhere.
+		{ CHATTER_USE, 0 }, // Crash: I got skills.
+		{ CHATTER_IDLE, 0 }, // Flynn
+		{ CHATTER_USE, 1 }, // Vegas: I'm on it.
 	},
 	{
-		{ 104, 0 }, // Sarge
-		{ 3,12 }, // Jaeger
-		{ 3,5 }, // Wildcat
-		{ 2,0 }, // Wolf
-		{ 2,0 }, // Faith
-		{ 3,8 }, // Bastille
-		{ 3,3 }, // Crash
-		{ 3,2 }, // Flynn
-		{ 3,0 }, // Vegas
+		{ CHATTER_SARGE_IDLE_REPLY, 0 }, // Sarge: Watch your mouth, Marine.
+		{ CHATTER_IDLE, 12 }, // Jaeger: This isn't a good day to run out of smokes.
+		{ CHATTER_IDLE, 5 }, // Wildcat: Who dares, wins.
+		{ CHATTER_USE, 0 }, // Wolfe: All right!
+		{ CHATTER_USE, 0 }, // Faith: Absolutely.
+		{ CHATTER_IDLE, 8 }, // Bastille: Ignore the rumors. Stimpacks aren't that addictive.
+		{ CHATTER_IDLE, 3 }, // Crash: I shoulda stolen more money to put up with this shit.
+		{ CHATTER_IDLE, 2 }, // Flynn
+		{ CHATTER_IDLE, 0 }, // Vegas: 4 to 1, eh? I like the odds.
 	},
 	{
-		{ 104, 1 }, // Sarge
-		{ 3,13 }, // Jaeger
-		{ 3,6 }, // Wildcat
-		{ 3,1 }, // Wolf
-		{ 3,4 }, // Faith
-		{ 3,10 }, // Bastille
-		{ 3,4 }, // Crash
-		{ 123,0 }, // Flynn
-		{ 3,2 }, // Vegas
+		{ CHATTER_SARGE_IDLE_REPLY, 1 }, // Sarge: You secure that shit.
+		{ CHATTER_IDLE, 13 }, // Jaeger: Why can't we set fire to this whole damn colony?
+		{ CHATTER_IDLE, 6 }, // Wildcat: Shouldn't we be wasting bugs instead of cooling our heels?
+		{ CHATTER_IDLE, 1 }, // Wolfe: I smell bugs. They're nasty and almost as ugly as me.
+		{ CHATTER_IDLE, 4 }, // Faith: It's way too quiet.
+		{ CHATTER_IDLE, 10 }, // Bastille: I hope we send every last one of these bastards straight to hell.
+		{ CHATTER_IDLE, 4 }, // Crash: I tell you what, you guys are lucky I'm here.
+		{ CHATTER_MISC, 0 }, // Flynn
+		{ CHATTER_IDLE, 2 }, // Vegas: Anyone got a deck of cards?
 	},
 	{
-		{ 114, 1 }, // Sarge
-		{ 3,9 }, // Jaeger
-		{ 0,0 }, // Wildcat
-		{ 3,0 }, // Wolf
-		{ 3,7 }, // Faith
-		{ 3,11 }, // Bastille
-		{ 27,2 }, // Crash
-		{ 3,5 }, // Flynn
-		{ 3,8 }, // Vegas
+		{ CHATTER_SARGE_JAEGER_CONV_1_REPLY, 1 }, // Sarge: I need a drink.
+		{ CHATTER_IDLE, 9 }, // Jaeger: Stay sharp, people, these guys don't take prisoners.
+		{ CHATTER_SELECTION, 0 }, // Wildcat: Anytime, anywhere.
+		{ CHATTER_IDLE, 0 }, // Wolfe: Don't get too close. I got a thing for collateral damage.
+		{ CHATTER_IDLE, 7 }, // Faith: This all seems like a horrible nightmare.
+		{ CHATTER_IDLE, 11 }, // Bastille: Just how many more bugs are on this rock?
+		{ CHATTER_SUPPLIES_AMMO, 2 }, // Crash: Oh yeah, that's what I like to see.
+		{ CHATTER_IDLE, 5 }, // Flynn
+		{ CHATTER_IDLE, 8 }, // Vegas: Who's up for some tequila?
 	},
 	{
-		{ 2, 2 }, // Sarge
-		{ 3,7 }, // Jaeger
-		{ 1,2 }, // Wildcat
-		{ 3,2 }, // Wolf
-		{ 3,3 }, // Faith
-		{ 3,13 }, // Bastille
-		{ 54,3 }, // Crash
-		{ 3,3 }, // Flynn
-		{ 3,5 }, // Vegas
+		{ CHATTER_USE, 2 }, // Sarge: Looks good.
+		{ CHATTER_IDLE, 7 }, // Jaeger: Just another day in the Corps.
+		{ CHATTER_SELECTION_INJURED, 2 }, // Wildcat: They'll pay for this.
+		{ CHATTER_IDLE, 2 }, // Wolfe: I got some scores to settle.
+		{ CHATTER_IDLE, 3 }, // Faith: I hope we pull through without too many injuries.
+		{ CHATTER_IDLE, 13 }, // Bastille: Stay sharp, mes amis.
+		{ CHATTER_MAD_FIRING, 3 }, // Crash: You want some?
+		{ CHATTER_IDLE, 3 }, // Flynn
+		{ CHATTER_IDLE, 5 }, // Vegas: If I were a betting man, I'd say the worst is yet to come.
 	},
 	{
-		{ 3, 5 }, // Sarge
-		{ 3,6 }, // Jaeger
-		{ 45,1 }, // Wildcat
-		{ 3,3 }, // Wolf
-		{ 3,8 }, // Faith
-		{ 3,0 }, // Bastille
-		{ 72,4 }, // Crash
-		{ 3,1 }, // Flynn
-		{ 6,3 }, // Vegas
+		{ CHATTER_IDLE, 5 }, // Sarge: Stay sharp, look alive.
+		{ CHATTER_IDLE, 6 }, // Jaeger: Jesus, I need a vacation.
+		{ CHATTER_TIME_TO_LEAVE, 1 }, // Wildcat: Time to get the hell out.
+		{ CHATTER_IDLE, 3 }, // Wolfe: The only good bug is a dead bug.
+		{ CHATTER_IDLE, 8 }, // Faith: This place isn't secure.
+		{ CHATTER_IDLE, 0 }, // Bastille: Careful, they could be anywhere.
+		{ CHATTER_HACK_STARTED, 4 }, // Crash: Time for me to work my magic.
+		{ CHATTER_IDLE, 1 }, // Flynn
+		{ CHATTER_FOLLOW_ME, 3 }, // Vegas: Time to roll the dice, Compadre.
 	},
 	{
-		{ 3, 7 }, // Sarge
-		{ 3,2 }, // Jaeger
-		{ 54,1 }, // Wildcat
-		{ 3,6 }, // Wolf
-		{ 3,9 }, // Faith
-		{ 3,15 }, // Bastille
-		{ 73,1 }, // Crash
-		{ 5,3 }, // Flynn
-		{ 45,1 }, // Vegas
+		{ CHATTER_IDLE, 7 }, // Sarge: I love this job.
+		{ CHATTER_IDLE, 2 }, // Jaeger: All this fighting makes a Marine hungry.
+		{ CHATTER_MAD_FIRING, 1 }, // Wildcat: Payback's a bitch, ain't it.
+		{ CHATTER_IDLE, 6 }, // Wolfe: This is getting more fun by the minute.
+		{ CHATTER_IDLE, 9 }, // Faith: Wait, I hear something.
+		{ CHATTER_IDLE, 15 }, // Bastille: What was that?
+		{ CHATTER_HACK_LONG_STARTED, 1 }, // Crash: Got my back, right?
+		{ CHATTER_FIRING_AT_ALIEN, 3 }, // Flynn
+		{ CHATTER_TIME_TO_LEAVE, 1 }, // Vegas: Sweet! Tequila, here I come.
 	},
 	{
-		{ 3, 8 }, // Sarge
-		{ 5,2 }, // Jaeger
-		{ 61,0 }, // Wildcat
-		{ 3,4 }, // Wolf
-		{ 54,2 }, // Faith
-		{ 3,5 }, // Bastille
-		{ 75,4 }, // Crash
-		{ 75,0 }, // Flynn
-		{ 47,2 }, // Vegas
+		{ CHATTER_IDLE, 8 }, // Sarge: Ah, another fine day in the Interstellar Armed Forces.
+		{ CHATTER_FIRING_AT_ALIEN, 2 }, // Jaeger: Eat this!
+		{ CHATTER_COMPLIMENTS, 0 }, // Wildcat: Nice job!
+		{ CHATTER_IDLE, 4 }, // Wolfe: Remember, you don't hurt em, if you don't hit em.
+		{ CHATTER_MAD_FIRING, 2 }, // Faith: I'll kill you all!
+		{ CHATTER_IDLE, 5 }, // Bastille: Great, now I'm hearing things.
+		{ CHATTER_HACK_FINISHED, 4 }, // Crash: Oh yeah, who's the man?
+		{ CHATTER_HACK_FINISHED, 0 }, // Flynn
+		{ CHATTER_SHIELDBUG, 2 }, // Vegas: Madre de dios!
 	},
 	{
-		{ 3, 12 }, // Sarge
-		{ 54,3 }, // Jaeger
-		{ 3,3 }, // Wildcat
-		{ 3,5 }, // Wolf
-		{ 54,3 }, // Faith
-		{ 45,2 }, // Bastille
-		{ 75,4 }, // Crash
-		{ 61,0 }, // Flynn
-		{ 54,2 }, // Vegas
+		{ CHATTER_IDLE, 12 }, // Sarge: This is the Interstellar Armed Forces, not a Gaddamned picnic.
+		{ CHATTER_MAD_FIRING, 3 }, // Jaeger: Rock and roll!
+		{ CHATTER_IDLE, 3 }, // Wildcat: Meow.
+		{ CHATTER_IDLE, 5 }, // Wolfe: There's only one way to solve this, and I think I'm gonna enjoy it.
+		{ CHATTER_MAD_FIRING, 3 }, // Faith: Payback's a bitch, ain't it?
+		{ CHATTER_TIME_TO_LEAVE, 2 }, // Bastille: Time to make an exit.
+		{ CHATTER_HACK_FINISHED, 4 }, // Crash: Oh yeah, who's the man?
+		{ CHATTER_COMPLIMENTS, 0 }, // Flynn
+		{ CHATTER_MAD_FIRING, 2 }, // Vegas: Oh, you wanna play rough.
 	},
 	{
-		{ 3, 2 }, // Sarge
-		{ 54,4 }, // Jaeger
-		{ 108,1 }, // Wildcat
-		{ 3,6 }, // Wolf
-		{ 71,2 }, // Faith
-		{ 54,1 }, // Bastille
-		{ 61,2 }, // Crash
-		{ 123,0 }, // Flynn
-		{ 54,0 }, // Vegas
+		{ CHATTER_IDLE, 2 }, // Sarge: Watch your spacing, team.
+		{ CHATTER_MAD_FIRING, 4 }, // Jaeger: You want some?
+		{ CHATTER_AUTOGUN_REPLY, 1 }, // Wildcat: Hell, yeah!
+		{ CHATTER_IDLE, 6 }, // Wolfe: This is getting more fun by the minute.
+		{ CHATTER_MEDS_NONE, 2 }, // Faith: Out of meds. Try not to get hurt.
+		{ CHATTER_MAD_FIRING, 1 }, // Bastille: Eat this, alien scum!
+		{ CHATTER_COMPLIMENTS, 2 }, // Crash: Smooth.
+		{ CHATTER_MISC, 0 }, // Flynn
+		{ CHATTER_MAD_FIRING, 0 }, // Vegas: Adios, muchachos.
 	},
 	{
-		{ 3, 9 }, // Sarge
-		{ 108,0 }, // Jaeger
-		{ 63,0 }, // Wildcat
-		{ 66,2 }, // Wolf
-		{ 84,1 }, // Faith
-		{ 69,13 }, // Bastille
-		{ 82,0 }, // Crash
-		{ 85,0 }, // Flynn
-		{ 54,3 }, // Vegas
+		{ CHATTER_IDLE, 9 }, // Sarge: So far, so good.
+		{ CHATTER_AUTOGUN_REPLY, 0 }, // Jaeger: That's the spirit.
+		{ CHATTER_IMPATIENCE, 0 }, // Wildcat: Christ, what's taking so long?
+		{ CHATTER_COMPLIMENTS_WILDCAT, 2 }, // Wolfe: Nice shooting, Kid.
+		{ CHATTER_MEDIC_COMPLAIN, 1 }, // Faith: You just love getting in harm's way, don't you?
+		{ CHATTER_HEALING, 13 }, // Bastille: Why, you should be dead, but you're not.
+		{ CHATTER_CRASH_COMPLAIN, 0 }, // Crash: I can't stand this place much longer.
+		{ CHATTER_MEDIC_COMPLAIN_REPLY, 0 }, // Flynn
+		{ CHATTER_MAD_FIRING, 3 }, // Vegas: You think you can take me?
 	},
 	{
-		{ 47, 1 }, // Sarge
-		{ 101,0 }, // Jaeger
-		{ 4,0 }, // Wildcat
-		{ 123,3 }, // Wolf
-		{ 0,1 }, // Faith
-		{ 69,18 }, // Bastille
-		{ 96,0 }, // Crash
-		{ 0,0 }, // Flynn
-		{ 72,0 }, // Vegas
+		{ CHATTER_SHIELDBUG, 1 }, // Sarge: Holy shit!
+		{ CHATTER_STILL_BREATHING, 0 }, // Jaeger: You guys still breathing?
+		{ CHATTER_FRIENDLY_FIRE, 0 }, // Wildcat: Christ, man.
+		{ CHATTER_MISC, 3 }, // Wolfe: You saved my life.
+		{ CHATTER_SELECTION, 1 }, // Faith: What do you need?
+		{ CHATTER_HEALING, 18 }, // Bastille: You're still alive, well, I think.
+		{ CHATTER_CRASH_IDLE, 0 }, // Crash: Does anyone have any idea what we are doing here?
+		{ CHATTER_SELECTION, 0 }, // Flynn
+		{ CHATTER_HACK_STARTED, 0 }, // Vegas: Ahh, finally something worthy of my time.
 	},
 	{
-		{ 52, 2 }, // Sarge
-		{ 1,0 }, // Jaeger
-		{ 3,1 }, // Wildcat
-		{ 110,8 }, // Wolf
-		{ 1,3 }, // Faith
-		{ 69,10 }, // Bastille
-		{ 2,1 }, // Crash
-		{ 85,0 }, // Flynn
-		{ 73,7 }, // Vegas
+		{ CHATTER_GRENADE, 2 }, // Sarge: Eat this!
+		{ CHATTER_SELECTION_INJURED, 0 }, // Jaeger: Never thought it would end like this.
+		{ CHATTER_IDLE, 1 }, // Wildcat: I say we set some T-75 explosives and get the hell out!
+		{ CHATTER_WOLFE_BEST_REPLY, 8 }, // Wolfe: Well, that sounds like a challenge.
+		{ CHATTER_SELECTION_INJURED, 3 }, // Faith: Let's be careful, okay?
+		{ CHATTER_HEALING, 10 }, // Bastille: That should help.
+		{ CHATTER_USE, 1 }, // Crash: No problem.
+		{ CHATTER_MEDIC_COMPLAIN_REPLY, 0 }, // Flynn
+		{ CHATTER_HACK_LONG_STARTED, 7 }, // Vegas: Watch my back, ok?
 	},
 	{
-		{ 3, 13 }, // Sarge
-		{ 3,5 }, // Jaeger
-		{ 3,2 }, // Wildcat
-		{ 85,0 }, // Wolf
-		{ 2,2 }, // Faith
-		{ 71,0 }, // Bastille
-		{ 3,5 }, // Crash
-		{ 1,1 }, // Flynn
-		{ 75,4 }, // Vegas
+		{ CHATTER_IDLE, 13 }, // Sarge: Well, time to earn those paychecks.
+		{ CHATTER_IDLE, 5 }, // Jaeger: I've got a bad feeling about this place.
+		{ CHATTER_IDLE, 2 }, // Wildcat: Let's get this party started.
+		{ CHATTER_MEDIC_COMPLAIN_REPLY, 0 }, // Wolfe: Is that a trick question?
+		{ CHATTER_USE, 2 }, // Faith: Excellent.
+		{ CHATTER_MEDS_NONE, 0 }, // Bastille: I'm out of meds.
+		{ CHATTER_IDLE, 5 }, // Crash: Wow, this place has seen some action.
+		{ CHATTER_SELECTION_INJURED, 1 }, // Flynn
+		{ CHATTER_HACK_FINISHED, 4 }, // Vegas: Too easy!
 	},
 	{
-		{ 3, 14 }, // Sarge
-		{ 3,10 }, // Jaeger
-		{ 3,4 }, // Wildcat
-		{ 0,0 }, // Wolf
-		{ 2,0 }, // Faith
-		{ 61,0 }, // Bastille
-		{ 0,1 }, // Crash
-		{ 3,0 }, // Flynn
-		{ 61,0 }, // Vegas
+		{ CHATTER_IDLE, 14 }, // Sarge: Check your corners.
+		{ CHATTER_IDLE, 10 }, // Jaeger: There's no bug trouble that can't be cured by a large case of explosives.
+		{ CHATTER_IDLE, 4 }, // Wildcat: Peace through superior firepower.
+		{ CHATTER_SELECTION, 0 }, // Wolfe: Locked and loaded.
+		{ CHATTER_USE, 0 }, // Faith: Absolutely.
+		{ CHATTER_COMPLIMENTS, 0 }, // Bastille: Good kill, mon ami!
+		{ CHATTER_SELECTION, 1 }, // Crash: Ready to get it on!
+		{ CHATTER_IDLE, 0 }, // Flynn
+		{ CHATTER_COMPLIMENTS, 0 }, // Vegas: Good job, amigo.
 	},
 	{
-		{ 3, 14 }, // Sarge
-		{ 3,12 }, // Jaeger
-		{ 3,5 }, // Wildcat
-		{ 1,0 }, // Wolf
-		{ 3,4 }, // Faith
-		{ 123,11 }, // Bastille
-		{ 1,3 }, // Crash
-		{ 3,2 }, // Flynn
-		{ 61,1 }, // Vegas
+		{ CHATTER_IDLE, 14 }, // Sarge: Check your corners.
+		{ CHATTER_IDLE, 12 }, // Jaeger: This isn't a good day to run out of smokes.
+		{ CHATTER_IDLE, 5 }, // Wildcat: Who dares, wins.
+		{ CHATTER_SELECTION_INJURED, 0 }, // Wolfe: Ain't got time to bleed.
+		{ CHATTER_IDLE, 4 }, // Faith: It's way too quiet.
+		{ CHATTER_MISC, 11 }, // Bastille: You're starting to be annoying.
+		{ CHATTER_SELECTION_INJURED, 3 }, // Crash
+		{ CHATTER_IDLE, 2 }, // Flynn
+		{ CHATTER_COMPLIMENTS, 1 }, // Vegas: Impressive.
 	},
 	{
-		{ 3, 16 }, // Sarge
-		{ 3,13 }, // Jaeger
-		{ 3,6 }, // Wildcat
-		{ 1,3 }, // Wolf
-		{ 3,7 }, // Faith
-		{ 123,7 }, // Bastille
-		{ 2,0 }, // Crash
-		{ 1,1 }, // Flynn
-		{ 61,2 }, // Vegas
+		{ CHATTER_IDLE, 16 }, // Sarge: Proceed by squads, we got a job to do.
+		{ CHATTER_IDLE, 13 }, // Jaeger: Why can't we set fire to this whole damn colony?
+		{ CHATTER_IDLE, 6 }, // Wildcat: Shouldn't we be wasting bugs instead of cooling our heels?
+		{ CHATTER_SELECTION_INJURED, 3 }, // Wolfe: It's time we hit em where it hurts most. All over.
+		{ CHATTER_IDLE, 7 }, // Faith: This all seems like a horrible nightmare.
+		{ CHATTER_MISC, 7 }, // Bastille: If we're lucky the wounds will be healed when we wake up from cryosleep.
+		{ CHATTER_USE, 0 }, // Crash: I got skills.
+		{ CHATTER_SELECTION_INJURED, 1 }, // Flynn
+		{ CHATTER_COMPLIMENTS, 2 }, // Vegas: Nice one, amigo.
 	},
 	{
-		{ 3, 17 }, // Sarge
-		{ 3,9 }, // Jaeger
-		{ 0,0 }, // Wildcat
-		{ 2,0 }, // Wolf
-		{ 3,3 }, // Faith
-		{ 83,0 }, // Bastille
-		{ 3,3 }, // Crash
-		{ 3,5 }, // Flynn
-		{ 63,0 }, // Vegas
+		{ CHATTER_IDLE, 17 }, // Sarge: Let's do this by the book.
+		{ CHATTER_IDLE, 9 }, // Jaeger: Stay sharp, people, these guys don't take prisoners.
+		{ CHATTER_SELECTION, 0 }, // Wildcat: Anytime, anywhere.
+		{ CHATTER_USE, 0 }, // Wolfe: All right!
+		{ CHATTER_IDLE, 3 }, // Faith: I hope we pull through without too many injuries.
+		{ CHATTER_CRASH_COMPLAIN_REPLY, 0 }, // Bastille: Maybe you should report a nervous breakdown.
+		{ CHATTER_IDLE, 3 }, // Crash: I shoulda stolen more money to put up with this shit.
+		{ CHATTER_IDLE, 5 }, // Flynn
+		{ CHATTER_IMPATIENCE, 0 }, // Vegas: Clock is ticking, amigo.
 	},
 	{
-		{ 61, 1 }, // Sarge
-		{ 3,7 }, // Jaeger
-		{ 1,2 }, // Wildcat
-		{ 3,1 }, // Wolf
-		{ 3,8 }, // Faith
-		{ 84,1 }, // Bastille
-		{ 3,4 }, // Crash
-		{ 3,3 }, // Flynn
-		{ 112,1 }, // Vegas
+		{ CHATTER_COMPLIMENTS, 1 }, // Sarge: That's what I like to hear.
+		{ CHATTER_IDLE, 7 }, // Jaeger: Just another day in the Corps.
+		{ CHATTER_SELECTION_INJURED, 2 }, // Wildcat: They'll pay for this.
+		{ CHATTER_IDLE, 1 }, // Wolfe: I smell bugs. They're nasty and almost as ugly as me.
+		{ CHATTER_IDLE, 8 }, // Faith: This place isn't secure.
+		{ CHATTER_MEDIC_COMPLAIN, 1 }, // Bastille: Can't you not get hurt for a change?
+		{ CHATTER_IDLE, 4 }, // Crash: I tell you what, you guys are lucky I'm here.
+		{ CHATTER_IDLE, 3 }, // Flynn
+		{ CHATTER_FIRST_BLOOD_WIN, 1 }, // Vegas: Lady luck is on my side.
 	},
 	{
-		{ 61, 2 }, // Sarge
-		{ 3,6 }, // Jaeger
-		{ 45,1 }, // Wildcat
-		{ 3,0 }, // Wolf
-		{ 3,0 }, // Faith
-		{ 87,0 }, // Bastille
-		{ 27,2 }, // Crash
-		{ 3,1 }, // Flynn
-		{ 112,0 }, // Vegas
+		{ CHATTER_COMPLIMENTS, 2 }, // Sarge: Damn fine work, marine.
+		{ CHATTER_IDLE, 6 }, // Jaeger: Jesus, I need a vacation.
+		{ CHATTER_TIME_TO_LEAVE, 1 }, // Wildcat: Time to get the hell out.
+		{ CHATTER_IDLE, 0 }, // Wolfe: Don't get too close. I got a thing for collateral damage.
+		{ CHATTER_IDLE, 0 }, // Faith: I don't like it down here.
+		{ CHATTER_HEALING_CRASH_REPLY, 0 }, // Bastille: I'm saving them for when you really get hurt.
+		{ CHATTER_SUPPLIES_AMMO, 2 }, // Crash: Oh yeah, that's what I like to see.
+		{ CHATTER_IDLE, 1 }, // Flynn
+		{ CHATTER_FIRST_BLOOD_WIN, 0 }, // Vegas: Haha, fortune favours Vegas today.
 	},
 	{
-		{ 1, 1 }, // Sarge
-		{ 3,2 }, // Jaeger
-		{ 54,1 }, // Wildcat
-		{ 3,2 }, // Wolf
-		{ 3,9 }, // Faith
-		{ 98,1 }, // Bastille
-		{ 54,3 }, // Crash
-		{ 5,3 }, // Flynn
-		{ 88,0 }, // Vegas
+		{ CHATTER_SELECTION_INJURED, 1 }, // Sarge: We should pull back and reassess this.
+		{ CHATTER_IDLE, 2 }, // Jaeger: All this fighting makes a Marine hungry.
+		{ CHATTER_MAD_FIRING, 1 }, // Wildcat: Payback's a bitch, ain't it.
+		{ CHATTER_IDLE, 2 }, // Wolfe: I got some scores to settle.
+		{ CHATTER_IDLE, 9 }, // Faith: Wait, I hear something.
+		{ CHATTER_SERIOUS_INJURY, 1 }, // Bastille: Good news, you're off the next mission.
+		{ CHATTER_MAD_FIRING, 3 }, // Crash: You want some?
+		{ CHATTER_FIRING_AT_ALIEN, 3 }, // Flynn
+		{ CHATTER_TEQUILA_START, 0 }, // Vegas: I could do with some tequila right about now.
 	},
 	{
-		{ 1, 3 }, // Sarge
-		{ 5,2 }, // Jaeger
-		{ 61,0 }, // Wildcat
-		{ 3,4 }, // Wolf
-		{ 54,2 }, // Faith
-		{ 99,0 }, // Bastille
-		{ 72,4 }, // Crash
-		{ 75,0 }, // Flynn
-		{ 99,0 }, // Vegas
+		{ CHATTER_SELECTION_INJURED, 3 }, // Sarge: This is tough.
+		{ CHATTER_FIRING_AT_ALIEN, 2 }, // Jaeger: Eat this!
+		{ CHATTER_COMPLIMENTS, 0 }, // Wildcat: Nice job!
+		{ CHATTER_IDLE, 4 }, // Wolfe: Remember, you don't hurt em, if you don't hit em.
+		{ CHATTER_MAD_FIRING, 2 }, // Faith: I'll kill you all!
+		{ CHATTER_SERIOUS_INJURY_REPLY, 0 }, // Bastille: All right, if you say so.
+		{ CHATTER_HACK_STARTED, 4 }, // Crash: Time for me to work my magic.
+		{ CHATTER_HACK_FINISHED, 0 }, // Flynn
+		{ CHATTER_SERIOUS_INJURY_REPLY, 0 }, // Vegas: Ah man, I should have stayed in Culiacán, Sinaloa.
 	},
 	{
-		{ 38, 2 }, // Sarge
-		{ 54,3 }, // Jaeger
-		{ 3,3 }, // Wildcat
-		{ 3,5 }, // Wolf
-		{ 54,3 }, // Faith
-		{ 2,2 }, // Bastille
-		{ 73,1 }, // Crash
-		{ 61,0 }, // Flynn
-		{ 102,0 }, // Vegas
+		{ CHATTER_GOT_REAR, 2 }, // Sarge: I've got your back.
+		{ CHATTER_MAD_FIRING, 3 }, // Jaeger: Rock and roll!
+		{ CHATTER_IDLE, 3 }, // Wildcat: Meow.
+		{ CHATTER_IDLE, 5 }, // Wolfe: There's only one way to solve this, and I think I'm gonna enjoy it.
+		{ CHATTER_MAD_FIRING, 3 }, // Faith: Payback's a bitch, ain't it?
+		{ CHATTER_USE, 2 }, // Bastille: Good thinking.
+		{ CHATTER_HACK_LONG_STARTED, 1 }, // Crash: Got my back, right?
+		{ CHATTER_COMPLIMENTS, 0 }, // Flynn
+		{ CHATTER_STILL_BREATHING_REPLY, 0 }, // Vegas: Why do I always get the crazy ones?
 	},
 };
 
