@@ -250,15 +250,15 @@ void MultiFontRichText::ApplySchemeSettings(IScheme *pScheme)
 	_font = pScheme->GetFont("Default", IsProportional() );
 	m_hFontUnderline = pScheme->GetFont("DefaultUnderline", IsProportional() );
 	
-	SetFgColor(GetSchemeColor("MultiFontRichText.TextColor", pScheme));
-	SetBgColor(GetSchemeColor("MultiFontRichText.BgColor", pScheme));
+	SetFgColor(GetSchemeColor("RichText.TextColor", pScheme));
+	SetBgColor(GetSchemeColor("RichText.BgColor", pScheme));
 	
-	_selectionTextColor = GetSchemeColor("MultiFontRichText.SelectedTextColor", GetFgColor(), pScheme);
-	_selectionColor = GetSchemeColor("MultiFontRichText.SelectedBgColor", pScheme);
+	_selectionTextColor = GetSchemeColor("RichText.SelectedTextColor", GetFgColor(), pScheme);
+	_selectionColor = GetSchemeColor("RichText.SelectedBgColor", pScheme);
 
-	if ( Q_strlen( pScheme->GetResourceString( "MultiFontRichText.InsetX" ) ) )
+	if ( Q_strlen( pScheme->GetResourceString( "RichText.InsetX" ) ) )
 	{
-		SetDrawOffsets( atoi( pScheme->GetResourceString( "MultiFontRichText.InsetX" ) ), atoi( pScheme->GetResourceString( "MultiFontRichText.InsetY" ) ) );
+		SetDrawOffsets( atoi( pScheme->GetResourceString( "RichText.InsetX" ) ), atoi( pScheme->GetResourceString( "RichText.InsetY" ) ) );
 	}
 }
 
@@ -994,6 +994,8 @@ void MultiFontRichText::GenerateRenderStateForTextStreamIndex(int textStreamInde
 	
 	// copy the state data
 	renderState.textColor = m_FormatStream[renderState.formatStreamIndex].color;
+	renderState.font = m_FormatStream[renderState.formatStreamIndex].font;
+	renderState.zbalermorna = m_FormatStream[renderState.formatStreamIndex].zbalermorna;
 	renderState.pixelsIndent = m_FormatStream[renderState.formatStreamIndex].pixelsIndent;
 	renderState.textClickable = m_FormatStream[renderState.formatStreamIndex].textClickable;
 }
@@ -2389,7 +2391,7 @@ void MultiFontRichText::SetFont(HFont font)
 //-----------------------------------------------------------------------------
 // Purpose: Called when the scrollbar slider is moved
 //-----------------------------------------------------------------------------
-void MultiFontRichText::OnSliderMoved()
+void MultiFontRichText::OnSliderMoved( int position )
 {
 	_recalcSavedRenderState = true;
 	Repaint();

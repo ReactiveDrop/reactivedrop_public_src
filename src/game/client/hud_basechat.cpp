@@ -2215,8 +2215,6 @@ void CBaseHudChatLine::Colorize( int alpha )
 			V_UnicodeToUTF8( wText, szText, sizeof( szText ) );
 			ConColorMsg( color, "%s", szText );
 
-			CBaseHudChat *pChat = dynamic_cast<CBaseHudChat*>(GetParent() );
-
 			if ( pChat && pChat->GetChatHistory() )
 			{	
 				pChat->GetChatHistory()->InsertColorChange( color );

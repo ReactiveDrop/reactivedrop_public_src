@@ -96,13 +96,13 @@ public:
 			"text"	- the text that was clicked on
 	*/
 
-	virtual bool RequestInfo(KeyValues *outputData);
+	bool RequestInfo(KeyValues *outputData) override;
 	/* INFO HANDLING
 		"GetText"
 			returns:
 				"text" - text contained in the text box
 	*/
-	virtual void SetFgColor( Color color );
+	void SetFgColor( Color color ) override;
 	virtual void SetDrawOffsets( int ofsx, int ofsy );
 	bool IsScrollbarVisible();
 	ScrollBar *GetScrollBar() { return _vertScrollBar; }
@@ -118,35 +118,34 @@ public:
 
 	void SetDrawTextOnly();
 
-protected:
-	virtual void OnThink();
-	virtual void PerformLayout();  // layout the text in the window
-	virtual void ApplySchemeSettings(IScheme *pScheme);
-	virtual void Paint();
+	void OnThink() override;
+	void PerformLayout() override;  // layout the text in the window
+	void ApplySchemeSettings(IScheme *pScheme) override;
+	void Paint() override;
 
-	virtual void ApplySettings( KeyValues *inResourceData );
-	virtual void GetSettings( KeyValues *outResourceData );
-	virtual const char *GetDescription( void );
+	void ApplySettings( KeyValues *inResourceData ) override;
+	void GetSettings( KeyValues *outResourceData ) override;
+	const char *GetDescription( void ) override;
 	MESSAGE_FUNC_WCHARPTR( OnSetText, "SetText", text );
-	MESSAGE_FUNC( OnSliderMoved, "ScrollBarSliderMoved" ); // respond to scroll bar events
-	virtual void OnKillFocus();
-	virtual void OnMouseWheeled(int delta);	// respond to mouse wheel events
-	virtual void OnKeyCodeTyped(KeyCode code);	//respond to keyboard events
+	MESSAGE_FUNC_INT( OnSliderMoved, "ScrollBarSliderMoved", position ); // respond to scroll bar events
+	void OnKillFocus() override;
+	void OnMouseWheeled(int delta) override;	// respond to mouse wheel events
+	void OnKeyCodeTyped(KeyCode code) override;	//respond to keyboard events
 	
 	MESSAGE_FUNC_INT( OnClickPanel, "ClickPanel", index);
 
-	virtual void OnCursorMoved(int x, int y);  // respond to moving the cursor with mouse button down
-	virtual void OnMousePressed(MouseCode code); // respond to mouse down events
-	virtual void OnMouseDoublePressed(MouseCode code);
-	virtual void OnMouseReleased(MouseCode code);	// respond to mouse up events
+	void OnCursorMoved(int x, int y) override;  // respond to moving the cursor with mouse button down
+	void OnMousePressed(MouseCode code) override; // respond to mouse down events
+	void OnMouseDoublePressed(MouseCode code) override;
+	void OnMouseReleased(MouseCode code) override;	// respond to mouse up events
 
-	virtual void OnMouseFocusTicked(); // do while window has mouse focus
-	virtual void OnCursorEntered();	 // handle cursor entering window
-	virtual void OnCursorExited();	 // handle cursor exiting window
+	void OnMouseFocusTicked() override; // do while window has mouse focus
+	void OnCursorEntered() override;	 // handle cursor entering window
+	void OnCursorExited() override;	 // handle cursor exiting window
 
-	virtual void OnMouseCaptureLost(); 
-	virtual void OnSizeChanged(int newWide, int newTall);
-	virtual void OnSetFocus();
+	void OnMouseCaptureLost() override; 
+	void OnSizeChanged(int newWide, int newTall) override;
+	void OnSetFocus() override;
 
 	// clickable url handling
 	int ParseTextStringForUrls(const char *text, int startPos, char *pchURLText, int cchURLText, char *pchURL, int cchURL, bool &clickable);
