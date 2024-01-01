@@ -907,6 +907,7 @@ function CleanUp()
 	RemoveEntitiesByClassName( "asw_weapon_flares" );
 	RemoveEntitiesByClassName( "asw_weapon_freeze_grenades" );
 	RemoveEntitiesByClassName( "asw_weapon_sentry" );
+	RemoveEntitiesByClassName( "asw_weapon_sentry_freeze" );
 	RemoveEntitiesByClassName( "asw_weapon_sentry_cannon" );
 	RemoveEntitiesByClassName( "asw_weapon_sentry_flamer" );
 	RemoveEntitiesByClassName( "asw_weapon_heal_gun" );
@@ -921,6 +922,7 @@ function CleanUp()
 	RemoveEntitiesByClassName( "asw_pickup_flares" );
 	RemoveEntitiesByClassName( "asw_pickup_freeze_grenades" );
 	RemoveEntitiesByClassName( "asw_pickup_sentry" );
+	RemoveEntitiesByClassName( "asw_pickup_sentry_freeze" );
 	RemoveEntitiesByClassName( "asw_pickup_sentry_cannon" );
 	RemoveEntitiesByClassName( "asw_pickup_sentry_flamer" );
 	RemoveEntitiesByClassName( "asw_pickup_heal_gun" );
