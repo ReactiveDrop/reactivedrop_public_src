@@ -11,7 +11,7 @@
 
 namespace vgui
 {
-	class RichText;
+	class MultiFontRichText;
 };
 
 class CASWChatHistoryEcho : public CHudChatHistory
@@ -39,7 +39,7 @@ public:
 	virtual void PerformLayout();
 	bool AddCursorToBuffer(wchar_t *buffer, int &iCursorPos, bool bFlash);
 
-	vgui::RichText *m_pChatInputLine;
+	vgui::MultiFontRichText *m_pChatInputLine;
 	CASWChatHistoryEcho* m_pChatHistory;
 
 	vgui::HFont m_hFont;

@@ -37,7 +37,7 @@ void CASWChatHistoryEcho::ApplySchemeSettings( vgui::IScheme *pScheme )
 
 ChatEchoPanel::ChatEchoPanel(vgui::Panel *parent, const char *name) : vgui::Panel(parent, name)
 {	
-	m_pChatInputLine = new vgui::RichText(this, "EchoChatInputLine");
+	m_pChatInputLine = new MultiFontRichText(this, "EchoChatInputLine");
 	//m_pChatHistory = new CASWChatHistoryEcho(this, "EchoChatHistory");
 	m_pChatHistory = NULL;
 	if (m_pChatHistory)

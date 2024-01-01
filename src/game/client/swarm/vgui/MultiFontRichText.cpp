@@ -85,7 +85,7 @@ public:
 	{
 		if (code == MOUSE_LEFT)
 		{
-			PostActionSignal(new KeyValues("MultiFontClickPanel", "index", _textIndex));
+			PostActionSignal(new KeyValues("ClickPanel", "index", _textIndex));
 		}
 		else
 		{
@@ -1282,8 +1282,6 @@ void MultiFontRichText::RecalculateLineBreaks()
 	_recalcSavedRenderState = true;
 	if (!HasText())
 		return;
-	
-	int selection0 = -1, selection1 = -1;
 
 	// subtract the scrollbar width
 	if (_vertScrollBar->IsVisible())
@@ -1641,7 +1639,6 @@ void MultiFontRichText::OnCursorMoved(int x, int y)
 	if (_mouseSelection)
 	{
 		// update the cursor position
-		int x, y;
 		input()->GetCursorPos(x, y);
 		ScreenToLocal(x, y);
 		_cursorPos = PixelToCursorSpace(x, y);

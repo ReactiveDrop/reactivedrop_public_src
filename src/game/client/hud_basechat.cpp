@@ -293,7 +293,7 @@ wchar_t* ReadChatTextString( bf_read &msg, wchar_t *pOut, int outSize, bool stri
 //			*panelName - 
 //-----------------------------------------------------------------------------
 CBaseHudChatLine::CBaseHudChatLine( vgui::Panel *parent, const char *panelName ) : 
-	CBaseHudChatRichText( parent, panelName )
+	vgui::MultiFontRichText( parent, panelName )
 {
 	m_hFont = m_hFontMarlett = 0;
 	m_flExpireTime = 0.0f;

@@ -13,7 +13,7 @@ class MultiFontClickPanel;
 //-----------------------------------------------------------------------------
 class MultiFontRichText : public Panel
 {
-	DECLARE_CLASS_SIMPLE( MultiFontRichText, Panel );
+	DECLARE_CLASS_SIMPLE( MultiFontRichText, vgui::Panel );
 
 public:
 	MultiFontRichText(Panel *parent, const char *panelName);

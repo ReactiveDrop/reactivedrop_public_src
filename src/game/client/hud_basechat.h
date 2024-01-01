@@ -17,20 +17,13 @@
 #include "vgui_basepanel.h"
 #include "vgui_controls/frame.h"
 #include <vgui_controls/TextEntry.h>
-#include <vgui_controls/RichText.h>
 #include <vgui_controls/button.h>
 #include <vgui_controls/checkbutton.h>
+#include "MultiFontRichText.h"
 
 class CBaseHudChatInputLine;
 class CBaseHudChatEntry;
 class CHudChatFilterPanel;
-
-#ifdef INFESTED_DLL
-#include "MultiFontRichText.h"
-typedef vgui::MultiFontRichText CBaseHudChatRichText;
-#else
-typedef vgui::RichText CBaseHudChatRichText;
-#endif
 
 namespace vgui
 {
@@ -99,9 +92,9 @@ inline wchar_t *CloneWString( const wchar_t *str )
 //-----------------------------------------------------------------------------
 // Purpose: An output/display line of the chat interface
 //-----------------------------------------------------------------------------
-class CBaseHudChatLine : public CBaseHudChatRichText
+class CBaseHudChatLine : public vgui::MultiFontRichText
 {
-	typedef CBaseHudChatRichText BaseClass;
+	typedef vgui::MultiFontRichText BaseClass;
 
 public:
 	CBaseHudChatLine( vgui::Panel *parent, const char *panelName );
@@ -160,9 +153,9 @@ private:
 };
 
 
-class CHudChatHistory : public CBaseHudChatRichText
+class CHudChatHistory : public vgui::MultiFontRichText
 {
-	DECLARE_CLASS_SIMPLE( CHudChatHistory, CBaseHudChatRichText );
+	DECLARE_CLASS_SIMPLE( CHudChatHistory, vgui::MultiFontRichText );
 public:
 
 	CHudChatHistory( vgui::Panel *pParent, const char *panelName );
