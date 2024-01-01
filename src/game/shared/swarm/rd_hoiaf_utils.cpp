@@ -502,6 +502,10 @@ void CRD_HoIAF_System::OnHTTPRequestCompleted( HTTPRequestCompleted_t *pParam, b
 			m_iBackoffUntil = 0;
 			m_iExponentialBackoff = 0;
 		}
+		else
+		{
+			OnRequestFailed();
+		}
 
 		DevMsg( "[HoIAF:%c] Received updated IAF Intel; expires in %lld seconds.\n", IsClientDll() ? 'C' : 'S', m_iExpireAt - iNow );
 	}
