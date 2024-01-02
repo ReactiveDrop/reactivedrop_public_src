@@ -480,7 +480,7 @@ function Update()
 	while((hGrenade = Entities.FindByClassname(hGrenade, "asw_grenade_cluster")) != null)
 	{
 		local hOwner = hGrenade.GetOwner();
-		if (hOwner && hOwner in g_teamZombie)
+		if (hOwner && hOwner in g_teamZombie && hGrenade.GetModelName() != "models/aliens/parasite/parasite.mdl")
 		{
 			hGrenade.SetModel("models/aliens/parasite/parasite.mdl");
 			EntFireByHandle(hGrenade, "SetBodyGroup", "1", 0, self, self);
