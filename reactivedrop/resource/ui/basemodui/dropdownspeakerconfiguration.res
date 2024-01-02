@@ -111,7 +111,7 @@
 		"OnlyActiveUser"		"1"
 	}
 	
-	"Btn5Speakers"
+	"Btn7Speakers"
 	{
 		"ControlName"			"BaseModHybridButton"
 		"fieldName"				"Btn7Speakers"
