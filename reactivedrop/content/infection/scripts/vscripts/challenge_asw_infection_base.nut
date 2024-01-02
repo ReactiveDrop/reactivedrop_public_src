@@ -480,10 +480,21 @@ function Update()
 	while((hGrenade = Entities.FindByClassname(hGrenade, "asw_grenade_cluster")) != null)
 	{
 		local hOwner = hGrenade.GetOwner();
-		if (hOwner && hOwner in g_teamZombie)
+		if (hOwner && hOwner in g_teamZombie && hGrenade.GetName() != "asw_infection_zgrenade")
 		{
-			hGrenade.SetModel("models/aliens/parasite/parasite.mdl");
-			EntFireByHandle(hGrenade, "SetBodyGroup", "1", 0, self, self);
+			hGrenade.SetName("asw_infection_zgrenade");
+			local parasiteProp = Entities.CreateByClassname("prop_dynamic");
+			parasiteProp.__KeyValueFromString("model", "models/aliens/parasite/parasite.mdl");
+			EntFireByHandle(parasiteProp, "SetBodyGroup", "1", 0, self, self);
+			parasiteProp.__KeyValueFromString("DefaultAnim", "Infest_Attack");
+			parasiteProp.__KeyValueFromInt("DisableBoneFollowers", 1);
+			parasiteProp.__KeyValueFromInt("solid", 0);
+			parasiteProp.__KeyValueFromInt("disableshadows", 1);
+			parasiteProp.Spawn();
+			parasiteProp.SetOrigin(hGrenade.GetOrigin() + Vector(0, 0, -8));
+			parasiteProp.SetOwner(hGrenade);
+			parasiteProp.SetParent(hGrenade);
+			hGrenade.__KeyValueFromInt("rendermode", 10);
 		}
 	}
 	foreach (name in g_alienClassnames)
