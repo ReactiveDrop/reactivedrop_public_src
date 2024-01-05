@@ -368,6 +368,9 @@ void ItemShowcase::PostChildPaint()
 {
 	BaseClass::PostChildPaint();
 
+	if ( m_QueueType.Count() == 0 )
+		return;
+
 	switch ( m_QueueType[0] )
 	{
 	case MODE_INSPECT:
