@@ -7,10 +7,9 @@
 #include "asw_shareddefs.h"
 #include "asw_medals_shared.h"
 
-// class responsible for loading/saving the client's medal store
-
 class C_ASW_Marine_Resource;
 
+// class responsible for loading/saving the client's medal store
 class C_ASW_Medal_Store
 {	
 public:
@@ -39,6 +38,10 @@ public:
 	bool IsWeaponNew( bool bExtraItem, int nEquipmentListIndex );
 	void ClearNewWeapons();
 
+	void RemoveBountiesExcept( const CUtlVector<int> &except );
+	void OnCompletedBounty( int iBountyID );
+	bool HasCompletedBounty( int iBountyID );
+
 	void SetExperience( int nXP );
 	int GetExperience();
 
@@ -63,14 +66,15 @@ private:
 
 	MedalList_t m_OfflineMarineMedals[ASW_NUM_MARINE_PROFILES];
 	MedalList_t m_OfflinePlayerMedals;
-	bool m_bLoaded;	
+	bool m_bLoaded;
 
 	CUtlVector<int> m_NewEquipment;
+	CUtlVector<int> m_ClaimedHoIAFMissionBounties;
 
 	int m_iXP;
 	int m_iPromotion;
 };
 
-C_ASW_Medal_Store* GetMedalStore();
+C_ASW_Medal_Store *GetMedalStore();
 
 #endif // _INCLUDED_C_ASW_MEDAL_STORE_H

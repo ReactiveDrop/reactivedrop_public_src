@@ -48,12 +48,18 @@ public:
 	void InsertChatMessages( CBaseHudChat *pChat );
 #endif
 
+	// HoIAF Mission Bounties
+#ifdef CLIENT_DLL
+	void MarkBountyAsCompleted( int iBountyID );
+#endif
+
 private:
 	void ParseIAFIntel();
 	void LoadCachedIAFIntel();
 	bool RefreshIAFIntel( bool bOnlyIfExpired = true, bool bForceNewRequest = false );
 	void OnHTTPRequestCompleted( HTTPRequestCompleted_t *pParam, bool bIOFailure );
 	void OnRequestFailed();
+	void OnNewIntelReceived();
 #ifdef CLIENT_DLL
 	void LoadTranslatedString( CUtlString &str, KeyValues *pKV, const char *szTemplate );
 #endif
@@ -106,6 +112,15 @@ private:
 #endif
 	};
 	CUtlVectorAutoPurge<ChatAnnouncement_t *> m_ChatAnnouncements;
+	struct HoIAFMissionBounty_t
+	{
+		int ID;
+		int64_t Starts;
+		int64_t Ends;
+		CUtlString Map;
+		int Points;
+	};
+	CUtlVectorAutoPurge<HoIAFMissionBounty_t *> m_HoIAFMissionBounties;
 #ifdef CLIENT_DLL
 	CUtlSymbolTable m_ChatAnnouncementSeen;
 #endif

@@ -8,6 +8,7 @@
 #include "hud_basechat.h"
 #include "gameui/swarm/basemodpanel.h"
 #include "gameui/swarm/basemodframe.h"
+#include "asw_medal_store.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -218,6 +219,35 @@ void CRD_HoIAF_System::InsertChatMessages( CBaseHudChat *pChat )
 }
 #endif
 
+#ifdef CLIENT_DLL
+void CRD_HoIAF_System::MarkBountyAsCompleted( int iBountyID )
+{
+	FOR_EACH_VEC( m_HoIAFMissionBounties, i )
+	{
+		if ( m_HoIAFMissionBounties[i]->ID != iBountyID )
+		{
+			continue;
+		}
+
+		Assert( !V_stricmp( m_HoIAFMissionBounties[i]->Map, MapName() ) );
+		if ( V_stricmp( m_HoIAFMissionBounties[i]->Map, MapName() ) )
+		{
+			Warning( "[HoIAF:%c] Server said to mark mission bounty complete for %s, but we are on map %s!\n", IsClientDll() ? 'C' : 'S', m_HoIAFMissionBounties[i]->Map.Get(), MapName() );
+			return;
+		}
+
+		if ( C_ASW_Medal_Store *pMedalStore = GetMedalStore() )
+		{
+			pMedalStore->OnCompletedBounty( iBountyID );
+		}
+
+		return;
+	}
+
+	Warning( "[HoIAF:%c] Server said to mark mission bounty %d complete, but we don't know about that bounty!\n", IsClientDll() ? 'C' : 'S', iBountyID );
+}
+#endif
+
 void CRD_HoIAF_System::ParseIAFIntel()
 {
 	m_iExpireAt = int64_t( m_pIAFIntel->GetUint64( "expires" ) );
@@ -226,6 +256,7 @@ void CRD_HoIAF_System::ParseIAFIntel()
 	m_FeaturedNews.PurgeAndDeleteElements();
 	m_EventTimers.PurgeAndDeleteElements();
 	m_ChatAnnouncements.PurgeAndDeleteElements();
+	m_HoIAFMissionBounties.PurgeAndDeleteElements();
 
 	FOR_EACH_SUBKEY( m_pIAFIntel, pCommand )
 	{
@@ -318,6 +349,20 @@ void CRD_HoIAF_System::ParseIAFIntel()
 #endif
 
 			m_ChatAnnouncements.AddToTail( pAnnouncement );
+		}
+		else if ( !V_stricmp( szName, "hoiafMissionBounty" ) )
+		{
+			Assert( pCommand->GetDataType() == KeyValues::TYPE_NONE );
+
+			HoIAFMissionBounty_t *pBounty = new HoIAFMissionBounty_t;
+
+			pBounty->ID = pCommand->GetInt( "id" );
+			pBounty->Starts = pCommand->GetUint64( "starts" );
+			pBounty->Ends = pCommand->GetUint64( "ends" );
+			pBounty->Map = pCommand->GetString( "map" );
+			pBounty->Points = pCommand->GetInt( "points" );
+
+			m_HoIAFMissionBounties.AddToTail( pBounty );
 		}
 		else
 		{
@@ -499,8 +544,7 @@ void CRD_HoIAF_System::OnHTTPRequestCompleted( HTTPRequestCompleted_t *pParam, b
 		Assert( m_iExpireAt > iNow );
 		if ( m_iExpireAt > iNow )
 		{
-			m_iBackoffUntil = 0;
-			m_iExponentialBackoff = 0;
+			OnNewIntelReceived();
 		}
 		else
 		{
@@ -530,6 +574,27 @@ void CRD_HoIAF_System::OnRequestFailed()
 
 	// if we can't get the current time, give up until the game is restarted
 	m_iBackoffUntil = pUtils ? ( pUtils->GetServerRealTime() + ( 1 << m_iExponentialBackoff ) ) : ~0u;
+}
+
+void CRD_HoIAF_System::OnNewIntelReceived()
+{
+	m_iBackoffUntil = 0;
+	m_iExponentialBackoff = 0;
+
+#ifdef CLIENT_DLL
+	C_ASW_Medal_Store *pMedalStore = GetMedalStore();
+	if ( pMedalStore )
+	{
+		CUtlVector<int> activeBounties;
+		activeBounties.SetCount( m_HoIAFMissionBounties.Count() );
+		FOR_EACH_VEC( m_HoIAFMissionBounties, i )
+		{
+			activeBounties[i] = m_HoIAFMissionBounties[i]->ID;
+		}
+
+		pMedalStore->RemoveBountiesExcept( activeBounties );
+	}
+#endif
 }
 
 #ifdef CLIENT_DLL
@@ -625,3 +690,17 @@ CRD_HoIAF_System *HoIAF()
 {
 	return &s_HoIAFSystem;
 }
+
+#ifdef CLIENT_DLL
+CON_COMMAND_F( rd_hoiaf_mark_bounty_completed, "mark a bounty as completed", FCVAR_HIDDEN | FCVAR_SERVER_CAN_EXECUTE | FCVAR_DONTRECORD )
+{
+	if ( args.ArgC() != 2 )
+		return;
+
+	int iBountyID = V_atoi( args[1] );
+	if ( !iBountyID )
+		return;
+
+	HoIAF()->MarkBountyAsCompleted( iBountyID );
+}
+#endif

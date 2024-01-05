@@ -131,7 +131,18 @@ void C_ASW_Medal_Store::LoadMedalStore()
 			m_NewEquipment.AddToTail( pKey->GetInt() );
 		}
 	}
-	
+
+	// completed hoiaf bounties
+	m_ClaimedHoIAFMissionBounties.Purge();
+	KeyValues *pkvBounties = kv->FindKey( "HOIAFBOUNTIES" );
+	if ( pkvBounties )
+	{
+		for ( KeyValues *pKey = pkvBounties->GetFirstSubKey(); pKey; pKey = pKey->GetNextKey() )
+		{
+			m_ClaimedHoIAFMissionBounties.AddToTail( pKey->GetInt() );
+		}
+	}
+
 	// first subsection is player medals
 	//KeyValues *pkvPlayerMedals = kv->GetFirstSubKey();
 	KeyValues *pkvPlayerMedals = kv->FindKey("LP");
@@ -241,14 +252,28 @@ bool C_ASW_Medal_Store::SaveMedalStore()
 	
 	KeyValues *pSubSection = new KeyValues("NEWEQUIP");
 	char buffer[64];
-	if (pSubSection)
+	if ( pSubSection )
 	{
-		for (int i=0;i<m_NewEquipment.Count();i++)
-		{			
-			pSubSection->SetInt( "EQUIP", m_NewEquipment[i]);
+		for ( int i = 0; i < m_NewEquipment.Count(); i++ )
+		{
+			KeyValues *pSub = new KeyValues( "EQUIP" );
+			pSub->SetInt( NULL, m_NewEquipment[i] );
+			pSubSection->AddSubKey( pSub );
 		}
-		kv->AddSubKey(pSubSection);
-	}	
+		kv->AddSubKey( pSubSection );
+	}
+
+	pSubSection = new KeyValues( "HOIAFBOUNTIES" );
+	if ( pSubSection )
+	{
+		for ( int i = 0; i < m_ClaimedHoIAFMissionBounties.Count(); i++ )
+		{
+			KeyValues *pSub = new KeyValues( "B" );
+			pSub->SetInt( NULL, m_ClaimedHoIAFMissionBounties[i] );
+			pSubSection->AddSubKey( pSub );
+		}
+		kv->AddSubKey( pSubSection );
+	}
 
 	// output player medals
 	pSubSection = new KeyValues("LP");
@@ -539,6 +564,7 @@ void C_ASW_Medal_Store::ClearMedalStore()
 	m_iXP = 0;
 	m_iPromotion = 0;
 	m_NewEquipment.Purge();
+	m_ClaimedHoIAFMissionBounties.Purge();
 	SaveMedalStore();
 }
 
@@ -694,7 +720,6 @@ bool C_ASW_Medal_Store::IsWeaponNew( bool bExtraItem, int nEquipmentListIndex )
 		LoadMedalStore();
 	}
 	int nIndexHash = nEquipmentListIndex + ( bExtraItem ? 100 : 0 );
-	//Msg( "C_ASW_Medal_Store::IsWeaponNew bextra=%d index=%d hash=%d found=%d m_NewEquipmentcount=%d\n", bExtraItem, nEquipmentListIndex, nIndexHash, ( m_NewEquipment.Find( nIndexHash ) != m_NewEquipment.InvalidIndex() ), m_NewEquipment.Count() );
 	return ( m_NewEquipment.Find( nIndexHash ) != m_NewEquipment.InvalidIndex() );
 }
 
@@ -705,6 +730,48 @@ void C_ASW_Medal_Store::ClearNewWeapons()
 		LoadMedalStore();
 	}
 	m_NewEquipment.RemoveAll();
+}
+
+void C_ASW_Medal_Store::RemoveBountiesExcept( const CUtlVector<int> &except )
+{
+	if ( !m_bLoaded )
+	{
+		LoadMedalStore();
+	}
+
+	bool bRemovedAny = false;
+	FOR_EACH_VEC_BACK( m_ClaimedHoIAFMissionBounties, i )
+	{
+		if ( except.Find( m_ClaimedHoIAFMissionBounties[i] ) == except.InvalidIndex() )
+		{
+			m_ClaimedHoIAFMissionBounties.Remove( i );
+			bRemovedAny = true;
+		}
+	}
+
+	if ( bRemovedAny )
+	{
+		SaveMedalStore();
+	}
+}
+
+void C_ASW_Medal_Store::OnCompletedBounty( int iBountyID )
+{
+	if ( !HasCompletedBounty(iBountyID) )
+	{
+		m_ClaimedHoIAFMissionBounties.AddToTail( iBountyID );
+		SaveMedalStore();
+	}
+}
+
+bool C_ASW_Medal_Store::HasCompletedBounty( int iBountyID )
+{
+	if ( !m_bLoaded )
+	{
+		LoadMedalStore();
+	}
+
+	return m_ClaimedHoIAFMissionBounties.Find( iBountyID ) != m_ClaimedHoIAFMissionBounties.InvalidIndex();
 }
 
 void C_ASW_Medal_Store::SetExperience( int nXP )
