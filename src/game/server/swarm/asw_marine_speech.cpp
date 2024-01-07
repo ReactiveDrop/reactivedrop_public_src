@@ -998,7 +998,7 @@ MarineFlavorSpeech g_MarineFlavorSpeech[ g_nNumFlavorSpeech ][ ASW_VOICE_TYPE_TO
 		{ CHATTER_MAD_FIRING, 4 }, // Jaeger: You want some?
 		{ CHATTER_AUTOGUN_REPLY, 1 }, // Wildcat: Hell, yeah!
 		{ CHATTER_IDLE, 6 }, // Wolfe: This is getting more fun by the minute.
-		{ CHATTER_MEDS_NONE, 2 }, // Faith: Out of meds. Try not to get hurt.
+		{ CHATTER_SERIOUS_INJURY_REPLY, 0 }, // Faith: Is it that bad?
 		{ CHATTER_MAD_FIRING, 1 }, // Bastille: Eat this, alien scum!
 		{ CHATTER_COMPLIMENTS, 2 }, // Crash: Smooth.
 		{ CHATTER_MISC, 0 }, // Flynn
@@ -1043,7 +1043,7 @@ MarineFlavorSpeech g_MarineFlavorSpeech[ g_nNumFlavorSpeech ][ ASW_VOICE_TYPE_TO
 		{ CHATTER_IDLE, 2 }, // Wildcat: Let's get this party started.
 		{ CHATTER_MEDIC_COMPLAIN_REPLY, 0 }, // Wolfe: Is that a trick question?
 		{ CHATTER_USE, 2 }, // Faith: Excellent.
-		{ CHATTER_MEDS_NONE, 0 }, // Bastille: I'm out of meds.
+		{ CHATTER_MEDIC_COMPLAIN, 0 }, // Bastille: Can't you not get hurt for a change?
 		{ CHATTER_IDLE, 5 }, // Crash: Wow, this place has seen some action.
 		{ CHATTER_SELECTION_INJURED, 1 }, // Flynn
 		{ CHATTER_HACK_FINISHED, 4 }, // Vegas: Too easy!
