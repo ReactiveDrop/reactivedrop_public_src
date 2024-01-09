@@ -852,20 +852,7 @@ void CASWInput::ComputeNewMarineFacing( C_ASW_Player *pPlayer, const Vector &Hit
 		ang[ROLL] = 0;
 		AngleVectors( ang, &vMarineForward, &vMarineRight, &vMarineUp );
 
-		C_ASW_Weapon *pWeapon = pNPC->GetActiveASWWeapon();
-
-		// Marine position already has Z offset added to it,
-		// choose a reasonable default in case pWeapon is NULL
-		Vector vMuzzlePosition = vecMarinePos +
-			vMarineForward * asw_marine_gun_offset_x.GetFloat() +
-			vMarineRight * asw_marine_gun_offset_y.GetFloat();
-
-		// Get the muzzle position on the gun (where the laser sight comes from)
-		if ( pWeapon )
-		{
-			int nAttachment = pWeapon->GetMuzzleAttachment();
-			pWeapon->GetAttachment( nAttachment, vMuzzlePosition );
-		}
+		Vector vMuzzlePosition = pNPC->Weapon_ShootPosition();
 
 		Vector vWeaponOffset = vMuzzlePosition - vecMarinePos;
 
@@ -919,14 +906,8 @@ void CASWInput::ComputeNewMarineFacing( C_ASW_Player *pPlayer, const Vector &Hit
 			//vecHitPos = pAutoAimEnt->GetAimTargetPos(vMuzzlePosition, bPreferFlatAiming);	
 		}
 
-		// Use the standard bullet start position to try and figure out the exact weapon pitch needed
-		vecMarinePos = pNPC->GetRenderOrigin()
-			+ vMarineForward * asw_marine_gun_offset_x.GetFloat()
-			+ vMarineRight * asw_marine_gun_offset_y.GetFloat()
-			+ vMarineUp * asw_marine_gun_offset_z.GetFloat();
-
 		// The yaw of this vector is not quite right (hence "approximate") but the pitch is correct
-		Vector vApproximateMarineFacingVector = vecHitPos - vecMarinePos;
+		Vector vApproximateMarineFacingVector = vecHitPos - vMuzzlePosition;
 
 		C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pNPC );
 		if ( pMarine )
@@ -955,7 +936,7 @@ void CASWInput::ComputeNewMarineFacing( C_ASW_Player *pPlayer, const Vector &Hit
 			if ( asw_DebugAutoAim.GetBool() )
 			{
 				debugoverlay->AddLineOverlay( vecHitPos, vMuzzlePosition,
-					255, 255, 0, true, 0.01f );
+					255, 255, 0, true, NDEBUG_PERSIST_TILL_NEXT_SERVER );
 			}
 		}
 	}
