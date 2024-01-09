@@ -829,7 +829,7 @@ const RD_Mission_t *ReactiveDropMissions::GetMission( int index )
 
 			for ( int i = 0; i < NUM_RD_CRAFTING_MATERIALS; i++ )
 			{
-				if ( g_RD_Crafting_Material_Info[i].m_iRarity != RD_CRAFTING_MATERIAL_RARITY_REGIONAL || i == RD_CRAFTING_MATERIAL_ARGON_CANISTER )
+				if ( g_RD_Crafting_Material_Info[i].m_iRarity != RD_CRAFTING_MATERIAL_RARITY_REGIONAL || i == RD_CRAFTING_MATERIAL_ARGON_CANISTER || i == RD_CRAFTING_MATERIAL_PROBABILITY_DRIVE )
 					continue;
 
 				if ( V_stricmp( pValue->GetString(), g_RD_Crafting_Material_Info[i].m_szName ) )

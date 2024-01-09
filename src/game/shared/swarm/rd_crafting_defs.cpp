@@ -48,6 +48,7 @@ const RD_Crafting_Material_Info g_RD_Crafting_Material_Info[] =
 	{ "roll_of_vent_tape", 7026, 7050, 4024, RD_CRAFTING_MATERIAL_RARITY_REGIONAL, "models/swarm/crafting/roll_of_vent_tape.mdl" },
 	{ "isotopes", 7027, 7051, 4025, RD_CRAFTING_MATERIAL_RARITY_REGIONAL, "models/swarm/crafting/isotopes.mdl" },
 	{ "cryotic", 7071, 7072, 4026, RD_CRAFTING_MATERIAL_RARITY_REGIONAL, "models/swarm/crafting/cryotic.mdl" },
-	{ "argon_canister", 7073, 7074, 4027, "models/swarm/crafting/argon_canister.mdl"},
+	{ "argon_canister", 7073, 7074, 4027, RD_CRAFTING_MATERIAL_RARITY_REGIONAL, "models/swarm/crafting/argon_canister.mdl" },
+	{ "probability_drive", 7075, 7076, 4028, RD_CRAFTING_MATERIAL_RARITY_REGIONAL, "models/swarm/crafting/probability_drive.mdl" },
 };
 #endif
