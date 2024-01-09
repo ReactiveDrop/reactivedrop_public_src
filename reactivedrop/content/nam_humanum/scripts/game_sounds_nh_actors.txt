@@ -393,8 +393,417 @@
 	"wave"			"*#vo\nh_odysseycommand\nh_03_11_vesta.wav"
 }
 
+// Gauntlet_Master
+
+"gm_intro_1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_intro_1.wav"
+}
+
+"gm_intro_2"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_intro_2.wav"
+}
+
+"gm_intro_3"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_intro_3.wav"
+}
+
+"gm_intro_4"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_intro_4.wav"
+}
+
+"gm_intro_5"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_intro_5.wav"
+}
+
+"gm_intro_6"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_intro_6.wav"
+}
+
+"gm_supply_1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_supply_1.wav"
+}
+
+
+"gm_supply_2"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_supply_2.wav"
+}
+
+
+"gm_supply_3"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_supply_3.wav"
+}
+
+
+"gm_supply_4"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_supply_4.wav"
+}
+
+"gm_supply_5"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_supply_5.wav"
+}
+
+"gm_supply_6"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_supply_6.wav"
+}
+
+"gm_wave_1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_wave_1.wav"
+}
+
+"gm_wave_2"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_wave_2.wav"
+}
+
+"gm_wave_3"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_wave_3.wav"
+}
+
+"gm_wave_4"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_wave_4.wav"
+}
+
+"gm_wave_5"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_wave_5.wav"
+}
+
+"gm_wave_6"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_wave_6.wav"
+}
+
+"gm_wave_7"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_wave_7.wav"
+}
+
+"gm_wave_8"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_wave_8.wav"
+}
+
+"gm_wave_9"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_wave_9.wav"
+}
+
+"gm_wave_10"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_wave_10.wav"
+}
+
+"gm_wave_11"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_wave_11.wav"
+}
+
+"gm_wave_12"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_wave_12.wav"
+}
+
+"gm_wave_13"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_wave_13.wav"
+}
+
+"gm_wave_14"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_wave_14.wav"
+}
+
+"gm_wave_15"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_wave_15.wav"
+}
+
+"gm_hard_1"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_hard_1.wav"
+}
+
+"gm_hard_2"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_hard_2.wav"
+}
+
+"gm_hard_3"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_hard_3.wav"
+}
+
+"gm_hard_4"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_hard_4.wav"
+}
+
+"gm_hard_5"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_hard_5.wav"
+}
+
+"gm_hard_6"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_hard_6.wav"
+}
+
+"gm_hard_7"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_hard_7.wav"
+}
+
+"gm_hard_8"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_hard_8.wav"
+}
+
+"gm_hard_9"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_hard_9.wav"
+}
+
+"gm_hard_10"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_hard_10.wav"
+}
+
+"gm_hard_11"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_hard_11.wav"
+}
+
+"gm_hard_12"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_hard_12.wav"
+}
+
+"gm_hard_13"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_hard_13.wav"
+}
+
+"gm_hard_14"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_hard_14.wav"
+}
+
+"gm_hard_15"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_hard_15.wav"
+}
+
+"gm_hard_16"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"   "*#vo\gauntlet_command\gm_hard_16.wav"
+}
 
 // SFX
+
+"radio_off"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"          "*#vo\nh_odysseycommand\nh_sfx_radio_off.wav"
+}
+
+"radio_on"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"1.00"
+	"pitch"	"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NONE"
+	"wave"          "*#vo\nh_odysseycommand\nh_sfx_radio_on.wav"
+}
 
 "Radio.radio_on"
 {

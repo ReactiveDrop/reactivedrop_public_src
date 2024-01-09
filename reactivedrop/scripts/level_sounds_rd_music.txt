@@ -1,4 +1,140 @@
 // =========================
+// Reduction Music
+// =========================
+
+"Reduction01.Intro"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/hl1_song26.mp3"
+}
+
+"Reduction01.Biomass"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/hl2_song13.mp3"
+}
+
+"Reduction01.Escapepod"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/hl2_song14.mp3"
+}
+
+"Reduction02.Deployment"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/hl2_song16.mp3"
+}
+
+"Reduction02.labyrinth"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/hl2_song19.mp3"
+}
+
+"Reduction03.Highrise"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/hl2_song30.mp3"
+}
+
+"Reduction03.Trainstart"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/hl2_song6.mp3"
+}
+
+"Reduction04.Trainbattle"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/hl1_song10.mp3"
+}
+
+"Reduction05.Preperations"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/hl1_song19.mp3"
+}
+
+"Reduction05.cutscene"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/hl1_song5.mp3"
+}
+
+"Reduction06.Escort_combat"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/hl1_song17.mp3"
+}
+
+"Reduction06.Escort_arrived"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/hl1_song20.mp3"
+}
+
+// =========================
 // Nam Humanum Music
 // =========================
 
@@ -66,6 +202,65 @@
 	"soundlevel"	"0"
 
 	"wave"			"*#music/a5_ending_triumph.mp3"
+}
+
+// =========================
+// Gauntlet Arena Music
+// =========================
+
+"NH_Survie_Injection"
+{
+	"channel"		"CHAN_AUTO"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music\Injection.mp3"
+}
+
+"NH_Survie_Revolt"
+{
+	"channel"		"CHAN_AUTO"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music\Revolt.mp3"
+}
+
+"NH_Survie_Runlikehell"
+{
+	"channel"		"CHAN_AUTO"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music\Runlikehell.mp3"
+}
+
+"NH_Survie_TechSlave"
+{
+	"channel"		"CHAN_AUTO"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music\TechSlave.mp3"
+}
+
+"NH_Survie_IsItTooLate"
+{
+	"channel"		"CHAN_AUTO"
+	"volume"		"1.0"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music\IsItTooLate.wav"
 }
 
 // =========================
