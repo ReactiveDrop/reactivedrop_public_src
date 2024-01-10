@@ -27,6 +27,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+ConVar rd_vindicator_fire_rate( "rd_vindicator_fire_rate", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Fire rate of vindicator (0 = use shotgun)", true, 0, false, 0 );
+
 IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Weapon_Assault_Shotgun, DT_ASW_Weapon_Assault_Shotgun )
 
 BEGIN_NETWORK_TABLE( CASW_Weapon_Assault_Shotgun, DT_ASW_Weapon_Assault_Shotgun )
@@ -199,6 +201,16 @@ void CASW_Weapon_Assault_Shotgun::SecondaryAttack()
 
 	// Can blow up after a short delay (so have time to release mouse button)
 	m_flNextSecondaryAttack = gpGlobals->curtime + 1.0f;
+}
+
+float CASW_Weapon_Assault_Shotgun::GetFireRate()
+{
+	if ( rd_vindicator_fire_rate.GetFloat() > 0 )
+	{
+		return rd_vindicator_fire_rate.GetFloat();
+	}
+
+	return BaseClass::GetFireRate();
 }
 
 float CASW_Weapon_Assault_Shotgun::GetWeaponDamage()

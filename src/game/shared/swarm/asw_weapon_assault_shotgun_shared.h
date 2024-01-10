@@ -6,8 +6,6 @@
 
 #ifdef CLIENT_DLL
 	#define CASW_Weapon_Assault_Shotgun C_ASW_Weapon_Assault_Shotgun
-#else
-	#include "npc_combine.h"
 #endif
 
 class CASW_Weapon_Assault_Shotgun : public CASW_Weapon_Shotgun
@@ -21,7 +19,7 @@ public:
 	virtual ~CASW_Weapon_Assault_Shotgun();
 	void Precache();
 
-	//float	GetFireRate( void ) { return 0.65f; }
+	float	GetFireRate( void );
 	virtual float GetWeaponDamage();
 	virtual int GetNumPellets();
 	virtual int AmmoClickPoint() { return 2; }
