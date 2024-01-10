@@ -98,6 +98,7 @@ namespace ReactiveDropInventory
 		bool HasBorder : 1;
 		bool IsBasic : 1;
 		bool GameOnly : 1;
+		bool AutoDeleteExceptNewest : 1; // for notification items
 #ifdef CLIENT_DLL
 		vgui::IImage *Icon{};
 		CUtlVector<vgui::IImage *> StyleIcons{};
@@ -163,6 +164,7 @@ namespace ReactiveDropInventory
 	void ResendDynamicEquipNotification( int iPlayer, bool bForce = false );
 	bool CheckMedalEquipCache();
 	void ChangeItemStyle( SteamItemInstanceID_t id, int iStyle );
+	void DeleteNotificationItem( SteamItemInstanceID_t id );
 #endif
 	void OnHitConfirm( CBaseEntity *pAttacker, CBaseEntity *pTarget, Vector vecDamagePosition, bool bKilled, bool bDamageOverTime, bool bBlastDamage, int iDisposition, float flDamage, CBaseEntity *pWeapon );
 }

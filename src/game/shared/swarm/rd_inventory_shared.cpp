@@ -35,6 +35,7 @@
 #include "c_user_message_register.h"
 #include "asw_hud_3dmarinenames.h"
 #include "rd_collections.h"
+#include "rd_hoiaf_utils.h"
 #define CASW_Sentry_Base C_ASW_Sentry_Base
 #define CASW_Sentry_Top C_ASW_Sentry_Top
 #else
@@ -691,6 +692,8 @@ public:
 		{
 			CacheItemSchema();
 		}
+
+		HoIAF()->RebuildNotificationList();
 	}
 
 	void CacheItemSchema()
@@ -1460,6 +1463,10 @@ public:
 		CRAFT_DYNAMIC_PROPERTY_UPDATE,
 		// updating user-modifiable dynamic properties for an item (eg. style). modal while in progress.
 		CRAFT_USER_DYNAMIC_PROPERTY_UPDATE,
+		// deleting an item. modal while in progress.
+		CRAFT_DELETE,
+		// deleting an item silently. no notifications.
+		CRAFT_DELETE_SILENT,
 	};
 	struct CraftItemTask_t
 	{
@@ -1513,12 +1520,14 @@ public:
 			case CRAFT_CLAIM_MAJOR:
 			case CRAFT_DYNAMIC_PROPERTY_INIT:
 			case CRAFT_USER_DYNAMIC_PROPERTY_UPDATE:
+			case CRAFT_DELETE:
 				return true;
 			case CRAFT_BTS:
 			case CRAFT_DROP:
 			case CRAFT_PROMO:
 			case CRAFT_INSPECT:
 			case CRAFT_DYNAMIC_PROPERTY_UPDATE:
+			case CRAFT_DELETE_SILENT:
 				break;
 			default:
 				Assert( !"unhandled crafting task type" );
@@ -1539,6 +1548,7 @@ public:
 		case CRAFT_CLAIM_MAJOR:
 		case CRAFT_INSPECT:
 		case CRAFT_USER_DYNAMIC_PROPERTY_UPDATE:
+		case CRAFT_DELETE:
 			return true;
 		case CRAFT_DYNAMIC_PROPERTY_INIT:
 			return pTask->m_iAccessoryDef != BaseModUI::ItemShowcase::MODE_ITEM_DROP;
@@ -1546,6 +1556,7 @@ public:
 		case CRAFT_DROP:
 		case CRAFT_PROMO:
 		case CRAFT_DYNAMIC_PROPERTY_UPDATE:
+		case CRAFT_DELETE_SILENT:
 			break;
 		default:
 			Assert( !"unhandled crafting task type" );
@@ -1639,6 +1650,10 @@ public:
 			}
 			break;
 		case CRAFT_USER_DYNAMIC_PROPERTY_UPDATE:
+			break;
+		case CRAFT_DELETE:
+			break;
+		case CRAFT_DELETE_SILENT:
 			break;
 		default:
 			Assert( !"unhandled crafting task type" );
@@ -3067,6 +3082,10 @@ namespace ReactiveDropInventory
 		Assert( !V_strcmp( szValue, "" ) || !V_strcmp( szValue, "1" ) || !V_strcmp( szValue, "0" ) );
 		pItemDef->GameOnly = !V_strcmp( szValue, "1" );
 
+		FETCH_PROPERTY( "auto_delete_except_newest" );
+		Assert( !V_strcmp( szValue, "" ) || !V_strcmp( szValue, "1" ) || !V_strcmp( szValue, "0" ) );
+		pItemDef->AutoDeleteExceptNewest = !V_strcmp( szValue, "1" );
+
 		FETCH_PROPERTY( "strange_notify_every" );
 		if ( *szValue )
 		{
@@ -3467,6 +3486,44 @@ namespace ReactiveDropInventory
 			Warning( "Inventory item style update submit failed!\n" );
 	}
 
+	void DeleteNotificationItem( SteamItemInstanceID_t id )
+	{
+		GET_INVENTORY_OR_BAIL;
+
+		const ItemInstance_t *pCached = GetLocalItemCache( id );
+		Assert( pCached );
+		if ( !pCached )
+		{
+			Warning( "Tried to delete notification item %llu which I have no memory of!\n", id );
+			return;
+		}
+
+		const ItemDef_t *pDef = GetItemDef( pCached->ItemDefID );
+		Assert( pDef );
+		if ( !pDef )
+		{
+			Warning( "Tried to delete notification item %llu which is item def id %d which I cannot find!\n", id, pCached->ItemDefID );
+			return;
+		}
+
+		Assert( pDef->ItemSlotMatches( "notification" ) );
+		if ( !pDef->ItemSlotMatches( "notification" ) )
+		{
+			Warning( "Tried to delete notification item %llu but item def id %d fits in slot %s!\n", id, pCached->ItemDefID, pDef->ItemSlot.Get() );
+			return;
+		}
+
+		FOR_EACH_VEC( s_RD_Inventory_Manager.m_CraftingQueue, i )
+		{
+			if ( s_RD_Inventory_Manager.m_CraftingQueue[i]->m_Type == CRD_Inventory_Manager::CRAFT_DELETE_SILENT && s_RD_Inventory_Manager.m_CraftingQueue[i]->m_iReplaceItemInstance == id )
+			{
+				// request already in-flight
+				return;
+			}
+		}
+
+		pInventory->ConsumeItem( s_RD_Inventory_Manager.AddCraftItemTask( CRD_Inventory_Manager::CRAFT_DELETE_SILENT, 0, id ), id, 1 );
+	}
 #endif
 
 	void OnHitConfirm( CBaseEntity *pAttacker, CBaseEntity *pTarget, Vector vecDamagePosition, bool bKilled, bool bDamageOverTime, bool bBlastDamage, int iDisposition, float flDamage, CBaseEntity *pWeapon )

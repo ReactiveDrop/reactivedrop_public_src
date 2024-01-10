@@ -8,6 +8,7 @@
 class CBaseHudChat;
 #endif
 
+// Note: This system is documented in more detail at <https://developer.reactivedrop.com/iaf-intel.html>.
 class SINGLE_INHERITANCE CRD_HoIAF_System : public CAutoGameSystemPerFrame
 {
 public:
@@ -51,6 +52,50 @@ public:
 	// HoIAF Mission Bounties
 #ifdef CLIENT_DLL
 	void MarkBountyAsCompleted( int iBountyID );
+#endif
+
+#ifdef CLIENT_DLL
+	// Notifications
+	struct Notification_t
+	{
+		enum Type_t
+		{
+			NOTIFICATION_ITEM,
+			NOTIFICATION_BOUNTY,
+			NUM_TYPES,
+		} Type;
+		CUtlString Title;
+		CUtlString Description;
+		int64_t Starts;
+		int64_t Ends;
+		enum Seen_t
+		{
+			SEEN_NEW,
+			SEEN_VIEWED,
+			SEEN_HOVERED,
+			SEEN_CLICKED,
+			NUM_SEEN_TYPES,
+		} Seen;
+
+		// For NOTIFICATION_ITEM
+		SteamItemDef_t ItemDefID;
+		SteamItemInstanceID_t ItemID;
+
+		// For NOTIFICATION_BOUNTY
+		int FirstBountyID;
+		struct BountyMission_t
+		{
+			char MissionName[MAX_MAP_NAME];
+			int Points;
+			PublishedFileId_t AddonID;
+			bool Claimed;
+		};
+		CUtlVector<BountyMission_t> BountyMissions;
+	};
+	// Elements from this array can be deleted at any time; do not store pointers.
+	CUtlVectorAutoPurge<Notification_t *> m_Notifications;
+	int m_nSeenNotifications[Notification_t::NUM_SEEN_TYPES];
+	void RebuildNotificationList();
 #endif
 
 private:
@@ -112,18 +157,19 @@ private:
 #endif
 	};
 	CUtlVectorAutoPurge<ChatAnnouncement_t *> m_ChatAnnouncements;
+#ifdef CLIENT_DLL
+	CUtlSymbolTable m_ChatAnnouncementSeen;
+#endif
 	struct HoIAFMissionBounty_t
 	{
 		int ID;
 		int64_t Starts;
 		int64_t Ends;
-		CUtlString Map;
+		char Map[MAX_MAP_NAME];
 		int Points;
+		PublishedFileId_t AddonID;
 	};
 	CUtlVectorAutoPurge<HoIAFMissionBounty_t *> m_HoIAFMissionBounties;
-#ifdef CLIENT_DLL
-	CUtlSymbolTable m_ChatAnnouncementSeen;
-#endif
 };
 
 CRD_HoIAF_System *HoIAF();

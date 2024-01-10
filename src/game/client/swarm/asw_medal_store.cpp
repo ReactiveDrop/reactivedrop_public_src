@@ -54,12 +54,12 @@ void C_ASW_Medal_Store::LoadMedalStore()
 	if ( !pSteamUser )
 		return;
 
-	char szMedalFile[ 256 ];
+	char szMedalFile[256];
 	Q_snprintf( szMedalFile, sizeof( szMedalFile ), "cfg/clientc_%I64u.dat", pSteamUser->GetSteamID().ConvertToUint64() );
 	int len = Q_strlen( szMedalFile );
 	for ( int i = 0; i < len; i++ )
 	{
-		if ( szMedalFile[ i ] == ':' )
+		if ( szMedalFile[i] == ':' )
 			szMedalFile[i] = '_';
 	}
 
@@ -75,7 +75,7 @@ void C_ASW_Medal_Store::LoadMedalStore()
 #endif
 
 	// clear out the currently loaded medals, if any
-	for (int i=0;i<ASW_NUM_MARINE_PROFILES;i++)
+	for ( int i = 0; i < ASW_NUM_MARINE_PROFILES; i++ )
 	{
 		m_MarineMedals[i].Purge();
 		m_OfflineMarineMedals[i].Purge();
@@ -89,14 +89,14 @@ void C_ASW_Medal_Store::LoadMedalStore()
 	if ( !f )
 		return;		// if we get here, it means the player has no clientc.dat file and therefore no medals
 
-	int fileSize = filesystem->Size(f);
-	char *file_buffer = (char*)MemAllocScratch(fileSize + 1);
-	Assert(file_buffer);
-	filesystem->Read(file_buffer, fileSize, f); // read into local buffer
+	int fileSize = filesystem->Size( f );
+	char *file_buffer = ( char * )MemAllocScratch( fileSize + 1 );
+	Assert( file_buffer );
+	filesystem->Read( file_buffer, fileSize, f ); // read into local buffer
 	file_buffer[fileSize] = 0; // null terminate file as EOF
 	filesystem->Close( f );	// close file after reading
 
-	UTIL_DecodeICE( (unsigned char*)file_buffer, fileSize, g_ucMedalStoreEncryptionKey );
+	UTIL_DecodeICE( ( unsigned char * )file_buffer, fileSize, g_ucMedalStoreEncryptionKey );
 
 	KeyValues *kv = new KeyValues( "CLIENTDAT" );
 	if ( !kv->LoadFromBuffer( "CLIENTDAT", file_buffer, filesystem ) )
@@ -109,22 +109,22 @@ void C_ASW_Medal_Store::LoadMedalStore()
 	m_bFoundNewClientDat = true;
 
 	// pull out missions/campaigns/kills
-	m_iMissionsCompleted = kv->GetInt("MC");
-	m_iCampaignsCompleted = kv->GetInt("CC");
-	m_iAliensKilled = kv->GetInt("AK");
+	m_iMissionsCompleted = kv->GetInt( "MC" );
+	m_iCampaignsCompleted = kv->GetInt( "CC" );
+	m_iAliensKilled = kv->GetInt( "AK" );
 
-	m_iOfflineMissionsCompleted = kv->GetInt("OMC");
-	m_iOfflineCampaignsCompleted = kv->GetInt("OCC");
-	m_iOfflineAliensKilled = kv->GetInt("OAK");
+	m_iOfflineMissionsCompleted = kv->GetInt( "OMC" );
+	m_iOfflineCampaignsCompleted = kv->GetInt( "OCC" );
+	m_iOfflineAliensKilled = kv->GetInt( "OAK" );
 
 	m_iXP = kv->GetInt( "LPL" );
 	m_iPromotion = kv->GetInt( "LPP" );
 
 	// new equip
 	m_NewEquipment.Purge();
-	KeyValues *pkvEquip = kv->FindKey("NEWEQUIP");
+	KeyValues *pkvEquip = kv->FindKey( "NEWEQUIP" );
 	char buffer[64];
-	if ( pkvEquip )	
+	if ( pkvEquip )
 	{
 		for ( KeyValues *pKey = pkvEquip->GetFirstSubKey(); pKey; pKey = pKey->GetNextKey() )
 		{
@@ -132,52 +132,54 @@ void C_ASW_Medal_Store::LoadMedalStore()
 		}
 	}
 
-	// completed hoiaf bounties
-	m_ClaimedHoIAFMissionBounties.Purge();
+	// HoIAF bounties
+	m_HoIAFMissionBounties.Purge();
 	KeyValues *pkvBounties = kv->FindKey( "HOIAFBOUNTIES" );
 	if ( pkvBounties )
 	{
 		for ( KeyValues *pKey = pkvBounties->GetFirstSubKey(); pKey; pKey = pKey->GetNextKey() )
 		{
-			m_ClaimedHoIAFMissionBounties.AddToTail( pKey->GetInt() );
+			int i = m_HoIAFMissionBounties.AddToTail();
+			m_HoIAFMissionBounties[i].ID = pKey->GetInt( "I" );
+			m_HoIAFMissionBounties[i].NotificationStatus = pKey->GetInt( "N" );
+			m_HoIAFMissionBounties[i].Claimed = pKey->GetBool( "C" );
 		}
 	}
 
-	// first subsection is player medals
-	//KeyValues *pkvPlayerMedals = kv->GetFirstSubKey();
-	KeyValues *pkvPlayerMedals = kv->FindKey("LP");
+	// player medals
+	KeyValues *pkvPlayerMedals = kv->FindKey( "LP" );
 	int iMedalNum = 0;
-	if (pkvPlayerMedals)	
+	if ( pkvPlayerMedals )
 	{
 		int iMedal = 0;
-		while (iMedal != -1)
+		while ( iMedal != -1 )
 		{
-			Q_snprintf(buffer, sizeof(buffer), "M%d", iMedalNum);			
-			iMedal = pkvPlayerMedals->GetInt(buffer, -1);
-			if (iMedal != -1 && IsPlayerMedal(iMedal))
+			Q_snprintf( buffer, sizeof( buffer ), "M%d", iMedalNum );
+			iMedal = pkvPlayerMedals->GetInt( buffer, -1 );
+			if ( iMedal != -1 && IsPlayerMedal( iMedal ) )
 			{
-				m_PlayerMedals.AddToTail(iMedal);
+				m_PlayerMedals.AddToTail( iMedal );
 			}
 			iMedalNum++;
 		}
 	}
 
 	// now go through each marine
-	for (int i=0;i<ASW_NUM_MARINE_PROFILES;i++)
+	for ( int i = 0; i < ASW_NUM_MARINE_PROFILES; i++ )
 	{
-		Q_snprintf(buffer, sizeof(buffer), "LA%d", i);
-		KeyValues *pkvMarineMedals = kv->FindKey(buffer);
-		if (pkvMarineMedals)
+		Q_snprintf( buffer, sizeof( buffer ), "LA%d", i );
+		KeyValues *pkvMarineMedals = kv->FindKey( buffer );
+		if ( pkvMarineMedals )
 		{
 			iMedalNum = 0;
 			int iMedal = 0;
-			while (iMedal != -1)
+			while ( iMedal != -1 )
 			{
-				Q_snprintf(buffer, sizeof(buffer), "M%d", iMedalNum);			
-				iMedal = pkvMarineMedals->GetInt(buffer, -1);
-				if (iMedal != -1 && !IsPlayerMedal(iMedal))
+				Q_snprintf( buffer, sizeof( buffer ), "M%d", iMedalNum );
+				iMedal = pkvMarineMedals->GetInt( buffer, -1 );
+				if ( iMedal != -1 && !IsPlayerMedal( iMedal ) )
 				{
-					m_MarineMedals[i].AddToTail(iMedal);
+					m_MarineMedals[i].AddToTail( iMedal );
 				}
 				iMedalNum++;
 			}
@@ -185,46 +187,45 @@ void C_ASW_Medal_Store::LoadMedalStore()
 	}
 
 	// offline medal store
-	pkvPlayerMedals = kv->FindKey("FP");
+	pkvPlayerMedals = kv->FindKey( "FP" );
 	iMedalNum = 0;
-	if (pkvPlayerMedals)	
+	if ( pkvPlayerMedals )
 	{
 		int iMedal = 0;
-		while (iMedal != -1)
+		while ( iMedal != -1 )
 		{
-			Q_snprintf(buffer, sizeof(buffer), "M%d", iMedalNum);			
-			iMedal = pkvPlayerMedals->GetInt(buffer, -1);
-			if (iMedal != -1 && IsPlayerMedal(iMedal))
+			Q_snprintf( buffer, sizeof( buffer ), "M%d", iMedalNum );
+			iMedal = pkvPlayerMedals->GetInt( buffer, -1 );
+			if ( iMedal != -1 && IsPlayerMedal( iMedal ) )
 			{
-				m_OfflinePlayerMedals.AddToTail(iMedal);
+				m_OfflinePlayerMedals.AddToTail( iMedal );
 			}
 			iMedalNum++;
 		}
 	}
 
 	// now go through each marine
-	for (int i=0;i<ASW_NUM_MARINE_PROFILES;i++)
+	for ( int i = 0; i < ASW_NUM_MARINE_PROFILES; i++ )
 	{
-		Q_snprintf(buffer, sizeof(buffer), "FA%d", i);
-		KeyValues *pkvMarineMedals = kv->FindKey(buffer);
-		if (pkvMarineMedals)
+		Q_snprintf( buffer, sizeof( buffer ), "FA%d", i );
+		KeyValues *pkvMarineMedals = kv->FindKey( buffer );
+		if ( pkvMarineMedals )
 		{
 			iMedalNum = 0;
 			int iMedal = 0;
-			while (iMedal != -1)
+			while ( iMedal != -1 )
 			{
-				Q_snprintf(buffer, sizeof(buffer), "M%d", iMedalNum);			
-				iMedal = pkvMarineMedals->GetInt(buffer, -1);
-				if (iMedal != -1 && !IsPlayerMedal(iMedal))
+				Q_snprintf( buffer, sizeof( buffer ), "M%d", iMedalNum );
+				iMedal = pkvMarineMedals->GetInt( buffer, -1 );
+				if ( iMedal != -1 && !IsPlayerMedal( iMedal ) )
 				{
-					m_OfflineMarineMedals[i].AddToTail(iMedal);
+					m_OfflineMarineMedals[i].AddToTail( iMedal );
 				}
 				iMedalNum++;
 			}
 		}
 	}
 }
-
 
 //-----------------------------------------------------------------------------
 // Purpose: encrypts an 8-byte sequence
@@ -237,20 +238,20 @@ bool C_ASW_Medal_Store::SaveMedalStore()
 		return false;
 
 	KeyValues *kv = new KeyValues( "CLIENTDAT" );
-	
-	// output missions/campaigns/kills
-	kv->SetInt("MC", m_iMissionsCompleted);
-	kv->SetInt("CC", m_iCampaignsCompleted);
-	kv->SetInt("AK", m_iAliensKilled);
 
-	kv->SetInt("OMC", m_iOfflineMissionsCompleted);
-	kv->SetInt("OCC", m_iOfflineCampaignsCompleted);
-	kv->SetInt("OAK", m_iOfflineAliensKilled);
+	// output missions/campaigns/kills
+	kv->SetInt( "MC", m_iMissionsCompleted );
+	kv->SetInt( "CC", m_iCampaignsCompleted );
+	kv->SetInt( "AK", m_iAliensKilled );
+
+	kv->SetInt( "OMC", m_iOfflineMissionsCompleted );
+	kv->SetInt( "OCC", m_iOfflineCampaignsCompleted );
+	kv->SetInt( "OAK", m_iOfflineAliensKilled );
 
 	kv->SetInt( "LPL", m_iXP );
 	kv->SetInt( "LPP", m_iPromotion );
-	
-	KeyValues *pSubSection = new KeyValues("NEWEQUIP");
+
+	KeyValues *pSubSection = new KeyValues( "NEWEQUIP" );
 	char buffer[64];
 	if ( pSubSection )
 	{
@@ -266,70 +267,75 @@ bool C_ASW_Medal_Store::SaveMedalStore()
 	pSubSection = new KeyValues( "HOIAFBOUNTIES" );
 	if ( pSubSection )
 	{
-		for ( int i = 0; i < m_ClaimedHoIAFMissionBounties.Count(); i++ )
+		for ( int i = 0; i < m_HoIAFMissionBounties.Count(); i++ )
 		{
 			KeyValues *pSub = new KeyValues( "B" );
-			pSub->SetInt( NULL, m_ClaimedHoIAFMissionBounties[i] );
+			pSub->SetInt( "I", m_HoIAFMissionBounties[i].ID );
+			// save some space by omitting zeroes
+			if ( m_HoIAFMissionBounties[i].NotificationStatus )
+				pSub->SetInt( "N", m_HoIAFMissionBounties[i].NotificationStatus );
+			if ( m_HoIAFMissionBounties[i].Claimed )
+				pSub->SetBool( "C", m_HoIAFMissionBounties[i].Claimed );
 			pSubSection->AddSubKey( pSub );
 		}
 		kv->AddSubKey( pSubSection );
 	}
 
 	// output player medals
-	pSubSection = new KeyValues("LP");
-	if (pSubSection)
+	pSubSection = new KeyValues( "LP" );
+	if ( pSubSection )
 	{
-		for (int i=0;i<m_PlayerMedals.Count();i++)
-		{			
-			Q_snprintf(buffer, sizeof(buffer), "M%d", i);
-			pSubSection->SetInt(buffer, m_PlayerMedals[i]);
+		for ( int i = 0; i < m_PlayerMedals.Count(); i++ )
+		{
+			Q_snprintf( buffer, sizeof( buffer ), "M%d", i );
+			pSubSection->SetInt( buffer, m_PlayerMedals[i] );
 		}
-		kv->AddSubKey(pSubSection);
-	}	
+		kv->AddSubKey( pSubSection );
+	}
 
-	for (int k=0;k<ASW_NUM_MARINE_PROFILES;k++)
+	for ( int k = 0; k < ASW_NUM_MARINE_PROFILES; k++ )
 	{
-		Q_snprintf(buffer, sizeof(buffer), "LA%d", k);
-		pSubSection = new KeyValues(buffer);
-		if (pSubSection)
-		{			
-			for (int i=0;i<m_MarineMedals[k].Count();i++)
+		Q_snprintf( buffer, sizeof( buffer ), "LA%d", k );
+		pSubSection = new KeyValues( buffer );
+		if ( pSubSection )
+		{
+			for ( int i = 0; i < m_MarineMedals[k].Count(); i++ )
 			{
-				Q_snprintf(buffer, sizeof(buffer), "M%d", i);
-				pSubSection->SetInt(buffer, m_MarineMedals[k][i]);				
+				Q_snprintf( buffer, sizeof( buffer ), "M%d", i );
+				pSubSection->SetInt( buffer, m_MarineMedals[k][i] );
 			}
-			kv->AddSubKey(pSubSection);
-		}		
+			kv->AddSubKey( pSubSection );
+		}
 	}
 
 	// offline medal store
-	pSubSection = new KeyValues("FP");
-	if (pSubSection)
+	pSubSection = new KeyValues( "FP" );
+	if ( pSubSection )
 	{
-		for (int i=0;i<m_OfflinePlayerMedals.Count();i++)
-		{			
-			Q_snprintf(buffer, sizeof(buffer), "M%d", i);
-			pSubSection->SetInt(buffer, m_OfflinePlayerMedals[i]);
+		for ( int i = 0; i < m_OfflinePlayerMedals.Count(); i++ )
+		{
+			Q_snprintf( buffer, sizeof( buffer ), "M%d", i );
+			pSubSection->SetInt( buffer, m_OfflinePlayerMedals[i] );
 		}
-		kv->AddSubKey(pSubSection);
-	}	
-
-	for (int k=0;k<ASW_NUM_MARINE_PROFILES;k++)
-	{
-		Q_snprintf(buffer, sizeof(buffer), "FA%d", k);
-		pSubSection = new KeyValues(buffer);
-		if (pSubSection)
-		{			
-			for (int i=0;i<m_OfflineMarineMedals[k].Count();i++)
-			{
-				Q_snprintf(buffer, sizeof(buffer), "M%d", i);
-				pSubSection->SetInt(buffer, m_OfflineMarineMedals[k][i]);				
-			}
-			kv->AddSubKey(pSubSection);
-		}		
+		kv->AddSubKey( pSubSection );
 	}
 
-	CUtlBuffer buf; //( 0, 0, CUtlBuffer::TEXT_BUFFER );
+	for ( int k = 0; k < ASW_NUM_MARINE_PROFILES; k++ )
+	{
+		Q_snprintf( buffer, sizeof( buffer ), "FA%d", k );
+		pSubSection = new KeyValues( buffer );
+		if ( pSubSection )
+		{
+			for ( int i = 0; i < m_OfflineMarineMedals[k].Count(); i++ )
+			{
+				Q_snprintf( buffer, sizeof( buffer ), "M%d", i );
+				pSubSection->SetInt( buffer, m_OfflineMarineMedals[k][i] );
+			}
+			kv->AddSubKey( pSubSection );
+		}
+	}
+
+	CUtlBuffer buf;
 	kv->RecursiveSaveToFile( buf, 0 );
 
 	// pad buffer with zeroes to make a multiple of 8
@@ -339,34 +345,34 @@ bool C_ASW_Medal_Store::SaveMedalStore()
 		buf.PutChar( 0 );
 		nExtra++;
 	}
-	UTIL_EncodeICE( (unsigned char*) buf.Base(), buf.TellPut(), g_ucMedalStoreEncryptionKey );
+	UTIL_EncodeICE( ( unsigned char * )buf.Base(), buf.TellPut(), g_ucMedalStoreEncryptionKey );
 
 	ISteamUser *pSteamUser = SteamUser();
 	if ( !pSteamUser )
 		return false;
 
-	char szMedalFile[ 256 ];
+	char szMedalFile[256];
 	Q_snprintf( szMedalFile, sizeof( szMedalFile ), "cfg/clientc_%I64u.dat", pSteamUser->GetSteamID().ConvertToUint64() );
 	int len = Q_strlen( szMedalFile );
 	for ( int i = 0; i < len; i++ )
 	{
-		if ( szMedalFile[ i ] == ':' )
+		if ( szMedalFile[i] == ':' )
 			szMedalFile[i] = '_';
 	}
 
 	bool bResult = filesystem->WriteFile( szMedalFile, "MOD", buf );
 	if ( bResult )
 	{
-	#if defined(NO_STEAM)
+#if defined(NO_STEAM)
 		AssertMsg( false, "SteamCloud not available." );
-	#else
+#else
 		ISteamRemoteStorage *pRemoteStorage = SteamRemoteStorage();
 
 		if ( asw_steam_cloud.GetBool() && pRemoteStorage )
 		{
 			WriteFileToRemoteStorage( pRemoteStorage, "PersistentMarines.dat", szMedalFile );
 		}
-	#endif
+#endif
 	}
 
 	return bResult;
@@ -564,7 +570,7 @@ void C_ASW_Medal_Store::ClearMedalStore()
 	m_iXP = 0;
 	m_iPromotion = 0;
 	m_NewEquipment.Purge();
-	m_ClaimedHoIAFMissionBounties.Purge();
+	m_HoIAFMissionBounties.Purge();
 	SaveMedalStore();
 }
 
@@ -740,11 +746,11 @@ void C_ASW_Medal_Store::RemoveBountiesExcept( const CUtlVector<int> &except )
 	}
 
 	bool bRemovedAny = false;
-	FOR_EACH_VEC_BACK( m_ClaimedHoIAFMissionBounties, i )
+	FOR_EACH_VEC_BACK( m_HoIAFMissionBounties, i )
 	{
-		if ( except.Find( m_ClaimedHoIAFMissionBounties[i] ) == except.InvalidIndex() )
+		if ( except.Find( m_HoIAFMissionBounties[i].ID ) == except.InvalidIndex() )
 		{
-			m_ClaimedHoIAFMissionBounties.Remove( i );
+			m_HoIAFMissionBounties.Remove( i );
 			bRemovedAny = true;
 		}
 	}
@@ -757,9 +763,31 @@ void C_ASW_Medal_Store::RemoveBountiesExcept( const CUtlVector<int> &except )
 
 void C_ASW_Medal_Store::OnCompletedBounty( int iBountyID )
 {
-	if ( !HasCompletedBounty(iBountyID) )
+	if ( !m_bLoaded )
 	{
-		m_ClaimedHoIAFMissionBounties.AddToTail( iBountyID );
+		LoadMedalStore();
+	}
+
+	int index = m_HoIAFMissionBounties.InvalidIndex();
+	FOR_EACH_VEC( m_HoIAFMissionBounties, i )
+	{
+		if ( m_HoIAFMissionBounties[i].ID == iBountyID )
+		{
+			index = i;
+			break;
+		}
+	}
+	if ( !m_HoIAFMissionBounties.IsValidIndex( index ) )
+	{
+		index = m_HoIAFMissionBounties.AddToTail();
+		m_HoIAFMissionBounties[index].ID = iBountyID;
+		m_HoIAFMissionBounties[index].NotificationStatus = 0;
+		m_HoIAFMissionBounties[index].Claimed = false;
+	}
+
+	if ( !m_HoIAFMissionBounties[index].Claimed )
+	{
+		m_HoIAFMissionBounties[index].Claimed = true;
 		SaveMedalStore();
 	}
 }
@@ -771,7 +799,64 @@ bool C_ASW_Medal_Store::HasCompletedBounty( int iBountyID )
 		LoadMedalStore();
 	}
 
-	return m_ClaimedHoIAFMissionBounties.Find( iBountyID ) != m_ClaimedHoIAFMissionBounties.InvalidIndex();
+	FOR_EACH_VEC( m_HoIAFMissionBounties, i )
+	{
+		if ( m_HoIAFMissionBounties[i].ID == iBountyID )
+		{
+			return m_HoIAFMissionBounties[i].Claimed;
+		}
+	}
+
+	return false;
+}
+
+void C_ASW_Medal_Store::SetBountyNotificationStatus( int iBountyID, int iValue )
+{
+	if ( !m_bLoaded )
+	{
+		LoadMedalStore();
+	}
+
+	int index = m_HoIAFMissionBounties.InvalidIndex();
+	FOR_EACH_VEC( m_HoIAFMissionBounties, i )
+	{
+		if ( m_HoIAFMissionBounties[i].ID == iBountyID )
+		{
+			index = i;
+			break;
+		}
+	}
+	if ( !m_HoIAFMissionBounties.IsValidIndex( index ) )
+	{
+		index = m_HoIAFMissionBounties.AddToTail();
+		m_HoIAFMissionBounties[index].ID = iBountyID;
+		m_HoIAFMissionBounties[index].NotificationStatus = 0;
+		m_HoIAFMissionBounties[index].Claimed = false;
+	}
+
+	if ( m_HoIAFMissionBounties[index].NotificationStatus != iValue )
+	{
+		m_HoIAFMissionBounties[index].NotificationStatus = iValue;
+		SaveMedalStore();
+	}
+}
+
+int C_ASW_Medal_Store::GetBountyNotificationStatus( int iBountyID )
+{
+	if ( !m_bLoaded )
+	{
+		LoadMedalStore();
+	}
+
+	FOR_EACH_VEC( m_HoIAFMissionBounties, i )
+	{
+		if ( m_HoIAFMissionBounties[i].ID == iBountyID )
+		{
+			return m_HoIAFMissionBounties[i].NotificationStatus;
+		}
+	}
+
+	return 0;
 }
 
 void C_ASW_Medal_Store::SetExperience( int nXP )

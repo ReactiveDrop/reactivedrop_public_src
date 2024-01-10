@@ -41,6 +41,8 @@ public:
 	void RemoveBountiesExcept( const CUtlVector<int> &except );
 	void OnCompletedBounty( int iBountyID );
 	bool HasCompletedBounty( int iBountyID );
+	void SetBountyNotificationStatus( int iBountyID, int iValue );
+	int GetBountyNotificationStatus( int iBountyID );
 
 	void SetExperience( int nXP );
 	int GetExperience();
@@ -69,7 +71,13 @@ private:
 	bool m_bLoaded;
 
 	CUtlVector<int> m_NewEquipment;
-	CUtlVector<int> m_ClaimedHoIAFMissionBounties;
+	struct HoIAFMissionBountyData_t
+	{
+		int ID;
+		int NotificationStatus;
+		bool Claimed;
+	};
+	CUtlVector<HoIAFMissionBountyData_t> m_HoIAFMissionBounties;
 
 	int m_iXP;
 	int m_iPromotion;
