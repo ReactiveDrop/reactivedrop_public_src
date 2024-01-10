@@ -78,8 +78,8 @@ public:
 		} Seen;
 
 		// For NOTIFICATION_ITEM
-		SteamItemDef_t ItemDefID;
-		SteamItemInstanceID_t ItemID;
+		int32_t ItemDefID;
+		uint64_t ItemID;
 
 		// For NOTIFICATION_BOUNTY
 		int FirstBountyID;
@@ -87,7 +87,7 @@ public:
 		{
 			char MissionName[MAX_MAP_NAME];
 			int Points;
-			PublishedFileId_t AddonID;
+			uint64_t AddonID;
 			bool Claimed;
 		};
 		CUtlVector<BountyMission_t> BountyMissions;
@@ -167,7 +167,7 @@ private:
 		int64_t Ends;
 		char Map[MAX_MAP_NAME];
 		int Points;
-		PublishedFileId_t AddonID;
+		uint64_t AddonID;
 	};
 	CUtlVectorAutoPurge<HoIAFMissionBounty_t *> m_HoIAFMissionBounties;
 };
