@@ -542,6 +542,69 @@ Scheme
 				"blur"			"3"
 			}
 		}
+
+		"DefaultTextBold"
+		{
+			"1"
+			{
+				"name"		"Neo Sans"
+				"tall"		"10"
+				"weight"	"700"
+				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
+				"antialias"	"1"
+			}
+		}
+
+		"DefaultTextItalic"
+		{
+			"1"
+			{
+				"name"		"Neo Sans"
+				"tall"		"10"
+				"weight"	"100"
+				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
+				"antialias"	"1"
+				"italic"	"1"
+			}
+		}
+
+		"DefaultTextBoldItalic"
+		{
+			"1"
+			{
+				"name"		"Neo Sans"
+				"tall"		"10"
+				"weight"	"700"
+				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
+				"antialias"	"1"
+				"italic"	"1"
+			}
+		}
+
+		"Combine"
+		{
+			"1"
+			{
+				"name"		"CMB Combine"
+				"tall"		"10"
+				"weight"	"400"
+				"range"		"0x0000 0x007F" //	ASCII
+				"antialias"	"1"
+			}
+		}
+
+		"CombineExtraLarge"
+		{
+			"1"
+			{
+				"name"		"CMB Combine"
+				"tall"		"20"
+				"weight"	"400"
+				"range"		"0x0000 0x007F" //	ASCII
+				"antialias"	"1"
+			}
+		}
+
 		"Countdown"
 		{
 			"1"
@@ -1383,5 +1446,6 @@ Scheme
 	CustomFontFiles
 	{
 		"1"		"resource/NeoSans.vfont"
+		"2"		"resource/cmb-combine.ttf"
 	}
 }

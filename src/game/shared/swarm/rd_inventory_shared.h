@@ -8,6 +8,7 @@ namespace vgui
 {
 	class IImage;
 	class RichText;
+	class MultiFontRichText;
 }
 
 #define CASW_Player C_ASW_Player
@@ -15,6 +16,9 @@ namespace vgui
 #define CRD_ItemInstances_Static C_RD_ItemInstances_Static
 #define CRD_ItemInstances_Dynamic C_RD_ItemInstances_Dynamic
 #define CRD_ProjectileData C_RD_ProjectileData
+
+extern ConVar rd_briefing_item_details_color1;
+extern ConVar rd_briefing_item_details_color2;
 #endif
 
 class CASW_Player;
@@ -136,7 +140,8 @@ namespace ReactiveDropInventory
 		explicit ItemInstance_t( KeyValues *pKV );
 		void FormatDescription( wchar_t *wszBuf, size_t sizeOfBufferInBytes, const CUtlString &szDesc, bool bIsSteamCommunityDesc ) const;
 #ifdef CLIENT_DLL
-		void FormatDescription( vgui::RichText *pRichText, bool bIncludeAccessories = true ) const;
+		void FormatDescription( vgui::RichText *pRichText, bool bIncludeAccessories = true, Color descriptionColor = rd_briefing_item_details_color1.GetColor(), Color beforeAfterColor = rd_briefing_item_details_color2.GetColor() ) const;
+		void FormatDescription( vgui::MultiFontRichText *pRichText, bool bIncludeAccessories = true, Color descriptionColor = rd_briefing_item_details_color1.GetColor(), Color beforeAfterColor = rd_briefing_item_details_color2.GetColor() ) const;
 		vgui::IImage *GetIcon() const;
 #endif
 		int GetStyle() const;
@@ -185,11 +190,6 @@ EXTERN_RECV_TABLE( DT_RD_ProjectileData );
 #ifdef RD_7A_DROPS
 EXTERN_RECV_TABLE( DT_RD_CraftingMaterialInfo );
 #endif
-
-namespace vgui
-{
-	class RichText;
-}
 #else
 EXTERN_SEND_TABLE( DT_RD_ItemInstance );
 EXTERN_SEND_TABLE( DT_RD_ItemInstances_Static );
@@ -218,7 +218,9 @@ public:
 	void FormatDescription( wchar_t *wszBuf, size_t sizeOfBufferInBytes, const CUtlString &szDesc, bool bIsSteamCommunityDesc ) const;
 #ifdef CLIENT_DLL
 	static void AppendBBCode( vgui::RichText *pRichText, const wchar_t *wszBuf, Color defaultColor );
-	void FormatDescription( vgui::RichText *pRichText, bool bIncludeAccessories = true ) const;
+	static void AppendBBCode( vgui::MultiFontRichText *pRichText, const wchar_t *wszBuf, Color defaultColor );
+	void FormatDescription( vgui::RichText *pRichText, bool bIncludeAccessories = true, Color descriptionAfterColor = rd_briefing_item_details_color1.GetColor(), Color beforeAfterColor = rd_briefing_item_details_color2.GetColor() ) const;
+	void FormatDescription( vgui::MultiFontRichText *pRichText, bool bIncludeAccessories = true, Color descriptionAfterColor = rd_briefing_item_details_color1.GetColor(), Color beforeAfterColor = rd_briefing_item_details_color2.GetColor() ) const;
 	vgui::IImage *GetIcon() const;
 #endif
 	int GetStyle() const;
