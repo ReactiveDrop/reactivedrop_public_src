@@ -563,14 +563,17 @@ void GameSettings::OnCommand(const char *command)
 	}
 	else if( V_strcmp( command, "cmd_change_mission" ) == 0 )
 	{
+		Activate();
 		ShowMissionSelect();
 	}
 	else if ( V_strcmp( command, "cmd_change_starting_mission" ) == 0 )
 	{
+		Activate();
 		ShowStartingMissionSelect();
 	}
 	else if ( V_strcmp( command, "cmd_change_challenge" ) == 0 )
 	{
+		Activate(); // undo the challenge name being changed to cmd_change_challenge by the dropdown
 		ShowChallengeSelect();
 	}
 	else if ( char const *szMissionSelected = StringAfterPrefix( command, "cmd_mission_selected_" ) )
