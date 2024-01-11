@@ -1495,13 +1495,14 @@ void MainMenu::OnThink()
 		s_iLastQuickJoinFriendsVisible = m_InactiveHideQuickJoinFriends.m_iGlow;
 
 		uint16 iSlideState = m_iInactiveHideMainMenu;
-		m_pBranchDisclaimer->SetAlpha( RemapValClamped( iSlideState, 32768, 65535, 0, 255 ) );
+		if ( m_pBranchDisclaimer )
+			m_pBranchDisclaimer->SetAlpha( RemapValClamped( iSlideState, 32768, 65535, 0, 255 ) );
 
 		int x, y;
 		int offx = ScreenWidth() / 2;
 		int offy = ScreenHeight() / 8;
 #define UPDATE_PANEL_SLIDE( pPanel, iTarget, axis, sign, start, end ) \
-			if ( false ) ; \
+			if ( !pPanel ) ; \
 			else \
 			{ \
 				pPanel->GetPos( x, y ); \
