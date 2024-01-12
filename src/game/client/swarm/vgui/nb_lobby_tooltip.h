@@ -17,7 +17,11 @@ class CASW_Model_Panel;
 // == MANAGED_CLASS_DECLARATIONS_END ==
 class vgui::ImagePanel;
 class vgui::Label;
-class vgui::RichText;
+
+namespace vgui
+{
+	class MultiFontRichText;
+}
 
 class CNB_Lobby_Tooltip : public vgui::EditablePanel
 {
@@ -59,7 +63,7 @@ public:
 	vgui::Panel *m_pIconBackground;
 	vgui::ImagePanel *m_pPromotionIcon;
 	vgui::Label *m_pPromotionLabel;
-	vgui::RichText *m_pItemDescription;
+	vgui::MultiFontRichText *m_pItemDescription;
 	Color m_DefaultTitleColor;
 
 	bool m_bPromotionTooltip;

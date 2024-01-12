@@ -7,8 +7,8 @@
 #include <vgui/ISurface.h>
 #include <vgui_controls/ImagePanel.h>
 #include <vgui_controls/Label.h>
-#include <vgui_controls/RichText.h>
 #include <vgui_controls/TextImage.h>
+#include "MultiFontRichText.h"
 #include "vgui_bitmapbutton.h"
 #include "gameui/swarm/vgenericpanellist.h"
 #include "nb_button.h"
@@ -242,7 +242,7 @@ CRD_Collection_Details_Equipment::CRD_Collection_Details_Equipment( CRD_Collecti
 	m_pModelPanel = new CRD_Swarmopedia_Model_Panel( this, "ModelPanel" );
 	m_pWeaponNameLabel = new vgui::Label( this, "WeaponNameLabel", L"" );
 	m_pWeaponAttrLabel = new vgui::Label( this, "WeaponAttrLabel", L"" );
-	m_pWeaponDescLabel = new vgui::RichText( this, "WeaponDescLabel" );
+	m_pWeaponDescLabel = new vgui::MultiFontRichText( this, "WeaponDescLabel" );
 	m_pWeaponDescLabel->SetPanelInteractive( false );
 	m_pWeaponDescLabel->SetUnusedScrollbarInvisible( true );
 	m_pWeaponDescLabel->SetDrawTextOnly();

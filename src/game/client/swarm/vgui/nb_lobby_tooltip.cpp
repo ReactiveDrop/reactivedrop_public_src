@@ -3,7 +3,7 @@
 #include "vgui_controls/Label.h"
 #include "vgui_controls/Panel.h"
 #include "vgui_controls/ImagePanel.h"
-#include "vgui_controls/RichText.h"
+#include "MultiFontRichText.h"
 #include "asw_marine_profile.h"
 #include "asw_briefing.h"
 #include "nb_skill_panel.h"
@@ -48,7 +48,7 @@ CNB_Lobby_Tooltip::CNB_Lobby_Tooltip( vgui::Panel *parent, const char *name ) : 
 	m_pIconBackground = new vgui::Panel( this, "IconBackground" );
 	m_pPromotionIcon = new vgui::ImagePanel( this, "PromotionIcon" );
 	m_pPromotionLabel = new vgui::Label( this, "PromotionLabel", "" );
-	m_pItemDescription = new vgui::RichText( this, "ItemDescription" );
+	m_pItemDescription = new vgui::MultiFontRichText( this, "ItemDescription" );
 
 	m_pItemModelPanel->m_bShouldPaint = false;
 	m_pItemModelPanel->SetVisible( false );

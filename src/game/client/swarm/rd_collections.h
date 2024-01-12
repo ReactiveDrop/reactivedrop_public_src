@@ -21,6 +21,10 @@ namespace BaseModUI
 {
 	class GenericPanelList;
 }
+namespace vgui
+{
+	class MultiFontRichText;
+}
 
 void LaunchCollectionsFrame();
 
@@ -116,7 +120,7 @@ public:
 	CRD_Swarmopedia_Model_Panel *m_pModelPanel;
 	vgui::Label *m_pWeaponNameLabel;
 	vgui::Label *m_pWeaponAttrLabel;
-	vgui::RichText *m_pWeaponDescLabel;
+	vgui::MultiFontRichText *m_pWeaponDescLabel;
 	BaseModUI::GenericPanelList *m_pGplStats;
 	vgui::ImagePanel *m_pImgStatsUpdating;
 	int m_iStatsUpdateCount{};
@@ -206,7 +210,7 @@ public:
 	vgui::Panel *m_pIconBackground;
 	vgui::ImagePanel *m_pIcon;
 	vgui::RichText *m_pTitle;
-	vgui::RichText *m_pDescription;
+	vgui::MultiFontRichText *m_pDescription;
 	int m_iStyleOverride;
 };
 

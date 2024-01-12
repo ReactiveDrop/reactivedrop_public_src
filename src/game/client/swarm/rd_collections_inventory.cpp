@@ -4,6 +4,7 @@
 #include <vgui/ILocalize.h>
 #include <vgui_controls/ImagePanel.h>
 #include <vgui_controls/RichText.h>
+#include "MultiFontRichText.h"
 #include "fmtstr.h"
 #include "filesystem.h"
 #include "gameui/swarm/basemodpanel.h"
@@ -234,7 +235,7 @@ CRD_Collection_Details_Inventory::CRD_Collection_Details_Inventory( CRD_Collecti
 	: BaseClass( parent )
 {
 	m_pTitle = new vgui::RichText( this, "Title" );
-	m_pDescription = new vgui::RichText( this, "Description" );
+	m_pDescription = new vgui::MultiFontRichText( this, "Description" );
 	m_pIconBackground = new vgui::Panel( this, "IconBackground" );
 	m_pIcon = new vgui::ImagePanel( this, "Icon" );
 

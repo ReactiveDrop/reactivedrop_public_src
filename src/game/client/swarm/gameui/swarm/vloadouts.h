@@ -194,7 +194,7 @@ public:
 	KeyValues::AutoDelete m_pKVDisplay{ "Display" };
 	vgui::DHANDLE<CRD_VGUI_Loadout_List_Item> m_hLoadout;
 	CRD_Swarmopedia_Model_Panel *m_pModelPanel;
-	vgui::RichText *m_pLblBiography;
+	vgui::MultiFontRichText *m_pLblBiography;
 	CNB_Skill_Panel *m_pSkillPanel[ASW_NUM_SKILL_SLOTS - 1];
 	vgui::ImagePanel *m_pImgClass;
 	CRD_VGUI_Loadout_Slot_Marine *m_pMarine;

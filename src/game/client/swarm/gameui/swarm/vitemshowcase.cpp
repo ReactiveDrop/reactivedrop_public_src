@@ -5,7 +5,7 @@
 #include "asw_equipment_list.h"
 #include "asw_model_panel.h"
 #include <vgui_controls/AnimationController.h>
-#include <vgui_controls/RichText.h>
+#include "MultiFontRichText.h"
 #include <vgui/ISurface.h>
 #include <vgui/IVGui.h>
 #include "engine/IEngineSound.h"
@@ -39,7 +39,7 @@ ItemShowcase::ItemShowcase( Panel *parent, const char *panelName )
 	m_pItemModelPanel->SetMouseInputEnabled( false );
 	m_pItemModelPanel->SetLighting( SwarmopediaDefaultLightingState() );
 
-	m_pDescriptionArea = new RichText( this, "DescriptionArea" );
+	m_pDescriptionArea = new MultiFontRichText( this, "DescriptionArea" );
 	m_pDescriptionArea->SetUnusedScrollbarInvisible( true );
 	m_pDescriptionArea->SetPaintBackgroundEnabled( false );
 	m_pDescriptionArea->SetCursor( vgui::dc_arrow );

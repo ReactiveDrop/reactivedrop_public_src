@@ -10,6 +10,7 @@
 #include "vgui/ISurface.h"
 #include "vgui_controls/ImagePanel.h"
 #include "vgui_controls/RichText.h"
+#include "MultiFontRichText.h"
 #include "vgenericwaitscreen.h"
 #include "vgenericconfirmation.h"
 #include "vpasswordentry.h"
@@ -1259,7 +1260,7 @@ CRD_VGUI_Loadout_Marine::CRD_VGUI_Loadout_Marine( vgui::Panel *parent, const cha
 	m_pModelPanel = new CRD_Swarmopedia_Model_Panel( this, "ModelPanel" );
 	m_pModelPanel->m_eMode = CRD_Swarmopedia_Model_Panel::MODE_FULLSCREEN_MOUSE;
 
-	m_pLblBiography = new vgui::RichText( this, "LblBiography" );
+	m_pLblBiography = new vgui::MultiFontRichText( this, "LblBiography" );
 	m_pLblBiography->SetPanelInteractive( false );
 	m_pLblBiography->SetCursor( vgui::dc_arrow );
 

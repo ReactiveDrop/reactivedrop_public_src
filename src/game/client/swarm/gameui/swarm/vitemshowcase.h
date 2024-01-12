@@ -55,7 +55,7 @@ public:
 	CNB_Gradient_Bar *m_pBanner;
 	CNB_Button *m_pBackButton;
 	CASW_Model_Panel *m_pItemModelPanel;
-	vgui::RichText *m_pDescriptionArea;
+	vgui::MultiFontRichText *m_pDescriptionArea;
 	int m_iWeaponLabelX;
 	int m_iDescriptionAreaY;
 	int m_iRepositionDescription;
