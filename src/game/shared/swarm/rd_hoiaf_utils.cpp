@@ -11,6 +11,7 @@
 #include "gameui/swarm/basemodframe.h"
 #include "asw_medal_store.h"
 #include "rd_inventory_shared.h"
+#include "rd_vgui_notifications.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -19,9 +20,12 @@
 
 #ifdef CLIENT_DLL
 extern ConVar hud_saytext_time;
-ConVar rd_notification_filter_crafting( "rd_notification_filter_crafting", "1", FCVAR_ARCHIVE, "Should we show crafting-related notifications?" );
-ConVar rd_notification_filter_hoiaf( "rd_notification_filter_hoiaf", "1", FCVAR_ARCHIVE, "Should we show HoIAF-related notifications?" );
-ConVar rd_notification_filter_reports( "rd_notification_filter_reports", "1", FCVAR_ARCHIVE, "Should we show non-critical report-related notifications?" );
+extern ConVar rd_notification_filter_hoiaf;
+static void ForceRebuildNotificationList( IConVar *var, const char *pOldValue, float flOldValue )
+{
+	HoIAF()->RebuildNotificationList();
+}
+ConVar rd_notification_debug_fake( "rd_notification_debug_fake", "0", FCVAR_NONE, "", ForceRebuildNotificationList );
 #endif
 
 CRD_HoIAF_System::CRD_HoIAF_System() :
@@ -256,162 +260,301 @@ static int __cdecl ItemInstancesInAcquisitionOrder( const ReactiveDropInventory:
 	return int( a->Acquired ) - int( b->Acquired );
 }
 
+static int __cdecl NewAndLatestNotificationsFirst( HoIAFNotification_t *const *a, HoIAFNotification_t *const *b )
+{
+	if ( ( *a )->Seen == HoIAFNotification_t::SEEN_NEW && ( *b )->Seen != HoIAFNotification_t::SEEN_NEW )
+		return -1;
+	if ( ( *a )->Seen != HoIAFNotification_t::SEEN_NEW && ( *b )->Seen == HoIAFNotification_t::SEEN_NEW )
+		return 1;
+
+	return int( clamp<int64_t>( ( *b )->Starts - ( *a )->Starts, -1, 1 ) );
+}
+
 void CRD_HoIAF_System::RebuildNotificationList()
 {
 	m_Notifications.PurgeAndDeleteElements();
-	for ( int i = 0; i < Notification_t::NUM_SEEN_TYPES; i++ )
+	for ( int i = 0; i < HoIAFNotification_t::NUM_SEEN_TYPES; i++ )
 	{
 		m_nSeenNotifications[i] = 0;
 	}
 
-	CUtlVector<ReactiveDropInventory::ItemInstance_t> notificationItems;
-	ReactiveDropInventory::GetItemsForSlot( notificationItems, "notification" );
-
-	notificationItems.Sort( &ItemInstancesInAcquisitionOrder );
-	CUtlVector<SteamItemDef_t> seenUniqueNotificationItem;
-	FOR_EACH_VEC_BACK( notificationItems, i )
+	if ( rd_notification_debug_fake.GetBool() )
 	{
-		const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( notificationItems[i].ItemDefID );
-		Assert( pDef );
-		if ( !pDef )
-		{
-			// no idea what this item is (even though we somehow categorized it!); best to not touch it
-			continue;
-		}
+		m_Notifications.AddToTail( new HoIAFNotification_t );
+		m_Notifications[0]->Type = HoIAFNotification_t::NOTIFICATION_ITEM;
+		m_Notifications[0]->Title = ReactiveDropInventory::GetItemDef( 7077 )->Name;
+		m_Notifications[0]->Description = ReactiveDropInventory::GetItemDef( 7077 )->Description;
+		m_Notifications[0]->Starts = 1706802222;
+		m_Notifications[0]->Ends = 0;
+		m_Notifications[0]->Seen = HoIAFNotification_t::SEEN_HOVERED;
+		m_Notifications[0]->ItemDefID = 7077;
+		m_Notifications[0]->ItemID = 1;
 
-		if ( pDef->AutoDeleteExceptNewest )
+		m_Notifications.AddToTail( new HoIAFNotification_t );
+		m_Notifications[1]->Type = HoIAFNotification_t::NOTIFICATION_ITEM;
+		m_Notifications[1]->Title = ReactiveDropInventory::GetItemDef( 7078 )->Name;
+		m_Notifications[1]->Description = ReactiveDropInventory::GetItemDef( 7078 )->Description;
+		m_Notifications[1]->Starts = 1706803232;
+		m_Notifications[1]->Ends = 0;
+		m_Notifications[1]->Seen = HoIAFNotification_t::SEEN_VIEWED;
+		m_Notifications[1]->ItemDefID = 7078;
+		m_Notifications[1]->ItemID = 2;
+
+		m_Notifications.AddToTail( new HoIAFNotification_t );
+		m_Notifications[2]->Type = HoIAFNotification_t::NOTIFICATION_BOUNTY;
+		m_Notifications[2]->Title = "#rd_hoiaf_bounty_title";
+		m_Notifications[2]->Description = "#rd_hoiaf_bounty_fully_claimed";
+		m_Notifications[2]->Starts = 1706745600;
+		m_Notifications[2]->Ends = 1706832000;
+		m_Notifications[2]->Seen = HoIAFNotification_t::SEEN_CLICKED;
+		m_Notifications[2]->FirstBountyID = 1;
+		m_Notifications[2]->BountyMissions.SetCount( 5 );
+		V_strcpy( m_Notifications[2]->BountyMissions[0].MissionName, "rd-acc_complex" );
+		m_Notifications[2]->BountyMissions[0].Points = 675;
+		m_Notifications[2]->BountyMissions[0].AddonID = k_PublishedFileIdInvalid;
+		m_Notifications[2]->BountyMissions[0].Claimed = false;
+		V_strcpy( m_Notifications[2]->BountyMissions[1].MissionName, "asw_warehouse_v1" );
+		m_Notifications[2]->BountyMissions[1].Points = 875;
+		m_Notifications[2]->BountyMissions[1].AddonID = 1312255876;
+		m_Notifications[2]->BountyMissions[1].Claimed = false;
+		V_strcpy( m_Notifications[2]->BountyMissions[2].MissionName, "researchlab2" );
+		m_Notifications[2]->BountyMissions[2].Points = 1250;
+		m_Notifications[2]->BountyMissions[2].AddonID = 936101427;
+		m_Notifications[2]->BountyMissions[2].Claimed = true;
+		V_strcpy( m_Notifications[2]->BountyMissions[3].MissionName, "rd-gluoncave_short" );
+		m_Notifications[2]->BountyMissions[3].Points = 625;
+		m_Notifications[2]->BountyMissions[3].AddonID = 2979008182;
+		m_Notifications[2]->BountyMissions[3].Claimed = true;
+		V_strcpy( m_Notifications[2]->BountyMissions[4].MissionName, "nest01cave" );
+		m_Notifications[2]->BountyMissions[4].Points = 750;
+		m_Notifications[2]->BountyMissions[4].AddonID = 848331447;
+		m_Notifications[2]->BountyMissions[4].Claimed = true;
+
+		m_Notifications.AddToTail( new HoIAFNotification_t );
+		m_Notifications[3]->Type = HoIAFNotification_t::NOTIFICATION_BOUNTY;
+		m_Notifications[3]->Title = "#rd_hoiaf_bounty_title";
+		m_Notifications[3]->Description = "#rd_hoiaf_bounty_desc";
+		m_Notifications[3]->Starts = 1706774400;
+		m_Notifications[3]->Ends = 1706860800;
+		m_Notifications[3]->Seen = HoIAFNotification_t::SEEN_HOVERED;
+		m_Notifications[3]->FirstBountyID = 6;
+		m_Notifications[3]->BountyMissions.SetCount( 5 );
+		V_strcpy( m_Notifications[3]->BountyMissions[0].MissionName, "as_city17_01" );
+		m_Notifications[3]->BountyMissions[0].Points = 337;
+		m_Notifications[3]->BountyMissions[0].AddonID = 861497042;
+		m_Notifications[3]->BountyMissions[0].Claimed = true;
+		V_strcpy( m_Notifications[3]->BountyMissions[1].MissionName, "as_city17_02" );
+		m_Notifications[3]->BountyMissions[1].Points = 315;
+		m_Notifications[3]->BountyMissions[1].AddonID = 861497042;
+		m_Notifications[3]->BountyMissions[1].Claimed = true;
+		V_strcpy( m_Notifications[3]->BountyMissions[2].MissionName, "as_city17_03" );
+		m_Notifications[3]->BountyMissions[2].Points = 300;
+		m_Notifications[3]->BountyMissions[2].AddonID = 861497042;
+		m_Notifications[3]->BountyMissions[2].Claimed = false;
+		V_strcpy( m_Notifications[3]->BountyMissions[3].MissionName, "as_city17_04" );
+		m_Notifications[3]->BountyMissions[3].Points = 300;
+		m_Notifications[3]->BountyMissions[3].AddonID = 861497042;
+		m_Notifications[3]->BountyMissions[3].Claimed = false;
+		V_strcpy( m_Notifications[3]->BountyMissions[4].MissionName, "as_city17_05" );
+		m_Notifications[3]->BountyMissions[4].Points = 487;
+		m_Notifications[3]->BountyMissions[4].AddonID = 861497042;
+		m_Notifications[3]->BountyMissions[4].Claimed = false;
+
+		m_Notifications.AddToTail( new HoIAFNotification_t );
+		m_Notifications[4]->Type = HoIAFNotification_t::NOTIFICATION_BOUNTY;
+		m_Notifications[4]->Title = "#rd_hoiaf_bounty_title";
+		m_Notifications[4]->Description = "#rd_hoiaf_bounty_desc";
+		m_Notifications[4]->Starts = 1706803200;
+		m_Notifications[4]->Ends = 1706889600;
+		m_Notifications[4]->Seen = HoIAFNotification_t::SEEN_VIEWED;
+		m_Notifications[4]->FirstBountyID = 11;
+		m_Notifications[4]->BountyMissions.SetCount( 3 );
+		V_strcpy( m_Notifications[4]->BountyMissions[0].MissionName, "rd-bio1operationx5" );
+		m_Notifications[4]->BountyMissions[0].Points = 375;
+		m_Notifications[4]->BountyMissions[0].AddonID = k_PublishedFileIdInvalid;
+		m_Notifications[4]->BountyMissions[0].Claimed = false;
+		V_strcpy( m_Notifications[4]->BountyMissions[1].MissionName, "rd-bio2invisiblethreat" );
+		m_Notifications[4]->BountyMissions[1].Points = 262;
+		m_Notifications[4]->BountyMissions[1].AddonID = k_PublishedFileIdInvalid;
+		m_Notifications[4]->BountyMissions[1].Claimed = false;
+		V_strcpy( m_Notifications[4]->BountyMissions[2].MissionName, "rd-bio3biogenlabs" );
+		m_Notifications[4]->BountyMissions[2].Points = 412;
+		m_Notifications[4]->BountyMissions[2].AddonID = k_PublishedFileIdInvalid;
+		m_Notifications[4]->BountyMissions[2].Claimed = false;
+
+		m_nSeenNotifications[HoIAFNotification_t::SEEN_VIEWED] = 2;
+		m_nSeenNotifications[HoIAFNotification_t::SEEN_HOVERED] = 2;
+		m_nSeenNotifications[HoIAFNotification_t::SEEN_CLICKED] = 1;
+	}
+	else
+	{
+		CUtlVector<ReactiveDropInventory::ItemInstance_t> notificationItems;
+		ReactiveDropInventory::GetItemsForSlot( notificationItems, "notification" );
+
+		notificationItems.Sort( &ItemInstancesInAcquisitionOrder );
+		CUtlVector<SteamItemDef_t> seenUniqueNotificationItem;
+		FOR_EACH_VEC_BACK( notificationItems, i )
 		{
-			if ( seenUniqueNotificationItem.IsValidIndex( seenUniqueNotificationItem.Find( notificationItems[i].ItemDefID ) ) )
+			const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( notificationItems[i].ItemDefID );
+			Assert( pDef );
+			if ( !pDef )
 			{
-				// this is an older copy of a notification item that we only want to have one of; discard the older copy
-				ReactiveDropInventory::DeleteNotificationItem( notificationItems[i].ItemID );
+				// no idea what this item is (even though we somehow categorized it!); best to not touch it
 				continue;
 			}
 
-			seenUniqueNotificationItem.AddToTail( notificationItems[i].ItemDefID );
-		}
-
-		UtlSymId_t notificationType = pDef->Tags.Find( "notification" );
-		if ( notificationType != pDef->Tags.InvalidIndex() )
-		{
-			bool bFiltered = false;
-			FOR_EACH_VEC( pDef->Tags[notificationType], j )
+			if ( pDef->AutoDeleteExceptNewest )
 			{
-				ConVarRef filter{ CFmtStr{ "rd_notification_filter_%s", pDef->Tags[notificationType][j]} };
-				Assert( filter.IsValid() );
-				if ( filter.IsValid() && !filter.GetBool() )
+				if ( seenUniqueNotificationItem.IsValidIndex( seenUniqueNotificationItem.Find( notificationItems[i].ItemDefID ) ) )
 				{
-					bFiltered = true;
-					break;
+					// this is an older copy of a notification item that we only want to have one of; discard the older copy
+					ReactiveDropInventory::DeleteNotificationItem( notificationItems[i].ItemID );
+					continue;
+				}
+
+				seenUniqueNotificationItem.AddToTail( notificationItems[i].ItemDefID );
+			}
+
+			UtlSymId_t notificationType = pDef->Tags.Find( "notification" );
+			if ( notificationType != pDef->Tags.InvalidIndex() )
+			{
+				bool bFiltered = false;
+				FOR_EACH_VEC( pDef->Tags[notificationType], j )
+				{
+					ConVarRef filter{ CFmtStr{ "rd_notification_filter_%s", pDef->Tags[notificationType][j]} };
+					Assert( filter.IsValid() );
+					if ( filter.IsValid() && !filter.GetBool() )
+					{
+						bFiltered = true;
+						break;
+					}
+
+					if ( !V_strcmp( pDef->Tags[notificationType][j], "crafting" ) )
+					{
+						// always hide crafting notifications for now
+						bFiltered = true;
+						break;
+					}
+				}
+
+				if ( bFiltered )
+				{
+					continue;
 				}
 			}
 
-			if ( bFiltered )
+			HoIAFNotification_t *pNotification = new HoIAFNotification_t;
+
+			pNotification->Type = HoIAFNotification_t::NOTIFICATION_ITEM;
+			pNotification->Title = pDef->Name;
+			pNotification->Description = pDef->Description;
+			pNotification->Starts = notificationItems[i].Acquired;
+			pNotification->Ends = 0;
+			pNotification->Seen = HoIAFNotification_t::SEEN_NEW;
+
+			UtlSymId_t seen = notificationItems[i].DynamicProps.Find( "notification_seen" );
+			if ( seen != notificationItems[i].DynamicProps.InvalidIndex() )
 			{
-				continue;
+				pNotification->Seen = ( HoIAFNotification_t::Seen_t )clamp<int>( V_atoi( notificationItems[i].DynamicProps[seen] ), ( int )HoIAFNotification_t::SEEN_NEW, HoIAFNotification_t::NUM_SEEN_TYPES - 1 );
 			}
+
+			m_nSeenNotifications[pNotification->Seen]++;
+
+			pNotification->ItemDefID = notificationItems[i].ItemDefID;
+			pNotification->ItemID = notificationItems[i].ItemID;
+
+			m_Notifications.AddToTail( pNotification );
 		}
 
-		Notification_t *pNotification = new Notification_t;
-
-		pNotification->Type = Notification_t::NOTIFICATION_ITEM;
-		pNotification->Title = pDef->Name;
-		pNotification->Description = pDef->Description;
-		pNotification->Starts = notificationItems[i].Acquired;
-		pNotification->Ends = 0;
-		pNotification->Seen = Notification_t::SEEN_NEW;
-
-		UtlSymId_t seen = notificationItems[i].DynamicProps.Find( "notification_seen" );
-		if ( seen != notificationItems[i].DynamicProps.InvalidIndex() )
+		C_ASW_Medal_Store *pMedalStore = GetMedalStore();
+		Assert( pMedalStore );
+		if ( rd_notification_filter_hoiaf.GetBool() && pMedalStore )
 		{
-			pNotification->Seen = ( Notification_t::Seen_t )clamp<int>( V_atoi( notificationItems[i].DynamicProps[seen] ), ( int )Notification_t::SEEN_NEW, Notification_t::NUM_SEEN_TYPES - 1 );
-		}
+			HoIAFNotification_t *pBountyNotification = NULL;
+			int64_t iLastStartTime = 0;
+			bool bAnyUnclaimed = false;
 
-		m_nSeenNotifications[pNotification->Seen]++;
-
-		pNotification->ItemDefID = notificationItems[i].ItemDefID;
-		pNotification->ItemID = notificationItems[i].ItemID;
-
-		m_Notifications.AddToTail( pNotification );
-	}
-
-	C_ASW_Medal_Store *pMedalStore = GetMedalStore();
-	Assert( pMedalStore );
-	if ( rd_notification_filter_hoiaf.GetBool() && pMedalStore )
-	{
-		Notification_t *pBountyNotification = NULL;
-		int64_t iLastStartTime = 0;
-		bool bAnyUnclaimed = false;
-
-		// bounties are grouped by start time. the server sends them pre-sorted.
-		FOR_EACH_VEC( m_HoIAFMissionBounties, i )
-		{
-			if ( m_HoIAFMissionBounties[i]->Starts != iLastStartTime )
+			// bounties are grouped by start time. the server sends them pre-sorted.
+			FOR_EACH_VEC( m_HoIAFMissionBounties, i )
 			{
-				if ( pBountyNotification )
+				if ( m_HoIAFMissionBounties[i]->Starts != iLastStartTime )
 				{
-					if ( bAnyUnclaimed )
+					if ( pBountyNotification )
 					{
-						pBountyNotification->Description = "#rd_hoiaf_bounty_desc";
+						if ( bAnyUnclaimed )
+						{
+							pBountyNotification->Description = "#rd_hoiaf_bounty_desc";
+						}
+						else
+						{
+							// if we have claimed every mission bonus, mark the notification as all-but-dismissed.
+							pBountyNotification->Seen = HoIAFNotification_t::SEEN_CLICKED;
+						}
+
+						m_nSeenNotifications[pBountyNotification->Seen]++;
+					}
+
+					HoIAFNotification_t::Seen_t iSeen = ( HoIAFNotification_t::Seen_t )pMedalStore->GetBountyNotificationStatus( m_HoIAFMissionBounties[i]->ID );
+					if ( iSeen == HoIAFNotification_t::NUM_SEEN_TYPES )
+					{
+						// notification was dismissed
+						pBountyNotification = NULL;
 					}
 					else
 					{
-						// if we have claimed every mission bonus, mark the notification as all-but-dismissed.
-						pBountyNotification->Seen = Notification_t::SEEN_CLICKED;
+						pBountyNotification = new HoIAFNotification_t;
+						pBountyNotification->Type = HoIAFNotification_t::NOTIFICATION_BOUNTY;
+						pBountyNotification->Title = "#rd_hoiaf_bounty_title";
+						pBountyNotification->Description = "#rd_hoiaf_bounty_fully_claimed";
+						pBountyNotification->Starts = m_HoIAFMissionBounties[i]->Starts;
+						pBountyNotification->Ends = m_HoIAFMissionBounties[i]->Ends;
+						pBountyNotification->FirstBountyID = m_HoIAFMissionBounties[i]->ID;
+
+						m_Notifications.AddToTail( pBountyNotification );
 					}
 
-					m_nSeenNotifications[pBountyNotification->Seen]++;
+					bAnyUnclaimed = false;
 				}
 
-				Notification_t::Seen_t iSeen = ( Notification_t::Seen_t )pMedalStore->GetBountyNotificationStatus( m_HoIAFMissionBounties[i]->ID );
-				if ( iSeen == Notification_t::NUM_SEEN_TYPES )
+				Assert( !pBountyNotification || pBountyNotification->Ends == m_HoIAFMissionBounties[i]->Ends );
+
+				if ( pBountyNotification )
 				{
-					// notification was dismissed
-					pBountyNotification = NULL;
+					int j = pBountyNotification->BountyMissions.AddToTail();
+					V_strncpy( pBountyNotification->BountyMissions[j].MissionName, m_HoIAFMissionBounties[i]->Map, sizeof( pBountyNotification->BountyMissions[j].MissionName ) );
+					pBountyNotification->BountyMissions[j].Points = m_HoIAFMissionBounties[i]->Points;
+					pBountyNotification->BountyMissions[j].AddonID = m_HoIAFMissionBounties[i]->AddonID;
+					pBountyNotification->BountyMissions[j].Claimed = pMedalStore->HasCompletedBounty( m_HoIAFMissionBounties[i]->ID );
+					bAnyUnclaimed = bAnyUnclaimed || !pBountyNotification->BountyMissions[j].Claimed;
 				}
-				else
-				{
-					pBountyNotification = new Notification_t;
-					pBountyNotification->Type = Notification_t::NOTIFICATION_BOUNTY;
-					pBountyNotification->Title = "#rd_hoiaf_bounty_title";
-					pBountyNotification->Description = "#rd_hoiaf_bounty_fully_claimed";
-					pBountyNotification->Starts = m_HoIAFMissionBounties[i]->Starts;
-					pBountyNotification->Ends = m_HoIAFMissionBounties[i]->Ends;
-					pBountyNotification->FirstBountyID = m_HoIAFMissionBounties[i]->ID;
-
-					m_Notifications.AddToTail( pBountyNotification );
-				}
-
-				bAnyUnclaimed = false;
 			}
-
-			Assert( !pBountyNotification || pBountyNotification->Ends == m_HoIAFMissionBounties[i]->Ends );
 
 			if ( pBountyNotification )
 			{
-				int j = pBountyNotification->BountyMissions.AddToTail();
-				V_strncpy( pBountyNotification->BountyMissions[j].MissionName, m_HoIAFMissionBounties[i]->Map, sizeof( pBountyNotification->BountyMissions[j].MissionName ) );
-				pBountyNotification->BountyMissions[j].Points = m_HoIAFMissionBounties[i]->Points;
-				pBountyNotification->BountyMissions[j].AddonID = m_HoIAFMissionBounties[i]->AddonID;
-				pBountyNotification->BountyMissions[j].Claimed = pMedalStore->HasCompletedBounty( m_HoIAFMissionBounties[i]->ID );
-				bAnyUnclaimed = bAnyUnclaimed || !pBountyNotification->BountyMissions[j].Claimed;
+				if ( bAnyUnclaimed )
+				{
+					pBountyNotification->Description = "#rd_hoiaf_bounty_desc";
+				}
+				else
+				{
+					// if we have claimed every mission bonus, mark the notification as all-but-dismissed.
+					pBountyNotification->Seen = HoIAFNotification_t::SEEN_CLICKED;
+				}
+
+				m_nSeenNotifications[pBountyNotification->Seen]++;
 			}
 		}
+	}
 
-		if ( pBountyNotification )
-		{
-			if ( bAnyUnclaimed )
-			{
-				pBountyNotification->Description = "#rd_hoiaf_bounty_desc";
-			}
-			else
-			{
-				// if we have claimed every mission bonus, mark the notification as all-but-dismissed.
-				pBountyNotification->Seen = Notification_t::SEEN_CLICKED;
-			}
+	m_Notifications.Sort( &NewAndLatestNotificationsFirst );
 
-			m_nSeenNotifications[pBountyNotification->Seen]++;
-		}
+	FOR_EACH_VEC( g_NotificationsButtons, i )
+	{
+		g_NotificationsButtons[i]->UpdateNotifications();
+	}
+	FOR_EACH_VEC( g_NotificationsLists, i )
+	{
+		g_NotificationsLists[i]->UpdateNotifications();
 	}
 }
 #endif

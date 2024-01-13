@@ -4,6 +4,7 @@
 #include "rd_hud_sheet.h"
 #include "vgui/ISurface.h"
 #include "gameui/swarm/vmainmenu.h"
+#include "rd_vgui_notifications.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -29,6 +30,7 @@ CRD_VGUI_Main_Menu_Top_Bar::CRD_VGUI_Main_Menu_Top_Bar( vgui::Panel *parent, con
 	m_pTopButton[BTN_SWARMOPEDIA] = new BaseModHybridButton( this, "BtnSwarmopedia", "#rd_collection_swarmopedia", this, "Swarmopedia" );
 	m_pTopButton[BTN_WORKSHOP] = new BaseModHybridButton(this, "BtnWorkshop", "#rd_mainmenu_workshop", this, "Workshop");
 	m_pTopButton[BTN_INVENTORY] = new BaseModHybridButton( this, "BtnInventory", "#rd_mainmenu_inventory", this, "Inventory" );
+	m_pBtnNotifications = new CRD_VGUI_Notifications_Button( this, "BtnNotifications" );
 	m_pBtnQuit = new BaseModHybridButton( this, "BtnQuit", "", this, "QuitGame" );
 
 	m_iLeftGlow = 0;

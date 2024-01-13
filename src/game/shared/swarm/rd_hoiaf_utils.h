@@ -1,11 +1,50 @@
 #pragma once
 
 #include "steam/isteamhttp.h"
+#include "steam/isteaminventory.h"
+#include "steam/isteamugc.h"
 
 #ifdef CLIENT_DLL
 #include <vgui/VGUI.h>
 
 class CBaseHudChat;
+
+struct HoIAFNotification_t
+{
+	enum Type_t
+	{
+		NOTIFICATION_ITEM,
+		NOTIFICATION_BOUNTY,
+		NUM_TYPES,
+	} Type;
+	CUtlString Title;
+	CUtlString Description;
+	int64_t Starts;
+	int64_t Ends;
+	enum Seen_t
+	{
+		SEEN_NEW,
+		SEEN_VIEWED,
+		SEEN_HOVERED,
+		SEEN_CLICKED,
+		NUM_SEEN_TYPES,
+	} Seen;
+
+	// For NOTIFICATION_ITEM
+	SteamItemDef_t ItemDefID;
+	SteamItemInstanceID_t ItemID;
+
+	// For NOTIFICATION_BOUNTY
+	int FirstBountyID;
+	struct BountyMission_t
+	{
+		char MissionName[MAX_MAP_NAME];
+		int Points;
+		PublishedFileId_t AddonID;
+		bool Claimed;
+	};
+	CCopyableUtlVector<BountyMission_t> BountyMissions;
+};
 #endif
 
 // Note: This system is documented in more detail at <https://developer.reactivedrop.com/iaf-intel.html>.
@@ -56,45 +95,9 @@ public:
 
 #ifdef CLIENT_DLL
 	// Notifications
-	struct Notification_t
-	{
-		enum Type_t
-		{
-			NOTIFICATION_ITEM,
-			NOTIFICATION_BOUNTY,
-			NUM_TYPES,
-		} Type;
-		CUtlString Title;
-		CUtlString Description;
-		int64_t Starts;
-		int64_t Ends;
-		enum Seen_t
-		{
-			SEEN_NEW,
-			SEEN_VIEWED,
-			SEEN_HOVERED,
-			SEEN_CLICKED,
-			NUM_SEEN_TYPES,
-		} Seen;
-
-		// For NOTIFICATION_ITEM
-		int32_t ItemDefID;
-		uint64_t ItemID;
-
-		// For NOTIFICATION_BOUNTY
-		int FirstBountyID;
-		struct BountyMission_t
-		{
-			char MissionName[MAX_MAP_NAME];
-			int Points;
-			uint64_t AddonID;
-			bool Claimed;
-		};
-		CUtlVector<BountyMission_t> BountyMissions;
-	};
 	// Elements from this array can be deleted at any time; do not store pointers.
-	CUtlVectorAutoPurge<Notification_t *> m_Notifications;
-	int m_nSeenNotifications[Notification_t::NUM_SEEN_TYPES];
+	CUtlVectorAutoPurge<HoIAFNotification_t *> m_Notifications;
+	int m_nSeenNotifications[HoIAFNotification_t::NUM_SEEN_TYPES];
 	void RebuildNotificationList();
 #endif
 
@@ -167,7 +170,7 @@ private:
 		int64_t Ends;
 		char Map[MAX_MAP_NAME];
 		int Points;
-		uint64_t AddonID;
+		PublishedFileId_t AddonID;
 	};
 	CUtlVectorAutoPurge<HoIAFMissionBounty_t *> m_HoIAFMissionBounties;
 };

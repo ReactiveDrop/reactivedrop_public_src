@@ -59,6 +59,7 @@
 #include "briefingtooltip.h"
 #include "rd_lobby_utils.h"
 #include "rd_hoiaf_utils.h"
+#include "rd_vgui_notifications.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1468,6 +1469,10 @@ void MainMenu::OnThink()
 		bool bWasMin = m_iInactiveHideMainMenu == 0;
 		bool bWasMax = m_iInactiveHideMainMenu == 65535;
 		bool bMenuActive = rd_main_menu_idle_timeout.GetFloat() <= 0 || Plat_FloatTime() - m_flLastActiveTime < rd_main_menu_idle_timeout.GetFloat();
+		if ( m_pTopBar->m_pBtnNotifications->m_pListPopOut && m_pTopBar->m_pBtnNotifications->m_pListPopOut->IsVisible() )
+		{
+			bMenuActive = true;
+		}
 		if ( rd_reduce_motion.GetBool() )
 		{
 			m_iInactiveHideMainMenu = bMenuActive ? 65535 : 0;

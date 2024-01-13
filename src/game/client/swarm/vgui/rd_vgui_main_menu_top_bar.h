@@ -4,6 +4,8 @@
 #include "gameui/swarm/vhybridbutton.h"
 #include "rd_hud_glow_helper.h"
 
+class CRD_VGUI_Notifications_Button;
+
 class CRD_VGUI_Main_Menu_Top_Bar : public vgui::EditablePanel
 {
 public:
@@ -37,6 +39,7 @@ public:
 	BaseModUI::BaseModHybridButton *m_pBtnSettings;
 	BaseModUI::BaseModHybridButton *m_pBtnLogo;
 	BaseModUI::BaseModHybridButton *m_pTopButton[NUM_TOP_BUTTONS];
+	CRD_VGUI_Notifications_Button *m_pBtnNotifications;
 	BaseModUI::BaseModHybridButton *m_pBtnQuit;
 
 	HUDGlowHelper_t m_GlowSettings;

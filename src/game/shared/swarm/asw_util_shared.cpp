@@ -2849,6 +2849,92 @@ const wchar_t *UTIL_RD_CommaNumber( int64_t num )
 	return pBuf;
 }
 
+static const char s_szZbalermornaDigit[16][3] =
+{
+	"no", "pa", "re", "ci", "vo",
+	"mu", "xa", "ze", "bi", "so",
+	"d~", "f{", "g`", "j~", "r{", "v`",
+};
+
+const char *UTIL_RD_ZbalermornaNumberDec( int64_t num )
+{
+	static char s_szBuf[16][43];
+	static int s_iSlot = 0;
+
+	// Special case: can't negate this number.
+	if ( num == INT64_MIN )
+	{
+		return "ni'usorerecicizerenocixabimuvozezemubinobi";
+	}
+
+	// Special case 2:
+	if ( num == 0 )
+	{
+		return "no";
+	}
+
+	char *pBuf = &s_szBuf[s_iSlot][42];
+	*pBuf-- = L'\0';
+
+	s_iSlot = ( s_iSlot + 1 ) % NELEMS( s_szBuf );
+
+	bool bNegative = num < 0;
+	if ( bNegative )
+	{
+		num = -num;
+	}
+
+	while ( num )
+	{
+		const char *digit = s_szZbalermornaDigit[num % 10];
+		*pBuf-- = digit[1];
+		*pBuf-- = digit[0];
+		num /= 10;
+	}
+
+	if ( bNegative )
+	{
+		*pBuf-- = 'u';
+		*pBuf-- = '\'';
+		*pBuf-- = 'i';
+		*pBuf = 'n';
+	}
+	else
+	{
+		pBuf++;
+	}
+
+	return pBuf;
+}
+
+const char *UTIL_RD_ZbalermornaNumberHex( uint64_t num )
+{
+	static char s_szBuf[16][33];
+	static int s_iSlot = 0;
+
+	if ( num == 0 )
+	{
+		return "no";
+	}
+
+	char *pBuf = &s_szBuf[s_iSlot][32];
+	*pBuf-- = L'\0';
+
+	s_iSlot = ( s_iSlot + 1 ) % NELEMS( s_szBuf );
+
+	while ( num )
+	{
+		const char *digit = s_szZbalermornaDigit[num & 0xf];
+		*pBuf-- = digit[1];
+		*pBuf-- = digit[0];
+		num >>= 4;
+	}
+
+	pBuf++;
+
+	return pBuf;
+}
+
 // get the index of the nth bit that is set to 1
 int UTIL_RD_IndexToBit( unsigned bits, int n )
 {

@@ -1,0 +1,701 @@
+#include "cbase.h"
+#include "rd_vgui_notifications.h"
+#include "gameui/swarm/vgenericpanellist.h"
+#include "nb_button.h"
+#include "MultiFontRichText.h"
+#include <vgui_controls/ImagePanel.h>
+#include "asw_util_shared.h"
+#include "rd_inventory_shared.h"
+#include "rd_missions_shared.h"
+#include <vgui/ILocalize.h>
+#include <vgui/ISurface.h>
+#include "asw_medal_store.h"
+
+// memdbgon must be the last include file in a .cpp file!!!
+#include "tier0/memdbgon.h"
+
+ConVar rd_notification_filter_crafting( "rd_notification_filter_crafting", "1", FCVAR_ARCHIVE, "Should we show crafting-related notifications?" );
+ConVar rd_notification_filter_hoiaf( "rd_notification_filter_hoiaf", "1", FCVAR_ARCHIVE, "Should we show HoIAF-related notifications?" );
+ConVar rd_notification_filter_reports( "rd_notification_filter_reports", "1", FCVAR_ARCHIVE, "Should we show non-critical report-related notifications?" );
+extern ConVar rd_notification_debug_fake;
+
+DECLARE_BUILD_FACTORY( CRD_VGUI_Notifications_Button );
+DECLARE_BUILD_FACTORY( CRD_VGUI_Notifications_List );
+DECLARE_BUILD_FACTORY( CRD_VGUI_Notifications_Filters );
+
+CUtlVector<CRD_VGUI_Notifications_Button *> g_NotificationsButtons;
+CUtlVector<CRD_VGUI_Notifications_List *> g_NotificationsLists;
+
+CRD_VGUI_Notifications_Button::CRD_VGUI_Notifications_Button( vgui::Panel *parent, const char *panelName )
+	: BaseClass{ parent, panelName, L"", this, "NotificationsButtonClicked" }
+{
+	SetConsoleStylePanel( true );
+	SetProportional( true );
+
+	m_pLblCounter = new vgui::Label( this, "LblCounter", L"" );
+	m_pListPopOut = NULL;
+
+	g_NotificationsButtons.AddToTail( this );
+}
+
+CRD_VGUI_Notifications_Button::~CRD_VGUI_Notifications_Button()
+{
+	g_NotificationsButtons.FindAndFastRemove( this );
+
+	if ( m_pListPopOut )
+	{
+		m_pListPopOut->MarkForDeletion();
+	}
+}
+
+void CRD_VGUI_Notifications_Button::UpdateNotifications()
+{
+	if ( int iSeen = HoIAF()->m_nSeenNotifications[HoIAFNotification_t::SEEN_NEW] )
+	{
+		m_pLblCounter->SetVisible( true );
+		m_pLblCounter->SetText( UTIL_RD_CommaNumber( iSeen ) );
+		m_pLblCounter->SetBgColor( m_BoldCounterColor );
+	}
+	else if ( ( iSeen = HoIAF()->m_nSeenNotifications[HoIAFNotification_t::SEEN_VIEWED] ) != 0 )
+	{
+		m_pLblCounter->SetVisible( true );
+		m_pLblCounter->SetText( UTIL_RD_CommaNumber( iSeen ) );
+		m_pLblCounter->SetBgColor( m_MutedCounterColor );
+	}
+	else
+	{
+		m_pLblCounter->SetVisible( false );
+	}
+
+	InvalidateLayout();
+}
+
+void CRD_VGUI_Notifications_Button::OnCommand( const char *command )
+{
+	if ( FStrEq( command, "NotificationsButtonClicked" ) )
+	{
+		if ( m_pListPopOut && m_pListPopOut->IsVisible() )
+		{
+			m_pListPopOut->SetVisible( false );
+		}
+		else
+		{
+			if ( !m_pListPopOut )
+			{
+				vgui::Panel *pFrame = this;
+				while ( !dynamic_cast< vgui::Frame * >( pFrame ) && pFrame )
+				{
+					pFrame = pFrame->GetParent();
+				}
+
+				m_pListPopOut = new CRD_VGUI_Notifications_List( pFrame, "List" );
+			}
+
+			m_pListPopOut->SetVisible( true );
+			m_pListPopOut->MoveToFront();
+
+			for ( int i = 0; i < m_pListPopOut->m_pList->GetPanelItemCount(); i++ )
+			{
+				CRD_VGUI_Notifications_List_Item *pItem = assert_cast< CRD_VGUI_Notifications_List_Item * >( m_pListPopOut->m_pList->GetPanelItem( i ) );
+				pItem->SetSeenAtLeast( HoIAFNotification_t::SEEN_VIEWED );
+			}
+		}
+	}
+	else
+	{
+		BaseClass::OnCommand( command );
+	}
+}
+
+void CRD_VGUI_Notifications_Button::PaintBackground()
+{
+	vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
+	vgui::surface()->DrawSetTexture( m_iButtonIcon );
+	vgui::surface()->DrawTexturedRect( 0, 0, GetWide(), GetTall() );
+}
+
+void CRD_VGUI_Notifications_Button::ApplySchemeSettings( vgui::IScheme *pScheme )
+{
+	BaseClass::ApplySchemeSettings( pScheme );
+
+	m_pLblCounter->SetMouseInputEnabled( false );
+	m_pLblCounter->SetFgColor( m_CounterFgColor );
+	m_pLblCounter->SetPaintBackgroundEnabled( true );
+	m_pLblCounter->SetPaintBackgroundType( 2 );
+	m_pLblCounter->SetContentAlignment( vgui::Label::a_center );
+	m_pLblCounter->SetFont( pScheme->GetFont( "DefaultSmall", IsProportional() ) );
+
+	UpdateNotifications();
+}
+
+void CRD_VGUI_Notifications_Button::PerformLayout()
+{
+	BaseClass::PerformLayout();
+
+	int wide, tall;
+	m_pLblCounter->GetContentSize( wide, tall );
+	m_pLblCounter->SetBounds( GetWide() - YRES( 11 ) - wide, YRES( 2 ), wide + YRES( 9 ), tall + YRES( 1 ) );
+	m_pLblCounter->SetZPos( -1 );
+}
+
+CRD_VGUI_Notifications_List::CRD_VGUI_Notifications_List( vgui::Panel *parent, const char *panelName )
+	: BaseClass{ parent, panelName }
+{
+	m_pList = new BaseModUI::GenericPanelList( this, "GplList", BaseModUI::GenericPanelList::ISM_PERITEM );
+	m_pLblNone = new vgui::Label( this, "LblNone", "#rd_notification_none" );
+	m_pFiltersButton = new CNB_Button( this, "BtnFilters", "#rd_notification_filter_title", this, "NotificationsFiltersClicked" );
+	m_pFiltersPopOut = NULL;
+	m_iLastTimerUpdate = -1;
+
+	g_NotificationsLists.AddToTail( this );
+
+	UpdateNotifications();
+}
+
+CRD_VGUI_Notifications_List::~CRD_VGUI_Notifications_List()
+{
+	g_NotificationsLists.FindAndFastRemove( this );
+}
+
+static bool __cdecl SortNotificationsByExpectedOrder( const vgui::Panel &a, const vgui::Panel &b )
+{
+	const CRD_VGUI_Notifications_List_Item *pA = assert_cast< const CRD_VGUI_Notifications_List_Item * >( &a );
+	const CRD_VGUI_Notifications_List_Item *pB = assert_cast< const CRD_VGUI_Notifications_List_Item * >( &b );
+
+	return pA->m_iExpectedOrder < pB->m_iExpectedOrder;
+}
+
+void CRD_VGUI_Notifications_List::UpdateNotifications()
+{
+	CVarBitVec foundNotification{ HoIAF()->m_Notifications.Count() ? HoIAF()->m_Notifications.Count() : 1 };
+	foundNotification.ClearAll();
+
+	m_pLblNone->SetVisible( HoIAF()->m_Notifications.Count() == 0 );
+
+	// first pass: delete any list item that is no longer a notification we want to show
+	for ( int i = m_pList->GetPanelItemCount() - 1; i >= 0; i-- )
+	{
+		CRD_VGUI_Notifications_List_Item *pItem = assert_cast< CRD_VGUI_Notifications_List_Item * >( m_pList->GetPanelItem( i ) );
+
+		bool bFound = false;
+		FOR_EACH_VEC( HoIAF()->m_Notifications, j )
+		{
+			if ( pItem->MatchesNotification( HoIAF()->m_Notifications[j] ) )
+			{
+				pItem->m_Notification = *HoIAF()->m_Notifications[j];
+				pItem->m_iExpectedOrder = j;
+				pItem->InitFromNotification();
+				Assert( !foundNotification.Get( j ) );
+				foundNotification.Set( j );
+				bFound = true;
+				break;
+			}
+		}
+
+		if ( !bFound )
+		{
+			m_pList->RemovePanelItem( i, true );
+		}
+	}
+
+	// second pass: add any notification that we're missing from the list
+	FOR_EACH_VEC( HoIAF()->m_Notifications, i )
+	{
+		if ( foundNotification.Get( i ) )
+		{
+			continue;
+		}
+
+		CRD_VGUI_Notifications_List_Item *pItem = CreateNotificationListItem( HoIAF()->m_Notifications[i] );
+		pItem->m_iExpectedOrder = i;
+		pItem->InitFromNotification();
+		m_pList->AddPanelItem( pItem, true );
+	}
+
+	// third pass: sort the list so it's in the same order as the notifications vector
+	m_pList->Sort( &SortNotificationsByExpectedOrder );
+
+	// fourth pass: force a timer update
+	m_iLastTimerUpdate = -1;
+	OnThink();
+}
+
+CRD_VGUI_Notifications_List_Item *CRD_VGUI_Notifications_List::CreateNotificationListItem( HoIAFNotification_t *pNotification )
+{
+	switch ( pNotification->Type )
+	{
+	case HoIAFNotification_t::NOTIFICATION_ITEM:
+		return new CRD_VGUI_Notifications_List_Item_Inventory( this, "Notification", pNotification );
+	case HoIAFNotification_t::NOTIFICATION_BOUNTY:
+		return new CRD_VGUI_Notifications_List_Item_HoIAF_Bounty( this, "Notification", pNotification );
+	default:
+		// do a full game crash because this shouldn't be possible outside of dev builds
+		COMPILE_TIME_ASSERT( HoIAFNotification_t::NUM_TYPES == 2 );
+		Error( "Unhandled notification type in CRD_VGUI_Notifications_List::CreateNotificationListItem: %d\n", pNotification->Type );
+		return NULL;
+	}
+}
+
+void CRD_VGUI_Notifications_List::OnThink()
+{
+	BaseClass::OnThink();
+
+	int64_t iNow = SteamUtils() ? SteamUtils()->GetServerRealTime() : 0;
+	if ( iNow == m_iLastTimerUpdate )
+	{
+		// only update timers once per second to save some CPU cycles
+		return;
+	}
+
+	if ( rd_notification_debug_fake.GetBool() )
+	{
+		iNow = 1706803456;
+	}
+
+	for ( int i = 0; i < m_pList->GetPanelItemCount(); i++ )
+	{
+		CRD_VGUI_Notifications_List_Item *pItem = assert_cast< CRD_VGUI_Notifications_List_Item * >( m_pList->GetPanelItem( i ) );
+		pItem->UpdateTimers( iNow );
+	}
+}
+
+void CRD_VGUI_Notifications_List::OnCommand( const char *command )
+{
+	if ( FStrEq( command, "NotificationsFiltersClicked" ) )
+	{
+		if ( m_pFiltersPopOut && m_pFiltersPopOut->IsVisible() )
+		{
+			m_pFiltersPopOut->SetVisible( false );
+		}
+		else
+		{
+			if ( !m_pFiltersPopOut )
+			{
+				vgui::Panel *pFrame = this;
+				while ( !dynamic_cast< vgui::Frame * >( pFrame ) && pFrame )
+				{
+					pFrame = pFrame->GetParent();
+				}
+
+				m_pFiltersPopOut = new CRD_VGUI_Notifications_Filters( pFrame, "Filters" );
+			}
+
+			m_pFiltersPopOut->SetVisible( true );
+		}
+	}
+	else
+	{
+		BaseClass::OnCommand( command );
+	}
+}
+
+void CRD_VGUI_Notifications_List::ApplySchemeSettings( vgui::IScheme *pScheme )
+{
+	BaseClass::ApplySchemeSettings( pScheme );
+
+	LoadControlSettings( "Resource/UI/CRD_VGUI_Notifications_List.res" );
+
+	UpdateNotifications();
+}
+
+CRD_VGUI_Notifications_List_Item::CRD_VGUI_Notifications_List_Item( vgui::Panel *parent, const char *panelName, HoIAFNotification_t *pNotification )
+	: BaseClass{ parent, panelName }
+{
+	m_pNotificationText = new vgui::MultiFontRichText( this, "NotificationText" );
+	m_pNotificationText->SetDrawTextOnly();
+	m_pNotificationText->SetMouseInputEnabled( false );
+	m_pNotificationText->SetCursor( vgui::dc_arrow );
+	m_pLblAge = new vgui::Label( this, "LblAge", L"" );
+	m_pLblExpires = new vgui::Label( this, "LblExpires", L"" );
+	m_pDetailsPopOut = NULL;
+	m_Notification = *pNotification;
+	m_iExpectedOrder = -1;
+	m_bOverMouse = false;
+	m_bOverKeyboard = false;
+	m_hFontBold = vgui::INVALID_FONT;
+	m_hFontNormal = vgui::INVALID_FONT;
+}
+
+void CRD_VGUI_Notifications_List_Item::InitFromNotification()
+{
+	if ( m_hFontBold == vgui::INVALID_FONT )
+	{
+		vgui::IScheme *pScheme = vgui::scheme()->GetIScheme( GetScheme() );
+		m_hFontBold = pScheme->GetFont( "DefaultTextBold", IsProportional() );
+		m_hFontNormal = pScheme->GetFont( "Default", IsProportional() );
+	}
+
+	m_pNotificationText->SetText( L"" );
+	m_pNotificationText->InsertFontChange( m_hFontBold );
+	m_pNotificationText->InsertColorChange( m_TitleColor );
+	m_pNotificationText->InsertString( m_Notification.Title );
+	m_pNotificationText->InsertString( L"  " );
+	m_pNotificationText->InsertFontChange( m_hFontNormal );
+	m_pNotificationText->InsertColorChange( m_DescriptionColor );
+	m_pNotificationText->InsertString( m_Notification.Description );
+
+	DebuggerBreakIfDebugging(); // TODO: shade based on m_Notification.Seen
+
+	InvalidateLayout();
+}
+
+void CRD_VGUI_Notifications_List_Item::UpdateTimers( int64_t iNow )
+{
+	wchar_t wszTimer[256];
+
+	if ( m_Notification.Starts < iNow )
+	{
+		m_pLblAge->SetVisible( false );
+	}
+	else
+	{
+		int64_t iSinceStart = iNow - m_Notification.Starts;
+		Assert( iSinceStart >= 0 );
+		if ( iSinceStart >= 2 * 24 * 60 * 60 )
+		{
+			int64_t iDays = iSinceStart / ( 24 * 60 * 60 );
+			g_pVGuiLocalize->ConstructString( wszTimer, sizeof( wszTimer ),
+				g_pVGuiLocalize->Find( "#rd_notification_age_days" ), 1, UTIL_RD_CommaNumber( iDays ) );
+		}
+		else if ( iSinceStart >= 2 * 60 * 60 )
+		{
+			int64_t iHours = iSinceStart / ( 60 * 60 );
+			g_pVGuiLocalize->ConstructString( wszTimer, sizeof( wszTimer ),
+				g_pVGuiLocalize->Find( "#rd_notification_age_hours" ), 1, UTIL_RD_CommaNumber( iHours ) );
+		}
+		else if ( iSinceStart >= 2 * 60 )
+		{
+			int64_t iMinutes = iSinceStart / 60;
+			g_pVGuiLocalize->ConstructString( wszTimer, sizeof( wszTimer ),
+				g_pVGuiLocalize->Find( "#rd_notification_age_minutes" ), 1, UTIL_RD_CommaNumber( iMinutes ) );
+		}
+		else
+		{
+			int64_t iSeconds = iSinceStart;
+			g_pVGuiLocalize->ConstructString( wszTimer, sizeof( wszTimer ),
+				g_pVGuiLocalize->Find( "#rd_notification_age_seconds" ), 1, UTIL_RD_CommaNumber( iSeconds ) );
+		}
+
+		m_pLblAge->SetVisible( true );
+		m_pLblAge->SetText( wszTimer );
+	}
+
+	if ( m_Notification.Ends == 0 )
+	{
+		m_pLblExpires->SetVisible( false );
+	}
+	else
+	{
+		int64_t iUntilEnd = MAX( m_Notification.Ends - iNow, 0 );
+		if ( iUntilEnd >= 2 * 24 * 60 * 60 )
+		{
+			int64_t iDays = iUntilEnd / ( 24 * 60 * 60 );
+			g_pVGuiLocalize->ConstructString( wszTimer, sizeof( wszTimer ),
+				g_pVGuiLocalize->Find( "#rd_notification_expires_in_days" ), 1, UTIL_RD_CommaNumber( iDays ) );
+		}
+		else if ( iUntilEnd >= 2 * 60 * 60 )
+		{
+			int64_t iHours = iUntilEnd / ( 60 * 60 );
+			g_pVGuiLocalize->ConstructString( wszTimer, sizeof( wszTimer ),
+				g_pVGuiLocalize->Find( "#rd_notification_expires_in_hours" ), 1, UTIL_RD_CommaNumber( iHours ) );
+		}
+		else if ( iUntilEnd >= 2 * 60 )
+		{
+			int64_t iMinutes = iUntilEnd / 60;
+			g_pVGuiLocalize->ConstructString( wszTimer, sizeof( wszTimer ),
+				g_pVGuiLocalize->Find( "#rd_notification_expires_in_minutes" ), 1, UTIL_RD_CommaNumber( iMinutes ) );
+		}
+		else
+		{
+			int64_t iSeconds = iUntilEnd;
+			g_pVGuiLocalize->ConstructString( wszTimer, sizeof( wszTimer ),
+				g_pVGuiLocalize->Find( "#rd_notification_expires_in_seconds" ), 1, UTIL_RD_CommaNumber( iSeconds ) );
+		}
+
+		m_pLblExpires->SetVisible( true );
+		m_pLblExpires->SetText( wszTimer );
+	}
+}
+
+void CRD_VGUI_Notifications_List_Item::SetSeenAtLeast(int iSeen)
+{
+	if ( rd_notification_debug_fake.GetBool() )
+	{
+		return;
+	}
+
+	if ( m_Notification.Seen < iSeen )
+	{
+		SetSeen( iSeen );
+		Assert( m_Notification.Seen == iSeen );
+	}
+}
+
+void CRD_VGUI_Notifications_List_Item::OnClicked()
+{
+	SetSeenAtLeast( HoIAFNotification_t::SEEN_CLICKED );
+}
+
+void CRD_VGUI_Notifications_List_Item::OnCursorEntered()
+{
+	SetSeenAtLeast( HoIAFNotification_t::SEEN_HOVERED );
+
+	m_bOverMouse = true;
+
+	if ( m_pDetailsPopOut )
+	{
+		m_pDetailsPopOut->SetVisible( true );
+	}
+
+	BaseClass::OnCursorEntered();
+}
+
+void CRD_VGUI_Notifications_List_Item::OnCursorExited()
+{
+	m_bOverMouse = false;
+
+	if ( m_pDetailsPopOut )
+	{
+		m_pDetailsPopOut->SetVisible( m_bOverKeyboard );
+	}
+
+	BaseClass::OnCursorExited();
+}
+
+void CRD_VGUI_Notifications_List_Item::NavigateTo()
+{
+	SetSeenAtLeast( HoIAFNotification_t::SEEN_HOVERED );
+
+	m_bOverKeyboard = true;
+
+	if ( m_pDetailsPopOut )
+	{
+		m_pDetailsPopOut->SetVisible( true );
+	}
+
+	BaseClass::NavigateTo();
+}
+
+void CRD_VGUI_Notifications_List_Item::NavigateFrom()
+{
+	m_bOverKeyboard = false;
+
+	if ( m_pDetailsPopOut )
+	{
+		m_pDetailsPopOut->SetVisible( m_bOverMouse );
+	}
+
+	BaseClass::NavigateFrom();
+}
+
+void CRD_VGUI_Notifications_List_Item::PerformLayout()
+{
+	BaseClass::PerformLayout();
+
+	int tall = GetTall() - m_pNotificationText->GetTall();
+	m_pNotificationText->OnThink();
+	m_pNotificationText->SetToFullHeight();
+	SetTall( tall + m_pNotificationText->GetTall() );
+
+	GetParent()->GetParent()->InvalidateLayout();
+}
+
+void CRD_VGUI_Notifications_List_Item::ApplySchemeSettings( vgui::IScheme *pScheme )
+{
+	BaseClass::ApplySchemeSettings( pScheme );
+
+	m_hFontBold = pScheme->GetFont( "DefaultTextBold", IsProportional() );
+	m_hFontNormal = pScheme->GetFont( "Default", IsProportional() );
+}
+
+CRD_VGUI_Notifications_List_Item_Inventory::CRD_VGUI_Notifications_List_Item_Inventory( vgui::Panel *parent, const char *panelName, HoIAFNotification_t *pNotification ) :
+	BaseClass{ parent, panelName, pNotification }
+{
+	Assert( pNotification->Type == HoIAFNotification_t::NOTIFICATION_ITEM );
+}
+
+void CRD_VGUI_Notifications_List_Item_Inventory::InitFromNotification()
+{
+	BaseClass::InitFromNotification();
+
+	const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( m_Notification.ItemDefID );
+	Assert( pDef );
+	const ReactiveDropInventory::ItemInstance_t *pItem = ReactiveDropInventory::GetLocalItemCache( m_Notification.ItemID );
+	Assert( pItem || rd_notification_debug_fake.GetBool() );
+	if ( !pDef || !pItem )
+	{
+		return;
+	}
+
+	m_pNotificationText->SetText( L"" );
+	m_pNotificationText->InsertFontChange( m_hFontBold );
+	m_pNotificationText->InsertColorChange( pDef->HasBorder ? pDef->NameColor : m_TitleColor );
+	m_pNotificationText->InsertString( pDef->Name );
+	m_pNotificationText->InsertString( L"  " );
+	m_pNotificationText->InsertFontChange( m_hFontNormal );
+	pItem->FormatDescription( m_pNotificationText, true, m_DescriptionColor );
+	m_pNotificationText->InsertString( m_Notification.Description );
+
+	InvalidateLayout();
+}
+
+bool CRD_VGUI_Notifications_List_Item_Inventory::MatchesNotification( const HoIAFNotification_t *pNotification ) const
+{
+	return pNotification->Type == HoIAFNotification_t::NOTIFICATION_ITEM && pNotification->ItemID == m_Notification.ItemID;
+}
+
+void CRD_VGUI_Notifications_List_Item_Inventory::SetSeen( int iSeen )
+{
+	if ( rd_notification_debug_fake.GetBool() )
+	{
+		return;
+	}
+
+	DebuggerBreakIfDebugging(); // TODO
+}
+
+void CRD_VGUI_Notifications_List_Item_Inventory::ApplySchemeSettings( vgui::IScheme *pScheme )
+{
+	BaseClass::ApplySchemeSettings( pScheme );
+
+	LoadControlSettings( "Resource/UI/CRD_VGUI_Notifications_List_Item_Inventory.res" );
+}
+
+CRD_VGUI_Notifications_List_Item_HoIAF_Bounty::CRD_VGUI_Notifications_List_Item_HoIAF_Bounty( vgui::Panel *parent, const char *panelName, HoIAFNotification_t *pNotification ) :
+	BaseClass{ parent, panelName, pNotification }
+{
+	Assert( pNotification->Type == HoIAFNotification_t::NOTIFICATION_BOUNTY );
+
+	for ( int i = 0; i < MAX_MISSIONS_PER_BOUNTY; i++ )
+	{
+		m_pImgCompleted[i] = new vgui::ImagePanel( this, VarArgs( "ImgCompleted%d", i ) );
+		m_pImgMissionIcon[i] = new vgui::ImagePanel( this, VarArgs( "ImgMissionIcon%d", i ) );
+		m_pLblMissionPoints[i] = new vgui::Label( this, VarArgs( "LblMissionPoints%d", i ), L"" );
+	}
+
+	vgui::Panel *pFrame = this;
+	while ( !dynamic_cast< vgui::Frame * >( pFrame ) && pFrame )
+	{
+		pFrame = pFrame->GetParent();
+	}
+
+	m_pDetailsPopOut = new CRD_VGUI_Notifications_Details_HoIAF_Bounty( pFrame, "Details" );
+}
+
+void CRD_VGUI_Notifications_List_Item_HoIAF_Bounty::InitFromNotification()
+{
+	BaseClass::InitFromNotification();
+
+	FOR_EACH_VEC( m_Notification.BountyMissions, i )
+	{
+		if ( m_Notification.BountyMissions[i].Claimed )
+		{
+			m_pImgCompleted[i]->SetVisible( true );
+			m_pLblMissionPoints[i]->SetAlpha( 192 );
+		}
+		else
+		{
+			m_pImgCompleted[i]->SetVisible( false );
+			m_pLblMissionPoints[i]->SetAlpha( 255 );
+		}
+
+		const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( m_Notification.BountyMissions[i].MissionName );
+		if ( !pMission || pMission->WorkshopID != m_Notification.BountyMissions[i].AddonID )
+		{
+			Assert( m_Notification.BountyMissions[i].AddonID != k_PublishedFileIdInvalid );
+
+			m_pImgMissionIcon[i]->SetImage( "swarm/missionpics/addonmissionpic" );
+		}
+		else
+		{
+			m_pImgMissionIcon[i]->SetImage( STRING( pMission->Image ) );
+		}
+		m_pImgMissionIcon[i]->SetVisible( true );
+		m_pLblMissionPoints[i]->SetText( UTIL_RD_CommaNumber( m_Notification.BountyMissions[i].Points ) );
+		m_pLblMissionPoints[i]->SetVisible( true );
+	}
+
+	for ( int i = m_Notification.BountyMissions.Count(); i < MAX_MISSIONS_PER_BOUNTY; i++ )
+	{
+		m_pImgCompleted[i]->SetVisible( false );
+		m_pImgMissionIcon[i]->SetVisible( false );
+		m_pLblMissionPoints[i]->SetVisible( false );
+	}
+
+	CRD_VGUI_Notifications_Details_HoIAF_Bounty *pDetails = assert_cast< CRD_VGUI_Notifications_Details_HoIAF_Bounty * >( m_pDetailsPopOut );
+
+	FOR_EACH_VEC( m_Notification.BountyMissions, i )
+	{
+		pDetails->SetBountyMission( i, &m_Notification.BountyMissions[i] );
+	}
+
+	for ( int i = m_Notification.BountyMissions.Count(); i < MAX_MISSIONS_PER_BOUNTY; i++ )
+	{
+		pDetails->SetBountyMission( i, NULL );
+	}
+}
+
+bool CRD_VGUI_Notifications_List_Item_HoIAF_Bounty::MatchesNotification( const HoIAFNotification_t *pNotification ) const
+{
+	return pNotification->Type == HoIAFNotification_t::NOTIFICATION_BOUNTY && pNotification->Starts == m_Notification.Starts;
+}
+
+void CRD_VGUI_Notifications_List_Item_HoIAF_Bounty::SetSeen( int iSeen )
+{
+	if ( rd_notification_debug_fake.GetBool() )
+	{
+		return;
+	}
+
+	C_ASW_Medal_Store *pMedalStore = GetMedalStore();
+	Assert( pMedalStore );
+	if ( pMedalStore )
+	{
+		Assert( pMedalStore->GetBountyNotificationStatus( m_Notification.FirstBountyID ) == iSeen );
+		pMedalStore->SetBountyNotificationStatus( m_Notification.FirstBountyID, iSeen );
+		m_Notification.Seen = ( HoIAFNotification_t::Seen_t )iSeen;
+	}
+}
+
+void CRD_VGUI_Notifications_List_Item_HoIAF_Bounty::ApplySchemeSettings( vgui::IScheme *pScheme )
+{
+	BaseClass::ApplySchemeSettings( pScheme );
+
+	LoadControlSettings( "Resource/UI/CRD_VGUI_Notifications_List_Item_HoIAF_Bounty.res" );
+}
+
+CRD_VGUI_Notifications_Details::CRD_VGUI_Notifications_Details( vgui::Panel *parent, const char *panelName )
+	: BaseClass{ parent, panelName }
+{
+}
+
+CRD_VGUI_Notifications_Details_HoIAF_Bounty::CRD_VGUI_Notifications_Details_HoIAF_Bounty( vgui::Panel *parent, const char *panelName )
+	: BaseClass{ parent, panelName }
+{
+}
+
+void CRD_VGUI_Notifications_Details_HoIAF_Bounty::SetBountyMission( int index, const HoIAFNotification_t::BountyMission_t *pMission )
+{
+	Assert( index >= 0 && index < CRD_VGUI_Notifications_List_Item_HoIAF_Bounty::MAX_MISSIONS_PER_BOUNTY );
+
+	DebuggerBreakIfDebugging(); // TODO
+}
+
+void CRD_VGUI_Notifications_Details_HoIAF_Bounty::ApplySchemeSettings( vgui::IScheme *pScheme )
+{
+	BaseClass::ApplySchemeSettings( pScheme );
+
+	LoadControlSettings( "Resource/UI/CRD_VGUI_Notifications_Details_HoIAF_Bounty.res" );
+}
+
+CRD_VGUI_Notifications_Filters::CRD_VGUI_Notifications_Filters( vgui::Panel *parent, const char *panelName )
+	: BaseClass{ parent, panelName }
+{
+}
+
+void CRD_VGUI_Notifications_Filters::ApplySchemeSettings( vgui::IScheme *pScheme )
+{
+	BaseClass::ApplySchemeSettings( pScheme );
+
+	LoadControlSettings( "Resource/UI/CRD_VGUI_Notifications_Filters.res" );
+}

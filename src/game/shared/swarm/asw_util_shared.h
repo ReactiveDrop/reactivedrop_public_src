@@ -152,6 +152,8 @@ const char *UTIL_RD_HashToCaption( CRC32_t hash );
 const char *UTIL_RD_EResultToString( EResult eResult );
 
 const wchar_t *UTIL_RD_CommaNumber( int64_t num );
+const char *UTIL_RD_ZbalermornaNumberDec( int64_t num );
+const char *UTIL_RD_ZbalermornaNumberHex( uint64_t num );
 
 int UTIL_RD_IndexToBit( unsigned bits, int n );
 int UTIL_RD_BitToIndex( unsigned bits, int n );
