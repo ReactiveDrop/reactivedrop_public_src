@@ -226,10 +226,10 @@ ConCommand rd_givemeweapon( "rd_givemeweapon", rd_givemeweaponf, "Gives a specif
 static bool isLeader() 
 {
 	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
-	if (!pPlayer || !ASWGameResource())
-		return false;
+	if ( !pPlayer || !ASWGameResource() )
+		return true; // issued by console?
 
-	if (ASWGameResource()->GetLeader() != pPlayer)
+	if ( ASWGameResource()->GetLeader() != pPlayer )
 		return false;
 
 	return true;
