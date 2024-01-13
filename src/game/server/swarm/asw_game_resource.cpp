@@ -50,9 +50,6 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Game_Resource, DT_ASW_Game_Resource )
 	// player specific medals
 	SendPropArray( SendPropString( SENDINFO_ARRAY( m_iszPlayerMedals ), 0, SendProxy_String_tToString ), m_iszPlayerMedals ),
 
-	SendPropArray3( SENDINFO_ARRAY3( m_iKickVotes ), SendPropInt( SENDINFO_ARRAY( m_iKickVotes ), NumBitsForCount( ASW_MAX_READY_PLAYERS ), SPROP_UNSIGNED ) ),
-	SendPropArray3( SENDINFO_ARRAY3( m_iLeaderVotes ), SendPropInt( SENDINFO_ARRAY( m_iLeaderVotes ), NumBitsForCount( ASW_MAX_READY_PLAYERS ), SPROP_UNSIGNED ) ),
-
 	SendPropInt( SENDINFO( m_iMoney ) ),
 	SendPropInt( SENDINFO( m_iNextCampaignMission ) ),
 	SendPropInt( SENDINFO( m_nDifficultySuggestion ), 2, SPROP_UNSIGNED ),
@@ -116,8 +113,6 @@ CASW_Game_Resource::CASW_Game_Resource()
 	for ( int i = 0; i < ASW_MAX_READY_PLAYERS; i++ )
 	{
 		m_bPlayerReady.Set( i, false );
-		m_iKickVotes.Set( i, 0 );
-		m_iLeaderVotes.Set( i, 0 );
 		m_iCampaignVote[i] = -1;
 	}
 	for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )

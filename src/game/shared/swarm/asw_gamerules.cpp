@@ -889,6 +889,8 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		RecvPropString( RECVINFO( m_szDeathmatchWinnerName ) ),
 		RecvPropString( RECVINFO( m_szCycleNextMap ) ),
 		RecvPropString( RECVINFO( m_szStatsMusicOverride ) ),
+		RecvPropArray3( RECVINFO_ARRAY( m_iKickVotes ), RecvPropInt( RECVINFO( m_iKickVotes[0] ) ) ),
+		RecvPropArray3( RECVINFO_ARRAY( m_iLeaderVotes ), RecvPropInt( RECVINFO( m_iLeaderVotes[0] ) ) ),
 	#else
 		SendPropInt(SENDINFO(m_iGameState), 8, SPROP_UNSIGNED ),
 		SendPropBool(SENDINFO(m_bMissionSuccess)),
@@ -929,6 +931,8 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		SendPropString( SENDINFO( m_szDeathmatchWinnerName ) ),
 		SendPropString( SENDINFO( m_szCycleNextMap ) ),
 		SendPropString( SENDINFO( m_szStatsMusicOverride ) ),
+		SendPropArray3( SENDINFO_ARRAY3( m_iKickVotes ), SendPropInt( SENDINFO_ARRAY( m_iKickVotes ), NumBitsForCount( ASW_MAX_READY_PLAYERS ), SPROP_UNSIGNED ) ),
+		SendPropArray3( SENDINFO_ARRAY3( m_iLeaderVotes ), SendPropInt( SENDINFO_ARRAY( m_iLeaderVotes ), NumBitsForCount( ASW_MAX_READY_PLAYERS ), SPROP_UNSIGNED ) ),
 	#endif
 END_NETWORK_TABLE()
 
@@ -1559,6 +1563,7 @@ extern ConVar asw_springcol;
 ConVar asw_blip_speech_chance( "asw_blip_speech_chance", "0.8", FCVAR_CHEAT, "Chance the tech marines will shout about movement on their scanner after a period of no activity" );
 ConVar asw_instant_restart( "asw_instant_restart", "1", FCVAR_NONE, "Whether the game should use the instant restart (if not, it'll do a full reload of the map)." );
 ConVar asw_instant_restart_debug( "asw_instant_restart_debug", "0", FCVAR_NONE, "Write a lot of developer messages to the console during an instant restart." );
+ConVar asw_instant_restart_cooldown( "asw_instant_restart_cooldown", "3.0", FCVAR_NOTIFY, "How many seconds have to pass since the last instant restart to be able to trigger another one, restarts in debriefing do not count.", true, 0.0f, true, 10.0f );
 
 const char* CAlienSwarm::GetGameDescription( void )
 { 
@@ -1568,6 +1573,7 @@ const char* CAlienSwarm::GetGameDescription( void )
 CAlienSwarm::CAlienSwarm() : m_ActorSpeakingUntil( DefLessFunc( string_t ) )
 {
 	m_bShuttingDown = false;
+	m_fLastInstantRestartTime = -1.0f;
 
 	// fixes a memory leak on dedicated server where model vertex data
 	// is not freed on map transition and remains locked, leading to increased
@@ -1576,6 +1582,12 @@ CAlienSwarm::CAlienSwarm() : m_ActorSpeakingUntil( DefLessFunc( string_t ) )
 	{
 		ConVarRef mod_dont_load_vertices( "mod_dont_load_vertices" );
 		mod_dont_load_vertices.SetValue( 1 );
+	}
+
+	for ( int i = 0; i < ASW_MAX_READY_PLAYERS; i++ )
+	{
+		m_iKickVotes.Set( i, 0 );
+		m_iLeaderVotes.Set( i, 0 );
 	}
 
 	V_strncpy( m_szGameDescription, "Alien Swarm: Reactive Drop", sizeof( m_szGameDescription ) );
@@ -2998,6 +3010,15 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 		return;
 	}
 
+	if ( pPlayer && GetGameState() < ASW_GS_DEBRIEF && asw_instant_restart.GetBool() && m_fLastInstantRestartTime > 0.0f && gpGlobals->realtime - m_fLastInstantRestartTime < asw_instant_restart_cooldown.GetFloat() )
+	{
+		char szCooldownTimeLeft[32];
+		V_snprintf( szCooldownTimeLeft, sizeof( szCooldownTimeLeft ), "%d", static_cast<int>( m_fLastInstantRestartTime + asw_instant_restart_cooldown.GetFloat() - gpGlobals->realtime ) );
+		ClientPrint( pPlayer, ASW_HUD_PRINTTALKANDCONSOLE, "#asw_instant_restart_cooldown_left", szCooldownTimeLeft );
+
+		return;
+	}
+
 	// notify players of our mission restart
 	IGameEvent *event = gameeventmanager->CreateEvent( "asw_mission_restart" );
 	if ( event )
@@ -3039,6 +3060,11 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce, bool bSkipF
 
 		return;
 	}
+
+	if ( pPlayer && GetGameState() < ASW_GS_DEBRIEF )
+		m_fLastInstantRestartTime = gpGlobals->realtime;
+	else
+		m_fLastInstantRestartTime = -1.0f;
 
 	if ( asw_instant_restart_debug.GetBool() )
 		Msg( "Performing Instant Restart with %d entities, %d edicts.\n", gEntList.NumberOfEntities(), gEntList.NumberOfEdicts() );
@@ -7601,9 +7627,9 @@ void CAlienSwarm::ClearLeaderKickVotes(CASW_Player *pPlayer, bool bClearLeader, 
 
 	// reset his totals
 	if (bClearLeader)
-		ASWGameResource()->m_iLeaderVotes.Set(iSlotIndex, 0);
+		m_iLeaderVotes.Set(iSlotIndex, 0);
 	if (bClearKick)
-		ASWGameResource()->m_iKickVotes.Set(iSlotIndex, 0);
+		m_iKickVotes.Set(iSlotIndex, 0);
 }
 
 void CAlienSwarm::SetLeaderVote( CASW_Player *pPlayer, int iPlayerIndex )
@@ -7654,9 +7680,9 @@ void CAlienSwarm::SetLeaderVote( CASW_Player *pPlayer, int iPlayerIndex )
 		}
 
 		// updates the target player's game resource entry with the number of leader votes against him
-		if ( iOldPlayer > 0 && iOldPlayer <= ASW_MAX_READY_PLAYERS && ASWGameResource() )
+		if ( iOldPlayer > 0 && iOldPlayer <= ASW_MAX_READY_PLAYERS )
 		{
-			ASWGameResource()->m_iLeaderVotes.Set( iOldPlayer - 1, iOldPlayerVotes );
+			m_iLeaderVotes.Set( iOldPlayer - 1, iOldPlayerVotes );
 		}
 	}
 
@@ -7681,9 +7707,9 @@ void CAlienSwarm::SetLeaderVote( CASW_Player *pPlayer, int iPlayerIndex )
 		}
 	}
 
-	if ( iPlayerIndex > 0 && iPlayerIndex <= ASW_MAX_READY_PLAYERS && ASWGameResource() )
+	if ( iPlayerIndex > 0 && iPlayerIndex <= ASW_MAX_READY_PLAYERS )
 	{
-		ASWGameResource()->m_iLeaderVotes.Set( iPlayerIndex - 1, iVotes );
+		m_iLeaderVotes.Set( iPlayerIndex - 1, iVotes );
 	}
 
 	int iVotesNeeded = Ceil2Int( asw_vote_leader_fraction.GetFloat() * iPlayers );
@@ -7782,9 +7808,9 @@ void CAlienSwarm::SetKickVote( CASW_Player *pPlayer, int iPlayerIndex )
 		}
 
 		// updates the target player's game resource entry with the number of kick votes against him
-		if ( iOldPlayer > 0 && iOldPlayer <= ASW_MAX_READY_PLAYERS && ASWGameResource() )
+		if ( iOldPlayer > 0 && iOldPlayer <= ASW_MAX_READY_PLAYERS )
 		{
-			ASWGameResource()->m_iKickVotes.Set( iOldPlayer - 1, iOldPlayerVotes );
+			m_iKickVotes.Set( iOldPlayer - 1, iOldPlayerVotes );
 		}
 	}
 
@@ -7812,9 +7838,9 @@ void CAlienSwarm::SetKickVote( CASW_Player *pPlayer, int iPlayerIndex )
 	}
 
 	// updates the target player's game resource entry with the number of kick votes against him
-	if ( iPlayerIndex > 0 && iPlayerIndex <= ASW_MAX_READY_PLAYERS && ASWGameResource() )
+	if ( iPlayerIndex > 0 && iPlayerIndex <= ASW_MAX_READY_PLAYERS )
 	{
-		ASWGameResource()->m_iKickVotes.Set( iPlayerIndex - 1, iVotes );
+		m_iKickVotes.Set( iPlayerIndex - 1, iVotes );
 	}
 
 	int iVotesNeeded = Ceil2Int( asw_vote_kick_fraction.GetFloat() * iPlayers );
