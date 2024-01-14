@@ -177,6 +177,8 @@ public:
 		pInventory->GetAllItems( &m_GetFullInventoryForCacheResult );
 
 		materials->AddReleaseFunc( &ResetAccessoryIconsOnMaterialsReleased );
+
+		CRD_PNG_Texture::CleanLocalCachedTextures( "vgui/inventory/cache" );
 #endif
 	}
 
@@ -1584,6 +1586,7 @@ public:
 			}
 
 			Warning( "Crafting task (type %d) failed with EResult %d %s\n", pTask->m_Type, eResult, UTIL_RD_EResultToString( eResult ) );
+			DebugPrintResult( pTask->m_hResult );
 
 			if ( IsUserInitiatedTask( pTask ) )
 			{

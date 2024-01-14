@@ -19,6 +19,8 @@ public:
 	vgui::HTexture GetID() override;
 	void SetRotation( int iRotation ) override;
 
+	static void CleanLocalCachedTextures( const char *szDirectory );
+
 protected:
 	// Init should be called in the constructor by derived classes.
 	//
@@ -34,7 +36,7 @@ private:
 	vgui::HTexture m_iTextureID{ NULL };
 	Color m_Color{ 255, 255, 255, 255 };
 	int m_nX{ 0 }, m_nY{ 0 };
-	int m_nWide{ 512 }, m_nTall{ 512 };
+	int m_nWide{ 256 }, m_nTall{ 256 };
 	bool m_bReady{ false };
 	CFastTimer m_DownloadTimer;
 

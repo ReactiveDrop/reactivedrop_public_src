@@ -4,6 +4,7 @@
 #include "lodepng.h"
 #include <vgui_controls/Controls.h>
 #include <vgui/ISurface.h>
+#include "vpklib/packedstore.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -81,6 +82,60 @@ vgui::HTexture CRD_PNG_Texture::GetID()
 
 void CRD_PNG_Texture::SetRotation( int iRotation )
 {
+}
+
+void CRD_PNG_Texture::CleanLocalCachedTextures( const char *szDirectory )
+{
+	// Delete textures that are in the local cache folder but also in pak01_vpk.dir.
+	//
+	// This can happen if an item is added to the schema and seen in-game before the
+	// update that adds the pre-cached texture to the game's files is released.
+	//
+	// We don't check mods (so replacing an item icon in an addon doesn't affect this)
+	// (The "MOD" path below refers to a Source Engine game's raw files, not addons.)
+
+	// Don't do this if we are loading the VPK with lower priority than loose files.
+	if ( CommandLine()->FindParm( "-override_vpk" ) )
+		return;
+
+	CPackedStore pak01{ "pak01", g_pFullFileSystem };
+
+	// Add the materials/ prefix here so we match the directory naming scheme in Init.
+	char szFullDirectory[MAX_PATH];
+	V_snprintf( szFullDirectory, sizeof( szFullDirectory ), "materials/%s", szDirectory );
+
+	// Do a separate pass for materials and for textures just in case the user already
+	// deleted one or something went wrong during generation.
+	char szMaterialWildcard[MAX_PATH], szTextureWildcard[MAX_PATH];
+	V_snprintf( szMaterialWildcard, sizeof( szMaterialWildcard ), "%s/*.vmt", szFullDirectory );
+	V_snprintf( szTextureWildcard, sizeof( szTextureWildcard ), "%s/*.vtf", szFullDirectory );
+
+	FileFindHandle_t hFind = FILESYSTEM_INVALID_FIND_HANDLE;
+	for ( const char *szName = g_pFullFileSystem->FindFirstEx( szMaterialWildcard, "MOD", &hFind ); szName; szName = g_pFullFileSystem->FindNext( hFind ) )
+	{
+		char szVerifyPath[MAX_PATH];
+		V_snprintf( szVerifyPath, sizeof( szVerifyPath ), "%s/%s", szFullDirectory, szName );
+
+		if ( pak01.OpenFile( szVerifyPath ) )
+		{
+			Msg( "Removing local cached file %s\n", szVerifyPath );
+			g_pFullFileSystem->RemoveFile( szVerifyPath, "MOD" );
+		}
+	}
+	g_pFullFileSystem->FindClose( hFind );
+
+	for ( const char *szName = g_pFullFileSystem->FindFirstEx( szTextureWildcard, "MOD", &hFind ); szName; szName = g_pFullFileSystem->FindNext( hFind ) )
+	{
+		char szVerifyPath[MAX_PATH];
+		V_snprintf( szVerifyPath, sizeof( szVerifyPath ), "%s/%s", szFullDirectory, szName );
+
+		if ( pak01.OpenFile( szVerifyPath ) )
+		{
+			Msg( "Removing local cached file %s\n", szVerifyPath );
+			g_pFullFileSystem->RemoveFile( szVerifyPath, "MOD" );
+		}
+	}
+	g_pFullFileSystem->FindClose( hFind );
 }
 
 bool CRD_PNG_Texture::Init( const char *szDirectory, uint32_t iHash, bool bForceLoadRemote )

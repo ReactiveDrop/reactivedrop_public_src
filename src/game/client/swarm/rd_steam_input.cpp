@@ -133,6 +133,8 @@ void CRD_Steam_Input::PostInit()
 	INIT_ANALOG_ACTION( Look );
 	INIT_ANALOG_ACTION( MenuNavigate );
 
+	CRD_PNG_Texture::CleanLocalCachedTextures( "vgui/steam_input_glyphs" );
+
 	m_bInitialized = true;
 #endif
 }
