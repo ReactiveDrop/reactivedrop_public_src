@@ -36,9 +36,6 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_Game_Resource, DT_ASW_Game_Resource, CASW_Game_R
 
 	RecvPropArray( RecvPropString( RECVINFO( m_iszPlayerMedals[0] ) ), m_iszPlayerMedals ),
 
-	RecvPropArray3( RECVINFO_ARRAY( m_iKickVotes ), RecvPropInt( RECVINFO( m_iKickVotes[0] ) ) ),
-	RecvPropArray3( RECVINFO_ARRAY( m_iLeaderVotes ), RecvPropInt( RECVINFO( m_iLeaderVotes[0] ) ) ),
-
 	RecvPropInt( RECVINFO( m_iMoney ) ),
 	RecvPropInt( RECVINFO( m_iNextCampaignMission ) ),
 	RecvPropInt( RECVINFO( m_nDifficultySuggestion ) ),

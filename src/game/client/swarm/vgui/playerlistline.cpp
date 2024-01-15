@@ -9,6 +9,7 @@
 #include "c_asw_marine.h"
 #include "c_asw_campaign_save.h"
 #include "c_asw_game_resource.h"
+#include "asw_gamerules.h"
 #include "PlayerListPanel.h"
 #include "PlayerListLine.h"
 #include "c_playerresource.h"
@@ -343,12 +344,12 @@ void PlayerListLine::UpdateVoteIcons()
 		iMaxKickVotes = 2;
 
 	int iKickVotes = 0;
-	if ( ASWGameResource() && m_iPlayerIndex < ASW_MAX_READY_PLAYERS )
-		iKickVotes = ASWGameResource()->m_iKickVotes[m_iPlayerIndex - 1];
+	if ( ASWGameRules() && m_iPlayerIndex < ASW_MAX_READY_PLAYERS )
+		iKickVotes = ASWGameRules()->m_iKickVotes[m_iPlayerIndex - 1];
 
 	int iLeaderVotes = 0;
-	if ( ASWGameResource() && m_iPlayerIndex < ASW_MAX_READY_PLAYERS )
-		iLeaderVotes = ASWGameResource()->m_iLeaderVotes[m_iPlayerIndex - 1];
+	if ( ASWGameRules() && m_iPlayerIndex < ASW_MAX_READY_PLAYERS )
+		iLeaderVotes = ASWGameRules()->m_iLeaderVotes[m_iPlayerIndex - 1];
 
 	// position the checkbox immediately to the right of our number of votes
 	float fScale = ScreenHeight() / 768.0f;

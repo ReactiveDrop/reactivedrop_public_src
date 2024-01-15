@@ -92,9 +92,6 @@ public:
 	CNetworkArray(int, m_iSkillSlot4, ASW_NUM_MARINE_PROFILES);
 	CNetworkArray(int, m_iSkillSlotSpare, ASW_NUM_MARINE_PROFILES);
 
-	int m_iKickVotes[ASW_MAX_READY_PLAYERS];
-	int m_iLeaderVotes[ASW_MAX_READY_PLAYERS];
-
 	// player medals
 	char	m_iszPlayerMedals[ ASW_MAX_READY_PLAYERS ][255];
 

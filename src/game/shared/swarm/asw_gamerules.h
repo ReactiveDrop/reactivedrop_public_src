@@ -221,6 +221,7 @@ public:
 	virtual void RemoveNoisyWeapons();
 	void ScheduleTechFailureRestart( float flRestartBeginTime, string_t szTechFailureSong );
 	void CheckTechFailure();
+	float m_fLastInstantRestartTime;
 	float m_fRemoveAliensTime;
 	bool m_bShouldStartMission;
 	float m_flTechFailureRestartTime;
@@ -298,6 +299,8 @@ public:
 	void ClearLeaderKickVotes(CASW_Player *pPlayer, bool bClearLeader=true, bool bClearKick=true);	// clears out any kick/leader votes aimed at this player	
 	void SetLeaderVote(CASW_Player *pPlayer, int iPlayerIndex);
 	void SetKickVote(CASW_Player *pPlayer, int iPlayerIndex);
+	CNetworkArray( int, m_iKickVotes, ASW_MAX_READY_PLAYERS );
+	CNetworkArray( int, m_iLeaderVotes, ASW_MAX_READY_PLAYERS );
 	// campaign/saved/mission voting
 	void StartVote(CASW_Player *pPlayer, int iVoteType, const char *szVoteName, int nCampaignIndex = -1);
 	void CastVote(CASW_Player *pPlayer, bool bVoteYes);
@@ -431,7 +434,12 @@ public:
 	CNetworkVar(int, m_iCurrentVoteNo);
 	CNetworkVar(int, m_iCurrentVoteType);
 	CNetworkVar(float, m_fVoteEndTime);
-	
+
+#ifdef CLIENT_DLL
+	int m_iKickVotes[ASW_MAX_READY_PLAYERS];
+	int m_iLeaderVotes[ASW_MAX_READY_PLAYERS];
+#endif
+
 	int GetCurrentVoteType() { return m_iCurrentVoteType; }
 	int GetCurrentVoteYes() { return m_iCurrentVoteYes; }
 	int GetCurrentVoteNo() { return m_iCurrentVoteNo; }

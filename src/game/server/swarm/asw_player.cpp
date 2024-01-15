@@ -377,6 +377,9 @@ CASW_Player::CASW_Player()
 
 	SetViewOffset( ASW_PLAYER_VIEW_OFFSET );
 
+	m_iKickVoteIndex = -1;
+	m_iLeaderVoteIndex = -1;
+
 	m_hInhabiting = NULL;
 	m_hSpectating = NULL;
 	m_pCurrentInfoMessage = NULL;
@@ -698,8 +701,6 @@ void CASW_Player::Spawn()
 
 	SetMoveType( MOVETYPE_WALK );
 	m_takedamage = DAMAGE_NO;
-	m_iKickVoteIndex = -1;
-	m_iLeaderVoteIndex = -1;
 	BecomeNonSolid();
 
 	m_bFirstInhabit = false;

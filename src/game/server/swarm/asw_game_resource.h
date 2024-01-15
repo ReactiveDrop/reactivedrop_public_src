@@ -129,10 +129,6 @@ public:
 	// player medals
 	CNetworkArray( string_t, m_iszPlayerMedals, ASW_MAX_READY_PLAYERS );
 
-	// voting
-	CNetworkArray( int, m_iKickVotes, ASW_MAX_READY_PLAYERS );
-	CNetworkArray( int, m_iLeaderVotes, ASW_MAX_READY_PLAYERS );
-
 	// returns current number of alive (non-KOed players)
 	int CountAllAliveMarines( void );
 
