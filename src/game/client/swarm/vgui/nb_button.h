@@ -22,6 +22,7 @@ public:
 	virtual void Paint();
 	virtual void PaintBackground();
 	virtual void OnCursorEntered();
+	virtual void NavigateTo();
 
 	void DrawRoundedBox( int x, int y, int wide, int tall, Color color, float normalizedAlpha, bool bHighlightGradient, Color highlightCenterColor );
 	void SetControllerButton( vgui::KeyCode code );
@@ -33,6 +34,7 @@ public:
 	const char *m_szControllerButton;
 	bool m_bAddedToControllerFocus;
 
+	CPanelAnimationVar( bool, m_bAutoFocus, "autoFocus", "0" );
 	CPanelAnimationVarAliasType( int, m_nNBBgTextureId1, "NBTexture1", "vgui/hud/800corner1", "textureid" );
 	CPanelAnimationVarAliasType( int, m_nNBBgTextureId2, "NBTexture2", "vgui/hud/800corner2", "textureid" );
 	CPanelAnimationVarAliasType( int, m_nNBBgTextureId3, "NBTexture3", "vgui/hud/800corner3", "textureid" );

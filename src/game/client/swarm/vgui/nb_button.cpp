@@ -96,9 +96,22 @@ void CNB_Button::OnCursorEntered()
 		if ( IsEnabled() && !HasFocus() )
 		{
 			vgui::surface()->PlaySound( "UI/menu_focus.wav" );
+
+			if ( m_bAutoFocus )
+			{
+				GetParent()->NavigateToChild( this );
+			}
 		}
 	}
+
 	BaseClass::OnCursorEntered();
+}
+
+void CNB_Button::NavigateTo()
+{
+	BaseClass::NavigateTo();
+
+	RequestFocus();
 }
 
 void CNB_Button::DrawRoundedBox( int x, int y, int wide, int tall, Color color, float normalizedAlpha, bool bHighlightGradient, Color highlightCenterColor )

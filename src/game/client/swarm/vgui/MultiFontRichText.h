@@ -222,28 +222,28 @@ private:
 	bool m_bAllTextAlphaIsZero;
 
 	// data
-	CUtlVector<wchar_t>   m_TextStream;		// the text in the text window is stored in this buffer
-	CUtlVector<int>	   m_LineBreaks;		// an array that holds the index in the buffer to wrap lines at
+	CUtlVector<wchar_t> m_TextStream;		// the text in the text window is stored in this buffer
+	CUtlVector<int> m_LineBreaks;		// an array that holds the index in the buffer to wrap lines at
 	CUtlVector<TFormatStream> m_FormatStream;	// list of format changes
 
 	bool m_bRecalcLineBreaks;
 
 	int	_recalculateBreaksIndex;			// tells next linebreakindex index to Start recalculating line breaks	
-	bool			   _invalidateVerticalScrollbarSlider;
-	int                _cursorPos;			// the position in the text buffer of the blinking cursor
-	bool			   _mouseSelection;		// whether we are highlighting text or not (selecting text)
-	bool			   _mouseDragSelection;	// tells weather mouse is outside window and button is down so we select text
-	int                _select[2];			// select[1] is the offset in the text to where the cursor is currently
+	bool				_invalidateVerticalScrollbarSlider;
+	int					_cursorPos;			// the position in the text buffer of the blinking cursor
+	bool				_mouseSelection;		// whether we are highlighting text or not (selecting text)
+	bool				_mouseDragSelection;	// tells weather mouse is outside window and button is down so we select text
+	int					_select[2];			// select[1] is the offset in the text to where the cursor is currently
 											// select[0] is the offset to where the cursor was dragged to. or -1 if no drag.
-	int				   _pixelsIndent;
-	int				   _maxCharCount;		// max number of chars that can be in the text buffer
-	HFont              _font;				// font of chars in the text buffer
-	HFont			   m_hFontUnderline;
-	Color			   _selectionColor;
-	Color			   _selectionTextColor;	// color of the highlighted text
-	bool			   _currentTextClickable;
-	CUtlVector<MultiFontClickPanel *>  _clickableTextPanels;
-	int				   _clickableTextIndex;
+	int					_pixelsIndent;
+	int					_maxCharCount;		// max number of chars that can be in the text buffer
+	HFont				m_hFontDefault;		// font of chars in the text buffer
+	HFont				m_hFontUnderline;
+	Color				_selectionColor;
+	Color				_selectionTextColor;	// color of the highlighted text
+	bool				_currentTextClickable;
+	CUtlVector<MultiFontClickPanel *>	_clickableTextPanels;
+	int					_clickableTextIndex;
 	Color				_defaultTextColor;
 	int					_drawOffsetX;
 	int					_drawOffsetY;

@@ -20,6 +20,7 @@ class CRD_VGUI_Notifications_List;
 class CRD_VGUI_Notifications_List_Item;
 class CRD_VGUI_Notifications_Details;
 class CRD_VGUI_Notifications_Filters;
+class CRD_VGUI_Option;
 
 extern CUtlVector<CRD_VGUI_Notifications_Button *> g_NotificationsButtons;
 extern CUtlVector<CRD_VGUI_Notifications_List *> g_NotificationsLists;
@@ -34,6 +35,7 @@ public:
 	void UpdateNotifications();
 	void OnCommand( const char *command ) override;
 	void PaintBackground() override;
+	void NavigateTo() override;
 	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 	void PerformLayout() override;
 
@@ -59,6 +61,7 @@ public:
 	void OnCommand( const char *command ) override;
 	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 
+	vgui::PHandle m_hButton;
 	BaseModUI::GenericPanelList *m_pList;
 	vgui::Label *m_pLblNone;
 	CNB_Button *m_pFiltersButton;
@@ -71,17 +74,19 @@ class CRD_VGUI_Notifications_List_Item : public vgui::EditablePanel
 	DECLARE_CLASS_SIMPLE( CRD_VGUI_Notifications_List_Item, vgui::EditablePanel );
 public:
 	CRD_VGUI_Notifications_List_Item( vgui::Panel *parent, const char *panelName, HoIAFNotification_t *pNotification );
+	~CRD_VGUI_Notifications_List_Item();
 
 	virtual void InitFromNotification();
 	virtual void UpdateTimers( int64_t iNow );
+	virtual void UpdateBackgroundColor( int isFocused = -1 );
 	void SetSeenAtLeast( int iSeen );
 	virtual void SetSeen( int iSeen ) = 0;
 	virtual bool MatchesNotification( const HoIAFNotification_t *pNotification ) const = 0;
 	virtual void OnClicked();
 	void OnCursorEntered() override;
-	void OnCursorExited() override;
 	void NavigateTo() override;
-	void NavigateFrom() override;
+	void OnSetFocus() override;
+	void OnKillFocus() override;
 	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 	void PerformLayout() override;
 
@@ -91,13 +96,14 @@ public:
 	CRD_VGUI_Notifications_Details *m_pDetailsPopOut;
 	HoIAFNotification_t m_Notification;
 	int m_iExpectedOrder;
-	bool m_bOverMouse;
-	bool m_bOverKeyboard;
-	vgui::HFont m_hFontBold;
-	vgui::HFont m_hFontNormal;
 
+	CPanelAnimationVar( vgui::HFont, m_hFontBold, "font_title", "DefaultTextBold" );
+	CPanelAnimationVar( vgui::HFont, m_hFontNormal, "font_desc", "Default" );
 	CPanelAnimationVar( Color, m_TitleColor, "title_color", "224 224 224 255" );
 	CPanelAnimationVar( Color, m_DescriptionColor, "description_color", "160 160 160 255" );
+	CPanelAnimationVar( Color, m_BackgroundColorHover, "bgcolor_hover", "20 59 96 255" );
+	CPanelAnimationVar( Color, m_BackgroundColorFresh, "bgcolor_fresh", "24 43 66 255" );
+	CPanelAnimationVar( Color, m_BackgroundColorViewed, "bgcolor_viewed", "40 48 56 255" );
 };
 
 class CRD_VGUI_Notifications_List_Item_Inventory : public CRD_VGUI_Notifications_List_Item
@@ -134,16 +140,21 @@ class CRD_VGUI_Notifications_Details : public vgui::EditablePanel
 {
 	DECLARE_CLASS_SIMPLE( CRD_VGUI_Notifications_Details, vgui::EditablePanel );
 public:
-	CRD_VGUI_Notifications_Details( vgui::Panel *parent, const char *panelName );
+	CRD_VGUI_Notifications_Details( CRD_VGUI_Notifications_List_Item *listItem, const char *panelName );
+
+	virtual void InitFromNotification() = 0;
+	void OnThink() override;
+
+	vgui::DHANDLE<CRD_VGUI_Notifications_List_Item> m_hListItem;
 };
 
 class CRD_VGUI_Notifications_Details_HoIAF_Bounty : public CRD_VGUI_Notifications_Details
 {
 	DECLARE_CLASS_SIMPLE( CRD_VGUI_Notifications_Details_HoIAF_Bounty, CRD_VGUI_Notifications_Details );
 public:
-	CRD_VGUI_Notifications_Details_HoIAF_Bounty( vgui::Panel *parent, const char *panelName );
+	CRD_VGUI_Notifications_Details_HoIAF_Bounty( CRD_VGUI_Notifications_List_Item *listItem, const char *panelName );
 
-	void SetBountyMission( int index, const HoIAFNotification_t::BountyMission_t *pMission );
+	void InitFromNotification() override;
 	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 };
 
@@ -154,4 +165,8 @@ public:
 	CRD_VGUI_Notifications_Filters( vgui::Panel *parent, const char *panelName );
 
 	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+
+	CRD_VGUI_Option *m_pSettingCrafting;
+	CRD_VGUI_Option *m_pSettingHoIAF;
+	CRD_VGUI_Option *m_pSettingReports;
 };

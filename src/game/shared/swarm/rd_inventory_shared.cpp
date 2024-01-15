@@ -1467,8 +1467,10 @@ public:
 		CRAFT_USER_DYNAMIC_PROPERTY_UPDATE,
 		// deleting an item. modal while in progress.
 		CRAFT_DELETE,
-		// deleting an item silently. no notifications.
+		// deleting an item silently. no notifications. (funnily enough, this is used to expire a different kind of notifications.)
 		CRAFT_DELETE_SILENT,
+		// updating the "seen" status of notifications. only one of these exist at a time. no notifications. (heh)
+		CRAFT_NOTIFICATION_DYNAMIC_PROPERTY_UPDATE,
 	};
 	struct CraftItemTask_t
 	{
@@ -1610,6 +1612,11 @@ public:
 				pConfirm->SetUsageData( data );
 			}
 
+			if ( pTask->m_Type == CRAFT_NOTIFICATION_DYNAMIC_PROPERTY_UPDATE )
+			{
+				DebuggerBreakIfDebugging(); // TODO
+			}
+
 			return;
 		}
 
@@ -1657,6 +1664,9 @@ public:
 		case CRAFT_DELETE:
 			break;
 		case CRAFT_DELETE_SILENT:
+			break;
+		case CRAFT_NOTIFICATION_DYNAMIC_PROPERTY_UPDATE:
+			m_InFlightNotificationSeen.Purge();
 			break;
 		default:
 			Assert( !"unhandled crafting task type" );
@@ -2054,6 +2064,14 @@ public:
 	CUtlVector<ReactiveDropInventory::ItemInstance_t> m_LocalInventoryCache;
 	SteamInventoryResult_t m_GetFullInventoryForCacheResult{ k_SteamInventoryResultInvalid };
 	bool m_bWantFullInventoryRefresh{ false };
+
+	struct NotificationSeenUpdate_t
+	{
+		SteamItemInstanceID_t NotificationID;
+		int Seen;
+	};
+	CUtlVector<NotificationSeenUpdate_t> m_QueuedNotificationSeen;
+	CUtlVector<NotificationSeenUpdate_t> m_InFlightNotificationSeen;
 
 	enum
 	{
@@ -3489,6 +3507,109 @@ namespace ReactiveDropInventory
 			Warning( "Inventory item style update submit failed!\n" );
 	}
 
+	void QueueSetNotificationSeen( SteamItemInstanceID_t id, int iSeen )
+	{
+		FOR_EACH_VEC( s_RD_Inventory_Manager.m_CraftingQueue, i )
+		{
+			if ( s_RD_Inventory_Manager.m_CraftingQueue[i]->m_Type == CRD_Inventory_Manager::CRAFT_DELETE_SILENT && s_RD_Inventory_Manager.m_CraftingQueue[i]->m_iReplaceItemInstance == id )
+			{
+				// queued for deletion
+				return;
+			}
+		}
+
+		FOR_EACH_VEC( s_RD_Inventory_Manager.m_LocalInventoryCache, i )
+		{
+			if ( s_RD_Inventory_Manager.m_LocalInventoryCache[i].ItemID == id )
+			{
+				// update the local inventory cache (prediction!)
+				UtlSymId_t iProp = s_RD_Inventory_Manager.m_LocalInventoryCache[i].DynamicProps.AddString( "notification_seen" );
+				s_RD_Inventory_Manager.m_LocalInventoryCache[i].DynamicProps[iProp] = CFmtStr{ "%d", iSeen };
+				break;
+			}
+		}
+
+		FOR_EACH_VEC( s_RD_Inventory_Manager.m_QueuedNotificationSeen, i )
+		{
+			if ( s_RD_Inventory_Manager.m_QueuedNotificationSeen[i].NotificationID == id )
+			{
+				// already have a queued request; update it
+				s_RD_Inventory_Manager.m_QueuedNotificationSeen[i].Seen = iSeen;
+			}
+		}
+
+		// add to the queue
+		s_RD_Inventory_Manager.m_QueuedNotificationSeen.AddToTail( CRD_Inventory_Manager::NotificationSeenUpdate_t{ id, iSeen } );
+	}
+
+	void CommitNotificationSeen()
+	{
+		GET_INVENTORY_OR_BAIL;
+
+		if ( s_RD_Inventory_Manager.m_QueuedNotificationSeen.Count() == 0 )
+		{
+			// no queued notification seen updates to commit!
+			return;
+		}
+
+		SteamInventoryResult_t *hResult = NULL;
+		FOR_EACH_VEC( s_RD_Inventory_Manager.m_CraftingQueue, i )
+		{
+			if ( s_RD_Inventory_Manager.m_CraftingQueue[i]->m_Type == CRD_Inventory_Manager::CRAFT_NOTIFICATION_DYNAMIC_PROPERTY_UPDATE )
+			{
+				hResult = &s_RD_Inventory_Manager.m_CraftingQueue[i]->m_hResult;
+			}
+		}
+
+		if ( hResult )
+		{
+			// we're likely going to fail due to an update conflict, but we need to move the queue
+			pInventory->DestroyResult( *hResult );
+			*hResult = k_SteamInventoryResultInvalid;
+		}
+
+		if ( !hResult )
+		{
+			hResult = s_RD_Inventory_Manager.AddCraftItemTask( CRD_Inventory_Manager::CRAFT_NOTIFICATION_DYNAMIC_PROPERTY_UPDATE );
+		}
+
+		// collapse the queue into the in-flight list
+		FOR_EACH_VEC( s_RD_Inventory_Manager.m_QueuedNotificationSeen, i )
+		{
+			bool bFound = false;
+			FOR_EACH_VEC( s_RD_Inventory_Manager.m_InFlightNotificationSeen, j )
+			{
+				if ( s_RD_Inventory_Manager.m_InFlightNotificationSeen[j].NotificationID == s_RD_Inventory_Manager.m_QueuedNotificationSeen[i].NotificationID )
+				{
+					s_RD_Inventory_Manager.m_InFlightNotificationSeen[j].Seen = s_RD_Inventory_Manager.m_QueuedNotificationSeen[i].Seen;
+					bFound = true;
+					break;
+				}
+			}
+
+			if ( !bFound )
+			{
+				s_RD_Inventory_Manager.m_InFlightNotificationSeen.AddToTail( s_RD_Inventory_Manager.m_QueuedNotificationSeen[i] );
+			}
+		}
+
+		s_RD_Inventory_Manager.m_QueuedNotificationSeen.Purge();
+
+		Assert( s_RD_Inventory_Manager.m_InFlightNotificationSeen.Count() <= 100 );
+		// if we have more than 100 updates, the commit will fail. just throw out some until we're under the limit.
+		if ( s_RD_Inventory_Manager.m_InFlightNotificationSeen.Count() > 100 )
+		{
+			s_RD_Inventory_Manager.m_InFlightNotificationSeen.RemoveMultipleFromHead( s_RD_Inventory_Manager.m_InFlightNotificationSeen.Count() - 100 );
+		}
+
+		SteamInventoryUpdateHandle_t hUpdate = pInventory->StartUpdateProperties();
+		FOR_EACH_VEC( s_RD_Inventory_Manager.m_InFlightNotificationSeen, i )
+		{
+			pInventory->SetProperty( hUpdate, s_RD_Inventory_Manager.m_InFlightNotificationSeen[i].NotificationID, "notification_seen", int64_t( s_RD_Inventory_Manager.m_InFlightNotificationSeen[i].Seen ) );
+		}
+		pInventory->SubmitUpdateProperties( hUpdate, hResult );
+	}
+
 	void DeleteNotificationItem( SteamItemInstanceID_t id )
 	{
 		GET_INVENTORY_OR_BAIL;
@@ -3522,6 +3643,26 @@ namespace ReactiveDropInventory
 			{
 				// request already in-flight
 				return;
+			}
+		}
+
+		FOR_EACH_VEC( s_RD_Inventory_Manager.m_QueuedNotificationSeen, i )
+		{
+			if ( s_RD_Inventory_Manager.m_QueuedNotificationSeen[i].NotificationID == id )
+			{
+				// remove from the queue so we don't try to set a property on a deleted item in a batch
+				s_RD_Inventory_Manager.m_QueuedNotificationSeen.Remove( i );
+				break;
+			}
+		}
+
+		FOR_EACH_VEC( s_RD_Inventory_Manager.m_InFlightNotificationSeen, i )
+		{
+			if ( s_RD_Inventory_Manager.m_InFlightNotificationSeen[i].NotificationID == id )
+			{
+				// remove from the in-flight cache so we don't retry on a deleted item
+				s_RD_Inventory_Manager.m_InFlightNotificationSeen.Remove( i );
+				break;
 			}
 		}
 

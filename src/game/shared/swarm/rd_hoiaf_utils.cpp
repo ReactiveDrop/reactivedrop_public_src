@@ -284,7 +284,7 @@ void CRD_HoIAF_System::RebuildNotificationList()
 		m_Notifications[0]->Type = HoIAFNotification_t::NOTIFICATION_ITEM;
 		m_Notifications[0]->Title = ReactiveDropInventory::GetItemDef( 7077 )->Name;
 		m_Notifications[0]->Description = ReactiveDropInventory::GetItemDef( 7077 )->Description;
-		m_Notifications[0]->Starts = 1706802222;
+		m_Notifications[0]->Starts = 1706770000;
 		m_Notifications[0]->Ends = 0;
 		m_Notifications[0]->Seen = HoIAFNotification_t::SEEN_HOVERED;
 		m_Notifications[0]->ItemDefID = 7077;
@@ -294,7 +294,7 @@ void CRD_HoIAF_System::RebuildNotificationList()
 		m_Notifications[1]->Type = HoIAFNotification_t::NOTIFICATION_ITEM;
 		m_Notifications[1]->Title = ReactiveDropInventory::GetItemDef( 7078 )->Name;
 		m_Notifications[1]->Description = ReactiveDropInventory::GetItemDef( 7078 )->Description;
-		m_Notifications[1]->Starts = 1706803232;
+		m_Notifications[1]->Starts = 1706802222;
 		m_Notifications[1]->Ends = 0;
 		m_Notifications[1]->Seen = HoIAFNotification_t::SEEN_VIEWED;
 		m_Notifications[1]->ItemDefID = 7078;
@@ -312,11 +312,11 @@ void CRD_HoIAF_System::RebuildNotificationList()
 		V_strcpy( m_Notifications[2]->BountyMissions[0].MissionName, "rd-acc_complex" );
 		m_Notifications[2]->BountyMissions[0].Points = 675;
 		m_Notifications[2]->BountyMissions[0].AddonID = k_PublishedFileIdInvalid;
-		m_Notifications[2]->BountyMissions[0].Claimed = false;
+		m_Notifications[2]->BountyMissions[0].Claimed = true;
 		V_strcpy( m_Notifications[2]->BountyMissions[1].MissionName, "asw_warehouse_v1" );
 		m_Notifications[2]->BountyMissions[1].Points = 875;
 		m_Notifications[2]->BountyMissions[1].AddonID = 1312255876;
-		m_Notifications[2]->BountyMissions[1].Claimed = false;
+		m_Notifications[2]->BountyMissions[1].Claimed = true;
 		V_strcpy( m_Notifications[2]->BountyMissions[2].MissionName, "researchlab2" );
 		m_Notifications[2]->BountyMissions[2].Points = 1250;
 		m_Notifications[2]->BountyMissions[2].AddonID = 936101427;
@@ -547,6 +547,16 @@ void CRD_HoIAF_System::RebuildNotificationList()
 	}
 
 	m_Notifications.Sort( &NewAndLatestNotificationsFirst );
+
+	// we set a hard limit of 100 notifications in the UI list to avoid problems.
+	if ( m_Notifications.Count() > 100 )
+	{
+		for ( int i = 100; i < m_Notifications.Count(); i++ )
+		{
+			delete m_Notifications[i];
+		}
+		m_Notifications.SetCountNonDestructively( 100 );
+	}
 
 	FOR_EACH_VEC( g_NotificationsButtons, i )
 	{

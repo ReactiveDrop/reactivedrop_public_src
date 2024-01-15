@@ -168,6 +168,8 @@ namespace ReactiveDropInventory
 	void ResendDynamicEquipNotification( int iPlayer, bool bForce = false );
 	bool CheckMedalEquipCache();
 	void ChangeItemStyle( SteamItemInstanceID_t id, int iStyle );
+	void QueueSetNotificationSeen( SteamItemInstanceID_t id, int iSeen );
+	void CommitNotificationSeen();
 	void DeleteNotificationItem( SteamItemInstanceID_t id );
 #endif
 	void OnHitConfirm( CBaseEntity *pAttacker, CBaseEntity *pTarget, Vector vecDamagePosition, bool bKilled, bool bDamageOverTime, bool bBlastDamage, int iDisposition, float flDamage, CBaseEntity *pWeapon );

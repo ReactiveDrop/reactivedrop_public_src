@@ -10,13 +10,18 @@
 #include <vgui/ILocalize.h>
 #include <vgui/ISurface.h>
 #include "asw_medal_store.h"
+#include "rd_vgui_settings.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-ConVar rd_notification_filter_crafting( "rd_notification_filter_crafting", "1", FCVAR_ARCHIVE, "Should we show crafting-related notifications?" );
-ConVar rd_notification_filter_hoiaf( "rd_notification_filter_hoiaf", "1", FCVAR_ARCHIVE, "Should we show HoIAF-related notifications?" );
-ConVar rd_notification_filter_reports( "rd_notification_filter_reports", "1", FCVAR_ARCHIVE, "Should we show non-critical report-related notifications?" );
+static void ForceRebuildNotificationList( IConVar *var, const char *pOldValue, float flOldValue )
+{
+	HoIAF()->RebuildNotificationList();
+}
+ConVar rd_notification_filter_crafting( "rd_notification_filter_crafting", "1", FCVAR_ARCHIVE, "Should we show crafting-related notifications?", ForceRebuildNotificationList );
+ConVar rd_notification_filter_hoiaf( "rd_notification_filter_hoiaf", "1", FCVAR_ARCHIVE, "Should we show HoIAF-related notifications?", ForceRebuildNotificationList );
+ConVar rd_notification_filter_reports( "rd_notification_filter_reports", "1", FCVAR_ARCHIVE, "Should we show non-critical report-related notifications?", ForceRebuildNotificationList );
 extern ConVar rd_notification_debug_fake;
 
 DECLARE_BUILD_FACTORY( CRD_VGUI_Notifications_Button );
@@ -25,6 +30,17 @@ DECLARE_BUILD_FACTORY( CRD_VGUI_Notifications_Filters );
 
 CUtlVector<CRD_VGUI_Notifications_Button *> g_NotificationsButtons;
 CUtlVector<CRD_VGUI_Notifications_List *> g_NotificationsLists;
+
+static vgui::Panel *GetParentFrame( vgui::Panel *pPanel )
+{
+	vgui::Panel *pFrame = pPanel;
+	while ( !dynamic_cast< vgui::Frame * >( pFrame ) && pFrame )
+	{
+		pFrame = pFrame->GetParent();
+	}
+
+	return pFrame;
+}
 
 CRD_VGUI_Notifications_Button::CRD_VGUI_Notifications_Button( vgui::Panel *parent, const char *panelName )
 	: BaseClass{ parent, panelName, L"", this, "NotificationsButtonClicked" }
@@ -45,6 +61,7 @@ CRD_VGUI_Notifications_Button::~CRD_VGUI_Notifications_Button()
 	if ( m_pListPopOut )
 	{
 		m_pListPopOut->MarkForDeletion();
+		m_pListPopOut = NULL;
 	}
 }
 
@@ -76,19 +93,15 @@ void CRD_VGUI_Notifications_Button::OnCommand( const char *command )
 	{
 		if ( m_pListPopOut && m_pListPopOut->IsVisible() )
 		{
+			ReactiveDropInventory::CommitNotificationSeen();
+
 			m_pListPopOut->SetVisible( false );
 		}
 		else
 		{
 			if ( !m_pListPopOut )
 			{
-				vgui::Panel *pFrame = this;
-				while ( !dynamic_cast< vgui::Frame * >( pFrame ) && pFrame )
-				{
-					pFrame = pFrame->GetParent();
-				}
-
-				m_pListPopOut = new CRD_VGUI_Notifications_List( pFrame, "List" );
+				m_pListPopOut = new CRD_VGUI_Notifications_List( this, "List" );
 			}
 
 			m_pListPopOut->SetVisible( true );
@@ -109,9 +122,16 @@ void CRD_VGUI_Notifications_Button::OnCommand( const char *command )
 
 void CRD_VGUI_Notifications_Button::PaintBackground()
 {
-	vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
 	vgui::surface()->DrawSetTexture( m_iButtonIcon );
+	vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
 	vgui::surface()->DrawTexturedRect( 0, 0, GetWide(), GetTall() );
+}
+
+void CRD_VGUI_Notifications_Button::NavigateTo()
+{
+	BaseClass::NavigateTo();
+
+	RequestFocus();
 }
 
 void CRD_VGUI_Notifications_Button::ApplySchemeSettings( vgui::IScheme *pScheme )
@@ -139,9 +159,11 @@ void CRD_VGUI_Notifications_Button::PerformLayout()
 }
 
 CRD_VGUI_Notifications_List::CRD_VGUI_Notifications_List( vgui::Panel *parent, const char *panelName )
-	: BaseClass{ parent, panelName }
+	: BaseClass{ GetParentFrame( parent ), panelName }
 {
+	m_hButton = parent;
 	m_pList = new BaseModUI::GenericPanelList( this, "GplList", BaseModUI::GenericPanelList::ISM_PERITEM );
+	m_pList->SetScrollBarVisible( true );
 	m_pLblNone = new vgui::Label( this, "LblNone", "#rd_notification_none" );
 	m_pFiltersButton = new CNB_Button( this, "BtnFilters", "#rd_notification_filter_title", this, "NotificationsFiltersClicked" );
 	m_pFiltersPopOut = NULL;
@@ -155,6 +177,14 @@ CRD_VGUI_Notifications_List::CRD_VGUI_Notifications_List( vgui::Panel *parent, c
 CRD_VGUI_Notifications_List::~CRD_VGUI_Notifications_List()
 {
 	g_NotificationsLists.FindAndFastRemove( this );
+
+	ReactiveDropInventory::CommitNotificationSeen();
+
+	if ( m_pFiltersPopOut )
+	{
+		m_pFiltersPopOut->MarkForDeletion();
+		m_pFiltersPopOut = NULL;
+	}
 }
 
 static bool __cdecl SortNotificationsByExpectedOrder( const vgui::Panel &a, const vgui::Panel &b )
@@ -215,9 +245,23 @@ void CRD_VGUI_Notifications_List::UpdateNotifications()
 	// third pass: sort the list so it's in the same order as the notifications vector
 	m_pList->Sort( &SortNotificationsByExpectedOrder );
 
-	// fourth pass: force a timer update
+	// force a timer update
 	m_iLastTimerUpdate = -1;
 	OnThink();
+
+	// set up navigation
+	if ( m_pList->GetPanelItemCount() )
+	{
+		m_hButton->SetNavDown( m_pList->GetPanelItem( 0 ) );
+		m_pList->GetPanelItem( 0 )->SetNavUp( m_hButton );
+		m_pList->GetPanelItem( m_pList->GetPanelItemCount() - 1 )->SetNavDown( m_pFiltersButton );
+		m_pFiltersButton->SetNavUp( m_pList->GetPanelItem( m_pList->GetPanelItemCount() - 1 ) );
+	}
+	else
+	{
+		m_hButton->SetNavDown( m_pFiltersButton );
+		m_pFiltersButton->SetNavUp( m_hButton );
+	}
 }
 
 CRD_VGUI_Notifications_List_Item *CRD_VGUI_Notifications_List::CreateNotificationListItem( HoIAFNotification_t *pNotification )
@@ -247,6 +291,10 @@ void CRD_VGUI_Notifications_List::OnThink()
 		return;
 	}
 
+	m_iLastTimerUpdate = iNow;
+
+	m_pFiltersButton->SetEnabled( false ); // temp
+
 	if ( rd_notification_debug_fake.GetBool() )
 	{
 		iNow = 1706803456;
@@ -271,13 +319,7 @@ void CRD_VGUI_Notifications_List::OnCommand( const char *command )
 		{
 			if ( !m_pFiltersPopOut )
 			{
-				vgui::Panel *pFrame = this;
-				while ( !dynamic_cast< vgui::Frame * >( pFrame ) && pFrame )
-				{
-					pFrame = pFrame->GetParent();
-				}
-
-				m_pFiltersPopOut = new CRD_VGUI_Notifications_Filters( pFrame, "Filters" );
+				m_pFiltersPopOut = new CRD_VGUI_Notifications_Filters( GetParentFrame( this ), "Filters" );
 			}
 
 			m_pFiltersPopOut->SetVisible( true );
@@ -291,9 +333,9 @@ void CRD_VGUI_Notifications_List::OnCommand( const char *command )
 
 void CRD_VGUI_Notifications_List::ApplySchemeSettings( vgui::IScheme *pScheme )
 {
-	BaseClass::ApplySchemeSettings( pScheme );
-
 	LoadControlSettings( "Resource/UI/CRD_VGUI_Notifications_List.res" );
+
+	BaseClass::ApplySchemeSettings( pScheme );
 
 	UpdateNotifications();
 }
@@ -306,44 +348,51 @@ CRD_VGUI_Notifications_List_Item::CRD_VGUI_Notifications_List_Item( vgui::Panel 
 	m_pNotificationText->SetMouseInputEnabled( false );
 	m_pNotificationText->SetCursor( vgui::dc_arrow );
 	m_pLblAge = new vgui::Label( this, "LblAge", L"" );
+	m_pLblAge->SetMouseInputEnabled( false );
 	m_pLblExpires = new vgui::Label( this, "LblExpires", L"" );
+	m_pLblExpires->SetMouseInputEnabled( false );
 	m_pDetailsPopOut = NULL;
 	m_Notification = *pNotification;
 	m_iExpectedOrder = -1;
-	m_bOverMouse = false;
-	m_bOverKeyboard = false;
 	m_hFontBold = vgui::INVALID_FONT;
 	m_hFontNormal = vgui::INVALID_FONT;
 }
 
+CRD_VGUI_Notifications_List_Item::~CRD_VGUI_Notifications_List_Item()
+{
+	if ( m_pDetailsPopOut )
+	{
+		m_pDetailsPopOut->MarkForDeletion();
+		m_pDetailsPopOut = NULL;
+	}
+}
+
 void CRD_VGUI_Notifications_List_Item::InitFromNotification()
 {
-	if ( m_hFontBold == vgui::INVALID_FONT )
-	{
-		vgui::IScheme *pScheme = vgui::scheme()->GetIScheme( GetScheme() );
-		m_hFontBold = pScheme->GetFont( "DefaultTextBold", IsProportional() );
-		m_hFontNormal = pScheme->GetFont( "Default", IsProportional() );
-	}
-
 	m_pNotificationText->SetText( L"" );
 	m_pNotificationText->InsertFontChange( m_hFontBold );
 	m_pNotificationText->InsertColorChange( m_TitleColor );
 	m_pNotificationText->InsertString( m_Notification.Title );
-	m_pNotificationText->InsertString( L"  " );
+	m_pNotificationText->InsertString( L"\n" );
 	m_pNotificationText->InsertFontChange( m_hFontNormal );
 	m_pNotificationText->InsertColorChange( m_DescriptionColor );
 	m_pNotificationText->InsertString( m_Notification.Description );
 
-	DebuggerBreakIfDebugging(); // TODO: shade based on m_Notification.Seen
+	UpdateBackgroundColor();
 
 	InvalidateLayout();
+
+	if ( m_pDetailsPopOut )
+	{
+		m_pDetailsPopOut->InitFromNotification();
+	}
 }
 
 void CRD_VGUI_Notifications_List_Item::UpdateTimers( int64_t iNow )
 {
 	wchar_t wszTimer[256];
 
-	if ( m_Notification.Starts < iNow )
+	if ( m_Notification.Starts > iNow )
 	{
 		m_pLblAge->SetVisible( false );
 	}
@@ -417,6 +466,22 @@ void CRD_VGUI_Notifications_List_Item::UpdateTimers( int64_t iNow )
 	}
 }
 
+void CRD_VGUI_Notifications_List_Item::UpdateBackgroundColor( int isFocused )
+{
+	if ( isFocused == -1 ? HasFocus() : isFocused )
+	{
+		SetBgColor( m_BackgroundColorHover );
+	}
+	else if ( m_Notification.Seen == HoIAFNotification_t::SEEN_VIEWED )
+	{
+		SetBgColor( m_BackgroundColorFresh );
+	}
+	else
+	{
+		SetBgColor( m_BackgroundColorViewed );
+	}
+}
+
 void CRD_VGUI_Notifications_List_Item::SetSeenAtLeast(int iSeen)
 {
 	if ( rd_notification_debug_fake.GetBool() )
@@ -438,54 +503,44 @@ void CRD_VGUI_Notifications_List_Item::OnClicked()
 
 void CRD_VGUI_Notifications_List_Item::OnCursorEntered()
 {
-	SetSeenAtLeast( HoIAFNotification_t::SEEN_HOVERED );
-
-	m_bOverMouse = true;
-
-	if ( m_pDetailsPopOut )
-	{
-		m_pDetailsPopOut->SetVisible( true );
-	}
-
 	BaseClass::OnCursorEntered();
-}
 
-void CRD_VGUI_Notifications_List_Item::OnCursorExited()
-{
-	m_bOverMouse = false;
-
-	if ( m_pDetailsPopOut )
-	{
-		m_pDetailsPopOut->SetVisible( m_bOverKeyboard );
-	}
-
-	BaseClass::OnCursorExited();
+	GetParent()->NavigateToChild( this );
 }
 
 void CRD_VGUI_Notifications_List_Item::NavigateTo()
 {
-	SetSeenAtLeast( HoIAFNotification_t::SEEN_HOVERED );
+	BaseClass::NavigateTo();
 
-	m_bOverKeyboard = true;
+	RequestFocus();
+}
+
+void CRD_VGUI_Notifications_List_Item::OnSetFocus()
+{
+	BaseClass::OnSetFocus();
+
+	BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_FOCUS );
+
+	SetSeenAtLeast( HoIAFNotification_t::SEEN_HOVERED );
 
 	if ( m_pDetailsPopOut )
 	{
 		m_pDetailsPopOut->SetVisible( true );
 	}
 
-	BaseClass::NavigateTo();
+	UpdateBackgroundColor( true );
 }
 
-void CRD_VGUI_Notifications_List_Item::NavigateFrom()
+void CRD_VGUI_Notifications_List_Item::OnKillFocus()
 {
-	m_bOverKeyboard = false;
+	BaseClass::OnKillFocus();
+
+	UpdateBackgroundColor( false );
 
 	if ( m_pDetailsPopOut )
 	{
-		m_pDetailsPopOut->SetVisible( m_bOverMouse );
+		m_pDetailsPopOut->SetVisible( false );
 	}
-
-	BaseClass::NavigateFrom();
 }
 
 void CRD_VGUI_Notifications_List_Item::PerformLayout()
@@ -504,8 +559,7 @@ void CRD_VGUI_Notifications_List_Item::ApplySchemeSettings( vgui::IScheme *pSche
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
-	m_hFontBold = pScheme->GetFont( "DefaultTextBold", IsProportional() );
-	m_hFontNormal = pScheme->GetFont( "Default", IsProportional() );
+	InitFromNotification();
 }
 
 CRD_VGUI_Notifications_List_Item_Inventory::CRD_VGUI_Notifications_List_Item_Inventory( vgui::Panel *parent, const char *panelName, HoIAFNotification_t *pNotification ) :
@@ -531,7 +585,7 @@ void CRD_VGUI_Notifications_List_Item_Inventory::InitFromNotification()
 	m_pNotificationText->InsertFontChange( m_hFontBold );
 	m_pNotificationText->InsertColorChange( pDef->HasBorder ? pDef->NameColor : m_TitleColor );
 	m_pNotificationText->InsertString( pDef->Name );
-	m_pNotificationText->InsertString( L"  " );
+	m_pNotificationText->InsertString( L"\n" );
 	m_pNotificationText->InsertFontChange( m_hFontNormal );
 	pItem->FormatDescription( m_pNotificationText, true, m_DescriptionColor );
 	m_pNotificationText->InsertString( m_Notification.Description );
@@ -551,14 +605,15 @@ void CRD_VGUI_Notifications_List_Item_Inventory::SetSeen( int iSeen )
 		return;
 	}
 
-	DebuggerBreakIfDebugging(); // TODO
+	ReactiveDropInventory::QueueSetNotificationSeen( m_Notification.ItemID, iSeen );
+	m_Notification.Seen = ( HoIAFNotification_t::Seen_t )iSeen;
 }
 
 void CRD_VGUI_Notifications_List_Item_Inventory::ApplySchemeSettings( vgui::IScheme *pScheme )
 {
-	BaseClass::ApplySchemeSettings( pScheme );
-
 	LoadControlSettings( "Resource/UI/CRD_VGUI_Notifications_List_Item_Inventory.res" );
+
+	BaseClass::ApplySchemeSettings( pScheme );
 }
 
 CRD_VGUI_Notifications_List_Item_HoIAF_Bounty::CRD_VGUI_Notifications_List_Item_HoIAF_Bounty( vgui::Panel *parent, const char *panelName, HoIAFNotification_t *pNotification ) :
@@ -569,17 +624,15 @@ CRD_VGUI_Notifications_List_Item_HoIAF_Bounty::CRD_VGUI_Notifications_List_Item_
 	for ( int i = 0; i < MAX_MISSIONS_PER_BOUNTY; i++ )
 	{
 		m_pImgCompleted[i] = new vgui::ImagePanel( this, VarArgs( "ImgCompleted%d", i ) );
+		m_pImgCompleted[i]->SetMouseInputEnabled( false );
 		m_pImgMissionIcon[i] = new vgui::ImagePanel( this, VarArgs( "ImgMissionIcon%d", i ) );
+		m_pImgMissionIcon[i]->SetMouseInputEnabled( false );
 		m_pLblMissionPoints[i] = new vgui::Label( this, VarArgs( "LblMissionPoints%d", i ), L"" );
+		m_pLblMissionPoints[i]->SetMouseInputEnabled( false );
 	}
 
-	vgui::Panel *pFrame = this;
-	while ( !dynamic_cast< vgui::Frame * >( pFrame ) && pFrame )
-	{
-		pFrame = pFrame->GetParent();
-	}
-
-	m_pDetailsPopOut = new CRD_VGUI_Notifications_Details_HoIAF_Bounty( pFrame, "Details" );
+	m_pDetailsPopOut = new CRD_VGUI_Notifications_Details_HoIAF_Bounty( this, "Details" );
+	m_pDetailsPopOut->SetMouseInputEnabled( false );
 }
 
 void CRD_VGUI_Notifications_List_Item_HoIAF_Bounty::InitFromNotification()
@@ -591,7 +644,7 @@ void CRD_VGUI_Notifications_List_Item_HoIAF_Bounty::InitFromNotification()
 		if ( m_Notification.BountyMissions[i].Claimed )
 		{
 			m_pImgCompleted[i]->SetVisible( true );
-			m_pLblMissionPoints[i]->SetAlpha( 192 );
+			m_pLblMissionPoints[i]->SetAlpha( 64 );
 		}
 		else
 		{
@@ -621,18 +674,6 @@ void CRD_VGUI_Notifications_List_Item_HoIAF_Bounty::InitFromNotification()
 		m_pImgMissionIcon[i]->SetVisible( false );
 		m_pLblMissionPoints[i]->SetVisible( false );
 	}
-
-	CRD_VGUI_Notifications_Details_HoIAF_Bounty *pDetails = assert_cast< CRD_VGUI_Notifications_Details_HoIAF_Bounty * >( m_pDetailsPopOut );
-
-	FOR_EACH_VEC( m_Notification.BountyMissions, i )
-	{
-		pDetails->SetBountyMission( i, &m_Notification.BountyMissions[i] );
-	}
-
-	for ( int i = m_Notification.BountyMissions.Count(); i < MAX_MISSIONS_PER_BOUNTY; i++ )
-	{
-		pDetails->SetBountyMission( i, NULL );
-	}
 }
 
 bool CRD_VGUI_Notifications_List_Item_HoIAF_Bounty::MatchesNotification( const HoIAFNotification_t *pNotification ) const
@@ -659,43 +700,65 @@ void CRD_VGUI_Notifications_List_Item_HoIAF_Bounty::SetSeen( int iSeen )
 
 void CRD_VGUI_Notifications_List_Item_HoIAF_Bounty::ApplySchemeSettings( vgui::IScheme *pScheme )
 {
-	BaseClass::ApplySchemeSettings( pScheme );
-
 	LoadControlSettings( "Resource/UI/CRD_VGUI_Notifications_List_Item_HoIAF_Bounty.res" );
+
+	BaseClass::ApplySchemeSettings( pScheme );
 }
 
-CRD_VGUI_Notifications_Details::CRD_VGUI_Notifications_Details( vgui::Panel *parent, const char *panelName )
-	: BaseClass{ parent, panelName }
+CRD_VGUI_Notifications_Details::CRD_VGUI_Notifications_Details( CRD_VGUI_Notifications_List_Item *listItem, const char *panelName )
+	: BaseClass{ GetParentFrame( listItem ), panelName }
+{
+	m_hListItem = listItem;
+}
+
+void CRD_VGUI_Notifications_Details::OnThink()
+{
+	BaseClass::OnThink();
+
+	if ( !m_hListItem || !m_hListItem->HasFocus() )
+	{
+		SetVisible( false );
+	}
+}
+
+CRD_VGUI_Notifications_Details_HoIAF_Bounty::CRD_VGUI_Notifications_Details_HoIAF_Bounty( CRD_VGUI_Notifications_List_Item *listItem, const char *panelName )
+	: BaseClass{ listItem, panelName }
 {
 }
 
-CRD_VGUI_Notifications_Details_HoIAF_Bounty::CRD_VGUI_Notifications_Details_HoIAF_Bounty( vgui::Panel *parent, const char *panelName )
-	: BaseClass{ parent, panelName }
+void CRD_VGUI_Notifications_Details_HoIAF_Bounty::InitFromNotification()
 {
-}
-
-void CRD_VGUI_Notifications_Details_HoIAF_Bounty::SetBountyMission( int index, const HoIAFNotification_t::BountyMission_t *pMission )
-{
-	Assert( index >= 0 && index < CRD_VGUI_Notifications_List_Item_HoIAF_Bounty::MAX_MISSIONS_PER_BOUNTY );
+	const CCopyableUtlVector<HoIAFNotification_t::BountyMission_t> &missions = m_hListItem->m_Notification.BountyMissions;
 
 	DebuggerBreakIfDebugging(); // TODO
+
+	InvalidateLayout();
 }
 
 void CRD_VGUI_Notifications_Details_HoIAF_Bounty::ApplySchemeSettings( vgui::IScheme *pScheme )
 {
-	BaseClass::ApplySchemeSettings( pScheme );
-
 	LoadControlSettings( "Resource/UI/CRD_VGUI_Notifications_Details_HoIAF_Bounty.res" );
+
+	BaseClass::ApplySchemeSettings( pScheme );
 }
 
 CRD_VGUI_Notifications_Filters::CRD_VGUI_Notifications_Filters( vgui::Panel *parent, const char *panelName )
 	: BaseClass{ parent, panelName }
 {
+	m_pSettingCrafting = new CRD_VGUI_Option( this, "SettingCrafting", "#rd_notification_filter_crafting_title", CRD_VGUI_Option::MODE_CHECKBOX );
+	m_pSettingCrafting->LinkToConVar( "rd_notification_filter_crafting", false );
+	m_pSettingCrafting->SetDefaultHint( "#rd_notification_filter_crafting_desc" );
+	m_pSettingHoIAF = new CRD_VGUI_Option( this, "SettingHoIAF", "#rd_notification_filter_hoiaf_title", CRD_VGUI_Option::MODE_CHECKBOX );
+	m_pSettingHoIAF->LinkToConVar( "rd_notification_filter_hoiaf", false );
+	m_pSettingHoIAF->SetDefaultHint( "#rd_notification_filter_hoiaf_desc" );
+	m_pSettingReports = new CRD_VGUI_Option( this, "SettingReports", "#rd_notification_filter_reports_title", CRD_VGUI_Option::MODE_CHECKBOX );
+	m_pSettingReports->LinkToConVar( "rd_notification_filter_reports", false );
+	m_pSettingReports->SetDefaultHint( "#rd_notification_filter_reports_desc" );
 }
 
 void CRD_VGUI_Notifications_Filters::ApplySchemeSettings( vgui::IScheme *pScheme )
 {
-	BaseClass::ApplySchemeSettings( pScheme );
-
 	LoadControlSettings( "Resource/UI/CRD_VGUI_Notifications_Filters.res" );
+
+	BaseClass::ApplySchemeSettings( pScheme );
 }
