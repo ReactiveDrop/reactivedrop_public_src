@@ -65,6 +65,7 @@ void CRD_VGUI_Main_Menu_Top_Bar::ApplySchemeSettings( vgui::IScheme *pScheme )
 	m_pBtnLogo->SetNavDown( this );
 	for ( int i = 0; i < NELEMS( m_pTopButton ); i++ )
 		m_pTopButton[i]->SetNavDown( this );
+	m_pBtnNotifications->SetNavDown( this );
 	m_pBtnQuit->SetNavDown( this );
 
 	SetNavUp( m_pBtnLogo );
@@ -178,8 +179,10 @@ void CRD_VGUI_Main_Menu_Top_Bar::PaintBackground()
 	HUD_SHEET_DRAW_RECT_ALPHA( 0, 0, p1, t, MainMenuAdditive, UV_top_bar_left_profile_glow, m_iLeftGlow );
 	HUD_SHEET_DRAW_RECT_ALPHA( p2, 0, w, t, MainMenuAdditive, UV_top_bar_right_hoiaf_glow, m_iRightGlow );
 
+	bool bNotificationsFocus = m_pBtnNotifications->HasFocus() || ( m_pBtnNotifications->m_hListPopOut && m_pBtnNotifications->m_hListPopOut->IsVisible() );
 	HUD_SHEET_DRAW_RECT_ALPHA( 0, 0, p1, t, MainMenuAdditive, UV_top_bar_left_settings_glow, m_GlowSettings.Update( m_pBtnSettings->GetCurrentState( true ) == BaseModHybridButton::Focus ) );
 	HUD_SHEET_DRAW_RECT_ALPHA( 0, 0, p1, t, MainMenuAdditive, UV_top_bar_left_logo_glow, m_GlowLogo.Update( m_pBtnLogo->GetCurrentState( true ) == BaseModHybridButton::Focus ) );
+	HUD_SHEET_DRAW_RECT_ALPHA( p2, 0, w, t, MainMenuAdditive, UV_top_bar_right_notifications_glow, m_GlowNotifications.Update( bNotificationsFocus ) );
 	HUD_SHEET_DRAW_RECT_ALPHA( p2, 0, w, t, MainMenuAdditive, UV_top_bar_right_quit_glow, m_GlowQuit.Update( m_pBtnQuit->GetCurrentState( true ) == BaseModHybridButton::Focus ) );
 
 	for ( int i = 0; i < NELEMS( m_pTopButton ); i++ )
@@ -201,6 +204,15 @@ void CRD_VGUI_Main_Menu_Top_Bar::PaintBackground()
 	for ( int i = 0; i < NELEMS( m_pTopButton ); i++ )
 	{
 		HUD_SHEET_DRAW_PANEL( m_pTopButton[i], MainMenuSheet, UV_top_button );
+	}
+	if ( m_pBtnNotifications->m_pLblCounter->IsVisible() )
+	{
+		HUD_SHEET_DRAW_PANEL( m_pBtnNotifications, MainMenuSheet, UV_notifications );
+	}
+	else
+	{
+		HUD_SHEET_DRAW_PANEL( m_pBtnNotifications, MainMenuSheet, UV_notifications_dull );
+		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnNotifications, MainMenuSheet, UV_notifications, m_GlowNotifications.Get() );
 	}
 	HUD_SHEET_DRAW_PANEL( m_pBtnQuit, MainMenuSheet, UV_quit );
 
@@ -240,7 +252,11 @@ void CRD_VGUI_Main_Menu_Top_Bar::PaintBackground()
 			HUD_SHEET_DRAW_PANEL_ALPHA( m_pTopButton[i], MainMenuAdditive, UV_top_button_right_hover, 255 );
 	}
 
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnNotifications, MainMenuAdditive, UV_notifications_hover, m_GlowNotifications.Get() );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnNotifications, MainMenuAdditive, UV_notifications_quit_hover, m_GlowQuit.Get() );
+
 	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnQuit, MainMenuAdditive, UV_quit_hover, m_GlowQuit.Get() );
+	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnQuit, MainMenuAdditive, UV_quit_notifications_hover, m_GlowNotifications.Get() );
 	if ( pActiveButton == m_pBtnQuit )
 		HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnQuit, MainMenuAdditive, UV_quit_hover, 255 );
 }

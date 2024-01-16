@@ -7,6 +7,7 @@
 #include "asw_util_shared.h"
 #include "rd_inventory_shared.h"
 #include "rd_missions_shared.h"
+#include <vgui/IInput.h>
 #include <vgui/ILocalize.h>
 #include <vgui/ISurface.h>
 #include "asw_medal_store.h"
@@ -49,7 +50,7 @@ CRD_VGUI_Notifications_Button::CRD_VGUI_Notifications_Button( vgui::Panel *paren
 	SetProportional( true );
 
 	m_pLblCounter = new vgui::Label( this, "LblCounter", L"" );
-	m_pListPopOut = NULL;
+	m_hListPopOut = NULL;
 
 	g_NotificationsButtons.AddToTail( this );
 }
@@ -58,10 +59,10 @@ CRD_VGUI_Notifications_Button::~CRD_VGUI_Notifications_Button()
 {
 	g_NotificationsButtons.FindAndFastRemove( this );
 
-	if ( m_pListPopOut )
+	if ( m_hListPopOut )
 	{
-		m_pListPopOut->MarkForDeletion();
-		m_pListPopOut = NULL;
+		m_hListPopOut->MarkForDeletion();
+		m_hListPopOut = NULL;
 	}
 }
 
@@ -91,25 +92,32 @@ void CRD_VGUI_Notifications_Button::OnCommand( const char *command )
 {
 	if ( FStrEq( command, "NotificationsButtonClicked" ) )
 	{
-		if ( m_pListPopOut && m_pListPopOut->IsVisible() )
+		BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_CLICK );
+
+		if ( m_hListPopOut && m_hListPopOut->IsVisible() )
 		{
 			ReactiveDropInventory::CommitNotificationSeen();
 
-			m_pListPopOut->SetVisible( false );
+			m_hListPopOut->SetVisible( false );
+
+			if ( m_hListPopOut->m_hFiltersPopOut )
+			{
+				m_hListPopOut->m_hFiltersPopOut->SetVisible( false );
+			}
 		}
 		else
 		{
-			if ( !m_pListPopOut )
+			if ( !m_hListPopOut )
 			{
-				m_pListPopOut = new CRD_VGUI_Notifications_List( this, "List" );
+				m_hListPopOut = new CRD_VGUI_Notifications_List( this, "List" );
 			}
 
-			m_pListPopOut->SetVisible( true );
-			m_pListPopOut->MoveToFront();
+			m_hListPopOut->SetVisible( true );
+			m_hListPopOut->MoveToFront();
 
-			for ( int i = 0; i < m_pListPopOut->m_pList->GetPanelItemCount(); i++ )
+			for ( int i = 0; i < m_hListPopOut->m_pList->GetPanelItemCount(); i++ )
 			{
-				CRD_VGUI_Notifications_List_Item *pItem = assert_cast< CRD_VGUI_Notifications_List_Item * >( m_pListPopOut->m_pList->GetPanelItem( i ) );
+				CRD_VGUI_Notifications_List_Item *pItem = assert_cast< CRD_VGUI_Notifications_List_Item * >( m_hListPopOut->m_pList->GetPanelItem( i ) );
 				pItem->SetSeenAtLeast( HoIAFNotification_t::SEEN_VIEWED );
 			}
 		}
@@ -120,11 +128,57 @@ void CRD_VGUI_Notifications_Button::OnCommand( const char *command )
 	}
 }
 
-void CRD_VGUI_Notifications_Button::PaintBackground()
+void CRD_VGUI_Notifications_Button::OnThink()
 {
-	vgui::surface()->DrawSetTexture( m_iButtonIcon );
-	vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
-	vgui::surface()->DrawTexturedRect( 0, 0, GetWide(), GetTall() );
+	BaseClass::OnThink();
+
+	if ( m_hListPopOut && m_hListPopOut->IsVisible() )
+	{
+		bool bAnyFocus = HasFocus() || m_hListPopOut->HasFocus() || m_hListPopOut->m_pList->HasFocus() || m_hListPopOut->m_pFiltersButton->HasFocus();
+
+		if ( !bAnyFocus && m_hListPopOut->m_pList->GetPanelItemCount() )
+		{
+			for ( int i = 0; i < m_hListPopOut->m_pList->GetPanelItemCount(); i++ )
+			{
+				if ( m_hListPopOut->m_pList->GetPanelItem( i )->HasFocus() )
+				{
+					bAnyFocus = true;
+					break;
+				}
+			}
+		}
+
+		if ( !bAnyFocus && m_hListPopOut->m_hFiltersPopOut && m_hListPopOut->m_hFiltersPopOut->IsVisible() )
+		{
+			bAnyFocus = m_hListPopOut->m_hFiltersPopOut->HasFocus();
+
+			for ( int i = 0; i < m_hListPopOut->m_hFiltersPopOut->GetChildCount(); i++ )
+			{
+				CRD_VGUI_Option *pOption = dynamic_cast< CRD_VGUI_Option * >( m_hListPopOut->m_hFiltersPopOut->GetChild( i ) );
+				if ( !pOption )
+				{
+					continue;
+				}
+
+				if ( pOption->HasFocus() )
+				{
+					bAnyFocus = true;
+					break;
+				}
+			}
+		}
+
+		if ( !bAnyFocus )
+		{
+			// If focus has shifted outside of the notifications menu, close the notifications menu.
+			m_hListPopOut->SetVisible( false );
+
+			if ( m_hListPopOut->m_hFiltersPopOut )
+			{
+				m_hListPopOut->m_hFiltersPopOut->SetVisible( false );
+			}
+		}
+	}
 }
 
 void CRD_VGUI_Notifications_Button::NavigateTo()
@@ -138,12 +192,13 @@ void CRD_VGUI_Notifications_Button::ApplySchemeSettings( vgui::IScheme *pScheme 
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
+	SetPaintBackgroundEnabled( false );
 	m_pLblCounter->SetMouseInputEnabled( false );
 	m_pLblCounter->SetFgColor( m_CounterFgColor );
 	m_pLblCounter->SetPaintBackgroundEnabled( true );
 	m_pLblCounter->SetPaintBackgroundType( 2 );
 	m_pLblCounter->SetContentAlignment( vgui::Label::a_center );
-	m_pLblCounter->SetFont( pScheme->GetFont( "DefaultSmall", IsProportional() ) );
+	m_pLblCounter->SetFont( pScheme->GetFont( "DefaultVerySmall", IsProportional() ) );
 
 	UpdateNotifications();
 }
@@ -153,8 +208,9 @@ void CRD_VGUI_Notifications_Button::PerformLayout()
 	BaseClass::PerformLayout();
 
 	int wide, tall;
+	m_pLblCounter->OnThink();
 	m_pLblCounter->GetContentSize( wide, tall );
-	m_pLblCounter->SetBounds( GetWide() - YRES( 11 ) - wide, YRES( 2 ), wide + YRES( 9 ), tall + YRES( 1 ) );
+	m_pLblCounter->SetBounds( GetWide() - YRES( 10 ) - wide, GetTall() - tall - YRES( 2 ), wide + YRES( 9 ), tall + YRES( 1 ) );
 	m_pLblCounter->SetZPos( -1 );
 }
 
@@ -166,7 +222,7 @@ CRD_VGUI_Notifications_List::CRD_VGUI_Notifications_List( vgui::Panel *parent, c
 	m_pList->SetScrollBarVisible( true );
 	m_pLblNone = new vgui::Label( this, "LblNone", "#rd_notification_none" );
 	m_pFiltersButton = new CNB_Button( this, "BtnFilters", "#rd_notification_filter_title", this, "NotificationsFiltersClicked" );
-	m_pFiltersPopOut = NULL;
+	m_hFiltersPopOut = NULL;
 	m_iLastTimerUpdate = -1;
 
 	g_NotificationsLists.AddToTail( this );
@@ -180,10 +236,10 @@ CRD_VGUI_Notifications_List::~CRD_VGUI_Notifications_List()
 
 	ReactiveDropInventory::CommitNotificationSeen();
 
-	if ( m_pFiltersPopOut )
+	if ( m_hFiltersPopOut )
 	{
-		m_pFiltersPopOut->MarkForDeletion();
-		m_pFiltersPopOut = NULL;
+		m_hFiltersPopOut->MarkForDeletion();
+		m_hFiltersPopOut = NULL;
 	}
 }
 
@@ -293,8 +349,6 @@ void CRD_VGUI_Notifications_List::OnThink()
 
 	m_iLastTimerUpdate = iNow;
 
-	m_pFiltersButton->SetEnabled( false ); // temp
-
 	if ( rd_notification_debug_fake.GetBool() )
 	{
 		iNow = 1706803456;
@@ -311,18 +365,18 @@ void CRD_VGUI_Notifications_List::OnCommand( const char *command )
 {
 	if ( FStrEq( command, "NotificationsFiltersClicked" ) )
 	{
-		if ( m_pFiltersPopOut && m_pFiltersPopOut->IsVisible() )
+		if ( m_hFiltersPopOut && m_hFiltersPopOut->IsVisible() )
 		{
-			m_pFiltersPopOut->SetVisible( false );
+			m_hFiltersPopOut->SetVisible( false );
 		}
 		else
 		{
-			if ( !m_pFiltersPopOut )
+			if ( !m_hFiltersPopOut )
 			{
-				m_pFiltersPopOut = new CRD_VGUI_Notifications_Filters( GetParentFrame( this ), "Filters" );
+				m_hFiltersPopOut = new CRD_VGUI_Notifications_Filters( GetParentFrame( this ), "Filters" );
 			}
 
-			m_pFiltersPopOut->SetVisible( true );
+			m_hFiltersPopOut->SetVisible( true );
 		}
 	}
 	else
@@ -351,7 +405,7 @@ CRD_VGUI_Notifications_List_Item::CRD_VGUI_Notifications_List_Item( vgui::Panel 
 	m_pLblAge->SetMouseInputEnabled( false );
 	m_pLblExpires = new vgui::Label( this, "LblExpires", L"" );
 	m_pLblExpires->SetMouseInputEnabled( false );
-	m_pDetailsPopOut = NULL;
+	m_hDetailsPopOut = NULL;
 	m_Notification = *pNotification;
 	m_iExpectedOrder = -1;
 	m_hFontBold = vgui::INVALID_FONT;
@@ -360,10 +414,10 @@ CRD_VGUI_Notifications_List_Item::CRD_VGUI_Notifications_List_Item( vgui::Panel 
 
 CRD_VGUI_Notifications_List_Item::~CRD_VGUI_Notifications_List_Item()
 {
-	if ( m_pDetailsPopOut )
+	if ( m_hDetailsPopOut )
 	{
-		m_pDetailsPopOut->MarkForDeletion();
-		m_pDetailsPopOut = NULL;
+		m_hDetailsPopOut->MarkForDeletion();
+		m_hDetailsPopOut = NULL;
 	}
 }
 
@@ -382,9 +436,9 @@ void CRD_VGUI_Notifications_List_Item::InitFromNotification()
 
 	InvalidateLayout();
 
-	if ( m_pDetailsPopOut )
+	if ( m_hDetailsPopOut )
 	{
-		m_pDetailsPopOut->InitFromNotification();
+		m_hDetailsPopOut->InitFromNotification();
 	}
 }
 
@@ -523,9 +577,9 @@ void CRD_VGUI_Notifications_List_Item::OnSetFocus()
 
 	SetSeenAtLeast( HoIAFNotification_t::SEEN_HOVERED );
 
-	if ( m_pDetailsPopOut )
+	if ( m_hDetailsPopOut )
 	{
-		m_pDetailsPopOut->SetVisible( true );
+		m_hDetailsPopOut->SetVisible( true );
 	}
 
 	UpdateBackgroundColor( true );
@@ -537,9 +591,9 @@ void CRD_VGUI_Notifications_List_Item::OnKillFocus()
 
 	UpdateBackgroundColor( false );
 
-	if ( m_pDetailsPopOut )
+	if ( m_hDetailsPopOut )
 	{
-		m_pDetailsPopOut->SetVisible( false );
+		m_hDetailsPopOut->SetVisible( false );
 	}
 }
 
@@ -589,8 +643,6 @@ void CRD_VGUI_Notifications_List_Item_Inventory::InitFromNotification()
 	m_pNotificationText->InsertFontChange( m_hFontNormal );
 	pItem->FormatDescription( m_pNotificationText, true, m_DescriptionColor );
 	m_pNotificationText->InsertString( m_Notification.Description );
-
-	InvalidateLayout();
 }
 
 bool CRD_VGUI_Notifications_List_Item_Inventory::MatchesNotification( const HoIAFNotification_t *pNotification ) const
@@ -631,8 +683,8 @@ CRD_VGUI_Notifications_List_Item_HoIAF_Bounty::CRD_VGUI_Notifications_List_Item_
 		m_pLblMissionPoints[i]->SetMouseInputEnabled( false );
 	}
 
-	m_pDetailsPopOut = new CRD_VGUI_Notifications_Details_HoIAF_Bounty( this, "Details" );
-	m_pDetailsPopOut->SetMouseInputEnabled( false );
+	m_hDetailsPopOut = new CRD_VGUI_Notifications_Details_HoIAF_Bounty( this, "Details" );
+	m_hDetailsPopOut->SetMouseInputEnabled( false );
 }
 
 void CRD_VGUI_Notifications_List_Item_HoIAF_Bounty::InitFromNotification()

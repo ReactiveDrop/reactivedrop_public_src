@@ -45,6 +45,7 @@ public:
 	HUDGlowHelper_t m_GlowSettings;
 	HUDGlowHelper_t m_GlowLogo;
 	HUDGlowHelper_t m_GlowTopButton[6];
+	HUDGlowHelper_t m_GlowNotifications;
 	HUDGlowHelper_t m_GlowQuit;
 
 	uint8_t m_iLeftGlow;

@@ -1469,7 +1469,7 @@ void MainMenu::OnThink()
 		bool bWasMin = m_iInactiveHideMainMenu == 0;
 		bool bWasMax = m_iInactiveHideMainMenu == 65535;
 		bool bMenuActive = rd_main_menu_idle_timeout.GetFloat() <= 0 || Plat_FloatTime() - m_flLastActiveTime < rd_main_menu_idle_timeout.GetFloat();
-		if ( m_pTopBar->m_pBtnNotifications->m_pListPopOut && m_pTopBar->m_pBtnNotifications->m_pListPopOut->IsVisible() )
+		if ( m_pTopBar->m_pBtnNotifications->m_hListPopOut && m_pTopBar->m_pBtnNotifications->m_hListPopOut->IsVisible() )
 		{
 			bMenuActive = true;
 		}
@@ -1543,7 +1543,11 @@ void MainMenu::OnThink()
 	if ( g_hBriefingTooltip )
 		g_hBriefingTooltip->SetTooltipIgnoresCursor( false );
 
-	if ( m_iInactiveHideMainMenu == 65535 )
+	if ( m_pTopBar->m_pBtnNotifications->m_hListPopOut && m_pTopBar->m_pBtnNotifications->m_hListPopOut->IsVisible() )
+	{
+		// no tooltip if we have the notifications menu open
+	}
+	else if ( m_iInactiveHideMainMenu == 65535 )
 	{
 		MaybeShowTooltip( m_pTopBar->m_pBtnSettings, "#rd_main_menu_tip_settings_title", "#rd_main_menu_tip_settings", 0.0f, 1.0f, vgui::Label::a_northwest );
 		MaybeShowTooltip( m_pTopBar->m_pTopButton[CRD_VGUI_Main_Menu_Top_Bar::BTN_LOADOUTS], "#rd_main_menu_tip_loadout_title", "#rd_main_menu_tip_loadout", 0.5f, 1.0f, vgui::Label::a_north );
@@ -1554,6 +1558,7 @@ void MainMenu::OnThink()
 		MaybeShowTooltip( m_pTopBar->m_pTopButton[CRD_VGUI_Main_Menu_Top_Bar::BTN_SWARMOPEDIA], "#rd_main_menu_tip_swarmopedia_title", "#rd_main_menu_tip_swarmopedia", 0.5f, 1.0f, vgui::Label::a_north );
 		MaybeShowTooltip( m_pTopBar->m_pTopButton[CRD_VGUI_Main_Menu_Top_Bar::BTN_WORKSHOP], "#rd_main_menu_tip_workshop_title", "#rd_main_menu_tip_workshop", 0.5f, 1.0f, vgui::Label::a_north );
 		MaybeShowTooltip( m_pTopBar->m_pTopButton[CRD_VGUI_Main_Menu_Top_Bar::BTN_INVENTORY], "#rd_main_menu_tip_inventory_title", "#rd_main_menu_tip_inventory", 0.5f, 1.0f, vgui::Label::a_north );
+		MaybeShowTooltip( m_pTopBar->m_pBtnNotifications, "#rd_main_menu_tip_notifications_title", "#rd_main_menu_tip_notifications", 1.0f, 1.0f, vgui::Label::a_northeast );
 		MaybeShowTooltip( m_pTopBar->m_pBtnQuit, "#rd_main_menu_tip_quit_title", "#rd_main_menu_tip_quit", 1.0f, 1.0f, vgui::Label::a_northeast );
 #ifdef RD_7A_QUESTS
 		MaybeShowTooltip( m_pCommanderProfile, "#rd_main_menu_tip_commander_profile_title", "#rd_main_menu_tip_commander_profile", 1.0f, 0.5f, vgui::Label::a_west );

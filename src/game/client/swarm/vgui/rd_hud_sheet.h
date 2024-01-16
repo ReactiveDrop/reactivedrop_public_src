@@ -163,6 +163,8 @@ public:
 		DECLARE_HUD_SHEET_UV( top_button ),
 		DECLARE_HUD_SHEET_UV( update ),
 		DECLARE_HUD_SHEET_UV( workshop ),
+		DECLARE_HUD_SHEET_UV( notifications ),
+		DECLARE_HUD_SHEET_UV( notifications_dull ),
 	END_HUD_SHEET( MainMenuSheet );
 
 	// 2024 Main Menu Glows
@@ -231,6 +233,10 @@ public:
 		DECLARE_HUD_SHEET_UV( update_news_hover ),
 		DECLARE_HUD_SHEET_UV( workshop_hover ),
 		DECLARE_HUD_SHEET_UV( workshop_quick_join_hover ),
+		DECLARE_HUD_SHEET_UV( notifications_hover ),
+		DECLARE_HUD_SHEET_UV( notifications_quit_hover ),
+		DECLARE_HUD_SHEET_UV( quit_notifications_hover ),
+		DECLARE_HUD_SHEET_UV( top_bar_right_notifications_glow ),
 	END_HUD_SHEET( MainMenuAdditive );
 
 	// 2024 settings control icons

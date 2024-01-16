@@ -168,7 +168,7 @@
 	{
 		"ControlName"			"CRD_VGUI_Notifications_Button"
 		"fieldName"				"BtnNotifications"
-		"xpos"					"r72"
+		"xpos"					"r60"
 		"ypos"					"0"
 		"wide"					"24"
 		"tall"					"24"

@@ -8,7 +8,7 @@
 		"ypos"				"28"
 		"zpos"				"100"
 		"wide"				"210"
-		"tall"				"320"
+		"tall"				"340"
 	}
 
 	"Background1"
@@ -19,7 +19,7 @@
 		"ypos"				"1"
 		"zpos"				"-1"
 		"wide"				"208"
-		"tall"				"318"
+		"tall"				"338"
 		"paintbackgroundtype"	"2"
 		"bgcolor_override"	"28 34 40 255"
 	}
@@ -32,7 +32,7 @@
 		"ypos"				"0"
 		"zpos"				"-2"
 		"wide"				"210"
-		"tall"				"320"
+		"tall"				"340"
 		"paintbackgroundtype"	"2"
 		"bgcolor_override"	"70 80 90 255"
 	}
@@ -42,7 +42,7 @@
 		"ControlName"		"CNB_Button"
 		"fieldName"			"BtnFilters"
 		"xpos"				"0"
-		"ypos"				"293"
+		"ypos"				"313"
 		"wide"				"210"
 		"tall"				"27"
 		"font"				"DefaultMedium"
@@ -56,10 +56,10 @@
 	{
 		"ControlName"		"Label"
 		"fieldName"			"LblNone"
-		"xpos"				"5"
-		"ypos"				"5"
-		"wide"				"200"
-		"tall"				"277"
+		"xpos"				"0"
+		"ypos"				"0"
+		"wide"				"210"
+		"tall"				"312"
 		"font"				"DefaultMedium"
 		"labelText"			"#rd_notification_none"
 		"textAlignment"		"center"
@@ -75,7 +75,7 @@
 		"xpos"				"0"
 		"ypos"				"0"
 		"wide"				"210"
-		"tall"				"287"
+		"tall"				"312"
 		"NoDrawPanel"		"1"
 	}
 }

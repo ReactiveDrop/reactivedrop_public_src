@@ -57,9 +57,11 @@
 		"pin_to_sibling"	"LblExpires"
 		"pin_corner_to_sibling"	"0"
 		"pin_to_sibling_corner"	"2"
+		"zpos"				"1"
 		"wide"				"20"
 		"tall"				"15"
 		"scaleImage"		"1"
+		"image"				"swarm/bounty_complete_overlay"
 	}
 
 	"ImgMissionIcon0"
@@ -95,9 +97,11 @@
 		"pin_to_sibling"	"ImgMissionIcon0"
 		"pin_corner_to_sibling"	"0"
 		"pin_to_sibling_corner"	"1"
+		"zpos"				"1"
 		"wide"				"20"
 		"tall"				"15"
 		"scaleImage"		"1"
+		"image"				"swarm/bounty_complete_overlay"
 	}
 
 	"ImgMissionIcon1"
@@ -133,9 +137,11 @@
 		"pin_to_sibling"	"ImgMissionIcon1"
 		"pin_corner_to_sibling"	"0"
 		"pin_to_sibling_corner"	"1"
+		"zpos"				"1"
 		"wide"				"20"
 		"tall"				"15"
 		"scaleImage"		"1"
+		"image"				"swarm/bounty_complete_overlay"
 	}
 
 	"ImgMissionIcon2"
@@ -171,9 +177,11 @@
 		"pin_to_sibling"	"ImgMissionIcon2"
 		"pin_corner_to_sibling"	"0"
 		"pin_to_sibling_corner"	"1"
+		"zpos"				"1"
 		"wide"				"20"
 		"tall"				"15"
 		"scaleImage"		"1"
+		"image"				"swarm/bounty_complete_overlay"
 	}
 
 	"ImgMissionIcon3"
@@ -209,9 +217,11 @@
 		"pin_to_sibling"	"ImgMissionIcon3"
 		"pin_corner_to_sibling"	"0"
 		"pin_to_sibling_corner"	"1"
+		"zpos"				"1"
 		"wide"				"20"
 		"tall"				"15"
 		"scaleImage"		"1"
+		"image"				"swarm/bounty_complete_overlay"
 	}
 
 	"ImgMissionIcon4"
@@ -247,9 +257,11 @@
 		"pin_to_sibling"	"ImgMissionIcon4"
 		"pin_corner_to_sibling"	"0"
 		"pin_to_sibling_corner"	"1"
+		"zpos"				"1"
 		"wide"				"20"
 		"tall"				"15"
 		"scaleImage"		"1"
+		"image"				"swarm/bounty_complete_overlay"
 	}
 
 	"ImgMissionIcon5"
@@ -285,9 +297,11 @@
 		"pin_to_sibling"	"ImgMissionIcon5"
 		"pin_corner_to_sibling"	"0"
 		"pin_to_sibling_corner"	"1"
+		"zpos"				"1"
 		"wide"				"20"
 		"tall"				"15"
 		"scaleImage"		"1"
+		"image"				"swarm/bounty_complete_overlay"
 	}
 
 	"ImgMissionIcon6"
@@ -323,9 +337,11 @@
 		"pin_to_sibling"	"ImgMissionIcon6"
 		"pin_corner_to_sibling"	"0"
 		"pin_to_sibling_corner"	"1"
+		"zpos"				"1"
 		"wide"				"20"
 		"tall"				"15"
 		"scaleImage"		"1"
+		"image"				"swarm/bounty_complete_overlay"
 	}
 
 	"ImgMissionIcon7"
@@ -361,9 +377,11 @@
 		"pin_to_sibling"	"ImgMissionIcon7"
 		"pin_corner_to_sibling"	"0"
 		"pin_to_sibling_corner"	"1"
+		"zpos"				"1"
 		"wide"				"20"
 		"tall"				"15"
 		"scaleImage"		"1"
+		"image"				"swarm/bounty_complete_overlay"
 	}
 
 	"ImgMissionIcon8"

@@ -34,18 +34,17 @@ public:
 
 	void UpdateNotifications();
 	void OnCommand( const char *command ) override;
-	void PaintBackground() override;
+	void OnThink() override;
 	void NavigateTo() override;
 	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 	void PerformLayout() override;
 
 	vgui::Label *m_pLblCounter;
-	CRD_VGUI_Notifications_List *m_pListPopOut;
+	vgui::DHANDLE<CRD_VGUI_Notifications_List> m_hListPopOut;
 
 	CPanelAnimationVar( Color, m_BoldCounterColor, "bold_counter_color", "224 64 32 255" );
 	CPanelAnimationVar( Color, m_MutedCounterColor, "muted_counter_color", "64 68 72 255" );
 	CPanelAnimationVar( Color, m_CounterFgColor, "counter_fg_color", "255 255 255 255" );
-	CPanelAnimationVarAliasType( int, m_iButtonIcon, "button_icon", "vgui/swarm/notification_button", "textureid" );
 };
 
 class CRD_VGUI_Notifications_List : public vgui::EditablePanel
@@ -65,7 +64,7 @@ public:
 	BaseModUI::GenericPanelList *m_pList;
 	vgui::Label *m_pLblNone;
 	CNB_Button *m_pFiltersButton;
-	CRD_VGUI_Notifications_Filters *m_pFiltersPopOut;
+	vgui::DHANDLE<CRD_VGUI_Notifications_Filters> m_hFiltersPopOut;
 	int64_t m_iLastTimerUpdate;
 };
 
@@ -93,7 +92,7 @@ public:
 	vgui::MultiFontRichText *m_pNotificationText;
 	vgui::Label *m_pLblAge;
 	vgui::Label *m_pLblExpires;
-	CRD_VGUI_Notifications_Details *m_pDetailsPopOut;
+	vgui::DHANDLE<CRD_VGUI_Notifications_Details> m_hDetailsPopOut;
 	HoIAFNotification_t m_Notification;
 	int m_iExpectedOrder;
 
