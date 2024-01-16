@@ -46,8 +46,6 @@
 		"rd_autogun_dmg_base" "10"
 		"rd_pistol_dmg_base" "35"
 		"rd_pistols_min_delay" "0.1"
-		"asw_skill_grenades_dmg_base" "800"
-		"asw_skill_grenades_dmg_step" "125"
 		"rd_deagle_dmg_base" "104"
 	}
 }
