@@ -49,6 +49,9 @@ namespace ReactiveDropMissions
 
 	static inline const RD_Campaign_t *GetCampaign( const char *name ) { return GetCampaign( GetCampaignIndex( name ) ); }
 	static inline const RD_Mission_t *GetMission( const char *name ) { return GetMission( GetMissionIndex( name ) ); }
+
+	// Finds a campaign containing this mission's map. If the mission is marked as standalone, this always returns NULL.
+	const RD_Campaign_t *FindCampaignContainingMission( const RD_Mission_t *pMission );
 }
 
 class CampaignHandle

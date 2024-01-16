@@ -967,6 +967,28 @@ int ReactiveDropMissions::GetMissionIndex( const char *name )
 	return -1;
 }
 
+const RD_Campaign_t *ReactiveDropMissions::FindCampaignContainingMission( const RD_Mission_t *pMission )
+{
+	if ( !pMission || pMission->HasTag( "bonus" ) || pMission->HasTag( "deathmatch" ) || pMission->HasTag( "endless" ) )
+	{
+		return NULL;
+	}
+
+	for ( int i = 0; i < CountCampaigns(); i++ )
+	{
+		const RD_Campaign_t *pCampaign = GetCampaign( i );
+		if ( !pCampaign || pCampaign->WorkshopID != pMission->WorkshopID )
+			continue;
+
+		if ( pCampaign->GetMissionByMapName( pMission->BaseName ) )
+		{
+			return pCampaign;
+		}
+	}
+
+	return NULL;
+}
+
 const RD_Campaign_t *CampaignHandle::Get()
 {
 	if ( !s_bRebuildUnpackedMissionData && m_nDataResets == ReactiveDropMissions::s_nDataResets )

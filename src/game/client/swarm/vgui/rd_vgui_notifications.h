@@ -143,8 +143,16 @@ public:
 
 	virtual void InitFromNotification() = 0;
 	void OnThink() override;
+	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+	void PerformLayout() override;
 
 	vgui::DHANDLE<CRD_VGUI_Notifications_List_Item> m_hListItem;
+
+	vgui::Panel *m_pBackground1;
+	vgui::Panel *m_pBackground2;
+
+	CPanelAnimationVarAliasType( int, m_iTallBase, "tall_base", "10", "proportional_int" );
+	CPanelAnimationVarAliasType( int, m_iTallPerMission, "tall_per_mission", "10", "proportional_int" );
 };
 
 class CRD_VGUI_Notifications_Details_HoIAF_Bounty : public CRD_VGUI_Notifications_Details
@@ -153,8 +161,14 @@ class CRD_VGUI_Notifications_Details_HoIAF_Bounty : public CRD_VGUI_Notification
 public:
 	CRD_VGUI_Notifications_Details_HoIAF_Bounty( CRD_VGUI_Notifications_List_Item *listItem, const char *panelName );
 
+	enum { MAX_MISSIONS_PER_BOUNTY = CRD_VGUI_Notifications_List_Item_HoIAF_Bounty::MAX_MISSIONS_PER_BOUNTY };
+
 	void InitFromNotification() override;
 	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+
+	vgui::ImagePanel *m_pImgCompleted[MAX_MISSIONS_PER_BOUNTY];
+	vgui::ImagePanel *m_pImgMissionIcon[MAX_MISSIONS_PER_BOUNTY];
+	vgui::Label *m_pLblMissionCaption[MAX_MISSIONS_PER_BOUNTY];
 };
 
 class CRD_VGUI_Notifications_Filters : public vgui::EditablePanel

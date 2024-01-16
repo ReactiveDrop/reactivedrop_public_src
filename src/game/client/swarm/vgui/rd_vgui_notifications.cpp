@@ -134,41 +134,13 @@ void CRD_VGUI_Notifications_Button::OnThink()
 
 	if ( m_hListPopOut && m_hListPopOut->IsVisible() )
 	{
-		bool bAnyFocus = HasFocus() || m_hListPopOut->HasFocus() || m_hListPopOut->m_pList->HasFocus() || m_hListPopOut->m_pFiltersButton->HasFocus();
-
-		if ( !bAnyFocus && m_hListPopOut->m_pList->GetPanelItemCount() )
+		vgui::Panel *pCurrentFocus = vgui::ipanel()->GetPanel( vgui::input()->GetCalculatedFocus(), GetModuleName() );
+		while ( pCurrentFocus != NULL && pCurrentFocus != this && pCurrentFocus != m_hListPopOut && pCurrentFocus != m_hListPopOut->m_hFiltersPopOut )
 		{
-			for ( int i = 0; i < m_hListPopOut->m_pList->GetPanelItemCount(); i++ )
-			{
-				if ( m_hListPopOut->m_pList->GetPanelItem( i )->HasFocus() )
-				{
-					bAnyFocus = true;
-					break;
-				}
-			}
+			pCurrentFocus = pCurrentFocus->GetParent();
 		}
 
-		if ( !bAnyFocus && m_hListPopOut->m_hFiltersPopOut && m_hListPopOut->m_hFiltersPopOut->IsVisible() )
-		{
-			bAnyFocus = m_hListPopOut->m_hFiltersPopOut->HasFocus();
-
-			for ( int i = 0; i < m_hListPopOut->m_hFiltersPopOut->GetChildCount(); i++ )
-			{
-				CRD_VGUI_Option *pOption = dynamic_cast< CRD_VGUI_Option * >( m_hListPopOut->m_hFiltersPopOut->GetChild( i ) );
-				if ( !pOption )
-				{
-					continue;
-				}
-
-				if ( pOption->HasFocus() )
-				{
-					bAnyFocus = true;
-					break;
-				}
-			}
-		}
-
-		if ( !bAnyFocus )
+		if ( !pCurrentFocus )
 		{
 			// If focus has shifted outside of the notifications menu, close the notifications menu.
 			m_hListPopOut->SetVisible( false );
@@ -761,6 +733,9 @@ CRD_VGUI_Notifications_Details::CRD_VGUI_Notifications_Details( CRD_VGUI_Notific
 	: BaseClass{ GetParentFrame( listItem ), panelName }
 {
 	m_hListItem = listItem;
+
+	m_pBackground1 = new vgui::Panel( this, "Background1" );
+	m_pBackground2 = new vgui::Panel( this, "Background2" );
 }
 
 void CRD_VGUI_Notifications_Details::OnThink()
@@ -773,16 +748,93 @@ void CRD_VGUI_Notifications_Details::OnThink()
 	}
 }
 
+void CRD_VGUI_Notifications_Details::ApplySchemeSettings( vgui::IScheme *pScheme )
+{
+	BaseClass::ApplySchemeSettings( pScheme );
+
+	InitFromNotification();
+}
+
+void CRD_VGUI_Notifications_Details::PerformLayout()
+{
+	BaseClass::PerformLayout();
+
+	int iTall = m_iTallBase + m_iTallPerMission * m_hListItem->m_Notification.BountyMissions.Count();
+	SetTall( iTall );
+	m_pBackground1->SetTall( iTall - YRES( 2 ) );
+	m_pBackground2->SetTall( iTall );
+}
+
 CRD_VGUI_Notifications_Details_HoIAF_Bounty::CRD_VGUI_Notifications_Details_HoIAF_Bounty( CRD_VGUI_Notifications_List_Item *listItem, const char *panelName )
 	: BaseClass{ listItem, panelName }
 {
+	for ( int i = 0; i < MAX_MISSIONS_PER_BOUNTY; i++ )
+	{
+		m_pImgCompleted[i] = new vgui::ImagePanel( this, VarArgs( "ImgCompleted%d", i ) );
+		m_pImgMissionIcon[i] = new vgui::ImagePanel( this, VarArgs( "ImgMissionIcon%d", i ) );
+		m_pLblMissionCaption[i] = new vgui::Label( this, VarArgs( "LblMissionCaption%d", i ), L"" );
+	}
 }
 
 void CRD_VGUI_Notifications_Details_HoIAF_Bounty::InitFromNotification()
 {
 	const CCopyableUtlVector<HoIAFNotification_t::BountyMission_t> &missions = m_hListItem->m_Notification.BountyMissions;
 
-	DebuggerBreakIfDebugging(); // TODO
+	FOR_EACH_VEC( missions, i )
+	{
+		m_pImgCompleted[i]->SetVisible( missions[i].Claimed );
+		m_pImgMissionIcon[i]->SetVisible( true );
+		m_pLblMissionCaption[i]->SetVisible( true );
+
+		wchar_t wszMessage[2048];
+		const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( missions[i].MissionName );
+		if ( !pMission || pMission->WorkshopID != missions[i].AddonID )
+		{
+			Assert( missions[i].AddonID != k_PublishedFileIdInvalid );
+
+			m_pImgMissionIcon[i]->SetImage( "swarm/missionpics/addonmissionpic" );
+
+			wchar_t wszMissionFilename[MAX_MAP_NAME];
+			V_UTF8ToUnicode( missions[i].MissionName, wszMissionFilename, sizeof( wszMissionFilename ) );
+
+			g_pVGuiLocalize->ConstructString( wszMessage, sizeof( wszMessage ),
+				g_pVGuiLocalize->Find( missions[i].Claimed ? "#rd_hoiaf_bounty_claimed_notinstalled" : "#rd_hoiaf_bounty_available_notinstalled" ),
+				2, UTIL_RD_CommaNumber( missions[i].Points ), wszMissionFilename );
+		}
+		else
+		{
+			const RD_Campaign_t *pCampaign = ReactiveDropMissions::FindCampaignContainingMission( pMission );
+			m_pImgMissionIcon[i]->SetImage( STRING( pMission->Image ) );
+
+			wchar_t wszMissionTitle[512];
+			TryLocalize( STRING( pMission->MissionTitle ), wszMissionTitle, sizeof( wszMissionTitle ) );
+
+			if ( pCampaign )
+			{
+				wchar_t wszCampaignTitle[512];
+				TryLocalize( STRING( pCampaign->CampaignName ), wszCampaignTitle, sizeof( wszCampaignTitle ) );
+
+				g_pVGuiLocalize->ConstructString( wszMessage, sizeof( wszMessage ),
+					g_pVGuiLocalize->Find( missions[i].Claimed ? "#rd_hoiaf_bounty_claimed_campaign" : "#rd_hoiaf_bounty_available_campaign" ),
+					3, UTIL_RD_CommaNumber( missions[i].Points ), wszMissionTitle, wszCampaignTitle );
+			}
+			else
+			{
+				g_pVGuiLocalize->ConstructString( wszMessage, sizeof( wszMessage ),
+					g_pVGuiLocalize->Find( missions[i].Claimed ? "#rd_hoiaf_bounty_claimed_standalone" : "#rd_hoiaf_bounty_available_standalone" ),
+					2, UTIL_RD_CommaNumber( missions[i].Points ), wszMissionTitle );
+			}
+		}
+
+		m_pLblMissionCaption[i]->SetText( wszMessage );
+	}
+
+	for ( int i = missions.Count(); i < MAX_MISSIONS_PER_BOUNTY; i++ )
+	{
+		m_pImgCompleted[i]->SetVisible( false );
+		m_pImgMissionIcon[i]->SetVisible( false );
+		m_pLblMissionCaption[i]->SetVisible( false );
+	}
 
 	InvalidateLayout();
 }
