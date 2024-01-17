@@ -382,6 +382,10 @@ function Update()
 			{
 				UseLastStand(hMarine);
 			}
+			if (g_matchTimer >= g_matchLength - 50)
+			{
+				Heal(hMarine, hMarine.GetMaxHealth() - hMarine.GetHealth());
+			}
 		}
 		else if (hMarine in g_teamZombie)
 		{
@@ -496,6 +500,11 @@ function Update()
 			parasiteProp.SetParent(hGrenade);
 			hGrenade.__KeyValueFromInt("rendermode", 10);
 		}
+	}
+	local hSentry = null;
+	while ((hSentry = Entities.FindByClassname(hSentry, "asw_sentry_base")) != null)
+	{
+		hSentry.Destroy();
 	}
 	foreach (name in g_alienClassnames)
 	{
@@ -644,6 +653,10 @@ function OnTakeDamage_Alive_Any( victim, inflictor, attacker, weapon, damage, da
 			}
 			local dir = victim.GetOrigin() - inflictor.GetOrigin();
 			local kb = dir * (damage/dir.Length()*20);
+			if (inflictor.GetClassname() == "asw_rocket")
+			{
+				kb = kb * 50;
+			}
 			if (IsOnGround(victim))
 			{
 				kb = kb + Vector(0, 0, 10);
@@ -653,6 +666,10 @@ function OnTakeDamage_Alive_Any( victim, inflictor, attacker, weapon, damage, da
 			{
 				damage = damage * 10;
 			}
+			if (inflictor.GetClassname() == "asw_rifle_grenade")
+			{
+				damage = damage * 5;
+			}
 			if (inflictor.GetClassname() == "asw_laser_mine")
 			{
 				damage = damage * 10;
@@ -661,9 +678,13 @@ function OnTakeDamage_Alive_Any( victim, inflictor, attacker, weapon, damage, da
 			{
 				damage = damage * 10;
 			}
-			if (weapon && weapon.GetClassname() == "asw_weapon_mines" && inflictor.GetClassname() == "asw_burning")
+			if (inflictor.GetClassname() == "asw_burning")
 			{
 				damage = damage * 10;
+			}
+			if (inflictor.GetClassname() == "asw_rocket")
+			{
+				damage = damage * 5;
 			}
 		}
 		if (weapon && weapon.GetClassname() == "asw_weapon_chainsaw")
@@ -1279,6 +1300,10 @@ function Heal(ent, amt)
 		return;
 	}
 	if (!(ent.IsValid()))
+	{
+		return;
+	}
+	if (ent.GetHealth() <= 0)
 	{
 		return;
 	}
