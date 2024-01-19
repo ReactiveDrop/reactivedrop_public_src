@@ -1307,6 +1307,10 @@ function Heal(ent, amt)
 	{
 		return;
 	}
+	if (amt <= 0)
+	{
+		return;
+	}
 	local newHealth = ent.GetHealth() + amt;
 	if (newHealth > ent.GetMaxHealth())
 	{
