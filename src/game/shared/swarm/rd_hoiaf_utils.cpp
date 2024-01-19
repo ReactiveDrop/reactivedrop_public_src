@@ -3,6 +3,7 @@
 #include "filesystem.h"
 #include "steam/steam_api.h"
 #include "fmtstr.h"
+#include "rd_workshop.h"
 
 #ifdef CLIENT_DLL
 #include <vgui/ISurface.h>
@@ -227,6 +228,19 @@ void CRD_HoIAF_System::InsertChatMessages( CBaseHudChat *pChat )
 }
 #endif
 
+const char *CRD_HoIAF_System::BountyAddonName( PublishedFileId_t addonID )
+{
+	FOR_EACH_VEC( m_HoIAFMissionBounties, i )
+	{
+		if ( m_HoIAFMissionBounties[i]->AddonID == addonID && !m_HoIAFMissionBounties[i]->AddonName.IsEmpty() )
+		{
+			return m_HoIAFMissionBounties[i]->AddonName.Get();
+		}
+	}
+
+	return NULL;
+}
+
 #ifdef CLIENT_DLL
 void CRD_HoIAF_System::MarkBountyAsCompleted( int iBountyID )
 {
@@ -403,7 +417,7 @@ void CRD_HoIAF_System::RebuildNotificationList()
 				continue;
 			}
 
-			if ( pDef->AutoDeleteExceptNewest )
+			if ( pDef->HasNotificationTag( "auto_delete_except_newest" ) )
 			{
 				if ( seenUniqueNotificationItem.IsValidIndex( seenUniqueNotificationItem.Find( notificationItems[i].ItemDefID ) ) )
 				{
@@ -683,6 +697,7 @@ void CRD_HoIAF_System::ParseIAFIntel()
 			V_strncpy( pBounty->Map, pCommand->GetString( "map" ), sizeof( pBounty->Map ) );
 			pBounty->Points = pCommand->GetInt( "points" );
 			pBounty->AddonID = pCommand->GetUint64( "addon", k_PublishedFileIdInvalid );
+			pBounty->AddonName = pCommand->GetString( "addon_name" );
 
 			m_HoIAFMissionBounties.AddToTail( pBounty );
 		}

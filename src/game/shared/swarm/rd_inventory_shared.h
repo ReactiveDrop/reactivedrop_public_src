@@ -97,12 +97,12 @@ namespace ReactiveDropInventory
 		Color NameColor;
 		int64_t StrangeNotifyEvery{ 0 };
 		CUtlVector<int64_t> StrangeNotify;
+		CUtlStringList NotificationTags; // for notification items
 		bool AfterDescriptionOnlyMultiStack : 1;
 		bool HasInGameDescription : 1;
 		bool HasBorder : 1;
 		bool IsBasic : 1;
 		bool GameOnly : 1;
-		bool AutoDeleteExceptNewest : 1; // for notification items
 #ifdef CLIENT_DLL
 		vgui::IImage *Icon{};
 		CUtlVector<vgui::IImage *> StyleIcons{};
@@ -114,6 +114,7 @@ namespace ReactiveDropInventory
 		bool ItemSlotMatchesAnyDynamic() const;
 		int64_t CountForStrangeTier( int iTier ) const;
 		int GetStrangeTier( int64_t x ) const;
+		bool HasNotificationTag( const char *szTag ) const;
 	};
 
 	// Data extracted from SteamInventoryResult_t; it is safe to destroy the result after constructing this data type.

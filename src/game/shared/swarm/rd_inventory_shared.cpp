@@ -2424,6 +2424,19 @@ namespace ReactiveDropInventory
 		return iTier;
 	}
 
+	bool ItemDef_t::HasNotificationTag( const char *szTag ) const
+	{
+		FOR_EACH_VEC( NotificationTags, i )
+		{
+			if ( !V_strcmp( szTag, NotificationTags[i] ) )
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	static bool ParseDynamicProps( CUtlStringMap<CUtlString> & props, const char *szDynamicProps )
 	{
 		jsmn_parser parser;
@@ -3091,22 +3104,6 @@ namespace ReactiveDropInventory
 				pItemDef->NotificationName[i] = szValue;
 		}
 
-		FETCH_PROPERTY( "after_description_only_multi_stack" );
-		Assert( !V_strcmp( szValue, "" ) || !V_strcmp( szValue, "1" ) || !V_strcmp( szValue, "0" ) );
-		pItemDef->AfterDescriptionOnlyMultiStack = !V_strcmp( szValue, "1" );
-
-		FETCH_PROPERTY( "is_basic" );
-		Assert( !V_strcmp( szValue, "" ) || !V_strcmp( szValue, "1" ) || !V_strcmp( szValue, "0" ) );
-		pItemDef->IsBasic = !V_strcmp( szValue, "1" );
-
-		FETCH_PROPERTY( "game_only" );
-		Assert( !V_strcmp( szValue, "" ) || !V_strcmp( szValue, "1" ) || !V_strcmp( szValue, "0" ) );
-		pItemDef->GameOnly = !V_strcmp( szValue, "1" );
-
-		FETCH_PROPERTY( "auto_delete_except_newest" );
-		Assert( !V_strcmp( szValue, "" ) || !V_strcmp( szValue, "1" ) || !V_strcmp( szValue, "0" ) );
-		pItemDef->AutoDeleteExceptNewest = !V_strcmp( szValue, "1" );
-
 		FETCH_PROPERTY( "strange_notify_every" );
 		if ( *szValue )
 		{
@@ -3124,6 +3121,28 @@ namespace ReactiveDropInventory
 			Assert( i == 0 || pItemDef->StrangeNotify[i - 1] < pItemDef->StrangeNotify[i] );
 			Assert( pItemDef->StrangeNotifyEvery == 0 || pItemDef->StrangeNotifyEvery > pItemDef->StrangeNotify[i] );
 		}
+
+		FETCH_PROPERTY( "notification_tags" );
+		if ( *szValue )
+		{
+			CSplitString NotificationTags{ szValue, ";" };
+			FOR_EACH_VEC( NotificationTags, i )
+			{
+				pItemDef->NotificationTags.CopyAndAddToTail( NotificationTags[i] );
+			}
+		}
+
+		FETCH_PROPERTY( "after_description_only_multi_stack" );
+		Assert( !V_strcmp( szValue, "" ) || !V_strcmp( szValue, "1" ) || !V_strcmp( szValue, "0" ) );
+		pItemDef->AfterDescriptionOnlyMultiStack = !V_strcmp( szValue, "1" );
+
+		FETCH_PROPERTY( "is_basic" );
+		Assert( !V_strcmp( szValue, "" ) || !V_strcmp( szValue, "1" ) || !V_strcmp( szValue, "0" ) );
+		pItemDef->IsBasic = !V_strcmp( szValue, "1" );
+
+		FETCH_PROPERTY( "game_only" );
+		Assert( !V_strcmp( szValue, "" ) || !V_strcmp( szValue, "1" ) || !V_strcmp( szValue, "0" ) );
+		pItemDef->GameOnly = !V_strcmp( szValue, "1" );
 
 #ifdef CLIENT_DLL
 		pItemDef->Icon = NULL;

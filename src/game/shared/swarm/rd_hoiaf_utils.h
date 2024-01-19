@@ -89,6 +89,7 @@ public:
 #endif
 
 	// HoIAF Mission Bounties
+	const char *BountyAddonName( PublishedFileId_t addonID );
 #ifdef CLIENT_DLL
 	void MarkBountyAsCompleted( int iBountyID );
 #endif
@@ -171,6 +172,7 @@ private:
 		char Map[MAX_MAP_NAME];
 		int Points;
 		PublishedFileId_t AddonID;
+		CUtlString AddonName;
 	};
 	CUtlVectorAutoPurge<HoIAFMissionBounty_t *> m_HoIAFMissionBounties;
 };
