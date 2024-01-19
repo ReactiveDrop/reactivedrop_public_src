@@ -32,20 +32,19 @@ extern ConVar asw_grenade_launcher_gravity;
 extern ConVar rd_grenade_launcher_explode_on_contact;
 extern ConVar rda_grenade_launcher_grenade_ricochet;
 
-ConVar asw_cluster_grenade_min_detonation_time("asw_cluster_grenade_min_detonation_time", "0.9f", FCVAR_CHEAT, "Min. time before cluster grenade can detonate");
-ConVar asw_cluster_grenade_fuse("asw_cluster_grenade_fuse", "2.0f", FCVAR_CHEAT, "Fuse length of cluster grenade");
-ConVar asw_cluster_grenade_radius_check_interval("asw_cluster_grenade_radius_check_interval", "0.5f", FCVAR_CHEAT, "How often the cluster grenade checks for nearby drones to explode against");
-ConVar asw_cluster_grenade_radius_check_scale("asw_cluster_grenade_radius_check_scale", "0.6f", FCVAR_CHEAT, "What fraction of the grenade's damage radius is used for the early detonation check");
-ConVar asw_cluster_grenade_child_fuse_min("asw_cluster_grenade_child_fuse_min", "0.5", FCVAR_CHEAT, "Cluster grenade child cluster's minimum fuse length");
-ConVar asw_cluster_grenade_child_fuse_max("asw_cluster_grenade_child_fuse_max", "1.0", FCVAR_CHEAT, "Cluster grenade child cluster's maximum fuse length");
+ConVar asw_cluster_grenade_min_detonation_time( "asw_cluster_grenade_min_detonation_time", "0.9f", FCVAR_CHEAT, "Min. time before cluster grenade can detonate" );
+ConVar asw_cluster_grenade_fuse( "asw_cluster_grenade_fuse", "2.0f", FCVAR_CHEAT, "Fuse length of cluster grenade" );
+ConVar asw_cluster_grenade_radius_check_interval( "asw_cluster_grenade_radius_check_interval", "0.5f", FCVAR_CHEAT, "How often the cluster grenade checks for nearby drones to explode against" );
+ConVar asw_cluster_grenade_radius_check_scale( "asw_cluster_grenade_radius_check_scale", "0.6f", FCVAR_CHEAT, "What fraction of the grenade's damage radius is used for the early detonation check" );
+ConVar asw_cluster_grenade_child_fuse_min( "asw_cluster_grenade_child_fuse_min", "0.5", FCVAR_CHEAT, "Cluster grenade child cluster's minimum fuse length" );
+ConVar asw_cluster_grenade_child_fuse_max( "asw_cluster_grenade_child_fuse_max", "1.0", FCVAR_CHEAT, "Cluster grenade child cluster's maximum fuse length" );
 
-ConVar rda_grenade_post_ricochet_velocity_multiplier("rda_grenade_post_ricochet_velocity_multiplier", "2", FCVAR_CHEAT, "Set to change GL grenade post ricochet velocity. Try values within [1..4] range");	//Orange. Advanced grenade behaviour.
-ConVar rda_grenade_max_ricochets("rda_grenade_max_ricochets", "1", FCVAR_CHEAT, "Set to change how many times GL grenade can bouncy, 0 = unlim till timer");
-ConVar rda_grenade_allow_electro_amped("rda_grenade_allow_electro_amped", "0", FCVAR_CHEAT, "Make grenades benefit from tesla additions");
-ConVar rda_grenade_electrostun_duration("rda_grenade_electrostun_duration", "0.5", FCVAR_CHEAT, "Electrostun duration time of amped grenades. Valid range 0.0 - 5.0 s");
-ConVar rda_grenade_electrostun_range_multiplier("rda_grenade_electrostun_range_multiplier", "1", FCVAR_CHEAT, "Electrostun range of amped grenades. Valid range 0.2 - 1.5 of current damage range");
-ConVar rda_grenade_reflector_radius("rda_grenade_reflector_radius", "72", FCVAR_CHEAT, "If grenade hit something while reflector alien is this nearby grenade will be reflected");
-ConVar rda_grenade_search_reflectors("rda_grenade_search_reflectors", "0", FCVAR_CHEAT, "Set to 1 to allow grenades to be reflected from reflector aliens");
+ConVar rda_grenade_post_ricochet_velocity_multiplier( "rda_grenade_post_ricochet_velocity_multiplier", "2", FCVAR_CHEAT, "Set to change GL grenade post ricochet velocity.", true, 1.0f, true, 4.0f ); // Orange. Advanced grenade behaviour.
+ConVar rda_grenade_max_ricochets( "rda_grenade_max_ricochets", "1", FCVAR_CHEAT, "Set to change how many times GL grenade can bouncy, 0 = unlim till timer" );
+ConVar rda_grenade_allow_electro_amped( "rda_grenade_allow_electro_amped", "0", FCVAR_CHEAT, "Make grenades benefit from tesla additions" );
+ConVar rda_grenade_electrostun_duration( "rda_grenade_electrostun_duration", "0.5", FCVAR_CHEAT, "Electrostun duration time of amped grenades.", true, 0.0f, true, 5.0f );
+ConVar rda_grenade_electrostun_range_multiplier( "rda_grenade_electrostun_range_multiplier", "1", FCVAR_CHEAT, "Electrostun range of amped grenades. (Multiple of the damage range.)", true, 0.2f, true, 1.5f );
+ConVar rda_grenade_reflector_radius( "rda_grenade_reflector_radius", "72", FCVAR_CHEAT, "If grenade hit something while reflector alien is this nearby grenade will be reflected", true, 1.0f, true, 500.0f );
 
 LINK_ENTITY_TO_CLASS( asw_grenade_cluster, CASW_Grenade_Cluster );
 
@@ -198,31 +197,18 @@ void CASW_Grenade_Cluster::ReflectBackThink()
 bool CASW_Grenade_Cluster::IsReflectorNearby()
 {
 	float flRadius = rda_grenade_reflector_radius.GetFloat();
-	flRadius = clamp(flRadius, 1, 500);
 	Vector vecSrc = GetAbsOrigin();
-	CBaseEntity* pEntity = NULL;
-	for (CEntitySphereQuery sphere(vecSrc, flRadius); (pEntity = sphere.GetCurrentEntity()) != NULL; sphere.NextEntity())
+	CBaseEntity *pEntity = NULL;
+	for ( CEntitySphereQuery sphere( vecSrc, flRadius ); ( pEntity = sphere.GetCurrentEntity() ) != NULL; sphere.NextEntity() )
 	{
-		if (!pEntity->IsAlien())
+		if ( !pEntity->IsInhabitableNPC() )
 			continue;
-		//Note: since this called from inside touch function, we have to delay our reflect a little bit
-		if (pEntity->Classify() == CLASS_ASW_BUZZER)
+		// Note: since this called from inside touch function, we have to delay our reflect a little bit
+		CASW_Inhabitable_NPC *pNPC = assert_cast< CASW_Inhabitable_NPC * >( pEntity );
+		if ( pNPC->m_bGrenadeReflector && pNPC->GetHealth() > 0 )
 		{
-			CASW_Buzzer* pBuzzer = static_cast<CASW_Buzzer*>(pEntity);
-			if (pBuzzer->m_bGrenadeReflector && pBuzzer->GetHealth() > 0)
-			{
-				SetContextThink(&CASW_Grenade_Cluster::ReflectBack, gpGlobals->curtime + 0.01f, s_pReflectContext);
-				return true;
-			}
-		}
-		else
-		{
-			CASW_Alien* pAlien = static_cast<CASW_Alien*>(pEntity);
-			if (pAlien->m_bGrenadeReflector && pAlien->GetHealth() > 0)
-			{
-				SetContextThink(&CASW_Grenade_Cluster::ReflectBack, gpGlobals->curtime + 0.01f, s_pReflectContext);
-				return true;
-			}
+			SetContextThink( &CASW_Grenade_Cluster::ReflectBack, gpGlobals->curtime + 0.01f, s_pReflectContext );
+			return true;
 		}
 	}
 	return false;
@@ -309,9 +295,7 @@ void CASW_Grenade_Cluster::DoExplosion()
 		CUtlVector<CASW_Alien*> candidates;
 		CUtlVector<CASW_Alien*> picked;
 		
-		float range = rda_grenade_electrostun_range_multiplier.GetFloat();
-		range = clamp(range, 0.2f, 1.5f);
-		range *= m_DmgRadius;
+		float range = rda_grenade_electrostun_range_multiplier.GetFloat() * m_DmgRadius;
 
 		CBaseEntity* pEntity = NULL;
 		for (CEntitySphereQuery sphere(GetAbsOrigin(), range); (pEntity = sphere.GetCurrentEntity()) != NULL; sphere.NextEntity())
@@ -339,7 +323,6 @@ void CASW_Grenade_Cluster::DoExplosion()
 		}
 
 		float duration = rda_grenade_electrostun_duration.GetFloat();
-		duration = clamp(duration, 0.0f, 5.0f);
 		for (int i = 0; i < picked.Count(); i++)
 		{
 			picked[i]->ElectroStun(duration);
@@ -459,7 +442,7 @@ void CASW_Grenade_Cluster::VGrenadeTouch(CBaseEntity* pOther)
 	if ( !ASWGameRules() || !ASWGameRules()->ShouldCollide( GetCollisionGroup(), pOther->GetCollisionGroup() ) )
 		return;
 
-	if ( rda_grenade_search_reflectors.GetBool() && IsReflectorNearby() )
+	if ( IsReflectorNearby() )
 		return;
 
 	//fix for situation when drone attacks through marine from behind and touches grenade launcher's grenade firing opposite direction
@@ -541,7 +524,7 @@ void CASW_Grenade_Cluster::VGrenadeTouch(CBaseEntity* pOther)
 	//Orange. Ricochet stuff
 	if ( m_bAdvancedRicochet )
 	{
-		float multip = clamp( rda_grenade_post_ricochet_velocity_multiplier.GetFloat(), 1, 4 );
+		float multip = rda_grenade_post_ricochet_velocity_multiplier.GetFloat();
 		if ( rda_grenade_max_ricochets.GetInt() > 0 )
 		{
 			if ( rda_grenade_max_ricochets.GetInt() >= ++m_iMaxRicochets )
