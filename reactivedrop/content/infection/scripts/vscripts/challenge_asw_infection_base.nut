@@ -1307,6 +1307,7 @@ function Heal(ent, amt)
 	{
 		return;
 	}
+	ent.Extinguish();
 	if (amt <= 0)
 	{
 		return;
