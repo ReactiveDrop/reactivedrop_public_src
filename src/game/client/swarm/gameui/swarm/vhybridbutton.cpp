@@ -108,6 +108,7 @@ BaseModUI::BaseModHybridButton::BaseModHybridButton( Panel *parent, const char *
 	mEnableCondition = EC_ALWAYS;
 
 	m_nStyle = BUTTON_SIMPLE;
+	m_bSetStyle = false;
 	m_hTextFont = 0;
 	m_hTextBlurFont = 0;
 	m_hHintTextFont = 0;
@@ -139,6 +140,7 @@ BaseModUI::BaseModHybridButton::BaseModHybridButton( Panel *parent, const char *
 	mEnableCondition = EC_ALWAYS;
 
 	m_nStyle = BUTTON_SIMPLE;
+	m_bSetStyle = false;
 	m_hTextFont = 0;
 	m_hTextBlurFont = 0;
 	m_hHintTextFont = 0;
@@ -195,6 +197,13 @@ BaseModHybridButton::State BaseModHybridButton::GetCurrentState( bool bIgnoreOpe
 	}
 
 	return curState;
+}
+
+void BaseModHybridButton::SetStyle( ButtonStyle_t nStyle )
+{
+	m_bSetStyle = true;
+	m_nStyle = nStyle;
+	ApplyStyle();
 }
 
 void BaseModHybridButton::SetOpen()
@@ -794,13 +803,119 @@ void BaseModHybridButton::ApplySettings( KeyValues * inResourceData )
 	}
 
 	// this is a total bypass of the CA look
-	m_nStyle = BUTTON_SIMPLE;
-	V_snprintf( keyString, sizeof( keyString ), "%s.Style", style );
-	const char *pFormatString = scheme->GetResourceString( keyString );
-	if ( pFormatString && pFormatString[0] )
+	if ( !m_bSetStyle )
 	{
-		m_nStyle = (ButtonStyle_t)atoi( pFormatString );
+		m_nStyle = BUTTON_SIMPLE;
+		V_snprintf( keyString, sizeof( keyString ), "%s.Style", style );
+		const char *pFormatString = scheme->GetResourceString( keyString );
+		if ( pFormatString && pFormatString[0] )
+		{
+			m_nStyle = ( ButtonStyle_t )atoi( pFormatString );
+		}
 	}
+
+	ApplyStyle();
+
+	m_nWideAtOpen = vgui::scheme()->GetProportionalScaledValue( inResourceData->GetInt( "wideatopen", 0 ) );
+
+	// tooltips
+	const char* enabledToolTipText = inResourceData->GetString( "tooltiptext" , NULL );
+	if ( enabledToolTipText )
+	{
+		SetHelpText( enabledToolTipText, true );
+	}
+
+	const char* disabledToolTipText = inResourceData->GetString( "disabled_tooltiptext", NULL );
+	if ( disabledToolTipText )
+	{
+		SetHelpText( disabledToolTipText, false );
+	}
+
+	//vgui's standard handling of the tabPosition tag doesn't properly navigate for the X360
+	if ( inResourceData->GetInt( "tabPosition", 0 ) == 1 )
+	{
+		NavigateTo();
+	}
+
+	//Get the x text inset
+	V_snprintf( keyString, sizeof( keyString ), "%s.%s", style, "TextInsetX" );
+	const char *result = scheme->GetResourceString( keyString );
+	if ( *result != 0 )
+	{
+		m_textInsetX = atoi( result );
+		m_textInsetX = vgui::scheme()->GetProportionalScaledValueEx( GetScheme(), m_textInsetX );
+	}
+
+	//Get the y text inset
+	V_snprintf( keyString, sizeof( keyString ), "%s.%s", style, "TextInsetY" );
+	result = scheme->GetResourceString( keyString );
+	if( *result != 0 )
+	{
+		m_textInsetY = atoi( result );
+		m_textInsetY = vgui::scheme()->GetProportionalScaledValueEx( GetScheme(), m_textInsetY );
+	}
+
+	// tell Label double the inset so it adjusts the width for word wrap/ellipsis
+	SetTextInset( m_textInsetX * 2, m_textInsetY * 2 );
+
+	//0 = press and release
+	//1 = press
+	//2 = release
+	int activationType = inResourceData->GetInt( "ActivationType" );
+	activationType = clamp( activationType, 0, 2 );
+	SetButtonActivationType( static_cast< vgui::Button::ActivationType_t >( activationType ) );
+
+	m_iUsablePlayerIndex = USE_EVERYBODY;
+	if ( const char *pszValue = inResourceData->GetString( "usablePlayerIndex", "" ) )
+	{
+		if ( !stricmp( "primary", pszValue ) )
+		{
+			m_iUsablePlayerIndex = USE_PRIMARY;
+		}
+		else if ( !stricmp( "nobody", pszValue ) )
+		{
+			m_iUsablePlayerIndex = USE_NOBODY;
+		}
+		else if ( V_isdigit( pszValue[0] ) )
+		{
+			m_iUsablePlayerIndex = atoi( pszValue );
+		}
+	}
+
+	//handle different conditions to allow the control to be enabled and disabled automatically
+	const char * condition = inResourceData->GetString( "EnableCondition" );
+	for ( int index = 0; index < ( sizeof( sHybridStates ) / sizeof( HybridEnableStates ) ); ++index )
+	{
+		if ( Q_stricmp( condition, sHybridStates[ index ].mConditionName ) == 0 )
+		{
+			mEnableCondition = sHybridStates[ index ].mCondition;
+			break;
+		}
+	}
+
+	if ( mEnableCondition == EC_NOTFORDEMO )
+	{
+		if ( IsEnabled() )
+		{
+			Demo_DisableButton( this );
+		}
+	}
+
+	m_bOnlyActiveUser = ( inResourceData->GetInt( "OnlyActiveUser", 0 ) != 0 );
+	m_bIgnoreButtonA = ( inResourceData->GetInt( "IgnoreButtonA", 0 ) != 0 );
+
+	m_bShowDropDownIndicator = ( inResourceData->GetInt( "ShowDropDownIndicator", 0 ) != 0 );
+	m_bOverrideDropDownIndicator = false;
+
+	m_iSelectedArrowSize = vgui::scheme()->GetProportionalScaledValue( inResourceData->GetInt( "DropDownIndicatorSize", 8 ) );
+}
+
+void BaseModHybridButton::ApplyStyle()
+{
+	vgui::IScheme *scheme = vgui::scheme()->GetIScheme( GetScheme() );
+	if ( !scheme )
+		return;
+
 	if ( m_nStyle == BUTTON_MAINMENU )
 	{
 		m_hTextFont = scheme->GetFont( "MainBold", true );
@@ -817,7 +932,6 @@ void BaseModHybridButton::ApplySettings( KeyValues * inResourceData )
 		m_hTextBlurFont = scheme->GetFont( "DefaultBoldBlur", true );
 		m_hSelectionFont = scheme->GetFont( "DefaultMedium", true );
 		m_hSelectionBlurFont = scheme->GetFont( "DefaultMediumBlur", true );
-		m_nWideAtOpen = vgui::scheme()->GetProportionalScaledValue( inResourceData->GetInt( "wideatopen", 0 ) );
 	}
 	else if ( m_nStyle == BUTTON_DIALOG )
 	{
@@ -844,7 +958,6 @@ void BaseModHybridButton::ApplySettings( KeyValues * inResourceData )
 		m_hTextFont = scheme->GetFont( "MainBold", true );
 		m_hTextBlurFont = scheme->GetFont( "MainBoldBlur", true );
 		m_hHintTextFont = scheme->GetFont( "Default", true );
-		m_nWideAtOpen = vgui::scheme()->GetProportionalScaledValue( inResourceData->GetInt( "wideatopen", 0 ) );
 	}
 	else if ( m_nStyle == BUTTON_MAINMENUSMALL )
 	{
@@ -898,58 +1011,11 @@ void BaseModHybridButton::ApplySettings( KeyValues * inResourceData )
 		m_hTextFont = scheme->GetFont( "DefaultBold", true );
 		m_hTextBlurFont = scheme->GetFont( "DefaultBoldBlur", true );
 	}
-	
+
 	m_nTextFontHeight = vgui::surface()->GetFontTall( m_hTextFont );
 	m_nHintTextFontHeight = vgui::surface()->GetFontTall( m_hHintTextFont );
 
-	// tooltips
-	const char* enabledToolTipText = inResourceData->GetString( "tooltiptext" , NULL );
-	if ( enabledToolTipText )
-	{
-		SetHelpText( enabledToolTipText, true );
-	}
-
-	const char* disabledToolTipText = inResourceData->GetString( "disabled_tooltiptext", NULL );
-	if ( disabledToolTipText )
-	{
-		SetHelpText( disabledToolTipText, false );
-	}
-
-	//vgui's standard handling of the tabPosition tag doesn't properly navigate for the X360
-	if ( inResourceData->GetInt( "tabPosition", 0 ) == 1 )
-	{
-		NavigateTo();
-	}
-
 	SetFont( m_hTextFont );
-
-	//Get the x text inset
-	V_snprintf( keyString, sizeof( keyString ), "%s.%s", style, "TextInsetX" );
-	const char *result = scheme->GetResourceString( keyString );
-	if ( *result != 0 )
-	{
-		m_textInsetX = atoi( result );
-		m_textInsetX = vgui::scheme()->GetProportionalScaledValueEx( GetScheme(), m_textInsetX );
-	}
-
-	//Get the y text inset
-	V_snprintf( keyString, sizeof( keyString ), "%s.%s", style, "TextInsetY" );
-	result = scheme->GetResourceString( keyString );
-	if( *result != 0 )
-	{
-		m_textInsetY = atoi( result );
-		m_textInsetY = vgui::scheme()->GetProportionalScaledValueEx( GetScheme(), m_textInsetY );
-	}
-
-	// tell Label double the inset so it adjusts the width for word wrap/ellipsis
-	SetTextInset( m_textInsetX * 2, m_textInsetY * 2 );
-
-	//0 = press and release
-	//1 = press
-	//2 = release
-	int activationType = inResourceData->GetInt( "ActivationType" );
-	activationType = clamp( activationType, 0, 2 );
-	SetButtonActivationType( static_cast< vgui::Button::ActivationType_t >( activationType ) );
 
 	int x, y, wide, tall;
 	GetBounds( x, y, wide, tall );
@@ -962,52 +1028,7 @@ void BaseModHybridButton::ApplySettings( KeyValues * inResourceData )
 		SetSize( wide, tall );
 		m_originalTall = m_nTextFontHeight;
 	}
-
-	m_iUsablePlayerIndex = USE_EVERYBODY;
-	if ( const char *pszValue = inResourceData->GetString( "usablePlayerIndex", "" ) )
-	{
-		if ( !stricmp( "primary", pszValue ) )
-		{
-			m_iUsablePlayerIndex = USE_PRIMARY;
-		}
-		else if ( !stricmp( "nobody", pszValue ) )
-		{
-			m_iUsablePlayerIndex = USE_NOBODY;
-		}
-		else if ( V_isdigit( pszValue[0] ) )
-		{
-			m_iUsablePlayerIndex = atoi( pszValue );
-		}
-	}
-
-	//handle different conditions to allow the control to be enabled and disabled automatically
-	const char * condition = inResourceData->GetString( "EnableCondition" );
-	for ( int index = 0; index < ( sizeof( sHybridStates ) / sizeof( HybridEnableStates ) ); ++index )
-	{
-		if ( Q_stricmp( condition, sHybridStates[ index ].mConditionName ) == 0 )
-		{
-			mEnableCondition = sHybridStates[ index ].mCondition;
-			break;
-		}
-	}
-
-	if ( mEnableCondition == EC_NOTFORDEMO )
-	{
-		if ( IsEnabled() )
-		{
-			Demo_DisableButton( this );
-		}
-	}
-
-	m_bOnlyActiveUser = ( inResourceData->GetInt( "OnlyActiveUser", 0 ) != 0 );
-	m_bIgnoreButtonA = ( inResourceData->GetInt( "IgnoreButtonA", 0 ) != 0 );
-
-	m_bShowDropDownIndicator = ( inResourceData->GetInt( "ShowDropDownIndicator", 0 ) != 0 );
-	m_bOverrideDropDownIndicator = false;
-
-	m_iSelectedArrowSize = vgui::scheme()->GetProportionalScaledValue( inResourceData->GetInt( "DropDownIndicatorSize", 8 ) );
 }
-
 
 void BaseModHybridButton::ApplySchemeSettings( vgui::IScheme *pScheme )
 {

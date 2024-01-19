@@ -70,6 +70,7 @@ public:
 	State			GetCurrentState( bool bIgnoreOpen = false );
 	int				GetOriginalTall() { return m_originalTall; }
 	ButtonStyle_t	GetStyle() { return m_nStyle; }
+	void			SetStyle( ButtonStyle_t nStyle );
 	
 	//used by flyout menus to indicate this button has spawned a flyout.
 	void		SetOpen();
@@ -91,6 +92,7 @@ public:
 	void		SetOverrideDropDownIndicator( bool bOverrideDropDownIndicator ) { m_bOverrideDropDownIndicator = bOverrideDropDownIndicator; }
 
 	virtual void ApplySettings( KeyValues *inResourceData );
+	void ApplyStyle();
 
 	int			GetWideAtOpen() { return m_nWideAtOpen; }
 
@@ -141,6 +143,7 @@ protected:
 	CUtlString	m_disabledToolText;
 	
 	ButtonStyle_t m_nStyle;
+	bool m_bSetStyle;
 
 	vgui::HFont	m_hTextFont;
 	vgui::HFont	m_hTextBlurFont;
