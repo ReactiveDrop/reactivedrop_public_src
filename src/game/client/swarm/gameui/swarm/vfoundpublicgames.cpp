@@ -238,22 +238,25 @@ void FoundPublicGames::AddDedicatedServersToList()
 			AddGameFromDetails( info );
 	}
 
-	g_ReactiveDropServerList.m_LANServers.WantUpdatedServerList();
-
-	FOR_EACH_VEC( g_ReactiveDropServerList.m_LANServers, i )
+	if ( !m_bHoIAFOnly )
 	{
-		FoundGameListItem::Info info;
-		if ( info.SetFromServer( g_ReactiveDropServerList.m_LANServers, i, FoundGameListItem::TYPE_LANSERVER ) )
-			AddGameFromDetails( info );
-	}
+		g_ReactiveDropServerList.m_LANServers.WantUpdatedServerList();
 
-	g_ReactiveDropServerList.m_FavoriteServers.WantUpdatedServerList();
+		FOR_EACH_VEC( g_ReactiveDropServerList.m_LANServers, i )
+		{
+			FoundGameListItem::Info info;
+			if ( info.SetFromServer( g_ReactiveDropServerList.m_LANServers, i, FoundGameListItem::TYPE_LANSERVER ) )
+				AddGameFromDetails( info );
+		}
 
-	FOR_EACH_VEC( g_ReactiveDropServerList.m_FavoriteServers, i )
-	{
-		FoundGameListItem::Info info;
-		if ( info.SetFromServer( g_ReactiveDropServerList.m_FavoriteServers, i, FoundGameListItem::TYPE_FAVORITESERVER ) )
-			AddGameFromDetails( info );
+		g_ReactiveDropServerList.m_FavoriteServers.WantUpdatedServerList();
+
+		FOR_EACH_VEC( g_ReactiveDropServerList.m_FavoriteServers, i )
+		{
+			FoundGameListItem::Info info;
+			if ( info.SetFromServer( g_ReactiveDropServerList.m_FavoriteServers, i, FoundGameListItem::TYPE_FAVORITESERVER ) )
+				AddGameFromDetails( info );
+		}
 	}
 }
 

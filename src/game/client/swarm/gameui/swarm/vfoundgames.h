@@ -10,9 +10,9 @@
 #include "basemodui.h"
 #include "matchmaking/imatchframework.h"
 #include "steam/steam_api_common.h"
+#include "rd_lobby_utils.h"
 
 struct FriendGameInfo_t;
-struct RD_Lobby_Scoreboard_Entry_t;
 class CNB_Header_Footer;
 class CReactiveDropServerListHelper;
 
@@ -277,6 +277,7 @@ public:
 	float m_LastEngineSpinnerTime;
 	int m_CurrentSpinnerValue;
 	bool m_bShowHardcoreDifficulties;
+	bool m_bHoIAFOnly;
 
 	uint64 m_SelectedGamePlayerID;
 	uint64 m_flyoutPlayerId;

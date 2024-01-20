@@ -1595,6 +1595,7 @@ FoundGames::FoundGames( Panel *parent, const char *panelName ):
 
 	m_LastEngineSpinnerTime = 0.0f;
 	m_CurrentSpinnerValue = 0;
+	m_bHoIAFOnly = false;
 
 	SetLowerGarnishEnabled( true );
 
@@ -2019,6 +2020,11 @@ bool FoundGames::AddGameFromDetails( const FoundGameListItem::Info &fi, bool bOn
 			bOnlyMerge = true;
 		else if ( rd_lobby_filter_challenge.GetInt() != -1 && !!V_strcmp( fi.m_szChallengeFile, "0" ) != rd_lobby_filter_challenge.GetBool() )
 			bOnlyMerge = true;
+	}
+
+	if ( m_bHoIAFOnly && fi.m_Type != FoundGameListItem::TYPE_RANKEDSERVER )
+	{
+		bOnlyMerge = true;
 	}
 
 	FoundGameListItem *pGame = NULL;
