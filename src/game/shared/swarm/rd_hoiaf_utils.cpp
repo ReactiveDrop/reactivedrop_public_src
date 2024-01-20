@@ -273,6 +273,28 @@ const char *CRD_HoIAF_System::BountyAddonName( PublishedFileId_t addonID )
 #ifdef CLIENT_DLL
 bool CRD_HoIAF_System::HasActiveBountyForMission( const char *szMission, PublishedFileId_t addonID, bool bOnlyOnServer, bool bAllowClaimed )
 {
+	if ( rd_notification_debug_fake.GetBool() )
+	{
+		// go based on notifications if we're using fake notifications
+		FOR_EACH_VEC( m_Notifications, i )
+		{
+			if ( m_Notifications[i]->Type != HoIAFNotification_t::NOTIFICATION_BOUNTY )
+			{
+				continue;
+			}
+
+			FOR_EACH_VEC( m_Notifications[i]->BountyMissions, j )
+			{
+				if ( !V_stricmp( m_Notifications[i]->BountyMissions[j].MissionName, szMission ) && m_Notifications[i]->BountyMissions[j].AddonID == addonID && ( bAllowClaimed || !m_Notifications[i]->BountyMissions[j].Claimed ) )
+				{
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
 	if ( bOnlyOnServer )
 	{
 		const char *szDedicatedServerIP = UTIL_RD_GetCurrentLobbyID().IsValid() ? UTIL_RD_GetCurrentLobbyData( "system:rd_dedicated_server" ) : "";
