@@ -23,6 +23,7 @@
 #include <tier0/memdbgon.h>
 
 float g_fMarinePoisonDuration = 0;
+int g_iForceMotionBlurUpdateFrame = 0;
 bool g_bBlurredLastTime = false;
 static float fNextDrawTime = 0.0f;
 ConVar asw_motionblur( "asw_motionblur", "0", FCVAR_NONE, "Motion Blur" );			// motion blur on/off
@@ -81,7 +82,7 @@ void CASWViewRender::Render2DEffectsPreHUD( const CViewSetup &viewsetup )
 void CASWViewRender::DoMotionBlur( const CViewSetup &viewsetup )
 {
 	bool bShouldDraw = asw_motionblur.GetBool() || g_fMarinePoisonDuration > 0;
-	if ( !bShouldDraw && !asw_motionblur_forceupdate.GetBool() )
+	if ( !bShouldDraw && !asw_motionblur_forceupdate.GetBool() && g_iForceMotionBlurUpdateFrame != gpGlobals->framecount )
 	{
 		g_bBlurredLastTime = false;
 		return;
@@ -491,6 +492,20 @@ void CLocalTimeProxy_Hour::OnBind( void *pC_BaseEntity )
 }
 
 EXPOSE_MATERIAL_PROXY( CLocalTimeProxy_Hour, LocalTime_Hour );
+
+class CASWForceMotionBlurUpdateProxy : public IMaterialProxy
+{
+public:
+	bool Init( IMaterial *pMaterial, KeyValues *pKeyValues ) override { m_pMaterial = pMaterial; return true; }
+	void OnBind( void * ) override { g_iForceMotionBlurUpdateFrame = gpGlobals->framecount; }
+	void Release() override {}
+	IMaterial *GetMaterial() override { return m_pMaterial; }
+
+private:
+	IMaterial *m_pMaterial;
+};
+
+EXPOSE_MATERIAL_PROXY( CASWForceMotionBlurUpdateProxy, ASWForceMotionBlurUpdate );
 
 // Set to true by the client mode when rendering glows, false when done
 bool g_bRenderingGlows;
