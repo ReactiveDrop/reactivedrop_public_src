@@ -24,6 +24,7 @@ extern ConVar rd_last_game_hardcoreff;
 extern ConVar rd_last_game_maxplayers;
 extern ConVar rd_reduce_motion;
 extern ConVar rd_notification_debug_fake;
+ConVar rd_mission_chooser_workshop_icon( "rd_mission_chooser_workshop_icon", "0", FCVAR_NONE, "Show an icon on workshop missions and campaigns." );
 
 const char *const g_ASW_ChooserTypeName[] =
 {
@@ -635,13 +636,24 @@ CASW_Mission_Chooser_Entry::CASW_Mission_Chooser_Entry( TGD_Grid *parent, const 
 	}
 
 	m_iGridIndex = -1;
-	if ( pMission->WorkshopID != k_PublishedFileIdInvalid )
+	if ( ( ( pCampaign && pCampaign->WorkshopID != k_PublishedFileIdInvalid ) || ( pMission && pMission->WorkshopID != k_PublishedFileIdInvalid ) ) && rd_mission_chooser_workshop_icon.GetBool() )
 	{
 		m_MissionModifiers.AddToTail( MM_WORKSHOP );
 	}
-	if ( HoIAF()->HasActiveBountyForMission( pMission->BaseName, pMission->WorkshopID, true ) )
+	if ( pMission && HoIAF()->HasActiveBountyForMission( pMission->BaseName, pMission->WorkshopID, true ) )
 	{
 		m_MissionModifiers.AddToTail( MM_BOUNTY );
+	}
+	else if ( !pMission && pCampaign )
+	{
+		FOR_EACH_VEC( pCampaign->Missions, i )
+		{
+			if ( i != 0 && HoIAF()->HasActiveBountyForMission( pCampaign->Missions[i].MapName, pCampaign->WorkshopID, true ) )
+			{
+				m_MissionModifiers.AddToTail( MM_BOUNTY );
+				break;
+			}
+		}
 	}
 #ifdef RD_7A_DROPS
 	// TODO: fill m_AvailableMaterials
