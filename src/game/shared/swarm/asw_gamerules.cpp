@@ -891,6 +891,7 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		RecvPropString( RECVINFO( m_szStatsMusicOverride ) ),
 		RecvPropArray3( RECVINFO_ARRAY( m_iKickVotes ), RecvPropInt( RECVINFO( m_iKickVotes[0] ) ) ),
 		RecvPropArray3( RECVINFO_ARRAY( m_iLeaderVotes ), RecvPropInt( RECVINFO( m_iLeaderVotes[0] ) ) ),
+		RecvPropInt( RECVINFO( m_iServerTypeFlags ) ),
 	#else
 		SendPropInt(SENDINFO(m_iGameState), 8, SPROP_UNSIGNED ),
 		SendPropBool(SENDINFO(m_bMissionSuccess)),
@@ -933,6 +934,7 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		SendPropString( SENDINFO( m_szStatsMusicOverride ) ),
 		SendPropArray3( SENDINFO_ARRAY3( m_iKickVotes ), SendPropInt( SENDINFO_ARRAY( m_iKickVotes ), NumBitsForCount( ASW_MAX_READY_PLAYERS ), SPROP_UNSIGNED ) ),
 		SendPropArray3( SENDINFO_ARRAY3( m_iLeaderVotes ), SendPropInt( SENDINFO_ARRAY( m_iLeaderVotes ), NumBitsForCount( ASW_MAX_READY_PLAYERS ), SPROP_UNSIGNED ) ),
+		SendPropInt( SENDINFO( m_iServerTypeFlags ), 1, SPROP_UNSIGNED ),
 	#endif
 END_NETWORK_TABLE()
 
@@ -1434,6 +1436,7 @@ CAlienSwarm::CAlienSwarm()
 	m_iPreviousGameState = 200;
 	m_iPreviousMissionWorkshopID = 999999; // impossible workshop ID
 	m_bShouldSaveChangedLoadout = false;
+	m_iServerTypeFlags = 0;
 
 	engine->SetPitchScale( rd_sound_pitch_scale.GetFloat() );
 
@@ -1733,6 +1736,8 @@ void CAlienSwarm::FullReset()
 	m_bHadBriefingCamera = false;
 	m_szBriefingVideo.GetForModify()[0] = '\0';
 	m_iCosmeticRandomSeed = std::time( NULL );
+
+	m_iServerTypeFlags = 0;
 
 	m_ActorSpeakingUntil.Purge();
 

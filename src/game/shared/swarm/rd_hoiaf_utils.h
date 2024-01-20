@@ -91,6 +91,7 @@ public:
 	// HoIAF Mission Bounties
 	const char *BountyAddonName( PublishedFileId_t addonID );
 #ifdef CLIENT_DLL
+	bool HasActiveBountyForMission( const char *szMission, PublishedFileId_t addonID, bool bOnlyOnServer = false, bool bAllowClaimed = false );
 	void MarkBountyAsCompleted( int iBountyID );
 #endif
 

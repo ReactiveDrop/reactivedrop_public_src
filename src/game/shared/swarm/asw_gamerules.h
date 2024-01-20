@@ -587,6 +587,12 @@ public:
 	bool m_bHadBriefingCamera;
 #endif
 
+	enum
+	{
+		SERVER_HOIAF = 0x00000001, // server is a "participating server" (used to differentiate between ranked and unranked servers on the same IP on the client)
+	};
+	CNetworkVar( uint32_t, m_iServerTypeFlags );
+
 private:
 	char m_szPickupDenial[128];
 

@@ -13,6 +13,8 @@
 #include "asw_medal_store.h"
 #include "rd_inventory_shared.h"
 #include "rd_vgui_notifications.h"
+#include "rd_lobby_utils.h"
+#include "asw_gamerules.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -269,6 +271,55 @@ const char *CRD_HoIAF_System::BountyAddonName( PublishedFileId_t addonID )
 }
 
 #ifdef CLIENT_DLL
+bool CRD_HoIAF_System::HasActiveBountyForMission( const char *szMission, PublishedFileId_t addonID, bool bOnlyOnServer, bool bAllowClaimed )
+{
+	if ( bOnlyOnServer )
+	{
+		const char *szDedicatedServerIP = UTIL_RD_GetCurrentLobbyID().IsValid() ? UTIL_RD_GetCurrentLobbyData( "system:rd_dedicated_server" ) : "";
+		if ( *szDedicatedServerIP == '\0' )
+		{
+			// we're not on a dedicated server
+			return false;
+		}
+
+		netadr_t DedicatedServerIP( szDedicatedServerIP );
+		// our IPs are stored with the first set of digits as the first byte, but netadr_t stores the last set of digits in the first byte. flip it.
+		if ( !IsRankedServerIP( DWordSwap( DedicatedServerIP.GetIP() ) ) )
+		{
+			// dedicated server IP address isn't on the ranked server list
+			return false;
+		}
+
+		if ( ASWGameRules() && !( ASWGameRules()->m_iServerTypeFlags.Get() & CAlienSwarm::SERVER_HOIAF ) )
+		{
+			// we're on an unranked server that shares an IP address with a ranked one.
+			return false;
+		}
+	}
+
+	FOR_EACH_VEC( m_HoIAFMissionBounties, i )
+	{
+		if ( V_stricmp( m_HoIAFMissionBounties[i]->Map, szMission ) || m_HoIAFMissionBounties[i]->AddonID != addonID )
+		{
+			continue;
+		}
+
+		if ( !bAllowClaimed )
+		{
+			C_ASW_Medal_Store *pMedalStore = GetMedalStore();
+			Assert( pMedalStore );
+			if ( pMedalStore && pMedalStore->HasCompletedBounty( m_HoIAFMissionBounties[i]->ID ) )
+			{
+				continue;
+			}
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
 void CRD_HoIAF_System::MarkBountyAsCompleted( int iBountyID )
 {
 	FOR_EACH_VEC( m_HoIAFMissionBounties, i )
