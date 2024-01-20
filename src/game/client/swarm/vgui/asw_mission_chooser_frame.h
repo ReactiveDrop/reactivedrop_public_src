@@ -14,6 +14,10 @@ class vgui::Label;
 class CNB_Header_Footer;
 class CampaignMapSearchLights;
 
+#ifdef RD_7A_DROPS
+enum RD_Crafting_Material_t;
+#endif
+
 // chooser types - what we're going to launch
 enum class ASW_CHOOSER_TYPE
 {
@@ -119,8 +123,24 @@ public:
 	char m_szMission[64];
 	ASW_CHOOSER_TYPE m_WorkshopChooserType;
 
+	enum MissionModifier_t
+	{
+		MM_WORKSHOP,	// mission was downloaded from the workshop (not built-in/official or manually installed)
+		MM_BOUNTY,		// unclaimed bounty on this mission and we are on a HoIAF server
+		MM_CRAFTING,	// crafting materials available here
+
+		NUM_MISSION_MODIFIER_TYPES,
+	};
+
+	int m_iGridIndex; // used for offsetting animated mission modifier icons
+	CUtlVector<MissionModifier_t> m_MissionModifiers;
+#ifdef RD_7A_DROPS
+	CUtlVector<RD_Crafting_Material_t> m_AvailableMaterials;
+#endif
+
 	vgui::ImagePanel *m_pImage;
 	vgui::Label *m_pTitle;
+	vgui::ImagePanel *m_pModifiers[NUM_MISSION_MODIFIER_TYPES];
 };
 
 #endif // _INCLUDED_IASW_MISSION_CHOOSER_FRAME_H

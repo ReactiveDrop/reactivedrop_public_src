@@ -10,6 +10,7 @@
 #include <vgui/ISystem.h>
 #include "campaignmapsearchlights.h"
 #include "fmtstr.h"
+#include "rd_hoiaf_utils.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -22,6 +23,7 @@ extern ConVar rd_last_game_onslaught;
 extern ConVar rd_last_game_hardcoreff;
 extern ConVar rd_last_game_maxplayers;
 extern ConVar rd_reduce_motion;
+extern ConVar rd_notification_debug_fake;
 
 const char *const g_ASW_ChooserTypeName[] =
 {
@@ -632,8 +634,29 @@ CASW_Mission_Chooser_Entry::CASW_Mission_Chooser_Entry( TGD_Grid *parent, const 
 		V_strncpy( m_szMission, pMission->BaseName, sizeof( m_szMission ) );
 	}
 
+	m_iGridIndex = -1;
+	if ( pMission->WorkshopID != k_PublishedFileIdInvalid )
+	{
+		m_MissionModifiers.AddToTail( MM_WORKSHOP );
+	}
+	if ( HoIAF()->HasActiveBountyForMission( pMission->BaseName, pMission->WorkshopID, true ) )
+	{
+		m_MissionModifiers.AddToTail( MM_BOUNTY );
+	}
+#ifdef RD_7A_DROPS
+	// TODO: fill m_AvailableMaterials
+	if ( m_AvailableMaterials.Count() != 0 )
+	{
+		m_MissionModifiers.AddToTail( MM_CRAFTING );
+	}
+#endif
+
 	m_pImage = new vgui::ImagePanel( this, "Image" );
 	m_pTitle = new vgui::Label( this, "Title", "" );
+	for ( int i = 0; i < NUM_MISSION_MODIFIER_TYPES; i++ )
+	{
+		m_pModifiers[i] = new vgui::ImagePanel( this, VarArgs( "Modifier%d", i ) );
+	}
 }
 
 CASW_Mission_Chooser_Entry::CASW_Mission_Chooser_Entry( TGD_Grid *parent, const char *pElementName, ASW_CHOOSER_TYPE iChooserType ) : BaseClass( parent, pElementName )
@@ -642,8 +665,14 @@ CASW_Mission_Chooser_Entry::CASW_Mission_Chooser_Entry( TGD_Grid *parent, const 
 	m_szMission[0] = '\0';
 	m_WorkshopChooserType = iChooserType;
 
+	m_iGridIndex = -1;
+
 	m_pImage = new vgui::ImagePanel( this, "Image" );
 	m_pTitle = new vgui::Label( this, "Title", "" );
+	for ( int i = 0; i < NUM_MISSION_MODIFIER_TYPES; i++ )
+	{
+		m_pModifiers[i] = new vgui::ImagePanel( this, VarArgs( "Modifier%d", i ) );
+	}
 }
 
 void CASW_Mission_Chooser_Entry::ApplySchemeSettings( vgui::IScheme *pScheme )
@@ -686,6 +715,30 @@ void CASW_Mission_Chooser_Entry::ApplySchemeSettings( vgui::IScheme *pScheme )
 		m_pImage->SetImage( STRING( pCampaign->ChooseCampaignTexture ) );
 		m_pTitle->SetText( STRING( pCampaign->CampaignName ) );
 		bIsSubscribed = pCampaign->WorkshopID == k_PublishedFileIdInvalid || g_ReactiveDropWorkshop.IsSubscribedToFile( pCampaign->WorkshopID );
+	}
+
+	FOR_EACH_VEC( m_MissionModifiers, i )
+	{
+		m_pModifiers[i]->SetVisible( true );
+		switch ( m_MissionModifiers[i] )
+		{
+		case MM_WORKSHOP:
+			m_pModifiers[i]->SetImage( "icon_modwrench" );
+			break;
+		case MM_BOUNTY:
+			m_pModifiers[i]->SetImage( "icon_server_ranked" );
+			break;
+		case MM_CRAFTING:
+			DebuggerBreakIfDebugging(); // TODO: rotating crafting item display
+			break;
+		default:
+			Assert( !"Unhandled mission modifier type" );
+			break;
+		}
+	}
+	for ( int i = m_MissionModifiers.Count(); i < NUM_MISSION_MODIFIER_TYPES; i++ )
+	{
+		m_pModifiers[i]->SetVisible( false );
 	}
 
 	if ( bIsSubscribed )
