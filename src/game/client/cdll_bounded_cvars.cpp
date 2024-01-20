@@ -26,11 +26,7 @@ public:
 	CBoundedCvar_Predict() :
 		ConVar_ServerBounded( "cl_predict",
 			"1.0",
-#ifdef INFESTED_DLL
-			FCVAR_USERINFO,
-#else
 			FCVAR_USERINFO | FCVAR_CHEAT,
-#endif
 			"Perform client side prediction. WARNING: Turning this off will cause extreme lag and break certain interactions like melee animations." )
 	{
 	}
