@@ -230,6 +230,33 @@ void CRD_HoIAF_System::InsertChatMessages( CBaseHudChat *pChat )
 
 const char *CRD_HoIAF_System::BountyAddonName( PublishedFileId_t addonID )
 {
+	if ( rd_notification_debug_fake.GetBool() )
+	{
+		if ( addonID == 848331447 )
+		{
+			return "Nest";
+		}
+		if ( addonID == 861497042 )
+		{
+			return "City 17";
+		}
+		if ( addonID == 936101427 )
+		{
+			return "Operation: Chaos Theory";
+		}
+		if ( addonID == 1312255876 )
+		{
+			return "Warehouse";
+		}
+		if ( addonID == 2979008182 )
+		{
+			return "Gluon Vengeance Bonus Mission";
+		}
+
+		Assert( addonID == k_PublishedFileIdInvalid );
+		return NULL;
+	}
+
 	FOR_EACH_VEC( m_HoIAFMissionBounties, i )
 	{
 		if ( m_HoIAFMissionBounties[i]->AddonID == addonID && !m_HoIAFMissionBounties[i]->AddonName.IsEmpty() )

@@ -357,11 +357,7 @@ public:
 			vgui::surface()->DrawTexturedRectEx( &rect[2] );
 			vgui::surface()->DrawTexturedRectEx( &rect[3] );
 
-			float flMin = 0, flMax = 255;
 			int x = RemapValClamped( c[component], 0, 255, x0 + iCapWidth, x1 - iCapWidth );
-			const HudSheetTexture_t &Bar = g_RD_HUD_Sheets.m_Controls[CRD_HUD_Sheets::UV_slider_bar];
-			const HudSheetTexture_t &BarEnd = g_RD_HUD_Sheets.m_Controls[CRD_HUD_Sheets::UV_slider_bar_end];
-
 			if ( parent->m_iActiveOption != component )
 				HUD_SHEET_DRAW_RECT( x - iLineHeight / 4, y0, x + iLineHeight / 4, y1, Controls, UV_slider_handle );
 			else if ( parent->m_bSliderActive )

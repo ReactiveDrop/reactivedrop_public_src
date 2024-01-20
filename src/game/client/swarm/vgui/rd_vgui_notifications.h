@@ -82,10 +82,13 @@ public:
 	virtual void SetSeen( int iSeen ) = 0;
 	virtual bool MatchesNotification( const HoIAFNotification_t *pNotification ) const = 0;
 	virtual void OnClicked();
+	virtual KeyValues *GetNotificationActions() = 0;
 	void OnCursorEntered() override;
 	void NavigateTo() override;
 	void OnSetFocus() override;
 	void OnKillFocus() override;
+	void OnMousePressed( vgui::MouseCode code ) override;
+	void OnKeyCodePressed( vgui::KeyCode code ) override;
 	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 	void PerformLayout() override;
 
@@ -114,6 +117,7 @@ public:
 	void InitFromNotification() override;
 	bool MatchesNotification( const HoIAFNotification_t *pNotification ) const override;
 	void SetSeen( int iSeen ) override;
+	KeyValues *GetNotificationActions() override;
 	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 };
 
@@ -128,6 +132,7 @@ public:
 	void InitFromNotification() override;
 	bool MatchesNotification( const HoIAFNotification_t *pNotification ) const override;
 	void SetSeen( int iSeen ) override;
+	KeyValues *GetNotificationActions() override;
 	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 
 	vgui::ImagePanel *m_pImgCompleted[MAX_MISSIONS_PER_BOUNTY];
@@ -176,6 +181,7 @@ class CRD_VGUI_Notifications_Filters : public vgui::EditablePanel
 	DECLARE_CLASS_SIMPLE( CRD_VGUI_Notifications_Filters, vgui::EditablePanel );
 public:
 	CRD_VGUI_Notifications_Filters( vgui::Panel *parent, const char *panelName );
+	~CRD_VGUI_Notifications_Filters();
 
 	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 

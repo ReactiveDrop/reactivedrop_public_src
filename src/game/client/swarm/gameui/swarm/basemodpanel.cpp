@@ -48,6 +48,7 @@
 #include "VGameLobby.h"
 #include "VGameOptions.h"
 #include "VGameSettings.h"
+#include "VGenericChoiceList.h"
 #include "VGenericConfirmation.h"
 #include "VGenericWaitScreen.h"
 #include "vgetlegacydata.h"
@@ -304,6 +305,8 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 	case WT_ITEMSHOWCASE:
 		nWindowPriority = WPRI_MESSAGE;
 		break;
+	case WT_GENERICCHOICELIST:
+		nWindowPriority = WPRI_MESSAGE;
 	}
 
 	if ( !newNav )
@@ -572,6 +575,10 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 
 		case WT_MISSIONCHOOSER:
 			m_Frames[wt] = new CASW_Mission_Chooser_Frame();
+			break;
+
+		case WT_GENERICCHOICELIST:
+			m_Frames[wt] = new GenericChoiceList( this, "GenericChoiceList" );
 			break;
 
 		default:

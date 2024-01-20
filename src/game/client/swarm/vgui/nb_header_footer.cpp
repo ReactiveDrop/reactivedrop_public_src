@@ -273,6 +273,7 @@ CNB_Header_Footer::CNB_Header_Footer( vgui::Panel *parent, const char *name ) : 
 	m_nTitleStyle = NB_TITLE_MEDIUM;
 	m_nBackgroundStyle = NB_BACKGROUND_TRANSPARENT_BLUE;
 	m_nGradientBarY = 0;
+	m_nGradientBarWidth = 0;
 	m_nGradientBarHeight = 480;
 }
 
@@ -355,7 +356,8 @@ void CNB_Header_Footer::PerformLayout()
 {
 	BaseClass::PerformLayout();
 
-	m_pGradientBar->SetBounds( 0, YRES( m_nGradientBarY ), ScreenWidth(), YRES( m_nGradientBarHeight ) );
+	int nGradientBarWidth = m_nGradientBarWidth ? YRES( m_nGradientBarWidth ) : ScreenWidth();
+	m_pGradientBar->SetBounds( ( ScreenWidth() - nGradientBarWidth ) / 2, YRES( m_nGradientBarY ), nGradientBarWidth, YRES( m_nGradientBarHeight ) );
 }
 
 void CNB_Header_Footer::OnThink()
@@ -397,7 +399,18 @@ void CNB_Header_Footer::SetGradientBarPos( int nY, int nHeight )
 {
 	m_nGradientBarY = nY;
 	m_nGradientBarHeight = nHeight;
-	m_pGradientBar->SetBounds( 0, YRES( m_nGradientBarY ), ScreenWidth(), YRES( m_nGradientBarHeight ) );
+	InvalidateLayout();
+}
+
+void CNB_Header_Footer::SetGradientBarWide( int nWidth )
+{
+	m_nGradientBarWidth = nWidth;
+	InvalidateLayout();
+}
+
+void CNB_Header_Footer::SetGradientBarColor( Color color )
+{
+	m_pGradientBar->m_Color = color;
 }
 
 void CNB_Header_Footer::SetTitleStyle( NB_Title_Style nTitleStyle )
@@ -483,6 +496,7 @@ void CNB_Header_Footer::PaintBackground()
 
 CNB_Gradient_Bar::CNB_Gradient_Bar( vgui::Panel *parent, const char *name ) : BaseClass( parent, name )
 {
+	m_Color = Color( 53, 86, 117, 255 );
 }
 
 void CNB_Gradient_Bar::PaintBackground()
@@ -497,9 +511,20 @@ void CNB_Gradient_Bar::PaintBackground()
 
 	// fill bar background
 	vgui::surface()->DrawSetColor( Color( 0, 0, 0, 255 * flAlpha ) );
-	vgui::surface()->DrawFilledRect( 0, y, wide, y + tall );
+	if ( wide == ScreenWidth() )
+	{
+		vgui::surface()->DrawFilledRect( 0, y, wide, y + tall );
+	}
+	else
+	{
+		// if we're not full screen width, fade the background shading as well
+		int iEdgeWide = wide * 0.05f;
+		vgui::surface()->DrawFilledRectFade( 0, y, iEdgeWide, y + tall, 0, 255, true );
+		vgui::surface()->DrawFilledRect( iEdgeWide, y, wide - iEdgeWide, y + tall );
+		vgui::surface()->DrawFilledRectFade( wide - iEdgeWide, y, wide, y + tall, 255, 0, true );
+	}
 
-	vgui::surface()->DrawSetColor( Color( 53, 86, 117, 255 * flAlpha ) );
+	vgui::surface()->DrawSetColor( Color( m_Color.r(), m_Color.g(), m_Color.b(), m_Color.a() * flAlpha ) );
 
 	int nBarPosY = y + YRES( 4 );
 	int nBarHeight = tall - YRES( 8 );

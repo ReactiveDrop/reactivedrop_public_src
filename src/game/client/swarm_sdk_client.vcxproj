@@ -432,6 +432,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="..\shared\swarm\rd_map_texture_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_vgui_vscript_shared.h" />
     <ClInclude Include="swarm\c_rd_infection_deathmatch_stats.h" />
+    <ClInclude Include="swarm\gameui\swarm\vgenericchoicelist.h" />
     <ClInclude Include="swarm\rd_font_zbalermorna.h" />
     <ClInclude Include="swarm\vgui\asw_scalable_text.inc">
       <FileType>Document</FileType>
@@ -1924,6 +1925,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="swarm\gameui\swarm\vgenericchoicelist.cpp" />
     <ClCompile Include="swarm\gameui\swarm\vgenericconfirmation.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>

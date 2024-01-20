@@ -83,6 +83,8 @@ public:
 	void SetBriefingCameraEnabled( bool bBriefingCameraenabled );
 	void SetGradientBarEnabled( bool bEnabled );
 	void SetGradientBarPos( int nY, int nHeight );
+	void SetGradientBarWide( int nWidth );
+	void SetGradientBarColor( Color color );
 	
 	// == MANAGED_MEMBER_POINTERS_START: Do not edit by hand ==
 	vgui::Panel	*m_pBackground;
@@ -102,6 +104,7 @@ public:
 	bool m_bBriefingCameraEnabled;
 	bool m_bGradientBarEnabled;
 	int m_nGradientBarY;
+	int m_nGradientBarWidth;
 	int m_nGradientBarHeight;
 
 	NB_Title_Style m_nTitleStyle;
@@ -115,6 +118,8 @@ public:
 	CNB_Gradient_Bar( vgui::Panel *parent, const char *name );
 
 	virtual void PaintBackground();
+
+	Color m_Color;
 };
 
 #endif // _INCLUDED_NB_HEADER_FOOTER_H

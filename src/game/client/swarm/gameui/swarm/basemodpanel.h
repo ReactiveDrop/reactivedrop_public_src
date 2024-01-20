@@ -86,6 +86,7 @@ namespace BaseModUI
 		WT_CONTRACTS,
 		WT_COLLECTIONS,
 		WT_MISSIONCHOOSER,
+		WT_GENERICCHOICELIST,
 		WT_WINDOW_COUNT // WT_WINDOW_COUNT must be last in the list!
 	};
 
