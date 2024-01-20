@@ -1,0 +1,16 @@
+#include "common_ps_fxc.h"
+
+sampler TexSampler : register( s0 );
+
+struct PS_INPUT
+{
+	float4 screenPos				: TEXCOORD0;
+};
+
+float4 main( PS_INPUT i ) : COLOR
+{
+	float2 screenPos = i.screenPos.xy / i.screenPos.w / 2.0f;
+	float4 sample = tex2D( TexSampler, float2(screenPos.x + 0.5f, 0.5f - screenPos.y) );
+
+	return FinalOutput( float4( sample.rgb, 1.0f ), 0, PIXEL_FOG_TYPE_NONE, TONEMAP_SCALE_NONE );
+}
