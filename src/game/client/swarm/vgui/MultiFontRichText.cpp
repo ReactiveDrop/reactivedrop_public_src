@@ -2810,7 +2810,141 @@ bool MultiFontRichText::HasText() const
 	return true;
 }
 
+void MultiFontRichText::AppendBBCode( const wchar_t *wszText )
+{
+	Color defaultColor = m_FormatStream.Tail().color;
 
+	struct Formatting_t
+	{
+		enum
+		{
+			CHANGE_NONE,
+			CHANGE_COLOR,
+			CHANGE_BOLD,
+			CHANGE_ITALIC,
+		} change;
+		Color color;
+		bool bold;
+		bool italic;
+	};
+	CUtlVector<Formatting_t> formattingStack;
+	formattingStack.AddToTail( Formatting_t{ Formatting_t::CHANGE_NONE, defaultColor, false, false } );
+	InsertColorChange( defaultColor );
+
+	vgui::IScheme *pScheme = vgui::scheme()->GetIScheme( GetScheme() );
+	Assert( pScheme );
+	if ( !pScheme )
+		return;
+
+	vgui::HFont fontMatrix[2][2] =
+	{
+		{
+			pScheme->GetFont( "Default", IsProportional() ),
+			pScheme->GetFont( "DefaultTextItalic", IsProportional() ),
+		},
+		{
+			pScheme->GetFont( "DefaultTextBold", IsProportional() ),
+			pScheme->GetFont( "DefaultTextBoldItalic", IsProportional() ),
+		},
+	};
+
+	for ( const wchar_t *pBuf = wszText; *pBuf; pBuf++ )
+	{
+		if ( *pBuf == L'[' )
+		{
+			if ( pBuf[1] == L'c' && pBuf[2] == L'o' && pBuf[3] == L'l' && pBuf[4] == L'o' && pBuf[5] == L'r' && pBuf[6] == L'=' && pBuf[7] == L'#' &&
+				pBuf[8] && pBuf[9] && pBuf[10] && pBuf[11] && pBuf[12] && pBuf[13] && pBuf[14] == L']' )
+			{
+				char szHex[6]
+				{
+					( char )pBuf[8],
+					( char )pBuf[9],
+					( char )pBuf[10],
+					( char )pBuf[11],
+					( char )pBuf[12],
+					( char )pBuf[13],
+				};
+				byte szBin[3]{};
+				V_hextobinary( szHex, 6, szBin, sizeof( szBin ) );
+
+				Color nextColor{ szBin[0], szBin[1], szBin[2], 255 };
+				formattingStack.AddToTail( formattingStack[formattingStack.Count() - 1] );
+				formattingStack.Tail().change = Formatting_t::CHANGE_COLOR;
+				formattingStack.Tail().color = nextColor;
+				InsertColorChange( nextColor );
+
+				pBuf += 14;
+				continue;
+			}
+
+			if ( pBuf[1] == L'/' && pBuf[2] == L'c' && pBuf[3] == L'o' && pBuf[4] == L'l' && pBuf[5] == L'o' && pBuf[6] == L'r' && pBuf[7] == L']' )
+			{
+				Assert( formattingStack.Count() > 1 && formattingStack.Tail().change == Formatting_t::CHANGE_COLOR );
+
+				formattingStack.RemoveMultipleFromTail( 1 );
+				InsertColorChange( formattingStack.Tail().color );
+
+				pBuf += 7;
+
+				continue;
+			}
+
+			if ( pBuf[1] == L'b' && pBuf[2] == L']' )
+			{
+				formattingStack.AddToTail( formattingStack[formattingStack.Count() - 1] );
+				formattingStack.Tail().change = Formatting_t::CHANGE_ITALIC;
+				formattingStack.Tail().italic = true;
+				InsertFontChange( fontMatrix[formattingStack.Tail().bold][formattingStack.Tail().italic] );
+
+				pBuf += 2;
+
+				continue;
+			}
+
+			if ( pBuf[1] == L'i' && pBuf[2] == L']' )
+			{
+				formattingStack.AddToTail( formattingStack[formattingStack.Count() - 1] );
+				formattingStack.Tail().change = Formatting_t::CHANGE_ITALIC;
+				formattingStack.Tail().italic = true;
+				InsertFontChange( fontMatrix[formattingStack.Tail().bold][formattingStack.Tail().italic] );
+
+				pBuf += 2;
+
+				continue;
+			}
+
+			if ( pBuf[1] == L'/' && pBuf[2] == L'b' && pBuf[3] == L']' )
+			{
+				Assert( formattingStack.Count() > 1 && formattingStack.Tail().change == Formatting_t::CHANGE_BOLD );
+
+				formattingStack.RemoveMultipleFromTail( 1 );
+				InsertFontChange( fontMatrix[formattingStack.Tail().bold][formattingStack.Tail().italic] );
+
+				pBuf += 3;
+
+				continue;
+			}
+
+			if ( pBuf[1] == L'/' && pBuf[2] == L'i' && pBuf[3] == L']' )
+			{
+				Assert( formattingStack.Count() > 1 && formattingStack.Tail().change == Formatting_t::CHANGE_ITALIC );
+
+				formattingStack.RemoveMultipleFromTail( 1 );
+				InsertFontChange( fontMatrix[formattingStack.Tail().bold][formattingStack.Tail().italic] );
+
+				pBuf += 3;
+
+				continue;
+			}
+
+			Assert( !"unexpected bbcode" );
+		}
+
+		InsertChar( *pBuf );
+	}
+
+	Assert( formattingStack.Count() == 1 );
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: Returns the height of the base font
@@ -2819,7 +2953,6 @@ int MultiFontRichText::GetLineHeight()
 {
 	return MAX( surface()->GetFontTall( m_hFontDefault ), 1 );
 }
-
 
 #ifdef DBGFLAG_VALIDATE
 //-----------------------------------------------------------------------------

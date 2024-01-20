@@ -3991,140 +3991,6 @@ void CRD_ItemInstance::FormatDescription( wchar_t *wszBuf, size_t sizeOfBufferIn
 ConVar rd_briefing_item_details_color1( "rd_briefing_item_details_color1", "221 238 255 255", FCVAR_NONE );
 ConVar rd_briefing_item_details_color2( "rd_briefing_item_details_color2", "170 204 238 255", FCVAR_NONE );
 
-void CRD_ItemInstance::AppendBBCode( vgui::MultiFontRichText *pRichText, const wchar_t *wszBuf, Color defaultColor )
-{
-	struct Formatting_t
-	{
-		enum
-		{
-			CHANGE_NONE,
-			CHANGE_COLOR,
-			CHANGE_BOLD,
-			CHANGE_ITALIC,
-		} change;
-		Color color;
-		bool bold;
-		bool italic;
-	};
-	CUtlVector<Formatting_t> formattingStack;
-	formattingStack.AddToTail( Formatting_t{ Formatting_t::CHANGE_NONE, defaultColor, false, false } );
-	pRichText->InsertColorChange( defaultColor );
-
-	vgui::IScheme *pScheme = vgui::scheme()->GetIScheme( pRichText->GetScheme() );
-	Assert( pScheme );
-	if ( !pScheme )
-		return;
-
-	vgui::HFont fontMatrix[2][2] =
-	{
-		{
-			pScheme->GetFont( "Default", pRichText->IsProportional() ),
-			pScheme->GetFont( "DefaultTextItalic", pRichText->IsProportional() ),
-		},
-		{
-			pScheme->GetFont( "DefaultTextBold", pRichText->IsProportional() ),
-			pScheme->GetFont( "DefaultTextBoldItalic", pRichText->IsProportional() ),
-		},
-	};
-
-	for ( const wchar_t *pBuf = wszBuf; *pBuf; pBuf++ )
-	{
-		if ( *pBuf == L'[' )
-		{
-			if ( pBuf[1] == L'c' && pBuf[2] == L'o' && pBuf[3] == L'l' && pBuf[4] == L'o' && pBuf[5] == L'r' && pBuf[6] == L'=' && pBuf[7] == L'#' &&
-				pBuf[8] && pBuf[9] && pBuf[10] && pBuf[11] && pBuf[12] && pBuf[13] && pBuf[14] == L']' )
-			{
-				char szHex[6]
-				{
-					( char )pBuf[8],
-					( char )pBuf[9],
-					( char )pBuf[10],
-					( char )pBuf[11],
-					( char )pBuf[12],
-					( char )pBuf[13],
-				};
-				byte szBin[3]{};
-				V_hextobinary( szHex, 6, szBin, sizeof( szBin ) );
-
-				Color nextColor{ szBin[0], szBin[1], szBin[2], 255 };
-				formattingStack.AddToTail( formattingStack[formattingStack.Count() - 1] );
-				formattingStack.Tail().change = Formatting_t::CHANGE_COLOR;
-				formattingStack.Tail().color = nextColor;
-				pRichText->InsertColorChange( nextColor );
-
-				pBuf += 14;
-				continue;
-			}
-
-			if ( pBuf[1] == L'/' && pBuf[2] == L'c' && pBuf[3] == L'o' && pBuf[4] == L'l' && pBuf[5] == L'o' && pBuf[6] == L'r' && pBuf[7] == L']' )
-			{
-				Assert( formattingStack.Count() > 1 && formattingStack.Tail().change == Formatting_t::CHANGE_COLOR );
-
-				formattingStack.RemoveMultipleFromTail( 1 );
-				pRichText->InsertColorChange( formattingStack.Tail().color );
-
-				pBuf += 7;
-
-				continue;
-			}
-
-			if ( pBuf[1] == L'b' && pBuf[2] == L']' )
-			{
-				formattingStack.AddToTail( formattingStack[formattingStack.Count() - 1] );
-				formattingStack.Tail().change = Formatting_t::CHANGE_ITALIC;
-				formattingStack.Tail().italic = true;
-				pRichText->InsertFontChange( fontMatrix[formattingStack.Tail().bold][formattingStack.Tail().italic] );
-
-				pBuf += 2;
-
-				continue;
-			}
-
-			if ( pBuf[1] == L'i' && pBuf[2] == L']' )
-			{
-				formattingStack.AddToTail( formattingStack[formattingStack.Count() - 1] );
-				formattingStack.Tail().change = Formatting_t::CHANGE_ITALIC;
-				formattingStack.Tail().italic = true;
-				pRichText->InsertFontChange( fontMatrix[formattingStack.Tail().bold][formattingStack.Tail().italic] );
-
-				pBuf += 2;
-
-				continue;
-			}
-
-			if ( pBuf[1] == L'/' && pBuf[2] == L'b' && pBuf[3] == L']' )
-			{
-				Assert( formattingStack.Count() > 1 && formattingStack.Tail().change == Formatting_t::CHANGE_BOLD );
-
-				formattingStack.RemoveMultipleFromTail( 1 );
-				pRichText->InsertFontChange( fontMatrix[formattingStack.Tail().bold][formattingStack.Tail().italic] );
-
-				pBuf += 3;
-
-				continue;
-			}
-
-			if ( pBuf[1] == L'/' && pBuf[2] == L'i' && pBuf[3] == L']' )
-			{
-				Assert( formattingStack.Count() > 1 && formattingStack.Tail().change == Formatting_t::CHANGE_ITALIC );
-
-				formattingStack.RemoveMultipleFromTail( 1 );
-				pRichText->InsertFontChange( fontMatrix[formattingStack.Tail().bold][formattingStack.Tail().italic] );
-
-				pBuf += 3;
-
-				continue;
-			}
-
-			Assert( !"unexpected bbcode" );
-		}
-
-		pRichText->InsertChar( *pBuf );
-	}
-
-	Assert( formattingStack.Count() == 1 );
-}
-
 void CRD_ItemInstance::FormatDescription( vgui::MultiFontRichText *pRichText, bool bIncludeAccessories, Color descriptionColor, Color beforeAfterColor ) const
 {
 	const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( m_iItemDefID );
@@ -4135,12 +4001,14 @@ void CRD_ItemInstance::FormatDescription( vgui::MultiFontRichText *pRichText, bo
 	FormatDescription( wszBuf, sizeof( wszBuf ), pDef->BeforeDescription, false );
 	if ( wszBuf[0] )
 	{
-		AppendBBCode( pRichText, wszBuf, beforeAfterColor );
+		pRichText->InsertColorChange( beforeAfterColor );
+		pRichText->AppendBBCode( wszBuf );
 		pRichText->InsertString( L"\n\n" );
 	}
 
 	FormatDescription( wszBuf, sizeof( wszBuf ), pDef->Description, !pDef->HasInGameDescription );
-	AppendBBCode( pRichText, wszBuf, descriptionColor );
+	pRichText->InsertColorChange( descriptionColor );
+	pRichText->AppendBBCode( wszBuf );
 
 	if ( bIncludeAccessories )
 	{
@@ -4155,7 +4023,8 @@ void CRD_ItemInstance::FormatDescription( vgui::MultiFontRichText *pRichText, bo
 			if ( wszBuf[0] )
 			{
 				pRichText->InsertString( L"\n" );
-				AppendBBCode( pRichText, wszBuf, descriptionColor );
+				pRichText->InsertColorChange( descriptionColor );
+				pRichText->AppendBBCode( wszBuf );
 			}
 		}
 	}
@@ -4182,7 +4051,8 @@ void CRD_ItemInstance::FormatDescription( vgui::MultiFontRichText *pRichText, bo
 		if ( wszBuf[0] )
 		{
 			pRichText->InsertString( L"\n\n" );
-			AppendBBCode( pRichText, wszBuf, beforeAfterColor );
+			pRichText->InsertColorChange( beforeAfterColor );
+			pRichText->AppendBBCode( wszBuf );
 		}
 	}
 }

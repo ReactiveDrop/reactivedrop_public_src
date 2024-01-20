@@ -219,7 +219,6 @@ public:
 	void SetFromInstance( const ReactiveDropInventory::ItemInstance_t &instance );
 	void FormatDescription( wchar_t *wszBuf, size_t sizeOfBufferInBytes, const CUtlString &szDesc, bool bIsSteamCommunityDesc ) const;
 #ifdef CLIENT_DLL
-	static void AppendBBCode( vgui::MultiFontRichText *pRichText, const wchar_t *wszBuf, Color defaultColor );
 	void FormatDescription( vgui::MultiFontRichText *pRichText, bool bIncludeAccessories = true, Color descriptionAfterColor = rd_briefing_item_details_color1.GetColor(), Color beforeAfterColor = rd_briefing_item_details_color2.GetColor() ) const;
 	vgui::IImage *GetIcon() const;
 #endif

@@ -151,6 +151,8 @@ public:
 	int ParseTextStringForUrls(const char *text, int startPos, char *pchURLText, int cchURLText, char *pchURL, int cchURL, bool &clickable);
 	virtual void OnTextClicked(const wchar_t *text);
 
+	void AppendBBCode( const wchar_t *wszText );
+
 #ifdef DBGFLAG_VALIDATE
 	virtual void Validate( CValidator &validator, char *pchName );
 #endif // DBGFLAG_VALIDATE
