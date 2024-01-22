@@ -11,14 +11,15 @@ namespace BaseModUI
 
 	public:
 		QuickJoinPublicPanel( vgui::Panel *parent, const char *panelName );
-		virtual ~QuickJoinPublicPanel();
+		~QuickJoinPublicPanel();
 
-		virtual void OnMousePressed( vgui::MouseCode code );
-		virtual void OnCommand(const char *command);
+		void OnMousePressed( vgui::MouseCode code ) override;
+		void OnCommand( const char *command ) override;
+		bool ShouldAlwaysBeVisible() const override { return true; }
 
 	protected:
-		virtual void AddServersToList( void );
-		virtual const char *GetTitle( void ) { return "#L4D360UI_MainMenu_PublicLobbies"; }
+		void AddServersToList( void ) override;
+		const char *GetTitle( void ) override { return "#L4D360UI_MainMenu_PublicLobbies"; }
 
 		void RefreshQuery();
 	};

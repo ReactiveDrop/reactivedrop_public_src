@@ -343,9 +343,13 @@ void QuickJoinPanel::OnThink()
 	iItemTall = MAX( iItemTall, iItemTallMin );
 
 	long lRateValue = ( system()->GetTimeMillis() / cl_quick_join_scroll_rate.GetInt() );
-	if ( rd_reduce_motion.GetBool() )
-		lRateValue = 0;
 	int iWrap = ( lRateValue / iItemTall ) + cl_quick_join_scroll_max.GetInt();
+
+	if ( rd_reduce_motion.GetBool() )
+	{
+		lRateValue = 0;
+		iWrap -= iWrap % cl_quick_join_scroll_max.GetInt();
+	}
 
 	if ( iWrap != m_iPrevWrap )
 	{
@@ -355,7 +359,7 @@ void QuickJoinPanel::OnThink()
 		UpdateNumGamesFoundLabel();
 
 		MainMenu *pMainMenu = dynamic_cast< MainMenu * >( GetParent() );
-		SetVisible( m_FriendInfo.Count() > 0 && ( !pMainMenu || !pMainMenu->m_bIsStub ) );
+		SetVisible( ( m_FriendInfo.Count() > 0 && ( !pMainMenu || !pMainMenu->m_bIsStub ) ) || ShouldAlwaysBeVisible() );
 
 		// Fade out last item completely since we wrapped around and done!
 		pItem = m_GplQuickJoinList->GetPanelItem( ( iNumItems > 1 ) ? ( iNumItems - 1 ) : ( 1 ) );
@@ -481,7 +485,10 @@ void QuickJoinPanel::UpdateNumGamesFoundLabel( void )
 				iCount += m_FriendInfo[iCount - 1].m_xuid - 1;
 
 			char gameCountTxt[ 16 ];
-			itoa( iCount, gameCountTxt, 10 );
+			if ( iCount == 0 ) // when loading, don't show 0 as it might make players think there are actually 0 lobbies
+				V_strncpy( gameCountTxt, "...", sizeof( gameCountTxt ) );
+			else
+				itoa( iCount, gameCountTxt, 10 );
 
 			wchar_t wGameCountTxt[ 16 ];
 			g_pVGuiLocalize->ConvertANSIToUnicode( gameCountTxt, wGameCountTxt, sizeof( wGameCountTxt ) );

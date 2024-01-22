@@ -30,6 +30,7 @@ namespace BaseModUI
 		virtual ~QuickJoinPanel();
 
 		virtual bool ShouldBeVisible() const;
+		virtual bool ShouldAlwaysBeVisible() const { return false; }
 
 		void OnThink();
 		void OnTick();
