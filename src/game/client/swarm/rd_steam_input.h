@@ -41,6 +41,7 @@ public:
 
 	STEAM_CALLBACK( CRD_Steam_Input, OnSteamInputDeviceConnected, SteamInputDeviceConnected_t );
 	STEAM_CALLBACK( CRD_Steam_Input, OnSteamInputDeviceDisconnected, SteamInputDeviceDisconnected_t );
+	STEAM_CALLBACK( CRD_Steam_Input, OnSteamInputConfigurationLoaded, SteamInputConfigurationLoaded_t );
 	static void OnActionEvent( SteamInputActionEvent_t *pEvent );
 
 	bool m_bInitialized;
@@ -74,6 +75,7 @@ public:
 
 	void OnConnected();
 	void OnDisconnected();
+	void OnConfigurationLoaded( SteamInputConfigurationLoaded_t *pParam );
 	void OnFrame( ISteamInput *pSteamInput );
 	void OnDigitalAction( InputDigitalActionHandle_t hAction, bool bState );
 	void OnAnalogAction( InputAnalogActionHandle_t hAction, EInputSourceMode mode, float x, float y );
@@ -88,7 +90,7 @@ public:
 class CRD_Steam_Input_Bind final
 {
 public:
-	CRD_Steam_Input_Bind( const char *szActionName, const char *szBind, const char *szForceActionSet, bool bIgnoreCommandOnXboxControllers = false, bool bIgnoreOnActionSetChange = false );
+	CRD_Steam_Input_Bind( const char *szActionName, const char *szBind, const char *szForceActionSet, bool bIgnoreOnActionSetChange = false );
 
 private:
 	const char *m_szActionName;
@@ -96,7 +98,6 @@ private:
 	const char *m_szForceActionSet;
 	InputDigitalActionHandle_t m_hAction;
 	InputActionSetHandle_t m_hForceActionSet;
-	bool m_bIgnoreCommandOnXboxControllers;
 	bool m_bIgnoreOnActionSetChange;
 
 	CRD_Steam_Input_Bind *m_pNext;

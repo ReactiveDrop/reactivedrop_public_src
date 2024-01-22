@@ -65,7 +65,7 @@ RD_STEAM_INPUT_BIND( VoteNo, "vote_no", "InGame" );
 // UI
 RD_STEAM_INPUT_BIND( PlayerList, "playerlist", "InGame" );
 RD_STEAM_INPUT_BIND( InGameBriefing, "ingamebriefing", "InGame" );
-RD_STEAM_INPUT_BIND( Menu, "gameui_activate", "InGame", false, true );
+RD_STEAM_INPUT_BIND( Menu, "gameui_activate", "InGame", true );
 RD_STEAM_INPUT_BIND( RotateCameraLeft, "rotatecameraleft", "InGame" );
 RD_STEAM_INPUT_BIND( RotateCameraRight, "rotatecameraright", "InGame" );
 RD_STEAM_INPUT_BIND( SelectMarineDeathmatch, "cl_select_loadout", "InGame" );
@@ -120,31 +120,31 @@ static void ButtonReleaseHelper( ButtonCode_t eButton )
 	ConCommand ConCommandName##_release_command( "-" #ConCommandName, &ConCommandName##_release, "helper command for " #eButton, FCVAR_HIDDEN ); \
 	RD_STEAM_INPUT_BIND( ActionName, "+" #ConCommandName, __VA_ARGS__ )
 
-RD_STEAM_INPUT_MENU_BIND( MenuConfirm, rd_menu_confirm, KEY_XBUTTON_A, "Menus", true );
-RD_STEAM_INPUT_MENU_BIND( MenuBack, rd_menu_back, KEY_XBUTTON_B, "Menus", true );
-RD_STEAM_INPUT_MENU_BIND( MenuSpecial1, rd_menu_special_1, KEY_XBUTTON_X, "Menus", true );
-RD_STEAM_INPUT_MENU_BIND( MenuSpecial2, rd_menu_special_2, KEY_XBUTTON_Y, "Menus", true );
+RD_STEAM_INPUT_MENU_BIND( MenuConfirm, rd_menu_confirm, KEY_XBUTTON_A, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuBack, rd_menu_back, KEY_XBUTTON_B, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuSpecial1, rd_menu_special_1, KEY_XBUTTON_X, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuSpecial2, rd_menu_special_2, KEY_XBUTTON_Y, "Menus" );
 
-RD_STEAM_INPUT_MENU_BIND( MenuL1, rd_menu_left_bumper, KEY_XBUTTON_LEFT_SHOULDER, "Menus", true );
-RD_STEAM_INPUT_MENU_BIND( MenuR1, rd_menu_right_bumper, KEY_XBUTTON_RIGHT_SHOULDER, "Menus", true );
-RD_STEAM_INPUT_MENU_BIND( MenuL2, rd_menu_left_trigger, KEY_XBUTTON_LTRIGGER, "Menus", true );
-RD_STEAM_INPUT_MENU_BIND( MenuR2, rd_menu_right_trigger, KEY_XBUTTON_RTRIGGER, "Menus", true );
-RD_STEAM_INPUT_MENU_BIND( MenuL3, rd_menu_left_stick, KEY_XBUTTON_STICK1, "Menus", true );
-RD_STEAM_INPUT_MENU_BIND( MenuR3, rd_menu_right_stick, KEY_XBUTTON_STICK2, "Menus", true );
-RD_STEAM_INPUT_MENU_BIND( MenuSelect, rd_menu_select, KEY_XBUTTON_BACK, "Menus", true );
-RD_STEAM_INPUT_MENU_BIND( MenuStart, rd_menu_start, KEY_XBUTTON_START, "Menus", true, true );
+RD_STEAM_INPUT_MENU_BIND( MenuL1, rd_menu_left_bumper, KEY_XBUTTON_LEFT_SHOULDER, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuR1, rd_menu_right_bumper, KEY_XBUTTON_RIGHT_SHOULDER, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuL2, rd_menu_left_trigger, KEY_XBUTTON_LTRIGGER, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuR2, rd_menu_right_trigger, KEY_XBUTTON_RTRIGGER, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuL3, rd_menu_left_stick, KEY_XBUTTON_STICK1, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuR3, rd_menu_right_stick, KEY_XBUTTON_STICK2, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuSelect, rd_menu_select, KEY_XBUTTON_BACK, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuStart, rd_menu_start, KEY_XBUTTON_START, "Menus", true );
 
-RD_STEAM_INPUT_MENU_BIND( MenuLeft, rd_menu_left, KEY_XBUTTON_LEFT, "Menus", true );
-RD_STEAM_INPUT_MENU_BIND( MenuRight, rd_menu_right, KEY_XBUTTON_RIGHT, "Menus", true );
-RD_STEAM_INPUT_MENU_BIND( MenuUp, rd_menu_up, KEY_XBUTTON_UP, "Menus", true );
-RD_STEAM_INPUT_MENU_BIND( MenuDown, rd_menu_down, KEY_XBUTTON_DOWN, "Menus", true );
+RD_STEAM_INPUT_MENU_BIND( MenuLeft, rd_menu_left, KEY_XBUTTON_LEFT, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuRight, rd_menu_right, KEY_XBUTTON_RIGHT, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuUp, rd_menu_up, KEY_XBUTTON_UP, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuDown, rd_menu_down, KEY_XBUTTON_DOWN, "Menus" );
 
-RD_STEAM_INPUT_MENU_BIND( MenuLeftStickLeft, rd_menu_left_stick_left, KEY_XSTICK1_LEFT, "Menus", true );
-RD_STEAM_INPUT_MENU_BIND( MenuLeftStickRight, rd_menu_left_stick_right, KEY_XSTICK1_RIGHT, "Menus", true );
-RD_STEAM_INPUT_MENU_BIND( MenuLeftStickUp, rd_menu_left_stick_up, KEY_XSTICK1_UP, "Menus", true );
-RD_STEAM_INPUT_MENU_BIND( MenuLeftStickDown, rd_menu_left_stick_down, KEY_XSTICK1_DOWN, "Menus", true );
+RD_STEAM_INPUT_MENU_BIND( MenuLeftStickLeft, rd_menu_left_stick_left, KEY_XSTICK1_LEFT, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuLeftStickRight, rd_menu_left_stick_right, KEY_XSTICK1_RIGHT, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuLeftStickUp, rd_menu_left_stick_up, KEY_XSTICK1_UP, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuLeftStickDown, rd_menu_left_stick_down, KEY_XSTICK1_DOWN, "Menus" );
 
-RD_STEAM_INPUT_MENU_BIND( MenuRightStickLeft, rd_menu_right_stick_left, KEY_XSTICK2_LEFT, "Menus", true );
-RD_STEAM_INPUT_MENU_BIND( MenuRightStickRight, rd_menu_right_stick_right, KEY_XSTICK2_RIGHT, "Menus", true );
-RD_STEAM_INPUT_MENU_BIND( MenuRightStickUp, rd_menu_right_stick_up, KEY_XSTICK2_UP, "Menus", true );
-RD_STEAM_INPUT_MENU_BIND( MenuRightStickDown, rd_menu_right_stick_down, KEY_XSTICK2_DOWN, "Menus", true );
+RD_STEAM_INPUT_MENU_BIND( MenuRightStickLeft, rd_menu_right_stick_left, KEY_XSTICK2_LEFT, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuRightStickRight, rd_menu_right_stick_right, KEY_XSTICK2_RIGHT, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuRightStickUp, rd_menu_right_stick_up, KEY_XSTICK2_UP, "Menus" );
+RD_STEAM_INPUT_MENU_BIND( MenuRightStickDown, rd_menu_right_stick_down, KEY_XSTICK2_DOWN, "Menus" );

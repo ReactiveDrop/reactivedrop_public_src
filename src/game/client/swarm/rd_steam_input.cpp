@@ -207,6 +207,22 @@ void CRD_Steam_Input::Update( float frametime )
 
 	FOR_EACH_VEC( m_Controllers, i )
 	{
+		if ( !m_Controllers[i]->m_bConnected )
+			continue;
+
+		// Disable Source Engine input handling for every controller if we have at least one
+		// Steam Input enabled controller attached.
+		int nControllers = g_pInputSystem->GetJoystickCount();
+		for ( int j = 0; j < nControllers; j++ )
+		{
+			g_pInputSystem->EnableJoystickInput( j, false );
+		}
+
+		break;
+	}
+
+	FOR_EACH_VEC( m_Controllers, i )
+	{
 		m_Controllers[i]->OnFrame( pSteamInput );
 	}
 }
@@ -729,6 +745,17 @@ void CRD_Steam_Input::OnSteamInputDeviceDisconnected( SteamInputDeviceDisconnect
 	pController->OnDisconnected();
 }
 
+void CRD_Steam_Input::OnSteamInputConfigurationLoaded( SteamInputConfigurationLoaded_t *pParam )
+{
+	CRD_Steam_Controller *pController = FindController( pParam->m_ulDeviceHandle );
+	if ( !pController )
+	{
+		return;
+	}
+
+	pController->OnConfigurationLoaded( pParam );
+}
+
 void CRD_Steam_Input::OnActionEvent( SteamInputActionEvent_t *pEvent )
 {
 	g_RD_Steam_Input.m_hLastControllerWithEvent = pEvent->controllerHandle;
@@ -796,6 +823,11 @@ void CRD_Steam_Controller::OnDisconnected()
 	}
 }
 
+void CRD_Steam_Controller::OnConfigurationLoaded( SteamInputConfigurationLoaded_t *pParam )
+{
+	Assert( m_bConnected );
+}
+
 void CRD_Steam_Controller::OnFrame( ISteamInput *pSteamInput )
 {
 #ifdef RD_STEAM_INPUT_ACTIONS
@@ -803,9 +835,6 @@ void CRD_Steam_Controller::OnFrame( ISteamInput *pSteamInput )
 		return;
 
 	ACTIVE_SPLITSCREEN_PLAYER_GUARD( m_SplitScreenPlayerIndex );
-
-	// disable source engine input handling so we don't get double inputs for xinput controllers
-	g_pInputSystem->EnableJoystickInput( pSteamInput->GetGamepadIndexForController( m_hController ), false );
 
 	C_ASW_Player *pPlayer = m_SplitScreenPlayerIndex == -1 ? NULL : C_ASW_Player::GetLocalASWPlayer( m_SplitScreenPlayerIndex );
 
@@ -859,9 +888,6 @@ void CRD_Steam_Controller::OnDigitalAction( InputDigitalActionHandle_t hAction, 
 		if ( m_bJustChangedActionSet && pBind->m_bIgnoreOnActionSetChange && bState )
 			return;
 
-		if ( pBind->m_bIgnoreCommandOnXboxControllers && SteamInput()->GetGamepadIndexForController( m_hController ) != -1 )
-			return;
-
 		char szCommand[1024];
 
 		bool bIsToggle = pBind->m_szBind[0] == '+';
@@ -898,11 +924,10 @@ void CRD_Steam_Controller::OnAnalogAction( InputAnalogActionHandle_t hAction, EI
 CRD_Steam_Input_Bind *CRD_Steam_Input_Bind::s_pBinds = NULL;
 CRD_Steam_Input_Bind *CRD_Steam_Input_Bind::s_pLastBind = NULL;
 
-CRD_Steam_Input_Bind::CRD_Steam_Input_Bind( const char *szActionName, const char *szBind, const char *szForceActionSet, bool bIgnoreCommandOnXboxControllers, bool bIgnoreOnActionSetChange ) :
+CRD_Steam_Input_Bind::CRD_Steam_Input_Bind( const char *szActionName, const char *szBind, const char *szForceActionSet, bool bIgnoreOnActionSetChange ) :
 	m_szActionName{ szActionName },
 	m_szBind{ szBind },
 	m_szForceActionSet{ szForceActionSet },
-	m_bIgnoreCommandOnXboxControllers{ bIgnoreCommandOnXboxControllers },
 	m_bIgnoreOnActionSetChange{ bIgnoreOnActionSetChange }
 {
 	m_pNext = NULL;
