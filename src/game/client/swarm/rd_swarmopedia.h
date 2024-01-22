@@ -308,4 +308,6 @@ namespace RD_Swarmopedia
 		bool IsSame( const WeaponFact * ) const;
 		void Merge( const WeaponFact * );
 	};
+
+	void CheckArticleUnlock( const char *szStatName, int iStatBefore, int iStatAfter );
 }

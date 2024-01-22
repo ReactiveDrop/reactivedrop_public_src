@@ -1380,3 +1380,68 @@ void WeaponFact::Merge( const WeaponFact *pWeaponFact )
 {
 	Assert( !"RD_Swarmopedia::WeaponFact::Merge should not have been called." );
 }
+
+void RD_Swarmopedia::CheckArticleUnlock( const char *szStatName, int iStatBefore, int iStatAfter )
+{
+	// We only load the Swarmopedia once per game run for unlock checking.
+	// This means if the player installs a mod that adds to the Swarmopedia
+	// after killing an alien and doesn't restart the game, they won't be
+	// notified if they unlock one of the new articles. Which is okay.
+	static Collection *s_pSwarmopediaForProgressChecking = NULL;
+	if ( !s_pSwarmopediaForProgressChecking )
+	{
+		s_pSwarmopediaForProgressChecking = new Collection;
+		s_pSwarmopediaForProgressChecking->ReadFromFiles( Subset::Aliens );
+	}
+
+	ISteamUserStats *pStats = SteamUserStats();
+	Assert( pStats );
+	if ( !pStats )
+	{
+		return;
+	}
+
+	FOR_EACH_VEC( s_pSwarmopediaForProgressChecking->Aliens, i )
+	{
+		Alien *pAlien = s_pSwarmopediaForProgressChecking->Aliens[i];
+		Assert( pAlien->Requirements.Count() <= 1 ); // if we ever use multiple requirements, we need to revisit this.
+		FOR_EACH_VEC( pAlien->Requirements, j )
+		{
+			Requirement *pReq = pAlien->Requirements[j];
+			Assert( pReq->Type == Requirement::Type_t::SteamStat );
+			bool bFoundCurrentStat = false;
+			FOR_EACH_VEC( pReq->StatNames, k )
+			{
+				if ( !V_stricmp( pReq->StatNames[k], szStatName ) )
+				{
+					bFoundCurrentStat = true;
+					break;
+				}
+			}
+
+			if ( !bFoundCurrentStat )
+			{
+				// not interested in this requirement as we're not changing our progress.
+				continue;
+			}
+
+			int iProgressExceptStat = pReq->MinValue;
+			FOR_EACH_VEC( pReq->StatNames, k )
+			{
+				if ( V_stricmp( pReq->StatNames[k], szStatName ) )
+				{
+					int32 iStat;
+					if ( pStats->GetStat( pReq->StatNames[k], &iStat ) )
+					{
+						iProgressExceptStat -= iStat;
+					}
+				}
+			}
+
+			if ( iProgressExceptStat > iStatBefore && iProgressExceptStat <= iStatAfter )
+			{
+				ClientPrint( NULL, HUD_PRINTTALK, "#rd_swarmopedia_article_unlocked", pAlien->Name.Get() );
+			}
+		}
+	}
+}

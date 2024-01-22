@@ -13,6 +13,9 @@
 #include "achievement_notification_panel.h"
 #include "fmtstr.h"
 #include "cdll_client_int.h"
+#ifdef INFESTED_DLL
+#include "rd_swarmopedia.h"
+#endif
 #endif // CLIENT_DLL
 
 #ifdef INFESTED_DLL
@@ -243,6 +246,9 @@ void CBaseAchievement::IncrementCount()
 			// Set the Steam stat with the same name as the achievement.  Only cached locally until we upload it.
 			char pszProgressName[1024];
 			Q_snprintf( pszProgressName, 1024, "%s_STAT", GetName() );
+#if defined( INFESTED_DLL ) && defined( CLIENT_DLL )
+			RD_Swarmopedia::CheckArticleUnlock( pszProgressName, m_iCount - 1, m_iCount );
+#endif
 			bool bRet = SteamUserStats()->SetStat( pszProgressName, m_iCount );
 			if ( !bRet )
 			{

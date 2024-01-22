@@ -23,6 +23,7 @@
 #include "asw_alien_classes.h"
 #include "rd_cause_of_death.h"
 #include "rd_inventory_shared.h"
+#include "rd_swarmopedia.h"
 
 CASW_Steamstats g_ASW_Steamstats;
 
@@ -534,6 +535,7 @@ static void __MsgFunc_RDAlienKillStat( bf_read &msg )
 	int32_t nCount = 0;
 	if ( SteamUserStats() && SteamUserStats()->GetStat( szApiName, &nCount ) )
 	{
+		RD_Swarmopedia::CheckArticleUnlock( szApiName, nCount, nCount + 1 );
 		SteamUserStats()->SetStat( szApiName, nCount + 1 );
 	}
 	else
@@ -823,7 +825,9 @@ void CASW_Steamstats::PrepStatsForSend( CASW_Player *pPlayer )
 	m_iShotsHit += GetDebriefStats()->GetShotsHit( iMarineIndex );
 	m_fAccuracy = ( m_iShotsFired > 0 ) ? ( m_iShotsHit / (float)m_iShotsFired * 100.0f ) : 0;
 	m_iAliensBurned += GetDebriefStats()->GetAliensBurned( iMarineIndex );
+	int iBiomassIgnitedBefore = m_iBiomassIgnited;
 	m_iBiomassIgnited += GetDebriefStats()->GetBiomassIgnited( iMarineIndex );
+	RD_Swarmopedia::CheckArticleUnlock( "iBiomassIgnited", iBiomassIgnitedBefore, m_iBiomassIgnited );
 	m_iHealing += GetDebriefStats()->GetHealthHealed( iMarineIndex );
 	m_iFastHacksLegacy += GetDebriefStats()->GetFastHacksWire( iMarineIndex );
 	m_iFastHacksWire += GetDebriefStats()->GetFastHacksWire( iMarineIndex );
