@@ -72,6 +72,9 @@ void CRD_Steam_Input::PostInit()
 	if ( CommandLine()->FindParm( "-nojoy" ) )
 		return;
 
+	if ( CommandLine()->FindParm( "-nosteamcontroller" ) )
+		return;
+
 	Assert( !m_bInitialized );
 	if ( m_bInitialized )
 	{
