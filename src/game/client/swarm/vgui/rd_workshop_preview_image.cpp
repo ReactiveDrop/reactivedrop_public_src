@@ -2,7 +2,7 @@
 #include "rd_workshop_preview_image.h"
 #include <vgui_controls/Controls.h>
 #include <vgui/ISurface.h>
-#include "jpeglib/jpeglib.h"
+#include "rd_image_utils.h"
 
 // NOTE: This has to be the last file included!
 #include "tier0/memdbgon.h"
@@ -71,89 +71,10 @@ bool CReactiveDropWorkshopPreviewImage::TryParseImage( const CUtlBuffer & buf )
 	return false;
 }
 
-// mostly copied from optionssubmultiplayer.cpp:
-
-struct RdValveJpegErrorHandler_t
-{
-	// The default manager
-	struct jpeg_error_mgr	m_Base;
-	// For handling any errors
-	jmp_buf					m_ErrorContext;
-};
-
-static void ValveJpegErrorHandler( j_common_ptr cinfo )
-{
-	RdValveJpegErrorHandler_t *pError = reinterpret_cast< RdValveJpegErrorHandler_t * >( cinfo->err );
-
-	char buffer[ JMSG_LENGTH_MAX ];
-
-	/* Create the message */
-	( *cinfo->err->format_message )( cinfo, buffer );
-
-	Warning( "%s\n", buffer );
-
-	// Bail
-	longjmp( pError->m_ErrorContext, 1 );
-}
-
-struct RdJpegSource_t
-{
-	RdJpegSource_t( const CUtlBuffer & buf ) : m_Buf( buf.Base(), buf.TellMaxPut(), CUtlBuffer::READ_ONLY )
-	{
-		m_Base.init_source = &InitSource;
-		m_Base.fill_input_buffer = &FillInputBuffer;
-		m_Base.skip_input_data = &SkipInputData;
-		m_Base.resync_to_restart = &ResyncToRestart;
-		m_Base.term_source = &TermSource;
-	}
-
-	// The default manager
-	struct jpeg_source_mgr	m_Base;
-
-	CUtlBuffer m_Buf;
-
-	static RdJpegSource_t *Get( j_decompress_ptr cinfo )
-	{
-		return reinterpret_cast<RdJpegSource_t *>( cinfo->src );
-	}
-
-	static void InitSource( j_decompress_ptr cinfo )
-	{
-		RdJpegSource_t *pSource = Get( cinfo );
-		pSource->m_Base.next_input_byte = reinterpret_cast<const JOCTET *>( pSource->m_Buf.Base() );
-		pSource->m_Base.bytes_in_buffer = pSource->m_Buf.TellPut();
-	}
-
-	static boolean FillInputBuffer( j_decompress_ptr cinfo )
-	{
-		return FALSE;
-	}
-
-	static void SkipInputData( j_decompress_ptr cinfo, long num_bytes )
-	{
-		RdJpegSource_t *pSource = Get( cinfo );
-		Assert( num_bytes < (long)pSource->m_Base.bytes_in_buffer );
-		pSource->m_Base.bytes_in_buffer -= num_bytes;
-		pSource->m_Base.next_input_byte += num_bytes;
-	}
-
-	static boolean ResyncToRestart( j_decompress_ptr cinfo, int desired )
-	{
-		return jpeg_resync_to_restart( cinfo, desired );
-	}
-
-	static void TermSource( j_decompress_ptr cinfo )
-	{
-		// no cleanup needed
-	}
-};
-
 bool CReactiveDropWorkshopPreviewImage::TryParseJPEG( const CUtlBuffer & buf )
 {
 	jpeg_decompress_struct jpegInfo;
-	RdValveJpegErrorHandler_t jerr;
-	jpegInfo.err = jpeg_std_error( &jerr.m_Base );
-	jpegInfo.err->error_exit = &ValveJpegErrorHandler;
+	ValveJpegErrorHandler_t jerr;
 
 	JSAMPROW row_pointer[1];
 	int row_stride;
@@ -163,24 +84,17 @@ bool CReactiveDropWorkshopPreviewImage::TryParseJPEG( const CUtlBuffer & buf )
 	int image_height;
 	int image_width;
 
-	bool bInitialized = false;
+	jerr.InitDecompress( &jpegInfo );
 
 	if ( setjmp( jerr.m_ErrorContext ) )
 	{
 		DevWarning( "Parsing image as JPEG failed: an error should be shown above this message\n" );
 		// Get here if there is any error
-		if ( bInitialized )
-		{
-			jpeg_destroy_decompress( &jpegInfo );
-		}
+		jpeg_destroy_decompress( &jpegInfo );
 		return false;
 	}
 
-	jpeg_create_decompress( &jpegInfo );
-	bInitialized = true;
-
-	RdJpegSource_t jsrc( buf );
-	jpegInfo.src = &jsrc.m_Base;
+	jpeg_mem_src( &jpegInfo, ( const unsigned char * )buf.Base(), buf.TellPut() );
 
 	if ( jpeg_read_header( &jpegInfo, 1 ) != JPEG_HEADER_OK )
 	{

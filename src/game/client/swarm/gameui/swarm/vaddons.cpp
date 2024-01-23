@@ -34,11 +34,7 @@
 #include "nb_header_footer.h"
 #include "nb_button.h"
 
-// use the JPEGLIB_USE_STDIO define so that we can read in jpeg's from outside the game directory tree.  For Spray Import.
-#define JPEGLIB_USE_STDIO
-#include "jpeglib/jpeglib.h"
-#undef JPEGLIB_USE_STDIO
-#include <setjmp.h>
+#include "rd_image_utils.h"
 #include "bitmap/tgawriter.h"
 #include "ivtex.h"
 #include "vgetlegacydata.h"
@@ -998,37 +994,6 @@ void Addons::SetDetailsUIForWorkshopItem( const CReactiveDropWorkshop::WorkshopI
 	}
 }
 
-//-----------------------------------------------------------------------------
-// Everything below was copied from the UI options page for converting sprays.
-// TODO: Move these functions to a library so that they can be shared more 
-//       sanely.
-//-----------------------------------------------------------------------------
-struct ValveJpegErrorHandler_t
-{
-	// The default manager
-	struct jpeg_error_mgr	m_Base;
-	// For handling any errors
-	jmp_buf					m_ErrorContext;
-};
-
-//-----------------------------------------------------------------------------
-// Purpose: We'll override the default error handler so we can deal with errors without having to exit the engine
-//-----------------------------------------------------------------------------
-static void ValveJpegErrorHandler( j_common_ptr cinfo )
-{
-	ValveJpegErrorHandler_t *pError = reinterpret_cast< ValveJpegErrorHandler_t * >( cinfo->err );
-
-	char buffer[JMSG_LENGTH_MAX];
-
-	/* Create the message */
-	( *cinfo->err->format_message )( cinfo, buffer );
-
-	Warning( "%s\n", buffer );
-
-	// Bail
-	longjmp( pError->m_ErrorContext, 1 );
-}
-
 // convert the JPEG file given to a TGA file at the given output path.
 Addons::ConversionErrorType Addons::SConvertJPEGToTGA( const char *jpegpath, const char *tgaPath )
 {
@@ -1050,13 +1015,8 @@ Addons::ConversionErrorType Addons::SConvertJPEGToTGA( const char *jpegpath, con
 		return CE_CANT_OPEN_SOURCE_FILE;
 	}
 
-	// setup error to print to stderr.
-	jpegInfo.err = jpeg_std_error( &jerr.m_Base );
-
-	jpegInfo.err->error_exit = &ValveJpegErrorHandler;
-
 	// create the decompress struct.
-	jpeg_create_decompress( &jpegInfo );
+	jerr.InitDecompress( &jpegInfo );
 
 	if ( setjmp( jerr.m_ErrorContext ) )
 	{
@@ -1122,6 +1082,7 @@ Addons::ConversionErrorType Addons::SConvertJPEGToTGA( const char *jpegpath, con
 	}
 
 	jpeg_finish_decompress( &jpegInfo );
+	jpeg_destroy_decompress( &jpegInfo );
 
 	fclose( infile );
 
