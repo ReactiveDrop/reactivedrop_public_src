@@ -731,9 +731,20 @@ void CRD_Steam_Input::OnSteamInputDeviceConnected( SteamInputDeviceConnected_t *
 
 	if ( g_RD_Steam_Input.m_bInitialized && g_RD_Steam_Input.m_AnalogActions.Look == g_RD_Steam_Input.m_AnalogActions.Move )
 	{
-		// we failed to initialize the first time, possibly due to there being no controllers, which causes Steam Input to avoid initializing. re-init.
-		g_RD_Steam_Input.Shutdown();
-		g_RD_Steam_Input.PostInit();
+		static int s_nRetries = 0;
+		if ( s_nRetries < 5 )
+		{
+			s_nRetries++;
+			Warning( "Retrying controller initialization (%d)\n", s_nRetries );
+
+			// we failed to initialize the first time, possibly due to there being no controllers, which causes Steam Input to avoid initializing. re-init.
+			g_RD_Steam_Input.Shutdown();
+			g_RD_Steam_Input.PostInit();
+		}
+		else
+		{
+			Warning( "Not retrying controller initialization; failed too many times.\n" );
+		}
 	}
 }
 
