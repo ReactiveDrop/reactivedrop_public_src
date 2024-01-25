@@ -11,6 +11,7 @@
 #include "gameui/swarm/vgenericwaitscreen.h"
 #include "gameui/swarm/vgenericconfirmation.h"
 #include "filesystem.h"
+#include "rd_image_utils.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -135,7 +136,7 @@ struct ReportingServerSnapshot_t
 	CSteamID LobbyID;
 
 	// players who were online at the time of this snapshot
-	CUtlVector<CSteamID> Witnesses;
+	CCopyableUtlVector<CSteamID> Witnesses;
 
 	// diagnostic data about connection quality
 	bool HaveConnectionQuality{ false };
@@ -295,6 +296,27 @@ void CRD_Player_Reporting::GetRecentlyPlayedWith( CUtlVector<CSteamID> &players 
 	}
 }
 
+bool CRD_Player_Reporting::HasRecentlyPlayedWith( CSteamID player ) const
+{
+	float flExpireTime = Plat_FloatTime() - REPORTING_SNAPSHOT_LIFETIME;
+
+	FOR_EACH_VEC_BACK( m_RecentData, i )
+	{
+		if ( m_RecentData[i]->RecordedAt < flExpireTime )
+			break;
+
+		FOR_EACH_VEC_BACK( m_RecentData[i]->Witnesses, j )
+		{
+			if ( player == m_RecentData[i]->Witnesses[j] )
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
 void CRD_Player_Reporting::UpdateServerInfo()
 {
 	if ( !engine->IsConnected() )
@@ -329,7 +351,26 @@ void CRD_Player_Reporting::UpdateServerInfo()
 	m_RecentData.AddToTail( pSnapshot );
 }
 
-bool CRD_Player_Reporting::PrepareReportForSend( const char *szCategory, const char *szDescription, CSteamID reportedPlayer, const CUtlVector<CUtlBuffer> &screenshots, bool bShowWaitScreen )
+const ReportingServerSnapshot_t *CRD_Player_Reporting::PinRelevantSnapshot( CSteamID player )
+{
+	if ( m_pPinnedSnapshot )
+	{
+		delete m_pPinnedSnapshot;
+	}
+
+	ReportingServerSnapshot_t *pRelevant = GetRelevantOrLatestSnapshot( player );
+	if ( !pRelevant )
+	{
+		m_pPinnedSnapshot = NULL;
+		return NULL;
+	}
+
+	m_pPinnedSnapshot = new ReportingServerSnapshot_t{ *pRelevant };
+
+	return m_pPinnedSnapshot;
+}
+
+bool CRD_Player_Reporting::PrepareReportForSend( const char *szCategory, const char *szDescription, CSteamID reportedPlayer, const CUtlVector<CUtlBuffer> &screenshots, bool bShowWaitScreen, const ReportingServerSnapshot_t *pForceSnapshot )
 {
 	Assert( szCategory );
 	Assert( szDescription || ( reportedPlayer.BIndividualAccount() && screenshots.Count() == 0 ) );
@@ -391,7 +432,7 @@ bool CRD_Player_Reporting::PrepareReportForSend( const char *szCategory, const c
 		WriteJSONRaw( m_Buffer, "," );
 	}
 
-	if ( ReportingServerSnapshot_t *pSnapshot = GetRelevantOrLatestSnapshot( reportedPlayer ) )
+	if ( const ReportingServerSnapshot_t *pSnapshot = pForceSnapshot ? pForceSnapshot : GetRelevantOrLatestSnapshot( reportedPlayer ) )
 	{
 		pSnapshot->WriteJSON( m_Buffer );
 	}
@@ -426,6 +467,75 @@ bool CRD_Player_Reporting::PrepareReportForSend( const char *szCategory, const c
 	// processing will continue in the OnGetTicketForWebApiResponse callback
 
 	return true;
+}
+
+void CRD_Player_Reporting::TakeScreenshot()
+{
+	int iWidth, iHeight;
+	GetHudSize( iWidth, iHeight );
+
+	CUtlMemory<unsigned char> screenPixels{ 0, iWidth * iHeight * 3 };
+	{
+		CMatRenderContextPtr pRenderContext( materials );
+		pRenderContext->ReadPixels( 0, 0, iWidth, iHeight, screenPixels.Base(), IMAGE_FORMAT_RGB888 );
+	}
+
+	unsigned char *jpegbuffer = NULL;
+	size_t jpegsize = 0;
+
+	struct jpeg_compress_struct jpegInfo;
+	ValveJpegErrorHandler_t jerr;
+	jerr.InitCompress( &jpegInfo );
+
+	if ( setjmp( jerr.m_ErrorContext ) )
+	{
+		jpeg_destroy_compress( &jpegInfo );
+		free( jpegbuffer );
+
+		// error occurred; clear latest screenshot as we don't have one
+		m_LatestScreenshot.Purge();
+
+		return;
+	}
+
+	jpegInfo.image_width = ScreenWidth();
+	jpegInfo.image_height = ScreenHeight();
+	jpegInfo.input_components = 3;
+	jpegInfo.in_color_space = JCS_RGB;
+	jpeg_set_defaults( &jpegInfo );
+
+	jpeg_default_colorspace( &jpegInfo );
+
+	jpeg_mem_dest( &jpegInfo, &jpegbuffer, &jpegsize );
+
+	jpeg_set_quality( &jpegInfo, 90, false );
+
+	if ( ScreenWidth() >= 3072 || ScreenHeight() >= 2048 )
+	{
+		// If we're on a huge screen, downsample the screenshot so it doesn't take absurd amounts of memory.
+		int iDownsample = MAX( ScreenWidth(), ScreenHeight() ) >> 11;
+		Assert( iDownsample > 1 );
+		Assert( jpegInfo.scale_num == 1 );
+		jpegInfo.scale_denom = iDownsample;
+	}
+	jpeg_calc_jpeg_dimensions( &jpegInfo );
+
+	jpeg_start_compress( &jpegInfo, true );
+
+	JSAMPROW scanline[1];
+	for ( int y = 0; y < iHeight; y++ )
+	{
+		scanline[0] = screenPixels.Base() + ( y * iWidth * 3 );
+		jpeg_write_scanlines( &jpegInfo, scanline, 1 );
+	}
+
+	jpeg_finish_compress( &jpegInfo );
+	jpeg_destroy_compress( &jpegInfo );
+
+	m_LatestScreenshot.Purge();
+	m_LatestScreenshot.Put( jpegbuffer, jpegsize );
+
+	free( jpegbuffer );
 }
 
 void CRD_Player_Reporting::OnGetTicketForWebApiResponse( GetTicketForWebApiResponse_t *pParam )

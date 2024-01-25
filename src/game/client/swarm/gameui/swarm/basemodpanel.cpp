@@ -65,6 +65,7 @@
 #include "VMainMenu.h"
 #include "VMultiplayer.h"
 #include "VOptions.h"
+#include "VReportProblem.h"
 #include "VSignInDialog.h"
 #include "VFooterPanel.h"
 #include "VPasswordEntry.h"
@@ -579,6 +580,10 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 
 		case WT_GENERICCHOICELIST:
 			m_Frames[wt] = new GenericChoiceList( this, "GenericChoiceList" );
+			break;
+
+		case WT_REPORTPROBLEM:
+			m_Frames[wt] = new ReportProblem( this, "ReportProblem" );
 			break;
 
 		default:

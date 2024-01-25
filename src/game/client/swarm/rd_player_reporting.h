@@ -23,9 +23,13 @@ public:
 	bool RecentlyReportedPlayer( const char *szCategory, CSteamID player );
 	// Fills a vector with a list of players seen in the past 5 minutes.
 	void GetRecentlyPlayedWith( CUtlVector<CSteamID> &players ) const;
+	// Returns true if a player has been seen in the past 5 minutes.
+	bool HasRecentlyPlayedWith( CSteamID player ) const;
 
 	// Update cached server info.
 	void UpdateServerInfo();
+	// Returns a snapshot containing the player, the latest snapshot, or NULL. The snapshot stays valid until PinRelevantSnapshot is called again.
+	const ReportingServerSnapshot_t *PinRelevantSnapshot( CSteamID player );
 
 	// Prepares to send a user-provided category, description, and player ID,
 	// as well as zero or more JPEG screenshots, to the player reporting API.
@@ -38,7 +42,10 @@ public:
 	// Can return false for two reasons:
 	// 1. Only one report can be in-transit at a time.
 	// 2. Can only send a report if we are connected to Steam.
-	bool PrepareReportForSend( const char *szCategory, const char *szDescription, CSteamID reportedPlayer, const CUtlVector<CUtlBuffer> &screenshots, bool bShowWaitScreen );
+	bool PrepareReportForSend( const char *szCategory, const char *szDescription, CSteamID reportedPlayer, const CUtlVector<CUtlBuffer> &screenshots, bool bShowWaitScreen, const ReportingServerSnapshot_t *pForceSnapshot = NULL );
+
+	// Called when it's time to update the player reporting screenshot, such as when WT_INGAMEMAINMENU is opened.
+	void TakeScreenshot();
 
 	// Latest progress message.
 	wchar_t m_wszLastMessage[2048]{};
@@ -46,6 +53,8 @@ public:
 private:
 	bool m_bShowWaitScreen{ false };
 	CUtlBuffer m_Buffer{ 0, 0, CUtlBuffer::TEXT_BUFFER };
+	CUtlBuffer m_LatestScreenshot;
+	ReportingServerSnapshot_t *m_pPinnedSnapshot{ NULL };
 	CUtlVectorAutoPurge<ReportingServerSnapshot_t *> m_RecentData;
 	char m_szQuickReport[256]{};
 	KeyValues::AutoDelete m_pRecentReports{ ( KeyValues * )NULL };

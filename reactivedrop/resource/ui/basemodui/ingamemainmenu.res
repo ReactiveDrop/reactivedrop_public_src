@@ -15,7 +15,7 @@
 		"tabPosition"			"0"
 		"PaintBackgroundType"	"0"
 	}
-	
+
 	"PnlBackground"
 	{
 		"ControlName"		"Panel"
@@ -25,20 +25,18 @@
 		"zpos"				"-1"
 		"wide"				"f0"
 		"tall"				"260"
-		"visible"			"1"			[$WIN32]
-		"visible"			"0"			[$X360]
+		"visible"			"1"
 		"enabled"			"1"
 		"fillColor"			"0 0 0 255"
 	}
-	
+
 	"BtnReturnToGame"
 	{
 		"ControlName"			"BaseModHybridButton"
 		"fieldName"				"BtnReturnToGame"
 		"xpos"					"100"
 		"ypos"					"135"
-		"wide"					"240"	[$WIN32]
-		"wide"					"180"	[$X360]
+		"wide"					"240"
 		"tall"					"20"
 		"autoResize"			"1"
 		"pinCorner"				"0"
@@ -60,8 +58,7 @@
 		"fieldName"				"BtnGoIdle"
 		"xpos"					"100"
 		"ypos"					"160"
-		"wide"					"240"	[$WIN32]
-		"wide"					"180"	[$X360]
+		"wide"					"240"
 		"tall"					"20"
 		"autoResize"			"1"
 		"pinCorner"				"0"
@@ -84,8 +81,7 @@
 		"fieldName"				"BtnCallAVote"
 		"xpos"					"100"
 		"ypos"					"185"
-		"wide"					"240"	[$WIN32]
-		"wide"					"180"	[$X360]
+		"wide"					"240"
 		"tall"					"20"
 		"autoResize"			"1"
 		"pinCorner"				"0"
@@ -93,23 +89,22 @@
 		"enabled"				"1"
 		"tabPosition"			"0"
 		"navUp"					"BtnGoIdle"
-		"navDown"				"BtnInviteFriends"
+		"navDown"				"BtnReportProblem"
 		"labelText"				"#L4D360UI_InGameMainMenu_CallAVote"
 		"tooltiptext"			"#L4D360UI_InGameMainMenu_CallAVote_Tip"
-		"disabled_tooltiptext" "#L4D360UI_InGameMainMenu_CallAVote_Tip"
+		"disabled_tooltiptext"	"#L4D360UI_InGameMainMenu_CallAVote_Tip"
 		"style"					"MainMenuButton"
 		"command" 				"FlmVoteFlyout"
 		"ActivationType"		"1"
 	}
 
-	"BtnInviteFriends"
+	"BtnReportProblem"
 	{
 		"ControlName"			"BaseModHybridButton"
-		"fieldName"				"BtnInviteFriends"
+		"fieldName"				"BtnReportProblem"
 		"xpos"					"100"
 		"ypos"					"210"
-		"wide"					"240"	[$WIN32]
-		"wide"					"180"	[$X360]
+		"wide"					"240"
 		"tall"					"20"
 		"autoResize"			"1"
 		"pinCorner"				"0"
@@ -117,33 +112,19 @@
 		"enabled"				"1"
 		"tabPosition"			"0"
 		"navUp"					"BtnCallAVote"
-		"navDown"				"BtnOpenServerBrowser"	[$WIN32]
-		"navDown"				"BtnLeaderboard"		[$X360]
-		"labelText"				"#L4D360UI_Lobby_InviteFriends"		[$WIN32]
-		"tooltiptext"			"#L4D360UI_Lobby_InviteFriends_Tip"	[$WIN32]
-		"labelText"				"#L4D360UI_InviteUIOptions"			[$X360]
-		"tooltiptext"			"#L4D360UI_InviteUIOptions_Tip"		[$X360]
+		"navDown"				"BtnInviteFriends"
+		"labelText"				"#L4D360UI_InGameMainMenu_ReportProblem"
+		"tooltiptext"			"#L4D360UI_InGameMainMenu_ReportProblem_Tip"
 		"style"					"MainMenuButton"
+		"command"				"ReportProblem"
+		"allcaps"				"1"
 		"ActivationType"		"1"
-		"command"				"InviteUI_Steam"		[$WIN32]
-		"command"				"FlmInviteFriends"		[$X360]
 	}
-	"FlmInviteFriends" [$X360]
-	{
-		"ControlName"			"FlyoutMenu"
-		"fieldName"				"FlmInviteFriends"
-		"visible"				"0"
-		"wide"					"0"
-		"tall"					"0"
-		"zpos"					"3"
-		"InitialFocus"			"BtnPlayers"
-		"ResourceFile"			"resource/UI/basemodui/DropDownInviteLive.res"
-	}
-	
-	"BtnOpenServerBrowser" [$WIN32]
+
+	"BtnInviteFriends"
 	{
 		"ControlName"			"BaseModHybridButton"
-		"fieldName"				"BtnOpenServerBrowser"
+		"fieldName"				"BtnInviteFriends"
 		"xpos"					"100"
 		"ypos"					"235"
 		"wide"					"240"
@@ -153,67 +134,35 @@
 		"visible"				"1"
 		"enabled"				"1"
 		"tabPosition"			"0"
-		"navUp"					"BtnInviteFriends"
-		"navDown"				"BtnLeaderboard"
-		"labelText"				"#L4D360UI_MainMenu_DedicatedServerBrowser"
-		"tooltiptext"			"#L4D360UI_MainMenu_DedicatedServerBrowser"
-		"style"					"MainMenuButton"
-		"command"				"OpenServerBrowser"
-		"allcaps"				"1"
-		"ActivationType"		"1"
-		"IgnoreButtonA"			"1" // don't let people accidentally open this with a controller
-	}
-	
-	"BtnLeaderboard"
-	{
-		"ControlName"			"BaseModHybridButton"
-		"fieldName"				"BtnLeaderboard"
-		"xpos"					"100"
-		"ypos"					"260"	[$WIN32]
-		"ypos"					"235"	[$X360]
-		"wide"					"240"	[$WIN32]
-		"wide"					"180"	[$X360]
-		"tall"					"20"	
-		"autoResize"			"1"		
-		"pinCorner"				"0"
-		"visible"				"0"
-		"enabled"				"1"
-		"tabPosition"			"0"
-		"navUp"					"BtnOpenServerBrowser"	[$WIN32]
-		"navUp"					"BtnInviteFriends"		[$X360]
+		"navUp"					"BtnReportProblem"
 		"navDown"				"BtnStatsAndAchievements"
-		"labelText"				"#L4D360UI_Leaderboard_Title"
-		"tooltiptext"			"#L4D360UI_MainMenu_SurvivalLeaderboards_Tip"
+		"labelText"				"#L4D360UI_Lobby_InviteFriends"
+		"tooltiptext"			"#L4D360UI_Lobby_InviteFriends_Tip"
 		"style"					"MainMenuButton"
-		"command"				"Leaderboards_"
 		"ActivationType"		"1"
+		"command"				"InviteUI_Steam"
 	}
-	
+
 	"BtnStatsAndAchievements"
 	{
 		"ControlName"			"BaseModHybridButton"
 		"fieldName"				"BtnStatsAndAchievements"
 		"xpos"					"100"
-		"ypos"					"260"	[$WIN32]
-		"ypos"					"235"	[$X360]
-		"wide"					"240"	[$WIN32]
-		"wide"					"180"	[$X360]
+		"ypos"					"260"
+		"wide"					"240"
 		"tall"					"20"
 		"autoResize"			"1"
 		"pinCorner"				"0"
 		"visible"				"1"
-		"enabled"				"1"		[!$X360GUEST]
-		"enabled"				"0"		[$X360GUEST]
+		"enabled"				"1"
 		"tabPosition"			"0"
-		"navUp"					"BtnLeaderboard"
+		"navUp"					"BtnInviteFriends"
 		"navDown"				"BtnOptions"
 		"labelText"				"#L4D360UI_MainMenu_StatsAndAchievements"
-		"tooltiptext"			"#L4D360UI_MainMenu_PCStatsAndAchievements_Tip"	[$WIN32]
-		"tooltiptext"			"#L4D360UI_MainMenu_StatsAndAchievements_Tip"	[$X360]
+		"tooltiptext"			"#L4D360UI_MainMenu_PCStatsAndAchievements_Tip"
 		"style"					"MainMenuButton"
 		"command"				"StatsAndAchievements"
 		"ActivationType"		"1"
-		"EnableCondition"		"Never" [$DEMO]
 	}
 
 	"BtnOptions"
@@ -221,10 +170,8 @@
 		"ControlName"			"BaseModHybridButton"
 		"fieldName"				"BtnOptions"
 		"xpos"					"100"
-		"ypos"					"285"	[$WIN32]
-		"ypos"					"260"	[$X360]
-		"wide"					"240"	[$WIN32]
-		"wide"					"180"	[$X360]
+		"ypos"					"285"
+		"wide"					"240"
 		"tall"					"20"
 		"autoResize"			"1"
 		"pinCorner"				"0"
@@ -246,8 +193,7 @@
 		"fieldName"				"BtnExitToMainMenu"
 		"xpos"					"100"
 		"ypos"					"322"
-		"wide"					"240"	[$WIN32]
-		"wide"					"180"	[$X360]
+		"wide"					"240"
 		"tall"					"20"
 		"autoResize"			"1"
 		"pinCorner"				"0"
@@ -271,57 +217,7 @@
 		"wide"					"0"
 		"tall"					"0"
 		"zpos"					"3"
-		"InitialFocus"			"BtnVideo" [$WIN32]
-		"InitialFocus"			"BtnAudioVideo" [$X360]
-		"ResourceFile"			"resource/UI/basemodui/OptionsFlyout.res"		[$WIN32]
-		"ResourceFile"			"resource/UI/basemodui/OptionsFlyoutIngame.res"	[$X360]
-	}
-	
-	"FlmOptionsGuestFlyout"
-	{
-		"ControlName"			"FlyoutMenu"
-		"fieldName"				"FlmOptionsGuestFlyout"
-		"visible"				"0"
-		"wide"					"0"
-		"tall"					"0"
-		"zpos"					"3"
-		"InitialFocus"			"BtnAudioVideo"
-		"ResourceFile"			"resource/UI/basemodui/OptionsGuestFlyout.res"
-	}
-
-	"FlmVoteFlyout"
-	{
-		"ControlName"			"FlyoutMenu"
-		"fieldName"				"FlmVoteFlyout"
-		"visible"				"0"
-		"wide"					"0"
-		"tall"					"0"
-		"zpos"					"3"
-		"InitialFocus"			"BtnReturnToLobby"
-		"ResourceFile"			"resource/UI/basemodui/InGameVoteFlyout.res"
-	}
-	
-	"FlmVoteFlyoutVersus"
-	{
-		"ControlName"		"FlyoutMenu"
-		"fieldName"			"FlmVoteFlyoutVersus"
-		"visible"			"0"
-		"wide"				"0"
-		"tall"				"0"
-		"zpos"				"3"
-		"InitialFocus"		"BtnReturnToLobby"
-		"ResourceFile"		"resource/UI/basemodui/InGameVoteFlyoutVersus.res"
-	}
-	
-	"FlmVoteFlyoutSurvival"
-	{
-		"ControlName"		"FlyoutMenu"
-		"fieldName"			"FlmVoteFlyoutSurvival"
-		"visible"			"0"
-		"wide"				"0"
-		"tall"				"0"
-		"zpos"				"3"
-		"InitialFocus"		"BtnReturnToLobby"
-		"ResourceFile"		"resource/UI/basemodui/InGameVoteFlyoutSurvival.res"
+		"InitialFocus"			"BtnVideo"
+		"ResourceFile"			"resource/UI/basemodui/OptionsFlyout.res"
 	}
 }

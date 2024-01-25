@@ -433,6 +433,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="..\shared\swarm\rd_vgui_vscript_shared.h" />
     <ClInclude Include="swarm\c_rd_infection_deathmatch_stats.h" />
     <ClInclude Include="swarm\gameui\swarm\vgenericchoicelist.h" />
+    <ClInclude Include="swarm\gameui\swarm\vreportproblem.h" />
     <ClInclude Include="swarm\rd_font_zbalermorna.h" />
     <ClInclude Include="swarm\rd_image_utils.h" />
     <ClInclude Include="swarm\vgui\asw_scalable_text.inc">
@@ -2090,6 +2091,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="swarm\gameui\swarm\vquickjoinpublic.cpp" />
+    <ClCompile Include="swarm\gameui\swarm\vreportproblem.cpp" />
     <ClCompile Include="swarm\gameui\swarm\vsignindialog.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>

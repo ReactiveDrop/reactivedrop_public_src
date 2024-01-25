@@ -27,6 +27,7 @@
 #include "gameui_util.h"
 #include "vguisystemmoduleloader.h"
 #include "rd_steam_input.h"
+#include "rd_player_reporting.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -310,32 +311,21 @@ void InGameMainMenu::OnCommand( const char *command )
 		{
 			if ( gpGlobals->maxClients <= 1 )
 			{
-				engine->ClientCmd("asw_restart_mission");
+				engine->ClientCmd_Unrestricted( "asw_restart_mission" );
 			}
 			else
 			{
 				ShowPlayerList();
 			}
-			engine->ClientCmd("gameui_hide");
+			engine->ClientCmd_Unrestricted( "gameui_hide" );
 			return;
-			/*
-			static ConVarRef mp_gamemode( "mp_gamemode" );
-			if ( mp_gamemode.IsValid() )
-			{
-				char const *szGameMode = mp_gamemode.GetString();
-				if ( char const *szNoTeamMode = StringAfterPrefix( szGameMode, "team" ) )
-					szGameMode = szNoTeamMode;
+		}
 
-				if ( !Q_strcmp( szGameMode, "versus" ) || !Q_strcmp( szGameMode, "scavenge" ) )
-				{
-					pchCommand = "FlmVoteFlyoutVersus";
-				}
-				else if ( !Q_strcmp( szGameMode, "survival" ) )
-				{
-					pchCommand = "FlmVoteFlyoutSurvival";
-				}
-			}
-			*/
+		if ( !Q_strcmp( command, "ReportProblem" ) )
+		{
+			CBaseModPanel::GetSingleton().OpenWindow( WT_REPORTPROBLEM, NULL );
+			engine->ClientCmd_Unrestricted( "gameui_hide" );
+			return;
 		}
 
 		// does this command match a flyout menu?
@@ -405,6 +395,8 @@ void InGameMainMenu::ApplySchemeSettings( vgui::IScheme *pScheme )
 void InGameMainMenu::OnOpen()
 {
 	BaseClass::OnOpen();
+
+	g_RD_Player_Reporting.TakeScreenshot();
 
 	SetFooterState();
 }
