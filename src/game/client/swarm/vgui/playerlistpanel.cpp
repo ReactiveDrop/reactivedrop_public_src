@@ -31,6 +31,8 @@
 #include "c_team.h"
 #include "gameui/swarm/vgenericpanellist.h"
 #include "rd_player_reporting.h"
+#include "cvartogglecheckbutton.h"
+#include "rd_vgui_quick_report_panel.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
@@ -103,7 +105,9 @@ PlayerListPanel::PlayerListPanel(vgui::Panel *parent, const char *name) :
 	m_pStartSavedCampaignVoteButton = new ImageButton(this, "SavedVoteButton", "#asw_saved_vote");
 	m_pStartSavedCampaignVoteButton->SetVisible( false );
 	m_pVoteYesButton = new CNB_Button(this, "Yes", "#asw_vote_yes");
-	m_pVoteNoButton = new CNB_Button(this, "No", "#asw_vote_no");	
+	m_pVoteNoButton = new CNB_Button(this, "No", "#asw_vote_no");
+
+	m_pSettingAutoReportVotes = new CCvarToggleCheckButton( this, "SettingAutoReportVotes", "#rd_reporting_auto_preference", "rd_report_voted_players" );
 
 	m_pStartSavedCampaignVoteButton->SetButtonTexture("swarm/Briefing/ShadedButton");
 	m_pStartSavedCampaignVoteButton->SetButtonOverTexture("swarm/Briefing/ShadedButton_over");
@@ -145,11 +149,18 @@ PlayerListPanel::PlayerListPanel(vgui::Panel *parent, const char *name) :
 	m_pPlayerListScroll = new GenericPanelList( this, "PlayerListScroll", GenericPanelList::ISM_ELEVATOR );
 	m_pPlayerListScroll->SetScrollBarVisible( IsPC() );
 	m_pPlayerListScroll->SetBgColor( Color( 0, 0, 0, 0 ) );
+
+	m_pQuickReportPanel = NULL;
 }
 
 PlayerListPanel::~PlayerListPanel()
 {
 	g_asw_iPlayerListOpen--;
+
+	if ( m_pSettingAutoReportVotes->HasBeenModified() )
+	{
+		engine->ClientCmd_Unrestricted( "host_writeconfig\n" );
+	}
 }
 
 void PlayerListPanel::ApplySchemeSettings(vgui::IScheme *pScheme)
@@ -214,8 +225,7 @@ void PlayerListPanel::PerformLayout()
 	m_pDeathsHeader->SetBounds( left_edge + PLAYER_LIST_DEATHS_X * fScale, player_list_top, PLAYER_LIST_DEATHS_W * fScale, header_height);
 	m_pPingHeader->SetBounds( left_edge + PLAYER_LIST_PING_X * fScale, player_list_top, PLAYER_LIST_PING_W * fScale, header_height);
 
-	m_pPlayerListScroll->SetBounds(left_edge + border - 5, line_top, YRES( 500 ) - 24.0f * fScale + 5, line_height * 8);
-
+	m_pPlayerListScroll->SetBounds( left_edge - YRES( 4 ), line_top, YRES( 500 ) - 24.0f * fScale + YRES( 4 ) * 2, line_height * 8 );
 
 	for (int i = m_pPlayerListScroll->GetPanelItemCount(); i < m_PlayerLine.Count(); ++i)
 	{
@@ -373,7 +383,6 @@ void PlayerListPanel::OnThink()
 		InvalidateLayout(true);
 }
 
-
 void PlayerListPanel::KickClicked( PlayerListLine *pLine )
 {
 	// unselect all the other check boxes
@@ -430,6 +439,23 @@ void PlayerListPanel::LeaderClicked( PlayerListLine *pLine )
 			}
 		}
 	}
+}
+
+void PlayerListPanel::QuickReportClicked( PlayerListLine *pLine )
+{
+	C_ASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( pLine->m_iPlayerIndex ) );
+	if ( !pPlayer )
+		return;
+
+	Assert( !pPlayer->IsAnyBot() && !pPlayer->IsLocalPlayer() );
+
+	if ( !m_pQuickReportPanel )
+	{
+		m_pQuickReportPanel = new CRD_VGUI_Quick_Report_Panel( this, "QuickReportPanel" );
+	}
+
+	m_pQuickReportPanel->SetVisible( true );
+	m_pQuickReportPanel->SetPlayer( pPlayer->GetSteamID() );
 }
 
 void PlayerListPanel::UpdateVoteButtons()

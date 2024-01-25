@@ -48,6 +48,7 @@ public:
 
 	void SetImage( ButtonImageType_t type, const char *pMaterialName, color32 color );
 	void SetImageColor( ButtonImageType_t type, color32 color );
+	void SetImageBounds( int x, int y, int w, int t );
 	bool IsImageLoaded( ButtonImageType_t type ) const;
 
 	void SetFocusOnNavigateTo( bool bAutoFocus ) { m_bFocusOnNavigateTo = bAutoFocus; }
@@ -69,6 +70,7 @@ private:
 	bool m_bImageLoaded[BUTTON_STATE_COUNT];
 	KeyValues *_doublePressedActionMessage;
 	bool m_bFocusOnNavigateTo;
+	bool m_bOverrideImageBounds;
 };
 
 

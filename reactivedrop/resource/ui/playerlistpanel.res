@@ -33,7 +33,7 @@
 		"ControlName"		"Label"
 		"fgcolor_override"		"224 224 224 255"
 	}
-  "Team1Score"
+	"Team1Score"
 	{
 		"fieldName"		"Team1Score"
 		"xpos"		"c15"
@@ -45,9 +45,8 @@
 		"textAlignment"		"west"
 		"ControlName"		"Label"
 		"fgcolor_override"		"224 224 224 255"
-//    "labelText"		"%s1: %s2"                         // "Counter-Terrorists: 15 "
 	}
-  "Team2Score"
+	"Team2Score"
 	{
 		"fieldName"		"Team2Score"
 		"xpos"		"c165"
@@ -59,7 +58,6 @@
 		"textAlignment"		"west"
 		"ControlName"		"Label"
 		"fgcolor_override"		"224 224 224 255"
-//    "labelText"		"%s1: %s2"                   //"Terrorists: 9"
 	}
 	"CurrentVoteTitle"
 	{
@@ -263,22 +261,28 @@
 		"fgcolor_override"		"113 142 181 255"
 		"zpos"		"3"
 	}
-  "PlayerListScroll"
+	"PlayerListScroll"
 	{
-		"fieldName"		"PlayerListScroll"
-		"xpos"		"c-216"
-		"ypos"		"156"
-		"wide"		"270"
-		"tall"		"240"
 		"ControlName"		"GenericPanelList"
-		"zpos"					"1"
-		"autoResize"			"1"
-		"pinCorner"				"0"
-		"visible"				"1"
-		"enabled"				"1"
-		"tabPosition"			"1"
+		"fieldName"			"PlayerListScroll"
+		// positioning done by code
+		"zpos"				"1"
+		"autoResize"		"1"
+		"pinCorner"			"0"
+		"visible"			"1"
+		"enabled"			"1"
+		"tabPosition"		"1"
 		"proportionalToParent"	"1"
-		
 		"bgcolor_override" "0 0 0 0"
+	}
+	"SettingAutoReportVotes"
+	{
+		"ControlName"		"CCvarToggleCheckButton"
+		"fieldName"			"SettingAutoReportVotes"
+		"xpos"				"c-250"
+		"ypos"				"360"
+		"wide"				"500"
+		"tall"				"20"
+		"ResourceFile"		"resource/ui/option_simple_checkbox.res"
 	}
 }

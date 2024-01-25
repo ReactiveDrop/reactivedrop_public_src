@@ -12,13 +12,17 @@ namespace vgui
 	class ImagePanel;
 	class CheckButton;
 	class Label;
-};
+}
 class ImageButton;
 class CNB_Header_Footer;
 class CNB_Button;
-
+class CCvarToggleCheckButton;
 class PlayerListLine;
-namespace BaseModUI { class GenericPanelList; };
+class CRD_VGUI_Quick_Report_Panel;
+namespace BaseModUI
+{
+	class GenericPanelList;
+}
 
 #define MAX_PLAYER_LINES 8
 
@@ -36,8 +40,9 @@ public:
 	virtual void PerformLayout();
 	virtual void ApplySchemeSettings(vgui::IScheme *pScheme);
 
-	void KickClicked(PlayerListLine* pLine);
-	void LeaderClicked(PlayerListLine* pLine);
+	void KickClicked( PlayerListLine *pLine );
+	void LeaderClicked( PlayerListLine *pLine );
+	void QuickReportClicked( PlayerListLine *pLine );
 
 	CNB_Header_Footer *m_pHeaderFooter;
 	vgui::Label *m_pPlayerHeader;
@@ -48,9 +53,6 @@ public:
 	vgui::Label *m_pTipsLabel;
 	vgui::Label *m_pVisibilityLabel;
 	CNB_Button	*m_pVisibilityButton;
-
-	// todo: button to start a map vote
-	// todo: button to vote yes/no to a map vote
 	
 	int m_iKickVoteIndex;
 	int m_iLeaderVoteIndex;
@@ -62,7 +64,6 @@ public:
 	void SetShowStartVoteElements(bool bVisible);
 	void SetShowCurrentVoteElements(bool bVisible);
 	void OnCommand( char const *cmd );
-	//void OnMouseReleased(vgui::MouseCode code);
 	
 	vgui::Panel* m_pVoteBackground;
 	vgui::Label* m_pStartVoteTitle;
@@ -79,6 +80,9 @@ public:
 	vgui::Label* m_pNoVotesLabel;
 	vgui::Label* m_pMapNameLabel;
 	vgui::Label* m_pCounterLabel;
+
+	CCvarToggleCheckButton *m_pSettingAutoReportVotes;
+	CRD_VGUI_Quick_Report_Panel *m_pQuickReportPanel;
 
 	char m_szMapName[64];
 	int m_iNoCount;

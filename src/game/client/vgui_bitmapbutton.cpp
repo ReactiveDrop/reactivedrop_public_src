@@ -28,6 +28,7 @@ CBitmapButton::CBitmapButton( vgui::Panel *pParent, const char *pName, const cha
 	}
 	_doublePressedActionMessage = NULL;
 	m_bFocusOnNavigateTo = false;
+	m_bOverrideImageBounds = false;
 }
 
 CBitmapButton::~CBitmapButton()
@@ -70,6 +71,11 @@ void CBitmapButton::ApplySettings(KeyValues *pInitData)
 	{
 		m_bImageLoaded[i] = InitializeImage(pInitData, pSectionName[i], this, &m_pImage[i] );
 	}
+
+	if ( pInitData->FindKey( "icon_xpos" ) || pInitData->FindKey( "icon_ypos" ) || pInitData->FindKey( "icon_wide" ) || pInitData->FindKey( "icon_tall" ) )
+	{
+		SetImageBounds( pInitData->GetInt( "icon_xpos" ), pInitData->GetInt( "icon_ypos" ), pInitData->GetInt( "icon_wide", GetWide() ), pInitData->GetInt( "icon_tall", GetTall() ) );
+	}
 }
 
 
@@ -92,6 +98,17 @@ void CBitmapButton::SetImageColor( ButtonImageType_t type, color32 color )
 	{
 		Color vcol( color.r, color.g, color.b, color.a );
 		m_pImage[type].SetColor( vcol );
+	}
+}
+
+void CBitmapButton::SetImageBounds( int x, int y, int w, int t )
+{
+	m_bOverrideImageBounds = true;
+
+	for ( int i = 0; i < BUTTON_STATE_COUNT; i++ )
+	{
+		m_pImage[i].SetPos( x, y );
+		m_pImage[i].SetRenderSize( w, t );
 	}
 }
 
@@ -126,7 +143,7 @@ void CBitmapButton::Paint( void )
 
 	if (m_bImageLoaded[nCurrentImage])
 	{
-		m_pImage[nCurrentImage].DoPaint( GetVPanel() );
+		m_pImage[nCurrentImage].DoPaint( m_bOverrideImageBounds ? NULL : GetVPanel() );
 	}
 
 	BaseClass::Paint();

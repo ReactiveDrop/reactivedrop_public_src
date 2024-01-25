@@ -14,6 +14,7 @@
 #include "PlayerListLine.h"
 #include "c_playerresource.h"
 #include <vgui/ILocalize.h>
+#include <vgui/ISurface.h>
 #include "voice_status.h"
 #include "rd_player_reporting.h"
 
@@ -25,10 +26,11 @@ extern ConVar asw_vote_leader_fraction;
 extern ConVar rd_report_voted_players;
 
 #define MUTE_BUTTON_ICON "voice/voice_icon_hud"
+#define QUICK_REPORT_BUTTON_ICON "vgui/briefing/quick_report_icon"
 
-ConVar rd_muted_color( "rd_muted_color", "66 66 66", FCVAR_ARCHIVE, "Color of the speaker icon in Player List window (F9) while muted" );
-ConVar rd_speaking_color( "rd_speaking_color", "0 240 240", FCVAR_ARCHIVE, "Color of the speaker icon in Player List window (F9) while talking" );
-ConVar rd_unmuted_color( "rd_unmuted_color", "190 190 190", FCVAR_ARCHIVE, "Color of the speaker icon in Player List window (F9) while silent" );
+ConVar rd_muted_color( "rd_muted_color", "255 66 66", FCVAR_NONE, "Color of the speaker icon in Player List window (F9) while muted" );
+ConVar rd_speaking_color( "rd_speaking_color", "0 240 240", FCVAR_NONE, "Color of the speaker icon in Player List window (F9) while talking" );
+ConVar rd_unmuted_color( "rd_unmuted_color", "190 190 190", FCVAR_NONE, "Color of the speaker icon in Player List window (F9) while silent" );
 
 PlayerListLine::PlayerListLine(vgui::Panel *parent, const char *name) :
 	vgui::Panel( parent, name )
@@ -37,6 +39,9 @@ PlayerListLine::PlayerListLine(vgui::Panel *parent, const char *name) :
 	m_pMuteButton = new CBitmapButton( this, "MuteButton", " " );
 	m_pMuteButton->AddActionSignalTarget( this );
 	m_pMuteButton->SetCommand( "MuteButton" );
+	m_pQuickReportButton = new CBitmapButton( this, "QuickReportButton", "#rd_quick_report_commend_or_report" );
+	m_pQuickReportButton->AddActionSignalTarget( this );
+	m_pQuickReportButton->SetCommand( "QuickReportButton" );
 	m_pPlayerLabel = new vgui::Button( this, "PlayerLabel", " " );
 	m_pPlayerLabel->AddActionSignalTarget( this );
 	m_pPlayerLabel->SetCommand( "PlayerLabel" );
@@ -91,9 +96,13 @@ void PlayerListLine::ApplySchemeSettings( vgui::IScheme *pScheme )
 	m_pMuteButton->SetImage( CBitmapButton::BUTTON_PRESSED, MUTE_BUTTON_ICON, white );
 	m_pMuteButton->SetImage( CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, MUTE_BUTTON_ICON, white );
 
+	m_pQuickReportButton->SetImage( CBitmapButton::BUTTON_ENABLED, QUICK_REPORT_BUTTON_ICON, grey );
+	m_pQuickReportButton->SetImage( CBitmapButton::BUTTON_DISABLED, QUICK_REPORT_BUTTON_ICON, grey );
+	m_pQuickReportButton->SetImage( CBitmapButton::BUTTON_PRESSED, QUICK_REPORT_BUTTON_ICON, white );
+	m_pQuickReportButton->SetImage( CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, QUICK_REPORT_BUTTON_ICON, white );
+
 	vgui::HFont DefaultFont = pScheme->GetFont( "Default", IsProportional() );
 	m_pPlayerLabel->SetFont( DefaultFont );
-
 	m_pPlayerLabel->SetPaintBackgroundEnabled( false );
 	m_pMarinesLabel->SetFont( DefaultFont );
 	m_pMarinesLabel->SetFgColor( Color( 255, 255, 255, 255 ) );
@@ -113,26 +122,29 @@ void PlayerListLine::ApplySchemeSettings( vgui::IScheme *pScheme )
 
 void PlayerListLine::OnCommand( const char *command )
 {
+	C_ASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( m_iPlayerIndex ) );
+
 	if ( !Q_stricmp( command, "MuteButton" ) )
 	{
 		g_PR->TogglePlayerMuteState( m_iPlayerIndex, false );
 
-		C_ASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( m_iPlayerIndex ) );
 		if ( pPlayer && g_PR->IsMuted( m_iPlayerIndex ) && !g_RD_Player_Reporting.IsInProgress() && !g_RD_Player_Reporting.RecentlyReportedPlayer( "quick_auto_mute", pPlayer->GetSteamID() ) && rd_report_voted_players.GetBool() )
 		{
 			g_RD_Player_Reporting.PrepareReportForSend( "quick_auto_mute", NULL, pPlayer->GetSteamID(), CUtlVector<CUtlBuffer>{}, false );
 		}
 	}
+	else if ( !Q_stricmp( command, "QuickReportButton" ) )
+	{
+		if ( pPlayer )
+		{
+			assert_cast< PlayerListPanel * >( GetParent()->GetParent()->GetParent() )->QuickReportClicked( this );
+		}
+	}
 	else if ( !Q_stricmp( command, "PlayerLabel" )  )
 	{
-		player_info_t pi;
-		if ( engine->GetPlayerInfo( m_iPlayerIndex, &pi ) )
+		if ( pPlayer )
 		{
-			if ( pi.friendsID )
-			{
-				CSteamID steamIDForPlayer( pi.friendsID, 1, SteamUtils()->GetConnectedUniverse(), k_EAccountTypeIndividual );
-				BaseModUI::CUIGameData::Get()->ExecuteOverlayCommand( "steamid", steamIDForPlayer );
-			}
+			BaseModUI::CUIGameData::Get()->ExecuteOverlayCommand( "steamid", pPlayer->GetSteamID() );
 		}
 	}
 	BaseClass::OnCommand( command );
@@ -144,9 +156,16 @@ void PlayerListLine::PerformLayout()
 	int top = 6.0f * fScale;
 	int top_line_height = 16.0f * fScale;
 	int bottom_line_top = top_line_height + top;
-	int bottom_line_height = 16.0f * fScale;	
+	int bottom_line_height = 16.0f * fScale;
 
-	m_pMuteButton->SetBounds( PLAYER_LIST_PLAYER_X * fScale - PLAYER_LIST_KICK_ICON_W * fScale - 5, top, PLAYER_LIST_KICK_ICON_W * fScale, bottom_line_height );
+	m_pMuteButton->SetBounds( PLAYER_LIST_MUTE_ICON_X * fScale, top, PLAYER_LIST_MUTE_ICON_W * fScale, top_line_height );
+	int iQuickReportX, iQuickReportWide;
+	vgui::surface()->GetTextSize( m_pQuickReportButton->GetFont(), g_pVGuiLocalize->Find( "#rd_quick_report_commend_or_report" ), iQuickReportX, iQuickReportWide );
+	iQuickReportWide = bottom_line_height + vgui::Label::Content + iQuickReportX;
+	iQuickReportX = PLAYER_LIST_QUICK_REPORT_RIGHT_X * fScale - iQuickReportWide;
+	m_pQuickReportButton->SetBounds( iQuickReportX, bottom_line_top, iQuickReportWide, bottom_line_height );
+	m_pQuickReportButton->SetTextInset( bottom_line_height + vgui::Label::Content, 0 );
+	m_pQuickReportButton->SetImageBounds( 0, 0, bottom_line_height, bottom_line_height );
 
 	m_pPlayerLabel-> SetBounds(PLAYER_LIST_PLAYER_X * fScale,		top,			 PLAYER_LIST_PLAYER_W * fScale,		  top_line_height);
 	m_pMarinesLabel->SetBounds(PLAYER_LIST_MARINES_X * fScale,		top,			 PLAYER_LIST_MARINES_W * fScale,	  top_line_height);
@@ -155,7 +174,6 @@ void PlayerListLine::PerformLayout()
 	m_pPingLabel->	 SetBounds(PLAYER_LIST_PING_X * fScale,			top,			 PLAYER_LIST_PING_W * fScale,		  top_line_height);
 	m_pLeaderCheck-> SetBounds(PLAYER_LIST_LEADER_CHECK_X * fScale, bottom_line_top, PLAYER_LIST_LEADER_CHECK_W * fScale, bottom_line_height);
 	m_pKickCheck->   SetBounds(PLAYER_LIST_KICK_CHECK_X * fScale,	bottom_line_top, PLAYER_LIST_KICK_CHECK_W * fScale,   bottom_line_height);
-	//m_pMuteCheck->SetBounds(PLAYER_LIST_MUTE_CHECK_X * fScale, bottom_line_top, PLAYER_LIST_MUTE_CHECK_W * fScale, bottom_line_height);
 
 	for (int i=0;i<MAX_VOTE_ICONS;i++)
 	{
@@ -300,6 +318,7 @@ void PlayerListLine::UpdateCheckBoxes()
 	C_ASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( m_iPlayerIndex ) );
 	m_pKickCheck->SetVisible( pPlayer && pPlayer->CanBeKicked() );
 	m_pLeaderCheck->SetVisible( pPlayer && pPlayer->CanBeLeader() );
+	m_pQuickReportButton->SetVisible( pPlayer && !pPlayer->IsAnyBot() && !pPlayer->IsLocalPlayer() );
 
 	// make sure our selected/unselected status matches the selected index from our parent
 	PlayerListPanel *pPanel = assert_cast< PlayerListPanel * >( GetParent()->GetParent()->GetParent() );
@@ -447,7 +466,6 @@ bool PlayerListLine::SetPlayerIndex( int i )
 	if ( i != m_iPlayerIndex )
 	{
 		m_iPlayerIndex = i;
-		// todo: update with his marines etc?
 		return true;
 	}
 	return false;

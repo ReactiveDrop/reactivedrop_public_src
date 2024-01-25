@@ -23,22 +23,23 @@ namespace vgui
 #define PLAYER_LIST_MARINES_X 260
 #define PLAYER_LIST_MARINES_W 200
 #define PLAYER_LIST_FRAGS_X 480
-#define PLAYER_LIST_FRAGS_W 60	
+#define PLAYER_LIST_FRAGS_W 60
 #define PLAYER_LIST_DEATHS_X 580
-#define PLAYER_LIST_DEATHS_W 60	
+#define PLAYER_LIST_DEATHS_W 60
 #define PLAYER_LIST_PING_X 680
-#define PLAYER_LIST_PING_W 60	
+#define PLAYER_LIST_PING_W 60
 
 #define PLAYER_LIST_LEADER_CHECK_X 200
 #define PLAYER_LIST_LEADER_CHECK_W 128
 #define PLAYER_LIST_KICK_CHECK_X 500
 #define PLAYER_LIST_KICK_CHECK_W 128
-#define PLAYER_LIST_MUTE_CHECK_X 630
-#define PLAYER_LIST_MUTE_CHECK_W 128
+#define PLAYER_LIST_MUTE_ICON_X 10
+#define PLAYER_LIST_MUTE_ICON_W 16
 #define PLAYER_LIST_KICK_ICON_X 260
 #define PLAYER_LIST_KICK_ICON_W 16
 #define PLAYER_LIST_LEADER_ICON_X 40
 #define PLAYER_LIST_LEADER_ICON_W 16
+#define PLAYER_LIST_QUICK_REPORT_RIGHT_X 740
 
 class VoteCheck : public vgui::CheckButton
 {
@@ -68,6 +69,7 @@ public:
 	CBitmapButton *m_pMuteButton;
 	vgui::Button *m_pPlayerLabel;
 	vgui::Label *m_pMarinesLabel;
+	CBitmapButton *m_pQuickReportButton;
 	vgui::Label *m_pFragsLabel;
 	vgui::Label *m_pDeathsLabel;
 	vgui::Label *m_pPingLabel;
