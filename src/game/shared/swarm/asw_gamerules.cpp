@@ -6354,8 +6354,8 @@ void CAlienSwarm::RadiusDamage( const CTakeDamageInfo &info, const Vector &vecSr
 			continue;
 		}
 
-		// check if this is a marine and if so, he may be outside the explosion radius				
-		if ( pEntity->Classify() == CLASS_ASW_MARINE )
+		// if the target is a marine or a colonist, use the reduced radius
+		if ( pEntity->MyCombatCharacterPointer() && pEntity->MyCombatCharacterPointer()->GetFaction() == FACTION_MARINES )
 		{
 			if ( ( vecSrc - pEntity->WorldSpaceCenter() ).Length() > fMarineRadius )
 				continue;
@@ -6466,8 +6466,8 @@ void CAlienSwarm::RadiusDamage( const CTakeDamageInfo &info, const Vector &vecSr
 		{
 			flFalloffDist -= rd_radial_damage_no_falloff_distance.GetFloat();
 
-			// decrease damage for marines
-			if ( pEntity->Classify() == CLASS_ASW_MARINE )
+			// decrease damage for marines and colonists
+			if ( pEntity->MyCombatCharacterPointer() && pEntity->MyCombatCharacterPointer()->GetFaction() == FACTION_MARINES )
 				flAdjustedDamage = flFalloffDist * fMarineFalloff;
 			else
 				flAdjustedDamage = flFalloffDist * falloff;
