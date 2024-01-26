@@ -124,6 +124,7 @@ struct ReportingServerSnapshot_t
 {
 	// snapshots expire after 5 minutes (counted from when the snapshot was taken to the start of the reporting process)
 	float RecordedAt;
+	RTime32 SnapshotTaken;
 
 	// diagnostic data about game state
 	CUtlString MissionName;
@@ -149,6 +150,8 @@ struct ReportingServerSnapshot_t
 
 	void WriteJSON( CUtlBuffer &buf ) const
 	{
+		WriteJSONString( buf, "snapshot_taken" );
+		WriteJSONFormat( buf, ":%u,", SnapshotTaken );
 		WriteJSONString( buf, "map" );
 		WriteJSONRaw( buf, ":{" );
 		WriteJSONString( buf, "name" );
@@ -730,6 +733,7 @@ ReportingServerSnapshot_t *CRD_Player_Reporting::NewSnapshot() const
 	ReportingServerSnapshot_t *pSnapshot = new ReportingServerSnapshot_t();
 
 	pSnapshot->RecordedAt = Plat_FloatTime();
+	pSnapshot->SnapshotTaken = SteamUtils() ? SteamUtils()->GetServerRealTime() : 0;
 
 	extern ConVar rd_challenge;
 	char szChallengeFileName[MAX_PATH];
