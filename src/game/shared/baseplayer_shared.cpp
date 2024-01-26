@@ -46,7 +46,9 @@
 #include "tier0/memdbgon.h"
 
 #if defined(GAME_DLL) 
+#ifndef INFESTED_DLL
 	ConVar sv_infinite_ammo( "sv_infinite_ammo", "0", FCVAR_CHEAT, "Player's active weapon will never run out of ammo" );
+#endif
 #if !defined(_XBOX)
 	extern ConVar sv_pushaway_max_force;
 	extern ConVar sv_pushaway_force;
@@ -233,6 +235,7 @@ void CBasePlayer::ItemPostFrame()
 #if !defined( CLIENT_DLL )
 	ImpulseCommands();
 
+#ifndef INFESTED_DLL
 	extern ConVar sv_infinite_ammo;
 	if( sv_infinite_ammo.GetBool() && (GetActiveWeapon() != NULL) )
 	{
@@ -248,6 +251,7 @@ void CBasePlayer::ItemPostFrame()
 		if( iSecondaryAmmoType >= 0 )
 			SetAmmoCount( GetAmmoDef()->MaxCarry( iSecondaryAmmoType, this ), iSecondaryAmmoType );
 	}
+#endif
 #else
 	// NOTE: If we ever support full impulse commands on the client,
 	// remove this line and call ImpulseCommands instead.
