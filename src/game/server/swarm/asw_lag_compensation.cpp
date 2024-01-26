@@ -6,7 +6,7 @@
 #include "ai_basenpc.h"
 #include "asw_game_resource.h"
 #include "asw_marine_resource.h"
-#include "asw_lag_compensation.h"
+#include "ilagcompensationmanager.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -15,7 +15,8 @@ CUtlVector<CASW_Lag_Compensation*>	g_LagCompensatingEntities;
 bool CASW_Lag_Compensation::s_bInLagCompensation = false;
 CBasePlayer* CASW_Lag_Compensation::s_pLagCompensatingPlayer = NULL;
 
-ConVar asw_alien_unlag("asw_alien_unlag", "1", 0, "Unlag alien positions by player's ping");
+ConVar asw_alien_unlag( "asw_alien_unlag", "1", 0, "Unlag alien positions by player's ping" );
+ConVar rd_use_full_lag_compensation( "rd_use_full_lag_compensation", "1", FCVAR_CHEAT, "use lag compensation that handles animations (0 = only positions)" );
 extern ConVar sv_maxunlag;
 extern ConVar sv_showlagcompensation;
 
@@ -61,7 +62,7 @@ void CASW_Lag_Compensation::StorePositionHistory()
 		return;
 	if (gpGlobals->curtime - m_fPositionHistoryTime[m_iPositionHistoryTail] < ASW_LAG_MIN_SAMPLE_TIME_DIFFERENCE)
 		return;
-	
+
 	m_iPositionHistoryTail++;
 	if ( m_iPositionHistoryTail >= ASW_LAG_NUM_POSITION_HISTORY_SAMPLES)
 		m_iPositionHistoryTail = 0;
@@ -207,6 +208,11 @@ void CASW_Lag_Compensation::RequestLagCompensation(CASW_Player *player, const CU
 	}
 
 	s_bInLagCompensation = true;
+
+	if ( rd_use_full_lag_compensation.GetBool() )
+	{
+		return;
+	}
 
 	// Get true latency
 

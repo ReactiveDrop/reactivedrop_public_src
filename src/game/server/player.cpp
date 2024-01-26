@@ -763,6 +763,7 @@ bool CBasePlayer::WantsLagCompensationOnEntity( const CBaseEntity *entity, const
 	if ( pEntityTransmitBits && !pEntityTransmitBits->Get( entity->entindex() ) )
 		return false;
 
+#ifndef INFESTED_DLL
 	const Vector &vMyOrigin = GetAbsOrigin();
 	const Vector &vHisOrigin = entity->GetAbsOrigin();
 
@@ -785,6 +786,7 @@ bool CBasePlayer::WantsLagCompensationOnEntity( const CBaseEntity *entity, const
 	float flCosAngle = 0.707107f;	// 45 degree angle
 	if ( vForward.Dot( vDiff ) < flCosAngle )
 		return false;
+#endif
 
 	return true;
 }

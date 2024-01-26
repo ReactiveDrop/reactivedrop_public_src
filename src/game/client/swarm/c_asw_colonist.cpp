@@ -12,12 +12,6 @@ public:
 
 	C_ASW_Colonist() {}
 
-	virtual float GetInterpolationAmount( int flags )
-	{
-		extern ConVar cl_alien_extra_interp;	// if necessary, add it's own cvar
-		return BaseClass::GetInterpolationAmount( flags ) + cl_alien_extra_interp.GetFloat();
-	}
-
 private:
 	C_ASW_Colonist( const C_ASW_Colonist & ); // not defined, not accessible
 };

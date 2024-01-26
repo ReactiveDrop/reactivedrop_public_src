@@ -21,6 +21,7 @@ public:
 	virtual void OnDataChanged( DataUpdateType_t type );
 	virtual void UpdateOnRemove( void );
 	virtual void OnRestore();
+	virtual float GetInterpolationAmount( int flags );
 
 	Class_T		Classify( void ) { return (Class_T) CLASS_ASW_BUZZER; }
 	virtual bool IsAlien( void ) const { return true; }

@@ -32,6 +32,7 @@ public:
 	virtual void OnRestore() override;
 	virtual void NPCInit() override;
 	virtual void NPCThink() override;
+	virtual void UpdateOnRemove() override;
 	virtual int DrawDebugTextOverlays() override;
 
 	// player control

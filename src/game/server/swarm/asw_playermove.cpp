@@ -235,7 +235,7 @@ void CASW_PlayerMove::RunCommand( CBasePlayer *player, CUserCmd *ucmd, IMoveHelp
 	VPROF_SCOPE_END();
 
 	// put lag compensation here so it affects weapons
-	lagcompensation->StartLagCompensation( player, LAG_COMPENSATE_BOUNDS );
+	lagcompensation->StartLagCompensation( player, LAG_COMPENSATE_HITBOXES );
 	RunPostThink( player );
 	lagcompensation->FinishLagCompensation( player );
 

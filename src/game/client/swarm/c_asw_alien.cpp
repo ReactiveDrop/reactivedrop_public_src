@@ -577,9 +577,12 @@ void C_ASW_Alien::GetShadowFromFlashlight(Vector &vecDir, float &fContribution) 
 }
 
 // aliens require extra interpolation time due to think rate
-ConVar cl_alien_extra_interp( "cl_alien_extra_interp", "0.1", FCVAR_CHEAT, "Extra interpolation for aliens." );
+ConVar cl_alien_extra_interp( "cl_alien_extra_interp", "0.1", FCVAR_NONE, "Extra interpolation for aliens." );
 
 float C_ASW_Alien::GetInterpolationAmount( int flags )
 {
-	return BaseClass::GetInterpolationAmount( flags ) + cl_alien_extra_interp.GetFloat();
+	if ( flags & LATCH_SIMULATION_VAR )
+		return BaseClass::GetInterpolationAmount( flags ) + cl_alien_extra_interp.GetFloat();
+
+	return BaseClass::GetInterpolationAmount( flags );
 }

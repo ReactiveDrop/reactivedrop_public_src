@@ -13,6 +13,10 @@
 #include "utllinkedlist.h"
 #include "BaseAnimatingOverlay.h"
 #include "tier0/vprof.h"
+#ifdef INFESTED_DLL
+#include "asw_player.h"
+#include "asw_inhabitable_npc.h"
+#endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -25,8 +29,13 @@
 #define LC_SIZE_CHANGED		(1<<10)
 #define LC_ANIMATION_CHANGED (1<<11)
 
+#ifdef INFESTED_DLL
+#define LAG_COMPENSATION_TELEPORTED_DISTANCE_SQR ( 192.0f * 192.0f )
+#define LAG_COMPENSATION_EPS_SQR ( 0.3f * 0.3f )
+#else
 #define LAG_COMPENSATION_TELEPORTED_DISTANCE_SQR ( 64.0f * 64.0f )
 #define LAG_COMPENSATION_EPS_SQR ( 0.1f * 0.1f )
+#endif
 // Allow 4 units of error ( about 1 / 8 bbox width )
 #define LAG_COMPENSATION_ERROR_EPS_SQR ( 4.0f * 4.0f )
 
@@ -71,10 +80,14 @@ static void RestoreEntityTo( CBaseEntity *pEntity, const Vector &vWantedPos )
 	{
 		// We don't have to test for validity.  Just put them back where you found them.
 		LC_SetAbsOrigin( pEntity, vWantedPos, true );
+		return;
 	}
 
-	unsigned int mask = MASK_PLAYERSOLID; 
-	UTIL_TraceEntity( pEntity, vWantedPos, vWantedPos, mask, pEntity, COLLISION_GROUP_PLAYER_MOVEMENT, &tr );
+	unsigned int mask = pEntity->PhysicsSolidMaskForEntity();
+	int collisionGroup = pEntity->GetCollisionGroup();
+	if ( collisionGroup == COLLISION_GROUP_PLAYER )
+		collisionGroup = COLLISION_GROUP_PLAYER_MOVEMENT;
+	UTIL_TraceEntity( pEntity, vWantedPos, vWantedPos, mask, pEntity, collisionGroup, &tr );
 	if ( tr.startsolid || tr.allsolid )
 	{
 		if ( sv_unlag_debug.GetBool() )
@@ -83,7 +96,7 @@ static void RestoreEntityTo( CBaseEntity *pEntity, const Vector &vWantedPos )
 					pEntity->entindex(), vWantedPos.x, vWantedPos.y, vWantedPos.z );
 		}
 
-		UTIL_TraceEntity( pEntity, pEntity->GetAbsOrigin(), vWantedPos, mask, pEntity, COLLISION_GROUP_PLAYER_MOVEMENT, &tr );
+		UTIL_TraceEntity( pEntity, pEntity->GetAbsOrigin(), vWantedPos, mask, pEntity, collisionGroup, &tr );
 		if ( tr.startsolid || tr.allsolid )
 		{
 			// In this case, the guy got stuck back wherever we lag compensated him to. Nasty.
@@ -239,7 +252,9 @@ void CLagCompensationManager::StartLagCompensation( CBasePlayer *player, LagComp
 		 || (gpGlobals->maxClients <= 1)	// no lag compensation in single player
 		 || !sv_unlag.GetBool()				// disabled by server admin
 		 || player->IsBot() 				// not for bots
+#ifndef INFESTED_DLL
 		 || player->IsObserver()			// not for spectators
+#endif
 		)
 		return;
 
@@ -250,6 +265,7 @@ void CLagCompensationManager::StartLagCompensation( CBasePlayer *player, LagComp
 		// (since lag comp asks for the GetPlayerOwner() which will have m_pCurrentCommand == NULL, 
 		//  not the player currently executing a CUserCmd).
 		Error( "CLagCompensationManager::StartLagCompensation with NULL CUserCmd!!!\n" );
+		return;
 	}
 
 	// NOTE: Put this here so that it won't show up in single player mode.
@@ -315,6 +331,13 @@ void CLagCompensationManager::StartLagCompensation( CBasePlayer *player, LagComp
 			continue;
 		}
 
+#ifdef INFESTED_DLL
+		if ( ToASW_Player( player )->GetNPC() == pEntity )
+		{
+			continue;
+		}
+#endif
+
 		// Custom checks for if things should lag compensate (based on things like what team the entity is associated with).
 		if ( !player->WantsLagCompensationOnEntity( pEntity, cmd, pEntityTransmitBits ) )
 			continue;
@@ -330,6 +353,14 @@ bool CLagCompensationManager::BacktrackEntity( CBaseEntity *entity, float flTarg
 	QAngle ang;
 
 	VPROF_BUDGET( "BacktrackEntity", "CLagCompensationManager" );
+
+#ifdef INFESTED_DLL
+	if ( entity->IsAlien() )
+	{
+		// match cl_alien_extra_interp
+		flTargetTime -= 0.1f;
+	}
+#endif
 
 	// check if we have at least one entry
 	if ( track->Count() <= 0 )
@@ -422,7 +453,7 @@ bool CLagCompensationManager::BacktrackEntity( CBaseEntity *entity, float flTarg
 	{
 		// Try to move to the wanted position from our current position.
 		trace_t tr;
-		UTIL_TraceEntity( entity, org, org, MASK_PLAYERSOLID, &tr );
+		UTIL_TraceEntity( entity, org, org, entity->PhysicsSolidMaskForEntity(), &tr );
 		if ( tr.startsolid || tr.allsolid )
 		{
 			if ( sv_unlag_debug.GetBool() )
@@ -457,7 +488,7 @@ bool CLagCompensationManager::BacktrackEntity( CBaseEntity *entity, float flTarg
 			}
 
 			// now trace us back as far as we can go
-			unsigned int mask = MASK_PLAYERSOLID;
+			unsigned int mask = entity->PhysicsSolidMaskForEntity();
 			UTIL_TraceEntity( entity, entity->GetAbsOrigin(), org, mask, &tr );
 
 			if ( tr.startsolid || tr.allsolid )
@@ -652,20 +683,6 @@ bool CLagCompensationManager::BacktrackEntity( CBaseEntity *entity, float flTarg
 
 	if ( sv_lagflushbonecache.GetBool() && (flags & LC_ANIMATION_CHANGED) && entity->GetBaseAnimating() )
 		entity->GetBaseAnimating()->InvalidateBoneCache();
-
-	/*
-	char text[256]; Q_snprintf( text, sizeof(text), "time %.2f", flTargetTime );
-	pPlayer->DrawServerHitboxes( 10 );
-	NDebugOverlay::Text( org, text, false, 10 );
-	if ( skipAnims )
-	{
-		NDebugOverlay::EntityBounds( pPlayer, 0, 255, 0, 32, 10 );
-	}
-	else
-	{
-		NDebugOverlay::EntityBounds( pPlayer, 255, 0, 0, 32, 10 );
-	}
-	*/
 
 	m_bNeedToRestore = true;  // we changed at least one entity
 	restore->m_fFlags = flags; // we need to restore these flags

@@ -582,8 +582,11 @@ int C_ASW_Simple_Alien::DrawModel( int flags, const RenderableInstance_t &instan
 float C_ASW_Simple_Alien::sm_flLastFootstepTime = 0.0f;
 
 // reactivedrop: use extra interpolation here to make asw_grub smoothly animated when clients play at cl_interp 0
+extern ConVar cl_alien_extra_interp;
 float C_ASW_Simple_Alien::GetInterpolationAmount( int flags )
 {
-	extern ConVar cl_alien_extra_interp;
-	return BaseClass::GetInterpolationAmount( flags ) + cl_alien_extra_interp.GetFloat();
+	if ( flags & LATCH_SIMULATION_VAR )
+		return BaseClass::GetInterpolationAmount( flags ) + cl_alien_extra_interp.GetFloat();
+
+	return BaseClass::GetInterpolationAmount( flags );
 }

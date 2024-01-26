@@ -12,6 +12,7 @@
 #include "asw_base_spawner.h"
 #include "asw_physics_prop_statue.h"
 #include "asw_util_shared.h"
+#include "ilagcompensationmanager.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -28,6 +29,7 @@ extern ConVar asw_alien_hurt_speed;
 extern ConVar asw_stun_grenade_time;
 extern ConVar asw_controls;
 extern ConVar asw_debug_alien_damage;
+extern ConVar rd_use_full_lag_compensation;
 
 static void DebugNPCsChanged( IConVar *var, const char *pOldValue, float flOldValue )
 {
@@ -200,6 +202,10 @@ void CASW_Inhabitable_NPC::OnRestore()
 	BaseClass::OnRestore();
 
 	m_LagCompensation.Init( this );
+	if ( rd_use_full_lag_compensation.GetBool() )
+	{
+		lagcompensation->AddAdditionalEntity( this );
+	}
 }
 
 void CASW_Inhabitable_NPC::NPCInit()
@@ -212,6 +218,10 @@ void CASW_Inhabitable_NPC::NPCInit()
 	}
 
 	m_LagCompensation.Init( this );
+	if ( rd_use_full_lag_compensation.GetBool() )
+	{
+		lagcompensation->AddAdditionalEntity( this );
+	}
 }
 
 void CASW_Inhabitable_NPC::NPCThink()
@@ -240,6 +250,13 @@ void CASW_Inhabitable_NPC::NPCThink()
 		m_LagCompensation.StorePositionHistory();
 
 	UpdateThawRate();
+}
+
+void CASW_Inhabitable_NPC::UpdateOnRemove()
+{
+	BaseClass::UpdateOnRemove();
+
+	lagcompensation->RemoveAdditionalEntity( this );
 }
 
 int	CASW_Inhabitable_NPC::DrawDebugTextOverlays()

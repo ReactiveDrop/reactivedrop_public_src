@@ -189,9 +189,3 @@ void C_ASW_Egg::Bleed( const CTakeDamageInfo &info, const Vector &vecPos, const 
 {
 	UTIL_ASW_DroneBleed( vecPos, -vecDir, 4 );
 }
-
-float C_ASW_Egg::GetInterpolationAmount( int flags )
-{
-	extern ConVar cl_alien_extra_interp;
-	return BaseClass::GetInterpolationAmount( flags ) + cl_alien_extra_interp.GetFloat();
-}
