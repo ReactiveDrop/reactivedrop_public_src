@@ -1835,7 +1835,7 @@ void CFuncTrackTrain::UpdateTrainVelocity( CPathTrack *pPrev, CPathTrack *pNext,
 					if ( flSegmentLen )
 					{
 						Vector vecCurOffset = GetLocalOrigin() - pPrev->GetLocalOrigin();
-						float p = vecCurOffset.Length() / flSegmentLen;
+						float p = clamp( vecCurOffset.Length() / flSegmentLen, 0, 1 );
 						if ( GetTrainVelocityType() == TrainVelocity_EaseInEaseOut )
 						{
 							p = SimpleSplineRemapVal( p, 0.0f, 1.0f, 0.0f, 1.0f );
