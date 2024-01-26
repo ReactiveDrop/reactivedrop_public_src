@@ -13,6 +13,7 @@
 	#include "c_asw_shieldbug.h"
 	#include "c_asw_hack.h"
 	#include "c_physics_prop_statue.h"
+	#include "prediction.h"
 	#define CASW_Simple_Alien C_ASW_Simple_Alien
 	#define CASW_Pickup_Weapon C_ASW_Pickup_Weapon
 	#define CAI_BaseNPC C_AI_BaseNPC
@@ -88,6 +89,8 @@ ConVar asw_marine_gun_offset_z( "asw_marine_gun_offset_z", "34", FCVAR_REPLICATE
 // reactivedrop: setting to 0, this prevents killing shieldbug from front using shotguns 
 ConVar asw_allow_hull_shots("asw_allow_hull_shots", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar rd_difficulty_tier( "rd_difficulty_tier", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Used to make difficulties higher than Brutal. 0 - default difficulties, 1 - Easy is as hard as Brutal + 1, 2 - Easy is as hard as Brutal + 6" );
+ConVar sv_showimpacts( "sv_showimpacts", "0", FCVAR_REPLICATED, "Shows client (red) and server (blue) bullet impact point (1=both, 2=client-only, 3=server-only)" );
+
 #ifdef GAME_DLL
 extern ConVar ai_show_hull_attacks;
 ConVar asw_melee_knockback_up_force( "asw_melee_knockback_up_force", "1.0", FCVAR_CHEAT );
@@ -782,6 +785,15 @@ void CASW_Marine::FireRegularBullets( const FireBulletsInfo_t &info )
 		ASWGameRules()->m_fLastFireTime = gpGlobals->curtime;
 #endif
 
+#ifdef CLIENT_DLL
+	const bool bShowHitboxes = ( sv_showimpacts.GetInt() == 1 || sv_showimpacts.GetInt() == 2 ) && prediction->IsFirstTimePredicted();
+#define DrawHitboxes DrawClientHitboxes
+#define SHOWIMPACTS_COLOR 255, 0, 0
+#else
+	const bool bShowHitboxes = sv_showimpacts.GetInt() == 1 || sv_showimpacts.GetInt() == 3;
+#define DrawHitboxes DrawServerHitboxes
+#define SHOWIMPACTS_COLOR 0, 0, 255
+#endif
 	bool bDoServerEffects = true;
 
 #if defined ( _XBOX ) && defined( GAME_DLL )
@@ -827,7 +839,7 @@ void CASW_Marine::FireRegularBullets( const FireBulletsInfo_t &info )
 	{
 		ApplyMultiDamage();
 	}
-	  
+
 	ClearMultiDamage();
 	g_MultiDamage.SetDamageType( nDamageType | DMG_NEVERGIB );
 
@@ -889,7 +901,7 @@ void CASW_Marine::FireRegularBullets( const FireBulletsInfo_t &info )
 		else
 		{
 			AI_TraceLine(info.m_vecSrc, vecEnd, MASK_SHOT, &traceFilter, &tr);
-		}		
+		}
 
 		vecFinalDir = tr.endpos - tr.startpos;
 		if (vecFinalDir == vec3_origin)
@@ -1050,7 +1062,17 @@ void CASW_Marine::FireRegularBullets( const FireBulletsInfo_t &info )
 		}
 #endif
 
-		//iSeed++;
+		if ( bShowHitboxes && IsInhabited() && tr.DidHit() )
+		{
+			if ( CBaseAnimating *pTarget = tr.m_pEnt ? tr.m_pEnt->GetBaseAnimating() : NULL )
+			{
+				pTarget->DrawHitboxes( 4, true );
+				pTarget->DrawCurrentSkeleton( 4 );
+			}
+
+			NDebugOverlay::Line( info.m_vecSrc, tr.endpos, SHOWIMPACTS_COLOR, false, 4 );
+			NDebugOverlay::Box( tr.endpos, Vector{ -2, -2, -2 }, Vector{ 2, 2, 2 }, SHOWIMPACTS_COLOR, 127, 4 );
+		}
 	}
 
 #ifdef GAME_DLL
@@ -1095,6 +1117,15 @@ void CASW_Marine::FirePenetratingBullets( const FireBulletsInfo_t &info, int iMa
 	
 	Vector vecPiercingTracerEnd(0,0,0);
 
+#ifdef CLIENT_DLL
+	const bool bShowHitboxes = ( sv_showimpacts.GetInt() == 1 || sv_showimpacts.GetInt() == 2 ) && prediction->IsFirstTimePredicted();
+#define DrawHitboxes DrawClientHitboxes
+#define SHOWIMPACTS_COLOR 255, 0, 0
+#else
+	const bool bShowHitboxes = sv_showimpacts.GetInt() == 1 || sv_showimpacts.GetInt() == 3;
+#define DrawHitboxes DrawServerHitboxes
+#define SHOWIMPACTS_COLOR 0, 0, 255
+#endif
 	bool bDoServerEffects = true;
 
 #if defined( HL2MP ) && defined( GAME_DLL )
@@ -1604,6 +1635,18 @@ void CASW_Marine::FirePenetratingBullets( const FireBulletsInfo_t &info, int iMa
 		if (pPiercingTracerEnd != NULL)
 		{
 			*pPiercingTracerEnd = vecPiercingTracerEnd;
+		}
+
+		if ( bShowHitboxes && IsInhabited() && tr.DidHit() )
+		{
+			if ( CBaseAnimating *pTarget = tr.m_pEnt ? tr.m_pEnt->GetBaseAnimating() : NULL )
+			{
+				pTarget->DrawHitboxes( 4, true );
+				pTarget->DrawCurrentSkeleton( 4 );
+			}
+
+			NDebugOverlay::Line( info.m_vecSrc, tr.endpos, SHOWIMPACTS_COLOR, false, 4 );
+			NDebugOverlay::Box( tr.endpos, Vector{ -2, -2, -2 }, Vector{ 2, 2, 2 }, SHOWIMPACTS_COLOR, 127, 4 );
 		}
 	}
 

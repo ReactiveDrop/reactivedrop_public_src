@@ -3256,6 +3256,32 @@ void C_BaseAnimating::DrawSkeleton( CStudioHdr const* pHdr, int iBoneMask ) cons
 	}
 }
 
+void C_BaseAnimating::DrawCurrentSkeleton( float duration )
+{
+	MDLCACHE_CRITICAL_SECTION();
+
+	CStudioHdr *pHdr = GetModelPtr();
+	if ( !pHdr )
+		return;
+
+	Vector from, to;
+	QAngle angles;
+	for ( int i = 0; i < pHdr->numbones(); ++i )
+	{
+		if ( !( pHdr->boneFlags( i ) & BONE_USED_BY_ANYTHING ) )
+			continue;
+
+		int const iParentIndex = pHdr->boneParent( i );
+		if ( iParentIndex < 0 )
+			continue;
+
+		GetBonePosition( i, from, angles );
+		GetBonePosition( iParentIndex, to, angles );
+
+		debugoverlay->AddLineOverlay( from, to, 255, 0, 0, false, duration );
+	}
+}
+
 //-----------------------------------------------------------------------------
 // Gets the hitbox-to-world transforms, returns false if there was a problem
 //-----------------------------------------------------------------------------

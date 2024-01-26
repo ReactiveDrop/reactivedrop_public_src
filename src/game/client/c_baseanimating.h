@@ -356,6 +356,7 @@ public:
 	int								GetHitboxSetCount( void );
 	void							DrawClientHitboxes( float duration = 0.0f, bool monocolor = false );
 	void							DrawSkeleton( CStudioHdr const* pHdr, int iBoneMask ) const;
+	void							DrawCurrentSkeleton( float duration );
 
 	C_BaseAnimating*				FindFollowedEntity();
 

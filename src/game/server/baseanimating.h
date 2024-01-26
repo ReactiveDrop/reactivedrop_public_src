@@ -285,6 +285,7 @@ public:
 	// See note in code re: bandwidth usage!!!
 	void				DrawServerHitboxes( float duration = 0.0f, bool monocolor = false );
 	void				DrawRawSkeleton( matrix3x4_t boneToWorld[], int boneMask, bool noDepthTest = true, float duration = 0.0f, bool monocolor = false );
+	void				DrawCurrentSkeleton( float duration );
 
 	void				SetModelScale( float scale, float change_duration = 0.0f );
 	float				GetModelScale() const;

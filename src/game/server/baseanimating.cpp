@@ -3320,6 +3320,31 @@ void CBaseAnimating::DrawRawSkeleton( matrix3x4_t boneToWorld[], int boneMask, b
 	}
 }
 
+void CBaseAnimating::DrawCurrentSkeleton( float duration )
+{
+	MDLCACHE_CRITICAL_SECTION();
+
+	CStudioHdr *pHdr = GetModelPtr();
+	if ( !pHdr )
+		return;
+
+	Vector from, to;
+	QAngle angles;
+	for ( int i = 0; i < pHdr->numbones(); ++i )
+	{
+		if ( !( pHdr->boneFlags( i ) & BONE_USED_BY_ANYTHING ) )
+			continue;
+
+		int const iParentIndex = pHdr->boneParent( i );
+		if ( iParentIndex < 0 )
+			continue;
+
+		GetBonePosition( i, from, angles );
+		GetBonePosition( iParentIndex, to, angles );
+
+		debugoverlay->AddLineOverlay( from, to, 0, 0, 255, false, duration );
+	}
+}
 
 int CBaseAnimating::GetHitboxBone( int hitboxIndex )
 {
