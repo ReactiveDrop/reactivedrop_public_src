@@ -2390,7 +2390,7 @@ void CFuncTrackTrain::Find( void )
 	}
 	else
 	{
-		VectorAngles( look - nextPos, nextAngles );
+		nextAngles = m_ppath->GetOrientation( true );
 		if ( HasSpawnFlags( SF_TRACKTRAIN_NOPITCH ) )
 		{
 			nextAngles.x = 0;
