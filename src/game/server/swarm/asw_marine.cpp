@@ -2143,6 +2143,16 @@ void CASW_Marine::InhabitedPhysicsSimulate()
 {
 	BaseClass::InhabitedPhysicsSimulate();
 
+	// handle basevelocity so trigger_push doesn't get us moving infinitely fast
+	if ( ( ( GetFlags() & FL_BASEVELOCITY ) == 0 ) && ( GetBaseVelocity() != vec3_origin ) )
+	{
+		Vector vecAbsVelocity;
+		VectorMA( GetAbsVelocity(), 1.0 + ( gpGlobals->frametime * 0.5 ), GetBaseVelocity(), vecAbsVelocity );
+		SetAbsVelocity( vecAbsVelocity );
+		SetBaseVelocity( vec3_origin );
+	}
+	RemoveFlag( FL_BASEVELOCITY );
+
 	// check for deleting this
 	if ( m_pfnThink == (BASEPTR)&CBaseEntity::SUB_Remove )
 	{
