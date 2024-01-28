@@ -895,3 +895,22 @@ asw_pickup_50calmg : "50cal Machine Gun"
 	mins(vector) : "Top Left Corner" : "-128 -128 0" : "Top left corner of the texture, in world coordinates relative to this entity."
 	maxs(vector) : "Bottom Right Corner" : "128 128 0" : "Bottom right corner of the texture, in world coordinates relative to this entity."
 ]
+
+@PointClass base(Targetname, Parentname, Angles) iconsprite("editor/light.vmt") sphere(distance) = asw_dynamic_light :
+	"An invisible light source that can be moved."
+[
+	LightColor(color255) : "Brightness" : "255 255 255"
+	distance(float) : "Maximum distance" : 256 : "This is the distance that light is allowed to cast, in inches."
+	brightness(integer) : "Brightness (-127 to 127)" : 0
+	spawnflags(Flags) =
+	[
+		1 : "Don't illuminate world" : 0
+		2 : "Don't illuminate models" : 0
+		4 : "Add displacement alpha" : 0
+		8 : "Subtract displacement alpha" : 0
+	]
+
+	input TurnOn(void)
+	input TurnOff(void)
+	input Toggle(void)
+]
