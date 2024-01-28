@@ -12,7 +12,6 @@ public:
 
 public:
 	void	OnDataChanged(DataUpdateType_t updateType);
-	bool	ShouldDraw();
 	void	ClientThink( void );
 
 	unsigned char	m_Flags;
