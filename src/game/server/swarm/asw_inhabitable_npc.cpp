@@ -76,6 +76,7 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Inhabitable_NPC, DT_ASW_Inhabitable_NPC )
 	SendPropBool( SENDINFO( m_bGlowWhenUnoccluded ) ),
 	SendPropBool( SENDINFO( m_bGlowFullBloom ) ),
 	SendPropInt( SENDINFO( m_iAlienClassIndex ), NumBitsForCount( MAX( NELEMS( g_Aliens ), NELEMS( g_NonSpawnableAliens ) + 2 ) ) + 1 ),
+	SendPropInt( SENDINFO( m_rgbaHealthBarColor ), 32, SPROP_UNSIGNED, SendProxy_Color32ToInt32 ),
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Inhabitable_NPC )
@@ -112,6 +113,8 @@ BEGIN_DATADESC( CASW_Inhabitable_NPC )
 	DEFINE_KEYFIELD( m_iHealthBonus, FIELD_INTEGER, "healthbonus" ),
 	DEFINE_KEYFIELD( m_fSizeScale, FIELD_FLOAT, "sizescale" ),
 	DEFINE_KEYFIELD( m_fSpeedScale, FIELD_FLOAT, "speedscale" ),
+
+	DEFINE_INPUT( m_rgbaHealthBarColor, FIELD_COLOR32, "SetHealthBarColor" ),
 END_DATADESC()
 
 BEGIN_ENT_SCRIPTDESC( CASW_Inhabitable_NPC, CBaseCombatCharacter, "Alien Swarm Inhabitable NPC" )
@@ -134,6 +137,7 @@ BEGIN_ENT_SCRIPTDESC( CASW_Inhabitable_NPC, CBaseCombatCharacter, "Alien Swarm I
 	DEFINE_SCRIPTFUNC_NAMED( ScriptElectroStun, "ElectroStun", "Stuns the alien." )
 	DEFINE_SCRIPTFUNC( Wake, "Wake up the alien." )
 	DEFINE_SCRIPTFUNC( SetSpawnZombineOnMarineKill, "Used to spawn a zombine in the place of a killed marine." )
+	DEFINE_SCRIPTFUNC( SetHealthBarColor, "Sets the health bar color. Cheaper than spawning an asw_health_bar. Set alpha to 0 to disable the health bar." )
 END_SCRIPTDESC()
 
 CASW_Inhabitable_NPC::CASW_Inhabitable_NPC()
@@ -169,6 +173,8 @@ CASW_Inhabitable_NPC::CASW_Inhabitable_NPC()
 	m_bGlowWhenOccluded = false;
 	m_bGlowWhenUnoccluded = false;
 	m_bGlowFullBloom = false;
+
+	*m_rgbaHealthBarColor.GetForModify().asInt() = 0;
 }
 
 CASW_Inhabitable_NPC::~CASW_Inhabitable_NPC()
@@ -895,4 +901,13 @@ void CASW_Inhabitable_NPC::ScriptChaseNearestMarine()
 void CASW_Inhabitable_NPC::SetSpawnZombineOnMarineKill( bool bSpawn )
 {
 	m_bSpawnZombineOnMarineKill = bSpawn;
+}
+
+void CASW_Inhabitable_NPC::SetHealthBarColor( int r, int g, int b, int a )
+{
+	color32 &color = m_rgbaHealthBarColor.GetForModify();
+	color.r = r;
+	color.g = g;
+	color.b = b;
+	color.a = a;
 }

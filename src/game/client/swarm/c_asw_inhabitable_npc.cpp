@@ -7,6 +7,7 @@
 #include "c_asw_fx.h"
 #include "asw_util_shared.h"
 #include "asw_marine_shared.h"
+#include "asw_hud_3dmarinenames.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -35,6 +36,7 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_Inhabitable_NPC, DT_ASW_Inhabitable_NPC, CASW_In
 	RecvPropBool( RECVINFO( m_bGlowWhenUnoccluded ) ),
 	RecvPropBool( RECVINFO( m_bGlowFullBloom ) ),
 	RecvPropInt( RECVINFO( m_iAlienClassIndex ) ),
+	RecvPropInt( RECVINFO( m_rgbaHealthBarColor ), 0, RecvProxy_Int32ToColor32 ),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_ASW_Inhabitable_NPC )
@@ -43,6 +45,7 @@ BEGIN_PREDICTION_DATA( C_ASW_Inhabitable_NPC )
 END_PREDICTION_DATA()
 
 C_ASW_Inhabitable_NPC::C_ASW_Inhabitable_NPC() :
+	IHealthTracked( false ),
 	m_GlowObject( this ),
 	m_MotionBlurObject( this, 0.0f )
 {
@@ -69,6 +72,9 @@ C_ASW_Inhabitable_NPC::C_ASW_Inhabitable_NPC() :
 	m_fNextElectroStunEffect = 0;
 	m_pBurningEffect = NULL;
 	m_iAlienClassIndex = -1;
+
+	*m_rgbaHealthBarColor.GetForModify().asInt() = 0;
+	m_bRegisteredHealthBar = false;
 }
 
 C_ASW_Inhabitable_NPC::~C_ASW_Inhabitable_NPC()
@@ -112,6 +118,17 @@ void C_ASW_Inhabitable_NPC::PostDataUpdate( DataUpdateType_t updateType )
 			Vector newVelo = ( GetNetworkOrigin() - GetOldOrigin() ) / flTimeDelta;
 			SetAbsVelocity( newVelo );
 		}
+	}
+
+	if ( m_rgbaHealthBarColor.Get().a == 0 && m_bRegisteredHealthBar )
+	{
+		IHealthTracked::Remove( this );
+		m_bRegisteredHealthBar = false;
+	}
+	else if ( m_rgbaHealthBarColor.Get().a != 0 && !m_bRegisteredHealthBar )
+	{
+		IHealthTracked::Add( this );
+		m_bRegisteredHealthBar = true;
 	}
 
 	// if player has switched into this marine, set it to be prediction eligible
@@ -353,4 +370,16 @@ void C_ASW_Inhabitable_NPC::UpdateFireEmitters( void )
 				EmitSound( "ASWFire.StopBurning" );
 		}
 	}
+}
+
+void C_ASW_Inhabitable_NPC::PaintHealthBar( class CASWHud3DMarineNames *pSurface )
+{
+	const color32 &color = m_rgbaHealthBarColor.Get();
+	Assert( color.a != 0 );
+	Assert( GetMaxHealth() > 0 );
+
+	if ( GetHealth() <= 0 )
+		return;
+
+	pSurface->PaintGenericBar( GetRenderOrigin(), float( GetHealth() ) / float( GetMaxHealth() ), Color{ color.r, color.g, color.b, color.a }, 1.0f );
 }

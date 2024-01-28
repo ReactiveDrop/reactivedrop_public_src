@@ -199,6 +199,9 @@ public:
 	CNetworkVar( float, m_fSpeedScale );
 
 	CNetworkVar( int, m_iAlienClassIndex );
+
+	void SetHealthBarColor( int r, int g, int b, int a );
+	CNetworkVar( color32, m_rgbaHealthBarColor );
 };
 
 #endif /* ASW_INHABITABLE_NPC_H */

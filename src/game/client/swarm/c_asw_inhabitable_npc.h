@@ -14,7 +14,7 @@
 class C_ASW_Player;
 class C_ASW_Weapon;
 
-class C_ASW_Inhabitable_NPC : public C_AI_BaseNPC, public IASW_Client_Aim_Target
+class C_ASW_Inhabitable_NPC : public C_AI_BaseNPC, public IASW_Client_Aim_Target, public IHealthTracked
 {
 public:
 	DECLARE_CLASS( C_ASW_Inhabitable_NPC, C_AI_BaseNPC );
@@ -118,6 +118,10 @@ public:
 	bool m_bClientOnFire;
 
 	CNetworkVar( int, m_iAlienClassIndex );
+
+	CNetworkVar( color32, m_rgbaHealthBarColor );
+	bool m_bRegisteredHealthBar;
+	void PaintHealthBar( class CASWHud3DMarineNames *pSurface ) override;
 
 private:
 	C_ASW_Inhabitable_NPC( const C_ASW_Inhabitable_NPC & ) = delete; // not defined, not accessible
