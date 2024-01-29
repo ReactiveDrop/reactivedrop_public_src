@@ -223,7 +223,7 @@
 			"visible"						"1"
 			"enabled"						"1"
 			"tabPosition"					"0"
-			"labelText"						"#L4D360UI_Onslaught"
+			"labelText"						"#nb_onslaught_setting"
 			"tooltiptext"					""
 			"disabled_tooltiptext"			""
 			"style"							"DropDownButton"
