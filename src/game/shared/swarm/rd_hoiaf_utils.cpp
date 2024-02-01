@@ -608,6 +608,8 @@ void CRD_HoIAF_System::RebuildNotificationList()
 						m_nSeenNotifications[pBountyNotification->Seen]++;
 					}
 
+					iLastStartTime = m_HoIAFMissionBounties[i]->Starts;
+
 					HoIAFNotification_t::Seen_t iSeen = ( HoIAFNotification_t::Seen_t )pMedalStore->GetBountyNotificationStatus( m_HoIAFMissionBounties[i]->ID );
 					if ( iSeen < 0 || iSeen >= HoIAFNotification_t::NUM_SEEN_TYPES )
 					{
