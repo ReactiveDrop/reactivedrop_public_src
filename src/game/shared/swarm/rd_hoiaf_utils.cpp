@@ -609,7 +609,7 @@ void CRD_HoIAF_System::RebuildNotificationList()
 					}
 
 					HoIAFNotification_t::Seen_t iSeen = ( HoIAFNotification_t::Seen_t )pMedalStore->GetBountyNotificationStatus( m_HoIAFMissionBounties[i]->ID );
-					if ( iSeen == HoIAFNotification_t::NUM_SEEN_TYPES )
+					if ( iSeen < 0 || iSeen >= HoIAFNotification_t::NUM_SEEN_TYPES )
 					{
 						// notification was dismissed
 						pBountyNotification = NULL;
@@ -623,6 +623,7 @@ void CRD_HoIAF_System::RebuildNotificationList()
 						pBountyNotification->Starts = m_HoIAFMissionBounties[i]->Starts;
 						pBountyNotification->Ends = m_HoIAFMissionBounties[i]->Ends;
 						pBountyNotification->FirstBountyID = m_HoIAFMissionBounties[i]->ID;
+						pBountyNotification->Seen = iSeen;
 
 						m_Notifications.AddToTail( pBountyNotification );
 					}
