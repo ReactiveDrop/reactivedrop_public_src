@@ -42,12 +42,17 @@ void CASW_Simple_Grub::Spawn(void)
 	SetModel( STRING( GetModelName() ) );
 
 	SetHullType( HULL_TINY );
-	AddSolidFlags( FSOLID_TRIGGER );
+	AddSolidFlags( FSOLID_NOT_SOLID | FSOLID_TRIGGER );
 
 	SetTouch( &CASW_Simple_Grub::GrubTouch );
 
 	m_iHealth	= rd_grub_health.GetInt();
 	SetBlocksLOS(false);
+}
+
+unsigned int CASW_Simple_Grub::PhysicsSolidMaskForEntity( void ) const
+{
+	return MASK_SOLID;
 }
 
 void CASW_Simple_Grub::GrubTouch( CBaseEntity *pOther )
@@ -237,7 +242,7 @@ bool CASW_Simple_Grub::TryMove( const Vector &vecSrc, Vector &vecTarget, float d
 	trace_t trace;
 	CTraceFilterSimple traceFilter( this, GetCollisionGroup() );
 	ray.Init( vecSrc, vecTarget, GetHullMins(), GetHullMaxs() );
-	enginetrace->TraceRay( ray, MASK_NPCSOLID, &traceFilter, &trace );
+	enginetrace->TraceRay( ray, MASK_SOLID, &traceFilter, &trace );
 	if ( trace.startsolid )
 	{
 		// doh, we're stuck in something!

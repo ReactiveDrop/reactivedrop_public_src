@@ -29,6 +29,7 @@ public:
 	virtual float GetIdealSpeed() const;
 	virtual float GetPitchSpeed() const;
 	virtual float GetIdealPitch();
+	unsigned int PhysicsSolidMaskForEntity() const;
 	virtual void UpdatePitch(float delta);
 	virtual float GetZigZagChaseDistance() const;
 	virtual float GetFaceEnemyDistance() const;
