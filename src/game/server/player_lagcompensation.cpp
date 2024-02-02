@@ -338,6 +338,13 @@ void CLagCompensationManager::StartLagCompensation( CBasePlayer *player, LagComp
 		{
 			continue;
 		}
+
+		CBaseEntity *pParent = pEntity->GetMoveParent();
+		// Don't lag compensate parasites that are infesting.
+		if ( pEntity->IsInhabitableNPC() && pParent->IsInhabitableNPC() )
+		{
+			continue;
+		}
 #endif
 
 		// Custom checks for if things should lag compensate (based on things like what team the entity is associated with).
