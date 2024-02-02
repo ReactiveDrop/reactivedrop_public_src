@@ -121,7 +121,7 @@ void CASW_Weapon_Sniper_Rifle::PrimaryAttack( void )
 		return;
 
 	// MUST call sound before removing a round from the clip of a CMachineGun
-	WeaponSound(SINGLE);
+	WeaponSound( m_bZoomed ? WPN_DOUBLE : SINGLE );
 	if (m_iClip1 <= AmmoClickPoint())
 		BaseClass::WeaponSound( EMPTY );
 

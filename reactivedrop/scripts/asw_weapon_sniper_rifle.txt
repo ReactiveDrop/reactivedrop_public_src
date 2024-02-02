@@ -49,5 +49,7 @@ WeaponData
 
 		"single_shot"		"ASW_Weapon_Sniper_Rifle.SingleFP"		// sound for locally controlled marine
 		"single_shot_npc"	"ASW_Weapon_Sniper_Rifle.Single"		// sound for other marines
+		"double_shot"		"ASW_Weapon_Sniper_Rifle.SingleFPScoped"
+		"double_shot_npc"	"ASW_Weapon_Sniper_Rifle.SingleScoped"
 	}
 }

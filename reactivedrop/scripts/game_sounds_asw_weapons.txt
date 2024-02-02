@@ -333,6 +333,24 @@
 	"wave"			"@weapons/2D/sniper/singleShotFP.wav"
 }
 
+"ASW_Weapon_Sniper_Rifle.SingleScoped"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_110dB"
+	"volume"		"1.0"
+	"pitch"			"90, 100"
+	"wave"			"^weapons/3D/sniper/singleShotScoped.wav"
+}
+
+"ASW_Weapon_Sniper_Rifle.SingleFPScoped"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_NONE"
+	"volume"		"1.0"
+	"pitch"			"90, 100"
+	"wave"			"@weapons/2D/sniper/singleShotFPScoped.wav"
+}
+
 "ASW_Weapon_Sniper_Rifle.Zoomin"
 {
 	"channel"		"CHAN_WEAPON"
