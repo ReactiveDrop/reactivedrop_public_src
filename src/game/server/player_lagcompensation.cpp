@@ -67,7 +67,9 @@ static void LC_SetAbsOrigin( CBaseEntity *entity, const Vector &vecAbsOrigin, bo
 	entity->SetAbsOrigin( vecAbsOrigin );
 	if ( bFireTriggers )
 	{
+#ifndef INFESTED_DLL
 		entity->PhysicsTouchTriggers();
+#endif
 	}
 }
 
