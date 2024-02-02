@@ -71,10 +71,7 @@ void C_ASW_Buzzer::OnRestore()
 extern ConVar cl_alien_extra_interp;
 float C_ASW_Buzzer::GetInterpolationAmount( int flags )
 {
-	if ( flags & LATCH_SIMULATION_VAR )
-		return BaseClass::GetInterpolationAmount( flags ) + cl_alien_extra_interp.GetFloat();
-
-	return BaseClass::GetInterpolationAmount( flags );
+	return BaseClass::GetInterpolationAmount( flags ) + cl_alien_extra_interp.GetFloat();
 }
 
 

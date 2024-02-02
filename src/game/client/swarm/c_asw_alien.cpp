@@ -581,8 +581,5 @@ ConVar cl_alien_extra_interp( "cl_alien_extra_interp", "0.1", FCVAR_NONE, "Extra
 
 float C_ASW_Alien::GetInterpolationAmount( int flags )
 {
-	if ( flags & LATCH_SIMULATION_VAR )
-		return BaseClass::GetInterpolationAmount( flags ) + cl_alien_extra_interp.GetFloat();
-
-	return BaseClass::GetInterpolationAmount( flags );
+	return BaseClass::GetInterpolationAmount( flags ) + cl_alien_extra_interp.GetFloat();
 }
