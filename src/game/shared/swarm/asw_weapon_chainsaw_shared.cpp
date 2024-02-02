@@ -66,6 +66,7 @@ ConVar asw_chainsaw_shake_duration( "asw_chainsaw_shake_duration", "1.0", FCVAR_
 
 ConVar rd_chainsaw_slows_down( "rd_chainsaw_slows_down", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "If 0 chainsaw doesn't slow down when firing" );
 ConVar rd_chainsaw_idle_sound( "rd_chainsaw_idle_sound", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "If 0, the chainsaw will not play an idle sound loop." );
+extern ConVar sv_showimpacts;
 
 IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Weapon_Chainsaw, DT_ASW_Weapon_Chainsaw );
 
@@ -308,6 +309,16 @@ void CASW_Weapon_Chainsaw::Fire( const Vector &vecOrigSrc, const Vector &vecDir 
 		m_flFireAnimTime = gpGlobals->curtime + 0.1f;
 	}
 
+#ifdef CLIENT_DLL
+	const bool bShowHitboxes = ( sv_showimpacts.GetInt() == 1 || sv_showimpacts.GetInt() == 2 ) && prediction->IsFirstTimePredicted();
+#define DrawHitboxes DrawClientHitboxes
+#define SHOWIMPACTS_COLOR 255, 0, 0
+#else
+	const bool bShowHitboxes = sv_showimpacts.GetInt() == 1 || sv_showimpacts.GetInt() == 3;
+#define DrawHitboxes DrawServerHitboxes
+#define SHOWIMPACTS_COLOR 0, 0, 255
+#endif
+
 	Vector vecDest = vecOrigSrc + (vecDir * ASW_CHAINSAW_RANGE);
 
 	bool bDamageTime = m_flDmgTime < gpGlobals->curtime;
@@ -315,6 +326,7 @@ void CASW_Weapon_Chainsaw::Fire( const Vector &vecOrigSrc, const Vector &vecDir 
 
 	Ray_t ray;
 	ray.Init( vecOrigSrc, vecDest, Vector( -5, -5, -5 ), Vector( 5, 5, 25 ) );
+
 
 	CBaseEntity *(pEntities[ 8 ]);
 
@@ -338,6 +350,18 @@ void CASW_Weapon_Chainsaw::Fire( const Vector &vecOrigSrc, const Vector &vecDir 
 			{
 				CTraceFilterOnlyHitThis filter( pEntity );
 				UTIL_TraceHull( vecOrigSrc, vecDest, Vector( -5, -5, -2 ), Vector( 5, 5, 25 ), MASK_SHOT, &filter, &tr );
+
+				if ( bShowHitboxes && pMarine && pMarine->IsInhabited() && tr.DidHit() )
+				{
+					if ( CBaseAnimating *pTarget = tr.m_pEnt ? tr.m_pEnt->GetBaseAnimating() : NULL )
+					{
+						pTarget->DrawHitboxes( 4, true );
+						pTarget->DrawCurrentSkeleton( 4 );
+					}
+
+					NDebugOverlay::Line( vecOrigSrc, vecDest, SHOWIMPACTS_COLOR, false, 4 );
+					NDebugOverlay::Box( tr.endpos, Vector{ -2, -2, -2 }, Vector{ 2, 2, 2 }, SHOWIMPACTS_COLOR, 127, 4 );
+				}
 
 				ClearMultiDamage();
 				float fDamage;
