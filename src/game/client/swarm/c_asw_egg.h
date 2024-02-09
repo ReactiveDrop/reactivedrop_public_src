@@ -31,6 +31,7 @@ public:
 	virtual void UpdateFireEmitters();
 	virtual void UpdateOnRemove();
 	virtual void ClientThink();
+	virtual float GetInterpolationAmount( int flags );
 
 	CGlowObject m_GlowObject;
 	bool m_bClientOnFire;

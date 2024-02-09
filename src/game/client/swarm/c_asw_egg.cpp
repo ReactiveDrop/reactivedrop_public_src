@@ -100,6 +100,12 @@ void C_ASW_Egg::ClientThink()
 	}
 }
 
+extern ConVar cl_alien_extra_interp;
+
+float C_ASW_Egg::GetInterpolationAmount( int flags )
+{
+	return BaseClass::GetInterpolationAmount( flags ) + cl_alien_extra_interp.GetFloat();
+}
 
 //-----------------------------------------------------------------------------
 // Material proxy for egg line glow
@@ -143,7 +149,14 @@ void CASW_Egg_Proxy::OnBind( void *pC_BaseEntity )
 {
 	Assert( m_pResult );
 
-	C_ASW_Egg *pEgg = static_cast<C_ASW_Egg*>( BindArgToEntity( pC_BaseEntity ) );
+	C_BaseEntity *pEnt = BindArgToEntity( pC_BaseEntity );
+	if ( pEnt->Classify() != CLASS_ASW_EGG )
+	{
+		SetFloatResult( 0.0f );
+		return;
+	}
+
+	C_ASW_Egg *pEgg = assert_cast< C_ASW_Egg * >( pEnt );
 
 	float flValue;
 	float flSineTimeOffset = m_SineTimeOffset.GetFloat();
