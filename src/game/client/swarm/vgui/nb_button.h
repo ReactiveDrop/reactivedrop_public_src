@@ -14,8 +14,8 @@ class CNB_Button : public vgui::Button
 {
 	DECLARE_CLASS_SIMPLE( CNB_Button, vgui::Button );
 public:
-	CNB_Button(Panel *parent, const char *panelName, const char *text, Panel *pActionSignalTarget=NULL, const char *pCmd=NULL);
-	CNB_Button(Panel *parent, const char *panelName, const wchar_t *text, Panel *pActionSignalTarget=NULL, const char *pCmd=NULL);
+	CNB_Button( Panel *parent, const char *panelName, const char *text, Panel *pActionSignalTarget = NULL, const char *pCmd = NULL, bool bSuppressAddToFocusList = false );
+	CNB_Button( Panel *parent, const char *panelName, const wchar_t *text, Panel *pActionSignalTarget = NULL, const char *pCmd = NULL, bool bSuppressAddToFocusList = false );
 	virtual ~CNB_Button();
 	
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );

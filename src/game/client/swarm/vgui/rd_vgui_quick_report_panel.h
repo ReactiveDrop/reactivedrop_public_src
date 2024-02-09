@@ -6,6 +6,7 @@
 class CAvatarImagePanel;
 class CBitmapButton;
 class CNB_Button;
+class CNB_Header_Footer;
 
 class CRD_VGUI_Quick_Report_Panel : public vgui::EditablePanel
 {
@@ -18,7 +19,9 @@ public:
 	void OnThink() override;
 	void OnCommand( const char *command ) override;
 	void SetPlayer( CSteamID player );
+	void ConfirmAndSendQuickReport( const char *szTitle, const char *szMessage, const char *szCategory, CSteamID player );
 
+	CNB_Header_Footer *m_pHeaderFooter;
 	CAvatarImagePanel *m_pImgPlayerAvatar;
 	vgui::Label *m_pLblPlayerName;
 	vgui::Label *m_pLblProgress;

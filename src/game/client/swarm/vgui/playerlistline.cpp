@@ -24,6 +24,7 @@
 extern ConVar asw_vote_kick_fraction;
 extern ConVar asw_vote_leader_fraction;
 extern ConVar rd_report_voted_players;
+extern ConVar rd_debug_quick_report_local_player;
 
 #define MUTE_BUTTON_ICON "voice/voice_icon_hud"
 #define QUICK_REPORT_BUTTON_ICON "vgui/briefing/quick_report_icon"
@@ -318,7 +319,7 @@ void PlayerListLine::UpdateCheckBoxes()
 	C_ASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( m_iPlayerIndex ) );
 	m_pKickCheck->SetVisible( pPlayer && pPlayer->CanBeKicked() );
 	m_pLeaderCheck->SetVisible( pPlayer && pPlayer->CanBeLeader() );
-	m_pQuickReportButton->SetVisible( pPlayer && !pPlayer->IsAnyBot() && !pPlayer->IsLocalPlayer() );
+	m_pQuickReportButton->SetVisible( pPlayer && !pPlayer->IsAnyBot() && ( rd_debug_quick_report_local_player.GetBool() || !pPlayer->IsLocalPlayer() ) );
 
 	// make sure our selected/unselected status matches the selected index from our parent
 	PlayerListPanel *pPanel = assert_cast< PlayerListPanel * >( GetParent()->GetParent()->GetParent() );

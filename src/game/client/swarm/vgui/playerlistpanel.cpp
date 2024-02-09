@@ -42,6 +42,7 @@ using BaseModUI::GenericPanelList;
 int g_asw_iPlayerListOpen = 0;
 
 ConVar rd_report_voted_players( "rd_report_voted_players", "0", FCVAR_ARCHIVE, "Automatically send a report when voting or muting a player on the player list." );
+extern ConVar rd_debug_quick_report_local_player;
 
 PlayerListPanel::PlayerListPanel(vgui::Panel *parent, const char *name) :
 	vgui::EditablePanel(parent, name)
@@ -108,6 +109,7 @@ PlayerListPanel::PlayerListPanel(vgui::Panel *parent, const char *name) :
 	m_pVoteNoButton = new CNB_Button(this, "No", "#asw_vote_no");
 
 	m_pSettingAutoReportVotes = new CCvarToggleCheckButton( this, "SettingAutoReportVotes", "#rd_reporting_auto_preference", "rd_report_voted_players" );
+	m_pSettingAutoReportVotes->Reset();
 
 	m_pStartSavedCampaignVoteButton->SetButtonTexture("swarm/Briefing/ShadedButton");
 	m_pStartSavedCampaignVoteButton->SetButtonOverTexture("swarm/Briefing/ShadedButton_over");
@@ -150,7 +152,7 @@ PlayerListPanel::PlayerListPanel(vgui::Panel *parent, const char *name) :
 	m_pPlayerListScroll->SetScrollBarVisible( IsPC() );
 	m_pPlayerListScroll->SetBgColor( Color( 0, 0, 0, 0 ) );
 
-	m_pQuickReportPanel = NULL;
+	m_hQuickReportPanel = NULL;
 }
 
 PlayerListPanel::~PlayerListPanel()
@@ -159,6 +161,7 @@ PlayerListPanel::~PlayerListPanel()
 
 	if ( m_pSettingAutoReportVotes->HasBeenModified() )
 	{
+		m_pSettingAutoReportVotes->ApplyChanges();
 		engine->ClientCmd_Unrestricted( "host_writeconfig\n" );
 	}
 }
@@ -447,15 +450,15 @@ void PlayerListPanel::QuickReportClicked( PlayerListLine *pLine )
 	if ( !pPlayer )
 		return;
 
-	Assert( !pPlayer->IsAnyBot() && !pPlayer->IsLocalPlayer() );
+	Assert( !pPlayer->IsAnyBot() && ( !pPlayer->IsLocalPlayer() || rd_debug_quick_report_local_player.GetBool() ) );
 
-	if ( !m_pQuickReportPanel )
+	if ( !m_hQuickReportPanel )
 	{
-		m_pQuickReportPanel = new CRD_VGUI_Quick_Report_Panel( this, "QuickReportPanel" );
+		m_hQuickReportPanel = new CRD_VGUI_Quick_Report_Panel( this, "QuickReportPanel" );
 	}
 
-	m_pQuickReportPanel->SetVisible( true );
-	m_pQuickReportPanel->SetPlayer( pPlayer->GetSteamID() );
+	m_hQuickReportPanel->SetVisible( true );
+	m_hQuickReportPanel->SetPlayer( pPlayer->GetSteamID() );
 }
 
 void PlayerListPanel::UpdateVoteButtons()

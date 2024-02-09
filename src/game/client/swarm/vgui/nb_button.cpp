@@ -13,23 +13,23 @@ using namespace vgui;
 
 DECLARE_BUILD_FACTORY_DEFAULT_TEXT( CNB_Button, CNB_Button );
 
-CNB_Button::CNB_Button(Panel *parent, const char *panelName, const char *text, Panel *pActionSignalTarget, const char *pCmd)
-: BaseClass( parent, panelName, text, pActionSignalTarget, pCmd )
+CNB_Button::CNB_Button( Panel *parent, const char *panelName, const char *text, Panel *pActionSignalTarget, const char *pCmd, bool bSuppressAddToFocusList )
+	: BaseClass( parent, panelName, text, pActionSignalTarget, pCmd )
 {
 	// == MANAGED_MEMBER_CREATION_START: Do not edit by hand ==
 	// == MANAGED_MEMBER_CREATION_END ==
 
-	m_bAddedToControllerFocus = GetControllerFocus()->IsInGame();
+	m_bAddedToControllerFocus = !bSuppressAddToFocusList && GetControllerFocus()->IsInGame();
 	if ( m_bAddedToControllerFocus )
 		GetControllerFocus()->AddToFocusList( this );
 
 	m_hButtonFont = INVALID_FONT;
 	m_szControllerButton = NULL;
 }
-CNB_Button::CNB_Button(Panel *parent, const char *panelName, const wchar_t *text, Panel *pActionSignalTarget, const char *pCmd)
-: BaseClass( parent, panelName, text, pActionSignalTarget, pCmd )
+CNB_Button::CNB_Button( Panel *parent, const char *panelName, const wchar_t *text, Panel *pActionSignalTarget, const char *pCmd, bool bSuppressAddToFocusList )
+	: BaseClass( parent, panelName, text, pActionSignalTarget, pCmd )
 {
-	m_bAddedToControllerFocus = GetControllerFocus()->IsInGame();
+	m_bAddedToControllerFocus = !bSuppressAddToFocusList && GetControllerFocus()->IsInGame();
 	if ( m_bAddedToControllerFocus )
 		GetControllerFocus()->AddToFocusList( this );
 
@@ -39,7 +39,6 @@ CNB_Button::CNB_Button(Panel *parent, const char *panelName, const wchar_t *text
 
 CNB_Button::~CNB_Button()
 {
-	Assert( m_bAddedToControllerFocus == GetControllerFocus()->IsInGame() );
 	if ( m_bAddedToControllerFocus )
 		GetControllerFocus()->RemoveFromFocusList( this );
 }

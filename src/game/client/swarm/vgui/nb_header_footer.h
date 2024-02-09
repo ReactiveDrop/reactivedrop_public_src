@@ -71,6 +71,7 @@ public:
 	
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
 	virtual void PerformLayout();
+	virtual void ApplySettings( KeyValues *inResourceData );
 	virtual void OnThink();
 	virtual void PaintBackground();
 	void SetTitle( const char *pszTitle );

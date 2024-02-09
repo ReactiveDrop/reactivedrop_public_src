@@ -360,6 +360,11 @@ void CNB_Header_Footer::PerformLayout()
 	m_pGradientBar->SetBounds( ( ScreenWidth() - nGradientBarWidth ) / 2, YRES( m_nGradientBarY ), nGradientBarWidth, YRES( m_nGradientBarHeight ) );
 }
 
+void CNB_Header_Footer::ApplySettings( KeyValues *inResourceData )
+{
+	BaseClass::ApplySettings( inResourceData );
+}
+
 void CNB_Header_Footer::OnThink()
 {
 	BaseClass::OnThink();

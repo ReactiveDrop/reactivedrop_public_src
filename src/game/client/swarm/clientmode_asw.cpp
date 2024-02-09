@@ -995,30 +995,50 @@ int	ClientModeASW::KeyInput( int down, ButtonCode_t keynum, const char *pszCurre
 		if ( CASW_VGUI_Info_Message::CloseInfoMessage() )
 			return 0;
 
-		// or closing the F1 panel
+		// or closing the F9 panel
 		if ( vgui::Panel *pViewport = GetViewport() )
 		{
-			vgui::Panel *pPanel = pViewport->FindChildByName( "g_PlayerListFrame", true );
+			vgui::Panel *pPanel = pViewport->FindChildByName( "QuickReportPanel", true );
 			if ( pPanel )
 			{
-				pPanel->SetVisible( false );
-				pPanel->MarkForDeletion();
+				if ( down )
+				{
+					pPanel->SetVisible( false );
+					pPanel->MarkForDeletion();
+				}
+				return 0;
+			}
+
+			pPanel = pViewport->FindChildByName( "g_PlayerListFrame", true );
+			if ( pPanel )
+			{
+				if ( down )
+				{
+					pPanel->SetVisible( false );
+					pPanel->MarkForDeletion();
+				}
 				return 0;
 			}
 
 			pPanel = pViewport->FindChildByName( "TabbedGridDetails", true );
 			if ( pPanel )
 			{
-				pPanel->SetVisible( false );
-				pPanel->MarkForDeletion();
+				if ( down )
+				{
+					pPanel->SetVisible( false );
+					pPanel->MarkForDeletion();
+				}
 				return 0;
 			}
 
 			pPanel = pViewport->FindChildByName( "InGameBriefingContainer", true );
 			if ( pPanel )
 			{
-				pPanel->SetVisible( false );
-				pPanel->MarkForDeletion();
+				if ( down )
+				{
+					pPanel->SetVisible( false );
+					pPanel->MarkForDeletion();
+				}
 				return 0;
 			}
 		}
