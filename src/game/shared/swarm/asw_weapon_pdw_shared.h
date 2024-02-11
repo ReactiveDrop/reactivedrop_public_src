@@ -41,7 +41,6 @@ public:
 		DECLARE_DATADESC();
 		DECLARE_ACTTABLE();
 
-		virtual void Spawn();
 		virtual void SecondaryAttack();
 
 		virtual float GetMadFiringBias() { return 2.5f; }	// scales the rate at which the mad firing counter goes up when we shoot aliens with this weapon
@@ -50,7 +49,7 @@ public:
 
 	#else
 		virtual bool HasSecondaryExplosive( void ) const { return false; }
-		virtual bool DisplayClipsDoubled() { return true; }    // dual weilded guns should show ammo doubled up to complete the illusion of holding two guns
+		virtual bool DisplayClipsDoubled() { return !m_bIsSingle; }    // dual weilded guns should show ammo doubled up to complete the illusion of holding two guns
 		virtual const char* GetTracerEffectName() { return "tracer_pdw"; }	// particle effect name
 		virtual const char* GetMuzzleEffectName() { return "muzzle_pdw"; }	// particle effect name
 		virtual const char *GetPartialReloadSound( int iPart );
@@ -60,6 +59,8 @@ public:
 	virtual const char* GetUTracerType();
 	virtual int ASW_SelectWeaponActivity(int idealActivity);
 	virtual bool SupportsGroundShooting() { return rd_ground_shooting.GetBool(); }
+
+	CNetworkVar( bool, m_bIsSingle );
 
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_PDW; }

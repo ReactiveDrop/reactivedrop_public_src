@@ -118,7 +118,7 @@ void CNPC_CombineS::Precache()
 			m_nSkin = 0;
 
 			if ( !m_spawnEquipment )
-				m_spawnEquipment = AllocPooledString( "asw_weapon_pdw" );
+				m_spawnEquipment = AllocPooledString( "asw_weapon_pdw_single" );
 		}
 
 		m_iNumGrenades = 1;

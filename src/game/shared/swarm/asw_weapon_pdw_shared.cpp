@@ -36,8 +36,10 @@ IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Weapon_PDW, DT_ASW_Weapon_PDW )
 BEGIN_NETWORK_TABLE( CASW_Weapon_PDW, DT_ASW_Weapon_PDW )
 #ifdef CLIENT_DLL
 	// recvprops
+	RecvPropBool( RECVINFO( m_bIsSingle ) ),
 #else
 	// sendprops
+	SendPropBool( SENDINFO( m_bIsSingle ) ),
 #endif
 END_NETWORK_TABLE()
 
@@ -45,7 +47,10 @@ BEGIN_PREDICTION_DATA( CASW_Weapon_PDW )
 END_PREDICTION_DATA()
 
 LINK_ENTITY_TO_CLASS( asw_weapon_pdw, CASW_Weapon_PDW );
-PRECACHE_WEAPON_REGISTER(asw_weapon_pdw);
+#ifndef CLIENT_DLL
+LINK_ENTITY_TO_CLASS( asw_weapon_pdw_single, CASW_Weapon_PDW );
+#endif
+PRECACHE_WEAPON_REGISTER( asw_weapon_pdw );
 
 ConVar asw_pdw_max_shooting_distance( "asw_pdw_max_shooting_distance", "400", FCVAR_CHEAT | FCVAR_REPLICATED, "Maximum distance of the hitscan weapons." );
 extern ConVar asw_weapon_max_shooting_distance;
@@ -127,11 +132,6 @@ acttable_t	CASW_Weapon_PDW::m_acttable[] =
 
 IMPLEMENT_ACTTABLE( CASW_Weapon_PDW );
 
-void CASW_Weapon_PDW::Spawn()
-{
-	BaseClass::Spawn();
-}
-
 // just dry fire by default
 void CASW_Weapon_PDW::SecondaryAttack( void )
 {
@@ -153,11 +153,22 @@ void CASW_Weapon_PDW::SecondaryAttack( void )
 
 void CASW_Weapon_PDW::Precache()
 {
-	PrecacheModel( "models/weapons/pdw/pdw_single.mdl" );
-
 	PrecacheScriptSound( "ASW_Weapon_PDW.ReloadA" );
 	PrecacheScriptSound( "ASW_Weapon_PDW.ReloadB" );
 	PrecacheScriptSound( "ASW_Weapon_PDW.ReloadC" );
+
+#ifndef CLIENT_DLL
+	m_bIsSingle = false;
+	if ( ClassMatches( "asw_weapon_pdw_single" ) )
+	{
+		m_bIsSingle = true;
+
+		PrecacheModel( "models/weapons/pdw/pdw_single.mdl" );
+
+		// swap the entity class so we get the weapon script that exists
+		SetClassname( "asw_weapon_pdw" );
+	}
+#endif
 
 	BaseClass::Precache();
 }
@@ -346,7 +357,7 @@ float CASW_Weapon_PDW::GetWeaponDamage()
 const char* CASW_Weapon_PDW::GetUTracerType()
 {
 	// BenLubar: for some reason, ASWUTracerDualLeft makes the right-hand gun fire. ugh.
-	return GetOwner() && GetOwner()->Classify() == CLASS_COMBINE ? "ASWUTracerDualLeft" : "ASWUTracerDual";
+	return m_bIsSingle ? "ASWUTracerDualLeft" : "ASWUTracerDual";
 }
 
 float CASW_Weapon_PDW::GetFireRate()
@@ -363,7 +374,7 @@ float CASW_Weapon_PDW::GetFireRate()
 // Combine soldiers don't have animations for akimbo-style weapons, so only give them one PDW.
 const char *CASW_Weapon_PDW::GetViewModel( int viewmodelindex ) const
 {
-	if ( GetOwner() && GetOwner()->Classify() == CLASS_COMBINE )
+	if ( m_bIsSingle )
 		return "models/weapons/pdw/pdw_single.mdl";
 
 	return BaseClass::GetViewModel( viewmodelindex );
@@ -371,7 +382,7 @@ const char *CASW_Weapon_PDW::GetViewModel( int viewmodelindex ) const
 
 const char *CASW_Weapon_PDW::GetWorldModel( void ) const
 {
-	if ( GetOwner() && GetOwner()->Classify() == CLASS_COMBINE )
+	if ( m_bIsSingle )
 		return "models/weapons/pdw/pdw_single.mdl";
 
 	return BaseClass::GetWorldModel();
