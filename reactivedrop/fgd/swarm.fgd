@@ -3976,7 +3976,7 @@
 	output OnHealthChanged(float) : "Fired when the health of this breakable changes, passing the new value of health as a percentage of max health, from [0..1]."
 ]
 
-@NPCClass base(InhabitableNPC, Parentname, TalkNPC, PlayerCompanion ) studio("models/swarm/Colonist/Male/MaleColonist.mdl") = asw_colonist : "Colonist"
+@NPCClass base(InhabitableNPC, Parentname, TalkNPC, PlayerCompanion ) studioprop("models/humans/group00/male_07.mdl") = asw_colonist : "Civilian / Citizen / Colonist"
 [	
 	notifynavfailblocked(choices) : "Fire output when Nav is blocked?" : 0 =
 	[
@@ -3989,6 +3989,9 @@
 		1 : "Male"
 		2 : "Female"
 	]
+	aimtarget(boolean) : "Is aim target" : 0 : "Should guns like the 22A7-Z Prototype Assault Rifle lock on to this colonist?"
+	followonuse(boolean) : "Follow on interact" : 1 : "If enabled, this controls the colonist's FX Color property and allows marines to interact with the colonist in order to override their AI to follow the marine."
+	dropweaponondeath(boolean) : "Drop active weapon on death" : 1
 ]
 
 @PointClass base(Targetname) iconsprite("editor/info_target.vmt") = asw_intro_control : 

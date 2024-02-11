@@ -6,6 +6,7 @@
 #include "asw_inhabitable_npc.h"
 #include "asw_shareddefs.h"
 #include "iasw_server_usable_entity.h"
+#include "ai_behavior_actbusy.h"
 
 class CASW_Alien;
 class CASW_Marine;
@@ -58,17 +59,22 @@ public:
 	int m_iInfestCycle;
 	bool m_bInfested;
 	CHandle<CASW_Marine> m_hInfestationCurer;	// the last medic to cure us of some infestation
-	virtual int SelectSchedule();
-	virtual void RunTask( const Task_t *pTask );
-	virtual void StartTask(const Task_t *pTask);
+	virtual bool CreateBehaviors() override;
+	virtual int SelectSchedule() override;
+	virtual void RunTask( const Task_t *pTask ) override;
+	virtual void StartTask( const Task_t *pTask ) override;
 	virtual int SelectFlinchSchedule_ASW();
+
+	CAI_ActBusyBehavior m_ActBusyBehavior;
 
 	bool					m_bNotifyNavFailBlocked;
 	COutputEvent		m_OnNavFailBlocked;
 
-	int selectedBy;
-	bool isSelectedBy(CASW_Marine* marine);
-	static void ASW_Colonist_GoTo(CASW_Player *pPlayer, CASW_Marine *pMarine, const Vector &targetPos, const Vector &traceDir);
+	CNetworkVar( bool, m_bAimTarget );
+	CNetworkVar( bool, m_bFollowOnUse );
+	CNetworkHandle( CASW_Marine, m_hFollowingMarine );
+	bool IsSelectedBy( CASW_Marine *marine );
+	static void ASW_Colonist_GoTo( CASW_Player *pPlayer, CASW_Marine *pMarine, const Vector &targetPos, const Vector &traceDir );
 	const Vector GetFollowPos();
 
 	int m_Gender;
@@ -79,6 +85,8 @@ public:
 	void InputGiveWeapon( inputdata_t &inputdata );
 	void OnRangeAttack1();
 	Vector Weapon_ShootPosition();
+	bool ShouldDropActiveWeaponWhenKilled() override { return m_bDropWeaponOnDeath; }
+	bool m_bDropWeaponOnDeath;
 
 	// IASW_Server_Usable_Entity implementation
 	virtual CBaseEntity *GetEntity() { return this; }
