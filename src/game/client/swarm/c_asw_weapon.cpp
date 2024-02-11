@@ -3,6 +3,7 @@
 #include "c_asw_weapon.h"
 #include "c_asw_marine.h"
 #include "c_asw_player.h"
+#include "c_asw_colonist.h"
 #include "in_buttons.h"
 #include "fx.h"
 #include "precache_register.h"
@@ -1004,6 +1005,8 @@ void C_ASW_Weapon::SimulateLaserPointer()
 	{
 		C_BaseEntity *pEnt = GetLaserTargetEntity();
 		if ( pEnt && pEnt->Classify() == CLASS_ASW_MARINE && ( !ASWDeathmatchMode() || ( ASWDeathmatchMode()->IsTeamDeathmatchEnabled() && pEnt->GetTeamNumber() == pMarine->GetTeamNumber() ) ) )
+			alphaFF = 0.65f;
+		if ( pEnt && pEnt->Classify() == CLASS_ASW_COLONIST && !assert_cast< C_ASW_Colonist * >( pEnt )->IsAimTarget() )
 			alphaFF = 0.65f;
 	}
 

@@ -11,6 +11,7 @@
 #include "asw_input.h"
 #include "c_asw_player.h"
 #include "c_asw_marine.h"
+#include "c_asw_colonist.h"
 #include "c_asw_weapon.h"
 #include "asw_hud_minimap.h" // asw
 #include "tier0/vprof.h"
@@ -735,9 +736,13 @@ void CASWHudCrosshair::DrawDirectionalCrosshair( int x, int y, int iSize )
 			{
 				bShotWarn = true;
 			}
-			if ( bShotWarn )
-				colorCross = Color( 255, 0, 0, flAlpha * flAdjust2 );
 		}
+		else if ( pEnt && pEnt->Classify() == CLASS_ASW_COLONIST && !assert_cast< C_ASW_Colonist * >( pEnt )->IsAimTarget() )
+		{
+			bShotWarn = true;
+		}
+		if ( bShotWarn )
+			colorCross = Color( 255, 0, 0, flAlpha * flAdjust2 );
 	}
 
 	surface()->DrawSetColor( colorCross );
