@@ -3992,6 +3992,7 @@
 	aimtarget(boolean) : "Is aim target" : 0 : "Should guns like the 22A7-Z Prototype Assault Rifle lock on to this colonist?"
 	followonuse(boolean) : "Follow on interact" : 1 : "If enabled, this controls the colonist's FX Color property and allows marines to interact with the colonist in order to override their AI to follow the marine."
 	dropweaponondeath(boolean) : "Drop active weapon on death" : 1
+	additionalequipment(string) : "Spawn with weapon" : ""
 ]
 
 @PointClass base(Targetname) iconsprite("editor/info_target.vmt") = asw_intro_control : 
