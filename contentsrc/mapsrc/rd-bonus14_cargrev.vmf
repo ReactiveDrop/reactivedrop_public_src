@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "3658"
+	"mapversion" "3659"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -50,7 +50,7 @@ viewsettings
 world
 {
 	"id" "394754"
-	"mapversion" "3658"
+	"mapversion" "3659"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -26461,7 +26461,7 @@ entity
 	"EndV" "0"
 	"fademindist" "-1"
 	"material" "overlays/hazard_stripe001c"
-	"sides" "6822"
+	"sides" "6822 150394"
 	"StartU" "0"
 	"StartV" "1"
 	"uv0" "-32 -16 0"
@@ -26490,7 +26490,7 @@ entity
 	"EndV" "0"
 	"fademindist" "-1"
 	"material" "overlays/hazard_stripe001c"
-	"sides" "6822"
+	"sides" "6822 150394"
 	"StartU" "0"
 	"StartV" "1"
 	"uv0" "-32 -16 0"
@@ -52283,7 +52283,7 @@ entity
 	"EndV" "0"
 	"fademindist" "-1"
 	"material" "overlays/hazard_stripe001c"
-	"sides" "6822"
+	"sides" "6822 150394"
 	"StartU" "0"
 	"StartV" "1"
 	"uv0" "-32 -16 0"
@@ -54998,7 +54998,7 @@ entity
 	"EndV" "0"
 	"fademindist" "-1"
 	"material" "overlays/hazard_stripe001c"
-	"sides" "150416 150410"
+	"sides" "150394 150416"
 	"StartU" "0"
 	"StartV" "1"
 	"uv0" "-32 -16 0"
@@ -55090,7 +55090,7 @@ entity
 	"EndV" "0"
 	"fademindist" "-1"
 	"material" "overlays/hazard_stripe001c"
-	"sides" "150416 150410"
+	"sides" "150416 150394"
 	"StartU" "0"
 	"StartV" "1"
 	"uv0" "-32 -16 0"
@@ -55119,7 +55119,7 @@ entity
 	"EndV" "0"
 	"fademindist" "-1"
 	"material" "overlays/hazard_stripe001c"
-	"sides" "150416 150410"
+	"sides" "150416 150394"
 	"StartU" "0"
 	"StartV" "1"
 	"uv0" "-32 -16 0"
@@ -55328,7 +55328,7 @@ entity
 	"EndV" "0"
 	"fademindist" "-1"
 	"material" "overlays/hazard_stripe001c"
-	"sides" "150416 150410"
+	"sides" "150416 150410 150394"
 	"StartU" "0"
 	"StartV" "1"
 	"uv0" "-32 -16 0"
@@ -55357,7 +55357,7 @@ entity
 	"EndV" "0"
 	"fademindist" "-1"
 	"material" "overlays/hazard_stripe001c"
-	"sides" "150416 150410"
+	"sides" "150410 150394"
 	"StartU" "0"
 	"StartV" "1"
 	"uv0" "-32 -16 0"
@@ -56879,7 +56879,7 @@ entity
 	"classname" "info_overlay"
 	"angles" "0 0 0"
 	"BasisNormal" "-0 0 1"
-	"BasisOrigin" "-5512 5740 813"
+	"BasisOrigin" "-5512 5814.71 813"
 	"BasisU" "1 0 0"
 	"BasisV" "0 1 -0"
 	"EndU" "1"
@@ -56889,12 +56889,12 @@ entity
 	"RenderOrder" "1"
 	"sides" "150416 6822"
 	"StartU" "0"
-	"StartV" "1"
-	"uv0" "-138.356 -201.412 0"
-	"uv1" "-138.356 201.412 0"
-	"uv2" "138.356 201.412 0"
-	"uv3" "138.356 -201.412 0"
-	"origin" "-5512 5740 813"
+	"StartV" "0.629088"
+	"uv0" "-138.356 -126.706 0"
+	"uv1" "-138.356 126.706 0"
+	"uv2" "138.356 126.706 0"
+	"uv3" "138.356 -126.706 0"
+	"origin" "-5512 5814.71 813"
 	editor
 	{
 		"color" "80 150 225"
@@ -64193,7 +64193,7 @@ entity
 	"EndV" "0"
 	"fademindist" "-1"
 	"material" "overlays/hazard_stripe001c"
-	"sides" "6368 6828 6822"
+	"sides" "6822 150394"
 	"StartU" "0"
 	"StartV" "1"
 	"uv0" "-32 -16 0"
@@ -65851,7 +65851,7 @@ entity
 	"EndV" "0"
 	"fademindist" "-1"
 	"material" "overlays/hazard_stripe001c"
-	"sides" "150416"
+	"sides" "150416 150394"
 	"StartU" "0"
 	"StartV" "1"
 	"uv0" "-32 -16 0"
@@ -65880,7 +65880,7 @@ entity
 	"EndV" "0"
 	"fademindist" "-1"
 	"material" "overlays/hazard_stripe001c"
-	"sides" "150416"
+	"sides" "150416 150394"
 	"StartU" "0"
 	"StartV" "1"
 	"uv0" "-32 -16 0"
@@ -65957,7 +65957,7 @@ entity
 	"EndV" "0"
 	"fademindist" "-1"
 	"material" "overlays/hazard_stripe001c"
-	"sides" "150410 150416"
+	"sides" "150410 150416 150394"
 	"StartU" "0"
 	"StartV" "1"
 	"uv0" "-32 -16 0"
@@ -65986,7 +65986,7 @@ entity
 	"EndV" "0"
 	"fademindist" "-1"
 	"material" "overlays/hazard_stripe001c"
-	"sides" "150410"
+	"sides" "150410 150394"
 	"StartU" "0"
 	"StartV" "1"
 	"uv0" "-32 -16 0"
@@ -88354,13 +88354,46 @@ entity
 		"logicalpos" "[13000 10000]"
 	}
 }
+hidden
+{
+	entity
+	{
+		"id" "3250424"
+		"classname" "info_overlay"
+		"angles" "0 0 0"
+		"BasisNormal" "-0 0 1"
+		"BasisOrigin" "-5512 5740 813"
+		"BasisU" "1 0 0"
+		"BasisV" "0 1 -0"
+		"EndU" "1"
+		"EndV" "0"
+		"fademindist" "-1"
+		"material" "overlays/stains_05b"
+		"RenderOrder" "1"
+		"sides" "150394"
+		"StartU" "0"
+		"StartV" "1"
+		"uv0" "-138.356 -201.412 0"
+		"uv1" "-138.356 201.412 0"
+		"uv2" "138.356 201.412 0"
+		"uv3" "138.356 -201.412 0"
+		"origin" "-5512 5740 813"
+		editor
+		{
+			"color" "80 150 225"
+			"visgroupshown" "1"
+			"visgroupautoshown" "1"
+			"logicalpos" "[0 -10268]"
+		}
+	}
+}
 cameras
 {
 	"activecamera" "0"
 	camera
 	{
-		"position" "[-4614.26 6967.75 1219.68]"
-		"look" "[-3104.49 10423.6 -3821.35]"
+		"position" "[-5450.51 5429.88 1112.16]"
+		"look" "[-5710.3 8284.09 -4493.22]"
 	}
 }
 cordons
