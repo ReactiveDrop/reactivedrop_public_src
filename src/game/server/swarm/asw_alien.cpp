@@ -2247,6 +2247,17 @@ bool CASW_Alien::Knockback(Vector vecForce)
 	return true;
 }
 
+void CASW_Alien::ReachedEndOfSequence()
+{
+	if ( !m_bStartBurrowed )
+	{
+		// make noises that colonists and combine soldiers can pick up whenever we loop or finish an animation.
+		MakeAIFootstepSound( 1024.0f );
+	}
+
+	BaseClass::ReachedEndOfSequence();
+}
+
 void CASW_Alien::UpdateEfficiency( bool bInPVS )
 {
 	// Sleeping NPCs always dormant

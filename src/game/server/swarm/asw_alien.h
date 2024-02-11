@@ -83,6 +83,7 @@ public:
 	bool FInViewCone( const Vector &vecSpot );
 	bool Knockback( Vector vecForce );
 	virtual void SetDefaultEyeOffset();
+	void ReachedEndOfSequence();
 
 	// make the aliens wake up when a marine gets within a certain distance
 	void UpdateSleepState( bool bInPVS );

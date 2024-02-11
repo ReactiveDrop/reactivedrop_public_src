@@ -2229,6 +2229,14 @@ void CASW_Buzzer::NPCThink( void )
 		m_bElectroStunned = false;
 }
 
+void CASW_Buzzer::ReachedEndOfSequence()
+{
+	// make noises that colonists and combine soldiers can pick up whenever we loop our animation.
+	MakeAIFootstepSound( 1024.0f );
+
+	BaseClass::ReachedEndOfSequence();
+}
+
 void CASW_Buzzer::SetDistSwarmSense( float flDistSense )
 {
 	if (!GetASWSenses())

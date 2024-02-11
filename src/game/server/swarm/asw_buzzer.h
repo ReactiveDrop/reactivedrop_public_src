@@ -188,6 +188,7 @@ public:
 	void MoanSound( envelopePoint_t *pEnvelope, int iEnvelopeSize );
 
 	virtual void NPCThink();
+	void ReachedEndOfSequence();
 
 	//stuff related to sleep state
 	bool MarineCanSee(int padding, float interval);// can a marine see us? //copy from asw_alien
