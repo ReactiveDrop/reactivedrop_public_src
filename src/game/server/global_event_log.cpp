@@ -306,6 +306,7 @@ void CGlobalEventLog::AddKeyValue( CGlobalEvent *pEvent, bool bVarying, const ch
 	nLen = _vscprintf( pszValueFormat, Args ) + 1;
 	pszBuffer = ( char * )stackalloc( nLen * sizeof( char ) );
 	vsprintf_s( pszBuffer, nLen, pszValueFormat, Args );
+	va_end( Args );
 
 	bResult = pEvent->AddValue( bVarying, pszKey, pszBuffer );
 
