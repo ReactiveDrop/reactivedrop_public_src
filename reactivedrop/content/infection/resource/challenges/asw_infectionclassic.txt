@@ -6,6 +6,9 @@
 	"required_on_client" "1"
 
 	"convars" {
+		"asw_horde_override" "0"
+		"asw_wanderer_override" "0"
+
 		"asw_marine_collision" "1"
 		"rd_hud_hide_clips" "1"
 		"rd_notify_about_out_of_ammo" "0"
