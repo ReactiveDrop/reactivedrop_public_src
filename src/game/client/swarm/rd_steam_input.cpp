@@ -93,20 +93,21 @@ void CRD_Steam_Input::PostInit()
 	if ( !bSuccess )
 		Warning( "ISteamInput::Init returned failure status\n" );
 
+#ifdef _DEBUG
 	char szCWD[MAX_PATH];
 	V_GetCurrentDirectory( szCWD, sizeof( szCWD ) );
 	CUtlString szInputActionManifest = CUtlString::PathJoin( szCWD, "steam_input/steam_input_manifest.vdf" );
 	bSuccess = pSteamInput->SetInputActionManifestFilePath( szInputActionManifest );
-	//Assert( bSuccess );
 	if ( !bSuccess )
 		Warning( "ISteamInput::SetInputActionManifestFilePath returned failure status\n" );
+#endif
 
 	pSteamInput->EnableDeviceCallbacks();
 	pSteamInput->EnableActionEventCallbacks( &OnActionEvent );
 
-#define INIT_ACTION_SET( name ) { m_ActionSets.name = pSteamInput->GetActionSetHandle( #name ); Assert( m_ActionSets.name ); if ( !m_ActionSets.name ) Warning( "Could not find Steam Input action set '%s'\n", #name ); }
-#define INIT_ACTION_SET_LAYER( name ) { m_ActionSetLayers.name = pSteamInput->GetActionSetHandle( #name ); Assert( m_ActionSetLayers.name ); if ( !m_ActionSetLayers.name ) Warning( "Could not find Steam Input action layer '%s'\n", #name ); }
-#define INIT_ANALOG_ACTION( name ) { m_AnalogActions.name = pSteamInput->GetAnalogActionHandle( #name ); Assert( m_AnalogActions.name ); if ( !m_AnalogActions.name ) Warning( "Could not find Steam Input analog action '%s'\n", #name ); }
+#define INIT_ACTION_SET( name ) { m_ActionSets.name = pSteamInput->GetActionSetHandle( #name ); Assert( !m_Controllers.Count() || m_ActionSets.name ); if ( m_Controllers.Count() && !m_ActionSets.name ) Warning( "Could not find Steam Input action set '%s'\n", #name ); }
+#define INIT_ACTION_SET_LAYER( name ) { m_ActionSetLayers.name = pSteamInput->GetActionSetHandle( #name ); Assert( !m_Controllers.Count() || m_ActionSetLayers.name ); if ( m_Controllers.Count() && !m_ActionSetLayers.name ) Warning( "Could not find Steam Input action layer '%s'\n", #name ); }
+#define INIT_ANALOG_ACTION( name ) { m_AnalogActions.name = pSteamInput->GetAnalogActionHandle( #name ); Assert( !m_Controllers.Count() || m_AnalogActions.name ); if ( m_Controllers.Count() && !m_AnalogActions.name ) Warning( "Could not find Steam Input analog action '%s'\n", #name ); }
 
 	// Action Sets
 	INIT_ACTION_SET( InGame );
@@ -119,15 +120,15 @@ void CRD_Steam_Input::PostInit()
 	for ( CRD_Steam_Input_Bind *pBind = CRD_Steam_Input_Bind::s_pBinds; pBind; pBind = pBind->m_pNext )
 	{
 		pBind->m_hAction = pSteamInput->GetDigitalActionHandle( pBind->m_szActionName );
-		AssertMsg1( pBind->m_hAction, "could not find digital action '%s'", pBind->m_szActionName );
-		if ( !pBind->m_hAction )
+		AssertMsg1( !m_Controllers.Count() || pBind->m_hAction, "could not find digital action '%s'", pBind->m_szActionName );
+		if ( m_Controllers.Count() && !pBind->m_hAction )
 			Warning( "Could not find Steam Input digital action '%s'\n", pBind->m_szActionName );
 
 		pBind->m_hForceActionSet = NULL;
 		if ( pBind->m_szForceActionSet )
 		{
 			pBind->m_hForceActionSet = pSteamInput->GetActionSetHandle( pBind->m_szForceActionSet );
-			AssertMsg2( pBind->m_hForceActionSet, "could not find action set '%s' for digital action '%s'", pBind->m_szForceActionSet, pBind->m_szActionName );
+			AssertMsg2( !m_Controllers.Count() || pBind->m_hForceActionSet, "could not find action set '%s' for digital action '%s'", pBind->m_szForceActionSet, pBind->m_szActionName );
 		}
 	}
 
