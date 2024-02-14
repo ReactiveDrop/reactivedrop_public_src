@@ -33,7 +33,7 @@ using namespace vgui;
 DECLARE_BUILD_FACTORY( QuickJoinPanel );
 
 ConVar cl_quick_join_scroll_start( "cl_quick_join_scroll_start", "1", FCVAR_NONE, "Number of players available to start friend scrolling ticker." );
-ConVar cl_quick_join_scroll_max( "cl_quick_join_scroll_max", "6", FCVAR_NONE, "Max players shown in the friend scrolling ticker." );
+ConVar cl_quick_join_scroll_max( "cl_quick_join_scroll_max", "6", FCVAR_NONE, "Max players shown in the friend scrolling ticker.", true, 0.0f, false, 0.0f );
 ConVar cl_quick_join_scroll_rate( "cl_quick_join_scroll_rate", "90", FCVAR_NONE, "Rate of the friend scrolling ticker." );
 ConVar cl_quick_join_panel_tall( "cl_quick_join_panel_tall", IsX360() ? "16" : "14", // X360 doesn't show icons, but need extra space on PC for Steam avatars
 								 FCVAR_NONE, "The spacing between panels." );
@@ -348,7 +348,7 @@ void QuickJoinPanel::OnThink()
 	if ( rd_reduce_motion.GetBool() )
 	{
 		lRateValue = 0;
-		iWrap -= iWrap % cl_quick_join_scroll_max.GetInt();
+		iWrap -= iWrap % MAX( cl_quick_join_scroll_max.GetInt(), 1 );
 	}
 
 	if ( iWrap != m_iPrevWrap )
