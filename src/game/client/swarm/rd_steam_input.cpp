@@ -166,6 +166,16 @@ void CRD_Steam_Input::Shutdown()
 	}
 	m_GlyphTextures.Purge();
 
+	if ( g_pInputSystem )
+	{
+		// Re-enable Source Engine XInput logic for every controller.
+		int nControllers = g_pInputSystem->GetJoystickCount();
+		for ( int i = 0; i < nControllers; i++ )
+		{
+			g_pInputSystem->EnableJoystickInput( i, true );
+		}
+	}
+
 	m_bInitialized = false;
 }
 
