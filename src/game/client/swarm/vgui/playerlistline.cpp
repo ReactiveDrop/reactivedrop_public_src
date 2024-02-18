@@ -131,7 +131,7 @@ void PlayerListLine::OnCommand( const char *command )
 
 		if ( pPlayer && g_PR->IsMuted( m_iPlayerIndex ) && !g_RD_Player_Reporting.IsInProgress() && !g_RD_Player_Reporting.RecentlyReportedPlayer( "quick_auto_mute", pPlayer->GetSteamID() ) && rd_report_voted_players.GetBool() )
 		{
-			g_RD_Player_Reporting.PrepareReportForSend( "quick_auto_mute", NULL, pPlayer->GetSteamID(), CUtlVector<CUtlBuffer>{}, false );
+			g_RD_Player_Reporting.PrepareReportForSend( "quick_auto_mute", NULL, pPlayer->GetSteamID() );
 		}
 	}
 	else if ( !Q_stricmp( command, "QuickReportButton" ) )

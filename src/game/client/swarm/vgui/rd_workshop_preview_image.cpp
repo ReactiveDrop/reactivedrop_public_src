@@ -187,10 +187,10 @@ void CReactiveDropWorkshopPreviewImage::CheckTextureID()
 		return;
 	}
 
-	DevMsg( "Workshop preview image texture ID %d is invalid. Re-parsing image.\n", m_iTextureID );
+	DevMsg( "Thumbnail texture ID %d is invalid. Re-parsing image.\n", m_iTextureID );
 
 	if ( !TryParseImage( m_SavedBuffer ) )
 	{
-		Assert( !"Workshop preview icon texture re-parsing failed unexpectedly" );
+		Assert( !"Thumbnail texture re-parsing failed unexpectedly" );
 	}
 }

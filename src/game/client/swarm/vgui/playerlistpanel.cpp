@@ -402,7 +402,7 @@ void PlayerListPanel::KickClicked( PlayerListLine *pLine )
 				C_ASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( m_PlayerLine[i]->m_iPlayerIndex ) );
 				if ( pPlayer && !g_RD_Player_Reporting.IsInProgress() && !g_RD_Player_Reporting.RecentlyReportedPlayer( "quick_auto_votekick", pPlayer->GetSteamID() ) && rd_report_voted_players.GetBool() )
 				{
-					g_RD_Player_Reporting.PrepareReportForSend( "quick_auto_votekick", NULL, pPlayer->GetSteamID(), CUtlVector<CUtlBuffer>{}, false );
+					g_RD_Player_Reporting.PrepareReportForSend( "quick_auto_votekick", NULL, pPlayer->GetSteamID() );
 				}
 			}
 			else	// we were already wanting to kick this player, so toggle it off
@@ -431,7 +431,7 @@ void PlayerListPanel::LeaderClicked( PlayerListLine *pLine )
 				C_ASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( m_PlayerLine[i]->m_iPlayerIndex ) );
 				if ( pPlayer && !g_RD_Player_Reporting.IsInProgress() && !g_RD_Player_Reporting.RecentlyReportedPlayer( "quick_auto_voteleader", pPlayer->GetSteamID() ) && rd_report_voted_players.GetBool() )
 				{
-					g_RD_Player_Reporting.PrepareReportForSend( "quick_auto_voteleader", NULL, pPlayer->GetSteamID(), CUtlVector<CUtlBuffer>{}, false );
+					g_RD_Player_Reporting.PrepareReportForSend( "quick_auto_voteleader", NULL, pPlayer->GetSteamID() );
 				}
 			}
 			else	// we were already wanting to kick this play, so toggle it off

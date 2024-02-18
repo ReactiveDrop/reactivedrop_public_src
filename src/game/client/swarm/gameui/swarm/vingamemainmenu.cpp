@@ -323,8 +323,7 @@ void InGameMainMenu::OnCommand( const char *command )
 
 		if ( !Q_strcmp( command, "ReportProblem" ) )
 		{
-			CBaseModPanel::GetSingleton().OpenWindow( WT_REPORTPROBLEM, NULL );
-			engine->ClientCmd_Unrestricted( "gameui_hide" );
+			CBaseModPanel::GetSingleton().OpenWindow( WT_REPORTPROBLEM, this, true );
 			return;
 		}
 

@@ -45,6 +45,8 @@ public:
 
 	virtual void SetRotation( int iRotation ) {}
 
+	CUtlBuffer m_SavedBuffer;
+
 private:
 	Color m_Color;
 	int m_iTextureID;
@@ -54,7 +56,6 @@ private:
 	bool TryParseImage( const CUtlBuffer & buf );
 	bool TryParseJPEG( const CUtlBuffer & buf );
 	void CheckTextureID();
-	CUtlBuffer m_SavedBuffer;
 
 	DECLARE_REFERENCED_CLASS( CReactiveDropWorkshopPreviewImage );
 };

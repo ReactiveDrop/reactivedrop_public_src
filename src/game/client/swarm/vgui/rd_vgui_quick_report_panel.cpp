@@ -163,7 +163,7 @@ static CSteamID s_QuickReportPlayerID;
 
 static void AcceptSendQuickReport()
 {
-	if ( g_RD_Player_Reporting.PrepareReportForSend( s_szQuickReportCategory, NULL, s_QuickReportPlayerID, CUtlVector<CUtlBuffer>{}, false ) )
+	if ( g_RD_Player_Reporting.PrepareReportForSend( s_szQuickReportCategory, NULL, s_QuickReportPlayerID ) )
 	{
 		BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_ACCEPT );
 	}

@@ -19,7 +19,7 @@
 using namespace BaseModUI;
 
 // number of seconds a report can be filed after someone leaves the server
-#define REPORTING_SNAPSHOT_LIFETIME 300.0f
+#define REPORTING_SNAPSHOT_LIFETIME 3600.0f
 // number of seconds a quick (descriptionless) report is considered to be "still active"
 #define REPORTING_QUICK_TIMEOUT 604800
 
@@ -122,7 +122,7 @@ static void WriteJSONHex( CUtlBuffer &buf, const CUtlBuffer &data )
 
 struct ReportingServerSnapshot_t
 {
-	// snapshots expire after 5 minutes (counted from when the snapshot was taken to the start of the reporting process)
+	// snapshots expire after an hour (counted from when the snapshot was taken to the start of the reporting process)
 	float RecordedAt;
 	RTime32 SnapshotTaken;
 
@@ -135,6 +135,7 @@ struct ReportingServerSnapshot_t
 	// diagnostic data about the lobby
 	CUtlString ServerIP;
 	CSteamID LobbyID;
+	bool IsDedicatedServer;
 
 	// players who were online at the time of this snapshot
 	CCopyableUtlVector<CSteamID> Witnesses;
@@ -186,7 +187,10 @@ struct ReportingServerSnapshot_t
 			WriteJSONRaw( buf, "," );
 		}
 		WriteJSONString( buf, "lobby" );
-		WriteJSONFormat( buf, ":\"%llu\"", LobbyID.ConvertToUint64() );
+		WriteJSONFormat( buf, ":\"%llu\",", LobbyID.ConvertToUint64() );
+		WriteJSONString( buf, "dedicated" );
+		WriteJSONRaw( buf, ":" );
+		WriteJSONRaw( buf, IsDedicatedServer ? "true" : "false" );
 		WriteJSONRaw( buf, "}," );
 
 		WriteJSONString( buf, "witnesses" );
@@ -247,11 +251,16 @@ bool CRD_Player_Reporting::IsInProgress() const
 
 bool CRD_Player_Reporting::HasRecentServer() const
 {
-	if ( m_RecentData.Count() == 0 )
-		return false;
+	FOR_EACH_VEC_BACK( m_RecentData, i )
+	{
+		if ( m_RecentData[i]->RecordedAt <= Plat_FloatTime() - REPORTING_SNAPSHOT_LIFETIME )
+			break;
 
-	// latest snapshot is always at the end
-	return m_RecentData[m_RecentData.Count() - 1]->RecordedAt > Plat_FloatTime() - REPORTING_SNAPSHOT_LIFETIME;
+		if ( m_RecentData[i]->IsDedicatedServer )
+			return true;
+	}
+
+	return false;
 }
 
 bool CRD_Player_Reporting::RecentlyReportedPlayer( const char *szCategory, CSteamID player )
@@ -297,6 +306,22 @@ void CRD_Player_Reporting::GetRecentlyPlayedWith( CUtlVector<CSteamID> &players 
 			}
 		}
 	}
+}
+
+bool CRD_Player_Reporting::HasRecentlyPlayedWith() const
+{
+	float flExpireTime = Plat_FloatTime() - REPORTING_SNAPSHOT_LIFETIME;
+
+	FOR_EACH_VEC_BACK( m_RecentData, i )
+	{
+		if ( m_RecentData[i]->RecordedAt < flExpireTime )
+			break;
+
+		if ( m_RecentData[i]->Witnesses.Count() )
+			return true;
+	}
+
+	return false;
 }
 
 bool CRD_Player_Reporting::HasRecentlyPlayedWith( CSteamID player ) const
@@ -354,14 +379,14 @@ void CRD_Player_Reporting::UpdateServerInfo()
 	m_RecentData.AddToTail( pSnapshot );
 }
 
-const ReportingServerSnapshot_t *CRD_Player_Reporting::PinRelevantSnapshot( CSteamID player )
+const ReportingServerSnapshot_t *CRD_Player_Reporting::PinRelevantSnapshot( CSteamID player, bool bRequireDedicatedServer )
 {
 	if ( m_pPinnedSnapshot )
 	{
 		delete m_pPinnedSnapshot;
 	}
 
-	ReportingServerSnapshot_t *pRelevant = GetRelevantOrLatestSnapshot( player );
+	ReportingServerSnapshot_t *pRelevant = GetRelevantOrLatestSnapshot( player, bRequireDedicatedServer );
 	if ( !pRelevant )
 	{
 		m_pPinnedSnapshot = NULL;
@@ -373,7 +398,7 @@ const ReportingServerSnapshot_t *CRD_Player_Reporting::PinRelevantSnapshot( CSte
 	return m_pPinnedSnapshot;
 }
 
-bool CRD_Player_Reporting::PrepareReportForSend( const char *szCategory, const char *szDescription, CSteamID reportedPlayer, const CUtlVector<CUtlBuffer> &screenshots, bool bShowWaitScreen, const ReportingServerSnapshot_t *pForceSnapshot )
+bool CRD_Player_Reporting::PrepareReportForSend( const char *szCategory, const char *szDescription, CSteamID reportedPlayer, const CUtlVector<CUtlBuffer> &screenshots, const ReportingServerSnapshot_t *pForceSnapshot )
 {
 	Assert( szCategory );
 	Assert( szDescription || ( reportedPlayer.BIndividualAccount() && screenshots.Count() == 0 ) );
@@ -383,17 +408,17 @@ bool CRD_Player_Reporting::PrepareReportForSend( const char *szCategory, const c
 	if ( IsInProgress() )
 		return false;
 
+	V_strncpy( m_szLastCategory, szCategory, sizeof( m_szLastCategory ) );
+
 	ISteamUser *pSteamUser = SteamUser();
 	Assert( pSteamUser );
 	Assert( SteamHTTP() );
-
-	m_bShowWaitScreen = bShowWaitScreen;
 
 	// we need to be connected to a game and also Steam in order to send a player report.
 	if ( !pSteamUser || !SteamHTTP() )
 	{
 		TryLocalize( "#rd_reporting_error_not_connected", m_wszLastMessage, sizeof( m_wszLastMessage ) );
-		ShowWaitScreen();
+		LogProgressMessage();
 
 		return false;
 	}
@@ -409,7 +434,7 @@ bool CRD_Player_Reporting::PrepareReportForSend( const char *szCategory, const c
 
 	m_hTicket = pSteamUser->GetAuthTicketForWebApi( "playerreport" );
 	TryLocalize( "#rd_reporting_wait_requesting_ticket", m_wszLastMessage, sizeof( m_wszLastMessage ) );
-	ShowWaitScreen();
+	LogProgressMessage();
 
 	m_Buffer.Purge();
 
@@ -435,6 +460,12 @@ bool CRD_Player_Reporting::PrepareReportForSend( const char *szCategory, const c
 		WriteJSONRaw( m_Buffer, "," );
 	}
 
+	if ( !pForceSnapshot )
+	{
+		// mark the report so that we know whether the user chose the snapshot or whether it was just one picked at sending time.
+		WriteJSONString( m_Buffer, "no_user_snapshot" );
+		WriteJSONRaw( m_Buffer, ":true," );
+	}
 	if ( const ReportingServerSnapshot_t *pSnapshot = pForceSnapshot ? pForceSnapshot : GetRelevantOrLatestSnapshot( reportedPlayer ) )
 	{
 		pSnapshot->WriteJSON( m_Buffer );
@@ -570,13 +601,13 @@ void CRD_Player_Reporting::OnGetTicketForWebApiResponse( GetTicketForWebApiRespo
 		{
 			// if we didn't get a valid request handle somehow, we'll end up here.
 			TryLocalize( "#rd_reporting_error_sending_unknown", m_wszLastMessage, sizeof( m_wszLastMessage ) );
-			ShowWaitScreen();
+			LogProgressMessage();
 			return;
 		}
 
 		TryLocalize( "#rd_reporting_sending_report_to_server", m_wszLastMessage, sizeof( m_wszLastMessage ) );
 		m_HTTPRequestCompleted.Set( hCall, this, &CRD_Player_Reporting::OnHTTPRequestCompleted );
-		ShowWaitScreen();
+		LogProgressMessage();
 	}
 	else
 	{
@@ -588,7 +619,7 @@ void CRD_Player_Reporting::OnGetTicketForWebApiResponse( GetTicketForWebApiRespo
 		V_snwprintf( wszEResultID, NELEMS( wszEResultID ), L"%d", pParam->m_eResult );
 		V_UTF8ToUnicode( UTIL_RD_EResultToString( pParam->m_eResult ), wszEResultName, sizeof( wszEResultName ) );
 		g_pVGuiLocalize->ConstructString( m_wszLastMessage, sizeof( m_wszLastMessage ), g_pVGuiLocalize->Find( "#rd_reporting_error_getting_ticket" ), 2, wszEResultID, wszEResultName );
-		ShowWaitScreen();
+		LogProgressMessage();
 	}
 }
 
@@ -598,7 +629,7 @@ void CRD_Player_Reporting::OnHTTPRequestCompleted( HTTPRequestCompleted_t *pPara
 	{
 		// entirely lost connection to the Steam client.
 		TryLocalize( "#rd_reporting_error_sending_client", m_wszLastMessage, sizeof( m_wszLastMessage ) );
-		ShowWaitScreen();
+		LogProgressMessage();
 		return;
 	}
 
@@ -606,7 +637,7 @@ void CRD_Player_Reporting::OnHTTPRequestCompleted( HTTPRequestCompleted_t *pPara
 	{
 		SteamHTTP()->ReleaseHTTPRequest( pParam->m_hRequest );
 		TryLocalize( "#rd_reporting_error_sending_network", m_wszLastMessage, sizeof( m_wszLastMessage ) );
-		ShowWaitScreen();
+		LogProgressMessage();
 		return;
 	}
 
@@ -665,61 +696,34 @@ void CRD_Player_Reporting::OnHTTPRequestCompleted( HTTPRequestCompleted_t *pPara
 		}
 
 		// report queued for processing
-		TryLocalize( "#rd_reporting_success", m_wszLastMessage, sizeof( m_wszLastMessage ) );
-		ShowWaitScreen();
+		if ( StringHasPrefix( m_szLastCategory, "quick_commend_" ) )
+			TryLocalize( "#rd_reporting_success_quick_commend", m_wszLastMessage, sizeof( m_wszLastMessage ) );
+		else if ( StringHasPrefix( m_szLastCategory, "quick_abusive_" ) )
+			TryLocalize( "#rd_reporting_success_quick_report", m_wszLastMessage, sizeof( m_wszLastMessage ) );
+		else if ( StringHasPrefix( m_szLastCategory, "quick_auto_" ) )
+			TryLocalize( "#rd_reporting_success_quick_auto", m_wszLastMessage, sizeof( m_wszLastMessage ) );
+		else
+			TryLocalize( "#rd_reporting_success", m_wszLastMessage, sizeof( m_wszLastMessage ) );
+		LogProgressMessage();
 		return;
 	}
 
 	wchar_t wszHTTPStatus[8];
 	V_snwprintf( wszHTTPStatus, NELEMS( wszHTTPStatus ), L"%03d", pParam->m_eStatusCode );
 	g_pVGuiLocalize->ConstructString( m_wszLastMessage, sizeof( m_wszLastMessage ), g_pVGuiLocalize->Find( "#rd_reporting_error_http" ), 1, wszHTTPStatus );
-	ShowWaitScreen();
+	LogProgressMessage();
 }
 
-void CRD_Player_Reporting::ShowWaitScreen()
+void CRD_Player_Reporting::LogProgressMessage()
 {
 	char szMessageUTF8[2048];
 	V_UnicodeToUTF8( m_wszLastMessage, szMessageUTF8, sizeof( szMessageUTF8 ) );
-	Msg( "[Player Reporting] %s\n", szMessageUTF8 );
+	Msg( "[Player Reporting:%s] %s\n", m_szLastCategory, szMessageUTF8 );
 
 	if ( !IsInProgress() )
 	{
 		// clear quick report key if we've exited the reporting process with an error
 		m_szQuickReport[0] = '\0';
-	}
-
-	if ( !m_bShowWaitScreen )
-		return;
-
-	CBaseModFrame *pCurrentWindow = CBaseModPanel::GetSingleton().GetWindow( CBaseModPanel::GetSingleton().GetActiveWindowType() );
-
-	if ( IsInProgress() )
-	{
-		GenericWaitScreen *pWaitScreen = assert_cast< GenericWaitScreen * >( CBaseModPanel::GetSingleton().OpenWindow( WT_GENERICWAITSCREEN, pCurrentWindow, false ) );
-		if ( pWaitScreen )
-		{
-			// we will dismiss the wait message ourself; don't dismiss the message on a timer.
-			pWaitScreen->ClearData();
-			pWaitScreen->AddMessageText( m_wszLastMessage, INFINITY );
-		}
-	}
-	else
-	{
-		GenericWaitScreen *pWaitScreen = assert_cast< GenericWaitScreen * >( CBaseModPanel::GetSingleton().GetWindow( WT_GENERICWAITSCREEN ) );
-		if ( pWaitScreen )
-			pWaitScreen->Close();
-
-		GenericConfirmation *pConfirm = assert_cast< GenericConfirmation * >( CBaseModPanel::GetSingleton().OpenWindow( WT_GENERICCONFIRMATION, pCurrentWindow, false ) );
-		if ( pConfirm )
-		{
-			GenericConfirmation::Data_t data;
-			data.pWindowTitle = "#rd_reporting_finished_title";
-			data.pMessageTextW = m_wszLastMessage;
-			data.bOkButtonEnabled = true;
-			pConfirm->SetUsageData( data );
-		}
-
-		m_bShowWaitScreen = false;
 	}
 }
 
@@ -746,6 +750,12 @@ ReportingServerSnapshot_t *CRD_Player_Reporting::NewSnapshot() const
 		{
 			nChallengeFileID = std::strtoull( pszChallengeFileID, NULL, 16 );
 		}
+
+		pSnapshot->IsDedicatedServer = *UTIL_RD_GetCurrentLobbyData( "system:rd_dedicated_server", "" ) != '\0';
+	}
+	else
+	{
+		pSnapshot->IsDedicatedServer = false;
 	}
 
 	pSnapshot->MissionName = engine->GetLevelNameShort();
@@ -791,20 +801,30 @@ ReportingServerSnapshot_t *CRD_Player_Reporting::NewSnapshot() const
 	return pSnapshot;
 }
 
-ReportingServerSnapshot_t *CRD_Player_Reporting::GetRelevantOrLatestSnapshot( CSteamID player ) const
+ReportingServerSnapshot_t *CRD_Player_Reporting::GetRelevantOrLatestSnapshot( CSteamID player, bool bRequireDedicatedServer ) const
 {
 	if ( m_RecentData.Count() == 0 )
 		return NULL;
 
 	FOR_EACH_VEC_BACK( m_RecentData, i )
 	{
+		if ( bRequireDedicatedServer && !m_RecentData[i]->IsDedicatedServer )
+		{
+			continue;
+		}
+
 		if ( m_RecentData[i]->Witnesses.IsValidIndex( m_RecentData[i]->Witnesses.Find( player ) ) )
+		{
+			return m_RecentData[i];
+		}
+
+		if ( bRequireDedicatedServer && !player.IsValid() )
 		{
 			return m_RecentData[i];
 		}
 	}
 
-	Assert( !player.IsValid() );
+	Assert( !player.IsValid() && !bRequireDedicatedServer );
 	return m_RecentData[m_RecentData.Count() - 1];
 }
 
@@ -820,9 +840,15 @@ void CRD_Player_Reporting::DeleteExpiredSnapshots()
 
 	// remove snapshots that have no new players from before the end of the list
 	CUtlVector<CSteamID> SeenWitnesses;
+	bool bSeenDedicated = false;
 	FOR_EACH_VEC_BACK( m_RecentData, i )
 	{
 		bool bAnyNew = false;
+		if ( !bSeenDedicated && m_RecentData[i]->IsDedicatedServer )
+		{
+			bSeenDedicated = true;
+			bAnyNew = true;
+		}
 		FOR_EACH_VEC( m_RecentData[i]->Witnesses, j )
 		{
 			if ( !SeenWitnesses.IsValidIndex( SeenWitnesses.Find( m_RecentData[i]->Witnesses[j] ) ) )
