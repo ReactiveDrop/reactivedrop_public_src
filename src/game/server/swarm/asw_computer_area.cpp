@@ -532,7 +532,6 @@ void CASW_Computer_Area::NPCUsing( CASW_Inhabitable_NPC *pNPC, float deltatime )
 					GetCurrentHack()->OnHackComplete();
 
 				// unlock it
-				m_OnComputerHackCompleted.FireOutput( pMarine, this );
 				m_bIsLocked = false;
 				UpdateWaitingForInput();
 				UpdatePanelSkin();
