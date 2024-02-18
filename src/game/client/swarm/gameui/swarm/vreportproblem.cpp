@@ -352,3 +352,8 @@ void ReportProblem::StartNewReport( const char *szCategory, const char *const *S
 
 	ResumeInProgressReport();
 }
+
+void ReportProblem::UpdateReportContents()
+{
+	DebuggerBreakIfDebugging(); // TODO
+}
