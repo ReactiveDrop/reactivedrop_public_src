@@ -657,6 +657,10 @@ function OnTakeDamage_Alive_Any( victim, inflictor, attacker, weapon, damage, da
 			{
 				kb = kb * 50;
 			}
+			if (weapon && weapon.GetClassname() == "asw_weapon_railgun")
+			{
+				kb = kb * 5;
+			}
 			if (IsOnGround(victim))
 			{
 				kb = kb + Vector(0, 0, 10);

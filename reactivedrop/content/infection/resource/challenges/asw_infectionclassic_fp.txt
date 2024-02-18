@@ -7,6 +7,8 @@
 
 	"convars" {
 		"asw_controls" "0"
+		"asw_horde_override" "0"
+		"asw_wanderer_override" "0"
 
 		"asw_marine_collision" "1"
 		"rd_hud_hide_clips" "1"
