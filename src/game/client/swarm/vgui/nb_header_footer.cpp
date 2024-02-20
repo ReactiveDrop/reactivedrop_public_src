@@ -363,6 +363,10 @@ void CNB_Header_Footer::PerformLayout()
 void CNB_Header_Footer::ApplySettings( KeyValues *inResourceData )
 {
 	BaseClass::ApplySettings( inResourceData );
+
+	SetGradientBarEnabled( inResourceData->GetBool( "gradient_bar_enabled", m_bGradientBarEnabled ) );
+	SetGradientBarPos( inResourceData->GetInt( "gradient_bar_ypos", m_nGradientBarY ), inResourceData->GetInt( "gradient_bar_tall", m_nGradientBarHeight ) );
+	SetGradientBarWide( inResourceData->GetInt( "gradient_bar_wide", m_nGradientBarWidth ) );
 }
 
 void CNB_Header_Footer::OnThink()

@@ -74,7 +74,7 @@ void CBitmapButton::ApplySettings(KeyValues *pInitData)
 
 	if ( pInitData->FindKey( "icon_xpos" ) || pInitData->FindKey( "icon_ypos" ) || pInitData->FindKey( "icon_wide" ) || pInitData->FindKey( "icon_tall" ) )
 	{
-		SetImageBounds( pInitData->GetInt( "icon_xpos" ), pInitData->GetInt( "icon_ypos" ), pInitData->GetInt( "icon_wide", GetWide() ), pInitData->GetInt( "icon_tall", GetTall() ) );
+		SetImageBounds( YRES( pInitData->GetInt( "icon_xpos" ) ), YRES( pInitData->GetInt( "icon_ypos" ) ), YRES( pInitData->GetInt( "icon_wide", GetWide() ) ), YRES( pInitData->GetInt( "icon_tall", GetTall() ) ) );
 	}
 }
 

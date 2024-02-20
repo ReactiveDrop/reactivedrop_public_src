@@ -79,3 +79,35 @@ private:
 };
 
 extern CRD_Player_Reporting g_RD_Player_Reporting;
+
+struct ReportingServerSnapshot_t
+{
+	// snapshots expire after an hour (counted from when the snapshot was taken to the start of the reporting process)
+	float RecordedAt;
+	RTime32 SnapshotTaken;
+
+	// diagnostic data about game state
+	CUtlString MissionName;
+	CUtlString ChallengeName;
+	PublishedFileId_t MissionWorkshop{ k_PublishedFileIdInvalid };
+	PublishedFileId_t ChallengeWorkshop{ k_PublishedFileIdInvalid };
+
+	// diagnostic data about the lobby
+	CUtlString ServerIP;
+	CSteamID LobbyID;
+	bool IsDedicatedServer;
+
+	// players who were online at the time of this snapshot
+	CCopyableUtlVector<CSteamID> Witnesses;
+
+	// diagnostic data about connection quality
+	bool HaveConnectionQuality{ false };
+	float CurTime{};
+	float AvgLatency[2]{};
+	float AvgChoke[2]{};
+	float AvgLoss[2]{};
+	float AvgPackets[2]{};
+	float FrameTime[2]{};
+
+	void WriteJSON( CUtlBuffer &buf ) const;
+};

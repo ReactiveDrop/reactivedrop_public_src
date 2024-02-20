@@ -8,6 +8,11 @@ class CNB_Button;
 class CNB_Header_Footer;
 class CRD_VGUI_Option;
 
+namespace vgui
+{
+	class MultiFontRichText;
+}
+
 namespace BaseModUI
 {
 	class ReportProblem : public CBaseModFrame
@@ -18,11 +23,12 @@ namespace BaseModUI
 		~ReportProblem();
 
 		// VGUI callbacks
-		void Activate() override;
+		void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 		void OnCommand( const char *command ) override;
 		void OnThink() override;
 		MESSAGE_FUNC( OnTextChanged, "TextChanged" );
 		MESSAGE_FUNC( OnCheckButtonChecked, "CheckButtonChecked" );
+		MESSAGE_FUNC( OnCurrentOptionChanged, "CurrentOptionChanged" );
 
 		// sub-screen setup functions
 		void HideAllControls();
@@ -36,10 +42,10 @@ namespace BaseModUI
 		void UpdateReportContents();
 
 		// global
-		CNB_Header_Footer *m_pHeaderFooter;
 		CNB_Button *m_pBtnBack;
 
 		// category selection screen
+		CNB_Header_Footer *m_pHeaderFooter_Category;
 		CBitmapButton *m_pBtnMyAccount;
 		CBitmapButton *m_pBtnServer;
 		CBitmapButton *m_pBtnPlayer;
@@ -54,19 +60,22 @@ namespace BaseModUI
 		vgui::Label *m_pLblLastProgress;
 
 		// wait screen
+		CNB_Header_Footer *m_pHeaderFooter_Wait;
 		vgui::Label *m_pLblWait;
 		vgui::Label *m_pLblDontWait;
 		vgui::ImagePanel *m_pImgSpinner;
 
 		// player select
+		CNB_Header_Footer *m_pHeaderFooter_Player;
 
 		// report in progress
+		CNB_Header_Footer *m_pHeaderFooter_Report;
 		CRD_VGUI_Option *m_pSettingSubCategory;
 		vgui::Label *m_pLblInstructions;
 		vgui::TextEntry *m_pTxtDescription;
 		vgui::ImagePanel *m_pImgScreenshot[1];
 		vgui::CheckButton *m_pChkScreenshot[1];
-		vgui::Label *m_pLblReportContents;
+		vgui::MultiFontRichText *m_pLblReportContents;
 		CNB_Button *m_pBtnSubmit;
 	};
 }

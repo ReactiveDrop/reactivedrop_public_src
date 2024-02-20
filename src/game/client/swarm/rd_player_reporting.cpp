@@ -120,123 +120,93 @@ static void WriteJSONHex( CUtlBuffer &buf, const CUtlBuffer &data )
 	buf.PutChar( '"' );
 }
 
-struct ReportingServerSnapshot_t
+void ReportingServerSnapshot_t::WriteJSON( CUtlBuffer &buf ) const
 {
-	// snapshots expire after an hour (counted from when the snapshot was taken to the start of the reporting process)
-	float RecordedAt;
-	RTime32 SnapshotTaken;
-
-	// diagnostic data about game state
-	CUtlString MissionName;
-	CUtlString ChallengeName;
-	PublishedFileId_t MissionWorkshop{ k_PublishedFileIdInvalid };
-	PublishedFileId_t ChallengeWorkshop{ k_PublishedFileIdInvalid };
-
-	// diagnostic data about the lobby
-	CUtlString ServerIP;
-	CSteamID LobbyID;
-	bool IsDedicatedServer;
-
-	// players who were online at the time of this snapshot
-	CCopyableUtlVector<CSteamID> Witnesses;
-
-	// diagnostic data about connection quality
-	bool HaveConnectionQuality{ false };
-	float CurTime{};
-	float AvgLatency[2]{};
-	float AvgChoke[2]{};
-	float AvgLoss[2]{};
-	float AvgPackets[2]{};
-	float FrameTime[2]{};
-
-	void WriteJSON( CUtlBuffer &buf ) const
+	WriteJSONString( buf, "snapshot_taken" );
+	WriteJSONFormat( buf, ":%u,", SnapshotTaken );
+	WriteJSONString( buf, "map" );
+	WriteJSONRaw( buf, ":{" );
+	WriteJSONString( buf, "name" );
+	WriteJSONRaw( buf, ":" );
+	WriteJSONString( buf, MissionName );
+	WriteJSONRaw( buf, "," );
+	WriteJSONString( buf, "challenge" );
+	WriteJSONRaw( buf, ":" );
+	WriteJSONString( buf, ChallengeName );
+	if ( MissionWorkshop != k_PublishedFileIdInvalid )
 	{
-		WriteJSONString( buf, "snapshot_taken" );
-		WriteJSONFormat( buf, ":%u,", SnapshotTaken );
-		WriteJSONString( buf, "map" );
-		WriteJSONRaw( buf, ":{" );
-		WriteJSONString( buf, "name" );
-		WriteJSONRaw( buf, ":" );
-		WriteJSONString( buf, MissionName );
 		WriteJSONRaw( buf, "," );
-		WriteJSONString( buf, "challenge" );
-		WriteJSONRaw( buf, ":" );
-		WriteJSONString( buf, ChallengeName );
-		if ( MissionWorkshop != k_PublishedFileIdInvalid )
-		{
-			WriteJSONRaw( buf, "," );
-			WriteJSONString( buf, "map_workshop" );
-			WriteJSONFormat( buf, ":\"%llu\"", MissionWorkshop );
-		}
-		if ( ChallengeWorkshop != k_PublishedFileIdInvalid )
-		{
-			WriteJSONRaw( buf, "," );
-			WriteJSONString( buf, "challenge_workshop" );
-			WriteJSONFormat( buf, ":\"%llu\"", ChallengeWorkshop );
-		}
-		WriteJSONRaw( buf, "}," );
+		WriteJSONString( buf, "map_workshop" );
+		WriteJSONFormat( buf, ":\"%llu\"", MissionWorkshop );
+	}
+	if ( ChallengeWorkshop != k_PublishedFileIdInvalid )
+	{
+		WriteJSONRaw( buf, "," );
+		WriteJSONString( buf, "challenge_workshop" );
+		WriteJSONFormat( buf, ":\"%llu\"", ChallengeWorkshop );
+	}
+	WriteJSONRaw( buf, "}," );
 
-		// current server IP and/or lobby id
+	// current server IP and/or lobby id
+	WriteJSONString( buf, "server" );
+	WriteJSONRaw( buf, ":{" );
+	if ( !ServerIP.IsEmpty() )
+	{
+		WriteJSONString( buf, "ip" );
+		WriteJSONRaw( buf, ":" );
+		WriteJSONString( buf, ServerIP );
+		WriteJSONRaw( buf, "," );
+	}
+	WriteJSONString( buf, "lobby" );
+	WriteJSONFormat( buf, ":\"%llu\",", LobbyID.ConvertToUint64() );
+	WriteJSONString( buf, "dedicated" );
+	WriteJSONRaw( buf, ":" );
+	WriteJSONRaw( buf, IsDedicatedServer ? "true" : "false" );
+	WriteJSONRaw( buf, "}," );
+
+	WriteJSONString( buf, "witnesses" );
+	WriteJSONRaw( buf, ":[" );
+	FOR_EACH_VEC( Witnesses, i )
+	{
+		if ( i != 0 )
+			WriteJSONRaw( buf, "," );
+
+		WriteJSONFormat( buf, "\"%llu\"", Witnesses[i].ConvertToUint64() );
+	}
+	WriteJSONRaw( buf, "]," );
+
+	if ( HaveConnectionQuality )
+	{
+		WriteJSONString( buf, "diagnostics" );
+		WriteJSONRaw( buf, ":{" );
+		WriteJSONString( buf, "client" );
+		WriteJSONRaw( buf, ":{" );
+		WriteJSONString( buf, "gametime" );
+		WriteJSONFormat( buf, ":%f,", CurTime );
+		WriteJSONString( buf, "latency" );
+		WriteJSONFormat( buf, ":%f,", AvgLatency[FLOW_OUTGOING] );
+		WriteJSONString( buf, "choke" );
+		WriteJSONFormat( buf, ":%f,", AvgChoke[FLOW_OUTGOING] );
+		WriteJSONString( buf, "loss" );
+		WriteJSONFormat( buf, ":%f,", AvgLoss[FLOW_OUTGOING] );
+		WriteJSONString( buf, "packets" );
+		WriteJSONFormat( buf, ":%f,", AvgPackets[FLOW_OUTGOING] );
+		WriteJSONString( buf, "frametime" );
+		WriteJSONFormat( buf, ":%f},", FrameTime[FLOW_OUTGOING] );
 		WriteJSONString( buf, "server" );
 		WriteJSONRaw( buf, ":{" );
-		if ( !ServerIP.IsEmpty() )
-		{
-			WriteJSONString( buf, "ip" );
-			WriteJSONRaw( buf, ":" );
-			WriteJSONString( buf, ServerIP );
-			WriteJSONRaw( buf, "," );
-		}
-		WriteJSONString( buf, "lobby" );
-		WriteJSONFormat( buf, ":\"%llu\",", LobbyID.ConvertToUint64() );
-		WriteJSONString( buf, "dedicated" );
-		WriteJSONRaw( buf, ":" );
-		WriteJSONRaw( buf, IsDedicatedServer ? "true" : "false" );
-		WriteJSONRaw( buf, "}," );
-
-		WriteJSONString( buf, "witnesses" );
-		WriteJSONRaw( buf, ":[" );
-		FOR_EACH_VEC( Witnesses, i )
-		{
-			if ( i != 0 )
-				WriteJSONRaw( buf, "," );
-
-			WriteJSONFormat( buf, "\"%llu\"", Witnesses[i].ConvertToUint64() );
-		}
-		WriteJSONRaw( buf, "]," );
-
-		if ( HaveConnectionQuality )
-		{
-			WriteJSONString( buf, "diagnostics" );
-			WriteJSONRaw( buf, ":{" );
-			WriteJSONString( buf, "client" );
-			WriteJSONRaw( buf, ":{" );
-			WriteJSONString( buf, "gametime" );
-			WriteJSONFormat( buf, ":%f,", CurTime );
-			WriteJSONString( buf, "latency" );
-			WriteJSONFormat( buf, ":%f,", AvgLatency[FLOW_OUTGOING] );
-			WriteJSONString( buf, "choke" );
-			WriteJSONFormat( buf, ":%f,", AvgChoke[FLOW_OUTGOING] );
-			WriteJSONString( buf, "loss" );
-			WriteJSONFormat( buf, ":%f,", AvgLoss[FLOW_OUTGOING] );
-			WriteJSONString( buf, "packets" );
-			WriteJSONFormat( buf, ":%f,", AvgPackets[FLOW_OUTGOING] );
-			WriteJSONString( buf, "frametime" );
-			WriteJSONFormat( buf, ":%f},", FrameTime[FLOW_OUTGOING] );
-			WriteJSONString( buf, "server" );
-			WriteJSONRaw( buf, ":{" );
-			WriteJSONString( buf, "latency" );
-			WriteJSONFormat( buf, ":%f,", AvgLatency[FLOW_INCOMING] );
-			WriteJSONString( buf, "choke" );
-			WriteJSONFormat( buf, ":%f,", AvgChoke[FLOW_INCOMING] );
-			WriteJSONString( buf, "loss" );
-			WriteJSONFormat( buf, ":%f,", AvgLoss[FLOW_INCOMING] );
-			WriteJSONString( buf, "packets" );
-			WriteJSONFormat( buf, ":%f,", AvgPackets[FLOW_INCOMING] );
-			WriteJSONString( buf, "frametime" );
-			WriteJSONFormat( buf, ":%f}},", FrameTime[FLOW_INCOMING] );
-		}
+		WriteJSONString( buf, "latency" );
+		WriteJSONFormat( buf, ":%f,", AvgLatency[FLOW_INCOMING] );
+		WriteJSONString( buf, "choke" );
+		WriteJSONFormat( buf, ":%f,", AvgChoke[FLOW_INCOMING] );
+		WriteJSONString( buf, "loss" );
+		WriteJSONFormat( buf, ":%f,", AvgLoss[FLOW_INCOMING] );
+		WriteJSONString( buf, "packets" );
+		WriteJSONFormat( buf, ":%f,", AvgPackets[FLOW_INCOMING] );
+		WriteJSONString( buf, "frametime" );
+		WriteJSONFormat( buf, ":%f}},", FrameTime[FLOW_INCOMING] );
 	}
-};
+}
 
 bool CRD_Player_Reporting::IsInProgress() const
 {
@@ -317,7 +287,7 @@ bool CRD_Player_Reporting::HasRecentlyPlayedWith() const
 		if ( m_RecentData[i]->RecordedAt < flExpireTime )
 			break;
 
-		if ( m_RecentData[i]->Witnesses.Count() )
+		if ( m_RecentData[i]->Witnesses.Count() > 1 )
 			return true;
 	}
 
