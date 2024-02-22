@@ -254,7 +254,9 @@ void CLagCompensationManager::StartLagCompensation( CBasePlayer *player, LagComp
 		 || (gpGlobals->maxClients <= 1)	// no lag compensation in single player
 		 || !sv_unlag.GetBool()				// disabled by server admin
 		 || player->IsBot() 				// not for bots
-#ifndef INFESTED_DLL
+#ifdef INFESTED_DLL
+		 || !ToASW_Player( player )->GetNPC() // not for spectators
+#else
 		 || player->IsObserver()			// not for spectators
 #endif
 		)
