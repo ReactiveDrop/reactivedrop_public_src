@@ -3,6 +3,7 @@
 #include "basemodframe.h"
 #include "steam/steamclientpublic.h"
 
+class CAvatarImagePanel;
 class CBitmapButton;
 class CNB_Button;
 class CNB_Header_Footer;
@@ -15,6 +16,8 @@ namespace vgui
 
 namespace BaseModUI
 {
+	class GenericPanelList;
+
 	class ReportProblem : public CBaseModFrame
 	{
 		DECLARE_CLASS_SIMPLE( ReportProblem, CBaseModFrame );
@@ -67,9 +70,15 @@ namespace BaseModUI
 
 		// player select
 		CNB_Header_Footer *m_pHeaderFooter_Player;
+		GenericPanelList *m_pGplPlayerChoices;
+		CNB_Button *m_pBtnSelectPlayer;
+		CSteamID m_SelectedPlayer;
 
 		// report in progress
 		CNB_Header_Footer *m_pHeaderFooter_Report;
+		vgui::Label *m_pLblReportingPlayer;
+		CAvatarImagePanel *m_pImgPlayerAvatar;
+		vgui::Label *m_pLblPlayerName;
 		CRD_VGUI_Option *m_pSettingSubCategory;
 		vgui::Label *m_pLblInstructions;
 		vgui::TextEntry *m_pTxtDescription;

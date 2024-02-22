@@ -33,10 +33,10 @@
 		"xpos"				"c-266"
 		"ypos"				"60"
 		"wide"				"250"
-		"tall"				"19"
+		"tall"				"24"
 		"zpos"				"5"
 		"labelText"			"#rd_reporting_title"
-		"textAlignment"		"west"
+		"textAlignment"		"north-west"
 		"font"				"DefaultExtraLarge"
 		"fgcolor_override"	"224 224 224 255"
 	}
@@ -410,7 +410,34 @@
 		"tall"				"f0"
 		"gradient_bar_enabled"	"1"
 		"gradient_bar_ypos"	"80"
-		"gradient_bar_tall"	"160"
+		"gradient_bar_tall"	"320"
+	}
+
+	"GplPlayerChoices"
+	{
+		"ControlName"		"GenericPanelList"
+		"fieldName"			"GplPlayerChoices"
+		"xpos"				"c-109"
+		"ypos"				"90"
+		"wide"				"217"
+		"tall"				"300"
+		"bgcolor_override"	"0 0 0 64"
+	}
+
+	"BtnSelectPlayer"
+	{
+		"ControlName"		"CNB_Button"
+		"fieldName"			"BtnSelectPlayer"
+		"xpos"				"c147"
+		"ypos"				"r23"
+		"zpos"				"3"
+		"wide"				"117"
+		"tall"				"27"
+		"labelText"			"#asw_button_next"
+		"command"			"SelectPlayer"
+		"textAlignment"		"center"
+		"font"				"DefaultMedium"
+		"fgcolor_override"	"113 142 181 255"
 	}
 
 	"HeaderFooter_Report"
@@ -425,7 +452,45 @@
 		"gradient_bar_ypos"	"80"
 		"gradient_bar_tall"	"310"
 	}
-	
+
+	"LblReportingPlayer"
+	{
+		"ControlName"		"Label"
+		"fieldName"			"LblReportingPlayer"
+		"xpos"				"c115"
+		"ypos"				"62"
+		"wide"				"185"
+		"tall"				"10"
+		"labelText"			"#rd_reporting_player_label"
+		"fgcolor_override"	"224 224 224 255"
+		"font"				"DefaultVerySmall"
+		"textAlignment"		"north-west"
+	}
+
+	"ImgPlayerAvatar"
+	{
+		"ControlName"		"CAvatarImagePanel"
+		"fieldName"			"ImgPlayerAvatar"
+		"xpos"				"c93"
+		"ypos"				"64"
+		"wide"				"20"
+		"tall"				"20"
+		"legacy_padding"	"0"
+	}
+
+	"LblPlayerName"
+	{
+		"ControlName"		"Label"
+		"fieldName"			"LblPlayerName"
+		"xpos"				"c115"
+		"ypos"				"68"
+		"wide"				"185"
+		"tall"				"15"
+		"fgcolor_override"	"224 224 224 255"
+		"font"				"DefaultMedium"
+		"textAlignment"		"north-west"
+	}
+
 	"SettingSubCategory"
 	{
 		"ControlName"		"CRD_VGUI_Option"

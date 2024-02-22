@@ -2,6 +2,7 @@
 #include "vreportproblem.h"
 #include "gameui_interface.h"
 #include "vgui_bitmapbutton.h"
+#include "vgui/ISurface.h"
 #include "vgui_controls/CheckButton.h"
 #include "vgui_controls/ImagePanel.h"
 #include "vgui_controls/TextEntry.h"
@@ -11,6 +12,8 @@
 #include "rd_player_reporting.h"
 #include "rd_workshop_preview_image.h"
 #include "MultiFontRichText.h"
+#include "vgenericpanellist.h"
+#include "vgui_avatarimage.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -77,7 +80,7 @@ static const char *const s_NonPrivateReportTypes[] =
 	// no NULL at the end as this one is used statically
 };
 
-ReportProblem::ReportProblem( vgui::Panel *parent, const char *panelName )
+ReportProblem::ReportProblem( Panel *parent, const char *panelName )
 	: BaseClass{ parent, panelName }
 {
 	if ( ui_gameui_modal.GetBool() )
@@ -96,46 +99,51 @@ ReportProblem::ReportProblem( vgui::Panel *parent, const char *panelName )
 	m_pHeaderFooter_Category = new CNB_Header_Footer( this, "HeaderFooter_Category" );
 	m_pBtnMyAccount = new CBitmapButton( this, "BtnMyAccount", "#rd_reporting_category_my_account" );
 	m_pBtnMyAccount->AddActionSignalTarget( this );
-	m_pLblMyAccount = new vgui::Label( this, "LblMyAccount", "#rd_reporting_category_my_account_desc" );
+	m_pLblMyAccount = new Label( this, "LblMyAccount", "#rd_reporting_category_my_account_desc" );
 	m_pBtnServer = new CBitmapButton( this, "BtnServer", "#rd_reporting_category_server" );
 	m_pBtnServer->AddActionSignalTarget( this );
-	m_pLblServer = new vgui::Label( this, "LblServer", "#rd_reporting_category_server_desc" );
+	m_pLblServer = new Label( this, "LblServer", "#rd_reporting_category_server_desc" );
 	m_pBtnPlayer = new CBitmapButton( this, "BtnPlayer", "#rd_reporting_category_player" );
 	m_pBtnPlayer->AddActionSignalTarget( this );
-	m_pLblPlayer = new vgui::Label( this, "LblPlayer", "#rd_reporting_category_player_desc" );
+	m_pLblPlayer = new Label( this, "LblPlayer", "#rd_reporting_category_player_desc" );
 	m_pBtnGameBug = new CBitmapButton( this, "BtnGameBug", "#rd_reporting_category_game_bug" );
 	m_pBtnGameBug->AddActionSignalTarget( this );
-	m_pLblGameBug = new vgui::Label( this, "LblGameBug", "#rd_reporting_category_game_bug_desc" );
+	m_pLblGameBug = new Label( this, "LblGameBug", "#rd_reporting_category_game_bug_desc" );
 	m_pBtnOther = new CBitmapButton( this, "BtnOther", "#rd_reporting_category_other" );
 	m_pBtnOther->AddActionSignalTarget( this );
-	m_pLblOther = new vgui::Label( this, "LblOther", "#rd_reporting_category_other_desc" );
+	m_pLblOther = new Label( this, "LblOther", "#rd_reporting_category_other_desc" );
 	m_pBtnResume = new CNB_Button( this, "BtnResume", "#rd_reporting_resume", this, "Resume" );
-	m_pLblLastProgress = new vgui::Label( this, "LblLastProgress", L"" );
+	m_pLblLastProgress = new Label( this, "LblLastProgress", L"" );
 
 	// wait screen
 	m_pHeaderFooter_Wait = new CNB_Header_Footer( this, "HeaderFooter_Wait" );
-	m_pLblWait = new vgui::Label( this, "LblWait", L"" );
-	m_pLblDontWait = new vgui::Label( this, "LblDontWait", "#rd_reporting_continues_in_background" );
-	m_pImgSpinner = new vgui::ImagePanel( this, "ImgSpinner" );
+	m_pLblWait = new Label( this, "LblWait", L"" );
+	m_pLblDontWait = new Label( this, "LblDontWait", "#rd_reporting_continues_in_background" );
+	m_pImgSpinner = new ImagePanel( this, "ImgSpinner" );
 
 	// player select
 	m_pHeaderFooter_Player = new CNB_Header_Footer( this, "HeaderFooter_Player" );
+	m_pGplPlayerChoices = new GenericPanelList( this, "GplPlayerChoices", GenericPanelList::ISM_PERITEM );
+	m_pBtnSelectPlayer = new CNB_Button( this, "BtnSelectPlayer", "#asw_button_next", this, "SelectPlayer" );
 
 	// report in progress
 	m_pHeaderFooter_Report = new CNB_Header_Footer( this, "HeaderFooter_Report" );
+	m_pLblReportingPlayer = new Label( this, "LblReportingPlayer", "#rd_reporting_player_label" );
+	m_pImgPlayerAvatar = new CAvatarImagePanel( this, "ImgPlayerAvatar" );
+	m_pLblPlayerName = new Label( this, "LblPlayerName", L"" );
 	m_pSettingSubCategory = new CRD_VGUI_Option( this, "SettingSubCategory", "", CRD_VGUI_Option::MODE_RADIO );
-	m_pLblInstructions = new vgui::Label( this, "LblInstructions", L"" );
-	m_pTxtDescription = new vgui::TextEntry( this, "TxtDescription" );
+	m_pLblInstructions = new Label( this, "LblInstructions", L"" );
+	m_pTxtDescription = new TextEntry( this, "TxtDescription" );
 	m_pTxtDescription->AddActionSignalTarget( this );
 	m_pTxtDescription->SetMultiline( true );
 	COMPILE_TIME_ASSERT( NELEMS( m_pImgScreenshot ) == NELEMS( m_pChkScreenshot ) );
 	for ( int i = 0; i < NELEMS( m_pImgScreenshot ); i++ )
 	{
-		m_pImgScreenshot[i] = new vgui::ImagePanel( this, VarArgs( "ImgScreenshot%d", i ) );
-		m_pChkScreenshot[i] = new vgui::CheckButton( this, VarArgs( "ChkScreenshot%d", i ), "#rd_reporting_include_this_screenshot" );
+		m_pImgScreenshot[i] = new ImagePanel( this, VarArgs( "ImgScreenshot%d", i ) );
+		m_pChkScreenshot[i] = new CheckButton( this, VarArgs( "ChkScreenshot%d", i ), "#rd_reporting_include_this_screenshot" );
 		m_pChkScreenshot[i]->AddActionSignalTarget( this );
 	}
-	m_pLblReportContents = new vgui::MultiFontRichText( this, "LblReportContents" );
+	m_pLblReportContents = new MultiFontRichText( this, "LblReportContents" );
 	m_pBtnSubmit = new CNB_Button( this, "BtnSubmit", "#rd_reporting_submit", this, "Submit" );
 }
 
@@ -144,7 +152,7 @@ ReportProblem::~ReportProblem()
 	GameUI().AllowEngineHideGameUI();
 }
 
-void ReportProblem::ApplySchemeSettings( vgui::IScheme *pScheme )
+void ReportProblem::ApplySchemeSettings( IScheme *pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
@@ -152,6 +160,8 @@ void ReportProblem::ApplySchemeSettings( vgui::IScheme *pScheme )
 	m_pLblReportContents->SetPanelInteractive( false );
 	m_pLblReportContents->SetDrawTextOnly();
 	m_pLblReportContents->SetCursor( dc_arrow );
+
+	m_pGplPlayerChoices->SetScrollBarVisible( true );
 
 	if ( g_RD_Player_Reporting.IsInProgress() )
 	{
@@ -191,6 +201,13 @@ void ReportProblem::OnCommand( const char *command )
 	{
 		ShowRecentlyPlayedWith();
 	}
+	else if ( !V_stricmp( command, "SelectPlayer" ) )
+	{
+		Assert( m_SelectedPlayer.BIndividualAccount() );
+		Assert( g_RD_Player_Reporting.HasRecentlyPlayedWith( m_SelectedPlayer ) );
+
+		StartNewReport( NULL, s_PlayerReportTypes, m_SelectedPlayer );
+	}
 	else if ( !V_stricmp( command, "GameBug" ) )
 	{
 		StartNewReport( "game_bug" );
@@ -218,6 +235,7 @@ void ReportProblem::OnCommand( const char *command )
 		}
 
 		bool bOK = g_RD_Player_Reporting.PrepareReportForSend( s_RD_Current_Report.Category, s_RD_Current_Report.Description.Get(), s_RD_Current_Report.Player, screenshots, s_RD_Current_Report.Snapshot );
+		Assert( bOK );
 		if ( bOK )
 		{
 			// Report was copied into the request buffer successfully; clear the draft report.
@@ -328,9 +346,14 @@ void ReportProblem::HideAllControls()
 
 	// player select
 	m_pHeaderFooter_Player->SetVisible( false );
+	m_pGplPlayerChoices->SetVisible( false );
+	m_pBtnSelectPlayer->SetVisible( false );
 
 	// report in progress
 	m_pHeaderFooter_Report->SetVisible( false );
+	m_pLblReportingPlayer->SetVisible( false );
+	m_pImgPlayerAvatar->SetVisible( false );
+	m_pLblPlayerName->SetVisible( false );
 	m_pSettingSubCategory->SetVisible( false );
 	m_pLblInstructions->SetVisible( false );
 	m_pTxtDescription->SetVisible( false );
@@ -376,6 +399,88 @@ void ReportProblem::ShowCategorySelectionScreen()
 	m_pBtnResume->SetVisible( s_RD_Current_Report.HasData() );
 }
 
+class ReportProblemPlayerListItem : public EditablePanel
+{
+	DECLARE_CLASS_SIMPLE( ReportProblemPlayerListItem, EditablePanel );
+public:
+	ReportProblemPlayerListItem( Panel *parent, const char *panelName ) : BaseClass{ parent, panelName }
+	{
+		m_pImgAvatar = new CAvatarImagePanel( this, "ImgAvatar" );
+		m_pLblName = new Label( this, "LblName", L"" );
+	}
+
+	void ApplySchemeSettings( IScheme *pScheme ) override
+	{
+		BaseClass::ApplySchemeSettings( pScheme );
+
+		LoadControlSettings( "Resource/UI/BaseModUI/ReportProblemPlayerListItem.res" );
+
+		m_pImgAvatar->SetMouseInputEnabled( false );
+		m_pLblName->SetMouseInputEnabled( false );
+	}
+
+	void PaintBackground() override
+	{
+		if ( assert_cast< ReportProblem * >( GetParent()->GetParent()->GetParent() )->m_SelectedPlayer == m_SteamID )
+		{
+			int x = 0;
+			int tall = GetTall() - GetTall() / 10;
+			int y = ( GetTall() - tall ) / 2;
+			int wide = GetWide();
+
+			// draw border lines
+			surface()->DrawSetColor( Color( 65, 74, 96, 255 ) );
+			surface()->DrawFilledRectFade( x, y, x + 0.5f * wide, y + 2, 0, 255, true );
+			surface()->DrawFilledRectFade( x + 0.5f * wide, y, x + wide, y + 2, 255, 0, true );
+			surface()->DrawFilledRectFade( x, y + tall - 2, x + 0.5f * wide, y + tall, 0, 255, true );
+			surface()->DrawFilledRectFade( x + 0.5f * wide, y + tall - 2, x + wide, y + tall, 255, 0, true );
+
+			int blotchWide = GetWide();
+			int blotchX = 0;
+			surface()->DrawFilledRectFade( blotchX, y, blotchX + 0.25f * blotchWide, y + tall, 0, 150, true );
+			surface()->DrawFilledRectFade( blotchX + 0.25f * blotchWide, y, blotchX + blotchWide, y + tall, 150, 0, true );
+		}
+	}
+
+	void OnSetFocus() override
+	{
+		BaseClass::OnSetFocus();
+
+		GetParent()->NavigateToChild( this );
+	}
+
+	void NavigateTo() override
+	{
+		BaseClass::NavigateTo();
+
+		ReportProblem *pReportProblem = assert_cast< ReportProblem * >( GetParent()->GetParent()->GetParent() );
+		pReportProblem->m_SelectedPlayer = m_SteamID;
+		pReportProblem->m_pBtnSelectPlayer->SetEnabled( true );
+	}
+
+	void SetSteamID( CSteamID steamID )
+	{
+		MakeReadyForUse();
+
+		m_pImgAvatar->SetAvatarBySteamID( &steamID );
+		wchar_t wszPlayerName[k_cwchPersonaNameMax + 1];
+		if ( ISteamFriends *pFriends = SteamFriends() )
+		{
+			V_UTF8ToUnicode( pFriends->GetFriendPersonaName( steamID ), wszPlayerName, sizeof( wszPlayerName ) );
+		}
+		else
+		{
+			V_snwprintf( wszPlayerName, NELEMS( wszPlayerName ), L"%llu", steamID.ConvertToUint64() );
+		}
+		m_pLblName->SetText( wszPlayerName );
+		m_SteamID = steamID;
+	}
+
+	CAvatarImagePanel *m_pImgAvatar;
+	Label *m_pLblName;
+	CSteamID m_SteamID;
+};
+
 void ReportProblem::ShowRecentlyPlayedWith()
 {
 	CUtlVector<CSteamID> players;
@@ -390,8 +495,17 @@ void ReportProblem::ShowRecentlyPlayedWith()
 	HideAllControls();
 
 	m_pHeaderFooter_Player->SetVisible( true );
+	m_pGplPlayerChoices->SetVisible( true );
+	m_pBtnSelectPlayer->SetVisible( true );
 
-	DebuggerBreakIfDebugging(); // TODO
+	m_pGplPlayerChoices->RemoveAllPanelItems();
+	FOR_EACH_VEC( players, i )
+	{
+		ReportProblemPlayerListItem *pItem = m_pGplPlayerChoices->AddPanelItem<ReportProblemPlayerListItem>( "ReportProblemPlayerListItem" );
+		pItem->SetSteamID( players[i] );
+	}
+
+	m_pBtnSelectPlayer->SetEnabled( false );
 }
 
 void ReportProblem::ResumeInProgressReport()
@@ -402,6 +516,26 @@ void ReportProblem::ResumeInProgressReport()
 	Assert( s_RD_Current_Report.Screenshots.Count() <= NELEMS( m_pImgScreenshot ) );
 
 	m_pHeaderFooter_Report->SetVisible( true );
+
+	if ( s_RD_Current_Report.Player.IsValid() )
+	{
+		Assert( s_RD_Current_Report.Player.BIndividualAccount() );
+		m_pLblReportingPlayer->SetVisible( true );
+		m_pImgPlayerAvatar->SetVisible( true );
+		m_pLblPlayerName->SetVisible( true );
+
+		m_pImgPlayerAvatar->SetAvatarBySteamID( &s_RD_Current_Report.Player );
+		wchar_t wszPlayerName[k_cwchPersonaNameMax + 1];
+		if ( ISteamFriends *pFriends = SteamFriends() )
+		{
+			V_UTF8ToUnicode( pFriends->GetFriendPersonaName( s_RD_Current_Report.Player ), wszPlayerName, sizeof( wszPlayerName ) );
+		}
+		else
+		{
+			V_snwprintf( wszPlayerName, NELEMS( wszPlayerName ), L"%llu", s_RD_Current_Report.Player.ConvertToUint64() );
+		}
+		m_pLblPlayerName->SetText( wszPlayerName );
+	}
 
 	m_pSettingSubCategory->SetVisible( true );
 	m_pSettingSubCategory->RemoveAllOptions();
@@ -421,9 +555,9 @@ void ReportProblem::ResumeInProgressReport()
 				Assert( iCurrentOption == -1 );
 				iCurrentOption = i;
 			}
-			Assert( iCurrentOption != -1 || !s_RD_Current_Report.Category );
-			m_pSettingSubCategory->SetCurrentOption( iCurrentOption );
 		}
+		Assert( iCurrentOption != -1 || !s_RD_Current_Report.Category );
+		m_pSettingSubCategory->SetCurrentOption( iCurrentOption );
 	}
 	m_pLblInstructions->SetVisible( true );
 	if ( s_RD_Current_Report.Category )
