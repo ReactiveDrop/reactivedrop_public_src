@@ -109,14 +109,20 @@ static void WriteJSONFormat( CUtlBuffer &buf, const char *szFormat, ... )
 	buf.PutString( szBuf );
 }
 
+static const char s_szHexDigits[] = "0123456789abcdef";
+
 static void WriteJSONHex( CUtlBuffer &buf, const CUtlBuffer &data )
 {
+	// V_binarytohex uses strcat, so we're doing it inline instead so it doesn't take multiple minutes to encode a jpeg.
 	int nLen = data.TellPut() - data.TellGet();
-	CUtlMemory<char> szData{ 0, nLen * 2 + 1 };
-	V_binarytohex( static_cast< const byte * >( data.PeekGet() ), nLen, szData.Base(), szData.Count() );
-
+	const byte *bytes = static_cast< const byte * >( data.PeekGet() );
+	buf.EnsureCapacity( buf.TellPut() + nLen * 2 + 2 );
 	buf.PutChar( '"' );
-	buf.PutString( szData.Base() );
+	for ( int i = 0; i < nLen; i++ )
+	{
+		buf.PutChar( s_szHexDigits[bytes[i] >> 4] );
+		buf.PutChar( s_szHexDigits[bytes[i] & 0xf] );
+	}
 	buf.PutChar( '"' );
 }
 

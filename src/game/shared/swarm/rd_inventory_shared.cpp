@@ -111,6 +111,8 @@ static void ResetAccessoryIconsOnMaterialsReleased( int nChangeFlags )
 }
 #endif
 
+static const char s_szHexDigits[] = "0123456789abcdef";
+
 static class CRD_Inventory_Manager final : public CAutoGameSystem, public CGameEventListener
 {
 public:
@@ -597,7 +599,14 @@ public:
 		char szHex[RD_EQUIPPED_ITEMS_NOTIFICATION_PAYLOAD_SIZE_PER_PACKET * 2 + 1]{};
 		for ( int i = 0; i < nLength; i += RD_EQUIPPED_ITEMS_NOTIFICATION_PAYLOAD_SIZE_PER_PACKET )
 		{
-			V_binarytohex( pData + i, MIN( nLength - i, RD_EQUIPPED_ITEMS_NOTIFICATION_PAYLOAD_SIZE_PER_PACKET ), szHex, sizeof( szHex ) );
+			int nClippedLength = MIN( nLength - i, RD_EQUIPPED_ITEMS_NOTIFICATION_PAYLOAD_SIZE_PER_PACKET );
+			// V_binarytohex is O(n^2); use an O(n) algorithm instead.
+			for ( int j = 0; j < nClippedLength; j++ )
+			{
+				szHex[j * 2] = s_szHexDigits[( pData[i + j] >> 4 ) & 0xf];
+				szHex[j * 2 + 1] = s_szHexDigits[pData[i + j] & 0xf];
+			}
+			szHex[nClippedLength * 2] = '\0';
 
 			COMPILE_TIME_ASSERT( NUM_EQUIP_SLOT_TYPES == 2 );
 			KeyValues *pKV = new KeyValues( iType == EQUIP_SLOT_TYPE_STATIC ? "EquippedItemsS" : "EquippedItemsD" );
@@ -1843,7 +1852,15 @@ public:
 			byte *pSerialized = ( byte * )stackalloc( nSerializedBufferSize );
 			pInventory->SerializeResult( hResult, pSerialized, &nSerializedBufferSize );
 			char *szSerialized = ( char * )stackalloc( nSerializedBufferSize * 2 + 1 );
-			V_binarytohex( pSerialized, nSerializedBufferSize, szSerialized, nSerializedBufferSize * 2 + 1 );
+
+			// V_binarytohex is O(n^2); use an O(n) algorithm instead.
+			for ( uint32 i = 0; i < nSerializedBufferSize; i++ )
+			{
+				szSerialized[i * 2] = s_szHexDigits[( pSerialized[i] >> 4 ) & 0xf];
+				szSerialized[i * 2 + 1] = s_szHexDigits[pSerialized[i] & 0xf];
+			}
+			szSerialized[nSerializedBufferSize * 2] = '\0';
+
 			Msg( "Serialized (%d bytes): %s\n", nSerializedBufferSize, szSerialized );
 		}
 

@@ -3077,6 +3077,8 @@ const wchar_t *ConVarUnicode::GetWString()
 	return m_wszWide;
 }
 
+static const char s_szHexDigits[] = "0123456789abcdef";
+
 void ConVarUnicode::SetValue( const char *value, bool bSetWithoutEncoding )
 {
 	// check if we're ASCII
@@ -3109,7 +3111,12 @@ void ConVarUnicode::SetValue( const char *value, bool bSetWithoutEncoding )
 	buf[0] = '$';
 	buf[1] = '0';
 	buf[2] = 'x';
-	V_binarytohex( reinterpret_cast< const byte * >( value ), len, buf + 3, len * 2 + 2 );
+	// V_binarytohex is O(n^2); use an O(n) algorithm instead.
+	for ( int i = 0; i < len; i++ )
+	{
+		buf[i * 2 + 3] = s_szHexDigits[( value[i] >> 4 ) & 0xf];
+		buf[i * 2 + 4] = s_szHexDigits[value[i] & 0xf];
+	}
 	buf[len * 2 + 3] = 'h';
 	buf[len * 2 + 4] = '\0';
 
