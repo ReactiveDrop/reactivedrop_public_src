@@ -69,7 +69,7 @@ void CMission_Complete_Message::PaintMessageBackground()
 	}
 }
 
-void CMission_Complete_Message::StartMessage( bool bSuccess )
+void CMission_Complete_Message::StartMessage( Message_t eMessage, bool bSuccess )
 {
 	m_bSuccess = bSuccess;
 
@@ -78,31 +78,43 @@ void CMission_Complete_Message::StartMessage( bool bSuccess )
 	m_flMessageBackgroundStartTime = gpGlobals->curtime + 0.4f;
 	m_flMessageBackgroundFadeDuration = 0.6f;
 
-	// MISSION
-	float flStartTime = gpGlobals->curtime + 0.2f;
-	if ( m_bSuccess && ASWGameRules() && ASWGameRules()->IsCampaignGame() && ASWGameRules()->CampaignMissionsLeft() <= 1 )
+	float flStartTime = gpGlobals->curtime;
+	switch ( eMessage )
 	{
-		AddWord( g_pVGuiLocalize->FindSafe( "#asw_mission_complete_CAMPAIGN" ), ScreenWidth() * 0.5f, ScreenHeight() * 0.35f, flStartTime, 0.075f );
-	}
-	else
-	{
+	case MISSION_COMPLETE:
 		AddWord( g_pVGuiLocalize->FindSafe( "#asw_mission_complete_MISSION" ), ScreenWidth() * 0.5f, ScreenHeight() * 0.35f, flStartTime, 0.075f );
-	}
-
-	flStartTime += 0.2f;
-
-	if ( m_bSuccess )
-	{
 		AddWord( g_pVGuiLocalize->FindSafe( "#asw_mission_complete_COMPLETE" ), ScreenWidth() * 0.5f, ScreenHeight() * 0.5f, flStartTime, 0.075f );
-	}
-	else
-	{
+		break;
+	case MISSION_FAILED:
+		AddWord( g_pVGuiLocalize->FindSafe( "#asw_mission_complete_MISSION" ), ScreenWidth() * 0.5f, ScreenHeight() * 0.35f, flStartTime, 0.075f );
 		AddWord( g_pVGuiLocalize->FindSafe( "#asw_mission_complete_FAILED" ), ScreenWidth() * 0.5f, ScreenHeight() * 0.5f, flStartTime, 0.075f );
+		break;
+	case CAMPAIGN_COMPLETE:
+		AddWord( g_pVGuiLocalize->FindSafe( "#asw_mission_complete_CAMPAIGN" ), ScreenWidth() * 0.5f, ScreenHeight() * 0.35f, flStartTime, 0.075f );
+		AddWord( g_pVGuiLocalize->FindSafe( "#asw_mission_complete_COMPLETE" ), ScreenWidth() * 0.5f, ScreenHeight() * 0.5f, flStartTime, 0.075f );
+		break;
+	case SKIRMISH_COMPLETE:
+		AddWord( g_pVGuiLocalize->FindSafe( "#asw_mission_complete_SKIRMISH" ), ScreenWidth() * 0.5f, ScreenHeight() * 0.35f, flStartTime, 0.075f );
+		AddWord( g_pVGuiLocalize->FindSafe( "#asw_mission_complete_COMPLETE" ), ScreenWidth() * 0.5f, ScreenHeight() * 0.5f, flStartTime, 0.075f );
+		break;
+	case MARINES_WIN:
+		AddWord( g_pVGuiLocalize->FindSafe( "#asw_mission_complete_MARINES" ), ScreenWidth() * 0.5f, ScreenHeight() * 0.35f, flStartTime, 0.075f );
+		AddWord( g_pVGuiLocalize->FindSafe( "#asw_mission_complete_WIN" ), ScreenWidth() * 0.5f, ScreenHeight() * 0.5f, flStartTime, 0.075f );
+		break;
+	case ALIENS_WIN:
+		AddWord( g_pVGuiLocalize->FindSafe( "#asw_mission_complete_BUG" ), ScreenWidth() * 0.5f, ScreenHeight() * 0.35f, flStartTime, 0.075f );
+		AddWord( g_pVGuiLocalize->FindSafe( "#asw_mission_complete_WINS" ), ScreenWidth() * 0.5f, ScreenHeight() * 0.5f, flStartTime, 0.075f );
+		break;
+	default:
+		Assert( 0 );
+		break;
 	}
 }
 
 void CMission_Complete_Message::AddWord( const wchar_t *wszWord, int row_middle_x, int row_middle_y, float &flStartTime, float flLetterTimeInterval )
 {
+	flStartTime += 0.2f;
+
 	float flTotalWidth = 0;
 	for ( const wchar_t *pLetter = wszWord; *pLetter; pLetter++ )
 	{

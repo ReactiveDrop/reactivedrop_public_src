@@ -219,8 +219,26 @@ void MissionCompletePanel::ShowImageAndPlaySound()
 	{
 		m_pResultImage->MarkForDeletion();
 	}
+
+	CMission_Complete_Message::Message_t eMessage = CMission_Complete_Message::MISSION_FAILED;
+	if ( m_bSuccess )
+	{
+		eMessage = CMission_Complete_Message::MISSION_COMPLETE;
+
+		if ( pGameRules && pGameRules->IsCampaignGame() && pGameRules->CampaignMissionsLeft() <= 1 )
+		{
+			eMessage = CMission_Complete_Message::CAMPAIGN_COMPLETE;
+		}
+#if 0
+		else if ( ASWDeathmatchMode() )
+		{
+			eMessage = CMission_Complete_Message::SKIRMISH_COMPLETE;
+		}
+#endif
+	}
+
 	m_pResultImage = new CMission_Complete_Message( this, "MissionCompleteMessage" );
-	m_pResultImage->StartMessage( m_bSuccess );
+	m_pResultImage->StartMessage( eMessage, m_bSuccess );
 
 	m_pResultImage->SetMouseInputEnabled( false );
 

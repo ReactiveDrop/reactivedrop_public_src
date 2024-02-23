@@ -32,12 +32,24 @@ public:
 	virtual void PerformLayout();
 	virtual void Paint();
 
+	enum Message_t
+	{
+		MISSION_COMPLETE,
+		MISSION_FAILED,
+		CAMPAIGN_COMPLETE,
+		SKIRMISH_COMPLETE,
+		MARINES_WIN,
+		ALIENS_WIN,
+	};
+
 	void PaintMessageBackground();
-	void StartMessage( bool bSuccess );
+	void StartMessage( Message_t eMessage, bool bSuccess );
 	void AddWord( const wchar_t *wszWord, int row_middle_x, int row_middle_y, float & flStartTime, float flLetterTimeInterval );
 	void AddLetter( wchar_t letter, int x, int y, float letter_offset, float flStartTime );
 	void PaintLetters();
 	void PaintLetter( CAnimating_Letter *pLetter, bool bGlow );
+
+	Message_t m_eMessage;
 	bool m_bSuccess;
 	float m_flMessageBackgroundStartTime;
 	float m_flMessageBackgroundFadeDuration;
