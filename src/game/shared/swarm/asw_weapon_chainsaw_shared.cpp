@@ -674,6 +674,11 @@ void CASW_Weapon_Chainsaw::StopChainsawSound( bool bForce /*= false*/ )
 
 void CASW_Weapon_Chainsaw::StartAttackOffSound()
 {
+	if ( !rd_chainsaw_idle_sound.GetBool() )
+	{
+		return;
+	}
+
 	float flCurPitch = 100;
 	
 	if ( m_pChainsawAttackSound )
