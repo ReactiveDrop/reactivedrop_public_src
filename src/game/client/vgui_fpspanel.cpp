@@ -258,7 +258,7 @@ void CFPSPanel::Paint()
 			g_pMatSystemSurface->DrawColoredText(
 				m_hFont, x, 42,
 				ucColor[0], ucColor[1], ucColor[2],
-				255, "Particle Performance Metric : %d", (nPerf+50)/100 );
+				255, "#vgui_fpspanel_particle_fps", (nPerf+50)/100 );
 		}
 	}
 	float realFrameTime = gpGlobals->realtime - m_lastRealTime;
@@ -292,7 +292,7 @@ void CFPSPanel::Paint()
 		int nFps = static_cast<int>( 1.0f / ( flServerTime * 0.001f ) );
 		GetFPSColor( nFps, ucColor );
 		g_pMatSystemSurface->DrawColoredText( m_hFont, x, 2, ucColor[0], ucColor[1], ucColor[2], 255, 
-			"server %5.1f ms curr, %5.1f ave, %5.1f peak", flServerTime, flTotalTime, flPeakTime );
+			"#vgui_fpspanel_fpscounter_3", flServerTime, flTotalTime, flPeakTime );
 	}
 	else if ( nFPSMode == 4 && m_lastRealTime > 0.0f && realFrameTime > 0.0f && engine->IsInGame() )
 	{
@@ -339,7 +339,7 @@ void CFPSPanel::Paint()
 		unsigned char ucColor[3];
 		GetFPSColor( nAvgFps, ucColor );
 		g_pMatSystemSurface->DrawColoredText( m_hFont, x, 2, ucColor[0], ucColor[1], ucColor[2], 255, 
-			"Avg FPS %3i, Frame MS %5.1f, Frame Server MS %5.1f", nAvgFps, flFrameMS, flServerTime );
+			"#vgui_fpspanel_fpscounter_4", nAvgFps, flFrameMS, flServerTime );
 
 		if ( m_fhLog == FILESYSTEM_INVALID_HANDLE )
 		{
@@ -419,7 +419,7 @@ void CFPSPanel::Paint()
 				float averageMS = 1000.0f / m_AverageFPS;
 				float frameMS = realFrameTime * 1000.0f;
 				GetFPSColor( nFps, ucColor );
-				g_pMatSystemSurface->DrawColoredText( m_hFont, x, 2, ucColor[0], ucColor[1], ucColor[2], 255, "%3i fps (%3i, %3i) smth:%4.1f ms frm:%4.1f ms on %s", nFps, m_low, m_high, averageMS, frameMS, engine->GetLevelName() );
+				g_pMatSystemSurface->DrawColoredText( m_hFont, x, 2, ucColor[0], ucColor[1], ucColor[2], 255, "#vgui_fpspanel_fpscounter_2", nFps, m_low, m_high, averageMS, frameMS, engine->GetLevelName() );
 			}
 			else
 			{
@@ -433,7 +433,7 @@ void CFPSPanel::Paint()
 				}
 				nFps = static_cast<int>( flFps );
 				GetFPSColor( nFps, ucColor );
-				g_pMatSystemSurface->DrawColoredText( m_hFont, x, 2, ucColor[0], ucColor[1], ucColor[2], 255, "%3i fps on %s", nFps, engine->GetLevelName() );
+				g_pMatSystemSurface->DrawColoredText( m_hFont, x, 2, ucColor[0], ucColor[1], ucColor[2], 255, "#vgui_fpspanel_fpscounter_1", nFps, engine->GetLevelName() );
 			}
 		}
 	}
@@ -494,25 +494,25 @@ void CFPSPanel::Paint()
 
 			g_pMatSystemSurface->DrawColoredText( m_hFont, x, 2 + i * lineHeight, 
 													255, 255, 255, 255, 
-													"name: %s", szName );
+													"#vgui_fpspanel_position_playername", szName );
 
 			i++;
 
 			g_pMatSystemSurface->DrawColoredText( m_hFont, x, 2+ i * lineHeight, 
 												  255, 255, 255, 255, 
-												  "pos:  %.02f %.02f %.02f", 
+												  "#vgui_fpspanel_position_currentposition", 
 												  vecOrigin.x, vecOrigin.y, vecOrigin.z );
 			i++;
 
 			g_pMatSystemSurface->DrawColoredText( m_hFont, x, 2 + i * lineHeight, 
 												  255, 255, 255, 255, 
-												  "ang:  %.02f %.02f %.02f", 
+												  "#vgui_fpspanel_position_angle", 
 												  angles.x, angles.y, angles.z );
 			i++;
 
 			g_pMatSystemSurface->DrawColoredText( m_hFont, x, 2 + i * lineHeight, 
 												  255, 255, 255, 255, 
-												  "vel:  %.2f", 
+												  "#vgui_fpspanel_position_velocity", 
 												  vel.Length() );
 		}
 	}
@@ -936,7 +936,7 @@ void  CBlockingFileIOPanel::DrawIOTime( int x, int y, int w, int h, int slot, ch
 	{
 		bDrawHistorySpike = true;
 		g_pMatSystemSurface->DrawColoredText( m_hFont, x + w + 5, y + 1, 
-											  255, 255, 255, 200, "[%8.3f ms]", m_History[ slot ].m_flHistorySpike * 1000.0f );
+											  255, 255, 255, 200, "#vgui_fpspanel_blocking_history", m_History[ slot ].m_flHistorySpike * 1000.0f );
 		g_pMatSystemSurface->DrawColoredText( m_hFont, x, y + h + 1, 
 											  255, 255, 255, 200, "%s", m_History[ slot ].m_LastFile.String() );
 	}
