@@ -383,7 +383,7 @@
 		"pin_corner_to_sibling"	"0"
 		"pin_to_sibling_corner"	"2"
 		"ResourceFile"		"resource/ui/option_setting_slider.res"
-		"displayMultiplier"	"0.0009765625"
+		"displayMultiplier"	"0.0078125"
 		"navLeft"			"SettingLeaderboardDebrief"
 		"navRight"			"SettingNetworkRate"
 		"navUp"				"SettingNetworkInterpolation"
