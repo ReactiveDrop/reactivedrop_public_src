@@ -417,22 +417,22 @@
 		"command"			"OpenServerBrowser"
 		"enabledImage"
 		{
-			"material"		"vgui/swarm/community_server_icon"
+			"material"		"vgui/swarm/community_servers_icon"
 			"color"			"255 255 255 64"
 		}
 		"mouseOverImage"
 		{
-			"material"		"vgui/swarm/community_server_icon"
+			"material"		"vgui/swarm/community_servers_icon"
 			"color"			"83 148 192 255"
 		}
 		"pressedImage"
 		{
-			"material"		"vgui/swarm/community_server_icon"
+			"material"		"vgui/swarm/community_servers_icon"
 			"color"			"169 213 255 255"
 		}
 		"disabledImage"
 		{
-			"material"		"vgui/swarm/community_server_icon"
+			"material"		"vgui/swarm/community_servers_icon"
 			"color"			"64 64 64 64"
 		}
 	}
