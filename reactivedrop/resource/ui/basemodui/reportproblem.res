@@ -522,6 +522,8 @@
 		"ypos"				"140"
 		"wide"				"500"
 		"tall"				"150"
+		"unicode"			"1"
+		"maxchars"			"8000"
 	}
 
 	"ImgScreenshot0"
