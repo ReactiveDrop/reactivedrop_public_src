@@ -139,7 +139,7 @@ void CASW_Weapon_Flamer::ClientThink()
 {
 	BaseClass::ClientThink();
 
-	if ( m_bIsFiring )
+	if ( m_bIsFiring && m_iClip1 != 0 )
 	{
 		if( !pEffect )
 		{
