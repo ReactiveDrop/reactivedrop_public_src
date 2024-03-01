@@ -78,6 +78,8 @@ void CBitmapButton::ApplySettings(KeyValues *pInitData)
 	{
 		SetImageBounds( YRES( pInitData->GetInt( "icon_xpos" ) ), YRES( pInitData->GetInt( "icon_ypos" ) ), YRES( pInitData->GetInt( "icon_wide", GetWide() ) ), YRES( pInitData->GetInt( "icon_tall", GetTall() ) ) );
 	}
+
+	m_bFocusOnNavigateTo = pInitData->GetBool( "auto_focus", m_bFocusOnNavigateTo );
 }
 
 

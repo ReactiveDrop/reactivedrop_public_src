@@ -413,6 +413,7 @@
 		"navRight"			"BtnHoIAFTimer"
 		"navUp"				"CommanderMiniProfile"
 		"navDown"			"BtnSingleplayer"
+		"auto_focus"		"1"
 		"command"			"OpenServerBrowser"
 		"enabledImage"
 		{
