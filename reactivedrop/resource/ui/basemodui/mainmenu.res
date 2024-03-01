@@ -56,7 +56,7 @@
 		"wide"					"145"
 		"tall"					"30"
 		"tabPosition"			"1"
-		"navRight"				"BtnHoIAFTimer"
+		"navRight"				"BtnServerBrowser"
 		"navUp"					"CommanderMiniProfile"
 		"navDown"				"BtnSingleplayer"
 		"labelText"				"#L4D360UI_FoudGames_CreateNew_campaign"
@@ -386,5 +386,53 @@
 		"fieldName"			"StockTickerHelper"
 		"visible"			"1"
 		"enabled"			"1"
+	}
+
+	"PnlServerBrowserSpacer"
+	{
+		"ControlName"		"Panel"
+		"fieldName"			"PnlServerBrowserSpacer"
+		"pin_to_sibling"	"BtnMultiplayer"
+		"pin_corner_to_sibling"	"0"
+		"pin_to_sibling_corner"	"1"
+		"wide"					"5"
+		"tall"					"0"
+	}
+
+	"BtnServerBrowser"
+	{
+		"ControlName"		"CBitmapButton"
+		"fieldName"			"BtnServerBrowser"
+		"pin_to_sibling"	"PnlServerBrowserSpacer"
+		"pin_corner_to_sibling"	"0"
+		"pin_to_sibling_corner"	"1"
+		"wide"				"30"
+		"tall"				"30"
+		"labelText"			" "
+		"navLeft"			"BtnMultiplayer"
+		"navRight"			"BtnHoIAFTimer"
+		"navUp"				"CommanderMiniProfile"
+		"navDown"			"BtnSingleplayer"
+		"command"			"OpenServerBrowser"
+		"enabledImage"
+		{
+			"material"		"vgui/swarm/community_server_icon"
+			"color"			"255 255 255 64"
+		}
+		"mouseOverImage"
+		{
+			"material"		"vgui/swarm/community_server_icon"
+			"color"			"83 148 192 255"
+		}
+		"pressedImage"
+		{
+			"material"		"vgui/swarm/community_server_icon"
+			"color"			"169 213 255 255"
+		}
+		"disabledImage"
+		{
+			"material"		"vgui/swarm/community_server_icon"
+			"color"			"64 64 64 64"
+		}
 	}
 }
