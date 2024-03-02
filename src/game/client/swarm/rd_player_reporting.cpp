@@ -29,7 +29,7 @@ using namespace BaseModUI;
 //
 // player_cheating - reporting a player for cheating
 // player_abusive_gameplay - reporting a player for griefing
-// player_abusive_communication - repoting a player for being abusive in text or voice chat or with another in-game communication tool
+// player_abusive_communication - reporting a player for being abusive in text or voice chat or with another in-game communication tool
 // player_commend - reporting a player for doing something good
 //
 // server_technical - reporting a technical problem with a server
@@ -424,7 +424,7 @@ bool CRD_Player_Reporting::PrepareReportForSend( const char *szCategory, const c
 	WriteJSONRaw( m_Buffer, ":{" );
 	if ( reportedPlayer.IsValid() )
 	{
-		WriteJSONString( m_Buffer, "steam64" );
+		WriteJSONString( m_Buffer, "steamid64" );
 		WriteJSONFormat( m_Buffer, ":\"%llu\"", reportedPlayer.ConvertToUint64() );
 	}
 	WriteJSONRaw( m_Buffer, "}," );
