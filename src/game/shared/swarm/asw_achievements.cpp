@@ -1154,7 +1154,7 @@ class CAchievement_Hardcore : public CASW_Achievement
 			{
 				if ( !Q_stricmp( szMapName, g_szAchievementMapNamesNoHardcore[i] ) )
 				{
-					break;
+					return;
 				}
 			}
 			for ( int i = 0; i < NELEMS( g_szAchievementMapNamesAllCoop ); i++ )
