@@ -277,8 +277,13 @@ void ReportProblem::OnThink()
 void ReportProblem::OnTextChanged()
 {
 	int buflen = m_pTxtDescription->GetTextLength() + 1;
-	s_RD_Current_Report.Description.SetLength( buflen - 1 );
-	m_pTxtDescription->GetText( s_RD_Current_Report.Description.Get(), buflen );
+	// worst case single character = U+FFFF / FFFF -> EF BF BF
+	// worst case surrogate pair = U+10FFFF / DBFF DFFF -> F3 CF BF BF
+	// so we need a maximum of 3 UTF-8 bytes per wchar_t.
+	// we don't know the length in UTF-8 until we've converted the string.
+	CUtlMemory<char> szBuf{ 0, buflen * 3 };
+	m_pTxtDescription->GetText( szBuf.Base(), szBuf.Count() );
+	s_RD_Current_Report.Description = szBuf.Base();
 
 	UpdateReportContents();
 
