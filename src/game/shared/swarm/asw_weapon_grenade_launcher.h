@@ -51,6 +51,7 @@ public:
 
 		int		CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
 	#else
+		bool Simulate() override;
 		virtual const char *GetPartialReloadSound( int iPart );
 	#endif
 

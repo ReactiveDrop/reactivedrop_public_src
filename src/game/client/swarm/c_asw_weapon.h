@@ -218,6 +218,7 @@ public:
 	virtual bool ShouldShowLaserPointer();
 	virtual bool ShouldAlignWeaponToLaserPointer();
 	virtual bool ShouldDimLaserPointer();
+	virtual bool IsFriendlyFireTarget( C_BaseEntity *pEnt );
 	virtual const char *GetLaserPointerEffectName() const { return "weapon_laser_sight"; }
 	void SimulateLaserPointer();
 	void CreateLaserPointerEffect( bool bIsViewMarine, int iAttachment );

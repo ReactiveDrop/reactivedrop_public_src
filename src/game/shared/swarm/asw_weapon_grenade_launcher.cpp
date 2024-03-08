@@ -176,6 +176,46 @@ void CASW_Weapon_Grenade_Launcher::ItemPostFrame( void )
 	Preview();
 }
 
+#ifdef CLIENT_DLL
+bool CASW_Weapon_Grenade_Launcher::Simulate()
+{
+	bool bContinue = BaseClass::Simulate();
+
+	C_ASW_Marine *pMarine = GetMarine();
+	C_ASW_Marine *pViewMarine = C_ASW_Marine::GetViewMarine();
+	if ( pMarine && pMarine == pViewMarine && pMarine->GetActiveASWWeapon() == this )
+	{
+		// We don't care if the grenade launcher is pointing at a marine if the grenade isn't going to land anywhere near them.
+		SetLaserTargetEntity( NULL );
+
+		Vector vecSrc;
+		Vector vecLaunch = IdealLaunchVelocity( vecSrc );
+		Vector vecDest = UTIL_Check_Throw( vecSrc, vecLaunch, asw_grenade_launcher_gravity.GetFloat(), Vector( -4, -4, -4 ), Vector( 4, 4, 4 ), MASK_SOLID, ASW_COLLISION_GROUP_GRENADES, pMarine );
+
+		// We don't have access to the value of asw_marine_explosion_protection on the client.
+		const float flMarineExplosionProtection = 0.5f;
+		// ...or rd_radial_damage_no_falloff_distance
+		const float flNoFalloffDistance = 16;
+		float flDamage = GetWeaponDamage();
+		float flRadius = MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_RADIUS );
+		float flFriendlyFireRadius = flRadius * flMarineExplosionProtection;
+		float flOneHitpointRadius = ( flFriendlyFireRadius - flNoFalloffDistance ) / flDamage;
+		float flRadiusSquared = Square( flFriendlyFireRadius - flOneHitpointRadius );
+		C_BaseEntity *pEnt = NULL;
+		for ( CEntitySphereQuery sphere( vecDest, flFriendlyFireRadius - flOneHitpointRadius ); ( pEnt = sphere.GetCurrentEntity() ) != NULL; sphere.NextEntity() )
+		{
+			if ( pEnt->WorldSpaceCenter().DistToSqr( vecDest ) < flRadiusSquared && IsFriendlyFireTarget( pEnt ) )
+			{
+				SetLaserTargetEntity( pEnt );
+				break;
+			}
+		}
+	}
+
+	return bContinue;
+}
+#endif
+
 Vector CASW_Weapon_Grenade_Launcher::IdealLaunchVelocity( Vector &vecSrc )
 {
 	CBaseCombatCharacter *pOwner = GetOwner();

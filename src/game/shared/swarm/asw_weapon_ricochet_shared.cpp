@@ -285,8 +285,10 @@ void CASW_Weapon_Ricochet::UpdateBounceLaser()
 			UTIL_TraceLine( vecSrc, vecSrc + vecDir * flRemainingDist, MASK_SHOT, NULL, COLLISION_GROUP_NONE, &tr );
 
 			// If we're going to hit a marine after a bounce, make sure the base laser pointer code knows that.
-			if ( tr.m_pEnt && tr.m_pEnt->Classify() == CLASS_ASW_MARINE )
-				m_hLaserTargetEntity = tr.m_pEnt;
+			if ( IsFriendlyFireTarget( tr.m_pEnt ) )
+			{
+				SetLaserTargetEntity( tr.m_pEnt );
+			}
 		}
 
 		m_pLaserPointerEffect->SetControlPoint( i + 10, vecSrc );

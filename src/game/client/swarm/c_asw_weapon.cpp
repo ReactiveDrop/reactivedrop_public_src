@@ -912,6 +912,27 @@ bool C_ASW_Weapon::ShouldDimLaserPointer()
 	return IsFiring();
 }
 
+bool C_ASW_Weapon::IsFriendlyFireTarget( C_BaseEntity *pEnt )
+{
+	if ( !pEnt )
+	{
+		return false;
+	}
+
+	C_ASW_Marine *pMarine = GetMarine();
+	if ( pEnt->Classify() == CLASS_ASW_MARINE && ( !ASWDeathmatchMode() || ( ASWDeathmatchMode()->IsTeamDeathmatchEnabled() && pMarine && pEnt->GetTeamNumber() == pMarine->GetTeamNumber() ) ) )
+	{
+		return true;
+	}
+
+	if ( pEnt->Classify() == CLASS_ASW_COLONIST && !assert_cast< C_ASW_Colonist * >( pEnt )->IsAimTarget() )
+	{
+		return true;
+	}
+
+	return false;
+}
+
 //--------------------------------------------------------------------------------------------------------
 void C_ASW_Weapon::SimulateLaserPointer()
 {
@@ -991,10 +1012,10 @@ void C_ASW_Weapon::SimulateLaserPointer()
 	else if ( IsOffensiveWeapon() )
 	{
 		C_BaseEntity *pEnt = GetLaserTargetEntity();
-		if ( pEnt && pEnt->Classify() == CLASS_ASW_MARINE && ( !ASWDeathmatchMode() || ( ASWDeathmatchMode()->IsTeamDeathmatchEnabled() && pEnt->GetTeamNumber() == pMarine->GetTeamNumber() ) ) )
+		if ( IsFriendlyFireTarget( pEnt ) )
+		{
 			alphaFF = 0.65f;
-		if ( pEnt && pEnt->Classify() == CLASS_ASW_COLONIST && !assert_cast< C_ASW_Colonist * >( pEnt )->IsAimTarget() )
-			alphaFF = 0.65f;
+		}
 	}
 
 	if ( IsReloading() || pMarine->GetCurrentMeleeAttack() || m_bSwitchingWeapons
