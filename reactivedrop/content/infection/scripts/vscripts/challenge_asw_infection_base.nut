@@ -576,8 +576,11 @@ function Update()
 			}
 			else
 			{
-				hMarine.BecomeInfested();
-				hMarine.TakeDamage(hMarine.GetMaxHealth()*0.005, 33554432, null);
+				if (g_matchTimer > 0)
+				{
+					hMarine.BecomeInfested();
+					hMarine.TakeDamage(hMarine.GetMaxHealth()*0.005, 33554432, null);
+				}
 			}
 		}
 	}
