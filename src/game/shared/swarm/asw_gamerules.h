@@ -141,9 +141,9 @@ public:
 	virtual void			EnforceMaxMarines();
 
 	// loadout/equip
-	virtual void			LoadoutSelect( CASW_Marine_Resource *pMR, int iInvSlot, int iEquipIndex, int iDynamicIndex );
+	virtual void			LoadoutSelect( CASW_Marine_Resource *pMR, int iInvSlot, int iEquipIndex );
 	virtual bool			CanHaveAmmo( CBaseCombatCharacter *pPlayer, int iAmmoIndex );
-	void GiveStartingWeaponToMarine( CASW_Marine *pMarine, int iEquipIndex, int iSlot, int iDynamicItemSlot );	// gives the specified marine the specified starting gun and default ammo
+	void GiveStartingWeaponToMarine( CASW_Marine *pMarine, int iEquipIndex, int iSlot );	// gives the specified marine the specified starting gun and default ammo
 	void AddBonusChargesToPickups();
 	
 	// spawning/connecting

@@ -1,6 +1,7 @@
 #include "cbase.h"
 #include "asw_weapon.h"
 #include "asw_marine.h"
+#include "asw_marine_resource.h"
 #include "asw_player.h"
 #include "asw_marine_skills.h"
 #include "asw_marine_profile.h"
@@ -56,8 +57,8 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Weapon, DT_ASW_Weapon )
 	SendPropIntWithMinusOneFlag( SENDINFO( m_iClip1 ), 8 ),
 	SendPropInt( SENDINFO( m_iPrimaryAmmoType ), 8 ),
 	SendPropBool( SENDINFO( m_bIsTemporaryPickup ) ),
-	SendPropEHandle( SENDINFO( m_hOriginalOwnerPlayer ) ),
-	SendPropIntWithMinusOneFlag( SENDINFO( m_iInventoryEquipSlot ), NumBitsForCount( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC + 1 ) ),
+	SendPropEHandle( SENDINFO( m_hOriginalOwnerMR ) ),
+	SendPropInt( SENDINFO( m_iInventoryEquipSlot ), 2, SPROP_UNSIGNED ),
 END_SEND_TABLE()
 
 //---------------------------------------------------------
@@ -106,8 +107,8 @@ CASW_Weapon::CASW_Weapon()
 
 	m_bPoweredUp = false;
 	m_bIsTemporaryPickup = false;
-	m_hOriginalOwnerPlayer = NULL;
-	m_iInventoryEquipSlot = -1;
+	m_hOriginalOwnerMR = NULL;
+	m_iInventoryEquipSlot = 0;
 }
 
 

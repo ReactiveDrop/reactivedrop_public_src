@@ -43,10 +43,6 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_Game_Resource, DT_ASW_Game_Resource, CASW_Game_R
 	RecvPropFloat( RECVINFO( m_fMapGenerationProgress ) ),
 	RecvPropString( RECVINFO( m_szMapGenerationStatus ) ),
 	RecvPropInt( RECVINFO( m_iRandomMapSeed ) ),
-
-#ifdef RD_7A_DROPS
-	RecvPropDataTable( RECVINFO_DT( m_CraftingMaterialInfo ), 0, &REFERENCE_RECV_TABLE( DT_RD_CraftingMaterialInfo ) ),
-#endif
 END_RECV_TABLE()
 
 C_ASW_Game_Resource *g_pASWGameResource = NULL;
@@ -177,20 +173,3 @@ void C_ASW_Game_Resource::CMarineToCrosshairInfo::RecomputeCache()
 	m_iLastFrameCached = gpGlobals->framecount;
 }
 #pragma warning(pop)
-
-#ifdef RD_7A_DROPS
-BEGIN_RECV_TABLE_NOBASE( C_RD_CraftingMaterialInfo, DT_RD_CraftingMaterialInfo )
-	RecvPropInt( RECVINFO( m_nSpawnLocations ) ),
-	RecvPropArray( RecvPropVector( RECVINFO( m_SpawnLocationOrigins[0] ) ), m_SpawnLocationOrigins ),
-END_RECV_TABLE()
-
-C_RD_CraftingMaterialInfo::C_RD_CraftingMaterialInfo()
-{
-	m_nSpawnLocations.Set( 0 );
-
-	for ( int i = 0; i < RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS; i++ )
-	{
-		m_SpawnLocationOrigins.Set( 0, vec3_origin );
-	}
-}
-#endif

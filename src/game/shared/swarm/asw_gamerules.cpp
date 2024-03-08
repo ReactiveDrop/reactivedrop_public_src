@@ -2264,7 +2264,7 @@ CASW_Marine_Resource *CAlienSwarm::RosterSelect( CASW_Player *pPlayer, int iProf
 	CASW_Marine_Resource *pMR = ( CASW_Marine_Resource * )CreateEntityByName( "asw_marine_resource" );
 	pMR->SetCommander( pPlayer );
 	COMPILE_TIME_ASSERT( ASW_NUM_MARINE_PROFILES == ASW_NUM_MARINES_PER_LOADOUT ); // TODO
-	pMR->SetProfileIndex( iProfileIndex, iProfileIndex );
+	pMR->SetProfileIndex( iProfileIndex );
 	if ( bForceInhabited )
 	{
 		pMR->SetInhabited( true );
@@ -2562,7 +2562,7 @@ void CAlienSwarm::ReviveDeadMarines()
 	}	
 }
 
-void CAlienSwarm::LoadoutSelect( CASW_Marine_Resource *pMR, int iInvSlot, int iEquipIndex, int iDynamicIndex )
+void CAlienSwarm::LoadoutSelect( CASW_Marine_Resource *pMR, int iInvSlot, int iEquipIndex )
 {
 	Assert( pMR );
 	if ( !pMR )
@@ -2576,12 +2576,12 @@ void CAlienSwarm::LoadoutSelect( CASW_Marine_Resource *pMR, int iInvSlot, int iE
 	if ( iChangedEquipIndex != iEquipIndex )
 	{
 		iEquipIndex = iChangedEquipIndex;
-		iDynamicIndex = -1;
 	}
 
 	// Figure out what item the marine is trying to equip
 	CASW_EquipItem *pNewItem = g_ASWEquipmentList.GetItemForSlot( iInvSlot, iEquipIndex );
-	if ( !pNewItem || ( !pNewItem->m_bSelectableInBriefing && !rd_weapons_show_hidden.GetBool() && iDynamicIndex == -1 ) )
+	// TODO: defer checking for selectable in briefing or split the field to support new weapons that are inventory-only.
+	if ( !pNewItem || ( !pNewItem->m_bSelectableInBriefing && !rd_weapons_show_hidden.GetBool() ) )
 		return;
 
 	// Figure out if the marine is already carrying an item in the slot
@@ -2593,7 +2593,6 @@ void CAlienSwarm::LoadoutSelect( CASW_Marine_Resource *pMR, int iInvSlot, int iE
 		return;
 
 	pMR->m_iWeaponsInSlots.Set( iInvSlot, iEquipIndex );
-	pMR->m_iWeaponsInSlotsDynamic.Set( iInvSlot, iDynamicIndex );
 
 	if ( ASWDeathmatchMode() )
 	{
@@ -2712,13 +2711,13 @@ void CAlienSwarm::StartMission()
 			if ( CASW_Marine_Resource *pMR = RosterSelect( pLeader, i, -1 ) )
 			{
 				if ( ASW_MARINE_PROFILE_SARGE == i )
-					LoadoutSelect( pMR, ASW_INVENTORY_SLOT_EXTRA, ASW_EQUIP_MINES, -1 );
+					LoadoutSelect( pMR, ASW_INVENTORY_SLOT_EXTRA, ASW_EQUIP_MINES );
 				if ( ASW_MARINE_PROFILE_WILDCAT == i )
-					LoadoutSelect( pMR, ASW_INVENTORY_SLOT_EXTRA, ASW_EQUIP_HORNET_BARRAGE, -1 );
+					LoadoutSelect( pMR, ASW_INVENTORY_SLOT_EXTRA, ASW_EQUIP_HORNET_BARRAGE );
 				if ( ASW_MARINE_PROFILE_FAITH == i )
-					LoadoutSelect( pMR, ASW_INVENTORY_SLOT_EXTRA, ASW_EQUIP_FREEZE_GRENADES, -1 );
+					LoadoutSelect( pMR, ASW_INVENTORY_SLOT_EXTRA, ASW_EQUIP_FREEZE_GRENADES );
 				if ( ASW_MARINE_PROFILE_CRASH == i )
-					LoadoutSelect( pMR, ASW_INVENTORY_SLOT_EXTRA, ASW_EQUIP_ELECTRIFIED_ARMOR, -1 );
+					LoadoutSelect( pMR, ASW_INVENTORY_SLOT_EXTRA, ASW_EQUIP_ELECTRIFIED_ARMOR );
 			}
 		}
 		// end of riflemod code
@@ -3605,7 +3604,7 @@ bool CAlienSwarm::SpawnMarineAt( CASW_Marine_Resource * RESTRICT pMR, const Vect
 	{
 		// give the pMarine the equipment selected on the briefing screen
 		for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++ iWpnSlot )
-			GiveStartingWeaponToMarine( pMarine, pMR->m_iInitialWeaponsInSlots[ iWpnSlot ], iWpnSlot, pMR->m_iWeaponsInSlotsDynamic.Get( iWpnSlot ) );
+			GiveStartingWeaponToMarine( pMarine, pMR->m_iInitialWeaponsInSlots[ iWpnSlot ], iWpnSlot );
 	}
 	else
 	{
@@ -3614,7 +3613,7 @@ bool CAlienSwarm::SpawnMarineAt( CASW_Marine_Resource * RESTRICT pMR, const Vect
 			if ( ASWDeathmatchMode()->IsGunGameEnabled() )
 			{
 				int weapon_id = ASWDeathmatchMode()->GetWeaponIndexByFragsCount( ASWDeathmatchMode()->GetFragCount( pMR ) );
-				GiveStartingWeaponToMarine( pMarine, weapon_id , 0, -1 );
+				GiveStartingWeaponToMarine( pMarine, weapon_id , 0 );
 			}
 			else if ( ASWDeathmatchMode()->IsTeamDeathmatchEnabled() ||
 				( rd_deathmatch_loadout_allowed.GetBool() &&
@@ -3629,18 +3628,18 @@ bool CAlienSwarm::SpawnMarineAt( CASW_Marine_Resource * RESTRICT pMR, const Vect
 						Warning( "When spawning marine the weapon_index is -1 \n" );
 						weapon_index = pMR->m_iWeaponsInSlots.Get( iWpnSlot );
 					}
-					GiveStartingWeaponToMarine( pMarine, weapon_index, iWpnSlot, pMR->m_iWeaponsInSlotsDynamic.Get( iWpnSlot ) );
+					GiveStartingWeaponToMarine( pMarine, weapon_index, iWpnSlot );
 				}
 			}
 			else
 			{
 				// give the pistols only in deathmatch, railgun in InstaGib
-				GiveStartingWeaponToMarine( pMarine, rd_default_weapon.GetInt(), 0, -1 );
+				GiveStartingWeaponToMarine( pMarine, rd_default_weapon.GetInt(), 0 );
 				// give a heal gun for medic by default to compensate theirs weakness
 				if ( pMR->GetProfile()->GetMarineClass() == MARINE_CLASS_MEDIC )
 				{
 					// heal gun
-					GiveStartingWeaponToMarine( pMarine, 11, 1, -1 );
+					GiveStartingWeaponToMarine( pMarine, 11, 1 );
 				}
 			}
 		}
@@ -3648,7 +3647,7 @@ bool CAlienSwarm::SpawnMarineAt( CASW_Marine_Resource * RESTRICT pMR, const Vect
 		{
 			for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; iWpnSlot++ )
 			{
-				GiveStartingWeaponToMarine( pMarine, ApplyWeaponSelectionRules( iWpnSlot, pMR->m_iWeaponsInSlots.Get( iWpnSlot ) ), iWpnSlot, pMR->m_iWeaponsInSlotsDynamic.Get( iWpnSlot ) );
+				GiveStartingWeaponToMarine( pMarine, ApplyWeaponSelectionRules( iWpnSlot, pMR->m_iWeaponsInSlots.Get( iWpnSlot ) ), iWpnSlot );
 			}
 		}
 
@@ -4254,7 +4253,7 @@ bool CAlienSwarm::CanHaveAmmo( CBaseCombatCharacter *pPlayer, int iAmmoIndex )
 	return false;
 }
 
-void CAlienSwarm::GiveStartingWeaponToMarine( CASW_Marine *pMarine, int iEquipIndex, int iSlot, int iDynamicItemSlot )
+void CAlienSwarm::GiveStartingWeaponToMarine( CASW_Marine *pMarine, int iEquipIndex, int iSlot )
 {
 	if ( !pMarine || iEquipIndex == -1 || iSlot < 0 || iSlot >= ASW_MAX_EQUIP_SLOTS )
 		return;
@@ -4274,43 +4273,44 @@ void CAlienSwarm::GiveStartingWeaponToMarine( CASW_Marine *pMarine, int iEquipIn
 	if ( !pWeapon )
 		return;
 
-	CSteamID ownerID;
-	if ( iDynamicItemSlot != -1 && pMarine->GetCommander() && pMarine->GetCommander()->GetSteamID( &ownerID ) && ownerID.BIndividualAccount() )
+	CASW_Marine_Resource *pMR = pMarine->GetMarineResource();
+	if ( pMR && pMR->m_EquippedItemData[iSlot + 1].IsSet() && pMarine->GetCommander() )
 	{
-		pWeapon->m_hOriginalOwnerPlayer = pMarine->GetCommander();
-		pWeapon->m_iInventoryEquipSlot = iDynamicItemSlot;
+		Assert( pMR->m_iWeaponsInSlots[iSlot] == iEquipIndex );
+
+		pWeapon->m_hOriginalOwnerMR = pMR;
+		pWeapon->m_iInventoryEquipSlot = iSlot + 1;
 
 		Assert( pWeapon->IsInventoryEquipSlotValid() );
-		if ( !pWeapon->IsInventoryEquipSlotValid() && !pEquip->m_bSelectableInBriefing && !rd_weapons_show_hidden.GetBool() )
+		if ( !pWeapon->IsInventoryEquipSlotValid() )
 		{
 			Warning( "Invalid inventory item for player %s weapon %s: changing to %s\n", pMarine->GetCommander()->GetASWNetworkID(), szWeaponClass, iSlot == ASW_INVENTORY_SLOT_EXTRA ? "medkit" : "rifle" );
 			UTIL_Remove( pWeapon );
 
-			CASW_Marine_Resource *pMR = pMarine->GetMarineResource();
-			Assert( pMR );
-			if ( pMR )
-			{
-				Assert( pMR->m_iWeaponsInSlots[iSlot] == iEquipIndex );
-				Assert( pMR->m_iWeaponsInSlotsDynamic[iSlot] == iDynamicItemSlot );
+			pMR->m_iWeaponsInSlots.Set( iSlot, iSlot == ASW_INVENTORY_SLOT_EXTRA ? ASW_EQUIP_MEDKIT : ASW_EQUIP_RIFLE );
+			pMR->m_EquippedItemData.GetForModify()[iSlot + 1].Reset();
 
-				pMR->m_iWeaponsInSlots.Set( iSlot, iSlot == ASW_INVENTORY_SLOT_EXTRA ? ASW_EQUIP_MEDKIT : ASW_EQUIP_RIFLE );
-				pMR->m_iWeaponsInSlotsDynamic.Set( iSlot, -1 );
-			}
-
-			GiveStartingWeaponToMarine( pMarine, iSlot == ASW_INVENTORY_SLOT_EXTRA ? ASW_EQUIP_MEDKIT : ASW_EQUIP_RIFLE, iSlot, -1 );
-
+			GiveStartingWeaponToMarine( pMarine, iSlot == ASW_INVENTORY_SLOT_EXTRA ? ASW_EQUIP_MEDKIT : ASW_EQUIP_RIFLE, iSlot );
 			return;
 		}
 	}
+	else if ( pMR && pEquip->m_bRequiresInventoryItem )
+	{
+		Assert( pMR->m_iWeaponsInSlots[iSlot] == iEquipIndex );
+
+		Warning( "Invalid inventory item for player %s weapon %s: changing to %s\n", pMarine->GetCommander() ? pMarine->GetCommander()->GetASWNetworkID() : "<null>", szWeaponClass, iSlot == ASW_INVENTORY_SLOT_EXTRA ? "medkit" : "rifle" );
+		UTIL_Remove( pWeapon );
+
+		pMR->m_iWeaponsInSlots.Set( iSlot, iSlot == ASW_INVENTORY_SLOT_EXTRA ? ASW_EQUIP_MEDKIT : ASW_EQUIP_RIFLE );
+		pMR->m_EquippedItemData.GetForModify()[iSlot + 1].Reset();
+
+		GiveStartingWeaponToMarine( pMarine, iSlot == ASW_INVENTORY_SLOT_EXTRA ? ASW_EQUIP_MEDKIT : ASW_EQUIP_RIFLE, iSlot );
+		return;
+	}
 	else
 	{
-		Assert( pEquip->m_bSelectableInBriefing || rd_weapons_show_hidden.GetBool() );
-		if ( !pEquip->m_bSelectableInBriefing && !rd_weapons_show_hidden.GetBool() )
-		{
-			Warning( "Invalid inventory item for player %s weapon %s: removing weapon\n", pMarine->GetCommander()->GetASWNetworkID(), szWeaponClass );
-			UTIL_Remove( pWeapon );
-			return;
-		}
+		pWeapon->m_hOriginalOwnerMR = NULL;
+		pWeapon->m_iInventoryEquipSlot = 0;
 	}
 
 	// If I have a name, make my weapon match it with "_weapon" appended
@@ -6953,21 +6953,21 @@ void CAlienSwarm::ClientCommandKeyValues( edict_t *pEntity, KeyValues *pKeyValue
 		pPlayer->SetNetworkedExperience( pKeyValues->GetInt( "xp" ) );
 		pPlayer->SetNetworkedPromotion( pKeyValues->GetInt( "pro" ) );
 	}
-	else if ( FStrEq( szCommand, "EquippedItemsS" ) )
+	else if ( FStrEq( szCommand, "InvCmdInit" ) )
 	{
-		pPlayer->HandleEquippedItemsNotification( pKeyValues, false );
+		pPlayer->HandleInventoryCommandInit( pKeyValues );
 	}
-	else if ( FStrEq( szCommand, "EquippedItemsD" ) )
+	else if ( FStrEq( szCommand, "InvCmdAbort" ) )
 	{
-		pPlayer->HandleEquippedItemsNotification( pKeyValues, true );
+		pPlayer->HandleInventoryCommandAbort( pKeyValues );
 	}
-	else if ( FStrEq( szCommand, "EquippedItemsCachedS" ) )
+	else if ( FStrEq( szCommand, "InvCmd" ) )
 	{
-		pPlayer->HandleEquippedItemsCachedNotification( pKeyValues, false );
+		pPlayer->HandleInventoryCommand( pKeyValues );
 	}
-	else if ( FStrEq( szCommand, "EquippedItemsCachedD" ) )
+	else if ( FStrEq( szCommand, "InvCmdOffline" ) )
 	{
-		pPlayer->HandleEquippedItemsCachedNotification( pKeyValues, true );
+		pPlayer->HandleOfflineInventoryCommand( pKeyValues );
 	}
 #endif
 }

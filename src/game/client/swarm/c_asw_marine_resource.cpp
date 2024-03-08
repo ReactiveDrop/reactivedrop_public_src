@@ -34,13 +34,11 @@ END_RECV_TABLE();
 IMPLEMENT_CLIENTCLASS_DT( C_ASW_Marine_Resource, DT_ASW_Marine_Resource, CASW_Marine_Resource )
 	RecvPropDataTable( "mr_timelines", 0, 0, &REFERENCE_RECV_TABLE( DT_MR_Timelines ) ),
 	RecvPropIntWithMinusOneFlag( RECVINFO( m_MarineProfileIndex ) ),
-	RecvPropIntWithMinusOneFlag( RECVINFO( m_MarineProfileIndexDynamic ) ),
 	RecvPropEHandle( RECVINFO( m_MarineEntity ) ),
 	RecvPropEHandle( RECVINFO( m_OriginalCommander ) ),
 	RecvPropEHandle( RECVINFO( m_Commander ) ),
 	RecvPropIntWithMinusOneFlag( RECVINFO( m_iCommanderIndex ) ),
 	RecvPropArray( RecvPropIntWithMinusOneFlag( RECVINFO( m_iWeaponsInSlots[0] ) ), m_iWeaponsInSlots ),
-	RecvPropArray( RecvPropIntWithMinusOneFlag( RECVINFO( m_iWeaponsInSlotsDynamic[0] ) ), m_iWeaponsInSlotsDynamic ),
 	RecvPropArray( RecvPropIntWithMinusOneFlag( RECVINFO( m_iInitialWeaponsInSlots[0] ) ), m_iInitialWeaponsInSlots ),
 	RecvPropBool( RECVINFO( m_bInfested ) ),
 	RecvPropBool( RECVINFO( m_bInhabited ) ),
@@ -55,6 +53,7 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_Marine_Resource, DT_ASW_Marine_Resource, CASW_Ma
 	RecvPropInt( RECVINFO( m_iBotDeaths ) ),
 	RecvPropIntWithMinusOneFlag( RECVINFO( m_iScore ) ),
 	RecvPropFloat( RECVINFO( m_flFinishedMissionTime ) ),
+	RecvPropDataTable( RECVINFO_DT( m_EquippedItemData ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstances_Marine_Resource ) ),
 END_RECV_TABLE();
 
 extern ConVar asw_leadership_radius;
@@ -64,7 +63,6 @@ extern ConVar asw_skill_healing_charges_step;
 C_ASW_Marine_Resource::C_ASW_Marine_Resource()
 {
 	m_MarineProfileIndex = -1;
-	m_MarineProfileIndexDynamic = -1;
 	m_iScannerSoundSkip = 3;
 	m_fScannerTime = RandomFloat(1.0f, 2.5f);
 	m_bPlayedBlipSound = false;

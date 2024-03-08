@@ -241,8 +241,7 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Player, DT_ASW_Player )
 	SendPropBool( SENDINFO( m_bSentJoinedMessage ) ),
 	SendPropQAngles( SENDINFO( m_angMarineAutoAimFromClient ), 10, SPROP_CHANGES_OFTEN ),
 	SendPropFloat( SENDINFO( m_flInactiveKickWarning ) ),
-	SendPropDataTable( SENDINFO_DT( m_EquippedItemDataStatic ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstances_Static ) ),
-	SendPropDataTable( SENDINFO_DT( m_EquippedItemDataDynamic ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstances_Dynamic ) ),
+	SendPropDataTable( SENDINFO_DT( m_EquippedItemData ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstances_Player ) ),
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Player )
@@ -426,13 +425,6 @@ CASW_Player::CASW_Player()
 	m_flLastActiveTime = 0.0f;
 	m_flInactiveKickWarning = 0.0f;
 
-	for ( int i = 0; i < 2; i++ )
-	{
-		m_EquippedItemsResult[i] = k_SteamInventoryResultInvalid;
-		m_EquippedItemsReceiving[i].Purge();
-		m_iEquippedItemsReceivingOffset[i] = 0;
-		m_iEquippedItemsParity[i] = 0;
-	}
 	m_flNextItemCounterCommit = -1;
 
 	m_iWantsAutoRecord = 0;
@@ -448,13 +440,6 @@ CASW_Player::~CASW_Player()
 	m_PlayerAnimState->Release();
 	if ( ASWGameRules() )
 		ASWGameRules()->SetMaxMarines( this );
-
-	// free inventory handle
-	for ( int i = 0; i < 2; i++ )
-	{
-		if ( m_EquippedItemsResult[i] != k_SteamInventoryResultInvalid )
-			ReactiveDropInventory::DecodeItemData( m_EquippedItemsResult[i], "" );
-	}
 }
 
 //------------------------------------------------------------------------------
@@ -642,13 +627,9 @@ void CASW_Player::PostThink()
 
 	if ( bShouldCommitCounters )
 	{
-		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC; i++ )
+		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_PLAYER; i++ )
 		{
-			m_EquippedItemDataStatic[i].CommitCounters();
-		}
-		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC; i++ )
-		{
-			m_EquippedItemDataDynamic[i].CommitCounters();
+			m_EquippedItemData[i].CommitCounters();
 		}
 	}
 }
@@ -795,16 +776,14 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 						int primary = atoi( args[3] );
 						int secondary = atoi( args[4] );
 						int extra = atoi( args[5] );
-						int iDynamicPrimary = atoi( args[6] );
-						int iDynamicSecondary = atoi( args[7] );
-						int iDynamicExtra = atoi( args[8] );
+						// args[6], args[7], and args[8] are currently unused.
 
 						if ( primary != -1 )
-							ASWGameRules()->LoadoutSelect( pMR, ASW_INVENTORY_SLOT_PRIMARY, primary, iDynamicPrimary );
+							ASWGameRules()->LoadoutSelect( pMR, ASW_INVENTORY_SLOT_PRIMARY, primary );
 						if ( secondary != -1 )
-							ASWGameRules()->LoadoutSelect( pMR, ASW_INVENTORY_SLOT_SECONDARY, secondary, iDynamicSecondary );
+							ASWGameRules()->LoadoutSelect( pMR, ASW_INVENTORY_SLOT_SECONDARY, secondary );
 						if ( extra != -1 )
-							ASWGameRules()->LoadoutSelect( pMR, ASW_INVENTORY_SLOT_EXTRA, extra, iDynamicExtra );
+							ASWGameRules()->LoadoutSelect( pMR, ASW_INVENTORY_SLOT_EXTRA, extra );
 					}
 				}
 
@@ -872,9 +851,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 				int iPrimary = atoi( args[3] );
 				int iSecondary = atoi( args[4] );
 				int iExtra = atoi( args[5] );
-				int iDynamicPrimary = atoi( args[6] );
-				int iDynamicSecondary = atoi( args[7] );
-				int iDynamicExtra = atoi( args[8] );
+				// args[6], args[7], and args[8] are currently unused.
 
 				if ( iMarineIndex == -1 )
 				{
@@ -896,11 +873,11 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 				}
 
 				if ( iPrimary >= 0 )
-					ASWGameRules()->LoadoutSelect( pMR, ASW_INVENTORY_SLOT_PRIMARY, iPrimary, iDynamicPrimary );
+					ASWGameRules()->LoadoutSelect( pMR, ASW_INVENTORY_SLOT_PRIMARY, iPrimary );
 				if ( iSecondary >= 0 )
-					ASWGameRules()->LoadoutSelect( pMR, ASW_INVENTORY_SLOT_SECONDARY, iSecondary, iDynamicSecondary );
+					ASWGameRules()->LoadoutSelect( pMR, ASW_INVENTORY_SLOT_SECONDARY, iSecondary );
 				if ( iExtra >= 0 )
-					ASWGameRules()->LoadoutSelect( pMR, ASW_INVENTORY_SLOT_EXTRA, iExtra, iDynamicExtra );
+					ASWGameRules()->LoadoutSelect( pMR, ASW_INVENTORY_SLOT_EXTRA, iExtra );
 
 				return true;
 			}
@@ -1088,14 +1065,13 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			}
 			else if ( FStrEq( pcmd, "cl_lobby_invalid_request" ) )			// check if server is dedicated, if yes, then disconnect this client
 			{
-				ConVarRef sv_allow_lobby_connect_only_ref("sv_allow_lobby_connect_only");
+				ConVarRef sv_allow_lobby_connect_only_ref( "sv_allow_lobby_connect_only" );
 				ConVarRef sv_lan_ref( "sv_lan" );
 				if ( sv_allow_lobby_connect_only_ref.IsValid() && sv_lan_ref.IsValid() )
 				{
 					if ( sv_allow_lobby_connect_only_ref.GetBool() && !sv_lan_ref.GetBool() && engine->IsDedicatedServer() )
 					{
-						ClientPrint( this, HUD_PRINTTALK, "Disconnecting, lost connection to Steam" );
-						engine->ClientCommand( edict(), "disconnect" );
+						engine->ServerCommand( CFmtStr( "kickid %d Wait a few seconds and reconnect to this server (lobby not found)\n", GetUserID() ) );
 					}
 				}
 				return true;	
@@ -1465,22 +1441,20 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 		if ( CASW_Marine_Resource *pMR = ASWGameRules()->RosterSelect( this, iRosterIndex, -2 ) )
 		{
 			// did they specify a previous inventory selection too?
-			if (args.ArgC() == 8)
+			if ( args.ArgC() == 8 )
 			{
 				m_bRequestedSpectator = false;
 				int primary = atoi( args[2] );
 				int secondary = atoi( args[3] );
 				int extra = atoi( args[4] );
-				int iDynamicPrimary = atoi( args[5] );
-				int iDynamicSecondary = atoi( args[6] );
-				int iDynamicExtra = atoi( args[7] );
+				// args[5], args[6], and args[7] are currently unused.
 
 				if ( primary != -1 )
-					ASWGameRules()->LoadoutSelect( pMR, ASW_INVENTORY_SLOT_PRIMARY, primary, iDynamicPrimary );
+					ASWGameRules()->LoadoutSelect( pMR, ASW_INVENTORY_SLOT_PRIMARY, primary );
 				if ( secondary != -1 )
-					ASWGameRules()->LoadoutSelect( pMR, ASW_INVENTORY_SLOT_SECONDARY, secondary, iDynamicSecondary );
+					ASWGameRules()->LoadoutSelect( pMR, ASW_INVENTORY_SLOT_SECONDARY, secondary );
 				if ( extra != -1 )
-					ASWGameRules()->LoadoutSelect( pMR, ASW_INVENTORY_SLOT_EXTRA, extra, iDynamicExtra );
+					ASWGameRules()->LoadoutSelect( pMR, ASW_INVENTORY_SLOT_EXTRA, extra );
 			}
 		}
 
@@ -1501,7 +1475,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			int iProfileIndex = clamp(atoi( args[1] ), 0, ASW_NUM_MARINE_PROFILES-1);
 			int iInvSlot = atoi( args[2] );
 			int iEquipIndex = atoi( args[3] );
-			int iDynamicIndex = atoi( args[4] );
+			// args[4] is currently unused.
 
 			for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
 			{
@@ -1509,7 +1483,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 				if ( pMR && pMR->GetCommander() == this && pMR->GetProfileIndex() == iProfileIndex )
 				{
 
-					ASWGameRules()->LoadoutSelect( pMR, iInvSlot, iEquipIndex, iDynamicIndex );
+					ASWGameRules()->LoadoutSelect( pMR, iInvSlot, iEquipIndex );
 					return true;
 				}
 			}
@@ -1532,7 +1506,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			int iMarineResource = atoi( args[1] );
 			int iInvSlot = atoi( args[2] );
 			int iEquipIndex = atoi( args[3] );
-			int iDynamicIndex = atoi( args[4] );
+			// args[4] is currently unused.
 
 			CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( iMarineResource );
 			if ( !pMR || pMR->GetCommander() != this )
@@ -1541,7 +1515,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 				return false;
 			}
 
-			ASWGameRules()->LoadoutSelect( pMR, iInvSlot, iEquipIndex, iDynamicIndex );
+			ASWGameRules()->LoadoutSelect( pMR, iInvSlot, iEquipIndex );
 			return true;
 		}
 		else
@@ -3595,209 +3569,4 @@ void CASW_Player::ScriptSetSpectatingNPC( HSCRIPT hNPC )
 
 	LeaveMarines();
 	SetSpectatingNPC( assert_cast< CASW_Inhabitable_NPC * >( pEnt ) );
-}
-
-void CASW_Player::HandleEquippedItemsNotification( KeyValues *pKeyValues, bool bDynamic )
-{
-	int iOffset = pKeyValues->GetInt( "i", -1 );
-	int iTotal = pKeyValues->GetInt( "t", -1 );
-	int iParity = pKeyValues->GetInt( "e", -1 );
-	const char *szData = pKeyValues->GetString( "m", NULL );
-	int iLength = szData ? V_strlen( szData ) : 0;
-	if ( iOffset < 0 || iTotal < 4 + int( bDynamic ? RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC : RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC ) || iTotal > RD_EQUIPPED_ITEMS_NOTIFICATION_WORST_CASE_SIZE || iParity <= 0 || !szData || !*szData || ( iLength & 1 ) )
-	{
-		Warning( "Ignoring equipped items notification (%s) from player %s (invalid data)\n", bDynamic ? "dynamic" : "static", GetASWNetworkID() );
-		return;
-	}
-
-	if ( iOffset == 0 && ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME && !ASWDeathmatchMode() )
-	{
-		// allow receiving data after mission start if the transfer as at least started beforehand
-		DevWarning( "Ignoring equipped items notification (%s) from player %s as the mission is in-progress.\n", bDynamic ? "dynamic" : "static", GetASWNetworkID() );
-		return;
-	}
-
-	iOffset *= 2;
-	iTotal *= 2;
-
-	if ( iOffset != 0 && ( iParity != m_iEquippedItemsParity[bDynamic] || iOffset != m_iEquippedItemsReceivingOffset[bDynamic] || iTotal + 1 != m_EquippedItemsReceiving[bDynamic].Count() ) || iLength + iOffset > iTotal || iLength != MIN( iTotal - iOffset, RD_EQUIPPED_ITEMS_NOTIFICATION_PAYLOAD_SIZE_PER_PACKET * 2 ) )
-	{
-		Assert( iParity == m_iEquippedItemsParity[bDynamic] );
-		Assert( iOffset == m_iEquippedItemsReceivingOffset[bDynamic] );
-		Assert( iTotal + 1 == m_EquippedItemsReceiving[bDynamic].Count() );
-		Assert( iLength + iOffset <= iTotal );
-		Assert( iLength == MIN( iTotal - iOffset, RD_EQUIPPED_ITEMS_NOTIFICATION_PAYLOAD_SIZE_PER_PACKET * 2 ) );
-		Warning( "Ignoring equipped items notification (%s) from player %s (out of order or bad parity)\n", bDynamic ? "dynamic" : "static", GetASWNetworkID() );
-		return;
-	}
-
-	if ( iOffset == 0 )
-	{
-		ReactiveDropInventory::DecodeItemData( m_EquippedItemsResult[bDynamic], "" );
-		if ( !bDynamic )
-		{
-			for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC; i++ )
-			{
-				m_EquippedItemDataStatic[i].Reset();
-			}
-		}
-		m_EquippedItemsReceiving[bDynamic].Init( 0, iTotal + 1 );
-		m_iEquippedItemsReceivingOffset[bDynamic] = 0;
-		m_iEquippedItemsParity[bDynamic] = iParity;
-		Assert( m_EquippedItemsReceiving[bDynamic].Count() == iTotal + 1 );
-	}
-
-	V_memcpy( m_EquippedItemsReceiving[bDynamic].Base() + m_iEquippedItemsReceivingOffset[bDynamic], szData, iLength );
-	m_iEquippedItemsReceivingOffset[bDynamic] += iLength;
-	Assert( m_iEquippedItemsReceivingOffset[bDynamic] <= iTotal );
-	if ( m_iEquippedItemsReceivingOffset[bDynamic] == iTotal )
-	{
-		m_EquippedItemsReceiving[bDynamic].Base()[iTotal] = '\0';
-		CUtlMemory<byte> RawBuffer{ 0, iTotal / 2 };
-		V_hextobinary( m_EquippedItemsReceiving[bDynamic].Base(), iTotal, RawBuffer.Base(), RawBuffer.Count() );
-		CRC32_t iChecksumExpected = CRC32_ProcessSingleBuffer( RawBuffer.Base() + 4, RawBuffer.Count() - 4 );
-		if ( iChecksumExpected != *reinterpret_cast< const CRC32_t * >( RawBuffer.Base() ) )
-		{
-			Warning( "Ignoring equipped items notification (%s) from player %s (bad checksum)\n", bDynamic ? "dynamic" : "static", GetASWNetworkID() );
-		}
-		else
-		{
-			ReactiveDropInventory::DecodeItemData( m_EquippedItemsResult[bDynamic], m_EquippedItemsReceiving[bDynamic].Base() + 8 + ( bDynamic ? RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC : RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC ) * 2 );
-		}
-	}
-	else
-	{
-		CSingleUserRecipientFilter filter{ this };
-		filter.MakeReliable();
-		UserMessageBegin( filter, "RDEquippedItemsACK" );
-			WRITE_LONG( iParity );
-		MessageEnd();
-	}
-}
-
-void CASW_Player::HandleEquippedItemsCachedNotification( KeyValues *pKeyValues, bool bDynamic )
-{
-	// This only works in singleplayer, and we need access to our own Steam ID.
-	if ( engine->IsDedicatedServer() || gpGlobals->maxClients != 1 || !SteamUser() )
-		return;
-
-	CFmtStr szCacheFileName{ "cfg/clienti_%llu.dat", SteamUser()->GetSteamID().ConvertToUint64() };
-	CUtlBuffer buf;
-
-	if ( !g_pFullFileSystem->ReadFile( szCacheFileName, "MOD", buf ) )
-		return;
-
-	KeyValues::AutoDelete pCache{ "IC" };
-
-	if ( !pCache->ReadAsBinary( buf ) )
-		return;
-
-	if ( bDynamic )
-	{
-		CUtlVector<SteamItemInstanceID_t> seen;
-		seen.EnsureCapacity( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC );
-
-		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC; i++ )
-		{
-			SteamItemInstanceID_t id = pKeyValues->GetUint64( CFmtStr( "item%d", i ), k_SteamItemInstanceIDInvalid );
-			Assert( id != 0 );
-
-			if ( id == k_SteamItemInstanceIDInvalid )
-			{
-				if ( !m_EquippedItemDataDynamic[i].IsSet() )
-					continue;
-
-				id = m_EquippedItemDataDynamic[i].m_iItemInstanceID;
-			}
-
-			Assert( !seen.IsValidIndex( seen.Find( id ) ) );
-			if ( seen.IsValidIndex( seen.Find( id ) ) )
-			{
-				Warning( "Offline dynamic items notification contains duplicate item ID %llu in slot %d\n", id, i );
-				return;
-			}
-		}
-
-		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC; i++ )
-		{
-			if ( KeyValues *pSlot = pKeyValues->FindKey( CFmtStr( "item%d", i ) ) )
-			{
-				SteamItemInstanceID_t id = pSlot->GetUint64();
-
-				FOR_EACH_SUBKEY( pCache, pItem )
-				{
-					if ( pItem->GetUint64( "i" ) != id )
-					{
-						continue;
-					}
-
-
-					ReactiveDropInventory::ItemInstance_t instance{ pItem };
-					const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( instance.ItemDefID );
-					Assert( pDef && pDef->ItemSlotMatchesAnyDynamic() );
-					if ( !pDef || !pDef->ItemSlotMatchesAnyDynamic() )
-					{
-						Warning( "Offline dynamic items notification contains %llu %d '%s' which fits in '%s', not a dynamic slot\n", instance.ItemID, instance.ItemDefID, pDef ? pDef->Name.Get() : "<NO DEF>", pDef ? pDef->ItemSlot.Get() : "<NO DEF>" );
-						m_EquippedItemDataDynamic[i].Reset();
-						continue;
-					}
-
-					m_EquippedItemDataDynamic[i].SetFromInstance( ReactiveDropInventory::ItemInstance_t{ pItem } );
-
-					break;
-				}
-			}
-		}
-	}
-	else
-	{
-		CUtlVector<SteamItemInstanceID_t> seen;
-		seen.EnsureCapacity( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC );
-
-		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC; i++ )
-		{
-			SteamItemInstanceID_t id = pKeyValues->GetUint64( ReactiveDropInventory::g_InventorySlotNames[i], k_SteamItemInstanceIDInvalid );
-			Assert( id != 0 );
-
-			if ( id == k_SteamItemInstanceIDInvalid )
-				continue;
-
-			Assert( !seen.IsValidIndex( seen.Find( id ) ) );
-			if ( seen.IsValidIndex( seen.Find( id ) ) )
-			{
-				Warning( "Offline static items notification contains duplicate item ID %llu in slot '%s'\n", id, ReactiveDropInventory::g_InventorySlotNames[i] );
-				return;
-			}
-		}
-
-		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC; i++ )
-		{
-			if ( KeyValues *pSlot = pKeyValues->FindKey( ReactiveDropInventory::g_InventorySlotNames[i] ) )
-			{
-				SteamItemInstanceID_t id = pSlot->GetUint64();
-				m_EquippedItemDataStatic[i].Reset();
-
-				FOR_EACH_SUBKEY( pCache, pItem )
-				{
-					if ( pItem->GetUint64( "i" ) != id )
-					{
-						continue;
-					}
-
-					ReactiveDropInventory::ItemInstance_t instance{ pItem };
-					const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( instance.ItemDefID );
-					Assert( pDef && pDef->ItemSlotMatches( ReactiveDropInventory::g_InventorySlotNames[i] ) );
-					if ( !pDef || !pDef->ItemSlotMatches( ReactiveDropInventory::g_InventorySlotNames[i] ) )
-					{
-						Warning( "Offline static items notification contains %llu %d '%s' which fits in '%s', not '%s'\n", instance.ItemID, instance.ItemDefID, pDef ? pDef->Name.Get() : "<NO DEF>", pDef ? pDef->ItemSlot.Get() : "<NO DEF>", ReactiveDropInventory::g_InventorySlotNames[i] );
-						continue;
-					}
-
-					m_EquippedItemDataStatic[i].SetFromInstance( instance );
-
-					break;
-				}
-			}
-		}
-	}
 }

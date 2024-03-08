@@ -343,7 +343,7 @@ void CASW_Deathmatch_Mode::OnMarineKilled( const CTakeDamageInfo &info, CASW_Mar
 			}
 
 			int iWeaponID = ASWDeathmatchMode()->GetWeaponIndexByFragsCount( GetFragCount( pOtherMR ) );
-			ASWGameRules()->GiveStartingWeaponToMarine( pOtherMarine, iWeaponID, 0, -1 );
+			ASWGameRules()->GiveStartingWeaponToMarine( pOtherMarine, iWeaponID, 0 );
 		}
 	}
 	else // else if marine was killed by aliens or anything else decrement frags
@@ -815,11 +815,11 @@ void CASW_Deathmatch_Mode::PrepareMarinesForGunGameOrInstagib( int iWeaponID/* =
 			{
 				if ( iWeaponID == -1 )
 				{
-					ASWGameRules()->GiveStartingWeaponToMarine( pMarine, GetWeaponIndexByFragsCount( 0 ), 0, -1 );
+					ASWGameRules()->GiveStartingWeaponToMarine( pMarine, GetWeaponIndexByFragsCount( 0 ), 0 );
 				}
 				else
 				{
-					ASWGameRules()->GiveStartingWeaponToMarine( pMarine, iWeaponID, 0, -1 );
+					ASWGameRules()->GiveStartingWeaponToMarine( pMarine, iWeaponID, 0 );
 				}
 			}
 

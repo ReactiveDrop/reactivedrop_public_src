@@ -99,7 +99,7 @@ void RegisterUserMessages( void )
 	usermessages->Register( "RDAlienKillStat", 2 );
 	usermessages->Register( "RDCauseOfDeath", 2 );
 	usermessages->Register( "RDHitConfirm", -1 );
-	usermessages->Register( "RDEquippedItemsACK", 4 );
 	usermessages->Register( "SentryGib", 13 );
 	usermessages->Register( "RDStrangeDeviceTier", -1 );
+	usermessages->Register( "RDInvCmdAck", 4 );
 }

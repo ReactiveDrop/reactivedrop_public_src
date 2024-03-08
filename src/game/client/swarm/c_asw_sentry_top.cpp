@@ -7,7 +7,7 @@
 #include "c_asw_fx.h"
 #include "c_user_message_register.h"
 #include "ai_debug_shared.h"
-#include "c_asw_player.h"
+#include "c_asw_marine_resource.h"
 #include "c_asw_weapon.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -95,7 +95,7 @@ void C_ASW_Sentry_Top::OnDataChanged( DataUpdateType_t updateType )
 #endif
 			};
 
-			C_RD_Weapon_Accessory::CreateWeaponAccessories( this, pBase->m_hOriginalOwnerPlayer->m_EquippedItemDataDynamic[pBase->m_iInventoryEquipSlot], m_hWeaponAccessory, s_pKVAccessoryPosition[pBase->m_nGunType], s_szAccessoryPositionFiles[pBase->m_nGunType] );
+			C_RD_Weapon_Accessory::CreateWeaponAccessories( this, pBase->m_hOriginalOwnerMR->m_EquippedItemData[pBase->m_iInventoryEquipSlot], m_hWeaponAccessory, s_pKVAccessoryPosition[pBase->m_nGunType], s_szAccessoryPositionFiles[pBase->m_nGunType] );
 		}
 
 		m_fAimPitch = -30.0f; // should match the angle that the build animation uses

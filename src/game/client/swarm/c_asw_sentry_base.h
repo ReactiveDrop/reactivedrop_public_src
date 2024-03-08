@@ -38,9 +38,9 @@ public:
 	CNetworkVar( bool, m_bSkillMarineHelping );
 	CNetworkVar( int, m_nGunType );
 
-	CNetworkHandle( CASW_Player, m_hOriginalOwnerPlayer );
+	CNetworkHandle( C_ASW_Marine_Resource, m_hOriginalOwnerMR );
 	CNetworkVar( int, m_iInventoryEquipSlot );
-	bool IsInventoryEquipSlotValid() const { return !!m_hOriginalOwnerPlayer && m_iInventoryEquipSlot != -1; }
+	bool IsInventoryEquipSlotValid() const { return !!m_hOriginalOwnerMR && m_iInventoryEquipSlot != 0; }
 
 	CNetworkHandle( C_ASW_Inhabitable_NPC, m_hLastDisassembler );
 

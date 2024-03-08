@@ -5,6 +5,7 @@
 #include <vgui_controls/Panel.h>
 #include "asw_util_shared.h"
 #include "c_asw_marine.h"
+#include "c_asw_marine_resource.h"
 #include "c_asw_player.h"
 #include "c_asw_pickup_weapon.h"
 #include "asw_equipment_list.h"
@@ -31,8 +32,8 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_Sentry_Base, DT_ASW_Sentry_Base, CASW_Sentry_Bas
 	RecvPropInt( RECVINFO( m_iMaxAmmo ) ),
 	RecvPropBool( RECVINFO( m_bSkillMarineHelping ) ),
 	RecvPropInt( RECVINFO( m_nGunType ) ),
-	RecvPropEHandle( RECVINFO( m_hOriginalOwnerPlayer ) ),
-	RecvPropIntWithMinusOneFlag( RECVINFO( m_iInventoryEquipSlot ) ),
+	RecvPropEHandle( RECVINFO( m_hOriginalOwnerMR ) ),
+	RecvPropInt( RECVINFO( m_iInventoryEquipSlot ) ),
 	RecvPropEHandle( RECVINFO( m_hLastDisassembler ) ),
 END_RECV_TABLE()
 
@@ -68,8 +69,8 @@ C_ASW_Sentry_Base::C_ASW_Sentry_Base() :
 	m_bSkillMarineHelping = false;
 	g_SentryGuns.AddToTail( this );
 	m_nUseIconTextureID = -1;
-	m_hOriginalOwnerPlayer = NULL;
-	m_iInventoryEquipSlot = -1;
+	m_hOriginalOwnerMR = NULL;
+	m_iInventoryEquipSlot = 0;
 	m_hLastDisassembler = NULL;
 }
 

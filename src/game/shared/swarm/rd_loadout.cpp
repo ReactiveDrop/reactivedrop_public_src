@@ -48,40 +48,6 @@ ConVar asw_default_extra[ASW_NUM_MARINES_PER_LOADOUT]
 	{ "asw_default_extra_7", "-1", FCVAR_ARCHIVE, "Default extra equip for Vegas" },
 };
 extern ConVar rd_equipped_medal[RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS];
-extern ConVar rd_equipped_marine[ASW_NUM_MARINES_PER_LOADOUT];
-ConVar rd_equipped_weapon_primary[ASW_NUM_MARINES_PER_LOADOUT]
-{
-	{ "rd_equipped_weapon_primary0", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current primary weapon for Sarge" },
-	{ "rd_equipped_weapon_primary1", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current primary weapon for Wildcat" },
-	{ "rd_equipped_weapon_primary2", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current primary weapon for Faith" },
-	{ "rd_equipped_weapon_primary3", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current primary weapon for Crash" },
-	{ "rd_equipped_weapon_primary4", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current primary weapon for Jaeger" },
-	{ "rd_equipped_weapon_primary5", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current primary weapon for Wolfe" },
-	{ "rd_equipped_weapon_primary6", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current primary weapon for Bastille" },
-	{ "rd_equipped_weapon_primary7", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current primary weapon for Vegas" },
-};
-ConVar rd_equipped_weapon_secondary[ASW_NUM_MARINES_PER_LOADOUT]
-{
-	{ "rd_equipped_weapon_secondary0", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current secondary weapon for Sarge" },
-	{ "rd_equipped_weapon_secondary1", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current secondary weapon for Wildcat" },
-	{ "rd_equipped_weapon_secondary2", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current secondary weapon for Faith" },
-	{ "rd_equipped_weapon_secondary3", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current secondary weapon for Crash" },
-	{ "rd_equipped_weapon_secondary4", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current secondary weapon for Jaeger" },
-	{ "rd_equipped_weapon_secondary5", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current secondary weapon for Wolfe" },
-	{ "rd_equipped_weapon_secondary6", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current secondary weapon for Bastille" },
-	{ "rd_equipped_weapon_secondary7", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current secondary weapon for Vegas" },
-};
-ConVar rd_equipped_weapon_extra[ASW_NUM_MARINES_PER_LOADOUT]
-{
-	{ "rd_equipped_weapon_extra0", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current extra weapon for Sarge" },
-	{ "rd_equipped_weapon_extra1", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current extra weapon for Wildcat" },
-	{ "rd_equipped_weapon_extra2", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current extra weapon for Faith" },
-	{ "rd_equipped_weapon_extra3", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current extra weapon for Crash" },
-	{ "rd_equipped_weapon_extra4", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current extra weapon for Jaeger" },
-	{ "rd_equipped_weapon_extra5", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current extra weapon for Wolfe" },
-	{ "rd_equipped_weapon_extra6", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current extra weapon for Bastille" },
-	{ "rd_equipped_weapon_extra7", "0", FCVAR_ARCHIVE, "Steam inventory item ID of current extra weapon for Vegas" },
-};
 
 // preferences
 ConVar rd_loadout_auto_update( "rd_loadout_auto_update", "1", FCVAR_NONE, "Should the current loadout be updated when an item is selected during briefing?" );
@@ -422,10 +388,8 @@ namespace ReactiveDropLoadout
 		asw_default_primary[id].SetValue( Primary );
 		asw_default_secondary[id].SetValue( Secondary );
 		asw_default_extra[id].SetValue( Extra );
-		rd_equipped_marine[id].SetValue( CFmtStr{ "%llu", Suit } );
-		rd_equipped_weapon_primary[id].SetValue( CFmtStr{ "%llu", PrimaryItem } );
-		rd_equipped_weapon_secondary[id].SetValue( CFmtStr{ "%llu", SecondaryItem } );
-		rd_equipped_weapon_extra[id].SetValue( CFmtStr{ "%llu", ExtraItem } );
+
+		// TODO: Inventory
 
 		C_ASW_Game_Resource *pGameResource = ASWGameResource();
 		C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
@@ -453,10 +417,7 @@ namespace ReactiveDropLoadout
 		if ( Extra < 0 || Extra >= ASW_NUM_EQUIP_EXTRA )
 			Extra = DefaultLoadout.Marines[id].Extra;
 
-		Suit = strtoull( rd_equipped_marine[id].GetString(), NULL, 10 );
-		PrimaryItem = strtoull( rd_equipped_weapon_primary[id].GetString(), NULL, 10 );
-		SecondaryItem = strtoull( rd_equipped_weapon_secondary[id].GetString(), NULL, 10 );
-		ExtraItem = strtoull( rd_equipped_weapon_extra[id].GetString(), NULL, 10 );
+		// TODO: Inventory
 
 		if ( Suit == 0 )
 			Suit = k_SteamItemInstanceIDInvalid;
@@ -586,22 +547,10 @@ namespace ReactiveDropLoadout
 		bool bAnyChanged = false;
 		CFmtStr szNewValue{ "%llu", newID };
 
-		// static equip slots (medals, marines)
+		// player equip slots (medals)
 		for ( int i = 0; i < RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS; i++ )
 		{
 			ReplaceItemIDCVarHelper( bAnyChanged, &rd_equipped_medal[i], oldID, szNewValue );
-		}
-		for ( int i = 0; i < ASW_NUM_MARINES_PER_LOADOUT; i++ )
-		{
-			ReplaceItemIDCVarHelper( bAnyChanged, &rd_equipped_marine[i], oldID, szNewValue );
-		}
-
-		// current loadout (weapons)
-		for ( int i = 0; i < ASW_NUM_MARINES_PER_LOADOUT; i++ )
-		{
-			ReplaceItemIDCVarHelper( bAnyChanged, &rd_equipped_weapon_primary[i], oldID, szNewValue );
-			ReplaceItemIDCVarHelper( bAnyChanged, &rd_equipped_weapon_secondary[i], oldID, szNewValue );
-			ReplaceItemIDCVarHelper( bAnyChanged, &rd_equipped_weapon_extra[i], oldID, szNewValue );
 		}
 
 		// saved loadouts

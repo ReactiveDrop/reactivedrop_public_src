@@ -8,19 +8,11 @@
 #include "asw_marine_profile.h"
 #include "asw_gamerules.h"
 #include "asw_deathmatch_mode.h"
-#ifdef RD_7A_DROPS
-#include "asw_marine_hint.h"
-#include "asw_spawn_manager.h"
-#endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 static char s_szLastLeaderNetworkID[ASW_LEADERID_LEN] = {0};
-
-#ifdef RD_7A_DROPS
-ConVar rd_debug_material_spawns( "rd_debug_material_spawns", "0", FCVAR_NONE );
-#endif
 
 LINK_ENTITY_TO_CLASS( asw_game_resource, CASW_Game_Resource );
 
@@ -57,10 +49,6 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Game_Resource, DT_ASW_Game_Resource )
 	SendPropFloat( SENDINFO( m_fMapGenerationProgress ) ),
 	SendPropString( SENDINFO( m_szMapGenerationStatus ) ),
 	SendPropInt( SENDINFO( m_iRandomMapSeed ) ),
-
-#ifdef RD_7A_DROPS
-	SendPropDataTable( SENDINFO_DT( m_CraftingMaterialInfo ), &REFERENCE_SEND_TABLE( DT_RD_CraftingMaterialInfo ) ),
-#endif
 END_SEND_TABLE()
 
 //---------------------------------------------------------
@@ -566,195 +554,3 @@ void CASW_Game_Resource::OnMissionCompleted( bool bWellDone )
 
 	s_nNumConsecutiveFailures = 0;
 }
-
-#ifdef RD_7A_DROPS
-BEGIN_SEND_TABLE_NOBASE( CRD_CraftingMaterialInfo, DT_RD_CraftingMaterialInfo )
-	SendPropInt( SENDINFO( m_nSpawnLocations ), NumBitsForCount( RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS ), SPROP_UNSIGNED ),
-	SendPropArray( SendPropVector( SENDINFO_ARRAY( m_SpawnLocationOrigins ) ), m_SpawnLocationOrigins ),
-END_SEND_TABLE()
-
-CRD_CraftingMaterialInfo::CRD_CraftingMaterialInfo()
-{
-	m_nSpawnLocations.Set( 0 );
-
-	for ( int i = 0; i < RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS; i++ )
-	{
-		m_SpawnLocationOrigins.Set( 0, vec3_origin );
-	}
-}
-
-void CRD_CraftingMaterialInfo::GenerateSpawnLocations()
-{
-	CASW_Marine_Hint_Manager *pMarineHintManager = MarineHintManager();
-	if ( !pMarineHintManager )
-	{
-		DevWarning( "Could not generate material spawn locations: missing marine hint manager\n" );
-		return;
-	}
-
-	if ( pMarineHintManager->GetHintCount() == 0 )
-	{
-		DevWarning( "Could not generate material spawn locations: no marine hints in level\n" );
-		return;
-	}
-
-	constexpr float flMinDistanceFromStart = 1536.0f;
-	constexpr float flMinSpacing = 768.0f;
-	constexpr int nDirections = 8;
-	constexpr float flMaxOffset = 128.0f;
-	constexpr float flSweepDist = 20.0f;
-
-	CUtlVector<int> HintOrder;
-	HintOrder.SetCount( pMarineHintManager->GetHintCount() );
-	FOR_EACH_VEC( HintOrder, i )
-	{
-		HintOrder[i] = i;
-	}
-
-	// shuffle hint order
-	FOR_EACH_VEC_BACK( HintOrder, i )
-	{
-		if ( i )
-		{
-			int j = RandomInt( 0, i );
-			V_swap( HintOrder[i], HintOrder[j] );
-		}
-	}
-
-	string_t iszInfoPlayerStart = AllocPooledString( "info_player_start" );
-
-	m_nSpawnLocations = 0;
-	FOR_EACH_VEC( HintOrder, iHintOrder )
-	{
-		if ( m_nSpawnLocations >= RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS )
-			break;
-
-		int iHint = HintOrder[iHintOrder];
-		// ignore hints that can move or hints that no longer exist
-		if ( pMarineHintManager->GetHintFlags( iHint ) & ( HintData_t::HINT_DELETED | HintData_t::HINT_DYNAMIC ) )
-			continue;
-
-		Vector vecHintOrigin = pMarineHintManager->GetHintPosition( iHint );
-
-		// ignore hints that are too close to marine spawn locations
-		if ( CBaseEntity *pEnt = gEntList.FindEntityByClassnameNearestFast( iszInfoPlayerStart, vecHintOrigin, flMinDistanceFromStart ) )
-		{
-			if ( rd_debug_material_spawns.GetBool() )
-			{
-				NDebugOverlay::Line( vecHintOrigin, pEnt->GetAbsOrigin(), 255, 127, 127, false, 120.0f );
-				NDebugOverlay::Text( vecHintOrigin, "Too close to marine spawn location", false, 120.0f );
-			}
-
-			continue;
-		}
-		// check for an active escape trigger (some maps use disabled escape triggers covering the entire playable space)
-		if ( CTriggerMultiple *pEnt = ASWSpawnManager()->EscapeTriggerAtPoint( vecHintOrigin, false ) )
-		{
-			if ( rd_debug_material_spawns.GetBool() )
-			{
-				NDebugOverlay::Line( vecHintOrigin, pEnt->GetAbsOrigin(), 255, 127, 127, false, 120.0f );
-				NDebugOverlay::Text( vecHintOrigin, "Within bounds of escape trigger", false, 120.0f );
-			}
-
-			continue;
-		}
-		// another material spawn point
-		bool bTooClose = false;
-		for ( int i = 0; i < m_nSpawnLocations; i++ )
-		{
-			if ( m_SpawnLocationOrigins[i].DistToSqr( vecHintOrigin ) < flMinSpacing * flMinSpacing )
-			{
-				bTooClose = true;
-
-				if ( rd_debug_material_spawns.GetBool() )
-				{
-					NDebugOverlay::Line( vecHintOrigin, m_SpawnLocationOrigins[i], 255, 127, 127, false, 120.0f );
-					NDebugOverlay::Text( vecHintOrigin, "Too close to other material spawn", false, 120.0f );
-				}
-
-				break;
-			}
-		}
-		if ( bTooClose )
-			continue;
-
-		trace_t tr;
-		Vector vecBestPos = vecHintOrigin;
-		float flBestFraction = 1.0f;
-
-		for ( int dir = 0; dir < nDirections; dir++ )
-		{
-			float flSin, flCos;
-			SinCos( dir * M_PI * 2.0f / nDirections, &flSin, &flCos );
-
-			// marine hull with padded sides and trimmed top and bottom
-			Vector vecOffsetOrigin = vecHintOrigin + Vector( flCos * flMaxOffset, flSin * flMaxOffset, 0.0f );
-			UTIL_TraceHull( vecHintOrigin, vecOffsetOrigin, Vector( -16, -16, 16 ), Vector( 16, 16, 56 ), MASK_PLAYERSOLID, NULL, COLLISION_GROUP_PLAYER_MOVEMENT, &tr );
-
-			if ( tr.startsolid || tr.allsolid || tr.fraction >= 1.0f )
-				continue;
-
-			if ( flBestFraction > tr.fraction )
-			{
-				vecBestPos = tr.endpos;
-				flBestFraction = tr.fraction;
-			}
-		}
-
-		if ( flBestFraction >= 1.0f )
-		{
-			NDebugOverlay::Text( vecHintOrigin, "No nearby walls", false, 120.0f );
-			continue;
-		}
-
-		// now we sweep towards the place we found, making sure we have relatively level floor the entire way
-		int nIterations = Ceil2Int( flBestFraction * flMaxOffset / flSweepDist );
-		bool bSweepFailed = false;
-		for ( int i = 0; i < nIterations; i++ )
-		{
-			Vector vecStepStart = Lerp( ( i + 0.5f ) / nIterations, vecHintOrigin, vecBestPos ) + Vector( 0.0f, 0.0f, 48.0f );
-			UTIL_TraceHull( vecStepStart, vecStepStart - Vector( 0.0f, 0.0f, 64.0f ), Vector( -12.0f, -12.0f, 0.0f ), Vector( 12.0f, 12.0f, 24.0f ), MASK_PLAYERSOLID, NULL, COLLISION_GROUP_PLAYER_MOVEMENT, &tr );
-
-			if ( tr.startsolid || tr.allsolid || tr.fraction >= 1.0f )
-			{
-				bSweepFailed = true;
-
-				if ( rd_debug_material_spawns.GetBool() )
-				{
-					NDebugOverlay::Text( vecHintOrigin, "Floor check failed", false, 120.0f );
-				}
-
-				break;
-			}
-		}
-
-		if ( bSweepFailed )
-			continue;
-
-		if ( rd_debug_material_spawns.GetBool() )
-		{
-			NDebugOverlay::Box( tr.endpos, Vector( -12, -12, 0 ), Vector( 12, 12, 24 ), 255, 255, 255, false, 120.0f );
-		}
-
-		m_SpawnLocationOrigins.Set( m_nSpawnLocations, tr.endpos );
-		m_nSpawnLocations++;
-	}
-}
-
-CON_COMMAND( rd_debug_material_spawn_locations, "Generate and display crafting material spawn locations (requires developer and listen server)." )
-{
-	// doesn't work for non-listen server host anyway, so don't waste time generating positions
-	if ( engine->IsDedicatedServer() || !UTIL_IsCommandIssuedByServerAdmin() )
-		return;
-
-	CRD_CraftingMaterialInfo info;
-
-	info.GenerateSpawnLocations();
-
-	Msg( "Generated %d/%d locations:\n", info.m_nSpawnLocations.Get(), RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS );
-	for ( int i = 0; i < info.m_nSpawnLocations; i++ )
-	{
-		Msg( "(%f, %f, %f)\n", VectorExpand( info.m_SpawnLocationOrigins[i] ) );
-	}
-}
-#endif

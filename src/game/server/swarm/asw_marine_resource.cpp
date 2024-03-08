@@ -26,7 +26,6 @@ LINK_ENTITY_TO_CLASS( asw_marine_resource, CASW_Marine_Resource );
 //---------------------------------------------------------
 BEGIN_DATADESC( CASW_Marine_Resource )
 	DEFINE_FIELD( m_MarineProfileIndex, FIELD_INTEGER ),
-	DEFINE_FIELD( m_MarineProfileIndexDynamic, FIELD_INTEGER ),
 	DEFINE_FIELD( m_MarineEntity, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_OriginalCommander, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_bHadOriginalCommander, FIELD_BOOLEAN ),
@@ -115,13 +114,11 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Marine_Resource, DT_ASW_Marine_Resource )
 	// Timeline data only gets sent at mission end
 	SendPropDataTable( "mr_timelines", 0, &REFERENCE_SEND_TABLE( DT_MR_Timelines ), SendProxy_SendMarineResourceTimelinesDataTable ),
 	SendPropIntWithMinusOneFlag( SENDINFO( m_MarineProfileIndex ), NumBitsForCount( ASW_NUM_MARINE_PROFILES + 1 ) ),
-	SendPropIntWithMinusOneFlag( SENDINFO( m_MarineProfileIndexDynamic ), NumBitsForCount( ASW_NUM_MARINES_PER_LOADOUT + 1 ) ),
 	SendPropEHandle( SENDINFO( m_MarineEntity ) ),
 	SendPropEHandle( SENDINFO( m_OriginalCommander ) ),
 	SendPropEHandle( SENDINFO( m_Commander ) ),
 	SendPropIntWithMinusOneFlag( SENDINFO( m_iCommanderIndex ), NumBitsForCount( ABSOLUTE_PLAYER_LIMIT + 1 ) ),
 	SendPropArray( SendPropIntWithMinusOneFlag( SENDINFO_ARRAY( m_iWeaponsInSlots ), NumBitsForCount( MAX( ASW_NUM_EQUIP_REGULAR, ASW_NUM_EQUIP_EXTRA ) + 1 ) ), m_iWeaponsInSlots ),
-	SendPropArray( SendPropIntWithMinusOneFlag( SENDINFO_ARRAY( m_iWeaponsInSlotsDynamic ), NumBitsForCount( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC + 1 ) ), m_iWeaponsInSlotsDynamic ),
 	SendPropArray( SendPropIntWithMinusOneFlag( SENDINFO_ARRAY( m_iInitialWeaponsInSlots ), NumBitsForCount( MAX( ASW_NUM_EQUIP_REGULAR, ASW_NUM_EQUIP_EXTRA ) + 1 ) ), m_iInitialWeaponsInSlots ),
 	SendPropBool( SENDINFO( m_bInfested ) ),
 	SendPropBool( SENDINFO( m_bInhabited ) ),
@@ -136,6 +133,7 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Marine_Resource, DT_ASW_Marine_Resource )
 	SendPropInt( SENDINFO( m_iBotDeaths ) ),
 	SendPropIntWithMinusOneFlag( SENDINFO( m_iScore ) ),
 	SendPropFloat( SENDINFO( m_flFinishedMissionTime ) ),
+	SendPropDataTable( SENDINFO_DT( m_EquippedItemData ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstances_Marine_Resource ) ),
 END_SEND_TABLE();
 
 extern ConVar asw_leadership_radius;
@@ -148,7 +146,6 @@ CASW_Marine_Resource::CASW_Marine_Resource()
 {
 	m_bAwardedMedals = false;
 	m_MarineProfileIndex = -1;
-	m_MarineProfileIndexDynamic = -1;
 	m_bInfested = false;
 	m_bHadOriginalCommander = false;
 	m_OriginalCommander = NULL;
@@ -256,7 +253,6 @@ CASW_Marine_Resource::CASW_Marine_Resource()
 	for ( int i = 0; i < ASW_NUM_INVENTORY_SLOTS; i++ )
 	{
 		m_iWeaponsInSlots.GetForModify( i ) = -1;
-		m_iWeaponsInSlotsDynamic.GetForModify( i ) = -1;
 		m_iInitialWeaponsInSlots.GetForModify( i ) = -1;
 	}
 }
@@ -364,10 +360,9 @@ void CASW_Marine_Resource::SetMarineEntity(CASW_Marine* marine)
 	m_MarineEntity = marine;
 }
 
-void CASW_Marine_Resource::SetProfileIndex( int ProfileIndex, int DynamicIndex = -1 )
+void CASW_Marine_Resource::SetProfileIndex( int ProfileIndex )
 {
 	m_MarineProfileIndex = ProfileIndex;
-	m_MarineProfileIndexDynamic = DynamicIndex;
 }
 
 int CASW_Marine_Resource::GetProfileIndex()

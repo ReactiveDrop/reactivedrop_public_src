@@ -131,9 +131,6 @@ ConVar asw_marine_switch_blend_max_dist( "asw_marine_switch_blend_max_dist", "15
 extern ConVar asw_default_primary[ASW_NUM_MARINES_PER_LOADOUT];
 extern ConVar asw_default_secondary[ASW_NUM_MARINES_PER_LOADOUT];
 extern ConVar asw_default_extra[ASW_NUM_MARINES_PER_LOADOUT];
-extern ConVar rd_equipped_weapon_primary[ASW_NUM_MARINES_PER_LOADOUT];
-extern ConVar rd_equipped_weapon_secondary[ASW_NUM_MARINES_PER_LOADOUT];
-extern ConVar rd_equipped_weapon_extra[ASW_NUM_MARINES_PER_LOADOUT];
 extern ConVar rd_loadout_auto_update;
 
 ConVar asw_particle_count( "asw_particle_count", "0", 0, "Shows how many particles are being drawn" );
@@ -269,8 +266,7 @@ BEGIN_NETWORK_TABLE( C_ASW_Player, DT_ASW_Player )
 	RecvPropBool( RECVINFO( m_bSentJoinedMessage ) ),
 	RecvPropQAngles( RECVINFO( m_angMarineAutoAimFromClient ) ),
 	RecvPropFloat( RECVINFO( m_flInactiveKickWarning ) ),
-	RecvPropDataTable( RECVINFO_DT( m_EquippedItemDataStatic ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstances_Static ) ),
-	RecvPropDataTable( RECVINFO_DT( m_EquippedItemDataDynamic ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstances_Dynamic ) ),
+	RecvPropDataTable( RECVINFO_DT( m_EquippedItemData ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstances_Player ) ),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_ASW_Player )
@@ -539,14 +535,8 @@ void C_ASW_Player::SendRosterSelectCommand( const char *command, int i, int nPre
 			}
 		}
 
-		int iAllocatedSlot0 = ReactiveDropInventory::AllocateDynamicItemSlot( GetSplitScreenPlayerSlot(), strtoull( rd_equipped_weapon_primary[i].GetString(), NULL, 10 ), i, ASW_INVENTORY_SLOT_PRIMARY );
-		int iAllocatedSlot1 = ReactiveDropInventory::AllocateDynamicItemSlot( GetSplitScreenPlayerSlot(), strtoull( rd_equipped_weapon_secondary[i].GetString(), NULL, 10 ), i, ASW_INVENTORY_SLOT_SECONDARY );
-		int iAllocatedSlot2 = ReactiveDropInventory::AllocateDynamicItemSlot( GetSplitScreenPlayerSlot(), strtoull( rd_equipped_weapon_extra[i].GetString(), NULL, 10 ), i, ASW_INVENTORY_SLOT_EXTRA );
-
-		V_snprintf( buffer, sizeof( buffer ), "%s %d %d %d %d %d %d %d %d", command, i, nPreferredSlot, iPrimary, iSecondary, iExtra, iAllocatedSlot0, iAllocatedSlot1, iAllocatedSlot2 );
+		V_snprintf( buffer, sizeof( buffer ), "%s %d %d %d %d %d %d %d %d", command, i, nPreferredSlot, iPrimary, iSecondary, iExtra, -1, -1, -1 );
 		engine->ServerCmd( buffer );
-
-		ReactiveDropInventory::ResendDynamicEquipNotification( GetSplitScreenPlayerSlot() );
 	}
 	else
 	{
@@ -631,27 +621,21 @@ void C_ASW_Player::LoadoutSelectEquip( int iMarineIndex, int iInvSlot, int iEqui
 			if ( iProfileIndex >= 0 && iProfileIndex < ASW_NUM_MARINE_PROFILES && iInvSlot >= 0 && iInvSlot <= 2 && rd_loadout_auto_update.GetBool() )
 			{
 				COMPILE_TIME_ASSERT( ASW_NUM_MARINE_PROFILES == 8 );
-				ConVar *pEquipIndex = NULL, *pItemInstanceID = NULL;
+				ConVar *pEquipIndex = NULL;
 				if ( iInvSlot == 0 )
 				{
 					pEquipIndex = &asw_default_primary[iProfileIndex];
-					pItemInstanceID = &rd_equipped_weapon_primary[iProfileIndex];
 				}
 				else if ( iInvSlot == 1 )
 				{
 					pEquipIndex = &asw_default_secondary[iProfileIndex];
-					pItemInstanceID = &rd_equipped_weapon_secondary[iProfileIndex];
 				}
 				else
 				{
 					pEquipIndex = &asw_default_extra[iProfileIndex];
-					pItemInstanceID = &rd_equipped_weapon_extra[iProfileIndex];
 				}
 
-				char szItemInstanceID[32];
-				V_snprintf( szItemInstanceID, sizeof( szItemInstanceID ), "%llu", iItemInstanceID );
 				pEquipIndex->SetValue( iEquipIndex );
-				pItemInstanceID->SetValue( szItemInstanceID );
 
 				if ( ASWGameRules() )
 				{
@@ -663,13 +647,9 @@ void C_ASW_Player::LoadoutSelectEquip( int iMarineIndex, int iInvSlot, int iEqui
 
 	if ( iProfileIndex != -1 )
 	{
-		int iAllocatedDynamicSlot = ReactiveDropInventory::AllocateDynamicItemSlot( GetSplitScreenPlayerSlot(), iItemInstanceID, iProfileIndex, iInvSlot );
-
 		char buffer[64];
-		Q_snprintf( buffer, sizeof( buffer ), "cl_loadoutm %d %d %d %d", iMarineIndex, iInvSlot, iEquipIndex, iAllocatedDynamicSlot );
+		Q_snprintf( buffer, sizeof( buffer ), "cl_loadoutm %d %d %d %d", iMarineIndex, iInvSlot, iEquipIndex, -1 );
 		engine->ServerCmd( buffer );
-
-		ReactiveDropInventory::ResendDynamicEquipNotification( GetSplitScreenPlayerSlot() );
 	}
 }
 

@@ -1750,14 +1750,14 @@ int CASW_Weapon::GetDefaultClip2() const
 
 bool CASW_Weapon::IsInventoryEquipSlotValid() const
 {
-	if ( m_hOriginalOwnerPlayer == NULL || m_iInventoryEquipSlot == -1 )
+	if ( m_hOriginalOwnerMR == NULL || m_iInventoryEquipSlot == 0 )
 		return false;
 
 	Assert( m_pEquipItem );
 	if ( !m_pEquipItem )
 		return false;
 
-	const CRD_ItemInstance &instance = m_hOriginalOwnerPlayer->m_EquippedItemDataDynamic[m_iInventoryEquipSlot];
+	const CRD_ItemInstance &instance = m_hOriginalOwnerMR->m_EquippedItemData[m_iInventoryEquipSlot];
 	if ( !instance.IsSet() )
 		return false;
 

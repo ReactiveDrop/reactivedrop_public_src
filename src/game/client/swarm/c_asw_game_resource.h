@@ -15,22 +15,6 @@ class C_ASW_Scanner_Info;
 class C_ASW_Campaign_Save;
 class CASW_Marine_Profile;
 
-#ifdef RD_7A_DROPS
-#define RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS 5
-
-class C_RD_CraftingMaterialInfo
-{
-public:
-	DECLARE_CLASS_NOBASE( C_RD_CraftingMaterialInfo );
-	DECLARE_EMBEDDED_NETWORKVAR();
-
-	C_RD_CraftingMaterialInfo();
-
-	CNetworkVar( int, m_nSpawnLocations );
-	CNetworkArray( Vector, m_SpawnLocationOrigins, RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS );
-};
-#endif
-
 // This entity networks various information about the game
 //   such as list of selected marines, which player is leader, marine skills, etc.
 
@@ -162,10 +146,6 @@ public:
 	CNetworkVar( int, m_iNextCampaignMission );
 
 	CNetworkVar( int, m_nDifficultySuggestion );
-
-#ifdef RD_7A_DROPS
-	CNetworkVarEmbedded( C_RD_CraftingMaterialInfo, m_CraftingMaterialInfo );
-#endif
 
 protected:
 	CMarineToCrosshairInfo m_marineToCrosshairInfo;

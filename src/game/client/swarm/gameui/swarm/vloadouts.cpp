@@ -38,10 +38,6 @@ extern ConVar asw_default_primary[ASW_NUM_MARINES_PER_LOADOUT];
 extern ConVar asw_default_secondary[ASW_NUM_MARINES_PER_LOADOUT];
 extern ConVar asw_default_extra[ASW_NUM_MARINES_PER_LOADOUT];
 extern ConVar rd_equipped_medal[RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS];
-extern ConVar rd_equipped_marine[ASW_NUM_MARINES_PER_LOADOUT];
-extern ConVar rd_equipped_weapon_primary[ASW_NUM_MARINES_PER_LOADOUT];
-extern ConVar rd_equipped_weapon_secondary[ASW_NUM_MARINES_PER_LOADOUT];
-extern ConVar rd_equipped_weapon_extra[ASW_NUM_MARINES_PER_LOADOUT];
 extern ConVar asw_unlock_all_weapons;
 
 ConVar rd_loadout_temp_animation( "rd_loadout_temp_animation", "run_aiming_all" );
@@ -83,7 +79,7 @@ Loadouts::Loadouts( Panel *parent, const char *panelName )
 
 	for ( int i = 0; i < RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS; i++ )
 	{
-		m_pMedalSlot[i] = new CRD_VGUI_Loadout_Slot_Inventory( this, VarArgs( "MedalSlot%d", i ), &rd_equipped_medal[i], ReactiveDropInventory::g_InventorySlotNames[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MEDAL + i] );
+		m_pMedalSlot[i] = new CRD_VGUI_Loadout_Slot_Inventory( this, VarArgs( "MedalSlot%d", i ), &rd_equipped_medal[i], ReactiveDropInventory::g_PlayerInventorySlotNames[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MEDAL + i] );
 		m_pLblMedal[i] = new vgui::Label( this, VarArgs( "LblMedal%d", i ), "" );
 	}
 
@@ -1032,7 +1028,6 @@ bool CRD_VGUI_Loadout_List_Item::SetMarineForSlot( int iSlot, SteamItemInstanceI
 
 	if ( m_bCurrentLoadout )
 	{
-		rd_equipped_marine[iSlot].SetValue( CFmtStr{ "%llu", iItemInstance } );
 		engine->ClientCmd_Unrestricted( "host_writeconfig\n" );
 
 		ReactiveDropLoadout::LoadoutData_t CurrentLoadout;
@@ -1111,17 +1106,14 @@ bool CRD_VGUI_Loadout_List_Item::SetWeaponForSlot( int iSlot, ASW_Inventory_slot
 		if ( iEquipSlot == ASW_INVENTORY_SLOT_PRIMARY )
 		{
 			asw_default_primary[iSlot].SetValue( iEquipIndex );
-			rd_equipped_weapon_primary[iSlot].SetValue( CFmtStr{ "%llu", iItemInstance } );
 		}
 		else if ( iEquipSlot == ASW_INVENTORY_SLOT_SECONDARY )
 		{
 			asw_default_secondary[iSlot].SetValue( iEquipIndex );
-			rd_equipped_weapon_secondary[iSlot].SetValue( CFmtStr{ "%llu", iItemInstance } );
 		}
 		else if ( iEquipSlot == ASW_INVENTORY_SLOT_EXTRA )
 		{
 			asw_default_extra[iSlot].SetValue( iEquipIndex );
-			rd_equipped_weapon_extra[iSlot].SetValue( CFmtStr{ "%llu", iItemInstance } );
 		}
 		engine->ClientCmd_Unrestricted( "host_writeconfig\n" );
 

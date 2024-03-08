@@ -100,7 +100,7 @@ public:
 
 	CASW_EquipItem( int iItemIndex, const char *szEquipClass, const char *szShortName, const char *szLongName,
 		const char *szDescription1, const char *szAltFireDescription, const char *szAttributeDescription,
-		bool bSelectableInBriefing, bool bIsExtra, const char *szAmmo1, const char *szAmmo2,
+		bool bSelectableInBriefing, bool bRequiresInventoryItem, bool bIsExtra, const char *szAmmo1, const char *szAmmo2,
 		const char *szEquipIcon, ConVar *pDefaultAmmo1, ConVar *pMaxAmmo1, ConVar *pDefaultAmmo2, ConVar *pMaxAmmo2,
 		int iRequiredClass = -1, bool bIsUnique = false, bool bViewModelIsMarineAttachment = false, bool bViewModelHidesMarineBodyGroup1 = false );
 
@@ -129,7 +129,8 @@ public:
 	const char *const m_szAmmo1;
 	const char *const m_szAmmo2;
 	const char *const m_szEquipIcon;
-	const bool m_bSelectableInBriefing : 1; // if false, this item won't show up on the loadout screen unless an inventory item is equipped
+	const bool m_bSelectableInBriefing : 1; // if false, this item won't show up on the loadout screen unless a convar says otherwise
+	const bool m_bRequiresInventoryItem : 1; // if true, this item won't show up on the loadout screen unless an inventory item is equipped
 	const bool m_bIsExtra : 1;
 	const bool m_bIsUnique : 1;
 	const bool m_bViewModelIsMarineAttachment : 1;

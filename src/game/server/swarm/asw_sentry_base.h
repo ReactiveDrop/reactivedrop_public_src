@@ -5,8 +5,8 @@
 #include "asw_shareddefs.h"
 #include "iasw_server_usable_entity.h"
 
-class CASW_Player;
 class CASW_Marine;
+class CASW_Marine_Resource;
 class CASW_Sentry_Top;
 
 class CASW_Sentry_Base : public CBaseAnimating, public IASW_Server_Usable_Entity
@@ -76,7 +76,7 @@ public:
 	inline void SetGunType( GunType_t iType );
 	inline void SetGunType( int iType );
 
-	CNetworkHandle( CASW_Player, m_hOriginalOwnerPlayer );
+	CNetworkHandle( CASW_Marine_Resource, m_hOriginalOwnerMR );
 	CNetworkVar( int, m_iInventoryEquipSlot );
 	// sentry item validity was checked when the sentry was deployed.
 	// there's a chance players could do some convoluted process where
@@ -84,7 +84,7 @@ public:
 	// and finish uploading it after the sentry is placed, but they
 	// can also just write their own code that increments stats directly,
 	// so this is not something we should spend resources trying to prevent.
-	bool IsInventoryEquipSlotValid() const { return !!m_hOriginalOwnerPlayer && m_iInventoryEquipSlot != -1; }
+	bool IsInventoryEquipSlotValid() const { return !!m_hOriginalOwnerMR && m_iInventoryEquipSlot != 0; }
 
 	CNetworkHandle( CASW_Inhabitable_NPC, m_hLastDisassembler );
 

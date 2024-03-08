@@ -1030,7 +1030,7 @@ const CRD_ItemInstance &CASW_Briefing::GetEquippedMedal( int nLobbySlot, int nMe
 	UpdateLobbySlotMapping();
 
 	C_ASW_Player *pPlayer = m_LobbySlotMapping[nLobbySlot].m_hPlayer.Get();
-	return pPlayer ? pPlayer->m_EquippedItemDataStatic[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MEDAL + nMedalIndex] : s_empty;
+	return pPlayer ? pPlayer->m_EquippedItemData[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MEDAL + nMedalIndex] : s_empty;
 }
 
 const CRD_ItemInstance &CASW_Briefing::GetEquippedSuit( int nLobbySlot )
@@ -1041,10 +1041,18 @@ const CRD_ItemInstance &CASW_Briefing::GetEquippedSuit( int nLobbySlot )
 
 	C_ASW_Player *pPlayer = m_LobbySlotMapping[nLobbySlot].m_hPlayer.Get();
 	C_ASW_Marine_Resource *pMR = m_LobbySlotMapping[nLobbySlot].m_hMR.Get();
-	if ( !pPlayer || !pMR || pMR->m_MarineProfileIndexDynamic < 0 || pMR->m_MarineProfileIndexDynamic >= ASW_NUM_MARINES_PER_LOADOUT )
+	if ( !pPlayer || !pMR || !pMR->m_EquippedItemData.m_Suit.IsSet() )
 		return s_empty;
 
-	return pPlayer->m_EquippedItemDataStatic[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + pMR->m_MarineProfileIndexDynamic];
+	const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( pMR->m_EquippedItemData.m_Suit.m_iItemDefID );
+	Assert( pDef );
+	if ( !pDef )
+		return s_empty;
+
+	if ( !pDef->ItemSlotMatches( "marine_any" ) || pDef->EquipIndex != pMR->GetProfileIndex() )
+		return s_empty;
+
+	return pMR->m_EquippedItemData.m_Suit;
 }
 
 const CRD_ItemInstance &CASW_Briefing::GetEquippedWeapon( int nLobbySlot, int nWeaponSlot )
@@ -1058,11 +1066,7 @@ const CRD_ItemInstance &CASW_Briefing::GetEquippedWeapon( int nLobbySlot, int nW
 	if ( !pPlayer || !pMR )
 		return s_empty;
 
-	int iDynamicSlot = pMR->m_iWeaponsInSlotsDynamic[nWeaponSlot];
-	if ( iDynamicSlot == -1 )
-		return s_empty;
-
-	const CRD_ItemInstance &instance = pPlayer->m_EquippedItemDataDynamic[iDynamicSlot];
+	const CRD_ItemInstance &instance = pMR->m_EquippedItemData[nWeaponSlot + 1];
 	if ( !instance.IsSet() )
 		return s_empty;
 

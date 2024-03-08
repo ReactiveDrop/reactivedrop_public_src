@@ -88,9 +88,9 @@ void CommanderProfile::InitForNetworkedPlayer( C_ASW_Player *pPlayer )
 	m_iPromotion = pPlayer->GetPromotion();
 
 	COMPILE_TIME_ASSERT( RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS == 3 );
-	m_Medals[0] = pPlayer->m_EquippedItemDataStatic.m_Medal0;
-	m_Medals[1] = pPlayer->m_EquippedItemDataStatic.m_Medal1;
-	m_Medals[2] = pPlayer->m_EquippedItemDataStatic.m_Medal2;
+	m_Medals[0] = pPlayer->m_EquippedItemData.m_Medal0;
+	m_Medals[1] = pPlayer->m_EquippedItemData.m_Medal1;
+	m_Medals[2] = pPlayer->m_EquippedItemData.m_Medal2;
 
 	FetchHoIAFSeasonStats();
 

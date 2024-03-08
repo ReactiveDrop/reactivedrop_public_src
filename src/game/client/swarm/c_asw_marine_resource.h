@@ -26,7 +26,6 @@ public:
 	CASW_Marine_Profile* GetProfile(void);
 	int GetProfileIndex() {	return m_MarineProfileIndex; }
 	int	m_MarineProfileIndex;
-	int m_MarineProfileIndexDynamic;
 	C_ASW_Marine* GetMarineEntity();
 	C_ASW_Player* GetCommander();
 	int GetCommanderIndex() { return m_iCommanderIndex; }
@@ -35,7 +34,6 @@ public:
 	void GetDisplayName( wchar_t *pwchDisplayName, int nMaxBytes );
 
 	int m_iWeaponsInSlots[ASW_MAX_EQUIP_SLOTS];	// index of equipment selected in loadout for primary inventory slot
-	int m_iWeaponsInSlotsDynamic[ASW_MAX_EQUIP_SLOTS];
 	int m_iInitialWeaponsInSlots[ASW_MAX_EQUIP_SLOTS];
 
 	// stats
@@ -115,6 +113,9 @@ public:
 	float m_flScoreLastChanged;
 	int m_iPrevScore;
 	int m_iCurScore;
+
+	CNetworkVarEmbedded( CRD_ItemInstances_Marine_Resource, m_EquippedItemData );
+	void ClearInvalidEquipData();
 
 private:
 	C_ASW_Marine_Resource( const C_ASW_Marine_Resource & ); // not defined, not accessible

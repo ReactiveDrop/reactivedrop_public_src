@@ -344,8 +344,7 @@ public:
 	CNetworkVar( int, m_iNetworkedXP );
 	CNetworkVar( int, m_iNetworkedPromotion );
 
-	CNetworkVarEmbedded( CRD_ItemInstances_Static, m_EquippedItemDataStatic );
-	CNetworkVarEmbedded( CRD_ItemInstances_Dynamic, m_EquippedItemDataDynamic );
+	CNetworkVarEmbedded( CRD_ItemInstances_Player, m_EquippedItemData );
 
 	bool m_bPendingSteamStats;
 	float m_flPendingSteamStatsStart;

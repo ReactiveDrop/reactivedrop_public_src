@@ -352,7 +352,7 @@ static const CRD_ItemInstance &GetItemInstanceFromRenderable( IClientRenderable 
 		if ( !pWeapon->IsInventoryEquipSlotValid() )
 			return s_EmptyInstance;
 
-		return pWeapon->m_hOriginalOwnerPlayer->m_EquippedItemDataDynamic[pWeapon->m_iInventoryEquipSlot];
+		return pWeapon->m_hOriginalOwnerMR->m_EquippedItemData[pWeapon->m_iInventoryEquipSlot];
 	}
 
 	if ( C_ASW_Sentry_Top *pSentry = dynamic_cast< C_ASW_Sentry_Top * >( pEnt ) )
@@ -365,15 +365,15 @@ static const CRD_ItemInstance &GetItemInstanceFromRenderable( IClientRenderable 
 		if ( !pSentry->IsInventoryEquipSlotValid() )
 			return s_EmptyInstance;
 
-		return pSentry->m_hOriginalOwnerPlayer->m_EquippedItemDataDynamic[pSentry->m_iInventoryEquipSlot];
+		return pSentry->m_hOriginalOwnerMR->m_EquippedItemData[pSentry->m_iInventoryEquipSlot];
 	}
 
 	if ( C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pEnt ) )
 	{
 		C_ASW_Marine_Resource *pMR = pMarine->GetMarineResource();
-		if ( pMR && pMR->m_OriginalCommander && pMR->m_MarineProfileIndexDynamic >= 0 && pMR->m_MarineProfileIndexDynamic < ASW_NUM_MARINES_PER_LOADOUT )
+		if ( pMR )
 		{
-			return pMR->m_OriginalCommander->m_EquippedItemDataStatic[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + pMR->m_MarineProfileIndexDynamic];
+			return pMR->m_EquippedItemData.m_Suit;
 		}
 	}
 
@@ -384,7 +384,7 @@ static const CRD_ItemInstance &GetItemInstanceFromRenderable( IClientRenderable 
 		if ( !pData || !pData->IsInventoryEquipSlotValid() )
 			return s_EmptyInstance;
 
-		return pData->m_hOriginalOwnerPlayer->m_EquippedItemDataDynamic[pData->m_iInventoryEquipSlot];
+		return pData->m_hOriginalOwnerMR->m_EquippedItemData[pData->m_iInventoryEquipSlot];
 	}
 
 	return s_EmptyInstance;

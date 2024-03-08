@@ -251,7 +251,7 @@ public:
 	virtual int DisplayClip2() { return Clip2(); }
 	virtual int DisplayMaxClip2() { return GetMaxClip2(); }
 
-	CNetworkHandle( CASW_Player, m_hOriginalOwnerPlayer );
+	CNetworkHandle( C_ASW_Marine_Resource, m_hOriginalOwnerMR );
 	CNetworkVar( int, m_iInventoryEquipSlot );
 	bool IsInventoryEquipSlotValid() const;
 

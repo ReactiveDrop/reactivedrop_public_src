@@ -279,18 +279,31 @@ public:
 	float m_flPendingSteamStatsStart;
 	bool m_bSentPromotedMessage;
 
-	// static inventory (medals, suits)
-	CNetworkVarEmbedded( CRD_ItemInstances_Static, m_EquippedItemDataStatic );
-	// dynamic inventory (weapons, equipment)
-	CNetworkVarEmbedded( CRD_ItemInstances_Dynamic, m_EquippedItemDataDynamic );
+	// static inventory (medals)
+	CNetworkVarEmbedded( CRD_ItemInstances_Player, m_EquippedItemData );
 	float m_flNextItemCounterCommit;
 	// receiving inventory data
-	SteamInventoryResult_t m_EquippedItemsResult[2];
-	CUtlMemory<char> m_EquippedItemsReceiving[2];
-	int m_iEquippedItemsReceivingOffset[2];
-	int m_iEquippedItemsParity[2];
-	void HandleEquippedItemsNotification( KeyValues *pKeyValues, bool bDynamic );
-	void HandleEquippedItemsCachedNotification( KeyValues *pKeyValues, bool bDynamic );
+	void HandleInventoryCommandInit( KeyValues *pKeyValues );
+	void HandleInventoryCommandAbort( KeyValues *pKeyValues );
+	void HandleInventoryCommand( KeyValues *pKeyValues );
+	void HandleOfflineInventoryCommand( KeyValues *pKeyValues );
+	bool OnSteamInventoryResultReady( SteamInventoryResultReady_t *pParam );
+	void RejectInventoryCommand( int iPayloadID );
+	struct InventoryCommandData_t
+	{
+		~InventoryCommandData_t();
+
+		int m_iCommandID;
+		enum EInventoryCommand m_eCommand;
+		CUtlVector<int> m_iArgs;
+
+		CRC32_t m_CRC;
+		CUtlMemory<byte> m_Data;
+		int m_iOffset{ 0 };
+
+		SteamInventoryResult_t m_hResult{ k_SteamInventoryResultInvalid };
+	};
+	CUtlVectorAutoPurge<InventoryCommandData_t *> m_InventoryCommands;
 
 	static CBaseEntity *spawn_point;
 	bool m_bWelcomed;

@@ -775,6 +775,7 @@ const RD_Mission_t *ReactiveDropMissions::GetMission( int index )
 #ifdef RD_7A_DROPS
 	// pre-pass to catch endless and deathmatch missions before we parse materials
 	bool bIsEndlessOrDeathmatch = info.bAdminOverrideDeathmatch && !V_strnicmp( pMission->BaseName, "dm_", 3 );
+	bool bIsProcedural = false;
 	FOR_EACH_VALUE( pKV, pValue )
 	{
 		if ( !V_stricmp( pValue->GetName(), "tag" ) && ( !V_stricmp( pValue->GetString(), "deathmatch" ) || !V_stricmp( pValue->GetString(), "endless" ) ) )
@@ -784,9 +785,15 @@ const RD_Mission_t *ReactiveDropMissions::GetMission( int index )
 		}
 	}
 
-	if ( bIsEndlessOrDeathmatch )
+	if ( bIsProcedural )
 	{
 		Assert( pMission->RegionalMaterials.Count() == 0 );
+		pMission->RegionalMaterials.AddToTail( RD_CRAFTING_MATERIAL_PROBABILITY_DRIVE );
+	}
+
+	if ( bIsEndlessOrDeathmatch )
+	{
+		Assert( pMission->RegionalMaterials.Count() == ( bIsProcedural ? 1 : 0 ) );
 		pMission->RegionalMaterials.AddToTail( RD_CRAFTING_MATERIAL_ARGON_CANISTER );
 	}
 #endif
@@ -827,7 +834,7 @@ const RD_Mission_t *ReactiveDropMissions::GetMission( int index )
 				continue;
 			}
 
-			for ( int i = 0; i < NUM_RD_CRAFTING_MATERIALS; i++ )
+			for ( int i = 0; i < NUM_RD_CRAFTING_MATERIAL_TYPES; i++ )
 			{
 				if ( g_RD_Crafting_Material_Info[i].m_iRarity != RD_CRAFTING_MATERIAL_RARITY_REGIONAL || i == RD_CRAFTING_MATERIAL_ARGON_CANISTER || i == RD_CRAFTING_MATERIAL_PROBABILITY_DRIVE )
 					continue;

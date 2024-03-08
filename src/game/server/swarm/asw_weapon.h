@@ -8,6 +8,7 @@
 
 class CASW_Inhabitable_NPC;
 class CASW_Player;
+class CASW_Marine_Resource;
 class CASW_Marine;
 class CASW_WeaponInfo;
 class CASW_EquipItem;
@@ -199,7 +200,7 @@ public:
 	virtual const char *GetMagazineGibModelName() const { return NULL; }
 	virtual int GetMagazineGibModelSkin() const { return 0; }
 
-	CNetworkHandle( CASW_Player, m_hOriginalOwnerPlayer );
+	CNetworkHandle( CASW_Marine_Resource, m_hOriginalOwnerMR );
 	CNetworkVar( int, m_iInventoryEquipSlot );
 	bool IsInventoryEquipSlotValid() const;
 

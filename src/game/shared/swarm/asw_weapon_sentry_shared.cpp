@@ -4,11 +4,13 @@
 #include "asw_marine_skills.h"
 
 #ifdef CLIENT_DLL
+#include "c_asw_marine.h"
+#include "c_asw_marine_resource.h"
 #include "c_asw_player.h"
 #include "c_asw_weapon.h"
-#include "c_asw_marine.h"
 #else
 #include "asw_marine.h"
+#include "asw_marine_resource.h"
 #include "asw_player.h"
 #include "asw_weapon.h"
 #include "npcevent.h"
@@ -345,7 +347,7 @@ void CASW_Weapon_Sentry::DeploySentry()
 	pBase->SetAmmo( m_nSentryAmmo );
 	if ( IsInventoryEquipSlotValid() )
 	{
-		pBase->m_hOriginalOwnerPlayer = m_hOriginalOwnerPlayer;
+		pBase->m_hOriginalOwnerMR = m_hOriginalOwnerMR;
 		pBase->m_iInventoryEquipSlot = m_iInventoryEquipSlot;
 	}
 

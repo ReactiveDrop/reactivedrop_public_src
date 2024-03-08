@@ -186,7 +186,7 @@ void CRD_VGUI_Commander_Mini_Profile::InitForLocalPlayer()
 
 	for ( int i = 0; i < RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS; i++ )
 	{
-		ConVarRef var{ CFmtStr{ "rd_equipped_%s", ReactiveDropInventory::g_InventorySlotNames[i + RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MEDAL] } };
+		ConVarRef var{ CFmtStr{ "rd_equipped_%s", ReactiveDropInventory::g_PlayerInventorySlotNames[i + RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MEDAL] } };
 		Assert( var.IsValid() );
 		SteamItemInstanceID_t id = strtoull( var.GetString(), NULL, 10 );
 		if ( const ReactiveDropInventory::ItemInstance_t *pInstance = ReactiveDropInventory::GetLocalItemCache( id ) )

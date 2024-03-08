@@ -6,6 +6,7 @@
 
 #include "baseentity.h"
 #include "asw_shareddefs.h"
+#include "rd_inventory_shared.h"
 
 class CASW_Marine_Profile;
 class CASW_Marine;
@@ -30,7 +31,6 @@ public:
 	virtual ~CASW_Marine_Resource();
 
 	CNetworkVar( int, m_MarineProfileIndex );
-	CNetworkVar( int, m_MarineProfileIndexDynamic );
 
 	CNetworkHandle (CASW_Marine, m_MarineEntity); 	// the actual marine
 	CNetworkHandle (CASW_Player, m_OriginalCommander);	// the player who was first in charge of this marine
@@ -40,7 +40,6 @@ public:
 
 	// indices into the equipment list for currently selected equipment
 	CNetworkArray( int, m_iWeaponsInSlots, ASW_MAX_EQUIP_SLOTS );
-	CNetworkArray( int, m_iWeaponsInSlotsDynamic, ASW_MAX_EQUIP_SLOTS );
 	CNetworkArray( int, m_iInitialWeaponsInSlots, ASW_MAX_EQUIP_SLOTS );
 
 	CNetworkVar( bool, m_bInfested );
@@ -90,7 +89,7 @@ public:
 
 	void SetMarineEntity(CASW_Marine* marine);
 	CASW_Marine* GetMarineEntity();
-	void SetProfileIndex( int ProfileIndex, int DynamicIndex );
+	void SetProfileIndex( int ProfileIndex );
 	int GetProfileIndex();
 	CASW_Marine_Profile* GetProfile();
 	bool IsInfested() { return m_bInfested; }
@@ -229,6 +228,9 @@ public:
 
 	CNetworkVar( int, m_iScore );
 	CNetworkVar( float, m_flFinishedMissionTime );
+
+	CNetworkVarEmbedded( CRD_ItemInstances_Marine_Resource, m_EquippedItemData );
+	void ClearInvalidEquipData();
 
 private:
 	CASW_Intensity* m_pIntensity;

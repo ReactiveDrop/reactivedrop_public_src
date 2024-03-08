@@ -36,6 +36,7 @@
 #include "asw_hud_3dmarinenames.h"
 #include "rd_collections.h"
 #include "rd_hoiaf_utils.h"
+#include "rd_inventory_command.h"
 #define CASW_Sentry_Base C_ASW_Sentry_Base
 #define CASW_Sentry_Top C_ASW_Sentry_Top
 #else
@@ -52,13 +53,10 @@
 #include "tier0/memdbgon.h"
 
 
-COMPILE_TIME_ASSERT( RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MEDAL + RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS == RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE );
-COMPILE_TIME_ASSERT( RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + ASW_NUM_MARINES_PER_LOADOUT == RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC );
-COMPILE_TIME_ASSERT( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC == 24 ); // if this assert fails, fix network table and update assert
+COMPILE_TIME_ASSERT( RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MEDAL + RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS == RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_PLAYER );
 #pragma warning(push)
 #pragma warning(disable: 4130) // we're comparing string literals, but if the comparison fails due to memory weirdness, it'll fail at compile time, so it's fine
-COMPILE_TIME_ASSERT( ReactiveDropInventory::g_InventorySlotNames[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MEDAL] == "medal" );
-COMPILE_TIME_ASSERT( ReactiveDropInventory::g_InventorySlotNames[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE] == "marine0" );
+COMPILE_TIME_ASSERT( ReactiveDropInventory::g_PlayerInventorySlotNames[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MEDAL] == "medal" );
 #pragma warning(pop)
 
 #ifdef CLIENT_DLL
@@ -69,10 +67,8 @@ ConVar rd_debug_inventory( "cl_debug_inventory", "0", FCVAR_NONE, "print debuggi
 	if ( !pInventory ) \
 		return
 
-extern ConVar rd_equipped_weapon_primary[ASW_NUM_MARINES_PER_LOADOUT];
-extern ConVar rd_equipped_weapon_secondary[ASW_NUM_MARINES_PER_LOADOUT];
-extern ConVar rd_equipped_weapon_extra[ASW_NUM_MARINES_PER_LOADOUT];
 extern ConVar rd_strange_device_tier_notifications;
+extern ConVar rd_equipped_medal[RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS];
 #else
 ConVar rd_debug_inventory( "sv_debug_inventory", "0", FCVAR_NONE, "print debugging messages about inventory service calls" );
 #define GET_INVENTORY_OR_BAIL \
@@ -84,18 +80,9 @@ ConVar rd_debug_inventory( "sv_debug_inventory", "0", FCVAR_NONE, "print debuggi
 extern ConVar rd_dedicated_server_language;
 #endif
 
-class CSteamItemIcon;
-
 static CUtlMap<SteamItemDef_t, ReactiveDropInventory::ItemDef_t *> s_ItemDefs( DefLessFunc( SteamItemDef_t ) );
-static CUtlStringMap<CSteamItemIcon *> s_ItemIcons( false );
 static KeyValues *s_pItemDefCache = NULL;
 static bool s_bLoadedItemDefs = false;
-
-static fieldtype_t DynamicPropertyDataType( const char *szPropertyName )
-{
-	// can be FIELD_INTEGER64, FIELD_STRING, FIELD_FLOAT, or FIELD_BOOLEAN.
-	return FIELD_INTEGER64;
-}
 
 #ifdef CLIENT_DLL
 static void ResetAccessoryIconsOnMaterialsReleased( int nChangeFlags )
@@ -210,10 +197,16 @@ public:
 		}
 
 #ifdef CLIENT_DLL
-		for ( int iPlayer = 0; iPlayer < MAX_SPLITSCREEN_PLAYERS; iPlayer++ )
+		m_iPlayerEquipmentCommand = 0;
+#endif
+	}
+
+	void LevelInitPostEntity() override
+	{
+#ifdef CLIENT_DLL
+		if ( ValidatePlayerEquipmentResult() )
 		{
-			QueueSendStaticEquipNotification( iPlayer, true );
-			QueueSendInitialDynamicEquipNotification( iPlayer );
+			SendPlayerEquipmentToServer();
 		}
 #endif
 	}
@@ -234,404 +227,11 @@ public:
 		}
 
 #ifdef CLIENT_DLL
-		for ( int iPlayer = 0; iPlayer < MAX_SPLITSCREEN_PLAYERS; iPlayer++ )
-		{
-			for ( int iType = 0; iType < NUM_EQUIP_SLOT_TYPES; iType++ )
-			{
-				pInventory->DestroyResult( m_PlayerLocal[iPlayer].m_PreparingEquipNotification[iType] );
-				m_PlayerLocal[iPlayer].m_PreparingEquipNotification[iType] = k_SteamInventoryResultInvalid;
-				FOR_EACH_VEC( m_PlayerLocal[iPlayer].m_PendingEquipSend[iType], i )
-				{
-					m_PlayerLocal[iPlayer].m_PendingEquipSend[iType][i]->deleteThis();
-
-				}
-				m_PlayerLocal[iPlayer].m_PendingEquipSend[iType].Purge();
-			}
-		}
-
 		CommitDynamicProperties();
 #endif
 	}
 
 #ifdef CLIENT_DLL
-	void QueueSendStaticEquipNotification( int iPlayer, bool bForce = false )
-	{
-		if ( !bForce && ( m_PlayerLocal[iPlayer].m_PreparingEquipNotification[EQUIP_SLOT_TYPE_STATIC] != k_SteamInventoryResultInvalid || !engine->IsInGame() ) )
-		{
-			return;
-		}
-
-		if ( ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME && !ASWDeathmatchMode() )
-		{
-			// we'll try again on map load or instant restart
-			return;
-		}
-
-		if ( !s_bLoadedItemDefs && gpGlobals->maxClients == 1 && engine->IsClientLocalToActiveServer() )
-		{
-			KeyValues *pCachedNotification = new KeyValues( "EquippedItemsCachedS" );
-			for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC; i++ )
-			{
-				// leave local cache empty; dynamic properties cannot be updated offline
-				m_PlayerLocal[iPlayer].m_LocalEquipCacheStatic[i] = ReactiveDropInventory::ItemInstance_t{};
-
-				const char *szSlot = ReactiveDropInventory::g_InventorySlotNames[i];
-				ConVarRef cv{ CFmtStr{ "rd_equipped_%s", szSlot } };
-				Assert( cv.IsValid() );
-
-				SteamItemInstanceID_t id = strtoull( cv.GetString(), NULL, 10 );
-				if ( id != 0 && id != k_SteamItemInstanceIDInvalid )
-					pCachedNotification->SetUint64( szSlot, id );
-			}
-
-			engine->ServerCmdKeyValues( pCachedNotification );
-
-			// still try to send networked notification (we might have gone online since startup)
-		}
-
-		GET_INVENTORY_OR_BAIL;
-
-		pInventory->DestroyResult( m_PlayerLocal[iPlayer].m_PreparingEquipNotification[EQUIP_SLOT_TYPE_STATIC] );
-		m_PlayerLocal[iPlayer].m_PreparingEquipNotification[EQUIP_SLOT_TYPE_STATIC] = k_SteamInventoryResultInvalid;
-		FOR_EACH_VEC( m_PlayerLocal[iPlayer].m_PendingEquipSend[EQUIP_SLOT_TYPE_STATIC], i )
-		{
-			m_PlayerLocal[iPlayer].m_PendingEquipSend[EQUIP_SLOT_TYPE_STATIC][i]->deleteThis();
-		}
-		m_PlayerLocal[iPlayer].m_PendingEquipSend[EQUIP_SLOT_TYPE_STATIC].Purge();
-
-		CUtlVector<SteamItemInstanceID_t> ItemIDs;
-		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC; i++ )
-		{
-			const char *szSlot = ReactiveDropInventory::g_InventorySlotNames[i];
-			ConVarRef cv{ CFmtStr{ "rd_equipped_%s", szSlot } };
-			Assert( cv.IsValid() );
-
-			SteamItemInstanceID_t id = strtoull( cv.GetString(), NULL, 10 );
-			if ( id != 0 && id != k_SteamItemInstanceIDInvalid )
-				ItemIDs.AddToTail( id );
-		}
-
-		if ( ItemIDs.Count() == 0 )
-			SendEquipNotification( EQUIP_SLOT_TYPE_STATIC, iPlayer );
-		else
-			pInventory->GetItemsByID( &m_PlayerLocal[iPlayer].m_PreparingEquipNotification[EQUIP_SLOT_TYPE_STATIC], ItemIDs.Base(), ItemIDs.Count() );
-	}
-
-	void QueueSendInitialDynamicEquipNotification( int iPlayer )
-	{
-		// this function should only be called on initial connect when we have no marines selected
-		m_PlayerLocal[iPlayer].m_DynamicNeedsSend.ClearAll();
-		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC; i++ )
-		{
-			m_PlayerLocal[iPlayer].m_EquipIDsDynamic[i] = k_SteamItemInstanceIDInvalid;
-			m_PlayerLocal[iPlayer].m_LocalEquipCacheDynamic[i] = ReactiveDropInventory::ItemInstance_t{};
-		}
-
-		for ( int i = 0; i < ASW_NUM_MARINES_PER_LOADOUT; i++ )
-		{
-			AllocateDynamicItemSlot( iPlayer, strtoull( rd_equipped_weapon_primary[i].GetString(), NULL, 10 ), i, ASW_INVENTORY_SLOT_PRIMARY );
-			AllocateDynamicItemSlot( iPlayer, strtoull( rd_equipped_weapon_secondary[i].GetString(), NULL, 10 ), i, ASW_INVENTORY_SLOT_SECONDARY );
-			AllocateDynamicItemSlot( iPlayer, strtoull( rd_equipped_weapon_extra[i].GetString(), NULL, 10 ), i, ASW_INVENTORY_SLOT_EXTRA );
-		}
-
-		ResendDynamicEquipNotification( iPlayer, true );
-	}
-
-	int AllocateDynamicItemSlot( int iPlayer, SteamItemInstanceID_t iItemInstanceID, int iMarineProfile, int iInventorySlot )
-	{
-		if ( iItemInstanceID == 0 || iItemInstanceID == k_SteamItemInstanceIDInvalid )
-		{
-			return -1;
-		}
-
-		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC; i++ )
-		{
-			if ( m_PlayerLocal[iPlayer].m_EquipIDsDynamic[i] == iItemInstanceID )
-			{
-				return i;
-			}
-		}
-
-		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC; i++ )
-		{
-			if ( m_PlayerLocal[iPlayer].m_EquipIDsDynamic[i] == k_SteamItemInstanceIDInvalid )
-			{
-				m_PlayerLocal[iPlayer].m_EquipIDsDynamic[i] = iItemInstanceID;
-				m_PlayerLocal[iPlayer].m_DynamicNeedsSend.Set( i );
-				return i;
-			}
-		}
-
-		C_ASW_Game_Resource *pGameResource = ASWGameResource();
-		Assert( pGameResource );
-		if ( pGameResource )
-		{
-			bool bSlotInUse[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC]{};
-			for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC; i++ )
-			{
-				if ( m_PlayerLocal[iPlayer].m_DynamicNeedsSend.Get( i ) )
-				{
-					bSlotInUse[i] = true;
-				}
-			}
-			for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
-			{
-				C_ASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
-				if ( !pMR || !pMR->m_OriginalCommander || !pMR->m_OriginalCommander->IsLocalPlayer() || pMR->m_OriginalCommander->GetSplitScreenPlayerSlot() != iPlayer )
-					continue;
-
-				for ( int j = 0; j < ASW_NUM_INVENTORY_SLOTS; j++ )
-				{
-					if ( j == iInventorySlot && pMR->GetProfileIndex() == iMarineProfile )
-						continue;
-
-					if ( pMR->m_iWeaponsInSlotsDynamic[j] >= 0 && pMR->m_iWeaponsInSlotsDynamic[j] < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC )
-					{
-						bSlotInUse[pMR->m_iWeaponsInSlotsDynamic[j]] = true;
-					}
-				}
-			}
-
-			for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC; i++ )
-			{
-				if ( !bSlotInUse[i] )
-				{
-					m_PlayerLocal[iPlayer].m_EquipIDsDynamic[i] = iItemInstanceID;
-					m_PlayerLocal[iPlayer].m_DynamicNeedsSend.Set( i );
-					return i;
-				}
-			}
-		}
-
-		// If this assert gets hit, we need to also track information about which slots are using pending items.
-		// Problem is, pending items can be in multiple slots. Good news is that's only 72 bytes of bitfields.
-		Assert( !"Failed to find a free dynamic item equip slot!" );
-
-		return -1;
-	}
-
-	void ResendDynamicEquipNotification( int iPlayer, bool bForce = false )
-	{
-		if ( !engine->IsInGame() )
-		{
-			return;
-		}
-
-		if ( m_PlayerLocal[iPlayer].m_DynamicNeedsSend.IsAllClear() && !bForce )
-		{
-			return;
-		}
-
-		if ( ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME && !ASWDeathmatchMode() )
-		{
-			// we'll try again on map load or instant restart
-			return;
-		}
-
-		if ( !s_bLoadedItemDefs && gpGlobals->maxClients == 1 && engine->IsClientLocalToActiveServer() )
-		{
-			KeyValues *pCachedNotification = new KeyValues( "EquippedItemsCachedD" );
-			for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC; i++ )
-			{
-				// leave local cache empty; dynamic properties cannot be updated offline
-				m_PlayerLocal[iPlayer].m_LocalEquipCacheDynamic[i] = ReactiveDropInventory::ItemInstance_t{};
-
-				SteamItemInstanceID_t id = m_PlayerLocal[iPlayer].m_EquipIDsDynamic[i];
-				if ( id != 0 && id != k_SteamItemInstanceIDInvalid )
-					pCachedNotification->SetUint64( CFmtStr( "item%d", i ), id );
-			}
-
-			engine->ServerCmdKeyValues( pCachedNotification );
-
-			// still try to send networked notification (we might have gone online since startup)
-		}
-
-		GET_INVENTORY_OR_BAIL;
-
-		pInventory->DestroyResult( m_PlayerLocal[iPlayer].m_PreparingEquipNotification[EQUIP_SLOT_TYPE_DYNAMIC] );
-		m_PlayerLocal[iPlayer].m_PreparingEquipNotification[EQUIP_SLOT_TYPE_DYNAMIC] = k_SteamInventoryResultInvalid;
-		FOR_EACH_VEC( m_PlayerLocal[iPlayer].m_PendingEquipSend[EQUIP_SLOT_TYPE_DYNAMIC], i )
-		{
-			m_PlayerLocal[iPlayer].m_PendingEquipSend[EQUIP_SLOT_TYPE_DYNAMIC][i]->deleteThis();
-		}
-		m_PlayerLocal[iPlayer].m_PendingEquipSend[EQUIP_SLOT_TYPE_DYNAMIC].Purge();
-
-		CUtlVector<SteamItemInstanceID_t> ItemIDs;
-		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC; i++ )
-		{
-			SteamItemInstanceID_t id = m_PlayerLocal[iPlayer].m_EquipIDsDynamic[i];
-			if ( id != 0 && id != k_SteamItemInstanceIDInvalid )
-				ItemIDs.AddToTail( id );
-		}
-
-		if ( ItemIDs.Count() == 0 )
-			SendEquipNotification( EQUIP_SLOT_TYPE_DYNAMIC, iPlayer );
-		else
-			pInventory->GetItemsByID( &m_PlayerLocal[iPlayer].m_PreparingEquipNotification[EQUIP_SLOT_TYPE_DYNAMIC], ItemIDs.Base(), ItemIDs.Count() );
-	}
-
-	void SendEquipNotification( int iType, int iPlayer )
-	{
-		COMPILE_TIME_ASSERT( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC < 255 );
-		COMPILE_TIME_ASSERT( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC < 255 );
-		COMPILE_TIME_ASSERT( NUM_EQUIP_SLOT_TYPES == 2 );
-
-		int iNumSlots = iType == EQUIP_SLOT_TYPE_STATIC ? RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC : RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC;
-
-		if ( m_PlayerLocal[iPlayer].m_PreparingEquipNotification[iType] == k_SteamInventoryResultInvalid )
-		{
-			byte allZeroes[4 + MAX( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC, RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC )];
-			V_memset( allZeroes, 0, sizeof( allZeroes ) );
-
-			*reinterpret_cast< CRC32_t * >( &allZeroes[0] ) = CRC32_ProcessSingleBuffer( &allZeroes[4], iNumSlots );
-
-			if ( iType == EQUIP_SLOT_TYPE_STATIC )
-			{
-				for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC; i++ )
-				{
-					m_PlayerLocal[iPlayer].m_LocalEquipCacheStatic[i] = ReactiveDropInventory::ItemInstance_t{};
-				}
-			}
-
-			SendEquipNotification( allZeroes, 4 + iNumSlots, iType, iPlayer );
-
-			return;
-		}
-
-		GET_INVENTORY_OR_BAIL;
-
-		EResult eResult = pInventory->GetResultStatus( m_PlayerLocal[iPlayer].m_PreparingEquipNotification[iType] );
-		if ( eResult != k_EResultOK )
-		{
-			Warning( "Getting snapshot of equipped items (type %d) to send to server failed: %d %s\n", iType, eResult, UTIL_RD_EResultToString( eResult ) );
-
-			pInventory->DestroyResult( m_PlayerLocal[iPlayer].m_PreparingEquipNotification[iType] );
-			m_PlayerLocal[iPlayer].m_PreparingEquipNotification[iType] = k_SteamInventoryResultInvalid;
-
-			return;
-		}
-
-		uint32_t nSize{};
-		pInventory->GetResultItems( m_PlayerLocal[iPlayer].m_PreparingEquipNotification[iType], NULL, &nSize );
-
-		CUtlVector<ReactiveDropInventory::ItemInstance_t> instances{ 0, int( nSize ) };
-		for ( uint32_t i = 0; i < nSize; i++ )
-		{
-			instances.AddToTail( ReactiveDropInventory::ItemInstance_t{ m_PlayerLocal[iPlayer].m_PreparingEquipNotification[iType], i } );
-		}
-
-		nSize = 0;
-		pInventory->SerializeResult( m_PlayerLocal[iPlayer].m_PreparingEquipNotification[iType], NULL, &nSize );
-		CUtlMemory<byte> buf{ 0, int( 4 + iNumSlots + nSize ) };
-
-		byte *pIndex = buf.Base() + 4;
-		if ( iType == EQUIP_SLOT_TYPE_STATIC )
-		{
-			for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC; i++ )
-			{
-				const char *szSlot = ReactiveDropInventory::g_InventorySlotNames[i];
-				ConVarRef cv{ CFmtStr{ "rd_equipped_%s", szSlot } };
-				Assert( cv.IsValid() );
-
-				*pIndex = 0;
-				m_PlayerLocal[iPlayer].m_LocalEquipCacheStatic[i] = ReactiveDropInventory::ItemInstance_t{};
-
-				SteamItemInstanceID_t id = strtoull( cv.GetString(), NULL, 10 );
-				if ( id != 0 && id != k_SteamItemInstanceIDInvalid )
-				{
-					FOR_EACH_VEC( instances, j )
-					{
-						if ( instances[j].ItemID == id )
-						{
-							m_PlayerLocal[iPlayer].m_LocalEquipCacheStatic[i] = instances[j];
-							*pIndex = j + 1;
-							break;
-						}
-					}
-				}
-
-				pIndex++;
-			}
-		}
-		else if ( iType == EQUIP_SLOT_TYPE_DYNAMIC )
-		{
-			for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC; i++ )
-			{
-				*pIndex = 0;
-
-				if ( m_PlayerLocal[iPlayer].m_EquipIDsDynamic[i] != 0 && m_PlayerLocal[iPlayer].m_EquipIDsDynamic[i] != k_SteamItemInstanceIDInvalid )
-				{
-					FOR_EACH_VEC( instances, j )
-					{
-						if ( instances[j].ItemID == m_PlayerLocal[iPlayer].m_EquipIDsDynamic[i] )
-						{
-							m_PlayerLocal[iPlayer].m_LocalEquipCacheDynamic[i] = instances[j];
-							*pIndex = j + 1;
-							break;
-						}
-					}
-				}
-
-				pIndex++;
-			}
-		}
-		else
-		{
-			Assert( 0 );
-		}
-
-		pInventory->SerializeResult( m_PlayerLocal[iPlayer].m_PreparingEquipNotification[iType], pIndex, &nSize );
-
-		*reinterpret_cast< CRC32_t * >( buf.Base() ) = CRC32_ProcessSingleBuffer( buf.Base() + 4, buf.Count() - 4 );
-
-		pInventory->DestroyResult( m_PlayerLocal[iPlayer].m_PreparingEquipNotification[iType] );
-		m_PlayerLocal[iPlayer].m_PreparingEquipNotification[iType] = k_SteamInventoryResultInvalid;
-
-		SendEquipNotification( buf.Base(), buf.Count(), iType, iPlayer );
-	}
-
-	void SendEquipNotification( const byte *pData, int nLength, int iType, int iPlayer )
-	{
-		Assert( m_PlayerLocal[iPlayer].m_PendingEquipSend[iType].Count() == 0 );
-		Assert( nLength <= RD_EQUIPPED_ITEMS_NOTIFICATION_WORST_CASE_SIZE );
-		m_PlayerLocal[iPlayer].m_EquipSendParity[iType] = ++m_EquipSendParityNext;
-		Assert( m_PlayerLocal[iPlayer].m_EquipSendParity[iType] > 0);
-		char szHex[RD_EQUIPPED_ITEMS_NOTIFICATION_PAYLOAD_SIZE_PER_PACKET * 2 + 1]{};
-		for ( int i = 0; i < nLength; i += RD_EQUIPPED_ITEMS_NOTIFICATION_PAYLOAD_SIZE_PER_PACKET )
-		{
-			int nClippedLength = MIN( nLength - i, RD_EQUIPPED_ITEMS_NOTIFICATION_PAYLOAD_SIZE_PER_PACKET );
-			// V_binarytohex is O(n^2); use an O(n) algorithm instead.
-			for ( int j = 0; j < nClippedLength; j++ )
-			{
-				szHex[j * 2] = s_szHexDigits[( pData[i + j] >> 4 ) & 0xf];
-				szHex[j * 2 + 1] = s_szHexDigits[pData[i + j] & 0xf];
-			}
-			szHex[nClippedLength * 2] = '\0';
-
-			COMPILE_TIME_ASSERT( NUM_EQUIP_SLOT_TYPES == 2 );
-			KeyValues *pKV = new KeyValues( iType == EQUIP_SLOT_TYPE_STATIC ? "EquippedItemsS" : "EquippedItemsD" );
-			pKV->SetInt( "i", i );
-			pKV->SetInt( "t", nLength );
-			pKV->SetInt( "e", m_PlayerLocal[iPlayer].m_EquipSendParity[iType]);
-			pKV->SetString( "m", szHex );
-
-			if ( i == 0 )
-				engine->ServerCmdKeyValues( pKV );
-			else
-				m_PlayerLocal[iPlayer].m_PendingEquipSend[iType].Insert( pKV );
-		}
-
-		if ( iType == EQUIP_SLOT_TYPE_DYNAMIC && m_PlayerLocal[iPlayer].m_PendingEquipSend[EQUIP_SLOT_TYPE_DYNAMIC].Count() == 0 )
-		{
-			m_PlayerLocal[iPlayer].m_DynamicNeedsSend.ClearAll();
-		}
-
-		if ( rd_debug_inventory.GetBool() )
-		{
-			Msg( "Split equipped items notification (type %d) into %d chunks (%d bytes total payload)\n", iType, m_PlayerLocal[iPlayer].m_PendingEquipSend[iType].Count() + 1, nLength );
-		}
-	}
-
 	void CacheUserInventory( SteamInventoryResult_t hResult )
 	{
 		ISteamInventory *pInventory = SteamInventory();
@@ -947,7 +547,7 @@ public:
 
 			for ( int j = 0; j < RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS; j++ )
 			{
-				CRD_ItemInstance &medalInstance = pPlayer->m_EquippedItemDataStatic[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MEDAL + j];
+				CRD_ItemInstance &medalInstance = pPlayer->m_EquippedItemData[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MEDAL + j];
 
 				ModifyAccessoryDynamicPropValue( pPlayer->GetNPC(), pPlayer, medalInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
 			}
@@ -956,27 +556,13 @@ public:
 			if ( !pMR || pMR->m_OriginalCommander.Get() != pPlayer || ( !pMR->IsInhabited() && pMR->GetHealthPercent() > 0 ) )
 				continue;
 
-			if ( pMR->m_MarineProfileIndexDynamic >= 0 && pMR->m_MarineProfileIndexDynamic < ASW_NUM_MARINES_PER_LOADOUT )
+			pMR->ClearInvalidEquipData();
+
+			for ( int j = 0; j < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_MARINE_RESOURCE; j++ )
 			{
-				CRD_ItemInstance &suitInstance = pPlayer->m_EquippedItemDataStatic[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + pMR->m_MarineProfileIndexDynamic];
+				CRD_ItemInstance &equipInstance = pMR->m_EquippedItemData[j];
 
-				ModifyAccessoryDynamicPropValue( pMR->GetMarineEntity(), pPlayer, suitInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
-			}
-
-			for ( int j = 0; j < ASW_NUM_INVENTORY_SLOTS; j++ )
-			{
-				if ( pMR->m_iWeaponsInSlotsDynamic[j] == -1 )
-					continue;
-
-				CRD_ItemInstance &weaponInstance = pPlayer->m_EquippedItemDataDynamic[j];
-				if ( !weaponInstance.IsSet() )
-					continue;
-
-				const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( weaponInstance.m_iItemDefID );
-				if ( !pDef || !pDef->ItemSlotMatches( j == ASW_INVENTORY_SLOT_EXTRA ? "extra" : "weapon" ) || pDef->EquipIndex != pMR->m_iInitialWeaponsInSlots[j] )
-					continue;
-
-				ModifyAccessoryDynamicPropValue( pMR->GetMarineEntity(), pPlayer, weaponInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
+				ModifyAccessoryDynamicPropValue( pMR->GetMarineEntity(), pPlayer, equipInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
 			}
 		}
 	}
@@ -994,7 +580,7 @@ public:
 
 		for ( int i = 0; i < RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS; i++ )
 		{
-			CRD_ItemInstance &medalInstance = pNPC->GetCommander()->m_EquippedItemDataStatic[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MEDAL + i];
+			CRD_ItemInstance &medalInstance = pNPC->GetCommander()->m_EquippedItemData[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MEDAL + i];
 
 			ModifyAccessoryDynamicPropValue( pNPC, pNPC->GetCommander(), medalInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
 		}
@@ -1002,23 +588,16 @@ public:
 		if ( CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC ) )
 		{
 			CASW_Marine_Resource *pMR = pMarine->GetMarineResource();
-			if ( pMR && pMR->m_OriginalCommander.Get() == pMR->m_Commander.Get() && pMR->m_MarineProfileIndexDynamic >= 0 && pMR->m_MarineProfileIndexDynamic < ASW_NUM_MARINES_PER_LOADOUT )
+			if ( pMR && pMR->m_OriginalCommander.Get() == pMR->m_Commander.Get() )
 			{
-				CRD_ItemInstance &suitInstance = pMR->m_OriginalCommander->m_EquippedItemDataStatic[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + pMR->m_MarineProfileIndexDynamic];
+				pMR->ClearInvalidEquipData();
 
-				ModifyAccessoryDynamicPropValue( pNPC, pMR->m_OriginalCommander, suitInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
-			}
-		}
+				for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_MARINE_RESOURCE; i++ )
+				{
+					CRD_ItemInstance &equipInstance = pMR->m_EquippedItemData[i];
 
-		for ( int i = 0; i < ASW_NUM_INVENTORY_SLOTS; i++ )
-		{
-			CASW_Weapon *pWeapon = pNPC->GetASWWeapon( i );
-			if ( pWeapon && pWeapon->m_hOriginalOwnerPlayer.Get() == pNPC->GetCommander() && pWeapon->IsInventoryEquipSlotValid() )
-			{
-				CRD_ItemInstance &weaponInstance = pWeapon->m_hOriginalOwnerPlayer->m_EquippedItemDataDynamic[pWeapon->m_iInventoryEquipSlot];
-				Assert( weaponInstance.IsSet() );
-
-				ModifyAccessoryDynamicPropValue( pNPC, pWeapon->m_hOriginalOwnerPlayer, weaponInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
+					ModifyAccessoryDynamicPropValue( pMR->GetMarineEntity(), pMR->m_Commander.Get(), equipInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
+				}
 			}
 		}
 	}
@@ -1037,7 +616,7 @@ public:
 
 		for ( int i = 0; i < RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS; i++ )
 		{
-			CRD_ItemInstance &medalInstance = pNPC->GetCommander()->m_EquippedItemDataStatic[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MEDAL + i];
+			CRD_ItemInstance &medalInstance = pNPC->GetCommander()->m_EquippedItemData[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MEDAL + i];
 
 			ModifyAccessoryDynamicPropValue( pNPC, pNPC->GetCommander(), medalInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
 		}
@@ -1051,21 +630,18 @@ public:
 #endif
 				)
 			{
-				if ( pMR->m_MarineProfileIndexDynamic >= 0 && pMR->m_MarineProfileIndexDynamic < ASW_NUM_MARINES_PER_LOADOUT )
-				{
-					CRD_ItemInstance &suitInstance = pMR->m_OriginalCommander->m_EquippedItemDataStatic[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + pMR->m_MarineProfileIndexDynamic];
+				pMR->ClearInvalidEquipData();
 
-					ModifyAccessoryDynamicPropValue( pMarine, pMR->m_OriginalCommander, suitInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
-				}
+				ModifyAccessoryDynamicPropValue( pMR->GetMarineEntity(), pMR->m_Commander.Get(), pMR->m_EquippedItemData.m_Suit, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
 			}
 		}
 
-		if ( pWeapon && pWeapon->IsInventoryEquipSlotValid() && ( bAllowBorrowed || pWeapon->m_hOriginalOwnerPlayer.Get() == pNPC->GetCommander() ) )
+		if ( pWeapon && pWeapon->IsInventoryEquipSlotValid() && ( bAllowBorrowed || ( pWeapon->m_hOriginalOwnerMR && pWeapon->m_hOriginalOwnerMR->m_OriginalCommander.Get() == pNPC->GetCommander() ) ) )
 		{
-			CRD_ItemInstance &weaponInstance = pWeapon->m_hOriginalOwnerPlayer->m_EquippedItemDataDynamic[pWeapon->m_iInventoryEquipSlot];
+			CRD_ItemInstance &weaponInstance = pWeapon->m_hOriginalOwnerMR->m_EquippedItemData[pWeapon->m_iInventoryEquipSlot];
 			Assert( weaponInstance.IsSet() );
 
-			ModifyAccessoryDynamicPropValue( pNPC, pWeapon->m_hOriginalOwnerPlayer, weaponInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
+			ModifyAccessoryDynamicPropValue( pNPC, pWeapon->m_hOriginalOwnerMR->m_OriginalCommander, weaponInstance, iAccessoryID, iPropertyIndex, iAmount, bRelative, bAllowCheating );
 		}
 	}
 
@@ -1149,31 +725,7 @@ public:
 
 		ReactiveDropInventory::ItemInstance_t *pLocalInstance = NULL;
 #ifdef CLIENT_DLL
-		for ( int iPlayer = 0; iPlayer < MAX_SPLITSCREEN_PLAYERS; iPlayer++ )
-		{
-			if ( !pLocalInstance )
-			{
-				for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC; i++ )
-				{
-					if ( m_PlayerLocal[iPlayer].m_LocalEquipCacheDynamic[i].ItemID == instance.m_iItemInstanceID )
-					{
-						pLocalInstance = &m_PlayerLocal[iPlayer].m_LocalEquipCacheDynamic[i];
-						break;
-					}
-				}
-			}
-			if ( !pLocalInstance )
-			{
-				for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC; i++ )
-				{
-					if ( m_PlayerLocal[iPlayer].m_LocalEquipCacheStatic[i].ItemID == instance.m_iItemInstanceID )
-					{
-						pLocalInstance = &m_PlayerLocal[iPlayer].m_LocalEquipCacheStatic[i];
-						break;
-					}
-				}
-			}
-		}
+		pLocalInstance = ReactiveDropInventory::GetLocalItemCacheForModify( instance.m_iItemInstanceID );
 		Assert( pLocalInstance );
 		if ( !pLocalInstance )
 		{
@@ -1215,6 +767,63 @@ public:
 
 		// no such accessory on item
 		return false;
+	}
+
+	static void UpdateCounterForAllInstancesOfThisItem( CRD_ItemInstance &instance, int iCombinedIndex, int64_t iCounterBefore, int64_t iCounterAfter )
+	{
+		Assert( instance.IsSet() );
+		if ( !instance.IsSet() )
+			return;
+
+		Assert( instance.m_nCounter[iCombinedIndex] == iCounterBefore );
+
+		int iFound = 0;
+#define CHECK( inst ) \
+		if ( inst.m_iItemInstanceID == instance.m_iItemInstanceID ) \
+		{ \
+			if ( &inst == &instance ) \
+			{ \
+				iFound++; \
+			} \
+			Assert( inst.m_nCounter[iCombinedIndex] == iCounterBefore ); \
+			inst.m_nCounter.Set( iCombinedIndex, iCounterAfter ); \
+		}
+
+		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+		{
+			CASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
+			if ( !pPlayer )
+				continue;
+
+			COMPILE_TIME_ASSERT( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_PLAYER == 3 );
+			CHECK( pPlayer->m_EquippedItemData.m_Medal0 );
+			CHECK( pPlayer->m_EquippedItemData.m_Medal1 );
+			CHECK( pPlayer->m_EquippedItemData.m_Medal2 );
+		}
+
+		if ( CASW_Game_Resource *pGameResource = ASWGameResource() )
+		{
+			for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
+			{
+				CASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
+				if ( !pMR )
+					continue;
+
+				COMPILE_TIME_ASSERT( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_MARINE_RESOURCE == 4 );
+				CHECK( pMR->m_EquippedItemData.m_Suit );
+				CHECK( pMR->m_EquippedItemData.m_Weapon1 );
+				CHECK( pMR->m_EquippedItemData.m_Weapon2 );
+				CHECK( pMR->m_EquippedItemData.m_Extra );
+			}
+		}
+
+#undef CHECK
+
+		Assert( iFound == 1 );
+		if ( !iFound )
+		{
+			instance.m_nCounter.Set( iCombinedIndex, iCounterAfter );
+		}
 	}
 
 	void ModifyDynamicPropValueHelper( CASW_Inhabitable_NPC *pNPC, CASW_Player *pOwner, CRD_ItemInstance &instance, SteamItemDef_t iAccessoryID, int iPropertyIndex, int iCombinedIndex, const char *szPropertyName,
@@ -1304,7 +913,7 @@ public:
 		pLocalInstance->DynamicProps[szPropertyName] = CFmtStr( "%lld", iCounterAfter );
 		pUpdate->NewValue = iCounterAfter;
 #endif
-		instance.m_nCounter.Set( iCombinedIndex, iCounterAfter );
+		UpdateCounterForAllInstancesOfThisItem( instance, iCombinedIndex, iCounterBefore, iCounterAfter );
 
 		if ( iTierBefore < iTierAfter && pNPC && pOwner )
 		{
@@ -1436,10 +1045,9 @@ public:
 			}
 			else if ( m_DynamicPropertyUpdateResult == k_SteamInventoryResultInvalid )
 			{
-				for ( int iPlayer = 0; iPlayer < MAX_SPLITSCREEN_PLAYERS; iPlayer++ )
+				if ( ValidatePlayerEquipmentResult() )
 				{
-					QueueSendStaticEquipNotification( iPlayer );
-					ResendDynamicEquipNotification( iPlayer );
+					SendPlayerEquipmentToServer();
 				}
 			}
 #endif
@@ -1706,10 +1314,9 @@ public:
 
 			pInventory->GetAllItems( &m_GetFullInventoryForCacheResult );
 
-			for ( int iPlayer = 0; iPlayer < MAX_SPLITSCREEN_PLAYERS; iPlayer++ )
+			if ( ValidatePlayerEquipmentResult() )
 			{
-				QueueSendStaticEquipNotification( iPlayer );
-				ResendDynamicEquipNotification( iPlayer, true );
+				SendPlayerEquipmentToServer();
 			}
 
 			m_bWantFullInventoryRefresh = false;
@@ -1744,7 +1351,7 @@ public:
 			{
 				if ( V_stricmp( pDef->CompressedDynamicProps[j], "m_unQuantity" ) && !instance.DynamicProps.Defined(pDef->CompressedDynamicProps[j]) )
 				{
-					Assert( DynamicPropertyDataType( pDef->CompressedDynamicProps[j] ) == FIELD_INTEGER64 );
+					Assert( ReactiveDropInventory::DynamicPropertyDataType( pDef->CompressedDynamicProps[j] ) == FIELD_INTEGER64 );
 					if ( hUpdate == k_SteamInventoryUpdateHandleInvalid )
 					{
 						hUpdate = pInventory->StartUpdateProperties();
@@ -1775,7 +1382,7 @@ public:
 					{
 						if ( V_stricmp( pAccessoryDef->CompressedDynamicProps[k], "m_unQuantity" ) && !instance.DynamicProps.Defined( pAccessoryDef->CompressedDynamicProps[k] ) )
 						{
-							Assert( DynamicPropertyDataType( pAccessoryDef->CompressedDynamicProps[k] ) == FIELD_INTEGER64 );
+							Assert( ReactiveDropInventory::DynamicPropertyDataType( pAccessoryDef->CompressedDynamicProps[k] ) == FIELD_INTEGER64 );
 							if ( hUpdate == k_SteamInventoryUpdateHandleInvalid )
 							{
 								hUpdate = pInventory->StartUpdateProperties();
@@ -1956,6 +1563,33 @@ public:
 
 		if ( pParam->m_handle == m_DynamicPropertyUpdateResult )
 		{
+			bool bAnyPlayerEquipChanged = false;
+
+			uint32_t nItems = 0;
+			pInventory->GetResultItems( pParam->m_handle, NULL, &nItems );
+			SteamItemDetails_t *pDetails = ( SteamItemDetails_t * )stackalloc( sizeof( SteamItemDetails_t ) * nItems );
+			pInventory->GetResultItems( pParam->m_handle, pDetails, &nItems );
+
+			for ( int i = 0; i < NELEMS( ReactiveDropInventory::g_PlayerInventorySlotNames ); i++ )
+			{
+				ConVarRef var( VarArgs( "rd_equipped_%s", ReactiveDropInventory::g_PlayerInventorySlotNames[i] ) );
+				SteamItemInstanceID_t id = strtoull( var.GetString(), NULL, 10 );
+				if ( id == 0 || id == k_SteamItemInstanceIDInvalid )
+					continue;
+
+				for ( uint32_t j = 0; j < nItems; j++ )
+				{
+					if ( pDetails[j].m_itemId == id )
+					{
+						bAnyPlayerEquipChanged = true;
+						break;
+					}
+				}
+
+				if ( bAnyPlayerEquipChanged )
+					break;
+			}
+
 			pInventory->DestroyResult( m_DynamicPropertyUpdateResult );
 			m_DynamicPropertyUpdateResult = k_SteamInventoryResultInvalid;
 
@@ -1971,27 +1605,15 @@ public:
 					pInventory->DestroyResult( m_GetFullInventoryForCacheResult );
 				pInventory->GetAllItems( &m_GetFullInventoryForCacheResult );
 
-				for ( int iPlayer = 0; iPlayer < MAX_SPLITSCREEN_PLAYERS; iPlayer++ )
-				{
-					QueueSendStaticEquipNotification( iPlayer );
-					ResendDynamicEquipNotification( iPlayer );
-				}
+				ValidatePlayerEquipmentResult( bAnyPlayerEquipChanged );
 			}
 
 			return;
 		}
 
-		for ( int iPlayer = 0; iPlayer < MAX_SPLITSCREEN_PLAYERS; iPlayer++ )
+		if ( pParam->m_handle == m_PlayerEquipmentResult )
 		{
-			for ( int iType = 0; iType < NUM_EQUIP_SLOT_TYPES; iType++ )
-			{
-				if ( pParam->m_handle == m_PlayerLocal[iPlayer].m_PreparingEquipNotification[iType] )
-				{
-					SendEquipNotification( iType, iPlayer );
-
-					return;
-				}
-			}
+			SendPlayerEquipmentToServer();
 		}
 
 		FOR_EACH_VEC( m_CraftingQueue, i )
@@ -2012,58 +1634,8 @@ public:
 			if ( !pPlayer )
 				continue;
 
-			if ( pParam->m_handle == pPlayer->m_EquippedItemsResult[0] )
+			if ( pPlayer->OnSteamInventoryResultReady( pParam ) )
 			{
-				byte nIndex[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC]{};
-				V_hextobinary( static_cast< const char * >( pPlayer->m_EquippedItemsReceiving[0].Base() ) + 8, RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC * 2, nIndex, sizeof( nIndex ) );
-
-				bool bValid = false;
-				if ( !ReactiveDropInventory::ValidateEquipItemDataStatic( bValid, pParam->m_handle, nIndex, pPlayer->GetSteamIDAsUInt64() ) )
-				{
-					Assert( !"ValidateEquipItemData failed as 'not-ready' but we are in the ready callback!" );
-				}
-
-				for ( int j = 0; j < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC; j++ )
-				{
-					if ( nIndex[j] == 0 || !bValid )
-					{
-						pPlayer->m_EquippedItemDataStatic[j].Reset();
-					}
-					else
-					{
-						pPlayer->m_EquippedItemDataStatic[j].SetFromInstance( ReactiveDropInventory::ItemInstance_t{ pParam->m_handle, nIndex[j] - 1u } );
-					}
-				}
-
-				return;
-			}
-
-			if ( pParam->m_handle == pPlayer->m_EquippedItemsResult[1] )
-			{
-				byte nIndex[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC]{};
-				V_hextobinary( static_cast< const char * >( pPlayer->m_EquippedItemsReceiving[1].Base() ) + 8, RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC * 2, nIndex, sizeof( nIndex ) );
-
-				bool bValid = false;
-				if ( !ReactiveDropInventory::ValidateEquipItemDataDynamic( bValid, pParam->m_handle, nIndex, pPlayer->GetSteamIDAsUInt64(), pPlayer ) )
-				{
-					Assert( !"ValidateEquipItemData failed as 'not-ready' but we are in the ready callback!" );
-				}
-
-				if ( bValid )
-				{
-					for ( int j = 0; j < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC; j++ )
-					{
-						if ( nIndex[j] == 0 )
-						{
-							pPlayer->m_EquippedItemDataDynamic[j].Reset();
-						}
-						else
-						{
-							pPlayer->m_EquippedItemDataDynamic[j].SetFromInstance( ReactiveDropInventory::ItemInstance_t{ pParam->m_handle, nIndex[j] - 1u } );
-						}
-					}
-				}
-
 				return;
 			}
 		}
@@ -2082,6 +1654,128 @@ public:
 	SteamInventoryResult_t m_GetFullInventoryForCacheResult{ k_SteamInventoryResultInvalid };
 	bool m_bWantFullInventoryRefresh{ false };
 
+	// we keep this result alive so we can quickly send our medals to game servers without having to do two network round trips.
+	// the result gets reset when an equipped medal changes due to dynamic property updates or crafting,
+	// the set of equipped medals is modified, or the result is within 5 minutes of expiring.
+	SteamInventoryResult_t m_PlayerEquipmentResult{ k_SteamInventoryResultInvalid };
+	// checks to see if m_PlayerEquipmentResult is ready for sending to a server; if not, an inventory request MAY be started.
+	bool ValidatePlayerEquipmentResult( bool bForceReset = false )
+	{
+		// if we can't get the inventory API, we can't send the data anyway.
+		GET_INVENTORY_OR_BAIL( false );
+
+		// we need SteamUtils so we can check the server time to see if our result is near the 1 hour expiration time.
+		ISteamUtils *pUtils = SteamUtils();
+		Assert( pUtils );
+		if ( !pUtils )
+			return false;
+
+		if ( m_PlayerEquipmentResult != k_SteamInventoryResultInvalid && !bForceReset )
+		{
+			EResult eResult = pInventory->GetResultStatus( m_PlayerEquipmentResult );
+
+			// if the result is pending, don't touch it.
+			if ( eResult == k_EResultPending )
+				return false;
+
+			// result is valid; check timestamp
+			if ( eResult == k_EResultOK )
+			{
+				// result expires 60 minutes after being created; catch it 5 minutes early and fetch a new one.
+				int iAge = pUtils->GetServerRealTime() - pInventory->GetResultTimestamp( m_PlayerEquipmentResult );
+				if ( iAge < 55 * 60 )
+					return true;
+			}
+		}
+
+		// otherwise, grab a new one
+		CUtlVector<SteamItemInstanceID_t> items;
+		items.EnsureCapacity( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_PLAYER );
+
+#define CHECK_PLAYER_EQUIP_CVAR( var ) \
+		{ \
+			SteamItemInstanceID_t iItemID = strtoull( var.GetString(), NULL, 10 ); \
+			if ( items.IsValidIndex( items.Find( iItemID ) ) ) \
+			{ \
+				Warning( "Item in %s is already equipped in another slot; unequipping %llu.\n", var.GetName(), iItemID ); \
+				var.SetValue( VarArgs( "%llu", k_SteamItemInstanceIDInvalid ) ); \
+			} \
+			else if ( iItemID != 0 && iItemID != k_SteamItemInstanceIDInvalid ) \
+			{ \
+				items.AddToTail( iItemID ); \
+			} \
+		}
+
+		CHECK_PLAYER_EQUIP_CVAR( rd_equipped_medal[0] );
+		CHECK_PLAYER_EQUIP_CVAR( rd_equipped_medal[1] );
+		CHECK_PLAYER_EQUIP_CVAR( rd_equipped_medal[2] );
+
+#undef CHECK_PLAYER_EQUIP_CVAR
+
+		if ( m_PlayerEquipmentResult != k_SteamInventoryResultInvalid )
+		{
+			pInventory->DestroyResult( m_PlayerEquipmentResult );
+			m_PlayerEquipmentResult = k_SteamInventoryResultInvalid;
+		}
+
+		if ( items.Count() == 0 )
+		{
+			// nothing equipped means we're ready to send now.
+			return true;
+		}
+
+		pInventory->GetItemsByID( &m_PlayerEquipmentResult, items.Base(), items.Count() );
+		Assert( m_PlayerEquipmentResult != k_SteamInventoryResultInvalid );
+
+		return false;
+	}
+	int m_iPlayerEquipmentCommand{ 0 };
+	void SendPlayerEquipmentToServer()
+	{
+		Assert( ValidatePlayerEquipmentResult() );
+		if ( !engine->IsInGame() )
+			return;
+
+		UTIL_RD_AbortInventoryCommand( m_iPlayerEquipmentCommand );
+
+		if ( m_PlayerEquipmentResult == k_SteamInventoryResultInvalid )
+		{
+			m_iPlayerEquipmentCommand = UTIL_RD_SendInventoryCommand( INVCMD_PLAYER_EQUIPS, CUtlVector<int>{}, m_PlayerEquipmentResult );
+			return;
+		}
+
+		GET_INVENTORY_OR_BAIL;
+
+		uint32_t nItems = 0;
+		pInventory->GetResultItems( m_PlayerEquipmentResult, NULL, &nItems );
+		SteamItemDetails_t *pDetails = ( SteamItemDetails_t * )stackalloc( sizeof( SteamItemDetails_t ) * nItems );
+		pInventory->GetResultItems( m_PlayerEquipmentResult, pDetails, &nItems );
+
+		CUtlVector<int> order;
+		order.SetCount( nItems );
+		order.FillWithValue( -1 );
+
+		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_PLAYER; i++ )
+		{
+			ConVarRef var( VarArgs( "rd_equipped_%s", ReactiveDropInventory::g_PlayerInventorySlotNames[i] ) );
+			SteamItemInstanceID_t id = strtoull( var.GetString(), NULL, 10 );
+			if ( id == 0 || id == k_SteamItemInstanceIDInvalid )
+				continue;
+
+			for ( uint32_t j = 0; j < nItems; j++ )
+			{
+				if ( pDetails[j].m_itemId == id )
+				{
+					Assert( order[j] == -1 );
+					order[j] = i;
+					break;
+				}
+			}
+		}
+
+		m_iPlayerEquipmentCommand = UTIL_RD_SendInventoryCommand( INVCMD_PLAYER_EQUIPS, order, m_PlayerEquipmentResult );
+	}
+
 	struct NotificationSeenUpdate_t
 	{
 		SteamItemInstanceID_t NotificationID;
@@ -2089,25 +1783,6 @@ public:
 	};
 	CUtlVector<NotificationSeenUpdate_t> m_QueuedNotificationSeen;
 	CUtlVector<NotificationSeenUpdate_t> m_InFlightNotificationSeen;
-
-	enum
-	{
-		EQUIP_SLOT_TYPE_STATIC,
-		EQUIP_SLOT_TYPE_DYNAMIC,
-		NUM_EQUIP_SLOT_TYPES,
-	};
-	int m_EquipSendParityNext{};
-	struct PlayerLocal_t
-	{
-		SteamInventoryResult_t m_PreparingEquipNotification[NUM_EQUIP_SLOT_TYPES]{ k_SteamInventoryResultInvalid, k_SteamInventoryResultInvalid };
-		CUtlQueue<KeyValues *> m_PendingEquipSend[NUM_EQUIP_SLOT_TYPES]{};
-		int m_EquipSendParity[NUM_EQUIP_SLOT_TYPES]{};
-		ReactiveDropInventory::ItemInstance_t m_LocalEquipCacheStatic[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC];
-		SteamItemInstanceID_t m_EquipIDsDynamic[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC];
-		ReactiveDropInventory::ItemInstance_t m_LocalEquipCacheDynamic[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC];
-		CBitVec<RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC> m_DynamicNeedsSend;
-	};
-	PlayerLocal_t m_PlayerLocal[MAX_SPLITSCREEN_PLAYERS];
 
 	STEAM_CALLBACK( CRD_Inventory_Manager, OnSteamInventoryFullUpdate, SteamInventoryFullUpdate_t )
 	{
@@ -2143,52 +1818,19 @@ public:
 } s_RD_Inventory_Manager;
 
 #ifdef CLIENT_DLL
-void __MsgFunc_RDEquippedItemsACK( bf_read &msg )
-{
-	int iParity = msg.ReadLong();
-	for ( int iPlayer = 0; iPlayer < MAX_SPLITSCREEN_PLAYERS; iPlayer++ )
-	{
-		for ( int iType = 0; iType < CRD_Inventory_Manager::NUM_EQUIP_SLOT_TYPES; iType++ )
-		{
-			if ( s_RD_Inventory_Manager.m_PlayerLocal[iPlayer].m_EquipSendParity[iType] != iParity )
-				continue;
-
-			Assert( s_RD_Inventory_Manager.m_PlayerLocal[iPlayer].m_PendingEquipSend[iType].Count() != 0 );
-			if ( s_RD_Inventory_Manager.m_PlayerLocal[iPlayer].m_PendingEquipSend[iType].Count() == 0 )
-				return;
-
-			engine->ServerCmdKeyValues( s_RD_Inventory_Manager.m_PlayerLocal[iPlayer].m_PendingEquipSend[iType].RemoveAtHead() );
-
-			DevMsg( 3, "Sending next equipped items (type %d) notification chunk (%d remain)\n", iType, s_RD_Inventory_Manager.m_PlayerLocal[iPlayer].m_PendingEquipSend[iType].Count() );
-
-			if ( iType == CRD_Inventory_Manager::EQUIP_SLOT_TYPE_DYNAMIC && s_RD_Inventory_Manager.m_PlayerLocal[iPlayer].m_PendingEquipSend[iType].Count() == 0 )
-			{
-				// revisit this if the equip command is coming in later than the item notification
-				// the hope is that delaying it until the last packet is sent means that we can use
-				// the "needs send" flag to know whether a slot is reserved for an item the marine
-				// resource doesn't yet know about
-				s_RD_Inventory_Manager.m_PlayerLocal[iPlayer].m_DynamicNeedsSend.ClearAll();
-			}
-
-			return;
-		}
-	}
-
-	Assert( !"No equip notification parity match!" );
-}
-USER_MESSAGE_REGISTER( RDEquippedItemsACK );
-
 static void RD_Equipped_Item_Changed( IConVar *var, const char *pOldValue, float flOldValue )
 {
-	s_RD_Inventory_Manager.QueueSendStaticEquipNotification( var->GetSplitScreenPlayerSlot() );
+	s_RD_Inventory_Manager.ValidatePlayerEquipmentResult( true );
 
 	if ( ReactiveDropInventory::CheckMedalEquipCache() )
 	{
-		Assert( SteamUserStats() );
-		if ( SteamUserStats() )
+		ISteamUserStats *pUserStats = SteamUserStats();
+		Assert( pUserStats );
+		if ( pUserStats )
 		{
-			bool bOK = SteamUserStats()->StoreStats();
-			Assert( bOK ); ( void )bOK;
+			bool bOK = pUserStats->StoreStats();
+			Assert( bOK );
+			( void )bOK;
 		}
 	}
 }
@@ -2197,17 +1839,6 @@ ConVar rd_equipped_medal[RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS]
 	{ "rd_equipped_medal", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped medal.", RD_Equipped_Item_Changed },
 	{ "rd_equipped_medal1", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped medal.", RD_Equipped_Item_Changed },
 	{ "rd_equipped_medal2", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped medal.", RD_Equipped_Item_Changed },
-};
-ConVar rd_equipped_marine[ASW_NUM_MARINES_PER_LOADOUT]
-{
-	{ "rd_equipped_marine0", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for Sarge's suit.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_marine1", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for Wildcat's suit.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_marine2", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for Faith's suit.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_marine3", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for Crash's suit.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_marine4", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for Jaeger's suit.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_marine5", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for Wolfe's suit.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_marine6", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for Bastille's suit.", RD_Equipped_Item_Changed },
-	{ "rd_equipped_marine7", "0", FCVAR_ARCHIVE, "Steam inventory item ID of equipped replacement for Vegas's suit.", RD_Equipped_Item_Changed },
 };
 
 CON_COMMAND( rd_debug_print_inventory, "" )
@@ -2242,142 +1873,15 @@ CON_COMMAND( rd_econ_item_preview, "inspect an item using a code from the Steam 
 
 	SteamInventory()->InspectItem( s_RD_Inventory_Manager.AddCraftItemTask( CRD_Inventory_Manager::CRAFT_INSPECT ), args.Arg( 1 ) );
 }
-
-class CSteamItemIcon : public CRD_PNG_Texture
-{
-public:
-	CSteamItemIcon( const char *szURL, bool bForceLoadRemote ) :
-		m_URLHash{ CRC32_ProcessSingleBuffer( szURL, V_strlen( szURL ) ) }
-	{
-		if ( Init( "vgui/inventory/cache", m_URLHash, bForceLoadRemote ) )
-			return;
-
-		char szDebugName[512];
-		V_snprintf( szDebugName, sizeof( szDebugName ), "inventory item icon %s", szURL );
-
-		ISteamHTTP *pHTTP = SteamHTTP();
-		Assert( pHTTP );
-		if ( pHTTP )
-		{
-			// The medal images send a Cache-Control header of "public, max-age=315569520" (1 decade).
-			// The Steam API will automatically cache stuff for us, so we don't have to manage cache ourselves.
-			HTTPRequestHandle hRequest = pHTTP->CreateHTTPRequest( k_EHTTPMethodGET, szURL );
-			SteamAPICall_t hAPICall;
-			if ( pHTTP->SendHTTPRequest( hRequest, &hAPICall ) )
-			{
-				m_szDebugName = strdup( szDebugName );
-				m_HTTPRequestCompleted.Set( hAPICall, this, &CSteamItemIcon::OnRequestCompleted );
-			}
-			else
-			{
-				OnFailedToLoadData( "Sending HTTP request failed!", szDebugName );
-			}
-		}
-		else
-		{
-			OnFailedToLoadData( "No ISteamHTTP access", szDebugName );
-		}
-	}
-
-	~CSteamItemIcon()
-	{
-		if ( m_szDebugName )
-		{
-			free( m_szDebugName );
-			m_szDebugName = NULL;
-		}
-	}
-
-	static CSteamItemIcon *Get( const char *szURL, bool bForceLoadRemote = false )
-	{
-#ifdef DBGFLAG_ASSERT
-		static CUtlMap<CRC32_t, CUtlString> s_HashToURL( DefLessFunc( CRC32_t ) );
-		CRC32_t iHash = CRC32_ProcessSingleBuffer( szURL, V_strlen( szURL ) );
-		unsigned short iHashIndex = s_HashToURL.Find( iHash );
-		if ( !s_HashToURL.IsValidIndex( iHashIndex ) )
-		{
-			s_HashToURL.Insert( iHash, szURL );
-		}
-		else
-		{
-			// if this fails, it means we have a hash collision!
-			// we need to rename one of the icons in this unusual case.
-			Assert( s_HashToURL[iHashIndex] == szURL );
-		}
-#endif
-
-		UtlSymId_t index = s_ItemIcons.Find( szURL );
-		if ( index != s_ItemIcons.InvalidIndex() )
-		{
-			if ( bForceLoadRemote )
-			{
-				Warning( "Loading icon for URL %s: already loaded; cannot create new icon\n", szURL );
-			}
-			return s_ItemIcons[index];
-		}
-
-		return s_ItemIcons[szURL] = new CSteamItemIcon( szURL, bForceLoadRemote );
-	}
-
-	const CRC32_t m_URLHash;
-private:
-	char *m_szDebugName{};
-	void OnRequestCompleted( HTTPRequestCompleted_t *pParam, bool bIOFailure )
-	{
-		if ( bIOFailure || !pParam->m_bRequestSuccessful )
-		{
-			OnFailedToLoadData( "IO Failure", m_szDebugName );
-			free( m_szDebugName );
-			m_szDebugName = NULL;
-			return;
-		}
-
-		ISteamHTTP *pHTTP = SteamHTTP();
-		Assert( pHTTP );
-		if ( !pHTTP )
-		{
-			OnFailedToLoadData( "No access to ISteamHTTP inside callback from HTTP request!", m_szDebugName );
-			free( m_szDebugName );
-			m_szDebugName = NULL;
-			return;
-		}
-
-		if ( pParam->m_eStatusCode != k_EHTTPStatusCode200OK )
-		{
-			Warning( "Status code %d from inventory item icon request - trying to parse anyway.\n", pParam->m_eStatusCode );
-		}
-
-		CUtlMemory<uint8_t> data( 0, pParam->m_unBodySize );
-		if ( !pHTTP->GetHTTPResponseBodyData( pParam->m_hRequest, data.Base(), pParam->m_unBodySize ) )
-		{
-			Warning( "Failed to get inventory item icon from successful request. Programmer error?\n" );
-		}
-
-		pHTTP->ReleaseHTTPRequest( pParam->m_hRequest );
-
-		OnPNGDataReady( data.Base(), pParam->m_unBodySize, m_szDebugName );
-		free( m_szDebugName );
-		m_szDebugName = NULL;
-	}
-
-	CCallResult<CSteamItemIcon, HTTPRequestCompleted_t> m_HTTPRequestCompleted;
-};
 #endif
 
 namespace ReactiveDropInventory
 {
-#ifdef CLIENT_DLL
-	ITexture *ItemDef_t::GetAccessoryIcon() const
+	fieldtype_t DynamicPropertyDataType( const char *szPropertyName )
 	{
-		if ( !AccessoryIcon && Icon && Icon->GetNumFrames() )
-		{
-			CFmtStr szTextureName{ "vgui/inventory/cache/%08x", assert_cast< CSteamItemIcon * >( Icon )->m_URLHash };
-			AccessoryIcon = materials->FindTexture( szTextureName, TEXTURE_GROUP_CLIENT_EFFECTS );
-		}
-
-		return AccessoryIcon;
+		// can be FIELD_INTEGER64, FIELD_STRING, FIELD_FLOAT, or FIELD_BOOLEAN.
+		return FIELD_INTEGER64;
 	}
-#endif
 
 	bool ItemDef_t::ItemSlotMatches( const char *szRequiredSlot ) const
 	{
@@ -2397,11 +1901,6 @@ namespace ReactiveDropInventory
 		}
 
 		return false;
-	}
-
-	bool ItemDef_t::ItemSlotMatchesAnyDynamic() const
-	{
-		return ItemSlotMatches( "weapon" ) || ItemSlotMatches( "extra" );
 	}
 
 	int64_t ItemDef_t::CountForStrangeTier( int iTier ) const
@@ -2594,147 +2093,6 @@ namespace ReactiveDropInventory
 	{
 		FromKeyValues( pKV );
 	}
-
-	void ItemInstance_t::FormatDescription( wchar_t *wszBuf, size_t sizeOfBufferInBytes, const CUtlString &szDesc, bool bIsSteamCommunityDesc ) const
-	{
-		Assert( !bIsSteamCommunityDesc || !V_stristr( szDesc, "m_unQuantity" ) );
-
-		V_UTF8ToUnicode( szDesc, wszBuf, sizeOfBufferInBytes );
-
-		if ( bIsSteamCommunityDesc && DynamicProps.GetNumStrings() == 0 )
-			return;
-
-		GET_INVENTORY_OR_BAIL;
-
-		char szToken[128]{};
-		wchar_t wszReplacement[1024]{};
-
-		for ( size_t i = 0; i < sizeOfBufferInBytes / sizeof( wchar_t ); i++ )
-		{
-			if ( wszBuf[i] == L'\0' )
-			{
-				break;
-			}
-
-			if ( wszBuf[i] != L'%' )
-			{
-				continue;
-			}
-
-			size_t tokenLength = 1;
-			while ( wszBuf[i + tokenLength] != L'%' )
-			{
-				wchar_t ch = wszBuf[i + tokenLength];
-				if ( ch == L'\0' )
-				{
-					return;
-				}
-
-				if ( ( ch < L'a' || ch > L'z' ) && ( ch < L'A' || ch > L'Z' ) && ( ch < L'0' || ch > L'9' ) && ch != L'_' )
-				{
-					tokenLength = 0;
-					break;
-				}
-
-				Assert( ch < 0x80 ); // assume ASCII
-				szToken[tokenLength - 1] = ( char )ch;
-
-				tokenLength++;
-
-				Assert( tokenLength < sizeof( szToken ) );
-			}
-
-			// bail if there's a non-token character after the percent sign
-			if ( tokenLength == 0 )
-			{
-				continue;
-			}
-
-			szToken[tokenLength - 1] = '\0';
-			tokenLength++;
-
-			if ( !bIsSteamCommunityDesc && !V_stricmp( szToken, "m_unQuantity" ) )
-			{
-				// special case: m_unQuantity is not stored in dynamic_props
-				V_wcsncpy( wszReplacement, UTIL_RD_CommaNumber( Quantity ), sizeof( wszReplacement ) );
-			}
-
-			if ( !DynamicProps.Defined( szToken ) )
-			{
-				if ( DynamicPropertyDataType( szToken ) == FIELD_BOOLEAN )
-				{
-					V_wcsncpy( wszReplacement, L"false", sizeof( wszReplacement ) );
-				}
-				else if ( DynamicPropertyDataType( szToken ) != FIELD_STRING )
-				{
-					V_wcsncpy( wszReplacement, L"0", sizeof( wszReplacement ) );
-				}
-			}
-			else if ( DynamicPropertyDataType( szToken ) == FIELD_STRING )
-			{
-				V_UTF8ToUnicode( DynamicProps[DynamicProps.Find( szToken )], wszReplacement, sizeof( wszReplacement ) );
-			}
-			else
-			{
-				int64_t nValue = strtoll( DynamicProps[DynamicProps.Find( szToken )], NULL, 10 );
-				V_wcsncpy( wszReplacement, UTIL_RD_CommaNumber( nValue ), sizeof( wszReplacement ) );
-			}
-
-			size_t replacementLength = 0;
-			while ( wszReplacement[replacementLength] )
-			{
-				replacementLength++;
-			}
-
-			if ( i + replacementLength >= sizeOfBufferInBytes / sizeof( wchar_t ) )
-			{
-				replacementLength = ( sizeOfBufferInBytes - i - 1 ) / sizeof( wchar_t );
-			}
-
-			V_memmove( &wszBuf[i + replacementLength], &wszBuf[i + tokenLength], sizeOfBufferInBytes - ( i + MAX( replacementLength, tokenLength ) ) * sizeof( wchar_t ) );
-			V_memmove( &wszBuf[i], wszReplacement, replacementLength * sizeof( wchar_t ) );
-			if ( replacementLength > tokenLength )
-			{
-				wszBuf[sizeOfBufferInBytes / sizeof( wchar_t ) - 1] = L'\0';
-			}
-		}
-
-#ifdef DBGFLAG_ASSERT
-		wchar_t *wszTemp = new wchar_t[sizeOfBufferInBytes / sizeof( wchar_t )];
-		CRD_ItemInstance reduced{ *this };
-		reduced.FormatDescription( wszTemp, sizeOfBufferInBytes, szDesc, bIsSteamCommunityDesc );
-		Assert( !V_wcscmp( wszBuf, wszTemp ) );
-		delete[] wszTemp;
-#endif
-	}
-
-#ifdef CLIENT_DLL
-	void ItemInstance_t::FormatDescription( vgui::MultiFontRichText *pRichText, bool bIncludeAccessories, Color descriptionColor, Color beforeAfterColor ) const
-	{
-		CRD_ItemInstance reduced{ *this };
-		reduced.FormatDescription( pRichText, bIncludeAccessories, descriptionColor, beforeAfterColor );
-	}
-
-	vgui::IImage *ItemInstance_t::GetIcon() const
-	{
-		const ItemDef_t *pDef = GetItemDef( ItemDefID );
-		Assert( pDef );
-		if ( !pDef )
-			return NULL;
-
-		int iStyle = GetStyle();
-		if ( pDef->StyleIcons.Count() )
-		{
-			Assert( pDef->StyleIcons.IsValidIndex( iStyle ) );
-			if ( pDef->StyleIcons.IsValidIndex( iStyle ) )
-			{
-				return pDef->StyleIcons[iStyle];
-			}
-		}
-
-		return pDef->Icon;
-	}
-#endif
 
 	int ItemInstance_t::GetStyle() const
 	{
@@ -3166,7 +2524,7 @@ namespace ReactiveDropInventory
 		FETCH_PROPERTY( "icon_url" );
 		if ( *szValue )
 		{
-			pItemDef->Icon = CSteamItemIcon::Get( szValue );
+			pItemDef->Icon = GetSteamItemIcon( szValue );
 		}
 
 		pItemDef->StyleIcons.SetCount( pItemDef->StyleNames.Count() );
@@ -3177,7 +2535,7 @@ namespace ReactiveDropInventory
 			FETCH_PROPERTY( szKey );
 			if ( *szValue )
 			{
-				pItemDef->StyleIcons[i] = CSteamItemIcon::Get( szValue );
+				pItemDef->StyleIcons[i] = GetSteamItemIcon( szValue );
 
 				// first style should always match default icon
 				Assert( i || pItemDef->StyleIcons[i] == pItemDef->Icon );
@@ -3259,135 +2617,6 @@ namespace ReactiveDropInventory
 		return true;
 	}
 
-	bool ValidateEquipItemDataStatic( bool &bValid, SteamInventoryResult_t hResult, byte( &nIndex )[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC], CSteamID requiredSteamID )
-	{
-		GET_INVENTORY_OR_BAIL( false );
-
-		EResult eResultStatus = pInventory->GetResultStatus( hResult );
-		if ( eResultStatus == k_EResultPending )
-		{
-			return false;
-		}
-
-		if ( eResultStatus != k_EResultOK )
-		{
-			Warning( "ReactiveDropInventory::ValidateEquipItemDataStatic: EResult %d (%s) for SteamID %llu\n", eResultStatus, UTIL_RD_EResultToString( eResultStatus ), requiredSteamID.ConvertToUint64() );
-
-			bValid = false;
-			return true;
-		}
-
-		Assert( requiredSteamID.IsValid() );
-		if ( !pInventory->CheckResultSteamID( hResult, requiredSteamID ) )
-		{
-			Warning( "ReactiveDropInventory::ValidateEquipItemDataStatic: not from SteamID %llu\n", requiredSteamID.ConvertToUint64() );
-
-			bValid = false;
-			return true;
-		}
-
-		CUtlVector<SteamItemInstanceID_t> seenIDs;
-		seenIDs.EnsureCapacity( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC );
-
-		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC; i++ )
-		{
-			if ( nIndex[i] == 0 )
-				continue;
-
-			ReactiveDropInventory::ItemInstance_t instance{ hResult, nIndex[i] - 1u };
-			const ReactiveDropInventory::ItemDef_t *pItemDef = GetItemDef( instance.ItemDefID );
-
-			if ( !pItemDef || !pItemDef->ItemSlotMatches( ReactiveDropInventory::g_InventorySlotNames[i] ) )
-			{
-				Warning( "ReactiveDropInventory::ValidateEquipItemDataStatic: item %llu '%s' fits in slot '%s', not '%s' for SteamID %llu\n", instance.ItemID, pItemDef ? pItemDef->Name.Get() : "<NO DEF>", pItemDef ? pItemDef->ItemSlot.Get() : "<NO DEF>", ReactiveDropInventory::g_InventorySlotNames[i], requiredSteamID.ConvertToUint64() );
-
-				bValid = false;
-				return true;
-			}
-
-			if ( seenIDs.IsValidIndex( seenIDs.Find( instance.ItemID ) ) )
-			{
-				Warning( "ReactiveDropInventory::ValidateEquipItemDataStatic: item %llu '%s' is in multiple slots (latest '%s') for SteamID %llu\n", instance.ItemID, pItemDef ? pItemDef->Name.Get() : "<NO DEF>", ReactiveDropInventory::g_InventorySlotNames[i], requiredSteamID.ConvertToUint64() );
-
-				bValid = false;
-				return true;
-			}
-
-			seenIDs.AddToTail( instance.ItemID );
-		}
-
-		bValid = true;
-		return true;
-	}
-
-	bool ValidateEquipItemDataDynamic( bool &bValid, SteamInventoryResult_t hResult, byte( &nIndex )[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC], CSteamID requiredSteamID, CASW_Player *pPlayer )
-	{
-		GET_INVENTORY_OR_BAIL( false );
-
-		EResult eResultStatus = pInventory->GetResultStatus( hResult );
-		if ( eResultStatus == k_EResultPending )
-		{
-			return false;
-		}
-
-		if ( eResultStatus != k_EResultOK )
-		{
-			Warning( "ReactiveDropInventory::ValidateEquipItemDataDynamic: EResult %d (%s) for SteamID %llu\n", eResultStatus, UTIL_RD_EResultToString( eResultStatus ), requiredSteamID.ConvertToUint64() );
-
-			bValid = false;
-			return true;
-		}
-
-		Assert( requiredSteamID.IsValid() );
-		if ( !pInventory->CheckResultSteamID( hResult, requiredSteamID ) )
-		{
-			Warning( "ReactiveDropInventory::ValidateEquipItemDataDynamic: not from SteamID %llu\n", requiredSteamID.ConvertToUint64() );
-
-			bValid = false;
-			return true;
-		}
-
-		CUtlVector<SteamItemInstanceID_t> seenIDs;
-		seenIDs.EnsureCapacity( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC );
-		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC; i++ )
-		{
-			if ( nIndex[i] == 0 && pPlayer->m_EquippedItemDataDynamic[i].IsSet() )
-			{
-				seenIDs.AddToTail( pPlayer->m_EquippedItemDataDynamic[i].m_iItemInstanceID );
-			}
-		}
-
-		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC; i++ )
-		{
-			if ( nIndex[i] == 0 )
-				continue;
-
-			ReactiveDropInventory::ItemInstance_t instance{ hResult, nIndex[i] - 1u };
-			const ReactiveDropInventory::ItemDef_t *pItemDef = GetItemDef( instance.ItemDefID );
-
-			if ( !pItemDef || !pItemDef->ItemSlotMatchesAnyDynamic() )
-			{
-				Warning( "ReactiveDropInventory::ValidateEquipItemDataDynamic: item %llu '%s' fits in slot '%s' (not in dynamic list) for SteamID %llu\n", instance.ItemID, pItemDef ? pItemDef->Name.Get() : "<NO DEF>", pItemDef ? pItemDef->ItemSlot.Get() : "<NO DEF>", requiredSteamID.ConvertToUint64() );
-
-				bValid = false;
-				return true;
-			}
-
-			if ( seenIDs.IsValidIndex( seenIDs.Find( instance.ItemID ) ) )
-			{
-				Warning( "ReactiveDropInventory::ValidateEquipItemDataDynamic: item %llu '%s' is in multiple slots (latest %d) for SteamID %llu\n", instance.ItemID, pItemDef ? pItemDef->Name.Get() : "<NO DEF>", i, requiredSteamID.ConvertToUint64() );
-
-				bValid = false;
-				return true;
-			}
-
-			seenIDs.AddToTail( instance.ItemID );
-		}
-
-		bValid = true;
-		return true;
-	}
-
 #ifdef CLIENT_DLL
 	void AddPromoItem( SteamItemDef_t id )
 	{
@@ -3449,6 +2678,20 @@ namespace ReactiveDropInventory
 		return NULL;
 	}
 
+	ItemInstance_t *GetLocalItemCacheForModify( SteamItemInstanceID_t id )
+	{
+		FOR_EACH_VEC( s_RD_Inventory_Manager.m_LocalInventoryCache, i )
+		{
+			ItemInstance_t *pInstance = &s_RD_Inventory_Manager.m_LocalInventoryCache[i];
+			if ( pInstance->ItemID == id )
+			{
+				return pInstance;
+			}
+		}
+
+		return NULL;
+	}
+
 	void GetItemsForSlot( CUtlVector<ItemInstance_t> &instances, const char *szRequiredSlot )
 	{
 		GetLocalInventoryWhere( instances, [&]( const ItemInstance_t &instance ) -> bool
@@ -3465,16 +2708,6 @@ namespace ReactiveDropInventory
 				const ItemDef_t *pDef = GetItemDef( instance.ItemDefID );
 				return pDef && pDef->ItemSlotMatches( szRequiredSlot ) && pDef->EquipIndex == iEquipIndex;
 			} );
-	}
-
-	int AllocateDynamicItemSlot( int iPlayer, SteamItemInstanceID_t iItemInstanceID, int iMarineProfile, int iInventorySlot )
-	{
-		return s_RD_Inventory_Manager.AllocateDynamicItemSlot( iPlayer, iItemInstanceID, iMarineProfile, iInventorySlot );
-	}
-
-	void ResendDynamicEquipNotification( int iPlayer, bool bForce )
-	{
-		s_RD_Inventory_Manager.ResendDynamicEquipNotification( iPlayer, bForce );
 	}
 
 	bool CheckMedalEquipCache()
@@ -3843,7 +3076,7 @@ void CRD_ItemInstance::SetFromInstance( const ReactiveDropInventory::ItemInstanc
 
 	FOR_EACH_VEC( pDef->CompressedDynamicProps, i )
 	{
-		Assert( DynamicPropertyDataType( pDef->CompressedDynamicProps[i] ) == FIELD_INTEGER64 );
+		Assert( ReactiveDropInventory::DynamicPropertyDataType( pDef->CompressedDynamicProps[i] ) == FIELD_INTEGER64 );
 
 		if ( !V_stricmp( pDef->CompressedDynamicProps[i], "m_unQuantity" ) )
 		{
@@ -3874,7 +3107,7 @@ void CRD_ItemInstance::SetFromInstance( const ReactiveDropInventory::ItemInstanc
 			const ReactiveDropInventory::ItemDef_t *pAccessoryDef = ReactiveDropInventory::GetItemDef( iAccessoryID );
 			FOR_EACH_VEC( pAccessoryDef->CompressedDynamicProps, j )
 			{
-				Assert( DynamicPropertyDataType( pAccessoryDef->CompressedDynamicProps[j] ) == FIELD_INTEGER64 );
+				Assert( ReactiveDropInventory::DynamicPropertyDataType( pAccessoryDef->CompressedDynamicProps[j] ) == FIELD_INTEGER64 );
 				if ( instance.DynamicProps.Defined( pAccessoryDef->CompressedDynamicProps[j] ) )
 				{
 					const char *szPropValue = instance.DynamicProps[instance.DynamicProps.Find( pAccessoryDef->CompressedDynamicProps[j] )];
@@ -3890,190 +3123,7 @@ void CRD_ItemInstance::SetFromInstance( const ReactiveDropInventory::ItemInstanc
 #endif
 }
 
-void CRD_ItemInstance::FormatDescription( wchar_t *wszBuf, size_t sizeOfBufferInBytes, const CUtlString &szDesc, bool bIsSteamCommunityDesc ) const
-{
-	const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( m_iItemDefID );
-
-	V_UTF8ToUnicode( szDesc, wszBuf, sizeOfBufferInBytes );
-
-	char szToken[128]{};
-	wchar_t wszReplacement[1024]{};
-
-	for ( size_t i = 0; i < sizeOfBufferInBytes / sizeof( wchar_t ); i++ )
-	{
-		if ( wszBuf[i] == L'\0' )
-		{
-			return;
-		}
-
-		if ( wszBuf[i] != L'%' )
-		{
-			continue;
-		}
-
-		V_wcsncpy( wszReplacement, L"0", sizeof( wszReplacement ) );
-
-		size_t tokenLength = 1;
-		while ( wszBuf[i + tokenLength] != L'%' )
-		{
-			wchar_t ch = wszBuf[i + tokenLength];
-			if ( ch == L'\0' )
-			{
-				return;
-			}
-
-			if ( ( ch < L'a' || ch > L'z' ) && ( ch < L'A' || ch > L'Z' ) && ( ch < L'0' || ch > L'9' ) && ch != L'_' )
-			{
-				tokenLength = 0;
-				break;
-			}
-
-			Assert( ch < 0x80 ); // assume ASCII
-			szToken[tokenLength - 1] = ( char )ch;
-
-			tokenLength++;
-
-			Assert( tokenLength < sizeof( szToken ) );
-		}
-
-		if ( tokenLength == 0 )
-			continue;
-
-		szToken[tokenLength - 1] = '\0';
-		tokenLength++;
-
-		Assert( !bIsSteamCommunityDesc || V_stricmp( szToken, "m_unQuantity" ) );
-		Assert( !bIsSteamCommunityDesc || V_stricmp( szToken, "style" ) );
-
-		FOR_EACH_VEC( pDef->CompressedDynamicProps, j )
-		{
-			if ( !V_strcmp( pDef->CompressedDynamicProps[j], szToken ) )
-			{
-				if ( !bIsSteamCommunityDesc && !V_strcmp( szToken, "style" ) && m_nCounter[j] >= 0 && m_nCounter[j] < pDef->StyleNames.Count() )
-				{
-					V_UTF8ToUnicode( pDef->StyleNames[m_nCounter[j]], wszReplacement, sizeof( wszReplacement ) );
-				}
-				else
-				{
-					V_wcsncpy( wszReplacement, UTIL_RD_CommaNumber( m_nCounter[j] ), sizeof( wszReplacement ) );
-				}
-				break;
-			}
-		}
-
-		if ( !pDef->AccessoryTag.IsEmpty() )
-		{
-			int iCounterIndex = pDef->CompressedDynamicProps.Count();
-			for ( int j = 0; j < RD_ITEM_MAX_ACCESSORIES; j++ )
-			{
-				if ( m_iAccessory[j] == 0 )
-					continue;
-
-				const ReactiveDropInventory::ItemDef_t *pAccessoryDef = ReactiveDropInventory::GetItemDef( m_iAccessory[j] );
-
-				FOR_EACH_VEC( pAccessoryDef->CompressedDynamicProps, k )
-				{
-					if ( !V_strcmp( pAccessoryDef->CompressedDynamicProps[k], szToken ) )
-					{
-						V_wcsncpy( wszReplacement, UTIL_RD_CommaNumber( m_nCounter[iCounterIndex] ), sizeof( wszReplacement ) );
-						break;
-					}
-
-					iCounterIndex++;
-				}
-			}
-		}
-
-		size_t replacementLength = 0;
-		while ( wszReplacement[replacementLength] )
-		{
-			replacementLength++;
-		}
-
-		if ( i + replacementLength >= sizeOfBufferInBytes / sizeof( wchar_t ) )
-		{
-			replacementLength = ( sizeOfBufferInBytes - i - 1 ) / sizeof( wchar_t );
-		}
-
-		V_memmove( &wszBuf[i + replacementLength], &wszBuf[i + tokenLength], sizeOfBufferInBytes - ( i + MAX( replacementLength, tokenLength ) ) * sizeof( wchar_t ) );
-		V_memmove( &wszBuf[i], wszReplacement, replacementLength * sizeof( wchar_t ) );
-		if ( replacementLength > tokenLength )
-		{
-			wszBuf[sizeOfBufferInBytes / sizeof( wchar_t ) - 1] = L'\0';
-		}
-	}
-}
-
 #ifdef CLIENT_DLL
-ConVar rd_briefing_item_details_color1( "rd_briefing_item_details_color1", "221 238 255 255", FCVAR_NONE );
-ConVar rd_briefing_item_details_color2( "rd_briefing_item_details_color2", "170 204 238 255", FCVAR_NONE );
-
-void CRD_ItemInstance::FormatDescription( vgui::MultiFontRichText *pRichText, bool bIncludeAccessories, Color descriptionColor, Color beforeAfterColor ) const
-{
-	const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( m_iItemDefID );
-	wchar_t wszBuf[2048];
-
-	pRichText->SetText( "" );
-
-	FormatDescription( wszBuf, sizeof( wszBuf ), pDef->BeforeDescription, false );
-	if ( wszBuf[0] )
-	{
-		pRichText->InsertColorChange( beforeAfterColor );
-		pRichText->AppendBBCode( wszBuf );
-		pRichText->InsertString( L"\n\n" );
-	}
-
-	FormatDescription( wszBuf, sizeof( wszBuf ), pDef->Description, !pDef->HasInGameDescription );
-	pRichText->InsertColorChange( descriptionColor );
-	pRichText->AppendBBCode( wszBuf );
-
-	if ( bIncludeAccessories )
-	{
-		for ( int i = 0; i < RD_ITEM_MAX_ACCESSORIES; i++ )
-		{
-			if ( m_iAccessory[i] == 0 )
-				continue;
-
-			Assert( !pDef->AccessoryTag.IsEmpty() );
-
-			FormatDescription( wszBuf, sizeof( wszBuf ), ReactiveDropInventory::GetItemDef( m_iAccessory[i] )->AccessoryDescription, true );
-			if ( wszBuf[0] )
-			{
-				pRichText->InsertString( L"\n" );
-				pRichText->InsertColorChange( descriptionColor );
-				pRichText->AppendBBCode( wszBuf );
-			}
-		}
-	}
-
-	bool bShowAfterDescription = !pDef->AfterDescriptionOnlyMultiStack;
-	if ( !bShowAfterDescription )
-	{
-		bool bFound = false;
-		FOR_EACH_VEC( pDef->CompressedDynamicProps, i )
-		{
-			if ( !V_stricmp( pDef->CompressedDynamicProps[i], "m_unQuantity" ) )
-			{
-				bFound = true;
-				bShowAfterDescription = m_nCounter[i] > 1;
-				break;
-			}
-		}
-		( void )bFound;
-		Assert( bFound );
-	}
-	if ( bShowAfterDescription )
-	{
-		FormatDescription( wszBuf, sizeof( wszBuf ), pDef->AfterDescription, false );
-		if ( wszBuf[0] )
-		{
-			pRichText->InsertString( L"\n\n" );
-			pRichText->InsertColorChange( beforeAfterColor );
-			pRichText->AppendBBCode( wszBuf );
-		}
-	}
-}
-
 vgui::IImage *CRD_ItemInstance::GetIcon() const
 {
 	const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( m_iItemDefID );
@@ -4123,120 +3173,64 @@ void CRD_ItemInstance::CommitCounters()
 }
 #endif
 
-BEGIN_NETWORK_TABLE_NOBASE( CRD_ItemInstances_Static, DT_RD_ItemInstances_Static )
+BEGIN_NETWORK_TABLE_NOBASE( CRD_ItemInstances_Player, DT_RD_ItemInstances_Player )
 #ifdef CLIENT_DLL
 	RecvPropDataTable( RECVINFO_DT( m_Medal0 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
 	RecvPropDataTable( RECVINFO_DT( m_Medal1 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
 	RecvPropDataTable( RECVINFO_DT( m_Medal2 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
-	RecvPropDataTable( RECVINFO_DT( m_Marine0 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
-	RecvPropDataTable( RECVINFO_DT( m_Marine1 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
-	RecvPropDataTable( RECVINFO_DT( m_Marine2 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
-	RecvPropDataTable( RECVINFO_DT( m_Marine3 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
-	RecvPropDataTable( RECVINFO_DT( m_Marine4 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
-	RecvPropDataTable( RECVINFO_DT( m_Marine5 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
-	RecvPropDataTable( RECVINFO_DT( m_Marine6 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
-	RecvPropDataTable( RECVINFO_DT( m_Marine7 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
 #else
 	SendPropDataTable( SENDINFO_DT( m_Medal0 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
 	SendPropDataTable( SENDINFO_DT( m_Medal1 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
 	SendPropDataTable( SENDINFO_DT( m_Medal2 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
-	SendPropDataTable( SENDINFO_DT( m_Marine0 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
-	SendPropDataTable( SENDINFO_DT( m_Marine1 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
-	SendPropDataTable( SENDINFO_DT( m_Marine2 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
-	SendPropDataTable( SENDINFO_DT( m_Marine3 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
-	SendPropDataTable( SENDINFO_DT( m_Marine4 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
-	SendPropDataTable( SENDINFO_DT( m_Marine5 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
-	SendPropDataTable( SENDINFO_DT( m_Marine6 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
-	SendPropDataTable( SENDINFO_DT( m_Marine7 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
 #endif
 END_NETWORK_TABLE()
 
-CRD_ItemInstance &CRD_ItemInstances_Static::operator []( int index )
+CRD_ItemInstance &CRD_ItemInstances_Player::operator []( int index )
 {
-	COMPILE_TIME_ASSERT( sizeof( ThisClass ) - offsetof( ThisClass, m_Medal0 ) == sizeof( CRD_ItemInstance[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC] ) );
-	Assert( index >= 0 && index < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_STATIC );
+	COMPILE_TIME_ASSERT( sizeof( ThisClass ) - offsetof( ThisClass, m_Medal0 ) == sizeof( CRD_ItemInstance[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_PLAYER] ) );
+	Assert( index >= 0 && index < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_PLAYER );
 
 	return ( &m_Medal0 )[index];
 }
 
-BEGIN_NETWORK_TABLE_NOBASE( CRD_ItemInstances_Dynamic, DT_RD_ItemInstances_Dynamic )
+BEGIN_NETWORK_TABLE_NOBASE( CRD_ItemInstances_Marine_Resource, DT_RD_ItemInstances_Marine_Resource )
 #ifdef CLIENT_DLL
-	RecvPropDataTable( RECVINFO_DT( m_Item0 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
-	RecvPropDataTable( RECVINFO_DT( m_Item1 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
-	RecvPropDataTable( RECVINFO_DT( m_Item2 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
-	RecvPropDataTable( RECVINFO_DT( m_Item3 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
-	RecvPropDataTable( RECVINFO_DT( m_Item4 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
-	RecvPropDataTable( RECVINFO_DT( m_Item5 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
-	RecvPropDataTable( RECVINFO_DT( m_Item6 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
-	RecvPropDataTable( RECVINFO_DT( m_Item7 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
-	RecvPropDataTable( RECVINFO_DT( m_Item8 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
-	RecvPropDataTable( RECVINFO_DT( m_Item9 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
-	RecvPropDataTable( RECVINFO_DT( m_Item10 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
-	RecvPropDataTable( RECVINFO_DT( m_Item11 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
-	RecvPropDataTable( RECVINFO_DT( m_Item12 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
-	RecvPropDataTable( RECVINFO_DT( m_Item13 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
-	RecvPropDataTable( RECVINFO_DT( m_Item14 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
-	RecvPropDataTable( RECVINFO_DT( m_Item15 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
-	RecvPropDataTable( RECVINFO_DT( m_Item16 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
-	RecvPropDataTable( RECVINFO_DT( m_Item17 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
-	RecvPropDataTable( RECVINFO_DT( m_Item18 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
-	RecvPropDataTable( RECVINFO_DT( m_Item19 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
-	RecvPropDataTable( RECVINFO_DT( m_Item20 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
-	RecvPropDataTable( RECVINFO_DT( m_Item21 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
-	RecvPropDataTable( RECVINFO_DT( m_Item22 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
-	RecvPropDataTable( RECVINFO_DT( m_Item23 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_Suit ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_Weapon1 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_Weapon2 ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
+	RecvPropDataTable( RECVINFO_DT( m_Extra ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstance ) ),
 #else
-	SendPropDataTable( SENDINFO_DT( m_Item0 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
-	SendPropDataTable( SENDINFO_DT( m_Item1 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
-	SendPropDataTable( SENDINFO_DT( m_Item2 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
-	SendPropDataTable( SENDINFO_DT( m_Item3 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
-	SendPropDataTable( SENDINFO_DT( m_Item4 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
-	SendPropDataTable( SENDINFO_DT( m_Item5 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
-	SendPropDataTable( SENDINFO_DT( m_Item6 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
-	SendPropDataTable( SENDINFO_DT( m_Item7 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
-	SendPropDataTable( SENDINFO_DT( m_Item8 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
-	SendPropDataTable( SENDINFO_DT( m_Item9 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
-	SendPropDataTable( SENDINFO_DT( m_Item10 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
-	SendPropDataTable( SENDINFO_DT( m_Item11 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
-	SendPropDataTable( SENDINFO_DT( m_Item12 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
-	SendPropDataTable( SENDINFO_DT( m_Item13 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
-	SendPropDataTable( SENDINFO_DT( m_Item14 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
-	SendPropDataTable( SENDINFO_DT( m_Item15 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
-	SendPropDataTable( SENDINFO_DT( m_Item16 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
-	SendPropDataTable( SENDINFO_DT( m_Item17 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
-	SendPropDataTable( SENDINFO_DT( m_Item18 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
-	SendPropDataTable( SENDINFO_DT( m_Item19 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
-	SendPropDataTable( SENDINFO_DT( m_Item20 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
-	SendPropDataTable( SENDINFO_DT( m_Item21 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
-	SendPropDataTable( SENDINFO_DT( m_Item22 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
-	SendPropDataTable( SENDINFO_DT( m_Item23 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT( m_Suit ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT( m_Weapon1 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT( m_Weapon2 ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
+	SendPropDataTable( SENDINFO_DT( m_Extra ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstance ) ),
 #endif
 END_NETWORK_TABLE()
 
-CRD_ItemInstance &CRD_ItemInstances_Dynamic::operator []( int index )
+CRD_ItemInstance &CRD_ItemInstances_Marine_Resource::operator []( int index )
 {
-	COMPILE_TIME_ASSERT( sizeof( ThisClass ) - offsetof( ThisClass, m_Item0 ) == sizeof( CRD_ItemInstance[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC] ) );
-	Assert( index >= 0 && index < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC );
+	COMPILE_TIME_ASSERT( sizeof( ThisClass ) - offsetof( ThisClass, m_Suit ) == sizeof( CRD_ItemInstance[RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_MARINE_RESOURCE] ) );
+	Assert( index >= 0 && index < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_MARINE_RESOURCE );
 
-	return ( &m_Item0 )[index];
+	return ( &m_Suit )[index];
 }
 
 BEGIN_NETWORK_TABLE_NOBASE( CRD_ProjectileData, DT_RD_ProjectileData )
 #ifdef CLIENT_DLL
-	RecvPropEHandle( RECVINFO( m_hOriginalOwnerPlayer ) ),
-	RecvPropIntWithMinusOneFlag( RECVINFO( m_iInventoryEquipSlot ) ),
+	RecvPropEHandle( RECVINFO( m_hOriginalOwnerMR ) ),
+	RecvPropInt( RECVINFO( m_iInventoryEquipSlot ) ),
 	RecvPropBool( RECVINFO( m_bFiredByOwner ) ),
 #else
-	SendPropEHandle( SENDINFO( m_hOriginalOwnerPlayer ) ),
-	SendPropIntWithMinusOneFlag( SENDINFO( m_iInventoryEquipSlot ), NumBitsForCount( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC + 1 ) ),
+	SendPropEHandle( SENDINFO( m_hOriginalOwnerMR ) ),
+	SendPropInt( SENDINFO( m_iInventoryEquipSlot ), 2, SPROP_UNSIGNED ),
 	SendPropBool( SENDINFO( m_bFiredByOwner ) ),
 #endif
 END_NETWORK_TABLE()
 
 CRD_ProjectileData::CRD_ProjectileData()
 {
-	m_hOriginalOwnerPlayer = NULL;
-	m_iInventoryEquipSlot = -1;
+	m_hOriginalOwnerMR = NULL;
+	m_iInventoryEquipSlot = 0;
 	m_bFiredByOwner = false;
 }
 
@@ -4247,13 +3241,12 @@ void CRD_ProjectileData::SetFromWeapon( CBaseEntity *pCreator )
 	{
 		if ( pWeapon->IsInventoryEquipSlotValid() )
 		{
-			m_hOriginalOwnerPlayer = pWeapon->m_hOriginalOwnerPlayer;
+			m_hOriginalOwnerMR = pWeapon->m_hOriginalOwnerMR;
 			m_iInventoryEquipSlot = pWeapon->m_iInventoryEquipSlot;
-			if ( pWeapon->GetOwner() && pWeapon->GetOwner()->IsInhabitableNPC() )
-			{
-				CASW_Inhabitable_NPC *pOwnerNPC = assert_cast< CASW_Inhabitable_NPC * >( pWeapon->GetOwner() );
-				m_bFiredByOwner = pOwnerNPC->IsInhabited() && pOwnerNPC->GetCommander() == pWeapon->m_hOriginalOwnerPlayer;
-			}
+
+			CASW_Marine_Resource *pMR = pWeapon->m_hOriginalOwnerMR;
+			CASW_Marine *pMarine = pWeapon->GetMarine();
+			m_bFiredByOwner = pMR && pMarine && pMarine->IsInhabited() && pMarine->GetCommander() == pMR->m_OriginalCommander;
 		}
 		return;
 	}
@@ -4265,138 +3258,10 @@ void CRD_ProjectileData::SetFromWeapon( CBaseEntity *pCreator )
 
 	if ( CASW_Sentry_Base *pSentry = dynamic_cast< CASW_Sentry_Base * >( pCreator ) )
 	{
-		m_hOriginalOwnerPlayer = pSentry->m_hOriginalOwnerPlayer;
+		m_hOriginalOwnerMR = pSentry->m_hOriginalOwnerMR;
 		m_iInventoryEquipSlot = pSentry->m_iInventoryEquipSlot;
 		m_bFiredByOwner = true;
 		return;
 	}
-}
-#endif
-
-#ifdef CLIENT_DLL
-CON_COMMAND_F( rd_load_all_inventory_defs, "load data and icons for all defined AS:RD inventory items", FCVAR_HIDDEN | FCVAR_NOT_CONNECTED )
-{
-	// Item def IDs are split into ranges. The important ones are:
-	// id <= 0 - invalid.
-	// 1 <= id <= 999999 - "public" items, retrieved from GetItemDefinitionIDs.
-	// 1000000 <= id <= 899999999 - "private" items; for now all of these are in the store.
-	// 900000000 <= id <= 999999999 - "unique" items; one copy of each exists (this is an AS:RD restriction, not an inventory service one). IDs are consecutive.
-	// 1000000000 <= id - Steam internal reserved ID range.
-
-	ISteamInventory *pInventory = SteamInventory();
-	Assert( pInventory );
-	if ( !pInventory )
-	{
-		Warning( "No inventory API!\n" );
-		return;
-	}
-
-	uint32_t nItemDefCount{};
-	pInventory->GetItemDefinitionIDs( NULL, &nItemDefCount );
-	CUtlMemory<SteamItemDef_t> DefIDs{ 0, int( nItemDefCount ) };
-	bool bOK = pInventory->GetItemDefinitionIDs( DefIDs.Base(), &nItemDefCount );
-	Assert( bOK ); ( void )bOK;
-
-	Msg( "Checking %d item defs...\n", nItemDefCount );
-	int iLoading = 0;
-	FOR_EACH_VEC( DefIDs, i )
-	{
-		const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( DefIDs[i] );
-		Assert( pDef );
-		if ( pDef )
-		{
-			if ( pDef->Icon && pDef->Icon->GetNumFrames() == 0 )
-			{
-				iLoading++;
-			}
-
-			FOR_EACH_VEC( pDef->StyleIcons, j )
-			{
-				if ( pDef->StyleIcons[j]->GetNumFrames() == 0 )
-				{
-					iLoading++;
-				}
-			}
-		}
-	}
-
-	SteamAPICall_t hCall = pInventory->RequestPrices();
-	bool bFailed{};
-	SteamInventoryRequestPricesResult_t param{};
-	while ( !SteamUtils()->GetAPICallResult( hCall, &param, sizeof( param ), param.k_iCallback, &bFailed ) )
-	{
-		ThreadSleep( 10 );
-		SteamAPI_RunCallbacks();
-	}
-
-	if ( bFailed )
-	{
-		Warning( "Failed to load mtx item list\n" );
-		return;
-	}
-
-	DefIDs.Purge();
-	DefIDs.EnsureCapacity( pInventory->GetNumItemsWithPrices() );
-	CUtlMemory<uint64_t> CurrentPrices{ 0, int( pInventory->GetNumItemsWithPrices() ) };
-	CUtlMemory<uint64_t> BasePrices{ 0, int( pInventory->GetNumItemsWithPrices() ) };
-	pInventory->GetItemsWithPrices( DefIDs.Base(), CurrentPrices.Base(), BasePrices.Base(), pInventory->GetNumItemsWithPrices() );
-
-	Msg( "Checking %d store item defs...\n", pInventory->GetNumItemsWithPrices() );
-	FOR_EACH_VEC( DefIDs, i )
-	{
-		const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( DefIDs[i] );
-		Assert( pDef );
-		if ( pDef )
-		{
-			if ( pDef->Icon && pDef->Icon->GetNumFrames() == 0 )
-			{
-				iLoading++;
-			}
-
-			FOR_EACH_VEC( pDef->StyleIcons, j )
-			{
-				if ( pDef->StyleIcons[j]->GetNumFrames() == 0 )
-				{
-					iLoading++;
-				}
-			}
-		}
-	}
-
-	for ( SteamItemDef_t id = 900000000; ; id++ )
-	{
-		uint32_t count{};
-		pInventory->GetItemDefinitionProperty( id, NULL, NULL, &count );
-		if ( !count )
-		{
-			Msg( "Number of unique item defs: %d\n", id - 900000000 );
-			break;
-		}
-
-		const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( id );
-		Assert( pDef );
-		if ( pDef )
-		{
-			if ( pDef->Icon && pDef->Icon->GetNumFrames() == 0 )
-			{
-				iLoading++;
-			}
-
-			FOR_EACH_VEC( pDef->StyleIcons, j )
-			{
-				if ( pDef->StyleIcons[j]->GetNumFrames() == 0 )
-				{
-					iLoading++;
-				}
-			}
-		}
-	}
-
-	Msg( "async loading icons: %d\n", iLoading );
-}
-
-CON_COMMAND_F( rd_inventory_create_icon_from_url, "Create a cache file for an inventory item icon. For dev use only. Put URL in quotes or it will interpret // as a comment.", FCVAR_NOT_CONNECTED | FCVAR_HIDDEN )
-{
-	CSteamItemIcon::Get( args[1], true );
 }
 #endif

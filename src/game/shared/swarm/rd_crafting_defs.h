@@ -1,10 +1,20 @@
 #pragma once
 
-#ifdef RD_7A_DROPS
 #include "steam/isteaminventory.h"
+#ifdef CLIENT_DLL
+#include "iasw_client_usable_entity.h"
+#define CRD_Crafting_Material_Pickup_Entity C_RD_Crafting_Material_Pickup_Entity
+#else
+#include "iasw_server_usable_entity.h"
+#endif
 
+#define RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS 5
+
+#ifdef RD_7A_DROPS
 enum RD_Crafting_Material_t
 {
+	RD_CRAFTING_MATERIAL_NONE,
+
 	// common
 	RD_CRAFTING_MATERIAL_SCRAP_METAL,
 	RD_CRAFTING_MATERIAL_ELECTRICAL_COMPONENTS,
@@ -66,4 +76,22 @@ struct RD_Crafting_Material_Info
 };
 
 extern const RD_Crafting_Material_Info g_RD_Crafting_Material_Info[NUM_RD_CRAFTING_MATERIAL_TYPES];
+
+class CRD_Crafting_Material_Pickup_Entity :
+	public CBaseAnimating,
+#ifdef CLIENT_DLL
+	public IASW_Client_Usable_Entity
+#else
+	public IASW_Server_Usable_Entity
+#endif
+{
+	DECLARE_CLASS( CRD_Crafting_Material_Pickup_Entity, CBaseAnimating );
+public:
+	DECLARE_NETWORKCLASS();
+
+	// TODO
+
+	CNetworkVar( int, m_iLocation );
+	CNetworkArray( RD_Crafting_Material_t, m_MaterialAtLocation, MAX_PLAYERS );
+};
 #endif

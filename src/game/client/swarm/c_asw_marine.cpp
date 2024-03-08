@@ -1074,7 +1074,7 @@ void C_ASW_Marine::OnDataChanged( DataUpdateType_t updateType )
 		CreateBackpack( GetASWWeapon( GetActiveASWWeapon() == GetASWWeapon( 0 ) ? 1 : 0 ) );
 
 		C_ASW_Marine_Resource *pMR = GetMarineResource();
-		if ( pMR && pMR->m_OriginalCommander && pMR->m_MarineProfileIndexDynamic >= 0 && pMR->m_MarineProfileIndexDynamic < ASW_NUM_MARINES_PER_LOADOUT )
+		if ( pMR && pMR->m_OriginalCommander && pMR->m_EquippedItemData.m_Suit.IsSet() )
 		{
 			static KeyValues *s_pKVAccessoryPosition[ASW_NUM_MARINE_PROFILES]{};
 
@@ -1084,7 +1084,7 @@ void C_ASW_Marine::OnDataChanged( DataUpdateType_t updateType )
 			char szFileName[MAX_PATH];
 			V_snprintf( szFileName, sizeof( szFileName ), "scripts/strange_device_positions_marine_%s.txt", pMR->GetProfile()->m_PortraitName );
 
-			C_RD_Weapon_Accessory::CreateWeaponAccessories( this, pMR->m_OriginalCommander->m_EquippedItemDataStatic[RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MARINE + pMR->m_MarineProfileIndexDynamic], m_hWeaponAccessory, s_pKVAccessoryPosition[iProfile], szFileName );
+			C_RD_Weapon_Accessory::CreateWeaponAccessories( this, pMR->m_EquippedItemData.m_Suit, m_hWeaponAccessory, s_pKVAccessoryPosition[iProfile], szFileName );
 		}
 
 		// We want to think every frame.

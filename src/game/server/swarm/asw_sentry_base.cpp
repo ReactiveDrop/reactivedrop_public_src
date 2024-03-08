@@ -42,8 +42,8 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Sentry_Base, DT_ASW_Sentry_Base )
 	SendPropInt( SENDINFO( m_iMaxAmmo ) ),
 	SendPropBool( SENDINFO( m_bSkillMarineHelping ) ),
 	SendPropInt( SENDINFO( m_nGunType ), NumBitsForCount( kGUNTYPE_MAX ), SPROP_UNSIGNED ),
-	SendPropEHandle( SENDINFO( m_hOriginalOwnerPlayer ) ),
-	SendPropIntWithMinusOneFlag( SENDINFO( m_iInventoryEquipSlot ), NumBitsForCount( RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_DYNAMIC + 1 ) ),
+	SendPropEHandle( SENDINFO( m_hOriginalOwnerMR ) ),
+	SendPropInt( SENDINFO( m_iInventoryEquipSlot ), 2, SPROP_UNSIGNED ),
 	SendPropEHandle( SENDINFO( m_hLastDisassembler ) ),
 END_SEND_TABLE()
 
@@ -88,8 +88,8 @@ CASW_Sentry_Base::CASW_Sentry_Base()
 	{
 		m_hBait[i] = NULL;
 	}
-	m_hOriginalOwnerPlayer = NULL;
-	m_iInventoryEquipSlot = -1;
+	m_hOriginalOwnerMR = NULL;
+	m_iInventoryEquipSlot = 0;
 	m_hLastDisassembler = NULL;
 }
 
@@ -246,7 +246,7 @@ void CASW_Sentry_Base::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldTyp
 			{
 				pWeapon->SetSentryAmmo( m_iAmmo );
 			}
-			pWeapon->m_hOriginalOwnerPlayer = m_hOriginalOwnerPlayer;
+			pWeapon->m_hOriginalOwnerMR = m_hOriginalOwnerMR;
 			pWeapon->m_iInventoryEquipSlot = m_iInventoryEquipSlot;
 
 			pMarine->TakeWeaponPickup( pWeapon );

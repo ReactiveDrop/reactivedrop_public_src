@@ -18,7 +18,7 @@
 #include "c_asw_sentry_base.h"
 #include "asw_hud_use_icon.h"
 #include "c_asw_weapon.h"
-#include "c_asw_player.h"
+#include "c_asw_marine_resource.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -100,7 +100,7 @@ void C_ASW_TeslaTrap::OnDataChanged( DataUpdateType_t type )
 		{
 			static KeyValues *s_pKVAccessoryPosition{};
 
-			C_RD_Weapon_Accessory::CreateWeaponAccessories( this, m_ProjectileData.m_hOriginalOwnerPlayer->m_EquippedItemDataDynamic[m_ProjectileData.m_iInventoryEquipSlot], m_hWeaponAccessory, s_pKVAccessoryPosition, "scripts/strange_device_positions_tesla_trap.txt" );
+			C_RD_Weapon_Accessory::CreateWeaponAccessories( this, m_ProjectileData.m_hOriginalOwnerMR->m_EquippedItemData[m_ProjectileData.m_iInventoryEquipSlot], m_hWeaponAccessory, s_pKVAccessoryPosition, "scripts/strange_device_positions_tesla_trap.txt" );
 		}
 
 		// We want to think every frame.

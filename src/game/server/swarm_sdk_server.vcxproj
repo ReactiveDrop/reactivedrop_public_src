@@ -700,6 +700,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClCompile Include="..\shared\swarm\asw_marine_command.cpp" />
     <ClCompile Include="..\shared\swarm\asw_marine_gamemovement.cpp" />
     <ClCompile Include="..\shared\swarm\asw_marine_profile.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_marine_resource_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_marine_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_marine_skills.cpp" />
     <ClCompile Include="..\shared\swarm\asw_melee_system.cpp" />
@@ -796,6 +797,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClCompile Include="..\shared\swarm\rd_crafting_defs.cpp" />
     <ClCompile Include="..\shared\swarm\rd_hud_counter_shared.cpp" />
     <ClCompile Include="..\shared\swarm\rd_hud_vscript_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\rd_inventory_command.cpp" />
     <ClCompile Include="..\shared\swarm\rd_inventory_shared.cpp" />
     <ClCompile Include="..\shared\swarm\rd_loadout.cpp" />
     <ClCompile Include="..\shared\swarm\rd_lobby_utils.cpp" />
@@ -1834,6 +1836,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="..\shared\swarm\rd_computer_vscript_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_crafting_defs.h" />
     <ClInclude Include="..\shared\swarm\rd_hud_vscript_shared.h" />
+    <ClInclude Include="..\shared\swarm\rd_inventory_command.h" />
     <ClInclude Include="..\shared\swarm\rd_inventory_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_loadout.h" />
     <ClInclude Include="..\shared\swarm\rd_lobby_utils.h" />

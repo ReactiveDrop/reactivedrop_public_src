@@ -2,6 +2,7 @@
 #include "cbase.h"
 #include "c_asw_weapon.h"
 #include "c_asw_marine.h"
+#include "c_asw_marine_resource.h"
 #include "c_asw_player.h"
 #include "c_asw_colonist.h"
 #include "in_buttons.h"
@@ -60,8 +61,8 @@ BEGIN_NETWORK_TABLE( CASW_Weapon, DT_ASW_Weapon )
 	RecvPropIntWithMinusOneFlag( RECVINFO(m_iClip1 )),
 	RecvPropInt( RECVINFO(m_iPrimaryAmmoType )),
 	RecvPropBool		( RECVINFO( m_bIsTemporaryPickup ) ),
-	RecvPropEHandle( RECVINFO( m_hOriginalOwnerPlayer ) ),
-	RecvPropIntWithMinusOneFlag( RECVINFO( m_iInventoryEquipSlot ) ),
+	RecvPropEHandle( RECVINFO( m_hOriginalOwnerMR ) ),
+	RecvPropInt( RECVINFO( m_iInventoryEquipSlot ) ),
 END_NETWORK_TABLE()
 
 BEGIN_PREDICTION_DATA( C_ASW_Weapon )
@@ -214,25 +215,11 @@ void C_ASW_Weapon::OnDataChanged( DataUpdateType_t type )
 
 	if ( type == DATA_UPDATE_CREATED )
 	{
-		if (SupportsBayonet())
-		{
-			// check if our owner has the bayonet skill
-			// bayonet disabled at this time
-			//C_ASW_Marine *pMarine = dynamic_cast<C_ASW_Marine*>(GetOwner());
-			//if (pMarine && MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_EDGED) > 0)
-			//{
-				//CreateBayonet();
-			//}
-		}
-		// don't create the laser sight anymore
-		// we use the particle one now
-		//CreateLaserSight();
-
 		m_bWeaponCreated = true;
 
 		if ( IsInventoryEquipSlotValid() )
 		{
-			const CRD_ItemInstance &instance = m_hOriginalOwnerPlayer->m_EquippedItemDataDynamic[m_iInventoryEquipSlot];
+			const CRD_ItemInstance &instance = m_hOriginalOwnerMR->m_EquippedItemData[m_iInventoryEquipSlot];
 			MaybeAddStrangeDevice( -1, instance.m_iItemDefID );
 			for ( int i = 0; i < RD_ITEM_MAX_ACCESSORIES; i++ )
 			{
@@ -765,7 +752,7 @@ bool C_ASW_Weapon::GetUseAction( ASWUseAction &action, C_ASW_Inhabitable_NPC *pU
 		if ( IsInventoryEquipSlotValid() && SteamFriends() )
 		{
 			wchar_t wszPlayerName[128];
-			V_UTF8ToUnicode( SteamFriends()->GetFriendPersonaName( m_hOriginalOwnerPlayer->GetSteamID() ), wszPlayerName, sizeof( wszPlayerName ) );
+			V_UTF8ToUnicode( SteamFriends()->GetFriendPersonaName( m_hOriginalOwnerMR->m_OriginalCommander->GetSteamID() ), wszPlayerName, sizeof( wszPlayerName ) );
 			g_pVGuiLocalize->ConstructString( wszWeaponName, sizeof( wszWeaponName ), g_pVGuiLocalize->Find( "#asw_owned_weapon_format" ), 2, wszPlayerName, wszWeaponShortName );
 		}
 		else

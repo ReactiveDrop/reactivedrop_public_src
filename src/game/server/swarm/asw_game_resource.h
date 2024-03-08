@@ -17,7 +17,7 @@ class CASW_Marine;
 
 #define ASW_LEADERID_LEN 128
 
-#ifdef RD_7A_DROPS
+#if defined( RD_7A_DROPS ) || defined( RD_7A_DROPS_PRE )
 #define RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS 5
 
 class CRD_CraftingMaterialInfo
@@ -168,10 +168,6 @@ public:
 	void OnMissionCompleted( bool bWellDone );
 	static int s_nNumConsecutiveFailures;
 	static bool s_bLeaderGivenDifficultySuggestion;
-
-#ifdef RD_7A_DROPS
-	CNetworkVarEmbedded( CRD_CraftingMaterialInfo, m_CraftingMaterialInfo );
-#endif
 
 private:
 	// skillslots
