@@ -1670,6 +1670,28 @@ public:
 		if ( !pUtils )
 			return false;
 
+		if ( gpGlobals->maxClients == 1 && engine->IsInGame() && engine->IsClientLocalToActiveServer() && !s_bLoadedItemDefs )
+		{
+			// If we're offline and in singleplayer, send our medals the offline way.
+			CUtlVector<int> args;
+			CUtlVector<SteamItemInstanceID_t> items;
+
+			for ( int i = 0; i < NELEMS( ReactiveDropInventory::g_PlayerInventorySlotNames ); i++ )
+			{
+				ConVarRef var( VarArgs( "rd_equipped_%s", ReactiveDropInventory::g_PlayerInventorySlotNames[i] ) );
+				SteamItemInstanceID_t id = strtoull( var.GetString(), NULL, 10 );
+				if ( id != 0 && id != k_SteamItemInstanceIDInvalid )
+				{
+					args.AddToTail( i );
+					items.AddToTail( id );
+				}
+			}
+
+			UTIL_RD_SendInventoryCommandOffline( INVCMD_PLAYER_EQUIPS, args, items );
+
+			// keep going just in case we are actually online now.
+		}
+
 		if ( m_PlayerEquipmentResult != k_SteamInventoryResultInvalid && !bForceReset )
 		{
 			EResult eResult = pInventory->GetResultStatus( m_PlayerEquipmentResult );
