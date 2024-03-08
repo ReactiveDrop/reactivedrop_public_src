@@ -90,6 +90,7 @@ ConVar asw_marine_gun_offset_z( "asw_marine_gun_offset_z", "34", FCVAR_REPLICATE
 ConVar asw_allow_hull_shots("asw_allow_hull_shots", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar rd_difficulty_tier( "rd_difficulty_tier", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Used to make difficulties higher than Brutal. 0 - default difficulties, 1 - Easy is as hard as Brutal + 1, 2 - Easy is as hard as Brutal + 6" );
 ConVar sv_showimpacts( "sv_showimpacts", "0", FCVAR_REPLICATED, "Shows client (red) and server (blue) bullet impact point (1=both, 2=client-only, 3=server-only)" );
+ConVar rd_shoot_from_face( "rd_shoot_from_face", "1", FCVAR_REPLICATED | FCVAR_CHEAT, "In first person, the gun fires out of our eyes instead of from where the gun is being held." );
 
 #ifdef GAME_DLL
 extern ConVar ai_show_hull_attacks;
@@ -331,6 +332,11 @@ void CASW_Marine::AvoidPhysicsProps( CUserCmd *pCmd )
 
 Vector CASW_Marine::Weapon_ShootPosition( )
 {
+	if ( rd_shoot_from_face.GetBool() && IsInhabited() && GetASWControls() == ASWC_FIRSTPERSON )
+	{
+		return EyePosition();
+	}
+
 	Vector forward, right, up, v;
 
 	v = GetAbsOrigin();
