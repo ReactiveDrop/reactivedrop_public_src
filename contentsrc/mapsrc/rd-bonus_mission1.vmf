@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "818"
+	"mapversion" "820"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -38,7 +38,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "818"
+	"mapversion" "820"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -17006,82 +17006,6 @@ world
 		editor
 		{
 			"color" "0 110 231"
-			"visgroupshown" "1"
-			"visgroupautoshown" "1"
-		}
-	}
-	solid
-	{
-		"id" "97911"
-		side
-		{
-			"id" "6755"
-			"plane" "(-2616 4232 444) (-2608 4232 444) (-2608 1872 444)"
-			"material" "CONCRETE/CINDERWALL02_DIRTY"
-			"uaxis" "[1 0 0 0] 0.25"
-			"vaxis" "[0 -1 0 0] 0.25"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		side
-		{
-			"id" "6756"
-			"plane" "(-2616 1872 188) (-2608 1872 188) (-2608 4232 188)"
-			"material" "CONCRETE/CINDERWALL02_DIRTY"
-			"uaxis" "[1 0 0 0] 0.25"
-			"vaxis" "[0 -1 0 0] 0.25"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		side
-		{
-			"id" "6757"
-			"plane" "(-2616 4232 444) (-2616 1872 444) (-2616 1872 188)"
-			"material" "CONCRETE/CINDERWALL02_DIRTY"
-			"uaxis" "[0 1 0 0] 0.25"
-			"vaxis" "[0 0 -1 0] 0.25"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		side
-		{
-			"id" "6758"
-			"plane" "(-2608 4232 188) (-2608 1872 188) (-2608 1872 444)"
-			"material" "TOOLS/TOOLSNODRAW"
-			"uaxis" "[0 1 0 0] 0.25"
-			"vaxis" "[0 0 -1 0] 0.25"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		side
-		{
-			"id" "6759"
-			"plane" "(-2608 4232 444) (-2616 4232 444) (-2616 4232 188)"
-			"material" "CONCRETE/CINDERWALL02_DIRTY"
-			"uaxis" "[1 0 0 0] 0.25"
-			"vaxis" "[0 0 -1 0] 0.25"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		side
-		{
-			"id" "6760"
-			"plane" "(-2608 1872 188) (-2616 1872 188) (-2616 1872 444)"
-			"material" "CONCRETE/CINDERWALL02_DIRTY"
-			"uaxis" "[1 0 0 0] 0.25"
-			"vaxis" "[0 0 -1 0] 0.25"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		editor
-		{
-			"color" "0 168 201"
 			"visgroupshown" "1"
 			"visgroupautoshown" "1"
 		}
@@ -58659,6 +58583,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"dentamount" "0"
 	"disableshadows" "0"
 	"distance" "130"
@@ -58884,6 +58809,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"dentamount" "0"
 	"disableshadows" "1"
 	"distance" "160"
@@ -62462,6 +62388,7 @@ entity
 {
 	"id" "3328"
 	"classname" "asw_tech_marine_req"
+	"StatsMusicFailure" "asw_song.StatsFailTech"
 	"targetname" "techreq"
 	"origin" "1176 -4416 -319"
 	editor
@@ -65011,6 +64938,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"healthbonus" "0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
@@ -65019,7 +64947,7 @@ entity
 	"rendercolor" "255 255 255"
 	"renderfx" "0"
 	"rendermode" "0"
-	"sizescale" "1.3"
+	"sizescale" "1.1"
 	"sleepstate" "1"
 	"spawnflags" "516"
 	"speedscale" "1.0"
@@ -65049,6 +64977,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"healthbonussp" "0"
 	"InfiniteAliens" "0"
 	"LongRange" "0"
@@ -65091,6 +65020,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"healthbonussp" "0"
 	"InfiniteAliens" "0"
 	"LongRange" "0"
@@ -65133,6 +65063,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"healthbonussp" "0"
 	"InfiniteAliens" "0"
 	"LongRange" "0"
@@ -65305,6 +65236,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"dentamount" "0"
 	"disableshadows" "1"
 	"distance" "130"
@@ -65702,6 +65634,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"healthbonus" "0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
@@ -65737,6 +65670,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"healthbonus" "0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
@@ -65772,6 +65706,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"healthbonus" "0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
@@ -65851,6 +65786,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"healthbonussp" "0"
 	"InfiniteAliens" "0"
 	"LongRange" "0"
@@ -66429,6 +66365,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
 	"physdamagescale" "1.0"
@@ -66467,6 +66404,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"healthbonussp" "0"
 	"InfiniteAliens" "0"
 	"LongRange" "0"
@@ -66510,6 +66448,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"healthbonussp" "0"
 	"InfiniteAliens" "0"
 	"LongRange" "0"
@@ -66729,6 +66668,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"healthbonussp" "0"
 	"InfiniteAliens" "0"
 	"LongRange" "0"
@@ -66865,6 +66805,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"dentamount" "0"
 	"disableshadows" "1"
 	"distance" "130"
@@ -67266,6 +67207,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
 	"physdamagescale" "1.0"
@@ -67594,6 +67536,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"healthbonussp" "0"
 	"InfiniteAliens" "0"
 	"LongRange" "0"
@@ -71912,6 +71855,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"healthbonussp" "0"
 	"InfiniteAliens" "0"
 	"LongRange" "0"
@@ -72307,6 +72251,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"healthbonussp" "0"
 	"InfiniteAliens" "0"
 	"LongRange" "0"
@@ -72350,6 +72295,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"healthbonussp" "0"
 	"InfiniteAliens" "0"
 	"LongRange" "0"
@@ -72393,6 +72339,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"healthbonussp" "0"
 	"InfiniteAliens" "0"
 	"LongRange" "0"
@@ -72436,6 +72383,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"healthbonussp" "0"
 	"InfiniteAliens" "0"
 	"LongRange" "0"
@@ -72479,6 +72427,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"healthbonussp" "0"
 	"InfiniteAliens" "0"
 	"LongRange" "0"
@@ -72522,6 +72471,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"healthbonussp" "0"
 	"InfiniteAliens" "0"
 	"LongRange" "0"
@@ -72565,6 +72515,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"healthbonussp" "0"
 	"InfiniteAliens" "0"
 	"LongRange" "0"
@@ -74084,6 +74035,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"healthbonussp" "0"
 	"InfiniteAliens" "0"
 	"LongRange" "0"
@@ -74338,6 +74290,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"healthbonussp" "0"
 	"InfiniteAliens" "0"
 	"LongRange" "0"
@@ -75573,6 +75526,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
 	"physdamagescale" "1.0"
@@ -77010,6 +76964,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"healthbonussp" "0"
 	"InfiniteAliens" "0"
 	"LongRange" "0"
@@ -77383,6 +77338,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"healthbonussp" "0"
 	"InfiniteAliens" "0"
 	"LongRange" "0"
@@ -77773,6 +77729,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"healthbonussp" "0"
 	"InfiniteAliens" "0"
 	"LongRange" "0"
@@ -78025,6 +77982,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"healthbonussp" "0"
 	"InfiniteAliens" "0"
 	"LongRange" "0"
@@ -78277,6 +78235,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"healthbonussp" "0"
 	"InfiniteAliens" "0"
 	"LongRange" "0"
@@ -78531,6 +78490,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"healthbonussp" "0"
 	"InfiniteAliens" "0"
 	"LongRange" "0"
@@ -78783,6 +78743,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"healthbonussp" "0"
 	"InfiniteAliens" "0"
 	"LongRange" "0"
@@ -78824,6 +78785,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
 	"physdamagescale" "1.0"
@@ -79557,6 +79519,10 @@ entity
 	"rendermode" "0"
 	"spawnflags" "0"
 	"spawnobject" "0"
+	connections
+	{
+		"OnBreak" "brush_endwall_bbKill0-1"
+	}
 	solid
 	{
 		"id" "91082"
@@ -81393,6 +81359,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"healthbonus" "0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
@@ -81428,6 +81395,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"healthbonus" "0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
@@ -81463,6 +81431,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"healthbonus" "0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
@@ -81499,6 +81468,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
 	"physdamagescale" "1.0"
@@ -82379,6 +82349,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"healthbonussp" "0"
 	"InfiniteAliens" "0"
 	"LongRange" "0"
@@ -82420,6 +82391,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"healthbonussp" "0"
 	"InfiniteAliens" "0"
 	"LongRange" "0"
@@ -82458,6 +82430,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
 	"physdamagescale" "1.0"
@@ -82493,6 +82466,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
 	"physdamagescale" "1.0"
@@ -82928,6 +82902,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
 	"physdamagescale" "1.0"
@@ -89169,6 +89144,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
 	"physdamagescale" "1.0"
@@ -90626,6 +90602,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
 	"physdamagescale" "1.0"
@@ -92556,6 +92533,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
 	"physdamagescale" "1.0"
@@ -92592,6 +92570,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
 	"physdamagescale" "1.0"
@@ -92628,6 +92607,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
 	"physdamagescale" "1.0"
@@ -92664,6 +92644,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
 	"physdamagescale" "1.0"
@@ -92700,6 +92681,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
 	"physdamagescale" "1.0"
@@ -92998,6 +92980,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"healthbonussp" "0"
 	"InfiniteAliens" "0"
 	"LongRange" "0"
@@ -93039,6 +93022,7 @@ entity
 	"flammablesp" "1"
 	"flinchablesp" "1"
 	"freezablesp" "1"
+	"freezeresistancesp" "0.0"
 	"healthbonussp" "0"
 	"InfiniteAliens" "0"
 	"LongRange" "0"
@@ -93135,6 +93119,7 @@ entity
 	"CanCloseToWeld" "1"
 	"CanPlayerWeld" "1"
 	"currentsealtime" "0"
+	"CustomMaxHealth" "1800"
 	"dentamount" "0"
 	"disableshadows" "1"
 	"distance" "96"
@@ -94631,6 +94616,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"healthbonus" "0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
@@ -94666,6 +94652,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"healthbonus" "0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
@@ -94701,6 +94688,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"healthbonus" "0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
@@ -94736,6 +94724,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"healthbonus" "0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
@@ -97059,6 +97048,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
 	"physdamagescale" "1.0"
@@ -97093,6 +97083,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
 	"physdamagescale" "1.0"
@@ -97127,6 +97118,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
 	"physdamagescale" "1.0"
@@ -97161,6 +97153,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
 	"physdamagescale" "1.0"
@@ -97195,6 +97188,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
 	"physdamagescale" "1.0"
@@ -98181,6 +98175,7 @@ entity
 {
 	"id" "187635"
 	"classname" "asw_marker"
+	"angles" "0 0 0"
 	"mapheight" "320"
 	"mapwidth" "320"
 	"objectivename" "objective1"
@@ -98199,6 +98194,7 @@ entity
 {
 	"id" "187679"
 	"classname" "asw_marker"
+	"angles" "0 0 0"
 	"mapheight" "1024"
 	"mapwidth" "1024"
 	"objectivename" "objective2"
@@ -98217,6 +98213,7 @@ entity
 {
 	"id" "187700"
 	"classname" "asw_marker"
+	"angles" "0 0 0"
 	"mapheight" "512"
 	"mapwidth" "512"
 	"objectivename" "objective3"
@@ -98257,6 +98254,7 @@ entity
 {
 	"id" "187750"
 	"classname" "asw_marker"
+	"angles" "0 0 0"
 	"mapheight" "320"
 	"mapwidth" "320"
 	"objectivename" "objective4"
@@ -98275,6 +98273,7 @@ entity
 {
 	"id" "187769"
 	"classname" "asw_marker"
+	"angles" "0 0 0"
 	"mapheight" "128"
 	"mapwidth" "128"
 	"objectivename" "objective4"
@@ -98315,6 +98314,7 @@ entity
 {
 	"id" "187813"
 	"classname" "asw_marker"
+	"angles" "0 0 0"
 	"mapheight" "256"
 	"mapwidth" "350"
 	"objectivename" "objective4"
@@ -98333,6 +98333,7 @@ entity
 {
 	"id" "187834"
 	"classname" "asw_marker"
+	"angles" "0 0 0"
 	"mapheight" "640"
 	"mapwidth" "640"
 	"objectivename" "objective4"
@@ -98395,6 +98396,7 @@ entity
 {
 	"id" "187872"
 	"classname" "asw_marker"
+	"angles" "0 0 0"
 	"mapheight" "420"
 	"mapwidth" "256"
 	"objectivename" "objective4"
@@ -98413,6 +98415,7 @@ entity
 {
 	"id" "187922"
 	"classname" "asw_marker"
+	"angles" "0 0 0"
 	"mapheight" "128"
 	"mapwidth" "128"
 	"objectivename" "objective4"
@@ -98431,6 +98434,7 @@ entity
 {
 	"id" "187939"
 	"classname" "asw_marker"
+	"angles" "0 0 0"
 	"mapheight" "128"
 	"mapwidth" "128"
 	"objectivename" "objective4"
@@ -98449,6 +98453,7 @@ entity
 {
 	"id" "187999"
 	"classname" "asw_marker"
+	"angles" "0 0 0"
 	"mapheight" "128"
 	"mapwidth" "128"
 	"objectivename" "objective4"
@@ -98794,6 +98799,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
 	"physdamagescale" "1.0"
@@ -98830,6 +98836,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
 	"physdamagescale" "1.0"
@@ -98866,6 +98873,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
 	"physdamagescale" "1.0"
@@ -98902,6 +98910,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
 	"physdamagescale" "1.0"
@@ -99343,6 +99352,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"healthbonus" "0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
@@ -99378,6 +99388,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"healthbonus" "0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
@@ -99413,6 +99424,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"healthbonus" "0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
@@ -99448,6 +99460,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"healthbonus" "0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
@@ -99483,6 +99496,7 @@ entity
 	"flammable" "1"
 	"flinchable" "1"
 	"freezable" "1"
+	"freezeresistance" "0.0"
 	"healthbonus" "0"
 	"hintlimiting" "0"
 	"ignoreunseenenemies" "0"
@@ -110649,7 +110663,7 @@ entity
 	"origin" "-554 266 12"
 	editor
 	{
-		"color" "220 30 220"
+		"color" "220 180 0"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[1000 2000]"
@@ -110667,7 +110681,7 @@ entity
 	"origin" "-214.425 -2770 -328"
 	editor
 	{
-		"color" "220 30 220"
+		"color" "220 180 0"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[1000 2500]"
@@ -114287,6 +114301,211 @@ entity
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[0 500]"
+	}
+}
+entity
+{
+	"id" "263481"
+	"classname" "func_brush"
+	"disablereceiveshadows" "0"
+	"disableshadows" "0"
+	"InputFilter" "0"
+	"invert_exclusion" "0"
+	"origin" "-2612 3052 316"
+	"renderamt" "255"
+	"rendercolor" "255 255 255"
+	"renderfx" "0"
+	"rendermode" "0"
+	"solidbsp" "0"
+	"Solidity" "1"
+	"spawnflags" "2"
+	"StartDisabled" "0"
+	"vrad_brush_cast_shadows" "0"
+	solid
+	{
+		"id" "97911"
+		side
+		{
+			"id" "13351"
+			"plane" "(-2616 4232 444) (-2608 4232 444) (-2608 1872 444)"
+			"material" "CONCRETE/CINDERWALL02_DIRTY"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 -1 0 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "13350"
+			"plane" "(-2616 1872 188) (-2608 1872 188) (-2608 4232 188)"
+			"material" "CONCRETE/CINDERWALL02_DIRTY"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 -1 0 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "13349"
+			"plane" "(-2616 4232 444) (-2616 1872 444) (-2616 1872 188)"
+			"material" "CONCRETE/CINDERWALL02_DIRTY"
+			"uaxis" "[0 1 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "13348"
+			"plane" "(-2608 4232 188) (-2608 1872 188) (-2608 1872 444)"
+			"material" "TOOLS/TOOLSNODRAW"
+			"uaxis" "[0 1 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "13347"
+			"plane" "(-2608 4232 444) (-2616 4232 444) (-2616 4232 188)"
+			"material" "CONCRETE/CINDERWALL02_DIRTY"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "13346"
+			"plane" "(-2608 1872 188) (-2616 1872 188) (-2616 1872 444)"
+			"material" "CONCRETE/CINDERWALL02_DIRTY"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		editor
+		{
+			"color" "220 30 220"
+			"visgroupshown" "1"
+			"visgroupautoshown" "1"
+		}
+	}
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
+	}
+}
+entity
+{
+	"id" "263506"
+	"classname" "func_brush"
+	"disablereceiveshadows" "0"
+	"disableshadows" "0"
+	"InputFilter" "0"
+	"invert_exclusion" "0"
+	"origin" "-2612 3052 316"
+	"renderamt" "255"
+	"rendercolor" "255 255 255"
+	"renderfx" "0"
+	"rendermode" "0"
+	"solidbsp" "0"
+	"Solidity" "1"
+	"spawnflags" "2"
+	"StartDisabled" "0"
+	"targetname" "brush_endwall_bb"
+	"vrad_brush_cast_shadows" "0"
+	solid
+	{
+		"id" "263507"
+		side
+		{
+			"id" "13363"
+			"plane" "(-2616 1872 444) (-2616 4232 444) (-2608 4232 444)"
+			"material" "TOOLS/TOOLSBLOCKBULLETS"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 -1 0 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "13362"
+			"plane" "(-2616 4232 188) (-2616 1872 188) (-2608 1872 188)"
+			"material" "TOOLS/TOOLSBLOCKBULLETS"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 -1 0 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "13361"
+			"plane" "(-2616 1872 188) (-2616 4232 188) (-2616 4232 444)"
+			"material" "TOOLS/TOOLSBLOCKBULLETS"
+			"uaxis" "[0 1 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "13360"
+			"plane" "(-2608 4232 188) (-2608 1872 188) (-2608 1872 444)"
+			"material" "TOOLS/TOOLSBLOCKBULLETS"
+			"uaxis" "[0 1 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "13359"
+			"plane" "(-2616 4232 188) (-2608 4232 188) (-2608 4232 444)"
+			"material" "TOOLS/TOOLSBLOCKBULLETS"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		side
+		{
+			"id" "13358"
+			"plane" "(-2608 1872 188) (-2616 1872 188) (-2616 1872 444)"
+			"material" "TOOLS/TOOLSBLOCKBULLETS"
+			"uaxis" "[1 0 0 0] 0.25"
+			"vaxis" "[0 0 -1 0] 0.25"
+			"rotation" "0"
+			"lightmapscale" "16"
+			"smoothing_groups" "0"
+		}
+		editor
+		{
+			"color" "220 30 220"
+			"visgroupshown" "1"
+			"visgroupautoshown" "1"
+		}
+	}
+	editor
+	{
+		"color" "220 30 220"
+		"visgroupshown" "1"
+		"visgroupautoshown" "1"
+		"logicalpos" "[0 0]"
 	}
 }
 cameras
