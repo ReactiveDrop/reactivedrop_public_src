@@ -332,7 +332,7 @@ void CASW_Marine::AvoidPhysicsProps( CUserCmd *pCmd )
 
 Vector CASW_Marine::Weapon_ShootPosition( )
 {
-	if ( rd_shoot_from_face.GetBool() && IsInhabited() && GetASWControls() == ASWC_FIRSTPERSON )
+	if ( rd_shoot_from_face.GetBool() && IsInhabited() && GetASWControls() == ASWC_FIRSTPERSON && ( !GetActiveASWWeapon() || GetActiveASWWeapon()->ShouldFireFromCameraInFirstPerson() ) )
 	{
 		return EyePosition();
 	}

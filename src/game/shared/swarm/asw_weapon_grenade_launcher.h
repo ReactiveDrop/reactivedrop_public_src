@@ -26,6 +26,7 @@ public:
 	virtual ~CASW_Weapon_Grenade_Launcher();
 	void Precache();
 
+	virtual bool ShouldFireFromCameraInFirstPerson() const { return false; }
 	virtual bool ShouldMarineMoveSlow() { return false; }	// throwing grenades doesn't slow the marine down
 	
 	virtual int AmmoClickPoint() { return 0; }

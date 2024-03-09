@@ -39,6 +39,8 @@ public:
 	virtual void	PrimaryAttack();
 	virtual void	ClearIsFiring();
 	virtual void	ItemPostFrame();
+	virtual bool SecondaryAttackUsesPrimaryAmmo() { return true; }
+	virtual bool ShouldFireFromCameraInFirstPerson() const { return false; }
 
 	virtual const Vector& GetBulletSpread( void )
 	{

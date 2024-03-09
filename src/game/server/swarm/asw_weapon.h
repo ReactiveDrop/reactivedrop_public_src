@@ -48,6 +48,7 @@ public:
 	virtual bool SecondaryAttackUsesPrimaryAmmo() { return false; }
 	virtual bool SecondaryAttackEqualsPrimary() { return false; }
 	virtual bool HasBuckshotSecondaryAttack() { return false; }
+	virtual bool ShouldFireFromCameraInFirstPerson() const { return true; }
 	virtual bool IsPredicted( void ) const;
 	bool ViewModelIsMarineAttachment() const;
 	bool ViewModelHidesMarineBodyGroup1() const;

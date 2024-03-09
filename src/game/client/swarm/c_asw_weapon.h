@@ -94,6 +94,7 @@ public:
 	virtual bool SecondaryAttackUsesPrimaryAmmo() { return false; }
 	virtual bool SecondaryAttackEqualsPrimary() { return false; }
 	virtual bool HasBuckshotSecondaryAttack() { return false; }
+	virtual bool ShouldFireFromCameraInFirstPerson() const { return true; }
 	virtual bool ReloadOrSwitchWeapons( void );
 	virtual const char *GetASWShootSound( int iIndex, int &iPitch );
 	virtual void WeaponSound( WeaponSound_t sound_type, float soundtime = 0.0f );
