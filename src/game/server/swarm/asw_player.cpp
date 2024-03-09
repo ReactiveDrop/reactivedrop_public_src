@@ -3469,21 +3469,6 @@ HSCRIPT CASW_Player::ScriptFindPickerEntity()
 
 const Vector& CASW_Player::GetCrosshairTracePos()
 {
-	if ( GetASWControls() != ASWC_TOPDOWN && GetNPC() )
-	{
-		trace_t tr;
-		Vector forward;
-		Vector shootposition = GetNPC()->Weapon_ShootPosition();
-		EyeVectors( &forward );
-		UTIL_TraceLine( shootposition,
-			shootposition + forward * MAX_COORD_RANGE,
-			MASK_SOLID, this, COLLISION_GROUP_NONE, &tr );
-		if ( tr.DidHit() )
-		{
-			m_vecCrosshairTracePos = tr.endpos;
-		}
-	}
-
 	return m_vecCrosshairTracePos;
 }
 
