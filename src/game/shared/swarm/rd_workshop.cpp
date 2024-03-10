@@ -1069,7 +1069,27 @@ bool CReactiveDropWorkshop::MaybeAddTemporaryAddon( PublishedFileId_t id, bool b
 	if ( IsSubscribedToFile( id, false ) )
 	{
 		// if we're subscribed to it, we don't need to do anything here
-		return false;
+
+		// EXCEPT that Steam now supports having an addon simultaneously
+		// subscribed and not visible in GetSubscribedItems
+		// so we have to load it even though it's disabled
+
+		// ugh
+
+		bool bFound = false;
+		FOR_EACH_VEC( m_EnabledAddons, i )
+		{
+			if ( m_EnabledAddons[i].details.m_nPublishedFileId == id )
+			{
+				bFound = true;
+				break;
+			}
+		}
+
+		if ( bFound )
+		{
+			return false;
+		}
 	}
 
 	if ( m_TemporaryAddons.Find( id ) != -1 )
