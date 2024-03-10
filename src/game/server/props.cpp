@@ -77,11 +77,11 @@ ConVar prop_active_gib_max_fade_time( "prop_active_gib_max_fade_time", "999999" 
 
 
 // Damage type modifiers for breakable objects.
-ConVar func_breakdmg_bullet( "func_breakdmg_bullet", "0.5" );
-ConVar func_breakdmg_club( "func_breakdmg_club", "1.5" );
-ConVar func_breakdmg_explosive( "func_breakdmg_explosive", "1.25" );
+ConVar func_breakdmg_bullet( "func_breakdmg_bullet", "0.5", FCVAR_CHEAT );
+ConVar func_breakdmg_club( "func_breakdmg_club", "1.5", FCVAR_CHEAT );
+ConVar func_breakdmg_explosive( "func_breakdmg_explosive", "1.25", FCVAR_CHEAT );
 
-ConVar sv_turbophysics( "sv_turbophysics", "0", FCVAR_REPLICATED, "Turns on turbo physics" );
+ConVar sv_turbophysics( "sv_turbophysics", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "Turns on turbo physics" );
 
 
 
