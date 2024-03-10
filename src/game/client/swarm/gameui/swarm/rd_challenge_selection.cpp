@@ -316,6 +316,9 @@ void BaseModUI::ReactiveDropChallengeSelection::PopulateChallenges()
 	pDisabled->PopulateChallenge( "0" );
 	GetControllerFocus()->AddToFocusList( pDisabled, true, true );
 
+	Assert( g_ReactiveDropWorkshop.m_bStartingUp == false );
+	g_ReactiveDropWorkshop.m_bStartingUp = true;
+
 	int iCount = ReactiveDropChallenges::Count();
 	for ( int i = 0; i < iCount; i++ )
 	{
@@ -327,6 +330,9 @@ void BaseModUI::ReactiveDropChallengeSelection::PopulateChallenges()
 			GetControllerFocus()->AddToFocusList( pItem, true, true );
 		}
 	}
+
+	g_ReactiveDropWorkshop.m_bStartingUp = false;
+	g_ReactiveDropWorkshop.RestartEnabledAddonsQuery();
 }
 
 void BaseModUI::ReactiveDropChallengeSelection::SetDetailsForChallenge( ReactiveDropChallengeSelectionListItem *pChallenge )
