@@ -569,7 +569,7 @@ function Update()
 					}
 				}
 			}
-			if (hStatus[0] > 0)
+			if (hStatus[0] > 0 || g_teamZombie.len() <= 0)
 			{
 				hMarine.CureInfestation();
 				if (g_teamZombie.len() > 0)
