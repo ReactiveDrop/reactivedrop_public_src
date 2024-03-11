@@ -576,6 +576,10 @@ function Update()
 				{
 					g_lastHuman[hMarine][0] = hStatus[0]-1;
 				}
+				else
+				{
+					g_lastHuman[hMarine][0] = 70;
+				}
 			}
 			else
 			{
