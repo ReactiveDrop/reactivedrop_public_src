@@ -572,7 +572,10 @@ function Update()
 			if (hStatus[0] > 0)
 			{
 				hMarine.CureInfestation();
-				g_lastHuman[hMarine][0] = hStatus[0]-1;
+				if (g_teamZombie.len() > 0)
+				{
+					g_lastHuman[hMarine][0] = hStatus[0]-1;
+				}
 			}
 			else
 			{
