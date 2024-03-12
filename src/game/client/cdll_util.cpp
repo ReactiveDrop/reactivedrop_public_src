@@ -32,6 +32,7 @@
 #include <vgui_controls/EditablePanel.h>
 #include "vgui_int.h"
 #include "cdll_client_int.h"
+#include "asw_util_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -564,15 +565,25 @@ void ClientPrint( C_BasePlayer *player, int msg_dest, const char *msg_name, cons
 	CBaseHudChat *hudChat = CBaseHudChat::GetHudChat();
 	if ( hudChat )
 	{
+		wchar_t wszParam1[1024]{}, wszParam2[1024]{}, wszParam3[1024]{}, wszParam4[1024]{};
+		if ( param1 )
+			TryLocalize( param1, wszParam1, sizeof( wszParam1 ) );
+		if ( param2 )
+			TryLocalize( param2, wszParam2, sizeof( wszParam2 ) );
+		if ( param3 )
+			TryLocalize( param3, wszParam3, sizeof( wszParam3 ) );
+		if ( param4 )
+			TryLocalize( param4, wszParam4, sizeof( wszParam4 ) );
+
 		wchar_t wszLocalized[2048];
-		g_pVGuiLocalize->ConstructString( wszLocalized, sizeof(wszLocalized), g_pVGuiLocalize->FindSafe( msg_name ), 4, param1, param2, param3, param4 );
+		g_pVGuiLocalize->ConstructString( wszLocalized, sizeof( wszLocalized ), g_pVGuiLocalize->FindSafe( msg_name ), 4, param1, param2, param3, param4 );
 
 		char szLocalized[4096];
 		g_pVGuiLocalize->ConvertUnicodeToANSI( wszLocalized, szLocalized, sizeof( szLocalized ) );
 
 		int index = 0;
 		if ( player ) index = player->entindex();
-		hudChat->ChatPrintf( index, msg_dest, szLocalized );
+		hudChat->ChatPrintf( index, msg_dest, "%s", szLocalized );
 	}
 }
 
