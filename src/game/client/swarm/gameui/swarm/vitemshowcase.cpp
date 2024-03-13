@@ -458,7 +458,8 @@ void ItemShowcase::ShowItems( SteamInventoryResult_t hResult, int iStart, int iC
 
 				if ( pItemShowcase->m_Queue[i]->ItemID == pInstance->ItemID )
 				{
-					pItemShowcase->m_Queue[i]->Quantity += pInstance->Quantity;
+					delete pItemShowcase->m_Queue[i];
+					pItemShowcase->m_Queue[i] = pInstance;
 					bFound = true;
 					break;
 				}
@@ -466,7 +467,6 @@ void ItemShowcase::ShowItems( SteamInventoryResult_t hResult, int iStart, int iC
 
 			if ( bFound )
 			{
-				delete pInstance;
 				continue;
 			}
 		}
