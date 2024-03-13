@@ -445,6 +445,32 @@ void ItemShowcase::ShowItems( SteamInventoryResult_t hResult, int iStart, int iC
 			delete pInstance;
 			continue;
 		}
+
+		if ( pDef->AutoStack )
+		{
+			bool bFound = false;
+			FOR_EACH_VEC( pItemShowcase->m_Queue, i )
+			{
+				if ( pItemShowcase->m_QueueExtra[i] != 0 || pItemShowcase->m_QueueType[i] != mode )
+				{
+					continue;
+				}
+
+				if ( pItemShowcase->m_Queue[i]->ItemID == pInstance->ItemID )
+				{
+					pItemShowcase->m_Queue[i]->Quantity += pInstance->Quantity;
+					bFound = true;
+					break;
+				}
+			}
+
+			if ( bFound )
+			{
+				delete pInstance;
+				continue;
+			}
+		}
+
 		pItemShowcase->m_Queue.AddToTail( pInstance );
 		pItemShowcase->m_QueueExtra.AddToTail( 0 );
 		pItemShowcase->m_QueueType.AddToTail( mode );

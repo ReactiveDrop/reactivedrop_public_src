@@ -2541,6 +2541,10 @@ namespace ReactiveDropInventory
 		Assert( !V_strcmp( szValue, "" ) || !V_strcmp( szValue, "1" ) || !V_strcmp( szValue, "0" ) );
 		pItemDef->GameOnly = !V_strcmp( szValue, "1" );
 
+		FETCH_PROPERTY( "auto_stack" );
+		Assert( !V_strcmp( szValue, "" ) || !V_strcmp( szValue, "1" ) || !V_strcmp( szValue, "0" ) );
+		pItemDef->AutoStack = !V_strcmp( szValue, "1" );
+
 #ifdef CLIENT_DLL
 		pItemDef->Icon = NULL;
 		FETCH_PROPERTY( "icon_url" );
