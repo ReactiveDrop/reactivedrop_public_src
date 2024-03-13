@@ -191,6 +191,9 @@ struct RD_Mission_t
 #endif
 
 	bool HasTag( const char *tag ) const;
+#ifdef RD_7A_DROPS
+	bool CraftingMaterialFoundHere( RD_Crafting_Material_t material ) const;
+#endif
 };
 
 struct RD_Mission_MinimapSlice_t

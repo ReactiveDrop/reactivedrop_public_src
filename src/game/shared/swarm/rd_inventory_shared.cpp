@@ -1,5 +1,6 @@
 #include "cbase.h"
 #include "rd_inventory_shared.h"
+#include "rd_crafting_defs.h"
 #include "rd_lobby_utils.h"
 #include "asw_util_shared.h"
 #include "asw_equipment_list.h"
@@ -198,6 +199,7 @@ public:
 
 #ifdef CLIENT_DLL
 		m_iPlayerEquipmentCommand = 0;
+		m_iCraftingMaterialSpawnCommand = 0;
 #endif
 	}
 
@@ -207,6 +209,10 @@ public:
 		if ( ValidatePlayerEquipmentResult() )
 		{
 			SendPlayerEquipmentToServer();
+		}
+		if ( s_bLoadedItemDefs )
+		{
+			PickCraftingMaterialLocations();
 		}
 #endif
 	}
@@ -1050,6 +1056,11 @@ public:
 					SendPlayerEquipmentToServer();
 				}
 			}
+
+			if ( s_bLoadedItemDefs )
+			{
+				PickCraftingMaterialLocations();
+			}
 #endif
 			return;
 		}
@@ -1633,6 +1644,18 @@ public:
 		if ( pParam->m_handle == m_PlayerEquipmentResult )
 		{
 			SendPlayerEquipmentToServer();
+			return;
+		}
+
+		if ( pParam->m_handle == m_CraftingMaterialLocationsResult )
+		{
+			if ( pParam->m_result == k_EResultOK )
+			{
+				m_iCraftingMaterialSpawnCommand = UTIL_RD_SendInventoryCommand( INVCMD_MATERIAL_SPAWN, m_CraftingMaterialSpawnArgs, m_CraftingMaterialLocationsResult );
+			}
+			pInventory->DestroyResult( m_CraftingMaterialLocationsResult );
+			m_CraftingMaterialLocationsResult = k_SteamInventoryResultInvalid;
+			return;
 		}
 
 		FOR_EACH_VEC( m_CraftingQueue, i )
@@ -1815,6 +1838,142 @@ public:
 		}
 
 		m_iPlayerEquipmentCommand = UTIL_RD_SendInventoryCommand( INVCMD_PLAYER_EQUIPS, order, m_PlayerEquipmentResult );
+	}
+
+	CUtlVector<int> m_CraftingMaterialSpawnArgs;
+	SteamInventoryResult_t m_CraftingMaterialLocationsResult{ k_SteamInventoryResultInvalid };
+	int m_iCraftingMaterialSpawnCommand{ 0 };
+	void PickCraftingMaterialLocations()
+	{
+#ifdef RD_7A_DROPS
+		GET_INVENTORY_OR_BAIL;
+
+		const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( MapName() );
+		if ( !pMission )
+		{
+			return;
+		}
+
+		CUtlVector<ReactiveDropInventory::ItemInstance_t> tokens;
+		ReactiveDropInventory::GetItemsForSlot( tokens, "material_drop_token" );
+		CUtlVector<std::pair<RD_Crafting_Material_t, ReactiveDropInventory::ItemInstance_t>> CommonTokens, RareTokens;
+		int nCommonTokens = 0, nRareTokens = 0;
+
+		// filter down to the materials we can actually find here
+		FOR_EACH_VEC( tokens, i )
+		{
+			for ( RD_Crafting_Material_t j = RD_Crafting_Material_t( RD_CRAFTING_MATERIAL_NONE + 1 ); j < NUM_RD_CRAFTING_MATERIAL_TYPES; j = RD_Crafting_Material_t( j + 1 ) )
+			{
+				if ( g_RD_Crafting_Material_Info[j].m_iTokenDef == tokens[i].ItemDefID )
+				{
+					if ( !pMission->CraftingMaterialFoundHere( j ) )
+					{
+						break;
+					}
+
+					if ( g_RD_Crafting_Material_Info[j].m_iRarity == RD_CRAFTING_MATERIAL_RARITY_COMMON || g_RD_Crafting_Material_Info[j].m_iRarity == RD_CRAFTING_MATERIAL_RARITY_ULTRA_COMMON || g_RD_Crafting_Material_Info[j].m_iRarity == RD_CRAFTING_MATERIAL_RARITY_UNCOMMON )
+					{
+						CommonTokens.AddToTail( std::make_pair( j, tokens[i] ) );
+						nCommonTokens += tokens[i].Quantity;
+					}
+					else if ( g_RD_Crafting_Material_Info[j].m_iRarity == RD_CRAFTING_MATERIAL_RARITY_RARE || g_RD_Crafting_Material_Info[j].m_iRarity == RD_CRAFTING_MATERIAL_RARITY_REGIONAL )
+					{
+						RareTokens.AddToTail( std::make_pair( j, tokens[i] ) );
+						nRareTokens += tokens[i].Quantity;
+					}
+
+					break;
+				}
+			}
+		}
+
+		if ( rd_debug_inventory.GetBool() )
+		{
+			DevMsg( "[C] Crafting material locations available in this mission (%s):\n", MapName() );
+
+			FOR_EACH_VEC( CommonTokens, i )
+			{
+				DevMsg( "[C] %s x%d (%llu)\n", g_RD_Crafting_Material_Info[CommonTokens[i].first].m_szName, CommonTokens[i].second.Quantity, CommonTokens[i].second.ItemID );
+			}
+			DevMsg( "[C] Total Industrial, Bulk, and Alien material locations: %d\n", nCommonTokens );
+
+			FOR_EACH_VEC( RareTokens, i )
+			{
+				DevMsg( "[C] %s x%d (%llu)\n", g_RD_Crafting_Material_Info[RareTokens[i].first].m_szName, RareTokens[i].second.Quantity, RareTokens[i].second.ItemID );
+			}
+			DevMsg( "[C] Total Tech and Salvaged material locations: %d\n", nRareTokens );
+		}
+
+		m_CraftingMaterialSpawnArgs.RemoveAll();
+		CUtlVector<SteamItemInstanceID_t> toSend;
+		m_CraftingMaterialSpawnArgs.EnsureCapacity( RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS );
+		toSend.EnsureCapacity( RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS );
+
+#define SELECT_TOKEN( Type ) \
+		int iSelectedToken = RandomInt( 0, n##Type##Tokens - 1 ); \
+		FOR_EACH_VEC( Type##Tokens, j ) \
+		{ \
+			iSelectedToken -= Type##Tokens[j].second.Quantity; \
+			if ( iSelectedToken < 0 ) \
+			{ \
+				Type##Tokens[j].second.Quantity--; \
+				n##Type##Tokens--; \
+				m_CraftingMaterialSpawnArgs.AddToTail( Type##Tokens[j].first ); \
+				if ( !toSend.IsValidIndex( toSend.Find( Type##Tokens[j].second.ItemID ) ) ) \
+					toSend.AddToTail( Type##Tokens[j].second.ItemID ); \
+				break; \
+			} \
+		}
+
+		if ( nRareTokens >= 1 )
+		{
+			// if we have a rare location, it's guaranteed to appear in the mission
+			SELECT_TOKEN( Rare );
+		}
+		else if ( nCommonTokens > 4 )
+		{
+			// otherwise, if we have enough non-rare locations, they spill over into the rare slot
+			SELECT_TOKEN( Common );
+		}
+
+		for ( int i = 1; i < RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS; i++ )
+		{
+			// the remaining slots work in reverse, using non-rare locations by default
+			if ( nCommonTokens > 0 )
+			{
+				SELECT_TOKEN( Common );
+			}
+			else if ( nRareTokens > 0 )
+			{
+				SELECT_TOKEN( Rare );
+			}
+		}
+
+#undef SELECT_TOKEN
+
+		if ( m_CraftingMaterialLocationsResult != k_SteamInventoryResultInvalid )
+		{
+			pInventory->DestroyResult( m_CraftingMaterialLocationsResult );
+			m_CraftingMaterialLocationsResult = k_SteamInventoryResultInvalid;
+		}
+
+		UTIL_RD_AbortInventoryCommand( m_iCraftingMaterialSpawnCommand );
+
+		if ( toSend.Count() == 0 )
+		{
+			m_iCraftingMaterialSpawnCommand = UTIL_RD_SendInventoryCommand( INVCMD_MATERIAL_SPAWN, m_CraftingMaterialSpawnArgs, k_SteamInventoryResultInvalid );
+		}
+		else
+		{
+			m_iCraftingMaterialSpawnCommand = 0;
+			pInventory->GetItemsByID( &m_CraftingMaterialLocationsResult, toSend.Base(), toSend.Count() );
+		}
+
+		if ( rd_debug_inventory.GetBool() )
+		{
+			DevMsg( "[C] Selected %d locations. (handle: %08x)\n", m_CraftingMaterialSpawnArgs.Count(), m_CraftingMaterialLocationsResult );
+		}
+#endif
 	}
 
 	struct NotificationSeenUpdate_t

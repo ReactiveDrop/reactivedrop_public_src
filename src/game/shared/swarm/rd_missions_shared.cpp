@@ -1111,3 +1111,28 @@ bool RD_Mission_t::HasTag( const char *tag ) const
 
 	return false;
 }
+
+#ifdef RD_7A_DROPS
+bool RD_Mission_t::CraftingMaterialFoundHere( RD_Crafting_Material_t material ) const
+{
+	// salvaged materials require being on the list
+	if ( g_RD_Crafting_Material_Info[material].m_iRarity == RD_CRAFTING_MATERIAL_RARITY_REGIONAL )
+	{
+		return RegionalMaterials.IsValidIndex( RegionalMaterials.Find( material ) );
+	}
+
+	// refined materials are not found
+	if ( g_RD_Crafting_Material_Info[material].m_iRarity > RD_CRAFTING_MATERIAL_RARITY_REGIONAL )
+	{
+		return false;
+	}
+
+	// special cases
+	if ( material == RD_CRAFTING_MATERIAL_LOOSE_WIRES && ( !V_stricmp( BaseName, "asi-jac4-residential" ) || !V_stricmp( BaseName, "dm_residential" ) ) )
+	{
+		return false;
+	}
+
+	return true;
+}
+#endif

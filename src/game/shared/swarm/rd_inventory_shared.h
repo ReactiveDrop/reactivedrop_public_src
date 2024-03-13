@@ -132,9 +132,11 @@ namespace ReactiveDropInventory
 		SteamItemInstanceID_t OriginalItemID{ k_SteamItemInstanceIDInvalid };
 		SteamItemDef_t ItemDefID{};
 		int32 Quantity{};
-		uint32 Acquired{};
-		uint32 StateChangedTimestamp{};
+		RTime32 Acquired{};
+		RTime32 StateChangedTimestamp{};
+		// "", "consumed"
 		CUtlString State{};
+		// "external", "promo", "playtime", "purchase"
 		CUtlString Origin{};
 		CUtlStringMap<CUtlString> DynamicProps{};
 		CUtlStringMap<CUtlStringList> Tags{};
