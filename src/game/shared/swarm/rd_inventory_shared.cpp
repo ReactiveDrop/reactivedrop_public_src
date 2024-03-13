@@ -1074,7 +1074,7 @@ public:
 		CRAFT_DYNAMIC_PROPERTY_INIT,
 		// checking for item drop. notifies user based on preferences if successful.
 		CRAFT_DROP,
-		// checking for promo item. notifies user if successful.
+		// checking for promo item. notifies user and server if successful.
 		CRAFT_PROMO,
 		// retrieving item data. may not be ours. notification when complete.
 		CRAFT_INSPECT,
@@ -1149,6 +1149,7 @@ public:
 			case CRAFT_INSPECT:
 			case CRAFT_DYNAMIC_PROPERTY_UPDATE:
 			case CRAFT_DELETE_SILENT:
+			case CRAFT_NOTIFICATION_DYNAMIC_PROPERTY_UPDATE:
 				break;
 			default:
 				Assert( !"unhandled crafting task type" );
@@ -1178,6 +1179,7 @@ public:
 		case CRAFT_PROMO:
 		case CRAFT_DYNAMIC_PROPERTY_UPDATE:
 		case CRAFT_DELETE_SILENT:
+		case CRAFT_NOTIFICATION_DYNAMIC_PROPERTY_UPDATE:
 			break;
 		default:
 			Assert( !"unhandled crafting task type" );
@@ -1264,6 +1266,23 @@ public:
 			InitDynamicPropertiesAndShowcase( pTask, BaseModUI::ItemShowcase::MODE_ITEM_DROP, true );
 			break;
 		case CRAFT_PROMO:
+			if ( engine->IsInGame() )
+			{
+				uint32_t nItems = 0;
+				pInventory->GetResultItems( pTask->m_hResult, NULL, &nItems );
+				if ( nItems > 0 )
+				{
+					// make sure the first item is real and not a "no new items granted" error message
+					char szOrigin[128]{};
+					uint32_t nOriginSize = sizeof( szOrigin );
+					pInventory->GetResultItemProperty( pTask->m_hResult, 0, "origin", szOrigin, &nOriginSize );
+
+					if ( !V_strcmp( szOrigin, "promo" ) )
+					{
+						UTIL_RD_SendInventoryCommand( INVCMD_PROMO_DROP, CUtlVector<int>{}, pTask->m_hResult );
+					}
+				}
+			}
 			InitDynamicPropertiesAndShowcase( pTask, BaseModUI::ItemShowcase::MODE_ITEM_DROP );
 			break;
 		case CRAFT_INSPECT:

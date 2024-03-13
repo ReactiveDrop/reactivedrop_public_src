@@ -19,9 +19,10 @@ public:
 	virtual void	Init( void );
 	virtual void	Reset( void );
 
-	void			MsgFunc_SayText(bf_read &msg);
+	void			MsgFunc_SayText( bf_read &msg );
 	void			MsgFunc_SayText2( bf_read &msg );
-	void			MsgFunc_TextMsg(bf_read &msg);
+	void			MsgFunc_TextMsg( bf_read &msg );
+	void			MsgFunc_RDItemPickupMsg( bf_read &msg );
 
 #ifdef INFESTED_DLL
 	virtual void ApplySchemeSettings(vgui::IScheme *pScheme);

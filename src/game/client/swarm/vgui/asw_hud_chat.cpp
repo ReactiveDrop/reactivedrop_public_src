@@ -29,6 +29,7 @@ DECLARE_HUDELEMENT_FLAGS( CHudChat, HUDELEMENT_SS_FULLSCREEN_ONLY );
 DECLARE_HUD_MESSAGE( CHudChat, SayText );
 DECLARE_HUD_MESSAGE( CHudChat, SayText2 );
 DECLARE_HUD_MESSAGE( CHudChat, TextMsg );
+DECLARE_HUD_MESSAGE( CHudChat, RDItemPickupMsg );
 
 //Color g_ASWColorGrey( 66, 142, 192, 255 );
 Color g_ASWColorGrey( 255, 255, 0, 255 );
@@ -74,6 +75,7 @@ void CHudChat::Init( void )
 	HOOK_HUD_MESSAGE( CHudChat, SayText );
 	HOOK_HUD_MESSAGE( CHudChat, SayText2 );
 	HOOK_HUD_MESSAGE( CHudChat, TextMsg );
+	HOOK_HUD_MESSAGE( CHudChat, RDItemPickupMsg );
 }
 
 void CHudChat::Reset( void )
@@ -367,6 +369,78 @@ void CHudChat::MsgFunc_TextMsg( bf_read &msg )
 	*/
 }
 
+static const char *const s_szItemPickupMessages[] =
+{
+	"#rd_player_found_promo_item",
+	"#rd_player_found_crafting_material",
+	"#rd_player_found_crafting_materials",
+};
+
+void CHudChat::MsgFunc_RDItemPickupMsg( bf_read &msg )
+{
+	int iMessage = msg.ReadByte();
+	int iPlayer = msg.ReadByte();
+	SteamItemDef_t iDef = msg.ReadLong();
+	int iQuantity = msg.ReadLong();
+
+	Assert( iMessage >= 0 && iMessage < NELEMS( s_szItemPickupMessages ) );
+	Assert( iPlayer > 0 && iPlayer <= gpGlobals->maxClients );
+	Assert( iDef >= 1 && iDef < 1000000000 );
+	Assert( iQuantity > 0 );
+	if ( iMessage < 0 || iMessage >= NELEMS( s_szItemPickupMessages ) )
+	{
+		Warning( "RDItemPickupMsg(%d, %d, %d, %d) out of range\n", iMessage, iPlayer, iDef, iQuantity );
+		return;
+	}
+
+	const wchar_t *wszMessageTemplate = g_pVGuiLocalize->Find( s_szItemPickupMessages[iMessage] );
+	Assert( wszMessageTemplate );
+	if ( !wszMessageTemplate )
+	{
+		Warning( "RDItemPickupMsg(%d, %d, %d, %d) no message\n", iMessage, iPlayer, iDef, iQuantity );
+		return;
+	}
+
+	C_ASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( iPlayer ) );
+	Assert( pPlayer );
+	if ( !pPlayer )
+	{
+		Warning( "RDItemPickupMsg(%d, %d, %d, %d) no player\n", iMessage, iPlayer, iDef, iQuantity );
+		return;
+	}
+
+	wchar_t wszPlayerName[MAX_PLAYER_NAME_LENGTH + 2];
+	wszPlayerName[0] = COLOR_PLAYERNAME;
+	V_UTF8ToUnicode( pPlayer->GetPlayerName(), &wszPlayerName[1], sizeof( wszPlayerName ) - sizeof( wchar_t ) );
+	int iNameLen = V_wcslen( wszPlayerName );
+	wszPlayerName[iNameLen] = COLOR_NORMAL;
+	wszPlayerName[iNameLen + 1] = L'\0';
+
+	const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( iDef );
+	Assert( pDef );
+	if ( !pDef )
+	{
+		Warning( "RDItemPickupMsg(%d, %d, %d, %d) no item def\n", iMessage, iPlayer, iDef, iQuantity );
+		return;
+	}
+
+	wchar_t wszItemName[256];
+	wszItemName[0] = COLOR_ACHIEVEMENT;
+	V_UTF8ToUnicode( pDef->Name.Get(), &wszItemName[1], sizeof( wszItemName ) - sizeof( wchar_t ) );
+	iNameLen = V_wcslen( wszItemName );
+	wszItemName[iNameLen] = COLOR_NORMAL;
+	wszItemName[iNameLen + 1] = L'\0';
+
+	wchar_t wszQuantity[32];
+	V_snwprintf( wszQuantity, NELEMS( wszQuantity ), L"%d", iQuantity );
+
+	wchar_t wszFullMessage[1024];
+	g_pVGuiLocalize->ConstructString( wszFullMessage, sizeof( wszFullMessage ), wszMessageTemplate, 3, wszPlayerName, wszItemName, wszQuantity );
+	char szFullMessage[2048];
+	V_UnicodeToUTF8( wszFullMessage, szFullMessage, sizeof( szFullMessage ) );
+
+	ChatPrintf( iPlayer, CHAT_FILTER_NONE, "%s", szFullMessage );
+}
 
 int CHudChat::GetChatInputOffset( void )
 {

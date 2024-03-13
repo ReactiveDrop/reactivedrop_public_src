@@ -102,4 +102,5 @@ void RegisterUserMessages( void )
 	usermessages->Register( "SentryGib", 13 );
 	usermessages->Register( "RDStrangeDeviceTier", -1 );
 	usermessages->Register( "RDInvCmdAck", 4 );
+	usermessages->Register( "RDItemPickupMsg", 10 );
 }

@@ -534,7 +534,22 @@ static void ExecuteInventoryCommand( CASW_Player *pPlayer, EInventoryCommand eCm
 	}
 	case INVCMD_PROMO_DROP:
 	{
-		DebuggerBreakIfDebugging(); // TODO
+		CReliableBroadcastRecipientFilter filter;
+		FOR_EACH_VEC( items, i )
+		{
+			Assert( items[i].Origin == "promo" );
+			if ( items[i].Origin != "promo" )
+			{
+				continue;
+			}
+
+			UserMessageBegin( filter, "RDItemPickupMsg" );
+				WRITE_BYTE( 0 );
+				WRITE_BYTE( pPlayer->entindex() );
+				WRITE_LONG( items[i].ItemDefID );
+				WRITE_LONG( items[i].Quantity );
+			MessageEnd();
+		}
 		break;
 	}
 	default:
