@@ -296,9 +296,11 @@ public:
 	CInterpolatedVar<short> m_iv_iMouseX;
 	CInterpolatedVar<short> m_iv_iMouseY;
 
+#ifdef RD_7A_DROPS
 	// networked for all players so spectating works
 	CNetworkArray( int, m_iCraftingMaterialType, RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS );
 	CNetworkVar( uint32_t, m_iCraftingMaterialFound );
+#endif
 
 private:	
 	bool m_bCheckedLevel;	// have we checked the level name to see if this is a tutorial yet?

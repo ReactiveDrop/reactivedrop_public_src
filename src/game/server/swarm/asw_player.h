@@ -321,9 +321,11 @@ public:
 
 	int m_iWantsAutoRecord;
 
+#ifdef RD_7A_DROPS
 	bool m_bCraftingMaterialsSpawned;
 	CNetworkArray( int, m_iCraftingMaterialType, RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS );
 	CNetworkVar( uint32_t, m_iCraftingMaterialFound );
+#endif
 
 private:
 

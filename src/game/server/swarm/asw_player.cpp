@@ -243,8 +243,10 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Player, DT_ASW_Player )
 	SendPropQAngles( SENDINFO( m_angMarineAutoAimFromClient ), 10, SPROP_CHANGES_OFTEN ),
 	SendPropFloat( SENDINFO( m_flInactiveKickWarning ) ),
 	SendPropDataTable( SENDINFO_DT( m_EquippedItemData ), &REFERENCE_SEND_TABLE( DT_RD_ItemInstances_Player ) ),
+#ifdef RD_7A_DROPS
 	SendPropArray( SendPropInt( SENDINFO_ARRAY( m_iCraftingMaterialType ), NumBitsForCount( NUM_RD_CRAFTING_MATERIAL_TYPES ), SPROP_UNSIGNED ), m_iCraftingMaterialType ),
 	SendPropInt( SENDINFO( m_iCraftingMaterialFound ), RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS, SPROP_UNSIGNED ),
+#endif
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Player )
@@ -698,12 +700,14 @@ void CASW_Player::Spawn()
 
 	m_flLastActiveTime = gpGlobals->curtime;
 
+#ifdef RD_7A_DROPS
 	m_bCraftingMaterialsSpawned = false;
 	for ( int i = 0; i < RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS; i++ )
 	{
 		m_iCraftingMaterialType.Set( i, RD_CRAFTING_MATERIAL_NONE );
 	}
 	m_iCraftingMaterialFound = 0;
+#endif
 
 	if (ASWGameRules())
 	{

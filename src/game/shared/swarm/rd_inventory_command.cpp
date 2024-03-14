@@ -299,6 +299,7 @@ static bool PreValidateInventoryCommand( CASW_Player *pPlayer, EInventoryCommand
 
 		break;
 	case INVCMD_MATERIAL_SPAWN:
+#ifdef RD_7A_DROPS
 		if ( pPlayer->m_bCraftingMaterialsSpawned )
 		{
 			Warning( "Player %s sent invalid InvCmdInit - already received an INVCMD_MATERIAL_SPAWN this mission.\n", pPlayer->GetASWNetworkID() );
@@ -331,8 +332,10 @@ static bool PreValidateInventoryCommand( CASW_Player *pPlayer, EInventoryCommand
 			Warning( "Player %s sent invalid InvCmdInit - material spawn received but no mission record for %s.\n", pPlayer->GetASWNetworkID(), STRING( gpGlobals->mapname ) );
 			return false;
 		}
+#endif
 		break;
 	case INVCMD_MATERIAL_PICKUP:
+#ifdef RD_7A_DROPS
 		if ( args.Count() != 1 )
 		{
 			Warning( "Player %s sent invalid InvCmdInit - wrong number of args for material pickup (%d).\n", pPlayer->GetASWNetworkID(), args.Count() );
@@ -343,6 +346,7 @@ static bool PreValidateInventoryCommand( CASW_Player *pPlayer, EInventoryCommand
 			Warning( "Player %s sent invalid InvCmdInit - out of range location number for material pickup (%d).\n", pPlayer->GetASWNetworkID(), args[0] );
 			return false;
 		}
+#endif
 		break;
 	case INVCMD_PROMO_DROP:
 		if ( args.Count() != 0 )
@@ -554,6 +558,7 @@ static void ExecuteInventoryCommand( CASW_Player *pPlayer, EInventoryCommand eCm
 	}
 	case INVCMD_MATERIAL_SPAWN:
 	{
+#ifdef RD_7A_DROPS
 		if ( pPlayer->m_bCraftingMaterialsSpawned )
 		{
 			Warning( "Player %s sent invalid InvCmd - already received an INVCMD_MATERIAL_SPAWN this mission.\n", pPlayer->GetASWNetworkID() );
@@ -570,11 +575,12 @@ static void ExecuteInventoryCommand( CASW_Player *pPlayer, EInventoryCommand eCm
 			pPlayer->m_iCraftingMaterialType.Set( i, args[i] );
 		}
 		Assert( pPlayer->m_iCraftingMaterialFound.Get() == 0 );
-
+#endif
 		break;
 	}
 	case INVCMD_MATERIAL_PICKUP:
 	{
+#ifdef RD_7A_DROPS
 		Assert( pPlayer->m_bCraftingMaterialsSpawned );
 
 		int iLocation = args[0];
@@ -621,7 +627,7 @@ static void ExecuteInventoryCommand( CASW_Player *pPlayer, EInventoryCommand eCm
 			WRITE_LONG( g_RD_Crafting_Material_Info[eMaterial].m_iItemDef );
 			WRITE_LONG( nTotalQuantity );
 		MessageEnd();
-
+#endif
 		break;
 	}
 	case INVCMD_PROMO_DROP:
@@ -629,6 +635,7 @@ static void ExecuteInventoryCommand( CASW_Player *pPlayer, EInventoryCommand eCm
 		CReliableBroadcastRecipientFilter filter;
 		FOR_EACH_VEC( items, i )
 		{
+			// this doesn't allow auto_stack promo items through if the first of that item wasn't just received, so... don't make auto_stack promo items.
 			Assert( items[i].Origin == "promo" );
 			if ( items[i].Origin != "promo" )
 			{
