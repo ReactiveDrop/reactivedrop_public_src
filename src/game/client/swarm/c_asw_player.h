@@ -14,6 +14,7 @@
 #include "steam/steam_api.h"
 #include <vgui_controls/PHandle.h>
 #include "rd_inventory_shared.h"
+#include "rd_crafting_defs.h"
 
 class C_ASW_Game_Resource;
 
@@ -294,6 +295,10 @@ public:
 #pragma warning(pop)
 	CInterpolatedVar<short> m_iv_iMouseX;
 	CInterpolatedVar<short> m_iv_iMouseY;
+
+	// networked for all players so spectating works
+	CNetworkArray( int, m_iCraftingMaterialType, RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS );
+	CNetworkVar( uint32_t, m_iCraftingMaterialFound );
 
 private:	
 	bool m_bCheckedLevel;	// have we checked the level name to see if this is a tutorial yet?

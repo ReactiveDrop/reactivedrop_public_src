@@ -307,7 +307,7 @@ public:
 
 	static CBaseEntity *spawn_point;
 	bool m_bWelcomed;
-	float m_fLastFragTime; 
+	float m_fLastFragTime;
 	int   m_iKillingSpree;
 
 #if !defined(NO_STEAM)
@@ -320,6 +320,10 @@ public:
 	bool m_bLeaderboardReady;
 
 	int m_iWantsAutoRecord;
+
+	bool m_bCraftingMaterialsSpawned;
+	CNetworkArray( int, m_iCraftingMaterialType, RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS );
+	CNetworkVar( uint32_t, m_iCraftingMaterialFound );
 
 private:
 

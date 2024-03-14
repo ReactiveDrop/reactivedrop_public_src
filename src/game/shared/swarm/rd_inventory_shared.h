@@ -136,7 +136,7 @@ namespace ReactiveDropInventory
 		RTime32 StateChangedTimestamp{};
 		// "", "consumed"
 		CUtlString State{};
-		// "external", "promo", "playtime", "purchase"
+		// "external", "promo", "playtime", "purchase", "exchange"
 		CUtlString Origin{};
 		CUtlStringMap<CUtlString> DynamicProps{};
 		CUtlStringMap<CUtlStringList> Tags{};

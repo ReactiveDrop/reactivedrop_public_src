@@ -1,5 +1,6 @@
 #include "cbase.h"
 #include "rd_inventory_command.h"
+#include "rd_crafting_defs.h"
 #include "steam/isteaminventory.h"
 #include "fmtstr.h"
 #include "asw_util_shared.h"
@@ -298,12 +299,38 @@ static bool PreValidateInventoryCommand( CASW_Player *pPlayer, EInventoryCommand
 
 		break;
 	case INVCMD_MATERIAL_SPAWN:
+		if ( pPlayer->m_bCraftingMaterialsSpawned )
+		{
+			Warning( "Player %s sent invalid InvCmdInit - already received an INVCMD_MATERIAL_SPAWN this mission.\n", pPlayer->GetASWNetworkID() );
+			return false;
+		}
 		if ( args.Count() > RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS )
 		{
 			Warning( "Player %s sent invalid InvCmdInit - wrong number of args for material spawn (%d).\n", pPlayer->GetASWNetworkID(), args.Count() );
 			return false;
 		}
-		DebuggerBreakIfDebugging(); // TODO: search for args (material IDs) in valid materials for this level
+		if ( const RD_Mission_t *pMission = ReactiveDropMissions::GetMission( STRING( gpGlobals->mapname ) ) )
+		{
+			FOR_EACH_VEC( args, i )
+			{
+				if ( args[i] <= RD_CRAFTING_MATERIAL_NONE || args[i] >= NUM_RD_CRAFTING_MATERIAL_TYPES )
+				{
+					Warning( "Player %s sent invalid InvCmdInit - out of range crafting material type (%d).\n", pPlayer->GetASWNetworkID(), args[i] );
+					return false;
+				}
+
+				if ( !pMission->CraftingMaterialFoundHere( RD_Crafting_Material_t( args[i] ) ) )
+				{
+					Warning( "Player %s sent invalid InvCmdInit - material %s cannot be found in mission %s.\n", pPlayer->GetASWNetworkID(), g_RD_Crafting_Material_Info[args[i]].m_szName, STRING( gpGlobals->mapname ) );
+					return false;
+				}
+			}
+		}
+		else
+		{
+			Warning( "Player %s sent invalid InvCmdInit - material spawn received but no mission record for %s.\n", pPlayer->GetASWNetworkID(), STRING( gpGlobals->mapname ) );
+			return false;
+		}
 		break;
 	case INVCMD_MATERIAL_PICKUP:
 		if ( args.Count() != 1 )
@@ -403,6 +430,10 @@ static void UpdateAllEquipmentItemInstances( const ReactiveDropInventory::ItemIn
 
 static void ExecuteInventoryCommand( CASW_Player *pPlayer, EInventoryCommand eCmd, const CUtlVector<int> &args, const CUtlVector<ReactiveDropInventory::ItemInstance_t> &items )
 {
+	Assert( SteamUtils() );
+	RTime32 iNow = SteamUtils()->GetServerRealTime();
+	RTime32 iFiveMinutesAgo = iNow - 300;
+
 	switch ( eCmd )
 	{
 	case INVCMD_PLAYER_EQUIPS:
@@ -523,13 +554,74 @@ static void ExecuteInventoryCommand( CASW_Player *pPlayer, EInventoryCommand eCm
 	}
 	case INVCMD_MATERIAL_SPAWN:
 	{
+		if ( pPlayer->m_bCraftingMaterialsSpawned )
+		{
+			Warning( "Player %s sent invalid InvCmd - already received an INVCMD_MATERIAL_SPAWN this mission.\n", pPlayer->GetASWNetworkID() );
+			return;
+		}
+
+		// validate that crafting material ids in args each have at least one corresponding token
 		DebuggerBreakIfDebugging(); // TODO
+
+		pPlayer->m_bCraftingMaterialsSpawned = true;
+		FOR_EACH_VEC( args, i )
+		{
+			Assert( pPlayer->m_iCraftingMaterialType[i] == RD_CRAFTING_MATERIAL_NONE );
+			pPlayer->m_iCraftingMaterialType.Set( i, args[i] );
+		}
+		Assert( pPlayer->m_iCraftingMaterialFound.Get() == 0 );
+
 		break;
 	}
 	case INVCMD_MATERIAL_PICKUP:
 	{
+		Assert( pPlayer->m_bCraftingMaterialsSpawned );
+
 		int iLocation = args[0];
-		DebuggerBreakIfDebugging(); // TODO
+		if ( pPlayer->m_iCraftingMaterialFound.Get() & ( 1 << iLocation ) )
+		{
+			Warning( "Player %s sent invalid InvCmd - already received an INVCMD_MATERIAL_PICKUP for location %d.\n", pPlayer->GetASWNetworkID(), iLocation );
+			return;
+		}
+		RD_Crafting_Material_t eMaterial = RD_Crafting_Material_t( pPlayer->m_iCraftingMaterialType[iLocation] );
+		if ( eMaterial == RD_CRAFTING_MATERIAL_NONE )
+		{
+			Warning( "Player %s sent invalid InvCmd - INVCMD_MATERIAL_PICKUP for empty location %d.\n", pPlayer->GetASWNetworkID(), iLocation );
+			return;
+		}
+
+		pPlayer->m_iCraftingMaterialFound |= ( 1 << iLocation );
+
+		// TODO: check to make sure the player has USEd the material spawn location so hacked clients can't spam these
+		// make sure the location's material matches the exchange result given by the player
+		bool bConsumed = false;
+		int nTotalQuantity = 0;
+
+		FOR_EACH_VEC( items, i )
+		{
+			// TODO: development of this is paused pending a resolution to https://steamcommunity.com/groups/steamworks/discussions/21/4298195085742657885/
+			DebuggerBreakIfDebugging(); // TODO
+		}
+
+		if ( nTotalQuantity == 0 )
+		{
+			Warning( "Player %s sent invalid InvCmd - INVCMD_MATERIAL_PICKUP with no gained materials material type %s (location %d).\n", pPlayer->GetASWNetworkID(), g_RD_Crafting_Material_Info[eMaterial].m_szName, iLocation );
+			return;
+		}
+		if ( !bConsumed )
+		{
+			Warning( "Player %s sent invalid InvCmd - INVCMD_MATERIAL_PICKUP with no consumed locations for material type %s (location %d).\n", pPlayer->GetASWNetworkID(), g_RD_Crafting_Material_Info[eMaterial].m_szName, iLocation );
+			return;
+		}
+
+		CReliableBroadcastRecipientFilter filter;
+		UserMessageBegin( filter, "RDItemPickupMsg" );
+			WRITE_BYTE( 2 );
+			WRITE_BYTE( pPlayer->entindex() );
+			WRITE_LONG( g_RD_Crafting_Material_Info[eMaterial].m_iItemDef );
+			WRITE_LONG( nTotalQuantity );
+		MessageEnd();
+
 		break;
 	}
 	case INVCMD_PROMO_DROP:
@@ -540,6 +632,13 @@ static void ExecuteInventoryCommand( CASW_Player *pPlayer, EInventoryCommand eCm
 			Assert( items[i].Origin == "promo" );
 			if ( items[i].Origin != "promo" )
 			{
+				Warning( "Player %s sent invalid InvCmd - INVCMD_PROMO_DROP item %d has origin %s.\n", pPlayer->GetASWNetworkID(), items[i].ItemDefID, items[i].Origin.Get() );
+				continue;
+			}
+			Assert( items[i].Acquired >= iFiveMinutesAgo );
+			if ( items[i].Acquired < iFiveMinutesAgo )
+			{
+				Warning( "Player %s sent invalid InvCmd - INVCMD_PROMO_DROP item %d acquired %d seconds ago.\n", pPlayer->GetASWNetworkID(), items[i].ItemDefID, iNow - items[i].Acquired );
 				continue;
 			}
 

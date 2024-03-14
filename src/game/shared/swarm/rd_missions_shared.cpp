@@ -1115,6 +1115,12 @@ bool RD_Mission_t::HasTag( const char *tag ) const
 #ifdef RD_7A_DROPS
 bool RD_Mission_t::CraftingMaterialFoundHere( RD_Crafting_Material_t material ) const
 {
+	// check range
+	if ( material <= RD_CRAFTING_MATERIAL_NONE || material >= NUM_RD_CRAFTING_MATERIAL_TYPES )
+	{
+		return false;
+	}
+
 	// salvaged materials require being on the list
 	if ( g_RD_Crafting_Material_Info[material].m_iRarity == RD_CRAFTING_MATERIAL_RARITY_REGIONAL )
 	{
