@@ -2906,7 +2906,7 @@ namespace ReactiveDropInventory
 
 		FOR_EACH_VEC( s_RD_Inventory_Manager.m_LocalInventoryCache, i )
 		{
-			if ( currentlyDeleting.IsValidIndex( currentlyDeleting.Find( s_RD_Inventory_Manager.m_LocalInventoryCache[i].ItemID ) )
+			if ( currentlyDeleting.IsValidIndex( currentlyDeleting.Find( s_RD_Inventory_Manager.m_LocalInventoryCache[i].ItemID ) ) )
 			{
 				continue;
 			}
