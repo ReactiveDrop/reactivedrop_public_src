@@ -648,6 +648,7 @@ static void CallbackEnableWorkshopAddon( KeyValues *pAction )
 static void CallbackDismissInventoryNotification( KeyValues *pAction )
 {
 	ReactiveDropInventory::DeleteNotificationItem( pAction->GetUint64( "itemid" ) );
+	HoIAF()->RebuildNotificationList();
 }
 
 static void CallbackDismissBountyNotification( KeyValues *pAction )
@@ -657,6 +658,7 @@ static void CallbackDismissBountyNotification( KeyValues *pAction )
 	if ( pMedalStore )
 	{
 		pMedalStore->SetBountyNotificationStatus( pAction->GetInt( "bountyid" ), HoIAFNotification_t::NUM_SEEN_TYPES );
+		HoIAF()->RebuildNotificationList();
 	}
 }
 
@@ -847,7 +849,7 @@ void CRD_VGUI_Notifications_List_Item_HoIAF_Bounty::SetSeen( int iSeen )
 	Assert( pMedalStore );
 	if ( pMedalStore )
 	{
-		Assert( pMedalStore->GetBountyNotificationStatus( m_Notification.FirstBountyID ) == iSeen );
+		Assert( pMedalStore->GetBountyNotificationStatus( m_Notification.FirstBountyID ) != iSeen );
 		pMedalStore->SetBountyNotificationStatus( m_Notification.FirstBountyID, iSeen );
 		m_Notification.Seen = ( HoIAFNotification_t::Seen_t )iSeen;
 	}

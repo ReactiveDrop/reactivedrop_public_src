@@ -1250,6 +1250,8 @@ public:
 			return;
 		}
 
+		RemoveConsumedItemsFromInventoryCache( pTask->m_hResult );
+
 		switch ( pTask->m_Type )
 		{
 		case CRAFT_RECIPE:
@@ -1350,6 +1352,39 @@ public:
 			}
 
 			m_bWantFullInventoryRefresh = false;
+		}
+	}
+	void RemoveConsumedItemsFromInventoryCache( SteamInventoryResult_t hResult )
+	{
+		GET_INVENTORY_OR_BAIL;
+
+		uint32_t nItems = 0;
+		if ( !pInventory->GetResultItems( hResult, NULL, &nItems ) )
+		{
+			return;
+		}
+
+		SteamItemDetails_t *pItems = ( SteamItemDetails_t * )stackalloc( nItems * sizeof( SteamItemDetails_t ) );
+		if ( !pInventory->GetResultItems( hResult, pItems, &nItems ) )
+		{
+			return;
+		}
+
+		for ( uint32_t i = 0; i < nItems; i++ )
+		{
+			if ( pItems[i].m_unFlags & ( k_ESteamItemRemoved | k_ESteamItemConsumed ) )
+			{
+				FOR_EACH_VEC( m_LocalInventoryCache, j )
+				{
+					if ( m_LocalInventoryCache[j].ItemID == pItems[i].m_itemId )
+					{
+						// we're going to request a full inventory update once the crafting queue is empty,
+						// but we can remove this item from our cache temporarily now.
+						m_LocalInventoryCache.Remove( j );
+						break;
+					}
+				}
+			}
 		}
 	}
 	void InitDynamicPropertiesAndShowcase( CraftItemTask_t *pTask, BaseModUI::ItemShowcase::Mode_t iMode, bool bCheckPreferences = false, bool bSilenceNotification = false )
@@ -2859,9 +2894,24 @@ namespace ReactiveDropInventory
 	template<typename F>
 	static void GetLocalInventoryWhere( CUtlVector<ItemInstance_t> &instances, F condition )
 	{
+		CUtlVector<SteamItemInstanceID_t> currentlyDeleting;
+
+		FOR_EACH_VEC( s_RD_Inventory_Manager.m_CraftingQueue, i )
+		{
+			if ( s_RD_Inventory_Manager.m_CraftingQueue[i]->m_Type == CRD_Inventory_Manager::CRAFT_DELETE_SILENT )
+			{
+				currentlyDeleting.AddToTail( s_RD_Inventory_Manager.m_CraftingQueue[i]->m_iReplaceItemInstance );
+			}
+		}
+
 		FOR_EACH_VEC( s_RD_Inventory_Manager.m_LocalInventoryCache, i )
 		{
-			if ( condition( s_RD_Inventory_Manager.m_LocalInventoryCache[i] ) )
+			if ( currentlyDeleting.IsValidIndex( currentlyDeleting.Find( s_RD_Inventory_Manager.m_LocalInventoryCache[i].ItemID ) )
+			{
+				continue;
+			}
+
+			if ( condition(s_RD_Inventory_Manager.m_LocalInventoryCache[i]) )
 			{
 				instances.AddToTail( s_RD_Inventory_Manager.m_LocalInventoryCache[i] );
 			}
