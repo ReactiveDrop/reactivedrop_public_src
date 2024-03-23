@@ -569,10 +569,10 @@ function Update()
 					}
 				}
 			}
-			if (hStatus[0] > 0 || g_teamZombie.len() <= 0)
+			if (hStatus[0] > 0 || !(ZombieNearby(hMarine)))
 			{
 				hMarine.CureInfestation();
-				if (g_teamZombie.len() > 0)
+				if (ZombieNearby(hMarine))
 				{
 					g_lastHuman[hMarine][0] = hStatus[0]-1;
 				}
@@ -1175,7 +1175,7 @@ function UseLastStand(hMarine)
 	hBubble.Spawn();
 	hBubble.Activate();
 	g_lastHuman[hMarine] <- [70, hBubble];
-	local mod = 0.3*g_teamZombie.len();
+	local mod = 0.5*g_teamZombie.len();
 	if (mod < 1)
 	{
 		mod = 1.0;
@@ -1377,6 +1377,19 @@ function GetSlotWeapon(hMarine, slot)
 		return invTable[slotName];
 	}
 	return null;
+}
+
+function ZombieNearby(hMarine, dist=600)
+{
+	local hTarget = null;
+	while ((hTarget = Entities.FindByClassnameWithin(hTarget, "asw_marine", hMarine.GetOrigin(), dist)) != null)
+	{
+		if (hTarget != hMarine && hTarget in g_teamZombie)
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 function UnitToTime(unit, countHour=false, decimal=false, unitPerSecond=10)
