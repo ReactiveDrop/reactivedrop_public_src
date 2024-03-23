@@ -550,7 +550,7 @@ function Update()
 			g_teamZombie.rawdelete(hMarine);
 		}
 	}
-	foreach (hMarine, hEnt in g_lastHuman)
+	foreach (hMarine, hStatus in g_lastHuman)
 	{
 		if (!(hMarine.IsValid()))
 		{
@@ -567,6 +567,26 @@ function Update()
 					{
 						hMarine.DropWeapon(i);
 					}
+				}
+			}
+			if (hStatus[0] > 0 || !(ZombieNearby(hMarine)))
+			{
+				hMarine.CureInfestation();
+				if (ZombieNearby(hMarine))
+				{
+					g_lastHuman[hMarine][0] = hStatus[0]-1;
+				}
+				else
+				{
+					g_lastHuman[hMarine][0] = 70;
+				}
+			}
+			else
+			{
+				if (g_matchTimer > 0)
+				{
+					hMarine.BecomeInfested();
+					hMarine.TakeDamage(hMarine.GetMaxHealth()*0.005, 33554432, null);
 				}
 			}
 		}
@@ -639,6 +659,10 @@ function OnTakeDamage_Alive_Any( victim, inflictor, attacker, weapon, damage, da
 	}
 	if ( victim in g_teamZombie && attacker && attacker in g_teamHuman )
 	{
+		if (attacker in g_lastHuman && g_lastHuman[attacker][0] < 40)
+		{
+			g_lastHuman[attacker][0] = 40;
+		}
 		g_teamZombie[victim][4] = GetRegenCD(victim);
 		damage = damage * (1.0 + GetRage());
 		if (NetProps.GetPropBool(victim, "m_bElectroStunned"))
@@ -795,6 +819,10 @@ function OnGameEvent_entity_killed( params )
 	}
 	if (victim in g_teamZombie)
 	{
+		if (attacker && attacker in g_lastHuman)
+		{
+			g_lastHuman[attacker][0] = 70;
+		}
 		if (g_teamZombie[victim][0].IsValid())
 		{
 			g_teamZombie[victim][0].Destroy();
@@ -1146,8 +1174,8 @@ function UseLastStand(hMarine)
 	hBubble.SetModelScale(0.3, 0);
 	hBubble.Spawn();
 	hBubble.Activate();
-	g_lastHuman[hMarine] <- hBubble;
-	local mod = 0.3*g_teamZombie.len();
+	g_lastHuman[hMarine] <- [70, hBubble];
+	local mod = 0.4*g_teamZombie.len();
 	if (mod < 1)
 	{
 		mod = 1.0;
@@ -1349,6 +1377,19 @@ function GetSlotWeapon(hMarine, slot)
 		return invTable[slotName];
 	}
 	return null;
+}
+
+function ZombieNearby(hMarine, dist=600)
+{
+	local hTarget = null;
+	while ((hTarget = Entities.FindByClassnameWithin(hTarget, "asw_marine", hMarine.GetOrigin(), dist)) != null)
+	{
+		if (hTarget != hMarine && hTarget in g_teamZombie)
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 function UnitToTime(unit, countHour=false, decimal=false, unitPerSecond=10)
