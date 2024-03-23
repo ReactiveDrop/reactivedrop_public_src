@@ -1175,7 +1175,7 @@ function UseLastStand(hMarine)
 	hBubble.Spawn();
 	hBubble.Activate();
 	g_lastHuman[hMarine] <- [70, hBubble];
-	local mod = 0.5*g_teamZombie.len();
+	local mod = 0.4*g_teamZombie.len();
 	if (mod < 1)
 	{
 		mod = 1.0;
