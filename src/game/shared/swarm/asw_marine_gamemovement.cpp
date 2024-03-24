@@ -3670,6 +3670,10 @@ int CASW_MarineGameMovement::CheckStuck( void )
 	if ( !truemarine || truemarine->m_bKnockedOut )
 		return 0;
 
+	// don't check stuck for bots here (they get checked in their navigation failed handler)
+	if ( !truemarine->IsInhabited() || !player )
+		return 0;
+
 	CreateMarineStuckTable();
 
 	hitent = TestPlayerPosition( mv->GetAbsOrigin(), COLLISION_GROUP_PLAYER_MOVEMENT, traceresult );
