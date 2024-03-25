@@ -30,7 +30,7 @@ void SDRSpewLevelChanged( IConVar *var, const char *pOldValue, float flOldValue 
 	}
 }
 
-ConVar sdr_spew_level( "sdr_spew_level", "5", FCVAR_NONE, "Verbosity level for SteamNetworkingSockets spew.  4=warning, 5=msg, 6=verbose, 7=debug", true, k_ESteamNetworkingSocketsDebugOutputType_None, true, k_ESteamNetworkingSocketsDebugOutputType_Everything, SDRSpewLevelChanged );
+ConVar sdr_spew_level( IsServerDll() ? "sdr_spew_level_server" : "sdr_spew_level", "5", FCVAR_NONE, "Verbosity level for SteamNetworkingSockets spew.  4=warning, 5=msg, 6=verbose, 7=debug", true, k_ESteamNetworkingSocketsDebugOutputType_None, true, k_ESteamNetworkingSocketsDebugOutputType_Everything, SDRSpewLevelChanged );
 
 void UTIL_RD_InitSteamNetworking()
 {
