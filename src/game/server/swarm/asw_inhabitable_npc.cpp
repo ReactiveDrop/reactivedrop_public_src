@@ -503,9 +503,9 @@ void CASW_Inhabitable_NPC::MakeTracer( const Vector &vecTracerSrc, const trace_t
 
 	CRecipientFilter filter;
 	filter.AddAllPlayers();
-	if ( gpGlobals->maxClients > 1 && IsInhabited() && GetCommander() )
+	if ( IsInhabited() )
 	{
-		filter.RemoveRecipient( GetCommander() );
+		filter.UsePredictionRules();
 	}
 
 	int iDamageAtt = ( iDamageType & DMG_BUCKSHOT ) ? BULLET_ATT_TRACER_BUCKSHOT : 0;
@@ -525,9 +525,9 @@ void CASW_Inhabitable_NPC::MakeUnattachedTracer( const Vector &vecTracerSrc, con
 
 	CRecipientFilter filter;
 	filter.AddAllPlayers();
-	if ( gpGlobals->maxClients > 1 && IsInhabited() && GetCommander() )
+	if ( IsInhabited() )
 	{
-		filter.RemoveRecipient( GetCommander() );
+		filter.UsePredictionRules();
 	}
 
 	int iDamageAtt = ( iDamageType & DMG_BUCKSHOT ) ? BULLET_ATT_TRACER_BUCKSHOT : 0;
