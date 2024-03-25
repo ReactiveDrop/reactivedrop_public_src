@@ -2868,7 +2868,7 @@ void MultiFontRichText::AppendBBCode( const wchar_t *wszText )
 				V_hextobinary( szHex, 6, szBin, sizeof( szBin ) );
 
 				Color nextColor{ szBin[0], szBin[1], szBin[2], 255 };
-				formattingStack.AddToTail( formattingStack[formattingStack.Count() - 1] );
+				formattingStack.AddToTail( Formatting_t{ formattingStack[formattingStack.Count() - 1] } );
 				formattingStack.Tail().change = Formatting_t::CHANGE_COLOR;
 				formattingStack.Tail().color = nextColor;
 				InsertColorChange( nextColor );
@@ -2891,7 +2891,7 @@ void MultiFontRichText::AppendBBCode( const wchar_t *wszText )
 
 			if ( pBuf[1] == L'b' && pBuf[2] == L']' )
 			{
-				formattingStack.AddToTail( formattingStack[formattingStack.Count() - 1] );
+				formattingStack.AddToTail( Formatting_t{ formattingStack[formattingStack.Count() - 1] } );
 				formattingStack.Tail().change = Formatting_t::CHANGE_ITALIC;
 				formattingStack.Tail().italic = true;
 				InsertFontChange( fontMatrix[formattingStack.Tail().bold][formattingStack.Tail().italic] );
@@ -2903,7 +2903,7 @@ void MultiFontRichText::AppendBBCode( const wchar_t *wszText )
 
 			if ( pBuf[1] == L'i' && pBuf[2] == L']' )
 			{
-				formattingStack.AddToTail( formattingStack[formattingStack.Count() - 1] );
+				formattingStack.AddToTail( Formatting_t{ formattingStack[formattingStack.Count() - 1] } );
 				formattingStack.Tail().change = Formatting_t::CHANGE_ITALIC;
 				formattingStack.Tail().italic = true;
 				InsertFontChange( fontMatrix[formattingStack.Tail().bold][formattingStack.Tail().italic] );
