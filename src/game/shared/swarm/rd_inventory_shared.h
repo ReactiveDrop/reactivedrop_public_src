@@ -173,6 +173,7 @@ namespace ReactiveDropInventory
 	ItemInstance_t *GetLocalItemCacheForModify( SteamItemInstanceID_t id );
 	void GetItemsForSlot( CUtlVector<ItemInstance_t> &instances, const char *szRequiredSlot );
 	void GetItemsForSlotAndEquipIndex( CUtlVector<ItemInstance_t> &instances, const char *szRequiredSlot, int iEquipIndex );
+	void GetItemsForDef( CUtlVector<ItemInstance_t> &instances, SteamItemDef_t iDefID );
 	bool CheckMedalEquipCache();
 	void ChangeItemStyle( SteamItemInstanceID_t id, int iStyle );
 	void QueueSetNotificationSeen( SteamItemInstanceID_t id, int iSeen );

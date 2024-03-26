@@ -565,7 +565,8 @@ static void ExecuteInventoryCommand( CASW_Player *pPlayer, EInventoryCommand eCm
 			return;
 		}
 
-		// validate that crafting material ids in args each have at least one corresponding token
+		// TODO: validate that crafting material ids in args each have at least one corresponding location token
+		// TODO: store the current quantities of each location and material token sent in the inventory service result
 		DebuggerBreakIfDebugging(); // TODO
 
 		pPlayer->m_bCraftingMaterialsSpawned = true;

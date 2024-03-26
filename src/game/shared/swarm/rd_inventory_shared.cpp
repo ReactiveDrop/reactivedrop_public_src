@@ -1891,7 +1891,13 @@ public:
 
 		CUtlVector<ReactiveDropInventory::ItemInstance_t> tokens;
 		ReactiveDropInventory::GetItemsForSlot( tokens, "material_drop_token" );
-		CUtlVector<std::pair<RD_Crafting_Material_t, ReactiveDropInventory::ItemInstance_t>> CommonTokens, RareTokens;
+		struct Token_t
+		{
+			RD_Crafting_Material_t Material;
+			ReactiveDropInventory::ItemInstance_t Instance;
+			CCopyableUtlVector<SteamItemInstanceID_t> Collected;
+		};
+		CUtlVector<Token_t> CommonTokens, RareTokens;
 		int nCommonTokens = 0, nRareTokens = 0;
 
 		// filter down to the materials we can actually find here
@@ -1908,12 +1914,30 @@ public:
 
 					if ( g_RD_Crafting_Material_Info[j].m_iRarity == RD_CRAFTING_MATERIAL_RARITY_COMMON || g_RD_Crafting_Material_Info[j].m_iRarity == RD_CRAFTING_MATERIAL_RARITY_ULTRA_COMMON || g_RD_Crafting_Material_Info[j].m_iRarity == RD_CRAFTING_MATERIAL_RARITY_UNCOMMON )
 					{
-						CommonTokens.AddToTail( std::make_pair( j, tokens[i] ) );
+						int k = CommonTokens.AddToTail();
+						CommonTokens[k].Material = j;
+						CommonTokens[k].Instance = tokens[i];
+						CUtlVector<ReactiveDropInventory::ItemInstance_t> collected;
+						ReactiveDropInventory::GetItemsForDef( collected, g_RD_Crafting_Material_Info[j].m_iItemDef );
+						CommonTokens[k].Collected.SetCount( collected.Count() );
+						FOR_EACH_VEC( collected, l )
+						{
+							CommonTokens[k].Collected[l] = collected[l].ItemID;
+						}
 						nCommonTokens += tokens[i].Quantity;
 					}
 					else if ( g_RD_Crafting_Material_Info[j].m_iRarity == RD_CRAFTING_MATERIAL_RARITY_RARE || g_RD_Crafting_Material_Info[j].m_iRarity == RD_CRAFTING_MATERIAL_RARITY_REGIONAL )
 					{
-						RareTokens.AddToTail( std::make_pair( j, tokens[i] ) );
+						int k = RareTokens.AddToTail();
+						RareTokens[k].Material = j;
+						RareTokens[k].Instance = tokens[i];
+						CUtlVector<ReactiveDropInventory::ItemInstance_t> collected;
+						ReactiveDropInventory::GetItemsForDef( collected, g_RD_Crafting_Material_Info[j].m_iItemDef );
+						RareTokens[k].Collected.SetCount( collected.Count() );
+						FOR_EACH_VEC( collected, l )
+						{
+							RareTokens[k].Collected[l] = collected[l].ItemID;
+						}
 						nRareTokens += tokens[i].Quantity;
 					}
 
@@ -1928,13 +1952,13 @@ public:
 
 			FOR_EACH_VEC( CommonTokens, i )
 			{
-				DevMsg( "[C] %s x%d (%llu)\n", g_RD_Crafting_Material_Info[CommonTokens[i].first].m_szName, CommonTokens[i].second.Quantity, CommonTokens[i].second.ItemID );
+				DevMsg( "[C] %s x%d (%llu; c:%d)\n", g_RD_Crafting_Material_Info[CommonTokens[i].Material].m_szName, CommonTokens[i].Instance.Quantity, CommonTokens[i].Instance.ItemID, CommonTokens[i].Collected.Count() );
 			}
 			DevMsg( "[C] Total Industrial, Bulk, and Alien material locations: %d\n", nCommonTokens );
 
 			FOR_EACH_VEC( RareTokens, i )
 			{
-				DevMsg( "[C] %s x%d (%llu)\n", g_RD_Crafting_Material_Info[RareTokens[i].first].m_szName, RareTokens[i].second.Quantity, RareTokens[i].second.ItemID );
+				DevMsg( "[C] %s x%d (%llu; c:%d)\n", g_RD_Crafting_Material_Info[RareTokens[i].Material].m_szName, RareTokens[i].Instance.Quantity, RareTokens[i].Instance.ItemID, RareTokens[i].Collected.Count() );
 			}
 			DevMsg( "[C] Total Tech and Salvaged material locations: %d\n", nRareTokens );
 		}
@@ -1948,14 +1972,17 @@ public:
 		int iSelectedToken = RandomInt( 0, n##Type##Tokens - 1 ); \
 		FOR_EACH_VEC( Type##Tokens, j ) \
 		{ \
-			iSelectedToken -= Type##Tokens[j].second.Quantity; \
+			iSelectedToken -= Type##Tokens[j].Instance.Quantity; \
 			if ( iSelectedToken < 0 ) \
 			{ \
-				Type##Tokens[j].second.Quantity--; \
+				Type##Tokens[j].Instance.Quantity--; \
 				n##Type##Tokens--; \
-				m_CraftingMaterialSpawnArgs.AddToTail( Type##Tokens[j].first ); \
-				if ( !toSend.IsValidIndex( toSend.Find( Type##Tokens[j].second.ItemID ) ) ) \
-					toSend.AddToTail( Type##Tokens[j].second.ItemID ); \
+				m_CraftingMaterialSpawnArgs.AddToTail( Type##Tokens[j].Material ); \
+				if ( !toSend.IsValidIndex( toSend.Find( Type##Tokens[j].Instance.ItemID ) ) ) \
+					toSend.AddToTail( Type##Tokens[j].Instance.ItemID ); \
+				FOR_EACH_VEC( Type##Tokens[j].Collected, k ) \
+					if ( !toSend.IsValidIndex( toSend.Find( Type##Tokens[j].Collected[k] ) ) ) \
+						toSend.AddToTail( Type##Tokens[j].Collected[k] ); \
 				break; \
 			} \
 		}
@@ -1985,6 +2012,8 @@ public:
 		}
 
 #undef SELECT_TOKEN
+
+		// don't log the selected tokens (to avoid encouraging metagaming)
 
 		if ( m_CraftingMaterialLocationsResult != k_SteamInventoryResultInvalid )
 		{
@@ -2961,6 +2990,14 @@ namespace ReactiveDropInventory
 			{
 				const ItemDef_t *pDef = GetItemDef( instance.ItemDefID );
 				return pDef && pDef->ItemSlotMatches( szRequiredSlot ) && pDef->EquipIndex == iEquipIndex;
+			} );
+	}
+
+	void GetItemsForDef( CUtlVector<ItemInstance_t> &instances, SteamItemDef_t iDefID )
+	{
+		GetLocalInventoryWhere( instances, [&]( const ItemInstance_t &instance ) -> bool
+			{
+				return instance.ItemDefID == iDefID;
 			} );
 	}
 
