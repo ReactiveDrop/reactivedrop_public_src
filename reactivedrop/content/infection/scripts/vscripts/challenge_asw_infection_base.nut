@@ -612,11 +612,11 @@ function Update()
 					local hPlayer = picker[random].GetCommander();
 					g_previous[hPlayer] <- 0;
 				}
+				PlayZombieSound(picker[random], "alert");
 				if (picker.len() > 1)
 				{
 					picker.remove(random);
 				}
-				PlayZombieSound(picker[random], "alert");
 			}
 		}
 	}
