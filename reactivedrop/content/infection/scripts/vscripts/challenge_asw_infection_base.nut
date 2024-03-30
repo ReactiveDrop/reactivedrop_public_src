@@ -1011,6 +1011,10 @@ function JoinHuman(hMarine)
 	{
 		hMarine.SetMaxHealth(newHealth);
 		hMarine.SetHealth(newHealth);
+		if (hMarine.IsInhabited())
+		{
+			NetProps.SetPropFloat(hMarine.GetCommander(), "m_flLaggedMovementValue", (300.0/330.0));
+		}
 	}
 	return;
 }
@@ -1064,6 +1068,10 @@ function JoinZombie(hMarine)
 		hMarine.SetHealth(newHealth);
 		hMarine.SetModel("models/swarm/marine/infected_marine.mdl");
 		hMarine.SetOrigin(hMarine.GetOrigin() + Vector(0, 0, 32));
+		if (hMarine.IsInhabited())
+		{
+			NetProps.SetPropFloat(hMarine.GetCommander(), "m_flLaggedMovementValue", 1.0);
+		}
 	}
 	return;
 }
