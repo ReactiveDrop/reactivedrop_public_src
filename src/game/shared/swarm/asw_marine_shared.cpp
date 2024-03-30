@@ -360,9 +360,9 @@ Vector CASW_Marine::Weapon_ShootPosition( )
 float CASW_Marine::MaxSpeed()
 {
 	float speed = BaseClass::MaxSpeed();
-	if (GetMarineResource())
+	if ( GetMarineResource() )
 	{
-		speed = MarineSkills()->GetSkillBasedValueByMarine(this, ASW_MARINE_SKILL_AGILITY);
+		speed = MarineSkills()->GetSkillBasedValueByMarine( this, ASW_MARINE_SKILL_AGILITY ) * m_fSpeedScale;
 	}
 	float speedscale = 1.0f;
 	// half speed if we're firing or reloading
