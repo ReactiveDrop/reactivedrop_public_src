@@ -38,7 +38,6 @@ bool IsBulletBasedWeaponClass( Class_T weapon_class )
 	return ( weapon_class == CLASS_ASW_RIFLE ||
 		weapon_class == CLASS_ASW_MINIGUN ||
 		weapon_class == CLASS_ASW_PDW ||
-		weapon_class == CLASS_ASW_FLECHETTE ||
 		weapon_class == CLASS_ASW_SHOTGUN ||
 		weapon_class == CLASS_ASW_RICOCHET ||
 		weapon_class == CLASS_ASW_RAILGUN ||

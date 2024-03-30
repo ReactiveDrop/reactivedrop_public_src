@@ -367,9 +367,9 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 	},
 	{
 		ASW_EQUIP_FLECHETTE, WEAPON_NAME( flechette ),
-		false, true, false, "ASW_FLECHETTE", "",
-		"swarm/EquipIcons/EquipFlechette",
-		&asw_ammo_count_flechette, &asw_ammo_count_flechette,
+		false, true, false, "ASW_F", "",
+		"swarm/EquipIcons/EquipRailgun",
+		&asw_ammo_count_flamer, &asw_ammo_count_flamer,
 		NULL, NULL,
 	},
 	{
@@ -400,6 +400,13 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		"swarm/EquipIcons/EquipAR2",
 		&asw_ammo_count_ar2, &asw_ammo_count_ar2,
 		&asw_ammo_count_ar2_grenade, &asw_ammo_count_ar2_grenade,
+	},
+	{
+		ASW_EQUIP_FLECHETTE2, WEAPON_NAME( flechette ),
+		false, true, false, "ASW_FLECHETTE", "",
+		"swarm/EquipIcons/EquipFlechette",
+		&asw_ammo_count_flechette, &asw_ammo_count_flechette,
+		NULL, NULL,
 	},
 #ifdef RD_7A_WEAPONS
 	{
@@ -440,14 +447,6 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		&asw_ammo_count_rifle, &asw_ammo_count_rifle,
 		&asw_ammo_count_energy_shield, &asw_ammo_count_energy_shield_max,
 		MARINE_CLASS_TECH,
-	},
-	{
-		ASW_EQUIP_REVIVE_TOOL, WEAPON_NAME( revive_tool ),
-		false, true, false, "", "",
-		"swarm/EquipIcons/EquipReviveTool",
-		NULL, NULL,
-		NULL, NULL,
-		MARINE_CLASS_MEDIC, true,
 	},
 #endif
 };
@@ -665,6 +664,14 @@ static CASW_EquipItem s_ExtraEquips[ASW_NUM_EQUIP_EXTRA] =
 		&asw_ammo_count_shield_bubble, &asw_ammo_count_shield_bubble,
 		NULL, NULL,
 		MARINE_CLASS_SPECIAL_WEAPONS,
+	},
+	{
+		ASW_EQUIP_REVIVE_TOOL, WEAPON_NAME( revive_tool ),
+		false, true, true, "", "",
+		"swarm/EquipIcons/EquipReviveTool",
+		NULL, NULL,
+		NULL, NULL,
+		MARINE_CLASS_MEDIC, true,
 	},
 #endif
 };

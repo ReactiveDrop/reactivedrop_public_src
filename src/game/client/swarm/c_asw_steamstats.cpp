@@ -470,6 +470,8 @@ Class_T GetDamagingWeaponClassFromName( const char *szClassName )
 		return ( Class_T )CLASS_ASW_SENTRY_RAILGUN;
 	else if ( FStrEq( szClassName, "asw_weapon_energy_shield" ) )
 		return ( Class_T )CLASS_ASW_ENERGY_SHIELD;
+	else if ( FStrEq( szClassName, "asw_weapon_flechette2" ) )
+		return ( Class_T )CLASS_ASW_FLECHETTE2;
 
 	else if( FStrEq( szClassName, "asw_weapon_laser_mines") )
 		return (Class_T)CLASS_ASW_LASER_MINES;

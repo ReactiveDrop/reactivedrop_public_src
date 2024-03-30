@@ -1,5 +1,5 @@
 #include "cbase.h"
-#include "asw_weapon_flechette_shared.h"
+#include "asw_weapon_flechette2_shared.h"
 #include "in_buttons.h"
 
 #ifdef CLIENT_DLL
@@ -24,6 +24,7 @@
 #include "decals.h"
 #include "ammodef.h"
 #include "asw_weapon_ammo_bag_shared.h"
+#include "episodic/npc_hunter.h"
 #include "asw_gamerules.h"
 #endif
 #include "asw_marine_skills.h"
@@ -32,49 +33,52 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Weapon_Flechette, DT_ASW_Weapon_Flechette )
+IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Weapon_Flechette2, DT_ASW_Weapon_Flechette2 )
 
-BEGIN_NETWORK_TABLE( CASW_Weapon_Flechette, DT_ASW_Weapon_Flechette )
+BEGIN_NETWORK_TABLE( CASW_Weapon_Flechette2, DT_ASW_Weapon_Flechette2 )
 #ifdef CLIENT_DLL
-	// recvprops
+// recvprops
 #else
-	// sendprops	
+// sendprops	
 #endif
 END_NETWORK_TABLE()
 
 #ifdef CLIENT_DLL
-BEGIN_PREDICTION_DATA( CASW_Weapon_Flechette )
+BEGIN_PREDICTION_DATA( CASW_Weapon_Flechette2 )
 END_PREDICTION_DATA()
 #endif
 
-LINK_ENTITY_TO_CLASS( asw_weapon_flechette, CASW_Weapon_Flechette );
-PRECACHE_WEAPON_REGISTER( asw_weapon_flechette );
+LINK_ENTITY_TO_CLASS( asw_weapon_flechette2, CASW_Weapon_Flechette2 );
+PRECACHE_WEAPON_REGISTER( asw_weapon_flechette2 );
 
 extern ConVar asw_weapon_max_shooting_distance;
 
 #ifndef CLIENT_DLL
 extern ConVar asw_debug_marine_damage;
+extern ConVar sk_hunter_dmg_flechette;
+ConVar rd_flechette_speed( "rd_flechette_speed", "2000", FCVAR_CHEAT );
 #endif
 
-CASW_Weapon_Flechette::CASW_Weapon_Flechette()
+CASW_Weapon_Flechette2::CASW_Weapon_Flechette2()
 {
 }
 
 
-CASW_Weapon_Flechette::~CASW_Weapon_Flechette()
+CASW_Weapon_Flechette2::~CASW_Weapon_Flechette2()
 {
+
 }
 
-void CASW_Weapon_Flechette::Precache()
+void CASW_Weapon_Flechette2::Precache()
 {
 	BaseClass::Precache();
 
 #ifdef GAME_DLL
-	UTIL_PrecacheOther( "asw_rocket" );
+	UTIL_PrecacheOther( "hunter_flechette" );
 #endif
 }
 
-void CASW_Weapon_Flechette::PrimaryAttack()
+void CASW_Weapon_Flechette2::PrimaryAttack()
 {
 	// If my clip is empty (and I use clips) start reload
 	if ( UsesClipsForAmmo1() && !m_iClip1 )
@@ -167,7 +171,13 @@ void CASW_Weapon_Flechette::PrimaryAttack()
 		VectorAngles( vecShoot, vecRocketAngle );
 		vecRocketAngle[YAW] += random->RandomFloat( -10, 10 );
 
-		CASW_Rocket::Create( fGrenadeDamage, vecSrc, vecRocketAngle, GetMarine() );
+		CHunterFlechette *pFlechette = CHunterFlechette::FlechetteCreate( fGrenadeDamage / sk_hunter_dmg_flechette.GetFloat(), vecSrc, vecRocketAngle, GetMarine() );
+		if ( pFlechette )
+		{
+			pFlechette->SetupMarineFlechette( this );
+			vecShoot *= rd_flechette_speed.GetFloat();
+			pFlechette->Shoot( vecShoot, true );
+		}
 
 		if ( pMarine->GetMarineResource() )
 		{
@@ -182,7 +192,7 @@ void CASW_Weapon_Flechette::PrimaryAttack()
 	}
 }
 
-void CASW_Weapon_Flechette::SecondaryAttack()
+void CASW_Weapon_Flechette2::SecondaryAttack()
 {
 	CASW_Player *pPlayer = GetCommander();
 	if ( !pPlayer )
@@ -192,18 +202,16 @@ void CASW_Weapon_Flechette::SecondaryAttack()
 	if ( !pMarine )
 		return;
 
+
 	// dry fire
 	SendWeaponAnim( ACT_VM_DRYFIRE );
 	BaseClass::WeaponSound( EMPTY );
 	m_flNextSecondaryAttack = gpGlobals->curtime + 0.5f;
 }
 
-float CASW_Weapon_Flechette::GetFireRate()
+float CASW_Weapon_Flechette2::GetFireRate()
 {
-	//float flRate = 0.125f;
 	float flRate = GetWeaponInfo()->m_flFireRate;
-
-	//CALL_ATTRIB_HOOK_FLOAT( flRate, mod_fire_rate );
 
 	return flRate;
 }
