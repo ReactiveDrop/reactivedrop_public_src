@@ -25,6 +25,7 @@
 #include "ammodef.h"
 #include "asw_weapon_ammo_bag_shared.h"
 #include "asw_gamerules.h"
+#include "asw_rocket.h"
 #endif
 #include "asw_marine_skills.h"
 #include "asw_weapon_parse.h"
