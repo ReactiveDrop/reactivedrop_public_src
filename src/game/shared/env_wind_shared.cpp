@@ -78,7 +78,7 @@
 #ifdef CLIENT_DLL
 // Test concommand for wind/tree sway. Couldn't think of a better way to put it.
 // Will move it out of this file when we figure out how the weather control will be implemented.
-CON_COMMAND( cl_tree_sway_dir, "sets tree sway wind direction and strength" )
+CON_COMMAND_F( cl_tree_sway_dir, "sets tree sway wind direction and strength", FCVAR_CHEAT )
 {
 	CMatRenderContextPtr pRenderContext( g_pMaterialSystem );
 	if ( args.ArgC() == 3 )
