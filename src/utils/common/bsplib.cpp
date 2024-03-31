@@ -2899,8 +2899,8 @@ void WriteBSPFile( const char *filename, char *pUnused )
 	AddLump( LUMP_CUBEMAPS, g_CubemapSamples, g_nCubemapSamples );
 	AddLump( LUMP_CLIPPORTALVERTS, ( float * )g_ClipPortalVerts, g_nClipPortalVerts * 3 );
 
-	AddLump( LUMP_WORLDLIGHTS, dworldlightsLDR, numworldlightsLDR );
-	AddLump( LUMP_WORLDLIGHTS_HDR, dworldlightsHDR, numworldlightsHDR );
+	AddLump( LUMP_WORLDLIGHTS, dworldlightsLDR, numworldlightsLDR, LUMP_WORLDLIGHTS_VERSION );
+	AddLump( LUMP_WORLDLIGHTS_HDR, dworldlightsHDR, numworldlightsHDR, LUMP_WORLDLIGHTS_VERSION );
 
     AddLump( LUMP_DISP_LIGHTMAP_SAMPLE_POSITIONS, g_DispLightmapSamplePositions );
 	AddLump( LUMP_FACE_MACRO_TEXTURE_INFO, g_FaceMacroTextureInfos );
