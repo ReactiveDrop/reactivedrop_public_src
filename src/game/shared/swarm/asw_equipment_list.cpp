@@ -137,7 +137,8 @@ ConVar asw_ammo_count_stun_grenades( "asw_ammo_count_stun_grenades", "10", FCVAR
 ConVar asw_ammo_count_incendiary_grenades( "asw_ammo_count_incendiary_grenades", "7", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_shield_bubble( "asw_ammo_count_shield_bubble", "3", FCVAR_CHEAT | FCVAR_REPLICATED );
 
-#define WEAPON_NAME( name ) "asw_weapon_" #name, "#asw_weapon_" #name, "#asw_weaponl_" #name, "#asw_wdesc_" #name, "#asw_weapon_" #name "_altfire", "#asw_weapon_" #name "_attributes"
+#define WEAPON_CLASS_NAME( class, name ) "asw_weapon_" #class, "#asw_weapon_" #name, "#asw_weaponl_" #name, "#asw_wdesc_" #name, "#asw_weapon_" #name "_altfire", "#asw_weapon_" #name "_attributes"
+#define WEAPON_NAME( name ) WEAPON_CLASS_NAME( name, name )
 
 static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 {
@@ -402,7 +403,7 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		&asw_ammo_count_ar2_grenade, &asw_ammo_count_ar2_grenade,
 	},
 	{
-		ASW_EQUIP_FLECHETTE2, WEAPON_NAME( flechette ),
+		ASW_EQUIP_FLECHETTE2, WEAPON_CLASS_NAME( flechette2, flechette ),
 		false, true, false, "ASW_FLECHETTE", "",
 		"swarm/EquipIcons/EquipFlechette",
 		&asw_ammo_count_flechette, &asw_ammo_count_flechette,
