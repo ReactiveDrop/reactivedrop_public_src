@@ -1678,7 +1678,10 @@ public:
 
 		if ( pParam->m_handle == m_PlayerEquipmentResult )
 		{
-			SendPlayerEquipmentToServer();
+			if ( pParam->m_result == k_EResultOK )
+			{
+				SendPlayerEquipmentToServer();
+			}
 			return;
 		}
 
@@ -3003,6 +3006,12 @@ namespace ReactiveDropInventory
 
 	bool CheckMedalEquipCache()
 	{
+		ISteamUtils *pUtils = SteamUtils();
+		Assert( pUtils );
+		// If we're not running as Alien Swarm: Reactive Drop (for example, if we're a mod or running through the SDK), don't check the medal cache because we'll fail.
+		if ( !pUtils || pUtils->GetAppID() != 563560 )
+			return false;
+
 		ISteamUserStats *pUserStats = SteamUserStats();
 		Assert( pUserStats );
 		if ( !pUserStats )
@@ -3024,9 +3033,9 @@ namespace ReactiveDropInventory
 		{
 			CFmtStr szLowBitsStatName{ "equipped_medal_%da", i + 1 };
 			CFmtStr szHighBitsStatName{ "equipped_medal_%db", i + 1 };
-			bool bOK = pUserStats->GetStat( szLowBitsStatName, &MedalID.Bits.iLowBits ) && pUserStats->GetStat( szHighBitsStatName, &MedalID.Bits.iHighBits );
-			Assert( bOK );
-			if ( bOK )
+			bool bGotEquippedMedal = pUserStats->GetStat( szLowBitsStatName, &MedalID.Bits.iLowBits ) && pUserStats->GetStat( szHighBitsStatName, &MedalID.Bits.iHighBits );
+			Assert( bGotEquippedMedal );
+			if ( bGotEquippedMedal )
 			{
 				SteamItemInstanceID_t iCurrentInstance = strtoull( rd_equipped_medal[i].GetString(), NULL, 10 );
 				if ( iCurrentInstance == 0 )
@@ -3038,10 +3047,10 @@ namespace ReactiveDropInventory
 				{
 					bAnyChanged = true;
 					MedalID.iItemInstance = iCurrentInstance;
-					bOK = pUserStats->SetStat( szLowBitsStatName, MedalID.Bits.iLowBits );
-					Assert( bOK ); ( void )bOK;
-					bOK = pUserStats->SetStat( szHighBitsStatName, MedalID.Bits.iHighBits );
-					Assert( bOK ); ( void )bOK;
+					bool bSetEquippedMedal = pUserStats->SetStat( szLowBitsStatName, MedalID.Bits.iLowBits );
+					Assert( bSetEquippedMedal ); ( void )bSetEquippedMedal;
+					bSetEquippedMedal = pUserStats->SetStat( szHighBitsStatName, MedalID.Bits.iHighBits );
+					Assert( bSetEquippedMedal ); ( void )bSetEquippedMedal;
 				}
 			}
 		}
