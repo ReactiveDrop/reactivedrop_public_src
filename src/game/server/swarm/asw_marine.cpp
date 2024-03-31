@@ -4274,7 +4274,7 @@ void CASW_Marine::Event_Killed( const CTakeDamageInfo &info )
 
 	if ( m_bSpawnZombineOnDeath )
 	{
-		CNPC_Zombine* pZombine = dynamic_cast< CNPC_Zombine* >( CreateEntityByName( "npc_zombine" ) );
+		CNPC_Zombine *pZombine = assert_cast< CNPC_Zombine * >( CreateEntityByName( "npc_zombine" ) );
 
 		if ( !pZombine )
 		{
@@ -4285,9 +4285,9 @@ void CASW_Marine::Event_Killed( const CTakeDamageInfo &info )
 			pZombine->SetAbsOrigin( GetAbsOrigin() + Vector( 0.0, 0.0, 10.0 ) ); // spawns in the ground, raise height by 10
 			pZombine->SetAbsAngles( GetAbsAngles() );
 
+			pZombine->SetModelName( AllocPooledString( "models/zombie/fallen_marine.mdl" ) );
 			pZombine->Spawn();
 
-			pZombine->SetModel( "models/zombie/fallen_marine.mdl" );
 			pZombine->m_nSkin = GetSkin();
 			pZombine->SetRenderColor( GetRenderColor().r, GetRenderColor().g, GetRenderColor().b );	
 		}

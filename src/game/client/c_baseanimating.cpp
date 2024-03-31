@@ -504,7 +504,7 @@ void C_ClientRagdoll::HandleAnimatedFriction( void )
 	}
 }
 
-ConVar g_ragdoll_fadespeed( "g_ragdoll_fadespeed", "600" );
+ConVar g_ragdoll_fadespeed( "g_ragdoll_fadespeed", "4" ); // fade out near-immediately to match aliens (but leave this configurable for people who want to make corpse piles)
 ConVar g_ragdoll_lvfadespeed( "g_ragdoll_lvfadespeed", "0" );
 
 void C_ClientRagdoll::OnPVSStatusChanged( bool bInPVS )

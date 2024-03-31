@@ -92,10 +92,13 @@ public:
 	 : m_DurationDoorBash( 2, 6),
 	   m_NextTimeToStartDoorBash( 3.0 )
 	{
-		if ( FClassnameIs( this, "npc_zombie" ) )
-			m_pszAlienModelName = "models/zombie/classic.mdl";
-		else
-			m_pszAlienModelName = "models/zombie/classic_torso.mdl";
+		m_iszNormalClass = AllocPooledStringConstant( "npc_zombie" );
+		m_iszTorsoClass = AllocPooledStringConstant( "npc_zombie_torso" );
+		m_iszHeadcrabClass = AllocPooledStringConstant( "npc_headcrab" );
+		m_iszNormalModel = AllocPooledStringConstant( "models/zombie/classic.mdl" );
+		m_iszTorsoModel = AllocPooledStringConstant( "models/zombie/classic_torso.mdl" );
+		m_iszLegsModel = AllocPooledStringConstant( "models/zombie/classic_legs.mdl" );
+		m_iszHeadcrabModel = AllocPooledStringConstant( "models/headcrabclassic.mdl" );
 	}
 
 	// reactivedrop:
@@ -114,7 +117,6 @@ public:
 	void Spawn( void );
 	void Precache( void );
 
-	void SetZombieModel( void );
 	void MoanSound( envelopePoint_t *pEnvelope, int iEnvelopeSize );
 	bool ShouldBecomeTorso( const CTakeDamageInfo &info, float flDamageThreshold );
 	bool CanBecomeLiveTorso() { return !m_fIsHeadless; }
@@ -134,11 +136,6 @@ public:
 
 	void StartTask( const Task_t *pTask );
 	void RunTask( const Task_t *pTask );
-
-	virtual const char *GetLegsModel( void );
-	virtual const char *GetTorsoModel( void );
-	virtual const char *GetHeadcrabClassname( void );
-	virtual const char *GetHeadcrabModel( void );
 
 	virtual bool OnObstructingDoor( AILocalMoveGoal_t *pMoveGoal, 
 								 CBaseDoor *pDoor,
@@ -268,18 +265,6 @@ void CZombie::Precache( void )
 void CZombie::Spawn( void )
 {
 	Precache();
-
-	if( FClassnameIs( this, "npc_zombie" ) )
-	{
-		m_fIsTorso = false;
-	}
-	else
-	{
-		// This was placed as an npc_zombie_torso
-		m_fIsTorso = true;
-	}
-
-	m_fIsHeadless = false;
 
 #ifdef HL2_EPISODIC
 	SetBloodColor( BLOOD_COLOR_ZOMBIE );
@@ -452,72 +437,6 @@ void CZombie::IdleSound( void )
 void CZombie::AttackSound( void )
 {
 	EmitSound( "Zombie.Attack" );
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: Returns the classname (ie "npc_headcrab") to spawn when our headcrab bails.
-//-----------------------------------------------------------------------------
-const char *CZombie::GetHeadcrabClassname( void )
-{
-	return "npc_headcrab";
-}
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-const char *CZombie::GetHeadcrabModel( void )
-{
-	return "models/headcrabclassic.mdl";
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-const char *CZombie::GetLegsModel( void )
-{
-	return "models/zombie/classic_legs.mdl";
-}
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-const char *CZombie::GetTorsoModel( void )
-{
-	return "models/zombie/classic_torso.mdl";
-}
-
-
-//---------------------------------------------------------
-//---------------------------------------------------------
-void CZombie::SetZombieModel( void )
-{
-	Hull_t lastHull = GetHullType();
-
-	if ( m_fIsTorso )
-	{
-		SetModel( "models/zombie/classic_torso.mdl" );
-		SetHullType( HULL_TINY );
-	}
-	else
-	{
-		SetModel( "models/zombie/classic.mdl" );
-		SetHullType( HULL_HUMAN );
-	}
-
-	SetBodygroup( ZOMBIE_BODYGROUP_HEADCRAB, !m_fIsHeadless );
-
-	SetHullSizeNormal( true );
-	SetDefaultEyeOffset();
-	SetActivity( ACT_IDLE );
-
-	// hull changed size, notify vphysics
-	// UNDONE: Solve this generally, systematically so other
-	// NPCs can change size
-	if ( lastHull != GetHullType() )
-	{
-		if ( VPhysicsGetObject() )
-		{
-			SetupVPhysicsHull();
-		}
-	}
 }
 
 //---------------------------------------------------------

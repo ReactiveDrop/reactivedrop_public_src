@@ -108,9 +108,16 @@ const char *CNPC_Zombine::pMoanSounds[] =
 
 CNPC_Zombine::CNPC_Zombine()
 {
-	m_pszAlienModelName = "models/zombie/zombie_soldier.mdl";
+	m_iszNormalClass = AllocPooledStringConstant( "npc_zombine" );
+	m_iszTorsoClass = NULL_STRING;
+	m_iszHeadcrabClass = AllocPooledStringConstant( "npc_headcrab" );
+	m_iszNormalModel = AllocPooledStringConstant( "models/zombie/zombie_soldier.mdl" );
+	m_iszTorsoModel = AllocPooledStringConstant( "models/zombie/zombie_soldier_torso.mdl" );
+	m_iszLegsModel = AllocPooledStringConstant( "models/zombie/zombie_soldier_legs.mdl" );
+	m_iszHeadcrabModel = AllocPooledStringConstant( "models/headcrabclassic.mdl" );
+
 	m_iGrenadeCount = ZOMBINE_MAX_GRENADES;
-	m_iszGrenadeClass = AllocPooledString( "npc_grenade_frag" );
+	m_iszGrenadeClass = AllocPooledStringConstant( "npc_grenade_frag" );
 	m_flGrenadeFuseLength = 3.5f;
 	m_iGrenadeClusters = 0;
 }
@@ -150,8 +157,6 @@ void CNPC_Zombine::Precache( void )
 {
 	BaseClass::Precache();
 
-	PrecacheModel( "models/zombie/zombie_soldier.mdl" );
-
 	PrecacheScriptSound( "Zombie.FootstepRight" );
 	PrecacheScriptSound( "Zombie.FootstepLeft" );
 	PrecacheScriptSound( "Zombine.ScuffRight" );
@@ -171,18 +176,6 @@ void CNPC_Zombine::Precache( void )
 	UTIL_PrecacheOther( STRING( m_iszGrenadeClass ) );
 }
 
-void CNPC_Zombine::SetZombieModel( void )
-{
-	SetModel( "models/zombie/zombie_soldier.mdl" );
-	SetHullType( HULL_HUMAN );
-
-	SetBodygroup( ZOMBIE_BODYGROUP_HEADCRAB, !m_fIsHeadless );
-
-	SetHullSizeNormal( true );
-	SetDefaultEyeOffset();
-	SetActivity( ACT_IDLE );
-}
-
 int CNPC_Zombine::GetBaseHealth()
 {
 	return sk_zombie_soldier_health.GetInt();
@@ -192,9 +185,9 @@ void CNPC_Zombine::PrescheduleThink( void )
 {
 	GatherGrenadeConditions();
 
-	if( gpGlobals->curtime > m_flNextMoanSound )
+	if ( gpGlobals->curtime > m_flNextMoanSound )
 	{
-		if( CanPlayMoanSound() )
+		if ( CanPlayMoanSound() )
 		{
 			// Classic guy idles instead of moans.
 			IdleSound();
@@ -207,13 +200,13 @@ void CNPC_Zombine::PrescheduleThink( void )
 		}
 	}
 
-	if ( HasGrenade () )
+	if ( HasGrenade() )
 	{
-		CSoundEnt::InsertSound ( SOUND_DANGER, GetAbsOrigin() + GetSmoothedVelocity() * 0.5f , 256, 0.1, this, SOUNDENT_CHANNEL_ZOMBINE_GRENADE );
+		CSoundEnt::InsertSound( SOUND_DANGER, GetAbsOrigin() + GetSmoothedVelocity() * 0.5f, 256, 0.1, this, SOUNDENT_CHANNEL_ZOMBINE_GRENADE );
 
-		if( IsSprinting() && GetEnemy() && GetEnemy()->Classify() == CLASS_PLAYER_ALLY_VITAL && HasCondition( COND_SEE_ENEMY ) )
+		if ( IsSprinting() && GetEnemy() && GetEnemy()->Classify() == CLASS_PLAYER_ALLY_VITAL && HasCondition( COND_SEE_ENEMY ) )
 		{
-			if( GetAbsOrigin().DistToSqr(GetEnemy()->GetAbsOrigin()) < Square( 144 ) )
+			if ( GetAbsOrigin().DistToSqr( GetEnemy()->GetAbsOrigin() ) < Square( 144 ) )
 			{
 				StopSprint();
 			}
@@ -232,6 +225,7 @@ void CNPC_Zombine::OnScheduleChange( void )
 
 	BaseClass::OnScheduleChange();
 }
+
 bool CNPC_Zombine::CanRunAScriptedNPCInteraction( bool bForced )
 {
 	if ( HasGrenade() == true )
@@ -248,7 +242,7 @@ int CNPC_Zombine::SelectSchedule( void )
 	if ( HasCondition( COND_ZOMBINE_GRENADE ) )
 	{
 		ClearCondition( COND_ZOMBINE_GRENADE );
-		
+
 		return SCHED_ZOMBINE_PULL_GRENADE;
 	}
 
@@ -268,7 +262,7 @@ Activity CNPC_Zombine::NPC_TranslateActivity( Activity baseAct )
 	{
 		if ( m_flSuperFastAttackTime > gpGlobals->curtime || HasGrenade() )
 		{
-			return (Activity)ACT_ZOMBINE_ATTACK_FAST;
+			return ( Activity )ACT_ZOMBINE_ATTACK_FAST;
 		}
 	}
 
@@ -276,7 +270,7 @@ Activity CNPC_Zombine::NPC_TranslateActivity( Activity baseAct )
 	{
 		if ( HasGrenade() )
 		{
-			return (Activity)ACT_ZOMBINE_GRENADE_IDLE;
+			return ( Activity )ACT_ZOMBINE_GRENADE_IDLE;
 		}
 	}
 
@@ -369,7 +363,7 @@ int CNPC_Zombine::TranslateSchedule( int scheduleType )
 void CNPC_Zombine::DropGrenade( Vector vDir )
 {
 	if ( m_hGrenade == NULL )
-		 return;
+		return;
 
 	m_hGrenade->SetParent( NULL );
 	m_hGrenade->SetOwnerEntity( NULL );
@@ -499,7 +493,7 @@ void CNPC_Zombine::HandleAnimEvent( animevent_t *pEvent )
 				angles.z = 0;
 				pGrenade->SetAbsAngles( angles );
 			}
-				
+
 			EmitSound( "Zombine.ReadyGrenade" );
 
 			m_iGrenadeCount--;
@@ -521,7 +515,7 @@ bool CNPC_Zombine::AllowedToSprint( void )
 {
 	if ( IsOnFire() )
 		return false;
-	
+
 	//If you're sprinting then there's no reason to sprint again.
 	if ( IsSprinting() )
 		return false;
@@ -529,7 +523,7 @@ bool CNPC_Zombine::AllowedToSprint( void )
 	int iChance = SPRINT_CHANCE_VALUE;
 
 #ifdef HL2_DLL
-	CHL2_Player *pPlayer = dynamic_cast <CHL2_Player*> ( AI_GetSinglePlayer() );
+	CHL2_Player *pPlayer = dynamic_cast < CHL2_Player * > ( AI_GetSinglePlayer() );
 
 	if ( pPlayer )
 	{
@@ -546,7 +540,7 @@ bool CNPC_Zombine::AllowedToSprint( void )
 	}
 #endif
 
-	if ( HasGrenade() ) 
+	if ( HasGrenade() )
 	{
 		iChance *= 4;
 	}
@@ -556,10 +550,10 @@ bool CNPC_Zombine::AllowedToSprint( void )
 	{
 		if ( IsStrategySlotRangeOccupied( SQUAD_SLOT_ZOMBINE_SPRINT1, SQUAD_SLOT_ZOMBINE_SPRINT2 ) == true )
 			return false;
-		
+
 		if ( random->RandomInt( 0, 100 ) > iChance )
 			return false;
-		
+
 		if ( m_flSprintRestTime > gpGlobals->curtime )
 			return false;
 	}
@@ -608,68 +602,68 @@ void CNPC_Zombine::RunTask( const Task_t *pTask )
 {
 	switch ( pTask->iTask )
 	{
-		case TASK_WAIT_FOR_MOVEMENT_STEP:
-		case TASK_WAIT_FOR_MOVEMENT:
+	case TASK_WAIT_FOR_MOVEMENT_STEP:
+	case TASK_WAIT_FOR_MOVEMENT:
+	{
+		BaseClass::RunTask( pTask );
+
+		if ( IsOnFire() && IsSprinting() )
 		{
-			BaseClass::RunTask( pTask );
-
-			if ( IsOnFire() && IsSprinting() )
-			{
-				StopSprint();
-			}
-
-			//Only do this if I have an enemy
-			if ( GetEnemy() )
-			{
-				if ( AllowedToSprint() == true )
-				{
-					Sprint( ( GetHealth() <= GetMaxHealth() * 0.5f ) );
-					return;
-				}
-
-				if ( HasGrenade() )
-				{
-					if ( IsSprinting() )
-					{
-						GetNavigator()->SetMovementActivity( (Activity)ACT_ZOMBINE_GRENADE_RUN );
-					}
-					else
-					{
-						GetNavigator()->SetMovementActivity( (Activity)ACT_ZOMBINE_GRENADE_WALK );
-					}
-
-					return;
-				}
-
-				if ( GetNavigator()->GetMovementActivity() != ACT_WALK )
-				{
-					if ( IsSprinting() == false )
-					{
-						GetNavigator()->SetMovementActivity( ACT_WALK );
-					}
-				}
-			}
-			else
-			{
-				GetNavigator()->SetMovementActivity( ACT_WALK );
-			}
-		
-			break;
+			StopSprint();
 		}
-		default:
+
+		//Only do this if I have an enemy
+		if ( GetEnemy() )
 		{
-			BaseClass::RunTask( pTask );
-			break;
+			if ( AllowedToSprint() == true )
+			{
+				Sprint( ( GetHealth() <= GetMaxHealth() * 0.5f ) );
+				return;
+			}
+
+			if ( HasGrenade() )
+			{
+				if ( IsSprinting() )
+				{
+					GetNavigator()->SetMovementActivity( ( Activity )ACT_ZOMBINE_GRENADE_RUN );
+				}
+				else
+				{
+					GetNavigator()->SetMovementActivity( ( Activity )ACT_ZOMBINE_GRENADE_WALK );
+				}
+
+				return;
+			}
+
+			if ( GetNavigator()->GetMovementActivity() != ACT_WALK )
+			{
+				if ( IsSprinting() == false )
+				{
+					GetNavigator()->SetMovementActivity( ACT_WALK );
+				}
+			}
 		}
+		else
+		{
+			GetNavigator()->SetMovementActivity( ACT_WALK );
+		}
+
+		break;
+	}
+	default:
+	{
+		BaseClass::RunTask( pTask );
+		break;
+	}
 	}
 }
 
-void CNPC_Zombine::InputStartSprint ( inputdata_t &inputdata )
+void CNPC_Zombine::InputStartSprint( inputdata_t &inputdata )
 {
 	Sprint();
 }
 
-void CNPC_Zombine::InputPullGrenade ( inputdata_t &inputdata )
+void CNPC_Zombine::InputPullGrenade( inputdata_t &inputdata )
 {
 	g_flZombineGrenadeTimes = gpGlobals->curtime + 5.0f;
 	SetCondition( COND_ZOMBINE_GRENADE );
@@ -680,7 +674,7 @@ void CNPC_Zombine::InputPullGrenade ( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 const char *CNPC_Zombine::GetMoanSound( int nSound )
 {
-	return pMoanSounds[ nSound % ARRAYSIZE( pMoanSounds ) ];
+	return pMoanSounds[nSound % ARRAYSIZE( pMoanSounds )];
 }
 
 //-----------------------------------------------------------------------------
@@ -688,7 +682,7 @@ const char *CNPC_Zombine::GetMoanSound( int nSound )
 //-----------------------------------------------------------------------------
 void CNPC_Zombine::FootstepSound( bool fRightFoot )
 {
-	if( fRightFoot )
+	if ( fRightFoot )
 	{
 		EmitSound( "Zombie.FootstepRight" );
 	}
@@ -711,7 +705,7 @@ bool CNPC_Zombine::ShouldBecomeTorso( const CTakeDamageInfo &info, float flDamag
 //-----------------------------------------------------------------------------
 void CNPC_Zombine::FootscuffSound( bool fRightFoot )
 {
-	if( fRightFoot )
+	if ( fRightFoot )
 	{
 		EmitSound( "Zombine.ScuffRight" );
 	}
@@ -754,7 +748,7 @@ void CNPC_Zombine::PainSound( const CTakeDamageInfo &info )
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CNPC_Zombine::DeathSound( const CTakeDamageInfo &info ) 
+void CNPC_Zombine::DeathSound( const CTakeDamageInfo &info )
 {
 	EmitSound( "Zombine.Die" );
 }
@@ -775,13 +769,13 @@ void CNPC_Zombine::AlertSound( void )
 //-----------------------------------------------------------------------------
 void CNPC_Zombine::IdleSound( void )
 {
-	if( GetState() == NPC_STATE_IDLE && random->RandomFloat( 0, 1 ) == 0 )
+	if ( GetState() == NPC_STATE_IDLE && random->RandomFloat( 0, 1 ) == 0 )
 	{
 		// Moan infrequently in IDLE state.
 		return;
 	}
 
-	if( IsSlumped() )
+	if ( IsSlumped() )
 	{
 		// Sleeping zombies are quiet.
 		return;
@@ -796,29 +790,6 @@ void CNPC_Zombine::IdleSound( void )
 //-----------------------------------------------------------------------------
 void CNPC_Zombine::AttackSound( void )
 {
-	
-}
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-const char *CNPC_Zombine::GetHeadcrabModel( void )
-{
-	return "models/headcrabclassic.mdl";
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-const char *CNPC_Zombine::GetLegsModel( void )
-{
-	return "models/zombie/zombie_soldier_legs.mdl";
-}
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-const char *CNPC_Zombine::GetTorsoModel( void )
-{
-	return "models/zombie/zombie_soldier_torso.mdl";
 }
 
 //---------------------------------------------------------
@@ -830,14 +801,6 @@ void CNPC_Zombine::MoanSound( envelopePoint_t *pEnvelope, int iEnvelopeSize )
 	{
 		BaseClass::MoanSound( pEnvelope, iEnvelopeSize );
 	}
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: Returns the classname (ie "npc_headcrab") to spawn when our headcrab bails.
-//-----------------------------------------------------------------------------
-const char *CNPC_Zombine::GetHeadcrabClassname( void )
-{
-	return "npc_headcrab";
 }
 
 void CNPC_Zombine::ReleaseGrenade( Vector vPhysgunPos )
@@ -853,8 +816,8 @@ void CNPC_Zombine::ReleaseGrenade( Vector vPhysgunPos )
 	Vector vForward, vRight;
 	GetVectors( &vForward, &vRight, NULL );
 
-	float flDotForward	= DotProduct( vForward, vDir );
-	float flDotRight	= DotProduct( vRight, vDir );
+	float flDotForward = DotProduct( vForward, vDir );
+	float flDotRight = DotProduct( vRight, vDir );
 
 	bool bNegativeForward = false;
 	bool bNegativeRight = false;
@@ -874,16 +837,16 @@ void CNPC_Zombine::ReleaseGrenade( Vector vPhysgunPos )
 	if ( flDotRight > flDotForward )
 	{
 		if ( bNegativeRight == true )
-			aActivity = (Activity)ACT_ZOMBINE_GRENADE_FLINCH_WEST;
-		else 
-			aActivity = (Activity)ACT_ZOMBINE_GRENADE_FLINCH_EAST;
+			aActivity = ( Activity )ACT_ZOMBINE_GRENADE_FLINCH_WEST;
+		else
+			aActivity = ( Activity )ACT_ZOMBINE_GRENADE_FLINCH_EAST;
 	}
 	else
 	{
 		if ( bNegativeForward == true )
-			aActivity = (Activity)ACT_ZOMBINE_GRENADE_FLINCH_BACK;
-		else 
-			aActivity = (Activity)ACT_ZOMBINE_GRENADE_FLINCH_FRONT;
+			aActivity = ( Activity )ACT_ZOMBINE_GRENADE_FLINCH_BACK;
+		else
+			aActivity = ( Activity )ACT_ZOMBINE_GRENADE_FLINCH_FRONT;
 	}
 
 	AddGesture( aActivity );

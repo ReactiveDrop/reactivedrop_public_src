@@ -144,7 +144,6 @@ public:
 
 	// Headcrab releasing/breaking apart
 	void RemoveHead( void );
-	virtual void SetZombieModel( void ) { };
 	virtual void BecomeTorso( const Vector &vecTorsoForce, const Vector &vecLegsForce );
 	virtual bool CanBecomeLiveTorso() { return false; }
 	virtual bool HeadcrabFits( CBaseAnimating *pCrab );
@@ -185,10 +184,6 @@ public:
 	bool ShouldPlayIdleSound( void ) { return false; }
 
 	virtual const char *GetMoanSound( int nSound ) = 0;
-	virtual const char *GetHeadcrabClassname( void ) = 0;
-	virtual const char *GetLegsModel( void ) = 0;
-	virtual const char *GetTorsoModel( void ) = 0;
-	virtual const char *GetHeadcrabModel( void ) = 0;
 
 	virtual Vector BodyTarget( const Vector &posSrc, bool bNoisy );
 	virtual Vector HeadTarget( const Vector &posSrc );
@@ -201,6 +196,14 @@ public:
 
 public:
 	CAI_ActBusyBehavior		m_ActBusyBehavior;
+
+	string_t m_iszNormalClass;
+	string_t m_iszTorsoClass;
+	string_t m_iszHeadcrabClass;
+	string_t m_iszHeadcrabModel;
+	string_t m_iszNormalModel;
+	string_t m_iszTorsoModel;
+	string_t m_iszLegsModel;
 
 protected:
 

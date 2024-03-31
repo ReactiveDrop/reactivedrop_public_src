@@ -215,10 +215,13 @@ class CFastZombie : public CNPC_BaseZombie
 public:
 	CFastZombie()
 	{
-		if ( FClassnameIs( this, "npc_fastzombie" ) )
-			m_pszAlienModelName = "models/zombie/fast.mdl";
-		else
-			m_pszAlienModelName = "models/zombie/fast_torso.mdl";
+		m_iszNormalClass = AllocPooledStringConstant( "npc_fastzombie" );
+		m_iszTorsoClass = AllocPooledStringConstant( "npc_fastzombie_torso" );
+		m_iszHeadcrabClass = AllocPooledStringConstant( "npc_headcrab_fast" );
+		m_iszNormalModel = AllocPooledStringConstant( "models/zombie/fast.mdl" );
+		m_iszTorsoModel = AllocPooledStringConstant( "models/zombie/fast_torso.mdl" );
+		m_iszLegsModel = AllocPooledStringConstant( "models/zombie/classic_legs.mdl" );
+		m_iszHeadcrabModel = AllocPooledStringConstant( "models/headcrab.mdl" );
 	}
 
 	// reactivedrop:
@@ -232,7 +235,6 @@ public:
 	void Spawn( void );
 	void Precache( void );
 
-	void SetZombieModel( void );
 	bool CanSwatPhysicsObjects( void ) { return false; }
 
 	int	TranslateSchedule( int scheduleType );
@@ -308,11 +310,6 @@ public:
 	void EndAttackJump( void );
 
 	float		MaxYawSpeed( void );
-
-	virtual const char *GetHeadcrabClassname( void );
-	virtual const char *GetHeadcrabModel( void );
-	virtual const char *GetLegsModel( void );
-	virtual const char *GetTorsoModel( void );
 
 //=============================================================================
 #if RD_ZOMBIE_PASSENGER
@@ -402,20 +399,12 @@ const char *CFastZombie::pMoanSounds[] =
 };
 
 //-----------------------------------------------------------------------------
-// The model we use for our legs when we get blowed up.
-//-----------------------------------------------------------------------------
-static const char *s_pLegsModel = "models/gibs/fast_zombie_legs.mdl";
-
-
-//-----------------------------------------------------------------------------
 // Purpose: 
 //
 //
 //-----------------------------------------------------------------------------
 void CFastZombie::Precache( void )
 {
-	PrecacheModel("models/zombie/fast.mdl");
-	PrecacheModel("models/zombie/Fast_torso.mdl");
 #ifdef HL2_EPISODIC
 	PrecacheScriptSound( "NPC_FastZombie.CarEnter1" );
 	PrecacheScriptSound( "NPC_FastZombie.CarEnter2" );
@@ -423,8 +412,6 @@ void CFastZombie::Precache( void )
 	PrecacheScriptSound( "NPC_FastZombie.CarEnter4" );
 	PrecacheScriptSound( "NPC_FastZombie.CarScream" );
 #endif
-	PrecacheModel( "models/gibs/fast_zombie_torso.mdl" );
-	PrecacheModel( "models/gibs/fast_zombie_legs.mdl" );
 	
 	PrecacheScriptSound( "NPC_FastZombie.LeapAttack" );
 	PrecacheScriptSound( "NPC_FastZombie.FootstepRight" );
@@ -690,18 +677,6 @@ void CFastZombie::Spawn( void )
 
 	m_fJustJumped = false;
 
-	m_fIsTorso = m_fIsHeadless = false;
-
-	if( FClassnameIs( this, "npc_fastzombie" ) )
-	{
-		m_fIsTorso = false;
-	}
-	else
-	{
-		// This was placed as an npc_fastzombie_torso
-		m_fIsTorso = true;
-	}
-
 #ifdef HL2_EPISODIC
 	SetBloodColor( BLOOD_COLOR_ZOMBIE );
 #else
@@ -741,19 +716,6 @@ void CFastZombie::PostNPCInit( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: Returns the classname (ie "npc_headcrab") to spawn when our headcrab bails.
-//-----------------------------------------------------------------------------
-const char *CFastZombie::GetHeadcrabClassname( void )
-{
-	return "npc_headcrab_fast";
-}
-
-const char *CFastZombie::GetHeadcrabModel( void )
-{
-	return "models/headcrab.mdl";
-}
-
-//-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
 float CFastZombie::MaxYawSpeed( void )
@@ -779,60 +741,6 @@ float CFastZombie::MaxYawSpeed( void )
 		break;
 	}
 }
-
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//
-//
-//-----------------------------------------------------------------------------
-void CFastZombie::SetZombieModel( void )
-{
-	Hull_t lastHull = GetHullType();
-
-	if ( m_fIsTorso )
-	{
-		SetModel( "models/zombie/fast_torso.mdl" );
-		SetHullType(HULL_TINY);
-	}
-	else
-	{
-		SetModel( "models/zombie/fast.mdl" );
-		SetHullType(HULL_HUMAN);
-	}
-
-	SetBodygroup( ZOMBIE_BODYGROUP_HEADCRAB, !m_fIsHeadless );
-
-	SetHullSizeNormal( true );
-	SetDefaultEyeOffset();
-	SetActivity( ACT_IDLE );
-
-	// hull changed size, notify vphysics
-	// UNDONE: Solve this generally, systematically so other
-	// NPCs can change size
-	if ( lastHull != GetHullType() )
-	{
-		if ( VPhysicsGetObject() )
-		{
-			SetupVPhysicsHull();
-		}
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-// Purpose: Returns the model to use for our legs ragdoll when we are blown in twain.
-//-----------------------------------------------------------------------------
-const char *CFastZombie::GetLegsModel( void )
-{
-	return s_pLegsModel;
-}
-
-const char *CFastZombie::GetTorsoModel( void )
-{
-	return "models/gibs/fast_zombie_torso.mdl";
-}
-
 
 //-----------------------------------------------------------------------------
 // Purpose: See if I can swat the player

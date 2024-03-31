@@ -18,7 +18,6 @@ public:
 	void Spawn( void );
 	void Precache( void );
 
-	void SetZombieModel( void );
 	int GetBaseHealth( void ) override;
 
 	virtual void PrescheduleThink( void );
@@ -26,11 +25,6 @@ public:
 	virtual void BuildScheduleTestBits( void );
 
 	virtual void HandleAnimEvent( animevent_t *pEvent );
-
-	virtual const char *GetLegsModel( void );
-	virtual const char *GetTorsoModel( void );
-	virtual const char *GetHeadcrabClassname( void );
-	virtual const char *GetHeadcrabModel( void );
 
 	virtual void PainSound( const CTakeDamageInfo &info );
 	virtual void DeathSound( const CTakeDamageInfo &info );

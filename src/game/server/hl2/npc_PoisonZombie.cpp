@@ -106,17 +106,6 @@ int AE_ZOMBIE_POISON_THROW_SOUND;
 int AE_ZOMBIE_POISON_THROW_CRAB;
 int AE_ZOMBIE_POISON_SPIT;
 
-//-----------------------------------------------------------------------------
-// The model we use for our legs when we get blowed up.
-//-----------------------------------------------------------------------------
-static const char *s_szLegsModel = "models/zombie/classic_legs.mdl";
-
-
-//-----------------------------------------------------------------------------
-// The classname of the headcrab that jumps off of this kind of zombie.
-//-----------------------------------------------------------------------------
-static const char *s_szHeadcrabClassname = "npc_headcrab_poison";
-static const char *s_szHeadcrabModel = "models/headcrabblack.mdl";
 
 static const char *pMoanSounds[] =
 {
@@ -136,7 +125,13 @@ class CNPC_PoisonZombie : public CNPC_BaseZombie
 public:
 	CNPC_PoisonZombie()
 	{
-		m_pszAlienModelName = "models/zombie/poison.mdl";
+		m_iszNormalClass = AllocPooledStringConstant( "npc_poisonzombie" );
+		m_iszTorsoClass = NULL_STRING;
+		m_iszHeadcrabClass = AllocPooledStringConstant( "npc_headcrab_poison" );
+		m_iszNormalModel = AllocPooledStringConstant( "models/zombie/poison.mdl" );
+		m_iszTorsoModel = AllocPooledStringConstant( "models/zombie/classic_torso.mdl" );
+		m_iszLegsModel = AllocPooledStringConstant( "models/zombie/classic_legs.mdl" );
+		m_iszHeadcrabModel = AllocPooledStringConstant( "models/headcrabblack.mdl" );
 	}
 
 	// reactivedrop:
@@ -146,7 +141,7 @@ public:
 	// CBaseZombie implemenation.
 	//
 	virtual Vector HeadTarget( const Vector &posSrc );
-	bool ShouldBecomeTorso( const CTakeDamageInfo &info, float flDamageThreshold );
+	bool ShouldBecomeTorso( const CTakeDamageInfo &info, float flDamageThreshold ) { return false; }
 	virtual bool IsChopped( const CTakeDamageInfo &info )	{ return false; }
 
 	//
@@ -177,7 +172,6 @@ public:
 	//
 	virtual void Spawn( void );
 	virtual void Precache( void );
-	virtual void SetZombieModel( void );
 
 	virtual Class_T Classify( void );
 	virtual void Event_Killed( const CTakeDamageInfo &info );
@@ -203,10 +197,6 @@ protected:
 	virtual bool MustCloseToAttack( void );
 
 	virtual const char *GetMoanSound( int nSoundIndex );
-	virtual const char *GetLegsModel( void );
-	virtual const char *GetTorsoModel( void );
-	virtual const char *GetHeadcrabClassname( void );
-	virtual const char *GetHeadcrabModel( void );
 
 private:
 
@@ -264,8 +254,6 @@ END_DATADESC()
 //-----------------------------------------------------------------------------
 void CNPC_PoisonZombie::Precache( void )
 {
-	PrecacheModel("models/zombie/poison.mdl");
-
 	PrecacheScriptSound( "NPC_PoisonZombie.Die" );
 	PrecacheScriptSound( "NPC_PoisonZombie.ThrowWarn" );
 	PrecacheScriptSound( "NPC_PoisonZombie.Throw" );
@@ -292,8 +280,6 @@ void CNPC_PoisonZombie::Precache( void )
 void CNPC_PoisonZombie::Spawn( void )
 {
 	Precache();
-
-	m_fIsTorso = m_fIsHeadless = false;
 
 #ifdef HL2_EPISODIC
 	SetBloodColor( BLOOD_COLOR_ZOMBIE );
@@ -371,38 +357,6 @@ const char *CNPC_PoisonZombie::GetMoanSound( int nSound )
 {
 	return pMoanSounds[nSound % ARRAYSIZE( pMoanSounds )];
 }
-
-
-//-----------------------------------------------------------------------------
-// Purpose: Returns the model to use for our legs ragdoll when we are blown in twain.
-//-----------------------------------------------------------------------------
-const char *CNPC_PoisonZombie::GetLegsModel( void )
-{
-	return s_szLegsModel;
-}
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-const char *CNPC_PoisonZombie::GetTorsoModel( void )
-{
-	return "models/zombie/classic_torso.mdl";
-}
-
-
-
-//-----------------------------------------------------------------------------
-// Purpose: Returns the classname (ie "npc_headcrab") to spawn when our headcrab bails.
-//-----------------------------------------------------------------------------
-const char *CNPC_PoisonZombie::GetHeadcrabClassname( void )
-{
-	return s_szHeadcrabClassname;
-}
-
-const char *CNPC_PoisonZombie::GetHeadcrabModel( void )
-{
-	return s_szHeadcrabModel;
-}
-
 
 //-----------------------------------------------------------------------------
 // Purpose: Turns the given crab on or off.
@@ -499,46 +453,6 @@ float CNPC_PoisonZombie::MaxYawSpeed( void )
 Class_T	CNPC_PoisonZombie::Classify( void )
 {
 	return CLASS_ZOMBIE;
-}
-
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//
-// NOTE: This function is still heavy with common code (found at the bottom).
-//		 we should consider moving some into the base class! (sjb)
-//-----------------------------------------------------------------------------
-void CNPC_PoisonZombie::SetZombieModel( void )
-{
-	Hull_t lastHull = GetHullType();
-
-	if ( m_fIsTorso )
-	{
-		SetModel( "models/zombie/classic_torso.mdl" );
-		SetHullType(HULL_TINY);
-	}
-	else
-	{
-		SetModel( "models/zombie/poison.mdl" );
-		SetHullType(HULL_HUMAN);
-	}
-
-	SetBodygroup( ZOMBIE_BODYGROUP_HEADCRAB, !m_fIsHeadless );
-
-	SetHullSizeNormal( true );
-	SetDefaultEyeOffset();
-	SetActivity( ACT_IDLE );
-
-	// hull changed size, notify vphysics
-	// UNDONE: Solve this generally, systematically so other
-	// NPCs can change size
-	if ( lastHull != GetHullType() )
-	{
-		if ( VPhysicsGetObject() )
-		{
-			SetupVPhysicsHull();
-		}
-	}
 }
 
 //-----------------------------------------------------------------------------
@@ -688,7 +602,7 @@ void CNPC_PoisonZombie::HandleAnimEvent( animevent_t *pEvent )
 	{
 		SetBodygroup( ZOMBIE_BODYGROUP_THROW, 0 );
 
-		CBlackHeadcrab *pCrab = (CBlackHeadcrab *)CreateNoSpawn( GetHeadcrabClassname(), EyePosition(), vec3_angle, this );
+		CBaseAnimating *pCrab = ( CBaseAnimating * )CreateNoSpawn( STRING( m_iszHeadcrabClass ), EyePosition(), vec3_angle, this );
 		pCrab->AddSpawnFlags( SF_NPC_FALL_TO_GROUND );
 		
 		// Fade if our parent is supposed to
@@ -702,12 +616,15 @@ void CNPC_PoisonZombie::HandleAnimEvent( animevent_t *pEvent )
 
 		pCrab->Spawn();
 
+		CAI_BaseNPC *pNPC = pCrab->MyNPCPointer();
 		pCrab->SetLocalAngles( GetLocalAngles() );
-		pCrab->SetActivity( ACT_RANGE_ATTACK1 );
+		if ( pNPC )
+			pNPC->SetActivity( ACT_RANGE_ATTACK1 );
 		pCrab->SetNextThink( gpGlobals->curtime );
 		pCrab->PhysicsSimulate();
 
-		pCrab->GetMotor()->SetIdealYaw( GetAbsAngles().y );
+		if ( pNPC )
+			pNPC->GetMotor()->SetIdealYaw( GetAbsAngles().y );
 
 		if ( IsOnFire() )
 		{
@@ -715,10 +632,11 @@ void CNPC_PoisonZombie::HandleAnimEvent( animevent_t *pEvent )
 		}
 
 		CBaseEntity *pEnemy = GetEnemy();
-		if ( pEnemy )
+		CBaseHeadcrab *pHeadcrab = dynamic_cast< CBaseHeadcrab * >( pCrab );
+		if ( pEnemy && pHeadcrab )
 		{
 			Vector vecEnemyEyePos = pEnemy->EyePosition();
-			pCrab->ThrowAt( vecEnemyEyePos );
+			pHeadcrab->ThrowAt( vecEnemyEyePos );
 		}
 
 		if (m_nCrabCount == 0)
@@ -805,12 +723,12 @@ void CNPC_PoisonZombie::EvacuateNest( bool bExplosion, float flDamage, CBaseEnti
 			// Now slam the angles because the attachment point will have pitch and roll, which we can't use.
 			vecAngles = QAngle( 0, random->RandomFloat( 0, 360 ), 0 );
 
-			CBlackHeadcrab *pCrab = (CBlackHeadcrab *)CreateNoSpawn( GetHeadcrabClassname(), vecPosition, vecAngles, this );
+			CBaseAnimating *pCrab = ( CBaseAnimating * )CreateNoSpawn( STRING( m_iszHeadcrabClass ), vecPosition, vecAngles, this );
 			pCrab->Spawn();
 
-			if( !HeadcrabFits(pCrab) )
+			if ( !HeadcrabFits( pCrab ) )
 			{
-				UTIL_Remove(pCrab);
+				UTIL_Remove( pCrab );
 				continue;
 			}
 
@@ -825,7 +743,8 @@ void CNPC_PoisonZombie::EvacuateNest( bool bExplosion, float flDamage, CBaseEnti
 				pCrab->Ignite( 100.0 );
 			}
 
-			pCrab->Eject( vecAngles, flVelocityScale, pAttacker );
+			if ( CBlackHeadcrab *pPoisonCrab = dynamic_cast< CBlackHeadcrab * >( pCrab ) )
+				pPoisonCrab->Eject( vecAngles, flVelocityScale, pAttacker );
 			EnableCrab( i, false );
 		}
 	}
@@ -1100,16 +1019,6 @@ void CNPC_PoisonZombie::MoanSound( envelopePoint_t *pEnvelope, int iEnvelopeSize
 
 	m_flNextMoanSound = gpGlobals->curtime + duration + 9999;
 }
-
-
-//-----------------------------------------------------------------------------
-// Purpose: Overloaded so that explosions don't split the poison zombie in twain.
-//-----------------------------------------------------------------------------
-bool CNPC_PoisonZombie::ShouldBecomeTorso( const CTakeDamageInfo &info, float flDamageThreshold )
-{
-	return false;
-}
-
 
 int ACT_ZOMBIE_POISON_THREAT;
 
