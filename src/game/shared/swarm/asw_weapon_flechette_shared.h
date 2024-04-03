@@ -35,6 +35,7 @@ public:
 	#else
 		virtual bool HasSecondaryExplosive( void ) const { return false; }
 	#endif
+	virtual bool HasSecondaryAttack() override { return false; } // weapon has no secondary fire
 
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_FLECHETTE; }

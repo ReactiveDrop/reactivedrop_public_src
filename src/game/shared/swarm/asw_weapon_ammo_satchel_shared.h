@@ -43,7 +43,8 @@ public:
 	//int m_nAmmoDrops;
 	float m_fLastAmmoDropTime;
 
-	virtual bool IsOffensiveWeapon() { return false; }
+	virtual bool HasSecondaryAttack() override { return false; } // weapon has no secondary fire
+	virtual bool IsOffensiveWeapon() override { return false; }
 
 	virtual Class_T Classify( void ) { return (Class_T)CLASS_ASW_AMMO_SATCHEL; }
 };

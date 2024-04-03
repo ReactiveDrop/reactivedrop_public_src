@@ -47,7 +47,8 @@ public:
 		virtual void MouseOverEntity(C_BaseEntity *pEnt, Vector vecWorldCursor);
 	#endif
 
-	virtual bool IsOffensiveWeapon() { return false; }
+	virtual bool IsOffensiveWeapon() override { return false; }
+	virtual bool HasSecondaryAttack() override { return false; } // weapon has no secondary fire
 
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_MEDICAL_SATCHEL; }

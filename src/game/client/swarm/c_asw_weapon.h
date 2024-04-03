@@ -147,7 +147,8 @@ public:
 	virtual int AmmoClickPoint(); // when this many rounds or less left in the gun, it will click when firing
 	virtual void LowAmmoSound();
 	virtual bool IsOffensiveWeapon() { return true; }		// is this weapon an offensive gun type weapon (as opposed to a utility item)
-	virtual bool DisplayClipsDoubled() { return false; }    // dual weilded guns should show ammo doubled up to complete the illusion of holding two guns
+	virtual bool HasSecondaryAttack() { return true; }		// does the secondary fire button perform a combat action directly?
+	virtual bool DisplayClipsDoubled() { return false; }		// dual weilded guns should show ammo doubled up to complete the illusion of holding two guns
 	virtual bool CanDoForcedAction( int iForcedAction ) { return true; }		// check if we're allowed to perform a forced action (certain abilities limit this)
 	virtual bool SupportsDamageModifiers() { return false; } // true if this (bullet-based) weapon calls OnFired_ScaleDamage
 	virtual float GetPassiveMeleeDamageScale() { return 1.0f; }

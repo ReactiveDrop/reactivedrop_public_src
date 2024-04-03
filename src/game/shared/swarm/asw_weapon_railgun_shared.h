@@ -57,6 +57,7 @@ public:
 		virtual const char* GetMuzzleEffectName() { return "muzzle_railgun"; }	// particle effect name
 	#endif
 	virtual const char *GetMagazineGibModelName() const override { return "models/weapons/empty_clips/railgun_empty_clip.mdl"; }
+	virtual bool HasSecondaryAttack() override { return false; } // weapon has no secondary fire
 
 	// aiming grenades at the ground
 	virtual bool SupportsGroundShooting() { return rd_ground_shooting.GetBool(); }

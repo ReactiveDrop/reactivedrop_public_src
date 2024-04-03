@@ -77,6 +77,7 @@ public:
 		int m_nEjectBrassCount;
 	#endif
 	virtual const char *GetMagazineGibModelName() const override { return "models/weapons/empty_clips/sniperrifle_empty_clip.mdl"; }
+	virtual bool HasSecondaryAttack() override { return false; } // secondary fire is scope toggle
 
 	CNetworkVar( bool, m_bZoomed );
 protected:

@@ -50,7 +50,8 @@ public:
 	void DestroySentryBuildDisplay( CASW_Marine *pMarine );
 #endif
 
-	virtual bool IsOffensiveWeapon() { return false; }
+	virtual bool IsOffensiveWeapon() override { return false; }
+	virtual bool HasSecondaryAttack() override { return false; } // weapon has no secondary fire
 
 	int		GetSentryAmmo() { return m_nSentryAmmo; }
 	void	SetSentryAmmo( int nAmmo ) { m_nSentryAmmo = nAmmo; }

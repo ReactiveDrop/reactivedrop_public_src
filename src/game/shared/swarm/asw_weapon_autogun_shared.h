@@ -56,6 +56,7 @@ public:
 		virtual const char* GetMuzzleEffectName() { return "muzzle_autogun"; }	// particle effect name
 	#endif
 	virtual const char *GetMagazineGibModelName() const override { return "models/weapons/empty_clips/autogun_empty_clip.mdl"; }
+	virtual bool HasSecondaryAttack() override { return false; } // weapon has no secondary fire
 	virtual bool ShouldPlayFiringAnimations() { return false; }
 	virtual float GetWeaponDamage();
 	virtual float GetMovementScale();

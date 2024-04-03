@@ -39,6 +39,7 @@ public:
 		virtual bool Simulate();
 	#endif
 	virtual const char *GetMagazineGibModelName() const override { return "models/weapons/empty_clips/autogun_empty_clip.mdl"; }
+	virtual bool HasSecondaryAttack() override { return false; } // secondary fire is shotgun toggle
 
 	// aiming grenades at the ground
 	virtual bool SupportsGroundShooting() { return false; }

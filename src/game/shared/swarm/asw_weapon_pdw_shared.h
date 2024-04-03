@@ -55,6 +55,7 @@ public:
 		virtual const char *GetPartialReloadSound( int iPart );
 	#endif
 	virtual const char *GetMagazineGibModelName() const override { return "models/weapons/empty_clips/pdw_empty_clip.mdl"; }
+	virtual bool HasSecondaryAttack() override { return false; } // weapon has no secondary fire
 
 	virtual const char* GetUTracerType();
 	virtual int ASW_SelectWeaponActivity(int idealActivity);

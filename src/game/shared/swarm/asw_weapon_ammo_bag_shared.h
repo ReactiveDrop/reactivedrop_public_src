@@ -49,7 +49,8 @@ public:
 		virtual void MouseOverEntity(C_BaseEntity *pEnt, Vector vecWorldCursor);
 	#endif
 
-	virtual bool IsOffensiveWeapon() { return false; }
+	virtual bool HasSecondaryAttack() override { return false; } // weapon has no secondary fire
+	virtual bool IsOffensiveWeapon() override { return false; }
 
 	// these differ because of server latency 
 	static float GetAIMaxAmmoGiveDistance() { return 50.0f; }

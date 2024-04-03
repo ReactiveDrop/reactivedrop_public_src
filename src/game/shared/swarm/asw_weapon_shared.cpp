@@ -608,12 +608,13 @@ bool CASW_Weapon::ReloadOrSwitchWeapons( void )
 
 	// if (HasAnyAmmo())    // asw add later!
 	m_bFireOnEmpty = false;
-	if ( UsesClipsForAmmo1() && 
-			 (m_iClip1 == 0) && 
-			 (GetWeaponFlags() & ITEM_FLAG_NOAUTORELOAD) == false && 
-			 bAutoReload && 
-			 m_flNextPrimaryAttack < gpGlobals->curtime && 			 
-			 m_flNextSecondaryAttack < gpGlobals->curtime && !m_bInReload)
+	if ( UsesClipsForAmmo1() &&
+		( m_iClip1 == 0 ) &&
+		( GetWeaponFlags() & ITEM_FLAG_NOAUTORELOAD ) == false &&
+		bAutoReload &&
+		m_flNextPrimaryAttack < gpGlobals->curtime &&
+		( ( m_flNextSecondaryAttack < gpGlobals->curtime ) || !HasSecondaryAttack() ) &&
+		!m_bInReload )
 	{
 		// if we're successfully reloading, we're done
 		if ( Reload() )

@@ -35,6 +35,7 @@ public:
 #else
 	virtual bool DisplayClipsDoubled() { return false; }
 #endif
+	virtual bool HasSecondaryAttack() override { return false; } // weapon has no secondary fire
 
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_DEAGLE; }
 protected:

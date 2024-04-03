@@ -57,6 +57,7 @@ public:
 	#endif
 
 	virtual bool IsOffensiveWeapon() { return true; }
+	virtual bool HasSecondaryAttack() override { return false; } // weapon has no secondary fire
 
 	Vector	IdealLaunchVelocity( Vector &vecSrc );
 	void	Preview();
