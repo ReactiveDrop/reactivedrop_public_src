@@ -137,6 +137,8 @@ ReportProblem::ReportProblem( Panel *parent, const char *panelName )
 	m_pTxtDescription->AddActionSignalTarget( this );
 	m_pTxtDescription->SetAllowNonAsciiCharacters( true );
 	m_pTxtDescription->SetMultiline( true );
+	m_pTxtDescription->SetCatchEnterKey( true );
+	m_pTxtDescription->SetCatchTabKey( true );
 	COMPILE_TIME_ASSERT( NELEMS( m_pImgScreenshot ) == NELEMS( m_pChkScreenshot ) );
 	for ( int i = 0; i < NELEMS( m_pImgScreenshot ); i++ )
 	{
