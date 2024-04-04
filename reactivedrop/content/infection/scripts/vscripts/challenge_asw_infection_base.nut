@@ -1013,7 +1013,7 @@ function JoinHuman(hMarine)
 		hMarine.SetHealth(newHealth);
 		if (hMarine.IsInhabited())
 		{
-			NetProps.SetPropFloat(hMarine.GetCommander(), "m_flLaggedMovementValue", (300.0/330.0));
+			NetProps.SetPropFloat(hMarine, "m_fSpeedScale", (290.0/330.0));
 		}
 	}
 	return;
@@ -1070,7 +1070,7 @@ function JoinZombie(hMarine)
 		hMarine.SetOrigin(hMarine.GetOrigin() + Vector(0, 0, 32));
 		if (hMarine.IsInhabited())
 		{
-			NetProps.SetPropFloat(hMarine.GetCommander(), "m_flLaggedMovementValue", 1.0);
+			NetProps.SetPropFloat(hMarine, "m_fSpeedScale", 1.0);
 		}
 	}
 	return;
@@ -1169,7 +1169,7 @@ function UseLastStand(hMarine)
 	hMarine.SetHealth(newHealth);
 	if (hMarine.IsInhabited())
 	{
-		NetProps.SetPropFloat(hMarine.GetCommander(), "m_flLaggedMovementValue", (290.0/330.0));
+		NetProps.SetPropFloat(hMarine, "m_fSpeedScale", (290.0/330.0));
 	}
 	ClientPrint(null, HUD_PRINTTALK, "#asw_infection_lastStand_used", NameFeed(hMarine));
 	ClientPrint(null, HUD_PRINTTALK, "#asw_infection_lastStand_timeAdd");
