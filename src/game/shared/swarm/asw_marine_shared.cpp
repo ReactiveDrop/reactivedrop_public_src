@@ -359,11 +359,7 @@ Vector CASW_Marine::Weapon_ShootPosition( )
 
 float CASW_Marine::MaxSpeed()
 {
-	float speed = BaseClass::MaxSpeed();
-	if ( GetMarineResource() )
-	{
-		speed = MarineSkills()->GetSkillBasedValueByMarine( this, ASW_MARINE_SKILL_AGILITY ) * m_fSpeedScale;
-	}
+	float speed = MarineSkills()->GetSkillBasedValueByMarine( this, ASW_MARINE_SKILL_AGILITY ) * m_fSpeedScale;
 	float speedscale = 1.0f;
 	// half speed if we're firing or reloading
 	if (GetActiveASWWeapon())			
@@ -763,8 +759,8 @@ void CASW_Marine::DoDamagePowerupEffects( CBaseEntity *pTarget, CTakeDamageInfo 
 void CASW_Marine::FireBullets( const FireBulletsInfo_t &info )
 {
 	float fPiercingChance = 0;
-	if (GetMarineResource() && GetMarineProfile() && GetMarineProfile()->GetMarineClass() == MARINE_CLASS_SPECIAL_WEAPONS)
-		fPiercingChance = MarineSkills()->GetSkillBasedValueByMarine(this, ASW_MARINE_SKILL_PIERCING);
+	if ( GetMarineProfile() && GetMarineProfile()->GetMarineClass() == MARINE_CLASS_SPECIAL_WEAPONS )
+		fPiercingChance = MarineSkills()->GetSkillBasedValueByMarine( this, ASW_MARINE_SKILL_PIERCING );
 
 	//if ( GetActiveWeapon() )
 	//{
