@@ -2509,6 +2509,9 @@ void CASW_Player::OrderMarineFace( int iMarine, float fYaw, Vector &vecOrderPos 
 	if ( !pMyMarine )
 		return;
 
+	if ( !pMyMarine->GetMarineResource() ) // NPC marines (non-squad) can't issue orders
+		return;
+
 	// if we don't have a specific marine to order, find the best one
 	if ( !pTarget )
 	{
@@ -2987,6 +2990,9 @@ void OrderNearestHoldingMarineToFollow()
 		CASW_Marine *pMyMarine = CASW_Marine::AsMarine( pPlayer->GetNPC() );
 		if (pMyMarine)
 		{
+			if ( !pMyMarine->GetMarineResource() ) // NPC marines (non-squad) can't issue orders
+				return;
+
 			if (pMyMarine->GetFlags() & FL_FROZEN)	// don't allow this if the marine is frozen
 				return;
 
@@ -3045,6 +3051,9 @@ void OrderNearbyMarines(CASW_Player *pPlayer, ASW_Orders NewOrders, bool bAcknow
 	CASW_Marine *pMyMarine = CASW_Marine::AsMarine( pPlayer->GetNPC() );
 	if ( pMyMarine )
 	{
+		if ( !pMyMarine->GetMarineResource() ) // NPC marines (non-squad) can't issue orders
+			return;
+
 		if ( pMyMarine->GetFlags() & FL_FROZEN )	// don't allow this if the marine is frozen
 			return;
 
