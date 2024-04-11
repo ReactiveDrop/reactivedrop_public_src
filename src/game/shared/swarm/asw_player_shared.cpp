@@ -194,7 +194,7 @@ void CASW_Player::DriveNPCMovement( CUserCmd *ucmd, IMoveHelper *moveHelper )
 		if ( pNPC && ( !pMarine || !pMarine->IsInVehicle() ) && ASWGameResource() )
 		{
 			// don't apply commands meant for another marine
-			if ( !pMarine || ( pMarine->GetMarineResource() && ASWGameResource()->GetMarineResourceIndex( pMarine->GetMarineResource() ) == ucmd->weaponsubtype ) )
+			if ( !pMarine || !pMarine->GetMarineResource() || ASWGameResource()->GetMarineResourceIndex( pMarine->GetMarineResource() ) == ucmd->weaponsubtype )
 			{
 				// check if we should be stopped
 				if ( pMarine && ( gpGlobals->curtime < pMarine->GetStopTime() || pMarine->m_bPreventMovement )

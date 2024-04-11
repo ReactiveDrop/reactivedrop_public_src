@@ -504,7 +504,10 @@ bool CASW_Marine::ASWAnim_CanMove()
 bool CASW_Marine::IsInhabited()
 {
 	if ( !GetMarineResource() )
-		return false;
+	{
+		// NPC-marine spawned by a mapper rather than a squad-marine.
+		return m_bInhabited;
+	}
 
 	return GetMarineResource()->IsInhabited();
 }

@@ -1147,9 +1147,11 @@ void CASW_Marine::UninhabitedBy( CASW_Player *player )
 
 void CASW_Marine::SetInhabited( bool bInhabited )
 {
-	if ( !GetMarineResource() )
-		return;
-	GetMarineResource()->SetInhabited( bInhabited );
+	BaseClass::SetInhabited( bInhabited );
+
+	if ( GetMarineResource() )
+		GetMarineResource()->SetInhabited( bInhabited );
+
 	// riflemod: bots shouldn't collide which aliens. TODO: this code can break vehicle support 
 	if ( bInhabited )
 	{
