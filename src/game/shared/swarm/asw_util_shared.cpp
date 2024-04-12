@@ -1433,6 +1433,8 @@ void UTIL_RD_DecideMainMenuBackground( const char *&szImage, const char *&szVide
 	static const char *s_szImage = NULL;
 	static const char *s_szVideo = NULL;
 	static const char *s_szAudio = NULL;
+	static ConVarRef sv_unlockedchapters{ "sv_unlockedchapters" };
+	extern int g_iSetUnlockedChaptersToValue;
 
 	if ( bAllowChange || !s_szImage || !s_szVideo || !s_szAudio )
 	{
@@ -1490,6 +1492,8 @@ void UTIL_RD_DecideMainMenuBackground( const char *&szImage, const char *&szVide
 		KeyValues::AutoDelete pChapterBackgrounds{ "chapters" };
 		if ( pChapterBackgrounds->LoadFromFile( g_pFullFileSystem, "scripts/ChapterBackgrounds.txt" ) )
 		{
+			g_iSetUnlockedChaptersToValue = 0; // clear this in case we don't find a valid chapter number.
+
 			// first, verify that the background movie we selected is in the chapter backgrounds file.
 			int iNextChapter = 0;
 			FOR_EACH_VALUE( pChapterBackgrounds, pChapter )
@@ -1505,7 +1509,6 @@ void UTIL_RD_DecideMainMenuBackground( const char *&szImage, const char *&szVide
 			// next, verify that the background image the engine started up with was in our list of possibilities
 			if ( iNextChapter > 0 )
 			{
-				ConVarRef sv_unlockedchapters{ "sv_unlockedchapters" };
 				int iPrevChapter = sv_unlockedchapters.GetInt();
 				char szPrevChapterName[MAX_PATH];
 				engine->GetMainMenuBackgroundName( szPrevChapterName, sizeof( szPrevChapterName ) );
@@ -1513,8 +1516,8 @@ void UTIL_RD_DecideMainMenuBackground( const char *&szImage, const char *&szVide
 				if ( iPrevChapter != iNextChapter )
 				{
 					// set the next time we start up to use the background we picked this time
-					sv_unlockedchapters.SetValue( iNextChapter );
-					engine->ClientCmd_Unrestricted( "host_writeconfig" );
+					// (we can't set it this early in startup, so let's store it away in a global variable for now)
+					g_iSetUnlockedChaptersToValue = iNextChapter;
 				}
 
 				FOR_EACH_SUBKEY( s_pBackgroundMovie, pOption )

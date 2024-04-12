@@ -125,6 +125,8 @@ static int s_nHoIAFCachedEntries = 0;
 static LeaderboardEntry_t s_HoIAFLeaderboardEntryCache[10];
 static LeaderboardScoreDetails_Points_t s_HoIAFLeaderboardDetailsCache[10];
 
+int g_iSetUnlockedChaptersToValue = 0;
+
 //=============================================================================
 MainMenu::MainMenu( Panel *parent, const char *panelName ):
 	BaseClass( parent, panelName, true, true, false, false )
@@ -323,6 +325,12 @@ void MainMenu::Activate()
 	}
 
 	BriefingTooltip::EnsureParent( this );
+
+	if ( g_iSetUnlockedChaptersToValue != 0 )
+	{
+		engine->ClientCmd_Unrestricted( VarArgs( "sv_unlockedchapters %d; host_writeconfig\n", g_iSetUnlockedChaptersToValue ) );
+		g_iSetUnlockedChaptersToValue = 0;
+	}
 
 	m_flLastActiveTime = Plat_FloatTime();
 }
