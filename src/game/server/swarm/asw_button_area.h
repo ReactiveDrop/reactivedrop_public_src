@@ -51,7 +51,7 @@ public:
 	int m_iWireRows;
 	int m_iNumWires;
 	
-	EHANDLE m_hDoorHack;
+	CHandle<CASW_Hack> m_hDoorHack;
 
 	COutputEvent m_OnFastHackFailed;
 	COutputEvent m_OnButtonHackStarted;

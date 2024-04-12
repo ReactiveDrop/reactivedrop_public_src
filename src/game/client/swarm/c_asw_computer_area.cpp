@@ -3,7 +3,6 @@
 #include "c_asw_marine.h"
 #include <vgui/ISurface.h>
 #include <vgui_controls/Panel.h>
-#include "c_asw_door.h"
 #include "asw_marine_profile.h"
 #include "c_asw_hack.h"
 #include "asw_util_shared.h"
@@ -74,14 +73,6 @@ C_ASW_Computer_Area::C_ASW_Computer_Area()
 
 	m_iActiveCam = 1;	// should be set serverside and networked down depending on which cam we're using?
 	m_fLastPositiveSoundTime = 0;
-}
-
-C_ASW_Door *C_ASW_Computer_Area::GetDoor()
-{
-	C_BaseEntity *pUseTargetH = GetUseTargetHandle().Get();
-	if ( pUseTargetH && pUseTargetH->Classify() == CLASS_ASW_DOOR )
-		return assert_cast< C_ASW_Door * >( pUseTargetH );
-	return NULL;
 }
 
 // use icon textures

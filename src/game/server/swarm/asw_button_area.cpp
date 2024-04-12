@@ -64,10 +64,10 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Button_Area, DT_ASW_Button_Area)
 	SendPropBool		(SENDINFO(m_bIsDoorButton)),
 	SendPropBool		(SENDINFO(m_bIsInUse)),
 	SendPropFloat		(SENDINFO(m_fHackProgress)),
-	SendPropBool		(SENDINFO(m_bNoPower)),	
-	SendPropBool		(SENDINFO(m_bWaitingForInput)),	
+	SendPropBool		(SENDINFO(m_bNoPower)),
+	SendPropBool		(SENDINFO(m_bWaitingForInput)),
 
-	SendPropString		(SENDINFO( m_NoPowerMessage ) ),
+	SendPropString		(SENDINFO(m_NoPowerMessage)),
 	SendPropString		(SENDINFO(m_UsePanelMessage)),
 	SendPropString		(SENDINFO(m_NeedTechMessage)),
 	SendPropString		(SENDINFO(m_ExitPanelMessage)),
@@ -105,9 +105,9 @@ CASW_Button_Area::CASW_Button_Area()
 
 CASW_Button_Area::~CASW_Button_Area()
 {
-	if (m_hDoorHack.Get())
+	if ( m_hDoorHack.Get() )
 	{
-		UTIL_Remove(m_hDoorHack.Get());
+		UTIL_Remove( m_hDoorHack.Get() );
 	}
 }
 
@@ -116,14 +116,14 @@ CASW_Button_Area::~CASW_Button_Area()
 //-----------------------------------------------------------------------------
 void CASW_Button_Area::Spawn( void )
 {
-	if (m_flWait == -1)
+	if ( m_flWait == -1 )
 		m_bDisableAfterUse = true;
 
-	BaseClass::Spawn();
 	Precache();
+	BaseClass::Spawn();
 
 	// check if this button is linked to a door or not
-	CBaseEntity* pUseTarget = m_hUseTarget.Get();
+	CBaseEntity *pUseTarget = m_hUseTarget.Get();
 	if ( pUseTarget && pUseTarget->Classify() == CLASS_ASW_DOOR )
 	{
 		m_bIsDoorButton = true;
@@ -147,10 +147,10 @@ void CASW_Button_Area::Spawn( void )
 
 void CASW_Button_Area::Precache()
 {
-	PrecacheScriptSound("ASWComputer.HackComplete");
-	PrecacheScriptSound("ASWComputer.AccessDenied");
-	PrecacheScriptSound("ASWComputer.TimeOut");
-	PrecacheScriptSound("ASWButtonPanel.TileLit");
+	PrecacheScriptSound( "ASWComputer.HackComplete" );
+	PrecacheScriptSound( "ASWComputer.AccessDenied" );
+	PrecacheScriptSound( "ASWComputer.TimeOut" );
+	PrecacheScriptSound( "ASWButtonPanel.TileLit" );
 }
 
 void CASW_Button_Area::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
@@ -191,7 +191,7 @@ void CASW_Button_Area::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldTyp
 					{
 						if ( !GetCurrentHack() ) // if we haven't created a hack object for this computer yet, then create one
 						{
-							m_hDoorHack = CreateEntityByName( "asw_hack_wire_tile" );
+							m_hDoorHack = ( CASW_Hack_Wire_Tile * )CreateEntityByName( "asw_hack_wire_tile" );
 						}
 
 						if ( GetCurrentHack() )
@@ -362,21 +362,21 @@ void CASW_Button_Area::ActivateUnlockedButton( CASW_Inhabitable_NPC *pNPC )
 	}
 }
 
-CASW_Door* CASW_Button_Area::GetDoor()
+CASW_Door *CASW_Button_Area::GetDoor()
 {
-	CBaseEntity* pUseTarget = m_hUseTarget.Get();
+	CBaseEntity *pUseTarget = m_hUseTarget.Get();
 	if ( pUseTarget && pUseTarget->Classify() == CLASS_ASW_DOOR )
-		return assert_cast<CASW_Door*>(pUseTarget);
+		return assert_cast< CASW_Door * >( pUseTarget );
 	return NULL;
 }
 
-CASW_Hack* CASW_Button_Area::GetCurrentHack()
+CASW_Hack *CASW_Button_Area::GetCurrentHack()
 {
-	return dynamic_cast<CASW_Hack*>(m_hDoorHack.Get());
+	return m_hDoorHack.Get();
 }
 
 // traditional Swarm hacking
-void CASW_Button_Area::NPCUsing(CASW_Inhabitable_NPC *pNPC, float deltatime)
+void CASW_Button_Area::NPCUsing( CASW_Inhabitable_NPC *pNPC, float deltatime )
 {
 	CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC );
 	if ( !pMarine )
@@ -456,7 +456,7 @@ void CASW_Button_Area::InputPowerOff( inputdata_t &inputdata )
 
 void CASW_Button_Area::InputUnlock( inputdata_t &inputdata )
 {
-	if (m_bIsLocked)
+	if ( m_bIsLocked )
 	{
 		m_bIsLocked = false;
 		m_fHackProgress = 1.0f;
@@ -468,12 +468,12 @@ void CASW_Button_Area::InputUnlock( inputdata_t &inputdata )
 
 		if ( inputdata.pActivator && inputdata.pActivator->Classify() == CLASS_ASW_MARINE )
 		{
-			CASW_Marine* pMarine = assert_cast<CASW_Marine*>(inputdata.pActivator);
+			CASW_Marine *pMarine = assert_cast< CASW_Marine * >( inputdata.pActivator );
 
 			// if set to use on unlock, then do so
 			if ( m_bUseAfterHack && pMarine && m_flHoldTime <= 0 )
 			{
-				ActivateUnlockedButton(pMarine);
+				ActivateUnlockedButton( pMarine );
 			}
 		}
 	}
@@ -484,23 +484,23 @@ void CASW_Button_Area::InputResetHack( inputdata_t &inputdata )
 	if ( !m_bIsInUse )
 	{
 		m_fStartedHackTime = false;
-		SetHackProgress(0, NULL);
+		SetHackProgress( 0, NULL );
 		m_bIsLocked = true;
 		UpdateWaitingForInput();
 		if ( m_bChangePanelSkin )
 		{
 			UpdatePanelSkin();
 		}
-		if (m_hDoorHack.Get())
+		if ( m_hDoorHack.Get() )
 		{
 			// need to delete the hack
-			UTIL_Remove(m_hDoorHack.Get());
+			UTIL_Remove( m_hDoorHack.Get() );
 			m_hDoorHack = NULL;
 		}
 	}
 }
 
-void CASW_Button_Area::SetHackProgress(float f, CASW_Marine *pMarine)
+void CASW_Button_Area::SetHackProgress( float f, CASW_Marine *pMarine )
 {
 	CBaseEntity *pActor = pMarine;
 	if ( !pActor )
@@ -508,27 +508,27 @@ void CASW_Button_Area::SetHackProgress(float f, CASW_Marine *pMarine)
 		pActor = this;
 	}
 
-	if (m_fHackProgress <= 0 && f > 0 && m_fStartedHackTime == 0)
+	if ( m_fHackProgress <= 0 && f > 0 && m_fStartedHackTime == 0 )
 	{
 		m_fStartedHackTime = gpGlobals->curtime;
 	}
-	if (m_fHackProgress < 0.25f && f >= 0.25f)
+	if ( m_fHackProgress < 0.25f && f >= 0.25f )
 	{
-		m_OnButtonHackAt25Percent.FireOutput(pActor, this);
+		m_OnButtonHackAt25Percent.FireOutput( pActor, this );
 	}
-	if (m_fHackProgress < 0.5f && f >= 0.5f)
+	if ( m_fHackProgress < 0.5f && f >= 0.5f )
 	{
-		m_OnButtonHackAt50Percent.FireOutput(pActor, this);
-		if (pMarine)
-			pMarine->GetMarineSpeech()->Chatter(CHATTER_HACK_HALFWAY);
+		m_OnButtonHackAt50Percent.FireOutput( pActor, this );
+		if ( pMarine )
+			pMarine->GetMarineSpeech()->Chatter( CHATTER_HACK_HALFWAY );
 	}
-	if (m_fHackProgress < 0.75f && f >= 0.75f)
+	if ( m_fHackProgress < 0.75f && f >= 0.75f )
 	{
-		m_OnButtonHackAt75Percent.FireOutput(pActor, this);
+		m_OnButtonHackAt75Percent.FireOutput( pActor, this );
 	}
-	if (m_fHackProgress < 1.0f && f >= 1.0f)
-	{	
-		if (asw_simple_hacking.GetBool() && pMarine)
+	if ( m_fHackProgress < 1.0f && f >= 1.0f )
+	{
+		if ( asw_simple_hacking.GetBool() && pMarine )
 		{
 			pMarine->StopUsing();
 		}
@@ -536,22 +536,22 @@ void CASW_Button_Area::SetHackProgress(float f, CASW_Marine *pMarine)
 		float time_taken = gpGlobals->curtime - m_fStartedHackTime;
 		// decide if this was a fast hack or not
 		float fSpeedScale = 1.0f;
-		if (pMarine)
-			fSpeedScale *= MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_HACKING, ASW_MARINE_SUBSKILL_HACKING_SPEED_SCALE);
-		float ideal_time = UTIL_ASW_CalcFastDoorHackTime(m_iWireRows, m_iWireColumns, m_iNumWires, m_iHackLevel, fSpeedScale);
+		if ( pMarine )
+			fSpeedScale *= MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_HACKING, ASW_MARINE_SUBSKILL_HACKING_SPEED_SCALE );
+		float ideal_time = UTIL_ASW_CalcFastDoorHackTime( m_iWireRows, m_iWireColumns, m_iNumWires, m_iHackLevel, fSpeedScale );
 
 		bool bFastHack = time_taken <= ideal_time;
-		if (asw_debug_medals.GetBool())
+		if ( asw_debug_medals.GetBool() )
 		{
-			Msg("Finished door hack, fast = %d.\n", bFastHack);
-			Msg(" ideal time is %f you took %f\n", ideal_time, time_taken);
+			Msg( "Finished door hack, fast = %d.\n", bFastHack );
+			Msg( " ideal time is %f you took %f\n", ideal_time, time_taken );
 		}
-		CASW_Marine_Resource* pMR = pMarine->GetMarineResource();
-		if (bFastHack && pMarine && pMR)
+		CASW_Marine_Resource *pMR = pMarine->GetMarineResource();
+		if ( bFastHack && pMarine && pMR )
 		{
 			pMR->m_iFastDoorHacks++;
-			CASW_Player* pCommander = pMarine->GetCommander();
-			if ( pMarine->IsInhabited() && pCommander)
+			CASW_Player *pCommander = pMarine->GetCommander();
+			if ( pMarine->IsInhabited() && pCommander )
 			{
 				pCommander->AwardAchievement( ACHIEVEMENT_ASW_FAST_WIRE_HACKS );
 			}
@@ -565,7 +565,7 @@ void CASW_Button_Area::SetHackProgress(float f, CASW_Marine *pMarine)
 			}
 		}
 
-		CASW_Hack* pHack = GetCurrentHack();
+		CASW_Hack *pHack = GetCurrentHack();
 		if ( pHack )
 		{
 			pHack->OnHackComplete();
@@ -576,17 +576,17 @@ void CASW_Button_Area::SetHackProgress(float f, CASW_Marine *pMarine)
 			int nAliensKilled = ASWGameResource() ? ASWGameResource()->GetAliensKilledInThisMission() : 0;
 			if ( ( nAliensKilled - m_iAliensKilledBeforeHack ) > 10 )
 			{
-				for ( int i = 1; i <= gpGlobals->maxClients; i++ )	
+				for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 				{
-					CASW_Player* pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
+					CASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
 					if ( !pPlayer || !pPlayer->IsConnected() )
 						continue;
-					
-					CASW_Marine* pOtherMarine = CASW_Marine::AsMarine( pPlayer->GetNPC() );
+
+					CASW_Marine *pOtherMarine = CASW_Marine::AsMarine( pPlayer->GetNPC() );
 					if ( !pOtherMarine || pOtherMarine == pMarine )
 						continue;
 
-					CASW_Marine_Resource* pMROther = pOtherMarine->GetMarineResource();
+					CASW_Marine_Resource *pMROther = pOtherMarine->GetMarineResource();
 					if ( pMROther )
 					{
 						pMROther->m_bProtectedTech = true;
@@ -597,7 +597,7 @@ void CASW_Button_Area::SetHackProgress(float f, CASW_Marine *pMarine)
 		}
 
 		// unlock it
-		m_OnButtonHackCompleted.FireOutput(pActor, this);
+		m_OnButtonHackCompleted.FireOutput( pActor, this );
 		m_bIsLocked = false;
 		UpdateWaitingForInput();
 		if ( m_bChangePanelSkin )
@@ -605,17 +605,17 @@ void CASW_Button_Area::SetHackProgress(float f, CASW_Marine *pMarine)
 			UpdatePanelSkin();
 		}
 
-		EmitSound("ASWComputer.HackComplete");
+		EmitSound( "ASWComputer.HackComplete" );
 
 		if ( pMarine && bFastHack )
 		{
-			pMarine->GetMarineSpeech()->QueueChatter(CHATTER_HACK_BUTTON_FINISHED, gpGlobals->curtime + 2.0f, gpGlobals->curtime + 3.0f);
+			pMarine->GetMarineSpeech()->QueueChatter( CHATTER_HACK_BUTTON_FINISHED, gpGlobals->curtime + 2.0f, gpGlobals->curtime + 3.0f );
 		}
 
 		// if set to use on unlock, then do so
 		if ( m_bUseAfterHack && pMarine && m_flHoldTime <= 0 )
 		{
-			ActivateUnlockedButton(pMarine);
+			ActivateUnlockedButton( pMarine );
 		}
 
 		if ( pMarine && !pMarine->IsInhabited() )
@@ -628,48 +628,48 @@ void CASW_Button_Area::SetHackProgress(float f, CASW_Marine *pMarine)
 }
 
 bool CASW_Button_Area::KeyValue( const char *szKeyName, const char *szValue )
-{	
+{
 	if ( FStrEq( szKeyName, "nopowermessage" ) )
 	{
-		Q_strncpy( m_NoPowerMessage.GetForModify(), szValue, 255 );
+		V_strncpy( m_NoPowerMessage.GetForModify(), szValue, 255 );
 		return true;
-	}	
+	}
 	else if ( FStrEq( szKeyName, "usepanelmessage" ) )
 	{
-		Q_strncpy( m_UsePanelMessage.GetForModify(), szValue, 255 );
+		V_strncpy( m_UsePanelMessage.GetForModify(), szValue, 255 );
 		return true;
-	}	
+	}
 	else if ( FStrEq( szKeyName, "needtechmessage" ) )
 	{
-		Q_strncpy( m_NeedTechMessage.GetForModify(), szValue, 255 );
+		V_strncpy( m_NeedTechMessage.GetForModify(), szValue, 255 );
 		return true;
-	}	
+	}
 	else if ( FStrEq( szKeyName, "exitpanelmessage" ) )
 	{
-		Q_strncpy( m_ExitPanelMessage.GetForModify(), szValue, 255 );
+		V_strncpy( m_ExitPanelMessage.GetForModify(), szValue, 255 );
 		return true;
-	}	
+	}
 	else if ( FStrEq( szKeyName, "hackpanelmessage" ) )
 	{
-		Q_strncpy( m_HackPanelMessage.GetForModify(), szValue, 255 );
+		V_strncpy( m_HackPanelMessage.GetForModify(), szValue, 255 );
 		return true;
-	}	
+	}
 	return BaseClass::KeyValue( szKeyName, szValue );
 }
 
 bool CASW_Button_Area::WaitingForInputVismonEvaluator( CBaseEntity *pVisibleEntity, CBasePlayer *pViewingPlayer )
 {
-	CASW_Button_Area *pButtonArea = static_cast< CASW_Button_Area* >( pVisibleEntity );
+	CASW_Button_Area *pButtonArea = static_cast< CASW_Button_Area * >( pVisibleEntity );
 	return pButtonArea->m_bWaitingForInput && pButtonArea->m_bUseAreaEnabled;
 }
 
 bool CASW_Button_Area::WaitingForInputVismonCallback( CBaseEntity *pVisibleEntity, CBasePlayer *pViewingPlayer )
 {
-	CASW_Button_Area *pButtonArea = static_cast< CASW_Button_Area* >( pVisibleEntity );
+	CASW_Button_Area *pButtonArea = static_cast< CASW_Button_Area * >( pVisibleEntity );
 	if ( !pButtonArea->m_bUseAreaEnabled )
 		return false;
 
-	IGameEvent * event = gameeventmanager->CreateEvent( "button_area_active" );
+	IGameEvent *event = gameeventmanager->CreateEvent( "button_area_active" );
 	if ( event )
 	{
 		event->SetInt( "userid", pViewingPlayer->GetUserID() );
@@ -700,8 +700,8 @@ void CASW_Button_Area::UpdateWaitingForInput()
 
 	if ( !bSet )
 	{
-		m_bWaitingForInput = ASWGameRules()->GetGameState() == ASW_GS_INGAME && 
-							 ( !m_bNoPower && !m_bIsInUse && ( m_bIsLocked || ( !m_bWasLocked && m_fLastButtonUseTime == 0 ) ) );
+		m_bWaitingForInput = ASWGameRules()->GetGameState() == ASW_GS_INGAME &&
+			( !m_bNoPower && !m_bIsInUse && ( m_bIsLocked || ( !m_bWasLocked && m_fLastButtonUseTime == 0 ) ) );
 	}
 
 	if ( !bOldWaitingForInput && m_bWaitingForInput )
@@ -712,7 +712,7 @@ void CASW_Button_Area::UpdateWaitingForInput()
 	{
 		VisibilityMonitor_RemoveEntity( this );
 
-		IGameEvent * event = gameeventmanager->CreateEvent( "button_area_inactive" );
+		IGameEvent *event = gameeventmanager->CreateEvent( "button_area_inactive" );
 		if ( event )
 		{
 			event->SetInt( "entindex", entindex() );
@@ -724,7 +724,7 @@ void CASW_Button_Area::UpdateWaitingForInput()
 // updates the panel prop (if any) with a skin to reflect the button's state
 void CASW_Button_Area::UpdatePanelSkin()
 {
-	CBaseEntity* pPanel = m_hPanelProp.Get();
+	CBaseEntity *pPanel = m_hPanelProp.Get();
 
 	if ( !pPanel )
 		return;
@@ -735,11 +735,11 @@ void CASW_Button_Area::UpdatePanelSkin()
 	}
 	CBaseAnimating *pAnim = pPanel->GetBaseAnimating();
 	CBaseEntity *pFindAnim = NULL;
-	while (pAnim)
-	{		
-		if (HasPower())
+	while ( pAnim )
+	{
+		if ( HasPower() )
 		{
-			if (m_bIsLocked)
+			if ( m_bIsLocked )
 			{
 				pAnim->m_nSkin = 1;	// locked skin
 				if ( asw_debug_button_skin.GetBool() )
@@ -765,12 +765,14 @@ void CASW_Button_Area::UpdatePanelSkin()
 			}
 		}
 
-		if (m_bMultiplePanelProps)
+		if ( m_bMultiplePanelProps )
 		{
-			pFindAnim = gEntList.FindEntityByName(pAnim, m_szPanelPropName);
+			pFindAnim = gEntList.FindEntityByName( pAnim, m_szPanelPropName );
 			pAnim = pFindAnim ? pFindAnim->GetBaseAnimating() : NULL;
 		}
 		else
+		{
 			pAnim = NULL;
+		}
 	}
 }

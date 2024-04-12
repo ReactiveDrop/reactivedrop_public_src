@@ -20,7 +20,6 @@ public:
 	bool IsLocked() { return m_bIsLocked; }
 	bool IsLoggedIn() { return m_bLoggedIn; }
 	int GetHackLevel() { return m_iHackLevel; }
-	C_ASW_Door *GetDoor();
 
 	Class_T		Classify( void ) { return ( Class_T )CLASS_ASW_COMPUTER_AREA; }
 

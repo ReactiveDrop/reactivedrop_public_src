@@ -7,6 +7,7 @@
 
 class CASW_Marine;
 class CASW_Player;
+class CASW_Door;
 
 DECLARE_AUTO_LIST( IASW_Use_Area_List );
 
@@ -30,7 +31,7 @@ public:
 
 	COutputEvent m_OnRequirementFailed;
 
-	virtual Class_T Classify() { return CLASS_HACKED_ROLLERMINE; }
+	virtual Class_T Classify() { return CLASS_NONE; }
 
 	// IASW_Server_Usable_Entity implementation
 	virtual CBaseEntity *GetEntity() { return this; }
@@ -57,6 +58,8 @@ public:
 	virtual CBaseEntity* GetProp() { return m_hPanelProp; }
 	// link to the prop representing us
 	CNetworkHandle( CBaseEntity, m_hPanelProp );
+
+	CASW_Door *GetDoor();
 
 	CNetworkVar( string_t, m_iHeldObjectName );
 	bool CheckHeldObject( CASW_Inhabitable_NPC *pNPC );

@@ -4,6 +4,8 @@
 #include "iasw_client_usable_entity.h"
 #include "c_triggers.h"
 
+class C_ASW_Door;
+
 class C_ASW_Use_Area : public C_BaseTrigger, public IASW_Client_Usable_Entity
 {
 	DECLARE_CLASS( C_ASW_Use_Area, C_BaseTrigger );
@@ -12,9 +14,9 @@ public:
 	C_ASW_Use_Area();
 
 	C_BaseEntity *GetUseTarget();
+	C_ASW_Door *GetDoor();
 
 	EHANDLE	m_hUseTarget;
-	EHANDLE	GetUseTargetHandle() { return m_hUseTarget; }
 	CNetworkVar( bool, m_bUseAreaEnabled );
 
 	// IASW_Client_Usable_Entity implementation

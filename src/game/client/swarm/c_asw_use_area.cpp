@@ -1,6 +1,7 @@
 #include "cbase.h"
 #include "c_asw_use_area.h"
 #include "c_asw_marine.h"
+#include "c_asw_door.h"
 #include <vgui/ISurface.h>
 #include <vgui_controls/Panel.h>
 #include "asw_shareddefs.h"
@@ -22,9 +23,17 @@ C_ASW_Use_Area::C_ASW_Use_Area()
 
 }
 
-C_BaseEntity* C_ASW_Use_Area::GetUseTarget()
+C_BaseEntity *C_ASW_Use_Area::GetUseTarget()
 {
-	return GetUseTargetHandle().Get();
+	return m_hUseTarget.Get();
+}
+
+C_ASW_Door *C_ASW_Use_Area::GetDoor()
+{
+	C_BaseEntity *pUseTarget = GetUseTarget();
+	if ( pUseTarget && pUseTarget->Classify() == CLASS_ASW_DOOR )
+		return assert_cast< C_ASW_Door * >( pUseTarget );
+	return NULL;
 }
 
 // check we're near enough

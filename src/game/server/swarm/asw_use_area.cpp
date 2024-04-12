@@ -1,6 +1,7 @@
 #include "cbase.h"
 #include "asw_shareddefs.h"
 #include "asw_use_area.h"
+#include "asw_door.h"
 #include "asw_player.h"
 #include "asw_marine.h"
 #include "rd_weapon_generic_object_shared.h"
@@ -168,7 +169,7 @@ bool CASW_Use_Area::CheckHeldObject( CASW_Inhabitable_NPC *pNPC )
 		return false;
 	}
 
-	if ( m_iHeldObjectName.Get() == NULL_STRING || !*STRING( m_iHeldObjectName.Get() ) )
+	if ( m_iHeldObjectName.Get() == NULL_STRING || STRING( m_iHeldObjectName.Get() )[0] == '\0' )
 	{
 		// no object required
 		return true;
@@ -181,4 +182,12 @@ bool CASW_Use_Area::CheckHeldObject( CASW_Inhabitable_NPC *pNPC )
 	}
 
 	return FStrEq( STRING( m_iHeldObjectName.Get() ), STRING( pObject->m_iOriginalName.Get() ) );
+}
+
+CASW_Door *CASW_Use_Area::GetDoor()
+{
+	CBaseEntity *pUse = m_hUseTarget.Get();
+	if ( pUse && pUse->Classify() == CLASS_ASW_DOOR )
+		return assert_cast< CASW_Door * >( pUse );
+	return NULL;
 }

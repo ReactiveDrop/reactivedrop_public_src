@@ -16,45 +16,44 @@ public:
 	int GetHackLevel() { return m_iHackLevel; }
 	bool IsDoorButton() { return m_bIsDoorButton; }
 	bool NeedsTech() { return m_bNeedsTech; }
-	C_ASW_Door* GetDoor();
 
-	Class_T		Classify( void ) { return (Class_T) CLASS_ASW_BUTTON_PANEL; }
-	
+	Class_T		Classify( void ) { return ( Class_T )CLASS_ASW_BUTTON_PANEL; }
+
 	// accessors for icons
 	int GetLockedIconTextureID();
-	const char* GetLockedIconText();
+	const char *GetLockedIconText();
 	int GetOpenIconTextureID();
-	const char* GetOpenIconText() { return "#asw_open"; }
+	const char *GetOpenIconText() { return "#asw_open"; }
 	int GetCloseIconTextureID();
-	const char* GetCloseIconText() { return "#asw_close"; }
+	const char *GetCloseIconText() { return "#asw_close"; }
 	int GetUseIconTextureID();
-	const char* GetUseIconText();
+	const char *GetUseIconText();
 	int GetHackIconTextureID();
-	const char* GetHackIconText(C_ASW_Inhabitable_NPC *pUser);
+	const char *GetHackIconText( C_ASW_Inhabitable_NPC *pUser );
 	int GetNoPowerIconTextureID();
-	const char* GetNoPowerText();
+	const char *GetNoPowerText();
 
-	virtual bool GetUseAction(ASWUseAction &action, C_ASW_Inhabitable_NPC *pUser);
-	virtual void CustomPaint(int ix, int iy, int alpha, vgui::Panel *pUseIcon ) { }
-	virtual C_BaseEntity* GetGlowEntity() { return m_hPanelProp.Get(); }
+	virtual bool GetUseAction( ASWUseAction &action, C_ASW_Inhabitable_NPC *pUser );
+	virtual void CustomPaint( int ix, int iy, int alpha, vgui::Panel *pUseIcon ) { }
+	virtual C_BaseEntity *GetGlowEntity() { return m_hPanelProp.Get(); }
 
 	// traditional Swarm hacking
 	float GetHackProgress() { return m_fHackProgress; }
-	CNetworkVar(bool, m_bIsInUse);
-	CNetworkVar(float, m_fHackProgress);
-	CNetworkVar(float, m_flHoldTime);
-	
+	CNetworkVar( bool, m_bIsInUse );
+	CNetworkVar( float, m_fHackProgress );
+	CNetworkVar( float, m_flHoldTime );
+
 	char		m_NoPowerMessage[255];
-	char		m_UsePanelMessage[255];	
-	char		m_OpenMessage[255];	
-	char		m_CloseMessage[255];	
-	char		m_NeedTechMessage[255];	
+	char		m_UsePanelMessage[255];
+	char		m_OpenMessage[255];
+	char		m_CloseMessage[255];
+	char		m_NeedTechMessage[255];
 	char		m_ExitPanelMessage[255];
-	char		m_HackPanelMessage[255];	
+	char		m_HackPanelMessage[255];
 
 	bool HasPower() { return !m_bNoPower; }
 	bool IsWaitingForInput( void ) const { return m_bWaitingForInput; }
-	
+
 protected:
 	bool m_bIsLocked;
 	bool m_bNoPower;
@@ -82,7 +81,7 @@ protected:
 	static int s_nHackIconTextureID;
 
 	static bool s_bLoadedNoPowerIconTexture;
-	static int s_nNoPowerIconTextureID;	
+	static int s_nNoPowerIconTextureID;
 };
 
 #endif /* _DEFINED_C_ASW_BUTTON_AREA_H */

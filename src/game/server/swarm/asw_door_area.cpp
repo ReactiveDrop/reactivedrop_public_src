@@ -28,54 +28,54 @@ CASW_Door_Area::CASW_Door_Area()
 	m_fNextCutCheck = 0;
 }
 
-bool CASW_Door_Area::HasWelder(CASW_Marine *pMarine)
+bool CASW_Door_Area::HasWelder( CASW_Marine *pMarine )
 {
-	CASW_Weapon* pWeapon2 = pMarine->GetASWWeapon(2);
-	if ( pWeapon2 && pWeapon2->Classify() == CLASS_ASW_WELDER )
+	CASW_Weapon *pExtra = pMarine->GetASWWeapon( ASW_INVENTORY_SLOT_EXTRA );
+	if ( pExtra && pExtra->Classify() == CLASS_ASW_WELDER )
 		return true;
 
 	return false;
 }
 
-void CASW_Door_Area::ActivateMultiTrigger(CBaseEntity *pActivator)
+void CASW_Door_Area::ActivateMultiTrigger( CBaseEntity *pActivator )
 {
-	if (GetNextThink() > gpGlobals->curtime)
-		return;         // still waiting for reset time
+	if ( GetNextThink() > gpGlobals->curtime )
+		return; // still waiting for reset time
 
-	BaseClass::ActivateMultiTrigger(pActivator);
-	
-	CASW_Door* pDoor = GetASWDoor();
+	BaseClass::ActivateMultiTrigger( pActivator );
+
+	CASW_Door *pDoor = GetDoor();
 	if ( !pDoor || !m_bUseAreaEnabled )
 		return;
 
 	// check for shouting out about a sealed door
-	if (pDoor->m_bDoCutShout)
+	if ( pDoor->m_bDoCutShout )
 	{
-		if (gpGlobals->curtime > m_fNextCutCheck)
+		if ( gpGlobals->curtime > m_fNextCutCheck )
 		{
 			CASW_Marine *pMarine = CASW_Marine::AsMarine( pActivator );
 			if ( pMarine )
 			{
 				// check if there's another marine nearby with a welder
 				CASW_Game_Resource *pGameResource = ASWGameResource();
-				if (pGameResource)
+				if ( pGameResource )
 				{
 					bool bFound = false;
-					for (int i=0;i<pGameResource->GetMaxMarineResources();i++)
+					for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
 					{
-						CASW_Marine_Resource *pMR = pGameResource->GetMarineResource(i);
+						CASW_Marine_Resource *pMR = pGameResource->GetMarineResource( i );
 						CASW_Marine *pOtherMarine = pMR ? pMR->GetMarineEntity() : NULL;
-						if (pOtherMarine && pActivator != pOtherMarine
-									&& (pMarine->GetAbsOrigin().DistTo(pOtherMarine->GetAbsOrigin()) < 800)
-									&& HasWelder(pOtherMarine) )
+						if ( pOtherMarine && pActivator != pOtherMarine
+							&& ( pMarine->GetAbsOrigin().DistTo( pOtherMarine->GetAbsOrigin() ) < 800 )
+							&& HasWelder( pOtherMarine ) )
 							bFound = true;
 					}
-					if (bFound)
+					if ( bFound )
 					{
-						if (pMarine->GetMarineSpeech()->Chatter(CHATTER_REQUEST_CUT_DOOR))
+						if ( pMarine->GetMarineSpeech()->Chatter( CHATTER_REQUEST_CUT_DOOR ) )
 						{
 							pDoor->m_bDoCutShout = false;
-							if (pDoor->m_bDoAutoShootChatter)
+							if ( pDoor->m_bDoAutoShootChatter )
 								pDoor->m_bDoAutoShootChatter = false;	// don't need to automatic shout about shooting a door if we've already shouted about cutting it
 						}
 						m_fNextCutCheck = gpGlobals->curtime + 2.0f;	// check again sooner if we tried to say the line but couldn't for some reason
@@ -84,16 +84,17 @@ void CASW_Door_Area::ActivateMultiTrigger(CBaseEntity *pActivator)
 					{
 						m_fNextCutCheck = gpGlobals->curtime + 10.0f;
 					}
-				}				
+				}
 			}
 		}
 	}
-	if (pDoor->m_bDoAutoShootChatter)
+
+	if ( pDoor->m_bDoAutoShootChatter )
 	{
 		CASW_Marine *pMarine = CASW_Marine::AsMarine( pActivator );
-		if (pMarine)
+		if ( pMarine )
 		{
-			pDoor->DoAutoDoorShootChatter(pMarine);
+			pDoor->DoAutoDoorShootChatter( pMarine );
 		}
 	}
 
@@ -104,19 +105,11 @@ void CASW_Door_Area::ActivateMultiTrigger(CBaseEntity *pActivator)
 
 	if ( pDoor->IsAutoOpen() )
 	{
-		pDoor->AutoOpen(pActivator);
+		pDoor->AutoOpen( pActivator );
 
 		if ( pDoor->CanWeld() )
 		{
 			ASWFailAdvice()->OnAlienOpenDoor();
 		}
 	}
-}
-
-CASW_Door* CASW_Door_Area::GetASWDoor()
-{
-	CBaseEntity* pUse = m_hUseTarget.Get();
-	if ( pUse && pUse->Classify() == CLASS_ASW_DOOR )
-		return assert_cast<CASW_Door*>(pUse);
-	return NULL;
 }

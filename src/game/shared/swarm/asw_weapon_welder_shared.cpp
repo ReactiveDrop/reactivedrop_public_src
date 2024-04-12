@@ -669,7 +669,7 @@ CASW_Door* CASW_Weapon_Welder::FindDoor()
 			if ( pEnt && pEnt->Classify() == CLASS_ASW_DOOR_AREA )
 			{
 				CASW_Door_Area* pDoorArea = assert_cast<CASW_Door_Area*>(pEnt);
-				CASW_Door* pDoor = pDoorArea->GetASWDoor();
+				CASW_Door* pDoor = pDoorArea->GetDoor();
 				if ( pDoorArea->m_bUseAreaEnabled && pDoor && pDoor->GetHealth() > 0 && pDoor->m_bCanPlayerWeld )
 				{
 					return pDoor;
@@ -689,7 +689,7 @@ CASW_Door* CASW_Weapon_Welder::FindDoor()
 			if ( pArea->Classify() == CLASS_ASW_DOOR_AREA && pArea->m_bUseAreaEnabled )
 			{
 				CASW_Door_Area *pDoorArea = assert_cast<CASW_Door_Area*>( pArea );
-				CASW_Door* pDoor = pDoorArea->GetASWDoor();
+				CASW_Door* pDoor = pDoorArea->GetDoor();
 				if ( !pDoor || pDoor->GetHealth() <= 0 || !pDoor->m_bCanPlayerWeld )
 				{
 					continue;
@@ -706,7 +706,7 @@ CASW_Door* CASW_Weapon_Welder::FindDoor()
 
 		if ( pClosestArea )
 		{
-			CASW_Door* pDoor = pClosestArea->GetASWDoor();
+			CASW_Door* pDoor = pClosestArea->GetDoor();
 			if ( pDoor )
 			{
 				return pDoor;

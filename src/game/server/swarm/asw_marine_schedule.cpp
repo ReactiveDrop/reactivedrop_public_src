@@ -1311,7 +1311,7 @@ static bool AdjustOffhandItemDestination( CASW_Marine *pMarine, CASW_Weapon *pWe
 			return false;
 		}
 
-		pDoor = pClosestArea->GetASWDoor();
+		pDoor = pClosestArea->GetDoor();
 		if ( !pDoor )
 		{
 			AssertMsg( false, "Door area is missing its door!\n" );
