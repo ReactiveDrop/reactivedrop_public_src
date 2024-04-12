@@ -1470,19 +1470,72 @@ void UTIL_RD_DecideMainMenuBackground( const char *&szImage, const char *&szVide
 			if ( bUseLegacyUI && V_strcmp( pOption->GetString( "legacy", "" ), szLegacyUI ) )
 				continue;
 
-			if ( pOption->GetBool( "mainmenu" ) && !pOption->GetBool( "disabled" ) && pOption->GetFloat( "weight", 1.0f ) > 0 )
-			{
-				pSelected = pOption;
+			if ( !pOption->GetBool( "mainmenu" ) || pOption->GetBool( "disabled" ) || pOption->GetFloat( "weight", 1.0f ) <= 0 )
+				continue;
 
-				flRemainingWeight -= pOption->GetFloat( "weight", 1.0f );
-				if ( flRemainingWeight <= 0 )
-					break;
-			}
+			pSelected = pOption;
+
+			flRemainingWeight -= pOption->GetFloat( "weight", 1.0f );
+			if ( flRemainingWeight <= 0 )
+				break;
 		}
 
-		s_szImage = pSelected->GetString( "image", "materials/console/RdSelectionScreen_widescreen.vtf" );
+		s_szImage = pSelected->GetString( "image", "RdSelectionScreen" );
 		s_szVideo = pSelected->GetString( "video", "media/bg_01.bik" );
 		s_szAudio = pSelected->GetString( "audio", "Misc.MainUI" );
+
+		// BenLubar: Okay, we're going to do something a little bit sneaky here. Because we have multiple main menu backgrounds now,
+		// we can't pick a single image to represent the game's pre-client.dll-load state. But we can abuse the fact that Half-Life 2
+		// loaded different main menus based on your progress through the game to pretend we can.
+		KeyValues::AutoDelete pChapterBackgrounds{ "chapters" };
+		if ( pChapterBackgrounds->LoadFromFile( g_pFullFileSystem, "scripts/ChapterBackgrounds.txt" ) )
+		{
+			// first, verify that the background movie we selected is in the chapter backgrounds file.
+			int iNextChapter = 0;
+			FOR_EACH_VALUE( pChapterBackgrounds, pChapter )
+			{
+				if ( !V_stricmp( pChapter->GetString(), s_szImage ) )
+				{
+					iNextChapter = V_atoi( pChapter->GetName() );
+					Assert( iNextChapter > 0 );
+					break;
+				}
+			}
+
+			// next, verify that the background image the engine started up with was in our list of possibilities
+			if ( iNextChapter > 0 )
+			{
+				ConVarRef sv_unlockedchapters{ "sv_unlockedchapters" };
+				int iPrevChapter = sv_unlockedchapters.GetInt();
+				char szPrevChapterName[MAX_PATH];
+				engine->GetMainMenuBackgroundName( szPrevChapterName, sizeof( szPrevChapterName ) );
+
+				if ( iPrevChapter != iNextChapter )
+				{
+					// set the next time we start up to use the background we picked this time
+					sv_unlockedchapters.SetValue( iNextChapter );
+					engine->ClientCmd_Unrestricted( "host_writeconfig" );
+				}
+
+				FOR_EACH_SUBKEY( s_pBackgroundMovie, pOption )
+				{
+					if ( bUseLegacyUI && V_strcmp( pOption->GetString( "legacy", "" ), szLegacyUI ) )
+						continue;
+
+					if ( !pOption->GetBool( "mainmenu" ) || pOption->GetBool( "disabled" ) || pOption->GetFloat( "weight", 1.0f ) <= 0 )
+						continue;
+
+					if ( !V_stricmp( pOption->GetString( "image", "RdSelectionScreen" ), szPrevChapterName ) )
+					{
+						// if both names are in both lists, use the one we started up with this time and the one we picked next time.
+						s_szImage = pOption->GetString( "image", "RdSelectionScreen" );
+						s_szVideo = pOption->GetString( "video", "media/bg_01.bik" );
+						s_szAudio = pOption->GetString( "audio", "Misc.MainUI" );
+						break;
+					}
+				}
+			}
+		}
 	}
 
 	szImage = s_szImage;

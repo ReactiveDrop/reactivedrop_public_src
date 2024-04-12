@@ -2037,15 +2037,12 @@ void CBaseModPanel::ApplySchemeSettings(IScheme *pScheme)
 
 	const char *szMainMenuImage, *szMainMenuVideo, *szMainMenuAudio;
 	UTIL_RD_DecideMainMenuBackground( szMainMenuImage, szMainMenuVideo, szMainMenuAudio, true );
-	V_strncpy( m_szFadeFilename, szMainMenuImage, sizeof( m_szFadeFilename ) );
+	V_snprintf( m_szFadeFilename, sizeof( m_szFadeFilename ), "materials/console/%s%s.vtf", szMainMenuImage, bIsWidescreen ? "_widescreen" : "" );
 
-	// the precache will be a memory or stream wave as needed 
-	// on 360 the sound system will detect the install state and force it to a memory wave to finalize the the i/o now
-	// it will be a stream resource if the installer is dormant
-	// On PC it will be a streaming MP3
-	if ( enginesound->PrecacheSound( szMainMenuAudio, true, false ) )
+	const char *szWavFile = g_pSoundEmitterSystem->GetWavFileForSound( szMainMenuAudio, GENDER_NONE );
+	if ( szWavFile )
 	{
-		// successfully precached
+		enginesound->PrecacheSound( szWavFile, true, false );
 		m_backgroundMusic = szMainMenuAudio;
 	}
 }
