@@ -9753,7 +9753,7 @@ void CAlienSwarm::CheckChallengeConVars()
 	// make sure none of the variables were changed
 	for ( unsigned i = 0; i < m_SavedConvars_Challenge.Count(); i++ )
 	{
-		ConVarRef ref( m_SavedConvars_Challenge.GetElementName( i ) );
+		ConVarRef ref( m_SavedConvars_Challenge.GetElementName( i ), true );
 		const char *pszDesiredValue = m_SavedConvars_Challenge[i];
 
 		if ( ref.IsValid() && Q_strcmp( ref.GetString(), pszDesiredValue ) )
@@ -9819,7 +9819,7 @@ void CAlienSwarm::ApplyChallengeConVars( KeyValues *pKV )
 	FOR_EACH_VALUE( pConVars, pCV )
 	{
 		ConVarRef ref( pCV->GetName() );
-		if ( ChallengeCanSetConVar( pCV->GetName() ) && ref.IsValid() )
+		if ( ChallengeCanSetConVar( pCV->GetName() ) && ref.IsValid() && ( !ref.IsFlagSet( FCVAR_CLIENTDLL ) || ref.IsFlagSet( FCVAR_REPLICATED ) ) )
 		{
 			SaveConvar( ref );
 			ref.SetValue( pCV->GetString() );
