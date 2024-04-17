@@ -1177,7 +1177,7 @@
 			}
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/heals_infestation"
-				"Caption" "#rd_weapon_fact_prevents_and_reverses_infestation"
+				"Caption" "#rd_weapon_fact_healing_cures_infestation"
 			}
 			"Generic" {
 				"Caption" "#rd_weapon_fact_heals_low_health_faster"
@@ -1208,7 +1208,7 @@
 			}
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/heals_infestation"
-				"Caption" "#rd_weapon_fact_prevents_and_reverses_infestation"
+				"Caption" "#rd_weapon_fact_healing_cures_infestation"
 			}
 			"Ammo" {
 				"UseWeaponInfo" "0"
@@ -1224,7 +1224,7 @@
 				}
 				"Generic" {
 					"Icon" "swarm/swarmopedia/fact/heals_infestation"
-					"Caption" "#rd_weapon_fact_prevents_and_reverses_infestation"
+					"Caption" "#rd_weapon_fact_healing_cures_infestation"
 				}
 				"Ammo" {
 					"UseWeaponInfo" "0"
@@ -1456,7 +1456,7 @@
 			}
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/heals_infestation"
-				"Caption" "#rd_weapon_fact_prevents_and_reverses_infestation"
+				"Caption" "#rd_weapon_fact_healing_cures_infestation"
 			}
 			"HammerUnits" {
 				"Icon" "swarm/swarmopedia/fact/range"
@@ -2217,7 +2217,7 @@
 			}
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/heals_infestation"
-				"Caption" "#rd_weapon_fact_prevents_and_reverses_infestation"
+				"Caption" "#rd_weapon_fact_healing_cures_infestation"
 			}
 			"HammerUnits" {
 				"Icon" "swarm/swarmopedia/fact/range"
@@ -2379,7 +2379,7 @@
 				}
 				"Generic" {
 					"Icon" "swarm/swarmopedia/fact/heals_infestation"
-					"Caption" "#rd_weapon_fact_prevents_and_reverses_infestation"
+					"Caption" "#rd_weapon_fact_healing_cures_infestation"
 				}
 				"HammerUnits" {
 					"Icon" "swarm/swarmopedia/fact/range"
