@@ -702,7 +702,7 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 		return false;
 	if ( (g_pMatchExtSwarm = (IMatchExtSwarm *)appSystemFactory(IMATCHEXT_SWARM_INTERFACE, NULL)) == NULL )
 		return false;
-	if ( ( consistency = ( IConsistency * )appSystemFactory( INTERFACEVERSION_ICONSISTENCY_V3, NULL ) ) == NULL )
+	if ( ( consistency = ( IConsistency * )appSystemFactory( INTERFACEVERSION_ICONSISTENCY_V4, NULL ) ) == NULL )
 		return false;
 #endif
 
@@ -3515,7 +3515,7 @@ public:
 		AddAppSystem( "scenefilecache", SCENE_FILE_CACHE_INTERFACE_VERSION );
 #ifdef INFESTED_DLL
 		AddAppSystem( "missionchooser", ASW_MISSION_CHOOSER_VERSION );
-		AddAppSystem( "consistency", INTERFACEVERSION_ICONSISTENCY_V3 );
+		AddAppSystem( "consistency", INTERFACEVERSION_ICONSISTENCY_V4 );
 #endif
 	}
 

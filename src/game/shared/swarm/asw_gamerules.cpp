@@ -108,6 +108,7 @@
 	#include "asw_door.h"
 	#include "ScriptGameEventListener.h"
 	#include "cdll_int.h"
+	#include "iconsistency.h"
 #endif
 #include "fmtstr.h"
 #include "game_timescale_shared.h"
@@ -140,6 +141,7 @@ extern ConVar old_radius_damage;
 #define ASW_DEFAULT_COMMANDER_FACE "briefing/face_pilot"
 
 #ifndef CLIENT_DLL
+	extern IConsistency *consistency;
 	extern ConVar asw_debug_alien_damage;
 	extern ConVar asw_medal_lifesaver_dist;
 	extern ConVar asw_medal_lifesaver_kills;
@@ -292,6 +294,7 @@ extern ConVar old_radius_damage;
 					continue;
 				}
 
+				COMPILE_TIME_ASSERT( ASW_NUM_MARINE_PROFILES == 8 );
 				engine->ClientCommand( pPlayer->edict(), "cl_dselectm 0;cl_dselectm 1;cl_dselectm 2;cl_dselectm 3;cl_dselectm 4;cl_dselectm 5;cl_dselectm 6;cl_dselectm 7;" );
 			}
 		}
@@ -383,8 +386,12 @@ static void UpdateMatchmakingTagsCallback( IConVar *pConVar, const char *pOldVal
 		UTIL_RD_RemoveCurrentLobbyData( "game:missioninfo:official" );
 	}
 
+	static ConVarRef sv_pure( "sv_pure" );
+
 	UTIL_RD_UpdateCurrentLobbyData( "system:game_version", engine->GetProductVersionString() );
 	UTIL_RD_UpdateCurrentLobbyData( "system:map_version", GetClientWorldEntity()->m_nMapVersion );
+	UTIL_RD_UpdateCurrentLobbyData( "system:server_version", uint64_t( pAlienSwarm->m_iServerVersion ) );
+	UTIL_RD_UpdateCurrentLobbyData( "system:pure", sv_pure.GetInt() );
 	if ( ISteamApps *pSteamApps = SteamApps() )
 	{
 		UTIL_RD_UpdateCurrentLobbyData( "system:game_build", pSteamApps->GetAppBuildId() );
@@ -892,6 +899,7 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		RecvPropArray3( RECVINFO_ARRAY( m_iKickVotes ), RecvPropInt( RECVINFO( m_iKickVotes[0] ) ) ),
 		RecvPropArray3( RECVINFO_ARRAY( m_iLeaderVotes ), RecvPropInt( RECVINFO( m_iLeaderVotes[0] ) ) ),
 		RecvPropInt( RECVINFO( m_iServerTypeFlags ) ),
+		RecvPropInt( RECVINFO( m_iServerVersion ) ),
 	#else
 		SendPropInt(SENDINFO(m_iGameState), 8, SPROP_UNSIGNED ),
 		SendPropBool(SENDINFO(m_bMissionSuccess)),
@@ -935,6 +943,7 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		SendPropArray3( SENDINFO_ARRAY3( m_iKickVotes ), SendPropInt( SENDINFO_ARRAY( m_iKickVotes ), NumBitsForCount( ASW_MAX_READY_PLAYERS ), SPROP_UNSIGNED ) ),
 		SendPropArray3( SENDINFO_ARRAY3( m_iLeaderVotes ), SendPropInt( SENDINFO_ARRAY( m_iLeaderVotes ), NumBitsForCount( ASW_MAX_READY_PLAYERS ), SPROP_UNSIGNED ) ),
 		SendPropInt( SENDINFO( m_iServerTypeFlags ), 1, SPROP_UNSIGNED ),
+		SendPropInt( SENDINFO( m_iServerVersion ), 32, SPROP_UNSIGNED ),
 	#endif
 END_NETWORK_TABLE()
 
@@ -1738,6 +1747,7 @@ void CAlienSwarm::FullReset()
 	m_iCosmeticRandomSeed = std::time( NULL );
 
 	m_iServerTypeFlags = 0;
+	m_iServerVersion = consistency->GetGameVersion();
 
 	m_ActorSpeakingUntil.Purge();
 

@@ -592,6 +592,7 @@ public:
 		SERVER_HOIAF = 0x00000001, // server is a "participating server" (used to differentiate between ranked and unranked servers on the same IP on the client)
 	};
 	CNetworkVar( uint32_t, m_iServerTypeFlags );
+	CNetworkVar( uint32_t, m_iServerVersion );
 
 private:
 	char m_szPickupDenial[128];
