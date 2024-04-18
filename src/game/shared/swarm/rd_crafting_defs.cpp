@@ -49,8 +49,8 @@ const RD_Crafting_Material_Info g_RD_Crafting_Material_Info[] =
 	{ "battery_pack", 7010, 7034, 4008, RD_CRAFTING_MATERIAL_RARITY_COMMON, "models/swarm/crafting/battery_pack.mdl" },
 
 	// ultra-common / "Bulk"
-	{ "loose_wires", 7011, 7035, 4009, RD_CRAFTING_MATERIAL_RARITY_ULTRA_COMMON, "models/swarm/crafting/loose_wires.mdl" },
-	{ "carbon", 7012, 7036, 4010, RD_CRAFTING_MATERIAL_RARITY_ULTRA_COMMON, "models/swarm/crafting/carbon.mdl" },
+	{ "loose_wires", 7011, 7035, 4009, RD_CRAFTING_MATERIAL_RARITY_ULTRA_COMMON, "models/swarm/crafting/wires_loose.mdl" },
+	{ "carbon", 7012, 7036, 4010, RD_CRAFTING_MATERIAL_RARITY_ULTRA_COMMON, "models/swarm/crafting/carbon_dust.mdl" },
 
 	// uncommon / "Alien"
 	{ "alien_chitin", 7013, 7037, 4011, RD_CRAFTING_MATERIAL_RARITY_UNCOMMON, "models/swarm/crafting/alien_chitin.mdl" },
