@@ -342,6 +342,11 @@ void CASWInput::SetUseGlowEntity( C_BaseEntity *pEnt )
 				bIsAllowed = pWeapon->AllowedToPickup( pNPC );
 			}
 		}
+
+		ASWUseAction action;
+		if ( IASW_Client_Usable_Entity *pUsable = dynamic_cast< IASW_Client_Usable_Entity * >( pEnt ) )
+			pUsable->GetUseAction( action, pNPC );
+		m_UseGlowObject.SetColor( action.vecUseHighlightColor );
 	}
 
 	if ( bIsAllowed )

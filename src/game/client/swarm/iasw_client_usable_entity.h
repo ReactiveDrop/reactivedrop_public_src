@@ -28,6 +28,7 @@ struct ASWUseAction
 		bShowHoldButtonUseKey = false;
 		bNoFadeIfSameUseTarget = false;
 		bWideIcon = false;
+		vecUseHighlightColor = Vector( 0.4f, 0.7f, 0.9f );
 	}
 
 	const bool operator==(const ASWUseAction &other) const
@@ -93,6 +94,7 @@ struct ASWUseAction
 	bool bNoFadeIfSameUseTarget;
 	int iInventorySlot;
 	bool bWideIcon;
+	Vector vecUseHighlightColor;
 };
 
 class C_ASW_Inhabitable_NPC;
