@@ -127,20 +127,28 @@ CASW_Alien_Goo::~CASW_Alien_Goo()
 void CASW_Alien_Goo::Spawn()
 {
 	BaseClass::Spawn();
-	char *szModel = (char *)STRING( GetModelName() );
-	if (!szModel || !*szModel)
+	const char *szModel = STRING( GetModelName() );
+	if ( !szModel || !*szModel )
 	{
 		Warning( "%s at %.0f %.0f %0.f missing modelname\n", GetClassname(), GetAbsOrigin().x, GetAbsOrigin().y, GetAbsOrigin().z );
 		UTIL_Remove( this );
 		return;
 	}
 
-	if (FClassnameIs(this, "asw_grub_sac"))
+	if ( FClassnameIs( this, "asw_grub_sac" ) )
 	{
 		m_bHasGrubs = true;
 		m_fPulseStrength = 1.0f;
-		m_fPulseSpeed = random->RandomFloat(1.5f, 3.0f);
-		SetBlocksLOS(false);
+		m_fPulseSpeed = random->RandomFloat( 1.5f, 3.0f );
+		SetBlocksLOS( false );
+	}
+
+	if ( V_stristr( szModel, "_red" ) )
+	{
+		if ( CAlienSwarm *pGameRules = ASWGameRules() )
+		{
+			pGameRules->m_iCosmeticFlags.Set( pGameRules->m_iCosmeticFlags | CAlienSwarm::COSMETIC_RED_BIOMASS );
+		}
 	}
 
 	PrecacheModel( szModel );

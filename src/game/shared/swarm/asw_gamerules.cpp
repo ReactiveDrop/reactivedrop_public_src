@@ -891,6 +891,7 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		RecvPropInt(RECVINFO(m_iOverrideAllowRotateCamera)),
 		RecvPropString(RECVINFO(m_szApproximatePingLocation)),
 		RecvPropInt(RECVINFO(m_iCosmeticRandomSeed)),
+		RecvPropInt( RECVINFO( m_iCosmeticFlags ) ),
 		RecvPropString(RECVINFO(m_szBriefingVideo)),
 		RecvPropEHandle(RECVINFO(m_hBriefingCamera)),
 		RecvPropString( RECVINFO( m_szDeathmatchWinnerName ) ),
@@ -935,6 +936,7 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		SendPropInt(SENDINFO(m_iOverrideAllowRotateCamera)),
 		SendPropString(SENDINFO(m_szApproximatePingLocation)),
 		SendPropInt(SENDINFO(m_iCosmeticRandomSeed)),
+		SendPropInt( SENDINFO( m_iCosmeticFlags ), 1, SPROP_UNSIGNED ),
 		SendPropString(SENDINFO(m_szBriefingVideo)),
 		SendPropEHandle(SENDINFO(m_hBriefingCamera)),
 		SendPropString( SENDINFO( m_szDeathmatchWinnerName ) ),
@@ -1745,6 +1747,7 @@ void CAlienSwarm::FullReset()
 	m_bHadBriefingCamera = false;
 	m_szBriefingVideo.GetForModify()[0] = '\0';
 	m_iCosmeticRandomSeed = std::time( NULL );
+	m_iCosmeticFlags = 0;
 
 	m_iServerTypeFlags = 0;
 	m_iServerVersion = consistency->GetGameVersion();
