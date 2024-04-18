@@ -21,7 +21,7 @@
 #ifdef GAME_DLL
 ConVar rd_debug_material_spawns( "rd_debug_material_spawns", "0", FCVAR_CHEAT );
 #else
-ConVar glow_outline_color_crafting( "glow_outline_color_crafting", "102 51 0", FCVAR_NONE );
+ConVar glow_outline_color_crafting( "glow_outline_color_crafting", "102 51 0", FCVAR_NONE ); // #630 hex
 #endif
 
 PRECACHE_REGISTER_BEGIN( GLOBAL, ReactiveDropCrafting )
@@ -78,7 +78,7 @@ const RD_Crafting_Material_Info g_RD_Crafting_Material_Info[] =
 };
 
 #ifdef GAME_DLL
-static void GenerateCraftingMaterialSpawnLocations( CUtlVector<Vector> &spawnLocations )
+void GenerateCraftingMaterialSpawnLocations( CUtlVector<Vector> &spawnLocations )
 {
 	CASW_Marine_Hint_Manager *pMarineHintManager = MarineHintManager();
 	if ( !pMarineHintManager )

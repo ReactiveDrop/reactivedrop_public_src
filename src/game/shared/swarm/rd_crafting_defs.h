@@ -78,6 +78,10 @@ struct RD_Crafting_Material_Info
 
 extern const RD_Crafting_Material_Info g_RD_Crafting_Material_Info[NUM_RD_CRAFTING_MATERIAL_TYPES];
 
+#ifdef GAME_DLL
+void GenerateCraftingMaterialSpawnLocations( CUtlVector<Vector> &spawnLocations )
+#endif
+
 class CRD_Crafting_Material_Pickup :
 	public CBaseAnimating,
 #ifdef CLIENT_DLL
