@@ -3,7 +3,8 @@
 #include "steam/isteaminventory.h"
 #ifdef CLIENT_DLL
 #include "iasw_client_usable_entity.h"
-#define CRD_Crafting_Material_Pickup_Entity C_RD_Crafting_Material_Pickup_Entity
+#include "glow_outline_effect.h"
+#define CRD_Crafting_Material_Pickup C_RD_Crafting_Material_Pickup
 #else
 #include "iasw_server_usable_entity.h"
 #endif
@@ -77,7 +78,7 @@ struct RD_Crafting_Material_Info
 
 extern const RD_Crafting_Material_Info g_RD_Crafting_Material_Info[NUM_RD_CRAFTING_MATERIAL_TYPES];
 
-class CRD_Crafting_Material_Pickup_Entity :
+class CRD_Crafting_Material_Pickup :
 	public CBaseAnimating,
 #ifdef CLIENT_DLL
 	public IASW_Client_Usable_Entity
@@ -85,13 +86,43 @@ class CRD_Crafting_Material_Pickup_Entity :
 	public IASW_Server_Usable_Entity
 #endif
 {
-	DECLARE_CLASS( CRD_Crafting_Material_Pickup_Entity, CBaseAnimating );
+	DECLARE_CLASS( CRD_Crafting_Material_Pickup, CBaseAnimating );
 public:
 	DECLARE_NETWORKCLASS();
 
-	// TODO
+	CRD_Crafting_Material_Pickup();
+
+	IMPLEMENT_AUTO_LIST_GET();
 
 	CNetworkVar( int, m_iLocation );
 	CNetworkArray( RD_Crafting_Material_t, m_MaterialAtLocation, MAX_PLAYERS );
+
+#ifdef CLIENT_DLL
+	void OnDataChanged( DataUpdateType_t updateType ) override;
+	void ClientThink() override;
+
+	// IASW_Client_Usable_Entity implementation
+	bool IsUsable( C_BaseEntity *pUser ) override;
+	bool GetUseAction( ASWUseAction &action, C_ASW_Inhabitable_NPC *pUser ) override;
+	void CustomPaint( int ix, int iy, int alpha, vgui::Panel *pUseIcon ) override {}
+	bool ShouldPaintBoxAround() override { return false; }
+	bool NeedsLOSCheck() override { return false; }
+
+	RD_Crafting_Material_t m_iLastMaterialType;
+	CGlowObject m_GlowObject;
+#else
+	void Spawn() override;
+
+	// IASW_Server_Usable_Entity implementation
+	bool IsUsable( CBaseEntity *pUser ) override;
+	bool RequirementsMet( CBaseEntity *pUser ) override { return true; }
+	void ActivateUseIcon( CASW_Inhabitable_NPC *pUser, int nHoldType ) override;
+	void NPCStartedUsing( CASW_Inhabitable_NPC *pUser ) override {}
+	void NPCStoppedUsing( CASW_Inhabitable_NPC *pUser ) override {}
+	void NPCUsing( CASW_Inhabitable_NPC *pUser, float fDeltaTime ) override {}
+	bool NeedsLOSCheck() override { return false; }
+
+	bool m_bAnyoneFound;
+#endif
 };
 #endif

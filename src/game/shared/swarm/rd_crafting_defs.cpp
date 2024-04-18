@@ -3,6 +3,15 @@
 #ifdef GAME_DLL
 #include "asw_marine_hint.h"
 #include "asw_spawn_manager.h"
+#include "asw_player.h"
+#include "asw_marine.h"
+#include "asw_marine_speech.h"
+#else
+#include "c_asw_player.h"
+#include "c_asw_inhabitable_npc.h"
+#include "asw_gamerules.h"
+#include "asw_input.h"
+#include "vgui/ILocalize.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -11,6 +20,8 @@
 #ifdef RD_7A_DROPS
 #ifdef GAME_DLL
 ConVar rd_debug_material_spawns( "rd_debug_material_spawns", "0", FCVAR_CHEAT );
+#else
+ConVar glow_outline_color_crafting( "glow_outline_color_crafting", "102 51 0", FCVAR_NONE );
 #endif
 
 PRECACHE_REGISTER_BEGIN( GLOBAL, ReactiveDropCrafting )
@@ -241,4 +252,183 @@ CON_COMMAND( rd_debug_material_spawn_locations, "Generate and display crafting m
 	}
 }
 #endif
+
+IMPLEMENT_NETWORKCLASS_ALIASED( RD_Crafting_Material_Pickup, DT_RD_Crafting_Material_Pickup )
+
+BEGIN_NETWORK_TABLE( CRD_Crafting_Material_Pickup, DT_RD_Crafting_Material_Pickup )
+#ifdef CLIENT_DLL
+	RecvPropIntWithMinusOneFlag( RECVINFO( m_iLocation ) ),
+	RecvPropArray( RecvPropInt( RECVINFO( m_MaterialAtLocation[0] ) ), m_MaterialAtLocation ),
+#else
+	SendPropIntWithMinusOneFlag( SENDINFO( m_iLocation ), NumBitsForCount( RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS + 1 ) ),
+	SendPropArray( SendPropInt( SENDINFO_ARRAY( m_MaterialAtLocation ), NumBitsForCount( NUM_RD_CRAFTING_MATERIAL_TYPES ), SPROP_UNSIGNED ), m_MaterialAtLocation ),
+#endif
+END_NETWORK_TABLE()
+
+#ifdef GAME_DLL
+LINK_ENTITY_TO_CLASS( rd_crafting_material_pickup, CRD_Crafting_Material_Pickup );
+
+CRD_Crafting_Material_Pickup::CRD_Crafting_Material_Pickup()
+{
+	m_iLocation = -1;
+	FOR_EACH_VEC( m_MaterialAtLocation, i )
+	{
+		m_MaterialAtLocation.Set( i, RD_CRAFTING_MATERIAL_NONE );
+	}
+	m_bAnyoneFound = false;
+
+	AddEFlags( EFL_FORCE_CHECK_TRANSMIT );
+}
+
+void CRD_Crafting_Material_Pickup::Spawn()
+{
+	BaseClass::Spawn();
+
+	if ( m_iLocation == -1 )
+	{
+		Warning( "%s not initialized properly; deleting\n", GetDebugName() );
+		UTIL_Remove( this );
+	}
+}
+
+void CRD_Crafting_Material_Pickup::ActivateUseIcon( CASW_Inhabitable_NPC *pUser, int nHoldType )
+{
+	if ( nHoldType == ASW_USE_HOLD_START )
+		return;
+
+	if ( !pUser || !pUser->IsInhabited() )
+		return;
+
+	CASW_Player *pPlayer = pUser->GetCommander();
+	if ( !pPlayer )
+		return;
+
+	if ( m_MaterialAtLocation[pPlayer->entindex() - 1] == RD_CRAFTING_MATERIAL_NONE )
+		return;
+
+	// only use longer supplies chatter line if we're the first one to find this location
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pUser );
+	if ( pMarine )
+		pMarine->GetMarineSpeech()->Chatter( m_bAnyoneFound ? CHATTER_USE : CHATTER_SUPPLIES );
+
+	m_bAnyoneFound = true;
+	m_MaterialAtLocation.Set( pPlayer->entindex() - 1, RD_CRAFTING_MATERIAL_NONE );
+}
+#else
+CRD_Crafting_Material_Pickup::CRD_Crafting_Material_Pickup() :
+	m_GlowObject{ this, glow_outline_color_crafting.GetColorAsVector(), 0.8f, true, true }
+{
+	m_iLastMaterialType = RD_CRAFTING_MATERIAL_NONE;
+}
+
+void CRD_Crafting_Material_Pickup::OnDataChanged( DataUpdateType_t updateType )
+{
+	BaseClass::OnDataChanged( updateType );
+
+	if ( updateType == DATA_UPDATE_CREATED )
+	{
+		SetNextClientThink( CLIENT_THINK_ALWAYS );
+	}
+}
+
+void CRD_Crafting_Material_Pickup::ClientThink()
+{
+	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	C_ASW_Inhabitable_NPC *pNPC = pPlayer ? pPlayer->GetViewNPC() : NULL;
+	if ( pNPC && pNPC->IsInhabited() )
+	{
+		pPlayer = pNPC->GetCommander();
+	}
+
+	int iCurrentPlayerIndex = pPlayer ? pPlayer->entindex() : 0;
+	RD_Crafting_Material_t iCurrentMaterial = iCurrentPlayerIndex ? m_MaterialAtLocation[iCurrentPlayerIndex - 1] : RD_CRAFTING_MATERIAL_NONE;
+	if ( m_iLastMaterialType != iCurrentMaterial )
+	{
+		const char *szModelName = g_RD_Crafting_Material_Info[iCurrentMaterial].m_szModelName;
+		if ( szModelName )
+		{
+			CAlienSwarm *pGameRules = ASWGameRules();
+
+			SetModel( szModelName );
+
+			if ( iCurrentMaterial == RD_CRAFTING_MATERIAL_LOOSE_WIRES || iCurrentMaterial == RD_CRAFTING_MATERIAL_UNOPENED_SYNUP_COLA )
+			{
+				int iRandomSeed = pGameRules ? pGameRules->m_iCosmeticRandomSeed : 0;
+				SetSkin( unsigned( m_iLocation + iRandomSeed ) % 4u );
+			}
+			else if ( iCurrentMaterial == RD_CRAFTING_MATERIAL_BIOMASS_SAMPLE )
+			{
+				SetSkin( pGameRules && ( pGameRules->m_iCosmeticFlags & CAlienSwarm::COSMETIC_RED_BIOMASS ) ? 1 : 0 );
+			}
+			else
+			{
+				SetSkin( 0 );
+			}
+			
+			RemoveEffects( EF_NODRAW );
+		}
+		else
+		{
+			AddEffects( EF_NODRAW );
+		}
+
+		m_iLastMaterialType = iCurrentMaterial;
+	}
+
+	if ( !IsEffectActive( EF_NODRAW ) )
+	{
+		bool bShouldGlow = false;
+		float flDistanceToMarineSqr = 0.0f;
+		float flWithinDistSqr = ( ASW_MARINE_USE_RADIUS * 1.5f ) * ( ASW_MARINE_USE_RADIUS * 1.5f );
+
+		C_ASW_Player *pLocalPlayer = C_ASW_Player::GetLocalASWPlayer();
+		if ( pLocalPlayer && pLocalPlayer->GetViewNPC() && ASWInput()->GetUseGlowEntity() != this )
+		{
+			flDistanceToMarineSqr = ( pLocalPlayer->GetViewNPC()->GetAbsOrigin() - GetAbsOrigin() ).LengthSqr();
+			if ( flDistanceToMarineSqr < flWithinDistSqr )
+				bShouldGlow = true;
+		}
+
+		m_GlowObject.SetRenderFlags( bShouldGlow, bShouldGlow );
+
+		if ( m_GlowObject.IsRendering() )
+		{
+			m_GlowObject.SetAlpha( MIN( 0.7f, ( 1.0f - ( flDistanceToMarineSqr / flWithinDistSqr ) ) * 1.0f ) );
+		}
+	}
+	else
+	{
+		m_GlowObject.SetRenderFlags( false, false );
+	}
+}
+
+bool CRD_Crafting_Material_Pickup::GetUseAction( ASWUseAction &action, C_ASW_Inhabitable_NPC *pUser )
+{
+	if ( m_iLastMaterialType == RD_CRAFTING_MATERIAL_NONE )
+		return false;
+
+	action.UseIconRed = 66;
+	action.UseIconGreen = 142;
+	action.UseIconBlue = 192;
+
+	wchar_t wszMaterialName[128]{};
+	const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( g_RD_Crafting_Material_Info[m_iLastMaterialType].m_iItemDef );
+	if ( pDef )
+		V_UTF8ToUnicode( pDef->Name.Get(), wszMaterialName, sizeof( wszMaterialName ) );
+	g_pVGuiLocalize->ConstructString( action.wszText, sizeof( action.wszText ), g_pVGuiLocalize->Find( "#rd_crafting_pickup_prompt" ), 1, wszMaterialName );
+
+	action.bShowUseKey = true;
+	action.UseTarget = this;
+	action.vecUseHighlightColor = glow_outline_color_crafting.GetColorAsVector();
+}
+#endif
+
+bool CRD_Crafting_Material_Pickup::IsUsable( CBaseEntity *pUser )
+{
+#ifdef CLIENT_DLL
+	if ( m_iLastMaterialType == RD_CRAFTING_MATERIAL_NONE )
+		return false;
+#endif
+	return ( pUser && pUser->GetAbsOrigin().DistTo( GetAbsOrigin() ) < ASW_MARINE_USE_RADIUS );	// near enough?
+}
 #endif
