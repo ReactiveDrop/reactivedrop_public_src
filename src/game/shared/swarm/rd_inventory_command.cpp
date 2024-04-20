@@ -4,6 +4,7 @@
 #include "steam/isteaminventory.h"
 #include "fmtstr.h"
 #include "asw_util_shared.h"
+#include <ctime>
 #ifdef CLIENT_DLL
 #include "c_user_message_register.h"
 #else
@@ -434,8 +435,13 @@ static void UpdateAllEquipmentItemInstances( const ReactiveDropInventory::ItemIn
 
 static void ExecuteInventoryCommand( CASW_Player *pPlayer, EInventoryCommand eCmd, const CUtlVector<int> &args, const CUtlVector<ReactiveDropInventory::ItemInstance_t> &items )
 {
-	Assert( SteamUtils() );
-	RTime32 iNow = SteamUtils()->GetServerRealTime();
+	ISteamUtils *pUtils = SteamUtils();
+#ifdef GAME_DLL
+	if ( engine->IsDedicatedServer() )
+		pUtils = SteamGameServerUtils();
+#endif
+	Assert( pUtils );
+	RTime32 iNow = pUtils ? pUtils->GetServerRealTime() : std::time( NULL );
 	RTime32 iFiveMinutesAgo = iNow - 300;
 
 	switch ( eCmd )
