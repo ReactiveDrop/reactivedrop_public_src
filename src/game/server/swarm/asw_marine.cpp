@@ -505,10 +505,10 @@ void CASW_Marine::DoAnimationEvent( PlayerAnimEvent_t event )
 }
 
 void CASW_Marine::DoAnimationEventToAll( PlayerAnimEvent_t event )
-{	
+{
 	TE_MarineAnimEvent( this, event );	// Send to all clients who can see this guy.
-	m_PlayerAnimState->DoAnimationEvent(event);
-	Msg("CASW_Marine::DoAnimationEventToAll %d\n", (int) event);
+	MDLCACHE_CRITICAL_SECTION();
+	m_PlayerAnimState->DoAnimationEvent( event );
 }
 
 void CASW_Marine::HandleAnimEvent( animevent_t *pEvent )

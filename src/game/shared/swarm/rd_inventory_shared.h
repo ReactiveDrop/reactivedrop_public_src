@@ -22,6 +22,7 @@ extern ConVar rd_briefing_item_details_color2;
 
 class CSteamItemIcon;
 vgui::IImage *GetSteamItemIcon( const char *szURL, bool bForceLoadRemote = false );
+enum RD_Crafting_Material_t;
 #endif
 
 class CASW_Player;
@@ -179,6 +180,9 @@ namespace ReactiveDropInventory
 	void QueueSetNotificationSeen( SteamItemInstanceID_t id, int iSeen );
 	void CommitNotificationSeen();
 	void DeleteNotificationItem( SteamItemInstanceID_t id );
+#ifdef RD_7A_DROPS
+	void PickUpCraftingMaterialAtLocation( int iLocation, RD_Crafting_Material_t eMaterial );
+#endif
 #endif
 	void OnHitConfirm( CBaseEntity *pAttacker, CBaseEntity *pTarget, Vector vecDamagePosition, bool bKilled, bool bDamageOverTime, bool bBlastDamage, int iDisposition, float flDamage, CBaseEntity *pWeapon );
 }
@@ -191,17 +195,11 @@ EXTERN_RECV_TABLE( DT_RD_ItemInstance );
 EXTERN_RECV_TABLE( DT_RD_ItemInstances_Player );
 EXTERN_RECV_TABLE( DT_RD_ItemInstances_Marine_Resource );
 EXTERN_RECV_TABLE( DT_RD_ProjectileData );
-#if defined( RD_7A_DROPS ) || defined( RD_7A_DROPS_PRE )
-EXTERN_RECV_TABLE( DT_RD_CraftingMaterialInfo );
-#endif
 #else
 EXTERN_SEND_TABLE( DT_RD_ItemInstance );
 EXTERN_SEND_TABLE( DT_RD_ItemInstances_Player );
 EXTERN_SEND_TABLE( DT_RD_ItemInstances_Marine_Resource );
 EXTERN_SEND_TABLE( DT_RD_ProjectileData );
-#if defined( RD_7A_DROPS ) || defined( RD_7A_DROPS_PRE )
-EXTERN_SEND_TABLE( DT_RD_CraftingMaterialInfo );
-#endif
 #endif
 
 // A reduced network-friendly version of the ItemInstance_t that can be transmitted from server to client.

@@ -322,9 +322,10 @@ public:
 	int m_iWantsAutoRecord;
 
 #ifdef RD_7A_DROPS
-	bool m_bCraftingMaterialsSpawned;
-	CNetworkArray( int, m_iCraftingMaterialType, RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS );
-	CNetworkVar( uint32_t, m_iCraftingMaterialFound );
+	bool m_bCraftingMaterialsSent;
+	RD_Crafting_Material_t m_CraftingMaterialType[RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS];
+	uint32_t m_CraftingMaterialFound;
+	CUtlVector<ReactiveDropInventory::ItemInstance_t> m_CraftingMaterialInstances;
 #endif
 
 private:

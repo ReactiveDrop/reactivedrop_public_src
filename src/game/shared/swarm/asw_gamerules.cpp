@@ -109,6 +109,7 @@
 	#include "ScriptGameEventListener.h"
 	#include "cdll_int.h"
 	#include "iconsistency.h"
+	#include "rd_crafting_defs.h"
 #endif
 #include "fmtstr.h"
 #include "game_timescale_shared.h"
@@ -2876,49 +2877,98 @@ void CAlienSwarm::StartMission()
 
 void CAlienSwarm::UpdateLaunching()
 {
-	if (!ASWGameResource())
+	if ( !ASWGameResource() )
 		return;
 
-	if (gpGlobals->curtime < m_fNextLaunchingStep)
+	if ( gpGlobals->curtime < m_fNextLaunchingStep )
 		return;
 
-	int iNumMarines = ASWGameResource()->GetNumMarines(NULL);
+	int iNumMarines = ASWGameResource()->GetNumMarines( NULL );
 
-	if (m_iMarinesSpawned >=iNumMarines || !SpawnNextMarine())
+	if ( m_iMarinesSpawned >= iNumMarines || !SpawnNextMarine() )
 	{
 		// we've spawned all we can, finish up and go to ingame state
-		
+
 		// any players with no marines should be set to spectating one
 		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 		{
-			CASW_Player* pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(i));
-			
-			if ( pOtherPlayer && pOtherPlayer->IsConnected() && ASWGameResource())
+			CASW_Player *pOtherPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
+
+			if ( pOtherPlayer && pOtherPlayer->IsConnected() && ASWGameResource() )
 			{
-				if (ASWGameResource()->GetNumMarines(pOtherPlayer) == 0)
+				if ( ASWGameResource()->GetNumMarines( pOtherPlayer ) == 0 )
 					pOtherPlayer->SpectateNextMarine();
 			}
-		}	
+		}
 
 		// notify all our alien spawners that the mission has started
-		CBaseEntity* pEntity = NULL;
-		while ((pEntity = gEntList.FindEntityByClassname( pEntity, "asw_spawner" )) != NULL)
+		CBaseEntity *pEntity = NULL;
+		while ( ( pEntity = gEntList.FindEntityByClassname( pEntity, "asw_spawner" ) ) != NULL )
 		{
-			CASW_Spawner* spawner = dynamic_cast<CASW_Spawner*>(pEntity);
+			CASW_Spawner *spawner = dynamic_cast< CASW_Spawner * >( pEntity );
 			spawner->MissionStart();
 		}
 
-		SetGameState(ASW_GS_INGAME);
+		SetGameState( ASW_GS_INGAME );
 		mm_swarm_state.SetValue( "ingame" );
 		DevMsg( "Setting game state to ingame\n" );
+
+#ifdef RD_7A_DROPS
+		CHandle<CRD_Crafting_Material_Pickup> craftingMaterialPickups[RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS];
+		CUtlVector<Vector> craftingMaterialLocations{ 0, RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS };
+		GenerateCraftingMaterialSpawnLocations( craftingMaterialLocations );
+		// only show this warning when launched with the map command (such as from Hammer)
+		if ( craftingMaterialLocations.Count() != RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS && !engine->IsDedicatedServer() && !UTIL_RD_GetCurrentLobbyID().IsValid() )
+		{
+			DevWarning( "\n[Mapper Warning] Only generated %d locations for crafting materials out of a recommended %d!\nMake sure the map is big enough and has enough info_marine_hint or info_node_marine_hint entities.\nUse rd_debug_material_spawns 1; rd_debug_material_spawn_locations to test.\n\n", craftingMaterialLocations.Count(), RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS );
+		}
+		// fill the list with invalid locations so we don't spawn location 0 every time if we can't generate the full list
+		if ( craftingMaterialLocations.Count() != 0 )
+		{
+			while ( craftingMaterialLocations.Count() < RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS )
+			{
+				craftingMaterialLocations.InsertBefore( RandomInt( 0, craftingMaterialLocations.Count() ), vec3_invalid );
+			}
+		}
+#endif
 
 		// Re-compute FOV in case we were in first person on the lobby screen.
 		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 		{
-			CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
+			CASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
 			if ( pPlayer )
 			{
 				ClientSettingsChanged( pPlayer );
+
+#ifdef RD_7A_DROPS
+				// also check whether any players have crafting materials prepared for spawning
+				Assert( pPlayer->m_CraftingMaterialFound == 0 );
+				if ( pPlayer->m_bCraftingMaterialsSent && craftingMaterialLocations.Count() )
+				{
+					for ( int j = 0; j < RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS; j++ )
+					{
+						if ( pPlayer->m_CraftingMaterialType[j] == RD_CRAFTING_MATERIAL_NONE )
+							continue;
+
+						if ( !craftingMaterialPickups[j].Get() && craftingMaterialLocations[j] != vec3_invalid )
+						{
+							CRD_Crafting_Material_Pickup *pPickup = ( CRD_Crafting_Material_Pickup * )CreateEntityByName( "rd_crafting_material_pickup" );
+
+							QAngle angles( 0, RandomFloat( 0.0f, 360.0f ), 0 );
+							pPickup->m_iLocation = j;
+							pPickup->Teleport( &craftingMaterialLocations[j], &angles, &vec3_origin );
+							DispatchSpawn( pPickup );
+
+							craftingMaterialPickups[j] = pPickup;
+						}
+
+						if ( CRD_Crafting_Material_Pickup *pPickup = craftingMaterialPickups[j].Get() )
+						{
+							pPickup->m_MaterialAtLocation.Set( i - 1, pPlayer->m_CraftingMaterialType[j] );
+						}
+					}
+				}
+#endif
 			}
 		}
 
@@ -2929,11 +2979,11 @@ void CAlienSwarm::UpdateLaunching()
 		// loop through all clients, count number of players on each team
 		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 		{
-			CASW_Player* pPlayer = ToASW_Player(UTIL_PlayerByIndex(i));
+			CASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
 
 			if ( pPlayer )
 			{
-				pPlayer->SwitchMarine(0);
+				pPlayer->SwitchMarine( 0 );
 				OrderNearbyMarines( pPlayer, ASW_ORDER_FOLLOW, false );
 			}
 		}
@@ -2963,7 +3013,7 @@ void CAlienSwarm::UpdateLaunching()
 		// Start up any button hints
 		for ( int i = 0; i < IASW_Use_Area_List::AutoList().Count(); i++ )
 		{
-			CASW_Use_Area *pArea = static_cast< CASW_Use_Area* >( IASW_Use_Area_List::AutoList()[ i ] );
+			CASW_Use_Area *pArea = static_cast< CASW_Use_Area * >( IASW_Use_Area_List::AutoList()[i] );
 			pArea->UpdateWaitingForInput();
 		}
 

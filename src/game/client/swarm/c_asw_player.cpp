@@ -268,10 +268,6 @@ BEGIN_NETWORK_TABLE( C_ASW_Player, DT_ASW_Player )
 	RecvPropQAngles( RECVINFO( m_angMarineAutoAimFromClient ) ),
 	RecvPropFloat( RECVINFO( m_flInactiveKickWarning ) ),
 	RecvPropDataTable( RECVINFO_DT( m_EquippedItemData ), 0, &REFERENCE_RECV_TABLE( DT_RD_ItemInstances_Player ) ),
-#ifdef RD_7A_DROPS
-	RecvPropArray( RecvPropInt( RECVINFO( m_iCraftingMaterialType[0] ) ), m_iCraftingMaterialType ),
-	RecvPropInt( RECVINFO( m_iCraftingMaterialFound ) ),
-#endif
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_ASW_Player )

@@ -93,50 +93,50 @@ void CASW_Scanner_Info::UpdateBlips()
 	SetNextThink( gpGlobals->curtime + 1.0f );
 }
 
-void CASW_Scanner_Info::AddBlips(Vector vecScannerCenter, float fDist)
+void CASW_Scanner_Info::AddBlips( Vector vecScannerCenter, float fDist )
 {
 	// enumerate all aliens/moving doors within the radius
 	// for each one, set the blip x + y and index to the entindex
 	CASW_Scanner_Objects_Enumerator BlipEntities( fDist, vecScannerCenter );
-	partition->EnumerateElementsInSphere( ASW_PARTITION_ALL_SERVER_EDICTS , vecScannerCenter, fDist, false, &BlipEntities );
+	partition->EnumerateElementsInSphere( ASW_PARTITION_ALL_SERVER_EDICTS, vecScannerCenter, fDist, false, &BlipEntities );
 
 	int c = BlipEntities.GetObjectCount();
-	for (int i=0;i<c;i++)
+	for ( int i = 0; i < c; i++ )
 	{
-		CBaseEntity *pEnt = BlipEntities.GetObject(i);
-		if (pEnt)
+		CBaseEntity *pEnt = BlipEntities.GetObject( i );
+		if ( pEnt )
 		{
 			// check if this entity has an entry already, otherwise use the first free slot
 			int slot = -1;
-			for (int k=ASW_SCANNER_MAX_BLIPS-1;k>=0;k--)
+			for ( int k = ASW_SCANNER_MAX_BLIPS - 1; k >= 0; k-- )
 			{
-				if (m_index.Get(k) == pEnt->entindex())
+				if ( m_index.Get( k ) == pEnt->entindex() )
 				{
 					slot = k;
 					break;
 				}
-				else if (m_index.Get(k) == 0)
+				else if ( m_index.Get( k ) == 0 )
 				{
 					slot = k;	// empty slot
 				}
 			}
 			// set type depending on alien/door/useable item
 			int iType = 0;
-			if (pEnt->Classify() == CLASS_ASW_BUTTON_PANEL || pEnt->Classify() == CLASS_ASW_COMPUTER_AREA )	// computer/button area
+			if ( pEnt->Classify() == CLASS_ASW_BUTTON_PANEL || pEnt->Classify() == CLASS_ASW_COMPUTER_AREA || pEnt->Classify() == CLASS_RD_CRAFTING_MATERIAL_PICKUP )	// computer/button area
 				iType = 1;
-			else if (pEnt->Classify() == CLASS_ASW_DOOR)		// door
+			else if ( pEnt->Classify() == CLASS_ASW_DOOR )		// door
 			{
 				iType = 2;
-				CASW_Door *pDoor = assert_cast<CASW_Door*>(pEnt);
-				if (!pDoor->m_bShowsOnScanner)	// skip doors that don't want to be on the scanner
+				CASW_Door *pDoor = assert_cast< CASW_Door * >( pEnt );
+				if ( !pDoor->m_bShowsOnScanner )	// skip doors that don't want to be on the scanner
 					continue;
 			}
-			if (slot != -1)
+			if ( slot != -1 )
 			{
-				m_iBlipX.Set(slot, (int) pEnt->WorldSpaceCenter().x);
-				m_iBlipY.Set(slot, (int) pEnt->WorldSpaceCenter().y);
-				m_index.Set(slot, pEnt->entindex());				
-				m_BlipType.Set(slot, iType);
+				m_iBlipX.Set( slot, ( int )pEnt->WorldSpaceCenter().x );
+				m_iBlipY.Set( slot, ( int )pEnt->WorldSpaceCenter().y );
+				m_index.Set( slot, pEnt->entindex() );
+				m_BlipType.Set( slot, iType );
 				m_bActiveBlip[slot] = true;
 			}
 		}

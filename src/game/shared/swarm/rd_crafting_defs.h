@@ -79,7 +79,7 @@ struct RD_Crafting_Material_Info
 extern const RD_Crafting_Material_Info g_RD_Crafting_Material_Info[NUM_RD_CRAFTING_MATERIAL_TYPES];
 
 #ifdef GAME_DLL
-void GenerateCraftingMaterialSpawnLocations( CUtlVector<Vector> &spawnLocations )
+void GenerateCraftingMaterialSpawnLocations( CUtlVector<Vector> &spawnLocations );
 #endif
 
 class CRD_Crafting_Material_Pickup :
@@ -97,12 +97,15 @@ public:
 	CRD_Crafting_Material_Pickup();
 
 	IMPLEMENT_AUTO_LIST_GET();
+	Class_T Classify() override;
 
 	CNetworkVar( int, m_iLocation );
 	CNetworkArray( RD_Crafting_Material_t, m_MaterialAtLocation, MAX_PLAYERS );
+	CNetworkVar( bool, m_bAnyoneFound );
 
 #ifdef CLIENT_DLL
 	void OnDataChanged( DataUpdateType_t updateType ) override;
+	void CheckMaterialPickup();
 	void ClientThink() override;
 
 	// IASW_Client_Usable_Entity implementation
@@ -125,8 +128,6 @@ public:
 	void NPCStoppedUsing( CASW_Inhabitable_NPC *pUser ) override {}
 	void NPCUsing( CASW_Inhabitable_NPC *pUser, float fDeltaTime ) override {}
 	bool NeedsLOSCheck() override { return false; }
-
-	bool m_bAnyoneFound;
 #endif
 };
 #endif

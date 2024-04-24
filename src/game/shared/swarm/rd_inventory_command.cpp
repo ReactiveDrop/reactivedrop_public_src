@@ -301,7 +301,7 @@ static bool PreValidateInventoryCommand( CASW_Player *pPlayer, EInventoryCommand
 		break;
 	case INVCMD_MATERIAL_SPAWN:
 #ifdef RD_7A_DROPS
-		if ( pPlayer->m_bCraftingMaterialsSpawned )
+		if ( pPlayer->m_bCraftingMaterialsSent )
 		{
 			Warning( "Player %s sent invalid InvCmdInit - already received an INVCMD_MATERIAL_SPAWN this mission.\n", pPlayer->GetASWNetworkID() );
 			return false;
@@ -565,58 +565,180 @@ static void ExecuteInventoryCommand( CASW_Player *pPlayer, EInventoryCommand eCm
 	case INVCMD_MATERIAL_SPAWN:
 	{
 #ifdef RD_7A_DROPS
-		if ( pPlayer->m_bCraftingMaterialsSpawned )
+		if ( pPlayer->m_bCraftingMaterialsSent )
 		{
 			Warning( "Player %s sent invalid InvCmd - already received an INVCMD_MATERIAL_SPAWN this mission.\n", pPlayer->GetASWNetworkID() );
 			return;
 		}
 
-		// TODO: validate that crafting material ids in args each have at least one corresponding location token
-		// TODO: store the current quantities of each location and material token sent in the inventory service result
-		DebuggerBreakIfDebugging(); // TODO
+		int *pQuantity = ( int * )stackalloc( items.Count() * sizeof( int ) );
+		FOR_EACH_VEC( items, i )
+		{
+			pQuantity[i] = items[i].Quantity;
+		}
 
-		pPlayer->m_bCraftingMaterialsSpawned = true;
 		FOR_EACH_VEC( args, i )
 		{
-			Assert( pPlayer->m_iCraftingMaterialType[i] == RD_CRAFTING_MATERIAL_NONE );
-			pPlayer->m_iCraftingMaterialType.Set( i, args[i] );
+			bool bHaveToken = false;
+			FOR_EACH_VEC( items, j )
+			{
+				if ( items[j].ItemDefID != g_RD_Crafting_Material_Info[args[i]].m_iTokenDef )
+					continue;
+
+				if ( pQuantity[j] <= 0 )
+					continue;
+
+				pQuantity[j]--;
+				bHaveToken = true;
+				break;
+			}
+
+			if ( !bHaveToken )
+			{
+				Warning( "Player %s sent invalid InvCmd - INVCMD_MATERIAL_SPAWN with no token for %s.\n", pPlayer->GetASWNetworkID(), g_RD_Crafting_Material_Info[args[i]].m_szName );
+				return;
+			}
 		}
-		Assert( pPlayer->m_iCraftingMaterialFound.Get() == 0 );
+
+		pPlayer->m_bCraftingMaterialsSent = true;
+		FOR_EACH_VEC( args, i )
+		{
+			Assert( pPlayer->m_CraftingMaterialType[i] == RD_CRAFTING_MATERIAL_NONE );
+			pPlayer->m_CraftingMaterialType[i] = RD_Crafting_Material_t( args[i] );
+		}
+		Assert( pPlayer->m_CraftingMaterialFound == 0 );
+		Assert( pPlayer->m_CraftingMaterialInstances.Count() == 0 );
+		pPlayer->m_CraftingMaterialInstances.AddVectorToTail( items );
 #endif
 		break;
 	}
 	case INVCMD_MATERIAL_PICKUP:
 	{
 #ifdef RD_7A_DROPS
-		Assert( pPlayer->m_bCraftingMaterialsSpawned );
+		Assert( pPlayer->m_bCraftingMaterialsSent );
 
 		int iLocation = args[0];
-		if ( pPlayer->m_iCraftingMaterialFound.Get() & ( 1 << iLocation ) )
+		if ( pPlayer->m_CraftingMaterialFound & ( 1 << iLocation ) )
 		{
 			Warning( "Player %s sent invalid InvCmd - already received an INVCMD_MATERIAL_PICKUP for location %d.\n", pPlayer->GetASWNetworkID(), iLocation );
 			return;
 		}
-		RD_Crafting_Material_t eMaterial = RD_Crafting_Material_t( pPlayer->m_iCraftingMaterialType[iLocation] );
+		RD_Crafting_Material_t eMaterial = pPlayer->m_CraftingMaterialType[iLocation];
 		if ( eMaterial == RD_CRAFTING_MATERIAL_NONE )
 		{
 			Warning( "Player %s sent invalid InvCmd - INVCMD_MATERIAL_PICKUP for empty location %d.\n", pPlayer->GetASWNetworkID(), iLocation );
 			return;
 		}
 
-		pPlayer->m_iCraftingMaterialFound |= ( 1 << iLocation );
+		pPlayer->m_CraftingMaterialFound |= ( 1 << iLocation );
 
-		// TODO: check to make sure the player has USEd the material spawn location so hacked clients can't spam these
+		CBaseEntity *pEnt = NULL;
+		bool bFoundLocation = false;
+		while ( ( pEnt = gEntList.FindEntityByClassname( pEnt, "rd_crafting_material_pickup" ) ) != NULL )
+		{
+			CRD_Crafting_Material_Pickup *pPickup = assert_cast< CRD_Crafting_Material_Pickup * >( pEnt );
+			if ( pPickup->m_iLocation != iLocation )
+				continue;
+
+			if ( pPickup->m_MaterialAtLocation[pPlayer->entindex() - 1] != RD_CRAFTING_MATERIAL_NONE )
+			{
+				Assert( eMaterial == pPickup->m_MaterialAtLocation[pPlayer->entindex() - 1] );
+				Warning( "Player %s sent invalid InvCmd - INVCMD_MATERIAL_PICKUP for location %d which has not been interacted with yet.\n", pPlayer->GetASWNetworkID(), iLocation );
+				return;
+			}
+
+			bFoundLocation = true;
+			break;
+		}
+
+		if ( !bFoundLocation )
+		{
+			Warning( "Player %s sent invalid InvCmd - received an INVCMD_MATERIAL_PICKUP for location %d which does not exist.\n", pPlayer->GetASWNetworkID(), iLocation );
+			return;
+		}
+
 		// make sure the location's material matches the exchange result given by the player
 		bool bConsumed = false;
 		int nTotalQuantity = 0;
 
-		FOR_EACH_VEC( items, i )
+		FOR_EACH_VEC_BACK( items, i )
 		{
-			// TODO: development of this is paused pending a resolution to https://steamcommunity.com/groups/steamworks/discussions/21/4298195085742657885/
-			DebuggerBreakIfDebugging(); // TODO
+			bool bFound = false;
+			// When generating a random number of items using nested generators and bundles, the result will contain item IDs multiple times.
+			// The last instance of each item ID is the "real" result for that item. Therefore, we check first to make sure we haven't already processed it:
+			FOR_EACH_VEC_BACK( items, j )
+			{
+				if ( j <= i )
+					break;
+
+				if ( items[i].ItemID != items[j].ItemID )
+					continue;
+
+				bFound = true;
+				break;
+			}
+
+			// If we already processed a later snapshot of this item, just ignore this snapshot.
+			if ( bFound )
+				continue;
+
+			FOR_EACH_VEC( pPlayer->m_CraftingMaterialInstances, j )
+			{
+				const ReactiveDropInventory::ItemInstance_t prev = pPlayer->m_CraftingMaterialInstances[j];
+				if ( prev.ItemID != items[i].ItemID )
+					continue;
+
+				bFound = true;
+				pPlayer->m_CraftingMaterialInstances[j] = items[i];
+
+				if ( items[i].ItemDefID == g_RD_Crafting_Material_Info[eMaterial].m_iTokenDef && items[i].Quantity < prev.Quantity )
+				{
+					bConsumed = true;
+
+					Assert( items[i].Quantity == prev.Quantity - 1 );
+					if ( items[i].Quantity != prev.Quantity - 1 )
+					{
+						Warning( "Player %s sent INVCMD_MATERIAL_PICKUP with unexpected decrease in token \"%s\" (%d) quantity by %d (expecting 1).\n", pPlayer->GetASWNetworkID(), g_RD_Crafting_Material_Info[eMaterial].m_szName, prev.ItemDefID, prev.Quantity - items[i].Quantity );
+
+						// ignore the anomaly and keep going
+					}
+
+					break;
+				}
+
+				if ( items[i].ItemDefID == g_RD_Crafting_Material_Info[eMaterial].m_iItemDef )
+				{
+					nTotalQuantity += items[i].Quantity - prev.Quantity;
+
+					break;
+				}
+
+				const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( items[i].ItemDefID );
+				Warning( "Player %s sent INVCMD_MATERIAL_PICKUP for material %s with unexpected item %llu #%d %c%s%c (quantity %d, previous %d, o:%s, s:%s).\n", pPlayer->GetASWNetworkID(), g_RD_Crafting_Material_Info[eMaterial].m_szName, prev.ItemID, prev.ItemDefID, pDef ? '"' : '<', pDef ? pDef->Name.Get() : "missing item def", pDef ? '"' : '>', items[i].Quantity, prev.Quantity, items[i].Origin.Get(), items[i].State.Get() );
+
+				// ignore the anomaly and keep going
+
+				break;
+			}
+
+			if ( !bFound )
+			{
+				pPlayer->m_CraftingMaterialInstances.AddToTail( items[i] );
+
+				if ( items[i].ItemDefID == g_RD_Crafting_Material_Info[eMaterial].m_iItemDef && items[i].Acquired > iFiveMinutesAgo )
+				{
+					nTotalQuantity += items[i].Quantity;
+					continue;
+				}
+
+				const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( items[i].ItemDefID );
+				Warning( "Player %s sent INVCMD_MATERIAL_PICKUP for material %s with unexpected item %llu #%d %c%s%c (quantity %d, no previous snapshot, o:%s, s:%s).\n", pPlayer->GetASWNetworkID(), g_RD_Crafting_Material_Info[eMaterial].m_szName, items[i].ItemID, items[i].ItemDefID, pDef ? '"' : '<', pDef ? pDef->Name.Get() : "missing item def", pDef ? '"' : '>', items[i].Quantity, items[i].Origin.Get(), items[i].State.Get() );
+
+				// ignore the anomaly and keep going
+			}
 		}
 
-		if ( nTotalQuantity == 0 )
+		if ( nTotalQuantity <= 0 )
 		{
 			Warning( "Player %s sent invalid InvCmd - INVCMD_MATERIAL_PICKUP with no gained materials material type %s (location %d).\n", pPlayer->GetASWNetworkID(), g_RD_Crafting_Material_Info[eMaterial].m_szName, iLocation );
 			return;

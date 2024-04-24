@@ -6,12 +6,14 @@
 #include "asw_player.h"
 #include "asw_marine.h"
 #include "asw_marine_speech.h"
+#include "asw_door_area.h"
 #else
 #include "c_asw_player.h"
 #include "c_asw_inhabitable_npc.h"
 #include "asw_gamerules.h"
 #include "asw_input.h"
 #include "vgui/ILocalize.h"
+#include "vgui/IImage.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -78,6 +80,29 @@ const RD_Crafting_Material_Info g_RD_Crafting_Material_Info[] =
 };
 
 #ifdef GAME_DLL
+class CRD_CraftingMaterialUseAreaEnumerator : public IPartitionEnumerator
+{
+public:
+	IterationRetval_t EnumElement( IHandleEntity *pHandleEntity ) override
+	{
+		CBaseEntity *pEnt = gEntList.GetBaseEntity( pHandleEntity->GetRefEHandle() );
+		CASW_Use_Area *pUseArea = dynamic_cast< CASW_Use_Area * >( pEnt );
+		if ( !pUseArea )
+			return ITERATION_CONTINUE;
+
+		// exclude door areas with no associated door (used for counting marines sometimes)
+		if ( pUseArea->Classify() != CLASS_ASW_DOOR_AREA || pUseArea->m_hUseTarget.Get() )
+		{
+			m_hEntity = pEnt;
+			return ITERATION_STOP;
+		}
+
+		return ITERATION_CONTINUE;
+	}
+
+	EHANDLE m_hEntity;
+};
+
 void GenerateCraftingMaterialSpawnLocations( CUtlVector<Vector> &spawnLocations )
 {
 	CASW_Marine_Hint_Manager *pMarineHintManager = MarineHintManager();
@@ -149,6 +174,19 @@ void GenerateCraftingMaterialSpawnLocations( CUtlVector<Vector> &spawnLocations 
 			{
 				NDebugOverlay::Line( vecHintOrigin, pEnt->GetAbsOrigin(), 255, 127, 127, false, 120.0f );
 				NDebugOverlay::Text( vecHintOrigin, "Within bounds of escape trigger", false, 120.0f );
+			}
+
+			continue;
+		}
+		// check for a USE area that conflicts with our spawn location
+		CRD_CraftingMaterialUseAreaEnumerator useAreaEnumerator;
+		partition->EnumerateElementsAtPoint( PARTITION_ENGINE_TRIGGER_EDICTS, vecHintOrigin, false, &useAreaEnumerator );
+		if ( useAreaEnumerator.m_hEntity )
+		{
+			if ( rd_debug_material_spawns.GetBool() )
+			{
+				NDebugOverlay::Line( vecHintOrigin, useAreaEnumerator.m_hEntity->GetAbsOrigin(), 255, 127, 127, false, 120.0f );
+				NDebugOverlay::Text( vecHintOrigin, "Within bounds of use trigger", false, 120.0f );
 			}
 
 			continue;
@@ -259,11 +297,15 @@ BEGIN_NETWORK_TABLE( CRD_Crafting_Material_Pickup, DT_RD_Crafting_Material_Picku
 #ifdef CLIENT_DLL
 	RecvPropIntWithMinusOneFlag( RECVINFO( m_iLocation ) ),
 	RecvPropArray( RecvPropInt( RECVINFO( m_MaterialAtLocation[0] ) ), m_MaterialAtLocation ),
+	RecvPropBool( RECVINFO( m_bAnyoneFound ) ),
 #else
 	SendPropIntWithMinusOneFlag( SENDINFO( m_iLocation ), NumBitsForCount( RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS + 1 ) ),
 	SendPropArray( SendPropInt( SENDINFO_ARRAY( m_MaterialAtLocation ), NumBitsForCount( NUM_RD_CRAFTING_MATERIAL_TYPES ), SPROP_UNSIGNED ), m_MaterialAtLocation ),
+	SendPropBool( SENDINFO( m_bAnyoneFound ) ),
 #endif
 END_NETWORK_TABLE()
+
+Class_T CRD_Crafting_Material_Pickup::Classify() { return ( Class_T )CLASS_RD_CRAFTING_MATERIAL_PICKUP; }
 
 #ifdef GAME_DLL
 LINK_ENTITY_TO_CLASS( rd_crafting_material_pickup, CRD_Crafting_Material_Pickup );
@@ -309,7 +351,10 @@ void CRD_Crafting_Material_Pickup::ActivateUseIcon( CASW_Inhabitable_NPC *pUser,
 	// only use longer supplies chatter line if we're the first one to find this location
 	CASW_Marine *pMarine = CASW_Marine::AsMarine( pUser );
 	if ( pMarine )
+	{
 		pMarine->GetMarineSpeech()->Chatter( m_bAnyoneFound ? CHATTER_USE : CHATTER_SUPPLIES );
+		pMarine->DoAnimationEventToAll( PLAYERANIMEVENT_PICKUP );
+	}
 
 	m_bAnyoneFound = true;
 	m_MaterialAtLocation.Set( pPlayer->entindex() - 1, RD_CRAFTING_MATERIAL_NONE );
@@ -329,6 +374,39 @@ void CRD_Crafting_Material_Pickup::OnDataChanged( DataUpdateType_t updateType )
 	{
 		SetNextClientThink( CLIENT_THINK_ALWAYS );
 	}
+	else
+	{
+		CheckMaterialPickup();
+	}
+}
+
+void CRD_Crafting_Material_Pickup::CheckMaterialPickup()
+{
+	// we picked up this material if:
+	// - we are currently controlling a character
+	HACK_GETLOCALPLAYER_GUARD( "picking up a crafting material" );
+	C_ASW_Player *pLocalPlayer = C_ASW_Player::GetLocalASWPlayer();
+	if ( !pLocalPlayer )
+		return;
+
+	C_ASW_Inhabitable_NPC *pNPC = pLocalPlayer->GetNPC();
+	if ( !pNPC )
+		return;
+
+	// - m_iLastMaterialType is set from the previous frame
+	if ( m_iLastMaterialType == RD_CRAFTING_MATERIAL_NONE )
+		return;
+
+	// - after the data update, our slot in m_MaterialAtLocation is empty
+	if ( m_MaterialAtLocation[pLocalPlayer->entindex() - 1] != RD_CRAFTING_MATERIAL_NONE )
+		return;
+
+	// - our character is close enough to the pickup entity to interact with it (with a little bit of padding)
+	if ( pNPC->GetAbsOrigin().DistTo( GetAbsOrigin() ) > ASW_MARINE_USE_RADIUS * 1.5f )
+		return;
+
+	// - we have a token and an exchange recipe prepared for that location and we haven't used it up yet
+	ReactiveDropInventory::PickUpCraftingMaterialAtLocation( m_iLocation, m_iLastMaterialType );
 }
 
 void CRD_Crafting_Material_Pickup::ClientThink()
@@ -349,7 +427,14 @@ void CRD_Crafting_Material_Pickup::ClientThink()
 		{
 			CAlienSwarm *pGameRules = ASWGameRules();
 
+			VPhysicsDestroyObject();
+
 			SetModel( szModelName );
+
+			// init client-side collision so we can determine whether the cursor is over this item for use priority
+			SetSolid( SOLID_VPHYSICS );
+			AddSolidFlags( FSOLID_TRIGGER );
+			VPhysicsInitStatic();
 
 			if ( iCurrentMaterial == RD_CRAFTING_MATERIAL_LOOSE_WIRES || iCurrentMaterial == RD_CRAFTING_MATERIAL_UNOPENED_SYNUP_COLA )
 			{
@@ -407,19 +492,20 @@ bool CRD_Crafting_Material_Pickup::GetUseAction( ASWUseAction &action, C_ASW_Inh
 	if ( m_iLastMaterialType == RD_CRAFTING_MATERIAL_NONE )
 		return false;
 
-	action.UseIconRed = 66;
-	action.UseIconGreen = 142;
-	action.UseIconBlue = 192;
-
 	wchar_t wszMaterialName[128]{};
 	const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( g_RD_Crafting_Material_Info[m_iLastMaterialType].m_iItemDef );
 	if ( pDef )
 		V_UTF8ToUnicode( pDef->Name.Get(), wszMaterialName, sizeof( wszMaterialName ) );
 	g_pVGuiLocalize->ConstructString( action.wszText, sizeof( action.wszText ), g_pVGuiLocalize->Find( "#rd_crafting_pickup_prompt" ), 1, wszMaterialName );
 
-	action.bShowUseKey = true;
+	if ( pDef && pDef->Icon && pDef->Icon->GetNumFrames() )
+		action.iUseIconTexture = pDef->Icon->GetID();
+
 	action.UseTarget = this;
+	action.bShowUseKey = true;
 	action.vecUseHighlightColor = glow_outline_color_crafting.GetColorAsVector();
+
+	return true;
 }
 #endif
 
