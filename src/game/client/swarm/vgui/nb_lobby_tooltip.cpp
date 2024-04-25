@@ -207,6 +207,7 @@ void CNB_Lobby_Tooltip::OnTick()
 			V_UTF8ToUnicode( pDef->DisplayType, wszBuf, sizeof( wszBuf ) );
 			m_pPromotionLabel->SetText( wszBuf );
 
+			m_pItemDescription->SetText( "" );
 			details.FormatDescription( m_pItemDescription );
 
 			if ( rd_briefing_item_details_delay.GetFloat() < 0 )

@@ -146,6 +146,7 @@ void ItemShowcase::OnThink()
 
 			m_pSubTitle->SetText( pDef->DisplayType );
 			CRD_ItemInstance instance{ *m_Queue[0] };
+			m_pDescriptionArea->SetText( "" );
 			instance.FormatDescription( m_pDescriptionArea );
 
 			break;

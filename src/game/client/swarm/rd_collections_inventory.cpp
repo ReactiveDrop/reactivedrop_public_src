@@ -314,6 +314,7 @@ void CRD_Collection_Details_Inventory::SetItemStyleOverride( TGD_Entry *pEntry, 
 	m_pTitle->InsertColorChange( rd_briefing_item_details_displaytype.GetColor() );
 	m_pTitle->InsertString( wszBuf );
 
+	m_pDescription->SetText( "" );
 	details.FormatDescription( m_pDescription );
 
 	CRD_Collection_Tab_Inventory *pTab = assert_cast< CRD_Collection_Tab_Inventory * >( m_pParent );

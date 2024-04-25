@@ -250,8 +250,6 @@ void CRD_ItemInstance::FormatDescription( vgui::MultiFontRichText *pRichText, bo
 	const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( m_iItemDefID );
 	wchar_t wszBuf[2048];
 
-	pRichText->SetText( "" );
-
 	FormatDescription( wszBuf, sizeof( wszBuf ), pDef->BeforeDescription, false );
 	if ( wszBuf[0] )
 	{

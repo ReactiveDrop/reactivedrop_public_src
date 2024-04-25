@@ -1296,6 +1296,7 @@ void CRD_VGUI_Loadout_Marine::ApplySchemeSettings( vgui::IScheme *pScheme )
 	if ( const ReactiveDropInventory::ItemInstance_t *pSuit = m_pMarine->GetItem() )
 	{
 		const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( pSuit->ItemDefID );
+		m_pLblBiography->SetText( "" );
 		pSuit->FormatDescription( m_pLblBiography, false );
 		m_pLblMarine->SetText( pDef->Name );
 		m_pLblMarine->SetFgColor( pDef->NameColor );
@@ -1304,6 +1305,7 @@ void CRD_VGUI_Loadout_Marine::ApplySchemeSettings( vgui::IScheme *pScheme )
 	{
 		CRD_ItemInstance dummyInstance;
 		dummyInstance.m_iItemDefID = pDef->ID;
+		m_pLblBiography->SetText( "" );
 		dummyInstance.FormatDescription( m_pLblBiography, false );
 		m_pLblMarine->SetText( pDef->Name );
 		m_pLblMarine->SetFgColor( pDef->NameColor );

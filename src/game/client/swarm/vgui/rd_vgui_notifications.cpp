@@ -693,7 +693,6 @@ void CRD_VGUI_Notifications_List_Item_Inventory::InitFromNotification()
 	m_pNotificationText->InsertString( L"\n" );
 	m_pNotificationText->InsertFontChange( m_hFontNormal );
 	pItem->FormatDescription( m_pNotificationText, true, m_DescriptionColor );
-	m_pNotificationText->InsertString( m_Notification.Description );
 }
 
 bool CRD_VGUI_Notifications_List_Item_Inventory::MatchesNotification( const HoIAFNotification_t *pNotification ) const
