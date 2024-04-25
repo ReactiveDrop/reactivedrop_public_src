@@ -1296,6 +1296,32 @@ public:
 #ifdef RD_7A_DROPS
 			if ( m_CraftingMaterialType[pTask->m_iAccessoryDef] != RD_CRAFTING_MATERIAL_NONE )
 			{
+				const char *szPickupSound = NULL;
+				switch ( g_RD_Crafting_Material_Info[m_CraftingMaterialType[pTask->m_iAccessoryDef]].m_iRarity )
+				{
+				case RD_CRAFTING_MATERIAL_RARITY_COMMON:
+					szPickupSound = "RD_Crafting_Material_Found.Industrial";
+					break;
+				case RD_CRAFTING_MATERIAL_RARITY_ULTRA_COMMON:
+					szPickupSound = "RD_Crafting_Material_Found.Bulk";
+					break;
+				case RD_CRAFTING_MATERIAL_RARITY_UNCOMMON:
+					szPickupSound = "RD_Crafting_Material_Found.Alien";
+					break;
+				case RD_CRAFTING_MATERIAL_RARITY_RARE:
+					szPickupSound = "RD_Crafting_Material_Found.Tech";
+					break;
+				case RD_CRAFTING_MATERIAL_RARITY_REGIONAL:
+					szPickupSound = "RD_Crafting_Material_Found.Salvaged";
+					break;
+				}
+
+				if ( szPickupSound )
+				{
+					CLocalPlayerFilter filter;
+					C_BaseEntity::EmitSound( filter, -1/*SOUND_FROM_LOCAL_PLAYER*/, szPickupSound );
+				}
+
 				CUtlVector<int> args;
 				args.AddToTail( pTask->m_iAccessoryDef );
 				UTIL_RD_SendInventoryCommand( INVCMD_MATERIAL_PICKUP, args, pTask->m_hResult );

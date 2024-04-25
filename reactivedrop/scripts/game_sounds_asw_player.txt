@@ -529,3 +529,48 @@
 	"volume"		"0.35, 0.4"
 	"wave"			")weapons/leader_resist.wav"
 }
+
+"RD_Crafting_Material_Found.Industrial"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_NONE"
+	"pitch"			"100"
+	"volume"		"1.0"
+	"wave"			"@ui/crafting/crafting_material_found_industrial.wav"
+}
+
+"RD_Crafting_Material_Found.Bulk"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_NONE"
+	"pitch"			"100"
+	"volume"		"1.0"
+	"wave"			"@ui/crafting/crafting_material_found_bulk.wav"
+}
+
+"RD_Crafting_Material_Found.Alien"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_NONE"
+	"pitch"			"100"
+	"volume"		"1.0"
+	"wave"			"@ui/crafting/crafting_material_found_alien.wav"
+}
+
+"RD_Crafting_Material_Found.Tech"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_NONE"
+	"pitch"			"100"
+	"volume"		"1.0"
+	"wave"			"@ui/crafting/crafting_material_found_tech.wav"
+}
+
+"RD_Crafting_Material_Found.Salvaged"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_NONE"
+	"pitch"			"100"
+	"volume"		"1.0"
+	"wave"			"@ui/crafting/crafting_material_found_salvaged.wav"
+}
