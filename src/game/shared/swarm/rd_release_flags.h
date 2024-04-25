@@ -14,8 +14,7 @@
 // 7th anniversary
 #define RD_7A_CHATWHEEL
 //#define RD_7A_CRAFTING
-//#define RD_7A_DROPS
-#define RD_7A_DROPS_PRE
+#define RD_7A_DROPS
 //#define RD_7A_ENEMIES
 #define RD_7A_LOADOUTS
 //#define RD_7A_QUESTS

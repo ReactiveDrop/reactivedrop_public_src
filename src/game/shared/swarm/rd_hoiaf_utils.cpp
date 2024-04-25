@@ -529,6 +529,14 @@ void CRD_HoIAF_System::RebuildNotificationList()
 				seenUniqueNotificationItem.AddToTail( notificationItems[i].ItemDefID );
 			}
 
+			bool bCraftingBetaOptIn = false;
+
+#ifdef RD_7A_DROPS
+			CUtlVector<ReactiveDropInventory::ItemInstance_t> optin;
+			ReactiveDropInventory::GetItemsForDef( optin, 4029 );
+			bCraftingBetaOptIn = optin.Count() != 0;
+#endif
+
 			UtlSymId_t notificationType = pDef->Tags.Find( "notification" );
 			if ( notificationType != pDef->Tags.InvalidIndex() )
 			{
@@ -543,9 +551,9 @@ void CRD_HoIAF_System::RebuildNotificationList()
 						break;
 					}
 
-					if ( !V_strcmp( pDef->Tags[notificationType][j], "crafting" ) )
+					if ( !V_strcmp( pDef->Tags[notificationType][j], "crafting" ) && !bCraftingBetaOptIn )
 					{
-						// always hide crafting notifications for now
+						// always hide crafting notifications unless we are opted in to the beta
 						bFiltered = true;
 						break;
 					}

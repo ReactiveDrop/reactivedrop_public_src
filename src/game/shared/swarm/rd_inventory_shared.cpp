@@ -1937,6 +1937,16 @@ public:
 			return;
 		}
 
+		CUtlVector<ReactiveDropInventory::ItemInstance_t> optin;
+		ReactiveDropInventory::GetItemsForDef( optin, 4029 );
+		if ( !optin.Count() )
+		{
+			m_CraftingMaterialSpawnArgs.RemoveAll();
+			UTIL_RD_AbortInventoryCommand( m_iCraftingMaterialSpawnCommand );
+			m_iCraftingMaterialSpawnCommand = UTIL_RD_SendInventoryCommand( INVCMD_MATERIAL_SPAWN, m_CraftingMaterialSpawnArgs, k_SteamInventoryResultInvalid );
+			return;
+		}
+
 		CUtlVector<ReactiveDropInventory::ItemInstance_t> tokens;
 		ReactiveDropInventory::GetItemsForSlot( tokens, "material_drop_token" );
 		struct Token_t
