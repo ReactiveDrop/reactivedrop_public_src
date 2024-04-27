@@ -23,7 +23,7 @@
 #ifdef GAME_DLL
 ConVar rd_debug_material_spawns( "rd_debug_material_spawns", "0", FCVAR_CHEAT );
 #else
-ConVar glow_outline_color_crafting( "glow_outline_color_crafting", "102 51 0", FCVAR_NONE ); // #630 hex
+ConVar glow_outline_color_crafting( "glow_outline_color_crafting", "204 102 0", FCVAR_NONE ); // #630 hex doubled
 #endif
 
 PRECACHE_REGISTER_BEGIN( GLOBAL, ReactiveDropCrafting )
@@ -45,7 +45,7 @@ const RD_Crafting_Material_Info g_RD_Crafting_Material_Info[] =
 	{ "scrap_metal", 7004, 7028, 4002, RD_CRAFTING_MATERIAL_RARITY_COMMON, "models/swarm/crafting/scrap_metal.mdl" },
 	{ "electrical_components", 7005, 7029, 4003, RD_CRAFTING_MATERIAL_RARITY_COMMON, "models/swarm/crafting/electrical_components.mdl" },
 	{ "spare_pipe", 7006, 7030, 4004, RD_CRAFTING_MATERIAL_RARITY_COMMON, "models/swarm/crafting/spare_pipe.mdl" },
-	{ "plastics", 7007, 7031, 4005, RD_CRAFTING_MATERIAL_RARITY_COMMON, "models/swarm/crafting/plastics.mdl" },
+	{ "plastics", 7007, 7031, 4005, RD_CRAFTING_MATERIAL_RARITY_COMMON, "models/swarm/crafting/plastic_filament.mdl" },
 	{ "coolant", 7008, 7032, 4006, RD_CRAFTING_MATERIAL_RARITY_COMMON, "models/swarm/crafting/coolant.mdl" },
 	{ "mini_crate", 7009, 7033, 4007, RD_CRAFTING_MATERIAL_RARITY_COMMON, "models/swarm/crafting/mini_crate.mdl" },
 	{ "battery_pack", 7010, 7034, 4008, RD_CRAFTING_MATERIAL_RARITY_COMMON, "models/swarm/crafting/battery_pack.mdl" },
@@ -236,7 +236,10 @@ void GenerateCraftingMaterialSpawnLocations( CUtlVector<Vector> &spawnLocations 
 
 		if ( flBestFraction >= 1.0f )
 		{
-			NDebugOverlay::Text( vecHintOrigin, "No nearby walls", false, 120.0f );
+			if ( rd_debug_material_spawns.GetBool() )
+			{
+				NDebugOverlay::Text( vecHintOrigin, "No nearby walls", false, 120.0f );
+			}
 			continue;
 		}
 
