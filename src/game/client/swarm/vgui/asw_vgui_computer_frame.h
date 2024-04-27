@@ -17,25 +17,24 @@ class CASW_VGUI_Computer_Frame : public vgui::Panel, public CASW_VGUI_Ingame_Pan
 	CASW_VGUI_Computer_Frame( vgui::Panel *pParent, const char *pElementName, C_ASW_Hack_Computer *pHackDoor );
 	virtual ~CASW_VGUI_Computer_Frame();
 
-	virtual void ASWInit();
-	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
-	virtual void OnThink();							// called every frame before painting, but only if panel is visible
-	virtual void OnCommand( const char *pCommand );
-	virtual void PaintBackground();
-	virtual void Paint();
-	virtual void PerformLayout();
-	virtual bool MouseClick( int x, int y, bool bRightClick, bool bDown );
-	virtual void SplashFinished();
-
-	virtual void SetTitleHidden( bool bHidden );
-	virtual void SetHackOption( int iOption );
-
-	virtual void SetBackdrop( int iBackdropType );
+	void SetBackdrop( int iBackdropType );
 	int m_iBackdropType;
 
-	bool IsPDA();
+	void SplashFinished();
+	void ASWInit();
 
-	// current door hack
+	bool IsPDA();
+	void RecordComputerContents();
+
+	void PerformLayout() override;
+	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+	void OnThink() override; // called every frame before painting, but only if panel is visible
+	void OnCommand( const char *pCommand ) override;
+	bool MouseClick( int x, int y, bool bRightClick, bool bDown ) override;
+	void SetTitleHidden( bool bHidden );
+	void SetHackOption( int iOption );
+
+	// current computer hack
 	CHandle<C_ASW_Hack_Computer> m_hHackComputer;
 	CASW_VGUI_Computer_Splash *m_pSplash;
 	CASW_VGUI_Computer_Menu *m_pMenuPanel;
@@ -46,12 +45,11 @@ class CASW_VGUI_Computer_Frame : public vgui::Panel, public CASW_VGUI_Ingame_Pan
 	vgui::ImagePanel *m_pBackdropImage;
 	int m_iScanHeight;
 
-	bool m_bPlayingSplash;
-
 	// overall scale of this window
 	float m_fScale;
 
 	float m_fLastThinkTime;
+	bool m_bPlayingSplash;
 	bool m_bSetAlpha;
 	bool m_bHideLogoffButton;
 };

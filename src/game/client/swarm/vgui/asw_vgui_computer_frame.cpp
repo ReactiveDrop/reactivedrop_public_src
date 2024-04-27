@@ -10,6 +10,8 @@
 #include "c_asw_hack_computer.h"
 #include "controller_focus.h"
 #include "asw_gamerules.h"
+#include "asw_computer_area_shared.h"
+#include "rd_swarmopedia_content_log.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -89,6 +91,9 @@ void CASW_VGUI_Computer_Frame::SplashFinished()
 	{
 		if ( !m_pMenuPanel->m_hCurrentPage )
 			m_pMenuPanel->ShowMenu();
+
+		RecordComputerContents();
+
 		m_bPlayingSplash = false;
 	}
 }
@@ -119,6 +124,8 @@ void CASW_VGUI_Computer_Frame::ASWInit()
 		{
 			m_pMenuPanel->ShowMenu();
 		}
+
+		RecordComputerContents();
 	}
 	else
 	{
@@ -143,6 +150,48 @@ bool CASW_VGUI_Computer_Frame::IsPDA()
 		return m_hHackComputer->GetComputerArea()->IsPDA();
 
 	return false;
+}
+
+void CASW_VGUI_Computer_Frame::RecordComputerContents()
+{
+	// sanity check
+	C_ASW_Computer_Area *pArea = m_hHackComputer ? m_hHackComputer->GetComputerArea() : NULL;
+	if ( !pArea )
+		return;
+
+	// don't record if the computer is locked
+	if ( pArea->IsLocked() )
+		return;
+
+	// don't record if we're watching a demo
+	if ( engine->IsPlayingDemo() )
+		return;
+
+	// don't record if we're watching someone else
+	C_ASW_Marine_Resource *pMR = m_hHackComputer->m_hHackerMarineResource;
+	C_ASW_Player *pPlayer = pMR ? pMR->GetCommander() : NULL;
+	if ( !pMR || !pMR->IsInhabited() || !pPlayer || !pPlayer->IsLocalPlayer() )
+		return;
+
+	// remember any content we can visit from this computer's menu so it can be read out-of-game.
+	if ( pArea->m_MailFile.Get() && pArea->m_MailFile.Get()[0] != '\0' && !( pArea->m_iLockedScreens & ( 1 << COMPUTER_LOCKED_MAIL ) ) )
+	{
+		COMPILE_TIME_ASSERT( COMPUTER_LOCKED_MAIL_1 + 1 == COMPUTER_LOCKED_MAIL_2 );
+		COMPILE_TIME_ASSERT( COMPUTER_LOCKED_MAIL_2 + 1 == COMPUTER_LOCKED_MAIL_3 );
+		COMPILE_TIME_ASSERT( COMPUTER_LOCKED_MAIL_3 + 1 == COMPUTER_LOCKED_MAIL_4 );
+
+		int iLockedEntries = ( pArea->m_iLockedScreens >> COMPUTER_LOCKED_MAIL_1 ) & ( 1 << 4 - 1 );
+
+		if ( pArea->IsPDA() )
+			SwarmopediaRecordSeenContent( "PDA", pArea->m_MailFile.Get(), pArea->GetAbsOrigin(), pMR->GetProfileIndex(), pArea->m_PDAName.Get(), iLockedEntries );
+		else
+			SwarmopediaRecordSeenContent( "MAIL", pArea->m_MailFile.Get(), pArea->GetAbsOrigin(), pMR->GetProfileIndex(), NULL, iLockedEntries );
+	}
+
+	if ( pArea->m_NewsFile.Get() && pArea->m_NewsFile.Get()[0] != '\0' && !( pArea->m_iLockedScreens & ( 1 << COMPUTER_LOCKED_NEWS ) ) )
+	{
+		SwarmopediaRecordSeenContent( "NEWS", pArea->m_MailFile.Get(), pArea->GetAbsOrigin(), pMR->GetProfileIndex());
+	}
 }
 
 void CASW_VGUI_Computer_Frame::PerformLayout()
@@ -300,16 +349,6 @@ void CASW_VGUI_Computer_Frame::OnCommand( const char *pCommand )
 	BaseClass::OnCommand( pCommand );
 }
 
-void CASW_VGUI_Computer_Frame::Paint()
-{
-	BaseClass::Paint();
-}
-
-void CASW_VGUI_Computer_Frame::PaintBackground()
-{
-	BaseClass::PaintBackground();
-}
-
 bool CASW_VGUI_Computer_Frame::MouseClick( int x, int y, bool bRightClick, bool bDown )
 {
 	if ( m_pLogoffLabel->IsCursorOver() && m_pLogoffLabel->IsVisible() )
@@ -335,6 +374,8 @@ void CASW_VGUI_Computer_Frame::SetHackOption( int iOption )
 		SetBackdrop( 1 );
 	if ( m_pMenuPanel )
 		m_pMenuPanel->SetHackOption( iOption );
+
+	RecordComputerContents();
 }
 
 // ================================== Container ==================================================
