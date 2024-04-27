@@ -160,7 +160,7 @@ vgui::IImage *ReactiveDropInventory::ItemInstance_t::GetIcon() const
 }
 
 #ifdef _DEBUG
-CON_COMMAND_F( rd_load_all_inventory_defs, "load data and icons for all defined AS:RD inventory items", FCVAR_HIDDEN | FCVAR_NOT_CONNECTED )
+CON_COMMAND_F( rd_load_all_inventory_defs, "load data and icons for all defined AS:RD inventory items", FCVAR_NOT_CONNECTED )
 {
 	// Item def IDs are split into ranges. The important ones are:
 	// id <= 0 - invalid.
@@ -281,7 +281,7 @@ CON_COMMAND_F( rd_load_all_inventory_defs, "load data and icons for all defined 
 	Msg( "async loading icons: %d\n", iLoading );
 }
 
-CON_COMMAND_F( rd_inventory_create_icon_from_url, "Create a cache file for an inventory item icon. For dev use only. Put URL in quotes or it will interpret // as a comment.", FCVAR_NOT_CONNECTED | FCVAR_HIDDEN )
+CON_COMMAND_F( rd_inventory_create_icon_from_url, "Create a cache file for an inventory item icon. For dev use only. Put URL in quotes or it will interpret // as a comment.", FCVAR_NOT_CONNECTED )
 {
 	GetSteamItemIcon( args[1], true );
 }
