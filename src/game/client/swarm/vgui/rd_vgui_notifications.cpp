@@ -369,6 +369,14 @@ void CRD_VGUI_Notifications_List::ApplySchemeSettings( IScheme *pScheme )
 
 	BaseClass::ApplySchemeSettings( pScheme );
 
+	int w, t;
+	m_pLblNone->GetContentSize( w, t );
+	int x, y;
+	m_pLblNone->GetPos( x, y );
+	y += ( m_pLblNone->GetTall() - t ) / 2;
+	m_pLblNone->SetPos( x, y );
+	m_pLblNone->SetTall( t );
+
 	UpdateNotifications();
 }
 

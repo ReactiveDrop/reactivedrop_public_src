@@ -13,12 +13,11 @@ DECLARE_BUILD_FACTORY( CRD_VGUI_Workshop_Download_Progress );
 
 CRD_VGUI_Workshop_Download_Progress::CRD_VGUI_Workshop_Download_Progress( vgui::Panel *parent, const char *panelName ) : BaseClass( parent, panelName )
 {
+	m_pPnlBackground = new vgui::Panel( this, "PnlBackground" );
 	m_pLblName = new vgui::Label( this, "LblName", "" );
 	m_pPrgDownload = new vgui::ProgressBar( this, "PrgDownload" );
 	m_pLblQueue = new vgui::Label( this, "LblQueue", "" );
 	m_pImgPreview = new vgui::ImagePanel( this, "ImgPreview" );
-
-	SetPaintBackgroundEnabled( false );
 }
 
 CRD_VGUI_Workshop_Download_Progress::~CRD_VGUI_Workshop_Download_Progress()
@@ -36,8 +35,9 @@ void CRD_VGUI_Workshop_Download_Progress::OnThink()
 {
 	BaseClass::OnThink();
 
-	AssertOnce( SteamUGC() );
-	if ( !SteamUGC() )
+	ISteamUGC *pUGC = SteamUGC();
+	AssertOnce( pUGC );
+	if ( !pUGC )
 	{
 		return;
 	}
@@ -46,7 +46,7 @@ void CRD_VGUI_Workshop_Download_Progress::OnThink()
 	FOR_EACH_VEC( g_ReactiveDropWorkshop.m_EnabledAddons, i )
 	{
 		PublishedFileId_t nPublishedFileID = g_ReactiveDropWorkshop.m_EnabledAddons[i].details.m_nPublishedFileId;
-		if ( SteamUGC()->GetItemState( nPublishedFileID ) & k_EItemStateDownloadPending )
+		if ( pUGC->GetItemState( nPublishedFileID ) & k_EItemStateDownloadPending )
 		{
 			nInQueue++;
 		}
@@ -57,7 +57,7 @@ void CRD_VGUI_Workshop_Download_Progress::OnThink()
 		wchar_t wszQueueCount[21];
 		V_snwprintf( wszQueueCount, ARRAYSIZE( wszQueueCount ), L"%d", nInQueue );
 		wchar_t wszQueue[128];
-		g_pVGuiLocalize->ConstructString( wszQueue, sizeof( wszQueue ), g_pVGuiLocalize->FindSafe( "#workshop_number_in_queue" ), 1, wszQueueCount );
+		g_pVGuiLocalize->ConstructString( wszQueue, sizeof( wszQueue ), g_pVGuiLocalize->Find( "#workshop_number_in_queue" ), 1, wszQueueCount );
 		m_pLblQueue->SetText( wszQueue );
 		m_pLblQueue->SetVisible( true );
 		SetZPos( 20 );
@@ -72,7 +72,7 @@ void CRD_VGUI_Workshop_Download_Progress::OnThink()
 	FOR_EACH_VEC( g_ReactiveDropWorkshop.m_EnabledAddons, i )
 	{
 		PublishedFileId_t nPublishedFileID = g_ReactiveDropWorkshop.m_EnabledAddons[i].details.m_nPublishedFileId;
-		if ( SteamUGC()->GetItemState( nPublishedFileID ) & k_EItemStateDownloadPending )
+		if ( pUGC->GetItemState( nPublishedFileID ) & k_EItemStateDownloadPending )
 		{
 			iBestAddonIndex = i;
 			break;
@@ -81,7 +81,7 @@ void CRD_VGUI_Workshop_Download_Progress::OnThink()
 	FOR_EACH_VEC( g_ReactiveDropWorkshop.m_EnabledAddons, i )
 	{
 		PublishedFileId_t nPublishedFileID = g_ReactiveDropWorkshop.m_EnabledAddons[i].details.m_nPublishedFileId;
-		if ( SteamUGC()->GetItemState( nPublishedFileID ) & k_EItemStateDownloading )
+		if ( pUGC->GetItemState( nPublishedFileID ) & k_EItemStateDownloading )
 		{
 			iBestAddonIndex = i;
 			break;
@@ -90,10 +90,10 @@ void CRD_VGUI_Workshop_Download_Progress::OnThink()
 	FOR_EACH_VEC( g_ReactiveDropWorkshop.m_EnabledAddons, i )
 	{
 		PublishedFileId_t nPublishedFileID = g_ReactiveDropWorkshop.m_EnabledAddons[i].details.m_nPublishedFileId;
-		if ( SteamUGC()->GetItemState( nPublishedFileID ) & k_EItemStateDownloading )
+		if ( pUGC->GetItemState( nPublishedFileID ) & k_EItemStateDownloading )
 		{
 			uint64 nBytesDownloaded, nBytesTotal;
-			if ( SteamUGC()->GetItemDownloadInfo( nPublishedFileID, &nBytesDownloaded, &nBytesTotal ) && nBytesDownloaded > 0 )
+			if ( pUGC->GetItemDownloadInfo( nPublishedFileID, &nBytesDownloaded, &nBytesTotal ) && nBytesDownloaded > 0 )
 			{
 				iBestAddonIndex = i;
 				break;
@@ -102,6 +102,7 @@ void CRD_VGUI_Workshop_Download_Progress::OnThink()
 	}
 	if ( iBestAddonIndex == -1 )
 	{
+		m_pPnlBackground->SetVisible( false );
 		m_pImgPreview->SetImage( (vgui::IImage *) NULL );
 		m_pImgPreview->SetVisible( false );
 		m_pLblName->SetVisible( false );
@@ -125,13 +126,14 @@ void CRD_VGUI_Workshop_Download_Progress::OnThink()
 		m_pImgPreview->SetVisible( false );
 	}
 
+	m_pPnlBackground->SetVisible( true );
 	wchar_t wszName[k_cchPublishedDocumentTitleMax];
 	V_UTF8ToUnicode( g_ReactiveDropWorkshop.m_EnabledAddons[iBestAddonIndex].details.m_rgchTitle, wszName, sizeof( wszName ) );
 	m_pLblName->SetText( wszName );
 	m_pLblName->SetVisible( true );
 
 	uint64 nBytesDownloaded, nBytesTotal;
-	if ( SteamUGC()->GetItemDownloadInfo( nPublishedFileID, &nBytesDownloaded, &nBytesTotal ) && nBytesTotal > 0 )
+	if ( pUGC->GetItemDownloadInfo( nPublishedFileID, &nBytesDownloaded, &nBytesTotal ) && nBytesTotal > 0 )
 	{
 		m_pPrgDownload->SetProgress( float( nBytesDownloaded ) / float( nBytesTotal ) );
 		m_pPrgDownload->SetVisible( true );

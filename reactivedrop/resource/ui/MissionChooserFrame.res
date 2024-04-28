@@ -62,10 +62,10 @@
 	"WorkshopDownloadProgress"
 	{
 		"fieldName"			"WorkshopDownloadProgress"
-		"xpos"				"r150"
-		"ypos"				"r50"
-		"wide"				"145"
-		"tall"				"45"
+		"xpos"				"r154"
+		"ypos"				"r54"
+		"wide"				"149"
+		"tall"				"49"
 		"zpos"				"20"
 		"ControlName"		"CRD_VGUI_Workshop_Download_Progress"
 	}

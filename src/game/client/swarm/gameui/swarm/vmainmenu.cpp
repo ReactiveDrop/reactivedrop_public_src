@@ -35,6 +35,7 @@
 #include "vgui_controls/Tooltip.h"
 #include "vgui_controls/ImagePanel.h"
 #include "vgui_controls/Image.h"
+#include "vgui_controls/TextImage.h"
 
 #include "steam/isteamremotestorage.h"
 #include "materialsystem/materialsystem_config.h"
@@ -527,6 +528,10 @@ void MainMenu::ApplySchemeSettings( IScheme *pScheme )
 		{
 			m_pBranchDisclaimer->SetText( VarArgs( "#rd_branch_disclaimer_%s", szBranch ) );
 			m_pBranchDisclaimer->SetVisible( true );
+			int w, t;
+			m_pBranchDisclaimer->GetTextImage()->GetContentSize( w, t );
+			m_pBranchDisclaimer->SetTextInset( YRES( 2 ), YRES( 2 ) );
+			m_pBranchDisclaimer->SetSize( w + YRES( 4 ), t + YRES( 4 ) );
 		}
 	}
 

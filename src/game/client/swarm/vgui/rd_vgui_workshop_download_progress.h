@@ -24,6 +24,7 @@ public:
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
 	virtual void OnThink();
 
+	vgui::Panel *m_pPnlBackground;
 	vgui::Label *m_pLblName;
 	vgui::ProgressBar *m_pPrgDownload;
 	vgui::Label *m_pLblQueue;

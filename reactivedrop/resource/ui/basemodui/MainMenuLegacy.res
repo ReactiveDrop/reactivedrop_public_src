@@ -318,10 +318,10 @@
 	{
 		"ControlName"		"CRD_VGUI_Workshop_Download_Progress"
 		"fieldName"			"WorkshopDownloadProgress"
-		"xpos"				"r150"
-		"ypos"				"r50"
-		"wide"				"145"
-		"tall"				"45"
+		"xpos"				"r154"
+		"ypos"				"r54"
+		"wide"				"149"
+		"tall"				"49"
 		"zpos"				"20"
 		"visible"			"1"
 		"enabled"			"1"
@@ -338,6 +338,8 @@
 		"textAlignment"		"north-west"
 		"wrap"				"1"
 		"fgcolor_override"	"192 192 192 255"
+		"bgcolor_override"	"28 34 40 224"
+		"paintbackgroundtype"	"2"
 	}
 
 	"TopBar"
