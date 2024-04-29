@@ -3405,6 +3405,19 @@ namespace ReactiveDropInventory
 		return nCount;
 	}
 #endif
+	void RequestFullInventoryRefresh()
+	{
+		if ( s_RD_Inventory_Manager.m_CraftingQueue.Count() )
+		{
+			s_RD_Inventory_Manager.m_bWantFullInventoryRefresh = true;
+		}
+		else if ( s_RD_Inventory_Manager.m_GetFullInventoryForCacheResult == k_SteamInventoryResultInvalid )
+		{
+			GET_INVENTORY_OR_BAIL;
+
+			pInventory->GetAllItems( &s_RD_Inventory_Manager.m_GetFullInventoryForCacheResult );
+		}
+	}
 #endif
 
 	void OnHitConfirm( CBaseEntity *pAttacker, CBaseEntity *pTarget, Vector vecDamagePosition, bool bKilled, bool bDamageOverTime, bool bBlastDamage, int iDisposition, float flDamage, CBaseEntity *pWeapon )

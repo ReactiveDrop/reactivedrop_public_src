@@ -185,6 +185,7 @@ namespace ReactiveDropInventory
 	int GetCraftingMaterialsFound();
 	int GetCraftingMaterialsMissed();
 #endif
+	void RequestFullInventoryRefresh();
 #endif
 	void OnHitConfirm( CBaseEntity *pAttacker, CBaseEntity *pTarget, Vector vecDamagePosition, bool bKilled, bool bDamageOverTime, bool bBlastDamage, int iDisposition, float flDamage, CBaseEntity *pWeapon );
 }

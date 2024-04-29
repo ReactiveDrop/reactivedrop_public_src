@@ -65,6 +65,7 @@
 #include "VMainMenu.h"
 #include "VMultiplayer.h"
 #include "VOptions.h"
+#include "VPromoOptIn.h"
 #include "VReportProblem.h"
 #include "VSignInDialog.h"
 #include "VFooterPanel.h"
@@ -584,6 +585,10 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 
 		case WT_REPORTPROBLEM:
 			m_Frames[wt] = new ReportProblem( this, "ReportProblem" );
+			break;
+
+		case WT_PROMOOPTIN:
+			m_Frames[wt] = new PromoOptIn( this, "PromoOptIn" );
 			break;
 
 		default:

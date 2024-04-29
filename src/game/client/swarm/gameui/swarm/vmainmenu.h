@@ -12,6 +12,7 @@
 #include "rd_hud_glow_helper.h"
 
 class CRD_VGUI_Commander_Mini_Profile;
+class CRD_VGUI_Main_Menu_Promo_Model_Viewer;
 class CRD_VGUI_Main_Menu_Top_Bar;
 class CRD_VGUI_Stock_Ticker_Helper;
 class CReactiveDropWorkshopPreviewImage;
@@ -56,7 +57,7 @@ public:
 	static void AcceptQuitGameCallback();
 	void SetFooterState();
 	void OpenNewsURL( const char *szURL );
-	void MaybeShowTooltip( vgui::Panel *pPanel, const char *szTitle, const char *szDescription, float flWidthBias, float flHeightBias, vgui::Label::Alignment iAlignment );
+	void MaybeShowTooltip( vgui::Panel *pPanel, const char *szTitle, const char *szDescription, float flWidthBias, float flHeightBias, vgui::Label::Alignment iAlignment, bool bZbalermorna = false );
 
 	enum MainMenuQuickJoinHelpText
 	{
@@ -81,6 +82,10 @@ public:
 	BaseModHybridButton *m_pBtnNewsShowcase;
 	BaseModHybridButton *m_pBtnUpdateNotes;
 	vgui::Label *m_pBranchDisclaimer{};
+#ifdef RD_7A_DROPS
+	CRD_VGUI_Main_Menu_Promo_Model_Viewer *m_pCraftingMaterialsBetaPromoButton;
+	int m_iTargetXCraftingMaterialsBetaPromo{};
+#endif
 	bool m_bIsStub{};
 	bool m_bIsLegacy{};
 	bool m_bGrabPanelLocations{};
