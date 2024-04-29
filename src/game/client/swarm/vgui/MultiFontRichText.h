@@ -82,6 +82,7 @@ public:
 	// used by tooltips
 	void SetToFullHeight();
 	int GetNumLines();
+	void GetContentSize( int &wide, int &tall );
 
 	/* CUSTOM MESSAGE HANDLING
 		"SetText"
@@ -193,6 +194,13 @@ private:
 	void InvalidateLineBreakStream();
 	void RecalculateLineBreaks();
 
+	struct TLineBreak
+	{
+		int textStreamIndex;
+		int lineWide;
+		int lineTall;
+	};
+
 	struct TFade
 	{
 		float flFadeStartTime;
@@ -225,7 +233,7 @@ private:
 
 	// data
 	CUtlVector<wchar_t> m_TextStream;		// the text in the text window is stored in this buffer
-	CUtlVector<int> m_LineBreaks;		// an array that holds the index in the buffer to wrap lines at
+	CUtlVector<TLineBreak> m_LineBreaks;		// an array that holds the index in the buffer to wrap lines at
 	CUtlVector<TFormatStream> m_FormatStream;	// list of format changes
 
 	bool m_bRecalcLineBreaks;

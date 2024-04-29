@@ -462,7 +462,7 @@ void MultiFontRichText::CursorToPixelSpace( int cursorPos, int &cx, int &cy )
 		if ( cursorPos == i )
 		{
 			// if we've passed a line break go to that
-			if ( m_LineBreaks[lineBreakIndexIndex] == i )
+			if ( m_LineBreaks[lineBreakIndexIndex].textStreamIndex == i )
 			{
 				// add another line
 				AddAnotherLine( x, y );
@@ -472,7 +472,7 @@ void MultiFontRichText::CursorToPixelSpace( int cursorPos, int &cx, int &cy )
 		}
 
 		// if we've passed a line break go to that
-		if ( m_LineBreaks[lineBreakIndexIndex] == i )
+		if ( m_LineBreaks[lineBreakIndexIndex].textStreamIndex == i )
 		{
 			// add another line
 			AddAnotherLine( x, y );
@@ -523,7 +523,7 @@ int MultiFontRichText::PixelToCursorSpace( int cx, int cy )
 		}
 
 		// if we are on the right line but off the end of if put the cursor at the end of the line
-		if ( m_LineBreaks[lineBreakIndexIndex] == i )
+		if ( m_LineBreaks[lineBreakIndexIndex].textStreamIndex == i )
 		{
 			// add another line
 			AddAnotherLine( x, y );
@@ -811,7 +811,7 @@ void MultiFontRichText::Paint()
 
 		// 2.
 		// if we've passed a line break go to that
-		if ( m_LineBreaks.IsValidIndex( lineBreakIndexIndex ) && m_LineBreaks[lineBreakIndexIndex] <= i )
+		if ( m_LineBreaks.IsValidIndex( lineBreakIndexIndex ) && m_LineBreaks[lineBreakIndexIndex].textStreamIndex <= i )
 		{
 			if ( _currentTextClickable )
 			{
@@ -860,8 +860,8 @@ void MultiFontRichText::Paint()
 		}
 
 		// Stop at the next line break
-		if ( m_LineBreaks.IsValidIndex( lineBreakIndexIndex ) && m_LineBreaks[lineBreakIndexIndex] < iLim )
-			iLim = m_LineBreaks[lineBreakIndexIndex];
+		if ( m_LineBreaks.IsValidIndex( lineBreakIndexIndex ) && m_LineBreaks[lineBreakIndexIndex].textStreamIndex < iLim )
+			iLim = m_LineBreaks[lineBreakIndexIndex].textStreamIndex;
 
 		// Handle non-drawing characters specially
 		for ( int iT = i; iT < iLim; iT++ )
@@ -1301,8 +1301,11 @@ void MultiFontRichText::RecalculateLineBreaks()
 	int x = _drawOffsetX, y = _drawOffsetY;
 
 	HFont fontWordStart = INVALID_FONT;
+	int wordStartX = 0;
 	int wordStartIndex = 0;
 	int lineStartIndex = 0;
+	// TODO(BenLubar): support multiple different font heights in one text stream
+	int heightThisLine = MAX( surface()->GetFontTall( m_hFontDefault ), 1 ) + _drawOffsetY;
 	bool hasWord = false;
 	bool justStartedNewLine = true;
 	bool wordStartedOnNewLine = true;
@@ -1320,8 +1323,8 @@ void MultiFontRichText::RecalculateLineBreaks()
 			m_LineBreaks.Remove( i );
 			--i; // removing shrinks the list!
 		}
-		startChar = m_LineBreaks[_recalculateBreaksIndex];
-		lineStartIndex = m_LineBreaks[_recalculateBreaksIndex];
+		startChar = m_LineBreaks[_recalculateBreaksIndex].textStreamIndex;
+		lineStartIndex = startChar;
 		wordStartIndex = lineStartIndex;
 	}
 
@@ -1384,6 +1387,7 @@ void MultiFontRichText::RecalculateLineBreaks()
 			if ( !hasWord )
 			{
 				// Start a new word
+				wordStartX = int( flLineWidthSoFar );
 				wordStartIndex = i;
 				hasWord = true;
 				wordStartedOnNewLine = justStartedNewLine;
@@ -1436,12 +1440,12 @@ void MultiFontRichText::RecalculateLineBreaks()
 			{
 				// skip the newline so it's not at the beginning of the new line
 				lineStartIndex = i + 1;
-				m_LineBreaks.AddToTail( i + 1 );
+				m_LineBreaks.AddToTail( TLineBreak{ i + 1, int( flLineWidthSoFar ) + 1, heightThisLine } );
 			}
 			else if ( bPreviousWordStartedOnNewLine || iPreviousWordStartIndex <= lineStartIndex )
 			{
 				lineStartIndex = i;
-				m_LineBreaks.AddToTail( i );
+				m_LineBreaks.AddToTail( TLineBreak{ i, int( flLineWidthSoFar ) + 1, heightThisLine } );
 
 				if ( renderState.textClickable )
 				{
@@ -1460,7 +1464,7 @@ void MultiFontRichText::RecalculateLineBreaks()
 			}
 			else
 			{
-				m_LineBreaks.AddToTail( iPreviousWordStartIndex );
+				m_LineBreaks.AddToTail( TLineBreak{ iPreviousWordStartIndex, wordStartX + 1, heightThisLine } );
 				lineStartIndex = iPreviousWordStartIndex;
 				i = iPreviousWordStartIndex;
 
@@ -1494,7 +1498,7 @@ void MultiFontRichText::RecalculateLineBreaks()
 	}
 
 	// end the list
-	m_LineBreaks.AddToTail( MAX_BUFFER_SIZE );
+	m_LineBreaks.AddToTail( TLineBreak{ MAX_BUFFER_SIZE, int( flLineWidthSoFar ) + 1, heightThisLine } );
 
 	// set up the scrollbar
 	_invalidateVerticalScrollbarSlider = true;
@@ -1937,7 +1941,7 @@ void MultiFontRichText::SetMaximumCharCount( int maxChars )
 int MultiFontRichText::GetCursorLine()
 {
 	// always returns the last place
-	int pos = m_LineBreaks[m_LineBreaks.Count() - 1];
+	int pos = m_LineBreaks[m_LineBreaks.Count() - 1].textStreamIndex;
 	Assert( pos == MAX_BUFFER_SIZE );
 	return pos;
 }
@@ -2333,7 +2337,7 @@ int MultiFontRichText::GetStartDrawIndex( int &lineBreakIndexIndex )
 	lineBreakIndexIndex = startLine;
 	if ( startLine && startLine < m_LineBreaks.Count() )
 	{
-		startIndex = m_LineBreaks[startLine - 1];
+		startIndex = m_LineBreaks[startLine - 1].textStreamIndex;
 	}
 
 	return startIndex;
@@ -2535,17 +2539,29 @@ int MultiFontRichText::GetNumLines()
 	return m_LineBreaks.Count();
 }
 
+void MultiFontRichText::GetContentSize( int &wide, int &tall )
+{
+	RecalculateLineBreaks();
+
+	wide = _drawOffsetX;
+	tall = _drawOffsetY;
+
+	FOR_EACH_VEC( m_LineBreaks, i )
+	{
+		wide = MAX( wide, m_LineBreaks[i].lineWide );
+		tall += m_LineBreaks[i].lineTall;
+	}
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Sets the height of the text entry window so all text will fit inside
 //-----------------------------------------------------------------------------
 void MultiFontRichText::SetToFullHeight()
 {
-	PerformLayout();
 	int wide, tall;
-	GetSize( wide, tall );
+	GetContentSize( wide, tall );
 
-	tall = GetNumLines() * ( GetLineHeight() + _drawOffsetY ) + _drawOffsetY + 2;
-	SetSize( wide, tall );
+	SetTall( tall );
 	PerformLayout();
 }
 
@@ -2583,7 +2599,7 @@ void MultiFontRichText::InvalidateLineBreakStream()
 {
 	// clear the buffer
 	m_LineBreaks.RemoveAll();
-	m_LineBreaks.AddToTail( MAX_BUFFER_SIZE );
+	m_LineBreaks.AddToTail( TLineBreak{ MAX_BUFFER_SIZE, 0, 0 } );
 	_recalculateBreaksIndex = 0;
 	m_bRecalcLineBreaks = true;
 }

@@ -1,5 +1,6 @@
 #include "cbase.h"
 #include "BriefingTooltip.h"
+#include "MultiFontRichText.h"
 #include "controller_focus.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -13,10 +14,8 @@ BriefingTooltip::BriefingTooltip( Panel *parent, const char *panelName ) :
 	Panel( parent, panelName )
 {
 	m_pTooltipPanel = NULL;
-	m_pMainLabel = new Label( this, "BriefingTooltipMainLabel", "" );
-	m_pMainLabel->SetContentAlignment( vgui::Label::a_center );
-	m_pSubLabel = new Label( this, "BriefingTooltipSubLabel", "" );
-	m_pSubLabel->SetContentAlignment( vgui::Label::a_center );
+	m_pMainLabel = new MultiFontRichText( this, "BriefingTooltipMainLabel" );
+	m_pSubLabel = new MultiFontRichText( this, "BriefingTooltipSubLabel" );
 	m_iTooltipX = m_iTooltipY = 0;
 	m_bTooltipsEnabled = true;
 	m_bTooltipIgnoresCursor = false;
@@ -49,28 +48,28 @@ void BriefingTooltip::ApplySchemeSettings( IScheme *pScheme )
 	BaseClass::ApplySchemeSettings( pScheme );
 
 	SetZPos( 200 );
-	m_MainFont = pScheme->GetFont( "Default", IsProportional() );
-	m_SubFont = pScheme->GetFont( "DefaultSmall", IsProportional() );
+	m_MainFont = pScheme->GetFont( "DefaultMedium", IsProportional() );
+	m_SubFont = pScheme->GetFont( "Default", IsProportional() );
 	SetBgColor( pScheme->GetColor( "Black", Color( 0, 0, 0, 255 ) ) );
 	SetBorder( pScheme->GetBorder( "ASWBriefingButtonBorder" ) );
 	SetPaintBorderEnabled( true );
 	SetPaintBackgroundType( 2 );
 
 	m_pMainLabel->SetFgColor( pScheme->GetColor( "White", Color( 255, 255, 255, 255 ) ) );
-	m_pMainLabel->SetContentAlignment( vgui::Label::a_center );
 	m_pMainLabel->SetZPos( 201 );
 	m_pMainLabel->SetFont( m_MainFont );
 	m_pMainLabel->SetMouseInputEnabled( false );
+	m_pMainLabel->SetDrawTextOnly();
 	m_pSubLabel->SetFgColor( pScheme->GetColor( "LightBlue", Color( 128, 128, 128, 255 ) ) );
-	m_pSubLabel->SetContentAlignment( vgui::Label::a_center );
 	m_pSubLabel->SetZPos( 201 );
 	m_pSubLabel->SetFont( m_SubFont );
 	m_pSubLabel->SetMouseInputEnabled( false );
+	m_pSubLabel->SetDrawTextOnly();
 	SetMouseInputEnabled( false );
 }
 
 void BriefingTooltip::SetTooltip( vgui::Panel *pPanel, const char *szMainText, const char *szSubText,
-	int iTooltipX, int iTooltipY, vgui::Label::Alignment iAlignment )
+	int iTooltipX, int iTooltipY, vgui::Label::Alignment iAlignment, bool bZbalermorna )
 {
 	if ( !pPanel || !m_bTooltipsEnabled )
 		return;
@@ -83,8 +82,18 @@ void BriefingTooltip::SetTooltip( vgui::Panel *pPanel, const char *szMainText, c
 
 	MoveToFront();
 	m_pTooltipPanel = pPanel;
-	m_pMainLabel->SetText( szMainText );
-	m_pSubLabel->SetText( szSubText );
+	if ( bZbalermorna )
+	{
+		m_pMainLabel->SetText( "" );
+		m_pMainLabel->InsertZbalermornaString( szMainText );
+		m_pSubLabel->SetText( "" );
+		m_pSubLabel->InsertZbalermornaString( szSubText );
+	}
+	else
+	{
+		m_pMainLabel->SetText( szMainText );
+		m_pSubLabel->SetText( szSubText );
+	}
 	m_pMainLabel->InvalidateLayout( true );
 	m_pSubLabel->InvalidateLayout( true );
 	m_iTooltipX = iTooltipX;
@@ -123,17 +132,18 @@ void BriefingTooltip::PerformLayout()
 {
 	BaseClass::PerformLayout();
 
-	m_pMainLabel->SetContentAlignment( vgui::Label::a_center );
-	m_pSubLabel->SetContentAlignment( vgui::Label::a_center );
-	m_pMainLabel->SizeToContents();
-	m_pSubLabel->SizeToContents();
-
 	int mainwide, maintall, subwide, subtall;
 	int border = ScreenWidth() * 0.01;
+
+	// set max size for the text to the screen size so it only wraps on hard line breaks
+	GetHudSize( mainwide, maintall );
+	m_pMainLabel->SetSize( mainwide - border * 2, maintall - border * 2 );
+	m_pSubLabel->SetSize( mainwide - border * 2, maintall - border * 2 );
+
 	m_pMainLabel->GetContentSize( mainwide, maintall );
 	m_pSubLabel->GetContentSize( subwide, subtall );
-	m_pMainLabel->SetPos( border, border );
-	m_pSubLabel->SetPos( border, maintall + border );
+	m_pMainLabel->SetBounds( border, border, mainwide, maintall );
+	m_pSubLabel->SetBounds( border, maintall + border, subwide, subtall );
 
 	int wide = ( mainwide > subwide ) ? mainwide : subwide;
 	int tall = maintall + subtall + ( border * 2 );

@@ -8,6 +8,11 @@
 #include <vgui_controls/Label.h>
 #include <vgui_controls/PHandle.h>
 
+namespace vgui
+{
+	class MultiFontRichText;
+}
+
 // this is the tooltip panel used throughout the briefing
 class BriefingTooltip : public vgui::Panel
 {
@@ -21,14 +26,14 @@ public:
 
 	vgui::Panel *GetTooltipPanel() { return m_pTooltipPanel; }
 	void SetTooltip( vgui::Panel *pPanel, const char *szMainText, const char *szSubText,
-		int iTooltipX, int iTooltipY, vgui::Label::Alignment iAlignment = vgui::Label::a_north );
+		int iTooltipX, int iTooltipY, vgui::Label::Alignment iAlignment = vgui::Label::a_north, bool bZbalermorna = false );
 	void SetTooltip( vgui::Panel *pPanel, const wchar_t *szMainText, const wchar_t *szSubText,
 		int iTooltipX, int iTooltipY, vgui::Label::Alignment iAlignment = vgui::Label::a_north );
 
 	virtual void PerformLayout();
 	vgui::Panel *m_pTooltipPanel;
-	vgui::Label *m_pMainLabel;
-	vgui::Label *m_pSubLabel;
+	vgui::MultiFontRichText *m_pMainLabel;
+	vgui::MultiFontRichText *m_pSubLabel;
 	vgui::HFont m_MainFont, m_SubFont;
 	int m_iTooltipX, m_iTooltipY;
 	vgui::Label::Alignment m_iTooltipAlignment;
