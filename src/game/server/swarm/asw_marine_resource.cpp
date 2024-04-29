@@ -212,6 +212,10 @@ CASW_Marine_Resource::CASW_Marine_Resource()
 	m_iLeadershipProcsResist = 0;
 	m_iLeadershipDamageAccuracy = 0;
 	m_iLeadershipDamageResist = 0;
+	m_iFastReloadSuccess = 0;
+	m_iFastReloadFail = 0;
+	m_iReloadsNormal = 0;
+	m_iReloadsStarted = 0;
 	m_iScore = -1;
 	m_flFinishedMissionTime = -1;
 

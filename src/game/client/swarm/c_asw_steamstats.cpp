@@ -650,6 +650,14 @@ bool CASW_Steamstats::FetchStats( CSteamID playerSteamID, CASW_Player *pPlayer )
 	FETCH_STEAM_STATS( "leadership.procs.resist", m_iLeadershipProcsResist );
 	FETCH_STEAM_STATS( "leadership.damage.accuracy", m_iLeadershipDamageAccuracy );
 	FETCH_STEAM_STATS( "leadership.damage.resist", m_iLeadershipDamageResist );
+	FETCH_STEAM_STATS( "reloads.fast_success", m_iReloadsFastSuccess );
+	FETCH_STEAM_STATS( "reloads.fast_fail", m_iReloadsFastFail );
+	FETCH_STEAM_STATS( "reloads.normal", m_iReloadsNormal );
+	FETCH_STEAM_STATS( "reloads.aborted", m_iReloadsAborted );
+#ifdef RD_7A_DROPS
+	FETCH_STEAM_STATS( "crafting.materials_found", m_iCraftingMaterialsFound );
+	FETCH_STEAM_STATS( "crafting.materials_missed", m_iCraftingMaterialsMissed );
+#endif
 	FETCH_STEAM_STATS( "playtime.total", m_iTotalPlayTime );
 
 	// Fetch starting equip information
@@ -890,6 +898,14 @@ void CASW_Steamstats::PrepStatsForSend( CASW_Player *pPlayer )
 	m_iLeadershipProcsResist += GetDebriefStats()->GetLeadershipProcsResist( iMarineIndex );
 	m_iLeadershipDamageAccuracy += GetDebriefStats()->GetLeadershipDamageAccuracy( iMarineIndex );
 	m_iLeadershipDamageResist += GetDebriefStats()->GetLeadershipDamageResist( iMarineIndex );
+	m_iReloadsFastSuccess += GetDebriefStats()->GetFastReloadSuccess( iMarineIndex );
+	m_iReloadsFastFail += GetDebriefStats()->GetFastReloadFail( iMarineIndex );
+	m_iReloadsNormal += GetDebriefStats()->GetReloadsNormal( iMarineIndex );
+	m_iReloadsAborted += GetDebriefStats()->GetReloadsAborted( iMarineIndex );
+#ifdef RD_7A_DROPS
+	m_iCraftingMaterialsFound += ReactiveDropInventory::GetCraftingMaterialsFound();
+	m_iCraftingMaterialsMissed += ReactiveDropInventory::GetCraftingMaterialsMissed();
+#endif
 	m_iTotalPlayTime += (int)GetDebriefStats()->m_fTimeTaken;
 
 	// Get starting equips
@@ -972,6 +988,14 @@ void CASW_Steamstats::PrepStatsForSend( CASW_Player *pPlayer )
 	SEND_STEAM_STATS( "leadership.procs.resist", m_iLeadershipProcsResist );
 	SEND_STEAM_STATS( "leadership.damage.accuracy", m_iLeadershipDamageAccuracy );
 	SEND_STEAM_STATS( "leadership.damage.resist", m_iLeadershipDamageResist );
+	SEND_STEAM_STATS( "reloads.fast_success", m_iReloadsFastSuccess );
+	SEND_STEAM_STATS( "reloads.fast_fail", m_iReloadsFastFail );
+	SEND_STEAM_STATS( "reloads.normal", m_iReloadsNormal );
+	SEND_STEAM_STATS( "reloads.aborted", m_iReloadsAborted );
+#ifdef RD_7A_DROPS
+	SEND_STEAM_STATS( "crafting.materials_found", m_iCraftingMaterialsFound );
+	SEND_STEAM_STATS( "crafting.materials_missed", m_iCraftingMaterialsMissed );
+#endif
 	SEND_STEAM_STATS( "playtime.total", m_iTotalPlayTime );
 
 	if ( pPrimary && m_PrimaryEquipCounts.IsValidIndex( iPrimaryIndex ) )

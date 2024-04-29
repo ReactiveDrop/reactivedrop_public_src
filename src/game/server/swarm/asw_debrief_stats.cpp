@@ -107,6 +107,9 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Debrief_Stats, DT_ASW_Debrief_Stats)
 	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iWeaponClassAndKills7) ), m_iWeaponClassAndKills7 ),
 	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iDamageAndFF7) ), m_iDamageAndFF7 ),
 	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iShotsFiredAndHit7) ), m_iShotsFiredAndHit7 ),
+	
+	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iFastReloadSuccessAndFail) ), m_iFastReloadSuccessAndFail ),
+	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iReloadNormalAndAborted) ), m_iReloadNormalAndAborted ),
 
 	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iLeaderboardScore) ), m_iLeaderboardScore ),
 

@@ -80,6 +80,10 @@ public:
 	int	GetLeadershipProcsResist( int iMarineIndex ) { return m_iLeadershipProcsResist[iMarineIndex]; }
 	int	GetLeadershipDamageAccuracy( int iMarineIndex ) { return m_iLeadershipDamageAccuracy[iMarineIndex]; }
 	int	GetLeadershipDamageResist( int iMarineIndex ) { return m_iLeadershipDamageResist[iMarineIndex]; }
+	int	GetFastReloadSuccess( int iMarineIndex ) { return m_iFastReloadSuccessAndFail[iMarineIndex] >> 16; }
+	int	GetFastReloadFail( int iMarineIndex ) { return m_iFastReloadSuccessAndFail[iMarineIndex] & 0xFFFF; }
+	int	GetReloadsNormal( int iMarineIndex ) { return m_iReloadNormalAndAborted[iMarineIndex] >> 16; }
+	int	GetReloadsAborted( int iMarineIndex ) { return m_iReloadNormalAndAborted[iMarineIndex] & 0xFFFF; }
 
 	int GetHighestKills();
 	float GetHighestAccuracy();
@@ -198,6 +202,9 @@ public:
 	CNetworkArray( unsigned int,		m_iWeaponClassAndKills7,		ASW_MAX_MARINE_RESOURCES );
 	CNetworkArray( unsigned int,		m_iDamageAndFF7,				ASW_MAX_MARINE_RESOURCES );
 	CNetworkArray( unsigned int,		m_iShotsFiredAndHit7,			ASW_MAX_MARINE_RESOURCES );
+
+	CNetworkArray( unsigned int,		m_iFastReloadSuccessAndFail,	ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( unsigned int,		m_iReloadNormalAndAborted,		ASW_MAX_MARINE_RESOURCES );
 
 	CNetworkArray( int, m_iLeaderboardScore, ASW_MAX_MARINE_RESOURCES );
 

@@ -533,16 +533,16 @@ void CASW_Weapon::ItemPostFrame( void )
 	// -----------------------
 	if ( bReload && UsesClipsForAmmo1() )
 	{
-		if ( m_bInReload )
-		{
-			// todo: check for a fast reload
-			//Msg("Check for fast reload\n");
-		}
-		else
+		if ( !m_bInReload )
 		{
 			// reload when reload is pressed, or if no buttons are down and weapon is empty.
 			Reload();
 			m_fFireDuration = 0.0f;
+
+#ifdef GAME_DLL
+			if ( pMarine && pMarine->GetMarineResource() )
+				pMarine->GetMarineResource()->m_iReloadsStarted++;
+#endif
 		}
 	}
 
@@ -595,15 +595,12 @@ void CASW_Weapon::SecondaryAttack( void )
 bool CASW_Weapon::ReloadOrSwitchWeapons( void )
 {
 	bool bAutoReload = true;
-	CBaseCombatCharacter* pCombatCharOwner = GetOwner();
-	if ( pCombatCharOwner && pCombatCharOwner->Classify() == CLASS_ASW_MARINE )
+	CBaseCombatCharacter *pCombatCharOwner = GetOwner();
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pCombatCharOwner );
+	if ( pMarine && pMarine->GetCommander() && pMarine->IsInhabited() )
 	{
-		CASW_Marine* pMarine = assert_cast<CASW_Marine*>(pCombatCharOwner);
-		if (pMarine->GetCommander() && pMarine->IsInhabited())
-		{
-			CASW_Player* pPlayer = pMarine->GetCommander();
-			bAutoReload = pPlayer->ShouldAutoReload();
-		}
+		CASW_Player *pPlayer = pMarine->GetCommander();
+		bAutoReload = pPlayer->ShouldAutoReload();
 	}
 
 	// if (HasAnyAmmo())    // asw add later!
@@ -619,6 +616,11 @@ bool CASW_Weapon::ReloadOrSwitchWeapons( void )
 		// if we're successfully reloading, we're done
 		if ( Reload() )
 		{
+#ifdef GAME_DLL
+			if ( pMarine && pMarine->GetMarineResource() )
+				pMarine->GetMarineResource()->m_iReloadsStarted++;
+#endif
+
 			return true;
 		}
 		else
@@ -1226,6 +1228,16 @@ void CASW_Weapon::FinishReload( void )
 			event->SetInt( "clipsmax", GetAmmoDef()->MaxCarry( m_iPrimaryAmmoType, pOwner ) / nClipSize );
 
 			gameeventmanager->FireEvent( event );
+		}
+
+		if ( CASW_Marine_Resource *pMR = pOwner->GetMarineResource() )
+		{
+			if ( m_bFastReloadFailure )
+				pMR->m_iFastReloadFail++;
+			else if ( m_bFastReloadSuccess )
+				pMR->m_iFastReloadSuccess++;
+			else
+				pMR->m_iReloadsNormal++;
 		}
 #endif
 

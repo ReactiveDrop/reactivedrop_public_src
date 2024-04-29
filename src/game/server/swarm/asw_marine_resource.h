@@ -225,6 +225,10 @@ public:
 	int m_iLeadershipProcsResist;
 	int m_iLeadershipDamageAccuracy;
 	int m_iLeadershipDamageResist;
+	unsigned short m_iFastReloadSuccess;
+	unsigned short m_iFastReloadFail;
+	unsigned short m_iReloadsNormal;
+	int m_iReloadsStarted;
 
 	CNetworkVar( int, m_iScore );
 	CNetworkVar( float, m_flFinishedMissionTime );

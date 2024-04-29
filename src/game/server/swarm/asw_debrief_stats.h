@@ -145,6 +145,9 @@ public:
 	CNetworkArray( unsigned int,		m_iDamageAndFF7,				ASW_MAX_MARINE_RESOURCES );
 	CNetworkArray( unsigned int,		m_iShotsFiredAndHit7,			ASW_MAX_MARINE_RESOURCES );
 
+	CNetworkArray( unsigned int,		m_iFastReloadSuccessAndFail,	ASW_MAX_MARINE_RESOURCES );
+	CNetworkArray( unsigned int,		m_iReloadNormalAndAborted,		ASW_MAX_MARINE_RESOURCES );
+
 	CNetworkArray( int, m_iLeaderboardScore, ASW_MAX_MARINE_RESOURCES );
 
 	// for the team

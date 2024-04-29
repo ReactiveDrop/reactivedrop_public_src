@@ -3379,6 +3379,31 @@ namespace ReactiveDropInventory
 
 		s_RD_Inventory_Manager.PickUpCraftingMaterialAtLocation( iLocation, eMaterial );
 	}
+	int GetCraftingMaterialsFound()
+	{
+		int nCount = 0;
+		for ( int i = 0; i < RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS; i++ )
+		{
+			if ( s_RD_Inventory_Manager.m_CraftingMaterialType[i] != RD_CRAFTING_MATERIAL_NONE && s_RD_Inventory_Manager.m_CraftingMaterialToken[i] == k_SteamItemInstanceIDInvalid )
+				nCount++;
+		}
+		return nCount;
+	}
+	int GetCraftingMaterialsMissed()
+	{
+		int nCount = 0;
+		// check entities so we don't track locations that failed to spawn entirely.
+		for ( C_BaseEntity *pEnt = ClientEntityList().FirstBaseEntity(); pEnt; pEnt = ClientEntityList().NextBaseEntity( pEnt ) )
+		{
+			if ( pEnt->Classify() != CLASS_RD_CRAFTING_MATERIAL_PICKUP )
+				continue;
+
+			int iLocation = assert_cast< C_RD_Crafting_Material_Pickup * >( pEnt )->m_iLocation;
+			if ( iLocation >= 0 && iLocation < RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS && s_RD_Inventory_Manager.m_CraftingMaterialType[iLocation] != RD_CRAFTING_MATERIAL_NONE && s_RD_Inventory_Manager.m_CraftingMaterialToken[iLocation] != k_SteamItemInstanceIDInvalid )
+				nCount++;
+		}
+		return nCount;
+	}
 #endif
 #endif
 

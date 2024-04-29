@@ -219,6 +219,14 @@ private:
 	int32	m_iLeadershipProcsResist;
 	int32	m_iLeadershipDamageAccuracy;
 	int32	m_iLeadershipDamageResist;
+	int32	m_iReloadsFastSuccess;
+	int32	m_iReloadsFastFail;
+	int32	m_iReloadsNormal;
+	int32	m_iReloadsAborted;
+#ifdef RD_7A_DROPS
+	int32	m_iCraftingMaterialsFound;
+	int32	m_iCraftingMaterialsMissed;
+#endif
 	int32	m_iTotalPlayTime;
 	
 	typedef CUtlVector<int32> StatList_Int_t;

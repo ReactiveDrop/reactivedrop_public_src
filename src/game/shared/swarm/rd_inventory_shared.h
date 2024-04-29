@@ -182,6 +182,8 @@ namespace ReactiveDropInventory
 	void DeleteNotificationItem( SteamItemInstanceID_t id );
 #ifdef RD_7A_DROPS
 	void PickUpCraftingMaterialAtLocation( int iLocation, RD_Crafting_Material_t eMaterial );
+	int GetCraftingMaterialsFound();
+	int GetCraftingMaterialsMissed();
 #endif
 #endif
 	void OnHitConfirm( CBaseEntity *pAttacker, CBaseEntity *pTarget, Vector vecDamagePosition, bool bKilled, bool bDamageOverTime, bool bBlastDamage, int iDisposition, float flDamage, CBaseEntity *pWeapon );

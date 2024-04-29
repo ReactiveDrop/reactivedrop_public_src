@@ -5088,6 +5088,11 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 					pMR->m_WeaponStats[j].m_nKills );
 			}
 
+			int iReloadsCompleted = ( int )pMR->m_iFastReloadSuccess + ( int )pMR->m_iFastReloadFail + ( int )pMR->m_iReloadsNormal;
+			int iReloadsAborted = iReloadsCompleted < pMR->m_iReloadsStarted ? MIN( pMR->m_iReloadsStarted - iReloadsCompleted, UINT16_MAX ) : 0;
+			m_hDebriefStats->m_iFastReloadSuccessAndFail.Set( i, ( ( ( unsigned int )pMR->m_iFastReloadSuccess ) << 16 ) | ( ( unsigned int )pMR->m_iFastReloadFail ) );
+			m_hDebriefStats->m_iReloadNormalAndAborted.Set( i, ( ( ( unsigned int )pMR->m_iReloadsNormal ) << 16 ) | ( ( unsigned int )iReloadsAborted ) );
+
 			// store the worst penalty for use later when penalizing skill points
 			float fPenalty = pMR->m_fFriendlyFireDamageDealt * 2 + pMR->m_fDamageTaken;
 			if ( fPenalty > fWorstPenalty )
