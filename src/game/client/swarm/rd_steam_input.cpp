@@ -82,7 +82,6 @@ void CRD_Steam_Input::PostInit()
 		return;
 	}
 
-#ifdef RD_STEAM_INPUT_ACTIONS
 	ISteamInput *pSteamInput = SteamInput();
 	Assert( pSteamInput );
 	if ( !pSteamInput )
@@ -140,7 +139,6 @@ void CRD_Steam_Input::PostInit()
 	CRD_PNG_Texture::CleanLocalCachedTextures( "vgui/steam_input_glyphs" );
 
 	m_bInitialized = true;
-#endif
 }
 
 void CRD_Steam_Input::Shutdown()
@@ -599,7 +597,6 @@ bool CRD_Steam_Input::GetGameAxes( int nSlot, float *flMoveX, float *flMoveY, fl
 
 	bool bFoundMove = false, bFoundLook = false;
 
-#ifdef RD_STEAM_INPUT_ACTIONS
 	FOR_EACH_VEC( m_Controllers, i )
 	{
 		if ( !m_Controllers[i]->m_bConnected || m_Controllers[i]->m_SplitScreenPlayerIndex != nSlot )
@@ -635,7 +632,6 @@ bool CRD_Steam_Input::GetGameAxes( int nSlot, float *flMoveX, float *flMoveY, fl
 			*flLookY -= data.y * MAX_BUTTONSAMPLE;
 		}
 	}
-#endif
 
 	// ensure added values from multiple controllers are within expected range
 	if ( bFoundMove )
@@ -662,7 +658,6 @@ bool CRD_Steam_Input::GetMenuNavigateOffset( int nSlot, float *flMenuNavigateX, 
 
 	bool bFoundMenuNavigate = false;
 
-#ifdef RD_STEAM_INPUT_ACTIONS
 	FOR_EACH_VEC( m_Controllers, i )
 	{
 		if ( !m_Controllers[i]->m_bConnected || m_Controllers[i]->m_SplitScreenPlayerIndex != nSlot )
@@ -684,7 +679,6 @@ bool CRD_Steam_Input::GetMenuNavigateOffset( int nSlot, float *flMenuNavigateX, 
 			*flMenuNavigateY -= data.y * MAX_BUTTONSAMPLE;
 		}
 	}
-#endif
 
 	// ensure added values from multiple controllers are within expected range
 	if ( bFoundMenuNavigate )
@@ -855,7 +849,6 @@ void CRD_Steam_Controller::OnConfigurationLoaded( SteamInputConfigurationLoaded_
 
 void CRD_Steam_Controller::OnFrame( ISteamInput *pSteamInput )
 {
-#ifdef RD_STEAM_INPUT_ACTIONS
 	if ( !m_bConnected )
 		return;
 
@@ -895,7 +888,6 @@ void CRD_Steam_Controller::OnFrame( ISteamInput *pSteamInput )
 			pSteamInput->SetLEDColor( m_hController, PlayerColor.r(), PlayerColor.g(), PlayerColor.b(), PlayerColor == Color{} ? k_ESteamInputLEDFlag_RestoreUserDefault : k_ESteamInputLEDFlag_SetColor );
 		}
 	}
-#endif
 }
 
 void CRD_Steam_Controller::OnDigitalAction( InputDigitalActionHandle_t hAction, bool bState )

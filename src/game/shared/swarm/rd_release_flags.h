@@ -18,13 +18,11 @@
 //#define RD_7A_ENEMIES
 #define RD_7A_LOADOUTS
 //#define RD_7A_QUESTS
-#define RD_7A_UI_REVAMP
 //#define RD_7A_WEAPONS
 
 // features that are not ready for prime time
 //#define RD_USE_FONT_HACK
 //#define RD_BONUS_MISSION_ACHIEVEMENTS
-#define RD_STEAM_INPUT_ACTIONS
 //#define RD_SPLITSCREEN_ENABLED
 //#define RD_FADE_SINGLE_EDICT
 
@@ -34,10 +32,6 @@
 // after which point they are put in approximate order of difficulty
 #define RD_NEW_CAMPAIGN_SPOTLIGHT
 
-// testing in production, starting november 1st 2023
-#define RD_STEAM_INPUT_ACTIONS
-// testing in production, starting december 1st 2023
-#define RD_7A_UI_REVAMP
 // testing in production, starting january 1st 2024
 #define RD_7A_DROPS_PRE
 

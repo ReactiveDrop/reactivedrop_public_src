@@ -105,11 +105,7 @@ static void OnLegacyUIChanged( IConVar *var, const char *pOldValue, float flOldV
 	// reset UI scripts
 	engine->ClientCmd_Unrestricted( "ui_reloadscheme; hud_reloadscheme\n" );
 }
-#ifdef RD_7A_UI_REVAMP
 ConVar rd_legacy_ui( "rd_legacy_ui", "", FCVAR_ARCHIVE, "Set to 2004, 2010, or 2017 to use simulated versions of previous user interfaces.", OnLegacyUIChanged );
-#else
-ConVar rd_legacy_ui( "rd_legacy_ui", "2017", FCVAR_DEVELOPMENTONLY, "Set to 2004, 2010, or 2017 to use simulated versions of previous user interfaces.", OnLegacyUIChanged );
-#endif
 
 void Demo_DisableButton( Button *pButton );
 void OpenGammaDialog( VPANEL parent );
