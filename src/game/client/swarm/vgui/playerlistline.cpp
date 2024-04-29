@@ -375,8 +375,8 @@ void PlayerListLine::UpdateVoteIcons()
 	float fScale = ScreenHeight() / 768.0f;
 	int top = 6.0f * fScale;
 	int top_line_height = 16.0f * fScale;
-	m_pLeaderCheck->SetPos( ( PLAYER_LIST_LEADER_ICON_X + PLAYER_LIST_LEADER_ICON_W * iMaxLeaderVotes ) * fScale, top + top_line_height );
-	m_pKickCheck->SetPos( ( PLAYER_LIST_KICK_ICON_X + PLAYER_LIST_KICK_ICON_W * iMaxKickVotes ) * fScale, top + top_line_height );
+	m_pLeaderCheck->SetPos( ( PLAYER_LIST_LEADER_ICON_X + PLAYER_LIST_LEADER_ICON_W * MIN( iMaxLeaderVotes, MAX_VOTE_ICONS ) ) * fScale, top + top_line_height );
+	m_pKickCheck->SetPos( ( PLAYER_LIST_KICK_ICON_X + PLAYER_LIST_KICK_ICON_W * MIN( iMaxKickVotes, MAX_VOTE_ICONS ) ) * fScale, top + top_line_height );
 
 	C_ASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( m_iPlayerIndex ) );
 	bool bCanKick = pPlayer && pPlayer->CanBeKicked();
