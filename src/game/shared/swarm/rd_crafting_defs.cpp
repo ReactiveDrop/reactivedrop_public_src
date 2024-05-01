@@ -299,11 +299,11 @@ IMPLEMENT_NETWORKCLASS_ALIASED( RD_Crafting_Material_Pickup, DT_RD_Crafting_Mate
 BEGIN_NETWORK_TABLE( CRD_Crafting_Material_Pickup, DT_RD_Crafting_Material_Pickup )
 #ifdef CLIENT_DLL
 	RecvPropIntWithMinusOneFlag( RECVINFO( m_iLocation ) ),
-	RecvPropArray( RecvPropInt( RECVINFO( m_MaterialAtLocation[0] ) ), m_MaterialAtLocation ),
+	RecvPropArray3( RECVINFO_ARRAY( m_MaterialAtLocation ), RecvPropInt( RECVINFO( m_MaterialAtLocation[0] ) ) ),
 	RecvPropBool( RECVINFO( m_bAnyoneFound ) ),
 #else
 	SendPropIntWithMinusOneFlag( SENDINFO( m_iLocation ), NumBitsForCount( RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS + 1 ) ),
-	SendPropArray( SendPropInt( SENDINFO_ARRAY( m_MaterialAtLocation ), NumBitsForCount( NUM_RD_CRAFTING_MATERIAL_TYPES ), SPROP_UNSIGNED ), m_MaterialAtLocation ),
+	SendPropArray3( SENDINFO_ARRAY3( m_MaterialAtLocation ), SendPropInt( SENDINFO_ARRAY( m_MaterialAtLocation ), NumBitsForCount( NUM_RD_CRAFTING_MATERIAL_TYPES ), SPROP_UNSIGNED ) ),
 	SendPropBool( SENDINFO( m_bAnyoneFound ) ),
 #endif
 END_NETWORK_TABLE()
