@@ -660,14 +660,6 @@ void CASW_Player::Precache()
 	PrecacheScriptSound( "asw_song.StatsSuccessCampaign" );
 	PrecacheScriptSound( "asw_song.StatsFail" );
 
-#ifdef RD_7A_DROPS
-	PrecacheScriptSound( "RD_Crafting_Material_Found.Industrial" );
-	PrecacheScriptSound( "RD_Crafting_Material_Found.Bulk" );
-	PrecacheScriptSound( "RD_Crafting_Material_Found.Alien" );
-	PrecacheScriptSound( "RD_Crafting_Material_Found.Tech" );
-	PrecacheScriptSound( "RD_Crafting_Material_Found.Salvaged" );
-#endif
-
 	if (MarineProfileList())
 	{
 		MarineProfileList()->PrecacheSpeech(this);

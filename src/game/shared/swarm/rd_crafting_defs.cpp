@@ -30,9 +30,16 @@ PRECACHE_REGISTER_BEGIN( GLOBAL, ReactiveDropCrafting )
 	for ( int i = 1; i < NUM_RD_CRAFTING_MATERIAL_TYPES; i++ )
 	{
 		// precache crafting material models that might be found in a mission.
-		if ( g_RD_Crafting_Material_Info[i].m_iRarity <= RD_CRAFTING_MATERIAL_RARITY_REGIONAL )
+		if ( g_RD_Crafting_Material_Rarity_Info[g_RD_Crafting_Material_Info[i].m_iRarity].m_bCanFindInMission )
 		{
 			PRECACHE( MODEL, g_RD_Crafting_Material_Info[i].m_szModelName );
+		}
+	}
+	for ( int i = 0; i < NUM_RD_CRAFTING_MATERIAL_RARITIES; i++ )
+	{
+		if ( g_RD_Crafting_Material_Rarity_Info[i].m_bCanFindInMission && g_RD_Crafting_Material_Rarity_Info[i].m_szPickupSound )
+		{
+			PRECACHE( GAMESOUND, g_RD_Crafting_Material_Rarity_Info[i].m_szPickupSound );
 		}
 	}
 PRECACHE_REGISTER_END();
@@ -77,6 +84,15 @@ const RD_Crafting_Material_Info g_RD_Crafting_Material_Info[] =
 	{ "cryotic", 7071, 7072, 4026, RD_CRAFTING_MATERIAL_RARITY_REGIONAL, "models/swarm/crafting/cryotic.mdl" },
 	{ "argon_canister", 7073, 7074, 4027, RD_CRAFTING_MATERIAL_RARITY_REGIONAL, "models/swarm/crafting/argon_canister.mdl" },
 	{ "probability_drive", 7075, 7076, 4028, RD_CRAFTING_MATERIAL_RARITY_REGIONAL, "models/swarm/crafting/probability_drive.mdl" },
+};
+
+const RD_Crafting_Material_Rarity_Info g_RD_Crafting_Material_Rarity_Info[] =
+{
+	{ "RD_Crafting_Material_Found.Industrial", true },
+	{ "RD_Crafting_Material_Found.Bulk", true },
+	{ "RD_Crafting_Material_Found.Alien", true },
+	{ "RD_Crafting_Material_Found.Tech", true },
+	{ "RD_Crafting_Material_Found.Salvaged", true },
 };
 
 #ifdef GAME_DLL

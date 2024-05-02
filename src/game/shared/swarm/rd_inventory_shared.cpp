@@ -1296,25 +1296,9 @@ public:
 #ifdef RD_7A_DROPS
 			if ( m_CraftingMaterialType[pTask->m_iAccessoryDef] != RD_CRAFTING_MATERIAL_NONE )
 			{
-				const char *szPickupSound = NULL;
-				switch ( g_RD_Crafting_Material_Info[m_CraftingMaterialType[pTask->m_iAccessoryDef]].m_iRarity )
-				{
-				case RD_CRAFTING_MATERIAL_RARITY_COMMON:
-					szPickupSound = "RD_Crafting_Material_Found.Industrial";
-					break;
-				case RD_CRAFTING_MATERIAL_RARITY_ULTRA_COMMON:
-					szPickupSound = "RD_Crafting_Material_Found.Bulk";
-					break;
-				case RD_CRAFTING_MATERIAL_RARITY_UNCOMMON:
-					szPickupSound = "RD_Crafting_Material_Found.Alien";
-					break;
-				case RD_CRAFTING_MATERIAL_RARITY_RARE:
-					szPickupSound = "RD_Crafting_Material_Found.Tech";
-					break;
-				case RD_CRAFTING_MATERIAL_RARITY_REGIONAL:
-					szPickupSound = "RD_Crafting_Material_Found.Salvaged";
-					break;
-				}
+				RD_Crafting_Material_t eMaterialType = m_CraftingMaterialType[pTask->m_iAccessoryDef];
+				RD_Crafting_Material_Rarity_t eMaterialRarity = g_RD_Crafting_Material_Info[eMaterialType].m_iRarity;
+				const char *szPickupSound = g_RD_Crafting_Material_Rarity_Info[eMaterialRarity].m_szPickupSound;
 
 				if ( szPickupSound )
 				{

@@ -63,6 +63,7 @@ enum RD_Crafting_Material_Rarity_t
 	RD_CRAFTING_MATERIAL_RARITY_UNCOMMON,
 	RD_CRAFTING_MATERIAL_RARITY_RARE,
 	RD_CRAFTING_MATERIAL_RARITY_REGIONAL,
+	NUM_RD_CRAFTING_MATERIAL_RARITIES,
 };
 
 struct RD_Crafting_Material_Info
@@ -76,7 +77,14 @@ struct RD_Crafting_Material_Info
 	const char *m_szModelName;
 };
 
+struct RD_Crafting_Material_Rarity_Info
+{
+	const char *m_szPickupSound;
+	bool m_bCanFindInMission;
+};
+
 extern const RD_Crafting_Material_Info g_RD_Crafting_Material_Info[NUM_RD_CRAFTING_MATERIAL_TYPES];
+extern const RD_Crafting_Material_Rarity_Info g_RD_Crafting_Material_Rarity_Info[NUM_RD_CRAFTING_MATERIAL_RARITIES];
 
 #ifdef GAME_DLL
 void GenerateCraftingMaterialSpawnLocations( CUtlVector<Vector> &spawnLocations );
