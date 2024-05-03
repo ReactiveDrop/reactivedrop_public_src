@@ -307,6 +307,8 @@ public:
 			Msg( "Successfully wrote inventory cache with %d items\n", nItems );
 		}
 
+		ReactiveDropInventory::g_nFullInventoryUpdates++;
+
 		if ( m_HighOwnedInventoryDefIDs.Count() )
 		{
 			CacheItemSchema();
@@ -1423,6 +1425,7 @@ public:
 						// we're going to request a full inventory update once the crafting queue is empty,
 						// but we can remove this item from our cache temporarily now.
 						m_LocalInventoryCache.Remove( j );
+						ReactiveDropInventory::g_nFullInventoryUpdates++;
 						break;
 					}
 				}
@@ -1651,16 +1654,6 @@ public:
 		if ( pParam->m_handle == m_GetFullInventoryForCacheResult )
 		{
 			CacheUserInventory( m_GetFullInventoryForCacheResult );
-
-			TabbedGridDetails *pCollections = assert_cast< TabbedGridDetails * >( BaseModUI::CBaseModPanel::GetSingleton().GetWindow( BaseModUI::WT_COLLECTIONS ) );
-			if ( pCollections && pCollections->m_hCurrentTab )
-			{
-				CRD_Collection_Tab_Inventory *pInventoryTab = dynamic_cast< CRD_Collection_Tab_Inventory * >( pCollections->m_hCurrentTab.Get() );
-				if ( pInventoryTab )
-				{
-					pInventoryTab->ForceRefreshItems( m_GetFullInventoryForCacheResult );
-				}
-			}
 
 			pInventory->DestroyResult( m_GetFullInventoryForCacheResult );
 			m_GetFullInventoryForCacheResult = k_SteamInventoryResultInvalid;
@@ -2259,6 +2252,10 @@ CON_COMMAND( rd_econ_item_preview, "inspect an item using a code from the Steam 
 
 namespace ReactiveDropInventory
 {
+#ifdef CLIENT_DLL
+	int g_nFullInventoryUpdates = 0;
+#endif
+
 	fieldtype_t DynamicPropertyDataType( const char *szPropertyName )
 	{
 		// can be FIELD_INTEGER64, FIELD_STRING, FIELD_FLOAT, or FIELD_BOOLEAN.
@@ -3077,6 +3074,11 @@ namespace ReactiveDropInventory
 		}
 
 		return NULL;
+	}
+
+	void GetLocalItemCache( CUtlVector<ItemInstance_t> &items )
+	{
+		items.AddVectorToTail( s_RD_Inventory_Manager.m_LocalInventoryCache );
 	}
 
 	ItemInstance_t *GetLocalItemCacheForModify( SteamItemInstanceID_t id )

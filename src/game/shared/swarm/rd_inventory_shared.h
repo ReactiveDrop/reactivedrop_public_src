@@ -34,6 +34,10 @@ class CASW_Marine_Resource;
 
 namespace ReactiveDropInventory
 {
+#ifdef CLIENT_DLL
+	extern int g_nFullInventoryUpdates;
+#endif
+
 	constexpr const char *const g_PlayerInventorySlotNames[] =
 	{
 		"medal", "medal1", "medal2",
@@ -171,6 +175,7 @@ namespace ReactiveDropInventory
 	void IncrementStrangePropertyOnStartingItems( SteamItemDef_t iAccessoryID, int64_t iAmount, int iPropertyIndex = 0, bool bRelative = true, bool bAllowCheating = false );
 	void CommitDynamicProperties();
 	const ItemInstance_t *GetLocalItemCache( SteamItemInstanceID_t id );
+	void GetLocalItemCache( CUtlVector<ItemInstance_t> &items );
 	ItemInstance_t *GetLocalItemCacheForModify( SteamItemInstanceID_t id );
 	void GetItemsForSlot( CUtlVector<ItemInstance_t> &instances, const char *szRequiredSlot );
 	void GetItemsForSlotAndEquipIndex( CUtlVector<ItemInstance_t> &instances, const char *szRequiredSlot, int iEquipIndex );

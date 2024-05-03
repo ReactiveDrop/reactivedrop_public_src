@@ -20,27 +20,15 @@ extern ConVar rd_equipped_medal[RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS];
 CRD_Collection_Tab_Inventory::CRD_Collection_Tab_Inventory( TabbedGridDetails *parent, const char *szLabel, const char *szSlot )
 	: BaseClass( parent, szLabel )
 {
-	m_szSlot = szSlot;
-
-	m_hResult = k_SteamInventoryResultInvalid;
+	m_Slots.CopyAndAddToTail( szSlot );
+	m_nLastFullUpdateCount = -1;
+	m_bInvertSlotFilter = false;
 	m_bUnavailable = false;
 	m_bForceUpdateMessage = true;
-
-	ISteamInventory *pInventory = SteamInventory();
-	Assert( pInventory );
-	if ( !pInventory || !pInventory->GetAllItems( &m_hResult ) )
-	{
-		m_hResult = k_SteamInventoryResultInvalid;
-		m_bUnavailable = true;
-	}
 }
 
 CRD_Collection_Tab_Inventory::~CRD_Collection_Tab_Inventory()
 {
-	if ( ISteamInventory *pInventory = SteamInventory() )
-	{
-		pInventory->DestroyResult( m_hResult );
-	}
 }
 
 TGD_Details *CRD_Collection_Tab_Inventory::CreateDetails()
@@ -62,173 +50,95 @@ void CRD_Collection_Tab_Inventory::OnThink()
 		UpdateErrorMessage( m_pGrid );
 	}
 
-	if ( m_pGrid->m_Entries.Count() || m_bUnavailable )
+	if ( m_nLastFullUpdateCount != ReactiveDropInventory::g_nFullInventoryUpdates )
 	{
-		return;
-	}
+		m_nLastFullUpdateCount = ReactiveDropInventory::g_nFullInventoryUpdates;
 
-	ISteamInventory *pInventory = SteamInventory();
-	if ( !pInventory )
-	{
-		return;
-	}
-
-	EResult eResultStatus = pInventory->GetResultStatus( m_hResult );
-	if ( eResultStatus == k_EResultPending )
-	{
-		return;
-	}
-
-	if ( eResultStatus != k_EResultOK )
-	{
-		m_bUnavailable = true;
-		UpdateErrorMessage( m_pGrid );
-		return;
-	}
-
-	uint32_t nResults = 0;
-	if ( !pInventory->GetResultItems( m_hResult, NULL, &nResults ) )
-	{
-		Assert( !"first call to GetResultItems failed" );
-		m_bUnavailable = true;
-		UpdateErrorMessage( m_pGrid );
-		return;
-	}
-
-	CUtlMemory<SteamItemDetails_t> details( 0, nResults );
-	if ( !pInventory->GetResultItems( m_hResult, details.Base(), &nResults ) )
-	{
-		Assert( !"second call to GetResultItems failed" );
-		m_bUnavailable = true;
-		UpdateErrorMessage( m_pGrid );
-		return;
-	}
-
-	Assert( int( nResults ) == details.Count() );
-
-	for ( uint32_t i = 0; i < nResults; i++ )
-	{
-		const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( details[i].m_iDefinition );
-		if ( !pDef || !pDef->ItemSlotMatches( m_szSlot ) )
+		SteamItemInstanceID_t iSelectedItemID = k_SteamItemInstanceIDInvalid;
+		if ( m_pGrid->m_hCurrentEntry )
 		{
-			continue;
+			iSelectedItemID = assert_cast< CRD_Collection_Entry_Inventory * >( m_pGrid->m_hCurrentEntry.Get() )->m_Details.ItemID;
+		}
+		m_pGrid->DeleteAllEntries();
+
+		CRD_Collection_Entry_Inventory *pSelectedBefore = NULL;
+
+		CUtlVector<ReactiveDropInventory::ItemInstance_t> inventory;
+		ReactiveDropInventory::GetLocalItemCache( inventory );
+		FOR_EACH_VEC( inventory, i )
+		{
+			const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( inventory[i].ItemDefID );
+			if ( !pDef || ( pDef->GameOnly && !pDef->HasInGameDescription ) )
+				continue;
+
+			bool bMatch = false;
+			FOR_EACH_VEC( m_Slots, j )
+			{
+				if ( pDef->ItemSlotMatches( m_Slots[j] ) )
+				{
+					bMatch = true;
+					break;
+				}
+			}
+
+			if ( bMatch == m_bInvertSlotFilter )
+				continue;
+
+			CRD_Collection_Entry_Inventory *pEntry = new CRD_Collection_Entry_Inventory( m_pGrid, "CollectionEntryInventory", i, inventory[i] );
+			if ( inventory[i].ItemID == iSelectedItemID )
+				pSelectedBefore = pEntry;
+			m_pGrid->AddEntry( pEntry );
 		}
 
-		m_pGrid->AddEntry( new CRD_Collection_Entry_Inventory( m_pGrid, "CollectionEntryInventory", m_hResult, i ) );
+		UpdateErrorMessage( m_pGrid );
+
+		bool bVisibleBefore = m_pGrid->IsVisible();
+		m_pGrid->InvalidateLayout( true, true );
+		m_pGrid->SetVisible( bVisibleBefore );
+
+		if ( pSelectedBefore && bVisibleBefore )
+		{
+			pSelectedBefore->m_pFocusHolder->RequestFocus();
+		}
+	}
+}
+
+bool CRD_Collection_Tab_Inventory::ShowsItemsForSlot( const char *szSlot )
+{
+	FOR_EACH_VEC( m_Slots, i )
+	{
+		if ( !V_strcmp( szSlot, m_Slots[i] ) )
+		{
+			return !m_bInvertSlotFilter;
+		}
+
+		for ( int j = 0; j < NELEMS( ReactiveDropInventory::g_InventorySlotAliases ); j++ )
+		{
+			if ( !V_strcmp( szSlot, ReactiveDropInventory::g_InventorySlotAliases[j][0] ) &&
+				!V_strcmp( m_Slots[i], ReactiveDropInventory::g_InventorySlotAliases[j][1] ) )
+			{
+				return !m_bInvertSlotFilter;
+			}
+		}
 	}
 
-	UpdateErrorMessage( m_pGrid );
-
-	bool bVisibleBefore = m_pGrid->IsVisible();
-	m_pGrid->InvalidateLayout( true, true );
-	m_pGrid->SetVisible( bVisibleBefore );
+	return m_bInvertSlotFilter;
 }
 
 void CRD_Collection_Tab_Inventory::UpdateErrorMessage( TGD_Grid *pGrid )
 {
-	ISteamInventory *pInventory = SteamInventory();
-	EResult eResultStatus = pInventory ? pInventory->GetResultStatus( m_hResult ) : k_EResultNoConnection;
-	if ( m_bUnavailable || eResultStatus == k_EResultPending )
+	FOR_EACH_VEC( pGrid->m_Entries, i )
 	{
-		if ( const wchar_t *wszMessage = g_pVGuiLocalize->Find( VarArgs( "#rd_collection_inventory_error_%d", eResultStatus ) ) )
+		// Using GetNumFrames to signal whether the HTTP request has finished.
+		if ( !assert_cast< CRD_Collection_Entry_Inventory * >( pGrid->m_Entries[i] )->m_pIcon->GetNumFrames() )
 		{
-			pGrid->SetMessage( wszMessage );
-		}
-		else
-		{
-			pGrid->SetMessage( "#rd_collection_inventory_error_generic" );
-		}
-
-		if ( m_bUnavailable )
-		{
-			LoadCachedInventory();
+			pGrid->SetMessage( VarArgs( "#rd_collection_inventory_error_%d", k_EResultPending ) );
+			m_bForceUpdateMessage = true;
+			return;
 		}
 	}
-	else
-	{
-		FOR_EACH_VEC( pGrid->m_Entries, i )
-		{
-			// Using GetNumFrames to signal whether the HTTP request has finished.
-			if ( !assert_cast< CRD_Collection_Entry_Inventory * >( pGrid->m_Entries[i] )->m_pIcon->GetNumFrames() )
-			{
-				pGrid->SetMessage( VarArgs( "#rd_collection_inventory_error_%d", k_EResultPending ) );
-				m_bForceUpdateMessage = true;
-				return;
-			}
-		}
 
-		pGrid->SetMessage( L"" );
-	}
-}
-
-void CRD_Collection_Tab_Inventory::LoadCachedInventory()
-{
-	if ( !m_pGrid || m_pGrid->m_Entries.Count() != 0 )
-		return;
-
-	// no (offline) Steam API means we can't even do this
-	if ( !SteamUser() )
-		return;
-
-	if ( !g_pFullFileSystem )
-		return;
-
-	CFmtStr szCacheFileName{ "cfg/clienti_%llu.dat", SteamUser()->GetSteamID().ConvertToUint64() };
-	CUtlBuffer buf;
-
-	if ( !g_pFullFileSystem->ReadFile( szCacheFileName, "MOD", buf ) )
-		return;
-
-	KeyValues::AutoDelete pCache{ "IC" };
-
-	if ( !pCache->ReadAsBinary( buf ) )
-		return;
-
-	m_pGrid->SetMouseInputEnabled( false );
-
-	int i = 0;
-	FOR_EACH_SUBKEY( pCache, pItem )
-	{
-		const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( pItem->GetInt( "d" ) );
-		if ( !pDef || !pDef->ItemSlotMatches( m_szSlot ) )
-			continue;
-
-		m_pGrid->AddEntry( new CRD_Collection_Entry_Inventory( m_pGrid, "CollectionEntryInventory", pItem, i ) );
-		i++;
-	}
-}
-
-void CRD_Collection_Tab_Inventory::ForceRefreshItems( SteamInventoryResult_t hResult )
-{
-	Assert( m_pGrid );
-	if ( !m_pGrid )
-		return;
-
-	SteamInventoryResult_t hPreviousResult = m_hResult;
-	m_hResult = hResult;
-	m_bForceUpdateMessage = true;
-	m_bUnavailable = false;
-
-	SteamItemInstanceID_t iSelectedItem = k_SteamItemInstanceIDInvalid;
-	if ( m_pGrid->m_hCurrentEntry )
-	{
-		iSelectedItem = assert_cast< CRD_Collection_Entry_Inventory * >( m_pGrid->m_hCurrentEntry.Get() )->m_Details.ItemID;
-	}
-
-	m_pGrid->DeleteAllEntries();
-
-	OnThink();
-
-	m_hResult = hPreviousResult;
-
-	FOR_EACH_VEC( m_pGrid->m_Entries, i )
-	{
-		if ( assert_cast< CRD_Collection_Entry_Inventory * >( m_pGrid->m_Entries[i] )->m_Details.ItemID == iSelectedItem )
-		{
-			m_pGrid->m_Entries[i]->m_pFocusHolder->RequestFocus();
-			break;
-		}
-	}
+	pGrid->SetMessage( L"" );
 }
 
 CRD_Collection_Details_Inventory::CRD_Collection_Details_Inventory( CRD_Collection_Tab_Inventory *parent )
@@ -317,18 +227,13 @@ void CRD_Collection_Details_Inventory::SetItemStyleOverride( TGD_Entry *pEntry, 
 	m_pDescription->SetText( "" );
 	details.FormatDescription( m_pDescription );
 
-	CRD_Collection_Tab_Inventory *pTab = assert_cast< CRD_Collection_Tab_Inventory * >( m_pParent );
-
-	ConVarRef equipID( VarArgs( "rd_equipped_%s", pTab->m_szSlot ) );
-	bool bEquipped = strtoull( equipID.GetString(), NULL, 10 ) == details.ItemID;
-
-	for ( int i = 0; i < NELEMS( ReactiveDropInventory::g_InventorySlotAliases ) && !bEquipped; i++ )
+	bool bEquipped = false;
+	for ( int i = 0; i < RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS; i++ )
 	{
-		if ( !V_strcmp( ReactiveDropInventory::g_InventorySlotAliases[i][1], pTab->m_szSlot ) )
+		if ( strtoull( rd_equipped_medal[i].GetString(), NULL, 10 ) == details.ItemID )
 		{
-			ConVarRef equipAliasID( VarArgs( "rd_equipped_%s", ReactiveDropInventory::g_InventorySlotAliases[i][0] ) );
-			Assert( equipAliasID.IsValid() );
-			bEquipped = strtoull( equipAliasID.GetString(), NULL, 10 ) == details.ItemID;
+			bEquipped = true;
+			break;
 		}
 	}
 
@@ -449,20 +354,9 @@ public:
 	int m_nOptions;
 };
 
-CRD_Collection_Entry_Inventory::CRD_Collection_Entry_Inventory( TGD_Grid *parent, const char *panelName, SteamInventoryResult_t hResult, int index )
+CRD_Collection_Entry_Inventory::CRD_Collection_Entry_Inventory( TGD_Grid *parent, const char *panelName, int index, const ReactiveDropInventory::ItemInstance_t &details )
 	: BaseClass( parent, panelName ),
-	m_Details{ hResult, uint32( index ) }
-{
-	m_pIconBackground = new vgui::Panel( this, "IconBackground" );
-	m_pIcon = new vgui::ImagePanel( this, "Icon" );
-	m_pEquippedMarker = new vgui::ImagePanel( this, "EquippedMarker" );
-
-	m_Index = index;
-}
-
-CRD_Collection_Entry_Inventory::CRD_Collection_Entry_Inventory( TGD_Grid *parent, const char *panelName, KeyValues *pCached, int index )
-	: BaseClass( parent, panelName ),
-	m_Details{ pCached }
+	m_Details{ details }
 {
 	m_pIconBackground = new vgui::Panel( this, "IconBackground" );
 	m_pIcon = new vgui::ImagePanel( this, "Icon" );
@@ -482,17 +376,13 @@ void CRD_Collection_Entry_Inventory::ApplySchemeSettings( vgui::IScheme *pScheme
 	m_pIconBackground->SetPaintBackgroundType( 0 );
 	m_pIcon->SetImage( m_Details.GetIcon() );
 
-	ConVarRef equipID( VarArgs( "rd_equipped_%s", GetTab()->m_szSlot ) );
-	Assert( equipID.IsValid() );
-	bool bEquipped = strtoull( equipID.GetString(), NULL, 10 ) == m_Details.ItemID;
-
-	for ( int i = 0; i < NELEMS( ReactiveDropInventory::g_InventorySlotAliases ) && !bEquipped; i++ )
+	bool bEquipped = false;
+	for ( int i = 0; i < RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS; i++ )
 	{
-		if ( !V_strcmp( ReactiveDropInventory::g_InventorySlotAliases[i][1], GetTab()->m_szSlot ) )
+		if ( strtoull( rd_equipped_medal[i].GetString(), NULL, 10 ) == m_Details.ItemID )
 		{
-			ConVarRef equipAliasID( VarArgs( "rd_equipped_%s", ReactiveDropInventory::g_InventorySlotAliases[i][0] ) );
-			Assert( equipAliasID.IsValid() );
-			bEquipped = strtoull( equipAliasID.GetString(), NULL, 10 ) == m_Details.ItemID;
+			bEquipped = true;
+			break;
 		}
 	}
 

@@ -35,6 +35,9 @@ void LaunchCollectionsFrame()
 	pFrame = assert_cast< TabbedGridDetails * >( BaseModUI::CBaseModPanel::GetSingleton().OpenWindow( BaseModUI::WT_COLLECTIONS, NULL ) );
 	pFrame->SetTitle( "#rd_collection_title", true );
 	pFrame->AddTab( new CRD_Collection_Tab_Inventory( pFrame, "#rd_collection_inventory_medals", "medal" ) );
+	CRD_Collection_Tab_Inventory *pOtherTab = new CRD_Collection_Tab_Inventory( pFrame, "#rd_collection_inventory_other", "medal" );
+	pOtherTab->m_bInvertSlotFilter = true;
+	pFrame->AddTab( pOtherTab );
 	if ( rd_legacy_ui.GetString()[0] != '\0' )
 	{
 		pFrame->AddTab( new CRD_Collection_Tab_Equipment( pFrame, "#rd_collection_weapons", NULL, ASW_INVENTORY_SLOT_PRIMARY ) );

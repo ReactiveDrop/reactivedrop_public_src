@@ -187,12 +187,12 @@ public:
 	TGD_Details *CreateDetails() override;
 	void OnThink() override;
 
+	bool ShowsItemsForSlot( const char *szSlot );
 	void UpdateErrorMessage( TGD_Grid *pGrid );
-	void LoadCachedInventory();
-	void ForceRefreshItems( SteamInventoryResult_t hResult );
 
-	const char *m_szSlot;
-	SteamInventoryResult_t m_hResult;
+	CUtlStringList m_Slots;
+	int m_nLastFullUpdateCount;
+	bool m_bInvertSlotFilter;
 	bool m_bUnavailable;
 	bool m_bForceUpdateMessage;
 };
@@ -218,8 +218,7 @@ class CRD_Collection_Entry_Inventory : public TGD_Entry
 {
 	DECLARE_CLASS_SIMPLE( CRD_Collection_Entry_Inventory, TGD_Entry );
 public:
-	CRD_Collection_Entry_Inventory( TGD_Grid *parent, const char *panelName, SteamInventoryResult_t hResult, int index );
-	CRD_Collection_Entry_Inventory( TGD_Grid *parent, const char *panelName, KeyValues *pCached, int index );
+	CRD_Collection_Entry_Inventory( TGD_Grid *parent, const char *panelName, int index, const ReactiveDropInventory::ItemInstance_t &details );
 
 	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 	void ApplyEntry() override;

@@ -1572,23 +1572,12 @@ void CRD_VGUI_Loadout_Slot_Inventory::OnClick()
 		FOR_EACH_VEC( pCollections->m_Tabs, i )
 		{
 			CRD_Collection_Tab_Inventory *pTab = assert_cast< CRD_Collection_Tab_Inventory * >( pCollections->m_Tabs[i] );
-			if ( !V_strcmp( pTab->m_szSlot, m_szSlot ) )
+			if ( pTab->ShowsItemsForSlot( m_szSlot ) )
 			{
 				pCollections->ActivateTab( pTab );
 				pFoundTab = pTab;
 
 				break;
-			}
-
-			for ( int j = 0; j < NELEMS( ReactiveDropInventory::g_InventorySlotAliases ); j++ )
-			{
-				if ( !V_strcmp( m_szSlot, ReactiveDropInventory::g_InventorySlotAliases[j][0] ) &&
-					!V_strcmp( pTab->m_szSlot, ReactiveDropInventory::g_InventorySlotAliases[j][1] ) )
-				{
-					pCollections->ActivateTab( pTab );
-					pFoundTab = pTab;
-					break;
-				}
 			}
 
 			if ( pFoundTab )
