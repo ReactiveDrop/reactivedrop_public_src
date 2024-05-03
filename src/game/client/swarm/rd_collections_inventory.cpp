@@ -444,8 +444,56 @@ void CRD_Collection_Entry_Inventory::ApplyEntry()
 		}
 	}
 
-	// TODO: rd_inventory_verb_accessory
-	// TODO: rd_inventory_verb_open
+	UtlSymId_t iAccessoryTags = m_Details.Tags.Find( pDef->AccessoryTag );
+	if ( !pDef->AccessoryTag.IsEmpty() && ( iAccessoryTags == UTL_INVAL_SYMBOL || m_Details.Tags[iAccessoryTags].Count() < pDef->AccessoryLimit ) )
+	{
+		UtlSymId_t iAllowedTagsFromTools = pDef->AllowedTagsFromTools.Find( pDef->AccessoryTag );
+		Assert( iAllowedTagsFromTools != UTL_INVAL_SYMBOL );
+		if ( iAllowedTagsFromTools != UTL_INVAL_SYMBOL )
+		{
+			FOR_EACH_VEC( pDef->AllowedTagsFromTools[iAllowedTagsFromTools], i )
+			{
+				bool bAlreadyHave = false;
+				if ( iAccessoryTags != UTL_INVAL_SYMBOL )
+				{
+					FOR_EACH_VEC( m_Details.Tags[iAccessoryTags], j )
+					{
+						if ( !V_strcmp( pDef->AllowedTagsFromTools[iAllowedTagsFromTools][i], m_Details.Tags[iAccessoryTags][j] ) )
+						{
+							bAlreadyHave = true;
+							break;
+						}
+					}
+				}
+
+				SteamItemDef_t iAccessoryDef = V_atoi( pDef->AllowedTagsFromTools[iAllowedTagsFromTools][i] );
+				Assert( iAccessoryDef );
+				if ( !bAlreadyHave && iAccessoryDef )
+				{
+					CUtlVector<ReactiveDropInventory::ItemInstance_t> items;
+					ReactiveDropInventory::GetItemsForDef( items, iAccessoryDef );
+
+					const ReactiveDropInventory::ItemDef_t *pAccessoryDef = ReactiveDropInventory::GetItemDef( iAccessoryDef );
+					Assert( pAccessoryDef );
+					if ( items.Count() && pAccessoryDef )
+					{
+						Assert( pAccessoryDef->Tags.Defined( pDef->AccessoryTag ) &&
+							pAccessoryDef->Tags[pAccessoryDef->Tags.Find( pDef->AccessoryTag )].Count() == 1 &&
+							!V_strcmp( pDef->AllowedTagsFromTools[iAllowedTagsFromTools][i], pAccessoryDef->Tags[pAccessoryDef->Tags.Find( pDef->AccessoryTag )][0] ) );
+
+						wchar_t wszAccessoryName[256];
+						V_UTF8ToUnicode( pAccessoryDef->Name, wszAccessoryName, sizeof( wszAccessoryName ) );
+						pModal->AddOption( VarArgs( "AttachAccessory%d", iAccessoryDef ), "#rd_inventory_verb_accessory", 1, wszAccessoryName );
+					}
+				}
+			}
+		}
+	}
+
+	if ( pDef->Tags.Defined( "contains_any" ) )
+	{
+		pModal->AddOption( "OpenChoiceBox", "#rd_inventory_verb_open" );
+	}
 
 	// TODO: make this selectable
 	pModal->AddOption( NULL, "#rd_inventory_verb_delete" );
@@ -493,6 +541,16 @@ void CRD_Collection_Entry_Inventory::OnCommand( const char *command )
 				BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_ACCEPT );
 			}
 		}
+	}
+	else if ( const char *szAccessoryDef = StringAfterPrefix( command, "AttachAccessory" ) )
+	{
+		SteamItemDef_t iAccessoryDef = V_atoi( szAccessoryDef );
+
+		DebuggerBreakIfDebugging(); // TODO: display confirmation
+	}
+	else if ( !V_strcmp( command, "OpenChoiceBox" ) )
+	{
+		DebuggerBreakIfDebugging(); // TODO: display choices for opening box
 	}
 	else if ( !V_strcmp( command, "Back" ) )
 	{
