@@ -11,7 +11,7 @@
 #include "tier0/memdbgon.h"
 
 extern ConVar rd_challenge;
-ConVar rd_override_alien_selection_challenge( "rd_override_alien_selection_challenge", "", FCVAR_CHEAT | FCVAR_NOTIFY );
+ConVar rd_override_alien_selection_challenge( "rd_override_alien_selection_challenge", "", FCVAR_CHEAT );
 
 static CASW_Spawn_Selection g_ASW_Spawn_Selection;
 CASW_Spawn_Selection *ASWSpawnSelection() { return &g_ASW_Spawn_Selection; }
