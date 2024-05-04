@@ -2523,9 +2523,9 @@ bool UTIL_RD_AddLocalizeFile( const char *fileName, const char *pPathID, bool bI
 }
 
 #ifdef CLIENT_DLL
-CON_COMMAND_F( rd_loc_reload, "reload localization files", FCVAR_HIDDEN | FCVAR_SERVER_CAN_EXECUTE )
+CON_COMMAND_F( rd_loc_reload, "reload localization files", FCVAR_SERVER_CAN_EXECUTE )
 #else
-CON_COMMAND_F( rd_loc_reload_server, "reload localization files (dedicated server)", FCVAR_HIDDEN )
+CON_COMMAND_F( rd_loc_reload_server, "reload localization files (dedicated server)", FCVAR_NONE )
 #endif
 {
 #ifndef CLIENT_DLL
