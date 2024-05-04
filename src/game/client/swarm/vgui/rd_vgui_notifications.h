@@ -35,6 +35,7 @@ public:
 	void UpdateNotifications();
 	void OnCommand( const char *command ) override;
 	void OnThink() override;
+	void OnSetFocus() override;
 	void NavigateTo() override;
 	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 	void PerformLayout() override;

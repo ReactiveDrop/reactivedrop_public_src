@@ -97,7 +97,7 @@ void CRD_VGUI_Notifications_Button::OnCommand( const char *command )
 {
 	if ( FStrEq( command, "NotificationsButtonClicked" ) )
 	{
-		CBaseModPanel::GetSingleton().PlayUISound( UISOUND_CLICK );
+		CBaseModPanel::GetSingleton().PlayUISound( UISOUND_ACCEPT );
 
 		if ( m_hListPopOut && m_hListPopOut->IsVisible() )
 		{
@@ -156,6 +156,13 @@ void CRD_VGUI_Notifications_Button::OnThink()
 			}
 		}
 	}
+}
+
+void CRD_VGUI_Notifications_Button::OnSetFocus()
+{
+	BaseClass::OnSetFocus();
+
+	CBaseModPanel::GetSingleton().PlayUISound( UISOUND_FOCUS );
 }
 
 void CRD_VGUI_Notifications_Button::NavigateTo()
