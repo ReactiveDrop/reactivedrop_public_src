@@ -9,6 +9,8 @@
 #include "nb_button.h"
 #include "rd_inventory_shared.h"
 #include "asw_util_shared.h"
+#include "engine/IEngineSound.h"
+#include "soundenvelope.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -175,6 +177,7 @@ PromoOptIn::PromoOptIn( Panel *parent, const char *panelName ) :
 	}
 
 	CBaseModPanel::GetSingleton().UpdateBackgroundMusicVolume( 0.0f );
+	m_hBackgroundNoiseLoop = 0;
 
 	SetProportional( true );
 	SetDeleteSelfOnClose( true );
@@ -202,6 +205,12 @@ PromoOptIn::~PromoOptIn()
 	GameUI().AllowEngineHideGameUI();
 
 	CBaseModPanel::GetSingleton().UpdateBackgroundMusicVolume( 1.0f );
+
+	if ( m_hBackgroundNoiseLoop )
+	{
+		enginesound->StopSoundByGuid( m_hBackgroundNoiseLoop );
+		m_hBackgroundNoiseLoop = 0;
+	}
 }
 
 void PromoOptIn::Activate()
@@ -211,7 +220,17 @@ void PromoOptIn::Activate()
 	MakeReadyForUse();
 
 #ifdef RD_7A_DROPS
-	surface()->PlaySound( "buttons/button1.wav" );
+	CSoundParameters params;
+	if ( g_pSoundEmitterSystem->GetParametersForSound( "swarm.gameeffects.bigelevatorstop", params, GENDER_NONE, true ) )
+	{
+		enginesound->EmitAmbientSound( params.soundname, params.volume, params.pitch );
+	}
+
+	if ( g_pSoundEmitterSystem->GetParametersForSound( "ambient.atmosphere.indoor2", params, GENDER_NONE, true ) )
+	{
+		enginesound->EmitAmbientSound( params.soundname, params.volume * 0.25f, params.pitch );
+		m_hBackgroundNoiseLoop = enginesound->GetGuidForLastSoundEmitted();
+	}
 
 	m_pLblFlavor->SetAlpha( 0 );
 	GetAnimationController()->RunAnimationCommand( m_pLblFlavor, "alpha", 255, 2.0f, 2.0f, AnimationController::INTERPOLATOR_LINEAR );

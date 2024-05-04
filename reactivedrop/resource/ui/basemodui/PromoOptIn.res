@@ -18,10 +18,9 @@
 		"xpos"			"c-200"
 		"ypos"			"20"
 		"wide"			"400"
-		"tall"			"210"
+		"tall"			"170"
 		"wrap"			"1"
 		"textAlignment"	"north-west"
-		"font"			"DefaultMedium"
 		"fgcolor_override"	"0 255 0 255"
 	}
 
@@ -30,7 +29,7 @@
 		"ControlName"	"Label"
 		"fieldName"		"LblExplanationTitle"
 		"xpos"			"c-250"
-		"ypos"			"230"
+		"ypos"			"190"
 		"wide"			"500"
 		"tall"			"20"
 		"labelText"		"#rd_crafting_beta1_signup_title"
@@ -43,10 +42,11 @@
 		"ControlName"	"Label"
 		"fieldName"		"LblExplanation"
 		"xpos"			"c-250"
-		"ypos"			"250"
+		"ypos"			"210"
 		"wide"			"500"
-		"tall"			"180"
+		"tall"			"220"
 		"labelText"		"#rd_crafting_beta1_signup_explanation"
+		"textAlignment"	"north-west"
 		"wrap"			"1"
 	}
 

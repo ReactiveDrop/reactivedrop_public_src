@@ -24,5 +24,7 @@ namespace BaseModUI
 		CNB_Button *m_pBtnDecline;
 		CNB_Button *m_pBtnAccept;
 		CNB_Button *m_pBtnAlready;
+
+		int m_hBackgroundNoiseLoop;
 	};
 }

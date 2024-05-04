@@ -97,11 +97,7 @@ ConVar rd_last_game_hardcoreff( "rd_last_game_hardcoreff", "0", FCVAR_ARCHIVE, "
 ConVar rd_last_game_maxplayers( "rd_last_game_maxplayers", "4", FCVAR_ARCHIVE, "Remembers the last game max players setting for a lobby created from the main menu." );
 ConVar rd_revert_convars( "rd_revert_convars", "1", FCVAR_ARCHIVE, "Resets FCVAR_REPLICATED variables to their default values when opening the main menu." );
 #ifdef RD_7A_DROPS
-#if 0
 ConVar rd_crafting_material_beta_phase1_show_promo( "rd_crafting_material_beta_phase1_show_promo", "1", FCVAR_ARCHIVE );
-#else
-ConVar rd_crafting_material_beta_phase1_show_promo( "rd_crafting_material_beta_phase1_show_promo", "0", FCVAR_NONE );
-#endif
 #endif
 
 static void OnLegacyUIChanged( IConVar *var, const char *pOldValue, float flOldValue )
