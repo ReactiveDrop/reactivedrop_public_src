@@ -442,6 +442,11 @@ public:
 		{
 			Msg( "Successfully wrote item schema cache with %d items (skipped %d)\n", nItemDefs - nSkippedDefs, nSkippedDefs );
 		}
+
+#ifdef DBGFLAG_ASSERT
+		extern void CheckContainsAnyItemIDLists( const CUtlVector<SteamItemDef_t> &itemIDs );
+		CheckContainsAnyItemIDLists( ItemDefIDs );
+#endif
 	}
 
 	CUtlVector<SteamItemDef_t> m_HighOwnedInventoryDefIDs;
@@ -3055,7 +3060,7 @@ namespace ReactiveDropInventory
 				continue;
 			}
 
-			if ( condition(s_RD_Inventory_Manager.m_LocalInventoryCache[i]) )
+			if ( condition( s_RD_Inventory_Manager.m_LocalInventoryCache[i] ) )
 			{
 				instances.AddToTail( s_RD_Inventory_Manager.m_LocalInventoryCache[i] );
 			}

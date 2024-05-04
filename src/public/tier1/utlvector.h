@@ -17,6 +17,7 @@
 
 
 #include <string.h>
+#include <initializer_list>
 #include "tier0/platform.h"
 #include "tier0/dbg.h"
 #include "tier0/threadtools.h"
@@ -47,6 +48,7 @@ public:
 	// constructor, destructor
 	CUtlVector( int growSize = 0, int initSize = 0 );
 	CUtlVector( T* pMemory, int allocationCount, int numElements = 0 );
+	CUtlVector( std::initializer_list<T> init );
 	~CUtlVector();
 	
 	// Copy the array.
@@ -536,6 +538,15 @@ inline CUtlVector<T, A>::CUtlVector( T* pMemory, int allocationCount, int numEle
 	m_Memory(pMemory, allocationCount), m_Size(numElements)
 {
 	ResetDbgInfo();
+}
+
+template< typename T, class A >
+inline CUtlVector<T, A>::CUtlVector( std::initializer_list<T> init ) :
+	m_Memory(0, init.size()), m_Size(init.size())
+{
+	ResetDbgInfo();
+
+	CopyArray( init.begin(), init.size() );
 }
 
 template< typename T, class A >

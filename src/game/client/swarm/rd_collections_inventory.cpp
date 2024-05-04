@@ -1,6 +1,7 @@
 #include "cbase.h"
 #include "rd_collections.h"
 #include "rd_inventory_shared.h"
+#include "rd_crafting_defs.h"
 #include <vgui/ILocalize.h>
 #include <vgui_controls/ImagePanel.h>
 #include <vgui_controls/RichText.h>
@@ -550,7 +551,76 @@ void CRD_Collection_Entry_Inventory::OnCommand( const char *command )
 	}
 	else if ( !V_strcmp( command, "OpenChoiceBox" ) )
 	{
+		const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( m_Details.ItemDefID );
+		Assert( pDef );
+		if ( !pDef )
+		{
+			Warning( "Missing item definition %d, but we're in the handler for OpenChoiceBox!\n", m_Details.ItemDefID );
+			return;
+		}
+
+		UtlSymId_t iContainsAny = pDef->Tags.Find( "contains_any" );
+		Assert( iContainsAny != UTL_INVAL_SYMBOL );
+		if ( iContainsAny == UTL_INVAL_SYMBOL )
+		{
+			Warning( "Item definition %d missing contains_any tag, but we already verified that it has one by this point!\n", m_Details.ItemDefID );
+			return;
+		}
+
+		const CUtlStringList &containsAny = pDef->Tags[iContainsAny];
+
+		const char *szTitle = NULL;
+		const char *szFlavor = NULL;
+		const char *szCompatible = NULL;
+		bool bShowAccessories = false;
+		bool bIsAccessory = false;
+
+		FOR_EACH_VEC( containsAny, i )
+		{
+			if ( !V_strcmp( containsAny[i], "set_1_strange_weapon" ) || !V_strcmp( containsAny[i], "set_1_strange_equipment" ) )
+			{
+				szTitle = "#rd_unbox_strange_weapon_title";
+				szFlavor = "#rd_unbox_strange_weapon_flavor";
+				szCompatible = "#rd_unbox_strange_weapon_compatible_devices";
+				bShowAccessories = true;
+				break;
+			}
+
+			if ( !V_strcmp( containsAny[i], "set_1_strange_device" ) )
+			{
+				szTitle = "#rd_unbox_strange_device_title";
+				szFlavor = "#rd_unbox_strange_device_flavor";
+				szCompatible = "#rd_unbox_strange_device_compatible_owned_items";
+				bIsAccessory = true;
+				break;
+			}
+
+			Assert( !"didn't find a string for this contains_any category" );
+		}
+
+		CUtlVector<SteamItemDef_t> choices;
+
+		FOR_EACH_VEC( containsAny, i )
+		{
+			FOR_EACH_VEC( g_RD_Crafting_Contains_Any_Lists, j )
+			{
+				if ( !V_strcmp( containsAny[i], g_RD_Crafting_Contains_Any_Lists[j].m_szTag ) )
+				{
+					choices.AddVectorToTail( g_RD_Crafting_Contains_Any_Lists[j].m_ItemDefs );
+					break;
+				}
+			}
+		}
+
 		DebuggerBreakIfDebugging(); // TODO: display choices for opening box
+
+		// "#rd_unbox_strange_weapon_warning_already_owned"
+		// "#rd_unbox_strange_weapon_warning_cannot_currently_use"
+		// "#rd_unbox_strange_device_warning_no_compatible_items"
+		// "#rd_unbox_strange_confirm"
+		// "#rd_unbox_strange_cancel"
+		// "#rd_unbox_strange_warnings_title"
+		// "#rd_unbox_strange_warnings_desc"
 	}
 	else if ( !V_strcmp( command, "Back" ) )
 	{

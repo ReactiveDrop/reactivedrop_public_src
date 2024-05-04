@@ -95,6 +95,15 @@ const RD_Crafting_Material_Rarity_Info g_RD_Crafting_Material_Rarity_Info[] =
 	{ "RD_Crafting_Material_Found.Salvaged", true },
 };
 
+// hard-coded so we don't have to search the entire item ID space to figure out which items can appear in a box.
+// gets verified on startup in debug builds.
+const CUtlVector<RD_Crafting_Contains_Any_List> g_RD_Crafting_Contains_Any_Lists
+{{
+	{"set_1_strange_weapon", {{2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026}}},
+	{"set_1_strange_equipment", {{3000, 3001, 3002, 3003, 3004, 3005, 3006, 3007, 3008, 3009, 3010, 3011, 3012, 3013, 3014, 3015, 3016, 3017}}},
+	{"set_1_strange_device", {{5000, 5001, 5002, 5003, 5004, 5005, 5006, 5007, 5008}}},
+}};
+
 #ifdef GAME_DLL
 class CRD_CraftingMaterialUseAreaEnumerator : public IPartitionEnumerator
 {
@@ -535,5 +544,77 @@ bool CRD_Crafting_Material_Pickup::IsUsable( CBaseEntity *pUser )
 		return false;
 #endif
 	return ( pUser && pUser->GetAbsOrigin().DistTo( GetAbsOrigin() ) < ASW_MARINE_USE_RADIUS );	// near enough?
+}
+#endif
+
+#ifdef DBGFLAG_ASSERT
+static int __cdecl CompareItemIDs( const SteamItemDef_t *a, const SteamItemDef_t *b )
+{
+	if ( *a > *b )
+		return 1;
+	if ( *a < *b )
+		return -1;
+	return 0;
+}
+
+void CheckContainsAnyItemIDLists( const CUtlVector<SteamItemDef_t> &AllItemDefs )
+{
+	ISteamInventory *pInventory = SteamInventory();
+#ifdef GAME_DLL
+	if ( engine->IsDedicatedServer() )
+		pInventory = SteamGameServerInventory();
+#endif
+	Assert( pInventory );
+	if ( !pInventory )
+		return;
+
+	CUtlVector<CUtlVector<SteamItemDef_t>> ActualExchangeLists;
+	ActualExchangeLists.SetCount( g_RD_Crafting_Contains_Any_Lists.Count() );
+
+	char szExchange[4096];
+
+	FOR_EACH_VEC( AllItemDefs, i )
+	{
+		uint32 nExchangeSize = sizeof( szExchange );
+		if ( !pInventory->GetItemDefinitionProperty( AllItemDefs[i], "exchange", szExchange, &nExchangeSize ) )
+			continue;
+
+		// this code assumes that each item is in at most one contains_any list and isn't exchangable from anything else
+		const char *szContainsAnyTag = StringAfterPrefixCaseSensitive( szExchange, "contains_any:" );
+		if ( szContainsAnyTag )
+		{
+			bool bFound = false;
+			FOR_EACH_VEC( g_RD_Crafting_Contains_Any_Lists, j )
+			{
+				if ( !V_strcmp( g_RD_Crafting_Contains_Any_Lists[j].m_szTag, szContainsAnyTag ) )
+				{
+					bFound = true;
+					ActualExchangeLists[j].AddToTail( AllItemDefs[i] );
+					break;
+				}
+			}
+
+			Assert( bFound );
+		}
+		else
+		{
+			// for now, anything that isn't a contains_any either isn't exchangable or is exchangable for a specific item ID; check that it starts with a digit
+			Assert( !szExchange[0] || V_isdigit( szExchange[0] ) );
+		}
+	}
+
+	FOR_EACH_VEC( ActualExchangeLists, i )
+	{
+		ActualExchangeLists[i].Sort( CompareItemIDs );
+
+		Assert( g_RD_Crafting_Contains_Any_Lists[i].m_ItemDefs.Count() == ActualExchangeLists[i].Count() );
+		if ( g_RD_Crafting_Contains_Any_Lists[i].m_ItemDefs.Count() == ActualExchangeLists[i].Count() )
+		{
+			FOR_EACH_VEC( ActualExchangeLists[i], j )
+			{
+				Assert( g_RD_Crafting_Contains_Any_Lists[i].m_ItemDefs[j] == ActualExchangeLists[i][j] );
+			}
+		}
+	}
 }
 #endif

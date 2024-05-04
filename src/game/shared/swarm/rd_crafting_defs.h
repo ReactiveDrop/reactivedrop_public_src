@@ -83,8 +83,15 @@ struct RD_Crafting_Material_Rarity_Info
 	bool m_bCanFindInMission;
 };
 
+struct RD_Crafting_Contains_Any_List
+{
+	const char *m_szTag;
+	CUtlVector<SteamItemDef_t> m_ItemDefs;
+};
+
 extern const RD_Crafting_Material_Info g_RD_Crafting_Material_Info[NUM_RD_CRAFTING_MATERIAL_TYPES];
 extern const RD_Crafting_Material_Rarity_Info g_RD_Crafting_Material_Rarity_Info[NUM_RD_CRAFTING_MATERIAL_RARITIES];
+extern const CUtlVector<RD_Crafting_Contains_Any_List> g_RD_Crafting_Contains_Any_Lists;
 
 #ifdef GAME_DLL
 void GenerateCraftingMaterialSpawnLocations( CUtlVector<Vector> &spawnLocations );
