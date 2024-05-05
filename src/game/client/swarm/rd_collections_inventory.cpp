@@ -3,6 +3,7 @@
 #include "rd_inventory_shared.h"
 #include "rd_crafting_defs.h"
 #include <vgui/ILocalize.h>
+#include <vgui/ISurface.h>
 #include <vgui_controls/ImagePanel.h>
 #include <vgui_controls/RichText.h>
 #include "MultiFontRichText.h"
@@ -10,6 +11,9 @@
 #include "filesystem.h"
 #include "gameui/swarm/basemodpanel.h"
 #include "gameui/swarm/vhybridbutton.h"
+#include "asw_util_shared.h"
+#include "asw_equipment_list.h"
+#include "asw_weapon_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -362,6 +366,7 @@ CRD_Collection_Entry_Inventory::CRD_Collection_Entry_Inventory( TGD_Grid *parent
 	m_pIconBackground = new vgui::Panel( this, "IconBackground" );
 	m_pIcon = new vgui::ImagePanel( this, "Icon" );
 	m_pEquippedMarker = new vgui::ImagePanel( this, "EquippedMarker" );
+	m_pLblQuantity = new vgui::Label( this, "LblQuantity", "" );
 
 	m_Index = index;
 }
@@ -371,11 +376,19 @@ void CRD_Collection_Entry_Inventory::ApplySchemeSettings( vgui::IScheme *pScheme
 	BaseClass::ApplySchemeSettings( pScheme );
 
 	const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( m_Details.ItemDefID );
+	Assert( pDef );
+	if ( !pDef )
+		return;
 
 	m_pIconBackground->SetBgColor( pDef->BackgroundColor );
 	m_pIconBackground->SetPaintBackgroundEnabled( true );
 	m_pIconBackground->SetPaintBackgroundType( 0 );
 	m_pIcon->SetImage( m_Details.GetIcon() );
+	m_pLblQuantity->SetVisible( pDef->AutoStack || m_Details.Quantity > 1 );
+	m_pLblQuantity->SetText( UTIL_RD_CommaNumber( m_Details.Quantity ) );
+
+	SetPostChildPaintEnabled( pDef->HasBorder );
+	m_BorderColor = pDef->NameColor;
 
 	bool bEquipped = false;
 	for ( int i = 0; i < RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS; i++ )
@@ -493,11 +506,14 @@ void CRD_Collection_Entry_Inventory::ApplyEntry()
 
 	if ( pDef->Tags.Defined( "contains_any" ) )
 	{
-		pModal->AddOption( "OpenChoiceBox", "#rd_inventory_verb_open" );
+		pModal->AddOption( "UnboxChoice", "#rd_inventory_verb_open" );
 	}
 
-	// TODO: make this selectable
-	pModal->AddOption( NULL, "#rd_inventory_verb_delete" );
+	if ( !pDef->ItemSlot.IsEmpty() )
+	{
+		// TODO: make this selectable
+		pModal->AddOption( NULL, "#rd_inventory_verb_delete" );
+	}
 
 	pModal->AddOption( "Back", "#asw_menu_back" );
 
@@ -549,7 +565,7 @@ void CRD_Collection_Entry_Inventory::OnCommand( const char *command )
 
 		DebuggerBreakIfDebugging(); // TODO: display confirmation
 	}
-	else if ( !V_strcmp( command, "OpenChoiceBox" ) )
+	else if ( !V_strcmp( command, "UnboxChoice" ) )
 	{
 		const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( m_Details.ItemDefID );
 		Assert( pDef );
@@ -635,6 +651,20 @@ void CRD_Collection_Entry_Inventory::OnCommand( const char *command )
 
 	m_pParent->InvalidateLayout( true, true );
 	m_pFocusHolder->OnSetFocus();
+}
+
+void CRD_Collection_Entry_Inventory::PostChildPaint()
+{
+	BaseClass::PostChildPaint();
+
+	int thick = YRES( 1.5f );
+	int x, y, wide, tall;
+	m_pIconBackground->GetBounds( x, y, wide, tall );
+	vgui::surface()->DrawSetColor( m_BorderColor );
+	vgui::surface()->DrawFilledRect( x, y, x + thick, y + tall );
+	vgui::surface()->DrawFilledRect( x + wide - thick, y, x + wide, y + tall );
+	vgui::surface()->DrawFilledRect( x, y, x + wide, y + thick );
+	vgui::surface()->DrawFilledRect( x, y + tall - thick, x + wide, y + tall );
 }
 
 CRD_Collection_Tab_Inventory *CRD_Collection_Entry_Inventory::GetTab()

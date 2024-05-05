@@ -59,12 +59,26 @@
 	"Icon"
 	{
 		"fieldName"		"Icon"
-		"xpos"		"2"
-		"ypos"		"3"
-		"wide"		"86"
-		"tall"		"86"
+		"xpos"		"4"
+		"ypos"		"5"
+		"wide"		"80"
+		"tall"		"80"
 		"ControlName"		"ImagePanel"
 		"scaleImage"		"1"
+	}
+
+	"LblQuantity"
+	{
+		"ControlName"	"Label"
+		"fieldName"		"LblQuantity"
+		"xpos"			"2"
+		"ypos"			"69"
+		"wide"			"86"
+		"tall"			"20"
+		"textAlignment"	"center"
+		"font"			"DefaultLarge"
+		"fgcolor_override"	"255 255 255 255"
+		"bgcolor_override"	"0 0 0 192"
 	}
 
 	"EquippedMarker"

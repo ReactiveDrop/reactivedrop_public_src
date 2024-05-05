@@ -2907,6 +2907,8 @@ namespace ReactiveDropInventory
 		Assert( !V_strcmp( szValue, "" ) || !V_strcmp( szValue, "1" ) || !V_strcmp( szValue, "0" ) );
 		pItemDef->AutoStack = !V_strcmp( szValue, "1" );
 
+		pItemDef->IsTagTool = szType == "tag_tool";
+
 #ifdef CLIENT_DLL
 		pItemDef->Icon = NULL;
 		FETCH_PROPERTY( "icon_url" );
@@ -3123,6 +3125,43 @@ namespace ReactiveDropInventory
 		GetLocalInventoryWhere( instances, [&]( const ItemInstance_t &instance ) -> bool
 			{
 				return instance.ItemDefID == iDefID;
+			} );
+	}
+
+	void GetItemsForTagTool( CUtlVector<ItemInstance_t> &instances, const char *szCategory, const char *szID )
+	{
+		GetLocalInventoryWhere( instances, [&]( const ItemInstance_t &instance ) -> bool
+			{
+				UtlSymId_t iCategory = instance.Tags.Find( szCategory );
+				if ( iCategory != UTL_INVAL_SYMBOL )
+				{
+					FOR_EACH_VEC( instance.Tags[iCategory], i )
+					{
+						if ( !V_strcmp( instance.Tags[iCategory][i], szID ) )
+						{
+							// already has the tag
+							return false;
+						}
+					}
+				}
+
+				const ItemDef_t *pDef = GetItemDef( instance.ItemDefID );
+				if ( !pDef )
+					return false;
+
+				iCategory = pDef->AllowedTagsFromTools.Find( szCategory );
+				if ( iCategory == UTL_INVAL_SYMBOL )
+					return false;
+
+				FOR_EACH_VEC( pDef->AllowedTagsFromTools[iCategory], i )
+				{
+					if ( !V_strcmp( pDef->AllowedTagsFromTools[iCategory][i], szID ) )
+					{
+						return true;
+					}
+				}
+
+				return false;
 			} );
 	}
 

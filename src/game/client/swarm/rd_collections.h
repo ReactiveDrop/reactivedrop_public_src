@@ -223,15 +223,18 @@ public:
 	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 	void ApplyEntry() override;
 	void OnCommand( const char *command ) override;
+	void PostChildPaint() override;
 
 	CRD_Collection_Tab_Inventory *GetTab();
 
 	vgui::Panel *m_pIconBackground;
 	vgui::ImagePanel *m_pIcon;
 	vgui::ImagePanel *m_pEquippedMarker;
+	vgui::Label *m_pLblQuantity;
 
 	int m_Index;
 	ReactiveDropInventory::ItemInstance_t m_Details;
+	Color m_BorderColor;
 };
 
 class CRD_Collection_Tab_Swarmopedia : public TGD_Tab

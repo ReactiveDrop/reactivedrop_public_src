@@ -116,6 +116,7 @@ namespace ReactiveDropInventory
 		bool IsBasic : 1;
 		bool GameOnly : 1;
 		bool AutoStack : 1;
+		bool IsTagTool : 1;
 #ifdef CLIENT_DLL
 		vgui::IImage *Icon{};
 		CUtlVector<vgui::IImage *> StyleIcons{};
@@ -180,6 +181,7 @@ namespace ReactiveDropInventory
 	void GetItemsForSlot( CUtlVector<ItemInstance_t> &instances, const char *szRequiredSlot );
 	void GetItemsForSlotAndEquipIndex( CUtlVector<ItemInstance_t> &instances, const char *szRequiredSlot, int iEquipIndex );
 	void GetItemsForDef( CUtlVector<ItemInstance_t> &instances, SteamItemDef_t iDefID );
+	void GetItemsForTagTool( CUtlVector<ItemInstance_t> &instances, const char *szCategory, const char *szID );
 	bool CheckMedalEquipCache();
 	void ChangeItemStyle( SteamItemInstanceID_t id, int iStyle );
 	void QueueSetNotificationSeen( SteamItemInstanceID_t id, int iSeen );
