@@ -153,7 +153,7 @@ public:
 
 protected:
 	// Can't copy this unless we explicitly do it!
-	CUtlVector( CUtlVector const& vec ) { Assert(0); }
+	CUtlVector( CUtlVector const &vec ) = delete;
 
 	// Grows the vector
 	void GrowVector( int num = 1 );
@@ -205,6 +205,7 @@ public:
 	// constructor, destructor
 	CUtlVectorMT( int growSize = 0, int initSize = 0 ) : BaseClass( growSize, initSize ) {}
 	CUtlVectorMT( typename BaseClass::ElemType_t* pMemory, int numElements ) : BaseClass( pMemory, numElements ) {}
+	CUtlVectorMT( std::initializer_list<typename BaseClass::ElemType_t> init ) : BaseClass( init ) {}
 };
 
 
@@ -221,6 +222,7 @@ public:
 	// constructor, destructor
 	CUtlVectorFixed( int growSize = 0, int initSize = 0 ) : BaseClass( growSize, initSize ) {}
 	CUtlVectorFixed( T* pMemory, int numElements ) : BaseClass( pMemory, numElements ) {}
+	CUtlVectorFixed( std::initializer_list<T> init ) : BaseClass( init ) {}
 };
 
 
@@ -236,6 +238,7 @@ class CUtlVectorFixedGrowable : public CUtlVector< T, CUtlMemoryFixedGrowable<T,
 public:
 	// constructor, destructor
 	CUtlVectorFixedGrowable( int growSize = 0 ) : BaseClass( growSize, MAX_SIZE ) {}
+	CUtlVectorFixedGrowable( std::initializer_list<T> init ) : BaseClass( init ) {}
 };
 
 
@@ -252,6 +255,7 @@ public:
 	// constructor, destructor
 	CUtlVectorConservative( int growSize = 0, int initSize = 0 ) : BaseClass( growSize, initSize ) {}
 	CUtlVectorConservative( T* pMemory, int numElements ) : BaseClass( pMemory, numElements ) {}
+	CUtlVectorConservative( std::initializer_list<T> init ) : BaseClass( init ) {}
 };
 
 
@@ -517,6 +521,7 @@ class CCopyableUtlVector : public CUtlVector< T, CUtlMemory<T> >
 public:
 	CCopyableUtlVector( int growSize = 0, int initSize = 0 ) : BaseClass( growSize, initSize ) {}
 	CCopyableUtlVector( T* pMemory, int numElements ) : BaseClass( pMemory, numElements ) {}
+	CCopyableUtlVector( std::initializer_list<T> init ) : BaseClass( init ) {}
 	virtual ~CCopyableUtlVector() {}
 	CCopyableUtlVector( CCopyableUtlVector const& vec ) { CopyArray( vec.Base(), vec.Count() ); }
 };
@@ -542,7 +547,7 @@ inline CUtlVector<T, A>::CUtlVector( T* pMemory, int allocationCount, int numEle
 
 template< typename T, class A >
 inline CUtlVector<T, A>::CUtlVector( std::initializer_list<T> init ) :
-	m_Memory(0, init.size()), m_Size(init.size())
+	m_Memory(0, init.size()), m_Size(0)
 {
 	ResetDbgInfo();
 

@@ -86,7 +86,7 @@ struct RD_Crafting_Material_Rarity_Info
 struct RD_Crafting_Contains_Any_List
 {
 	const char *m_szTag;
-	CUtlVector<SteamItemDef_t> m_ItemDefs;
+	CCopyableUtlVector<SteamItemDef_t> m_ItemDefs;
 };
 
 extern const RD_Crafting_Material_Info g_RD_Crafting_Material_Info[NUM_RD_CRAFTING_MATERIAL_TYPES];
