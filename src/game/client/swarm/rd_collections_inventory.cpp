@@ -1015,14 +1015,13 @@ void CRD_Collection_Entry_Inventory::PostChildPaint()
 {
 	BaseClass::PostChildPaint();
 
-	int thick = YRES( 1.5f );
 	int x, y, wide, tall;
 	m_pIconBackground->GetBounds( x, y, wide, tall );
 	vgui::surface()->DrawSetColor( m_BorderColor );
-	vgui::surface()->DrawFilledRect( x, y, x + thick, y + tall );
-	vgui::surface()->DrawFilledRect( x + wide - thick, y, x + wide, y + tall );
-	vgui::surface()->DrawFilledRect( x, y, x + wide, y + thick );
-	vgui::surface()->DrawFilledRect( x, y + tall - thick, x + wide, y + tall );
+	vgui::surface()->DrawFilledRect( x, y, x + m_iBorderThickness, y + tall );
+	vgui::surface()->DrawFilledRect( x + wide - m_iBorderThickness, y, x + wide, y + tall );
+	vgui::surface()->DrawFilledRect( x, y, x + wide, y + m_iBorderThickness );
+	vgui::surface()->DrawFilledRect( x, y + tall - m_iBorderThickness, x + wide, y + tall );
 }
 
 CRD_Collection_Tab_Inventory *CRD_Collection_Entry_Inventory::GetTab()

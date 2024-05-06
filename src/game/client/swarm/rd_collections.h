@@ -235,6 +235,8 @@ public:
 	int m_Index;
 	ReactiveDropInventory::ItemInstance_t m_Details;
 	Color m_BorderColor;
+
+	CPanelAnimationVarAliasType( int, m_iBorderThickness, "border_thickness", "1.5", "proportional_int" );
 };
 
 class CRD_Collection_Tab_Swarmopedia : public TGD_Tab
