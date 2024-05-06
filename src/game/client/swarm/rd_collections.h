@@ -237,6 +237,7 @@ public:
 	Color m_BorderColor;
 
 	CPanelAnimationVarAliasType( int, m_iBorderThickness, "border_thickness", "1.5", "proportional_int" );
+	CPanelAnimationVar( uint8, m_iBorderAlpha, "border_alpha", "255" );
 };
 
 class CRD_Collection_Tab_Swarmopedia : public TGD_Tab

@@ -1017,7 +1017,7 @@ void CRD_Collection_Entry_Inventory::PostChildPaint()
 
 	int x, y, wide, tall;
 	m_pIconBackground->GetBounds( x, y, wide, tall );
-	vgui::surface()->DrawSetColor( m_BorderColor );
+	vgui::surface()->DrawSetColor( m_BorderColor.r(), m_BorderColor.g(), m_BorderColor.b(), m_iBorderAlpha );
 	vgui::surface()->DrawFilledRect( x, y, x + m_iBorderThickness, y + tall );
 	vgui::surface()->DrawFilledRect( x + wide - m_iBorderThickness, y, x + wide, y + tall );
 	vgui::surface()->DrawFilledRect( x, y, x + wide, y + m_iBorderThickness );
