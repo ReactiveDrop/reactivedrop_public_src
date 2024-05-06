@@ -14,6 +14,8 @@
 #include "asw_util_shared.h"
 #include "asw_equipment_list.h"
 #include "asw_weapon_shared.h"
+#include "vgui_bitmapbutton.h"
+#include "nb_button.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -359,6 +361,429 @@ public:
 	int m_nOptions;
 };
 
+class HoverableItemIcon : public vgui::ImagePanel
+{
+	DECLARE_CLASS_SIMPLE( HoverableItemIcon, vgui::ImagePanel );
+public:
+	HoverableItemIcon( vgui::Panel *parent, const char *panelName, const ReactiveDropInventory::ItemDef_t *pDef ) :
+		BaseClass{ parent, panelName }
+	{
+		m_Details.m_iItemDefID = pDef->ID;
+
+		SetImage( pDef->AccessoryImage ? pDef->AccessoryImage : pDef->Icon );
+		SetShouldScaleImage( true );
+	}
+
+	HoverableItemIcon( vgui::Panel *parent, const char *panelName, const ReactiveDropInventory::ItemInstance_t &item ) :
+		BaseClass{ parent, panelName }, m_Details{ item }
+	{
+		SetImage( item.GetIcon() );
+		SetShouldScaleImage( true );
+	}
+
+	// TODO: the actual "hoverable" part (tooltip)
+
+	CRD_ItemInstance m_Details;
+};
+
+class CRD_Collection_Panel_Inventory_Unbox_Choice : public vgui::EditablePanel
+{
+	DECLARE_CLASS_SIMPLE( CRD_Collection_Panel_Inventory_Unbox_Choice, vgui::EditablePanel );
+public:
+	CRD_Collection_Panel_Inventory_Unbox_Choice( vgui::Panel *parent, const char *panelName, CRD_Collection_Entry_Inventory *pEntry ) :
+		BaseClass{ parent, panelName }
+	{
+		m_pEntry = pEntry;
+		m_iChoice = 0;
+
+		m_pLblTitle = new vgui::Label( this, "LblTitle", "" );
+		m_pLblFlavor = new vgui::Label( this, "LblFlavor", "" );
+		m_pLblOptionNumber = new vgui::Label( this, "LblOptionNumber", "" );
+		m_pLblItemName = new vgui::Label( this, "LblItemName", "" );
+		m_pLblItemType = new vgui::Label( this, "LblItemType", "" );
+		m_pImgItemIcon = new vgui::ImagePanel( this, "ImgItemIcon" );
+		m_pLblDescription = new vgui::MultiFontRichText( this, "LblDescription" );
+		m_pLblDescription->SetDrawTextOnly();
+		m_pLblDescription->SetMouseInputEnabled( false );
+		m_pPnlDetails = new vgui::Panel( this, "PnlDetails" );
+		m_pBtnPrevious = new CBitmapButton( this, "BtnPrevious", " " );
+		m_pBtnPrevious->AddActionSignalTarget( this );
+		m_pBtnPrevious->SetCommand( "PreviousSelection" );
+		m_pBtnNext = new CBitmapButton( this, "BtnNext", " " );
+		m_pBtnNext->AddActionSignalTarget( this );
+		m_pBtnNext->SetCommand( "NextSelection" );
+		m_pBtnConfirm = new CNB_Button( this, "BtnConfirm", "#rd_unbox_strange_confirm", this, "ConfirmSelection" );
+		m_pBtnConfirm->SetControllerButton( KEY_XBUTTON_X );
+		m_pBtnCancel = new CNB_Button( this, "BtnCancel", "#rd_unbox_strange_cancel", this, "CancelSelection" );
+		m_pBtnCancel->SetControllerButton( KEY_XBUTTON_B );
+
+		const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( pEntry->m_Details.ItemDefID );
+		Assert( pDef );
+		if ( !pDef )
+		{
+			Warning( "Missing item definition %d, but we're in the handler for OpenChoiceBox!\n", pEntry->m_Details.ItemDefID );
+			return;
+		}
+
+		UtlSymId_t iContainsAny = pDef->Tags.Find( "contains_any" );
+		Assert( iContainsAny != UTL_INVAL_SYMBOL );
+		if ( iContainsAny == UTL_INVAL_SYMBOL )
+		{
+			Warning( "Item definition %d missing contains_any tag, but we already verified that it has one by this point!\n", pEntry->m_Details.ItemDefID );
+			return;
+		}
+
+		const CUtlStringList &containsAny = pDef->Tags[iContainsAny];
+
+		FOR_EACH_VEC( containsAny, i )
+		{
+			if ( !V_strcmp( containsAny[i], "set_1_strange_weapon" ) || !V_strcmp( containsAny[i], "set_1_strange_equipment" ) )
+			{
+				m_pLblTitle->SetText( "#rd_unbox_strange_weapon_title" );
+				m_pLblFlavor->SetText( "#rd_unbox_strange_weapon_flavor" );
+				break;
+			}
+
+			if ( !V_strcmp( containsAny[i], "set_1_strange_device" ) )
+			{
+				m_pLblTitle->SetText( "#rd_unbox_strange_device_title" );
+				m_pLblFlavor->SetText( "#rd_unbox_strange_device_flavor" );
+				break;
+			}
+
+			Assert( !"didn't find a string for this contains_any category" );
+		}
+
+		FOR_EACH_VEC( containsAny, i )
+		{
+			FOR_EACH_VEC( g_RD_Crafting_Contains_Any_Lists, j )
+			{
+				if ( !V_strcmp( containsAny[i], g_RD_Crafting_Contains_Any_Lists[j].m_szTag ) )
+				{
+					m_Choices.AddVectorToTail( g_RD_Crafting_Contains_Any_Lists[j].m_ItemDefs );
+					break;
+				}
+			}
+		}
+
+		FOR_EACH_VEC( m_Choices, i )
+		{
+			// pre-fetch icons
+			( void )ReactiveDropInventory::GetItemDef( m_Choices[i] );
+		}
+
+		MakeReadyForUse();
+	}
+
+	void UpdateChoice()
+	{
+		if ( !m_Choices.Count() )
+		{
+			// failed to initialize
+			MarkForDeletion();
+			return;
+		}
+
+		const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( m_Choices[m_iChoice] );
+		Assert( pDef );
+		if ( !pDef )
+		{
+			// don't let people try to open a box that has invalid contents - this problem will result in an assert on debug builds at startup and a crash here.
+			Error( "missing item def %d in container %d", m_Choices[m_iChoice], m_pEntry->m_Details.ItemDefID );
+			return;
+		}
+
+		ClearInfo();
+
+		wchar_t wszLabel[1024];
+		g_pVGuiLocalize->ConstructString( wszLabel, sizeof( wszLabel ), g_pVGuiLocalize->Find( "#rd_unbox_strange_option_number" ), 2, UTIL_RD_CommaNumber( m_iChoice + 1 ), UTIL_RD_CommaNumber( m_Choices.Count() ) );
+		m_pLblOptionNumber->SetText( wszLabel );
+
+		V_UTF8ToUnicode( pDef->Name, wszLabel, sizeof( wszLabel ) );
+		m_pLblItemName->SetFgColor( pDef->NameColor );
+		m_pLblItemName->SetText( wszLabel );
+		V_UTF8ToUnicode( pDef->DisplayType, wszLabel, sizeof( wszLabel ) );
+		m_pLblItemType->SetText( wszLabel );
+		m_pImgItemIcon->SetImage( pDef->Icon );
+
+		m_pLblDescription->SetText( "" );
+		CRD_ItemInstance futureItem;
+		futureItem.m_iItemDefID = pDef->ID;
+		futureItem.FormatDescription( m_pLblDescription );
+
+		if ( pDef->ItemSlotMatches( "weapon" ) )
+		{
+			CASW_EquipItem *pEquip = g_ASWEquipmentList.GetRegular( pDef->EquipIndex );
+			Assert( pEquip );
+			if ( pEquip )
+			{
+				Assert( !pEquip->m_bRequiresInventoryItem || GetWeaponLevelRequirement( pEquip->m_szEquipClass ) == -1 );
+				if ( !UTIL_ASW_CommanderLevelAtLeast( NULL, GetWeaponLevelRequirement( pEquip->m_szEquipClass ), -1 ) )
+				{
+					AddWarning( "#rd_unbox_strange_weapon_warning_cannot_currently_use" );
+				}
+			}
+		}
+
+		if ( pDef->ItemSlotMatches( "extra" ) )
+		{
+			CASW_EquipItem *pEquip = g_ASWEquipmentList.GetExtra( pDef->EquipIndex );
+			Assert( pEquip );
+			if ( pEquip )
+			{
+				Assert( !pEquip->m_bRequiresInventoryItem || GetWeaponLevelRequirement( pEquip->m_szEquipClass ) == -1 );
+				if ( !UTIL_ASW_CommanderLevelAtLeast( NULL, GetWeaponLevelRequirement( pEquip->m_szEquipClass ), -1 ) )
+				{
+					AddWarning( "#rd_unbox_strange_weapon_warning_cannot_currently_use" );
+				}
+			}
+		}
+
+		if ( !pDef->AccessoryTag.IsEmpty() )
+		{
+			UtlSymId_t iAllowedAccessories = pDef->AllowedTagsFromTools.Find( pDef->AccessoryTag );
+			Assert( iAllowedAccessories != UTL_INVAL_SYMBOL );
+			if ( iAllowedAccessories != UTL_INVAL_SYMBOL )
+			{
+				BeginItemIconSection( "#rd_unbox_strange_weapon_compatible_devices" );
+				FOR_EACH_VEC( pDef->AllowedTagsFromTools[iAllowedAccessories], i )
+				{
+					const ReactiveDropInventory::ItemDef_t *pAccessoryDef = ReactiveDropInventory::GetItemDef( V_atoi( pDef->AllowedTagsFromTools[iAllowedAccessories][i] ) );
+					Assert( pAccessoryDef );
+					if ( pAccessoryDef )
+					{
+						AddItemDefIcon( pAccessoryDef );
+					}
+				}
+			}
+		}
+
+		if ( pDef->IsTagTool )
+		{
+			Assert( pDef->Tags.GetNumStrings() == 1 && pDef->Tags[0].Count() == 1 );
+			if ( pDef->Tags.GetNumStrings() == 1 && pDef->Tags[0].Count() == 1 )
+			{
+				CUtlVector<ReactiveDropInventory::ItemInstance_t> compatible;
+				ReactiveDropInventory::GetItemsForTagTool( compatible, pDef->Tags.String( 0 ), pDef->Tags[0][0] );
+				if ( compatible.Count() )
+				{
+					BeginItemIconSection( "#rd_unbox_strange_device_compatible_owned_items" );
+					FOR_EACH_VEC( compatible, i )
+					{
+						AddItemInstanceIcon( compatible[i] );
+					}
+				}
+				else
+				{
+					AddWarning( "#rd_unbox_strange_device_warning_no_compatible_items" );
+				}
+			}
+		}
+		else
+		{
+			CUtlVector<ReactiveDropInventory::ItemInstance_t> owned;
+			ReactiveDropInventory::GetItemsForDef( owned, pDef->ID );
+			if ( owned.Count() )
+			{
+				AddWarning( "#rd_unbox_strange_weapon_warning_already_owned" );
+			}
+		}
+
+		InvalidateLayout( true );
+	}
+
+	void ApplySchemeSettings( vgui::IScheme *pScheme ) override
+	{
+		LoadControlSettings( "Resource/UI/CollectionPanelInventoryUnboxChoice.res" );
+
+		BaseClass::ApplySchemeSettings( pScheme );
+
+		UpdateChoice();
+	}
+
+	void PerformLayout() override
+	{
+		BaseClass::PerformLayout();
+
+		int x, y, w, t;
+		m_pPnlDetails->GetBounds( x, y, w, t );
+
+		FOR_EACH_VEC( m_Warnings, i )
+		{
+			m_Warnings[i]->MakeReadyForUse();
+			m_Warnings[i]->SetFgColor( Color{ 255, 224, 0, 255 } );
+			m_Warnings[i]->SetBounds( x, y, w, YRES( 10 ) );
+			m_Warnings[i]->InvalidateLayout( true );
+			m_Warnings[i]->OnThink();
+			y += m_Warnings[i]->GetTall();
+			t -= m_Warnings[i]->GetTall();
+			Assert( t >= 0 );
+		}
+
+		FOR_EACH_VEC( m_ItemIconSections, i )
+		{
+			m_ItemIconSections[i].m_pLblSectionTitle->MakeReadyForUse();
+			m_ItemIconSections[i].m_pLblSectionTitle->SetFgColor( Color{ 180, 180, 180, 255 } );
+			m_ItemIconSections[i].m_pLblSectionTitle->SetBounds( x, y, w, YRES( 10 ) );
+			m_ItemIconSections[i].m_pLblSectionTitle->InvalidateLayout( true );
+			m_ItemIconSections[i].m_pLblSectionTitle->OnThink();
+			y += m_ItemIconSections[i].m_pLblSectionTitle->GetTall();
+			t -= m_ItemIconSections[i].m_pLblSectionTitle->GetTall();
+
+			int x1 = 0;
+			FOR_EACH_VEC( m_ItemIconSections[i].m_Icons, j )
+			{
+				if ( x1 >= w - YRES( 32 ) )
+				{
+					y += YRES( 32 );
+					t -= YRES( 32 );
+					x1 = 0;
+				}
+				m_ItemIconSections[i].m_Icons[j]->SetBounds( x + x1, y, YRES( 32 ), YRES( 32 ) );
+				x1 += YRES( 32 );
+			}
+			y += YRES( 32 );
+			t -= YRES( 32 );
+			Assert( t >= 0 );
+		}
+	}
+
+	void OnCommand( const char *command ) override
+	{
+		if ( FStrEq( command, "ConfirmSelection" ) )
+		{
+			BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_ACCEPT );
+
+			if ( m_Warnings.Count() )
+			{
+				// "#rd_unbox_strange_warnings_title"
+				// "#rd_unbox_strange_warnings_desc"
+
+				DebuggerBreakIfDebugging(); // TODO!
+			}
+			else
+			{
+				DebuggerBreakIfDebugging(); // TODO!
+			}
+		}
+		else if ( FStrEq( command, "CancelSelection" ) )
+		{
+			BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_BACK );
+			m_pEntry->m_pParent->m_pParent->m_pParent->SetOverridePanel( NULL );
+			MarkForDeletion();
+		}
+		else if ( FStrEq( command, "PreviousSelection" ) )
+		{
+			BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_ACCEPT );
+			m_iChoice--;
+			if ( m_iChoice < 0 )
+				m_iChoice = m_Choices.Count() - 1;
+
+			UpdateChoice();
+		}
+		else if ( FStrEq( command, "NextSelection" ) )
+		{
+			BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_ACCEPT );
+			m_iChoice++;
+			if ( m_iChoice >= m_Choices.Count() )
+				m_iChoice = 0;
+
+			UpdateChoice();
+		}
+		else
+		{
+			BaseClass::OnCommand( command );
+		}
+	}
+
+	void ClearInfo()
+	{
+		FOR_EACH_VEC( m_Warnings, i )
+		{
+			m_Warnings[i]->MarkForDeletion();
+		}
+
+		m_Warnings.Purge();
+
+		FOR_EACH_VEC( m_ItemIconSections, i )
+		{
+			m_ItemIconSections[i].m_pLblSectionTitle->MarkForDeletion();
+
+			FOR_EACH_VEC( m_ItemIconSections[i].m_Icons, j )
+			{
+				m_ItemIconSections[i].m_Icons[j]->MarkForDeletion();
+			}
+		}
+
+		m_ItemIconSections.Purge();
+	}
+
+	void AddWarning( const char *szLabel )
+	{
+		vgui::Label *pLabel = new vgui::Label( this, "LblWarning", szLabel );
+		m_Warnings.AddToTail( pLabel );
+
+		InvalidateLayout();
+	}
+
+	void BeginItemIconSection( const char *szLabel )
+	{
+		int i = m_ItemIconSections.AddToTail();
+		m_ItemIconSections[i].m_pLblSectionTitle = new vgui::Label( this, "LblSectionHeading", szLabel );
+
+		InvalidateLayout();
+	}
+
+	void AddItemDefIcon( const ReactiveDropInventory::ItemDef_t *pDef )
+	{
+		Assert( m_ItemIconSections.Count() );
+		if ( !m_ItemIconSections.Count() )
+			return;
+
+		HoverableItemIcon *pIcon = new HoverableItemIcon( this, "InfoItemIcon", pDef );
+		m_ItemIconSections[m_ItemIconSections.Count() - 1].m_Icons.AddToTail( pIcon );
+
+		InvalidateLayout();
+	}
+
+	void AddItemInstanceIcon( const ReactiveDropInventory::ItemInstance_t &item )
+	{
+		const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( item.ItemDefID );
+		Assert( pDef );
+		if ( !pDef )
+			return;
+
+		HoverableItemIcon *pIcon = new HoverableItemIcon( this, "InfoItemIcon", item );
+		m_ItemIconSections[m_ItemIconSections.Count() - 1].m_Icons.AddToTail( pIcon );
+
+		InvalidateLayout();
+	}
+
+	CRD_Collection_Entry_Inventory *m_pEntry;
+	CUtlVector<SteamItemDef_t> m_Choices;
+	int m_iChoice;
+
+	vgui::Label *m_pLblTitle;
+	vgui::Label *m_pLblFlavor;
+	vgui::Label *m_pLblOptionNumber;
+	vgui::Label *m_pLblItemName;
+	vgui::Label *m_pLblItemType;
+	vgui::ImagePanel *m_pImgItemIcon;
+	vgui::MultiFontRichText *m_pLblDescription;
+	vgui::Panel *m_pPnlDetails;
+	CBitmapButton *m_pBtnPrevious;
+	CBitmapButton *m_pBtnNext;
+	CNB_Button *m_pBtnConfirm;
+	CNB_Button *m_pBtnCancel;
+	CUtlVector<vgui::Label *> m_Warnings;
+	struct ItemIconSection_t
+	{
+		vgui::Label *m_pLblSectionTitle;
+		CCopyableUtlVector<HoverableItemIcon *> m_Icons;
+	};
+	CUtlVector<ItemIconSection_t> m_ItemIconSections;
+};
+
 CRD_Collection_Entry_Inventory::CRD_Collection_Entry_Inventory( TGD_Grid *parent, const char *panelName, int index, const ReactiveDropInventory::ItemInstance_t &details )
 	: BaseClass( parent, panelName ),
 	m_Details{ details }
@@ -567,76 +992,9 @@ void CRD_Collection_Entry_Inventory::OnCommand( const char *command )
 	}
 	else if ( !V_strcmp( command, "UnboxChoice" ) )
 	{
-		const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( m_Details.ItemDefID );
-		Assert( pDef );
-		if ( !pDef )
-		{
-			Warning( "Missing item definition %d, but we're in the handler for OpenChoiceBox!\n", m_Details.ItemDefID );
-			return;
-		}
-
-		UtlSymId_t iContainsAny = pDef->Tags.Find( "contains_any" );
-		Assert( iContainsAny != UTL_INVAL_SYMBOL );
-		if ( iContainsAny == UTL_INVAL_SYMBOL )
-		{
-			Warning( "Item definition %d missing contains_any tag, but we already verified that it has one by this point!\n", m_Details.ItemDefID );
-			return;
-		}
-
-		const CUtlStringList &containsAny = pDef->Tags[iContainsAny];
-
-		const char *szTitle = NULL;
-		const char *szFlavor = NULL;
-		const char *szCompatible = NULL;
-		bool bShowAccessories = false;
-		bool bIsAccessory = false;
-
-		FOR_EACH_VEC( containsAny, i )
-		{
-			if ( !V_strcmp( containsAny[i], "set_1_strange_weapon" ) || !V_strcmp( containsAny[i], "set_1_strange_equipment" ) )
-			{
-				szTitle = "#rd_unbox_strange_weapon_title";
-				szFlavor = "#rd_unbox_strange_weapon_flavor";
-				szCompatible = "#rd_unbox_strange_weapon_compatible_devices";
-				bShowAccessories = true;
-				break;
-			}
-
-			if ( !V_strcmp( containsAny[i], "set_1_strange_device" ) )
-			{
-				szTitle = "#rd_unbox_strange_device_title";
-				szFlavor = "#rd_unbox_strange_device_flavor";
-				szCompatible = "#rd_unbox_strange_device_compatible_owned_items";
-				bIsAccessory = true;
-				break;
-			}
-
-			Assert( !"didn't find a string for this contains_any category" );
-		}
-
-		CUtlVector<SteamItemDef_t> choices;
-
-		FOR_EACH_VEC( containsAny, i )
-		{
-			FOR_EACH_VEC( g_RD_Crafting_Contains_Any_Lists, j )
-			{
-				if ( !V_strcmp( containsAny[i], g_RD_Crafting_Contains_Any_Lists[j].m_szTag ) )
-				{
-					choices.AddVectorToTail( g_RD_Crafting_Contains_Any_Lists[j].m_ItemDefs );
-					break;
-				}
-			}
-		}
-
-		DebuggerBreakIfDebugging(); // TODO: display choices for opening box
-
-		// "#rd_unbox_strange_weapon_warning_already_owned"
-		// "#rd_unbox_strange_weapon_warning_cannot_currently_use"
-		// "#rd_unbox_strange_device_warning_no_compatible_items"
-		// "#rd_unbox_strange_confirm"
-		// "#rd_unbox_strange_cancel"
-		// "#rd_unbox_strange_warnings_title"
-		// "#rd_unbox_strange_warnings_desc"
+		TabbedGridDetails *pTGD = m_pParent->m_pParent->m_pParent;
+		CRD_Collection_Panel_Inventory_Unbox_Choice *pModal = new CRD_Collection_Panel_Inventory_Unbox_Choice( pTGD, "OptionsModal", this );
+		pTGD->SetOverridePanel( pModal );
 	}
 	else if ( !V_strcmp( command, "Back" ) )
 	{

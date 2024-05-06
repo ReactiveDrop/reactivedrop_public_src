@@ -2911,10 +2911,27 @@ namespace ReactiveDropInventory
 
 #ifdef CLIENT_DLL
 		pItemDef->Icon = NULL;
-		FETCH_PROPERTY( "icon_url" );
-		if ( *szValue )
+		pItemDef->AccessoryImage = NULL;
+		if ( pItemDef->IsTagTool )
 		{
-			pItemDef->Icon = GetSteamItemIcon( szValue );
+			FETCH_PROPERTY( "icon_url" );
+			if ( *szValue )
+			{
+				pItemDef->AccessoryImage = GetSteamItemIcon( szValue );
+			}
+			FETCH_PROPERTY( "icon_url_large" );
+			if ( *szValue )
+			{
+				pItemDef->Icon = GetSteamItemIcon( szValue );
+			}
+		}
+		else
+		{
+			FETCH_PROPERTY( "icon_url" );
+			if ( *szValue )
+			{
+				pItemDef->Icon = GetSteamItemIcon( szValue );
+			}
 		}
 
 		pItemDef->StyleIcons.SetCount( pItemDef->StyleNames.Count() );

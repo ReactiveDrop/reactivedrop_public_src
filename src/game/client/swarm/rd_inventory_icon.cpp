@@ -130,9 +130,9 @@ vgui::IImage *GetSteamItemIcon( const char *szURL, bool bForceLoadRemote )
 
 ITexture *ReactiveDropInventory::ItemDef_t::GetAccessoryIcon() const
 {
-	if ( !AccessoryIcon && Icon && Icon->GetNumFrames() )
+	if ( !AccessoryIcon && AccessoryImage && AccessoryImage->GetNumFrames() )
 	{
-		CFmtStr szTextureName{ "vgui/inventory/cache/%08x", assert_cast< CSteamItemIcon * >( Icon )->m_URLHash };
+		CFmtStr szTextureName{ "vgui/inventory/cache/%08x", assert_cast< CSteamItemIcon * >( AccessoryImage )->m_URLHash };
 		AccessoryIcon = materials->FindTexture( szTextureName, TEXTURE_GROUP_CLIENT_EFFECTS );
 	}
 

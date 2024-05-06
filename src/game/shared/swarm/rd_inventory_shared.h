@@ -120,6 +120,7 @@ namespace ReactiveDropInventory
 #ifdef CLIENT_DLL
 		vgui::IImage *Icon{};
 		CUtlVector<vgui::IImage *> StyleIcons{};
+		vgui::IImage *AccessoryImage{};
 		mutable ITexture *AccessoryIcon{};
 		ITexture *GetAccessoryIcon() const;
 #endif
