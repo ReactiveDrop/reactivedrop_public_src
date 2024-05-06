@@ -70,21 +70,24 @@ void CNB_Button::Paint()
 
 void CNB_Button::PaintBackground()
 {
-	// draw gray outline background
-	DrawRoundedBox( 0, 0, GetWide(), GetTall(), Color( 78, 94, 110, 255 ), 1.0f, false, Color( 0, 0, 0, 0 ) );
+	int wide, tall;
+	GetSize( wide, tall );
 
-	int nBorder = MAX( YRES( 1 ), 1 );
+	// draw gray outline background
+	DrawRoundedBox( 0, 0, wide, tall, m_BorderColor, Color( 0, 0, 0, 0 ) );
+
+	int nBorder = MAX( m_nBorderThick, m_nBorderThickMin );
 	if ( IsArmed() || IsDepressed() )
 	{
-		DrawRoundedBox( nBorder, nBorder, GetWide() - nBorder * 2, GetTall() - nBorder * 2, Color( 20, 59, 96, 255 ), 1.0f, true, Color( 28, 80, 130, 255 ) );
+		DrawRoundedBox( nBorder, nBorder, wide - nBorder * 2, tall - nBorder * 2, m_PressedColor, m_PressedHighlightColor );
 	}
 	else if ( IsEnabled() )
 	{
-		DrawRoundedBox( nBorder, nBorder, GetWide() - nBorder * 2, GetTall() - nBorder * 2, Color( 24, 43, 66, 255 ), 1.0f, false, Color( 0, 0, 0, 0 ) );
+		DrawRoundedBox( nBorder, nBorder, wide - nBorder * 2, tall - nBorder * 2, m_EnabledColor, m_EnabledHighlightColor );
 	}
 	else
 	{
-		DrawRoundedBox( nBorder, nBorder, GetWide() - nBorder * 2, GetTall() - nBorder * 2, Color( 65, 78, 91, 255 ), 1.0f, false, Color( 0, 0, 0, 0 ) );
+		DrawRoundedBox( nBorder, nBorder, wide - nBorder * 2, tall - nBorder * 2, m_DisabledColor, m_DisabledHighlightColor );
 	}
 }
 
@@ -113,17 +116,12 @@ void CNB_Button::NavigateTo()
 	RequestFocus();
 }
 
-void CNB_Button::DrawRoundedBox( int x, int y, int wide, int tall, Color color, float normalizedAlpha, bool bHighlightGradient, Color highlightCenterColor )
+void CNB_Button::DrawRoundedBox( int x, int y, int wide, int tall, Color color, Color highlightCenterColor )
 {
-	if ( m_nNBBgTextureId1 == -1 ||
-		m_nNBBgTextureId2 == -1 ||
-		m_nNBBgTextureId3 == -1 ||
-		m_nNBBgTextureId4 == -1 )
+	if ( m_nNBBgTextureId1 == -1 || m_nNBBgTextureId2 == -1 || m_nNBBgTextureId3 == -1 || m_nNBBgTextureId4 == -1 )
 	{
 		return;
 	}
-
-	color[3] *= normalizedAlpha;
 
 	// work out our bounds
 	int cornerWide, cornerTall;
@@ -131,24 +129,24 @@ void CNB_Button::DrawRoundedBox( int x, int y, int wide, int tall, Color color, 
 
 	// draw the background in the areas not occupied by the corners
 	// draw it in three horizontal strips
-	surface()->DrawSetColor(color);
-	surface()->DrawFilledRect(x + cornerWide, y, x + wide - cornerWide,	y + cornerTall);
-	surface()->DrawFilledRect(x, y + cornerTall, x + wide, y + tall - cornerTall);
-	surface()->DrawFilledRect(x + cornerWide, y + tall - cornerTall, x + wide - cornerWide, y + tall);
+	surface()->DrawSetColor( color );
+	surface()->DrawFilledRect( x + cornerWide, y, x + wide - cornerWide, y + cornerTall );
+	surface()->DrawFilledRect( x, y + cornerTall, x + wide, y + tall - cornerTall );
+	surface()->DrawFilledRect( x + cornerWide, y + tall - cornerTall, x + wide - cornerWide, y + tall );
 
 	// draw the corners
-	surface()->DrawSetTexture(m_nNBBgTextureId1);
-	surface()->DrawTexturedRect(x, y, x + cornerWide, y + cornerTall);
-	surface()->DrawSetTexture(m_nNBBgTextureId2);
-	surface()->DrawTexturedRect(x + wide - cornerWide, y, x + wide, y + cornerTall);
-	surface()->DrawSetTexture(m_nNBBgTextureId3);
-	surface()->DrawTexturedRect(x + wide - cornerWide, y + tall - cornerTall, x + wide, y + tall);
-	surface()->DrawSetTexture(m_nNBBgTextureId4);
-	surface()->DrawTexturedRect(x + 0, y + tall - cornerTall, x + cornerWide, y + tall);
+	surface()->DrawSetTexture( m_nNBBgTextureId1 );
+	surface()->DrawTexturedRect( x, y, x + cornerWide, y + cornerTall );
+	surface()->DrawSetTexture( m_nNBBgTextureId2 );
+	surface()->DrawTexturedRect( x + wide - cornerWide, y, x + wide, y + cornerTall );
+	surface()->DrawSetTexture( m_nNBBgTextureId3 );
+	surface()->DrawTexturedRect( x + wide - cornerWide, y + tall - cornerTall, x + wide, y + tall );
+	surface()->DrawSetTexture( m_nNBBgTextureId4 );
+	surface()->DrawTexturedRect( x + 0, y + tall - cornerTall, x + cornerWide, y + tall );
 
-	if ( bHighlightGradient )
+	if ( highlightCenterColor.a() )
 	{
-		surface()->DrawSetColor(highlightCenterColor);
+		surface()->DrawSetColor( highlightCenterColor );
 		surface()->DrawFilledRectFade( x + cornerWide, y, x + wide * 0.5f, y + tall, 0, 255, true );
 		surface()->DrawFilledRectFade( x + wide * 0.5f, y, x + wide - cornerWide, y + tall, 255, 0, true );
 	}
