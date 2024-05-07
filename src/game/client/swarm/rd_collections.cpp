@@ -343,7 +343,7 @@ void CRD_Swarmopedia_Model_Panel::OnPaint3D()
 		m_Models[i].m_MDL.Draw( mat, Bones[i], m_Models[i].m_iRenderFlags );
 	}
 
-	if ( rd_swarmopedia_grid.GetBool() )
+	if ( rd_swarmopedia_grid.GetBool() && m_bShouldDrawGrid )
 	{
 		DrawGrid();
 	}

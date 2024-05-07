@@ -141,6 +141,7 @@ public:
 		m_flYawIntensity = 5.0f;
 		m_flPanSpeed = 2.5f;
 		m_angPanOrigin.Init( 40.0f, -15.0f, 0.0f );
+		m_bShouldDrawGrid = false;
 
 		RD_Swarmopedia::Display display;
 		display.Models.SetCount( 1 );

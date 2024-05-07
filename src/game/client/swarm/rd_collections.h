@@ -65,6 +65,7 @@ public:
 
 	bool m_bUseTimeScale{ true };
 	bool m_bAutoPosition{ true };
+	bool m_bShouldDrawGrid{ true };
 	Vector m_vecCenter;
 	float m_flRadius;
 

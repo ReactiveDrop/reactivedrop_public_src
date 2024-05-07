@@ -1251,6 +1251,7 @@ CRD_VGUI_Loadout_Marine::CRD_VGUI_Loadout_Marine( vgui::Panel *parent, const cha
 	m_hLoadout = pLoadout;
 	m_pModelPanel = new CRD_Swarmopedia_Model_Panel( this, "ModelPanel" );
 	m_pModelPanel->m_eMode = CRD_Swarmopedia_Model_Panel::MODE_FULLSCREEN_MOUSE;
+	m_pModelPanel->m_bShouldDrawGrid = false;
 
 	m_pLblBiography = new vgui::MultiFontRichText( this, "LblBiography" );
 	m_pLblBiography->SetPanelInteractive( false );
