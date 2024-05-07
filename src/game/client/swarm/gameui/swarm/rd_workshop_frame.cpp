@@ -297,7 +297,7 @@ void ReactiveDropWorkshop::OnCommand( const char *command )
 		m_pBtnSubmit->SetEnabled( false );
 		if ( ReactiveDropWorkshopListItem *pItem = dynamic_cast<ReactiveDropWorkshopListItem *>( m_pGplWorkshopItems->GetSelectedPanelItem() ) )
 		{
-			if ( pItem->GetDetails().details.m_rgchTitle[0] && pItem->GetPreviewImage() )
+			if ( pItem->GetDetails().details.m_rgchTitle[0] )
 			{
 				m_pBtnSubmit->SetEnabled( true );
 			}
