@@ -101,22 +101,22 @@
 		"command"		"PreviousSelection"
 		"enabledImage"
 		{
-			"material"		"vgui/TODO"
+			"material"		"vgui/swarm/big_arrow_left"
 			"color"			"224 224 224 255"
 		}
 		"mouseOverImage"
 		{
-			"material"		"vgui/TODO"
+			"material"		"vgui/swarm/big_arrow_left"
 			"color"			"255 255 255 255"
 		}
 		"pressedImage"
 		{
-			"material"		"vgui/TODO"
+			"material"		"vgui/swarm/big_arrow_left"
 			"color"			"255 255 255 255"
 		}
 		"disabledImage"
 		{
-			"material"		"vgui/TODO"
+			"material"		"vgui/swarm/big_arrow_left"
 			"color"			"96 96 96 255"
 		}
 	}
@@ -131,22 +131,22 @@
 		"command"		"NextSelection"
 		"enabledImage"
 		{
-			"material"		"vgui/TODO"
+			"material"		"vgui/swarm/big_arrow_right"
 			"color"			"224 224 224 255"
 		}
 		"mouseOverImage"
 		{
-			"material"		"vgui/TODO"
+			"material"		"vgui/swarm/big_arrow_right"
 			"color"			"255 255 255 255"
 		}
 		"pressedImage"
 		{
-			"material"		"vgui/TODO"
+			"material"		"vgui/swarm/big_arrow_right"
 			"color"			"255 255 255 255"
 		}
 		"disabledImage"
 		{
-			"material"		"vgui/TODO"
+			"material"		"vgui/swarm/big_arrow_right"
 			"color"			"96 96 96 255"
 		}
 	}
@@ -161,13 +161,14 @@
 	}
 	"BtnConfirm"
 	{
-		"ControlName"	"CNB_Button"
+		"ControlName"	"CNB_Button_Hold"
 		"fieldName"		"BtnConfirm"
 		"xpos"			"250"
 		"ypos"			"385"
 		"wide"			"150"
 		"tall"			"23"
 		"font"			"DefaultMedium"
+		"labelText"		"#rd_unbox_strange_confirm"
 		"textAlignment"	"center"
 	}
 	"BtnCancel"
@@ -179,6 +180,8 @@
 		"wide"			"150"
 		"tall"			"23"
 		"font"			"DefaultMedium"
+		"labelText"		"#rd_unbox_strange_cancel"
 		"textAlignment"	"center"
+		"command"		"CancelSelection"
 	}
 }

@@ -38,6 +38,7 @@
 #include "rd_collections.h"
 #include "rd_hoiaf_utils.h"
 #include "rd_inventory_command.h"
+#include "vstdlib/jobthread.h"
 #define CASW_Sentry_Base C_ASW_Sentry_Base
 #define CASW_Sentry_Top C_ASW_Sentry_Top
 #else
@@ -100,6 +101,8 @@ static void ResetAccessoryIconsOnMaterialsReleased( int nChangeFlags )
 #endif
 
 static const char s_szHexDigits[] = "0123456789abcdef";
+
+static void WriteInventoryCacheHelper();
 
 static class CRD_Inventory_Manager final : public CAutoGameSystem, public CGameEventListener
 {
@@ -248,12 +251,6 @@ public:
 			Warning( "Failed to cache user inventory for offline play: no ISteamInventory\n" );
 			return;
 		}
-		ISteamUser *pUser = SteamUser();
-		if ( !pUser )
-		{
-			Warning( "Failed to cache user inventory for offline play: no ISteamUser\n" );
-			return;
-		}
 
 		uint32 nItems{};
 		if ( !pInventory->GetResultItems( hResult, NULL, &nItems ) )
@@ -267,13 +264,10 @@ public:
 
 		m_HighOwnedInventoryDefIDs.Purge();
 
-		KeyValues::AutoDelete pCache{ "IC" };
-
 		for ( uint32 i = 0; i < nItems; i++ )
 		{
 			ReactiveDropInventory::ItemInstance_t instance{ hResult, i };
 			m_LocalInventoryCache.AddToTail( instance );
-			pCache->AddSubKey( instance.ToKeyValues() );
 
 			// precache item def + icon
 			( void )ReactiveDropInventory::GetItemDef( instance.ItemDefID );
@@ -288,10 +282,35 @@ public:
 			}
 		}
 
+		ReactiveDropInventory::g_nFullInventoryUpdates++;
+
+		HoIAF()->RebuildNotificationList();
+
+		ThreadExecute( WriteInventoryCacheHelper );
+	}
+
+	void WriteInventoryCache()
+	{
+		CFastTimer timer;
+		timer.Start();
+
+		KeyValues::AutoDelete pCache{ "IC" };
+		FOR_EACH_VEC( m_LocalInventoryCache, i )
+		{
+			pCache->AddSubKey( m_LocalInventoryCache[i].ToKeyValues() );
+		}
+
 		CUtlBuffer buf;
 		if ( !pCache->WriteAsBinary( buf ) )
 		{
 			Warning( "Failed to serialize inventory cache\n" );
+			return;
+		}
+
+		ISteamUser *pUser = SteamUser();
+		if ( !pUser )
+		{
+			Warning( "Failed to cache user inventory for offline play: no ISteamUser\n" );
 			return;
 		}
 
@@ -302,23 +321,23 @@ public:
 			return;
 		}
 
+		timer.End();
 		if ( rd_debug_inventory.GetBool() )
 		{
-			Msg( "Successfully wrote inventory cache with %d items\n", nItems );
+			Msg( "Successfully wrote inventory cache with %d items in %fs\n", m_LocalInventoryCache.Count(), timer.GetDuration().GetSeconds() );
 		}
-
-		ReactiveDropInventory::g_nFullInventoryUpdates++;
 
 		if ( m_HighOwnedInventoryDefIDs.Count() )
 		{
 			CacheItemSchema();
 		}
-
-		HoIAF()->RebuildNotificationList();
 	}
 
 	void CacheItemSchema()
 	{
+		CFastTimer timer;
+		timer.Start();
+
 		ISteamInventory *pInventory = SteamInventory();
 		if ( !pInventory )
 		{
@@ -438,9 +457,10 @@ public:
 			return;
 		}
 
+		timer.End();
 		if ( rd_debug_inventory.GetBool() )
 		{
-			Msg( "Successfully wrote item schema cache with %d items (skipped %d)\n", nItemDefs - nSkippedDefs, nSkippedDefs );
+			Msg( "Successfully wrote item schema cache with %d items (skipped %d) in %fs\n", nItemDefs - nSkippedDefs, nSkippedDefs, timer.GetDuration().GetSeconds() );
 		}
 
 #ifdef DBGFLAG_ASSERT
@@ -2197,6 +2217,13 @@ public:
 	}
 } s_RD_Inventory_Manager;
 
+static void WriteInventoryCacheHelper()
+{
+#ifdef CLIENT_DLL
+	s_RD_Inventory_Manager.WriteInventoryCache();
+#endif
+}
+
 #ifdef CLIENT_DLL
 static void RD_Equipped_Item_Changed( IConVar *var, const char *pOldValue, float flOldValue )
 {
@@ -3452,6 +3479,21 @@ namespace ReactiveDropInventory
 		return nCount;
 	}
 #endif
+	void PerformCraftingAction( SteamItemDef_t recipe, std::initializer_list<SteamItemInstanceID_t> ingredient, std::initializer_list<uint32> quantity )
+	{
+		Assert( ingredient.size() == quantity.size() );
+		if ( ingredient.size() != quantity.size() )
+		{
+			Warning( "Crafting action failed due to programmer error: %d ingredients but %d ingredient quantities! (recipe=%d)\n", ingredient.size(), quantity.size(), recipe );
+			return;
+		}
+
+		GET_INVENTORY_OR_BAIL;
+
+		const uint32 one = 1;
+		pInventory->ExchangeItems( s_RD_Inventory_Manager.AddCraftItemTask( CRD_Inventory_Manager::CRAFT_RECIPE ),
+			&recipe, &one, 1, ingredient.begin(), quantity.begin(), ingredient.size() );
+	}
 	void RequestFullInventoryRefresh()
 	{
 		if ( s_RD_Inventory_Manager.m_CraftingQueue.Count() )

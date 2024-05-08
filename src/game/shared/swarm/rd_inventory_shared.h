@@ -193,6 +193,7 @@ namespace ReactiveDropInventory
 	int GetCraftingMaterialsFound();
 	int GetCraftingMaterialsMissed();
 #endif
+	void PerformCraftingAction( SteamItemDef_t recipe, std::initializer_list<SteamItemInstanceID_t> ingredient, std::initializer_list<uint32> quantity );
 	void RequestFullInventoryRefresh();
 #endif
 	void OnHitConfirm( CBaseEntity *pAttacker, CBaseEntity *pTarget, Vector vecDamagePosition, bool bKilled, bool bDamageOverTime, bool bBlastDamage, int iDisposition, float flDamage, CBaseEntity *pWeapon );

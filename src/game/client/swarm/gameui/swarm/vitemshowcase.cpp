@@ -135,6 +135,7 @@ void ItemShowcase::OnThink()
 		case MODE_ITEM_DROP:
 		case MODE_ITEM_CLAIMED:
 		case MODE_ITEM_UPGRADED:
+		case MODE_ITEM_CRAFTED:
 		{
 			const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( m_Queue[0]->ItemDefID );
 

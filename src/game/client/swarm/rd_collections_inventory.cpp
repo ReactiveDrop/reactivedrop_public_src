@@ -2,6 +2,7 @@
 #include "rd_collections.h"
 #include "rd_inventory_shared.h"
 #include "rd_crafting_defs.h"
+#include <vgui/IInput.h>
 #include <vgui/ILocalize.h>
 #include <vgui/ISurface.h>
 #include <vgui_controls/ImagePanel.h>
@@ -15,7 +16,8 @@
 #include "asw_equipment_list.h"
 #include "asw_weapon_shared.h"
 #include "vgui_bitmapbutton.h"
-#include "nb_button.h"
+#include "nb_button_hold.h"
+#include "gameui/swarm/vgenericconfirmation.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -23,6 +25,28 @@
 
 ConVar rd_briefing_item_details_displaytype( "rd_briefing_item_details_displaytype", "170 170 170 255" );
 extern ConVar rd_equipped_medal[RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS];
+
+static SteamItemDef_t s_iDeferredCraftingRecipe = 0;
+static CUtlVector<SteamItemInstanceID_t> s_DeferredCraftingIngredients;
+static CUtlVector<uint32> s_DeferredCraftingQuantities;
+
+static void DeferredCraftingConfirm()
+{
+	if ( !s_iDeferredCraftingRecipe )
+		return;
+
+	ReactiveDropInventory::PerformCraftingAction( s_iDeferredCraftingRecipe, std::initializer_list<SteamItemInstanceID_t>( &s_DeferredCraftingIngredients.Head(), &s_DeferredCraftingIngredients.Tail() ), std::initializer_list<uint32>( &s_DeferredCraftingQuantities.Head(), &s_DeferredCraftingQuantities.Tail() ) );
+
+	s_iDeferredCraftingRecipe = 0;
+	s_DeferredCraftingIngredients.Purge();
+	s_DeferredCraftingQuantities.Purge();
+}
+static void DeferredCraftingCancel()
+{
+	s_iDeferredCraftingRecipe = 0;
+	s_DeferredCraftingIngredients.Purge();
+	s_DeferredCraftingQuantities.Purge();
+}
 
 CRD_Collection_Tab_Inventory::CRD_Collection_Tab_Inventory( TabbedGridDetails *parent, const char *szLabel, const char *szSlot )
 	: BaseClass( parent, szLabel )
@@ -412,7 +436,7 @@ public:
 		m_pBtnNext = new CBitmapButton( this, "BtnNext", " " );
 		m_pBtnNext->AddActionSignalTarget( this );
 		m_pBtnNext->SetCommand( "NextSelection" );
-		m_pBtnConfirm = new CNB_Button( this, "BtnConfirm", "#rd_unbox_strange_confirm", this, "ConfirmSelection" );
+		m_pBtnConfirm = new CNB_Button_Hold( this, "BtnConfirm", "#rd_unbox_strange_confirm", this, "ConfirmSelection" );
 		m_pBtnConfirm->SetControllerButton( KEY_XBUTTON_X );
 		m_pBtnCancel = new CNB_Button( this, "BtnCancel", "#rd_unbox_strange_cancel", this, "CancelSelection" );
 		m_pBtnCancel->SetControllerButton( KEY_XBUTTON_B );
@@ -656,14 +680,36 @@ public:
 
 			if ( m_Warnings.Count() )
 			{
-				// "#rd_unbox_strange_warnings_title"
-				// "#rd_unbox_strange_warnings_desc"
+				Assert( s_iDeferredCraftingRecipe == 0 );
+				Assert( s_DeferredCraftingIngredients.Count() == 0 );
+				Assert( s_DeferredCraftingQuantities.Count() == 0 );
+				s_iDeferredCraftingRecipe = m_Choices[m_iChoice];
+				s_DeferredCraftingIngredients.Purge();
+				s_DeferredCraftingIngredients.AddToTail( m_pEntry->m_Details.ItemID );
+				s_DeferredCraftingQuantities.Purge();
+				s_DeferredCraftingQuantities.AddToTail( 1 );
 
-				DebuggerBreakIfDebugging(); // TODO!
+				BaseModUI::GenericConfirmation::Data_t data;
+				data.pWindowTitle = "#rd_unbox_strange_warnings_title";
+				data.pMessageText = "#rd_unbox_strange_warnings_desc";
+				data.bOkButtonEnabled = true;
+				data.bCancelButtonEnabled = true;
+				data.pfnOkCallback = DeferredCraftingConfirm;
+				data.pfnCancelCallback = DeferredCraftingCancel;
+
+				BaseModUI::CBaseModPanel::GetSingleton().OpenFrontScreen();
+
+				BaseModUI::GenericConfirmation *pConfirm = assert_cast< BaseModUI::GenericConfirmation * >( BaseModUI::CBaseModPanel::GetSingleton().OpenWindow( BaseModUI::WT_GENERICCONFIRMATION, BaseModUI::CBaseModPanel::GetSingleton().GetWindow( BaseModUI::WT_MAINMENU ) ) );
+				pConfirm->SetUsageData( data );
 			}
 			else
 			{
-				DebuggerBreakIfDebugging(); // TODO!
+				SteamItemDef_t iRecipe = m_Choices[m_iChoice];
+				SteamItemInstanceID_t iIngredient = m_pEntry->m_Details.ItemID;
+
+				BaseModUI::CBaseModPanel::GetSingleton().OpenFrontScreen();
+
+				ReactiveDropInventory::PerformCraftingAction( iRecipe, { iIngredient }, { 1 } );
 			}
 		}
 		else if ( FStrEq( command, "CancelSelection" ) )
@@ -773,7 +819,7 @@ public:
 	vgui::Panel *m_pPnlDetails;
 	CBitmapButton *m_pBtnPrevious;
 	CBitmapButton *m_pBtnNext;
-	CNB_Button *m_pBtnConfirm;
+	CNB_Button_Hold *m_pBtnConfirm;
 	CNB_Button *m_pBtnCancel;
 	CUtlVector<vgui::Label *> m_Warnings;
 	struct ItemIconSection_t

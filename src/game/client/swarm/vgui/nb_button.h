@@ -17,12 +17,12 @@ public:
 	CNB_Button( Panel *parent, const char *panelName, const char *text, Panel *pActionSignalTarget = NULL, const char *pCmd = NULL, bool bSuppressAddToFocusList = false );
 	CNB_Button( Panel *parent, const char *panelName, const wchar_t *text, Panel *pActionSignalTarget = NULL, const char *pCmd = NULL, bool bSuppressAddToFocusList = false );
 	virtual ~CNB_Button();
-	
-	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
-	virtual void Paint();
-	virtual void PaintBackground();
-	virtual void OnCursorEntered();
-	virtual void NavigateTo();
+
+	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+	void Paint() override;
+	void PaintBackground() override;
+	void OnCursorEntered() override;
+	void NavigateTo() override;
 
 	void DrawRoundedBox( int x, int y, int wide, int tall, Color color, Color highlightCenterColor );
 	void SetControllerButton( vgui::KeyCode code );
@@ -32,6 +32,7 @@ public:
 
 	vgui::HFont m_hButtonFont;
 	const char *m_szControllerButton;
+	vgui::KeyCode m_iControllerButton;
 	bool m_bAddedToControllerFocus;
 
 	CPanelAnimationVar( bool, m_bAutoFocus, "autoFocus", "0" );

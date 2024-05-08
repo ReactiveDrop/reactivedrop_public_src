@@ -2316,6 +2316,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="swarm\vgui\mission_complete_message.cpp" />
     <ClCompile Include="swarm\vgui\MultiFontRichText.cpp" />
     <ClCompile Include="swarm\vgui\nb_button.cpp" />
+    <ClCompile Include="swarm\vgui\nb_button_hold.cpp" />
     <ClCompile Include="swarm\vgui\nb_campaign_map.cpp" />
     <ClCompile Include="swarm\vgui\nb_campaign_mission_details.cpp" />
     <ClCompile Include="swarm\vgui\nb_commander_list.cpp" />
@@ -3437,6 +3438,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="swarm\vgui\mission_complete_message.h" />
     <ClInclude Include="swarm\vgui\MultiFontRichText.h" />
     <ClInclude Include="swarm\vgui\nb_button.h" />
+    <ClInclude Include="swarm\vgui\nb_button_hold.h" />
     <ClInclude Include="swarm\vgui\nb_campaign_map.h" />
     <ClInclude Include="swarm\vgui\nb_campaign_mission_details.h" />
     <ClInclude Include="swarm\vgui\nb_commander_list.h" />

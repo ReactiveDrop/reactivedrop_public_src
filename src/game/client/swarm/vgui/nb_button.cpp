@@ -25,6 +25,7 @@ CNB_Button::CNB_Button( Panel *parent, const char *panelName, const char *text, 
 
 	m_hButtonFont = INVALID_FONT;
 	m_szControllerButton = NULL;
+	m_iControllerButton = KEY_NONE;
 }
 CNB_Button::CNB_Button( Panel *parent, const char *panelName, const wchar_t *text, Panel *pActionSignalTarget, const char *pCmd, bool bSuppressAddToFocusList )
 	: BaseClass( parent, panelName, text, pActionSignalTarget, pCmd )
@@ -35,6 +36,7 @@ CNB_Button::CNB_Button( Panel *parent, const char *panelName, const wchar_t *tex
 
 	m_hButtonFont = INVALID_FONT;
 	m_szControllerButton = NULL;
+	m_iControllerButton = KEY_NONE;
 }
 
 CNB_Button::~CNB_Button()
@@ -88,6 +90,12 @@ void CNB_Button::PaintBackground()
 	else
 	{
 		DrawRoundedBox( nBorder, nBorder, wide - nBorder * 2, tall - nBorder * 2, m_DisabledColor, m_DisabledHighlightColor );
+	}
+
+	if ( m_szControllerButton && g_RD_Steam_Input.GetJoystickCount() )
+	{
+		int padding = ( tall - nBorder * 2 - surface()->GetFontTall( m_hButtonFont ) ) / 2;
+		g_RD_Steam_Input.DrawLegacyControllerGlyph( m_szControllerButton, nBorder + padding, nBorder + padding, false, false, m_hButtonFont );
 	}
 }
 
@@ -150,16 +158,12 @@ void CNB_Button::DrawRoundedBox( int x, int y, int wide, int tall, Color color, 
 		surface()->DrawFilledRectFade( x + cornerWide, y, x + wide * 0.5f, y + tall, 0, 255, true );
 		surface()->DrawFilledRectFade( x + wide * 0.5f, y, x + wide - cornerWide, y + tall, 255, 0, true );
 	}
-
-	if ( m_szControllerButton && g_RD_Steam_Input.GetJoystickCount() )
-	{
-		int padding = ( tall - surface()->GetFontTall( m_hButtonFont ) ) / 2;
-		g_RD_Steam_Input.DrawLegacyControllerGlyph( m_szControllerButton, x + padding, y + padding, false, false, m_hButtonFont );
-	}
 }
 
 void CNB_Button::SetControllerButton( KeyCode code )
 {
+	m_iControllerButton = code;
+
 	switch ( code )
 	{
 	case KEY_XBUTTON_A:
@@ -213,6 +217,7 @@ void CNB_Button::SetControllerButton( KeyCode code )
 	default:
 		Warning( "CNB_Button: Unhandled controller button code %d\n", code );
 		m_szControllerButton = NULL;
+		m_iControllerButton = KEY_NONE;
 		break;
 	}
 }
