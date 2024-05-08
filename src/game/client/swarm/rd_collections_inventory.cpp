@@ -584,20 +584,30 @@ public:
 
 		if ( pDef->IsTagTool )
 		{
-			Assert( pDef->Tags.GetNumStrings() == 1 && pDef->Tags[0].Count() == 1 );
+			Assert( pDef->Tags.GetNumStrings() == 1 && pDef->Tags[0].Count() == 1 && pDef->ID == V_atoi( pDef->Tags[0][0] ) );
 			if ( pDef->Tags.GetNumStrings() == 1 && pDef->Tags[0].Count() == 1 )
 			{
 				CUtlVector<ReactiveDropInventory::ItemInstance_t> compatible;
 				ReactiveDropInventory::GetItemsForTagTool( compatible, pDef->Tags.String( 0 ), pDef->Tags[0][0] );
+				CUtlVector<ReactiveDropInventory::ItemInstance_t> accessories;
+				ReactiveDropInventory::GetItemsForDef( accessories, pDef->ID );
+				int nCompatible = 0, nAccessories = 0;
 				if ( compatible.Count() )
 				{
 					BeginItemIconSection( "#rd_unbox_strange_device_compatible_owned_items" );
 					FOR_EACH_VEC( compatible, i )
 					{
 						AddItemInstanceIcon( compatible[i] );
+						nCompatible += compatible[i].Quantity;
 					}
 				}
-				else
+
+				FOR_EACH_VEC( accessories, i )
+				{
+					nAccessories += accessories[i].Quantity;
+				}
+
+				if ( nCompatible <= nAccessories )
 				{
 					AddWarning( "#rd_unbox_strange_device_warning_no_compatible_items" );
 				}
