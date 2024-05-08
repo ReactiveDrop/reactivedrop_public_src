@@ -441,6 +441,7 @@ void ItemShowcase::ShowItems( SteamInventoryResult_t hResult, int iStart, int iC
 			delete pInstance;
 			continue;
 		}
+
 		const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( pInstance->ItemDefID );
 		if ( !pDef || pDef->GameOnly )
 		{
@@ -448,8 +449,24 @@ void ItemShowcase::ShowItems( SteamInventoryResult_t hResult, int iStart, int iC
 			continue;
 		}
 
+		if ( const ReactiveDropInventory::ItemInstance_t *pPrev = ReactiveDropInventory::GetLocalItemCache( pInstance->ItemID ) )
+		{
+			if ( pPrev->Quantity > pInstance->Quantity )
+			{
+				// we consumed items from a stack
+				delete pInstance;
+				continue;
+			}
+			else if ( pPrev->Quantity < pInstance->Quantity && pDef->AutoStack )
+			{
+				// we added items to a stack
+				pInstance->Quantity -= pPrev->Quantity;
+			}
+		}
+
 		if ( pDef->AutoStack )
 		{
+			// replace previous versions of this item's state in the queue
 			bool bFound = false;
 			FOR_EACH_VEC( pItemShowcase->m_Queue, i )
 			{
