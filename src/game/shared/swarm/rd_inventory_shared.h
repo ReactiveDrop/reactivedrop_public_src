@@ -193,7 +193,42 @@ namespace ReactiveDropInventory
 	int GetCraftingMaterialsFound();
 	int GetCraftingMaterialsMissed();
 #endif
-	void PerformCraftingAction( SteamItemDef_t recipe, std::initializer_list<SteamItemInstanceID_t> ingredient, std::initializer_list<uint32> quantity );
+	enum CraftItemType_t
+	{
+		// craft an item via a predefined recipe. notifies user when complete. modal while in progress.
+		CRAFT_RECIPE,
+		// attach an accessory to an item. modal while in progress. updates equip slots to use new ID. forces a dynamic property update for the accessory.
+		CRAFT_ACCESSORY,
+		// convert currency to items or items to currency. modal while in progress.
+		CRAFT_SHOP,
+		// claiming a currency reward. modal while in progress.
+		CRAFT_CLAIM_MINOR,
+		// claiming an item or bundle reward. modal while in progress. notifies user when complete.
+		CRAFT_CLAIM_MAJOR,
+		// picking up a crafting material. silent while in progress. in-game notification when complete.
+		CRAFT_PICKUP_MATERIAL,
+		// behind-the-scenes item exchange. no notification.
+		CRAFT_BTS,
+		// set dynamic properties on newly created item to 0. modal while in progress. notifies user when complete (replaces notification from craft task that queued this).
+		CRAFT_DYNAMIC_PROPERTY_INIT,
+		// checking for item drop. notifies user based on preferences if successful.
+		CRAFT_DROP,
+		// checking for promo item. notifies user and server if successful.
+		CRAFT_PROMO,
+		// retrieving item data. may not be ours. notification when complete.
+		CRAFT_INSPECT,
+		// updating dynamic properties for an item (eg. at the end of a mission). no notifications.
+		CRAFT_DYNAMIC_PROPERTY_UPDATE,
+		// updating user-modifiable dynamic properties for an item (eg. style). modal while in progress.
+		CRAFT_USER_DYNAMIC_PROPERTY_UPDATE,
+		// deleting an item. modal while in progress.
+		CRAFT_DELETE,
+		// deleting an item silently. no notifications. (funnily enough, this is used to expire a different kind of notifications.)
+		CRAFT_DELETE_SILENT,
+		// updating the "seen" status of notifications. only one of these exist at a time. no notifications. (heh)
+		CRAFT_NOTIFICATION_DYNAMIC_PROPERTY_UPDATE,
+	};
+	void PerformCraftingAction( CraftItemType_t eCraftType, SteamItemDef_t recipe, std::initializer_list<SteamItemInstanceID_t> ingredient, std::initializer_list<uint32> quantity, SteamItemDef_t iAccessoryDef = 0, SteamItemInstanceID_t iReplaceItemInstance = k_SteamItemInstanceIDInvalid );
 	void RequestFullInventoryRefresh();
 #endif
 	void OnHitConfirm( CBaseEntity *pAttacker, CBaseEntity *pTarget, Vector vecDamagePosition, bool bKilled, bool bDamageOverTime, bool bBlastDamage, int iDisposition, float flDamage, CBaseEntity *pWeapon );

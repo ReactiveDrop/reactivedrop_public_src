@@ -26,26 +26,73 @@
 ConVar rd_briefing_item_details_displaytype( "rd_briefing_item_details_displaytype", "170 170 170 255" );
 extern ConVar rd_equipped_medal[RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS];
 
+static ReactiveDropInventory::CraftItemType_t s_eDeferredCraftType = ReactiveDropInventory::CRAFT_RECIPE;
 static SteamItemDef_t s_iDeferredCraftingRecipe = 0;
 static CUtlVector<SteamItemInstanceID_t> s_DeferredCraftingIngredients;
 static CUtlVector<uint32> s_DeferredCraftingQuantities;
+static SteamItemDef_t s_iDeferredCraftingAccessoryDef = 0;
+static SteamItemInstanceID_t s_iDeferredCraftingReplaceItemInstance = k_SteamItemInstanceIDInvalid;
 
 static void DeferredCraftingConfirm()
 {
 	if ( !s_iDeferredCraftingRecipe )
 		return;
 
-	ReactiveDropInventory::PerformCraftingAction( s_iDeferredCraftingRecipe, std::initializer_list<SteamItemInstanceID_t>( s_DeferredCraftingIngredients.Base(), s_DeferredCraftingIngredients.Base() + s_DeferredCraftingIngredients.Count() ), std::initializer_list<uint32>( s_DeferredCraftingQuantities.Base(), s_DeferredCraftingQuantities.Base() + s_DeferredCraftingQuantities.Count() ) );
+	ReactiveDropInventory::PerformCraftingAction( s_eDeferredCraftType, s_iDeferredCraftingRecipe, std::initializer_list<SteamItemInstanceID_t>( s_DeferredCraftingIngredients.Base(), s_DeferredCraftingIngredients.Base() + s_DeferredCraftingIngredients.Count() ), std::initializer_list<uint32>( s_DeferredCraftingQuantities.Base(), s_DeferredCraftingQuantities.Base() + s_DeferredCraftingQuantities.Count() ), s_iDeferredCraftingAccessoryDef, s_iDeferredCraftingReplaceItemInstance );
 
+	s_eDeferredCraftType = ReactiveDropInventory::CRAFT_RECIPE;
 	s_iDeferredCraftingRecipe = 0;
 	s_DeferredCraftingIngredients.Purge();
 	s_DeferredCraftingQuantities.Purge();
+	s_iDeferredCraftingAccessoryDef = 0;
+	s_iDeferredCraftingReplaceItemInstance = k_SteamItemInstanceIDInvalid;
 }
 static void DeferredCraftingCancel()
 {
+	s_eDeferredCraftType = ReactiveDropInventory::CRAFT_RECIPE;
 	s_iDeferredCraftingRecipe = 0;
 	s_DeferredCraftingIngredients.Purge();
 	s_DeferredCraftingQuantities.Purge();
+	s_iDeferredCraftingAccessoryDef = 0;
+	s_iDeferredCraftingReplaceItemInstance = k_SteamItemInstanceIDInvalid;
+}
+static void DeferredCraft( ReactiveDropInventory::CraftItemType_t eCraftType, SteamItemDef_t iRecipe, std::initializer_list<SteamItemInstanceID_t> ingredients, std::initializer_list<uint32> quantities, const char *szTitle, const char *szMessage, int nParams = 0, const wchar_t *wszParam1 = NULL, const wchar_t *wszParam2 = NULL, const wchar_t *wszParam3 = NULL, const wchar_t *wszParam4 = NULL )
+{
+	Assert( s_eDeferredCraftType == ReactiveDropInventory::CRAFT_RECIPE );
+	Assert( s_iDeferredCraftingRecipe == 0 );
+	Assert( s_DeferredCraftingIngredients.Count() == 0 );
+	Assert( s_DeferredCraftingQuantities.Count() == 0 );
+	Assert( ingredients.size() == quantities.size() );
+
+	s_eDeferredCraftType = eCraftType;
+	s_iDeferredCraftingRecipe = iRecipe;
+	s_DeferredCraftingIngredients.CopyArray( ingredients.begin(), ingredients.size() );
+	s_DeferredCraftingQuantities.CopyArray( quantities.begin(), quantities.size() );
+
+	BaseModUI::GenericConfirmation::Data_t data;
+	data.pWindowTitle = szTitle;
+	wchar_t wszMessage[4096];
+	const wchar_t *wszMessageTemplate = g_pVGuiLocalize->Find( szMessage );
+	if ( wszMessageTemplate )
+	{
+		g_pVGuiLocalize->ConstructString( wszMessage, sizeof( wszMessage ), wszMessageTemplate, nParams, wszParam1, wszParam2, wszParam3, wszParam4 );
+	}
+	else
+	{
+		V_UTF8ToUnicode( szMessage, wszMessage, sizeof( wszMessage ) );
+	}
+	data.pMessageTextW = wszMessage;
+	data.bOkButtonEnabled = true;
+	data.bCancelButtonEnabled = true;
+	data.pfnOkCallback = DeferredCraftingConfirm;
+	data.pfnCancelCallback = DeferredCraftingCancel;
+
+	BaseModUI::CBaseModPanel::GetSingleton().OpenFrontScreen();
+
+	BaseModUI::CBaseModFrame *pMainMenu = BaseModUI::CBaseModPanel::GetSingleton().GetWindow( BaseModUI::WT_MAINMENU );
+	Assert( pMainMenu );
+	BaseModUI::GenericConfirmation *pConfirm = assert_cast< BaseModUI::GenericConfirmation * >( BaseModUI::CBaseModPanel::GetSingleton().OpenWindow( BaseModUI::WT_GENERICCONFIRMATION, pMainMenu ) );
+	pConfirm->SetUsageData( data );
 }
 
 CRD_Collection_Tab_Inventory::CRD_Collection_Tab_Inventory( TabbedGridDetails *parent, const char *szLabel, const char *szSlot )
@@ -693,27 +740,7 @@ public:
 
 			if ( m_Warnings.Count() )
 			{
-				Assert( s_iDeferredCraftingRecipe == 0 );
-				Assert( s_DeferredCraftingIngredients.Count() == 0 );
-				Assert( s_DeferredCraftingQuantities.Count() == 0 );
-				s_iDeferredCraftingRecipe = m_Choices[m_iChoice];
-				s_DeferredCraftingIngredients.Purge();
-				s_DeferredCraftingIngredients.AddToTail( m_pEntry->m_Details.ItemID );
-				s_DeferredCraftingQuantities.Purge();
-				s_DeferredCraftingQuantities.AddToTail( 1 );
-
-				BaseModUI::GenericConfirmation::Data_t data;
-				data.pWindowTitle = "#rd_unbox_strange_warnings_title";
-				data.pMessageText = "#rd_unbox_strange_warnings_desc";
-				data.bOkButtonEnabled = true;
-				data.bCancelButtonEnabled = true;
-				data.pfnOkCallback = DeferredCraftingConfirm;
-				data.pfnCancelCallback = DeferredCraftingCancel;
-
-				BaseModUI::CBaseModPanel::GetSingleton().OpenFrontScreen();
-
-				BaseModUI::GenericConfirmation *pConfirm = assert_cast< BaseModUI::GenericConfirmation * >( BaseModUI::CBaseModPanel::GetSingleton().OpenWindow( BaseModUI::WT_GENERICCONFIRMATION, BaseModUI::CBaseModPanel::GetSingleton().GetWindow( BaseModUI::WT_MAINMENU ) ) );
-				pConfirm->SetUsageData( data );
+				DeferredCraft( ReactiveDropInventory::CRAFT_RECIPE, m_Choices[m_iChoice], { m_pEntry->m_Details.ItemID }, { 1 }, "#rd_unbox_strange_warnings_title", "#rd_unbox_strange_warnings_desc" );
 			}
 			else
 			{
@@ -722,7 +749,7 @@ public:
 
 				BaseModUI::CBaseModPanel::GetSingleton().OpenFrontScreen();
 
-				ReactiveDropInventory::PerformCraftingAction( iRecipe, { iIngredient }, { 1 } );
+				ReactiveDropInventory::PerformCraftingAction( ReactiveDropInventory::CRAFT_RECIPE, iRecipe, { iIngredient }, { 1 } );
 			}
 		}
 		else if ( FStrEq( command, "CancelSelection" ) )
@@ -1047,7 +1074,33 @@ void CRD_Collection_Entry_Inventory::OnCommand( const char *command )
 	{
 		SteamItemDef_t iAccessoryDef = V_atoi( szAccessoryDef );
 
-		DebuggerBreakIfDebugging(); // TODO: display confirmation
+		CUtlVector<ReactiveDropInventory::ItemInstance_t> accessories;
+		ReactiveDropInventory::GetItemsForDef( accessories, iAccessoryDef );
+		if ( !accessories.Count() )
+		{
+			Warning( "Tried to attach accessory %d but we don't have any?\n", iAccessoryDef );
+			return;
+		}
+
+		wchar_t wszItemName[256]{};
+		wchar_t wszAccessoryName[256]{};
+		wchar_t wszNumSlots[4]{};
+
+		const ReactiveDropInventory::ItemDef_t *pItemDef = ReactiveDropInventory::GetItemDef( m_Details.ItemDefID );
+		Assert( pItemDef );
+		const ReactiveDropInventory::ItemDef_t *pAccessoryDef = ReactiveDropInventory::GetItemDef( iAccessoryDef );
+		Assert( pAccessoryDef );
+
+		if ( pItemDef )
+			V_UTF8ToUnicode( pItemDef->Name, wszItemName, sizeof( wszItemName ) );
+		if ( pAccessoryDef )
+			V_UTF8ToUnicode( pAccessoryDef->Name, wszAccessoryName, sizeof( wszItemName ) );
+		if ( pItemDef )
+			V_snwprintf( wszNumSlots, NELEMS( wszNumSlots ), L"%d", pItemDef->AccessoryLimit );
+
+		DeferredCraft( ReactiveDropInventory::CRAFT_ACCESSORY, m_Details.ItemDefID, { m_Details.ItemID, accessories[0].ItemID }, { 1, 1 }, "#rd_attach_strange_device_warning_title", "#rd_attach_strange_device_warning_desc", 3, wszItemName, wszAccessoryName, wszNumSlots );
+		s_iDeferredCraftingAccessoryDef = iAccessoryDef;
+		s_iDeferredCraftingReplaceItemInstance = m_Details.ItemID;
 	}
 	else if ( !V_strcmp( command, "UnboxChoice" ) )
 	{

@@ -55,6 +55,8 @@
 #include "tier0/memdbgon.h"
 
 
+using namespace ReactiveDropInventory;
+
 COMPILE_TIME_ASSERT( RD_STEAM_INVENTORY_EQUIP_SLOT_FIRST_MEDAL + RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS == RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_PLAYER );
 #pragma warning(push)
 #pragma warning(disable: 4130) // we're comparing string literals, but if the comparison fails due to memory weirdness, it'll fail at compile time, so it's fine
@@ -1097,41 +1099,6 @@ public:
 	}
 
 #ifdef CLIENT_DLL
-	enum CraftItemType_t
-	{
-		// craft an item via a predefined recipe. notifies user when complete. modal while in progress.
-		CRAFT_RECIPE,
-		// attach an accessory to an item. modal while in progress. updates equip slots to use new ID. forces a dynamic property update for the accessory.
-		CRAFT_ACCESSORY,
-		// convert currency to items or items to currency. modal while in progress.
-		CRAFT_SHOP,
-		// claiming a currency reward. modal while in progress.
-		CRAFT_CLAIM_MINOR,
-		// claiming an item or bundle reward. modal while in progress. notifies user when complete.
-		CRAFT_CLAIM_MAJOR,
-		// picking up a crafting material. silent while in progress. in-game notification when complete.
-		CRAFT_PICKUP_MATERIAL,
-		// behind-the-scenes item exchange. no notification.
-		CRAFT_BTS,
-		// set dynamic properties on newly created item to 0. modal while in progress. notifies user when complete (replaces notification from craft task that queued this).
-		CRAFT_DYNAMIC_PROPERTY_INIT,
-		// checking for item drop. notifies user based on preferences if successful.
-		CRAFT_DROP,
-		// checking for promo item. notifies user and server if successful.
-		CRAFT_PROMO,
-		// retrieving item data. may not be ours. notification when complete.
-		CRAFT_INSPECT,
-		// updating dynamic properties for an item (eg. at the end of a mission). no notifications.
-		CRAFT_DYNAMIC_PROPERTY_UPDATE,
-		// updating user-modifiable dynamic properties for an item (eg. style). modal while in progress.
-		CRAFT_USER_DYNAMIC_PROPERTY_UPDATE,
-		// deleting an item. modal while in progress.
-		CRAFT_DELETE,
-		// deleting an item silently. no notifications. (funnily enough, this is used to expire a different kind of notifications.)
-		CRAFT_DELETE_SILENT,
-		// updating the "seen" status of notifications. only one of these exist at a time. no notifications. (heh)
-		CRAFT_NOTIFICATION_DYNAMIC_PROPERTY_UPDATE,
-	};
 	struct CraftItemTask_t
 	{
 		~CraftItemTask_t()
@@ -2255,7 +2222,7 @@ CON_COMMAND( rd_debug_print_inventory, "" )
 
 CON_COMMAND( rd_debug_inspect_entire_inventory, "inspect every item in your inventory" )
 {
-	SteamInventory()->GetAllItems( s_RD_Inventory_Manager.AddCraftItemTask( CRD_Inventory_Manager::CRAFT_INSPECT ) );
+	SteamInventory()->GetAllItems( s_RD_Inventory_Manager.AddCraftItemTask( CRAFT_INSPECT ) );
 }
 
 CON_COMMAND( rd_debug_inspect_own_item, "inspect an item you own by ID" )
@@ -2267,7 +2234,7 @@ CON_COMMAND( rd_debug_inspect_own_item, "inspect an item you own by ID" )
 		return;
 	}
 
-	SteamInventory()->GetItemsByID( s_RD_Inventory_Manager.AddCraftItemTask( CRD_Inventory_Manager::CRAFT_INSPECT ), &id, 1 );
+	SteamInventory()->GetItemsByID( s_RD_Inventory_Manager.AddCraftItemTask( CRAFT_INSPECT ), &id, 1 );
 }
 
 CON_COMMAND( rd_econ_item_preview, "inspect an item using a code from the Steam Community backpack" )
@@ -2278,7 +2245,7 @@ CON_COMMAND( rd_econ_item_preview, "inspect an item using a code from the Steam 
 		return;
 	}
 
-	SteamInventory()->InspectItem( s_RD_Inventory_Manager.AddCraftItemTask( CRD_Inventory_Manager::CRAFT_INSPECT ), args.Arg( 1 ) );
+	SteamInventory()->InspectItem( s_RD_Inventory_Manager.AddCraftItemTask( CRAFT_INSPECT ), args.Arg( 1 ) );
 }
 #endif
 
@@ -3056,14 +3023,14 @@ namespace ReactiveDropInventory
 	{
 		GET_INVENTORY_OR_BAIL;
 
-		pInventory->AddPromoItem( s_RD_Inventory_Manager.AddCraftItemTask( CRD_Inventory_Manager::CRAFT_PROMO ), id );
+		pInventory->AddPromoItem( s_RD_Inventory_Manager.AddCraftItemTask( CRAFT_PROMO ), id );
 	}
 
 	void RequestGenericPromoItems()
 	{
 		GET_INVENTORY_OR_BAIL;
 
-		pInventory->GrantPromoItems( s_RD_Inventory_Manager.AddCraftItemTask( CRD_Inventory_Manager::CRAFT_PROMO ) );
+		pInventory->GrantPromoItems( s_RD_Inventory_Manager.AddCraftItemTask( CRAFT_PROMO ) );
 	}
 
 	void CheckPlaytimeItemGenerators()
@@ -3071,8 +3038,8 @@ namespace ReactiveDropInventory
 #if defined( RD_7A_DROPS ) || defined( RD_7A_DROPS_PRE )
 		GET_INVENTORY_OR_BAIL;
 
-		pInventory->TriggerItemDrop( s_RD_Inventory_Manager.AddCraftItemTask( CRD_Inventory_Manager::CRAFT_DROP ), 7000 ); // Playtime Random Material Tokens Weekly
-		pInventory->TriggerItemDrop( s_RD_Inventory_Manager.AddCraftItemTask( CRD_Inventory_Manager::CRAFT_DROP ), 7002 ); // Playtime Random Material Tokens Extended
+		pInventory->TriggerItemDrop( s_RD_Inventory_Manager.AddCraftItemTask( CRAFT_DROP ), 7000 ); // Playtime Random Material Tokens Weekly
+		pInventory->TriggerItemDrop( s_RD_Inventory_Manager.AddCraftItemTask( CRAFT_DROP ), 7002 ); // Playtime Random Material Tokens Extended
 #endif
 	}
 
@@ -3093,7 +3060,7 @@ namespace ReactiveDropInventory
 
 		FOR_EACH_VEC( s_RD_Inventory_Manager.m_CraftingQueue, i )
 		{
-			if ( s_RD_Inventory_Manager.m_CraftingQueue[i]->m_Type == CRD_Inventory_Manager::CRAFT_DELETE_SILENT )
+			if ( s_RD_Inventory_Manager.m_CraftingQueue[i]->m_Type == CRAFT_DELETE_SILENT )
 			{
 				currentlyDeleting.AddToTail( s_RD_Inventory_Manager.m_CraftingQueue[i]->m_iReplaceItemInstance );
 			}
@@ -3275,7 +3242,7 @@ namespace ReactiveDropInventory
 		if ( !bOK )
 			Warning( "Inventory item style property update failed!\n" );
 
-		bOK = pInventory->SubmitUpdateProperties( hUpdate, s_RD_Inventory_Manager.AddCraftItemTask( CRD_Inventory_Manager::CRAFT_USER_DYNAMIC_PROPERTY_UPDATE ) );
+		bOK = pInventory->SubmitUpdateProperties( hUpdate, s_RD_Inventory_Manager.AddCraftItemTask( CRAFT_USER_DYNAMIC_PROPERTY_UPDATE ) );
 		Assert( bOK );
 		if ( !bOK )
 			Warning( "Inventory item style update submit failed!\n" );
@@ -3285,7 +3252,7 @@ namespace ReactiveDropInventory
 	{
 		FOR_EACH_VEC( s_RD_Inventory_Manager.m_CraftingQueue, i )
 		{
-			if ( s_RD_Inventory_Manager.m_CraftingQueue[i]->m_Type == CRD_Inventory_Manager::CRAFT_DELETE_SILENT && s_RD_Inventory_Manager.m_CraftingQueue[i]->m_iReplaceItemInstance == id )
+			if ( s_RD_Inventory_Manager.m_CraftingQueue[i]->m_Type == CRAFT_DELETE_SILENT && s_RD_Inventory_Manager.m_CraftingQueue[i]->m_iReplaceItemInstance == id )
 			{
 				// queued for deletion
 				return;
@@ -3329,7 +3296,7 @@ namespace ReactiveDropInventory
 		SteamInventoryResult_t *hResult = NULL;
 		FOR_EACH_VEC( s_RD_Inventory_Manager.m_CraftingQueue, i )
 		{
-			if ( s_RD_Inventory_Manager.m_CraftingQueue[i]->m_Type == CRD_Inventory_Manager::CRAFT_NOTIFICATION_DYNAMIC_PROPERTY_UPDATE )
+			if ( s_RD_Inventory_Manager.m_CraftingQueue[i]->m_Type == CRAFT_NOTIFICATION_DYNAMIC_PROPERTY_UPDATE )
 			{
 				hResult = &s_RD_Inventory_Manager.m_CraftingQueue[i]->m_hResult;
 			}
@@ -3344,7 +3311,7 @@ namespace ReactiveDropInventory
 
 		if ( !hResult )
 		{
-			hResult = s_RD_Inventory_Manager.AddCraftItemTask( CRD_Inventory_Manager::CRAFT_NOTIFICATION_DYNAMIC_PROPERTY_UPDATE );
+			hResult = s_RD_Inventory_Manager.AddCraftItemTask( CRAFT_NOTIFICATION_DYNAMIC_PROPERTY_UPDATE );
 		}
 
 		// collapse the queue into the in-flight list
@@ -3413,7 +3380,7 @@ namespace ReactiveDropInventory
 
 		FOR_EACH_VEC( s_RD_Inventory_Manager.m_CraftingQueue, i )
 		{
-			if ( s_RD_Inventory_Manager.m_CraftingQueue[i]->m_Type == CRD_Inventory_Manager::CRAFT_DELETE_SILENT && s_RD_Inventory_Manager.m_CraftingQueue[i]->m_iReplaceItemInstance == id )
+			if ( s_RD_Inventory_Manager.m_CraftingQueue[i]->m_Type == CRAFT_DELETE_SILENT && s_RD_Inventory_Manager.m_CraftingQueue[i]->m_iReplaceItemInstance == id )
 			{
 				// request already in-flight
 				return;
@@ -3440,7 +3407,7 @@ namespace ReactiveDropInventory
 			}
 		}
 
-		pInventory->ConsumeItem( s_RD_Inventory_Manager.AddCraftItemTask( CRD_Inventory_Manager::CRAFT_DELETE_SILENT, 0, id ), id, 1 );
+		pInventory->ConsumeItem( s_RD_Inventory_Manager.AddCraftItemTask( CRAFT_DELETE_SILENT, 0, id ), id, 1 );
 	}
 
 #ifdef RD_7A_DROPS
@@ -3479,7 +3446,7 @@ namespace ReactiveDropInventory
 		return nCount;
 	}
 #endif
-	void PerformCraftingAction( SteamItemDef_t recipe, std::initializer_list<SteamItemInstanceID_t> ingredient, std::initializer_list<uint32> quantity )
+	void PerformCraftingAction( CraftItemType_t eCraftType, SteamItemDef_t recipe, std::initializer_list<SteamItemInstanceID_t> ingredient, std::initializer_list<uint32> quantity, SteamItemDef_t iAccessoryDef, SteamItemInstanceID_t iReplaceItemInstance )
 	{
 		Assert( ingredient.size() == quantity.size() );
 		if ( ingredient.size() != quantity.size() )
@@ -3491,7 +3458,7 @@ namespace ReactiveDropInventory
 		GET_INVENTORY_OR_BAIL;
 
 		const uint32 one = 1;
-		pInventory->ExchangeItems( s_RD_Inventory_Manager.AddCraftItemTask( CRD_Inventory_Manager::CRAFT_RECIPE ),
+		pInventory->ExchangeItems( s_RD_Inventory_Manager.AddCraftItemTask( eCraftType, iAccessoryDef, iReplaceItemInstance ),
 			&recipe, &one, 1, ingredient.begin(), quantity.begin(), ingredient.size() );
 	}
 	void RequestFullInventoryRefresh()
