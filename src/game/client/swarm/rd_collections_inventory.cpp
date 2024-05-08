@@ -35,7 +35,7 @@ static void DeferredCraftingConfirm()
 	if ( !s_iDeferredCraftingRecipe )
 		return;
 
-	ReactiveDropInventory::PerformCraftingAction( s_iDeferredCraftingRecipe, std::initializer_list<SteamItemInstanceID_t>( &s_DeferredCraftingIngredients.Head(), &s_DeferredCraftingIngredients.Tail() ), std::initializer_list<uint32>( &s_DeferredCraftingQuantities.Head(), &s_DeferredCraftingQuantities.Tail() ) );
+	ReactiveDropInventory::PerformCraftingAction( s_iDeferredCraftingRecipe, std::initializer_list<SteamItemInstanceID_t>( s_DeferredCraftingIngredients.Base(), s_DeferredCraftingIngredients.Base() + s_DeferredCraftingIngredients.Count() ), std::initializer_list<uint32>( s_DeferredCraftingQuantities.Base(), s_DeferredCraftingQuantities.Base() + s_DeferredCraftingQuantities.Count() ) );
 
 	s_iDeferredCraftingRecipe = 0;
 	s_DeferredCraftingIngredients.Purge();
