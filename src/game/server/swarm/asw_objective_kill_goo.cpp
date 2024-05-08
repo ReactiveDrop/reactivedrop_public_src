@@ -35,7 +35,6 @@ void CASW_Objective_Kill_Goo::GooKilled(CASW_Alien_Goo* pGoo)
 	//Msg(" Currently %d goos killed, target is %d\n", m_iCurrentKills, m_iTargetKills);
 	if (m_iCurrentKills >= m_iTargetKills)
 	{
-		Msg("  we're done!\n");
 		SetComplete(true);
 	}
 	else
