@@ -77,8 +77,13 @@ void ItemShowcase::OnOpen()
 	SetAlpha( 0 );
 	GetAnimationController()->RunAnimationCommand( this, "alpha", 255, 0, 0.5f, AnimationController::INTERPOLATOR_LINEAR );
 
+	static int s_iSoundID = 0;
 	const char *szSoundName = soundemitterbase->GetWavFileForSound( "ASW_XP.LevelUp", GENDER_NONE );
-	enginesound->EmitAmbientSound( szSoundName, 1.0f, 100, 0, 0.5f );
+	if ( !enginesound->IsSoundStillPlaying( s_iSoundID ) )
+	{
+		enginesound->EmitAmbientSound( szSoundName, 1.0f, 100, 0, 0.5f );
+		s_iSoundID = enginesound->GetGuidForLastSoundEmitted();
+	}
 }
 
 void ItemShowcase::OnTick()
