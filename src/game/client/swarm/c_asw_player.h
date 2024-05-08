@@ -95,6 +95,7 @@ public:
 	virtual void RosterDeselectMarine( int iProfileIndex );
 	virtual void LoadoutSelectEquip( int iMarineIndex, int iInvSlot, int iEquipIndex, SteamItemInstanceID_t iItemInstanceID );
 	virtual void LoadoutSendStored( C_ASW_Marine_Resource *pMR );
+	virtual void LoadoutSendEquippedItems( C_ASW_Marine_Resource *pMR );
 	virtual void RosterSpendSkillPoint( int iProfileIndex, int iSkillIndex );
 
 	// campaign

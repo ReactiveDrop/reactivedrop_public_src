@@ -35,6 +35,7 @@ public:
 
 	int m_iWeaponsInSlots[ASW_MAX_EQUIP_SLOTS];	// index of equipment selected in loadout for primary inventory slot
 	int m_iInitialWeaponsInSlots[ASW_MAX_EQUIP_SLOTS];
+	int m_iWeaponsInSlotsLastSeen[ASW_MAX_EQUIP_SLOTS];
 
 	// stats
 	float m_fDamageTaken;

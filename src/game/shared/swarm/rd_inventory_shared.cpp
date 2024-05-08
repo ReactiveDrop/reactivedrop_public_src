@@ -1734,6 +1734,12 @@ public:
 				return;
 			}
 		}
+
+		extern bool RDCheckForInventoryCommandResult( ISteamInventory *pInventory, SteamInventoryResult_t hResult );
+		if ( RDCheckForInventoryCommandResult( pInventory, pParam->m_handle ) )
+		{
+			return;
+		}
 #else
 		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 		{

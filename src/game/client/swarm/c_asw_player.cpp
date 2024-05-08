@@ -100,6 +100,7 @@
 #include <ctime>
 #include "rd_player_reporting.h"
 #include "rd_crafting_defs.h"
+#include "rd_inventory_command.h"
 
 #if defined( CASW_Player )
 #undef CASW_Player
@@ -660,6 +661,49 @@ void C_ASW_Player::LoadoutSendStored( C_ASW_Marine_Resource *pMR )
 		return;
 
 	SendRosterSelectCommand( "cl_loadouta", pMR->GetProfileIndex(), ASWGameResource()->GetMarineResourceIndex( pMR ) );
+}
+
+void C_ASW_Player::LoadoutSendEquippedItems( C_ASW_Marine_Resource *pMR )
+{
+	if ( !pMR )
+		return;
+
+	int iMarineResourceIndex = ASWGameResource()->GetMarineResourceIndex( pMR );
+
+	CUtlVector<SteamItemInstanceID_t> ids;
+	ids.AddMultipleToTail( 4, &k_SteamItemInstanceIDInvalid );
+	CUtlVector<ReactiveDropInventory::ItemInstance_t> instances;
+
+	// until we have loadouts done, just send the first eligible item for each equip slot
+	ReactiveDropInventory::GetItemsForSlotAndEquipIndex( instances, "marine_any", pMR->GetProfileIndex() );
+	if ( instances.Count() )
+		ids[0] = instances[0].ItemID;
+	instances.Purge(); 
+
+	ReactiveDropInventory::GetItemsForSlotAndEquipIndex( instances, "weapon", pMR->m_iWeaponsInSlots[0] );
+	if ( instances.Count() )
+		ids[1] = instances[0].ItemID;
+	instances.Purge();
+
+	ReactiveDropInventory::GetItemsForSlotAndEquipIndex( instances, "weapon", pMR->m_iWeaponsInSlots[1] );
+	if ( pMR->m_iWeaponsInSlots[0] != pMR->m_iWeaponsInSlots[1] )
+	{
+		if ( instances.Count() )
+			ids[2] = instances[0].ItemID;
+	}
+	else
+	{
+		if ( instances.Count() > 1 )
+			ids[2] = instances[1].ItemID;
+	}
+	instances.Purge();
+
+	ReactiveDropInventory::GetItemsForSlotAndEquipIndex( instances, "extra", pMR->m_iWeaponsInSlots[2] );
+	if ( instances.Count() )
+		ids[3] = instances[0].ItemID;
+	instances.Purge();
+
+	UTIL_RD_SendInventoryCommandByIDs( INVCMD_MARINE_RESOURCE_EQUIPS, ids, CUtlVector<int>{ iMarineResourceIndex } );
 }
 
 void C_ASW_Player::StartReady()

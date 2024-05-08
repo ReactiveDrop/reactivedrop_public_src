@@ -56,6 +56,16 @@ public:
 		}
 
 		m_PayloadChunks.Purge();
+
+		if ( ISteamInventory *pInventory = SteamInventory())
+		{
+			FOR_EACH_VEC( m_ItemIDQueue, i )
+			{
+				pInventory->DestroyResult( m_ItemIDQueue[i].m_hResult );
+			}
+		}
+
+		m_ItemIDQueue.Purge();
 	}
 
 	bool DiscardPayload( int iPayloadID )
@@ -158,6 +168,15 @@ public:
 
 	int m_iNextPayloadID;
 	CUtlVector<KeyValues *> m_PayloadChunks;
+
+	struct ItemIDCommand_t
+	{
+		EInventoryCommand m_eCmd;
+		CCopyableUtlVector<int> m_Args;
+		CCopyableUtlVector<SteamItemInstanceID_t> m_IDs;
+		SteamInventoryResult_t m_hResult;
+	};
+	CUtlVector<ItemIDCommand_t> m_ItemIDQueue;
 } s_RD_Inventory_Command_Queue;
 
 int UTIL_RD_SendInventoryCommand( EInventoryCommand eCmd, const CUtlVector<int> &args, SteamInventoryResult_t hResult )
@@ -201,6 +220,77 @@ int UTIL_RD_SendInventoryCommand( EInventoryCommand eCmd, const CUtlVector<int> 
 	}
 
 	return s_RD_Inventory_Command_Queue.CreateCommandPayload( eCmd, args.Base(), args.Count(), buf.Base(), nSize );
+}
+
+void UTIL_RD_SendInventoryCommandByIDs( EInventoryCommand eCmd, const CUtlVector<SteamItemInstanceID_t> &ids, const CUtlVector<int> &args )
+{
+	CUtlVector<SteamItemInstanceID_t> realIDs;
+	realIDs.EnsureCapacity( ids.Count() );
+	FOR_EACH_VEC( ids, i )
+	{
+		if ( ids[i] != k_SteamItemInstanceIDInvalid )
+		{
+			realIDs.AddToTail( ids[i] );
+		}
+	}
+
+	if ( realIDs.Count() == 0 )
+	{
+		UTIL_RD_SendInventoryCommand( eCmd, args, k_SteamInventoryResultInvalid );
+		return;
+	}
+
+	ISteamInventory *pInventory = SteamInventory();
+	if ( !pInventory )
+	{
+		Warning( "Cannot send inventory command %d: no ISteamInventory\n", eCmd );
+		return;
+	}
+
+	int i = s_RD_Inventory_Command_Queue.m_ItemIDQueue.AddToTail();
+	s_RD_Inventory_Command_Queue.m_ItemIDQueue[i].m_eCmd = eCmd;
+	s_RD_Inventory_Command_Queue.m_ItemIDQueue[i].m_Args.AddVectorToTail( args );
+	s_RD_Inventory_Command_Queue.m_ItemIDQueue[i].m_IDs.AddVectorToTail( ids );
+	pInventory->GetItemsByID( &s_RD_Inventory_Command_Queue.m_ItemIDQueue[i].m_hResult, realIDs.Base(), realIDs.Count() );
+}
+
+bool RDCheckForInventoryCommandResult( ISteamInventory *pInventory, SteamInventoryResult_t hResult )
+{
+	FOR_EACH_VEC( s_RD_Inventory_Command_Queue.m_ItemIDQueue, i )
+	{
+		const CRD_Inventory_Command_Queue::ItemIDCommand_t &cmd = s_RD_Inventory_Command_Queue.m_ItemIDQueue[i];
+		if ( cmd.m_hResult != hResult )
+			continue;
+
+		CUtlVector<int> args;
+		args.AddVectorToTail( cmd.m_Args );
+
+		uint32 nItems{};
+		pInventory->GetResultItems( hResult, NULL, &nItems );
+		CUtlMemory<SteamItemDetails_t> items{ 0, int( nItems ) };
+		pInventory->GetResultItems( hResult, items.Base(), &nItems );
+
+		FOR_EACH_VEC( items, j )
+		{
+			int index = args.AddToTail( -1 );
+			FOR_EACH_VEC( cmd.m_IDs, k )
+			{
+				if ( items[j].m_itemId == cmd.m_IDs[k] )
+				{
+					args[index] = k;
+					break;
+				}
+			}
+		}
+
+		UTIL_RD_SendInventoryCommand( cmd.m_eCmd, args, hResult );
+		pInventory->DestroyResult( hResult );
+
+		s_RD_Inventory_Command_Queue.m_ItemIDQueue.Remove( i );
+		return true;
+	}
+
+	return false;
 }
 
 void UTIL_RD_SendInventoryCommandOffline( EInventoryCommand eCmd, const CUtlVector<int> &args, const CUtlVector<SteamItemInstanceID_t> &items )
@@ -276,6 +366,7 @@ CASW_Player::InventoryCommandData_t::~InventoryCommandData_t()
 static bool PreValidateInventoryCommand( CASW_Player *pPlayer, EInventoryCommand eCmd, const CUtlVector<int> &args, uint32_t nSize )
 {
 	size_t nMaxSize = 65536;
+	int iArgsAreIndicesSkip = 0;
 	int iArgsAreIndices = 0;
 	switch ( eCmd )
 	{
@@ -290,13 +381,38 @@ static bool PreValidateInventoryCommand( CASW_Player *pPlayer, EInventoryCommand
 
 		break;
 	case INVCMD_MARINE_RESOURCE_EQUIPS:
-		if ( args.Count() > RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_MARINE_RESOURCE )
+		if ( args.Count() < 1 )
+		{
+			Warning( "Player %s sent invalid InvCmdInit - marine resource equip slots missing marine ID.\n", pPlayer->GetASWNetworkID() );
+			return false;
+		}
+
+		if ( args[0] < 0 || args[0] >= ASW_MAX_MARINE_RESOURCES )
+		{
+			Warning( "Player %s sent invalid InvCmdInit - marine resource %d is out of range.\n", pPlayer->GetASWNetworkID(), args[0] );
+			return false;
+		}
+
+		if ( !ASWGameResource() || !ASWGameResource()->GetMarineResource( args[0] ) )
+		{
+			Warning( "Player %s sent invalid InvCmdInit - marine resource %d does not exist.\n", pPlayer->GetASWNetworkID(), args[0] );
+			return false;
+		}
+
+		if ( ASWGameResource()->GetMarineResource( args[0] )->GetCommander() != pPlayer )
+		{
+			Warning( "Player %s sent invalid InvCmdInit - marine resource %d is owned by a different player.\n", pPlayer->GetASWNetworkID(), args[0] );
+			return false;
+		}
+
+		if ( args.Count() > RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_MARINE_RESOURCE + 1 )
 		{
 			Warning( "Player %s sent invalid InvCmdInit - marine resource equip slots (%d) exceeds limit (%d).\n", pPlayer->GetASWNetworkID(), args.Count(), RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_MARINE_RESOURCE );
 			return false;
 		}
 
 		iArgsAreIndices = RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_MARINE_RESOURCE;
+		iArgsAreIndicesSkip = 1;
 
 		break;
 	case INVCMD_MATERIAL_SPAWN:
@@ -366,6 +482,11 @@ static bool PreValidateInventoryCommand( CASW_Player *pPlayer, EInventoryCommand
 		CUtlVector<int> seen;
 		FOR_EACH_VEC( args, i )
 		{
+			if ( i < iArgsAreIndicesSkip )
+			{
+				continue;
+			}
+
 			if ( args[i] < 0 || args[i] >= iArgsAreIndices )
 			{
 				Warning( "Player %s sent invalid InvCmdInit(%d) - out of range equip slot number (%d).\n", pPlayer->GetASWNetworkID(), eCmd, args[i] );
@@ -530,13 +651,18 @@ static void ExecuteInventoryCommand( CASW_Player *pPlayer, EInventoryCommand eCm
 
 		FOR_EACH_VEC( args, i )
 		{
+			if ( i == 0 )
+			{
+				continue;
+			}
+
 			if ( args[i] < 0 || args[i] >= RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_MARINE_RESOURCE )
 			{
 				Assert( args[i] == -1 );
 				continue;
 			}
 
-			const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( items[i].ItemDefID );
+			const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( items[i - 1].ItemDefID );
 			Assert( pDef );
 			if ( !pDef )
 			{
@@ -545,11 +671,11 @@ static void ExecuteInventoryCommand( CASW_Player *pPlayer, EInventoryCommand eCm
 
 			if ( pDef->ItemSlotMatches( ReactiveDropInventory::g_MarineResourceInventorySlotNames[args[i]] ) )
 			{
-				pMR->m_EquippedItemData.GetForModify()[args[i]].SetFromInstance( items[i] );
+				pMR->m_EquippedItemData.GetForModify()[args[i]].SetFromInstance( items[i - 1] );
 			}
 			else
 			{
-				Warning( "Player %s sent invalid INVCMD_MARINE_RESOURCE_EQUIPS - item %llu (%d \"%s\") does not fit in slot \"%s\".\n", pPlayer->GetASWNetworkID(), items[i].ItemID, items[i].ItemDefID, pDef->Name.Get(), ReactiveDropInventory::g_MarineResourceInventorySlotNames[args[i]] );
+				Warning( "Player %s sent invalid INVCMD_MARINE_RESOURCE_EQUIPS - item %llu (%d \"%s\") does not fit in slot \"%s\".\n", pPlayer->GetASWNetworkID(), items[i - 1].ItemID, items[i - 1].ItemDefID, pDef->Name.Get(), ReactiveDropInventory::g_MarineResourceInventorySlotNames[args[i]] );
 			}
 		}
 

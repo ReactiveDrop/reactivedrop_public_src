@@ -82,6 +82,7 @@ C_ASW_Marine_Resource::C_ASW_Marine_Resource()
 	m_iScore = -1;
 	m_flFinishedMissionTime = -1;
 	memset( m_iWeaponsInSlots, -1, sizeof( m_iWeaponsInSlots ) );
+	memset( m_iWeaponsInSlotsLastSeen, -1, sizeof( m_iWeaponsInSlotsLastSeen ) );
 }
 
 C_ASW_Marine_Resource::~C_ASW_Marine_Resource()
@@ -301,31 +302,41 @@ float C_ASW_Marine_Resource::GetFiringTimer()
 
 void C_ASW_Marine_Resource::OnDataChanged(DataUpdateType_t updateType)
 {
-	if ( updateType == DATA_UPDATE_CREATED )
+	FOR_EACH_VALID_SPLITSCREEN_PLAYER( hh )
 	{
-		FOR_EACH_VALID_SPLITSCREEN_PLAYER( hh )
-		{
-			ACTIVE_SPLITSCREEN_PLAYER_GUARD( hh );
+		ACTIVE_SPLITSCREEN_PLAYER_GUARD( hh );
 
-			C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-			if (pPlayer && pPlayer == GetCommander() && ASWGameRules() && ASWGameRules()->GetGameState() <= ASW_GS_BRIEFING)
+		C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+		if ( pPlayer && pPlayer == GetCommander() && ASWGameRules() && ASWGameRules()->GetGameState() <= ASW_GS_BRIEFING )
+		{
+			if ( updateType == DATA_UPDATE_CREATED )
 			{
 				// we're in briefing and a marine has just been selected by us (possibly autoselection)
 				// send our last saved loadout
-				pPlayer->LoadoutSendStored(this);
+				pPlayer->LoadoutSendStored( this );
 
 				// see if we need to spend skill points
-				if ( ASWGameRules()->GetCampaignSave() && !ASWGameRules()->GetCampaignSave()->UsingFixedSkillPoints() 
+				if ( ASWGameRules()->GetCampaignSave() && !ASWGameRules()->GetCampaignSave()->UsingFixedSkillPoints()
 					&& ASWGameResource() && ASWGameResource()->GetMarineSkill( this, ASW_SKILL_SLOT_SPARE ) > 0 )
 				{
 					CNB_Main_Panel::QueueSpendSkillPoints( GetProfileIndex() );
 				}
 			}
+
+			if ( V_memcmp( m_iWeaponsInSlots, m_iWeaponsInSlotsLastSeen, sizeof( m_iWeaponsInSlots ) ) )
+			{
+				V_memcpy( m_iWeaponsInSlotsLastSeen, m_iWeaponsInSlots, sizeof( m_iWeaponsInSlots ) );
+				pPlayer->LoadoutSendEquippedItems( this );
+			}
 		}
-		SetNextClientThink(gpGlobals->curtime);
 	}
 
-	BaseClass::OnDataChanged(updateType);
+	if ( updateType == DATA_UPDATE_CREATED )
+	{
+		SetNextClientThink( gpGlobals->curtime );
+	}
+
+	BaseClass::OnDataChanged( updateType );
 
 	if ( updateType == DATA_UPDATE_CREATED )
 	{

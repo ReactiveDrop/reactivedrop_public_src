@@ -18,6 +18,7 @@ enum EInventoryCommand
 
 #ifdef CLIENT_DLL
 int UTIL_RD_SendInventoryCommand( EInventoryCommand eCmd, const CUtlVector<int> &args, SteamInventoryResult_t hResult );
+void UTIL_RD_SendInventoryCommandByIDs( EInventoryCommand eCmd, const CUtlVector<SteamItemInstanceID_t> &ids, const CUtlVector<int> &args = CUtlVector<int>{} );
 void UTIL_RD_SendInventoryCommandOffline( EInventoryCommand eCmd, const CUtlVector<int> &args, const CUtlVector<SteamItemInstanceID_t> &items );
 void UTIL_RD_AbortInventoryCommand( int iCommandID );
 #endif
