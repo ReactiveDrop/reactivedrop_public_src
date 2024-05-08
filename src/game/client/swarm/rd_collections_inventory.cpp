@@ -678,6 +678,9 @@ public:
 		{
 			BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_ACCEPT );
 
+			// un-capture the mouse so players can click on the buttons in the confirm this spawns
+			vgui::input()->SetMouseCapture( NULL );
+
 			if ( m_Warnings.Count() )
 			{
 				Assert( s_iDeferredCraftingRecipe == 0 );
