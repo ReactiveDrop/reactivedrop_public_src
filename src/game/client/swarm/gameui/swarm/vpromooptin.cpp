@@ -159,6 +159,8 @@ public:
 		if ( pParam->m_unBodySize && szMessage[pParam->m_unBodySize - 1] == '\n' )
 			szMessage[pParam->m_unBodySize - 1] = '\0';
 
+		ReactiveDropInventory::RequestFullInventoryRefresh();
+
 		// server will return a translation key
 		ShowMessage( szMessage );
 	}
