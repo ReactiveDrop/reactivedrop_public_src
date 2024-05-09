@@ -143,6 +143,7 @@ public:
 	void NPCStoppedUsing( CASW_Inhabitable_NPC *pUser ) override {}
 	void NPCUsing( CASW_Inhabitable_NPC *pUser, float fDeltaTime ) override {}
 	bool NeedsLOSCheck() override { return false; }
+	virtual int ShouldTransmit( const CCheckTransmitInfo *pInfo ) override;
 #endif
 };
 #endif
