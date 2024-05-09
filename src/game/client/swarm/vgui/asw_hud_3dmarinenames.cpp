@@ -1810,10 +1810,10 @@ void CASWHud3DMarineNames::PaintStrangeDeviceNotifications()
 			vgui::surface()->DrawUnicodeString( pNotification->m_wszItemName );
 
 			const ReactiveDropInventory::ItemDef_t *pAccessoryDef = ReactiveDropInventory::GetItemDef( pNotification->m_iAccessoryID );
-			if ( pAccessoryDef && pAccessoryDef->Icon && pAccessoryDef->Icon->GetNumFrames() )
+			if ( pAccessoryDef && pAccessoryDef->AccessoryImage && pAccessoryDef->AccessoryImage->GetNumFrames() )
 			{
 				vgui::surface()->DrawSetColor( 255, 255, 255, Lerp( flFadeScale, 0, 255 ) );
-				vgui::surface()->DrawSetTexture( pAccessoryDef->Icon->GetID() );
+				vgui::surface()->DrawSetTexture( pAccessoryDef->AccessoryImage->GetID() );
 				vgui::surface()->DrawTexturedRect( iNumberX - iNumberTall, iNumberY, iNumberX, iNumberY + iNumberTall );
 			}
 		}
