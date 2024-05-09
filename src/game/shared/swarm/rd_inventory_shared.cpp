@@ -1873,9 +1873,15 @@ public:
 
 		UTIL_RD_AbortInventoryCommand( m_iPlayerEquipmentCommand );
 
+		CUtlVector<int> args;
+		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_PLAYER; i++ )
+		{
+			args.AddToTail( -1 );
+		}
+
 		if ( m_PlayerEquipmentResult == k_SteamInventoryResultInvalid )
 		{
-			m_iPlayerEquipmentCommand = UTIL_RD_SendInventoryCommand( INVCMD_PLAYER_EQUIPS, CUtlVector<int>{}, m_PlayerEquipmentResult );
+			m_iPlayerEquipmentCommand = UTIL_RD_SendInventoryCommand( INVCMD_PLAYER_EQUIPS, args, m_PlayerEquipmentResult );
 			return;
 		}
 
@@ -1885,10 +1891,6 @@ public:
 		pInventory->GetResultItems( m_PlayerEquipmentResult, NULL, &nItems );
 		SteamItemDetails_t *pDetails = ( SteamItemDetails_t * )stackalloc( sizeof( SteamItemDetails_t ) * nItems );
 		pInventory->GetResultItems( m_PlayerEquipmentResult, pDetails, &nItems );
-
-		CUtlVector<int> order;
-		order.SetCount( nItems );
-		order.FillWithValue( -1 );
 
 		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_PLAYER; i++ )
 		{
@@ -1901,14 +1903,13 @@ public:
 			{
 				if ( pDetails[j].m_itemId == id )
 				{
-					Assert( order[j] == -1 );
-					order[j] = i;
+					args[i] = j;
 					break;
 				}
 			}
 		}
 
-		m_iPlayerEquipmentCommand = UTIL_RD_SendInventoryCommand( INVCMD_PLAYER_EQUIPS, order, m_PlayerEquipmentResult );
+		m_iPlayerEquipmentCommand = UTIL_RD_SendInventoryCommand( INVCMD_PLAYER_EQUIPS, args, m_PlayerEquipmentResult );
 	}
 
 	CUtlVector<int> m_CraftingMaterialSpawnArgs;

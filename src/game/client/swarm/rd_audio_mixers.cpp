@@ -254,8 +254,10 @@ static bool InitDefaultMixLevels()
 
 	for ( int i = 0; i < NELEMS( s_MixerVars ); i++ )
 	{
-		static const float flNegativeOne = -1.0f;
-		s_MixerVars[i].defaultVolumes.AddMultipleToTail( s_MixerVars[i].mixers.Count(), &flNegativeOne );
+		for ( int j = 0; j < s_MixerVars[i].mixers.Count(); j++ )
+		{
+			s_MixerVars[i].defaultVolumes.AddToTail( -1.0f );
+		}
 	}
 
 	for ( int i = 0; i < *pMixerGroupCount; i++ )

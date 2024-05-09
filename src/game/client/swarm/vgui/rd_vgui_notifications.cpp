@@ -547,8 +547,16 @@ void CRD_VGUI_Notifications_List_Item::OnClicked()
 {
 	SetSeenAtLeast( HoIAFNotification_t::SEEN_CLICKED );
 
-	CBaseModFrame *pCaller = CBaseModPanel::GetSingleton().GetWindow( CBaseModPanel::GetSingleton().GetActiveWindowType() );
-	CBaseModPanel::GetSingleton().OpenWindow( WT_GENERICCHOICELIST, pCaller, false, GetNotificationActions() );
+	KeyValues *pParameters = GetNotificationActions();
+
+	// kill whatever sub-menu we're on so it doesn't open the notifications behind the sub-menu
+	if ( CBaseModPanel::GetSingleton().GetActiveWindowType() != WT_MAINMENU )
+	{
+		CBaseModPanel::GetSingleton().OpenFrontScreen();
+	}
+
+	CBaseModFrame *pCaller = CBaseModPanel::GetSingleton().GetWindow( WT_MAINMENU );
+	CBaseModPanel::GetSingleton().OpenWindow( WT_GENERICCHOICELIST, pCaller, true, pParameters );
 }
 
 void CRD_VGUI_Notifications_List_Item::OnCursorEntered()

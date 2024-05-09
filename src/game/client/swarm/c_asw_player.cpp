@@ -671,7 +671,10 @@ void C_ASW_Player::LoadoutSendEquippedItems( C_ASW_Marine_Resource *pMR )
 	int iMarineResourceIndex = ASWGameResource()->GetMarineResourceIndex( pMR );
 
 	CUtlVector<SteamItemInstanceID_t> ids;
-	ids.AddMultipleToTail( 4, &k_SteamItemInstanceIDInvalid );
+	for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_MARINE_RESOURCE; i++ )
+	{
+		ids.AddToTail( k_SteamItemInstanceIDInvalid );
+	}
 	CUtlVector<ReactiveDropInventory::ItemInstance_t> instances;
 
 	// until we have loadouts done, just send the first eligible item for each equip slot
@@ -686,16 +689,8 @@ void C_ASW_Player::LoadoutSendEquippedItems( C_ASW_Marine_Resource *pMR )
 	instances.Purge();
 
 	ReactiveDropInventory::GetItemsForSlotAndEquipIndex( instances, "weapon", pMR->m_iWeaponsInSlots[1] );
-	if ( pMR->m_iWeaponsInSlots[0] != pMR->m_iWeaponsInSlots[1] )
-	{
-		if ( instances.Count() )
-			ids[2] = instances[0].ItemID;
-	}
-	else
-	{
-		if ( instances.Count() > 1 )
-			ids[2] = instances[1].ItemID;
-	}
+	if ( instances.Count() )
+		ids[2] = instances[0].ItemID;
 	instances.Purge();
 
 	ReactiveDropInventory::GetItemsForSlotAndEquipIndex( instances, "extra", pMR->m_iWeaponsInSlots[2] );
