@@ -361,6 +361,11 @@ void CRD_Crafting_Material_Pickup::Spawn()
 	}
 }
 
+int CRD_Crafting_Material_Pickup::ShouldTransmit( const CCheckTransmitInfo *pInfo )
+{
+	return FL_EDICT_ALWAYS;
+}
+
 void CRD_Crafting_Material_Pickup::ActivateUseIcon( CASW_Inhabitable_NPC *pUser, int nHoldType )
 {
 	if ( nHoldType == ASW_USE_HOLD_START )
