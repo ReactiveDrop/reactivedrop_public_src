@@ -544,10 +544,15 @@ bool CRD_Crafting_Material_Pickup::GetUseAction( ASWUseAction &action, C_ASW_Inh
 
 bool CRD_Crafting_Material_Pickup::IsUsable( CBaseEntity *pUser )
 {
-#ifdef CLIENT_DLL
-	if ( m_iLastMaterialType == RD_CRAFTING_MATERIAL_NONE )
-		return false;
-#endif
+	if ( pUser && pUser->IsInhabitableNPC() )
+	{
+		CASW_Player *pPlayer = assert_cast< CASW_Inhabitable_NPC * >( pUser )->GetCommander();
+		if ( !pPlayer || m_MaterialAtLocation[pPlayer->entindex() - 1] == RD_CRAFTING_MATERIAL_NONE )
+		{
+			return false;
+		}
+	}
+
 	return ( pUser && pUser->GetAbsOrigin().DistTo( GetAbsOrigin() ) < ASW_MARINE_USE_RADIUS );	// near enough?
 }
 #endif
