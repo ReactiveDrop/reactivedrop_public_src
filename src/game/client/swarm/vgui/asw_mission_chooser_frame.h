@@ -5,6 +5,7 @@
 #endif
 
 #include "tabbedgriddetails.h"
+#include "rd_crafting_defs.h"
 
 struct RD_Campaign_t;
 struct RD_Mission_t;
@@ -13,10 +14,6 @@ class vgui::ImagePanel;
 class vgui::Label;
 class CNB_Header_Footer;
 class CampaignMapSearchLights;
-
-#ifdef RD_7A_DROPS
-enum RD_Crafting_Material_t;
-#endif
 
 // chooser types - what we're going to launch
 enum class ASW_CHOOSER_TYPE
@@ -107,6 +104,8 @@ public:
 	vgui::ImagePanel *m_pMapBase;
 	vgui::ImagePanel *m_pMapLayer[3];
 	CampaignMapSearchLights *m_pSearchLights;
+	vgui::Label *m_pModifiers;
+	vgui::Panel *m_pModifiersBackdrop;
 };
 
 class CASW_Mission_Chooser_Entry : public TGD_Entry
@@ -116,8 +115,13 @@ public:
 	CASW_Mission_Chooser_Entry( TGD_Grid *parent, const char *panelName, const RD_Campaign_t *pCampaign, const RD_Mission_t *pMission );
 	CASW_Mission_Chooser_Entry( TGD_Grid *parent, const char *panelName, ASW_CHOOSER_TYPE iChooserType );
 
-	virtual void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
-	virtual void ApplyEntry() override;
+	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+	void ApplyEntry() override;
+	void OnThink() override;
+
+#ifdef RD_7A_DROPS
+	void SetCraftingMaterialIcon();
+#endif
 
 	char m_szCampaign[64];
 	char m_szMission[64];
@@ -127,6 +131,8 @@ public:
 	{
 		MM_WORKSHOP,	// mission was downloaded from the workshop (not built-in/official or manually installed)
 		MM_BOUNTY,		// unclaimed bounty on this mission and we are on a HoIAF server
+
+		// put crafting last because it shows a table of numbers
 		MM_CRAFTING,	// crafting materials available here
 
 		NUM_MISSION_MODIFIER_TYPES,
@@ -136,6 +142,8 @@ public:
 	CUtlVector<MissionModifier_t> m_MissionModifiers;
 #ifdef RD_7A_DROPS
 	CUtlVector<RD_Crafting_Material_t> m_AvailableMaterials;
+	int m_iLastMaterialIconChange;
+	int m_MaterialsPerRarity[NUM_RD_CRAFTING_MATERIAL_RARITIES];
 #endif
 
 	vgui::ImagePanel *m_pImage;

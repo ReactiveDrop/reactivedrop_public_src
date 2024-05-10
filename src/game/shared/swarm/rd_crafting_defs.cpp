@@ -88,11 +88,11 @@ const RD_Crafting_Material_Info g_RD_Crafting_Material_Info[] =
 
 const RD_Crafting_Material_Rarity_Info g_RD_Crafting_Material_Rarity_Info[] =
 {
-	{ "RD_Crafting_Material_Found.Industrial", true },
-	{ "RD_Crafting_Material_Found.Bulk", true },
-	{ "RD_Crafting_Material_Found.Alien", true },
-	{ "RD_Crafting_Material_Found.Tech", true },
-	{ "RD_Crafting_Material_Found.Salvaged", true },
+	{ "#rd_crafting_material_rarity_industrial", "RD_Crafting_Material_Found.Industrial", true },
+	{ "#rd_crafting_material_rarity_bulk", "RD_Crafting_Material_Found.Bulk", true },
+	{ "#rd_crafting_material_rarity_alien", "RD_Crafting_Material_Found.Alien", true },
+	{ "#rd_crafting_material_rarity_tech", "RD_Crafting_Material_Found.Tech", true },
+	{ "#rd_crafting_material_rarity_salvaged", "RD_Crafting_Material_Found.Salvaged", true },
 };
 
 // hard-coded so we don't have to search the entire item ID space to figure out which items can appear in a box.

@@ -73,6 +73,7 @@ ConVar rd_debug_inventory( "cl_debug_inventory", "0", FCVAR_NONE, "print debuggi
 
 extern ConVar rd_strange_device_tier_notifications;
 extern ConVar rd_equipped_medal[RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS];
+ConVar rd_crafting_material_pickups( "rd_crafting_material_pickups", "1", FCVAR_ARCHIVE, "if set to 0, the game will pretend that no crafting material locations are available" );
 #else
 ConVar rd_debug_inventory( "sv_debug_inventory", "0", FCVAR_NONE, "print debugging messages about inventory service calls" );
 #define GET_INVENTORY_OR_BAIL \
@@ -3123,6 +3124,9 @@ namespace ReactiveDropInventory
 
 	void GetItemsForSlot( CUtlVector<ItemInstance_t> &instances, const char *szRequiredSlot )
 	{
+		if ( !rd_crafting_material_pickups.GetBool() && !V_strcmp( szRequiredSlot, "material_drop_token" ) )
+			return; // short circuit
+
 		GetLocalInventoryWhere( instances, [&]( const ItemInstance_t &instance ) -> bool
 			{
 				const ItemDef_t *pDef = GetItemDef( instance.ItemDefID );

@@ -4,13 +4,17 @@
 #include "gameui/swarm/uigamedata.h"
 #include "rd_missions_shared.h"
 #include "rd_workshop.h"
-#include "rd_missions_shared.h"
 #include <vgui_controls/ImagePanel.h>
 #include <vgui_controls/Label.h>
+#include <vgui/ILocalize.h>
 #include <vgui/ISystem.h>
 #include "campaignmapsearchlights.h"
 #include "fmtstr.h"
 #include "rd_hoiaf_utils.h"
+#include "rd_inventory_shared.h"
+#include "rd_crafting_defs.h"
+#include "asw_util_shared.h"
+#include <ctime>
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -24,7 +28,7 @@ extern ConVar rd_last_game_hardcoreff;
 extern ConVar rd_last_game_maxplayers;
 extern ConVar rd_reduce_motion;
 extern ConVar rd_notification_debug_fake;
-ConVar rd_mission_chooser_workshop_icon( "rd_mission_chooser_workshop_icon", "0", FCVAR_NONE, "Show an icon on workshop missions and campaigns." );
+ConVar rd_mission_chooser_workshop_icon( "rd_mission_chooser_workshop_icon", "1", FCVAR_NONE, "Show an icon on workshop missions and campaigns." );
 
 const char *const g_ASW_ChooserTypeName[] =
 {
@@ -474,6 +478,8 @@ CASW_Mission_Chooser_Details::CASW_Mission_Chooser_Details( TGD_Tab *pTab ) : Ba
 	m_pMapLayer[1] = new vgui::ImagePanel( this, "MapLayer2" );
 	m_pMapLayer[2] = new vgui::ImagePanel( this, "MapLayer3" );
 	m_pSearchLights = new CampaignMapSearchLights( this, "MapSearchLights" );
+	m_pModifiers = new vgui::Label( this, "Modifiers", "" );
+	m_pModifiersBackdrop = new vgui::Panel( this, "ModifiersBackdrop" );
 
 	DisplayEntry( NULL );
 }
@@ -504,17 +510,13 @@ void CASW_Mission_Chooser_Details::ApplySchemeSettings( vgui::IScheme *pScheme )
 	LoadControlSettings( "Resource/UI/MissionChooserDetails.res" );
 
 	BaseClass::ApplySchemeSettings( pScheme );
-
-	m_pBackdrop->SetPaintBackgroundEnabled( true );
-	m_pBackdrop->SetBgColor( Color( 0, 0, 0, 224 ) );
-
 }
 
 void CASW_Mission_Chooser_Details::PerformLayout()
 {
 	BaseClass::PerformLayout();
 
-	int discard, y0, y1, tall, titleTallDiff;
+	int discard, x, y0, y1, tall, titleTallDiff;
 	m_pTitle->GetContentSize( discard, tall );
 	titleTallDiff = tall - m_pTitle->GetTall();
 	m_pTitle->SetTall( tall );
@@ -525,6 +527,13 @@ void CASW_Mission_Chooser_Details::PerformLayout()
 	m_pDescription->GetContentSize( discard, tall );
 	m_pBackdrop->SetTall( tall + m_pTitle->GetTall() / 2 + y1 - y0 );
 
+	m_pModifiers->GetPos( discard, y0 );
+	y0 += m_pModifiers->GetTall();
+	m_pModifiersBackdrop->GetPos( x, y1 );
+	m_pModifiers->GetContentSize( discard, tall );
+	int gap = y1 + m_pModifiersBackdrop->GetTall() - y0;
+	m_pModifiersBackdrop->SetBounds( x, y0 - gap - tall, m_pModifiersBackdrop->GetWide(), gap * 2 + tall );
+
 	if ( m_nForceReLayout )
 	{
 		m_nForceReLayout--;
@@ -534,6 +543,7 @@ void CASW_Mission_Chooser_Details::PerformLayout()
 
 void CASW_Mission_Chooser_Details::DisplayEntry( TGD_Entry *pBaseEntry )
 {
+	MakeReadyForUse();
 	m_nForceReLayout = 1;
 
 	if ( !pBaseEntry )
@@ -547,6 +557,8 @@ void CASW_Mission_Chooser_Details::DisplayEntry( TGD_Entry *pBaseEntry )
 		m_pMapLayer[1]->SetVisible( false );
 		m_pMapLayer[2]->SetVisible( false );
 		m_pSearchLights->SetVisible( false );
+		m_pModifiers->SetVisible( false );
+		m_pModifiersBackdrop->SetVisible( false );
 
 		InvalidateLayout();
 
@@ -563,6 +575,42 @@ void CASW_Mission_Chooser_Details::DisplayEntry( TGD_Entry *pBaseEntry )
 	m_pMapBase->SetVisible( true );
 
 	CASW_Mission_Chooser_Entry *pEntry = assert_cast< CASW_Mission_Chooser_Entry * >( pBaseEntry );
+
+	wchar_t wszModifiers[2048]{};
+
+	FOR_EACH_VEC( pEntry->m_MissionModifiers, i )
+	{
+		switch ( pEntry->m_MissionModifiers[i] )
+		{
+		case CASW_Mission_Chooser_Entry::MM_WORKSHOP:
+			V_snwprintf( wszModifiers, NELEMS( wszModifiers ), L"%s\n\n%s", wszModifiers,
+				g_pVGuiLocalize->Find( pEntry->m_szMission[0] ? "#rd_mission_modifier_workshop" : "#rd_mission_modifier_workshop_campaign" ) );
+			break;
+		case CASW_Mission_Chooser_Entry::MM_BOUNTY:
+			V_snwprintf( wszModifiers, NELEMS( wszModifiers ), L"%s\n\n%s", wszModifiers,
+				g_pVGuiLocalize->Find( pEntry->m_szMission[0] ? "#rd_mission_modifier_bounty" : "#rd_mission_modifier_bounty_campaign" ) );
+			break;
+		case CASW_Mission_Chooser_Entry::MM_CRAFTING:
+			V_snwprintf( wszModifiers, NELEMS( wszModifiers ), L"%s\n\n%s\n", wszModifiers,
+				g_pVGuiLocalize->Find( pEntry->m_szMission[0] ? "#rd_mission_modifier_crafting" : "#rd_mission_modifier_crafting_campaign" ) );
+			for ( int j = 0; j < NUM_RD_CRAFTING_MATERIAL_RARITIES; j++ )
+			{
+				if ( pEntry->m_MaterialsPerRarity[j] )
+				{
+					wchar_t wszPerRarity[256]{};
+					g_pVGuiLocalize->ConstructString( wszPerRarity, sizeof( wszPerRarity ),
+						g_pVGuiLocalize->Find( "#rd_mission_modifier_crafting_rarity" ), 2,
+						g_pVGuiLocalize->Find( g_RD_Crafting_Material_Rarity_Info[j].m_szDisplayName ), UTIL_RD_CommaNumber( pEntry->m_MaterialsPerRarity[j] ) );
+					V_snwprintf( wszModifiers, NELEMS( wszModifiers ), L"%s\n%s", wszModifiers, wszPerRarity );
+				}
+			}
+			break;
+		}
+	}
+
+	m_pModifiers->SetText( wszModifiers[0] != L'\0' ? &wszModifiers[2] : L"" );
+	m_pModifiers->SetVisible( wszModifiers[0] != L'\0' );
+	m_pModifiersBackdrop->SetVisible( wszModifiers[0] != L'\0' );
 
 	if ( pEntry->m_szMission[0] )
 	{
@@ -656,11 +704,86 @@ CASW_Mission_Chooser_Entry::CASW_Mission_Chooser_Entry( TGD_Grid *parent, const 
 		}
 	}
 #ifdef RD_7A_DROPS
-	// TODO: fill m_AvailableMaterials
+	CUtlVector<ReactiveDropInventory::ItemInstance_t> tokens;
+	ReactiveDropInventory::GetItemsForSlot( tokens, "material_drop_token" );
+	for ( int i = 0; i < NUM_RD_CRAFTING_MATERIAL_RARITIES; i++ )
+	{
+		m_MaterialsPerRarity[i] = 0;
+	}
+
+	if ( pMission )
+	{
+		for ( int i = RD_CRAFTING_MATERIAL_NONE + 1; i < NUM_RD_CRAFTING_MATERIAL_TYPES; i++ )
+		{
+			RD_Crafting_Material_t eMaterial = RD_Crafting_Material_t( i );
+			if ( !pMission->CraftingMaterialFoundHere( eMaterial ) )
+				continue;
+
+			bool bFound = false;
+			FOR_EACH_VEC( tokens, j )
+			{
+				if ( g_RD_Crafting_Material_Info[i].m_iTokenDef == tokens[j].ItemDefID )
+				{
+					if ( !bFound )
+					{
+						m_AvailableMaterials.AddToTail( eMaterial );
+						bFound = true;
+					}
+
+					m_MaterialsPerRarity[g_RD_Crafting_Material_Info[i].m_iRarity] += tokens[j].Quantity;
+				}
+			}
+		}
+	}
+	else if ( pCampaign )
+	{
+		CUtlVector<const RD_Mission_t *> missions;
+		FOR_EACH_VEC( pCampaign->Missions, i )
+		{
+			if ( i == 0 )
+				continue;
+
+			const RD_Mission_t *pCampaignMission = ReactiveDropMissions::GetMission( pCampaign->Missions[i].MapName );
+			if ( pCampaignMission )
+				missions.AddToTail( pCampaignMission );
+		}
+		for ( int i = RD_CRAFTING_MATERIAL_NONE + 1; i < NUM_RD_CRAFTING_MATERIAL_TYPES; i++ )
+		{
+			RD_Crafting_Material_t eMaterial = RD_Crafting_Material_t( i );
+			bool bFoundHere = false;
+			FOR_EACH_VEC( missions, j )
+			{
+				if ( missions[j]->CraftingMaterialFoundHere( eMaterial ) )
+				{
+					bFoundHere = true;
+					break;
+				}
+			}
+
+			if ( !bFoundHere )
+				continue;
+
+			bool bFound = false;
+			FOR_EACH_VEC( tokens, j )
+			{
+				if ( g_RD_Crafting_Material_Info[i].m_iTokenDef == tokens[j].ItemDefID )
+				{
+					if ( !bFound )
+					{
+						m_AvailableMaterials.AddToTail( eMaterial );
+						bFound = true;
+					}
+
+					m_MaterialsPerRarity[g_RD_Crafting_Material_Info[i].m_iRarity] += tokens[j].Quantity;
+				}
+			}
+		}
+	}
 	if ( m_AvailableMaterials.Count() != 0 )
 	{
 		m_MissionModifiers.AddToTail( MM_CRAFTING );
 	}
+	m_iLastMaterialIconChange = 0;
 #endif
 
 	m_pImage = new vgui::ImagePanel( this, "Image" );
@@ -678,6 +801,14 @@ CASW_Mission_Chooser_Entry::CASW_Mission_Chooser_Entry( TGD_Grid *parent, const 
 	m_WorkshopChooserType = iChooserType;
 
 	m_iGridIndex = -1;
+
+#ifdef RD_7A_DROPS
+	for ( int i = 0; i < NUM_RD_CRAFTING_MATERIAL_TYPES; i++ )
+	{
+		m_MaterialsPerRarity[i] = 0;
+	}
+	m_iLastMaterialIconChange = 0;
+#endif
 
 	m_pImage = new vgui::ImagePanel( this, "Image" );
 	m_pTitle = new vgui::Label( this, "Title", "" );
@@ -741,7 +872,9 @@ void CASW_Mission_Chooser_Entry::ApplySchemeSettings( vgui::IScheme *pScheme )
 			m_pModifiers[i]->SetImage( "icon_server_ranked" );
 			break;
 		case MM_CRAFTING:
-			DebuggerBreakIfDebugging(); // TODO: rotating crafting item display
+#ifdef RD_7A_DROPS
+			SetCraftingMaterialIcon();
+#endif
 			break;
 		default:
 			Assert( !"Unhandled mission modifier type" );
@@ -864,3 +997,51 @@ void CASW_Mission_Chooser_Entry::ApplyEntry()
 
 	pFrame->ApplyCampaign( pTab->m_ChooserType, m_szCampaign );
 }
+
+void CASW_Mission_Chooser_Entry::OnThink()
+{
+	BaseClass::OnThink();
+
+#ifdef RD_7A_DROPS
+	if ( m_iLastMaterialIconChange && !rd_reduce_motion.GetBool() && m_iLastMaterialIconChange + 2 <= std::time( NULL ) )
+	{
+		SetCraftingMaterialIcon();
+	}
+#endif
+}
+
+#ifdef RD_7A_DROPS
+void CASW_Mission_Chooser_Entry::SetCraftingMaterialIcon()
+{
+	m_iLastMaterialIconChange = std::time( NULL ) & ~1;
+
+	Assert( m_AvailableMaterials.Count() );
+	if ( !m_AvailableMaterials.Count() )
+		return;
+
+	if ( m_iGridIndex == -1 )
+	{
+		m_iGridIndex = m_pParent->m_Entries.Find( this );
+		Assert( m_iGridIndex != -1 );
+	}
+
+	FOR_EACH_VEC( m_MissionModifiers, i )
+	{
+		if ( m_MissionModifiers[i] != MM_CRAFTING )
+			continue;
+
+		int iMaterialIndex = unsigned( m_iGridIndex + m_iLastMaterialIconChange / 2 ) % m_AvailableMaterials.Count();
+		SteamItemDef_t iDef = g_RD_Crafting_Material_Info[m_AvailableMaterials[iMaterialIndex]].m_iItemDef;
+		const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( iDef );
+		Assert( pDef );
+		if ( !pDef )
+			return;
+
+		m_pModifiers[i]->SetImage( pDef->Icon );
+
+		return;
+	}
+
+	Assert( !"should not have been called without MM_CRAFTING modifier" );
+}
+#endif
