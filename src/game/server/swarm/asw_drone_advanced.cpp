@@ -62,7 +62,7 @@ ConVar asw_drone_yaw_speed_attackprep("asw_drone_yaw_speed_attackprep", "64.0", 
 ConVar asw_drone_yaw_speed_attacking("asw_drone_yaw_speed_attacking", "8.0", FCVAR_CHEAT, "How fast the swarm drone can turn while doing a melee attack");
 ConVar asw_drone_run_speed( "asw_drone_run_speed", "1.25", FCVAR_CHEAT );
 ConVar asw_drone_attack_speed( "asw_drone_attack_speed", "1.25", FCVAR_CHEAT );
-ConVar asw_drone_attack_speed_on_fire( "asw_drone_attack_speed_on_fire", "1.75", FCVAR_CHEAT );
+ConVar asw_drone_attack_speed_on_fire( "asw_drone_attack_speed_on_fire", "1.25", FCVAR_CHEAT );
 ConVar asw_drone_acceleration("asw_drone_acceleration", "5", FCVAR_CHEAT, "How fast the swarm drone accelerates, as a multiplier on his ideal speed");
 ConVar asw_drone_smooth_speed("asw_drone_smooth_speed", "200", FCVAR_CHEAT, "How fast the swarm drone smooths his current velocity into the ideal, when using overidden movement");
 ConVar asw_drone_override_move("asw_drone_override_move", "0", FCVAR_CHEAT, "Enable to make Swarm drones use custom override movement to chase their enemy");
