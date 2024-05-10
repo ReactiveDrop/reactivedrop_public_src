@@ -480,7 +480,7 @@ public:
 		int PropertyIndex{};
 		int64_t NewValue{};
 	};
-	CUtlVector<PendingDynamicPropertyUpdate_t> m_PendingDynamicPropertyUpdates{};
+	CUtlVectorAutoPurge<PendingDynamicPropertyUpdate_t *> m_PendingDynamicPropertyUpdates{};
 	SteamInventoryResult_t m_DynamicPropertyUpdateResult{ k_SteamInventoryResultInvalid };
 	bool m_bWantExtraDynamicPropertyCommit{};
 
@@ -525,15 +525,15 @@ public:
 
 		FOR_EACH_VEC( m_PendingDynamicPropertyUpdates, i )
 		{
-			const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( m_PendingDynamicPropertyUpdates[i].ItemDefID );
-			const char *szProperty = pDef->CompressedDynamicProps[m_PendingDynamicPropertyUpdates[i].PropertyIndex];
+			const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( m_PendingDynamicPropertyUpdates[i]->ItemDefID );
+			const char *szProperty = pDef->CompressedDynamicProps[m_PendingDynamicPropertyUpdates[i]->PropertyIndex];
 			if ( rd_debug_inventory.GetBool() )
 			{
-				Msg( "[C] Setting item %llu (#%d:%s) property %d:%s value to %lld\n", m_PendingDynamicPropertyUpdates[i].ItemInstanceID, m_PendingDynamicPropertyUpdates[i].ItemDefID, pDef->Name.Get(),
-					m_PendingDynamicPropertyUpdates[i].PropertyIndex, szProperty, m_PendingDynamicPropertyUpdates[i].NewValue );
+				Msg( "[C] Setting item %llu (#%d:%s) property %d:%s value to %lld\n", m_PendingDynamicPropertyUpdates[i]->ItemInstanceID, m_PendingDynamicPropertyUpdates[i]->ItemDefID, pDef->Name.Get(),
+					m_PendingDynamicPropertyUpdates[i]->PropertyIndex, szProperty, m_PendingDynamicPropertyUpdates[i]->NewValue );
 			}
 
-			bool ok = pInventory->SetProperty( hUpdate, m_PendingDynamicPropertyUpdates[i].ItemInstanceID, szProperty, m_PendingDynamicPropertyUpdates[i].NewValue );
+			bool ok = pInventory->SetProperty( hUpdate, m_PendingDynamicPropertyUpdates[i]->ItemInstanceID, szProperty, m_PendingDynamicPropertyUpdates[i]->NewValue );
 			Assert( ok );
 			if ( !ok )
 			{
@@ -553,7 +553,7 @@ public:
 			Msg( "[C] Item property update handle is %08x\n", m_DynamicPropertyUpdateResult );
 		}
 
-		m_PendingDynamicPropertyUpdates.Purge();
+		m_PendingDynamicPropertyUpdates.PurgeAndDeleteElements();
 	}
 #endif
 
@@ -877,20 +877,21 @@ public:
 		PendingDynamicPropertyUpdate_t *pUpdate = NULL;
 		FOR_EACH_VEC( m_PendingDynamicPropertyUpdates, j )
 		{
-			if ( m_PendingDynamicPropertyUpdates[j].ItemInstanceID == instance.m_iItemInstanceID && m_PendingDynamicPropertyUpdates[j].ItemDefID == iAccessoryID && m_PendingDynamicPropertyUpdates[j].PropertyIndex == iPropertyIndex )
+			if ( m_PendingDynamicPropertyUpdates[j]->ItemInstanceID == instance.m_iItemInstanceID && m_PendingDynamicPropertyUpdates[j]->ItemDefID == iAccessoryID && m_PendingDynamicPropertyUpdates[j]->PropertyIndex == iPropertyIndex )
 			{
-				pUpdate = &m_PendingDynamicPropertyUpdates[j];
+				pUpdate = m_PendingDynamicPropertyUpdates[j];
 				iCounterBefore = pUpdate->NewValue;
 				break;
 			}
 		}
 		if ( !pUpdate )
 		{
-			pUpdate = &m_PendingDynamicPropertyUpdates[m_PendingDynamicPropertyUpdates.AddToTail()];
+			pUpdate = new PendingDynamicPropertyUpdate_t{};
 			pUpdate->ItemInstanceID = instance.m_iItemInstanceID;
 			pUpdate->ItemDefID = iAccessoryID;
 			pUpdate->PropertyIndex = iPropertyIndex;
 			iCounterBefore = strtoll( pLocalInstance->DynamicProps[szPropertyName], NULL, 10 );
+			m_PendingDynamicPropertyUpdates.AddToTail( pUpdate );
 		}
 #endif
 		int64_t iCounterAfter = iCounterBefore;
@@ -923,9 +924,9 @@ public:
 			bool bFoundBestStreak = false;
 			FOR_EACH_VEC( m_PendingDynamicPropertyUpdates, j )
 			{
-				if ( m_PendingDynamicPropertyUpdates[j].ItemInstanceID == instance.m_iItemInstanceID && m_PendingDynamicPropertyUpdates[j].ItemDefID == iAccessoryID && m_PendingDynamicPropertyUpdates[j].PropertyIndex == iPropertyIndex + 1 )
+				if ( m_PendingDynamicPropertyUpdates[j]->ItemInstanceID == instance.m_iItemInstanceID && m_PendingDynamicPropertyUpdates[j]->ItemDefID == iAccessoryID && m_PendingDynamicPropertyUpdates[j]->PropertyIndex == iPropertyIndex + 1 )
 				{
-					iBestStreak = m_PendingDynamicPropertyUpdates[j].NewValue;
+					iBestStreak = m_PendingDynamicPropertyUpdates[j]->NewValue;
 					bFoundBestStreak = true;
 					break;
 				}
