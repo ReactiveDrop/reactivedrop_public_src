@@ -925,7 +925,7 @@ public:
 			{
 				if ( m_PendingDynamicPropertyUpdates[j].ItemInstanceID == instance.m_iItemInstanceID && m_PendingDynamicPropertyUpdates[j].ItemDefID == iAccessoryID && m_PendingDynamicPropertyUpdates[j].PropertyIndex == iPropertyIndex + 1 )
 				{
-					iBestStreak = pUpdate->NewValue;
+					iBestStreak = m_PendingDynamicPropertyUpdates[j].NewValue;
 					bFoundBestStreak = true;
 					break;
 				}
