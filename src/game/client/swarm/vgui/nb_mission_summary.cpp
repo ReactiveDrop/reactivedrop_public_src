@@ -28,6 +28,8 @@ CNB_Mission_Summary::CNB_Mission_Summary( vgui::Panel *parent, const char *name 
 	m_pChallengeLabel = new vgui::Label(this, "ChallengeLabel", "");
 	m_pMissionTitle = new vgui::Label( this, "MissionTitle", "" );
 	m_pMissionLabel = new vgui::Label( this, "MissionLabel", "" );
+	m_pSpeedrunTimeLabel = new vgui::Label( this, "SpeedrunTimeLabel", "" );
+	m_pOutstandingExecutionLabel = new vgui::Label( this, "OutstandingExecutionLabel", "" );
 	m_pObjectivesTitle = new vgui::Label( this, "ObjectivesTitle", "" );
 	m_pObjectivesLabel = new vgui::Label( this, "ObjectivesLabel", "" );
 	// == MANAGED_MEMBER_CREATION_END ==
@@ -138,6 +140,26 @@ void CNB_Mission_Summary::OnThink()
 	{
 		m_pMissionLabel->SetText(pMap->m_szMissionTitle);
 	}
+
+	int nSpeedrunTime = CAlienSwarm::GetSpeedrunTime();
+	wchar_t wszSRTime[ 128 ];
+
+	if ( nSpeedrunTime <= 0 )
+		V_snwprintf( wszSRTime, ARRAYSIZE( wszSRTime ), L"-" );
+	else
+		V_snwprintf( wszSRTime, ARRAYSIZE( wszSRTime ), g_pVGuiLocalize->FindSafe( "#nb_speedruntime_format" ), nSpeedrunTime / 60, nSpeedrunTime % 60 / 10, nSpeedrunTime % 10 );
+
+	m_pSpeedrunTimeLabel->SetText( wszSRTime );
+
+	int nOEStatus = CAlienSwarm::GetOutstandingExecutionStatus();
+	wchar_t wszOEStatus[ 128 ];
+
+	if ( nOEStatus < 0 )
+		V_snwprintf( wszOEStatus, ARRAYSIZE( wszOEStatus ), L"-" );
+	else
+		V_snwprintf( wszOEStatus, ARRAYSIZE( wszOEStatus ), L"%s", nOEStatus ? g_pVGuiLocalize->FindSafe( "#nb_oe_status_active" ) : g_pVGuiLocalize->FindSafe( "#nb_oe_status_failed" ) );
+
+	m_pOutstandingExecutionLabel->SetText( wszOEStatus );
 
 	// compose objectives list
 	wchar_t wszObjectivesBuffer[ 1024 ];

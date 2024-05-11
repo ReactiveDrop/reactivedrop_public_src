@@ -864,6 +864,7 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		RecvPropInt(RECVINFO(m_nFailAdvice)),
 		RecvPropInt(RECVINFO(m_iMissionDifficulty) ),
 		RecvPropInt(RECVINFO(m_iSkillLevel) ),
+		RecvPropBool(RECVINFO(m_iOutstandingExecutionStatus)),
 		RecvPropBool(RECVINFO(m_bVoteStartedIngame) ),
 		RecvPropInt(RECVINFO(m_iCurrentVoteYes) ),
 		RecvPropInt(RECVINFO(m_iCurrentVoteNo) ),
@@ -909,6 +910,7 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		SendPropInt(SENDINFO(m_nFailAdvice)),
 		SendPropInt(SENDINFO(m_iMissionDifficulty) ),
 		SendPropInt(SENDINFO(m_iSkillLevel) ),
+		SendPropInt(SENDINFO(m_iOutstandingExecutionStatus) ),
 		SendPropInt(SENDINFO(m_bVoteStartedIngame) ),
 		SendPropInt(SENDINFO(m_iCurrentVoteYes) ),
 		SendPropInt(SENDINFO(m_iCurrentVoteNo) ),
@@ -1014,6 +1016,7 @@ CAlienSwarmProxy::~CAlienSwarmProxy()
 
 	BEGIN_RECV_TABLE( CAlienSwarmProxy, DT_AlienSwarmProxy )
 		RecvPropDataTable( "asw_gamerules_data", 0, 0, &REFERENCE_RECV_TABLE( DT_ASWGameRules ), RecvProxy_ASWGameRules ),
+		RecvPropInt( RECVINFO( m_iSpeedrunTime ) ),
 		RecvPropBool( RECVINFO( m_bDisallowCameraRotation ) ),		
 	END_RECV_TABLE()
 #else
@@ -1027,6 +1030,7 @@ CAlienSwarmProxy::~CAlienSwarmProxy()
 
 	BEGIN_SEND_TABLE( CAlienSwarmProxy, DT_AlienSwarmProxy )
 		SendPropDataTable( "asw_gamerules_data", 0, &REFERENCE_SEND_TABLE( DT_ASWGameRules ), SendProxy_ASWGameRules ),
+		SendPropInt( SENDINFO( m_iSpeedrunTime ) ),
 		SendPropBool( SENDINFO( m_bDisallowCameraRotation ) ),
 	END_SEND_TABLE()
 
@@ -1663,6 +1667,7 @@ void CAlienSwarm::FullReset()
 	m_bMissionSuccess = false;
 	m_bMissionFailed = false;
 	m_fReserveMarinesEndTime = 0;
+	m_iOutstandingExecutionStatus = -1;
 
 	m_nFailAdvice = ASW_FAIL_ADVICE_DEFAULT;
 
@@ -8562,12 +8567,35 @@ void CAlienSwarm::OnSVCheatsChanged()
 }
 //ConCommand asw_notify_ch( "asw_notify_ch", StartedCheating_f, "Internal use", 0 );
 
+#endif	// GAME_DLL
+
 int CAlienSwarm::GetSpeedrunTime( void )
 {
 	Assert( g_pSwarmProxy );
 
 	return g_pSwarmProxy->m_iSpeedrunTime;
 }
+
+int CAlienSwarm::GetOutstandingExecutionStatus(void)
+{
+#ifdef CLIENT_DLL
+	return ASWGameRules()->m_iOutstandingExecutionStatus;
+#else
+	if ( !GetCampaignInfo() )
+		return -1;
+
+	if ( GetCampaignInfo()->Missions.Count() > 1 && !V_strcmp( GetCampaignInfo()->Missions[1].MapName, STRING( gpGlobals->mapname ) ) )
+		return 1;
+
+	int iSkill = ASWGameRules()->GetLowestSkillLevelPlayed();
+	if ( iSkill >= 2 && ASWGameRules()->GetCampaignSave() && ASWGameRules()->GetCampaignSave()->m_iNumDeaths <= 0 && ASWGameRules()->GetCampaignSave()->m_iInitialNumMissionsComplete == 0 && !ASWGameRules()->m_bChallengeActiveThisCampaign )
+		return 1;
+
+	return 0;
+#endif
+}
+
+#ifdef GAME_DLL
 
 int CAlienSwarm::GetJumpJetType(void)
 {
@@ -9413,6 +9441,8 @@ void CAlienSwarm::LevelInitPostEntity()
 		}
 	}
 	// todo: if we fail to load the campaign save file above, then gracefully fall into single mission mode?
+
+	m_iOutstandingExecutionStatus = GetOutstandingExecutionStatus();
 
 	// make sure we're on easy mode for the tutorial
 	if ( IsTutorialMap() )
