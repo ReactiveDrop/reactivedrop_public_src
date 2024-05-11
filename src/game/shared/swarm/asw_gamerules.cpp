@@ -9442,6 +9442,10 @@ void CAlienSwarm::LevelInitPostEntity()
 	}
 	// todo: if we fail to load the campaign save file above, then gracefully fall into single mission mode?
 
+	// restarting on the first mission of the campaign will not fail outstanding execution
+	if ( GetCampaignSave() && GetCampaignInfo() && GetCampaignInfo()->Missions.Count() > 1 && !V_strcmp( GetCampaignInfo()->Missions[1].MapName, STRING( gpGlobals->mapname ) ) )
+		GetCampaignSave()->m_iNumDeaths = 0;
+
 	m_iOutstandingExecutionStatus = GetOutstandingExecutionStatus();
 
 	// make sure we're on easy mode for the tutorial
