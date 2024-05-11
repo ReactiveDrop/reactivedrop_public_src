@@ -8587,8 +8587,8 @@ int CAlienSwarm::GetOutstandingExecutionStatus(void)
 	if ( GetCampaignInfo()->Missions.Count() > 1 && !V_strcmp( GetCampaignInfo()->Missions[1].MapName, STRING( gpGlobals->mapname ) ) )
 		return 1;
 
-	int iSkill = ASWGameRules()->GetLowestSkillLevelPlayed();
-	if ( iSkill >= 2 && ASWGameRules()->GetCampaignSave() && ASWGameRules()->GetCampaignSave()->m_iNumDeaths <= 0 && ASWGameRules()->GetCampaignSave()->m_iInitialNumMissionsComplete == 0 && !ASWGameRules()->m_bChallengeActiveThisCampaign )
+	int iSkill = GetLowestSkillLevelPlayed();
+	if ( iSkill >= 2 && GetCampaignSave() && GetCampaignSave()->m_iNumDeaths <= 0 && GetCampaignSave()->m_iInitialNumMissionsComplete == 0 && !m_bChallengeActiveThisCampaign )
 		return 1;
 
 	return 0;
