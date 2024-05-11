@@ -56,8 +56,8 @@ public:
 	DECLARE_NETWORKCLASS();
 	DECLARE_DATADESC();
 
-	int m_iSpeedrunTime;
 	int m_iJumpJetType;
+	CNetworkVar( int, m_iSpeedrunTime );
 	CNetworkVar( bool, m_bDisallowCameraRotation );
 	string_t m_szStatsMusicSuccess;
 	string_t m_szStatsMusicFailure;
@@ -292,7 +292,6 @@ public:
 	CASW_Medals m_Medals;
 	int m_iNumGrubs;
 	CHandle<CASW_Debrief_Stats> m_hDebriefStats;
-	int GetSpeedrunTime( void );	
 	int GetJumpJetType( void );
 
 	// voting
@@ -486,11 +485,15 @@ public:
 
 	virtual void OnDataChanged( DataUpdateType_t updateType );
 	unsigned char m_iPreviousGameState;
+
 #endif
 	void FinishDeathmatchRound( CASW_Marine_Resource *winner );
 	CNetworkString( m_szStatsMusicOverride, 128 );
 
 	// misc
+	int GetSpeedrunTime( void );
+	CNetworkVar( int, m_iOutstandingExecutionStatus );
+	int GetOutstandingExecutionStatus( void );
 	virtual void CreateStandardEntities( void );	
 	virtual bool IsMultiplayer();	
 	bool IsOfflineGame();
@@ -503,6 +506,7 @@ public:
 #ifdef GAME_DLL
 	void RunScriptFunctionInListenerScopes( const char *szFunctionName, ScriptVariant_t *pReturn, int nArgs, ScriptVariant_t *pArgs );
 	CUtlMap<string_t, float> m_ActorSpeakingUntil;
+
 #endif
 
 	// mission

@@ -28,6 +28,7 @@ CNB_Mission_Summary::CNB_Mission_Summary( vgui::Panel *parent, const char *name 
 	m_pChallengeLabel = new vgui::Label(this, "ChallengeLabel", "");
 	m_pMissionTitle = new vgui::Label( this, "MissionTitle", "" );
 	m_pMissionLabel = new vgui::Label( this, "MissionLabel", "" );
+	m_pSpeedrunTimeLabel = new vgui::Label( this, "SpeedrunTimeLabel", "" );
 	m_pObjectivesTitle = new vgui::Label( this, "ObjectivesTitle", "" );
 	m_pObjectivesLabel = new vgui::Label( this, "ObjectivesLabel", "" );
 	// == MANAGED_MEMBER_CREATION_END ==
@@ -138,6 +139,16 @@ void CNB_Mission_Summary::OnThink()
 	{
 		m_pMissionLabel->SetText(pMap->m_szMissionTitle);
 	}
+
+	int nSpeedrunTime = ASWGameRules()->GetSpeedrunTime();
+	wchar_t wszSRTime[ 128 ];
+
+	if ( nSpeedrunTime <= 0 )
+		V_snwprintf( wszSRTime, ARRAYSIZE( wszSRTime ), L"-" );
+	else
+		V_snwprintf( wszSRTime, ARRAYSIZE( wszSRTime ), g_pVGuiLocalize->FindSafe( "#nb_speedruntime_format" ), nSpeedrunTime / 60, nSpeedrunTime % 60 );
+
+	m_pSpeedrunTimeLabel->SetText( wszSRTime );
 
 	// compose objectives list
 	wchar_t wszObjectivesBuffer[ 1024 ];
