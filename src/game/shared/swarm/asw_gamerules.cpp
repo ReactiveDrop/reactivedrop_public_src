@@ -864,7 +864,7 @@ BEGIN_NETWORK_TABLE_NOBASE( CAlienSwarm, DT_ASWGameRules )
 		RecvPropInt(RECVINFO(m_nFailAdvice)),
 		RecvPropInt(RECVINFO(m_iMissionDifficulty) ),
 		RecvPropInt(RECVINFO(m_iSkillLevel) ),
-		RecvPropBool(RECVINFO(m_iOutstandingExecutionStatus)),
+		RecvPropInt(RECVINFO(m_iOutstandingExecutionStatus)),
 		RecvPropBool(RECVINFO(m_bVoteStartedIngame) ),
 		RecvPropInt(RECVINFO(m_iCurrentVoteYes) ),
 		RecvPropInt(RECVINFO(m_iCurrentVoteNo) ),
@@ -8581,14 +8581,13 @@ int CAlienSwarm::GetOutstandingExecutionStatus(void)
 #ifdef CLIENT_DLL
 	return ASWGameRules()->m_iOutstandingExecutionStatus;
 #else
-	if ( !GetCampaignInfo() )
+
+	CASW_Campaign_Save *pCampaignSave = GetCampaignSave();
+	if ( !pCampaignSave )
 		return -1;
 
-	if ( GetCampaignInfo()->Missions.Count() > 1 && !V_strcmp( GetCampaignInfo()->Missions[1].MapName, STRING( gpGlobals->mapname ) ) )
-		return 1;
-
 	int iSkill = GetLowestSkillLevelPlayed();
-	if ( iSkill >= 2 && GetCampaignSave() && GetCampaignSave()->m_iNumDeaths <= 0 && GetCampaignSave()->m_iInitialNumMissionsComplete == 0 && !m_bChallengeActiveThisCampaign )
+	if ( iSkill >= 2 && pCampaignSave && pCampaignSave->m_iNumDeaths <= 0 && pCampaignSave->m_iInitialNumMissionsComplete == 0 && !m_bChallengeActiveThisCampaign )
 		return 1;
 
 	return 0;
@@ -9443,8 +9442,10 @@ void CAlienSwarm::LevelInitPostEntity()
 	// todo: if we fail to load the campaign save file above, then gracefully fall into single mission mode?
 
 	// restarting on the first mission of the campaign will not fail outstanding execution
-	if ( GetCampaignSave() && GetCampaignInfo() && GetCampaignInfo()->Missions.Count() > 1 && !V_strcmp( GetCampaignInfo()->Missions[1].MapName, STRING( gpGlobals->mapname ) ) )
-		GetCampaignSave()->m_iNumDeaths = 0;
+	CASW_Campaign_Save *pCampaignSave = GetCampaignSave();
+	const RD_Campaign_t *pCampaignInfo = GetCampaignInfo();
+	if ( pCampaignSave && pCampaignInfo && pCampaignInfo->Missions.Count() > 1 && !V_strcmp( pCampaignInfo->Missions[1].MapName, STRING( gpGlobals->mapname ) ) )
+		pCampaignSave->m_iNumDeaths = 0;
 
 	m_iOutstandingExecutionStatus = GetOutstandingExecutionStatus();
 

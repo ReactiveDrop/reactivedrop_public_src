@@ -486,14 +486,14 @@ public:
 	virtual void OnDataChanged( DataUpdateType_t updateType );
 	unsigned char m_iPreviousGameState;
 
-	CNetworkVar( int, m_iOutstandingExecutionStatus );
-	static int GetOutstandingExecutionStatus( void );
 #endif
 	void FinishDeathmatchRound( CASW_Marine_Resource *winner );
 	CNetworkString( m_szStatsMusicOverride, 128 );
 
 	// misc
-	static int GetSpeedrunTime( void );
+	int GetSpeedrunTime( void );
+	CNetworkVar( int, m_iOutstandingExecutionStatus );
+	int GetOutstandingExecutionStatus( void );
 	virtual void CreateStandardEntities( void );	
 	virtual bool IsMultiplayer();	
 	bool IsOfflineGame();
@@ -507,8 +507,6 @@ public:
 	void RunScriptFunctionInListenerScopes( const char *szFunctionName, ScriptVariant_t *pReturn, int nArgs, ScriptVariant_t *pArgs );
 	CUtlMap<string_t, float> m_ActorSpeakingUntil;
 
-	CNetworkVar( int, m_iOutstandingExecutionStatus );
-	int GetOutstandingExecutionStatus( void );
 #endif
 
 	// mission

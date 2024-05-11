@@ -38,7 +38,6 @@ public:
 	vgui::Label	*m_pMissionTitle;
 	vgui::Label	*m_pMissionLabel;
 	vgui::Label	*m_pSpeedrunTimeLabel;
-	vgui::Label	*m_pOutstandingExecutionLabel;
 	vgui::Label	*m_pObjectivesTitle;
 	vgui::Label	*m_pObjectivesLabel;
 	// == MANAGED_MEMBER_POINTERS_END ==
