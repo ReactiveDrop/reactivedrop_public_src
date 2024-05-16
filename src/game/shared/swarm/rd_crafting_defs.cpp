@@ -274,7 +274,7 @@ void GenerateCraftingMaterialSpawnLocations( CUtlVector<Vector> &spawnLocations 
 		for ( int i = 0; i < nIterations; i++ )
 		{
 			Vector vecStepStart = Lerp( ( i + 0.5f ) / nIterations, vecHintOrigin, vecBestPos ) + Vector( 0.0f, 0.0f, 48.0f );
-			UTIL_TraceHull( vecStepStart, vecStepStart - Vector( 0.0f, 0.0f, 64.0f ), Vector( -12.0f, -12.0f, 0.0f ), Vector( 12.0f, 12.0f, 24.0f ), MASK_PLAYERSOLID, NULL, COLLISION_GROUP_PLAYER_MOVEMENT, &tr );
+			UTIL_TraceHull( vecStepStart, vecStepStart - Vector( 0.0f, 0.0f, 80.0f ), Vector( -12.0f, -12.0f, 0.0f ), Vector( 12.0f, 12.0f, 24.0f ), MASK_PLAYERSOLID, NULL, COLLISION_GROUP_PLAYER_MOVEMENT, &tr );
 
 			if ( tr.startsolid || tr.allsolid || tr.fraction >= 1.0f )
 			{
