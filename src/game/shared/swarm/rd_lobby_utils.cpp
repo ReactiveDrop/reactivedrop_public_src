@@ -693,6 +693,19 @@ bool CReactiveDropServerListHelper::IsHoIAFServer( gameserveritem_t *pDetails ) 
 	return false;
 }
 
+bool CReactiveDropServerListHelper::IsModdedServer( int iServer ) const
+{
+	return IsModdedServer( GetDetails( iServer ) );
+}
+
+bool CReactiveDropServerListHelper::IsModdedServer( gameserveritem_t *pDetails ) const
+{
+	if ( !pDetails )
+		return false;
+
+	return HoIAF()->IsModdedServerIP( netadr_t( pDetails->m_NetAdr.GetIP(), pDetails->m_NetAdr.GetConnectionPort() ) );
+}
+
 bool CReactiveDropServerListHelper::IsVACSecure( int iServer ) const
 {
 	gameserveritem_t *pDetails = GetDetails( iServer );

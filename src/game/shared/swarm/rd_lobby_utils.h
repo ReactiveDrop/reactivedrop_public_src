@@ -130,6 +130,8 @@ public:
 	gameserveritem_t *GetDetails( int iServer ) const;
 	bool IsHoIAFServer( int iServer ) const;
 	bool IsHoIAFServer( gameserveritem_t *pDetails ) const;
+	bool IsModdedServer( int iServer ) const;
+	bool IsModdedServer( gameserveritem_t *pDetails ) const;
 	bool IsVACSecure( int iServer ) const;
 	bool HasPassword( int iServer ) const;
 	int GetPing( int iServer ) const;

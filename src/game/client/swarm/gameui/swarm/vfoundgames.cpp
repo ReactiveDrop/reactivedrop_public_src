@@ -515,6 +515,8 @@ bool FoundGameListItem::Info::SetFromServer( CReactiveDropServerListHelper &help
 			m_Type = FoundGameListItem::TYPE_INSECURESERVER;
 		else if ( helper.IsHoIAFServer( pDetails ) )
 			m_Type = FoundGameListItem::TYPE_RANKEDSERVER;
+		else if ( helper.IsModdedServer( pDetails ) )
+			m_Type = FoundGameListItem::TYPE_MODDEDSERVER;
 	}
 
 	m_ServerIP = pDetails->m_NetAdr;
@@ -770,6 +772,9 @@ void FoundGameListItem::SetGameIndex( const Info& fi )
 		case TYPE_RANKEDSERVER:
 			m_pPnlGamerPic->SetImage( "icon_server_ranked" );
 			break;
+		case TYPE_MODDEDSERVER:
+			m_pPnlGamerPic->SetImage( "icon_server_modded" );
+			break;
 		default:
 			m_pPnlGamerPic->SetVisible( false );
 			break;
@@ -892,6 +897,7 @@ void FoundGameListItem::UpdateTooltip()
 	CHECK_TOOLTIP_OPTION( m_FullInfo.m_Type == TYPE_FAVORITESERVER, "#rd_lobby_tooltip_type_favorite_server_title", "#rd_lobby_tooltip_type_favorite_server_desc" )
 	CHECK_TOOLTIP_OPTION( m_FullInfo.m_Type == TYPE_INSECURESERVER, "#rd_lobby_tooltip_type_insecure_server_title", "#rd_lobby_tooltip_type_insecure_server_desc" )
 	CHECK_TOOLTIP_OPTION( m_FullInfo.m_Type == TYPE_RANKEDSERVER, "#rd_lobby_tooltip_type_ranked_server_title", "#rd_lobby_tooltip_type_ranked_server_desc" )
+	CHECK_TOOLTIP_OPTION( m_FullInfo.m_Type == TYPE_MODDEDSERVER, "#rd_lobby_tooltip_type_modded_title", "#rd_lobby_tooltip_type_modded_desc" )
 	CHECK_TOOLTIP_END()
 
 	CHECK_TOOLTIP_BEGIN( m_pImgDifficulty )
@@ -2416,6 +2422,9 @@ void FoundGames::OnItemSelected( const char *panelName )
 					break;
 				case FoundGameListItem::TYPE_RANKEDSERVER:
 					imgAvatar->SetImage( "icon_server_ranked" );
+					break;
+				case FoundGameListItem::TYPE_MODDEDSERVER:
+					imgAvatar->SetImage( "icon_server_modded" );
 					break;
 				default:
 					imgAvatar->SetVisible( false );

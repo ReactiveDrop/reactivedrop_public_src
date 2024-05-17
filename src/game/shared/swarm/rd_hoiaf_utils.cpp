@@ -74,6 +74,11 @@ bool CRD_HoIAF_System::IsRankedServerIP( uint32_t ip ) const
 	return m_RankedServerIPs.IsValidIndex( m_RankedServerIPs.Find( ip ) );
 }
 
+bool CRD_HoIAF_System::IsModdedServerIP( netadr_t addr ) const
+{
+	return m_ModdedServers.IsValidIndex( m_ModdedServers.Find( addr ) );
+}
+
 bool CRD_HoIAF_System::GetLastUpdateDate( int &year, int &month, int &day ) const
 {
 	int date = m_iLatestPatch;
@@ -698,6 +703,7 @@ void CRD_HoIAF_System::ParseIAFIntel()
 {
 	m_iExpireAt = int64_t( m_pIAFIntel->GetUint64( "expires" ) );
 	m_RankedServerIPs.Purge();
+	m_ModdedServers.Purge();
 	m_iLatestPatch = m_pIAFIntel->GetInt( "latestPatch" );
 	m_FeaturedNews.PurgeAndDeleteElements();
 	m_EventTimers.PurgeAndDeleteElements();
@@ -716,6 +722,11 @@ void CRD_HoIAF_System::ParseIAFIntel()
 		{
 			Assert( pCommand->GetDataType() == KeyValues::TYPE_INT );
 			m_RankedServerIPs.AddToTail( uint32_t( pCommand->GetInt() ) );
+		}
+		else if ( !V_stricmp( szName, "moddedServer" ) )
+		{
+			Assert( pCommand->GetDataType() == KeyValues::TYPE_STRING );
+			m_ModdedServers[m_ModdedServers.AddToTail()].SetFromString( pCommand->GetString() );
 		}
 		else if ( !V_stricmp( szName, "latestPatch" ) )
 		{

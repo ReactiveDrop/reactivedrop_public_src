@@ -3,6 +3,7 @@
 #include "steam/isteamhttp.h"
 #include "steam/isteaminventory.h"
 #include "steam/isteamugc.h"
+#include "netadr.h"
 
 #ifdef CLIENT_DLL
 #include <vgui/VGUI.h>
@@ -64,6 +65,8 @@ public:
 	bool CheckIAFIntelUpToDate();
 	// Checks whether a server IP is in the HoIAF participating server list.
 	bool IsRankedServerIP( uint32_t ip ) const;
+	// Checks whether a server IP and port are known to be modded.
+	bool IsModdedServerIP( netadr_t addr ) const;
 	// Returns the date of the latest release.
 	bool GetLastUpdateDate( int &year, int &month, int &day ) const;
 
@@ -122,6 +125,7 @@ private:
 
 	int64_t m_iExpireAt{};
 	CUtlVector<uint32_t> m_RankedServerIPs;
+	CUtlVector<netadr_t> m_ModdedServers;
 	int m_iLatestPatch{};
 	struct FeaturedNews_t
 	{
