@@ -1627,12 +1627,12 @@ void CBaseModPanel::OnEvent( KeyValues *pEvent )
 			//if (pSysData) KeyValuesDumpAsDevMsg(pSysData, 1, 0);
 
 			KeyValues *pSettings = pSession->GetSessionSettings();
-			if (!pSettings)
+			if ( !pSettings )
 				return;
 
 			//KeyValuesDumpAsDevMsg(pSettings, 1, 0);
 			bool dedicatedServer = false;
-			if (!Q_strcmp(pSettings->GetString("server/server", "lobby"), "dedicated"))
+			if ( !Q_strcmp( pSettings->GetString( "server/server", "lobby" ), "dedicated" ) )
 				dedicatedServer = true;
 
 			KeyValues *pInfoMission = NULL;
@@ -1641,44 +1641,43 @@ void CBaseModPanel::OnEvent( KeyValues *pEvent )
 			bool bValidMission = true;
 
 			IASW_Mission_Chooser_Source *pSource = missionchooser ? missionchooser->LocalMissionSource() : NULL;
-			if (pSource)
+			if ( pSource )
 			{
 				pSource->Think();
-				const char *szCampaignName = pSettings->GetString("game/campaign");
-				const char *szMapName = pSettings->GetString("game/mission");
-				bValidMission = pSource->MissionExists(szMapName, false);
-				if (bValidMission)
+				const char *szCampaignName = pSettings->GetString( "game/campaign" );
+				const char *szMapName = pSettings->GetString( "game/mission" );
+				bValidMission = pSource->MissionExists( szMapName, false );
+				if ( bValidMission )
 				{
-					Msg("Map %s is installed.\n", szMapName);
-					pInfoMission = pSource->GetMissionDetails(szMapName);
-					pInfoChapter = pSource->GetCampaignDetails(szCampaignName);
+					pInfoMission = pSource->GetMissionDetails( szMapName );
+					pInfoChapter = pSource->GetCampaignDetails( szCampaignName );
 				}
 			}
 
 			bool bBlacklisted = false;
-			if (dedicatedServer)
+			if ( dedicatedServer )
 			{
-				const char* pServerAddress = pSettings->GetString("server/adronline", "0.0.0.0:0");
-				if (!m_pServerBlackList)
+				const char *pServerAddress = pSettings->GetString( "server/adronline", "0.0.0.0:0" );
+				if ( !m_pServerBlackList )
 				{
-					if (!LoadBlackListFile(m_pServerBlackList))
+					if ( !LoadBlackListFile( m_pServerBlackList ) )
 					{
-						Msg("Failed to load the server blacklist.\n");
+						Msg( "Failed to load the server blacklist.\n" );
 					}
 				}
-				if (m_pServerBlackList)
+				if ( m_pServerBlackList )
 				{
-					bBlacklisted = IsOnList(pServerAddress, m_pServerBlackList);
-					if (bBlacklisted)
+					bBlacklisted = IsOnList( pServerAddress, m_pServerBlackList );
+					if ( bBlacklisted )
 					{
-						Msg("Server is on the blacklist, disconnecting from %s\n", pServerAddress);
+						Msg( "Server is on the blacklist, disconnecting from %s\n", pServerAddress );
 					}
 				}
 			}
 
 			// If we do not have a valid chapter/mission, then we need to quit
-			if (!bBlacklisted && bValidMission && pInfoChapter && pInfoMission &&
-				(!*pInfoMission->GetName() || pInfoMission->GetInt("version") == pSettings->GetInt("game/missioninfo/version", -1)))
+			if ( !bBlacklisted && bValidMission && pInfoChapter && pInfoMission &&
+				( !*pInfoMission->GetName() || pInfoMission->GetInt( "version", 1 ) == pSettings->GetInt( "game/missioninfo/version", 1 ) ) )
 				return;
 
 			KeyValues *pSettings2 = pSettings->MakeCopy();
@@ -1689,7 +1688,7 @@ void CBaseModPanel::OnEvent( KeyValues *pEvent )
 			CloseAllWindows( CLOSE_POLICY_EVEN_MSGS | CLOSE_POLICY_EVEN_LOADING );
 			OpenFrontScreen();
 
-			if (bBlacklisted)
+			if ( bBlacklisted )
 			{
 				GenericConfirmation::Data_t data;
 
@@ -1697,10 +1696,10 @@ void CBaseModPanel::OnEvent( KeyValues *pEvent )
 				data.pMessageText = "Server is on the blacklist.";
 				data.bOkButtonEnabled = true;
 
-				GenericConfirmation* confirmation =
-					static_cast< GenericConfirmation* >(OpenWindow(WT_GENERICCONFIRMATION, NULL, true));
+				GenericConfirmation *confirmation =
+					static_cast< GenericConfirmation * >( OpenWindow( WT_GENERICCONFIRMATION, NULL, true ) );
 
-				confirmation->SetUsageData(data);
+				confirmation->SetUsageData( data );
 				return;
 			}
 
@@ -1719,10 +1718,9 @@ void CBaseModPanel::OnEvent( KeyValues *pEvent )
 				data.pMessageText = "#L4D360UI_Lobby_MissingContent_Message";
 				data.bOkButtonEnabled = true;
 
-				GenericConfirmation* confirmation = 
-					static_cast< GenericConfirmation* >( OpenWindow( WT_GENERICCONFIRMATION, NULL, true ) );
+				GenericConfirmation *confirmation = static_cast< GenericConfirmation * >( OpenWindow( WT_GENERICCONFIRMATION, NULL, true ) );
 
-				confirmation->SetUsageData(data);
+				confirmation->SetUsageData( data );
 			}
 		}
 		else if ( !Q_stricmp( "progress", szState ) )
