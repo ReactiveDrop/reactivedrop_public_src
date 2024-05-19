@@ -248,6 +248,8 @@ void CASW_Mission_Chooser_Frame::Init( ASW_HOST_TYPE iHostType )
 			CASW_Mission_Chooser_Tab *pChooserList = new CASW_Mission_Chooser_Tab( this, ASW_CHOOSER_TYPE( j ) );
 			m_MainTabs.AddToTail( pChooserList );
 			AddTab( pChooserList );
+
+			break;
 		}
 	}
 
@@ -803,7 +805,7 @@ CASW_Mission_Chooser_Entry::CASW_Mission_Chooser_Entry( TGD_Grid *parent, const 
 	m_iGridIndex = -1;
 
 #ifdef RD_7A_DROPS
-	for ( int i = 0; i < NUM_RD_CRAFTING_MATERIAL_TYPES; i++ )
+	for ( int i = 0; i < NUM_RD_CRAFTING_MATERIAL_RARITIES; i++ )
 	{
 		m_MaterialsPerRarity[i] = 0;
 	}
