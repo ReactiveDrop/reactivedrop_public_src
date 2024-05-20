@@ -1485,8 +1485,7 @@ void C_ASW_Player::OnDataChanged( DataUpdateType_t updateType )
 
 			// This shows a panel where player can select a marine. 
 			// Called after player have joined the game 
-			// TODO check if this is correct
-			if ( !engine->IsPlayingDemo() && ASWGameRules()->GetGameState() == ASW_GS_INGAME )
+			if ( !engine->IsPlayingDemo() && ASWGameRules()->GetGameState() == ASW_GS_INGAME && ASWDeathmatchMode() )
 			{
 				engine->ClientCmd( "cl_select_loadout" );
 			}
@@ -1502,6 +1501,18 @@ void C_ASW_Player::OnDataChanged( DataUpdateType_t updateType )
 			kv->SetInt( "pro", m_iPromotion );
 			engine->ServerCmdKeyValues( kv );		// kv gets deleted in here
 #endif
+
+			if ( ASWGameRules()->GetGameState() == ASW_GS_INGAME && !engine->IsPlayingDemo() )
+			{
+				// we're loading into a game in progress. temporarily block game audio so we don't blow up the player's ears.
+				CLocalPlayerFilter filter;
+				CSoundPatch *pLateJoinMusic = CSoundEnvelopeController::GetController().SoundCreate( filter, 0, "asw_song.LateJoin" );
+				if ( pLateJoinMusic )
+				{
+					CSoundEnvelopeController::GetController().Play( pLateJoinMusic, 1.0f, 100 );
+					CSoundEnvelopeController::GetController().SoundFadeOut( pLateJoinMusic, 5.0f, true );
+				}
+			}
 
 			// tell other players that we're fully connected
 			engine->ServerCmd( "cl_fullyjoined\n" );

@@ -31,6 +31,17 @@
 	"wave"			"*#music/solo/briefing_main.wav"
 }
 
+"asw_song.LateJoin"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.75"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/solo/join_midgame.wav"
+}
+
 "asw_song.Stinger"
 {
 	"channel"		"CHAN_AUTO"
