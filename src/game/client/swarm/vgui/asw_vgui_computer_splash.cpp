@@ -17,7 +17,7 @@
 CASW_VGUI_Computer_Splash::CASW_VGUI_Computer_Splash( vgui::Panel *pParent, const char *pElementName, C_ASW_Hack_Computer* pHackComputer ) 
 :	vgui::Panel( pParent, pElementName ),
 	CASW_VGUI_Ingame_Panel(),
-	m_pHackComputer( pHackComputer )
+	m_hHackComputer( pHackComputer )
 {
 	m_pLogoImage = new vgui::ImagePanel(this, "SplashImage");
 	m_pLogoGlitchImage = new vgui::ImagePanel(this, "SplashImage");
@@ -25,17 +25,17 @@ CASW_VGUI_Computer_Splash::CASW_VGUI_Computer_Splash( vgui::Panel *pParent, cons
 	{
 		m_pSynTekLabel = new vgui::Label(this, "SynTekHeader", "");
 		m_pSloganLabel = new vgui::Label(this, "SloganLabel", g_pVGuiLocalize->Find("#asw_SynTekPDA"));
-		if (m_pHackComputer && m_pHackComputer->GetComputerArea())
+		if (m_hHackComputer.Get() && m_hHackComputer->GetComputerArea() )
 		{
 			// set the label based on PDA name
 			wchar_t wnamebuffer[64];
-			if ( const wchar_t *pwszName = g_pVGuiLocalize->Find( m_pHackComputer->GetComputerArea()->m_PDAName.Get() ) )
+			if ( const wchar_t *pwszName = g_pVGuiLocalize->Find( m_hHackComputer->GetComputerArea()->m_PDAName.Get() ) )
 			{
 				V_wcsncpy( wnamebuffer, pwszName, sizeof( wnamebuffer ) );
 			}
 			else
 			{
-				g_pVGuiLocalize->ConvertANSIToUnicode( m_pHackComputer->GetComputerArea()->m_PDAName.Get(), wnamebuffer, sizeof( wnamebuffer ) );
+				g_pVGuiLocalize->ConvertANSIToUnicode( m_hHackComputer->GetComputerArea()->m_PDAName.Get(), wnamebuffer, sizeof( wnamebuffer ) );
 			}
 			
 			wchar_t wbuffer[256];		
@@ -204,8 +204,8 @@ void CASW_VGUI_Computer_Splash::ApplySchemeSettings(vgui::IScheme *pScheme)
 
 bool CASW_VGUI_Computer_Splash::IsPDA()
 {
-	if (m_pHackComputer && m_pHackComputer->GetComputerArea())
-		return m_pHackComputer->GetComputerArea()->IsPDA();
+	if ( m_hHackComputer.Get() && m_hHackComputer->GetComputerArea() )
+		return m_hHackComputer->GetComputerArea()->IsPDA();
 
 	return false;
 }

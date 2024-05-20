@@ -151,7 +151,7 @@ void CRD_HUD_VScript::OnDataChanged( DataUpdateType_t type )
 		m_pInfectionDeathmatchStats->OnUpdate( this );
 	}
 
-	if ( m_hUpdateFunc != INVALID_HSCRIPT )
+	if ( m_hUpdateFunc != INVALID_HSCRIPT && ShouldCallUpdateFunc() )
 	{
 		g_pScriptVM->Call( m_hUpdateFunc, m_ScriptScope );
 	}

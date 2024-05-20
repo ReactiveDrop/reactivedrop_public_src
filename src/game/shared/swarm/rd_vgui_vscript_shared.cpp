@@ -1,5 +1,6 @@
 #include "cbase.h"
 #include "rd_vgui_vscript_shared.h"
+#include <ctime>
 #ifdef CLIENT_DLL
 #include "c_asw_inhabitable_npc.h"
 #include "c_asw_player.h"
@@ -8,7 +9,7 @@
 #include "inputsystem/iinputsystem.h"
 #include "controller_focus.h"
 #include <vgui_controls/Panel.h>
-#include "prediction.h"
+#include "asw_vgui_ingame_panel.h"
 #include "asw_gamerules.h"
 #else
 #include "asw_inhabitable_npc.h"
@@ -20,108 +21,6 @@
 
 #ifdef CLIENT_DLL
 CUtlVector<CRD_VGui_VScript *> CRD_VGui_VScript::s_InteractiveHUDEntities;
-
-BEGIN_PREDICTION_DATA( CRD_VGui_VScript )
-	DEFINE_PRED_FIELD( m_hDataEntity, FIELD_EHANDLE, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_ARRAY( m_szDataString, FIELD_CHARACTER, 256, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_flDataFloat[0], FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_flDataFloat[1], FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_flDataFloat[2], FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_flDataFloat[3], FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_flDataFloat[4], FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_flDataFloat[5], FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_flDataFloat[6], FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_flDataFloat[7], FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_flDataFloat[8], FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_flDataFloat[9], FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_flDataFloat[10], FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_flDataFloat[11], FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_flDataFloat[12], FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_flDataFloat[13], FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_flDataFloat[14], FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_flDataFloat[15], FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_flDataFloat[16], FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_flDataFloat[17], FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_flDataFloat[18], FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_flDataFloat[19], FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_flDataFloat[20], FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_flDataFloat[21], FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_flDataFloat[22], FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_flDataFloat[23], FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_flDataFloat[24], FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_flDataFloat[25], FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_flDataFloat[26], FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_flDataFloat[27], FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_flDataFloat[28], FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_flDataFloat[29], FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_flDataFloat[30], FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_flDataFloat[31], FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[0], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[1], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[2], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[3], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[4], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[5], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[6], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[7], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[8], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[9], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[10], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[11], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[12], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[13], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[14], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[15], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[16], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[17], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[18], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[19], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[20], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[21], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[22], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[23], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[24], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[25], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[26], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[27], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[28], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[29], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[30], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[31], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[32], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[33], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[34], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[35], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[36], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[37], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[38], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[39], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[40], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[41], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[42], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[43], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[44], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[45], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[46], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[47], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[48], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[49], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[50], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[51], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[52], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[53], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[54], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[55], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[56], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[57], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[58], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[59], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[60], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[61], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[62], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iDataInt[63], FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-	DEFINE_PRED_FIELD( m_iSequenceAck, FIELD_INTEGER, FTYPEDESC_INSENDTABLE | FTYPEDESC_NOERRORCHECK ),
-END_PREDICTION_DATA();
 #else
 LINK_ENTITY_TO_CLASS( rd_vgui_vscript, CRD_VGui_VScript );
 
@@ -161,7 +60,7 @@ BEGIN_ENT_SCRIPTDESC( CRD_VGui_VScript, CRD_HUD_VScript, "Alien Swarm: Reactive 
 END_SCRIPTDESC();
 
 #ifdef CLIENT_DLL
-class CRD_VGui_VScript_Button_Panel : public vgui::Panel
+class CRD_VGui_VScript_Button_Panel : public vgui::Panel, public CASW_VGUI_Ingame_Panel
 {
 	DECLARE_CLASS_SIMPLE( CRD_VGui_VScript_Button_Panel, vgui::Panel );
 public:
@@ -172,7 +71,10 @@ public:
 
 		m_pDef = pDef;
 
-		GetControllerFocus()->AddToFocusList( this );
+		if ( pDef->m_bEnabled )
+			GetControllerFocus()->AddToFocusList( this );
+		else
+			SetVisible( false );
 
 		SetKeyBoardInputEnabled( false );
 	}
@@ -182,7 +84,8 @@ public:
 		Assert( m_pDef->m_hPanel.Get() == this );
 		m_pDef->m_hPanel = NULL;
 
-		GetControllerFocus()->RemoveFromFocusList( this );
+		if ( m_pDef->m_bEnabled )
+			GetControllerFocus()->RemoveFromFocusList( this );
 	}
 
 	void PerformLayout() override
@@ -192,31 +95,30 @@ public:
 		SetBounds( m_pDef->m_x, m_pDef->m_y, m_pDef->m_wide, m_pDef->m_tall );
 	}
 
-	void CursorThink( int x, int y, bool bOverParent )
+	void OnThink() override
 	{
-		int localX = x - m_pDef->m_x;
-		int localY = y - m_pDef->m_y;
+		BaseClass::OnThink();
 
 		bool bLastOver = m_bLastCursorOver;
-		bool bMoved = x != m_iLastX || y != m_iLastY;
-		bool bOver = bOverParent && localX >= 0 && localY >= 0 && localX < m_pDef->m_wide && localY < m_pDef->m_tall;
+		bool bMoved = m_iMouseX != m_iLastX || m_iMouseY != m_iLastY;
 
-		m_iLastX = x;
-		m_iLastY = y;
-		m_bLastCursorOver = bOver;
+		m_iLastX = m_iMouseX;
+		m_iLastY = m_iMouseY;
+		m_bLastCursorOver = m_bMouseIsOver;
 
-		if ( bLastOver && !bOver )
+		if ( bLastOver && !m_bMouseIsOver )
 		{
 			m_pDef->OnCursorExited();
+			m_bDoingClick = false;
 		}
-		else if ( bOver && !bLastOver )
+		else if ( m_bMouseIsOver && !bLastOver )
 		{
 			m_pDef->OnCursorEntered();
 		}
 
-		if ( bMoved && bOver )
+		if ( bMoved && m_bMouseIsOver )
 		{
-			m_pDef->OnCursorMoved( x, y );
+			m_pDef->OnCursorMoved( m_iMouseX, m_iMouseY );
 		}
 	}
 
@@ -225,11 +127,41 @@ public:
 		BaseClass::OnMousePressed( code );
 
 		m_pDef->OnMousePressed( code == MOUSE_RIGHT );
+
+		m_bDoingClick = code == MOUSE_LEFT;
+	}
+
+	void OnMouseReleased( vgui::MouseCode code ) override
+	{
+		BaseClass::OnMouseReleased( code );
+
+		m_pDef->OnMouseReleased( code == MOUSE_RIGHT );
+
+		if ( code == MOUSE_LEFT && m_bDoingClick )
+		{
+			m_pDef->OnClicked();
+		}
+		m_bDoingClick = false;
+	}
+
+	bool MouseClick( int x, int y, bool bRightClick, bool bDown ) override
+	{
+		if ( bDown )
+		{
+			OnMousePressed( bRightClick ? MOUSE_RIGHT : MOUSE_LEFT );
+		}
+		else
+		{
+			OnMouseReleased( bRightClick ? MOUSE_RIGHT : MOUSE_LEFT );
+		}
+
+		return true;
 	}
 
 	CRD_VGui_VScript_Button *m_pDef;
 	int m_iLastX{ 0 }, m_iLastY{ 0 };
 	bool m_bLastCursorOver{ false };
+	bool m_bDoingClick{ false };
 };
 
 static const struct VScriptAllowedButton_t
@@ -262,11 +194,11 @@ CRD_VGui_VScript::CRD_VGui_VScript()
 
 #ifdef CLIENT_DLL
 	s_InteractiveHUDEntities.AddToTail( this );
-	SetPredictionEligible( true );
+	m_iLastSequenceAck = 0;
 	m_iNextSequence = 1;
 #else
 	// random check number to make it slightly harder to write a script that interacts with custom screens directly
-	m_iRandomCheck = RandomInt( 0, INT32_MAX );
+	m_iRandomCheck = std::time( NULL );
 #endif
 }
 
@@ -309,6 +241,29 @@ void CRD_VGui_VScript::SendInput( int value )
 	int sequence = m_iNextSequence++;
 	engine->ServerCmd( VarArgs( "cl_vgui_vscript_input %d %d %d %d\n", entindex(), m_iRandomCheck.Get(), sequence, value ) );
 	m_QueuedInputsForPrediction.AddToTail( QueuedInput_t{ sequence, value } );
+
+	// temporarily pop out of control so we can run the predicted input and update
+	m_bIsControlling = false;
+
+	if ( m_hInputFunc != INVALID_HSCRIPT )
+	{
+		Assert( !m_bIsPredicting );
+		Assert( !m_bIsInput );
+		m_bIsPredicting = true;
+		m_bIsInput = true;
+
+		g_pScriptVM->Call( m_hInputFunc, m_ScriptScope, true, NULL, value );
+
+		m_bIsPredicting = false;
+		m_bIsInput = false;
+	}
+
+	if ( m_hUpdateFunc != INVALID_HSCRIPT )
+	{
+		g_pScriptVM->Call( m_hUpdateFunc, m_ScriptScope );
+	}
+
+	m_bIsControlling = true;
 }
 
 void CRD_VGui_VScript::SetEntity( int i, HSCRIPT entity )
@@ -325,7 +280,7 @@ void CRD_VGui_VScript::SetEntity( int i, HSCRIPT entity )
 		return;
 	}
 
-	m_hDataEntity.Set( ToEnt( entity ) );
+	m_hPredictedEntity = ToEnt( entity );
 }
 
 void CRD_VGui_VScript::SetInt( int i, int value )
@@ -336,13 +291,13 @@ void CRD_VGui_VScript::SetInt( int i, int value )
 		return;
 	}
 
-	if ( i < 0 || i >= m_iDataInt.Count() )
+	if ( i < 0 || i >= NELEMS( m_iPredictedInt ) )
 	{
 		Warning( "Integer index %d is not allowed for %s (%s)\n", i, GetDebugClassname(), STRING( m_szClientVScript.Get() ) );
 		return;
 	}
 
-	m_iDataInt.Set( i, value );
+	m_iPredictedInt[i] = value;
 }
 
 void CRD_VGui_VScript::SetFloat( int i, float value )
@@ -353,13 +308,13 @@ void CRD_VGui_VScript::SetFloat( int i, float value )
 		return;
 	}
 
-	if ( i < 0 || i >= m_flDataFloat.Count() )
+	if ( i < 0 || i >= NELEMS( m_flPredictedFloat ) )
 	{
 		Warning( "Float index %d is not allowed for %s (%s)\n", i, GetDebugClassname(), STRING( m_szClientVScript.Get() ) );
 		return;
 	}
 
-	m_flDataFloat.Set( i, value );
+	m_flPredictedFloat[i] = value;
 }
 
 void CRD_VGui_VScript::SetString( int i, const char *string )
@@ -376,10 +331,51 @@ void CRD_VGui_VScript::SetString( int i, const char *string )
 		return;
 	}
 
-	if ( V_strcmp( m_szDataString.Get(), string ) )
+	V_strncpy( m_szPredictedString, string, sizeof( m_szPredictedString ) );
+}
+
+HSCRIPT CRD_VGui_VScript::GetEntity( int i ) const
+{
+	if ( i != 0 )
 	{
-		V_strncpy( m_szDataString.GetForModify(), string, sizeof( m_szDataString ) );
+		Warning( "Entity index %d is not allowed for %s (%s)\n", i, GetDebugClassname(), STRING( m_szClientVScript.Get() ) );
+		return NULL;
 	}
+
+	return ToHScript( m_hPredictedEntity.Get() );
+}
+
+int CRD_VGui_VScript::GetInt( int i ) const
+{
+	if ( i < 0 || i >= NELEMS( m_iPredictedInt ) )
+	{
+		Warning( "Integer index %d is not allowed for %s (%s)\n", i, GetDebugClassname(), STRING( m_szClientVScript.Get() ) );
+		return 0;
+	}
+
+	return m_iPredictedInt[i];
+}
+
+float CRD_VGui_VScript::GetFloat( int i ) const
+{
+	if ( i < 0 || i >= NELEMS( m_flPredictedFloat ) )
+	{
+		Warning( "Float index %d is not allowed for %s (%s)\n", i, GetDebugClassname(), STRING( m_szClientVScript.Get() ) );
+		return 0.0f;
+	}
+
+	return m_flPredictedFloat[i];
+}
+
+const char *CRD_VGui_VScript::GetString( int i ) const
+{
+	if ( i != 0 )
+	{
+		Warning( "String index %d is not allowed for %s (%s)\n", i, GetDebugClassname(), STRING( m_szClientVScript.Get() ) );
+		return "";
+	}
+
+	return m_szPredictedString;
 }
 
 void CRD_VGui_VScript::OnDataChanged( DataUpdateType_t type )
@@ -403,13 +399,23 @@ void CRD_VGui_VScript::OnDataChanged( DataUpdateType_t type )
 			Warning( "%s (%s) does not have an Input function in its client script scope. (This function should match on the client and the server.)\n", GetDebugClassname(), STRING( m_szClientVScript.Get() ) );
 		}
 	}
-}
 
-bool CRD_VGui_VScript::ShouldPredict()
-{
-	C_BasePlayer *pOwner = GetPredictionOwner();
+	if ( type == DATA_UPDATE_CREATED )
+	{
+		Assert( m_QueuedInputsForPrediction.Count() == 0 );
+		m_QueuedInputsForPrediction.Purge();
 
-	return pOwner && pOwner->IsLocalPlayer();
+		ResetPrediction();
+	}
+	else if ( m_iLastSequenceAck != m_iSequenceAck )
+	{
+		ResetPrediction();
+	}
+
+	if ( m_hUpdateFunc != INVALID_HSCRIPT )
+	{
+		g_pScriptVM->Call( m_hUpdateFunc, m_ScriptScope );
+	}
 }
 
 C_BasePlayer *CRD_VGui_VScript::GetPredictionOwner()
@@ -421,9 +427,16 @@ C_BasePlayer *CRD_VGui_VScript::GetPredictionOwner()
 	return pInteracter->GetCommander();
 }
 
-void CRD_VGui_VScript::PhysicsSimulate()
+void CRD_VGui_VScript::ResetPrediction()
 {
-	if ( ShouldPredict() && m_QueuedInputsForPrediction.Count() && m_hInputFunc && m_hInputFunc != INVALID_HSCRIPT && ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME )
+	m_hPredictedEntity = m_hDataEntity;
+	V_memcpy( &m_szPredictedString, &m_szDataString, sizeof( m_szPredictedString ) );
+	V_memcpy( &m_flPredictedFloat, &m_flDataFloat, sizeof( m_flPredictedFloat ) );
+	V_memcpy( &m_iPredictedInt, &m_iDataInt, sizeof( m_iPredictedInt ) );
+	m_iLastSequenceAck = m_iSequenceAck;
+
+	HACK_GETLOCALPLAYER_GUARD( "need to know whether we control the screen" );
+	if ( AllowedToInteract() && ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME && m_QueuedInputsForPrediction.Count() && m_hInputFunc && m_hInputFunc != INVALID_HSCRIPT )
 	{
 		Assert( !m_bIsPredicting );
 		Assert( !m_bIsInput );
@@ -445,14 +458,7 @@ void CRD_VGui_VScript::PhysicsSimulate()
 
 		m_bIsPredicting = false;
 		m_bIsInput = false;
-
-		if ( m_QueuedInputsForPrediction.Count() && m_hUpdateFunc && m_hUpdateFunc != INVALID_HSCRIPT )
-		{
-			g_pScriptVM->Call( m_hUpdateFunc, m_ScriptScope );
-		}
 	}
-
-	BaseClass::PhysicsSimulate();
 }
 
 bool CRD_VGui_VScript::AllowedToInteract()
@@ -585,14 +591,6 @@ void CRD_VGui_VScript::ClearButtonPanels()
 	m_ButtonPanels.Purge();
 }
 
-void CRD_VGui_VScript::CursorThink( int x, int y, bool bOverParent )
-{
-	FOR_EACH_VEC( m_ButtonPanels, i )
-	{
-		assert_cast< CRD_VGui_VScript_Button_Panel * >( m_ButtonPanels[i].Get() )->CursorThink( x, y, bOverParent );
-	}
-}
-
 HSCRIPT CRD_VGui_VScript::CreateButton()
 {
 	CRD_VGui_VScript_Button *pButton = new CRD_VGui_VScript_Button( this );
@@ -669,6 +667,7 @@ BEGIN_SCRIPTDESC_ROOT( CRD_VGui_VScript_Button, "Alien Swarm: Reactive Drop scri
 	DEFINE_SCRIPTFUNC( GetY, "Gets the x position of the button." )
 	DEFINE_SCRIPTFUNC( GetWide, "Gets the width of the button." )
 	DEFINE_SCRIPTFUNC( GetTall, "Gets the height of the button." )
+	DEFINE_SCRIPTFUNC( IsEnabled, "Returns true if this button exists within the screen." )
 	DEFINE_SCRIPTFUNC( SetX, "Sets the y position of the button." )
 	DEFINE_SCRIPTFUNC( SetY, "Sets the y position of the button." )
 	DEFINE_SCRIPTFUNC( SetWide, "Sets the width of the button." )
@@ -676,6 +675,8 @@ BEGIN_SCRIPTDESC_ROOT( CRD_VGui_VScript_Button, "Alien Swarm: Reactive Drop scri
 	DEFINE_SCRIPTFUNC( SetPos, "Sets the x and y position of the button." )
 	DEFINE_SCRIPTFUNC( SetSize, "Sets the width and height of the button." )
 	DEFINE_SCRIPTFUNC( SetBounds, "Sets the x and y position and width and height of the button." )
+	DEFINE_SCRIPTFUNC( SetEnabled, "Sets whether the button exists within the screen." )
+	DEFINE_SCRIPTFUNC( SetOnClicked, "Sets a function that will be called when the button is clicked, either by the mouse or the controller." )
 	DEFINE_SCRIPTFUNC( SetOnCursorMoved, "Sets a function that will be called when the cursor is moved over this button." )
 	DEFINE_SCRIPTFUNC( SetOnCursorEntered, "Sets a function that will be called when the cursor moves onto this button." )
 	DEFINE_SCRIPTFUNC( SetOnCursorExited, "Sets a function that will be called when the cursor moves off of this button." )
@@ -690,10 +691,29 @@ CRD_VGui_VScript_Button::CRD_VGui_VScript_Button( CRD_VGui_VScript *pOwner )
 	m_y = 0;
 	m_wide = YRES( 30 );
 	m_tall = YRES( 10 );
+	m_bEnabled = true;
 }
 
 CRD_VGui_VScript_Button::~CRD_VGui_VScript_Button()
 {
+#define RELEASE_CALLBACK( hCallback ) \
+	if ( hCallback && hCallback != INVALID_HSCRIPT ) \
+	{ \
+		ScriptVariant_t ref; \
+		ref = hCallback; \
+		g_pScriptVM->ReleaseValue( ref ); \
+		hCallback = INVALID_HSCRIPT; \
+	}
+
+	RELEASE_CALLBACK( m_hClickedCallback );
+	RELEASE_CALLBACK( m_hCursorMovedCallback );
+	RELEASE_CALLBACK( m_hCursorEnteredCallback );
+	RELEASE_CALLBACK( m_hCursorExitedCallback );
+	RELEASE_CALLBACK( m_hMousePressedCallback );
+	RELEASE_CALLBACK( m_hMouseReleasedCallback );
+
+#undef RELEASE_CALLBACK
+
 	if ( m_hThis )
 	{
 		g_pScriptVM->RemoveInstance( m_hThis );
@@ -731,6 +751,36 @@ void CRD_VGui_VScript_Button::SetTall( int tall )
 
 	if ( m_hPanel )
 		m_hPanel->InvalidateLayout();
+}
+
+void CRD_VGui_VScript_Button::SetEnabled( bool bEnabled )
+{
+	if ( m_bEnabled == bEnabled )
+		return;
+
+	m_bEnabled = bEnabled;
+
+	if ( m_hPanel )
+	{
+		m_hPanel->SetVisible( bEnabled );
+
+		if ( bEnabled )
+			GetControllerFocus()->AddToFocusList( m_hPanel );
+		else
+			GetControllerFocus()->RemoveFromFocusList( m_hPanel );
+
+		m_hPanel->InvalidateLayout();
+	}
+}
+
+void CRD_VGui_VScript_Button::SetOnClicked( HSCRIPT callback )
+{
+	char buf[256];
+	g_pScriptVM->GenerateUniqueKey( "ButtonOnClicked", buf, sizeof( buf ) );
+	g_pScriptVM->SetValue( m_pOwner->m_ScriptScope, buf, callback );
+	ScriptVariant_t ref;
+	g_pScriptVM->GetValue( m_pOwner->m_ScriptScope, buf, &ref );
+	m_hClickedCallback = ref;
 }
 
 void CRD_VGui_VScript_Button::SetOnCursorMoved( HSCRIPT callback )
@@ -771,6 +821,27 @@ void CRD_VGui_VScript_Button::SetOnMousePressed( HSCRIPT callback )
 	ScriptVariant_t ref;
 	g_pScriptVM->GetValue( m_pOwner->m_ScriptScope, buf, &ref );
 	m_hMousePressedCallback = ref;
+}
+
+void CRD_VGui_VScript_Button::SetOnMouseReleased( HSCRIPT callback )
+{
+	char buf[256];
+	g_pScriptVM->GenerateUniqueKey( "ButtonOnMouseReleased", buf, sizeof( buf ) );
+	g_pScriptVM->SetValue( m_pOwner->m_ScriptScope, buf, callback );
+	ScriptVariant_t ref;
+	g_pScriptVM->GetValue( m_pOwner->m_ScriptScope, buf, &ref );
+	m_hMouseReleasedCallback = ref;
+}
+
+void CRD_VGui_VScript_Button::OnClicked()
+{
+	if ( !m_hClickedCallback || m_hClickedCallback == INVALID_HSCRIPT )
+		return;
+
+	Assert( !m_pOwner->m_bIsControlling );
+	m_pOwner->m_bIsControlling = true;
+	g_pScriptVM->Call( m_hClickedCallback, m_pOwner->m_ScriptScope );
+	m_pOwner->m_bIsControlling = false;
 }
 
 void CRD_VGui_VScript_Button::OnCursorMoved( int x, int y )
@@ -823,6 +894,17 @@ void CRD_VGui_VScript_Button::OnMousePressed( bool right )
 	Assert( !m_pOwner->m_bIsControlling );
 	m_pOwner->m_bIsControlling = true;
 	g_pScriptVM->Call( m_hMousePressedCallback, m_pOwner->m_ScriptScope, true, NULL, right );
+	m_pOwner->m_bIsControlling = false;
+}
+
+void CRD_VGui_VScript_Button::OnMouseReleased( bool right )
+{
+	if ( !m_hMouseReleasedCallback || m_hMouseReleasedCallback == INVALID_HSCRIPT )
+		return;
+
+	Assert( !m_pOwner->m_bIsControlling );
+	m_pOwner->m_bIsControlling = true;
+	g_pScriptVM->Call( m_hMouseReleasedCallback, m_pOwner->m_ScriptScope, true, NULL, right );
 	m_pOwner->m_bIsControlling = false;
 }
 #endif

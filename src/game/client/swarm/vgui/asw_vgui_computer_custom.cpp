@@ -14,6 +14,13 @@ CASW_VGUI_Computer_Custom::CASW_VGUI_Computer_Custom( vgui::Panel *pParent, cons
 	m_hHackComputer( pHackComputer ),
 	m_hCustom( pCustom )
 {
+	m_bInitialized = false;
+
+	CASW_VGUI_Computer_Frame *pComputerFrame = dynamic_cast< CASW_VGUI_Computer_Frame * >( GetClientMode()->GetPanelFromViewport( "ComputerContainer/VGUIComputerFrame" ) );
+	if ( pComputerFrame )
+	{
+		pComputerFrame->m_bHideLogoffButton = true;
+	}
 }
 
 CASW_VGUI_Computer_Custom::~CASW_VGUI_Computer_Custom()
@@ -23,10 +30,18 @@ CASW_VGUI_Computer_Custom::~CASW_VGUI_Computer_Custom()
 	{
 		pComputerFrame->m_bHideLogoffButton = false;
 	}
+
+	if ( m_bInitialized )
+	{
+		ASWClose();
+	}
 }
 
 void CASW_VGUI_Computer_Custom::ASWInit()
 {
+	Assert( !m_bInitialized );
+	m_bInitialized = true;
+
 	if ( C_RD_Computer_VScript *pCustom = m_hCustom )
 	{
 		pCustom->OnOpened( C_ASW_Marine::GetViewMarine() );
@@ -36,6 +51,9 @@ void CASW_VGUI_Computer_Custom::ASWInit()
 
 void CASW_VGUI_Computer_Custom::ASWClose()
 {
+	Assert( m_bInitialized );
+	m_bInitialized = false;
+
 	if ( C_RD_Computer_VScript *pCustom = m_hCustom )
 	{
 		pCustom->OnClosed();
@@ -58,9 +76,6 @@ void CASW_VGUI_Computer_Custom::OnThink()
 
 	if ( C_RD_Computer_VScript *pCustom = m_hCustom )
 	{
-		int x = m_iMouseX, y = m_iMouseY;
-		ScreenToLocal( x, y );
-		pCustom->CursorThink( x, y, m_bMouseIsOver );
 		pCustom->RunControlFunction();
 	}
 }
@@ -81,7 +96,7 @@ bool CASW_VGUI_Computer_Custom::MouseClick( int x, int y, bool bRightClick, bool
 	{
 		if ( bDown )
 		{
-			pCustom->InterceptButtonPress( bRightClick ? MOUSE_RIGHT : MOUSE_LEFT );
+			return pCustom->InterceptButtonPress( bRightClick ? MOUSE_RIGHT : MOUSE_LEFT );
 		}
 	}
 

@@ -16,7 +16,6 @@ class CRD_VGui_VScript : public CRD_HUD_VScript
 {
 	DECLARE_CLASS( CRD_VGui_VScript, CRD_HUD_VScript );
 public:
-	DECLARE_PREDICTABLE();
 	DECLARE_NETWORKCLASS();
 	DECLARE_ENT_SCRIPTDESC();
 
@@ -32,13 +31,18 @@ public:
 	void SetFloat( int i, float value );
 	void SetString( int i, const char *string );
 
+	HSCRIPT GetEntity( int i ) const override;
+	int GetInt( int i ) const override;
+	float GetFloat( int i ) const override;
+	const char *GetString( int i ) const override;
+
 	ScriptVariant_t m_hControlTable;
 	HSCRIPT m_hControlFunc{ INVALID_HSCRIPT };
 
 	void OnDataChanged( DataUpdateType_t type ) override;
-	bool ShouldPredict() override;
+	bool ShouldCallUpdateFunc() const override { return false; } // handled after prediction runs
 	C_BasePlayer *GetPredictionOwner() override;
-	void PhysicsSimulate() override;
+	void ResetPrediction();
 	virtual bool AllowedToInteract();
 	virtual bool InterceptButtonPress( ButtonCode_t iButton );
 	virtual void RunControlFunction( ButtonCode_t iButton = BUTTON_CODE_NONE );
@@ -52,13 +56,18 @@ public:
 	CUtlVector<QueuedInput_t> m_QueuedInputsForPrediction;
 	int m_iNextSequence;
 
+	EHANDLE m_hPredictedEntity;
+	char m_szPredictedString[NELEMS( m_szDataString )];
+	float m_flPredictedFloat[NELEMS( m_flDataFloat )];
+	int m_iPredictedInt[NELEMS( m_iDataInt )];
+	int m_iLastSequenceAck;
+
 	CUtlVectorAutoPurge<CRD_VGui_VScript_Button *> m_ButtonDefs;
 	CUtlVector<vgui::DHANDLE<CRD_VGui_VScript_Button_Panel>> m_ButtonPanels;
 	vgui::PHandle m_hButtonPanelParent;
 	int m_iControllerFocusIndex{ -1 };
 	void InitButtonPanels( vgui::Panel *pParent );
 	void ClearButtonPanels();
-	void CursorThink( int x, int y, bool bOverParent );
 	HSCRIPT CreateButton();
 
 	bool m_bIsControlling{ false };
@@ -97,6 +106,7 @@ public:
 	int GetY() const { return m_y; }
 	int GetWide() const { return m_wide; }
 	int GetTall() const { return m_tall; }
+	bool IsEnabled() const { return m_bEnabled; }
 	void SetX( int x);
 	void SetY(int y);
 	void SetWide( int wide );
@@ -104,24 +114,32 @@ public:
 	void SetPos( int x, int y ) { SetX( x ); SetY( y ); }
 	void SetSize( int wide, int tall ) { SetWide( wide ); SetTall( tall ); }
 	void SetBounds( int x, int y, int wide, int tall ) { SetPos( x, y ); SetSize( wide, tall ); }
+	void SetEnabled( bool bEnabled );
+	void SetOnClicked( HSCRIPT callback );
 	void SetOnCursorMoved( HSCRIPT callback );
 	void SetOnCursorEntered( HSCRIPT callback );
 	void SetOnCursorExited( HSCRIPT callback );
 	void SetOnMousePressed( HSCRIPT callback );
+	void SetOnMouseReleased( HSCRIPT callback );
 
 	// callbacks
+	void OnClicked();
 	void OnCursorMoved( int x, int y );
 	void OnCursorEntered();
 	void OnCursorExited();
 	void OnMousePressed( bool right );
+	void OnMouseReleased( bool right );
 
 	HSCRIPT m_hThis;
 	CRD_VGui_VScript *m_pOwner;
 	int m_x, m_y, m_wide, m_tall;
+	bool m_bEnabled;
 	vgui::DHANDLE<CRD_VGui_VScript_Button_Panel> m_hPanel;
+	HSCRIPT m_hClickedCallback{ INVALID_HSCRIPT };
 	HSCRIPT m_hCursorMovedCallback{ INVALID_HSCRIPT };
 	HSCRIPT m_hCursorEnteredCallback{ INVALID_HSCRIPT };
 	HSCRIPT m_hCursorExitedCallback{ INVALID_HSCRIPT };
 	HSCRIPT m_hMousePressedCallback{ INVALID_HSCRIPT };
+	HSCRIPT m_hMouseReleasedCallback{ INVALID_HSCRIPT };
 };
 #endif

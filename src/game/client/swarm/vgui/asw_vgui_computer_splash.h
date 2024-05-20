@@ -20,7 +20,7 @@ class CASW_VGUI_Computer_Splash : public vgui::Panel, public CASW_VGUI_Ingame_Pa
 {
 	DECLARE_CLASS_SIMPLE( CASW_VGUI_Computer_Splash, vgui::Panel );
 
-	CASW_VGUI_Computer_Splash( vgui::Panel *pParent, const char *pElementName, C_ASW_Hack_Computer* pHackDoor );
+	CASW_VGUI_Computer_Splash( vgui::Panel *pParent, const char *pElementName, C_ASW_Hack_Computer *pHackComputer );
 	virtual ~CASW_VGUI_Computer_Splash();
 	
 	virtual void ApplySchemeSettings(vgui::IScheme *pScheme);
@@ -32,7 +32,7 @@ class CASW_VGUI_Computer_Splash : public vgui::Panel, public CASW_VGUI_Ingame_Pa
 	bool IsPDA();
 
 	// current computer hack
-	C_ASW_Hack_Computer* m_pHackComputer;
+	CHandle<C_ASW_Hack_Computer> m_hHackComputer;
 
 	vgui::ImagePanel *m_pLogoImage;
 	vgui::ImagePanel *m_pLogoGlitchImage;

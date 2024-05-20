@@ -21,6 +21,7 @@ public:
 	void OnDataChanged( DataUpdateType_t type ) override;
 	void OnSetDormant( bool bDormant ) override;
 	virtual void Paint();
+	virtual bool ShouldCallUpdateFunc() const { return true; }
 
 	int Script_LookupTexture( const char *name );
 	int Script_LookupFont( const char *name );
@@ -56,10 +57,10 @@ public:
 	CNetworkVar( string_t, m_szClientVScript );
 #endif
 
-	HSCRIPT GetEntity( int i ) const;
-	int GetInt( int i ) const;
-	float GetFloat( int i ) const;
-	const char *GetString( int i ) const;
+	virtual HSCRIPT GetEntity( int i ) const;
+	virtual int GetInt( int i ) const;
+	virtual float GetFloat( int i ) const;
+	virtual const char *GetString( int i ) const;
 
 	virtual const char *GetDebugClassname() const { return "rd_hud_vscript"; }
 

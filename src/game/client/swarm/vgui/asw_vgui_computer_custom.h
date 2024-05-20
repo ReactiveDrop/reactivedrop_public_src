@@ -26,6 +26,8 @@ public:
 
 	// overall scale of this window
 	float m_fScale;
+
+	bool m_bInitialized;
 };
 
 #endif /* _INCLUDED_ASW_VGUI_COMPUTER_CUSTOM_H */

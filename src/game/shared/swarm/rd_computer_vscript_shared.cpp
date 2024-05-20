@@ -5,9 +5,15 @@
 #ifdef CLIENT_DLL
 #include "c_asw_inhabitable_npc.h"
 #include "c_asw_hack_computer.h"
+#include "c_asw_computer_area.h"
+#include "asw_vgui_computer_frame.h"
+#include "asw_vgui_computer_menu.h"
+#include "asw_vgui_computer_custom.h"
+#define CASW_Computer_Area C_ASW_Computer_Area
 #else
-#include "asw_inhabitable_npc.h"
+#include "asw_marine.h"
 #include "asw_hack_computer.h"
+#include "asw_computer_area.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -111,8 +117,20 @@ void CRD_Computer_VScript::RunVScripts()
 
 void CRD_Computer_VScript::HackCompleted()
 {
-	// TODO
-	DebuggerBreakIfDebugging();
+	Assert( m_hHack );
+	if ( !m_hHack )
+		return;
+
+	CASW_Computer_Area *pArea = m_hHack->GetComputerArea();
+	Assert( pArea );
+	if ( !pArea )
+		return;
+
+	Assert( pArea->m_hCustomHack.Get() == this );
+	if ( pArea->m_hCustomHack.Get() != this )
+		return;
+
+	m_hHack->OnHackUnlocked( CASW_Marine::AsMarine( m_hInteracter ) );
 }
 #endif
 
@@ -149,8 +167,91 @@ void CRD_Computer_VScript::OnClosed()
 
 void CRD_Computer_VScript::Back()
 {
-	// TODO
-	DebuggerBreakIfDebugging();
+	Assert( m_hHack.Get() );
+	if ( !m_hHack.Get() )
+		return;
+
+	CASW_Computer_Area *pArea = m_hHack->GetComputerArea();
+	Assert( pArea );
+	if ( !pArea )
+		return;
+
+#ifdef CLIENT_DLL
+	CASW_VGUI_Computer_Frame *pFrame = m_hHack->m_hComputerFrame;
+	Assert( pFrame );
+	if ( !pFrame )
+		return;
+
+	Assert( pFrame->m_pMenuPanel );
+	if ( !pFrame->m_pMenuPanel )
+		return;
+
+	CASW_VGUI_Computer_Custom *pCustom = dynamic_cast< CASW_VGUI_Computer_Custom * >( pFrame->m_pMenuPanel->m_hCurrentPage.Get() );
+	Assert( pCustom );
+	if ( !pCustom )
+		return;
+
+	Assert( pCustom->m_hCustom.Get() == this );
+	if ( pCustom->m_hCustom.Get() != this )
+		return;
+
+	if ( pArea->IsLocked() )
+	{
+		C_ASW_Player::GetLocalASWPlayer()->StopUsing();
+	}
+	else
+	{
+		pFrame->m_pMenuPanel->FadeCurrentPage();
+	}
+#else
+	if ( pArea->m_bIsLocked )
+	{
+		Assert( pArea->m_hCustomHack.Get() == this );
+		if ( pArea->m_hCustomHack.Get() != this )
+			return;
+
+		pArea->m_flStopUsingTime = gpGlobals->curtime;
+		return;
+	}
+
+	switch ( m_hHack->GetOptionTypeForEntry( m_hHack->m_iShowOption ) )
+	{
+	case ASW_COMPUTER_OPTION_TYPE_CUSTOM_1:
+		Assert( pArea->m_hCustomScreen1.Get() == this );
+		if ( pArea->m_hCustomScreen1.Get() != this )
+			return;
+		break;
+	case ASW_COMPUTER_OPTION_TYPE_CUSTOM_2:
+		Assert( pArea->m_hCustomScreen2.Get() == this );
+		if ( pArea->m_hCustomScreen2.Get() != this )
+			return;
+		break;
+	case ASW_COMPUTER_OPTION_TYPE_CUSTOM_3:
+		Assert( pArea->m_hCustomScreen3.Get() == this );
+		if ( pArea->m_hCustomScreen3.Get() != this )
+			return;
+		break;
+	case ASW_COMPUTER_OPTION_TYPE_CUSTOM_4:
+		Assert( pArea->m_hCustomScreen4.Get() == this );
+		if ( pArea->m_hCustomScreen4.Get() != this )
+			return;
+		break;
+	case ASW_COMPUTER_OPTION_TYPE_CUSTOM_5:
+		Assert( pArea->m_hCustomScreen5.Get() == this );
+		if ( pArea->m_hCustomScreen5.Get() != this )
+			return;
+		break;
+	case ASW_COMPUTER_OPTION_TYPE_CUSTOM_6:
+		Assert( pArea->m_hCustomScreen6.Get() == this );
+		if ( pArea->m_hCustomScreen6.Get() != this )
+			return;
+		break;
+	default:
+		return;
+	}
+
+	m_hHack->SelectHackOption( 0 );
+#endif
 }
 
 void CRD_Computer_VScript::SetHackProgress( float flProgress )
