@@ -1,6 +1,7 @@
 #include "cbase.h"
 #include "asw_computer_area.h"
 #include "asw_computer_area_shared.h"
+#include "eventqueue.h"
 #include "asw_player.h"
 #include "asw_marine.h"
 #include "asw_marine_profile.h"
@@ -283,6 +284,17 @@ void CASW_Computer_Area::Spawn( void )
 	UpdateWaitingForInput();
 	UpdatePanelSkin();
 	UpdateLockedScreensBits();
+
+	if ( m_DownloadObjectiveName[0] != '\0' )
+	{
+		variant_t value;
+		value.SetInt( 0 );
+		g_EventQueue.AddEvent( m_DownloadObjectiveName, "SetProgress", value, 0.0f, this, this );
+		value.SetInt( Ceil2Int( m_fDownloadTime ) );
+		g_EventQueue.AddEvent( m_DownloadObjectiveName, "SetMaxProgress", value, 0.0f, this, this );
+		value.SetBool( true );
+		g_EventQueue.AddEvent( m_DownloadObjectiveName, "SetShowPercentage", value, 0.0f, this, this );
+	}
 }
 
 void CASW_Computer_Area::Precache()
@@ -497,13 +509,13 @@ void CASW_Computer_Area::NPCUsing( CASW_Inhabitable_NPC *pNPC, float deltatime )
 		return;
 	}
 
+	float flOldHackProgress = m_fDownloadProgress;
 	if ( asw_simple_hacking.GetBool() || !pMarine->IsInhabited() )
 	{
 		// TODO: handle m_bDownloadLocked for AI marines
 		// TODO: handle simple hack timing for locked computers with no download
 		if ( m_bIsInUse && ( m_bIsLocked || ( m_DownloadObjectiveName.Get()[0] != '\0' && GetDownloadProgress() < 1.0f ) ) )
 		{
-			float flOldHackProgress = m_fDownloadProgress;
 			float fTime = deltatime / ( MAX( m_bIsLocked ? m_iHackLevel : 1, 1 ) / asw_ai_computer_hacking_scale.GetFloat() + MAX( m_DownloadObjectiveName.Get()[0] != '\0' ? m_fDownloadTime : 0, 0 ) / asw_ai_computer_data_download_scale.GetFloat() );
 			// boost fTime by the marine's hack skill
 			fTime *= MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_HACKING, ASW_MARINE_SUBSKILL_HACKING_SPEED_SCALE );
@@ -582,6 +594,20 @@ void CASW_Computer_Area::NPCUsing( CASW_Inhabitable_NPC *pNPC, float deltatime )
 			pMarine->StopUsing();
 			m_flStopUsingTime = 0.0f;
 		}
+	}
+
+	if ( m_DownloadObjectiveName[0] != '\0' && ( m_fDownloadProgress == 1.0f && flOldHackProgress != 1.0f ) || Floor2Int( m_fDownloadProgress * m_fDownloadTime ) != Floor2Int( flOldHackProgress * m_fDownloadTime ) )
+	{
+		variant_t value;
+		if ( m_fDownloadProgress == 1.0f )
+		{
+			value.SetInt( Ceil2Int( m_fDownloadTime ) );
+		}
+		else
+		{
+			value.SetInt( Floor2Int( m_fDownloadProgress * m_fDownloadTime ) );
+		}
+		g_EventQueue.AddEvent( m_DownloadObjectiveName, "SetProgress", value, 0.0f, this, this );
 	}
 }
 
