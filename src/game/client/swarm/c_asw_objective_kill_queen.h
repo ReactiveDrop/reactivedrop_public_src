@@ -12,16 +12,13 @@ public:
 	DECLARE_CLASS( C_ASW_Objective_Kill_Queen, C_ASW_Objective );
 	DECLARE_CLIENTCLASS();
 
-					C_ASW_Objective_Kill_Queen();
+	C_ASW_Objective_Kill_Queen();
 	virtual			~C_ASW_Objective_Kill_Queen();
 
-	virtual void OnDataChanged( DataUpdateType_t updateType );
-
-	CNetworkHandle(C_ASW_Queen, m_hQueen);
+	CNetworkHandle( C_ASW_Queen, m_hQueen );
 
 private:
 	C_ASW_Objective_Kill_Queen( const C_ASW_Objective_Kill_Queen & ); // not defined, not accessible
 };
-
 
 #endif // _INCLUDED_C_ASW_OBJECTIVE_KILL_QUEEN_H

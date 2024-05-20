@@ -23,6 +23,7 @@ public:
 
 	CNetworkVar( int, m_nProgress );
 	CNetworkVar( int, m_nMaxProgress );
+	CNetworkVar( bool, m_bShowPercentage );
 };
 
 #endif /* _INCLUDED_ASW_OBJECTIVE_TRIGGERED_H */

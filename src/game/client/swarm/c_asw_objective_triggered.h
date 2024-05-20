@@ -18,6 +18,7 @@ public:
 
 	CNetworkVar( int, m_nProgress );
 	CNetworkVar( int, m_nMaxProgress );
+	CNetworkVar( bool, m_bShowPercentage );
 	int m_nPrevProgress;
 	bool m_bNeedsUpdate;
 

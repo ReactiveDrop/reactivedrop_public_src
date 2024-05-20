@@ -11,21 +11,17 @@ public:
 
 	C_ASW_Objective_Kill_Aliens();
 
-	virtual void OnDataChanged(DataUpdateType_t updateType);
+	virtual void OnDataChanged( DataUpdateType_t updateType );
 	virtual const wchar_t *GetObjectiveTitle();
 	virtual bool NeedsTitleUpdate();
 	virtual float GetObjectiveProgress();
 	void FindText();
-	const wchar_t *GetPluralText();
-	const wchar_t *GetSingularText();
 
-	CNetworkVar(int, m_iTargetKills);
-	CNetworkVar(int, m_iCurrentKills);
-	CNetworkVar(int, m_AlienClassNum);
+	CNetworkVar( int, m_iTargetKills );
+	CNetworkVar( int, m_iCurrentKills );
+	CNetworkVar( int, m_AlienClassNum );
 
-	const wchar_t *m_pKillText;
 	const wchar_t *m_pAlienPluralText;
-	const wchar_t *m_pAlienSingularText;
 	bool m_bFoundText;
 
 	wchar_t m_wszTitleBuffer[64];

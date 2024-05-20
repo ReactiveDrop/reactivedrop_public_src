@@ -15,9 +15,7 @@ END_RECV_TABLE()
 
 C_ASW_Objective_Kill_Aliens::C_ASW_Objective_Kill_Aliens()
 {
-	m_pKillText = NULL;
 	m_pAlienPluralText = NULL;
-	m_pAlienSingularText = NULL;
 	m_bFoundText = false;
 	m_wszTitleBuffer[0] = '\0';
 	m_iLastKills = -1;
@@ -29,6 +27,7 @@ void C_ASW_Objective_Kill_Aliens::OnDataChanged(DataUpdateType_t updateType)
 	{
 		FindText();
 	}
+
 	BaseClass::OnDataChanged(updateType);
 }
 
@@ -41,7 +40,7 @@ bool C_ASW_Objective_Kill_Aliens::NeedsTitleUpdate()
 
 const wchar_t *C_ASW_Objective_Kill_Aliens::GetObjectiveTitle()
 {
-	if ( !m_bFoundText || !m_pKillText || !m_pAlienPluralText || !m_pAlienSingularText )
+	if ( !m_bFoundText || !m_pAlienPluralText )
 	{
 		return L"";
 	}
@@ -59,8 +58,8 @@ const wchar_t *C_ASW_Objective_Kill_Aliens::GetObjectiveTitle()
 		V_snwprintf( wszNum2, NELEMS( wszNum2 ), L"%d", m_iTargetKills.Get() );
 
 		g_pVGuiLocalize->ConstructString( m_wszTitleBuffer, sizeof( m_wszTitleBuffer ),
-			g_pVGuiLocalize->Find( "#asw_kill_objective_format" ), 4,
-			m_pKillText, m_pAlienPluralText, wszNum, wszNum2 );
+			g_pVGuiLocalize->Find( "#asw_kill_objective_format" ), 3,
+			m_pAlienPluralText, wszNum, wszNum2 );
 	}
 
 	return m_wszTitleBuffer;
@@ -68,30 +67,11 @@ const wchar_t *C_ASW_Objective_Kill_Aliens::GetObjectiveTitle()
 
 void C_ASW_Objective_Kill_Aliens::FindText()
 {
-	m_pKillText = g_pVGuiLocalize->Find( "#asw_kill" );
-	m_pAlienPluralText = GetPluralText();
-	m_pAlienSingularText = GetSingularText();
+	if ( m_AlienClassNum >= 0 && m_AlienClassNum < NELEMS( g_Aliens ) )
+	{
+		m_pAlienPluralText = g_pVGuiLocalize->Find( VarArgs( "#%ss", g_Aliens[m_AlienClassNum].m_pszAlienClass ) );
+	}
 	m_bFoundText = true;
-}
-
-const wchar_t *C_ASW_Objective_Kill_Aliens::GetPluralText()
-{
-	if ( m_AlienClassNum < 0 || m_AlienClassNum >= NELEMS( g_Aliens ) )
-	{
-		return NULL;
-	}
-
-	return g_pVGuiLocalize->Find( VarArgs( "#%ss", g_Aliens[m_AlienClassNum].m_pszAlienClass ) );
-}
-
-const wchar_t *C_ASW_Objective_Kill_Aliens::GetSingularText()
-{
-	if ( m_AlienClassNum < 0 || m_AlienClassNum >= NELEMS( g_Aliens ) )
-	{
-		return NULL;
-	}
-
-	return g_pVGuiLocalize->Find( VarArgs( "#%s", g_Aliens[m_AlienClassNum].m_pszAlienClass ) );
 }
 
 float C_ASW_Objective_Kill_Aliens::GetObjectiveProgress()

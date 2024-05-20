@@ -18,10 +18,4 @@ C_ASW_Objective_Kill_Queen::C_ASW_Objective_Kill_Queen()
 
 C_ASW_Objective_Kill_Queen::~C_ASW_Objective_Kill_Queen()
 {
-	
-}
-
-void C_ASW_Objective_Kill_Queen::OnDataChanged( DataUpdateType_t updateType )
-{
-	BaseClass::OnDataChanged(updateType);
 }

@@ -11,16 +11,13 @@ public:
 
 	C_ASW_Objective_Kill_Goo();
 
-	virtual const wchar_t* GetObjectiveTitle();
+	virtual const wchar_t *GetObjectiveTitle();
 	virtual bool NeedsTitleUpdate();
 	virtual float GetObjectiveProgress();
-	void FindText();
-	wchar_t *GetPluralText();
-	wchar_t *GetSingularText();
 
-	CNetworkVar(int, m_iTargetKills);
-	CNetworkVar(int, m_iCurrentKills);
-	
+	CNetworkVar( int, m_iTargetKills );
+	CNetworkVar( int, m_iCurrentKills );
+
 	wchar_t m_wszTitleBuffer[64];
 	int m_iLastKills;
 

@@ -13,22 +13,8 @@ END_RECV_TABLE()
 
 C_ASW_Objective_Kill_Eggs::C_ASW_Objective_Kill_Eggs()
 {
-	m_pKillText = NULL;
-	m_pAlienPluralText = NULL;
-	m_pAlienSingularText = NULL;
-	m_bFoundText = false;
 	m_wszTitleBuffer[0] = '\0';
 	m_iLastKills = -1;
-}
-
-void C_ASW_Objective_Kill_Eggs::OnDataChanged(DataUpdateType_t updateType)
-{
-	if ( updateType == DATA_UPDATE_CREATED )
-	{
-		FindText();
-	}
-
-	BaseClass::OnDataChanged(updateType);
 }
 
 bool C_ASW_Objective_Kill_Eggs::NeedsTitleUpdate()
@@ -40,11 +26,6 @@ bool C_ASW_Objective_Kill_Eggs::NeedsTitleUpdate()
 
 const wchar_t *C_ASW_Objective_Kill_Eggs::GetObjectiveTitle()
 {
-	if ( !m_bFoundText || !m_pKillText || !m_pAlienPluralText || !m_pAlienSingularText )
-	{
-		return L"";
-	}
-
 	int iKills = MIN( m_iTargetKills.Get(), m_iCurrentKills.Get() );
 
 	if ( iKills != m_iLastKills )	// update the string
@@ -58,29 +39,10 @@ const wchar_t *C_ASW_Objective_Kill_Eggs::GetObjectiveTitle()
 		V_snwprintf( wszNum2, NELEMS( wszNum2 ), L"%d", m_iTargetKills.Get() );
 
 		g_pVGuiLocalize->ConstructString( m_wszTitleBuffer, sizeof( m_wszTitleBuffer ),
-			g_pVGuiLocalize->Find( "#asw_kill_objective_format" ), 4,
-			m_pKillText, m_pAlienPluralText, wszNum, wszNum2 );
+			g_pVGuiLocalize->Find( "#asw_kill_eggs_objective_format" ), 2, wszNum, wszNum2 );
 	}
 
 	return m_wszTitleBuffer;
-}
-
-void C_ASW_Objective_Kill_Eggs::FindText()
-{
-	m_pKillText = g_pVGuiLocalize->Find( "#asw_destroy" );
-	m_pAlienPluralText = GetPluralText();
-	m_pAlienSingularText = GetSingularText();
-	m_bFoundText = true;
-}
-
-wchar_t *C_ASW_Objective_Kill_Eggs::GetPluralText()
-{
-	return g_pVGuiLocalize->Find( "#asw_eggs" );
-}
-
-wchar_t *C_ASW_Objective_Kill_Eggs::GetSingularText()
-{
-	return g_pVGuiLocalize->Find( "#asw_egg" );
 }
 
 float C_ASW_Objective_Kill_Eggs::GetObjectiveProgress()

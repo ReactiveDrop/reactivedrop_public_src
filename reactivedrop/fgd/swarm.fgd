@@ -3585,11 +3585,13 @@
 	objectivetitle(string) : "Objective Title" : "" : "Title to use for this objective in the list on the briefing screen, or in-game for the current objective HUD display."
 	SetProgress(integer) : "Initial Progress" : 0 : "Numerator of progress fraction."
 	SetMaxProgress(integer) : "Max Progress" : 0 : "Denominator of progress fraction (0 for no progress tracking)."
+	SetShowPercentage(boolean) : "Show Percentage" : 0 : "Show a percentage rather than a fraction"
 	input SetComplete(void) : "SetComplete"
 	input SetIncomplete(void) : "SetIncomplete"
 	input SetFailed(void) : "SetFailed"
 	input SetProgress(integer) : "Set numerator of objective progress"
 	input SetMaxProgress(integer) : "Set denominator of objective progress"
+	input SetShowPercentage(bool) : "Show a percentage rather than a fraction"
 ]
 
 @PointClass base(Targetname, ASWObjective) iconsprite("editor/asw_objective_escape.vmt") = asw_objective_escape : 

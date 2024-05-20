@@ -11,21 +11,12 @@ public:
 
 	C_ASW_Objective_Kill_Eggs();
 
-	virtual void OnDataChanged(DataUpdateType_t updateType);
-	virtual const wchar_t* GetObjectiveTitle();
+	virtual const wchar_t *GetObjectiveTitle();
 	virtual bool NeedsTitleUpdate();
 	virtual float GetObjectiveProgress();
-	void FindText();
-	wchar_t *GetPluralText();
-	wchar_t *GetSingularText();
 
-	CNetworkVar(int, m_iTargetKills);
-	CNetworkVar(int, m_iCurrentKills);
-
-	wchar_t *m_pKillText;
-	wchar_t *m_pAlienPluralText;
-	wchar_t *m_pAlienSingularText;
-	bool m_bFoundText;
+	CNetworkVar( int, m_iTargetKills );
+	CNetworkVar( int, m_iCurrentKills );
 
 	wchar_t m_wszTitleBuffer[64];
 	int m_iLastKills;
