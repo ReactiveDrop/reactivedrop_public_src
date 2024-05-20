@@ -22,6 +22,7 @@
 #include "asw_marine_speech.h"
 #include "asw_weapon_ammo_bag_shared.h"
 #endif
+#include "asw_util_shared.h"
 #include "asw_marine_skills.h"
 #include "asw_weapon_parse.h"
 #include "asw_deathmatch_mode.h"
@@ -288,11 +289,18 @@ void CASW_Weapon_Sniper_Rifle::UpdateZoomState( void )
 	if ( !pMarine )
 		return;
 
+#ifdef CLIENT_DLL
+	CLocalPlayerFilter filter;
+#else
+	CASW_ViewNPCRecipientFilter filter( pMarine );
+#endif
+	filter.UsePredictionRules();
+
 	// AIs switch out of zoom mode
 	if ( !pMarine->IsInhabited() && IsZoomed() )
 	{
 		m_bZoomed = false;
-		EmitSound( "ASW_Weapon_Sniper_Rifle.Zoomout" );
+		EmitSound( filter, entindex(), "ASW_Weapon_Sniper_Rifle.Zoomout" );
 		return;
 	}
 
@@ -302,13 +310,13 @@ void CASW_Weapon_Sniper_Rifle::UpdateZoomState( void )
 	bool bOldAttack2 = false;
 	if ( pMarine->IsInhabited() && pMarine->GetCommander() )
 	{
-		bOldAttack2 = !!(pMarine->m_nOldButtons & IN_ATTACK2);
+		bOldAttack2 = !!( pMarine->m_nOldButtons & IN_ATTACK2 );
 	}
 
 	if ( bAttack2 && !bOldAttack2 )
 	{
 		m_bZoomed = !IsZoomed();
-		EmitSound( m_bZoomed ? "ASW_Weapon_Sniper_Rifle.Zoomin" : "ASW_Weapon_Sniper_Rifle.Zoomout" );
+		EmitSound( filter, entindex(), m_bZoomed ? "ASW_Weapon_Sniper_Rifle.Zoomin" : "ASW_Weapon_Sniper_Rifle.Zoomout" );
 	}
 }
 
