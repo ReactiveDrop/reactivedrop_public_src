@@ -54,7 +54,7 @@ void CNB_Button::ApplySchemeSettings( vgui::IScheme *pScheme )
 	SetReleasedSound( "UI/menu_accept.wav" );
 
 	const char *pCmd = GetCommand() ? GetCommand()->GetString( "command" ) : "";
-	if ( !engine->IsConnected() && ( !V_strcmp( GetName(), "BtnBack" ) || !V_strcmp( GetName(), "BtnDone" ) || !V_strcmp( GetName(), "BtnCancel" ) || !V_strcmp( GetName(), "BackButton" ) ) && ( !V_strcmp( pCmd, "Back" ) || !V_strcmp( pCmd, "BackButton" ) ) )
+	if ( !engine->IsConnected() && m_iControllerButton == KEY_NONE && ( !V_strcmp( GetName(), "BtnBack" ) || !V_strcmp( GetName(), "BtnDone" ) || !V_strcmp( GetName(), "BtnCancel" ) || !V_strcmp( GetName(), "BackButton" ) ) && ( !V_strcmp( pCmd, "Back" ) || !V_strcmp( pCmd, "BackButton" ) ) )
 	{
 		SetControllerButton( KEY_XBUTTON_B );
 	}
