@@ -48,6 +48,11 @@ public:
 	virtual bool ShouldFlareAutoaim() { return true; }
 	virtual bool SupportsDamageModifiers() { return true; }
 
+	void PlayZoomSound();
+#ifdef CLIENT_DLL
+	void ReceiveMessage( int classID, bf_read &msg ) override;
+#endif
+
 	virtual const Vector& GetBulletSpread( void )
 	{
 		static Vector cone;

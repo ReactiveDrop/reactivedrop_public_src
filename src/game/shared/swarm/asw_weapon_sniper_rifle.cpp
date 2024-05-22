@@ -11,6 +11,7 @@
 #include "iefx.h"
 #include "engine/ivdebugoverlay.h"
 #include "c_asw_fx.h"
+#include "prediction.h"
 #else
 #include "asw_lag_compensation.h"
 #include "asw_marine.h"
@@ -37,7 +38,8 @@ extern ConVar asw_weapon_force_scale;
 
 ConVar rd_sniper_rifle_dmg_zoomed_bonus("rd_sniper_rifle_dmg_zoomed_bonus", "186", FCVAR_REPLICATED | FCVAR_CHEAT, "Damage value added to sniper rifle in zoom mode");
 #ifdef CLIENT_DLL
-ConVar rd_sniper_scope_weapon_switch("rd_sniper_scope_weapon_switch", "0", FCVAR_ARCHIVE | FCVAR_USERINFO);
+ConVar rd_sniper_scope_weapon_switch( "rd_sniper_scope_weapon_switch", "0", FCVAR_ARCHIVE | FCVAR_USERINFO );
+ConVar rd_sniper_hear_other_scope( "rd_sniper_hear_other_scope", "1", FCVAR_ARCHIVE );
 #endif
 IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Weapon_Sniper_Rifle, DT_ASW_Weapon_Sniper_Rifle )
 
@@ -289,18 +291,11 @@ void CASW_Weapon_Sniper_Rifle::UpdateZoomState( void )
 	if ( !pMarine )
 		return;
 
-#ifdef CLIENT_DLL
-	CLocalPlayerFilter filter;
-#else
-	CASW_ViewNPCRecipientFilter filter( pMarine );
-#endif
-	filter.UsePredictionRules();
-
 	// AIs switch out of zoom mode
 	if ( !pMarine->IsInhabited() && IsZoomed() )
 	{
 		m_bZoomed = false;
-		EmitSound( filter, entindex(), "ASW_Weapon_Sniper_Rifle.Zoomout" );
+		PlayZoomSound();
 		return;
 	}
 
@@ -316,7 +311,7 @@ void CASW_Weapon_Sniper_Rifle::UpdateZoomState( void )
 	if ( bAttack2 && !bOldAttack2 )
 	{
 		m_bZoomed = !IsZoomed();
-		EmitSound( filter, entindex(), m_bZoomed ? "ASW_Weapon_Sniper_Rifle.Zoomin" : "ASW_Weapon_Sniper_Rifle.Zoomout" );
+		PlayZoomSound();
 	}
 }
 
@@ -357,6 +352,47 @@ inline float CASW_Weapon_Sniper_Rifle::GetZoomedDamageBonus()
 	else
 		return 0;
 }
+
+void CASW_Weapon_Sniper_Rifle::PlayZoomSound()
+{
+#ifdef CLIENT_DLL
+	if ( prediction->InPrediction() && prediction->IsFirstTimePredicted() )
+	{
+		// If we are predicting, simply play the sound.
+		EmitSound( m_bZoomed ? "ASW_Weapon_Sniper_Rifle.Zoomin" : "ASW_Weapon_Sniper_Rifle.Zoomout" );
+	}
+#else
+	EntityMessageBegin( this );
+		WRITE_BYTE( m_bZoomed ? 1 : 0 );
+	MessageEnd();
+#endif
+}
+
+#ifdef CLIENT_DLL
+void CASW_Weapon_Sniper_Rifle::ReceiveMessage( int classID, bf_read &msg )
+{
+	if ( classID != GetClientClass()->m_ClassID )
+	{
+		// message is for parent class
+		BaseClass::ReceiveMessage( classID, msg );
+		return;
+	}
+
+	int messageType = msg.ReadByte();
+
+	switch ( messageType )
+	{
+	case 0:
+		if ( rd_sniper_hear_other_scope.GetBool() || ( GetMarine() && GetMarine() == C_ASW_Marine::GetViewMarine() ) )
+			EmitSound( "ASW_Weapon_Sniper_Rifle.Zoomout" );
+		break;
+	case 1:
+		if ( rd_sniper_hear_other_scope.GetBool() || ( GetMarine() && GetMarine() == C_ASW_Marine::GetViewMarine() ) )
+			EmitSound( "ASW_Weapon_Sniper_Rifle.Zoomin" );
+		break;
+	}
+}
+#endif
 
 #ifdef CLIENT_DLL
 /*
