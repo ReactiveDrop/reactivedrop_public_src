@@ -138,7 +138,7 @@ int CRD_HoIAF_System::CountEventTimers() const
 bool CRD_HoIAF_System::IsEventTimerActive( int index ) const
 {
 	int64_t iCurrentTime = SteamUtils() ? SteamUtils()->GetServerRealTime() : 0;
-	return GetEventStartTime( index ) <= iCurrentTime || GetEventEndTime( index ) >= iCurrentTime;
+	return GetEventStartTime( index ) <= iCurrentTime && GetEventEndTime( index ) >= iCurrentTime;
 }
 
 const char *CRD_HoIAF_System::GetEventTimerCaption( int index ) const

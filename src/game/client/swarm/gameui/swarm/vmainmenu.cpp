@@ -1474,7 +1474,7 @@ void MainMenu::OnThink()
 		wchar_t wszTimerText[1024];
 		for ( int i = NELEMS( m_pBtnEventTimer ) - 1; i >= 0; i-- )
 		{
-			if ( HoIAF()->IsEventTimerActive( i ) )
+			if ( !HoIAF()->IsEventTimerActive( i ) )
 			{
 				m_pBtnEventTimer[i]->SetVisible( false );
 				continue;
