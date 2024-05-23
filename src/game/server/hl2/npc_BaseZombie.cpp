@@ -750,12 +750,14 @@ bool CNPC_BaseZombie::ShouldBecomeTorso( const CTakeDamageInfo &info, float flDa
 		return true;
 	}
 
+#ifndef INFESTED_DLL
 	if ( hl2_episodic.GetBool() )
 	{
 		// Always split after a cannon hit
 		if ( info.GetAmmoType() == GetAmmoDef()->Index( "CombineHeavyCannon" ) )
 			return true;
 	}
+#endif
 
 #if 0
 	if ( info.GetDamageType() & DMG_BUCKSHOT )
@@ -912,7 +914,11 @@ int CNPC_BaseZombie::OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo )
 
 		if ( ShouldBecomeTorso( info, flDamageThreshold ) )
 		{
+#ifdef INFESTED_DLL
+			bool bHitByCombineCannon = false;
+#else
 			bool bHitByCombineCannon = ( inputInfo.GetAmmoType() == GetAmmoDef()->Index( "CombineHeavyCannon" ) );
+#endif
 
 			if ( CanBecomeLiveTorso() )
 			{
