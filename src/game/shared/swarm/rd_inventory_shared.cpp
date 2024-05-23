@@ -466,7 +466,7 @@ public:
 			Msg( "Successfully wrote item schema cache with %d items (skipped %d) in %fs\n", nItemDefs - nSkippedDefs, nSkippedDefs, timer.GetDuration().GetSeconds() );
 		}
 
-#ifdef DBGFLAG_ASSERT
+#if defined( DBGFLAG_ASSERT ) && defined( RD_7A_DROPS )
 		extern void CheckContainsAnyItemIDLists( const CUtlVector<SteamItemDef_t> &itemIDs );
 		CheckContainsAnyItemIDLists( ItemDefIDs );
 #endif

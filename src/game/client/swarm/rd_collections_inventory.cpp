@@ -457,6 +457,7 @@ public:
 	CRD_ItemInstance m_Details;
 };
 
+#ifdef RD_7A_DROPS
 class CRD_Collection_Panel_Inventory_Unbox_Choice : public vgui::EditablePanel
 {
 	DECLARE_CLASS_SIMPLE( CRD_Collection_Panel_Inventory_Unbox_Choice, vgui::EditablePanel );
@@ -869,6 +870,7 @@ public:
 	};
 	CUtlVector<ItemIconSection_t> m_ItemIconSections;
 };
+#endif
 
 CRD_Collection_Entry_Inventory::CRD_Collection_Entry_Inventory( TGD_Grid *parent, const char *panelName, int index, const ReactiveDropInventory::ItemInstance_t &details )
 	: BaseClass( parent, panelName ),
@@ -1070,6 +1072,7 @@ void CRD_Collection_Entry_Inventory::OnCommand( const char *command )
 			}
 		}
 	}
+#ifdef RD_7A_DROPS
 	else if ( const char *szAccessoryDef = StringAfterPrefix( command, "AttachAccessory" ) )
 	{
 		SteamItemDef_t iAccessoryDef = V_atoi( szAccessoryDef );
@@ -1108,6 +1111,7 @@ void CRD_Collection_Entry_Inventory::OnCommand( const char *command )
 		CRD_Collection_Panel_Inventory_Unbox_Choice *pModal = new CRD_Collection_Panel_Inventory_Unbox_Choice( pTGD, "OptionsModal", this );
 		pTGD->SetOverridePanel( pModal );
 	}
+#endif
 	else if ( !V_strcmp( command, "Back" ) )
 	{
 		// do nothing

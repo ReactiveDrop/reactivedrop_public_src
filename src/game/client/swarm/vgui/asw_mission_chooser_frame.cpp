@@ -593,6 +593,7 @@ void CASW_Mission_Chooser_Details::DisplayEntry( TGD_Entry *pBaseEntry )
 				g_pVGuiLocalize->Find( pEntry->m_szMission[0] ? "#rd_mission_modifier_bounty" : "#rd_mission_modifier_bounty_campaign" ) );
 			break;
 		case CASW_Mission_Chooser_Entry::MM_CRAFTING:
+#ifdef RD_7A_DROPS
 			V_snwprintf( wszModifiers, NELEMS( wszModifiers ), L"%s\n\n%s\n", wszModifiers,
 				g_pVGuiLocalize->Find( pEntry->m_szMission[0] ? "#rd_mission_modifier_crafting" : "#rd_mission_modifier_crafting_campaign" ) );
 			for ( int j = 0; j < NUM_RD_CRAFTING_MATERIAL_RARITIES; j++ )
@@ -606,6 +607,7 @@ void CASW_Mission_Chooser_Details::DisplayEntry( TGD_Entry *pBaseEntry )
 					V_snwprintf( wszModifiers, NELEMS( wszModifiers ), L"%s\n%s", wszModifiers, wszPerRarity );
 				}
 			}
+#endif
 			break;
 		}
 	}
@@ -706,77 +708,83 @@ CASW_Mission_Chooser_Entry::CASW_Mission_Chooser_Entry( TGD_Grid *parent, const 
 		}
 	}
 #ifdef RD_7A_DROPS
-	CUtlVector<ReactiveDropInventory::ItemInstance_t> tokens;
-	ReactiveDropInventory::GetItemsForSlot( tokens, "material_drop_token" );
 	for ( int i = 0; i < NUM_RD_CRAFTING_MATERIAL_RARITIES; i++ )
 	{
 		m_MaterialsPerRarity[i] = 0;
 	}
 
-	if ( pMission )
+	CUtlVector<ReactiveDropInventory::ItemInstance_t> optin;
+	ReactiveDropInventory::GetItemsForDef( optin, 4029 );
+	if ( optin.Count() )
 	{
-		for ( int i = RD_CRAFTING_MATERIAL_NONE + 1; i < NUM_RD_CRAFTING_MATERIAL_TYPES; i++ )
+		CUtlVector<ReactiveDropInventory::ItemInstance_t> tokens;
+		ReactiveDropInventory::GetItemsForSlot( tokens, "material_drop_token" );
+
+		if ( pMission )
 		{
-			RD_Crafting_Material_t eMaterial = RD_Crafting_Material_t( i );
-			if ( !pMission->CraftingMaterialFoundHere( eMaterial ) )
-				continue;
-
-			bool bFound = false;
-			FOR_EACH_VEC( tokens, j )
+			for ( int i = RD_CRAFTING_MATERIAL_NONE + 1; i < NUM_RD_CRAFTING_MATERIAL_TYPES; i++ )
 			{
-				if ( g_RD_Crafting_Material_Info[i].m_iTokenDef == tokens[j].ItemDefID )
-				{
-					if ( !bFound )
-					{
-						m_AvailableMaterials.AddToTail( eMaterial );
-						bFound = true;
-					}
+				RD_Crafting_Material_t eMaterial = RD_Crafting_Material_t( i );
+				if ( !pMission->CraftingMaterialFoundHere( eMaterial ) )
+					continue;
 
-					m_MaterialsPerRarity[g_RD_Crafting_Material_Info[i].m_iRarity] += tokens[j].Quantity;
+				bool bFound = false;
+				FOR_EACH_VEC( tokens, j )
+				{
+					if ( g_RD_Crafting_Material_Info[i].m_iTokenDef == tokens[j].ItemDefID )
+					{
+						if ( !bFound )
+						{
+							m_AvailableMaterials.AddToTail( eMaterial );
+							bFound = true;
+						}
+
+						m_MaterialsPerRarity[g_RD_Crafting_Material_Info[i].m_iRarity] += tokens[j].Quantity;
+					}
 				}
 			}
 		}
-	}
-	else if ( pCampaign )
-	{
-		CUtlVector<const RD_Mission_t *> missions;
-		FOR_EACH_VEC( pCampaign->Missions, i )
+		else if ( pCampaign )
 		{
-			if ( i == 0 )
-				continue;
-
-			const RD_Mission_t *pCampaignMission = ReactiveDropMissions::GetMission( pCampaign->Missions[i].MapName );
-			if ( pCampaignMission )
-				missions.AddToTail( pCampaignMission );
-		}
-		for ( int i = RD_CRAFTING_MATERIAL_NONE + 1; i < NUM_RD_CRAFTING_MATERIAL_TYPES; i++ )
-		{
-			RD_Crafting_Material_t eMaterial = RD_Crafting_Material_t( i );
-			bool bFoundHere = false;
-			FOR_EACH_VEC( missions, j )
+			CUtlVector<const RD_Mission_t *> missions;
+			FOR_EACH_VEC( pCampaign->Missions, i )
 			{
-				if ( missions[j]->CraftingMaterialFoundHere( eMaterial ) )
-				{
-					bFoundHere = true;
-					break;
-				}
+				if ( i == 0 )
+					continue;
+
+				const RD_Mission_t *pCampaignMission = ReactiveDropMissions::GetMission( pCampaign->Missions[i].MapName );
+				if ( pCampaignMission )
+					missions.AddToTail( pCampaignMission );
 			}
-
-			if ( !bFoundHere )
-				continue;
-
-			bool bFound = false;
-			FOR_EACH_VEC( tokens, j )
+			for ( int i = RD_CRAFTING_MATERIAL_NONE + 1; i < NUM_RD_CRAFTING_MATERIAL_TYPES; i++ )
 			{
-				if ( g_RD_Crafting_Material_Info[i].m_iTokenDef == tokens[j].ItemDefID )
+				RD_Crafting_Material_t eMaterial = RD_Crafting_Material_t( i );
+				bool bFoundHere = false;
+				FOR_EACH_VEC( missions, j )
 				{
-					if ( !bFound )
+					if ( missions[j]->CraftingMaterialFoundHere( eMaterial ) )
 					{
-						m_AvailableMaterials.AddToTail( eMaterial );
-						bFound = true;
+						bFoundHere = true;
+						break;
 					}
+				}
 
-					m_MaterialsPerRarity[g_RD_Crafting_Material_Info[i].m_iRarity] += tokens[j].Quantity;
+				if ( !bFoundHere )
+					continue;
+
+				bool bFound = false;
+				FOR_EACH_VEC( tokens, j )
+				{
+					if ( g_RD_Crafting_Material_Info[i].m_iTokenDef == tokens[j].ItemDefID )
+					{
+						if ( !bFound )
+						{
+							m_AvailableMaterials.AddToTail( eMaterial );
+							bFound = true;
+						}
+
+						m_MaterialsPerRarity[g_RD_Crafting_Material_Info[i].m_iRarity] += tokens[j].Quantity;
+					}
 				}
 			}
 		}

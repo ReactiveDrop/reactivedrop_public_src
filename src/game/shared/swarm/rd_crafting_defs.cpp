@@ -555,7 +555,6 @@ bool CRD_Crafting_Material_Pickup::IsUsable( CBaseEntity *pUser )
 
 	return ( pUser && pUser->GetAbsOrigin().DistTo( GetAbsOrigin() ) < ASW_MARINE_USE_RADIUS );	// near enough?
 }
-#endif
 
 #ifdef DBGFLAG_ASSERT
 static int __cdecl CompareItemIDs( const SteamItemDef_t *a, const SteamItemDef_t *b )
@@ -627,4 +626,5 @@ void CheckContainsAnyItemIDLists( const CUtlVector<SteamItemDef_t> &AllItemDefs 
 		}
 	}
 }
+#endif
 #endif
