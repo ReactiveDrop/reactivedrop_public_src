@@ -51,13 +51,13 @@ public:
 
 	virtual const Vector& GetBulletSpread()
 	{
-		static Vector cone = VECTOR_CONE_20DEGREES;
+		static const Vector cone = VECTOR_CONE_20DEGREES;
 		return cone;
 	}
 
 	virtual const Vector& GetAngularBulletSpread()
 	{
-		static Vector cone(22,22,22);
+		static const Vector cone(22,22,22);
 		return cone;
 	}
 

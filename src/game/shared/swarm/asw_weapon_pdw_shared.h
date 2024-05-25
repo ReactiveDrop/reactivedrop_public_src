@@ -30,7 +30,8 @@ public:
 	virtual const float GetAutoAimAmount() { return AUTOAIM_2DEGREES; }	
 	virtual const Vector& GetBulletSpread( void )
 	{
-		static Vector cone = VECTOR_CONE_3DEGREES; //VECTOR_CONE_20DEGREES;
+		static const Vector cone = VECTOR_CONE_3DEGREES; //VECTOR_CONE_20DEGREES;
+
 		return cone;
 	}
 	virtual bool ShouldFlareAutoaim() { return true; }

@@ -26,7 +26,7 @@ public:
 
 	virtual const Vector& GetAngularBulletSpread()
 	{
-		static Vector cone(60, 60, 10);
+		static const Vector cone(60, 60, 10);
 		return cone;
 	}
 

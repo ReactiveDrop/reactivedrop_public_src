@@ -50,8 +50,8 @@ public:
 
 	virtual const Vector& GetBulletSpread( void )
 	{
-		static Vector cone;
-		cone = vec3_origin;
+		static const Vector cone = VECTOR_CONE_PRECALCULATED;
+
 		return cone;
 	}
 

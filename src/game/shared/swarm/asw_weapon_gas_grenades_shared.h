@@ -40,8 +40,8 @@ public:
 
 	virtual const Vector& GetBulletSpread( void )
 	{
-		static Vector cone;
-		cone = Vector(0,0,0);
+		static const Vector cone = VECTOR_CONE_PRECALCULATED;
+
 		return cone;
 	}
 	virtual bool OffhandActivate();

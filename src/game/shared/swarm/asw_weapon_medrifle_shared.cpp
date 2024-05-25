@@ -359,7 +359,7 @@ void CASW_Weapon_MedRifle::WeaponIdle( void )
 
 const Vector& CASW_Weapon_MedRifle::GetBulletSpread( void )
 {
-	static Vector cone = Vector( 0.13053, 0.13053, 0.02 );	// VECTOR_CONE_15DEGREES with flattened Z
+	static const Vector cone = Vector( 0.13053, 0.13053, 0.02 );	// VECTOR_CONE_15DEGREES with flattened Z
 
 	return cone;
 }

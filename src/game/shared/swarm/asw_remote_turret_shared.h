@@ -86,9 +86,7 @@ public:
 	int m_iAmmoType;
 	virtual const Vector &GetBulletSpread( void )
 	{
-		static Vector cone;
-
-		cone = VECTOR_CONE_PRECALCULATED;//VECTOR_CONE_5DEGREES;
+		static const Vector cone = VECTOR_CONE_PRECALCULATED;
 
 		return cone;
 	}

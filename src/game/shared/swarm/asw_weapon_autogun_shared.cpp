@@ -181,7 +181,7 @@ float CASW_Weapon_Autogun::GetWeaponDamage()
 
 const Vector& CASW_Weapon_Autogun::GetBulletSpread( void )
 {
-	static Vector cone = VECTOR_CONE_7DEGREES;
+	static const Vector cone = VECTOR_CONE_7DEGREES;
 	return cone;
 }
 
