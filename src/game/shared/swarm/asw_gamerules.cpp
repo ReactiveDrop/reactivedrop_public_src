@@ -387,12 +387,12 @@ static void UpdateMatchmakingTagsCallback( IConVar *pConVar, const char *pOldVal
 		UTIL_RD_RemoveCurrentLobbyData( "game:missioninfo:official" );
 	}
 
-	static ConVarRef sv_pure( "sv_pure" );
+	static ConVarRef sv_consistency( "sv_consistency" );
 
 	UTIL_RD_UpdateCurrentLobbyData( "system:game_version", engine->GetProductVersionString() );
 	UTIL_RD_UpdateCurrentLobbyData( "system:map_version", GetClientWorldEntity()->m_nMapVersion );
 	UTIL_RD_UpdateCurrentLobbyData( "system:server_version", uint64_t( pAlienSwarm->m_iServerVersion ) );
-	UTIL_RD_UpdateCurrentLobbyData( "system:pure", sv_pure.GetInt() );
+	UTIL_RD_UpdateCurrentLobbyData( "system:pure", sv_consistency.GetInt() );
 	if ( ISteamApps *pSteamApps = SteamApps() )
 	{
 		UTIL_RD_UpdateCurrentLobbyData( "system:game_build", pSteamApps->GetAppBuildId() );
