@@ -217,8 +217,15 @@ void CAI_ASW_FlinchBehavior::HandleBehaviorEvent( CBaseEntity *pInflictor, Behav
 
 bool CAI_ASW_FlinchBehavior::ShouldStumble( const CTakeDamageInfo &info )
 {
+	Assert( GetOuter()->IsInhabitableNPC() );
+	if ( !assert_cast< CASW_Inhabitable_NPC * >( GetOuter() )->m_bFlinchable )
+		return false;
+
 	// shock damage never causes flinching
 	if ( ( info.GetDamageType() & DMG_SHOCK ) != 0 )
+		return false;
+
+	if ( ( info.GetDamageType() & DMG_NERVEGAS ) != 0 )
 		return false;
 
 	if ( ( info.GetDamageType() & DMG_BLAST ) != 0 )
@@ -237,9 +244,8 @@ bool CAI_ASW_FlinchBehavior::ShouldStumble( const CTakeDamageInfo &info )
 		if ( pWeapon && pWeapon->ShouldAlienFlinch( GetOuter(), info ) )
 			return true;
 
-		// non-melee marines always cause a flinch when they melee an alien
-		ASW_Marine_Class MarineClass = pMarine->GetMarineProfile()->GetMarineClass();
-		if ( (info.GetDamageType() & DMG_CLUB) != 0 && ( MarineClass != MARINE_CLASS_NCO ) )
+		// marines always cause a flinch when they melee an alien
+		if ( ( info.GetDamageType() & DMG_CLUB ) != 0 )
 			return true;
 	}
 
