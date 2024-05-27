@@ -139,7 +139,7 @@ public:
 	virtual bool ShouldPlayFiringAnimations() { return true; }
 	virtual void CalcBoneMerge( CStudioHdr *hdr, int boneMask, CBoneBitList &boneComputed );
 	virtual int ASW_SelectWeaponActivity(int idealActivity);
-	virtual float GetWeaponPvpDamageBase();
+	virtual float GetWeaponBaseDamageOverride();
 	virtual int GetWeaponSkillId();
 	virtual int GetWeaponSubSkillId();
 	virtual float GetWeaponDamage();

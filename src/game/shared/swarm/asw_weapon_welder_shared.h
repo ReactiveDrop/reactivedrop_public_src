@@ -25,7 +25,6 @@ public:
 	virtual ~CASW_Weapon_Welder();
 	void Precache();
 
-	virtual float GetFireRate( void );
 	virtual const float GetAutoAimAmount() { return 0.3f; }
 	virtual void PrimaryAttack();
 	virtual void SecondaryAttack();
@@ -35,7 +34,7 @@ public:
 		DECLARE_DATADESC();
 	#else
 		virtual bool HasSecondaryExplosive( void ) const { return false; }
-		void ProcessMuzzleFlashEvent();		
+		void ProcessMuzzleFlashEvent();
 	#endif	
 	virtual bool IsOffensiveWeapon() { return false; }
 	virtual bool OffhandActivate();

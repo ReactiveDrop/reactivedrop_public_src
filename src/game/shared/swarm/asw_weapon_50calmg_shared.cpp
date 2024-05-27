@@ -79,31 +79,6 @@ void CASW_Weapon_50CalMG::Precache()
 	BaseClass::Precache();
 }
 
-// float CASW_Weapon_50CalMG::GetMovementScale()
-// {
-// 	return ShouldMarineMoveSlow() ? 0.5f : 0.8f;
-// }
-
-float CASW_Weapon_50CalMG::GetWeaponDamage()
-{
-	//float flDamage = 18.0f;
-	float flDamage = GetWeaponInfo()->m_flBaseDamage;
-
-// if we decide to allow it in PvP, uncomment and implement this
-//	if (ASWDeathmatchMode())
-//	{
-//		extern ConVar rd_pvp_50calmg_dmg;
-//		flDamage = rd_pvp_50calmg_dmg.GetFloat();
-//	}
-
-	if (GetMarine())
-	{
-		flDamage += MarineSkills()->GetSkillBasedValueByMarine(GetMarine(), ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG);
-	}
-
-	return flDamage;
-}
-
 // just dry fire by default
 void CASW_Weapon_50CalMG::SecondaryAttack()
 {

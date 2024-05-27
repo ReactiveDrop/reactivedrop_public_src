@@ -550,33 +550,22 @@ bool CASW_Weapon_Railgun::SupportsBayonet()
 	return true;
 }
 
-//ConVar rd_railgun_damage_override("rd_railgun_damage_override", "0", FCVAR_NONE, "The value of this var is an ammount of railgun damage");
-
-float CASW_Weapon_Railgun::GetWeaponDamage()
+float CASW_Weapon_Railgun::GetWeaponBaseDamageOverride()
 {
-#ifdef GAME_DLL
 	// Railgun must kill with one shot for Instagib game mode
 	if ( ASWDeathmatchMode() && ASWDeathmatchMode()->IsInstagibEnabled() )
 		return 1000;
-#endif 
-
-	//float flDamage = 35.0f;
-	float flDamage = GetWeaponInfo()->m_flBaseDamage;
 
 	extern ConVar rd_railgun_dmg_base;
-	if ( rd_railgun_dmg_base.GetFloat() > 0 )
-	{
-		flDamage = rd_railgun_dmg_base.GetFloat();
-	}
-
-	if ( GetMarine() )
-	{
-		flDamage += MarineSkills()->GetSkillBasedValueByMarine(GetMarine(), ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_RAILGUN_DMG);
-	}
-
-	//CALL_ATTRIB_HOOK_FLOAT( flDamage, mod_damage_done );
-
-	return flDamage;
+	return rd_railgun_dmg_base.GetFloat();
+}
+int CASW_Weapon_Railgun::GetWeaponSkillId()
+{
+	return ASW_MARINE_SKILL_ACCURACY;
+}
+int CASW_Weapon_Railgun::GetWeaponSubSkillId()
+{
+	return ASW_MARINE_SUBSKILL_ACCURACY_RAILGUN_DMG;
 }
 
 int CASW_Weapon_Railgun::ASW_SelectWeaponActivity(int idealActivity)
@@ -751,14 +740,4 @@ void CASW_Weapon_Railgun::SecondaryAttack()
 
 	// Can blow up after a short delay (so have time to release mouse button)
 	m_flNextSecondaryAttack = gpGlobals->curtime + 1.0f;
-}
-
-float CASW_Weapon_Railgun::GetFireRate()
-{
-	//float flRate = 0.1f;
-	float flRate = GetWeaponInfo()->m_flFireRate;
-
-	//CALL_ATTRIB_HOOK_FLOAT( flRate, mod_fire_rate );
-
-	return flRate;
 }

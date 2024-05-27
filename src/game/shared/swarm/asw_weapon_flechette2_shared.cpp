@@ -208,10 +208,3 @@ void CASW_Weapon_Flechette2::SecondaryAttack()
 	BaseClass::WeaponSound( EMPTY );
 	m_flNextSecondaryAttack = gpGlobals->curtime + 0.5f;
 }
-
-float CASW_Weapon_Flechette2::GetFireRate()
-{
-	float flRate = GetWeaponInfo()->m_flFireRate;
-
-	return flRate;
-}

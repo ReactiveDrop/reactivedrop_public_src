@@ -23,4 +23,16 @@ END_DATADESC()
 #endif
 
 // TODO: m_iEnergyShieldProjectilesDestroyed
+
+void CASW_Weapon_Energy_Shield::Precache()
+{
+	BaseClass::Precache();
+
+	PrecacheModel( "models/items/shield_bubble/rifle_shield.mdl" );
+}
+
+void CASW_Weapon_Energy_Shield::SecondaryAttack()
+{
+	// TODO
+}
 #endif

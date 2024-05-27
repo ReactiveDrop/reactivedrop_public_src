@@ -140,26 +140,30 @@ void CASW_Weapon_AR2::Precache()
 
 float CASW_Weapon_AR2::GetWeaponDamage()
 {
-	float flDamage = GetWeaponInfo()->m_flBaseDamage;
+	float flDamage = BaseClass::GetWeaponDamage();
 
-	extern ConVar rd_ar2_dmg_base;
-	if ( rd_ar2_dmg_base.GetFloat() > 0 )
-	{
-		flDamage = rd_ar2_dmg_base.GetFloat();
-	}
-
-	if ( GetMarine() )
-	{
-		flDamage += MarineSkills()->GetSkillBasedValueByMarine( GetMarine(), ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_AR2_DMG );
-	}
 #ifdef GAME_DLL
-	else if ( ASWGameRules() )
+	if ( !GetMarine() && ASWGameRules() )
 	{
 		flDamage = ASWGameRules()->ModifyAlienDamageBySkillLevel( sk_npc_dmg_ar2.GetFloat() );
 	}
 #endif
 
 	return flDamage;
+}
+
+float CASW_Weapon_AR2::GetWeaponBaseDamageOverride()
+{
+	extern ConVar rd_ar2_dmg_base;
+	return rd_ar2_dmg_base.GetFloat();
+}
+int CASW_Weapon_AR2::GetWeaponSkillId()
+{
+	return ASW_MARINE_SKILL_ACCURACY;
+}
+int CASW_Weapon_AR2::GetWeaponSubSkillId()
+{
+	return ASW_MARINE_SUBSKILL_ACCURACY_AR2_DMG;
 }
 
 void CASW_Weapon_AR2::ItemPostFrame()

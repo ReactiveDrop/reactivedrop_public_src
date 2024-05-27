@@ -42,7 +42,7 @@ PRECACHE_WEAPON_REGISTER(asw_weapon_deagle);
 
 #ifndef CLIENT_DLL
 BEGIN_DATADESC( CASW_Weapon_DEagle )
-DEFINE_FIELD( m_bCanShoot, FIELD_TIME ),
+	DEFINE_FIELD( m_bCanShoot, FIELD_BOOLEAN ),
 END_DATADESC()
 #endif
 
@@ -100,23 +100,18 @@ void CASW_Weapon_DEagle::PrimaryAttack()
 	}
 }
 
-float CASW_Weapon_DEagle::GetWeaponDamage()
+float CASW_Weapon_DEagle::GetWeaponBaseDamageOverride()
 {
-	//float flDamage = 18.0f;
-	float flDamage = GetWeaponInfo()->m_flBaseDamage;
-
 	extern ConVar rd_deagle_dmg_base;
-	if ( rd_deagle_dmg_base.GetFloat() > 0 )
-	{
-		flDamage = rd_deagle_dmg_base.GetFloat();
-	}
-
-	if (GetMarine())
-	{
-		flDamage += MarineSkills()->GetSkillBasedValueByMarine( GetMarine(), ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_DEAGLE_DMG );
-	}
-
-	return flDamage;
+	return rd_deagle_dmg_base.GetFloat();
+}
+int CASW_Weapon_DEagle::GetWeaponSkillId()
+{
+	return ASW_MARINE_SKILL_ACCURACY;
+}
+int CASW_Weapon_DEagle::GetWeaponSubSkillId()
+{
+	return ASW_MARINE_SUBSKILL_ACCURACY_DEAGLE_DMG;
 }
 
 void CASW_Weapon_DEagle::FireBullets(CASW_Marine *pMarine, FireBulletsInfo_t *pBulletsInfo)
@@ -144,22 +139,20 @@ int CASW_Weapon_DEagle::ASW_SelectWeaponActivity(int idealActivity)
 
 float CASW_Weapon_DEagle::GetFireRate( void )
 {
-	CASW_Marine *pMarine = GetMarine();
-
-	float flRate = GetWeaponInfo()->m_flFireRate;
-
-	// player firing rate
-	if (!pMarine || pMarine->IsInhabited())
-	{
-		return flRate;
-	}
+	float flRate = GetEquipItem()->m_flFireRate;
 
 #ifdef CLIENT_DLL
 	return flRate;
 
 #else
-	RandomSeed(gpGlobals->curtime * 10.0f);
-	float rate = flRate + flRate * random->RandomFloat();
+	CASW_Marine *pMarine = GetMarine();
+	if ( !pMarine || pMarine->IsInhabited() )
+	{
+		return flRate;
+	}
+
+	RandomSeed( gpGlobals->curtime * 10 );
+	float rate = RandomFloat( flRate, flRate * 2 );
 
 	return rate;
 #endif

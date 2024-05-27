@@ -161,22 +161,18 @@ float CASW_Weapon_Autogun::GetMovementScale()
 	return ShouldMarineMoveSlow() ? 0.5f : 0.8f;
 }
 
-float CASW_Weapon_Autogun::GetWeaponDamage()
+float CASW_Weapon_Autogun::GetWeaponBaseDamageOverride()
 {
-	float flDamage = GetWeaponInfo()->m_flBaseDamage;
-
 	extern ConVar rd_autogun_dmg_base;
-	if ( rd_autogun_dmg_base.GetFloat() > 0 )
-	{
-		flDamage = rd_autogun_dmg_base.GetFloat();
-	}
-
-	if ( GetMarine() )
-	{
-		flDamage += MarineSkills()->GetSkillBasedValueByMarine(GetMarine(), ASW_MARINE_SKILL_AUTOGUN, ASW_MARINE_SUBSKILL_AUTOGUN_DMG);
-	}
-
-	return flDamage;
+	return rd_autogun_dmg_base.GetFloat();
+}
+int CASW_Weapon_Autogun::GetWeaponSkillId()
+{
+	return ASW_MARINE_SKILL_AUTOGUN;
+}
+int CASW_Weapon_Autogun::GetWeaponSubSkillId()
+{
+	return ASW_MARINE_SUBSKILL_AUTOGUN_DMG;
 }
 
 const Vector& CASW_Weapon_Autogun::GetBulletSpread( void )

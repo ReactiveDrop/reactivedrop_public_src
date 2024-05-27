@@ -33,7 +33,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-//static const float ASW_HG_HEAL_RATE = 0.25f; // Rate at which we heal entities we're latched on
+static const float ASW_HG_HEAL_RATE = 0.33f; // Rate at which we heal entities we're latched on
 static const float ASW_HG_SEARCH_DIAMETER = 48.0f; // How far past the range to search for enemies to latch on to
 static const float SQRT3 = 1.732050807569; // for computing max extents inside a box
 
@@ -120,23 +120,18 @@ void CASW_Weapon_MedRifle::Precache()
 }
 
 
-float CASW_Weapon_MedRifle::GetWeaponDamage()
+float CASW_Weapon_MedRifle::GetWeaponBaseDamageOverride()
 {
-	//float flDamage = 7.0f;
-	float flDamage = GetWeaponInfo()->m_flBaseDamage;
-
 	extern ConVar rd_medrifle_dmg_base;
-	if ( rd_medrifle_dmg_base.GetFloat() > 0 )
-	{
-		flDamage = rd_medrifle_dmg_base.GetFloat();
-	}
-
-	if ( GetMarine() )
-	{
-		flDamage += MarineSkills()->GetSkillBasedValueByMarine( GetMarine(), ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_MEDRIFLE_DMG );
-	}
-
-	return flDamage;
+	return rd_medrifle_dmg_base.GetFloat();
+}
+int CASW_Weapon_MedRifle::GetWeaponSkillId()
+{
+	return ASW_MARINE_SKILL_ACCURACY;
+}
+int CASW_Weapon_MedRifle::GetWeaponSubSkillId()
+{
+	return ASW_MARINE_SUBSKILL_ACCURACY_MEDRIFLE_DMG;
 }
 
 void CASW_Weapon_MedRifle::SecondaryAttack()
@@ -280,13 +275,13 @@ void CASW_Weapon_MedRifle::SecondaryAttack()
 				break;
 			}
 
-			if ( gpGlobals->curtime > m_flLastHealTime + GetSecondaryFireRate() )
+			if ( gpGlobals->curtime > m_flLastHealTime + ASW_HG_HEAL_RATE )
 			{
 				HealEntity();
 				m_flLastHealTime = gpGlobals->curtime;
 			}
 
-			m_flNextPrimaryAttack = gpGlobals->curtime + GetSecondaryFireRate();
+			m_flNextPrimaryAttack = gpGlobals->curtime + ASW_HG_HEAL_RATE;
 			m_flNextSecondaryAttack = m_flNextPrimaryAttack;
 
 			//StartHealSound();
@@ -296,17 +291,10 @@ void CASW_Weapon_MedRifle::SecondaryAttack()
 
 	SendWeaponAnim( GetSecondaryAttackActivity() );
 
-	SetWeaponIdleTime( gpGlobals->curtime + GetSecondaryFireRate() );
+	SetWeaponIdleTime( gpGlobals->curtime + ASW_HG_HEAL_RATE );
 #endif
 
-	m_fSlowTime = gpGlobals->curtime + GetSecondaryFireRate();
-}
-
-float CASW_Weapon_MedRifle::GetSecondaryFireRate()
-{
-	float flRate = GetWeaponInfo()->m_flSecondaryFireRate;
-
-	return flRate;
+	m_fSlowTime = gpGlobals->curtime + ASW_HG_HEAL_RATE;
 }
 
 void CASW_Weapon_MedRifle::SetFiringState( ASW_Weapon_HealGunFireState_t state )
@@ -469,7 +457,7 @@ void CASW_Weapon_MedRifle::HealSelf( void )
 	{
 		// TODO: have some better feedback here if the player is full on health?
 		WeaponSound( EMPTY );
-		m_flNextPrimaryAttack = gpGlobals->curtime + GetSecondaryFireRate();
+		m_flNextPrimaryAttack = gpGlobals->curtime + ASW_HG_HEAL_RATE;
 		m_flNextSecondaryAttack = m_flNextPrimaryAttack;
 		return;
 	}
@@ -486,7 +474,7 @@ void CASW_Weapon_MedRifle::HealSelf( void )
 	SetFiringState( ASW_HG_FIRE_HEALSELF );
 	m_bIsFiring = true;
 
-	m_flNextPrimaryAttack = gpGlobals->curtime + GetSecondaryFireRate();
+	m_flNextPrimaryAttack = gpGlobals->curtime + ASW_HG_HEAL_RATE;
 	m_flNextSecondaryAttack = m_flNextPrimaryAttack;
 	m_fSlowTime = m_flNextSecondaryAttack;
 

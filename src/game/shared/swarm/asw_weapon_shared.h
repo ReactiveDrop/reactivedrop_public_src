@@ -13,6 +13,7 @@
 #endif
 
 #include "asw_shareddefs.h"
+#include "asw_equipment_list.h"
 
 // Shared header file for weapons
 #if defined( CLIENT_DLL )

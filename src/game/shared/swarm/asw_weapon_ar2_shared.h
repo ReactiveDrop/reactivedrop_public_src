@@ -22,6 +22,9 @@ public:
 
 	void Precache() override;
 	float GetWeaponDamage() override;
+	float GetWeaponBaseDamageOverride() override;
+	int GetWeaponSkillId() override;
+	int GetWeaponSubSkillId() override;
 	void ItemPostFrame() override;
 	void SecondaryAttack() override;
 	void DelayedAttack() override;

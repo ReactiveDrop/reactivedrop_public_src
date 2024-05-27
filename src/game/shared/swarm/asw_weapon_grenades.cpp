@@ -92,18 +92,18 @@ bool CASW_Weapon_Grenades::OffhandActivate()
 	return true;
 }
 
-#define FLARE_PROJECTILE_AIR_VELOCITY	400
-
-float CASW_Weapon_Grenades::GetWeaponDamage()
+float CASW_Weapon_Grenades::GetWeaponBaseDamageOverride()
 {
-	float flDamage = GetWeaponInfo()->m_flBaseDamage;
-
-	if ( GetMarine() )
-	{
-		flDamage += MarineSkills()->GetSkillBasedValueByMarine( GetMarine(), ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_CLUSTER_DMG );
-	}
-
-	return flDamage;
+	extern ConVar rd_grenades_dmg_base;
+	return rd_grenades_dmg_base.GetFloat();
+}
+int CASW_Weapon_Grenades::GetWeaponSkillId()
+{
+	return ASW_MARINE_SKILL_GRENADES;
+}
+int CASW_Weapon_Grenades::GetWeaponSubSkillId()
+{
+	return ASW_MARINE_SUBSKILL_GRENADE_CLUSTER_DMG;
 }
 
 void CASW_Weapon_Grenades::PrimaryAttack( void )
@@ -155,23 +155,20 @@ void CASW_Weapon_Grenades::PrimaryAttack( void )
 #ifndef CLIENT_DLL
 float CASW_Weapon_Grenades::GetBoomDamage( CASW_Marine *pMarine )
 {
-	float flBaseDamage = 0.0f;
-	CASW_WeaponInfo* pWeaponInfo = g_ASWEquipmentList.GetWeaponDataFor( "asw_weapon_grenades" );
-	if ( pWeaponInfo )
-		flBaseDamage = pWeaponInfo->m_flBaseDamage;
+	float flBaseDamage = g_ASWEquipmentList.GetExtra( ASW_EQUIP_GRENADES )->m_flBaseDamage;
 
 	extern ConVar rd_grenades_dmg_base;
 	if ( rd_grenades_dmg_base.GetFloat() )
 	{
 		flBaseDamage = rd_grenades_dmg_base.GetFloat();
 	}
-	
+
 	return flBaseDamage + MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_CLUSTER_DMG );
 }
 
 float CASW_Weapon_Grenades::GetBoomRadius( CASW_Marine *pMarine )
 {
-	return MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_RADIUS);
+	return MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_RADIUS );
 }
 
 #endif

@@ -32,6 +32,9 @@ public:
 	float	GetFireRate( void );
 	virtual bool SupportsBayonet();
 	virtual float GetWeaponDamage();
+	virtual float GetWeaponBaseDamageOverride();
+	virtual int GetWeaponSkillId();
+	virtual int GetWeaponSubSkillId();
 	virtual int GetNumPellets();
 	const char *GetTracerType( void ) { return "ASWTracer"; }
 	virtual int AmmoClickPoint() { return 0; }

@@ -30,11 +30,10 @@ public:
 	virtual bool ShouldMarineMoveSlow() { return false; }	// throwing grenades doesn't slow the marine down
 	
 	virtual int AmmoClickPoint() { return 0; }
-	virtual float GetFireRate() { return 0.4f; }
 
 	virtual void PrimaryAttack();
 
-	virtual float GetWeaponPvpDamageBase();
+	virtual float GetWeaponBaseDamageOverride();
 	virtual int GetWeaponSkillId();
 	virtual int GetWeaponSubSkillId();
 	

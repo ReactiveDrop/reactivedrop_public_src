@@ -3,44 +3,19 @@
 WeaponData
 {
 	// Weapon data is loaded by both the Game and Client DLLs.
-	"printname"				"#rd_weapon_combat_rifle"
 	"viewmodel"				"models/weapons/CombatRifle/CombatRifle.mdl"
 	"playermodel"			"models/weapons/CombatRifle/CombatRifle.mdl"
 	"anim_prefix"			"ar2"
 	"bucket"				"0"
 	"bucket_position"		"0"
 
-	"clip_size"				"98"
-	"default_clip"			"98"
-
-	"clip2_size"			"8"
-	"default_clip2"			"8"
-
-	"primary_ammo"			"ASW_R"
-	"secondary_ammo"		"ASW_SG_G"
-
 	"weight"				"5"
 	"item_flags"			"0"
-			
-	// asw properties
-	"reload_time"			"2.0"
-	"base_damage"			"6"
-	"fire_rate"				"0.07"
-	//"num_pellets"			"7"
-	"equipicon"				"swarm/EquipIcons/equipcombatrifle"
-	"equiplongname"			"#rd_weaponl_combat_rifle"
-	"equipdescription1"		"#rd_wdesc_combat_rifle"
-	"altfiretext"			"#rd_weapon_combat_rifle_altfire"
-	"attributestext"		"#rd_weapon_combat_rifle_attributes"
-	
-	// flinching
-	"FlinchChance"              "0.20"
-	"StoppingPowerFlinchBonus"  "0.10"
-	
+
 	// which ammo elements this weapon should display on the hud
-	"ShowBulletsOnHUD"      "1"
-	"ShowClipsOnHUD"      	"1"
-	"ShowGrenadesOnHUD"      "1"
+	"ShowBulletsOnHUD"		"1"
+	"ShowClipsOnHUD"		"1"
+	"ShowGrenadesOnHUD"		"1"
 	
 	"HUDIconOffsetX" 		"-7"
 

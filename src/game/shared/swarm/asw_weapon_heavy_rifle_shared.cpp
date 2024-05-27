@@ -82,21 +82,9 @@ void CASW_Weapon_Heavy_Rifle::Precache()
 	PrecacheParticleSystem( "mining_laser_exhaust" );
 }
 
-
 float CASW_Weapon_Heavy_Rifle::GetWeaponDamage()
 {
-	float flDamage = GetWeaponInfo()->m_flBaseDamage;
-
-	extern ConVar rd_heavy_rifle_dmg_base;
-	if ( rd_heavy_rifle_dmg_base.GetFloat() > 0 )
-	{
-		flDamage = rd_heavy_rifle_dmg_base.GetFloat();
-	}
-
-	if ( GetMarine() )
-	{
-		flDamage += MarineSkills()->GetSkillBasedValueByMarine(GetMarine(), ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_HEAVY_RIFLE_DMG);
-	}
+	float flDamage = BaseClass::GetWeaponDamage();
 
 	if ( !ASWDeathmatchMode() && m_bFastFire )
 	{
@@ -104,6 +92,20 @@ float CASW_Weapon_Heavy_Rifle::GetWeaponDamage()
 	}
 
 	return flDamage;
+}
+
+float CASW_Weapon_Heavy_Rifle::GetWeaponBaseDamageOverride()
+{
+	extern ConVar rd_heavy_rifle_dmg_base;
+	return rd_heavy_rifle_dmg_base.GetFloat();
+}
+int CASW_Weapon_Heavy_Rifle::GetWeaponSkillId()
+{
+	return ASW_MARINE_SKILL_ACCURACY;
+}
+int CASW_Weapon_Heavy_Rifle::GetWeaponSubSkillId()
+{
+	return ASW_MARINE_SUBSKILL_ACCURACY_HEAVY_RIFLE_DMG;
 }
 
 // just dry fire by default
@@ -139,7 +141,7 @@ void CASW_Weapon_Heavy_Rifle::SecondaryAttack()
 
 float CASW_Weapon_Heavy_Rifle::GetFireRate()
 {
-	float flRate = GetWeaponInfo()->m_flFireRate;
+	float flRate = BaseClass::GetFireRate();
 
 	if ( m_bFastFire )
 	{

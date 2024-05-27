@@ -3,46 +3,22 @@
 WeaponData
 {
 	// Weapon data is loaded by both the Game and Client DLLs.
-	"printname"	"#asw_weapon_heavy_rifle"
-	"viewmodel"			"models/weapons/HeavyRifle/heavyrifle.mdl"
+	"viewmodel"				"models/weapons/HeavyRifle/heavyrifle.mdl"
 	"playermodel"			"models/weapons/HeavyRifle/heavyrifle.mdl"
 	"anim_prefix"			"ar2"
-	"bucket"			"0"
+	"bucket"				"0"
 	"bucket_position"		"0"
-
-	"clip_size"			"98"
-	"default_clip"			"98"
-
-	"clip2_size"			"5"
-	"default_clip2"			"5"
-
-	"primary_ammo"			"ASW_HR"
-	"secondary_ammo"		"ASW_HR_G"
 
 	"weight"				"5"
 	"item_flags"			"0"
-			
-	// asw properties
-	"reload_time"			"2.0"
-	"base_damage"			"10"
-	"fire_rate"				"0.09"
-	"equipicon"			"swarm/EquipIcons/EquipHeavyRifle"
-	"equiplongname"			"#asw_weaponl_heavy_rifle"
-	"equipdescription1"		"#asw_wdesc_heavy_rifle"
-	"altfiretext"			"#asw_weapon_heavy_rifle_altfire"
-	"attributestext"		"#asw_weapon_heavy_rifle_attributes"
-	
-	// flinching
-	"FlinchChance"              "0.60"
-	"StoppingPowerFlinchBonus"  "0.30"
-	
+
 	// which ammo elements this weapon should display on the hud
-	"ShowBulletsOnHUD"      "1"
-	"ShowClipsOnHUD"      "1"
-	"ShowGrenadesOnHUD"      "0"
-	"ShowSecondaryBulletsOnHUD"      "1"
+	"ShowBulletsOnHUD"		"1"
+	"ShowClipsOnHUD"		"1"
+	"ShowGrenadesOnHUD"		"0"
+	"ShowSecondaryBulletsOnHUD"	"1"
 	
-	"HUDIconOffsetX" "-7"
+	"HUDIconOffsetX"		"-7"
 
 	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
 	SoundData

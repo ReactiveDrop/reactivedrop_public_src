@@ -325,19 +325,19 @@ void CASWPlayerAnimState::DoAnimationEvent( PlayerAnimEvent_t event )
 				CASW_Marine* pMarine = assert_cast<CASW_Marine*>(pOuter);
 
 				CASW_Weapon* pActiveWeapon = pMarine->GetActiveASWWeapon();
-				if (pActiveWeapon)
+				if ( pActiveWeapon )
 				{
-					const CASW_WeaponInfo* pWpnInfo = pActiveWeapon->GetWeaponInfo();
-					if (pWpnInfo)
+					const CASW_EquipItem *pEquipItem = pActiveWeapon->GetEquipItem();
+					if ( pEquipItem )
 					{
-						fReloadTime = pWpnInfo->flReloadTime;
+						fReloadTime = pEquipItem->m_flReloadTime;
 
-						if (pActiveWeapon->ASW_SelectWeaponActivity(ACT_RELOAD) == ACT_RELOAD_PISTOL)
+						if ( pActiveWeapon->ASW_SelectWeaponActivity( ACT_RELOAD ) == ACT_RELOAD_PISTOL )
 							bShortReloadAnim = true;
 					}
 				}
 
-				fReloadTime *= MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_RELOADING);
+				fReloadTime *= MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_RELOADING );
 			}
 
 			// calc playback rate needed to play the whole anim in this time

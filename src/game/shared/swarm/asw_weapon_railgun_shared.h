@@ -31,7 +31,6 @@ public:
 	virtual void CreateRailgunBeam( const Vector &vecStartPoint, const Vector &vecEndPoint );
 	virtual const char* GetUTracerType() { return "ASWUTracerRG"; }
 
-	float	GetFireRate( void );
 	virtual const Vector& GetBulletSpread( void ) { 	return VECTOR_CONE_PRECALCULATED; 	}
 	virtual const float GetAutoAimAmount() { return 0.24f; }
 	virtual bool ShouldFlareAutoaim() { return true; }
@@ -42,7 +41,9 @@ public:
 
 	virtual bool Holster( CBaseCombatWeapon *pSwitchingTo );
 	virtual bool Reload();
-	virtual float GetWeaponDamage();
+	virtual float GetWeaponBaseDamageOverride();
+	virtual int GetWeaponSkillId();
+	virtual int GetWeaponSubSkillId();
 	virtual int ASW_SelectWeaponActivity(int idealActivity);
 
 	#ifndef CLIENT_DLL

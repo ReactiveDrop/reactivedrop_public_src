@@ -3,55 +3,31 @@
 WeaponData
 {
 	// Weapon data is loaded by both the Game and Client DLLs.
-	"printname"	"#asw_weapon_ammo_satchel"
 	"viewmodel"				"models/items/ItemBox/ItemBoxLarge.mdl"
 	"playermodel"			"models/items/ItemBox/ItemBoxLarge.mdl"
 	"playermodel_skin"		"0"
 	"anim_prefix"			"ar2"
-	"bucket"			"0"
+	"bucket"				"0"
 	"bucket_position"		"1"
-
-	"clip_size"			"3"
-	"default_clip"			"3"
-
-	"clip2_size"			"-1"
-	"default_clip2"			"-1"
-
-	"primary_ammo"			"AR2"
-	"secondary_ammo"		"None"
 
 	"weight"				"5"
 	"item_flags"			"0"
-				
-	// asw properties
-	"reload_time"			"2.2"
-	"equipicon"			"swarm/EquipIcons/EquipAmmoSatchel"
-	"equiplongname"			"#asw_weaponl_ammo_satchel"
-	"ShowCharges"			"1"
-	"equipdescription1"		"#asw_wdesc_ammosatchel"
-	"attributestext"		"#asw_weapon_ammo_satchel_attributes"
 
-	"OffhandActivate"		"1"
-	"OffhandOrderType"		"ASW_OFFHAND_DEPLOY"
-	
-	// flinching
-	"FlinchChance"              "0"
-	"StoppingPowerFlinchBonus"  "0"
-	
 	// which ammo elements this weapon should display on the hud
-	"ShowBulletsOnHUD"      "2"
-	"ShowClipsOnHUD"      "0"
-	"ShowGrenadesOnHUD"      "0"
+	"ShowBulletsOnHUD"		"2"
+	"ShowClipsOnHUD"		"0"
+	"ShowGrenadesOnHUD"		"0"
+	"OffhandActivate"		"1"
 
-	"SquadEmote"	"1"
+	"SquadEmote"			"1"
 	"ShowMultiplayerHotkey"	"1"
+	"ShowCharges"			"1"
 	
-	"HUDIconOffsetX" "-10"
+	"HUDIconOffsetX"		"-10"
 
 	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
 	SoundData
 	{
-		//"special1"		"Weapon_CombineGuard.Special1"
 		"empty"			"ASW_Weapon.Empty"
 		"double_shot"		"ASW_Weapon.Reload4"
 		"single_shot"		"ASW_Weapon.Reload4"

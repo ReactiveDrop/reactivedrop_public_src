@@ -30,9 +30,10 @@ public:
 
 	virtual void Spawn();
 
-	float	GetFireRate( void );
 	virtual bool SupportsBayonet();
-	virtual float GetWeaponDamage();
+	virtual float GetWeaponBaseDamageOverride();
+	virtual int GetWeaponSkillId();
+	virtual int GetWeaponSubSkillId();
 	
 	Activity	GetPrimaryAttackActivity( void );
 	virtual void	SecondaryAttack();

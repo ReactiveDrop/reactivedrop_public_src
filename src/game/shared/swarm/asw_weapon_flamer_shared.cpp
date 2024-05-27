@@ -453,25 +453,18 @@ bool CASW_Weapon_Flamer::SupportsBayonet()
 	return true;
 }
 
-float CASW_Weapon_Flamer::GetWeaponDamage()
+float CASW_Weapon_Flamer::GetWeaponBaseDamageOverride()
 {
-	//float flDamage = 35.0f;
-	float flDamage = GetWeaponInfo()->m_flBaseDamage;
-
 	extern ConVar rd_flamer_dmg_base;
-	if ( rd_flamer_dmg_base.GetFloat() > 0 )
-	{
-		flDamage = rd_flamer_dmg_base.GetFloat();
-	}
-
-	if ( GetMarine() )
-	{
-		flDamage += MarineSkills()->GetSkillBasedValueByMarine( GetMarine(), ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_FLAMER_DMG );
-	}
-
-	//CALL_ATTRIB_HOOK_FLOAT( flDamage, mod_damage_done );
-
-	return flDamage;
+	return rd_flamer_dmg_base.GetFloat();
+}
+int CASW_Weapon_Flamer::GetWeaponSkillId()
+{
+	return ASW_MARINE_SKILL_ACCURACY;
+}
+int CASW_Weapon_Flamer::GetWeaponSubSkillId()
+{
+	return ASW_MARINE_SUBSKILL_ACCURACY_FLAMER_DMG;
 }
 
 #ifdef CLIENT_DLL
@@ -502,13 +495,3 @@ bool CASW_Weapon_Flamer::ShouldMarineFireExtinguish()
 	return m_bIsSecondaryFiring;
 }
 #endif
-
-float CASW_Weapon_Flamer::GetFireRate()
-{
-	//float flRate = 0.1f;
-	float flRate = GetWeaponInfo()->m_flFireRate;
-
-	//CALL_ATTRIB_HOOK_FLOAT( flRate, mod_fire_rate );
-
-	return flRate;
-}

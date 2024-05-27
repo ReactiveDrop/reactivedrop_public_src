@@ -213,33 +213,26 @@ float CASW_Weapon_Assault_Shotgun::GetFireRate()
 	return BaseClass::GetFireRate();
 }
 
-float CASW_Weapon_Assault_Shotgun::GetWeaponDamage()
+float CASW_Weapon_Assault_Shotgun::GetWeaponBaseDamageOverride()
 {
-	//float flDamage = 7.0f;
-	float flDamage = GetWeaponInfo()->m_flBaseDamage;
-
 	extern ConVar rd_vindicator_dmg_base;
-	if ( rd_vindicator_dmg_base.GetFloat() )
-	{
-		flDamage = rd_vindicator_dmg_base.GetFloat();
-	}
-
-	if ( GetMarine() )
-	{
-		flDamage += MarineSkills()->GetSkillBasedValueByMarine(GetMarine(), ASW_MARINE_SKILL_VINDICATOR, ASW_MARINE_SUBSKILL_VINDICATOR_DAMAGE);
-	}
-
-	//CALL_ATTRIB_HOOK_FLOAT( flDamage, mod_damage_done );
-
-	return flDamage;
+	return rd_vindicator_dmg_base.GetFloat();
+}
+int CASW_Weapon_Assault_Shotgun::GetWeaponSkillId()
+{
+	return ASW_MARINE_SKILL_VINDICATOR;
+}
+int CASW_Weapon_Assault_Shotgun::GetWeaponSubSkillId()
+{
+	return ASW_MARINE_SUBSKILL_VINDICATOR_DAMAGE;
 }
 
 int CASW_Weapon_Assault_Shotgun::GetNumPellets()
 {
-	if (GetMarine())
-		return MarineSkills()->GetSkillBasedValueByMarine(GetMarine(), ASW_MARINE_SKILL_VINDICATOR, ASW_MARINE_SUBSKILL_VINDICATOR_PELLETS);
+	if ( GetMarine() )
+		return MarineSkills()->GetSkillBasedValueByMarine( GetMarine(), ASW_MARINE_SKILL_VINDICATOR, ASW_MARINE_SUBSKILL_VINDICATOR_PELLETS );
 
-	return GetWeaponInfo()->m_iNumPellets;
+	return GetEquipItem()->m_nNumPellets;
 }
 
 #ifdef CLIENT_DLL

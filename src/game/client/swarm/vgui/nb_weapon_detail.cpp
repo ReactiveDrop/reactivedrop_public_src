@@ -103,7 +103,7 @@ void CNB_Weapon_Detail::UpdateLabels( CASW_EquipItem *pItem, CASW_WeaponInfo *pW
 			// "bonus" side to the "base" side because the base bonus always exists - confused yet?
 			float flBaseSkillDmgShift = 0;
 			int nBonusDmg = 0;
-			int nPellets = pWeaponData->m_iNumPellets;
+			int nPellets = pItem->m_nNumPellets;
 			if ( pProfile )
 			{
 				if ( FStrEq("asw_weapon_prifle", pWeaponData->szClassName) )
@@ -151,7 +151,7 @@ void CNB_Weapon_Detail::UpdateLabels( CASW_EquipItem *pItem, CASW_WeaponInfo *pW
 
 			// fire power
 			static wchar_t wszPowerLine[32];
-			int iDamValue = (pWeaponData->m_flBaseDamage*pWeaponData->m_iNumPellets)+flBaseSkillDmgShift;
+			int iDamValue = ( pItem->m_flBaseDamage * pItem->m_nNumPellets ) + flBaseSkillDmgShift;
 			int nTotalBonusDmg = (nBonusDmg*nPellets)-flBaseSkillDmgShift;
 			Q_snwprintf( wszPowerLine, ARRAYSIZE( wszPowerLine ), L"%s", g_pVGuiLocalize->Find( "#asw_weapon_details_firepower" ) );
 			wchar_t wzDamValue[10];
@@ -202,7 +202,7 @@ void CNB_Weapon_Detail::UpdateLabels( CASW_EquipItem *pItem, CASW_WeaponInfo *pW
 			m_pTitleLabel->SetText( wszRateLine );
 			m_pTitleLabel->SetVisible( true );
 
-			float flRate = pWeaponData->m_flFireRate;
+			float flRate = pItem->m_flFireRate;
 			wchar_t wzFireValue[32];
 
 			if ( FStrEq( "asw_weapon_prifle", pWeaponData->szClassName ) )
@@ -220,9 +220,9 @@ void CNB_Weapon_Detail::UpdateLabels( CASW_EquipItem *pItem, CASW_WeaponInfo *pW
 			{
 				Q_snwprintf( wzFireValue, ARRAYSIZE( wzFireValue ), L"%.1f / %s", (1.0f/flRate), g_pVGuiLocalize->Find( "#asw_weapon_details_seconds" ) );
 				if ( flRate <= 0.125f )
-					flCurrent = 1.0f - MIN( ((pWeaponData->m_flFireRate-0.03f)/0.125f)*0.5f, 0.48f );
+					flCurrent = 1.0f - MIN( ( ( pItem->m_flFireRate - 0.03f ) / 0.125f ) * 0.5f, 0.48f );
 				else
-					flCurrent = 1.0f - MIN( ((pWeaponData->m_flFireRate-0.5f)/0.65f)+0.5f, 0.98f );
+					flCurrent = 1.0f - MIN( ( ( pItem->m_flFireRate - 0.5f ) / 0.65f ) + 0.5f, 0.98f );
 			}
 
 			m_pValueLabel->SetText( wzFireValue );
@@ -240,7 +240,7 @@ void CNB_Weapon_Detail::UpdateLabels( CASW_EquipItem *pItem, CASW_WeaponInfo *pW
 			// reload time
 			static wchar_t wszReloadLine[32];
 			Q_snwprintf( wszReloadLine, ARRAYSIZE( wszReloadLine ), L"%s", g_pVGuiLocalize->Find( "#asw_weapon_details_reload" ) );
-			float flBaseReload = pWeaponData->flReloadTime;
+			float flBaseReload = pItem->m_flReloadTime;
 			if ( pWeaponData->m_flDisplayReloadTime >= 0 )
 				flBaseReload = pWeaponData->m_flDisplayReloadTime;
 

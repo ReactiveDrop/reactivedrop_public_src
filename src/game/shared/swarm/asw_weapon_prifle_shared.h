@@ -25,7 +25,9 @@ public:
 	virtual const float GetAutoAimAmount() { return 0.26f; }
 	virtual const float GetAutoAimRadiusScale() { return 1.5f; }
 	virtual float GetFireRate();
-	virtual float GetWeaponDamage();
+	virtual float GetWeaponBaseDamageOverride();
+	virtual int GetWeaponSkillId();
+	virtual int GetWeaponSubSkillId();
 	virtual void SecondaryAttack();
 
 	#ifndef CLIENT_DLL

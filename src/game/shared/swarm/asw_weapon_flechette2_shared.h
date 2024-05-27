@@ -25,8 +25,6 @@ public:
 	virtual void PrimaryAttack();
 	virtual void SecondaryAttack();
 
-	virtual float GetFireRate( void );
-
 	virtual const float GetAutoAimAmount() { return 0.26f; }
 	virtual bool ShouldFlareAutoaim() { return true; }
 	virtual bool SupportsDamageModifiers() { return false; }

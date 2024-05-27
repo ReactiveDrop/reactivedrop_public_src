@@ -24,8 +24,10 @@ public:
 	virtual ~CASW_Weapon_PDW();
 	void Precache();
 
-	float	GetFireRate( void );
 	virtual float GetWeaponDamage();
+	virtual float GetWeaponBaseDamageOverride();
+	virtual int GetWeaponSkillId();
+	virtual int GetWeaponSubSkillId();
 
 	virtual const float GetAutoAimAmount() { return AUTOAIM_2DEGREES; }	
 	virtual const Vector& GetBulletSpread( void )

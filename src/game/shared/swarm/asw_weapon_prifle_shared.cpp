@@ -80,36 +80,26 @@ void CASW_Weapon_PRifle::Precache()
 
 float CASW_Weapon_PRifle::GetFireRate()
 {
-	float flRate = GetWeaponInfo()->m_flFireRate;
+	float flRate = BaseClass::GetFireRate();
 
-	//CALL_ATTRIB_HOOK_FLOAT( flRate, mod_fire_rate );
-
-	flRate -= MarineSkills()->GetSkillBasedValueByMarine(GetMarine(), ASW_MARINE_SKILL_ENGINEERING, ASW_MARINE_SUBSKILL_ENGINEERING_FIRERATE);
-	flRate = MAX(0.005, flRate); //0.07 is default
-	//Msg("protorifle firerate is %f\n", flRate);
+	flRate -= MarineSkills()->GetSkillBasedValueByMarine( GetMarine(), ASW_MARINE_SKILL_ENGINEERING, ASW_MARINE_SUBSKILL_ENGINEERING_FIRERATE );
+	flRate = MAX( 0.005f, flRate ); //0.07 is default
 
 	return flRate;
 }
 
-float CASW_Weapon_PRifle::GetWeaponDamage()
+float CASW_Weapon_PRifle::GetWeaponBaseDamageOverride()
 {
-	//float flDamage = 7.0f;
-	float flDamage = GetWeaponInfo()->m_flBaseDamage;
-
 	extern ConVar rd_prifle_dmg_base;
-	if ( rd_prifle_dmg_base.GetFloat() > 0 )
-	{
-		flDamage = rd_prifle_dmg_base.GetFloat();
-	}
-
-	if ( GetMarine() )
-	{
-		flDamage += MarineSkills()->GetSkillBasedValueByMarine( GetMarine(), ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_PRIFLE_DMG );
-	}
-
-	//CALL_ATTRIB_HOOK_FLOAT( flDamage, mod_damage_done );
-
-	return flDamage;
+	return rd_prifle_dmg_base.GetFloat();
+}
+int CASW_Weapon_PRifle::GetWeaponSkillId()
+{
+	return ASW_MARINE_SKILL_ACCURACY;
+}
+int CASW_Weapon_PRifle::GetWeaponSubSkillId()
+{
+	return ASW_MARINE_SUBSKILL_ACCURACY_PRIFLE_DMG;
 }
 
 void CASW_Weapon_PRifle::SecondaryAttack()

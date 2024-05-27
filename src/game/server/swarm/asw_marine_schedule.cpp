@@ -1494,7 +1494,7 @@ void CASW_Marine::OrderUseOffhandItem( int iInventorySlot, const Vector &vecDest
 		NDebugOverlay::Cross( m_vecOffhandItemSpot, 12.0f, 255, 0, 0, true, 3 );
 	}
 
-	if ( pWpnInfo->m_nOffhandOrderType == ASW_OFFHAND_USE_IMMEDIATELY )
+	if ( pItem->m_iOffhandOrderType == ASW_OFFHAND_USE_IMMEDIATELY )
 	{
 		pWeapon->OffhandActivate();
 		if ( pItem->m_bIsExtra )
@@ -1567,7 +1567,7 @@ int CASW_Marine::SelectOffhandItemSchedule()
 	SetPoseParameter( "move_x", 1.0f );
 	SetPoseParameter( "move_y", 0.0f );
 
-	if ( pInfo->m_nOffhandOrderType == ASW_OFFHAND_DEPLOY )
+	if ( pItem->m_iOffhandOrderType == ASW_OFFHAND_DEPLOY )
 	{
 		// if we're in range of the deploy spot, then use the item
 		if ( ( m_vecOffhandItemSpot - GetAbsOrigin() ).Length2D() < ASW_DEPLOY_RANGE )

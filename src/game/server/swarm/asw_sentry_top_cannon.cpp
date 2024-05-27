@@ -75,9 +75,7 @@ void CASW_Sentry_Top_Cannon::Fire()
 	}
 	else
 	{
-		CASW_WeaponInfo *pWeaponInfo = g_ASWEquipmentList.GetWeaponDataFor( "asw_weapon_sentry_cannon" );
-		if ( pWeaponInfo )
-			fBaseGrenadeDamage = pWeaponInfo->m_flBaseDamage;
+		fBaseGrenadeDamage = g_ASWEquipmentList.GetRegular( ASW_EQUIP_SENTRY_CANNON )->m_flBaseDamage;
 	}
 
 	if ( pMarineDeployer )

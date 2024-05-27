@@ -1669,7 +1669,7 @@
 			"DamagePerShot" {
 				"CVar" "rd_minigun_dmg_base"
 				"Skill" "ASW_MARINE_SKILL_AUTOGUN"
-				"SubSkill" "ASW_MARINE_SUBSKILL_AUTOGUN_DMG"
+				"SubSkill" "ASW_MARINE_SUBSKILL_AUTOGUN_MINIGUN_DMG"
 			}
 			"BulletSpread" {
 				"Base" "15"
@@ -2107,7 +2107,7 @@
 			"DamagePerShot" {
 				"CVar" "rd_devastator_dmg_base"
 				"Skill" "ASW_MARINE_SKILL_ACCURACY"
-				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG"
+				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_DEVASTATOR_DMG"
 			}
 			"BulletSpread" {
 				"Base" "11"
@@ -2439,7 +2439,7 @@
 			"DamagePerShot" {
 				"CVar" "rd_mininglaser_dmg_base"
 				"Skill" "ASW_MARINE_SKILL_ACCURACY"
-				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG"
+				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_MINING_LASER_DMG"
 				// ammo is used every 0.2 seconds, but damage is dealt every 0.1 seconds.
 				"BaseMultiplier" "2"
 				"SkillMultiplier" "2"
@@ -2479,7 +2479,7 @@
 		"Facts" {
 			"DamagePerShot" {
 				"Skill" "ASW_MARINE_SKILL_ACCURACY"
-				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG"
+				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_50CALMG_DMG"
 			}
 			"BulletSpread" {
 				"Base" "20"

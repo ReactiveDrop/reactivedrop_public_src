@@ -36,8 +36,6 @@ public:
 		return cone;
 	}
 
-	virtual float GetWeaponDamage();
-
 #ifndef CLIENT_DLL
 	DECLARE_DATADESC();
 

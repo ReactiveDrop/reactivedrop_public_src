@@ -87,23 +87,18 @@ void CASW_Weapon_CombatRifle::Precache()
 	BaseClass::Precache();
 }
 
-float CASW_Weapon_CombatRifle::GetWeaponDamage()
+float CASW_Weapon_CombatRifle::GetWeaponBaseDamageOverride()
 {
-	//float flDamage = 18.0f;
-	float flDamage = GetWeaponInfo()->m_flBaseDamage;
-
 	extern ConVar rd_combat_rifle_dmg_base;
-	if ( rd_combat_rifle_dmg_base.GetFloat() > 0 )
-	{
-		flDamage = rd_combat_rifle_dmg_base.GetFloat();
-	}
-
-	if (GetMarine())
-	{
-		flDamage += MarineSkills()->GetSkillBasedValueByMarine(GetMarine(), ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG);
-	}
-
-	return flDamage;
+	return rd_combat_rifle_dmg_base.GetFloat();
+}
+int CASW_Weapon_CombatRifle::GetWeaponSkillId()
+{
+	return ASW_MARINE_SKILL_ACCURACY;
+}
+int CASW_Weapon_CombatRifle::GetWeaponSubSkillId()
+{
+	return ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG;
 }
 
 void CASW_Weapon_CombatRifle::SecondaryAttack()

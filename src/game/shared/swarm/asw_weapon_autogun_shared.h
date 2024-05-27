@@ -58,7 +58,9 @@ public:
 	virtual const char *GetMagazineGibModelName() const override { return "models/weapons/empty_clips/autogun_empty_clip.mdl"; }
 	virtual bool HasSecondaryAttack() override { return false; } // weapon has no secondary fire
 	virtual bool ShouldPlayFiringAnimations() { return false; }
-	virtual float GetWeaponDamage();
+	virtual float GetWeaponBaseDamageOverride();
+	virtual int GetWeaponSkillId();
+	virtual int GetWeaponSubSkillId();
 	virtual float GetMovementScale();
 	virtual bool SupportsBayonet();
 	virtual void OnStoppedFiring();

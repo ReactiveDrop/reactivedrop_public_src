@@ -21,7 +21,9 @@ public:
 	virtual void PrimaryAttack();
 	virtual void ItemPostFrame();
 	virtual void ItemBusyFrame();
-	virtual float GetWeaponDamage();
+	virtual float GetWeaponBaseDamageOverride();
+	virtual int GetWeaponSkillId();
+	virtual int GetWeaponSubSkillId();
 	virtual float GetFireRate(void);
 
 	virtual void FireBullets(CASW_Marine *pMarine, FireBulletsInfo_t *pBulletsInfo);

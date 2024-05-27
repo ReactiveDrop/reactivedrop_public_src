@@ -327,7 +327,7 @@ void CNB_Lobby_Tooltip::OnTick()
 	m_pTitle->SetFgColor( m_DefaultTitleColor );
 	m_pTitle->SetVisible( true );
 
-	bool bShowDetails = ( m_nInventorySlot != ASW_INVENTORY_SLOT_EXTRA && pWeaponInfo->m_flBaseDamage > 0 );
+	bool bShowDetails = ( m_nInventorySlot != ASW_INVENTORY_SLOT_EXTRA && pItem->m_flBaseDamage > 0 );
 
 	int nWeaponHash = nWeapon * ( m_nInventorySlot + 1 );
 	bool bWeaponChanged = false;

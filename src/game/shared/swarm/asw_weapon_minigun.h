@@ -55,7 +55,6 @@ public:
 		virtual float GetMuzzleFlashScale();
 		virtual Vector GetMuzzleFlashTint();
 		virtual void OnMuzzleFlashed();
-		virtual void ReachedEndOfSequence();
 		float m_flLastMuzzleFlashTime;
 		virtual const char* GetPartialReloadSound(int iPart);
 
@@ -76,7 +75,9 @@ public:
 	virtual const char *GetMagazineGibModelName() const override { return "models/weapons/empty_clips/autogun_empty_clip.mdl"; }
 	virtual bool ShouldPlayFiringAnimations() { return false; }
 	virtual bool HasSecondaryAttack() override { return false; } // secondary fire is spin-up
-	virtual float GetWeaponDamage();
+	virtual float GetWeaponBaseDamageOverride();
+	virtual int GetWeaponSkillId();
+	virtual int GetWeaponSubSkillId();
 	virtual float GetMovementScale();
 	virtual bool ShouldMarineMoveSlow();
 	virtual bool SupportsBayonet() { return false; }

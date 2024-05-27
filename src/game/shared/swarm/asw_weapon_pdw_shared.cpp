@@ -328,29 +328,30 @@ int CASW_Weapon_PDW::ASW_SelectWeaponActivity(int idealActivity)
 
 float CASW_Weapon_PDW::GetWeaponDamage()
 {
-	//float flDamage = 18.0f;
-	float flDamage = GetWeaponInfo()->m_flBaseDamage;
+	float flDamage = BaseClass::GetWeaponDamage();
 
-	extern ConVar rd_pdw_dmg_base;
-	if ( rd_pdw_dmg_base.GetFloat() > 0 )
-	{
-		flDamage = rd_pdw_dmg_base.GetFloat();
-	}
-
-	if ( GetMarine() )
-	{
-		flDamage += MarineSkills()->GetSkillBasedValueByMarine(GetMarine(), ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_PDW_DMG);
-	}
 #ifdef GAME_DLL
-	else if ( ASWGameRules() )
+	if ( !GetMarine() && ASWGameRules() )
 	{
 		flDamage = ASWGameRules()->ModifyAlienDamageBySkillLevel( sk_npc_dmg_smg1.GetFloat() );
 	}
 #endif
 
-	//CALL_ATTRIB_HOOK_FLOAT( flDamage, mod_damage_done );
-
 	return flDamage;
+}
+
+float CASW_Weapon_PDW::GetWeaponBaseDamageOverride()
+{
+	extern ConVar rd_pdw_dmg_base;
+	return rd_pdw_dmg_base.GetFloat();
+}
+int CASW_Weapon_PDW::GetWeaponSkillId()
+{
+	return ASW_MARINE_SKILL_ACCURACY;
+}
+int CASW_Weapon_PDW::GetWeaponSubSkillId()
+{
+	return ASW_MARINE_SUBSKILL_ACCURACY_PDW_DMG;
 }
 
 // user message based tracer type
@@ -358,16 +359,6 @@ const char* CASW_Weapon_PDW::GetUTracerType()
 {
 	// BenLubar: for some reason, ASWUTracerDualLeft makes the right-hand gun fire. ugh.
 	return m_bIsSingle ? "ASWUTracerDualLeft" : "ASWUTracerDual";
-}
-
-float CASW_Weapon_PDW::GetFireRate()
-{
-	//float flRate = 0.035f;
-	float flRate = GetWeaponInfo()->m_flFireRate;
-
-	//CALL_ATTRIB_HOOK_FLOAT( flRate, mod_fire_rate );
-
-	return flRate;
 }
 
 #ifdef GAME_DLL

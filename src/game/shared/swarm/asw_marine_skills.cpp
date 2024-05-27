@@ -25,6 +25,7 @@ ConVar asw_skill_vindicator_dmg_base( "asw_skill_vindicator_dmg_base", "0", FCVA
 ConVar asw_skill_vindicator_pellets_base( "asw_skill_vindicator_pellets_base", "7", FCVAR_REPLICATED | FCVAR_CHEAT );
 
 ConVar asw_skill_autogun_base( "asw_skill_autogun_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_autogun_minigun_dmg_base( "asw_skill_autogun_minigun_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_piercing_base( "asw_skill_piercing_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 
 ConVar asw_skill_healing_charges_base( "asw_skill_healing_charges_base", "4", FCVAR_REPLICATED | FCVAR_CHEAT );
@@ -75,6 +76,7 @@ ConVar asw_skill_vindicator_dmg_step( "asw_skill_vindicator_dmg_step", "2.0", FC
 ConVar asw_skill_vindicator_pellets_step( "asw_skill_vindicator_pellets_step", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 
 ConVar asw_skill_autogun_step( "asw_skill_autogun_step", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_autogun_minigun_dmg_step( "asw_skill_autogun_minigun_dmg_step", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_piercing_step( "asw_skill_piercing_step", "0.20", FCVAR_REPLICATED | FCVAR_CHEAT );
 
 ConVar asw_skill_healing_charges_step( "asw_skill_healing_charges_step", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
@@ -155,6 +157,10 @@ ConVar asw_skill_accuracy_ar2_dmg_base( "asw_skill_accuracy_ar2_dmg_base", "0", 
 ConVar asw_skill_accuracy_ar2_dmg_step( "asw_skill_accuracy_ar2_dmg_step", "2", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_accuracy_devastator_dmg_base( "asw_skill_accuracy_devastator_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_accuracy_devastator_dmg_step( "asw_skill_accuracy_devastator_dmg_step", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_accuracy_50calmg_dmg_base( "asw_skill_accuracy_50calmg_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_accuracy_50calmg_dmg_step( "asw_skill_accuracy_50calmg_dmg_step", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_accuracy_mining_laser_dmg_base( "asw_skill_accuracy_mining_laser_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_accuracy_mining_laser_dmg_step( "asw_skill_accuracy_mining_laser_dmg_step", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
 
 ConVar asw_skill_laser_mines_base( "asw_skill_laser_mines_base", "1", FCVAR_REPLICATED | FCVAR_CHEAT, "Number of laser mines to deploy by marines with no Explosives skills", true, 1, true, 10 );
 ConVar asw_skill_laser_mines_moderate( "asw_skill_laser_mines_moderate", "2", FCVAR_REPLICATED | FCVAR_CHEAT, "Number of laser mines to deploy by marines with moderate(>1) Explosives skills", true, 1, true, 10 );
@@ -236,6 +242,8 @@ float CASW_Marine_Skills::GetSkillBasedValue( CASW_Marine_Profile *pProfile, ASW
 			return asw_skill_autogun_base.GetFloat() + asw_skill_autogun_step.GetFloat() * iSkillPoints;
 		case ASW_MARINE_SUBSKILL_AUTOGUN_MUZZLE:
 			return asw_skill_muzzle_flash_base.GetFloat() + asw_skill_muzzle_flash_step.GetFloat() * iSkillPoints;
+		case ASW_MARINE_SUBSKILL_AUTOGUN_MINIGUN_DMG:
+			return asw_skill_autogun_minigun_dmg_base.GetFloat() + asw_skill_autogun_minigun_dmg_step.GetFloat() * iSkillPoints;
 		default:
 			Assert( 0 );
 			return 0.0f;
@@ -356,6 +364,10 @@ float CASW_Marine_Skills::GetSkillBasedValue( CASW_Marine_Profile *pProfile, ASW
 			return asw_skill_accuracy_ar2_dmg_base.GetFloat() + asw_skill_accuracy_ar2_dmg_step.GetFloat() * iSkillPoints;
 		case ASW_MARINE_SUBSKILL_ACCURACY_DEVASTATOR_DMG:
 			return asw_skill_accuracy_devastator_dmg_base.GetFloat() + asw_skill_accuracy_devastator_dmg_step.GetFloat() * iSkillPoints;
+		case ASW_MARINE_SUBSKILL_ACCURACY_50CALMG_DMG:
+			return asw_skill_accuracy_50calmg_dmg_base.GetFloat() + asw_skill_accuracy_50calmg_dmg_step.GetFloat() * iSkillPoints;
+		case ASW_MARINE_SUBSKILL_ACCURACY_MINING_LASER_DMG:
+			return asw_skill_accuracy_mining_laser_dmg_base.GetFloat() + asw_skill_accuracy_mining_laser_dmg_step.GetFloat() * iSkillPoints;
 		default:
 			Assert( 0 );
 			return 0.0f;

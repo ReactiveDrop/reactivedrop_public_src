@@ -90,13 +90,3 @@ bool C_ASW_Weapon_Rifle::SupportsBayonet()
 {
 	return true;
 }
-
-float C_ASW_Weapon_Rifle::GetFireRate()
-{
-	//float flRate = 0.07f;
-	float flRate = GetWeaponInfo()->m_flFireRate;
-
-	//CALL_ATTRIB_HOOK_FLOAT( flRate, mod_fire_rate );
-
-	return flRate;
-}

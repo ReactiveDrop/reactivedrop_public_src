@@ -47,7 +47,6 @@ enum ASW_Equip_Regular
 #ifdef RD_7A_WEAPONS
 	ASW_EQUIP_CRYO_CANNON,
 	ASW_EQUIP_PLASMA_THROWER,
-	ASW_EQUIP_HACK_TOOL,
 	ASW_EQUIP_SENTRY_RAILGUN,
 	ASW_EQUIP_ENERGY_SHIELD,
 #endif
@@ -88,10 +87,18 @@ enum ASW_Equip_Extra
 	ASW_EQUIP_SPEED_BURST,
 	ASW_EQUIP_SHIELD_BUBBLE,
 	ASW_EQUIP_REVIVE_TOOL,
+	ASW_EQUIP_HACK_TOOL,
 #endif
 
 	ASW_NUM_EQUIP_EXTRA,
 	ASW_FIRST_HIDDEN_EQUIP_EXTRA = ASW_EQUIP_T75,
+};
+
+enum ASW_Offhand_Order_t
+{
+	ASW_OFFHAND_USE_IMMEDIATELY,		// AI marine can just use this item immediately, without caring about facing/position
+	ASW_OFFHAND_THROW,					// AI marine needs to get line of sight to throw this item at the order destination
+	ASW_OFFHAND_DEPLOY,					// AI marine needs to walk up to the deploy spot
 };
 
 class CASW_EquipItem
@@ -103,7 +110,10 @@ public:
 		const char *szDescription1, const char *szAltFireDescription, const char *szAttributeDescription,
 		bool bSelectableInBriefing, bool bRequiresInventoryItem, bool bIsExtra, const char *szAmmo1, const char *szAmmo2,
 		const char *szEquipIcon, ConVar *pDefaultAmmo1, ConVar *pMaxAmmo1, ConVar *pDefaultAmmo2, ConVar *pMaxAmmo2,
-		int iRequiredClass = -1, bool bIsUnique = false, bool bViewModelIsMarineAttachment = false, bool bViewModelHidesMarineBodyGroup1 = false );
+		float flBaseDamage, float flFireRate, float flReloadTime, int nNumPellets = 1, int iRequiredClass = -1, bool bIsUnique = false,
+		bool bViewModelIsMarineAttachment = false, bool bViewModelHidesMarineBodyGroup1 = false,
+		ASW_Offhand_Order_t iOffhandOrderType = ASW_OFFHAND_USE_IMMEDIATELY,
+		float flFlinchChance = 0.2f, float flStoppingPowerFlinchBonus = 0.1f );
 
 	int DefaultAmmo1() const;
 	int MaxAmmo1() const;
@@ -130,6 +140,13 @@ public:
 	const char *const m_szAmmo1;
 	const char *const m_szAmmo2;
 	const char *const m_szEquipIcon;
+	const float m_flBaseDamage;
+	const float m_flFireRate;
+	const float m_flReloadTime;
+	const int m_nNumPellets;
+	const float m_flFlinchChance;
+	const float m_flStoppingPowerFlinchBonus;
+	const ASW_Offhand_Order_t m_iOffhandOrderType;
 	const bool m_bSelectableInBriefing : 1; // if false, this item won't show up on the loadout screen unless a convar says otherwise
 	const bool m_bRequiresInventoryItem : 1; // if true, this item won't show up on the loadout screen unless an inventory item is equipped
 	const bool m_bIsExtra : 1;

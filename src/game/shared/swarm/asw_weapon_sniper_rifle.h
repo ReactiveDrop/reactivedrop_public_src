@@ -40,6 +40,9 @@ public:
 	void	SecondaryAttack();
 	virtual float GetWeaponDamage();
 	virtual float GetZoomedDamageBonus();
+	virtual float GetWeaponBaseDamageOverride();
+	virtual int GetWeaponSkillId();
+	virtual int GetWeaponSubSkillId();
 	virtual int AmmoClickPoint() { return 2; }
 
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_SNIPER_RIFLE; }

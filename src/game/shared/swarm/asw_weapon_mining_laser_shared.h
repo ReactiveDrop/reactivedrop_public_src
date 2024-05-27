@@ -29,12 +29,12 @@ public:
 	DECLARE_NETWORKCLASS(); 
 	DECLARE_PREDICTABLE();
 
-    CASW_Weapon_Mining_Laser(void);
+	CASW_Weapon_Mining_Laser(void);
 	virtual ~CASW_Weapon_Mining_Laser();
 
 	virtual bool	Deploy( void );
 	void	PrimaryAttack( void );
-    virtual void    Precache( void );
+	virtual void    Precache( void );
 
 	virtual void Spawn();
 
@@ -56,7 +56,9 @@ public:
 	virtual bool SecondaryAttackEqualsPrimary() { return true; }
 	virtual bool SecondaryAttackUsesPrimaryAmmo() { return true; }
 
-	virtual float GetWeaponDamage();
+	virtual float GetWeaponBaseDamageOverride();
+	virtual int GetWeaponSkillId();
+	virtual int GetWeaponSubSkillId();
 	virtual const float GetAutoAimAmount() { return 0.26f; }
 	virtual bool ShouldFlareAutoaim() { return true; }
 
@@ -71,7 +73,6 @@ public:
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_MINING_LASER; }
 
 private:
-	void	Attack( void );
 	void	EndAttack( void );
 	bool	Fire( const Vector &vecOrigSrc, const Vector &vecDir );
 	void	GetLaserEndPosition( Vector vecStart, Vector vecDir, Vector *pVecEnd );

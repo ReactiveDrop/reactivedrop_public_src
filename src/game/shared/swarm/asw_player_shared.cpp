@@ -465,17 +465,6 @@ void CASW_Player::ItemPostFrame()
 #endif
 				}
 			}
-			else if ( pWpnInfo->m_bOffhandSwitch )
-			{
-#ifdef CLIENT_DLL
-				::input->MakeWeaponSelection( pExtra );
-#else
-				if ( gpGlobals->maxClients <= 1 )
-				{
-					engine->ClientCommand( edict(), "ASW_ActivateExtra" );
-				}
-#endif
-			}
 		}
 	}
 

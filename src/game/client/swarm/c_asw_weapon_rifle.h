@@ -16,8 +16,6 @@ public:
 					C_ASW_Weapon_Rifle();
 	virtual			~C_ASW_Weapon_Rifle();
 
-	float	GetFireRate( void );
-
 	virtual const char* GetTracerEffectName() { return "tracer_rifle"; }	// particle effect name
 	virtual const char* GetMuzzleEffectName() { return "muzzle_rifle"; }	// particle effect name
 	virtual const char *GetMagazineGibModelName() const override { return const_cast< C_ASW_Weapon_Rifle * >( this )->Classify() == CLASS_ASW_RIFLE ? "models/weapons/empty_clips/assaultrifle_empty_clip.mdl" : NULL; }

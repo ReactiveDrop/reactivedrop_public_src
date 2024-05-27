@@ -36,7 +36,9 @@ public:
 	virtual int AmmoClickPoint() { return 0; }
 	virtual float GetThrowGravity() { return 0.8f; }
 
-	virtual float GetWeaponDamage();
+	virtual float GetWeaponBaseDamageOverride();
+	virtual int GetWeaponSkillId();
+	virtual int GetWeaponSubSkillId();
 	virtual void PrimaryAttack();
 
 	virtual const Vector& GetBulletSpread( void )

@@ -275,16 +275,17 @@ void CASW_Weapon_Tesla_Gun::PrimaryAttack( void )
 	m_fSlowTime = gpGlobals->curtime + GetFireRate();
 }
 
-float CASW_Weapon_Tesla_Gun::GetWeaponDamage()
+float CASW_Weapon_Tesla_Gun::GetWeaponBaseDamageOverride()
 {
-	float flDamage = GetWeaponInfo()->m_flBaseDamage;
-
-	if ( GetMarine() )
-	{
-		flDamage += MarineSkills()->GetSkillBasedValueByMarine(GetMarine(), ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_TESLA_CANNON_DMG);
-	}
-
-	return flDamage;
+	return 0;
+}
+int CASW_Weapon_Tesla_Gun::GetWeaponSkillId()
+{
+	return ASW_MARINE_SKILL_ACCURACY;
+}
+int CASW_Weapon_Tesla_Gun::GetWeaponSubSkillId()
+{
+	return ASW_MARINE_SUBSKILL_ACCURACY_TESLA_CANNON_DMG;
 }
 
 void CASW_Weapon_Tesla_Gun::ShockEntity()

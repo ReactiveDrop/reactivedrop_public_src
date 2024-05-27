@@ -375,8 +375,8 @@ void CASW_Weapon_Mining_Laser::PrimaryAttack( void )
 			WeaponSound( EMPTY );
 		}
 
-		m_flNextPrimaryAttack = gpGlobals->curtime + GetWeaponInfo()->m_flFireRate;
-		m_flNextSecondaryAttack = gpGlobals->curtime + GetWeaponInfo()->m_flFireRate;
+		m_flNextPrimaryAttack = gpGlobals->curtime + GetFireRate();
+		m_flNextSecondaryAttack = gpGlobals->curtime + GetFireRate();
 		return;
 	}
 
@@ -629,8 +629,8 @@ void CASW_Weapon_Mining_Laser::EndAttack( void )
 	}
 
 	SetWeaponIdleTime( gpGlobals->curtime + 2.0 );
-	m_flNextPrimaryAttack = gpGlobals->curtime + GetWeaponInfo()->m_flFireRate;
-	m_flNextSecondaryAttack = gpGlobals->curtime + GetWeaponInfo()->m_flFireRate;
+	m_flNextPrimaryAttack = gpGlobals->curtime + GetFireRate();
+	m_flNextSecondaryAttack = gpGlobals->curtime + GetFireRate();
 
 	SetFiringState(FIRE_OFF);
 
@@ -651,26 +651,19 @@ bool CASW_Weapon_Mining_Laser::Holster( CBaseCombatWeapon *pSwitchingTo )
 	return BaseClass::Holster( pSwitchingTo );
 }
 
-
-float CASW_Weapon_Mining_Laser::GetWeaponDamage()
+float CASW_Weapon_Mining_Laser::GetWeaponBaseDamageOverride()
 {
-	//float flDamage = 18.0f;
-	float flDamage = GetWeaponInfo()->m_flBaseDamage;
-
 	extern ConVar rd_mininglaser_dmg_base;
-	if ( rd_mininglaser_dmg_base.GetFloat() > 0 )
-	{
-		flDamage = rd_mininglaser_dmg_base.GetFloat();
-	}
-
-	if (GetMarine())
-	{
-		flDamage += MarineSkills()->GetSkillBasedValueByMarine(GetMarine(), ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG);
-	}
-
-	return flDamage;
+	return rd_mininglaser_dmg_base.GetFloat();
 }
-
+int CASW_Weapon_Mining_Laser::GetWeaponSkillId()
+{
+	return ASW_MARINE_SKILL_ACCURACY;
+}
+int CASW_Weapon_Mining_Laser::GetWeaponSubSkillId()
+{
+	return ASW_MARINE_SUBSKILL_ACCURACY_MINING_LASER_DMG;
+}
 
 void CASW_Weapon_Mining_Laser::WeaponIdle( void )
 {

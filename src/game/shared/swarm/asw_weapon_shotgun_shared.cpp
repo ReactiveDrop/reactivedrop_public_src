@@ -345,33 +345,35 @@ bool CASW_Weapon_Shotgun::SupportsBayonet()
 
 float CASW_Weapon_Shotgun::GetWeaponDamage()
 {
-	float flDamage = GetWeaponInfo()->m_flBaseDamage;
+	float flDamage = BaseClass::GetWeaponDamage();
 
-	extern ConVar rd_shotgun_dmg_base;
-	if ( rd_shotgun_dmg_base.GetFloat() > 0 )
-	{
-		flDamage = rd_shotgun_dmg_base.GetFloat();
-	}
-
-	if ( GetMarine() )
-	{
-		flDamage += MarineSkills()->GetSkillBasedValueByMarine(GetMarine(), ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_SHOTGUN_DMG);
-	}
 #ifdef GAME_DLL
-	else if ( ASWGameRules() )
+	if ( !GetMarine() && ASWGameRules() )
 	{
 		flDamage = ASWGameRules()->ModifyAlienDamageBySkillLevel( sk_npc_dmg_buckshot.GetFloat() );
 	}
 #endif
 
-	//CALL_ATTRIB_HOOK_FLOAT( flDamage, mod_damage_done );
-
 	return flDamage;
+}
+
+float CASW_Weapon_Shotgun::GetWeaponBaseDamageOverride()
+{
+	extern ConVar rd_shotgun_dmg_base;
+	return rd_shotgun_dmg_base.GetFloat();
+}
+int CASW_Weapon_Shotgun::GetWeaponSkillId()
+{
+	return ASW_MARINE_SKILL_ACCURACY;
+}
+int CASW_Weapon_Shotgun::GetWeaponSubSkillId()
+{
+	return ASW_MARINE_SUBSKILL_ACCURACY_SHOTGUN_DMG;
 }
 
 int CASW_Weapon_Shotgun::GetNumPellets()
 {
-	return GetWeaponInfo()->m_iNumPellets;
+	return GetEquipItem()->m_nNumPellets;
 }
 
 
@@ -419,8 +421,8 @@ int CASW_Weapon_Shotgun::ASW_SelectWeaponActivity(int idealActivity)
 	{		
 		case ACT_WALK:			idealActivity = ACT_WALK_AIM_RIFLE; break;
 		case ACT_RUN:			idealActivity = ACT_RUN_AIM_RIFLE; break;
-		case ACT_IDLE:			idealActivity = ACT_IDLE_RIFLE; break;		
-		case ACT_RELOAD:		idealActivity = ACT_RELOAD; break;		
+		case ACT_IDLE:			idealActivity = ACT_IDLE_RIFLE; break;
+		case ACT_RELOAD:		idealActivity = ACT_RELOAD; break;
 		default: break;
 	}
 	return idealActivity;
@@ -429,7 +431,7 @@ int CASW_Weapon_Shotgun::ASW_SelectWeaponActivity(int idealActivity)
 float CASW_Weapon_Shotgun::GetFireRate()
 {
 	//float flRate = 1.0f;
-	float flRate = GetWeaponInfo()->m_flFireRate;
+	float flRate = GetEquipItem()->m_flFireRate;
 
 	if ( rd_shotgun_fire_rate.GetFloat() > 0 )
 		flRate = rd_shotgun_fire_rate.GetFloat();

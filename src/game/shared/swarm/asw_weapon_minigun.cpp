@@ -342,7 +342,12 @@ void CASW_Weapon_Minigun::UpdateSpinRate()
 
 	CASW_Marine *pMarine = GetMarine();
 	bool bMeleeing = pMarine && ( pMarine->GetCurrentMeleeAttack() != NULL );
-	bool bWalking = pMarine && ( pMarine->m_bWalking.Get() || pMarine->m_bForceWalking.Get() );
+	bool bWalking = pMarine && ( pMarine->m_bWalking.Get() || pMarine->m_bForceWalking.Get() 
+#ifdef GAME_DLL
+		// the logic for bot crouching is somewhat complicated; just check their animation
+		|| ( !pMarine->IsInhabited() && pMarine->GetActivity() == ACT_CROUCHIDLE )
+#endif
+		);
 
 	bool bSpinUp = !m_bInReload && !bMeleeing && ( bAttack1 || bAttack2 || bWalking );
 	if ( bSpinUp )
@@ -377,17 +382,6 @@ void CASW_Weapon_Minigun::OnMuzzleFlashed()
 	{
 		m_hGunSmoke->OnFired();
 	}
-}
-
-
-void CASW_Weapon_Minigun::ReachedEndOfSequence()
-{
-	BaseClass::ReachedEndOfSequence();
-	//if (gpGlobals->curtime - m_flLastMuzzleFlashTime > 1.0)	// 0.3 is the real firing time, but spin for a bit longer
-	//{
-		//if (GetSequenceActivity(GetSequence()) != ACT_VM_IDLE)
-			//SetActivity(ACT_VM_IDLE, 0);
-	//}
 }
 
 float CASW_Weapon_Minigun::GetMuzzleFlashScale( void )
@@ -435,25 +429,18 @@ bool CASW_Weapon_Minigun::ShouldMarineMoveSlow()
 	return ( BaseClass::ShouldMarineMoveSlow() || bAttack2 || bAttack1 || GetSpinRate() >= 0.99f );
 }
 
-float CASW_Weapon_Minigun::GetWeaponDamage()
+float CASW_Weapon_Minigun::GetWeaponBaseDamageOverride()
 {
-	//float flDamage = 7.0f;
-	float flDamage = GetWeaponInfo()->m_flBaseDamage;
-
 	extern ConVar rd_minigun_dmg_base;
-	if ( rd_minigun_dmg_base.GetFloat() > 0 )
-	{
-		flDamage = rd_minigun_dmg_base.GetFloat();
-	}
-
-	if ( GetMarine() )
-	{
-		flDamage += MarineSkills()->GetSkillBasedValueByMarine(GetMarine(), ASW_MARINE_SKILL_AUTOGUN, ASW_MARINE_SUBSKILL_AUTOGUN_DMG);
-	}
-
-	//CALL_ATTRIB_HOOK_FLOAT( flDamage, mod_damage_done );
-
-	return flDamage;
+	return rd_minigun_dmg_base.GetFloat();
+}
+int CASW_Weapon_Minigun::GetWeaponSkillId()
+{
+	return ASW_MARINE_SKILL_AUTOGUN;
+}
+int CASW_Weapon_Minigun::GetWeaponSubSkillId()
+{
+	return ASW_MARINE_SUBSKILL_AUTOGUN_MINIGUN_DMG;
 }
 
 const Vector &CASW_Weapon_Minigun::GetBulletSpread( void )

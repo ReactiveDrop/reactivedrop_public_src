@@ -153,7 +153,7 @@ void CASW_Weapon_Grenade_Launcher::PrimaryAttack( void )
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = gpGlobals->curtime + GetFireRate();
 }
 
-float CASW_Weapon_Grenade_Launcher::GetWeaponPvpDamageBase()
+float CASW_Weapon_Grenade_Launcher::GetWeaponBaseDamageOverride()
 {
 	extern ConVar rd_grenade_launcher_dmg_base;
 	return rd_grenade_launcher_dmg_base.GetFloat();

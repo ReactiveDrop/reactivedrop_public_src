@@ -816,10 +816,10 @@ bool CASW_Weapon::ViewModelHidesMarineBodyGroup1() const
 float CASW_Weapon::GetReloadTime()
 {
 	// can adjust for marine's weapon skill here
-	float fReloadTime = GetWeaponInfo()->flReloadTime;
-	if (GetMarine())
+	float fReloadTime = GetEquipItem() ? GetEquipItem()->m_flReloadTime : 2.2f;
+	if ( GetMarine() )
 	{
-		float fSpeedScale = MarineSkills()->GetSkillBasedValueByMarine(GetMarine(), ASW_MARINE_SKILL_RELOADING, ASW_MARINE_SUBSKILL_RELOADING_SPEED_SCALE);
+		float fSpeedScale = MarineSkills()->GetSkillBasedValueByMarine( GetMarine(), ASW_MARINE_SKILL_RELOADING, ASW_MARINE_SUBSKILL_RELOADING_SPEED_SCALE );
 		fReloadTime *= fSpeedScale;
 
 #ifdef GAME_DLL
@@ -1079,7 +1079,7 @@ bool CASW_Weapon::IsFiring()// const
 
 float CASW_Weapon::GetFireRate()
 {
-	float flRate = GetWeaponInfo()->m_flFireRate;
+	float flRate = GetEquipItem() ? GetEquipItem()->m_flFireRate : 1.0f;
 
 	//CALL_ATTRIB_HOOK_FLOAT( flRate, mod_fire_rate );
 
@@ -1418,7 +1418,7 @@ float CASW_Weapon::GetMovementScale()
 	return ShouldMarineMoveSlow() ? 0.5f : 1.0f;
 }
 
-float CASW_Weapon::GetWeaponPvpDamageBase()
+float CASW_Weapon::GetWeaponBaseDamageOverride()
 {
 	extern ConVar rd_rifle_dmg_base;
 	return rd_rifle_dmg_base.GetFloat();
@@ -1437,16 +1437,16 @@ int CASW_Weapon::GetWeaponSubSkillId()
 
 float CASW_Weapon::GetWeaponDamage()
 {
-	float flDamage = GetWeaponInfo()->m_flBaseDamage;
+	float flDamage = GetEquipItem() ? GetEquipItem()->m_flBaseDamage : 0;
 
-	if ( ASWDeathmatchMode() )
+	if ( GetWeaponBaseDamageOverride() > 0 )
 	{
-		flDamage = GetWeaponPvpDamageBase(); 
+		flDamage = GetWeaponBaseDamageOverride();
 	}
 
 	if ( GetMarine() )
 	{
-		flDamage += MarineSkills()->GetSkillBasedValueByMarine( GetMarine(), ASW_Skill(GetWeaponSkillId()), GetWeaponSubSkillId() );
+		flDamage += MarineSkills()->GetSkillBasedValueByMarine( GetMarine(), ASW_Skill( GetWeaponSkillId() ), GetWeaponSubSkillId() );
 	}
 
 	//CALL_ATTRIB_HOOK_FLOAT( flDamage, mod_damage_done );

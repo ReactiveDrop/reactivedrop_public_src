@@ -7,13 +7,6 @@
 #include "weapon_parse.h"
 #include "networkvar.h"
 
-enum ASW_Offhand_Order_t
-{
-	ASW_OFFHAND_USE_IMMEDIATELY,		// AI marine can just use this item immediately, without caring about facing/position
-	ASW_OFFHAND_THROW,					// AI marine needs to get line of sight to throw this item at the order destination
-	ASW_OFFHAND_DEPLOY,					// AI marine needs to walk up to the deploy spot
-};
-
 //--------------------------------------------------------------------------------------------------------
 class CASW_WeaponInfo : public FileWeaponInfo_t
 {
@@ -27,11 +20,6 @@ public:
 
 public:
 	// asw:
-	float				flReloadTime;
-	float				m_flBaseDamage;
-	float				m_flFireRate;
-	float				m_flSecondaryFireRate;
-	int					m_iNumPellets;
 	int					m_iDisplayClipSize;
 	float				m_flDisplayReloadTime;
 	int					m_iPlayerModelSkin;
@@ -45,14 +33,10 @@ public:
 	bool				m_bShowMultiplayerHotkey;
 	bool				m_bOffhandActivate;	// can you activate this weapon even when it isn't your current
 	bool				m_bHUDPlayerActivate;
-	bool				m_bOffhandSwitch;		// should we switch to this weapon when we press our offhand key
-	ASW_Offhand_Order_t m_nOffhandOrderType;
 	int					m_iHUDIconOffsetX, m_iHUDIconOffsetY;
 	int					m_iHUDNumberOffsetX, m_iHUDNumberOffsetY;
 	bool				m_bZoomHotbarIcon;		// zoom this icon on the squad hotbar
 
-	float		m_fFlinchChance;		// chance of this weapon putting the drone into a flinch
-	float		m_fStoppingPowerFlinchBonus;	// bonus to the flinch chance per stopping power skill point
 	int			m_iShowBulletsOnHUD;
 	int			m_iShowClipsOnHUD;
 	int			m_iShowGrenadesOnHUD;

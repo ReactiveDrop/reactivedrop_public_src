@@ -22,9 +22,12 @@ public:
 	void Precache();
 
 	virtual float GetWeaponDamage();
+	virtual float GetWeaponBaseDamageOverride();
+	virtual int GetWeaponSkillId();
+	virtual int GetWeaponSubSkillId();
 	virtual void SecondaryAttack();
 	virtual const Vector &GetBulletSpread( void );
-	float GetFireRate( void );
+	virtual float GetFireRate( void );
 	void StopFastFire();
 
 #ifdef CLIENT_DLL

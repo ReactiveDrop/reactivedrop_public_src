@@ -9,6 +9,7 @@
 #define CASW_Weapon_Sentry_Flamer C_ASW_Weapon_Sentry_Flamer
 #define CASW_Weapon_Sentry_Cannon C_ASW_Weapon_Sentry_Cannon
 #define CASW_Weapon_Sentry_Freeze C_ASW_Weapon_Sentry_Freeze
+#define CASW_Weapon_Sentry_Railgun C_ASW_Weapon_Sentry_Railgun
 #define CASW_Marine C_ASW_Marine
 #else
 #include "asw_weapon.h"
@@ -121,5 +122,20 @@ public:
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_SENTRY_FREEZE_CASE; }
 };
+
+#ifdef RD_7A_WEAPONS
+class CASW_Weapon_Sentry_Railgun : public CASW_Weapon_Sentry
+{
+public:
+	DECLARE_CLASS( CASW_Weapon_Sentry_Railgun, CASW_Weapon_Sentry );
+	DECLARE_NETWORKCLASS();
+	DECLARE_PREDICTABLE();
+
+	CASW_Weapon_Sentry_Railgun();
+
+	// Classification
+	virtual Class_T		Classify( void ) { return ( Class_T ) CLASS_ASW_SENTRY_RAILGUN_CASE; }
+};
+#endif
 
 #endif /* _INCLUDED_ASW_WEAPON_SENTRY_H */

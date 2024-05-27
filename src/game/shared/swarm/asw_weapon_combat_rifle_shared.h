@@ -30,13 +30,9 @@ public:
 		return cone;
 	}
 
-	virtual float GetWeaponDamage();
-	//virtual void PrimaryAttack();
-	//virtual void ItemPostFrame();
-
-	//virtual void FireBullets(CASW_Marine *pMarine, FireBulletsInfo_t *pBulletsInfo);
-
-	//virtual float GetMovementScale();
+	virtual float GetWeaponBaseDamageOverride();
+	virtual int GetWeaponSkillId();
+	virtual int GetWeaponSubSkillId();
 
 #ifndef CLIENT_DLL
 	DECLARE_DATADESC();

@@ -20,7 +20,9 @@ public:
 	void Precache();
 
 	float	GetFireRate( void );
-	virtual float GetWeaponDamage();
+	virtual float GetWeaponBaseDamageOverride();
+	virtual int GetWeaponSkillId();
+	virtual int GetWeaponSubSkillId();
 	virtual int GetNumPellets();
 	virtual int AmmoClickPoint() { return 2; }
 

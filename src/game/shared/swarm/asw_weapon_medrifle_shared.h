@@ -33,7 +33,9 @@ public:
 	void Precache();
 
 	virtual bool Reload( void );
-	virtual float GetWeaponDamage();
+	virtual float GetWeaponBaseDamageOverride();
+	virtual int GetWeaponSkillId();
+	virtual int GetWeaponSubSkillId();
 	virtual void SecondaryAttack();
 	virtual void HealAttack() { SecondaryAttack(); }
 	virtual bool HasMedicalAmmo() { return HasSecondaryAmmo(); }
@@ -46,7 +48,6 @@ public:
 	virtual bool Holster( CBaseCombatWeapon *pSwitchingTo = NULL );
 	virtual void Drop( const Vector &vecVelocity );
 	virtual bool ShouldMarineMoveSlow();
-	float GetSecondaryFireRate( void );
 
 	#ifndef CLIENT_DLL
 		DECLARE_DATADESC();

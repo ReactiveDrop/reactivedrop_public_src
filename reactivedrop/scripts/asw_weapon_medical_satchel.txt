@@ -3,53 +3,29 @@
 WeaponData
 {
 	// Weapon data is loaded by both the Game and Client DLLs.
-	"printname"	"#asw_weapon_medsat"
-	"viewmodel"			"models/items/ItemBox/ItemBoxLarge.mdl"
+	"viewmodel"				"models/items/ItemBox/ItemBoxLarge.mdl"
 	"playermodel"			"models/items/ItemBox/ItemBoxLarge.mdl"
 	"playermodel_skin"		"1"
 	"anim_prefix"			"ar2"
-	"bucket"			"0"
+	"bucket"				"0"
 	"bucket_position"		"1"
-
-	"clip_size"			"9"
-	"default_clip"			"5"
-
-	"clip2_size"			"5"
-	"default_clip2"			"2"
-
-	"primary_ammo"			"ASW_MEDSAT"
-	"secondary_ammo"		"ASW_MEDSELF"
 
 	"weight"				"5"
 	"item_flags"			"0"
-				
-	// asw properties
-	"reload_time"			"2.2"
-	"equipicon"			"swarm/EquipIcons/EquipMedSatchel"
-	"equiplongname"			"#asw_weaponl_medsat"
-	"RequiresFirstAid"		"1"
-	"ShowCharges"			"1"
-	"equipdescription1"		"#asw_wdesc_medsatchel"
-	"altfiretext"			"#asw_weapon_healgun_altfire"
-	"attributestext"		"#asw_weapon_medsat_attributes"
-	//"Unique"			"1"
-	
-	// flinching
-	"FlinchChance"              "0"
-	"StoppingPowerFlinchBonus"  "0"
-	
+
 	// which ammo elements this weapon should display on the hud
-	"ShowBulletsOnHUD"      "2"
-	"ShowClipsOnHUD"      "0"
-	"ShowGrenadesOnHUD"      "0"
+	"ShowBulletsOnHUD"		"2"
+	"ShowClipsOnHUD"		"0"
+	"ShowGrenadesOnHUD"		"0"
+	"ShowCharges"			"1"
 
-	"SquadEmote"	"0"
+	"SquadEmote"		"0"
 	
-	"HUDIconOffsetX" "-10"
-	"HUDNumberOffsetX" "56"
-	"HUDNumberOffsetY" "10"
+	"HUDIconOffsetX"		"-10"
+	"HUDNumberOffsetX"		"56"
+	"HUDNumberOffsetY"		"10"
 
-// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
+	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
 	SoundData
 	{
 		"empty"			"ASW_Weapon.Empty"

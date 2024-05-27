@@ -205,8 +205,8 @@ void CASW_Weapon_Chainsaw::PrimaryAttack( void )
 			WeaponSound( EMPTY );
 		}
 
-		m_flNextPrimaryAttack = gpGlobals->curtime + GetWeaponInfo()->m_flFireRate;
-		m_flNextSecondaryAttack = gpGlobals->curtime + GetWeaponInfo()->m_flFireRate;
+		m_flNextPrimaryAttack = gpGlobals->curtime + GetEquipItem()->m_flFireRate;
+		m_flNextSecondaryAttack = gpGlobals->curtime + GetEquipItem()->m_flFireRate;
 		return;
 	}
 
@@ -368,11 +368,12 @@ void CASW_Weapon_Chainsaw::Fire( const Vector &vecOrigSrc, const Vector &vecDir 
 				extern ConVar rd_chainsaw_dmg_base;
 				if ( rd_chainsaw_dmg_base.GetFloat() > 0)
 				{
-					fDamage = 0.5 * rd_chainsaw_dmg_base.GetFloat() + MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_MELEE, ASW_MARINE_SUBSKILL_MELEE_DMG);
+					// convar is multiplied by 0.5 for backwards compatibility
+					fDamage = 0.5f * rd_chainsaw_dmg_base.GetFloat() + MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_MELEE, ASW_MARINE_SUBSKILL_MELEE_DMG );
 				}
 				else
 				{
-					fDamage = 0.5f * GetWeaponInfo()->m_flBaseDamage + MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_MELEE, ASW_MARINE_SUBSKILL_MELEE_DMG);
+					fDamage = GetEquipItem()->m_flBaseDamage + MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_MELEE, ASW_MARINE_SUBSKILL_MELEE_DMG );
 				}
 				CTakeDamageInfo info( this, pMarine, fDamage * g_pGameRules->GetDamageMultiplier(), DMG_SLASH );
 				info.SetWeapon( this );
@@ -450,8 +451,8 @@ void CASW_Weapon_Chainsaw::EndAttack( void )
 	StopChainsawSound();
 	
 	SetWeaponIdleTime( gpGlobals->curtime + 2.0 );
-	m_flNextPrimaryAttack = gpGlobals->curtime + GetWeaponInfo()->m_flFireRate;
-	m_flNextSecondaryAttack = gpGlobals->curtime + GetWeaponInfo()->m_flFireRate;
+	m_flNextPrimaryAttack = gpGlobals->curtime + GetEquipItem()->m_flFireRate;
+	m_flNextSecondaryAttack = gpGlobals->curtime + GetEquipItem()->m_flFireRate;
 
 	SetFiringState(FIRE_OFF);
 

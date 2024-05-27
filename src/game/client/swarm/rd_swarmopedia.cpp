@@ -853,10 +853,10 @@ static void PostProcessBuiltin( WeaponFact *pFact, CASW_EquipItem *pItem, CASW_W
 	case WeaponFact::Type_T::HammerUnits:
 		break;
 	case WeaponFact::Type_T::ShotgunPellets:
-		pFact->Base += pWeaponInfo->m_iNumPellets;
+		pFact->Base += pItem->m_nNumPellets;
 		break;
 	case WeaponFact::Type_T::DamagePerShot:
-		pFact->Base += pWeaponInfo->m_flBaseDamage;
+		pFact->Base += pItem->m_flBaseDamage;
 		break;
 	case WeaponFact::Type_T::LargeAlienDamageScale:
 		break;
@@ -865,8 +865,7 @@ static void PostProcessBuiltin( WeaponFact *pFact, CASW_EquipItem *pItem, CASW_W
 	case WeaponFact::Type_T::Piercing:
 		break;
 	case WeaponFact::Type_T::FireRate:
-		//pFact->Base += bIsSecondary ? pWeaponInfo->m_flSecondaryFireRate : pWeaponInfo->m_flFireRate;
-		pFact->Base += pWeaponInfo->m_flFireRate;
+		pFact->Base += pItem->m_flFireRate;
 		break;
 	case WeaponFact::Type_T::Ammo:
 		pFact->Base += bIsSecondary ? pItem->DefaultAmmo2() : pItem->DefaultAmmo1();
@@ -1107,7 +1106,7 @@ bool Weapon::ReadFromFile( const char *pszPath, KeyValues *pKV )
 					pFact->SetInt( "Precision", 2 );
 					pFact->SetString( "Skill", "ASW_MARINE_SKILL_RELOADING" );
 					pFact->SetString( "SubSkill", "ASW_MARINE_SUBSKILL_RELOADING_SPEED_SCALE" );
-					pFact->SetFloat( "SkillMultiplier", pWeaponInfo->m_flDisplayReloadTime > 0 ? pWeaponInfo->m_flDisplayReloadTime : pWeaponInfo->flReloadTime );
+					pFact->SetFloat( "SkillMultiplier", pWeaponInfo->m_flDisplayReloadTime > 0 ? pWeaponInfo->m_flDisplayReloadTime : pItem->m_flReloadTime );
 					Facts.InsertAfter( iNext++, Helpers::ReadFromFile<WeaponFact>( "INTERNAL", pFact ) );
 				}
 			}

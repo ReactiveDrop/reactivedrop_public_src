@@ -41,7 +41,9 @@ public:
 	virtual void PrimaryAttack();
 	virtual void FireBullets(CASW_Marine *pMarine, FireBulletsInfo_t *pBulletsInfo);
 	int ASW_SelectWeaponActivity(int idealActivity);
-	virtual float GetWeaponDamage();
+	virtual float GetWeaponBaseDamageOverride();
+	virtual int GetWeaponSkillId();
+	virtual int GetWeaponSubSkillId();
 	virtual int AmmoClickPoint() { return 2; }
 
 	virtual const float GetAutoAimAmount() { return 0.26f; }

@@ -264,11 +264,10 @@ float CASW_Weapon_Sniper_Rifle::GetMovementScale()
 
 float CASW_Weapon_Sniper_Rifle::GetFireRate()
 {
-	float flRate = GetWeaponInfo()->m_flFireRate;
-	if (IsZoomed())
-		flRate *= 1.9;
+	float flRate = BaseClass::GetFireRate();
 
-	//CALL_ATTRIB_HOOK_FLOAT( flRate, mod_fire_rate );
+	if ( IsZoomed() )
+		flRate *= 1.9;
 
 	return flRate;
 }
@@ -317,24 +316,7 @@ void CASW_Weapon_Sniper_Rifle::UpdateZoomState( void )
 
 float CASW_Weapon_Sniper_Rifle::GetWeaponDamage()
 {
-	float flDamage = GetWeaponInfo()->m_flBaseDamage;
-
-	extern ConVar rd_sniper_dmg_base;
-	if ( rd_sniper_dmg_base.GetFloat() > 0 )
-	{
-		flDamage = rd_sniper_dmg_base.GetFloat();
-	}
-
-#ifdef GAME_DLL
-	// Sniper rifle must kill with one shot for Instagib game mode
-	if ( ASWDeathmatchMode() && ASWDeathmatchMode()->IsInstagibEnabled() )
-		return 1000;
-#endif 
-
-	if ( GetMarine() )
-	{
-		flDamage += MarineSkills()->GetSkillBasedValueByMarine(GetMarine(), ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_SNIPER_RIFLE_DMG);
-	}
+	float flDamage = BaseClass::GetWeaponDamage();
 
 	if ( IsZoomed() )
 	{
@@ -351,6 +333,24 @@ inline float CASW_Weapon_Sniper_Rifle::GetZoomedDamageBonus()
 		return bonus;
 	else
 		return 0;
+}
+
+float CASW_Weapon_Sniper_Rifle::GetWeaponBaseDamageOverride()
+{
+	// Sniper rifle must kill with one shot for Instagib game mode
+	if ( ASWDeathmatchMode() && ASWDeathmatchMode()->IsInstagibEnabled() )
+		return 1000;
+
+	extern ConVar rd_sniper_dmg_base;
+	return rd_sniper_dmg_base.GetFloat();
+}
+int CASW_Weapon_Sniper_Rifle::GetWeaponSkillId()
+{
+	return ASW_MARINE_SKILL_ACCURACY;
+}
+int CASW_Weapon_Sniper_Rifle::GetWeaponSubSkillId()
+{
+	return ASW_MARINE_SUBSKILL_ACCURACY_SNIPER_RIFLE_DMG;
 }
 
 void CASW_Weapon_Sniper_Rifle::PlayZoomSound()

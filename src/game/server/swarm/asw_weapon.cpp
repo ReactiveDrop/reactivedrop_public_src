@@ -179,45 +179,45 @@ int CASW_Weapon::ShouldTransmit( const CCheckTransmitInfo *pInfo )
 	return FL_EDICT_ALWAYS;
 }
 
-bool CASW_Weapon::ShouldAlienFlinch(CBaseEntity *pAlien, const CTakeDamageInfo &info)
+bool CASW_Weapon::ShouldAlienFlinch( CBaseEntity *pAlien, const CTakeDamageInfo &info )
 {
-	const CASW_WeaponInfo* pWpnInfo = GetWeaponInfo();
-	if (!pWpnInfo)
+	const CASW_EquipItem *pEquipItem = GetEquipItem();
+	if ( !pEquipItem )
 		return false;
-	float fFlinchChance = pWpnInfo->m_fFlinchChance;
-	if (asw_debug_alien_damage.GetBool())
-		Msg("BaseFlinch chance %f ", fFlinchChance);
+	float fFlinchChance = pEquipItem->m_flFlinchChance;
+	if ( asw_debug_alien_damage.GetBool() )
+		Msg( "BaseFlinch chance %f ", fFlinchChance );
 
-	CBaseCombatCharacter* pOwner = GetOwner();
+	CBaseCombatCharacter *pOwner = GetOwner();
 	if ( pOwner && pOwner->Classify() == CLASS_ASW_MARINE )
 	{
-		CASW_Marine* pMarine = assert_cast<CASW_Marine*>( pOwner );
-		CASW_Marine_Profile* pMarineProfile = pMarine->GetMarineProfile();
+		CASW_Marine *pMarine = assert_cast< CASW_Marine * >( pOwner );
+		CASW_Marine_Profile *pMarineProfile = pMarine->GetMarineProfile();
 		if ( pMarineProfile && pMarineProfile->GetMarineClass() == MARINE_CLASS_SPECIAL_WEAPONS )
 		{
 			// this is a special weapons marine, so we need to add our flinch bonus onto it
-			fFlinchChance += pWpnInfo->m_fStoppingPowerFlinchBonus * MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_STOPPING_POWER);
-			if (asw_debug_alien_damage.GetBool())
-				Msg("Boosted by specialweaps to %f ", fFlinchChance);
+			fFlinchChance += pEquipItem->m_flStoppingPowerFlinchBonus * MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_STOPPING_POWER );
+			if ( asw_debug_alien_damage.GetBool() )
+				Msg( "Boosted by specialweaps to %f ", fFlinchChance );
 		}
 	}
 
 	//CALL_ATTRIB_HOOK_FLOAT( fFlinchChance, mod_stopping );
 
-	if (pAlien)
+	if ( pAlien )
 	{
 		int iHealth = pAlien->GetHealth();
 		int iDamage = info.GetDamage();
-		float fAlienHealth = float(iHealth + iDamage) / float(pAlien->GetMaxHealth());
+		float fAlienHealth = float( iHealth + iDamage ) / float( pAlien->GetMaxHealth() );
 		fFlinchChance *= fAlienHealth;
-		if (asw_debug_alien_damage.GetBool())
-			Msg("adjusted by alien health (%f) to %f ", fAlienHealth, fFlinchChance);
+		if ( asw_debug_alien_damage.GetBool() )
+			Msg( "adjusted by alien health (%f) to %f ", fAlienHealth, fFlinchChance );
 	}
 
 	float f = random->RandomFloat();
-	bool bResult = ( f < fFlinchChance);
-	if (asw_debug_alien_damage.GetBool())
-		Msg("random float is %f shouldflinch = %d\n", f, bResult);
+	bool bResult = ( f < fFlinchChance );
+	if ( asw_debug_alien_damage.GetBool() )
+		Msg( "random float is %f shouldflinch = %d\n", f, bResult );
 	return bResult;
 }
 

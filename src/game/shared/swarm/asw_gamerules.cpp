@@ -769,6 +769,11 @@ ConVar	sk_plr_dmg_asw_eshield( "sk_plr_dmg_asw_eshield", "10", FCVAR_REPLICATED 
 ConVar	sk_npc_dmg_asw_eshield( "sk_npc_dmg_asw_eshield", "10", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar	sk_max_asw_eshield( "sk_max_asw_eshield", "8", FCVAR_REPLICATED | FCVAR_CHEAT );
 
+// Rifle (4 clips, 120 per)
+ConVar	sk_plr_dmg_asw_r_burst( "sk_plr_dmg_asw_r_burst", "7", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_npc_dmg_asw_r_burst( "sk_npc_dmg_asw_r_burst", "7", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_r_burst( "sk_max_asw_r_burst", "480", FCVAR_REPLICATED | FCVAR_CHEAT );
+
 ConVar sk_asw_parasite_infest_dmg_easy( "sk_asw_parasite_infest_dmg_easy", "175", FCVAR_REPLICATED | FCVAR_CHEAT, "Total damage from parasite infestation" );
 ConVar sk_asw_parasite_infest_dmg_normal( "sk_asw_parasite_infest_dmg_normal", "225", FCVAR_REPLICATED | FCVAR_CHEAT, "Total damage from parasite infestation" );
 ConVar sk_asw_parasite_infest_dmg_hard( "sk_asw_parasite_infest_dmg_hard", "270", FCVAR_REPLICATED | FCVAR_CHEAT, "Total damage from parasite infestation" );
@@ -1430,6 +1435,8 @@ CAmmoDef *GetAmmoDef()
 		def.AddAmmoType( "ASW_CRYO", DMG_SLOWBURN, TRACER_NONE, "sk_plr_dmg_asw_cryo", "sk_npc_dmg_asw_cryo", "sk_max_asw_cryo", BULLET_IMPULSE( 200, 1225 ), 0 );
 		// energy shield alt fire
 		def.AddAmmoType( "ASW_ESHIELD", DMG_DISSOLVE, TRACER_NONE, "sk_plr_dmg_asw_eshield", "sk_npc_dmg_asw_eshield", "sk_max_asw_eshield", BULLET_IMPULSE( 200, 1225 ), 0 );
+		// rifle (burst fire)
+		def.AddAmmoType("ASW_R_BURST",			DMG_BULLET,					TRACER_LINE,	"sk_plr_dmg_asw_r_burst",			"sk_npc_dmg_asw_r_burst",			"sk_max_asw_r_burst",			BULLET_IMPULSE(200, 1225),	0 );
 	}
 
 	return &def;

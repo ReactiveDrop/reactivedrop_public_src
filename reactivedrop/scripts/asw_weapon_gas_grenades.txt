@@ -22,32 +22,18 @@ WeaponData
 
 	"weight"				"5"
 	"item_flags"			"0"
-	
-	// asw properties
-	"reload_time"			"2.2"
-	"equipicon"				"swarm/EquipIcons/EquipGasGrenades"
-	"equiplongname"			"#asw_weaponl_gas_grenades"
-	"RequiresFirstAid"		"1"
-	"equipdescription1"		"#asw_wdesc_gas_grenades"
-	"attributestext"		"#asw_weapon_gas_grenades_attributes"
-	"ExtraItem"				"1"
+
+	// which ammo elements this weapon should display on the hud
+	"ShowBulletsOnHUD"		"1"
+	"ShowClipsOnHUD"		"0"
+	"ShowGrenadesOnHUD"		"0"
+
 	"ShowCharges"			"1"
 	"OffhandActivate"		"1"
-	"OffhandOrderType"		"ASW_OFFHAND_THROW"
-	
-	// flinching
-	"FlinchChance"              "0"
-	"StoppingPowerFlinchBonus"  "0"
-	
-	// which ammo elements this weapon should display on the hud
-	"ShowBulletsOnHUD"      "1"
-	"ShowClipsOnHUD"      	"0"
-	"ShowGrenadesOnHUD"     "0"
-	
-	"HUDNumberOffsetX" "32"
-	"HUDNumberOffsetY" "12"
 
-	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
+	"HUDNumberOffsetX"		"32"
+	"HUDNumberOffsetY"		"12"
+
 	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
 	SoundData
 	{

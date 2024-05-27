@@ -517,3 +517,26 @@ CASW_Weapon_Sentry_Freeze::CASW_Weapon_Sentry_Freeze()
 	m_nMaxSentryAmmo = m_nSentryAmmo = CASW_Sentry_Base::GetBaseAmmoForGunType( (GunType_t) m_iSentryMunitionType );
 #endif
 }
+
+//============================================
+
+#ifdef RD_7A_WEAPONS
+IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Weapon_Sentry_Railgun, DT_ASW_Weapon_Sentry_Railgun )
+
+BEGIN_NETWORK_TABLE( CASW_Weapon_Sentry_Railgun, DT_ASW_Weapon_Sentry_Railgun )
+END_NETWORK_TABLE()
+
+BEGIN_PREDICTION_DATA( CASW_Weapon_Sentry_Railgun )
+END_PREDICTION_DATA()
+
+LINK_ENTITY_TO_CLASS( asw_weapon_sentry_railgun, CASW_Weapon_Sentry_Railgun );
+PRECACHE_WEAPON_REGISTER( asw_weapon_sentry_railgun );
+
+CASW_Weapon_Sentry_Railgun::CASW_Weapon_Sentry_Railgun()
+{
+#ifndef CLIENT_DLL
+	m_iSentryMunitionType = kRAILGUN;
+	m_nMaxSentryAmmo = m_nSentryAmmo = CASW_Sentry_Base::GetBaseAmmoForGunType( ( GunType_t )m_iSentryMunitionType );
+#endif
+}
+#endif

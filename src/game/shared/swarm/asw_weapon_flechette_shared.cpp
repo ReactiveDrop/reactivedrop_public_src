@@ -201,8 +201,7 @@ void CASW_Weapon_Flechette::SecondaryAttack()
 
 float CASW_Weapon_Flechette::GetFireRate()
 {
-	//float flRate = 0.125f;
-	float flRate = GetWeaponInfo()->m_flFireRate;
+	float flRate = GetEquipItem()->m_flFireRate;
 
 	//CALL_ATTRIB_HOOK_FLOAT( flRate, mod_fire_rate );
 

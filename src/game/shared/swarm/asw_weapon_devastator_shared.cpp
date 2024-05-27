@@ -76,25 +76,19 @@ void CASW_Weapon_Devastator::Precache()
 	BaseClass::Precache();
 }
 
-float CASW_Weapon_Devastator::GetWeaponDamage()
+float CASW_Weapon_Devastator::GetWeaponBaseDamageOverride()
 {
-	//float flDamage = 18.0f;
-	float flDamage = GetWeaponInfo()->m_flBaseDamage;
-
 	extern ConVar rd_devastator_dmg_base;
-	if ( rd_devastator_dmg_base.GetFloat() > 0 )
-	{
-		flDamage = rd_devastator_dmg_base.GetFloat();
-	}
-
-	if (GetMarine())
-	{
-		flDamage += MarineSkills()->GetSkillBasedValueByMarine( GetMarine(), ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_DEVASTATOR_DMG );
-	}
-
-	return flDamage;
+	return rd_devastator_dmg_base.GetFloat();
 }
-
+int CASW_Weapon_Devastator::GetWeaponSkillId()
+{
+	return ASW_MARINE_SKILL_ACCURACY;
+}
+int CASW_Weapon_Devastator::GetWeaponSubSkillId()
+{
+	return ASW_MARINE_SUBSKILL_ACCURACY_DEVASTATOR_DMG;
+}
 
 float CASW_Weapon_Devastator::GetMovementScale()
 {

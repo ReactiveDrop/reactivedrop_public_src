@@ -638,17 +638,6 @@ bool CASW_Weapon_Welder::OffhandActivate()
 	return true;
 }
 
-
-float CASW_Weapon_Welder::GetFireRate()
-{
-	//float flRate = 0.07f;
-	float flRate = GetWeaponInfo()->m_flFireRate;
-		
-	//CALL_ATTRIB_HOOK_FLOAT( flRate, mod_fire_rate );
-
-	return flRate;
-}
-
 CASW_Door* CASW_Weapon_Welder::FindDoor()
 {
 	CASW_Marine *pMarine = GetMarine();

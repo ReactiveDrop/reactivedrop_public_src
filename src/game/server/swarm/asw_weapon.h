@@ -99,10 +99,10 @@ public:
 	virtual void LowAmmoSound();
 	virtual int ASW_SelectWeaponActivity(int idealActivity);
 	virtual bool SupportsBayonet();
-	// reactivedrop: added GetWeaponPvpDamageBase(), GetWeaponSkillId() and
+	// reactivedrop: added GetWeaponBaseDamageOverride(), GetWeaponSkillId(), and
 	// GetWeaponSubSkillId() to make polymorphic implementation of GetWeaponDamage()
 	// this can reduce the duplication of code in subclasses
-	virtual float GetWeaponPvpDamageBase();
+	virtual float GetWeaponBaseDamageOverride();
 	virtual int GetWeaponSkillId();
 	virtual int GetWeaponSubSkillId();
 	virtual float GetWeaponDamage();

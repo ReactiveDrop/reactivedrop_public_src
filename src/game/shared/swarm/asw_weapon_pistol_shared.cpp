@@ -286,37 +286,36 @@ void CASW_Weapon_Pistol::ItemPostFrame( void )
 	}
 }
 
-float	CASW_Weapon_Pistol::GetFireRate( void )
+float CASW_Weapon_Pistol::GetFireRate( void )
 {
+	float flRate = BaseClass::GetFireRate();
+
+#ifdef CLIENT_DLL
+	return flRate;
+#else
 	CASW_Marine *pMarine = GetMarine();
 
-	float flRate = GetWeaponInfo()->m_flFireRate;
-
 	// player firing rate
-	if (!pMarine || pMarine->IsInhabited())
+	if ( !pMarine || pMarine->IsInhabited() )
 	{
 		return flRate;
 	}
 
-#ifdef CLIENT_DLL
-	return flRate;
-
-#else
-	RandomSeed(gpGlobals->curtime * 10.0f);
-	float randomness = 0.1f * random->RandomFloat() - 0.05f;
+	RandomSeed( gpGlobals->curtime * 10.0f );
+	float randomness = RandomFloat( -0.05f, 0.05f );
 
 	// AI firing rate: depends on distance to enemy
-	if (!pMarine->GetEnemy())
+	if ( !pMarine->GetEnemy() )
 		return 0.3f + randomness;
 
-	float dist = pMarine->GetAbsOrigin().DistTo(pMarine->GetEnemy()->GetAbsOrigin());
-	if (dist > 500)
+	float dist = pMarine->GetAbsOrigin().DistTo( pMarine->GetEnemy()->GetAbsOrigin() );
+	if ( dist > 500 )
 		return 0.3f + randomness;
 
-	if (dist < 100)
+	if ( dist < 100 )
 		return 0.14f + randomness;
 
-	float factor = (dist - 100) / 400.0f;
+	float factor = ( dist - 100 ) / 400.0f;
 	return 0.14f + factor * 0.16f + randomness;
 #endif
 }
@@ -357,28 +356,19 @@ int CASW_Weapon_Pistol::ASW_SelectWeaponActivity(int idealActivity)
 	return idealActivity;
 }
 
-float CASW_Weapon_Pistol::GetWeaponDamage()
+float CASW_Weapon_Pistol::GetWeaponBaseDamageOverride()
 {
-	//float flDamage = 18.0f;
-	float flDamage = GetWeaponInfo()->m_flBaseDamage;
-
 	extern ConVar rd_pistol_dmg_base;
-	if ( rd_pistol_dmg_base.GetFloat() > 0 )
-	{
-		
-		flDamage = rd_pistol_dmg_base.GetFloat();
-	}
-
-	if ( GetMarine() )
-	{
-		flDamage += MarineSkills()->GetSkillBasedValueByMarine(GetMarine(), ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_PISTOL_DMG);
-	}
-
-	//CALL_ATTRIB_HOOK_FLOAT( flDamage, mod_damage_done );
-
-	return flDamage;
+	return rd_pistol_dmg_base.GetFloat();
 }
-
+int CASW_Weapon_Pistol::GetWeaponSkillId()
+{
+	return ASW_MARINE_SKILL_ACCURACY;
+}
+int CASW_Weapon_Pistol::GetWeaponSubSkillId()
+{
+	return ASW_MARINE_SUBSKILL_ACCURACY_PISTOL_DMG;
+}
 
 #ifdef CLIENT_DLL
 const char* CASW_Weapon_Pistol::GetPartialReloadSound(int iPart)
