@@ -44,10 +44,11 @@
 #define ASW_CHAINSAW_CHARGE_UP_TIME  1.0
 #define ASW_CHAINSAW_PULSE_INTERVAL			0.1
 #define ASW_CHAINSAW_DISCHARGE_INTERVAL		0.1
-#define ASW_CHAINSAW_RANGE 30
 
 extern ConVar sk_plr_dmg_asw_cs;
 extern int	g_sModelIndexSmoke;			// (in combatweapon.cpp) holds the index for the smoke cloud
+
+ConVar asw_chainsaw_range( "asw_chainsaw_range", "30", FCVAR_CHEAT | FCVAR_REPLICATED, "Length of the chainsaw blade. Chainsaw blade has a 5 unit radius.", true, 10.0f, false, 0.0f );
 
 ConVar asw_chainsaw_pitch_bite_rate( "asw_chainsaw_pitch_bite_rate", "50.0", FCVAR_CHEAT | FCVAR_REPLICATED, "How quickly the chainsaw pitch changes when attack hits somethings" );
 ConVar asw_chainsaw_pitch_return_rate( "asw_chainsaw_pitch_return_rate", "50.0", FCVAR_CHEAT | FCVAR_REPLICATED, "How quickly the pitch returns to normal when attacking chainsaw doesn't hit anything" );
@@ -122,8 +123,8 @@ CASW_Weapon_Chainsaw::CASW_Weapon_Chainsaw( void )
 	m_bShouldUpdateActivityClient = false;
 #endif
 
-	m_fMaxRange1 = ASW_CHAINSAW_RANGE;
-	m_fMaxRange2 = ASW_CHAINSAW_RANGE;
+	m_fMaxRange1 = asw_chainsaw_range.GetFloat();
+	m_fMaxRange2 = asw_chainsaw_range.GetFloat();
 }
 
 CASW_Weapon_Chainsaw::~CASW_Weapon_Chainsaw()
@@ -319,7 +320,7 @@ void CASW_Weapon_Chainsaw::Fire( const Vector &vecOrigSrc, const Vector &vecDir 
 #define SHOWIMPACTS_COLOR 0, 0, 255
 #endif
 
-	Vector vecDest = vecOrigSrc + (vecDir * ASW_CHAINSAW_RANGE);
+	Vector vecDest = vecOrigSrc + (vecDir * asw_chainsaw_range.GetFloat());
 
 	bool bDamageTime = m_flDmgTime < gpGlobals->curtime;
 	bool bHit = false;
