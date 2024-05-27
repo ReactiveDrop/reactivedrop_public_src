@@ -19,6 +19,11 @@
 
 int ASW_GiveAmmo( CASW_Inhabitable_NPC *pNPC, float flCount, const char *pszAmmoName, CBaseEntity *pAmmoEntity, bool bSuppressSound = false )
 {
+	if ( pAmmoEntity->IsMarkedForDeletion() )
+	{
+		return 0;
+	}
+
 	int iAmmoType = GetAmmoDef()->Index( pszAmmoName );
 	if ( iAmmoType == -1 )
 	{
@@ -77,6 +82,36 @@ int ASW_GiveAmmo( CASW_Inhabitable_NPC *pNPC, float flCount, const char *pszAmmo
 	return amount;
 }
 
+void ASW_GiveSecondaryAmmo( CASW_Inhabitable_NPC *pNPC, std::initializer_list<int> allowedClasses )
+{
+	CBaseCombatWeapon *pActive = pNPC->GetActiveWeapon();
+	if ( pActive && std::find( allowedClasses.begin(), allowedClasses.end(), pActive->Classify() ) != allowedClasses.end() )
+	{
+		if ( pActive->Clip2() < pActive->GetMaxClip2() )
+		{
+			pActive->m_iClip2++;
+			return;
+		}
+	}
+
+	CBaseCombatWeapon *pWeapon;
+	for ( int i = 0; i < ASW_MAX_MARINE_WEAPONS; i++ )
+	{
+		pWeapon = pNPC->GetWeapon( i );
+		if ( pWeapon == pActive )
+			continue;
+
+		if ( pWeapon && std::find( allowedClasses.begin(), allowedClasses.end(), pWeapon->Classify() ) != allowedClasses.end() )
+		{
+			if ( pWeapon->Clip2() < pWeapon->GetMaxClip2() )
+			{
+				pWeapon->m_iClip2++;
+				return;
+			}
+		}
+	}
+}
+
 IMPLEMENT_AUTO_LIST( IAmmoPickupAutoList );
 
 void CASW_Ammo::Spawn( void )
@@ -130,6 +165,7 @@ void CASW_Ammo_Rifle::Spawn( void )
 	SetModel( "models/swarm/ammo/ammoassaultrifle.mdl" );
 	BaseClass::Spawn();
 	m_iAmmoIndex = GetAmmoDef()->Index( "ASW_R" );
+	m_iAmmoIndex2 = GetAmmoDef()->Index( "ASW_R_BURST" );
 }
 
 
@@ -143,37 +179,41 @@ void CASW_Ammo_Rifle::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType
 	if ( nHoldType == ASW_USE_HOLD_START )
 		return;
 
-	// player has used this item	
+	// if we have a burst rifle active, try that first
+	bool bBurstRifleActive = pNPC->GetActiveWeapon() && pNPC->GetActiveWeapon()->GetPrimaryAmmoType() == GetAmmoDef()->Index( "ASW_R_BURST" );
+	if ( bBurstRifleActive && ASW_GiveAmmo( pNPC, 120, "ASW_R_BURST", this ) )
+	{
+		if ( m_bAddSecondary ) // add rifle grenade
+		{
+			ASW_GiveSecondaryAmmo( pNPC, { CLASS_ASW_ENERGY_SHIELD } );
+		}
+
+		UTIL_Remove( this );
+		return;
+	}
+
+	// player has used this item
 	if ( ASW_GiveAmmo( pNPC, 98, "ASW_R", this ) )
 	{
-		if ( m_bAddSecondary )//add rifle grenade
+		if ( m_bAddSecondary ) // add rifle grenade
 		{
-			bool bFilledActive = false;
-			CBaseCombatWeapon *pActive = pNPC->GetActiveWeapon();
-			if ( pActive && ( pActive->Classify() == CLASS_ASW_RIFLE || pActive->Classify() == CLASS_ASW_PRIFLE || pActive->Classify() == CLASS_ASW_COMBAT_RIFLE ) )
-			{
-				if ( pActive->Clip2() < pActive->GetMaxClip2() )
-				{
-					pActive->m_iClip2++;
-					bFilledActive = true;
-				}
-			}
-
-			if ( !bFilledActive )
-			{
-				CBaseCombatWeapon *pWeapon;
-				for ( int i = 0; i < ASW_MAX_MARINE_WEAPONS; i++ )
-				{
-					pWeapon = pNPC->GetWeapon( i );
-					if ( pWeapon == pActive )
-						continue;
-					if ( pWeapon && ( pWeapon->Classify() == CLASS_ASW_RIFLE || pWeapon->Classify() == CLASS_ASW_PRIFLE || pWeapon->Classify() == CLASS_ASW_COMBAT_RIFLE ) )
-						if ( pWeapon->Clip2() < pWeapon->GetMaxClip2() )
-							pWeapon->m_iClip2++;
-				}
-			}
+			ASW_GiveSecondaryAmmo( pNPC, { CLASS_ASW_RIFLE, CLASS_ASW_PRIFLE, CLASS_ASW_COMBAT_RIFLE } );
 		}
+
 		UTIL_Remove( this );
+		return;
+	}
+
+	// alternate use: burst rifle
+	if ( !bBurstRifleActive && ASW_GiveAmmo( pNPC, 120, "ASW_R_BURST", this ) )
+	{
+		if ( m_bAddSecondary ) // add rifle grenade
+		{
+			ASW_GiveSecondaryAmmo( pNPC, { CLASS_ASW_ENERGY_SHIELD } );
+		}
+
+		UTIL_Remove( this );
+		return;
 	}
 }
 
@@ -195,6 +235,7 @@ void CASW_Ammo_Autogun::Spawn( void )
 	SetModel( "models/swarm/ammo/ammoautogun.mdl" );
 	BaseClass::Spawn();
 	m_iAmmoIndex = GetAmmoDef()->Index( "ASW_AG" );
+	m_iAmmoIndex2 = GetAmmoDef()->Index( "ASW_DEVASTATOR" );
 }
 
 
@@ -208,10 +249,24 @@ void CASW_Ammo_Autogun::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldTy
 	if ( nHoldType == ASW_USE_HOLD_START )
 		return;
 
-	// player has used this item	
+	bool bDevastatorActive = pNPC->GetActiveWeapon() && pNPC->GetActiveWeapon()->GetPrimaryAmmoType() == GetAmmoDef()->Index( "ASW_DEVASTATOR" );
+	if ( bDevastatorActive && ASW_GiveAmmo( pNPC, 70, "ASW_DEVASTATOR", this ) )
+	{
+		UTIL_Remove( this );
+		return;
+	}
+
+	// player has used this item
 	if ( ASW_GiveAmmo( pNPC, 250, "ASW_AG", this ) )
 	{
 		UTIL_Remove( this );
+		return;
+	}
+
+	if ( !bDevastatorActive && ASW_GiveAmmo( pNPC, 70, "ASW_DEVASTATOR", this ) )
+	{
+		UTIL_Remove( this );
+		return;
 	}
 }
 
@@ -288,32 +343,11 @@ void CASW_Ammo_Assault_Shotgun::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int
 	{
 		if ( m_bAddSecondary )
 		{
-			bool bFilledActive = false;
-			CBaseCombatWeapon *pActive = pNPC->GetActiveWeapon();
-			if ( pActive && pActive->Classify() == CLASS_ASW_ASSAULT_SHOTGUN )
-			{
-				if ( pActive->Clip2() < pActive->GetMaxClip2() )
-				{
-					pActive->m_iClip2++;
-					bFilledActive = true;
-				}
-			}
-
-			if ( !bFilledActive )
-			{
-				CBaseCombatWeapon *pWeapon;
-				for ( int i = 0; i < ASW_MAX_MARINE_WEAPONS; i++ )
-				{
-					pWeapon = pNPC->GetWeapon( i );
-					if ( pWeapon == pActive )
-						continue;
-					if ( pWeapon && pWeapon->Classify() == CLASS_ASW_ASSAULT_SHOTGUN )
-						if ( pWeapon->Clip2() < pWeapon->GetMaxClip2() )
-							pWeapon->m_iClip2++;
-				}
-			}
+			ASW_GiveSecondaryAmmo( pNPC, { CLASS_ASW_ASSAULT_SHOTGUN } );
 		}
+
 		UTIL_Remove( this );
+		return;
 	}
 }
 
@@ -335,6 +369,7 @@ void CASW_Ammo_Flamer::Spawn( void )
 	SetModel( "models/swarm/Ammo/ammoflamer.mdl" );
 	BaseClass::Spawn();
 	m_iAmmoIndex = GetAmmoDef()->Index( "ASW_F" );
+	m_iAmmoIndex2 = GetAmmoDef()->Index( "ASW_CRYO" );
 }
 
 
@@ -348,9 +383,23 @@ void CASW_Ammo_Flamer::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldTyp
 	if ( nHoldType == ASW_USE_HOLD_START )
 		return;
 
+	bool bCryoActive = pNPC->GetActiveWeapon() && pNPC->GetActiveWeapon()->GetPrimaryAmmoType() == GetAmmoDef()->Index( "ASW_CRYO" );
+	if ( bCryoActive && ASW_GiveAmmo( pNPC, 80, "ASW_CRYO", this ) )
+	{
+		UTIL_Remove( this );
+		return;
+	}
+
 	if ( ASW_GiveAmmo( pNPC, 80, "ASW_F", this ) )
 	{
 		UTIL_Remove( this );
+		return;
+	}
+
+	if ( !bCryoActive && ASW_GiveAmmo( pNPC, 80, "ASW_CRYO", this ) )
+	{
+		UTIL_Remove( this );
+		return;
 	}
 }
 
@@ -388,6 +437,7 @@ void CASW_Ammo_Pistol::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldTyp
 	if ( ASW_GiveAmmo( pNPC, 16, "ASW_P", this ) )
 	{
 		UTIL_Remove( this );
+		return;
 	}
 }
 
@@ -425,6 +475,7 @@ void CASW_Ammo_Mining_Laser::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nH
 	if ( ASW_GiveAmmo( pNPC, 50, "ASW_ML", this ) )
 	{
 		UTIL_Remove( this );
+		return;
 	}
 }
 
@@ -462,6 +513,7 @@ void CASW_Ammo_Railgun::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldTy
 	if ( ASW_GiveAmmo( pNPC, 12, "ASW_RG", this ) )
 	{
 		UTIL_Remove( this );
+		return;
 	}
 }
 
@@ -499,6 +551,7 @@ void CASW_Ammo_Chainsaw::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldT
 	if ( ASW_GiveAmmo( pNPC, 150, "ASW_CS", this ) )
 	{
 		UTIL_Remove( this );
+		return;
 	}
 }
 
@@ -536,6 +589,7 @@ void CASW_Ammo_PDW::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
 	if ( ASW_GiveAmmo( pNPC, 80, "ASW_PDW", this ) )
 	{
 		UTIL_Remove( this );
+		return;
 	}
 }
 
@@ -576,32 +630,11 @@ void CASW_Ammo_AR2::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
 	{
 		if ( m_bAddSecondary )
 		{
-			bool bFilledActive = false;
-			CBaseCombatWeapon *pActive = pNPC->GetActiveWeapon();
-			if ( pActive && pActive->Classify() == CLASS_ASW_AR2 )
-			{
-				if ( pActive->Clip2() < pActive->GetMaxClip2() )
-				{
-					pActive->m_iClip2++;
-					bFilledActive = true;
-				}
-			}
-
-			if ( !bFilledActive )
-			{
-				CBaseCombatWeapon *pWeapon;
-				for ( int i = 0; i < ASW_MAX_MARINE_WEAPONS; i++ )
-				{
-					pWeapon = pNPC->GetWeapon( i );
-					if ( pWeapon == pActive )
-						continue;
-					if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AR2 )
-						if ( pWeapon->Clip2() < pWeapon->GetMaxClip2() )
-							pWeapon->m_iClip2++;
-				}
-			}
+			ASW_GiveSecondaryAmmo( pNPC, { CLASS_ASW_AR2 } );
 		}
+
 		UTIL_Remove( this );
+		return;
 	}
 }
 
@@ -640,6 +673,7 @@ void CASW_Ammo_Grenade_Launcher::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, in
 	if ( ASW_GiveAmmo( pNPC, 18, "ASW_GL", this ) )
 	{
 		UTIL_Remove( this );
+		return;
 	}
 }
 
@@ -677,6 +711,7 @@ void CASW_Ammo_Sniper_Rifle::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nH
 	if ( ASW_GiveAmmo( pNPC, 12, "ASW_SNIPER", this ) )
 	{
 		UTIL_Remove( this );
+		return;
 	}
 }
 
@@ -716,31 +751,10 @@ void CASW_Ammo_Heavy_Rifle::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHo
 	{
 		if ( m_bAddSecondary )
 		{
-			bool bFilledActive = false;
-			CBaseCombatWeapon *pActive = pNPC->GetActiveWeapon();
-			if ( pActive && pActive->Classify() == CLASS_ASW_HEAVY_RIFLE )
-			{
-				if ( pActive->Clip2() < pActive->GetMaxClip2() )
-				{
-					pActive->m_iClip2++;
-					bFilledActive = true;
-				}
-			}
-
-			if ( !bFilledActive )
-			{
-				CBaseCombatWeapon *pWeapon;
-				for ( int i = 0; i < ASW_MAX_MARINE_WEAPONS; i++ )
-				{
-					pWeapon = pNPC->GetWeapon( i );
-					if ( pWeapon == pActive )
-						continue;
-					if ( pWeapon && pWeapon->Classify() == CLASS_ASW_HEAVY_RIFLE )
-						if ( pWeapon->Clip2() < pWeapon->GetMaxClip2() )
-							pWeapon->m_iClip2++;
-				}
-			}
+			ASW_GiveSecondaryAmmo( pNPC, { CLASS_ASW_HEAVY_RIFLE } );
 		}
+
 		UTIL_Remove( this );
+		return;
 	}
 }

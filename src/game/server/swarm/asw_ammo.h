@@ -17,12 +17,14 @@ public:
 	
 	virtual bool AllowedToPickup( CASW_Inhabitable_NPC *pNPC );
 	int GetAmmoType() { return m_iAmmoIndex; }
+	int GetAmmoType2() { return m_iAmmoIndex2; }
 	
 	static bool VismonCallback( CBaseEntity *pPickup, CBasePlayer *pViewingPlayer );
 
 	IMPLEMENT_AUTO_LIST_GET();
 
-	int m_iAmmoIndex;
+	int m_iAmmoIndex{ -1 };
+	int m_iAmmoIndex2{ -1 };
 };
 
 class CASW_Ammo_Rifle : public CASW_Ammo

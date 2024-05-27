@@ -23,10 +23,11 @@ END_RECV_TABLE()
 
 C_ASW_Ammo_Rifle::C_ASW_Ammo_Rifle()
 {	
-	Q_snprintf(m_szUseIconText, sizeof(m_szUseIconText), "#asw_take_ammo_rifle");
-	Q_snprintf(m_szNoGunText, sizeof(m_szNoGunText), "#asw_ammo_rifle");	
-	Q_snprintf(m_szAmmoFullText, sizeof(m_szAmmoFullText), "#asw_ammo_rifle_full");	
-	m_iAmmoIndex = GetAmmoDef()->Index("ASW_R");
+	Q_snprintf( m_szUseIconText, sizeof( m_szUseIconText ), "#asw_take_ammo_rifle" );
+	Q_snprintf( m_szNoGunText, sizeof( m_szNoGunText ), "#asw_ammo_rifle" );
+	Q_snprintf( m_szAmmoFullText, sizeof( m_szAmmoFullText ), "#asw_ammo_rifle_full" );
+	m_iAmmoIndex = GetAmmoDef()->Index( "ASW_R" );
+	m_iAmmoIndex2 = GetAmmoDef()->Index( "ASW_R_BURST" );
 }
 
 //------------
@@ -38,10 +39,11 @@ END_RECV_TABLE()
 
 C_ASW_Ammo_Autogun::C_ASW_Ammo_Autogun()
 {	
-	Q_snprintf(m_szUseIconText, sizeof(m_szUseIconText), "#asw_take_ammo_autogun");
-	Q_snprintf(m_szNoGunText, sizeof(m_szNoGunText), "#asw_ammo_autogun");
-	Q_snprintf(m_szAmmoFullText, sizeof(m_szAmmoFullText), "#asw_ammo_autogun_full");	
-	m_iAmmoIndex = GetAmmoDef()->Index("ASW_AG");
+	Q_snprintf( m_szUseIconText, sizeof( m_szUseIconText ), "#asw_take_ammo_autogun" );
+	Q_snprintf( m_szNoGunText, sizeof( m_szNoGunText ), "#asw_ammo_autogun" );
+	Q_snprintf( m_szAmmoFullText, sizeof( m_szAmmoFullText ), "#asw_ammo_autogun_full" );
+	m_iAmmoIndex = GetAmmoDef()->Index( "ASW_AG" );
+	m_iAmmoIndex2 = GetAmmoDef()->Index( "ASW_DEVASTATOR" );
 }
 
 //------------
@@ -53,10 +55,10 @@ END_RECV_TABLE()
 
 C_ASW_Ammo_Shotgun::C_ASW_Ammo_Shotgun()
 {	
-	Q_snprintf(m_szUseIconText, sizeof(m_szUseIconText), "#asw_take_ammo_shotgun");
-	Q_snprintf(m_szNoGunText, sizeof(m_szNoGunText), "#asw_ammo_shotgun");
-	Q_snprintf(m_szAmmoFullText, sizeof(m_szAmmoFullText), "#asw_ammo_shotgun_full");
-	m_iAmmoIndex = GetAmmoDef()->Index("ASW_SG");
+	Q_snprintf( m_szUseIconText, sizeof( m_szUseIconText ), "#asw_take_ammo_shotgun" );
+	Q_snprintf( m_szNoGunText, sizeof( m_szNoGunText ), "#asw_ammo_shotgun" );
+	Q_snprintf( m_szAmmoFullText, sizeof( m_szAmmoFullText ), "#asw_ammo_shotgun_full" );
+	m_iAmmoIndex = GetAmmoDef()->Index( "ASW_SG" );
 }
 
 //------------
@@ -68,10 +70,10 @@ END_RECV_TABLE()
 
 C_ASW_Ammo_Assault_Shotgun::C_ASW_Ammo_Assault_Shotgun()
 {
-	Q_snprintf(m_szUseIconText, sizeof(m_szUseIconText), "#asw_take_ammo_vindicator");
-	Q_snprintf(m_szNoGunText, sizeof(m_szNoGunText), "#asw_ammo_vindicator");
-	Q_snprintf(m_szAmmoFullText, sizeof(m_szAmmoFullText), "#asw_ammo_vindicator_full");
-	m_iAmmoIndex = GetAmmoDef()->Index("ASW_ASG");
+	Q_snprintf( m_szUseIconText, sizeof( m_szUseIconText ), "#asw_take_ammo_vindicator" );
+	Q_snprintf( m_szNoGunText, sizeof( m_szNoGunText ), "#asw_ammo_vindicator" );
+	Q_snprintf( m_szAmmoFullText, sizeof( m_szAmmoFullText ), "#asw_ammo_vindicator_full" );
+	m_iAmmoIndex = GetAmmoDef()->Index( "ASW_ASG" );
 }
 
 //------------
@@ -83,10 +85,11 @@ END_RECV_TABLE()
 
 C_ASW_Ammo_Flamer::C_ASW_Ammo_Flamer()
 {
-	Q_snprintf(m_szUseIconText, sizeof(m_szUseIconText), "#asw_take_ammo_flamer");
-	Q_snprintf(m_szNoGunText, sizeof(m_szNoGunText), "#asw_ammo_flamer");
-	Q_snprintf(m_szAmmoFullText, sizeof(m_szAmmoFullText), "#asw_ammo_flamer_full");	
-	m_iAmmoIndex = GetAmmoDef()->Index("ASW_F");
+	Q_snprintf( m_szUseIconText, sizeof( m_szUseIconText ), "#asw_take_ammo_flamer" );
+	Q_snprintf( m_szNoGunText, sizeof( m_szNoGunText ), "#asw_ammo_flamer" );
+	Q_snprintf( m_szAmmoFullText, sizeof( m_szAmmoFullText ), "#asw_ammo_flamer_full" );
+	m_iAmmoIndex = GetAmmoDef()->Index( "ASW_F" );
+	m_iAmmoIndex2 = GetAmmoDef()->Index( "ASW_CRYO" );
 }
 
 //------------
@@ -98,10 +101,10 @@ END_RECV_TABLE()
 
 C_ASW_Ammo_Pistol::C_ASW_Ammo_Pistol()
 {
-	Q_snprintf(m_szUseIconText, sizeof(m_szUseIconText), "#asw_take_ammo_pistol");
-	Q_snprintf(m_szNoGunText, sizeof(m_szNoGunText), "#asw_ammo_pistol");
-	Q_snprintf(m_szAmmoFullText, sizeof(m_szAmmoFullText), "#asw_ammo_pistol_full");	
-	m_iAmmoIndex = GetAmmoDef()->Index("ASW_P");
+	Q_snprintf( m_szUseIconText, sizeof( m_szUseIconText ), "#asw_take_ammo_pistol" );
+	Q_snprintf( m_szNoGunText, sizeof( m_szNoGunText ), "#asw_ammo_pistol" );
+	Q_snprintf( m_szAmmoFullText, sizeof( m_szAmmoFullText ), "#asw_ammo_pistol_full" );
+	m_iAmmoIndex = GetAmmoDef()->Index( "ASW_P" );
 }
 
 //------------
@@ -113,10 +116,10 @@ END_RECV_TABLE()
 
 C_ASW_Ammo_Mining_Laser::C_ASW_Ammo_Mining_Laser()
 {
-	Q_snprintf(m_szUseIconText, sizeof(m_szUseIconText), "#asw_take_ammo_mining_laser");
-	Q_snprintf(m_szNoGunText, sizeof(m_szNoGunText), "#asw_ammo_mining_laser");
-	Q_snprintf(m_szAmmoFullText, sizeof(m_szAmmoFullText), "#asw_ammo_mining_laser_full");	
-	m_iAmmoIndex = GetAmmoDef()->Index("ASW_ML");
+	Q_snprintf( m_szUseIconText, sizeof( m_szUseIconText ), "#asw_take_ammo_mining_laser" );
+	Q_snprintf( m_szNoGunText, sizeof( m_szNoGunText ), "#asw_ammo_mining_laser" );
+	Q_snprintf( m_szAmmoFullText, sizeof( m_szAmmoFullText ), "#asw_ammo_mining_laser_full" );
+	m_iAmmoIndex = GetAmmoDef()->Index( "ASW_ML" );
 }
 
 //------------
@@ -128,10 +131,10 @@ END_RECV_TABLE()
 
 C_ASW_Ammo_Railgun::C_ASW_Ammo_Railgun()
 {
-	Q_snprintf(m_szUseIconText, sizeof(m_szUseIconText), "#asw_take_ammo_railgun");
-	Q_snprintf(m_szNoGunText, sizeof(m_szNoGunText), "#asw_ammo_railgun");
-	Q_snprintf(m_szAmmoFullText, sizeof(m_szAmmoFullText), "#asw_ammo_railgun_full");	
-	m_iAmmoIndex = GetAmmoDef()->Index("ASW_RG");
+	Q_snprintf( m_szUseIconText, sizeof( m_szUseIconText ), "#asw_take_ammo_railgun" );
+	Q_snprintf( m_szNoGunText, sizeof( m_szNoGunText ), "#asw_ammo_railgun" );
+	Q_snprintf( m_szAmmoFullText, sizeof( m_szAmmoFullText ), "#asw_ammo_railgun_full" );
+	m_iAmmoIndex = GetAmmoDef()->Index( "ASW_RG" );
 }
 
 //------------
@@ -143,10 +146,10 @@ END_RECV_TABLE()
 
 C_ASW_Ammo_Chainsaw::C_ASW_Ammo_Chainsaw()
 {
-	Q_snprintf(m_szUseIconText, sizeof(m_szUseIconText), "#asw_take_ammo_chainsaw");
-	Q_snprintf(m_szNoGunText, sizeof(m_szNoGunText), "#asw_ammo_chainsaw");
-	Q_snprintf(m_szAmmoFullText, sizeof(m_szAmmoFullText), "#asw_ammo_chainsaw_full");	
-	m_iAmmoIndex = GetAmmoDef()->Index("ASW_CS");
+	Q_snprintf( m_szUseIconText, sizeof( m_szUseIconText ), "#asw_take_ammo_chainsaw" );
+	Q_snprintf( m_szNoGunText, sizeof( m_szNoGunText ), "#asw_ammo_chainsaw" );
+	Q_snprintf( m_szAmmoFullText, sizeof( m_szAmmoFullText ), "#asw_ammo_chainsaw_full" );
+	m_iAmmoIndex = GetAmmoDef()->Index( "ASW_CS" );
 }
 
 //------------
@@ -158,10 +161,10 @@ END_RECV_TABLE()
 
 C_ASW_Ammo_PDW::C_ASW_Ammo_PDW()
 {
-	Q_snprintf(m_szUseIconText, sizeof(m_szUseIconText), "#asw_take_ammo_pdw");
-	Q_snprintf(m_szNoGunText, sizeof(m_szNoGunText), "#asw_ammo_pdw");
-	Q_snprintf(m_szAmmoFullText, sizeof(m_szAmmoFullText), "#asw_ammo_pdw_full");	
-	m_iAmmoIndex = GetAmmoDef()->Index("ASW_PDW");
+	Q_snprintf( m_szUseIconText, sizeof( m_szUseIconText ), "#asw_take_ammo_pdw" );
+	Q_snprintf( m_szNoGunText, sizeof( m_szNoGunText ), "#asw_ammo_pdw" );
+	Q_snprintf( m_szAmmoFullText, sizeof( m_szAmmoFullText ), "#asw_ammo_pdw_full" );
+	m_iAmmoIndex = GetAmmoDef()->Index( "ASW_PDW" );
 }
 
 //------------

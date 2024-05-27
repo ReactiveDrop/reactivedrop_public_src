@@ -8891,17 +8891,18 @@ int CAlienSwarm::CampaignMissionsLeft()
 	return ( iNumMissions - pSave->m_iNumMissionsComplete );
 }
 
-bool CAlienSwarm::MarineCanPickupAmmo(CASW_Marine *pMarine, CASW_Ammo *pAmmo)
+bool CAlienSwarm::MarineCanPickupAmmo( CASW_Marine *pMarine, CASW_Ammo *pAmmo )
 {
-	if (!pMarine || !pAmmo)
+	if ( !pMarine || !pAmmo )
 		return false;
 
-	int iGuns = pMarine->GetNumberOfWeaponsUsingAmmo(pAmmo->m_iAmmoIndex);
-	if (iGuns <= 0)
+	int iGuns = pMarine->GetNumberOfWeaponsUsingAmmo( pAmmo->m_iAmmoIndex );
+	int iGuns2 = pAmmo->m_iAmmoIndex2 != -1 ? pMarine->GetNumberOfWeaponsUsingAmmo( pAmmo->m_iAmmoIndex2 ) : 0;
+	if ( iGuns <= 0 && iGuns2 <= 0 )
 	{
 		// just show the name of the ammo, without the 'take'
 #ifdef CLIENT_DLL
-		Q_snprintf(m_szPickupDenial, sizeof(m_szPickupDenial), "%s", pAmmo->m_szNoGunText);
+		Q_snprintf( m_szPickupDenial, sizeof( m_szPickupDenial ), "%s", pAmmo->m_szNoGunText );
 #endif
 		return false;
 	}
@@ -8909,12 +8910,14 @@ bool CAlienSwarm::MarineCanPickupAmmo(CASW_Marine *pMarine, CASW_Ammo *pAmmo)
 	if ( pAmmo->m_iAmmoIndex < 0 || pAmmo->m_iAmmoIndex >= MAX_AMMO_SLOTS )
 		return false;
 
-	int iMax = GetAmmoDef()->MaxCarry(pAmmo->m_iAmmoIndex, pMarine) * iGuns;
-	int iAdd = MIN( 1, iMax - pMarine->GetAmmoCount(pAmmo->m_iAmmoIndex) );
-	if ( iAdd < 1 )
+	int iMax = GetAmmoDef()->MaxCarry( pAmmo->m_iAmmoIndex, pMarine ) * iGuns;
+	int iMax2 = pAmmo->m_iAmmoIndex2 != -1 ? GetAmmoDef()->MaxCarry( pAmmo->m_iAmmoIndex2, pMarine ) * iGuns2 : 0;
+	int iAdd = iMax - pMarine->GetAmmoCount( pAmmo->m_iAmmoIndex );
+	int iAdd2 = pAmmo->m_iAmmoIndex2 != -1 ? iMax2 - pMarine->GetAmmoCount( pAmmo->m_iAmmoIndex2 ) : 0;
+	if ( iAdd < 1 && iAdd2 < 1 )
 	{
 #ifdef CLIENT_DLL
-		Q_snprintf(m_szPickupDenial, sizeof(m_szPickupDenial), "%s", pAmmo->m_szAmmoFullText);
+		Q_snprintf( m_szPickupDenial, sizeof( m_szPickupDenial ), "%s", pAmmo->m_szAmmoFullText );
 #endif
 		return false;
 	}
