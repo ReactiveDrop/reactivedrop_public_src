@@ -24,6 +24,7 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_Hack_Computer, DT_ASW_Hack_Computer, CASW_Hack_C
 	RecvPropBool( RECVINFO( m_bLastAllCorrect ) ),
 	RecvPropFloat( RECVINFO( m_fMoveInterval ) ),
 	RecvPropFloat( RECVINFO( m_fNextMoveTime ) ),
+	RecvPropFloat( RECVINFO( m_fStartedHackTime ) ),
 	RecvPropFloat( RECVINFO( m_fFastFinishTime ) ),
 	RecvPropArray3( RECVINFO_ARRAY( m_iTumblerPosition ), RecvPropInt( RECVINFO( m_iTumblerPosition[0] ) ) ),
 	RecvPropArray3( RECVINFO_ARRAY( m_iTumblerCorrectNumber ), RecvPropInt( RECVINFO( m_iTumblerCorrectNumber[0] ) ) ),
@@ -47,6 +48,7 @@ C_ASW_Hack_Computer::C_ASW_Hack_Computer()
 	m_iOldShowOption = 0;
 	m_bLastAllCorrect = false;
 	m_fStartedHackTime = 0;
+	m_fFastFinishTime = 0;
 	SetPredictionEligible( true );
 	for ( int i = 0; i < ASW_HACK_COMPUTER_MAX_TUMBLERS; i++ )
 	{
@@ -127,8 +129,6 @@ void C_ASW_Hack_Computer::ClientThink()
 		{
 			if ( m_iOldShowOption != m_iShowOption )
 			{
-				if ( m_fStartedHackTime == 0 && m_iShowOption == ASW_HACK_OPTION_OVERRIDE )
-					m_fStartedHackTime = gpGlobals->curtime;
 				if ( m_hComputerFrame.Get() )
 					m_hComputerFrame->SetHackOption( m_iShowOption );
 				m_iOldShowOption = m_iShowOption;

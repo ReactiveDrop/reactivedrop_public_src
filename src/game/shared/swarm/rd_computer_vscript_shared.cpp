@@ -50,9 +50,12 @@ BEGIN_ENT_SCRIPTDESC( CRD_Computer_VScript, CRD_VGui_VScript, "Alien Swarm: Reac
 #ifdef CLIENT_DLL
 #else
 	DEFINE_SCRIPTFUNC( HackCompleted, "Call when the player has completed the hack." )
+	DEFINE_SCRIPTFUNC( SetFastHackEndTime, "Set the time limit (absolute) for the fast hack. The timer is initially set using the logic for the default computer hack." )
 #endif
 	DEFINE_SCRIPTFUNC( Back, "Call to close the computer screen and return to the menu." )
 	DEFINE_SCRIPTFUNC( SetHackProgress, "Set the hack progress between 0 (just started) and 1 (ready to call HackCompleted). Can only be called from Input." )
+	DEFINE_SCRIPTFUNC( GetHackStartTime, "Get the value of Time() when the hack started." )
+	DEFINE_SCRIPTFUNC( GetFastHackEndTime, "Get the time limit (absolute) for the fast hack. Call Time() for the current time." )
 END_SCRIPTDESC();
 
 CRD_Computer_VScript::CRD_Computer_VScript()
@@ -131,6 +134,37 @@ void CRD_Computer_VScript::HackCompleted()
 		return;
 
 	m_hHack->OnHackUnlocked( CASW_Marine::AsMarine( m_hInteracter ) );
+}
+
+void CRD_Computer_VScript::SetFastHackEndTime( float flTime )
+{
+	Assert( m_hHack );
+	if ( !m_hHack )
+		return;
+
+	CASW_Computer_Area *pArea = m_hHack->GetComputerArea();
+	Assert( pArea );
+	if ( !pArea )
+		return;
+
+	Assert( pArea->m_hCustomHack.Get() == this );
+	if ( pArea->m_hCustomHack.Get() != this )
+		return;
+
+	Assert( m_hHack->m_fStartedHackTime != 0 );
+	if ( m_hHack->m_fStartedHackTime == 0 )
+	{
+		Warning( "%s (%s): Cannot call SetFastHackEndTime when hack has not yet launched.\n", GetDebugClassname(), STRING( m_szClientVScript.Get() ) );
+		return;
+	}
+
+	if ( m_hHack->m_fStartedHackTime < flTime )
+	{
+		Warning( "%s (%s): SetFastHackEndTime would set hack duration to %f seconds. Clamping to 0.\n", GetDebugClassname(), STRING( m_szClientVScript.Get() ), flTime - m_hHack->m_fStartedHackTime );
+		flTime = m_hHack->m_fStartedHackTime;
+	}
+
+	m_hHack->m_fFastFinishTime = flTime;
 }
 #endif
 
@@ -264,4 +298,40 @@ void CRD_Computer_VScript::SetHackProgress( float flProgress )
 	}
 
 	m_flHackProgress.Set( clamp( flProgress, 0.0f, 1.0f ) );
+}
+
+float CRD_Computer_VScript::GetHackStartTime()
+{
+	Assert( m_hHack );
+	if ( !m_hHack )
+		return 0;
+
+	CASW_Computer_Area *pArea = m_hHack->GetComputerArea();
+	Assert( pArea );
+	if ( !pArea )
+		return 0;
+
+	Assert( pArea->m_hCustomHack.Get() == this );
+	if ( pArea->m_hCustomHack.Get() != this )
+		return 0;
+
+	return m_hHack->m_fStartedHackTime;
+}
+
+float CRD_Computer_VScript::GetFastHackEndTime()
+{
+	Assert( m_hHack );
+	if ( !m_hHack )
+		return 0;
+
+	CASW_Computer_Area *pArea = m_hHack->GetComputerArea();
+	Assert( pArea );
+	if ( !pArea )
+		return 0;
+
+	Assert( pArea->m_hCustomHack.Get() == this );
+	if ( pArea->m_hCustomHack.Get() != this )
+		return 0;
+
+	return m_hHack->m_fFastFinishTime;
 }

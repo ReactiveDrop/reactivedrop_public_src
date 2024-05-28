@@ -22,6 +22,7 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Hack_Computer, DT_ASW_Hack_Computer )
 	
 	SendPropFloat( SENDINFO( m_fMoveInterval ) ),
 	SendPropFloat( SENDINFO( m_fNextMoveTime ), 0, SPROP_NOSCALE ),
+	SendPropFloat( SENDINFO( m_fStartedHackTime ), 0, SPROP_NOSCALE ),
 	SendPropFloat( SENDINFO( m_fFastFinishTime ), 0, SPROP_NOSCALE ),
 	SendPropArray3( SENDINFO_ARRAY3( m_iTumblerPosition ), SendPropInt( SENDINFO_ARRAY( m_iTumblerPosition ), 12 ) ),
 	SendPropArray3( SENDINFO_ARRAY3( m_iTumblerCorrectNumber ), SendPropInt( SENDINFO_ARRAY( m_iTumblerCorrectNumber ), 12 ) ),
@@ -41,6 +42,8 @@ CASW_Hack_Computer::CASW_Hack_Computer()
 	m_bPlayedTimeOutSound = false;
 
 	m_fNextMoveTime = 0;
+	m_fStartedHackTime = 0;
+	m_fFastFinishTime = 0;
 	m_iLastNumWrong = 0;
 	m_bLastAllCorrect = false;
 	m_bLastHalfCorrect = false;
@@ -217,6 +220,7 @@ void CASW_Hack_Computer::SelectHackOption( int i )
 			ideal_time = time_per_column * diff_factor * m_iNumTumblers;
 			if ( asw_debug_medals.GetBool() )
 				Msg( "Fast hack time is %f, starting at %f\n", ideal_time, gpGlobals->curtime );
+			m_fStartedHackTime = gpGlobals->curtime;
 			m_fFastFinishTime = gpGlobals->curtime + ideal_time;
 		}
 

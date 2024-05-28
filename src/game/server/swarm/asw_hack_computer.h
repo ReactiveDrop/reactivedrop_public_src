@@ -49,6 +49,7 @@ public:
 	int m_iLastNumWrong;
 	void UpdateCorrectStatus( CASW_Player *pPlayer, CASW_Marine *pMarine, int iNumWrong );
 
+	CNetworkVar( float, m_fStartedHackTime );
 	CNetworkVar( float, m_fFastFinishTime );
 	bool m_bPlayedTimeOutSound;
 };

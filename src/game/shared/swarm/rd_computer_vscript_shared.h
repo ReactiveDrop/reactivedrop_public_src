@@ -29,6 +29,7 @@ public:
 	void RunVScripts() override;
 
 	void HackCompleted();
+	void SetFastHackEndTime( float flTime );
 #endif
 
 	CNetworkString( m_szLabel, 255 );
@@ -45,6 +46,8 @@ public:
 
 	void Back();
 	void SetHackProgress( float flProgress );
+	float GetHackStartTime();
+	float GetFastHackEndTime();
 
 	const char *GetDebugClassname() const override { return "rd_computer_vscript"; }
 };
