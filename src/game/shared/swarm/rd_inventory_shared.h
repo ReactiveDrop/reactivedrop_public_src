@@ -211,6 +211,8 @@ namespace ReactiveDropInventory
 		CRAFT_BTS,
 		// set dynamic properties on newly created item to 0. modal while in progress. notifies user when complete (replaces notification from craft task that queued this).
 		CRAFT_DYNAMIC_PROPERTY_INIT,
+		// when CRAFT_DYNAMIC_PROPERTY_INIT fails, we re-request the item IDs and retry initialization once.
+		CRAFT_DYNAMIC_PROPERTY_INIT_RETRY,
 		// checking for item drop. notifies user based on preferences if successful.
 		CRAFT_DROP,
 		// checking for promo item. notifies user and server if successful.
