@@ -2191,9 +2191,11 @@ bool CASW_Drone_Advanced::IsHeavyDamage( const CTakeDamageInfo &info )
 		}
 	}
 	m_FlinchActivity = ACT_INVALID;
-	if (pMarine && pMarine->GetActiveASWWeapon())
-	{		
-		return pMarine->GetActiveASWWeapon()->ShouldAlienFlinch(this, info);
+
+	CASW_Weapon *pWeapon = dynamic_cast< CASW_Weapon * >( info.GetWeapon() );
+	if ( pWeapon )
+	{
+		return pWeapon->ShouldAlienFlinch( this, info );
 	}
 
 	return false;
