@@ -42,6 +42,7 @@ public:
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_DRONE; }
 	virtual void HandleAnimEvent( animevent_t *pEvent );
 	virtual bool CorpseGib( const CTakeDamageInfo &info );
+	virtual bool IsLightDamage( const CTakeDamageInfo &info );
 	virtual bool IsHeavyDamage( const CTakeDamageInfo &info );
 	virtual void BuildScheduleTestBits( void );
 	virtual bool OverrideMoveFacing( const AILocalMoveGoal_t &move, float flInterval );

@@ -2127,6 +2127,18 @@ bool CDroneTraceFilterLOS::ShouldHitEntity( IHandleEntity *pServerEntity, int co
 	return CTraceFilterSimple::ShouldHitEntity( pServerEntity, contentsMask );
 }
 
+bool CASW_Drone_Advanced::IsLightDamage( const CTakeDamageInfo &info )
+{
+	// dots never cause a flinch
+	if ( ( info.GetDamageType() & DMG_DIRECT ) != 0 )
+		return false;
+
+	if ( ( info.GetDamageType() & DMG_NERVEGAS ) != 0 )
+		return false;
+
+	return BaseClass::IsLightDamage( info );
+}
+
 // only shock damage counts as heavy (and thus causes a flinch even during normal running)
 bool CASW_Drone_Advanced::IsHeavyDamage( const CTakeDamageInfo &info )
 {
@@ -2136,6 +2148,9 @@ bool CASW_Drone_Advanced::IsHeavyDamage( const CTakeDamageInfo &info )
 
 	// dots never cause a flinch
 	if (( info.GetDamageType() & DMG_DIRECT ) != 0 )
+		return false;
+	
+	if (( info.GetDamageType() & DMG_NERVEGAS ) != 0 )
 		return false;
 
 	// shock damage always causes large flinch
