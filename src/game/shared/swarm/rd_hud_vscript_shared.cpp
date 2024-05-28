@@ -370,6 +370,14 @@ void CRD_HUD_VScript::Script_PaintTexturedRectangleAdvanced( HSCRIPT table )
 	if ( g_pScriptVM->GetValue( table, "texture", &value ) )
 		value.AssignTo( &texture );
 
+	if ( g_pScriptVM->GetValue( table, "frame", &value ) )
+	{
+		int nFrame = 0;
+		unsigned int dummy = 0;
+		value.AssignTo( &nFrame );
+		vgui::surface()->DrawSetTextureFrame( texture, nFrame, &dummy );
+	}
+
 	vgui::surface()->DrawSetColor( r, g, b, 255 );
 	vgui::surface()->DrawSetTexture( texture );
 	vgui::surface()->DrawTexturedRectEx( &params );
