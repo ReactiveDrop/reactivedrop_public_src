@@ -400,7 +400,11 @@ static const char * const s_DamageTypeToStrTable[] =
 	"RADIATION",
 	"DROWNRECOVER",
 	"ACID",
+#ifdef INFESTED_DLL
+	"COLD",
+#else
 	"SLOWBURN",
+#endif
 	"REMOVENORAGDOLL",
 	"PHYSGUN",
 	"PLASMA",

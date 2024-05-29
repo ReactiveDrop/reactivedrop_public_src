@@ -813,6 +813,9 @@ static void PostProcessBuiltin( WeaponFact *pFact, CASW_EquipItem *pItem, CASW_W
 		case DMG_SONIC:
 			// special case; untyped or non-damaging
 			break;
+		case DMG_COLD:
+			szSuffix = "_cold";
+			break;
 		case DMG_ENERGYBEAM:
 			szSuffix = "_beam";
 			break;

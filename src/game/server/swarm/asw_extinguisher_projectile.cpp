@@ -113,7 +113,7 @@ void CASW_Extinguisher_Projectile::ProjectileTouch( CBaseEntity *pOther )
 
 		if ( rd_extinguisher_dmg_amount.GetFloat() > 0.0 && !pMarine )
 		{
-			CTakeDamageInfo	dmgInfo( this, GetOwnerEntity(), rd_extinguisher_dmg_amount.GetFloat(), DMG_SLOWBURN );
+			CTakeDamageInfo	dmgInfo( this, m_hFirer, m_hFirerWeapon, rd_extinguisher_dmg_amount.GetFloat(), DMG_COLD );
 			pOther->TakeDamage( dmgInfo );
 		}
 
@@ -136,60 +136,16 @@ void CASW_Extinguisher_Projectile::ProjectileTouch( CBaseEntity *pOther )
 						gameeventmanager->FireEvent( event );
 					}
 				}
-
-				if ( pNPC->GetFrozenAmount() >= 0.9f )
-					return;
 			}
-		}
-		SetAbsVelocity( Vector( 0, 0, 0 ) );
-
-		SetTouch( NULL );
-		SetThink( NULL );
-
-		UTIL_Remove( this );
-	}
-	else
-	{
-#if 0
-		trace_t	tr;
-		tr = BaseClass::GetTouchTrace();
-
-		// See if we struck the world
-		if ( pOther->GetMoveType() == MOVETYPE_NONE && !( tr.surface.flags & SURF_SKY ) )
-		{
-			Vector vel = GetAbsVelocity();
-			if ( tr.startsolid )
-			{
-				if ( !m_inSolid )
-				{
-					// UNDONE: Do a better contact solution that uses relative velocity?
-					vel *= -1.0f; // bounce backwards
-					SetAbsVelocity(vel);
-				}
-				m_inSolid = true;
-				return;
-			}
-			m_inSolid = false;
-			if ( tr.DidHit() )
-			{
-				Vector dir = vel;
-				VectorNormalize(dir);
-
-				// reflect velocity around normal
-				vel = -2.0f * tr.plane.normal * DotProduct(vel,tr.plane.normal) + vel;
-				
-				// absorb 80% in impact
-				//vel *= GRENADE_COEFFICIENT_OF_RESTITUTION;
-				SetAbsVelocity( vel );
-			}
-			return;
-		}
-		else
-#endif
-		{
-			UTIL_Remove( this );
 		}
 	}
+
+	SetAbsVelocity( vec3_origin );
+
+	SetTouch( NULL );
+	SetThink( NULL );
+
+	UTIL_Remove( this );
 }
 
 CASW_Extinguisher_Projectile* CASW_Extinguisher_Projectile::Extinguisher_Projectile_Create( const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner, CBaseEntity *pWeapon )

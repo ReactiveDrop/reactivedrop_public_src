@@ -9600,7 +9600,7 @@ const char* CAlienSwarm::GetFailAdviceText( void )
 bool CAlienSwarm::Damage_IsTimeBased( int iDmgType )
 {
 	// Damage types that are time-based.
-	return ( ( iDmgType & ( DMG_PARALYZE | DMG_NERVEGAS | DMG_RADIATION | DMG_DROWNRECOVER | DMG_ACID | DMG_SLOWBURN ) ) != 0 );
+	return ( ( iDmgType & ( DMG_PARALYZE | DMG_NERVEGAS | DMG_RADIATION | DMG_DROWNRECOVER ) ) != 0 );
 }
 
 //-----------------------------------------------------------------------------
@@ -9642,7 +9642,7 @@ bool CAlienSwarm::Damage_ShouldNotBleed( int iDmgType )
 //-----------------------------------------------------------------------------
 int CAlienSwarm::Damage_GetTimeBased( void )
 {
-	int iDamage = ( DMG_PARALYZE | DMG_NERVEGAS | DMG_RADIATION | DMG_DROWNRECOVER | DMG_ACID | DMG_SLOWBURN );
+	int iDamage = ( DMG_PARALYZE | DMG_NERVEGAS | DMG_RADIATION | DMG_DROWNRECOVER );
 	return iDamage;
 }
 

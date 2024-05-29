@@ -66,6 +66,7 @@ enum ASW_Skill_Slot
 #define HIDEHUD_REMOTE_TURRET		( HIDEHUD_VEHICLE_CROSSHAIR )	// player is using a remote turret
 
 // Re-use base damage bits
+#define DMG_COLD					(DMG_SLOWBURN)
 #define DMG_INFEST					(DMG_AIRBOAT)		// damage from parasite infestation
 #define DMG_BLURPOISON				(DMG_LASTGENERICFLAG << 1)		// damage from buzzers, blurs the player's view
 
