@@ -32,7 +32,7 @@ END_SEND_TABLE()
 BEGIN_DATADESC( CASW_Extinguisher_Projectile )
 	DEFINE_FUNCTION( ProjectileTouch ),
 	DEFINE_FIELD( m_flDamage, FIELD_FLOAT ),
-	DEFINE_FIELD( m_inSolid, FIELD_BOOLEAN ),
+	DEFINE_FIELD( m_bAllowFriendlyFire, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_hFirer, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_hFirerWeapon, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_flFreezeAmount, FIELD_FLOAT ),
@@ -52,9 +52,10 @@ void CASW_Extinguisher_Projectile::Spawn( void )
 
 	SetMoveType( MOVETYPE_FLYGRAVITY, MOVECOLLIDE_FLY_CUSTOM );
 
-	m_flDamage		= sk_plr_dmg_asw_f.GetFloat();
+	m_flDamage		= rd_extinguisher_dmg_amount.GetFloat();
 	m_takedamage	= DAMAGE_NO;
 	m_flFreezeAmount = rd_extinguisher_freeze_amount.GetFloat();
+	m_bAllowFriendlyFire = false;
 
 	SetSize( -Vector(4,4,4), Vector(4,4,4) );
 	SetSolid( SOLID_BBOX );
@@ -85,22 +86,23 @@ void CASW_Extinguisher_Projectile::ProjectileTouch( CBaseEntity *pOther )
 	if ( !g_pGameRules || !g_pGameRules->ShouldCollide( GetCollisionGroup(), pOther->GetCollisionGroup() ) )
 		return;
 
-	if ( !pOther->IsSolid() || pOther->IsSolidFlagSet(FSOLID_VOLUME_CONTENTS) )
-		return;	
+	if ( !pOther->IsSolid() || pOther->IsSolidFlagSet( FSOLID_VOLUME_CONTENTS ) )
+		return;
 
 	if ( pOther->m_takedamage != DAMAGE_NO )
 	{
 		CASW_Marine *pMarine = CASW_Marine::AsMarine( pOther );
-		if (pMarine && pMarine->m_bOnFire)
+		if ( pMarine && pMarine->m_bOnFire )
 		{
 			pMarine->Extinguish( m_hFirer, this );
+			m_bAllowFriendlyFire = false; // never do friendly fire when also extinguishing
 		}
 		else
-		{		
-			CBaseAnimating* pAnim = pOther->GetBaseAnimating();
-			if (pAnim && pAnim->IsOnFire())
-			{						
-				CEntityFlame *pFireChild = dynamic_cast<CEntityFlame *>( pAnim->GetEffectEntity() );
+		{
+			CBaseAnimating *pAnim = pOther->GetBaseAnimating();
+			if ( pAnim && pAnim->IsOnFire() )
+			{
+				CEntityFlame *pFireChild = dynamic_cast< CEntityFlame * >( pAnim->GetEffectEntity() );
 				if ( pFireChild )
 				{
 					pAnim->SetEffectEntity( NULL );
@@ -111,16 +113,16 @@ void CASW_Extinguisher_Projectile::ProjectileTouch( CBaseEntity *pOther )
 			}
 		}
 
-		if ( rd_extinguisher_dmg_amount.GetFloat() > 0.0 && !pMarine )
+		if ( m_flDamage > 0.0 && ( !pMarine || m_bAllowFriendlyFire ) )
 		{
-			CTakeDamageInfo	dmgInfo( this, m_hFirer, m_hFirerWeapon, rd_extinguisher_dmg_amount.GetFloat(), DMG_COLD );
+			CTakeDamageInfo	dmgInfo( this, m_hFirer, m_hFirerWeapon, m_flDamage, DMG_COLD );
 			pOther->TakeDamage( dmgInfo );
 		}
 
 		CAI_BaseNPC * RESTRICT pNPC = pOther->MyNPCPointer();
 		if ( pNPC )
 		{
-			if ( m_flFreezeAmount > 0 && ( !m_hFirer || !m_hFirer->MyCombatCharacterPointer() || m_hFirer->MyCombatCharacterPointer()->IRelationType( pNPC ) != D_LI ) )
+			if ( m_flFreezeAmount > 0 && ( m_bAllowFriendlyFire || !m_hFirer || !m_hFirer->MyCombatCharacterPointer() || m_hFirer->MyCombatCharacterPointer()->IRelationType( pNPC ) != D_LI ) )
 			{
 				bool bWasFrozen = pNPC->m_bWasEverFrozen;
 				pNPC->Freeze( m_flFreezeAmount, m_hFirer ? m_hFirer : this );

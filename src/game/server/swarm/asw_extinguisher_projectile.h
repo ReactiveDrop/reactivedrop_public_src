@@ -32,8 +32,8 @@ public:
 
 protected:
 
-	float		m_flDamage;
-	bool	m_inSolid;	
+	float m_flDamage;
+	bool m_bAllowFriendlyFire;
 	float m_flFreezeAmount;
 };
 
