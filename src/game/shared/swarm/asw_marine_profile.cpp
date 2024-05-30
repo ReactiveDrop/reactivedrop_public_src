@@ -53,7 +53,7 @@ ConVar asw_marine_skill[ASW_NUM_MARINE_PROFILES][ASW_NUM_SKILL_SLOTS - 1]
 	},
 	{
 		{ "asw_marine_skill_wildcat_0", s_szSkillNumber[ASW_MARINE_SKILL_AUTOGUN], FCVAR_CHEAT | FCVAR_REPLICATED, "index of Wildcat's first skill slot type", true, 0, true, ASW_NUM_MARINE_SKILLS - 1 },
-		{ "asw_marine_skill_wildcat_1", s_szSkillNumber[ASW_MARINE_SKILL_PIERCING], FCVAR_CHEAT | FCVAR_REPLICATED, "index of Wildcat's second skill slot type", true, 0, true, ASW_NUM_MARINE_SKILLS - 1 },
+		{ "asw_marine_skill_wildcat_1", s_szSkillNumber[ASW_MARINE_SKILL_STOPPING_POWER], FCVAR_CHEAT | FCVAR_REPLICATED, "index of Wildcat's second skill slot type", true, 0, true, ASW_NUM_MARINE_SKILLS - 1 },
 		{ "asw_marine_skill_wildcat_2", s_szSkillNumber[ASW_MARINE_SKILL_ACCURACY], FCVAR_CHEAT | FCVAR_REPLICATED, "index of Wildcat's third skill slot type", true, 0, true, ASW_NUM_MARINE_SKILLS - 1 },
 		{ "asw_marine_skill_wildcat_3", s_szSkillNumber[ASW_MARINE_SKILL_RELOADING], FCVAR_CHEAT | FCVAR_REPLICATED, "index of Wildcat's fourth skill slot type", true, 0, true, ASW_NUM_MARINE_SKILLS - 1 },
 		{ "asw_marine_skill_wildcat_4", s_szSkillNumber[ASW_MARINE_SKILL_AGILITY], FCVAR_CHEAT | FCVAR_REPLICATED, "index of Wildcat's fifth skill slot type", true, 0, true, ASW_NUM_MARINE_SKILLS - 1 },
@@ -81,7 +81,7 @@ ConVar asw_marine_skill[ASW_NUM_MARINE_PROFILES][ASW_NUM_SKILL_SLOTS - 1]
 	},
 	{
 		{ "asw_marine_skill_wolfe_0", s_szSkillNumber[ASW_MARINE_SKILL_AUTOGUN], FCVAR_CHEAT | FCVAR_REPLICATED, "index of Wolfe's first skill slot type", true, 0, true, ASW_NUM_MARINE_SKILLS - 1 },
-		{ "asw_marine_skill_wolfe_1", s_szSkillNumber[ASW_MARINE_SKILL_PIERCING], FCVAR_CHEAT | FCVAR_REPLICATED, "index of Wolfe's second skill slot type", true, 0, true, ASW_NUM_MARINE_SKILLS - 1 },
+		{ "asw_marine_skill_wolfe_1", s_szSkillNumber[ASW_MARINE_SKILL_STOPPING_POWER], FCVAR_CHEAT | FCVAR_REPLICATED, "index of Wolfe's second skill slot type", true, 0, true, ASW_NUM_MARINE_SKILLS - 1 },
 		{ "asw_marine_skill_wolfe_2", s_szSkillNumber[ASW_MARINE_SKILL_ACCURACY], FCVAR_CHEAT | FCVAR_REPLICATED, "index of Wolfe's third skill slot type", true, 0, true, ASW_NUM_MARINE_SKILLS - 1 },
 		{ "asw_marine_skill_wolfe_3", s_szSkillNumber[ASW_MARINE_SKILL_RELOADING], FCVAR_CHEAT | FCVAR_REPLICATED, "index of Wolfe's fourth skill slot type", true, 0, true, ASW_NUM_MARINE_SKILLS - 1 },
 		{ "asw_marine_skill_wolfe_4", s_szSkillNumber[ASW_MARINE_SKILL_HEALTH], FCVAR_CHEAT | FCVAR_REPLICATED, "index of Wolfe's fifth skill slot type", true, 0, true, ASW_NUM_MARINE_SKILLS - 1 },

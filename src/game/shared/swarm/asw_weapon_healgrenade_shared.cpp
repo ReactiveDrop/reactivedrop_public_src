@@ -306,7 +306,7 @@ CASW_AOEGrenade_Projectile* CASW_Weapon_HealGrenade::CreateProjectile( const Vec
 	float flRadius = 100.0f;
 
 	float flHealthPerSecond = 3.0f;
-	float flInfestationCureAmount = MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_XENOWOUNDS ) / 100.0f;
+	float flInfestationCureAmount = MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_XENOWOUNDS, ASW_MARINE_SUBSKILL_XENOWOUNDS_INFESTATION_CURING ) / 100.0f;
 
 	return CASW_HealGrenade_Projectile::Grenade_Projectile_Create( vecSrc, angles, vecVel, rotSpeed, pOwner, this,
 		flHealthPerSecond, flInfestationCureAmount, flRadius, flDuration, flHealAmount );

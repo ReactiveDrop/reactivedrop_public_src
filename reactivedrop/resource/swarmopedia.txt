@@ -1681,7 +1681,8 @@
 			}
 			"Piercing" {
 				"Precision" "1"
-				"Skill" "ASW_MARINE_SKILL_PIERCING"
+				"Skill" "ASW_MARINE_SKILL_STOPPING_POWER"
+				"SubSkill" "ASW_MARINE_SUBSKILL_PIERCING_CHANCE"
 			}
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/duration"
@@ -2114,7 +2115,8 @@
 			}
 			"Piercing" {
 				"Precision" "1"
-				"Skill" "ASW_MARINE_SKILL_PIERCING"
+				"Skill" "ASW_MARINE_SKILL_STOPPING_POWER"
+				"SubSkill" "ASW_MARINE_SUBSKILL_PIERCING_CHANCE"
 			}
 			"FireRate" {}
 			"Ammo" {}

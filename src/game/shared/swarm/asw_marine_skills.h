@@ -14,8 +14,8 @@
 	ENUM_ITEM( VINDICATOR, "swarm/SkillButtons/Vindicator", "#asw_vindicator", "#asw_vindicator_desc", 5 ) \
 	/* special weapons */ \
 	ENUM_ITEM( AUTOGUN, "swarm/SkillButtons/Autogun", "#asw_autogunsk", "#asw_autogunsk_desc", 5 ) \
-	ENUM_ITEM( STOPPING_POWER, "swarm/SkillButtons/Secondary", "#asw_stopping", "#asw_stopping_desc", 5 ) /* note: skill code doesn't calculate the actual % chance, because that is an attribute of the individual guns.  See their weapon info for the stopping power % increase per skill point */ \
-	ENUM_ITEM( PIERCING, "swarm/SkillButtons/Piercing", "#asw_piercingbullets", "#asw_piercingbullets_desc", 5 ) \
+	ENUM_ITEM( STOPPING_POWER_OBSOLETE, "swarm/SkillButtons/Secondary", "OBSOLETE", "OBSOLETE", 5 ) \
+	ENUM_ITEM( STOPPING_POWER, "swarm/SkillButtons/Piercing", "#asw_stopping", "#asw_stopping_desc", 5 ) \
 	/* medic */ \
 	ENUM_ITEM( HEALING, "swarm/SkillButtons/Healing", "#asw_healing", "#asw_healing_desc", 5 ) \
 	ENUM_ITEM( XENOWOUNDS, "swarm/SkillButtons/Xenowound", "#asw_xenowound", "#asw_xenowound_desc", 3 ) \
@@ -57,31 +57,14 @@ const char *SkillToString( ASW_Skill nSkill );
 	ENUM_ITEM( VINDICATOR, VINDICATOR_PELLETS, 1 ) \
 	ENUM_ITEM( VINDICATOR, VINDICATOR_MUZZLE, 2 ) \
 	\
-	ENUM_ITEM( GRENADES, GRENADE_RADIUS, 0 ) \
-	ENUM_ITEM( GRENADES, GRENADE_DMG, 1 ) \
-	ENUM_ITEM( GRENADES, GRENADE_INCENDIARY_DMG, 2 ) \
-	ENUM_ITEM( GRENADES, GRENADE_CLUSTER_DMG, 3 ) \
-	ENUM_ITEM( GRENADES, GRENADE_CLUSTERS, 4 ) \
-	ENUM_ITEM( GRENADES, GRENADE_FLECHETTE_DMG, 5 ) \
-	ENUM_ITEM( GRENADES, GRENADE_HORNET_DMG, 6 ) \
-	ENUM_ITEM( GRENADES, GRENADE_HORNET_COUNT, 7 ) \
-	ENUM_ITEM( GRENADES, GRENADE_HORNET_INTERVAL, 8 ) \
-	ENUM_ITEM( GRENADES, GRENADE_FREEZE_RADIUS, 9 ) \
-	ENUM_ITEM( GRENADES, GRENADE_FREEZE_DURATION, 10 ) \
-	ENUM_ITEM( GRENADES, GRENADE_SMART_BOMB_COUNT, 11 ) \
-	ENUM_ITEM( GRENADES, GRENADE_SMART_BOMB_INTERVAL, 12 ) \
-	ENUM_ITEM( GRENADES, GRENADE_LASER_MINES, 13 ) \
-	ENUM_ITEM( GRENADES, GRENADE_MINES_FIRES, 14 ) \
-	ENUM_ITEM( GRENADES, GRENADE_MINES_DURATION, 15 ) \
+	ENUM_ITEM( AUTOGUN, AUTOGUN_DMG, 0 ) \
+	ENUM_ITEM( AUTOGUN, AUTOGUN_MUZZLE, 1 ) \
+	ENUM_ITEM( AUTOGUN, AUTOGUN_MINIGUN_DMG, 2 ) \
+	ENUM_ITEM( AUTOGUN, AUTOGUN_CRYO_SPINUP, 3 ) \
 	\
-	ENUM_ITEM( MELEE, MELEE_DMG, 0 ) \
-	ENUM_ITEM( MELEE, MELEE_FORCE, 1 ) \
-	ENUM_ITEM( MELEE, MELEE_FLINCH, 2 ) \
-	ENUM_ITEM( MELEE, MELEE_SPEED, 3 ) \
-	\
-	ENUM_ITEM( ENGINEERING, ENGINEERING_WELDING, 0 ) \
-	ENUM_ITEM( ENGINEERING, ENGINEERING_SENTRY, 1 ) \
-	ENUM_ITEM( ENGINEERING, ENGINEERING_FIRERATE, 2 ) \
+	ENUM_ITEM( STOPPING_POWER, STOPPING_POWER, 0 ) \
+	ENUM_ITEM( STOPPING_POWER, PIERCING_CHANCE, 1 ) \
+	ENUM_ITEM( STOPPING_POWER, AIRBLAST_STRENGTH, 2 ) \
 	\
 	ENUM_ITEM( HEALING, HEALING_CHARGES, 0 ) \
 	ENUM_ITEM( HEALING, SELF_HEALING_CHARGES, 1 ) \
@@ -93,12 +76,23 @@ const char *SkillToString( ASW_Skill nSkill );
 	ENUM_ITEM( HEALING, HEALAMP_GUN_CHARGES, 7 ) \
 	ENUM_ITEM( HEALING, MEDRIFLE_HEALING_CHARGES, 8 ) \
 	\
+	ENUM_ITEM( XENOWOUNDS, XENOWOUNDS_INFESTATION_CURING, 0 ) \
+	\
 	ENUM_ITEM( DRUGS, STIM_DURATION, 0 ) \
 	ENUM_ITEM( DRUGS, HEALAMP_GUN_AMP_CHARGES, 1 ) \
 	\
-	ENUM_ITEM( AUTOGUN, AUTOGUN_DMG, 0 ) \
-	ENUM_ITEM( AUTOGUN, AUTOGUN_MUZZLE, 1 ) \
-	ENUM_ITEM( AUTOGUN, AUTOGUN_MINIGUN_DMG, 2 ) \
+	ENUM_ITEM( HACKING, HACKING_SPEED_SCALE, 0 ) \
+	ENUM_ITEM( HACKING, HACKING_TUMBLER_COUNT_REDUCTION, 1 ) \
+	ENUM_ITEM( HACKING, HACKING_ENTRIES_PER_TUMBLER_REDUCTION, 2 ) \
+	\
+	ENUM_ITEM( SCANNER, SCANNER_RANGE, 0 ) \
+	\
+	ENUM_ITEM( ENGINEERING, ENGINEERING_WELDING, 0 ) \
+	ENUM_ITEM( ENGINEERING, ENGINEERING_SENTRY, 1 ) \
+	ENUM_ITEM( ENGINEERING, ENGINEERING_FIRERATE, 2 ) \
+	ENUM_ITEM( ENGINEERING, ENGINEERING_SHIELD_HEALTH, 3 ) \
+	ENUM_ITEM( ENGINEERING, ENGINEERING_SHIELD_DURATION, 4 ) \
+	ENUM_ITEM( ENGINEERING, ENGINEERING_SHIELD_DAMAGE, 5 ) \
 	\
 	ENUM_ITEM( ACCURACY, ACCURACY_RIFLE_DMG, 0 ) \
 	ENUM_ITEM( ACCURACY, ACCURACY_PRIFLE_DMG, 1 ) \
@@ -117,14 +111,38 @@ const char *SkillToString( ASW_Skill nSkill );
 	ENUM_ITEM( ACCURACY, ACCURACY_DEVASTATOR_DMG, 14 ) \
 	ENUM_ITEM( ACCURACY, ACCURACY_50CALMG_DMG, 15 ) \
 	ENUM_ITEM( ACCURACY, ACCURACY_MINING_LASER_DMG, 16 ) \
+	ENUM_ITEM( ACCURACY, ACCURACY_SHIELD_RIFLE_DMG, 17 ) \
+	ENUM_ITEM( ACCURACY, ACCURACY_CRYO_DMG, 18 ) \
 	\
-	ENUM_ITEM( HACKING, HACKING_SPEED_SCALE, 0 ) \
-	ENUM_ITEM( HACKING, HACKING_TUMBLER_COUNT_REDUCTION, 1 ) \
-	ENUM_ITEM( HACKING, HACKING_ENTRIES_PER_TUMBLER_REDUCTION, 2 ) \
+	ENUM_ITEM( GRENADES, GRENADE_RADIUS, 0 ) \
+	ENUM_ITEM( GRENADES, GRENADE_DMG, 1 ) \
+	ENUM_ITEM( GRENADES, GRENADE_INCENDIARY_DMG, 2 ) \
+	ENUM_ITEM( GRENADES, GRENADE_CLUSTER_DMG, 3 ) \
+	ENUM_ITEM( GRENADES, GRENADE_CLUSTERS, 4 ) \
+	ENUM_ITEM( GRENADES, GRENADE_FLECHETTE_DMG, 5 ) \
+	ENUM_ITEM( GRENADES, GRENADE_HORNET_DMG, 6 ) \
+	ENUM_ITEM( GRENADES, GRENADE_HORNET_COUNT, 7 ) \
+	ENUM_ITEM( GRENADES, GRENADE_HORNET_INTERVAL, 8 ) \
+	ENUM_ITEM( GRENADES, GRENADE_FREEZE_RADIUS, 9 ) \
+	ENUM_ITEM( GRENADES, GRENADE_FREEZE_DURATION, 10 ) \
+	ENUM_ITEM( GRENADES, GRENADE_SMART_BOMB_COUNT, 11 ) \
+	ENUM_ITEM( GRENADES, GRENADE_SMART_BOMB_INTERVAL, 12 ) \
+	ENUM_ITEM( GRENADES, GRENADE_LASER_MINES, 13 ) \
+	ENUM_ITEM( GRENADES, GRENADE_MINES_FIRES, 14 ) \
+	ENUM_ITEM( GRENADES, GRENADE_MINES_DURATION, 15 ) \
+	\
+	ENUM_ITEM( HEALTH, HEALTH, 0 ) \
+	\
+	ENUM_ITEM( MELEE, MELEE_DMG, 0 ) \
+	ENUM_ITEM( MELEE, MELEE_FORCE, 1 ) \
+	ENUM_ITEM( MELEE, MELEE_FLINCH, 2 ) \
+	ENUM_ITEM( MELEE, MELEE_SPEED, 3 ) \
 	\
 	ENUM_ITEM( RELOADING, RELOADING_SPEED_SCALE, 0 ) \
 	ENUM_ITEM( RELOADING, RELOADING_SOUND, 1 ) \
-	ENUM_ITEM( RELOADING, RELOADING_FAST_WIDTH_SCALE, 2 )
+	ENUM_ITEM( RELOADING, RELOADING_FAST_WIDTH_SCALE, 2 ) \
+	\
+	ENUM_ITEM( AGILITY, AGILITY_MOVE_SPEED, 0 )
 
 // subskills - used to select different elements of the game that are affected by the same skill
 enum
@@ -153,21 +171,21 @@ public:
 	CASW_Marine_Skills();
 #ifdef CLIENT_DLL
 	// get the value based on the current skills of that marine
-	float GetSkillBasedValueByMarine( C_ASW_Marine *pMarine, ASW_Skill iSkillIndex, int iSubSkill = 0 );
-	float GetSkillBasedValueByMarineResource( C_ASW_Marine_Resource *pMarineResource, ASW_Skill iSkillIndex, int iSubSkill = 0 );
+	float GetSkillBasedValueByMarine( C_ASW_Marine *pMarine, ASW_Skill iSkillIndex, int iSubSkill );
+	float GetSkillBasedValueByMarineResource( C_ASW_Marine_Resource *pMarineResource, ASW_Skill iSkillIndex, int iSubSkill );
 #else
-	float GetSkillBasedValueByMarine( CASW_Marine *pMarine, ASW_Skill iSkillIndex, int iSubSkill = 0 );
-	float GetSkillBasedValueByMarineResource( CASW_Marine_Resource *pMarineResource, ASW_Skill iSkillIndex, int iSubSkill = 0 );
+	float GetSkillBasedValueByMarine( CASW_Marine *pMarine, ASW_Skill iSkillIndex, int iSubSkill );
+	float GetSkillBasedValueByMarineResource( CASW_Marine_Resource *pMarineResource, ASW_Skill iSkillIndex, int iSubSkill );
 #endif
 	// returns the live marine with the best skill of this type
-	float GetBestSkillValue( ASW_Skill iSkillIndex, int iSubSkill = 0 );
-	float GetHighestSkillValueNearby( const Vector &pos, float MaxDistance, ASW_Skill iSkillIndex, int iSubSkill = 0 );
-	float GetLowestSkillValueNearby( const Vector &pos, float MaxDistance, ASW_Skill iSkillIndex, int iSubSkill = 0 );
+	float GetBestSkillValue( ASW_Skill iSkillIndex, int iSubSkill );
+	float GetHighestSkillValueNearby( const Vector &pos, float MaxDistance, ASW_Skill iSkillIndex, int iSubSkill );
+	float GetLowestSkillValueNearby( const Vector &pos, float MaxDistance, ASW_Skill iSkillIndex, int iSubSkill );
 
 	// get the value based on the current skills of that marine, or based on some specified number of points in that skill
-	float GetSkillBasedValue( CASW_Marine_Profile *pProfile, ASW_Skill iSkillIndex, int iSubSkill = 0, int iSkillPoints = -1 );
+	float GetSkillBasedValue( CASW_Marine_Profile *pProfile, ASW_Skill iSkillIndex, int iSubSkill, int iSkillPoints = -1 );
 #ifndef CLIENT_DLL
-	CASW_Marine *CheckSkillChanceNearby( CBaseEntity *pAlly, const Vector &pos, float MaxDistance, ASW_Skill iSkillIndex, int iSubSkill = 0 );
+	CASW_Marine *CheckSkillChanceNearby( CBaseEntity *pAlly, const Vector &pos, float MaxDistance, ASW_Skill iSkillIndex, int iSubSkill );
 	// returns the marine last used by the GetHighest/Lowest functions
 	CASW_Marine *GetLastSkillMarine() { return m_hLastSkillMarine.Get(); }
 	CHandle<CASW_Marine> m_hLastSkillMarine;

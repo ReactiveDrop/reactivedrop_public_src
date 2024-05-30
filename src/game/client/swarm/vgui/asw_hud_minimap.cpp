@@ -1270,7 +1270,7 @@ void CASWHudMinimapLinePanel::PaintScannerRing()
 			pMR->m_fScannerTime += gpGlobals->frametime * 2.2f;
 			if ( bCheckRing )
 			{
-				float fScannerRangeWorldUnits = MarineSkills()->GetSkillBasedValueByMarineResource( pMR, ASW_MARINE_SKILL_SCANNER ); // asw_scanner_range.GetFloat()
+				float fScannerRangeWorldUnits = MarineSkills()->GetSkillBasedValueByMarineResource( pMR, ASW_MARINE_SKILL_SCANNER, ASW_MARINE_SUBSKILL_SCANNER_RANGE );
 				float scanner_range = m_pMap->WorldDistanceToPixelDistance( fScannerRangeWorldUnits ) * pMR->m_fScannerTime * asw_scanner_ring_scale.GetFloat();
 
 				Vector2D marine_pos( 0, 0 );

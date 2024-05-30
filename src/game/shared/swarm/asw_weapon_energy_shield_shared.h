@@ -4,6 +4,7 @@
 #include "c_asw_weapon_rifle.h"
 #define CASW_Weapon_Rifle C_ASW_Weapon_Rifle
 #define CASW_Weapon_Energy_Shield C_ASW_Weapon_Energy_Shield
+#define CASW_Energy_Shield C_ASW_Energy_Shield
 #else
 #include "asw_weapon_rifle.h"
 #endif
@@ -34,5 +35,22 @@ public:
 	}
 
 	Class_T Classify() override { return ( Class_T )CLASS_ASW_ENERGY_SHIELD; }
+};
+
+class CASW_Energy_Shield : public CBaseAnimating
+{
+public:
+	DECLARE_CLASS( CASW_Energy_Shield, CBaseAnimating );
+	DECLARE_NETWORKCLASS();
+	DECLARE_PREDICTABLE();
+
+#ifdef CLIENT_DLL
+#else
+	DECLARE_DATADESC();
+#endif
+
+	void Precache() override;
+
+	Class_T Classify() override { return ( Class_T )CLASS_ASW_ENERGY_SHIELD_SHIELD; }
 };
 #endif

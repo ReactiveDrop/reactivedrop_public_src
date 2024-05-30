@@ -359,7 +359,7 @@ Vector CASW_Marine::Weapon_ShootPosition( )
 
 float CASW_Marine::MaxSpeed()
 {
-	float speed = MarineSkills()->GetSkillBasedValueByMarine( this, ASW_MARINE_SKILL_AGILITY ) * m_fSpeedScale;
+	float speed = MarineSkills()->GetSkillBasedValueByMarine( this, ASW_MARINE_SKILL_AGILITY, ASW_MARINE_SUBSKILL_AGILITY_MOVE_SPEED ) * m_fSpeedScale;
 	float speedscale = 1.0f;
 	// half speed if we're firing or reloading
 	if (GetActiveASWWeapon())			
@@ -758,23 +758,15 @@ void CASW_Marine::DoDamagePowerupEffects( CBaseEntity *pTarget, CTakeDamageInfo 
 
 void CASW_Marine::FireBullets( const FireBulletsInfo_t &info )
 {
-	float fPiercingChance = 0;
-	if ( GetMarineProfile() && GetMarineProfile()->GetMarineClass() == MARINE_CLASS_SPECIAL_WEAPONS )
-		fPiercingChance = MarineSkills()->GetSkillBasedValueByMarine( this, ASW_MARINE_SKILL_PIERCING );
-
-	//if ( GetActiveWeapon() )
-	//{
-		//CALL_ATTRIB_HOOK_FLOAT_ON_OTHER( GetActiveWeapon(), fPiercingChance, mod_piercing );
-	//}
-
-	if (fPiercingChance > 0)
+	float fPiercingChance = MarineSkills()->GetSkillBasedValueByMarine( this, ASW_MARINE_SKILL_STOPPING_POWER, ASW_MARINE_SUBSKILL_PIERCING_CHANCE );
+	if ( fPiercingChance > 0 )
 	{
-		FirePenetratingBullets(info, 1, fPiercingChance, 0 );
+		FirePenetratingBullets( info, 1, fPiercingChance, 0 );
 	}
 	else
 	{
-		FireRegularBullets(info);
-	}	
+		FireRegularBullets( info );
+	}
 }
 
 void CASW_Marine::FireRegularBullets( const FireBulletsInfo_t &info )

@@ -126,10 +126,7 @@ void CASW_Weapon_Devastator::FireShotgunPellet( CASW_Inhabitable_NPC *pNPC, cons
 		return;
 	}
 
-	float fPiercingChance = 0;
-	if (pMarine->GetMarineResource() && pMarine->GetMarineProfile() && pMarine->GetMarineProfile()->GetMarineClass() == MARINE_CLASS_SPECIAL_WEAPONS)
-		fPiercingChance = MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_PIERCING);
-
+	float fPiercingChance = MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_STOPPING_POWER, ASW_MARINE_SUBSKILL_PIERCING_CHANCE );
 	if (fPiercingChance > 0)
 	{
 		pMarine->FirePenetratingBullets(info, 1, fPiercingChance, iSeed, false );

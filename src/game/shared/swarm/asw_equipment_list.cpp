@@ -160,7 +160,9 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		"swarm/EquipIcons/EquipRifle",
 		&asw_ammo_count_rifle, &asw_ammo_count_rifle,
 		&asw_ammo_count_rifle_grenade, &asw_ammo_count_rifle_grenade_max,
-		5, 0.07f, 2.0f,
+		5, 0.07f, 2.0f, 1, MARINE_CLASS_UNDEFINED,
+		false, false, false, ASW_OFFHAND_USE_IMMEDIATELY,
+		0.2f, 0.1f,
 	},
 	{
 		ASW_EQUIP_PRIFLE, WEAPON_NAME( prifle ),
@@ -170,7 +172,7 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		&asw_ammo_count_prifle_grenade, &asw_ammo_count_prifle_grenade_max,
 		7, 0.07f, 2.0f, 1, MARINE_CLASS_TECH,
 		false, false, false, ASW_OFFHAND_USE_IMMEDIATELY,
-		0.28f,
+		0.28f, 0.1f,
 	},
 	{
 		ASW_EQUIP_AUTOGUN, WEAPON_NAME( autogun ),
@@ -178,7 +180,7 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		"swarm/EquipIcons/EquipAutogun",
 		&asw_ammo_count_autogun, &asw_ammo_count_autogun,
 		NULL, NULL,
-		7, 0.1f, 2.0f, 1, MARINE_CLASS_SPECIAL_WEAPONS, true,
+		8, 0.1f, 2.0f, 1, MARINE_CLASS_SPECIAL_WEAPONS, true,
 		false, false, ASW_OFFHAND_USE_IMMEDIATELY,
 		0.2f, 0.3f,
 	},
@@ -189,6 +191,8 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		&asw_ammo_count_vindicator, &asw_ammo_count_vindicator,
 		&asw_ammo_count_vindicator_grenade, &asw_ammo_count_vindicator_grenade_max,
 		15, 0.65f, 2.0f, 7, MARINE_CLASS_NCO,
+		false, false, false, ASW_OFFHAND_USE_IMMEDIATELY,
+		0.2f, 0.1f,
 	},
 	{
 		ASW_EQUIP_PISTOL, WEAPON_NAME( pistol ),
@@ -198,7 +202,7 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		NULL, NULL,
 		21, 0.5f, 1.0f, 1, MARINE_CLASS_UNDEFINED,
 		false, false, false, ASW_OFFHAND_USE_IMMEDIATELY,
-		0.1f,
+		0.1f, 0.1f,
 	},
 	{
 		ASW_EQUIP_SENTRY, WEAPON_NAME( sentry ),
@@ -238,7 +242,9 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		"swarm/EquipIcons/EquipShotgun",
 		&asw_ammo_count_shotgun, &asw_ammo_count_shotgun,
 		NULL, NULL,
-		25, 1.0f, 1.3f, 7,
+		25, 1.0f, 1.3f, 7, MARINE_CLASS_UNDEFINED,
+		false, false, false, ASW_OFFHAND_USE_IMMEDIATELY,
+		0.2f, 0.1f,
 	},
 	{
 		ASW_EQUIP_TESLA_GUN, WEAPON_NAME( tesla_gun ),
@@ -256,7 +262,9 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		"swarm/EquipIcons/EquipRailgun",
 		&asw_ammo_count_railgun, &asw_ammo_count_railgun,
 		NULL, NULL,
-		105, 0.0f, 1.3f,
+		105, 0.0f, 1.3f, 1, MARINE_CLASS_UNDEFINED,
+		false, false, false, ASW_OFFHAND_USE_IMMEDIATELY,
+		1, 0,
 	},
 	{
 		ASW_EQUIP_HEAL_GUN, WEAPON_NAME( heal_gun ),
@@ -286,7 +294,7 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		NULL, NULL,
 		2, 0.1f, 2.2f, 1, MARINE_CLASS_UNDEFINED,
 		false, false, false, ASW_OFFHAND_USE_IMMEDIATELY,
-		1.0f, 0.05f,
+		0.5f, 0,
 	},
 	{
 		ASW_EQUIP_SENTRY_FREEZE, WEAPON_NAME( sentry_freeze ),
@@ -306,7 +314,7 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		NULL, NULL,
 		8, 0.04f, 2.0f, 1, MARINE_CLASS_SPECIAL_WEAPONS,
 		true, false, false, ASW_OFFHAND_USE_IMMEDIATELY,
-		0.1f, 0.3f,
+		0.1f, 0,
 	},
 	{
 		ASW_EQUIP_SNIPER_RIFLE, WEAPON_NAME( sniper_rifle ),
@@ -314,7 +322,9 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		"swarm/EquipIcons/EquipSniperRifle",
 		&asw_ammo_count_sniper_rifle, &asw_ammo_count_sniper_rifle,
 		NULL, NULL,
-		65, 0.72f, 2.0f,
+		65, 0.72f, 2.0f, 1, MARINE_CLASS_UNDEFINED,
+		false, false, false, ASW_OFFHAND_USE_IMMEDIATELY,
+		0.4f, 0.1f,
 	},
 	{
 		ASW_EQUIP_SENTRY_FLAMER, WEAPON_NAME( sentry_flamer ),
@@ -332,7 +342,9 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		"swarm/EquipIcons/EquipChainsaw",
 		&asw_ammo_count_internal_chainsaw, &asw_ammo_count_internal_chainsaw,
 		NULL, NULL,
-		0.5f, 0.1f, 2.2f,
+		0.5f, 0.1f, 2.2f, 1, MARINE_CLASS_UNDEFINED,
+		false, false, false, ASW_OFFHAND_USE_IMMEDIATELY,
+		0.2f, 0.1f,
 	},
 	{
 		ASW_EQUIP_SENTRY_CANNON, WEAPON_NAME( sentry_cannon ),
@@ -350,7 +362,9 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		"swarm/EquipIcons/EquipGrenadeLauncher",
 		&asw_ammo_count_grenade_launcher, &asw_ammo_count_grenade_launcher,
 		NULL, NULL,
-		80, 0.4f, 3.2f,
+		80, 0.4f, 3.2f, 1, MARINE_CLASS_UNDEFINED,
+		false, false, false, ASW_OFFHAND_USE_IMMEDIATELY,
+		1, 0,
 	},
 	{
 		ASW_EQUIP_DEAGLE, WEAPON_NAME( deagle ),
@@ -369,7 +383,8 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		&asw_ammo_count_devastator, &asw_ammo_count_devastator,
 		NULL, NULL,
 		11, 0.2f, 3.0f, 7, MARINE_CLASS_SPECIAL_WEAPONS,
-		true,
+		true, false, false, ASW_OFFHAND_USE_IMMEDIATELY,
+		0.2f, 0.2f,
 	},
 	{
 		ASW_EQUIP_COMBAT_RIFLE, WEAPON_NAME( combat_rifle ),
@@ -377,7 +392,9 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		"swarm/EquipIcons/EquipCombatRifle",
 		&asw_ammo_count_rifle, &asw_ammo_count_rifle,
 		&asw_ammo_count_combat_rifle_shotgun, &asw_ammo_count_combat_rifle_shotgun,
-		6, 0.07f, 2.0f,
+		6, 0.07f, 2.0f, 1, MARINE_CLASS_UNDEFINED,
+		false, false, false, ASW_OFFHAND_USE_IMMEDIATELY,
+		0.2f, 0.1f,
 	},
 	{
 		ASW_EQUIP_HEALAMP_GUN, WEAPON_NAME( healamp_gun ),
@@ -397,7 +414,7 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		&asw_ammo_count_heavy_rifle_charge, &asw_ammo_count_heavy_rifle_charge,
 		10, 0.09f, 2.0f, 1, MARINE_CLASS_UNDEFINED,
 		false, false, false, ASW_OFFHAND_USE_IMMEDIATELY,
-		0.6f, 0.3f,
+		0.4f, 0.1f,
 	},
 	{
 		ASW_EQUIP_MEDRIFLE, WEAPON_NAME( medrifle ),
@@ -406,6 +423,8 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		&asw_ammo_count_medrifle, &asw_ammo_count_medrifle,
 		&asw_ammo_count_medrifle_heal, &asw_ammo_count_medrifle_heal,
 		7, 0.035f, 2.0f, 1, MARINE_CLASS_MEDIC,
+		false, false, false, ASW_OFFHAND_USE_IMMEDIATELY,
+		0.1f, 0.1f,
 	},
 
 	// hidden weapons
@@ -427,7 +446,7 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		NULL, NULL,
 		52, 0.5f, 2.2f, 1, MARINE_CLASS_UNDEFINED,
 		false, false, false, ASW_OFFHAND_USE_IMMEDIATELY,
-		0, 0,
+		1, 0,
 	},
 	{
 		ASW_EQUIP_50CALMG, WEAPON_NAME( 50calmg ),
@@ -437,7 +456,7 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		NULL, NULL,
 		160, 0.14f, 2.0f, 1, MARINE_CLASS_UNDEFINED,
 		false, false, false, ASW_OFFHAND_USE_IMMEDIATELY,
-		0.6f, 0.6f,
+		1, 0,
 	},
 	{
 		// mapper/modder only; see ASW_EQUIP_FLECHETTE2 for the unlockable one
@@ -446,7 +465,9 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		"swarm/EquipIcons/EquipRailgun",
 		&asw_ammo_count_flamer, &asw_ammo_count_flamer,
 		NULL, NULL,
-		0, 0.125f, 2.0f,
+		0, 0.125f, 2.0f, 1, MARINE_CLASS_UNDEFINED,
+		false, false, false, ASW_OFFHAND_USE_IMMEDIATELY,
+		0, 0,
 	},
 	{
 		// item-unlockable
@@ -455,7 +476,9 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		"swarm/EquipIcons/EquipRicochet",
 		&asw_ammo_count_rifle, &asw_ammo_count_rifle,
 		NULL, NULL,
-		0, 0.07f, 1.3f,
+		0, 0.07f, 1.3f, 1, MARINE_CLASS_UNDEFINED,
+		false, false, false, ASW_OFFHAND_USE_IMMEDIATELY,
+		0.2f, 0.1f,
 	},
 	{
 		ASW_EQUIP_AMMO_BAG, WEAPON_NAME( ammo_bag ),
@@ -485,7 +508,7 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		&asw_ammo_count_ar2_grenade, &asw_ammo_count_ar2_grenade,
 		0, 0.1f, 2.0f, 1, MARINE_CLASS_UNDEFINED,
 		false, false, false, ASW_OFFHAND_USE_IMMEDIATELY,
-		0.6f, 0.3f,
+		0.4f, 0.1f,
 	},
 	// item-unlockable weapons
 	{
@@ -494,7 +517,9 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		"swarm/EquipIcons/EquipFlechette",
 		&asw_ammo_count_flechette, &asw_ammo_count_flechette,
 		NULL, NULL,
-		0, 0.125f, 2.0f,
+		0, 0.125f, 2.0f, 1, MARINE_CLASS_UNDEFINED,
+		false, false, false, ASW_OFFHAND_USE_IMMEDIATELY,
+		0.2f, 0.1f,
 	},
 
 #ifdef RD_7A_WEAPONS
@@ -505,6 +530,8 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		&asw_ammo_count_cryo_cannon, &asw_ammo_count_cryo_cannon,
 		NULL, NULL,
 		2, 0.1f, 2.2f, 1, MARINE_CLASS_SPECIAL_WEAPONS,
+		false, false, false, ASW_OFFHAND_USE_IMMEDIATELY,
+		0.2f, 0.1f,
 	},
 	{
 		ASW_EQUIP_PLASMA_THROWER, WEAPON_NAME( plasma_thrower ),
@@ -513,6 +540,8 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		&asw_ammo_count_flamer, &asw_ammo_count_flamer,
 		NULL, NULL,
 		2, 0.1f, 2.2f, 1, MARINE_CLASS_SPECIAL_WEAPONS,
+		false, false, false, ASW_OFFHAND_USE_IMMEDIATELY,
+		0.2f, 0.1f,
 	},
 	{
 		ASW_EQUIP_SENTRY_RAILGUN, WEAPON_NAME( sentry_railgun ),
@@ -531,6 +560,8 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		&asw_ammo_count_rifle_burst, &asw_ammo_count_rifle_burst,
 		&asw_ammo_count_energy_shield, &asw_ammo_count_energy_shield_max,
 		6, 0.07f, 2.0f, 1, MARINE_CLASS_TECH,
+		false, false, false, ASW_OFFHAND_USE_IMMEDIATELY,
+		0.2f, 0.1f,
 	},
 #endif
 };
@@ -812,6 +843,8 @@ static CASW_EquipItem s_ExtraEquips[ASW_NUM_EQUIP_EXTRA] =
 		NULL, NULL,
 		NULL, NULL,
 		0, 0, 2.2f, 1, MARINE_CLASS_MEDIC,
+		false, false, false, ASW_OFFHAND_USE_IMMEDIATELY,
+		0, 0,
 	},
 	{
 		ASW_EQUIP_HACK_TOOL, WEAPON_NAME( hack_tool ),
@@ -820,6 +853,8 @@ static CASW_EquipItem s_ExtraEquips[ASW_NUM_EQUIP_EXTRA] =
 		NULL, NULL,
 		NULL, NULL,
 		0, 0, 2.2f, 1, MARINE_CLASS_UNDEFINED,
+		false, false, false, ASW_OFFHAND_USE_IMMEDIATELY,
+		0, 0,
 	},
 #endif
 };

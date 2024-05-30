@@ -22,17 +22,41 @@ BEGIN_DATADESC( CASW_Weapon_Energy_Shield )
 END_DATADESC()
 #endif
 
-// TODO: m_iEnergyShieldProjectilesDestroyed
-
 void CASW_Weapon_Energy_Shield::Precache()
 {
 	BaseClass::Precache();
 
-	PrecacheModel( "models/items/shield_bubble/rifle_shield.mdl" );
+#ifdef GAME_DLL
+	UTIL_PrecacheOther( "asw_energy_shield" );
+#endif
 }
 
 void CASW_Weapon_Energy_Shield::SecondaryAttack()
 {
 	// TODO
+}
+
+IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Energy_Shield, DT_ASW_Energy_Shield );
+
+BEGIN_NETWORK_TABLE( CASW_Energy_Shield, DT_ASW_Energy_Shield )
+END_NETWORK_TABLE()
+
+BEGIN_PREDICTION_DATA( CASW_Energy_Shield )
+END_PREDICTION_DATA()
+
+LINK_ENTITY_TO_CLASS( asw_energy_shield, CASW_Energy_Shield );
+
+#ifndef CLIENT_DLL
+BEGIN_DATADESC( CASW_Energy_Shield )
+END_DATADESC()
+#endif
+
+// TODO: m_iEnergyShieldProjectilesDestroyed
+
+void CASW_Energy_Shield::Precache()
+{
+	BaseClass::Precache();
+
+	PrecacheModel( "models/items/shield_bubble/rifle_shield.mdl" );
 }
 #endif

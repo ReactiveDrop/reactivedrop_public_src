@@ -292,10 +292,7 @@ void CASW_Weapon_Minigun::PrimaryAttack()
 
 void CASW_Weapon_Minigun::FireBullets( CASW_Marine* pMarine, const FireBulletsInfo_t& info )
 {
-	float fPiercingChance = 0;
-	CASW_Marine_Profile* pProfile = pMarine->GetMarineProfile();
-	if ( pProfile && pProfile->GetMarineClass() == MARINE_CLASS_SPECIAL_WEAPONS )
-		fPiercingChance = MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_PIERCING );
+	float fPiercingChance = MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_STOPPING_POWER, ASW_MARINE_SUBSKILL_PIERCING_CHANCE );
 
 	if ( gpGlobals->curtime - m_flTimeFireStarted > rd_minigun_additional_piercing_delay.GetFloat() )
 	{

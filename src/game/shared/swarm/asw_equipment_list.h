@@ -110,10 +110,9 @@ public:
 		const char *szDescription1, const char *szAltFireDescription, const char *szAttributeDescription,
 		bool bSelectableInBriefing, bool bRequiresInventoryItem, bool bIsExtra, const char *szAmmo1, const char *szAmmo2,
 		const char *szEquipIcon, ConVar *pDefaultAmmo1, ConVar *pMaxAmmo1, ConVar *pDefaultAmmo2, ConVar *pMaxAmmo2,
-		float flBaseDamage, float flFireRate, float flReloadTime, int nNumPellets = 1, int iRequiredClass = -1, bool bIsUnique = false,
-		bool bViewModelIsMarineAttachment = false, bool bViewModelHidesMarineBodyGroup1 = false,
-		ASW_Offhand_Order_t iOffhandOrderType = ASW_OFFHAND_USE_IMMEDIATELY,
-		float flFlinchChance = 0.2f, float flStoppingPowerFlinchBonus = 0.1f );
+		float flBaseDamage, float flFireRate, float flReloadTime, int nNumPellets, int iRequiredClass, bool bIsUnique,
+		bool bViewModelIsMarineAttachment, bool bViewModelHidesMarineBodyGroup1, ASW_Offhand_Order_t iOffhandOrderType,
+		float flFlinchChance, float flStoppingPowerFlinchBonus );
 
 	int DefaultAmmo1() const;
 	int MaxAmmo1() const;

@@ -323,7 +323,7 @@ bool CASW_Weapon_Medical_Satchel::GiveHealth()
 		if (!pMarine)
 			return 0.0f;		
 
-		float flCureAmount = MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_XENOWOUNDS) / 100.0f;
+		float flCureAmount = MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_XENOWOUNDS, ASW_MARINE_SUBSKILL_XENOWOUNDS_INFESTATION_CURING ) / 100.0f;
 
 		//CALL_ATTRIB_HOOK_FLOAT( flCureAmount, mod_xenowound_bonus );
 

@@ -3651,7 +3651,7 @@ bool CAlienSwarm::SpawnMarineAt( CASW_Marine_Resource * RESTRICT pMR, const Vect
 	pMarine->SetAbsAngles( angFacing );
 	pMarine->m_fHoldingYaw = angFacing[YAW];
 
-	int iMarineHealth = MarineSkills()->GetSkillBasedValueByMarineResource(pMR, ASW_MARINE_SKILL_HEALTH);
+	int iMarineHealth = MarineSkills()->GetSkillBasedValueByMarineResource( pMR, ASW_MARINE_SKILL_HEALTH, ASW_MARINE_SUBSKILL_HEALTH );
 	int iMarineMaxHealth = iMarineHealth;
 
 	// half the pMarine's health if he's wounded

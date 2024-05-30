@@ -70,10 +70,10 @@ void CASW_Scanner_Info::UpdateBlips()
 			CASW_Marine_Resource *pMarineResource = pGameResource->GetMarineResource(i);
 			if (pMarineResource && pMarineResource->GetMarineEntity() && pMarineResource->GetHealthPercent() > 0)
 			{
-				if (pMarineResource->GetProfile() && pMarineResource->GetProfile()->CanScanner())
+				if ( pMarineResource->GetProfile() && pMarineResource->GetProfile()->CanScanner() )
 				{
-					float fScannerRange = MarineSkills()->GetSkillBasedValueByMarineResource(pMarineResource, ASW_MARINE_SKILL_SCANNER);
-					AddBlips(pMarineResource->GetMarineEntity()->GetAbsOrigin(), fScannerRange);
+					float fScannerRange = MarineSkills()->GetSkillBasedValueByMarineResource( pMarineResource, ASW_MARINE_SKILL_SCANNER, ASW_MARINE_SUBSKILL_SCANNER_RANGE );
+					AddBlips( pMarineResource->GetMarineEntity()->GetAbsOrigin(), fScannerRange );
 				}
 			}
 		}

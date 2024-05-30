@@ -382,7 +382,7 @@ bool CASW_Weapon_Shotgun::ShouldUseFastReloadAnim()
 {
 	if (GetMarine())
 	{
-		return (MarineSkills()->GetSkillBasedValueByMarine(GetMarine(), ASW_MARINE_SKILL_RELOADING) < 1.06f);		
+		return ( MarineSkills()->GetSkillBasedValueByMarine( GetMarine(), ASW_MARINE_SKILL_RELOADING, ASW_MARINE_SUBSKILL_RELOADING_SPEED_SCALE ) < 1.06f );
 	}
 	return true;
 }

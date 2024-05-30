@@ -337,7 +337,7 @@ void CASWPlayerAnimState::DoAnimationEvent( PlayerAnimEvent_t event )
 					}
 				}
 
-				fReloadTime *= MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_RELOADING );
+				fReloadTime *= MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_RELOADING, ASW_MARINE_SUBSKILL_RELOADING_SPEED_SCALE );
 			}
 
 			// calc playback rate needed to play the whole anim in this time

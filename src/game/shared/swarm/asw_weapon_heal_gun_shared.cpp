@@ -838,7 +838,7 @@ float CASW_Weapon_Heal_Gun::GetInfestationCureAmount()
 	if (!pMarine)
 		return 0.0f;		
 
-	float flCureAmount = MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_XENOWOUNDS) / 100.0f;
+	float flCureAmount = MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_XENOWOUNDS, ASW_MARINE_SUBSKILL_XENOWOUNDS_INFESTATION_CURING ) / 100.0f;
 
 	return flCureAmount;
 }

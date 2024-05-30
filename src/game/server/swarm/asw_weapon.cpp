@@ -193,10 +193,10 @@ bool CASW_Weapon::ShouldAlienFlinch( CBaseEntity *pAlien, const CTakeDamageInfo 
 	{
 		CASW_Marine *pMarine = assert_cast< CASW_Marine * >( pOwner );
 		CASW_Marine_Profile *pMarineProfile = pMarine->GetMarineProfile();
-		if ( pMarineProfile && pMarineProfile->GetMarineClass() == MARINE_CLASS_SPECIAL_WEAPONS )
+		if ( pMarineProfile )
 		{
 			// this is a special weapons marine, so we need to add our flinch bonus onto it
-			fFlinchChance += pEquipItem->m_flStoppingPowerFlinchBonus * MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_STOPPING_POWER );
+			fFlinchChance += pEquipItem->m_flStoppingPowerFlinchBonus * MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_STOPPING_POWER, ASW_MARINE_SUBSKILL_STOPPING_POWER );
 			if ( asw_debug_alien_damage.GetBool() )
 				Msg( "Boosted by specialweaps to %f ", fFlinchChance );
 		}
