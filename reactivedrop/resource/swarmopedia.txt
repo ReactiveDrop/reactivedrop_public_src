@@ -2616,6 +2616,26 @@
 			}
 		}
 	}
+	"WEAPON" {
+		"ClassName" "asw_weapon_flechette2"
+		"Builtin" "1"
+	}
+	"WEAPON" {
+		"ClassName" "asw_weapon_cryo_cannon"
+		"Builtin" "1"
+	}
+	"WEAPON" {
+		"ClassName" "asw_weapon_plasma_thrower"
+		"Builtin" "1"
+	}
+	"WEAPON" {
+		"ClassName" "asw_weapon_sentry_railgun"
+		"Builtin" "1"
+	}
+	"WEAPON" {
+		"ClassName" "asw_weapon_energy_shield"
+		"Builtin" "1"
+	}
 
 	"WEAPON" {
 		"ClassName" "asw_weapon_medkit"
@@ -3433,5 +3453,29 @@
 				"Caption" "#rd_weapon_fact_throwable"
 			}
 		}
+	}
+	"WEAPON" {
+		"ClassName" "asw_weapon_stun_grenades"
+		"Builtin" "1"
+	}
+	"WEAPON" {
+		"ClassName" "asw_weapon_incendiary_grenades"
+		"Builtin" "1"
+	}
+	"WEAPON" {
+		"ClassName" "asw_weapon_speed_burst"
+		"Builtin" "1"
+	}
+	"WEAPON" {
+		"ClassName" "asw_weapon_shield_bubble"
+		"Builtin" "1"
+	}
+	"WEAPON" {
+		"ClassName" "asw_weapon_revive_tool"
+		"Builtin" "1"
+	}
+	"WEAPON" {
+		"ClassName" "asw_weapon_hack_tool"
+		"Builtin" "1"
 	}
 }
