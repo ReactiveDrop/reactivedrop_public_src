@@ -5,6 +5,7 @@
 #include "asw_shareddefs.h"
 #include "asw_marine_skills.h"
 #include "world.h"
+#include "asw_marine_profile.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -23,7 +24,7 @@ END_SEND_TABLE()
 
 
 ConVar asw_buffgrenade_gravity( "asw_buffgrenade_gravity", "1000", FCVAR_CHEAT, "Gravity of buffgrenades" );
-
+extern ConVar rd_buff_grenade_attach_sw;
 
 CASW_BuffGrenade_Projectile::CASW_BuffGrenade_Projectile()
 {
@@ -183,4 +184,43 @@ CASW_BuffGrenade_Projectile* CASW_BuffGrenade_Projectile::Grenade_Projectile_Cre
 	pGrenade->m_ProjectileData.GetForModify().SetFromWeapon( pCreator );
 
 	return pGrenade;
+}
+
+bool CASW_BuffGrenade_Projectile::IsUsable( CBaseEntity *pUser )
+{
+	if ( GetMoveParent() && GetMoveParent()->IsInhabitableNPC() )
+		return false;
+
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pUser );
+	if ( !pMarine )
+		return false;
+
+	if ( pMarine->GetAbsOrigin().DistTo( GetAbsOrigin() ) >= ASW_MARINE_USE_RADIUS )
+		return false;
+
+	for ( CBaseEntity *pEnt = pMarine->FirstMoveChild(); pEnt; pEnt = pEnt->NextMovePeer() )
+	{
+		if ( dynamic_cast< CASW_BuffGrenade_Projectile * >( pEnt ) )
+		{
+			// only one amp grenade attached to a marine (they don't stack anyway)
+			return false;
+		}
+	}
+
+	return pMarine->GetMarineProfile() && pMarine->GetMarineProfile()->GetMarineClass() == MARINE_CLASS_SPECIAL_WEAPONS && rd_buff_grenade_attach_sw.GetBool();
+}
+
+void CASW_BuffGrenade_Projectile::ActivateUseIcon( CASW_Inhabitable_NPC *pUser, int nHoldType )
+{
+	Assert( IsUsable( pUser ) );
+
+	if ( nHoldType == ASW_USE_HOLD_START )
+		return;
+
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pUser );
+	Assert( pMarine );
+	if ( !pMarine )
+		return;
+
+	AttachToMarine( pMarine );
 }

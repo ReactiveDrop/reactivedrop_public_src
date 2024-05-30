@@ -3,11 +3,12 @@
 #pragma once
 
 #include "asw_aoegrenade_projectile.h"
+#include "iasw_server_usable_entity.h"
 
 class CASW_Marine;
 class CASW_Skill_Details;
 
-class CASW_BuffGrenade_Projectile : public CASW_AOEGrenade_Projectile
+class CASW_BuffGrenade_Projectile : public CASW_AOEGrenade_Projectile, public IASW_Server_Usable_Entity
 {
 	DECLARE_CLASS( CASW_BuffGrenade_Projectile, CASW_AOEGrenade_Projectile );
 
@@ -39,6 +40,15 @@ public:
 	int GetBuffedMarineCount() { return m_hBuffedMarines.Count(); }
 
 	void AttachToMarine( CASW_Marine *pMarine );
+
+	virtual CBaseEntity *GetEntity() override { return this; }
+	virtual bool IsUsable( CBaseEntity *pUser ) override;
+	virtual bool RequirementsMet( CBaseEntity *pUser ) override { return true; }
+	virtual void ActivateUseIcon( CASW_Inhabitable_NPC *pUser, int nHoldType ) override;
+	virtual void NPCStartedUsing( CASW_Inhabitable_NPC *pUser ) override {}
+	virtual void NPCStoppedUsing( CASW_Inhabitable_NPC *pUser ) override {}
+	virtual void NPCUsing( CASW_Inhabitable_NPC *pUser, float fDeltaTime ) override {}
+	virtual bool NeedsLOSCheck() override { return false; }
 
 protected:
 	// if this buff grenade was deployed by a marine, these describe the skill used

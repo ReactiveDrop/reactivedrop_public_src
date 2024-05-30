@@ -40,7 +40,7 @@ END_PREDICTION_DATA()
 LINK_ENTITY_TO_CLASS( asw_weapon_buff_grenade, CASW_Weapon_Buff_Grenade );
 PRECACHE_WEAPON_REGISTER( asw_weapon_buff_grenade );
 
-ConVar rd_buff_grenade_attach_sw( "rd_buff_grenade_attach_sw", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "if set, special weapons deploy amp grenades to themselves, not to the floor" );
+ConVar rd_buff_grenade_attach_sw( "rd_buff_grenade_attach_sw", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "if set, special weapons can pick up amp grenades" );
 
 #ifndef CLIENT_DLL
 
@@ -152,13 +152,6 @@ void CASW_Weapon_Buff_Grenade::PrimaryAttack( void )
 	float flDuration = 30.0f;
 	CASW_BuffGrenade_Projectile *pBuff = CASW_BuffGrenade_Projectile::Grenade_Projectile_Create( vecSrc, ang, newVel, rotSpeed, pMarine, this, flRadius, flDuration );
 
-	CASW_Marine_Profile *pProfile = pMarine->GetMarineProfile();
-	if ( pProfile && pProfile->GetMarineClass() == MARINE_CLASS_SPECIAL_WEAPONS && rd_buff_grenade_attach_sw.GetBool() )
-	{
-		pBuff->AttachToMarine( pMarine );
-	}
-
-
 	pMarine->OnWeaponFired( this, 1 );
 
 	IGameEvent * event = gameeventmanager->CreateEvent( "damage_amplifier_placed" );
@@ -169,7 +162,7 @@ void CASW_Weapon_Buff_Grenade::PrimaryAttack( void )
 		gameeventmanager->FireEvent( event );
 	}
 
-	pMarine->GetMarineSpeech()->Chatter(CHATTER_MINE_DEPLOYED);
+	pMarine->GetMarineSpeech()->Chatter( CHATTER_MINE_DEPLOYED );
 #endif
 	// decrement ammo
 	m_iClip1 -= 1;

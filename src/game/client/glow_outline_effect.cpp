@@ -10,6 +10,7 @@
 #include "shaderapi/ishaderapi.h"
 #include "materialsystem/imaterialvar.h"
 #include "view_shared.h"
+#include "c_asw_aoegrenade_projectile.h"
 
 #define FULL_FRAME_TEXTURE "_rt_FullFrameFB"
 
@@ -446,6 +447,11 @@ void CGlowObjectManager::GlowObjectDefinition_t::DrawModel()
 	instance.m_nAlpha = (uint8)( m_flGlowAlpha * 255.0f );
 
 	m_pEntity->DrawModel( STUDIO_RENDER | STUDIO_SKIP_FLEXES | STUDIO_DONOTMODIFYSTENCILSTATE | STUDIO_NOLIGHTING_OR_CUBEMAP | STUDIO_SKIP_DECALS, instance );
+
+	// HACK!
+	if ( dynamic_cast< C_ASW_AOEGrenade_Projectile * >( m_pEntity ) )
+		return;
+
 	C_BaseEntity *pAttachment = m_pEntity->FirstMoveChild();
 
 	while ( pAttachment != NULL )
