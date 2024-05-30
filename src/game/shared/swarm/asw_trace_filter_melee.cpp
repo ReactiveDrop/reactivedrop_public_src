@@ -94,10 +94,6 @@ bool CASW_Trace_Filter_Melee::ShouldHitEntity( IHandleEntity *pHandleEntity, int
 		// Only do these comparisons between NPCs
 		if ( !CASW_Marine::AsMarine( pAttackerBCC ) && pAttackerBCC && pVictimBCC )
 		{
-			// stop aliens from meleeing each other, unless they're on different factions
-			if ( pAttackerBCC->GetFaction() == pVictimBCC->GetFaction() )
-				return false;
-
 			// Can only damage other NPCs that we hate
 			if ( !m_bDamageAnyNPC && pAttackerBCC->IRelationType( pEntity ) != D_HT )
 			{
