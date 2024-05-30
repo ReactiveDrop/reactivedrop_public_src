@@ -18,7 +18,7 @@
 //#define RD_7A_ENEMIES
 #define RD_7A_LOADOUTS
 //#define RD_7A_QUESTS
-//#define RD_7A_WEAPONS
+#define RD_7A_WEAPONS
 
 // features that are not ready for prime time
 //#define RD_USE_FONT_HACK

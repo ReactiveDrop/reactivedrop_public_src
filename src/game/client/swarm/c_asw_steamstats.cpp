@@ -1533,6 +1533,14 @@ void CASW_Steamstats::PrepStatsForSend_Leaderboard( CASW_Player *pPlayer, bool b
 		return;
 	}
 
+#ifdef RD_7A_WEAPONS
+#ifdef RD_DISABLE_ALL_RELEASE_FLAGS
+#error This should be disabled for release!
+#endif
+	engine->ServerCmd( "cl_leaderboard_ready\n" );
+	return;
+#endif
+
 	if ( !ASWGameRules()->GetMissionSuccess() && !ShouldUploadOnFailure() )
 	{
 		if ( asw_stats_leaderboard_debug.GetBool() )

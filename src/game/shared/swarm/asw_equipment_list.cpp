@@ -461,7 +461,7 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 	{
 		// mapper/modder only; see ASW_EQUIP_FLECHETTE2 for the unlockable one
 		ASW_EQUIP_FLECHETTE, WEAPON_NAME( flechette ),
-		false, true, false, "ASW_F", "",
+		false, false, false, "ASW_F", "",
 		"swarm/EquipIcons/EquipRailgun",
 		&asw_ammo_count_flamer, &asw_ammo_count_flamer,
 		NULL, NULL,
@@ -1029,7 +1029,7 @@ CON_COMMAND( asw_list_equipment, "list weapons and their IDs" )
 	{
 		CASW_EquipItem *pRegular = g_ASWEquipmentList.GetRegular( i );
 		Assert( pRegular );
-		Msg( "%d: %s%s\n", i, pRegular->m_szEquipClass, pRegular->m_bSelectableInBriefing ? "" : " (hidden)" );
+		Msg( "%d: %s%s%s\n", i, pRegular->m_szEquipClass, pRegular->m_bSelectableInBriefing ? "" : " (hidden)", pRegular->m_bRequiresInventoryItem ? " (requires item)" : "" );
 	}
 	Msg( "\n" );
 
@@ -1039,7 +1039,7 @@ CON_COMMAND( asw_list_equipment, "list weapons and their IDs" )
 	{
 		CASW_EquipItem *pExtra = g_ASWEquipmentList.GetExtra( i );
 		Assert( pExtra );
-		Msg( "%d: %s%s\n", i, pExtra->m_szEquipClass, pExtra->m_bSelectableInBriefing ? "" : " (hidden)" );
+		Msg( "%d: %s%s%s\n", i, pExtra->m_szEquipClass, pExtra->m_bSelectableInBriefing ? "" : " (hidden)", pExtra->m_bRequiresInventoryItem ? " (requires item)" : "" );
 	}
 }
 #endif

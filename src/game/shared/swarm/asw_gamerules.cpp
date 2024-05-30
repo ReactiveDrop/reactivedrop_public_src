@@ -2606,8 +2606,10 @@ void CAlienSwarm::LoadoutSelect( CASW_Marine_Resource *pMR, int iInvSlot, int iE
 
 	// Figure out what item the marine is trying to equip
 	CASW_EquipItem *pNewItem = g_ASWEquipmentList.GetItemForSlot( iInvSlot, iEquipIndex );
-	// TODO: defer checking for selectable in briefing or split the field to support new weapons that are inventory-only.
-	if ( !pNewItem || ( !pNewItem->m_bSelectableInBriefing && !rd_weapons_show_hidden.GetBool() ) )
+	if ( !pNewItem )
+		return;
+
+	if ( !pNewItem->m_bSelectableInBriefing && !pNewItem->m_bRequiresInventoryItem && !rd_weapons_show_hidden.GetBool() )
 		return;
 
 	// Figure out if the marine is already carrying an item in the slot
@@ -4369,6 +4371,7 @@ void CAlienSwarm::GiveStartingWeaponToMarine( CASW_Marine *pMarine, int iEquipIn
 			return;
 		}
 	}
+#ifndef RD_7A_WEAPONS
 	else if ( pMR && pEquip->m_bRequiresInventoryItem )
 	{
 		Assert( pMR->m_iWeaponsInSlots[iSlot] == iEquipIndex );
@@ -4382,6 +4385,11 @@ void CAlienSwarm::GiveStartingWeaponToMarine( CASW_Marine *pMarine, int iEquipIn
 		GiveStartingWeaponToMarine( pMarine, iSlot == ASW_INVENTORY_SLOT_EXTRA ? ASW_EQUIP_MEDKIT : ASW_EQUIP_RIFLE, iSlot );
 		return;
 	}
+#else
+#ifdef RD_DISABLE_ALL_RELEASE_FLAGS
+#error This should be disabled for release!
+#endif
+#endif
 	else
 	{
 		pWeapon->m_hOriginalOwnerMR = NULL;
@@ -6143,7 +6151,7 @@ int CAlienSwarm::GetRandomValidWeaponSelectionExtra( CASW_Marine_Resource *pMari
 		CASW_EquipItem *pExtra = g_ASWEquipmentList.GetExtra( nRandom );
 
 		// check for hidden weapons
-		if ( !pExtra->m_bSelectableInBriefing )
+		if ( !pExtra->m_bSelectableInBriefing && !rd_weapons_show_hidden.GetBool() )
 			continue;
 
 		bool bLevelLocked = !asw_unlock_all_weapons.GetBool() && !UTIL_ASW_CommanderLevelAtLeast( NULL, GetWeaponLevelRequirement( pExtra->m_szEquipClass ) - 1, -1 );

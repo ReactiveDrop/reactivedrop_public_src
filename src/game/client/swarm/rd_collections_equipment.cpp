@@ -20,6 +20,7 @@
 #include "controller_focus.h"
 #include "c_asw_steamstats.h"
 #include "engine/IEngineSound.h"
+#include "asw_equipment_list.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -162,11 +163,29 @@ TGD_Grid *CRD_Collection_Tab_Equipment::CreateGrid()
 			continue; // can't equip a weapon that isn't built in
 		}
 
-		bool bHideNonInventory = pWeapon->Hidden && !rd_weapons_show_hidden.GetBool();
+		CASW_EquipItem *pItem = pWeapon->Extra ? g_ASWEquipmentList.GetExtra( pWeapon->EquipIndex ) : g_ASWEquipmentList.GetRegular( pWeapon->EquipIndex );
+		Assert( pItem );
 
 		instances.Purge();
 		ReactiveDropInventory::GetItemsForSlotAndEquipIndex( instances, pWeapon->Extra ? "extra" : "weapon", pWeapon->EquipIndex );
-		if ( bHideNonInventory && instances.Count() == 0 )
+
+		bool bHideWeapon = pWeapon->Hidden && !rd_weapons_show_hidden.GetBool();
+		if ( bHideWeapon && pItem && pItem->m_bRequiresInventoryItem )
+		{
+			if ( instances.Count() )
+			{
+				bHideWeapon = false;
+			}
+
+#ifdef RD_7A_WEAPONS
+#ifdef RD_DISABLE_ALL_RELEASE_FLAGS
+#error This should be disabled for release!
+#endif
+			bHideWeapon = false;
+#endif
+		}
+
+		if ( bHideWeapon )
 		{
 			continue;
 		}
@@ -189,7 +208,7 @@ TGD_Grid *CRD_Collection_Tab_Equipment::CreateGrid()
 			}
 		}
 
-		if ( !bHideBasic && !bHideNonInventory )
+		if ( !bHideBasic && !bHideWeapon )
 		{
 			pGrid->AddEntry( new CRD_Collection_Entry_Equipment( pGrid, pWeapon->Extra ? "CollectionEntryEquipmentExtra" : "CollectionEntryEquipmentRegular", pWeapon, ReactiveDropInventory::ItemInstance_t{} ) );
 
@@ -504,6 +523,21 @@ void CRD_Collection_Entry_Equipment::ApplySchemeSettings( vgui::IScheme *pScheme
 	else
 	{
 		m_pCantEquipLabel->SetVisible( false );
+
+#ifdef RD_7A_WEAPONS
+#ifdef RD_DISABLE_ALL_RELEASE_FLAGS
+#error This should be disabled for release!
+#endif
+		if ( m_pWeapon->EquipIndex != -1 )
+		{
+			CASW_EquipItem *pItem = m_pWeapon->Extra ? g_ASWEquipmentList.GetExtra( m_pWeapon->EquipIndex ) : g_ASWEquipmentList.GetRegular( m_pWeapon->EquipIndex );
+			if ( pItem && pItem->m_bRequiresInventoryItem )
+			{
+				m_pCantEquipLabel->SetText( "#rd_can_equip_beta" );
+				m_pCantEquipLabel->SetVisible( true );
+			}
+		}
+#endif
 
 		if ( pTab->m_pBriefing )
 		{
