@@ -3,8 +3,8 @@
 WeaponData
 {
 	// Weapon data is loaded by both the Game and Client DLLs.
-	"viewmodel"				"models/items/ItemBox/ItemBoxLarge.mdl"
-	"playermodel"			"models/items/ItemBox/ItemBoxLarge.mdl"
+	"viewmodel"				"models/swarm/Ammo/ammobag.mdl"
+	"playermodel"			"models/swarm/Ammo/ammobag.mdl"
 	"playermodel_skin"		"1"
 	"anim_prefix"			"ar2"
 	"bucket"				"0"
