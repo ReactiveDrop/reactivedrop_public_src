@@ -10,31 +10,33 @@ class CASW_Extinguisher_Projectile : public CBaseCombatCharacter
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
 
-	virtual ~CASW_Extinguisher_Projectile( void );
+	CASW_Extinguisher_Projectile();
+	virtual ~CASW_Extinguisher_Projectile();
 
 public:
-	void	Spawn( void );
-	bool	CreateVPhysics( void );
-	unsigned int PhysicsSolidMaskForEntity() const;
-	void	ProjectileTouch( CBaseEntity *pOther );
-	virtual void PhysicsSimulate( void );
-	virtual int ShouldTransmit( const CCheckTransmitInfo *pInfo );
+	void Spawn( void ) override;
+	bool CreateVPhysics( void ) override;
+	unsigned int PhysicsSolidMaskForEntity() const override;
+	void ProjectileTouch( CBaseEntity *pOther );
+	void Explode();
+	void OnProjectileTouch( CBaseEntity *pOther );
+	void PhysicsSimulate( void ) override;
+	int ShouldTransmit( const CCheckTransmitInfo *pInfo ) override;
 	void TouchedEnvFire();
 	void SetFreezeAmount( float flFreeze ) { m_flFreezeAmount = flFreeze; }
 
 	static CASW_Extinguisher_Projectile *Extinguisher_Projectile_Create( const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner, CBaseEntity *pWeapon );
 
-	CBaseEntity* GetFirer();
+	CBaseEntity *GetFirer();
 	EHANDLE m_hFirer;
 	EHANDLE m_hFirerWeapon;
 
 	CNetworkVarEmbedded( CRD_ProjectileData, m_ProjectileData );
 
-protected:
-
 	float m_flDamage;
-	bool m_bAllowFriendlyFire;
 	float m_flFreezeAmount;
+	float m_flExplosionRadius;
+	bool m_bAllowFriendlyFire;
 };
 
 

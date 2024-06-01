@@ -2136,6 +2136,10 @@ bool CASW_Drone_Advanced::IsLightDamage( const CTakeDamageInfo &info )
 	if ( ( info.GetDamageType() & DMG_NERVEGAS ) != 0 )
 		return false;
 
+	// don't flinch from freezing (it looks weird with the slowdown)
+	if ( ( info.GetDamageType() & DMG_COLD ) != 0 )
+		return false;
+
 	return BaseClass::IsLightDamage( info );
 }
 
@@ -2151,6 +2155,10 @@ bool CASW_Drone_Advanced::IsHeavyDamage( const CTakeDamageInfo &info )
 		return false;
 	
 	if (( info.GetDamageType() & DMG_NERVEGAS ) != 0 )
+		return false;
+
+	// don't flinch from freezing (it looks weird with the slowdown)
+	if ( ( info.GetDamageType() & DMG_COLD ) != 0 )
 		return false;
 
 	// shock damage always causes large flinch

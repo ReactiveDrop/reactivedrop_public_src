@@ -39,32 +39,34 @@ BEGIN_DATADESC( CASW_Extinguisher_Projectile )
 END_DATADESC()
 
 
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-CASW_Extinguisher_Projectile::~CASW_Extinguisher_Projectile( void )
+CASW_Extinguisher_Projectile::CASW_Extinguisher_Projectile()
+{
+	m_flDamage = rd_extinguisher_dmg_amount.GetFloat();
+	m_flFreezeAmount = rd_extinguisher_freeze_amount.GetFloat();
+	m_flExplosionRadius = 0.0f;
+	m_bAllowFriendlyFire = false;
+}
+
+CASW_Extinguisher_Projectile::~CASW_Extinguisher_Projectile()
 {
 }
 
-void CASW_Extinguisher_Projectile::Spawn( void )
+void CASW_Extinguisher_Projectile::Spawn()
 {
-	Precache( );
+	Precache();
 
 	SetMoveType( MOVETYPE_FLYGRAVITY, MOVECOLLIDE_FLY_CUSTOM );
 
-	m_flDamage		= rd_extinguisher_dmg_amount.GetFloat();
-	m_takedamage	= DAMAGE_NO;
-	m_flFreezeAmount = rd_extinguisher_freeze_amount.GetFloat();
-	m_bAllowFriendlyFire = false;
+	m_takedamage = DAMAGE_NO;
 
-	SetSize( -Vector(4,4,4), Vector(4,4,4) );
+	SetSize( -Vector( 4, 4, 4 ), Vector( 4, 4, 4 ) );
 	SetSolid( SOLID_BBOX );
 	SetGravity( 0.05f );
 	SetCollisionGroup( ASW_COLLISION_GROUP_EXTINGUISHER_PELLETS );
 
 	SetTouch( &CASW_Extinguisher_Projectile::ProjectileTouch );
 
-	// flamer projectile only lasts 1 second
+	// extinguisher projectile only lasts 1 second
 	SetThink( &CASW_Extinguisher_Projectile::SUB_Remove );
 	SetNextThink( gpGlobals->curtime + 1.0f );
 }
@@ -89,57 +91,13 @@ void CASW_Extinguisher_Projectile::ProjectileTouch( CBaseEntity *pOther )
 	if ( !pOther->IsSolid() || pOther->IsSolidFlagSet( FSOLID_VOLUME_CONTENTS ) )
 		return;
 
-	if ( pOther->m_takedamage != DAMAGE_NO )
+	if ( m_flExplosionRadius <= 0.0f )
 	{
-		CASW_Marine *pMarine = CASW_Marine::AsMarine( pOther );
-		if ( pMarine && pMarine->m_bOnFire )
-		{
-			pMarine->Extinguish( m_hFirer, this );
-			m_bAllowFriendlyFire = false; // never do friendly fire when also extinguishing
-		}
-		else
-		{
-			CBaseAnimating *pAnim = pOther->GetBaseAnimating();
-			if ( pAnim && pAnim->IsOnFire() )
-			{
-				CEntityFlame *pFireChild = dynamic_cast< CEntityFlame * >( pAnim->GetEffectEntity() );
-				if ( pFireChild )
-				{
-					pAnim->SetEffectEntity( NULL );
-					UTIL_Remove( pFireChild );
-				}
-
-				pAnim->Extinguish();
-			}
-		}
-
-		if ( m_flDamage > 0.0 && ( !pMarine || m_bAllowFriendlyFire ) )
-		{
-			CTakeDamageInfo	dmgInfo( this, m_hFirer, m_hFirerWeapon, m_flDamage, DMG_COLD );
-			pOther->TakeDamage( dmgInfo );
-		}
-
-		CAI_BaseNPC * RESTRICT pNPC = pOther->MyNPCPointer();
-		if ( pNPC )
-		{
-			if ( m_flFreezeAmount > 0 && ( m_bAllowFriendlyFire || !m_hFirer || !m_hFirer->MyCombatCharacterPointer() || m_hFirer->MyCombatCharacterPointer()->IRelationType( pNPC ) != D_LI ) )
-			{
-				bool bWasFrozen = pNPC->m_bWasEverFrozen;
-				pNPC->Freeze( m_flFreezeAmount, m_hFirer ? m_hFirer : this );
-				if ( !bWasFrozen && pNPC->IsFrozen() )
-				{
-					IGameEvent *event = gameeventmanager->CreateEvent( "entity_frozen" );
-					if ( event )
-					{
-						event->SetInt( "entindex", pNPC->entindex() );
-						event->SetInt( "attacker", m_hFirer ? m_hFirer->entindex() : -1 );
-						event->SetInt( "weapon", m_hFirerWeapon ? m_hFirerWeapon->entindex() : -1 );
-
-						gameeventmanager->FireEvent( event );
-					}
-				}
-			}
-		}
+		OnProjectileTouch( pOther );
+	}
+	else
+	{
+		Explode();
 	}
 
 	SetAbsVelocity( vec3_origin );
@@ -150,9 +108,96 @@ void CASW_Extinguisher_Projectile::ProjectileTouch( CBaseEntity *pOther )
 	UTIL_Remove( this );
 }
 
-CASW_Extinguisher_Projectile* CASW_Extinguisher_Projectile::Extinguisher_Projectile_Create( const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner, CBaseEntity *pWeapon )
+void CASW_Extinguisher_Projectile::Explode()
 {
-	CASW_Extinguisher_Projectile *pPellet = (CASW_Extinguisher_Projectile *)CreateEntityByName( "asw_extinguisher_projectile" );	
+	CEntitySphereQuery sphere( GetAbsOrigin(), m_flExplosionRadius );
+	while ( CBaseEntity *pEnt = sphere.GetCurrentEntity() )
+	{
+		sphere.NextEntity();
+
+		if ( !g_pGameRules->ShouldCollide( GetCollisionGroup(), pEnt->GetCollisionGroup() ) )
+			continue;
+
+		if ( !pEnt->IsSolid() || pEnt->IsSolidFlagSet( FSOLID_VOLUME_CONTENTS ) )
+			continue;
+
+		OnProjectileTouch( pEnt );
+	}
+}
+
+void CASW_Extinguisher_Projectile::OnProjectileTouch( CBaseEntity *pOther )
+{
+	if ( pOther->m_takedamage == DAMAGE_NO )
+		return;
+
+	CASW_Marine *pMarine = CASW_Marine::AsMarine( pOther );
+	if ( pMarine && pMarine->m_bOnFire )
+	{
+		pMarine->Extinguish( m_hFirer, this );
+		m_bAllowFriendlyFire = false; // never do friendly fire when also extinguishing
+	}
+	else
+	{
+		CBaseAnimating *pAnim = pOther->GetBaseAnimating();
+		if ( pAnim && pAnim->IsOnFire() )
+		{
+			CEntityFlame *pFireChild = dynamic_cast< CEntityFlame * >( pAnim->GetEffectEntity() );
+			if ( pFireChild )
+			{
+				pAnim->SetEffectEntity( NULL );
+				UTIL_Remove( pFireChild );
+			}
+
+			pAnim->Extinguish();
+		}
+	}
+
+	// half radius for friendly fire
+	if ( m_flExplosionRadius > 0.0f )
+	{
+		CASW_Marine *pFirer = CASW_Marine::AsMarine( m_hFirer.Get() );
+		if ( pFirer && pFirer->IRelationType( pOther ) == D_LI )
+		{
+			// actually less than half because we're measuring to the center rather than the edge
+			if ( GetAbsOrigin().DistTo( pOther->WorldSpaceCenter() ) > m_flExplosionRadius / 2.0f )
+			{
+				return;
+			}
+		}
+	}
+
+	if ( m_flDamage > 0.0f && ( !pMarine || m_bAllowFriendlyFire ) )
+	{
+		CTakeDamageInfo	dmgInfo( this, m_hFirer, m_hFirerWeapon, m_flDamage, DMG_COLD );
+		pOther->TakeDamage( dmgInfo );
+	}
+
+	CAI_BaseNPC *RESTRICT pNPC = pOther->MyNPCPointer();
+	if ( pNPC )
+	{
+		if ( m_flFreezeAmount > 0 && ( m_bAllowFriendlyFire || !m_hFirer || !m_hFirer->MyCombatCharacterPointer() || m_hFirer->MyCombatCharacterPointer()->IRelationType( pNPC ) != D_LI ) )
+		{
+			bool bWasFrozen = pNPC->m_bWasEverFrozen;
+			pNPC->Freeze( m_flFreezeAmount, m_hFirer ? m_hFirer : this );
+			if ( !bWasFrozen && pNPC->IsFrozen() )
+			{
+				IGameEvent *event = gameeventmanager->CreateEvent( "entity_frozen" );
+				if ( event )
+				{
+					event->SetInt( "entindex", pNPC->entindex() );
+					event->SetInt( "attacker", m_hFirer ? m_hFirer->entindex() : -1 );
+					event->SetInt( "weapon", m_hFirerWeapon ? m_hFirerWeapon->entindex() : -1 );
+
+					gameeventmanager->FireEvent( event );
+				}
+			}
+		}
+	}
+}
+
+CASW_Extinguisher_Projectile *CASW_Extinguisher_Projectile::Extinguisher_Projectile_Create( const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner, CBaseEntity *pWeapon )
+{
+	CASW_Extinguisher_Projectile *pPellet = ( CASW_Extinguisher_Projectile * )CreateEntityByName( "asw_extinguisher_projectile" );
 	pPellet->SetAbsAngles( angles );
 	pPellet->Spawn();
 	pPellet->SetOwnerEntity( pOwner );
@@ -162,10 +207,8 @@ CASW_Extinguisher_Projectile* CASW_Extinguisher_Projectile::Extinguisher_Project
 	UTIL_SetOrigin( pPellet, position );
 	pPellet->SetAbsVelocity( velocity );
 
-
-	if (asw_flamer_debug.GetBool())
+	if ( asw_flamer_debug.GetBool() )
 		pPellet->m_debugOverlays |= OVERLAY_BBOX_BIT;
-
 
 	return pPellet;
 }
@@ -174,45 +217,42 @@ CASW_Extinguisher_Projectile* CASW_Extinguisher_Projectile::Extinguisher_Project
 void CASW_Extinguisher_Projectile::PhysicsSimulate()
 {
 	// Make sure not to simulate this guy twice per frame
-	if (m_nSimulationTick == gpGlobals->tickcount)
+	if ( m_nSimulationTick == gpGlobals->tickcount )
 		return;
 
 	// slow down the projectile's velocity	
-	/*
-	Vector dir = GetAbsVelocity();
-	VectorNormalize(dir);		
-	SetAbsVelocity(GetAbsVelocity() - (dir * gpGlobals->frametime * ASW_EXTINGUISHER_PROJECTILE_ACCN));
-	dir = GetAbsVelocity();
-	*/
-	SetAbsVelocity( GetAbsVelocity() * 
-		( 1 - gpGlobals->frametime * ASW_EXTINGUISHER_PROJECTILE_ACCN / CASW_Weapon_Flamer::EXTINGUISHER_PROJECTILE_AIR_VELOCITY )  );
+	SetAbsVelocity( GetAbsVelocity() * ( 1 - gpGlobals->frametime * ASW_EXTINGUISHER_PROJECTILE_ACCN / CASW_Weapon_Flamer::EXTINGUISHER_PROJECTILE_AIR_VELOCITY ) );
 
-	if (asw_flamer_debug.GetBool())
+	if ( asw_flamer_debug.GetBool() )
 	{
-		NDebugOverlay::Box( GetAbsOrigin(), -Vector(4,4,4), Vector(4,4,4), 255, 0, 0, 255, 0.2f );
+		NDebugOverlay::Box( GetAbsOrigin(), -Vector( 4, 4, 4 ), Vector( 4, 4, 4 ), 255, 0, 0, 255, 0.2f );
 
-		NDebugOverlay::Line( GetAbsOrigin(), GetAbsOrigin() + GetAbsVelocity() ,
-			255, 255, 0, true, 0.3f );
-		NDebugOverlay::Line( GetAbsOrigin(), GetAbsOrigin() + GetAbsVelocity() * gpGlobals->interval_per_tick,
-			128, 255, 0, true, 0.3f );
+		NDebugOverlay::Line( GetAbsOrigin(), GetAbsOrigin() + GetAbsVelocity(), 255, 255, 0, true, 0.3f );
+		NDebugOverlay::Line( GetAbsOrigin(), GetAbsOrigin() + GetAbsVelocity() * gpGlobals->interval_per_tick, 128, 255, 0, true, 0.3f );
 	}
-	
+
 	BaseClass::PhysicsSimulate();
 }
 
-// need to force send as it has no model
+// the client doesn't need this entity
 int CASW_Extinguisher_Projectile::ShouldTransmit( const CCheckTransmitInfo *pInfo )
 {
-	return FL_EDICT_ALWAYS;
+	return FL_EDICT_DONTSEND;
 }
 
 void CASW_Extinguisher_Projectile::TouchedEnvFire()
 {
+	if ( m_flExplosionRadius > 0.0f )
+	{
+		// make sure we still do AOE damage even if there's a fire in the way when we stop
+		Explode();
+	}
+
 	SetThink( &CASW_Extinguisher_Projectile::SUB_Remove );
 	SetNextThink( gpGlobals->curtime );
 }
 
-CBaseEntity* CASW_Extinguisher_Projectile::GetFirer()
+CBaseEntity *CASW_Extinguisher_Projectile::GetFirer()
 {
 	return m_hFirer.Get();
-}	
+}

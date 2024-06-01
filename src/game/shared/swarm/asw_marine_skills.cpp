@@ -26,7 +26,7 @@ ConVar asw_skill_vindicator_pellets_base( "asw_skill_vindicator_pellets_base", "
 
 ConVar asw_skill_autogun_base( "asw_skill_autogun_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_autogun_minigun_dmg_base( "asw_skill_autogun_minigun_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_autogun_cryo_spinup_base( "asw_skill_autogun_cryo_spinup_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_autogun_cryo_spinup_base( "asw_skill_autogun_cryo_spinup_base", "0.25", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_piercing_base( "asw_skill_piercing_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_stopping_power_airblast_strength_base( "asw_skill_stopping_power_airblast_strength_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 
@@ -82,7 +82,7 @@ ConVar asw_skill_vindicator_pellets_step( "asw_skill_vindicator_pellets_step", "
 
 ConVar asw_skill_autogun_step( "asw_skill_autogun_step", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_autogun_minigun_dmg_step( "asw_skill_autogun_minigun_dmg_step", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_autogun_cryo_spinup_step( "asw_skill_autogun_cryo_spinup_step", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_autogun_cryo_spinup_step( "asw_skill_autogun_cryo_spinup_step", "0.25", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_piercing_step( "asw_skill_piercing_step", "0.20", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_stopping_power_airblast_strength_step( "asw_skill_stopping_power_airblast_strength_step", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 
