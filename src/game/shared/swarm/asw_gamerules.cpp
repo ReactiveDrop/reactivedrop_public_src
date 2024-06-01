@@ -273,31 +273,51 @@ extern ConVar old_radius_damage;
 
 	// reactivedrop: this callback function is called when rd_player_bots_allowed cvar is
 	// changed. If the value is 0 it will remove all bots from the briefing
-	static void DeselectMarineBots( IConVar *pConVar = NULL, const char *pOldValue = NULL, float flOldValue = 0.0f )
+	static void DeselectMarineBots( IConVar *pConVar, const char *pOldValue, float flOldValue )
 	{
-		ConVarRef rd_player_bots_allowed( "rd_player_bots_allowed" );
+		extern ConVar rd_player_bots_allowed;
 		if ( rd_player_bots_allowed.GetBool() )
 			return;
 
-		if ( ASWGameRules() && ASWGameResource() )
+		if ( !ASWGameRules() || ASWGameRules()->GetGameState() != ASW_GS_BRIEFING )
+			return;
+
+		CASW_Game_Resource *pGameResource = ASWGameResource();
+		if ( !pGameResource )
+			return;
+
+		CUtlVector<CASW_Marine_Resource *> toDelete;
+
+		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 		{
-			for ( int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++ )
+			CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
+			if ( !pPlayer )
+				continue;
+
+			bool bHaveMarine = false;
+			for ( int j = 0; j < ASW_MAX_MARINE_RESOURCES; j++ )
 			{
-				CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( i );
+				CASW_Marine_Resource *pMR = pGameResource->GetMarineResource( j );
 				if ( !pMR )
+					continue;
+
+				if ( pMR->GetCommander() != pPlayer )
+					continue;
+
+				if ( !bHaveMarine )
 				{
+					bHaveMarine = true;
 					continue;
 				}
 
-				CASW_Player *pPlayer = pMR->GetCommander();
-				if ( !pPlayer )
-				{
-					continue;
-				}
-
-				COMPILE_TIME_ASSERT( ASW_NUM_MARINE_PROFILES == 8 );
-				engine->ClientCommand( pPlayer->edict(), "cl_dselectm 0;cl_dselectm 1;cl_dselectm 2;cl_dselectm 3;cl_dselectm 4;cl_dselectm 5;cl_dselectm 6;cl_dselectm 7;" );
+				toDelete.AddToTail( pMR );
 			}
+		}
+
+		DevMsg( "Removing %d bot marines from the lobby.\n", toDelete.Count() );
+		FOR_EACH_VEC( toDelete, i )
+		{
+			pGameResource->DeleteMarineResource( toDelete[i] );
 		}
 	}
 #endif
