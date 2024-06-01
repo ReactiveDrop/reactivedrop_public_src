@@ -136,6 +136,10 @@ const char *const g_szDeathCauseStatName[] =
 	"cause_of_death.bleed_out",
 	"cause_of_death.marineacademy_lava",
 	"cause_of_death.remote_turret",
+	"cause_of_death.cold",
+	"cause_of_death.fizzle",
+	"cause_of_death.plasma",
+	"cause_of_death.marine_charge",
 };
 
 #ifndef CLIENT_DLL
@@ -299,6 +303,11 @@ RD_Cause_of_Death_t GetCauseOfDeath( CBaseEntity *pVictim, const CTakeDamageInfo
 
 	if ( info.GetDamageType() & DMG_SHOCK )
 	{
+		if ( info.GetDamageType() & DMG_DISSOLVE )
+		{
+			return DEATHCAUSE_FIZZLE;
+		}
+
 		return DEATHCAUSE_ZAPPED;
 	}
 
@@ -557,6 +566,21 @@ RD_Cause_of_Death_t GetCauseOfDeath( CBaseEntity *pVictim, const CTakeDamageInfo
 	if ( info.GetDamageType() & DMG_BURN )
 	{
 		return DEATHCAUSE_BURN_OTHER;
+	}
+
+	if ( info.GetDamageType() & DMG_COLD )
+	{
+		return DEATHCAUSE_COLD;
+	}
+
+	if ( info.GetDamageType() & DMG_PLASMA )
+	{
+		return DEATHCAUSE_PLASMA;
+	}
+
+	if ( info.GetInflictor() && info.GetInflictor()->Classify() == CLASS_ASW_SPEED_BURST )
+	{
+		return DEATHCAUSE_MARINE_CHARGE;
 	}
 
 	Warning( "Could not determine cause of death from damage info:\n" );
