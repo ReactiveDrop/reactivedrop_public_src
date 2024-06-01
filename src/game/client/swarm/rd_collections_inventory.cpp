@@ -655,9 +655,13 @@ public:
 					nAccessories += accessories[i].Quantity;
 				}
 
-				if ( nCompatible <= nAccessories )
+				if ( nCompatible == 0 )
 				{
 					AddWarning( "#rd_unbox_strange_device_warning_no_compatible_items" );
+				}
+				if ( nAccessories && nCompatible <= nAccessories )
+				{
+					AddWarning( "#rd_unbox_strange_device_warning_already_have_accessories" );
 				}
 			}
 		}
