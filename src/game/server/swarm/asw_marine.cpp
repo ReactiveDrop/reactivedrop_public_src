@@ -204,7 +204,7 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Marine, DT_ASW_Marine)
 	SendPropFloat	(SENDINFO(m_fInfestedTime),		6,	SPROP_UNSIGNED,	0.0f,	64.0f ),
 	SendPropFloat	(SENDINFO(m_fInfestedStartTime), 0, SPROP_NOSCALE ),
 	SendPropInt		(SENDINFO(m_ASWOrders), 4),
-	SendPropArray3		( SENDINFO_ARRAY3(m_iAmmo), SendPropInt( SENDINFO_ARRAY(m_iAmmo), 20, SPROP_UNSIGNED ) ),
+	SendPropArray3		( SENDINFO_ARRAY3(m_iAmmo), SendPropInt( SENDINFO_ARRAY(m_iAmmo), 10, SPROP_UNSIGNED ) ),
 	SendPropBool	(SENDINFO(m_bSlowHeal)),
 	SendPropInt	(SENDINFO(m_iSlowHealAmount), 10 ),
 	SendPropBool	(SENDINFO(m_bPreventMovement)),
