@@ -76,6 +76,7 @@ void CASW_Queen_Grabber::Spawn()
 	BaseClass::Spawn();
 
 	Precache();
+	AddEffects( EF_NOSHADOW );
 	SetModel( ASW_QUEEN_GRABBER_MODEL );
 	SetMoveType( MOVETYPE_NONE );
 	SetSolid( SOLID_BBOX );
