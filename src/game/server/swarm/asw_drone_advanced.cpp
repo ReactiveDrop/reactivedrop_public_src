@@ -1192,7 +1192,9 @@ void CASW_Drone_Advanced::RunTask( const Task_t *pTask )
 		{
 			if ( IsMovementFrozen() )
 			{
-				TaskFail(FAIL_FROZEN);
+#ifndef INFESTED_DLL
+				TaskFail( FAIL_FROZEN );
+#endif
 				break;
 			}
 
@@ -1228,7 +1230,9 @@ void CASW_Drone_Advanced::RunTask( const Task_t *pTask )
 		{
 			if ( IsMovementFrozen() )
 			{
-				TaskFail(FAIL_FROZEN);
+#ifndef INFESTED_DLL
+				TaskFail( FAIL_FROZEN );
+#endif
 				break;
 			}
 
@@ -1262,7 +1266,9 @@ void CASW_Drone_Advanced::RunTask( const Task_t *pTask )
 		{
 			if ( IsMovementFrozen() )
 			{
-				TaskFail(FAIL_FROZEN);
+#ifndef INFESTED_DLL
+				TaskFail( FAIL_FROZEN );
+#endif
 				break;
 			}
 			//if ( IsActivityFinished() )

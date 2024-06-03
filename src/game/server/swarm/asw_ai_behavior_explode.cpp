@@ -234,10 +234,17 @@ void CAI_ASW_ExplodeBehavior::StartTask( const Task_t *pTask )
 	{
 		case TASK_EXPLODE_PREPARE_BUILDUP:
 			{
-				GetOuter()->SetIdealActivity( ACT_PREP_EXPLODE );
 				CASW_Boomer *pBoomer = assert_cast<CASW_Boomer*>( GetOuter() );
-				pBoomer->SetInflating( true );
-				m_flStartExplodeTime = gpGlobals->curtime;
+				if ( !pBoomer->m_bInflating )
+				{
+					GetOuter()->SetIdealActivity( ACT_PREP_EXPLODE );
+					pBoomer->SetInflating( true );
+					m_flStartExplodeTime = gpGlobals->curtime;
+				}
+				else if ( pBoomer->m_bInflated )
+				{
+					TaskComplete();
+				}
 			}
 			break;
 
@@ -246,12 +253,6 @@ void CAI_ASW_ExplodeBehavior::StartTask( const Task_t *pTask )
 				MoveTowardsPlayer();
 				CASW_Boomer *pBoomer = assert_cast<CASW_Boomer*>( GetOuter() );
 				pBoomer->SetInflating( true );
-//				GetOuter()->RestartGesture( ACT_EXPLODE, true, false );
-				//GetOuter()->AddGesture( ACT_EXPLODE, false );
-
-//				m_iSecondaryLayer = GetOuter()->AddLayeredSequence( GetOuter()->SelectWeightedSequence( ACT_EXPLODE ), 0 );
-//				GetOuter()->SetLayerWeight( m_iSecondaryLayer, 0.0 );
-//				GetOuter()->SetLayerPlaybackRate( m_iSecondaryLayer, 1.0 );
 
 				m_flStartBuildup = gpGlobals->curtime;
 				m_flEndBuildup = m_flStartBuildup + m_flMaxBuildupTime;
@@ -301,7 +302,7 @@ void CAI_ASW_ExplodeBehavior::RunTask( const Task_t *pTask )
 			break;
 
 		case TASK_EXPLODE_BEGIN_BUILDUP:
-			if ( m_flEndBuildup <= gpGlobals->curtime )
+			if ( m_flEndBuildup <= gpGlobals->curtime && !GetOuter()->IsAttackFrozen() )
 			{
 				TaskComplete();
 			}
@@ -313,7 +314,7 @@ void CAI_ASW_ExplodeBehavior::RunTask( const Task_t *pTask )
 
 		case TASK_EXPLODE_KILL_SELF:
 			TaskComplete();
-			break;	
+			break;
 
 		case TASK_EXPLODE_SUICIDE:
 			TaskComplete();

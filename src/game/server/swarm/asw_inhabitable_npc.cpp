@@ -381,6 +381,11 @@ int CASW_Inhabitable_NPC::TranslateSchedule( int scheduleType )
 
 float CASW_Inhabitable_NPC::GetIdealSpeed() const
 {
+	if ( const_cast< CASW_Inhabitable_NPC * >( this )->IsMovementFrozen() )
+	{
+		return 0.0f;
+	}
+
 	float flBaseSpeed = BaseClass::GetIdealSpeed() * m_fSpeedScale;
 
 	// if the alien is hurt, move slower
@@ -788,17 +793,16 @@ void CASW_Inhabitable_NPC::Freeze( float flFreezeAmount, CBaseEntity *pFreezer, 
 		return;
 	}
 
-	if ( !CanBeFullyFrozen() && ( flFreezeAmount > 1.0f || flFreezeAmount * ( 1.0f - m_flFreezeResistance ) + m_flFrozen >= 1.0f ) )
+	float flTargetFreezeAmount = flFreezeAmount * ( 1.0f - m_flFreezeResistance ) + m_flFrozen;
+
+	if ( !CanBeFullyFrozen() && flTargetFreezeAmount >= 1.0f )
 		return;
 
-	if ( flFreezeAmount > 1.0f )
+	if ( flTargetFreezeAmount >= 1.0f )
 	{
-		float flFreezeDuration = flFreezeAmount - 1.0f;
+		float flFreezeDuration = MAX( m_flFrozenTime - gpGlobals->curtime, 0.0f ) + flTargetFreezeAmount - 1.0f;
 
-		// if freezing permanently, then reduce freeze duration by freeze resistance
-		flFreezeDuration *= ( 1.0f - m_flFreezeResistance );
-
-		BaseClass::Freeze( 1.0f, pFreezer, pFreezeRay );			// make alien fully frozen
+		BaseClass::Freeze( 1.0f, pFreezer, pFreezeRay ); // make alien fully frozen
 
 		m_flFrozenTime = gpGlobals->curtime + flFreezeDuration;
 	}

@@ -127,6 +127,12 @@ void C_ASW_Drone_Advanced::UpdatePoseParams()
 	VPROF_BUDGET( "C_ASW_Drone_Advanced::UpdatePoseParams", VPROF_BUDGETGROUP_ASW_CLIENT );
 	// update pose params based on velocity and our angles
 
+	if ( IsFrozen() )
+	{
+		// don't look around while fully frozen!
+		return;
+	}
+
 	// calculate the angle difference between our facing and our velocity
 	Vector v;
 	EstimateAbsVelocity(v);	

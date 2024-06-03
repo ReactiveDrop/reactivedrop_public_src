@@ -204,7 +204,7 @@ void CASW_Queen::Precache( void )
 // queen doesn't move, like Kompressor does not dance
 float CASW_Queen::GetIdealSpeed() const
 {
-	return m_bCanMove ? BaseClass::GetIdealSpeed() * m_flPlaybackRate : 0;
+	return m_bCanMove && !const_cast< CASW_Queen * >( this )->IsMovementFrozen() ? BaseClass::GetIdealSpeed() * m_flPlaybackRate : 0;
 }
 
 float CASW_Queen::GetIdealAccel() const
@@ -215,7 +215,7 @@ float CASW_Queen::GetIdealAccel() const
 // queen doesn't turn
 float CASW_Queen::MaxYawSpeed( void )
 {
-	if ( !m_bCanMove )
+	if ( !m_bCanMove || IsMovementFrozen() )
 		return 0;
 
 	Activity eActivity = GetActivity();
@@ -348,7 +348,14 @@ int CASW_Queen::MeleeAttack1Conditions( float flDot, float flDist )
 	}
 
 	if ( !m_bCanClaw )
+	{
 		return COND_TOO_FAR_TO_ATTACK;
+	}
+
+	if ( IsAttackFrozen() )
+	{
+		return COND_TOO_FAR_TO_ATTACK;
+	}
 
 	return COND_CAN_MELEE_ATTACK1;
 }
@@ -372,7 +379,14 @@ int CASW_Queen::MeleeAttack2Conditions( float flDot, float flDist )
 	}
 
 	if ( !m_bCanClaw || !m_bCanMove )
+	{
 		return COND_TOO_FAR_TO_ATTACK;
+	}
+
+	if ( IsAttackFrozen() || IsMovementFrozen() )
+	{
+		return COND_TOO_FAR_TO_ATTACK;
+	}
 
 	return COND_CAN_MELEE_ATTACK2;
 }
@@ -418,11 +432,20 @@ int CASW_Queen::RangeAttack1Conditions( float flDot, float flDist )
 	}
 
 	if ( !m_bCanSpit )
+	{
 		return COND_TOO_FAR_TO_ATTACK;
+	}
 
 	// we also have a timer that can prevent us from attacking, make sure we don't try while we're still in that time
 	if ( gpGlobals->curtime <= m_fLastRangedAttack + asw_queen_spit_interval.GetFloat() )
+	{
 		return COND_TOO_FAR_TO_ATTACK;
+	}
+
+	if ( IsAttackFrozen() )
+	{
+		return COND_TOO_FAR_TO_ATTACK;
+	}
 
 	return COND_CAN_RANGE_ATTACK1;
 }
@@ -439,14 +462,25 @@ int CASW_Queen::RangeAttack2Conditions( float flDot, float flDist )
 	}
 
 	if ( !m_bCanSpawnParasites )
+	{
 		return COND_TOO_FAR_TO_ATTACK;
+	}
 
 	if ( m_iCrittersAlive >= asw_queen_max_parasites.GetInt() )
+	{
 		return COND_TOO_FAR_TO_ATTACK;
+	}
 
 	// we also have a timer that can prevent us from attacking, make sure we don't try while we're still in that time
 	if ( gpGlobals->curtime <= m_fLastSpawnedParasites + asw_queen_parasite_interval.GetFloat() )
+	{
 		return COND_TOO_FAR_TO_ATTACK;
+	}
+
+	if ( IsAttackFrozen() )
+	{
+		return COND_TOO_FAR_TO_ATTACK;
+	}
 
 	return COND_CAN_RANGE_ATTACK1;
 }
@@ -454,7 +488,9 @@ int CASW_Queen::RangeAttack2Conditions( float flDot, float flDist )
 bool CASW_Queen::FCanCheckAttacks()
 {
 	if ( GetNavType() == NAV_CLIMB || GetNavType() == NAV_JUMP )
+	{
 		return false;
+	}
 
 	return true;
 }
@@ -650,36 +686,12 @@ int CASW_Queen::SelectDeadSchedule()
 
 void CASW_Queen::UpdatePoseParams()
 {
-	/*
-	float yaw = m_fLastHeadYaw;  //GetPoseParameter( LookupPoseParameter("head_yaw") );
-
-	if ( m_hQueenEnemy.Get() != NULL )
+	if ( IsFrozen() )
 	{
-		Vector	enemyDir = m_hQueenEnemy->WorldSpaceCenter() - WorldSpaceCenter();
-		VectorNormalize( enemyDir );
-
-		float angle = VecToYaw( BodyDirection3D() );
-		float angleDiff = VecToYaw( enemyDir );
-		angleDiff = UTIL_AngleDiff( angleDiff, angle + yaw );
-
-		//ASW_ClampYaw(500.0f, yaw, yaw + angleDiff, gpGlobals->frametime);
-		//Msg("yaw=%f targ=%f delta=%f ", yaw, yaw+angleDiff, gpGlobals->frametime * 3.0f);
-		yaw = ASW_Linear_Approach(yaw, yaw + angleDiff, gpGlobals->frametime * 1200.0f);
-		//Msg(" result=%f\n", yaw);
-		SetPoseParameter( "head_yaw", yaw );
-		m_fLastHeadYaw = yaw;
-		//SetPoseParameter( "head_yaw", Approach( yaw + angleDiff, yaw, 5 ) );
+		// don't look around while fully frozen!
+		return;
 	}
-	else
-	{
-		// Otherwise turn the head back to its normal position
-		//ASW_ClampYaw(500.0f, yaw, 0, gpGlobals->frametime);
-		yaw = ASW_Linear_Approach(yaw, 0, gpGlobals->frametime * 1200.0f);
-		SetPoseParameter( "head_yaw", yaw );
-		m_fLastHeadYaw = yaw;
-		//SetPoseParameter( "head_yaw",	Approach( 0, yaw, 10 ) );
-	}
-*/
+
 	float shield = m_fLastShieldPose; //GetPoseParameter( LookupPoseParameter("shield_open") );
 	float targetshield = m_bChestOpen ? 1.0f : 0.0f;
 

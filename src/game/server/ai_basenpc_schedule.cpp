@@ -2662,7 +2662,9 @@ void CAI_BaseNPC::StartTask( const Task_t *pTask )
 		{
 			if ( IsMovementFrozen() )
 			{
+#ifndef INFESTED_DLL
 				TaskFail(FAIL_FROZEN);
+#endif
 				break;
 			}
 
@@ -2685,7 +2687,9 @@ void CAI_BaseNPC::StartTask( const Task_t *pTask )
 		{
 			if ( IsMovementFrozen() )
 			{
+#ifndef INFESTED_DLL
 				TaskFail(FAIL_FROZEN);
+#endif
 				break;
 			}
 
@@ -3388,7 +3392,9 @@ void CAI_BaseNPC::RunTask( const Task_t *pTask )
 		{
 			if ( IsMovementFrozen() )
 			{
+#ifndef INFESTED_DLL
 				TaskFail( FAIL_FROZEN );
+#endif
 				break;
 			}
 
@@ -3869,7 +3875,9 @@ void CAI_BaseNPC::RunTask( const Task_t *pTask )
 		{
 			if ( IsMovementFrozen() )
 			{
+#ifndef INFESTED_DLL
 				TaskFail(FAIL_FROZEN);
+#endif
 				break;
 			}
 

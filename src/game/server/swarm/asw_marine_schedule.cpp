@@ -2537,7 +2537,9 @@ void CASW_Marine::RunTask( const Task_t *pTask )
 
 			if ( IsMovementFrozen() )
 			{
-				TaskFail(FAIL_FROZEN);
+#ifndef INFESTED_DLL
+				TaskFail( FAIL_FROZEN );
+#endif
 				break;
 			}
 

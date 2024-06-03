@@ -11490,7 +11490,9 @@ void CAI_BaseNPC::Unfreeze()
 
 	// Unfreeze them.
 	SetCondition(COND_NPC_UNFREEZE);
+#ifndef INFESTED_DLL
 	m_Activity = ACT_RESET;
+#endif
 	SetMoveType( MOVETYPE_STEP );	// BUGBUG: this might not be the correct movetype!
 	SetGravity(1);	// Doesn't restore gravity to the original value, but who cares?
 }

@@ -1453,9 +1453,9 @@ CAmmoDef *GetAmmoDef()
 		// flechette
 		def.AddAmmoType( "ASW_FLECHETTE", DMG_DISSOLVE, TRACER_NONE, "sk_plr_dmg_asw_flechette", "sk_npc_dmg_asw_flechette", "sk_max_asw_flechette", BULLET_IMPULSE( 200, 1225 ), 0 );
 		// cryo cannon
-		def.AddAmmoType( "ASW_CRYO", DMG_SLOWBURN, TRACER_NONE, "sk_plr_dmg_asw_cryo", "sk_npc_dmg_asw_cryo", "sk_max_asw_cryo", BULLET_IMPULSE( 200, 1225 ), 0 );
+		def.AddAmmoType( "ASW_CRYO", DMG_COLD, TRACER_NONE, "sk_plr_dmg_asw_cryo", "sk_npc_dmg_asw_cryo", "sk_max_asw_cryo", BULLET_IMPULSE( 200, 1225 ), 0 );
 		// energy shield alt fire
-		def.AddAmmoType( "ASW_ESHIELD", DMG_DISSOLVE, TRACER_NONE, "sk_plr_dmg_asw_eshield", "sk_npc_dmg_asw_eshield", "sk_max_asw_eshield", BULLET_IMPULSE( 200, 1225 ), 0 );
+		def.AddAmmoType( "ASW_ESHIELD", DMG_DISSOLVE | DMG_SHOCK, TRACER_NONE, "sk_plr_dmg_asw_eshield", "sk_npc_dmg_asw_eshield", "sk_max_asw_eshield", BULLET_IMPULSE( 200, 1225 ), 0 );
 		// rifle (burst fire)
 		def.AddAmmoType("ASW_R_BURST",			DMG_BULLET,					TRACER_LINE,	"sk_plr_dmg_asw_r_burst",			"sk_npc_dmg_asw_r_burst",			"sk_max_asw_r_burst",			BULLET_IMPULSE(200, 1225),	0 );
 	}
@@ -9652,7 +9652,7 @@ bool CAlienSwarm::Damage_NoPhysicsForce( int iDmgType )
 {
 	// Damage types that don't have to supply a physics force & position.
 	int iTimeBasedDamage = Damage_GetTimeBased();
-	return ( ( iDmgType & ( DMG_FALL | DMG_BURN | DMG_PLASMA | DMG_DROWN | iTimeBasedDamage | DMG_CRUSH | DMG_PHYSGUN | DMG_PREVENT_PHYSICS_FORCE | DMG_INFEST ) ) != 0 );
+	return ( ( iDmgType & ( DMG_FALL | DMG_BURN | DMG_DROWN | iTimeBasedDamage | DMG_CRUSH | DMG_PHYSGUN | DMG_PREVENT_PHYSICS_FORCE | DMG_INFEST ) ) != 0 );
 }
 
 //-----------------------------------------------------------------------------
@@ -9690,7 +9690,7 @@ int	CAlienSwarm::Damage_GetShouldGibCorpse( void )
 int	CAlienSwarm::Damage_GetNoPhysicsForce( void )
 {
 	int iTimeBasedDamage = Damage_GetTimeBased();
-	int iDamage = ( DMG_FALL | DMG_BURN | DMG_PLASMA | DMG_DROWN | iTimeBasedDamage | DMG_CRUSH | DMG_PHYSGUN | DMG_PREVENT_PHYSICS_FORCE | DMG_INFEST );
+	int iDamage = ( DMG_FALL | DMG_BURN | DMG_DROWN | iTimeBasedDamage | DMG_CRUSH | DMG_PHYSGUN | DMG_PREVENT_PHYSICS_FORCE | DMG_INFEST );
 	return iDamage;
 }
 

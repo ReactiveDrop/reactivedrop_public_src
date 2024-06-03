@@ -129,7 +129,7 @@ public:
 
 	// soft drone collision
 	virtual bool CanBePushedAway();
-	virtual bool CanBeFullyFrozen() override;
+	virtual bool CanBeFullyFrozen() const override;
 	virtual void PerformPushaway();
 	virtual void SetupPushawayVector();
 	virtual float GetSpringColRadius();

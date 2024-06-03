@@ -693,6 +693,9 @@ int	CASW_Alien::MeleeAttack1Conditions( float flDot, float flDist )
 	if ( !meleeAttack1.m_bCheck )
 		return COND_NONE;
 
+	if ( IsAttackFrozen() )
+		return COND_NONE;
+
 	// Check range.
 	if ( flDist < meleeAttack1.m_flMinDist )
 		return COND_TOO_CLOSE_TO_ATTACK;
@@ -718,6 +721,9 @@ int CASW_Alien::MeleeAttack2Conditions( float flDot, float flDist )
 {
 	// Should we even check this condition?
 	if ( !meleeAttack2.m_bCheck )
+		return COND_NONE;
+
+	if ( IsAttackFrozen() )
 		return COND_NONE;
 
 	// Check ranges.
@@ -747,6 +753,9 @@ int CASW_Alien::RangeAttack1Conditions ( float flDot, float flDist )
 	if ( !rangeAttack1.m_bCheck )
 		return COND_NONE;
 
+	if ( IsAttackFrozen() )
+		return COND_NONE;
+
 	// Check ranges.
 	if ( flDist < rangeAttack1.m_flMinDist )
 		return COND_TOO_CLOSE_TO_ATTACK;
@@ -772,6 +781,9 @@ int CASW_Alien::RangeAttack2Conditions ( float flDot, float flDist )
 {
 	// Should we even check this condition?
 	if ( !rangeAttack2.m_bCheck )
+		return COND_NONE;
+
+	if ( IsAttackFrozen() )
 		return COND_NONE;
 
 	// Check ranges.
@@ -866,7 +878,9 @@ void CASW_Alien::StartTask( const Task_t *pTask )
 		{
 			if ( IsMovementFrozen() )
 			{
-				TaskFail(FAIL_FROZEN);
+#ifndef INFESTED_DLL
+				TaskFail( FAIL_FROZEN );
+#endif
 				break;
 			}
 
@@ -1106,7 +1120,9 @@ void CASW_Alien::RunTask(const Task_t *pTask)
 		{			
 			if ( IsMovementFrozen() )
 			{
-				TaskFail(FAIL_FROZEN);
+#ifndef INFESTED_DLL
+				TaskFail( FAIL_FROZEN );
+#endif
 				break;
 			}
 
@@ -1196,7 +1212,9 @@ void CASW_Alien::RunTask(const Task_t *pTask)
 		{
 			if ( IsMovementFrozen() )
 			{
-				TaskFail(FAIL_FROZEN);
+#ifndef INFESTED_DLL
+				TaskFail( FAIL_FROZEN );
+#endif
 				break;
 			}
 
@@ -1530,18 +1548,20 @@ void CASW_Alien::SetupPushawayVector()
 bool CASW_Alien::CanBePushedAway()
 {
 	// no pushing away while burrowed
-	if ( IsCurSchedule( SCHED_BURROW_WAIT, false ) || IsCurSchedule( SCHED_WAIT_FOR_CLEAR_UNBORROW, false )
-		|| IsCurSchedule( SCHED_BURROW_OUT, false ) )
+	if ( IsCurSchedule( SCHED_BURROW_WAIT, false ) || IsCurSchedule( SCHED_WAIT_FOR_CLEAR_UNBORROW, false ) || IsCurSchedule( SCHED_BURROW_OUT, false ) )
+		return false;
+
+	if ( IsMovementFrozen() )
 		return false;
 
 	// don't push away aliens that have low sight ('asleep')
 	return !IsCurSchedule( CAI_ASW_SleepBehavior::SCHED_SLEEP_UNBURROW );
 }
 
-bool CASW_Alien::CanBeFullyFrozen()
+bool CASW_Alien::CanBeFullyFrozen() const
 {
-	if ( IsCurSchedule( SCHED_BURROW_WAIT, false ) || IsCurSchedule( SCHED_WAIT_FOR_CLEAR_UNBORROW, false )
-		|| IsCurSchedule( SCHED_BURROW_OUT, false ) )
+	CASW_Alien *pMutThis = const_cast< CASW_Alien * >( this );
+	if ( pMutThis->IsCurSchedule( SCHED_BURROW_WAIT, false ) || pMutThis->IsCurSchedule( SCHED_WAIT_FOR_CLEAR_UNBORROW, false ) || pMutThis->IsCurSchedule( SCHED_BURROW_OUT, false ) )
 		return false;
 
 	return BaseClass::CanBeFullyFrozen();

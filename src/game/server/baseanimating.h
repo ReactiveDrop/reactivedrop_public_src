@@ -325,6 +325,7 @@ public:
 	void			ToggleFreeze(void);
 	virtual void	Freeze( float flFreezeAmount = -1.0f, CBaseEntity *pFreezer = NULL, Ray_t *pFreezeRay = NULL );
 	virtual void	Unfreeze();
+	virtual bool	CanBeFullyFrozen() const { return true; }
 
 	// Dissolve, returns true if the ragdoll has been created
 	virtual bool Dissolve( const char *pMaterialName, float flStartTime, bool bNPCOnly = true, int nDissolveType = 0, Vector vDissolverOrigin = vec3_origin, int iMagnitude = 0 );
@@ -510,7 +511,8 @@ inline void CBaseAnimating::ResetSequence(int nSequence)
 
 inline float CBaseAnimating::GetPlaybackRate() const
 {
-
+	if ( !CanBeFullyFrozen() )
+		return m_flPlaybackRate;
 
 	// Slow the animation while partially frozen
 	return m_flPlaybackRate * clamp( 1.0f - m_flFrozen, 0.0f, 1.0f );

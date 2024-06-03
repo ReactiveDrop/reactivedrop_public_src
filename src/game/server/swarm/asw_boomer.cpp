@@ -111,7 +111,7 @@ void CASW_Boomer::Precache( void )
 //-----------------------------------------------------------------------------
 float CASW_Boomer::MaxYawSpeed( void )
 {
-	if ( GetActivity() == ACT_STRAFE_LEFT || GetActivity() == ACT_STRAFE_RIGHT )
+	if ( GetActivity() == ACT_STRAFE_LEFT || GetActivity() == ACT_STRAFE_RIGHT || IsMovementFrozen() )
 	{
 		return 0.0f;
 	}

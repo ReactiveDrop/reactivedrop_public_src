@@ -121,6 +121,11 @@ bool CAI_ASW_ChaseEnemyBehavior::CanSelectSchedule()
 		return false;
 	}
 
+	if ( GetOuter()->IsMovementFrozen() )
+	{
+		return false;
+	}
+
 	return BaseClass::CanSelectSchedule();
 }
 

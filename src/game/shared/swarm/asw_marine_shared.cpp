@@ -2121,23 +2121,20 @@ void CASW_Marine::ApplyMeleeDamage( CBaseEntity *pHitEntity, CTakeDamageInfo dmg
 		{
 			if ( pHitEntity->IsAlienClassType() )
 			{
-				CASW_Alien* pAlien = assert_cast<CASW_Alien*>(pHitEntity);
-				float flFlatForce = pAttack->m_flKnockbackForce;
-				float flUpForce = flFlatForce * asw_melee_knockback_up_force.GetFloat();
+				CASW_Alien *pAlien = assert_cast< CASW_Alien * >( pHitEntity );
+				// if the enemy is iced, they're stuck to the floor
+				if ( !pAlien->IsMovementFrozen() )
+				{
+					float flFlatForce = pAttack->m_flKnockbackForce;
+					float flUpForce = flFlatForce * asw_melee_knockback_up_force.GetFloat();
 
-				// knockback aliens on broad strokes
-				Vector vecToTarget = pAlien->WorldSpaceCenter() - WorldSpaceCenter();
-				vecToTarget.z = 0;
-				VectorNormalize(vecToTarget);
+					// knockback aliens on broad strokes
+					Vector vecToTarget = pAlien->WorldSpaceCenter() - WorldSpaceCenter();
+					vecToTarget.z = 0;
+					VectorNormalize( vecToTarget );
 
-				// undone: knock aliens to the side to better clear a path for the marine
-				//Vector vecDirUp( 0, 0, 1 );
-				//float flSideForce = flFlatForce * ( RandomInt( -1, 1 ) == -1 ? -1 : 1);
-				//Vector vecSide;
-				//CrossProduct( vecToTarget, vecDirUp, vecSide );
-
-				pAlien->Knockback(vecToTarget * flFlatForce + Vector(0, 0, 1) * flUpForce);
-				//pAlien->ForceFlinch( vecAttackDir );
+					pAlien->Knockback( vecToTarget * flFlatForce + Vector( 0, 0, 1 ) * flUpForce );
+				}
 			}
 		}
 	}

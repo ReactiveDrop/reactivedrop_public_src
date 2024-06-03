@@ -91,37 +91,13 @@ float C_ASW_Queen::VecToYaw( const Vector &vecDir )
 }
 
 void C_ASW_Queen::UpdatePoseParams()
-{	
-	/*
-	float yaw = m_fLastHeadYaw;  //GetPoseParameter( LookupPoseParameter("head_yaw") );
+{
+	if ( IsFrozen() )
+	{
+		// don't look around while fully frozen!
+		return;
+	}
 
-	if ( m_hQueenEnemy.Get() != NULL && m_iHealth > 0)
-	{
-		Vector	enemyDir = m_hQueenEnemy->WorldSpaceCenter() - WorldSpaceCenter();
-		VectorNormalize( enemyDir );
-		
-		float angle = VecToYaw( BodyDirection3D() );
-		float angleDiff = VecToYaw( enemyDir );		
-		angleDiff = UTIL_AngleDiff( angleDiff, angle + yaw );
-		
-		//ASW_ClampYaw(500.0f, yaw, yaw + angleDiff, gpGlobals->frametime);
-		//Msg("yaw=%f targ=%f delta=%f ", yaw, yaw+angleDiff, gpGlobals->frametime * 3.0f);
-		yaw = ASW_Linear_Approach(yaw, yaw + angleDiff, gpGlobals->frametime * 300.0f);
-		//Msg(" result=%f\n", yaw);
-		SetPoseParameter( "head_yaw", yaw );
-		m_fLastHeadYaw = yaw;
-		//SetPoseParameter( "head_yaw", Approach( yaw + angleDiff, yaw, 5 ) );
-	}
-	else
-	{
-		// Otherwise turn the head back to its normal position
-		//ASW_ClampYaw(500.0f, yaw, 0, gpGlobals->frametime);
-		yaw = ASW_Linear_Approach(yaw, 0, gpGlobals->frametime * 300.0f);
-		SetPoseParameter( "head_yaw", yaw );
-		m_fLastHeadYaw = yaw;
-		//SetPoseParameter( "head_yaw",	Approach( 0, yaw, 10 ) );		
-	}
-	*/
 	int pose_index = LookupPoseParameter( "head_yaw" );
 	if (pose_index >= 0)
 	{

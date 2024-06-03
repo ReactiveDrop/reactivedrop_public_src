@@ -98,6 +98,9 @@ void CASWStatueProp::Freeze( float flFreezeAmount, CBaseEntity *pFreezer, Ray_t 
 
 void CASWStatueProp::EnableAutoShatter( const CTakeDamageInfo &dmgInfo, float flShatterDelay )
 {
+	// see comment in CBaseEntity::VPhysicsTakeDamage for how to fix if you hit this assert
+	Assert( dmgInfo.GetDamageForce() != vec3_origin && dmgInfo.GetDamagePosition() != vec3_origin );
+
 	m_ShatterDamageInfo = dmgInfo;
 
 	SetThink( &CASWStatueProp::AutoShatterThink );

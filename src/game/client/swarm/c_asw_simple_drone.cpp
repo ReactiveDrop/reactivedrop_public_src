@@ -95,6 +95,13 @@ void C_ASW_Simple_Drone::ClientThink()
 void C_ASW_Simple_Drone::UpdatePoseParams()
 {
 	VPROF_BUDGET( "C_ASW_Simple_Drone::UpdatePoseParams", VPROF_BUDGETGROUP_ASW_CLIENT );
+
+	if ( IsFrozen() )
+	{
+		// don't look around while fully frozen!
+		return;
+	}
+
 	// update pose params based on velocity and our angles
 
 	// calculate the angle difference between our facing and our velocity

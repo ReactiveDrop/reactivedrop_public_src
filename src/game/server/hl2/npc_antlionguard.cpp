@@ -2453,7 +2453,9 @@ void CNPC_AntlionGuard::StartTask( const Task_t *pTask )
 		{
 			if ( IsMovementFrozen() )
 			{
-				TaskFail(FAIL_FROZEN);
+#ifndef INFESTED_DLL
+				TaskFail( FAIL_FROZEN );
+#endif
 				break;
 			}
 
