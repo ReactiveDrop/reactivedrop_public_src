@@ -103,7 +103,7 @@ JiggleData *CJiggleBones::GetJiggleData( int bone, float currenttime, const Vect
  * Do spring physics calculations and update "jiggle bone" matrix
  * (Michael Booth, Turtle Rock Studios)
  */
-void CJiggleBones::BuildJiggleTransformations( int boneIndex, float currenttime, const mstudiojigglebone_t *jiggleInfo, const matrix3x4_t &goalMX, matrix3x4_t &boneMX )
+void CJiggleBones::BuildJiggleTransformations( int boneIndex, float currenttime, const mstudiojigglebone_t *jiggleInfo, const matrix3x4_t &goalMX, matrix3x4_t &boneMX, float speedScale )
 {
 	Vector goalBasePosition;
 	MatrixPosition( goalMX, goalBasePosition );
@@ -173,8 +173,11 @@ void CJiggleBones::BuildJiggleTransformations( int boneIndex, float currenttime,
 	// if framerate gets very low, jiggle will run in slow motion
 	const float thirtyHZ = 0.0333f;
 	const float thousandHZ = 0.001f;
-	float deltaT = clamp( currenttime - data->lastUpdate, thousandHZ, thirtyHZ );
+	float deltaT = clamp( ( currenttime - data->lastUpdate ) * speedScale, thousandHZ, thirtyHZ);
 	data->lastUpdate = currenttime;
+
+	if ( speedScale == 0.0f )
+		return;
 
 	//
 	// Bone tip flex
