@@ -37,6 +37,7 @@ public:
 	float m_flFreezeAmount;
 	float m_flExplosionRadius;
 	bool m_bAllowFriendlyFire;
+	Vector m_vecSpawnOrigin;
 };
 
 

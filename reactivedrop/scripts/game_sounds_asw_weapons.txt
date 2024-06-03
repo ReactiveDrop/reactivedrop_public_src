@@ -1749,3 +1749,24 @@
 		"wave"		"items/large_pickup2.wav"
 	}
 }
+
+"ASW_CryoCannon.Spin"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_75dB"
+	"wave"			"weapons/3D/cryocannon/cryogun_idle.wav"
+}
+
+"ASW_CryoCannon.Fire"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"			"weapons/3D/cryocannon/cryogun_loop.wav"
+}
+
+"ASW_CryoCannon.Stop"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_85dB"
+	"wave"			"weapons/3D/cryocannon/cryogun_stop.wav"
+}

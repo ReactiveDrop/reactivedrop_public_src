@@ -15,7 +15,7 @@ WeaponData
 	// which ammo elements this weapon should display on the hud
 	"ShowBulletsOnHUD"		"1"
 	"ShowClipsOnHUD"		"1"
-	"ShowGrenadesOnHUD"		"1"
+	"ShowGrenadesOnHUD"		"0"
 
 	"HUDIconOffsetX"		"0"
 

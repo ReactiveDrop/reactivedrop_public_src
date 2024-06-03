@@ -10,6 +10,7 @@
 #include "asw_weapon_flamer_shared.h"
 #include "asw_sentry_top_icer.h"
 #include "asw_sentry_base.h"
+#include "particle_parse.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -20,6 +21,7 @@ extern ConVar sk_npc_dmg_asw_f;
 extern ConVar asw_flamer_debug;
 ConVar rd_extinguisher_freeze_amount( "rd_extinguisher_freeze_amount", "0.0", FCVAR_REPLICATED | FCVAR_CHEAT, "The amount of freezing to apply to the extinguisher" );
 ConVar rd_extinguisher_dmg_amount( "rd_extinguisher_dmg_amount", "0.0", FCVAR_REPLICATED | FCVAR_CHEAT, "The amount of damage the extinguisher does to entities" );
+ConVar rd_extinguisher_dmg_force( "rd_extinguisher_dmg_force", "1.0", FCVAR_REPLICATED | FCVAR_CHEAT, "The amount of force being hit by a damaging extinguisher particle applies" );
 
 #define PELLET_MODEL "models/swarm/Shotgun/ShotgunPellet.mdl"
 
@@ -36,6 +38,8 @@ BEGIN_DATADESC( CASW_Extinguisher_Projectile )
 	DEFINE_FIELD( m_hFirer, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_hFirerWeapon, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_flFreezeAmount, FIELD_FLOAT ),
+	DEFINE_FIELD( m_flExplosionRadius, FIELD_FLOAT ),
+	DEFINE_FIELD( m_vecSpawnOrigin, FIELD_POSITION_VECTOR ),
 END_DATADESC()
 
 
@@ -110,6 +114,8 @@ void CASW_Extinguisher_Projectile::ProjectileTouch( CBaseEntity *pOther )
 
 void CASW_Extinguisher_Projectile::Explode()
 {
+	bool bAtLeastOne = false;
+
 	CEntitySphereQuery sphere( GetAbsOrigin(), m_flExplosionRadius );
 	while ( CBaseEntity *pEnt = sphere.GetCurrentEntity() )
 	{
@@ -121,7 +127,19 @@ void CASW_Extinguisher_Projectile::Explode()
 		if ( !pEnt->IsSolid() || pEnt->IsSolidFlagSet( FSOLID_VOLUME_CONTENTS ) )
 			continue;
 
+		if ( pEnt->m_takedamage != DAMAGE_NO )
+			bAtLeastOne = true;
+
 		OnProjectileTouch( pEnt );
+	}
+
+	if ( bAtLeastOne )
+	{
+		// don't play explode animation if we only hit world or props
+		CBaseEntity *pHelpHelpImBeingSupressed = ( CBaseEntity * )te->GetSuppressHost();
+		te->SetSuppressHost( NULL );
+		DispatchParticleEffect( "rd_cryocannon_explode", GetAbsOrigin(), Vector( m_flExplosionRadius, 0, 0 ), vec3_angle );
+		te->SetSuppressHost( pHelpHelpImBeingSupressed );
 	}
 }
 
@@ -168,7 +186,9 @@ void CASW_Extinguisher_Projectile::OnProjectileTouch( CBaseEntity *pOther )
 
 	if ( m_flDamage > 0.0f && ( !pMarine || m_bAllowFriendlyFire ) )
 	{
-		CTakeDamageInfo	dmgInfo( this, m_hFirer, m_hFirerWeapon, m_flDamage, DMG_COLD );
+		Vector vecDirection = pOther->WorldSpaceCenter() - m_vecSpawnOrigin;
+		vecDirection.NormalizeInPlace();
+		CTakeDamageInfo	dmgInfo( this, m_hFirer, m_hFirerWeapon, vecDirection * rd_extinguisher_dmg_force.GetFloat(), GetAbsOrigin(), m_flDamage, DMG_COLD );
 		pOther->TakeDamage( dmgInfo );
 	}
 
@@ -206,6 +226,7 @@ CASW_Extinguisher_Projectile *CASW_Extinguisher_Projectile::Extinguisher_Project
 	pPellet->m_ProjectileData.GetForModify().SetFromWeapon( pWeapon );
 	UTIL_SetOrigin( pPellet, position );
 	pPellet->SetAbsVelocity( velocity );
+	pPellet->m_vecSpawnOrigin = position;
 
 	if ( asw_flamer_debug.GetBool() )
 		pPellet->m_debugOverlays |= OVERLAY_BBOX_BIT;

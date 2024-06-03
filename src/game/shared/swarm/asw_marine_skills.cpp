@@ -27,6 +27,8 @@ ConVar asw_skill_vindicator_pellets_base( "asw_skill_vindicator_pellets_base", "
 ConVar asw_skill_autogun_base( "asw_skill_autogun_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_autogun_minigun_dmg_base( "asw_skill_autogun_minigun_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_autogun_cryo_spinup_base( "asw_skill_autogun_cryo_spinup_base", "0.25", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_autogun_cryo_freeze_base( "asw_skill_autogun_cryo_freeze_base", "0.8", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_autogun_cryo_radius_base( "asw_skill_autogun_cryo_radius_base", "64", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_piercing_base( "asw_skill_piercing_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_stopping_power_airblast_strength_base( "asw_skill_stopping_power_airblast_strength_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 
@@ -83,6 +85,8 @@ ConVar asw_skill_vindicator_pellets_step( "asw_skill_vindicator_pellets_step", "
 ConVar asw_skill_autogun_step( "asw_skill_autogun_step", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_autogun_minigun_dmg_step( "asw_skill_autogun_minigun_dmg_step", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_autogun_cryo_spinup_step( "asw_skill_autogun_cryo_spinup_step", "0.25", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_autogun_cryo_freeze_step( "asw_skill_autogun_cryo_freeze_step", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_autogun_cryo_radius_step( "asw_skill_autogun_cryo_radius_step", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_piercing_step( "asw_skill_piercing_step", "0.20", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_stopping_power_airblast_strength_step( "asw_skill_stopping_power_airblast_strength_step", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 
@@ -174,7 +178,7 @@ ConVar asw_skill_accuracy_mining_laser_dmg_step( "asw_skill_accuracy_mining_lase
 ConVar asw_skill_accuracy_shield_rifle_dmg_base( "asw_skill_accuracy_shield_rifle_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_accuracy_shield_rifle_dmg_step( "asw_skill_accuracy_shield_rifle_dmg_step", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_accuracy_cryo_dmg_base( "asw_skill_accuracy_cryo_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_cryo_dmg_step( "asw_skill_accuracy_cryo_dmg_step", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_accuracy_cryo_dmg_step( "asw_skill_accuracy_cryo_dmg_step", "0.5", FCVAR_REPLICATED | FCVAR_CHEAT );
 
 ConVar asw_skill_laser_mines_base( "asw_skill_laser_mines_base", "1", FCVAR_REPLICATED | FCVAR_CHEAT, "Number of laser mines to deploy by marines with no Explosives skills", true, 1, true, 10 );
 ConVar asw_skill_laser_mines_moderate( "asw_skill_laser_mines_moderate", "2", FCVAR_REPLICATED | FCVAR_CHEAT, "Number of laser mines to deploy by marines with moderate(>1) Explosives skills", true, 1, true, 10 );
@@ -260,6 +264,10 @@ float CASW_Marine_Skills::GetSkillBasedValue( CASW_Marine_Profile *pProfile, ASW
 			return asw_skill_autogun_minigun_dmg_base.GetFloat() + asw_skill_autogun_minigun_dmg_step.GetFloat() * iSkillPoints;
 		case ASW_MARINE_SUBSKILL_AUTOGUN_CRYO_SPINUP:
 			return asw_skill_autogun_cryo_spinup_base.GetFloat() + asw_skill_autogun_cryo_spinup_step.GetFloat() * iSkillPoints;
+		case ASW_MARINE_SUBSKILL_AUTOGUN_CRYO_FREEZE:
+			return asw_skill_autogun_cryo_freeze_base.GetFloat() + asw_skill_autogun_cryo_freeze_step.GetFloat() * iSkillPoints;
+		case ASW_MARINE_SUBSKILL_AUTOGUN_CRYO_RADIUS:
+			return asw_skill_autogun_cryo_radius_base.GetFloat() + asw_skill_autogun_cryo_radius_step.GetFloat() * iSkillPoints;
 		default:
 			Assert( 0 );
 			return 0.0f;

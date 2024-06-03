@@ -24,6 +24,7 @@ public:
 
 	void ClientThink() override;
 	void UpdateSpinningBarrel();
+	void UpdateFiringEffects();
 
 	void OnDataChanged( DataUpdateType_t updateType ) override;
 	void SetDormant( bool bDormant ) override;
@@ -67,7 +68,9 @@ public:
 	CNetworkVar( float, m_flSpinRate );
 #ifdef CLIENT_DLL
 	CSoundPatch *m_pBarrelSpinSound;
+	CSoundPatch *m_pFireSound;
 	bool m_bShouldUpdateActivityClient;
+	CUtlReference<CNewParticleEffect> m_hEffect;
 #endif
 };
 #endif

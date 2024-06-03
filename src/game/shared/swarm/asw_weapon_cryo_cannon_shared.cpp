@@ -55,6 +55,8 @@ CASW_Weapon_Cryo_Cannon::CASW_Weapon_Cryo_Cannon()
 {
 #ifdef CLIENT_DLL
 	m_pBarrelSpinSound = NULL;
+	m_pFireSound = NULL;
+	m_hEffect = NULL;
 	m_bShouldUpdateActivityClient = false;
 #endif
 	m_flSpinRate = 0.0f;
@@ -67,7 +69,11 @@ void CASW_Weapon_Cryo_Cannon::Precache()
 #endif
 
 	PrecacheScriptSound( "ASW_CryoCannon.Spin" );
+	PrecacheScriptSound( "ASW_CryoCannon.Fire" );
+	PrecacheScriptSound( "ASW_CryoCannon.Stop" );
 	PrecacheEffect( "ExtinguisherCloud" );
+	PrecacheParticleSystem( "rd_cryocannon" );
+	PrecacheParticleSystem( "rd_cryocannon_explode" );
 
 	BaseClass::Precache();
 }
@@ -85,17 +91,18 @@ void CASW_Weapon_Cryo_Cannon::ClientThink()
 	BaseClass::ClientThink();
 
 	UpdateSpinningBarrel();
+	UpdateFiringEffects();
 }
 
 void CASW_Weapon_Cryo_Cannon::UpdateSpinningBarrel()
 {
-	if ( GetSpinRate() > 0.1 && GetSequenceActivity( GetSequence() ) != ACT_VM_PRIMARYATTACK )
+	if ( GetSpinRate() > 0.1f && GetSequenceActivity( GetSequence() ) != ACT_VM_PRIMARYATTACK )
 	{
 		SetActivity( ACT_VM_PRIMARYATTACK, 0 );
 		m_bShouldUpdateActivityClient = true;
 	}
 
-	if ( GetSpinRate() < 0.1 && m_bShouldUpdateActivityClient )
+	if ( GetSpinRate() < 0.1f && m_bShouldUpdateActivityClient )
 	{
 		SetActivity( ACT_VM_IDLE, 0 );
 		m_bShouldUpdateActivityClient = false;
@@ -122,6 +129,41 @@ void CASW_Weapon_Cryo_Cannon::UpdateSpinningBarrel()
 	}
 }
 
+void CASW_Weapon_Cryo_Cannon::UpdateFiringEffects()
+{
+	if ( m_bIsFiring )
+	{
+		if ( !m_hEffect )
+		{
+			m_hEffect = ParticleProp()->Create( "rd_cryocannon", PATTACH_POINT_FOLLOW, "muzzle" );
+		}
+
+		if ( !m_pFireSound )
+		{
+			CPASAttenuationFilter filter( this );
+			m_pFireSound = CSoundEnvelopeController::GetController().SoundCreate( filter, entindex(), "ASW_CryoCannon.Fire" );
+			CSoundEnvelopeController::GetController().Play( m_pFireSound, 1.0f, 100 );
+		}
+		CSoundEnvelopeController::GetController().SoundChangePitch( m_pFireSound, asw_cryo_cannon_pitch_min.GetFloat() + ( GetSpinRate() * ( asw_cryo_cannon_pitch_max.GetFloat() - asw_cryo_cannon_pitch_min.GetFloat() ) ), 0.0f );
+	}
+	else
+	{
+		if ( m_hEffect )
+		{
+			m_hEffect->StopEmission();
+			m_hEffect = NULL;
+		}
+
+		if ( m_pFireSound )
+		{
+			CSoundEnvelopeController::GetController().SoundDestroy( m_pFireSound );
+			m_pFireSound = NULL;
+
+			EmitSound( "ASW_CryoCannon.Stop" );
+		}
+	}
+}
+
 void CASW_Weapon_Cryo_Cannon::OnDataChanged( DataUpdateType_t updateType )
 {
 	BaseClass::OnDataChanged( updateType );
@@ -141,6 +183,12 @@ void CASW_Weapon_Cryo_Cannon::SetDormant( bool bDormant )
 			CSoundEnvelopeController::GetController().SoundDestroy( m_pBarrelSpinSound );
 			m_pBarrelSpinSound = NULL;
 		}
+
+		if ( m_pFireSound )
+		{
+			CSoundEnvelopeController::GetController().SoundDestroy( m_pFireSound );
+			m_pFireSound = NULL;
+		}
 	}
 	BaseClass::SetDormant( bDormant );
 }
@@ -151,6 +199,12 @@ void CASW_Weapon_Cryo_Cannon::UpdateOnRemove()
 	{
 		CSoundEnvelopeController::GetController().SoundDestroy( m_pBarrelSpinSound );
 		m_pBarrelSpinSound = NULL;
+	}
+
+	if ( m_pFireSound )
+	{
+		CSoundEnvelopeController::GetController().SoundDestroy( m_pFireSound );
+		m_pFireSound = NULL;
 	}
 
 	BaseClass::UpdateOnRemove();
@@ -215,10 +269,15 @@ void CASW_Weapon_Cryo_Cannon::PrimaryAttack()
 		pMarine->RemoveAmmo( iShots, m_iPrimaryAmmoType );
 	}
 
+	if ( iShots )
+	{
+		m_bIsFiring = true;
+	}
+
 #ifndef CLIENT_DLL
 	float flDamage = GetWeaponDamage();
-	float flFreezeAmount = 0.4f; // TODO!
-	float flExplosionRadius = 64.0f; // TODO!
+	float flFreezeAmount = MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_AUTOGUN, ASW_MARINE_SUBSKILL_AUTOGUN_CRYO_FREEZE );
+	float flExplosionRadius = MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_AUTOGUN, ASW_MARINE_SUBSKILL_AUTOGUN_CRYO_RADIUS );
 
 	Vector vecSrc = pMarine->Weapon_ShootPosition();
 	Vector vecAiming = vec3_origin;
