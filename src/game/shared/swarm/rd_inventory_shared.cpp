@@ -212,10 +212,16 @@ public:
 	void LevelInitPostEntity() override
 	{
 #ifdef CLIENT_DLL
+		if ( m_bWantFullInventoryRefresh && m_CraftingQueue.Count() == 0 )
+		{
+			RequestFullInventoryRefresh();
+		}
+
 		if ( ValidatePlayerEquipmentResult() )
 		{
 			SendPlayerEquipmentToServer();
 		}
+
 		ClearCraftingMaterialLocations();
 		if ( s_bLoadedItemDefs )
 		{
@@ -248,6 +254,14 @@ public:
 #ifdef CLIENT_DLL
 	void CacheUserInventory( SteamInventoryResult_t hResult )
 	{
+		ISteamUtils *pUtils = SteamUtils();
+		Assert( pUtils );
+		// If we're not running as Alien Swarm: Reactive Drop (for example, if we're a mod or running through the SDK), don't update caches.
+		if ( !pUtils || pUtils->GetAppID() != 563560 )
+		{
+			return;
+		}
+
 		ISteamInventory *pInventory = SteamInventory();
 		if ( !pInventory )
 		{
@@ -294,6 +308,14 @@ public:
 
 	void WriteInventoryCache()
 	{
+		ISteamUtils *pUtils = SteamUtils();
+		Assert( pUtils );
+		// If we're not running as Alien Swarm: Reactive Drop (for example, if we're a mod or running through the SDK), don't update caches.
+		if ( !pUtils || pUtils->GetAppID() != 563560 )
+		{
+			return;
+		}
+
 		CFastTimer timer;
 		timer.Start();
 
@@ -1391,7 +1413,7 @@ public:
 			HideModalCraftingWaitScreen();
 		}
 
-		if ( m_bWantFullInventoryRefresh && m_CraftingQueue.Count() == 0 )
+		if ( m_bWantFullInventoryRefresh && m_CraftingQueue.Count() == 0 && ( !ASWGameRules() || ASWGameRules()->GetGameState() != ASW_GS_INGAME ) )
 		{
 			pInventory->DestroyResult( m_GetFullInventoryForCacheResult );
 			m_GetFullInventoryForCacheResult = k_SteamInventoryResultInvalid;
@@ -3501,13 +3523,21 @@ namespace ReactiveDropInventory
 	}
 	void RequestFullInventoryRefresh()
 	{
-		if ( s_RD_Inventory_Manager.m_CraftingQueue.Count() )
+		GET_INVENTORY_OR_BAIL;
+
+		if ( s_RD_Inventory_Manager.m_CraftingQueue.Count() || ( ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME ) )
 		{
+			if ( s_RD_Inventory_Manager.m_GetFullInventoryForCacheResult != k_SteamInventoryResultInvalid )
+			{
+				pInventory->DestroyResult( s_RD_Inventory_Manager.m_GetFullInventoryForCacheResult );
+				s_RD_Inventory_Manager.m_GetFullInventoryForCacheResult = k_SteamInventoryResultInvalid;
+			}
+
 			s_RD_Inventory_Manager.m_bWantFullInventoryRefresh = true;
 		}
 		else if ( s_RD_Inventory_Manager.m_GetFullInventoryForCacheResult == k_SteamInventoryResultInvalid )
 		{
-			GET_INVENTORY_OR_BAIL;
+			s_RD_Inventory_Manager.m_bWantFullInventoryRefresh = false;
 
 			pInventory->GetAllItems( &s_RD_Inventory_Manager.m_GetFullInventoryForCacheResult );
 		}
