@@ -23,6 +23,8 @@
 static void DebugNPCsChanged( IConVar *var, const char *pOldValue, float flOldValue );
 ConVar asw_debug_npcs( "asw_debug_npcs", "0", FCVAR_CHEAT, "Enables debug overlays for various NPCs", DebugNPCsChanged );
 ConVar asw_fire_alien_damage_scale( "asw_fire_alien_damage_scale", "3.0", FCVAR_CHEAT );
+ConVar asw_burning_alien_damage_scale( "asw_burning_alien_damage_scale", "1.0", FCVAR_CHEAT );
+ConVar asw_frozen_alien_damage_scale( "asw_frozen_alien_damage_scale", "2.0", FCVAR_CHEAT );
 ConVar asw_alien_burn_duration( "asw_alien_burn_duration", "5.0f", FCVAR_CHEAT, "Alien burn time" );
 extern ConVar asw_alien_stunned_speed;
 extern ConVar asw_alien_hurt_speed;
@@ -273,7 +275,7 @@ int	CASW_Inhabitable_NPC::DrawDebugTextOverlays()
 	{
 		NDebugOverlay::EntityText( entindex(), text_offset, CFmtStr( "Freeze amt.: %f", m_flFrozen.Get() ), 0 );
 		text_offset++;
-		NDebugOverlay::EntityText( entindex(), text_offset, CFmtStr( "Freeze time: %f", m_flFrozenTime - gpGlobals->curtime ), 0 );
+		NDebugOverlay::EntityText( entindex(), text_offset, CFmtStr( "Freeze time: %f", MAX( m_flFrozenTime - gpGlobals->curtime, 0.0f ) ), 0 );
 		text_offset++;
 	}
 	return text_offset;
@@ -633,6 +635,22 @@ int CASW_Inhabitable_NPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 			if ( asw_debug_alien_damage.GetBool() )
 			{
 				Msg( "%d %s hurt by %f dmg (scaled up by asw_fire_alien_damage_scale)\n", entindex(), GetClassname(), newInfo.GetDamage() );
+			}
+		}
+		else if ( IsFrozen() )
+		{
+			newInfo.ScaleDamage( asw_frozen_alien_damage_scale.GetFloat() );
+			if ( asw_debug_alien_damage.GetBool() )
+			{
+				Msg( "%d %s hurt by %f dmg (scaled up by asw_frozen_alien_damage_scale)\n", entindex(), GetClassname(), newInfo.GetDamage() );
+			}
+		}
+		else if ( IsOnFire() )
+		{
+			newInfo.ScaleDamage( asw_burning_alien_damage_scale.GetFloat() );
+			if ( asw_debug_alien_damage.GetBool() )
+			{
+				Msg( "%d %s hurt by %f dmg (scaled up by asw_burning_alien_damage_scale)\n", entindex(), GetClassname(), newInfo.GetDamage() );
 			}
 		}
 		else
