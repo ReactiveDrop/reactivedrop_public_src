@@ -22,6 +22,22 @@ extern ConVar asw_flamer_debug;
 ConVar rd_extinguisher_freeze_amount( "rd_extinguisher_freeze_amount", "0.0", FCVAR_REPLICATED | FCVAR_CHEAT, "The amount of freezing to apply to the extinguisher" );
 ConVar rd_extinguisher_dmg_amount( "rd_extinguisher_dmg_amount", "0.0", FCVAR_REPLICATED | FCVAR_CHEAT, "The amount of damage the extinguisher does to entities" );
 ConVar rd_extinguisher_dmg_force( "rd_extinguisher_dmg_force", "1.0", FCVAR_REPLICATED | FCVAR_CHEAT, "The amount of force being hit by a damaging extinguisher particle applies" );
+ConVar rd_extinguisher_hull_scale[NUM_HULLS]
+{
+	{ "rd_extinguisher_hull_scale_human", "1", FCVAR_CHEAT, "Cryo Cannon freeze rate scale for y'know ;)" },
+	{ "rd_extinguisher_hull_scale_small_centered", "5", FCVAR_CHEAT, "Cryo Cannon freeze rate scale for (unused, was scanner in HL2)" },
+	{ "rd_extinguisher_hull_scale_wide_human", "1", FCVAR_CHEAT, "Cryo Cannon freeze rate scale for Vortigaunt (unused)" },
+	{ "rd_extinguisher_hull_scale_tiny", "5", FCVAR_CHEAT, "Cryo Cannon freeze rate scale for Headcrab, Zombie Torso, Birds, Parasite, Grub, Xenomite" },
+	{ "rd_extinguisher_hull_scale_wide_short", "0.4", FCVAR_CHEAT, "Cryo Cannon freeze rate scale for Harvester, Mortarbug, Shieldbug" },
+	{ "rd_extinguisher_hull_scale_medium", "1", FCVAR_CHEAT, "Cryo Cannon freeze rate scale for Antlion, Mender" },
+	{ "rd_extinguisher_hull_scale_tiny_centered", "5", FCVAR_CHEAT, "Cryo Cannon freeze rate scale for Buzzer, Scanner" },
+	{ "rd_extinguisher_hull_scale_large", "0.4", FCVAR_CHEAT, "Cryo Cannon freeze rate scale for Boomer, Antlion Guard" },
+	{ "rd_extinguisher_hull_scale_large_centered", "0", FCVAR_CHEAT, "Cryo Cannon freeze rate scale for Strider / Dropship / Gunship / Helicopter" },
+	{ "rd_extinguisher_hull_scale_medium_tall", "0.4", FCVAR_CHEAT, "Cryo Cannon freeze rate scale for Hunter" },
+	{ "rd_extinguisher_hull_scale_tiny_fluid", "0", FCVAR_CHEAT, "Cryo Cannon freeze rate scale for EP3 Blob (unused)" },
+	{ "rd_extinguisher_hull_scale_mediumbig", "1", FCVAR_CHEAT, "Cryo Cannon freeze rate scale for Drone, Ranger" },
+	{ "rd_extinguisher_hull_scale_huge", "0.2", FCVAR_CHEAT, "Cryo Cannon freeze rate scale for Queen" },
+};
 
 #define PELLET_MODEL "models/swarm/Shotgun/ShotgunPellet.mdl"
 
@@ -33,12 +49,13 @@ END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Extinguisher_Projectile )
 	DEFINE_FUNCTION( ProjectileTouch ),
-	DEFINE_FIELD( m_flDamage, FIELD_FLOAT ),
-	DEFINE_FIELD( m_bAllowFriendlyFire, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_hFirer, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_hFirerWeapon, FIELD_EHANDLE ),
+	DEFINE_FIELD( m_flDamage, FIELD_FLOAT ),
 	DEFINE_FIELD( m_flFreezeAmount, FIELD_FLOAT ),
 	DEFINE_FIELD( m_flExplosionRadius, FIELD_FLOAT ),
+	DEFINE_FIELD( m_bAllowFriendlyFire, FIELD_BOOLEAN ),
+	DEFINE_FIELD( m_bUseHullFreezeScale, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_vecSpawnOrigin, FIELD_POSITION_VECTOR ),
 END_DATADESC()
 
@@ -49,6 +66,7 @@ CASW_Extinguisher_Projectile::CASW_Extinguisher_Projectile()
 	m_flFreezeAmount = rd_extinguisher_freeze_amount.GetFloat();
 	m_flExplosionRadius = 0.0f;
 	m_bAllowFriendlyFire = false;
+	m_bUseHullFreezeScale = false;
 }
 
 CASW_Extinguisher_Projectile::~CASW_Extinguisher_Projectile()
@@ -192,13 +210,19 @@ void CASW_Extinguisher_Projectile::OnProjectileTouch( CBaseEntity *pOther )
 		pOther->TakeDamage( dmgInfo );
 	}
 
-	CAI_BaseNPC *RESTRICT pNPC = pOther->MyNPCPointer();
+	CAI_BaseNPC *pNPC = pOther->MyNPCPointer();
 	if ( pNPC )
 	{
-		if ( m_flFreezeAmount > 0 && ( m_bAllowFriendlyFire || !m_hFirer || !m_hFirer->MyCombatCharacterPointer() || m_hFirer->MyCombatCharacterPointer()->IRelationType( pNPC ) != D_LI ) )
+		float flFreezeAmount = m_flFreezeAmount;
+		if ( m_bUseHullFreezeScale )
+		{
+			flFreezeAmount *= rd_extinguisher_hull_scale[clamp( pNPC->GetHullType(), 0, NUM_HULLS - 1 )].GetFloat();
+		}
+
+		if ( flFreezeAmount > 0 && ( m_bAllowFriendlyFire || !m_hFirer || !m_hFirer->MyCombatCharacterPointer() || m_hFirer->MyCombatCharacterPointer()->IRelationType( pNPC ) != D_LI ) )
 		{
 			bool bWasFrozen = pNPC->m_bWasEverFrozen;
-			pNPC->Freeze( m_flFreezeAmount, m_hFirer ? m_hFirer : this );
+			pNPC->Freeze( flFreezeAmount, m_hFirer ? m_hFirer : this );
 			if ( !bWasFrozen && pNPC->IsFrozen() )
 			{
 				IGameEvent *event = gameeventmanager->CreateEvent( "entity_frozen" );
