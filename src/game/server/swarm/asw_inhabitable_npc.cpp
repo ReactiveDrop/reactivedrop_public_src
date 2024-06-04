@@ -24,7 +24,9 @@ static void DebugNPCsChanged( IConVar *var, const char *pOldValue, float flOldVa
 ConVar asw_debug_npcs( "asw_debug_npcs", "0", FCVAR_CHEAT, "Enables debug overlays for various NPCs", DebugNPCsChanged );
 ConVar asw_fire_alien_damage_scale( "asw_fire_alien_damage_scale", "3.0", FCVAR_CHEAT );
 ConVar asw_burning_alien_damage_scale( "asw_burning_alien_damage_scale", "1.0", FCVAR_CHEAT );
-ConVar asw_frozen_alien_damage_scale( "asw_frozen_alien_damage_scale", "2.0", FCVAR_CHEAT );
+ConVar asw_burning_alien_damage_scale_melee( "asw_burning_alien_damage_scale_melee", "1.0", FCVAR_CHEAT );
+ConVar asw_frozen_alien_damage_scale( "asw_frozen_alien_damage_scale", "1.0", FCVAR_CHEAT );
+ConVar asw_frozen_alien_damage_scale_melee( "asw_frozen_alien_damage_scale_melee", "2.0", FCVAR_CHEAT );
 ConVar asw_alien_burn_duration( "asw_alien_burn_duration", "5.0f", FCVAR_CHEAT, "Alien burn time" );
 extern ConVar asw_alien_stunned_speed;
 extern ConVar asw_alien_hurt_speed;
@@ -637,20 +639,26 @@ int CASW_Inhabitable_NPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 				Msg( "%d %s hurt by %f dmg (scaled up by asw_fire_alien_damage_scale)\n", entindex(), GetClassname(), newInfo.GetDamage() );
 			}
 		}
-		else if ( IsFrozen() )
+		else if ( IsFrozen() || IsOnFire() )
 		{
-			newInfo.ScaleDamage( asw_frozen_alien_damage_scale.GetFloat() );
-			if ( asw_debug_alien_damage.GetBool() )
+			bool bIsMelee = ( newInfo.GetDamageType() & DMG_SLASH ) || ( newInfo.GetDamageType() & DMG_CLUB );
+			ConVar *pIce = bIsMelee ? &asw_frozen_alien_damage_scale_melee : &asw_frozen_alien_damage_scale;
+			ConVar *pFire = bIsMelee ? &asw_burning_alien_damage_scale_melee : &asw_burning_alien_damage_scale;
+
+			ConVar *pScale = pIce;
+			if ( !IsFrozen() )
 			{
-				Msg( "%d %s hurt by %f dmg (scaled up by asw_frozen_alien_damage_scale)\n", entindex(), GetClassname(), newInfo.GetDamage() );
+				pScale = pFire;
 			}
-		}
-		else if ( IsOnFire() )
-		{
-			newInfo.ScaleDamage( asw_burning_alien_damage_scale.GetFloat() );
+			else if ( IsOnFire() )
+			{
+				pScale = pIce->GetFloat() > pFire->GetFloat() ? pIce : pFire;
+			}
+
+			newInfo.ScaleDamage( pScale->GetFloat() );
 			if ( asw_debug_alien_damage.GetBool() )
 			{
-				Msg( "%d %s hurt by %f dmg (scaled up by asw_burning_alien_damage_scale)\n", entindex(), GetClassname(), newInfo.GetDamage() );
+				Msg( "%d %s hurt by %f dmg (scaled up by %s)\n", entindex(), GetClassname(), newInfo.GetDamage(), pScale->GetName() );
 			}
 		}
 		else
