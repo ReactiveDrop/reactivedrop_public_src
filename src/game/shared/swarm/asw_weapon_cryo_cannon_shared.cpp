@@ -304,6 +304,7 @@ void CASW_Weapon_Cryo_Cannon::PrimaryAttack()
 		pProjectile->m_flDamage = flDamage;
 		pProjectile->m_flFreezeAmount = flFreezeAmount;
 		pProjectile->m_flExplosionRadius = flExplosionRadius;
+		pProjectile->m_bAllowFriendlyFire = true;
 		pProjectile->m_bUseHullFreezeScale = true;
 
 		// check for putting ourselves out
