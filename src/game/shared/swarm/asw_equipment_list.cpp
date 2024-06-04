@@ -530,7 +530,7 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		&asw_ammo_count_cryo_cannon, &asw_ammo_count_cryo_cannon,
 		NULL, NULL,
 		2, 0.1f, 2.2f, 1, MARINE_CLASS_SPECIAL_WEAPONS,
-		false, false, false, ASW_OFFHAND_USE_IMMEDIATELY,
+		true, false, false, ASW_OFFHAND_USE_IMMEDIATELY,
 		0.2f, 0.1f,
 	},
 	{
@@ -540,7 +540,7 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		&asw_ammo_count_flamer, &asw_ammo_count_flamer,
 		NULL, NULL,
 		2, 0.1f, 2.2f, 1, MARINE_CLASS_SPECIAL_WEAPONS,
-		false, false, false, ASW_OFFHAND_USE_IMMEDIATELY,
+		true, false, false, ASW_OFFHAND_USE_IMMEDIATELY,
 		0.2f, 0.1f,
 	},
 	{
