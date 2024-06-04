@@ -11,6 +11,7 @@
 #include "asw_sentry_top_icer.h"
 #include "asw_sentry_base.h"
 #include "particle_parse.h"
+#include "asw_marine_resource.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -225,6 +226,16 @@ void CASW_Extinguisher_Projectile::OnProjectileTouch( CBaseEntity *pOther )
 			pNPC->Freeze( flFreezeAmount, m_hFirer ? m_hFirer : this );
 			if ( !bWasFrozen && pNPC->IsFrozen() )
 			{
+				CASW_Marine *pMarineOwner = CASW_Marine::AsMarine( m_hFirer );
+				if ( !pMarine && pMarineOwner && m_hFirerWeapon.Get() && m_hFirerWeapon->Classify() == CLASS_ASW_CRYO_CANNON )
+				{
+					CASW_Marine_Resource *pMR = pMarineOwner->GetMarineResource();
+					if ( pMR )
+					{
+						pMR->m_iCryoCannonFreezeAlien++;
+					}
+				}
+
 				IGameEvent *event = gameeventmanager->CreateEvent( "entity_frozen" );
 				if ( event )
 				{

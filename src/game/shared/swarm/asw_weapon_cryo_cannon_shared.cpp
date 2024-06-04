@@ -416,6 +416,4 @@ int CASW_Weapon_Cryo_Cannon::GetWeaponSubSkillId()
 {
 	return ASW_MARINE_SUBSKILL_ACCURACY_CRYO_DMG;
 }
-
-// TODO: m_iCryoCannonFreezeAlien
 #endif
