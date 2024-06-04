@@ -124,7 +124,7 @@ ConVar asw_ammo_count_flechette( "asw_ammo_count_flechette", "60", FCVAR_CHEAT |
 ConVar asw_ammo_count_medsatchel( "asw_ammo_count_medsatchel", "9", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_ar2( "asw_ammo_count_ar2", "30", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_ar2_grenade( "asw_ammo_count_ar2_grenade", "3", FCVAR_CHEAT | FCVAR_REPLICATED );
-ConVar asw_ammo_count_cryo_cannon( "asw_ammo_count_cryo_cannon", "200", FCVAR_CHEAT | FCVAR_REPLICATED );
+ConVar asw_ammo_count_cryo_cannon( "asw_ammo_count_cryo_cannon", "50", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_energy_shield( "asw_ammo_count_energy_shield", "5", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_energy_shield_max( "asw_ammo_count_energy_shield_max", "8", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_medkit( "asw_ammo_count_medkit", "1", FCVAR_CHEAT | FCVAR_REPLICATED );
