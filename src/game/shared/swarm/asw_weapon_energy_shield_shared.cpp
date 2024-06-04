@@ -27,7 +27,7 @@ void CASW_Weapon_Energy_Shield::Precache()
 	BaseClass::Precache();
 
 #ifdef GAME_DLL
-	UTIL_PrecacheOther( "asw_energy_shield" );
+	UTIL_PrecacheOther( "asw_energy_shield_shield" );
 #endif
 }
 
@@ -44,7 +44,7 @@ END_NETWORK_TABLE()
 BEGIN_PREDICTION_DATA( CASW_Energy_Shield )
 END_PREDICTION_DATA()
 
-LINK_ENTITY_TO_CLASS( asw_energy_shield, CASW_Energy_Shield );
+LINK_ENTITY_TO_CLASS( asw_energy_shield_shield, CASW_Energy_Shield );
 
 #ifndef CLIENT_DLL
 BEGIN_DATADESC( CASW_Energy_Shield )
