@@ -529,7 +529,7 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		"swarm/EquipIcons/EquipCryoCannon",
 		&asw_ammo_count_cryo_cannon, &asw_ammo_count_cryo_cannon,
 		NULL, NULL,
-		2, 0.1f, 2.2f, 1, MARINE_CLASS_SPECIAL_WEAPONS,
+		0.5f, 0.1f, 2.2f, 1, MARINE_CLASS_SPECIAL_WEAPONS,
 		true, false, false, ASW_OFFHAND_USE_IMMEDIATELY,
 		0.2f, 0.1f,
 	},
