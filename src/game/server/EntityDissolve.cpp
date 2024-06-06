@@ -118,9 +118,9 @@ void CEntityDissolve::Spawn()
 	Precache();
 	UTIL_SetModel( this, STRING( GetModelName() ) );
 
-	if ( (m_nDissolveType == ENTITY_DISSOLVE_ELECTRICAL) || (m_nDissolveType == ENTITY_DISSOLVE_ELECTRICAL_LIGHT) )
+	if ( ( m_nDissolveType == ENTITY_DISSOLVE_ELECTRICAL ) || ( m_nDissolveType == ENTITY_DISSOLVE_ELECTRICAL_FAST ) || ( m_nDissolveType == ENTITY_DISSOLVE_ELECTRICAL_LIGHT ) )
 	{
-		if ( dynamic_cast< CRagdollProp* >( GetMoveParent() ) )
+		if ( dynamic_cast< CRagdollProp * >( GetMoveParent() ) )
 		{
 			SetContextThink( &CEntityDissolve::ElectrocuteThink, gpGlobals->curtime + 0.01f, s_pElectroThinkContext );
 		}
@@ -143,6 +143,12 @@ void CEntityDissolve::Spawn()
 		m_flFadeOutModelStart = CORE_DISSOLVE_MODEL_FADE_START;
 		m_flFadeOutModelLength = CORE_DISSOLVE_MODEL_FADE_LENGTH;
 		m_flFadeInLength = CORE_DISSOLVE_FADEIN_LENGTH;
+	}
+	else if ( m_nDissolveType == ENTITY_DISSOLVE_ELECTRICAL_FAST )
+	{
+		m_flFadeInLength *= 0.25f;
+		m_flFadeOutModelLength *= 0.25f;
+		m_flFadeOutLength *= 0.25f;
 	}
 
 	m_nRenderMode = kRenderTransColor;
@@ -193,7 +199,7 @@ void CEntityDissolve::InputDissolve( inputdata_t &inputdata )
 // Purpose: Creates a flame and attaches it to a target entity.
 // Input  : pTarget - 
 //-----------------------------------------------------------------------------
-CEntityDissolve *CEntityDissolve::Create( CBaseEntity *pTarget, const char *pMaterialName, 
+CEntityDissolve *CEntityDissolve::Create( CBaseEntity *pTarget, const char *pMaterialName,
 	float flStartTime, int nDissolveType, bool *pRagdollCreated )
 {
 	if ( pRagdollCreated )
@@ -209,20 +215,20 @@ CEntityDissolve *CEntityDissolve::Create( CBaseEntity *pTarget, const char *pMat
 	if ( pTarget->IsPlayer() )
 	{
 		// Simply immediately kill the player.
-		CBasePlayer *pPlayer = assert_cast< CBasePlayer* >( pTarget );
+		CBasePlayer *pPlayer = assert_cast< CBasePlayer * >( pTarget );
 		pPlayer->SetArmorValue( 0 );
 		CTakeDamageInfo info( pPlayer, pPlayer, pPlayer->GetHealth(), DMG_GENERIC | DMG_REMOVENORAGDOLL | DMG_PREVENT_PHYSICS_FORCE );
 		pPlayer->TakeDamage( info );
 		return NULL;
 	}
 
-	CEntityDissolve *pDissolve = (CEntityDissolve *) CreateEntityByName( "env_entity_dissolver" );
+	CEntityDissolve *pDissolve = ( CEntityDissolve * )CreateEntityByName( "env_entity_dissolver" );
 
 	if ( pDissolve == NULL )
 		return NULL;
 
 	pDissolve->m_nDissolveType = nDissolveType;
-	if ( (nDissolveType == ENTITY_DISSOLVE_ELECTRICAL) || (nDissolveType == ENTITY_DISSOLVE_ELECTRICAL_LIGHT) )
+	if ( ( nDissolveType == ENTITY_DISSOLVE_ELECTRICAL ) || ( nDissolveType == ENTITY_DISSOLVE_ELECTRICAL_FAST ) || ( nDissolveType == ENTITY_DISSOLVE_ELECTRICAL_LIGHT ) )
 	{
 		if ( pTarget->IsNPC() && pTarget->MyNPCPointer()->CanBecomeRagdoll() )
 		{
@@ -248,7 +254,7 @@ CEntityDissolve *CEntityDissolve::Create( CBaseEntity *pTarget, const char *pMat
 		}
 	}
 
-	pDissolve->SetModelName( AllocPooledString(pMaterialName) );
+	pDissolve->SetModelName( AllocPooledString( pMaterialName ) );
 	pDissolve->AttachToEntity( pTarget );
 	pDissolve->SetStartTime( flStartTime );
 	pDissolve->Spawn();
@@ -257,7 +263,7 @@ CEntityDissolve *CEntityDissolve::Create( CBaseEntity *pTarget, const char *pMat
 	pDissolve->AddEFlags( EFL_FORCE_CHECK_TRANSMIT );
 
 	// Play any appropriate noises when we start to dissolve
-	if ( (nDissolveType == ENTITY_DISSOLVE_ELECTRICAL) || (nDissolveType == ENTITY_DISSOLVE_ELECTRICAL_LIGHT) )
+	if ( ( nDissolveType == ENTITY_DISSOLVE_ELECTRICAL ) || ( nDissolveType == ENTITY_DISSOLVE_ELECTRICAL_FAST ) || ( nDissolveType == ENTITY_DISSOLVE_ELECTRICAL_LIGHT ) )
 	{
 		pTarget->DispatchResponse( "TLK_ELECTROCUTESCREAM" );
 	}
@@ -353,12 +359,14 @@ void CEntityDissolve::DissolveThink( void )
 		CTakeDamageInfo info( pPlayer, pPlayer, 10000.0, DMG_GENERIC | DMG_REMOVENORAGDOLL | iNoPhysicsDamage );
 		pTarget->TakeDamage( info );
 
+		// Need to mark us for deletion before the target
+		// so we don't spew a warning about orphans
+		UTIL_Remove( this );
+
 		if ( pTarget != pPlayer )
 		{
 			UTIL_Remove( pTarget );
 		}
-		
-		UTIL_Remove( this );
 		
 		return;
 	}

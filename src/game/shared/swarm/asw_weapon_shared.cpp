@@ -1171,10 +1171,7 @@ bool CASW_Weapon::Holster( CBaseCombatWeapon *pSwitchingTo )
 	}
 	*/
 
-	return BaseClass::Holster( pSwitchingTo );	
-
-	m_bFastReloadSuccess = false;
-	m_bFastReloadFailure = false;
+	return BaseClass::Holster( pSwitchingTo );
 }
 
 void CASW_Weapon::FinishReload( void )

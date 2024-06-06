@@ -28,6 +28,7 @@ PRECACHE_REGISTER_BEGIN( GLOBAL, PrecacheEffectBuild )
 PRECACHE( MATERIAL,"effects/tesla_glow_noz" )
 PRECACHE( MATERIAL,"effects/spark" )
 PRECACHE( MATERIAL,"effects/combinemuzzle2" )
+PRECACHE( PARTICLE_SYSTEM, "dissolve_tesla_arc" )
 PRECACHE_REGISTER_END()
 
 //-----------------------------------------------------------------------------
@@ -152,6 +153,9 @@ IMotionEvent::simresult_e C_EntityDissolve::Simulate( IPhysicsMotionController *
 //-----------------------------------------------------------------------------
 static void FX_BuildTesla( C_BaseEntity *pEntity, Vector &vecOrigin, Vector &vecEnd )
 {
+#ifdef INFESTED_DLL
+	DispatchParticleEffect( "dissolve_tesla_arc", vecOrigin, vecEnd, vec3_angle );
+#else
 	BeamInfo_t beamInfo;
 	beamInfo.m_pStartEnt = pEntity;
 	beamInfo.m_nStartAttachment = 0;
@@ -179,6 +183,7 @@ static void FX_BuildTesla( C_BaseEntity *pEntity, Vector &vecOrigin, Vector &vec
 	beamInfo.m_nFlags = 0; //FBEAM_ONLYNOISEONCE;
 	
 	beams->CreateBeamEntPoint( beamInfo );
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -382,7 +387,7 @@ void C_EntityDissolve::DoSparks( mstudiohitboxset_t *set, matrix3x4_t *hitboxbon
 	dt = clamp( dt, 0.0f, m_flFadeOutStart );
 	
 	float flNextTime;
-	if (m_nDissolveType == ENTITY_DISSOLVE_ELECTRICAL)
+	if ( m_nDissolveType == ENTITY_DISSOLVE_ELECTRICAL || m_nDissolveType == ENTITY_DISSOLVE_ELECTRICAL_FAST )
 	{
 		flNextTime = SimpleSplineRemapVal( dt, 0.0f, m_flFadeOutStart, 2.0f * TICK_INTERVAL, 0.4f );
 	}
@@ -604,7 +609,7 @@ int C_EntityDissolve::DrawModel( int flags, const RenderableInstance_t &instance
 	Vector vecSkew = vec3_origin;
 
 	// Do extra effects under certain circumstances
-	if ( ( fadePerc < 0.99f ) && ( (m_nDissolveType == ENTITY_DISSOLVE_ELECTRICAL) || (m_nDissolveType == ENTITY_DISSOLVE_ELECTRICAL_LIGHT) ) )
+	if ( ( fadePerc < 0.99f ) && ( ( m_nDissolveType == ENTITY_DISSOLVE_ELECTRICAL ) || ( m_nDissolveType == ENTITY_DISSOLVE_ELECTRICAL_FAST ) || ( m_nDissolveType == ENTITY_DISSOLVE_ELECTRICAL_LIGHT ) ) )
 	{
 		DoSparks( set, hitboxbones );
 	}

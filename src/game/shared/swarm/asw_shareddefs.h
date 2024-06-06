@@ -312,6 +312,7 @@ enum
 	ASW_COLLISION_GROUP_EXTINGUISHER_PELLETS,	// the pellets that the extinguisher shoots. Hits lots of things, but not other weapons
 	ASW_COLLISION_GROUP_BOTS,			// reactivedrop: collision group for bots
 	ASW_COLLISION_GROUP_BOT_MOVEMENT,
+	ASW_COLLISION_GROUP_SHIELD,			// collides with projectiles and NPCs
 	ASW_COLLISION_GROUP_PASSABLE,		// asw (stuff you can walk through) NOTE: Has to be LAST!
 };
 
@@ -645,6 +646,7 @@ enum
 	CLASS_ASW_ENERGY_SHIELD_SHIELD,
 	CLASS_ASW_FLECHETTE2, // TODO #527
 	CLASS_RD_CRAFTING_MATERIAL_PICKUP,
+	CLASS_ASW_ALIEN_MISSILE,
 
 	// Add new classes here ^^^^
 	CLASS_FUNC_TRACKTRAIN,

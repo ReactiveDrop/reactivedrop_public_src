@@ -21,6 +21,8 @@ public:
 	CASW_Missile_Round();	
 	DECLARE_NETWORKCLASS();
 
+	Class_T Classify() { return ( Class_T )CLASS_ASW_ALIEN_MISSILE; }
+
 #ifdef GAME_DLL
 	virtual ~CASW_Missile_Round();
 	DECLARE_DATADESC();
@@ -40,6 +42,7 @@ public:
 private:
 	void			Touch( CBaseEntity *pOther );
 	void			MissileHit( CBaseEntity *pEnt, trace_t &tr );
+	void			SUB_RemoveNoWarn();
 
 	CASW_AlienShot	m_ShotDef;
 	EHANDLE			m_hOwner;

@@ -778,6 +778,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClCompile Include="..\shared\swarm\asw_weapon_railgun_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_revive_tool_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_ricochet_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_rifle_burst_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_sentry_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_shield_bubble_shared.cpp" />
@@ -1818,6 +1819,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="..\shared\swarm\asw_weapon_railgun_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_revive_tool_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_ricochet_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_rifle_burst_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_sentry_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_shield_bubble_shared.h" />

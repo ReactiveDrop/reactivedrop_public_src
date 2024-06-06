@@ -98,7 +98,8 @@ void CRD_PNG_Texture::CleanLocalCachedTextures( const char *szDirectory )
 	if ( CommandLine()->FindParm( "-override_vpk" ) )
 		return;
 
-	CPackedStore pak01{ "pak01", g_pFullFileSystem };
+	static CPackedStore pak01{ "pak01", g_pFullFileSystem };
+	static CPackedStore pak02{ "pak02", g_pFullFileSystem };
 
 	// Add the materials/ prefix here so we match the directory naming scheme in Init.
 	char szFullDirectory[MAX_PATH];
@@ -129,7 +130,7 @@ void CRD_PNG_Texture::CleanLocalCachedTextures( const char *szDirectory )
 		char szVerifyPath[MAX_PATH];
 		V_snprintf( szVerifyPath, sizeof( szVerifyPath ), "%s/%s", szFullDirectory, szName );
 
-		if ( pak01.OpenFile( szVerifyPath ) )
+		if ( pak02.OpenFile( szVerifyPath ) )
 		{
 			Msg( "Removing local cached file %s\n", szVerifyPath );
 			g_pFullFileSystem->RemoveFile( szVerifyPath, "MOD" );

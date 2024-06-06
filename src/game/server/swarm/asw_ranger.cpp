@@ -168,7 +168,10 @@ float CASW_Ranger::MaxYawSpeed( void )
 		return 0.1f;
 	}
 
-	return 32.0f;// * GetMovementSpeedModifier();
+	if ( IsMovementFrozen() )
+		return 0.0f;
+
+	return 32.0f;
 }
 
 //-----------------------------------------------------------------------------

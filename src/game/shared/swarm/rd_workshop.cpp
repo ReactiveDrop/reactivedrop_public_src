@@ -1552,8 +1552,10 @@ const char *CReactiveDropWorkshop::GetNativeFileSystemFile( const char *pszFileN
 	{
 #ifdef DBGFLAG_ASSERT
 		// This function should only be called for addon files, not official VPK contents.
-		CPackedStore pak01( "pak01", filesystem );
+		static CPackedStore pak01( "pak01", filesystem );
 		Assert( !pak01.OpenFile( pszFileName ) );
+		static CPackedStore pak02( "pak02", filesystem );
+		Assert( !pak02.OpenFile( pszFileName ) );
 #endif
 
 		return pszFileName;

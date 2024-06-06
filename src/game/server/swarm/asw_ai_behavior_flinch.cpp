@@ -228,6 +228,9 @@ bool CAI_ASW_FlinchBehavior::ShouldStumble( const CTakeDamageInfo &info )
 	if ( ( info.GetDamageType() & DMG_NERVEGAS ) != 0 )
 		return false;
 
+	if ( ( info.GetDamageType() & DMG_COLD ) != 0 )
+		return false;
+
 	if ( ( info.GetDamageType() & DMG_BLAST ) != 0 )
 		return true;
 

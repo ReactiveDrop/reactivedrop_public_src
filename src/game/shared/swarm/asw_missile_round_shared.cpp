@@ -3,6 +3,7 @@
 #include "asw_gamerules.h"
 #include "asw_melee_system.h"
 #include "asw_trace_filter_shot.h"
+#include "asw_weapon_energy_shield_shared.h"
 #ifdef CLIENT_DLL
 #include "particles_simple.h"
 #else
@@ -85,7 +86,6 @@ void CASW_Missile_Round::Spawn( void )
 	Precache();
 	SetModel( m_ShotDef.m_strModel );
 	
-	//SetMoveType( MOVETYPE_FLY, MOVECOLLIDE_FLY_CUSTOM );
 	SetMoveType( MOVETYPE_CUSTOM );
 
 	m_takedamage	= m_ShotDef.m_bShootable ? DAMAGE_YES : DAMAGE_NO;
@@ -103,7 +103,7 @@ void CASW_Missile_Round::Spawn( void )
 
 	EmitSound( m_ShotDef.m_strSound_spawn );
 
-	SetThink( &CBaseEntity::SUB_Remove );
+	SetThink( &CASW_Missile_Round::SUB_RemoveNoWarn );
 	SetNextThink( gpGlobals->curtime + m_ShotDef.m_flFuse );
 
 	m_vecOldPosition = GetAbsOrigin();
@@ -329,6 +329,17 @@ void CASW_Missile_Round::MissileHit( CBaseEntity *pEnt, trace_t &tr )
 		}
 	}
 
+	if ( pEnt->Classify() == CLASS_ASW_ENERGY_SHIELD_SHIELD )
+	{
+		EmitSound( m_ShotDef.m_strSound_hitWorld );
+		DispatchParticleEffect( m_ShotDef.m_strParticles_hit, GetAbsOrigin(), vec3_angle );
+
+		CASW_Energy_Shield *pShield = assert_cast< CASW_Energy_Shield * >( pEnt );
+		pShield->OnProjectileHit( this );
+
+		return;
+	}
+
 	if ( pEnt->m_takedamage != DAMAGE_NO )
 	{
 		trace_t	tr2;
@@ -386,12 +397,19 @@ void CASW_Missile_Round::MissileHit( CBaseEntity *pEnt, trace_t &tr )
 
 	m_bDetonated = true;
 	m_vEndPosition = GetAbsOrigin();
+	m_iHealth = 0;
 
 	SetTouch( NULL );
 	SetAbsVelocity( Vector( 0, 0, 0 ) );
 	SetSolid( SOLID_NONE );
 	SetThink( &CBaseEntity::SUB_Remove );
 	SetNextThink( gpGlobals->curtime + 1.0f );
+}
+
+void CASW_Missile_Round::SUB_RemoveNoWarn()
+{
+	m_iHealth = 0;
+	UTIL_Remove( this );
 }
 
 CASW_Missile_Round* CASW_Missile_Round::Missile_Round_Create( const CASW_AlienShot &shot, const Vector &position, const QAngle &angles, const Vector &velocity, CBaseEntity *pOwner )
@@ -452,6 +470,10 @@ void CASW_Missile_Round::OnDataChanged(DataUpdateType_t updateType)
 	}
 	else if ( updateType == DATA_UPDATE_DATATABLE_CHANGED )
 	{
+		if ( GetMoveType() != MOVETYPE_CUSTOM )
+		{
+			ParticleProp()->StopParticlesInvolving( this );
+		}
 		if ( m_bDetonated )
 		{
 			SetNextClientThink(CLIENT_THINK_ALWAYS);

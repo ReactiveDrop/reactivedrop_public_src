@@ -789,7 +789,7 @@ ConVar	sk_plr_dmg_asw_eshield( "sk_plr_dmg_asw_eshield", "10", FCVAR_REPLICATED 
 ConVar	sk_npc_dmg_asw_eshield( "sk_npc_dmg_asw_eshield", "10", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar	sk_max_asw_eshield( "sk_max_asw_eshield", "8", FCVAR_REPLICATED | FCVAR_CHEAT );
 
-// Rifle (4 clips, 120 per)
+// Burst Rifle (4 clips, 120 per)
 ConVar	sk_plr_dmg_asw_r_burst( "sk_plr_dmg_asw_r_burst", "7", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar	sk_npc_dmg_asw_r_burst( "sk_npc_dmg_asw_r_burst", "7", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar	sk_max_asw_r_burst( "sk_max_asw_r_burst", "480", FCVAR_REPLICATED | FCVAR_CHEAT );
@@ -822,6 +822,7 @@ ConVar	rd_heavy_rifle_dmg_base("rd_heavy_rifle_dmg_base", "0", FCVAR_REPLICATED 
 ConVar	rd_medrifle_dmg_base("rd_medrifle_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of medical rifle", true, 0, false, 0);
 ConVar	rd_grenades_dmg_base( "rd_grenades_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of hand grenades", true, 0, false, 0);
 ConVar	rd_ar2_dmg_base( "rd_ar2_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of AR2", true, 0, false, 0 );
+ConVar	rd_shield_rifle_dmg_base( "rd_shield_rifle_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of shield rifle", true, 0, false, 0 );
 ConVar	rd_cryo_cannon_dmg_base( "rd_cryo_cannon_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of cryo cannon", true, 0, false, 0 );
 
 ConVar asw_flare_autoaim_radius("asw_flare_autoaim_radius", "250", FCVAR_REPLICATED | FCVAR_CHEAT, "Radius of autoaim effect from flares");
@@ -5976,6 +5977,25 @@ bool CAlienSwarm::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 	SHOULD_COLLIDE( ASW_COLLISION_GROUP_SHOTGUN_PELLET, ASW_COLLISION_GROUP_SENTRY, false );
 	SHOULD_COLLIDE( COLLISION_GROUP_PLAYER, ASW_COLLISION_GROUP_SENTRY, false );
 	SHOULD_COLLIDE( ASW_COLLISION_GROUP_SENTRY, ASW_COLLISION_GROUP_BOTS, false );
+
+	// energy shields collide with aliens, marines, and projectiles
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_ALIEN, ASW_COLLISION_GROUP_SHIELD, true );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_ALIEN_MISSILE, ASW_COLLISION_GROUP_SHIELD, true );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_BIG_ALIEN, ASW_COLLISION_GROUP_SHIELD, true );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_BOTS, ASW_COLLISION_GROUP_SHIELD, true );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_BUZZER, ASW_COLLISION_GROUP_SHIELD, true );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_EGG, ASW_COLLISION_GROUP_SHIELD, true );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_GRUBS, ASW_COLLISION_GROUP_SHIELD, true );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_NPC_GRENADES, ASW_COLLISION_GROUP_SHIELD, true );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_PARASITE, ASW_COLLISION_GROUP_SHIELD, true );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_PLAYER_MISSILE, ASW_COLLISION_GROUP_SHIELD, true );
+	SHOULD_COLLIDE( ASW_COLLISION_GROUP_SENTRY_PROJECTILE, ASW_COLLISION_GROUP_SHIELD, true );
+	SHOULD_COLLIDE( COLLISION_GROUP_NPC, ASW_COLLISION_GROUP_SHIELD, true );
+	SHOULD_COLLIDE( COLLISION_GROUP_NPC_ACTOR, ASW_COLLISION_GROUP_SHIELD, true );
+	SHOULD_COLLIDE( COLLISION_GROUP_NPC_SCRIPTED, ASW_COLLISION_GROUP_SHIELD, true );
+	SHOULD_COLLIDE( COLLISION_GROUP_PLAYER, ASW_COLLISION_GROUP_SHIELD, true );
+	SHOULD_COLLIDE( COLLISION_GROUP_PROJECTILE, ASW_COLLISION_GROUP_SHIELD, true );
+	ALWAYS_COLLIDE( ASW_COLLISION_GROUP_SHIELD, false );
 
 #ifndef CLIENT_DLL	// this isn't necessary on client
 	// reactivedrop: sentries don't collide with aliens

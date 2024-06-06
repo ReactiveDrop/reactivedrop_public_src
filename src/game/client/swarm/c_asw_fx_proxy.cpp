@@ -15,6 +15,7 @@
 #include "c_asw_weapon.h"
 #include "c_asw_sentry_base.h"
 #include "c_asw_sentry_top.h"
+#include "asw_weapon_energy_shield_shared.h"
 
 #include "ProxyEntity.h"
 #include "functionproxy.h"
@@ -605,3 +606,39 @@ IMaterial *CRD_StatTrakIcon_Proxy::GetMaterial()
 }
 
 EXPOSE_MATERIAL_PROXY( CRD_StatTrakIcon_Proxy, StatTrakIcon );
+
+
+class CRD_ShieldFalloff_Proxy : public CResultProxy
+{
+public:
+	void OnBind( void *pRenderable ) override;
+};
+
+void CRD_ShieldFalloff_Proxy::OnBind( void *pRenderable )
+{
+	C_BaseEntity *pEnt = static_cast< IClientRenderable * >( pRenderable )->GetIClientUnknown()->GetBaseEntity();
+	if ( !pEnt )
+	{
+		SetFloatResult( 0.1f );
+		return;
+	}
+
+	if ( pEnt->Classify() == CLASS_ASW_ENERGY_SHIELD_SHIELD )
+	{
+		C_ASW_Energy_Shield *pShield = assert_cast< C_ASW_Energy_Shield * >( pEnt );
+		float flSinceLastHit = gpGlobals->curtime - pShield->m_flLastHitTime;
+		C_ASW_Weapon_Energy_Shield *pGun = pShield->m_hCreatorWeapon;
+		float flSinceLastShot = pGun ? gpGlobals->curtime - pGun->m_fLastMuzzleFlashTime : FLT_MAX;
+		C_ASW_Marine *pMarine = pShield->m_hCreatorMarine;
+		if ( pMarine && pMarine->GetCurrentMeleeAttack() )
+			flSinceLastShot = 0.0f;
+		float flBlinkHit = RemapValClamped( flSinceLastHit, 0.0f, 0.4f, 1.0f, 0.1f );
+		float flBlinkShot = RemapValClamped( flSinceLastShot, 0.0f, 0.4f, 0.0f, flBlinkHit );
+		SetFloatResult( flBlinkShot );
+		return;
+	}
+
+	SetFloatResult( 0.1f );
+}
+
+EXPOSE_MATERIAL_PROXY( CRD_ShieldFalloff_Proxy, ShieldFalloff );

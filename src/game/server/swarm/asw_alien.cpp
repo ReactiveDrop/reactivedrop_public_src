@@ -1422,7 +1422,7 @@ void CASW_Alien::PerformPushaway()
 	if ( !tr.startsolid && (tr.fraction == 1.0) )
 	{
 		// all was clear, move into new position
-		UTIL_SetOrigin(this, dest);
+		UTIL_SetOrigin( this, dest, true );
 	}
 #endif
 

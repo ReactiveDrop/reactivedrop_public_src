@@ -1010,10 +1010,9 @@ void C_ASW_Player::ClientThink()
 
 		if ( m_nLastInactiveKickWarning != nInactiveKickSeconds )
 		{
-			wchar_t buffer[12]{};
-			V_snwprintf( buffer, ARRAYSIZE( buffer ), L"%d", nInactiveKickSeconds );
-			char *szBuffer = reinterpret_cast< char * >( &buffer[0] ); // FIXME: ClientPrint is weird on the client-side.
-			ClientPrint( this, ASW_HUD_PRINTTALKANDCONSOLE, "#rd_inactive_kick_seconds", szBuffer );
+			char buf[12];
+			V_snprintf( buf, sizeof( buf ), "%d", nInactiveKickSeconds );
+			ClientPrint( this, ASW_HUD_PRINTTALKANDCONSOLE, "#rd_inactive_kick_seconds", buf );
 
 			m_nLastInactiveKickWarning = nInactiveKickSeconds;
 		}
@@ -1904,7 +1903,7 @@ void C_ASW_Player::MarineStopMoveIfBlocked( float flFrameTime, CUserCmd *pCmd, C
 
 	Vector vel = pMarine->GetLocalVelocity();	// our current velocity, will it take us inside an NPC?	
 	bool bStill = ( vel.Length2D() == 0 );
-	if ( pCmd->sidemove == 00 && pCmd->forwardmove == 0 )
+	if ( pCmd->sidemove == 0 && pCmd->forwardmove == 0 )
 		m_bGuidingMarine = false;	// make sure to stop all guiding if the player lets go of movement keys
 	Vector vecPlayerPushing( pCmd->sidemove, pCmd->forwardmove, 0 );
 	if ( m_bGuidingMarine )

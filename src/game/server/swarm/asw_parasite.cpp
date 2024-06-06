@@ -695,6 +695,19 @@ bool CASW_Parasite::CheckInfestTarget( CBaseEntity *pOther )
 			// marine is in the middle of a jump jet or blink, don't infest him
 			return false;
 		}
+
+		if ( IsAttackFrozen() )
+		{
+			// can't attack until we thaw a bit
+			return false;
+		}
+
+		if ( m_bElectroStunned )
+		{
+			// allow mid-air tesla cannon saves
+			return false;
+		}
+
 		return true;
 	}
 	else if ( pOther && pOther->Classify() == CLASS_ASW_COLONIST )

@@ -427,6 +427,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="..\..\public\steam\steam_api_internal.h" />
     <ClInclude Include="..\shared\swarm\asw_computer_area_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_flechette2_shared.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_rifle_burst_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_computer_vscript_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_crafting_defs.h" />
     <ClInclude Include="..\shared\swarm\rd_hoiaf_utils.h" />
@@ -872,6 +873,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="..\shared\swarm\asw_weapon_railgun_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_revive_tool_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_ricochet_shared.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_rifle_burst_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_sentry_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_shield_bubble_shared.cpp" />
