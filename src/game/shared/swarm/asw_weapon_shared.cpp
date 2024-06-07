@@ -226,7 +226,7 @@ void CASW_Weapon::ItemBusyFrame( void )
 				//Msg( "S: %f - %f - %f RELOAD SUCCESS! -- Progress = %f\n", gpGlobals->curtime, fFastStart, fFastEnd, flProgress );
 
 #ifdef CLIENT_DLL
-				if ( prediction->InPrediction() && prediction->IsFirstTimePredicted() )
+				if ( prediction->InPrediction() && prediction->IsFirstTimePredicted() && gpGlobals->maxClients != 1 )
 #endif
 				{
 					pMarine->DoAnimationEvent( PLAYERANIMEVENT_DROP_MAGAZINE_GIB );
@@ -1239,7 +1239,7 @@ void CASW_Weapon::FinishReload( void )
 #endif
 
 #ifdef CLIENT_DLL
-		if ( prediction->InPrediction() && prediction->IsFirstTimePredicted() )
+		if ( prediction->InPrediction() && prediction->IsFirstTimePredicted() && gpGlobals->maxClients != 1 )
 #endif
 		{
 			if ( !m_bFastReloadSuccess )
