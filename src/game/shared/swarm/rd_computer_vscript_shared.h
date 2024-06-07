@@ -21,6 +21,7 @@ public:
 
 #ifdef CLIENT_DLL
 	void OnDataChanged( DataUpdateType_t type ) override;
+	void UpdateControlTable( ButtonCode_t iButton ) override;
 #else
 	DECLARE_DATADESC();
 

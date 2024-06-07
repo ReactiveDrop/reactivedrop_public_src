@@ -9,6 +9,8 @@
 #include "asw_vgui_computer_frame.h"
 #include "asw_vgui_computer_menu.h"
 #include "asw_vgui_computer_custom.h"
+#include "asw_input.h"
+#include "clientmode.h"
 #define CASW_Computer_Area C_ASW_Computer_Area
 #else
 #include "asw_marine.h"
@@ -93,6 +95,27 @@ void CRD_Computer_VScript::OnDataChanged( DataUpdateType_t type )
 		m_hOnOpenedFunc = m_ScriptScope.IsInitialized() ? m_ScriptScope.LookupFunction( "OnOpened" ) : INVALID_HSCRIPT;
 		m_hOnClosedFunc = m_ScriptScope.IsInitialized() ? m_ScriptScope.LookupFunction( "OnClosed" ) : INVALID_HSCRIPT;
 	}
+}
+
+void CRD_Computer_VScript::UpdateControlTable( ButtonCode_t iButton )
+{
+	BaseClass::UpdateControlTable( iButton );
+
+	CASWInput *pInput = ASWInput();
+	Assert( pInput );
+	if ( !pInput )
+		return;
+
+	// move mouse position so it's relative to the inner computer screen
+	int x, y;
+	pInput->GetSimulatedFullscreenMousePos( &x, &y );
+	CASW_VGUI_Computer_Frame *pComputerFrame = assert_cast< CASW_VGUI_Computer_Frame * >( GetClientMode()->GetPanelFromViewport( "ComputerContainer/VGUIComputerFrame" ) );
+	if ( pComputerFrame && pComputerFrame->m_pMenuPanel )
+	{
+		pComputerFrame->m_pMenuPanel->ScreenToLocal( x, y );
+	}
+	g_pScriptVM->SetValue( m_hControlTable, "mouse_x", x );
+	g_pScriptVM->SetValue( m_hControlTable, "mouse_y", y );
 }
 #else
 bool CRD_Computer_VScript::KeyValue( const char *szKeyName, const char *szValue )
