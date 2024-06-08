@@ -110,14 +110,21 @@ CASW_MarineGameMovement* g_pASWGameMovement = NULL;
 CASW_MarineGameMovement* ASWGameMovement() { return g_pASWGameMovement; }
 
 #ifndef CLIENT_DLL
-extern ConVar asw_debug_marine_damage;
-extern ConVar asw_marine_fall_damage;
 //-----------------------------------------------------------------------------
 // Purpose: Debug - draw the displacement collision plane.
 //-----------------------------------------------------------------------------
 extern void DrawDispCollPlane( CBaseTrace *pTrace );
 
+extern ConVar asw_debug_marine_damage;
+ConVar asw_marine_fall_damage( "asw_marine_fall_damage", "0", FCVAR_CHEAT, "Marines take falling damage" );
+ConVar asw_alien_walk_damage( "asw_alien_walk_damage", "15", FCVAR_CHEAT, "Marines take damage for standing on an alien" );
+ConVar asw_alien_walk_damage_interval( "asw_alien_walk_damage_interval", "0.4", FCVAR_CHEAT, "Marines take damage for standing on an alien every this many seconds", true, 0.01f, false, 0 );
+ConVar asw_marine_fatal_fall_speed( "asw_marine_fatal_fall_speed", "1024", FCVAR_CHEAT, "fall speed at which the marine takes their maximum health in damage (default is approx 60 feet)" );
 #endif
+ConVar asw_marine_max_safe_fall_speed( "asw_marine_max_safe_fall_speed", "580", FCVAR_CHEAT | FCVAR_REPLICATED, "maximum fall speed without taking damage (default is approx 20 feet) - must be higher than asw_marine_fall_punch_threshold" ); // approx 20 feet
+ConVar asw_marine_land_on_floating_object( "asw_marine_land_on_floating_object", "200", FCVAR_CHEAT | FCVAR_REPLICATED, "subtracts from velocity when computing fall damage onto an object floating in water" );
+ConVar asw_marine_min_bounce_speed( "asw_marine_min_bounce_speed", "200", FCVAR_CHEAT | FCVAR_REPLICATED, "fall speed at which falling will make no sound" );
+ConVar asw_marine_fall_punch_threshold( "asw_marine_fall_punch_threshold", "350", FCVAR_CHEAT | FCVAR_REPLICATED, "won't punch marine's screen/make scrape noise/check for damage unless marine is falling at least this fast" );
 
 //-----------------------------------------------------------------------------
 // Traces marine movement + position
@@ -943,17 +950,17 @@ void CASW_MarineGameMovement::ProcessMovement( CBasePlayer *pPlayer, CBaseEntity
 	if ( pTrueMarineEntity  )
 	{
 		CBaseEntity* pGround = pMarine->GetGroundEntity();
-		if ( pGround && pGround->IsAlienClassType() )
+		if ( pGround && pGround->IsAlienClassType() && asw_alien_walk_damage.GetFloat() > 0.0f )
 		{
 			CASW_Alien* pAlien = assert_cast<CASW_Alien*>(pGround);
 			if ( gpGlobals->curtime > pTrueMarineEntity->m_fNextAlienWalkDamage && ( pAlien->Classify() != CLASS_ASW_DRONE || ( pAlien->GetTask() && pAlien->GetTask()->iTask != CASW_Alien::TASK_UNBURROW ) ) )
 			{
-				CTakeDamageInfo info(pAlien, pAlien, 15, DMG_SLASH);
+				CTakeDamageInfo info( pAlien, pAlien, asw_alien_walk_damage.GetFloat(), DMG_SLASH );
 				Vector diff = pMarine->GetAbsOrigin() - pAlien->GetAbsOrigin();
 				diff.NormalizeInPlace();
-				CalculateMeleeDamageForce(&info, diff, pMarine->GetAbsOrigin() - diff * 30);
-				pMarine->TakeDamage(info);
-				pTrueMarineEntity->m_fNextAlienWalkDamage = gpGlobals->curtime + 0.4f;
+				CalculateMeleeDamageForce( &info, diff, pMarine->GetAbsOrigin() - diff * 30 );
+				pMarine->TakeDamage( info );
+				pTrueMarineEntity->m_fNextAlienWalkDamage = gpGlobals->curtime + asw_alien_walk_damage_interval.GetFloat();
 			}
 		}
 	}
@@ -4166,11 +4173,11 @@ void CASW_MarineGameMovement::CheckFalling( void )
 	float fFallVel = player->m_Local.m_flFallVelocity;
 	//Msg("Checking falling, fall vel = %f\n", fFallVel);
 	if ( marine->GetGroundEntity() != NULL &&
-		 !IsDead() &&
-		 fFallVel >= PLAYER_FALL_PUNCH_THRESHOLD )
+		!IsDead() &&
+		fFallVel >= asw_marine_fall_punch_threshold.GetFloat() )
 	{
 		bool bAlive = true;
-		float fvol = 0.5;		
+		float fvol = 0.5;
 
 		if ( marine->GetWaterLevel() > 0 )
 		{
@@ -4181,7 +4188,7 @@ void CASW_MarineGameMovement::CheckFalling( void )
 			// Scale it down if we landed on something that's floating...
 			if ( marine->GetGroundEntity()->IsFloating() )
 			{
-				fFallVel -= PLAYER_LAND_ON_FLOATING_OBJECT;
+				fFallVel -= asw_marine_land_on_floating_object.GetFloat();
 			}
 
 			//
@@ -4189,55 +4196,47 @@ void CASW_MarineGameMovement::CheckFalling( void )
 			//
 
 			// asw added this if block: sept 2nd 06
-			if( marine->GetGroundEntity()->GetAbsVelocity().z < 0.0f )
+			if ( marine->GetGroundEntity()->GetAbsVelocity().z < 0.0f )
 			{
 				// Player landed on a descending object. Subtract the velocity of the ground entity.
 				player->m_Local.m_flFallVelocity += marine->GetGroundEntity()->GetAbsVelocity().z;
 				player->m_Local.m_flFallVelocity = MAX( 0.1f, player->m_Local.m_flFallVelocity );
 			}
-						
-			if ( fFallVel > PLAYER_MAX_SAFE_FALL_SPEED )
+
+			if ( fFallVel > asw_marine_max_safe_fall_speed.GetFloat() )
 			{
-				//
-				// If they hit the ground going this fast they may take damage (and die).
-				//
-				//bAlive = MoveHelper( )->PlayerFallingDamage();
 #ifndef CLIENT_DLL
 				float fFallVelMod = fFallVel;
-				fFallVelMod -= PLAYER_MAX_SAFE_FALL_SPEED;
-				float flFallDamage = fFallVelMod * DAMAGE_FOR_FALL_SPEED;
+				fFallVelMod -= asw_marine_max_safe_fall_speed.GetFloat();
+				float flFallDamage = fFallVelMod * marine->GetMaxHealth() / ( asw_marine_fatal_fall_speed.GetFloat() - asw_marine_max_safe_fall_speed.GetFloat() ); // damage per unit per second.
 				if ( asw_debug_marine_damage.GetBool() )
 				{
-					Msg("Marine fell with speed %f modded to %f damage is %f\n", fFallVel, fFallVelMod, flFallDamage);
+					Msg( "Marine fell with speed %f modded to %f damage is %f\n", fFallVel, fFallVelMod, flFallDamage );
 				}
 				if ( flFallDamage > 0 )
 				{
 					if ( asw_marine_fall_damage.GetBool() )
 					{
-						marine->TakeDamage( CTakeDamageInfo( GetContainingEntity(INDEXENT(0)), GetContainingEntity(INDEXENT(0)), flFallDamage, DMG_FALL ) ); 
+						marine->TakeDamage( CTakeDamageInfo( GetContainingEntity( INDEXENT( 0 ) ), GetContainingEntity( INDEXENT( 0 ) ), flFallDamage, DMG_FALL ) );
 					}
-					CRecipientFilter filter;
-					filter.AddRecipientsByPAS( marine->GetAbsOrigin() );
 
+					CPASAttenuationFilter filter( marine->GetAbsOrigin(), "Player.FallDamage" );
 					CBaseEntity::EmitSound( filter, marine->entindex(), "Player.FallDamage" );
 				}
 				bAlive = marine->GetHealth() > 0;
 #endif
 				fvol = 1.0;
 			}
-			else if ( fFallVel > PLAYER_MAX_SAFE_FALL_SPEED / 2 )
+			else if ( fFallVel > asw_marine_max_safe_fall_speed.GetFloat() / 2 )
 			{
 				fvol = 0.85;
 			}
-			else if ( fFallVel < PLAYER_MIN_BOUNCE_SPEED )
+			else if ( fFallVel < asw_marine_min_bounce_speed.GetFloat() )
 			{
 				fvol = 0;
 			}
-			
 		}
 
-		
-		
 		if ( fvol > 0.0 )
 		{
 			//
@@ -4260,23 +4259,22 @@ void CASW_MarineGameMovement::CheckFalling( void )
 				player->m_Local.m_vecPunchAngle.Set( PITCH, 8 );
 			}
 		}
-		
 
-		if (bAlive)
+
+		if ( bAlive )
 		{
-			MoveHelper( )->PlayerSetAnimation( PLAYER_WALK );
+			MoveHelper()->PlayerSetAnimation( PLAYER_WALK );
 		}
 	}
 
 	//
 	// Clear the fall velocity so the impact doesn't happen again.
 	//
-	if ( marine->GetGroundEntity() != NULL ) 
-	{		
+	if ( marine->GetGroundEntity() != NULL )
+	{
 		player->m_Local.m_flFallVelocity = 0;
 	}
 }
-
 
 //-----------------------------------------------------------------------------
 // Purpose: Use for ease-in, ease-out style interpolation (accel/decel)  Used by ducking code.

@@ -431,7 +431,12 @@ extern int AE_MARINE_UNFREEZE;
 ConVar asw_marine_stumble_on_damage( "asw_marine_stumble_on_damage", "1", FCVAR_CHEAT, "Marine stumbles when he takes damage" );
 ConVar asw_stumble_interval( "asw_stumble_interval", "2.0", FCVAR_CHEAT, "Min time between stumbles" );
 ConVar asw_knockdown_interval( "asw_knockdown_interval", "3.0", FCVAR_CHEAT, "Min time between knockdowns" );
-ConVar asw_marine_fall_damage( "asw_marine_fall_damage", "0", FCVAR_CHEAT, "Marines take falling damage" );
+extern ConVar asw_marine_fall_damage;
+extern ConVar asw_marine_fatal_fall_speed;
+extern ConVar asw_marine_max_safe_fall_speed;
+extern ConVar asw_marine_land_on_floating_object;
+extern ConVar asw_marine_min_bounce_speed;
+extern ConVar asw_marine_fall_punch_threshold;
 ConVar asw_screenflash("asw_screenflash", "0", FCVAR_CHEAT, "Alpha of damage screen flash");
 ConVar asw_damage_indicator( "asw_damage_indicator", "1", FCVAR_CHEAT, "If set, directional damage indicator is shown" );
 ConVar asw_marine_server_ragdoll("asw_marine_server_ragdoll", "0", FCVAR_CHEAT, "If set, marines will have server ragdolls instead of clientside ones.");
@@ -5477,40 +5482,41 @@ void CASW_Marine::PhysicsLandedOnGround( float fFallSpeed )
 			}
 
 			// They hit the ground.
-			if ( fFallVel > PLAYER_MAX_SAFE_FALL_SPEED )
+			if ( fFallVel > asw_marine_max_safe_fall_speed.GetFloat() )
 			{
 
 				// If they hit the ground going this fast they may take damage (and die).
-				//bAlive = MoveHelper( )->PlayerFallingDamage();
 #ifndef CLIENT_DLL
 				float fFallVelMod = fFallVel;
-				fFallVelMod -= PLAYER_MAX_SAFE_FALL_SPEED;
-				float flFallDamage = fFallVelMod * DAMAGE_FOR_FALL_SPEED;
-				//Msg("Marine fell with speed %f modded to %f damage is %f\n", fFallVel, fFallVelMod, flFallDamage);
+				fFallVelMod -= asw_marine_max_safe_fall_speed.GetFloat();
+				float flFallDamage = fFallVelMod * GetMaxHealth() / ( asw_marine_fatal_fall_speed.GetFloat() - asw_marine_max_safe_fall_speed.GetFloat() ); // damage per unit per second.
+				if ( asw_debug_marine_damage.GetBool() )
+				{
+					Msg( "Marine fell with speed %f modded to %f damage is %f\n", fFallVel, fFallVelMod, flFallDamage );
+				}
 				if ( flFallDamage > 0 )
 				{
 					// fixed fall damage for bots by adding this check 
 					if ( asw_marine_fall_damage.GetBool() )
 					{
-						TakeDamage( CTakeDamageInfo( GetContainingEntity(INDEXENT(0)), GetContainingEntity(INDEXENT(0)), flFallDamage, DMG_FALL ) ); 
+						TakeDamage( CTakeDamageInfo( GetContainingEntity( INDEXENT( 0 ) ), GetContainingEntity( INDEXENT( 0 ) ), flFallDamage, DMG_FALL ) );
 					}
-					CRecipientFilter filter;
-					filter.AddRecipientsByPAS( GetAbsOrigin() );
 
+					CPASAttenuationFilter filter( GetAbsOrigin(), "Player.FallDamage" );
 					CBaseEntity::EmitSound( filter, entindex(), "Player.FallDamage" );
 				}
 				bAlive = GetHealth() > 0;
 #endif
 				fvol = 1.0;
 			}
-			else if ( fFallVel > PLAYER_MAX_SAFE_FALL_SPEED / 2 )
+			else if ( fFallVel > asw_marine_max_safe_fall_speed.GetFloat() / 2 )
 			{
 				fvol = 0.85;
 			}
-			else if ( fFallVel < PLAYER_MIN_BOUNCE_SPEED )
+			else if ( fFallVel < asw_marine_min_bounce_speed.GetFloat() )
 			{
 				fvol = 0;
-			}				
+			}
 		}
 
 		if ( fvol > 0.0 )
@@ -5521,7 +5527,7 @@ void CASW_Marine::PhysicsLandedOnGround( float fFallSpeed )
 
 			// Play step sound for current texture.
 			//PlayStepSound( mv->m_vecAbsOrigin, m_pSurfaceData, fvol, true );
-		}			
+		}
 	}
 }
 
