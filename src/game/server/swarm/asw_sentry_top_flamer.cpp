@@ -94,6 +94,11 @@ void CASW_Sentry_Top_Flamer::CheckFiring()
 	{
 		bShouldFire = gpGlobals->curtime < m_flFireHysteresisTime ;
 	}
+
+	if ( gpGlobals->curtime < m_fNextFireTime )
+	{
+		bShouldFire = false;
+	}
 	
 	// turn firing on or off as appropriate
 	if ( IsFiring() != bShouldFire )
