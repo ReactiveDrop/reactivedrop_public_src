@@ -133,8 +133,6 @@ BEGIN_NETWORK_TABLE( CASW_Marine, DT_ASW_Marine )
 
 	RecvPropFloat		( RECVINFO( m_fAIPitch ) ),
 	RecvPropInt			( RECVINFO( m_fFlags) ),
-	RecvPropInt			( RECVINFO( m_iHealth) ),
-	RecvPropInt			( RECVINFO( m_iMaxHealth ) ),
 	RecvPropFloat		( RECVINFO( m_fInfestedTime ) ),
 	RecvPropFloat		( RECVINFO( m_fInfestedStartTime ) ),
 	RecvPropInt			( RECVINFO( m_ASWOrders), 4),	

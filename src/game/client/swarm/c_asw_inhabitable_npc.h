@@ -42,7 +42,9 @@ public:
 	virtual void PhysicsSimulate() override;
 
 	// health
-	virtual int	GetHealth() const { return m_iHealth; }
+	int m_iMaxHealth;
+	int	GetHealth() const { return m_iHealth; }
+	int GetMaxHealth() const { return m_iMaxHealth; }
 
 	// using entities over time
 	C_BaseEntity *GetUsingEntity() { return m_hUsingEntity.Get(); }
@@ -120,6 +122,8 @@ public:
 	CNetworkVar( int, m_iAlienClassIndex );
 
 	CNetworkVar( color32, m_rgbaHealthBarColor );
+	CNetworkVar( float, m_flHealthBarScale );
+	CNetworkVector( m_vecHealthBarOffset );
 	bool m_bRegisteredHealthBar;
 	void PaintHealthBar( class CASWHud3DMarineNames *pSurface ) override;
 

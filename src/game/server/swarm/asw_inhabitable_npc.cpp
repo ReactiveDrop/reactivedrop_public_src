@@ -64,7 +64,8 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Inhabitable_NPC, DT_ASW_Inhabitable_NPC )
 	SendPropBool( SENDINFO( m_bInhabited ) ),
 	SendPropBool( SENDINFO( m_bWalking ) ),
 	SendPropIntWithMinusOneFlag( SENDINFO( m_iControlsOverride ) ),
-	SendPropInt( SENDINFO( m_iHealth ), ASW_ALIEN_HEALTH_BITS ),
+	SendPropInt( SENDINFO( m_iHealth ), ASW_ALIEN_HEALTH_BITS, SPROP_CHANGES_OFTEN ),
+	SendPropInt( SENDINFO( m_iMaxHealth ), ASW_ALIEN_HEALTH_BITS ),
 #if PREDICTION_ERROR_CHECK_LEVEL > 1
 	SendPropVector( SENDINFO( m_vecBaseVelocity ), -1, SPROP_COORD ),
 #else
@@ -81,6 +82,8 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Inhabitable_NPC, DT_ASW_Inhabitable_NPC )
 	SendPropBool( SENDINFO( m_bGlowFullBloom ) ),
 	SendPropInt( SENDINFO( m_iAlienClassIndex ), NumBitsForCount( MAX( NELEMS( g_Aliens ), NELEMS( g_NonSpawnableAliens ) + 2 ) ) + 1 ),
 	SendPropInt( SENDINFO( m_rgbaHealthBarColor ), 32, SPROP_UNSIGNED, SendProxy_Color32ToInt32 ),
+	SendPropFloat( SENDINFO( m_flHealthBarScale ) ),
+	SendPropVector( SENDINFO( m_vecHealthBarOffset ) ),
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Inhabitable_NPC )
@@ -119,6 +122,8 @@ BEGIN_DATADESC( CASW_Inhabitable_NPC )
 	DEFINE_KEYFIELD( m_fSpeedScale, FIELD_FLOAT, "speedscale" ),
 
 	DEFINE_INPUT( m_rgbaHealthBarColor, FIELD_COLOR32, "SetHealthBarColor" ),
+	DEFINE_INPUT( m_flHealthBarScale, FIELD_FLOAT, "SetHealthBarScale" ),
+	DEFINE_INPUT( m_vecHealthBarOffset, FIELD_VECTOR, "SetHealthBarOffset" ),
 END_DATADESC()
 
 BEGIN_ENT_SCRIPTDESC( CASW_Inhabitable_NPC, CBaseCombatCharacter, "Alien Swarm Inhabitable NPC" )
@@ -142,6 +147,8 @@ BEGIN_ENT_SCRIPTDESC( CASW_Inhabitable_NPC, CBaseCombatCharacter, "Alien Swarm I
 	DEFINE_SCRIPTFUNC( Wake, "Wake up the alien." )
 	DEFINE_SCRIPTFUNC( SetSpawnZombineOnMarineKill, "Used to spawn a zombine in the place of a killed marine." )
 	DEFINE_SCRIPTFUNC( SetHealthBarColor, "Sets the health bar color. Cheaper than spawning an asw_health_bar. Set alpha to 0 to disable the health bar." )
+	DEFINE_SCRIPTFUNC( SetHealthBarScale, "Sets the health bar scale. Negative scales hide the health bar if the alien's health is full." )
+	DEFINE_SCRIPTFUNC( SetHealthBarOffset, "Sets the health bar offset in local space." )
 END_SCRIPTDESC()
 
 CASW_Inhabitable_NPC::CASW_Inhabitable_NPC()
@@ -179,6 +186,8 @@ CASW_Inhabitable_NPC::CASW_Inhabitable_NPC()
 	m_bGlowFullBloom = false;
 
 	*m_rgbaHealthBarColor.GetForModify().asInt() = 0;
+	m_flHealthBarScale = 1.0f;
+	m_vecHealthBarOffset = vec3_origin;
 }
 
 CASW_Inhabitable_NPC::~CASW_Inhabitable_NPC()
@@ -940,4 +949,14 @@ void CASW_Inhabitable_NPC::SetHealthBarColor( int r, int g, int b, int a )
 	color.g = g;
 	color.b = b;
 	color.a = a;
+}
+
+void CASW_Inhabitable_NPC::SetHealthBarScale( float scale )
+{
+	m_flHealthBarScale = scale;
+}
+
+void CASW_Inhabitable_NPC::SetHealthBarOffset( Vector offset )
+{
+	m_vecHealthBarOffset = offset;
 }

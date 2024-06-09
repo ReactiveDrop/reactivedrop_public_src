@@ -122,6 +122,7 @@ public:
 
 	// health
 	IMPLEMENT_NETWORK_VAR_FOR_DERIVED( m_iHealth );
+	IMPLEMENT_NETWORK_VAR_FOR_DERIVED( m_iMaxHealth );
 	virtual void SetHealth( int amt ) override;
 	virtual void SetHealthByDifficultyLevel() override;
 	virtual int GetBaseHealth() { Assert( 0 ); return 100; } // should be overridden
@@ -200,7 +201,11 @@ public:
 	CNetworkVar( int, m_iAlienClassIndex );
 
 	void SetHealthBarColor( int r, int g, int b, int a );
+	void SetHealthBarScale( float scale );
+	void SetHealthBarOffset( Vector offset );
 	CNetworkVar( color32, m_rgbaHealthBarColor );
+	CNetworkVar( float, m_flHealthBarScale );
+	CNetworkVector( m_vecHealthBarOffset );
 };
 
 #endif /* ASW_INHABITABLE_NPC_H */

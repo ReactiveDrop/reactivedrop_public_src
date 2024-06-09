@@ -742,8 +742,6 @@ public:
 	
 	// vars from parent that we're networking
 	IMPLEMENT_NETWORK_VAR_FOR_DERIVED( m_hGroundEntity );
-	IMPLEMENT_NETWORK_VAR_FOR_DERIVED( m_iHealth );
-	IMPLEMENT_NETWORK_VAR_FOR_DERIVED( m_iMaxHealth );
 	IMPLEMENT_NETWORK_VAR_FOR_DERIVED( m_vecVelocity );
 	IMPLEMENT_NETWORK_VAR_FOR_DERIVED( m_fFlags );
 	IMPLEMENT_NETWORK_VAR_FOR_DERIVED( m_iAmmo );

@@ -25,6 +25,7 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_Inhabitable_NPC, DT_ASW_Inhabitable_NPC, CASW_In
 	RecvPropBool( RECVINFO( m_bWalking ) ),
 	RecvPropIntWithMinusOneFlag( RECVINFO( m_iControlsOverride ) ),
 	RecvPropInt( RECVINFO( m_iHealth ) ),
+	RecvPropInt( RECVINFO( m_iMaxHealth ) ),
 	RecvPropVector( RECVINFO( m_vecBaseVelocity ) ),
 	RecvPropBool( RECVINFO( m_bElectroStunned ) ),
 	RecvPropBool( RECVINFO( m_bOnFire ) ),
@@ -37,6 +38,8 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_Inhabitable_NPC, DT_ASW_Inhabitable_NPC, CASW_In
 	RecvPropBool( RECVINFO( m_bGlowFullBloom ) ),
 	RecvPropInt( RECVINFO( m_iAlienClassIndex ) ),
 	RecvPropInt( RECVINFO( m_rgbaHealthBarColor ), 0, RecvProxy_Int32ToColor32 ),
+	RecvPropFloat( RECVINFO( m_flHealthBarScale ) ),
+	RecvPropVector( RECVINFO( m_vecHealthBarOffset ) ),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_ASW_Inhabitable_NPC )
@@ -74,6 +77,8 @@ C_ASW_Inhabitable_NPC::C_ASW_Inhabitable_NPC() :
 	m_iAlienClassIndex = -1;
 
 	*m_rgbaHealthBarColor.GetForModify().asInt() = 0;
+	m_flHealthBarScale = 1.0f;
+	m_vecHealthBarOffset = vec3_origin;
 	m_bRegisteredHealthBar = false;
 }
 
@@ -378,8 +383,13 @@ void C_ASW_Inhabitable_NPC::PaintHealthBar( class CASWHud3DMarineNames *pSurface
 	Assert( color.a != 0 );
 	Assert( GetMaxHealth() > 0 );
 
-	if ( GetHealth() <= 0 )
+	float flHealthFraction = float( GetHealth() ) / float( GetMaxHealth() );
+
+	if ( ( m_flHealthBarScale < 0.0f && flHealthFraction >= 1.0f ) || flHealthFraction <= 0 )
 		return;
 
-	pSurface->PaintGenericBar( GetRenderOrigin(), float( GetHealth() ) / float( GetMaxHealth() ), Color{ color.r, color.g, color.b, color.a }, 1.0f );
+	Vector vecOrigin;
+	EntityToWorldSpace( m_vecHealthBarOffset, &vecOrigin );
+
+	pSurface->PaintGenericBar( vecOrigin, flHealthFraction, Color{ color.r, color.g, color.b, color.a }, fabsf( m_flHealthBarScale ) );
 }

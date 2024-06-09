@@ -259,10 +259,7 @@ public:
 	bool IsInfested();
 	void UpdateHeartbeat();
 	float m_fNextHeartbeat;	// time for the next heartbeat sound effect
-	virtual int	GetHealth() const { return m_iHealth; }
 	CNetworkVar(float, m_fFFGuardTime);	// if set, marine cannot fire any weapons for a certain amount of time
-	int GetMaxHealth( void ) const { return m_iMaxHealth; }
-	int  m_iMaxHealth;
 	int  m_iOldHealth;
 	float m_fLastHealTime;
 	CNetworkVar(bool, m_bOnFire);
