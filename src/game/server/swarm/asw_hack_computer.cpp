@@ -227,6 +227,11 @@ void CASW_Hack_Computer::SelectHackOption( int i )
 		m_iShowOption = i;
 		pArea->m_bLoggedIn = true;
 
+		if ( pArea->m_hCustomHack.Get() )
+		{
+			pArea->m_hCustomHack->OnOpened( GetHackingMarine() );
+		}
+
 		return;
 	}
 
@@ -326,6 +331,48 @@ void CASW_Hack_Computer::SelectHackOption( int i )
 			return;
 		}
 	}
+	else if ( iOptionType == ASW_COMPUTER_OPTION_TYPE_CUSTOM_1 )
+	{
+		if ( pArea && pArea->m_hCustomScreen1.Get() )
+		{
+			pArea->m_hCustomScreen1->OnOpened( GetHackingMarine() );
+		}
+	}
+	else if ( iOptionType == ASW_COMPUTER_OPTION_TYPE_CUSTOM_2 )
+	{
+		if ( pArea && pArea->m_hCustomScreen2.Get() )
+		{
+			pArea->m_hCustomScreen2->OnOpened( GetHackingMarine() );
+		}
+	}
+	else if ( iOptionType == ASW_COMPUTER_OPTION_TYPE_CUSTOM_3 )
+	{
+		if ( pArea && pArea->m_hCustomScreen3.Get() )
+		{
+			pArea->m_hCustomScreen3->OnOpened( GetHackingMarine() );
+		}
+	}
+	else if ( iOptionType == ASW_COMPUTER_OPTION_TYPE_CUSTOM_4 )
+	{
+		if ( pArea && pArea->m_hCustomScreen4.Get() )
+		{
+			pArea->m_hCustomScreen4->OnOpened( GetHackingMarine() );
+		}
+	}
+	else if ( iOptionType == ASW_COMPUTER_OPTION_TYPE_CUSTOM_5 )
+	{
+		if ( pArea && pArea->m_hCustomScreen5.Get() )
+		{
+			pArea->m_hCustomScreen5->OnOpened( GetHackingMarine() );
+		}
+	}
+	else if ( iOptionType == ASW_COMPUTER_OPTION_TYPE_CUSTOM_6 )
+	{
+		if ( pArea && pArea->m_hCustomScreen6.Get() )
+		{
+			pArea->m_hCustomScreen6->OnOpened( GetHackingMarine() );
+		}
+	}
 }
 
 bool CASW_Hack_Computer::IsPDA()
@@ -381,6 +428,54 @@ void CASW_Hack_Computer::SetDefaultHackOption()
 
 void CASW_Hack_Computer::MarineStoppedUsing( CASW_Marine *pMarine )
 {
+	CASW_Computer_Area *pArea = GetComputerArea();
+	if ( pArea && pArea->m_bIsLocked && pArea->m_bLoggedIn && pArea->m_hCustomHack.Get() )
+	{
+		pArea->m_hCustomHack->OnClosed();
+	}
+	else
+	{
+		switch ( GetOptionTypeForEntry( m_iShowOption ) )
+		{
+		case ASW_COMPUTER_OPTION_TYPE_CUSTOM_1:
+			if ( pArea && pArea->m_hCustomScreen1.Get() )
+			{
+				pArea->m_hCustomScreen1->OnClosed();
+			}
+			break;
+		case ASW_COMPUTER_OPTION_TYPE_CUSTOM_2:
+			if ( pArea && pArea->m_hCustomScreen2.Get() )
+			{
+				pArea->m_hCustomScreen2->OnClosed();
+			}
+			break;
+		case ASW_COMPUTER_OPTION_TYPE_CUSTOM_3:
+			if ( pArea && pArea->m_hCustomScreen3.Get() )
+			{
+				pArea->m_hCustomScreen3->OnClosed();
+			}
+			break;
+		case ASW_COMPUTER_OPTION_TYPE_CUSTOM_4:
+			if ( pArea && pArea->m_hCustomScreen4.Get() )
+			{
+				pArea->m_hCustomScreen4->OnClosed();
+			}
+			break;
+		case ASW_COMPUTER_OPTION_TYPE_CUSTOM_5:
+			if ( pArea && pArea->m_hCustomScreen5.Get() )
+			{
+				pArea->m_hCustomScreen5->OnClosed();
+			}
+			break;
+		case ASW_COMPUTER_OPTION_TYPE_CUSTOM_6:
+			if ( pArea && pArea->m_hCustomScreen6.Get() )
+			{
+				pArea->m_hCustomScreen6->OnClosed();
+			}
+			break;
+		}
+	}
+
 	m_iShowOption = 0;	// put us back on the main menu
 	if ( pMarine->m_hRemoteTurret )
 	{

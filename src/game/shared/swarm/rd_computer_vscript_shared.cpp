@@ -181,7 +181,7 @@ void CRD_Computer_VScript::SetFastHackEndTime( float flTime )
 		return;
 	}
 
-	if ( m_hHack->m_fStartedHackTime < flTime )
+	if ( m_hHack->m_fStartedHackTime > flTime )
 	{
 		Warning( "%s (%s): SetFastHackEndTime would set hack duration to %f seconds. Clamping to 0.\n", GetDebugClassname(), STRING( m_szClientVScript.Get() ), flTime - m_hHack->m_fStartedHackTime );
 		flTime = m_hHack->m_fStartedHackTime;
