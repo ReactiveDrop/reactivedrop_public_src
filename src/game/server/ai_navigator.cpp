@@ -4108,7 +4108,7 @@ void CAI_Navigator::IgnoreStoppingPath( void )
 
 //-----------------------------------------------------------------------------
 
-ConVar ai_use_clipped_paths( "ai_use_clipped_paths", "1" );
+ConVar ai_use_clipped_paths( "ai_use_clipped_paths", "0", FCVAR_CHEAT );
 
 void CAI_Navigator::SaveStoppingPath( void )
 {
