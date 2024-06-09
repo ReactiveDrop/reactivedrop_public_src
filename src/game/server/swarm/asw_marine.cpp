@@ -111,6 +111,8 @@ ConVar rd_marine_take_damage_from_ai_grenade( "rd_marine_take_damage_from_ai_gre
 ConVar rd_stuck_teleport_distance( "rd_stuck_teleport_distance", "256", FCVAR_CHEAT, "Maximum distance to teleport a stuck marine to a node" );
 static ConVar rd_notify_about_out_of_ammo( "rd_notify_about_out_of_ammo", "1", FCVAR_CHEAT, "Chatter and print a yellow message when marine is out of ammo" );
 static ConVar rd_gas_grenade_ff_dmg( "rd_gas_grenade_ff_dmg", "10", FCVAR_CHEAT, "Fixed friendly fire damage of gas grenade, marine to marine, done in asw_gas_grenade_damage_interval. " );
+extern ConVar rd_marine_ff_fist;
+ConVar rd_marine_ff_fist_scale( "rd_marine_ff_fist_scale", "1", FCVAR_CHEAT, "Scale CLUB type damage done to marines (requires rd_ff_marine_fist)" );
 
 ConVar rd_server_marine_backpacks("rd_server_marine_backpacks", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Attach unactive weapon model to marine's back");
 
@@ -1180,7 +1182,6 @@ void CASW_Marine::SetMarineResource(CASW_Marine_Resource *pMR)
 	}
 }
 
-extern ConVar rd_marine_ff_fist;
 int CASW_Marine::OnTakeDamage( const CTakeDamageInfo &info )
 {
 	if ( m_takedamage == DAMAGE_NO || !ASWGameRules() || ASWGameRules()->GetGameState() != ASW_GS_INGAME || ASWGameRules()->m_bMarineInvuln )
@@ -1407,14 +1408,16 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		}
 		else
 		{
-			if (newInfo.GetDamageType() & DMG_CLUB)
+			if ( newInfo.GetDamageType() & DMG_CLUB )
 			{
-				if ( rd_marine_ff_fist.GetBool() == false ) 
+				if ( rd_marine_ff_fist.GetBool() == false )
 				{
-					if (asw_debug_marine_damage.GetBool())
-						Msg("  but all ignored, since it's FF meleee dmg\n");
+					if ( asw_debug_marine_damage.GetBool() )
+						Msg( "  but all ignored, since it's FF meleee dmg\n" );
 					return 0;
 				}
+
+				newInfo.ScaleDamage( rd_marine_ff_fist_scale.GetFloat() );
 			}
 
 			if ( newInfo.GetWeapon() && newInfo.GetWeapon()->Classify() == CLASS_ASW_GAS_GRENADE )
