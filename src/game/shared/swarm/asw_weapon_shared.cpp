@@ -1504,7 +1504,7 @@ void CASW_Weapon::WeaponSound( WeaponSound_t sound_type, float soundtime /* = 0.
 	EmitSound_t playparams(params);
 	if (soundtime != 0)
 		playparams.m_flSoundTime = soundtime;
-	playparams.m_nPitch = params.pitch;
+	playparams.m_nPitch = params.pitch * iPitch / 100;
 
 	CASW_Player *pPlayer = GetCommander();
 
