@@ -53,7 +53,7 @@ public:
 	int m_iMaxRicochets;
 	Vector m_vecInitPos;
 	// Classification
-	virtual Class_T Classify( void ) { return (Class_T)CLASS_ASW_GRENADE_CLUSER; }
+	virtual Class_T Classify( void ) { return (Class_T)CLASS_ASW_GRENADE_CLUSTER; }
 };
 
 #endif // _INCLUDED_ASW_GRENADE_CLUSTER_H
