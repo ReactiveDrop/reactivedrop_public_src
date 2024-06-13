@@ -5841,6 +5841,12 @@ bool CAlienSwarm::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 	}
 #endif
 
+	// let energy shield touch debris, but not vice versa
+	if ( collisionGroup0 == ASW_COLLISION_GROUP_SHIELD && collisionGroup1 == COLLISION_GROUP_DEBRIS )
+	{
+		return true;
+	}
+
 	if ( collisionGroup0 > collisionGroup1 )
 	{
 		// swap so that lowest is always first

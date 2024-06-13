@@ -25,7 +25,7 @@ ConVar rd_energy_shield_holster_burst( "rd_energy_shield_holster_burst", "1", FC
 ConVar rd_energy_shield_holster_shield( "rd_energy_shield_holster_shield", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "allow holstering to cancel shield" );
 ConVar rd_energy_shield_activation_blocks_shooting( "rd_energy_shield_activation_blocks_shooting", "0.5", FCVAR_CHEAT | FCVAR_REPLICATED, "minimum delay between activating shield and shooting next burst" );
 #ifdef GAME_DLL
-ConVar rd_energy_shield_touch_interval( "rd_energy_shield_touch_interval", "0.75", FCVAR_CHEAT, "time between damage ticks for the energy shield's electric dissolve" );
+ConVar rd_energy_shield_touch_interval( "rd_energy_shield_touch_interval", "0.2", FCVAR_CHEAT, "time between damage ticks for the energy shield's electric dissolve" );
 #endif
 extern ConVar rd_shield_rifle_dmg_base;
 

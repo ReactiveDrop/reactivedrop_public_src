@@ -559,7 +559,7 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		"swarm/EquipIcons/EquipShieldRifle",
 		&asw_ammo_count_rifle_burst, &asw_ammo_count_rifle_burst,
 		&asw_ammo_count_energy_shield, &asw_ammo_count_energy_shield_max,
-		6, 0.14f, 2.0f, 1, MARINE_CLASS_TECH,
+		17, 0.14f, 2.0f, 1, MARINE_CLASS_TECH,
 		false, false, false, ASW_OFFHAND_USE_IMMEDIATELY,
 		0.2f, 0.1f,
 	},

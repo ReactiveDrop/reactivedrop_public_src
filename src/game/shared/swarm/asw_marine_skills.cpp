@@ -176,7 +176,7 @@ ConVar asw_skill_accuracy_50calmg_dmg_step( "asw_skill_accuracy_50calmg_dmg_step
 ConVar asw_skill_accuracy_mining_laser_dmg_base( "asw_skill_accuracy_mining_laser_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_accuracy_mining_laser_dmg_step( "asw_skill_accuracy_mining_laser_dmg_step", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_accuracy_shield_rifle_dmg_base( "asw_skill_accuracy_shield_rifle_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_shield_rifle_dmg_step( "asw_skill_accuracy_shield_rifle_dmg_step", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_accuracy_shield_rifle_dmg_step( "asw_skill_accuracy_shield_rifle_dmg_step", "2", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_accuracy_cryo_dmg_base( "asw_skill_accuracy_cryo_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_accuracy_cryo_dmg_step( "asw_skill_accuracy_cryo_dmg_step", "0.5", FCVAR_REPLICATED | FCVAR_CHEAT );
 
