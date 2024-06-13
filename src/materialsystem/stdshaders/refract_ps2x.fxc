@@ -10,12 +10,15 @@
 // STATIC: "SECONDARY_NORMAL"				"0..1"
 // STATIC: "MIRRORABOUTVIEWPORTEDGES"		"0..1"	[XBOX]
 // STATIC: "MIRRORABOUTVIEWPORTEDGES"		"0..0"	[PC]
+// STATIC: "LOCALREFRACT"					"0..1"
 
 #include "common_fog_ps_fxc.h"
 // DYNAMIC: "WRITE_DEPTH_TO_DESTALPHA"		"0..1"	[ps20b] [PC]
 // DYNAMIC: "WRITE_DEPTH_TO_DESTALPHA"		"0..0"	[ps20b] [XBOX]
 
 // SKIP: $MASKED && $BLUR
+// SKIP: $LOCALREFRACT && $BLUR
+// SKIP: $MIRRORABOUTVIEWPORTEDGES && $LOCALREFRACT
 
 #if defined( SHADER_MODEL_PS_2_0 )
 #	define WRITE_DEPTH_TO_DESTALPHA 0
@@ -43,8 +46,10 @@ const float3 g_RefractTint					: register( c1 );
 const float3 g_EnvmapContrast				: register( c2 );
 const float3 g_EnvmapSaturation				: register( c3 );
 const float4 g_NormalizedViewportMinXYMaxWZ	: register( c4 );
-const float4  g_c5							: register( c5 );
+const float4 g_c5							: register( c5 );
 #define g_RefractScale g_c5.x
+#define g_LocalRefractDepth g_c5.y
+#define g_LocalRefractTextureAspectRatio g_c5.z
 #define g_flTime g_c5.w
 
 const float4 g_c6							: register( c6 );
@@ -113,18 +118,37 @@ float4 main( PS_INPUT i ) : COLOR
 	#if COLORMODULATE
 		refractTintColor *= i.ColorModulate.rgb;
 	#endif
-
-	// Perform division by W only once
-	float ooW = 1.0f / i.vRefractXYW.z;
 	
 	// Compute coordinates for sampling refraction
+	#if LOCALREFRACT
+	float2 vRefractTexCoordNoWarp = i.vBumpTexCoord.xy;
+	#else
+	// Perform division by W only once
+	float ooW = 1.0f / i.vRefractXYW.z;
+
 	float2 vRefractTexCoordNoWarp = i.vRefractXYW.xy * ooW;
+	#endif
+
 	float2 vRefractTexCoord = vNormal.xy;
 	float scale = vNormal.a * g_RefractScale;
 	#if COLORMODULATE
 		scale *= i.ColorModulate.a;
 	#endif
 	vRefractTexCoord *= scale;
+
+	#if LOCALREFRACT
+	// Recompute tangent-to-eye vector from vertex shader here as interpolation is noticeable on the static texture background
+	float3 vWorldEyeVect = normalize( g_EyePos_SpecExponent.xyz - i.worldPos_projPosZ.xyz );
+	float3 vTangentEyeVect = float3(
+		dot( vWorldEyeVect, i.vWorldTangent ),
+		dot( vWorldEyeVect, i.vWorldBinormal ),
+		dot( vWorldEyeVect, i.vWorldNormal )
+	);
+
+	vRefractTexCoord += ( 2.0f - vNormal.z ) * vTangentEyeVect.xy / -vTangentEyeVect.z;
+	vRefractTexCoord *= g_LocalRefractDepth;
+	vRefractTexCoord.x *= g_LocalRefractTextureAspectRatio;
+	#endif
 	
 	#if ( MAGNIFY )
 	{
@@ -135,6 +159,10 @@ float4 main( PS_INPUT i ) : COLOR
 	{
 		vRefractTexCoord += vRefractTexCoordNoWarp;
 	}	
+	#endif
+
+	#if LOCALREFRACT
+	vRefractTexCoord = saturate( vRefractTexCoord );
 	#endif
 
 	#if ( MIRRORABOUTVIEWPORTEDGES )
@@ -216,6 +244,13 @@ float4 main( PS_INPUT i ) : COLOR
 		#else
 			float3 colorWarp = tex2Dsrgb( RefractSampler, vRefractTexCoord.xy );
 			float3 colorNoWarp = tex2Dsrgb( RefractSampler, vRefractTexCoordNoWarp.xy );
+
+			#if LOCALREFRACT
+			colorWarp *= vNormal.z * vNormal.z * vNormal.z;
+			// The secret sauce: slightly brighten the "surface" in places where it is more "transparent" (high alpha means the "background" is visible)
+			float4 fudgedSurface = tex2Dsrgb( RefractSampler, saturate( vRefractTexCoordNoWarp.xy + vNormal.xy * 0.1f ) );
+			colorWarp = lerp( colorWarp, fudgedSurface.aaa, 0.025f );
+			#endif
 		
 			colorWarp *= refractTintColor;
 			result = lerp( colorNoWarp, colorWarp, blend );
@@ -237,7 +272,7 @@ float4 main( PS_INPUT i ) : COLOR
 		specularLighting = lerp( greyScale, specularLighting, g_EnvmapSaturation );
 		result += specularLighting;
 	#endif
-	
+
 	#if COLORMODULATE
 		float resultAlpha = i.ColorModulate.a * vNormal.a;
 	#else

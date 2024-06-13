@@ -47,6 +47,8 @@ BEGIN_VS_SHADER( Refract_DX90, "Help for Refract" )
 		SHADER_PARAM( MAGNIFYENABLE, SHADER_PARAM_TYPE_BOOL, "0", "Enable magnification of refracted image around the $magnifyCenter screen position by $magnifyScale" )
 		SHADER_PARAM( MAGNIFYCENTER, SHADER_PARAM_TYPE_VEC2, "[0 0]", "Magnify refracted image around this screen position" )
 		SHADER_PARAM( MAGNIFYSCALE, SHADER_PARAM_TYPE_FLOAT, "0", "Magnify refracted image by this factor" )
+		SHADER_PARAM( LOCALREFRACT, SHADER_PARAM_TYPE_BOOL, "0", "Refract a texture rather than the scene" )
+		SHADER_PARAM( LOCALREFRACTDEPTH, SHADER_PARAM_TYPE_FLOAT, "0", "Distance in world units from the surface to the simulated back surface" )
 	END_SHADER_PARAMS
 // FIXME: doesn't support Fresnel!
 
@@ -80,6 +82,8 @@ BEGIN_VS_SHADER( Refract_DX90, "Help for Refract" )
 		info.m_nMagnifyEnable = MAGNIFYENABLE;
 		info.m_nMagnifyCenter = MAGNIFYCENTER;
 		info.m_nMagnifyScale = MAGNIFYSCALE;
+		info.m_nLocalRefract = LOCALREFRACT;
+		info.m_nLocalRefractDepth = LOCALREFRACTDEPTH;
 	}
 
 	SHADER_INIT_PARAMS()

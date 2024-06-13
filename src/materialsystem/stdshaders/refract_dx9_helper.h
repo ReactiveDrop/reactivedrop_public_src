@@ -55,6 +55,8 @@ struct Refract_DX9_Vars_t
 	int m_nMagnifyEnable;
 	int m_nMagnifyCenter;
 	int m_nMagnifyScale;
+	int m_nLocalRefract;
+	int m_nLocalRefractDepth;
 };
 
 void InitParamsRefract_DX9( CBaseVSShader *pShader, IMaterialVar** params, const char *pMaterialName, 
