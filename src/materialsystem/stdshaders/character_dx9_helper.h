@@ -46,6 +46,7 @@ struct Character_DX9_Vars_t
 	int m_nNormalWrinkle;
 	int m_nNormalStretch;
 	int m_nBumpFrame;
+	int m_nBumpTransform;
 	int m_nEnvmapContrast;
 	int m_nEnvmapSaturation;
 	int m_nAlphaTestReference;

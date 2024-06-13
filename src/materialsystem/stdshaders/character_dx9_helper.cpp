@@ -7,10 +7,12 @@
 //===========================================================================//
 #include "basevsshader.h"
 #include "character_dx9_helper.h"
-
 #include "shaderlib/commandbuilder.h"
 #include "convar.h"
-
+#include "character_vs20.inc"
+#include "character_vs30.inc"
+#include "character_ps20b.inc"
+#include "character_ps30.inc"
 #include "tier0/vprof.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -428,9 +430,10 @@ void DrawCharacter_DX9( CBaseVSShader *pShader, IMaterialVar **params, IShaderDy
 			SET_STATIC_PIXEL_SHADER_COMBO( RIMLIGHT, bHasRimLight );
 			SET_STATIC_PIXEL_SHADER_COMBO( CUBEMAP, bHasEnvmap );
 			SET_STATIC_PIXEL_SHADER_COMBO( FLASHLIGHTDEPTHFILTERMODE, nShadowFilterMode );
-			SET_STATIC_PIXEL_SHADER_COMBO( SHADER_SRGB_READ, 0 );
 			SET_STATIC_PIXEL_SHADER_COMBO( WORLD_NORMAL, 0 );
 			SET_STATIC_PIXEL_SHADER_COMBO( PHONG_HALFLAMBERT, bPhongHalfLambert );
+			SET_STATIC_PIXEL_SHADER_COMBO( STATUSEFFECT, 0 ); // TODO
+			SET_STATIC_PIXEL_SHADER_COMBO( TEAMGLOW, 0 ); // TODO
 			SET_STATIC_PIXEL_SHADER( character_ps20b );
 		}
 		else
@@ -442,6 +445,7 @@ void DrawCharacter_DX9( CBaseVSShader *pShader, IMaterialVar **params, IShaderDy
 			DECLARE_STATIC_VERTEX_SHADER( character_vs30 );
 			SET_STATIC_VERTEX_SHADER_COMBO( WORLD_NORMAL, bWorldNormal );
 			SET_STATIC_VERTEX_SHADER_COMBO( DECAL, bIsDecal );
+			SET_STATIC_VERTEX_SHADER_COMBO( STATUSEFFECT, 0 ); // TODO
 			SET_STATIC_VERTEX_SHADER( character_vs30 );
 
 			DECLARE_STATIC_PIXEL_SHADER( character_ps30 );
@@ -456,9 +460,10 @@ void DrawCharacter_DX9( CBaseVSShader *pShader, IMaterialVar **params, IShaderDy
 			SET_STATIC_PIXEL_SHADER_COMBO( RIMLIGHT, bHasRimLight );
 			SET_STATIC_PIXEL_SHADER_COMBO( CUBEMAP, bHasEnvmap );
 			SET_STATIC_PIXEL_SHADER_COMBO( FLASHLIGHTDEPTHFILTERMODE, nShadowFilterMode );
-			SET_STATIC_PIXEL_SHADER_COMBO( SHADER_SRGB_READ, 0 );
 			SET_STATIC_PIXEL_SHADER_COMBO( WORLD_NORMAL, bWorldNormal );
 			SET_STATIC_PIXEL_SHADER_COMBO( PHONG_HALFLAMBERT, bPhongHalfLambert );
+			SET_STATIC_PIXEL_SHADER_COMBO( STATUSEFFECT, 0 ); // TODO
+			SET_STATIC_PIXEL_SHADER_COMBO( TEAMGLOW, 0 ); // TODO
 			SET_STATIC_PIXEL_SHADER( character_ps30 );
 		}
 
