@@ -849,6 +849,11 @@ void CASW_Marine::FireRegularBullets( const FireBulletsInfo_t &info )
 	traceFilter.SetSkipRollingMarines( true );
 
 	int iSeed = CBaseEntity::GetPredictionRandomSeed();// & 255;
+	if ( iSeed == -1 )
+	{
+		Assert( !IsInhabited() );
+		iSeed = gpGlobals->tickcount;
+	}
 
 	CShotManipulator Manipulator( info.m_vecDirShooting );
 
