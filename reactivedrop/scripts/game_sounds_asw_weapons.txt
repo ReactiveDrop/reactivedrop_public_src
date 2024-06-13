@@ -1770,3 +1770,21 @@
 	"soundlevel"	"SNDLVL_85dB"
 	"wave"			"weapons/3D/cryocannon/cryogun_stop.wav"
 }
+
+"ASW_Weapon_Energy_Shield.Single"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_95dB"
+	"volume"		"0.4"
+	"pitch"			"95,105"
+	"wave"			"^weapons\3D\shieldrifle\singleShot.wav"
+}
+
+"ASW_Weapon_Energy_Shield.SingleFP"
+{
+	"channel"		"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_NONE"
+	"volume"		"0.45"
+	"pitch"			"95, 105"
+	"wave"			"@weapons\2D\shieldrifle\singleShotFP.wav"
+}

@@ -29,7 +29,9 @@ public:
 	void OnDataChanged( DataUpdateType_t updateType ) override;
 	void ClientThink() override;
 
-	int m_iShieldPoseParameter{ -2 };
+	int m_iShieldPoseParameter;
+	CUtlReference<CNewParticleEffect> m_pOverheatEffect;
+	CUtlReference<CNewParticleEffect> m_pProjectEffect;
 #else
 	DECLARE_DATADESC();
 
@@ -42,6 +44,7 @@ public:
 	float GetBurstRestRatio() const override;
 	bool CanHolster() override;
 	bool HolsterCancelsBurstFire() const override;
+	void OnStartedBurst() override;
 	void UpdateOnRemove() override;
 	bool Holster( CBaseCombatWeapon *pSwitchingTo ) override;
 	void Drop( const Vector &vecVelocity ) override;
@@ -49,13 +52,12 @@ public:
 	int GetWeaponSkillId() override;
 	int GetWeaponSubSkillId() override;
 	const char *GetMagazineGibModelName() const override { return "models/weapons/empty_clips/shieldrifle_empty_clip.mdl"; }
-	const Vector &GetBulletSpread() override
-	{
-		static const Vector cone = VECTOR_CONE_1DEGREES;
-		return cone;
-	}
+	const Vector &GetBulletSpread() override;
+	const char *GetASWShootSound( int iIndex, int &iPitch ) override;
 
 	CNetworkHandle( CASW_Energy_Shield, m_hShield );
+	CNetworkVar( int, m_iConsecutiveBurstPenalty );
+	CNetworkVar( float, m_flResetConsecutiveBurstAfter );
 
 	Class_T Classify() override { return ( Class_T )CLASS_ASW_ENERGY_SHIELD; }
 };
@@ -79,9 +81,11 @@ public:
 
 	void Spawn() override;
 	bool CreateVPhysics() override;
+	bool IsShieldInactive() const;
 	void StartTouch( CBaseEntity *pOther ) override;
 	void EndTouch( CBaseEntity *pOther ) override;
 	void TouchThink();
+	bool CheckProjectileHit( CBaseEntity *pProjectile );
 	void OnProjectileHit( CBaseEntity *pProjectile );
 
 	CUtlVector<EHANDLE> m_vecTouching;

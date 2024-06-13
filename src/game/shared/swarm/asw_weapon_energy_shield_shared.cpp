@@ -17,7 +17,11 @@
 #ifdef RD_7A_WEAPONS
 ConVar rd_energy_shield_burst_count( "rd_energy_shield_burst_count", "3", FCVAR_CHEAT | FCVAR_REPLICATED, "number of shots in burst", true, 1, false, 255 );
 ConVar rd_energy_shield_burst_rest_ratio( "rd_energy_shield_burst_rest_ratio", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "amount of time rifle spends idle between bursts (to have rest time match active time, set to 1)", true, 0, false, 0 );
-ConVar rd_energy_shield_holster_burst( "rd_energy_shield_holster_burst", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "allow holstering to cancel burst" );
+ConVar rd_energy_shield_burst_penalty_ratio( "rd_energy_shield_burst_penalty_ratio", "2", FCVAR_CHEAT | FCVAR_REPLICATED, "multiple of overall fire rate player must wait between bursts to reset spread penalty" );
+ConVar rd_energy_shield_burst_penalty_shield( "rd_energy_shield_burst_penalty_shield", "2", FCVAR_CHEAT | FCVAR_REPLICATED, "minimum spread penalty when shield is active" );
+ConVar rd_energy_shield_burst_sound_count( "rd_energy_shield_burst_sound_count", "10", FCVAR_CHEAT | FCVAR_REPLICATED, "number of consecutive bursts to get maximum pitch" );
+ConVar rd_energy_shield_burst_sound_pitch( "rd_energy_shield_burst_sound_pitch", "50", FCVAR_CHEAT | FCVAR_REPLICATED, "maximum pitch change" );
+ConVar rd_energy_shield_holster_burst( "rd_energy_shield_holster_burst", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "allow holstering to cancel burst" );
 ConVar rd_energy_shield_holster_shield( "rd_energy_shield_holster_shield", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "allow holstering to cancel shield" );
 ConVar rd_energy_shield_activation_blocks_shooting( "rd_energy_shield_activation_blocks_shooting", "0.5", FCVAR_CHEAT | FCVAR_REPLICATED, "minimum delay between activating shield and shooting next burst" );
 #ifdef GAME_DLL
@@ -30,8 +34,12 @@ IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Weapon_Energy_Shield, DT_ASW_Weapon_Energy_S
 BEGIN_NETWORK_TABLE( CASW_Weapon_Energy_Shield, DT_ASW_Weapon_Energy_Shield )
 #ifdef CLIENT_DLL
 	RecvPropEHandle( RECVINFO( m_hShield ) ),
+	RecvPropInt( RECVINFO( m_iConsecutiveBurstPenalty ) ),
+	RecvPropFloat( RECVINFO( m_flResetConsecutiveBurstAfter ) ),
 #else
 	SendPropEHandle( SENDINFO( m_hShield ) ),
+	SendPropInt( SENDINFO( m_iConsecutiveBurstPenalty ), 7, SPROP_UNSIGNED | SPROP_CHANGES_OFTEN ),
+	SendPropFloat( SENDINFO( m_flResetConsecutiveBurstAfter ), 32, SPROP_NOSCALE | SPROP_CHANGES_OFTEN ),
 #endif
 END_NETWORK_TABLE()
 
@@ -41,16 +49,28 @@ PRECACHE_WEAPON_REGISTER( asw_weapon_energy_shield );
 #ifdef CLIENT_DLL
 BEGIN_PREDICTION_DATA( CASW_Weapon_Energy_Shield )
 	DEFINE_PRED_FIELD( m_hShield, FIELD_EHANDLE, FTYPEDESC_INSENDTABLE ),
+	DEFINE_PRED_FIELD( m_iConsecutiveBurstPenalty, FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
+	DEFINE_PRED_FIELD_TOL( m_flResetConsecutiveBurstAfter, FIELD_FLOAT, FTYPEDESC_INSENDTABLE, TD_MSECTOLERANCE ),
 END_PREDICTION_DATA()
 #else
 BEGIN_DATADESC( CASW_Weapon_Energy_Shield )
 	DEFINE_FIELD( m_hShield, FIELD_EHANDLE ),
+	DEFINE_FIELD( m_iConsecutiveBurstPenalty, FIELD_INTEGER ),
+	DEFINE_FIELD( m_flResetConsecutiveBurstAfter, FIELD_TIME ),
 END_DATADESC()
 #endif
 
 CASW_Weapon_Energy_Shield::CASW_Weapon_Energy_Shield()
 {
 	m_hShield = NULL;
+	m_iConsecutiveBurstPenalty = 0;
+	m_flResetConsecutiveBurstAfter = 0.0f;
+
+#ifdef CLIENT_DLL
+	m_iShieldPoseParameter = -2;
+	m_pOverheatEffect = NULL;
+	m_pProjectEffect = NULL;
+#endif
 }
 
 CASW_Weapon_Energy_Shield::~CASW_Weapon_Energy_Shield()
@@ -97,6 +117,28 @@ void CASW_Weapon_Energy_Shield::ClientThink()
 {
 	BaseClass::ClientThink();
 
+	int iOverheat = m_iConsecutiveBurstPenalty;
+	if ( m_flResetConsecutiveBurstAfter <= gpGlobals->curtime )
+	{
+		iOverheat = 0;
+	}
+	// don't check for the shield; it only matters while firing (just having the shield doesn't overheat the barrel)
+
+	if ( iOverheat == 0 && m_pOverheatEffect.GetObject() )
+	{
+		m_pOverheatEffect->StopEmission();
+		m_pOverheatEffect = NULL;
+	}
+	else if ( iOverheat != 0 && !m_pOverheatEffect.GetObject() )
+	{
+		m_pOverheatEffect = ParticleProp()->Create( "shieldrifle_overheat", PATTACH_POINT_FOLLOW, "muzzle" );
+	}
+
+	if ( m_pOverheatEffect.GetObject() )
+	{
+		m_pOverheatEffect->SetControlPoint( 1, Vector( iOverheat, GetBulletSpread().x, 0 ) );
+	}
+
 	if ( m_iShieldPoseParameter == -2 )
 	{
 		m_iShieldPoseParameter = LookupPoseParameter( "energy_shield" );
@@ -104,7 +146,18 @@ void CASW_Weapon_Energy_Shield::ClientThink()
 
 	if ( m_iShieldPoseParameter != -1 )
 	{
+		// TODO: animate?
 		SetPoseParameter( m_iShieldPoseParameter, m_hShield.Get() ? 2.0f : 0.0f );
+	}
+
+	if ( !m_hShield.Get() && m_pProjectEffect.GetObject() )
+	{
+		m_pProjectEffect->StopEmission();
+		m_pProjectEffect = NULL;
+	}
+	else if ( m_hShield.Get() && !m_pProjectEffect.GetObject() )
+	{
+		m_pProjectEffect = ParticleProp()->Create( "shieldrifle_project", PATTACH_POINT_FOLLOW, "muzzle" );
 	}
 }
 #else
@@ -130,6 +183,8 @@ void CASW_Weapon_Energy_Shield::Precache()
 	PrecacheParticleSystem( "muzzle_shieldrifle" );
 	PrecacheParticleSystem( "muzzle_shieldrifle_first" );
 	PrecacheParticleSystem( "muzzle_shieldrifle_last" );
+	PrecacheParticleSystem( "shieldrifle_overheat" );
+	PrecacheParticleSystem( "shieldrifle_project" );
 
 #ifdef GAME_DLL
 	UTIL_PrecacheOther( "asw_energy_shield_shield" );
@@ -230,6 +285,27 @@ bool CASW_Weapon_Energy_Shield::HolsterCancelsBurstFire() const
 	return rd_energy_shield_holster_burst.GetBool();
 }
 
+void CASW_Weapon_Energy_Shield::OnStartedBurst()
+{
+	BaseClass::OnStartedBurst();
+
+	if ( gpGlobals->curtime < m_flResetConsecutiveBurstAfter )
+	{
+		m_iConsecutiveBurstPenalty++;
+	}
+	else
+	{
+		m_iConsecutiveBurstPenalty = 0;
+	}
+
+	if ( m_hShield.Get() )
+	{
+		m_iConsecutiveBurstPenalty = MAX( m_iConsecutiveBurstPenalty, rd_energy_shield_burst_penalty_shield.GetInt() );
+	}
+
+	m_flResetConsecutiveBurstAfter = gpGlobals->curtime + GetFireRate() * rd_energy_shield_burst_penalty_ratio.GetFloat();
+}
+
 void CASW_Weapon_Energy_Shield::UpdateOnRemove( )
 {
 #ifdef GAME_DLL
@@ -279,6 +355,33 @@ int CASW_Weapon_Energy_Shield::GetWeaponSkillId()
 int CASW_Weapon_Energy_Shield::GetWeaponSubSkillId()
 {
 	return ASW_MARINE_SUBSKILL_ACCURACY_SHIELD_RIFLE_DMG;
+}
+
+const Vector &CASW_Weapon_Energy_Shield::GetBulletSpread()
+{
+	static const Vector cones[] =
+	{
+		VECTOR_CONE_1DEGREES,
+		VECTOR_CONE_1DEGREES,
+		VECTOR_CONE_2DEGREES,
+		VECTOR_CONE_4DEGREES,
+		VECTOR_CONE_7DEGREES,
+		VECTOR_CONE_10DEGREES,
+		VECTOR_CONE_15DEGREES,
+		VECTOR_CONE_20DEGREES,
+	};
+
+	return cones[clamp( m_iConsecutiveBurstPenalty, 0, NELEMS( cones ) - 1 )];
+}
+
+const char *CASW_Weapon_Energy_Shield::GetASWShootSound( int iIndex, int &iPitch )
+{
+	if ( iIndex == SINGLE || iIndex == SINGLE_NPC )
+	{
+		iPitch = RemapValClamped( m_iConsecutiveBurstPenalty, 0, rd_energy_shield_burst_sound_count.GetInt(), 100, 100 + rd_energy_shield_burst_sound_pitch.GetFloat() );
+	}
+
+	return BaseClass::GetASWShootSound( iIndex, iPitch );
 }
 
 IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Energy_Shield, DT_ASW_Energy_Shield );
@@ -353,9 +456,9 @@ void CASW_Energy_Shield::Spawn()
 
 	SetCollisionGroup( ASW_COLLISION_GROUP_SHIELD );
 	SetSolid( SOLID_VPHYSICS );
+	CreateVPhysics();
 	AddSolidFlags( FSOLID_TRIGGER );
 	SetMoveType( MOVETYPE_NONE );
-	CreateVPhysics();
 	SetNavIgnore();
 
 	SetContextThink( &CASW_Energy_Shield::TouchThink, gpGlobals->curtime + rd_energy_shield_touch_interval.GetFloat(), s_pTouchThink );
@@ -366,6 +469,21 @@ bool CASW_Energy_Shield::CreateVPhysics()
 	VPhysicsInitShadow( false, false );
 
 	return true;
+}
+
+bool CASW_Energy_Shield::IsShieldInactive() const
+{
+	if ( !m_hCreatorMarine.Get() )
+		return true;
+	if ( !m_hCreatorWeapon.Get() )
+		return true;
+
+	if ( m_hCreatorMarine->GetCurrentMeleeAttack() )
+		return true;
+	if ( m_hCreatorWeapon->IsFiring() )
+		return true;
+
+	return false;
 }
 
 void CASW_Energy_Shield::StartTouch( CBaseEntity *pOther )
@@ -381,6 +499,9 @@ void CASW_Energy_Shield::StartTouch( CBaseEntity *pOther )
 	if ( m_vecTouching.Find( pOther ) != m_vecTouching.InvalidIndex() )
 		return;
 
+	if ( !IsShieldInactive() && CheckProjectileHit( pOther ) )
+		return;
+
 	m_vecTouching.AddToTail( pOther );
 }
 void CASW_Energy_Shield::EndTouch( CBaseEntity *pOther )
@@ -392,11 +513,12 @@ void CASW_Energy_Shield::EndTouch( CBaseEntity *pOther )
 
 void CASW_Energy_Shield::TouchThink()
 {
-	if ( m_hCreatorMarine.Get() && m_hCreatorWeapon.Get() && m_vecTouching.Count() )
+	if ( !IsShieldInactive() )
 	{
 		CTakeDamageInfo info( this, m_hCreatorMarine, m_hCreatorWeapon, MarineSkills()->GetSkillBasedValueByMarine( m_hCreatorMarine, ASW_MARINE_SKILL_ENGINEERING, ASW_MARINE_SUBSKILL_ENGINEERING_SHIELD_DAMAGE ), DMG_DISSOLVE | DMG_SHOCK );
 		info.SetAmmoType( m_hCreatorWeapon->GetSecondaryAmmoType() );
 		info.SetDamagePosition( m_hCreatorMarine->Weapon_ShootPosition() );
+		info.SetDamageForce( m_hCreatorMarine->Forward() );
 
 		FOR_EACH_VEC_BACK( m_vecTouching, i )
 		{
@@ -407,25 +529,46 @@ void CASW_Energy_Shield::TouchThink()
 				continue;
 			}
 
+			if ( CheckProjectileHit( pEnt ) )
+			{
+				continue;
+			}
+
 			if ( pEnt->m_takedamage == DAMAGE_NO )
 			{
 				continue;
 			}
 
 			pEnt->TakeDamage( info );
+			m_flLastHitTime = gpGlobals->curtime;
 		}
 	}
 
 	SetContextThink( &CASW_Energy_Shield::TouchThink, gpGlobals->curtime + rd_energy_shield_touch_interval.GetFloat(), s_pTouchThink );
 }
 
+bool CASW_Energy_Shield::CheckProjectileHit( CBaseEntity *pProjectile )
+{
+	if ( pProjectile->Classify() == CLASS_ASW_MORTAR_SHELL ||
+		pProjectile->GetCollisionGroup() == COLLISION_GROUP_PROJECTILE )
+	{
+		OnProjectileHit( pProjectile );
+		return true;
+	}
+
+	return false;
+}
+
 void CASW_Energy_Shield::OnProjectileHit( CBaseEntity *pProjectile )
 {
+	if ( IsShieldInactive() )
+		return;
+
 	pProjectile->SetThink( NULL );
 	pProjectile->SetMoveType( MOVETYPE_FLYGRAVITY );
 	pProjectile->SetGravity( -0.02f );
-	pProjectile->SetLocalVelocity( vec3_origin );
-	pProjectile->GetBaseAnimating()->Dissolve( NULL, gpGlobals->curtime, false, ENTITY_DISSOLVE_ELECTRICAL_FAST, WorldSpaceCenter() );
+	pProjectile->SetLocalVelocity( pProjectile->GetLocalVelocity() / 16.0f );
+	pProjectile->GetBaseAnimating()->Dissolve( NULL, gpGlobals->curtime, false, ENTITY_DISSOLVE_NORMAL, WorldSpaceCenter() );
 
 	CASW_Marine_Resource *pMR = m_hCreatorMarine.Get() ? m_hCreatorMarine->GetMarineResource() : NULL;
 	if ( pMR )

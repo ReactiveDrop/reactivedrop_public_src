@@ -40,6 +40,8 @@ public:
 	virtual int GetBurstCount() const { return 1; }
 	virtual float GetBurstRestRatio() const { return 0.0f; }
 	virtual bool HolsterCancelsBurstFire() const { return false; }
+	virtual void OnStartedBurst() {}
+	virtual void OnEndedBurst() {}
 	bool CanHolster() override;
 	void ClearIsFiring() override;
 

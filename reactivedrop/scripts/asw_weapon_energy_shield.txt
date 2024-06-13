@@ -21,5 +21,7 @@ WeaponData
 	SoundData
 	{
 		"empty"				"ASW_Weapon.Empty"
+		"single_shot"		"ASW_Weapon_Energy_Shield.SingleFP"		// sound for locally controlled marine
+		"single_shot_npc"	"ASW_Weapon_Energy_Shield.Single"		// sound for other marines
 	}
 }

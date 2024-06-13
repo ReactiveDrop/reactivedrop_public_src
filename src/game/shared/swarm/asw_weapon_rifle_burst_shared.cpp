@@ -155,6 +155,11 @@ void CASW_Weapon_Rifle_Burst::DelayedAttack()
 	int nShotsPerBurst = GetBurstCount();
 	while ( m_flDelayedFire <= gpGlobals->curtime && m_iBurstShots > 0 )
 	{
+		if ( m_iBurstShots % nShotsPerBurst == 0 )
+		{
+			OnStartedBurst();
+		}
+
 		m_flDelayedFire += flBurstFireRate;
 
 		m_iBurstShots--;
@@ -162,6 +167,7 @@ void CASW_Weapon_Rifle_Burst::DelayedAttack()
 
 		if ( m_iBurstShots % nShotsPerBurst == 0 )
 		{
+			OnEndedBurst();
 			m_flDelayedFire += flRestFireRate;
 		}
 
