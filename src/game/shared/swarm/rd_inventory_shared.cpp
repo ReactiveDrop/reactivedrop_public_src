@@ -360,6 +360,14 @@ public:
 
 	void CacheItemSchema()
 	{
+		ISteamUtils *pUtils = SteamUtils();
+		Assert( pUtils );
+		// If we're not running as Alien Swarm: Reactive Drop (for example, if we're a mod or running through the SDK), don't update caches.
+		if ( !pUtils || pUtils->GetAppID() != 563560 )
+		{
+			return;
+		}
+
 		CFastTimer timer;
 		timer.Start();
 
