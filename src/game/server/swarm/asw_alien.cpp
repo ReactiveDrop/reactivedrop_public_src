@@ -2044,9 +2044,14 @@ void CASW_Alien::Event_Killed( const CTakeDamageInfo &info )
 		SetBodygroup( 0, m_iDeadBodyGroup );
 	}
 
-	// if we died from an explosion, instagib
-	if ( !m_bNeverInstagib && info.GetDamage() > 8.0f && (info.GetDamageType() & DMG_BLAST || info.GetDamageType() & DMG_SONIC) )
+	if ( info.GetDamageType() & DMG_DISSOLVE )
 	{
+		// if we are dissolving, ragdoll even if we're not normally supposed to
+		m_nDeathStyle = kDIE_RAGDOLLFADE;
+	}
+	else if ( !m_bNeverInstagib && info.GetDamage() > 8.0f && ( ( info.GetDamageType() & DMG_BLAST ) || ( info.GetDamageType() & DMG_SONIC ) ) )
+	{
+		// if we died from an explosion, instagib
 		m_nDeathStyle = kDIE_INSTAGIB;
 	}
 	else if ( rd_alien_instagib.GetBool() )
