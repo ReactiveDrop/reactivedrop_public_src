@@ -42,9 +42,10 @@ public:
 	Activity	GetPrimaryAttackActivity( void );
 	virtual bool ShouldMarineMoveSlow();
 
-	virtual void PrimaryAttack();
-	virtual void SecondaryAttack();
-	virtual void DelayedAttack();
+	void PrimaryAttack() override;
+	void SecondaryAttack() override;
+	void DelayedAttack() override;
+	void ClearIsFiring() override;
 	virtual void FireShotgunPellet( CASW_Inhabitable_NPC *pNPC, const FireBulletsInfo_t &info, int iSeed );	// shotgun specific, re-defined in CASW_Weapon_Devastator
 	virtual int ASW_SelectWeaponActivity(int idealActivity);
 

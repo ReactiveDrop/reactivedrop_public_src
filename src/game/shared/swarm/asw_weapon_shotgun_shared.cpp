@@ -294,6 +294,13 @@ void CASW_Weapon_Shotgun::DelayedAttack()
 	m_bShotDelayed = false;
 }
 
+void CASW_Weapon_Shotgun::ClearIsFiring()
+{
+	BaseClass::ClearIsFiring();
+
+	m_bShotDelayed = false;
+}
+
 void CASW_Weapon_Shotgun::FireShotgunPellet( CASW_Inhabitable_NPC *pNPC, const FireBulletsInfo_t &info, int iSeed )
 {
 	if ( CASW_Marine *pMarine = CASW_Marine::AsMarine( pNPC ) )
