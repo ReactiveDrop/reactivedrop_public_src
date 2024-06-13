@@ -28,6 +28,7 @@ PRECACHE_REGISTER_BEGIN( GLOBAL, PrecacheEffectBuild )
 PRECACHE( MATERIAL,"effects/tesla_glow_noz" )
 PRECACHE( MATERIAL,"effects/spark" )
 PRECACHE( MATERIAL,"effects/combinemuzzle2" )
+PRECACHE( PARTICLE_SYSTEM, "dissolve" )
 PRECACHE( PARTICLE_SYSTEM, "dissolve_tesla_arc" )
 PRECACHE_REGISTER_END()
 
@@ -429,6 +430,10 @@ void C_EntityDissolve::SetupEmitter( void )
 	{
 		m_pEmitter = CSimpleEmitter::Create( "C_EntityDissolve" );
 		m_pEmitter->SetSortOrigin( GetAbsOrigin() );
+
+#ifdef INFESTED_DLL
+		DispatchParticleEffect( "dissolve", PATTACH_ABSORIGIN_FOLLOW, GetMoveParent() );
+#endif
 	}
 }
 
@@ -614,6 +619,7 @@ int C_EntityDissolve::DrawModel( int flags, const RenderableInstance_t &instance
 		DoSparks( set, hitboxbones );
 	}
 
+#ifndef INFESTED_DLL
 	// Skew the particles in front or in back of their targets
 	vecSkew = CurrentViewForward() * ( 8.0f - ( ( 1.0f - fadePerc ) * 32.0f ) );
 
@@ -775,6 +781,7 @@ int C_EntityDissolve::DrawModel( int flags, const RenderableInstance_t &instance
 			}
 		}
 	}
+#endif
 
 	return 1;
 }

@@ -515,7 +515,7 @@ void CASW_Energy_Shield::TouchThink()
 {
 	if ( !IsShieldInactive() )
 	{
-		CTakeDamageInfo info( this, m_hCreatorMarine, m_hCreatorWeapon, MarineSkills()->GetSkillBasedValueByMarine( m_hCreatorMarine, ASW_MARINE_SKILL_ENGINEERING, ASW_MARINE_SUBSKILL_ENGINEERING_SHIELD_DAMAGE ), DMG_DISSOLVE | DMG_SHOCK );
+		CTakeDamageInfo info( this, m_hCreatorMarine, m_hCreatorWeapon, MarineSkills()->GetSkillBasedValueByMarine( m_hCreatorMarine, ASW_MARINE_SKILL_ENGINEERING, ASW_MARINE_SUBSKILL_ENGINEERING_SHIELD_DAMAGE ), DMG_DISSOLVE );
 		info.SetAmmoType( m_hCreatorWeapon->GetSecondaryAmmoType() );
 		info.SetDamagePosition( m_hCreatorMarine->Weapon_ShootPosition() );
 		info.SetDamageForce( m_hCreatorMarine->Forward() );
