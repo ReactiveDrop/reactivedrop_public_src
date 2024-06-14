@@ -14,6 +14,8 @@ public:
 					C_ASW_Extinguisher_Projectile();
 	virtual			~C_ASW_Extinguisher_Projectile();
 
+	Class_T Classify() override { return ( Class_T )CLASS_ASW_EXTINGUISHER_PROJECTILE; }
+
 	CNetworkVarEmbedded( CRD_ProjectileData, m_ProjectileData );
 
 private:

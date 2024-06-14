@@ -20,7 +20,7 @@
 //-----------------------------------------------------------------------------
 // Trace filter that skips two entities
 //-----------------------------------------------------------------------------
-CASWTraceFilterShot::CASWTraceFilterShot( IHandleEntity *passentity, IHandleEntity *passentity2, int collisionGroup ) :
+CASWTraceFilterShot::CASWTraceFilterShot( IHandleEntity *passentity, IHandleEntity *passentity2, int collisionGroup, Vector shotNormal ) :
 	BaseClass( collisionGroup )
 {
 	SetPassEntity( passentity );
@@ -29,6 +29,7 @@ CASWTraceFilterShot::CASWTraceFilterShot( IHandleEntity *passentity, IHandleEnti
 	m_bSkipRollingMarines = false;
 	m_bSkipMarinesReflectingProjectiles = false;
 	m_bSkipAliens = false;
+	m_vecShotNormal = shotNormal.Normalized();
 }
 
 bool CASWTraceFilterShot::ShouldHitEntity( IHandleEntity *pHandleEntity, int contentsMask )
@@ -43,7 +44,7 @@ bool CASWTraceFilterShot::ShouldHitEntity( IHandleEntity *pHandleEntity, int con
 	if ( pEntity->Classify() == CLASS_ASW_FLAMER_PROJECTILE )
 		return false;
 
-	if ( dynamic_cast<CASW_Extinguisher_Projectile*>( pEntity ) != NULL )
+	if ( pEntity->Classify() == CLASS_ASW_EXTINGUISHER_PROJECTILE )
 		return false;
 
 	if ( pEntity->Classify() == CLASS_ASW_MARINE )
@@ -51,7 +52,7 @@ bool CASWTraceFilterShot::ShouldHitEntity( IHandleEntity *pHandleEntity, int con
 		if ( m_bSkipMarines )
 			return false;
 
-		CASW_Marine *pMarine = assert_cast<CASW_Marine*>( pEntity );
+		CASW_Marine *pMarine = assert_cast< CASW_Marine * >( pEntity );
 		if ( m_bSkipRollingMarines && pMarine->GetCurrentMeleeAttack() && pMarine->GetCurrentMeleeAttack()->m_nAttackID == CASW_Melee_System::s_nRollAttackID )
 			return false;
 

@@ -698,7 +698,7 @@ void CASW_Marine::DoDamagePowerupEffects( CBaseEntity *pTarget, CTakeDamageInfo 
 				// trace from the last shock position to this guy
 				trace_t shockTR;
 				Vector vecAIPos = ppAIs[i]->WorldSpaceCenter();
-				CASWTraceFilterShot traceFilter( this, pLastShocked, COLLISION_GROUP_NONE );
+				CASWTraceFilterShot traceFilter( this, pLastShocked, COLLISION_GROUP_NONE, vecAIPos - vecShockSrc );
 				AI_TraceLine( vecShockSrc, vecAIPos, MASK_SHOT, &traceFilter, &shockTR );
 
 				if ( shockTR.fraction != 1.0 && shockTR.m_pEnt )
@@ -844,7 +844,7 @@ void CASW_Marine::FireRegularBullets( const FireBulletsInfo_t &info )
 	Vector vecEnd;
 	Vector vecFinalDir;	// bullet's final direction can be changed by passing through a portal
 	
-	CASWTraceFilterShot traceFilter( this, info.m_pAdditionalIgnoreEnt, COLLISION_GROUP_NONE );	
+	CASWTraceFilterShot traceFilter( this, info.m_pAdditionalIgnoreEnt, COLLISION_GROUP_NONE, info.m_vecDirShooting );
 	traceFilter.SetSkipMarines( false );
 	traceFilter.SetSkipRollingMarines( true );
 
@@ -1622,7 +1622,7 @@ void CASW_Marine::FirePenetratingBullets( const FireBulletsInfo_t &info, int iMa
 						}
 						else
 						{
-							CASWTraceFilterShot traceFilterNoIgnore( this, NULL, COLLISION_GROUP_NONE );
+							CASWTraceFilterShot traceFilterNoIgnore( this, NULL, COLLISION_GROUP_NONE, ray.m_Delta );
 							traceFilterNoIgnore.SetSkipMarines( false );
 							traceFilterNoIgnore.SetSkipRollingMarines( true );
 

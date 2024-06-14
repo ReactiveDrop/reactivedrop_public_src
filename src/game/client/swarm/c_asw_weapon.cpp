@@ -28,6 +28,7 @@
 #include "asw_equipment_list.h"
 #include "gamestringpool.h"
 #include "bone_setup.h"
+#include "asw_trace_filter_shot.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1051,8 +1052,11 @@ void C_ASW_Weapon::SimulateLaserPointer()
 		alphaFF = 0;
 	}
 
+	CASWTraceFilterShot filter( this, NULL, COLLISION_GROUP_NONE, vecDirShooting );
+	filter.SetSkipMarines( false );
+	filter.SetSkipRollingMarines( true );
 	// used to call GetWeaponRange() which was defined per weapon
-	UTIL_TraceLine( vecOrigin, vecOrigin + (vecDirShooting * flDistance), MASK_SHOT, this, COLLISION_GROUP_NONE, &tr );
+	UTIL_TraceLine( vecOrigin, vecOrigin + (vecDirShooting * flDistance), MASK_SHOT, &filter, &tr );
 
 	m_hLaserTargetEntity = tr.m_pEnt;
 

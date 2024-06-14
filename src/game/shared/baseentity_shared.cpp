@@ -1798,7 +1798,7 @@ void CBaseEntity::FireBullets( const FireBulletsInfo_t &info )
 	Vector vecEnd;
 
 #ifdef INFESTED_DLL
-	CASWTraceFilterShot traceFilter( this, info.m_pAdditionalIgnoreEnt, COLLISION_GROUP_NONE );
+	CASWTraceFilterShot traceFilter( this, info.m_pAdditionalIgnoreEnt, COLLISION_GROUP_NONE, info.m_vecDirShooting );
 	traceFilter.SetSkipMarines( false );
 	traceFilter.SetSkipRollingMarines( true );
 #else

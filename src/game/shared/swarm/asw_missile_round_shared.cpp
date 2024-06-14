@@ -114,7 +114,7 @@ void CASW_Missile_Round::PerformCustomPhysics( Vector *pNewPosition, Vector *pNe
 	if ( m_bDetonated )
 	{
 		*pNewPosition = GetAbsOrigin();
-		*pNewVelocity = GetAbsVelocity();	
+		*pNewVelocity = GetAbsVelocity();
 		return;
 	}
 	Vector vNorm = GetAbsVelocity();
@@ -123,10 +123,11 @@ void CASW_Missile_Round::PerformCustomPhysics( Vector *pNewPosition, Vector *pNe
 	VectorAngles( vNorm, angles );
 	SetAbsAngles( angles );
 
-	Vector vNewPosition = GetAbsOrigin() + GetAbsVelocity() * gpGlobals->frametime;
+	Vector vOldPosition = GetAbsOrigin();
+	Vector vNewPosition = vOldPosition + GetAbsVelocity() * gpGlobals->frametime;
 
 	trace_t tr;
-	CASWTraceFilterShot filter( this, NULL, GetCollisionGroup() );
+	CASWTraceFilterShot filter( this, NULL, GetCollisionGroup(), GetAbsVelocity() );
 
 	if ( m_bMarineFriendly )
 	{
@@ -139,20 +140,13 @@ void CASW_Missile_Round::PerformCustomPhysics( Vector *pNewPosition, Vector *pNe
 		filter.SetSkipMarines( false );
 		filter.SetSkipRollingMarines( true );
 	}
-	UTIL_TraceHull( GetAbsOrigin(), vNewPosition, WorldAlignMins(), WorldAlignMaxs(), MASK_SHOT, &filter, &tr );
+	UTIL_TraceHull( vOldPosition, vNewPosition, WorldAlignMins(), WorldAlignMaxs(), MASK_SHOT, &filter, &tr );
 	vNewPosition = tr.endpos;
 
 	if ( tr.DidHit() && tr.m_pEnt ) 
 	{
 		if ( tr.m_pEnt->Classify() == CLASS_ASW_MARINE )
 		{
-			/*
-			float flDesiredMoveDist = (GetAbsVelocity() * gpGlobals->frametime ).Length();
-			float flMoveDist = ( tr.endpos - GetAbsOrigin() ).Length();
-			if ( flDesiredMoveDist)
-			float flMoveAmount = 
-			filter.SetSkipMarinesReflectingProjectiles( true );
-			*/
 			CASW_Marine *pMarine = assert_cast<CASW_Marine*>( tr.m_pEnt );
 			if ( pMarine->IsReflectingProjectiles() )
 			{
@@ -163,7 +157,7 @@ void CASW_Missile_Round::PerformCustomPhysics( Vector *pNewPosition, Vector *pNe
 				SetAbsVelocity( -GetAbsVelocity() );
 
 				*pNewPosition = GetAbsOrigin();
-				*pNewVelocity = GetAbsVelocity();	
+				*pNewVelocity = GetAbsVelocity();
 				return;
 			}
 		}		
@@ -173,8 +167,8 @@ void CASW_Missile_Round::PerformCustomPhysics( Vector *pNewPosition, Vector *pNe
 
 	DoLagCompensatedMarineCollision();
 
-	UpdatePhysicsShadowToCurrentPosition(gpGlobals->frametime);
-	PhysicsTouchTriggers();
+	UpdatePhysicsShadowToCurrentPosition( gpGlobals->frametime );
+	PhysicsTouchTriggers( &vOldPosition );
 
 	*pNewPosition = GetAbsOrigin();
 	*pNewVelocity = GetAbsVelocity();
@@ -470,10 +464,6 @@ void CASW_Missile_Round::OnDataChanged(DataUpdateType_t updateType)
 	}
 	else if ( updateType == DATA_UPDATE_DATATABLE_CHANGED )
 	{
-		if ( GetMoveType() != MOVETYPE_CUSTOM )
-		{
-			ParticleProp()->StopParticlesInvolving( this );
-		}
 		if ( m_bDetonated )
 		{
 			SetNextClientThink(CLIENT_THINK_ALWAYS);

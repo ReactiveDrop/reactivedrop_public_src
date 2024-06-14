@@ -39,6 +39,8 @@ public:
 	bool m_bAllowFriendlyFire;
 	bool m_bUseHullFreezeScale;
 	Vector m_vecSpawnOrigin;
+
+	Class_T Classify() override { return (Class_T)CLASS_ASW_EXTINGUISHER_PROJECTILE; }
 };
 
 

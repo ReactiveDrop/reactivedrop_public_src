@@ -373,7 +373,7 @@ void CASW_Weapon_Tesla_Gun::DoArcingShock( float flBaseDamage, CBaseEntity *pLas
 			// trace from the last shock position to this guy
 			trace_t shockTR;
 			Vector vecAIPos = ppAIs[i]->WorldSpaceCenter();
-			CASWTraceFilterShot traceFilter( this, pLastShocked, COLLISION_GROUP_NONE );
+			CASWTraceFilterShot traceFilter( this, pLastShocked, COLLISION_GROUP_NONE, vecAIPos - vecShockSrc );
 			AI_TraceLine( vecShockSrc, vecAIPos, MASK_SHOT, &traceFilter, &shockTR );
 
 			if ( shockTR.fraction != 1.0 && shockTR.m_pEnt )

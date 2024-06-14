@@ -631,7 +631,7 @@ bool CASW_TeslaTrap::ZapTarget( CBaseEntity *pEntity )
 	trace_t shockTR;
 	Vector vecShockSrc = WorldSpaceCenter();
 	Vector vecAIPos = pEntity->WorldSpaceCenter();
-	CASWTraceFilterShot traceFilter( this, NULL, COLLISION_GROUP_NONE );
+	CASWTraceFilterShot traceFilter( this, NULL, COLLISION_GROUP_NONE, vecAIPos - vecShockSrc );
 	AI_TraceLine( vecShockSrc, vecAIPos, MASK_SHOT, &traceFilter, &shockTR );
 
 	if ( shockTR.fraction != 1.0 && shockTR.m_pEnt )
