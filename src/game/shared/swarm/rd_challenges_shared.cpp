@@ -78,6 +78,15 @@ static bool FillChallengeSummary( RD_Challenge_t &summary, const char *szKVFileN
 	return true;
 }
 
+// sort some challenges to the top of the list to indicate to new players that this is for any game rules change, not just harder difficulty
+static const char *const s_szOfficialChallengesFirst[] =
+{
+	"asbi",
+	"energy_weapons",
+	"rd_first_person",
+	"rd_third_person",
+};
+
 #ifdef GAME_DLL
 extern ConVar rd_debug_string_tables;
 
@@ -96,7 +105,12 @@ void ReactiveDropChallenges::ClearServerCache()
 		return;
 	}
 
-	// TODO: purge old data
+	// add some challenges to the top of the list (will be filled in during the loop)
+	for ( int i = 0; i < NELEMS( s_szOfficialChallengesFirst ); i++ )
+	{
+		Assert( IsOfficial( s_szOfficialChallengesFirst[i] ) );
+		g_StringTableReactiveDropChallenges->AddString( true, s_szOfficialChallengesFirst[i] );
+	}
 
 	RD_Challenge_t summary;
 	char szKVFileName[MAX_PATH];
@@ -172,6 +186,14 @@ public:
 			return;
 		}
 
+		// add some challenges to the start of the list
+		for ( int i = 0; i < NELEMS( s_szOfficialChallengesFirst ); i++ )
+		{
+			Assert( ReactiveDropChallenges::IsOfficial( s_szOfficialChallengesFirst[i] ) );
+			m_LocalChallenges.AddString( s_szOfficialChallengesFirst[i] );
+		}
+
+		// add the rest of the challenges
 		FileFindHandle_t hFind;
 		for ( const char *pszChallenge = filesystem->FindFirstEx( "resource/challenges/*.txt", "GAME", &hFind ); pszChallenge; pszChallenge = filesystem->FindNext( hFind ) )
 		{
