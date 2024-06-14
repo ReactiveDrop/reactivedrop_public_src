@@ -1182,12 +1182,19 @@ void CASW_Marine::FirePenetratingBullets( const FireBulletsInfo_t &info, int iMa
 	Vector vecEnd;
 	Vector vecFinalDir;	// bullet's final direction can be changed by passing through a portal
 	
-	CASWTraceFilterShot traceFilter( this, info.m_pAdditionalIgnoreEnt, COLLISION_GROUP_NONE );
+	CASWTraceFilterShot traceFilter( this, info.m_pAdditionalIgnoreEnt, COLLISION_GROUP_NONE, info.m_vecDirShooting );
 	traceFilter.SetSkipMarines( false );
 	traceFilter.SetSkipRollingMarines( true );
 
 	// Prediction is only usable on players
-	int iSeed = (CBaseEntity::GetPredictionRandomSeed() + iSeedPlus );// & 255;
+	int iSeed = CBaseEntity::GetPredictionRandomSeed();// & 255;
+	if ( iSeed == -1 )
+	{
+		Assert( !IsInhabited() );
+		iSeed = gpGlobals->tickcount;
+	}
+
+	iSeed += iSeedPlus;
 
 #if defined( HL2MP ) && defined( GAME_DLL )
 	int iEffectSeed = iSeed;
@@ -1726,11 +1733,17 @@ void CASW_Marine::FireBouncingBullets( const FireBulletsInfo_t &info, int iMaxBo
 	Vector vecEnd;
 	Vector vecFinalDir;	// bullet's final direction can be changed by passing through a portal
 	
-	CASWTraceFilterShot traceFilter( bAllowHittingAttacker ? NULL : this, info.m_pAdditionalIgnoreEnt, COLLISION_GROUP_NONE );
+	CASWTraceFilterShot traceFilter( bAllowHittingAttacker ? NULL : this, info.m_pAdditionalIgnoreEnt, COLLISION_GROUP_NONE, info.m_vecDirShooting );
 	traceFilter.SetSkipMarines( false );
 	traceFilter.SetSkipRollingMarines( true );
 
-	int iSeed = (CBaseEntity::GetPredictionRandomSeed() + iSeedPlus );// & 255;
+	int iSeed = CBaseEntity::GetPredictionRandomSeed();// & 255;
+	if ( iSeed == -1 )
+	{
+		Assert( !IsInhabited() );
+		iSeed = gpGlobals->tickcount;
+	}
+	iSeed += iSeedPlus;
 
 	CShotManipulator Manipulator( info.m_vecDirShooting );
 

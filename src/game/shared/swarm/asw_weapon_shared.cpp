@@ -1000,7 +1000,10 @@ bool CASW_Weapon::ASWReload( int iClipSize1, int iClipSize2, int iActivity )
 	// set fast reload timings
 	//  assuming 2.8 base reload time
 	//    ~0.29 
-	RandomSeed( CBaseEntity::GetPredictionRandomSeed() & 255 );	
+	if ( CBaseEntity::GetPredictionRandomSeed() != -1 )
+	{
+		RandomSeed( CBaseEntity::GetPredictionRandomSeed() );
+	}
 
 	float flStartFraction = random->RandomFloat( 0.29f, 0.35f );
 
