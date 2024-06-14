@@ -25,7 +25,6 @@ CNB_Skill_Panel::CNB_Skill_Panel( vgui::Panel *parent, const char *name ) : Base
 	m_pSkillButton->AddActionSignalTarget( this );
 	m_pSkillButton->SetCommand( "SpendPoint" );
 	m_pSkillBar->SetShowMaxOnCounter( true );
-	m_pSkillBar->SetColors( Color( 255, 255, 255, 0 ), Color( 93,148,192,255 ), Color( 255, 255, 255, 255 ), Color( 17,37,57,255 ), Color( 35, 77, 111, 255 ) );
 	m_pSkillBar->m_flBorder = 1.5f;
 	m_bSpendPointsMode = false;
 	m_szLastSkillImage[0] = 0;
@@ -155,7 +154,6 @@ void CNB_Skill_Panel::OnCommand( const char *command )
 
 CNB_Skill_Panel_Spending::CNB_Skill_Panel_Spending( vgui::Panel *parent, const char *name ) : BaseClass( parent, name )
 {
-	//m_pSkillBar->SetColors( Color( 255, 255, 255, 0 ), Color( 93,148,192,255 ), Color( 255, 255, 255, 255 ), Color( 35, 77, 111, 255 ), Color( 17,37,57,255 ) );
 }
 
 CNB_Skill_Panel_Spending::~CNB_Skill_Panel_Spending()

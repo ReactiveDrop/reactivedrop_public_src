@@ -39,7 +39,6 @@ ExperienceBar::ExperienceBar(vgui::Panel *parent, const char *name) :
 	m_pExperienceBar = new StatsBar( this, "ExperienceBar" );
 	m_pExperienceBar->UseExternalCounter( m_pExperienceCounter );
 	m_pExperienceBar->SetShowMaxOnCounter( true );
-	m_pExperienceBar->SetColors( Color( 255, 255, 255, 0 ), Color( 93,148,192,255 ), Color( 255, 255, 255, 255 ), Color( 17,37,57,255 ), Color( 35, 77, 111, 255 ) );
 	//m_pExperienceBar->m_bShowCumulativeTotal = true;
 	m_nLastPromotion = -1;
 	UpdateMinMaxes( 0 );

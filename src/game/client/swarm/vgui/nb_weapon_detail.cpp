@@ -28,7 +28,6 @@ CNB_Weapon_Detail::CNB_Weapon_Detail( vgui::Panel *parent, const char *name ) : 
 
 	m_bHidden = false;
 	m_pStatsBar->SetShowMaxOnCounter( true );
-	m_pStatsBar->SetColors( Color( 255, 255, 255, 0 ), Color( 93,148,192,255 ), Color( 255, 255, 255, 255 ), Color( 17,37,57,255 ), Color( 35, 77, 111, 255 ) );
 	m_pStatsBar->m_flBorder = 1.5f;
 	m_pStatsBar->AddMinMax( 0, 1.0f );
 	m_nEquipIndex = -1;

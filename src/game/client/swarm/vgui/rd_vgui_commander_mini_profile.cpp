@@ -205,6 +205,8 @@ void CRD_VGUI_Commander_Mini_Profile::InitForLocalPlayer()
 
 void CRD_VGUI_Commander_Mini_Profile::InitShared( CSteamID steamID )
 {
+	MakeReadyForUse();
+
 	m_SteamID = steamID;
 
 	ISteamFriends *pSteamFriends = SteamFriends();
@@ -259,19 +261,14 @@ void CRD_VGUI_Commander_Mini_Profile::SetExperienceAndPromotion( int iExperience
 		m_pLblLevel->SetVisible( true );
 		m_pLblLevel->SetText( wszLevelText );
 
-		int iRequiredForThisLevel = 0;
-		if ( iLevel > 0 )
-			iRequiredForThisLevel = g_iLevelExperience[iLevel - 1] * g_flPromotionXPScale[iPromotion];
-
-		bool bHitMaxLevel = iLevel >= ASW_NUM_EXPERIENCE_LEVELS;
-		int iRequiredForNextLevel = iRequiredForThisLevel;
-		if ( !bHitMaxLevel )
-			iRequiredForNextLevel = g_iLevelExperience[iLevel] * g_flPromotionXPScale[iPromotion];
-		else
-			iRequiredForThisLevel = g_iLevelExperience[iLevel - 2] * g_flPromotionXPScale[iPromotion];
-
 		m_pExperienceBar->SetVisible( true );
-		m_pExperienceBar->Init( iExperience - iRequiredForThisLevel, iRequiredForNextLevel - iRequiredForThisLevel, 1.0f, true, false );
+		m_pExperienceBar->Init( iExperience, iExperience, 1.0f, true, false );
+		m_pExperienceBar->ClearMinMax();
+		m_pExperienceBar->AddMinMax( 0, g_iLevelExperience[0] * g_flPromotionXPScale[iPromotion] );
+		for ( int i = 0; i < ASW_NUM_EXPERIENCE_LEVELS - 1; i++ )
+		{
+			m_pExperienceBar->AddMinMax( g_iLevelExperience[i] * g_flPromotionXPScale[iPromotion], g_iLevelExperience[i + 1] * g_flPromotionXPScale[iPromotion] );
+		}
 	}
 }
 

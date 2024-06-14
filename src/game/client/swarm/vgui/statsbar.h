@@ -20,25 +20,24 @@ class StatsBar : public vgui::Panel
 {
 	DECLARE_CLASS_SIMPLE( StatsBar, vgui::Panel );
 public:
-	StatsBar(vgui::Panel *parent, const char *name);
-	
+	StatsBar( vgui::Panel *parent, const char *name );
+
 	virtual void OnThink();
 	virtual void PerformLayout();
-	virtual void ApplySchemeSettings(vgui::IScheme *pScheme);
-	virtual void Init(float fCurrent, float fTarget, float fIncreaseRate, bool bDisplayInteger, bool bDisplayPercentage);
-	virtual void SetStartCountingTime(float fTime) { m_fStartTime = fTime; }
+	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
+	virtual void Init( float fCurrent, float fTarget, float fIncreaseRate, bool bDisplayInteger, bool bDisplayPercentage );
+	virtual void SetStartCountingTime( float fTime ) { m_fStartTime = fTime; }
 	void AddMinMax( float flBarMin, float flBarMax );
 	void ClearMinMax();
 	void UseExternalCounter( vgui::Label *pCounter );
-	void SetColors(Color text, Color bar, Color increasebar, Color unusedbar, Color background);
 	void SetShowMaxOnCounter( bool bShowMax ) { m_bShowMaxOnCounter = bShowMax; }
-	
+
 	vgui::Label *m_pLabel;
 	vgui::DHANDLE<vgui::Label> m_hExternalCounter;
 	vgui::Panel *m_pBar;
 	vgui::Panel *m_pIncreaseBar;
 	vgui::Panel *m_pUnusedBar;
-	CSoundPatch		*m_pLoopingSound;
+	CSoundPatch *m_pLoopingSound;
 
 	// find the min/max which contains the current value
 	float GetBarMin();
@@ -57,7 +56,7 @@ public:
 	bool m_bDisplayPercentage;
 	bool m_bDisplayTime;
 	float m_flBorder;
-	
+
 	bool m_bInit;
 	bool m_bShowMaxOnCounter;
 	float m_fStartTime;
@@ -65,11 +64,12 @@ public:
 	float m_flUpdateInterval;
 
 	// colors
-	Color m_TextColor;
-	Color m_BarColor;
-	Color m_IncreaseBarColor;
-	Color m_BackgroundColor;
-	Color m_UnusedColor;
+	CPanelAnimationVar( Color, m_TextColor, "text_color", "255 255 255 0" );
+	CPanelAnimationVar( Color, m_BarColor, "bar_color", "93 148 192 255" );
+	CPanelAnimationVar( Color, m_IncreaseBarColor, "increase_color", "255 255 255 255" );
+	CPanelAnimationVar( Color, m_UnusedColor, "unused_color", "17 37 57 255" );
+
+	CPanelAnimationVar( vgui::HFont, m_hLabelFont, "label_font", "Default" );
 
 	// list of future bar max's for looping bars (e.g. XP bar)
 	struct StatsBarMinMax
