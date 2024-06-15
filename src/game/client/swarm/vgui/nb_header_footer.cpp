@@ -297,8 +297,8 @@ void CNB_Header_Footer::ApplySchemeSettings( vgui::IScheme *pScheme )
 
 	switch( m_nTitleStyle )
 	{
-		case NB_TITLE_BRIGHT: m_pTitle->SetFgColor( Color( 255, 255, 255, 255 ) ); break;
-		case NB_TITLE_MEDIUM: m_pTitle->SetFgColor( Color( 47, 79, 111, 255 ) ); break;
+		case NB_TITLE_BRIGHT: m_pTitle->SetFgColor( m_TitleBrightColor ); break;
+		case NB_TITLE_MEDIUM: m_pTitle->SetFgColor( m_TitleMediumColor ); break;
 	}
 
 	switch( m_nBackgroundStyle )
@@ -307,7 +307,7 @@ void CNB_Header_Footer::ApplySchemeSettings( vgui::IScheme *pScheme )
 			{
 				m_pBackground->SetVisible( true );
 				m_pBackgroundImage->SetVisible( false );
-				m_pBackground->SetBgColor( Color( 0, 0, 0, 230 ) );
+				m_pBackground->SetBgColor( m_BackgroundColorDark );
 				break;
 			}
 		case NB_BACKGROUND_TRANSPARENT_BLUE:
@@ -321,14 +321,14 @@ void CNB_Header_Footer::ApplySchemeSettings( vgui::IScheme *pScheme )
 			{
 				m_pBackground->SetVisible( true );
 				m_pBackgroundImage->SetVisible( false );
-				m_pBackground->SetBgColor( Color( 128, 0, 0, 128 ) );
+				m_pBackground->SetBgColor( m_BackgroundColorRed );
 				break;
 			}
 		case NB_BACKGROUND_BLUE:
 			{
 				m_pBackground->SetVisible( true );
 				m_pBackgroundImage->SetVisible( false );
-				m_pBackground->SetBgColor( Color( 16, 32, 46, 230 ) );
+				m_pBackground->SetBgColor( m_BackgroundColorBlue );
 				break;
 			}
 		case NB_BACKGROUND_IMAGE:

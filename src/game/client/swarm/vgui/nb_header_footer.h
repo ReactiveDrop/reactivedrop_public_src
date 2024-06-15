@@ -110,6 +110,12 @@ public:
 
 	NB_Title_Style m_nTitleStyle;
 	NB_Background_Style m_nBackgroundStyle;
+
+	CPanelAnimationVar( Color, m_TitleBrightColor, "title_bright_color", "255 255 255 255" );
+	CPanelAnimationVar( Color, m_TitleMediumColor, "title_medium_color", "47 79 111 255" );
+	CPanelAnimationVar( Color, m_BackgroundColorRed, "bgcolor_red", "128 0 0 128" );
+	CPanelAnimationVar( Color, m_BackgroundColorBlue, "bgcolor_blue", "16 32 46 230" );
+	CPanelAnimationVar( Color, m_BackgroundColorDark, "bgcolor_dark", "0 0 0 230" );
 };
 
 class CNB_Gradient_Bar : public vgui::EditablePanel
