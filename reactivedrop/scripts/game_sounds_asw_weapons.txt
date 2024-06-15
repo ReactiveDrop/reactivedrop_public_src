@@ -1866,3 +1866,30 @@
 		"wave"		"weapons/3D/shieldrifle/shield_dmg2.wav"
 	}
 }
+
+"ASW_Weapon_Energy_Shield.ReloadA"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons/3D/reloads/shieldrifle_A.wav"
+}
+
+"ASW_Weapon_Energy_Shield.ReloadB"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons/3D/reloads/shieldrifle_B.wav"
+}
+
+"ASW_Weapon_Energy_Shield.ReloadC"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons/3D/reloads/shieldrifle_C.wav"
+}

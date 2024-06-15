@@ -631,7 +631,7 @@ void CRD_ShieldFalloff_Proxy::OnBind( void *pRenderable )
 		float flSinceLastShot = pGun ? gpGlobals->curtime - pGun->m_fLastMuzzleFlashTime : FLT_MAX;
 		float flTimeRemaining = pShield->m_flExpireTime - gpGlobals->curtime;
 		C_ASW_Marine *pMarine = pShield->m_hCreatorMarine;
-		if ( pMarine && pMarine->GetCurrentMeleeAttack() )
+		if ( pMarine && ( pMarine->GetCurrentMeleeAttack() || pMarine->GetActiveASWWeapon() != pGun ) )
 		{
 			SetFloatResult( -1.0f );
 			return;

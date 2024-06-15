@@ -52,7 +52,7 @@ ConVar asw_skill_engineering_sentry_base( "asw_skill_engineering_sentry_base", "
 ConVar asw_skill_engineering_firerate_base( "asw_skill_engineering_firerate_base", "0.0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_engineering_shield_health_base( "asw_skill_engineering_shield_health_base", "300", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_engineering_shield_duration_base( "asw_skill_engineering_shield_duration_base", "30", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_engineering_shield_damage_base( "asw_skill_engineering_shield_damage_base", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_engineering_shield_damage_base( "asw_skill_engineering_shield_damage_base", "2", FCVAR_REPLICATED | FCVAR_CHEAT );
 
 ConVar asw_skill_grenades_radius_base( "asw_skill_grenades_radius_base", "280", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_grenades_dmg_base( "asw_skill_grenades_dmg_base", "128", FCVAR_REPLICATED | FCVAR_CHEAT );
@@ -110,7 +110,7 @@ ConVar asw_skill_engineering_sentry_step( "asw_skill_engineering_sentry_step", "
 ConVar asw_skill_engineering_firerate_step( "asw_skill_engineering_firerate_step", "0.005", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_engineering_shield_health_step( "asw_skill_engineering_shield_health_step", "50", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_engineering_shield_duration_step( "asw_skill_engineering_shield_duration_step", "5", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_engineering_shield_damage_step( "asw_skill_engineering_shield_damage_step", "0.5", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_engineering_shield_damage_step( "asw_skill_engineering_shield_damage_step", "2", FCVAR_REPLICATED | FCVAR_CHEAT );
 
 ConVar asw_skill_grenades_radius_step( "asw_skill_grenades_radius_step", "20", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_grenades_dmg_step( "asw_skill_grenades_dmg_step", "20", FCVAR_REPLICATED | FCVAR_CHEAT );

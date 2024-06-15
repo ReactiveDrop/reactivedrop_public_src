@@ -26,15 +26,16 @@ ConVar rd_energy_shield_burst_penalty_shield( "rd_energy_shield_burst_penalty_sh
 ConVar rd_energy_shield_burst_sound_count( "rd_energy_shield_burst_sound_count", "10", FCVAR_CHEAT | FCVAR_REPLICATED, "number of consecutive bursts to get maximum pitch" );
 ConVar rd_energy_shield_burst_sound_pitch( "rd_energy_shield_burst_sound_pitch", "50", FCVAR_CHEAT | FCVAR_REPLICATED, "maximum pitch change" );
 ConVar rd_energy_shield_holster_burst( "rd_energy_shield_holster_burst", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "allow holstering to cancel burst" );
-ConVar rd_energy_shield_holster_shield( "rd_energy_shield_holster_shield", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "allow holstering to cancel shield" );
+ConVar rd_energy_shield_holster_shield( "rd_energy_shield_holster_shield", "2", FCVAR_CHEAT | FCVAR_REPLICATED, "allow holstering to cancel shield (2 = holster does not cancel, only pauses)" );
 ConVar rd_energy_shield_activation_blocks_shooting( "rd_energy_shield_activation_blocks_shooting", "0.5", FCVAR_CHEAT | FCVAR_REPLICATED, "minimum delay between activating shield and shooting next burst" );
 #ifdef GAME_DLL
 ConVar rd_energy_shield_touch_interval( "rd_energy_shield_touch_interval", "0.2", FCVAR_CHEAT, "time between damage ticks for the energy shield's electric dissolve" );
-ConVar rd_energy_shield_distance_min( "rd_energy_shield_distance_min", "64", FCVAR_CHEAT );
-ConVar rd_energy_shield_distance_max( "rd_energy_shield_distance_max", "112", FCVAR_CHEAT );
-ConVar rd_energy_shield_height_min( "rd_energy_shield_height_min", "32", FCVAR_CHEAT );
-ConVar rd_energy_shield_height_max( "rd_energy_shield_height_max", "64", FCVAR_CHEAT );
-ConVar rd_energy_shield_move_speed( "rd_energy_shield_move_speed", "10", FCVAR_CHEAT );
+ConVar rd_energy_shield_distance_min( "rd_energy_shield_distance_min", "64", FCVAR_CHEAT, "shield min distance in front of marine" );
+ConVar rd_energy_shield_distance_max( "rd_energy_shield_distance_max", "112", FCVAR_CHEAT, "shield max distance in front of marine (it stays this far out unless there's a wall)" );
+ConVar rd_energy_shield_height_min( "rd_energy_shield_height_min", "32", FCVAR_CHEAT, "shield height above floor when marine is aiming horizontally or lower" );
+ConVar rd_energy_shield_height_max( "rd_energy_shield_height_max", "64", FCVAR_CHEAT, "shield height above floor when marine is aiming straight up" );
+ConVar rd_energy_shield_move_speed( "rd_energy_shield_move_speed", "10", FCVAR_CHEAT, "speed multiplier for shield moving forward and backward" );
+ConVar rd_energy_shield_ff( "rd_energy_shield_ff", "0", FCVAR_CHEAT, "does the energy shield damage friendly characters?" );
 #endif
 extern ConVar rd_shield_rifle_dmg_base;
 
@@ -112,6 +113,15 @@ const char *CASW_Weapon_Energy_Shield::GetMuzzleEffectName( int iShot )
 	return "muzzle_shieldrifle";
 }
 
+const char *CASW_Weapon_Energy_Shield::GetPartialReloadSound( int iPart )
+{
+	if ( iPart == 1 )
+		return "ASW_Weapon_Energy_Shield.ReloadB";
+	if ( iPart == 2 )
+		return "ASW_Weapon_Energy_Shield.ReloadC";
+	return "ASW_Weapon_Energy_Shield.ReloadA";
+}
+
 void CASW_Weapon_Energy_Shield::OnDataChanged( DataUpdateType_t updateType )
 {
 	BaseClass::OnDataChanged( updateType );
@@ -170,7 +180,7 @@ void CASW_Weapon_Energy_Shield::ClientThink()
 	}
 }
 #else
-void CASW_Weapon_Energy_Shield::DestroyShield()
+void CASW_Weapon_Energy_Shield::DestroyShield( bool bViolent )
 {
 	Assert( m_hShield.Get() );
 	if ( !m_hShield.Get() )
@@ -178,9 +188,18 @@ void CASW_Weapon_Energy_Shield::DestroyShield()
 
 	CBaseEntity *pHelpHelpImBeingSupressed = ( CBaseEntity * )te->GetSuppressHost();
 	te->SetSuppressHost( NULL );
-	CPASAttenuationFilter filter( m_hShield->GetAbsOrigin(), "ASW_Weapon_Energy_Shield.TurnOff" );
-	EmitSound( filter, entindex(), "ASW_Weapon_Energy_Shield.TurnOff", &m_hShield->GetAbsOrigin() );
-	DispatchParticleEffect( "energy_shield_dissipate", m_hShield->GetAbsOrigin(), m_hShield->GetAbsAngles() );
+	if ( bViolent )
+	{
+		CPASAttenuationFilter filter( m_hShield->GetAbsOrigin(), "ASW_Weapon_Energy_Shield.Shatter" );
+		EmitSound( filter, entindex(), "ASW_Weapon_Energy_Shield.Shatter", &m_hShield->GetAbsOrigin() );
+		DispatchParticleEffect( "energy_shield_dissipate_violent", m_hShield->GetAbsOrigin(), m_hShield->GetAbsAngles() );
+	}
+	else
+	{
+		CPASAttenuationFilter filter( m_hShield->GetAbsOrigin(), "ASW_Weapon_Energy_Shield.TurnOff" );
+		EmitSound( filter, entindex(), "ASW_Weapon_Energy_Shield.TurnOff", &m_hShield->GetAbsOrigin() );
+		DispatchParticleEffect( "energy_shield_dissipate", m_hShield->GetAbsOrigin(), m_hShield->GetAbsAngles() );
+	}
 	te->SetSuppressHost( pHelpHelpImBeingSupressed );
 
 	UTIL_Remove( m_hShield );
@@ -205,6 +224,9 @@ void CASW_Weapon_Energy_Shield::Precache()
 
 	PrecacheScriptSound( "ASW_Weapon_Energy_Shield.TurnOn" );
 	PrecacheScriptSound( "ASW_Weapon_Energy_Shield.TurnOff" );
+	PrecacheScriptSound( "ASW_Weapon_Energy_Shield.ReloadA" );
+	PrecacheScriptSound( "ASW_Weapon_Energy_Shield.ReloadB" );
+	PrecacheScriptSound( "ASW_Weapon_Energy_Shield.ReloadC" );
 
 #ifdef GAME_DLL
 	UTIL_PrecacheOther( "asw_energy_shield_shield" );
@@ -335,7 +357,7 @@ void CASW_Weapon_Energy_Shield::UpdateOnRemove()
 #ifdef GAME_DLL
 	if ( m_hShield.Get() )
 	{
-		DestroyShield();
+		DestroyShield( true );
 	}
 #endif
 
@@ -345,9 +367,9 @@ void CASW_Weapon_Energy_Shield::UpdateOnRemove()
 bool CASW_Weapon_Energy_Shield::Holster( CBaseCombatWeapon *pSwitchingTo )
 {
 #ifdef GAME_DLL
-	if ( m_hShield.Get() )
+	if ( m_hShield.Get() && rd_energy_shield_holster_shield.GetInt() <= 1 )
 	{
-		DestroyShield();
+		DestroyShield( false );
 	}
 #endif
 
@@ -359,7 +381,7 @@ void CASW_Weapon_Energy_Shield::Drop( const Vector &vecVelocity )
 #ifdef GAME_DLL
 	if ( m_hShield.Get() )
 	{
-		DestroyShield();
+		DestroyShield( !GetMarine() || !GetMarine()->IsAlive() );
 	}
 #endif
 
@@ -503,7 +525,7 @@ void CASW_Energy_Shield::ClientThink()
 	m_pDLight->radius = 130.0f;
 	m_pDLight->die = m_flExpireTime;
 
-	bool bHiddenNow = m_hCreatorMarine.Get() && m_hCreatorMarine->GetCurrentMeleeAttack() != NULL;
+	bool bHiddenNow = m_hCreatorMarine.Get() && ( m_hCreatorMarine->GetCurrentMeleeAttack() != NULL || m_hCreatorMarine->GetActiveASWWeapon() != m_hCreatorWeapon.Get() );
 	if ( m_bWasHidden != bHiddenNow )
 	{
 		if ( bHiddenNow )
@@ -571,6 +593,8 @@ bool CASW_Energy_Shield::IsShieldInactive() const
 		return true;
 	if ( !m_hCreatorWeapon.Get() )
 		return true;
+	if ( m_hCreatorMarine->GetActiveASWWeapon() != m_hCreatorWeapon.Get() )
+		return true;
 
 	if ( m_hCreatorMarine->GetCurrentMeleeAttack() )
 		return true;
@@ -619,19 +643,12 @@ int CASW_Energy_Shield::OnTakeDamage( const CTakeDamageInfo &info )
 }
 void CASW_Energy_Shield::Event_Killed( const CTakeDamageInfo &info )
 {
-	CBaseEntity *pHelpHelpImBeingSupressed = ( CBaseEntity * )te->GetSuppressHost();
-	te->SetSuppressHost( NULL );
-	DispatchParticleEffect( "energy_shield_dissipate_violent", GetAbsOrigin(), GetAbsAngles() );
-	CPASAttenuationFilter filter( this, "ASW_Weapon_Energy_Shield.Shatter" );
-	EmitSound( filter, m_hCreatorWeapon.Get() ? m_hCreatorWeapon->entindex() : 0, "ASW_Weapon_Energy_Shield.Shatter", &GetAbsOrigin() );
-	te->SetSuppressHost( pHelpHelpImBeingSupressed );
-
-	BaseClass::Event_Killed( info );
-
 	if ( m_hCreatorWeapon.Get() )
 	{
-		m_hCreatorWeapon->m_hShield = NULL;
+		m_hCreatorWeapon->DestroyShield( true );
 	}
+
+	BaseClass::Event_Killed( info );
 
 	UTIL_Remove( this );
 }
@@ -694,7 +711,7 @@ void CASW_Energy_Shield::PositionThink()
 
 	if ( gpGlobals->curtime > m_flExpireTime )
 	{
-		m_hCreatorWeapon->DestroyShield();
+		m_hCreatorWeapon->DestroyShield( false );
 	}
 
 	SetContextThink( &CASW_Energy_Shield::PositionThink, gpGlobals->curtime + flInterval, s_pPositionThink );
@@ -724,6 +741,11 @@ void CASW_Energy_Shield::TouchThink()
 			}
 
 			if ( pEnt->m_takedamage != DAMAGE_YES )
+			{
+				continue;
+			}
+
+			if ( !rd_energy_shield_ff.GetBool() && m_hCreatorMarine->IRelationType( pEnt ) == D_LI )
 			{
 				continue;
 			}

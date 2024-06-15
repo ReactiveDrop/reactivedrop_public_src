@@ -26,6 +26,7 @@ public:
 
 	const char *GetTracerEffectName( int iShot ) override;
 	const char *GetMuzzleEffectName( int iShot ) override;
+	const char *GetPartialReloadSound( int iPart ) override;
 	bool HasSecondaryExplosive() const override { return false; }
 	void OnDataChanged( DataUpdateType_t updateType ) override;
 	void ClientThink() override;
@@ -36,7 +37,7 @@ public:
 #else
 	DECLARE_DATADESC();
 
-	void DestroyShield();
+	void DestroyShield( bool bViolent );
 #endif
 
 	void Precache() override;
