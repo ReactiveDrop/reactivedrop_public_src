@@ -386,7 +386,7 @@ void CExperienceReport::Init()
 	int iBar = 1;
 
 	// other players
-	for ( int i = 1; i <= gpGlobals->maxClients && iBar < ASW_EXPERIENCE_REPORT_MAX_PLAYERS; i++ )
+	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 	{
 		if ( !g_PR->IsConnected( i ) )
 			continue;
@@ -396,7 +396,8 @@ void CExperienceReport::Init()
 			continue;
 
 		pOtherPlayer->AwardExperience();
-		m_pExperienceBar[ iBar ]->InitFor( pOtherPlayer );
+		if ( iBar < ASW_EXPERIENCE_REPORT_MAX_PLAYERS )
+			m_pExperienceBar[iBar]->InitFor( pOtherPlayer );
 		iBar++;
 	}
 
