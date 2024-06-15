@@ -323,17 +323,6 @@ void CASW_Missile_Round::MissileHit( CBaseEntity *pEnt, trace_t &tr )
 		}
 	}
 
-	if ( pEnt->Classify() == CLASS_ASW_ENERGY_SHIELD_SHIELD )
-	{
-		EmitSound( m_ShotDef.m_strSound_hitWorld );
-		DispatchParticleEffect( m_ShotDef.m_strParticles_hit, GetAbsOrigin(), vec3_angle );
-
-		CASW_Energy_Shield *pShield = assert_cast< CASW_Energy_Shield * >( pEnt );
-		pShield->OnProjectileHit( this );
-
-		return;
-	}
-
 	if ( pEnt->m_takedamage != DAMAGE_NO )
 	{
 		trace_t	tr2;

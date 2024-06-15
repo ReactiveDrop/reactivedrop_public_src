@@ -616,7 +616,7 @@ public:
 
 void CRD_ShieldFalloff_Proxy::OnBind( void *pRenderable )
 {
-	C_BaseEntity *pEnt = static_cast< IClientRenderable * >( pRenderable )->GetIClientUnknown()->GetBaseEntity();
+	C_BaseEntity *pEnt = pRenderable ? static_cast< IClientRenderable * >( pRenderable )->GetIClientUnknown()->GetBaseEntity() : NULL;
 	if ( !pEnt )
 	{
 		SetFloatResult( 0.1f );
@@ -629,12 +629,20 @@ void CRD_ShieldFalloff_Proxy::OnBind( void *pRenderable )
 		float flSinceLastHit = gpGlobals->curtime - pShield->m_flLastHitTime;
 		C_ASW_Weapon_Energy_Shield *pGun = pShield->m_hCreatorWeapon;
 		float flSinceLastShot = pGun ? gpGlobals->curtime - pGun->m_fLastMuzzleFlashTime : FLT_MAX;
+		float flTimeRemaining = pShield->m_flExpireTime - gpGlobals->curtime;
 		C_ASW_Marine *pMarine = pShield->m_hCreatorMarine;
 		if ( pMarine && pMarine->GetCurrentMeleeAttack() )
-			flSinceLastShot = 0.0f;
-		float flBlinkHit = RemapValClamped( flSinceLastHit, 0.0f, 0.4f, 1.0f, 0.1f );
-		float flBlinkShot = RemapValClamped( flSinceLastShot, 0.0f, 0.4f, 0.0f, flBlinkHit );
-		SetFloatResult( flBlinkShot );
+		{
+			SetFloatResult( -1.0f );
+			return;
+		}
+		float flBlink = RemapValClamped( flSinceLastHit, 0.0f, 0.4f, 1.0f, 0.1f );
+		flBlink = RemapValClamped( flSinceLastShot, 0.0f, 0.4f, 0.0f, flBlink );
+		if ( flTimeRemaining < 3 )
+			flBlink += ( 1 - cosf( flTimeRemaining * M_PI_F * 6 ) ) * 0.2f;
+		else if ( flTimeRemaining < 10 )
+			flBlink += ( 1 - cosf( flTimeRemaining * M_PI_F * 2 ) ) * 0.2f;
+		SetFloatResult( flBlink );
 		return;
 	}
 
@@ -642,3 +650,53 @@ void CRD_ShieldFalloff_Proxy::OnBind( void *pRenderable )
 }
 
 EXPOSE_MATERIAL_PROXY( CRD_ShieldFalloff_Proxy, ShieldFalloff );
+
+
+class CRD_HealthFrame_Proxy : public CResultProxy
+{
+public:
+	bool Init( IMaterial *pMaterial, KeyValues *pKeyValues ) override;
+	void OnBind( void *pRenderable ) override;
+
+	IMaterialVar *m_pTextureVar;
+};
+
+bool CRD_HealthFrame_Proxy::Init( IMaterial *pMaterial, KeyValues *pKeyValues )
+{
+	const char *szTextureVarName = pKeyValues->GetString( "textureVar", NULL );
+	if ( !szTextureVarName )
+		return false;
+
+	bool bFound;
+	m_pTextureVar = pMaterial->FindVar( szTextureVarName, &bFound );
+	if ( !bFound )
+		return false;
+
+	return CResultProxy::Init( pMaterial, pKeyValues );
+}
+
+void CRD_HealthFrame_Proxy::OnBind( void *pRenderable )
+{
+	Assert( m_pTextureVar && m_pTextureVar->IsTexture() );
+
+	C_BaseEntity *pEnt = pRenderable ? static_cast< IClientRenderable * >( pRenderable )->GetIClientUnknown()->GetBaseEntity() : NULL;
+	if ( !pEnt || pEnt->GetMaxHealth() == 0 || !m_pTextureVar || !m_pTextureVar->IsTexture() )
+	{
+		SetFloatResult( 0 );
+		return;
+	}
+
+	ITexture *pTexture = m_pTextureVar->GetTextureValue();
+	Assert( pTexture );
+	if ( !pTexture || pTexture->GetNumAnimationFrames() < 1 )
+	{
+		SetFloatResult( 0 );
+		return;
+	}
+
+	int iFramesFromEnd = clamp( pEnt->GetHealth(), 0, pEnt->GetMaxHealth() ) * pTexture->GetNumAnimationFrames() / ( pEnt->GetMaxHealth() + 1 );
+	Assert( iFramesFromEnd >= 0 && iFramesFromEnd < pTexture->GetNumAnimationFrames() );
+	SetFloatResult( pTexture->GetNumAnimationFrames() - iFramesFromEnd - 1 );
+}
+
+EXPOSE_MATERIAL_PROXY( CRD_HealthFrame_Proxy, HealthFrame );

@@ -6,6 +6,7 @@
 #define CASW_Weapon_Energy_Shield C_ASW_Weapon_Energy_Shield
 #define CASW_Energy_Shield C_ASW_Energy_Shield
 #define CASW_Marine C_ASW_Marine
+struct dlight_t;
 #endif
 
 class CASW_Energy_Shield;
@@ -62,10 +63,10 @@ public:
 	Class_T Classify() override { return ( Class_T )CLASS_ASW_ENERGY_SHIELD; }
 };
 
-class CASW_Energy_Shield : public CBaseAnimating
+class CASW_Energy_Shield : public CBaseCombatCharacter
 {
 public:
-	DECLARE_CLASS( CASW_Energy_Shield, CBaseAnimating );
+	DECLARE_CLASS( CASW_Energy_Shield, CBaseCombatCharacter );
 	DECLARE_NETWORKCLASS();
 
 	CASW_Energy_Shield();
@@ -76,19 +77,34 @@ public:
 
 	void OnDataChanged( DataUpdateType_t updateType ) override;
 	void ClientThink() override;
+	int GetHealth() const override { return m_iHealth; }
+	int GetMaxHealth() const override { return m_iMaxHealth; }
+
+	CNetworkVar( int, m_iMaxHealth );
+	dlight_t *m_pDLight;
+	bool m_bWasHidden;
 #else
 	DECLARE_DATADESC();
 
 	void Spawn() override;
 	bool CreateVPhysics() override;
+	void PhysicsSimulate() override;
 	bool IsShieldInactive() const;
 	void StartTouch( CBaseEntity *pOther ) override;
 	void EndTouch( CBaseEntity *pOther ) override;
+	int OnTakeDamage( const CTakeDamageInfo &info ) override;
+	void Event_Killed( const CTakeDamageInfo &info ) override;
+	void TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr ) override;
+	void PositionThink();
 	void TouchThink();
 	bool CheckProjectileHit( CBaseEntity *pProjectile );
 	void OnProjectileHit( CBaseEntity *pProjectile );
 
 	CUtlVector<EHANDLE> m_vecTouching;
+	float m_flCurrentPosition;
+	CSoundPatch *m_pSoundLoop;
+
+	IMPLEMENT_NETWORK_VAR_FOR_DERIVED( m_iMaxHealth );
 #endif
 
 	void Precache() override;
@@ -99,5 +115,6 @@ public:
 	CNetworkHandle( CASW_Weapon_Energy_Shield, m_hCreatorWeapon );
 	CNetworkVar( float, m_flLastHitTime );
 	CNetworkVar( float, m_flExpireTime );
+	IMPLEMENT_NETWORK_VAR_FOR_DERIVED( m_iHealth );
 };
 #endif

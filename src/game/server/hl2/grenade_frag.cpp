@@ -137,6 +137,7 @@ void CGrenadeFrag::Spawn( void )
 
 	BaseClass::Spawn();
 
+	SetCollisionGroup( ASW_COLLISION_GROUP_NPC_GRENADES );
 	CreateVPhysics();
 }
 

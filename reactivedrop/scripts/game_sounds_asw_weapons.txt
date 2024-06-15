@@ -1788,3 +1788,81 @@
 	"pitch"			"95, 105"
 	"wave"			"@weapons\2D\shieldrifle\singleShotFP.wav"
 }
+
+"ASW_Weapon_Energy_Shield.Loop"
+{
+	"channel"		"CHAN_ITEM"
+	"soundlevel"	"SNDLVL_75dB"
+	"volume"		"0.75"
+	"pitch"			"100"
+	"wave"			"^weapons/3D/shieldrifle/shieldloop.wav"
+}
+
+"ASW_Weapon_Energy_Shield.TurnOn"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_95dB"
+	"volume"		"1.0"
+	"pitch"			"100"
+	"wave"			"weapons/3D/shieldrifle/shield_on.wav"
+}
+
+"ASW_Weapon_Energy_Shield.TurnOff"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_95dB"
+	"volume"		"1.0"
+	"pitch"			"100"
+	"wave"			"weapons/3D/shieldrifle/shield_off.wav"
+}
+
+"ASW_Weapon_Energy_Shield.Burn"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_85dB"
+	"volume"		"0.75"
+	"pitch"			"85,105"
+	"rndwave"
+	{
+		"wave"		"weapons/3D/shieldrifle/shield_stun1.wav"
+		"wave"		"weapons/3D/shieldrifle/shield_stun2.wav"
+		"wave"		"weapons/3D/shieldrifle/shield_stun3.wav"
+		"wave"		"weapons/3D/shieldrifle/shield_stun4.wav"
+	}
+}
+
+"ASW_Weapon_Energy_Shield.BurnKill"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_95dB"
+	"volume"		"1.0"
+	"pitch"			"100"
+	"wave"			"weapons/3D/shieldrifle/shield_stun_kill.wav"
+}
+
+"ASW_Weapon_Energy_Shield.Shatter"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_120dB"
+	"volume"		"1.0"
+	"pitch"			"100"
+	"rndwave"
+	{
+		"wave"		"weapons/3D/shieldrifle/shield_break1.wav"
+		"wave"		"weapons/3D/shieldrifle/shield_break2.wav"
+		"wave"		"weapons/3D/shieldrifle/shield_break3.wav"
+	}
+}
+
+"ASW_Weapon_Energy_Shield.Damaged"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_85dB"
+	"volume"		"0.6"
+	"pitch"			"85,105"
+	"rndwave"
+	{
+		"wave"		"weapons/3D/shieldrifle/shield_dmg1.wav"
+		"wave"		"weapons/3D/shieldrifle/shield_dmg2.wav"
+	}
+}

@@ -63,5 +63,11 @@ bool CASWTraceFilterShot::ShouldHitEntity( IHandleEntity *pHandleEntity, int con
 	if ( m_bSkipAliens && IsAlienClass( pEntity->Classify() ) )
 		return false;
 
+	if ( pEntity->Classify() == CLASS_ASW_ENERGY_SHIELD_SHIELD )
+	{
+		float flDot = DotProduct( m_vecShotNormal, pEntity->Forward() );
+		return flDot < 0;
+	}
+
 	return BaseClass::ShouldHitEntity( pHandleEntity, contentsMask );
 }
