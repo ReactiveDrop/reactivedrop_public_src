@@ -20,7 +20,7 @@ class vgui::Label;
 class WeaponUnlockPanel;
 // == MANAGED_CLASS_DECLARATIONS_END ==
 
-#define ASW_EXPERIENCE_REPORT_MAX_PLAYERS 4
+#define ASW_EXPERIENCE_REPORT_MAX_PLAYERS 8
 #define ASW_EXPERIENCE_REPORT_STAT_LINES 7
 
 // shows experience earned breakdown, weapons unlocked, etc.
