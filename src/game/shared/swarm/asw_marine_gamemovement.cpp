@@ -118,6 +118,7 @@ extern void DrawDispCollPlane( CBaseTrace *pTrace );
 extern ConVar asw_debug_marine_damage;
 ConVar asw_marine_fall_damage( "asw_marine_fall_damage", "0", FCVAR_CHEAT, "Marines take falling damage" );
 ConVar asw_alien_walk_damage( "asw_alien_walk_damage", "15", FCVAR_CHEAT, "Marines take damage for standing on an alien" );
+ConVar asw_alien_walk_damage_tiny( "asw_alien_walk_damage_tiny", "0.01", FCVAR_CHEAT, "Damage scale for standing on an alien with HULL_TINY" );
 ConVar asw_alien_walk_damage_interval( "asw_alien_walk_damage_interval", "0.4", FCVAR_CHEAT, "Marines take damage for standing on an alien every this many seconds", true, 0.01f, false, 0 );
 ConVar asw_marine_fatal_fall_speed( "asw_marine_fatal_fall_speed", "1024", FCVAR_CHEAT, "fall speed at which the marine takes their maximum health in damage (default is approx 60 feet)" );
 #endif
@@ -952,10 +953,12 @@ void CASW_MarineGameMovement::ProcessMovement( CBasePlayer *pPlayer, CBaseEntity
 		CBaseEntity* pGround = pMarine->GetGroundEntity();
 		if ( pGround && pGround->IsAlienClassType() && asw_alien_walk_damage.GetFloat() > 0.0f )
 		{
-			CASW_Alien* pAlien = assert_cast<CASW_Alien*>(pGround);
+			CASW_Alien *pAlien = assert_cast< CASW_Alien * >( pGround );
 			if ( gpGlobals->curtime > pTrueMarineEntity->m_fNextAlienWalkDamage && ( pAlien->Classify() != CLASS_ASW_DRONE || ( pAlien->GetTask() && pAlien->GetTask()->iTask != CASW_Alien::TASK_UNBURROW ) ) )
 			{
 				CTakeDamageInfo info( pAlien, pAlien, asw_alien_walk_damage.GetFloat(), DMG_SLASH );
+				if ( pAlien->GetHullType() == HULL_TINY )
+					info.ScaleDamage( asw_alien_walk_damage_tiny.GetFloat() );
 				Vector diff = pMarine->GetAbsOrigin() - pAlien->GetAbsOrigin();
 				diff.NormalizeInPlace();
 				CalculateMeleeDamageForce( &info, diff, pMarine->GetAbsOrigin() - diff * 30 );

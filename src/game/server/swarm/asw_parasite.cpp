@@ -702,17 +702,23 @@ bool CASW_Parasite::CheckInfestTarget( CBaseEntity *pOther )
 			return false;
 		}
 
-		if ( m_bElectroStunned )
-		{
-			// allow mid-air tesla cannon saves
-			return false;
-		}
-
 		return true;
 	}
 	else if ( pOther && pOther->Classify() == CLASS_ASW_COLONIST )
 	{
-		return !IsOnFire();
+		if ( IsOnFire() )
+		{
+			// don't actually infest if we're on fire, since we'll die very shortly
+			return false;
+		}
+
+		if ( IsAttackFrozen() )
+		{
+			// can't attack until we thaw a bit
+			return false;
+		}
+
+		return true;
 	}
 	return false;
 }
