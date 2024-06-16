@@ -51,8 +51,7 @@ ConVar asw_skill_engineering_welding_base( "asw_skill_engineering_welding_base",
 ConVar asw_skill_engineering_sentry_base( "asw_skill_engineering_sentry_base", "1.0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_engineering_firerate_base( "asw_skill_engineering_firerate_base", "0.0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_engineering_shield_health_base( "asw_skill_engineering_shield_health_base", "300", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_engineering_shield_duration_base( "asw_skill_engineering_shield_duration_base", "30", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_engineering_shield_damage_base( "asw_skill_engineering_shield_damage_base", "2", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_engineering_shield_duration_base( "asw_skill_engineering_shield_duration_base", "6", FCVAR_REPLICATED | FCVAR_CHEAT );
 
 ConVar asw_skill_grenades_radius_base( "asw_skill_grenades_radius_base", "280", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_grenades_dmg_base( "asw_skill_grenades_dmg_base", "128", FCVAR_REPLICATED | FCVAR_CHEAT );
@@ -109,8 +108,7 @@ ConVar asw_skill_engineering_welding_step( "asw_skill_engineering_welding_step",
 ConVar asw_skill_engineering_sentry_step( "asw_skill_engineering_sentry_step", "0.25", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_engineering_firerate_step( "asw_skill_engineering_firerate_step", "0.005", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_engineering_shield_health_step( "asw_skill_engineering_shield_health_step", "50", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_engineering_shield_duration_step( "asw_skill_engineering_shield_duration_step", "5", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_engineering_shield_damage_step( "asw_skill_engineering_shield_damage_step", "2", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_engineering_shield_duration_step( "asw_skill_engineering_shield_duration_step", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
 
 ConVar asw_skill_grenades_radius_step( "asw_skill_grenades_radius_step", "20", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_grenades_dmg_step( "asw_skill_grenades_dmg_step", "20", FCVAR_REPLICATED | FCVAR_CHEAT );
@@ -179,6 +177,8 @@ ConVar asw_skill_accuracy_shield_rifle_dmg_base( "asw_skill_accuracy_shield_rifl
 ConVar asw_skill_accuracy_shield_rifle_dmg_step( "asw_skill_accuracy_shield_rifle_dmg_step", "2", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_accuracy_cryo_dmg_base( "asw_skill_accuracy_cryo_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar asw_skill_accuracy_cryo_dmg_step( "asw_skill_accuracy_cryo_dmg_step", "0.5", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_accuracy_shield_damage_base( "asw_skill_accuracy_shield_damage_base", "30", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar asw_skill_accuracy_shield_damage_step( "asw_skill_accuracy_shield_damage_step", "20", FCVAR_REPLICATED | FCVAR_CHEAT );
 
 ConVar asw_skill_laser_mines_base( "asw_skill_laser_mines_base", "1", FCVAR_REPLICATED | FCVAR_CHEAT, "Number of laser mines to deploy by marines with no Explosives skills", true, 1, true, 10 );
 ConVar asw_skill_laser_mines_moderate( "asw_skill_laser_mines_moderate", "2", FCVAR_REPLICATED | FCVAR_CHEAT, "Number of laser mines to deploy by marines with moderate(>1) Explosives skills", true, 1, true, 10 );
@@ -362,8 +362,6 @@ float CASW_Marine_Skills::GetSkillBasedValue( CASW_Marine_Profile *pProfile, ASW
 			return asw_skill_engineering_shield_health_base.GetFloat() + asw_skill_engineering_shield_health_step.GetFloat() * iSkillPoints;
 		case ASW_MARINE_SUBSKILL_ENGINEERING_SHIELD_DURATION:
 			return asw_skill_engineering_shield_duration_base.GetFloat() + asw_skill_engineering_shield_duration_step.GetFloat() * iSkillPoints;
-		case ASW_MARINE_SUBSKILL_ENGINEERING_SHIELD_DAMAGE:
-			return asw_skill_engineering_shield_damage_base.GetFloat() + asw_skill_engineering_shield_damage_step.GetFloat() * iSkillPoints;
 		default:
 			Assert( 0 );
 			return 0.0f;
@@ -409,6 +407,8 @@ float CASW_Marine_Skills::GetSkillBasedValue( CASW_Marine_Profile *pProfile, ASW
 			return asw_skill_accuracy_shield_rifle_dmg_base.GetFloat() + asw_skill_accuracy_shield_rifle_dmg_step.GetFloat() * iSkillPoints;
 		case ASW_MARINE_SUBSKILL_ACCURACY_CRYO_DMG:
 			return asw_skill_accuracy_cryo_dmg_base.GetFloat() + asw_skill_accuracy_cryo_dmg_step.GetFloat() * iSkillPoints;
+		case ASW_MARINE_SUBSKILL_ACCURACY_SHIELD_DAMAGE:
+			return asw_skill_accuracy_shield_damage_base.GetFloat() + asw_skill_accuracy_shield_damage_step.GetFloat() * iSkillPoints;
 		default:
 			Assert( 0 );
 			return 0.0f;

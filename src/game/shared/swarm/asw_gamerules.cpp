@@ -789,10 +789,10 @@ ConVar	sk_plr_dmg_asw_eshield( "sk_plr_dmg_asw_eshield", "10", FCVAR_REPLICATED 
 ConVar	sk_npc_dmg_asw_eshield( "sk_npc_dmg_asw_eshield", "10", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar	sk_max_asw_eshield( "sk_max_asw_eshield", "8", FCVAR_REPLICATED | FCVAR_CHEAT );
 
-// Burst Rifle (4 clips, 120 per)
+// Burst Rifle (5 clips, 99 per)
 ConVar	sk_plr_dmg_asw_r_burst( "sk_plr_dmg_asw_r_burst", "7", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar	sk_npc_dmg_asw_r_burst( "sk_npc_dmg_asw_r_burst", "7", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar	sk_max_asw_r_burst( "sk_max_asw_r_burst", "480", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_r_burst( "sk_max_asw_r_burst", "495", FCVAR_REPLICATED | FCVAR_CHEAT );
 
 ConVar sk_asw_parasite_infest_dmg_easy( "sk_asw_parasite_infest_dmg_easy", "175", FCVAR_REPLICATED | FCVAR_CHEAT, "Total damage from parasite infestation" );
 ConVar sk_asw_parasite_infest_dmg_normal( "sk_asw_parasite_infest_dmg_normal", "225", FCVAR_REPLICATED | FCVAR_CHEAT, "Total damage from parasite infestation" );

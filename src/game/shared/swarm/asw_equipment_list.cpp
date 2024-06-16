@@ -146,7 +146,7 @@ ConVar asw_ammo_count_bait( "asw_ammo_count_bait", "9", FCVAR_CHEAT | FCVAR_REPL
 ConVar asw_ammo_count_stun_grenades( "asw_ammo_count_stun_grenades", "10", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_incendiary_grenades( "asw_ammo_count_incendiary_grenades", "7", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_shield_bubble( "asw_ammo_count_shield_bubble", "3", FCVAR_CHEAT | FCVAR_REPLICATED );
-ConVar asw_ammo_count_rifle_burst( "asw_ammo_count_rifle_burst", "120", FCVAR_CHEAT | FCVAR_REPLICATED );
+ConVar asw_ammo_count_rifle_burst( "asw_ammo_count_rifle_burst", "99", FCVAR_CHEAT | FCVAR_REPLICATED );
 
 #define WEAPON_CLASS_NAME( class, name ) "asw_weapon_" #class, "#asw_weapon_" #name, "#asw_weaponl_" #name, "#asw_wdesc_" #name, "#asw_weapon_" #name "_altfire", "#asw_weapon_" #name "_attributes"
 #define WEAPON_NAME( name ) WEAPON_CLASS_NAME( name, name )

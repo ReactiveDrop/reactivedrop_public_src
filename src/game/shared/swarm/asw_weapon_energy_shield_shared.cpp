@@ -30,8 +30,8 @@ ConVar rd_energy_shield_holster_shield( "rd_energy_shield_holster_shield", "2", 
 ConVar rd_energy_shield_activation_blocks_shooting( "rd_energy_shield_activation_blocks_shooting", "0.5", FCVAR_CHEAT | FCVAR_REPLICATED, "minimum delay between activating shield and shooting next burst" );
 #ifdef GAME_DLL
 ConVar rd_energy_shield_touch_interval( "rd_energy_shield_touch_interval", "0.2", FCVAR_CHEAT, "time between damage ticks for the energy shield's electric dissolve" );
-ConVar rd_energy_shield_distance_min( "rd_energy_shield_distance_min", "64", FCVAR_CHEAT, "shield min distance in front of marine" );
-ConVar rd_energy_shield_distance_max( "rd_energy_shield_distance_max", "112", FCVAR_CHEAT, "shield max distance in front of marine (it stays this far out unless there's a wall)" );
+ConVar rd_energy_shield_distance_min( "rd_energy_shield_distance_min", "40", FCVAR_CHEAT, "shield min distance in front of marine" );
+ConVar rd_energy_shield_distance_max( "rd_energy_shield_distance_max", "70", FCVAR_CHEAT, "shield max distance in front of marine (it stays this far out unless there's a wall)" );
 ConVar rd_energy_shield_height_min( "rd_energy_shield_height_min", "32", FCVAR_CHEAT, "shield height above floor when marine is aiming horizontally or lower" );
 ConVar rd_energy_shield_height_max( "rd_energy_shield_height_max", "64", FCVAR_CHEAT, "shield height above floor when marine is aiming straight up" );
 ConVar rd_energy_shield_move_speed( "rd_energy_shield_move_speed", "10", FCVAR_CHEAT, "speed multiplier for shield moving forward and backward" );
@@ -721,7 +721,7 @@ void CASW_Energy_Shield::TouchThink()
 {
 	if ( !IsShieldInactive() )
 	{
-		CTakeDamageInfo info( this, m_hCreatorMarine, m_hCreatorWeapon, MarineSkills()->GetSkillBasedValueByMarine( m_hCreatorMarine, ASW_MARINE_SKILL_ENGINEERING, ASW_MARINE_SUBSKILL_ENGINEERING_SHIELD_DAMAGE ), DMG_DISSOLVE );
+		CTakeDamageInfo info( this, m_hCreatorMarine, m_hCreatorWeapon, MarineSkills()->GetSkillBasedValueByMarine( m_hCreatorMarine, ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_SHIELD_DAMAGE ), DMG_DISSOLVE );
 		info.SetAmmoType( m_hCreatorWeapon->GetSecondaryAmmoType() );
 		info.SetDamagePosition( m_hCreatorMarine->Weapon_ShootPosition() );
 		info.SetDamageForce( m_hCreatorMarine->Forward() );
