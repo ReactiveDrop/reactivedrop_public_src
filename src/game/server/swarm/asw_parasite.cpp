@@ -960,7 +960,7 @@ void CASW_Parasite::LeapTouch( CBaseEntity *pOther )
 
 	if ( IRelationType( pOther ) == D_HT )
 	{
-		if ( m_bDefanged )
+		if ( m_bDefanged && !IsAttackFrozen() )
 		{
 			if ( pOther->m_takedamage != DAMAGE_NO )
 			{
@@ -968,16 +968,10 @@ void CASW_Parasite::LeapTouch( CBaseEntity *pOther )
 				TouchDamage( pOther );
 				//ClearSchedule( "About to gib self" );
 				// gib us
-				// reactivedrop: change NULL, NULL to this, this
-				CTakeDamageInfo info( this, this, Vector( 0, 0, 0 ), GetAbsOrigin(), GetHealth() * 2,
-					DMG_ACID );
+				CTakeDamageInfo info( this, this, Vector( 0, 0, 0 ), GetAbsOrigin(), GetHealth() * 2, DMG_ACID );
 				TakeDamage( info );
 				SetSchedule( SCHED_DIE );
 				return;
-			}
-			else
-			{
-				//ImpactSound();
 			}
 		}
 	}
