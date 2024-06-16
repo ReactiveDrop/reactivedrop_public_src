@@ -13,6 +13,24 @@
 #include "tier0/memdbgon.h"
 
 
+extern ConVar asw_ammo_count_ar2;
+extern ConVar asw_ammo_count_autogun;
+extern ConVar asw_ammo_count_cryo_cannon;
+extern ConVar asw_ammo_count_devastator;
+extern ConVar asw_ammo_count_flamer;
+extern ConVar asw_ammo_count_grenade_launcher;
+extern ConVar asw_ammo_count_heavy_rifle;
+extern ConVar asw_ammo_count_internal_chainsaw;
+extern ConVar asw_ammo_count_mining_laser;
+extern ConVar asw_ammo_count_pdw;
+extern ConVar asw_ammo_count_pistol;
+extern ConVar asw_ammo_count_railgun;
+extern ConVar asw_ammo_count_rifle;
+extern ConVar asw_ammo_count_rifle_burst;
+extern ConVar asw_ammo_count_shotgun;
+extern ConVar asw_ammo_count_sniper_rifle;
+extern ConVar asw_ammo_count_vindicator;
+
 //-------------
 // Generic give ammo function
 //-------------
@@ -46,7 +64,8 @@ int ASW_GiveAmmo( CASW_Inhabitable_NPC *pNPC, float flCount, const char *pszAmmo
 		pMarine->TookAmmoPickup( pAmmoEntity );
 
 		// Check the ammo type... for some doing a spilling bullet effect isn't fictionally appropriate
-		if ( iAmmoType != GetAmmoDef()->Index( "ASW_F" ) && iAmmoType != GetAmmoDef()->Index( "ASW_ML" ) && iAmmoType != GetAmmoDef()->Index( "ASW_TG" ) && iAmmoType != GetAmmoDef()->Index( "ASW_GL" ) )
+		// (disabled because it's better to give *some* feedback and there are still bullets in there even if we're not pulling them out for this gun)
+		//if ( iAmmoType != GetAmmoDef()->Index( "ASW_F" ) && iAmmoType != GetAmmoDef()->Index( "ASW_ML" ) && iAmmoType != GetAmmoDef()->Index( "ASW_TG" ) && iAmmoType != GetAmmoDef()->Index( "ASW_GL" ) )
 		{
 			// Do effects
 			int iAmmoCost = CASW_Ammo_Drop_Shared::GetAmmoUnitCost( iAmmoType );
@@ -181,7 +200,7 @@ void CASW_Ammo_Rifle::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType
 
 	// if we have a burst rifle active, try that first
 	bool bBurstRifleActive = pNPC->GetActiveWeapon() && pNPC->GetActiveWeapon()->GetPrimaryAmmoType() == GetAmmoDef()->Index( "ASW_R_BURST" );
-	if ( bBurstRifleActive && ASW_GiveAmmo( pNPC, 120, "ASW_R_BURST", this ) )
+	if ( bBurstRifleActive && ASW_GiveAmmo( pNPC, asw_ammo_count_rifle_burst.GetInt(), "ASW_R_BURST", this ) )
 	{
 		if ( m_bAddSecondary ) // add rifle grenade
 		{
@@ -193,7 +212,7 @@ void CASW_Ammo_Rifle::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType
 	}
 
 	// player has used this item
-	if ( ASW_GiveAmmo( pNPC, 98, "ASW_R", this ) )
+	if ( ASW_GiveAmmo( pNPC, asw_ammo_count_rifle.GetInt(), "ASW_R", this ) )
 	{
 		if ( m_bAddSecondary ) // add rifle grenade
 		{
@@ -205,7 +224,7 @@ void CASW_Ammo_Rifle::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType
 	}
 
 	// alternate use: burst rifle
-	if ( !bBurstRifleActive && ASW_GiveAmmo( pNPC, 120, "ASW_R_BURST", this ) )
+	if ( !bBurstRifleActive && ASW_GiveAmmo( pNPC, asw_ammo_count_rifle_burst.GetInt(), "ASW_R_BURST", this ) )
 	{
 		if ( m_bAddSecondary ) // add rifle grenade
 		{
@@ -250,20 +269,20 @@ void CASW_Ammo_Autogun::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldTy
 		return;
 
 	bool bDevastatorActive = pNPC->GetActiveWeapon() && pNPC->GetActiveWeapon()->GetPrimaryAmmoType() == GetAmmoDef()->Index( "ASW_DEVASTATOR" );
-	if ( bDevastatorActive && ASW_GiveAmmo( pNPC, 70, "ASW_DEVASTATOR", this ) )
+	if ( bDevastatorActive && ASW_GiveAmmo( pNPC, asw_ammo_count_devastator.GetInt(), "ASW_DEVASTATOR", this ) )
 	{
 		UTIL_Remove( this );
 		return;
 	}
 
 	// player has used this item
-	if ( ASW_GiveAmmo( pNPC, 250, "ASW_AG", this ) )
+	if ( ASW_GiveAmmo( pNPC, asw_ammo_count_autogun.GetInt(), "ASW_AG", this ) )
 	{
 		UTIL_Remove( this );
 		return;
 	}
 
-	if ( !bDevastatorActive && ASW_GiveAmmo( pNPC, 70, "ASW_DEVASTATOR", this ) )
+	if ( !bDevastatorActive && ASW_GiveAmmo( pNPC, asw_ammo_count_devastator.GetInt(), "ASW_DEVASTATOR", this ) )
 	{
 		UTIL_Remove( this );
 		return;
@@ -301,7 +320,7 @@ void CASW_Ammo_Shotgun::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldTy
 	if ( nHoldType == ASW_USE_HOLD_START )
 		return;
 
-	if ( ASW_GiveAmmo( pNPC, 8, "ASW_SG", this ) )		// two clips per pack
+	if ( ASW_GiveAmmo( pNPC, asw_ammo_count_shotgun.GetInt() * 2, "ASW_SG", this ) )		// two clips per pack
 	{
 		UTIL_Remove( this );
 	}
@@ -339,7 +358,7 @@ void CASW_Ammo_Assault_Shotgun::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int
 	if ( nHoldType == ASW_USE_HOLD_START )
 		return;
 
-	if ( ASW_GiveAmmo( pNPC, 14, "ASW_ASG", this ) )
+	if ( ASW_GiveAmmo( pNPC, asw_ammo_count_vindicator.GetInt(), "ASW_ASG", this ) )
 	{
 		if ( m_bAddSecondary )
 		{
@@ -384,19 +403,19 @@ void CASW_Ammo_Flamer::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldTyp
 		return;
 
 	bool bCryoActive = pNPC->GetActiveWeapon() && pNPC->GetActiveWeapon()->GetPrimaryAmmoType() == GetAmmoDef()->Index( "ASW_CRYO" );
-	if ( bCryoActive && ASW_GiveAmmo( pNPC, 80, "ASW_CRYO", this ) )
+	if ( bCryoActive && ASW_GiveAmmo( pNPC, asw_ammo_count_cryo_cannon.GetInt(), "ASW_CRYO", this ) )
 	{
 		UTIL_Remove( this );
 		return;
 	}
 
-	if ( ASW_GiveAmmo( pNPC, 80, "ASW_F", this ) )
+	if ( ASW_GiveAmmo( pNPC, asw_ammo_count_flamer.GetInt(), "ASW_F", this ) )
 	{
 		UTIL_Remove( this );
 		return;
 	}
 
-	if ( !bCryoActive && ASW_GiveAmmo( pNPC, 80, "ASW_CRYO", this ) )
+	if ( !bCryoActive && ASW_GiveAmmo( pNPC, asw_ammo_count_cryo_cannon.GetInt(), "ASW_CRYO", this ) )
 	{
 		UTIL_Remove( this );
 		return;
@@ -434,7 +453,7 @@ void CASW_Ammo_Pistol::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldTyp
 	if ( nHoldType == ASW_USE_HOLD_START )
 		return;
 
-	if ( ASW_GiveAmmo( pNPC, 16, "ASW_P", this ) )
+	if ( ASW_GiveAmmo( pNPC, asw_ammo_count_pistol.GetInt(), "ASW_P", this ) )
 	{
 		UTIL_Remove( this );
 		return;
@@ -472,7 +491,7 @@ void CASW_Ammo_Mining_Laser::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nH
 	if ( nHoldType == ASW_USE_HOLD_START )
 		return;
 
-	if ( ASW_GiveAmmo( pNPC, 50, "ASW_ML", this ) )
+	if ( ASW_GiveAmmo( pNPC, asw_ammo_count_mining_laser.GetInt(), "ASW_ML", this) )
 	{
 		UTIL_Remove( this );
 		return;
@@ -510,7 +529,7 @@ void CASW_Ammo_Railgun::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldTy
 	if ( nHoldType == ASW_USE_HOLD_START )
 		return;
 
-	if ( ASW_GiveAmmo( pNPC, 12, "ASW_RG", this ) )
+	if ( ASW_GiveAmmo( pNPC, asw_ammo_count_railgun.GetInt() * 12, "ASW_RG", this ) )
 	{
 		UTIL_Remove( this );
 		return;
@@ -548,7 +567,7 @@ void CASW_Ammo_Chainsaw::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldT
 	if ( nHoldType == ASW_USE_HOLD_START )
 		return;
 
-	if ( ASW_GiveAmmo( pNPC, 150, "ASW_CS", this ) )
+	if ( ASW_GiveAmmo( pNPC, asw_ammo_count_internal_chainsaw.GetInt(), "ASW_CS", this) )
 	{
 		UTIL_Remove( this );
 		return;
@@ -586,7 +605,7 @@ void CASW_Ammo_PDW::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
 	if ( nHoldType == ASW_USE_HOLD_START )
 		return;
 
-	if ( ASW_GiveAmmo( pNPC, 80, "ASW_PDW", this ) )
+	if ( ASW_GiveAmmo( pNPC, asw_ammo_count_pdw.GetInt(), "ASW_PDW", this) )
 	{
 		UTIL_Remove( this );
 		return;
@@ -626,7 +645,7 @@ void CASW_Ammo_AR2::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldType )
 		return;
 
 	// give two reloads rather than just one like other ammo types
-	if ( ASW_GiveAmmo( pNPC, 60, "AR2", this ) )
+	if ( ASW_GiveAmmo( pNPC, asw_ammo_count_ar2.GetInt() * 2, "AR2", this ) )
 	{
 		if ( m_bAddSecondary )
 		{
@@ -670,7 +689,7 @@ void CASW_Ammo_Grenade_Launcher::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, in
 		return;
 
 	// give three reloads to match the ammo stash interaction
-	if ( ASW_GiveAmmo( pNPC, 18, "ASW_GL", this ) )
+	if ( ASW_GiveAmmo( pNPC, asw_ammo_count_grenade_launcher.GetInt() * 3, "ASW_GL", this ) )
 	{
 		UTIL_Remove( this );
 		return;
@@ -708,7 +727,7 @@ void CASW_Ammo_Sniper_Rifle::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nH
 	if ( nHoldType == ASW_USE_HOLD_START )
 		return;
 
-	if ( ASW_GiveAmmo( pNPC, 12, "ASW_SNIPER", this ) )
+	if ( ASW_GiveAmmo( pNPC, asw_ammo_count_sniper_rifle.GetInt(), "ASW_SNIPER", this) )
 	{
 		UTIL_Remove( this );
 		return;
@@ -747,7 +766,7 @@ void CASW_Ammo_Heavy_Rifle::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHo
 	if ( nHoldType == ASW_USE_HOLD_START )
 		return;
 
-	if ( ASW_GiveAmmo( pNPC, 98, "ASW_HR", this ) )
+	if ( ASW_GiveAmmo( pNPC, asw_ammo_count_heavy_rifle.GetInt(), "ASW_HR", this ) )
 	{
 		if ( m_bAddSecondary )
 		{
