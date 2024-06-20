@@ -2163,16 +2163,16 @@ void CMapFile::CheckForInstances( const char *pszFileName )
 		return;
 	}
 
-	char	FDGPath[ MAX_PATH ];
-	if ( !g_pFullFileSystem->RelativePathToFullPath( GameDataFile, "EXECUTABLE_PATH", FDGPath, sizeof( FDGPath ) ) )
+	char	FGDPath[ MAX_PATH ];
+	if ( !g_pFullFileSystem->RelativePathToFullPath( GameDataFile, "EXECUTABLE_PATH", FGDPath, sizeof( FGDPath ) ) )
 	{
-		if ( !g_pFullFileSystem->RelativePathToFullPath( GameDataFile, NULL, FDGPath, sizeof( FDGPath ) ) )
+		if ( !g_pFullFileSystem->RelativePathToFullPath( GameDataFile, NULL, FGDPath, sizeof( FGDPath ) ) )
 		{
 			Msg( "Could not locate GameData file %s\n", GameDataFile );
 		}
 	}
 
-	GD.Load( FDGPath );
+	GD.Load( FGDPath );
 
 	// this list will grow as instances are merged onto it.  sub-instances are merged and 
 	// automatically done in this processing.
@@ -2206,6 +2206,11 @@ void CMapFile::CheckForInstances( const char *pszFileName )
 			entities[ i ].numbrushes = 0;
 			entities[ i ].epairs = NULL;
 		}
+		else if ( !strcmp( pEntity, "func_instance_parms" ) )
+		{
+			entities[i].numbrushes = 0;
+			entities[i].epairs = NULL;
+		}
 	}
 
 	g_LoadingMap = this;
@@ -2236,8 +2241,10 @@ void CMapFile::MergeInstance( entity_t *pInstanceEntity, CMapFile *Instance )
 	MergePlanes( pInstanceEntity, Instance, OriginOffset, angles, mat );
 	MergeBrushes( pInstanceEntity, Instance, OriginOffset, angles, mat );
 	MergeBrushSides( pInstanceEntity, Instance, OriginOffset, angles, mat );
+	MergeInstanceParms( pInstanceEntity, Instance, OriginOffset, angles, mat );
 	MergeEntities( pInstanceEntity, Instance, OriginOffset, angles, mat );
 	MergeOverlays( pInstanceEntity, Instance, OriginOffset, angles, mat );
+	MergeInstanceIOProxy( pInstanceEntity, Instance, OriginOffset, angles, mat );
 }
 
 
@@ -2475,6 +2482,106 @@ void CMapFile::ReplaceInstancePair( epair_t *pPair, entity_t *pInstanceEntity )
 	}
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: this function takes the replace commands from func_instance_parms
+//			and executes them.
+// Input  : pInstanceEntity - the entity of the func_instance
+//			Instance - the map file of the instance
+//			InstanceOrigin - the translation of the instance
+//			InstanceAngle - the rotation of the instance
+//			InstanceMatrix - the translation / rotation matrix of the instance
+// Output : none
+//-----------------------------------------------------------------------------
+void CMapFile::MergeInstanceParms( entity_t *pInstanceEntity, CMapFile *Instance, Vector &InstanceOrigin, QAngle &InstanceAngle, matrix3x4_t &InstanceMatrix )
+{
+	entity_t *pParms = NULL;
+
+	for ( int i = 0; i < Instance->num_entities; i++ )
+	{
+		const char *szClass = ValueForKey( &Instance->entities[i], "classname" );
+		if ( !V_stricmp( szClass, "func_instance_parms" ) )
+		{
+			pParms = &Instance->entities[i];
+			break;
+		}
+	}
+
+	if ( !pParms )
+	{
+		return;
+	}
+
+	for ( epair_t *pParm = pParms->epairs; pParm; pParm = pParm->next )
+	{
+		if ( !StringHasPrefix( pParm->key, "parm" ) )
+		{
+			continue;
+		}
+
+		char buf[MAX_KEYVALUE_LEN];
+		V_strncpy( buf, pParm->value, sizeof( buf ) );
+
+		const char *szName = buf;
+
+		char *szType = V_stristr( buf, " " );
+		if ( !szType )
+		{
+			continue;
+		}
+
+		*szType++ = '\0';
+
+		char *szDefaultValue = V_stristr( szType, " " );
+		if ( !szDefaultValue )
+		{
+			continue;
+		}
+
+		*szDefaultValue++ = '\0';
+
+		bool bFound = false;
+		for ( epair_t *pReplace = pInstanceEntity->epairs; pReplace; pReplace = pReplace->next )
+		{
+			if ( !StringHasPrefix( pReplace->key, "replace" ) )
+			{
+				continue;
+			}
+
+			char buf2[MAX_KEYVALUE_LEN];
+			V_strncpy( buf2, pReplace->value, sizeof( buf2 ) );
+
+			const char *szName2 = buf2;
+
+			char *szValue = V_stristr( buf, " " );
+			if ( !szValue )
+			{
+				continue;
+			}
+
+			*szValue++ = '\0';
+
+			if ( !V_stricmp( szName, szName2 ) )
+			{
+				bFound = true;
+				break;
+			}
+		}
+
+		if ( !bFound )
+		{
+			char szReplaceKey[MAX_KEYVALUE_LEN];
+			V_snprintf( szReplaceKey, sizeof( szReplaceKey ), "replacetemp%s", szName );
+			char szReplaceValue[MAX_KEYVALUE_LEN];
+			V_snprintf( szReplaceValue, sizeof( szReplaceValue ), "%s %s", szName, szDefaultValue );
+
+			epair_t *pPlaceholder = new epair_t;
+			pPlaceholder->key = strdup( szReplaceKey );
+			pPlaceholder->value = strdup( szReplaceValue );
+			pPlaceholder->next = pInstanceEntity->epairs;
+			pInstanceEntity->epairs = pPlaceholder;
+		}
+	}
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: this function will merge in the entities from the instance into
@@ -2683,6 +2790,26 @@ void CMapFile::MergeOverlays( entity_t *pInstanceEntity, CMapFile *Instance, Vec
 	}
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: Hooks up the entity IO data needed for func_instance_io_proxy
+// Input  : InstanceEntityNum - the entity number of the func_instance
+//			Instance - the map file of the instance
+//			InstanceOrigin - the translation of the instance
+//			InstanceAngle - the rotation of the instance
+//			InstanceMatrix - the translation / rotation matrix of the instance
+// Output : none
+//-----------------------------------------------------------------------------
+void CMapFile::MergeInstanceIOProxy( entity_t *pInstanceEntity, CMapFile *Instance, Vector &InstanceOrigin, QAngle &InstanceAngle, matrix3x4_t &InstanceMatrix )
+{
+	for ( int i = 0; i < Instance->num_entities; i++ )
+	{
+		const char *szClass = ValueForKey( &Instance->entities[i], "classname" );
+		if ( !V_stricmp( szClass, "func_instance_io_proxy" ) )
+		{
+			Error( "func_instance_io_proxy is not currently supported in Alien Swarm: Reactive Drop VBSP. Tell Ben if you need this.\n" );
+		}
+	}
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: Loads a VMF or MAP file. If the file has a .MAP extension, the MAP
