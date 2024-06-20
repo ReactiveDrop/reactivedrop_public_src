@@ -85,10 +85,8 @@ void CASW_Sentry_Top_Cannon::Fire()
 	}
 	else
 	{
-		extern ConVar asw_skill_grenades_cluster_dmg_base;
-		extern ConVar asw_skill_grenades_radius_base;
-		fGrenadeDamage = fBaseGrenadeDamage;	// reactivedrop: was asw_skill_grenades_cluster_dmg_base.GetFloat() * 0.5f, but we made asw_skill_grenades_cluster_dmg_base 0(zero) to fix the UI 80(+80) bug
-		fGrenadeRadius = asw_skill_grenades_radius_base.GetFloat() * 0.5f;
+		fGrenadeDamage = fBaseGrenadeDamage;
+		fGrenadeRadius = MarineSkills()->GetSkillBasedValue( NULL, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_RADIUS, 0 ) * 0.5f;
 	}
 
 	CBaseEntity *owner;

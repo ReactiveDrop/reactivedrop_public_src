@@ -9,11 +9,10 @@
 #include "asw_fx_shared.h"
 #include "particle_parse.h"
 #include "te_effect_dispatch.h"
+#include "asw_marine_skills.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
-
-extern ConVar asw_skill_grenades_freeze_duration_base;
 
 LINK_ENTITY_TO_CLASS( asw_grenade_freeze, CASW_Grenade_Freeze );
 PRECACHE_REGISTER( asw_grenade_freeze );
@@ -24,7 +23,7 @@ END_DATADESC()
 
 CASW_Grenade_Freeze::CASW_Grenade_Freeze()
 {
-	m_flFreezeAmount = 1.0f + asw_skill_grenades_freeze_duration_base.GetFloat();
+	m_flFreezeAmount = 1.0f + MarineSkills()->GetSkillBasedValue( NULL, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_FREEZE_DURATION, 0 );
 }
 
 void CASW_Grenade_Freeze::DoExplosion()

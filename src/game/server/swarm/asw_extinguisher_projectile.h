@@ -18,17 +18,17 @@ public:
 	bool CreateVPhysics( void ) override;
 	unsigned int PhysicsSolidMaskForEntity() const override;
 	void ProjectileTouch( CBaseEntity *pOther );
-	void Explode();
+	void Explode( CBaseEntity *pExcept );
 	void OnProjectileTouch( CBaseEntity *pOther );
 	void PhysicsSimulate( void ) override;
 	int ShouldTransmit( const CCheckTransmitInfo *pInfo ) override;
 	void TouchedEnvFire();
 	void SetFreezeAmount( float flFreeze ) { m_flFreezeAmount = flFreeze; }
 
-	static CASW_Extinguisher_Projectile *Extinguisher_Projectile_Create( const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner, CBaseEntity *pWeapon );
+	static CASW_Extinguisher_Projectile *Extinguisher_Projectile_Create( const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseCombatCharacter *pOwner, CBaseEntity *pWeapon );
 
 	CBaseEntity *GetFirer();
-	EHANDLE m_hFirer;
+	CHandle<CBaseCombatCharacter> m_hFirer;
 	EHANDLE m_hFirerWeapon;
 
 	CNetworkVarEmbedded( CRD_ProjectileData, m_ProjectileData );

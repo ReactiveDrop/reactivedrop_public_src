@@ -12,177 +12,337 @@
 	#include "asw_marine_resource.h"
 	#include "asw_game_resource.h"
 #endif
+#include "rd_gamerules_convar.h"
 #include "asw_marine_skills.h"
 #include "asw_marine_profile.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+static CRD_GameRulesConVarCollection s_ASWMarineSkillsConVars( "asw_marine_skills" );
+
+// Never add anything to the start or middle of this list!
+// Never remove anything from this list!
+// Demos and networking will break!
+enum
+{
+	AMSC_LEADERSHIP_ACCURACY_CHANCE_BASE,
+	AMSC_LEADERSHIP_DAMAGE_RESIST_BASE,
+	AMSC_VINDICATOR_DMG_BASE,
+	AMSC_VINDICATOR_PELLETS_BASE,
+	AMSC_AUTOGUN_BASE,
+	AMSC_AUTOGUN_MINIGUN_DMG_BASE,
+	AMSC_AUTOGUN_CRYO_SPINUP_BASE,
+	AMSC_AUTOGUN_CRYO_FREEZE_BASE,
+	AMSC_AUTOGUN_CRYO_RADIUS_BASE,
+	AMSC_PIERCING_BASE,
+	AMSC_STOPPING_POWER_AIRBLAST_STRENGTH_BASE,
+	AMSC_HEALING_CHARGES_BASE,
+	AMSC_SELF_HEALING_CHARGES_BASE,
+	AMSC_HEALING_MEDRIFLE_HEALING_CHARGES_BASE,
+	AMSC_HEALING_MEDKIT_HPS_BASE,
+	AMSC_HEALING_HPS_BASE,
+	AMSC_HEALING_GRENADE_BASE,
+	AMSC_HEALING_GUN_CHARGES_BASE,
+	AMSC_HEALING_GUN_BASE,
+	AMSC_HEALING_AMP_GUN_CHARGES_BASE,
+	AMSC_XENOWOUNDS_BASE,
+	AMSC_DRUGS_BASE,
+	AMSC_DRUGS_HEALAMP_BASE,
+	AMSC_HACKING_SPEED_BASE,
+	AMSC_SCANNER_BASE,
+	AMSC_ENGINEERING_WELDING_BASE,
+	AMSC_ENGINEERING_SENTRY_BASE,
+	AMSC_ENGINEERING_FIRERATE_BASE,
+	AMSC_ENGINEERING_SHIELD_HEALTH_BASE,
+	AMSC_ENGINEERING_SHIELD_DURATION_BASE,
+	AMSC_GRENADES_RADIUS_BASE,
+	AMSC_GRENADES_DMG_BASE,
+	AMSC_GRENADES_INCENDIARY_DMG_BASE,
+	AMSC_GRENADES_CLUSTER_DMG_BASE,
+	AMSC_GRENADES_CLUSTERS_BASE,
+	AMSC_GRENADES_FLECHETTE_DMG_BASE,
+	AMSC_GRENADES_HORNET_DMG_BASE,
+	AMSC_GRENADES_HORNET_COUNT_BASE,
+	AMSC_GRENADES_HORNET_INTERVAL_BASE,
+	AMSC_GRENADES_FREEZE_RADIUS_BASE,
+	AMSC_GRENADES_FREEZE_DURATION_BASE,
+	AMSC_GRENADES_SMART_COUNT_BASE,
+	AMSC_GRENADES_SMART_INTERVAL_BASE,
+	AMSC_HEALTH_BASE,
+	AMSC_MELEE_DMG_BASE,
+	AMSC_MELEE_FORCE_BASE,
+	AMSC_MELEE_SPEED_BASE,
+	AMSC_RELOADING_BASE,
+	AMSC_RELOADING_FAST_BASE,
+	AMSC_AGILITY_MOVESPEED_BASE,
+	AMSC_LEADERSHIP_ACCURACY_CHANCE_STEP,
+	AMSC_LEADERSHIP_DAMAGE_RESIST_STEP,
+	AMSC_VINDICATOR_DMG_STEP,
+	AMSC_VINDICATOR_PELLETS_STEP,
+	AMSC_AUTOGUN_STEP,
+	AMSC_AUTOGUN_MINIGUN_DMG_STEP,
+	AMSC_AUTOGUN_CRYO_SPINUP_STEP,
+	AMSC_AUTOGUN_CRYO_FREEZE_STEP,
+	AMSC_AUTOGUN_CRYO_RADIUS_STEP,
+	AMSC_PIERCING_STEP,
+	AMSC_STOPPING_POWER_AIRBLAST_STRENGTH_STEP,
+	AMSC_HEALING_CHARGES_STEP,
+	AMSC_SELF_HEALING_CHARGES_STEP,
+	AMSC_HEALING_MEDRIFLE_HEALING_CHARGES_STEP,
+	AMSC_HEALING_HPS_STEP,
+	AMSC_HEALING_GRENADE_STEP,
+	AMSC_HEALING_GUN_CHARGES_STEP,
+	AMSC_HEALING_GUN_STEP,
+	AMSC_HEALING_AMP_GUN_CHARGES_STEP,
+	AMSC_HEALING_MEDKIT_HPS_STEP,
+	AMSC_XENOWOUNDS_STEP,
+	AMSC_DRUGS_STEP,
+	AMSC_DRUGS_HEALAMP_STEP,
+	AMSC_HACKING_SPEED_STEP,
+	AMSC_SCANNER_STEP,
+	AMSC_ENGINEERING_WELDING_STEP,
+	AMSC_ENGINEERING_SENTRY_STEP,
+	AMSC_ENGINEERING_FIRERATE_STEP,
+	AMSC_ENGINEERING_SHIELD_HEALTH_STEP,
+	AMSC_ENGINEERING_SHIELD_DURATION_STEP,
+	AMSC_GRENADES_RADIUS_STEP,
+	AMSC_GRENADES_DMG_STEP,
+	AMSC_GRENADES_INCENDIARY_DMG_STEP,
+	AMSC_GRENADES_CLUSTER_DMG_STEP,
+	AMSC_GRENADES_CLUSTERS_STEP,
+	AMSC_GRENADES_FLECHETTE_DMG_STEP,
+	AMSC_GRENADES_HORNET_DMG_STEP,
+	AMSC_GRENADES_HORNET_COUNT_STEP,
+	AMSC_GRENADES_HORNET_INTERVAL_STEP,
+	AMSC_GRENADES_FREEZE_RADIUS_STEP,
+	AMSC_GRENADES_FREEZE_DURATION_STEP,
+	AMSC_GRENADES_SMART_COUNT_STEP,
+	AMSC_GRENADES_SMART_INTERVAL_STEP,
+	AMSC_HEALTH_STEP,
+	AMSC_MELEE_DMG_STEP,
+	AMSC_MELEE_FORCE_STEP,
+	AMSC_MELEE_SPEED_STEP,
+	AMSC_RELOADING_STEP,
+	AMSC_RELOADING_FAST_STEP,
+	AMSC_AGILITY_MOVESPEED_STEP,
+	AMSC_AGILITY_RELOAD_STEP,
+	AMSC_MINES_FIRES_BASE,
+	AMSC_MINES_FIRES_STEP,
+	AMSC_MINES_DURATION_BASE,
+	AMSC_MINES_DURATION_STEP,
+	AMSC_ACCURACY_RIFLE_DMG_BASE,
+	AMSC_ACCURACY_RIFLE_DMG_STEP,
+	AMSC_ACCURACY_PRIFLE_DMG_BASE,
+	AMSC_ACCURACY_PRIFLE_DMG_STEP,
+	AMSC_ACCURACY_SHOTGUN_DMG_BASE,
+	AMSC_ACCURACY_SHOTGUN_DMG_STEP,
+	AMSC_ACCURACY_RAILGUN_DMG_BASE,
+	AMSC_ACCURACY_RAILGUN_DMG_STEP,
+	AMSC_ACCURACY_FLAMER_DMG_BASE,
+	AMSC_ACCURACY_FLAMER_DMG_STEP,
+	AMSC_ACCURACY_PISTOL_DMG_BASE,
+	AMSC_ACCURACY_PISTOL_DMG_STEP,
+	AMSC_ACCURACY_DEAGLE_DMG_BASE,
+	AMSC_ACCURACY_DEAGLE_DMG_STEP,
+	AMSC_ACCURACY_PDW_DMG_BASE,
+	AMSC_ACCURACY_PDW_DMG_STEP,
+	AMSC_MUZZLE_FLASH_BASE,
+	AMSC_MUZZLE_FLASH_STEP,
+	AMSC_ACCURACY_SNIPER_RIFLE_DMG_BASE,
+	AMSC_ACCURACY_SNIPER_RIFLE_DMG_STEP,
+	AMSC_ACCURACY_TESLA_CANNON_DMG_BASE,
+	AMSC_ACCURACY_TESLA_CANNON_DMG_STEP,
+	AMSC_ACCURACY_HEAVY_RIFLE_DMG_BASE,
+	AMSC_ACCURACY_HEAVY_RIFLE_DMG_STEP,
+	AMSC_ACCURACY_MEDRIFLE_DMG_BASE,
+	AMSC_ACCURACY_MEDRIFLE_DMG_STEP,
+	AMSC_ACCURACY_AR2_DMG_BASE,
+	AMSC_ACCURACY_AR2_DMG_STEP,
+	AMSC_ACCURACY_DEVASTATOR_DMG_BASE,
+	AMSC_ACCURACY_DEVASTATOR_DMG_STEP,
+	AMSC_ACCURACY_50CALMG_DMG_BASE,
+	AMSC_ACCURACY_50CALMG_DMG_STEP,
+	AMSC_ACCURACY_MINING_LASER_DMG_BASE,
+	AMSC_ACCURACY_MINING_LASER_DMG_STEP,
+	AMSC_ACCURACY_SHIELD_RIFLE_DMG_BASE,
+	AMSC_ACCURACY_SHIELD_RIFLE_DMG_STEP,
+	AMSC_ACCURACY_CRYO_DMG_BASE,
+	AMSC_ACCURACY_CRYO_DMG_STEP,
+	AMSC_ACCURACY_SHIELD_DAMAGE_BASE,
+	AMSC_ACCURACY_SHIELD_DAMAGE_STEP,
+	AMSC_LASER_MINES_BASE,
+	AMSC_LASER_MINES_MODERATE,
+	AMSC_LASER_MINES_EXPERT,
+
+	// ^^ Always add new entries here! ^^
+};
+
 // base convars
-ConVar asw_skill_leadership_accuracy_chance_base( "asw_skill_leadership_accuracy_chance_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_leadership_damage_resist_base( "asw_skill_leadership_damage_resist_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_vindicator_dmg_base( "asw_skill_vindicator_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_vindicator_pellets_base( "asw_skill_vindicator_pellets_base", "7", FCVAR_REPLICATED | FCVAR_CHEAT );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_LEADERSHIP_ACCURACY_CHANCE_BASE, asw_skill_leadership_accuracy_chance_base, 0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_LEADERSHIP_DAMAGE_RESIST_BASE, asw_skill_leadership_damage_resist_base, 0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_VINDICATOR_DMG_BASE, asw_skill_vindicator_dmg_base, 0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_VINDICATOR_PELLETS_BASE, asw_skill_vindicator_pellets_base, 7, "" );
 
-ConVar asw_skill_autogun_base( "asw_skill_autogun_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_autogun_minigun_dmg_base( "asw_skill_autogun_minigun_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_autogun_cryo_spinup_base( "asw_skill_autogun_cryo_spinup_base", "0.25", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_autogun_cryo_freeze_base( "asw_skill_autogun_cryo_freeze_base", "0.15", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_autogun_cryo_radius_base( "asw_skill_autogun_cryo_radius_base", "64", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_piercing_base( "asw_skill_piercing_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_stopping_power_airblast_strength_base( "asw_skill_stopping_power_airblast_strength_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_AUTOGUN_BASE, asw_skill_autogun_base, 0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_AUTOGUN_MINIGUN_DMG_BASE, asw_skill_autogun_minigun_dmg_base, 0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_AUTOGUN_CRYO_SPINUP_BASE, asw_skill_autogun_cryo_spinup_base, 0.25, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_AUTOGUN_CRYO_FREEZE_BASE, asw_skill_autogun_cryo_freeze_base, 0.15, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_AUTOGUN_CRYO_RADIUS_BASE, asw_skill_autogun_cryo_radius_base, 64, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_PIERCING_BASE, asw_skill_piercing_base, 0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_STOPPING_POWER_AIRBLAST_STRENGTH_BASE, asw_skill_stopping_power_airblast_strength_base, 0, "" );
 
-ConVar asw_skill_healing_charges_base( "asw_skill_healing_charges_base", "4", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_self_healing_charges_base( "asw_skill_self_healing_charges_base", "2", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_healing_medrifle_healing_charges_base( "asw_skill_healing_medrifle_healing_charges_base", "50", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_healing_medkit_hps_base( "asw_skill_healing_medkit_hps_base", "50", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_healing_hps_base( "asw_skill_healing_hps_base", "25", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_healing_grenade_base( "asw_skill_healing_grenade_base", "120", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_healing_gun_charges_base( "asw_skill_healing_gun_charges_base", "40", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_healing_gun_base( "asw_skill_healing_gun_base", "5", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_healing_amp_gun_charges_base( "asw_skill_healing_amp_gun_charges_base", "20", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_xenowounds_base( "asw_skill_xenowounds_base", "100", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_drugs_base( "asw_skill_drugs_base", "5", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_drugs_healamp_base( "asw_skill_drugs_healamp_base", "90", FCVAR_REPLICATED | FCVAR_CHEAT );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HEALING_CHARGES_BASE, asw_skill_healing_charges_base, 4, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_SELF_HEALING_CHARGES_BASE, asw_skill_self_healing_charges_base, 2, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HEALING_MEDRIFLE_HEALING_CHARGES_BASE, asw_skill_healing_medrifle_healing_charges_base, 50, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HEALING_MEDKIT_HPS_BASE, asw_skill_healing_medkit_hps_base, 50, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HEALING_HPS_BASE, asw_skill_healing_hps_base, 25, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HEALING_GRENADE_BASE, asw_skill_healing_grenade_base, 120, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HEALING_GUN_CHARGES_BASE, asw_skill_healing_gun_charges_base, 40, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HEALING_GUN_BASE, asw_skill_healing_gun_base, 5, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HEALING_AMP_GUN_CHARGES_BASE, asw_skill_healing_amp_gun_charges_base, 20, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_XENOWOUNDS_BASE, asw_skill_xenowounds_base, 100, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_DRUGS_BASE, asw_skill_drugs_base, 5, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_DRUGS_HEALAMP_BASE, asw_skill_drugs_healamp_base, 90, "" );
 
-ConVar asw_skill_hacking_speed_base( "asw_skill_hacking_speed_base", "2.0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_scanner_base( "asw_skill_scanner_base", "600", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_engineering_welding_base( "asw_skill_engineering_welding_base", "0.8", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_engineering_sentry_base( "asw_skill_engineering_sentry_base", "1.0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_engineering_firerate_base( "asw_skill_engineering_firerate_base", "0.0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_engineering_shield_health_base( "asw_skill_engineering_shield_health_base", "300", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_engineering_shield_duration_base( "asw_skill_engineering_shield_duration_base", "6", FCVAR_REPLICATED | FCVAR_CHEAT );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HACKING_SPEED_BASE, asw_skill_hacking_speed_base, 2.0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_SCANNER_BASE, asw_skill_scanner_base, 600, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ENGINEERING_WELDING_BASE, asw_skill_engineering_welding_base, 0.8, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ENGINEERING_SENTRY_BASE, asw_skill_engineering_sentry_base, 1.0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ENGINEERING_FIRERATE_BASE, asw_skill_engineering_firerate_base, 0.0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ENGINEERING_SHIELD_HEALTH_BASE, asw_skill_engineering_shield_health_base, 300, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ENGINEERING_SHIELD_DURATION_BASE, asw_skill_engineering_shield_duration_base, 6, "" );
 
-ConVar asw_skill_grenades_radius_base( "asw_skill_grenades_radius_base", "280", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_grenades_dmg_base( "asw_skill_grenades_dmg_base", "128", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_grenades_incendiary_dmg_base( "asw_skill_grenades_incendiary_dmg_base", "20", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_grenades_cluster_dmg_base( "asw_skill_grenades_cluster_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_grenades_clusters_base( "asw_skill_grenades_clusters_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_grenades_flechette_dmg_base( "asw_skill_grenades_flechette_dmg_base", "10", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_grenades_hornet_dmg_base( "asw_skill_grenades_hornet_dmg_base", "50", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_grenades_hornet_count_base( "asw_skill_grenades_hornet_count_base", "8", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_grenades_hornet_interval_base( "asw_skill_grenades_hornet_interval_base", "0.09", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_grenades_freeze_radius_base( "asw_skill_grenades_freeze_radius_base", "210", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_grenades_freeze_duration_base( "asw_skill_grenades_freeze_duration_base", "3.0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_grenades_smart_count_base( "asw_skill_grenades_smart_count_base", "32", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_grenades_smart_interval_base( "asw_skill_grenades_smart_interval_base", "0.09", FCVAR_REPLICATED | FCVAR_CHEAT );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_RADIUS_BASE, asw_skill_grenades_radius_base, 280, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_DMG_BASE, asw_skill_grenades_dmg_base, 128, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_INCENDIARY_DMG_BASE, asw_skill_grenades_incendiary_dmg_base, 20, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_CLUSTER_DMG_BASE, asw_skill_grenades_cluster_dmg_base, 0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_CLUSTERS_BASE, asw_skill_grenades_clusters_base, 0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_FLECHETTE_DMG_BASE, asw_skill_grenades_flechette_dmg_base, 10, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_HORNET_DMG_BASE, asw_skill_grenades_hornet_dmg_base, 50, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_HORNET_COUNT_BASE, asw_skill_grenades_hornet_count_base, 8, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_HORNET_INTERVAL_BASE, asw_skill_grenades_hornet_interval_base, 0.09, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_FREEZE_RADIUS_BASE, asw_skill_grenades_freeze_radius_base, 210, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_FREEZE_DURATION_BASE, asw_skill_grenades_freeze_duration_base, 3.0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_SMART_COUNT_BASE, asw_skill_grenades_smart_count_base, 32, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_SMART_INTERVAL_BASE, asw_skill_grenades_smart_interval_base, 0.09, "" );
 
-ConVar asw_skill_health_base( "asw_skill_health_base", "80", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_melee_dmg_base( "asw_skill_melee_dmg_base", "30", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_melee_force_base( "asw_skill_melee_force_base", "10", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_melee_speed_base( "asw_skill_melee_speed_base", "1.0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_reloading_base( "asw_skill_reloading_base", "1.4", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_reloading_fast_base( "asw_skill_reloading_fast_base", "1.0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_agility_movespeed_base( "asw_skill_agility_movespeed_base", "290", FCVAR_REPLICATED | FCVAR_CHEAT );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HEALTH_BASE, asw_skill_health_base, 80, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_MELEE_DMG_BASE, asw_skill_melee_dmg_base, 30, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_MELEE_FORCE_BASE, asw_skill_melee_force_base, 10, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_MELEE_SPEED_BASE, asw_skill_melee_speed_base, 1.0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_RELOADING_BASE, asw_skill_reloading_base, 1.4, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_RELOADING_FAST_BASE, asw_skill_reloading_fast_base, 1.0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_AGILITY_MOVESPEED_BASE, asw_skill_agility_movespeed_base, 290, "" );
 
 // step convars
-ConVar asw_skill_leadership_accuracy_chance_step( "asw_skill_leadership_accuracy_chance_step", "0.03", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_leadership_damage_resist_step( "asw_skill_leadership_damage_resist_step", "0.06", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_vindicator_dmg_step( "asw_skill_vindicator_dmg_step", "2.0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_vindicator_pellets_step( "asw_skill_vindicator_pellets_step", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_LEADERSHIP_ACCURACY_CHANCE_STEP, asw_skill_leadership_accuracy_chance_step, 0.03, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_LEADERSHIP_DAMAGE_RESIST_STEP, asw_skill_leadership_damage_resist_step, 0.06, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_VINDICATOR_DMG_STEP, asw_skill_vindicator_dmg_step, 2.0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_VINDICATOR_PELLETS_STEP, asw_skill_vindicator_pellets_step, 0, "" );
 
-ConVar asw_skill_autogun_step( "asw_skill_autogun_step", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_autogun_minigun_dmg_step( "asw_skill_autogun_minigun_dmg_step", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_autogun_cryo_spinup_step( "asw_skill_autogun_cryo_spinup_step", "0.25", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_autogun_cryo_freeze_step( "asw_skill_autogun_cryo_freeze_step", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_autogun_cryo_radius_step( "asw_skill_autogun_cryo_radius_step", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_piercing_step( "asw_skill_piercing_step", "0.20", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_stopping_power_airblast_strength_step( "asw_skill_stopping_power_airblast_strength_step", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_AUTOGUN_STEP, asw_skill_autogun_step, 1, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_AUTOGUN_MINIGUN_DMG_STEP, asw_skill_autogun_minigun_dmg_step, 1, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_AUTOGUN_CRYO_SPINUP_STEP, asw_skill_autogun_cryo_spinup_step, 0.25, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_AUTOGUN_CRYO_FREEZE_STEP, asw_skill_autogun_cryo_freeze_step, 0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_AUTOGUN_CRYO_RADIUS_STEP, asw_skill_autogun_cryo_radius_step, 0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_PIERCING_STEP, asw_skill_piercing_step, 0.20, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_STOPPING_POWER_AIRBLAST_STRENGTH_STEP, asw_skill_stopping_power_airblast_strength_step, 0, "" );
 
-ConVar asw_skill_healing_charges_step( "asw_skill_healing_charges_step", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_self_healing_charges_step( "asw_skill_self_healing_charges_step", "0.5", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_healing_medrifle_healing_charges_step( "asw_skill_healing_medrifle_healing_charges_step", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_healing_hps_step( "asw_skill_healing_hps_step", "8", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_healing_grenade_step( "asw_skill_healing_grenade_step", "30", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_healing_gun_charges_step( "asw_skill_healing_gun_charges_step", "10", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_healing_gun_step( "asw_skill_healing_gun_step", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_healing_amp_gun_charges_step( "asw_skill_healing_amp_gun_charges_step", "5", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_healing_medkit_hps_step( "asw_skill_healing_medkit_hps_step", "5", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_xenowounds_step( "asw_skill_xenowounds_step", "-25", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_drugs_step( "asw_skill_drugs_step", "0.8", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_drugs_healamp_step( "asw_skill_drugs_healamp_step", "20", FCVAR_REPLICATED | FCVAR_CHEAT );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HEALING_CHARGES_STEP, asw_skill_healing_charges_step, 1, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_SELF_HEALING_CHARGES_STEP, asw_skill_self_healing_charges_step, 0.5, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HEALING_MEDRIFLE_HEALING_CHARGES_STEP, asw_skill_healing_medrifle_healing_charges_step, 0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HEALING_HPS_STEP, asw_skill_healing_hps_step, 8, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HEALING_GRENADE_STEP, asw_skill_healing_grenade_step, 30, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HEALING_GUN_CHARGES_STEP, asw_skill_healing_gun_charges_step, 10, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HEALING_GUN_STEP, asw_skill_healing_gun_step, 1, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HEALING_AMP_GUN_CHARGES_STEP, asw_skill_healing_amp_gun_charges_step, 5, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HEALING_MEDKIT_HPS_STEP, asw_skill_healing_medkit_hps_step, 5, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_XENOWOUNDS_STEP, asw_skill_xenowounds_step, -25, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_DRUGS_STEP, asw_skill_drugs_step, 0.8, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_DRUGS_HEALAMP_STEP, asw_skill_drugs_healamp_step, 20, "" );
 
-ConVar asw_skill_hacking_speed_step( "asw_skill_hacking_speed_step", "0.1", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_scanner_step( "asw_skill_scanner_step", "150", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_engineering_welding_step( "asw_skill_engineering_welding_step", "0.5", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_engineering_sentry_step( "asw_skill_engineering_sentry_step", "0.25", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_engineering_firerate_step( "asw_skill_engineering_firerate_step", "0.005", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_engineering_shield_health_step( "asw_skill_engineering_shield_health_step", "50", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_engineering_shield_duration_step( "asw_skill_engineering_shield_duration_step", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HACKING_SPEED_STEP, asw_skill_hacking_speed_step, 0.1, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_SCANNER_STEP, asw_skill_scanner_step, 150, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ENGINEERING_WELDING_STEP, asw_skill_engineering_welding_step, 0.5, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ENGINEERING_SENTRY_STEP, asw_skill_engineering_sentry_step, 0.25, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ENGINEERING_FIRERATE_STEP, asw_skill_engineering_firerate_step, 0.005, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ENGINEERING_SHIELD_HEALTH_STEP, asw_skill_engineering_shield_health_step, 50, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ENGINEERING_SHIELD_DURATION_STEP, asw_skill_engineering_shield_duration_step, 1, "" );
 
-ConVar asw_skill_grenades_radius_step( "asw_skill_grenades_radius_step", "20", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_grenades_dmg_step( "asw_skill_grenades_dmg_step", "20", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_grenades_incendiary_dmg_step( "asw_skill_grenades_incendiary_dmg_step", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_grenades_cluster_dmg_step( "asw_skill_grenades_cluster_dmg_step", "10", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_grenades_clusters_step( "asw_skill_grenades_clusters_step", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_grenades_flechette_dmg_step( "asw_skill_grenades_flechette_dmg_step", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_grenades_hornet_dmg_step( "asw_skill_grenades_hornet_dmg_step", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_grenades_hornet_count_step( "asw_skill_grenades_hornet_count_step", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_grenades_hornet_interval_step( "asw_skill_grenades_hornet_interval_step", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_grenades_freeze_radius_step( "asw_skill_grenades_freeze_radius_step", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_grenades_freeze_duration_step( "asw_skill_grenades_freeze_duration_step", "0.3", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_grenades_smart_count_step( "asw_skill_grenades_smart_count_step", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_grenades_smart_interval_step( "asw_skill_grenades_smart_interval_step", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_RADIUS_STEP, asw_skill_grenades_radius_step, 20, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_DMG_STEP, asw_skill_grenades_dmg_step, 20, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_INCENDIARY_DMG_STEP, asw_skill_grenades_incendiary_dmg_step, 0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_CLUSTER_DMG_STEP, asw_skill_grenades_cluster_dmg_step, 10, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_CLUSTERS_STEP, asw_skill_grenades_clusters_step, 1, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_FLECHETTE_DMG_STEP, asw_skill_grenades_flechette_dmg_step, 1, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_HORNET_DMG_STEP, asw_skill_grenades_hornet_dmg_step, 1, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_HORNET_COUNT_STEP, asw_skill_grenades_hornet_count_step, 0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_HORNET_INTERVAL_STEP, asw_skill_grenades_hornet_interval_step, 0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_FREEZE_RADIUS_STEP, asw_skill_grenades_freeze_radius_step, 0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_FREEZE_DURATION_STEP, asw_skill_grenades_freeze_duration_step, 0.3, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_SMART_COUNT_STEP, asw_skill_grenades_smart_count_step, 0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_SMART_INTERVAL_STEP, asw_skill_grenades_smart_interval_step, 0, "" );
 
-ConVar asw_skill_health_step( "asw_skill_health_step", "15", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_melee_dmg_step( "asw_skill_melee_dmg_step", "6", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_melee_force_step( "asw_skill_melee_force_step", "1.0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_melee_speed_step( "asw_skill_melee_speed_step", "0.1", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_reloading_step( "asw_skill_reloading_step", "-0.14", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_reloading_fast_step( "asw_skill_reloading_fast_step", "0.05", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_agility_movespeed_step( "asw_skill_agility_movespeed_step", "10", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_agility_reload_step( "asw_skill_agility_reload_step", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HEALTH_STEP, asw_skill_health_step, 15, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_MELEE_DMG_STEP, asw_skill_melee_dmg_step, 6, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_MELEE_FORCE_STEP, asw_skill_melee_force_step, 1.0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_MELEE_SPEED_STEP, asw_skill_melee_speed_step, 0.1, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_RELOADING_STEP, asw_skill_reloading_step, -0.14, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_RELOADING_FAST_STEP, asw_skill_reloading_fast_step, 0.05, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_AGILITY_MOVESPEED_STEP, asw_skill_agility_movespeed_step, 10, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_AGILITY_RELOAD_STEP, asw_skill_agility_reload_step, 0, "" );
 
-ConVar asw_skill_mines_fires_base( "asw_skill_mines_fires_base", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_mines_fires_step( "asw_skill_mines_fires_step", "0.5", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_mines_duration_base( "asw_skill_mines_duration_base", "10.0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_mines_duration_step( "asw_skill_mines_duration_step", "5.0", FCVAR_REPLICATED | FCVAR_CHEAT );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_MINES_FIRES_BASE, asw_skill_mines_fires_base, 1, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_MINES_FIRES_STEP, asw_skill_mines_fires_step, 0.5, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_MINES_DURATION_BASE, asw_skill_mines_duration_base, 10.0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_MINES_DURATION_STEP, asw_skill_mines_duration_step, 5.0, "" );
 
 // accuracy convars
-ConVar asw_skill_accuracy_rifle_dmg_base( "asw_skill_accuracy_rifle_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_rifle_dmg_step( "asw_skill_accuracy_rifle_dmg_step", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_prifle_dmg_base( "asw_skill_accuracy_prifle_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_prifle_dmg_step( "asw_skill_accuracy_prifle_dmg_step", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_shotgun_dmg_base( "asw_skill_accuracy_shotgun_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_shotgun_dmg_step( "asw_skill_accuracy_shotgun_dmg_step", "2", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_railgun_dmg_base( "asw_skill_accuracy_railgun_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_railgun_dmg_step( "asw_skill_accuracy_railgun_dmg_step", "10", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_flamer_dmg_base( "asw_skill_accuracy_flamer_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_flamer_dmg_step( "asw_skill_accuracy_flamer_dmg_step", "0.5", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_pistol_dmg_base( "asw_skill_accuracy_pistol_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_pistol_dmg_step( "asw_skill_accuracy_pistol_dmg_step", "4", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_deagle_dmg_base( "asw_skill_accuracy_deagle_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_deagle_dmg_step( "asw_skill_accuracy_deagle_dmg_step", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_pdw_dmg_base( "asw_skill_accuracy_pdw_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_pdw_dmg_step( "asw_skill_accuracy_pdw_dmg_step", "1.0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_muzzle_flash_base( "asw_skill_muzzle_flash_base", "1.0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_muzzle_flash_step( "asw_skill_muzzle_flash_step", "0.2", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_sniper_rifle_dmg_base( "asw_skill_accuracy_sniper_rifle_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_sniper_rifle_dmg_step( "asw_skill_accuracy_sniper_rifle_dmg_step", "20", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_tesla_cannon_dmg_base( "asw_skill_accuracy_tesla_cannon_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_tesla_cannon_dmg_step( "asw_skill_accuracy_tesla_cannon_dmg_step", "0.25", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_heavy_rifle_dmg_base( "asw_skill_accuracy_heavy_rifle_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_heavy_rifle_dmg_step( "asw_skill_accuracy_heavy_rifle_dmg_step", "2", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_medrifle_dmg_base( "asw_skill_accuracy_medrifle_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_medrifle_dmg_step( "asw_skill_accuracy_medrifle_dmg_step", "2", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_ar2_dmg_base( "asw_skill_accuracy_ar2_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_ar2_dmg_step( "asw_skill_accuracy_ar2_dmg_step", "2", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_devastator_dmg_base( "asw_skill_accuracy_devastator_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_devastator_dmg_step( "asw_skill_accuracy_devastator_dmg_step", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_50calmg_dmg_base( "asw_skill_accuracy_50calmg_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_50calmg_dmg_step( "asw_skill_accuracy_50calmg_dmg_step", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_mining_laser_dmg_base( "asw_skill_accuracy_mining_laser_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_mining_laser_dmg_step( "asw_skill_accuracy_mining_laser_dmg_step", "1", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_shield_rifle_dmg_base( "asw_skill_accuracy_shield_rifle_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_shield_rifle_dmg_step( "asw_skill_accuracy_shield_rifle_dmg_step", "2", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_cryo_dmg_base( "asw_skill_accuracy_cryo_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_cryo_dmg_step( "asw_skill_accuracy_cryo_dmg_step", "0.5", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_shield_damage_base( "asw_skill_accuracy_shield_damage_base", "30", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar asw_skill_accuracy_shield_damage_step( "asw_skill_accuracy_shield_damage_step", "20", FCVAR_REPLICATED | FCVAR_CHEAT );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_RIFLE_DMG_BASE, asw_skill_accuracy_rifle_dmg_base, 0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_RIFLE_DMG_STEP, asw_skill_accuracy_rifle_dmg_step, 1, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_PRIFLE_DMG_BASE, asw_skill_accuracy_prifle_dmg_base, 0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_PRIFLE_DMG_STEP, asw_skill_accuracy_prifle_dmg_step, 1, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_SHOTGUN_DMG_BASE, asw_skill_accuracy_shotgun_dmg_base, 0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_SHOTGUN_DMG_STEP, asw_skill_accuracy_shotgun_dmg_step, 2, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_RAILGUN_DMG_BASE, asw_skill_accuracy_railgun_dmg_base, 0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_RAILGUN_DMG_STEP, asw_skill_accuracy_railgun_dmg_step, 10, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_FLAMER_DMG_BASE, asw_skill_accuracy_flamer_dmg_base, 0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_FLAMER_DMG_STEP, asw_skill_accuracy_flamer_dmg_step, 0.5, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_PISTOL_DMG_BASE, asw_skill_accuracy_pistol_dmg_base, 0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_PISTOL_DMG_STEP, asw_skill_accuracy_pistol_dmg_step, 4, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_DEAGLE_DMG_BASE, asw_skill_accuracy_deagle_dmg_base, 0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_DEAGLE_DMG_STEP, asw_skill_accuracy_deagle_dmg_step, 0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_PDW_DMG_BASE, asw_skill_accuracy_pdw_dmg_base, 0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_PDW_DMG_STEP, asw_skill_accuracy_pdw_dmg_step, 1.0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_MUZZLE_FLASH_BASE, asw_skill_muzzle_flash_base, 1.0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_MUZZLE_FLASH_STEP, asw_skill_muzzle_flash_step, 0.2, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_SNIPER_RIFLE_DMG_BASE, asw_skill_accuracy_sniper_rifle_dmg_base, 0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_SNIPER_RIFLE_DMG_STEP, asw_skill_accuracy_sniper_rifle_dmg_step, 20, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_TESLA_CANNON_DMG_BASE, asw_skill_accuracy_tesla_cannon_dmg_base, 0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_TESLA_CANNON_DMG_STEP, asw_skill_accuracy_tesla_cannon_dmg_step, 0.25, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_HEAVY_RIFLE_DMG_BASE, asw_skill_accuracy_heavy_rifle_dmg_base, 0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_HEAVY_RIFLE_DMG_STEP, asw_skill_accuracy_heavy_rifle_dmg_step, 2, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_MEDRIFLE_DMG_BASE, asw_skill_accuracy_medrifle_dmg_base, 0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_MEDRIFLE_DMG_STEP, asw_skill_accuracy_medrifle_dmg_step, 2, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_AR2_DMG_BASE, asw_skill_accuracy_ar2_dmg_base, 0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_AR2_DMG_STEP, asw_skill_accuracy_ar2_dmg_step, 2, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_DEVASTATOR_DMG_BASE, asw_skill_accuracy_devastator_dmg_base, 0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_DEVASTATOR_DMG_STEP, asw_skill_accuracy_devastator_dmg_step, 1, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_50CALMG_DMG_BASE, asw_skill_accuracy_50calmg_dmg_base, 0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_50CALMG_DMG_STEP, asw_skill_accuracy_50calmg_dmg_step, 1, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_MINING_LASER_DMG_BASE, asw_skill_accuracy_mining_laser_dmg_base, 0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_MINING_LASER_DMG_STEP, asw_skill_accuracy_mining_laser_dmg_step, 1, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_SHIELD_RIFLE_DMG_BASE, asw_skill_accuracy_shield_rifle_dmg_base, 0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_SHIELD_RIFLE_DMG_STEP, asw_skill_accuracy_shield_rifle_dmg_step, 2, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_CRYO_DMG_BASE, asw_skill_accuracy_cryo_dmg_base, 0, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_CRYO_DMG_STEP, asw_skill_accuracy_cryo_dmg_step, 0.5, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_SHIELD_DAMAGE_BASE, asw_skill_accuracy_shield_damage_base, 30, "" );
+GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_SHIELD_DAMAGE_STEP, asw_skill_accuracy_shield_damage_step, 20, "" );
 
-ConVar asw_skill_laser_mines_base( "asw_skill_laser_mines_base", "1", FCVAR_REPLICATED | FCVAR_CHEAT, "Number of laser mines to deploy by marines with no Explosives skills", true, 1, true, 10 );
-ConVar asw_skill_laser_mines_moderate( "asw_skill_laser_mines_moderate", "2", FCVAR_REPLICATED | FCVAR_CHEAT, "Number of laser mines to deploy by marines with moderate(>1) Explosives skills", true, 1, true, 10 );
-ConVar asw_skill_laser_mines_expert( "asw_skill_laser_mines_expert", "3", FCVAR_REPLICATED | FCVAR_CHEAT, "Number of laser mines to deploy by marines with expert(>3) Explosives skills. Currently only Jaeger have it", true, 1, true, 10 );
+GameRulesConVarClamp( s_ASWMarineSkillsConVars, AMSC_LASER_MINES_BASE, asw_skill_laser_mines_base, 1, "Number of laser mines to deploy by marines with no Explosives skills", 1, 10 );
+GameRulesConVarClamp( s_ASWMarineSkillsConVars, AMSC_LASER_MINES_MODERATE, asw_skill_laser_mines_moderate, 2, "Number of laser mines to deploy by marines with moderate(>1) Explosives skills", 1, 10 );
+GameRulesConVarClamp( s_ASWMarineSkillsConVars, AMSC_LASER_MINES_EXPERT, asw_skill_laser_mines_expert, 3, "Number of laser mines to deploy by marines with expert(>3) Explosives skills. Currently only Jaeger have it", 1, 10 );
 
 CASW_Marine_Skills::CASW_Marine_Skills()
 {
@@ -444,10 +604,10 @@ float CASW_Marine_Skills::GetSkillBasedValue( CASW_Marine_Profile *pProfile, ASW
 			return asw_skill_grenades_smart_interval_base.GetFloat() + asw_skill_grenades_smart_interval_step.GetFloat() * iSkillPoints;
 		case ASW_MARINE_SUBSKILL_GRENADE_LASER_MINES:
 			if ( iSkillPoints >= 4 )
-				return asw_skill_laser_mines_expert.GetInt();
+				return asw_skill_laser_mines_expert.GetFloat();
 			if ( iSkillPoints >= 2 )
-				return asw_skill_laser_mines_moderate.GetInt();
-			return asw_skill_laser_mines_base.GetInt();
+				return asw_skill_laser_mines_moderate.GetFloat();
+			return asw_skill_laser_mines_base.GetFloat();
 		case ASW_MARINE_SUBSKILL_GRENADE_MINES_FIRES:
 			return asw_skill_mines_fires_base.GetFloat() + asw_skill_mines_fires_step.GetFloat() * iSkillPoints;
 		case ASW_MARINE_SUBSKILL_GRENADE_MINES_DURATION:

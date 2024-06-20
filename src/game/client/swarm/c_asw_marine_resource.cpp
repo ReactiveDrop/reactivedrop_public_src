@@ -57,8 +57,6 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_Marine_Resource, DT_ASW_Marine_Resource, CASW_Ma
 END_RECV_TABLE();
 
 extern ConVar asw_leadership_radius;
-extern ConVar asw_skill_healing_charges_base;
-extern ConVar asw_skill_healing_charges_step;
 
 C_ASW_Marine_Resource::C_ASW_Marine_Resource()
 {
@@ -272,7 +270,7 @@ float C_ASW_Marine_Resource::GetMedsPercent()
 		}
 	}
 
-	float max_meds = asw_skill_healing_charges_base.GetInt() + ( asw_skill_healing_charges_step.GetInt() * 5 );
+	float max_meds = MarineSkills()->GetSkillBasedValue( NULL, ASW_MARINE_SKILL_HEALING, ASW_MARINE_SUBSKILL_HEALING_CHARGES, 5 );
 	
 	m_fCachedMedsPercent = float( meds ) / float( max_meds );
 	if ( m_fCachedMedsPercent > 1 )

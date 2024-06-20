@@ -56,7 +56,7 @@
 #include "eventlist.h"
 #include "particle_parse.h"
 #include "asw_trace_filter_shot.h"
-#include "asw_deathmatch_mode_light.h"
+#include "asw_deathmatch_mode.h"
 #include "asw_weapon_sniper_rifle.h"
 #include "asw_fx_shared.h"
 
@@ -2547,6 +2547,8 @@ CBaseEntity *CASW_Marine::MeleeTraceHullAttack( const Vector &vecStart, const Ve
 
 	CTakeDamageInfo	dmgInfo( this, this, 0.0f, DMG_CLUB );
 	dmgInfo.SetDamage( MarineSkills()->GetSkillBasedValueByMarine( this, ASW_MARINE_SKILL_MELEE, ASW_MARINE_SUBSKILL_MELEE_DMG ) );
+	if ( ASWDeathmatchMode() && ASWDeathmatchMode()->IsInstagibEnabled() )
+		dmgInfo.SetDamage( 200 );
 	dmgInfo.ScaleDamage( GetCurrentMeleeAttack() ? GetCurrentMeleeAttack()->m_flDamageScale : 1.0f );
 
 	Vector vecAttackDir = vecEnd - vecStart;

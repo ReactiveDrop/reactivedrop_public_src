@@ -797,6 +797,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClCompile Include="..\shared\swarm\rd_computer_vscript_shared.cpp" />
     <ClCompile Include="..\shared\swarm\rd_convar_printdescription_hack.cpp" />
     <ClCompile Include="..\shared\swarm\rd_crafting_defs.cpp" />
+    <ClCompile Include="..\shared\swarm\rd_gamerules_convar.cpp" />
     <ClCompile Include="..\shared\swarm\rd_hud_counter_shared.cpp" />
     <ClCompile Include="..\shared\swarm\rd_hud_vscript_shared.cpp" />
     <ClCompile Include="..\shared\swarm\rd_inventory_command.cpp" />
@@ -1839,6 +1840,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="..\shared\swarm\rd_challenges_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_computer_vscript_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_crafting_defs.h" />
+    <ClInclude Include="..\shared\swarm\rd_gamerules_convar.h" />
     <ClInclude Include="..\shared\swarm\rd_hud_vscript_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_inventory_command.h" />
     <ClInclude Include="..\shared\swarm\rd_inventory_shared.h" />

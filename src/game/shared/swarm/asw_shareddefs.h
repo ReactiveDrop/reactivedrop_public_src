@@ -5,6 +5,7 @@
 #endif
 
 #include "const.h"
+#include "rd_gamerules_convar.h"
 
 enum ASW_Inventory_slot_t
 {

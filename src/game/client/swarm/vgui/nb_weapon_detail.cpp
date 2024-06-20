@@ -15,8 +15,6 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-extern ConVar asw_skill_reloading_base;
-extern ConVar asw_skill_melee_dmg_base;
 
 CNB_Weapon_Detail::CNB_Weapon_Detail( vgui::Panel *parent, const char *name ) : BaseClass( parent, name )
 {
@@ -125,7 +123,7 @@ void CNB_Weapon_Detail::UpdateLabels( CASW_EquipItem *pItem, CASW_WeaponInfo *pW
 					nBonusDmg = 0.5f + MarineSkills()->GetSkillBasedValue(pProfile, ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_TESLA_CANNON_DMG);
 				else if ( FStrEq("asw_weapon_chainsaw", pWeaponData->szClassName) )
 				{
-					flBaseSkillDmgShift = asw_skill_melee_dmg_base.GetFloat();
+					flBaseSkillDmgShift = MarineSkills()->GetSkillBasedValue( NULL, ASW_MARINE_SKILL_MELEE, ASW_MARINE_SUBSKILL_MELEE_DMG, 0 );
 					nBonusDmg = MarineSkills()->GetSkillBasedValue(pProfile, ASW_MARINE_SKILL_MELEE, ASW_MARINE_SUBSKILL_MELEE_DMG);
 				}
 				else if ( FStrEq("asw_weapon_vindicator", pWeaponData->szClassName) )
@@ -151,7 +149,7 @@ void CNB_Weapon_Detail::UpdateLabels( CASW_EquipItem *pItem, CASW_WeaponInfo *pW
 			// fire power
 			static wchar_t wszPowerLine[32];
 			int iDamValue = ( pItem->m_flBaseDamage * pItem->m_nNumPellets ) + flBaseSkillDmgShift;
-			int nTotalBonusDmg = (nBonusDmg*nPellets)-flBaseSkillDmgShift;
+			int nTotalBonusDmg = ( nBonusDmg * nPellets ) - flBaseSkillDmgShift;
 			Q_snwprintf( wszPowerLine, ARRAYSIZE( wszPowerLine ), L"%s", g_pVGuiLocalize->Find( "#asw_weapon_details_firepower" ) );
 			wchar_t wzDamValue[10];
 			if ( iDamValue <= 0 )
@@ -235,7 +233,7 @@ void CNB_Weapon_Detail::UpdateLabels( CASW_EquipItem *pItem, CASW_WeaponInfo *pW
 		case 2:
 		{
 			// the skill modifies the base reload time by this amount so all of the numbers in the script files are incorrect for displaying base amount
-			float flBaseSkillModifier = asw_skill_reloading_base.GetFloat();
+			float flBaseSkillModifier = MarineSkills()->GetSkillBasedValue( NULL, ASW_MARINE_SKILL_RELOADING, ASW_MARINE_SUBSKILL_RELOADING_SPEED_SCALE, 0 );
 			// reload time
 			static wchar_t wszReloadLine[32];
 			Q_snwprintf( wszReloadLine, ARRAYSIZE( wszReloadLine ), L"%s", g_pVGuiLocalize->Find( "#asw_weapon_details_reload" ) );

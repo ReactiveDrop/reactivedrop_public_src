@@ -100,7 +100,6 @@ extern ConVar rd_weapon_on_ground_time;
 extern ConVar asw_marine_death_protection;
 extern ConVar asw_skill;
 extern ConVar asw_marine_ff_absorption;
-extern ConVar asw_skill_melee_dmg_base;
 
 extern ConVar rd_shotgun_dmg_base;
 extern ConVar rd_rifle_dmg_base;
@@ -411,9 +410,7 @@ void CASW_Deathmatch_Mode::InstagibEnable()
 		- reset scores
 	*/
 
-	// 10 is for railgun
-	SaveSetConvar( rd_default_weapon, 10 );
-	SaveSetConvar( asw_skill_melee_dmg_base, 200 );
+	SaveSetConvar( rd_default_weapon, ASW_EQUIP_RAILGUN );
 
 	DisableWeaponRespawnTimer();
 	RemoveAllWeaponsFromMap();

@@ -114,13 +114,17 @@ void CASW_Extinguisher_Projectile::ProjectileTouch( CBaseEntity *pOther )
 	if ( !pOther->IsSolid() || pOther->IsSolidFlagSet( FSOLID_VOLUME_CONTENTS ) )
 		return;
 
-	if ( m_flExplosionRadius <= 0.0f )
+	OnProjectileTouch( pOther );
+
+	if ( m_flExplosionRadius > 0.0f )
 	{
-		OnProjectileTouch( pOther );
-	}
-	else
-	{
-		Explode();
+		if ( m_hFirer.Get() && m_hFirer->IRelationType( pOther ) != D_LI )
+		{
+			// Don't splash friendly fire if we hit an enemy.
+			m_bAllowFriendlyFire = false;
+		}
+
+		Explode( pOther );
 	}
 
 	SetAbsVelocity( vec3_origin );
@@ -131,7 +135,7 @@ void CASW_Extinguisher_Projectile::ProjectileTouch( CBaseEntity *pOther )
 	UTIL_Remove( this );
 }
 
-void CASW_Extinguisher_Projectile::Explode()
+void CASW_Extinguisher_Projectile::Explode( CBaseEntity *pExcept )
 {
 	bool bAtLeastOne = false;
 
@@ -148,6 +152,9 @@ void CASW_Extinguisher_Projectile::Explode()
 
 		if ( pEnt->m_takedamage != DAMAGE_NO )
 			bAtLeastOne = true;
+
+		if ( pEnt == pExcept )
+			continue;
 
 		OnProjectileTouch( pEnt );
 	}
@@ -189,21 +196,19 @@ void CASW_Extinguisher_Projectile::OnProjectileTouch( CBaseEntity *pOther )
 		}
 	}
 
+	bool bFriendly = m_hFirer.Get() && m_hFirer->IRelationType( pOther ) == D_LI;
+
 	// half radius for friendly fire
-	if ( m_flExplosionRadius > 0.0f )
+	if ( m_flExplosionRadius > 0.0f && bFriendly )
 	{
-		CASW_Marine *pFirer = CASW_Marine::AsMarine( m_hFirer.Get() );
-		if ( pFirer && pFirer->IRelationType( pOther ) == D_LI )
+		// actually less than half because we're measuring to the center rather than the edge
+		if ( GetAbsOrigin().DistTo( pOther->WorldSpaceCenter() ) > m_flExplosionRadius / 2.0f )
 		{
-			// actually less than half because we're measuring to the center rather than the edge
-			if ( GetAbsOrigin().DistTo( pOther->WorldSpaceCenter() ) > m_flExplosionRadius / 2.0f )
-			{
-				return;
-			}
+			return;
 		}
 	}
 
-	if ( m_flDamage > 0.0f && ( !pMarine || m_bAllowFriendlyFire ) )
+	if ( m_flDamage > 0.0f && ( !bFriendly || m_bAllowFriendlyFire ) )
 	{
 		Vector vecDirection = pOther->WorldSpaceCenter() - m_vecSpawnOrigin;
 		vecDirection.NormalizeInPlace();
@@ -220,7 +225,7 @@ void CASW_Extinguisher_Projectile::OnProjectileTouch( CBaseEntity *pOther )
 			flFreezeAmount *= rd_extinguisher_hull_scale[clamp( pNPC->GetHullType(), 0, NUM_HULLS - 1 )].GetFloat();
 		}
 
-		if ( flFreezeAmount > 0 && ( m_bAllowFriendlyFire || !m_hFirer || !m_hFirer->MyCombatCharacterPointer() || m_hFirer->MyCombatCharacterPointer()->IRelationType( pNPC ) != D_LI ) )
+		if ( flFreezeAmount > 0 && ( !bFriendly || m_bAllowFriendlyFire ) )
 		{
 			bool bWasFrozen = pNPC->m_bWasEverFrozen;
 			pNPC->Freeze( flFreezeAmount, m_hFirer ? m_hFirer : this );
@@ -250,7 +255,7 @@ void CASW_Extinguisher_Projectile::OnProjectileTouch( CBaseEntity *pOther )
 	}
 }
 
-CASW_Extinguisher_Projectile *CASW_Extinguisher_Projectile::Extinguisher_Projectile_Create( const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner, CBaseEntity *pWeapon )
+CASW_Extinguisher_Projectile *CASW_Extinguisher_Projectile::Extinguisher_Projectile_Create( const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseCombatCharacter *pOwner, CBaseEntity *pWeapon )
 {
 	CASW_Extinguisher_Projectile *pPellet = ( CASW_Extinguisher_Projectile * )CreateEntityByName( "asw_extinguisher_projectile" );
 	pPellet->SetAbsAngles( angles );
@@ -301,7 +306,8 @@ void CASW_Extinguisher_Projectile::TouchedEnvFire()
 	if ( m_flExplosionRadius > 0.0f )
 	{
 		// make sure we still do AOE damage even if there's a fire in the way when we stop
-		Explode();
+		m_bAllowFriendlyFire = false;
+		Explode( NULL );
 	}
 
 	SetThink( &CASW_Extinguisher_Projectile::SUB_Remove );

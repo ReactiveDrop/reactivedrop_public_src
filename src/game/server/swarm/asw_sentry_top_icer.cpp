@@ -107,16 +107,17 @@ void CASW_Sentry_Top_Icer::FireProjectiles( int numShotsToFire, ///< number of p
 
 	CASW_Sentry_Base *pBase = GetSentryBase();
 	CBaseEntity *pBaseEntThis = this;
+	CBaseCombatCharacter *pBaseCombatCharacterThis = this;
 	for ( int i = 0; i < numShotsToFire; i++ )
 	{
 		// create a pellet at some random spread direction		
 		Vector projectileVel = Manipulator.GetShotDirection();
 
 		projectileVel *= GetProjectileVelocity();
-		projectileVel *= ( 1.0 + ( 0.1 * random->RandomFloat( -1, 1 ) ) );
+		projectileVel *= random->RandomFloat( 0.9f, 1.1f );
 		CASW_Extinguisher_Projectile *pProjectile = CASW_Extinguisher_Projectile::Extinguisher_Projectile_Create(
 			vecSrc + ( projectileVel.Normalized() * BoundingRadius() ), QAngle( 0, 0, 0 ), projectileVel, rotSpeed,
-			pBase && pBase->m_hDeployer ? pBase->m_hDeployer : pBaseEntThis, pBase ? pBase : pBaseEntThis );
+			pBase && pBase->m_hDeployer.Get() ? pBase->m_hDeployer.Get() : pBaseCombatCharacterThis, pBase ? pBase : pBaseEntThis );
 		if ( pProjectile )
 		{
 			pProjectile->SetFreezeAmount( 0.4f );
