@@ -165,6 +165,14 @@ protected:
 	int			m_iSelectedArrowSize;		// size to draw the arrow
 
 	int			m_nWideAtOpen;
+
+	Color m_BlotchColor;
+	Color m_BorderColor;
+	Color m_ColorEnabled;
+	Color m_ColorDisabled;
+	Color m_ColorFocusDisabled;
+	Color m_ColorOpen;
+	Color m_ColorFocus;
 };
 
 }; //namespace BaseModUI

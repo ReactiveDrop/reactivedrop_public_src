@@ -353,10 +353,6 @@ void BaseModHybridButton::SetHelpText( const char* tooltip, bool enabled )
 // 3 = Flyout button
 void BaseModHybridButton::PaintButtonEx()
 {
-	vgui::IScheme *pScheme = vgui::scheme()->GetIScheme( GetScheme() );
-	Color blotchColor = pScheme->GetColor( "HybridButton.BlotchColor", Color( 0, 0, 0, 255 ) );
-	Color borderColor = pScheme->GetColor( "HybridButton.BorderColor", Color( 0, 0, 0, 255 ) );
-
 	int x, y;
 	int wide, tall;
 	GetSize( wide, tall );
@@ -387,58 +383,31 @@ void BaseModHybridButton::PaintButtonEx()
 	{
 		case Enabled:
 			// selectable, just not highlighted
-			if ( m_nStyle == BUTTON_RED || m_nStyle == BUTTON_REDMAIN )
-			{
-				//col.SetColor( 0, 128, 128, 255 );
-				col.SetColor( 169, 213, 255, 255 );
-			}
-			else if ( m_nStyle == BUTTON_ALIENSWARMMENUBUTTON || m_nStyle == BUTTON_ALIENSWARMMENUBUTTONSMALL )
-			{
-				col.SetColor( 135, 170, 193, 255 );
-			}
-			else if ( m_nStyle == BUTTON_REACTIVEDROPMAINMENU || m_nStyle == BUTTON_REACTIVEDROPMAINMENUBIG || m_nStyle == BUTTON_REACTIVEDROPMAINMENUSHOWCASE || m_nStyle == BUTTON_REACTIVEDROPMAINMENUTIMER || m_nStyle == BUTTON_REACTIVEDROPMAINMENUHOIAF )
-			{
-				col.SetColor( 192, 192, 192, 255 );
-			}
-			else if ( m_nStyle == BUTTON_REACTIVEDROPMAINMENUTOP )
-			{
-				col.SetColor( 96, 96, 96, 255 );
-			}
-			else
-			{
-				//col.SetColor( 125, 125, 125, 255 );
-				col.SetColor( 83, 148, 192, 255 );
-			}
+			col = m_ColorEnabled;
 			break;
 		case Disabled:
-			//col.SetColor( 88, 97, 104, 255 );
-			//col.SetColor( 65, 74, 96, 255 );
-			col.SetColor( 32, 59, 82, 255 );
+			col = m_ColorDisabled;
 			bDrawText = true;
 			bDrawGlow = false;
 			break;
 		case FocusDisabled:
-			col.SetColor( 182, 189, 194, 255 );
+			col = m_ColorFocusDisabled;
 			bDrawText = false;
 			bDrawGlow = true;
 			break;
 		case Open:
 			// flyout menu is attached
-			//col.SetColor( 200, 200, 200, 255 );
-			if ( m_nStyle == BUTTON_REACTIVEDROPMAINMENUTOP )
+			col = m_ColorOpen;
+			// ...or top level tab is active
+			if ( m_nStyle != BUTTON_REACTIVEDROPMAINMENUTOP )
 			{
-				col.SetColor( 224, 224, 224, 255 );
-			}
-			else
-			{
-				col.SetColor( 169, 213, 255, 255 );
 				bDrawGlow = true;
 				bDrawCursor = true;
 			}
 			break;
 		case Focus:
 			// active item
-			col.SetColor( 255, 255, 255, 255 );
+			col = m_ColorFocus;
 			bDrawGlow = true;
 			bAnimateGlow = true;
 			if ( m_nStyle == BUTTON_SIMPLE ||
@@ -488,7 +457,7 @@ void BaseModHybridButton::PaintButtonEx()
 		if ( szUnicode[0] != L'\0' )
 		{
 			// black background so we can read the text on top of the image
-			surface()->DrawSetColor( blotchColor.r() * blotchColor.a() / 255, blotchColor.g() * blotchColor.a() / 255, blotchColor.b() * blotchColor.a() / 255, 224 );
+			surface()->DrawSetColor( m_BlotchColor.r() * m_BlotchColor.a() / 255, m_BlotchColor.g() * m_BlotchColor.a() / 255, m_BlotchColor.b() * m_BlotchColor.a() / 255, 224 );
 			surface()->DrawFilledRectFastFade( YRES( 1 ), y, wide - YRES( 1 ), tall - YRES( 1 ), y, y + YRES( 2 ), 0, 224, false );
 		}
 	}
@@ -508,7 +477,7 @@ void BaseModHybridButton::PaintButtonEx()
 		}
 
 		// draw blotch
-		surface()->DrawSetColor( blotchColor );
+		surface()->DrawSetColor( m_BlotchColor );
 		if ( m_nStyle == BUTTON_DIALOG )
 		{
 			int blotchWide = textWide;
@@ -525,7 +494,7 @@ void BaseModHybridButton::PaintButtonEx()
 		}
 
 		// draw border lines
-		surface()->DrawSetColor( borderColor );
+		surface()->DrawSetColor( m_BorderColor );
 		if ( curState == Open )
 		{
 			FlyoutMenu *pActiveFlyout = FlyoutMenu::GetActiveMenu();
@@ -740,6 +709,10 @@ void BaseModHybridButton::PaintButtonEx()
 		if ( bDrawGlow )
 		{
 			int alpha = bAnimateGlow ? 60.0f + 30.0f * sin( Plat_FloatTime() * 4.0f ) : 30;
+#ifdef INFESTED_DLL
+			if ( bAnimateGlow && rd_reduce_motion.GetBool() )
+				alpha = 60;
+#endif
 			vgui::surface()->DrawSetTextColor( Color( 255, 255, 255, alpha ) );
 			vgui::surface()->DrawSetTextFont( m_hSelectionBlurFont );
 			vgui::surface()->DrawSetTextPos( xx, yy );
@@ -916,101 +889,139 @@ void BaseModHybridButton::ApplyStyle()
 	if ( !scheme )
 		return;
 
+	const char *szStyle = NULL;
+
+#define GET_FONT( var, def ) scheme->GetFont( scheme->GetResourceString( var ) ? scheme->GetResourceString( var ) : def, true )
+
 	if ( m_nStyle == BUTTON_MAINMENU )
 	{
-		m_hTextFont = scheme->GetFont( "MainBold", true );
-		m_hTextBlurFont = scheme->GetFont( "MainBoldBlur", true );
+		szStyle = "MainMenuButton";
+		m_hTextFont = GET_FONT( "MainMenuButton.Font", "MainBold" );
+		m_hTextBlurFont = GET_FONT( "MainMenuButton.FontBlur", "MainBoldBlur" );
 	}
 	else if ( m_nStyle == BUTTON_FLYOUTITEM )
 	{
-		m_hTextFont = scheme->GetFont( "DefaultMedium", true );
-		m_hTextBlurFont = scheme->GetFont( "DefaultMediumBlur", true );
+		szStyle = "FlyoutMenuButton";
+		m_hTextFont = GET_FONT( "FlyoutMenuButton.Font", "DefaultMedium" );
+		m_hTextBlurFont = GET_FONT( "FlyoutMenuButton.FontBlur", "DefaultMediumBlur" );
 	}
 	else if ( m_nStyle == BUTTON_DROPDOWN )
 	{
-		m_hTextFont = scheme->GetFont( "DefaultBold", true );
-		m_hTextBlurFont = scheme->GetFont( "DefaultBoldBlur", true );
-		m_hSelectionFont = scheme->GetFont( "DefaultMedium", true );
-		m_hSelectionBlurFont = scheme->GetFont( "DefaultMediumBlur", true );
+		szStyle = "DropDownButton";
+		m_hTextFont = GET_FONT( "DropDownButton.Font", "DefaultBold" );
+		m_hTextBlurFont = GET_FONT( "DropDownButton.FontBlur", "DefaultBoldBlur" );
+		m_hSelectionFont = GET_FONT( "DropDownButton.FontSelected", "DefaultMedium" );
+		m_hSelectionBlurFont = GET_FONT( "DropDownButton.FontSelectedBlur", "DefaultMediumBlur" );
 	}
 	else if ( m_nStyle == BUTTON_DIALOG )
 	{
-		m_hTextFont = scheme->GetFont( "DefaultBold", true );
-		m_hTextBlurFont = scheme->GetFont( "DefaultBoldBlur", true );
+		szStyle = "DialogButton";
+		m_hTextFont = GET_FONT( "DialogButton.Font", "DefaultBold" );
+		m_hTextBlurFont = GET_FONT( "DialogButton.FontBlur", "DefaultBoldBlur" );
 	}
-	else if ( m_nStyle == BUTTON_RED || m_nStyle == BUTTON_REDMAIN )
+	else if ( m_nStyle == BUTTON_RED )
 	{
-		m_hTextFont = scheme->GetFont( "DefaultBold", true );
-		m_hTextBlurFont = scheme->GetFont( "DefaultBoldBlur", true );
+		szStyle = "RedButton";
+		m_hTextFont = GET_FONT( "RedButton.Font", "DefaultBold" );
+		m_hTextBlurFont = GET_FONT( "RedButton.FontBlur", "DefaultBoldBlur" );
+	}
+	else if ( m_nStyle == BUTTON_REDMAIN )
+	{
+		szStyle = "RedMainButton";
+		m_hTextFont = GET_FONT( "RedMainButton.Font", "DefaultBold" );
+		m_hTextBlurFont = GET_FONT( "RedMainButton.FontBlur", "DefaultBoldBlur" );
 	}
 	else if ( m_nStyle == BUTTON_SMALL )
 	{
-		m_hTextFont = scheme->GetFont( "DefaultVerySmall", true );
-		m_hTextBlurFont = scheme->GetFont( "DefaultVerySmall", true );
+		szStyle = "SmallButton";
+		m_hTextFont = GET_FONT( "SmallButton.Font", "DefaultVerySmall" );
+		m_hTextBlurFont = GET_FONT( "SmallButton.FontBlur", "DefaultVerySmall" );
 	}
 	else if ( m_nStyle == BUTTON_MEDIUM )
 	{
-		m_hTextFont = scheme->GetFont( "DefaultMedium", true );
-		m_hTextBlurFont = scheme->GetFont( "DefaultMediumBlur", true );
+		szStyle = "MediumButton";
+		m_hTextFont = GET_FONT( "MediumButton.Font", "DefaultMedium" );
+		m_hTextBlurFont = GET_FONT( "MediumButton.FontBlur", "DefaultMediumBlur" );
 	}
 	else if ( m_nStyle == BUTTON_GAMEMODE )
 	{
-		m_hTextFont = scheme->GetFont( "MainBold", true );
-		m_hTextBlurFont = scheme->GetFont( "MainBoldBlur", true );
-		m_hHintTextFont = scheme->GetFont( "Default", true );
+		szStyle = "GameModeButton";
+		m_hTextFont = GET_FONT( "GameModeButton.Font", "MainBold" );
+		m_hTextBlurFont = GET_FONT( "GameModeButton.FontBlur", "MainBoldBlur" );
+		m_hHintTextFont = GET_FONT( "GameModeButton.FontHint", "Default" );
 	}
 	else if ( m_nStyle == BUTTON_MAINMENUSMALL )
 	{
-		m_hTextFont = scheme->GetFont( "DefaultBold", true );
-		m_hTextBlurFont = scheme->GetFont( "DefaultBoldBlur", true );
+		szStyle = "MainMenuSmallButton";
+		m_hTextFont = GET_FONT( "MainMenuSmallButton.Font", "DefaultBold" );
+		m_hTextBlurFont = GET_FONT( "MainMenuSmallButton.FontBlur", "DefaultBoldBlur" );
 	}
 	else if ( m_nStyle == BUTTON_ALIENSWARMMENUBUTTON )
 	{
-		m_hTextFont = scheme->GetFont( "DefaultBold", true );
-		m_hTextBlurFont = scheme->GetFont( "DefaultBoldBlur", true );
+		szStyle = "AlienSwarmMenuButton";
+		m_hTextFont = GET_FONT( "AlienSwarmMenuButton.Font", "DefaultBold" );
+		m_hTextBlurFont = GET_FONT( "AlienSwarmMenuButton.FontBlur", "DefaultBoldBlur" );
 	}
 	else if ( m_nStyle == BUTTON_ALIENSWARMMENUBUTTONSMALL )
 	{
-		m_hTextFont = scheme->GetFont( "DefaultMedium", true );
-		m_hTextBlurFont = scheme->GetFont( "DefaultMediumBlur", true );
+		szStyle = "AlienSwarmMenuButtonSmall";
+		m_hTextFont = GET_FONT( "AlienSwarmMenuButtonSmall.Font", "DefaultMedium" );
+		m_hTextBlurFont = GET_FONT( "AlienSwarmMenuButtonSmall.FontBlur", "DefaultMediumBlur" );
 	}
 	else if ( m_nStyle == BUTTON_ALIENSWARMDEFAULT )
 	{
-		m_hTextFont = scheme->GetFont( "Default", true );
-		m_hTextBlurFont = scheme->GetFont( "DefaultBlur", true );
+		szStyle = "AlienSwarmDefault";
+		m_hTextFont = GET_FONT( "AlienSwarmDefault.Font", "Default" );
+		m_hTextBlurFont = GET_FONT( "AlienSwarmDefault.FontBlur", "DefaultBlur" );
 	}
 	else if ( m_nStyle == BUTTON_REACTIVEDROPMAINMENU )
 	{
-		m_hTextFont = scheme->GetFont( "DefaultLarge", true );
-		m_hTextBlurFont = scheme->GetFont( "DefaultLargeBlur", true );
+		szStyle = "ReactiveDropMainMenu";
+		m_hTextFont = GET_FONT( "ReactiveDropMainMenu.Font", "DefaultLarge" );
+		m_hTextBlurFont = GET_FONT( "ReactiveDropMainMenu.FontBlur", "DefaultLargeBlur" );
 	}
 	else if ( m_nStyle == BUTTON_REACTIVEDROPMAINMENUBIG )
 	{
-		m_hTextFont = scheme->GetFont( "DefaultExtraLarge", true );
-		m_hTextBlurFont = scheme->GetFont( "DefaultExtraLargeBlur", true );
+		szStyle = "ReactiveDropMainMenuBig";
+		m_hTextFont = GET_FONT( "ReactiveDropMainMenuBig.Font", "DefaultExtraLarge" );
+		m_hTextBlurFont = GET_FONT( "ReactiveDropMainMenuBig.FontBlur", "DefaultExtraLargeBlur" );
 	}
 	else if ( m_nStyle == BUTTON_REACTIVEDROPMAINMENUTOP )
 	{
-		m_hTextFont = scheme->GetFont( "DefaultMedium", true );
-		m_hTextBlurFont = scheme->GetFont( "DefaultMediumBlur", true );
+		szStyle = "ReactiveDropMainMenuTop";
+		m_hTextFont = GET_FONT( "ReactiveDropMainMenuTop.Font", "DefaultMedium" );
+		m_hTextBlurFont = GET_FONT( "ReactiveDropMainMenuTop.FontBlur", "DefaultMediumBlur" );
 	}
 	else if ( m_nStyle == BUTTON_REACTIVEDROPMAINMENUSHOWCASE )
 	{
-		m_hTextFont = scheme->GetFont( "Default", true );
-		m_hTextBlurFont = scheme->GetFont( "DefaultBlur", true );
+		szStyle = "ReactiveDropMainMenuShowcase";
+		m_hTextFont = GET_FONT( "ReactiveDropMainMenuShowcase.Font", "Default" );
+		m_hTextBlurFont = GET_FONT( "ReactiveDropMainMenuShowcase.FontBlur", "DefaultBlur" );
 	}
 	else if ( m_nStyle == BUTTON_REACTIVEDROPMAINMENUTIMER )
 	{
-		m_hTextFont = scheme->GetFont( "Default", true );
-		m_hTextBlurFont = scheme->GetFont( "DefaultBlur", true );
+		szStyle = "ReactiveDropMainMenuTimer";
+		m_hTextFont = GET_FONT( "ReactiveDropMainMenuTimer.Font", "Default" );
+		m_hTextBlurFont = GET_FONT( "ReactiveDropMainMenuTimer.FontBlur", "DefaultBlur" );
 		SetWrap( true );
+	}
+	else if ( m_nStyle == BUTTON_REACTIVEDROPMAINMENUHOIAF )
+	{
+		szStyle = "ReactiveDropMainMenuHoIAF";
+		// fonts handled by subclass
 	}
 	else
 	{
+		Assert( m_nStyle == BUTTON_SIMPLE );
+		szStyle = "DefaultButton";
 		m_nStyle = BUTTON_SIMPLE;
-		m_hTextFont = scheme->GetFont( "DefaultBold", true );
-		m_hTextBlurFont = scheme->GetFont( "DefaultBoldBlur", true );
+		m_hTextFont = GET_FONT( "DefaultButton.Font", "DefaultBold" );
+		m_hTextBlurFont = GET_FONT( "DefaultButton.FontBlur", "DefaultBoldBlur" );
 	}
+
+#undef GET_FONT
+
+	Assert( szStyle );
 
 	m_nTextFontHeight = vgui::surface()->GetFontTall( m_hTextFont );
 	m_nHintTextFontHeight = vgui::surface()->GetFontTall( m_hHintTextFont );
@@ -1028,6 +1039,18 @@ void BaseModHybridButton::ApplyStyle()
 		SetSize( wide, tall );
 		m_originalTall = m_nTextFontHeight;
 	}
+
+	char szKey[128];
+	V_snprintf( szKey, sizeof( szKey ), "%s.ColorEnabled", szStyle );
+	m_ColorEnabled = scheme->GetColor( szKey, Color( 83, 148, 192, 255 ) );
+	V_snprintf( szKey, sizeof( szKey ), "%s.ColorDisabled", szStyle );
+	m_ColorDisabled = scheme->GetColor( szKey, Color( 32, 59, 82, 255 ) );
+	V_snprintf( szKey, sizeof( szKey ), "%s.ColorFocusDisabled", szStyle );
+	m_ColorFocusDisabled = scheme->GetColor( szKey, Color( 182, 189, 194, 255 ) );
+	V_snprintf( szKey, sizeof( szKey ), "%s.ColorOpen", szStyle );
+	m_ColorOpen = scheme->GetColor( szKey, Color( 169, 213, 255, 255 ) );
+	V_snprintf( szKey, sizeof( szKey ), "%s.ColorFocus", szStyle );
+	m_ColorFocus = scheme->GetColor( szKey, Color( 255, 255, 255, 255 ) );
 }
 
 void BaseModHybridButton::ApplySchemeSettings( vgui::IScheme *pScheme )
@@ -1055,6 +1078,10 @@ void BaseModHybridButton::ApplySchemeSettings( vgui::IScheme *pScheme )
 		m_iUnselectedArrow = vgui::surface()->CreateNewTextureID();
 		vgui::surface()->DrawSetTextureFile( m_iUnselectedArrow, pImageName, true, false );	
 	}
+
+	// cache some colors so we don't do string lookups on every frame
+	m_BlotchColor = pScheme->GetColor( "HybridButton.BlotchColor", Color( 0, 0, 0, 255 ) );
+	m_BorderColor = pScheme->GetColor( "HybridButton.BorderColor", Color( 0, 0, 0, 255 ) );
 }
 
 void BaseModHybridButton::OnKeyCodePressed( vgui::KeyCode code )

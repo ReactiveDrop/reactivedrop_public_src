@@ -239,12 +239,26 @@ Scheme
 		MainMenuButton.TextInsetY					"0"		[$WIN32]
 		MainMenuButton.TextInsetY					"1"		[$X360HIDEF]
 		MainMenuButton.TextInsetY					"0"		[$X360LODEF]
+		MainMenuButton.Font							"MainBold"
+		MainMenuButton.FontBlur						"MainBoldBlur"
+		MainMenuButton.ColorEnabled					"83 148 192 255"
+		MainMenuButton.ColorDisabled				"32 59 82 255"
+		MainMenuButton.ColorFocusDisabled			"182 189 194 255"
+		MainMenuButton.ColorOpen					"169 213 255 255"
+		MainMenuButton.ColorFocus					"255 255 255 255"
 		
 		// inside of a flyout menu only
 		FlyoutMenuButton.Style						"2"
 		FlyoutMenuButton.TextInsetX					"8"
 		FlyoutMenuButton.TextInsetY					"2"		[$WIN32]
 		FlyoutMenuButton.TextInsetY					"5"		[$X360]
+		FlyoutMenuButton.Font						"DefaultMedium"
+		FlyoutMenuButton.FontBlur					"DefaultMediumBlur"
+		FlyoutMenuButton.ColorEnabled				"83 148 192 255"
+		FlyoutMenuButton.ColorDisabled				"32 59 82 255"
+		FlyoutMenuButton.ColorFocusDisabled			"182 189 194 255"
+		FlyoutMenuButton.ColorOpen					"169 213 255 255"
+		FlyoutMenuButton.ColorFocus					"255 255 255 255"
 
 		// inside a dialog, contains a RHS value, usually causes a flyout
 		DropDownButton.Style						"3"
@@ -252,6 +266,15 @@ Scheme
 		DropDownButton.TextInsetY					"-1"	[$WIN32LODEF]
 		DropDownButton.TextInsetY					"2"		[$X360HIDEF]
 		DropDownButton.TextInsetY					"1"		[$X360LODEF]
+		DropDownButton.Font							"DefaultBold"
+		DropDownButton.FontBlur						"DefaultBoldBlur"
+		DropDownButton.FontSelected					"DefaultMedium"
+		DropDownButton.FontSelectedBlur				"DefaultMediumBlur"
+		DropDownButton.ColorEnabled					"83 148 192 255"
+		DropDownButton.ColorDisabled				"32 59 82 255"
+		DropDownButton.ColorFocusDisabled			"182 189 194 255"
+		DropDownButton.ColorOpen					"169 213 255 255"
+		DropDownButton.ColorFocus					"255 255 255 255"
 
 		// centers within the focus
 		DialogButton.Style							"4"
@@ -259,6 +282,13 @@ Scheme
 		DialogButton.TextInsetY						"-1"	[$WIN32LODEF]
 		DialogButton.TextInsetY						"2"		[$X360HIDEF]
 		DialogButton.TextInsetY						"1"		[$X360LODEF]
+		DialogButton.Font							"DefaultBold"
+		DialogButton.FontBlur						"DefaultBoldBlur"
+		DialogButton.ColorEnabled					"83 148 192 255"
+		DialogButton.ColorDisabled					"32 59 82 255"
+		DialogButton.ColorFocusDisabled				"182 189 194 255"
+		DialogButton.ColorOpen						"169 213 255 255"
+		DialogButton.ColorFocus						"255 255 255 255"
 		
 		// left aligned within the focus
 		DefaultButton.Style							"0"
@@ -266,45 +296,173 @@ Scheme
 		DefaultButton.TextInsetY					"-1"	[$WIN32LODEF]
 		DefaultButton.TextInsetY					"2"		[$X360HIDEF]
 		DefaultButton.TextInsetY					"1"		[$X360LODEF]
+		DefaultButton.Font							"DefaultBold"
+		DefaultButton.FontBlur						"DefaultBoldBlur"
+		DefaultButton.ColorEnabled					"83 148 192 255"
+		DefaultButton.ColorDisabled					"32 59 82 255"
+		DefaultButton.ColorFocusDisabled			"182 189 194 255"
+		DefaultButton.ColorOpen						"169 213 255 255"
+		DefaultButton.ColorFocus					"255 255 255 255"
 		
 		// left aligned within the focus
 		RedButton.Style								"5"
 		RedButton.TextInsetY						"0"		[$WIN32HIDEF]
 		RedButton.TextInsetY						"-1"	[$WIN32LODEF]
+		RedButton.Font								"DefaultBold"
+		RedButton.FontBlur							"DefaultBoldBlur"
+		RedButton.ColorEnabled						"169 213 255 255"
+		RedButton.ColorDisabled						"32 59 82 255"
+		RedButton.ColorFocusDisabled				"182 189 194 255"
+		RedButton.ColorOpen							"169 213 255 255"
+		RedButton.ColorFocus						"255 255 255 255"
 
 		// left aligned within the focus
 		RedMainButton.Style							"6"
 		RedMainButton.TextInsetY					"0"		[$WIN32HIDEF]
 		RedMainButton.TextInsetY					"-1"	[$WIN32LODEF]
+		RedMainButton.Font							"DefaultBold"
+		RedMainButton.FontBlur						"DefaultBoldBlur"
+		RedMainButton.ColorEnabled					"169 213 255 255"
+		RedMainButton.ColorDisabled					"32 59 82 255"
+		RedMainButton.ColorFocusDisabled			"182 189 194 255"
+		RedMainButton.ColorOpen						"169 213 255 255"
+		RedMainButton.ColorFocus					"255 255 255 255"
 		
 		// left aligned within the focus
 		SmallButton.Style							"7"
 		SmallButton.TextInsetY						"1"
+		SmallButton.Font							"DefaultVerySmall"
+		SmallButton.FontBlur						"DefaultVerySmall"
+		SmallButton.ColorEnabled					"83 148 192 255"
+		SmallButton.ColorDisabled					"32 59 82 255"
+		SmallButton.ColorFocusDisabled				"182 189 194 255"
+		SmallButton.ColorOpen						"169 213 255 255"
+		SmallButton.ColorFocus						"255 255 255 255"
 
-		MediumButton.Style						"8"
+		MediumButton.Style							"8"
+		MediumButton.Font							"DefaultMedium"
+		MediumButton.FontBlur						"DefaultMediumBlur"
+		MediumButton.ColorEnabled					"83 148 192 255"
+		MediumButton.ColorDisabled					"32 59 82 255"
+		MediumButton.ColorFocusDisabled				"182 189 194 255"
+		MediumButton.ColorOpen						"169 213 255 255"
+		MediumButton.ColorFocus						"255 255 255 255"
 
 		// specialized button, only appears in game mode carousel
 		GameModeButton.Style						"9"
 		GameModeButton.TextInsetY					"0"		[$WIN32]
 		GameModeButton.TextInsetY					"1"		[$X360HIDEF]
 		GameModeButton.TextInsetY					"0"		[$X360LODEF]
-		
+		GameModeButton.Font							"MainBold"
+		GameModeButton.FontBlur						"MainBoldBlur"
+		GameModeButton.FontHint						"Default"
+		GameModeButton.ColorEnabled					"83 148 192 255"
+		GameModeButton.ColorDisabled				"32 59 82 255"
+		GameModeButton.ColorFocusDisabled			"182 189 194 255"
+		GameModeButton.ColorOpen					"169 213 255 255"
+		GameModeButton.ColorFocus					"255 255 255 255"
+
 		// main or ingame menu only
 		MainMenuSmallButton.Style					"10"
-		
+		MainMenuSmallButton.Font					"DefaultBold"
+		MainMenuSmallButton.FontBlur				"DefaultBoldBlur"
+		MainMenuSmallButton.ColorEnabled			"83 148 192 255"
+		MainMenuSmallButton.ColorDisabled			"32 59 82 255"
+		MainMenuSmallButton.ColorFocusDisabled		"182 189 194 255"
+		MainMenuSmallButton.ColorOpen				"169 213 255 255"
+		MainMenuSmallButton.ColorFocus				"255 255 255 255"
+
 		// who invented this crazy style system anyway?
 		AlienSwarmMenuButton.Style					"11"
+		AlienSwarmMenuButton.Font					"DefaultBold"
+		AlienSwarmMenuButton.FontBlur				"DefaultBoldBlur"
+		AlienSwarmMenuButton.ColorEnabled			"135 170 193 255"
+		AlienSwarmMenuButton.ColorDisabled			"32 59 82 255"
+		AlienSwarmMenuButton.ColorFocusDisabled		"182 189 194 255"
+		AlienSwarmMenuButton.ColorOpen				"169 213 255 255"
+		AlienSwarmMenuButton.ColorFocus				"255 255 255 255"
+
 		AlienSwarmMenuButtonSmall.Style				"12"
+		AlienSwarmMenuButtonSmall.Font				"DefaultMedium"
+		AlienSwarmMenuButtonSmall.FontBlur			"DefaultMediumBlur"
+		AlienSwarmMenuButtonSmall.ColorEnabled		"135 170 193 255"
+		AlienSwarmMenuButtonSmall.ColorDisabled		"32 59 82 255"
+		AlienSwarmMenuButtonSmall.ColorFocusDisabled	"182 189 194 255"
+		AlienSwarmMenuButtonSmall.ColorOpen			"169 213 255 255"
+		AlienSwarmMenuButtonSmall.ColorFocus		"255 255 255 255"
+
 		AlienSwarmDefault.Style						"13"
+		AlienSwarmDefault.Font						"Default"
+		AlienSwarmDefault.FontBlur					"DefaultBlur"
+		AlienSwarmDefault.ColorEnabled				"83 148 192 255"
+		AlienSwarmDefault.ColorDisabled				"32 59 82 255"
+		AlienSwarmDefault.ColorFocusDisabled		"182 189 194 255"
+		AlienSwarmDefault.ColorOpen					"169 213 255 255"
+		AlienSwarmDefault.ColorFocus				"255 255 255 255"
+
 		ReactiveDropMainMenu.Style					"14"
+		ReactiveDropMainMenu.Font					"DefaultLarge"
+		ReactiveDropMainMenu.FontBlur				"DefaultLargeBlur"
+		ReactiveDropMainMenu.ColorEnabled			"192 192 192 255"
+		ReactiveDropMainMenu.ColorDisabled			"32 59 82 255"
+		ReactiveDropMainMenu.ColorFocusDisabled		"182 189 194 255"
+		ReactiveDropMainMenu.ColorOpen				"169 213 255 255"
+		ReactiveDropMainMenu.ColorFocus				"255 255 255 255"
+
 		ReactiveDropMainMenuBig.Style				"15"
+		ReactiveDropMainMenuBig.Font				"DefaultExtraLarge"
+		ReactiveDropMainMenuBig.FontBlur			"DefaultExtraLargeBlur"
+		ReactiveDropMainMenuBig.ColorEnabled		"192 192 192 255"
+		ReactiveDropMainMenuBig.ColorDisabled		"32 59 82 255"
+		ReactiveDropMainMenuBig.ColorFocusDisabled	"182 189 194 255"
+		ReactiveDropMainMenuBig.ColorOpen			"169 213 255 255"
+		ReactiveDropMainMenuBig.ColorFocus			"255 255 255 255"
+
 		ReactiveDropMainMenuTop.Style				"16"
+		ReactiveDropMainMenuTop.Font				"DefaultMedium"
+		ReactiveDropMainMenuTop.FontBlur			"DefaultMediumBlur"
+		ReactiveDropMainMenuTop.ColorEnabled		"96 96 96 255"
+		ReactiveDropMainMenuTop.ColorDisabled		"32 59 82 255"
+		ReactiveDropMainMenuTop.ColorFocusDisabled	"182 189 194 255"
+		ReactiveDropMainMenuTop.ColorOpen			"224 224 224 255"
+		ReactiveDropMainMenuTop.ColorFocus			"255 255 255 255"
+
 		ReactiveDropMainMenuShowcase.Style			"17"
 		ReactiveDropMainMenuShowcase.TextInsetX		"3"
 		ReactiveDropMainMenuShowcase.TextInsetY		"5"
+		ReactiveDropMainMenuShowcase.Font			"Default"
+		ReactiveDropMainMenuShowcase.FontBlur		"DefaultBlur"
+		ReactiveDropMainMenuShowcase.ColorEnabled	"192 192 192 255"
+		ReactiveDropMainMenuShowcase.ColorDisabled	"32 59 82 255"
+		ReactiveDropMainMenuShowcase.ColorFocusDisabled	"182 189 194 255"
+		ReactiveDropMainMenuShowcase.ColorOpen		"169 213 255 255"
+		ReactiveDropMainMenuShowcase.ColorFocus		"255 255 255 255"
+
 		ReactiveDropMainMenuTimer.Style				"18"
 		ReactiveDropMainMenuTimer.TextInsetX		"2"
 		ReactiveDropMainMenuTimer.TextInsetY		"1"
+		ReactiveDropMainMenuTimer.Font				"Default"
+		ReactiveDropMainMenuTimer.FontBlur			"DefaultBlur"
+		ReactiveDropMainMenuTimer.ColorEnabled		"192 192 192 255"
+		ReactiveDropMainMenuTimer.ColorDisabled		"32 59 82 255"
+		ReactiveDropMainMenuTimer.ColorFocusDisabled	"182 189 194 255"
+		ReactiveDropMainMenuTimer.ColorOpen			"169 213 255 255"
+		ReactiveDropMainMenuTimer.ColorFocus		"255 255 255 255"
+
+		ReactiveDropMainMenuHoIAF.Style				"19"
+		ReactiveDropMainMenuHoIAF.Font				"DefaultMedium"
+		ReactiveDropMainMenuHoIAF.FontBlur			"DefaultMediumBlur"
+		ReactiveDropMainMenuHoIAF.FontRank			"DefaultVerySmall"
+		ReactiveDropMainMenuHoIAF.FontScore			"Default"
+		ReactiveDropMainMenuHoIAF.FontLarge			"DefaultBold"
+		ReactiveDropMainMenuHoIAF.FontLargeBlur		"DefaultBoldBlur"
+		ReactiveDropMainMenuHoIAF.FontLargeRank		"DefaultSmall"
+		ReactiveDropMainMenuHoIAF.FontLargeScore	"DefaultMedium"
+		ReactiveDropMainMenuHoIAF.ColorEnabled		"192 192 192 255"
+		ReactiveDropMainMenuHoIAF.ColorDisabled		"32 59 82 255"
+		ReactiveDropMainMenuHoIAF.ColorFocusDisabled	"182 189 194 255"
+		ReactiveDropMainMenuHoIAF.ColorOpen			"169 213 255 255"
+		ReactiveDropMainMenuHoIAF.ColorFocus		"255 255 255 255"
 	}
 
 	//

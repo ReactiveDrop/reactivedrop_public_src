@@ -24,6 +24,8 @@ CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry::CRD_VGUI_Main_Menu_HoIAF_Leaderboard
 	m_pLblRankNumber->SetMouseInputEnabled( false );
 	m_pLblScore = new vgui::Label( this, "LblScore", L"" );
 	m_pLblScore->SetMouseInputEnabled( false );
+
+	SetStyle( BUTTON_REACTIVEDROPMAINMENUHOIAF );
 }
 
 CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry::~CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry()
@@ -53,17 +55,16 @@ void CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry::ApplySettings( KeyValues *pSett
 	Assert( pScheme );
 	if ( pScheme )
 	{
-		m_pLblRankNumber->SetFont( pScheme->GetFont( "DefaultVerySmall", true ) );
-		m_hTextFont = pScheme->GetFont( "DefaultMedium", true );
-		m_hTextBlurFont = pScheme->GetFont( "DefaultMediumBlur", true );
+		m_pLblScore->SetFont( pScheme->GetFont( pScheme->GetResourceString( "ReactiveDropMainMenuHoIAF.FontScore" ), true ) );
+		m_pLblRankNumber->SetFont( pScheme->GetFont( pScheme->GetResourceString( "ReactiveDropMainMenuHoIAF.FontRank" ), true ) );
+		m_hTextFont = pScheme->GetFont( pScheme->GetResourceString( "ReactiveDropMainMenuHoIAF.Font" ), true );
+		m_hTextBlurFont = pScheme->GetFont( pScheme->GetResourceString( "ReactiveDropMainMenuHoIAF.FontBlur" ), true );
 		m_nTextFontHeight = vgui::surface()->GetFontTall( m_hTextFont );
 		SetFont( m_hTextFont );
 	}
 
 	m_textInsetX = GetTall();
 	SetTextInset( m_textInsetX * 2, m_textInsetY * 2 );
-
-	m_nStyle = BUTTON_REACTIVEDROPMAINMENUHOIAF;
 }
 
 void CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry::SetFgColor( Color color )
@@ -123,10 +124,10 @@ void CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry_Large::ApplySettings( KeyValues 
 	Assert( pScheme );
 	if ( pScheme )
 	{
-		m_pLblScore->SetFont( pScheme->GetFont( "DefaultMedium", true ) );
-		m_pLblRankNumber->SetFont( pScheme->GetFont( "DefaultSmall", true ) );
-		m_hTextFont = pScheme->GetFont( "DefaultBold", true );
-		m_hTextBlurFont = pScheme->GetFont( "DefaultBoldBlur", true );
+		m_pLblScore->SetFont( pScheme->GetFont( pScheme->GetResourceString( "ReactiveDropMainMenuHoIAF.FontLargeScore" ), true ) );
+		m_pLblRankNumber->SetFont( pScheme->GetFont( pScheme->GetResourceString( "ReactiveDropMainMenuHoIAF.FontLargeRank" ), true ) );
+		m_hTextFont = pScheme->GetFont( pScheme->GetResourceString( "ReactiveDropMainMenuHoIAF.FontLarge" ), true );
+		m_hTextBlurFont = pScheme->GetFont( pScheme->GetResourceString( "ReactiveDropMainMenuHoIAF.FontLargeBlur" ), true );
 		m_nTextFontHeight = vgui::surface()->GetFontTall( m_hTextFont );
 		SetFont( m_hTextFont );
 	}
