@@ -623,6 +623,7 @@ void CRD_ShieldFalloff_Proxy::OnBind( void *pRenderable )
 		return;
 	}
 
+#ifdef RD_7A_WEAPONS
 	if ( pEnt->Classify() == CLASS_ASW_ENERGY_SHIELD_SHIELD )
 	{
 		C_ASW_Energy_Shield *pShield = assert_cast< C_ASW_Energy_Shield * >( pEnt );
@@ -645,6 +646,7 @@ void CRD_ShieldFalloff_Proxy::OnBind( void *pRenderable )
 		SetFloatResult( flBlink );
 		return;
 	}
+#endif
 
 	SetFloatResult( 0.1f );
 }
