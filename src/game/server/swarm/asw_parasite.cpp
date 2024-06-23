@@ -100,8 +100,6 @@ void CASW_Parasite::Spawn( void )
 
 	BaseClass::Spawn();
 
-	SetModel( SWARM_PARASITE_MODEL);
-
 	if (FClassnameIs(this, "asw_parasite_defanged"))
 	{
 		m_bDefanged = true;
