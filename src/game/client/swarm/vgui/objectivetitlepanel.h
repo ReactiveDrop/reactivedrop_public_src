@@ -23,27 +23,27 @@ class ObjectiveTitlePanel : public vgui::Panel
 {
 	DECLARE_CLASS_SIMPLE( ObjectiveTitlePanel, vgui::Panel );
 public:
-	ObjectiveTitlePanel(Panel *parent, const char *name);
+	ObjectiveTitlePanel( Panel *parent, const char *name );
 	virtual ~ObjectiveTitlePanel();
 
-	virtual void OnMouseReleased(vgui::MouseCode code);
+	virtual void OnMouseReleased( vgui::MouseCode code );
 	virtual void OnCursorEntered();
 
 	virtual void PerformLayout();
 
 	virtual void OnThink();
 	void UpdateElements();
-	virtual void ApplySchemeSettings(vgui::IScheme *pScheme);
+	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
 
-	void SetObjective(C_ASW_Objective* pObjective);
-	C_ASW_Objective* GetObjective() { return m_hObjective.Get(); }
-	void SetSelected(bool bSelected);
+	void SetObjective( C_ASW_Objective *pObjective );
+	C_ASW_Objective *GetObjective() { return m_hObjective.Get(); }
+	void SetSelected( bool bSelected );
 
-	vgui::Label* m_ObjectiveLabel;
-	vgui::ImagePanel* m_ObjectiveImagePanel;
-	vgui::ImagePanel* m_pCheckbox;
+	vgui::Label *m_ObjectiveLabel;
+	vgui::ImagePanel *m_ObjectiveImagePanel;
+	vgui::ImagePanel *m_pCheckbox;
 
-	void SetIndex(int i) { m_Index = i; }
+	void SetIndex( int i ) { m_Index = i; }
 	int m_Index;
 	vgui::HTexture m_TextureID;
 
@@ -55,7 +55,7 @@ public:
 	char m_szImageName[256];
 
 	vgui::HFont m_hFont, m_hSmallFont;
-	ObjectiveListBox* m_pListBox;
+	ObjectiveListBox *m_pListBox;
 };
 
 #endif // _INCLUDED_OBJECTIVE_TITLE_PANEL_H

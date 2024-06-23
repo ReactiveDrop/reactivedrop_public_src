@@ -37,7 +37,8 @@ Scheme
 		"DarkBlueTrans"			"65 74 96 64"
 		"Blue"				"83 148 192 255"
 		"HighlightBlue"		"169 213 255 255"
-		
+		"ObjectiveBackground"	"30 66 89 164"
+
 		"TransparentBlack"	"0 0 0 128"
 		"Black"				"0 0 0 255"
 
