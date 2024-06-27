@@ -21,6 +21,9 @@
 #error steam_api_common.h should define VALVE_CALLBACK_PACK_xxx
 #endif
 
+
+
+
 //-----------------------------------------------------------------------------
 // Purpose: Steam Video API
 //-----------------------------------------------------------------------------
@@ -38,11 +41,9 @@ public:
 	STEAM_CALL_BACK( GetOPFSettingsResult_t )
 	virtual void GetOPFSettings( AppId_t unVideoAppID ) = 0;
 	virtual bool GetOPFStringForApp( AppId_t unVideoAppID, char *pchBuffer, int32 *pnBufferSize ) = 0;
-
-
 };
 
-#define STEAMVIDEO_INTERFACE_VERSION "STEAMVIDEO_INTERFACE_V007"
+#define STEAMVIDEO_INTERFACE_VERSION "STEAMVIDEO_INTERFACE_V002"
 
 // Global interface accessor
 inline ISteamVideo *SteamVideo();
