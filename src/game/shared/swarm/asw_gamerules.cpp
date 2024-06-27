@@ -1500,11 +1500,6 @@ CAlienSwarm::~CAlienSwarm()
 
 	GameTimescale()->SetDesiredTimescale( 1.0f );
 	engine->SetPitchScale( 1.0f );
-
-	if ( ISteamTimeline *pTimeline = SteamTimeline() )
-	{
-		pTimeline->SetTimelineGameMode( k_ETimelineGameMode_Menus );
-	}
 }
 
 float CAlienSwarm::GetMarineDeathCamInterp( bool bIgnoreCvar )
@@ -1591,11 +1586,6 @@ void CAlienSwarm::OnDataChanged( DataUpdateType_t updateType )
 				engine->ClientCmd_Unrestricted( "host_writeconfig" );
 			}
 			g_ReactiveDropWorkshop.OnMissionStart();
-		}
-
-		if ( ISteamTimeline *pTimeline = SteamTimeline() )
-		{
-			pTimeline->SetTimelineGameMode( GetGameState() == ASW_GS_INGAME ? k_ETimelineGameMode_Playing : k_ETimelineGameMode_Staging );
 		}
 
 		g_ReactiveDropWorkshop.CheckForRequiredAddons();
