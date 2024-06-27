@@ -1422,6 +1422,11 @@ void CBaseModPanel::OnLevelLoadingStarted( char const *levelName, bool bShowProg
 	pLoadingProgress->SetLoadingType( type );
 	pLoadingProgress->SetProgress( 0.0f );
 
+	if ( ISteamTimeline *pTimeline = SteamTimeline() )
+	{
+		pTimeline->SetTimelineGameMode( k_ETimelineGameMode_LoadingScreen );
+	}
+
 	m_LevelLoading = true;
 }
 
@@ -1472,6 +1477,11 @@ void CBaseModPanel::OnLevelLoadingFinished( KeyValues *kvEvent )
 
 		// always close loading progress, this frees costly resources
 		pLoadingProgress->Close();
+	}
+
+	if ( ISteamTimeline *pTimeline = SteamTimeline() )
+	{
+		pTimeline->SetTimelineGameMode( bError ? k_ETimelineGameMode_Menus : k_ETimelineGameMode_Staging );
 	}
 
 	m_LevelLoading = false;
