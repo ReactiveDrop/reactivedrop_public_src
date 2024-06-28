@@ -167,6 +167,12 @@ void SliderControl::SetConCommand( const char* conCommand )
 
 		m_conVarRef = new CGameUIConVarRef( conCommand );
 
+		// don't set command with cheat flags
+		if (m_conVarRef && m_conVarRef->IsValid() && (m_conVarRef->IsFlagSet(FCVAR_REPLICATED) || m_conVarRef->IsFlagSet(FCVAR_CHEAT))) {
+			delete m_conVarRef;
+			m_conVarRef = NULL;
+		}	
+
 		Reset();
 	}
 	else
@@ -190,6 +196,12 @@ void SliderControl::SetConCommandDefault( const char* conCommand )
 		}
 
 		m_conVarDefaultRef = new CGameUIConVarRef( conCommand );
+
+		// don't set command with cheat flags
+		if (m_conVarDefaultRef && m_conVarDefaultRef->IsValid() && (m_conVarDefaultRef->IsFlagSet(FCVAR_REPLICATED) || m_conVarDefaultRef->IsFlagSet(FCVAR_CHEAT))) {
+			delete m_conVarDefaultRef;
+			m_conVarDefaultRef = NULL;
+		}
 	}
 	else
 	{
