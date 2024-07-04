@@ -170,8 +170,8 @@ BEGIN_DATADESC( CNPC_CScanner )
 	DEFINE_FIELD( m_flLastPhysicsInfluenceTime, FIELD_TIME ),
 
 	DEFINE_KEYFIELD( m_bNoLight, FIELD_BOOLEAN, "SpotlightDisabled" ),
-	DEFINE_KEYFIELD( m_bIsNeutralScanner, FIELD_BOOLEAN, "NeutralScanner" ),
-	DEFINE_KEYFIELD( m_bIsClawScanner, FIELD_BOOLEAN, "ClawScanner" ),
+	DEFINE_KEYFIELD( m_bIsNeutralScanner, FIELD_BOOLEAN, "IsNeutralScanner" ),
+	DEFINE_KEYFIELD( m_bIsClawScanner, FIELD_BOOLEAN, "IsClawScanner" ),
 
 	DEFINE_INPUTFUNC( FIELD_VOID, "DisableSpotlight", InputDisableSpotlight ),
 	DEFINE_INPUTFUNC( FIELD_STRING, "InspectTargetPhoto", InputInspectTargetPhoto ),
