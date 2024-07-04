@@ -14,6 +14,9 @@
 #include "tier0/memdbgon.h"
 
 extern ConVar glow_outline_color_alien;
+extern ConVar asw_alien_shadows;
+ConVar rd_alien_vertical_shadow_flying( "rd_alien_vertical_shadow_flying", "0", FCVAR_NONE, "force flying aliens to have vertical shadows" );
+extern ConVar rd_alien_vertical_shadow_distance;
 
 // Buzzer is our flying poisoning alien (based on the hl2 manhack code)
 
@@ -65,7 +68,37 @@ void C_ASW_Buzzer::OnDataChanged( DataUpdateType_t type )
 void C_ASW_Buzzer::OnRestore()
 {
 	BaseClass::OnRestore();
-	SoundInit();	
+	SoundInit();
+}
+
+bool C_ASW_Buzzer::GetShadowCastDistance( float *pDistance, ShadowType_t shadowType ) const
+{
+	if ( rd_alien_vertical_shadow_flying.GetBool() )
+	{
+		*pDistance = rd_alien_vertical_shadow_distance.GetFloat();
+		return true;
+	}
+
+	return BaseClass::GetShadowCastDistance( pDistance, shadowType );
+}
+
+bool C_ASW_Buzzer::GetShadowCastDirection( Vector *pDirection, ShadowType_t shadowType ) const
+{
+	if ( rd_alien_vertical_shadow_flying.GetBool() )
+	{
+		pDirection->Init( 0, 0, -1 );
+		return true;
+	}
+
+	return BaseClass::GetShadowCastDirection( pDirection, shadowType );
+}
+
+ShadowType_t C_ASW_Buzzer::ShadowCastType()
+{
+	if ( rd_alien_vertical_shadow_flying.GetBool() || asw_alien_shadows.GetBool() )
+		return BaseClass::ShadowCastType();
+
+	return SHADOWS_NONE;
 }
 
 extern ConVar cl_alien_extra_interp;

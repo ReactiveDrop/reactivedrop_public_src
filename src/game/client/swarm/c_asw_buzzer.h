@@ -18,29 +18,32 @@ public:
 	DECLARE_CLIENTCLASS();
 
 	// Purpose: Start the buzzer's engine sound.
-	virtual void OnDataChanged( DataUpdateType_t type );
-	virtual void UpdateOnRemove( void );
-	virtual void OnRestore();
-	virtual float GetInterpolationAmount( int flags );
+	void OnDataChanged( DataUpdateType_t type ) override;
+	void UpdateOnRemove() override;
+	void OnRestore() override;
+	float GetInterpolationAmount( int flags ) override;
 
-	Class_T		Classify( void ) { return (Class_T) CLASS_ASW_BUZZER; }
-	virtual bool IsAlien( void ) const { return true; }
+	Class_T Classify( void ) override { return (Class_T) CLASS_ASW_BUZZER; }
+	bool IsAlien( void ) const override { return true; }
 
-	virtual float GetRadius() { return 18; }
+	float GetRadius() override { return 18; }
+	bool GetShadowCastDistance( float *pDistance, ShadowType_t shadowType ) const override;
+	bool GetShadowCastDirection( Vector *pDirection, ShadowType_t shadowType ) const override;
+	ShadowType_t ShadowCastType() override;
 
 private:
-	C_ASW_Buzzer( const C_ASW_Buzzer & );
+	C_ASW_Buzzer( const C_ASW_Buzzer & ) = delete;
 
 	// Purpose: Start + stop the buzzer's engine sound.
 	void SoundInit( void );
 	void SoundShutdown( void );
 
-	CSoundPatch		*m_pEngineSound1;
+	CSoundPatch *m_pEngineSound1;
 
-	int				m_nEnginePitch1;
-	float			m_flEnginePitch1Time;	
+	int m_nEnginePitch1;
+	float m_flEnginePitch1Time;
 
-	CUtlReference<CNewParticleEffect> m_pTrailEffect;	
+	CUtlReference<CNewParticleEffect> m_pTrailEffect;
 };
 
 #endif /* _INLCUDE_C_ASW_BUZZER_H */

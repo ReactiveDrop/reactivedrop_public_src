@@ -11,23 +11,27 @@ public:
 	DECLARE_CLIENTCLASS();
 	DECLARE_PREDICTABLE();
 
-					C_ASW_Drone_Advanced();
-	virtual			~C_ASW_Drone_Advanced();
+	C_ASW_Drone_Advanced();
+	virtual ~C_ASW_Drone_Advanced();
 
-	Class_T		Classify( void ) { return (Class_T) CLASS_ASW_DRONE; }
+	Class_T Classify( void ) override { return ( Class_T )CLASS_ASW_DRONE; }
 
 	float GetRunSpeed();
-	virtual void ClientThink();
-	virtual void OnDataChanged( DataUpdateType_t updateType );
-	void UpdatePoseParams();	
-	virtual const Vector& GetAimTargetPos(const Vector &vecFiringSrc, bool bWeaponPrefersFlatAiming);
-	virtual void GetPoseParameters( CStudioHdr *pStudioHdr, float poseParameter[MAXSTUDIOPOSEPARAM]);
+	void ClientThink() override;
+	void OnDataChanged( DataUpdateType_t updateType ) override;
+	void UpdatePoseParams();
+	ShadowType_t ShadowCastType() override;
+	bool GetShadowCastDistance( float *pDistance, ShadowType_t shadowType ) const override;
+	bool GetShadowCastDirection( Vector *pDirection, ShadowType_t shadowType ) const override;
+	const Vector &GetAimTargetPos( const Vector &vecFiringSrc, bool bWeaponPrefersFlatAiming ) override;
+	void GetPoseParameters( CStudioHdr *pStudioHdr, float poseParameter[MAXSTUDIOPOSEPARAM] ) override;
 
 	CNetworkHandle( CBaseEntity, m_hAimTarget );
 
-
 private:
-	C_ASW_Drone_Advanced( const C_ASW_Drone_Advanced & ); // not defined, not accessible
+	C_ASW_Drone_Advanced( const C_ASW_Drone_Advanced & ) = delete;
+
+	int m_iJumpSequence{ -2 };
 	float m_flCurrentTravelYaw;
 	float m_flCurrentTravelSpeed;
 	float m_flClientPoseParameter[MAXSTUDIOPOSEPARAM];

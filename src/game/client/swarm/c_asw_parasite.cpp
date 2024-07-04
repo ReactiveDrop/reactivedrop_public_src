@@ -5,6 +5,9 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+extern ConVar rd_alien_vertical_shadow_jumping;
+extern ConVar rd_alien_vertical_shadow_distance;
+
 IMPLEMENT_CLIENTCLASS_DT(C_ASW_Parasite, DT_ASW_Parasite, CASW_Parasite)
 	RecvPropBool(RECVINFO(m_bStartIdleSound)),
 	RecvPropBool(RECVINFO(m_bDoEggIdle)),
@@ -79,4 +82,48 @@ void C_ASW_Parasite::SoundShutdown()
 bool C_ASW_Parasite::IsAimTarget()
 {
 	return BaseClass::IsAimTarget() && !m_bDoEggIdle && !m_bInfesting;
+}
+
+ShadowType_t C_ASW_Parasite::ShadowCastType()
+{
+	if ( rd_alien_vertical_shadow_jumping.GetBool() && IsJumping() )
+	{
+		return BaseClass::BaseClass::ShadowCastType();
+	}
+
+	return BaseClass::ShadowCastType();
+}
+
+bool C_ASW_Parasite::GetShadowCastDistance( float *pDistance, ShadowType_t shadowType ) const
+{
+	if ( rd_alien_vertical_shadow_jumping.GetBool() && IsJumping() )
+	{
+		*pDistance = rd_alien_vertical_shadow_distance.GetFloat();
+		return true;
+	}
+
+	return BaseClass::GetShadowCastDistance( pDistance, shadowType );
+}
+
+bool C_ASW_Parasite::GetShadowCastDirection( Vector *pDirection, ShadowType_t shadowType ) const
+{
+	if ( rd_alien_vertical_shadow_jumping.GetBool() && IsJumping() )
+	{
+		pDirection->Init( 0, 0, -1 );
+		return true;
+	}
+
+	return BaseClass::GetShadowCastDirection( pDirection, shadowType );
+}
+
+bool C_ASW_Parasite::IsJumping() const
+{
+	if ( m_bDoEggIdle || m_bInfesting )
+		return false;
+
+	C_ASW_Parasite *pParasite = const_cast< C_ASW_Parasite * >( this );
+	if ( pParasite->GetSequenceActivity( pParasite->GetSequence() ) == ACT_RANGE_ATTACK1 )
+		return true;
+
+	return false;
 }

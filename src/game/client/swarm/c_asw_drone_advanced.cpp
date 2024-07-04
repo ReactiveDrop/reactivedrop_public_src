@@ -22,6 +22,8 @@ ConVar asw_debug_drone_pose( "asw_debug_drone_pose", "0", FCVAR_NONE, "Set to dr
 ConVar asw_drone_jump_pitch_min( "asw_drone_jump_pitch_min", "-45", FCVAR_NONE, "Min pitch for drone's jumping pose parameter" );
 ConVar asw_drone_jump_pitch_max( "asw_drone_jump_pitch_max", "45", FCVAR_NONE, "Min pitch for drone's jumping pose parameter" );
 ConVar asw_drone_jump_pitch_speed( "asw_drone_jump_pitch_speed", "3.0", FCVAR_NONE, "Speed for drone's pitch jumping pose parameter transition" );
+ConVar rd_alien_vertical_shadow_jumping( "rd_alien_vertical_shadow_jumping", "1", FCVAR_NONE, "force jumping aliens to have vertical shadows" );
+ConVar rd_alien_vertical_shadow_distance( "rd_alien_vertical_shadow_distance", "4096", FCVAR_NONE, "max distance below a jumping or flying alien to render a shadow" );
 extern ConVar asw_marine_gun_offset_z;
 
 namespace
@@ -266,8 +268,11 @@ void C_ASW_Drone_Advanced::UpdatePoseParams()
 		UTIL_ApproachTarget( flTargetAimPose, 3.0f, 3.0f, &m_flClientPoseParameter[ pose_index ] );
 	}
 
-	static int s_nJumpSequence = LookupSequence( "Jump_Glide" );
-	bool bJumping = ( GetSequence() == s_nJumpSequence );
+	if ( m_iJumpSequence == -2 )
+	{
+		m_iJumpSequence = LookupSequence( "Jump_Glide" );
+	}
+	bool bJumping = GetSequence() == m_iJumpSequence;
 	if ( bJumping )
 	{
 		pose_index = LookupPoseParameter( "jump_angle" );
@@ -286,7 +291,7 @@ void C_ASW_Drone_Advanced::UpdatePoseParams()
 	m_bWasJumping = bJumping;
 
 	if ( asw_debug_drone_pose.GetInt() == entindex() )
-	{		
+	{
 		con_nprint_t np;
 		np.fixed_width_font = true;
 		np.color[0] = 0.8f;
@@ -329,6 +334,38 @@ void C_ASW_Drone_Advanced::UpdatePoseParams()
 // 			}
 		}
 	}
+}
+
+ShadowType_t C_ASW_Drone_Advanced::ShadowCastType()
+{
+	if ( rd_alien_vertical_shadow_jumping.GetBool() && m_bWasJumping )
+	{
+		return BaseClass::BaseClass::ShadowCastType();
+	}
+
+	return BaseClass::ShadowCastType();
+}
+
+bool C_ASW_Drone_Advanced::GetShadowCastDistance( float *pDistance, ShadowType_t shadowType ) const
+{
+	if ( rd_alien_vertical_shadow_jumping.GetBool() && m_bWasJumping )
+	{
+		*pDistance = rd_alien_vertical_shadow_distance.GetFloat();
+		return true;
+	}
+
+	return BaseClass::GetShadowCastDistance( pDistance, shadowType );
+}
+
+bool C_ASW_Drone_Advanced::GetShadowCastDirection( Vector *pDirection, ShadowType_t shadowType ) const
+{
+	if ( rd_alien_vertical_shadow_jumping.GetBool() && m_bWasJumping )
+	{
+		pDirection->Init( 0, 0, -1 );
+		return true;
+	}
+
+	return BaseClass::GetShadowCastDirection( pDirection, shadowType );
 }
 
 // hardcoded to match with the gun offset in the marine's autoaim
