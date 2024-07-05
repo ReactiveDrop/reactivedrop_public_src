@@ -55,6 +55,7 @@ CASW_Parasite::CASW_Parasite( void )// : CASW_Alien()
 	m_pszAlienModelName = SWARM_PARASITE_MODEL;
 	m_nAlienCollisionGroup = ASW_COLLISION_GROUP_ALIEN;
 	m_bNeverRagdoll = true;
+	m_fSuicideTime = 0;
 }
 
 LINK_ENTITY_TO_CLASS( asw_parasite, CASW_Parasite );
@@ -107,7 +108,6 @@ void CASW_Parasite::Spawn( void )
 		if ( asw_debug_alien_damage.GetBool() )
 			Msg( "Setting defanged parasite's initial health to %d\n", m_iHealth );
 		SetBodygroup( 0, 1 );
-		m_fSuicideTime = gpGlobals->curtime + 60;
 	}
 	else
 	{
@@ -116,7 +116,6 @@ void CASW_Parasite::Spawn( void )
 		if ( asw_debug_alien_damage.GetBool() )
 			Msg( "Setting parasite's initial health to %d\n", m_iHealth );
 		SetBodygroup( 0, 0 );
-		m_fSuicideTime = 0;
 	}
 
 	m_iMaxHealth = m_iHealth;
@@ -1203,6 +1202,8 @@ Activity CASW_Parasite::TranslateActivity( Activity baseAct, Activity *pIdealWea
 void CASW_Parasite::SetMother( CASW_Alien *spawner )
 {
 	m_hMother = spawner;
+	// naturally-spawned (i.e. not via the map or console commands) xenomites die after 60 seconds if they can't find a target
+	m_fSuicideTime = gpGlobals->curtime + 60;
 
 	if ( spawner && spawner->IsInhabited() )
 	{
