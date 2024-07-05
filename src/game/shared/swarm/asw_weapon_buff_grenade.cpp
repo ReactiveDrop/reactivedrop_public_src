@@ -41,6 +41,7 @@ LINK_ENTITY_TO_CLASS( asw_weapon_buff_grenade, CASW_Weapon_Buff_Grenade );
 PRECACHE_WEAPON_REGISTER( asw_weapon_buff_grenade );
 
 ConVar rd_buff_grenade_attach_sw( "rd_buff_grenade_attach_sw", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "if set, special weapons can pick up amp grenades" );
+ConVar rd_buff_grenade_attach_sw_auto( "rd_buff_grenade_attach_sw_auto", "0", FCVAR_ARCHIVE | FCVAR_USERINFO, "automatically pick up amp grenade after deploying if possible" );
 
 #ifndef CLIENT_DLL
 
@@ -163,6 +164,12 @@ void CASW_Weapon_Buff_Grenade::PrimaryAttack( void )
 	}
 
 	pMarine->GetMarineSpeech()->Chatter( CHATTER_MINE_DEPLOYED );
+
+	// don't check for inhabited
+	if ( pPlayer && V_atoi( engine->GetClientConVarValue( pPlayer->entindex(), "rd_buff_grenade_attach_sw_auto" ) ) && pBuff->IsUsable( pMarine ) )
+	{
+		pBuff->AttachToMarine( pMarine );
+	}
 #endif
 	// decrement ammo
 	m_iClip1 -= 1;

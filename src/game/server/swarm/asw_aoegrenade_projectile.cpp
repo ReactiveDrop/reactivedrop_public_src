@@ -62,7 +62,7 @@ public:
 	virtual void StartTouch( CBaseEntity *pEntity )
 	{
 		CASW_AOEGrenade_Projectile *pParent = dynamic_cast<CASW_AOEGrenade_Projectile *>(GetOwnerEntity());
-
+		Assert( pParent );
 		if ( pParent )
 		{
 			pParent->StartTouch( pEntity );
@@ -72,7 +72,7 @@ public:
 	virtual void EndTouch( CBaseEntity *pEntity )
 	{
 		CASW_AOEGrenade_Projectile *pParent = dynamic_cast<CASW_AOEGrenade_Projectile *>(GetOwnerEntity());
-
+		Assert( pParent );
 		if ( pParent )
 		{
 			pParent->EndTouch( pEntity );
