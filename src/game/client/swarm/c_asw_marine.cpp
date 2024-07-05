@@ -96,6 +96,7 @@ extern ConVar asw_night_vision_flash_min;
 extern ConVar asw_night_vision_flash_max;
 extern ConVar asw_night_vision_flash_speed;
 extern ConVar rd_deathmatch_team_colors;
+extern ConVar rd_deathmatch_team_color_highlight;
 extern ConVar rd_team_color_alpha;
 extern ConVar rd_team_color_beta;
 extern ConVar rd_team_color_ally;
@@ -883,7 +884,7 @@ void C_ASW_Marine::ClientThink()
 	UpdateElectrifiedArmor();
 
 	C_ASW_Player *pLocalPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if ( rd_highlight_active_character.GetBool() && pLocalPlayer && pLocalPlayer->GetViewNPC() == this )
+	if ( rd_highlight_active_character.GetFloat() > 0.0f && pLocalPlayer && pLocalPlayer->GetViewNPC() == this )
 	{
 		m_GlowObject.SetColor( m_vecMarineColor );
 	}
@@ -923,7 +924,7 @@ void C_ASW_Marine::ClientThink()
 	{
 		Color teamColor;
 
-		switch ( ASWDeathmatchMode()->IsTeamDeathmatchEnabled() ? rd_deathmatch_team_colors.GetInt() : 0 )
+		switch ( ASWDeathmatchMode()->IsTeamDeathmatchEnabled() && rd_deathmatch_team_color_highlight.GetFloat() == 0.0f ? rd_deathmatch_team_colors.GetInt() : 0 )
 		{
 			case 0:
 			default:

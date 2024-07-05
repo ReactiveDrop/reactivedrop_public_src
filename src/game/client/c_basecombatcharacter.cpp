@@ -78,11 +78,7 @@ END_RECV_TABLE();
 BEGIN_RECV_TABLE(C_BaseCombatCharacter, DT_BaseCombatCharacter)
 	RecvPropDataTable( "bcc_localdata", 0, 0, &REFERENCE_RECV_TABLE(DT_BCCLocalPlayerExclusive) ),
 	RecvPropEHandle( RECVINFO( m_hActiveWeapon ) ),
-
-
-
-
-
+	RecvPropInt( RECVINFO( m_nFaction ) ),
 END_RECV_TABLE()
 
 

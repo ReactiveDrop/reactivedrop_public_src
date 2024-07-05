@@ -294,7 +294,8 @@ float X360LinearToGamma( float flLinearValue )
 
 float3 SrgbGammaTo360Gamma( float3 vSrgbGammaColor )
 {
-	return X360LinearToGamma( SrgbGammaToLinear( vSrgbGammaColor.rgb ) );
+	float3 color = SrgbGammaToLinear( vSrgbGammaColor.rgb );
+	return float3( X360LinearToGamma( color.r ), X360LinearToGamma( color.g ), X360LinearToGamma( color.b ) );
 }
 
 // Function to do srgb read in shader code

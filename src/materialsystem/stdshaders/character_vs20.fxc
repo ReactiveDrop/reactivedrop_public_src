@@ -4,16 +4,13 @@
 // STATIC: "DECAL"					"0..1" [vs30]
 // STATIC: "WORLD_NORMAL"			"0..0" [vs20]
 // STATIC: "WORLD_NORMAL"			"0..1" [vs30]
-// STATIC: "STATUSEFFECT"			"0..1" [vs30]
 
 // DYNAMIC: "COMPRESSED_VERTS"		"0..1"
 // DYNAMIC: "SKINNING"				"0..1"
 
 // DYNAMIC: "MORPHING"				"0..1" [vs30] [ = pShaderAPI->IsHWMorphingEnabled() ]
-// DYNAMIC: "TESSELLATION"			"0..2" [vs30]
-// DYNAMIC: "TESSELLATION"			"0..0" [vs20]
-
-// SKIP: ( $MORPHING || $SKINNING || $COMPRESSED_VERTS ) && $TESSELLATION
+// DYNAMIC: "STATUSEFFECT"			"0..4" [vs20b]
+// DYNAMIC: "STATUSEFFECT"			"0..1" [vs30]
 
 #include "common_fog_vs_supportsvertexfog_fxc.h"
 #include "common_vs_fxc.h"
@@ -29,24 +26,12 @@ const float4 cDetailTexCoordTransform[2]	: register( SHADER_SPECIFIC_CONST_2 );
 //		 cMorphTargetTextureDim.z = 4tuples/morph
 const float3 cMorphTargetTextureDim			: register( SHADER_SPECIFIC_CONST_4 );
 const float4 cMorphSubrect					: register( SHADER_SPECIFIC_CONST_5 );
-#ifdef 
 
 sampler2D morphSampler						: register( s0 );
 #endif
 
 const float4 g_vEyeVector					: register( SHADER_SPECIFIC_CONST_6 );
-
-
-#if TESSELLATION
-
-#include "tessellation_vs_fxc.h"
-
-const float4 g_SubDControls					: register( SHADER_SPECIFIC_CONST_7 );
-sampler2D BezierSampler						: register( s1 );
-sampler2D DispSampler						: register( s2 );
-// VS_INPUT defined in header
-
-#else // no TESSELLATION
+const float g_flTime						: register( SHADER_SPECIFIC_CONST_7 );
 
 struct VS_INPUT
 {
@@ -75,8 +60,6 @@ struct VS_INPUT
 #endif
 };
 
-#endif // TESSELLATION
-
 struct VS_OUTPUT
 {
 	// Stuff that isn't seen by the pixel shader
@@ -93,11 +76,18 @@ struct VS_OUTPUT
 	#else
 		float4 worldPos_vertexFogFactor	: TEXCOORD6;
 	#endif
-	#if defined( SHADER_MODEL_PS_3_0 ) && STATUSEFFECT
+	#if defined( SHADER_MODEL_VS_3_0 ) && STATUSEFFECT
 		float4 statusEffectTexCoord		: TEXCOORD7; // xy=fire zw=ice
 		float2 statusEffectTexCoord2	: TEXCOORD8; // xy=shock
 	#endif
 };
+
+float2 ComputeStatusEffectCoord( float4 vTexCoords, float flSpeed, float flScale )
+{
+	float2 vCoord = vTexCoords.xy;
+	vCoord.x += ( flSpeed / 128.0 * g_flTime ) % 1.0;
+	return vCoord * flScale;
+}
 
 //-----------------------------------------------------------------------------
 // Main shader entry point
@@ -109,55 +99,64 @@ VS_OUTPUT main( const VS_INPUT v )
 	float4 vPosition, vTangent, vTexCoords;
 	float3 vNormal, worldPos, worldNormal, worldTangentS, worldTangentT;
 
-	#if TESSELLATION
+	vPosition = v.vPos;
+
+	DecompressVertex_NormalTangent( v.vNormal, v.vUserData, vNormal, vTangent );
+
+	#if ( !defined( SHADER_MODEL_VS_3_0 ) || !MORPHING )
 	{
-		float flBiTangentSign;
-		EvaluateSubdivisionSurface( v, g_SubDControls.x, g_SubDControls.y, g_SubDControls.z, BezierSampler, DispSampler,
-								    worldNormal, worldPos, worldTangentS, worldTangentT, flBiTangentSign,
-									o.projPos_fWrinkleWeight.w, o.baseTexCoordDetailTexCoord.xy, o.baseTexCoordDetailTexCoord.zw );
+		ApplyMorph( v.vPosFlex, v.vNormalFlex.xyz, vPosition.xyz, vNormal, vTangent.xyz, o.projPos_fWrinkleWeight.w );
 	}
-	#else // not tessellating
+	#else
 	{
-		vPosition = v.vPos;
-
-		DecompressVertex_NormalTangent( v.vNormal, v.vUserData, vNormal, vTangent );
-
-		#if ( !defined( SHADER_MODEL_VS_3_0 ) || !MORPHING )
-		{
-			ApplyMorph( v.vPosFlex, v.vNormalFlex, vPosition.xyz, vNormal, vTangent.xyz, o.projPos_fWrinkleWeight.w );
-		}
-		#else
-		{
-			ApplyMorph( morphSampler, cMorphTargetTextureDim, cMorphSubrect, v.vVertexID, v.vTexCoord2,
-						vPosition.xyz, vNormal, vTangent.xyz, o.projPos_fWrinkleWeight.w );
-		}
-		#endif
-
-		// Perform skinning
-		SkinPositionNormalAndTangentSpace( g_bSkinning, vPosition, vNormal, vTangent,
-											v.vBoneWeights, v.vBoneIndices, worldPos,
-											worldNormal, worldTangentS, worldTangentT );
-
-		// Always normalize since flex path can denormalize
-		worldNormal   = normalize( worldNormal );
-		worldTangentS = normalize( worldTangentS );
-		worldTangentT = normalize( worldTangentT );
-
-		#if defined( SHADER_MODEL_VS_3_0 ) && MORPHING && DECAL && ( !WORLD_NORMAL )
-		{
-			// Avoid z precision errors
-			worldPos += worldNormal * 0.05f * v.vTexCoord2.z;
-		}
-		#endif
-
-		vTexCoords = v.vTexCoord0;
-
-		// Texture coordinate transforms
-		o.baseTexCoordDetailTexCoord.x = dot( vTexCoords, cBaseTexCoordTransform[0] );
-		o.baseTexCoordDetailTexCoord.y = dot( vTexCoords, cBaseTexCoordTransform[1] );
-		o.baseTexCoordDetailTexCoord.z = dot( vTexCoords, cDetailTexCoordTransform[0] );
-		o.baseTexCoordDetailTexCoord.w = dot( vTexCoords, cDetailTexCoordTransform[1] );
+		ApplyMorph( morphSampler, cMorphTargetTextureDim, cMorphSubrect, v.vVertexID, v.vTexCoord2.xyz,
+					vPosition.xyz, vNormal, vTangent.xyz, o.projPos_fWrinkleWeight.w );
 	}
+	#endif
+
+	// Perform skinning
+	SkinPositionNormalAndTangentSpace( g_bSkinning, vPosition, vNormal, vTangent,
+										v.vBoneWeights, v.vBoneIndices, worldPos,
+										worldNormal, worldTangentS, worldTangentT );
+
+	// Always normalize since flex path can denormalize
+	worldNormal   = normalize( worldNormal );
+	worldTangentS = normalize( worldTangentS );
+	worldTangentT = normalize( worldTangentT );
+
+	#if defined( SHADER_MODEL_VS_3_0 ) && MORPHING && DECAL && ( !WORLD_NORMAL )
+	{
+		// Avoid z precision errors
+		worldPos += worldNormal * 0.05f * v.vTexCoord2.z;
+	}
+	#endif
+
+	vTexCoords = v.vTexCoord0;
+
+	// Texture coordinate transforms
+	o.baseTexCoordDetailTexCoord.x = dot( vTexCoords, cBaseTexCoordTransform[0] );
+	o.baseTexCoordDetailTexCoord.y = dot( vTexCoords, cBaseTexCoordTransform[1] );
+	#if ( defined( SHADER_MODEL_VS_3_0 ) || !STATUSEFFECT )
+	o.baseTexCoordDetailTexCoord.z = dot( vTexCoords, cDetailTexCoordTransform[0] );
+	o.baseTexCoordDetailTexCoord.w = dot( vTexCoords, cDetailTexCoordTransform[1] );
+	#endif
+	#if ( !defined( SHADER_MODEL_VS_3_0 ) && STATUSEFFECT == 1 )
+	// fire
+	o.baseTexCoordDetailTexCoord.zw = ComputeStatusEffectCoord( vTexCoords, 24, 6.0 );
+	#endif
+	#if ( !defined( SHADER_MODEL_VS_3_0 ) && STATUSEFFECT == 2 )
+	// ice
+	o.baseTexCoordDetailTexCoord.zw = ComputeStatusEffectCoord( vTexCoords, 0, 5.0 );
+	#endif
+	#if ( !defined( SHADER_MODEL_VS_3_0 ) && STATUSEFFECT == 3 )
+	// shock
+	o.baseTexCoordDetailTexCoord.zw = ComputeStatusEffectCoord( vTexCoords, 80, 4.0 );
+	#endif
+	#if ( defined( SHADER_MODEL_VS_3_0 ) && STATUSEFFECT )
+	// all three
+	o.statusEffectTexCoord.xy = ComputeStatusEffectCoord( vTexCoords, 24, 6.0 );
+	o.statusEffectTexCoord.zw = ComputeStatusEffectCoord( vTexCoords, 0, 5.0 );
+	o.statusEffectTexCoord2.xy = ComputeStatusEffectCoord( vTexCoords, 80, 4.0 );
 	#endif
 	
 	#if ( !DOPIXELFOG )
@@ -186,7 +185,7 @@ VS_OUTPUT main( const VS_INPUT v )
 
 	#if ( WORLD_NORMAL )
 	{
-		o.projPos_fWrinkleWeight.z = dot( g_vEyeVector, worldPos.xyz - cEyePos.xyz );	// Linear depth
+		o.projPos_fWrinkleWeight.z = dot( g_vEyeVector.xyz, worldPos.xyz - cEyePos.xyz );	// Linear depth
 	}
 	#endif
 

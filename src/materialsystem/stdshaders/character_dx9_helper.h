@@ -115,14 +115,16 @@ struct Character_DX9_Vars_t
 	
 	int m_nDisplacementMap;
 
-	int m_nDisplacementWrinkleMap;
-
 	int m_nPhongDisableHalfLambert;
 
 	int m_nTintMaskTexture;
 
+	int m_nCharacterProxyAttached;
 	int m_nCharacterTeamColor;
 	int m_nCharacterStatusFx;
+	int m_nCharacterBurningLayer;
+	int m_nCharacterFrozenLayer;
+	int m_nCharacterShockLayer;
 };
 
 void InitParamsCharacter_DX9( CBaseVSShader *pShader, IMaterialVar **params, const char *pMaterialName, Character_DX9_Vars_t &info );

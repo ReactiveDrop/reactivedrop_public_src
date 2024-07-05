@@ -90,6 +90,8 @@ public:
 
 public:
 
+	CNetworkVar( int, m_nFaction );
+
 // BEGIN PREDICTION DATA COMPACTION (these fields are together to allow for faster copying in prediction system)
 	float			m_flNextAttack;
 

@@ -21,7 +21,9 @@
 #include "tier0/memdbgon.h"
 
 
-BEGIN_VS_SHADER( Character, "Alien Swarm: Reactive Drop character shader" )
+static bool s_bSeenCharacterProxy = false;
+
+BEGIN_VS_SHADER( RDCharacter, "Alien Swarm: Reactive Drop character shader" )
 	BEGIN_SHADER_PARAMS
 		SHADER_PARAM( ALBEDO, SHADER_PARAM_TYPE_TEXTURE, "shadertest/BaseTexture", "albedo (Base texture with no baked lighting)" )
 		SHADER_PARAM( COMPRESS, SHADER_PARAM_TYPE_TEXTURE, "shadertest/BaseTexture", "compression wrinklemap" )
@@ -125,7 +127,6 @@ BEGIN_VS_SHADER( Character, "Alien Swarm: Reactive Drop character shader" )
 		SHADER_PARAM( AMBIENTOCCLUSION, SHADER_PARAM_TYPE_FLOAT, "0.0", "Amount of screen space ambient occlusion to use (0..1 range)" )
 
 		SHADER_PARAM( DISPLACEMENTMAP, SHADER_PARAM_TYPE_TEXTURE, "shadertest/BaseTexture", "Displacement map" )
-		SHADER_PARAM( DISPLACEMENTWRINKLE, SHADER_PARAM_TYPE_BOOL, "0", "Displacement map contains wrinkle displacements" )
 
 		SHADER_PARAM( BLENDTINTBYBASEALPHA, SHADER_PARAM_TYPE_BOOL, "0", "Use the base alpha to blend in the $color modulation" )
 
@@ -144,8 +145,12 @@ BEGIN_VS_SHADER( Character, "Alien Swarm: Reactive Drop character shader" )
 
 		SHADER_PARAM( TINTMASKTEXTURE, SHADER_PARAM_TYPE_TEXTURE, "", "Separate tint mask texture (as opposed to using basetexture alpha)" )
 
+		SHADER_PARAM( CHARACTER_PROXY_ATTACHED, SHADER_PARAM_TYPE_BOOL, "0", "Flag to determine whether material proxy has been successfully attached" )
 		SHADER_PARAM( CHARACTER_TEAM_COLOR, SHADER_PARAM_TYPE_COLOR, "[0 0 0 0]", "Glow color and intensity for team highlights." )
 		SHADER_PARAM( CHARACTER_STATUS_FX, SHADER_PARAM_TYPE_VEC4, "[0 0 0 0]", "Intensity for fire, ice, shock, and night vision effects." )
+		SHADER_PARAM( CHARACTER_BURNING_LAYER, SHADER_PARAM_TYPE_TEXTURE, "effects/TiledFire/fire_tiled", "Fire effect texture" )
+		SHADER_PARAM( CHARACTER_FROZEN_LAYER, SHADER_PARAM_TYPE_TEXTURE, "effects/model_layer_ice_1", "Ice effect texture" )
+		SHADER_PARAM( CHARACTER_SHOCK_LAYER, SHADER_PARAM_TYPE_TEXTURE, "effects/model_layer_shock_1", "Shock effect texture" )
 	END_SHADER_PARAMS
 
 	void SetupVars( Character_DX9_Vars_t &info )
@@ -230,14 +235,16 @@ BEGIN_VS_SHADER( Character, "Alien Swarm: Reactive Drop character shader" )
 		info.m_nBaseAlphaEnvMapMaskMinMaxExp = BASEALPHAENVMAPMASKMINMAXEXP;
 		info.m_nDisplacementMap = DISPLACEMENTMAP;
 
-		info.m_nDisplacementWrinkleMap = DISPLACEMENTWRINKLE;
-
 		info.m_nPhongDisableHalfLambert = PHONGDISABLEHALFLAMBERT;
 
 		info.m_nTintMaskTexture = TINTMASKTEXTURE;
 
+		info.m_nCharacterProxyAttached = CHARACTER_PROXY_ATTACHED;
 		info.m_nCharacterTeamColor = CHARACTER_TEAM_COLOR;
 		info.m_nCharacterStatusFx = CHARACTER_STATUS_FX;
+		info.m_nCharacterBurningLayer = CHARACTER_BURNING_LAYER;
+		info.m_nCharacterFrozenLayer = CHARACTER_FROZEN_LAYER;
+		info.m_nCharacterShockLayer = CHARACTER_SHOCK_LAYER;
 	}
 
 	// Cloak Pass
@@ -404,9 +411,26 @@ BEGIN_VS_SHADER( Character, "Alien Swarm: Reactive Drop character shader" )
 
 	SHADER_DRAW
 	{
+		if ( !IsSnapshotting() )
+		{
+			if ( params[CHARACTER_PROXY_ATTACHED]->GetIntValue() != 1 )
+			{
+				const char *szMaterialName = params[FLAGS]->GetOwningMaterial()->GetName();
+				Assert( szMaterialName );
+				if ( s_bSeenCharacterProxy && szMaterialName )
+				{
+					Warning( "RDCharacter material \"%s\" is missing the RDCharacter proxy.\n", szMaterialName );
+				}
+			}
+			else
+			{
+				s_bSeenCharacterProxy = true;
+			}
+		}
+
 		// Skip the standard rendering if cloak pass is fully opaque
 		bool bDrawStandardPass = true;
-		if ( params[CLOAKPASSENABLED]->GetIntValue() && ( pShaderShadow == NULL ) ) // && not snapshotting
+		if ( params[CLOAKPASSENABLED]->GetIntValue() && !IsSnapshotting() )
 		{
 			CloakBlendedPassVars_t info;
 			SetupVarsCloakBlendedPass( info );
@@ -433,7 +457,7 @@ BEGIN_VS_SHADER( Character, "Alien Swarm: Reactive Drop character shader" )
 		if ( params[CLOAKPASSENABLED]->GetIntValue() )
 		{
 			// If ( snapshotting ) or ( we need to draw this frame )
-			if ( ( pShaderShadow != NULL ) || ( ( params[CLOAKFACTOR]->GetFloatValue() > 0.0f ) && ( params[CLOAKFACTOR]->GetFloatValue() < 1.0f ) ) )
+			if ( IsSnapshotting() || ( ( params[CLOAKFACTOR]->GetFloatValue() > 0.0f ) && ( params[CLOAKFACTOR]->GetFloatValue() < 1.0f ) ) )
 			{
 				CloakBlendedPassVars_t info;
 				SetupVarsCloakBlendedPass( info );
@@ -450,7 +474,7 @@ BEGIN_VS_SHADER( Character, "Alien Swarm: Reactive Drop character shader" )
 		if ( params[EMISSIVEBLENDENABLED]->GetIntValue() )
 		{
 			// If ( snapshotting ) or ( we need to draw this frame )
-			if ( ( pShaderShadow != NULL ) || ( params[EMISSIVEBLENDSTRENGTH]->GetFloatValue() > 0.0f ) )
+			if ( IsSnapshotting() || ( params[EMISSIVEBLENDSTRENGTH]->GetFloatValue() > 0.0f ) )
 			{
 				EmissiveScrollBlendedPassVars_t info;
 				SetupVarsEmissiveScrollBlendedPass( info );
@@ -467,7 +491,7 @@ BEGIN_VS_SHADER( Character, "Alien Swarm: Reactive Drop character shader" )
 		if ( params[FLESHINTERIORENABLED]->GetIntValue() )
 		{
 			// If ( snapshotting ) or ( we need to draw this frame )
-			if ( ( pShaderShadow != NULL ) || ( true ) )
+			if ( IsSnapshotting() || ( true ) )
 			{
 				FleshInteriorBlendedPassVars_t info;
 				SetupVarsFleshInteriorBlendedPass( info );

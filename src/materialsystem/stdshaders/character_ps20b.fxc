@@ -7,19 +7,13 @@
 // STATIC: "FLASHLIGHT"					"0..1"
 // STATIC: "LIGHTWARPTEXTURE"			"0..1"
 // STATIC: "PHONGWARPTEXTURE"			"0..1"
-// STATIC: "WRINKLEMAP"					"0..1"
-// STATIC: "DETAIL_BLEND_MODE"			"0..6"
-// STATIC: "DETAILTEXTURE"				"0..1"
-// STATIC: "RIMLIGHT"					"0..1"
+// STATIC: "DETAIL_BLEND_MODE"			"0..6"	[ps30]
+// STATIC: "DETAILTEXTURE"				"0..1"	[ps30]
+// STATIC: "RIMLIGHT"					"0..1"	[ps30]
 // STATIC: "FLASHLIGHTDEPTHFILTERMODE"	"0..2"
 // STATIC: "WORLD_NORMAL"				"0..0"	[ps20b]
 // STATIC: "WORLD_NORMAL"				"0..1"	[ps30]
 // STATIC: "PHONG_HALFLAMBERT"			"0..1"
-// STATIC: "STATUSEFFECT"				"0..4"	[ps20b]
-// STATIC: "STATUSEFFECT"				"0..1"	[ps30]
-// STATIC: "TEAMGLOW"					"0..1"
-
-// on PS2.0b, status effect 0=none, 1=fire animation, 2=ice animation, 3=shock animation, 4=nightvision
 
 // DYNAMIC: "WRITEWATERFOGTODESTALPHA"  "0..1"
 #include "common_fog_ps_fxc.h"
@@ -27,6 +21,16 @@
 // DYNAMIC: "WRITE_DEPTH_TO_DESTALPHA"	"0..1"
 // DYNAMIC: "FLASHLIGHTSHADOWS"			"0..1"
 // DYNAMIC: "UBERLIGHT"					"0..1"	[ps30]
+
+// DYNAMIC: "WRINKLEMAP"				"0..1"
+// DYNAMIC: "DETAIL_BLEND_MODE"			"0..6"	[ps20b]
+// DYNAMIC: "DETAILTEXTURE"				"0..1"	[ps20b]
+// DYNAMIC: "RIMLIGHT"					"0..1"	[ps20b]
+// DYNAMIC: "STATUSEFFECT"				"0..4"	[ps20b]
+// DYNAMIC: "STATUSEFFECT"				"0..1"	[ps30]
+// DYNAMIC: "TEAMGLOW"					"0..1"
+
+// on PS2.0b, status effect 0=none, 1=fire animation, 2=ice animation, 3=shock animation, 4=nightvision
 
 // blend mode doesn't matter if we only have one texture
 // SKIP: ( $DETAILTEXTURE == 0 ) && ( $DETAIL_BLEND_MODE != 0 )
@@ -48,7 +52,7 @@
 // SKIP: ( $WORLD_NORMAL == 1 ) && ( $FLASHLIGHTSHADOWS == 1 ) && ( $NUM_LIGHTS != 0 ) && ( $WRITEWATERFOGTODESTALPHA == 1 )
 
 // Not enough sampler slots to do wrinkle maps and status effect overlays at the same time.
-// SKIP: ( $WRINKLEMAP == 1 ) && ( $STATUSEFFECT == 1 )
+// SKIP: ( $WRINKLEMAP == 1 ) && ( $STATUSEFFECT != 0 )
 
 // Not enough registers in PS2.0b for all the new features, so we disable related features to make room.
 // SKIP: ( $DETAILTEXTURE == 1 ) && ( $STATUSEFFECT != 0 ) [ps20b]
@@ -100,6 +104,7 @@ const float4 g_StatusEffectParams					: register( PSREG_FLESH_LIGHTING_PARAMS );
 #elif STATUSEFFECT == 4
 #define g_fNightVisionAmount						g_SelfIllumTint_and_DetailBlendFactor.w
 #else
+#define g_StatusEffectParams						g_SelfIllumTint_and_DetailBlendFactor.www
 #define g_fNightVisionAmount						0.0
 #endif
 
@@ -143,13 +148,14 @@ sampler StretchSampler			: register( s10 );	// Expansion base
 sampler NormalWrinkleSampler	: register( s11 );	// Compression normal
 sampler NormalStretchSampler	: register( s12 );	// Expansion normal
 #elif STATUSEFFECT
-
+sampler BurningSampler			: register( s9 );
+sampler FrozenSampler			: register( s10 );
+sampler ShockSampler			: register( s11 );
+// sampler 12 unused
 #endif
 
 #if DETAILTEXTURE
 sampler DetailSampler			: register( s13 );	// detail texture
-#elif !defined( SHADER_MODEL_PS_3_0 ) && STATUSEFFECT != 0 && STATUSEFFECT != 4
-sampler StatusEffectSampler		: register( s13 );	// detail texture
 #endif
 
 sampler SelfIllumMaskSampler	: register( s14 );	// selfillummask
@@ -204,7 +210,7 @@ float4 main( PS_INPUT i ) : COLOR
 		float4 stretchColor = tex2Dsrgb( StretchSampler, i.baseTexCoordDetailTexCoord.xy );
 
 		// Apply wrinkle blend to only RGB.  Alpha comes from the base texture
-		baseColor.rgb = ( flTextureAmount * baseColor ) + ( flWrinkleAmount * wrinkleColor ) + ( flStretchAmount * stretchColor );
+		baseColor.rgb = ( flTextureAmount * baseColor.rgb ) + ( flWrinkleAmount * wrinkleColor.rgb ) + ( flStretchAmount * stretchColor.rgb );
 	}
 	#endif
 
@@ -369,12 +375,6 @@ float4 main( PS_INPUT i ) : COLOR
 
 	float3 diffuseComponent = albedo * diffuseLighting;
 
-	#if ( !defined( SHADER_MODEL_PS_3_0 ) ? STATUSEFFECT == 4 : STATUSEFFECT )
-	{
-		diffuseComponent = lerp( diffuseComponent, albedo, g_fNightVisionAmount );
-	}
-	#endif
-
 	#if ( SELFILLUM && !FLASHLIGHT )
 	{
 		#if ( SELFILLUMFRESNEL == 1 ) // To free up the constant register...see top of file
@@ -396,11 +396,65 @@ float4 main( PS_INPUT i ) : COLOR
 
 		diffuseComponent = max( 0.0f, diffuseComponent );
 	}
-	#endif	
+	#endif
+
+	#if ( !defined( SHADER_MODEL_PS_3_0 ) ? STATUSEFFECT == 4 : STATUSEFFECT )
+	{
+		if ( g_fNightVisionAmount < 1.0 )
+		{
+			diffuseComponent = lerp( diffuseComponent, albedo, g_fNightVisionAmount );
+		}
+		else
+		{
+			diffuseComponent = albedo * g_fNightVisionAmount;
+		}
+	}
+	#endif
 
 	#if ( DETAILTEXTURE )
 	{
 		diffuseComponent =  TextureCombinePostLighting( diffuseComponent, detailColor, DETAIL_BLEND_MODE, g_SelfIllumTint_and_DetailBlendFactor.w );
+	}
+	#endif
+
+	#if ( defined( SHADER_MODEL_PS_3_0 ) )
+	#define burningTexCoord i.statusEffectTexCoord.xy
+	#define frozenTexCoord i.statusEffectTexCoord.zw
+	#define shockTexCoord i.statusEffectTexCoord2.xy
+	#else
+	#define burningTexCoord i.baseTexCoordDetailTexCoord.zw
+	#define frozenTexCoord i.baseTexCoordDetailTexCoord.zw
+	#define shockTexCoord i.baseTexCoordDetailTexCoord.zw
+	#endif
+
+	// cut intensity when multiple status effects are active to avoid blowing out the colors
+	float flStatusEffectOverallScale = 1.0;
+	#if ( defined( SHADER_MODEL_PS_3_0 ) && STATUSEFFECT )
+	flStatusEffectOverallScale = 2.0;
+	if ( g_StatusEffectParams.x > 0 )
+		flStatusEffectOverallScale *= 0.5;
+	if ( g_StatusEffectParams.y > 0 )
+		flStatusEffectOverallScale *= 0.5;
+	if ( g_StatusEffectParams.z > 0 )
+		flStatusEffectOverallScale *= 0.5;
+	#endif
+
+	#if ( !defined( SHADER_MODEL_PS_3_0 ) ? STATUSEFFECT == 1 : STATUSEFFECT )
+	{
+		float4 burningColor = tex2D( BurningSampler, burningTexCoord );
+		diffuseComponent =  TextureCombinePostLighting( diffuseComponent, burningColor, TCOMBINE_RGB_ADDITIVE_SELFILLUM, g_StatusEffectParams.x * 0.3 * flStatusEffectOverallScale );
+	}
+	#endif
+	#if ( !defined( SHADER_MODEL_PS_3_0 ) ? STATUSEFFECT == 2 : STATUSEFFECT )
+	{
+		float4 frozenColor = tex2D( FrozenSampler, frozenTexCoord );
+		diffuseComponent =  TextureCombinePostLighting( diffuseComponent, frozenColor, TCOMBINE_RGB_ADDITIVE_SELFILLUM, min( g_StatusEffectParams.y * 0.25, 0.4 ) * flStatusEffectOverallScale );
+	}
+	#endif
+	#if ( !defined( SHADER_MODEL_PS_3_0 ) ? STATUSEFFECT == 3 : STATUSEFFECT )
+	{
+		float4 shockColor = tex2D( ShockSampler, shockTexCoord );
+		diffuseComponent =  TextureCombinePostLighting( diffuseComponent, shockColor, TCOMBINE_RGB_ADDITIVE_SELFILLUM, g_StatusEffectParams.z * 0.75 * flStatusEffectOverallScale );
 	}
 	#endif
 
@@ -417,7 +471,17 @@ float4 main( PS_INPUT i ) : COLOR
 		// Add in view-ray lookup from ambient cube
 		specularLighting += fRimFresnel * fRimMask * g_fRimBoost * PixelShaderAmbientLight( vEyeDir, cAmbientCube) * saturate(dot(worldSpaceNormal, float3(0, 0 , 1)) );
 	}
-	#endif	
+	#endif
+
+	#if ( TEAMGLOW )
+	{
+		float flFresnel = Fresnel( worldSpaceNormal, vEyeDir );
+		float flThreshold = 1.0 - g_TeamGlowParams.a * 0.5;
+		float flBrightness = saturate( ( flFresnel - flThreshold ) * 32.0 );
+
+		diffuseComponent = TextureCombinePostLighting( diffuseComponent, float4( g_TeamGlowParams.rgb, 1.0 ), TCOMBINE_RGB_ADDITIVE_SELFILLUM, flBrightness );
+	}
+	#endif
 
 	// Screen-space dynamic ambient occlusion on PC
 	float fAmbientOcclusion = 1.0f;

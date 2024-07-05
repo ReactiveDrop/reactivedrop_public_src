@@ -6,7 +6,7 @@
 // ( $FLASHLIGHT == 1 ) && ( $SELFILLUMFRESNEL == 1 )
 // ( $FLASHLIGHT == 1 ) && ( $SELFILLUM == 1 )
 // ( $WORLD_NORMAL == 1 ) && ( $FLASHLIGHTSHADOWS == 1 ) && ( $NUM_LIGHTS != 0 ) && ( $WRITEWATERFOGTODESTALPHA == 1 )
-// ( $WRINKLEMAP == 1 ) && ( $STATUSEFFECT == 1 )
+// ( $WRINKLEMAP == 1 ) && ( $STATUSEFFECT != 0 )
 // defined $PIXELFOGTYPE && defined $WRITEWATERFOGTODESTALPHA && ( $PIXELFOGTYPE != 1 ) && $WRITEWATERFOGTODESTALPHA
 // defined $LIGHTING_PREVIEW && defined $FASTPATHENVMAPTINT && $LIGHTING_PREVIEW && $FASTPATHENVMAPTINT
 // defined $LIGHTING_PREVIEW && defined $FASTPATHENVMAPCONTRAST && $LIGHTING_PREVIEW && $FASTPATHENVMAPCONTRAST
@@ -28,15 +28,12 @@ class character_ps30_Static_Index
 	unsigned int m_nFLASHLIGHT : 2;
 	unsigned int m_nLIGHTWARPTEXTURE : 2;
 	unsigned int m_nPHONGWARPTEXTURE : 2;
-	unsigned int m_nWRINKLEMAP : 2;
 	unsigned int m_nDETAIL_BLEND_MODE : 3;
 	unsigned int m_nDETAILTEXTURE : 2;
 	unsigned int m_nRIMLIGHT : 2;
 	unsigned int m_nFLASHLIGHTDEPTHFILTERMODE : 2;
 	unsigned int m_nWORLD_NORMAL : 2;
 	unsigned int m_nPHONG_HALFLAMBERT : 2;
-	unsigned int m_nSTATUSEFFECT : 2;
-	unsigned int m_nTEAMGLOW : 2;
 #ifdef _DEBUG
 	bool m_bCUBEMAP : 1;
 	bool m_bSELFILLUM : 1;
@@ -44,15 +41,12 @@ class character_ps30_Static_Index
 	bool m_bFLASHLIGHT : 1;
 	bool m_bLIGHTWARPTEXTURE : 1;
 	bool m_bPHONGWARPTEXTURE : 1;
-	bool m_bWRINKLEMAP : 1;
 	bool m_bDETAIL_BLEND_MODE : 1;
 	bool m_bDETAILTEXTURE : 1;
 	bool m_bRIMLIGHT : 1;
 	bool m_bFLASHLIGHTDEPTHFILTERMODE : 1;
 	bool m_bWORLD_NORMAL : 1;
 	bool m_bPHONG_HALFLAMBERT : 1;
-	bool m_bSTATUSEFFECT : 1;
-	bool m_bTEAMGLOW : 1;
 #endif	// _DEBUG
 public:
 	void SetCUBEMAP( int i )
@@ -106,15 +100,6 @@ public:
 		m_nPHONGWARPTEXTURE = i;
 #ifdef _DEBUG
 		m_bPHONGWARPTEXTURE = true;
-#endif	// _DEBUG
-	}
-
-	void SetWRINKLEMAP( int i )
-	{
-		Assert( i >= 0 && i <= 1 );
-		m_nWRINKLEMAP = i;
-#ifdef _DEBUG
-		m_bWRINKLEMAP = true;
 #endif	// _DEBUG
 	}
 
@@ -172,24 +157,6 @@ public:
 #endif	// _DEBUG
 	}
 
-	void SetSTATUSEFFECT( int i )
-	{
-		Assert( i >= 0 && i <= 1 );
-		m_nSTATUSEFFECT = i;
-#ifdef _DEBUG
-		m_bSTATUSEFFECT = true;
-#endif	// _DEBUG
-	}
-
-	void SetTEAMGLOW( int i )
-	{
-		Assert( i >= 0 && i <= 1 );
-		m_nTEAMGLOW = i;
-#ifdef _DEBUG
-		m_bTEAMGLOW = true;
-#endif	// _DEBUG
-	}
-
 	character_ps30_Static_Index( IShaderShadow* pShaderShadow, IMaterialVar** params )
 	{
 		m_nCUBEMAP = 0;
@@ -198,15 +165,12 @@ public:
 		m_nFLASHLIGHT = 0;
 		m_nLIGHTWARPTEXTURE = 0;
 		m_nPHONGWARPTEXTURE = 0;
-		m_nWRINKLEMAP = 0;
 		m_nDETAIL_BLEND_MODE = 0;
 		m_nDETAILTEXTURE = 0;
 		m_nRIMLIGHT = 0;
 		m_nFLASHLIGHTDEPTHFILTERMODE = 0;
 		m_nWORLD_NORMAL = 0;
 		m_nPHONG_HALFLAMBERT = 0;
-		m_nSTATUSEFFECT = 0;
-		m_nTEAMGLOW = 0;
 #ifdef _DEBUG
 		m_bCUBEMAP = false;
 		m_bSELFILLUM = false;
@@ -214,31 +178,27 @@ public:
 		m_bFLASHLIGHT = false;
 		m_bLIGHTWARPTEXTURE = false;
 		m_bPHONGWARPTEXTURE = false;
-		m_bWRINKLEMAP = false;
 		m_bDETAIL_BLEND_MODE = false;
 		m_bDETAILTEXTURE = false;
 		m_bRIMLIGHT = false;
 		m_bFLASHLIGHTDEPTHFILTERMODE = false;
 		m_bWORLD_NORMAL = false;
 		m_bPHONG_HALFLAMBERT = false;
-		m_bSTATUSEFFECT = false;
-		m_bTEAMGLOW = false;
 #endif	// _DEBUG
 	}
 
 	int GetIndex() const
 	{
-		Assert( m_bCUBEMAP && m_bSELFILLUM && m_bSELFILLUMFRESNEL && m_bFLASHLIGHT && m_bLIGHTWARPTEXTURE && m_bPHONGWARPTEXTURE && m_bWRINKLEMAP && m_bDETAIL_BLEND_MODE && m_bDETAILTEXTURE && m_bRIMLIGHT && m_bFLASHLIGHTDEPTHFILTERMODE && m_bWORLD_NORMAL && m_bPHONG_HALFLAMBERT && m_bSTATUSEFFECT && m_bTEAMGLOW );
+		Assert( m_bCUBEMAP && m_bSELFILLUM && m_bSELFILLUMFRESNEL && m_bFLASHLIGHT && m_bLIGHTWARPTEXTURE && m_bPHONGWARPTEXTURE && m_bDETAIL_BLEND_MODE && m_bDETAILTEXTURE && m_bRIMLIGHT && m_bFLASHLIGHTDEPTHFILTERMODE && m_bWORLD_NORMAL && m_bPHONG_HALFLAMBERT );
 		AssertMsg( !( ( m_nDETAILTEXTURE == 0 ) && ( m_nDETAIL_BLEND_MODE != 0 ) ), "Invalid combo combination ( ( DETAILTEXTURE == 0 ) && ( DETAIL_BLEND_MODE != 0 ) )" );
 		AssertMsg( !( ( m_nSELFILLUM == 0 ) && ( m_nSELFILLUMFRESNEL == 1 ) ), "Invalid combo combination ( ( SELFILLUM == 0 ) && ( SELFILLUMFRESNEL == 1 ) )" );
 		AssertMsg( !( ( m_nFLASHLIGHT == 1 ) && ( m_nSELFILLUMFRESNEL == 1 ) ), "Invalid combo combination ( ( FLASHLIGHT == 1 ) && ( SELFILLUMFRESNEL == 1 ) )" );
 		AssertMsg( !( ( m_nFLASHLIGHT == 1 ) && ( m_nSELFILLUM == 1 ) ), "Invalid combo combination ( ( FLASHLIGHT == 1 ) && ( SELFILLUM == 1 ) )" );
-		AssertMsg( !( ( m_nWRINKLEMAP == 1 ) && ( m_nSTATUSEFFECT == 1 ) ), "Invalid combo combination ( ( WRINKLEMAP == 1 ) && ( STATUSEFFECT == 1 ) )" );
-		return ( 160 * m_nCUBEMAP ) + ( 320 * m_nSELFILLUM ) + ( 640 * m_nSELFILLUMFRESNEL ) + ( 1280 * m_nFLASHLIGHT ) + ( 2560 * m_nLIGHTWARPTEXTURE ) + ( 5120 * m_nPHONGWARPTEXTURE ) + ( 10240 * m_nWRINKLEMAP ) + ( 20480 * m_nDETAIL_BLEND_MODE ) + ( 143360 * m_nDETAILTEXTURE ) + ( 286720 * m_nRIMLIGHT ) + ( 573440 * m_nFLASHLIGHTDEPTHFILTERMODE ) + ( 1720320 * m_nWORLD_NORMAL ) + ( 3440640 * m_nPHONG_HALFLAMBERT ) + ( 6881280 * m_nSTATUSEFFECT ) + ( 13762560 * m_nTEAMGLOW ) + 0;
+		return ( 1280 * m_nCUBEMAP ) + ( 2560 * m_nSELFILLUM ) + ( 5120 * m_nSELFILLUMFRESNEL ) + ( 10240 * m_nFLASHLIGHT ) + ( 20480 * m_nLIGHTWARPTEXTURE ) + ( 40960 * m_nPHONGWARPTEXTURE ) + ( 81920 * m_nDETAIL_BLEND_MODE ) + ( 573440 * m_nDETAILTEXTURE ) + ( 1146880 * m_nRIMLIGHT ) + ( 2293760 * m_nFLASHLIGHTDEPTHFILTERMODE ) + ( 6881280 * m_nWORLD_NORMAL ) + ( 13762560 * m_nPHONG_HALFLAMBERT ) + 0;
 	}
 };
 
-#define shaderStaticTest_character_ps30 psh_forgot_to_set_static_CUBEMAP + psh_forgot_to_set_static_SELFILLUM + psh_forgot_to_set_static_SELFILLUMFRESNEL + psh_forgot_to_set_static_FLASHLIGHT + psh_forgot_to_set_static_LIGHTWARPTEXTURE + psh_forgot_to_set_static_PHONGWARPTEXTURE + psh_forgot_to_set_static_WRINKLEMAP + psh_forgot_to_set_static_DETAIL_BLEND_MODE + psh_forgot_to_set_static_DETAILTEXTURE + psh_forgot_to_set_static_RIMLIGHT + psh_forgot_to_set_static_FLASHLIGHTDEPTHFILTERMODE + psh_forgot_to_set_static_WORLD_NORMAL + psh_forgot_to_set_static_PHONG_HALFLAMBERT + psh_forgot_to_set_static_STATUSEFFECT + psh_forgot_to_set_static_TEAMGLOW
+#define shaderStaticTest_character_ps30 psh_forgot_to_set_static_CUBEMAP + psh_forgot_to_set_static_SELFILLUM + psh_forgot_to_set_static_SELFILLUMFRESNEL + psh_forgot_to_set_static_FLASHLIGHT + psh_forgot_to_set_static_LIGHTWARPTEXTURE + psh_forgot_to_set_static_PHONGWARPTEXTURE + psh_forgot_to_set_static_DETAIL_BLEND_MODE + psh_forgot_to_set_static_DETAILTEXTURE + psh_forgot_to_set_static_RIMLIGHT + psh_forgot_to_set_static_FLASHLIGHTDEPTHFILTERMODE + psh_forgot_to_set_static_WORLD_NORMAL + psh_forgot_to_set_static_PHONG_HALFLAMBERT
 
 
 class character_ps30_Dynamic_Index
@@ -249,12 +209,18 @@ class character_ps30_Dynamic_Index
 	unsigned int m_nWRITE_DEPTH_TO_DESTALPHA : 2;
 	unsigned int m_nFLASHLIGHTSHADOWS : 2;
 	unsigned int m_nUBERLIGHT : 2;
+	unsigned int m_nWRINKLEMAP : 2;
+	unsigned int m_nSTATUSEFFECT : 2;
+	unsigned int m_nTEAMGLOW : 2;
 #ifdef _DEBUG
 	bool m_bWRITEWATERFOGTODESTALPHA : 1;
 	bool m_bNUM_LIGHTS : 1;
 	bool m_bWRITE_DEPTH_TO_DESTALPHA : 1;
 	bool m_bFLASHLIGHTSHADOWS : 1;
 	bool m_bUBERLIGHT : 1;
+	bool m_bWRINKLEMAP : 1;
+	bool m_bSTATUSEFFECT : 1;
+	bool m_bTEAMGLOW : 1;
 #endif	// _DEBUG
 public:
 	void SetWRITEWATERFOGTODESTALPHA( int i )
@@ -308,6 +274,33 @@ public:
 #endif	// _DEBUG
 	}
 
+	void SetWRINKLEMAP( int i )
+	{
+		Assert( i >= 0 && i <= 1 );
+		m_nWRINKLEMAP = i;
+#ifdef _DEBUG
+		m_bWRINKLEMAP = true;
+#endif	// _DEBUG
+	}
+
+	void SetSTATUSEFFECT( int i )
+	{
+		Assert( i >= 0 && i <= 1 );
+		m_nSTATUSEFFECT = i;
+#ifdef _DEBUG
+		m_bSTATUSEFFECT = true;
+#endif	// _DEBUG
+	}
+
+	void SetTEAMGLOW( int i )
+	{
+		Assert( i >= 0 && i <= 1 );
+		m_nTEAMGLOW = i;
+#ifdef _DEBUG
+		m_bTEAMGLOW = true;
+#endif	// _DEBUG
+	}
+
 	character_ps30_Dynamic_Index( IShaderDynamicAPI* pShaderAPI )
 	{
 		m_nWRITEWATERFOGTODESTALPHA = 0;
@@ -316,23 +309,30 @@ public:
 		m_nWRITE_DEPTH_TO_DESTALPHA = 0;
 		m_nFLASHLIGHTSHADOWS = 0;
 		m_nUBERLIGHT = 0;
+		m_nWRINKLEMAP = 0;
+		m_nSTATUSEFFECT = 0;
+		m_nTEAMGLOW = 0;
 #ifdef _DEBUG
 		m_bWRITEWATERFOGTODESTALPHA = false;
 		m_bNUM_LIGHTS = false;
 		m_bWRITE_DEPTH_TO_DESTALPHA = false;
 		m_bFLASHLIGHTSHADOWS = false;
 		m_bUBERLIGHT = false;
+		m_bWRINKLEMAP = false;
+		m_bSTATUSEFFECT = false;
+		m_bTEAMGLOW = false;
 #endif	// _DEBUG
 	}
 
 	int GetIndex() const
 	{
-		Assert( m_bWRITEWATERFOGTODESTALPHA && m_bNUM_LIGHTS && m_bWRITE_DEPTH_TO_DESTALPHA && m_bFLASHLIGHTSHADOWS && m_bUBERLIGHT );
+		Assert( m_bWRITEWATERFOGTODESTALPHA && m_bNUM_LIGHTS && m_bWRITE_DEPTH_TO_DESTALPHA && m_bFLASHLIGHTSHADOWS && m_bUBERLIGHT && m_bWRINKLEMAP && m_bSTATUSEFFECT && m_bTEAMGLOW );
+		AssertMsg( !( ( m_nWRINKLEMAP == 1 ) && ( m_nSTATUSEFFECT != 0 ) ), "Invalid combo combination ( ( WRINKLEMAP == 1 ) && ( STATUSEFFECT != 0 ) )" );
 		AssertMsg( !( 1 && ( 1 && ( ( m_nPIXELFOGTYPE != 1 ) && m_nWRITEWATERFOGTODESTALPHA ) ) ), "Invalid combo combination ( 1 && ( 1 && ( ( PIXELFOGTYPE != 1 ) && WRITEWATERFOGTODESTALPHA ) ) )" );
 		AssertMsg( !( 1 && ( 1 && ( ( m_nPIXELFOGTYPE != 1 ) && m_nWRITEWATERFOGTODESTALPHA ) ) ), "Invalid combo combination ( 1 && ( 1 && ( ( PIXELFOGTYPE != 1 ) && WRITEWATERFOGTODESTALPHA ) ) )" );
-		return ( 1 * m_nWRITEWATERFOGTODESTALPHA ) + ( 2 * m_nPIXELFOGTYPE ) + ( 4 * m_nNUM_LIGHTS ) + ( 20 * m_nWRITE_DEPTH_TO_DESTALPHA ) + ( 40 * m_nFLASHLIGHTSHADOWS ) + ( 80 * m_nUBERLIGHT ) + 0;
+		return ( 1 * m_nWRITEWATERFOGTODESTALPHA ) + ( 2 * m_nPIXELFOGTYPE ) + ( 4 * m_nNUM_LIGHTS ) + ( 20 * m_nWRITE_DEPTH_TO_DESTALPHA ) + ( 40 * m_nFLASHLIGHTSHADOWS ) + ( 80 * m_nUBERLIGHT ) + ( 160 * m_nWRINKLEMAP ) + ( 320 * m_nSTATUSEFFECT ) + ( 640 * m_nTEAMGLOW ) + 0;
 	}
 };
 
-#define shaderDynamicTest_character_ps30 psh_forgot_to_set_dynamic_WRITEWATERFOGTODESTALPHA + psh_forgot_to_set_dynamic_NUM_LIGHTS + psh_forgot_to_set_dynamic_WRITE_DEPTH_TO_DESTALPHA + psh_forgot_to_set_dynamic_FLASHLIGHTSHADOWS + psh_forgot_to_set_dynamic_UBERLIGHT
+#define shaderDynamicTest_character_ps30 psh_forgot_to_set_dynamic_WRITEWATERFOGTODESTALPHA + psh_forgot_to_set_dynamic_NUM_LIGHTS + psh_forgot_to_set_dynamic_WRITE_DEPTH_TO_DESTALPHA + psh_forgot_to_set_dynamic_FLASHLIGHTSHADOWS + psh_forgot_to_set_dynamic_UBERLIGHT + psh_forgot_to_set_dynamic_WRINKLEMAP + psh_forgot_to_set_dynamic_STATUSEFFECT + psh_forgot_to_set_dynamic_TEAMGLOW
 

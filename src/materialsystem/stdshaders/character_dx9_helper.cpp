@@ -21,7 +21,6 @@
 static ConVar mat_fullbright( "mat_fullbright", "0", FCVAR_CHEAT );
 static ConVar r_lightwarpidentity( "r_lightwarpidentity", "0", FCVAR_CHEAT );
 static ConVar r_rimlight( "r_rimlight", "1", FCVAR_CHEAT );
-static ConVar mat_displacementmap( "mat_displacementmap", "1", FCVAR_CHEAT );
 static ConVar mat_force_vertexfog( "mat_force_vertexfog", "0", FCVAR_DEVELOPMENTONLY );
 
 
@@ -80,6 +79,14 @@ void InitParamsCharacter_DX9( CBaseVSShader *pShader, IMaterialVar **params, con
 
 	params[FLASHLIGHTTEXTURE]->SetStringValue( GetFlashlightTextureFilename() );
 
+	// init status effect textures
+	if ( !params[info.m_nCharacterBurningLayer]->IsDefined() )
+		params[info.m_nCharacterBurningLayer]->SetStringValue( "effects/TiledFire/fire_tiled" );
+	if ( !params[info.m_nCharacterFrozenLayer]->IsDefined() )
+		params[info.m_nCharacterFrozenLayer]->SetStringValue( "effects/model_layer_ice_1" );
+	if ( !params[info.m_nCharacterShockLayer]->IsDefined() )
+		params[info.m_nCharacterShockLayer]->SetStringValue( "effects/model_layer_shock_1" );
+
 	// Write over $basetexture with $info.m_nBumpmap if we are going to be using diffuse normal mapping.
 	if ( info.m_nAlbedo != -1 && g_pConfig->UseBumpmapping() && info.m_nBumpmap != -1 && params[info.m_nBumpmap]->IsDefined() && params[info.m_nAlbedo]->IsDefined() &&
 		params[info.m_nBaseTexture]->IsDefined() )
@@ -113,7 +120,6 @@ void InitParamsCharacter_DX9( CBaseVSShader *pShader, IMaterialVar **params, con
 
 	InitFloatParam( info.m_nEnvmapFresnel, params, 0.0f );
 	InitFloatParam( info.m_nAmbientOcclusion, params, 0.0f );
-	InitFloatParam( info.m_nDisplacementWrinkleMap, params, 0.0f );
 
 	InitIntParam( info.m_nSelfIllumFresnel, params, 0 );
 	InitIntParam( info.m_nBaseMapAlphaPhongMask, params, 0 );
@@ -218,6 +224,10 @@ void InitCharacter_DX9( CBaseVSShader *pShader, IMaterialVar **params, Character
 	{
 		pShader->LoadTexture( info.m_nDisplacementMap );
 	}
+
+	pShader->LoadTexture( info.m_nCharacterBurningLayer );
+	pShader->LoadTexture( info.m_nCharacterFrozenLayer );
+	pShader->LoadTexture( info.m_nCharacterShockLayer );
 }
 
 class CCharacter_DX9_Context : public CBasePerMaterialContextData
@@ -238,20 +248,28 @@ void DrawCharacter_DX9( CBaseVSShader *pShader, IMaterialVar **params, IShaderDy
 	BlendType_t nBlendType = pShader->EvaluateBlendRequirements( info.m_nBaseTexture, true );
 	bool bFullyOpaque = ( nBlendType != BT_BLENDADD ) && ( nBlendType != BT_BLEND ) && !bIsAlphaTested && !bHasFlashlight; //dest alpha is free for special use
 	bool bHasDisplacement = ( info.m_nDisplacementMap != -1 ) && params[info.m_nDisplacementMap]->IsTexture();
-	bool bHasDisplacementWrinkles = ( info.m_nDisplacementWrinkleMap != -1 ) && params[info.m_nDisplacementWrinkleMap]->GetIntValue();
+	bool bHasRimLight = r_rimlight.GetBool() && ( info.m_nRimLight != -1 ) && ( params[info.m_nRimLight]->GetIntValue() != 0 );
+	bool bHasBump = ( info.m_nBumpmap != -1 ) && params[info.m_nBumpmap]->IsTexture();
+	bool bHasBaseTextureWrinkle = ( info.m_nBaseTexture != -1 ) && params[info.m_nBaseTexture]->IsTexture() &&
+		( info.m_nWrinkle != -1 ) && params[info.m_nWrinkle]->IsTexture() &&
+		( info.m_nStretch != -1 ) && params[info.m_nStretch]->IsTexture();
+	bool bHasBumpWrinkle = bHasBump &&
+		( info.m_nNormalWrinkle != -1 ) && params[info.m_nNormalWrinkle]->IsTexture() &&
+		( info.m_nNormalStretch != -1 ) && params[info.m_nNormalStretch]->IsTexture();
+	int nDetailBlendMode = ( info.m_nDetailTextureCombineMode == -1 ) ? 0 : params[info.m_nDetailTextureCombineMode]->GetIntValue();
+
+	constexpr static float s_flFourZeroes[4] = { 0, 0, 0, 0 };
+	const float *flCharacterStatusFx = info.m_nCharacterStatusFx == -1 ? s_flFourZeroes : params[info.m_nCharacterStatusFx]->GetVecValue();
+	const float *flCharacterTeamColor = info.m_nCharacterTeamColor == -1 ? s_flFourZeroes : params[info.m_nCharacterTeamColor]->GetVecValue();
+	if ( !g_pHardwareConfig->HasFastVertexTextures() && flCharacterTeamColor[3] )
+	{
+		bHasRimLight = false;
+	}
 
 	if ( pShader->IsSnapshotting() )
 	{
-		int nDetailBlendMode = ( info.m_nDetailTextureCombineMode == -1 ) ? 0 : params[info.m_nDetailTextureCombineMode]->GetIntValue();
 		bool bHasVertexColor = IS_FLAG_SET( MATERIAL_VAR_VERTEXCOLOR );
 		bool bHasVertexAlpha = IS_FLAG_SET( MATERIAL_VAR_VERTEXALPHA );
-		bool bHasBaseTextureWrinkle = ( info.m_nBaseTexture != -1 ) && params[info.m_nBaseTexture]->IsTexture() &&
-			( info.m_nWrinkle != -1 ) && params[info.m_nWrinkle]->IsTexture() &&
-			( info.m_nStretch != -1 ) && params[info.m_nStretch]->IsTexture();
-		bool bHasBumpWrinkle = ( info.m_nBumpmap != -1 ) && params[info.m_nBumpmap]->IsTexture() &&
-			( info.m_nNormalWrinkle != -1 ) && params[info.m_nNormalWrinkle]->IsTexture() &&
-			( info.m_nNormalStretch != -1 ) && params[info.m_nNormalStretch]->IsTexture();
-		bool bHasRimLight = r_rimlight.GetBool() && ( info.m_nRimLight != -1 ) && ( params[info.m_nRimLight]->GetIntValue() != 0 );
 
 		// look at color and alphamod stuff.
 		// Unlit generic never uses the flashlight
@@ -312,14 +330,11 @@ void DrawCharacter_DX9( CBaseVSShader *pShader, IMaterialVar **params, IShaderDy
 		pShaderShadow->EnableTexture( SHADER_SAMPLER0, true );		// Base (albedo) map
 		pShaderShadow->EnableSRGBRead( SHADER_SAMPLER0, true );
 
-		if ( bHasBaseTextureWrinkle )
-		{
-			pShaderShadow->EnableTexture( SHADER_SAMPLER9, true );	// Base (albedo) compression map
-			pShaderShadow->EnableSRGBRead( SHADER_SAMPLER9, true );
+		pShaderShadow->EnableTexture( SHADER_SAMPLER9, true );	// Base (albedo) compression map OR fire status effect
+		pShaderShadow->EnableSRGBRead( SHADER_SAMPLER9, true );
 
-			pShaderShadow->EnableTexture( SHADER_SAMPLER10, true );	// Base (albedo) stretch map
-			pShaderShadow->EnableSRGBRead( SHADER_SAMPLER10, true );
-		}
+		pShaderShadow->EnableTexture( SHADER_SAMPLER10, true );	// Base (albedo) stretch map OR ice status effect
+		pShaderShadow->EnableSRGBRead( SHADER_SAMPLER10, true );
 
 		if ( ( info.m_nDiffuseWarpTexture != -1 ) && params[info.m_nDiffuseWarpTexture]->IsTexture() )
 		{
@@ -348,11 +363,11 @@ void DrawCharacter_DX9( CBaseVSShader *pShader, IMaterialVar **params, IShaderDy
 		userDataSize = 4; // tangent S
 		pShaderShadow->EnableTexture( SHADER_SAMPLER5, true );		// Normalizing cube map
 
+		pShaderShadow->EnableTexture( SHADER_SAMPLER11, true );	// Normal compression map OR shock status effect
+		pShaderShadow->EnableSRGBRead( SHADER_SAMPLER11, false );
+
 		if ( bHasBumpWrinkle || bHasBaseTextureWrinkle )
 		{
-			pShaderShadow->EnableTexture( SHADER_SAMPLER11, true );	// Normal compression map
-			pShaderShadow->EnableSRGBRead( SHADER_SAMPLER11, false );
-
 			pShaderShadow->EnableTexture( SHADER_SAMPLER12, true );	// Normal stretch map
 			pShaderShadow->EnableSRGBRead( SHADER_SAMPLER12, false );
 		}
@@ -424,28 +439,20 @@ void DrawCharacter_DX9( CBaseVSShader *pShader, IMaterialVar **params, IShaderDy
 			SET_STATIC_PIXEL_SHADER_COMBO( SELFILLUMFRESNEL, IS_FLAG_SET( MATERIAL_VAR_SELFILLUM ) && ( info.m_nSelfIllumFresnel != -1 ) && ( params[info.m_nSelfIllumFresnel]->GetIntValue() != 0 ) && !bHasFlashlight );
 			SET_STATIC_PIXEL_SHADER_COMBO( LIGHTWARPTEXTURE, ( info.m_nDiffuseWarpTexture != -1 ) && params[info.m_nDiffuseWarpTexture]->IsTexture() );
 			SET_STATIC_PIXEL_SHADER_COMBO( PHONGWARPTEXTURE, ( info.m_nPhongWarpTexture != -1 ) && params[info.m_nPhongWarpTexture]->IsTexture() );
-			SET_STATIC_PIXEL_SHADER_COMBO( WRINKLEMAP, bHasBaseTextureWrinkle );
-			SET_STATIC_PIXEL_SHADER_COMBO( DETAILTEXTURE, ( info.m_nDetail != -1 ) && params[info.m_nDetail]->IsTexture() );
-			SET_STATIC_PIXEL_SHADER_COMBO( DETAIL_BLEND_MODE, nDetailBlendMode );
-			SET_STATIC_PIXEL_SHADER_COMBO( RIMLIGHT, bHasRimLight );
 			SET_STATIC_PIXEL_SHADER_COMBO( CUBEMAP, bHasEnvmap );
 			SET_STATIC_PIXEL_SHADER_COMBO( FLASHLIGHTDEPTHFILTERMODE, nShadowFilterMode );
 			SET_STATIC_PIXEL_SHADER_COMBO( WORLD_NORMAL, 0 );
 			SET_STATIC_PIXEL_SHADER_COMBO( PHONG_HALFLAMBERT, bPhongHalfLambert );
-			SET_STATIC_PIXEL_SHADER_COMBO( STATUSEFFECT, 0 ); // TODO
-			SET_STATIC_PIXEL_SHADER_COMBO( TEAMGLOW, 0 ); // TODO
 			SET_STATIC_PIXEL_SHADER( character_ps20b );
 		}
 		else
 		{
 			// The vertex shader uses the vertex id stream
 			SET_FLAGS2( MATERIAL_VAR2_USES_VERTEXID );
-			SET_FLAGS2( MATERIAL_VAR2_SUPPORTS_TESSELLATION );
 
 			DECLARE_STATIC_VERTEX_SHADER( character_vs30 );
 			SET_STATIC_VERTEX_SHADER_COMBO( WORLD_NORMAL, bWorldNormal );
 			SET_STATIC_VERTEX_SHADER_COMBO( DECAL, bIsDecal );
-			SET_STATIC_VERTEX_SHADER_COMBO( STATUSEFFECT, 0 ); // TODO
 			SET_STATIC_VERTEX_SHADER( character_vs30 );
 
 			DECLARE_STATIC_PIXEL_SHADER( character_ps30 );
@@ -454,7 +461,6 @@ void DrawCharacter_DX9( CBaseVSShader *pShader, IMaterialVar **params, IShaderDy
 			SET_STATIC_PIXEL_SHADER_COMBO( SELFILLUMFRESNEL, IS_FLAG_SET( MATERIAL_VAR_SELFILLUM ) && ( info.m_nSelfIllumFresnel != -1 ) && ( params[info.m_nSelfIllumFresnel]->GetIntValue() != 0 ) && !bHasFlashlight );
 			SET_STATIC_PIXEL_SHADER_COMBO( LIGHTWARPTEXTURE, ( info.m_nDiffuseWarpTexture != -1 ) && params[info.m_nDiffuseWarpTexture]->IsTexture() );
 			SET_STATIC_PIXEL_SHADER_COMBO( PHONGWARPTEXTURE, ( info.m_nPhongWarpTexture != -1 ) && params[info.m_nPhongWarpTexture]->IsTexture() );
-			SET_STATIC_PIXEL_SHADER_COMBO( WRINKLEMAP, bHasBaseTextureWrinkle );
 			SET_STATIC_PIXEL_SHADER_COMBO( DETAILTEXTURE, ( info.m_nDetail != -1 ) && params[info.m_nDetail]->IsTexture() );
 			SET_STATIC_PIXEL_SHADER_COMBO( DETAIL_BLEND_MODE, nDetailBlendMode );
 			SET_STATIC_PIXEL_SHADER_COMBO( RIMLIGHT, bHasRimLight );
@@ -462,8 +468,6 @@ void DrawCharacter_DX9( CBaseVSShader *pShader, IMaterialVar **params, IShaderDy
 			SET_STATIC_PIXEL_SHADER_COMBO( FLASHLIGHTDEPTHFILTERMODE, nShadowFilterMode );
 			SET_STATIC_PIXEL_SHADER_COMBO( WORLD_NORMAL, bWorldNormal );
 			SET_STATIC_PIXEL_SHADER_COMBO( PHONG_HALFLAMBERT, bPhongHalfLambert );
-			SET_STATIC_PIXEL_SHADER_COMBO( STATUSEFFECT, 0 ); // TODO
-			SET_STATIC_PIXEL_SHADER_COMBO( TEAMGLOW, 0 ); // TODO
 			SET_STATIC_PIXEL_SHADER( character_ps30 );
 		}
 
@@ -497,7 +501,7 @@ void DrawCharacter_DX9( CBaseVSShader *pShader, IMaterialVar **params, IShaderDy
 	}
 	else // not snapshotting -- begin dynamic state
 	{
-		// Deal with semisatic
+		// Deal with semistatic
 		if ( ( !pContextData ) || ( pContextData->m_bMaterialVarsChanged ) )
 		{
 			if ( !pContextData )								// make sure allocated
@@ -509,22 +513,14 @@ void DrawCharacter_DX9( CBaseVSShader *pShader, IMaterialVar **params, IShaderDy
 			pContextData->m_SemiStaticCmdsOut.Reset();
 			pContextData->m_bMaterialVarsChanged = false;
 
-			bool bHasBump = ( info.m_nBumpmap != -1 ) && params[info.m_nBumpmap]->IsTexture();
 			bool bLightingOnly = mat_fullbright.GetInt() == 2 && !IS_FLAG_SET( MATERIAL_VAR_NO_DEBUG_OVERRIDE );
 			bool bHasSelfIllumMask = IS_FLAG_SET( MATERIAL_VAR_SELFILLUM ) && ( info.m_nSelfIllumMask != -1 ) && params[info.m_nSelfIllumMask]->IsTexture();
 			float fBlendFactor = ( info.m_nDetailTextureBlendFactor == -1 ) ? 1 : params[info.m_nDetailTextureBlendFactor]->GetFloatValue();
 			bool bHasSpecularExponentTexture = ( info.m_nPhongExponentTexture != -1 ) && params[info.m_nPhongExponentTexture]->IsTexture();
 			bool bHasPhongTintMap = bHasSpecularExponentTexture && ( info.m_nPhongAlbedoTint != -1 ) && ( params[info.m_nPhongAlbedoTint]->GetIntValue() != 0 );
 			bool bHasNormalMapAlphaEnvmapMask = IS_FLAG_SET( MATERIAL_VAR_NORMALMAPALPHAENVMAPMASK );
-			bool bHasRimLight = r_rimlight.GetBool() && ( info.m_nRimLight != -1 ) && ( params[info.m_nRimLight]->GetIntValue() != 0 );
 			bool bHasRimMaskMap = bHasSpecularExponentTexture && bHasRimLight &&
 				( info.m_nRimMask != -1 ) && ( params[info.m_nRimMask]->GetIntValue() != 0 );
-			bool bHasBaseTextureWrinkle = ( info.m_nBaseTexture != -1 ) && params[info.m_nBaseTexture]->IsTexture() &&
-				( info.m_nWrinkle != -1 ) && params[info.m_nWrinkle]->IsTexture() &&
-				( info.m_nStretch != -1 ) && params[info.m_nStretch]->IsTexture();
-			bool bHasBumpWrinkle = bHasBump &&
-				( info.m_nNormalWrinkle != -1 ) && params[info.m_nNormalWrinkle]->IsTexture() &&
-				( info.m_nNormalStretch != -1 ) && params[info.m_nNormalStretch]->IsTexture();
 
 			if ( ( info.m_nBaseTexture != -1 ) && params[info.m_nBaseTexture]->IsTexture() )
 			{
@@ -906,12 +902,39 @@ void DrawCharacter_DX9( CBaseVSShader *pShader, IMaterialVar **params, IShaderDy
 			pShaderAPI->GetDX9LightState( &lightState );
 		}
 
+		int iCharacterStatusEffectIndex = 0;
+		if ( flCharacterStatusFx[3] )
+			iCharacterStatusEffectIndex = 4;
+		else if ( flCharacterStatusFx[2] )
+			iCharacterStatusEffectIndex = 3;
+		else if ( flCharacterStatusFx[1] )
+			iCharacterStatusEffectIndex = 2;
+		else if ( flCharacterStatusFx[0] )
+			iCharacterStatusEffectIndex = 1;
+
+		float flTime = IS_PARAM_DEFINED( info.m_nTime ) && params[info.m_nTime]->GetFloatValue() > 0.0f ? params[info.m_nTime]->GetFloatValue() : pShaderAPI->CurrentTime();
+
+		if ( iCharacterStatusEffectIndex )
+		{
+			ITexture *pBurning = params[info.m_nCharacterBurningLayer]->GetTextureValue();
+			ITexture *pFrozen = params[info.m_nCharacterFrozenLayer]->GetTextureValue();
+			ITexture *pShock = params[info.m_nCharacterShockLayer]->GetTextureValue();
+			const float flFrameRate = 30.0f;
+			// this wraps around after 2 years but if a mission takes more than two years from level load to complete there are other problems first
+			int iRawFrame = ( int )( flTime * flFrameRate );
+			DynamicCmdsOut.BindTexture( pShader, SHADER_SAMPLER9, pBurning, iRawFrame % pBurning->GetNumAnimationFrames() );
+			DynamicCmdsOut.BindTexture( pShader, SHADER_SAMPLER10, pFrozen, iRawFrame % pFrozen->GetNumAnimationFrames() );
+			DynamicCmdsOut.BindTexture( pShader, SHADER_SAMPLER11, pShock, iRawFrame % pShock->GetNumAnimationFrames() );
+		}
+
+		if ( flCharacterTeamColor[3] )
+			bHasBaseTextureWrinkle = false;
+
 		if ( !g_pHardwareConfig->HasFastVertexTextures() )
 		{
 			DECLARE_DYNAMIC_VERTEX_SHADER( character_vs20 );
 			SET_DYNAMIC_VERTEX_SHADER_COMBO( SKINNING, numBones > 0 );
 			SET_DYNAMIC_VERTEX_SHADER_COMBO( COMPRESSED_VERTS, ( int )vertexCompression );
-			SET_DYNAMIC_VERTEX_SHADER_COMBO( TESSELLATION, 0 );
 			SET_DYNAMIC_VERTEX_SHADER( character_vs20 );
 
 			DECLARE_DYNAMIC_PIXEL_SHADER( character_ps20b );
@@ -919,7 +942,22 @@ void DrawCharacter_DX9( CBaseVSShader *pShader, IMaterialVar **params, IShaderDy
 			SET_DYNAMIC_PIXEL_SHADER_COMBO( WRITEWATERFOGTODESTALPHA, bWriteWaterFogToAlpha );
 			SET_DYNAMIC_PIXEL_SHADER_COMBO( WRITE_DEPTH_TO_DESTALPHA, bWriteDepthToAlpha );
 			SET_DYNAMIC_PIXEL_SHADER_COMBO( FLASHLIGHTSHADOWS, bFlashlightShadows );
+			SET_DYNAMIC_PIXEL_SHADER_COMBO( DETAILTEXTURE, ( iCharacterStatusEffectIndex == 0 ) && ( info.m_nDetail != -1 ) && params[info.m_nDetail]->IsTexture() );
+			SET_DYNAMIC_PIXEL_SHADER_COMBO( DETAIL_BLEND_MODE, nDetailBlendMode );
+			SET_DYNAMIC_PIXEL_SHADER_COMBO( WRINKLEMAP, bHasBaseTextureWrinkle );
+			SET_DYNAMIC_PIXEL_SHADER_COMBO( RIMLIGHT, bHasRimLight );
+			SET_DYNAMIC_PIXEL_SHADER_COMBO( STATUSEFFECT, iCharacterStatusEffectIndex );
+			SET_DYNAMIC_PIXEL_SHADER_COMBO( TEAMGLOW, flCharacterTeamColor[3] ? 1 : 0 );
 			SET_DYNAMIC_PIXEL_SHADER( character_ps20b );
+
+			if ( flCharacterTeamColor[3] )
+			{
+				DynamicCmdsOut.SetPixelShaderConstant( PSREG_SPEC_RIM_PARAMS, info.m_nCharacterTeamColor );
+			}
+			if ( iCharacterStatusEffectIndex != 0 )
+			{
+				DynamicCmdsOut.SetPixelShaderConstant_W( PSREG_SELFILLUMTINT, info.m_nSelfIllumTint, flCharacterStatusFx[iCharacterStatusEffectIndex - 1] );
+			}
 		}
 		else
 		{
@@ -938,36 +976,10 @@ void DrawCharacter_DX9( CBaseVSShader *pShader, IMaterialVar **params, IShaderDy
 				pShaderAPI->SetVertexShaderConstant( VERTEX_SHADER_SHADER_SPECIFIC_CONST_6, vEyeDir );
 			}
 
-			TessellationMode_t nTessellationMode = pShaderAPI->GetTessellationMode();
-			if ( nTessellationMode != TESSELLATION_MODE_DISABLED )
-			{
-				pShaderAPI->BindStandardVertexTexture( SHADER_VERTEXTEXTURE_SAMPLER1, TEXTURE_SUBDIVISION_PATCHES );
-
-
-
-				float vSubDDimensions[4] = { 1.0f / pShaderAPI->GetSubDHeight(),
-											 bHasDisplacement && mat_displacementmap.GetBool() ? 1.0f : 0.0f,
-											 bHasDisplacementWrinkles && mat_displacementmap.GetBool() ? 1.0f : 0.0f, 0.0f };
-
-				pShaderAPI->SetVertexShaderConstant( VERTEX_SHADER_SHADER_SPECIFIC_CONST_7, vSubDDimensions );
-				if ( bHasDisplacement )
-				{
-					pShader->BindVertexTexture( SHADER_VERTEXTEXTURE_SAMPLER2, info.m_nDisplacementMap );
-				}
-				else
-				{
-					pShaderAPI->BindStandardVertexTexture( SHADER_VERTEXTEXTURE_SAMPLER2, TEXTURE_BLACK );
-				}
-
-				// Currently, tessellation is mutually exclusive with any kind of GPU-side skinning, morphing or vertex compression
-				Assert( !pShaderAPI->IsHWMorphingEnabled() );
-				Assert( numBones == 0 );
-				Assert( vertexCompression == 0 );
-			}
 			DECLARE_DYNAMIC_VERTEX_SHADER( character_vs30 );
-			SET_DYNAMIC_VERTEX_SHADER_COMBO( SKINNING, ( numBones > 0 ) && ( nTessellationMode == TESSELLATION_MODE_DISABLED ) );
-			SET_DYNAMIC_VERTEX_SHADER_COMBO( COMPRESSED_VERTS, ( int )vertexCompression && ( nTessellationMode == TESSELLATION_MODE_DISABLED ) );
-			SET_DYNAMIC_VERTEX_SHADER_COMBO( TESSELLATION, nTessellationMode );
+			SET_DYNAMIC_VERTEX_SHADER_COMBO( SKINNING, ( numBones > 0 ) );
+			SET_DYNAMIC_VERTEX_SHADER_COMBO( COMPRESSED_VERTS, ( int )vertexCompression );
+			SET_DYNAMIC_VERTEX_SHADER_COMBO( STATUSEFFECT, iCharacterStatusEffectIndex ? 1 : 0 );
 			SET_DYNAMIC_VERTEX_SHADER( character_vs30 );
 
 			DECLARE_DYNAMIC_PIXEL_SHADER( character_ps30 );
@@ -976,7 +988,13 @@ void DrawCharacter_DX9( CBaseVSShader *pShader, IMaterialVar **params, IShaderDy
 			SET_DYNAMIC_PIXEL_SHADER_COMBO( WRITE_DEPTH_TO_DESTALPHA, bWriteDepthToAlpha );
 			SET_DYNAMIC_PIXEL_SHADER_COMBO( FLASHLIGHTSHADOWS, nLightingPreviewMode ? false : bFlashlightShadows );
 			SET_DYNAMIC_PIXEL_SHADER_COMBO( UBERLIGHT, bUberlight );
+			SET_DYNAMIC_PIXEL_SHADER_COMBO( WRINKLEMAP, bHasBaseTextureWrinkle );
+			SET_DYNAMIC_PIXEL_SHADER_COMBO( STATUSEFFECT, iCharacterStatusEffectIndex ? 1 : 0 );
+			SET_DYNAMIC_PIXEL_SHADER_COMBO( TEAMGLOW, flCharacterTeamColor[3] ? 1 : 0 );
 			SET_DYNAMIC_PIXEL_SHADER( character_ps30 );
+
+			DynamicCmdsOut.SetPixelShaderConstant( PSREG_RIMPARAMS, info.m_nCharacterTeamColor );
+			DynamicCmdsOut.SetPixelShaderConstant( PSREG_FLESH_LIGHTING_PARAMS, info.m_nCharacterStatusFx );
 
 			bool bUnusedTexCoords[3] = { false, false, !pShaderAPI->IsHWMorphingEnabled() || !bIsDecal };
 			pShaderAPI->MarkUnusedVertexFields( 0, 3, bUnusedTexCoords );
@@ -984,6 +1002,12 @@ void DrawCharacter_DX9( CBaseVSShader *pShader, IMaterialVar **params, IShaderDy
 			// Set constant to enable translation of VPOS to render target coordinates in ps_3_0
 			pShaderAPI->SetScreenSizeForVPOS();
 		}
+
+		float flGlobals[] =
+		{
+			flTime,
+		};
+		DynamicCmdsOut.SetVertexShaderConstant( VERTEX_SHADER_SHADER_SPECIFIC_CONST_7, flGlobals, 1 );
 
 		DynamicCmdsOut.End();
 		pShaderAPI->ExecuteCommandBuffer( DynamicCmdsOut.Base() );

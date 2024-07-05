@@ -502,7 +502,7 @@ protected:
 	//  Relationships
 	// ---------------
 	CUtlVector<Relationship_t>		m_Relationship;						// Array of relationships
-	int								m_nFaction;
+	CNetworkVar( int, m_nFaction );
 
 	// Used by trigger_fog to manage when the character is touching multiple fog triggers simultaneously.
 	// The one at the HEAD of the list is always the current fog trigger for the character.

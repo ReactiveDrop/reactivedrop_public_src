@@ -204,7 +204,7 @@ IMPLEMENT_SERVERCLASS_ST(CBaseCombatCharacter, DT_BaseCombatCharacter)
 	SendPropDataTable( "bcc_localdata", 0, &REFERENCE_SEND_TABLE(DT_BCCLocalPlayerExclusive), SendProxy_SendBaseCombatCharacterLocalDataTable ),
 
 	SendPropEHandle( SENDINFO( m_hActiveWeapon ) ),
-
+	SendPropInt( SENDINFO( m_nFaction ), NumBitsForCount( NUM_ASW_FACTIONS ) ),
 
 END_SEND_TABLE()
 

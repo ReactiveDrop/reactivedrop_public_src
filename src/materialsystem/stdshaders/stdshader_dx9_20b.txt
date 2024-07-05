@@ -180,8 +180,8 @@
 //prototype_ps20b.fxc
 //prototype_vs20.fxc
 
-Refract_ps2x.fxc
-Refract_vs20.fxc
+//Refract_ps2x.fxc
+//Refract_vs20.fxc
 
 //rendertargetblit_ps2x.fxc
 //rendertargetblit_vs20.fxc
