@@ -648,7 +648,7 @@ static CASW_EquipItem s_ExtraEquips[ASW_NUM_EQUIP_EXTRA] =
 		&asw_ammo_count_freeze_grenades, &asw_ammo_count_freeze_grenades,
 		NULL, NULL,
 		0, 0, 2.2f, 1, MARINE_CLASS_UNDEFINED,
-		false, true, false, ASW_OFFHAND_THROW,
+		false, false, false, ASW_OFFHAND_THROW,
 		0, 0,
 	},
 	{
