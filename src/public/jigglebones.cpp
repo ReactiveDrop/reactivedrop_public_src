@@ -103,7 +103,7 @@ JiggleData *CJiggleBones::GetJiggleData( int bone, float currenttime, const Vect
  * Do spring physics calculations and update "jiggle bone" matrix
  * (Michael Booth, Turtle Rock Studios)
  */
-void CJiggleBones::BuildJiggleTransformations( int boneIndex, float currenttime, const mstudiojigglebone_t *jiggleInfo, const matrix3x4_t &goalMX, matrix3x4_t &boneMX, float speedScale )
+void CJiggleBones::BuildJiggleTransformations( int boneIndex, float currenttime, const mstudiojigglebone_t *jiggleInfo, const matrix3x4_t &goalMX, matrix3x4_t &boneMX, float rangeScale )
 {
 	Vector goalBasePosition;
 	MatrixPosition( goalMX, goalBasePosition );
@@ -173,11 +173,8 @@ void CJiggleBones::BuildJiggleTransformations( int boneIndex, float currenttime,
 	// if framerate gets very low, jiggle will run in slow motion
 	const float thirtyHZ = 0.0333f;
 	const float thousandHZ = 0.001f;
-	float deltaT = clamp( ( currenttime - data->lastUpdate ) * speedScale, thousandHZ, thirtyHZ);
+	float deltaT = clamp( currenttime - data->lastUpdate, thousandHZ, thirtyHZ );
 	data->lastUpdate = currenttime;
-
-	if ( speedScale == 0.0f )
-		return;
 
 	//
 	// Bone tip flex
@@ -482,6 +479,10 @@ void CJiggleBones::BuildJiggleTransformations( int boneIndex, float currenttime,
 			data->tipVel -= DotProduct( data->tipVel, forward ) * forward;
 		}
 
+		// reduce range
+		forward = VectorLerp( goalForward, forward, rangeScale );
+		forward.NormalizeInPlace();
+
 		//
 		// Build bone matrix to align along current tip direction
 		//
@@ -597,7 +598,7 @@ void CJiggleBones::BuildJiggleTransformations( int boneIndex, float currenttime,
 		}
 
 		// update bone position
-		MatrixSetColumn( data->basePos, 3, boneMX );
+		MatrixSetColumn( VectorLerp( goalBasePosition, data->basePos, rangeScale ), 3, boneMX );
 	}
 	else if (!(jiggleInfo->flags & (JIGGLE_IS_FLEXIBLE | JIGGLE_IS_RIGID)))
 	{
