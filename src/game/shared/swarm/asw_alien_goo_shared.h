@@ -47,11 +47,11 @@ public:
 	CASW_Alien_Goo();
 	virtual ~CASW_Alien_Goo();
 
+	Class_T		Classify( void ) { return ( Class_T )CLASS_ASW_ALIEN_GOO; }
 #ifndef CLIENT_DLL
 	DECLARE_DATADESC();
 	void Precache();
 	void Spawn();
-	Class_T		Classify( void ) { return (Class_T) CLASS_ASW_ALIEN_GOO; }
 	
 	virtual int OnTakeDamage( const CTakeDamageInfo &info );
 	virtual void Ignite( float flFlameLifetime, bool bNPCOnly = true, float flSize = 0.0f, bool bCalledByLevelDesigner = false );

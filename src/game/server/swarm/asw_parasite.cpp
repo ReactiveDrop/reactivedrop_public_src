@@ -101,6 +101,9 @@ void CASW_Parasite::Spawn( void )
 
 	BaseClass::Spawn();
 
+	// For some reason, collision or hitboxes or something breaks if we don't redundantly set the model.
+	SetModel( STRING( GetModelName() ) );
+
 	if (FClassnameIs(this, "asw_parasite_defanged"))
 	{
 		m_bDefanged = true;

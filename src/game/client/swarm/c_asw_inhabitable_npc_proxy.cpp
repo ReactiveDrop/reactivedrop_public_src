@@ -10,7 +10,9 @@
 #include "c_asw_physics_prop_statue.h"
 #include "c_asw_simple_alien.h"
 #include "c_asw_weapon.h"
+#include "c_gib.h"
 #include "asw_deathmatch_mode.h"
+#include "asw_alien_goo_shared.h"
 #include "asw_gamerules.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -69,9 +71,11 @@ private:
 	void OnBindNull();
 	void OnBindCharacter( C_ASW_Inhabitable_NPC *pNPC );
 	void OnBindEgg( C_ASW_Egg *pEgg );
+	void OnBindBiomass( CASW_Alien_Goo *pBiomass );
 	void OnBindSimpleAlien( C_ASW_Simple_Alien *pAlien );
 	void OnBindRagdoll( C_ClientRagdoll *pRagdoll );
-	void OnBindGib( C_ASW_Mesh_Emitter *pGib );
+	void OnBindEmitter( C_ASW_Mesh_Emitter *pEmitter );
+	void OnBindGib( C_Gib *pGib );
 	void OnBindStatue( C_ASWStatueProp *pStatue );
 	void OnBindWeapon( C_ASW_Weapon *pWeapon );
 
@@ -155,6 +159,10 @@ void CASW_Character_Proxy::OnBind( C_BaseEntity *pEnt )
 	{
 		OnBindEgg( assert_cast< C_ASW_Egg * >( pEnt ) );
 	}
+	else if ( pEnt->Classify() == CLASS_ASW_ALIEN_GOO )
+	{
+		OnBindBiomass( assert_cast< CASW_Alien_Goo * >( pEnt ) );
+	}
 	else if ( C_ASW_Simple_Alien *pAlien = dynamic_cast< C_ASW_Simple_Alien * >( pEnt ) )
 	{
 		OnBindSimpleAlien( pAlien );
@@ -163,7 +171,11 @@ void CASW_Character_Proxy::OnBind( C_BaseEntity *pEnt )
 	{
 		OnBindRagdoll( pRagdoll );
 	}
-	else if ( C_ASW_Mesh_Emitter *pGib = dynamic_cast< C_ASW_Mesh_Emitter * >( pEnt ) )
+	else if ( C_ASW_Mesh_Emitter *pEmitter = dynamic_cast< C_ASW_Mesh_Emitter * >( pEnt ) )
+	{
+		OnBindEmitter( pEmitter );
+	}
+	else if ( C_Gib *pGib = dynamic_cast< C_Gib * >( pEnt ) )
 	{
 		OnBindGib( pGib );
 	}
@@ -346,12 +358,12 @@ void CASW_Character_Proxy::OnBindCharacter( C_ASW_Inhabitable_NPC *pNPC )
 void CASW_Character_Proxy::OnBindEgg( C_ASW_Egg *pEgg )
 {
 	bool bEnemy = C_ASW_Marine::GetViewMarine() != NULL;
-	if ( pEgg->GetHealth() > 0.0f && bEnemy && rd_highlight_enemies.GetFloat() > 0.0f )
+	if ( bEnemy && rd_highlight_enemies.GetFloat() > 0.0f )
 	{
 		Vector vecEnemyColor = rd_highlight_enemies_color.GetColorAsVector();
 		m_pTeamColor->SetVecValue( VectorExpand( vecEnemyColor ), clamp( rd_highlight_enemies.GetFloat(), 0.0f, 1.0f ) );
 	}
-	else if ( pEgg->GetHealth() > 0.0f && !bEnemy && rd_highlight_allies.GetFloat() > 0.0f )
+	else if ( !bEnemy && rd_highlight_allies.GetFloat() > 0.0f )
 	{
 		Vector vecAllyColor = rd_highlight_allies_color.GetColorAsVector();
 		m_pTeamColor->SetVecValue( VectorExpand( vecAllyColor ), clamp( rd_highlight_allies.GetFloat(), 0.0f, 1.0f ) );
@@ -363,6 +375,31 @@ void CASW_Character_Proxy::OnBindEgg( C_ASW_Egg *pEgg )
 
 	float flFire = pEgg->m_bOnFire ? 1.0f : 0.0f;
 	float flIce = pEgg->GetFrozenAmount();
+	float flShock = 0.0f;
+	float flNightVision = bEnemy ? GetNightVisionAmount() : 0.0f;
+	m_pStatusFx->SetVecValue( flFire, flIce, flShock, flNightVision );
+}
+
+void CASW_Character_Proxy::OnBindBiomass( CASW_Alien_Goo *pBiomass )
+{
+	bool bEnemy = C_ASW_Marine::GetViewMarine() != NULL;
+	if ( pBiomass->GetHealth() > 0.0f && bEnemy && rd_highlight_enemies.GetFloat() > 0.0f )
+	{
+		Vector vecEnemyColor = rd_highlight_enemies_color.GetColorAsVector();
+		m_pTeamColor->SetVecValue( VectorExpand( vecEnemyColor ), clamp( rd_highlight_enemies.GetFloat(), 0.0f, 1.0f ) );
+	}
+	else if ( pBiomass->GetHealth() > 0.0f && !bEnemy && rd_highlight_allies.GetFloat() > 0.0f )
+	{
+		Vector vecAllyColor = rd_highlight_allies_color.GetColorAsVector();
+		m_pTeamColor->SetVecValue( VectorExpand( vecAllyColor ), clamp( rd_highlight_allies.GetFloat(), 0.0f, 1.0f ) );
+	}
+	else
+	{
+		m_pTeamColor->SetVecValue( 0, 0, 0, 0 );
+	}
+
+	float flFire = pBiomass->m_bOnFire ? 1.0f : 0.0f;
+	float flIce = 0.0f;
 	float flShock = 0.0f;
 	float flNightVision = bEnemy ? GetNightVisionAmount() : 0.0f;
 	m_pStatusFx->SetVecValue( flFire, flIce, flShock, flNightVision );
@@ -406,12 +443,23 @@ void CASW_Character_Proxy::OnBindRagdoll( C_ClientRagdoll *pRagdoll )
 	m_pStatusFx->SetVecValue( flFire, flIce, flShock, flNightVision );
 }
 
-void CASW_Character_Proxy::OnBindGib( C_ASW_Mesh_Emitter *pGib )
+void CASW_Character_Proxy::OnBindEmitter( C_ASW_Mesh_Emitter *pEmitter )
 {
 	m_pTeamColor->SetVecValue( 0, 0, 0, 0 );
 
 	float flFire = 0.0f;
-	float flIce = pGib->m_bFrozen ? 1.0f : 0.0f;
+	float flIce = pEmitter->m_bFrozen ? 1.0f : 0.0f;
+	float flShock = 0.0f;
+	float flNightVision = 0.0f;
+	m_pStatusFx->SetVecValue( flFire, flIce, flShock, flNightVision );
+}
+
+void CASW_Character_Proxy::OnBindGib( C_Gib *pGib )
+{
+	m_pTeamColor->SetVecValue( 0, 0, 0, 0 );
+
+	float flFire = pGib->IsOnFire();
+	float flIce = 0.0f;
 	float flShock = 0.0f;
 	float flNightVision = 0.0f;
 	m_pStatusFx->SetVecValue( flFire, flIce, flShock, flNightVision );
