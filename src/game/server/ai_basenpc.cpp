@@ -4040,6 +4040,13 @@ void CAI_BaseNPC::NPCThink( void )
 		CheckPhysicsContacts();
 	}
 
+#ifdef INFESTED_DLL
+	if ( IsMovementFrozen() && GetGroundEntity() )
+	{
+		GetMotor()->MoveStop();
+	}
+#endif
+
 	Assert( !(m_NPCState == NPC_STATE_DEAD && m_lifeState == LIFE_ALIVE) );
 
 	//---------------------------------

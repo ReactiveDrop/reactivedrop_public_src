@@ -4030,6 +4030,8 @@ void CBaseAnimating::Freeze( float flFreezeAmount, CBaseEntity *pFreezer, Ray_t 
 		}
 
 		m_flFrozen = MIN( fMaxFrozen, m_flFrozen + flFreezeAmount );
+		m_flAttackFrozen = m_flFrozen;
+		m_flMovementFrozen = m_flFrozen;
 	}
 
 	pFreezing->SetFrozen( m_flFrozen );
