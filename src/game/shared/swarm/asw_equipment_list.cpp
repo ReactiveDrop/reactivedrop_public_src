@@ -254,7 +254,7 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		NULL, NULL,
 		1, 0.25f, 2.2f, 1, MARINE_CLASS_UNDEFINED,
 		false, false, false, ASW_OFFHAND_USE_IMMEDIATELY,
-		0, 0,
+		1, 0,
 	},
 	{
 		ASW_EQUIP_RAILGUN, WEAPON_NAME( railgun ),
