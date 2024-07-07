@@ -10162,6 +10162,17 @@ int CAlienSwarm::ApplyWeaponSelectionRules( int iEquipSlot, int iWeaponIndex )
 		}
 	}
 #endif
+	if ( !rd_weapons_show_hidden.GetBool() )
+	{
+		CASW_EquipItem *pItem = g_ASWEquipmentList.GetItemForSlot( iEquipSlot, iWeaponIndex );
+		if ( !pItem || !pItem->m_bSelectableInBriefing )
+		{
+			if ( iEquipSlot < ASW_INVENTORY_SLOT_EXTRA )
+				return GetAllowedWeaponId( iEquipSlot, iWeaponIndex, rd_weapons_regular_allowed, rd_weapons_regular_allowed_inverted );
+			else
+				return GetAllowedWeaponId( iEquipSlot, iWeaponIndex, rd_weapons_extra_allowed, rd_weapons_extra_allowed_inverted );
+		}
+	}
 
 	if ( V_stricmp( rd_weapons_regular_allowed.GetString(), "-1" ) && iEquipSlot < ASW_INVENTORY_SLOT_EXTRA )
 	{
