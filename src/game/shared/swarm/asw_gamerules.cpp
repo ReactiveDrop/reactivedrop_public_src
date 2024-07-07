@@ -10013,6 +10013,7 @@ void CAlienSwarm::ApplyChallenge()
 	if ( !V_strcmp( rd_challenge.GetString(), "0" ) )
 	{
 		// no challenge
+		EnforceWeaponSelectionRules();
 		return;
 	}
 
@@ -10025,6 +10026,7 @@ void CAlienSwarm::ApplyChallenge()
 	}
 
 	CheckChallengeConVars();
+	EnforceWeaponSelectionRules();
 
 	if ( !filesystem->FileExists( CFmtStr( "scripts/vscripts/challenge_%s.nut", rd_challenge.GetString() ), "GAME" ) )
 	{
