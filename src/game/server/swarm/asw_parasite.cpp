@@ -1279,7 +1279,7 @@ void CASW_Parasite::NPCThink()
 		else
 			s_fNextSpottedChatterTime = gpGlobals->curtime + 1.0f;
 	}
-	if ( m_bDefanged && m_fSuicideTime < gpGlobals->curtime && GetEnemy() == NULL )
+	if ( m_bDefanged && m_fSuicideTime != 0 && m_fSuicideTime < gpGlobals->curtime && GetEnemy() == NULL )
 	{
 		CTakeDamageInfo info( this, this, Vector( 0, 0, 0 ), GetAbsOrigin(), GetHealth() * 2, DMG_ACID );
 		TakeDamage( info );
