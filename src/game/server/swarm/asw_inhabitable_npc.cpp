@@ -755,7 +755,7 @@ void CASW_Inhabitable_NPC::ASW_Ignite( float flFlameLifetime, float flSize, CBas
 		{
 			// reactivedrop
 			if ( ASWBurning() )
-				ASWBurning()->ExtendBurning( this, flFlameLifetime );	// 2.5 dps, applied every 0.4 seconds
+				ASWBurning()->ExtendBurning( this, flFlameLifetime );	// ? dps, applied every 0.4 seconds
 			//
 			return;
 		}
@@ -763,7 +763,7 @@ void CASW_Inhabitable_NPC::ASW_Ignite( float flFlameLifetime, float flSize, CBas
 		AddFlag( FL_ONFIRE );
 		m_bOnFire = true;
 		if ( ASWBurning() )
-			ASWBurning()->BurnEntity( this, pAttacker, flFlameLifetime, 0.4f, 2.5f * 0.4f, pDamagingWeapon );	// 2.5 dps, applied every 0.4 seconds
+			ASWBurning()->BurnEntity( this, pAttacker, flFlameLifetime, 0.4f, ( GetHullType() == HULL_HUMAN ? 10.0f : 5.0f ) * 0.4f, pDamagingWeapon ); // ? dps, applied every 0.4 seconds
 
 		m_OnIgnite.FireOutput( this, this );
 	}
