@@ -112,6 +112,8 @@ ConVar rd_stuck_teleport_distance( "rd_stuck_teleport_distance", "256", FCVAR_CH
 static ConVar rd_notify_about_out_of_ammo( "rd_notify_about_out_of_ammo", "1", FCVAR_CHEAT, "Chatter and print a yellow message when marine is out of ammo" );
 static ConVar rd_gas_grenade_ff_dmg( "rd_gas_grenade_ff_dmg", "10", FCVAR_CHEAT, "Fixed friendly fire damage of gas grenade, marine to marine, done in asw_gas_grenade_damage_interval. " );
 extern ConVar rd_marine_ff_fist;
+extern ConVar rd_burning_interval;
+extern ConVar rd_burning_marine_damage;
 ConVar rd_marine_ff_fist_scale( "rd_marine_ff_fist_scale", "1", FCVAR_CHEAT, "Scale CLUB type damage done to marines (requires rd_ff_marine_fist)" );
 
 ConVar rd_server_marine_backpacks("rd_server_marine_backpacks", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Attach unactive weapon model to marine's back");
@@ -459,7 +461,8 @@ ConVar asw_marine_burn_time_easy( "asw_marine_burn_time_easy", "6", FCVAR_CHEAT,
 ConVar asw_marine_burn_time_normal( "asw_marine_burn_time_normal", "8", FCVAR_CHEAT, "Amount of time marine burns for when ignited on normal difficulty" );
 ConVar asw_marine_burn_time_hard( "asw_marine_burn_time_hard", "12", FCVAR_CHEAT, "Amount of time marine burns for when ignited on hard difficulty" );
 ConVar asw_marine_burn_time_insane( "asw_marine_burn_time_insane", "15", FCVAR_CHEAT, "Amount of time marine burns for when ignited on insane difficulty" );
-ConVar asw_marine_time_until_ignite( "asw_marine_time_until_ignite", "0.7f", FCVAR_CHEAT, "Amount of time before a marine ignites from taking repeated burn damage" );
+ConVar asw_marine_time_until_ignite( "asw_marine_time_until_ignite", "0.7", FCVAR_CHEAT, "Amount of time before a marine ignites from taking repeated burn damage" );
+ConVar asw_marine_time_until_ignite_hcff( "asw_marine_time_until_ignite_hcff", "0.2", FCVAR_CHEAT, "Amount of time before a marine ignites from taking repeated burn damage (hardcore ff)" );
 ConVar asw_mad_firing_break( "asw_mad_firing_break", "4", FCVAR_CHEAT, "Point at which the mad firing counter triggers the mad firing speech" );
 ConVar asw_mad_firing_decay( "asw_mad_firing_decay", "0.15", FCVAR_CHEAT, "Tick down rate of the mad firing counter" );
 ConVar asw_marine_special_idle_chatter_chance( "asw_marine_special_idle_chatter_chance", "0.25", FCVAR_CHEAT, "Chance of marine doing a special idle chatter" );
@@ -5032,7 +5035,7 @@ void CASW_Marine::ScriptIgnite( float flFlameLifetime )
 		return;
 
 	// scream about being on fire
-	GetMarineSpeech()->PersonalChatter(CHATTER_ON_FIRE);
+	GetMarineSpeech()->PersonalChatter( CHATTER_ON_FIRE );
 
 	AddFlag( FL_ONFIRE );
 	m_bOnFire = true;
@@ -5040,7 +5043,7 @@ void CASW_Marine::ScriptIgnite( float flFlameLifetime )
 
 	if ( ASWBurning() )
 	{
-		ASWBurning()->BurnEntity( this, NULL, flFlameLifetime, 0.4f, 10.0f * 0.4f, NULL );	// 10 dps, applied every 0.4 seconds
+		ASWBurning()->BurnEntity( this, NULL, flFlameLifetime, rd_burning_interval.GetFloat(), rd_burning_marine_damage.GetFloat() * rd_burning_interval.GetFloat(), NULL );
 	}
 
 	IGameEvent * event = gameeventmanager->CreateEvent( "marine_ignited" );
@@ -5073,16 +5076,18 @@ void CASW_Marine::ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *
 	if ( m_flFirstBurnTime == 0 )
 		m_flFirstBurnTime = gpGlobals->curtime;
 
+	bool bFriendlyFire = IRelationType( pAttacker ) == D_LI;
+
 	// if this is an env_fire trying to burn us, ignore the grace period that the AllowedToIgnite function does
 	// we want env_fires to always ignite the marine immediately so they can be used as dangerous blockers in levels
-	CFire *pFire = dynamic_cast<CFire*>(pAttacker);
+	CFire *pFire = dynamic_cast< CFire * >( pAttacker );
 	if ( AllowedToIgnite() || ( pFire && !pFire->m_bPlacedByMarine ) || rd_marine_ignite_immediately.GetBool() )
 	{
-		if( IsOnFire() )
+		if ( IsOnFire() )
 			return;
 
 		// scream about being on fire
-		GetMarineSpeech()->PersonalChatter(CHATTER_ON_FIRE);
+		GetMarineSpeech()->PersonalChatter( CHATTER_ON_FIRE );
 
 		AddFlag( FL_ONFIRE );
 		m_bOnFire = true;
@@ -5090,7 +5095,7 @@ void CASW_Marine::ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *
 
 		if ( ASWBurning() )
 		{
-			ASWBurning()->BurnEntity(this, pAttacker, flFlameLifetime, 0.4f, 10.0f * 0.4f, pDamagingWeapon );	// 10 dps, applied every 0.4 seconds
+			ASWBurning()->BurnEntity( this, pAttacker, flFlameLifetime, rd_burning_interval.GetFloat(), rd_burning_marine_damage.GetFloat() * rd_burning_interval.GetFloat(), pDamagingWeapon, bFriendlyFire );
 		}
 
 		IGameEvent * event = gameeventmanager->CreateEvent( "marine_ignited" );
@@ -5147,7 +5152,7 @@ bool CASW_Marine::AllowedToIgnite( void )
 	if ( m_iJumpJetting.Get() != 0 )
 		return false;
 
-	float flBurnTime = ( asw_marine_ff_absorption.GetInt() > 0 ) ? asw_marine_time_until_ignite.GetFloat() : 0.2f;
+	float flBurnTime = ( asw_marine_ff_absorption.GetInt() > 0 ) ? asw_marine_time_until_ignite.GetFloat() : asw_marine_time_until_ignite_hcff.GetFloat();
 	if ( m_flFirstBurnTime > 0 && (gpGlobals->curtime - m_flFirstBurnTime) >= flBurnTime )
 		return true;
 

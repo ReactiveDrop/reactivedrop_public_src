@@ -10,6 +10,9 @@
 #include "tier0/memdbgon.h"
 
 
+extern ConVar rd_burning_interval;
+extern ConVar rd_burning_alien_damage;
+
 LINK_ENTITY_TO_CLASS(asw_prop_physics, CASW_Prop_Physics);
 
 // Remap old prop physics entities to infested versions too
@@ -50,7 +53,7 @@ void CASW_Prop_Physics::Ignite( float flFlameLifetime, bool bNPCOnly, float flSi
 
 	if (ASWBurning())
 	{
-		ASWBurning()->BurnEntity(this, NULL, flFlameLifetime, 0.4f, 5.0f * 0.4f);	// 5 dps, applied every 0.4 seconds
+		ASWBurning()->BurnEntity( this, NULL, flFlameLifetime, rd_burning_interval.GetFloat(), rd_burning_alien_damage.GetFloat() * rd_burning_interval.GetFloat() );
 	}
 
 	if ( g_pGameRules->ShouldBurningPropsEmitLight() )

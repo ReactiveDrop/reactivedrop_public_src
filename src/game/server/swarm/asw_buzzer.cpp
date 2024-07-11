@@ -96,6 +96,8 @@ extern ConVar asw_alien_speed_scale_normal;
 extern ConVar asw_alien_speed_scale_hard;
 extern ConVar asw_alien_speed_scale_insane;
 extern ConVar asw_stun_grenade_time;
+extern ConVar rd_burning_interval;
+extern ConVar rd_burning_alien_damage;
 
 extern void		SpawnBlood(Vector vecSpot, const Vector &vAttackDir, int bloodColor, float flDamage);
 extern float	GetFloorZ(const Vector &origin);
@@ -3031,8 +3033,8 @@ void CASW_Buzzer::ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *
 
 		AddFlag( FL_ONFIRE );
 		m_bOnFire = true;
-		if (ASWBurning())
-			ASWBurning()->BurnEntity(this, pAttacker, flFlameLifetime, 0.4f, 5.0f * 0.4f, pDamagingWeapon );	// 5 dps, applied every 0.4 seconds
+		if ( ASWBurning() )
+			ASWBurning()->BurnEntity( this, pAttacker, flFlameLifetime, rd_burning_interval.GetFloat(), rd_burning_alien_damage.GetFloat() * rd_burning_interval.GetFloat(), pDamagingWeapon );
 
 		m_OnIgnite.FireOutput( this, this );
 

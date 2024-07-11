@@ -1,5 +1,5 @@
-#ifndef _INCLUDED_ASW_FIRE_H
-#define _INCLUDED_ASW_FIRE_H
+#ifndef _INCLUDED_ASW_BURNING_H
+#define _INCLUDED_ASW_BURNING_H
 #ifdef _WIN32
 #pragma once
 #endif
@@ -9,15 +9,17 @@
 class CASW_BurnInfo
 {
 public:
-	CASW_BurnInfo(CBaseEntity *pEntity, CBaseEntity *pAttacker, float fDieTime, float fBurnInterval, float fDamagePerInterval, CBaseEntity *pDamagingWeapon = NULL );
+	CASW_BurnInfo( CBaseEntity *pEntity, CBaseEntity *pAttacker, float fDieTime, float fBurnInterval, float fDamagePerInterval, CBaseEntity *pDamagingWeapon = NULL, bool bFriendlyFire = false );
 
 	EHANDLE m_hEntity;
 	EHANDLE m_hAttacker;
 	EHANDLE m_hDamagingWeapon;
+	float m_fStartTime;
 	float m_fNextBurnTime;
 	float m_fDieTime;
 	float m_fBurnInterval;
 	float m_fDamagePerInterval;
+	bool m_bFriendlyFire;
 };
 
 class CASW_Burning : public CBaseEntity
@@ -35,19 +37,16 @@ public:
 	void SetNextThinkTime();
 	void Precache();
 
-	void BurnEntity(CBaseEntity *pEntity, CBaseEntity *pAttacker, float fFireDuration, float fBurnInterval, float fDamagePerInterval, CBaseEntity *pDamagingWeapon = NULL );
-	void Extinguish(CBaseEntity *pEntity);
-	// reactivedrop
-	void ExtendBurning(CBaseEntity *pEntity, float fFireDuration);
+	void BurnEntity( CBaseEntity *pEntity, CBaseEntity *pAttacker, float fFireDuration, float fBurnInterval, float fDamagePerInterval, CBaseEntity *pDamagingWeapon = NULL, bool bFriendlyFire = false );
+	void Extinguish( CBaseEntity *pEntity );
+	void ExtendBurning( CBaseEntity *pEntity, float fFireDuration, bool bFriendlyFire = false );
 
-	//void OnEntityExtinguished(CBaseEntity *pEntity);
-
-	CUtlVector<CASW_BurnInfo*> m_Burning;
+	CUtlVectorAutoPurge<CASW_BurnInfo *> m_Burning;
 
 	// Classification
-	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_BURNING; }
+	virtual Class_T		Classify( void ) { return ( Class_T )CLASS_ASW_BURNING; }
 };
 
-CASW_Burning* ASWBurning();
+CASW_Burning *ASWBurning();
 
-#endif // _INCLUDED_ASW_FIRE_H
+#endif // _INCLUDED_ASW_BURNING_H

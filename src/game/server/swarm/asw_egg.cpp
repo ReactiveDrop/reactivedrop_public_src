@@ -35,13 +35,15 @@
 #define ASW_EGG_BURST_DISTANCE 450.0f
 #define ASW_EGG_RESET_DELAY 20.0f
 
+extern ConVar rd_burning_interval;
+extern ConVar rd_burning_alien_damage;
 
 LINK_ENTITY_TO_CLASS( asw_egg, CASW_Egg );
 
 
 IMPLEMENT_SERVERCLASS_ST(CASW_Egg, DT_ASW_Egg)
-SendPropBool( SENDINFO( m_bOnFire ) ),
-SendPropFloat( SENDINFO( m_fEggAwake ) ),
+	SendPropBool( SENDINFO( m_bOnFire ) ),
+	SendPropFloat( SENDINFO( m_fEggAwake ) ),
 END_SEND_TABLE()
 
 //---------------------------------------------------------
@@ -647,8 +649,8 @@ void CASW_Egg::ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAt
 
 	AddFlag( FL_ONFIRE );
 	m_bOnFire = true;
-	if (ASWBurning())
-		ASWBurning()->BurnEntity(this, pAttacker, flFlameLifetime, 0.4f, 5.0f * 0.4f, pDamagingWeapon );	// 5 dps, applied every 0.4 seconds
+	if ( ASWBurning() )
+		ASWBurning()->BurnEntity( this, pAttacker, flFlameLifetime, rd_burning_interval.GetFloat(), rd_burning_alien_damage.GetFloat() * rd_burning_interval.GetFloat(), pDamagingWeapon );
 
 	m_hBurner = pAttacker;
 	m_hBurnerWeapon = pDamagingWeapon;

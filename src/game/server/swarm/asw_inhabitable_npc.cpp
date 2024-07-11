@@ -22,18 +22,20 @@
 
 static void DebugNPCsChanged( IConVar *var, const char *pOldValue, float flOldValue );
 ConVar asw_debug_npcs( "asw_debug_npcs", "0", FCVAR_CHEAT, "Enables debug overlays for various NPCs", DebugNPCsChanged );
-ConVar asw_fire_alien_damage_scale( "asw_fire_alien_damage_scale", "3.0", FCVAR_CHEAT );
 ConVar asw_burning_alien_damage_scale( "asw_burning_alien_damage_scale", "1.0", FCVAR_CHEAT );
 ConVar asw_burning_alien_damage_scale_melee( "asw_burning_alien_damage_scale_melee", "1.0", FCVAR_CHEAT );
 ConVar asw_frozen_alien_damage_scale( "asw_frozen_alien_damage_scale", "1.0", FCVAR_CHEAT );
 ConVar asw_frozen_alien_damage_scale_melee( "asw_frozen_alien_damage_scale_melee", "2.0", FCVAR_CHEAT );
-ConVar asw_alien_burn_duration( "asw_alien_burn_duration", "5.0f", FCVAR_CHEAT, "Alien burn time" );
+ConVar asw_alien_burn_duration( "asw_alien_burn_duration", "5.0", FCVAR_CHEAT, "Alien burn time" );
 extern ConVar asw_alien_stunned_speed;
 extern ConVar asw_alien_hurt_speed;
 extern ConVar asw_stun_grenade_time;
 extern ConVar asw_controls;
 extern ConVar asw_debug_alien_damage;
 extern ConVar rd_use_full_lag_compensation;
+extern ConVar rd_burning_interval;
+extern ConVar rd_burning_alien_damage;
+extern ConVar rd_burning_humanoid_damage;
 
 static void DebugNPCsChanged( IConVar *var, const char *pOldValue, float flOldValue )
 {
@@ -636,19 +638,8 @@ int CASW_Inhabitable_NPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	{
 		CASW_Burning *pBurning = NULL;
 		CBaseEntity *pInflictor = info.GetInflictor();
-		if ( pInflictor && pInflictor->Classify() == CLASS_ASW_BURNING )
-			pBurning = assert_cast< CASW_Burning * >( pInflictor );
 
-		// scale burning damage up
-		if ( pBurning )
-		{
-			newInfo.ScaleDamage( asw_fire_alien_damage_scale.GetFloat() );
-			if ( asw_debug_alien_damage.GetBool() )
-			{
-				Msg( "%d %s hurt by %f dmg (scaled up by asw_fire_alien_damage_scale)\n", entindex(), GetClassname(), newInfo.GetDamage() );
-			}
-		}
-		else if ( IsFrozen() || IsOnFire() )
+		if ( ( info.GetDamageType() & DMG_DIRECT ) && ( IsFrozen() || IsOnFire() ) )
 		{
 			bool bIsMelee = ( newInfo.GetDamageType() & DMG_SLASH ) || ( newInfo.GetDamageType() & DMG_CLUB );
 			ConVar *pIce = bIsMelee ? &asw_frozen_alien_damage_scale_melee : &asw_frozen_alien_damage_scale;
@@ -680,8 +671,8 @@ int CASW_Inhabitable_NPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 
 		result = BaseClass::OnTakeDamage_Alive( newInfo );
 
-		// if we take fire damage, catch on fire
-		if ( result > 0 && ( newInfo.GetDamageType() & DMG_BURN ) && m_bFlammable && newInfo.GetWeapon() && !pBurning )
+		// if we take fire damage (but not afterburn damage), catch on fire
+		if ( result > 0 && ( newInfo.GetDamageType() & DMG_BURN ) && m_bFlammable && newInfo.GetWeapon() && !( newInfo.GetDamageType() & DMG_DIRECT ) )
 		{
 			ASW_Ignite( asw_alien_burn_duration.GetFloat(), 0, pAttacker, newInfo.GetWeapon() );
 		}
@@ -753,17 +744,15 @@ void CASW_Inhabitable_NPC::ASW_Ignite( float flFlameLifetime, float flSize, CBas
 	{
 		if ( IsOnFire() )
 		{
-			// reactivedrop
 			if ( ASWBurning() )
-				ASWBurning()->ExtendBurning( this, flFlameLifetime );	// ? dps, applied every 0.4 seconds
-			//
+				ASWBurning()->ExtendBurning( this, flFlameLifetime );;
 			return;
 		}
 
 		AddFlag( FL_ONFIRE );
 		m_bOnFire = true;
 		if ( ASWBurning() )
-			ASWBurning()->BurnEntity( this, pAttacker, flFlameLifetime, 0.4f, ( GetHullType() == HULL_HUMAN ? 10.0f : 5.0f ) * 0.4f, pDamagingWeapon ); // ? dps, applied every 0.4 seconds
+			ASWBurning()->BurnEntity( this, pAttacker, flFlameLifetime, rd_burning_interval.GetFloat(), ( GetHullType() == HULL_HUMAN ? rd_burning_humanoid_damage.GetFloat() : rd_burning_alien_damage.GetFloat() ) * rd_burning_interval.GetFloat(), pDamagingWeapon );
 
 		m_OnIgnite.FireOutput( this, this );
 	}

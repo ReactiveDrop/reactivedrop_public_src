@@ -20,10 +20,13 @@ const int MAX_PLAYER_SQUAD = 4;
 
 ConVar asw_colonist_health( "asw_colonist_health", "40", FCVAR_CHEAT );
 extern ConVar asw_god;
+extern ConVar asw_god_effects;
 extern ConVar asw_debug_alien_damage;
 extern ConVar asw_marine_gun_offset_x;
 extern ConVar asw_marine_gun_offset_y;
 extern ConVar asw_marine_gun_offset_z;
+extern ConVar rd_burning_interval;
+extern ConVar rd_burning_humanoid_damage;
 
 static const char *const s_szColonistModelFemale[] =
 {
@@ -398,7 +401,7 @@ Activity CASW_Colonist::NPC_TranslateActivity( Activity activity )
 
 int CASW_Colonist::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 {
-	if ( asw_god.GetBool() )
+	if ( asw_god.GetBool() || asw_god_effects.GetBool() )
 	{
 		return 0;
 	}
@@ -434,17 +437,19 @@ void CASW_Colonist::ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity
 {
 	if ( AllowedToIgnite() )
 	{
+		bool bFriendlyFire = IRelationType( pAttacker ) == D_LI;
+
 		if ( IsOnFire() )
 		{
 			if ( ASWBurning() )
-				ASWBurning()->ExtendBurning( this, flFlameLifetime ); // 10 dps, applied every 0.4 seconds
+				ASWBurning()->ExtendBurning( this, flFlameLifetime, bFriendlyFire );
 			return;
 		}
 
 		AddFlag( FL_ONFIRE );
 		m_bOnFire = true;
 		if ( ASWBurning() )
-			ASWBurning()->BurnEntity( this, pAttacker, flFlameLifetime, 0.4f, 10.0f * 0.4f, pDamagingWeapon ); // 10 dps, applied every 0.4 seconds
+			ASWBurning()->BurnEntity( this, pAttacker, flFlameLifetime, rd_burning_interval.GetFloat(), rd_burning_humanoid_damage.GetFloat() * rd_burning_interval.GetFloat(), pDamagingWeapon, bFriendlyFire );
 
 		m_OnIgnite.FireOutput( this, this );
 	}
