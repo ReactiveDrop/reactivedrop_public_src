@@ -1095,10 +1095,11 @@ public:
 				CASW_Marine *pTarget = CASW_Marine::AsMarine( Ent( event->GetInt( "patient_entindex" ) ) );
 				CASW_Marine *pHealer = CASW_Marine::AsMarine( Ent( event->GetInt( "medic_entindex" ) ) );
 				CBaseEntity *pWeapon = Ent( event->GetInt( "weapon" ) );
+				int iAmount = event->GetInt( "amount" );
 
-				if ( pTarget && pHealer && pWeapon )
+				if ( pTarget && pHealer && pWeapon && iAmount > 0 )
 				{
-					s_RD_Inventory_Manager.IncrementStrangePropertiesForWeapon( pHealer, pWeapon, 5003, event->GetInt( "amount" ) ); // Healing
+					s_RD_Inventory_Manager.IncrementStrangePropertiesForWeapon( pHealer, pWeapon, 5003, iAmount ); // Healing
 				}
 
 				return;
