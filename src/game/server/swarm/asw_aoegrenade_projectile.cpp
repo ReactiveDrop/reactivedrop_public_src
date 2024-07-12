@@ -257,34 +257,16 @@ void CASW_AOEGrenade_Projectile::AOEGrenadeTouch( CBaseEntity *pOther )
 		//SetTouch( &CASW_Flare_Projectile::FlareBurnTouch );
 		m_hTouchTrigger = CBaseEntity::Create( "asw_aoegrenade_touch_trigger", GetAbsOrigin(), vec3_angle, this );
 		int radius = GetEffectRadius();
-		UTIL_SetSize( m_hTouchTrigger.Get(), Vector(-radius,-radius,-radius), Vector(radius,radius,radius) );
+		UTIL_SetSize( m_hTouchTrigger.Get(), Vector( -radius, -radius, -radius ), Vector( radius, radius, radius ) );
 		m_hTouchTrigger->SetSolid( SOLID_BBOX );
 
-		if (pOther->Classify() == CLASS_FUNC_MOVELINEAR || pOther->Classify() == CLASS_FUNC_TRACKTRAIN)
+		if ( pOther->Classify() == CLASS_FUNC_MOVELINEAR || pOther->Classify() == CLASS_FUNC_TRACKTRAIN )
 		{
-			SetParent(pOther);
-			m_hTouchTrigger->SetParent(pOther);
+			SetParent( pOther );
+			m_hTouchTrigger->SetParent( pOther );
 		}
 
-		// call StartTouch() on all marines in radius
-		CASW_Game_Resource *pGameResource = ASWGameResource();
-		for (int i=0;i<pGameResource->GetMaxMarineResources();i++)
-		{
-			CASW_Marine_Resource *pMR = pGameResource->GetMarineResource(i);
-			if (!pMR)
-				continue;
-			CASW_Marine *pMarine = pMR->GetMarineEntity();
-			if (!pMarine)
-				continue;
-
-			if( GetDistanceToEntity( pMarine ) < m_flRadius )
-			{
-				CBaseEntity *pEntity = pMarine;
-				StartTouch( pEntity );
-			}
-		}
-
-		//NDebugOverlay::Box( GetAbsOrigin(), Vector(-radius,-radius,-radius), Vector(radius,radius,radius), 0, 0, 255, 200, 5.5 );
+		m_hTouchTrigger->PhysicsTouchTriggers();
 
 		Assert( m_hTouchTrigger.Get() );
 

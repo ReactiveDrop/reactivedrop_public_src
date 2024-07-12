@@ -137,7 +137,10 @@ bool CASW_BuffGrenade_Projectile::StopAOE( CBaseEntity *pEntity )
 void CASW_BuffGrenade_Projectile::AttachToMarine( CASW_Marine *pMarine )
 {
 	SetAbsVelocity( vec3_origin );
-	AOEGrenadeTouch( GetWorldEntity() );
+	if ( !m_bSettled )
+	{
+		AOEGrenadeTouch( GetWorldEntity() );
+	}
 
 	CBaseEntity *pTouchTrigger = m_hTouchTrigger;
 	Assert( pTouchTrigger );
@@ -150,6 +153,11 @@ void CASW_BuffGrenade_Projectile::AttachToMarine( CASW_Marine *pMarine )
 	SetLocalOrigin( vec3_origin );
 	pTouchTrigger->SetLocalOrigin( vec3_origin );
 	SetRenderMode( kRenderNone );
+
+	// can't touch our own parent, so fake it
+	Assert( !IsAOETarget( pMarine ) );
+	RemoveAOETarget( pMarine ); // remove first to make sure we aren't doubling up the marine if the above assert fails
+	AddAOETarget( pMarine );
 
 	m_vecLastOrigin = GetAbsOrigin();
 	SetContextThink( &CASW_BuffGrenade_Projectile::LoseTimeForMoving, gpGlobals->curtime + 1.0f, "BuffGrenadeMoved" );
