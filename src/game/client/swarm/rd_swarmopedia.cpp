@@ -7,6 +7,8 @@
 #include "asw_weapon_shared.h"
 #include "ammodef.h"
 #include "asw_ammo_drop_shared.h"
+#include <vgui_controls/Controls.h>
+#include <vgui/IScheme.h>
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -97,21 +99,99 @@ void Helpers::CopyUniqueVector( CUtlVectorAutoPurge<T *> &dst, const CUtlVectorA
 	}
 }
 
-Collection::Collection( const Collection &copy )
+static Collection *s_pSwarmopedia = NULL;
+
+const Collection &RD_Swarmopedia::Get()
 {
-	Helpers::CopyVector( Aliens, copy.Aliens );
-	Helpers::CopyVector( Weapons, copy.Weapons );
+	if ( !s_pSwarmopedia )
+	{
+		Collection *pSwarmopedia = new Collection;
+		pSwarmopedia->ReadFromFiles();
+
+		s_pSwarmopedia = pSwarmopedia;
+	}
+
+	return *s_pSwarmopedia;
 }
 
-void Collection::ReadFromFiles( Subset subset )
+const Alien *RD_Swarmopedia::FindAlien( const char *id )
 {
-	ReadSubset = subset;
-	UTIL_RD_LoadAllKeyValues( SWARMOPEDIA_PATH, "GAME", "Swarmopedia", &ReadHelper, this );
+	const Collection &Swarmopedia = Get();
+	FOR_EACH_VEC( Swarmopedia.Aliens, i )
+	{
+		if ( Swarmopedia.Aliens[i]->ID == id )
+		{
+			return Swarmopedia.Aliens[i];
+		}
+	}
+
+	return NULL;
+}
+
+const Weapon *RD_Swarmopedia::FindWeapon( int iEquipIndex, bool bExtra )
+{
+	const Collection &Swarmopedia = Get();
+	FOR_EACH_VEC( Swarmopedia.Weapons, i )
+	{
+		if ( Swarmopedia.Weapons[i]->EquipIndex == iEquipIndex && Swarmopedia.Weapons[i]->Extra == bExtra )
+		{
+			return Swarmopedia.Weapons[i];
+		}
+	}
+
+	return NULL;
+}
+
+const Weapon *RD_Swarmopedia::FindWeapon( const char *szClassName )
+{
+	const Collection &Swarmopedia = Get();
+	FOR_EACH_VEC( Swarmopedia.Weapons, i )
+	{
+		if ( Swarmopedia.Weapons[i]->ClassName == szClassName )
+		{
+			return Swarmopedia.Weapons[i];
+		}
+	}
+
+	return NULL;
+}
+
+void RD_Swarmopedia::ClearCache()
+{
+	if ( s_pSwarmopedia )
+	{
+		delete s_pSwarmopedia;
+		s_pSwarmopedia = NULL;
+	}
+}
+
+CON_COMMAND( rd_swarmopedia_reload, "clear swarmopedia.txt cache" )
+{
+	RD_Swarmopedia::ClearCache();
+	// load it immediately so any console warnings are shown during the command
+	( void )RD_Swarmopedia::Get();
 }
 
 void Collection::ReadHelper( const char *pszPath, KeyValues *pKV, void *pUserData )
 {
 	static_cast< Collection * >( pUserData )->ReadFromFile( pszPath, pKV );
+}
+
+void Collection::ReadFromFiles()
+{
+	static bool s_bLoadWeaponDataOnce = true;
+	// make sure weapon ammo type data is loaded even if we accessed the Swarmopedia from the main menu
+	if ( s_bLoadWeaponDataOnce )
+	{
+		if ( !engine->IsConnected() )
+		{
+			g_ASWEquipmentList.LevelInitPreEntity();
+		}
+
+		s_bLoadWeaponDataOnce = false;
+	}
+
+	UTIL_RD_LoadAllKeyValues( SWARMOPEDIA_PATH, "GAME", "Swarmopedia", &ReadHelper, this );
 }
 
 void Collection::ReadFromFile( const char *pszPath, KeyValues *pKV )
@@ -120,26 +200,13 @@ void Collection::ReadFromFile( const char *pszPath, KeyValues *pKV )
 	{
 		if ( FStrEq( pEntry->GetName(), "ALIEN" ) )
 		{
-			if ( int( ReadSubset ) & int( Subset::Aliens ) )
-			{
-				Helpers::AddMerge( Aliens, pszPath, pEntry );
-			}
+			Helpers::AddMerge( Aliens, pszPath, pEntry );
 		}
 		else if ( FStrEq( pEntry->GetName(), "WEAPON" ) )
 		{
-			if ( int( ReadSubset ) & int( Subset::Weapons ) )
+			if ( Weapon *pWeapon = Helpers::ReadFromFile<Weapon>( pszPath, pEntry ) )
 			{
-				if ( Weapon *pWeapon = Helpers::ReadFromFile<Weapon>( pszPath, pEntry ) )
-				{
-					if ( int( ReadSubset ) & int( pWeapon->Extra ? Subset::ExtraWeapons : Subset::RegularWeapons ) )
-					{
-						Helpers::AddMerge( Weapons, pWeapon );
-					}
-					else
-					{
-						delete pWeapon;
-					}
-				}
+				Helpers::AddMerge( Weapons, pWeapon );
 			}
 		}
 		else
@@ -738,6 +805,33 @@ bool Content::ReadFromFile( const char *pszPath, KeyValues *pKV )
 		{
 			Text = pKV->GetString( "Text" );
 			Color = pKV->GetColor( "Color", Color );
+
+			if ( const char *szFont = pKV->GetString( "Font", NULL ) )
+			{
+				vgui::HScheme hScheme = vgui::scheme()->LoadSchemeFromFileEx( NULL, "resource/SwarmSchemeNew.res", "SwarmSchemeNew" );
+				Font = vgui::scheme()->GetIScheme( hScheme )->GetFont( szFont, true );
+			}
+		}
+		else
+		{
+			Text = pKV->GetString();
+		}
+
+		return true;
+	}
+	else if ( FStrEq( pKV->GetName(), "ZbalermornaParagraph" ) )
+	{
+		Type = Type_t::ZbalermornaParagraph;
+		if ( pKV->GetDataType() == KeyValues::TYPE_NONE )
+		{
+			Text = pKV->GetString( "Text" );
+			Color = pKV->GetColor( "Color", Color );
+
+			if ( const char *szFont = pKV->GetString( "Font", NULL ) )
+			{
+				vgui::HScheme hScheme = vgui::scheme()->LoadSchemeFromFileEx( NULL, "resource/SwarmSchemeNew.res", "SwarmSchemeNew" );
+				Font = vgui::scheme()->GetIScheme( hScheme )->GetFont( szFont, true );
+			}
 		}
 		else
 		{
@@ -867,8 +961,41 @@ static void PostProcessBuiltin( WeaponFact *pFact, CASW_EquipItem *pItem, CASW_W
 		break;
 	case WeaponFact::Type_T::Piercing:
 		break;
+	case WeaponFact::Type_T::StoppingPower:
+	{
+		int iDamageType = GetAmmoDef()->DamageType( bIsSecondary ? pItem->m_iAmmo2 : pItem->m_iAmmo1 );
+		if ( iDamageType & DMG_SHOCK )
+		{
+			Assert( bIsSecondary || pItem->m_flFlinchChance >= 1 );
+			pFact->Base = 1;
+			pFact->Caption = "#rd_weapon_fact_stopping_power_shock";
+		}
+		else if ( iDamageType & DMG_BLAST )
+		{
+			Assert( bIsSecondary || pItem->m_flFlinchChance >= 1 );
+			pFact->Base = 1;
+			pFact->Caption = "#rd_weapon_fact_stopping_power_blast";
+		}
+		else
+		{
+			pFact->Base = pItem->m_flFlinchChance;
+			pFact->SkillMultiplier = pItem->m_flStoppingPowerFlinchBonus;
+			if ( pItem->m_flStoppingPowerFlinchBonus != 0.0f )
+			{
+				pFact->Skill = ASW_MARINE_SKILL_STOPPING_POWER;
+				pFact->SubSkill = ASW_MARINE_SUBSKILL_STOPPING_POWER;
+			}
+		}
+
+		break;
+	}
 	case WeaponFact::Type_T::FireRate:
 		pFact->Base += pItem->m_flFireRate;
+		break;
+	case WeaponFact::Type_T::ReloadTime:
+		pFact->Skill = ASW_MARINE_SKILL_RELOADING;
+		pFact->SubSkill = ASW_MARINE_SUBSKILL_RELOADING_SPEED_SCALE;
+		pFact->SkillMultiplier = pWeaponInfo->m_flDisplayReloadTime > 0 ? pWeaponInfo->m_flDisplayReloadTime : pItem->m_flReloadTime;
 		break;
 	case WeaponFact::Type_T::Ammo:
 		pFact->Base += bIsSecondary ? pItem->DefaultAmmo2() : pItem->DefaultAmmo1();
@@ -1100,18 +1227,6 @@ bool Weapon::ReadFromFile( const char *pszPath, KeyValues *pKV )
 						Facts.InsertAfter( iNext++, Helpers::ReadFromFile<WeaponFact>( "INTERNAL", pFact ) );
 					}
 				}
-
-				if ( Facts[i]->UseWeaponInfo && Facts[i]->ClipSize )
-				{
-					KeyValues::AutoDelete pFact( "Numeric" );
-					pFact->SetString( "Icon", "swarm/swarmopedia/fact/reload" );
-					pFact->SetString( "Caption", "#rd_weapon_fact_reload" );
-					pFact->SetInt( "Precision", 2 );
-					pFact->SetString( "Skill", "ASW_MARINE_SKILL_RELOADING" );
-					pFact->SetString( "SubSkill", "ASW_MARINE_SUBSKILL_RELOADING_SPEED_SCALE" );
-					pFact->SetFloat( "SkillMultiplier", pWeaponInfo->m_flDisplayReloadTime > 0 ? pWeaponInfo->m_flDisplayReloadTime : pItem->m_flReloadTime );
-					Facts.InsertAfter( iNext++, Helpers::ReadFromFile<WeaponFact>( "INTERNAL", pFact ) );
-				}
 			}
 		}
 	}
@@ -1159,6 +1274,71 @@ WeaponFact::WeaponFact( const WeaponFact &copy ) :
 	Helpers::CopyVector( Facts, copy.Facts );
 }
 
+void WeaponFact::ComputeBaseAndSkill( float &flBase, float &flSkill, CASW_Marine_Profile *pProfile, int iSkillOverride ) const
+{
+	flBase = Base;
+	if ( !CVar.IsEmpty() )
+	{
+		ConVarRef var( CVar );
+		if ( Type != Type_T::DamagePerShot )
+		{
+			flBase += var.GetFloat();
+		}
+		else if ( var.GetFloat() > 0 )
+		{
+			flBase = var.GetFloat();
+		}
+	}
+
+	flBase *= BaseMultiplier;
+	FOR_EACH_VEC( BaseMultiplierCVar, i )
+	{
+		ConVarRef var( BaseMultiplierCVar[i] );
+		flBase *= var.GetFloat();
+	}
+	FOR_EACH_VEC( BaseDivisorCVar, i )
+	{
+		ConVarRef var( BaseDivisorCVar[i] );
+		flBase /= var.GetFloat();
+	}
+
+	flSkill = 0.0f;
+	float flBaseSkillBasedValue = 0.0f;
+	if ( Skill != ASW_MARINE_SKILL_INVALID )
+	{
+		flSkill = MarineSkills()->GetSkillBasedValue( pProfile, Skill, SubSkill, iSkillOverride );
+
+		flBaseSkillBasedValue = MarineSkills()->GetSkillBasedValue( NULL, Skill, SubSkill, 0 );
+	}
+
+	flSkill *= SkillMultiplier;
+	flBaseSkillBasedValue *= SkillMultiplier;
+	FOR_EACH_VEC( SkillMultiplierCVar, i )
+	{
+		ConVarRef var( SkillMultiplierCVar[i] );
+		flSkill *= var.GetFloat();
+		flBaseSkillBasedValue *= var.GetFloat();
+	}
+	FOR_EACH_VEC( SkillDivisorCVar, i )
+	{
+		ConVarRef var( SkillDivisorCVar[i] );
+		flSkill /= var.GetFloat();
+		flBaseSkillBasedValue /= var.GetFloat();
+	}
+
+	flSkill -= flBaseSkillBasedValue;
+	flBase += flBaseSkillBasedValue;
+
+	if ( flBase + flSkill < MinimumValue )
+	{
+		flBase = MinimumValue - flSkill;
+	}
+	else if ( flBase + flSkill > MaximumValue )
+	{
+		flBase = MaximumValue - flSkill;
+	}
+}
+
 bool WeaponFact::ReadFromFile( const char *pszPath, KeyValues *pKV )
 {
 	const char *szName = pKV->GetName();
@@ -1198,9 +1378,19 @@ bool WeaponFact::ReadFromFile( const char *pszPath, KeyValues *pKV )
 	{
 		Type = Type_T::Piercing;
 	}
+	else if ( FStrEq( szName, "StoppingPower" ) )
+	{
+		Type = Type_T::StoppingPower;
+		Precision = 2;
+	}
 	else if ( FStrEq( szName, "FireRate" ) )
 	{
 		Type = Type_T::FireRate;
+		Precision = 2;
+	}
+	else if ( FStrEq( szName, "ReloadTime" ) )
+	{
+		Type = Type_T::ReloadTime;
 		Precision = 2;
 	}
 	else if ( FStrEq( szName, "Ammo" ) )
@@ -1385,17 +1575,6 @@ void WeaponFact::Merge( const WeaponFact *pWeaponFact )
 
 void RD_Swarmopedia::CheckArticleUnlock( const char *szStatName, int iStatBefore, int iStatAfter )
 {
-	// We only load the Swarmopedia once per game run for unlock checking.
-	// This means if the player installs a mod that adds to the Swarmopedia
-	// after killing an alien and doesn't restart the game, they won't be
-	// notified if they unlock one of the new articles. Which is okay.
-	static Collection *s_pSwarmopediaForProgressChecking = NULL;
-	if ( !s_pSwarmopediaForProgressChecking )
-	{
-		s_pSwarmopediaForProgressChecking = new Collection;
-		s_pSwarmopediaForProgressChecking->ReadFromFiles( Subset::Aliens );
-	}
-
 	ISteamUserStats *pStats = SteamUserStats();
 	Assert( pStats );
 	if ( !pStats )
@@ -1403,9 +1582,10 @@ void RD_Swarmopedia::CheckArticleUnlock( const char *szStatName, int iStatBefore
 		return;
 	}
 
-	FOR_EACH_VEC( s_pSwarmopediaForProgressChecking->Aliens, i )
+	const Collection &Swarmopedia = Get();
+	FOR_EACH_VEC( Swarmopedia.Aliens, i )
 	{
-		Alien *pAlien = s_pSwarmopediaForProgressChecking->Aliens[i];
+		Alien *pAlien = Swarmopedia.Aliens[i];
 		Assert( pAlien->Requirements.Count() <= 1 ); // if we ever use multiple requirements, we need to revisit this.
 		FOR_EACH_VEC( pAlien->Requirements, j )
 		{

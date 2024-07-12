@@ -6,6 +6,7 @@
 
 #include <vgui/VGUI.h>
 #include <vgui_controls/EditablePanel.h>
+#include "rd_swarmopedia.h"
 
 // == MANAGED_CLASS_DECLARATIONS_START: Do not edit by hand ==
 class vgui::Label;
@@ -25,7 +26,7 @@ public:
 	virtual void PerformLayout();
 	virtual void OnThink();
 
-	void SetWeaponDetails( int nEquipIndex, int nInventorySlot, int nProfileIndex, int nDetailIndex );
+	void SetWeaponDetails( int nEquipIndex, int nInventorySlot, int nProfileIndex, RD_Swarmopedia::WeaponFact::Type_T eWeaponFactType );
 
 	void UpdateLabels( CASW_EquipItem *pItem, CASW_WeaponInfo *pWeaponData );
 	
@@ -38,7 +39,7 @@ public:
 	bool m_bHidden;
 	int m_nEquipIndex;
 	int m_nInventorySlot;	
-	int m_nDetailIndex;
+	RD_Swarmopedia::WeaponFact::Type_T m_eWeaponFactType;
 	int m_nProfileIndex;
 };
 

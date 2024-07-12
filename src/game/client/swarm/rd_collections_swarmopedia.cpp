@@ -14,6 +14,7 @@
 #include "gameui/swarm/basemodpanel.h"
 #include "gameui/swarm/vgenericpanellist.h"
 #include "c_asw_steamstats.h"
+#include "MultiFontRichText.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -23,30 +24,20 @@ ConVar rd_swarmopedia_global_stat_window_days( "rd_swarmopedia_global_stat_windo
 CRD_Collection_Tab_Swarmopedia::CRD_Collection_Tab_Swarmopedia( TabbedGridDetails *parent, const char *szLabel )
 	: BaseClass( parent, szLabel )
 {
-	m_pCollection = NULL;
 }
 
 CRD_Collection_Tab_Swarmopedia::~CRD_Collection_Tab_Swarmopedia()
 {
-	if ( m_pCollection )
-	{
-		delete m_pCollection;
-
-		m_pCollection = NULL;
-	}
 }
 
 TGD_Grid *CRD_Collection_Tab_Swarmopedia::CreateGrid()
 {
 	TGD_Grid *pGrid = BaseClass::CreateGrid();
 
-	Assert( !m_pCollection );
-	m_pCollection = new RD_Swarmopedia::Collection();
-	m_pCollection->ReadFromFiles( RD_Swarmopedia::Subset::Aliens );
-
-	FOR_EACH_VEC( m_pCollection->Aliens, i )
+	const RD_Swarmopedia::Collection &Swarmopedia = RD_Swarmopedia::Get();
+	FOR_EACH_VEC( Swarmopedia.Aliens, i )
 	{
-		pGrid->AddEntry( new CRD_Collection_Entry_Swarmopedia( pGrid, "CollectionEntrySwarmopedia", m_pCollection->Aliens[i] ) );
+		pGrid->AddEntry( new CRD_Collection_Entry_Swarmopedia( pGrid, "CollectionEntrySwarmopedia", Swarmopedia.Aliens[i] ) );
 	}
 
 	return pGrid;
@@ -122,7 +113,12 @@ void CRD_Collection_Details_Swarmopedia::DisplayEntry( TGD_Entry *pEntry )
 	}
 
 	CRD_Collection_Entry_Swarmopedia *pSwarmopediaEntry = assert_cast< CRD_Collection_Entry_Swarmopedia * >( pEntry );
-	const RD_Swarmopedia::Alien *pAlien = pSwarmopediaEntry->m_pAlien;
+	const RD_Swarmopedia::Alien *pAlien = pSwarmopediaEntry->GetAlien();
+	if ( !pAlien )
+	{
+		DisplayEntry( NULL );
+		return;
+	}
 
 	if ( pAlien->GetOverallRequirementProgress() < 1.0f )
 	{
@@ -262,7 +258,7 @@ void CRD_Collection_Details_Swarmopedia::DisplayEntryLocked( const RD_Swarmopedi
 CRD_Collection_Entry_Swarmopedia::CRD_Collection_Entry_Swarmopedia( TGD_Grid *parent, const char *panelName, const RD_Swarmopedia::Alien *pAlien )
 	: BaseClass( parent, panelName )
 {
-	m_pAlien = pAlien;
+	m_AlienID = pAlien->ID;
 
 	m_pIcon = new vgui::ImagePanel( this, "Icon" );
 	m_pUnlockProgress = new vgui::Panel( this, "UnlockProgress" );
@@ -272,12 +268,18 @@ void CRD_Collection_Entry_Swarmopedia::ApplySchemeSettings( vgui::IScheme *pSche
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
-	bool bUnlocked = m_pAlien->GetOverallRequirementProgress() >= 1.0f;
+	const RD_Swarmopedia::Alien *pAlien = GetAlien();
+	if ( !pAlien )
+	{
+		return;
+	}
 
-	m_pUnlockProgress->SetWide( m_pHighlight->GetWide() * m_pAlien->GetOverallRequirementProgress() );
+	bool bUnlocked = pAlien->GetOverallRequirementProgress() >= 1.0f;
+
+	m_pUnlockProgress->SetWide( m_pHighlight->GetWide() * pAlien->GetOverallRequirementProgress() );
 	m_pUnlockProgress->SetVisible( !bUnlocked );
 
-	m_pIcon->SetImage( m_pAlien->Icon );
+	m_pIcon->SetImage( pAlien->Icon );
 	m_pIcon->SetDrawColor( bUnlocked ? Color( 255, 255, 255, 255 ) : Color( 0, 0, 0, 255 ) );
 }
 
@@ -288,7 +290,7 @@ void CRD_Collection_Entry_Swarmopedia::ApplyEntry()
 	if ( pPanel )
 	{
 		CRD_Collection_Panel_Swarmopedia *pSwarmopediaPanel = dynamic_cast< CRD_Collection_Panel_Swarmopedia * >( pPanel );
-		bool bStop = pSwarmopediaPanel && pSwarmopediaPanel->m_pAlien == m_pAlien;
+		bool bStop = pSwarmopediaPanel && pSwarmopediaPanel->m_AlienID == m_AlienID;
 
 		pTGD->SetOverridePanel( NULL );
 		pPanel->MarkForDeletion();
@@ -299,23 +301,29 @@ void CRD_Collection_Entry_Swarmopedia::ApplyEntry()
 		}
 	}
 
-	if ( m_pAlien->GetOverallRequirementProgress() >= 1.0f )
+	const RD_Swarmopedia::Alien *pAlien = GetAlien();
+	if ( pAlien && pAlien->GetOverallRequirementProgress() >= 1.0f )
 	{
-		pPanel = new CRD_Collection_Panel_Swarmopedia( pTGD, "SwarmopediaPanel", m_pAlien );
+		pPanel = new CRD_Collection_Panel_Swarmopedia( pTGD, "SwarmopediaPanel", pAlien );
 		pTGD->SetOverridePanel( pPanel );
 	}
+}
+
+const RD_Swarmopedia::Alien *CRD_Collection_Entry_Swarmopedia::GetAlien() const
+{
+	return RD_Swarmopedia::FindAlien( m_AlienID );
 }
 
 CRD_Collection_Panel_Swarmopedia::CRD_Collection_Panel_Swarmopedia( vgui::Panel *parent, const char *panelName, const RD_Swarmopedia::Alien *pAlien )
 	: BaseClass( parent, panelName )
 {
-	m_pAlien = pAlien;
+	m_AlienID = pAlien->ID;
 	m_iCurrentDisplay = 0;
 
 	m_pModelPanel = new CRD_Swarmopedia_Model_Panel( this, "ModelPanel" );
 	m_pModelButton = new CNB_Button( this, "ModelButton", L"", this, "CycleDisplay" );
 	m_pLblNoModel = new vgui::Label( this, "LblNoModel", "#rd_so_display_no_model" );
-	m_pContent = new vgui::RichText( this, "Content" );
+	m_pContent = new vgui::MultiFontRichText( this, "Content" );
 
 	m_pModelPanel->SetMouseInputEnabled( false );
 	m_pModelButton->SetControllerButton( KEY_XBUTTON_X );
@@ -331,20 +339,34 @@ void CRD_Collection_Panel_Swarmopedia::ApplySchemeSettings( vgui::IScheme *pSche
 
 	BaseClass::ApplySchemeSettings( pScheme );
 
-	m_pContent->SetFont( pScheme->GetFont( "DefaultMedium", true ) );
+	const RD_Swarmopedia::Alien *pAlien = GetAlien();
+	if ( !pAlien )
+	{
+		return;
+	}
+
+	vgui::HFont hDefaultFont = pScheme->GetFont( "DefaultMedium", true );
+	m_pContent->SetFont( hDefaultFont );
 	m_pContent->SetText( L"" );
 
-	m_pModelButton->SetEnabled( m_pAlien->Display.Count() > 1 );
+	m_pModelButton->SetEnabled( pAlien->Display.Count() > 1 );
 
 	wchar_t wszBuf[4096]{};
-	FOR_EACH_VEC( m_pAlien->Content, i )
+	FOR_EACH_VEC( pAlien->Content, i )
 	{
-		switch ( m_pAlien->Content[i]->Type )
+		switch ( pAlien->Content[i]->Type )
 		{
 		case RD_Swarmopedia::Content::Type_t::Paragraph:
-			TryLocalize( m_pAlien->Content[i]->Text, wszBuf, sizeof( wszBuf ) );
-			m_pContent->InsertColorChange( m_pAlien->Content[i]->Color );
+			TryLocalize( pAlien->Content[i]->Text, wszBuf, sizeof( wszBuf ) );
+			m_pContent->InsertColorChange( pAlien->Content[i]->Color );
+			m_pContent->InsertFontChange( pAlien->Content[i]->Font == vgui::INVALID_FONT ? hDefaultFont : pAlien->Content[i]->Font );
 			m_pContent->InsertString( wszBuf );
+			m_pContent->InsertString( L"\n\n" );
+			break;
+		case RD_Swarmopedia::Content::Type_t::ZbalermornaParagraph:
+			m_pContent->InsertColorChange( pAlien->Content[i]->Color );
+			m_pContent->InsertFontChange( pAlien->Content[i]->Font == vgui::INVALID_FONT ? hDefaultFont : pAlien->Content[i]->Font );
+			m_pContent->InsertZbalermornaString( pAlien->Content[i]->Text );
 			m_pContent->InsertString( L"\n\n" );
 			break;
 		default:
@@ -357,10 +379,10 @@ void CRD_Collection_Panel_Swarmopedia::ApplySchemeSettings( vgui::IScheme *pSche
 	m_pContent->InsertString( g_pVGuiLocalize->FindSafe( "#rd_so_sources" ) );
 
 	m_pContent->InsertColorChange( Color{ 83, 148, 192, 255 } );
-	FOR_EACH_VEC( m_pAlien->Sources, i )
+	FOR_EACH_VEC( pAlien->Sources, i )
 	{
 		m_pContent->InsertString( L"\n" );
-		m_pContent->InsertString( g_ReactiveDropWorkshop.AddonName( m_pAlien->Sources[i] ) );
+		m_pContent->InsertString( g_ReactiveDropWorkshop.AddonName( pAlien->Sources[i] ) );
 	}
 }
 
@@ -368,13 +390,14 @@ void CRD_Collection_Panel_Swarmopedia::PerformLayout()
 {
 	BaseClass::PerformLayout();
 
-	if ( 0 <= m_iCurrentDisplay && m_iCurrentDisplay < m_pAlien->Display.Count() )
+	const RD_Swarmopedia::Alien *pAlien = GetAlien();
+	if ( pAlien && 0 <= m_iCurrentDisplay && m_iCurrentDisplay < pAlien->Display.Count() )
 	{
-		m_pModelPanel->SetDisplay( m_pAlien->Display[m_iCurrentDisplay] );
+		m_pModelPanel->SetDisplay( pAlien->Display[m_iCurrentDisplay] );
 		m_pModelPanel->m_bShouldPaint = true;
 		m_pModelPanel->SetVisible( true );
 
-		m_pModelButton->SetText( m_pAlien->Display[m_iCurrentDisplay]->Caption );
+		m_pModelButton->SetText( pAlien->Display[m_iCurrentDisplay]->Caption );
 		m_pModelButton->SetVisible( true );
 		m_pLblNoModel->SetVisible( false );
 	}
@@ -392,9 +415,10 @@ void CRD_Collection_Panel_Swarmopedia::OnCommand( const char *command )
 {
 	if ( !V_strcmp( command, "CycleDisplay" ) )
 	{
-		if ( m_pAlien->Display.Count() )
+		const RD_Swarmopedia::Alien *pAlien = GetAlien();
+		if ( pAlien && pAlien->Display.Count() )
 		{
-			m_iCurrentDisplay = ( m_iCurrentDisplay + 1 ) % m_pAlien->Display.Count();
+			m_iCurrentDisplay = ( m_iCurrentDisplay + 1 ) % pAlien->Display.Count();
 			InvalidateLayout();
 		}
 	}
@@ -430,4 +454,9 @@ void CRD_Collection_Panel_Swarmopedia::OnKeyCodePressed( vgui::KeyCode keycode )
 		BaseClass::OnKeyCodePressed( keycode );
 		break;
 	}
+}
+
+const RD_Swarmopedia::Alien *CRD_Collection_Panel_Swarmopedia::GetAlien() const
+{
+	return RD_Swarmopedia::FindAlien( m_AlienID );
 }

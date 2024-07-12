@@ -377,12 +377,13 @@ void CNB_Lobby_Tooltip::OnTick()
 	{
 		int nProfileIndex = pProfile->m_ProfileIndex;
 		int nEquipIndex = Briefing()->GetProfileSelectedWeapon( nProfileIndex, m_nInventorySlot );
-		m_pWeaponDetail0->SetWeaponDetails( nEquipIndex, m_nInventorySlot, nProfileIndex, 0 );
-		m_pWeaponDetail1->SetWeaponDetails( nEquipIndex, m_nInventorySlot, nProfileIndex, 1 );
-		m_pWeaponDetail2->SetWeaponDetails( nEquipIndex, m_nInventorySlot, nProfileIndex, 2 );
-		m_pWeaponDetail3->SetWeaponDetails( nEquipIndex, m_nInventorySlot, nProfileIndex, 3 );
-		m_pWeaponDetail4->SetWeaponDetails( nEquipIndex, m_nInventorySlot, nProfileIndex, 4 );
-		m_pWeaponDetail5->SetWeaponDetails( nEquipIndex, m_nInventorySlot, nProfileIndex, 5 );
+
+		m_pWeaponDetail0->SetWeaponDetails( nEquipIndex, m_nInventorySlot, nProfileIndex, RD_Swarmopedia::WeaponFact::Type_T::DamagePerShot );
+		m_pWeaponDetail1->SetWeaponDetails( nEquipIndex, m_nInventorySlot, nProfileIndex, RD_Swarmopedia::WeaponFact::Type_T::FireRate );
+		m_pWeaponDetail2->SetWeaponDetails( nEquipIndex, m_nInventorySlot, nProfileIndex, RD_Swarmopedia::WeaponFact::Type_T::ReloadTime );
+		m_pWeaponDetail3->SetWeaponDetails( nEquipIndex, m_nInventorySlot, nProfileIndex, RD_Swarmopedia::WeaponFact::Type_T::Ammo );
+		m_pWeaponDetail4->SetWeaponDetails( nEquipIndex, m_nInventorySlot, nProfileIndex, RD_Swarmopedia::WeaponFact::Type_T::Secondary );
+		m_pWeaponDetail5->SetWeaponDetails( nEquipIndex, m_nInventorySlot, nProfileIndex, RD_Swarmopedia::WeaponFact::Type_T::Generic ); // uses the attributes string for the weapon
 	}
 
 	m_pTitle->SetText( pItem->m_szLongName );

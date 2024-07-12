@@ -126,9 +126,9 @@ enum
 	AMSC_RELOADING_STEP,
 	AMSC_RELOADING_FAST_STEP,
 	AMSC_AGILITY_MOVESPEED_STEP,
-	AMSC_AGILITY_RELOAD_STEP,
+	AMSC_AGILITY_RELOAD_STEP, // unused
 	AMSC_MINES_FIRES_BASE,
-	AMSC_MINES_FIRES_STEP,
+	AMSC_MINES_FIRES_STEP, // unused
 	AMSC_MINES_DURATION_BASE,
 	AMSC_MINES_DURATION_STEP,
 	AMSC_ACCURACY_RIFLE_DMG_BASE,
@@ -143,8 +143,8 @@ enum
 	AMSC_ACCURACY_FLAMER_DMG_STEP,
 	AMSC_ACCURACY_PISTOL_DMG_BASE,
 	AMSC_ACCURACY_PISTOL_DMG_STEP,
-	AMSC_ACCURACY_DEAGLE_DMG_BASE,
-	AMSC_ACCURACY_DEAGLE_DMG_STEP,
+	AMSC_ACCURACY_BULLDOG_DMG_BASE,
+	AMSC_ACCURACY_BULLDOG_DMG_STEP,
 	AMSC_ACCURACY_PDW_DMG_BASE,
 	AMSC_ACCURACY_PDW_DMG_STEP,
 	AMSC_MUZZLE_FLASH_BASE,
@@ -174,175 +174,124 @@ enum
 	AMSC_LASER_MINES_BASE,
 	AMSC_LASER_MINES_MODERATE,
 	AMSC_LASER_MINES_EXPERT,
+	AMSC_VINDICATOR_MUZZLE_FLASH_BASE,
+	AMSC_VINDICATOR_MUZZLE_FLASH_STEP,
+	AMSC_MINES_FIRES_MODERATE,
+	AMSC_MINES_FIRES_EXPERT,
 
 	// ^^ Always add new entries here! ^^
 };
 
-// base convars
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_LEADERSHIP_ACCURACY_CHANCE_BASE, asw_skill_leadership_accuracy_chance_base, 0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_LEADERSHIP_DAMAGE_RESIST_BASE, asw_skill_leadership_damage_resist_base, 0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_VINDICATOR_DMG_BASE, asw_skill_vindicator_dmg_base, 0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_VINDICATOR_PELLETS_BASE, asw_skill_vindicator_pellets_base, 7, "" );
+// Leadership (Officer)
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_LEADERSHIP_ACCURACY_CHANCE, asw_skill_leadership_accuracy_chance, 0, 0.03, "", ASW_MARINE_SKILL_LEADERSHIP, ASW_MARINE_SUBSKILL_LEADERSHIP_ACCURACY_CHANCE );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_LEADERSHIP_DAMAGE_RESIST, asw_skill_leadership_damage_resist, 0, 0.06, "", ASW_MARINE_SKILL_LEADERSHIP, ASW_MARINE_SUBSKILL_LEADERSHIP_DAMAGE_RESIST );
 
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_AUTOGUN_BASE, asw_skill_autogun_base, 0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_AUTOGUN_MINIGUN_DMG_BASE, asw_skill_autogun_minigun_dmg_base, 0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_AUTOGUN_CRYO_SPINUP_BASE, asw_skill_autogun_cryo_spinup_base, 0.25, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_AUTOGUN_CRYO_FREEZE_BASE, asw_skill_autogun_cryo_freeze_base, 0.15, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_AUTOGUN_CRYO_RADIUS_BASE, asw_skill_autogun_cryo_radius_base, 64, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_PIERCING_BASE, asw_skill_piercing_base, 0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_STOPPING_POWER_AIRBLAST_STRENGTH_BASE, asw_skill_stopping_power_airblast_strength_base, 0, "" );
+// Vindicator Damage (Officer)
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_VINDICATOR_DMG, asw_skill_vindicator_dmg, 0, 2.0, "", ASW_MARINE_SKILL_VINDICATOR, ASW_MARINE_SUBSKILL_VINDICATOR_DAMAGE );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_VINDICATOR_PELLETS, asw_skill_vindicator_pellets, 7, 0, "", ASW_MARINE_SKILL_VINDICATOR, ASW_MARINE_SUBSKILL_VINDICATOR_PELLETS );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_VINDICATOR_MUZZLE_FLASH, asw_skill_vindicator_muzzle_flash, 1.0, 0.2, "", ASW_MARINE_SKILL_VINDICATOR, ASW_MARINE_SUBSKILL_VINDICATOR_MUZZLE );
 
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HEALING_CHARGES_BASE, asw_skill_healing_charges_base, 4, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_SELF_HEALING_CHARGES_BASE, asw_skill_self_healing_charges_base, 2, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HEALING_MEDRIFLE_HEALING_CHARGES_BASE, asw_skill_healing_medrifle_healing_charges_base, 50, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HEALING_MEDKIT_HPS_BASE, asw_skill_healing_medkit_hps_base, 50, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HEALING_HPS_BASE, asw_skill_healing_hps_base, 25, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HEALING_GRENADE_BASE, asw_skill_healing_grenade_base, 120, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HEALING_GUN_CHARGES_BASE, asw_skill_healing_gun_charges_base, 40, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HEALING_GUN_BASE, asw_skill_healing_gun_base, 5, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HEALING_AMP_GUN_CHARGES_BASE, asw_skill_healing_amp_gun_charges_base, 20, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_XENOWOUNDS_BASE, asw_skill_xenowounds_base, 100, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_DRUGS_BASE, asw_skill_drugs_base, 5, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_DRUGS_HEALAMP_BASE, asw_skill_drugs_healamp_base, 90, "" );
+// Heavy Weapons (Special Weapons)
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_AUTOGUN, asw_skill_autogun, 0, 1, "", ASW_MARINE_SKILL_AUTOGUN, ASW_MARINE_SUBSKILL_AUTOGUN_DMG );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_AUTOGUN_MINIGUN_DMG, asw_skill_autogun_minigun_dmg, 0, 1, "", ASW_MARINE_SKILL_AUTOGUN, ASW_MARINE_SUBSKILL_AUTOGUN_MINIGUN_DMG );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_AUTOGUN_CRYO_SPINUP, asw_skill_autogun_cryo_spinup, 0.25, 0.25, "", ASW_MARINE_SKILL_AUTOGUN, ASW_MARINE_SUBSKILL_AUTOGUN_CRYO_SPINUP );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_AUTOGUN_CRYO_FREEZE, asw_skill_autogun_cryo_freeze, 0.15, 0, "", ASW_MARINE_SKILL_AUTOGUN, ASW_MARINE_SUBSKILL_AUTOGUN_CRYO_FREEZE );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_AUTOGUN_CRYO_RADIUS, asw_skill_autogun_cryo_radius, 64, 0, "", ASW_MARINE_SKILL_AUTOGUN, ASW_MARINE_SUBSKILL_AUTOGUN_CRYO_RADIUS );
 
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HACKING_SPEED_BASE, asw_skill_hacking_speed_base, 2.0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_SCANNER_BASE, asw_skill_scanner_base, 600, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ENGINEERING_WELDING_BASE, asw_skill_engineering_welding_base, 0.8, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ENGINEERING_SENTRY_BASE, asw_skill_engineering_sentry_base, 1.0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ENGINEERING_FIRERATE_BASE, asw_skill_engineering_firerate_base, 0.0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ENGINEERING_SHIELD_HEALTH_BASE, asw_skill_engineering_shield_health_base, 300, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ENGINEERING_SHIELD_DURATION_BASE, asw_skill_engineering_shield_duration_base, 6, "" );
+// Stopping Power (Special Weapons)
+// ASW_MARINE_SUBSKILL_STOPPING_POWER is handled per weapon
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_PIERCING, asw_skill_piercing, 0, 0.20, "", ASW_MARINE_SKILL_STOPPING_POWER, ASW_MARINE_SUBSKILL_PIERCING_CHANCE );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_STOPPING_POWER_AIRBLAST_STRENGTH, asw_skill_stopping_power_airblast_strength, 0, 0, "", ASW_MARINE_SKILL_STOPPING_POWER, ASW_MARINE_SUBSKILL_AIRBLAST_STRENGTH );
 
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_RADIUS_BASE, asw_skill_grenades_radius_base, 280, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_DMG_BASE, asw_skill_grenades_dmg_base, 128, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_INCENDIARY_DMG_BASE, asw_skill_grenades_incendiary_dmg_base, 20, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_CLUSTER_DMG_BASE, asw_skill_grenades_cluster_dmg_base, 0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_CLUSTERS_BASE, asw_skill_grenades_clusters_base, 0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_FLECHETTE_DMG_BASE, asw_skill_grenades_flechette_dmg_base, 10, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_HORNET_DMG_BASE, asw_skill_grenades_hornet_dmg_base, 50, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_HORNET_COUNT_BASE, asw_skill_grenades_hornet_count_base, 8, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_HORNET_INTERVAL_BASE, asw_skill_grenades_hornet_interval_base, 0.09, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_FREEZE_RADIUS_BASE, asw_skill_grenades_freeze_radius_base, 210, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_FREEZE_DURATION_BASE, asw_skill_grenades_freeze_duration_base, 3.0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_SMART_COUNT_BASE, asw_skill_grenades_smart_count_base, 32, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_SMART_INTERVAL_BASE, asw_skill_grenades_smart_interval_base, 0.09, "" );
+// Healing (Medic)
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_HEALING_CHARGES, asw_skill_healing_charges, 4, 1, "", ASW_MARINE_SKILL_HEALING, ASW_MARINE_SUBSKILL_HEALING_CHARGES );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_SELF_HEALING_CHARGES, asw_skill_self_healing_charges, 2, 0.5, "", ASW_MARINE_SKILL_HEALING, ASW_MARINE_SUBSKILL_SELF_HEALING_CHARGES );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_HEALING_HPS, asw_skill_healing_hps, 25, 8, "", ASW_MARINE_SKILL_HEALING, ASW_MARINE_SUBSKILL_HEALING_HPS );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_HEALING_MEDKIT_HPS, asw_skill_healing_medkit_hps, 50, 5, "", ASW_MARINE_SKILL_HEALING, ASW_MARINE_SUBSKILL_HEALING_MEDKIT_HPS );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_HEALING_GRENADE, asw_skill_healing_grenade, 120, 30, "", ASW_MARINE_SKILL_HEALING, ASW_MARINE_SUBSKILL_HEAL_GRENADE_HEAL_AMOUNT );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_HEALING_GUN_CHARGES, asw_skill_healing_gun_charges, 40, 5, "", ASW_MARINE_SKILL_HEALING, ASW_MARINE_SUBSKILL_HEAL_GUN_CHARGES );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_HEALING_GUN, asw_skill_healing_gun, 5, 1, "", ASW_MARINE_SKILL_HEALING, ASW_MARINE_SUBSKILL_HEAL_GUN_HEAL_AMOUNT );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_HEALING_AMP_GUN_CHARGES, asw_skill_healing_amp_gun_charges, 20, 5, "", ASW_MARINE_SKILL_HEALING, ASW_MARINE_SUBSKILL_HEALAMP_GUN_CHARGES );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_HEALING_MEDRIFLE_HEALING_CHARGES, asw_skill_healing_medrifle_healing_charges, 50, 0, "", ASW_MARINE_SKILL_HEALING, ASW_MARINE_SUBSKILL_MEDRIFLE_HEALING_CHARGES );
 
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HEALTH_BASE, asw_skill_health_base, 80, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_MELEE_DMG_BASE, asw_skill_melee_dmg_base, 30, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_MELEE_FORCE_BASE, asw_skill_melee_force_base, 10, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_MELEE_SPEED_BASE, asw_skill_melee_speed_base, 1.0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_RELOADING_BASE, asw_skill_reloading_base, 1.4, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_RELOADING_FAST_BASE, asw_skill_reloading_fast_base, 1.0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_AGILITY_MOVESPEED_BASE, asw_skill_agility_movespeed_base, 290, "" );
+// Infestation Curing (Medic)
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_XENOWOUNDS, asw_skill_xenowounds, 100, -25, "", ASW_MARINE_SKILL_XENOWOUNDS, ASW_MARINE_SUBSKILL_XENOWOUNDS_INFESTATION_CURING );
 
-// step convars
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_LEADERSHIP_ACCURACY_CHANCE_STEP, asw_skill_leadership_accuracy_chance_step, 0.03, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_LEADERSHIP_DAMAGE_RESIST_STEP, asw_skill_leadership_damage_resist_step, 0.06, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_VINDICATOR_DMG_STEP, asw_skill_vindicator_dmg_step, 2.0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_VINDICATOR_PELLETS_STEP, asw_skill_vindicator_pellets_step, 0, "" );
+// Combat Drugs (Medic)
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_DRUGS, asw_skill_drugs, 5, 0.8, "", ASW_MARINE_SKILL_DRUGS, ASW_MARINE_SUBSKILL_STIM_DURATION );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_DRUGS_HEALAMP, asw_skill_drugs_healamp, 90, 20, "", ASW_MARINE_SKILL_DRUGS, ASW_MARINE_SUBSKILL_HEALAMP_GUN_AMP_CHARGES );
 
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_AUTOGUN_STEP, asw_skill_autogun_step, 1, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_AUTOGUN_MINIGUN_DMG_STEP, asw_skill_autogun_minigun_dmg_step, 1, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_AUTOGUN_CRYO_SPINUP_STEP, asw_skill_autogun_cryo_spinup_step, 0.25, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_AUTOGUN_CRYO_FREEZE_STEP, asw_skill_autogun_cryo_freeze_step, 0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_AUTOGUN_CRYO_RADIUS_STEP, asw_skill_autogun_cryo_radius_step, 0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_PIERCING_STEP, asw_skill_piercing_step, 0.20, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_STOPPING_POWER_AIRBLAST_STRENGTH_STEP, asw_skill_stopping_power_airblast_strength_step, 0, "" );
+// Hacking (Tech)
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_HACKING_SPEED, asw_skill_hacking_speed, 2.0, 0.1, "", ASW_MARINE_SKILL_HACKING, ASW_MARINE_SUBSKILL_HACKING_SPEED_SCALE );
+// TODO: ASW_MARINE_SUBSKILL_HACKING_TUMBLER_COUNT_REDUCTION
+// TODO: ASW_MARINE_SUBSKILL_HACKING_ENTRIES_PER_TUMBLER_REDUCTION
 
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HEALING_CHARGES_STEP, asw_skill_healing_charges_step, 1, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_SELF_HEALING_CHARGES_STEP, asw_skill_self_healing_charges_step, 0.5, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HEALING_MEDRIFLE_HEALING_CHARGES_STEP, asw_skill_healing_medrifle_healing_charges_step, 0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HEALING_HPS_STEP, asw_skill_healing_hps_step, 8, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HEALING_GRENADE_STEP, asw_skill_healing_grenade_step, 30, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HEALING_GUN_CHARGES_STEP, asw_skill_healing_gun_charges_step, 10, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HEALING_GUN_STEP, asw_skill_healing_gun_step, 1, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HEALING_AMP_GUN_CHARGES_STEP, asw_skill_healing_amp_gun_charges_step, 5, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HEALING_MEDKIT_HPS_STEP, asw_skill_healing_medkit_hps_step, 5, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_XENOWOUNDS_STEP, asw_skill_xenowounds_step, -25, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_DRUGS_STEP, asw_skill_drugs_step, 0.8, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_DRUGS_HEALAMP_STEP, asw_skill_drugs_healamp_step, 20, "" );
+// Scanner (Tech)
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_SCANNER, asw_skill_scanner, 600, 150, "", ASW_MARINE_SKILL_SCANNER, ASW_MARINE_SUBSKILL_SCANNER_RANGE );
 
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HACKING_SPEED_STEP, asw_skill_hacking_speed_step, 0.1, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_SCANNER_STEP, asw_skill_scanner_step, 150, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ENGINEERING_WELDING_STEP, asw_skill_engineering_welding_step, 0.5, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ENGINEERING_SENTRY_STEP, asw_skill_engineering_sentry_step, 0.25, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ENGINEERING_FIRERATE_STEP, asw_skill_engineering_firerate_step, 0.005, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ENGINEERING_SHIELD_HEALTH_STEP, asw_skill_engineering_shield_health_step, 50, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ENGINEERING_SHIELD_DURATION_STEP, asw_skill_engineering_shield_duration_step, 1, "" );
+// Engineering (Tech)
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_ENGINEERING_WELDING, asw_skill_engineering_welding, 0.8, 0.5, "", ASW_MARINE_SKILL_ENGINEERING, ASW_MARINE_SUBSKILL_ENGINEERING_WELDING );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_ENGINEERING_SENTRY, asw_skill_engineering_sentry, 1.0, 0.25, "", ASW_MARINE_SKILL_ENGINEERING, ASW_MARINE_SUBSKILL_ENGINEERING_SENTRY );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_ENGINEERING_FIRERATE, asw_skill_engineering_firerate, 0.0, 0.005, "", ASW_MARINE_SKILL_ENGINEERING, ASW_MARINE_SUBSKILL_ENGINEERING_FIRERATE );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_ENGINEERING_SHIELD_HEALTH, asw_skill_engineering_shield_health, 300, 50, "", ASW_MARINE_SKILL_ENGINEERING, ASW_MARINE_SUBSKILL_ENGINEERING_SHIELD_HEALTH );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_ENGINEERING_SHIELD_DURATION, asw_skill_engineering_shield_duration, 6, 1, "", ASW_MARINE_SKILL_ENGINEERING, ASW_MARINE_SUBSKILL_ENGINEERING_SHIELD_DURATION );
 
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_RADIUS_STEP, asw_skill_grenades_radius_step, 20, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_DMG_STEP, asw_skill_grenades_dmg_step, 20, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_INCENDIARY_DMG_STEP, asw_skill_grenades_incendiary_dmg_step, 0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_CLUSTER_DMG_STEP, asw_skill_grenades_cluster_dmg_step, 10, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_CLUSTERS_STEP, asw_skill_grenades_clusters_step, 1, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_FLECHETTE_DMG_STEP, asw_skill_grenades_flechette_dmg_step, 1, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_HORNET_DMG_STEP, asw_skill_grenades_hornet_dmg_step, 1, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_HORNET_COUNT_STEP, asw_skill_grenades_hornet_count_step, 0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_HORNET_INTERVAL_STEP, asw_skill_grenades_hornet_interval_step, 0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_FREEZE_RADIUS_STEP, asw_skill_grenades_freeze_radius_step, 0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_FREEZE_DURATION_STEP, asw_skill_grenades_freeze_duration_step, 0.3, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_SMART_COUNT_STEP, asw_skill_grenades_smart_count_step, 0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_GRENADES_SMART_INTERVAL_STEP, asw_skill_grenades_smart_interval_step, 0, "" );
+// Damage Bonus
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_ACCURACY_RIFLE_DMG, asw_skill_accuracy_rifle_dmg, 0, 1, "", ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_ACCURACY_PRIFLE_DMG, asw_skill_accuracy_prifle_dmg, 0, 1, "", ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_PRIFLE_DMG );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_ACCURACY_SHOTGUN_DMG, asw_skill_accuracy_shotgun_dmg, 0, 2, "", ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_SHOTGUN_DMG );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_ACCURACY_RAILGUN_DMG, asw_skill_accuracy_railgun_dmg, 0, 10, "", ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_RAILGUN_DMG );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_ACCURACY_FLAMER_DMG, asw_skill_accuracy_flamer_dmg, 0, 0.5, "", ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_FLAMER_DMG );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_ACCURACY_PISTOL_DMG, asw_skill_accuracy_pistol_dmg, 0, 4, "", ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_PISTOL_DMG );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_ACCURACY_PDW_DMG, asw_skill_accuracy_pdw_dmg, 0, 1.0, "", ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_PDW_DMG );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_ACCURACY_SNIPER_RIFLE_DMG, asw_skill_accuracy_sniper_rifle_dmg, 0, 20, "", ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_SNIPER_RIFLE_DMG );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_ACCURACY_TESLA_CANNON_DMG, asw_skill_accuracy_tesla_cannon_dmg, 0, 0.25, "", ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_TESLA_CANNON_DMG );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_ACCURACY_HEAVY_RIFLE_DMG, asw_skill_accuracy_heavy_rifle_dmg, 0, 2, "", ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_HEAVY_RIFLE_DMG );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_ACCURACY_MEDRIFLE_DMG, asw_skill_accuracy_medrifle_dmg, 0, 2, "", ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_MEDRIFLE_DMG );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_MUZZLE_FLASH, asw_skill_muzzle_flash, 1.0, 0.2, "", ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_MUZZLE );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_ACCURACY_BULLDOG_DMG, asw_skill_accuracy_deagle_dmg, 0, 0, "", ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_DEAGLE_DMG );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_ACCURACY_AR2_DMG, asw_skill_accuracy_ar2_dmg, 0, 2, "", ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_AR2_DMG );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_ACCURACY_DEVASTATOR_DMG, asw_skill_accuracy_devastator_dmg, 0, 1, "", ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_DEVASTATOR_DMG );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_ACCURACY_50CALMG_DMG, asw_skill_accuracy_50calmg_dmg, 0, 1, "", ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_50CALMG_DMG );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_ACCURACY_MINING_LASER_DMG, asw_skill_accuracy_mining_laser_dmg, 0, 1, "", ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_MINING_LASER_DMG );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_ACCURACY_SHIELD_RIFLE_DMG, asw_skill_accuracy_shield_rifle_dmg, 0, 2, "", ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_SHIELD_RIFLE_DMG );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_ACCURACY_CRYO_DMG, asw_skill_accuracy_cryo_dmg, 0, 0.5, "", ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_CRYO_DMG );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_ACCURACY_SHIELD_DAMAGE, asw_skill_accuracy_shield_damage, 30, 20, "", ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_SHIELD_DAMAGE );
 
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_HEALTH_STEP, asw_skill_health_step, 15, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_MELEE_DMG_STEP, asw_skill_melee_dmg_step, 6, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_MELEE_FORCE_STEP, asw_skill_melee_force_step, 1.0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_MELEE_SPEED_STEP, asw_skill_melee_speed_step, 0.1, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_RELOADING_STEP, asw_skill_reloading_step, -0.14, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_RELOADING_FAST_STEP, asw_skill_reloading_fast_step, 0.05, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_AGILITY_MOVESPEED_STEP, asw_skill_agility_movespeed_step, 10, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_AGILITY_RELOAD_STEP, asw_skill_agility_reload_step, 0, "" );
+// Explosives Bonus
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_GRENADES_RADIUS, asw_skill_grenades_radius, 280, 20, "", ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_RADIUS );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_GRENADES_DMG, asw_skill_grenades_dmg, 128, 20, "", ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_DMG );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_GRENADES_INCENDIARY_DMG, asw_skill_grenades_incendiary_dmg, 20, 0, "", ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_INCENDIARY_DMG );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_GRENADES_CLUSTER_DMG, asw_skill_grenades_cluster_dmg, 0, 10, "", ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_CLUSTER_DMG );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_GRENADES_CLUSTERS, asw_skill_grenades_clusters, 0, 1, "", ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_CLUSTERS );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_GRENADES_FLECHETTE_DMG, asw_skill_grenades_flechette_dmg, 10, 1, "", ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_FLECHETTE_DMG );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_GRENADES_HORNET_DMG, asw_skill_grenades_hornet_dmg, 50, 1, "", ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_HORNET_DMG );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_GRENADES_HORNET_COUNT, asw_skill_grenades_hornet_count, 8, 0, "", ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_HORNET_COUNT );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_GRENADES_HORNET_INTERVAL, asw_skill_grenades_hornet_interval, 0.09, 0, "", ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_HORNET_INTERVAL );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_GRENADES_FREEZE_RADIUS, asw_skill_grenades_freeze_radius, 210, 0, "", ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_FREEZE_RADIUS );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_GRENADES_FREEZE_DURATION, asw_skill_grenades_freeze_duration, 3.0, 0.3, "", ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_FREEZE_DURATION );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_GRENADES_SMART_COUNT, asw_skill_grenades_smart_count, 32, 0, "", ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_SMART_BOMB_COUNT );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_GRENADES_SMART_INTERVAL, asw_skill_grenades_smart_interval, 0.09, 0, "", ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_SMART_BOMB_INTERVAL );
+GameRulesConVarSkill5_2( s_ASWMarineSkillsConVars, AMSC_LASER_MINES, asw_skill_laser_mines, 1, 2, 3, "number of laser mines to deploy per Explosives Bonus skill", ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_LASER_MINES );
+GameRulesConVarSkill5_2( s_ASWMarineSkillsConVars, AMSC_MINES_FIRES, asw_skill_mines_fires, 1, 2, 3, "number of additional incendiary mine fires on each side per Explosives Bonus skill", ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_MINES_FIRES );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_MINES_DURATION, asw_skill_mines_duration, 10.0, 5.0, "", ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_MINES_DURATION );
 
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_MINES_FIRES_BASE, asw_skill_mines_fires_base, 1, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_MINES_FIRES_STEP, asw_skill_mines_fires_step, 0.5, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_MINES_DURATION_BASE, asw_skill_mines_duration_base, 10.0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_MINES_DURATION_STEP, asw_skill_mines_duration_step, 5.0, "" );
+// Health Bonus
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_HEALTH, asw_skill_health, 80, 15, "", ASW_MARINE_SKILL_HEALTH, ASW_MARINE_SUBSKILL_HEALTH );
 
-// accuracy convars
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_RIFLE_DMG_BASE, asw_skill_accuracy_rifle_dmg_base, 0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_RIFLE_DMG_STEP, asw_skill_accuracy_rifle_dmg_step, 1, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_PRIFLE_DMG_BASE, asw_skill_accuracy_prifle_dmg_base, 0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_PRIFLE_DMG_STEP, asw_skill_accuracy_prifle_dmg_step, 1, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_SHOTGUN_DMG_BASE, asw_skill_accuracy_shotgun_dmg_base, 0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_SHOTGUN_DMG_STEP, asw_skill_accuracy_shotgun_dmg_step, 2, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_RAILGUN_DMG_BASE, asw_skill_accuracy_railgun_dmg_base, 0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_RAILGUN_DMG_STEP, asw_skill_accuracy_railgun_dmg_step, 10, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_FLAMER_DMG_BASE, asw_skill_accuracy_flamer_dmg_base, 0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_FLAMER_DMG_STEP, asw_skill_accuracy_flamer_dmg_step, 0.5, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_PISTOL_DMG_BASE, asw_skill_accuracy_pistol_dmg_base, 0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_PISTOL_DMG_STEP, asw_skill_accuracy_pistol_dmg_step, 4, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_DEAGLE_DMG_BASE, asw_skill_accuracy_deagle_dmg_base, 0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_DEAGLE_DMG_STEP, asw_skill_accuracy_deagle_dmg_step, 0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_PDW_DMG_BASE, asw_skill_accuracy_pdw_dmg_base, 0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_PDW_DMG_STEP, asw_skill_accuracy_pdw_dmg_step, 1.0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_MUZZLE_FLASH_BASE, asw_skill_muzzle_flash_base, 1.0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_MUZZLE_FLASH_STEP, asw_skill_muzzle_flash_step, 0.2, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_SNIPER_RIFLE_DMG_BASE, asw_skill_accuracy_sniper_rifle_dmg_base, 0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_SNIPER_RIFLE_DMG_STEP, asw_skill_accuracy_sniper_rifle_dmg_step, 20, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_TESLA_CANNON_DMG_BASE, asw_skill_accuracy_tesla_cannon_dmg_base, 0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_TESLA_CANNON_DMG_STEP, asw_skill_accuracy_tesla_cannon_dmg_step, 0.25, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_HEAVY_RIFLE_DMG_BASE, asw_skill_accuracy_heavy_rifle_dmg_base, 0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_HEAVY_RIFLE_DMG_STEP, asw_skill_accuracy_heavy_rifle_dmg_step, 2, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_MEDRIFLE_DMG_BASE, asw_skill_accuracy_medrifle_dmg_base, 0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_MEDRIFLE_DMG_STEP, asw_skill_accuracy_medrifle_dmg_step, 2, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_AR2_DMG_BASE, asw_skill_accuracy_ar2_dmg_base, 0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_AR2_DMG_STEP, asw_skill_accuracy_ar2_dmg_step, 2, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_DEVASTATOR_DMG_BASE, asw_skill_accuracy_devastator_dmg_base, 0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_DEVASTATOR_DMG_STEP, asw_skill_accuracy_devastator_dmg_step, 1, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_50CALMG_DMG_BASE, asw_skill_accuracy_50calmg_dmg_base, 0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_50CALMG_DMG_STEP, asw_skill_accuracy_50calmg_dmg_step, 1, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_MINING_LASER_DMG_BASE, asw_skill_accuracy_mining_laser_dmg_base, 0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_MINING_LASER_DMG_STEP, asw_skill_accuracy_mining_laser_dmg_step, 1, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_SHIELD_RIFLE_DMG_BASE, asw_skill_accuracy_shield_rifle_dmg_base, 0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_SHIELD_RIFLE_DMG_STEP, asw_skill_accuracy_shield_rifle_dmg_step, 2, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_CRYO_DMG_BASE, asw_skill_accuracy_cryo_dmg_base, 0, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_CRYO_DMG_STEP, asw_skill_accuracy_cryo_dmg_step, 0.5, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_SHIELD_DAMAGE_BASE, asw_skill_accuracy_shield_damage_base, 30, "" );
-GameRulesConVar( s_ASWMarineSkillsConVars, AMSC_ACCURACY_SHIELD_DAMAGE_STEP, asw_skill_accuracy_shield_damage_step, 20, "" );
+// Melee Damage Bonus
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_MELEE_DMG, asw_skill_melee_dmg, 30, 6, "", ASW_MARINE_SKILL_MELEE, ASW_MARINE_SUBSKILL_MELEE_DMG );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_MELEE_FORCE, asw_skill_melee_force, 10, 1.0, "", ASW_MARINE_SKILL_MELEE, ASW_MARINE_SUBSKILL_MELEE_FORCE );
+// TODO: ASW_MARINE_SUBSKILL_MELEE_FLINCH
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_MELEE_SPEED, asw_skill_melee_speed, 1.0, 0.1, "", ASW_MARINE_SKILL_MELEE, ASW_MARINE_SUBSKILL_MELEE_SPEED );
 
-GameRulesConVarClamp( s_ASWMarineSkillsConVars, AMSC_LASER_MINES_BASE, asw_skill_laser_mines_base, 1, "Number of laser mines to deploy by marines with no Explosives skills", 1, 10 );
-GameRulesConVarClamp( s_ASWMarineSkillsConVars, AMSC_LASER_MINES_MODERATE, asw_skill_laser_mines_moderate, 2, "Number of laser mines to deploy by marines with moderate(>1) Explosives skills", 1, 10 );
-GameRulesConVarClamp( s_ASWMarineSkillsConVars, AMSC_LASER_MINES_EXPERT, asw_skill_laser_mines_expert, 3, "Number of laser mines to deploy by marines with expert(>3) Explosives skills. Currently only Jaeger have it", 1, 10 );
+// Reload Speed Bonus
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_RELOADING, asw_skill_reloading, 1.4, -0.14, "", ASW_MARINE_SKILL_RELOADING, ASW_MARINE_SUBSKILL_RELOADING_SPEED_SCALE );
+// TODO: ASW_MARINE_SUBSKILL_RELOADING_SOUND
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_RELOADING_FAST, asw_skill_reloading_fast, 1.0, 0.05, "", ASW_MARINE_SKILL_RELOADING, ASW_MARINE_SUBSKILL_RELOADING_FAST_WIDTH_SCALE );
+
+// Speed Bonus
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_AGILITY_MOVESPEED, asw_skill_agility_movespeed, 290, 10, "", ASW_MARINE_SKILL_AGILITY, ASW_MARINE_SUBSKILL_AGILITY_MOVE_SPEED );
 
 CASW_Marine_Skills::CASW_Marine_Skills()
 {
@@ -408,7 +357,7 @@ float CASW_Marine_Skills::GetSkillBasedValue( CASW_Marine_Profile *pProfile, ASW
 		case ASW_MARINE_SUBSKILL_VINDICATOR_PELLETS:
 			return asw_skill_vindicator_pellets_base.GetFloat() + asw_skill_vindicator_pellets_step.GetFloat() * iSkillPoints;
 		case ASW_MARINE_SUBSKILL_VINDICATOR_MUZZLE:
-			return asw_skill_muzzle_flash_base.GetFloat() + asw_skill_muzzle_flash_step.GetFloat() * iSkillPoints;
+			return asw_skill_vindicator_muzzle_flash_base.GetFloat() + asw_skill_vindicator_muzzle_flash_step.GetFloat() * iSkillPoints;
 		default:
 			Assert( 0 );
 			return 0.0f;
@@ -609,7 +558,11 @@ float CASW_Marine_Skills::GetSkillBasedValue( CASW_Marine_Profile *pProfile, ASW
 				return asw_skill_laser_mines_moderate.GetFloat();
 			return asw_skill_laser_mines_base.GetFloat();
 		case ASW_MARINE_SUBSKILL_GRENADE_MINES_FIRES:
-			return asw_skill_mines_fires_base.GetFloat() + asw_skill_mines_fires_step.GetFloat() * iSkillPoints;
+			if ( iSkillPoints >= 4 )
+				return asw_skill_mines_fires_expert.GetFloat();
+			if ( iSkillPoints >= 2 )
+				return asw_skill_mines_fires_moderate.GetFloat();
+			return asw_skill_mines_fires_base.GetFloat();
 		case ASW_MARINE_SUBSKILL_GRENADE_MINES_DURATION:
 			return asw_skill_mines_duration_base.GetFloat() + asw_skill_mines_duration_step.GetFloat() * iSkillPoints;
 		default:

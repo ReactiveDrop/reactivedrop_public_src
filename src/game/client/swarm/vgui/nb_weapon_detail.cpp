@@ -11,6 +11,7 @@
 #include "asw_marine_skills.h"
 #include "c_asw_game_resource.h"
 #include "c_asw_marine_resource.h"
+#include "rd_swarmopedia.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -75,333 +76,241 @@ void CNB_Weapon_Detail::OnThink()
 	}
 }
 
-void CNB_Weapon_Detail::SetWeaponDetails( int nEquipIndex, int nInventorySlot, int nProfileIndex, int nDetailIndex )
+void CNB_Weapon_Detail::SetWeaponDetails( int nEquipIndex, int nInventorySlot, int nProfileIndex, RD_Swarmopedia::WeaponFact::Type_T eWeaponFactType )
 {
 	m_nEquipIndex = nEquipIndex;
 	m_nInventorySlot = nInventorySlot;
 	m_nProfileIndex = nProfileIndex;
-	m_nDetailIndex = nDetailIndex;
+	m_eWeaponFactType = eWeaponFactType;
 }
 
 void CNB_Weapon_Detail::UpdateLabels( CASW_EquipItem *pItem, CASW_WeaponInfo *pWeaponData )
 {
+	m_pTitleLabel->SetVisible( false );
+	m_pValueLabel->SetVisible( false );
+	m_pStatsBar->SetVisible( false );
+
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	if ( !pPlayer )
 		return;
 
 	CASW_Marine_Profile *pProfile = Briefing()->GetMarineProfileByProfileIndex( m_nProfileIndex );
 
-	switch( m_nDetailIndex )
+	const RD_Swarmopedia::Weapon *pWeapon = RD_Swarmopedia::FindWeapon( pItem->m_iItemIndex, pItem->m_bIsExtra );
+	if ( !pWeapon )
 	{
-		case 0:
+		m_pTitleLabel->SetVisible( true );
+		m_pTitleLabel->SetText( pItem->m_szEquipClass );
+		m_pValueLabel->SetVisible( true );
+		m_pValueLabel->SetText( L"MISSING SWARMOPEDIA ARTICLE" ); // this is not translated because it should not ever show up in the released game
+		return;
+	}
+
+	if ( m_eWeaponFactType == RD_Swarmopedia::WeaponFact::Type_T::Generic )
+	{
+		if ( const wchar_t *wszAttributesValue = g_pVGuiLocalize->Find( pItem->m_szAttributeDescription ) )
 		{
-			// for the chainsaw (which uses melee damage as a skill modifier), it applies a base value to the specified number in the script file
-			// even if the skill is at 0 - because of this, we have to make a special case for the chainsaw and shift those values from the 
-			// "bonus" side to the "base" side because the base bonus always exists - confused yet?
-			float flBaseSkillDmgShift = 0;
-			int nBonusDmg = 0;
-			int nPellets = pItem->m_nNumPellets;
-			if ( pProfile )
-			{
-				if ( FStrEq("asw_weapon_prifle", pWeaponData->szClassName) )
-					nBonusDmg = MarineSkills()->GetSkillBasedValue(pProfile, ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_PRIFLE_DMG);
-				else if ( FStrEq("asw_weapon_shotgun", pWeaponData->szClassName) )
-					nBonusDmg = MarineSkills()->GetSkillBasedValue(pProfile, ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_SHOTGUN_DMG);
-				else if ( FStrEq("asw_weapon_railgun", pWeaponData->szClassName) )
-					nBonusDmg = MarineSkills()->GetSkillBasedValue(pProfile, ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_RAILGUN_DMG);
-				else if ( FStrEq("asw_weapon_flamer", pWeaponData->szClassName) || FStrEq("asw_weapon_sentry_flamer", pWeaponData->szClassName) )
-					nBonusDmg = MarineSkills()->GetSkillBasedValue(pProfile, ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_FLAMER_DMG);
-				else if ( FStrEq("asw_weapon_pistol", pWeaponData->szClassName) )
-					nBonusDmg = MarineSkills()->GetSkillBasedValue(pProfile, ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_PISTOL_DMG);
-				else if ( FStrEq( "asw_weapon_deagle", pWeaponData->szClassName ) )
-					nBonusDmg = MarineSkills()->GetSkillBasedValue( pProfile, ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_DEAGLE_DMG );
-				else if ( FStrEq("asw_weapon_pdw", pWeaponData->szClassName) )
-					nBonusDmg = MarineSkills()->GetSkillBasedValue(pProfile, ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_PDW_DMG);
-				else if ( FStrEq("asw_weapon_sniper_rifle", pWeaponData->szClassName) )
-					nBonusDmg = MarineSkills()->GetSkillBasedValue(pProfile, ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_SNIPER_RIFLE_DMG);
-				else if ( FStrEq("asw_weapon_tesla_gun", pWeaponData->szClassName) )
-					nBonusDmg = 0.5f + MarineSkills()->GetSkillBasedValue(pProfile, ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_TESLA_CANNON_DMG);
-				else if ( FStrEq("asw_weapon_chainsaw", pWeaponData->szClassName) )
-				{
-					flBaseSkillDmgShift = MarineSkills()->GetSkillBasedValue( NULL, ASW_MARINE_SKILL_MELEE, ASW_MARINE_SUBSKILL_MELEE_DMG, 0 );
-					nBonusDmg = MarineSkills()->GetSkillBasedValue(pProfile, ASW_MARINE_SKILL_MELEE, ASW_MARINE_SUBSKILL_MELEE_DMG);
-				}
-				else if ( FStrEq("asw_weapon_vindicator", pWeaponData->szClassName) )
-				{
-					nBonusDmg = MarineSkills()->GetSkillBasedValue(pProfile, ASW_MARINE_SKILL_VINDICATOR, ASW_MARINE_SUBSKILL_VINDICATOR_DAMAGE);
-					nPellets = MarineSkills()->GetSkillBasedValue(pProfile, ASW_MARINE_SKILL_VINDICATOR, ASW_MARINE_SUBSKILL_VINDICATOR_PELLETS);
-				}
-				else if ( FStrEq("asw_weapon_autogun", pWeaponData->szClassName) || FStrEq("asw_weapon_minigun", pWeaponData->szClassName) )
-					nBonusDmg = MarineSkills()->GetSkillBasedValue(pProfile, ASW_MARINE_SKILL_AUTOGUN, ASW_MARINE_SUBSKILL_AUTOGUN_DMG);
-				else if ( FStrEq("asw_weapon_grenade_launcher", pWeaponData->szClassName) )
-					nBonusDmg = MarineSkills()->GetSkillBasedValue(pProfile, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_CLUSTER_DMG);
-				else if ( FStrEq("asw_weapon_sentry_cannon", pWeaponData->szClassName) )
-					nBonusDmg = MarineSkills()->GetSkillBasedValue(pProfile, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_CLUSTER_DMG) * 0.5f;
-				else if ( FStrEq( "asw_weapon_heavy_rifle", pWeaponData->szClassName ) )
-					nBonusDmg = MarineSkills()->GetSkillBasedValue( pProfile, ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_HEAVY_RIFLE_DMG );
-				else if ( FStrEq( "asw_weapon_medrifle", pWeaponData->szClassName ) )
-					nBonusDmg = MarineSkills()->GetSkillBasedValue( pProfile, ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_MEDRIFLE_DMG );
-				else
-					nBonusDmg = MarineSkills()->GetSkillBasedValue(pProfile, ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG);
-
-			}
-
-			// fire power
-			static wchar_t wszPowerLine[32];
-			int iDamValue = ( pItem->m_flBaseDamage * pItem->m_nNumPellets ) + flBaseSkillDmgShift;
-			int nTotalBonusDmg = ( nBonusDmg * nPellets ) - flBaseSkillDmgShift;
-			Q_snwprintf( wszPowerLine, ARRAYSIZE( wszPowerLine ), L"%s", g_pVGuiLocalize->Find( "#asw_weapon_details_firepower" ) );
-			wchar_t wzDamValue[10];
-			if ( iDamValue <= 0 )
-			{
-				Q_snwprintf( wzDamValue, ARRAYSIZE( wzDamValue ), L"%s", g_pVGuiLocalize->Find( "#asw_weapon_altfire_NA" ) );
-			}
-			else if ( nTotalBonusDmg > 0 )
-			{
-				Q_snwprintf( wzDamValue, ARRAYSIZE( wzDamValue ), L"%d (+%d)", iDamValue, nTotalBonusDmg );
-			}
-			else
-			{
-				Q_snwprintf( wzDamValue, ARRAYSIZE( wzDamValue ), L"%d", iDamValue );
-			}
-
-			m_pTitleLabel->SetText( wszPowerLine );
 			m_pTitleLabel->SetVisible( true );
-			m_pValueLabel->SetText( wzDamValue );
+			m_pTitleLabel->SetText( g_pVGuiLocalize->Find( "#asw_weapon_details_notes" ) );
 			m_pValueLabel->SetVisible( true );
-			
-			float flDamage = iDamValue + nTotalBonusDmg;
-			float flCurrent = 0.0f;
-			if ( flDamage > 60 )
-				flCurrent = 1.0f;
-			else if ( iDamValue > 0 )
-				flCurrent = MAX( (flDamage-5.0f) / 55.0f, 0.05f );
-
-			if ( flDamage <= 0.0f )
-			{
-				m_pValueLabel->SetText( "#asw_weapon_altfire_NA" );
-				m_pStatsBar->SetVisible( false );
-			}
-			else
-			{
-				m_pStatsBar->Init( flCurrent, flCurrent, 0.1f, false, false );
-				m_pStatsBar->SetVisible( true );
-			}
-
-			break;
+			m_pValueLabel->SetText( wszAttributesValue );
 		}
 
-		case 1:
+		return;
+	}
+
+	const RD_Swarmopedia::WeaponFact *pFact = NULL;
+	FOR_EACH_VEC( pWeapon->Facts, i )
+	{
+		if ( pWeapon->Facts[i]->Type == m_eWeaponFactType )
 		{
-			// fire rate
-			static wchar_t wszRateLine[32];
-			Q_snwprintf( wszRateLine, ARRAYSIZE( wszRateLine ), L"%s", g_pVGuiLocalize->Find( "#asw_weapon_details_firerate" ) );
-			m_pTitleLabel->SetText( wszRateLine );
-			m_pTitleLabel->SetVisible( true );
+			pFact = pWeapon->Facts[i];
+			break;
+		}
+	}
 
-			float flRate = pItem->m_flFireRate;
-			wchar_t wzFireValue[32];
+	m_pTitleLabel->SetVisible( true );
+	if ( m_eWeaponFactType == RD_Swarmopedia::WeaponFact::Type_T::DamagePerShot )
+	{
+		m_pTitleLabel->SetText( "#asw_weapon_details_firepower" );
+	}
+	else if ( m_eWeaponFactType == RD_Swarmopedia::WeaponFact::Type_T::FireRate )
+	{
+		m_pTitleLabel->SetText( "#asw_weapon_details_firerate" );
+	}
+	else if ( m_eWeaponFactType == RD_Swarmopedia::WeaponFact::Type_T::ReloadTime )
+	{
+		m_pTitleLabel->SetText( "#asw_weapon_details_reload" );
+	}
+	else if ( m_eWeaponFactType == RD_Swarmopedia::WeaponFact::Type_T::Ammo )
+	{
+		m_pTitleLabel->SetText( "#asw_weapon_details_clipsize" );
+	}
+	else if ( m_eWeaponFactType == RD_Swarmopedia::WeaponFact::Type_T::Secondary )
+	{
+		m_pTitleLabel->SetText( "#asw_weapon_details_altfire" );
+	}
 
-			if ( FStrEq( "asw_weapon_prifle", pWeaponData->szClassName ) )
+	if ( !pFact )
+	{
+		m_pValueLabel->SetVisible( true );
+		m_pValueLabel->SetText( m_eWeaponFactType == RD_Swarmopedia::WeaponFact::Type_T::Secondary ? "#asw_weapon_altfire_none" : "#asw_weapon_altfire_NA" );
+		return;
+	}
+
+	float flBase, flSkill;
+	pFact->ComputeBaseAndSkill( flBase, flSkill, pProfile );
+
+	if ( m_eWeaponFactType == RD_Swarmopedia::WeaponFact::Type_T::DamagePerShot )
+	{
+		const RD_Swarmopedia::WeaponFact *pPellets = NULL;
+		FOR_EACH_VEC( pWeapon->Facts, i )
+		{
+			if ( pWeapon->Facts[i]->Type == RD_Swarmopedia::WeaponFact::Type_T::ShotgunPellets )
 			{
-				flRate -= MarineSkills()->GetSkillBasedValue( pProfile, ASW_MARINE_SKILL_ENGINEERING, ASW_MARINE_SUBSKILL_ENGINEERING_FIRERATE );
-				flRate = MAX(0.005, flRate); //0.07 is default
+				pPellets = pWeapon->Facts[i];
+				break;
 			}
+		}
 
-			float flCurrent = 0.0f;
-			if ( flRate <= 0 )
-			{
-				Q_snwprintf( wzFireValue, ARRAYSIZE( wzFireValue ), L"%s", g_pVGuiLocalize->Find( "#asw_weapon_altfire_NA" ) );
-			}
-			else
-			{
-				Q_snwprintf( wzFireValue, ARRAYSIZE( wzFireValue ), L"%.1f / %s", (1.0f/flRate), g_pVGuiLocalize->Find( "#asw_weapon_details_seconds" ) );
-				if ( flRate <= 0.125f )
-					flCurrent = 1.0f - MIN( ( ( pItem->m_flFireRate - 0.03f ) / 0.125f ) * 0.5f, 0.48f );
-				else
-					flCurrent = 1.0f - MIN( ( ( pItem->m_flFireRate - 0.5f ) / 0.65f ) + 0.5f, 0.98f );
-			}
+		if ( pPellets )
+		{
+			float flBasePellets, flSkillPellets;
+			pPellets->ComputeBaseAndSkill( flBasePellets, flSkillPellets, pProfile );
 
-			m_pValueLabel->SetText( wzFireValue );
-			m_pValueLabel->SetVisible( true );
-			m_pStatsBar->Init( flCurrent, flCurrent, 0.1f, false, false );
+			int iPellets = flBasePellets + flSkillPellets;
+
+			flBase *= iPellets;
+			flSkill *= iPellets;
+		}
+
+		wchar_t wzDamValue[10];
+		if ( flBase + flSkill <= 0 )
+		{
+			V_snwprintf( wzDamValue, ARRAYSIZE( wzDamValue ), L"%s", g_pVGuiLocalize->Find( "#asw_weapon_altfire_NA" ) );
+		}
+		else if ( flSkill > 0 )
+		{
+			V_snwprintf( wzDamValue, ARRAYSIZE( wzDamValue ), L"%d (+%d)", int( flBase + flSkill ), int( flSkill ) );
+		}
+		else
+		{
+			V_snwprintf( wzDamValue, ARRAYSIZE( wzDamValue ), L"%d", int( flBase ) );
+		}
+
+		m_pValueLabel->SetVisible( true );
+		m_pValueLabel->SetText( wzDamValue );
+
+		float flDamage = flBase + flSkill;
+		float flCurrent = 0.0f;
+		if ( flDamage > 60 )
+			flCurrent = 1.0f;
+		else if ( flBase > 0 )
+			flCurrent = MAX( ( flDamage - 5.0f ) / 55.0f, 0.05f );
+
+		if ( flDamage <= 0.0f )
+		{
+			m_pValueLabel->SetText( "#asw_weapon_altfire_NA" );
+		}
+		else
+		{
 			m_pStatsBar->SetVisible( true );
-
-			break;
-		}
-
-		case 2:
-		{
-			// the skill modifies the base reload time by this amount so all of the numbers in the script files are incorrect for displaying base amount
-			float flBaseSkillModifier = MarineSkills()->GetSkillBasedValue( NULL, ASW_MARINE_SKILL_RELOADING, ASW_MARINE_SUBSKILL_RELOADING_SPEED_SCALE, 0 );
-			// reload time
-			static wchar_t wszReloadLine[32];
-			Q_snwprintf( wszReloadLine, ARRAYSIZE( wszReloadLine ), L"%s", g_pVGuiLocalize->Find( "#asw_weapon_details_reload" ) );
-			float flBaseReload = pItem->m_flReloadTime;
-			if ( pWeaponData->m_flDisplayReloadTime >= 0 )
-				flBaseReload = pWeaponData->m_flDisplayReloadTime;
-
-			float flCurrent = flBaseReload;
-			float flRealReload = flBaseReload;
-			wchar_t wzReloadValue[32];
-			if ( flBaseReload <= 0 )
-			{
-				Q_snwprintf( wzReloadValue, ARRAYSIZE( wzReloadValue ), L"%s", g_pVGuiLocalize->Find( "#asw_weapon_altfire_NA" ) );
-			}
-			else
-			{
-				float fSpeedScale = 1;
-				float flReloadDiff = 0;
-				if ( pProfile )
-				{
-					fSpeedScale = MarineSkills()->GetSkillBasedValue(pProfile, ASW_MARINE_SKILL_RELOADING, ASW_MARINE_SUBSKILL_RELOADING_SPEED_SCALE);
-					if ( fSpeedScale != 1 )
-					{
-						flRealReload = flBaseReload * fSpeedScale;
-					
-						// to get an accurate difference, we need to multiply the script defined base reload amount by the base modifier that the Skill does
-						flReloadDiff = flRealReload - (flBaseReload * flBaseSkillModifier);
-					}
-				}
-
-				if ( flReloadDiff != 0 )
-					Q_snwprintf( wzReloadValue, ARRAYSIZE( wzReloadValue ), L"%.1f %s (%s%.1f)", (flBaseReload*flBaseSkillModifier), g_pVGuiLocalize->Find( "#asw_weapon_details_seconds" ), (flReloadDiff>0)?L"+":L"", flReloadDiff );
-				else
-					Q_snwprintf( wzReloadValue, ARRAYSIZE( wzReloadValue ), L"%.1f %s", (flBaseReload*flBaseSkillModifier), g_pVGuiLocalize->Find( "#asw_weapon_details_seconds" ) );
-				flCurrent = 1.0f - MIN( (flRealReload-0.75f)/2.5f, 0.99f );
-			}
-
-			m_pTitleLabel->SetText( wszReloadLine );
-			m_pTitleLabel->SetVisible( true );
-			m_pValueLabel->SetText( wzReloadValue );
-			m_pValueLabel->SetVisible( true );
 			m_pStatsBar->Init( flCurrent, flCurrent, 0.1f, false, false );
-			m_pStatsBar->SetVisible( true );
-			break;
 		}
+	}
+	else if ( m_eWeaponFactType == RD_Swarmopedia::WeaponFact::Type_T::FireRate )
+	{
+		wchar_t wzFireValue[32];
 
-		case 3:
+		float flTotal = flBase + flSkill;
+
+		float flCurrent = 0.0f;
+		if ( flTotal <= 0 )
 		{
-			// clip capacity
-			static wchar_t wszClipLine[32];
-			Q_snwprintf( wszClipLine, ARRAYSIZE( wszClipLine ), L"%s", g_pVGuiLocalize->Find( "#asw_weapon_details_clipsize" ) );
-			int iClipValue = pItem->MaxAmmo1();
-			int nMaxBulletsPerGun = GetAmmoDef()->MaxCarry( pItem->m_iAmmo1, NULL );
-			int iNumClips = ( nMaxBulletsPerGun / iClipValue ) + 1;
-			if ( pWeaponData->m_bShowClipsDoubled )
-			{
-				iNumClips *= 2;
-			}
+			V_snwprintf( wzFireValue, ARRAYSIZE( wzFireValue ), L"%s", g_pVGuiLocalize->Find( "#asw_weapon_altfire_NA" ) );
+		}
+		else
+		{
+			float flTotalReciprocal = 1.0f / flTotal;
+			float flBaseReciprocal = 1.0f / flBase;
 
-			if ( pWeaponData->m_iDisplayClipSize >= 0 )
-				iClipValue = pWeaponData->m_iDisplayClipSize;
-
-			wchar_t wzClipValue[10];
-			if ( iClipValue == 111 ) // magic number for infinite ammo
+			if ( flSkill == 0.0f )
 			{
-				// this displays an "infinity" symbol in the neosans font
-				wzClipValue[0] = 0x221E;
-				wzClipValue[1] = L'\0';
-			}
-			else if ( pWeaponData->m_bShowClipsInWeaponDetail )
-			{
-				Q_snwprintf( wzClipValue, ARRAYSIZE( wzClipValue ), L"%d x %d", iClipValue, iNumClips );
+				V_snwprintf( wzFireValue, ARRAYSIZE( wzFireValue ), L"%.1f / %s", flTotalReciprocal, g_pVGuiLocalize->Find( "#asw_weapon_details_seconds" ) );
 			}
 			else
 			{
-				Q_snwprintf( wzClipValue, ARRAYSIZE( wzClipValue ), L"%d", iClipValue );
+				V_snwprintf( wzFireValue, ARRAYSIZE( wzFireValue ), L"%.1f (%+.1f) / %s", flTotalReciprocal, flTotalReciprocal - flBaseReciprocal, g_pVGuiLocalize->Find( "#asw_weapon_details_seconds" ) );
 			}
-			float flCurrent = MIN( (float)iClipValue/200.0f, 1.0f );
 
-			m_pTitleLabel->SetText( wszClipLine );
-			m_pTitleLabel->SetVisible( true );
-			m_pValueLabel->SetText( wzClipValue );
-			m_pValueLabel->SetVisible( true );
-			m_pStatsBar->Init( flCurrent, flCurrent, 0.1f, false, false );
-			m_pStatsBar->SetVisible( true );
-			break;
-		}
-
-		case 4:
-		{
-			// alt fire
-			static wchar_t wszAltLine[32];
-			Q_snwprintf( wszAltLine, ARRAYSIZE( wszAltLine ), L"%s", g_pVGuiLocalize->Find( "#asw_weapon_details_altfire" ) );
-			wchar_t wzAltValue[64];
-			bool bHighlightText = false;
-
-			if ( !g_pVGuiLocalize->Find( pItem->m_szAltFireDescription ) )
-				V_snwprintf( wzAltValue, ARRAYSIZE( wzAltValue ), L"%s", g_pVGuiLocalize->Find( "#asw_weapon_altfire_none" ) );
+			if ( flTotal <= 0.125f )
+				flCurrent = 1.0f - MIN( ( ( flTotal - 0.03f ) / 0.125f ) * 0.5f, 0.48f );
 			else
-			{
-				int iAltFire = pItem->DefaultAmmo2();
-				if ( iAltFire > 0 )
-					Q_snwprintf( wzAltValue, ARRAYSIZE( wzAltValue ), L"%d %s", iAltFire, g_pVGuiLocalize->Find( pItem->m_szAltFireDescription ) );
-				else
-					Q_snwprintf( wzAltValue, ARRAYSIZE( wzAltValue ), L"%s", g_pVGuiLocalize->Find( pItem->m_szAltFireDescription ) );
-				bHighlightText = true;
-			}
-
-			m_pTitleLabel->SetText( wszAltLine );
-			m_pTitleLabel->SetVisible( true );
-			m_pValueLabel->SetText( wzAltValue );
-			m_pValueLabel->SetVisible( true );
-			m_pStatsBar->SetVisible( false );
-			break;
+				flCurrent = 1.0f - MIN( ( ( flTotal - 0.5f ) / 0.65f ) + 0.5f, 0.98f );
 		}
-		
-		case 5:
+
+		m_pValueLabel->SetVisible( true );
+		m_pValueLabel->SetText( wzFireValue );
+		m_pStatsBar->SetVisible( true );
+		m_pStatsBar->Init( flCurrent, flCurrent, 0.1f, false, false );
+	}
+	else if ( m_eWeaponFactType == RD_Swarmopedia::WeaponFact::Type_T::ReloadTime )
+	{
+		wchar_t wszReloadValue[32];
+		if ( flSkill != 0.0f )
+			V_snwprintf( wszReloadValue, ARRAYSIZE( wszReloadValue ), L"%.1f (%+.1f) %s", flBase + flSkill, flSkill, g_pVGuiLocalize->Find( "#asw_weapon_details_seconds" ) );
+		else
+			V_snwprintf( wszReloadValue, ARRAYSIZE( wszReloadValue ), L"%.1f %s", flBase, g_pVGuiLocalize->Find( "#asw_weapon_details_seconds" ) );
+
+		float flCurrent = 1.0f - MIN( ( flBase + flSkill - 0.75f ) / 2.5f, 0.99f );
+
+		m_pValueLabel->SetVisible( true );
+		m_pValueLabel->SetText( wszReloadValue );
+		m_pStatsBar->SetVisible( true );
+		m_pStatsBar->Init( flCurrent, flCurrent, 0.1f, false, false );
+	}
+	else if ( m_eWeaponFactType == RD_Swarmopedia::WeaponFact::Type_T::Ammo )
+	{
+		int iClipValue = pItem->MaxAmmo1();
+		int nMaxBulletsPerGun = GetAmmoDef()->MaxCarry( pItem->m_iAmmo1, NULL );
+		Assert( nMaxBulletsPerGun % iClipValue == 0 );
+		int iNumClips = ( nMaxBulletsPerGun / iClipValue ) + 1;
+
+		if ( pWeaponData->m_iDisplayClipSize >= 0 )
+			iClipValue = pWeaponData->m_iDisplayClipSize;
+
+		wchar_t wszClipValue[10];
+		if ( iClipValue == 111 ) // magic number for infinite ammo
 		{
-			// attributes
-			static wchar_t wszAttributesLine[32];
-			Q_snwprintf( wszAttributesLine, ARRAYSIZE( wszAttributesLine ), L"%s", g_pVGuiLocalize->Find( "#asw_weapon_details_notes" ) );
-			bool bHighlightText = false;
-			const wchar_t *wszAttributesValue = g_pVGuiLocalize->Find( pItem->m_szAttributeDescription );
-			if ( !wszAttributesValue )
-			{
-				m_pTitleLabel->SetVisible( false );
-				m_pValueLabel->SetVisible( false );
-			}
-			else
-			{
-				bHighlightText = true;
-				m_pTitleLabel->SetText( wszAttributesLine );
-				m_pTitleLabel->SetVisible( true );
-				m_pValueLabel->SetText( wszAttributesValue );
-				m_pValueLabel->SetVisible( true );
-			}
-
-			m_pStatsBar->SetVisible( false );
-
-			break;
+			// this displays an "infinity" symbol in the neosans font
+			V_snwprintf( wszClipValue, ARRAYSIZE( wszClipValue ), L"\u221E" );
 		}
-
-		case 6:
+		else if ( pWeaponData->m_bShowClipsInWeaponDetail )
 		{
-			int nRequiredLevel = pPlayer->GetWeaponLevelRequirement( pWeaponData->szClassName );
-			if ( nRequiredLevel == -1 )
-			{
-				m_pTitleLabel->SetVisible( false );
-				m_pValueLabel->SetVisible( false );
-				m_pStatsBar->SetVisible( false );
-				return;
-			}
-
-			// required level
-			static wchar_t wszAltLine[32];
-			Q_snwprintf( wszAltLine, ARRAYSIZE( wszAltLine ), L"%s", g_pVGuiLocalize->Find( "#asw_weapon_details_required_level" ) );
-
-			nRequiredLevel++;	// for display it's actually 1 higher (levels start from 0 in code)
-			wchar_t wzAltValue[64];
-			Q_snwprintf( wzAltValue, ARRAYSIZE( wzAltValue ), L"%d", nRequiredLevel );
-
-			m_pTitleLabel->SetText( wszAltLine );
-			m_pTitleLabel->SetVisible( true );
-			m_pValueLabel->SetText( wzAltValue );
-			m_pValueLabel->SetVisible( true );
-			m_pStatsBar->SetVisible( false );
-
-			break;
+			V_snwprintf( wszClipValue, ARRAYSIZE( wszClipValue ), L"%d \u00d7 %d", iClipValue, iNumClips );
 		}
-	}	
+		else
+		{
+			V_snwprintf( wszClipValue, ARRAYSIZE( wszClipValue ), L"%d", iClipValue );
+		}
+		float flCurrent = MIN( ( float )iClipValue / 200.0f, 1.0f );
+
+		m_pValueLabel->SetVisible( true );
+		m_pValueLabel->SetText( wszClipValue );
+		m_pStatsBar->SetVisible( true );
+		m_pStatsBar->Init( flCurrent, flCurrent, 0.1f, false, false );
+	}
+	else if ( m_eWeaponFactType == RD_Swarmopedia::WeaponFact::Type_T::Secondary )
+	{
+		wchar_t wszAltValue[64];
+
+		int iAltFire = pItem->DefaultAmmo2();
+		if ( iAltFire > 0 )
+			V_snwprintf( wszAltValue, ARRAYSIZE( wszAltValue ), L"%d %s", iAltFire, g_pVGuiLocalize->Find( pItem->m_szAltFireDescription ) );
+		else
+			V_snwprintf( wszAltValue, ARRAYSIZE( wszAltValue ), L"%s", g_pVGuiLocalize->Find( pItem->m_szAltFireDescription ) );
+
+		m_pValueLabel->SetVisible( true );
+		m_pValueLabel->SetText( wszAltValue );
+	}
 }

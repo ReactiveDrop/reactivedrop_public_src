@@ -765,11 +765,13 @@
 				"Skill" "ASW_MARINE_SKILL_ACCURACY"
 				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG"
 			}
+			"StoppingPower" {}
 			"BulletSpread" {
 				"Base" "3"
 			}
 			"FireRate" {}
 			"Ammo" {}
+			"ReloadTime" {}
 			"Secondary" {
 				"DamagePerShot" {
 					"UseWeaponInfo" "0"
@@ -778,6 +780,7 @@
 					"Skill" "ASW_MARINE_SKILL_GRENADES"
 					"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_DMG"
 				}
+				"StoppingPower" {}
 				"Ammo" {}
 				"HammerUnits" {
 					"Icon" "swarm/swarmopedia/fact/projectile_speed"
@@ -826,6 +829,7 @@
 				"Skill" "ASW_MARINE_SKILL_ACCURACY"
 				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_PRIFLE_DMG"
 			}
+			"StoppingPower" {}
 			"BulletSpread" {
 				"Base" "3"
 			}
@@ -836,6 +840,7 @@
 				"MinimumValue" "0.005"
 			}
 			"Ammo" {}
+			"ReloadTime" {}
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/aim_assist"
 				"Caption" "#rd_weapon_fact_aim_assist"
@@ -847,6 +852,7 @@
 					"Caption" "#rd_weapon_fact_damage_per_shot_shock"
 					"Base" "1"
 				}
+				"StoppingPower" {}
 				"Ammo" {
 					"Icon" "swarm/swarmopedia/fact/ammo_shock"
 					"Caption" "#rd_weapon_fact_ammo_shock"
@@ -898,11 +904,13 @@
 				"Skill" "ASW_MARINE_SKILL_AUTOGUN"
 				"SubSkill" "ASW_MARINE_SUBSKILL_AUTOGUN_DMG"
 			}
+			"StoppingPower" {}
 			"BulletSpread" {
 				"Base" "7"
 			}
 			"FireRate" {}
 			"Ammo" {}
+			"ReloadTime" {}
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/heavy"
 				"Caption" "#rd_weapon_fact_slow_movement_while_held"
@@ -951,11 +959,13 @@
 				"Skill" "ASW_MARINE_SKILL_VINDICATOR"
 				"SubSkill" "ASW_MARINE_SUBSKILL_VINDICATOR_DAMAGE"
 			}
+			"StoppingPower" {}
 			"BulletSpread" {
 				"Base" "22"
 			}
 			"FireRate" {}
 			"Ammo" {}
+			"ReloadTime" {}
 			"Secondary" {
 				"DamagePerShot" {
 					"UseWeaponInfo" "0"
@@ -964,6 +974,7 @@
 					"Skill" "ASW_MARINE_SKILL_GRENADES"
 					"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_INCENDIARY_DMG"
 				}
+				"StoppingPower" {}
 				"Generic" {
 					"Caption" "#rd_weapon_fact_ignites"
 				}
@@ -1029,6 +1040,7 @@
 				"Skill" "ASW_MARINE_SKILL_ACCURACY"
 				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_PISTOL_DMG"
 			}
+			"StoppingPower" {}
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/specific_damage_bonus"
 				"Caption" "#rd_weapon_fact_drone_bonus_damage"
@@ -1041,6 +1053,7 @@
 				"Caption" "#rd_weapon_fact_can_be_fired_faster"
 			}
 			"Ammo" {}
+			"ReloadTime" {}
 		}
 	}
 	"WEAPON" {
@@ -1325,11 +1338,13 @@
 				"Skill" "ASW_MARINE_SKILL_ACCURACY"
 				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_SHOTGUN_DMG"
 			}
+			"StoppingPower" {}
 			"BulletSpread" {
 				"Base" "22"
 			}
 			"FireRate" {}
 			"Ammo" {}
+			"ReloadTime" {}
 			"Secondary" {
 				"Generic" {
 					"Caption" "#rd_weapon_fact_secondary_uses_primary_ammo"
@@ -1369,8 +1384,10 @@
 				"Skill" "ASW_MARINE_SKILL_ACCURACY"
 				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_TESLA_CANNON_DMG"
 			}
+			"StoppingPower" {}
 			"FireRate" {}
 			"Ammo" {}
+			"ReloadTime" {}
 			"HammerUnits" {
 				"Icon" "swarm/swarmopedia/fact/range"
 				"Caption" "#rd_weapon_fact_range"
@@ -1417,7 +1434,9 @@
 				"Skill" "ASW_MARINE_SKILL_ACCURACY"
 				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_RAILGUN_DMG"
 			}
+			"StoppingPower" {}
 			"Ammo" {}
+			"ReloadTime" {}
 		}
 	}
 	"WEAPON" {
@@ -1506,11 +1525,13 @@
 				"Skill" "ASW_MARINE_SKILL_ACCURACY"
 				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_PDW_DMG"
 			}
+			"StoppingPower" {}
 			"BulletSpread" {
 				"Base" "3"
 			}
 			"FireRate" {}
 			"Ammo" {}
+			"ReloadTime" {}
 		}
 	}
 	"WEAPON" {
@@ -1546,6 +1567,7 @@
 				"Skill" "ASW_MARINE_SKILL_ACCURACY"
 				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_FLAMER_DMG"
 			}
+			"StoppingPower" {}
 			"FireRate" {}
 			"Generic" {
 				"Caption" "#rd_weapon_fact_ignites"
@@ -1554,6 +1576,7 @@
 				"Caption" "#rd_weapon_fact_burning_dps"
 			}
 			"Ammo" {}
+			"ReloadTime" {}
 			"Secondary" {
 				"Generic" {
 					"RequireCVar" "rd_flamer_infinite_extinguisher"
@@ -1671,6 +1694,7 @@
 				"Skill" "ASW_MARINE_SKILL_AUTOGUN"
 				"SubSkill" "ASW_MARINE_SUBSKILL_AUTOGUN_MINIGUN_DMG"
 			}
+			"StoppingPower" {}
 			"BulletSpread" {
 				"Base" "15"
 				"Flattened" "1"
@@ -1729,6 +1753,7 @@
 				"Skill" "ASW_MARINE_SKILL_ACCURACY"
 				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_SNIPER_RIFLE_DMG"
 			}
+			"StoppingPower" {}
 			// TODO: this gun does 1/2/3 max penetrate when idle/zoomed/damage-amped. piercing chance is always 350%. need to figure out a good way to represent this.
 			"Piercing" {
 				"Base" "3.5"
@@ -1739,6 +1764,7 @@
 			}
 			"FireRate" {}
 			"Ammo" {}
+			"ReloadTime" {}
 			"Secondary" {
 				"Numeric" {
 					"Icon" "swarm/swarmopedia/fact/specific_damage_bonus"
@@ -1863,6 +1889,7 @@
 				"BaseMultiplier" "0.5"
 				"Precision" "1"
 			}
+			"StoppingPower" {}
 			"FireRate" {
 				"UseWeaponInfo" "0"
 				"Base" "0.1"
@@ -1992,6 +2019,7 @@
 				"Skill" "ASW_MARINE_SKILL_GRENADES"
 				"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_CLUSTER_DMG"
 			}
+			"StoppingPower" {}
 			"Numeric" {
 				"Icon" "swarm/swarmopedia/fact/specific_damage_bonus"
 				"Caption" "#rd_weapon_fact_direct_hit_damage_scale"
@@ -2000,6 +2028,7 @@
 			}
 			"FireRate" {}
 			"Ammo" {}
+			"ReloadTime" {}
 			"HammerUnits" {
 				"Icon" "swarm/swarmopedia/fact/blast_radius"
 				"Caption" "#rd_weapon_fact_blast_radius"
@@ -2050,6 +2079,7 @@
 				"Skill" "ASW_MARINE_SKILL_ACCURACY"
 				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_DEAGLE_DMG"
 			}
+			"StoppingPower" {}
 			"LargeAlienDamageScale" {
 				"CVar" "rd_deagle_bigalien_dmg_scale"
 			}
@@ -2071,6 +2101,7 @@
 			}
 			"FireRate" {}
 			"Ammo" {}
+			"ReloadTime" {}
 		}
 	}
 	"WEAPON" {
@@ -2110,6 +2141,7 @@
 				"Skill" "ASW_MARINE_SKILL_ACCURACY"
 				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_DEVASTATOR_DMG"
 			}
+			"StoppingPower" {}
 			"BulletSpread" {
 				"Base" "11"
 			}
@@ -2120,6 +2152,7 @@
 			}
 			"FireRate" {}
 			"Ammo" {}
+			"ReloadTime" {}
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/accurate_crouch"
 				"Caption" "#rd_weapon_fact_more_accurate_while_crouching"
@@ -2163,7 +2196,9 @@
 				"Skill" "ASW_MARINE_SKILL_ACCURACY"
 				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG"
 			}
+			"StoppingPower" {}
 			"Ammo" {}
+			"ReloadTime" {}
 			"Secondary" {
 				"ShotgunPellets" {
 					"UseWeaponInfo" "0"
@@ -2176,6 +2211,7 @@
 					"BaseMultiplier" "6"
 					"SkillMultiplier" "6"
 				}
+				"StoppingPower" {}
 				"BulletSpread" {
 					"Base" "30"
 				}
@@ -2281,6 +2317,7 @@
 				"Skill" "ASW_MARINE_SKILL_ACCURACY"
 				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_HEAVY_RIFLE_DMG"
 			}
+			"StoppingPower" {}
 			"LargeAlienDamageScale" {
 				"CVar" "rd_heavy_rifle_bigalien_dmg_scale"
 			}
@@ -2294,6 +2331,7 @@
 			}
 			"FireRate" {}
 			"Ammo" {}
+			"ReloadTime" {}
 			"Secondary" {
 				"Numeric" {
 					"Icon" "swarm/swarmopedia/fact/duration"
@@ -2359,11 +2397,13 @@
 				"Skill" "ASW_MARINE_SKILL_ACCURACY"
 				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_MEDRIFLE_DMG"
 			}
+			"StoppingPower" {}
 			"BulletSpread" {
 				"Base" "3"
 			}
 			"FireRate" {}
 			"Ammo" {}
+			"ReloadTime" {}
 			"Secondary" {
 				"Ammo" {
 					"RequireCVar" "rd_medgun_infinite_ammo"
@@ -2446,6 +2486,7 @@
 				"BaseMultiplier" "2"
 				"SkillMultiplier" "2"
 			}
+			"StoppingPower" {}
 			"Numeric" {
 				"Icon" "swarm/swarmopedia/fact/duration"
 				"Caption" "#rd_weapon_fact_charge_time"
@@ -2457,6 +2498,7 @@
 				"Base" "0.2"
 			}
 			"Ammo" {}
+			"ReloadTime" {}
 		}
 	}
 	"WEAPON" {
@@ -2483,6 +2525,7 @@
 				"Skill" "ASW_MARINE_SKILL_ACCURACY"
 				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_50CALMG_DMG"
 			}
+			"StoppingPower" {}
 			"BulletSpread" {
 				"Base" "20"
 				"Flattened" "1"
@@ -2523,6 +2566,11 @@
 				"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_FLECHETTE_DMG"
 				"BaseMultiplier" "0"
 			}
+			"StoppingPower" {
+				"UseWeaponInfo" "0"
+				"Caption" "#rd_weapon_fact_stopping_power_blast"
+				"Base" "1"
+			}
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/rocket_aim"
 				"Caption" "#rd_weapon_fact_rockets_auto_aim"
@@ -2559,11 +2607,13 @@
 				"Skill" "ASW_MARINE_SKILL_ACCURACY"
 				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_RIFLE_DMG"
 			}
+			"StoppingPower" {}
 			"BulletSpread" {
 				"Base" "3"
 			}
 			"FireRate" {}
 			"Ammo" {}
+			"ReloadTime" {}
 			"Secondary" {}
 		}
 	}
@@ -2592,11 +2642,13 @@
 				"Skill" "ASW_MARINE_SKILL_ACCURACY"
 				"SubSkill" "ASW_MARINE_SUBSKILL_ACCURACY_AR2_DMG"
 			}
+			"StoppingPower" {}
 			"BulletSpread" {
 				"Base" "3"
 			}
 			"FireRate" {}
 			"Ammo" {}
+			"ReloadTime" {}
 			"Secondary" {
 				"DamagePerShot" {
 					"UseWeaponInfo" "0"
@@ -2762,6 +2814,11 @@
 					"Base" "100" // rd_laser_mine_dmg
 					"UseWeaponInfo" "0"
 				}
+				"StoppingPower" {
+					"UseWeaponInfo" "0"
+					"Caption" "#rd_weapon_fact_stopping_power_blast"
+					"Base" "1"
+				}
 				"Numeric" {
 					"Icon" "swarm/swarmopedia/fact/grenade_cluster"
 					"Caption" "#rd_weapon_fact_mines_per_use"
@@ -2896,6 +2953,11 @@
 					"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_HORNET_DMG"
 					"BaseMultiplier" "0"
 				}
+				"StoppingPower" {
+					"UseWeaponInfo" "0"
+					"Caption" "#rd_weapon_fact_stopping_power_blast"
+					"Base" "1"
+				}
 				"FireRate" {
 					"UseWeaponInfo" "0"
 					"Skill" "ASW_MARINE_SKILL_GRENADES"
@@ -3019,6 +3081,11 @@
 					"Caption" "#rd_weapon_fact_damage_per_shot_shock"
 					"Base" "5" // rd_tesla_trap_dmg
 				}
+				"StoppingPower" {
+					"UseWeaponInfo" "0"
+					"Caption" "#rd_weapon_fact_stopping_power_shock"
+					"Base" "1"
+				}
 				"FireRate" {
 					"Base" "0.3"
 				}
@@ -3068,6 +3135,11 @@
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/damage_shock"
 				"Caption" "#rd_weapon_fact_shocks_nearby_aliens"
+			}
+			"StoppingPower" {
+				"UseWeaponInfo" "0"
+				"Caption" "#rd_weapon_fact_stopping_power_shock"
+				"Base" "1"
 			}
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/heals_infestation"
@@ -3215,6 +3287,11 @@
 				"Skill" "ASW_MARINE_SKILL_GRENADES"
 				"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_CLUSTER_DMG"
 			}
+			"StoppingPower" {
+				"UseWeaponInfo" "0"
+				"Caption" "#rd_weapon_fact_stopping_power_blast"
+				"Base" "1"
+			}
 			"Ammo" {
 				"CVar" "asw_bonus_charges"
 			}
@@ -3298,6 +3375,11 @@
 					"Skill" "ASW_MARINE_SKILL_GRENADES"
 					"SubSkill" "ASW_MARINE_SUBSKILL_GRENADE_HORNET_DMG"
 					"BaseMultiplier" "0"
+				}
+				"StoppingPower" {
+					"UseWeaponInfo" "0"
+					"Caption" "#rd_weapon_fact_stopping_power_blast"
+					"Base" "1"
 				}
 				"FireRate" {
 					"UseWeaponInfo" "0"
@@ -3388,6 +3470,11 @@
 					"Caption" "#rd_weapon_fact_damage_per_shot_blast"
 					"Base" "600"
 				}
+				"StoppingPower" {
+					"UseWeaponInfo" "0"
+					"Caption" "#rd_weapon_fact_stopping_power_blast"
+					"Base" "1"
+				}
 				"HammerUnits" {
 					"Icon" "swarm/swarmopedia/fact/blast_radius"
 					"Caption" "#rd_weapon_fact_blast_radius"
@@ -3419,6 +3506,11 @@
 			"Generic" {
 				"Icon" "swarm/swarmopedia/fact/damage_shock"
 				"Caption" "#rd_weapon_fact_shocks_nearby_aliens"
+			}
+			"StoppingPower" {
+				"UseWeaponInfo" "0"
+				"Caption" "#rd_weapon_fact_stopping_power_shock"
+				"Base" "1"
 			}
 		}
 	}

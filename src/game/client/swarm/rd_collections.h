@@ -100,7 +100,6 @@ public:
 
 	void SetBriefing( IBriefing *pBriefing, int nLobbySlot );
 
-	RD_Swarmopedia::Collection *m_pCollection;
 	CASW_Marine_Profile *m_pProfile;
 	int m_nSkillValue[ASW_NUM_MARINE_SKILLS];
 	int m_nInventorySlot;
@@ -140,7 +139,9 @@ public:
 	void PostChildPaint() override;
 	void ApplyEntry() override;
 
-	const RD_Swarmopedia::Weapon *m_pWeapon;
+	int m_iEquipIndex;
+	bool m_bExtra;
+	CUtlString m_szWeaponClass;
 	ReactiveDropInventory::ItemInstance_t m_ItemInstance;
 	bool m_bNoDirectEquip;
 
@@ -173,8 +174,10 @@ public:
 	BaseModUI::GenericPanelList *m_pGplFacts;
 	CNB_Button *m_pBtnEquip;
 
+	int m_iEquipIndex;
+	bool m_bExtra;
+	CUtlString m_szWeaponClass;
 	CRD_Collection_Tab_Equipment *m_pTab;
-	const RD_Swarmopedia::Weapon *m_pWeapon;
 	ReactiveDropInventory::ItemInstance_t m_ItemInstance;
 };
 
@@ -250,8 +253,6 @@ public:
 
 	TGD_Grid *CreateGrid() override;
 	TGD_Details *CreateDetails() override;
-
-	RD_Swarmopedia::Collection *m_pCollection;
 };
 
 class CRD_Collection_Details_Swarmopedia : public TGD_Details
@@ -283,11 +284,11 @@ public:
 
 	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 	void ApplyEntry() override;
+	const RD_Swarmopedia::Alien *GetAlien() const;
 
 	vgui::ImagePanel *m_pIcon;
 	vgui::Panel *m_pUnlockProgress;
-
-	const RD_Swarmopedia::Alien *m_pAlien;
+	CUtlString m_AlienID;
 };
 
 class CRD_Collection_Panel_Swarmopedia : public vgui::EditablePanel
@@ -300,12 +301,13 @@ public:
 	void PerformLayout() override;
 	void OnCommand( const char *command ) override;
 	void OnKeyCodePressed( vgui::KeyCode keycode ) override;
+	const RD_Swarmopedia::Alien *GetAlien() const;
 
 	CRD_Swarmopedia_Model_Panel *m_pModelPanel;
 	CNB_Button *m_pModelButton;
 	vgui::Label *m_pLblNoModel;
-	vgui::RichText *m_pContent;
+	vgui::MultiFontRichText *m_pContent;
 
-	const RD_Swarmopedia::Alien *m_pAlien;
+	CUtlString m_AlienID;
 	int m_iCurrentDisplay;
 };

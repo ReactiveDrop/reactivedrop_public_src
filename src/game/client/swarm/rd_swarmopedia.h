@@ -37,31 +37,27 @@ namespace RD_Swarmopedia
 		static void CopyUniqueVector( CUtlVectorAutoPurge<T *> &, const CUtlVectorAutoPurge<T *> & );
 	};
 
-	enum class Subset
-	{
-		Aliens = 1 << 0,
-		RegularWeapons = 1 << 1,
-		ExtraWeapons = 1 << 2,
-		Weapons = RegularWeapons | ExtraWeapons,
-		All = Aliens | Weapons,
-	};
-
 	struct Collection
 	{
-		Collection() = default;
-		Collection( const Collection &copy );
-
 		CUtlVectorAutoPurge<Alien *> Aliens{};
 		CUtlVectorAutoPurge<Weapon *> Weapons{};
 
-		void ReadFromFiles( Subset subset = Subset::All );
 	private:
-		friend struct Helpers;
-		static void ReadHelper( const char *, KeyValues *, void * );
-		void ReadFromFile( const char *, KeyValues * );
+		Collection() = default;
+		Collection( const Collection &copy ) = delete;
 
-		Subset ReadSubset{};
+		friend struct Helpers;
+		friend const Collection &Get();
+		static void ReadHelper( const char *, KeyValues *, void * );
+		void ReadFromFiles();
+		void ReadFromFile( const char *, KeyValues * );
 	};
+
+	const Collection &Get();
+	const Alien *FindAlien( const char *id );
+	const Weapon *FindWeapon( int iEquipIndex, bool bExtra );
+	const Weapon *FindWeapon( const char *szClassName );
+	void ClearCache();
 
 	struct Alien
 	{
@@ -200,10 +196,12 @@ namespace RD_Swarmopedia
 		enum class Type_t
 		{
 			Paragraph,
+			ZbalermornaParagraph,
 		} Type{ Type_t::Paragraph };
 
 		CUtlString Text{};
 		Color Color{ 224, 224, 224, 255 };
+		vgui::HFont Font{ vgui::INVALID_FONT };
 
 	private:
 		friend struct Helpers;
@@ -256,7 +254,9 @@ namespace RD_Swarmopedia
 			LargeAlienDamageScale,
 			BulletSpread,
 			Piercing,
+			StoppingPower,
 			FireRate,
+			ReloadTime,
 			Ammo,
 			Secondary,
 			Deployed,
@@ -301,6 +301,8 @@ namespace RD_Swarmopedia
 
 		// Secondary
 		CUtlVectorAutoPurge<WeaponFact *> Facts{};
+
+		void ComputeBaseAndSkill( float &flBase, float &flSkill, CASW_Marine_Profile *pProfile, int iSkillOverride = -1 ) const;
 
 	private:
 		friend struct Helpers;

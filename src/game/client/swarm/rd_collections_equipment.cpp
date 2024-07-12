@@ -113,7 +113,6 @@ CRD_Collection_Tab_Equipment::CRD_Collection_Tab_Equipment( TabbedGridDetails *p
 {
 	Assert( MarineSkills() );
 
-	m_pCollection = NULL;
 	m_pProfile = pProfile;
 	m_nInventorySlot = nInventorySlot;
 
@@ -130,13 +129,6 @@ CRD_Collection_Tab_Equipment::CRD_Collection_Tab_Equipment( TabbedGridDetails *p
 
 CRD_Collection_Tab_Equipment::~CRD_Collection_Tab_Equipment()
 {
-	if ( m_pCollection )
-	{
-		delete m_pCollection;
-
-		m_pCollection = NULL;
-	}
-
 	if ( m_pBriefing )
 	{
 		m_pBriefing->SetChangingWeaponSlot( -1, 0 );
@@ -147,20 +139,22 @@ TGD_Grid *CRD_Collection_Tab_Equipment::CreateGrid()
 {
 	TGD_Grid *pGrid = BaseClass::CreateGrid();
 
-	Assert( !m_pCollection );
-	m_pCollection = new RD_Swarmopedia::Collection();
-	m_pCollection->ReadFromFiles( m_nInventorySlot == ASW_INVENTORY_SLOT_EXTRA ? RD_Swarmopedia::Subset::ExtraWeapons : RD_Swarmopedia::Subset::RegularWeapons );
-
 	CUtlVector<ReactiveDropInventory::ItemInstance_t> instances;
 	int iEquippedIndex = m_pBriefing ? m_pBriefing->GetMarineSelectedWeapon( m_nLobbySlot, m_nInventorySlot ) : -1;
 	SteamItemInstanceID_t iEquippedItemID = m_pBriefing ? m_pBriefing->GetEquippedWeapon( m_nLobbySlot, m_nInventorySlot ).m_iItemInstanceID : k_SteamItemInstanceIDInvalid;
 
-	FOR_EACH_VEC( m_pCollection->Weapons, i )
+	const RD_Swarmopedia::Collection &Swarmopedia = RD_Swarmopedia::Get();
+	FOR_EACH_VEC( Swarmopedia.Weapons, i )
 	{
-		const RD_Swarmopedia::Weapon *pWeapon = m_pCollection->Weapons[i];
+		const RD_Swarmopedia::Weapon *pWeapon = Swarmopedia.Weapons[i];
 		if ( pWeapon->EquipIndex == -1 && m_pBriefing )
 		{
 			continue; // can't equip a weapon that isn't built in
+		}
+
+		if ( pWeapon->Extra != ( m_nInventorySlot == ASW_INVENTORY_SLOT_EXTRA ) )
+		{
+			continue; // can't equip a weapon that's not for this slot
 		}
 
 		CASW_EquipItem *pItem = pWeapon->Extra ? g_ASWEquipmentList.GetExtra( pWeapon->EquipIndex ) : g_ASWEquipmentList.GetRegular( pWeapon->EquipIndex );
@@ -292,12 +286,22 @@ void CRD_Collection_Details_Equipment::DisplayEntry( TGD_Entry *pEntry )
 		return;
 	}
 
+	const RD_Swarmopedia::Weapon *pWeapon = RD_Swarmopedia::FindWeapon( pEquip->m_iEquipIndex, pEquip->m_bExtra );
+	if ( !pWeapon )
+	{
+		pWeapon = RD_Swarmopedia::FindWeapon( pEquip->m_szWeaponClass );
+	}
+	if ( !pWeapon )
+	{
+		return;
+	}
+
 	// TODO: support arbitrary number of Display/Content per weapon
-	Assert( pEquip->m_pWeapon->Display.Count() == 1 );
-	Assert( pEquip->m_pWeapon->Content.Count() == 1 );
+	Assert( pWeapon->Display.Count() == 1 );
+	Assert( pWeapon->Content.Count() == 1 );
 
 	wchar_t buf[1024]{};
-	FOR_EACH_VEC( pEquip->m_pWeapon->Abilities, i )
+	FOR_EACH_VEC( pWeapon->Abilities, i )
 	{
 		int len = V_wcslen( buf );
 		if ( i != 0 )
@@ -306,18 +310,18 @@ void CRD_Collection_Details_Equipment::DisplayEntry( TGD_Entry *pEntry )
 			len = V_wcslen( buf );
 		}
 
-		TryLocalize( pEquip->m_pWeapon->Abilities[i]->Caption, &buf[len], sizeof( buf ) - len * sizeof( wchar_t ) );
+		TryLocalize( pWeapon->Abilities[i]->Caption, &buf[len], sizeof( buf ) - len * sizeof( wchar_t ) );
 	}
 
 	m_pWeaponAttrLabel->SetText( buf );
 
-	if ( pEquip->m_pWeapon->Display.Count() == 1 )
+	if ( pWeapon->Display.Count() == 1 )
 	{
 		m_pModelPanel->m_bShouldPaint = true;
 		m_pModelPanel->SetVisible( true );
-		m_pModelPanel->SetDisplay( pEquip->m_pWeapon->Display[0] );
+		m_pModelPanel->SetDisplay( pWeapon->Display[0] );
 
-		m_pWeaponNameLabel->SetText( pEquip->m_pWeapon->Display[0]->Caption );
+		m_pWeaponNameLabel->SetText( pWeapon->Display[0]->Caption );
 	}
 	else
 	{
@@ -340,12 +344,12 @@ void CRD_Collection_Details_Equipment::DisplayEntry( TGD_Entry *pEntry )
 	if ( pEquip->m_pLockedLabel->IsVisible() )
 	{
 		wchar_t wszRequiredLevel[12]{};
-		V_snwprintf( wszRequiredLevel, ARRAYSIZE( wszRequiredLevel ), L"%d", pEquip->m_pWeapon->RequiredLevel );
+		V_snwprintf( wszRequiredLevel, ARRAYSIZE( wszRequiredLevel ), L"%d", pWeapon->RequiredLevel );
 
 		wchar_t wszBuf[1024]{};
 		g_pVGuiLocalize->ConstructString( wszBuf, sizeof( wszBuf ),
 			g_pVGuiLocalize->Find( "#rd_reach_level_to_unlock_weapon" ), 2,
-			wszRequiredLevel, g_pVGuiLocalize->FindSafe( pEquip->m_pWeapon->Name ) );
+			wszRequiredLevel, g_pVGuiLocalize->FindSafe( pWeapon->Name ) );
 		m_pWeaponDescLabel->SetText( wszBuf );
 	}
 	else
@@ -355,9 +359,9 @@ void CRD_Collection_Details_Equipment::DisplayEntry( TGD_Entry *pEntry )
 			m_pWeaponDescLabel->SetText( L"" );
 			pEquip->m_ItemInstance.FormatDescription( m_pWeaponDescLabel );
 		}
-		else if ( pEquip->m_pWeapon->Content.Count() == 1 )
+		else if ( pWeapon->Content.Count() == 1 )
 		{
-			m_pWeaponDescLabel->SetText( pEquip->m_pWeapon->Content[0]->Text );
+			m_pWeaponDescLabel->SetText( pWeapon->Content[0]->Text );
 		}
 		else
 		{
@@ -378,17 +382,17 @@ void CRD_Collection_Details_Equipment::DisplayEntry( TGD_Entry *pEntry )
 			pDaysLabel->SetContentAlignment( vgui::Label::a_east );
 			pDaysLabel->SetText( buf );
 
-			FOR_EACH_VEC( pEquip->m_pWeapon->GlobalStats, i )
+			FOR_EACH_VEC( pWeapon->GlobalStats, i )
 			{
 				int nOK{};
 				int64 nStat[61]{};
 				if ( rd_swarmopedia_global_stat_window_days.GetInt() == 0 )
 				{
-					nOK = SteamUserStats()->GetGlobalStat( pEquip->m_pWeapon->GlobalStats[i]->StatName, &nStat[1] ) ? 1 : 0;
+					nOK = SteamUserStats()->GetGlobalStat( pWeapon->GlobalStats[i]->StatName, &nStat[1] ) ? 1 : 0;
 				}
 				else
 				{
-					nOK = SteamUserStats()->GetGlobalStatHistory( pEquip->m_pWeapon->GlobalStats[i]->StatName, &nStat[1], sizeof( nStat ) - sizeof( nStat[0] ) );
+					nOK = SteamUserStats()->GetGlobalStatHistory( pWeapon->GlobalStats[i]->StatName, &nStat[1], sizeof( nStat ) - sizeof( nStat[0] ) );
 				}
 
 				for ( int j = 1; j <= nOK; j++ )
@@ -397,7 +401,7 @@ void CRD_Collection_Details_Equipment::DisplayEntry( TGD_Entry *pEntry )
 				}
 
 				CRD_Collection_StatLine *pStatLine = m_pGplStats->AddPanelItem<CRD_Collection_StatLine>( "StatLine" );
-				pStatLine->SetLabel( g_pVGuiLocalize->FindSafe( pEquip->m_pWeapon->GlobalStats[i]->Caption ) );
+				pStatLine->SetLabel( g_pVGuiLocalize->FindSafe( pWeapon->GlobalStats[i]->Caption ) );
 				pStatLine->SetValue( nStat[0] );
 			}
 		}
@@ -443,7 +447,9 @@ void CRD_Collection_Details_Equipment::OnThink()
 CRD_Collection_Entry_Equipment::CRD_Collection_Entry_Equipment( TGD_Grid *parent, const char *panelName, const RD_Swarmopedia::Weapon *pWeapon, const ReactiveDropInventory::ItemInstance_t &itemInstance )
 	: BaseClass( parent, panelName )
 {
-	m_pWeapon = pWeapon;
+	m_iEquipIndex = pWeapon->EquipIndex;
+	m_bExtra = pWeapon->Extra;
+	m_szWeaponClass = pWeapon->ClassName;
 	m_ItemInstance = itemInstance;
 	m_bNoDirectEquip = false;
 
@@ -477,12 +483,22 @@ void CRD_Collection_Entry_Equipment::ApplySchemeSettings( vgui::IScheme *pScheme
 	m_pInfoButton->SetImage( CBitmapButton::BUTTON_PRESSED, "vgui/swarm/swarmopedia/fact/generic", white );
 	m_pInfoButton->SetImage( CBitmapButton::BUTTON_DISABLED, "vgui/swarm/swarmopedia/fact/generic", transparent );
 
-	m_pIcon->SetImage( m_pWeapon->Icon );
+	const RD_Swarmopedia::Weapon *pWeapon = RD_Swarmopedia::FindWeapon( m_iEquipIndex, m_bExtra );
+	if ( !pWeapon )
+	{
+		pWeapon = RD_Swarmopedia::FindWeapon( m_szWeaponClass );
+	}
+	if ( !pWeapon )
+	{
+		return;
+	}
+
+	m_pIcon->SetImage( pWeapon->Icon );
 
 	m_pClassIcon->SetVisible( true );
 	m_pClassLabel->SetVisible( true );
 
-	switch ( m_pWeapon->RequiredClass )
+	switch ( pWeapon->RequiredClass )
 	{
 	case MARINE_CLASS_NCO:
 		m_pClassIcon->SetImage( "swarm/ClassIcons/NCOClassIcon" );
@@ -508,13 +524,13 @@ void CRD_Collection_Entry_Equipment::ApplySchemeSettings( vgui::IScheme *pScheme
 
 	CRD_Collection_Tab_Equipment *pTab = assert_cast< CRD_Collection_Tab_Equipment * >( m_pParent->m_pParent );
 
-	bool bLevelLocked = !asw_unlock_all_weapons.GetBool() && !UTIL_ASW_CommanderLevelAtLeast( NULL, m_pWeapon->RequiredLevel - 1, -1 );
-	if ( pTab->m_pBriefing && m_pWeapon->Builtin )
+	bool bLevelLocked = !asw_unlock_all_weapons.GetBool() && !UTIL_ASW_CommanderLevelAtLeast( NULL, pWeapon->RequiredLevel - 1, -1 );
+	if ( pTab->m_pBriefing && pWeapon->Builtin )
 	{
-		bLevelLocked = !pTab->m_pBriefing->IsWeaponUnlocked( m_pWeapon->ClassName );
+		bLevelLocked = !pTab->m_pBriefing->IsWeaponUnlocked( pWeapon->ClassName );
 	}
 
-	const char *szCantEquipReason = pTab->m_pBriefing ? CantEquipReason( pTab, m_pWeapon ) : NULL;
+	const char *szCantEquipReason = pTab->m_pBriefing ? CantEquipReason( pTab, pWeapon ) : NULL;
 	if ( szCantEquipReason )
 	{
 		m_pCantEquipLabel->SetText( szCantEquipReason );
@@ -528,9 +544,9 @@ void CRD_Collection_Entry_Equipment::ApplySchemeSettings( vgui::IScheme *pScheme
 #ifdef RD_DISABLE_ALL_RELEASE_FLAGS
 #error This should be disabled for release!
 #endif
-		if ( m_pWeapon->EquipIndex != -1 )
+		if ( m_iEquipIndex != -1 )
 		{
-			CASW_EquipItem *pItem = m_pWeapon->Extra ? g_ASWEquipmentList.GetExtra( m_pWeapon->EquipIndex ) : g_ASWEquipmentList.GetRegular( m_pWeapon->EquipIndex );
+			CASW_EquipItem *pItem = m_bExtra ? g_ASWEquipmentList.GetExtra( m_iEquipIndex ) : g_ASWEquipmentList.GetRegular( m_iEquipIndex );
 			if ( pItem && pItem->m_bRequiresInventoryItem )
 			{
 				m_pCantEquipLabel->SetText( "#rd_can_equip_beta" );
@@ -557,7 +573,7 @@ void CRD_Collection_Entry_Equipment::ApplySchemeSettings( vgui::IScheme *pScheme
 		m_pCantEquipLabel->SetVisible( false );
 
 		wchar_t wszLevel[12];
-		V_snwprintf( wszLevel, ARRAYSIZE( wszLevel ), L"%d", m_pWeapon->RequiredLevel );
+		V_snwprintf( wszLevel, ARRAYSIZE( wszLevel ), L"%d", pWeapon->RequiredLevel );
 		m_pLockedLabel->SetText( wszLevel );
 	}
 	else
@@ -568,7 +584,7 @@ void CRD_Collection_Entry_Equipment::ApplySchemeSettings( vgui::IScheme *pScheme
 		m_pIcon->SetVisible( true );
 
 		C_ASW_Medal_Store *pMedalStore = GetMedalStore();
-		m_pNewLabel->SetVisible( pMedalStore && pMedalStore->IsWeaponNew( m_pWeapon->Extra, m_pWeapon->EquipIndex ) );
+		m_pNewLabel->SetVisible( pMedalStore && pMedalStore->IsWeaponNew( pWeapon->Extra, pWeapon->EquipIndex ) );
 	}
 }
 
@@ -641,6 +657,16 @@ void CRD_Collection_Entry_Equipment::ApplyEntry()
 		return;
 	}
 
+	const RD_Swarmopedia::Weapon *pWeapon = RD_Swarmopedia::FindWeapon( m_iEquipIndex, m_bExtra );
+	if ( !pWeapon )
+	{
+		pWeapon = RD_Swarmopedia::FindWeapon( m_szWeaponClass );
+	}
+	if ( !pWeapon )
+	{
+		return;
+	}
+
 	CRD_Collection_Tab_Equipment *pTab = assert_cast< CRD_Collection_Tab_Equipment * >( m_pParent->m_pParent );
 	TabbedGridDetails *pTGD = pTab->m_pParent;
 	vgui::Panel *pPanel = pTGD->m_hOverridePanel;
@@ -650,7 +676,7 @@ void CRD_Collection_Entry_Equipment::ApplyEntry()
 		pPanel->MarkForDeletion();
 	}
 
-	pTGD->SetOverridePanel( new CRD_Collection_Panel_Equipment( pTGD, "EquipmentPanel", pTab, m_pWeapon, m_ItemInstance ) );
+	pTGD->SetOverridePanel( new CRD_Collection_Panel_Equipment( pTGD, "EquipmentPanel", pTab, pWeapon, m_ItemInstance ) );
 
 	if ( !m_bNoDirectEquip && pTab->m_pBriefing )
 	{
@@ -743,7 +769,6 @@ void CRD_Equipment_WeaponFact::ApplySchemeSettings( vgui::IScheme *pScheme )
 	bool bHasValue = true;
 	bool bIsHammerUnits = false;
 	bool bIgnoreCustomCaption = false;
-	bool bConVarIsOverride = false;
 	bool bShowReciprocal = m_pFact->ShowReciprocal;
 
 	switch ( m_pFact->Type )
@@ -766,7 +791,6 @@ void CRD_Equipment_WeaponFact::ApplySchemeSettings( vgui::IScheme *pScheme )
 	case Type_T::DamagePerShot:
 		szIcon = "swarm/swarmopedia/fact/damage";
 		szCaption = "#rd_weapon_fact_damage_per_shot";
-		bConVarIsOverride = true;
 		break;
 	case Type_T::LargeAlienDamageScale:
 		szIcon = "swarm/swarmopedia/fact/large_alien_damage";
@@ -780,10 +804,18 @@ void CRD_Equipment_WeaponFact::ApplySchemeSettings( vgui::IScheme *pScheme )
 		szIcon = "swarm/swarmopedia/fact/piercing";
 		szCaption = "#rd_weapon_fact_piercing";
 		break;
+	case Type_T::StoppingPower:
+		szIcon = "swarm/swarmopedia/fact/stopping_power";
+		szCaption = "#rd_weapon_fact_stopping_power";
+		break;
 	case Type_T::FireRate:
 		szIcon = "swarm/swarmopedia/fact/fire_rate";
 		szCaption = "#rd_weapon_fact_fire_rate";
 		bShowReciprocal = !bShowReciprocal;
+		break;
+	case Type_T::ReloadTime:
+		szIcon = "swarm/swarmopedia/fact/reload";
+		szCaption = "#rd_weapon_fact_reload";
 		break;
 	case Type_T::Ammo:
 		szIcon = "swarm/swarmopedia/fact/ammo";
@@ -871,46 +903,20 @@ void CRD_Equipment_WeaponFact::ApplySchemeSettings( vgui::IScheme *pScheme )
 	if ( !wszAfter )
 		wszAfter = L"";
 
-	float flBaseValue = m_pFact->Base;
-	if ( !m_pFact->CVar.IsEmpty() )
-	{
-		ConVarRef var( m_pFact->CVar );
-		if ( !bConVarIsOverride )
-		{
-			flBaseValue += var.GetFloat();
-		}
-		else if ( var.GetFloat() > 0 )
-		{
-			flBaseValue = var.GetFloat();
-		}
-	}
-
-	flBaseValue *= m_pFact->BaseMultiplier;
-	FOR_EACH_VEC( m_pFact->BaseMultiplierCVar, i )
-	{
-		ConVarRef var( m_pFact->BaseMultiplierCVar[i] );
-		flBaseValue *= var.GetFloat();
-	}
-	FOR_EACH_VEC( m_pFact->BaseDivisorCVar, i )
-	{
-		ConVarRef var( m_pFact->BaseDivisorCVar[i] );
-		flBaseValue /= var.GetFloat();
-	}
-
-	float flSkillValue = 0.0f;
+	int iSkillValue = -1;
 	if ( m_pFact->Skill != ASW_MARINE_SKILL_INVALID )
 	{
 		CFmtStr szSkillImage( "vgui/%s", MarineSkills()->GetSkillImage( m_pFact->Skill ) );
-		m_pSkillIcon->SetImage( CBitmapButton::BUTTON_ENABLED, szSkillImage, color32{ 255, 255, 255, 255 } );
+		m_pSkillIcon->SetImage( CBitmapButton::BUTTON_ENABLED, szSkillImage, color32{ 220, 220, 220, 255 } );
 		m_pSkillIcon->SetImage( CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, szSkillImage, color32{ 255, 255, 255, 255 } );
 		m_pSkillIcon->SetImage( CBitmapButton::BUTTON_PRESSED, szSkillImage, color32{ 255, 255, 255, 255 } );
-		m_pSkillIcon->SetImage( CBitmapButton::BUTTON_DISABLED, szSkillImage, color32{ 255, 255, 255, 255 } );
+		m_pSkillIcon->SetImage( CBitmapButton::BUTTON_DISABLED, szSkillImage, color32{ 96, 96, 96, 255 } );
 		m_pSkillIcon->SetVisible( true );
 		m_pSkillIcon->SetEnabled( !m_pTab->m_pProfile );
 		GetControllerFocus()->AddToFocusList( m_pSkillIcon );
 
 		int iMaxSkillPoints = MarineSkills()->GetMaxSkillPoints( m_pFact->Skill );
-		int iSkillValue = m_pTab->m_nSkillValue[m_pFact->Skill];
+		iSkillValue = m_pTab->m_nSkillValue[m_pFact->Skill];
 
 		int x, y;
 		m_pSkillIcon->GetPos( x, y );
@@ -925,30 +931,10 @@ void CRD_Equipment_WeaponFact::ApplySchemeSettings( vgui::IScheme *pScheme )
 				m_pSkillPips[i]->SetPos( x - YRES( 6 ), y + ( iMaxSkillPoints - i ) * m_pSkillIcon->GetTall() / ( iMaxSkillPoints + 2 ) );
 			}
 		}
-
-		flSkillValue = MarineSkills()->GetSkillBasedValue( m_pTab->m_pProfile, m_pFact->Skill, m_pFact->SubSkill, iSkillValue );
 	}
 
-	flSkillValue *= m_pFact->SkillMultiplier;
-	FOR_EACH_VEC( m_pFact->SkillMultiplierCVar, i )
-	{
-		ConVarRef var( m_pFact->SkillMultiplierCVar[i] );
-		flSkillValue *= var.GetFloat();
-	}
-	FOR_EACH_VEC( m_pFact->SkillDivisorCVar, i )
-	{
-		ConVarRef var( m_pFact->SkillDivisorCVar[i] );
-		flSkillValue /= var.GetFloat();
-	}
-
-	if ( flBaseValue + flSkillValue < m_pFact->MinimumValue )
-	{
-		flBaseValue = m_pFact->MinimumValue - flSkillValue;
-	}
-	else if ( flBaseValue + flSkillValue > m_pFact->MaximumValue )
-	{
-		flBaseValue = m_pFact->MaximumValue - flSkillValue;
-	}
+	float flBaseValue, flSkillValue;
+	m_pFact->ComputeBaseAndSkill( flBaseValue, flSkillValue, m_pTab->m_pProfile, iSkillValue );
 
 	if ( bShowReciprocal )
 	{
@@ -1136,7 +1122,9 @@ CRD_Collection_Panel_Equipment::CRD_Collection_Panel_Equipment( vgui::Panel *par
 	m_pBtnEquip = new CNB_Button( this, "BtnEquip", "#asw_equip", this, "AcceptEquip" );
 
 	m_pTab = pTab;
-	m_pWeapon = pWeapon;
+	m_iEquipIndex = pWeapon->EquipIndex;
+	m_bExtra = pWeapon->Extra;
+	m_szWeaponClass = pWeapon->ClassName;
 	m_ItemInstance = itemInstance;
 }
 
@@ -1146,11 +1134,21 @@ void CRD_Collection_Panel_Equipment::ApplySchemeSettings( vgui::IScheme *pScheme
 
 	BaseClass::ApplySchemeSettings( pScheme );
 
+	const RD_Swarmopedia::Weapon *pWeapon = RD_Swarmopedia::FindWeapon( m_iEquipIndex, m_bExtra );
+	if ( !pWeapon )
+	{
+		pWeapon = RD_Swarmopedia::FindWeapon( m_szWeaponClass );
+	}
+	if ( !pWeapon )
+	{
+		return;
+	}
+
 	if ( m_pTab->m_pBriefing )
 	{
 		m_pBtnEquip->SetVisible( true );
 
-		const char *szReason = CantEquipReason( m_pTab, m_pWeapon );
+		const char *szReason = CantEquipReason( m_pTab, pWeapon );
 		if ( szReason )
 		{
 			m_pBtnEquip->SetText( szReason );
@@ -1169,9 +1167,9 @@ void CRD_Collection_Panel_Equipment::ApplySchemeSettings( vgui::IScheme *pScheme
 
 	m_pGplFacts->RemoveAllPanelItems();
 
-	FOR_EACH_VEC( m_pWeapon->Facts, i )
+	FOR_EACH_VEC( pWeapon->Facts, i )
 	{
-		AddWeaponFact( m_pWeapon->Facts[i] );
+		AddWeaponFact( pWeapon->Facts[i] );
 	}
 }
 
@@ -1179,7 +1177,17 @@ void CRD_Collection_Panel_Equipment::OnCommand( const char *command )
 {
 	if ( FStrEq( command, "AcceptEquip" ) )
 	{
-		if ( CantEquipReason( m_pTab, m_pWeapon ) )
+		const RD_Swarmopedia::Weapon *pWeapon = RD_Swarmopedia::FindWeapon( m_iEquipIndex, m_bExtra );
+		if ( !pWeapon )
+		{
+			pWeapon = RD_Swarmopedia::FindWeapon( m_szWeaponClass );
+		}
+		if ( !pWeapon )
+		{
+			return;
+		}
+
+		if ( CantEquipReason( m_pTab, pWeapon ) )
 		{
 			return;
 		}
@@ -1200,10 +1208,10 @@ void CRD_Collection_Panel_Equipment::OnCommand( const char *command )
 
 		if ( C_ASW_Medal_Store *pMedalStore = GetMedalStore() )
 		{
-			pMedalStore->OnSelectedEquipment( m_pWeapon->Extra, m_pWeapon->EquipIndex );
+			pMedalStore->OnSelectedEquipment( m_bExtra, m_iEquipIndex );
 		}
 
-		m_pTab->m_pBriefing->SelectWeapon( m_pTab->m_nLobbySlot, m_pTab->m_nInventorySlot, m_pWeapon->EquipIndex, m_ItemInstance.ItemID );
+		m_pTab->m_pBriefing->SelectWeapon( m_pTab->m_nLobbySlot, m_pTab->m_nInventorySlot, m_iEquipIndex, m_ItemInstance.ItemID );
 
 		m_pTab->m_pParent->MarkForDeletion();
 	}
