@@ -938,13 +938,18 @@ void CRD_Equipment_WeaponFact::ApplySchemeSettings( vgui::IScheme *pScheme )
 
 	if ( bShowReciprocal )
 	{
-		flBaseValue += flSkillValue;
-		flSkillValue = 0.0f;
+		float flTotalValue = flBaseValue + flSkillValue;
+		if ( flTotalValue != 0.0f )
+		{
+			flTotalValue = 1.0f / flTotalValue;
+		}
 
 		if ( flBaseValue != 0.0f )
 		{
 			flBaseValue = 1.0f / flBaseValue;
 		}
+
+		flSkillValue = flTotalValue - flBaseValue;
 	}
 
 	int iPrecision = m_pFact->Precision;
