@@ -62,15 +62,16 @@ public:
 	virtual void StartAOE( CBaseEntity *pEntity );
 	virtual void DoAOE( CBaseEntity *pEntity ) {}
 	virtual bool StopAOE( CBaseEntity *pEntity );
-	void AddAOETarget( CBaseEntity *pEntity );
-	void RemoveAOETarget( CBaseEntity *pEntity );
 	bool IsAOETarget( CBaseEntity *pEntity );
+	void AddForcedAOETarget( CBaseEntity *pEntity );
+	void RemoveForcedAOETarget( CBaseEntity *pEntity );
+	bool IsForcedAOETarget( CBaseEntity *pEntity );
 
 	int			m_nBounces;			// how many times has this aoegrenade bounced?
 	CNetworkVar( float, m_flTimeBurnOut );	// when will the aoegrenade burn out?
 	CNetworkVar( float, m_flScale );
 	CNetworkVar( bool, m_bSettled );
-	float		m_flDuration;
+	CNetworkVar( float, m_flDuration );
 	float		m_flNextDamage;
 	float		m_flTimePulse; // How often does the buff pulse?
 	float		m_flLastDoAOE;
@@ -87,6 +88,7 @@ public:
 	}
 
 	CUtlVector< EHANDLE >	m_hAOETargets;
+	CUtlVector< EHANDLE >	m_hForcedTargets;
 
 	virtual void DrawDebugGeometryOverlays();	// visualise the autoaim radius
 

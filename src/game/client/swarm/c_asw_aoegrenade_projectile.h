@@ -22,7 +22,6 @@ public:
 	void	OnDataChanged( DataUpdateType_t updateType );
 	virtual void	ClientThink( void );
 	void	NotifyDestroyParticle( Particle* pParticle );
-	void	NotifyShouldTransmit( ShouldTransmitState_t state );
 	void	RestoreResources( void );
 	void	UpdateTargetAOEEffects( void );
 	void	UpdateParticleAttachments( CNewParticleEffect *pEffect, C_BaseEntity *pTarget );
@@ -45,6 +44,7 @@ public:
 	virtual int GetSphereSkin( void ) { return 0; }
 
 	float	m_flTimeBurnOut;
+	float	m_flDuration;
 	float	m_flScale;
 	bool	m_bSettled;
 	dlight_t *m_pDLight;

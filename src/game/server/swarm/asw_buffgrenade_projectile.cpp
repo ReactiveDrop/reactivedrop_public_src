@@ -155,9 +155,7 @@ void CASW_BuffGrenade_Projectile::AttachToMarine( CASW_Marine *pMarine )
 	SetRenderMode( kRenderNone );
 
 	// can't touch our own parent, so fake it
-	Assert( !IsAOETarget( pMarine ) );
-	RemoveAOETarget( pMarine ); // remove first to make sure we aren't doubling up the marine if the above assert fails
-	AddAOETarget( pMarine );
+	AddForcedAOETarget( pMarine );
 
 	m_vecLastOrigin = GetAbsOrigin();
 	SetContextThink( &CASW_BuffGrenade_Projectile::LoseTimeForMoving, gpGlobals->curtime + 1.0f, "BuffGrenadeMoved" );

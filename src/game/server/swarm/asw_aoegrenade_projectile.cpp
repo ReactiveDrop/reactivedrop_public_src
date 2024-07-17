@@ -109,7 +109,8 @@ IMPLEMENT_SERVERCLASS_ST( CASW_AOEGrenade_Projectile, DT_ASW_AOEGrenade_Projecti
 			   "aoetarget_array"
 			   ),
 
-	SendPropFloat( SENDINFO( m_flTimeBurnOut ), 0,	SPROP_NOSCALE ),
+	SendPropFloat( SENDINFO( m_flTimeBurnOut ), 0, SPROP_NOSCALE ),
+	SendPropFloat( SENDINFO( m_flDuration ), 0,	SPROP_NOSCALE ),
 	//SendPropFloat( SENDINFO( m_flTimePulse ), 0,	SPROP_NOSCALE ),
 	SendPropFloat( SENDINFO( m_flScale ), 0, SPROP_NOSCALE ),
 	SendPropBool( SENDINFO( m_bSettled ) ),
@@ -374,29 +375,11 @@ void CASW_AOEGrenade_Projectile::EndTouch( CBaseEntity *pEntity )
 //-----------------------------------------------------------------------------
 void CASW_AOEGrenade_Projectile::StartAOE( CBaseEntity *pEntity )
 {
-	AddAOETarget( pEntity );
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: Stop healing this target
-//-----------------------------------------------------------------------------
-bool CASW_AOEGrenade_Projectile::StopAOE( CBaseEntity *pEntity )
-{
-	bool bFound = false;
-
-	EHANDLE hEntity = pEntity;
-	bFound = m_hAOETargets.FindAndRemove( hEntity );
-	NetworkStateChanged();
-
-	return bFound;
-}
-
-//-----------------------------------------------------------------------------
-// Purpose:
-//-----------------------------------------------------------------------------
-void CASW_AOEGrenade_Projectile::AddAOETarget( CBaseEntity *pEntity )
-{
 	Assert( pEntity );
+	Assert( !IsAOETarget( pEntity ) );
+	if ( IsAOETarget( pEntity ) )
+		return;
+
 	// add to tail
 	EHANDLE hEntity = pEntity;
 	m_hAOETargets.AddToTail( hEntity );
@@ -404,15 +387,23 @@ void CASW_AOEGrenade_Projectile::AddAOETarget( CBaseEntity *pEntity )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose:
+// Purpose: Stop healing this target
 //-----------------------------------------------------------------------------
-void CASW_AOEGrenade_Projectile::RemoveAOETarget( CBaseEntity *pEntity )
+bool CASW_AOEGrenade_Projectile::StopAOE( CBaseEntity *pEntity )
 {
 	Assert( pEntity );
-	// remove
+
+	if ( IsForcedAOETarget( pEntity ) )
+	{
+		Assert( IsAOETarget( pEntity ) );
+		return false;
+	}
+
 	EHANDLE hEntity = pEntity;
-	m_hAOETargets.FindAndRemove( hEntity );
+	bool bFound = m_hAOETargets.FindAndRemove( hEntity );
 	NetworkStateChanged();
+
+	return bFound;
 }
 
 //-----------------------------------------------------------------------------
@@ -423,6 +414,41 @@ bool CASW_AOEGrenade_Projectile::IsAOETarget( CBaseEntity *pEntity  )
 	Assert( pEntity );
 	EHANDLE hEntity = pEntity;
 	return m_hAOETargets.HasElement( hEntity );
+}
+
+void CASW_AOEGrenade_Projectile::AddForcedAOETarget( CBaseEntity *pEntity )
+{
+	Assert( pEntity );
+	Assert( !IsForcedAOETarget( pEntity ) );
+	// already in list
+	if ( IsForcedAOETarget( pEntity ) )
+	{
+		Assert( IsAOETarget( pEntity ) );
+		return;
+	}
+
+	EHANDLE hEntity = pEntity;
+	m_hForcedTargets.AddToTail( hEntity );
+
+	if ( !IsAOETarget( pEntity ) )
+	{
+		StartAOE( pEntity );
+	}
+}
+
+void CASW_AOEGrenade_Projectile::RemoveForcedAOETarget( CBaseEntity *pEntity )
+{
+	Assert( pEntity );
+	EHANDLE hEntity = pEntity;
+	m_hForcedTargets.FindAndRemove( hEntity );
+	StopAOE( pEntity );
+}
+
+bool CASW_AOEGrenade_Projectile::IsForcedAOETarget( CBaseEntity *pEntity )
+{
+	Assert( pEntity );
+	EHANDLE hEntity = pEntity;
+	return m_hForcedTargets.HasElement( hEntity );
 }
 
 void CASW_AOEGrenade_Projectile::LayFlat()

@@ -29,11 +29,11 @@ PRECACHE_REGISTER_END()
 //-----------------------------------------------------------------------------
 // Purpose: RecvProxy that converts a marine's player UtlVector to entindexes
 //-----------------------------------------------------------------------------
-void RecvProxy_AOEGrenList(  const CRecvProxyData *pData, void *pStruct, void *pOut )
+void RecvProxy_AOEGrenList( const CRecvProxyData *pData, void *pStruct, void *pOut )
 {
-	C_ASW_AOEGrenade_Projectile *pAOEGren = (C_ASW_AOEGrenade_Projectile*)pStruct;
+	C_ASW_AOEGrenade_Projectile *pAOEGren = ( C_ASW_AOEGrenade_Projectile * )pStruct;
 
-	CBaseHandle *pHandle = (CBaseHandle*)(&(pAOEGren->m_hAOETargets[pData->m_iElement])); 
+	CBaseHandle *pHandle = ( CBaseHandle * )( &( pAOEGren->m_hAOETargets[pData->m_iElement] ) );
 	RecvProxy_IntToEHandle( pData, pStruct, pHandle );
 
 	// update the heal beams
@@ -42,7 +42,7 @@ void RecvProxy_AOEGrenList(  const CRecvProxyData *pData, void *pStruct, void *p
 
 void RecvProxyArrayLength_AOEGrenArray( void *pStruct, int objectID, int currentArrayLength )
 {
-	C_ASW_AOEGrenade_Projectile *pAOEGren = (C_ASW_AOEGrenade_Projectile*)pStruct;
+	C_ASW_AOEGrenade_Projectile *pAOEGren = ( C_ASW_AOEGrenade_Projectile * )pStruct;
 
 	if ( pAOEGren->m_hAOETargets.Count() != currentArrayLength )
 		pAOEGren->m_hAOETargets.SetSize( currentArrayLength );
@@ -60,6 +60,7 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_AOEGrenade_Projectile, DT_ASW_AOEGrenade_Project
 			   "aoetarget_array"
 			   ),
 	RecvPropFloat( RECVINFO( m_flTimeBurnOut ) ),
+	RecvPropFloat( RECVINFO( m_flDuration ) ),
 	//RecvPropFloat( RECVINFO( m_flTimePulse ) ),
 	RecvPropFloat( RECVINFO( m_flScale ) ),
 	RecvPropBool( RECVINFO( m_bSettled ) ),
@@ -74,12 +75,13 @@ IMPLEMENT_AUTO_LIST( IASW_AOEGrenade_Projectile_List );
 //-----------------------------------------------------------------------------
 C_ASW_AOEGrenade_Projectile::C_ASW_AOEGrenade_Projectile()
 {
-	m_flTimeBurnOut	= 0.0f;
+	m_flTimeBurnOut = 0.0f;
+	m_flDuration = 0.0f;
 	//m_flTimePulse	= 0.0f;
 	m_pDLight = NULL;
 
-	m_bSettled		= false;
-	m_bPlayingSound	= false;
+	m_bSettled = false;
+	m_bPlayingSound = false;
 
 	//SetDynamicallyAllocated( false );
 	m_queryHandle = 0;
@@ -100,38 +102,19 @@ C_ASW_AOEGrenade_Projectile::C_ASW_AOEGrenade_Projectile()
 
 C_ASW_AOEGrenade_Projectile::~C_ASW_AOEGrenade_Projectile( void )
 {
-	if (m_pDLight)
+	if ( m_pDLight )
 	{
 		m_pDLight->die = gpGlobals->curtime;
 		m_pDLight = NULL;
 	}
 
-	if (m_hSphereModel.Get())
+	if ( m_hSphereModel.Get() )
 	{
 		UTIL_Remove( m_hSphereModel.Get() );
 		m_hSphereModel = NULL;
 	}
 
 	StopSound( GetIdleLoopSoundName() );
-}
-
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : state - 
-//-----------------------------------------------------------------------------
-void C_ASW_AOEGrenade_Projectile::NotifyShouldTransmit( ShouldTransmitState_t state )
-{
-	if ( state == SHOULDTRANSMIT_END )
-	{
-		AddEffects( EF_NODRAW );
-	}
-	else if ( state == SHOULDTRANSMIT_START )
-	{
-		RemoveEffects( EF_NODRAW );
-	}
-
-	BaseClass::NotifyShouldTransmit( state );
 }
 
 //-----------------------------------------------------------------------------
@@ -144,11 +127,7 @@ void C_ASW_AOEGrenade_Projectile::OnDataChanged( DataUpdateType_t updateType )
 	{
 		//SetSortOrigin( GetAbsOrigin() );
 		SoundInit();
-		SetNextClientThink(CLIENT_THINK_ALWAYS);
-	}
-
-	if ( updateType == DATA_UPDATE_DATATABLE_CHANGED )
-	{
+		SetNextClientThink( CLIENT_THINK_ALWAYS );
 	}
 
 	BaseClass::OnDataChanged( updateType );
@@ -311,7 +290,7 @@ void C_ASW_AOEGrenade_Projectile::UpdatePingEffects( void )
 		m_pPulseEffect = ParticleProp()->Create( GetPingEffectName(), PATTACH_ABSORIGIN_FOLLOW, -1, Vector( 0, 0, 8 ) );
 		if ( m_pPulseEffect )
 		{
-			m_pPulseEffect->SetControlPoint( 1, Vector( m_flRadius, 0, 0 ) );
+			m_pPulseEffect->SetControlPoint( 1, Vector( m_flRadius, 1 - ( m_flTimeBurnOut - gpGlobals->curtime ) / m_flDuration, 0 ) );
 		}
 	}
 
@@ -365,17 +344,17 @@ void C_ASW_AOEGrenade_Projectile::ClientThink( void )
 	{
 		baseScale *= ( flTimeLeft / 5.0f );
 
-		CSoundEnvelopeController::GetController().SoundChangeVolume( m_pLoopedSound, clamp<float>(0.6f * baseScale, 0.0f, 0.6f), 0 );
+		CSoundEnvelopeController::GetController().SoundChangeVolume( m_pLoopedSound, clamp<float>( 0.6f * baseScale, 0.0f, 0.6f ), 0 );
 
 		AOEGrenTargetFXList_t::IndexLocalType_t i = m_hAOETargetEffects.Head();
-		while ( m_hAOETargetEffects.IsValidIndex(i) )
+		while ( m_hAOETargetEffects.IsValidIndex( i ) )
 		{
 			// Are we still buffing this target?
 			for ( int target = 0; target < m_hAOETargets.Count(); target++ )
 			{
 				if ( m_hAOETargetEffects[i].pBuffLoopSound )
 				{
-					CSoundEnvelopeController::GetController().SoundChangeVolume( m_hAOETargetEffects[i].pBuffLoopSound, clamp<float>(0.6f * baseScale, 0.0f, 0.6f), 0 );
+					CSoundEnvelopeController::GetController().SoundChangeVolume( m_hAOETargetEffects[i].pBuffLoopSound, clamp<float>( 0.6f * baseScale, 0.0f, 0.6f ), 0 );
 				}
 			}
 
@@ -394,11 +373,11 @@ void C_ASW_AOEGrenade_Projectile::ClientThink( void )
 		m_fStartLightTime = gpGlobals->curtime;
 	}
 
-	if (!rd_simple_beacons.GetBool())
+	if ( !rd_simple_beacons.GetBool() )
 	{
-		if (!m_pDLight)
+		if ( !m_pDLight )
 		{
-			m_pDLight = effects->CL_AllocDlight(index);
+			m_pDLight = effects->CL_AllocDlight( index );
 
 			Color rgbaGrenadeColor = GetGrenadeColor();
 
@@ -409,25 +388,29 @@ void C_ASW_AOEGrenade_Projectile::ClientThink( void )
 		}
 
 
-		m_pDLight->origin = GetAbsOrigin() + Vector(0, 0, 5);	// make the dlight slightly higher than the aoegrenade, so it doesn't bury the light being so close to the ground
+		m_pDLight->origin = GetAbsOrigin() + Vector( 0, 0, 5 );	// make the dlight slightly higher than the aoegrenade, so it doesn't bury the light being so close to the ground
 
-		if (m_fLightRadius < 32.0f)
+		if ( m_fLightRadius < 32.0f )
 		{
-			m_fLightRadius += flTimeLeft * (1.0f + random->RandomFloat() * 36.0f);
-			if (m_fLightRadius > 32.0f)
+			m_fLightRadius += flTimeLeft * ( 1.0f + random->RandomFloat() * 36.0f );
+			if ( m_fLightRadius > 32.0f )
 				m_fLightRadius = 100.0f;
 		}
 
-		m_pDLight->radius = baseScale * 120 * (m_fLightRadius / 32.0f);
+		m_pDLight->radius = baseScale * 120 * ( m_fLightRadius / 32.0f );
 
-		if (flTimeLeft > 4.0f)
+		if ( flTimeLeft > 4.0f )
 		{
 			m_pDLight->die = gpGlobals->curtime + 30.0f;
 		}
-
 	}
 
-	// spehere bubble models
+	if ( m_pPulseEffect )
+	{
+		m_pPulseEffect->SetControlPoint( 1, Vector( m_flRadius, 1 - ( m_flTimeBurnOut - gpGlobals->curtime ) / m_flDuration, 0 ) );
+	}
+
+	// sphere bubble models
 	if ( ShouldSpawnSphere() && m_hSphereModel.Get() )
 	{
 		C_BaseAnimating *pSphere = static_cast< C_BaseAnimating * >( m_hSphereModel.Get() );
@@ -454,14 +437,14 @@ void C_ASW_AOEGrenade_Projectile::ClientThink( void )
 	if ( m_fUpdateAttachFXTime < gpGlobals->curtime )
 	{
 		AOEGrenTargetFXList_t::IndexLocalType_t i = m_hAOETargetEffects.Head();
-		while ( m_hAOETargetEffects.IsValidIndex(i) )
+		while ( m_hAOETargetEffects.IsValidIndex( i ) )
 		{
 			// Are we still buffing this target?
 			for ( int target = 0; target < m_hAOETargets.Count(); target++ )
 			{
 				C_BaseEntity *pTarget = m_hAOETargets[target].Get();
 				if ( m_hAOETargetEffects[i].hTarget.Get() == pTarget && m_hAOETargetEffects[i].pEffect )
-					UpdateParticleAttachments( m_hAOETargetEffects[i].pEffect, pTarget );	
+					UpdateParticleAttachments( m_hAOETargetEffects[i].pEffect, pTarget );
 			}
 
 			i = m_hAOETargetEffects.Next( i );
@@ -477,7 +460,7 @@ void C_ASW_AOEGrenade_Projectile::ClientThink( void )
 void C_ASW_AOEGrenade_Projectile::OnRestore()
 {
 	BaseClass::OnRestore();
-	SoundInit();	
+	SoundInit();
 }
 
 void C_ASW_AOEGrenade_Projectile::UpdateOnRemove()
@@ -494,7 +477,7 @@ void C_ASW_AOEGrenade_Projectile::SoundInit()
 	EmitSound( GetActivateSoundName() );
 
 	// Bring up the aoegrenade burning loop sound
-	if( !m_pLoopedSound )
+	if ( !m_pLoopedSound )
 	{
 		m_pLoopedSound = CSoundEnvelopeController::GetController().SoundCreate( filter, entindex(), GetIdleLoopSoundName() );
 		CSoundEnvelopeController::GetController().Play( m_pLoopedSound, 0.0, 100 );
@@ -503,9 +486,9 @@ void C_ASW_AOEGrenade_Projectile::SoundInit()
 }
 
 void C_ASW_AOEGrenade_Projectile::SoundShutdown()
-{	
+{
 	AOEGrenTargetFXList_t::IndexLocalType_t i = m_hAOETargetEffects.Head();
-	while ( m_hAOETargetEffects.IsValidIndex(i) )
+	while ( m_hAOETargetEffects.IsValidIndex( i ) )
 	{
 		// Are we still buffing this target?
 		for ( int target = 0; target < m_hAOETargets.Count(); target++ )
@@ -515,22 +498,9 @@ void C_ASW_AOEGrenade_Projectile::SoundShutdown()
 				CSoundEnvelopeController::GetController().SoundDestroy( m_hAOETargetEffects[i].pBuffLoopSound );
 				m_hAOETargetEffects[i].pBuffLoopSound = NULL;
 			}
-
-			/*
-			C_ASW_Marine *pMarine = dynamic_cast<C_ASW_Marine*>( m_hAOETargets[target].Get() );
-			if ( pMarine && pMarine->GetCommander() )
-			{
-				C_ASW_Player *pLocalPlayer = C_ASW_Player::GetLocalASWPlayer();
-				if ( pMarine->GetCommander() == pLocalPlayer && pMarine->IsInhabited() && m_hAOETargetEffects[i].pBuffLoopSound )
-				{
-					CSoundEnvelopeController::GetController().SoundDestroy( m_hAOETargetEffects[i].pBuffLoopSound );
-					m_hAOETargetEffects[i].pBuffLoopSound = NULL;
-				}
-			}
-			*/
 		}
 
-		m_hAOETargetEffects.Remove(i);
+		m_hAOETargetEffects.Remove( i );
 	}
 
 	if ( m_pLoopedSound )
