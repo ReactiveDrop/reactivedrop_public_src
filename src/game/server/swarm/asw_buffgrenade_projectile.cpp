@@ -194,6 +194,11 @@ CASW_BuffGrenade_Projectile* CASW_BuffGrenade_Projectile::Grenade_Projectile_Cre
 
 bool CASW_BuffGrenade_Projectile::IsUsable( CBaseEntity *pUser )
 {
+	return IsUsable( pUser, false );
+}
+
+bool CASW_BuffGrenade_Projectile::IsUsable( CBaseEntity *pUser, bool bEvenIfAlreadyCarrying )
+{
 	if ( GetMoveParent() && GetMoveParent()->IsInhabitableNPC() )
 		return false;
 
@@ -204,12 +209,15 @@ bool CASW_BuffGrenade_Projectile::IsUsable( CBaseEntity *pUser )
 	if ( pMarine->GetAbsOrigin().DistTo( GetAbsOrigin() ) >= ASW_MARINE_USE_RADIUS )
 		return false;
 
-	for ( CBaseEntity *pEnt = pMarine->FirstMoveChild(); pEnt; pEnt = pEnt->NextMovePeer() )
+	if ( !bEvenIfAlreadyCarrying )
 	{
-		if ( dynamic_cast< CASW_BuffGrenade_Projectile * >( pEnt ) )
+		for ( CBaseEntity *pEnt = pMarine->FirstMoveChild(); pEnt; pEnt = pEnt->NextMovePeer() )
 		{
-			// only one amp grenade attached to a marine (they don't stack anyway)
-			return false;
+			if ( dynamic_cast< CASW_BuffGrenade_Projectile * >( pEnt ) )
+			{
+				// only one amp grenade attached to a marine (they don't stack anyway)
+				return false;
+			}
 		}
 	}
 

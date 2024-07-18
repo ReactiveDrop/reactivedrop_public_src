@@ -43,6 +43,7 @@ public:
 
 	virtual CBaseEntity *GetEntity() override { return this; }
 	virtual bool IsUsable( CBaseEntity *pUser ) override;
+	bool IsUsable( CBaseEntity *pUser, bool bEvenIfAlreadyCarrying );
 	virtual bool RequirementsMet( CBaseEntity *pUser ) override { return true; }
 	virtual void ActivateUseIcon( CASW_Inhabitable_NPC *pUser, int nHoldType ) override;
 	virtual void NPCStartedUsing( CASW_Inhabitable_NPC *pUser ) override {}

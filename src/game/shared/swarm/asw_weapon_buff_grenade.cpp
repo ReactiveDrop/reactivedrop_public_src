@@ -169,7 +169,7 @@ void CASW_Weapon_Buff_Grenade::PrimaryAttack( void )
 
 	// don't check for inhabited
 	// allow auto-pickup if the convar is 2 even if an x-33 is already carried
-	if ( pPlayer && V_atoi( engine->GetClientConVarValue( pPlayer->entindex(), "rd_buff_grenade_attach_sw_auto" ) ) && ( pBuff->IsUsable( pMarine ) || V_atoi( engine->GetClientConVarValue( pPlayer->entindex(), "rd_buff_grenade_attach_sw_auto" ) ) == 2 ) )
+	if ( pPlayer && V_atoi( engine->GetClientConVarValue( pPlayer->entindex(), "rd_buff_grenade_attach_sw_auto" ) ) && pBuff->IsUsable( pMarine, V_atoi( engine->GetClientConVarValue( pPlayer->entindex(), "rd_buff_grenade_attach_sw_auto" ) ) == 2 ) )
 	{
 		pBuff->AttachToMarine( pMarine );
 	}
