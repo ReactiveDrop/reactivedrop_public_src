@@ -96,6 +96,10 @@ public:
 
 		for ( int i = 0; i < NELEMS( s_szAddArchive ); i++ )
 		{
+			// 2024-07-17: Visual Studio is for some reason making this array have 4 nulls after the one string that's in it.
+			if ( s_szAddArchive[i] == NULL )
+				continue;
+
 			ConCommandBase *pCmd = g_pCVar->FindCommandBase( s_szAddArchive[i] );
 			Assert( pCmd );
 			if ( !pCmd )
