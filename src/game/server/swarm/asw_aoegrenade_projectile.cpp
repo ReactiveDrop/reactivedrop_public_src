@@ -333,6 +333,12 @@ void CASW_AOEGrenade_Projectile::GiveEffectToEntitesInRadius( void )
 
 	if ( bDoAOE )
 	{
+		FOR_EACH_VEC( m_hForcedTargets, i )
+		{
+			Assert( IsAOETarget( m_hForcedTargets[i] ) );
+			DoAOE( m_hForcedTargets[i] );
+		}
+
 		m_flLastDoAOE = gpGlobals->curtime;
 	}
 }
