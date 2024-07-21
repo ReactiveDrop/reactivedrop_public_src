@@ -52,6 +52,7 @@ static void UpdateIgnoredHighlightClasses( IConVar *pVar, const char *szOldValue
 }
 ConVar rd_highlight_ignore_class( "rd_highlight_ignore_class", "", FCVAR_NONE, "advanced option. comma-separated list of integers. any integer that is a Class_T from C++ will block that Class_T from using ally/enemy/team glow colors. not guaranteed to keep working between updates. examples: drone = 27, marine = 40", UpdateIgnoredHighlightClasses );
 
+ConVar rd_electrified_armor_fx( "rd_electrified_armor_fx", "1", FCVAR_NONE, "should the ECA appear to be shocked when it is active?" );
 ConVar rd_debug_status_fx( "rd_debug_status_fx", "0", FCVAR_CHEAT, "bitfield: 1=fire, 2=ice, 4=shock, 8=nightvision. for testing RDCharacter shader." );
 
 extern ConVar asw_night_vision_self_illum_multiplier;
@@ -480,7 +481,7 @@ void CASW_Character_Proxy::OnBindWeapon( C_ASW_Weapon *pWeapon )
 {
 	OnBind( pWeapon->GetOwner() );
 
-	if ( pWeapon->Classify() == CLASS_ASW_ELECTRIFIED_ARMOR )
+	if ( pWeapon->Classify() == CLASS_ASW_ELECTRIFIED_ARMOR && rd_electrified_armor_fx.GetBool() )
 	{
 		C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pWeapon->GetOwner() );
 		if ( pMarine && pMarine->IsElectrifiedArmorActive() )
