@@ -19,7 +19,7 @@
 extern ConVar sk_plr_dmg_asw_gas_grenades;
 extern ConVar sk_npc_dmg_asw_gas_grenades;
 
-#define GAS_GRENADE_MODEL "models/swarm/grenades/HandGrenadeProjectile.mdl"
+#define GAS_GRENADE_MODEL "models/swarm/grenades/GasGrenadeProjectile.mdl"
 
 extern ConVar asw_gas_grenade_duration;
 extern ConVar asw_gas_grenade_fuse;
@@ -87,7 +87,7 @@ void CASW_Gas_Grenade_Projectile::Spawn( void )
 	Precache( );
 
 	SetModel( GAS_GRENADE_MODEL );
-	m_nSkin = 2;
+	m_nSkin = 0;
 	UTIL_SetSize( this, Vector( -2, -2, -2 ), Vector( 2, 2, 2 ) );
 	SetSolid( SOLID_BBOX );
 

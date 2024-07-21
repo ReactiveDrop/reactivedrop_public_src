@@ -51,7 +51,6 @@ PRECACHE_WEAPON_REGISTER( asw_weapon_gas_grenades );
 // Save/Restore
 //---------------------------------------------------------
 BEGIN_DATADESC( CASW_Weapon_Gas_Grenades )
-	DEFINE_FIELD( m_flSoonestPrimaryAttack, FIELD_TIME ),
 END_DATADESC()
 
 ConVar asw_gas_grenade_throw_speed("asw_gas_grenade_throw_speed", "50.0f", FCVAR_CHEAT, "Velocity of thrown gas_grenades");
@@ -64,28 +63,16 @@ ConVar asw_gas_grenade_refire_time("asw_gas_grenade_refire_time", "0.1f", FCVAR_
 
 CASW_Weapon_Gas_Grenades::CASW_Weapon_Gas_Grenades()
 {
-	m_flSoonestPrimaryAttack = 0;
 }
 
 
 CASW_Weapon_Gas_Grenades::~CASW_Weapon_Gas_Grenades()
 {
-
-}
-
-bool CASW_Weapon_Gas_Grenades::OffhandActivate()
-{
-	if (!GetMarine() || GetMarine()->GetFlags() & FL_FROZEN)	// don't allow this if the marine is frozen
-		return false;
-
-	PrimaryAttack();	
-
-	return true;
 }
 
 #define FLARE_PROJECTILE_AIR_VELOCITY	400
 
-void CASW_Weapon_Gas_Grenades::PrimaryAttack( void )
+void CASW_Weapon_Gas_Grenades::PrimaryAttack()
 {	
 	// Only the player fires this way so we can cast
 	CASW_Player *pPlayer = GetCommander();
@@ -196,79 +183,3 @@ void CASW_Weapon_Gas_Grenades::Precache()
 	UTIL_PrecacheOther( "asw_gas_grenade_projectile" );
 #endif
 }
-
-// this weapon doesn't reload
-bool CASW_Weapon_Gas_Grenades::Reload()
-{
-	return false;
-}
-
-void CASW_Weapon_Gas_Grenades::ItemPostFrame( void )
-{
-	BaseClass::ItemPostFrame();
-
-	if ( m_bInReload )
-		return;
-	
-	CBasePlayer *pOwner = GetCommander();
-	if ( !pOwner )
-		return;
-
-	//Allow a refire as fast as the player can click
-	if ( ( ( pOwner->m_nButtons & IN_ATTACK ) == false ) && ( m_flSoonestPrimaryAttack < gpGlobals->curtime ) )
-	{
-		m_flNextPrimaryAttack = gpGlobals->curtime - 0.1f;
-	}
-}
-
-
-int CASW_Weapon_Gas_Grenades::ASW_SelectWeaponActivity(int idealActivity)
-{
-	// we just use the normal 'no weapon' anims for this
-	return idealActivity;
-}
-
-#ifdef CLIENT_DLL
-
-void CASW_Weapon_Gas_Grenades::OnDataChanged(DataUpdateType_t updateType)
-{
-	if ( updateType == DATA_UPDATE_CREATED )
-	{
-		SetNextClientThink( CLIENT_THINK_ALWAYS );
-	}
-
-	BaseClass::OnDataChanged( updateType );
-}
-
-void CASW_Weapon_Gas_Grenades::ClientThink()
-{
-	BaseClass::ClientThink();
-
-	CASW_Player *pPlayer = GetCommander();
-	if ( !pPlayer )
-		return;
-
-	CASW_Marine *pMarine = GetMarine();
-	if ( pMarine && pMarine->IsInhabited() && pMarine->GetActiveWeapon() == this )
-	{
-		ShowThrowArc();
-	}
-}
-
-void CASW_Weapon_Gas_Grenades::ShowThrowArc()
-{
-	CASW_Player *pPlayer = GetCommander();
-	if ( !pPlayer )
-		return;
-
-	CASW_Marine *pMarine = GetMarine();
-	if ( !pMarine || pMarine->GetWaterLevel() == 3 )
-		return;
-
-	Vector vecSrc = pMarine->GetOffhandThrowSource();
-	Vector vecDest = pMarine->GetOffhandThrowDest();
-	Vector vecVelocity = UTIL_LaunchVector( vecSrc, vecDest, GetThrowGravity() ) * 28.0f;
-	UTIL_Check_Throw( vecSrc, vecVelocity, GetThrowGravity(), Vector( -2, -2, -2 ), Vector( 2, 2, 2 ), MASK_SOLID, ASW_COLLISION_GROUP_GRENADES, NULL, true );
-}
-
-#endif

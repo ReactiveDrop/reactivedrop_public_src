@@ -648,7 +648,7 @@ static CASW_EquipItem s_ExtraEquips[ASW_NUM_EQUIP_EXTRA] =
 		&asw_ammo_count_freeze_grenades, &asw_ammo_count_freeze_grenades,
 		NULL, NULL,
 		0, 0, 2.2f, 1, MARINE_CLASS_UNDEFINED,
-		false, false, false, ASW_OFFHAND_THROW,
+		false, true, false, ASW_OFFHAND_THROW,
 		0, 0,
 	},
 	{
@@ -718,7 +718,7 @@ static CASW_EquipItem s_ExtraEquips[ASW_NUM_EQUIP_EXTRA] =
 		&asw_ammo_count_grenades, &asw_ammo_count_grenades,
 		NULL, NULL,
 		80, 0, 2.2f, 1, MARINE_CLASS_UNDEFINED,
-		false, false, false, ASW_OFFHAND_THROW,
+		false, true, false, ASW_OFFHAND_THROW,
 		0, 0,
 	},
 	{
@@ -748,7 +748,7 @@ static CASW_EquipItem s_ExtraEquips[ASW_NUM_EQUIP_EXTRA] =
 		&asw_ammo_count_gas_grenades, &asw_ammo_count_gas_grenades,
 		NULL, NULL,
 		0, 0, 2.2f, 1, MARINE_CLASS_MEDIC,
-		false, false, false, ASW_OFFHAND_THROW,
+		false, true, false, ASW_OFFHAND_THROW,
 		0, 0,
 	},
 
@@ -803,7 +803,7 @@ static CASW_EquipItem s_ExtraEquips[ASW_NUM_EQUIP_EXTRA] =
 		&asw_ammo_count_stun_grenades, &asw_ammo_count_stun_grenades,
 		NULL, NULL,
 		0, 0, 2.2f, 1, MARINE_CLASS_UNDEFINED,
-		false, false, false, ASW_OFFHAND_THROW,
+		false, true, false, ASW_OFFHAND_THROW,
 		0, 0,
 	},
 	{
@@ -813,7 +813,7 @@ static CASW_EquipItem s_ExtraEquips[ASW_NUM_EQUIP_EXTRA] =
 		&asw_ammo_count_incendiary_grenades, &asw_ammo_count_incendiary_grenades,
 		NULL, NULL,
 		0, 0, 2.2f, 1, MARINE_CLASS_NCO,
-		false, false, false, ASW_OFFHAND_THROW,
+		false, true, false, ASW_OFFHAND_THROW,
 		0, 0,
 	},
 	{

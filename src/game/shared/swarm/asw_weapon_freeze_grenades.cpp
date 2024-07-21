@@ -50,95 +50,11 @@ extern ConVar asw_debug_marine_damage;
 // Save/Restore
 //---------------------------------------------------------
 BEGIN_DATADESC( CASW_Weapon_Freeze_Grenades )
-	DEFINE_FIELD( m_flSoonestPrimaryAttack, FIELD_TIME ),	
 END_DATADESC()
 
 #endif /* not client */
 
-CASW_Weapon_Freeze_Grenades::CASW_Weapon_Freeze_Grenades()
-{
-	m_fMinRange1	= 0;
-	m_fMaxRange1	= 2048;
-
-	m_fMinRange2	= 256;
-	m_fMaxRange2	= 1024;
-
-	m_flSoonestPrimaryAttack = gpGlobals->curtime;
-}
-
-
-CASW_Weapon_Freeze_Grenades::~CASW_Weapon_Freeze_Grenades()
-{
-
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-// Output : Activity
-//-----------------------------------------------------------------------------
-Activity CASW_Weapon_Freeze_Grenades::GetPrimaryAttackActivity( void )
-{
-	return ACT_VM_PRIMARYATTACK;
-}
-
-bool CASW_Weapon_Freeze_Grenades::OffhandActivate()
-{
-	if (!GetMarine() || GetMarine()->GetFlags() & FL_FROZEN)	// don't allow this if the marine is frozen
-		return false;
-	PrimaryAttack();
-
-	return true;
-}
-
 #define FLARE_PROJECTILE_AIR_VELOCITY	400
-
-void CASW_Weapon_Freeze_Grenades::PrimaryAttack( void )
-{	
-	CASW_Player *pPlayer = GetCommander();
-
-	if (!pPlayer)
-		return;
-
-	CASW_Marine *pMarine = GetMarine();
-	bool bThisActive = (pMarine && pMarine->GetActiveWeapon() == this);
-
-	// grenade weapon is lost when all grenades are gone
-	if ( UsesClipsForAmmo1() && m_iClip1 <= 0 )
-	{
-		return;
-	}
-
-	if (pMarine && gpGlobals->curtime > m_flDelayedFire)		// firing from a marine
-	{
-#ifdef CLIENT_DLL
-		if ( !prediction->InPrediction() || prediction->IsFirstTimePredicted() )
-		{
-			pMarine->DoAnimationEvent( PLAYERANIMEVENT_THROW_GRENADE );
-		}
-#else
-		pMarine->DoAnimationEvent( PLAYERANIMEVENT_THROW_GRENADE );
-
-		pMarine->OnWeaponFired( this, 1 );
-#endif
-
-		// start our delayed attack
-		m_bShotDelayed = true;
-		m_flNextPrimaryAttack = m_flNextSecondaryAttack = m_flDelayedFire = gpGlobals->curtime + asw_grenade_throw_delay.GetFloat();
-		if (!bThisActive && pMarine->GetActiveASWWeapon())
-		{
-			// if we're offhand activating, make sure our primary weapon can't fire until we're done
-			//pMarine->GetActiveASWWeapon()->m_flNextPrimaryAttack = m_flNextPrimaryAttack  + 0.4f;
-
-			// reactivedrop: preventing cheating, firing flare can greatly
-			// increase fire rate for primary weapon, when using with scripts
-			pMarine->GetActiveASWWeapon()->m_flNextPrimaryAttack =
-				MAX(pMarine->GetActiveASWWeapon()->m_flNextPrimaryAttack,
-					m_flNextPrimaryAttack + 0.4f);
-			pMarine->GetActiveASWWeapon()->m_bIsFiring = false;
-		}
-	}
-}
-
 
 #ifndef CLIENT_DLL
 float CASW_Weapon_Freeze_Grenades::GetBoomRadius( CASW_Marine *pMarine )
@@ -206,36 +122,7 @@ void CASW_Weapon_Freeze_Grenades::DelayedAttack( void )
 
 void CASW_Weapon_Freeze_Grenades::Precache()
 {	
-	BaseClass::Precache();	
-}
+	BaseClass::Precache();
 
-// flares don't reload
-bool CASW_Weapon_Freeze_Grenades::Reload()
-{
-	return false;
-}
-
-void CASW_Weapon_Freeze_Grenades::ItemPostFrame( void )
-{
-	BaseClass::ItemPostFrame();
-
-	if ( m_bInReload )
-		return;
-	
-	CBasePlayer *pOwner = GetCommander();
-
-	if ( pOwner == NULL )
-		return;
-
-	//Allow a refire as fast as the player can click
-	if ( ( ( pOwner->m_nButtons & IN_ATTACK ) == false ) && ( m_flSoonestPrimaryAttack < gpGlobals->curtime ) )
-	{
-		m_flNextPrimaryAttack = gpGlobals->curtime - 0.1f;
-	}
-}
-
-int CASW_Weapon_Freeze_Grenades::ASW_SelectWeaponActivity(int idealActivity)
-{
-	// we just use the normal 'no weapon' anims for this
-	return idealActivity;
+	UTIL_PrecacheOther( "asw_grenade_freeze" );
 }

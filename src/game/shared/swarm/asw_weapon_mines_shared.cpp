@@ -106,19 +106,9 @@ void CASW_Weapon_Mines::PrimaryAttack( void )
 	if ( !pMarine || pMarine->GetWaterLevel() == 3 )
 		return;
 
-	// MUST call sound before removing a round from the clip of a CMachineGun
-	//WeaponSound(SINGLE);
-
-	// tell the marine to tell its weapon to draw the muzzle flash
-	//pMarine->DoMuzzleFlash();
-
 	// sets the animation on the weapon model iteself
 	SendWeaponAnim( GetPrimaryAttackActivity() );
 
-	//pMarine->DoAnimationEvent(PLAYERANIMEVENT_HEAL);
-
-	// sets the animation on the marine holding this weapon
-	//pMarine->SetAnimation( PLAYER_ATTACK1 );
 #ifndef CLIENT_DLL
 	Vector	vecSrc		= pMarine->Weapon_ShootPosition( );
 	Vector	vecAiming	= pPlayer->GetAutoaimVectorForMarine(pMarine, GetAutoAimAmount(), GetVerticalAdjustOnlyAutoAimAmount());	// 45 degrees = 0.707106781187
@@ -136,8 +126,8 @@ void CASW_Weapon_Mines::PrimaryAttack( void )
 	CShotManipulator Manipulator( vecAiming );
 	AngularImpulse rotSpeed(0,0,720);
 	
-	// create a pellet at some random spread direction			
-	Vector newVel = Manipulator.ApplySpread(GetBulletSpread());
+	// create a pellet at some random spread direction
+	Vector newVel = Manipulator.ApplySpread( GetBulletSpread() );
 
 	newVel *= ASW_MINE_VELOCITY;
 	if ( !pMarine->IsInhabited() )
@@ -158,6 +148,8 @@ void CASW_Weapon_Mines::PrimaryAttack( void )
 
 		pMarine->OnWeaponFired( this, 1 );
 
+		EmitSound( "ASW_Mine.Throw" );
+
 		IGameEvent * event = gameeventmanager->CreateEvent( "fire_mine_placed" );
 		if ( event )
 		{
@@ -167,7 +159,7 @@ void CASW_Weapon_Mines::PrimaryAttack( void )
 		}
 	}
 
-	pMarine->GetMarineSpeech()->Chatter(CHATTER_MINE_DEPLOYED);
+	pMarine->GetMarineSpeech()->Chatter( CHATTER_MINE_DEPLOYED );
 #endif
 	// decrement ammo
 	m_iClip1 -= 1;
@@ -185,7 +177,9 @@ void CASW_Weapon_Mines::PrimaryAttack( void )
 
 void CASW_Weapon_Mines::Precache()
 {
-	BaseClass::Precache();	
+	BaseClass::Precache();
+
+	PrecacheScriptSound( "ASW_Mine.Throw" );
 #ifndef CLIENT_DLL
 	UTIL_PrecacheOther( "asw_mine" );
 #endif

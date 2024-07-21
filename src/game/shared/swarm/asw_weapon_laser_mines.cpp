@@ -111,8 +111,8 @@ void CASW_Weapon_Laser_Mines::PrimaryAttack( void )
 	{
 #ifdef CLIENT_DLL
 		if ( !prediction->InPrediction() || prediction->IsFirstTimePredicted() )
-		{
 #endif	
+		{
 			Vector vecSrc = pMarine->GetAbsOrigin();
 			vecSrc.z += 16.0f;	// place lower to catch shorter aliens
 			Vector	vecAiming = pPlayer->GetAutoaimVectorForMarine(pMarine, GetAutoAimAmount(), GetVerticalAdjustOnlyAutoAimAmount());	// 45 degrees = 0.707106781187
@@ -125,10 +125,12 @@ void CASW_Weapon_Laser_Mines::PrimaryAttack( void )
 			// try to predict whether mine throw is valid, if not then dont do the animation.
 			// small problem: this prediction happens a little earlier than the actual throw, so there will be occassional cases when the animation does play when it shouldnt have or it will not play when it should have. though still better than always playing imo. 
 			if ( GetThrownMineCount( nMinesPerShot, vecSrc, vecAiming, flSpread ) > 0 )
+			{
 				pMarine->DoAnimationEvent( PLAYERANIMEVENT_THROW_GRENADE );
-#ifdef CLIENT_DLL
+
+				EmitSound( "ASW_Mine.Throw" );
+			}
 		}
-#endif
 
 		// start our delayed attack
 		m_bShotDelayed = true;
@@ -381,7 +383,9 @@ int CASW_Weapon_Laser_Mines::GetThrownMineCount( int nMinesPerShot, Vector vecSr
 
 void CASW_Weapon_Laser_Mines::Precache()
 {
-	BaseClass::Precache();	
+	BaseClass::Precache();
+
+	PrecacheScriptSound( "ASW_Mine.Throw" );
 #ifndef CLIENT_DLL
 	UTIL_PrecacheOther( "asw_laser_mine" );
 #endif

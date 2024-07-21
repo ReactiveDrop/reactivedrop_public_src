@@ -752,6 +752,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClCompile Include="..\shared\swarm\asw_weapon_freeze_grenades.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_gas_grenades_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_grenades.cpp" />
+    <ClCompile Include="..\shared\swarm\asw_weapon_grenade_box_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_grenade_launcher.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_hack_tool_shared.cpp" />
     <ClCompile Include="..\shared\swarm\asw_weapon_healamp_gun_shared.cpp" />
@@ -1794,6 +1795,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="..\shared\swarm\asw_weapon_freeze_grenades.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_gas_grenades_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_grenades.h" />
+    <ClInclude Include="..\shared\swarm\asw_weapon_grenade_box_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_grenade_launcher.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_hack_tool_shared.h" />
     <ClInclude Include="..\shared\swarm\asw_weapon_healamp_gun_shared.h" />

@@ -20,6 +20,7 @@
 #include "tier0/memdbgon.h"
 
 #define CLUSTER_GRENADE_MODEL "models/swarm/grenades/HandGrenadeProjectile.mdl"
+#define LAUNCHER_GRENADE_MODEL "models/swarm/grenades/GrenadeLauncherProjectile.mdl"
 
 extern ConVar sk_plr_dmg_asw_r_g;
 extern ConVar asw_grenade_vindicator_radius;
@@ -78,9 +79,9 @@ END_SCRIPTDESC();
 void CASW_Grenade_Cluster::Spawn( void )
 {
 	Precache();
-	SetModel( CLUSTER_GRENADE_MODEL );
+	SetModel( m_CreatorWeaponClass == CLASS_ASW_GRENADE_LAUNCHER ? LAUNCHER_GRENADE_MODEL : CLUSTER_GRENADE_MODEL );
 	m_nSkin = 0;
-	
+
 	SetMoveType( MOVETYPE_FLYGRAVITY, MOVECOLLIDE_FLY_BOUNCE );
 
 	m_flDamage		= sk_plr_dmg_asw_r_g.GetFloat();
@@ -110,7 +111,7 @@ void CASW_Grenade_Cluster::Spawn( void )
 	m_fEarliestTouchDetonationTime = GetEarliestTouchDetonationTime();
 
 	m_iClusters = 0;
-	m_bMaster = true;	
+	m_bMaster = true;
 
 	//EmitSound( "ASWGrenade.Alarm" );
 	SetFuseLength(asw_cluster_grenade_fuse.GetFloat());	
@@ -138,7 +139,8 @@ void CASW_Grenade_Cluster::Precache()
 {
 	BaseClass::Precache();
 
-	PrecacheModel(CLUSTER_GRENADE_MODEL);
+	PrecacheModel( CLUSTER_GRENADE_MODEL );
+	PrecacheModel( LAUNCHER_GRENADE_MODEL );
 	PrecacheScriptSound( "ASWGrenade.Alarm" );
 	PrecacheParticleSystem( "explosion_grenade" );
 }
