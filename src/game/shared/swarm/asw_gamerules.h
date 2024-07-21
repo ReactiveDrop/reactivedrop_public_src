@@ -96,6 +96,12 @@ class CASW_Powerup;
 #define LAST_ASW_FACTION			(FACTION_ROBOTS)
 #define NUM_ASW_FACTIONS			(LAST_ASW_FACTION + 1)
 
+struct StringKeyValue_t
+{
+	CUtlString m_Key;
+	CUtlString m_Value;
+};
+
 class CAlienSwarm : public CSingleplayRules
 {
 public:
@@ -253,7 +259,7 @@ public:
 	void FreezeAliensInRadius( CBaseEntity *pAttacker, CBaseEntity *pInflictor, float flFreezeAmount, const Vector &vecSrcIn, float flRadius );
 	void StumbleAliensInRadius( CBaseEntity *pInflictor, const Vector &vecSrcIn, float flRadius );
 	void ShockNearbyAliens( CASW_Marine *pMarine, CASW_Weapon *pWeaponSource );
-			
+
 	// skill/difficulty level stuff
 	virtual bool IsSkillLevel( int iLevel ) { return GetSkillLevel() == iLevel; }
 	virtual void OnSkillLevelChanged( int iNewLevel );
@@ -368,14 +374,14 @@ public:
 	void EnableChallenge( const char *szChallengeName );
 	void ApplyChallenge();
 
-	CUtlDict<CUtlString> m_SavedConvars_Challenge;
+	CUtlVectorAutoPurge<StringKeyValue_t *> m_SavedConvars_Challenge;
 	void ResetChallengeConVars();
 	void CheckChallengeConVars();
 	void ApplyChallengeConVars( KeyValues *pKV );
 
 #endif	// GAME_DLL above
 
-	CUtlDict<CUtlString> m_SavedConvars;
+	CUtlVectorAutoPurge<StringKeyValue_t *> m_SavedConvars;
 	bool HaveSavedConvar( const ConVarRef & cvar );
 	void SaveConvar( const ConVarRef & cvar );
 	void RevertSingleConvar( ConVarRef & cvar );

@@ -328,14 +328,19 @@ static void UpdateMatchmakingTagsCallback( IConVar *pConVar, const char *pOldVal
 	// don't allow changing challenge convars from their desired values
 	if ( pConVar && ASWGameRules() )
 	{
-		unsigned index = ASWGameRules()->m_SavedConvars_Challenge.Find( pConVar->GetName() );
-		if ( ASWGameRules()->m_SavedConvars_Challenge.IsValidIndex( index ) )
+		const CUtlVectorAutoPurge<StringKeyValue_t *> &saved = ASWGameRules()->m_SavedConvars_Challenge;
+		FOR_EACH_VEC( saved, i )
 		{
-			const char *pszDesiredValue = ASWGameRules()->m_SavedConvars_Challenge[index];
-			if ( V_strcmp( ConVarRef( pConVar->GetName() ).GetString(), pszDesiredValue ) )
+			if ( saved[i]->m_Key == pConVar->GetName() )
 			{
-				pConVar->SetValue( pszDesiredValue );
-				return;
+				const char *pszDesiredValue = saved[i]->m_Value;
+				if ( V_strcmp( ConVarRef( pConVar ).GetString(), pszDesiredValue ) )
+				{
+					pConVar->SetValue( pszDesiredValue );
+					return;
+				}
+
+				break;
 			}
 		}
 	}
@@ -2028,14 +2033,14 @@ void CAlienSwarm::PlayerSpawn( CBasePlayer *pPlayer )
 		// BenLubar: Send saved replicated convars to the client so that it can reset them if the player disconnects during the mission.
 		CSingleUserRecipientFilter filter( pPlayer );
 		filter.MakeReliable();
-		for ( unsigned i = 0; i < m_SavedConvars.Count(); i++ )
+		FOR_EACH_VEC( m_SavedConvars, i )
 		{
-			const char *szName = m_SavedConvars.GetElementName( i );
+			const char *szName = m_SavedConvars[i]->m_Key;
 			if ( ConVarRef( szName ).IsFlagSet( FCVAR_REPLICATED ) )
 			{
 				UserMessageBegin( filter, "SavedConvar" );
 					WRITE_STRING( szName );
-					WRITE_STRING( m_SavedConvars[i] );
+					WRITE_STRING( m_SavedConvars[i]->m_Value );
 				MessageEnd();
 			}
 		}
@@ -9752,8 +9757,15 @@ bool CAlienSwarm::HaveSavedConvar( const ConVarRef & ref )
 {
 	Assert( ref.IsValid() );
 
-	int index = m_SavedConvars.Find( ref.GetName() );
-	return m_SavedConvars.IsValidIndex( index );
+	FOR_EACH_VEC( m_SavedConvars, i )
+	{
+		if ( m_SavedConvars[i]->m_Key == ref.GetName() )
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 #ifdef CLIENT_DLL
@@ -9778,7 +9790,16 @@ void __MsgFunc_SavedConvar( bf_read &msg )
 		Assert( ref.IsFlagSet( FCVAR_REPLICATED ) );
 		if ( ref.IsValid() && ref.IsFlagSet( FCVAR_REPLICATED ) )
 		{
-			ASWGameRules()->m_SavedConvars.Insert( szKey, szValue );
+			CUtlVectorAutoPurge<StringKeyValue_t *> &saved = ASWGameRules()->m_SavedConvars;
+			FOR_EACH_VEC( saved, i )
+			{
+				if ( saved[i]->m_Key == szKey )
+				{
+					saved[i]->m_Value = szValue;
+					return;
+				}
+			}
+			saved.AddToTail( new StringKeyValue_t{ szKey, szValue } );
 		}
 	}
 }
@@ -9807,37 +9828,38 @@ void CAlienSwarm::SaveConvar( const ConVarRef & ref )
 	}
 #endif
 
-	m_SavedConvars.Insert( ref.GetName(), ref.GetString() );
+	m_SavedConvars.AddToTail( new StringKeyValue_t{ ref.GetName(), ref.GetString() } );
 }
 
-void CAlienSwarm::RevertSingleConvar( ConVarRef & ref )
+void CAlienSwarm::RevertSingleConvar( ConVarRef &ref )
 {
 	Assert( ref.IsValid() );
 
-	int index = m_SavedConvars.Find( ref.GetName() );
-	if ( !m_SavedConvars.IsValidIndex( index ) )
+	FOR_EACH_VEC( m_SavedConvars, i )
 	{
-		// don't have a saved value
-		return;
+		if ( m_SavedConvars[i]->m_Key == ref.GetName() )
+		{
+			ref.SetValue( m_SavedConvars[i]->m_Value );
+			delete m_SavedConvars[i];
+			m_SavedConvars.Remove( i );
+			return;
+		}
 	}
-
-	ref.SetValue( m_SavedConvars[index] );
-	m_SavedConvars.RemoveAt( index );
 }
 
 void CAlienSwarm::RevertSavedConvars()
 {
 	// revert saved convars
-	for ( unsigned i = 0; i < m_SavedConvars.Count(); i++ )
+	FOR_EACH_VEC( m_SavedConvars, i )
 	{
-		const char *pszName = m_SavedConvars.GetElementName( i );
-		const char *szValue = m_SavedConvars[i];
+		const char *pszName = m_SavedConvars[i]->m_Key;
+		const char *szValue = m_SavedConvars[i]->m_Value;
 		ConVarRef ref( pszName );
 		Assert( ref.IsValid() );
 		ref.SetValue( szValue );
 	}
 
-	m_SavedConvars.Purge();
+	m_SavedConvars.PurgeAndDeleteElements();
 }
 
 #ifdef GAME_DLL
@@ -9921,10 +9943,10 @@ void CAlienSwarm::EnableChallenge( const char *szChallengeName )
 void CAlienSwarm::CheckChallengeConVars()
 {
 	// make sure none of the variables were changed
-	for ( unsigned i = 0; i < m_SavedConvars_Challenge.Count(); i++ )
+	FOR_EACH_VEC( m_SavedConvars_Challenge, i )
 	{
-		ConVarRef ref( m_SavedConvars_Challenge.GetElementName( i ), true );
-		const char *pszDesiredValue = m_SavedConvars_Challenge[i];
+		ConVarRef ref( m_SavedConvars_Challenge[i]->m_Key );
+		const char *pszDesiredValue = m_SavedConvars_Challenge[i]->m_Value;
 
 		if ( ref.IsValid() && Q_strcmp( ref.GetString(), pszDesiredValue ) )
 		{
@@ -9938,13 +9960,13 @@ void CAlienSwarm::ResetChallengeConVars()
 {
 	CUtlStringList names;
 	names.EnsureCapacity( m_SavedConvars_Challenge.Count() );
-	for ( unsigned i = 0; i < m_SavedConvars_Challenge.Count(); i++ )
+	FOR_EACH_VEC( m_SavedConvars_Challenge, i )
 	{
-		names.CopyAndAddToTail( m_SavedConvars_Challenge.GetElementName( i ) );
+		names.CopyAndAddToTail( m_SavedConvars_Challenge[i]->m_Key );
 	}
 
 	// purge before we reset the convars so the write protection doesn't trigger.
-	m_SavedConvars_Challenge.Purge();
+	m_SavedConvars_Challenge.PurgeAndDeleteElements();
 
 	FOR_EACH_VEC( names, i )
 	{
@@ -9993,8 +10015,22 @@ void CAlienSwarm::ApplyChallengeConVars( KeyValues *pKV )
 		{
 			SaveConvar( ref );
 			ref.SetValue( pCV->GetString() );
+
 			// use the actual value to make sure we don't run into issues with truncated values not being equal.
-			m_SavedConvars_Challenge.Insert( ref.GetName(), ref.GetString() );
+			bool bFound = false;
+			FOR_EACH_VEC( m_SavedConvars_Challenge, i )
+			{
+				if ( m_SavedConvars_Challenge[i]->m_Key == ref.GetName() )
+				{
+					m_SavedConvars_Challenge[i]->m_Value = ref.GetString();
+					bFound = true;
+					break;
+				}
+			}
+			if ( !bFound )
+			{
+				m_SavedConvars_Challenge.AddToTail( new StringKeyValue_t{ ref.GetName(), ref.GetString() } );
+			}
 		}
 		else
 		{
