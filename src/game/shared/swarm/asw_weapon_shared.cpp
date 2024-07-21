@@ -1689,6 +1689,10 @@ bool CASW_Weapon::AllowedToPickup( CASW_Inhabitable_NPC *pNPC )
 	if ( !pMarine || !ASWGameRules() || !pMarine->GetMarineResource() )
 		return false;
 
+	// sanity check
+	if ( IsMarkedForDeletion() )
+		return false;
+
 	// check if we're swapping for an existing item
 	int i = pMarine->GetWeaponPositionForPickup( GetClassname(), m_bIsTemporaryPickup );
 	CASW_Weapon *pWeapon = pMarine->GetASWWeapon( i );

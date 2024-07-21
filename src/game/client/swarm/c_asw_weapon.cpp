@@ -559,6 +559,9 @@ void C_ASW_Weapon::ClientThink()
 
 bool C_ASW_Weapon::ShouldDraw()
 {
+	if ( IsMarkedForDeletion() )
+		return false;
+
 	// If it's a player, then only show active weapons
 	C_BaseCombatCharacter* pCombatCharOwner = GetOwner();
 	if ( pCombatCharOwner && pCombatCharOwner->Classify() == CLASS_ASW_MARINE )
@@ -569,7 +572,7 @@ bool C_ASW_Weapon::ShouldDraw()
 			return false;
 		}
 
-		return ( pMarine->GetActiveWeapon() == this ) || ( rd_marine_gear.GetBool() && ViewModelIsMarineAttachment() && pMarine->GetRenderAlpha() > 0 );
+		return BaseClass::ShouldDraw() && ( ( pMarine->GetActiveWeapon() == this ) || ( rd_marine_gear.GetBool() && ViewModelIsMarineAttachment() && pMarine->GetRenderAlpha() > 0 ) );
 	}
 
 	return BaseClass::ShouldDraw();
