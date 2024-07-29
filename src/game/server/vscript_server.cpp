@@ -1148,25 +1148,37 @@ static void ScriptTraceLineTable( HSCRIPT hTable )
 	if ( !hTable )
 		return;
 
-	if  (!g_pScriptVM ) return;
+	if ( !g_pScriptVM )
+		return;
 
-	// UTIL_TraceLine( vecAbsStart, vecAbsEnd, MASK_BLOCKLOS, pLooker, COLLISION_GROUP_NONE, ptr );
 	trace_t tr;
-	ScriptVariant_t start, end, mask, ignore;
+	ScriptVariant_t start, end, mask, ignore, collisiongroup, mins, maxs;
+	mask = MASK_VISIBLE_AND_NPCS;
+	collisiongroup = COLLISION_GROUP_NONE;
+	mins = vec3_origin;
+	maxs = vec3_origin;
 	g_pScriptVM->GetValue( hTable, "start", &start );
 	g_pScriptVM->GetValue( hTable, "end", &end );
 	g_pScriptVM->GetValue( hTable, "mask", &mask );
 	g_pScriptVM->GetValue( hTable, "ignore", &ignore );
-	const Vector &vecStart = Vector( start.m_pVector->x, start.m_pVector->y, start.m_pVector->z );
-	const Vector &vecEnd = Vector( end.m_pVector->x, end.m_pVector->y, end.m_pVector->z );
-	UTIL_TraceLine( vecStart, vecEnd, mask.m_int, ToEnt(ignore.m_hScript), COLLISION_GROUP_NONE, &tr );
+	g_pScriptVM->GetValue( hTable, "collisiongroup", &collisiongroup );
+	g_pScriptVM->GetValue( hTable, "mins", &mins );
+	g_pScriptVM->GetValue( hTable, "maxs", &maxs );
+	const Vector vecStart = start;
+	const Vector vecEnd = end;
+	const Vector vecMins = mins;
+	const Vector vecMaxs = maxs;
+	if ( vecMins == vecMaxs )
+		UTIL_TraceLine( vecStart, vecEnd, ( int )mask, ToEnt( ignore ), ( int )collisiongroup, &tr );
+	else
+		UTIL_TraceHull( vecStart, vecEnd, vecMins, vecMaxs, ( int )mask, ToEnt( ignore ), ( int )collisiongroup, &tr );
 
 	g_pScriptVM->SetValue( hTable, "pos", tr.endpos );
 	g_pScriptVM->SetValue( hTable, "fraction", tr.fraction );
 	g_pScriptVM->SetValue( hTable, "hit", tr.DidHit() );
-	g_pScriptVM->SetValue( hTable, "enthit", ToHScript(tr.m_pEnt) );
+	g_pScriptVM->SetValue( hTable, "enthit", ToHScript( tr.m_pEnt ) );
 	g_pScriptVM->SetValue( hTable, "startsolid", tr.startsolid );
-	
+	g_pScriptVM->SetValue( hTable, "normal", tr.plane.normal );
 }
 
 HSCRIPT Script_PlayerInstanceFromIndex( int playerIndex )
@@ -1849,6 +1861,98 @@ bool VScriptServerInit()
 				g_pScriptVM->SetValue( "ASW_MARINE_PROFILE_WOLFE", ASW_MARINE_PROFILE_WOLFE );
 				g_pScriptVM->SetValue( "ASW_MARINE_PROFILE_BASTILLE", ASW_MARINE_PROFILE_BASTILLE );
 				g_pScriptVM->SetValue( "ASW_MARINE_PROFILE_VEGAS", ASW_MARINE_PROFILE_VEGAS );
+
+				// constants for mask in TraceLineTable
+				g_pScriptVM->SetValue( "CONTENTS_SOLID", CONTENTS_SOLID );
+				g_pScriptVM->SetValue( "CONTENTS_WINDOW", CONTENTS_WINDOW );
+				g_pScriptVM->SetValue( "CONTENTS_GRATE", CONTENTS_GRATE );
+				g_pScriptVM->SetValue( "CONTENTS_SLIME", CONTENTS_SLIME );
+				g_pScriptVM->SetValue( "CONTENTS_WATER", CONTENTS_WATER );
+				g_pScriptVM->SetValue( "CONTENTS_BLOCKLOS", CONTENTS_BLOCKLOS );
+				g_pScriptVM->SetValue( "CONTENTS_OPAQUE", CONTENTS_OPAQUE );
+				g_pScriptVM->SetValue( "CONTENTS_BLOCKLIGHT", CONTENTS_BLOCKLIGHT );
+				g_pScriptVM->SetValue( "CONTENTS_TEAM1", CONTENTS_TEAM1 );
+				g_pScriptVM->SetValue( "CONTENTS_TEAM2", CONTENTS_TEAM2 );
+				g_pScriptVM->SetValue( "CONTENTS_IGNORE_NODRAW_OPAQUE", CONTENTS_IGNORE_NODRAW_OPAQUE );
+				g_pScriptVM->SetValue( "CONTENTS_MOVEABLE", CONTENTS_MOVEABLE );
+				g_pScriptVM->SetValue( "CONTENTS_AREAPORTAL", CONTENTS_AREAPORTAL );
+				g_pScriptVM->SetValue( "CONTENTS_PLAYERCLIP", CONTENTS_PLAYERCLIP );
+				g_pScriptVM->SetValue( "CONTENTS_MONSTERCLIP", CONTENTS_MONSTERCLIP );
+				g_pScriptVM->SetValue( "CONTENTS_MONSTER", CONTENTS_MONSTER );
+				g_pScriptVM->SetValue( "CONTENTS_DEBRIS", CONTENTS_DEBRIS );
+				g_pScriptVM->SetValue( "CONTENTS_DETAIL", CONTENTS_DETAIL );
+				g_pScriptVM->SetValue( "CONTENTS_TRANSLUCENT", CONTENTS_TRANSLUCENT );
+				g_pScriptVM->SetValue( "CONTENTS_LADDER", CONTENTS_LADDER );
+				g_pScriptVM->SetValue( "CONTENTS_HITBOX", CONTENTS_HITBOX );
+				g_pScriptVM->SetValue( "MASK_ALL", ( int )MASK_ALL );
+				g_pScriptVM->SetValue( "MASK_SOLID", MASK_SOLID );
+				g_pScriptVM->SetValue( "MASK_PLAYERSOLID", MASK_PLAYERSOLID );
+				g_pScriptVM->SetValue( "MASK_NPCSOLID", MASK_NPCSOLID );
+				g_pScriptVM->SetValue( "MASK_NPCFLUID", MASK_NPCFLUID );
+				g_pScriptVM->SetValue( "MASK_WATER", MASK_WATER );
+				g_pScriptVM->SetValue( "MASK_OPAQUE", MASK_OPAQUE );
+				g_pScriptVM->SetValue( "MASK_OPAQUE_AND_NPCS", MASK_OPAQUE_AND_NPCS );
+				g_pScriptVM->SetValue( "MASK_BLOCKLOS", MASK_BLOCKLOS );
+				g_pScriptVM->SetValue( "MASK_BLOCKLOS_AND_NPCS", MASK_BLOCKLOS_AND_NPCS );
+				g_pScriptVM->SetValue( "MASK_VISIBLE", MASK_VISIBLE );
+				g_pScriptVM->SetValue( "MASK_VISIBLE_AND_NPCS", MASK_VISIBLE_AND_NPCS );
+				g_pScriptVM->SetValue( "MASK_SHOT", MASK_SHOT );
+				g_pScriptVM->SetValue( "MASK_SHOT_BRUSHONLY", MASK_SHOT_BRUSHONLY );
+				g_pScriptVM->SetValue( "MASK_SHOT_PORTAL", MASK_SHOT_PORTAL );
+				g_pScriptVM->SetValue( "MASK_SOLID_BRUSHONLY", MASK_SOLID_BRUSHONLY );
+				g_pScriptVM->SetValue( "MASK_PLAYERSOLID_BRUSHONLY", MASK_PLAYERSOLID_BRUSHONLY );
+				g_pScriptVM->SetValue( "MASK_NPCSOLID_BRUSHONLY", MASK_NPCSOLID_BRUSHONLY );
+				g_pScriptVM->SetValue( "MASK_NPCWORLDSTATIC", MASK_NPCWORLDSTATIC );
+				g_pScriptVM->SetValue( "MASK_NPCWORLDSTATIC_FLUID", MASK_NPCWORLDSTATIC_FLUID );
+				g_pScriptVM->SetValue( "COLLISION_GROUP_NONE", COLLISION_GROUP_NONE );
+				g_pScriptVM->SetValue( "COLLISION_GROUP_DEBRIS", COLLISION_GROUP_DEBRIS );
+				g_pScriptVM->SetValue( "COLLISION_GROUP_DEBRIS_TRIGGER", COLLISION_GROUP_DEBRIS_TRIGGER );
+				g_pScriptVM->SetValue( "COLLISION_GROUP_INTERACTIVE_DEBRIS", COLLISION_GROUP_INTERACTIVE_DEBRIS );
+				g_pScriptVM->SetValue( "COLLISION_GROUP_INTERACTIVE", COLLISION_GROUP_INTERACTIVE );
+				g_pScriptVM->SetValue( "COLLISION_GROUP_PLAYER", COLLISION_GROUP_PLAYER );
+				g_pScriptVM->SetValue( "COLLISION_GROUP_BREAKABLE_GLASS", COLLISION_GROUP_BREAKABLE_GLASS );
+				g_pScriptVM->SetValue( "COLLISION_GROUP_VEHICLE", COLLISION_GROUP_VEHICLE );
+				g_pScriptVM->SetValue( "COLLISION_GROUP_PLAYER_MOVEMENT", COLLISION_GROUP_PLAYER_MOVEMENT );
+				g_pScriptVM->SetValue( "COLLISION_GROUP_NPC", COLLISION_GROUP_NPC );
+				g_pScriptVM->SetValue( "COLLISION_GROUP_IN_VEHICLE", COLLISION_GROUP_IN_VEHICLE );
+				g_pScriptVM->SetValue( "COLLISION_GROUP_WEAPON", COLLISION_GROUP_WEAPON );
+				g_pScriptVM->SetValue( "COLLISION_GROUP_VEHICLE_CLIP", COLLISION_GROUP_VEHICLE_CLIP );
+				g_pScriptVM->SetValue( "COLLISION_GROUP_PROJECTILE", COLLISION_GROUP_PROJECTILE );
+				g_pScriptVM->SetValue( "COLLISION_GROUP_DOOR_BLOCKER", COLLISION_GROUP_DOOR_BLOCKER );
+				g_pScriptVM->SetValue( "COLLISION_GROUP_PASSABLE_DOOR", COLLISION_GROUP_PASSABLE_DOOR );
+				g_pScriptVM->SetValue( "COLLISION_GROUP_DISSOLVING", COLLISION_GROUP_DISSOLVING );
+				g_pScriptVM->SetValue( "COLLISION_GROUP_PUSHAWAY", COLLISION_GROUP_PUSHAWAY );
+				g_pScriptVM->SetValue( "COLLISION_GROUP_NPC_ACTOR", COLLISION_GROUP_NPC_ACTOR );
+				g_pScriptVM->SetValue( "COLLISION_GROUP_NPC_SCRIPTED", COLLISION_GROUP_NPC_SCRIPTED );
+				g_pScriptVM->SetValue( "COLLISION_GROUP_PZ_CLIP", COLLISION_GROUP_PZ_CLIP );
+				g_pScriptVM->SetValue( "COLLISION_GROUP_DEBRIS_BLOCK_PROJECTILE", COLLISION_GROUP_DEBRIS_BLOCK_PROJECTILE );
+				g_pScriptVM->SetValue( "ASW_COLLISION_GROUP_GRUBS", ASW_COLLISION_GROUP_GRUBS );
+				g_pScriptVM->SetValue( "ASW_COLLISION_GROUP_PARASITE", ASW_COLLISION_GROUP_PARASITE );
+				g_pScriptVM->SetValue( "ASW_COLLISION_GROUP_ALIEN", ASW_COLLISION_GROUP_ALIEN );
+				g_pScriptVM->SetValue( "ASW_COLLISION_GROUP_MARINE_POSITION_PREDICTION", ASW_COLLISION_GROUP_MARINE_POSITION_PREDICTION );
+				g_pScriptVM->SetValue( "ASW_COLLISION_GROUP_SHOTGUN_PELLET", ASW_COLLISION_GROUP_SHOTGUN_PELLET );
+				g_pScriptVM->SetValue( "ASW_COLLISION_GROUP_EGG", ASW_COLLISION_GROUP_EGG );
+				g_pScriptVM->SetValue( "ASW_COLLISION_GROUP_BLOCK_DRONES", ASW_COLLISION_GROUP_BLOCK_DRONES );
+				g_pScriptVM->SetValue( "ASW_COLLISION_GROUP_BIG_ALIEN", ASW_COLLISION_GROUP_BIG_ALIEN );
+				g_pScriptVM->SetValue( "ASW_COLLISION_GROUP_BUZZER", ASW_COLLISION_GROUP_BUZZER );
+				g_pScriptVM->SetValue( "ASW_COLLISION_GROUP_BODY_SNATCHER", ASW_COLLISION_GROUP_BODY_SNATCHER );
+				g_pScriptVM->SetValue( "ASW_COLLISION_GROUP_GRENADES", ASW_COLLISION_GROUP_GRENADES );
+				g_pScriptVM->SetValue( "ASW_COLLISION_GROUP_NPC_GRENADES", ASW_COLLISION_GROUP_NPC_GRENADES );
+				g_pScriptVM->SetValue( "ASW_COLLISION_GROUP_BLOB_TINY", ASW_COLLISION_GROUP_BLOB_TINY );
+				g_pScriptVM->SetValue( "ASW_COLLISION_GROUP_ALIEN_MISSILE", ASW_COLLISION_GROUP_ALIEN_MISSILE );
+				g_pScriptVM->SetValue( "ASW_COLLISION_GROUP_PLAYER_MISSILE", ASW_COLLISION_GROUP_PLAYER_MISSILE );
+				g_pScriptVM->SetValue( "ASW_COLLISION_GROUP_SENTRY", ASW_COLLISION_GROUP_SENTRY );
+				g_pScriptVM->SetValue( "ASW_COLLISION_GROUP_SENTRY_PROJECTILE", ASW_COLLISION_GROUP_SENTRY_PROJECTILE );
+				g_pScriptVM->SetValue( "HL2COLLISION_GROUP_COMBINE_BALL", HL2COLLISION_GROUP_COMBINE_BALL );
+				g_pScriptVM->SetValue( "HL2COLLISION_GROUP_GUNSHIP", HL2COLLISION_GROUP_GUNSHIP );
+				g_pScriptVM->SetValue( "ASW_COLLISION_GROUP_BLOCK_ALIENS", ASW_COLLISION_GROUP_BLOCK_ALIENS );
+				g_pScriptVM->SetValue( "ASW_COLLISION_GROUP_IGNORE_NPCS", ASW_COLLISION_GROUP_IGNORE_NPCS );
+				g_pScriptVM->SetValue( "ASW_COLLISION_GROUP_FLAMER_PELLETS", ASW_COLLISION_GROUP_FLAMER_PELLETS );
+				g_pScriptVM->SetValue( "ASW_COLLISION_GROUP_EXTINGUISHER_PELLETS", ASW_COLLISION_GROUP_EXTINGUISHER_PELLETS );
+				g_pScriptVM->SetValue( "ASW_COLLISION_GROUP_BOTS", ASW_COLLISION_GROUP_BOTS );
+				g_pScriptVM->SetValue( "ASW_COLLISION_GROUP_BOT_MOVEMENT", ASW_COLLISION_GROUP_BOT_MOVEMENT );
+				g_pScriptVM->SetValue( "ASW_COLLISION_GROUP_SHIELD", ASW_COLLISION_GROUP_SHIELD );
+				g_pScriptVM->SetValue( "ASW_COLLISION_GROUP_PASSABLE", ASW_COLLISION_GROUP_PASSABLE );
 
 				if ( scriptLanguage == SL_SQUIRREL )
 				{
