@@ -628,7 +628,7 @@ public:
 	virtual void Extinguish( CBaseEntity *pHealer, CBaseEntity *pWeapon );
 	virtual void Extinguish();
 	void ScriptExtinguish() { Extinguish( NULL, NULL ); }
-	virtual	bool		AllowedToIgnite( void );
+	virtual	bool AllowedToIgnite( CBaseEntity *pAttacker, CBaseEntity *pWeapon );
 	float m_flFirstBurnTime;
 	float m_flLastBurnTime;
 	float m_flLastBurnSoundTime;
