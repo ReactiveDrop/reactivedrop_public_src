@@ -32,6 +32,8 @@ BEGIN_DATADESC( CASW_Harvester )
 	DEFINE_FIELD( m_fLastTouchHurtTime, FIELD_TIME ),
 	DEFINE_FIELD( m_fGibTime, FIELD_TIME ),
 	DEFINE_FIELD( m_flIdleDelay,			FIELD_TIME ),
+	DEFINE_OUTPUT( m_OnChildAlienSpawned, "OnChildAlienSpawned" ),
+	DEFINE_OUTPUT( m_OnChildAlienKilled, "OnChildAlienKilled" ),
 END_DATADESC()
 
 ConVar asw_harvester_speedboost( "asw_harvester_speedboost", "1.0",FCVAR_CHEAT , "boost speed for the harvesters" );
@@ -470,11 +472,15 @@ CAI_BaseNPC* CASW_Harvester::SpawnAlien()
 		m_iCrittersAlive++;
 		pParasite->SetMother( this );
 	}
+
+	m_OnChildAlienSpawned.FireOutput( pEntity, this );
+
 	return pNPC;
 }
 
-void CASW_Harvester::ChildAlienKilled(CASW_Alien* pParasite)
+void CASW_Harvester::ChildAlienKilled( CASW_Alien *pParasite )
 {
+	m_OnChildAlienKilled.FireOutput( pParasite, this );
 	m_iCrittersAlive--;
 }
 

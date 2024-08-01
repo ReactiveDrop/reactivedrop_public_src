@@ -81,6 +81,9 @@ public:
 	static float s_fNextSpawnSoundTime;
 	static float s_fNextPainSoundTime;
 
+	COutputEvent m_OnChildAlienSpawned;
+	COutputEvent m_OnChildAlienKilled;
+
 	enum
 	{
 		SCHED_ASW_HARVESTER_LAY_CRITTER = BaseClass::NEXT_SCHEDULE,

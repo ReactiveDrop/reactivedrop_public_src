@@ -2869,6 +2869,8 @@
 	radius(integer) : "Alert Radius" : 256
 	eludedist(integer) : "Distance until eluded" : 1024 : "Only available when Burrow When Eluded is flagged"
 	input BreakWaitForScript(void) : "Wakes the alien up if his Wait For Script flag was set"
+	output OnChildAlienSpawned(void) : "!activator is the Xenomite."
+	output OnChildAlienKilled(void) : "!activator is the Xenomite."
 ]
 
 @NPCClass base(InhabitableNPC) studio("models/aliens/mortar/mortar.mdl") sphere() = asw_mortarbug :
