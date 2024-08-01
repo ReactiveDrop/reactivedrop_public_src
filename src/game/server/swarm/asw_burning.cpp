@@ -11,10 +11,10 @@ ConVar rd_burning_humanoid_damage( "rd_burning_humanoid_damage", "30", FCVAR_CHE
 ConVar rd_burning_alien_damage( "rd_burning_alien_damage", "15", FCVAR_CHEAT, "damage per second caused by afterburn to non-humanoid targets" ); // was 5 multiplied by asw_fire_alien_damage_scale (3), collapsed into just a simple 15 with no scaling
 ConVar rd_burning_biomass_damage( "rd_burning_biomass_damage", "5", FCVAR_CHEAT, "damage per second caused by afterburn to biomass" ); // was asw_goo_burning_damage (2) divided by 0.4, collapsed into just a simple 5 per second rather than 2 per 0.4 second tick
 ConVar rd_burning_rampup( "rd_burning_rampup", "1", FCVAR_CHEAT, "bias for damage ramp-up for non-friendly fire afterburn (0.5 = linear)", true, 0, true, 1 );
-ConVar rd_burning_rampup_ff( "rd_burning_rampup_ff", "0.25", FCVAR_CHEAT, "bias for damage ramp-up for friendly fire afterburn (0.5 = linear)", true, 0, true, 1 );
+ConVar rd_burning_rampup_ff( "rd_burning_rampup_ff", "1", FCVAR_CHEAT, "bias for damage ramp-up for friendly fire afterburn (0.5 = linear)", true, 0, true, 1 );
 ConVar rd_burning_rampup_hcff( "rd_burning_rampup_hcff", "1", FCVAR_CHEAT, "bias for damage ramp-up for hardcore friendly fire afterburn (0.5 = linear)", true, 0, true, 1 );
 ConVar rd_burning_rampup_time( "rd_burning_rampup_time", "0", FCVAR_CHEAT, "number of seconds for ramp-up for non-friendly fire afterburn", true, 0, false, 0 );
-ConVar rd_burning_rampup_time_ff( "rd_burning_rampup_time_ff", "3", FCVAR_CHEAT, "number of seconds for ramp-up for friendly fire afterburn", true, 0, false, 0 );
+ConVar rd_burning_rampup_time_ff( "rd_burning_rampup_time_ff", "0", FCVAR_CHEAT, "number of seconds for ramp-up for friendly fire afterburn", true, 0, false, 0 );
 ConVar rd_burning_rampup_time_hcff( "rd_burning_rampup_time_hcff", "0", FCVAR_CHEAT, "number of seconds for ramp-up for hardcore friendly fire afterburn", true, 0, false, 0 );
 extern ConVar asw_marine_ff_absorption;
 
