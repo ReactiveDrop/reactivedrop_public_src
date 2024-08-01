@@ -5157,15 +5157,12 @@ bool CASW_Marine::AllowedToIgnite( void )
 		return true;
 
 	// don't ignite, but play a flesh burn sound if we aren't on fire already
-	if ( !m_bOnFire && (gpGlobals->curtime - m_flLastBurnSoundTime) > 1.0f )
+	if ( !m_bOnFire && ( gpGlobals->curtime - m_flLastBurnSoundTime ) > 1.0f )
 	{
 		CASW_Player *player = GetCommander();
 		if ( player )
 		{
-			CSingleUserRecipientFilter localfilter( player );
-			localfilter.MakeReliable();
-
-			CBaseEntity::EmitSound( localfilter, entindex(), "ASW.MarineBurnPain_NoIgnite" );
+			EmitSound( "ASW.MarineBurnPain_NoIgnite" );
 			m_flLastBurnSoundTime = gpGlobals->curtime;
 		}
 	}
