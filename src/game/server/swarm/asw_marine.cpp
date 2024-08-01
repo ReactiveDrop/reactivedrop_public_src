@@ -461,6 +461,7 @@ ConVar asw_marine_burn_time_easy( "asw_marine_burn_time_easy", "6", FCVAR_CHEAT,
 ConVar asw_marine_burn_time_normal( "asw_marine_burn_time_normal", "8", FCVAR_CHEAT, "Amount of time marine burns for when ignited on normal difficulty" );
 ConVar asw_marine_burn_time_hard( "asw_marine_burn_time_hard", "12", FCVAR_CHEAT, "Amount of time marine burns for when ignited on hard difficulty" );
 ConVar asw_marine_burn_time_insane( "asw_marine_burn_time_insane", "15", FCVAR_CHEAT, "Amount of time marine burns for when ignited on insane difficulty" );
+ConVar asw_marine_time_until_ignite_expire( "asw_marine_time_until_ignite_expire", "2.0", FCVAR_CHEAT, "Amount of time until repeated burn damage counter expires" );
 ConVar asw_marine_time_until_ignite( "asw_marine_time_until_ignite", "0.0", FCVAR_CHEAT, "Amount of time before a marine ignites from taking repeated burn damage" );
 ConVar asw_marine_time_until_ignite_hcff( "asw_marine_time_until_ignite_hcff", "0.0", FCVAR_CHEAT, "Amount of time before a marine ignites from taking repeated burn damage (hardcore ff)" );
 ConVar asw_mad_firing_break( "asw_mad_firing_break", "4", FCVAR_CHEAT, "Point at which the mad firing counter triggers the mad firing speech" );
@@ -2652,10 +2653,9 @@ void CASW_Marine::ASWThinkEffects()
 	// we've been burned relatively recently
 	if ( m_flFirstBurnTime > 0 )
 	{
-		float flGraceTime = asw_marine_time_until_ignite.GetFloat();
 		// if we haven't been burned in the last chunk of the total time-to-ignite, reset the timer
 		// additionally, if our initial burn time is over the time-to-ignite time, reset
-		if ( (gpGlobals->curtime - m_flFirstBurnTime) > flGraceTime + 1.0f )
+		if ( ( gpGlobals->curtime - m_flFirstBurnTime ) > asw_marine_time_until_ignite_expire.GetFloat() )
 			m_flFirstBurnTime = 0;
 	}
 
