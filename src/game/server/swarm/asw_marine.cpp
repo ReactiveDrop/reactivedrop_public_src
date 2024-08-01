@@ -5153,7 +5153,7 @@ bool CASW_Marine::AllowedToIgnite( void )
 		return false;
 
 	float flBurnTime = ( asw_marine_ff_absorption.GetInt() > 0 ) ? asw_marine_time_until_ignite.GetFloat() : asw_marine_time_until_ignite_hcff.GetFloat();
-	if ( m_flFirstBurnTime > 0 && (gpGlobals->curtime - m_flFirstBurnTime) >= flBurnTime )
+	if ( flBurnTime <= 0.0f || ( m_flFirstBurnTime > 0 && ( gpGlobals->curtime - m_flFirstBurnTime ) >= flBurnTime ) )
 		return true;
 
 	// don't ignite, but play a flesh burn sound if we aren't on fire already
