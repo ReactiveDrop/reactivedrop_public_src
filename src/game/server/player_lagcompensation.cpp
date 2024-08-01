@@ -16,6 +16,7 @@
 #ifdef INFESTED_DLL
 #include "asw_player.h"
 #include "asw_inhabitable_npc.h"
+#include "asw_weapon.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -249,17 +250,29 @@ void CLagCompensationManager::StartLagCompensation( CBasePlayer *player, LagComp
 	m_bNeedToRestore = false;
 
 	m_pCurrentPlayer = player;
-	
-	if ( !player->m_bLagCompensation		// Player not wanting lag compensation
-		 || (gpGlobals->maxClients <= 1)	// no lag compensation in single player
-		 || !sv_unlag.GetBool()				// disabled by server admin
-		 || player->IsBot() 				// not for bots
+
+	if ( ( gpGlobals->maxClients <= 1 )	// no lag compensation in single player
+		|| !sv_unlag.GetBool()				// disabled by server admin
+		|| player->IsBot() 				// not for bots
 #ifdef INFESTED_DLL
-		 || !ToASW_Player( player )->GetNPC() // not for spectators
+		|| !ToASW_Player( player )->GetNPC() ) // not for spectators
 #else
-		 || player->IsObserver()			// not for spectators
+		|| player->IsObserver() )			// not for spectators
 #endif
-		)
+		return;
+
+	bool bWantLagComp = player->m_bLagCompensation;
+
+#ifdef INFESTED_DLL
+	CASW_Inhabitable_NPC *pNPC = ToASW_Player( player )->GetNPC();
+	CASW_Weapon *pWeapon = pNPC->GetActiveASWWeapon();
+	if ( pWeapon && pWeapon->Classify() == CLASS_ASW_CHAINSAW )
+	{
+		bWantLagComp = player->m_bLagCompensationChainsaw;
+	}
+#endif
+
+	if ( !bWantLagComp )		// Player not wanting lag compensation
 		return;
 
 	const CUserCmd *cmd = player->GetCurrentUserCommand(); 

@@ -267,6 +267,9 @@ BEGIN_DATADESC( CBasePlayer )
 	DEFINE_FIELD( m_nUpdateRate, FIELD_INTEGER ),
 	DEFINE_FIELD( m_fLerpTime, FIELD_FLOAT ),
 	DEFINE_FIELD( m_bLagCompensation, FIELD_BOOLEAN ),
+#ifdef INFESTED_DLL
+	DEFINE_FIELD( m_bLagCompensationChainsaw, FIELD_BOOLEAN ),
+#endif
 	DEFINE_FIELD( m_bPredictWeapons, FIELD_BOOLEAN ),
 
 	DEFINE_FIELD( m_vecAdditionalPVSOrigin, FIELD_POSITION_VECTOR ),

@@ -2928,12 +2928,18 @@ void CServerGameClients::ClientSettingsChanged( edict_t *pEdict )
 	{
 		player->m_bPredictWeapons  = Q_atoi( QUICKGETCVARVALUE("cl_predictweapons")) != 0;
 		player->m_bLagCompensation = Q_atoi( QUICKGETCVARVALUE("cl_lagcompensation")) != 0;
+#ifdef INFESTED_DLL
+		player->m_bLagCompensationChainsaw = Q_atoi( QUICKGETCVARVALUE( "cl_lagcompensation_chainsaw" ) ) == -1 ? player->m_bLagCompensation : ( Q_atoi( QUICKGETCVARVALUE( "cl_lagcompensation_chainsaw" ) ) != 0 );
+#endif
 	}
 	else
 #endif
 	{
 		player->m_bPredictWeapons  = false;
 		player->m_bLagCompensation = false;
+#ifdef INFESTED_DLL
+		player->m_bLagCompensationChainsaw = false;
+#endif
 	}
 	
 

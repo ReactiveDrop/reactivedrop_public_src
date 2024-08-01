@@ -898,6 +898,9 @@ public:
 	int						m_nUpdateRate;		// user snapshot rate cl_updaterate
 	float					m_fLerpTime;		// users cl_interp
 	bool					m_bLagCompensation;	// user wants lag compenstation
+#ifdef INFESTED_DLL
+	bool					m_bLagCompensationChainsaw;
+#endif
 	bool					m_bPredictWeapons; //  user has client side predicted weapons
 	
 	float		GetDeathTime( void ) { return m_flDeathTime; }
