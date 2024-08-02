@@ -10211,6 +10211,12 @@ int CAlienSwarm::ApplyWeaponSelectionRules( int iEquipSlot, int iWeaponIndex )
 	if ( !rd_weapons_show_hidden.GetBool() )
 	{
 		CASW_EquipItem *pItem = g_ASWEquipmentList.GetItemForSlot( iEquipSlot, iWeaponIndex );
+#ifdef RD_7A_WEAPONS
+#ifdef RD_DISABLE_ALL_RELEASE_FLAGS
+#error This should be disabled for release!
+#endif
+		if ( pItem && pItem->m_bRequiresInventoryItem ); else
+#endif
 		if ( !pItem || !pItem->m_bSelectableInBriefing )
 		{
 			return 0;

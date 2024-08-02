@@ -555,7 +555,7 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 	},
 	{
 		ASW_EQUIP_ENERGY_SHIELD, WEAPON_NAME( energy_shield ),
-		true, true, false, "ASW_R_BURST", "ASW_ESHIELD",
+		false, true, false, "ASW_R_BURST", "ASW_ESHIELD",
 		"swarm/EquipIcons/EquipShieldRifle",
 		&asw_ammo_count_rifle_burst, &asw_ammo_count_rifle_burst,
 		&asw_ammo_count_energy_shield, &asw_ammo_count_energy_shield_max,
