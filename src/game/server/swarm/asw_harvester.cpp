@@ -691,6 +691,8 @@ void CASW_Harvester::Event_Killed( const CTakeDamageInfo &info )
 			{
 				pParasite->ASW_Ignite( 30.0f, 0, info.GetAttacker(), info.GetWeapon(), info.GetInflictor() );
 			}
+
+			m_OnChildAlienSpawned.FireOutput( pParasite, this );
 		}
 	}
 
