@@ -27,8 +27,8 @@ END_NETWORK_TABLE()
 BEGIN_PREDICTION_DATA( CASW_Weapon_Incendiary_Grenades )
 END_PREDICTION_DATA()
 
-LINK_ENTITY_TO_CLASS( asw_weapon_Incendiary_grenades, CASW_Weapon_Incendiary_Grenades );
-PRECACHE_WEAPON_REGISTER( asw_weapon_Incendiary_grenades );
+LINK_ENTITY_TO_CLASS( asw_weapon_incendiary_grenades, CASW_Weapon_Incendiary_Grenades );
+PRECACHE_WEAPON_REGISTER( asw_weapon_incendiary_grenades );
 
 #ifndef CLIENT_DLL
 BEGIN_DATADESC( CASW_Weapon_Incendiary_Grenades )
@@ -39,7 +39,9 @@ void CASW_Weapon_Incendiary_Grenades::Precache()
 {
 	BaseClass::Precache();
 
+#ifndef CLIENT_DLL
 	UTIL_PrecacheOther( "asw_grenade_vindicator" );
+#endif
 }
 
 void CASW_Weapon_Incendiary_Grenades::DelayedAttack( void )

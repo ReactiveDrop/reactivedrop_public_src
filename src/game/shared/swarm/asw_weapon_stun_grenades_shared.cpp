@@ -37,7 +37,9 @@ void CASW_Weapon_Stun_Grenades::Precache()
 {
 	BaseClass::Precache();
 
+#ifndef CLIENT_DLL
 	UTIL_PrecacheOther( "asw_grenade_prifle" );
+#endif
 }
 
 void CASW_Weapon_Stun_Grenades::DelayedAttack( void )
