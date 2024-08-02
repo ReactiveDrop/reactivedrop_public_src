@@ -124,5 +124,7 @@ void CASW_Weapon_Freeze_Grenades::Precache()
 {	
 	BaseClass::Precache();
 
+#ifndef CLIENT_DLL
 	UTIL_PrecacheOther( "asw_grenade_freeze" );
+#endif
 }
