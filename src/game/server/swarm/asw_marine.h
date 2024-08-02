@@ -623,12 +623,12 @@ public:
 	CNetworkVar(float, m_fInfestedStartTime);	// when the marine first got infested
 	int m_iInfestCycle;	
 	virtual void ScriptIgnite( float flFlameLifetime );
-	virtual void ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon = NULL );
-	virtual void Ignite( float flFlameLifetime, bool bNPCOnly = true, float flSize = 0.0f, bool bCalledByLevelDesigner = false );
+	virtual void ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon, CBaseEntity *pInflictor ) override;
+	virtual void Ignite( float flFlameLifetime, bool bNPCOnly = true, float flSize = 0.0f, bool bCalledByLevelDesigner = false ) override;
 	virtual void Extinguish( CBaseEntity *pHealer, CBaseEntity *pWeapon );
-	virtual void Extinguish();
+	virtual void Extinguish() override;
 	void ScriptExtinguish() { Extinguish( NULL, NULL ); }
-	virtual	bool AllowedToIgnite( CBaseEntity *pAttacker, CBaseEntity *pWeapon );
+	bool AllowedToIgnite( CBaseEntity *pAttacker, CBaseEntity *pWeapon, CBaseEntity *pInflictor ) override;
 	float m_flFirstBurnTime;
 	float m_flLastBurnTime;
 	float m_flLastBurnSoundTime;

@@ -462,8 +462,17 @@ ConVar asw_marine_burn_time_normal( "asw_marine_burn_time_normal", "8", FCVAR_CH
 ConVar asw_marine_burn_time_hard( "asw_marine_burn_time_hard", "12", FCVAR_CHEAT, "Amount of time marine burns for when ignited on hard difficulty" );
 ConVar asw_marine_burn_time_insane( "asw_marine_burn_time_insane", "15", FCVAR_CHEAT, "Amount of time marine burns for when ignited on insane difficulty" );
 ConVar asw_marine_time_until_ignite_expire( "asw_marine_time_until_ignite_expire", "2.0", FCVAR_CHEAT, "Amount of time until repeated burn damage counter expires" );
-ConVar asw_marine_time_until_ignite( "asw_marine_time_until_ignite", "0.0", FCVAR_CHEAT, "Amount of time before a marine ignites from taking repeated burn damage" );
-ConVar asw_marine_time_until_ignite_hcff( "asw_marine_time_until_ignite_hcff", "0.0", FCVAR_CHEAT, "Amount of time before a marine ignites from taking repeated burn damage (hardcore ff)" );
+ConVar asw_marine_time_until_ignite( "asw_marine_time_until_ignite", "0.7", FCVAR_CHEAT, "Amount of time before a marine ignites from taking repeated burn damage" );
+ConVar asw_marine_time_until_ignite_hcff( "asw_marine_time_until_ignite_hcff", "0.2", FCVAR_CHEAT, "Amount of time before a marine ignites from taking repeated burn damage (hardcore ff)" );
+ConVar asw_marine_time_until_ignite_flamer( "asw_marine_time_until_ignite_flamer", "0.0", FCVAR_CHEAT, "If non-negative, overrides asw_marine_time_until_ignite for the M868 Flamer Unit" );
+ConVar asw_marine_time_until_ignite_hcff_flamer( "asw_marine_time_until_ignite_hcff_flamer", "0.0", FCVAR_CHEAT, "If non-negative, overrides asw_marine_time_until_ignite_hcff for the M868 Flamer Unit" );
+ConVar asw_marine_time_until_ignite_grenade( "asw_marine_time_until_ignite_grenade", "-1", FCVAR_CHEAT, "If non-negative, overrides asw_marine_time_until_ignite for M42 Vindicator grenades and NA-23 Incendiary Grenades" );
+ConVar asw_marine_time_until_ignite_hcff_grenade( "asw_marine_time_until_ignite_hcff_grenade", "-1", FCVAR_CHEAT, "If non-negative, overrides asw_marine_time_until_ignite_hcff for M42 Vindicator grenades and NA-23 Incendiary Grenades" );
+ConVar asw_marine_time_until_ignite_mines( "asw_marine_time_until_ignite_mines", "-1", FCVAR_CHEAT, "If non-negative, overrides asw_marine_time_until_ignite for M478 Proximity Incendiary Mines" );
+ConVar asw_marine_time_until_ignite_hcff_mines( "asw_marine_time_until_ignite_hcff_mines", "-1", FCVAR_CHEAT, "If non-negative, overrides asw_marine_time_until_ignite_hcff for M478 Proximity Incendiary Mines" );
+ConVar asw_marine_time_until_ignite_plasma( "asw_marine_time_until_ignite_plasma", "-1", FCVAR_CHEAT, "If non-negative, overrides asw_marine_time_until_ignite for the G521 Plasma Thrower" );
+ConVar asw_marine_time_until_ignite_hcff_plasma( "asw_marine_time_until_ignite_hcff_plasma", "-1", FCVAR_CHEAT, "If non-negative, overrides asw_marine_time_until_ignite_hcff for the G521 Plasma Thrower" );
+ConVar asw_marine_roll_through_firewall( "asw_marine_roll_through_firewall", "1", FCVAR_CHEAT, "If set, marines cannot be ignited by M478 Proximity Incendiary Mines while rolling" );
 ConVar asw_mad_firing_break( "asw_mad_firing_break", "4", FCVAR_CHEAT, "Point at which the mad firing counter triggers the mad firing speech" );
 ConVar asw_mad_firing_decay( "asw_mad_firing_decay", "0.15", FCVAR_CHEAT, "Tick down rate of the mad firing counter" );
 ConVar asw_marine_special_idle_chatter_chance( "asw_marine_special_idle_chatter_chance", "0.25", FCVAR_CHEAT, "Chance of marine doing a special idle chatter" );
@@ -1874,9 +1883,9 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		// if we take fire damage, catch on fire
 		float fPainInterval = 0.7f;
 
-		if ( info.GetDamageType() & DMG_BURN )
+		if ( ( info.GetDamageType() & DMG_BURN ) && !( info.GetDamageType() & DMG_DIRECT ) )
 		{
-			ASW_Ignite( 1.0f, 0, pAttacker, info.GetWeapon() );
+			ASW_Ignite( 1.0f, 0, pAttacker, info.GetWeapon(), info.GetInflictor() );
 		}
 
 		if ( info.GetDamageType() & DMG_POISON )
@@ -5058,7 +5067,7 @@ void CASW_Marine::ScriptIgnite( float flFlameLifetime )
 	m_flLastBurnTime = gpGlobals->curtime;
 }
 
-void CASW_Marine::ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon /*= NULL */ )
+void CASW_Marine::ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon, CBaseEntity *pInflictor )
 {
 	if (!ASWGameRules())
 		return;
@@ -5081,7 +5090,7 @@ void CASW_Marine::ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *
 	// if this is an env_fire trying to burn us, ignore the grace period that the AllowedToIgnite function does
 	// we want env_fires to always ignite the marine immediately so they can be used as dangerous blockers in levels
 	CFire *pFire = dynamic_cast< CFire * >( pAttacker );
-	if ( AllowedToIgnite( pAttacker, pDamagingWeapon ) || ( pFire && !pFire->m_bPlacedByMarine ) || rd_marine_ignite_immediately.GetBool() )
+	if ( AllowedToIgnite( pAttacker, pDamagingWeapon, pInflictor ) || ( pFire && !pFire->m_bPlacedByMarine ) || rd_marine_ignite_immediately.GetBool() )
 	{
 		if ( IsOnFire() )
 			return;
@@ -5113,7 +5122,7 @@ void CASW_Marine::ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *
 
 void CASW_Marine::Ignite( float flFlameLifetime, bool bNPCOnly, float flSize, bool bCalledByLevelDesigner )
 {
-	return;	// use ASW_Ignite instead;
+	Assert( 0 ); // use ASW_Ignite instead;
 }
 
 void CASW_Marine::Extinguish( CBaseEntity *pHealer, CBaseEntity *pWeapon )
@@ -5147,12 +5156,38 @@ void CASW_Marine::Extinguish()
 	Extinguish( NULL, NULL );
 }
 
-bool CASW_Marine::AllowedToIgnite( CBaseEntity *pAttacker, CBaseEntity *pWeapon )
+bool CASW_Marine::AllowedToIgnite( CBaseEntity *pAttacker, CBaseEntity *pWeapon, CBaseEntity *pInflictor )
 {
 	if ( m_iJumpJetting.Get() != 0 )
 		return false;
 
 	float flBurnTime = ( asw_marine_ff_absorption.GetInt() > 0 ) ? asw_marine_time_until_ignite.GetFloat() : asw_marine_time_until_ignite_hcff.GetFloat();
+#define CHECK_BURN_TIME( suffix ) \
+		if ( asw_marine_ff_absorption.GetInt() > 0 && asw_marine_time_until_ignite_##suffix.GetFloat() >= 0 ) \
+			flBurnTime = asw_marine_time_until_ignite_##suffix.GetFloat(); \
+		else if ( asw_marine_ff_absorption.GetInt() <= 0 && asw_marine_time_until_ignite_hcff_##suffix.GetFloat() >= 0 ) \
+			flBurnTime = asw_marine_time_until_ignite_hcff_##suffix.GetFloat()
+	if ( pWeapon && pWeapon->Classify() == CLASS_ASW_FLAMER )
+	{
+		CHECK_BURN_TIME( flamer );
+	}
+	else if ( pWeapon && pWeapon->Classify() == CLASS_ASW_PLASMA_THROWER )
+	{
+		CHECK_BURN_TIME( plasma );
+	}
+	else if ( pInflictor && pInflictor->Classify() == CLASS_ASW_GRENADE_VINDICATOR )
+	{
+		CHECK_BURN_TIME( grenade );
+	}
+	else if ( pInflictor && pInflictor->Classify() == CLASS_ASW_FIRE && assert_cast< CFire * >( pInflictor )->m_bPlacedByMarine )
+	{
+		if ( m_iMeleeAttackID == CASW_Melee_System::s_nRollAttackID && asw_marine_roll_through_firewall.GetBool() )
+			return false;
+
+		CHECK_BURN_TIME( mines );
+	}
+#undef CHECK_BURN_TIME
+
 	if ( flBurnTime <= 0.0f || ( m_flFirstBurnTime > 0 && ( gpGlobals->curtime - m_flFirstBurnTime ) >= flBurnTime ) )
 		return true;
 

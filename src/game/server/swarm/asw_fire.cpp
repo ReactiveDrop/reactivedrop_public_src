@@ -1806,13 +1806,13 @@ void CFire::ASWFireTouch( CBaseEntity *pOther )
 				}
 
 				// Burn for 1/3rd the time decided by difficulty
-				pMarine->ASW_Ignite( ( m_nFireType == FIRE_WALL_MINE ) ? 0.5f : 1.0f, 0, pOwner ? pOwner : this, m_hCreatorWeapon );
+				pMarine->ASW_Ignite( ( m_nFireType == FIRE_WALL_MINE ) ? 0.5f : 1.0f, 0, pOwner ? pOwner : this, m_hCreatorWeapon, this );
 				//Msg("OUCH OUCH BURNING MARINE\n");
 			}
 			else if ( pOther->Classify() == CLASS_ASW_COLONIST )
 			{
 				CASW_Colonist *pColonist = assert_cast<CASW_Colonist*>(pOther);
-				pColonist->ASW_Ignite( ( m_nFireType == FIRE_WALL_MINE ) ? 5 : 10, 0, pOwner ? pOwner : this, m_hCreatorWeapon );
+				pColonist->ASW_Ignite( ( m_nFireType == FIRE_WALL_MINE ) ? 5 : 10, 0, pOwner ? pOwner : this, m_hCreatorWeapon, this );
 			}
 			else if ( IASW_Spawnable_NPC *pSpawnable = dynamic_cast< IASW_Spawnable_NPC * >( pOther ) )
 			{
@@ -1828,7 +1828,7 @@ void CFire::ASWFireTouch( CBaseEntity *pOther )
 						}
 					}
 				}
-				pSpawnable->ASW_Ignite( 10.0f, 0, pOwner ? pOwner : this, m_hCreatorWeapon );
+				pSpawnable->ASW_Ignite( 10.0f, 0, pOwner ? pOwner : this, m_hCreatorWeapon, this );
 
 				if ( m_nFireType == FIRE_WALL_MINE && pSpawnable->GetNPC() )
 				{

@@ -73,6 +73,7 @@ extern ConVar asw_world_healthbars;
 extern ConVar asw_world_usingbars;
 extern ConVar asw_marine_rolls;
 extern ConVar asw_vindicator_grenade_fuse;
+extern ConVar asw_marine_roll_through_firewall;
 extern ConVar rd_default_weapon;
 extern ConVar rd_chatter_about_ff;
 extern ConVar rd_chatter_about_marine_death;
@@ -193,6 +194,7 @@ void CASW_Deathmatch_Mode::ApplyDeathmatchConVars()
 
 	SaveSetConvar( asw_marine_death_protection, 0 ); // disable 1 HP protection
 	SaveSetConvar( asw_vindicator_grenade_fuse, 1.0f );
+	SaveSetConvar( asw_marine_roll_through_firewall, 0 );
 
 	SaveSetConvar( rd_chatter_about_ff, 0 );
 	SaveSetConvar( rd_chatter_about_marine_death, 0 );

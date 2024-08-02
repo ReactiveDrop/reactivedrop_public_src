@@ -130,8 +130,8 @@ public:
 	virtual void Event_Killed( const CTakeDamageInfo &info ) override;
 
 	// burning
-	virtual	bool AllowedToIgnite( void ) override { return m_bFlammable; }
-	virtual void ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon = NULL ) override;
+	virtual	bool AllowedToIgnite( CBaseEntity *pAttacker, CBaseEntity *pWeapon, CBaseEntity *pInflictor ) override { return m_bFlammable; }
+	virtual void ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon, CBaseEntity *pInflictor ) override;
 	virtual void Ignite( float flFlameLifetime, bool bNPCOnly = true, float flSize = 0.0f, bool bCalledByLevelDesigner = false ) override;
 	virtual void ScriptIgnite( float flFlameLifetime );
 	virtual void Extinguish() override;

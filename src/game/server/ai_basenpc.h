@@ -1125,7 +1125,7 @@ public:
 	void				SelectDeathPose( const CTakeDamageInfo &info );
 	virtual bool		ShouldPickADeathPose( void ) { return true; }
 
-	virtual	bool		AllowedToIgnite( void ) { return false; }
+	virtual	bool		AllowedToIgnite( CBaseEntity *pAttacker, CBaseEntity *pWeapon, CBaseEntity *pInflictor ) { return false; }
 
 protected:
 	virtual float 		GetGoalRepathTolerance( CBaseEntity *pGoalEnt, GoalType_t type, const Vector &curGoal, const Vector &curTargetPos );

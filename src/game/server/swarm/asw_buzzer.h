@@ -176,7 +176,7 @@ public:
 	virtual bool IsAlien(void) const { return true; }
 
 	virtual void MoveAside() { }
-	virtual void ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon = NULL );
+	virtual void ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon, CBaseEntity *pInflictor );
 	virtual void Extinguish();
 	virtual void OnSwarmSensed(int iDistance);
 

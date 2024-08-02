@@ -859,9 +859,9 @@ void CASW_Simple_Alien::ClearAlienOrders()
 	m_bFailedMoveTo = false;
 }
 
-void CASW_Simple_Alien::ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon )
+void CASW_Simple_Alien::ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon, CBaseEntity *pInflictor )
 {
-	if ( AllowedToIgnite() )
+	if ( AllowedToIgnite( pAttacker, pDamagingWeapon, pInflictor ) )
 	{
 		if ( IsOnFire() )
 			return;

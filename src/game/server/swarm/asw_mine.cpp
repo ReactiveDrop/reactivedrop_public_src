@@ -103,7 +103,8 @@ void CASW_Mine::Explode()
 		if (GetOwnerEntity())
 			Msg("Creating firewall with owner %s\n", GetOwnerEntity()->GetClassname());
 		pFirewall->SetOwnerEntity(GetOwnerEntity());
-		pFirewall->SetAbsOrigin( GetAbsOrigin() );			
+		pFirewall->SetAbsOrigin( GetAbsOrigin() );
+		pFirewall->m_bPlacedByMarine = m_bPlacedByMarine;
 
 		CASW_Marine* pMarine = NULL;
 		if ( GetOwnerEntity() && GetOwnerEntity()->Classify() == CLASS_ASW_MARINE )

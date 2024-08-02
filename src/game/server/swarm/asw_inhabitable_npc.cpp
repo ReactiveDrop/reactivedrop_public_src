@@ -674,7 +674,7 @@ int CASW_Inhabitable_NPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		// if we take fire damage (but not afterburn damage), catch on fire
 		if ( result > 0 && ( newInfo.GetDamageType() & DMG_BURN ) && m_bFlammable && newInfo.GetWeapon() && !( newInfo.GetDamageType() & DMG_DIRECT ) )
 		{
-			ASW_Ignite( asw_alien_burn_duration.GetFloat(), 0, pAttacker, newInfo.GetWeapon() );
+			ASW_Ignite( asw_alien_burn_duration.GetFloat(), 0, pAttacker, newInfo.GetWeapon(), newInfo.GetInflictor() );
 		}
 
 		// make the alien move slower for 0.5 seconds
@@ -738,9 +738,9 @@ void CASW_Inhabitable_NPC::Event_Killed( const CTakeDamageInfo &info )
 	BaseClass::Event_Killed( info );
 }
 
-void CASW_Inhabitable_NPC::ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon )
+void CASW_Inhabitable_NPC::ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon, CBaseEntity *pInflictor )
 {
-	if ( AllowedToIgnite() )
+	if ( AllowedToIgnite( pAttacker, pDamagingWeapon, pInflictor ) )
 	{
 		if ( IsOnFire() )
 		{
@@ -765,7 +765,7 @@ void CASW_Inhabitable_NPC::Ignite( float flFlameLifetime, bool bNPCOnly, float f
 
 void CASW_Inhabitable_NPC::ScriptIgnite( float flFlameLifetime )
 {
-	ASW_Ignite( flFlameLifetime, 0, NULL, NULL );
+	ASW_Ignite( flFlameLifetime, 0, NULL, NULL, NULL );
 }
 
 void CASW_Inhabitable_NPC::Extinguish()

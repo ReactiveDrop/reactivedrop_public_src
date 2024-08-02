@@ -410,7 +410,7 @@ int CASW_Colonist::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	{
 		if ( !IsOnFire() )
 		{
-			ASW_Ignite( 10, 0, info.GetAttacker(), info.GetWeapon() );
+			ASW_Ignite( 10, 0, info.GetAttacker(), info.GetWeapon(), info.GetInflictor() );
 		}
 	}
 	else if ( info.GetDamage() > 0 )
@@ -433,9 +433,9 @@ int CASW_Colonist::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	return BaseClass::OnTakeDamage_Alive( info );
 }
 
-void CASW_Colonist::ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon )
+void CASW_Colonist::ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon, CBaseEntity *pInflictor )
 {
-	if ( AllowedToIgnite() )
+	if ( AllowedToIgnite( pAttacker, pDamagingWeapon, pInflictor ) )
 	{
 		bool bFriendlyFire = IRelationType( pAttacker ) == D_LI;
 

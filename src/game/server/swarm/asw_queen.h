@@ -67,7 +67,7 @@ public:
 	virtual void SpitProjectile();
 	Vector GetQueenAutoaimVector(Vector &spitSrc, QAngle &angSpit);
 
-	virtual	bool		AllowedToIgnite( void ) { return false; }
+	bool AllowedToIgnite( CBaseEntity *pAttacker, CBaseEntity *pWeapon, CBaseEntity *pInflictor ) override { return false; }
 
 	// head turning
 	bool ShouldWatchEnemy();

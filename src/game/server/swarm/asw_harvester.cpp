@@ -689,7 +689,7 @@ void CASW_Harvester::Event_Killed( const CTakeDamageInfo &info )
 
 			if ( IsOnFire() )
 			{
-				pParasite->ASW_Ignite( 30.0f, 0, info.GetAttacker(), info.GetWeapon() );
+				pParasite->ASW_Ignite( 30.0f, 0, info.GetAttacker(), info.GetWeapon(), info.GetInflictor() );
 			}
 		}
 	}

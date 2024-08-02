@@ -136,19 +136,19 @@ public:
 	virtual void SetHealthByDifficultyLevel();
 
 	// unused parts of the interface
-	CAI_BaseNPC* GetNPC() { return NULL; }
-	virtual bool CanStartBurrowed() { return false; }
-	virtual void StartBurrowed() { }
-	virtual void SetUnburrowActivity( string_t iszActivityName ) { }
-	virtual void SetUnburrowIdleActivity( string_t iszActivityName ) { }
-	virtual void MoveAside() { }
-	virtual void ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon );
-	virtual void ElectroStun( float flStunTime ) { }
-	virtual void OnSwarmSensed(int iDistance) { }
-	virtual void OnSwarmSenseEntity(CBaseEntity* pEnt) { }
-	virtual bool AllowedToIgnite() { return true; }
-	virtual void SetHoldoutAlien() { m_bHoldoutAlien = true; }
-	virtual bool IsHoldoutAlien() { return m_bHoldoutAlien; }
+	CAI_BaseNPC *GetNPC() override { return NULL; }
+	virtual bool CanStartBurrowed() override { return false; }
+	virtual void StartBurrowed() override { }
+	virtual void SetUnburrowActivity( string_t iszActivityName ) override { }
+	virtual void SetUnburrowIdleActivity( string_t iszActivityName ) override { }
+	virtual void MoveAside() override { }
+	virtual void ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon, CBaseEntity *pInflictor ) override;
+	virtual void ElectroStun( float flStunTime ) override { }
+	virtual void OnSwarmSensed(int iDistance) override { }
+	virtual void OnSwarmSenseEntity(CBaseEntity* pEnt) override { }
+	virtual bool AllowedToIgnite( CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon, CBaseEntity *pInflictor ) { return true; }
+	virtual void SetHoldoutAlien() override { m_bHoldoutAlien = true; }
+	virtual bool IsHoldoutAlien() override { return m_bHoldoutAlien; }
 
 	// debug
 	virtual int DrawDebugTextOverlays();

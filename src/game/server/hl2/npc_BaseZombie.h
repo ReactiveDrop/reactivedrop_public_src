@@ -192,8 +192,6 @@ public:
 
 	bool OnInsufficientStopDist( AILocalMoveGoal_t *pMoveGoal, float distClear, AIMoveResult_t *pResult );
 
-	virtual	bool		AllowedToIgnite( void ) { return m_bFlammable; }
-
 public:
 	CAI_ActBusyBehavior		m_ActBusyBehavior;
 

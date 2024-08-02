@@ -4,7 +4,7 @@
 
 #include "rd_inventory_shared.h"
 
-class CASW_Extinguisher_Projectile : public CBaseCombatCharacter
+class CASW_Extinguisher_Projectile : public CBaseCombatCharacter, public IRD_Has_Projectile_Data
 {
 	DECLARE_CLASS( CASW_Extinguisher_Projectile, CBaseCombatCharacter );
 	DECLARE_SERVERCLASS();
@@ -32,6 +32,10 @@ public:
 	EHANDLE m_hFirerWeapon;
 
 	CNetworkVarEmbedded( CRD_ProjectileData, m_ProjectileData );
+	const CRD_ProjectileData *GetProjectileData() const override
+	{
+		return &m_ProjectileData;
+	}
 
 	float m_flDamage;
 	float m_flFreezeAmount;

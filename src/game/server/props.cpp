@@ -1043,7 +1043,7 @@ void CBreakableProp::BreakablePropTouch( CBaseEntity *pOther )
 	{
 		CAI_BaseNPC *pNPC = pOther->MyNPCPointer();
 
-		if ( pNPC && pNPC->AllowedToIgnite() && pNPC->IsOnFire() == false )
+		if ( pNPC && pNPC->AllowedToIgnite( NULL, NULL, NULL ) && pNPC->IsOnFire() == false )
 		{
 			pNPC->Ignite( 25.0f );
 			KillFlare( this, m_hFlareEnt, PROP_FLARE_IGNITE_SUBSTRACT );

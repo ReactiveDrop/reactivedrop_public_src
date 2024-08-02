@@ -944,9 +944,9 @@ int CASW_Shieldbug::GetBaseHealth()
 	return rd_shieldbug_health.GetInt() + m_nExtraHeath;
 }
 
-void CASW_Shieldbug::ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon /*= NULL */ )
+void CASW_Shieldbug::ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon, CBaseEntity *pInflictor )
 {
-	BaseClass::ASW_Ignite(MIN(flFlameLifetime, 3.0f), flSize, pAttacker, pDamagingWeapon );
+	BaseClass::ASW_Ignite( MIN( flFlameLifetime, 3.0f ), flSize, pAttacker, pDamagingWeapon, pInflictor );
 }
 
 void CASW_Shieldbug::NPCThink()

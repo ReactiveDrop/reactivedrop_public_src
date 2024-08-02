@@ -684,7 +684,7 @@ int	CASW_Buzzer::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		if (nRetVal > 0 &&
 			( ((info.GetDamageType() & DMG_BURN) || (info.GetDamageType() & DMG_BLAST)) && m_bFlammable )
 			)
-			ASW_Ignite(30.0f, 0, pAttacker, info.GetWeapon() );
+			ASW_Ignite(30.0f, 0, pAttacker, info.GetWeapon(), info.GetInflictor() );
 	}
 
 	return nRetVal;
@@ -3024,9 +3024,9 @@ int CASW_Buzzer::SelectSchedule( void )
 	return BaseClass::SelectSchedule();
 }
 
-void CASW_Buzzer::ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon /*= NULL */ )
+void CASW_Buzzer::ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon, CBaseEntity *pInflictor )
 {
-	if (AllowedToIgnite())
+	if ( AllowedToIgnite( pAttacker, pDamagingWeapon, pInflictor ) )
 	{
 		if( IsOnFire() )
 			return;

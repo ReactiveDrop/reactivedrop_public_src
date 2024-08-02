@@ -42,7 +42,7 @@ public:
 	int TranslateSchedule( int scheduleType );
 	bool OverrideMoveFacing( const AILocalMoveGoal_t &move, float flInterval );
 	void SetTurnActivity();	
-	virtual void ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon = NULL );
+	virtual void ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon, CBaseEntity *pInflictor );
 	virtual bool ShouldDefend();
 	float m_fNextHeadhitAttack;
 	float m_fLastHurtTime;

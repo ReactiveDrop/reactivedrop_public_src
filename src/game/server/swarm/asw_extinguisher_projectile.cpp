@@ -49,7 +49,7 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Extinguisher_Projectile, DT_ASW_Extinguisher_Proj
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Extinguisher_Projectile )
-	DEFINE_FUNCTION( ProjectileTouch ),
+	DEFINE_ENTITYFUNC( ProjectileTouch ),
 	DEFINE_FIELD( m_hFirer, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_hFirerWeapon, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_flDamage, FIELD_FLOAT ),

@@ -448,7 +448,7 @@ void  CASW_Egg::Hatch(CBaseEntity* pOther)
 				CBaseEntity *pBurner = m_hBurner.Get();
 				if (!pBurner)
 					pBurner = this;
-				GetParasite()->ASW_Ignite( 30, 0, pBurner, m_hBurnerWeapon.Get() );
+				GetParasite()->ASW_Ignite( 30, 0, pBurner, m_hBurnerWeapon.Get(), pBurner );
 			}
 			else
 			{
@@ -547,7 +547,7 @@ int CASW_Egg::OnTakeDamage( const CTakeDamageInfo &info )
 
 		if ( ( info.GetDamageType() & DMG_BURN ) || ( info.GetDamageType() & DMG_BLAST ) )
 		{
-			ASW_Ignite( 30.0f, 0, pAttacker, info.GetWeapon() );
+			ASW_Ignite( 30.0f, 0, pAttacker, info.GetWeapon(), info.GetInflictor() );
 		}
 	}
 	return result;
@@ -642,7 +642,7 @@ void CASW_Egg::ParasiteDied(CASW_Parasite* pParasite)
 	m_hParasite = NULL;
 }
 
-void CASW_Egg::ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon /*= NULL */ )
+void CASW_Egg::ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon, CBaseEntity *pInflictor )
 {
 	if( IsOnFire() )
 		return;
@@ -660,7 +660,7 @@ void CASW_Egg::ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAt
 
 void CASW_Egg::Ignite( float flFlameLifetime, bool bNPCOnly, float flSize, bool bCalledByLevelDesigner )
 {
-	return;	// use ASW_Ignite instead
+	Assert( 0 ); // use ASW_Ignite instead
 }
 
 CASW_Parasite* CASW_Egg::GetParasite()

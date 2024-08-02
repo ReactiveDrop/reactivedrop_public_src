@@ -27,7 +27,7 @@ public:
 	Class_T 		Classify() { return (Class_T) CLASS_ASW_COLONIST; }
 	Activity		NPC_TranslateActivity( Activity eNewActivity );
 	int 			OnTakeDamage_Alive( const CTakeDamageInfo &info );
-	void ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon );
+	void ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon, CBaseEntity *pInflictor ) override;
 	virtual void MeleeBleed(CTakeDamageInfo* info);
 	bool			IsPlayerAlly( CBasePlayer *pPlayer = NULL );
 	void PainSound( const CTakeDamageInfo &info );

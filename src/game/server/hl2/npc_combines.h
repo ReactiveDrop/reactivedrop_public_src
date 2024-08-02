@@ -36,8 +36,6 @@ public:
 
 	bool		m_fIsBlocking;
 
-	virtual	bool		AllowedToIgnite( void ) { return true; }
-
 private:
 	bool		ShouldHitPlayer( const Vector &targetDir, float targetDist );
 

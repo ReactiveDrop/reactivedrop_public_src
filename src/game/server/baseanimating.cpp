@@ -3684,7 +3684,7 @@ void CBaseAnimating::Ignite( float flFlameLifetime, bool bNPCOnly, float flSize,
 	{
 		CAI_BaseNPC *pNPC = MyNPCPointer();
 
-		if ( pNPC && pNPC->AllowedToIgnite() == false )
+		if ( pNPC && pNPC->AllowedToIgnite( NULL, NULL, NULL ) == false )
 			 return;
 	}
 

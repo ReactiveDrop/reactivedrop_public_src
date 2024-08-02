@@ -602,7 +602,7 @@ void CASW_Marine::DoDamagePowerupEffects( CBaseEntity *pTarget, CTakeDamageInfo 
 		IASW_Spawnable_NPC *pSpawnableNPC = dynamic_cast<IASW_Spawnable_NPC*>( pTarget );
 		if ( pSpawnableNPC )
 		{
-			pSpawnableNPC->ASW_Ignite( 2.0f, 0, info.GetAttacker(), info.GetWeapon() );
+			pSpawnableNPC->ASW_Ignite( 2.0f, 0, info.GetAttacker(), info.GetWeapon(), info.GetInflictor() );
 		}
 	}
 
