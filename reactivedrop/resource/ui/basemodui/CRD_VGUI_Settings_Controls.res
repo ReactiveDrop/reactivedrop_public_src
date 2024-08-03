@@ -912,7 +912,6 @@
 		"command"			"ManageWheels"
 		"centerwrap"		"1"
 		"navLeft"			"BindWheelEquipment2"
-		"navRight"			"BtnCustomWheels"
 		"navUp"				"BindWheelMarine"
 		"navDown"			"SettingDeveloperConsole"
 	}
