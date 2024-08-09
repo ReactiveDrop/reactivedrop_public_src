@@ -1231,6 +1231,7 @@ void CUIGameData::OnEvent( KeyValues *pEvent )
 			{ "You have been voted off", "#SessionError_Kicked", RemapText_t::MATCH_SUBSTR },
 			{ "All players idle", "#L4D_ServerShutdownIdle", RemapText_t::MATCH_SUBSTR },
 			{ "Connection failed after 10 retries", "#SessionError_Connect", RemapText_t::MATCH_SUBSTR },
+			{ "Server is enforcing consistency for this file:\nbin/client.dll\n", "#SessionError_ClientDLL", RemapText_t::MATCH_FULL },
 #ifdef _X360
 			{ "", "#DisconnectReason_Unknown", RemapText_t::MATCH_START },	// Catch all cases for X360
 #endif
