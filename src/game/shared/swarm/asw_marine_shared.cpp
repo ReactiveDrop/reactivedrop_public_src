@@ -260,44 +260,35 @@ bool CASW_Marine::IsInfested()
 
 // tick emotes, if server sets any emote bool to true, it causes the emote timer
 //   to go to 2.0 on all machines and tick down to zero (whereupon it gets set to false again)
-void CASW_Marine::TickEmotes(float d)
+void CASW_Marine::TickEmotes( float d )
 {
-#ifdef CLIENT_DLL
-	if ( bEmoteMedic && !bClientEmoteMedic )
-	{
-		m_flLastMedicCall = gpGlobals->curtime;
-	}
-	if ( bEmoteAmmo && !bClientEmoteAmmo )
-	{
-		m_flLastAmmoCall = gpGlobals->curtime;
-	}
-#endif
-	bEmoteMedic = TickEmote(d, bEmoteMedic, bClientEmoteMedic, fEmoteMedicTime);
-	bEmoteAmmo = TickEmote(d, bEmoteAmmo, bClientEmoteAmmo, fEmoteAmmoTime);
-	bEmoteSmile = TickEmote(d, bEmoteSmile, bClientEmoteSmile, fEmoteSmileTime);
-	bEmoteStop = TickEmote(d, bEmoteStop, bClientEmoteStop, fEmoteStopTime);
-	bEmoteGo = TickEmote(d, bEmoteGo, bClientEmoteGo, fEmoteGoTime);
-	bEmoteExclaim = TickEmote(d, bEmoteExclaim, bClientEmoteExclaim, fEmoteExclaimTime);
-	bEmoteAnimeSmile = TickEmote(d, bEmoteAnimeSmile, bClientEmoteAnimeSmile, fEmoteAnimeSmileTime);
-	bEmoteQuestion = TickEmote(d, bEmoteQuestion, bClientEmoteQuestion, fEmoteQuestionTime);	
+	TickEmote( d, 1 << 0, m_fEmoteMedicTime );
+	TickEmote( d, 1 << 1, m_fEmoteAmmoTime );
+	TickEmote( d, 1 << 2, m_fEmoteSmileTime );
+	TickEmote( d, 1 << 3, m_fEmoteStopTime );
+	TickEmote( d, 1 << 4, m_fEmoteGoTime );
+	TickEmote( d, 1 << 5, m_fEmoteExclaimTime );
+	TickEmote( d, 1 << 6, m_fEmoteAnimeSmileTime );
+	TickEmote( d, 1 << 7, m_fEmoteQuestionTime );
 }
 
-bool CASW_Marine::TickEmote(float d, bool bEmote, bool& bClientEmote, float& fEmoteTime)
+bool CASW_Marine::TickEmote( float d, int bit, float &fEmoteTime )
 {
-	if (bEmote != bClientEmote)
+	if ( ( ( m_iEmote ^ m_iClientEmote ) & bit ) != 0 )
 	{
-		bClientEmote = bEmote;
-		if (bEmote)	// started an emote
+		m_iClientEmote ^= bit;
+		if ( m_iEmote & bit )	// started an emote
 			fEmoteTime = 2.0;
 	}
 
-	if (bEmote)		// if we're doing an emote, tick down the emote timer
+	// if we're doing an emote, tick down the emote timer
+	if ( ( m_iEmote & bit ) != 0 )
 	{
 		fEmoteTime -= d * 2;
-		if (fEmoteTime <= 0)
-			bEmote = false;	
+		if ( fEmoteTime <= 0 )
+			m_iEmote &= ~bit;
 	}
-	return bEmote;
+	return ( m_iEmote & bit ) != 0;
 }
 
 // asw fixme to be + eye height (crouch/no)

@@ -680,21 +680,21 @@ public:
 	float m_fUsingEngineeringAura;	// last time this tech marine had his engineering aura used
 
 	// emote system
-	void TickEmotes(float d);
-	bool TickEmote(float d, bool bEmote, bool& bClientEmote, float& fEmoteTime);
-	void DoEmote(int iEmote);
-	CNetworkVar(bool, bEmoteMedic);
-	CNetworkVar(bool, bEmoteAmmo);
-	CNetworkVar(bool, bEmoteSmile);
-	CNetworkVar(bool, bEmoteStop);
-	CNetworkVar(bool, bEmoteGo);
-	CNetworkVar(bool, bEmoteExclaim);
-	CNetworkVar(bool, bEmoteAnimeSmile);
-	CNetworkVar(bool, bEmoteQuestion);
-	bool bClientEmoteMedic, bClientEmoteAmmo, bClientEmoteSmile, bClientEmoteStop,
-		bClientEmoteGo, bClientEmoteExclaim, bClientEmoteAnimeSmile, bClientEmoteQuestion; 		// these are unused by the server.dll but are here for shared code purposes
-	float fEmoteMedicTime, fEmoteAmmoTime, fEmoteSmileTime, fEmoteStopTime,
-		fEmoteGoTime, fEmoteExclaimTime, fEmoteAnimeSmileTime, fEmoteQuestionTime;
+	void TickEmotes( float d );
+	bool TickEmote( float d, int bit, float &fEmoteTime );
+	void DoEmote( int iEmote );
+	CNetworkVar( int, m_iEmote );
+	int m_iClientEmote; // this is unused by the server.dll but is here for shared code purposes
+	float m_fEmoteMedicTime;
+	float m_fEmoteAmmoTime;
+	float m_fEmoteSmileTime;
+	float m_fEmoteStopTime;
+	float m_fEmoteGoTime;
+	float m_fEmoteExclaimTime;
+	float m_fEmoteAnimeSmileTime;
+	float m_fEmoteQuestionTime;
+	CNetworkVar( float, m_flLastMedicCall );
+	CNetworkVar( float, m_flLastAmmoCall );
 
 	// driving
 	virtual void EnterVehicle( IASW_Vehicle *pVehicle, int iSeat );

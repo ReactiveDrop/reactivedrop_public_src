@@ -153,15 +153,10 @@ BEGIN_NETWORK_TABLE( CASW_Marine, DT_ASW_Marine )
 	RecvPropEHandle		( RECVINFO ( m_hCurrentHack ) ),
 	RecvPropBool		( RECVINFO ( m_bOnFire ) ),
 
-	//emotes
-	RecvPropBool	(RECVINFO(bEmoteMedic)),
-	RecvPropBool	(RECVINFO(bEmoteAmmo)),
-	RecvPropBool	(RECVINFO(bEmoteSmile)),
-	RecvPropBool	(RECVINFO(bEmoteStop)),
-	RecvPropBool	(RECVINFO(bEmoteGo)),
-	RecvPropBool	(RECVINFO(bEmoteExclaim)),
-	RecvPropBool	(RECVINFO(bEmoteAnimeSmile)),
-	RecvPropBool	(RECVINFO(bEmoteQuestion)),
+	// emotes
+	RecvPropInt			( RECVINFO( m_iEmote ) ),
+	RecvPropFloat		( RECVINFO( m_flLastMedicCall ) ),
+	RecvPropFloat		( RECVINFO( m_flLastAmmoCall ) ),
 
 	// driving
 	RecvPropEHandle (RECVINFO(m_hASWVehicle)),
@@ -267,13 +262,6 @@ BEGIN_PREDICTION_DATA( C_ASW_Marine )
 	DEFINE_FIELD( m_hASWVehicle, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_bDriving, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bIsInVehicle, FIELD_BOOLEAN ),
-	DEFINE_FIELD( bEmoteMedic, FIELD_BOOLEAN ),
-	DEFINE_FIELD( bEmoteAmmo, FIELD_BOOLEAN ),
-	DEFINE_FIELD( bEmoteStop, FIELD_BOOLEAN ),
-	DEFINE_FIELD( bEmoteGo, FIELD_BOOLEAN ),
-	DEFINE_FIELD( bEmoteExclaim, FIELD_BOOLEAN ),
-	DEFINE_FIELD( bEmoteAnimeSmile, FIELD_BOOLEAN ),
-	DEFINE_FIELD( bEmoteQuestion, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_Commander, FIELD_EHANDLE),
 	DEFINE_FIELD( m_fStopFacingPointTime, FIELD_FLOAT ),
 	DEFINE_FIELD( m_bHacking, FIELD_BOOLEAN ),
@@ -311,23 +299,6 @@ BEGIN_PREDICTION_DATA( C_ASW_Marine )
 	DEFINE_FIELD( m_fInfestedStartTime, FIELD_FLOAT),
 	DEFINE_FIELD( m_bRedNamePulseUp, FIELD_BOOLEAN),
 	DEFINE_FIELD( m_vecFacingPoint, FIELD_VECTOR),
-	DEFINE_FIELD( bEmoteSmile, FIELD_BOOLEAN),
-	DEFINE_FIELD( bClientEmoteMedic, FIELD_BOOLEAN),
-	DEFINE_FIELD( bClientEmoteAmmo, FIELD_BOOLEAN),
-	DEFINE_FIELD( bClientEmoteSmile, FIELD_BOOLEAN),
-	DEFINE_FIELD( bClientEmoteStop, FIELD_BOOLEAN),
-	DEFINE_FIELD( bClientEmoteGo, FIELD_BOOLEAN),
-	DEFINE_FIELD( bClientEmoteExclaim, FIELD_BOOLEAN),
-	DEFINE_FIELD( bClientEmoteAnimeSmile, FIELD_BOOLEAN),
-	DEFINE_FIELD( bClientEmoteQuestion, FIELD_BOOLEAN),
-	DEFINE_FIELD( fEmoteMedicTime, FIELD_FLOAT),
-	DEFINE_FIELD( fEmoteAmmoTime, FIELD_FLOAT),
-	DEFINE_FIELD( fEmoteSmileTime, FIELD_FLOAT),
-	DEFINE_FIELD( fEmoteStopTime, FIELD_FLOAT),
-	DEFINE_FIELD( fEmoteGoTime, FIELD_FLOAT),
-	DEFINE_FIELD( fEmoteExclaimTime, FIELD_FLOAT),
-	DEFINE_FIELD( fEmoteAnimeSmileTime, FIELD_FLOAT),
-	DEFINE_FIELD( fEmoteQuestionTime, FIELD_FLOAT),
 	DEFINE_FIELD( m_bHasClientsideVehicle, FIELD_BOOLEAN),
 	DEFINE_FIELD( m_bKnockedOut, FIELD_BOOLEAN),
 	DEFINE_FIELD( m_fPoison, FIELD_FLOAT),
@@ -477,10 +448,16 @@ C_ASW_Marine::C_ASW_Marine() :
 	m_pJumpJetEffect[1] = NULL;
 	m_hOrderArrow = C_ASW_Order_Arrow::CreateOrderArrow();
 
-	bClientEmoteMedic = bClientEmoteAmmo = bClientEmoteSmile = bClientEmoteStop
-		= bClientEmoteGo = bClientEmoteExclaim = bClientEmoteAnimeSmile = bClientEmoteQuestion = false;
-	fEmoteMedicTime = fEmoteAmmoTime = fEmoteSmileTime = fEmoteStopTime
-		= fEmoteGoTime = fEmoteExclaimTime = fEmoteAnimeSmileTime = fEmoteQuestionTime = 0;
+	m_iEmote = 0;
+	m_iClientEmote = 0;
+	m_fEmoteMedicTime = 0;
+	m_fEmoteAmmoTime = 0;
+	m_fEmoteSmileTime = 0;
+	m_fEmoteStopTime = 0;
+	m_fEmoteGoTime = 0;
+	m_fEmoteExclaimTime = 0;
+	m_fEmoteAnimeSmileTime = 0;
+	m_fEmoteQuestionTime = 0;
 	m_flLastMedicCall = 0;
 	m_flLastAmmoCall = 0;
 
@@ -876,8 +853,8 @@ void C_ASW_Marine::ClientThink()
 	}
 	m_fPoison = MAX( 0, m_fPoison - gpGlobals->frametime );
 
-	TickEmotes(deltatime);
-	TickRedName(deltatime);
+	TickEmotes( deltatime );
+	TickRedName( deltatime );
 
 	UpdateFireEmitters();
 	UpdateJumpJetEffects();

@@ -290,21 +290,20 @@ public:
 	static int s_nReviveIconTextureID;
 
 	// emote system
-	void TickEmotes(float d);
-	bool TickEmote(float d, bool bEmote, bool& bClientEmote, float& fEmoteTime);
-	CNetworkVar(bool, bEmoteMedic);
-	CNetworkVar(bool, bEmoteAmmo);
-	CNetworkVar(bool, bEmoteSmile);
-	CNetworkVar(bool, bEmoteStop);
-	CNetworkVar(bool, bEmoteGo);
-	CNetworkVar(bool, bEmoteExclaim);
-	CNetworkVar(bool, bEmoteAnimeSmile);
-	CNetworkVar(bool, bEmoteQuestion);
-	bool bClientEmoteMedic, bClientEmoteAmmo, bClientEmoteSmile, bClientEmoteStop,
-		bClientEmoteGo, bClientEmoteExclaim, bClientEmoteAnimeSmile, bClientEmoteQuestion;
-	float fEmoteMedicTime, fEmoteAmmoTime, fEmoteSmileTime, fEmoteStopTime,
-		fEmoteGoTime, fEmoteExclaimTime, fEmoteAnimeSmileTime, fEmoteQuestionTime;
-	float m_flLastMedicCall, m_flLastAmmoCall;
+	void TickEmotes( float d );
+	bool TickEmote( float d, int bit, float &fEmoteTime );
+	CNetworkVar( int, m_iEmote );
+	int m_iClientEmote;
+	float m_fEmoteMedicTime;
+	float m_fEmoteAmmoTime;
+	float m_fEmoteSmileTime;
+	float m_fEmoteStopTime;
+	float m_fEmoteGoTime;
+	float m_fEmoteExclaimTime;
+	float m_fEmoteAnimeSmileTime;
+	float m_fEmoteQuestionTime;
+	CNetworkVar( float, m_flLastMedicCall );
+	CNetworkVar( float, m_flLastAmmoCall );
 
 	// driving
 	IASW_Client_Vehicle *GetASWVehicle();
