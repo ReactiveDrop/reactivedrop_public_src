@@ -577,6 +577,7 @@ public:
 	float m_flLastAttributeExplosionSound;
 	int m_nFastReloadsInARow;
 	CNetworkVar( float, m_flPreventLaserSightTime );
+	CNetworkVar( ASW_Special_Ability, m_SpecialAbility );
 
 	// AI control of firing
 	virtual bool AIWantsToFire();

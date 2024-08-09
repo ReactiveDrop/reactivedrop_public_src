@@ -271,6 +271,7 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Marine, DT_ASW_Marine)
 	SendPropBool	( SENDINFO( m_bRolls ) ),
 	SendPropInt		( SENDINFO( m_nMarineProfile ) ),
 	SendPropBool	( SENDINFO( m_bNightVision ) ),
+	SendPropInt		( SENDINFO( m_SpecialAbility ), NumBitsForCount( NUM_SPECIAL_ABILITIES ), SPROP_UNSIGNED ),
 END_SEND_TABLE()
 
 //---------------------------------------------------------
@@ -375,6 +376,7 @@ BEGIN_DATADESC( CASW_Marine )
 	DEFINE_FIELD( m_flPowerupExpireTime, FIELD_FLOAT ),
 	DEFINE_FIELD( m_bPowerupExpires, FIELD_BOOLEAN ),
 	DEFINE_KEYFIELD( m_nMarineProfile, FIELD_INTEGER, "MarineProfile" ),
+	DEFINE_KEYFIELD( m_SpecialAbility, FIELD_INTEGER, "SpecialAbility" ),
 	DEFINE_INPUTFUNC( FIELD_INTEGER, "AddPoints", InputAddPoints ),
 	DEFINE_OUTPUT( m_TotalPoints, "TotalPoints" ),
 END_DATADESC()
@@ -675,6 +677,7 @@ CASW_Marine::CASW_Marine() : m_RecentMeleeHits( 16, 16 )
 	m_bRolls = asw_marine_rolls.GetBool();
 
 	m_nMarineProfile = -1;
+	m_SpecialAbility = SPECIAL_ABILITY_FAST_RELOAD;
 
 	m_bSpawnZombineOnDeath = false;
 	m_bNightVision = false;

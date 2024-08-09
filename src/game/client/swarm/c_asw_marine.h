@@ -123,6 +123,7 @@ public:
 
 	bool ShouldPreventLaserSight() { return m_flPreventLaserSightTime.Get() < 0.0f || m_flPreventLaserSightTime.Get() > gpGlobals->curtime; }
 	CNetworkVar( float, m_flPreventLaserSightTime );
+	CNetworkVar( ASW_Special_Ability, m_SpecialAbility );
 
 	// shadow
 	ShadowType_t ShadowCastType();

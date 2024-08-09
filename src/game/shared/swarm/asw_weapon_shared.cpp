@@ -872,8 +872,8 @@ bool CASW_Weapon::ASWReload( int iClipSize1, int iClipSize2, int iActivity )
 {
 	if ( m_bInReload )	// we're already reloading!
 	{
-		Msg("ASWReload already reloading\n");
-		Assert(false);
+		Msg( "ASWReload already reloading\n" );
+		Assert( false );
 		return true;
 	}
 
@@ -891,7 +891,7 @@ bool CASW_Weapon::ASWReload( int iClipSize1, int iClipSize2, int iActivity )
 	if ( UsesClipsForAmmo1() )
 	{
 		// need to reload primary clip?
-		int primary	= MIN( iClipSize1 - m_iClip1, pMarine->GetAmmoCount( m_iPrimaryAmmoType ) );
+		int primary = MIN( iClipSize1 - m_iClip1, pMarine->GetAmmoCount( m_iPrimaryAmmoType ) );
 		if ( primary != 0 )
 		{
 			bReload = true;
@@ -899,16 +899,16 @@ bool CASW_Weapon::ASWReload( int iClipSize1, int iClipSize2, int iActivity )
 		else
 		{
 			// check if we have an ammo bag we can take a clip from instead
-			CASW_Weapon_Ammo_Bag* pAmmoBag = NULL;
-			CASW_Weapon* pWeapon = pMarine->GetASWWeapon(0);
+			CASW_Weapon_Ammo_Bag *pAmmoBag = NULL;
+			CASW_Weapon *pWeapon = pMarine->GetASWWeapon( 0 );
 			if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
-				pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
+				pAmmoBag = assert_cast< CASW_Weapon_Ammo_Bag * >( pWeapon );
 
-			if (!pAmmoBag)
+			if ( !pAmmoBag )
 			{
-				pWeapon = pMarine->GetASWWeapon(1);
-				if (pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG)
-					pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
+				pWeapon = pMarine->GetASWWeapon( 1 );
+				if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
+					pAmmoBag = assert_cast< CASW_Weapon_Ammo_Bag * >( pWeapon );
 			}
 
 			if ( pAmmoBag && pAmmoBag->CanGiveAmmoToWeapon( this ) )
@@ -916,10 +916,10 @@ bool CASW_Weapon::ASWReload( int iClipSize1, int iClipSize2, int iActivity )
 #ifdef CLIENT_DLL
 				bReload = true;
 #else
-				pAmmoBag->GiveClipTo(pMarine, m_iPrimaryAmmoType, true);
+				pAmmoBag->GiveClipTo( pMarine, m_iPrimaryAmmoType, true );
 
 				// now we've given a clip, check if we can reload
-				primary	= MIN(iClipSize1 - m_iClip1, pMarine->GetAmmoCount(m_iPrimaryAmmoType));
+				primary = MIN( iClipSize1 - m_iClip1, pMarine->GetAmmoCount( m_iPrimaryAmmoType ) );
 				if ( primary != 0 )
 				{
 					bReload = true;
@@ -949,9 +949,9 @@ bool CASW_Weapon::ASWReload( int iClipSize1, int iClipSize2, int iActivity )
 	if ( GetMaxClip1() >= 1 )
 	{
 		// Fire event when a player reloads a weapon with more than a bullet per clip
-		IGameEvent * event = gameeventmanager->CreateEvent( "weapon_reload" );
+		IGameEvent *event = gameeventmanager->CreateEvent( "weapon_reload" );
 		if ( event )
-		{		
+		{
 			CASW_Player *pPlayer = NULL;
 			pPlayer = pMarine->GetCommander();
 
@@ -959,16 +959,16 @@ bool CASW_Weapon::ASWReload( int iClipSize1, int iClipSize2, int iActivity )
 
 			int nClips = pMarine->GetAmmoCount( m_iPrimaryAmmoType ) / nClipSize;
 
-			CASW_Weapon_Ammo_Bag* pAmmoBag = NULL;
-			CASW_Weapon* pWeapon = pMarine->GetASWWeapon(0);
+			CASW_Weapon_Ammo_Bag *pAmmoBag = NULL;
+			CASW_Weapon *pWeapon = pMarine->GetASWWeapon( 0 );
 			if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
-				pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
+				pAmmoBag = assert_cast< CASW_Weapon_Ammo_Bag * >( pWeapon );
 
-			if (!pAmmoBag)
+			if ( !pAmmoBag )
 			{
-				pWeapon = pMarine->GetASWWeapon(1);
+				pWeapon = pMarine->GetASWWeapon( 1 );
 				if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
-					pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
+					pAmmoBag = assert_cast< CASW_Weapon_Ammo_Bag * >( pWeapon );
 			}
 			if ( pAmmoBag && this != pAmmoBag )
 			{
@@ -993,9 +993,8 @@ bool CASW_Weapon::ASWReload( int iClipSize1, int iClipSize2, int iActivity )
 	float flSequenceEndTime = gpGlobals->curtime + fReloadTime;
 	pMarine->SetNextAttack( flSequenceEndTime );
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = flSequenceEndTime;
-	//Msg("  Setting nextprimary attack time to %f from aswreload\n", m_flNextPrimaryAttack);
 
-	m_bInReload = true;	
+	m_bInReload = true;
 
 	// set fast reload timings
 	//  assuming 2.8 base reload time
@@ -1011,19 +1010,26 @@ bool CASW_Weapon::ASWReload( int iClipSize1, int iClipSize2, int iActivity )
 	float flFastReloadWidth = 0.12f;
 	switch( ASWGameRules()->GetSkillLevel() )
 	{
-		default:
-		case 1: 
-		case 2: flFastReloadWidth = random->RandomFloat( 0.10f, 0.1f ); break;		// easy/normal
-		case 3: flFastReloadWidth = random->RandomFloat( 0.08f, 0.12f ); break;		// hard
-		case 4: flFastReloadWidth = random->RandomFloat( 0.06f, 0.10f ); break;		// insane
-		case 5: flFastReloadWidth = random->RandomFloat( 0.055f, 0.09f ); break;		// imba
+		case 1: break; // easy
+		case 2: flFastReloadWidth = random->RandomFloat( 0.10f, 0.12f ); break; // normal
+		case 3: flFastReloadWidth = random->RandomFloat( 0.08f, 0.12f ); break; // hard
+		case 4: flFastReloadWidth = random->RandomFloat( 0.06f, 0.10f ); break; // insane
+		case 5: flFastReloadWidth = random->RandomFloat( 0.055f, 0.09f ); break; // imba
 	}
 	// scale by marine skills
 	flFastReloadWidth *= MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_RELOADING, ASW_MARINE_SUBSKILL_RELOADING_FAST_WIDTH_SCALE );
 	
 	m_fReloadStart = gpGlobals->curtime;
-	m_fFastReloadStart = gpGlobals->curtime + flStartFraction * fReloadTime;
-	m_fFastReloadEnd = m_fFastReloadStart + flFastReloadWidth * fReloadTime;
+	if ( pMarine->m_SpecialAbility == SPECIAL_ABILITY_FAST_RELOAD )
+	{
+		m_fFastReloadStart = gpGlobals->curtime + flStartFraction * fReloadTime;
+		m_fFastReloadEnd = m_fFastReloadStart + flFastReloadWidth * fReloadTime;
+	}
+	else
+	{
+		m_fFastReloadStart = 0;
+		m_fFastReloadEnd = 0;
+	}
 
 	SendReloadEvents();
 
@@ -1037,15 +1043,15 @@ bool CASW_Weapon::ASWReload( int iClipSize1, int iClipSize2, int iActivity )
 
 void CASW_Weapon::SendReloadEvents()
 {
-	CASW_Marine* marine = NULL;
-	CBaseCombatCharacter* pCombatCharOwner = GetOwner();
+	CASW_Marine *marine = NULL;
+	CBaseCombatCharacter *pCombatCharOwner = GetOwner();
 	if ( pCombatCharOwner && pCombatCharOwner->Classify() == CLASS_ASW_MARINE )
-		marine = assert_cast<CASW_Marine*>(pCombatCharOwner);
+		marine = assert_cast< CASW_Marine * >( pCombatCharOwner );
 	else
 		return;
-	
+
 #ifdef CLIENT_DLL
-	if (marine->IsAnimatingReload())	// don't play the anim twice
+	if ( marine->IsAnimatingReload() )	// don't play the anim twice
 		return;
 #else
 	CASW_GameStats.Event_MarineReloading( marine, this );

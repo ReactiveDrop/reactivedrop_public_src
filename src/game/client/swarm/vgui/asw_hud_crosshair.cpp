@@ -456,7 +456,7 @@ void CASWHudCrosshair::PaintReloadProgressBar( void )
 		else
 			m_pAmmoProgress->SetFgColor( Color( 175, 80, 80, 255 ) );
 
-		if ( asw_fast_reload_enabled.GetBool() )
+		if ( asw_fast_reload_enabled.GetBool() && pWeapon->m_fFastReloadStart != pWeapon->m_fFastReloadEnd )
 		{
 			m_pFastReloadBar->SetFgColor( Color( 235, 235, 235, 100 ) );
 			m_pFastReloadBar->SetBgColor( Color( 0, 0, 0, 0 ) );

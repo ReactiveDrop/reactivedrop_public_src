@@ -1337,8 +1337,16 @@ bool CASWHud3DMarineNames::PaintReloadBar( C_ASW_Weapon *pWeapon, float xPos, fl
 	if ( !bFailure && !bSuccess )
 	{
 		m_flLastReloadProgress = flProgress;
-		m_flLastFastReloadStart = ((pWeapon->m_fFastReloadStart - fStart) / fTotalTime)+0.015f;
-		m_flLastFastReloadEnd = ((pWeapon->m_fFastReloadEnd - fStart) / fTotalTime)-0.015f;
+		if ( pWeapon->m_fFastReloadStart == pWeapon->m_fFastReloadEnd )
+		{
+			m_flLastFastReloadStart = 0;
+			m_flLastFastReloadEnd = 0;
+		}
+		else
+		{
+			m_flLastFastReloadStart = ( ( pWeapon->m_fFastReloadStart - fStart ) / fTotalTime ) + 0.015f;
+			m_flLastFastReloadEnd = ( ( pWeapon->m_fFastReloadEnd - fStart ) / fTotalTime ) - 0.015f;
+		}
 	}
 	//Msg( "C: %f - %f - %f Reload Progress = %f\n", gpGlobals->curtime, fFastStart, fFastEnd, flProgress );
 
@@ -1376,17 +1384,20 @@ bool CASWHud3DMarineNames::PaintReloadBar( C_ASW_Weapon *pWeapon, float xPos, fl
 	}; 
 	vgui::surface()->DrawTexturedPolygon( 4, bgpoints );
 
-	// then the charging bar
-	vgui::surface()->DrawSetColor(colorWindow);
-	vgui::surface()->DrawSetTexture(m_nHorizHealthBar);
-	vgui::Vertex_t chargepoints[4] = 
-	{ 
-		vgui::Vertex_t( Vector2D(iXPos+w*m_flLastFastReloadStart,		iYPos+1),		Vector2D(m_flLastFastReloadStart, 0) ), 
-		vgui::Vertex_t( Vector2D(iXPos+w*m_flLastFastReloadEnd,		iYPos+1),		Vector2D(m_flLastFastReloadEnd, 0) ), 
-		vgui::Vertex_t( Vector2D(iXPos+w*m_flLastFastReloadEnd,		iYPos+t-1),		Vector2D(m_flLastFastReloadEnd, 1) ), 
-		vgui::Vertex_t( Vector2D(iXPos+w*m_flLastFastReloadStart,		iYPos+t-1),		Vector2D(m_flLastFastReloadStart, 1) )
-	}; 
-	vgui::surface()->DrawTexturedPolygon( 4, chargepoints );
+	if ( m_flLastFastReloadStart != m_flLastFastReloadEnd )
+	{
+		// then the charging bar
+		vgui::surface()->DrawSetColor(colorWindow);
+		vgui::surface()->DrawSetTexture(m_nHorizHealthBar);
+		vgui::Vertex_t chargepoints[4] = 
+		{ 
+			vgui::Vertex_t( Vector2D(iXPos+w*m_flLastFastReloadStart,		iYPos+1),		Vector2D(m_flLastFastReloadStart, 0) ), 
+			vgui::Vertex_t( Vector2D(iXPos+w*m_flLastFastReloadEnd,		iYPos+1),		Vector2D(m_flLastFastReloadEnd, 0) ), 
+			vgui::Vertex_t( Vector2D(iXPos+w*m_flLastFastReloadEnd,		iYPos+t-1),		Vector2D(m_flLastFastReloadEnd, 1) ), 
+			vgui::Vertex_t( Vector2D(iXPos+w*m_flLastFastReloadStart,		iYPos+t-1),		Vector2D(m_flLastFastReloadStart, 1) )
+		}; 
+		vgui::surface()->DrawTexturedPolygon( 4, chargepoints );
+	}
 
 	// now the delay bar
 	vgui::surface()->DrawSetColor(colorBar);

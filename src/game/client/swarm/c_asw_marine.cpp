@@ -201,6 +201,7 @@ BEGIN_NETWORK_TABLE( CASW_Marine, DT_ASW_Marine )
 	RecvPropBool	( RECVINFO( m_bRolls )),
 	RecvPropInt		( RECVINFO( m_nMarineProfile ) ),
 	RecvPropBool	( RECVINFO( m_bNightVision ) ),
+	RecvPropInt		( RECVINFO( m_SpecialAbility ) ),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_ASW_Marine )
@@ -255,6 +256,7 @@ BEGIN_PREDICTION_DATA( C_ASW_Marine )
 	DEFINE_FIELD( m_fJumpJetAnimationDurationOverride, FIELD_FLOAT ),
 	DEFINE_FIELD( m_flJumpJetStartTime, FIELD_FLOAT ),
 	DEFINE_FIELD( m_flJumpJetEndTime, FIELD_FLOAT ),
+	DEFINE_FIELD( m_SpecialAbility, FIELD_INTEGER ),
 
 	/*
 	DEFINE_FIELD( m_bSlowHeal, FIELD_BOOLEAN ),
@@ -464,6 +466,7 @@ C_ASW_Marine::C_ASW_Marine() :
 	m_iPowerupType = -1;
 	m_flPowerupExpireTime = -1;
 	m_bPowerupExpires = false;
+	m_SpecialAbility = SPECIAL_ABILITY_FAST_RELOAD;
 
 	m_PrevRenderAlpha = 255;
 	m_bIsHiddenLocal = false;
