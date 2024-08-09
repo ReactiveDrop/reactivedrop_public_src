@@ -416,6 +416,12 @@ const CReactiveDropWorkshop::WorkshopItem_t & CReactiveDropWorkshop::TryQueryAdd
 		}
 	}
 
+	Assert( nPublishedFileID > RD_MIN_WORKSHOP_FILE_ID );
+	if ( nPublishedFileID <= RD_MIN_WORKSHOP_FILE_ID )
+	{
+		return nilWorkshopItem;
+	}
+
 	FOR_EACH_VEC( m_EnabledAddonsForQuery, i )
 	{
 		if ( m_EnabledAddonsForQuery[i] == nPublishedFileID )
@@ -1410,6 +1416,7 @@ void CReactiveDropWorkshop::SteamPublishedAddonsRequestCompleted( SteamUGCQueryC
 
 CReactiveDropWorkshop::WorkshopPreviewRequest_t::WorkshopPreviewRequest_t( const SteamUGCDetails_t & details )
 {
+	Assert( details.m_nPublishedFileId > RD_MIN_WORKSHOP_FILE_ID );
 	if ( cl_workshop_debug.GetBool() )
 	{
 		DevMsg( "Starting preview request for addon %llu \"%s\" (preview file %llu)\n", details.m_nPublishedFileId, details.m_rgchTitle, details.m_hPreviewFile );

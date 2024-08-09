@@ -1578,7 +1578,7 @@ void CASW_Steamstats::PrepStatsForSend_Leaderboard( CASW_Player *pPlayer, bool b
 	char szMissionFileName[MAX_PATH];
 	Q_snprintf( szMissionFileName, sizeof( szMissionFileName ), "resource/overviews/%s.txt", IGameSystem::MapName() );
 	PublishedFileId_t nWorkshopFileID = g_ReactiveDropWorkshop.FindAddonProvidingFile( szMissionFileName );
-	if ( nWorkshopFileID == k_PublishedFileIdInvalid ? bUnofficial : nWorkshopFileID < 1000000 )
+	if ( nWorkshopFileID == k_PublishedFileIdInvalid ? bUnofficial : nWorkshopFileID < RD_MIN_WORKSHOP_FILE_ID )
 	{
 		if ( asw_stats_leaderboard_debug.GetBool() )
 		{

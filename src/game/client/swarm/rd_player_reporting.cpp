@@ -736,9 +736,9 @@ ReportingServerSnapshot_t *CRD_Player_Reporting::NewSnapshot() const
 
 	pSnapshot->MissionName = engine->GetLevelNameShort();
 	pSnapshot->ChallengeName = rd_challenge.GetString();
-	if ( pAlienSwarm && pAlienSwarm->m_iMissionWorkshopID > 1000000 )
+	if ( pAlienSwarm && pAlienSwarm->m_iMissionWorkshopID > RD_MIN_WORKSHOP_FILE_ID )
 		pSnapshot->MissionWorkshop = pAlienSwarm->m_iMissionWorkshopID;
-	if ( nChallengeFileID > 1000000 )
+	if ( nChallengeFileID > RD_MIN_WORKSHOP_FILE_ID )
 		pSnapshot->ChallengeWorkshop = nChallengeFileID;
 
 	if ( pNCI )
