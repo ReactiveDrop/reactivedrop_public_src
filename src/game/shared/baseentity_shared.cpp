@@ -53,7 +53,7 @@ ConVar hl2_episodic( "hl2_episodic", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 #include "tier0/memdbgon.h"
 
 #ifdef GAME_DLL
-	ConVar ent_debugkeys( "ent_debugkeys", "" );
+	ConVar ent_debugkeys( "ent_debugkeys", "", FCVAR_CHEAT );
 	extern bool ParseKeyvalue( void *pObject, typedescription_t *pFields, int iNumFields, const char *szKeyName, const char *szValue );
 	extern bool ExtractKeyvalue( void *pObject, typedescription_t *pFields, int iNumFields, const char *szKeyName, char *szValue, int iMaxLen );
 #endif
@@ -73,11 +73,11 @@ float k_flMaxEntityEulerAngle = 360.0 * 1000.0f; // really should be restricted 
 float k_flMaxEntitySpeed = k_flMaxVelocity;
 float k_flMaxEntitySpinRate = k_flMaxAngularVelocity * 10.0f;
 
-ConVar  sv_clamp_unsafe_velocities( "sv_clamp_unsafe_velocities", "1", FCVAR_REPLICATED | FCVAR_RELEASE, "Whether the server will attempt to clamp velocities that could cause physics bugs or crashes." );
-ConVar  sv_skip_velocities_warnings("sv_skip_velocities_warnings", "1", FCVAR_REPLICATED | FCVAR_RELEASE, "Do not show console warnings for unsafe velocities");
+ConVar  sv_clamp_unsafe_velocities( "sv_clamp_unsafe_velocities", "1", FCVAR_REPLICATED | FCVAR_RELEASE | FCVAR_CHEAT, "Whether the server will attempt to clamp velocities that could cause physics bugs or crashes." );
+ConVar  sv_skip_velocities_warnings("sv_skip_velocities_warnings", "1", FCVAR_REPLICATED | FCVAR_RELEASE | FCVAR_CHEAT, "Do not show console warnings for unsafe velocities");
 
-ConVar	ai_shot_bias_min( "ai_shot_bias_min", "-1.0", FCVAR_REPLICATED );
-ConVar	ai_shot_bias_max( "ai_shot_bias_max", "1.0", FCVAR_REPLICATED );
+ConVar	ai_shot_bias_min( "ai_shot_bias_min", "-1.0", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	ai_shot_bias_max( "ai_shot_bias_max", "1.0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar	ai_debug_shoot_positions( "ai_debug_shoot_positions", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 
 // Utility func to throttle rate at which the "reasonable position" spew goes out
