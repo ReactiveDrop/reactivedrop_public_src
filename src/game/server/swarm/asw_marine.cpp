@@ -457,7 +457,7 @@ ConVar asw_marine_burn_time_insane( "asw_marine_burn_time_insane", "15", FCVAR_C
 ConVar asw_marine_time_until_ignite_expire( "asw_marine_time_until_ignite_expire", "2.0", FCVAR_CHEAT, "Amount of time until repeated burn damage counter expires" );
 ConVar asw_marine_time_until_ignite( "asw_marine_time_until_ignite", "0.7", FCVAR_CHEAT, "Amount of time before a marine ignites from taking repeated burn damage" );
 ConVar asw_marine_time_until_ignite_hcff( "asw_marine_time_until_ignite_hcff", "0.2", FCVAR_CHEAT, "Amount of time before a marine ignites from taking repeated burn damage (hardcore ff)" );
-ConVar asw_marine_time_until_ignite_flamer( "asw_marine_time_until_ignite_flamer", "0.0", FCVAR_CHEAT, "If non-negative, overrides asw_marine_time_until_ignite for the M868 Flamer Unit" );
+ConVar asw_marine_time_until_ignite_flamer( "asw_marine_time_until_ignite_flamer", "0.2", FCVAR_CHEAT, "If non-negative, overrides asw_marine_time_until_ignite for the M868 Flamer Unit" );
 ConVar asw_marine_time_until_ignite_hcff_flamer( "asw_marine_time_until_ignite_hcff_flamer", "0.0", FCVAR_CHEAT, "If non-negative, overrides asw_marine_time_until_ignite_hcff for the M868 Flamer Unit" );
 ConVar asw_marine_time_until_ignite_grenade( "asw_marine_time_until_ignite_grenade", "-1", FCVAR_CHEAT, "If non-negative, overrides asw_marine_time_until_ignite for M42 Vindicator grenades and NA-23 Incendiary Grenades" );
 ConVar asw_marine_time_until_ignite_hcff_grenade( "asw_marine_time_until_ignite_hcff_grenade", "-1", FCVAR_CHEAT, "If non-negative, overrides asw_marine_time_until_ignite_hcff for M42 Vindicator grenades and NA-23 Incendiary Grenades" );
