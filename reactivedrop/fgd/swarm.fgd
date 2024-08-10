@@ -3626,6 +3626,7 @@
 
 	input StartCountdown(void) : "Start Countdown"
 	input CancelCountdown(void) : "Cancel Countdown"
+	input AddTime(float) : "Add Time (countdown must be active)"
 	input StatsMusicFailure(string) : "Overrides the music that plays during debriefing."
 
 	output OnCountdownFailed(void) : "Fired when the countdown timer reaches 0."

@@ -23,6 +23,7 @@ public:
 
 	void InputStartCountdown( inputdata_t &inputdata );
 	void InputCancelCountdown( inputdata_t &inputdata );
+	void InputAddTime( inputdata_t &inputdata );
 
 	CNetworkVar( float, m_fCountdownFinishTime );
 	CNetworkVar( string_t, m_szWarningText );

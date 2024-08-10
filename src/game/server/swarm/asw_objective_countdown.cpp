@@ -131,6 +131,18 @@ void CASW_Objective_Countdown::InputCancelCountdown( inputdata_t &inputdata )
 	}
 }
 
+void CASW_Objective_Countdown::InputAddTime( inputdata_t &inputdata )
+{
+	if ( !m_bCountdownStarted )
+	{
+		Warning( "%s: AddTime input sent while countdown is inactive\n", GetDebugName() );
+		return;
+	}
+
+	m_fCountdownFinishTime = MAX( gpGlobals->curtime, m_fCountdownFinishTime + inputdata.value.Float() );
+	SetNextThink( m_fCountdownFinishTime );
+}
+
 void CASW_Objective_Countdown::ExplodeLevel()
 {
 	m_OnCountdownFailed.FireOutput( this, this );
