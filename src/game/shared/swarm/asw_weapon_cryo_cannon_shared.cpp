@@ -24,6 +24,8 @@ ConVar asw_cryo_cannon_spin_down_rate( "asw_cryo_cannon_spin_down_rate", "0.4", 
 #ifdef CLIENT_DLL
 ConVar asw_cryo_cannon_pitch_min( "asw_cryo_cannon_pitch_min", "50", FCVAR_NONE, "Pitch of barrel spin sound" );
 ConVar asw_cryo_cannon_pitch_max( "asw_cryo_cannon_pitch_max", "150", FCVAR_NONE, "Pitch of barrel spin sound" );
+#else
+ConVar rd_cryo_cannon_friendly_fire( "rd_cryo_cannon_friendly_fire", "0", FCVAR_CHEAT, "Does the cryo cannon damage allies?" );
 #endif
 
 IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Weapon_Cryo_Cannon, DT_ASW_Weapon_Cryo_Cannon );
@@ -311,7 +313,7 @@ void CASW_Weapon_Cryo_Cannon::PrimaryAttack()
 		pProjectile->m_flDamage = flDamage;
 		pProjectile->m_flFreezeAmount = flFreezeAmount;
 		pProjectile->m_flExplosionRadius = flExplosionRadius;
-		pProjectile->m_bAllowFriendlyFire = true;
+		pProjectile->m_bAllowFriendlyFire = rd_cryo_cannon_friendly_fire.GetBool();
 		pProjectile->m_bUseHullFreezeScale = true;
 
 		// check for putting ourselves out

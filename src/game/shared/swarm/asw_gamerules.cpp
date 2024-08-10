@@ -784,10 +784,10 @@ ConVar	sk_plr_dmg_asw_flechette( "sk_plr_dmg_asw_flechette", "7", FCVAR_REPLICAT
 ConVar	sk_npc_dmg_asw_flechette( "sk_npc_dmg_asw_flechette", "7", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar	sk_max_asw_flechette( "sk_max_asw_flechette", "420", FCVAR_REPLICATED | FCVAR_CHEAT );
 
-// Cryo Cannon (3 clips, 600 per)
+// Cryo Cannon (7 clips, 50 per)
 ConVar	sk_plr_dmg_asw_cryo( "sk_plr_dmg_asw_cryo", "2", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar	sk_npc_dmg_asw_cryo( "sk_npc_dmg_asw_cryo", "2", FCVAR_REPLICATED | FCVAR_CHEAT );
-ConVar	sk_max_asw_cryo( "sk_max_asw_cryo", "1800", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_cryo( "sk_max_asw_cryo", "300", FCVAR_REPLICATED | FCVAR_CHEAT );
 
 // Energy Shield alt fire (5 default 8 max)
 ConVar	sk_plr_dmg_asw_eshield( "sk_plr_dmg_asw_eshield", "10", FCVAR_REPLICATED | FCVAR_CHEAT );
