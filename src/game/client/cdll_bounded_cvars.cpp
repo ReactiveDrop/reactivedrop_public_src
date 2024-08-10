@@ -98,6 +98,12 @@ static CBoundedCvar_InterpRatio cl_interp_ratio_var;
 ConVar_ServerBounded *cl_interp_ratio = &cl_interp_ratio_var;
 
 
+#ifdef INFESTED_DLL
+CON_COMMAND_F( cl_interp, "This variable was removed and is now always set to 0.0.", FCVAR_HIDDEN )
+{
+	Warning( "As of September 2024, cl_interp has been removed and now always has a value of 0.0. If you need to change network interpolation for some reason, use cl_update_ratio.\n" );
+}
+#else
 // ------------------------------------------------------------------------------------------ //
 // cl_interp
 // ------------------------------------------------------------------------------------------ //
@@ -130,6 +136,7 @@ public:
 
 static CBoundedCvar_Interp cl_interp_var;
 ConVar_ServerBounded *cl_interp = &cl_interp_var;
+#endif
 
 float GetClientInterpAmount()
 {
@@ -137,7 +144,11 @@ float GetClientInterpAmount()
 	if ( pUpdateRate )
 	{
 		// #define FIXME_INTERP_RATIO
+#ifdef INFESTED_DLL
+		return MAX( 0.0f, cl_interp_ratio->GetFloat() / pUpdateRate->GetFloat() );
+#else
 		return MAX( cl_interp->GetFloat(), cl_interp_ratio->GetFloat() / pUpdateRate->GetFloat() );
+#endif
 	}
 	else
 	{

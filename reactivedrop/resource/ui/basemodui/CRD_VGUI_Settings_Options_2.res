@@ -145,7 +145,7 @@
 		"pin_to_sibling_corner"	"2"
 		"ResourceFile"		"resource/ui/option_setting_checkbox.res"
 		"navLeft"			"SettingLeaderboardLoading"
-		"navRight"			"SettingNetworkInterpolation"
+		"navRight"			"SettingAccessibilitySpecWeaponsDamageAmp"
 		"navUp"				"SettingLeaderboardSend"
 		"navDown"			"SettingLeaderboardDebrief"
 	}
@@ -349,25 +349,22 @@
 		"navLeft"			"SettingLeaderboardSend"
 		"navRight"			"SettingAccessibilityMoveRelativeToAim"
 		"navUp"				"SettingAccessibilityMinimapClicks"
-		"navDown"			"SettingNetworkInterpolation"
+		"navDown"			"SettingAccessibilitySpecWeaponsDamageAmp"
 	}
 
-	"SettingNetworkInterpolation"
+	"SettingAccessibilitySpecWeaponsDamageAmp"
 	{
 		"ControlName"		"CRD_VGUI_Option"
-		"fieldName"			"SettingNetworkInterpolation"
+		"fieldName"			"SettingAccessibilitySpecWeaponsDamageAmp"
 		"xpos"				"300"	[!$WIN32WIDE]
 		"xpos"				"310"	[$WIN32WIDE]
 		"ypos"				"240"
 		"wide"				"260"	[!$WIN32WIDE]
 		"wide"				"270"	[$WIN32WIDE]
 		"tall"				"24"
-		"ResourceFile"		"resource/ui/option_setting_slider.res"
-		"displayMultiplier"	"1000"
-		"decimalDigits"		"0"
-		"displaySuffix"		"#rd_option_suffix_milliseconds"
+		"ResourceFile"		"resource/ui/option_setting_dropdown.res"
 		"navLeft"			"SettingLeaderboardLoading"
-		"navRight"			"SettingNetworkInterpolation"
+		"navRight"			"SettingAccessibilitySpecWeaponsDamageAmp"
 		"navUp"				"SettingAccessibilityMoveRelativeToAim"
 		"navDown"			"SettingNetworkRate"
 	}
@@ -379,14 +376,14 @@
 		"wide"				"260"	[!$WIN32WIDE]
 		"wide"				"270"	[$WIN32WIDE]
 		"tall"				"24"
-		"pin_to_sibling"	"SettingNetworkInterpolation"
+		"pin_to_sibling"	"SettingAccessibilitySpecWeaponsDamageAmp"
 		"pin_corner_to_sibling"	"0"
 		"pin_to_sibling_corner"	"2"
 		"ResourceFile"		"resource/ui/option_setting_slider.res"
 		"displayMultiplier"	"0.0078125"
 		"navLeft"			"SettingLeaderboardDebrief"
 		"navRight"			"SettingNetworkRate"
-		"navUp"				"SettingNetworkInterpolation"
+		"navUp"				"SettingAccessibilitySpecWeaponsDamageAmp"
 		"navDown"			"SettingNetworkAllowRelay"
 	}
 

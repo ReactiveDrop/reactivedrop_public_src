@@ -42,7 +42,7 @@ PRECACHE_WEAPON_REGISTER( asw_weapon_buff_grenade );
 
 ConVar rd_buff_grenade_attach_sw( "rd_buff_grenade_attach_sw", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "if set, special weapons can pick up amp grenades" );
 #ifdef CLIENT_DLL
-ConVar rd_buff_grenade_attach_sw_auto( "rd_buff_grenade_attach_sw_auto", "0", FCVAR_ARCHIVE | FCVAR_USERINFO, "automatically pick up amp grenade after deploying if possible" );
+ConVar rd_buff_grenade_attach_sw_auto( "rd_buff_grenade_attach_sw_auto", "1", FCVAR_ARCHIVE | FCVAR_USERINFO, "automatically pick up amp grenade after deploying if possible" );
 #endif
 
 #ifndef CLIENT_DLL

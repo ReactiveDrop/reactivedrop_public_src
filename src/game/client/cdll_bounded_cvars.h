@@ -16,7 +16,9 @@
 
 
 extern ConVar_ServerBounded *cl_predict;
+#ifndef INFESTED_DLL
 extern ConVar_ServerBounded *cl_interp;
+#endif
 
 // Returns cl_interp_ratio / cl_updaterate.
 float GetClientInterpAmount();

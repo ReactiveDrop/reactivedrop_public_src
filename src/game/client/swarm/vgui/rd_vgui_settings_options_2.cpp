@@ -106,15 +106,16 @@ CRD_VGUI_Settings_Options_2::CRD_VGUI_Settings_Options_2( vgui::Panel *parent, c
 	m_pSettingAccessibilityMoveRelativeToAim = new CRD_VGUI_Option( this, "SettingAccessibilityMoveRelativeToAim", "#rd_option_accessibility_move_relative_to_aim", CRD_VGUI_Option::MODE_CHECKBOX );
 	m_pSettingAccessibilityMoveRelativeToAim->SetDefaultHint( "#rd_option_accessibility_move_relative_to_aim_hint" );
 	m_pSettingAccessibilityMoveRelativeToAim->LinkToConVar( "rd_movement_relative_to_aim", true );
+	m_pSettingAccessibilitySpecWeaponsDamageAmp = new CRD_VGUI_Option( this, "SettingAccessibilitySpecWeaponsDamageAmp", "#rd_option_accessibility_spec_weapons_damage_amp", CRD_VGUI_Option::MODE_DROPDOWN );
+	m_pSettingAccessibilitySpecWeaponsDamageAmp->AddOption( 0, "#rd_option_accessibility_spec_weapons_damage_amp_never", "#rd_option_accessibility_spec_weapons_damage_amp_never_hint" );
+	m_pSettingAccessibilitySpecWeaponsDamageAmp->AddOption( 1, "#rd_option_accessibility_spec_weapons_damage_amp_conditional", "#rd_option_accessibility_spec_weapons_damage_amp_conditional_hint" );
+	m_pSettingAccessibilitySpecWeaponsDamageAmp->AddOption( 2, "#rd_option_accessibility_spec_weapons_damage_amp_always", "#rd_option_accessibility_spec_weapons_damage_amp_always_hint" );
+	m_pSettingAccessibilitySpecWeaponsDamageAmp->LinkToConVar( "rd_buff_grenade_attach_sw_auto", true );
 
 	// Network
-	m_pSettingNetworkInterpolation = new CRD_VGUI_Option( this, "SettingNetworkInterpolation", "#rd_option_network_interpolation", CRD_VGUI_Option::MODE_SLIDER );
-	m_pSettingNetworkInterpolation->SetDefaultHint( "#rd_option_network_interpolation_hint" );
-	m_pSettingNetworkInterpolation->SetSliderMinMax( 0.0f, 0.5f );
-	m_pSettingNetworkInterpolation->LinkToConVar( "cl_interp", true );
 	m_pSettingNetworkRate = new CRD_VGUI_Option( this, "SettingNetworkRate", "#rd_option_network_rate", CRD_VGUI_Option::MODE_SLIDER );
 	m_pSettingNetworkRate->SetDefaultHint( "#rd_option_network_rate_hint" );
-	m_pSettingNetworkRate->SetSliderMinMax( 24576, 786432 );
+	m_pSettingNetworkRate->SetSliderMinMax( 98304, 786432 );
 	m_pSettingNetworkRate->LinkToConVar( "rate", true );
 	m_pSettingNetworkAllowRelay = new CRD_VGUI_Option( this, "SettingNetworkAllowRelay", "#rd_option_network_allow_relay", CRD_VGUI_Option::MODE_DROPDOWN );
 	m_pSettingNetworkAllowRelay->AddOption( 0, "#rd_option_network_allow_relay_disabled", "#rd_option_network_allow_relay_disabled_hint" );

@@ -2900,7 +2900,11 @@ void CServerGameClients::ClientSettingsChanged( edict_t *pEdict )
 		float flLerpRatio = Q_atof( QUICKGETCVARVALUE("cl_interp_ratio") );
 		if ( flLerpRatio == 0 )
 			flLerpRatio = 1.0f;
+#ifdef INFESTED_DLL
+		float flLerpAmount = 0.0f;
+#else
 		float flLerpAmount = Q_atof( QUICKGETCVARVALUE("cl_interp") );
+#endif
 
 		static const ConVar *pMin = g_pCVar->FindVar( "sv_client_min_interp_ratio" );
 		static const ConVar *pMax = g_pCVar->FindVar( "sv_client_max_interp_ratio" );
