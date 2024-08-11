@@ -183,4 +183,16 @@ private:
 	wchar_t *m_wszWide;
 };
 
+// Converts a space separated list of coefficients (a b c) into a polynomial (a + bx + cx^2).
+class CDynamicPolynomial
+{
+public:
+	CDynamicPolynomial( const char *szCoefficients );
+
+	float operator()( float x ) const;
+
+private:
+	CUtlVector<float> m_Coefficients;
+};
+
 #endif // _INCLUDE_ASW_UTIL_SHARED_H

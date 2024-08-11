@@ -830,6 +830,11 @@ ConVar	sk_plr_dmg_asw_cryo( "sk_plr_dmg_asw_cryo", "2", FCVAR_REPLICATED | FCVAR
 ConVar	sk_npc_dmg_asw_cryo( "sk_npc_dmg_asw_cryo", "2", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar	sk_max_asw_cryo( "sk_max_asw_cryo", "300", FCVAR_REPLICATED | FCVAR_CHEAT );
 
+// Plasma Thrower (3 clips, 200 per)
+ConVar	sk_plr_dmg_asw_plasma( "sk_plr_dmg_asw_plasma", "2", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_npc_dmg_asw_plasma( "sk_npc_dmg_asw_plasma", "2", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar	sk_max_asw_plasma( "sk_max_asw_plasma", "400", FCVAR_REPLICATED | FCVAR_CHEAT );
+
 // Energy Shield alt fire (5 default 8 max)
 ConVar	sk_plr_dmg_asw_eshield( "sk_plr_dmg_asw_eshield", "10", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar	sk_npc_dmg_asw_eshield( "sk_npc_dmg_asw_eshield", "10", FCVAR_REPLICATED | FCVAR_CHEAT );
@@ -870,6 +875,7 @@ ConVar	rd_grenades_dmg_base( "rd_grenades_dmg_base", "0", FCVAR_REPLICATED | FCV
 ConVar	rd_ar2_dmg_base( "rd_ar2_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of AR2", true, 0, false, 0 );
 ConVar	rd_shield_rifle_dmg_base( "rd_shield_rifle_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of shield rifle", true, 0, false, 0 );
 ConVar	rd_cryo_cannon_dmg_base( "rd_cryo_cannon_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of cryo cannon", true, 0, false, 0 );
+ConVar	rd_plasma_thrower_dmg_base( "rd_plasma_thrower_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of plasma thrower", true, 0, false, 0 );
 
 ConVar asw_flare_autoaim_radius("asw_flare_autoaim_radius", "250", FCVAR_REPLICATED | FCVAR_CHEAT, "Radius of autoaim effect from flares");
 ConVar asw_vote_kick_fraction("asw_vote_kick_fraction", "0.6", FCVAR_REPLICATED, "Fraction of players needed to activate a kick vote");
@@ -1501,6 +1507,8 @@ CAmmoDef *GetAmmoDef()
 		def.AddAmmoType( "ASW_FLECHETTE", DMG_DISSOLVE, TRACER_NONE, "sk_plr_dmg_asw_flechette", "sk_npc_dmg_asw_flechette", "sk_max_asw_flechette", BULLET_IMPULSE( 200, 1225 ), 0 );
 		// cryo cannon
 		def.AddAmmoType( "ASW_CRYO", DMG_COLD, TRACER_NONE, "sk_plr_dmg_asw_cryo", "sk_npc_dmg_asw_cryo", "sk_max_asw_cryo", BULLET_IMPULSE( 200, 1225 ), 0 );
+		// plasma thrower
+		def.AddAmmoType( "ASW_PLASMA", DMG_BURN, TRACER_NONE, "sk_plr_dmg_asw_plasma", "sk_npc_dmg_asw_plasma", "sk_max_asw_plasma", BULLET_IMPULSE( 200, 1225 ), 0 );
 		// energy shield alt fire
 		def.AddAmmoType( "ASW_ESHIELD", DMG_DISSOLVE, TRACER_NONE, "sk_plr_dmg_asw_eshield", "sk_npc_dmg_asw_eshield", "sk_max_asw_eshield", BULLET_IMPULSE( 200, 1225 ), 0 );
 		// rifle (burst fire)
@@ -9001,7 +9009,8 @@ bool CAlienSwarm::MarineCanPickupAmmo( CASW_Marine *pMarine, CASW_Ammo *pAmmo )
 
 	int iGuns = pMarine->GetNumberOfWeaponsUsingAmmo( pAmmo->m_iAmmoIndex );
 	int iGuns2 = pAmmo->m_iAmmoIndex2 != -1 ? pMarine->GetNumberOfWeaponsUsingAmmo( pAmmo->m_iAmmoIndex2 ) : 0;
-	if ( iGuns <= 0 && iGuns2 <= 0 )
+	int iGuns3 = pAmmo->m_iAmmoIndex3 != -1 ? pMarine->GetNumberOfWeaponsUsingAmmo( pAmmo->m_iAmmoIndex3 ) : 0;
+	if ( iGuns <= 0 && iGuns2 <= 0 && iGuns3 <= 0 )
 	{
 		// just show the name of the ammo, without the 'take'
 #ifdef CLIENT_DLL
@@ -9015,9 +9024,11 @@ bool CAlienSwarm::MarineCanPickupAmmo( CASW_Marine *pMarine, CASW_Ammo *pAmmo )
 
 	int iMax = GetAmmoDef()->MaxCarry( pAmmo->m_iAmmoIndex, pMarine ) * iGuns;
 	int iMax2 = pAmmo->m_iAmmoIndex2 != -1 ? GetAmmoDef()->MaxCarry( pAmmo->m_iAmmoIndex2, pMarine ) * iGuns2 : 0;
+	int iMax3 = pAmmo->m_iAmmoIndex3 != -1 ? GetAmmoDef()->MaxCarry( pAmmo->m_iAmmoIndex3, pMarine ) * iGuns3 : 0;
 	int iAdd = iMax - pMarine->GetAmmoCount( pAmmo->m_iAmmoIndex );
 	int iAdd2 = pAmmo->m_iAmmoIndex2 != -1 ? iMax2 - pMarine->GetAmmoCount( pAmmo->m_iAmmoIndex2 ) : 0;
-	if ( iAdd < 1 && iAdd2 < 1 )
+	int iAdd3 = pAmmo->m_iAmmoIndex3 != -1 ? iMax3 - pMarine->GetAmmoCount( pAmmo->m_iAmmoIndex3 ) : 0;
+	if ( iAdd < 1 && iAdd2 < 1 && iAdd3 < 1 )
 	{
 #ifdef CLIENT_DLL
 		Q_snprintf( m_szPickupDenial, sizeof( m_szPickupDenial ), "%s", pAmmo->m_szAmmoFullText );

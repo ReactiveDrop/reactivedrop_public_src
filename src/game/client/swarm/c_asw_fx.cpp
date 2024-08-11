@@ -2047,7 +2047,7 @@ void ASWUTracer( C_ASW_Inhabitable_NPC *pNPC, const Vector &vecEnd, int iAttribu
 	CTraceFilterSimple traceFilter( pNPC, COLLISION_GROUP_NONE );
 	UTIL_TraceLine( vecEnd + diff, vecEnd - diff, MASK_SHOT, &traceFilter, &tr );
 	// do impact effect
-	UTIL_ImpactTrace( &tr, DMG_BULLET );
+	UTIL_ImpactTrace( &tr, pWpn->Classify() == CLASS_ASW_PLASMA_THROWER ? DMG_BURN : DMG_BULLET );
 
 	// make the marine do a firing anim
 	if ( C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pNPC ) )

@@ -16,6 +16,7 @@ public:
 	char m_szNoGunText[32];
 	int m_iAmmoIndex{ -1 };
 	int m_iAmmoIndex2{ -1 };
+	int m_iAmmoIndex3{ -1 };
 };
 
 class C_ASW_Ammo_Rifle : public C_ASW_Ammo

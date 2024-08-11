@@ -3188,3 +3188,29 @@ void ConVarUnicode::SetValue( const wchar_t *value )
 	V_UnicodeToUTF8( value, buf, nWideLen * 3 + 1 );
 	SetValue( buf );
 }
+
+CDynamicPolynomial::CDynamicPolynomial( const char *szCoefficients )
+{
+	CSplitString split( szCoefficients, " " );
+	m_Coefficients.SetCount( split.Count() );
+
+	FOR_EACH_VEC( split, i )
+	{
+		m_Coefficients[i] = V_atof( split[i] );
+		Assert( !isnan( m_Coefficients[i] ) );
+	}
+}
+
+float CDynamicPolynomial::operator()( float x ) const
+{
+	float flTotal = 0.0f;
+	float flTerm = 1.0f;
+
+	FOR_EACH_VEC( m_Coefficients, i )
+	{
+		flTotal += m_Coefficients[i] * flTerm;
+		flTerm *= x;
+	}
+
+	return flTotal;
+}

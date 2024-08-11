@@ -169,8 +169,8 @@ enum
 	AMSC_ACCURACY_SHIELD_RIFLE_DMG_STEP,
 	AMSC_ACCURACY_CRYO_DMG_BASE,
 	AMSC_ACCURACY_CRYO_DMG_STEP,
-	AMSC_ACCURACY_SHIELD_DAMAGE_BASE,
-	AMSC_ACCURACY_SHIELD_DAMAGE_STEP,
+	AMSC_ACCURACY_SHIELD_DMG_BASE,
+	AMSC_ACCURACY_SHIELD_DMG_STEP,
 	AMSC_LASER_MINES_BASE,
 	AMSC_LASER_MINES_MODERATE,
 	AMSC_LASER_MINES_EXPERT,
@@ -178,6 +178,8 @@ enum
 	AMSC_VINDICATOR_MUZZLE_FLASH_STEP,
 	AMSC_MINES_FIRES_MODERATE,
 	AMSC_MINES_FIRES_EXPERT,
+	AMSC_ACCURACY_PLASMA_THROWER_DMG_BASE,
+	AMSC_ACCURACY_PLASMA_THROWER_DMG_STEP,
 
 	// ^^ Always add new entries here! ^^
 };
@@ -256,7 +258,8 @@ GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_ACCURACY_50CALMG_DMG, asw_s
 GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_ACCURACY_MINING_LASER_DMG, asw_skill_accuracy_mining_laser_dmg, 0, 1, "", ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_MINING_LASER_DMG );
 GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_ACCURACY_SHIELD_RIFLE_DMG, asw_skill_accuracy_shield_rifle_dmg, 0, 2, "", ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_SHIELD_RIFLE_DMG );
 GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_ACCURACY_CRYO_DMG, asw_skill_accuracy_cryo_dmg, 0, 0.5, "", ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_CRYO_DMG );
-GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_ACCURACY_SHIELD_DAMAGE, asw_skill_accuracy_shield_damage, 30, 20, "", ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_SHIELD_DAMAGE );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_ACCURACY_SHIELD_DMG, asw_skill_accuracy_shield_dmg, 30, 20, "", ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_SHIELD_DMG );
+GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_ACCURACY_PLASMA_THROWER_DMG, asw_skill_accuracy_plasma_thrower_dmg, 0, 1, "", ASW_MARINE_SKILL_ACCURACY, ASW_MARINE_SUBSKILL_ACCURACY_PLASMA_THROWER_DMG );
 
 // Explosives Bonus
 GameRulesConVarSkill( s_ASWMarineSkillsConVars, AMSC_GRENADES_RADIUS, asw_skill_grenades_radius, 280, 20, "", ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_RADIUS );
@@ -516,8 +519,10 @@ float CASW_Marine_Skills::GetSkillBasedValue( CASW_Marine_Profile *pProfile, ASW
 			return asw_skill_accuracy_shield_rifle_dmg_base.GetFloat() + asw_skill_accuracy_shield_rifle_dmg_step.GetFloat() * iSkillPoints;
 		case ASW_MARINE_SUBSKILL_ACCURACY_CRYO_DMG:
 			return asw_skill_accuracy_cryo_dmg_base.GetFloat() + asw_skill_accuracy_cryo_dmg_step.GetFloat() * iSkillPoints;
-		case ASW_MARINE_SUBSKILL_ACCURACY_SHIELD_DAMAGE:
-			return asw_skill_accuracy_shield_damage_base.GetFloat() + asw_skill_accuracy_shield_damage_step.GetFloat() * iSkillPoints;
+		case ASW_MARINE_SUBSKILL_ACCURACY_SHIELD_DMG:
+			return asw_skill_accuracy_shield_dmg_base.GetFloat() + asw_skill_accuracy_shield_dmg_step.GetFloat() * iSkillPoints;
+		case ASW_MARINE_SUBSKILL_ACCURACY_PLASMA_THROWER_DMG:
+			return asw_skill_accuracy_plasma_thrower_dmg_base.GetFloat() + asw_skill_accuracy_plasma_thrower_dmg_step.GetFloat() * iSkillPoints;
 		default:
 			Assert( 0 );
 			return 0.0f;

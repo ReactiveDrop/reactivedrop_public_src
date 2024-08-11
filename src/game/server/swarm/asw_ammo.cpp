@@ -24,6 +24,7 @@ extern ConVar asw_ammo_count_internal_chainsaw;
 extern ConVar asw_ammo_count_mining_laser;
 extern ConVar asw_ammo_count_pdw;
 extern ConVar asw_ammo_count_pistol;
+extern ConVar asw_ammo_count_plasma_thrower;
 extern ConVar asw_ammo_count_railgun;
 extern ConVar asw_ammo_count_rifle;
 extern ConVar asw_ammo_count_rifle_burst;
@@ -389,6 +390,7 @@ void CASW_Ammo_Flamer::Spawn( void )
 	BaseClass::Spawn();
 	m_iAmmoIndex = GetAmmoDef()->Index( "ASW_F" );
 	m_iAmmoIndex2 = GetAmmoDef()->Index( "ASW_CRYO" );
+	m_iAmmoIndex3 = GetAmmoDef()->Index( "ASW_PLASMA" );
 }
 
 
@@ -409,6 +411,13 @@ void CASW_Ammo_Flamer::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldTyp
 		return;
 	}
 
+	bool bPlasmaActive = pNPC->GetActiveWeapon() && pNPC->GetActiveWeapon()->GetPrimaryAmmoType() == GetAmmoDef()->Index( "ASW_PLASMA" );
+	if ( bPlasmaActive && ASW_GiveAmmo( pNPC, asw_ammo_count_plasma_thrower.GetInt(), "ASW_PLASMA", this ) )
+	{
+		UTIL_Remove( this );
+		return;
+	}
+
 	if ( ASW_GiveAmmo( pNPC, asw_ammo_count_flamer.GetInt(), "ASW_F", this ) )
 	{
 		UTIL_Remove( this );
@@ -416,6 +425,12 @@ void CASW_Ammo_Flamer::ActivateUseIcon( CASW_Inhabitable_NPC *pNPC, int nHoldTyp
 	}
 
 	if ( !bCryoActive && ASW_GiveAmmo( pNPC, asw_ammo_count_cryo_cannon.GetInt(), "ASW_CRYO", this ) )
+	{
+		UTIL_Remove( this );
+		return;
+	}
+
+	if ( !bPlasmaActive && ASW_GiveAmmo( pNPC, asw_ammo_count_plasma_thrower.GetInt(), "ASW_PLASMA", this ) )
 	{
 		UTIL_Remove( this );
 		return;

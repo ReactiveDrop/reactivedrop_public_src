@@ -24,6 +24,7 @@
 
 #include "c_asw_player.h"
 #include "c_asw_marine.h"
+#include "c_asw_weapon.h"
 #include "engine/IVDebugOverlay.h"
 
 #include "mathlib/mathlib.h"
@@ -168,7 +169,15 @@ void ASWCircularProgressBar::PaintBackground()
 		}
 		w = (YRES( asw_crosshair_progress_size.GetFloat() ) * 2) * m_flScale;
 		h = w;
-	
+
+		C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+		C_ASW_Inhabitable_NPC *pViewNPC = pPlayer ? pPlayer->GetViewNPC() : NULL;
+		C_ASW_Weapon *pViewWeapon = pViewNPC ? pViewNPC->GetActiveASWWeapon() : NULL;
+		if ( pViewWeapon )
+		{
+			pViewWeapon->ModifyCrosshairPos( x, y );
+		}
+
 		// do the rotation to match the crosshair
 		float fFacingYaw = GetMarineFacingYaw( x, y );
 		QAngle angFacing(0, -fFacingYaw + 90.0, 0);
@@ -241,6 +250,14 @@ void ASWCircularProgressBar::Paint()
 		}
 		w = YRES( asw_crosshair_progress_size.GetFloat() ) * m_flScale;
 		h = w;
+
+		C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+		C_ASW_Inhabitable_NPC *pViewNPC = pPlayer ? pPlayer->GetViewNPC() : NULL;
+		C_ASW_Weapon *pViewWeapon = pViewNPC ? pViewNPC->GetActiveASWWeapon() : NULL;
+		if ( pViewWeapon )
+		{
+			pViewWeapon->ModifyCrosshairPos( x, y );
+		}
 	}
 	else
 	{

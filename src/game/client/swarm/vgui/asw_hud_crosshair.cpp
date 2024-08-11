@@ -182,6 +182,13 @@ void CASWHudCrosshair::Paint( void )
 	int x, y;
 	GetCurrentPos( x, y );
 
+	C_ASW_Inhabitable_NPC *pViewNPC = pPlayer->GetViewNPC();
+	C_ASW_Weapon *pViewWeapon = pViewNPC ? pViewNPC->GetActiveASWWeapon() : NULL;
+	if ( pViewWeapon )
+	{
+		pViewWeapon->ModifyCrosshairPos( x, y );
+	}
+
 	int nCrosshair = GetCurrentCrosshair( x, y );
 
 	if ( nCrosshair == m_nCrosshairTexture )

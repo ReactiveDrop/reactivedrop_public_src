@@ -90,6 +90,7 @@ C_ASW_Ammo_Flamer::C_ASW_Ammo_Flamer()
 	Q_snprintf( m_szAmmoFullText, sizeof( m_szAmmoFullText ), "#asw_ammo_flamer_full" );
 	m_iAmmoIndex = GetAmmoDef()->Index( "ASW_F" );
 	m_iAmmoIndex2 = GetAmmoDef()->Index( "ASW_CRYO" );
+	m_iAmmoIndex3 = GetAmmoDef()->Index( "ASW_PLASMA" );
 }
 
 //------------

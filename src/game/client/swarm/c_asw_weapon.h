@@ -76,8 +76,9 @@ public:
 	virtual float GetBatteryCharge() { return -1.0f; }			// for weapons which want a battery charge display on the HUD
 	virtual float GetMinBatteryChargeToActivate() { return -1.0f; }
 	virtual bool PrefersFlatAiming() const { return false; }
+	virtual void ModifyCrosshairPos( int &x, int &y ) {}
 	virtual void ClientThink();
-	float m_fLastMuzzleFlashTime;	
+	float m_fLastMuzzleFlashTime;
 	float m_fMuzzleFlashScale;
 
 	virtual bool HasSecondaryExplosive( void ) const { return false; }

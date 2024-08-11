@@ -18,6 +18,7 @@ public:
 	virtual bool AllowedToPickup( CASW_Inhabitable_NPC *pNPC );
 	int GetAmmoType() { return m_iAmmoIndex; }
 	int GetAmmoType2() { return m_iAmmoIndex2; }
+	int GetAmmoType3() { return m_iAmmoIndex3; }
 	
 	static bool VismonCallback( CBaseEntity *pPickup, CBasePlayer *pViewingPlayer );
 
@@ -25,6 +26,7 @@ public:
 
 	int m_iAmmoIndex{ -1 };
 	int m_iAmmoIndex2{ -1 };
+	int m_iAmmoIndex3{ -1 };
 };
 
 class CASW_Ammo_Rifle : public CASW_Ammo

@@ -38,6 +38,10 @@ void ImpactCallback( const CEffectData &data )
 		}
 	}
 
+	// don't play ricochet sounds for the plasma thrower
+	if ( iDamageType == DMG_BURN )
+		return;
+
 	PlayImpactSound( pEntity, tr, vecOrigin, nSurfaceProp );
 }
 

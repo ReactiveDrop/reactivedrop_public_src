@@ -593,9 +593,9 @@ enum FireBulletsFlags_t
 	FIRE_BULLETS_ALLOW_WATER_SURFACE_IMPACTS = 0x4,	// If the shot hits water surface, still call DoImpactEffect
 	FIRE_BULLETS_TEMPORARY_DANGER_SOUND = 0x8,		// Danger sounds added from this impact can be stomped immediately if another is queued
 
-	FIRE_BULLETS_NO_PIERCING_SPARK = 0x16,	// do a piercing spark effect when a bullet penetrates an alien
-	FIRE_BULLETS_HULL = 0x32,	// bullet trace is a hull rather than a line
-	FIRE_BULLETS_ANGULAR_SPREAD = 0x64,	// bullet spread is based on uniform random change to angles rather than gaussian search
+	FIRE_BULLETS_NO_PIERCING_SPARK = 0x10,	// do a piercing spark effect when a bullet penetrates an alien
+	FIRE_BULLETS_HULL = 0x20,	// bullet trace is a hull rather than a line
+	FIRE_BULLETS_ANGULAR_SPREAD = 0x40,	// bullet spread is based on uniform random change to angles rather than gaussian search
 };
 
 

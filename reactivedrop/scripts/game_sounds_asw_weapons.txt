@@ -1913,3 +1913,30 @@
 
 	"wave"			"^weapons\slam\throw.wav"
 }
+
+"ASW_Weapon_Plasma_Thrower.Loop"
+{
+	"channel"		"CHAN_ITEM"
+	"soundlevel"	"SNDLVL_75dB"
+	"volume"		"0.75"
+	"pitch"			"100"
+	"wave"			"^weapons/3D/plasma/plasmaloop.wav"
+}
+
+"ASW_Weapon_Plasma_Thrower.Stop"
+{
+	"channel"		"CHAN_ITEM"
+	"soundlevel"	"SNDLVL_75dB"
+	"volume"		"0.75"
+	"pitch"			"100"
+	"wave"			"^weapons/3D/plasma/plasmastop.wav"
+}
+
+"ASW_Weapon_Plasma_Thrower.Airblast"
+{
+	"channel"		"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_75dB"
+	"volume"		"0.75"
+	"pitch"			"100"
+	"wave"			"^weapons/flame_thrower_airblast.wav"
+}

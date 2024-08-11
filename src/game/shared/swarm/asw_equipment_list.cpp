@@ -125,6 +125,7 @@ ConVar asw_ammo_count_medsatchel( "asw_ammo_count_medsatchel", "9", FCVAR_CHEAT 
 ConVar asw_ammo_count_ar2( "asw_ammo_count_ar2", "30", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_ar2_grenade( "asw_ammo_count_ar2_grenade", "3", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_cryo_cannon( "asw_ammo_count_cryo_cannon", "50", FCVAR_CHEAT | FCVAR_REPLICATED );
+ConVar asw_ammo_count_plasma_thrower( "asw_ammo_count_plasma_thrower", "200", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_energy_shield( "asw_ammo_count_energy_shield", "5", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_energy_shield_max( "asw_ammo_count_energy_shield_max", "8", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_medkit( "asw_ammo_count_medkit", "1", FCVAR_CHEAT | FCVAR_REPLICATED );
@@ -535,11 +536,11 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 	},
 	{
 		ASW_EQUIP_PLASMA_THROWER, WEAPON_NAME( plasma_thrower ),
-		false, true, false, "ASW_F", "",
+		false, true, false, "ASW_PLASMA", "",
 		"swarm/EquipIcons/EquipPlasma",
-		&asw_ammo_count_flamer, &asw_ammo_count_flamer,
+		&asw_ammo_count_plasma_thrower, &asw_ammo_count_plasma_thrower,
 		NULL, NULL,
-		2, 0.1f, 2.2f, 1, MARINE_CLASS_SPECIAL_WEAPONS,
+		2, 0.05f, 4.2f, 1, MARINE_CLASS_SPECIAL_WEAPONS,
 		true, false, false, ASW_OFFHAND_USE_IMMEDIATELY,
 		0.2f, 0.1f,
 	},

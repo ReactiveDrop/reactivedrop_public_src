@@ -15,13 +15,14 @@ WeaponData
 	// which ammo elements this weapon should display on the hud
 	"ShowBulletsOnHUD"			"1"
 	"ShowClipsOnHUD"			"1"
-	"ShowGrenadesOnHUD"			"1"
 
 	"HUDIconOffsetX"			"0"
 
 	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
 	SoundData
 	{
-		"empty"				"ASW_Weapon.Empty"
+		"empty"			"ASW_Weapon.Empty"
+		"special1"		"ASW_Weapon_Plasma_Thrower.Airblast"
+		"special3"		"ASW_Weapon.Reload3"		// weapon switch
 	}
 }
