@@ -322,7 +322,7 @@ public:
 	CNetworkVar( int, m_iInventoryEquipSlot );
 	CNetworkVar( bool, m_bFiredByOwner );
 
-	bool IsInventoryEquipSlotValid() const { return !!m_hOriginalOwnerMR && m_iInventoryEquipSlot != 0; }
+	bool IsInventoryEquipSlotValid() const;
 
 #ifdef GAME_DLL
 	void SetFromWeapon( CBaseEntity *pCreator );

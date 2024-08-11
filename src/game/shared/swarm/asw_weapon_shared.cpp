@@ -1773,7 +1773,7 @@ int CASW_Weapon::GetDefaultClip2() const
 
 bool CASW_Weapon::IsInventoryEquipSlotValid() const
 {
-	if ( m_hOriginalOwnerMR == NULL || m_iInventoryEquipSlot == 0 )
+	if ( m_hOriginalOwnerMR == NULL || m_hOriginalOwnerMR->m_OriginalCommander == NULL || m_iInventoryEquipSlot == 0 )
 		return false;
 
 	Assert( m_pEquipItem );

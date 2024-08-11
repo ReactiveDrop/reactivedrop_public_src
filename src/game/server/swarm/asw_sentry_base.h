@@ -84,7 +84,7 @@ public:
 	// and finish uploading it after the sentry is placed, but they
 	// can also just write their own code that increments stats directly,
 	// so this is not something we should spend resources trying to prevent.
-	bool IsInventoryEquipSlotValid() const { return !!m_hOriginalOwnerMR && m_iInventoryEquipSlot != 0; }
+	bool IsInventoryEquipSlotValid() const;
 
 	CNetworkHandle( CASW_Inhabitable_NPC, m_hLastDisassembler );
 

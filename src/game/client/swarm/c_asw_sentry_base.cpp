@@ -250,6 +250,11 @@ void C_ASW_Sentry_Base::CustomPaint( int ix, int iy, int alpha, vgui::Panel *pUs
 	}
 }
 
+bool C_ASW_Sentry_Base::IsInventoryEquipSlotValid() const
+{
+	return !!m_hOriginalOwnerMR && !!m_hOriginalOwnerMR->m_OriginalCommander && m_iInventoryEquipSlot != 0;
+}
+
 const char *C_ASW_Sentry_Base::GetWeaponClass()
 {
 	switch ( m_nGunType.Get() )

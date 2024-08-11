@@ -3848,6 +3848,11 @@ CRD_ProjectileData::CRD_ProjectileData()
 	m_bFiredByOwner = false;
 }
 
+bool CRD_ProjectileData::IsInventoryEquipSlotValid() const
+{
+	return !!m_hOriginalOwnerMR && !!m_hOriginalOwnerMR->m_OriginalCommander && m_iInventoryEquipSlot != 0;
+}
+
 #ifdef GAME_DLL
 void CRD_ProjectileData::SetFromWeapon( CBaseEntity *pCreator )
 {

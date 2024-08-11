@@ -566,6 +566,11 @@ GunType_t CASW_Sentry_Base::GetGunType( void ) const
 	}
 }
 
+bool CASW_Sentry_Base::IsInventoryEquipSlotValid() const
+{
+	return !!m_hOriginalOwnerMR && !!m_hOriginalOwnerMR->m_OriginalCommander && m_iInventoryEquipSlot != 0;
+}
+
 int CASW_Sentry_Base::ScriptGetMaxAmmo()
 {
 	return GetBaseAmmoForGunType( GetGunType() );

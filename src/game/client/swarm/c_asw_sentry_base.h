@@ -40,7 +40,7 @@ public:
 
 	CNetworkHandle( C_ASW_Marine_Resource, m_hOriginalOwnerMR );
 	CNetworkVar( int, m_iInventoryEquipSlot );
-	bool IsInventoryEquipSlotValid() const { return !!m_hOriginalOwnerMR && m_iInventoryEquipSlot != 0; }
+	bool IsInventoryEquipSlotValid() const;
 
 	CNetworkHandle( C_ASW_Inhabitable_NPC, m_hLastDisassembler );
 
