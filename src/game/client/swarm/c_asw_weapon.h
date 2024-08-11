@@ -52,6 +52,8 @@ public:
 	// effects
 	virtual int		GetMuzzleAttachment( void );
 	virtual void	SetMuzzleAttachment( int nNewAttachment );
+	virtual int		GetLaserPointerAttachment( void );
+	virtual void	SetLaserPointerAttachment( int nNewAttachment );
 	virtual float	GetMuzzleFlashScale( void );
 	virtual Vector	GetMuzzleFlashTint();
 	virtual void	ProcessMuzzleFlashEvent();
@@ -186,6 +188,7 @@ public:
 	// attachments
 	int m_nMuzzleAttachment;
 	int m_nLastMuzzleAttachment;
+	int m_nLaserPointerAttachment;
 	// body groups
 	int m_nLaserBodyGroup;
 	int m_nMagazineBodyGroup;

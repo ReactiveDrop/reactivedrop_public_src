@@ -23,7 +23,7 @@ void C_ASW_Weapon::CalcBoneMerge( CStudioHdr *hdr, int boneMask, CBoneBitList &b
 			CASW_Bone_Merge_Cache *pASWBoneMergeCache = static_cast<CASW_Bone_Merge_Cache*>( m_pBoneMergeCache );
 			pASWBoneMergeCache->MergeMatchingBones( boneMask, boneComputed, ShouldAlignWeaponToLaserPointer(), !ViewModelIsMarineAttachment(), m_vecLaserPointerDirection );
 
-			int iAttachment = GetMuzzleAttachment();
+			int iAttachment = GetLaserPointerAttachment();
 			if ( iAttachment > 0 && m_pLaserPointerEffect )
 			{
 				Vector vecOrigin;

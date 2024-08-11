@@ -159,6 +159,7 @@ m_GlowObject( this, glow_outline_color_weapon.GetColorAsVector(), 1.0f, false, t
 	m_bWeaponCreated = false;
 	m_nMuzzleAttachment = 0;
 	m_nLastMuzzleAttachment = 0;
+	m_nLaserPointerAttachment = 0;
 	m_nLaserBodyGroup = -2;
 	m_nMagazineBodyGroup = -2;
 	m_nScreenBodyGroup = -2;
@@ -340,6 +341,22 @@ void C_ASW_Weapon::SetMuzzleAttachment( int nNewAttachment )
 {
 	m_nMuzzleAttachment = nNewAttachment;
 }
+
+int C_ASW_Weapon::GetLaserPointerAttachment( void )
+{
+	if ( m_nLaserPointerAttachment == 0 )
+	{
+		// lazy initialization
+		m_nLaserPointerAttachment = LookupAttachment( "laserpointer" );
+	}
+	return m_nLaserPointerAttachment ? m_nLaserPointerAttachment : GetMuzzleAttachment();
+}
+
+void C_ASW_Weapon::SetLaserPointerAttachment( int nNewAttachment )
+{
+	m_nLaserPointerAttachment = nNewAttachment;
+}
+
 float C_ASW_Weapon::GetMuzzleFlashScale( void )
 {
 	// if we haven't calculated the muzzle scale based on the carrying marine's skill yet, then do so
@@ -421,19 +438,19 @@ void C_ASW_Weapon::ProcessMuzzleFlashEvent()
 	{
 		Vector vAttachment;
 		QAngle dummyAngles;
-		if ( GetAttachment( 1, vAttachment, dummyAngles ) )
+		if ( GetAttachment( GetMuzzleAttachment(), vAttachment, dummyAngles ) )
 		{
 			// Make an elight
 			dlight_t *el = effects->CL_AllocDlight( LIGHT_INDEX_MUZZLEFLASH + index );
 			el->origin = vAttachment;
-			el->radius = random->RandomFloat( asw_muzzle_light_radius_min.GetFloat(), asw_muzzle_light_radius_max.GetFloat() ); 
+			el->radius = random->RandomFloat( asw_muzzle_light_radius_min.GetFloat(), asw_muzzle_light_radius_max.GetFloat() );
 			el->decay = el->radius / 0.05f;
 			el->die = gpGlobals->curtime + 0.05f;
 			Color c = asw_muzzle_light.GetColor();
 			el->color.r = c.r();
 			el->color.g = c.g();
 			el->color.b = c.b();
-			el->color.exponent = c.a(); 
+			el->color.exponent = c.a();
 		}
 	}
 	OnMuzzleFlashed();	
@@ -981,7 +998,7 @@ void C_ASW_Weapon::SimulateLaserPointer()
 	Vector vecOrigin;
 	QAngle angWeapon;
 
-	int iAttachment = GetMuzzleAttachment();
+	int iAttachment = GetLaserPointerAttachment();
 	if ( iAttachment <= 0 )
 	{
 		RemoveLaserPointerEffect();
