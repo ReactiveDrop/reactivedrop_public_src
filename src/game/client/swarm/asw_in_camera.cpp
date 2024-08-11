@@ -13,59 +13,61 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-static bool s_bDontSendDesiredYaw = false;
-static void SetDesiredCameraYaw( IConVar *pVar, const char *szOldValue, float flOldValue );
+bool g_bSendDesiredYaw = true;
+static void SetDesiredCameraYaw( IConVar *pVar, const char *szOldValue, float flOldValue )
+{
+	if ( g_bSendDesiredYaw && engine && engine->IsInGame() )
+	{
+		engine->ServerCmd( VarArgs( "rotatecameraexact %f\n", ConVarRef( pVar ).GetFloat() ) );
+	}
+}
+ConVar asw_cam_marine_yaw( "asw_cam_marine_yaw", "90", FCVAR_CHEAT, "Marine Camera: yaw." );
+ConVar rd_cam_marine_yaw_desired( "rd_cam_marine_yaw_desired", "90", FCVAR_CHEAT, "The desired value of yaw. Camera yaw will linearly blend to the desired value", SetDesiredCameraYaw );
 
 // Marine Camera ConVars.
 extern ConVar asw_cam_marine_pitch;
 extern ConVar asw_cam_marine_dist;
-ConVar asw_cam_marine_pitch_rate( "asw_cam_marine_pitch_rate", "1000", FCVAR_CHEAT ); // asw setting
-ConVar asw_cam_marine_yaw( "asw_cam_marine_yaw", "90", FCVAR_CHEAT, "Marine Camera: yaw." );
-ConVar rd_cam_marine_yaw_desired( "rd_cam_marine_yaw_desired", "90", FCVAR_CHEAT, "The desired value of yaw. Camera yaw will linearly blend to the desired value", SetDesiredCameraYaw );
-ConVar rd_cam_marine_yaw_rate( "rd_cam_marine_yaw_rate", "0.1", FCVAR_CHEAT, "Time in seconds needed to change camera yaw" );
-ConVar asw_cam_marine_dist_rate( "asw_cam_marine_dist_rate", "50", FCVAR_CHEAT, "Marine Camera: Distance from marine." );
+extern ConVar asw_cam_marine_pitch_rate;
+extern ConVar rd_cam_marine_yaw_rate;
+extern ConVar asw_cam_marine_dist_rate;
 
-ConVar asw_cam_marine_dist_death( "asw_cam_marine_dist_death", "200", FCVAR_CHEAT, "Marine Camera: Distance from marine as he dies." );
-ConVar asw_cam_marine_pitch_death( "asw_cam_marine_pitch_death", "50", FCVAR_CHEAT, "Marine Camera: pitch when he dies." );
-ConVar asw_cam_marine_yaw_death_rate( "asw_cam_marine_yaw_death_rate", "35.0", FCVAR_CHEAT, "Marine Camera: yaw rotate rate when he dies." );
-ConVar asw_cam_marine_shift_z_death( "asw_cam_marine_shift_z_death", "-30.0", FCVAR_CHEAT, "Marine Camera: Shift camera vertically when he dies." );
+extern ConVar asw_cam_marine_dist_death;
+extern ConVar asw_cam_marine_pitch_death;
+extern ConVar asw_cam_marine_yaw_death_rate;
+extern ConVar asw_cam_marine_shift_z_death;
 
-ConVar asw_cam_marine_shift_ratex( "asw_cam_marine_shift_ratex", "1000", FCVAR_CHEAT, "Marine Camera: How far the camera pans east/west as you move the mouse." );
-ConVar asw_cam_marine_shift_ratey( "asw_cam_marine_shift_ratey", "650", FCVAR_CHEAT, "Marine Camera: How far the camera pans north as you move the mouse." );
-ConVar asw_cam_marine_shift_ratey_south( "asw_cam_marine_shift_ratey_south", "2000", FCVAR_CHEAT, "Marine Camera: How far the camera pans south as you move the mouse." );
-ConVar asw_cam_marine_shift_maxx( "asw_cam_marine_shift_maxx", "300", FCVAR_CHEAT, "Marine Camera: How far the camera pans east/west as you move the mouse." );
-ConVar asw_cam_marine_shift_maxy( "asw_cam_marine_shift_maxy", "200", FCVAR_CHEAT, "Marine Camera: How far the camera pans north as you move the mouse." );
-ConVar asw_cam_marine_shift_maxy_south( "asw_cam_marine_shift_maxy_south", "380", FCVAR_CHEAT, "Marine Camera: How far the camera pans south as you move the mouse." );
-ConVar asw_cam_marine_shift_deadspace( "asw_cam_marine_shift_deadspace", "64", FCVAR_CHEAT, "Marine Camera: Deadspace around the marine before camera shifting starts." );
-ConVar asw_cam_marine_blend( "asw_cam_marine_blend", "1", FCVAR_CHEAT, "Marine Camera: Whether camera should blend Z movement changes.");
+extern ConVar asw_cam_marine_shift_ratex;
+extern ConVar asw_cam_marine_shift_ratey;
+extern ConVar asw_cam_marine_shift_ratey_south;
+extern ConVar asw_cam_marine_shift_maxx;
+extern ConVar asw_cam_marine_shift_maxy;
+extern ConVar asw_cam_marine_shift_maxy_south;
+extern ConVar asw_cam_marine_shift_deadspace;
+extern ConVar asw_cam_marine_blend;
 
-ConVar asw_cam_marine_test( "asw_cam_marine_test", "1", FCVAR_CHEAT, "Camera Test." );
-ConVar asw_cam_marine_sphere_min( "asw_cam_marine_sphere_min", "32", FCVAR_CHEAT, "Test" );
-ConVar asw_cam_marine_sphere_max( "asw_cam_marine_sphere_max", "400", FCVAR_CHEAT, "Test" );
+extern ConVar asw_cam_marine_test;
+extern ConVar asw_cam_marine_sphere_min;
+extern ConVar asw_cam_marine_sphere_max;
 
-ConVar asw_cam_marine_spring_vel_max( "asw_cam_marine_spring_vel_max", "35.0", FCVAR_CHEAT, "Camera max velocity." );
-ConVar asw_cam_marine_spring_const( "asw_cam_marine_spring_const", "0.75", FCVAR_CHEAT, "Camera spring constant." );
-ConVar asw_cam_marine_spring_dampening( "asw_cam_marine_spring_dampening", "3.0", FCVAR_CHEAT, "Camera spring dampening." );
+extern ConVar asw_cam_marine_spring_vel_max;
+extern ConVar asw_cam_marine_spring_const;
+extern ConVar asw_cam_marine_spring_dampening;
 
-ConVar asw_cam_marine_yshift_static( "asw_cam_marine_yshift_static", "75.0f", FCVAR_CHEAT, "Camera y-shift value." );
+extern ConVar asw_cam_marine_yshift_static;
 
-ConVar asw_cam_marine_shift_enable( "asw_cam_marine_shift_enable", "1", FCVAR_ARCHIVE, "Camera shifting enable/disable." );
+ConVar asw_cam_marine_shift_enable( "asw_cam_marine_shift_enable", "1", FCVAR_ARCHIVE | FCVAR_USERINFO, "Camera shifting enable/disable." );
 
 // Vehicle Camera ConVars.
-ConVar asw_vehicle_cam_height( "asw_vehicle_cam_height", "0", FCVAR_CHEAT );
-ConVar asw_vehicle_cam_pitch( "asw_vehicle_cam_pitch", "5", FCVAR_CHEAT );
-ConVar asw_vehicle_cam_dist( "asw_vehicle_cam_dist", "380", FCVAR_CHEAT );
-ConVar asw_vehicle_cam_speed( "asw_vehicle_cam_speed", "200", FCVAR_CHEAT );
-ConVar asw_vehicle_cam_shift_enable( "asw_vehicle_cam_shift_enable", "0", FCVAR_CHEAT );
+extern ConVar asw_vehicle_cam_height;
+extern ConVar asw_vehicle_cam_pitch;
+extern ConVar asw_vehicle_cam_dist;
+extern ConVar asw_vehicle_cam_speed;
+extern ConVar asw_vehicle_cam_shift_enable;
 
-ConVar asw_cam_marine_dist_2( "asw_cam_marine_dist_2", "80", FCVAR_CHEAT, "offset of camera in asw_controls 2" );
-ConVar asw_cam_marine_pitch_2( "asw_cam_marine_pitch_2", "10", FCVAR_CHEAT, "pitch offset of camera in asw_controls 2" );
-ConVar asw_cam_marine_yaw_2( "asw_cam_marine_yaw_2", "20", FCVAR_CHEAT, "yaw offset of camera in asw_controls 2" );
-ConVar asw_cam_marine_speed_2( "asw_cam_marine_speed_2", "50", FCVAR_CHEAT, "speed going back to full distance of camera in asw_controls 2" );
-
-// ASWTODO - allow thirdperson but cheat protect first person
-//static ConCommand thirdperson( "thirdperson", ::CAM_ToThirdPerson, "Switch to thirdperson camera." );
-//static ConCommand firstperson( "firstperson", ::CAM_ToFirstPerson, "Switch to firstperson camera.", FCVAR_CHEAT );
+extern ConVar asw_cam_marine_dist_2;
+extern ConVar asw_cam_marine_pitch_2;
+extern ConVar asw_cam_marine_yaw_2;
+extern ConVar asw_cam_marine_speed_2;
 
 extern kbutton_t in_zoom;
 extern ConVar cam_command;
@@ -127,7 +129,6 @@ float CASWInput::ASW_GetCameraPitch( const float *pfDeathCamInterp /*= NULL*/ )
 	return m_fCurrentCameraPitch;
 }
 
-
 //-----------------------------------------------------------------------------
 // Purpose: Alien Swarm camera yaw.
 //-----------------------------------------------------------------------------
@@ -174,25 +175,25 @@ float CASWInput::ASW_GetCameraYaw( const float *pfDeathCamInterp /*= NULL*/ )
 
 	if ( pPlayer && asw_cam_marine_yaw.GetFloat() != pPlayer->m_flMovementAxisYaw )
 	{
-		s_bDontSendDesiredYaw = true;
+		g_bSendDesiredYaw = false;
 		rd_cam_marine_yaw_desired.SetValue( pPlayer->m_flMovementAxisYaw );
-		s_bDontSendDesiredYaw = false;
+		g_bSendDesiredYaw = true;
 
 		if ( !m_fCamYawRotStartTime )
 			m_fCamYawRotStartTime = gpGlobals->realtime;
 
 		float fCamYawRotEndTime = m_fCamYawRotStartTime + rd_cam_marine_yaw_rate.GetFloat();
 
-		if ( gpGlobals->realtime >= fCamYawRotEndTime ) 
+		if ( gpGlobals->realtime >= fCamYawRotEndTime )
 		{
 			// finish rotation
-			asw_cam_marine_yaw.SetValue(pPlayer->m_flMovementAxisYaw);
+			asw_cam_marine_yaw.SetValue( pPlayer->m_flMovementAxisYaw );
 			m_fCamYawRotStartTime = 0.0f;
 		}
 		else
 		{
 			// a value from 0 to 1
-			float fRotProgress = (gpGlobals->realtime - m_fCamYawRotStartTime) / (fCamYawRotEndTime - m_fCamYawRotStartTime);
+			float fRotProgress = ( gpGlobals->realtime - m_fCamYawRotStartTime ) / ( fCamYawRotEndTime - m_fCamYawRotStartTime );
 			float fTotalDegreesToChange = 0.0f;
 
 			// handle special situations for 0 and 360 angles
@@ -218,7 +219,6 @@ float CASWInput::ASW_GetCameraYaw( const float *pfDeathCamInterp /*= NULL*/ )
 	return asw_cam_marine_yaw.GetFloat();
 }
 
-
 extern ConVar fov_desired;
 //-----------------------------------------------------------------------------
 // Purpose: Alien Swarm camera distance.
@@ -228,7 +228,7 @@ float CASWInput::ASW_GetCameraDist( const float *pfDeathCamInterp /*= NULL*/ )
 #ifdef VARIABLE_CAMERA
 	// Are we using a valid FOV, if not use the default distance.
 	float flFOV = fov_desired.GetFloat();
-	if ( !( flFOV == 75.0f || flFOV == 50.0f  ) )
+	if ( !( flFOV == 75.0f || flFOV == 50.0f ) )
 		return asw_cam_marine_dist.GetFloat();
 
 	// Do we have a missionchooser, if not use the default distance.
@@ -244,7 +244,7 @@ float CASWInput::ASW_GetCameraDist( const float *pfDeathCamInterp /*= NULL*/ )
 	IASW_Room_Details *pRoom = missionchooser->RandomMissions()->GetRoomDetails( pPlayer->GetViewMarine()->GetAbsOrigin() );
 	if ( !pRoom )
 		return asw_cam_marine_dist.GetFloat();
-	
+
 	// Get the desired distance for the room.
 	float flDesiredDist = s_flCameraHeights[pRoom->GetTileType()];
 	if ( flFOV == 50 )
@@ -301,7 +301,6 @@ float CASWInput::ASW_GetCameraDist( const float *pfDeathCamInterp /*= NULL*/ )
 #endif
 }
 
-
 extern void UpdateOrderArrow();
 
 void CASWInput::CAM_Think( void )
@@ -310,7 +309,7 @@ void CASWInput::CAM_Think( void )
 
 	UpdateOrderArrow();	// update the arrow direction if we're in the middle of ordering a marine (see in_main.cpp)
 
-	switch( GetPerUser().m_nCamCommand )
+	switch ( GetPerUser().m_nCamCommand )
 	{
 	case CAM_COMMAND_TOTHIRDPERSON:
 		CAM_ToThirdPerson();
@@ -403,12 +402,12 @@ void CASWInput::CAM_Think( void )
 	}
 }
 
-void CASWInput::CAM_ToThirdPerson(void)
+void CASWInput::CAM_ToThirdPerson( void )
 {
 	CInput::CAM_ToThirdPerson();
 }
 
-void CASWInput::CAM_ToFirstPerson(void)
+void CASWInput::CAM_ToFirstPerson( void )
 {
 	CInput::CAM_ToFirstPerson();
 }
@@ -447,10 +446,9 @@ void CASWInput::CalculateCameraShift( C_ASW_Player *pPlayer, float flDeltaX, flo
 	}
 
 	flShiftX = flDeltaX * asw_cam_marine_shift_maxx.GetFloat() * m_fShiftFraction;
-	float camshifty = (flDeltaY < 0) ? asw_cam_marine_shift_maxy.GetFloat() : asw_cam_marine_shift_maxy_south.GetFloat();
+	float camshifty = ( flDeltaY < 0 ) ? asw_cam_marine_shift_maxy.GetFloat() : asw_cam_marine_shift_maxy_south.GetFloat();
 	flShiftY = flDeltaY * camshifty * m_fShiftFraction;
 }
-
 
 //-----------------------------------------------------------------------------
 // Purpose:
@@ -468,7 +466,6 @@ void CASWInput::SmoothCamera( C_ASW_Player *pPlayer, Vector &vecCameraLocation )
 		pPlayer->SmoothCameraZ( vecCameraLocation );
 	}
 }
-
 
 //-----------------------------------------------------------------------------
 // Purpose:
@@ -522,7 +519,7 @@ void CASWInput::ASW_GetCameraLocation( C_ASW_Player *pPlayer, Vector &vecCameraL
 
 		// Calculate the camera shift and move the camera.
 		float flShiftX, flShiftY;
-		CalculateCameraShift( pPlayer, (float) nDeltaX / ( nCenterX * 2.0f ), (float) nDeltaY / ( nCenterY * 2.0f ), flShiftX, flShiftY );
+		CalculateCameraShift( pPlayer, ( float )nDeltaX / ( nCenterX * 2.0f ), ( float )nDeltaY / ( nCenterY * 2.0f ), flShiftX, flShiftY );
 
 		VectorMA( vecCameraLocation, flShiftX, vecCamRight, vecCameraLocation );
 		vecCamUp.z = 0;	// don't want the camera changing z
@@ -531,7 +528,7 @@ void CASWInput::ASW_GetCameraLocation( C_ASW_Player *pPlayer, Vector &vecCameraL
 	}
 
 	bool bDeathcam = ASWGameRules() && ( ASWGameRules()->GetMarineDeathCamInterp() > 0.0f );
-	
+
 	// Smooth the camera movement.
 	if ( bApplySmoothing && !bDeathcam )
 	{
@@ -554,18 +551,16 @@ void CASWInput::ASW_GetCameraLocation( C_ASW_Player *pPlayer, Vector &vecCameraL
 	pPlayer->m_hLastNPC = pPlayer->GetViewNPC();
 }
 
-
-
 /*
 ==============================
 CAM_StartMouseMove
 
 ==============================
 */
-void CASWInput::CAM_StartMouseMove(void)
+void CASWInput::CAM_StartMouseMove( void )
 {
-	GetPerUser().m_fCameraMovingWithMouse=false;
-	GetPerUser().m_fCameraInterceptingMouse=false;
+	GetPerUser().m_fCameraMovingWithMouse = false;
+	GetPerUser().m_fCameraInterceptingMouse = false;
 }
 
 /*
@@ -576,12 +571,12 @@ routines to start the process of moving the cam in or out
 using the mouse
 ==============================
 */
-void CASWInput::CAM_StartDistance(void)
+void CASWInput::CAM_StartDistance( void )
 {
 	// asw
-	GetPerUser().m_fCameraDistanceMove=false;
-	GetPerUser().m_fCameraMovingWithMouse=false;
-	GetPerUser().m_fCameraInterceptingMouse=false;
+	GetPerUser().m_fCameraDistanceMove = false;
+	GetPerUser().m_fCameraMovingWithMouse = false;
+	GetPerUser().m_fCameraInterceptingMouse = false;
 }
 
 
@@ -595,8 +590,8 @@ void CASWInput::Init_Camera( void )
 {
 	for ( int i = 0; i < MAX_SPLITSCREEN_PLAYERS; ++i )
 	{
-		m_PerUser[ i ].m_fCameraInThirdPerson = true;
-		m_PerUser[ i ].m_CameraIsOrthographic = false;
+		m_PerUser[i].m_fCameraInThirdPerson = true;
+		m_PerUser[i].m_CameraIsOrthographic = false;
 		// TODO: make this part of the per user data
 		m_fCurrentCameraPitch = 0.0f;
 		m_flCurrentCameraDist = asw_cam_marine_dist.GetFloat();
@@ -625,21 +620,11 @@ void CASWInput::UpdateASWControls()
 // asw - sets us up for moving the camera around in demos
 void ASWDemoCamera_f()
 {
-	if (!engine->IsPlayingDemo())
+	if ( !engine->IsPlayingDemo() )
 		return;
 
-	engine->ClientCmd("firstperson");
-	engine->ClientCmd("asw_hl2_camera 1");
-	engine->ClientCmd("asw_controls 0");
+	engine->ClientCmd( "firstperson" );
+	engine->ClientCmd( "asw_hl2_camera 1" );
+	engine->ClientCmd( "asw_controls 0" );
 }
-ConCommand asw_demo_camera("asw_demo_camera", ASWDemoCamera_f);
-
-static void SetDesiredCameraYaw( IConVar *pVar, const char *szOldValue, float flOldValue )
-{
-	if ( s_bDontSendDesiredYaw )
-	{
-		return;
-	}
-
-	engine->ServerCmd( VarArgs( "rotatecameraexact %f\n", rd_cam_marine_yaw_desired.GetFloat() ) );
-}
+ConCommand asw_demo_camera( "asw_demo_camera", ASWDemoCamera_f );

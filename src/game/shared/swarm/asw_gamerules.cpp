@@ -521,6 +521,47 @@ ConVar rd_respawn_time( "rd_respawn_time", "0.2",  FCVAR_REPLICATED, "Number of 
 ConVar rd_ground_shooting( "rd_ground_shooting", "0",  FCVAR_CHEAT | FCVAR_REPLICATED, "1 enable ground shooting, 0 disabled" );
 ConVar asw_cam_marine_pitch( "asw_cam_marine_pitch", "60", FCVAR_CHEAT | FCVAR_REPLICATED, "Marine Camera: pitch." );
 ConVar asw_cam_marine_dist( "asw_cam_marine_dist", "412", FCVAR_CHEAT | FCVAR_REPLICATED, "Marine Camera: Distance from marine." );
+
+ConVar asw_cam_marine_pitch_rate( "asw_cam_marine_pitch_rate", "1000", FCVAR_CHEAT | FCVAR_REPLICATED );
+ConVar rd_cam_marine_yaw_rate( "rd_cam_marine_yaw_rate", "0.1", FCVAR_CHEAT | FCVAR_REPLICATED, "Time in seconds needed to change camera yaw" );
+ConVar asw_cam_marine_dist_rate( "asw_cam_marine_dist_rate", "50", FCVAR_CHEAT | FCVAR_REPLICATED, "Marine Camera: Distance from marine." );
+
+ConVar asw_cam_marine_dist_death( "asw_cam_marine_dist_death", "200", FCVAR_CHEAT | FCVAR_REPLICATED, "Marine Camera: Distance from marine as he dies." );
+ConVar asw_cam_marine_pitch_death( "asw_cam_marine_pitch_death", "50", FCVAR_CHEAT | FCVAR_REPLICATED, "Marine Camera: pitch when he dies." );
+ConVar asw_cam_marine_yaw_death_rate( "asw_cam_marine_yaw_death_rate", "35.0", FCVAR_CHEAT | FCVAR_REPLICATED, "Marine Camera: yaw rotate rate when he dies." );
+ConVar asw_cam_marine_shift_z_death( "asw_cam_marine_shift_z_death", "-30.0", FCVAR_CHEAT | FCVAR_REPLICATED, "Marine Camera: Shift camera vertically when he dies." );
+
+ConVar asw_cam_marine_shift_ratex( "asw_cam_marine_shift_ratex", "1000", FCVAR_CHEAT | FCVAR_REPLICATED, "Marine Camera: How far the camera pans east/west as you move the mouse." );
+ConVar asw_cam_marine_shift_ratey( "asw_cam_marine_shift_ratey", "650", FCVAR_CHEAT | FCVAR_REPLICATED, "Marine Camera: How far the camera pans north as you move the mouse." );
+ConVar asw_cam_marine_shift_ratey_south( "asw_cam_marine_shift_ratey_south", "2000", FCVAR_CHEAT | FCVAR_REPLICATED, "Marine Camera: How far the camera pans south as you move the mouse." );
+ConVar asw_cam_marine_shift_maxx( "asw_cam_marine_shift_maxx", "300", FCVAR_CHEAT | FCVAR_REPLICATED, "Marine Camera: How far the camera pans east/west as you move the mouse." );
+ConVar asw_cam_marine_shift_maxy( "asw_cam_marine_shift_maxy", "200", FCVAR_CHEAT | FCVAR_REPLICATED, "Marine Camera: How far the camera pans north as you move the mouse." );
+ConVar asw_cam_marine_shift_maxy_south( "asw_cam_marine_shift_maxy_south", "380", FCVAR_CHEAT | FCVAR_REPLICATED, "Marine Camera: How far the camera pans south as you move the mouse." );
+ConVar asw_cam_marine_shift_deadspace( "asw_cam_marine_shift_deadspace", "64", FCVAR_CHEAT | FCVAR_REPLICATED, "Marine Camera: Deadspace around the marine before camera shifting starts." );
+ConVar asw_cam_marine_blend( "asw_cam_marine_blend", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "Marine Camera: Whether camera should blend Z movement changes." );
+
+ConVar asw_cam_marine_test( "asw_cam_marine_test", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "Camera Test." );
+ConVar asw_cam_marine_sphere_min( "asw_cam_marine_sphere_min", "32", FCVAR_CHEAT | FCVAR_REPLICATED, "Test" );
+ConVar asw_cam_marine_sphere_max( "asw_cam_marine_sphere_max", "400", FCVAR_CHEAT | FCVAR_REPLICATED, "Test" );
+
+ConVar asw_cam_marine_spring_vel_max( "asw_cam_marine_spring_vel_max", "35.0", FCVAR_CHEAT | FCVAR_REPLICATED, "Camera max velocity." );
+ConVar asw_cam_marine_spring_const( "asw_cam_marine_spring_const", "0.75", FCVAR_CHEAT | FCVAR_REPLICATED, "Camera spring constant." );
+ConVar asw_cam_marine_spring_dampening( "asw_cam_marine_spring_dampening", "3.0", FCVAR_CHEAT | FCVAR_REPLICATED, "Camera spring dampening." );
+
+ConVar asw_cam_marine_yshift_static( "asw_cam_marine_yshift_static", "75.0f", FCVAR_CHEAT | FCVAR_REPLICATED, "Camera y-shift value." );
+
+// Vehicle Camera ConVars.
+ConVar asw_vehicle_cam_height( "asw_vehicle_cam_height", "0", FCVAR_CHEAT | FCVAR_REPLICATED );
+ConVar asw_vehicle_cam_pitch( "asw_vehicle_cam_pitch", "5", FCVAR_CHEAT | FCVAR_REPLICATED );
+ConVar asw_vehicle_cam_dist( "asw_vehicle_cam_dist", "380", FCVAR_CHEAT | FCVAR_REPLICATED );
+ConVar asw_vehicle_cam_speed( "asw_vehicle_cam_speed", "200", FCVAR_CHEAT | FCVAR_REPLICATED );
+ConVar asw_vehicle_cam_shift_enable( "asw_vehicle_cam_shift_enable", "0", FCVAR_CHEAT | FCVAR_REPLICATED );
+
+ConVar asw_cam_marine_dist_2( "asw_cam_marine_dist_2", "80", FCVAR_CHEAT | FCVAR_REPLICATED, "offset of camera in asw_controls 2" );
+ConVar asw_cam_marine_pitch_2( "asw_cam_marine_pitch_2", "10", FCVAR_CHEAT | FCVAR_REPLICATED, "pitch offset of camera in asw_controls 2" );
+ConVar asw_cam_marine_yaw_2( "asw_cam_marine_yaw_2", "20", FCVAR_CHEAT | FCVAR_REPLICATED, "yaw offset of camera in asw_controls 2" );
+ConVar asw_cam_marine_speed_2( "asw_cam_marine_speed_2", "50", FCVAR_CHEAT | FCVAR_REPLICATED, "speed going back to full distance of camera in asw_controls 2" );
+
 ConVar rd_allow_afk( "rd_allow_afk", "1", FCVAR_REPLICATED, "If set to 0 players cannot use asw_afk command or Esc - Take a Break" );
 // for deathmatch
 

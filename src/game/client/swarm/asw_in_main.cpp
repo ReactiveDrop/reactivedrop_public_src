@@ -30,7 +30,6 @@ ConVar joy_pan_camera("joy_pan_camera", "0", FCVAR_ARCHIVE);
 ConVar asw_ground_secondary("asw_ground_secondary", "1", FCVAR_NONE, "Set to 1 to make marines aim grenades at the floor instead of firing them straight");
 extern ConVar rd_ground_shooting;
 extern ConVar asw_DebugAutoAim;
-ConVar rd_networked_mouse( "rd_networked_mouse", "1", FCVAR_DEVELOPMENTONLY, "Send the mouse position to the server for spectating" );
 ConVar rd_first_person_aim_correction( "rd_first_person_aim_correction", "1", FCVAR_USERINFO, "Make the gun point where the player is looking rather than straight forward." );
 ConVar rd_first_person_aim_correction_weapon_length( "rd_first_person_aim_correction_weapon_length", "35", FCVAR_USERINFO, "Scale down aim angle correction linearly when distance is below this." );
 
@@ -668,24 +667,13 @@ void CASWInput::CreateMove( int sequence_number, float input_sample_frametime, b
 		pWeapon->CheckSyncKill( cmd->forced_action, cmd->sync_kill_ent );
 	}
 
-	// BenLubar(spectator-mouse)
-	if ( rd_networked_mouse.GetBool() )
-	{
-		// BenLubar: send the screen size and cursor position to the server
-		cmd->screenw = (short) ScreenWidth();
-		cmd->screenh = (short) ScreenHeight();
-		int mx, my;
-		ASWInput()->GetFullscreenMousePos( &mx, &my );
-		cmd->mousex = (short) mx;
-		cmd->mousey = (short) my;
-	}
-	else
-	{
-		cmd->screenw = 0;
-		cmd->screenh = 0;
-		cmd->mousex = 0;
-		cmd->mousey = 0;
-	}
+	// BenLubar: send the screen size and cursor position to the server
+	cmd->screenw = (short) ScreenWidth();
+	cmd->screenh = (short) ScreenHeight();
+	int mx, my;
+	ASWInput()->GetFullscreenMousePos( &mx, &my );
+	cmd->mousex = (short) mx;
+	cmd->mousey = (short) my;
 
 	pVerified->m_cmd = *cmd;
 	pVerified->m_crc = cmd->GetChecksum();
