@@ -1680,7 +1680,7 @@ void MainMenu::OnThink()
 		MaybeShowTooltip( m_pBtnNewsShowcase, "#rd_main_menu_tip_news_showcase_title", "#rd_main_menu_tip_news_showcase", 0.0f, 0.5f, vgui::Label::a_east );
 		MaybeShowTooltip( m_pBtnUpdateNotes, "#rd_main_menu_tip_update_notes_title", "#rd_main_menu_tip_update_notes", 0.0f, 0.5f, vgui::Label::a_east );
 #ifdef RD_7A_DROPS
-		MaybeShowTooltip( m_pCraftingMaterialsBetaPromoButton, "vi'ecpe do", "ti xatra do la briju voi'e tugygau\n.i la sEnArIOs n} qocre fizde lo nu do spuda", 0.0f, 0.5f, vgui::Label::a_east, true );
+		MaybeShowTooltip( m_pCraftingMaterialsBetaPromoButton, "vi'ecpe do", "ti xatra do la briju voi'e tugygau\n.i la SENARIOS noi qocre fizde lo nu do spuda", 0.0f, 0.5f, vgui::Label::a_east, true );
 #endif
 	}
 
