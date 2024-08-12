@@ -24,8 +24,8 @@ using namespace vgui;
 using namespace BaseModUI;
 
 //=============================================================================
-ConVar cl_support_vpk_assocation( "cl_support_vpk_assocation", "0", FCVAR_NONE, "Whether vpk associations are enabled for this mod" );
-ConVar cl_ignore_vpk_assocation( "cl_ignore_vpk_assocation", "0", FCVAR_ARCHIVE, "Do not ask to set vpk assocation" );
+ConVar cl_support_vpk_association( "cl_support_vpk_association", "0", FCVAR_NONE, "Whether vpk associations are enabled for this mod" );
+ConVar cl_ignore_vpk_association( "cl_ignore_vpk_association", "0", FCVAR_ARCHIVE, "Do not ask to set vpk association" );
 
 static bool s_checkedNoShow = false;
 static bool s_checkedAssociation = false;
@@ -42,7 +42,7 @@ AddonAssociation::AddonAssociation( Panel *parent, const char *panelName )
 		this, 
 		"CheckButtonAddonAssociation", 
 		"#L4D360UI_Cloud_KeepInSync_Tip", 
-		"cl_ignore_vpk_assocation",
+		"cl_ignore_vpk_association",
 		true );
 
 	SetTitle( "", false );
@@ -74,7 +74,7 @@ static void GetAddonInstallerUtilityPath( char path[MAX_PATH] )
 }
 
 //=============================================================================
-static void RegisterAssocation( bool showFailure )
+static void RegisterAssociation( bool showFailure )
 {
 #ifdef IS_WINDOWS_PC
 	char addonInstallPath[MAX_PATH];
@@ -149,7 +149,7 @@ static void RegisterAssocation( bool showFailure )
 				data.pMessageText = "#L4D360UI_AddonAssociation_Failure_Description";
 				data.bOkButtonEnabled = true;
 				data.bCheckBoxEnabled = true;
-				data.pCheckBoxCvarName = "cl_ignore_vpk_assocation";
+				data.pCheckBoxCvarName = "cl_ignore_vpk_association";
 				data.pCheckBoxLabelText = "#L4D360UI_AddonAssociation_Failure_DoNotAsk";
 				confirmation->SetUsageData(data);
 			}
@@ -166,7 +166,7 @@ static void RegisterAssocation( bool showFailure )
 AddonAssociation::EAssociation AddonAssociation::VPKAssociation()
 {
 #ifdef IS_WINDOWS_PC
-	if ( cl_ignore_vpk_assocation.GetBool() )
+	if ( cl_ignore_vpk_association.GetBool() )
 	{
 		return kAssociation_Ok;
 	}
@@ -187,9 +187,9 @@ AddonAssociation::EAssociation AddonAssociation::VPKAssociation()
 	else
 	{
 		// Key exists, check if its set to us
-		char assocation[MAX_PATH];
-		DWORD len = sizeof( assocation );
-		LONG vpkAssociationError = RegQueryValueEx( hKey, NULL, NULL, NULL, (LPBYTE)assocation, &len );
+		char association[MAX_PATH];
+		DWORD len = sizeof( association );
+		LONG vpkAssociationError = RegQueryValueEx( hKey, NULL, NULL, NULL, (LPBYTE)association, &len );
 
 		if ( vpkAssociationError != ERROR_SUCCESS )
 		{
@@ -198,7 +198,7 @@ AddonAssociation::EAssociation AddonAssociation::VPKAssociation()
 		}
 		else
 		{
-			if ( Q_stricmp( assocation, "sourceaddonfile" ) != 0 )
+			if ( Q_stricmp( association, "sourceaddonfile" ) != 0 )
 			{
 				s_association = kAssociation_Other; // assigned to someone else
 			}
@@ -219,7 +219,7 @@ AddonAssociation::EAssociation AddonAssociation::VPKAssociation()
 //=============================================================================
 bool AddonAssociation::CheckAndSeeIfShouldShow()
 {
-	if ( !cl_support_vpk_assocation.GetBool() )
+	if ( !cl_support_vpk_association.GetBool() )
 		// VPK associations unsupported
 		return false;
 
@@ -233,7 +233,7 @@ bool AddonAssociation::CheckAndSeeIfShouldShow()
 		// Not found, assume it
 		case kAssociation_None :
 			Msg("Executing addoninstaller to register with vpk files\n");
-			RegisterAssocation( true );
+			RegisterAssociation( true );
 			break;
 
 		// Set to someone else, ask
@@ -255,14 +255,14 @@ void AddonAssociation::OnCommand(const char *command)
 	{
 		if ( m_pDoNotAskForAssociation && m_pDoNotAskForAssociation->IsSelected() )
 		{
-			cl_ignore_vpk_assocation.SetValue( true );
+			cl_ignore_vpk_association.SetValue( true );
 		}
 
 		Close();
 
 		if ( Q_stricmp( command, "Yes" ) == 0 )
 		{
-			RegisterAssocation( true );
+			RegisterAssociation( true );
 		}
 
 	}
