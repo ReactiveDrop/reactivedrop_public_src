@@ -10,7 +10,7 @@
 #include <vgui_controls/Menu.h>
 #include <vgui_controls/ScrollBar.h>
 #include "filesystem.h"
-#include "rd_font_zbalermorna.h"
+#include "asw_util_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -200,7 +200,6 @@ MultiFontRichText::MultiFontRichText( Panel *parent, const char *panelName ) : B
 	stream.pixelsIndent = 0;
 	stream.textStreamIndex = 0;
 	stream.textClickable = false;
-	stream.zbalermorna = false;
 	stream.font = INVALID_FONT;
 	m_FormatStream.AddToTail( stream );
 
@@ -418,7 +417,6 @@ void MultiFontRichText::SetText( const wchar_t *text )
 	stream.pixelsIndent = 0;
 	stream.textStreamIndex = 0;
 	stream.textClickable = false;
-	stream.zbalermorna = false;
 	stream.font = m_hFontDefault;
 	m_FormatStream.AddToTail( stream );
 
@@ -544,7 +542,6 @@ int MultiFontRichText::PixelToCursorSpace( int cx, int cy )
 			onRightLine = true;
 		}
 
-		// TODO(BenLubar): zbalermorna support here
 		int wide = surface()->GetCharacterWidth( renderState.font, ch );
 
 		// if we've found the position, break
@@ -600,11 +597,6 @@ int MultiFontRichText::DrawString( int iFirst, int iLast, TRenderState &renderSt
 	for ( int i = iFirst; i <= iLast; i++ )
 	{
 		wchar_t ch = m_TextStream[i];
-		if ( renderState.zbalermorna )
-		{
-			charWide += zbalermorna::MeasureChar( ch, fontTall );
-			continue;
-		}
 
 #if USE_GETKERNEDCHARWIDTH
 		wchar_t chBefore = 0;
@@ -640,26 +632,13 @@ int MultiFontRichText::DrawString( int iFirst, int iLast, TRenderState &renderSt
 		m_bAllTextAlphaIsZero = false;
 	}
 
-	if ( renderState.zbalermorna )
+	surface()->DrawSetTextColor( textColor );
+
+	if ( renderState.textColor.a() != 0 )
 	{
-		char *buf = ( char * )stackalloc( iLast - iFirst + 1 );
-
-		for ( int i = iFirst; i <= iLast; i++ )
-			buf[i - iFirst] = m_TextStream[i];
-		buf[iLast - iFirst] = '\0';
-
-		zbalermorna::PaintText( renderState.x, renderState.y, buf, fontTall, textColor );
-	}
-	else
-	{
-		surface()->DrawSetTextColor( textColor );
-
-		if ( renderState.textColor.a() != 0 )
-		{
-			m_bAllTextAlphaIsZero = false;
-			surface()->DrawSetTextPos( renderState.x, renderState.y );
-			surface()->DrawPrintText( &m_TextStream[iFirst], iLast - iFirst + 1 );
-		}
+		m_bAllTextAlphaIsZero = false;
+		surface()->DrawSetTextPos( renderState.x, renderState.y );
+		surface()->DrawPrintText( &m_TextStream[iFirst], iLast - iFirst + 1 );
 	}
 
 	return charWide;
@@ -751,7 +730,6 @@ void MultiFontRichText::Paint()
 	if ( m_FormatStream.IsValidIndex( renderState.formatStreamIndex ) )
 	{
 		renderState.textColor = m_FormatStream[renderState.formatStreamIndex].color;
-		renderState.zbalermorna = m_FormatStream[renderState.formatStreamIndex].zbalermorna;
 		renderState.font = m_FormatStream[renderState.formatStreamIndex].font;
 	}
 
@@ -948,7 +926,6 @@ bool MultiFontRichText::UpdateRenderState( int textStreamPos, TRenderState &rend
 		// set the current formatting
 		renderState.textColor = m_FormatStream[renderState.formatStreamIndex].color;
 		renderState.font = m_FormatStream[renderState.formatStreamIndex].font;
-		renderState.zbalermorna = m_FormatStream[renderState.formatStreamIndex].zbalermorna;
 		renderState.textClickable = m_FormatStream[renderState.formatStreamIndex].textClickable;
 
 		CalculateFade( renderState );
@@ -1004,7 +981,6 @@ void MultiFontRichText::GenerateRenderStateForTextStreamIndex( int textStreamInd
 	// copy the state data
 	renderState.textColor = m_FormatStream[renderState.formatStreamIndex].color;
 	renderState.font = m_FormatStream[renderState.formatStreamIndex].font;
-	renderState.zbalermorna = m_FormatStream[renderState.formatStreamIndex].zbalermorna;
 	renderState.pixelsIndent = m_FormatStream[renderState.formatStreamIndex].pixelsIndent;
 	renderState.textClickable = m_FormatStream[renderState.formatStreamIndex].textClickable;
 }
@@ -1139,29 +1115,6 @@ void MultiFontRichText::InsertFontChange( HFont font )
 		// add to text stream, based off existing item
 		TFormatStream streamItem = prevItem;
 		streamItem.font = font;
-		streamItem.textStreamIndex = m_TextStream.Count();
-		m_FormatStream.AddToTail( streamItem );
-	}
-}
-
-void MultiFontRichText::InsertZbalermornaMode( bool bZbalermorna )
-{
-	// see if charset already exists in text stream
-	TFormatStream &prevItem = m_FormatStream[m_FormatStream.Count() - 1];
-	if ( prevItem.zbalermorna == bZbalermorna )
-	{
-		// inserting same charset into stream, just ignore
-	}
-	else if ( prevItem.textStreamIndex == m_TextStream.Count() )
-	{
-		// this item is in the same place; update values
-		prevItem.zbalermorna = bZbalermorna;
-	}
-	else
-	{
-		// add to text stream, based off existing item
-		TFormatStream streamItem = prevItem;
-		streamItem.zbalermorna = bZbalermorna;
 		streamItem.textStreamIndex = m_TextStream.Count();
 		m_FormatStream.AddToTail( streamItem );
 	}
@@ -2085,8 +2038,6 @@ void MultiFontRichText::InsertChar( wchar_t wch )
 		TruncateTextStream();
 	}
 
-	InsertZbalermornaMode( false );
-
 	// insert the new char at the end of the buffer
 	m_TextStream.AddToTail( wch );
 
@@ -2133,23 +2084,10 @@ void MultiFontRichText::InsertString( const wchar_t *wszText )
 
 void MultiFontRichText::InsertZbalermornaChar( char ch )
 {
-	// throw away redundant linefeed characters
-	if ( ch == '\r' )
-		return;
+	wchar_t buf[2] = { ch, 0 };
+	UTIL_RD_LatinToZbalermorna( buf );
 
-	if ( _maxCharCount > 0 && m_TextStream.Count() > _maxCharCount )
-	{
-		TruncateTextStream();
-	}
-
-	InsertZbalermornaMode( true );
-
-	// insert the new char at the end of the buffer
-	m_TextStream.AddToTail( ch );
-
-	// mark the linebreak steam as needing recalculating from that point
-	_recalculateBreaksIndex = m_LineBreaks.Count() - 2;
-	Repaint();
+	InsertChar( buf[0] );
 }
 
 void MultiFontRichText::InsertZbalermornaString( const char *text )
@@ -2158,9 +2096,6 @@ void MultiFontRichText::InsertZbalermornaString( const char *text )
 	{
 		InsertZbalermornaChar( *ch );
 	}
-	InvalidateLayout();
-	m_bRecalcLineBreaks = true;
-	Repaint();
 }
 
 //-----------------------------------------------------------------------------

@@ -62,9 +62,6 @@ public:
 	// rich edit commands
 	void InsertColorChange(Color col);
 	void InsertFontChange(HFont font);
-private:
-	void InsertZbalermornaMode( bool bZbalermorna );
-public:
 	// IndentChange doesn't take effect until the next newline character
 	void InsertIndentChange(int pixelsIndent);
 	// clickable text
@@ -216,7 +213,6 @@ private:
 		Color color;
 		int pixelsIndent;
 		bool textClickable;
-		bool zbalermorna;
 		vgui::HFont font;
 		CUtlSymbol m_sClickableTextAction;
 
@@ -279,7 +275,6 @@ private:
 		Color textColor;
 		int pixelsIndent;
 		bool textClickable;
-		bool zbalermorna;
 		HFont font;
 
 		// index into our current position in the formatting stream

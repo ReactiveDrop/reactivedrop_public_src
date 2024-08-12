@@ -2905,34 +2905,38 @@ const wchar_t *UTIL_RD_CommaNumber( int64_t num )
 	return pBuf;
 }
 
-static const char s_szZbalermornaDigit[16][3] =
+static const char *const s_szZbalermornaDigit[16] =
 {
 	"no", "pa", "re", "ci", "vo",
 	"mu", "xa", "ze", "bi", "so",
-	"d~", "f{", "g`", "j~", "r{", "v`",
+	"dau", "fei", "gai", "jau", "xei", "vai",
 };
 
-const char *UTIL_RD_ZbalermornaNumberDec( int64_t num )
+const wchar_t *UTIL_RD_ZbalermornaNumberDec( int64_t num )
 {
-	static char s_szBuf[16][43];
+	static wchar_t s_wszBuf[16][43];
 	static int s_iSlot = 0;
 
 	// Special case: can't negate this number.
 	if ( num == INT64_MIN )
 	{
-		return "ni'usorerecicizerenocixabimuvozezemubinobi";
+		static wchar_t s_wchInt64Min[] = L"ni'usorerecicizerenocixabimuvozezemubinobi";
+		UTIL_RD_LatinToZbalermorna( s_wchInt64Min );
+		return s_wchInt64Min;
 	}
 
 	// Special case 2:
 	if ( num == 0 )
 	{
-		return "no";
+		static wchar_t s_wchZero[] = L"no";
+		UTIL_RD_LatinToZbalermorna( s_wchZero );
+		return s_wchZero;
 	}
 
-	char *pBuf = &s_szBuf[s_iSlot][42];
+	wchar_t *pBuf = &s_wszBuf[s_iSlot][42];
 	*pBuf-- = L'\0';
 
-	s_iSlot = ( s_iSlot + 1 ) % NELEMS( s_szBuf );
+	s_iSlot = ( s_iSlot + 1 ) % NELEMS( s_wszBuf );
 
 	bool bNegative = num < 0;
 	if ( bNegative )
@@ -2950,37 +2954,43 @@ const char *UTIL_RD_ZbalermornaNumberDec( int64_t num )
 
 	if ( bNegative )
 	{
-		*pBuf-- = 'u';
-		*pBuf-- = '\'';
-		*pBuf-- = 'i';
-		*pBuf = 'n';
+		*pBuf-- = L'u';
+		*pBuf-- = L'\'';
+		*pBuf-- = L'i';
+		*pBuf = L'n';
 	}
 	else
 	{
 		pBuf++;
 	}
 
+	UTIL_RD_LatinToZbalermorna( pBuf );
+
 	return pBuf;
 }
 
-const char *UTIL_RD_ZbalermornaNumberHex( uint64_t num )
+const wchar_t *UTIL_RD_ZbalermornaNumberHex( uint64_t num )
 {
-	static char s_szBuf[16][33];
+	static wchar_t s_wszBuf[16][49];
 	static int s_iSlot = 0;
 
 	if ( num == 0 )
 	{
-		return "no";
+		static wchar_t s_wchZero[] = L"no";
+		UTIL_RD_LatinToZbalermorna( s_wchZero );
+		return s_wchZero;
 	}
 
-	char *pBuf = &s_szBuf[s_iSlot][32];
+	wchar_t *pBuf = &s_wszBuf[s_iSlot][48];
 	*pBuf-- = L'\0';
 
-	s_iSlot = ( s_iSlot + 1 ) % NELEMS( s_szBuf );
+	s_iSlot = ( s_iSlot + 1 ) % NELEMS( s_wszBuf );
 
 	while ( num )
 	{
 		const char *digit = s_szZbalermornaDigit[num & 0xf];
+		if ( digit[2] )
+			*pBuf-- = digit[2];
 		*pBuf-- = digit[1];
 		*pBuf-- = digit[0];
 		num >>= 4;
@@ -2988,7 +2998,51 @@ const char *UTIL_RD_ZbalermornaNumberHex( uint64_t num )
 
 	pBuf++;
 
+	UTIL_RD_LatinToZbalermorna( pBuf );
+
 	return pBuf;
+}
+
+// (Loosely) based on code put into the public domain
+// Public Domain 2016 la kmir, 2019 Jack Humbert
+void UTIL_RD_LatinToZbalermorna( wchar_t *wszBuf )
+{
+	constexpr wchar_t k_wchUnicodeStart = 0xED80;
+	constexpr const char *k_szLerfuIndex = "ptkflscmx.' 1234bdgvrzjn`-,~    aeiouy    qw    AEIOUY";
+
+	for ( wchar_t *c = wszBuf; *c; c++ )
+	{
+		if ( *c > 0x7F )
+		{
+			// not ASCII; not Latin
+			continue;
+		}
+
+		if ( *c == L' ' )
+		{
+			// skip spaces
+			continue;
+		}
+
+		if ( *c == L'h' || *c == L'H' )
+		{
+			*c = L'\'';
+		}
+
+		const char *pLerfu = strchr( k_szLerfuIndex, *c );
+		if ( pLerfu )
+		{
+			*c = k_wchUnicodeStart + ( pLerfu - k_szLerfuIndex );
+			continue;
+		}
+
+		pLerfu = strchr( k_szLerfuIndex, *c );
+		if ( pLerfu )
+		{
+			*c = k_wchUnicodeStart + ( pLerfu - k_szLerfuIndex );
+			continue;
+		}
+	}
 }
 
 // get the index of the nth bit that is set to 1

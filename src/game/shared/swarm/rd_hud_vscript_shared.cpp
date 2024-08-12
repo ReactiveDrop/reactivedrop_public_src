@@ -1,8 +1,8 @@
 #include "cbase.h"
 #include "rd_hud_vscript_shared.h"
 #ifdef CLIENT_DLL
-#include "rd_font_zbalermorna.h"
 #include "c_rd_infection_deathmatch_stats.h"
+#include "asw_util_shared.h"
 #endif
 #include <vgui/IScheme.h>
 #include <vgui/ISurface.h>
@@ -250,14 +250,17 @@ void CRD_HUD_VScript::Script_PaintText( int x, int y, int r, int g, int b, int a
 
 float CRD_HUD_VScript::Script_GetZbalermornaTextWide( int font, const char *text )
 {
-	float wide, tall;
-	int fontTall = vgui::surface()->GetFontTall( font );
-	zbalermorna::MeasureText( text, fontTall, wide, tall );
+	wchar_t wszText[2048];
+	V_UTF8ToUnicode( text, wszText, sizeof( wszText ) );
+	UTIL_RD_LatinToZbalermorna( wszText );
+
+	int wide, tall;
+	vgui::surface()->GetTextSize( font, wszText, wide, tall );
 
 	return wide;
 }
 
-void CRD_HUD_VScript::Script_PaintZbalermornaText( float x, float y, int r, int g, int b, int a, int font, const char *text )
+void CRD_HUD_VScript::Script_PaintZbalermornaText( int x, int y, int r, int g, int b, int a, int font, const char *text )
 {
 	if ( !m_bIsPainting )
 	{
@@ -265,8 +268,14 @@ void CRD_HUD_VScript::Script_PaintZbalermornaText( float x, float y, int r, int 
 		return;
 	}
 
-	int fontTall = vgui::surface()->GetFontTall( font );
-	zbalermorna::PaintText( x, y, text, fontTall, Color{ r, g, b, a } );
+	wchar_t wsz[2048];
+	V_UTF8ToUnicode( text, wsz, sizeof( wsz ) );
+	UTIL_RD_LatinToZbalermorna( wsz );
+
+	vgui::surface()->DrawSetTextFont( font );
+	vgui::surface()->DrawSetTextColor( r, g, b, a );
+	vgui::surface()->DrawSetTextPos( x, y );
+	vgui::surface()->DrawUnicodeString( wsz );
 }
 
 void CRD_HUD_VScript::Script_PaintRectangle( int x0, int y0, int x1, int y1, int r, int g, int b, int a )
