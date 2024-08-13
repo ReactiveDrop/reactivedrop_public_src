@@ -501,14 +501,6 @@ Scheme
 				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
 				"antialias"	"1"
 			}
-			"2"
-			{
-				"name"		"Manri"
-				"tall"		"10"
-				"weight"	"100"
-				"range"		"0xED80 0xEDBF" //	Zbalermorna
-				"antialias"	"1"
-			}
 		}
 
 		"DefaultNoMinRes"
@@ -521,14 +513,6 @@ Scheme
 				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
 				"antialias"	"1"
 			}
-			"2"
-			{
-				"name"		"Manri"
-				"tall"		"10"
-				"weight"	"100"
-				"range"		"0xED80 0xEDBF" //	Zbalermorna
-				"antialias"	"1"
-			}
 		}
 		"DefaultBlur"
 		{
@@ -538,15 +522,6 @@ Scheme
 				"tall"		"10"
 				"weight"	"100"
 				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
-				"antialias"	"1"
-				"blur"		"2"
-			}
-			"2"
-			{
-				"name"		"Manri"
-				"tall"		"10"
-				"weight"	"100"
-				"range"		"0xED80 0xEDBF" //	Zbalermorna
 				"antialias"	"1"
 				"blur"		"2"
 			}
@@ -562,15 +537,6 @@ Scheme
 				"antialias"	"1"
 				"dropshadow"	"2"
 			}
-			"2"
-			{
-				"name"		"Manri"
-				"tall"		"10"
-				"weight"	"100"
-				"range"		"0xED80 0xEDBF" //	Zbalermorna
-				"antialias"	"1"
-				"dropshadow"	"2"
-			}
 		}
 		"DefaultUnderline"
 		{
@@ -580,15 +546,6 @@ Scheme
 				"tall"		"10"
 				"weight"	"100"
 				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
-				"antialias"	"1"
-				"underline"	"1"
-			}
-			"2"
-			{
-				"name"		"Manri"
-				"tall"		"10"
-				"weight"	"100"
-				"range"		"0xED80 0xEDBF" //	Zbalermorna
 				"antialias"	"1"
 				"underline"	"1"
 			}
@@ -603,14 +560,6 @@ Scheme
 				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
 				"antialias"	"1"
 			}
-			"2"
-			{
-				"name"		"Manri"
-				"tall"		"7"
-				"weight"	"100"
-				"range"		"0xED80 0xEDBF" //	Zbalermorna
-				"antialias"	"1"
-			}
 		}
 		"DefaultVerySmallBlur"
 		{
@@ -620,15 +569,6 @@ Scheme
 				"tall"		"7"
 				"weight"	"100"
 				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
-				//"antialias"	"1"
-				"blur"		"5"
-			}
-			"2"
-			{
-				"name"		"Manri"
-				"tall"		"7"
-				"weight"	"100"
-				"range"		"0xED80 0xEDBF" //	Zbalermorna
 				//"antialias"	"1"
 				"blur"		"5"
 			}
@@ -643,14 +583,6 @@ Scheme
 				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
 				"antialias"	"1"
 			}
-			"2"
-			{
-				"name"		"Manri"
-				"tall"		"8"
-				"weight"	"100"
-				"range"		"0xED80 0xEDBF" //	Zbalermorna
-				"antialias"	"1"
-			}
 		}
 		"DefaultSmallBlur"
 		{
@@ -660,15 +592,6 @@ Scheme
 				"tall"		"8"
 				"weight"	"100"
 				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
-				"antialias"	"1"
-				"blur"		"5"
-			}
-			"2"
-			{
-				"name"		"Manri"
-				"tall"		"8"
-				"weight"	"100"
-				"range"		"0xED80 0xEDBF" //	Zbalermorna
 				"antialias"	"1"
 				"blur"		"5"
 			}
@@ -684,15 +607,6 @@ Scheme
 				"antialias"	"1"
 				"outline"	"1"
 			}
-			"2"
-			{
-				"name"		"Manri"
-				"tall"		"8"
-				"weight"	"100"
-				"range"		"0xED80 0xEDBF" //	Zbalermorna
-				"antialias"	"1"
-				"outline"	"1"
-			}
 		}
 		"DefaultMedium"
 		{
@@ -704,14 +618,6 @@ Scheme
 				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
 				"antialias"	"1"
 			}
-			"2"
-			{
-				"name"		"Manri"
-				"tall"		"12"
-				"weight"	"100"
-				"range"		"0xED80 0xEDBF" //	Zbalermorna
-				"antialias"	"1"
-			}
 		}
 		"DefaultMediumBlur"
 		{
@@ -721,14 +627,6 @@ Scheme
 				"tall"		"12"
 				"weight"	"100"
 				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
-				"blur"		"3"
-			}
-			"2"
-			{
-				"name"		"Manri"
-				"tall"		"10"
-				"weight"	"100"
-				"range"		"0xED80 0xEDBF" //	Zbalermorna
 				"blur"		"3"
 			}
 		}
@@ -743,14 +641,6 @@ Scheme
 				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
 				"antialias"	"1"
 			}
-			"2"
-			{
-				"name"		"Manri"
-				"tall"		"15"
-				"weight"	"100"
-				"range"		"0xED80 0xEDBF" //	Zbalermorna
-				"antialias"	"1"
-			}
 		}
 		"DefaultLargeBlur"
 		{
@@ -760,15 +650,6 @@ Scheme
 				"tall"		"15"
 				"weight"	"100"
 				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
-				"antialias"	"1"
-				"blur"		"3"
-			}
-			"2"
-			{
-				"name"		"Manri"
-				"tall"		"15"
-				"weight"	"100"
-				"range"		"0xED80 0xEDBF" //	Zbalermorna
 				"antialias"	"1"
 				"blur"		"3"
 			}
@@ -784,14 +665,6 @@ Scheme
 				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
 				"antialias"	"1"
 			}
-			"2"
-			{
-				"name"		"Manri"
-				"tall"		"20"
-				"weight"	"100"
-				"range"		"0xED80 0xEDBF" //	Zbalermorna
-				"antialias"	"1"
-			}
 		}
 		"DefaultExtraLargeBlur"
 		{
@@ -801,15 +674,6 @@ Scheme
 				"tall"		"20"
 				"weight"	"100"
 				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
-				"antialias"	"1"
-				"blur"		"3"
-			}
-			"2"
-			{
-				"name"		"Manri"
-				"tall"		"20"
-				"weight"	"100"
-				"range"		"0xED80 0xEDBF" //	Zbalermorna
 				"antialias"	"1"
 				"blur"		"3"
 			}
@@ -825,14 +689,6 @@ Scheme
 				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
 				"antialias"	"1"
 			}
-			"2"
-			{
-				"name"		"Manri"
-				"tall"		"16"
-				"weight"	"100"
-				"range"		"0xED80 0xEDBF" //	Zbalermorna
-				"antialias"	"1"
-			}
 		}
 
 		"DefaultBoldBlur"
@@ -843,15 +699,6 @@ Scheme
 				"tall"		"16"
 				"weight"	"100"
 				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
-				"antialias"	"1"
-				"blur"		"3"
-			}
-			"2"
-			{
-				"name"		"Manri"
-				"tall"		"16"
-				"weight"	"100"
-				"range"		"0xED80 0xEDBF" //	Zbalermorna
 				"antialias"	"1"
 				"blur"		"3"
 			}
@@ -867,14 +714,6 @@ Scheme
 				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
 				"antialias"	"1"
 			}
-			"2"
-			{
-				"name"		"Manri"
-				"tall"		"10"
-				"weight"	"700"
-				"range"		"0xED80 0xEDBF" //	Zbalermorna
-				"antialias"	"1"
-			}
 		}
 
 		"DefaultTextItalic"
@@ -885,15 +724,6 @@ Scheme
 				"tall"		"10"
 				"weight"	"100"
 				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
-				"antialias"	"1"
-				"italic"	"1"
-			}
-			"2"
-			{
-				"name"		"Manri"
-				"tall"		"10"
-				"weight"	"000"
-				"range"		"0xED80 0xEDBF" //	Zbalermorna
 				"antialias"	"1"
 				"italic"	"1"
 			}
@@ -910,15 +740,6 @@ Scheme
 				"antialias"	"1"
 				"italic"	"1"
 			}
-			"2"
-			{
-				"name"		"Manri"
-				"tall"		"10"
-				"weight"	"700"
-				"range"		"0xED80 0xEDBF" //	Zbalermorna
-				"antialias"	"1"
-				"italic"	"1"
-			}
 		}
 
 		"Combine"
@@ -929,14 +750,6 @@ Scheme
 				"tall"		"10"
 				"weight"	"400"
 				"range"		"0x0000 0x007F" //	ASCII
-				"antialias"	"1"
-			}
-			"2"
-			{
-				"name"		"Manri"
-				"tall"		"10"
-				"weight"	"400"
-				"range"		"0xED80 0xEDBF" //	Zbalermorna
 				"antialias"	"1"
 			}
 		}
@@ -951,14 +764,6 @@ Scheme
 				"range"		"0x0000 0x007F" //	ASCII
 				"antialias"	"1"
 			}
-			"2"
-			{
-				"name"		"Manri"
-				"tall"		"20"
-				"weight"	"400"
-				"range"		"0xED80 0xEDBF" //	Zbalermorna
-				"antialias"	"1"
-			}
 		}
 
 		"Countdown"
@@ -969,14 +774,6 @@ Scheme
 				"tall"		"20"
 				"weight"	"900"
 				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
-				"antialias"	"1"
-			}
-			"2"
-			{
-				"name"		"Manri"
-				"tall"		"20"
-				"weight"	"900"
-				"range"		"0xED80 0xEDBF" //	Zbalermorna
 				"antialias"	"1"
 			}
 		}
@@ -990,14 +787,6 @@ Scheme
 				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
 				"antialias"	"1"
 			}
-			"2"
-			{
-				"name"		"Manri"
-				"tall"		"18"
-				"weight"	"900"
-				"range"		"0xED80 0xEDBF" //	Zbalermorna
-				"antialias"	"1"
-			}
 		}
 		"CountdownBlur"
 		{
@@ -1009,15 +798,6 @@ Scheme
 				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
 				"scanlines"	"1"
 				"blur"	"2"
-			}
-			"2"
-			{
-				"name"		"Manri"
-				"tall"		"18"
-				"weight"	"900"
-				"range"		"0xED80 0xEDBF" //	Zbalermorna
-				"scanlines"	"1"
-				"blur"		"2"
 			}
 		}
 
@@ -1034,14 +814,6 @@ Scheme
 				"weight"		"400"
 				"antialias"		"1"
 			}
-			"2"
-			{
-				"name"		"Manri"
-				"tall"		"24"
-				"weight"	"400"
-				"range"		"0xED80 0xEDBF" //	Zbalermorna
-				"antialias"	"1"
-			}
 		}
 
 		"FrameTitleBlur"
@@ -1055,15 +827,6 @@ Scheme
 				"blur"			"5"					[$X360HIDEF]
 				"antialias"		"1"
 			}
-			"2"
-			{
-				"name"		"Manri"
-				"tall"		"24"
-				"weight"	"400"
-				"range"		"0xED80 0xEDBF" //	Zbalermorna
-				"blur"		"3"
-				"antialias"	"1"
-			}
 		}
 
 		"MainBold"
@@ -1075,14 +838,6 @@ Scheme
 				"weight"		"400"				[$WIN32]
 				"weight"		"800"				[$X360]
 				"antialias"		"1"
-			}
-			"2"
-			{
-				"name"		"Manri"
-				"tall"		"20"
-				"weight"	"400"
-				"range"		"0xED80 0xEDBF" //	Zbalermorna
-				"antialias"	"1"
 			}
 		}
 
@@ -1096,15 +851,6 @@ Scheme
 				"weight"		"800"				[$X360]
 				"blur"			"3"
 				"antialias"		"1"
-			}
-			"2"
-			{
-				"name"		"Manri"
-				"tall"		"20"
-				"weight"	"400"
-				"range"		"0xED80 0xEDBF" //	Zbalermorna
-				"blur"		"3"
-				"antialias"	"1"
 			}
 		}
 
@@ -1162,14 +908,6 @@ Scheme
 				"name"		"Neo Sans"
 				"tall"		"28"
 				"weight"	"400"
-				"antialias"	"1"
-			}
-			"2"
-			{
-				"name"		"Manri"
-				"tall"		"28"
-				"weight"	"400"
-				"range"		"0xED80 0xEDBF" //	Zbalermorna
 				"antialias"	"1"
 			}
 		}
@@ -1869,8 +1607,7 @@ Scheme
 	CustomFontFiles
 	{
 		"1"		"resource/neosans.vfont"
-		"2"		"resource/manri.vfont"
-		"3"		"resource/veranda.vfont"
-		"4"		"resource/cmb-combine.vfont"
+		"2"		"resource/veranda.vfont"
+		"3"		"resource/cmb-combine.vfont"
 	}
 }

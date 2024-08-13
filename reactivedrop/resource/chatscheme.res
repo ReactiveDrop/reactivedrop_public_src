@@ -261,51 +261,6 @@ Scheme
 				"yres"	"1200 6000"
 				"antialias"	"1"
 			}
-			"6"
-			{
-				"name"		"Manri"
-				"tall"		"12"
-				"weight"	"100"
-				"range"		"0xED80 0xEDBF"
-				"yres"	"480 599"
-				"antialias"	"1"
-			}
-			"7"
-			{
-				"name"		"Manri"
-				"tall"		"13"
-				"weight"	"100"
-				"range"		"0xED80 0xEDBF"
-				"yres"	"600 767"
-				"antialias"	"1"
-			}
-			"8"
-			{
-				"name"		"Manri"
-				"tall"		"14"
-				"weight"	"100"
-				"range"		"0xED80 0xEDBF"
-				"yres"	"768 1023"
-				"antialias"	"1"
-			}
-			"9"
-			{
-				"name"		"Manri"
-				"tall"		"16"
-				"weight"	"100"
-				"range"		"0xED80 0xEDBF"
-				"yres"	"1024 1199"
-				"antialias"	"1"
-			}
-			"10"
-			{
-				"name"		"Manri"
-				"tall"		"20"
-				"weight"	"100"
-				"range"		"0xED80 0xEDBF"
-				"yres"	"1200 6000"
-				"antialias"	"1"
-			}
 		}
 		
 		// this is the symbol font
@@ -398,51 +353,6 @@ Scheme
 				"tall"		"25"
 				"weight"	"100"
 				"range"		"0x0000 0x017F"
-				"yres"	"1200 6000"
-				"antialias"	"1"
-			}
-			"6"
-			{
-				"name"		"Manri"
-				"tall"		"12"
-				"weight"	"100"
-				"range"		"0xED80 0xEDBF"
-				"yres"	"480 599"
-				"antialias"	"1"
-			}
-			"7"
-			{
-				"name"		"Manri"
-				"tall"		"13"
-				"weight"	"100"
-				"range"		"0xED80 0xEDBF"
-				"yres"	"600 767"
-				"antialias"	"1"
-			}
-			"8"
-			{
-				"name"		"Manri"
-				"tall"		"16"
-				"weight"	"100"
-				"range"		"0xED80 0xEDBF"
-				"yres"	"768 1023"
-				"antialias"	"1"
-			}
-			"9"
-			{
-				"name"		"Manri"
-				"tall"		"21"
-				"weight"	"100"
-				"range"		"0xED80 0xEDBF"
-				"yres"	"1024 1199"
-				"antialias"	"1"
-			}
-			"10"
-			{
-				"name"		"Manri"
-				"tall"		"25"
-				"weight"	"100"
-				"range"		"0xED80 0xEDBF"
 				"yres"	"1200 6000"
 				"antialias"	"1"
 			}

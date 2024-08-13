@@ -3036,11 +3036,14 @@ void UTIL_RD_LatinToZbalermorna( wchar_t *wszBuf )
 			continue;
 		}
 
-		pLerfu = strchr( k_szLerfuIndex, *c );
-		if ( pLerfu )
+		if ( *c >= 'A' && *c <= 'Z' )
 		{
-			*c = k_wchUnicodeStart + ( pLerfu - k_szLerfuIndex );
-			continue;
+			pLerfu = strchr( k_szLerfuIndex, *c - 'A' + 'a' );
+			if ( pLerfu )
+			{
+				*c = k_wchUnicodeStart + ( pLerfu - k_szLerfuIndex );
+				continue;
+			}
 		}
 	}
 }

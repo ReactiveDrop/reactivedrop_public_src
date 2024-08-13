@@ -21,7 +21,6 @@
 #define RD_7A_WEAPONS
 
 // features that are not ready for prime time
-//#define RD_USE_FONT_HACK
 //#define RD_BONUS_MISSION_ACHIEVEMENTS
 //#define RD_SPLITSCREEN_ENABLED
 //#define RD_FADE_SINGLE_EDICT
