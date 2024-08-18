@@ -34,7 +34,7 @@
 			cvar "asw_player_names"
 			options
 			{
-				"0" "#RD_AdvancedSettings_HUD_TeamColors_None" // TODO: use a better string here
+				"0" "#RD_AdvancedSettings_HUD_NameUnderMarine_None"
 				"1" "#RD_AdvancedSettings_HUD_NameUnderMarine_Player"
 				"2" "#RD_AdvancedSettings_HUD_NameUnderMarine_Marine"
 				"3" "#RD_AdvancedSettings_HUD_NameUnderMarine_Both"
