@@ -17,7 +17,7 @@ constexpr struct
 	int nRangeEnd;
 } s_InsertFallbackFonts[] =
 {
-	{ "Manri", 0xED80, 0xEDBF },
+	{ "ManriASRD", 0xEC44, 0xEDBF },
 };
 
 // And now we do some memory tricks.

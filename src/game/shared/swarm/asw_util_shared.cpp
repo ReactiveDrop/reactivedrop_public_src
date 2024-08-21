@@ -3007,6 +3007,12 @@ const wchar_t *UTIL_RD_ZbalermornaNumberHex( uint64_t num )
 // Public Domain 2016 la kmir, 2019 Jack Humbert
 void UTIL_RD_LatinToZbalermorna( wchar_t *wszBuf )
 {
+	// Some of the later code in this function assumes that the string is at least one character long, so if it's zero, just bail early.
+	if ( *wszBuf == L'\0' )
+	{
+		return;
+	}
+
 	constexpr wchar_t k_wchUnicodeStart = 0xED80;
 	constexpr const char *k_szLerfuIndex = "ptkflscmx.' 1234bdgvrzjn`-,~    aeiouy    qw    AEIOUY";
 
@@ -3044,6 +3050,441 @@ void UTIL_RD_LatinToZbalermorna( wchar_t *wszBuf )
 				*c = k_wchUnicodeStart + ( pLerfu - k_szLerfuIndex );
 				continue;
 			}
+		}
+	}
+
+	// Now for the weird part.
+	// This code is also dedicated to the public domain by me, Ben Lubar (August 2024):
+
+	// Because the version of Source Engine Alien Swarm: Reactive Drop runs on doesn't support ligatures,
+	// any word with vowels will render incorrectly. And that's all of the words.
+	//
+	// So we're going to define a new block of characters next to the Zbalermorna Unicode Space --
+	// https://jackhumbert.github.io/zbalermorna/unicode/ -- with all the ligatures the font needs
+	// as standalone characters. We're going to clobber a few ranges in the UCSUR, but as of May 2022,
+	// zbalermorna already clobbers the proposed Iranic range.
+
+	// Constraints on this implementation:
+	// - The Unicode range we use needs to be adjacent to the zbalermorna range
+	//   (that is, having no usable codepoints between it and the zbalermorna range).
+	// - Any string we apply this transformation to must be at most the number of UTF-16
+	//   bytes that the original string had.
+	// - All characters in the output must be able to be rendered separately. That is, no ligatures.
+	// - We're ignoring some of the zbalermorna-specific codepoints, so the last section of characters
+	//   defined in the Zbalermorna Unicode Space specification are treated as opaque by this algorithm.
+	//   (This allows us to avoid having two or more combining characters other than the special case of cnimahobu.)
+	// - Running the algorithm again should give the initial result. That is, it is idempotent.
+
+	// Let's define our new ligature codepoints.
+	// Zbalermorna starts at U+ED80, so we work backwards from there.
+	//
+	// standalone ligatures:
+	// U+ED7B - smajibu_initial
+	// U+ED7C - smajibu_mid
+	// U+ED7D - smajibu_final
+	// U+ED7E - bahebu_bahebu
+	// U+ED7F - bahebu_bahebu_bahebu
+	//
+	// attitudinal shorthand:
+	// U+ED16 - .a'a
+	// U+ED17 - .a'e
+	// ...
+	// U+ED20 - .e'a
+	// ...
+	// U+ED7A - .au'au
+	//
+	// denpabu+vowel ligatures:
+	// U+ED0C - .a
+	// U+ED0D - .e
+	// U+ED0E - .i
+	// U+ED0F - .o
+	// U+ED10 - .u
+	// U+ED11 - .y
+	// U+ED12 - .ai
+	// U+ED13 - .ei
+	// U+ED14 - .oi
+	// U+ED15 - .au
+	//
+	// yhy ligatures:
+	// U+ED02 - ha
+	// U+ED03 - he
+	// ...
+	// U+ED0B - hau
+	//
+	// semivowel ligatures:
+	// U+ECEE - ia
+	// ...
+	// U+ECF8 - ua
+	// ...
+	// U+ED01 - uau
+	//
+	// consonant+vowel ligatures:
+	// U+EC44 - pa
+	// ...
+	// U+EC4E - ta
+	// ...
+	// U+EC58 - ka
+	// ...
+	// U+EC62 - fa
+	// ...
+	// U+EC6C - la
+	// ...
+	// U+EC76 - sa
+	// ...
+	// U+EC80 - ca
+	// ...
+	// U+EC8A - ma
+	// ...
+	// U+EC94 - xa
+	// ...
+	// U+EC9E - ba
+	// ...
+	// U+ECA8 - da
+	// ...
+	// U+ECB2 - ga
+	// ...
+	// U+ECBC - va
+	// ...
+	// U+ECC6 - ra
+	// ...
+	// U+ECD0 - za
+	// ...
+	// U+ECDA - ja
+	// ...
+	// U+ECE4 - na
+	// ...
+
+	// We can implement this as two 2x2 lookup tables (which are themselves simple mathematical expressions on the indices of arrays) and a few special cases.
+	constexpr wchar_t k_ConsonantLigaturesStart = 0xEC44;
+	constexpr wchar_t k_DenpabuStart = 0xED0C;
+	constexpr wchar_t k_YhyStart = 0xED02;
+	constexpr wchar_t k_AttitudinalShorthandStart = 0xED16;
+	constexpr wchar_t k_Consonants[]
+	{
+		0xED80, 0xED81, 0xED82, 0xED83, 0xED84, 0xED85, 0xED86, 0xED87, 0xED88, // unvoiced
+		0xED90, 0xED91, 0xED92, 0xED93, 0xED94, 0xED95, 0xED96, 0xED97, // voiced
+		0xEDAA, 0xEDAB, // semivowels
+		0xED8A, // yhy
+		0xED89, // denpabu
+	};
+	constexpr wchar_t k_CombiningVowels[]
+	{
+		0xEDA0, 0xEDA1, 0xEDA2, 0xEDA3, 0xEDA4, 0xEDA5,
+		0xEDA6, 0xEDA7, 0xEDA8, 0xEDA9, // dipthongs
+	};
+
+	// If a full vowel forms a dipthong with an adjacent full vowel, replace them.
+	constexpr wchar_t k_FullVowelLigatures[][3]
+	{
+		{ 0xEDB0, 0xEDB2, 0xEDB6 }, // AI
+		{ 0xEDB1, 0xEDB2, 0xEDB7 }, // EI
+		{ 0xEDB3, 0xEDB2, 0xEDB8 }, // OI
+		{ 0xEDB0, 0xEDB4, 0xEDB9 }, // AU
+	};
+	for ( wchar_t *c = wszBuf, *d = wszBuf; ; c++ )
+	{
+		bool bFound = false;
+		for ( int i = 0; i < NELEMS( k_FullVowelLigatures ); i++ )
+		{
+			if ( c[0] == k_FullVowelLigatures[i][0] && c[1] == k_FullVowelLigatures[i][1] )
+			{
+				*d++ = k_FullVowelLigatures[i][2];
+				c++;
+				bFound = true;
+				break;
+			}
+		}
+
+		if ( !bFound )
+		{
+			*d++ = *c;
+		}
+
+		if ( *c == L'\0' )
+		{
+			break;
+		}
+	}
+
+	// Replace i[vowel] and u[vowel] with semivowel forms unless the sequence is preceded by ibu or ubu.
+	// Because we're processing the string linearly from start to end, we can ignore the exception.
+	// This creates different results, but the strings that cause different results are invalid anyway.
+	constexpr wchar_t k_SemiVowelReplacement[][2]
+	{
+		{ 0xEDA2, 0xEDAA }, // i
+		{ 0xEDA4, 0xEDAB }, // u
+	};
+	for ( wchar_t *c = wszBuf, *d = wszBuf; ; c++ )
+	{
+		bool bFound = false;
+		for ( int i = 0; i < NELEMS( k_SemiVowelReplacement ); i++ )
+		{
+			for ( int j = 0; j < NELEMS( k_CombiningVowels ); j++ )
+			{
+				if ( c[0] == k_SemiVowelReplacement[i][0] && c[1] == k_CombiningVowels[j] )
+				{
+					*d++ = k_SemiVowelReplacement[i][1];
+					c++;
+					*d++ = *c;
+					bFound = true;
+					break;
+				}
+			}
+
+			if ( bFound )
+			{
+				break;
+			}
+		}
+
+		if ( !bFound )
+		{
+			*d++ = *c;
+		}
+
+		if ( *c == L'\0' )
+		{
+			break;
+		}
+	}
+
+	// If a pair of combining vowels forms a dipthong, replace them.
+	constexpr wchar_t k_CombiningVowelLigatures[][3]
+	{
+		{ 0xEDA0, 0xEDA2, 0xEDA6 }, // ai
+		{ 0xEDA1, 0xEDA2, 0xEDA7 }, // ei
+		{ 0xEDA3, 0xEDA2, 0xEDA8 }, // oi
+		{ 0xEDA0, 0xEDA4, 0xEDA9 }, // au
+	};
+	for ( wchar_t *c = wszBuf, *d = wszBuf; ; c++ )
+	{
+		bool bFound = false;
+		for ( int i = 0; i < NELEMS( k_CombiningVowelLigatures ); i++ )
+		{
+			if ( c[0] == k_CombiningVowelLigatures[i][0] && c[1] == k_CombiningVowelLigatures[i][1] )
+			{
+				*d++ = k_CombiningVowelLigatures[i][2];
+				c++;
+				bFound = true;
+				break;
+			}
+		}
+
+		if ( !bFound )
+		{
+			*d++ = *c;
+		}
+
+		if ( *c == L'\0' )
+		{
+			break;
+		}
+	}
+
+	// bahebu (`) has ligatures when it appears in triplets and pairs.
+	for ( wchar_t *c = wszBuf, *d = wszBuf; ; c++ )
+	{
+		if ( c[0] == 0xED98 && c[1] == 0xED98 && c[2] == 0xED98 )
+		{
+			*d++ = 0xED7F;
+			c++;
+			c++;
+		}
+		else if ( c[0] == 0xED98 && c[1] == 0xED98 )
+		{
+			*d++ = 0xED7E;
+			c++;
+		}
+		else
+		{
+			*d++ = *c;
+		}
+
+		if ( *c == L'\0' )
+		{
+			break;
+		}
+	}
+
+	// smajibu looks different depending on whether it is first, middle, or last. (They become pairs if there are more than three in a row.)
+	wchar_t prev = 0;
+	for ( wchar_t *c = wszBuf, *d = wszBuf; ; c++ )
+	{
+		if ( *c != 0xED99 )
+		{
+			prev = *c;
+			*d++ = *c;
+		}
+		else if ( c[0] == 0xED99 && c[1] == 0xED99 && c[2] == 0xED99 && c[3] == 0xED99 )
+		{
+			// if there are more than three remaining smajibu, pair up with the previous or next one.
+			if ( prev == 0xED7B )
+			{
+				prev = 0xED7D;
+				*d++ = 0xED7D;
+			}
+			else
+			{
+				prev = 0xED7B;
+				*d++ = 0xED7B;
+			}
+		}
+		else if ( c[0] == 0xED99 && c[1] == 0xED99 && c[2] == 0xED99 )
+		{
+			// if there are three remaining smajibu, pair up with the previous or become the start of a triplet.
+			if ( prev == 0xED7B )
+			{
+				prev = 0xED7D;
+				*d++ = 0xED7D;
+			}
+			else
+			{
+				prev = 0xED7B;
+				*d++ = 0xED7B;
+			}
+		}
+		else if ( c[0] == 0xED99 && c[1] == 0xED99 )
+		{
+			// if there are two remaining smajibu, pair up with the next or become the middle of a triplet.
+			if ( prev == 0xED7B )
+			{
+				prev = 0xED7C;
+				*d++ = 0xED7C;
+			}
+			else
+			{
+				prev = 0xED7B;
+				*d++ = 0xED7B;
+			}
+		}
+		else
+		{
+			// if there is one remaining smajibu, pair/triplet up with the previous or stand alone.
+			if ( prev == 0xED7B || prev == 0xED7C )
+			{
+				prev = 0xED7D;
+				*d++ = 0xED7D;
+			}
+			else
+			{
+				prev = 0xED99;
+				*d++ = 0xED99;
+			}
+		}
+
+		if ( *c == L'\0' )
+		{
+			break;
+		}
+	}
+
+	// Vowels at the start of a word insert an implicit denpabu.
+	bool bPrevConsonant = false;
+	for ( wchar_t *c = wszBuf, *d = wszBuf; ; c++ )
+	{
+		if ( bPrevConsonant )
+		{
+			*d++ = *c;
+		}
+		else
+		{
+			int iVowelIndex = -1;
+			for ( int i = 0; i < NELEMS( k_CombiningVowels ); i++ )
+			{
+				if ( k_CombiningVowels[i] == *c )
+				{
+					iVowelIndex = i;
+					break;
+				}
+			}
+
+			if ( iVowelIndex == -1 )
+			{
+				*d++ = *c;
+			}
+			else
+			{
+				*d++ = k_DenpabuStart + iVowelIndex;
+			}
+		}
+
+		bPrevConsonant = false;
+		for ( int i = 0; i < NELEMS( k_Consonants ); i++ )
+		{
+			if ( k_Consonants[i] == *c )
+			{
+				bPrevConsonant = true;
+				break;
+			}
+		}
+
+		if ( *c == L'\0' )
+		{
+			break;
+		}
+	}
+
+	// Cases where a vowel follows a consonant.
+	for ( wchar_t *c = wszBuf, *d = wszBuf; ; c++ )
+	{
+		bool bFound = false;
+		for ( int i = 0; i < NELEMS( k_Consonants ); i++ )
+		{
+			if ( c[0] != k_Consonants[i] )
+			{
+				continue;
+			}
+
+			for ( int j = 0; j < NELEMS( k_CombiningVowels ); j++ )
+			{
+				if ( c[1] != k_CombiningVowels[j] )
+				{
+					continue;
+				}
+
+				*d++ = k_ConsonantLigaturesStart + i * NELEMS( k_CombiningVowels ) + j;
+				c++;
+				bFound = true;
+				break;
+			}
+
+			if ( bFound )
+			{
+				break;
+			}
+		}
+
+		if ( !bFound )
+		{
+			*d++ = *c;
+		}
+
+		if ( *c == L'\0' )
+		{
+			break;
+		}
+	}
+
+	// Convert denpabu+vowel + yhy+vowel to attitudinal shorthand.
+	for ( wchar_t *c = wszBuf, *d = wszBuf; ; c++ )
+	{
+		if ( c[0] < k_DenpabuStart || c[0] >= k_DenpabuStart + NELEMS( k_CombiningVowels ) )
+		{
+			*d++ = *c;
+		}
+		else if ( c[1] < k_YhyStart || c[1] >= k_YhyStart + NELEMS( k_CombiningVowels ) )
+		{
+			*d++ = *c;
+		}
+		else
+		{
+			*d++ = k_AttitudinalShorthandStart + ( c[0] - k_DenpabuStart ) * NELEMS( k_CombiningVowels ) + ( c[1] - k_YhyStart );
+			c++;
+		}
+
+		if ( *c == L'\0' )
+		{
+			break;
 		}
 	}
 }

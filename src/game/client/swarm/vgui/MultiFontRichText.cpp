@@ -2084,18 +2084,20 @@ void MultiFontRichText::InsertString( const wchar_t *wszText )
 
 void MultiFontRichText::InsertZbalermornaChar( char ch )
 {
-	wchar_t buf[2] = { ch, 0 };
-	UTIL_RD_LatinToZbalermorna( buf );
+	char buf[2] = { ch, 0 };
 
-	InsertChar( buf[0] );
+	InsertZbalermornaString( buf );
 }
 
 void MultiFontRichText::InsertZbalermornaString( const char *text )
 {
-	for ( const char *ch = text; *ch != 0; ++ch )
-	{
-		InsertZbalermornaChar( *ch );
-	}
+	int len = V_strlen( text ) + 1;
+	wchar_t *buf = ( wchar_t *)stackalloc( len * sizeof( wchar_t ) );
+	V_UTF8ToUnicode( text, buf, len * sizeof( wchar_t ) );
+
+	UTIL_RD_LatinToZbalermorna( buf );
+
+	InsertString( buf );
 }
 
 //-----------------------------------------------------------------------------
