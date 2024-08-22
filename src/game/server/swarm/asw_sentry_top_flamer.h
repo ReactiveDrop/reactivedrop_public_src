@@ -48,8 +48,7 @@ protected:
 	virtual void FireProjectiles( int numShotsToFire,
 		const Vector &vecSrc, const Vector &vecAiming, const AngularImpulse &rotSpeed = AngularImpulse(0,0,720)	);
 
-	CNetworkVar(bool, m_bFiring);
-	CNetworkVar(float, m_flPitchHack); // just for a second to deal with stairs until I get proper pitch gimballing on base class
+	CNetworkVar( bool, m_bFiring );
 
 	float m_flLastFireTime;
 	float m_flFireHysteresisTime;

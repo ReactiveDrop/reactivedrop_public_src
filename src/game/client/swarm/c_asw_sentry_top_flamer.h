@@ -31,7 +31,6 @@ protected:
 
 	CUtlReference<CNewParticleEffect> m_hFiringEffect;
 	CNetworkVar( bool, m_bFiring );
-	CNetworkVar( float, m_flPitchHack ); // just for a second to deal with stairs until I get proper pitch gimballing on base class
 	CSoundPatch *m_pFlamerLoopSound;
 
 	const char *m_szParticleEffectFireName;

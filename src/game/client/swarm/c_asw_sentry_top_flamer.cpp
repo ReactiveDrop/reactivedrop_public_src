@@ -16,8 +16,7 @@
 #include "tier0/memdbgon.h"
 
 IMPLEMENT_CLIENTCLASS_DT(C_ASW_Sentry_Top_Flamer, DT_ASW_Sentry_Top_Flamer, CASW_Sentry_Top_Flamer)
-RecvPropInt( RECVINFO( m_bFiring ) ),	
-RecvPropFloat( RECVINFO( m_flPitchHack ) ),
+	RecvPropInt( RECVINFO( m_bFiring ) ),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_ASW_Sentry_Top_Flamer )

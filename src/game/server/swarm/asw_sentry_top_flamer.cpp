@@ -21,8 +21,7 @@ PRECACHE_REGISTER( asw_sentry_top_flamer );
 
 
 IMPLEMENT_SERVERCLASS_ST(CASW_Sentry_Top_Flamer, DT_ASW_Sentry_Top_Flamer )
-	SendPropBool( SENDINFO( m_bFiring ) ),	
-	SendPropFloat( SENDINFO( m_flPitchHack ) ),	
+	SendPropBool( SENDINFO( m_bFiring ) ),
 END_SEND_TABLE()
 
 
@@ -44,7 +43,7 @@ void CASW_Sentry_Top_Flamer::SetTopModel()
 #define ASW_SENTRY_FIRE_RATE 0.1f		// time in seconds between each shot
 #define ASW_SENTRY_FIRE_ANGLE_THRESHOLD 3
 
-CASW_Sentry_Top_Flamer::CASW_Sentry_Top_Flamer(  int projectileVelocity  ) : m_bFiring(false), m_flPitchHack(false), m_nProjectileVelocity( projectileVelocity ? projectileVelocity : CASW_Weapon_Flamer::FLAMER_PROJECTILE_AIR_VELOCITY )
+CASW_Sentry_Top_Flamer::CASW_Sentry_Top_Flamer(  int projectileVelocity  ) : m_bFiring(false), m_nProjectileVelocity( projectileVelocity ? projectileVelocity : CASW_Weapon_Flamer::FLAMER_PROJECTILE_AIR_VELOCITY )
 {
 	m_flShootRange = 375.0f;
 
@@ -155,8 +154,8 @@ void CASW_Sentry_Top_Flamer::Fire() RESTRICT
 	// early enough that hopefully the scheduler can hide latencies.
 
 	// hang on to the float original to avoid a LHS when doing the conversion in the other direction below
-	const float flNumShotsToFire = floor( (gpGlobals->curtime - m_flLastFireTime) / ASW_SENTRY_FIRE_RATE );
-	const int numShotsToFire =  flNumShotsToFire ;
+	const float flNumShotsToFire = floorf( ( gpGlobals->curtime - m_flLastFireTime ) / ASW_SENTRY_FIRE_RATE );
+	const int numShotsToFire = flNumShotsToFire;
 
 	const Vector vecSrc = GetFiringPosition();
 	const QAngle &curAngles = GetAbsAngles();
@@ -174,61 +173,50 @@ void CASW_Sentry_Top_Flamer::Fire() RESTRICT
 		if ( asw_sentry_debug_aim.GetBool() )
 		{
 			NDebugOverlay::HorzArrow( vecSrc, m_hEnemy->WorldSpaceCenter(), 2, 0, 255, 0, 255, true, 0.2f );
-			NDebugOverlay::HorzArrow( m_hEnemy->WorldSpaceCenter(), m_hEnemy->WorldSpaceCenter()+ vEnemyVelocity, 
+			NDebugOverlay::HorzArrow( m_hEnemy->WorldSpaceCenter(), m_hEnemy->WorldSpaceCenter() + vEnemyVelocity,
 				2, 0, 0, 255, 255, true, 0.2f );
 		}
 
 		Vector intercept = ProjectileIntercept( vecSrc, GetProjectileVelocity(),
 			m_hEnemy->WorldSpaceCenter(), vEnemyVelocity );
-		if ( intercept.IsZero( ) )
+		if ( intercept.IsZero() )
 		{
-			if ( asw_sentry_debug_aim.GetBool() ) 
-				NDebugOverlay::Cross( m_hEnemy->WorldSpaceCenter(), 8, 255, 0, 0 , true, 0.2f );
+			if ( asw_sentry_debug_aim.GetBool() )
+				NDebugOverlay::Cross( m_hEnemy->WorldSpaceCenter(), 8, 255, 0, 0, true, 0.2f );
 		}
 		else
 		{
 			videalToEnemy = intercept;
-			if ( asw_sentry_debug_aim.GetBool() ) 
+			if ( asw_sentry_debug_aim.GetBool() )
 				NDebugOverlay::HorzArrow( vecSrc, vecSrc + videalToEnemy, 2, 255, 255, 0, 255, true, 0.2f );
 		}
 
-
-		Vector vecAiming2DNormalized( vecAiming.x , vecAiming.y, 0 ) ;
+		Vector vecAiming2DNormalized( vecAiming.x, vecAiming.y, 0 );
 		vecAiming2DNormalized.NormalizeInPlace();
 		Vector vIdealToEnemyNormalized = videalToEnemy.Normalized();
 		float flIdeal2DLength = vIdealToEnemyNormalized.Length2D();
 
 		vecAiming.x = vecAiming2DNormalized.x * flIdeal2DLength;
 		vecAiming.y = vecAiming2DNormalized.y * flIdeal2DLength;
-		vecAiming.z = vIdealToEnemyNormalized.z  ;
-
-		m_flPitchHack = -RAD2DEG(sin(vecAiming.z));
+		vecAiming.z = vIdealToEnemyNormalized.z;
 	}
 
 	FireProjectiles( numShotsToFire, vecSrc, vecAiming );
 
-	// if we actually fired shots, roll the timers forward.
-	// leave the "cents" in place. 
 	if ( numShotsToFire > 0 )
 	{
 		BaseClass::Fire();
 
-		float flMillisecondsFired = m_flLastFireTime;
-
 		m_flLastFireTime += flNumShotsToFire * ASW_SENTRY_FIRE_RATE;
-		if (ASWGameRules())
+		if ( ASWGameRules() )
 			ASWGameRules()->m_fLastFireTime = m_flLastFireTime;
 
-		flMillisecondsFired = (m_flLastFireTime - flMillisecondsFired) * 25.0f;
-		Assert( flMillisecondsFired > 0 );
 		// subtract from ammo.
-		CASW_Sentry_Base* RESTRICT pSentryBase = GetSentryBase();
-		if (pSentryBase)
+		CASW_Sentry_Base *RESTRICT pSentryBase = GetSentryBase();
+		if ( pSentryBase )
 		{
-			pSentryBase->OnFiredShots( (int)floor(flMillisecondsFired) );
-		}	
-
-		//Msg( "%f == numShotsToFire - %d, ammo used %d\n", gpGlobals->curtime, numShotsToFire, (int)floor(flMillisecondsFired) );
+			pSentryBase->OnFiredShots( numShotsToFire );
+		}
 	}
 }
 
