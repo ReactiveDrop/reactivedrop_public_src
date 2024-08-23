@@ -369,7 +369,7 @@ void CASW_Weapon_Plasma_Thrower::PrimaryAttack()
 			short Height;
 		} S;
 	} Screen;
-	Screen.WidthHeight = pPlayer->m_iScreenWidthHeight;
+	Screen.WidthHeight = pPlayer ? pPlayer->m_iScreenWidthHeight : 0x28001E0; // default to 640x480 for unowned bots
 	union
 	{
 		unsigned XY;
@@ -379,7 +379,7 @@ void CASW_Weapon_Plasma_Thrower::PrimaryAttack()
 			short Y;
 		} M;
 	} Mouse;
-	Mouse.XY = pPlayer->m_iMouseXY;
+	Mouse.XY = pPlayer ? pPlayer->m_iMouseXY : 0x14000F0; // default to middle of screen
 
 	if ( eControls == ASWC_TOPDOWN && pPlayer )
 	{
