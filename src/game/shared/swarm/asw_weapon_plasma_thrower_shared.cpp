@@ -444,7 +444,8 @@ void CASW_Weapon_Plasma_Thrower::PrimaryAttack()
 	UTIL_TraceLine( vecCamera, vecTraceEnd, MASK_SOLID | CONTENTS_IGNORE_NODRAW_OPAQUE, &filter, &tr );
 
 	info.m_vecDirShooting = tr.endpos - info.m_vecSrc;
-	info.m_vecDirShooting.z = 0;
+	if ( !tr.m_pEnt || !( tr.m_pEnt->GetFlags() & FL_AIMTARGET ) )
+		info.m_vecDirShooting.z = 0;
 	info.m_vecDirShooting.NormalizeInPlace();
 
 	info.m_flDistance = asw_weapon_max_shooting_distance.GetFloat();
