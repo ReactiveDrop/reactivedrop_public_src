@@ -24,6 +24,7 @@
 #ifdef RD_7A_WEAPONS
 ConVar rd_plasma_thrower_airblast_push( "rd_plasma_thrower_airblast_push", "1000", FCVAR_CHEAT | FCVAR_REPLICATED, "Amount of force (actually instantaneous velocity) that the airblast applies to each target" );
 ConVar rd_plasma_thrower_airblast_push_ally( "rd_plasma_thrower_airblast_push_ally", "300", FCVAR_CHEAT | FCVAR_REPLICATED, "Amount of force (actually instantaneous velocity) that the airblast applies to each allied target" );
+ConVar rd_plasma_thrower_airblast_push_object( "rd_plasma_thrower_airblast_push_object", "1000", FCVAR_CHEAT | FCVAR_REPLICATED, "Multiplier for instantaneous velocity for non-NPC targets (gets divided by the object's mass in kilograms)" );
 ConVar rd_plasma_thrower_airblast_push_up( "rd_plasma_thrower_airblast_push_up", "100", FCVAR_CHEAT | FCVAR_REPLICATED, "Minimum upwards velocity impulse from the airblast" );
 ConVar rd_plasma_thrower_airblast_torque( "rd_plasma_thrower_airblast_torque", "10", FCVAR_CHEAT | FCVAR_REPLICATED, "Amount of spin force applied by the airblast to physics props/buzzers" );
 ConVar rd_plasma_thrower_airblast_dot( "rd_plasma_thrower_airlast_dot", "0.866025403784", FCVAR_CHEAT | FCVAR_REPLICATED, "Minimum dot product for an object's position if that object gets hit.\n1.0 would be a zero degree arc, and 0.0 would be a 180 degree (90 to both sides) arc.\nDefault value is about 30 degrees to each side (60 degrees total).", true, -1, true, 1 );
@@ -568,6 +569,12 @@ void CASW_Weapon_Plasma_Thrower::SecondaryAttack()
 		{
 			flPushForce = rd_plasma_thrower_airblast_push_ally.GetFloat();
 		}
+		float flDampen = 1.0f;
+		if ( !pTarget->IsNPC() && pTarget->VPhysicsGetObject() )
+		{
+			flDampen = rd_plasma_thrower_airblast_push_object.GetFloat() * pTarget->VPhysicsGetObject()->GetInvMass();
+			flPushForce *= flDampen;
+		}
 
 		// put out fires if we're friends
 		if ( bFriendly )
@@ -604,7 +611,7 @@ void CASW_Weapon_Plasma_Thrower::SecondaryAttack()
 		float flDistanceFactor = 1.0f - Bias( clamp( flDist / rd_plasma_thrower_airblast_range.GetFloat(), 0.0f, 1.0f ), rd_plasma_thrower_airblast_falloff.GetFloat() );
 
 		Vector vecImpulse = vecDiff * flPushForce;
-		vecImpulse.z = MAX( vecImpulse.z, rd_plasma_thrower_airblast_push_up.GetFloat() );
+		vecImpulse.z = MAX( vecImpulse.z, rd_plasma_thrower_airblast_push_up.GetFloat() * flDampen );
 		pTarget->SetGroundEntity( NULL );
 		if ( pTarget->GetMoveType() == MOVETYPE_VPHYSICS && pTarget->VPhysicsGetObject() )
 		{
@@ -612,7 +619,7 @@ void CASW_Weapon_Plasma_Thrower::SecondaryAttack()
 			QAngle angles;
 			VectorAngles( vecDiff.ProjectOnto( vecForward ), angles );
 			AngularImpulse angularImpulse( VectorExpand( angles ) );
-			angularImpulse *= rd_plasma_thrower_airblast_torque.GetFloat();
+			angularImpulse *= rd_plasma_thrower_airblast_torque.GetFloat() * flDampen;
 			pTarget->VPhysicsGetObject()->AddVelocity( &vecImpulse, &angularImpulse );
 		}
 		else
