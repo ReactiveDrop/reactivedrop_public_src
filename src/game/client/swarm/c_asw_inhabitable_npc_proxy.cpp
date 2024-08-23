@@ -194,7 +194,7 @@ void CASW_Character_Proxy::OnBind( C_BaseEntity *pEnt )
 	}
 	else
 	{
-		Assert( !"Unhandled entity type for CASW_Character_Proxy" );
+		AssertMsg( pEnt->Classify() == CLASS_NONE, "Unhandled entity type for CASW_Character_Proxy" );
 		OnBindNull();
 	}
 
