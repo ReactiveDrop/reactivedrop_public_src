@@ -1,0 +1,80 @@
+// DYNAMIC: "COMPRESSED_VERTS"		"0..1"
+// DYNAMIC: "SKINNING"				"0..1"
+
+#include "common_vs_fxc.h"
+#include "common_fog_vs_supportsvertexfog_fxc.h"
+
+static const int g_FogType = DOWATERFOG;
+static const bool g_bSkinning = SKINNING ? true : false;
+
+const float4 cBaseTexCoordTransform[2] : register( SHADER_SPECIFIC_CONST_0 );
+
+struct VS_INPUT
+{
+	float4 vPos							: POSITION;
+	float4 vBoneWeights					: BLENDWEIGHT;
+	float4 vBoneIndices					: BLENDINDICES;
+	float4 vTexCoord0					: TEXCOORD0;
+	float4 vNormal						: NORMAL;
+	float3 vTangentS					: TANGENT;
+	float3 vTangentT					: BINORMAL;
+	float4 vUserData					: TANGENT;
+};
+
+struct VS_OUTPUT
+{
+	float4 vProjPos						: POSITION;
+
+#if !defined( SHADER_MODEL_VS_3_0 )
+	float fog							: FOG;
+#endif
+
+	float2 baseTexCoord					: TEXCOORD0;
+	float3 vProjPosForRefract			: TEXCOORD1;
+	float3x3 tangentSpaceTranspose		: TEXCOORD2;
+	//	     second row					: TEXCOORD3;
+	//	     third row					: TEXCOORD4;
+	float4 worldPos_projPosZ			: TEXCOORD7;
+};
+
+VS_OUTPUT main( const VS_INPUT v )
+{
+	VS_OUTPUT o = ( VS_OUTPUT )0;
+
+	float3 vNormal, worldPos, worldNormal, worldTangentS, worldTangentT;
+	float4 vPosition, vTangent;
+	vPosition = v.vPos;
+	DecompressVertex_NormalTangent( v.vNormal, v.vUserData, vNormal, vTangent );
+
+	SkinPositionNormalAndTangentSpace( g_bSkinning, vPosition, vNormal, vTangent,
+			v.vBoneWeights, v.vBoneIndices, worldPos,
+			worldNormal, worldTangentS, worldTangentT );
+
+	worldNormal   = normalize(worldNormal);
+	worldTangentS = normalize(worldTangentS);
+	worldTangentT = normalize(worldTangentT);
+
+	o.baseTexCoord.x = dot( v.vTexCoord0, cBaseTexCoordTransform[0] );
+	o.baseTexCoord.y = dot( v.vTexCoord0, cBaseTexCoordTransform[1] );
+
+	o.tangentSpaceTranspose[0].xyz = float3( worldTangentS.x, worldTangentT.x, worldNormal.x );
+	o.tangentSpaceTranspose[1].xyz = float3( worldTangentS.y, worldTangentT.y, worldNormal.y );
+	o.tangentSpaceTranspose[2].xyz = float3( worldTangentS.z, worldTangentT.z, worldNormal.z );
+
+	o.vProjPos = mul( float4( worldPos, 1.0 ), cViewProj );
+	o.worldPos_projPosZ = float4( worldPos.xyz, o.vProjPos.z );
+
+	// Map projected position to the refraction texture
+	float2 vRefractPos;
+	vRefractPos.x = o.vProjPos.x;
+	vRefractPos.y = -o.vProjPos.y; // Invert Y
+	vRefractPos = (vRefractPos + o.vProjPos.w) * 0.5f;
+	o.vProjPosForRefract.xy = vRefractPos.xy;
+	o.vProjPosForRefract.z = o.vProjPos.w;
+
+#if !defined( SHADER_MODEL_VS_3_0 )
+	o.fog = CalcFixedFunctionFog( worldPos, g_FogType );
+#endif
+
+	return o;
+}

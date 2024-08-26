@@ -49,6 +49,8 @@
 //projected_vs20.fxc
 //projected_ps2x.fxc
 //shadowbuildtexture_ps2x.fxc
+//shielddome_vs20.fxc
+//shielddome_ps2x.fxc
 //phong_vs20.fxc
 //phong_ps20b.fxc
 //teeth_vs20.fxc

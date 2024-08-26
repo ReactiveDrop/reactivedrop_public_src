@@ -16,7 +16,9 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-ConVar rd_simple_beacons("rd_simple_beacons", "0", FCVAR_NONE, "If 1 heal beacon and damage amplifier will be rendered simple to improve performance");
+
+// saved in video.txt, not config.cfg
+ConVar rd_simple_beacons( "rd_simple_beacons", "0", FCVAR_NONE, "If 1 heal beacon and damage amplifier will be rendered simple to improve performance" );
 
 //Precahce the effects
 PRECACHE_REGISTER_BEGIN( GLOBAL, ASWPrecacheEffectAOEGrenades )
@@ -282,8 +284,8 @@ void C_ASW_AOEGrenade_Projectile::UpdateParticleAttachments( CNewParticleEffect 
 
 void C_ASW_AOEGrenade_Projectile::UpdatePingEffects( void )
 {
-	if (rd_simple_beacons.GetBool())
-		return; 
+	if ( rd_simple_beacons.GetBool() )
+		return;
 
 	if ( m_bSettled && m_pPulseEffect.GetObject() == NULL )
 	{	
@@ -299,20 +301,19 @@ void C_ASW_AOEGrenade_Projectile::UpdatePingEffects( void )
 		C_BaseAnimating *pEnt = new C_BaseAnimating;
 		if (!pEnt)
 		{
-			Msg("Error, couldn't create new C_BaseAnimating\n");
+			Warning( "Error, couldn't create new C_BaseAnimating\n" );
 			return;
 		}
-		if (!pEnt->InitializeAsClientEntity( "models/items/shield_bubble/shield_bubble.mdl", false ))
-			//if (!pEnt->InitializeAsClientEntity( "models/props_combine/coreball.mdl", false ))
+		if ( !pEnt->InitializeAsClientEntity( "models/items/shield_bubble/shield_bubble.mdl", false ) )
 		{
-			Msg("Error, couldn't InitializeAsClientEntity\n");
+			Warning( "Error, couldn't InitializeAsClientEntity\n" );
 			pEnt->Release();
 			return;
 		}
 
 		pEnt->SetParent( this );
 		pEnt->SetLocalOrigin( Vector( 0, 0, 0 ) );
-		pEnt->SetLocalAngles( QAngle( 0, 0, 0 ) );	
+		pEnt->SetLocalAngles( QAngle( 0, 0, 0 ) );
 		pEnt->SetSolid( SOLID_NONE );
 		pEnt->SetSkin( GetSphereSkin() );
 		pEnt->RemoveEFlags( EFL_USE_PARTITION_WHEN_NOT_SOLID );
@@ -411,7 +412,7 @@ void C_ASW_AOEGrenade_Projectile::ClientThink( void )
 	}
 
 	// sphere bubble models
-	if ( ShouldSpawnSphere() && m_hSphereModel.Get() )
+	if ( m_hSphereModel.Get() )
 	{
 		C_BaseAnimating *pSphere = static_cast< C_BaseAnimating * >( m_hSphereModel.Get() );
 		if ( pSphere )

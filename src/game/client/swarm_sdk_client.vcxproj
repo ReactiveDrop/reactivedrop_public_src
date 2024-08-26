@@ -437,6 +437,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClInclude Include="..\shared\swarm\rd_map_texture_shared.h" />
     <ClInclude Include="..\shared\swarm\rd_vgui_vscript_shared.h" />
     <ClInclude Include="swarm\c_asw_colonist.h" />
+    <ClInclude Include="swarm\c_asw_shieldgrenade_projectile.h" />
     <ClInclude Include="swarm\c_rd_infection_deathmatch_stats.h" />
     <ClInclude Include="swarm\gameui\swarm\vgenericchoicelist.h" />
     <ClInclude Include="swarm\gameui\swarm\vpromooptin.h" />
@@ -1345,6 +1346,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd clien
     <ClCompile Include="swarm\c_asw_sentry_top_icer.cpp" />
     <ClCompile Include="swarm\c_asw_shaman.cpp" />
     <ClCompile Include="swarm\c_asw_shieldbug.cpp" />
+    <ClCompile Include="swarm\c_asw_shieldgrenade_projectile.cpp" />
     <ClCompile Include="swarm\c_asw_simple_alien.cpp" />
     <ClCompile Include="swarm\c_asw_simple_drone.cpp" />
     <ClCompile Include="swarm\c_asw_snow_emitter.cpp" />

@@ -20,6 +20,8 @@ public:
 	DECLARE_DATADESC();
 #endif
 
+	void Precache() override;
+	bool OffhandActivate() override;
 	bool IsOffensiveWeapon() override { return false; }
 
 	Class_T Classify() override { return ( Class_T )CLASS_ASW_SHIELD_BUBBLE; }

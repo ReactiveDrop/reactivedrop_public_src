@@ -1,0 +1,50 @@
+#include "common_ps_fxc.h"
+#include "common_fog_ps_fxc.h"
+#include "common_vertexlitgeneric_dx9.h"
+#include "shader_constant_register_map.h"
+
+const float3 cAmbientCube[6]						: register( PSREG_AMBIENT_CUBE );
+const float4 g_EyePos_SpecExponent					: register( PSREG_EYEPOS_SPEC_EXPONENT );
+const float3 g_EyeDir								: register( PSREG_SHADER_CONTROLS_2 );
+const float4 g_FogParams							: register( PSREG_FOG_PARAMS );
+PixelShaderLightInfo cLightInfo[3]					: register( PSREG_LIGHT_INFO_ARRAY );
+
+sampler BaseTextureSampler		: register( s0 );
+sampler DepthTextureSampler		: register( s1 );
+
+struct PS_INPUT
+{
+	float2 baseTexCoord					: TEXCOORD0;
+	float3 vProjPosForRefract			: TEXCOORD1;
+	float3x3 tangentSpaceTranspose		: TEXCOORD2;
+	//	     second row					: TEXCOORD3;
+	//	     third row					: TEXCOORD4;
+	float4 worldPos_projPosZ			: TEXCOORD7;
+};
+
+float4 main( PS_INPUT i ) : COLOR
+{
+	// TODO: do something with basetexture
+	float4 baseColor = tex2Dsrgb( BaseTextureSampler, i.baseTexCoord.xy );
+
+	const float2 screenPos = i.vProjPosForRefract.xy / i.vProjPosForRefract.z;
+	// TODO: blur?
+	float depth = tex2D( DepthTextureSampler, screenPos ).a / OO_DESTALPHA_DEPTH_RANGE;
+
+	float3 tangentSpaceNormal = float3( 0.0, 0.0, 1.0 );
+	float3 worldSpaceNormal = mul( i.tangentSpaceTranspose, tangentSpaceNormal );
+	float3 eyeDir = normalize( -g_EyeDir );
+	bool backface = dot( worldSpaceNormal, eyeDir ) < 0.0;
+	if ( backface )
+	{
+		worldSpaceNormal = -worldSpaceNormal;
+	}
+
+	float depthDiff = ( depth - i.worldPos_projPosZ.w );
+	// TODO: use fresnel ranges?
+	float fresnel = Fresnel4( worldSpaceNormal, eyeDir );
+	float visibility = lerp( saturate( 1.0 - abs( depthDiff ) * 0.04 ), 1.0, fresnel );
+
+	float fogFactor = CalcPixelFogFactor( PIXELFOGTYPE, g_FogParams, g_EyePos_SpecExponent.xyz, i.worldPos_projPosZ.xyz, i.worldPos_projPosZ.w );
+	return FinalOutput( float4( visibility, visibility, visibility, 1.0 ), fogFactor, PIXELFOGTYPE, TONEMAP_SCALE_LINEAR, false, i.worldPos_projPosZ.w );
+}

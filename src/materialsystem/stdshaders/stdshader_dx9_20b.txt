@@ -204,6 +204,9 @@
 //ShatteredGlass_ps2x.fxc
 //ShatteredGlass_vs20.fxc
 
+//shielddome_vs20.fxc
+//shielddome_ps2x.fxc
+
 //DebugTextureView_vs20.fxc
 //DebugTextureView_ps2x.fxc
 

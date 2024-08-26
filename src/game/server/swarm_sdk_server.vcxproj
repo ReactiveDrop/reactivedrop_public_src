@@ -1333,6 +1333,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClCompile Include="swarm\asw_sentry_top_railgun.cpp" />
     <ClCompile Include="swarm\asw_shaman.cpp" />
     <ClCompile Include="swarm\asw_shieldbug.cpp" />
+    <ClCompile Include="swarm\asw_shieldgrenade_projectile.cpp" />
     <ClCompile Include="swarm\asw_simple_alien.cpp" />
     <ClCompile Include="swarm\asw_simple_alien_shared_data.cpp" />
     <ClCompile Include="swarm\asw_simple_drone.cpp" />
@@ -2267,6 +2268,7 @@ if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd serve
     <ClInclude Include="swarm\asw_sentry_top_railgun.h" />
     <ClInclude Include="swarm\asw_shaman.h" />
     <ClInclude Include="swarm\asw_shieldbug.h" />
+    <ClInclude Include="swarm\asw_shieldgrenade_projectile.h" />
     <ClInclude Include="swarm\asw_simple_alien.h" />
     <ClInclude Include="swarm\asw_simple_alien_shared_data.h" />
     <ClInclude Include="swarm\asw_simple_drone.h" />
