@@ -253,7 +253,7 @@ void CASW_Weapon_Mining_Laser::ClientThink()
 		bool bLocalPlayer = false;
 		C_ASW_Player *pPlayer = GetCommander();
 		C_ASW_Player *pLocalPlayer = C_ASW_Player::GetLocalASWPlayer();
-		if ( pPlayer == pLocalPlayer )
+		if ( pPlayer == pLocalPlayer && pMarine->IsInhabited() )
 			bLocalPlayer = true;
 
 		QAngle angWeapon;
