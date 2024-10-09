@@ -9,6 +9,7 @@ static RDShieldDome_DX9_Vars_t s_info;
 DEFINE_FALLBACK_SHADER( RDShieldDome, RDShieldDome_DX9 )
 BEGIN_VS_SHADER( RDShieldDome_DX9, "shield bubble proximity effect" )
 	BEGIN_SHADER_PARAMS
+		SHADER_PARAM( WIGGLEPARAMS, SHADER_PARAM_TYPE_VEC4, "[0 0 0 0]", "" )
 	END_SHADER_PARAMS
 
 	void SetupVars( RDShieldDome_DX9_Vars_t &info )
@@ -16,6 +17,7 @@ BEGIN_VS_SHADER( RDShieldDome_DX9, "shield bubble proximity effect" )
 		info.m_nBaseTexture = BASETEXTURE;
 		info.m_nBaseTextureFrame = FRAME;
 		info.m_nBaseTextureTransform = BASETEXTURETRANSFORM;
+		info.m_nWiggleParams = WIGGLEPARAMS;
 	}
 
 	SHADER_INIT_PARAMS()

@@ -36,6 +36,10 @@ public:
 class shielddome_ps30_Dynamic_Index
 {
 	unsigned int m_nPIXELFOGTYPE : 2;
+	unsigned int m_nNUM_LIGHTS : 3;
+#ifdef _DEBUG
+	bool m_bNUM_LIGHTS : 1;
+#endif	// _DEBUG
 public:
 	void SetPIXELFOGTYPE( int i )
 	{
@@ -43,16 +47,30 @@ public:
 		m_nPIXELFOGTYPE = i;
 	}
 
+	void SetNUM_LIGHTS( int i )
+	{
+		Assert( i >= 0 && i <= 4 );
+		m_nNUM_LIGHTS = i;
+#ifdef _DEBUG
+		m_bNUM_LIGHTS = true;
+#endif	// _DEBUG
+	}
+
 	shielddome_ps30_Dynamic_Index( IShaderDynamicAPI* pShaderAPI )
 	{
 		m_nPIXELFOGTYPE = ( pShaderAPI->GetSceneFogMode() == MATERIAL_FOG_LINEAR_BELOW_FOG_Z ) ;
+		m_nNUM_LIGHTS = 0;
+#ifdef _DEBUG
+		m_bNUM_LIGHTS = false;
+#endif	// _DEBUG
 	}
 
 	int GetIndex() const
 	{
-		return ( 1 * m_nPIXELFOGTYPE ) + 0;
+		Assert( m_bNUM_LIGHTS );
+		return ( 1 * m_nPIXELFOGTYPE ) + ( 2 * m_nNUM_LIGHTS ) + 0;
 	}
 };
 
-#define shaderDynamicTest_shielddome_ps30 1
+#define shaderDynamicTest_shielddome_ps30 psh_forgot_to_set_dynamic_NUM_LIGHTS
 

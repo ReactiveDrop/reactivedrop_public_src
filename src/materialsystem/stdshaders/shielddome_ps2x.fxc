@@ -3,14 +3,18 @@
 #include "common_vertexlitgeneric_dx9.h"
 #include "shader_constant_register_map.h"
 
+// DYNAMIC: "NUM_LIGHTS"				"0..4"
+
 const float3 cAmbientCube[6]						: register( PSREG_AMBIENT_CUBE );
 const float4 g_EyePos_SpecExponent					: register( PSREG_EYEPOS_SPEC_EXPONENT );
-const float3 g_EyeDir								: register( PSREG_SHADER_CONTROLS_2 );
+const float4 g_WiggleOffset							: register( PSREG_SHADER_CONTROLS_2 );
 const float4 g_FogParams							: register( PSREG_FOG_PARAMS );
 PixelShaderLightInfo cLightInfo[3]					: register( PSREG_LIGHT_INFO_ARRAY );
 
 sampler BaseTextureSampler		: register( s0 );
 sampler DepthTextureSampler		: register( s1 );
+sampler RandomVectorSampler		: register( s2 );
+sampler NormalizeSampler		: register( s3 );
 
 struct PS_INPUT
 {
@@ -19,6 +23,7 @@ struct PS_INPUT
 	float3x3 tangentSpaceTranspose		: TEXCOORD2;
 	//	     second row					: TEXCOORD3;
 	//	     third row					: TEXCOORD4;
+	float4 lightAtten					: TEXCOORD5;
 	float4 worldPos_projPosZ			: TEXCOORD7;
 };
 
@@ -28,12 +33,16 @@ float4 main( PS_INPUT i ) : COLOR
 	float4 baseColor = tex2Dsrgb( BaseTextureSampler, i.baseTexCoord.xy );
 
 	const float2 screenPos = i.vProjPosForRefract.xy / i.vProjPosForRefract.z;
-	// TODO: blur?
-	float depth = tex2D( DepthTextureSampler, screenPos ).a / OO_DESTALPHA_DEPTH_RANGE;
+	const float4 random_vector = tex2D( RandomVectorSampler, screenPos * float2( 64.0, 32.0 ) + g_WiggleOffset.ww );
+
+	float4 depthSample = tex2D( DepthTextureSampler, screenPos );
+	float depth = depthSample.a / OO_DESTALPHA_DEPTH_RANGE;
+	depth += tex2D( DepthTextureSampler, screenPos + (random_vector.xy - 0.5) / 100.0 ).a / OO_DESTALPHA_DEPTH_RANGE + (random_vector.z - 0.5) / 100.0;
+	depth /= 2.0;
 
 	float3 tangentSpaceNormal = float3( 0.0, 0.0, 1.0 );
 	float3 worldSpaceNormal = mul( i.tangentSpaceTranspose, tangentSpaceNormal );
-	float3 eyeDir = normalize( -g_EyeDir );
+	float3 eyeDir = normalize( g_EyePos_SpecExponent.xyz - i.worldPos_projPosZ.xyz + g_WiggleOffset.xyz );
 	bool backface = dot( worldSpaceNormal, eyeDir ) < 0.0;
 	if ( backface )
 	{
@@ -41,10 +50,28 @@ float4 main( PS_INPUT i ) : COLOR
 	}
 
 	float depthDiff = ( depth - i.worldPos_projPosZ.w );
-	// TODO: use fresnel ranges?
-	float fresnel = Fresnel4( worldSpaceNormal, eyeDir );
-	float visibility = lerp( saturate( 1.0 - abs( depthDiff ) * 0.04 ), 1.0, fresnel );
+	float fresnel = Fresnel4( worldSpaceNormal, eyeDir ) * 0.995 + 0.005;
+	float depthVisibility = saturate( 1.0 - abs( depthDiff ) * 0.04 );
+	float visibility = fresnel + depthVisibility;
+
+	float3 ambientLight = PixelShaderAmbientLight( eyeDir, cAmbientCube );
+
+	float4 vLightAtten = i.lightAtten;
+
+	float3 diffuseLighting = PixelShaderDoLighting( i.worldPos_projPosZ.xyz, worldSpaceNormal,
+			float3( 0.0f, 0.0f, 0.0f ), false, true, vLightAtten,
+			cAmbientCube, NormalizeSampler, 4, cLightInfo, 0,
+			0, BaseTextureSampler );
+
+	float3 specularLighting;
+	float3 rimLighting;
+	PixelShaderDoSpecularLighting( i.worldPos_projPosZ.xyz, worldSpaceNormal,
+		1.0, eyeDir, vLightAtten,
+		4, cLightInfo, 0, BaseTextureSampler, fresnel, 1, 1.0,
+
+		// Outputs
+		specularLighting, rimLighting );
 
 	float fogFactor = CalcPixelFogFactor( PIXELFOGTYPE, g_FogParams, g_EyePos_SpecExponent.xyz, i.worldPos_projPosZ.xyz, i.worldPos_projPosZ.w );
-	return FinalOutput( float4( visibility, visibility, visibility, 1.0 ), fogFactor, PIXELFOGTYPE, TONEMAP_SCALE_LINEAR, false, i.worldPos_projPosZ.w );
+	return FinalOutput( float4( lerp( depthSample.rgb, float3( 1.0, 1.0, 1.0 ), depthVisibility * 0.25 + 0.05 ) * ( max( specularLighting, rimLighting ) + ambientLight + visibility * ( 0.4 + baseColor.a * 0.1 ) ), 1.0 ), fogFactor, PIXELFOGTYPE, TONEMAP_SCALE_LINEAR, false, i.worldPos_projPosZ.w );
 }

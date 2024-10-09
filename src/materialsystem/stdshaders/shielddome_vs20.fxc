@@ -34,6 +34,7 @@ struct VS_OUTPUT
 	float3x3 tangentSpaceTranspose		: TEXCOORD2;
 	//	     second row					: TEXCOORD3;
 	//	     third row					: TEXCOORD4;
+	float4 lightAtten					: TEXCOORD5;
 	float4 worldPos_projPosZ			: TEXCOORD7;
 };
 
@@ -63,6 +64,11 @@ VS_OUTPUT main( const VS_INPUT v )
 
 	o.vProjPos = mul( float4( worldPos, 1.0 ), cViewProj );
 	o.worldPos_projPosZ = float4( worldPos.xyz, o.vProjPos.z );
+
+	o.lightAtten.x = GetVertexAttenForLight( worldPos, 0 );
+	o.lightAtten.y = GetVertexAttenForLight( worldPos, 1 );
+	o.lightAtten.z = GetVertexAttenForLight( worldPos, 2 );
+	o.lightAtten.w = GetVertexAttenForLight( worldPos, 3 );
 
 	// Map projected position to the refraction texture
 	float2 vRefractPos;

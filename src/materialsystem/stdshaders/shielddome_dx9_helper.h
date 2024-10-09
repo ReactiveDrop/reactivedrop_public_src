@@ -7,6 +7,7 @@ struct RDShieldDome_DX9_Vars_t
 	int m_nBaseTexture;
 	int m_nBaseTextureFrame;
 	int m_nBaseTextureTransform;
+	int m_nWiggleParams;
 };
 
 void InitParamsRDShieldDome_DX9( CBaseVSShader *pShader, IMaterialVar **params, const char *pMaterialName, const RDShieldDome_DX9_Vars_t &info );

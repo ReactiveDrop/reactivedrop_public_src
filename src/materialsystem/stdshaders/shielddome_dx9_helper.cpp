@@ -29,6 +29,8 @@ void DrawRDShieldDome_DX9( CBaseVSShader *pShader, IMaterialVar **params,
 	const RDShieldDome_DX9_Vars_t &info, CBasePerMaterialContextData **pContextDataPtr,
 	VertexCompressionType_t vertexCompression )
 {
+	bool bHasFlashlight = pShader->UsingFlashlight( params );
+
 	SHADOW_STATE
 	{
 		pShader->SetInitialShadowState();
@@ -41,6 +43,10 @@ void DrawRDShieldDome_DX9( CBaseVSShader *pShader, IMaterialVar **params,
 		pShaderShadow->EnableSRGBRead( SHADER_SAMPLER0, true );
 		pShaderShadow->EnableTexture( SHADER_SAMPLER1, true ); // depth buffer
 		pShaderShadow->EnableSRGBRead( SHADER_SAMPLER1, false );
+		pShaderShadow->EnableTexture( SHADER_SAMPLER2, true ); // random vectors
+		pShaderShadow->EnableSRGBRead( SHADER_SAMPLER2, false );
+		pShaderShadow->EnableTexture( SHADER_SAMPLER3, true ); // normalize
+		pShaderShadow->EnableSRGBRead( SHADER_SAMPLER3, false );
 		pShaderShadow->EnableSRGBWrite( true );
 
 		if ( g_pHardwareConfig->HasFastVertexTextures() )
@@ -78,14 +84,27 @@ void DrawRDShieldDome_DX9( CBaseVSShader *pShader, IMaterialVar **params,
 		vEyePos_SpecExponent[3] = 0.0f;
 		pShaderAPI->SetPixelShaderConstant( PSREG_EYEPOS_SPEC_EXPONENT, vEyePos_SpecExponent, 1 );
 
-		float vEyeDir[4];
-		pShaderAPI->GetWorldSpaceCameraDirection( vEyeDir );
-		pShaderAPI->SetPixelShaderConstant( PSREG_SHADER_CONTROLS_2, vEyeDir, 1 );
+		float flTime = pShaderAPI->CurrentTime();
+		const float *vecWiggleParams = params[info.m_nWiggleParams]->GetVecValue();
+		float vWiggle[4];
+		vWiggle[0] = cosf( flTime * vecWiggleParams[1] ) * vecWiggleParams[0];
+		vWiggle[1] = cosf( flTime * vecWiggleParams[2] ) * vecWiggleParams[0];
+		vWiggle[2] = cosf( flTime * vecWiggleParams[3] ) * vecWiggleParams[0];
+		vWiggle[3] = flTime * 1337.5;
+		pShaderAPI->SetPixelShaderConstant( PSREG_SHADER_CONTROLS_2, vWiggle, 1 );
 
 		pShader->SetVertexShaderTextureTransform( VERTEX_SHADER_SHADER_SPECIFIC_CONST_0, info.m_nBaseTextureTransform );
 
 		pShader->BindTexture( SHADER_SAMPLER0, info.m_nBaseTexture, info.m_nBaseTextureFrame );
 		pShaderAPI->BindStandardTexture( SHADER_SAMPLER1, TEXTURE_FRAME_BUFFER_FULL_DEPTH );
+		pShaderAPI->BindStandardTexture( SHADER_SAMPLER2, TEXTURE_SSAO_NOISE_2D );
+		pShaderAPI->BindStandardTexture( SHADER_SAMPLER3, TEXTURE_NORMALIZATION_CUBEMAP_SIGNED );
+
+		LightState_t lightState = { 0, false, false };
+		if ( !bHasFlashlight )
+		{
+			pShaderAPI->GetDX9LightState( &lightState );
+		}
 
 		if ( g_pHardwareConfig->HasFastVertexTextures() )
 		{
@@ -95,6 +114,7 @@ void DrawRDShieldDome_DX9( CBaseVSShader *pShader, IMaterialVar **params,
 			SET_DYNAMIC_VERTEX_SHADER( shielddome_vs30 );
 
 			DECLARE_DYNAMIC_PIXEL_SHADER( shielddome_ps30 );
+			SET_DYNAMIC_PIXEL_SHADER_COMBO( NUM_LIGHTS, lightState.m_nNumLights );
 			SET_DYNAMIC_PIXEL_SHADER( shielddome_ps30 );
 		}
 		else
@@ -107,6 +127,7 @@ void DrawRDShieldDome_DX9( CBaseVSShader *pShader, IMaterialVar **params,
 			Assert( g_pHardwareConfig->SupportsPixelShaders_2_b() );
 
 			DECLARE_DYNAMIC_PIXEL_SHADER( shielddome_ps20b );
+			SET_DYNAMIC_PIXEL_SHADER_COMBO( NUM_LIGHTS, lightState.m_nNumLights );
 			SET_DYNAMIC_PIXEL_SHADER( shielddome_ps20b );
 		}
 	}
