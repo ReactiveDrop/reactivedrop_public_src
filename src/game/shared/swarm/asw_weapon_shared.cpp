@@ -549,7 +549,7 @@ void CASW_Weapon::ItemPostFrame( void )
 	// -----------------------
 	//  No buttons down
 	// -----------------------
-	if ( !( bAttack1 || bAttack2 || bReload ) )
+	if ( !( /*bAttack1 ||*/ bAttack2 || bReload ) )
 	{
 		// no fire buttons down or reloading
 		if ( !ReloadOrSwitchWeapons() && ( m_bInReload == false ) )
@@ -609,8 +609,6 @@ bool CASW_Weapon::ReloadOrSwitchWeapons( void )
 		( m_iClip1 == 0 ) &&
 		( GetWeaponFlags() & ITEM_FLAG_NOAUTORELOAD ) == false &&
 		bAutoReload &&
-		m_flNextPrimaryAttack < gpGlobals->curtime &&
-		( ( m_flNextSecondaryAttack < gpGlobals->curtime ) || !HasSecondaryAttack() ) &&
 		!m_bInReload )
 	{
 		// if we're successfully reloading, we're done
