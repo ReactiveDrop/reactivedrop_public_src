@@ -66,7 +66,7 @@ ConVar asw_marine_edge_names( "asw_marine_edge_names", "1", FCVAR_NONE, "Prevent
 ConVar asw_marine_labels_cursor_maxdist( "asw_marine_labels_cursor_maxdist", "70", FCVAR_ARCHIVE, "Only marines within this distance of the cursor will get their health bar drawn" );
 ConVar asw_fast_reload_under_marine( "asw_fast_reload_under_marine", "1", FCVAR_ARCHIVE, "Draw the active reload bar under the marine?" );
 ConVar asw_world_healthbar_class_icon( "asw_world_healthbar_class_icon", "0", FCVAR_ARCHIVE, "Show class icon on mouse over" );
-ConVar rd_fast_reload_under_marine_scale( "rd_fast_reload_under_marine_scale", "1", FCVAR_ARCHIVE, "Scales the original Fast Reload Bar", true, 1, true, 12 ); //p2k scalable fast reload bar
+ConVar rd_fast_reload_under_marine_scale( "rd_fast_reload_under_marine_scale", "3.5", FCVAR_ARCHIVE, "Scales the original Fast Reload Bar", true, 1, true, 12 ); //p2k scalable fast reload bar
 ConVar rd_fast_reload_under_marine_height_scale( "rd_fast_reload_under_marine_height_scale", "0", FCVAR_ARCHIVE, "Scales the original Fast Reload Bar. 0 to use the same rd_fast_reload_under_marine_scale", true, 0, true, 12 );
 ConVar rd_ammo_under_marine( "rd_ammo_under_marine", "0", FCVAR_ARCHIVE, "Draw the marine's current ammo under the marine?" );
 ConVar asw_magazine_under_marine( "asw_magazine_under_marine", "0", FCVAR_ARCHIVE, "Enable an ammo notification on low magazine count. (1 = warn at 100% ammo)", true, 0, true, 1 );
