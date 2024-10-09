@@ -22,6 +22,7 @@
 #include "tier0/memdbgon.h"
 
 ConVar rd_fire_extinguisher_infinite( "rd_fire_extinguisher_infinite", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "If 1 the fire extinguisher has infinite ammo" );
+ConVar rd_fire_extinguisher_force_temporary( "rd_fire_extinguisher_force_temporary", "1", FCVAR_REPLICATED | FCVAR_CHEAT, "Fire extinguishers are always temporary weapons (can be equipped even with two other weapons)." );
 
 IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Weapon_FireExtinguisher, DT_ASW_Weapon_FireExtinguisher )
 
@@ -71,6 +72,11 @@ CASW_Weapon_FireExtinguisher::~CASW_Weapon_FireExtinguisher()
 void CASW_Weapon_FireExtinguisher::Spawn()
 {
 	BaseClass::Spawn();
+
+	if ( rd_fire_extinguisher_force_temporary.GetBool() )
+	{
+		m_bIsTemporaryPickup = true;
+	}
 
 #ifdef CLIENT_DLL
 	SetNextClientThink( CLIENT_THINK_ALWAYS );
