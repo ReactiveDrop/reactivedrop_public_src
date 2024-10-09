@@ -97,7 +97,8 @@ void CASW_Grenade_PRifle::Detonate()
 	// do just 1 damage...
 	CTakeDamageInfo info( this, pOwnerEnt, 1, DMG_SHOCK );
 	info.SetWeapon( m_hCreatorWeapon );
-	RadiusDamage ( info , GetAbsOrigin(), m_DmgRadius, CLASS_NONE, NULL );
+	info.SetDamageCustom( DAMAGE_FLAG_NO_FALLOFF );
+	RadiusDamage( info, GetAbsOrigin(), m_DmgRadius, CLASS_NONE, NULL );
 
 	// count as a shot fired
 	CASW_Marine* pMarine = NULL;
