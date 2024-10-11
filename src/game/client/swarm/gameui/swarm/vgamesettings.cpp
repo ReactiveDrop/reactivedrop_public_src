@@ -334,17 +334,17 @@ void GameSettings::Activate()
 		m_drpNumSlots->SetVisible( showNumSlots );
 		m_drpNumSlots->SetEnabled( showNumSlots );
 
-		if ( m_pSettings->GetInt( "members/numSlots" ) <= 4 )
+		if ( m_pSettings->GetInt( "members/numSlots", rd_last_game_maxplayers.GetInt() ) <= 4 )
 		{
 			m_drpNumSlots->SetCurrentSelection( "#rd_ui_4_slots" );
 			mm_max_players.SetValue( 4 );
 		}
-		else if ( m_pSettings->GetInt( "members/numSlots" ) <= 8 )
+		else if ( m_pSettings->GetInt( "members/numSlots", rd_last_game_maxplayers.GetInt() ) <= 8 )
 		{
 			m_drpNumSlots->SetCurrentSelection( "#rd_ui_8_slots" );
 			mm_max_players.SetValue( 8 );
 		}
-		else if ( m_pSettings->GetInt( "members/numSlots" ) <= 12 )
+		else if ( m_pSettings->GetInt( "members/numSlots", rd_last_game_maxplayers.GetInt() ) <= 12 )
 		{
 			m_drpNumSlots->SetCurrentSelection( "#rd_ui_12_slots" );
 			mm_max_players.SetValue( 12 );
@@ -1026,6 +1026,9 @@ void GameSettings::OnClose()
 
 	if( m_drpChallenge )
 		m_drpChallenge->CloseDropDown();
+
+	if ( m_drpNumSlots )
+		m_drpNumSlots->CloseDropDown();
 
 	m_pSettings = NULL;	// NULL out settings in case we get some calls
 	// after we are closed
