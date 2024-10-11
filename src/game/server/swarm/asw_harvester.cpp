@@ -620,7 +620,7 @@ void CASW_Harvester::Event_Killed( const CTakeDamageInfo &info )
 	if ( !rd_harvester_always_release_xenomites.GetBool() )
 	{
 		// If we died to an explosion which inflicted two times more damage than we had health (and no other damage type), the xenomites died with us.
-		if ( ( info.GetDamageType() == DMG_BLAST ) && ( info.GetDamage() > 135.0f ) && ( m_iHealth + info.GetDamage() / 2 <= 0 ) )
+		if ( ( info.GetDamageType() == DMG_BLAST ) && ( info.GetDamage() > 125.0f ) && ( m_iHealth + info.GetDamage() / 2 <= 0 ) )
 			return;
 	}
 
