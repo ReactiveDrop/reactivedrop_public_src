@@ -549,10 +549,10 @@ void CASW_Weapon::ItemPostFrame( void )
 	// -----------------------
 	//  No buttons down
 	// -----------------------
-	if ( !( /*bAttack1 ||*/ bAttack2 || bReload ) )
+	if ( !bAttack2 && !bReload )
 	{
 		// no fire buttons down or reloading
-		if ( !ReloadOrSwitchWeapons() && ( m_bInReload == false ) )
+		if ( !ReloadOrSwitchWeapons() && !m_bInReload && !bAttack1 )
 		{
 			WeaponIdle();
 		}
