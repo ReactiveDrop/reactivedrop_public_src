@@ -35,9 +35,11 @@ BEGIN_NETWORK_TABLE( CASW_Weapon_Pistol, DT_ASW_Weapon_Pistol )
 #ifdef CLIENT_DLL
 	// recvprops
 	RecvPropTime( RECVINFO( m_fSlowTime ) ),
+	RecvPropBool( RECVINFO( m_bIsSingle ) ),
 #else
 	// sendprops
 	SendPropTime( SENDINFO( m_fSlowTime ) ),
+	SendPropBool( SENDINFO( m_bIsSingle ) ),
 #endif
 END_NETWORK_TABLE()
 
@@ -58,6 +60,9 @@ END_DATADESC()
 #endif
 
 LINK_ENTITY_TO_CLASS( asw_weapon_pistol, CASW_Weapon_Pistol );
+#ifndef CLIENT_DLL
+LINK_ENTITY_TO_CLASS( asw_weapon_pistol_single, CASW_Weapon_Pistol );
+#endif
 PRECACHE_WEAPON_REGISTER(asw_weapon_pistol);
 
 #ifndef CLIENT_DLL
@@ -255,6 +260,19 @@ void CASW_Weapon_Pistol::Precache()
 	PrecacheScriptSound("ASW_Pistol.ReloadA");
 	PrecacheScriptSound("ASW_Pistol.ReloadB");
 
+#ifndef CLIENT_DLL
+	m_bIsSingle = false;
+	if ( ClassMatches( "asw_weapon_pistol_single" ) )
+	{
+		m_bIsSingle = true;
+
+		PrecacheModel( "models/weapons/pistol/pistol_single.mdl" );
+
+		// swap the entity class so we get the weapon script that exists
+		SetClassname( "asw_weapon_pistol" );
+	}
+#endif
+
 	BaseClass::Precache();
 }
 
@@ -370,7 +388,23 @@ int CASW_Weapon_Pistol::GetWeaponSubSkillId()
 	return ASW_MARINE_SUBSKILL_ACCURACY_PISTOL_DMG;
 }
 
-#ifdef CLIENT_DLL
+#ifdef GAME_DLL
+const char *CASW_Weapon_Pistol::GetViewModel( int viewmodelindex ) const
+{
+	if ( m_bIsSingle )
+		return "models/weapons/pistol/pistol_single.mdl";
+
+	return BaseClass::GetViewModel( viewmodelindex );
+}
+
+const char *CASW_Weapon_Pistol::GetWorldModel( void ) const
+{
+	if ( m_bIsSingle )
+		return "models/weapons/pistol/pistol_single.mdl";
+
+	return BaseClass::GetWorldModel();
+}
+#else
 const char* CASW_Weapon_Pistol::GetPartialReloadSound(int iPart)
 {
 	switch (iPart)
@@ -386,8 +420,7 @@ const char* CASW_Weapon_Pistol::GetPartialReloadSound(int iPart)
 // user message based tracer type
 const char* CASW_Weapon_Pistol::GetUTracerType()
 {
-	//return "ASWUTracerDual";
-	if ( m_currentPistol == ASW_WEAPON_PISTOL_RIGHT )
+	if ( m_currentPistol == ASW_WEAPON_PISTOL_RIGHT && !m_bIsSingle )
 	{
 		return "ASWUTracerDualRight";
 	}

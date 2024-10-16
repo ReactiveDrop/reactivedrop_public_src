@@ -64,12 +64,14 @@ public:
 
 		virtual bool IsRapidFire() { return false; }
 		virtual float GetMadFiringBias() { return 0.2f; }	// scales the rate at which the mad firing counter goes up when we shoot aliens with this weapon
+		virtual const char *GetViewModel( int viewmodelindex = 0 ) const;
+		virtual const char *GetWorldModel( void ) const;
 	#else
 		virtual const char* GetPartialReloadSound(int iPart);
 		//virtual const char* GetTracerEffectName() { return "tracer_pistol"; }	// particle effect name
 		//virtual const char* GetMuzzleEffectName() { return "muzzle_pistol"; }	// particle effect name
 
-		virtual bool DisplayClipsDoubled() { return true; }
+		virtual bool DisplayClipsDoubled() { return !m_bIsSingle; }				// dual weilded guns should show ammo doubled up to complete the illusion of holding two guns
 		virtual const char* GetTracerEffectName() { return "tracer_pistol"; }	// particle effect name
 		virtual const char* GetMuzzleEffectName() { return "muzzle_pistol"; }	// particle effect name
 	#endif
@@ -77,6 +79,9 @@ public:
 	virtual bool HasSecondaryAttack() override { return false; } // weapon has no secondary fire
 
 	virtual const char* GetUTracerType();
+
+	CNetworkVar( bool, m_bIsSingle );
+
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_PISTOL; }
 
