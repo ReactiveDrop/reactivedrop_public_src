@@ -737,7 +737,7 @@
 	"channel"		"CHAN_WEAPON"
 	"volume"		"0.8"
 	"soundlevel"	"SNDLVL_85dB"
-	"wave"			"null.wav"
+	"wave"			"weapons\3D\meds\satcheloff.wav"
 }
 
 
@@ -1100,7 +1100,7 @@
 
 	"soundlevel"	"SNDLVL_NORM"
 
-	"wave"			"ambient/fire/large_loop.wav"
+	"wave"			"weapons\3d\mines\incendiary_loop.wav"
 }
 
 "ASWGrenade.Alarm"
@@ -1920,8 +1920,18 @@
 	"soundlevel"	"SNDLVL_75dB"
 	"volume"		"0.75"
 	"pitch"			"100"
-	"wave"			"^weapons/3D/plasma/plasmaloop.wav"
+	"wave"			"^weapons/3D/plasma/Plasma_loop.wav"
 }
+
+"ASW_Weapon_Plasma_Thrower.Spin"
+{
+	"channel"		"CHAN_ITEM"
+	"soundlevel"	"SNDLVL_75dB"
+	"volume"		"0.75"
+	"pitch"			"100"
+	"wave"			"^weapons/3D/plasma/Plasma_spin.wav"
+}
+
 
 "ASW_Weapon_Plasma_Thrower.Stop"
 {
@@ -1929,7 +1939,7 @@
 	"soundlevel"	"SNDLVL_75dB"
 	"volume"		"0.75"
 	"pitch"			"100"
-	"wave"			"^weapons/3D/plasma/plasmastop.wav"
+	"wave"			"^weapons/3D/plasma/plasma_stop.wav"
 }
 
 "ASW_Weapon_Plasma_Thrower.Airblast"
