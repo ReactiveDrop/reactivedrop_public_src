@@ -1,7 +1,6 @@
 #include "cbase.h"
 #include "rd_collections_crafting.h"
 #include "rd_crafting_defs.h"
-#include "rd_inventory_shared.h"
 #include "nb_button.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -29,6 +28,11 @@ CRD_Crafting_Panel::CRD_Crafting_Panel( CRD_Collection_Tab_Crafting *pTab )
 	m_pLblFlavor = new vgui::Label( this, "LblFlavor", "" );
 	m_pLblWarning = new vgui::Label( this, "LblWarning", "" );
 	m_pBtnCraft = new CNB_Button( this, "BtnCraft", "#rd_crafting_submit_ready", this, "ConfirmCraft" );
+	m_pLblIngredients = new vgui::Label( this, "LblIngredients", "#rd_crafting_required_items" );
+	m_pGridIngredients = new CRD_Crafting_Item_Grid( this, "GridIngredients" );
+	m_pGridIngredientsTall = new CRD_Crafting_Item_Grid( this, "GridIngredientsTall" );
+	m_pLblOutputs = new vgui::Label( this, "LblOutputs", "#rd_crafting_output_items" );
+	m_pGridOutputs = new CRD_Crafting_Item_Grid( this, "GridOutputs" );
 	m_iSelectedRecipe = -1;
 	m_SelectedRecipeOutput = 0;
 	m_iLastFullInventoryUpdates = -1;
@@ -53,6 +57,16 @@ void CRD_Crafting_Panel::ApplySchemeSettings( vgui::IScheme *pScheme )
 	m_pLblFlavor->SetText( "" );
 	m_pLblWarning->SetText( "" );
 	m_pBtnCraft->SetVisible( false );
+
+	m_pGridIngredients->DeleteAllEntries();
+	m_pGridIngredientsTall->DeleteAllEntries();
+	m_pGridOutputs->DeleteAllEntries();
+
+	m_pLblIngredients->SetVisible( false );
+	m_pGridIngredients->SetVisible( false );
+	m_pGridIngredientsTall->SetVisible( false );
+	m_pLblOutputs->SetVisible( false );
+	m_pGridOutputs->SetVisible( false );
 
 	m_iLastFullInventoryUpdates = ReactiveDropInventory::g_nFullInventoryUpdates;
 	m_pGplRecipes->SetScrollBarVisible( true );
@@ -203,6 +217,69 @@ void CRD_Crafting_Panel::OnCommand( const char *szCommand )
 		m_SelectedItems.Purge();
 
 		UpdateCraftState();
+	}
+	else if ( const char *szItemNumber = StringAfterPrefix( szCommand, "RemoveItem" ) )
+	{
+		int iItemNumber = V_atoi( szItemNumber );
+		if ( m_SelectedItems.IsValidIndex( iItemNumber ) )
+		{
+			m_SelectedItems.Remove( iItemNumber );
+			UpdateCraftState();
+		}
+	}
+	else if ( FStrEq( szCommand, "AddItem" ) )
+	{
+		// TODO: show m_PossibleNextIngredients
+		DebuggerBreakIfDebugging();
+	}
+	else if ( FStrEq( szCommand, "ConfirmCraft" ) )
+	{
+		if ( m_SelectedRecipeOutput == 0 )
+		{
+			return;
+		}
+
+		CUtlVector<SteamItemInstanceID_t> ingredient;
+		CUtlVector<uint32> quantity;
+		FOR_EACH_VEC( m_SelectedItems, i )
+		{
+			int j = ingredient.Find( m_SelectedItems[i] );
+			if ( j == ingredient.InvalidIndex() )
+			{
+				ingredient.AddToTail( m_SelectedItems[i] );
+				quantity.AddToTail( 1 );
+			}
+			else
+			{
+				quantity[j]++;
+			}
+		}
+		FOR_EACH_VEC( m_AutoSelectedItems, i )
+		{
+			int j = ingredient.Find( m_AutoSelectedItems[i] );
+			if ( j == ingredient.InvalidIndex() )
+			{
+				ingredient.AddToTail( m_AutoSelectedItems[i] );
+				quantity.AddToTail( 1 );
+			}
+			else
+			{
+				quantity[j]++;
+			}
+		}
+
+		ReactiveDropInventory::PerformCraftingAction( ReactiveDropInventory::CRAFT_RECIPE, m_SelectedRecipeOutput,
+			std::initializer_list<SteamItemInstanceID_t>( ingredient.Base(), ingredient.Base() + ingredient.Count() ),
+			std::initializer_list<uint32>( quantity.Base(), quantity.Base() + quantity.Count() ) );
+
+		m_pBtnCraft->SetText( "#rd_crafting_submit_in_progress" );
+		m_pBtnCraft->SetEnabled( false );
+
+		m_SelectedRecipeOutput = 0;
+		m_SelectedItems.Purge();
+		m_AutoSelectedItems.Purge();
+		m_FilteredVariants.Purge();
+		m_PossibleNextIngredients.Purge();
 	}
 	else
 	{
@@ -366,8 +443,30 @@ void CRD_Crafting_Panel::UpdateCraftState()
 		}
 	}
 
+	m_PossibleNextIngredients.Purge();
+	if ( possibleNextIngredients.Count() != 0 )
+	{
+		ReactiveDropInventory::GetLocalItemCache( m_PossibleNextIngredients );
+		FOR_EACH_VEC_BACK( m_PossibleNextIngredients, i )
+		{
+			if ( !possibleNextIngredients.IsValidIndex( possibleNextIngredients.Find( m_PossibleNextIngredients[i].ItemID ) ) )
+			{
+				m_PossibleNextIngredients.Remove( i );
+			}
+		}
+	}
+
+	m_pGridIngredients->DeleteAllEntries();
+	m_pGridIngredientsTall->DeleteAllEntries();
+	m_pGridOutputs->DeleteAllEntries();
 	if ( m_FilteredVariants.Count() == 0 )
 	{
+		m_pLblIngredients->SetVisible( false );
+		m_pGridIngredients->SetVisible( false );
+		m_pGridIngredientsTall->SetVisible( false );
+		m_pLblOutputs->SetVisible( false );
+		m_pGridOutputs->SetVisible( false );
+
 		m_pBtnCraft->SetText( "#rd_crafting_submit_missing_ingredients" );
 		m_pBtnCraft->SetEnabled( false );
 		m_pBtnCraft->SetVisible( true );
@@ -379,18 +478,87 @@ void CRD_Crafting_Panel::UpdateCraftState()
 
 		m_SelectedRecipeOutput = possibleAutoVariants[0]->m_ExchangeItem;
 
+		FOR_EACH_VEC( m_SelectedItems, i )
+		{
+			ReactiveDropInventory::ItemInstance_t details;
+			if ( const ReactiveDropInventory::ItemInstance_t *pInstance = ReactiveDropInventory::GetLocalItemCache( m_SelectedItems[i] ) )
+			{
+				details = *pInstance;
+			}
+			details.Quantity = 1;
+			m_pGridIngredients->AddEntry( new CRD_Crafting_Item_Entry( m_pGridIngredients, this, i, true, details ) );
+		}
+		FOR_EACH_VEC( m_AutoSelectedItems, i )
+		{
+			ReactiveDropInventory::ItemInstance_t details;
+			if ( const ReactiveDropInventory::ItemInstance_t *pInstance = ReactiveDropInventory::GetLocalItemCache( m_AutoSelectedItems[i] ) )
+			{
+				details = *pInstance;
+			}
+			details.Quantity = 1;
+			m_pGridIngredients->AddEntry( new CRD_Crafting_Item_Entry( m_pGridIngredients, this, m_SelectedItems.Count() + i, false, details ) );
+		}
+
+		const ReactiveDropInventory::ItemDef_t *pOutputDef = ReactiveDropInventory::GetItemDef( m_SelectedRecipeOutput );
+		if ( pOutputDef && pOutputDef->Type == "bundle" )
+		{
+			CSplitString bundleItems( pOutputDef->Bundle, ";" );
+			FOR_EACH_VEC( bundleItems, i )
+			{
+				CSplitString itemQuantity( bundleItems[i], "x" );
+				Assert( itemQuantity.Count() == 1 || itemQuantity.Count() == 2 );
+
+				ReactiveDropInventory::ItemInstance_t details;
+				details.ItemDefID = V_atoi( itemQuantity[0] );
+				details.Quantity = itemQuantity.Count() > 1 ? V_atoi( itemQuantity[1] ) : 1;
+				m_pGridOutputs->AddEntry( new CRD_Crafting_Item_Entry( m_pGridOutputs, this, i, false, details ) );
+			}
+		}
+		else
+		{
+			ReactiveDropInventory::ItemInstance_t details;
+			details.ItemDefID = m_SelectedRecipeOutput;
+			details.Quantity = 1;
+			m_pGridOutputs->AddEntry( new CRD_Crafting_Item_Entry( m_pGridOutputs, this, 0, false, details ) );
+		}
+
+		m_pLblIngredients->SetVisible( true );
+		m_pGridIngredients->SetVisible( true );
+		m_pGridIngredientsTall->SetVisible( false );
+		m_pLblOutputs->SetVisible( true );
+		m_pGridOutputs->SetVisible( true );
+
 		m_pBtnCraft->SetText( "#rd_crafting_submit_ready" );
 		m_pBtnCraft->SetEnabled( true );
 		m_pBtnCraft->SetVisible( true );
 	}
 	else
 	{
+		Assert( m_PossibleNextIngredients.Count() != 0 );
+
+		FOR_EACH_VEC( m_SelectedItems, i )
+		{
+			ReactiveDropInventory::ItemInstance_t details;
+			if ( const ReactiveDropInventory::ItemInstance_t *pInstance = ReactiveDropInventory::GetLocalItemCache( m_SelectedItems[i] ) )
+			{
+				details = *pInstance;
+			}
+			details.Quantity = 1;
+			m_pGridIngredientsTall->AddEntry( new CRD_Crafting_Item_Entry( m_pGridIngredientsTall, this, i, true, details ) );
+		}
+
+		m_pGridIngredientsTall->AddEntry( new CRD_Crafting_Item_Entry_Add( m_pGridIngredientsTall, this ) );
+
+		m_pLblIngredients->SetVisible( true );
+		m_pGridIngredients->SetVisible( false );
+		m_pGridIngredientsTall->SetVisible( true );
+		m_pLblOutputs->SetVisible( false );
+		m_pGridOutputs->SetVisible( false );
+
 		m_pBtnCraft->SetText( "#rd_crafting_submit_unselected_ingredients" );
 		m_pBtnCraft->SetEnabled( false );
 		m_pBtnCraft->SetVisible( true );
 	}
-
-	// TODO: show items
 }
 
 BaseModUI::CRD_Crafting_Recipe_Button::CRD_Crafting_Recipe_Button( CRD_Crafting_Panel *pParent, const char *szRecipeLabel, int iRecipeIndex )
@@ -404,4 +572,37 @@ void BaseModUI::CRD_Crafting_Recipe_Button::ApplySchemeSettings( vgui::IScheme *
 
 	SetTall( YRES( 20 ) );
 	SetStyle( BUTTON_FLYOUTITEM );
+}
+
+CRD_Crafting_Item_Grid::CRD_Crafting_Item_Grid( CRD_Crafting_Panel *pParent, const char *szPanelName )
+	: BaseClass( pParent->m_pParent )
+{
+	SetParent( pParent );
+	SetName( szPanelName );
+}
+
+CRD_Crafting_Item_Entry::CRD_Crafting_Item_Entry( TGD_Grid *pGrid, CRD_Crafting_Panel *pParent, int index, bool bRemovable, const ReactiveDropInventory::ItemInstance_t &details )
+	: BaseClass( pGrid, "RecipeItem", index, details )
+{
+	m_pCrafting = pParent;
+	m_bRemovable = bRemovable;
+}
+
+void CRD_Crafting_Item_Entry::ApplyEntry()
+{
+	if ( m_bRemovable )
+	{
+		m_pCrafting->OnCommand( VarArgs( "RemoveItem%d", m_Index ) );
+	}
+}
+
+CRD_Crafting_Item_Entry_Add::CRD_Crafting_Item_Entry_Add( TGD_Grid *pGrid, CRD_Crafting_Panel *pParent )
+	: BaseClass( pGrid, "RecipeAddItem" )
+{
+	m_pCrafting = pParent;
+}
+
+void CRD_Crafting_Item_Entry_Add::ApplyEntry()
+{
+	m_pCrafting->OnCommand( "AddItem" );
 }

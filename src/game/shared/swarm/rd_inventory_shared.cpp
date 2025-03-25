@@ -1623,7 +1623,7 @@ public:
 
 			bool bHeldBack = false;
 
-			if ( !pDef->IsTagTool )
+			if ( pDef->Type != "tag_tool" )
 			{
 				FOR_EACH_VEC( pDef->CompressedDynamicProps, j )
 				{
@@ -2991,7 +2991,9 @@ namespace ReactiveDropInventory
 		char szKey[256];
 
 		FETCH_PROPERTY( "type" );
-		CUtlString szType = szValue;
+		pItemDef->Type = szValue;
+		FETCH_PROPERTY( "bundle" );
+		pItemDef->Bundle = szValue;
 		FETCH_PROPERTY( "item_slot" );
 		pItemDef->ItemSlot = szValue;
 		FETCH_PROPERTY( "equip_index" );
@@ -3011,7 +3013,7 @@ namespace ReactiveDropInventory
 		{
 			CSplitString CompressedDynamicProps{ szValue, ";" };
 			Assert( CompressedDynamicProps.Count() <= RD_ITEM_MAX_COMPRESSED_DYNAMIC_PROPS - ( pItemDef->AccessoryTag.IsEmpty() ? 0 : pItemDef->AccessoryLimit * RD_ITEM_MAX_COMPRESSED_DYNAMIC_PROPS_PER_ACCESSORY ) );
-			Assert( szType != "tag_tool" || CompressedDynamicProps.Count() <= RD_ITEM_MAX_COMPRESSED_DYNAMIC_PROPS_PER_ACCESSORY );
+			Assert( pItemDef->Type != "tag_tool" || CompressedDynamicProps.Count() <= RD_ITEM_MAX_COMPRESSED_DYNAMIC_PROPS_PER_ACCESSORY );
 			FOR_EACH_VEC( CompressedDynamicProps, i )
 			{
 				pItemDef->CompressedDynamicProps.CopyAndAddToTail( CompressedDynamicProps[i] );
@@ -3193,12 +3195,10 @@ namespace ReactiveDropInventory
 		Assert( !V_strcmp( szValue, "" ) || !V_strcmp( szValue, "1" ) || !V_strcmp( szValue, "0" ) );
 		pItemDef->AutoStack = !V_strcmp( szValue, "1" );
 
-		pItemDef->IsTagTool = szType == "tag_tool";
-
 #ifdef CLIENT_DLL
 		pItemDef->Icon = NULL;
 		pItemDef->AccessoryImage = NULL;
-		if ( pItemDef->IsTagTool )
+		if ( pItemDef->Type == "tag_tool" )
 		{
 			FETCH_PROPERTY( "icon_url" );
 			if ( *szValue )

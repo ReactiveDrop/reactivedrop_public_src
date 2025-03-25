@@ -91,4 +91,51 @@
 		"font"				"DefaultMedium"
 		"fgcolor_override"	"113 142 181 255"
 	}
+
+	"LblIngredients" {
+		"ControlName"		"Label"
+		"fieldName"			"LblIngredients"
+		"xpos"				"220"
+		"ypos"				"90"
+		"wide"				"410"
+		"tall"				"15"
+		"labelText"			"#rd_crafting_required_items"
+	}
+
+	"GridIngredients" {
+		"ControlName"		"CRD_Crafting_Item_Grid"
+		"fieldName"			"GridIngredients"
+		"xpos"				"220"
+		"ypos"				"105"
+		"wide"				"70"
+		"tall"				"15"
+	}
+
+	"GridIngredientsTall" {
+		"ControlName"		"CRD_Crafting_Item_Grid"
+		"fieldName"			"GridIngredientsTall"
+		"xpos"				"220"
+		"ypos"				"105"
+		"wide"				"410"
+		"tall"				"175"
+	}
+
+	"LblOutputs" {
+		"ControlName"		"Label"
+		"fieldName"			"LblOutputs"
+		"xpos"				"220"
+		"ypos"				"175"
+		"wide"				"410"
+		"tall"				"15"
+		"labelText"			"#rd_crafting_output_items"
+	}
+
+	"GridOutputs" {
+		"ControlName"		"CRD_Crafting_Item_Grid"
+		"fieldName"			"GridOutputs"
+		"xpos"				"220"
+		"ypos"				"190"
+		"wide"				"410"
+		"tall"				"90"
+	}
 }

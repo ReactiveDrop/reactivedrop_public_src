@@ -630,7 +630,7 @@ public:
 			}
 		}
 
-		if ( pDef->IsTagTool )
+		if ( pDef->Type == "tag_tool" )
 		{
 			Assert( pDef->Tags.GetNumStrings() == 1 && pDef->Tags[0].Count() == 1 && pDef->ID == V_atoi( pDef->Tags[0][0] ) );
 			if ( pDef->Tags.GetNumStrings() == 1 && pDef->Tags[0].Count() == 1 )

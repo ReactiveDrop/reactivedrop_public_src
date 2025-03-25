@@ -89,6 +89,8 @@ namespace ReactiveDropInventory
 	struct ItemDef_t
 	{
 		SteamItemDef_t ID;
+		CUtlString Type;
+		CUtlString Bundle;
 		CUtlString ItemSlot;
 		int EquipIndex{ -1 };
 		CUtlStringMap<CUtlStringList> Tags;
@@ -118,7 +120,6 @@ namespace ReactiveDropInventory
 		bool IsBasic : 1;
 		bool GameOnly : 1;
 		bool AutoStack : 1;
-		bool IsTagTool : 1;
 #ifdef CLIENT_DLL
 		vgui::IImage *Icon{};
 		CUtlVector<vgui::IImage *> StyleIcons{};

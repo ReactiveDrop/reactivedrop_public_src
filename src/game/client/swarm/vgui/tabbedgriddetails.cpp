@@ -875,7 +875,10 @@ void TGD_Grid::OnKeyFocusTicked()
 
 void TGD_Grid::DeleteAllEntries()
 {
-	m_pParent->m_pDetails->DisplayEntry( NULL );
+	if ( m_pParent->m_pDetails )
+	{
+		m_pParent->m_pDetails->DisplayEntry( NULL );
+	}
 	m_hCurrentEntry = NULL;
 
 	FOR_EACH_VEC( m_Entries, i )
@@ -915,7 +918,10 @@ void TGD_Grid::RemoveEntry( TGD_Entry *pEntry )
 void TGD_Grid::DisplayEntry( TGD_Entry *pEntry )
 {
 	m_hCurrentEntry = pEntry;
-	m_pParent->m_pDetails->DisplayEntry( pEntry );
+	if ( m_pParent->m_pDetails )
+	{
+		m_pParent->m_pDetails->DisplayEntry( pEntry );
+	}
 
 	if ( pEntry )
 	{
@@ -935,7 +941,10 @@ void TGD_Grid::DisplayEntry( TGD_Entry *pEntry )
 		}
 	}
 
-	m_pParent->m_pDetails->SetVisible( true );
+	if ( m_pParent->m_pDetails )
+	{
+		m_pParent->m_pDetails->SetVisible( true );
+	}
 	m_pParent->m_pHighlight->SetVisible( true );
 	m_pParent->m_pLabelHighlight->SetVisible( true );
 
@@ -988,7 +997,10 @@ public:
 
 		TGD_Entry *pParent = assert_cast< TGD_Entry * >( GetParent() );
 		pParent->m_pHighlight->SetVisible( true );
-		pParent->m_pParent->m_pParent->m_pDetails->DisplayEntry( pParent );
+		if ( pParent->m_pParent->m_pParent->m_pDetails )
+		{
+			pParent->m_pParent->m_pParent->m_pDetails->DisplayEntry( pParent );
+		}
 
 		if ( !m_bNoScrollOnFocus )
 		{
