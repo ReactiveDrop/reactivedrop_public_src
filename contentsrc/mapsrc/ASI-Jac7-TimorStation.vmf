@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "3337"
+	"mapversion" "3343"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -62,7 +62,7 @@ viewsettings
 world
 {
 	"id" "152641"
-	"mapversion" "3337"
+	"mapversion" "3343"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -148411,7 +148411,9 @@ hidden
 entity
 {
 	"id" "490678"
-	"classname" "func_detail"
+	"classname" "func_clip_vphysics"
+	"StartDisabled" "1"
+	"targetname" "bridge_rotating_clip"
 	solid
 	{
 		"id" "490679"
@@ -148483,14 +148485,14 @@ entity
 		}
 		editor
 		{
-			"color" "0 180 0"
+			"color" "220 30 220"
 			"visgroupshown" "1"
 			"visgroupautoshown" "1"
 		}
 	}
 	editor
 	{
-		"color" "0 180 0"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[6000 -8268]"
@@ -186957,94 +186959,6 @@ entity
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[16000 -5768]"
-	}
-}
-entity
-{
-	"id" "956810"
-	"classname" "func_detail"
-	solid
-	{
-		"id" "956811"
-		side
-		{
-			"id" "41350"
-			"plane" "(-2256 3088 -32) (-2256 3184 -32) (-184 3184 -32)"
-			"material" "TOOLS/TOOLSBLOCKLIGHT"
-			"uaxis" "[1 0 0 0] 0.25"
-			"vaxis" "[0 -1 0 0] 0.25"
-			"rotation" "0"
-			"lightmapscale" "8"
-			"smoothing_groups" "0"
-		}
-		side
-		{
-			"id" "41349"
-			"plane" "(-2256 3184 -36) (-2256 3088 -36) (-184 3088 -36)"
-			"material" "TOOLS/TOOLSBLOCKLIGHT"
-			"uaxis" "[1 0 0 -4] 1"
-			"vaxis" "[0 -1 0 -14] 1"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		side
-		{
-			"id" "41348"
-			"plane" "(-2256 3088 -36) (-2256 3184 -36) (-2256 3184 -32)"
-			"material" "TOOLS/TOOLSBLOCKLIGHT"
-			"uaxis" "[0 1 0 14] 1"
-			"vaxis" "[0 0 -1 28] 1"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		side
-		{
-			"id" "41347"
-			"plane" "(-184 3184 -36) (-184 3088 -36) (-184 3088 -32)"
-			"material" "TOOLS/TOOLSBLOCKLIGHT"
-			"uaxis" "[0 1 0 14] 1"
-			"vaxis" "[0 0 -1 28] 1"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		side
-		{
-			"id" "41346"
-			"plane" "(-2256 3184 -36) (-184 3184 -36) (-184 3184 -32)"
-			"material" "TOOLS/TOOLSBLOCKLIGHT"
-			"uaxis" "[1 0 0 -4] 1"
-			"vaxis" "[0 0 -1 28] 1"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		side
-		{
-			"id" "41345"
-			"plane" "(-184 3088 -36) (-2256 3088 -36) (-2256 3088 -32)"
-			"material" "TOOLS/TOOLSBLOCKLIGHT"
-			"uaxis" "[1 0 0 -4] 1"
-			"vaxis" "[0 0 -1 28] 1"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		editor
-		{
-			"color" "0 180 0"
-			"visgroupshown" "1"
-			"visgroupautoshown" "1"
-		}
-	}
-	editor
-	{
-		"color" "0 180 0"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[6000 -8268]"
 	}
 }
 entity
@@ -255065,6 +254979,7 @@ entity
 	{
 		"OnFullyOpen" "bridge_clipDisable0-1"
 		"OnFullyOpen" "exit_bridge_openPlaySound0-1"
+		"OnFullyOpen" "bridge_rotating_clipEnable01"
 	}
 	solid
 	{
