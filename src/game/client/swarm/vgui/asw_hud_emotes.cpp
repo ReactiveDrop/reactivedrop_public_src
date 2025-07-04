@@ -30,6 +30,10 @@
 #include "engine/IVDebugOverlay.h"
 #include "vguimatsurface/imatsystemsurface.h"
 #include "tier1/fmtstr.h"
+#ifdef CLIENT_DLL
+#include <vector>
+#include <list>
+#endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -37,6 +41,11 @@
 using namespace vgui;
 
 extern ConVar asw_draw_hud;
+
+#ifdef CLIENT_DLL
+extern std::vector<bool> g_bShouldTracePlayer;
+extern const float TRACE_FADE_TIME;
+#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: Shows the marines emote graphics
@@ -55,6 +64,9 @@ public:
 	virtual void PaintEmotesFor( C_ASW_Marine *pMarine );
 	virtual void PaintEmote( C_BaseEntity *pEnt, float fTime, int iTexture, float fScale = 1.0f );
 	virtual bool ShouldDraw( void ) { return asw_draw_hud.GetBool() && CASW_HudElement::ShouldDraw(); }
+
+	virtual void PaintTraces();
+	virtual void PaintTracesFor(C_ASW_Marine* pMarine);
 
 	CPanelAnimationVarAliasType( int, m_nMedicTexture, "MedicEmoteTexture", "vgui/swarm/Emotes/EmoteMedic", "textureid" );
 	CPanelAnimationVarAliasType( int, m_nAmmoTexture, "AmmoEmoteTexture", "vgui/swarm/Emotes/EmoteAmmo", "textureid" );
@@ -100,6 +112,7 @@ void CASWHudEmotes::Paint()
 	VPROF_BUDGET( "CASWHudEmotes::Paint", VPROF_BUDGETGROUP_ASW_CLIENT );
 	BaseClass::Paint();
 	PaintEmotes();
+	PaintTraces();
 }
 
 void CASWHudEmotes::PaintEmotes()
@@ -273,6 +286,79 @@ void CASWHudEmotes::PaintEmote( C_BaseEntity *pEnt, float fTime, int iTexture, f
 
 			//surface()->DrawTexturedRect(xPos - HalfW, yPos - HalfH,
 										//xPos + HalfW, yPos + HalfH);
+		}
+	}
+}
+
+void CASWHudEmotes::PaintTraces()
+{
+	C_ASW_Game_Resource* pGameResource = ASWGameResource();
+	if (!pGameResource)
+		return;
+
+	for (int i = 0; i < pGameResource->GetMaxMarineResources(); i++)
+	{
+		C_ASW_Marine_Resource* pMR = pGameResource->GetMarineResource(i);
+		if (!pMR)
+			continue;
+
+		C_ASW_Marine* marine = pMR->GetMarineEntity();
+		if (!pMR->IsInhabited() || !marine || !g_bShouldTracePlayer[pMR->GetCommanderIndex()])
+			continue;
+
+		PaintTracesFor(marine);
+	}
+}
+
+void CASWHudEmotes::PaintTracesFor(C_ASW_Marine* pMarine)
+{
+	for (auto iter = pMarine->m_lstTracePlayerMovementList.begin(); iter != pMarine->m_lstTracePlayerMovementList.end(); ++iter)
+	{
+		float fTime = (*iter).m_flTraceTime;
+		Vector vecPosition = (*iter).m_vecPosition;
+
+		if (fTime <= 0)
+		{
+			continue; // no trace to draw
+		}
+
+		// draw a circle at the position of the trace in world space
+		// and fade it out over time
+		float fAlpha = pow(((fTime / 3.0) - (int)(fTime / 3.0)),4);
+		fAlpha = clamp(fAlpha, 0.0f, 1.0f);
+		int iTexture = m_nSmileTexture;
+
+		Vector screenPos;
+		// 将世界坐标转换为屏幕坐标
+		if (!debugoverlay->ScreenPosition(vecPosition, screenPos))
+		{
+			float xPos = screenPos[0];
+			float yPos = screenPos[1];
+
+			if (iTexture != -1)
+			{
+				// 计算大小，随时间略微变化
+				float fSize = 0.9f + 0.1f * fAlpha;
+
+				// 应用屏幕高度比例和自定义缩放
+				float fScale = (ScreenHeight() / 768.0f);
+				float HalfW = 16.0f * fScale * fSize;
+				float HalfH = 16.0f * fScale * fSize;
+
+				// 设置颜色和纹理
+				surface()->DrawSetColor(Color(255, 255, 255, fAlpha * 255.0f));
+				surface()->DrawSetTexture(iTexture);
+
+				// 绘制纹理多边形
+				Vertex_t points[4] =
+				{
+					Vertex_t(Vector2D(xPos - HalfW, yPos - HalfH), Vector2D(0, 0)),
+					Vertex_t(Vector2D(xPos + HalfW, yPos - HalfH), Vector2D(1, 0)),
+					Vertex_t(Vector2D(xPos + HalfW, yPos + HalfH), Vector2D(1, 1)),
+					Vertex_t(Vector2D(xPos - HalfW, yPos + HalfH), Vector2D(0, 1))
+				};
+				surface()->DrawTexturedPolygon(4, points);
+			}
 		}
 	}
 }

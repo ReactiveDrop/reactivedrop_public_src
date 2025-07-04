@@ -49,6 +49,10 @@
 #include <vgui/IScheme.h>
 #include "stats_report.h"
 #include "asw_weapon_night_vision.h"
+#ifdef CLIENT_DLL
+#include <vector>
+#include <list>
+#endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -102,6 +106,11 @@ extern ConVar rd_team_color_beta;
 extern ConVar rd_team_color_ally;
 extern ConVar rd_team_color_enemy;
 extern float g_fMarinePoisonDuration;
+
+#ifdef CLIENT_DLL
+std::vector<bool> g_bShouldTracePlayer = std::vector<bool>(MAX_PLAYERS, true); // whether we have a trace position for this player
+const float TRACE_FADE_TIME = 60.0f; // how long to keep the trace positions for
+#endif
 
 #define FLASHLIGHT_DISTANCE		1000
 #define ASW_PROJECTOR_FLASHLIGHT 1
@@ -859,6 +868,8 @@ void C_ASW_Marine::ClientThink()
 	TickEmotes( deltatime );
 	TickRedName( deltatime );
 
+	TickTracePlayerMovement(deltatime);
+
 	UpdateFireEmitters();
 	UpdateJumpJetEffects();
 	UpdateElectrifiedArmor();
@@ -973,7 +984,28 @@ void C_ASW_Marine::DoWaterRipples()
 		DispatchEffect( "aswwatersplash", data );
 		//static Vector s_MarineWaterSplashColor( 0.5, 0.5, 0.5 );
 		//FX_ASWWaterRipple(data.m_vOrigin, 1.0f, &s_MarineWaterSplashColor, 1.5f, 0.1f);
-	}	
+	}
+}
+
+void C_ASW_Marine::TickTracePlayerMovement(float d)
+{
+	// insert current time marine position
+	struct TracePlayerMovement_t movement;
+	//get current time
+	movement.m_flTraceTime = TRACE_FADE_TIME;
+	movement.m_vecPosition = GetAbsOrigin() + Vector(0, 0, 5);
+	m_lstTracePlayerMovementList.push_back(movement);
+
+	// update the trace time for each movement trace
+	for (auto iter = m_lstTracePlayerMovementList.begin(); iter != m_lstTracePlayerMovementList.end(); ++iter)
+	{
+		iter->m_flTraceTime -= d;
+	}
+
+	// remove any traces that have expired
+	m_lstTracePlayerMovementList.remove_if([](const auto& item) {
+		return item.m_flTraceTime <= 0;
+		});
 }
 
 void C_ASW_Marine::CreateWeaponEmitters()

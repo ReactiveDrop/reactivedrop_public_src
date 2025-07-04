@@ -16,6 +16,18 @@
 #include "asw_deathmatch_mode.h"
 #include "dlight.h"
 #include "rd_inventory_shared.h"
+#ifdef CLIENT_DLL
+#include <vector>
+#include <list>
+
+struct TracePlayerMovement_t
+{
+	float m_flTraceTime;
+	Vector m_vecPosition;
+};
+#endif
+
+
 
 class C_ASW_Player;
 class C_ASW_Marine_Resource;
@@ -293,6 +305,10 @@ public:
 	// emote system
 	void TickEmotes( float d );
 	bool TickEmote( float d, int bit, float &fEmoteTime );
+#ifdef CLIENT_DLL
+	void TickTracePlayerMovement(float d);
+	std::list<TracePlayerMovement_t> m_lstTracePlayerMovementList = std::list<TracePlayerMovement_t>(); // list of positions and times for the last few frames
+#endif
 	CNetworkVar( int, m_iEmote );
 	int m_iClientEmote;
 	float m_fEmoteMedicTime;
