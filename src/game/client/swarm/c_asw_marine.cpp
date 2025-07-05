@@ -108,7 +108,7 @@ extern ConVar rd_team_color_enemy;
 extern float g_fMarinePoisonDuration;
 
 #ifdef CLIENT_DLL
-std::vector<bool> g_bShouldTracePlayer = std::vector<bool>(MAX_PLAYERS, true); // whether we have a trace position for this player
+std::vector<bool> g_bShouldTracePlayer = std::vector<bool>(MAX_PLAYERS, false); // whether we have a trace position for this player
 const float TRACE_FADE_TIME = 60.0f; // how long to keep the trace positions for
 #endif
 

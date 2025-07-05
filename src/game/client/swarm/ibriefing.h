@@ -71,6 +71,7 @@ public:
 	virtual const IBriefing_ItemInstance &GetEquippedMedal( int nLobbySlot, int nMedalIndex ) = 0;
 	virtual const IBriefing_ItemInstance &GetEquippedSuit( int nLobbySlot ) = 0;
 	virtual const IBriefing_ItemInstance &GetEquippedWeapon( int nLobbySlot, int nWeaponSlot ) = 0;
+	virtual int GetPlayerIndex(int nLobbySlot) { return -1; };
 };
 
 #define NUM_BRIEFING_LOBBY_SLOTS ( ASW_MAX_MARINE_RESOURCES + MAX_PLAYERS - 1 ) // was 9, was 4

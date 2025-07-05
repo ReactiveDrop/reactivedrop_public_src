@@ -43,6 +43,11 @@ public:
 	virtual void CheckTooltip( CNB_Lobby_Tooltip *pTooltip );
 
 	void UpdateChangingSlot();
+
+	void UpdateTraceMeButton();
+	void TraceMePressed();
+	void UpdateTracePlayerButton();
+	void TracePlayerPressed();
 	
 	// == MANAGED_MEMBER_POINTERS_START: Do not edit by hand ==
 	vgui::ImagePanel	*m_pBackground;
@@ -79,16 +84,8 @@ public:
 	SteamItemDef_t m_lastMedal[RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS];
 
 	int m_nLobbySlot;
+	CBitmapButton *m_pTraceMeButton;
+	CBitmapButton* m_pTracePlayerButton;
 };
 
 #endif // _INCLUDED_NB_LOBBY_ROW_H
-
-
-
-
-
-
-
-
-
-

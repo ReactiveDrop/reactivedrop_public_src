@@ -20,11 +20,15 @@
 #include "gameui/swarm/vdropdownmenu.h"
 #include "gameui/swarm/vhybridbutton.h"
 #include "rd_inventory_shared.h"
+#include <vector>
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 extern ConVar rd_legacy_ui;
+#ifdef CLIENT_DLL
+extern std::vector<bool> g_bShouldTracePlayer;
+#endif
 
 using namespace BaseModUI;
 
@@ -98,10 +102,22 @@ CNB_Lobby_Row::CNB_Lobby_Row( vgui::Panel *parent, const char *name ) : BaseClas
 	m_pXPBar->m_flBorder = 1.5f;
 	m_nLobbySlot = 0;
 
+	// Create the TraceMe button
+	m_pTraceMeButton = new CBitmapButton( this, "TraceMeButton", "");
+	m_pTraceMeButton->AddActionSignalTarget( this );
+	m_pTraceMeButton->SetCommand( "TraceMePressed" );
+
+	// Create and initialize TracePlayerButton
+	m_pTracePlayerButton = new CBitmapButton( this, "TracePlayerButton", "" );
+	m_pTracePlayerButton->AddActionSignalTarget( this );
+	m_pTracePlayerButton->SetCommand( "TracePlayerPressed" );
+
 	GetControllerFocus()->AddToFocusList( m_pPortraitButton );
 	GetControllerFocus()->AddToFocusList( m_pWeaponButton0 );
 	GetControllerFocus()->AddToFocusList( m_pWeaponButton1 );
 	GetControllerFocus()->AddToFocusList( m_pWeaponButton2 );
+	GetControllerFocus()->AddToFocusList( m_pTraceMeButton );
+	GetControllerFocus()->AddToFocusList( m_pTracePlayerButton );
 }
 
 CNB_Lobby_Row::~CNB_Lobby_Row()
@@ -110,6 +126,8 @@ CNB_Lobby_Row::~CNB_Lobby_Row()
 	GetControllerFocus()->RemoveFromFocusList( m_pWeaponButton0 );
 	GetControllerFocus()->RemoveFromFocusList( m_pWeaponButton1 );
 	GetControllerFocus()->RemoveFromFocusList( m_pWeaponButton2 );
+	GetControllerFocus()->RemoveFromFocusList( m_pTraceMeButton );
+	GetControllerFocus()->RemoveFromFocusList( m_pTracePlayerButton );
 }
 
 void CNB_Lobby_Row::ApplySchemeSettings( vgui::IScheme *pScheme )
@@ -140,6 +158,8 @@ void CNB_Lobby_Row::OnThink()
 
 	UpdateDetails();
 	UpdateChangingSlot();
+	UpdateTraceMeButton(); // Update the TraceMe button state
+	UpdateTracePlayerButton(); // Update the TracePlayer button state
 }
 
 void CNB_Lobby_Row::UpdateDetails()
@@ -426,6 +446,16 @@ void CNB_Lobby_Row::UpdateDetails()
 			pSilhouette->SetVisible( false );
 		}
 	}
+
+	// Set the images for the TraceMe button
+	const char* szTraceMeButtonEnabled = "vgui/swarm/Emotes/EmoteSmile";
+	const char* szTraceMeButtonDisabled = "vgui/swarm/Emotes/EmoteStop";
+	const char* szTraceMeButtonPressed = "vgui/swarm/Emotes/EmoteAmmo";
+	const char* szTraceMeButtonMouseOver = "vgui/swarm/Emotes/EmoteMedic";
+	m_pTraceMeButton->SetImage(CBitmapButton::BUTTON_ENABLED, szTraceMeButtonEnabled, lightblue);
+	m_pTraceMeButton->SetImage(CBitmapButton::BUTTON_DISABLED, szTraceMeButtonDisabled, lightblue);
+	m_pTraceMeButton->SetImage(CBitmapButton::BUTTON_PRESSED, szTraceMeButtonPressed, white);
+	m_pTraceMeButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, szTraceMeButtonMouseOver, white);
 }
 
 void CNB_Lobby_Row::CheckTooltip( CNB_Lobby_Tooltip *pTooltip )
@@ -465,60 +495,68 @@ void CNB_Lobby_Row::CheckTooltip( CNB_Lobby_Tooltip *pTooltip )
 
 extern ConVar developer;
 
-void CNB_Lobby_Row::OnCommand( const char *command )
+void CNB_Lobby_Row::OnCommand(const char* command)
 {
-	CNB_Main_Panel *pMainPanel = GetMainPanel();
-	if ( !pMainPanel )
+	CNB_Main_Panel* pMainPanel = GetMainPanel();
+	if (!pMainPanel)
 		return;
 
-	if ( !Q_stricmp( command, "ChangeMarine" ) )
+	if (!Q_stricmp(command, "ChangeMarine"))
 	{
-		pMainPanel->ChangeMarine( m_nLobbySlot );
+		pMainPanel->ChangeMarine(m_nLobbySlot);
 	}
-	else if ( !Q_stricmp( command, "ChangeWeapon0" ) )
+	else if (!Q_stricmp(command, "ChangeWeapon0"))
 	{
-		pMainPanel->ChangeWeapon( m_nLobbySlot, 0 );
-	}	
-	else if ( !Q_stricmp( command, "ChangeWeapon1" ) )
-	{
-		pMainPanel->ChangeWeapon( m_nLobbySlot, 1 );
+		pMainPanel->ChangeWeapon(m_nLobbySlot, 0);
 	}
-	else if ( !Q_stricmp( command, "ChangeWeapon2" ) )
+	else if (!Q_stricmp(command, "ChangeWeapon1"))
 	{
-		pMainPanel->ChangeWeapon( m_nLobbySlot, 2 );
+		pMainPanel->ChangeWeapon(m_nLobbySlot, 1);
 	}
-	else if ( !Q_stricmp( command, "PlayerFlyout" ) )
+	else if (!Q_stricmp(command, "ChangeWeapon2"))
 	{
-		if ( !Briefing()->IsLobbySlotBot( m_nLobbySlot ) && Briefing()->GetCommanderSteamID( m_nLobbySlot ).IsValid() )
+		pMainPanel->ChangeWeapon(m_nLobbySlot, 2);
+	}
+	else if (!Q_stricmp(command, "PlayerFlyout"))
+	{
+		if (!Briefing()->IsLobbySlotBot(m_nLobbySlot) && Briefing()->GetCommanderSteamID(m_nLobbySlot).IsValid())
 		{
 			OpenPlayerFlyout();
 		}
 	}
-	else if ( !Q_stricmp( command, "#L4D360UI_SendMessage" ) )
+	else if (!Q_stricmp(command, "#L4D360UI_SendMessage"))
 	{
-		BaseModUI::CUIGameData::Get()->ExecuteOverlayCommand( "chat", pMainPanel->m_FlyoutSteamID );
+		BaseModUI::CUIGameData::Get()->ExecuteOverlayCommand("chat", pMainPanel->m_FlyoutSteamID);
 	}
-	else if ( !Q_stricmp( command, "#L4D360UI_ViewSteamID" ) )
+	else if (!Q_stricmp(command, "#L4D360UI_ViewSteamID"))
 	{
-		BaseModUI::CUIGameData::Get()->ExecuteOverlayCommand( "steamid", pMainPanel->m_FlyoutSteamID );
+		BaseModUI::CUIGameData::Get()->ExecuteOverlayCommand("steamid", pMainPanel->m_FlyoutSteamID);
 	}
-	else if ( !Q_stricmp( command, "#L4D360UI_ViewSteamStats" ) )
+	else if (!Q_stricmp(command, "#L4D360UI_ViewSteamStats"))
 	{
 #if !defined( _X360 ) && !defined( NO_STEAM )
-		if ( SteamUser() )
+		if (SteamUser())
 		{
-			if ( developer.GetBool() )
+			if (developer.GetBool())
 			{
-				Msg( "Local player SteamID = %I64u\n", SteamUser()->GetSteamID().ConvertToUint64() );
-				Msg( "Activating stats for SteamID = %I64u\n", Briefing()->GetCommanderSteamID( m_nLobbySlot ).ConvertToUint64() );
+				Msg("Local player SteamID = %I64u\n", SteamUser()->GetSteamID().ConvertToUint64());
+				Msg("Activating stats for SteamID = %I64u\n", Briefing()->GetCommanderSteamID(m_nLobbySlot).ConvertToUint64());
 			}
 			char statsWeb[256];
-			Q_snprintf( statsWeb, sizeof( statsWeb ), "https://stats.reactivedrop.com/profiles/%I64u?lang=%s&utm_source=briefing",
-				Briefing()->GetCommanderSteamID( m_nLobbySlot ).ConvertToUint64(),
-				SteamApps()->GetCurrentGameLanguage() );
-			BaseModUI::CUIGameData::Get()->ExecuteOverlayUrl( statsWeb );
+			Q_snprintf(statsWeb, sizeof(statsWeb), "https://stats.reactivedrop.com/profiles/%I64u?lang=%s&utm_source=briefing",
+				Briefing()->GetCommanderSteamID(m_nLobbySlot).ConvertToUint64(),
+				SteamApps()->GetCurrentGameLanguage());
+			BaseModUI::CUIGameData::Get()->ExecuteOverlayUrl(statsWeb);
 		}
 #endif
+	}
+	else if (!Q_stricmp(command, "TraceMePressed"))
+	{
+		TraceMePressed();
+	}
+	else if (!Q_stricmp(command, "TracePlayerPressed"))
+	{
+		TracePlayerPressed();
 	}
 }
 
@@ -577,4 +615,75 @@ void CNB_Lobby_Row::UpdateChangingSlot()
 	m_pChangingSlot[ 1 ]->SetVisible( nSlot == 2 );
 	m_pChangingSlot[ 2 ]->SetVisible( nSlot == 3 );
 	m_pChangingSlot[ 3 ]->SetVisible( nSlot == 4 );
+}
+
+void CNB_Lobby_Row::UpdateTraceMeButton()
+{
+    if (!m_pTraceMeButton)
+        return;
+	
+	// Check if the TraceMe button should be enabled or not
+	// It should be enabled if it's an online game, the slot is the local player's slot, the slot is not a bot, the slot is occupied, and the marine profile exists 
+    if (!Briefing()
+		|| Briefing()->IsOfflineGame()
+		|| !Briefing()->IsLobbySlotLocal(m_nLobbySlot)
+		|| Briefing()->IsLobbySlotBot(m_nLobbySlot)
+		|| !Briefing()->IsLobbySlotOccupied(m_nLobbySlot)
+		|| Briefing()->GetMarineProfile(m_nLobbySlot) == NULL)
+    {
+        m_pTraceMeButton->SetVisible(false);
+        return;
+    }
+    m_pTraceMeButton->SetVisible(true);
+}
+
+void CNB_Lobby_Row::TraceMePressed()
+{
+	// Get the local player index
+	int localPlayerIndex = -1;
+	if (engine && engine->IsInGame())
+	{
+		localPlayerIndex = engine->GetLocalPlayer();
+		if (localPlayerIndex < 0 || localPlayerIndex >= gpGlobals->maxClients)
+		{
+			return; // Invalid player index
+		}
+
+		char cmd[128];
+		Q_snprintf(cmd, sizeof(cmd), "rd_lobby_suggest_trace_player %d", localPlayerIndex);
+		// Send a message in chat to all other players to suggest them to trace this player
+		engine->ClientCmd_Unrestricted(cmd);
+	}
+}
+
+void CNB_Lobby_Row::UpdateTracePlayerButton()
+{
+	if (!m_pTracePlayerButton)
+		return;
+
+	// In online games, show the button only for other players (not local player, not bot, and occupied slot)
+	if (!Briefing()
+		|| Briefing()->IsOfflineGame()
+		|| Briefing()->IsLobbySlotLocal(m_nLobbySlot)
+		|| Briefing()->IsLobbySlotBot(m_nLobbySlot)
+		|| !Briefing()->IsLobbySlotOccupied(m_nLobbySlot))
+	{
+		m_pTracePlayerButton->SetVisible(false);
+		return;
+	}
+
+	m_pTracePlayerButton->SetVisible(true);
+}
+
+void CNB_Lobby_Row::TracePlayerPressed()
+{
+	int playerIndex = Briefing()->GetPlayerIndex(m_nLobbySlot);
+	if (playerIndex < 0 || playerIndex >= gpGlobals->maxClients)
+	{
+		Msg("Invalid player index for lobby slot %d\n", m_nLobbySlot);
+		return; // Invalid player index
+	}
+	// flip the trace state for this player
+	g_bShouldTracePlayer[playerIndex] = !g_bShouldTracePlayer[playerIndex];
+	Msg("Trace player %d : %s\n", playerIndex, g_bShouldTracePlayer[playerIndex] ? "true" : "false");
 }

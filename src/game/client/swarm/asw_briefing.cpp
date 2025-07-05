@@ -1083,3 +1083,16 @@ const CRD_ItemInstance &CASW_Briefing::GetEquippedWeapon( int nLobbySlot, int nW
 
 	return instance;
 }
+
+int CASW_Briefing::GetPlayerIndex(int nLobbySlot)
+{
+	if (nLobbySlot < 0 || nLobbySlot >= NUM_BRIEFING_LOBBY_SLOTS || !IsLobbySlotOccupied(nLobbySlot))
+		return -1;
+
+	C_ASW_Player* pPlayer = m_LobbySlotMapping[nLobbySlot].m_hPlayer.Get();
+	if (pPlayer)
+	{
+		return pPlayer->entindex();
+	}
+	return -1; // not found, or not a player
+}

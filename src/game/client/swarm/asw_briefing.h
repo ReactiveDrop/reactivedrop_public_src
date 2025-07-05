@@ -79,6 +79,7 @@ public:
 
 	int LobbySlotToMarineResourceIndex( int nLobbySlot );
 	void UpdateLobbySlotMapping();
+	virtual int GetPlayerIndex(int nLobbySlot);
 
 	int m_nLastLobbySlotMappingFrame;
 	LobbySlotMapping_t m_LobbySlotMapping[ NUM_BRIEFING_LOBBY_SLOTS ];
