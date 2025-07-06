@@ -110,6 +110,7 @@ extern float g_fMarinePoisonDuration;
 #ifdef CLIENT_DLL
 std::vector<bool> g_bShouldTracePlayer = std::vector<bool>(MAX_PLAYERS, false); // whether we have a trace position for this player
 const float TRACE_FADE_TIME = 60.0f; // how long to keep the trace positions for
+ConVar cl_trace_player_max_targets("cl_trace_player_max_targets", "3", FCVAR_ARCHIVE | FCVAR_CLIENTDLL, "Maximum number of players to trace positions for in the client.", true, 1.0f, true, 7.0f);
 #endif
 
 #define FLASHLIGHT_DISTANCE		1000

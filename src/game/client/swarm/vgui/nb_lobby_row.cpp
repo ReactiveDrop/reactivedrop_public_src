@@ -28,6 +28,7 @@
 extern ConVar rd_legacy_ui;
 #ifdef CLIENT_DLL
 extern std::vector<bool> g_bShouldTracePlayer;
+extern ConVar cl_trace_player_max_targets;
 #endif
 
 using namespace BaseModUI;
@@ -102,15 +103,28 @@ CNB_Lobby_Row::CNB_Lobby_Row( vgui::Panel *parent, const char *name ) : BaseClas
 	m_pXPBar->m_flBorder = 1.5f;
 	m_nLobbySlot = 0;
 
+	color32 lightblue;
+	lightblue.r = 66;
+	lightblue.g = 142;
+	lightblue.b = 192;
+	lightblue.a = 255;
+
 	// Create the TraceMe button
 	m_pTraceMeButton = new CBitmapButton( this, "TraceMeButton", "");
-	m_pTraceMeButton->AddActionSignalTarget( this );
-	m_pTraceMeButton->SetCommand( "TraceMePressed" );
+	m_pTraceMeButton->AddActionSignalTarget(this);
+	m_pTraceMeButton->SetCommand("TraceMePressed");
+	m_pTraceMeButton->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/briefing/trace_me_icon_on", lightblue);
+	m_pTraceMeButton->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/briefing/trace_me_icon_pressed", lightblue);
+	m_pTraceMeButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/briefing/trace_me_icon_mouse_over", lightblue);
 
-	// Create and initialize TracePlayerButton
+	// Create the TracePlayerButton
 	m_pTracePlayerButton = new CBitmapButton( this, "TracePlayerButton", "" );
 	m_pTracePlayerButton->AddActionSignalTarget( this );
 	m_pTracePlayerButton->SetCommand( "TracePlayerPressed" );
+	m_pTracePlayerButton->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/briefing/trace_player_icon_off", lightblue);
+	m_pTracePlayerButton->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/briefing/trace_player_icon_pressed", lightblue);
+	m_pTracePlayerButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/briefing/trace_player_icon_mouse_over", lightblue);
+
 
 	GetControllerFocus()->AddToFocusList( m_pPortraitButton );
 	GetControllerFocus()->AddToFocusList( m_pWeaponButton0 );
@@ -145,6 +159,15 @@ void CNB_Lobby_Row::ApplySchemeSettings( vgui::IScheme *pScheme )
 	}
 	m_szLastPortraitImage[ 0 ] = 0;	
 	m_lastSteamID.Set( 0, k_EUniverseInvalid, k_EAccountTypeInvalid );
+
+	// place the button
+	m_pTraceMeButton->SetPos(XRES(4), YRES(35));
+	m_pTracePlayerButton->SetPos(XRES(4), YRES(35));
+	// set width and height
+	m_pTraceMeButton->SetWide(XRES(12));
+	m_pTraceMeButton->SetTall(YRES(12)); 
+	m_pTracePlayerButton->SetWide(XRES(12));
+	m_pTracePlayerButton->SetTall(YRES(12));
 }
 
 void CNB_Lobby_Row::PerformLayout()
@@ -446,16 +469,6 @@ void CNB_Lobby_Row::UpdateDetails()
 			pSilhouette->SetVisible( false );
 		}
 	}
-
-	// Set the images for the TraceMe button
-	const char* szTraceMeButtonEnabled = "vgui/swarm/Emotes/EmoteSmile";
-	const char* szTraceMeButtonDisabled = "vgui/swarm/Emotes/EmoteStop";
-	const char* szTraceMeButtonPressed = "vgui/swarm/Emotes/EmoteAmmo";
-	const char* szTraceMeButtonMouseOver = "vgui/swarm/Emotes/EmoteMedic";
-	m_pTraceMeButton->SetImage(CBitmapButton::BUTTON_ENABLED, szTraceMeButtonEnabled, lightblue);
-	m_pTraceMeButton->SetImage(CBitmapButton::BUTTON_DISABLED, szTraceMeButtonDisabled, lightblue);
-	m_pTraceMeButton->SetImage(CBitmapButton::BUTTON_PRESSED, szTraceMeButtonPressed, white);
-	m_pTraceMeButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, szTraceMeButtonMouseOver, white);
 }
 
 void CNB_Lobby_Row::CheckTooltip( CNB_Lobby_Tooltip *pTooltip )
@@ -649,10 +662,18 @@ void CNB_Lobby_Row::TraceMePressed()
 			return; // Invalid player index
 		}
 
-		char cmd[128];
-		Q_snprintf(cmd, sizeof(cmd), "rd_lobby_suggest_trace_player %d", localPlayerIndex);
-		// Send a message in chat to all other players to suggest them to trace this player
-		engine->ClientCmd_Unrestricted(cmd);
+		if (lastTraceMePressedTime < 0 || (lastTraceMePressedTime + 30.0) <= gpGlobals->curtime)
+		{
+			lastTraceMePressedTime = gpGlobals->curtime; // Prevent spamming the command
+			char cmd[128];
+			Q_snprintf(cmd, sizeof(cmd), "rd_lobby_suggest_trace_player %d", localPlayerIndex);
+			// Send a message in chat to all other players to suggest them to trace this player
+			engine->ClientCmd_Unrestricted(cmd);
+		}
+		else
+		{
+			ClientPrint(CBasePlayer::GetLocalPlayer(), HUD_PRINTTALK, "asw_trace_me_cooling_down");
+		}
 	}
 }
 
@@ -685,5 +706,6 @@ void CNB_Lobby_Row::TracePlayerPressed()
 	}
 	// flip the trace state for this player
 	g_bShouldTracePlayer[playerIndex] = !g_bShouldTracePlayer[playerIndex];
+	m_pTracePlayerButton->SetImage(CBitmapButton::BUTTON_ENABLED, g_bShouldTracePlayer[playerIndex] ? "vgui/briefing/trace_player_icon_on" : "vgui/briefing/trace_player_icon_off", color32{ 66, 142, 192, 255 });
 	Msg("Trace player %d : %s\n", playerIndex, g_bShouldTracePlayer[playerIndex] ? "true" : "false");
 }

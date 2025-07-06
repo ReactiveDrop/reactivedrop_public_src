@@ -84,6 +84,8 @@ public:
 	SteamItemDef_t m_lastMedal[RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS];
 
 	int m_nLobbySlot;
+
+	float lastTraceMePressedTime = -1.0f;
 	CBitmapButton *m_pTraceMeButton;
 	CBitmapButton* m_pTracePlayerButton;
 };
