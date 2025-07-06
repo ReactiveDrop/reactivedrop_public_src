@@ -583,44 +583,6 @@ CON_COMMAND( rd_lobby_debug_filter_distance, "1: close, 2: default, 3: far, 4: w
 	}
 }
 
-CON_COMMAND(rd_lobby_suggest_trace_player, "notify server to send a trace player suggestion to all clients.")
-{
-	if (args.ArgC() < 2)
-	{
-		Msg("Usage: rd_lobby_suggest_trace_player <playerIndex>\n");
-		return;
-	}
-
-	int iPlayerIndex = atoi(args[1]);
-	if (iPlayerIndex < 1 || iPlayerIndex > gpGlobals->maxClients)
-	{
-		Msg("Invalid playerIndex\n");
-		return;
-	}
-
-	CBasePlayer* pPlayer = UTIL_PlayerByIndex(iPlayerIndex);
-	if (!pPlayer)
-	{
-		Msg("Can't find a player with index <%d>.\n", iPlayerIndex);
-		return;
-	}
-	// Send the message to all players
-	for (int i = 1; i <= gpGlobals->maxClients; i++)
-	{
-		CBasePlayer* pRecipient = UTIL_PlayerByIndex(i);
-		if (!pRecipient)
-			continue;
-		if (pRecipient == pPlayer)
-		{
-			ClientPrint(pRecipient, HUD_PRINTTALK, "asw_trace_me_msg_to_self");
-		}
-		else
-		{
-			ClientPrint(pRecipient, HUD_PRINTTALK, "asw_trace_me_msg_to_others", pPlayer->GetPlayerName());
-		}
-	}
-}
-
 CReactiveDropServerListHelper::CReactiveDropServerListHelper( const char *szDebugName )
 {
 	m_pszDebugName = szDebugName;
@@ -830,5 +792,45 @@ CReactiveDropServerList::CReactiveDropServerList() :
 bool CReactiveDropServerList::IsHoIAFServerIP( uint32_t ip )
 {
 	return HoIAF()->IsRankedServerIP( ip );
+}
+#endif
+
+#ifndef CLIENT_DLL
+CON_COMMAND(rd_lobby_suggest_trace_player, "notify server to send a trace player suggestion to all clients.")
+{
+	if (args.ArgC() < 2)
+	{
+		Msg("Usage: rd_lobby_suggest_trace_player <playerIndex>\n");
+		return;
+	}
+
+	int iPlayerIndex = atoi(args[1]);
+	if (iPlayerIndex < 1 || iPlayerIndex > gpGlobals->maxClients)
+	{
+		Msg("Invalid playerIndex\n");
+		return;
+	}
+
+	CBasePlayer* pPlayer = UTIL_PlayerByIndex(iPlayerIndex);
+	if (!pPlayer)
+	{
+		Msg("Can't find a player with index <%d>.\n", iPlayerIndex);
+		return;
+	}
+	// Send the message to all players
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	{
+		CBasePlayer* pRecipient = UTIL_PlayerByIndex(i);
+		if (!pRecipient)
+			continue;
+		if (pRecipient == pPlayer)
+		{
+			ClientPrint(pRecipient, HUD_PRINTTALK, "asw_trace_me_msg_to_self");
+		}
+		else
+		{
+			ClientPrint(pRecipient, HUD_PRINTTALK, "asw_trace_me_msg_to_others", pPlayer->GetPlayerName());
+		}
+	}
 }
 #endif

@@ -44,7 +44,8 @@ extern ConVar asw_draw_hud;
 
 #ifdef CLIENT_DLL
 extern std::vector<bool> g_bShouldTracePlayer;
-extern const float TRACE_FADE_TIME;
+extern float TRACE_FADE_TIME;
+extern ConVar cl_trace_player_opacity;
 #endif
 
 //-----------------------------------------------------------------------------
@@ -312,20 +313,29 @@ void CASWHudEmotes::PaintTraces()
 
 void CASWHudEmotes::PaintTracesFor(C_ASW_Marine* pMarine)
 {
+	float fTimeRatio = 1.0 - gpGlobals->curtime/3.0 + (int)(gpGlobals->curtime / 3.0); // current time
+	float fOpacity = cl_trace_player_opacity.GetFloat(); // default opacity for traces
 	for (auto iter = pMarine->m_lstTracePlayerMovementList.begin(); iter != pMarine->m_lstTracePlayerMovementList.end(); ++iter)
 	{
-		float fTime = (*iter).m_flTraceTime;
+		float fTraceRatio = (*iter).m_flTraceTime/TRACE_FADE_TIME;
 		Vector vecPosition = (*iter).m_vecPosition;
 
-		if (fTime <= 0)
+		if (fTraceRatio <= 0)
 		{
 			continue; // no trace to draw
 		}
 
 		// draw a circle at the position of the trace in world space
 		// and fade it out over time
-		float fAlpha = pow(((fTime / 3.0) - (int)(fTime / 3.0)),4);
-		fAlpha = clamp(fAlpha, 0.0f, 1.0f);
+		float fAlpha = (fTraceRatio + fTimeRatio) - (int)(fTraceRatio + fTimeRatio);
+		if (fAlpha > 1.0/3.0 || fAlpha <= 0.01)
+		{
+			continue;
+		}
+		else
+		{
+			fAlpha = pow(3.0 * fAlpha, 2.2);
+		}
 		int iTexture = m_nSmileTexture;
 
 		Vector screenPos;
@@ -338,7 +348,7 @@ void CASWHudEmotes::PaintTracesFor(C_ASW_Marine* pMarine)
 			if (iTexture != -1)
 			{
 				// 计算大小，随时间略微变化
-				float fSize = 0.9f + 0.1f * fAlpha;
+				float fSize = 0.5f + 0.1f * fAlpha;
 
 				// 应用屏幕高度比例和自定义缩放
 				float fScale = (ScreenHeight() / 768.0f);
@@ -346,7 +356,7 @@ void CASWHudEmotes::PaintTracesFor(C_ASW_Marine* pMarine)
 				float HalfH = 16.0f * fScale * fSize;
 
 				// 设置颜色和纹理
-				surface()->DrawSetColor(Color(255, 255, 255, fAlpha * 255.0f));
+				surface()->DrawSetColor(Color(255, 255, 255, fAlpha * fOpacity * 255.0f));
 				surface()->DrawSetTexture(iTexture);
 
 				// 绘制纹理多边形
