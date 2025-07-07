@@ -108,7 +108,7 @@ extern ConVar rd_team_color_enemy;
 extern float g_fMarinePoisonDuration;
 
 #ifdef CLIENT_DLL
-std::vector<bool> g_bShouldTracePlayer = std::vector<bool>(MAX_PLAYERS, false); // whether we have a trace position for this player
+std::vector<bool> g_bShouldTracePlayer = std::vector<bool>(MAX_PLAYERS, true); // whether we have a trace position for this player
 float TRACE_FADE_TIME = 60.0f; // how long to keep the trace positions for
 ConVar cl_trace_player_max_targets("cl_trace_player_max_targets", "3", FCVAR_ARCHIVE | FCVAR_CLIENTDLL, "Maximum number of players to trace positions for in the client.", true, 1.0f, true, 7.0f);
 ConVar cl_trace_player_opacity("cl_trace_player_opacity", "0.5", FCVAR_ARCHIVE | FCVAR_CLIENTDLL, "Opacity of the player trace positions in the client. 0.0 means fully transparent, 1.0 means fully opaque.", true, 0.0f, true, 1.0f);
@@ -991,17 +991,20 @@ void C_ASW_Marine::DoWaterRipples()
 
 void C_ASW_Marine::TickTracePlayerMovement(float d)
 {
-	// insert current time marine position
+	m_nTraceSkip--;
+	if ( m_nTraceSkip > 0 )
+		return;
+	m_nTraceSkip = 20;
+	// get current marine position
 	struct TracePlayerMovement_t movement;
-	//get current time
 	movement.m_flTraceTime = TRACE_FADE_TIME;
-	movement.m_vecPosition = GetAbsOrigin() + Vector(0, 0, 5);
+	movement.m_vecPosition = GetAbsOrigin();
 	m_lstTracePlayerMovementList.push_back(movement);
 
 	// update the trace time for each movement trace
 	for (auto iter = m_lstTracePlayerMovementList.begin(); iter != m_lstTracePlayerMovementList.end(); ++iter)
 	{
-		iter->m_flTraceTime -= d;
+		iter->m_flTraceTime -= 20 * d;
 	}
 
 	// remove any traces that have expired

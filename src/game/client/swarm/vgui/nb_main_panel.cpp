@@ -39,7 +39,6 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-
 #define CHAT_BUTTON_ICON "vgui/briefing/chat_icon"
 #define VOTE_BUTTON_ICON "vgui/briefing/vote_icon"
 #define LEADERBOARD_BUTTON_ICON "vgui/briefing/leaderboard_icon"
@@ -131,9 +130,15 @@ CNB_Main_Panel::CNB_Main_Panel( vgui::Panel *parent, const char *name ) : BaseCl
 
 	m_bLobbyValidityChecked = false;
 
+	// Create the TraceMe button
+	m_pTraceMeButton = new CBitmapButton(this, "TraceMeButton", "");
+	m_pTraceMeButton->AddActionSignalTarget(this);
+	m_pTraceMeButton->SetCommand("TraceMePressed");
+
 	GetControllerFocus()->AddToFocusList( m_pChatButton );
 	GetControllerFocus()->AddToFocusList( m_pVoteButton );
 	GetControllerFocus()->AddToFocusList( m_pLeaderboardButton );
+	GetControllerFocus()->AddToFocusList(m_pTraceMeButton);
 	GetControllerFocus()->AddToFocusList( m_pAddBotButton );
 	GetControllerFocus()->AddToFocusList( m_pDeselectMarinesButton );
 }
@@ -143,6 +148,7 @@ CNB_Main_Panel::~CNB_Main_Panel()
 	GetControllerFocus()->RemoveFromFocusList( m_pChatButton );
 	GetControllerFocus()->RemoveFromFocusList( m_pVoteButton );
 	GetControllerFocus()->RemoveFromFocusList( m_pLeaderboardButton );
+	GetControllerFocus()->RemoveFromFocusList(m_pTraceMeButton);
 	GetControllerFocus()->RemoveFromFocusList( m_pAddBotButton );
 	GetControllerFocus()->RemoveFromFocusList( m_pDeselectMarinesButton );
 }
@@ -161,14 +167,22 @@ void CNB_Main_Panel::OnFinishedSpendingSkillPoints()
 	ProcessSkillSpendQueue();
 }
 
-void CNB_Main_Panel::ApplySchemeSettings( vgui::IScheme *pScheme )
+void CNB_Main_Panel::ApplySchemeSettings(vgui::IScheme* pScheme)
 {
-	BaseClass::ApplySchemeSettings( pScheme );
-	
-	if ( rd_legacy_ui.GetString()[0] != '\0' )
-		LoadControlSettings( "resource/ui/nb_main_panel.res" );
+	BaseClass::ApplySchemeSettings(pScheme);
+
+	// Unless we have clearly specified a correct scheme, we will use the default scheme for the game.
+	auto currentScheme = rd_legacy_ui.GetString();
+	if (!Q_stricmp(currentScheme, "'2004")
+		|| !Q_stricmp(currentScheme, "'2010")
+		|| !Q_stricmp(currentScheme, "'2017"))
+	{
+		LoadControlSettings("resource/ui/nb_main_panel.res");
+	}
 	else
-		LoadControlSettings( "resource/ui/nb_main_panel_2024.res" );
+	{
+		LoadControlSettings("resource/ui/nb_main_panel_2024.res");
+	}
 
 	color32 white;
 	white.r = 255;
@@ -182,20 +196,25 @@ void CNB_Main_Panel::ApplySchemeSettings( vgui::IScheme *pScheme )
 	grey.b = 190;
 	grey.a = 255;
 
-	m_pChatButton->SetImage( CBitmapButton::BUTTON_ENABLED, CHAT_BUTTON_ICON, grey );
-	m_pChatButton->SetImage( CBitmapButton::BUTTON_DISABLED, CHAT_BUTTON_ICON, grey );
-	m_pChatButton->SetImage( CBitmapButton::BUTTON_PRESSED, CHAT_BUTTON_ICON, white );		
-	m_pChatButton->SetImage( CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, CHAT_BUTTON_ICON, white );
+	m_pChatButton->SetImage(CBitmapButton::BUTTON_ENABLED, CHAT_BUTTON_ICON, grey);
+	m_pChatButton->SetImage(CBitmapButton::BUTTON_DISABLED, CHAT_BUTTON_ICON, grey);
+	m_pChatButton->SetImage(CBitmapButton::BUTTON_PRESSED, CHAT_BUTTON_ICON, white);
+	m_pChatButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, CHAT_BUTTON_ICON, white);
 
-	m_pVoteButton->SetImage( CBitmapButton::BUTTON_ENABLED, VOTE_BUTTON_ICON, grey );
-	m_pVoteButton->SetImage( CBitmapButton::BUTTON_DISABLED, VOTE_BUTTON_ICON, grey );
-	m_pVoteButton->SetImage( CBitmapButton::BUTTON_PRESSED, VOTE_BUTTON_ICON, white );		
-	m_pVoteButton->SetImage( CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, VOTE_BUTTON_ICON, white );
+	m_pVoteButton->SetImage(CBitmapButton::BUTTON_ENABLED, VOTE_BUTTON_ICON, grey);
+	m_pVoteButton->SetImage(CBitmapButton::BUTTON_DISABLED, VOTE_BUTTON_ICON, grey);
+	m_pVoteButton->SetImage(CBitmapButton::BUTTON_PRESSED, VOTE_BUTTON_ICON, white);
+	m_pVoteButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, VOTE_BUTTON_ICON, white);
 
-	m_pLeaderboardButton->SetImage( CBitmapButton::BUTTON_ENABLED, LEADERBOARD_BUTTON_ICON, grey );
-	m_pLeaderboardButton->SetImage( CBitmapButton::BUTTON_DISABLED, LEADERBOARD_BUTTON_ICON, grey );
-	m_pLeaderboardButton->SetImage( CBitmapButton::BUTTON_PRESSED, LEADERBOARD_BUTTON_ICON, white );
-	m_pLeaderboardButton->SetImage( CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, LEADERBOARD_BUTTON_ICON, white );
+	m_pLeaderboardButton->SetImage(CBitmapButton::BUTTON_ENABLED, LEADERBOARD_BUTTON_ICON, grey);
+	m_pLeaderboardButton->SetImage(CBitmapButton::BUTTON_DISABLED, LEADERBOARD_BUTTON_ICON, grey);
+	m_pLeaderboardButton->SetImage(CBitmapButton::BUTTON_PRESSED, LEADERBOARD_BUTTON_ICON, white);
+	m_pLeaderboardButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, LEADERBOARD_BUTTON_ICON, white);
+
+	m_pTraceMeButton->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/briefing/trace_me_icon_on", grey);
+	m_pTraceMeButton->SetImage(CBitmapButton::BUTTON_DISABLED, "vgui/briefing/trace_me_icon_on", grey);
+	m_pTraceMeButton->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/briefing/trace_me_icon_pressed", white);
+	m_pTraceMeButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/briefing/trace_me_icon_mouse_over", white);
 
 	m_pAddBotButton->SetImage(CBitmapButton::BUTTON_ENABLED, ADDBOT_BUTTON_ICON, grey);
 	m_pAddBotButton->SetImage(CBitmapButton::BUTTON_DISABLED, ADDBOT_BUTTON_ICON, grey);
@@ -325,6 +344,23 @@ void CNB_Main_Panel::OnThink()
 				m_pReadyCheckImage->SetImage( "swarm/HUD/TickBoxEmpty" );
 			}
 		}
+	}
+	if (m_pTraceMeButton)
+	{
+		// Check if the TraceMe button should be enabled or not
+		// It should be enabled if it's an online game, the slot is the local player's slot, the slot is not a bot, the slot is occupied, and the marine profile exists 
+		int m_nLobbySlot = m_pLobbyRow0->m_nLobbySlot;
+		if (!Briefing()
+			|| Briefing()->IsOfflineGame()
+			|| !Briefing()->IsLobbySlotLocal(m_nLobbySlot)
+			|| Briefing()->IsLobbySlotBot(m_nLobbySlot)
+			|| !Briefing()->IsLobbySlotOccupied(m_nLobbySlot)
+			|| Briefing()->GetMarineProfile(m_nLobbySlot) == NULL)
+		{
+			m_pTraceMeButton->SetVisible(false);
+			return;
+		}
+		m_pTraceMeButton->SetVisible(true);
 	}
 }
 
@@ -497,36 +533,36 @@ void CNB_Main_Panel::SpendSkillPointsOnMarine( int nProfileIndex )
 
 extern vgui::DHANDLE<vgui::Frame> g_hBriefingFrame;
 
-void CNB_Main_Panel::OnCommand( const char *command )
+void CNB_Main_Panel::OnCommand(const char* command)
 {
-	if ( !Q_stricmp( command, "ReadyButton" ) )
+	if (!Q_stricmp(command, "ReadyButton"))
 	{
 		// Firstly check if we are in the deathmatch 
-		if ( ASWDeathmatchMode() )
+		if (ASWDeathmatchMode())
 		{
 			// because briefing frame fades out slowly a user can click the
 			// Ready button one more time and get a crash here, so we do this check
-			if ( g_hBriefingFrame.Get() )
+			if (g_hBriefingFrame.Get())
 			{
 				// for DM we only close the briefing panel
-				g_hBriefingFrame->SetDeleteSelfOnClose( true );
+				g_hBriefingFrame->SetDeleteSelfOnClose(true);
 				g_hBriefingFrame->Close();
 				g_hBriefingFrame = NULL;
 			}
 		}
-		else if ( m_bLocalLeader )
+		else if (m_bLocalLeader)
 		{
-			if ( Briefing()->CheckMissionRequirements() )
+			if (Briefing()->CheckMissionRequirements())
 			{
-				if ( Briefing()->AreOtherPlayersReady() )
+				if (Briefing()->AreOtherPlayersReady())
 				{
 					Briefing()->StartMission();
 				}
 				else
 				{
 					// force other players to be ready?
-					engine->ClientCmd( "cl_wants_start" ); // notify other players that we're waiting on them
-					new ForceReadyPanel( GetParent(), "ForceReady", "#asw_force_startm", ASW_FR_BRIEFING );		// TODO: this breaks the IBriefing abstraction, fix it if we need that
+					engine->ClientCmd("cl_wants_start"); // notify other players that we're waiting on them
+					new ForceReadyPanel(GetParent(), "ForceReady", "#asw_force_startm", ASW_FR_BRIEFING);		// TODO: this breaks the IBriefing abstraction, fix it if we need that
 				}
 			}
 		}
@@ -535,55 +571,59 @@ void CNB_Main_Panel::OnCommand( const char *command )
 			Briefing()->ToggleLocalPlayerReady();
 		}
 	}
-	else if ( !Q_stricmp( command, "FriendsButton" ) )
+	else if (!Q_stricmp(command, "FriendsButton"))
 	{
 #ifndef _X360 
-		if ( BaseModUI::CUIGameData::Get() )
+		if (BaseModUI::CUIGameData::Get())
 		{
-			BaseModUI::CUIGameData::Get()->OpenInviteUI( "friends" );
+			BaseModUI::CUIGameData::Get()->OpenInviteUI("friends");
 		}
 #endif
 	}
-	else if ( !Q_stricmp( command, "ChangeMissionButton" ) )
+	else if (!Q_stricmp(command, "ChangeMissionButton"))
 	{
-		engine->ClientCmd( "asw_mission_chooser callvote" );
+		engine->ClientCmd("asw_mission_chooser callvote");
 	}
-	else if ( !Q_stricmp( command, "MissionDetailsButton" ) )
+	else if (!Q_stricmp(command, "MissionDetailsButton"))
 	{
 		ShowMissionDetails();
 	}
-	else if ( !Q_stricmp( command, "ChatButton" ) )
+	else if (!Q_stricmp(command, "ChatButton"))
 	{
-		if ( GetClientModeASW() )
+		if (GetClientModeASW())
 		{
 			GetClientModeASW()->ToggleMessageMode();
 		}
 	}
-	else if ( !Q_stricmp( command, "VoteButton" ) )
+	else if (!Q_stricmp(command, "VoteButton"))
 	{
-		engine->ClientCmd( "playerlist" );
+		engine->ClientCmd("playerlist");
 	}
-	else if ( !Q_stricmp( command, "LeaderboardButton" ) )
+	else if (!Q_stricmp(command, "LeaderboardButton"))
 	{
 		ShowLeaderboard();
 	}
-	else if ( !Q_stricmp( command, "AddBotButton" ) )
+	else if (!Q_stricmp(command, "AddBotButton"))
 	{
 		AddBot();
 	}
-	else if ( !Q_stricmp( command, "DeselectMarines" ) )
+	else if (!Q_stricmp(command, "DeselectMarines"))
 	{
-		engine->ClientCmd( "cl_dselectallm" );
+		engine->ClientCmd("cl_dselectallm");
 	}
-	else if ( !Q_stricmp( command, "PromotionButton" ) )
+	else if (!Q_stricmp(command, "PromotionButton"))
 	{
 		ShowPromotionPanel();
 	}
-	else if ( !Q_stricmp( command, "TeamChangeButton" ) )
+	else if (!Q_stricmp(command, "TeamChangeButton"))
 	{
-		engine->ServerCmd( "rd_team_change" );
+		engine->ServerCmd("rd_team_change");
 	}
-	BaseClass::OnCommand( command );
+	else if (!Q_stricmp(command, "TraceMePressed"))
+	{
+		TraceMePressed();
+	}
+	BaseClass::OnCommand(command);
 }
 
 
@@ -626,3 +666,31 @@ void CNB_Main_Panel::ShowLeaderboard()
 
 	m_hSubScreen = pPanel;
 }
+
+void CNB_Main_Panel::TraceMePressed()
+{
+	// Get the local player index
+	int localPlayerIndex = -1;
+	if (engine && engine->IsInGame())
+	{
+		localPlayerIndex = engine->GetLocalPlayer();
+		if (localPlayerIndex < 0 || localPlayerIndex >= gpGlobals->maxClients)
+		{
+			return; // Invalid player index
+		}
+
+		if (lastTraceMePressedTime < 0 || (lastTraceMePressedTime + 30.0) <= gpGlobals->curtime)
+		{
+			lastTraceMePressedTime = gpGlobals->curtime; // Prevent spamming the command
+			char cmd[128];
+			Q_snprintf(cmd, sizeof(cmd), "rd_lobby_suggest_trace_player %d", localPlayerIndex);
+			// Send a message in chat to all other players to suggest them to trace this player
+			engine->ClientCmd_Unrestricted(cmd);
+		}
+		else
+		{
+			ClientPrint(CBasePlayer::GetLocalPlayer(), HUD_PRINTTALK, "asw_trace_me_cooling_down");
+		}
+	}
+}
+

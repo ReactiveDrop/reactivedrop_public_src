@@ -31,8 +31,11 @@
 #include "vguimatsurface/imatsystemsurface.h"
 #include "tier1/fmtstr.h"
 #ifdef CLIENT_DLL
-#include <vector>
-#include <list>
+	#include <vector>
+	#include <list>
+	#include "c_basetempentity.h"
+	#include "c_te_legacytempents.h"
+	#include "tempent.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -83,6 +86,7 @@ public:
 	CPanelAnimationVarAliasType( int, m_nHackTexture, "HackTexture", "vgui/swarm/ClassIcons/HackIcon", "textureid" );
 	CPanelAnimationVarAliasType( int, m_nWeldTexture, "WeldTexture", "vgui/swarm/ClassIcons/WeldIcon", "textureid" );
 	CPanelAnimationVarAliasType( int, m_nReviveMarineTexture, "ReviveMarineTexture", "vgui/swarm/ClassIcons/revivemarine", "textureid" );
+	CPanelAnimationVarAliasType(int, m_nTraceTexture, "TraceTexture", "vgui/icon_arrow_down", "textureid");
 };
 
 DECLARE_HUDELEMENT( CASWHudEmotes );
@@ -313,12 +317,19 @@ void CASWHudEmotes::PaintTraces()
 
 void CASWHudEmotes::PaintTracesFor(C_ASW_Marine* pMarine)
 {
-	float fTimeRatio = 1.0 - gpGlobals->curtime/3.0 + (int)(gpGlobals->curtime / 3.0); // current time
+	float fTimeRatio = 1.0 - gpGlobals->curtime / 3.0 + (int)(gpGlobals->curtime / 3.0); // current time
 	float fOpacity = cl_trace_player_opacity.GetFloat(); // default opacity for traces
-	for (auto iter = pMarine->m_lstTracePlayerMovementList.begin(); iter != pMarine->m_lstTracePlayerMovementList.end(); ++iter)
+	auto iter = pMarine->m_lstTracePlayerMovementList.begin();
+	auto iterNext = iter;
+	if (pMarine->m_lstTracePlayerMovementList.size() > 1)
 	{
-		float fTraceRatio = (*iter).m_flTraceTime/TRACE_FADE_TIME;
+		iterNext++;
+	}
+	for (; iter != pMarine->m_lstTracePlayerMovementList.end() && iterNext != pMarine->m_lstTracePlayerMovementList.end(); ++iter, ++iterNext)
+	{
+		float fTraceRatio = (*iter).m_flTraceTime / TRACE_FADE_TIME;
 		Vector vecPosition = (*iter).m_vecPosition;
+		Vector vecPositionNext = (*iterNext).m_vecPosition;
 
 		if (fTraceRatio <= 0)
 		{
@@ -328,7 +339,7 @@ void CASWHudEmotes::PaintTracesFor(C_ASW_Marine* pMarine)
 		// draw a circle at the position of the trace in world space
 		// and fade it out over time
 		float fAlpha = (fTraceRatio + fTimeRatio) - (int)(fTraceRatio + fTimeRatio);
-		if (fAlpha > 1.0/3.0 || fAlpha <= 0.01)
+		if (fAlpha > 1.0 / 3.0 || fAlpha <= 0.01)
 		{
 			continue;
 		}
@@ -336,37 +347,55 @@ void CASWHudEmotes::PaintTracesFor(C_ASW_Marine* pMarine)
 		{
 			fAlpha = pow(3.0 * fAlpha, 2.2);
 		}
-		int iTexture = m_nSmileTexture;
-
+		int iTexture = m_nTraceTexture;
 		Vector screenPos;
-		// 将世界坐标转换为屏幕坐标
-		if (!debugoverlay->ScreenPosition(vecPosition, screenPos))
+		Vector screenPosNext;
+		if (!debugoverlay->ScreenPosition(vecPosition, screenPos) && !debugoverlay->ScreenPosition(vecPositionNext, screenPosNext))
 		{
 			float xPos = screenPos[0];
 			float yPos = screenPos[1];
+			Vector vecTargetDirection = vecPositionNext - vecPosition;
+			vecTargetDirection.z = 0;
+			if (vecTargetDirection.NormalizeInPlace() < 0.01)
+			{
+				continue; // no direction to draw
+			}
 
 			if (iTexture != -1)
 			{
-				// 计算大小，随时间略微变化
-				float fSize = 0.5f + 0.1f * fAlpha;
-
-				// 应用屏幕高度比例和自定义缩放
 				float fScale = (ScreenHeight() / 768.0f);
-				float HalfW = 16.0f * fScale * fSize;
-				float HalfH = 16.0f * fScale * fSize;
+				float HalfW = 16.0f * fScale;
+				float HalfH = 16.0f * fScale;
 
-				// 设置颜色和纹理
 				surface()->DrawSetColor(Color(255, 255, 255, fAlpha * fOpacity * 255.0f));
 				surface()->DrawSetTexture(iTexture);
 
-				// 绘制纹理多边形
+				float fFacingYaw = -UTIL_VecToYaw(vecTargetDirection);
+				Vector vecCornerTL(-HalfW, -HalfH, 0);
+				Vector vecCornerTR(HalfW, -HalfH, 0);
+				Vector vecCornerBR(HalfW, HalfH, 0);
+				Vector vecCornerBL(-HalfW, HalfH, 0);
+				Vector vecCornerTL_rotated, vecCornerTR_rotated, vecCornerBR_rotated, vecCornerBL_rotated;
+
+				// rotate it by our facing yaw
+				QAngle angFacing(0, -fFacingYaw, 0);
+				VectorRotate(vecCornerTL, angFacing, vecCornerTL_rotated);
+				VectorRotate(vecCornerTR, angFacing, vecCornerTR_rotated);
+				VectorRotate(vecCornerBR, angFacing, vecCornerBR_rotated);
+				VectorRotate(vecCornerBL, angFacing, vecCornerBL_rotated);
+				
 				Vertex_t points[4] =
 				{
-					Vertex_t(Vector2D(xPos - HalfW, yPos - HalfH), Vector2D(0, 0)),
-					Vertex_t(Vector2D(xPos + HalfW, yPos - HalfH), Vector2D(1, 0)),
-					Vertex_t(Vector2D(xPos + HalfW, yPos + HalfH), Vector2D(1, 1)),
-					Vertex_t(Vector2D(xPos - HalfW, yPos + HalfH), Vector2D(0, 1))
+					Vertex_t(Vector2D(xPos + vecCornerTL_rotated.x, yPos + vecCornerTL_rotated.y),
+					Vector2D(0,0)),
+					Vertex_t(Vector2D(xPos + vecCornerTR_rotated.x, yPos + vecCornerTR_rotated.y),
+					Vector2D(1,0)),
+					Vertex_t(Vector2D(xPos + vecCornerBR_rotated.x, yPos + vecCornerBR_rotated.y),
+					Vector2D(1,1)),
+					Vertex_t(Vector2D(xPos + vecCornerBL_rotated.x, yPos + vecCornerBL_rotated.y),
+					Vector2D(0,1))
 				};
+
 				surface()->DrawTexturedPolygon(4, points);
 			}
 		}

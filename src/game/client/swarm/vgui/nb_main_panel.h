@@ -45,6 +45,7 @@ public:
 	void ShowMissionDetails();
 	void ShowPromotionPanel();
 	void ShowLeaderboard();
+	void TraceMePressed();
 
 	vgui::DHANDLE<vgui::Panel> m_hSubScreen;
 
@@ -71,6 +72,9 @@ public:
 	CBitmapButton *m_pLeaderboardButton;
 	CBitmapButton *m_pAddBotButton;
 	CBitmapButton *m_pDeselectMarinesButton;
+
+	float lastTraceMePressedTime = -1.0f;
+	CBitmapButton* m_pTraceMeButton;
 
 	bool m_bLocalLeader;
 	uint64 m_FlyoutSteamID;

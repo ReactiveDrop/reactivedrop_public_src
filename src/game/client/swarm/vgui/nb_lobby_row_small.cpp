@@ -24,23 +24,32 @@ CNB_Lobby_Row_Small::~CNB_Lobby_Row_Small()
 
 }
 
-void CNB_Lobby_Row_Small::ApplySchemeSettings( vgui::IScheme *pScheme )
+void CNB_Lobby_Row_Small::ApplySchemeSettings(vgui::IScheme* pScheme)
 {
-	BaseClass::BaseClass::ApplySchemeSettings( pScheme );
-	
-	if ( rd_legacy_ui.GetString()[0] != '\0' )
-		LoadControlSettings( "resource/ui/nb_lobby_row_small.res" );
-	else
-		LoadControlSettings( "resource/ui/nb_lobby_row_small_2024.res" );
+	BaseClass::BaseClass::ApplySchemeSettings(pScheme);
 
-	for ( int i = 0;i < ASW_NUM_INVENTORY_SLOTS; i++ )
+	// Unless we have clearly specified a correct scheme, we will use the default scheme for the game.
+	auto currentScheme = rd_legacy_ui.GetString();
+	if (!Q_stricmp(currentScheme, "'2004")
+		|| !Q_stricmp(currentScheme, "'2010")
+		|| !Q_stricmp(currentScheme, "'2017"))
+	{
+		LoadControlSettings("resource/ui/nb_lobby_row_small.res");
+	}
+	else
+	{
+		LoadControlSettings("resource/ui/nb_lobby_row_small_2024.res");
+	}
+
+
+	for (int i = 0; i < ASW_NUM_INVENTORY_SLOTS; i++)
 	{
 		m_szLastWeaponImage[i][0] = 0;
 	}
-	m_szLastPortraitImage[ 0 ] = 0;
-	m_lastSteamID.Set( 0, k_EUniverseInvalid, k_EAccountTypeInvalid );
+	m_szLastPortraitImage[0] = 0;
+	m_lastSteamID.Set(0, k_EUniverseInvalid, k_EAccountTypeInvalid);
 
-	SetTall( m_pBackroundPlain->GetTall() );
+	SetTall(m_pBackroundPlain->GetTall());
 }
 
 void CNB_Lobby_Row_Small::PerformLayout()

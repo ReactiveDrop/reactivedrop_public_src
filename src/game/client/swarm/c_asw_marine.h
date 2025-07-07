@@ -306,6 +306,7 @@ public:
 	void TickEmotes( float d );
 	bool TickEmote( float d, int bit, float &fEmoteTime );
 #ifdef CLIENT_DLL
+	int m_nTraceSkip = 10;
 	void TickTracePlayerMovement(float d);
 	std::list<TracePlayerMovement_t> m_lstTracePlayerMovementList = std::list<TracePlayerMovement_t>(); // list of positions and times for the last few frames
 #endif

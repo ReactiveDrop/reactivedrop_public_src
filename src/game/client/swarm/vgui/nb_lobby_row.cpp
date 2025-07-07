@@ -108,14 +108,10 @@ CNB_Lobby_Row::CNB_Lobby_Row( vgui::Panel *parent, const char *name ) : BaseClas
 	lightblue.g = 142;
 	lightblue.b = 192;
 	lightblue.a = 255;
-
-	// Create the TraceMe button
-	m_pTraceMeButton = new CBitmapButton( this, "TraceMeButton", "");
-	m_pTraceMeButton->AddActionSignalTarget(this);
-	m_pTraceMeButton->SetCommand("TraceMePressed");
-	m_pTraceMeButton->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/briefing/trace_me_icon_on", lightblue);
-	m_pTraceMeButton->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/briefing/trace_me_icon_pressed", lightblue);
-	m_pTraceMeButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/briefing/trace_me_icon_mouse_over", lightblue);
+	lightblue.r = 255;
+	lightblue.g = 255;
+	lightblue.b = 255;
+	lightblue.a = 255;
 
 	// Create the TracePlayerButton
 	m_pTracePlayerButton = new CBitmapButton( this, "TracePlayerButton", "" );
@@ -130,44 +126,40 @@ CNB_Lobby_Row::CNB_Lobby_Row( vgui::Panel *parent, const char *name ) : BaseClas
 	GetControllerFocus()->AddToFocusList( m_pWeaponButton0 );
 	GetControllerFocus()->AddToFocusList( m_pWeaponButton1 );
 	GetControllerFocus()->AddToFocusList( m_pWeaponButton2 );
-	GetControllerFocus()->AddToFocusList( m_pTraceMeButton );
 	GetControllerFocus()->AddToFocusList( m_pTracePlayerButton );
 }
 
 CNB_Lobby_Row::~CNB_Lobby_Row()
 {
-	GetControllerFocus()->RemoveFromFocusList( m_pPortraitButton );
-	GetControllerFocus()->RemoveFromFocusList( m_pWeaponButton0 );
-	GetControllerFocus()->RemoveFromFocusList( m_pWeaponButton1 );
-	GetControllerFocus()->RemoveFromFocusList( m_pWeaponButton2 );
-	GetControllerFocus()->RemoveFromFocusList( m_pTraceMeButton );
-	GetControllerFocus()->RemoveFromFocusList( m_pTracePlayerButton );
+	GetControllerFocus()->RemoveFromFocusList(m_pPortraitButton);
+	GetControllerFocus()->RemoveFromFocusList(m_pWeaponButton0);
+	GetControllerFocus()->RemoveFromFocusList(m_pWeaponButton1);
+	GetControllerFocus()->RemoveFromFocusList(m_pWeaponButton2);
+	GetControllerFocus()->RemoveFromFocusList(m_pTracePlayerButton);
 }
 
-void CNB_Lobby_Row::ApplySchemeSettings( vgui::IScheme *pScheme )
+void CNB_Lobby_Row::ApplySchemeSettings(vgui::IScheme* pScheme)
 {
-	BaseClass::ApplySchemeSettings( pScheme );
-	
-	if ( rd_legacy_ui.GetString()[0] != '\0' )
-		LoadControlSettings( "resource/ui/nb_lobby_row.res" );
-	else
-		LoadControlSettings( "resource/ui/nb_lobby_row_2024.res" );
+	BaseClass::ApplySchemeSettings(pScheme);
 
-	for ( int i = 0;i < ASW_NUM_INVENTORY_SLOTS; i++ )
+	// Unless we have clearly specified a correct scheme, we will use the default scheme for the game.
+	auto currentScheme = rd_legacy_ui.GetString();
+	if (!Q_stricmp(currentScheme, "'2004")
+		|| !Q_stricmp(currentScheme, "'2010")
+		|| !Q_stricmp(currentScheme, "'2017"))
+	{
+		LoadControlSettings("resource/ui/nb_lobby_row.res");
+	}
+	else
+	{
+		LoadControlSettings("resource/ui/nb_lobby_row_2024.res");
+	}
+	for (int i = 0; i < ASW_NUM_INVENTORY_SLOTS; i++)
 	{
 		m_szLastWeaponImage[i][0] = 0;
 	}
-	m_szLastPortraitImage[ 0 ] = 0;	
-	m_lastSteamID.Set( 0, k_EUniverseInvalid, k_EAccountTypeInvalid );
-
-	// place the button
-	m_pTraceMeButton->SetPos(XRES(4), YRES(35));
-	m_pTracePlayerButton->SetPos(XRES(4), YRES(35));
-	// set width and height
-	m_pTraceMeButton->SetWide(XRES(12));
-	m_pTraceMeButton->SetTall(YRES(12)); 
-	m_pTracePlayerButton->SetWide(XRES(12));
-	m_pTracePlayerButton->SetTall(YRES(12));
+	m_szLastPortraitImage[0] = 0;
+	m_lastSteamID.Set(0, k_EUniverseInvalid, k_EAccountTypeInvalid);
 }
 
 void CNB_Lobby_Row::PerformLayout()
@@ -181,7 +173,6 @@ void CNB_Lobby_Row::OnThink()
 
 	UpdateDetails();
 	UpdateChangingSlot();
-	UpdateTraceMeButton(); // Update the TraceMe button state
 	UpdateTracePlayerButton(); // Update the TracePlayer button state
 }
 
@@ -563,10 +554,6 @@ void CNB_Lobby_Row::OnCommand(const char* command)
 		}
 #endif
 	}
-	else if (!Q_stricmp(command, "TraceMePressed"))
-	{
-		TraceMePressed();
-	}
 	else if (!Q_stricmp(command, "TracePlayerPressed"))
 	{
 		TracePlayerPressed();
@@ -630,58 +617,10 @@ void CNB_Lobby_Row::UpdateChangingSlot()
 	m_pChangingSlot[ 3 ]->SetVisible( nSlot == 4 );
 }
 
-void CNB_Lobby_Row::UpdateTraceMeButton()
-{
-    if (!m_pTraceMeButton)
-        return;
-	
-	// Check if the TraceMe button should be enabled or not
-	// It should be enabled if it's an online game, the slot is the local player's slot, the slot is not a bot, the slot is occupied, and the marine profile exists 
-    if (!Briefing()
-		|| Briefing()->IsOfflineGame()
-		|| !Briefing()->IsLobbySlotLocal(m_nLobbySlot)
-		|| Briefing()->IsLobbySlotBot(m_nLobbySlot)
-		|| !Briefing()->IsLobbySlotOccupied(m_nLobbySlot)
-		|| Briefing()->GetMarineProfile(m_nLobbySlot) == NULL)
-    {
-        m_pTraceMeButton->SetVisible(false);
-        return;
-    }
-    m_pTraceMeButton->SetVisible(true);
-}
-
-void CNB_Lobby_Row::TraceMePressed()
-{
-	// Get the local player index
-	int localPlayerIndex = -1;
-	if (engine && engine->IsInGame())
-	{
-		localPlayerIndex = engine->GetLocalPlayer();
-		if (localPlayerIndex < 0 || localPlayerIndex >= gpGlobals->maxClients)
-		{
-			return; // Invalid player index
-		}
-
-		if (lastTraceMePressedTime < 0 || (lastTraceMePressedTime + 30.0) <= gpGlobals->curtime)
-		{
-			lastTraceMePressedTime = gpGlobals->curtime; // Prevent spamming the command
-			char cmd[128];
-			Q_snprintf(cmd, sizeof(cmd), "rd_lobby_suggest_trace_player %d", localPlayerIndex);
-			// Send a message in chat to all other players to suggest them to trace this player
-			engine->ClientCmd_Unrestricted(cmd);
-		}
-		else
-		{
-			ClientPrint(CBasePlayer::GetLocalPlayer(), HUD_PRINTTALK, "asw_trace_me_cooling_down");
-		}
-	}
-}
-
 void CNB_Lobby_Row::UpdateTracePlayerButton()
 {
 	if (!m_pTracePlayerButton)
 		return;
-
 	// In online games, show the button only for other players (not local player, not bot, and occupied slot)
 	if (!Briefing()
 		|| Briefing()->IsOfflineGame()
@@ -707,5 +646,4 @@ void CNB_Lobby_Row::TracePlayerPressed()
 	// flip the trace state for this player
 	g_bShouldTracePlayer[playerIndex] = !g_bShouldTracePlayer[playerIndex];
 	m_pTracePlayerButton->SetImage(CBitmapButton::BUTTON_ENABLED, g_bShouldTracePlayer[playerIndex] ? "vgui/briefing/trace_player_icon_on" : "vgui/briefing/trace_player_icon_off", color32{ 66, 142, 192, 255 });
-	Msg("Trace player %d : %s\n", playerIndex, g_bShouldTracePlayer[playerIndex] ? "true" : "false");
 }
