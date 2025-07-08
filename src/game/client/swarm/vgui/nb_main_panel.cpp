@@ -173,9 +173,9 @@ void CNB_Main_Panel::ApplySchemeSettings(vgui::IScheme* pScheme)
 
 	// Unless we have clearly specified a correct scheme, we will use the default scheme for the game.
 	auto currentScheme = rd_legacy_ui.GetString();
-	if (!Q_stricmp(currentScheme, "'2004")
-		|| !Q_stricmp(currentScheme, "'2010")
-		|| !Q_stricmp(currentScheme, "'2017"))
+	if (!Q_stricmp(currentScheme, "2004")
+		|| !Q_stricmp(currentScheme, "2010")
+		|| !Q_stricmp(currentScheme, "2017"))
 	{
 		LoadControlSettings("resource/ui/nb_main_panel.res");
 	}

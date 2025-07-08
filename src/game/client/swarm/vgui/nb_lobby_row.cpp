@@ -103,23 +103,13 @@ CNB_Lobby_Row::CNB_Lobby_Row( vgui::Panel *parent, const char *name ) : BaseClas
 	m_pXPBar->m_flBorder = 1.5f;
 	m_nLobbySlot = 0;
 
-	color32 lightblue;
-	lightblue.r = 66;
-	lightblue.g = 142;
-	lightblue.b = 192;
-	lightblue.a = 255;
-	lightblue.r = 255;
-	lightblue.g = 255;
-	lightblue.b = 255;
-	lightblue.a = 255;
-
 	// Create the TracePlayerButton
 	m_pTracePlayerButton = new CBitmapButton( this, "TracePlayerButton", "" );
 	m_pTracePlayerButton->AddActionSignalTarget( this );
 	m_pTracePlayerButton->SetCommand( "TracePlayerPressed" );
-	m_pTracePlayerButton->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/briefing/trace_player_icon_off", lightblue);
-	m_pTracePlayerButton->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/briefing/trace_player_icon_pressed", lightblue);
-	m_pTracePlayerButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/briefing/trace_player_icon_mouse_over", lightblue);
+	m_pTracePlayerButton->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/briefing/trace_player_icon_off", color32{ 255, 255, 255, 255 });
+	m_pTracePlayerButton->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/briefing/trace_player_icon_pressed", color32{ 255, 255, 255, 255 });
+	m_pTracePlayerButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/briefing/trace_player_icon_mouse_over", color32{ 255, 255, 255, 255 });
 
 
 	GetControllerFocus()->AddToFocusList( m_pPortraitButton );
@@ -144,9 +134,9 @@ void CNB_Lobby_Row::ApplySchemeSettings(vgui::IScheme* pScheme)
 
 	// Unless we have clearly specified a correct scheme, we will use the default scheme for the game.
 	auto currentScheme = rd_legacy_ui.GetString();
-	if (!Q_stricmp(currentScheme, "'2004")
-		|| !Q_stricmp(currentScheme, "'2010")
-		|| !Q_stricmp(currentScheme, "'2017"))
+	if (!Q_stricmp(currentScheme, "2004")
+		|| !Q_stricmp(currentScheme, "2010")
+		|| !Q_stricmp(currentScheme, "2017"))
 	{
 		LoadControlSettings("resource/ui/nb_lobby_row.res");
 	}
@@ -160,6 +150,10 @@ void CNB_Lobby_Row::ApplySchemeSettings(vgui::IScheme* pScheme)
 	}
 	m_szLastPortraitImage[0] = 0;
 	m_lastSteamID.Set(0, k_EUniverseInvalid, k_EAccountTypeInvalid);
+
+	m_pTracePlayerButton->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/briefing/trace_player_icon_off", color32{ 255, 255, 255, 255 });
+	m_pTracePlayerButton->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/briefing/trace_player_icon_pressed", color32{ 255, 255, 255, 255 });
+	m_pTracePlayerButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/briefing/trace_player_icon_mouse_over", color32{ 255, 255, 255, 255 });
 }
 
 void CNB_Lobby_Row::PerformLayout()
@@ -173,7 +167,6 @@ void CNB_Lobby_Row::OnThink()
 
 	UpdateDetails();
 	UpdateChangingSlot();
-	UpdateTracePlayerButton(); // Update the TracePlayer button state
 }
 
 void CNB_Lobby_Row::UpdateDetails()
@@ -184,44 +177,44 @@ void CNB_Lobby_Row::UpdateDetails()
 	white.b = 255;
 	white.a = 255;
 
-	m_pVoiceIcon->SetVisible( Briefing()->IsCommanderSpeaking( m_nLobbySlot ) );
+	m_pVoiceIcon->SetVisible(Briefing()->IsCommanderSpeaking(m_nLobbySlot));
 
-	if ( m_nLobbySlot == -1 || !Briefing()->IsLobbySlotOccupied( m_nLobbySlot ) )
+	if (m_nLobbySlot == -1 || !Briefing()->IsLobbySlotOccupied(m_nLobbySlot))
 	{
-		m_pXPBar->SetVisible( false );
-		m_pLevelLabel->SetVisible( false );
-		m_pPromotionIcon->SetVisible( false );
-		for ( int i = 0; i < NELEMS( m_pMedalIcon ); i++ )
+		m_pXPBar->SetVisible(false);
+		m_pLevelLabel->SetVisible(false);
+		m_pPromotionIcon->SetVisible(false);
+		for (int i = 0; i < NELEMS(m_pMedalIcon); i++)
 		{
-			m_pMedalIcon[i]->SetVisible( false );
+			m_pMedalIcon[i]->SetVisible(false);
 			m_lastMedal[i] = 0;
 		}
-		m_pNameDropdown->SetVisible( false );
-		m_pAvatarImage->SetVisible( false );
-		m_pClassLabel->SetVisible( false );
-		m_pClassImage->SetVisible( false );
+		m_pNameDropdown->SetVisible(false);
+		m_pAvatarImage->SetVisible(false);
+		m_pClassLabel->SetVisible(false);
+		m_pClassImage->SetVisible(false);
 
-		if ( Briefing()->IsOfflineGame() )
+		if (Briefing()->IsOfflineGame())
 		{
 			// in singleplayer, empty slots show the empty portrait button
-			const char *szEmptyFace = "vgui/briefing/face_empty";
-			const char *szEmptyFaceLit = "vgui/briefing/face_empty_lit";
-			if ( Q_strcmp( szEmptyFace, m_szLastPortraitImage ) )
+			const char* szEmptyFace = "vgui/briefing/face_empty";
+			const char* szEmptyFaceLit = "vgui/briefing/face_empty_lit";
+			if (Q_strcmp(szEmptyFace, m_szLastPortraitImage))
 			{
-				Q_snprintf( m_szLastPortraitImage, sizeof( m_szLastPortraitImage ), "%s", szEmptyFace );
-				m_pPortraitButton->SetImage( CBitmapButton::BUTTON_ENABLED, szEmptyFace, white );
-				m_pPortraitButton->SetImage( CBitmapButton::BUTTON_PRESSED, szEmptyFace, white );
+				Q_snprintf(m_szLastPortraitImage, sizeof(m_szLastPortraitImage), "%s", szEmptyFace);
+				m_pPortraitButton->SetImage(CBitmapButton::BUTTON_ENABLED, szEmptyFace, white);
+				m_pPortraitButton->SetImage(CBitmapButton::BUTTON_PRESSED, szEmptyFace, white);
 
-				if ( Briefing()->IsLobbySlotLocal( m_nLobbySlot ) )
+				if (Briefing()->IsLobbySlotLocal(m_nLobbySlot))
 				{
-					m_pPortraitButton->SetImage( CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, szEmptyFaceLit, white );
+					m_pPortraitButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, szEmptyFaceLit, white);
 				}
 				else
 				{
-					m_pPortraitButton->SetImage( CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, szEmptyFace, white );
+					m_pPortraitButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, szEmptyFace, white);
 				}
 			}
-			m_pPortraitButton->SetVisible( true );
+			m_pPortraitButton->SetVisible(true);
 		}
 		else
 		{
@@ -241,43 +234,43 @@ void CNB_Lobby_Row::UpdateDetails()
 	lightblue.b = 192;
 	lightblue.a = 255;
 
-	BaseModHybridButton *pButton = m_pNameDropdown->GetButton();
-	if ( pButton )
+	BaseModHybridButton* pButton = m_pNameDropdown->GetButton();
+	if (pButton)
 	{
-		pButton->SetText( Briefing()->GetMarineOrPlayerName( m_nLobbySlot ) );
+		pButton->SetText(Briefing()->GetMarineOrPlayerName(m_nLobbySlot));
 	}
-	m_pNameDropdown->SetVisible( true );
+	m_pNameDropdown->SetVisible(true);
 
 #if !defined(NO_STEAM)
-	CSteamID steamID = Briefing()->GetCommanderSteamID( m_nLobbySlot );
-	if ( steamID.IsValid() )
+	CSteamID steamID = Briefing()->GetCommanderSteamID(m_nLobbySlot);
+	if (steamID.IsValid())
 	{
-		if ( steamID.ConvertToUint64() != m_lastSteamID.ConvertToUint64() )
+		if (steamID.ConvertToUint64() != m_lastSteamID.ConvertToUint64())
 		{
-			m_pAvatarImage->SetAvatarBySteamID( &steamID );
+			m_pAvatarImage->SetAvatarBySteamID(&steamID);
 
-			for ( int i = 0; i < NELEMS( m_pMedalIcon ); i++ )
+			for (int i = 0; i < NELEMS(m_pMedalIcon); i++)
 			{
-				m_pMedalIcon[i]->SetVisible( false );
+				m_pMedalIcon[i]->SetVisible(false);
 				m_lastMedal[i] = 0;
 			}
 		}
 		m_lastSteamID = steamID;
 
-		for ( int i = 0; i < NELEMS( m_pMedalIcon ); i++ )
+		for (int i = 0; i < NELEMS(m_pMedalIcon); i++)
 		{
-			const C_RD_ItemInstance &medal = Briefing()->GetEquippedMedal( m_nLobbySlot, i );
-			if ( medal.m_iItemDefID != m_lastMedal[i] )
+			const C_RD_ItemInstance& medal = Briefing()->GetEquippedMedal(m_nLobbySlot, i);
+			if (medal.m_iItemDefID != m_lastMedal[i])
 			{
-				if ( !medal.IsSet() )
+				if (!medal.IsSet())
 				{
-					m_pMedalIcon[i]->SetVisible( false );
+					m_pMedalIcon[i]->SetVisible(false);
 					m_lastMedal[i] = medal.m_iItemDefID;
 				}
 				else
 				{
-					m_pMedalIcon[i]->SetImage( medal.GetIcon() );
-					m_pMedalIcon[i]->SetVisible( true );
+					m_pMedalIcon[i]->SetImage(medal.GetIcon());
+					m_pMedalIcon[i]->SetVisible(true);
 					m_lastMedal[i] = medal.m_iItemDefID;
 				}
 			}
@@ -285,180 +278,195 @@ void CNB_Lobby_Row::UpdateDetails()
 	}
 #endif
 
-	int nLevel = Briefing()->GetCommanderLevel( m_nLobbySlot ) + 1;		// levels start from 0 in code, but present as 1
-	int nXP = Briefing()->GetCommanderXP( m_nLobbySlot );
-	int nPromotion = Briefing()->GetCommanderPromotion( m_nLobbySlot );
+	int nLevel = Briefing()->GetCommanderLevel(m_nLobbySlot) + 1;		// levels start from 0 in code, but present as 1
+	int nXP = Briefing()->GetCommanderXP(m_nLobbySlot);
+	int nPromotion = Briefing()->GetCommanderPromotion(m_nLobbySlot);
 
-	if ( nPromotion <= 0 || nPromotion > ASW_PROMOTION_CAP )
+	if (nPromotion <= 0 || nPromotion > ASW_PROMOTION_CAP)
 	{
-		m_pPromotionIcon->SetVisible( false );
+		m_pPromotionIcon->SetVisible(false);
 		m_nLastPromotion = 0;
 	}
 	else
 	{
-		m_pPromotionIcon->SetVisible( true );
-		m_pPromotionIcon->SetImage( VarArgs( "briefing/promotion_%d", nPromotion ) );
+		m_pPromotionIcon->SetVisible(true);
+		m_pPromotionIcon->SetImage(VarArgs("briefing/promotion_%d", nPromotion));
 		m_nLastPromotion = nPromotion;
 	}
 	m_pXPBar->ClearMinMax();
-	m_pXPBar->AddMinMax( 0, g_iLevelExperience[0] * g_flPromotionXPScale[m_nLastPromotion] );
-	for ( int i = 0; i < ASW_NUM_EXPERIENCE_LEVELS - 1; i++ )
+	m_pXPBar->AddMinMax(0, g_iLevelExperience[0] * g_flPromotionXPScale[m_nLastPromotion]);
+	for (int i = 0; i < ASW_NUM_EXPERIENCE_LEVELS - 1; i++)
 	{
-		m_pXPBar->AddMinMax( g_iLevelExperience[i] * g_flPromotionXPScale[m_nLastPromotion], g_iLevelExperience[i + 1] * g_flPromotionXPScale[m_nLastPromotion] );
+		m_pXPBar->AddMinMax(g_iLevelExperience[i] * g_flPromotionXPScale[m_nLastPromotion], g_iLevelExperience[i + 1] * g_flPromotionXPScale[m_nLastPromotion]);
 	}
 
-	if ( !Briefing()->IsFullyConnected( m_nLobbySlot ) )
+	if (!Briefing()->IsFullyConnected(m_nLobbySlot))
 	{
-		m_pXPBar->SetVisible( false );
-		m_pLevelLabel->SetVisible( true );
-		m_pLevelLabel->SetText( "#nb_commander_connecting" );
+		m_pXPBar->SetVisible(false);
+		m_pLevelLabel->SetVisible(true);
+		m_pLevelLabel->SetText("#nb_commander_connecting");
 	}
-	else if ( nLevel == -1 || nXP == -1 )
+	else if (nLevel == -1 || nXP == -1)
 	{
-		m_pXPBar->SetVisible( false );
-		m_pLevelLabel->SetVisible( false );
+		m_pXPBar->SetVisible(false);
+		m_pLevelLabel->SetVisible(false);
 	}
 	else
 	{
-		m_pXPBar->SetVisible( true );
-		m_pLevelLabel->SetVisible( true );
+		m_pXPBar->SetVisible(true);
+		m_pLevelLabel->SetVisible(true);
 
-		m_pXPBar->Init( nXP, nXP, 1.0, true, false );
+		m_pXPBar->Init(nXP, nXP, 1.0, true, false);
 
 		wchar_t szLevelNum[16] = L"";
-		V_snwprintf( szLevelNum, ARRAYSIZE( szLevelNum ), L"%i", nLevel );
+		V_snwprintf(szLevelNum, ARRAYSIZE(szLevelNum), L"%i", nLevel);
 
 		wchar_t wzLevelLabel[64];
-		g_pVGuiLocalize->ConstructString( wzLevelLabel, sizeof( wzLevelLabel ), g_pVGuiLocalize->Find( "#nb_commander_level" ), 1, szLevelNum );
-		m_pLevelLabel->SetText( wzLevelLabel );
+		g_pVGuiLocalize->ConstructString(wzLevelLabel, sizeof(wzLevelLabel), g_pVGuiLocalize->Find("#nb_commander_level"), 1, szLevelNum);
+		m_pLevelLabel->SetText(wzLevelLabel);
 	}
 
-	ASW_Marine_Class nMarineClass = Briefing()->GetMarineClass( m_nLobbySlot );
-	m_pClassLabel->SetText( nMarineClass > MARINE_CLASS_UNDEFINED && nMarineClass < NUM_MARINE_CLASSES ? g_szMarineClassLabel[nMarineClass] : "" );
-	m_pClassLabel->SetVisible( true );
-	if ( nMarineClass > MARINE_CLASS_UNDEFINED && nMarineClass < NUM_MARINE_CLASSES )
+	ASW_Marine_Class nMarineClass = Briefing()->GetMarineClass(m_nLobbySlot);
+	m_pClassLabel->SetText(nMarineClass > MARINE_CLASS_UNDEFINED && nMarineClass < NUM_MARINE_CLASSES ? g_szMarineClassLabel[nMarineClass] : "");
+	m_pClassLabel->SetVisible(true);
+	if (nMarineClass > MARINE_CLASS_UNDEFINED && nMarineClass < NUM_MARINE_CLASSES)
 	{
-		m_pClassImage->SetImage( g_szMarineClassImage[nMarineClass] );
-		m_pClassImage->SetVisible( true );
+		m_pClassImage->SetImage(g_szMarineClassImage[nMarineClass]);
+		m_pClassImage->SetVisible(true);
 	}
 	else
 	{
-		m_pClassImage->SetVisible( false );
+		m_pClassImage->SetVisible(false);
 	}
 
-	if ( Briefing()->IsOfflineGame() && m_nLobbySlot != 0 )
+	if (Briefing()->IsOfflineGame() && m_nLobbySlot != 0)
 	{
 		// AI slots
-		m_pLevelLabel->SetVisible( false );
-		m_pPromotionIcon->SetVisible( false );
-		for ( int i = 0; i < NELEMS( m_pMedalIcon ); i++ )
+		m_pLevelLabel->SetVisible(false);
+		m_pPromotionIcon->SetVisible(false);
+		for (int i = 0; i < NELEMS(m_pMedalIcon); i++)
 		{
-			m_pMedalIcon[i]->SetVisible( false );
+			m_pMedalIcon[i]->SetVisible(false);
 			m_lastMedal[i] = 0;
 		}
-		m_pAvatarImage->SetVisible( false );
+		m_pAvatarImage->SetVisible(false);
 
 		int nAvatarX, nAvatarY;
-		m_pAvatarImage->GetPos( nAvatarX, nAvatarY );
+		m_pAvatarImage->GetPos(nAvatarX, nAvatarY);
 
 		int nNameX, nNameY;
-		m_pNameDropdown->GetPos( nNameX, nNameY );
+		m_pNameDropdown->GetPos(nNameX, nNameY);
 
-		m_pNameDropdown->SetPos( nAvatarX + YRES( 5 ), nNameY );
+		m_pNameDropdown->SetPos(nAvatarX + YRES(5), nNameY);
 	}
 	else
 	{
-		m_pAvatarImage->SetVisible( true );
+		m_pAvatarImage->SetVisible(true);
 	}
 
 
-	CASW_Marine_Profile *pProfile = Briefing()->GetMarineProfile( m_nLobbySlot );
-	if ( !pProfile )
+	CASW_Marine_Profile* pProfile = Briefing()->GetMarineProfile(m_nLobbySlot);
+	if (!pProfile)
 	{
 		// Set to some blank image
-		const char *szEmptyFace = "vgui/briefing/face_empty";
-		const char *szEmptyFaceLit = "vgui/briefing/face_empty_lit";
-		if ( Q_strcmp( szEmptyFace, m_szLastPortraitImage ) )
+		const char* szEmptyFace = "vgui/briefing/face_empty";
+		const char* szEmptyFaceLit = "vgui/briefing/face_empty_lit";
+		if (Q_strcmp(szEmptyFace, m_szLastPortraitImage))
 		{
-			Q_snprintf( m_szLastPortraitImage, sizeof( m_szLastPortraitImage ), "%s", szEmptyFace );
-			m_pPortraitButton->SetImage( CBitmapButton::BUTTON_ENABLED, szEmptyFace, white );
-			m_pPortraitButton->SetImage( CBitmapButton::BUTTON_PRESSED, szEmptyFace, white );
+			Q_snprintf(m_szLastPortraitImage, sizeof(m_szLastPortraitImage), "%s", szEmptyFace);
+			m_pPortraitButton->SetImage(CBitmapButton::BUTTON_ENABLED, szEmptyFace, white);
+			m_pPortraitButton->SetImage(CBitmapButton::BUTTON_PRESSED, szEmptyFace, white);
 
-			if ( Briefing()->IsLobbySlotLocal( m_nLobbySlot ) )
+			if (Briefing()->IsLobbySlotLocal(m_nLobbySlot))
 			{
-				m_pPortraitButton->SetImage( CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, szEmptyFaceLit, white );
+				m_pPortraitButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, szEmptyFaceLit, white);
 			}
 			else
 			{
-				m_pPortraitButton->SetImage( CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, szEmptyFace, white );
+				m_pPortraitButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, szEmptyFace, white);
 			}
 		}
 	}
 	else
 	{
 		char imagename[255];
-		Q_snprintf( imagename, sizeof( imagename ), "vgui/briefing/face_%s", pProfile->m_PortraitName );
-		if ( Q_strcmp( imagename, m_szLastPortraitImage ) )
+		Q_snprintf(imagename, sizeof(imagename), "vgui/briefing/face_%s", pProfile->m_PortraitName);
+		if (Q_strcmp(imagename, m_szLastPortraitImage))
 		{
-			Q_snprintf( m_szLastPortraitImage, sizeof( m_szLastPortraitImage ), "%s", imagename );
-			m_pPortraitButton->SetImage( CBitmapButton::BUTTON_ENABLED, imagename, white );
-			m_pPortraitButton->SetImage( CBitmapButton::BUTTON_PRESSED, imagename, white );
+			Q_snprintf(m_szLastPortraitImage, sizeof(m_szLastPortraitImage), "%s", imagename);
+			m_pPortraitButton->SetImage(CBitmapButton::BUTTON_ENABLED, imagename, white);
+			m_pPortraitButton->SetImage(CBitmapButton::BUTTON_PRESSED, imagename, white);
 
-			if ( Briefing()->IsLobbySlotLocal( m_nLobbySlot ) )
+			if (Briefing()->IsLobbySlotLocal(m_nLobbySlot))
 			{
-				Q_snprintf( imagename, sizeof( imagename ), "vgui/briefing/face_%s_lit", pProfile->m_PortraitName );
+				Q_snprintf(imagename, sizeof(imagename), "vgui/briefing/face_%s_lit", pProfile->m_PortraitName);
 			}
-			m_pPortraitButton->SetImage( CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, imagename, white );
+			m_pPortraitButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, imagename, white);
 		}
 	}
 
-	for ( int i = 0; i < ASW_NUM_INVENTORY_SLOTS; i++ )
+	for (int i = 0; i < ASW_NUM_INVENTORY_SLOTS; i++)
 	{
 		bool bSetButtonImage = false;
-		CBitmapButton *pButton = NULL;
-		vgui::ImagePanel *pSilhouette = NULL;
-		switch ( i )
+		CBitmapButton* pButton = NULL;
+		vgui::ImagePanel* pSilhouette = NULL;
+		switch (i)
 		{
 		case ASW_INVENTORY_SLOT_PRIMARY:  pButton = m_pWeaponButton0; pSilhouette = m_pSilhouetteWeapon0; break;
 		case ASW_INVENTORY_SLOT_SECONDARY:  pButton = m_pWeaponButton1; pSilhouette = m_pSilhouetteWeapon1; break;
 		case ASW_INVENTORY_SLOT_EXTRA:  pButton = m_pWeaponButton2; pSilhouette = m_pSilhouetteWeapon2; break;
 		}
-		Assert( pButton && pSilhouette );
+		Assert(pButton && pSilhouette);
 
-		int nWeapon = Briefing()->GetMarineSelectedWeapon( m_nLobbySlot, i );
-		if ( nWeapon != -1 )
+		int nWeapon = Briefing()->GetMarineSelectedWeapon(m_nLobbySlot, i);
+		if (nWeapon != -1)
 		{
-			CASW_EquipItem *pItem = g_ASWEquipmentList.GetItemForSlot( i, nWeapon );
-			Assert( pItem );
-			if ( pItem )
+			CASW_EquipItem* pItem = g_ASWEquipmentList.GetItemForSlot(i, nWeapon);
+			Assert(pItem);
+			if (pItem)
 			{
 				bSetButtonImage = true;
 				char imagename[255];
-				Q_snprintf( imagename, sizeof( imagename ), "vgui/%s", pItem->m_szEquipIcon );
-				if ( Q_strcmp( imagename, m_szLastWeaponImage[i] ) )
+				Q_snprintf(imagename, sizeof(imagename), "vgui/%s", pItem->m_szEquipIcon);
+				if (Q_strcmp(imagename, m_szLastWeaponImage[i]))
 				{
-					Q_snprintf( m_szLastWeaponImage[i], sizeof( m_szLastWeaponImage[i] ), "%s", imagename );
-					pButton->SetImage( CBitmapButton::BUTTON_ENABLED, imagename, lightblue );
-					pButton->SetImage( CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, imagename, Briefing()->IsLobbySlotLocal( m_nLobbySlot ) ? white : lightblue );
-					pButton->SetImage( CBitmapButton::BUTTON_PRESSED, imagename, lightblue );
+					Q_snprintf(m_szLastWeaponImage[i], sizeof(m_szLastWeaponImage[i]), "%s", imagename);
+					pButton->SetImage(CBitmapButton::BUTTON_ENABLED, imagename, lightblue);
+					pButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, imagename, Briefing()->IsLobbySlotLocal(m_nLobbySlot) ? white : lightblue);
+					pButton->SetImage(CBitmapButton::BUTTON_PRESSED, imagename, lightblue);
 				}
 			}
 		}
-		if ( !bSetButtonImage )
+		if (!bSetButtonImage)
 		{
-			if ( Q_strcmp( "vgui/white", m_szLastWeaponImage[i] ) )
+			if (Q_strcmp("vgui/white", m_szLastWeaponImage[i]))
 			{
-				Q_snprintf( m_szLastWeaponImage[i], sizeof( m_szLastWeaponImage[i] ), "%s", "vgui/white" );
-				pButton->SetImage( CBitmapButton::BUTTON_ENABLED, "vgui/white", invisible );
-				pButton->SetImage( CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/white", invisible );
-				pButton->SetImage( CBitmapButton::BUTTON_PRESSED, "vgui/white", invisible );
+				Q_snprintf(m_szLastWeaponImage[i], sizeof(m_szLastWeaponImage[i]), "%s", "vgui/white");
+				pButton->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/white", invisible);
+				pButton->SetImage(CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/white", invisible);
+				pButton->SetImage(CBitmapButton::BUTTON_PRESSED, "vgui/white", invisible);
 			}
-			pSilhouette->SetVisible( true );
+			pSilhouette->SetVisible(true);
 		}
 		else
 		{
-			pSilhouette->SetVisible( false );
+			pSilhouette->SetVisible(false);
 		}
+	}
+
+	if (m_pTracePlayerButton) {
+		// In online games, show the button only for other players (not local player, not bot, and occupied slot)
+		if (!Briefing()
+			|| Briefing()->IsOfflineGame()
+			|| Briefing()->IsLobbySlotLocal(m_nLobbySlot)
+			|| Briefing()->IsLobbySlotBot(m_nLobbySlot)
+			|| !Briefing()->IsLobbySlotOccupied(m_nLobbySlot))
+		{
+			m_pTracePlayerButton->SetVisible(true);
+			return;
+		}
+
+		m_pTracePlayerButton->SetVisible(true);
 	}
 }
 
@@ -556,7 +564,7 @@ void CNB_Lobby_Row::OnCommand(const char* command)
 	}
 	else if (!Q_stricmp(command, "TracePlayerPressed"))
 	{
-		TracePlayerPressed();
+		OnTracePlayerPressed();
 	}
 }
 
@@ -617,25 +625,7 @@ void CNB_Lobby_Row::UpdateChangingSlot()
 	m_pChangingSlot[ 3 ]->SetVisible( nSlot == 4 );
 }
 
-void CNB_Lobby_Row::UpdateTracePlayerButton()
-{
-	if (!m_pTracePlayerButton)
-		return;
-	// In online games, show the button only for other players (not local player, not bot, and occupied slot)
-	if (!Briefing()
-		|| Briefing()->IsOfflineGame()
-		|| Briefing()->IsLobbySlotLocal(m_nLobbySlot)
-		|| Briefing()->IsLobbySlotBot(m_nLobbySlot)
-		|| !Briefing()->IsLobbySlotOccupied(m_nLobbySlot))
-	{
-		m_pTracePlayerButton->SetVisible(false);
-		return;
-	}
-
-	m_pTracePlayerButton->SetVisible(true);
-}
-
-void CNB_Lobby_Row::TracePlayerPressed()
+void CNB_Lobby_Row::OnTracePlayerPressed()
 {
 	int playerIndex = Briefing()->GetPlayerIndex(m_nLobbySlot);
 	if (playerIndex < 0 || playerIndex >= gpGlobals->maxClients)
@@ -645,5 +635,5 @@ void CNB_Lobby_Row::TracePlayerPressed()
 	}
 	// flip the trace state for this player
 	g_bShouldTracePlayer[playerIndex] = !g_bShouldTracePlayer[playerIndex];
-	m_pTracePlayerButton->SetImage(CBitmapButton::BUTTON_ENABLED, g_bShouldTracePlayer[playerIndex] ? "vgui/briefing/trace_player_icon_on" : "vgui/briefing/trace_player_icon_off", color32{ 66, 142, 192, 255 });
+	m_pTracePlayerButton->SetImage(CBitmapButton::BUTTON_ENABLED, g_bShouldTracePlayer[playerIndex] ? "vgui/briefing/trace_player_icon_on" : "vgui/briefing/trace_player_icon_off", color32{ 255, 255, 255, 255 });
 }

@@ -43,9 +43,7 @@ public:
 	virtual void CheckTooltip(CNB_Lobby_Tooltip* pTooltip);
 
 	void UpdateChangingSlot();
-
-	void UpdateTracePlayerButton();
-	void TracePlayerPressed();
+	void OnTracePlayerPressed();
 
 	// == MANAGED_MEMBER_POINTERS_START: Do not edit by hand ==
 	vgui::ImagePanel* m_pBackground;
