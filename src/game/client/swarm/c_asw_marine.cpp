@@ -994,7 +994,7 @@ void C_ASW_Marine::TickTracePlayerMovement(float d)
 	m_nTraceSkip--;
 	if ( m_nTraceSkip > 0 )
 		return;
-	m_nTraceSkip = 20;
+	m_nTraceSkip = 30;
 	// get current marine position
 	struct TracePlayerMovement_t movement;
 	movement.m_flTraceTime = TRACE_FADE_TIME;

@@ -1,4 +1,3 @@
-
 #include "cbase.h"
 #include "hud.h"
 #include "hud_macros.h"
@@ -86,7 +85,7 @@ public:
 	CPanelAnimationVarAliasType( int, m_nHackTexture, "HackTexture", "vgui/swarm/ClassIcons/HackIcon", "textureid" );
 	CPanelAnimationVarAliasType( int, m_nWeldTexture, "WeldTexture", "vgui/swarm/ClassIcons/WeldIcon", "textureid" );
 	CPanelAnimationVarAliasType( int, m_nReviveMarineTexture, "ReviveMarineTexture", "vgui/swarm/ClassIcons/revivemarine", "textureid" );
-	CPanelAnimationVarAliasType(int, m_nTraceTexture, "TraceTexture", "vgui/icon_arrow_down", "textureid");
+	CPanelAnimationVarAliasType(int, m_nTraceTexture, "TraceTexture", "vgui/arrow_right", "textureid");
 };
 
 DECLARE_HUDELEMENT( CASWHudEmotes );
@@ -325,6 +324,19 @@ void CASWHudEmotes::PaintTracesFor(C_ASW_Marine* pMarine)
 	{
 		iterNext++;
 	}
+
+	int omx, omy;
+	float fAlpha, fTraceRatio, xPos, yPos, angleRad, angleDeg;
+	float fScale = (ScreenHeight() / 768.0f);
+	float HalfW = 16.0f * fScale;
+	float HalfH = 16.0f * fScale;
+	Vector vecPosition, vecPositionNext, screenPos, screenPosNext, vecTargetDirection;
+
+	Vector vecCameraFocus;
+	QAngle cameraAngle;
+
+	ASWInput()->ASW_GetCameraLocation(C_ASW_Player::GetLocalASWPlayer(), vecCameraFocus, cameraAngle, omx, omy, false);
+
 	for (; iter != pMarine->m_lstTracePlayerMovementList.end() && iterNext != pMarine->m_lstTracePlayerMovementList.end(); ++iter, ++iterNext)
 	{
 		float fTraceRatio = (*iter).m_flTraceTime / TRACE_FADE_TIME;
@@ -338,7 +350,7 @@ void CASWHudEmotes::PaintTracesFor(C_ASW_Marine* pMarine)
 
 		// draw a circle at the position of the trace in world space
 		// and fade it out over time
-		float fAlpha = (fTraceRatio + fTimeRatio) - (int)(fTraceRatio + fTimeRatio);
+		fAlpha = (fTraceRatio + fTimeRatio) - (int)(fTraceRatio + fTimeRatio);
 		if (fAlpha > 1.0 / 3.0 || fAlpha <= 0.01)
 		{
 			continue;
@@ -347,30 +359,28 @@ void CASWHudEmotes::PaintTracesFor(C_ASW_Marine* pMarine)
 		{
 			fAlpha = pow(3.0 * fAlpha, 2.2);
 		}
-		int iTexture = m_nTraceTexture;
-		Vector screenPos;
-		Vector screenPosNext;
+
 		if (!debugoverlay->ScreenPosition(vecPosition, screenPos) && !debugoverlay->ScreenPosition(vecPositionNext, screenPosNext))
 		{
-			float xPos = screenPos[0];
-			float yPos = screenPos[1];
-			Vector vecTargetDirection = vecPositionNext - vecPosition;
+			xPos = screenPos[0];
+			yPos = screenPos[1];
+			vecTargetDirection = vecPositionNext - vecPosition;
 			vecTargetDirection.z = 0;
 			if (vecTargetDirection.NormalizeInPlace() < 0.01)
 			{
 				continue; // no direction to draw
 			}
 
-			if (iTexture != -1)
+			if (m_nTraceTexture != -1)
 			{
-				float fScale = (ScreenHeight() / 768.0f);
-				float HalfW = 16.0f * fScale;
-				float HalfH = 16.0f * fScale;
-
 				surface()->DrawSetColor(Color(255, 255, 255, fAlpha * fOpacity * 255.0f));
-				surface()->DrawSetTexture(iTexture);
+				surface()->DrawSetTexture(m_nTraceTexture);
 
-				float fFacingYaw = -UTIL_VecToYaw(vecTargetDirection);
+				angleRad = atan2(vecTargetDirection.y, vecTargetDirection.x);
+				angleDeg = RAD2DEG(angleRad);
+
+				QAngle angFacing(0, -angleDeg + cameraAngle.y - 90, 0);
+
 				Vector vecCornerTL(-HalfW, -HalfH, 0);
 				Vector vecCornerTR(HalfW, -HalfH, 0);
 				Vector vecCornerBR(HalfW, HalfH, 0);
@@ -378,12 +388,11 @@ void CASWHudEmotes::PaintTracesFor(C_ASW_Marine* pMarine)
 				Vector vecCornerTL_rotated, vecCornerTR_rotated, vecCornerBR_rotated, vecCornerBL_rotated;
 
 				// rotate it by our facing yaw
-				QAngle angFacing(0, -fFacingYaw, 0);
 				VectorRotate(vecCornerTL, angFacing, vecCornerTL_rotated);
 				VectorRotate(vecCornerTR, angFacing, vecCornerTR_rotated);
 				VectorRotate(vecCornerBR, angFacing, vecCornerBR_rotated);
 				VectorRotate(vecCornerBL, angFacing, vecCornerBL_rotated);
-				
+
 				Vertex_t points[4] =
 				{
 					Vertex_t(Vector2D(xPos + vecCornerTL_rotated.x, yPos + vecCornerTL_rotated.y),
