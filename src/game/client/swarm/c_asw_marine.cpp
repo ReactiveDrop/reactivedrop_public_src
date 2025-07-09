@@ -870,7 +870,7 @@ void C_ASW_Marine::ClientThink()
 	TickEmotes( deltatime );
 	TickRedName( deltatime );
 
-	TickTracePlayerMovement(deltatime);
+	TickTrace(deltatime);
 
 	UpdateFireEmitters();
 	UpdateJumpJetEffects();
@@ -989,28 +989,127 @@ void C_ASW_Marine::DoWaterRipples()
 	}
 }
 
-void C_ASW_Marine::TickTracePlayerMovement(float d)
+inline float ManhattanDistance(const Vector &a, const Vector &b)
 {
-	m_nTraceSkip--;
-	if ( m_nTraceSkip > 0 )
-		return;
-	m_nTraceSkip = 30;
-	// get current marine position
-	struct TracePlayerMovement_t movement;
-	movement.m_flTraceTime = TRACE_FADE_TIME;
-	movement.m_vecPosition = GetAbsOrigin();
-	m_lstTracePlayerMovementList.push_back(movement);
+	return fabs(a.x - b.x) + fabs(a.y - b.y) + fabs(a.z - b.z);
+}
 
-	// update the trace time for each movement trace
-	for (auto iter = m_lstTracePlayerMovementList.begin(); iter != m_lstTracePlayerMovementList.end(); ++iter)
-	{
-		iter->m_flTraceTime -= 20 * d;
+/// <summary>
+/// Performs Catmull-Rom interpolation on the player movement traces stored in lstIn and outputs the interpolated positions to vecOut vector.
+/// </summary>
+/// <param name="lstIn"> List of player movement traces to interpolate.</param>
+/// <param name="vecOut"> Output vector to store the interpolated positions.</param>
+/// <param name="interpCount"> Number of interpolation steps between each pair of points.</param>
+void CatmullRomInterp(std::list<MovementTrace_t>& lstIn, std::vector<MovementTrace_t>& vecOut, int interpCount)
+{
+	vecOut.clear();
+	std::vector<MovementTrace_t> vecPoints;
+	vecPoints.reserve(lstIn.size());
+	for (const auto& point : lstIn) {
+		vecPoints.push_back(point);
 	}
 
-	// remove any traces that have expired
-	m_lstTracePlayerMovementList.remove_if([](const auto& item) {
-		return item.m_flTraceTime <= 0;
-		});
+	const size_t numPoints = vecPoints.size();
+	if (numPoints == 0) {
+		return;
+	}
+	if (numPoints == 1) {
+		vecOut.push_back(vecPoints[0]);
+		return;
+	}
+
+	size_t totalPoints = numPoints + (numPoints - 1) * interpCount;
+	vecOut.reserve(totalPoints);
+
+	// add the start point of the segment
+	vecOut.push_back(vecPoints[0]);
+	for (size_t i = 0; i < numPoints - 1; ++i) {
+		// get the previous, current, next and next-next points. Need to pad virtual points at the start and end to ensure we can interpolate the first and last segments correctly.
+		const Vector& p0 = (i == 0) ? vecPoints[0].m_vecPosition : vecPoints[i - 1].m_vecPosition;
+		const Vector& p1 = vecPoints[i].m_vecPosition;
+		const Vector& p2 = vecPoints[i + 1].m_vecPosition;
+		const Vector& p3 = (i + 2 < numPoints) ? vecPoints[i + 2].m_vecPosition : vecPoints[i + 1].m_vecPosition;
+
+		// add interpolated points between p1 and p2, excluding p1 and p2 themselves
+		for (int j = 1; j <= interpCount; ++j) {
+			// calculate the interpolation parameter u, (0, 1)
+			float u = (float)j / (interpCount + 1);
+			float u2 = u * u;
+			float u3 = u2 * u;
+
+			// Catmull-Rom interpolation formula for a point q(u) on the curve defined by points p0, p1, p2, p3
+			// q(u) = 0.5 * ((2 * p1) + 
+			//               (-p0 + p2) * u +
+			//               (2*p0 - 5*p1 + 4*p2 - p3) * u^2 +
+			//               (-p0 + 3*p1 - 3*p2 + p3) * u^3)
+			MovementTrace_t temp;
+			temp.m_flTimestamp = -1;
+			temp.m_vecPosition = 0.5f * ((2 * p1) + (-p0 + p2) * u + (2 * p0 - 5 * p1 + 4 * p2 - p3) * u2 + (-p0 + 3 * p1 - 3 * p2 + p3) * u3);
+			if (j == 1) {
+				auto vecTargetDirection = temp.m_vecPosition - vecOut.back().m_vecPosition;
+				vecTargetDirection.z = 0;
+				float angleRad = atan2(vecTargetDirection.y, vecTargetDirection.x);
+				vecOut.back().m_flAngleDegree = RAD2DEG(angleRad);
+			}
+			vecOut.push_back(temp);
+		}
+
+		// add the end point of the segment
+		vecOut.push_back(vecPoints[i + 1]);
+	}
+}
+
+void C_ASW_Marine::TickTrace(float d)
+{
+	// Not sure if the engine is single threaded or not, meanwhile, the list is accessed form other places. Therefore, lock m_TraceLock, just in case we are accessing the list from multiple threads, preventing concurrent modification of m_lstTracePlayerMovementList. Can safely remove the lock if the engine is gauranteed to be single threaded.
+	std::lock_guard<std::mutex> lock(m_TraceLock);
+
+	m_nTraceSkip--;
+
+	m_vecCurrentTraceOrigin = GetAbsOrigin();
+	m_vecLastTraceOrigin = m_vecCurrentTraceOrigin;
+	// get current marine position
+	struct MovementTrace_t movement;
+	movement.m_flTimestamp = gpGlobals->curtime;
+	movement.m_flTraceTime = TRACE_FADE_TIME;
+	movement.m_vecPosition = m_vecCurrentTraceOrigin;
+	m_lstTrace.push_back(movement);
+
+	if (m_nTraceSkip > 0)
+		return;
+
+	m_nTraceSkip = 30;
+	for (auto iter = m_lstTrace.begin(); iter != m_lstTrace.end(); ++iter)
+	{
+		// Entering the loop means list is not empty, so we can safely use rbegin() here.
+		auto iter2 = m_lstTrace.rbegin(); 
+		// iterate through the list of player movement traces reversily, until we reach the iter postion. The rbegin() always stores the latest player position, so we skip it.
+		for (iter2++; iter2 != m_lstTrace.rend() && iter2->m_flTimestamp > iter->m_flTimestamp; ++iter2)
+		{
+			if (fabs(iter->m_vecPosition.z - iter2->m_vecPosition.z) < 20 && ManhattanDistance(iter->m_vecPosition, iter2->m_vecPosition) < 400.0f)
+			{
+				Ray_t ray;
+				ray.Init(iter->m_vecPosition + Vector(0, 0, 10), iter2->m_vecPosition + Vector(0, 0, 10), GetCollideable()->OBBMins(), GetCollideable()->OBBMaxs());
+
+				trace_t	trace;
+				UTIL_TraceRay(ray, (CONTENTS_SOLID | CONTENTS_MOVEABLE | CONTENTS_PLAYERCLIP | CONTENTS_GRATE), this, COLLISION_GROUP_PLAYER_MOVEMENT, &trace);
+
+				if (trace.fraction != 1.0f)
+				{
+					continue;	// no ground
+				}
+
+				// if the distance is less than 500 units and there is no obstacle between the two positions, we can remove the trace. It is believed as the player moves back to the same position, then we can remove the trace between the two positions
+				auto timeStamp1 = iter->m_flTimestamp;
+				auto timeStamp2 = iter2->m_flTimestamp;
+				m_lstTrace.remove_if([timeStamp1, timeStamp2](const MovementTrace_t& item) {
+					return item.m_flTimestamp > timeStamp1 && item.m_flTimestamp <= timeStamp2;
+					});
+			}
+		}
+	}
+
+	CatmullRomInterp(m_lstTrace, m_vecTraceInterpolated, 10);
 }
 
 void C_ASW_Marine::CreateWeaponEmitters()

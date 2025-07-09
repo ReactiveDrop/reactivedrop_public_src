@@ -19,15 +19,16 @@
 #ifdef CLIENT_DLL
 #include <vector>
 #include <list>
+#include <mutex>
 
-struct TracePlayerMovement_t
+struct MovementTrace_t
 {
+	float m_flTimestamp;
 	float m_flTraceTime;
 	Vector m_vecPosition;
+	float m_flAngleDegree;
 };
 #endif
-
-
 
 class C_ASW_Player;
 class C_ASW_Marine_Resource;
@@ -307,8 +308,12 @@ public:
 	bool TickEmote( float d, int bit, float &fEmoteTime );
 #ifdef CLIENT_DLL
 	int m_nTraceSkip = 10;
-	void TickTracePlayerMovement(float d);
-	std::list<TracePlayerMovement_t> m_lstTracePlayerMovementList = std::list<TracePlayerMovement_t>(); // list of positions and times for the last few frames
+	std::mutex m_TraceLock;
+	Vector m_vecCurrentTraceOrigin = vec3_origin;
+	Vector m_vecLastTraceOrigin = vec3_origin;
+	void TickTrace(float d);
+	std::list<MovementTrace_t> m_lstTrace = std::list<MovementTrace_t>(); // list of positions and times for the last few frames
+	std::vector<MovementTrace_t> m_vecTraceInterpolated = std::vector<MovementTrace_t>();
 #endif
 	CNetworkVar( int, m_iEmote );
 	int m_iClientEmote;

@@ -316,70 +316,58 @@ void CASWHudEmotes::PaintTraces()
 
 void CASWHudEmotes::PaintTracesFor(C_ASW_Marine* pMarine)
 {
+	// Not sure if the engine is single threaded or not, meanwhile, the list is accessed form other places. Therefore, lock m_TraceLock, just in case we are accessing the list from multiple threads, preventing concurrent modification of m_lstTracePlayerMovementList. Can safely remove the lock if the engine is gauranteed to be single threaded.
+	std::lock_guard<std::mutex> lock(pMarine->m_TraceLock);
+
 	float fTimeRatio = 1.0 - gpGlobals->curtime / 3.0 + (int)(gpGlobals->curtime / 3.0); // current time
 	float fOpacity = cl_trace_player_opacity.GetFloat(); // default opacity for traces
-	auto iter = pMarine->m_lstTracePlayerMovementList.begin();
-	auto iterNext = iter;
-	if (pMarine->m_lstTracePlayerMovementList.size() > 1)
-	{
-		iterNext++;
-	}
-
 	int omx, omy;
-	float fAlpha, fTraceRatio, xPos, yPos, angleRad, angleDeg;
+	float fAlpha, fTraceRatio, xPos, yPos;
 	float fScale = (ScreenHeight() / 768.0f);
 	float HalfW = 16.0f * fScale;
 	float HalfH = 16.0f * fScale;
-	Vector vecPosition, vecPositionNext, screenPos, screenPosNext, vecTargetDirection;
-
+	Vector vecPosition, vecPositionNext, screenPos, screenPosNext;
 	Vector vecCameraFocus;
 	QAngle cameraAngle;
 
 	ASWInput()->ASW_GetCameraLocation(C_ASW_Player::GetLocalASWPlayer(), vecCameraFocus, cameraAngle, omx, omy, false);
 
-	for (; iter != pMarine->m_lstTracePlayerMovementList.end() && iterNext != pMarine->m_lstTracePlayerMovementList.end(); ++iter, ++iterNext)
+	// draw trace direction icons
+	for (auto iter = pMarine->m_vecTraceInterpolated.begin(); iter != pMarine->m_vecTraceInterpolated.end(); ++iter)
 	{
-		float fTraceRatio = (*iter).m_flTraceTime / TRACE_FADE_TIME;
-		Vector vecPosition = (*iter).m_vecPosition;
-		Vector vecPositionNext = (*iterNext).m_vecPosition;
+		if (iter->m_flTimestamp < 0.0f || iter->m_flTimestamp + 1.0f > gpGlobals->curtime)
+		{
+			continue;
+		}
+		float fTraceRatio = iter->m_flTraceTime / TRACE_FADE_TIME;
+		Vector vecPosition = iter->m_vecPosition;
 
 		if (fTraceRatio <= 0)
 		{
 			continue; // no trace to draw
 		}
 
-		// draw a circle at the position of the trace in world space
-		// and fade it out over time
 		fAlpha = (fTraceRatio + fTimeRatio) - (int)(fTraceRatio + fTimeRatio);
 		if (fAlpha > 1.0 / 3.0 || fAlpha <= 0.01)
 		{
-			continue;
+			//continue;
 		}
 		else
 		{
 			fAlpha = pow(3.0 * fAlpha, 2.2);
 		}
 
-		if (!debugoverlay->ScreenPosition(vecPosition, screenPos) && !debugoverlay->ScreenPosition(vecPositionNext, screenPosNext))
+		if (!debugoverlay->ScreenPosition(vecPosition, screenPos))
 		{
 			xPos = screenPos[0];
 			yPos = screenPos[1];
-			vecTargetDirection = vecPositionNext - vecPosition;
-			vecTargetDirection.z = 0;
-			if (vecTargetDirection.NormalizeInPlace() < 0.01)
-			{
-				continue; // no direction to draw
-			}
 
 			if (m_nTraceTexture != -1)
 			{
-				surface()->DrawSetColor(Color(255, 255, 255, fAlpha * fOpacity * 255.0f));
+				surface()->DrawSetColor(Color(255, 255, 255, 255.0f));
 				surface()->DrawSetTexture(m_nTraceTexture);
 
-				angleRad = atan2(vecTargetDirection.y, vecTargetDirection.x);
-				angleDeg = RAD2DEG(angleRad);
-
-				QAngle angFacing(0, -angleDeg + cameraAngle.y - 90, 0);
+				QAngle angFacing(0, -iter->m_flAngleDegree + cameraAngle.y - 90, 0);
 
 				Vector vecCornerTL(-HalfW, -HalfH, 0);
 				Vector vecCornerTR(HalfW, -HalfH, 0);
@@ -407,6 +395,19 @@ void CASWHudEmotes::PaintTracesFor(C_ASW_Marine* pMarine)
 
 				surface()->DrawTexturedPolygon(4, points);
 			}
+		}
+	}
+
+	// draw trace lines
+	for (int i = 0; i < pMarine->m_vecTraceInterpolated.size() - 2; i++)
+	{
+		Vector vecPosition = pMarine->m_vecTraceInterpolated[i].m_vecPosition;
+		Vector vecPositionNext = pMarine->m_vecTraceInterpolated[i + 1].m_vecPosition;
+
+		if (!debugoverlay->ScreenPosition(vecPosition, screenPos) && !debugoverlay->ScreenPosition(vecPositionNext, screenPosNext))
+		{
+			surface()->DrawSetColor(Color(255, 255, 255, 255.0f));
+			surface()->DrawLine(screenPos[0], screenPos[1], screenPosNext[0], screenPosNext[1]);
 		}
 	}
 }
