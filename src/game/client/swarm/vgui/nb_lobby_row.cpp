@@ -26,9 +26,14 @@
 #include "tier0/memdbgon.h"
 
 extern ConVar rd_legacy_ui;
+
 #ifdef CLIENT_DLL
-extern std::vector<bool> g_bShouldTracePlayer;
+extern Color g_TraceColorArray[8];
+extern std::vector<int> g_nTracePlayer2Color;
+extern std::vector<int> g_nTraceColor2Player;
 extern ConVar cl_trace_player_max_targets;
+extern void RemoveInvalidTracePlayersAndColors();
+extern void ToggleTraceColor(int playerIndex);
 #endif
 
 using namespace BaseModUI;
@@ -455,6 +460,7 @@ void CNB_Lobby_Row::UpdateDetails()
 	}
 
 	if (m_pTracePlayerButton) {
+		RemoveInvalidTracePlayersAndColors();
 		// In online games, show the button only for other players (not local player, not bot, and occupied slot)
 		if (!Briefing()
 			|| Briefing()->IsOfflineGame()
@@ -634,6 +640,6 @@ void CNB_Lobby_Row::OnTracePlayerPressed()
 		return; // Invalid player index
 	}
 	// flip the trace state for this player
-	g_bShouldTracePlayer[playerIndex] = !g_bShouldTracePlayer[playerIndex];
-	m_pTracePlayerButton->SetImage(CBitmapButton::BUTTON_ENABLED, g_bShouldTracePlayer[playerIndex] ? "vgui/briefing/trace_player_icon_on" : "vgui/briefing/trace_player_icon_off", color32{ 255, 255, 255, 255 });
+	ToggleTraceColor(playerIndex);
+	m_pTracePlayerButton->SetImage(CBitmapButton::BUTTON_ENABLED, (g_nTracePlayer2Color[playerIndex] == 0) ? "vgui/briefing/trace_player_icon_on" : "vgui/briefing/trace_player_icon_off", color32{ 255, 255, 255, 255 });
 }

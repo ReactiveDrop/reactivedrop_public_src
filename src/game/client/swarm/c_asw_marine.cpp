@@ -108,10 +108,96 @@ extern ConVar rd_team_color_enemy;
 extern float g_fMarinePoisonDuration;
 
 #ifdef CLIENT_DLL
-std::vector<bool> g_bShouldTracePlayer = std::vector<bool>(MAX_PLAYERS, false); // whether we have a trace position for this player
+Color g_TraceColorArray[8] =
+{
+	Color(0, 0, 0, 255),		// black (unused)
+	Color(255, 255, 255, 255),	// white
+	Color(255, 255,   0, 255),	// yellow
+	Color(0, 255, 0, 255),		// green
+	Color(255, 0, 0, 255),		// red
+	Color(0, 0, 255, 255),		// blue
+	Color(255, 0, 255, 255),	// pink
+	Color(0, 255, 255, 255),	// cyan	
+};
+std::vector<int> g_nTracePlayer2Color = std::vector<int>(MAX_PLAYERS, 0);
+std::vector<int> g_nTraceColor2Player = std::vector<int>(8, 0);
 float TRACE_FADE_TIME = 60.0f; // how long to keep the trace positions for
 ConVar cl_trace_player_max_targets("cl_trace_player_max_targets", "3", FCVAR_ARCHIVE | FCVAR_CLIENTDLL, "Maximum number of players to trace positions for in the client.", true, 1.0f, true, 7.0f);
-ConVar cl_trace_player_opacity("cl_trace_player_opacity", "0.5", FCVAR_ARCHIVE | FCVAR_CLIENTDLL, "Opacity of the player trace positions in the client. 0.0 means fully transparent, 1.0 means fully opaque.", true, 0.0f, true, 1.0f);
+ConVar cl_trace_player_opacity("cl_trace_player_opacity", "1", FCVAR_ARCHIVE | FCVAR_CLIENTDLL, "Opacity of the player trace positions in the client. 0.0 means fully transparent, 1.0 means fully opaque.", true, 0.0f, true, 1.0f);
+//ConVar cl_trace_player_line_thickness("cl_trace_player_line_thickness", "30", FCVAR_ARCHIVE | FCVAR_CLIENTDLL, "Thickness of the player trace.", true, 1.0f, true, 100.0f);
+//ConVar cl_trace_player_border_thickness("cl_trace_player_border_thickness", "5", FCVAR_ARCHIVE | FCVAR_CLIENTDLL, "Thickness of the player trace border.", true, 1.0f, true, 10.0f);
+
+void RemoveInvalidTracePlayersAndColors()
+{
+	for (int i = 1; i <= 7; i++)
+	{
+		// if this color's playerIndex is not a valid player, or if the color index is greater than the max targets, reset it 
+		if (g_nTraceColor2Player[i] <= 0 || g_nTraceColor2Player[i] >= MAX_PLAYERS || !UTIL_PlayerByIndex(g_nTraceColor2Player[i]) || i > cl_trace_player_max_targets.GetInt())
+		{
+			g_nTraceColor2Player[i] = 0;
+		}
+	}
+	for (int i = 1; i < MAX_PLAYERS; i++)
+	{
+		// if this playerIndex is not a valid player, or if the player's colorIndex is greater than the max targets, reset it
+		if (!UTIL_PlayerByIndex(i) || g_nTracePlayer2Color[i] <= 0 || g_nTracePlayer2Color[i] > cl_trace_player_max_targets.GetInt())
+		{
+			g_nTracePlayer2Color[i] = 0;
+		}
+
+	}
+	// cross-check the color -> player mapping, remove any record if not match
+	for (int i = 1; i <= cl_trace_player_max_targets.GetInt(); i++)
+	{
+		if (g_nTracePlayer2Color[g_nTraceColor2Player[i]] != i)
+		{
+			g_nTraceColor2Player[i] = 0;
+		}
+	}
+	// cross-check the player -> color mapping, remove any record if not match
+	for (int i = 1; i < MAX_PLAYERS; i++)
+	{
+		if (g_nTraceColor2Player[g_nTracePlayer2Color[i]] != i)
+		{
+			g_nTracePlayer2Color[i] = 0;
+		}
+	}
+}
+
+void ToggleTraceColor(int playerIndex)
+{
+	RemoveInvalidTracePlayersAndColors();
+	if ( playerIndex < 0 || playerIndex >= MAX_PLAYERS )
+		return;
+	int nColorIndex = g_nTracePlayer2Color[playerIndex];
+	if ( nColorIndex != 0 )
+	{
+		g_nTracePlayer2Color[playerIndex] == 0;
+		g_nTraceColor2Player[nColorIndex] = 0;
+	}
+	else
+	{
+		// find an available color index
+		bool hasAvailableColor = false;
+		for ( int i = 1; i <= cl_trace_player_max_targets.GetInt(); i++ )
+		{
+			if ( g_nTraceColor2Player[i] == 0 )
+			{
+				g_nTracePlayer2Color[playerIndex] = i;
+				g_nTraceColor2Player[i] = playerIndex;
+				hasAvailableColor = true;
+				break;
+			}
+		}
+		if(!hasAvailableColor)
+		{
+			// no available color, so replace the last one
+			g_nTracePlayer2Color[g_nTraceColor2Player[cl_trace_player_max_targets.GetInt()]] = 0;
+			g_nTraceColor2Player[cl_trace_player_max_targets.GetInt()] = playerIndex;
+			g_nTracePlayer2Color[playerIndex] = cl_trace_player_max_targets.GetInt();
+		}
+	}
+}
 #endif
 
 #define FLASHLIGHT_DISTANCE		1000

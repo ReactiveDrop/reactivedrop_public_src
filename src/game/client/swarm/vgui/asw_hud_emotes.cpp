@@ -45,9 +45,16 @@ using namespace vgui;
 extern ConVar asw_draw_hud;
 
 #ifdef CLIENT_DLL
-extern std::vector<bool> g_bShouldTracePlayer;
 extern float TRACE_FADE_TIME;
 extern ConVar cl_trace_player_opacity;
+extern ConVar cl_trace_player_max_targets;
+//extern ConVar cl_trace_player_line_thickness;
+//extern ConVar cl_trace_player_border_thickness;
+extern Color g_TraceColorArray[8];
+extern std::vector<int> g_nTracePlayer2Color;
+extern std::vector<int> g_nTraceColor2Player;
+extern void RemoveInvalidTracePlayersAndColors();
+extern void ToggleTraceColor(int playerIndex);
 #endif
 
 //-----------------------------------------------------------------------------
@@ -69,7 +76,7 @@ public:
 	virtual bool ShouldDraw( void ) { return asw_draw_hud.GetBool() && CASW_HudElement::ShouldDraw(); }
 
 	virtual void PaintTraces();
-	virtual void PaintTracesFor(C_ASW_Marine* pMarine);
+	virtual void PaintTracesFor(C_ASW_Marine* pMarine, Color color);
 
 	CPanelAnimationVarAliasType( int, m_nMedicTexture, "MedicEmoteTexture", "vgui/swarm/Emotes/EmoteMedic", "textureid" );
 	CPanelAnimationVarAliasType( int, m_nAmmoTexture, "AmmoEmoteTexture", "vgui/swarm/Emotes/EmoteAmmo", "textureid" );
@@ -296,6 +303,7 @@ void CASWHudEmotes::PaintEmote( C_BaseEntity *pEnt, float fTime, int iTexture, f
 
 void CASWHudEmotes::PaintTraces()
 {
+	RemoveInvalidTracePlayersAndColors();
 	C_ASW_Game_Resource* pGameResource = ASWGameResource();
 	if (!pGameResource)
 		return;
@@ -307,22 +315,22 @@ void CASWHudEmotes::PaintTraces()
 			continue;
 
 		C_ASW_Marine* marine = pMR->GetMarineEntity();
-		if (!pMR->IsInhabited() || !marine || !g_bShouldTracePlayer[pMR->GetCommanderIndex()])
+		if (!pMR->IsInhabited() || !marine || g_nTracePlayer2Color[pMR->GetCommanderIndex()] == 0)
 			continue;
 
-		PaintTracesFor(marine);
+		PaintTracesFor(marine, g_TraceColorArray[g_nTracePlayer2Color[pMR->GetCommanderIndex()]]);
 	}
 }
 
-void CASWHudEmotes::PaintTracesFor(C_ASW_Marine* pMarine)
+void CASWHudEmotes::PaintTracesFor(C_ASW_Marine* pMarine, Color color)
 {
 	// Not sure if the engine is single threaded or not, meanwhile, the list is accessed form other places. Therefore, lock m_TraceLock, just in case we are accessing the list from multiple threads, preventing concurrent modification of m_lstTracePlayerMovementList. Can safely remove the lock if the engine is gauranteed to be single threaded.
 	std::lock_guard<std::mutex> lock(pMarine->m_TraceLock);
 
 	float fTimeRatio = 1.0 - gpGlobals->curtime / 3.0 + (int)(gpGlobals->curtime / 3.0); // current time
-	float fOpacity = cl_trace_player_opacity.GetFloat(); // default opacity for traces
+	color[3] = 255 * pow(cl_trace_player_opacity.GetFloat(), 2.2);
 	int omx, omy;
-	float fAlpha, fTraceRatio, xPos, yPos;
+	float xPos, yPos;
 	float fScale = (ScreenHeight() / 768.0f);
 	float HalfW = 16.0f * fScale;
 	float HalfH = 16.0f * fScale;
@@ -332,29 +340,33 @@ void CASWHudEmotes::PaintTracesFor(C_ASW_Marine* pMarine)
 
 	ASWInput()->ASW_GetCameraLocation(C_ASW_Player::GetLocalASWPlayer(), vecCameraFocus, cameraAngle, omx, omy, false);
 
+	// draw trace lines
+	surface()->DrawSetColor(color);
+	for (int i = 0; i < pMarine->m_vecTraceInterpolated.size() - 2; i++)
+	{
+		Vector vecPosition = pMarine->m_vecTraceInterpolated[i].m_vecPosition;
+		Vector vecPositionNext = pMarine->m_vecTraceInterpolated[i + 1].m_vecPosition;
+
+		if (!debugoverlay->ScreenPosition(vecPosition, screenPos) && !debugoverlay->ScreenPosition(vecPositionNext, screenPosNext))
+		{
+			surface()->DrawLine(screenPos[0], screenPos[1], screenPosNext[0], screenPosNext[1]);
+		}
+	}
+
 	// draw trace direction icons
+	surface()->DrawSetColor(color);
+	surface()->DrawSetTexture(m_nTraceTexture);
 	for (auto iter = pMarine->m_vecTraceInterpolated.begin(); iter != pMarine->m_vecTraceInterpolated.end(); ++iter)
 	{
 		if (iter->m_flTimestamp < 0.0f || iter->m_flTimestamp + 1.0f > gpGlobals->curtime)
 		{
 			continue;
 		}
-		float fTraceRatio = iter->m_flTraceTime / TRACE_FADE_TIME;
 		Vector vecPosition = iter->m_vecPosition;
 
-		if (fTraceRatio <= 0)
+		if (iter->m_flTraceTime <= 0)
 		{
 			continue; // no trace to draw
-		}
-
-		fAlpha = (fTraceRatio + fTimeRatio) - (int)(fTraceRatio + fTimeRatio);
-		if (fAlpha > 1.0 / 3.0 || fAlpha <= 0.01)
-		{
-			//continue;
-		}
-		else
-		{
-			fAlpha = pow(3.0 * fAlpha, 2.2);
 		}
 
 		if (!debugoverlay->ScreenPosition(vecPosition, screenPos))
@@ -364,9 +376,6 @@ void CASWHudEmotes::PaintTracesFor(C_ASW_Marine* pMarine)
 
 			if (m_nTraceTexture != -1)
 			{
-				surface()->DrawSetColor(Color(255, 255, 255, 255.0f));
-				surface()->DrawSetTexture(m_nTraceTexture);
-
 				QAngle angFacing(0, -iter->m_flAngleDegree + cameraAngle.y - 90, 0);
 
 				Vector vecCornerTL(-HalfW, -HalfH, 0);
@@ -395,19 +404,6 @@ void CASWHudEmotes::PaintTracesFor(C_ASW_Marine* pMarine)
 
 				surface()->DrawTexturedPolygon(4, points);
 			}
-		}
-	}
-
-	// draw trace lines
-	for (int i = 0; i < pMarine->m_vecTraceInterpolated.size() - 2; i++)
-	{
-		Vector vecPosition = pMarine->m_vecTraceInterpolated[i].m_vecPosition;
-		Vector vecPositionNext = pMarine->m_vecTraceInterpolated[i + 1].m_vecPosition;
-
-		if (!debugoverlay->ScreenPosition(vecPosition, screenPos) && !debugoverlay->ScreenPosition(vecPositionNext, screenPosNext))
-		{
-			surface()->DrawSetColor(Color(255, 255, 255, 255.0f));
-			surface()->DrawLine(screenPos[0], screenPos[1], screenPosNext[0], screenPosNext[1]);
 		}
 	}
 }
