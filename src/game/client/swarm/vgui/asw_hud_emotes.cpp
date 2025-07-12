@@ -45,12 +45,9 @@ using namespace vgui;
 extern ConVar asw_draw_hud;
 
 #ifdef CLIENT_DLL
-extern float TRACE_FADE_TIME;
 extern ConVar cl_trace_player_enable;
 extern ConVar cl_trace_player_opacity;
 extern ConVar cl_trace_player_max_targets;
-//extern ConVar cl_trace_player_line_thickness;
-//extern ConVar cl_trace_player_border_thickness;
 extern Color g_TraceColorArray[8];
 extern std::vector<int> g_nTracePlayer2Color;
 extern std::vector<int> g_nTraceColor2Player;
@@ -364,11 +361,6 @@ void CASWHudEmotes::PaintTracesFor(C_ASW_Marine* pMarine, Color color)
 			continue;
 		}
 		Vector vecPosition = iter->m_vecPosition;
-
-		if (iter->m_flTraceTime <= 0)
-		{
-			continue; // no trace to draw
-		}
 
 		if (!debugoverlay->ScreenPosition(vecPosition, screenPos))
 		{

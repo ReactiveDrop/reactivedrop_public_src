@@ -24,7 +24,6 @@
 struct MovementTrace_t
 {
 	float m_flTimestamp;
-	float m_flTraceTime;
 	Vector m_vecPosition;
 	float m_flAngleDegree;
 };
