@@ -179,7 +179,7 @@ void PlayerListPanel::ApplySchemeSettings(vgui::IScheme *pScheme)
 {
 	BaseClass::ApplySchemeSettings(pScheme);
 
-	LoadControlSettings( "resource/ui/PlayerListPanel_1.res" );
+	LoadControlSettings( "resource/ui/PlayerListPanel.res" );
 
 	vgui::HFont DefaultFont = pScheme->GetFont( "Default", IsProportional() );
 	m_pPlayerHeader->SetFont(DefaultFont);
