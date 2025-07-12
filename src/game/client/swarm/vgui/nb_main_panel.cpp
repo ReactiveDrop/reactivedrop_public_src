@@ -50,6 +50,7 @@ extern ConVar mm_max_players;
 extern ConVar rd_player_bots_allowed;
 extern ConVar rd_legacy_ui;
 ConVar rd_draw_briefing_ui( "rd_draw_briefing_ui", "1", FCVAR_CHEAT );
+extern ConVar cl_trace_player_enable;
 
 using BaseModUI::GenericPanelList;
 
@@ -350,17 +351,19 @@ void CNB_Main_Panel::OnThink()
 		// Check if the TraceMe button should be enabled or not
 		// It should be enabled if it's an online game, the slot is the local player's slot, the slot is not a bot, the slot is occupied, and the marine profile exists 
 		int m_nLobbySlot = m_pLobbyRow0->m_nLobbySlot;
+		bool isDeathMatch = ASWDeathmatchMode() && (ASWDeathmatchMode()->IsDeathmatchEnabled() || ASWDeathmatchMode()->IsTeamDeathmatchEnabled());
 		if (!Briefing()
 			|| Briefing()->IsOfflineGame()
 			|| !Briefing()->IsLobbySlotLocal(m_nLobbySlot)
 			|| Briefing()->IsLobbySlotBot(m_nLobbySlot)
 			|| !Briefing()->IsLobbySlotOccupied(m_nLobbySlot)
-			|| Briefing()->GetMarineProfile(m_nLobbySlot) == NULL)
+			|| Briefing()->GetMarineProfile(m_nLobbySlot) == NULL
+			|| isDeathMatch)
 		{
 			m_pTraceMeButton->SetVisible(false);
 			return;
 		}
-		m_pTraceMeButton->SetVisible(true);
+		m_pTraceMeButton->SetVisible(cl_trace_player_enable.GetBool());
 	}
 }
 

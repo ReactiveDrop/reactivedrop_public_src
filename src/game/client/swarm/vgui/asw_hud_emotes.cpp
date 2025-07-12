@@ -46,6 +46,7 @@ extern ConVar asw_draw_hud;
 
 #ifdef CLIENT_DLL
 extern float TRACE_FADE_TIME;
+extern ConVar cl_trace_player_enable;
 extern ConVar cl_trace_player_opacity;
 extern ConVar cl_trace_player_max_targets;
 //extern ConVar cl_trace_player_line_thickness;

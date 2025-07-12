@@ -43,6 +43,7 @@ int g_asw_iPlayerListOpen = 0;
 
 ConVar rd_report_voted_players( "rd_report_voted_players", "0", FCVAR_ARCHIVE, "Automatically send a report when voting or muting a player on the player list." );
 extern ConVar rd_debug_quick_report_local_player;
+extern ConVar cl_trace_player_enable;
 
 PlayerListPanel::PlayerListPanel(vgui::Panel *parent, const char *name) :
 	vgui::EditablePanel(parent, name)
@@ -111,6 +112,9 @@ PlayerListPanel::PlayerListPanel(vgui::Panel *parent, const char *name) :
 	m_pSettingAutoReportVotes = new CCvarToggleCheckButton( this, "SettingAutoReportVotes", "#rd_reporting_auto_preference", "rd_report_voted_players" );
 	m_pSettingAutoReportVotes->Reset();
 
+	m_pTracePlayerToggle = new CCvarToggleCheckButton(this, "SettingTracePlayerToggle", "#asw_trace_player_enable", "cl_trace_player_enable");
+	m_pTracePlayerToggle->Reset();
+
 	m_pStartSavedCampaignVoteButton->SetButtonTexture("swarm/Briefing/ShadedButton");
 	m_pStartSavedCampaignVoteButton->SetButtonOverTexture("swarm/Briefing/ShadedButton_over");
 	
@@ -164,13 +168,18 @@ PlayerListPanel::~PlayerListPanel()
 		m_pSettingAutoReportVotes->ApplyChanges();
 		engine->ClientCmd_Unrestricted( "host_writeconfig\n" );
 	}
+	if (m_pTracePlayerToggle->HasBeenModified())
+	{
+		m_pTracePlayerToggle->ApplyChanges();
+		engine->ClientCmd_Unrestricted("host_writeconfig\n");
+	}
 }
 
 void PlayerListPanel::ApplySchemeSettings(vgui::IScheme *pScheme)
 {
 	BaseClass::ApplySchemeSettings(pScheme);
 
-	LoadControlSettings( "resource/ui/PlayerListPanel.res" );
+	LoadControlSettings( "resource/ui/PlayerListPanel_1.res" );
 
 	vgui::HFont DefaultFont = pScheme->GetFont( "Default", IsProportional() );
 	m_pPlayerHeader->SetFont(DefaultFont);
@@ -261,9 +270,9 @@ void PlayerListPanel::OnThink()
 	// make sure we have enough line panels per player and that each line knows the index of the player its displaying
 	int iNumPlayersInGame = 0;
 	bool bNeedsLayout = false;
-	for ( int j = 1; j <= gpGlobals->maxClients; j++ )
-	{	
-		if ( g_PR->IsConnected( j ) )
+	for (int j = 1; j <= gpGlobals->maxClients; j++)
+	{
+		if (g_PR->IsConnected(j))
 		{
 			iNumPlayersInGame++;
 			while (m_PlayerLine.Count() <= iNumPlayersInGame)
@@ -271,10 +280,10 @@ void PlayerListPanel::OnThink()
 				// temp comment
 				m_PlayerLine.AddToTail(new PlayerListLine(this, "PlayerLine"));
 			}
-			if ( m_PlayerLine.Count() > ( iNumPlayersInGame - 1 ) && m_PlayerLine[ iNumPlayersInGame - 1 ] )
+			if (m_PlayerLine.Count() > (iNumPlayersInGame - 1) && m_PlayerLine[iNumPlayersInGame - 1])
 			{
-				m_PlayerLine[iNumPlayersInGame-1]->SetVisible(true);
-				if (m_PlayerLine[iNumPlayersInGame-1]->SetPlayerIndex(j))
+				m_PlayerLine[iNumPlayersInGame - 1]->SetVisible(true);
+				if (m_PlayerLine[iNumPlayersInGame - 1]->SetPlayerIndex(j))
 				{
 					bNeedsLayout = true;
 				}
@@ -284,43 +293,43 @@ void PlayerListPanel::OnThink()
 
 	m_pTipsLabel->SetText("");
 
-	IMatchSession *pSession = g_pMatchFramework->GetMatchSession();
-	if ( pSession )
+	IMatchSession* pSession = g_pMatchFramework->GetMatchSession();
+	if (pSession)
 	{
-		KeyValues *pSettings = pSession->GetSessionSettings();
-		if ( pSettings )
+		KeyValues* pSettings = pSession->GetSessionSettings();
+		if (pSettings)
 		{
-			m_pVisibilityLabel->SetVisible( !Q_stricmp( pSettings->GetString( "options/server" ), "listen") );
-			m_pVisibilityButton->SetVisible( engine->IsClientLocalToActiveServer() );
+			m_pVisibilityLabel->SetVisible(!Q_stricmp(pSettings->GetString("options/server"), "listen"));
+			m_pVisibilityButton->SetVisible(engine->IsClientLocalToActiveServer());
 			const char* tip;
 
-			if ( !Q_stricmp( pSettings->GetString( "system/access"), "public" ) )
+			if (!Q_stricmp(pSettings->GetString("system/access"), "public"))
 			{
-				m_pVisibilityLabel->SetText( "#L4D360UI_Lobby_PublicTitle" );
-				m_pVisibilityButton->SetText( "#L4D360UI_Lobby_FriendsTitle" );
+				m_pVisibilityLabel->SetText("#L4D360UI_Lobby_PublicTitle");
+				m_pVisibilityButton->SetText("#L4D360UI_Lobby_FriendsTitle");
 				tip = "#L4D360UI_Lobby_MakeFriendOnly_Tip";
 			}
 			else
 			{
-				m_pVisibilityLabel->SetText( "#L4D360UI_Lobby_FriendsTitle" );
-				m_pVisibilityButton->SetText( "#L4D360UI_Lobby_PublicTitle" );
+				m_pVisibilityLabel->SetText("#L4D360UI_Lobby_FriendsTitle");
+				m_pVisibilityButton->SetText("#L4D360UI_Lobby_PublicTitle");
 				tip = "#L4D360UI_Lobby_OpenToPublic_Tip";
 			}
 
-			if ( m_pVisibilityButton->IsCursorOver() )
-				m_pTipsLabel->SetText( tip );
+			if (m_pVisibilityButton->IsCursorOver())
+				m_pTipsLabel->SetText(tip);
 		}
 	}
 	else
 	{
-		m_pVisibilityLabel->SetVisible( false );
-		m_pVisibilityButton->SetVisible( false );
+		m_pVisibilityLabel->SetVisible(false);
+		m_pVisibilityButton->SetVisible(false);
 	}
 
 	//m_pPlayerListScroll->SetScrollBarVisible( IsPC() && iNumPlayersInGame > 6);
 
 	// hide any extra ones we might have
-	for (int i=iNumPlayersInGame;i<m_PlayerLine.Count();i++)
+	for (int i = iNumPlayersInGame; i < m_PlayerLine.Count(); i++)
 	{
 		m_PlayerLine[i]->SetVisible(false);
 	}
@@ -334,18 +343,18 @@ void PlayerListPanel::OnThink()
 	}
 
 	bool is_team_game = ASWDeathmatchMode() && ASWDeathmatchMode()->IsTeamDeathmatchEnabled();
-	m_pTeam1ScoreLabel->SetVisible( is_team_game );
-	m_pTeam2ScoreLabel->SetVisible( is_team_game );
+	m_pTeam1ScoreLabel->SetVisible(is_team_game);
+	m_pTeam2ScoreLabel->SetVisible(is_team_game);
 
-	if ( is_team_game )
+	if (is_team_game)
 	{
-		C_Team *alpha_team = GetGlobalTeam( TEAM_ALPHA );
-		C_Team *beta_team = GetGlobalTeam( TEAM_BETA );
+		C_Team* alpha_team = GetGlobalTeam(TEAM_ALPHA);
+		C_Team* beta_team = GetGlobalTeam(TEAM_BETA);
 
-		if ( alpha_team && beta_team )
+		if (alpha_team && beta_team)
 		{
-			const char *t1_name = alpha_team->Get_Name();
-			const char *t2_name = beta_team->Get_Name();
+			const char* t1_name = alpha_team->Get_Name();
+			const char* t2_name = beta_team->Get_Name();
 
 			if (t1_name && t2_name)
 			{
@@ -360,30 +369,33 @@ void PlayerListPanel::OnThink()
 
 				wchar_t t1_wlabel[1024];
 				wchar_t t2_wlabel[1024];
-				g_pVGuiLocalize->ConvertANSIToUnicode( t1_label, t1_wlabel, sizeof(t1_wlabel));
-				g_pVGuiLocalize->ConvertANSIToUnicode( t2_label, t2_wlabel, sizeof(t2_wlabel));
+				g_pVGuiLocalize->ConvertANSIToUnicode(t1_label, t1_wlabel, sizeof(t1_wlabel));
+				g_pVGuiLocalize->ConvertANSIToUnicode(t2_label, t2_wlabel, sizeof(t2_wlabel));
 
-				m_pTeam1ScoreLabel->SetText( t1_wlabel );
-				m_pTeam2ScoreLabel->SetText( t2_wlabel );
+				m_pTeam1ScoreLabel->SetText(t1_wlabel);
+				m_pTeam2ScoreLabel->SetText(t2_wlabel);
 			}
 		}
 		else
 		{
-			Warning( "Cannot get the needed team for displayin in UI \n" );
+			Warning("Cannot get the needed team for displayin in UI \n");
 		}
 
 	}
 
-	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	C_ASW_Player* pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	bool bShowRestart = pPlayer && ASWGameResource() && ASWGameResource()->GetLeader() == pPlayer;
 	//Msg("bLeader = %d leaderentindex=%d player entindex=%d\n", bLeader, ASWGameResource()->GetLeaderEntIndex(), pPlayer->entindex());
 	m_pRestartMissionButton->SetVisible(bShowRestart);
-	m_pLeaderButtonsBackground->SetVisible(bShowRestart);	
+	m_pLeaderButtonsBackground->SetVisible(bShowRestart);
 
 	UpdateServerName();
 
 	if (bNeedsLayout)
 		InvalidateLayout(true);
+
+	bool isDeathMatch = ASWDeathmatchMode() && (ASWDeathmatchMode()->IsDeathmatchEnabled() || ASWDeathmatchMode()->IsTeamDeathmatchEnabled());
+	m_pTracePlayerToggle->SetVisible(!isDeathMatch);
 }
 
 void PlayerListPanel::KickClicked( PlayerListLine *pLine )

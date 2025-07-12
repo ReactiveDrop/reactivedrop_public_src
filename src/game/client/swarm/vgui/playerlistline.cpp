@@ -33,6 +33,16 @@ ConVar rd_muted_color( "rd_muted_color", "255 66 66", FCVAR_NONE, "Color of the 
 ConVar rd_speaking_color( "rd_speaking_color", "0 240 240", FCVAR_NONE, "Color of the speaker icon in Player List window (F9) while talking" );
 ConVar rd_unmuted_color( "rd_unmuted_color", "190 190 190", FCVAR_NONE, "Color of the speaker icon in Player List window (F9) while silent" );
 
+#ifdef CLIENT_DLL
+extern Color g_TraceColorArray[8];
+extern std::vector<int> g_nTracePlayer2Color;
+extern std::vector<int> g_nTraceColor2Player;
+extern ConVar cl_trace_player_enable;
+extern ConVar cl_trace_player_max_targets;
+extern void RemoveInvalidTracePlayersAndColors();
+extern void ToggleTraceColor(int playerIndex);
+#endif
+
 PlayerListLine::PlayerListLine(vgui::Panel *parent, const char *name) :
 	vgui::Panel( parent, name )
 {
@@ -43,6 +53,9 @@ PlayerListLine::PlayerListLine(vgui::Panel *parent, const char *name) :
 	m_pQuickReportButton = new CBitmapButton( this, "QuickReportButton", "#rd_quick_report_commend_or_report" );
 	m_pQuickReportButton->AddActionSignalTarget( this );
 	m_pQuickReportButton->SetCommand( "QuickReportButton" );
+	m_pTracePlayerButton1 = new CBitmapButton( this, "TracePlayerButton", " " );
+	m_pTracePlayerButton1->AddActionSignalTarget( this );
+	m_pTracePlayerButton1->SetCommand( "plTracePlayerButton" );
 	m_pPlayerLabel = new vgui::Button( this, "PlayerLabel", " " );
 	m_pPlayerLabel->AddActionSignalTarget( this );
 	m_pPlayerLabel->SetCommand( "PlayerLabel" );
@@ -102,6 +115,10 @@ void PlayerListLine::ApplySchemeSettings( vgui::IScheme *pScheme )
 	m_pQuickReportButton->SetImage( CBitmapButton::BUTTON_PRESSED, QUICK_REPORT_BUTTON_ICON, white );
 	m_pQuickReportButton->SetImage( CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, QUICK_REPORT_BUTTON_ICON, white );
 
+	m_pTracePlayerButton1->SetImage( CBitmapButton::BUTTON_ENABLED, "vgui/briefing/trace_player_icon_off", grey );
+	m_pTracePlayerButton1->SetImage( CBitmapButton::BUTTON_PRESSED, "vgui/briefing/trace_player_icon_pressed", white );
+	m_pTracePlayerButton1->SetImage( CBitmapButton::BUTTON_ENABLED_MOUSE_OVER, "vgui/briefing/trace_player_icon_mouse_over", white );
+
 	vgui::HFont DefaultFont = pScheme->GetFont( "Default", IsProportional() );
 	m_pPlayerLabel->SetFont( DefaultFont );
 	m_pPlayerLabel->SetPaintBackgroundEnabled( false );
@@ -141,6 +158,21 @@ void PlayerListLine::OnCommand( const char *command )
 			assert_cast< PlayerListPanel * >( GetParent()->GetParent()->GetParent() )->QuickReportClicked( this );
 		}
 	}
+	else if ( !Q_stricmp( command, "plTracePlayerButton" ) )
+	{
+		if ( pPlayer )
+		{			
+			int playerIndex = pPlayer->entindex();
+			if (playerIndex <= 0 || playerIndex >= gpGlobals->maxClients)
+			{
+				Msg("Invalid player index %d\n", playerIndex);
+				return; // Invalid player index
+			}
+			// flip the trace state for this player
+			ToggleTraceColor(playerIndex);
+			m_pTracePlayerButton1->SetImage(CBitmapButton::BUTTON_ENABLED, (g_nTracePlayer2Color[playerIndex] == 0) ? "vgui/briefing/trace_player_icon_on" : "vgui/briefing/trace_player_icon_off", color32{ 255, 255, 255, 255 });
+		}
+	}
 	else if ( !Q_stricmp( command, "PlayerLabel" )  )
 	{
 		if ( pPlayer )
@@ -153,36 +185,40 @@ void PlayerListLine::OnCommand( const char *command )
 
 void PlayerListLine::PerformLayout()
 {
-	float fScale = (ScreenHeight() / 768.0f);
-	int top = 6.0f * fScale;
-	int top_line_height = 16.0f * fScale;
-	int bottom_line_top = top_line_height + top;
-	int bottom_line_height = 16.0f * fScale;
+    float fScale = (ScreenHeight() / 768.0f);
+    int top = 6.0f * fScale;
+    int top_line_height = 16.0f * fScale;
+    int bottom_line_top = top_line_height + top;
+    int bottom_line_height = 16.0f * fScale;
 
-	m_pMuteButton->SetBounds( PLAYER_LIST_MUTE_ICON_X * fScale, top, PLAYER_LIST_MUTE_ICON_W * fScale, top_line_height );
-	int iQuickReportX, iQuickReportWide;
-	vgui::surface()->GetTextSize( m_pQuickReportButton->GetFont(), g_pVGuiLocalize->Find( "#rd_quick_report_commend_or_report" ), iQuickReportX, iQuickReportWide );
-	iQuickReportWide = bottom_line_height + vgui::Label::Content + iQuickReportX;
-	iQuickReportX = PLAYER_LIST_QUICK_REPORT_RIGHT_X * fScale - iQuickReportWide;
-	m_pQuickReportButton->SetBounds( iQuickReportX, bottom_line_top, iQuickReportWide, bottom_line_height );
-	m_pQuickReportButton->SetTextInset( bottom_line_height + vgui::Label::Content, 0 );
-	m_pQuickReportButton->SetImageBounds( 0, 0, bottom_line_height, bottom_line_height );
+    m_pMuteButton->SetBounds( PLAYER_LIST_MUTE_ICON_X * fScale, top, PLAYER_LIST_MUTE_ICON_W * fScale, top_line_height );
+    int iQuickReportX, iQuickReportWide;
+    vgui::surface()->GetTextSize( m_pQuickReportButton->GetFont(), g_pVGuiLocalize->Find( "#rd_quick_report_commend_or_report" ), iQuickReportX, iQuickReportWide );
+    iQuickReportWide = bottom_line_height + vgui::Label::Content + iQuickReportX;
+    iQuickReportX = PLAYER_LIST_QUICK_REPORT_RIGHT_X * fScale - iQuickReportWide;
+    m_pQuickReportButton->SetBounds( iQuickReportX, bottom_line_top, iQuickReportWide, bottom_line_height );
+    m_pQuickReportButton->SetTextInset( bottom_line_height + vgui::Label::Content, 0 );
+    m_pQuickReportButton->SetImageBounds( 0, 0, bottom_line_height, bottom_line_height );
 
-	m_pPlayerLabel-> SetBounds(PLAYER_LIST_PLAYER_X * fScale,		top,			 PLAYER_LIST_PLAYER_W * fScale,		  top_line_height);
-	m_pMarinesLabel->SetBounds(PLAYER_LIST_MARINES_X * fScale,		top,			 PLAYER_LIST_MARINES_W * fScale,	  top_line_height);
-	m_pFragsLabel->	 SetBounds(PLAYER_LIST_FRAGS_X * fScale,		top,			 PLAYER_LIST_FRAGS_W * fScale,		  top_line_height);
-	m_pDeathsLabel-> SetBounds(PLAYER_LIST_DEATHS_X * fScale,		top,			 PLAYER_LIST_DEATHS_W * fScale,		  top_line_height);
-	m_pPingLabel->	 SetBounds(PLAYER_LIST_PING_X * fScale,			top,			 PLAYER_LIST_PING_W * fScale,		  top_line_height);
-	m_pLeaderCheck-> SetBounds(PLAYER_LIST_LEADER_CHECK_X * fScale, bottom_line_top, PLAYER_LIST_LEADER_CHECK_W * fScale, bottom_line_height);
-	m_pKickCheck->   SetBounds(PLAYER_LIST_KICK_CHECK_X * fScale,	bottom_line_top, PLAYER_LIST_KICK_CHECK_W * fScale,   bottom_line_height);
+    int trace_button_size = 20.0f * fScale;
+	m_pTracePlayerButton1->SetBounds((PLAYER_LIST_MUTE_ICON_X - 2) * fScale, bottom_line_top, trace_button_size, trace_button_size);
+    //m_pTracePlayerButton1->SetImageBounds( 0, 0, trace_button_size, trace_button_size);
 
-	for (int i=0;i<MAX_VOTE_ICONS;i++)
-	{
-		m_pKickVoteIcon[i]->SetBounds((PLAYER_LIST_KICK_ICON_X + (PLAYER_LIST_KICK_ICON_W * i)) * fScale, bottom_line_top,
-							PLAYER_LIST_KICK_ICON_W * fScale, bottom_line_height);
-		m_pLeaderVoteIcon[i]->SetBounds((PLAYER_LIST_LEADER_ICON_X + (PLAYER_LIST_LEADER_ICON_W * i)) * fScale, bottom_line_top,
-							PLAYER_LIST_LEADER_ICON_W * fScale, bottom_line_height);
-	}	
+    m_pPlayerLabel-> SetBounds(PLAYER_LIST_PLAYER_X * fScale,        top,             PLAYER_LIST_PLAYER_W * fScale,       top_line_height);
+    m_pMarinesLabel->SetBounds(PLAYER_LIST_MARINES_X * fScale,       top,             PLAYER_LIST_MARINES_W * fScale,      top_line_height);
+    m_pFragsLabel->  SetBounds(PLAYER_LIST_FRAGS_X * fScale,         top,             PLAYER_LIST_FRAGS_W * fScale,        top_line_height);
+    m_pDeathsLabel-> SetBounds(PLAYER_LIST_DEATHS_X * fScale,        top,             PLAYER_LIST_DEATHS_W * fScale,       top_line_height);
+    m_pPingLabel->   SetBounds(PLAYER_LIST_PING_X * fScale,          top,             PLAYER_LIST_PING_W * fScale,         top_line_height);
+    m_pLeaderCheck-> SetBounds(PLAYER_LIST_LEADER_CHECK_X * fScale, bottom_line_top, PLAYER_LIST_LEADER_CHECK_W * fScale, bottom_line_height);
+    m_pKickCheck->   SetBounds(PLAYER_LIST_KICK_CHECK_X * fScale,    bottom_line_top, PLAYER_LIST_KICK_CHECK_W * fScale,   bottom_line_height);
+
+    for (int i=0;i<MAX_VOTE_ICONS;i++)
+    {
+        m_pKickVoteIcon[i]->SetBounds((PLAYER_LIST_KICK_ICON_X + (PLAYER_LIST_KICK_ICON_W * i)) * fScale, bottom_line_top,
+                            PLAYER_LIST_KICK_ICON_W * fScale, bottom_line_height);
+        m_pLeaderVoteIcon[i]->SetBounds((PLAYER_LIST_LEADER_ICON_X + (PLAYER_LIST_LEADER_ICON_W * i)) * fScale, bottom_line_top,
+                            PLAYER_LIST_LEADER_ICON_W * fScale, bottom_line_height);
+    }    
 }
 
 void PlayerListLine::OnThink()
@@ -270,6 +306,20 @@ void PlayerListLine::OnThink()
 			}
 		}
 	}
+
+	RemoveInvalidTracePlayersAndColors();
+	C_ASW_Player* pPlayer = ToASW_Player(UTIL_PlayerByIndex(m_iPlayerIndex));
+	bool isDeathMatch = ASWDeathmatchMode() && (ASWDeathmatchMode()->IsDeathmatchEnabled() || ASWDeathmatchMode()->IsTeamDeathmatchEnabled());
+	if (pPlayer && !pPlayer->IsLocalPlayer() && !pPlayer->IsAnyBot() && !ASWDeathmatchMode()->IsDeathmatchEnabled() && !isDeathMatch)
+	{
+		m_pTracePlayerButton1->SetVisible(cl_trace_player_enable.GetBool());
+		m_pTracePlayerButton1->SetImage(CBitmapButton::BUTTON_ENABLED, (g_nTracePlayer2Color[pPlayer->entindex()] != 0) ? "vgui/briefing/trace_player_icon_on" : "vgui/briefing/trace_player_icon_off", color32{ 255, 255, 255, 255 });
+	}
+	else
+	{
+		m_pTracePlayerButton1->SetVisible(false);
+	}
+
 	UpdateCheckBoxes();
 	UpdateVoteIcons();
 }
@@ -320,6 +370,17 @@ void PlayerListLine::UpdateCheckBoxes()
 	m_pKickCheck->SetVisible( pPlayer && pPlayer->CanBeKicked() );
 	m_pLeaderCheck->SetVisible( pPlayer && pPlayer->CanBeLeader() );
 	m_pQuickReportButton->SetVisible( pPlayer && !pPlayer->IsAnyBot() && ( rd_debug_quick_report_local_player.GetBool() || !pPlayer->IsLocalPlayer() ) );
+	
+	bool isDeathMatch = ASWDeathmatchMode() && (ASWDeathmatchMode()->IsDeathmatchEnabled() || ASWDeathmatchMode()->IsTeamDeathmatchEnabled());
+	if (pPlayer && !pPlayer->IsLocalPlayer() && !pPlayer->IsAnyBot() && !ASWDeathmatchMode()->IsDeathmatchEnabled() && !isDeathMatch)
+	{
+		m_pTracePlayerButton1->SetVisible(cl_trace_player_enable.GetBool());
+		m_pTracePlayerButton1->SetImage(CBitmapButton::BUTTON_ENABLED, (g_nTracePlayer2Color[pPlayer->entindex()] != 0) ? "vgui/briefing/trace_player_icon_on" : "vgui/briefing/trace_player_icon_off", color32{255, 255, 255, 255});
+	}
+	else
+	{
+		m_pTracePlayerButton1->SetVisible(false);
+	}
 
 	// make sure our selected/unselected status matches the selected index from our parent
 	PlayerListPanel *pPanel = assert_cast< PlayerListPanel * >( GetParent()->GetParent()->GetParent() );

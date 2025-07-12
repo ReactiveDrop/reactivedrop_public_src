@@ -20,6 +20,7 @@
 #include "gameui/swarm/vdropdownmenu.h"
 #include "gameui/swarm/vhybridbutton.h"
 #include "rd_inventory_shared.h"
+#include "asw_deathmatch_mode.h"
 #include <vector>
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -31,6 +32,7 @@ extern ConVar rd_legacy_ui;
 extern Color g_TraceColorArray[8];
 extern std::vector<int> g_nTracePlayer2Color;
 extern std::vector<int> g_nTraceColor2Player;
+extern ConVar cl_trace_player_enable;
 extern ConVar cl_trace_player_max_targets;
 extern void RemoveInvalidTracePlayersAndColors();
 extern void ToggleTraceColor(int playerIndex);
@@ -109,7 +111,7 @@ CNB_Lobby_Row::CNB_Lobby_Row( vgui::Panel *parent, const char *name ) : BaseClas
 	m_nLobbySlot = 0;
 
 	// Create the TracePlayerButton
-	m_pTracePlayerButton = new CBitmapButton( this, "TracePlayerButton", "" );
+	m_pTracePlayerButton = new CBitmapButton( this, "TracePlayerButton", " " );
 	m_pTracePlayerButton->AddActionSignalTarget( this );
 	m_pTracePlayerButton->SetCommand( "TracePlayerPressed" );
 	m_pTracePlayerButton->SetImage(CBitmapButton::BUTTON_ENABLED, "vgui/briefing/trace_player_icon_off", color32{ 255, 255, 255, 255 });
@@ -462,17 +464,19 @@ void CNB_Lobby_Row::UpdateDetails()
 	if (m_pTracePlayerButton) {
 		RemoveInvalidTracePlayersAndColors();
 		// In online games, show the button only for other players (not local player, not bot, and occupied slot)
+		bool isDeathMatch = ASWDeathmatchMode() && (ASWDeathmatchMode()->IsDeathmatchEnabled() || ASWDeathmatchMode()->IsTeamDeathmatchEnabled());
 		if (!Briefing()
 			|| Briefing()->IsOfflineGame()
 			|| Briefing()->IsLobbySlotLocal(m_nLobbySlot)
 			|| Briefing()->IsLobbySlotBot(m_nLobbySlot)
-			|| !Briefing()->IsLobbySlotOccupied(m_nLobbySlot))
+			|| !Briefing()->IsLobbySlotOccupied(m_nLobbySlot)
+			|| isDeathMatch)
 		{
-			m_pTracePlayerButton->SetVisible(true);
+			m_pTracePlayerButton->SetVisible(false);
 			return;
 		}
 
-		m_pTracePlayerButton->SetVisible(true);
+		m_pTracePlayerButton->SetVisible(cl_trace_player_enable.GetBool() );
 	}
 }
 
@@ -641,5 +645,5 @@ void CNB_Lobby_Row::OnTracePlayerPressed()
 	}
 	// flip the trace state for this player
 	ToggleTraceColor(playerIndex);
-	m_pTracePlayerButton->SetImage(CBitmapButton::BUTTON_ENABLED, (g_nTracePlayer2Color[playerIndex] == 0) ? "vgui/briefing/trace_player_icon_on" : "vgui/briefing/trace_player_icon_off", color32{ 255, 255, 255, 255 });
+	m_pTracePlayerButton->SetImage(CBitmapButton::BUTTON_ENABLED, (g_nTracePlayer2Color[playerIndex] != 0) ? "vgui/briefing/trace_player_icon_on" : "vgui/briefing/trace_player_icon_off", color32{ 255, 255, 255, 255 });
 }

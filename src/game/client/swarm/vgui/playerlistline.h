@@ -70,6 +70,7 @@ public:
 	vgui::Button *m_pPlayerLabel;
 	vgui::Label *m_pMarinesLabel;
 	CBitmapButton *m_pQuickReportButton;
+	CBitmapButton *m_pTracePlayerButton1;
 	vgui::Label *m_pFragsLabel;
 	vgui::Label *m_pDeathsLabel;
 	vgui::Label *m_pPingLabel;

@@ -122,6 +122,7 @@ Color g_TraceColorArray[8] =
 std::vector<int> g_nTracePlayer2Color = std::vector<int>(MAX_PLAYERS, 0);
 std::vector<int> g_nTraceColor2Player = std::vector<int>(8, 0);
 float TRACE_FADE_TIME = 60.0f; // how long to keep the trace positions for
+ConVar cl_trace_player_enable("cl_trace_player_enable", "0", FCVAR_ARCHIVE | FCVAR_CLIENTDLL, "Show player movement traces in the client. 0 = disabled, 1 = enabled.");
 ConVar cl_trace_player_max_targets("cl_trace_player_max_targets", "3", FCVAR_ARCHIVE | FCVAR_CLIENTDLL, "Maximum number of players to trace positions for in the client.", true, 1.0f, true, 7.0f);
 ConVar cl_trace_player_opacity("cl_trace_player_opacity", "1", FCVAR_ARCHIVE | FCVAR_CLIENTDLL, "Opacity of the player trace positions in the client. 0.0 means fully transparent, 1.0 means fully opaque.", true, 0.0f, true, 1.0f);
 //ConVar cl_trace_player_line_thickness("cl_trace_player_line_thickness", "30", FCVAR_ARCHIVE | FCVAR_CLIENTDLL, "Thickness of the player trace.", true, 1.0f, true, 100.0f);

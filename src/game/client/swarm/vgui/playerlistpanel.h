@@ -82,6 +82,7 @@ public:
 	vgui::Label* m_pCounterLabel;
 
 	CCvarToggleCheckButton *m_pSettingAutoReportVotes;
+	CCvarToggleCheckButton* m_pTracePlayerToggle;
 	vgui::DHANDLE<CRD_VGUI_Quick_Report_Panel> m_hQuickReportPanel;
 
 	char m_szMapName[64];
