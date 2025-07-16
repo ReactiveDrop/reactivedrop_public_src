@@ -23,6 +23,7 @@ using namespace vgui;
 #include <keyvalues.h>
 #include "asw_hud_minimap.h"
 #include "c_asw_player.h"
+#include "c_playerresource.h"
 #include "c_asw_marine.h"
 #include "asw_marine_profile.h"
 #include "c_asw_marine_resource.h"
@@ -165,6 +166,9 @@ void MsgFunc_ASWMapLine( bf_read &msg )
 	int player_index = msg.ReadByte();
 	int world_x = msg.ReadLong();
 	int world_y = msg.ReadLong();
+
+	if ( g_PR->IsMuted( player_index ) )
+		return;
 
 	C_ASW_Player *local = C_ASW_Player::GetLocalASWPlayer();
 	if ( local )

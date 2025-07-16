@@ -23,9 +23,21 @@ public:
 	virtual void Spawn()
 	{
 		BaseClass::Spawn();
-		UTIL_Remove(this);
+		UTIL_Remove( this );
+	}
+};
+
+class CEnv_Sprite_Clientside_Dummy : public CServerOnlyPointEntity
+{
+	DECLARE_CLASS( CEnv_Sprite_Clientside_Dummy, CServerOnlyPointEntity );
+public:
+	virtual void Spawn()
+	{
+		BaseClass::Spawn();
+		UTIL_Remove( this );
 	}
 };
 
 LINK_ENTITY_TO_CLASS( asw_snow_volume, CASW_Snow_Volume_Dummy );
 LINK_ENTITY_TO_CLASS( asw_scanner_noise, CASW_Scanner_Noise_Dummy );
+LINK_ENTITY_TO_CLASS( env_sprite_clientside, CEnv_Sprite_Clientside_Dummy );

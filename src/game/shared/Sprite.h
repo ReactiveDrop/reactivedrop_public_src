@@ -90,9 +90,9 @@ class CSprite : public CBaseEntity
 public:
 	DECLARE_PREDICTABLE();
 	DECLARE_NETWORKCLASS();
+	DECLARE_DATADESC();
 
 	CSprite();
-	virtual ~CSprite();
 
 	virtual void SetModel( const char *szModelName );
 
@@ -101,8 +101,6 @@ public:
 	{
 		return true;
 	};
-
-	bool IsClientOnly() const { return m_bClientOnly; }
 #endif
 
 	void Spawn( void );
@@ -224,8 +222,6 @@ public:
 
 	void AnimateUntilDead( void );
 #if !defined( CLIENT_DLL )
-	DECLARE_DATADESC();
-
 	static CSprite *SpriteCreate( const char *pSpriteName, const Vector &origin, bool animate );
 #endif
 	static CSprite *SpriteCreatePredictable( const char *module, int line, const char *pSpriteName, const Vector &origin, bool animate );
@@ -244,14 +240,6 @@ public:
 	virtual void	ClientThink( void );
 	virtual void	OnDataChanged( DataUpdateType_t updateType );
 
-	static void RecreateAllClientside();
-	static void DestroyAllClientside();
-	static void ParseAllClientsideEntities(const char *pMapData);
-	static const char *ParseClientsideEntity( const char *pEntData );
-
-	bool InitializeClientside();
-
-	virtual bool KeyValue( const char *szKeyName, const char *szValue );
 	string_t m_iszSpriteControllerName{};
 	CHandle<CSprite> m_hSpriteController{};
 #endif
@@ -285,10 +273,6 @@ private:
 	int			m_nStartBrightness;
 	int			m_nDestBrightness;		//Destination brightness
 	float		m_flBrightnessTimeStart;//Real time for brightness
-
-#ifdef CLIENT_DLL
-	bool		m_bClientOnly;
-#endif
 };
 
 
@@ -305,7 +289,26 @@ public:
 #endif
 };
 
+#ifdef CLIENT_DLL
+class C_Sprite_ClientSide : public CSprite
+{
+public:
+	DECLARE_CLASS( C_Sprite_ClientSide, CSprite );
 
+	C_Sprite_ClientSide();
+	~C_Sprite_ClientSide();
+
+	bool Initialize();
+	static C_Sprite_ClientSide *CreateNew( bool bForce );
+
+	bool KeyValue( const char *szKeyName, const char *szValue ) override;
+
+	static void RecreateAll();
+	static void DestroyAll();
+	static const char *ParseEntity( const char *pEntData );
+	static void ParseAllEntities( const char *pMapData );
+};
+#endif
 
 // Macro to wrap creation
 #define SPRITE_CREATE_PREDICTABLE( name, origin, animate ) \

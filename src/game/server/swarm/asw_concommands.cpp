@@ -681,7 +681,36 @@ void rd_addbotf(const CCommand &args)
 		}
 	}
 }
-ConCommand rd_botadd("rd_botadd", rd_addbotf, "Adds a bot by index from 1 to 8, where index is the character of bot", FCVAR_NONE);
+ConCommand rd_botadd("rd_botadd", rd_addbotf, "Adds a bot by index from 1 to 8, where index is the character of bot (leader only)", FCVAR_NONE);
+
+void rd_addbot_svf(const CCommand& args) {
+	if (args.ArgC() < 2) {
+		Msg("Please supply the value from 1 to 8\n");
+		return;
+	}
+
+	int iRosterIndex = atoi(args[1]);
+	if (iRosterIndex < 1 || iRosterIndex > 8) {
+		Msg("Please supply the value from 1 to 8\n");
+		return;
+	}
+	--iRosterIndex;
+
+	CASW_Player* pLeader = ASWGameResource() ? ASWGameResource()->GetLeader() : NULL;
+	if (pLeader && ASWGameResource() && ASWGameRules()) {
+		if (!rd_player_bots_allowed.GetBool()) {
+			Msg("Failed to add a bot, rd_no_bots_allowed is set to 0\n");
+			return;
+		}
+
+		if (ASWGameRules()->RosterSelect(pLeader, iRosterIndex, -1)) {
+			DevMsg("Added bot %i \n", iRosterIndex);
+		} else {
+			Msg("Failed to add bot %i \n", iRosterIndex);
+		}
+	}
+}
+ConCommand rd_botadd_sv("rd_botadd_sv", rd_addbot_svf, "Adds a bot by index from 1 to 8 (server-side)", FCVAR_CHEAT);
 
 void RdBotsKickF()
 {

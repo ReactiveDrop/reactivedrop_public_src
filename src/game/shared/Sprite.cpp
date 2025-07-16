@@ -16,6 +16,7 @@
 	#include "iclientmode.h"
 	#include "c_baseviewmodel.h"
 
+	#include "mapentities_shared.h"
 #else
 	#include "baseviewmodel.h"
 #endif
@@ -30,10 +31,8 @@ LINK_ENTITY_TO_CLASS( env_sprite, CSprite );
 LINK_ENTITY_TO_CLASS( env_sprite_oriented, CSpriteOriented );
 #if !defined( CLIENT_DLL )
 LINK_ENTITY_TO_CLASS( env_glow, CSprite ); // For backwards compatibility, remove when no longer needed.
-LINK_ENTITY_TO_CLASS( env_sprite_clientside, CSprite );
 #endif
 
-#if !defined( CLIENT_DLL )
 BEGIN_DATADESC( CSprite )
 
 	DEFINE_FIELD( m_flLastTime, FIELD_TIME ),
@@ -62,6 +61,15 @@ BEGIN_DATADESC( CSprite )
 	DEFINE_FIELD( m_flBrightnessTimeStart, FIELD_TIME ),
 	DEFINE_FIELD( m_bWorldSpaceScale,	FIELD_BOOLEAN ),
 
+#ifdef CLIENT_DLL
+	DEFINE_KEYFIELD( m_iszSpriteControllerName, FIELD_STRING, "spritecontroller" ),
+	DEFINE_KEYFIELD( m_nRenderFX, FIELD_CHARACTER, "renderfx" ),
+	DEFINE_KEYFIELD( m_nRenderMode, FIELD_CHARACTER, "rendermode" ),
+	DEFINE_KEYFIELD( m_fEffects, FIELD_INTEGER, "effects" ),
+	DEFINE_KEYFIELD( m_clrRender, FIELD_COLOR32, "rendercolor" ),
+	DEFINE_KEYFIELD( m_ModelName, FIELD_MODELNAME, "model" ),
+	DEFINE_KEYFIELD( m_spawnflags, FIELD_INTEGER, "spawnflags" ),
+#else
 	// Function Pointers
 	DEFINE_FUNCTION( AnimateThink ),
 	DEFINE_FUNCTION( ExpandThink ),
@@ -76,10 +84,11 @@ BEGIN_DATADESC( CSprite )
 	DEFINE_INPUTFUNC( FIELD_FLOAT, "ColorRedValue", InputColorRedValue ),
 	DEFINE_INPUTFUNC( FIELD_FLOAT, "ColorGreenValue", InputColorGreenValue ),
 	DEFINE_INPUTFUNC( FIELD_FLOAT, "ColorBlueValue", InputColorBlueValue ),
+#endif
 
 END_DATADESC()
 
-#else
+#ifdef CLIENT_DLL
 
 BEGIN_PREDICTION_DATA( CSprite )
 
@@ -161,28 +170,10 @@ BEGIN_NETWORK_TABLE( CSprite, DT_Sprite )
 END_NETWORK_TABLE()
 
 
-
-#ifdef CLIENT_DLL
-extern CUtlVector< CSprite * > g_ClientsideSprites;
-#endif
-
 CSprite::CSprite()
 {
-#ifdef CLIENT_DLL
-	m_bClientOnly = false;
-#endif
 	m_flGlowProxySize = 2.0f;
 	m_flHDRColorScale = 1.0f;
-}
-
-CSprite::~CSprite()
-{
-#ifdef CLIENT_DLL
-	if ( m_bClientOnly )
-	{
-		g_ClientsideSprites.FindAndFastRemove( this );
-	}
-#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -248,19 +239,6 @@ void CSprite::Spawn( void )
 #if defined( CLIENT_DLL )
 	m_flStartScale = m_flDestScale = m_flSpriteScale;
 	m_nStartBrightness = m_nDestBrightness = m_nBrightness;
-#endif
-
-#ifndef CLIENT_DLL
-	// Server has no use for client-only entities.
-	// Seems like a waste to create the entity, only to UTIL_Remove it on Spawn, but this pattern works safely...
-	if ( FClassnameIs( this, "env_sprite_clientside" ) )
-	{
-		if ( FStrEq( STRING( GetEntityName() ), "" ) && !GetMoveParent() )
-		{ 
-			//remove all with empty name and without moveparent, we do not parse same on client
-			UTIL_Remove( this );
-		}
-	}
 #endif
 }
 
@@ -931,6 +909,164 @@ void CSpriteOriented::Spawn( void )
 RenderableTranslucencyType_t CSpriteOriented::ComputeTranslucencyType()
 {
 	return RENDERABLE_IS_TRANSLUCENT;
+}
+
+#endif
+
+
+#ifdef CLIENT_DLL
+CUtlVector<C_Sprite_ClientSide *> g_ClientSideSprites;
+
+C_Sprite_ClientSide::C_Sprite_ClientSide()
+{
+}
+
+C_Sprite_ClientSide::~C_Sprite_ClientSide()
+{
+	g_ClientSideSprites.FindAndFastRemove( this );
+}
+
+C_Sprite_ClientSide *C_Sprite_ClientSide::CreateNew( bool bForce )
+{
+	return new C_Sprite_ClientSide();
+}
+
+bool C_Sprite_ClientSide::Initialize()
+{
+	if ( InitializeAsClientEntity( NULL, false ) == false )
+	{
+		return false;
+	}
+
+	Spawn();
+
+	const model_t *mod = GetModel();
+	if ( mod )
+	{
+		Vector mins, maxs;
+		modelinfo->GetModelBounds( mod, mins, maxs );
+		SetCollisionBounds( mins, maxs );
+	}
+
+	SetBlocksLOS( false ); // this should be a small object
+	SetNextClientThink( CLIENT_THINK_NEVER );
+
+	return true;
+}
+
+extern bool ParseKeyvalue( void *pObject, typedescription_t *pFields, int iNumFields, const char *szKeyName, const char *szValue );
+
+bool C_Sprite_ClientSide::KeyValue( const char *szKeyName, const char *szValue )
+{
+	if ( BaseClass::KeyValue( szKeyName, szValue ) )
+	{
+		return true;
+	}
+
+	// This isn't done for client-side entity parsing, but it'd be REALLY useful if it was.
+	for ( datamap_t *dmap = GetDataDescMap(); dmap != NULL; dmap = dmap->baseMap )
+	{
+		if ( ::ParseKeyvalue( this, dmap->dataDesc, dmap->dataNumFields, szKeyName, szValue ) )
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void C_Sprite_ClientSide::RecreateAll()
+{
+	DestroyAll();
+	ParseAllEntities( engine->GetMapEntitiesString() );
+}
+
+void C_Sprite_ClientSide::DestroyAll()
+{
+	while ( g_ClientSideSprites.Count() > 0 )
+	{
+		C_Sprite_ClientSide *p = g_ClientSideSprites[0];
+		p->Release();
+	}
+}
+
+const char *C_Sprite_ClientSide::ParseEntity( const char *pEntData )
+{
+	CEntityMapData entData( (char *)pEntData );
+	char className[MAPKEY_MAXLENGTH];
+
+	MDLCACHE_CRITICAL_SECTION();
+
+	if ( !entData.ExtractValue( "classname", className ) )
+	{
+		Error( "classname missing from entity!\n" );
+	}
+
+	if ( !Q_strcmp( className, "env_sprite_clientside" ) )
+	{
+		// always force clientside entities placed in maps
+		C_Sprite_ClientSide *pEntity = C_Sprite_ClientSide::CreateNew( true );
+
+		if ( pEntity )
+		{
+			// Set up keyvalues.
+			pEntity->ParseMapData( &entData );
+
+			if ( !pEntity->Initialize() )
+				pEntity->Release();
+
+			return entData.CurrentBufferPosition();
+		}
+	}
+
+	// Just skip past all the keys.
+	char keyName[MAPKEY_MAXLENGTH];
+	char value[MAPKEY_MAXLENGTH];
+	if ( entData.GetFirstKey( keyName, value ) )
+	{
+		do
+		{
+		} while ( entData.GetNextKey( keyName, value ) );
+	}
+
+	//
+	// Return the current parser position in the data block
+	//
+	return entData.CurrentBufferPosition();
+}
+
+void C_Sprite_ClientSide::ParseAllEntities( const char *pMapData )
+{
+	char szTokenBuffer[MAPKEY_MAXLENGTH];
+
+	//
+	//  Loop through all entities in the map data, creating each.
+	//
+	for ( ; true; pMapData = MapEntity_SkipToNextEntity( pMapData, szTokenBuffer ) )
+	{
+		//
+		// Parse the opening brace.
+		//
+		char token[MAPKEY_MAXLENGTH];
+		pMapData = MapEntity_ParseToken( pMapData, token );
+
+		//
+		// Check to see if we've finished or not.
+		//
+		if ( !pMapData )
+			break;
+
+		if ( token[0] != '{' )
+		{
+			Error( "C_Sprite_ClientSide::ParseAllEntities: found %s when expecting {", token );
+			continue;
+		}
+
+		//
+		// Parse the entity and add it to the spawn list.
+		//
+		pMapData = ParseEntity( pMapData );
+	}
 }
 
 #endif

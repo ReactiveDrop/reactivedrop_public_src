@@ -2734,17 +2734,7 @@ bool C_BaseAnimating::SetupBones( matrix3x4a_t *pBoneToWorldOut, int nMaxBones, 
 {
 	VPROF_BUDGET( "C_BaseAnimating::SetupBones", ( !g_bInThreadedBoneSetup ) ? VPROF_BUDGETGROUP_CLIENT_ANIMATION : "Client_Animation_Threaded" );
 
-	//=============================================================================
-	// HPE_BEGIN:
-	// [pfreese] Added the check for pBoneToWorldOut != NULL in this debug warning
-	// code. SetupBones is called in the CSS anytime an attachment wants its
-	// parent's transform, hence this warning is hit extremely frequently.
-	// I'm not actually sure if this is the right "fix" for this, as the bones are
-	// actually accessed as part of the setup process, but since I'm not clear on the
-	// purpose of this dev warning, I'm including this comment block.
-	//=============================================================================
-
-	if ( pBoneToWorldOut != NULL && !IsBoneAccessAllowed() )
+	if ( !IsBoneAccessAllowed() )
 	{
 		static float lastWarning = 0.0f;
 

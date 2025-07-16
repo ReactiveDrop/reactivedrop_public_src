@@ -6948,15 +6948,6 @@ void CBaseEntity::UpdateCell()
 	m_cellX = CellFromCoord( cellwidth, m_vecOrigin.GetX() );
 	m_cellY = CellFromCoord( cellwidth, m_vecOrigin.GetY() );
 	m_cellZ	= CellFromCoord( cellwidth, m_vecOrigin.GetZ() );
-
-
-    // PRB TODO : HACK fix for hostage warping.
-    // Somehow the above code does not flag the network vars as modified, but below does... 
-    // Needs revisiting, but at this stage it fixes our bug
-
-    m_cellX.GetForModify();
-    m_cellY.GetForModify();
-    m_cellZ.GetForModify();
 }
 
 //-----------------------------------------------------------------------------
