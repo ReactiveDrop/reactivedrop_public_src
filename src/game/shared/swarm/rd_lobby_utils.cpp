@@ -444,6 +444,7 @@ void CReactiveDropLobbySearch::UpdateSearch()
 		if ( rd_lobby_search_debug.GetBool() )
 			DevMsg( 3, "%s: filter: \"%s\" %s %d\n", m_pszDebugName, m_NumericalFilters[i].m_Name.Get(), LobbyComparisonName( m_NumericalFilters[i].m_Compare ), m_NumericalFilters[i].m_Value );
 	}
+
 	pMatchmaking->AddRequestLobbyListDistanceFilter( m_DistanceFilter );
 	if ( rd_lobby_search_debug.GetBool() )
 		DevMsg( 3, "%s: distance filter: %s\n", m_pszDebugName, LobbyDistanceFilterName( m_DistanceFilter ) );
@@ -475,7 +476,24 @@ void CReactiveDropLobbySearch::LobbyMatchListResult( LobbyMatchList_t *pResult, 
 	m_MatchingLobbies.SetCount( pResult->m_nLobbiesMatching );
 	for ( uint32 i = 0; i < pResult->m_nLobbiesMatching; i++ )
 	{
-		m_MatchingLobbies[i] = pMatchmaking->GetLobbyByIndex( i );
+		CSteamID lobby = pMatchmaking->GetLobbyByIndex(i);
+
+		int count = SteamMatchmaking()->GetLobbyDataCount(lobby);
+		for (int j = 0; j < count; j++)
+		{
+			char key[k_nMaxLobbyKeyLength];
+			char dummy[1]; // only big enough to hold the null terminator
+			SteamMatchmaking()->GetLobbyDataByIndex(lobby, j, key, sizeof(key), dummy, sizeof(dummy));
+			const char* value = SteamMatchmaking()->GetLobbyData(lobby, key);
+
+			if (strcmp(key, "Binary Blob") != 0) {
+				if (key == "game:dir" && value == "reactivedrop") {
+
+					// only add if this is a Reactive Drop lobby
+					m_MatchingLobbies[i] = lobby;
+				}
+			}
+		}
 	}
 
 	if ( rd_lobby_search_debug.GetBool() )
