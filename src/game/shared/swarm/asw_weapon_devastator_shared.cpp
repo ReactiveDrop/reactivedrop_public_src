@@ -35,7 +35,16 @@ BEGIN_DATADESC(CASW_Weapon_Devastator)
 END_DATADESC()
 #endif
 
+static Vector cone_duck( 14, 14, 14 );
+
+static void On_rd_devastator_bullet_spread_duck_Changed( IConVar* var, const char* /*pOldValue*/, float /*flOldValue*/ )
+{
+	float newSpread = ConVarRef( var ).GetFloat();
+	cone_duck.Init( newSpread, newSpread, newSpread );
+}
+
 ConVar rd_devastator_dynamic_bullet_spread( "rd_devastator_dynamic_bullet_spread", "1", FCVAR_REPLICATED | FCVAR_CHEAT, "Controls if crouching decreases bullet spread for devastator" );
+ConVar rd_devastator_bullet_spread_duck (   "rd_devastator_bullet_spread_duck",   "14", FCVAR_REPLICATED | FCVAR_CHEAT, "Devastator's bullet spread when ducking (crouching)", true, 1.0f, true, 60.0f, &On_rd_devastator_bullet_spread_duck_Changed );
 
 CASW_Weapon_Devastator::CASW_Weapon_Devastator()
 {
@@ -140,7 +149,6 @@ void CASW_Weapon_Devastator::FireShotgunPellet( CASW_Inhabitable_NPC *pNPC, cons
 const Vector &CASW_Weapon_Devastator::GetAngularBulletSpread()
 {
 	const static Vector cone( 22, 22, 22 );
-	const static Vector cone_duck( 14, 14, 14 );
 
 	CASW_Marine *marine = GetMarine();
 
