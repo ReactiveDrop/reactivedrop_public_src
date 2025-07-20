@@ -92,7 +92,7 @@ int CASW_Weapon_Devastator::GetWeaponSubSkillId()
 
 float CASW_Weapon_Devastator::GetMovementScale()
 {
-	return ShouldMarineMoveSlow() ? 0.3f : 0.7f;
+	return ShouldMarineMoveSlow() ? 0.3f : 0.9f;
 }
 
 #ifndef CLIENT_DLL
