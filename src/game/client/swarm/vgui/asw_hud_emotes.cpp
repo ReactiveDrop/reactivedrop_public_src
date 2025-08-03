@@ -430,6 +430,9 @@ void CASWHudEmotes::PaintTracesFor(C_ASW_Marine* pMarine, Color color)
 
 				surface()->DrawTexturedPolygon(4, points);
 			}
+		}
+	}
+}
       
 void CASWHudEmotes::PaintTraitorEmote(C_BaseEntity* pEnt, int iTexture, float fEmoteScale)
 {
