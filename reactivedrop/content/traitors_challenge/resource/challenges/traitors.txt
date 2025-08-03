@@ -3,8 +3,9 @@
 	"description"	"#challenge_traitors_description"
 	"allowed_mode" "coop"
 	"convars" {
+		"_rd_traitors_challenge_enabled" "1"
 		"rd_player_bots_allowed" "0"
-		"cl_add_index_to_name" "1"
+		"rd_add_index_to_name" "1"
 		"rd_draw_restricted_rectangles_coop" "1"
 		
 		"rd_auto_fast_restart" "1"

@@ -21,9 +21,19 @@
 IMPLEMENT_NETWORKCLASS_ALIASED(ASW_Weapon_Devastator, DT_ASW_Weapon_Devastator)
 
 BEGIN_NETWORK_TABLE(CASW_Weapon_Devastator, DT_ASW_Weapon_Devastator)
+#ifdef CLIENT_DLL
+	// recvprops
+	RecvPropBool( RECVINFO( m_bLockedFire ) ),
+#else
+	// sendprops
+	SendPropBool( SENDINFO( m_bLockedFire ) ),
+#endif
 END_NETWORK_TABLE()
 
 BEGIN_PREDICTION_DATA(CASW_Weapon_Devastator)
+#ifdef CLIENT_DLL
+	DEFINE_PRED_FIELD( m_bLockedFire, FIELD_BOOLEAN, FTYPEDESC_INSENDTABLE ),
+#endif
 END_PREDICTION_DATA()
 
 LINK_ENTITY_TO_CLASS(asw_weapon_devastator, CASW_Weapon_Devastator);
@@ -35,7 +45,18 @@ BEGIN_DATADESC(CASW_Weapon_Devastator)
 END_DATADESC()
 #endif
 
+static Vector cone_duck( 14, 14, 14 );
+
+static void On_rd_devastator_bullet_spread_duck_Changed( IConVar* var, const char* /*pOldValue*/, float /*flOldValue*/ )
+{
+	float newSpread = ConVarRef( var ).GetFloat();
+	cone_duck.Init( newSpread, newSpread, newSpread );
+}
+
 ConVar rd_devastator_dynamic_bullet_spread( "rd_devastator_dynamic_bullet_spread", "1", FCVAR_REPLICATED | FCVAR_CHEAT, "Controls if crouching decreases bullet spread for devastator" );
+ConVar rd_devastator_bullet_spread_duck (   "rd_devastator_bullet_spread_duck",   "14", FCVAR_REPLICATED | FCVAR_CHEAT, "Devastator's bullet spread when ducking (crouching)",  true, 1.0f, true, 60.0f, &On_rd_devastator_bullet_spread_duck_Changed );
+ConVar rd_devastator_lockmode_enabled(		"rd_devastator_lockmode_enabled",	   "1", FCVAR_REPLICATED | FCVAR_CHEAT, "Enables lock-mode secondary attack. Marine is locked in place but weapon fire rate and penetration gets higher" );
+ConVar rd_devastator_lockmode_firerate(     "rd_devastator_lockmode_firerate",   "1.3", FCVAR_REPLICATED | FCVAR_CHEAT, "Scale factor of the fire rate in lock-mode",			true, 0.2f, true, 3.0f );
 
 CASW_Weapon_Devastator::CASW_Weapon_Devastator()
 {
@@ -46,27 +67,12 @@ CASW_Weapon_Devastator::~CASW_Weapon_Devastator()
 
 }
 
-void CASW_Weapon_Devastator::SecondaryAttack()
-{
-	CASW_Player *pPlayer = GetCommander();
-	if ( !pPlayer )
-		return;
-
-	CASW_Marine *pMarine = GetMarine();
-	if ( !pMarine )
-		return;
-
-	// dry fire
-	SendWeaponAnim( ACT_VM_DRYFIRE );
-	BaseClass::WeaponSound( EMPTY );
-	m_flNextSecondaryAttack = gpGlobals->curtime + 0.5f;
-}
-
 void CASW_Weapon_Devastator::Precache()
 {
 	PrecacheModel( "swarm/sprites/whiteglow1.vmt" );
 	PrecacheModel( "swarm/sprites/greylaser1.vmt");
 	PrecacheScriptSound( "ASW_Weapon.Empty" );
+	PrecacheScriptSound( "ASW_Weapon.Reload3" );
 	PrecacheScriptSound( "ASW_Weapon_Devastator.SingleFP" );
 	PrecacheScriptSound( "ASW_Weapon_Devastator.Single" );
 	PrecacheScriptSound( "ASW_Weapon_Devastator.ReloadA" );
@@ -92,7 +98,11 @@ int CASW_Weapon_Devastator::GetWeaponSubSkillId()
 
 float CASW_Weapon_Devastator::GetMovementScale()
 {
-	return ShouldMarineMoveSlow() ? 0.3f : 0.7f;
+	if ( m_bLockedFire )
+	{
+		return 0.000001f;	// 0 makes marine run faster for some reason
+	}
+	return ShouldMarineMoveSlow() ? 0.3f : 0.9f;
 }
 
 #ifndef CLIENT_DLL
@@ -109,12 +119,17 @@ const char *CASW_Weapon_Devastator::GetPartialReloadSound( int iPart )
 }
 #endif
 
+bool CASW_Weapon_Devastator::HasSecondaryAttack()
+{
+	return rd_devastator_lockmode_enabled.GetBool();
+}
+
 bool CASW_Weapon_Devastator::ShouldMarineMoveSlow()
 {
 	bool bAttack1, bAttack2, bReload, bOldReload, bOldAttack1;
 	GetButtons(bAttack1, bAttack2, bReload, bOldReload, bOldAttack1);
 
-	return ( BaseClass::ShouldMarineMoveSlow() || bAttack1 );
+	return ( BaseClass::ShouldMarineMoveSlow() || bAttack1 || m_bLockedFire );
 }
 
 void CASW_Weapon_Devastator::FireShotgunPellet( CASW_Inhabitable_NPC *pNPC, const FireBulletsInfo_t &info, int iSeed )
@@ -127,6 +142,9 @@ void CASW_Weapon_Devastator::FireShotgunPellet( CASW_Inhabitable_NPC *pNPC, cons
 	}
 
 	float fPiercingChance = MarineSkills()->GetSkillBasedValueByMarine( pMarine, ASW_MARINE_SKILL_STOPPING_POWER, ASW_MARINE_SUBSKILL_PIERCING_CHANCE );
+	if (m_bLockedFire)
+		fPiercingChance = 1;
+
 	if (fPiercingChance > 0)
 	{
 		pMarine->FirePenetratingBullets(info, 1, fPiercingChance, iSeed, false );
@@ -137,10 +155,9 @@ void CASW_Weapon_Devastator::FireShotgunPellet( CASW_Inhabitable_NPC *pNPC, cons
 	}
 }
 
-const Vector &CASW_Weapon_Devastator::GetAngularBulletSpread()
+const Vector& CASW_Weapon_Devastator::GetAngularBulletSpread()
 {
 	const static Vector cone( 22, 22, 22 );
-	const static Vector cone_duck( 14, 14, 14 );
 
 	CASW_Marine *marine = GetMarine();
 
@@ -150,4 +167,94 @@ const Vector &CASW_Weapon_Devastator::GetAngularBulletSpread()
 			return cone_duck;
 	}
 	return cone;
+}
+
+bool CASW_Weapon_Devastator::Reload( void )
+{
+	m_bLockedFire = false;
+
+	return BaseClass::Reload();
+}
+
+bool CASW_Weapon_Devastator::Holster( CBaseCombatWeapon *pSwitchingTo )
+{
+	m_bLockedFire = false;
+
+	return BaseClass::Holster( pSwitchingTo );
+}
+
+void CASW_Weapon_Devastator::Drop( const Vector &vecVelocity )
+{	
+	m_bLockedFire = false;
+
+	BaseClass::Drop( vecVelocity );
+}
+
+void CASW_Weapon_Devastator::ItemPostFrame( void )
+{
+	BaseClass::ItemPostFrame();
+
+	CASW_Marine* pMarine = GetMarine();
+	if ( !pMarine || !pMarine->IsAlive() )
+	{
+		m_bLockedFire = false;
+		return;
+	}
+	if ( pMarine->GetCurrentMeleeAttack() )
+		m_bLockedFire = false;
+}
+
+void CASW_Weapon_Devastator::ItemBusyFrame( void )
+{
+	BaseClass::ItemBusyFrame();
+
+	CASW_Marine* pMarine = GetMarine();
+	if ( !pMarine || !pMarine->IsAlive() )
+	{
+		m_bLockedFire = false;
+		return;
+	}
+	if ( pMarine->GetCurrentMeleeAttack() )
+		m_bLockedFire = false;
+}
+
+void CASW_Weapon_Devastator::SecondaryAttack()
+{
+	if ( rd_devastator_lockmode_enabled.GetBool() )
+	{
+		m_bLockedFire = !m_bLockedFire;
+		m_flNextSecondaryAttack = gpGlobals->curtime + 1.0f;
+		if ( m_bLockedFire )
+		{
+			m_flNextPrimaryAttack = gpGlobals->curtime + 0.5f;
+			WeaponSound( BURST );
+		}
+	}
+	else
+	{
+		CASW_Player *pPlayer = GetCommander();
+		if ( !pPlayer )
+			return;
+
+		CASW_Marine *pMarine = GetMarine();
+		if ( !pMarine )
+			return;
+
+		// dry fire
+		SendWeaponAnim( ACT_VM_DRYFIRE );
+		BaseClass::WeaponSound( EMPTY );
+		m_flNextSecondaryAttack = gpGlobals->curtime + 0.5f;
+	}
+}
+
+float CASW_Weapon_Devastator::GetFireRate()
+{
+	if ( m_bLockedFire )
+	{
+		return GetEquipItem()->m_flFireRate / rd_devastator_lockmode_firerate.GetFloat();
+	}
+	else
+	{
+		return GetEquipItem()->m_flFireRate;
+	}
 }

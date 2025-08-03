@@ -103,24 +103,24 @@ function SetBomb() {
 	g_bool_BombActivited = true;
 	if (g_marine_Boomer != g_marine_SilencedMarine) {
 		local delay = RandomHQUniformIntDistribution(0, 5);
-		DelayFunctionCall("BomberAlert", "", delay + 0.01);
+		DelayFunctionCall("BoomerAlert", "", delay + 0.01);
 
 		g_marine_Boomer.PrecacheSoundScript(BOOMER_SOUND.COUNT_DOWN[delay]);
 		g_marine_Boomer.EmitSound(BOOMER_SOUND.COUNT_DOWN[delay]);
-		DelayFunctionCall("BomberSelfExplode", "", 5.0); // 5秒后自爆
+		DelayFunctionCall("BoomerSelfExplode", "", 5.0); // 5秒后自爆
 	} else {
 		LocalizedClientPrint(hSender, 3, TextColor(250, 250, 250) + "%s1", "#challenge_traitors_marine_silenced_notify");
 	}
 }
 
-function BomberAlert() {
+function BoomerAlert() {
 	if (g_marine_Boomer != null && g_marine_Boomer.IsValid()) {
 		g_marine_Boomer.PrecacheSoundScript(BOOMER_SOUND.ALERT);
 		g_marine_Boomer.EmitSound(BOOMER_SOUND.ALERT);
 	}
 }
 
-function BomberSelfExplode() {
+function BoomerSelfExplode() {
 	if (g_marine_Boomer == null || !g_marine_Boomer.IsValid()) {
 		return;
 	}

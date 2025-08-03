@@ -24,6 +24,7 @@ WeaponData
 	{
 		"empty"					"ASW_Weapon.Empty"
 		"special3"				"ASW_Weapon.Reload3"				// weapon switch
+		"burst"					"ASW_Weapon.Reload2"
 
 		"single_shot"			"ASW_Weapon_Devastator.SingleFP"		// sound for locally controlled marine
 		"single_shot_npc"		"ASW_Weapon_Devastator.Single"		// sound for other marines

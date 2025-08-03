@@ -635,6 +635,7 @@ public:
 	float m_flLastBurnSoundTime;
 	float m_fNextPainSoundTime;
 	virtual void Event_Killed( const CTakeDamageInfo &info );
+	void PrintDeathMessage( const CTakeDamageInfo &info );
 	bool CanBecomeRagdoll();
 	virtual bool BecomeRagdollOnClient( const Vector &force );
 	void Suicide();

@@ -26,7 +26,13 @@ public:
 	virtual int GetWeaponSkillId();
 	virtual int GetWeaponSubSkillId();
 	virtual float GetMovementScale();
+	virtual float GetFireRate();
 	virtual const Vector& GetAngularBulletSpread();
+	virtual bool	Reload( void );
+	virtual bool	Holster( CBaseCombatWeapon *pSwitchingTo = NULL );
+	virtual void	Drop( const Vector &vecVelocity );
+	virtual void	ItemPostFrame();
+	virtual void	ItemBusyFrame();
 
 #ifndef CLIENT_DLL
 	DECLARE_DATADESC();
@@ -35,10 +41,12 @@ public:
 	virtual bool HasSecondaryExplosive(void) const { return false; }
 #endif
 	virtual const char *GetMagazineGibModelName() const override { return "models/weapons/empty_clips/devastator_empty_clip.mdl"; }
-	virtual bool HasSecondaryAttack() override { return false; } // weapon has no secondary fire
+	virtual bool HasSecondaryAttack() override;
 
 	virtual bool ShouldMarineMoveSlow();
 	virtual Class_T		Classify(void) { return (Class_T)CLASS_ASW_DEVASTATOR; }
+protected:
+	CNetworkVar( bool, m_bLockedFire );
 };
 
 #endif // asw_weapon_devastator_shared_h__

@@ -919,7 +919,7 @@ bool IsGameplayCrosshair()
 	return pCrosshair->IsGameplayCrosshair();
 }
 
-ConVar asw_sniper_scope_radius( "asw_sniper_scope_radius", "52", FCVAR_CHEAT );
+ConVar asw_sniper_scope_radius( "asw_sniper_scope_radius", "52", FCVAR_NONE, "The size of the sniper scope/sight when you are in the alternate firing position" );
 
 void CASWHudCrosshair::DrawSniperScope( int x, int y )
 {

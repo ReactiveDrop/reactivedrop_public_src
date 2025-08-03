@@ -109,6 +109,7 @@ ConVar	sv_noclipduringpause( "sv_noclipduringpause", "0", FCVAR_REPLICATED | FCV
 extern ConVar sv_maxunlag;
 extern ConVar sv_turbophysics;
 extern ConVar *sv_maxreplay;
+extern ConVar rd_add_index_to_name;
 
 extern CServerGameDLL g_ServerGameDLL;
 
@@ -8783,7 +8784,18 @@ void CBasePlayer::SetPlayerName( const char *name )
 	{
 		Assert( strlen(name) > 0 );
 
-		Q_strncpy( m_szNetname, name, sizeof(m_szNetname) );
+		//set whole m_szNetname to 0
+		memset(m_szNetname, 0, sizeof(m_szNetname));
+
+		if(rd_add_index_to_name.GetBool())
+		{
+			int n = V_snprintf(m_szNetname, sizeof(m_szNetname) - 1, "%d-%s", ENTINDEX(edict()), name);
+			UTIL_SafeUtf8Truncate(m_szNetname, sizeof(m_szNetname));
+		}
+		else
+		{
+			Q_strncpy(m_szNetname, name, sizeof(m_szNetname));
+		}
 	}
 }
 

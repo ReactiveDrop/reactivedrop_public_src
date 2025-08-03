@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright ?1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: Shared util code between client and server.
 //
@@ -921,11 +921,15 @@ private:
 
 int			UTIL_EntitiesAlongRay( const Ray_t &ray, CFlaggedEntitiesEnum *pEnum  );
 
-inline int UTIL_EntitiesAlongRay( CBaseEntity **pList, int listMax, const Ray_t &ray, int flagMask )
+inline int UTIL_EntitiesAlongRay(CBaseEntity** pList, int listMax, const Ray_t& ray, int flagMask)
 {
-	CFlaggedEntitiesEnum rayEnum( pList, listMax, flagMask );
-	return UTIL_EntitiesAlongRay( ray, &rayEnum );
-}
+	CFlaggedEntitiesEnum rayEnum(pList, listMax, flagMask);
+	return UTIL_EntitiesAlongRay(ray, &rayEnum);
+};
 
+// These 3 functions best fit into strtools.h. However, if we put them there, we will get build errors. So we put them here for now.
+bool UTIL_IsUtf8ContinuationByte(char b);
+int UTIL_Utf8CharLength(char first_byte);
+void UTIL_SafeUtf8Truncate(char* str, size_t max_size);
 
 #endif // UTIL_SHARED_H

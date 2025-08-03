@@ -204,7 +204,7 @@ function SetMapHandler() {
 					hMarine.GetScriptScope().DamageMapModifier = 1.0;
 					local temp = hMarine.GetOrigin();
 					if ((temp.x > 400 && temp.x < 800 && temp.y > 1500 && temp.y < 1900) || (temp.x < 100 && temp.y < 1600)) {
-						hMarine.TakeDamage(999, DAMAGE_TYPE.DMG_FALL, null);
+						hMarine.Die();
 					} else if (temp.x < 0 && temp.z > 720) {
 						hMarine.TakeDamage(10, DAMAGE_TYPE.DMG_FALL, null);
 					}

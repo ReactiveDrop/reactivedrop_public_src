@@ -117,7 +117,7 @@ extern ConVar rd_burning_interval;
 extern ConVar rd_burning_marine_damage;
 ConVar rd_marine_ff_fist_scale( "rd_marine_ff_fist_scale", "1", FCVAR_CHEAT, "Scale CLUB type damage done to marines (requires rd_ff_marine_fist)" );
 
-ConVar rd_server_marine_backpacks("rd_server_marine_backpacks", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Attach unactive weapon model to marine's back");
+ConVar rd_server_marine_backpacks("rd_server_marine_backpacks", "0", FCVAR_REPLICATED, "Attach unactive weapon model to marine's back");
 
 ConVar rda_marine_strafe_allow_air("rda_marine_strafe_allow_air", "0", FCVAR_CHEAT, "If set to 1 marine able to strafe jump once in the air");
 ConVar rda_marine_strafe_push_hor_velocity("rda_marine_strafe_push_hor_velocity", "520", FCVAR_CHEAT, "Horizontal velocity for strafe push");
@@ -227,7 +227,7 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Marine, DT_ASW_Marine)
 	SendPropBool	(SENDINFO(m_bOnFire)),
 
 	// emotes
-	SendPropInt		( SENDINFO( m_iEmote ), 8, SPROP_UNSIGNED ),
+	SendPropInt		( SENDINFO( m_iEmote ), 16, SPROP_UNSIGNED ),
 	SendPropFloat	( SENDINFO( m_flLastMedicCall ) ),
 	SendPropFloat	( SENDINFO( m_flLastAmmoCall ) ),
 
@@ -4358,6 +4358,44 @@ void CASW_Marine::Event_Killed( const CTakeDamageInfo &info )
 	if ( ASWDeathmatchMode() )
 		ASWDeathmatchMode()->OnMarineKilled( info, this );
 
+	m_bSlowHeal = false;	// no healing if we're dead!
+
+	PrintDeathMessage( info );
+}
+
+void CASW_Marine::PrintDeathMessage( const CTakeDamageInfo &info )
+{
+	CASW_Marine_Resource *pMR = GetMarineResource();
+	
+	// print a custom death message if we have one
+	CAlienSwarm *pAlienSwarm = ASWGameRules();
+	if ( pAlienSwarm )
+	{
+		ScriptVariant_t args[7];
+		ScriptVariant_t retvalue;
+
+		args[0] = ToHScript( this );
+		args[1] = ToHScript( info.GetInflictor() );
+		args[2] = ToHScript( info.GetAttacker() );
+		args[3] = ToHScript( info.GetWeapon() );
+		args[4] = info.GetDamage();
+		args[5] = info.GetDamageType();
+		args[6] = info.GetAmmoName();
+
+		pAlienSwarm->RunScriptFunctionInListenerScopes( "AlterDeathMessage", &retvalue, NELEMS( args ), args );
+		
+		if ( retvalue.m_type == FIELD_CSTRING )
+		{
+			char szName[256];
+			pMR->GetDisplayName( szName, sizeof( szName ) );
+			
+			UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, retvalue.m_pszString, szName );
+
+			return;
+		}
+	}
+
+	CBaseEntity *pAttacker = info.GetAttacker();
 	// print a message if marine was killed by another marine
 	if ( pAttacker && pAttacker->Classify() == CLASS_ASW_MARINE )
 	{
@@ -4411,8 +4449,6 @@ void CASW_Marine::Event_Killed( const CTakeDamageInfo &info )
 			UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_chat_died", szName );
 		}
 	}
-
-	m_bSlowHeal = false;	// no healing if we're dead!
 }
 
 void CASW_Marine::AimGun()

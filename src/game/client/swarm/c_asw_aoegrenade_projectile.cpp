@@ -19,6 +19,7 @@
 
 // saved in video.txt, not config.cfg
 ConVar rd_simple_beacons( "rd_simple_beacons", "0", FCVAR_NONE, "If 1 heal beacon and damage amplifier will be rendered simple to improve performance" );
+extern ConVar _rd_traitors_challenge_enabled;
 
 //Precahce the effects
 PRECACHE_REGISTER_BEGIN( GLOBAL, ASWPrecacheEffectAOEGrenades )
@@ -284,7 +285,8 @@ void C_ASW_AOEGrenade_Projectile::UpdateParticleAttachments( CNewParticleEffect 
 
 void C_ASW_AOEGrenade_Projectile::UpdatePingEffects( void )
 {
-	if ( rd_simple_beacons.GetBool() )
+	// Turn off the beacon effects if the traitor's challenge is enabled to prevent fps drops on the client
+	if ( rd_simple_beacons.GetBool() || _rd_traitors_challenge_enabled.GetBool())
 		return;
 
 	if ( m_bSettled && m_pPulseEffect.GetObject() == NULL )
@@ -374,7 +376,8 @@ void C_ASW_AOEGrenade_Projectile::ClientThink( void )
 		m_fStartLightTime = gpGlobals->curtime;
 	}
 
-	if ( !rd_simple_beacons.GetBool() )
+	// Turn off the beacon effects if the traitor's challenge is enabled to prevent fps drops on the client
+	if ( !rd_simple_beacons.GetBool() || _rd_traitors_challenge_enabled.GetBool() )
 	{
 		if ( !m_pDLight )
 		{

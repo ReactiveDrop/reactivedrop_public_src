@@ -1,4 +1,4 @@
-//===== Copyright © 1996-2005, Valve Corporation, All rights reserved. ======//
+//===== Copyright ?1996-2005, Valve Corporation, All rights reserved. ======//
 //
 // Purpose: 
 //
@@ -2018,4 +2018,75 @@ int UTIL_EntitiesAlongRay( const Ray_t &ray, CFlaggedEntitiesEnum *pEnum )
 	partition->EnumerateElementsAlongRay( PARTITION_ENGINE_NON_STATIC_EDICTS, ray, false, pEnum );
 #endif
 	return pEnum->GetCount();
+}
+
+/// <summary>
+/// Determines if a byte is a valid UTF-8 continuation byte.
+/// </summary>
+/// <param name="b"> The byte to check.</param>
+/// <returns> True if the byte is a valid continuation byte, false otherwise.</returns>
+inline bool UTIL_IsUtf8ContinuationByte(char b)
+{
+	// check if the byte is a valid UTF-8 continuation byte (10xxxxxx)
+	return (b & 0xC0) == 0x80;
+}
+
+// Those functions best fit in strtools.h, but if we put them there,
+/// <summary>
+/// Calculates the length of a UTF-8 character based on its first byte.
+/// </summary>
+/// <param name="first_byte"> The first byte of the UTF-8 character.</param>
+/// <returns> The length of the UTF-8 character in bytes, or 0 if the first byte is invalid.</returns>
+int UTIL_Utf8CharLength(char first_byte)
+{
+	if ((first_byte & 0x80) == 0x00) return 1;      // 0xxxxxxx
+	if ((first_byte & 0xE0) == 0xC0) return 2;      // 110xxxxx
+	if ((first_byte & 0xF0) == 0xE0) return 3;      // 1110xxxx
+	if ((first_byte & 0xF8) == 0xF0) return 4;      // 11110xxx
+	return 0; // Invalid UTF-8 start byte, return 0 to indicate an error
+}
+
+/// <summary>
+/// Truncates a UTF-8 string to a maximum byte size, ensuring that it does not cut off a character in the middle.
+/// </summary>
+/// <param name="str"> The string to truncate. It must be a valid UTF-8 string.</param>
+/// <param name="max_size"> The maximum size of the string in bytes, including the null terminator.</param>
+void UTIL_SafeUtf8Truncate(char* str, size_t max_size)
+{
+	if (!str || max_size == 0) return;
+
+	const size_t MAX_CONTENT_SIZE = max_size - 1;
+	str[MAX_CONTENT_SIZE] = '\0';
+
+	size_t len = strlen(str);
+	if (len <= MAX_CONTENT_SIZE) return;
+
+	size_t truncate_pos = 0;
+	while (truncate_pos < MAX_CONTENT_SIZE)
+	{
+		char byte = str[truncate_pos];
+		int char_len = UTIL_Utf8CharLength(byte);
+
+		if (char_len == 0) {
+			truncate_pos++;
+			continue;
+		}
+
+		size_t next_pos = truncate_pos + char_len;
+		if (next_pos > len) break;
+
+		bool valid = true;
+		for (int i = 1; i < char_len; ++i) {
+			if (!UTIL_IsUtf8ContinuationByte(static_cast<uint8_t>(str[truncate_pos + i]))) {
+				valid = false;
+				break;
+			}
+		}
+
+		if (!valid || next_pos > MAX_CONTENT_SIZE)
+			break;
+
+		truncate_pos = next_pos; // move to the next character
+	}
+	str[truncate_pos] = '\0'; // safe truncate
 }

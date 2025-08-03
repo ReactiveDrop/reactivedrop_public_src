@@ -102,6 +102,7 @@ ConVar asw_rts_controls( "asw_rts_controls", "0", FCVAR_REPLICATED | FCVAR_CHEAT
 ConVar asw_controls( "asw_controls", "1", FCVAR_REPLICATED | FCVAR_CHEAT | FCVAR_DEMO, "Default camera/control scheme mode", ASWControlsChanged );
 ConVar asw_controls_vehicle( "asw_controls_vehicle", "2", FCVAR_REPLICATED | FCVAR_CHEAT, "Default camera/control scheme mode when in a vehicle", ASWControlsChanged );
 ConVar asw_hl2_camera( "asw_hl2_camera", "0", FCVAR_REPLICATED | FCVAR_DONTRECORD | FCVAR_CHEAT );
+ConVar rd_add_index_to_name("rd_add_index_to_name", "0", FCVAR_REPLICATED);
 #ifdef CLIENT_DLL
 ConVar asw_controls_spectator_override( "asw_controls_spectator_override", "-1", FCVAR_DONTRECORD, "Force a value for asw_controls while spectating.", ASWControlsChanged );
 #endif

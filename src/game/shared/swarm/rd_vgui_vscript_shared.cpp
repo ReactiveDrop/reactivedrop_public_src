@@ -47,6 +47,7 @@ END_NETWORK_TABLE();
 
 BEGIN_ENT_SCRIPTDESC( CRD_VGui_VScript, CRD_HUD_VScript, "Alien Swarm: Reactive Drop scriptable interactive UI" )
 #ifdef CLIENT_DLL
+	DEFINE_SCRIPTFUNC( ForceSync, "Discard all client predictions and force syncing with server." )
 	DEFINE_SCRIPTFUNC( SendInput, "Sends a numeric input to the server." )
 	DEFINE_SCRIPTFUNC( SetEntity, "Predict a change to the value of an entity parameter. (Only during Input.)" )
 	DEFINE_SCRIPTFUNC( SetInt, "Predict a change to the value of an integer parameter. (Only during Input.)" )
@@ -224,6 +225,12 @@ CRD_VGui_VScript::~CRD_VGui_VScript()
 }
 
 #ifdef CLIENT_DLL
+
+inline void CRD_VGui_VScript::ForceSync()
+{
+	ResetPrediction();
+}
+
 void CRD_VGui_VScript::SendInput( int value )
 {
 	if ( !m_bIsControlling )

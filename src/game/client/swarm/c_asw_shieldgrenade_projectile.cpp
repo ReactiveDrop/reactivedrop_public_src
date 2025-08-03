@@ -9,13 +9,15 @@
 #define BUBBLE_MODEL_LOW "models/items/shield_bubble/shield_bubble_arena_low.mdl"
 
 extern ConVar rd_simple_beacons;
+extern ConVar _rd_traitors_challenge_enabled;
 
 IMPLEMENT_CLIENTCLASS_DT( C_ASW_ShieldGrenade_Projectile, DT_ASW_ShieldGrenade_Projectile, CASW_ShieldGrenade_Projectile )
 END_RECV_TABLE()
 
 static bool UseLowBubbleModel()
 {
-	return rd_simple_beacons.GetBool() || ( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() < 92 );
+	// Turn off the beacon effects if the traitor's challenge is enabled to prevent fps drops on the client
+	return rd_simple_beacons.GetBool() || _rd_traitors_challenge_enabled.GetBool() || ( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() < 92 );
 }
 
 void C_ASW_ShieldGrenade_Projectile::Precache()

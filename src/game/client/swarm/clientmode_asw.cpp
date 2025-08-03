@@ -81,7 +81,7 @@ ConVar asw_hear_fixed("asw_hear_fixed", "0", FCVAR_NONE, "If set, hearing audio 
 Vector g_asw_vec_fixed_cam(-276.03076, -530.74951, -196.65625);
 QAngle g_asw_ang_fixed_cam(42.610226, 90.289375, 0);
 extern ConVar sensitivity;
-ConVar asw_fix_cam( "asw_fix_cam", "-1", FCVAR_CHEAT, "Set to 1 to fix the camera in place." );
+ConVar asw_fix_cam( "asw_fix_cam", "-1", FCVAR_NONE, "Set to 1 to fix the camera in place." );
 ConVar asw_fix_cam_speed_fast( "asw_fix_cam_speed_fast", "300", FCVAR_NONE, "Speed of camera in fix cam." );
 ConVar asw_fix_cam_speed_slow( "asw_fix_cam_speed_slow", "100", FCVAR_NONE, "Speed of camera in fix cam while holding shift." );
 

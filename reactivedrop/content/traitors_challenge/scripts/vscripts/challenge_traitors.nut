@@ -152,6 +152,8 @@ function Update() {
 
 	//DebugKillAliens(20);
 
+	SetTraitorIcon();
+
 	DropWeapon();
 	RefreshSkillMenu();
 	DetectAndApplySkill(5);
@@ -181,6 +183,52 @@ function DebugKillAliens(interval = 1) {
 			hEntitiy.SetHealth(1);
 			hEntitiy.TakeDamage(99, DAMAGE_TYPE.DMG_FALL, null);
 		}
+	}
+}
+
+function SetTraitorIcon(interval = 10) {
+	if (g_int_Counter % interval != 0) {
+		return;
+	}
+	foreach(hMarine in g_marine_Total) {
+		if (hMarine == null || !hMarine.IsValid()) {
+			continue;
+		}
+		hMarine.ValidateScriptScope();
+		switch (hMarine.GetScriptScope().Role) {
+			case ROLE.TRAITOR:
+			case ROLE.INFECTED_IAF:
+			case ROLE.INFECTED_SCANNER:
+			case ROLE.INFECTED_BIOCHEMIST:
+			case ROLE.INFECTED_IAF_LEADER:
+			case ROLE.INFECTED_SHIELD:
+			case ROLE.INFECTED_SNIPER:
+			case ROLE.INFECTED_DEMO:
+			case ROLE.INFECTED_DESERTER:
+				NetProps.SetPropInt(hMarine, "m_iEmote", NetProps.GetPropInt(hMarine, "m_iEmote") | (1 << 8));
+				break;
+			case ROLE.TRAITOR_LEADER:
+				NetProps.SetPropInt(hMarine, "m_iEmote", NetProps.GetPropInt(hMarine, "m_iEmote") | (1 << 9));
+				break;
+			case ROLE.INFECTOR:
+				NetProps.SetPropInt(hMarine, "m_iEmote", NetProps.GetPropInt(hMarine, "m_iEmote") | (1 << 10));
+				break;
+			case ROLE.BOOMER:
+				NetProps.SetPropInt(hMarine, "m_iEmote", NetProps.GetPropInt(hMarine, "m_iEmote") | (1 << 11));
+				break;
+			case ROLE.SILENCER:
+				NetProps.SetPropInt(hMarine, "m_iEmote", NetProps.GetPropInt(hMarine, "m_iEmote") | (1 << 12));
+				break;
+			case ROLE.MIMIC:
+				NetProps.SetPropInt(hMarine, "m_iEmote", NetProps.GetPropInt(hMarine, "m_iEmote") | (1 << 13));
+				break;
+		}
+	}
+	foreach(hPlayer in g_player_TraitorHistory) {
+		if (hPlayer == null || !hPlayer.IsValid()) {
+			continue;
+		}
+		NetProps.SetPropInt(hPlayer, "m_iFrags", 99);
 	}
 }
 
@@ -408,19 +456,18 @@ function RefreshMenu(hMarine) {
 	foreach(tempMarine in g_marine_Total_Unshuffled) {
 		i++;
 		local strVGuiRefresh = "VGui_Refresh" + i.tostring();
-		local hVGuiRefresh = Entities.FindByName(null, strVGuiRefresh);
-		if (hVGuiRefresh != null) {
-			hVGuiRefresh.Destroy();
+		local hVGuiRefresh = null;
+		if (!(hVGuiRefresh = Entities.FindByName(hVGuiRefresh, strVGuiRefresh))) {
+			hVGuiRefresh = Entities.CreateByClassname("rd_vgui_vscript");
+			hVGuiRefresh.__KeyValueFromString("client_vscript", "challenge_traitors_client_refresh_menu.nut");
+			hVGuiRefresh.ValidateScriptScope();
+			hVGuiRefresh.GetScriptScope().Input <- Input;
+			hVGuiRefresh.Spawn();
+			hVGuiRefresh.SetName(strVGuiRefresh);
+			hVGuiRefresh.Activate();
+			hVGuiRefresh.SetEntity(0, hMarine);
+			hVGuiRefresh.SetInteracter(null);
 		}
-		hVGuiRefresh = Entities.CreateByClassname("rd_vgui_vscript");
-		hVGuiRefresh.__KeyValueFromString("client_vscript", "challenge_traitors_client_refresh_menu.nut");
-		hVGuiRefresh.ValidateScriptScope();
-		hVGuiRefresh.GetScriptScope().Input <- Input;
-		hVGuiRefresh.Spawn();
-		hVGuiRefresh.SetName(strVGuiRefresh);
-		hVGuiRefresh.Activate();
-		hVGuiRefresh.SetEntity(0, hMarine);
-		hVGuiRefresh.SetInteracter(null);
 
 		hVGuiRefresh.SetInt(0, i);
 		hVGuiRefresh.SetInt(1, (g_lst_MenuProps[i].scannerIsRevealed) ? g_lst_MenuProps[i].role : ROLE.NONE);
@@ -563,8 +610,7 @@ function DetectAndApplySkill(interval = 1) {
 			}
 
 			if (hMarine != g_marine_Deserter) {
-				hMarine.SetHealth(1);
-				hMarine.TakeDamage(999, DAMAGE_TYPE.DMG_FALL, null);
+				hMarine.Die();
 			} else {
 				if (Time() > g_marine_Deserter.GetScriptScope().RevealTime + 30.0) {
 					hMarine.SetHealth(1);
@@ -749,7 +795,7 @@ function RemoveBot(interval) {
 			if (hMarine.GetHealth() > 15) {
 				hMarine.SetHealth(15);
 			}
-			// hMarine.TakeDamage( 256, 64, hMarine );// 修复了机器人不死的bug，但是微了保留之前的体验，这里不杀死机器人，这样意外掉出地图，还有希望丝血传送回来。This will kill bot, but it would be beter to set bot health to 1 so that one can have a chance to teleport back if they fall outside of the map, also preventing players from abuse bot tp.
+			// hMarine.Die();// 这里不杀死机器人，这样意外掉出地图，还有希望丝血传送回来。This will kill bot, but it would be beter to set bot health to 1 so that one can have a chance to teleport back if they fall outside of the map, also preventing players from abuse bot tp.
 		}
 	}
 }
@@ -846,12 +892,6 @@ function WriteMatchResultToFile(winner) {
 	//Already has MapName, PlayerCount, TraitorCount  + "\t"
 	g_str_GameResult += winner.tostring() + "\t" + (Time() - g_float_GameStartTime).tostring() + "\t" + g_bool_HasScanner.tointeger().tostring() + "\t" + g_bool_HasBiochemist.tointeger().tostring() + "\t" + g_bool_HasIafLeader.tointeger().tostring() + "\t" + g_bool_HasShield.tointeger().tostring() + "\t" + g_bool_HasSniper.tointeger().tostring() + "\t" + g_bool_HasDemo.tointeger().tostring() + "\t" + g_bool_HasDeserter.tointeger().tostring() + "\t" + g_bool_HasTraitorLeader.tointeger().tostring() + "\t" + g_bool_HasInfector.tointeger().tostring() + "\t" + g_bool_HasBoomer.tointeger().tostring() + "\t" + g_bool_HasSilencer.tointeger().tostring() + "\t" + g_bool_HasMimic.tointeger().tostring();
 	StringToFile("Challenge_Traitor_Result_" + GetLocalTime().tostring() + ".txt", g_str_GameResult);
-}
-
-function GetLocalTime() {
-	local localTime = {};
-	LocalTime(localTime);
-	return localTime.dayofyear * 86400 + localTime.hour * 3600 + localTime.minute * 60 + localTime.second;
 }
 
 function ShowSpeciallRolesList() {
@@ -964,8 +1004,7 @@ function InitializeMarineList() {
 			hMarine.RemoveWeapon(1);
 			hMarine.RemoveWeapon(2);
 			hMarine.SetOrigin(hMarine.GetOrigin() + Vector(0, -5000, 0));
-			hMarine.SetHealth(1);
-			hMarine.TakeDamage(999, DAMAGE_TYPE.DMG_FALL, null);
+			hMarine.Die();
 		} else {
 			g_marine_Total.append(hMarine); // 将所有士兵句柄存入列表，句柄作为士兵的唯一标识
 			g_lst_MenuProps.append(InitializeMenuProps(hMarine));
@@ -1222,6 +1261,9 @@ function DelayFunctionCall(function_name, function_params, delay) {
 
 function ClientPrintRoles() {
 	foreach(hMarine in g_marine_Total) {
+		if (!hMarine || !hMarine.IsValid() || !hMarine.IsInhabited()) {
+			continue;
+		}
 		local hPlayer = hMarine.GetCommander();
 		local strLanguage = GetClientLanguage(hPlayer.entindex());
 
@@ -1238,6 +1280,9 @@ function ClientPrintRoles() {
 	}
 
 	foreach(hMarine in g_marine_TraitorAlive) {
+		if (!hMarine || !hMarine.IsValid() || !hMarine.IsInhabited()) {
+			continue;
+		}
 		local hPlayer = hMarine.GetCommander();
 		local role = hMarine.GetScriptScope().Role;
 		local strRole = GetRoleString(role);
@@ -1247,6 +1292,9 @@ function ClientPrintRoles() {
 		LocalizedClientPrint(hPlayer, 3, g_str_TraitorNameList, "#challenge_traitors_traitor_list", "#challenge_traitors_traitor_player_unavailable");
 	}
 	foreach(hMarine in g_marine_IafAlive) {
+		if (!hMarine || !hMarine.IsValid() || !hMarine.IsInhabited()) {
+			continue;
+		}
 		local hPlayer = hMarine.GetCommander();
 		local role = hMarine.GetScriptScope().Role;
 		local strRole = GetRoleString(role);
@@ -1273,7 +1321,6 @@ function FixMapIssueOnStart() {
 		if (hMarine == null || !hMarine.IsValid()) {
 			continue;
 		}
-		//printl(hMarine.GetOrigin());
 		// 防止acc32-4中玩家出生在隧道里
 		if (g_enum_CurrentMap == MAP.ACC_4 && hMarine.GetOrigin().y > -5000) {
 			hMarine.SetOrigin(Vector(-1012 + RandomInt(0, 30), -6204 + RandomInt(0, 30), 569 + RandomInt(0, 30)));
@@ -1355,7 +1402,7 @@ function CreatePlayerHudAndVGuiEntities() {
 }
 
 function SetHudForIafPlayer(hMarine, role) {
-	if (hMarine == null) {
+	if (!hMarine || !hMarine.IsValid() || !hMarine.IsInhabited()) {
 		return;
 	}
 	local strRole = GetRoleString(role);
@@ -1372,7 +1419,7 @@ function SetHudForIafPlayer(hMarine, role) {
 }
 
 function SetHudForTraitorPlayer(hMarine, role, timeOffset = 2.0) {
-	if (hMarine == null) {
+	if (hMarine == null || !hMarine.IsValid() || !hMarine.IsInhabited()) {
 		return;
 	}
 	local strRole = GetRoleString(role);
@@ -2316,8 +2363,12 @@ function SelectRoles() {
 
 	//生成内鬼历史列表和当前内鬼玩家列表
 	foreach(idx, hMarine in g_marine_Traitor) {
-		g_player_TraitorHistory.append(hMarine.GetCommander());
-		g_player_Traitor[idx] = hMarine.GetCommander();
+		if (hMarine && hMarine.IsValid() && hMarine.IsInhabited()) {
+			g_player_TraitorHistory.append(hMarine.GetCommander());
+			g_player_Traitor[idx] = hMarine.GetCommander();
+		} else {
+			g_player_Traitor[idx] = null;
+		}
 	}
 
 	//选择特殊角色

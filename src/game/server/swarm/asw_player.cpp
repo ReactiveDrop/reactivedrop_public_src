@@ -77,6 +77,7 @@ extern ConVar asw_default_campaign;
 extern ConVar rd_lock_onslaught;
 extern ConVar rd_lock_hardcoreff;
 extern ConVar rd_lock_challenge;
+extern ConVar rd_add_index_to_name;
 
 ConVar rm_welcome_message("rm_welcome_message", "", FCVAR_NONE, "This message is displayed to a player after they join the game");
 ConVar rm_welcome_message_delay("rm_welcome_message_delay", "10", FCVAR_NONE, "The number of seconds the welcome message is delayed.", true, 0, true, 30);
@@ -2597,18 +2598,33 @@ void CASW_Player::ChangeName( const char *pszNewName )
 
 	const char *pszOldName = GetPlayerName();
 
+	bool bShouldFireEvent = true;
+	if (rd_add_index_to_name.GetBool())
+	{
+		char tempName[MAX_PLAYER_NAME_LENGTH];
+		int n = V_snprintf(tempName, sizeof(tempName) - 1, "%d-%s", ENTINDEX(edict()), pszNewName);
+		UTIL_SafeUtf8Truncate(tempName, sizeof(tempName));
+		if (V_strncmp(pszOldName, tempName, sizeof(tempName)) == 0)
+		{
+			bShouldFireEvent = false;
+		}
+	}
+
 	//char text[256];
 	//Q_snprintf( text,sizeof(text), "%s changed name (CASW_Player::ChangeName) to %s\n", pszOldName, trimmedName );
 	//UTIL_ClientPrintAll( HUD_PRINTTALK, text );
 
 	// broadcast event
-	IGameEvent * event = gameeventmanager->CreateEvent( "player_changename" );
-	if ( event )
+	if (bShouldFireEvent)
 	{
-		event->SetInt( "userid", GetUserID() );
-		event->SetString( "oldname", pszOldName );
-		event->SetString( "newname", trimmedName );
-		gameeventmanager->FireEvent( event );
+		IGameEvent* event = gameeventmanager->CreateEvent("player_changename");
+		if (event)
+		{
+			event->SetInt("userid", GetUserID());
+			event->SetString("oldname", pszOldName);
+			event->SetString("newname", trimmedName);
+			gameeventmanager->FireEvent(event);
+		}
 	}
 
 	// change shared player name

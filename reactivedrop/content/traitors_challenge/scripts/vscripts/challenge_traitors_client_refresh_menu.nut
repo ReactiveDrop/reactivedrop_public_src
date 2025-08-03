@@ -18,6 +18,7 @@ function Paint() {}
 function Control(tbl) {}
 
 function OnUpdate() {
+	self.ForceSync();
 	local idx = self.GetInt(0);
 	if (!("marine_info" in getconsttable())) {
 		getconsttable()["marine_info"] <- [];

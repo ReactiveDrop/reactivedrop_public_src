@@ -25,6 +25,7 @@ public:
 #ifdef CLIENT_DLL
 	static CUtlVector<CRD_VGui_VScript *> s_InteractiveHUDEntities;
 
+	void ForceSync();
 	void SendInput( int value );
 	void SetEntity( int i, HSCRIPT entity );
 	void SetInt( int i, int value );

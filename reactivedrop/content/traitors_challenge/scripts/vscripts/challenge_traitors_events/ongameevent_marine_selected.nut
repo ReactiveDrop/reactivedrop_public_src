@@ -84,7 +84,7 @@ g_ModeScript.OnGameEvent_marine_selected <- function(params) {
 				if (tempPlayer == hPlayer) // 如果曾经做过内鬼，直接处死反骨仔
 				{
 					hMarine.SetHealth(1);
-					hMarine.TakeDamage(999, DAMAGE_TYPE.DMG_FALL, null);
+					hMarine.Die();
 					LocalizedClientPrint(tempPlayer, 3, "%s1", "#challenge_traitors_iaf_bot_killed_notify");
 
 					local strLanguage = GetClientLanguage(hMarine.GetCommander().entindex());
