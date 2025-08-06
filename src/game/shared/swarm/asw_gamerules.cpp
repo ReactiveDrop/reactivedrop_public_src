@@ -609,6 +609,7 @@ ConVar asw_marine_ff_absorption( "asw_marine_ff_absorption", "1", FCVAR_REPLICAT
 ConVar asw_horde_override( "asw_horde_override", "0", FCVAR_REPLICATED, "Forces hordes to spawn", UpdateMatchmakingTagsCallback );
 ConVar asw_wanderer_override( "asw_wanderer_override", "0", FCVAR_REPLICATED, "Forces wanderers to spawn", UpdateMatchmakingTagsCallback );
 ConVar rd_challenge( "rd_challenge", "0", FCVAR_REPLICATED | FCVAR_DEMO, "Activates a challenge by ID", UpdateMatchmakingTagsCallback );
+ConVar rd_challenge_changing( "rd_challenge_changing", "0", FCVAR_GAMEDLL | FCVAR_CHEAT | FCVAR_HIDDEN, "Internally used for diagnostics during challenge transitions" );
 ConVar rd_lock_difficulty( "rd_lock_difficulty", "0", FCVAR_REPLICATED, "If 1, the lobby leader cannot change the difficulty level." );
 ConVar rd_lock_onslaught( "rd_lock_onslaught", "0", FCVAR_REPLICATED, "If 1, the lobby leader cannot change the onslaught setting." );
 ConVar rd_lock_hardcoreff( "rd_lock_hardcoreff", "0", FCVAR_REPLICATED, "If 1, the lobby leader cannot change the hardcore friendly fire setting." );
@@ -9916,6 +9917,7 @@ void CAlienSwarm::RevertSavedConvars()
 void CAlienSwarm::EnableChallenge( const char *szChallengeName )
 {
 	extern ConVar rd_challenge;
+	extern ConVar rd_challenge_changing;
 
 	const RD_Challenge_t *pSummary = ReactiveDropChallenges::GetSummary( szChallengeName );
 	if ( !pSummary || ( ASWDeathmatchMode() ? !pSummary->AllowDeathmatch : !pSummary->AllowCoop ) )
@@ -9932,9 +9934,9 @@ void CAlienSwarm::EnableChallenge( const char *szChallengeName )
 	KeyValues::AutoDelete pKV( "CHALLENGE" );
 	bool bEnabled = ReactiveDropChallenges::ReadData( pKV, szChallengeName );
 
-	rd_challenge.SetValue("");
+	rd_challenge_changing.SetValue(1);
 	ResetChallengeConVars();
-	rd_challenge.SetValue(szChallengeName);
+	rd_challenge_changing.SetValue(2);
 
 	if ( ASWDeathmatchMode() )
 	{
@@ -9958,6 +9960,8 @@ void CAlienSwarm::EnableChallenge( const char *szChallengeName )
 		ApplyChallengeConVars( pKV );
 		EnforceWeaponSelectionRules();
 	}
+
+	rd_challenge_changing.SetValue(3);
 
 	if ( !bEnabled )
 	{
@@ -9989,6 +9993,8 @@ void CAlienSwarm::EnableChallenge( const char *szChallengeName )
 	{
 		V_strncpy( m_szGameDescription, "Alien Swarm: Reactive Drop", sizeof( m_szGameDescription ) );
 	}
+
+	rd_challenge_changing.SetValue(0);
 }
 
 void CAlienSwarm::CheckChallengeConVars()

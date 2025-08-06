@@ -241,6 +241,24 @@
 	"wave"			"@weapons\2D\devastator\devastatorfp.wav"
 }
 
+"ASW_Weapon_Devastator.LockModeOn"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\devastator\lockmodeon.wav"
+}
+
+"ASW_Weapon_Devastator.LockModeOff"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons\3D\devastator\lockmodeoff.wav"
+}
+
 "ASW_Weapon_Prifle.Single"
 {
 	"channel"		"CHAN_WEAPON"

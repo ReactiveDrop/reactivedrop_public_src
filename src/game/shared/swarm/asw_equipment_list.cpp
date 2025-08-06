@@ -383,7 +383,7 @@ static CASW_EquipItem s_RegularEquips[ASW_NUM_EQUIP_REGULAR] =
 		"swarm/EquipIcons/EquipDevastator",
 		&asw_ammo_count_devastator, &asw_ammo_count_devastator,
 		NULL, NULL,
-		11, 0.2f, 3.0f, 7, MARINE_CLASS_SPECIAL_WEAPONS,
+		13, 0.2f, 3.0f, 7, MARINE_CLASS_SPECIAL_WEAPONS,
 		true, false, false, ASW_OFFHAND_USE_IMMEDIATELY,
 		0.2f, 0.2f,
 	},

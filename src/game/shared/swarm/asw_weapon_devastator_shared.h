@@ -39,6 +39,8 @@ public:
 #else
 	virtual const char *GetPartialReloadSound( int iPart );
 	virtual bool HasSecondaryExplosive(void) const { return false; }
+	virtual void ClientThink() override;
+
 #endif
 	virtual const char *GetMagazineGibModelName() const override { return "models/weapons/empty_clips/devastator_empty_clip.mdl"; }
 	virtual bool HasSecondaryAttack() override;
@@ -47,6 +49,12 @@ public:
 	virtual Class_T		Classify(void) { return (Class_T)CLASS_ASW_DEVASTATOR; }
 protected:
 	CNetworkVar( bool, m_bLockedFire );
+
+#ifdef CLIENT_DLL
+	HPARTICLEFFECT m_hLockedFireParticle;
+#endif
+
+	void DisableLockFire();
 };
 
 #endif // asw_weapon_devastator_shared_h__

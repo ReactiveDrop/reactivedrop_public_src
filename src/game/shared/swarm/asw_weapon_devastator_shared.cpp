@@ -72,12 +72,13 @@ void CASW_Weapon_Devastator::Precache()
 	PrecacheModel( "swarm/sprites/whiteglow1.vmt" );
 	PrecacheModel( "swarm/sprites/greylaser1.vmt");
 	PrecacheScriptSound( "ASW_Weapon.Empty" );
-	PrecacheScriptSound( "ASW_Weapon.Reload3" );
 	PrecacheScriptSound( "ASW_Weapon_Devastator.SingleFP" );
 	PrecacheScriptSound( "ASW_Weapon_Devastator.Single" );
 	PrecacheScriptSound( "ASW_Weapon_Devastator.ReloadA" );
 	PrecacheScriptSound( "ASW_Weapon_Devastator.ReloadB" );
 	PrecacheScriptSound( "ASW_Weapon_Devastator.ReloadC" );
+	PrecacheScriptSound( "ASW_Weapon_Devastator.LockModeOn" );
+	PrecacheScriptSound( "ASW_Weapon_Devastator.LockModeOff" );
 
 	BaseClass::Precache();
 }
@@ -171,21 +172,21 @@ const Vector& CASW_Weapon_Devastator::GetAngularBulletSpread()
 
 bool CASW_Weapon_Devastator::Reload( void )
 {
-	m_bLockedFire = false;
+	DisableLockFire();
 
 	return BaseClass::Reload();
 }
 
 bool CASW_Weapon_Devastator::Holster( CBaseCombatWeapon *pSwitchingTo )
 {
-	m_bLockedFire = false;
+	DisableLockFire();
 
 	return BaseClass::Holster( pSwitchingTo );
 }
 
 void CASW_Weapon_Devastator::Drop( const Vector &vecVelocity )
 {	
-	m_bLockedFire = false;
+	DisableLockFire();
 
 	BaseClass::Drop( vecVelocity );
 }
@@ -197,11 +198,11 @@ void CASW_Weapon_Devastator::ItemPostFrame( void )
 	CASW_Marine* pMarine = GetMarine();
 	if ( !pMarine || !pMarine->IsAlive() )
 	{
-		m_bLockedFire = false;
+		DisableLockFire();
 		return;
 	}
 	if ( pMarine->GetCurrentMeleeAttack() )
-		m_bLockedFire = false;
+		DisableLockFire();
 }
 
 void CASW_Weapon_Devastator::ItemBusyFrame( void )
@@ -211,11 +212,11 @@ void CASW_Weapon_Devastator::ItemBusyFrame( void )
 	CASW_Marine* pMarine = GetMarine();
 	if ( !pMarine || !pMarine->IsAlive() )
 	{
-		m_bLockedFire = false;
+		DisableLockFire();
 		return;
 	}
 	if ( pMarine->GetCurrentMeleeAttack() )
-		m_bLockedFire = false;
+		DisableLockFire();
 }
 
 void CASW_Weapon_Devastator::SecondaryAttack()
@@ -227,8 +228,10 @@ void CASW_Weapon_Devastator::SecondaryAttack()
 		if ( m_bLockedFire )
 		{
 			m_flNextPrimaryAttack = gpGlobals->curtime + 0.5f;
-			WeaponSound( BURST );
+			WeaponSound( SPECIAL1 );
 		}
+		else
+			WeaponSound( BURST );
 	}
 	else
 	{
@@ -258,3 +261,33 @@ float CASW_Weapon_Devastator::GetFireRate()
 		return GetEquipItem()->m_flFireRate;
 	}
 }
+
+void CASW_Weapon_Devastator::DisableLockFire()
+{
+	if (m_bLockedFire)
+	{
+		m_bLockedFire = false;
+		WeaponSound( BURST );
+	}
+}
+
+#ifdef CLIENT_DLL
+void CASW_Weapon_Devastator::ClientThink()
+{
+	BaseClass::ClientThink();
+
+	if ( m_bLockedFire != m_hLockedFireParticle.IsValid() )
+	{
+		if ( m_bLockedFire )
+		{
+			m_hLockedFireParticle.Set( ParticleProp()->Create( "buffgrenade_attach_arc", PATTACH_POINT_FOLLOW, "eject1" ) );
+			ParticleProp()->AddControlPoint( m_hLockedFireParticle, 1, this, PATTACH_POINT_FOLLOW, "muzzle" );
+		}
+		else
+		{
+			ParticleProp()->StopEmissionAndDestroyImmediately( m_hLockedFireParticle.GetObject() );
+			m_hLockedFireParticle.Set( NULL );
+		}
+	}
+}
+#endif
