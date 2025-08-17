@@ -64,6 +64,15 @@ jobs:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.1
 
+      # shader compilation
+      - name: Compile the shaders
+        working-directory: src/materialsystem/stdshaders
+        run: |
+          echo "video_yuv_vs30.fxc" >> stdshader_dx9_30.txt
+          echo "video_yuv_ps30.fxc" >> stdshader_dx9_30.txt
+
+          ./buildsdkshaders.bat
+
       # missionchooser.dll
       - name: Build missionchooser.dll
         working-directory: src/game/missionchooser
@@ -79,6 +88,7 @@ jobs:
         working-directory: src/game/client
         run: MSBuild.exe swarm_sdk_client.vcxproj -property:Configuration=Debug
 
+
       # store artifacts
       # make sure retention is low, this can become huge otherwise
       - name: Store build
@@ -89,3 +99,60 @@ jobs:
             reactivedrop/bin/missionchooser.dll
             reactivedrop/bin/server.dll
             reactivedrop/bin/client.dll
+
+  run-game:
+    name: run client and server
+    runs-on: windows-2022
+    needs:
+      - release
+    timeout-minutes: 30
+    steps:
+      - name: Download release artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: Release
+
+      - name: Cache files
+        id: cache-app
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}\asrd
+          key: cache-app
+
+      - name: Setup steamcmd
+        uses: CyberAndrii/setup-steamcmd@v1
+
+      - name: Download the game
+        run: steamcmd +force_install_dir ${{ github.workspace }}\asrd +logon anonymous +app_update 563560 +app_update 1007 +quit
+
+      - name: Move the artifacts files to the game
+        run: |
+          mv client.dll asrd/reactivedrop/bin/client.dll
+          mv server.dll asrd/reactivedrop/bin/server.dll
+          mv missionchooser.dll asrd/reactivedrop/bin/missionchooser.dll
+
+      - name: Run the client
+        # any script to run can be added here, i.e. automate testing of some game commands
+        run: |
+          cd ${{ github.workspace }}\asrd
+          echo "cvarlist log cvars-client.txt; quit" > reactivedrop/cfg/test.cfg
+          cmd /c start /wait reactivedrop.exe -textmode -condebug -conclearlog +exec test
+          mv ${{ github.workspace }}/asrd/reactivedrop/console.log ${{ github.workspace }}/asrd/console-client.log
+
+      - name: Run the server
+        # any script to run can be added here, i.e. automate testing of some game commands
+        run: |
+          cd ${{ github.workspace }}\asrd
+          echo "cvarlist log cvars-server.txt; map lobby; quit" > reactivedrop/cfg/servertest.cfg
+          cmd /c start /wait srcds_console.exe -console -condebug -conclearlog -game reactivedrop -noassert +sv_lan 1 +exec servertest
+          mv ${{ github.workspace }}/asrd/reactivedrop/console.log ${{ github.workspace }}/asrd/console-server.log
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: rd-artifacts
+          path: |
+            ${{ github.workspace }}/asrd/reactivedrop/cvars-client.txt
+            ${{ github.workspace }}/asrd/reactivedrop/cvars-server.txt
+            ${{ github.workspace }}/asrd/console-client.log
+            ${{ github.workspace }}/asrd/console-server.log
