@@ -71,7 +71,7 @@ jobs:
           echo "video_yuv_vs30.fxc" >> stdshader_dx9_30.txt
           echo "video_yuv_ps30.fxc" >> stdshader_dx9_30.txt
 
-          ./buildsdkshaders.bat
+          cmd /c buildsdkshaders.bat
 
       # missionchooser.dll
       - name: Build missionchooser.dll
