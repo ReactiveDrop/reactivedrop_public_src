@@ -64,15 +64,6 @@ jobs:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.1
 
-      # shader compilation
-      - name: Compile the shaders
-        working-directory: src/materialsystem/stdshaders
-        run: |
-          echo "video_yuv_vs30.fxc" >> stdshader_dx9_30.txt
-          echo "video_yuv_ps30.fxc" >> stdshader_dx9_30.txt
-
-          cmd /c buildsdkshaders.bat
-
       # missionchooser.dll
       - name: Build missionchooser.dll
         working-directory: src/game/missionchooser
