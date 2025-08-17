@@ -1,0 +1,106 @@
+#!/usr/bin/env php
+<?php
+
+$dir = $argc > 1 ? $argv[1] : __DIR__;
+
+class convar {
+
+  const FLAGS = [
+    'cheat' => 'CHEAT',
+    'replicated' => 'REPLICATED',
+    'client' => 'CLIENTDLL',
+    'server' => 'GAMEDLL'
+  ];
+
+  public ?string $name;
+  public ?string $default;
+  public array $flags = [];
+  public ?string $description;
+
+  public static function factory(array $row) {
+    $cvar = new self;
+
+    $cvar->name = trim($row['Name']);
+    $cvar->default = trim($row['Value']);
+    $cvar->description = trim($row['Help Text']);
+
+    foreach (self::FLAGS as $flag => $search) {
+      if ($row[$search]) {
+        $cvar->flags[] = $flag;
+      }
+    }
+
+    return $cvar;
+  }
+
+  public function getCategory() {
+    return strtoupper(
+      substr($this->name, 0, 1)
+    );
+  }
+}
+
+function e(?string $msg = '', ...$args) {
+  if ($args) {
+    $msg = vsprintf($msg, $args);
+  }
+  echo trim($msg) . PHP_EOL;
+}
+
+$cvargroup = [];
+
+foreach (['client', 'server'] as $t) {
+  $header = [];
+
+  $file = sprintf('%s/asrd/reactivedrop/cvars-%s.txt', $dir, $t);
+  $f = fopen($file, 'r');
+
+  while (($data = fgetcsv($f, 4096, ',')) !== false) {
+    if (!sizeof($header)) {
+      $header = $data;
+    } else {
+      $record = array_combine($header, $data);
+      $cvar = convar::factory($record);
+      $cvargroup[$cvar->getCategory()][] = $cvar;
+    }
+  }
+}
+
+
+e("
+{{cmdlist|asrd}}
+
+{{note|This file was updated (generated) on %s}}
+
+==Notes==
+*Descriptions with '''**''' denote community modified descriptions and my not be entirely accurate.
+*This list does not include all console commands. Ex: '''jointeam <team|team number|character>'''.
+*Some commands are legacy commands or are \"not hooked up to code\".
+*Some commands may need developer mode (launch option -dev) in order to work.
+
+==Index==
+{{Compact ToC}}
+",
+date(DATE_RSS)
+);
+
+foreach ($cvargroup as $group => $cvars) {
+  e('===%s===', $group);
+  e('');
+  e('{| class="standard-table" style="width: 100%;"');
+  e('! Command !! Default Value !! Flags !! Description');
+  e('|-');
+
+  foreach ($cvars as $cvar) {
+    e(
+      '| %s || %s || %s || %s',
+      $cvar->name,
+      $cvar->default,
+      implode(', ', $cvar->flags),
+      $cvar->description
+    );
+    e('|-');
+  };
+
+  e('|}');
+}
