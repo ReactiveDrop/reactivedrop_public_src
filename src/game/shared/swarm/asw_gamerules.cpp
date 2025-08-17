@@ -39,7 +39,7 @@
 	#include "globalstate.h"
 	#include "ai_basenpc.h"
 	#include "asw_game_resource.h"
-		
+
 	#include "asw_marine.h"
 	#include "asw_spawner.h"
 	#include "asw_pickup.h"
@@ -173,13 +173,13 @@ extern ConVar old_radius_damage;
 	ConVar asw_ww_chatter_interval_min("asw_ww_chatter_interval_min", "200", 0, "Min time between wildcat and wolfe conversation");
 	ConVar asw_ww_chatter_interval_max("asw_ww_chatter_interval_max", "260", 0, "Max time between wildcat and wolfe conversation");
 	ConVar asw_compliment_chatter_interval_min("asw_compliment_chatter_interval_min", "180", 0, "Min time between kill compliments");
-	ConVar asw_compliment_chatter_interval_max("asw_compliment_chatter_interval_max", "240", 0, "Max time between kill compliments");	
+	ConVar asw_compliment_chatter_interval_max("asw_compliment_chatter_interval_max", "240", 0, "Max time between kill compliments");
 	ConVar asw_default_campaign("asw_default_campaign", "jacob", FCVAR_ARCHIVE, "Default campaign used when dedicated server restarts");
 	ConVar rd_max_marines( "rd_max_marines", "-1", FCVAR_NONE, "Sets how many marines can be selected" );
 	ConVar asw_campaign_wounding("asw_campaign_wounding", "0", FCVAR_NONE, "Whether marines are wounded in the roster if a mission is completed with the marine having taken significant damage");
 	ConVar asw_drop_powerups("asw_drop_powerups", "0", FCVAR_CHEAT, "Do aliens drop powerups?");
 	ConVar asw_adjust_difficulty_by_number_of_marines( "asw_adjust_difficulty_by_number_of_marines", "1", FCVAR_CHEAT, "If enabled, difficulty will be reduced when there are only 3 or 2 marines." );
-	ConVar rd_increase_difficulty_by_number_of_marines( "rd_increase_difficulty_by_number_of_marines", "0", FCVAR_CHEAT, "If enabled, difficulty will be increased when there are more than 4 marines." );	
+	ConVar rd_increase_difficulty_by_number_of_marines( "rd_increase_difficulty_by_number_of_marines", "0", FCVAR_CHEAT, "If enabled, difficulty will be increased when there are more than 4 marines." );
 	ConVar sv_vote_kick_ban_duration("sv_vote_kick_ban_duration", "5", 0, "How long should a kick vote ban someone from the server? (in minutes)");
 	ConVar sv_timeout_when_fully_connected( "sv_timeout_when_fully_connected", "30", FCVAR_NONE, "Once fully connected, player will be kicked if he doesn't send a network message within this interval." );
 	ConVar mm_swarm_state( "mm_swarm_state", "ingame", FCVAR_DEVELOPMENTONLY );
@@ -510,7 +510,7 @@ static void UpdateMatchmakingTagsCallback( IConVar *pConVar, const char *pOldVal
 ConVar asw_marine_names("asw_marine_names", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "Whether to show the marine name");
 ConVar asw_world_healthbars("asw_world_healthbars", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "Shows health bars in the game world");
 ConVar asw_world_usingbars("asw_world_usingbars", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "Shows using bars in the game world");
-ConVar rd_show_arrow_to_marine("rd_show_arrow_to_marine", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "If 1 then arrows show where marines are"); 
+ConVar rd_show_arrow_to_marine("rd_show_arrow_to_marine", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "If 1 then arrows show where marines are");
 //
 // also for deathmatch
 ConVar rd_show_others_laser_pointer("rd_show_others_laser_pointer", "1", FCVAR_CHEAT | FCVAR_REPLICATED, "Allows to show laser pointers of other marines, not my marine");
@@ -852,7 +852,7 @@ ConVar sk_asw_parasite_infest_dmg_hard( "sk_asw_parasite_infest_dmg_hard", "270"
 ConVar sk_asw_parasite_infest_dmg_insane( "sk_asw_parasite_infest_dmg_insane", "280", FCVAR_REPLICATED | FCVAR_CHEAT, "Total damage from parasite infestation" );
 ConVar sk_asw_parasite_infest_dmg_brutal( "sk_asw_parasite_infest_dmg_brutal", "280", FCVAR_REPLICATED | FCVAR_CHEAT, "Total damage from parasite infestation" );
 
-// reactivedrop: adding these weapon damage overrides for PvP 
+// reactivedrop: adding these weapon damage overrides for PvP
 ConVar	rd_shotgun_dmg_base("rd_shotgun_dmg_base",	"0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of shotgun", true, 0, false, 0);
 ConVar	rd_rifle_dmg_base("rd_rifle_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of rifle", true, 0, false, 0);
 ConVar	rd_prifle_dmg_base("rd_prifle_dmg_base", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Base damage of prototype rifle", true, 0, false, 0);
@@ -1097,7 +1097,7 @@ CAlienSwarmProxy::~CAlienSwarmProxy()
 	BEGIN_RECV_TABLE( CAlienSwarmProxy, DT_AlienSwarmProxy )
 		RecvPropDataTable( "asw_gamerules_data", 0, 0, &REFERENCE_RECV_TABLE( DT_ASWGameRules ), RecvProxy_ASWGameRules ),
 		RecvPropInt( RECVINFO( m_iSpeedrunTime ) ),
-		RecvPropBool( RECVINFO( m_bDisallowCameraRotation ) ),		
+		RecvPropBool( RECVINFO( m_bDisallowCameraRotation ) ),
 	END_RECV_TABLE()
 #else
 	void* SendProxy_ASWGameRules( const SendProp *pProp, const void *pStructBase, const void *pData, CSendProxyRecipients *pRecipients, int objectID )
@@ -1494,7 +1494,7 @@ CAmmoDef *GetAmmoDef()
 		def.AddAmmoType("ASW_DEAGLE",		DMG_BULLET,					TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_asw_deagle",		"sk_npc_dmg_asw_deagle",			"sk_max_asw_deagle",		BULLET_IMPULSE(200, 1225),	0 );
 		// devastator (automated heavy shotgun)
 		def.AddAmmoType( "ASW_DEVASTATOR",	DMG_BULLET | DMG_BUCKSHOT,	TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_asw_devastator",	"sk_npc_dmg_asw_devastator",		"sk_max_asw_devastator",	BULLET_IMPULSE(200, 1225), 0);
-		// 
+		//
 		def.AddAmmoType( "ASW_50CALMG",		DMG_BULLET,					TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_asw_50calmg",		"sk_npc_dmg_asw_50calmg",			"sk_max_asw_50calmg",		BULLET_IMPULSE(200, 1225),	0 );
 		// gas_grenades
 		def.AddAmmoType( "ASW_GAS_GRENADES",DMG_NERVEGAS,					TRACER_LINE_AND_WHIZ,	"sk_plr_dmg_asw_gas_grenades", "sk_npc_dmg_asw_gas_grenades",		"sk_max_asw_gas_grenades",	BULLET_IMPULSE( 200, 1225 ), 0 );
@@ -1669,8 +1669,8 @@ ConVar asw_instant_restart_debug( "asw_instant_restart_debug", "0", FCVAR_NONE, 
 ConVar asw_instant_restart_cooldown( "asw_instant_restart_cooldown", "3.0", FCVAR_NOTIFY, "How many seconds have to pass since the last instant restart to be able to trigger another one, restarts in debriefing do not count.", true, 0.0f, true, 10.0f );
 
 const char* CAlienSwarm::GetGameDescription( void )
-{ 
-	return m_szGameDescription; 
+{
+	return m_szGameDescription;
 }
 
 CAlienSwarm::CAlienSwarm() : m_ActorSpeakingUntil( DefLessFunc( string_t ) )
@@ -2104,7 +2104,7 @@ void CAlienSwarm::PlayerSpawn( CBasePlayer *pPlayer )
 }
 
 bool CAlienSwarm::ClientConnected( edict_t *pEntity, const char *pszName, const char *pszAddress, char *reject, int maxrejectlen )
-{	
+{
 #ifndef CLIENT_DLL
 	// request a high resolution timer from the os
 	if ( engine->IsDedicatedServer() )
@@ -2135,7 +2135,7 @@ bool CAlienSwarm::ClientConnected( edict_t *pEntity, const char *pszName, const 
 			//else
 				//Msg("Failed to cast connected player\n");
 		}
-	}	
+	}
 
 	return BaseClass::ClientConnected(pEntity, pszName, pszAddress, reject, maxrejectlen);
 }
@@ -2155,7 +2155,7 @@ void CAlienSwarm::ClientDisconnected( edict_t *pClient )
 					CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( i );
 					if ( !pMR )
 						continue;
-					
+
 					if ( pMR->GetCommander() == pPlayer )
 					{
 						pMR->SetInhabited( false );
@@ -2173,7 +2173,7 @@ void CAlienSwarm::ClientDisconnected( edict_t *pClient )
 				CASW_Game_Resource::s_bLeaderGivenDifficultySuggestion = false;
 
 				int iPlayerEntIndex = pPlayer->entindex();
-				
+
 				CASW_Player *pBestPlayer = NULL;
 				for ( int i = 0; i < ASW_MAX_READY_PLAYERS; i++ )
 				{
@@ -2406,8 +2406,8 @@ CASW_Marine_Resource *CAlienSwarm::RosterSelect( CASW_Player *pPlayer, int iProf
 		{
 			pMR->m_iWeaponsInSlots.Set( iWpnSlot, nWeaponIndex );
 
-			// store also in initial array to disallow marines spawn 
-			// with picked up items 
+			// store also in initial array to disallow marines spawn
+			// with picked up items
 			if ( ASWDeathmatchMode() )
 			{
 				pMR->m_iInitialWeaponsInSlots.Set( iWpnSlot, nWeaponIndex );
@@ -2507,7 +2507,7 @@ void CAlienSwarm::ReassignMarines(CASW_Player *pPlayer)
 		for ( int i = 0; i < ASWGameResource()->GetMaxMarineResources(); ++i )
 		{
 			CASW_Marine_Resource* pMR = ASWGameResource()->GetMarineResource( i );
-			
+
 			if ( pMR && pMR->GetCommander() == pTmpPlayer )
 			{
 				++numMarines;
@@ -2634,7 +2634,7 @@ void CAlienSwarm::EnforceMaxMarines()
 				DevMsg( "Found marine resource with index %i, nNumSelectedMarines=%i\n", RosterIndex, nNumSelectedMarines );
 				if ( nNumSelectedMarines > nMaxMarines )
 				{
-					// we don't delete elements here because 
+					// we don't delete elements here because
 					// DeleteMarineResource() shuffles array elements
 					DevMsg( "Marking marine %i for deselection\n", RosterIndex );
 					marineResourcesToDelete.AddToTail( pMR );
@@ -2663,7 +2663,7 @@ void CAlienSwarm::ReviveDeadMarines()
 		if (ASWGameResource())
 			ASWGameResource()->UpdateMarineSkills(GetCampaignSave());
 		UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_marines_revived" );
-	}	
+	}
 }
 
 void CAlienSwarm::LoadoutSelect( CASW_Marine_Resource *pMR, int iInvSlot, int iEquipIndex )
@@ -2719,7 +2719,7 @@ void CAlienSwarm::RequestStartMission(CASW_Player *pPlayer)
 	CASW_Game_Resource *pGameResource = ASWGameResource();
 	if (!pGameResource)
 		return;
-	int m = pGameResource->GetMaxMarineResources();	
+	int m = pGameResource->GetMaxMarineResources();
 	bool bCanStart = false;
 	bool bTech = false;
 	for (int i=0;i<m;i++)
@@ -2739,7 +2739,7 @@ void CAlienSwarm::RequestStartMission(CASW_Player *pPlayer)
 		return;
 	if (m_hEquipReq.Get() && !m_hEquipReq->AreRequirementsMet())
 		return;
-	
+
 	if (ASWGameResource()->AreAllOtherPlayersReady(pPlayer->entindex()))
 	{
 		m_bShouldStartMission = true;
@@ -2747,19 +2747,19 @@ void CAlienSwarm::RequestStartMission(CASW_Player *pPlayer)
 }
 
 void CAlienSwarm::StartMission()
-{	
+{
 	if (m_iGameState != ASW_GS_BRIEFING)
 		return;
 
 	SetForceReady(ASW_FR_NONE);
-	
+
 	// check we actually have some marines selected before starting
 	CASW_Game_Resource *pGameResource = ASWGameResource();
 	if ( !pGameResource )
 		return;
 
-	int iMaxMarineResources = pGameResource->GetMaxMarineResources();	
-	bool bCanStart = false;	
+	int iMaxMarineResources = pGameResource->GetMaxMarineResources();
+	bool bCanStart = false;
 	if ( ASWDeathmatchMode() )
 		bCanStart = true;		// allow start without marines selected
 	bool bTech = false;
@@ -2807,10 +2807,10 @@ void CAlienSwarm::StartMission()
 
 	if ( rd_add_bots.GetBool() )
 	{
-		// riflemod: add bots for missing slots 
+		// riflemod: add bots for missing slots
 		// find out the actual number of marines, if the number is less than 4 then
-		// add marines for leader player 
-		
+		// add marines for leader player
+
 		CASW_Player *pLeader = ASWGameResource() ? ASWGameResource()->GetLeader() : NULL;
 		for ( int i = 0; i < 4; ++i )
 		{
@@ -2914,7 +2914,7 @@ void CAlienSwarm::StartMission()
 	CASW_Marine::s_fNextMadFiringChatter = 0;
 	CASW_Marine::s_fNextIdleChatterTime = 0;
 	CASW_Parasite::s_fNextSpottedChatterTime = 0;
-	CASW_Parasite::s_fLastHarvesiteAttackSound = 0;	
+	CASW_Parasite::s_fLastHarvesiteAttackSound = 0;
 	CASW_Shieldbug::s_fNextSpottedChatterTime = 0;
 	CASW_Alien_Goo::s_fNextSpottedChatterTime = 0;
 	CASW_Harvester::s_fNextSpawnSoundTime = 0;
@@ -3129,7 +3129,7 @@ void CAlienSwarm::ReportMissingEquipment()
 
 void CAlienSwarm::ReportNeedTwoPlayers()
 {
-#ifdef GAME_DLL		
+#ifdef GAME_DLL
 	UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_need_two_players" );
 #endif
 }
@@ -3400,7 +3400,7 @@ void CAlienSwarm::CampaignSaveAndShowCampaignMap(CASW_Player* pPlayer, bool bFor
 
 	SetForceReady(ASW_FR_NONE);
 
-	// give each marine some skill points for finishing the mission	
+	// give each marine some skill points for finishing the mission
 	if (ASWGameResource())
 	{
 		for (int i=0;i<ASW_NUM_MARINE_PROFILES;i++)
@@ -3417,11 +3417,11 @@ void CAlienSwarm::CampaignSaveAndShowCampaignMap(CASW_Player* pPlayer, bool bFor
 				{
 					for (int k=0;k<ASWGameResource()->GetMaxMarineResources();k++)
 					{
-						CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource(k);					
+						CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource(k);
 						if (pMR && pMR->GetProfile() == pProfile)
 						{
 							bOnMission = true;
-							break;						
+							break;
 						}
 					}
 					//if (bOnMission)
@@ -3498,7 +3498,7 @@ void CAlienSwarm::CampaignSaveAndShowCampaignMap(CASW_Player* pPlayer, bool bFor
 		CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource(i);
 		if (pMR)
 		{
-			GetCampaignSave()->AddParasitesKilled(pMR->GetProfileIndex(), pMR->m_iParasitesKilled);			
+			GetCampaignSave()->AddParasitesKilled(pMR->GetProfileIndex(), pMR->m_iParasitesKilled);
 		}
 	}
 
@@ -3610,7 +3610,7 @@ void CAlienSwarm::VerifySpawnLocation( CASW_Marine *pMarine )
 		if (dist < fNearestDist || fNearestDist == -1)
 		{
 			// check the spot is clear
-			vecPos = pNode->GetOrigin();		
+			vecPos = pNode->GetOrigin();
 			UTIL_TraceHull( vecPos,
 				vecPos + Vector( 0, 0, 1 ),
 				pMarine->CollisionProp()->OBBMins(),
@@ -3639,7 +3639,7 @@ bool CAlienSwarm::SpawnNextMarine()
 {
 	if (!ASWGameResource())
 		return false;
-	
+
 	if (m_iMarinesSpawned == 0)
 	{
 		if (IsTutorialMap())
@@ -3652,9 +3652,9 @@ bool CAlienSwarm::SpawnNextMarine()
 	{
 		Msg("Failed to spawn a marine! No more spawn points could be found.\n");
 		return false;
-	}	
+	}
 
-	// reactivedrop: security measure, in case players were able to hack and 
+	// reactivedrop: security measure, in case players were able to hack and
 	// select more marines than it is allowed by current challenge
 	if (m_iMarinesSpawned + 1 > ASWGameResource()->m_iMaxMarines)
 	{
@@ -3667,7 +3667,7 @@ bool CAlienSwarm::SpawnNextMarine()
 		CASW_Marine_Resource* pMR = ASWGameResource()->GetMarineResource(i);
 		if (!pMR)
 			continue;
-		
+
 		if ( !SpawnMarineAt( pMR, m_pSpawningSpot->GetAbsOrigin(), m_pSpawningSpot->GetAbsAngles(), false ) )
 			return false;
 
@@ -3680,9 +3680,9 @@ bool CAlienSwarm::SpawnNextMarine()
 		}
 		else
 		{
-			
-			// reactivedrop: if we don't find next spawn point then use the 
-			// last one 
+
+			// reactivedrop: if we don't find next spawn point then use the
+			// last one
 			CBaseEntity *spawn_pt =	GetMarineSpawnPoint(m_pSpawningSpot);
 			if (!spawn_pt)
 			{
@@ -3824,7 +3824,7 @@ bool CAlienSwarm::SpawnMarineAt( CASW_Marine_Resource * RESTRICT pMR, const Vect
 }
 
 CBaseEntity* CAlienSwarm::GetMarineSpawnPoint(CBaseEntity *pStartEntity)
-{	
+{
 	do
 	{
 		pStartEntity = gEntList.FindEntityByClassname( pStartEntity, "info_player_start");
@@ -3867,7 +3867,7 @@ void CAlienSwarm::StopStim()
 	m_flStimEndTime = gpGlobals->curtime;
 }
 
-void CAlienSwarm::ThinkUpdateTimescale() RESTRICT 
+void CAlienSwarm::ThinkUpdateTimescale() RESTRICT
 {
 	if ( GetGameState() != ASW_GS_INGAME || m_bMissionFailed )
 	{
@@ -3981,7 +3981,7 @@ void CAlienSwarm::Think()
 
 	switch (m_iGameState)
 	{
-	case ASW_GS_BRIEFING:	
+	case ASW_GS_BRIEFING:
 		{
 			// let our mission chooser source think while we're relatively idle in the briefing, in case it needs to be scanning for missions
 			if ( missionchooser && missionchooser->LocalMissionSource() )
@@ -4133,7 +4133,7 @@ inline unsigned int ThreadShutdown(void* pParam)
 	return 0;
 }
 
-void CAlienSwarm::Shutdown() 
+void CAlienSwarm::Shutdown()
 {
 	m_bShuttingDown = true;
 	CreateSimpleThread(ThreadShutdown, engine);
@@ -4204,7 +4204,7 @@ void CAlienSwarm::OnServerHibernating()
 ConVar asw_respawn_marine_enable( "asw_respawn_marine_enable", "0", FCVAR_CHEAT, "Enables respawning marines.", true, 0, true, 1 );
 
 // Respawn a dead marine.
-void CAlienSwarm::Resurrect( CASW_Marine_Resource * RESTRICT pMR, CASW_Marine *pRespawnNearMarine )  
+void CAlienSwarm::Resurrect( CASW_Marine_Resource * RESTRICT pMR, CASW_Marine *pRespawnNearMarine )
 {
 	if ( !asw_respawn_marine_enable.GetBool() )
 	{
@@ -4212,7 +4212,7 @@ void CAlienSwarm::Resurrect( CASW_Marine_Resource * RESTRICT pMR, CASW_Marine *p
 		return;
 	}
 
-	//AssertMsg1( !pMR->IsAlive() && 
+	//AssertMsg1( !pMR->IsAlive() &&
 	//((gpGlobals->curtime - pMR->m_fDeathTime) >= asw_marine_resurrection_interval.GetFloat() ),
 	//"Tried to respawn %s before its time!", pMR->GetProfile()->GetShortName() );
 
@@ -4290,7 +4290,7 @@ void CAlienSwarm::Resurrect( CASW_Marine_Resource * RESTRICT pMR, CASW_Marine *p
 }
 
 // Respawn a dead marine. DEPRECATED, UNUSED
-void CAlienSwarm::Resurrect( CASW_Marine_Resource * RESTRICT pMR )  
+void CAlienSwarm::Resurrect( CASW_Marine_Resource * RESTRICT pMR )
 {
 	static CBaseEntity *spawn_spot = NULL;
 
@@ -4321,7 +4321,7 @@ void CAlienSwarm::Resurrect( CASW_Marine_Resource * RESTRICT pMR )
 CASW_Marine* CAlienSwarm::ScriptResurrect( CASW_Marine_Resource* RESTRICT pMR, Vector vecSpawnPos, bool bEffect )
 {
 	CASW_Marine* pMarine = NULL;
-	
+
 	if ( !pMR || GetGameState() != ASW_GS_INGAME ) return NULL;
 
 	if ( !SpawnMarineAt( pMR, vecSpawnPos + Vector( 0, 0, 1 ), QAngle( 0, 0, 0 ), true ) )
@@ -4335,7 +4335,7 @@ CASW_Marine* CAlienSwarm::ScriptResurrect( CASW_Marine_Resource* RESTRICT pMR, V
 		AssertMsg1( pMarine, "SpawnMarineAt failed to populate marine resource %s with a marine entity!\n", pMR->GetProfile()->GetShortName() );
 		if ( !pMR->GetCommander()->GetNPC() )
 			pMR->GetCommander()->SwitchMarine( 0 );
-		
+
 		if ( bEffect )
 			pMarine->PerformResurrectionEffect();
 	}
@@ -4364,7 +4364,7 @@ void CAlienSwarm::KillAllMarines()
 		CASW_Marine_Resource* pMR = ASWGameResource()->GetMarineResource(i);
 		if (pMR!=NULL && pMR->GetMarineEntity()!=NULL && pMR->GetMarineEntity()->GetHealth() > 0)
 		{
-			pMR->GetMarineEntity()->Suicide(); 
+			pMR->GetMarineEntity()->Suicide();
 		}
 	}
 }
@@ -4390,7 +4390,7 @@ bool CAlienSwarm::CanHaveAmmo( CBaseCombatCharacter *pPlayer, int iAmmoIndex )
 		int iMaxCarry = GetAmmoDef()->MaxCarry( iAmmoIndex, pPlayer );
 
 		// asw - allow carrying more ammo if we have duplicate guns
-		CASW_Marine* pMarine = CASW_Marine::AsMarine( pPlayer );		
+		CASW_Marine* pMarine = CASW_Marine::AsMarine( pPlayer );
 		if (pMarine)
 		{
 			int iGuns = pMarine->GetNumberOfWeaponsUsingAmmo(iAmmoIndex);
@@ -4717,7 +4717,7 @@ void CAlienSwarm::FinishDeathmatchRound( CASW_Marine_Resource *winner )
 	}
 
 	UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "#asw_player_won_deathmatch", m_szDeathmatchWinnerName );
-	
+
 	m_fDeathmatchFinishTime = gpGlobals->curtime + rd_deathmatch_ending_time.GetFloat();
 	m_iDeathmatchFinishCount = rd_deathmatch_ending_time.GetInt();
 
@@ -5021,7 +5021,7 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 		ClearHouse();
 
 	// freeze all the npcs, because Freeze(-1) doesn't work at all
-	// and Freeze(9999) makes NPCs look frozen we disable think function	
+	// and Freeze(9999) makes NPCs look frozen we disable think function
 	const bool bAllDead = ASWGameRules()->GetMissionManager()->AllMarinesDead();
 	CAI_BaseNPC *npc = gEntList.NextEntByClass( ( CAI_BaseNPC * )NULL );
 	if ( !bAllDead )
@@ -5035,7 +5035,7 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 	CBaseEntity *ent = NULL;
 	while ( ( ent = gEntList.FindEntityByClassname( ent, "asw_spawner" ) ) != NULL )
 	{
-		// BenLubar(deathmatch-improvements): reduce network traffic by 
+		// BenLubar(deathmatch-improvements): reduce network traffic by
 		// disabling spawners instead of deleting them
 		ent->SetThink( NULL );
 	}
@@ -5062,7 +5062,7 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 		}
 	}
 
-	// award medals	
+	// award medals
 #ifndef _DEBUG
 	if ( !m_bCheated )
 #endif
@@ -5359,7 +5359,7 @@ void CAlienSwarm::BroadcastMapLine(CASW_Player *pPlayer, int linetype, int world
 	filter.AddAllPlayers();
 	filter.RemoveRecipient(pPlayer);
 
-	UserMessageBegin( filter, "ASWMapLine" ); // create message 
+	UserMessageBegin( filter, "ASWMapLine" ); // create message
 		WRITE_BYTE( (char) linetype );
 		WRITE_BYTE( pPlayer->entindex() );
 		WRITE_LONG( world_x );	// send the location of the map line dot
@@ -5458,11 +5458,11 @@ void CAlienSwarm::MarineKnockedOut( CASW_Marine *pMarine )
 class GroundNodeFilter : public INearestNodeFilter
 {
 public:
-	virtual bool IsValid( CAI_Node *pNode ) 
+	virtual bool IsValid( CAI_Node *pNode )
 	{
 		return pNode->GetType() == NODE_GROUND;
 	};
-	virtual bool ShouldContinue() 
+	virtual bool ShouldContinue()
 	{
 		return true;
 	}
@@ -5472,7 +5472,7 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 {
 	if (asw_debug_alien_damage.GetBool())
 	{
-		Msg("Alien %s killed by attacker %s inflicter %s\n", pAlien->GetClassname(), 
+		Msg("Alien %s killed by attacker %s inflicter %s\n", pAlien->GetClassname(),
 			info.GetAttacker() ? info.GetAttacker()->GetClassname() : "unknown",
 			info.GetInflictor() ? info.GetInflictor()->GetClassname() : "unknown");
 	}
@@ -5541,7 +5541,7 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 						if ( pGameResource->m_iAliensKilledWithDamageAmp >= nRequiredDamageAmpKills )
 						{
 							pGameResource->m_bAwardedDamageAmpAchievement = true;
-							for ( int i = 1; i <= gpGlobals->maxClients; i++ )	
+							for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 							{
 								CASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
 								CASW_Marine *pOtherMarine = pPlayer ? CASW_Marine::AsMarine( pPlayer->GetNPC() ) : NULL;
@@ -5615,9 +5615,9 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 		}
 
 		if (!m_bDoneCrashShieldbugConv)
-		{			
+		{
 			if (pSB && random->RandomFloat() < 1.0f)
-			{				
+			{
 				// see if crash was nearby
 				CASW_Game_Resource *pGameResource = ASWGameResource();
 				if (pGameResource)
@@ -5651,7 +5651,7 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 				}
 			}
 		}
-			
+
 		// check for doing an conversation from this kill
 		if (pMarine->GetMarineProfile())
 		{
@@ -5714,7 +5714,7 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 	{
 		pSentry = dynamic_cast< CASW_Sentry_Top* >(pAttacker);
 	}
-	
+
 	if ( pSentry )
 	{
 		// count sentry kills
@@ -5760,9 +5760,9 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 	{
 		pWeapon = info.GetWeapon();
 	}
-	
+
 	pEvent->SetInt( "alien", pAlien ? pAlien->Classify() : 0 );
-	pEvent->SetInt( "marine", pMarine ? pMarine->entindex() : 0 );		
+	pEvent->SetInt( "marine", pMarine ? pMarine->entindex() : 0 );
 	pEvent->SetInt( "weapon", pWeapon ? pWeapon->Classify() : 0 );
 
 	gameeventmanager->FireEvent( pEvent );
@@ -5824,7 +5824,7 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 
 							if ( iFragsForAmmo && nFrags % iFragsForAmmo == 0 )															//DRAVEN ~FRAGD0~
 							{
-								CBaseEntity *pAmmoDrop = CreateEntityByName( "asw_ammo_drop" );	
+								CBaseEntity *pAmmoDrop = CreateEntityByName( "asw_ammo_drop" );
 								UTIL_SetOrigin( pAmmoDrop, vecDest );
 								DispatchSpawn( pAmmoDrop );
 								//pAmmoDrop->Spawn();
@@ -5840,7 +5840,7 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 #endif /* not CLIENT_DLL */
 
 bool CAlienSwarm::ShouldCollide( int collisionGroup0, int collisionGroup1 )
-{	
+{
 	// HL2 treats movement and tracing against players the same, so just remap here
 	if ( collisionGroup0 == COLLISION_GROUP_PLAYER_MOVEMENT )
 	{
@@ -5851,7 +5851,7 @@ bool CAlienSwarm::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 	{
 		collisionGroup1 = COLLISION_GROUP_PLAYER;
 	}
-	
+
 	// aliens shouldn't walk into players (but will this make them get stuck? - might need some extra push out stuff for em)
 	if ((collisionGroup0 == ASW_COLLISION_GROUP_ALIEN || collisionGroup0 == ASW_COLLISION_GROUP_BIG_ALIEN)
 		&& collisionGroup1 == COLLISION_GROUP_PLAYER)
@@ -5930,7 +5930,7 @@ bool CAlienSwarm::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 
 	// eggs and parasites don't collide
 	SHOULD_COLLIDE( ASW_COLLISION_GROUP_PARASITE, ASW_COLLISION_GROUP_EGG, false );
-	
+
 	// so our parasites don't stop gibs from flying out of people alongside them
 	SHOULD_COLLIDE( COLLISION_GROUP_DEBRIS, ASW_COLLISION_GROUP_PARASITE, false );
 
@@ -6136,7 +6136,7 @@ bool CAlienSwarm::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 	// reactivedrop: players don't collide with unborrowing aliens
 	SHOULD_COLLIDE( COLLISION_GROUP_PLAYER, COLLISION_GROUP_NPC_SCRIPTED, false );
 
-	return BaseClass::ShouldCollide( collisionGroup0, collisionGroup1 ); 
+	return BaseClass::ShouldCollide( collisionGroup0, collisionGroup1 );
 }
 
 static bool CanPickupUnrestrictedWeapon( int iWeaponIndex, const ConVar &unrestrictedGuns )
@@ -6248,7 +6248,7 @@ int CAlienSwarm::GetRandomValidWeaponSelectionExtra( CASW_Marine_Resource *pMari
 	while ( i < 100 )	// 100 attempts to get a valid index
 	{
 		i++;
-		
+
 		int nRandom = random->RandomInt( 0, nExtra - 1 );
 		CASW_EquipItem *pExtra = g_ASWEquipmentList.GetExtra( nRandom );
 
@@ -6577,7 +6577,7 @@ void CAlienSwarm::RadiusDamage( const CTakeDamageInfo &info, const Vector &vecSr
 						Vector vecToTarget = vecSpot - tr.endpos;
 						VectorNormalize( vecToTarget );
 
-						// We're going to deflect the blast along the surface that 
+						// We're going to deflect the blast along the surface that
 						// interrupted a trace from explosion to this target.
 						Vector vecUp, vecDeflect;
 						CrossProduct( vecToTarget, tr.plane.normal, vecUp );
@@ -6748,7 +6748,7 @@ void CAlienSwarm::RadiusDamage( const CTakeDamageInfo &info, const Vector &vecSr
 			NDebugOverlay::EntityText( pEntity->entindex(), 0, CFmtStr( "%d", ( int )adjustedInfo.GetDamage() ), 4.0, 255, 255, 255, 255 );
 		}
 
-		// Now hit all triggers along the way that respond to damage... 
+		// Now hit all triggers along the way that respond to damage...
 		pEntity->TraceAttackToTriggers( adjustedInfo, vecSrc, tr.endpos, dir );
 	}
 }
@@ -6790,7 +6790,7 @@ void CAlienSwarm::StumbleAliensInRadius( CBaseEntity *pInflictor, const Vector &
 		if ( !pEntity->IsNPC() )
 			continue;
 
-		// knockdown marines 
+		// knockdown marines
 		if (pEntity->Classify() == CLASS_ASW_MARINE )
 		{
 			if ( rd_jumpjet_knockdown_marines.GetBool() )
@@ -6832,7 +6832,7 @@ void CAlienSwarm::StumbleAliensInRadius( CBaseEntity *pInflictor, const Vector &
 					Vector vecToTarget = vecSpot - tr.endpos;
 					VectorNormalize( vecToTarget );
 
-					// We're going to deflect the blast along the surface that 
+					// We're going to deflect the blast along the surface that
 					// interrupted a trace from explosion to this target.
 					Vector vecUp, vecDeflect;
 					CrossProduct( vecToTarget, tr.plane.normal, vecUp );
@@ -6914,7 +6914,7 @@ void CAlienSwarm::ShockNearbyAliens( CASW_Marine *pMarine, CASW_Weapon *pWeaponS
 
 		// Disregard things that want to be disregarded
 		if( pNPC->Classify() == CLASS_NONE )
-			continue; 
+			continue;
 
 		// Disregard bullseyes
 		if( pNPC->Classify() == CLASS_BULLSEYE )
@@ -6935,8 +6935,8 @@ void CAlienSwarm::ShockNearbyAliens( CASW_Marine *pMarine, CASW_Weapon *pWeaponS
 			WRITE_SHORT( pNPC->entindex() );
 		MessageEnd();
 
-		ClearMultiDamage();	
-		CTakeDamageInfo shockDmgInfo( pWeaponSource, pMarine, 5.0f, DMG_SHOCK );					
+		ClearMultiDamage();
+		CTakeDamageInfo shockDmgInfo( pWeaponSource, pMarine, 5.0f, DMG_SHOCK );
 		Vector vecDir = pNPC->WorldSpaceCenter() - pMarine->WorldSpaceCenter();
 		VectorNormalize( vecDir );
 		shockDmgInfo.SetDamagePosition( pNPC->WorldSpaceCenter() * vecDir * -20.0f );
@@ -6980,7 +6980,7 @@ void CAlienSwarm::FreezeAliensInRadius( CBaseEntity *pAttacker, CBaseEntity *pIn
 		// don't stumble marines
 		if ( pEntity->Classify() == CLASS_ASW_MARINE || pEntity->Classify() == CLASS_ASW_COLONIST )
 		{
-#ifdef GAME_DLL		
+#ifdef GAME_DLL
 			// but, do extinguish them if they are on fire
 			CBaseAnimating *pAnim = assert_cast<CBaseAnimating *>(pEntity);
 			if ( pAnim->IsOnFire() )
@@ -6989,7 +6989,7 @@ void CAlienSwarm::FreezeAliensInRadius( CBaseEntity *pAttacker, CBaseEntity *pIn
 				if ( pFireChild )
 				{
 					pAnim->SetEffectEntity( NULL );
-					UTIL_Remove( pFireChild );	
+					UTIL_Remove( pFireChild );
 				}
 				if ( CASW_Marine *pMarine = CASW_Marine::AsMarine( pAnim ) )
 					pMarine->Extinguish( pAttacker, pInflictor );
@@ -7029,7 +7029,7 @@ void CAlienSwarm::FreezeAliensInRadius( CBaseEntity *pAttacker, CBaseEntity *pIn
 					Vector vecToTarget = vecSpot - tr.endpos;
 					VectorNormalize( vecToTarget );
 
-					// We're going to deflect the blast along the surface that 
+					// We're going to deflect the blast along the surface that
 					// interrupted a trace from explosion to this target.
 					Vector vecUp, vecDeflect;
 					CrossProduct( vecToTarget, tr.plane.normal, vecUp );
@@ -7083,7 +7083,7 @@ void CAlienSwarm::FreezeAliensInRadius( CBaseEntity *pAttacker, CBaseEntity *pIn
 			if ( pFireChild )
 			{
 				pAnim->SetEffectEntity( NULL );
-				UTIL_Remove( pFireChild );	
+				UTIL_Remove( pFireChild );
 			}
 			if ( CASW_Marine *pMarine = CASW_Marine::AsMarine( pAnim ) )
 				pMarine->Extinguish( pAttacker, pInflictor );
@@ -7165,7 +7165,7 @@ void CAlienSwarm::ClientCommandKeyValues( edict_t *pEntity, KeyValues *pKeyValue
 //-----------------------------------------------------------------------------
 // Purpose: called each time a player uses a "cmd" command
 // Input  : *pEdict - the player who issued the command
-//			Use engine.Cmd_Argv,  engine.Cmd_Argv, and engine.Cmd_Argc to get 
+//			Use engine.Cmd_Argv,  engine.Cmd_Argv, and engine.Cmd_Argc to get
 //			pointers the character string command.
 //-----------------------------------------------------------------------------
 bool CAlienSwarm::ClientCommand( CBaseEntity *pEdict, const CCommand &args )
@@ -7208,7 +7208,7 @@ bool CAlienSwarm::ClientCommand( CBaseEntity *pEdict, const CCommand &args )
 				{
 					pMR = ASWGameResource()->GetFirstMarineResourceForPlayer( pPlayer );
 				}
-				
+
 				if ( pMR )
 				{
 					pMR->m_aAchievementsEarned.AddToTail( iAchievement );
@@ -7227,7 +7227,7 @@ bool CAlienSwarm::ClientCommand( CBaseEntity *pEdict, const CCommand &args )
 								break;
 							}
 						}
-						
+
 						if ( !bHasMedal )
 						{
 							char achievement_buffer[ 255 ];
@@ -7294,7 +7294,7 @@ bool CAlienSwarm::CanSpendPoint(CASW_Player *pPlayer, int iProfileIndex, int nSk
 	}
 
 	if (!pProfile && MarineProfileList())
-	{		
+	{
 		pProfile = MarineProfileList()->GetProfile(iProfileIndex);
 	}
 
@@ -7306,11 +7306,11 @@ bool CAlienSwarm::CanSpendPoint(CASW_Player *pPlayer, int iProfileIndex, int nSk
 			//pSave, pSave ? pSave->IsMarineAlive(iProfileIndex) : 0, pProfile, iProfileIndex );
 		return false;
 	}
-	
+
 	int iCurrentSkillValue = ASWGameResource()->GetMarineSkill( iProfileIndex, nSkillSlot );
 	int iMaxSkillValue = MarineSkills()->GetMaxSkillPoints( pProfile->GetSkillMapping( nSkillSlot ) );
 	int iSparePoints = ASWGameResource()->GetMarineSkill( iProfileIndex, ASW_SKILL_SLOT_SPARE );
-	
+
 	//Msg("returning comparison\n");
 	return ((iCurrentSkillValue < iMaxSkillValue) && (iSparePoints > 0));
 }
@@ -7358,7 +7358,7 @@ bool CAlienSwarm::SpendSkill(int iProfileIndex, int nSkillSlot)
 	ASWGameResource()->UpdateMarineSkills(pSave);
 	pSave->SaveGameToFile();	// save with the new stats
 
-	// trigger an animation for anyone to see	
+	// trigger an animation for anyone to see
 	CReliableBroadcastRecipientFilter users;
 	users.MakeReliable();
 	UserMessageBegin( users, "ASWSkillSpent" );
@@ -7397,7 +7397,7 @@ bool CAlienSwarm::SkillsUndo(CASW_Player *pPlayer, int iProfileIndex)
 	// check we have this marine selected
 	CASW_Game_Resource *pGameResource = ASWGameResource();
 	if (pGameResource->IsRosterSelected(iProfileIndex))
-	{		
+	{
 		bool bSelectedByMe = false;
 		for (int i=0; i<pGameResource->GetMaxMarineResources();i++)
 		{
@@ -7405,7 +7405,7 @@ bool CAlienSwarm::SkillsUndo(CASW_Player *pPlayer, int iProfileIndex)
 			if (pMarineResource && pMarineResource->GetProfile()->m_ProfileIndex == iProfileIndex)
 			{
 				bSelectedByMe = (pMarineResource->GetCommander() == pPlayer);
-				break;                                     
+				break;
 			}
 		}
 		if (!bSelectedByMe)
@@ -7539,7 +7539,7 @@ void CAlienSwarm::OnSkillLevelChanged( int iNewLevel )
 	}
 
 	UpdateMatchmakingTagsCallback( NULL, "0", 0.0f );
-		
+
 	m_iSkillLevel = iNewLevel;
 }
 
@@ -7637,9 +7637,9 @@ float CAlienSwarm::ModifyAlienHealthBySkillLevel(float health)
 {
 	float fDiff = GetMissionDifficulty() - 5;
 	float f = 1.0 + fDiff * asw_difficulty_alien_health_step.GetFloat();
-	
+
 	// commented and added mine scale factors
-	/*float f = 1.0f; 
+	/*float f = 1.0f;
 	switch (m_iSkillLevel)
 	{
 	case 1:
@@ -7686,7 +7686,7 @@ void CAlienSwarm::ClientSettingsChanged( CBasePlayer *pPlayer )
 	CASW_Player *pASWPlayer = (CASW_Player*)pPlayer;
 
 	// first check if new name is really different
-	if (  pszOldName[0] != 0 && 
+	if (  pszOldName[0] != 0 &&
 		  Q_strncmp( pszOldName, pszNewName, MAX_PLAYER_NAME_LENGTH-1 ) )
 	{
 		// ok, player send different name
@@ -7735,7 +7735,7 @@ void CAlienSwarm::ExplodedLevel( CBaseEntity *pExploder )
 				CASW_Marine_Resource *pMR = pGameResource->GetMarineResource(i);
 				if (!pMR)
 					continue;
-				
+
 				CASW_Marine *pMarine = pMR->GetMarineEntity();
 				if (!pMarine || pMarine->GetHealth() <= 0)
 					continue;
@@ -7767,7 +7767,7 @@ edict_t *CAlienSwarm::DoFindClientInPVS( edict_t *pEdict, unsigned char *pvs, un
 	if (pEnt)
 		return pEnt->edict();
 
-	return NULL;		// returns a marine who can see us	
+	return NULL;		// returns a marine who can see us
 }
 
 void CAlienSwarm::SetInfoHeal( CASW_Info_Heal *pInfoHeal )
@@ -7805,7 +7805,7 @@ void CAlienSwarm::ClearLeaderKickVotes(CASW_Player *pPlayer, bool bClearLeader, 
 		return;
 
 	// unflag any players voting for him
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )	
+	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 	{
 		CASW_Player* pOtherPlayer = ToASW_Player(UTIL_PlayerByIndex(i));
 
@@ -7858,7 +7858,7 @@ void CAlienSwarm::SetLeaderVote( CASW_Player *pPlayer, int iPlayerIndex )
 	int iOldPlayer = pPlayer->m_iLeaderVoteIndex;
 	pPlayer->m_iLeaderVoteIndex = iPlayerIndex;
 
-	// if we were previously voting for someone, update their vote count	
+	// if we were previously voting for someone, update their vote count
 	if ( iOldPlayer != -1 )
 	{
 		// this loop goes through every player, counting how many players have voted for the old guy
@@ -7986,7 +7986,7 @@ void CAlienSwarm::SetKickVote( CASW_Player *pPlayer, int iPlayerIndex )
 	int iOldPlayer = pPlayer->m_iKickVoteIndex;
 	pPlayer->m_iKickVoteIndex = iPlayerIndex;
 
-	// if we were previously voting for someone, update their vote count	
+	// if we were previously voting for someone, update their vote count
 	if ( iOldPlayer != -1 )
 	{
 		// this loop goes through every player, counting how many players have voted for the old guy
@@ -8166,7 +8166,7 @@ void CAlienSwarm::StartVote( CASW_Player *pPlayer, int iVoteType, const char *sz
 	if ( pPlayer->m_iRecentMapVotesCount >= asw_vote_limit.GetInt() )
 	{
 		pPlayer->m_fMapVoteCooldownEndTime = gpGlobals->realtime + asw_vote_cooldown_duration.GetFloat();
-		
+
 		char szCooldownTime[32];
 		V_snprintf( szCooldownTime, sizeof( szCooldownTime ), "%d", static_cast<int>( asw_vote_cooldown_duration.GetFloat() ) );
 		ClientPrint( pPlayer, ASW_HUD_PRINTTALKANDCONSOLE, "#asw_vote_spam_cooldown_start", szCooldownTime );
@@ -8221,7 +8221,7 @@ void CAlienSwarm::StartVote( CASW_Player *pPlayer, int iVoteType, const char *sz
 	}
 	// 	else if (iVoteType == ASW_VOTE_CAMPAIGN)
 	// 	{
-	// 		UTIL_ClientPrintAll(ASW_HUD_PRINTTALKANDCONSOLE, "#asw_vote_campaign_start", pPlayer->GetPlayerName(), desc);		
+	// 		UTIL_ClientPrintAll(ASW_HUD_PRINTTALKANDCONSOLE, "#asw_vote_campaign_start", pPlayer->GetPlayerName(), desc);
 	// 	}
 
 	//UTIL_ClientPrintAll(ASW_HUD_PRINTTALKANDCONSOLE, "#asw_press_vote_key", "^%playerlist%" );
@@ -8456,8 +8456,8 @@ void CAlienSwarm::StartAllAmbientSounds()
 {
 	CBaseEntity *pAmbient = gEntList.FindEntityByClassname( NULL, "ambient_generic" );
 	while ( pAmbient != NULL )
-	{		
-		pAmbient->KeyValue("aswactivate", "1");		
+	{
+		pAmbient->KeyValue("aswactivate", "1");
 		pAmbient = gEntList.FindEntityByClassname( pAmbient, "ambient_generic" );
 	}
 }
@@ -8566,9 +8566,9 @@ void CAlienSwarm::CheckForceReady()
 		if (iSecondsLeft <= 0)
 		{
 			FinishForceReady();
-			return;									
+			return;
 		}
-	}		
+	}
 }
 
 void CAlienSwarm::FinishForceReady()
@@ -8581,10 +8581,10 @@ void CAlienSwarm::FinishForceReady()
 	{
 		case ASW_FR_BRIEFING:		// forcing a start of the mission
 			{
-				SetForceReady(ASW_FR_NONE);	
+				SetForceReady(ASW_FR_NONE);
 
-				// check we actually have some marines selected before starting			
-				int m = pGameResource->GetMaxMarineResources();	
+				// check we actually have some marines selected before starting
+				int m = pGameResource->GetMaxMarineResources();
 				bool bCanStart = false;
 				for (int i=0;i<m;i++)
 				{
@@ -8597,13 +8597,13 @@ void CAlienSwarm::FinishForceReady()
 					return;
 
 				SetMaxMarines();
-				
-				m_bShouldStartMission = true;			
+
+				m_bShouldStartMission = true;
 			}
 			break;
 		case ASW_FR_CONTINUE:	// force save and continue
 			{
-				SetForceReady(ASW_FR_NONE);	
+				SetForceReady(ASW_FR_NONE);
 				CampaignSaveAndShowCampaignMap(NULL, true);
 			}
 			break;
@@ -8629,13 +8629,13 @@ void CAlienSwarm::FinishForceReady()
 			break;
 		case ASW_FR_CAMPAIGN_MAP:
 			{
-				SetForceReady(ASW_FR_NONE);	
+				SetForceReady(ASW_FR_NONE);
 				// launch campaign map without saving
 				// make sure all players are marked as not ready
 				for (int i=0;i<ASW_MAX_READY_PLAYERS;i++)
 				{
 					pGameResource->m_bPlayerReady.Set(i, rd_ready_mark_override.GetBool());
-				}				
+				}
 				SetGameState(ASW_GS_CAMPAIGNMAP);
 				if ( GetCampaignSave() )
 					GetCampaignSave()->SelectDefaultNextCampaignMission();
@@ -8643,7 +8643,7 @@ void CAlienSwarm::FinishForceReady()
 			break;
 
 		default: break;
-	};	
+	};
 }
 
 void CAlienSwarm::CheckDeathmatchFinish()
@@ -8752,7 +8752,7 @@ void CAlienSwarm::OnPlayerFullyJoined( CASW_Player *pPlayer )
 
 	bool bDifficultyRestricted = false;
 	const unsigned int iBrutal = 5;
-	
+
 	// if brutal and low level
 	if ( GetSkillLevel() >= iBrutal && rd_auto_kick_low_level_player.GetBool() ) bDifficultyRestricted = true;
 
@@ -8864,7 +8864,7 @@ void CAlienSwarm::DropPowerup( CBaseEntity *pSource, const CTakeDamageInfo &info
 		return; break;
 	}
 
-	CASW_Powerup *pPowerup = (CASW_Powerup *)CreateEntityByName( m_szPowerupClassname );		
+	CASW_Powerup *pPowerup = (CASW_Powerup *)CreateEntityByName( m_szPowerupClassname );
 	UTIL_SetOrigin( pPowerup, pSource->WorldSpaceCenter() );
 	pPowerup->Spawn();
 
@@ -8886,7 +8886,7 @@ void CAlienSwarm::ScheduleTechFailureRestart( float flRestartBeginTime, string_t
 }
 
 void CAlienSwarm::CheckTechFailure()
-{	
+{
 	if ( m_flTechFailureRestartTime > 0 && gpGlobals->curtime >= m_flTechFailureRestartTime )
 	{
 		CASW_Game_Resource *pGameResource = ASWGameResource();
@@ -9051,7 +9051,7 @@ bool CAlienSwarm::MarineCanPickupPowerup(CASW_Marine *pMarine, CASW_Powerup *pPo
 #endif
 		return false;
 	}
-	
+
 	return true;
 }
 
@@ -9462,7 +9462,7 @@ void CAlienSwarm::LevelInitPostEntity()
 	// check if we're the intro/outro map
 	char mapName[255];
 #ifdef CLIENT_DLL
-	Q_FileBase( engine->GetLevelName(), mapName, sizeof(mapName) );	
+	Q_FileBase( engine->GetLevelName(), mapName, sizeof(mapName) );
 #else
 	Q_strcpy( mapName, STRING(gpGlobals->mapname) );
 #endif
@@ -9512,9 +9512,9 @@ void CAlienSwarm::LevelInitPostEntity()
 		Msg("ASW: ASWGameResource already exists, removing it\n");
 		UTIL_Remove( ASWGameResource() );
 	}
-	
+
 	CreateEntityByName( "asw_game_resource" );
-	
+
 	if (ASWGameResource() == NULL)
 	{
 		Msg("ASW: Error! Failed to create ASWGameResource\n");
@@ -9655,7 +9655,7 @@ int CAlienSwarm::TotalInfestDamage()
 	// 300 at difficulty 10  -  15.0 damage/sec  - 4- full skill satchel heals  Can't outheal  Can survive if healed by a level 3 xenowound marine if they're quick.
 	//                                             (double number of heals needed for a 0 skill medic)
 	//
-	// Med satchel heals 4 health every 0.33 seconds, which is 12 hps/sec (same as ASv1)	
+	// Med satchel heals 4 health every 0.33 seconds, which is 12 hps/sec (same as ASv1)
 	// Med satchel heals 25 hps at skill 0, 65 hps at skill 5.
 	// Med satchel has 4 to 9 charges.
 	//  Giving a total hps healed for 1 satchel = 100 to 675
@@ -9705,8 +9705,8 @@ const char* CAlienSwarm::GetFailAdviceText( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : iDmgType - 
+// Purpose:
+// Input  : iDmgType -
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CAlienSwarm::Damage_IsTimeBased( int iDmgType )
@@ -9716,8 +9716,8 @@ bool CAlienSwarm::Damage_IsTimeBased( int iDmgType )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : iDmgType - 
+// Purpose:
+// Input  : iDmgType -
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CAlienSwarm::Damage_ShouldGibCorpse( int iDmgType )
@@ -9727,8 +9727,8 @@ bool CAlienSwarm::Damage_ShouldGibCorpse( int iDmgType )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : iDmgType - 
+// Purpose:
+// Input  : iDmgType -
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CAlienSwarm::Damage_NoPhysicsForce( int iDmgType )
@@ -9739,8 +9739,8 @@ bool CAlienSwarm::Damage_NoPhysicsForce( int iDmgType )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : iDmgType - 
+// Purpose:
+// Input  : iDmgType -
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CAlienSwarm::Damage_ShouldNotBleed( int iDmgType )
@@ -9750,7 +9750,7 @@ bool CAlienSwarm::Damage_ShouldNotBleed( int iDmgType )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 int CAlienSwarm::Damage_GetTimeBased( void )
 {
@@ -9759,7 +9759,7 @@ int CAlienSwarm::Damage_GetTimeBased( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 int	CAlienSwarm::Damage_GetShouldGibCorpse( void )
 {
@@ -9768,7 +9768,7 @@ int	CAlienSwarm::Damage_GetShouldGibCorpse( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 int	CAlienSwarm::Damage_GetNoPhysicsForce( void )
 {
@@ -9778,7 +9778,7 @@ int	CAlienSwarm::Damage_GetNoPhysicsForce( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 int	CAlienSwarm::Damage_GetShouldNotBleed( void )
 {
@@ -9979,6 +9979,7 @@ void CAlienSwarm::EnableChallenge( const char *szChallengeName )
 	// if rd_max_marines changed we need to update marines limits using SetMaxMarines
 	SetMaxMarines();
 	EnforceMaxMarines();
+	rd_challenge.SetValue( szChallengeName );
 	OnSkillLevelChanged( m_iSkillLevel );
 
 	if ( V_strcmp( rd_challenge.GetString(), "0" ) )
