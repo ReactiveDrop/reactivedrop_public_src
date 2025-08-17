@@ -118,9 +118,9 @@ jobs:
 
       - name: Move the artifacts files to the game
         run: |
-          mv -f client.dll asrd/reactivedrop/bin/client.dll
-          mv -f server.dll asrd/reactivedrop/bin/server.dll
-          mv -f missionchooser.dll asrd/reactivedrop/bin/missionchooser.dll
+          mv -Force client.dll asrd/reactivedrop/bin/client.dll
+          mv -Force server.dll asrd/reactivedrop/bin/server.dll
+          mv -Force missionchooser.dll asrd/reactivedrop/bin/missionchooser.dll
 
       - name: Run the client
         # any script to run can be added here, i.e. automate testing of some game commands
