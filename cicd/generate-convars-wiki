@@ -52,7 +52,7 @@ $cvargroup = [];
 foreach (['client', 'server'] as $t) {
   $header = [];
 
-  $file = sprintf('%s/asrd/reactivedrop/cvars-%s.txt', $dir, $t);
+  $file = sprintf('%s/../asrd/reactivedrop/cvars-%s.txt', $dir, $t);
   $f = fopen($file, 'r');
 
   while (($data = fgetcsv($f, 4096, ',')) !== false) {
