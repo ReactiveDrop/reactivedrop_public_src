@@ -128,7 +128,7 @@ jobs:
           cd ${{ github.workspace }}\asrd
           echo "cvarlist log cvars-client.txt; quit" > reactivedrop/cfg/test.cfg
           cmd /c start /wait reactivedrop.exe -textmode -condebug -conclearlog +exec test
-          mv ${{ github.workspace }}/asrd/reactivedrop/console.log ${{ github.workspace }}/asrd/console-client.log
+          mv -Force ${{ github.workspace }}/asrd/reactivedrop/console.log ${{ github.workspace }}/asrd/console-client.log
 
       - name: Run the server
         # any script to run can be added here, i.e. automate testing of some game commands
@@ -136,7 +136,7 @@ jobs:
           cd ${{ github.workspace }}\asrd
           echo "cvarlist log cvars-server.txt; map lobby; quit" > reactivedrop/cfg/servertest.cfg
           cmd /c start /wait srcds_console.exe -console -condebug -conclearlog -game reactivedrop -noassert +sv_lan 1 +exec servertest
-          mv ${{ github.workspace }}/asrd/reactivedrop/console.log ${{ github.workspace }}/asrd/console-server.log
+          mv -Force ${{ github.workspace }}/asrd/reactivedrop/console.log ${{ github.workspace }}/asrd/console-server.log
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
