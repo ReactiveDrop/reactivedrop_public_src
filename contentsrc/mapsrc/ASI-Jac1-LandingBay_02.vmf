@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "3603"
+	"mapversion" "3604"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -50,7 +50,7 @@ viewsettings
 world
 {
 	"id" "394754"
-	"mapversion" "3603"
+	"mapversion" "3604"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -19656,7 +19656,7 @@ entity
 	"origin" "-6512 -1488 844"
 	editor
 	{
-		"color" "0 255 0"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[0 1500]"
@@ -20791,7 +20791,7 @@ entity
 	"origin" "-6608 -1448 844"
 	editor
 	{
-		"color" "0 255 0"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[0 1500]"
@@ -32230,7 +32230,7 @@ entity
 	"rendercolor" "255 255 255"
 	"shadowcastdist" "0"
 	"skin" "2"
-	"spawnflags" "33025"
+	"spawnflags" "33801"
 	"origin" "-5092.67 870.539 832.281"
 	editor
 	{
@@ -32264,7 +32264,7 @@ entity
 	"rendercolor" "255 255 255"
 	"shadowcastdist" "0"
 	"skin" "2"
-	"spawnflags" "33025"
+	"spawnflags" "33801"
 	"origin" "-5092.67 958.539 832.281"
 	editor
 	{
@@ -32298,7 +32298,7 @@ entity
 	"rendercolor" "255 255 255"
 	"shadowcastdist" "0"
 	"skin" "2"
-	"spawnflags" "33025"
+	"spawnflags" "33801"
 	"origin" "-5308.85 1375.9 832.281"
 	editor
 	{
@@ -32332,7 +32332,7 @@ entity
 	"rendercolor" "255 255 255"
 	"shadowcastdist" "0"
 	"skin" "2"
-	"spawnflags" "33025"
+	"spawnflags" "33801"
 	"origin" "-5308.85 1463.9 832.281"
 	editor
 	{
@@ -55843,7 +55843,7 @@ entity
 	"origin" "-6672 -1376 844"
 	editor
 	{
-		"color" "0 255 0"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[0 1500]"
@@ -55964,7 +55964,7 @@ entity
 	"origin" "-6576 -1376 844"
 	editor
 	{
-		"color" "0 255 0"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[0 1500]"
@@ -56066,7 +56066,7 @@ entity
 	"origin" "-6480 -1408 844"
 	editor
 	{
-		"color" "0 255 0"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[0 1500]"
@@ -63006,7 +63006,7 @@ entity
 	"origin" "-6448 -1456 844"
 	editor
 	{
-		"color" "0 255 0"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[0 1500]"
@@ -88336,8 +88336,8 @@ cameras
 	"activecamera" "0"
 	camera
 	{
-		"position" "[-5433.51 5556.85 1219.01]"
-		"look" "[-5553.87 6842.42 -4942.78]"
+		"position" "[-5129.34 817.108 1017.95]"
+		"look" "[-4077.25 4083.93 -4259.92]"
 	}
 }
 cordons

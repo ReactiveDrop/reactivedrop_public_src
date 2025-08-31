@@ -4493,6 +4493,9 @@ void CASW_Marine::DoEmote( int iEmote )
 		case 7:
 			GetMarineSpeech()->Chatter( CHATTER_QUESTION );
 			break;
+		case 14:
+			GetMarineSpeech()->Chatter( CHATTER_THANKS );
+			break;
 		default:
 			iEmote = 6;
 			break;

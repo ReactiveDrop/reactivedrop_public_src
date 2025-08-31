@@ -144,7 +144,7 @@ ConVar asw_ammo_count_gas_grenades( "asw_ammo_count_gas_grenades", "5", FCVAR_CH
 ConVar asw_ammo_count_t75( "asw_ammo_count_t75", "5", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_jump_jet( "asw_ammo_count_jump_jet", "5", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_bait( "asw_ammo_count_bait", "9", FCVAR_CHEAT | FCVAR_REPLICATED );
-ConVar asw_ammo_count_stun_grenades( "asw_ammo_count_stun_grenades", "10", FCVAR_CHEAT | FCVAR_REPLICATED );
+ConVar asw_ammo_count_stun_grenades( "asw_ammo_count_stun_grenades", "7", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_incendiary_grenades( "asw_ammo_count_incendiary_grenades", "7", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_shield_bubble( "asw_ammo_count_shield_bubble", "3", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_rifle_burst( "asw_ammo_count_rifle_burst", "99", FCVAR_CHEAT | FCVAR_REPLICATED );
@@ -795,11 +795,10 @@ static CASW_EquipItem s_ExtraEquips[ASW_NUM_EQUIP_EXTRA] =
 		0, 0,
 	},
 
-#ifdef RD_7A_WEAPONS
 	// item-unlockable equipment
 	{
 		ASW_EQUIP_STUN_GRENADES, WEAPON_NAME( stun_grenades ),
-		false, true, true, "", "",
+		true, false, true, "", "",
 		"swarm/EquipIcons/EquipStunGrenade",
 		&asw_ammo_count_stun_grenades, &asw_ammo_count_stun_grenades,
 		NULL, NULL,
@@ -807,6 +806,7 @@ static CASW_EquipItem s_ExtraEquips[ASW_NUM_EQUIP_EXTRA] =
 		false, true, false, ASW_OFFHAND_THROW,
 		0, 0,
 	},
+#ifdef RD_7A_WEAPONS
 	{
 		ASW_EQUIP_INCENDIARY_GRENADES, WEAPON_NAME( incendiary_grenades ),
 		false, true, true, "", "",

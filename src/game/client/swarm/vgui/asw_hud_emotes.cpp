@@ -87,6 +87,7 @@ public:
 	CPanelAnimationVarAliasType( int, m_nExclaimTexture, "ExclaimEmoteTexture", "vgui/swarm/Emotes/EmoteExclaim", "textureid" );
 	CPanelAnimationVarAliasType( int, m_nAnimeTexture, "AnimeEmoteTexture", "vgui/swarm/Emotes/EmoteAnime", "textureid" );
 	CPanelAnimationVarAliasType( int, m_nQuestionTexture, "QuestionTexture", "vgui/swarm/Emotes/EmoteQuestion", "textureid" );
+	CPanelAnimationVarAliasType( int, m_nThanksTexture, "ThanksTexture", "vgui/swarm/Emotes/EmoteThanks", "textureid" );
 	CPanelAnimationVarAliasType( int, m_nWrenchTexture, "WrenchTexture", "vgui/swarm/ClassIcons/EngineerIcon", "textureid" );
 	CPanelAnimationVarAliasType( int, m_nSentryUpTexture, "SentryUpTexture", "vgui/swarm/ClassIcons/SentryBuild", "textureid" );
 	CPanelAnimationVarAliasType( int, m_nSentryDnTexture, "SentryDnTexture", "vgui/swarm/ClassIcons/SentryDismantle", "textureid" );
@@ -175,6 +176,8 @@ void CASWHudEmotes::PaintEmotesFor( C_ASW_Marine *pMarine )
 		PaintEmote( pMarine, pMarine->m_fEmoteAnimeSmileTime, m_nAnimeTexture );
 	if ( pMarine->m_iClientEmote & ( 1 << 7 ) )
 		PaintEmote( pMarine, pMarine->m_fEmoteQuestionTime, m_nQuestionTexture );
+	if ( pMarine->m_iClientEmote & ( 1 << 14 ) )
+		PaintEmote( pMarine, pMarine->m_fEmoteThanksTime, m_nThanksTexture );
 
 	if (_rd_traitors_challenge_enabled.GetBool())
 	{

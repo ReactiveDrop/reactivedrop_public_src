@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "312"
+	"mapversion" "314"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -32,7 +32,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "312"
+	"mapversion" "314"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -83225,7 +83225,7 @@ entity
 	"origin" "-6783 118 0"
 	editor
 	{
-		"color" "0 255 0"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[1000 3000]"
@@ -83239,7 +83239,7 @@ entity
 	"origin" "-6792.91 175.825 0"
 	editor
 	{
-		"color" "0 255 0"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[1000 3500]"
@@ -83253,7 +83253,7 @@ entity
 	"origin" "-6696 66 0"
 	editor
 	{
-		"color" "0 255 0"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[1000 4000]"
@@ -83267,7 +83267,7 @@ entity
 	"origin" "-6744.48 74.941 0"
 	editor
 	{
-		"color" "0 255 0"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[1000 4500]"
@@ -125915,6 +125915,7 @@ entity
 		"disOnTrigger" "finale_room_lightTurnOff401"
 		"OnTrigger" "finale_room_light_2TurnOn401"
 		"OnTrigger" "startup_relay_goingdownTrigger01"
+		"OnTrigger" "hint_gene_failEndHint431"
 	}
 	"origin" "-4864 6368 272.326"
 	editor
@@ -194321,7 +194322,7 @@ entity
 	"origin" "-6753.08 147.831 -12.0539"
 	editor
 	{
-		"color" "0 255 0"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[0 -11268]"
@@ -194335,7 +194336,7 @@ entity
 	"origin" "-6739.93 32.7486 -16.5747"
 	editor
 	{
-		"color" "0 255 0"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[0 -10768]"
@@ -194349,7 +194350,7 @@ entity
 	"origin" "-6708 126 -6"
 	editor
 	{
-		"color" "0 255 0"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[0 -10268]"
@@ -194363,7 +194364,7 @@ entity
 	"origin" "-6787.09 57.2998 -17"
 	editor
 	{
-		"color" "0 255 0"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[0 -9768]"
@@ -216308,6 +216309,7 @@ entity
 		"OnButtonActivated" "finale_room_lightTurnOn01"
 		"OnButtonActivated" "finale_room_light_2TurnOff01"
 		"OnButtonActivated" "startup_relayTrigger01"
+		"OnButtonActivated" "hint_gene_fail_2Kill0.1-1"
 	}
 	solid
 	{
@@ -229353,8 +229355,8 @@ cameras
 	"activecamera" "0"
 	camera
 	{
-		"position" "[-2512.4 5254.67 463.66]"
-		"look" "[-2662.69 5453.39 371.351]"
+		"position" "[-3288.97 6543.87 219.936]"
+		"look" "[-3426.88 6647.42 17.8055]"
 	}
 }
 cordons

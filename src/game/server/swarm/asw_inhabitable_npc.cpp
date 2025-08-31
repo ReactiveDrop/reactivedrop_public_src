@@ -13,6 +13,7 @@
 #include "asw_physics_prop_statue.h"
 #include "asw_util_shared.h"
 #include "ilagcompensationmanager.h"
+#include "asw_marine_resource.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -159,6 +160,9 @@ CASW_Inhabitable_NPC::CASW_Inhabitable_NPC()
 	m_nOldButtons = 0;
 	m_iControlsOverride = -1;
 
+	m_fLastMarineCanSeeTime = -100;
+	m_bLastMarineCanSee = false;
+
 	m_bWasOnFireForStats = false;
 	m_bFlammable = true;
 	m_bTeslable = true;
@@ -293,6 +297,47 @@ int	CASW_Inhabitable_NPC::DrawDebugTextOverlays()
 		text_offset++;
 	}
 	return text_offset;
+}
+
+bool CASW_Inhabitable_NPC::MarineNearby( float radius, bool bCheck3D )
+{
+	// find the closest marine
+	CASW_Game_Resource* pGameResource = ASWGameResource();
+	if ( !pGameResource )
+		return false;
+
+	for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
+	{
+		CASW_Marine_Resource* pMarineResource = pGameResource->GetMarineResource( i );
+		if ( !pMarineResource )
+			continue;
+
+		CASW_Marine* pMarine = pMarineResource->GetMarineEntity();
+		if ( !pMarine || pMarine->m_bKnockedOut )
+			continue;
+
+		Vector diff = pMarine->GetAbsOrigin() - GetAbsOrigin();
+		float dist = bCheck3D ? diff.Length() : diff.Length2D();
+
+		if ( dist < radius )
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+// checks if a marine can see us
+//  caches the results and won't recheck unless the specified interval has passed since the last check
+bool CASW_Inhabitable_NPC::MarineCanSee( int padding, float interval )
+{
+	if ( gpGlobals->curtime >= m_fLastMarineCanSeeTime + interval )
+	{
+		bool bCorpseCanSee = false;
+		m_bLastMarineCanSee = ( UTIL_ASW_AnyMarineCanSee( GetAbsOrigin(), padding, bCorpseCanSee ) != NULL ) || bCorpseCanSee;
+		m_fLastMarineCanSeeTime = gpGlobals->curtime;
+	}
+	return m_bLastMarineCanSee;
 }
 
 // sets which player commands this marine

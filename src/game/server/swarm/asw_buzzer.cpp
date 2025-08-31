@@ -82,7 +82,7 @@
 #define	ASW_BUZZER_CHARGE_MIN_DIST	200
 
 #define ASW_BUZZER_SLEEP_CHECK_INTERVAL 1.0f
-#define ASW_BUZZER_PVS_CHECK_RANGE 384.0f
+#define ASW_BUZZER_PVS_CHECK_RANGE 1024.0f
 
 ConVar	sk_asw_buzzer_health( "sk_asw_buzzer_health","30", FCVAR_CHEAT, "Health of the buzzer");
 ConVar	sk_asw_buzzer_melee_dmg( "sk_asw_buzzer_melee_dmg","15", FCVAR_CHEAT, "Damage caused by buzzer");
@@ -836,6 +836,11 @@ int CASW_Buzzer::TranslateSchedule( int scheduleType )
 			// Relentless bastard! Doesn't fail (fail not valid anyway)
 			return TranslateSchedule( SCHED_CHASE_ENEMY );
 			break;
+		}
+	case SCHED_ASW_BUZZER_SWARM_FAILURE:
+		{
+		ClearAlienOrders();	// without clearing orders buzzer will never enter Sleep state
+		break;
 		}
 
 	}
@@ -2219,7 +2224,7 @@ void CASW_Buzzer::NPCInit()
 
 	CASW_GameStats.Event_AlienSpawned( this );
 
-	SetDistSwarmSense(576.0f);
+	//SetDistSwarmSense(576.0f);	// is this necessary? commented for now
 }
 
 void CASW_Buzzer::NPCThink( void )
@@ -2352,7 +2357,8 @@ void CASW_Buzzer::StartTask( const Task_t *pTask )
 					// HACKHACK: Call through TranslateNavGoal to fixup this goal position
 					// UNDONE: Remove this and have NPCs that need this functionality fix up paths in the 
 					// movement system instead of when they are specified.
-					AI_NavGoal_t goal(pGoalEnt->GetAbsOrigin(), bIsFlying ? ACT_FLY : ACT_WALK, AIN_DEF_TOLERANCE, AIN_YAW_TO_DEST);
+					AI_NavGoal_t goal( pGoalEnt->GetAbsOrigin() );	// using default parameters here seem to be more resilient
+																	// for situations when there is no air node graph, but only ground nodes
 					TranslateNavGoal( pGoalEnt, goal.dest );
 					
 					if (!GetNavigator()->SetGoal( goal ))
@@ -2372,19 +2378,15 @@ void CASW_Buzzer::StartTask( const Task_t *pTask )
 				if (pTask->flTaskData <= 0)		// check the taskdata to see if we should do a short spread movement when failing to build a path
 				{
 					// random nearby position
-					if ( GetNavigator()->SetWanderGoal( 90, 200 ) )
+					Vector dir( RandomFloat( -1, 1 ), RandomFloat( -1, 1 ), 0 );
+					Vector vecGoal( GetAbsOrigin() + dir * RandomFloat( 50, 150 ) );					
+					AI_NavGoal_t goal( vecGoal );
+					if ( GetNavigator()->SetGoal( goal ) )
 					{
 						TaskComplete();
 					}
 					else
-					{
-						// if we couldn't go for a full path
-						if ( GetNavigator()->SetRandomGoal( 150.0f ) )
-						{
-							TaskComplete();
-						}
 						TaskFail(FAIL_NO_ROUTE);
-					}
 				}
 				else
 				{
@@ -3107,19 +3109,6 @@ int CASW_Buzzer::GetBaseHealth()
 	return sk_asw_buzzer_health.GetFloat();
 }
 
-// checks if a marine can see us
-// caches the results and won't recheck unless the specified interval has passed since the last check
-bool CASW_Buzzer::MarineCanSee(int padding, float interval)
-{
-	if (gpGlobals->curtime >= m_fLastMarineCanSeeTime + interval)
-	{
-		bool bCorpseCanSee = false;
-		m_bLastMarineCanSee = (UTIL_ASW_AnyMarineCanSee(GetAbsOrigin(), padding, bCorpseCanSee) != NULL) || bCorpseCanSee;
-		m_fLastMarineCanSeeTime = gpGlobals->curtime;
-	}
-	return m_bLastMarineCanSee;
-}
-
 // wake the buzzer up when a marine gets nearby
 void CASW_Buzzer::UpdateSleepState(bool bInPVS)
 {
@@ -3133,12 +3122,6 @@ void CASW_Buzzer::UpdateSleepState(bool bInPVS)
 			if ( VPhysicsGetObject() )
 				VPhysicsGetObject()->Wake();
 		}
-
-		bInPVS = MarineCanSee(ASW_BUZZER_PVS_CHECK_RANGE, 0.1f);
-		if (bInPVS)
-			SetCondition(COND_IN_PVS);
-		else
-			ClearCondition(COND_IN_PVS);
 
 		if ( GetSleepState() != AISS_WAITING_FOR_INPUT )
 		{
@@ -3164,8 +3147,8 @@ void CASW_Buzzer::UpdateSleepState(bool bInPVS)
 		{
 			if (m_fLastSleepCheckTime < gpGlobals->curtime + ASW_BUZZER_SLEEP_CHECK_INTERVAL)
 			{
-				//if (!GetEnemy() && !MarineNearby(1024.0f) )
-				if (!GetEnemy() && !MarineCanSee(ASW_BUZZER_PVS_CHECK_RANGE, 2.0f))
+				//if (!GetEnemy() && !MarineCanSee(ASW_BUZZER_PVS_CHECK_RANGE, 2.0f))
+				if (!GetEnemy() && !MarineNearby( ASW_BUZZER_PVS_CHECK_RANGE ) )
 				{
 					SetSleepState(AISS_WAITING_FOR_PVS);
 
@@ -3225,8 +3208,8 @@ void CASW_Buzzer::UpdateEfficiency(bool bInPVS)
 
 	bool bInVisibilityPVS = (UTIL_FindClientInVisibilityPVS(edict()) != NULL);
 
-	//if ( bInPVS && MarineNearby(1024) ) 
-	if (bInPVS && MarineCanSee(ASW_BUZZER_PVS_CHECK_RANGE, 1.0f))
+	if ( bInPVS && MarineNearby( ASW_BUZZER_PVS_CHECK_RANGE ) )
+	//if (bInPVS && MarineCanSee(ASW_BUZZER_PVS_CHECK_RANGE, 1.0f))
 	{
 		SetMoveEfficiency(AIME_NORMAL);
 	}
@@ -3268,6 +3251,18 @@ void CASW_Buzzer::UpdateEfficiency(bool bInPVS)
 	SetEfficiency((bFramerateOk) ? AIE_EFFICIENT : AIE_VERY_EFFICIENT);
 }
 
+bool CASW_Buzzer::CheckPVSCondition()
+{
+	bool bInPVS = MarineNearby( ASW_BUZZER_PVS_CHECK_RANGE );
+
+	if ( bInPVS )
+		SetCondition( COND_IN_PVS );
+	else
+		ClearCondition( COND_IN_PVS );
+
+	return bInPVS;
+}
+
 void CASW_Buzzer::UpdateOnRemove()
 {
 	if (m_bRegisteredAsAwake)
@@ -3289,7 +3284,7 @@ AI_BEGIN_CUSTOM_NPC( npc_buzzer, CASW_Buzzer )
 	DECLARE_TASK( TASK_ASW_BUZZER_FIND_SQUAD_CENTER );
 	DECLARE_TASK( TASK_ASW_BUZZER_FIND_SQUAD_MEMBER );
 	DECLARE_TASK( TASK_ASW_BUZZER_MOVEAT_SAVEPOSITION );
-	DECLARE_TASK(TASK_ASW_BUZZER_BUILD_PATH_TO_ORDER);
+	DECLARE_TASK( TASK_ASW_BUZZER_BUILD_PATH_TO_ORDER );
 
 	DECLARE_CONDITION( COND_ASW_BUZZER_START_ATTACK );
 
@@ -3405,11 +3400,11 @@ DEFINE_SCHEDULE
 	SCHED_ASW_BUZZER_ORDER_MOVE,
 
 	"	Tasks"
-	"		TASK_ASW_BUZZER_BUILD_PATH_TO_ORDER	0"
-	"		TASK_WALK_PATH			9999"
+	"		TASK_SET_FAIL_SCHEDULE						SCHEDULE:SCHED_ASW_BUZZER_SWARM_FAILURE"		// this allows to clear orders and go to Sleep() if we cannot find route
+	"		TASK_ASW_BUZZER_BUILD_PATH_TO_ORDER	0" 	// setting 1 here sets flTaskData and prevents buzzer from wandering under the map from one skybox wall to another
+	"		TASK_RUN_PATH						0"
 	"		TASK_WAIT_FOR_MOVEMENT	0"		// 0 is spread if fail to build path
-	"		TASK_WAIT_PVS			0"
-	""
+	"	"
 	"	Interrupts"
 	"		COND_NEW_ENEMY"
 	"		COND_SEE_ENEMY"	// in deference to scripted schedule where the enemy was slammed, thus no COND_NEW_ENEMY
@@ -3422,5 +3417,3 @@ DEFINE_SCHEDULE
 )
 
 AI_END_CUSTOM_NPC()
-
-

@@ -92,7 +92,7 @@ function FisherYatesShuffle(arr) {
 	// 遍历数组，从后往前随机交换
 	for (local i = arr.len() - 1; i > 0; i--) {
 		// 生成一个随机索引
-		local j = RandIntUniformDistribution(0, i);
+		local j = RandomHQUniformIntDistribution(0, i);
 
 		// 交换元素
 		local tmp = arr[i];

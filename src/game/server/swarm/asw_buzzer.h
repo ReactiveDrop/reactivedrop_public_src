@@ -190,16 +190,13 @@ public:
 	virtual void NPCThink();
 	void ReachedEndOfSequence();
 
-	//stuff related to sleep state
-	bool MarineCanSee(int padding, float interval);// can a marine see us? //copy from asw_alien
-	float m_fLastMarineCanSeeTime;
-	bool m_bLastMarineCanSee;
 	bool m_bRegisteredAsAwake;
 	float m_fLastSleepCheckTime;
 	bool m_bVisibleWhenAsleep;
 	virtual void UpdateSleepState(bool bInPVS);
 	void UpdateEfficiency(bool bInPVS);
 	virtual void UpdateOnRemove();
+	virtual bool CheckPVSCondition() override;
 private:
 
 	bool IsInEffectiveTargetZone( CBaseEntity *pTarget );

@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "3609"
+	"mapversion" "3610"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -50,7 +50,7 @@ viewsettings
 world
 {
 	"id" "394754"
-	"mapversion" "3609"
+	"mapversion" "3610"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -31302,7 +31302,7 @@ entity
 	"rendercolor" "255 255 255"
 	"shadowcastdist" "0"
 	"skin" "2"
-	"spawnflags" "33025"
+	"spawnflags" "34057"
 	"origin" "-5092.67 870.539 832.281"
 	editor
 	{
@@ -31336,7 +31336,7 @@ entity
 	"rendercolor" "255 255 255"
 	"shadowcastdist" "0"
 	"skin" "2"
-	"spawnflags" "33025"
+	"spawnflags" "34057"
 	"origin" "-5092.67 958.539 832.281"
 	editor
 	{
@@ -31370,7 +31370,7 @@ entity
 	"rendercolor" "255 255 255"
 	"shadowcastdist" "0"
 	"skin" "2"
-	"spawnflags" "33025"
+	"spawnflags" "34057"
 	"origin" "-5308.85 1375.9 832.281"
 	editor
 	{
@@ -31404,7 +31404,7 @@ entity
 	"rendercolor" "255 255 255"
 	"shadowcastdist" "0"
 	"skin" "2"
-	"spawnflags" "33025"
+	"spawnflags" "34057"
 	"origin" "-5308.85 1463.9 832.281"
 	editor
 	{
@@ -79662,7 +79662,7 @@ entity
 	"rendercolor" "255 255 255"
 	"shadowcastdist" "0"
 	"skin" "2"
-	"spawnflags" "33025"
+	"spawnflags" "33801"
 	"origin" "-6544 896 832.281"
 	editor
 	{
@@ -85852,8 +85852,8 @@ cameras
 	"activecamera" "0"
 	camera
 	{
-		"position" "[-5477.03 5530.91 1142.71]"
-		"look" "[-4983.68 8283.34 -4497.82]"
+		"position" "[-5222.79 1209.15 974.816]"
+		"look" "[-7344.12 6255.4 -2134.87]"
 	}
 }
 cordons

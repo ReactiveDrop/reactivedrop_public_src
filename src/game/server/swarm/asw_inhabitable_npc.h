@@ -35,6 +35,12 @@ public:
 	virtual void UpdateOnRemove() override;
 	virtual int DrawDebugTextOverlays() override;
 
+	// util
+	bool MarineNearby( float radius, bool bCheck3D = false );
+	bool MarineCanSee( int padding, float interval );	// can a marine see us?
+	float m_fLastMarineCanSeeTime;
+	bool  m_bLastMarineCanSee;
+
 	// player control
 	void SetCommander( CASW_Player *player );
 	CASW_Player *GetCommander() const;

@@ -79,7 +79,6 @@ public:
 	CASW_AI_Senses *GetASWSenses();
 	virtual bool QuerySeeEntity( CBaseEntity *pEntity, bool bOnlyHateOrFearIfNPC );
 	void SetDistSwarmSense( float flDistSense );
-	bool MarineNearby( float radius, bool bCheck3D = false );
 	bool FInViewCone( const Vector &vecSpot );
 	bool Knockback( Vector vecForce );
 	virtual void SetDefaultEyeOffset();
@@ -234,11 +233,6 @@ public:
 	EHANDLE m_hMoveClone;
 	string_t m_iMoveCloneName;
 	matrix3x4_t m_moveCloneOffset;
-
-	// can a marine see us?
-	bool MarineCanSee( int padding, float interval );
-	float m_fLastMarineCanSeeTime;
-	bool m_bLastMarineCanSee;
 
 	int m_iNumASWOrderRetries;
 

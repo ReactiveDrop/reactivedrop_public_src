@@ -142,8 +142,6 @@ CASW_Alien::CASW_Alien( void ) :
 	m_fLastSleepCheckTime = 0;
 	m_bVisibleWhenAsleep = false;
 
-	m_fLastMarineCanSeeTime = -100;
-	m_bLastMarineCanSee = false;
 	m_bTimeToRagdoll = false;
 	m_iDeadBodyGroup = 1;
 	m_bNeverRagdoll = false;
@@ -560,34 +558,6 @@ void CASW_Alien::NPCThink( void )
 		UpdateRangedAttack();
 
 	m_flLastThinkTime = gpGlobals->curtime;
-}
-
-bool CASW_Alien::MarineNearby(float radius, bool bCheck3D)
-{
-	// find the closest marine
-	CASW_Game_Resource *pGameResource = ASWGameResource();
-	if (!pGameResource)
-		return false;
-	
-	for (int i=0;i<pGameResource->GetMaxMarineResources();i++)
-	{
-		CASW_Marine_Resource* pMarineResource = pGameResource->GetMarineResource(i);
-		if (!pMarineResource)
-			continue;
-
-		CASW_Marine* pMarine = pMarineResource->GetMarineEntity();
-		if (!pMarine || pMarine->m_bKnockedOut)
-			continue;
-		
-		Vector diff = pMarine->GetAbsOrigin() - GetAbsOrigin();
-		float dist = bCheck3D ? diff.Length() : diff.Length2D();
-
-		if (dist < radius)
-		{
-			return true;
-		}
-	}
-	return false;
 }
 
 CBaseEntity *CASW_Alien::CheckTraceHullAttack( float flDist, const Vector &mins, const Vector &maxs, float flDamage, int iDmgType, float forceScale, bool bDamageAnyNPC )
@@ -2346,19 +2316,6 @@ void CASW_Alien::UpdateEfficiency( bool bInPVS )
 	}
 
 	SetEfficiency( ( bFramerateOk ) ? AIE_EFFICIENT : AIE_VERY_EFFICIENT );
-}
-
-// checks if a marine can see us
-//  caches the results and won't recheck unless the specified interval has passed since the last check
-bool CASW_Alien::MarineCanSee(int padding, float interval)
-{
-	if (gpGlobals->curtime >= m_fLastMarineCanSeeTime + interval)
-	{
-		bool bCorpseCanSee = false;
-		m_bLastMarineCanSee = (UTIL_ASW_AnyMarineCanSee(GetAbsOrigin(), padding, bCorpseCanSee) != NULL) || bCorpseCanSee;
-		m_fLastMarineCanSeeTime = gpGlobals->curtime;
-	}
-	return m_bLastMarineCanSee;
 }
 
 void CASW_Alien::DropMoney( const CTakeDamageInfo &info )

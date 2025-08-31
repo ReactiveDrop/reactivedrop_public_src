@@ -40,6 +40,7 @@
 		"asw_ammo_count_50calmg" "100"
 		"asw_ammo_count_medrifle_heal" "30"
 		"asw_skill" "2"
+		"rd_lock_difficulty" "1"
 		"asw_horde_override" "0"
 		"asw_wanderer_override" "0"
 		"asw_marine_ff_absorption" "0"

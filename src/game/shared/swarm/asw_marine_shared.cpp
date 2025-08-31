@@ -270,6 +270,7 @@ void CASW_Marine::TickEmotes( float d )
 	TickEmote( d, 1 << 5, m_fEmoteExclaimTime );
 	TickEmote( d, 1 << 6, m_fEmoteAnimeSmileTime );
 	TickEmote( d, 1 << 7, m_fEmoteQuestionTime );
+	TickEmote( d, 1 << 14, m_fEmoteThanksTime );
 }
 
 bool CASW_Marine::TickEmote( float d, int bit, float &fEmoteTime )

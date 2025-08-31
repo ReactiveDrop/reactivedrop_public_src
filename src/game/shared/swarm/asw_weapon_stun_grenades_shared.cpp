@@ -14,7 +14,6 @@
 #include "tier0/memdbgon.h"
 
 
-#ifdef RD_7A_WEAPONS
 #define ASW_FLARES_FASTEST_REFIRE_TIME		0.1f
 
 IMPLEMENT_NETWORKCLASS_ALIASED( ASW_Weapon_Stun_Grenades, DT_ASW_Weapon_Stun_Grenades );
@@ -88,4 +87,3 @@ void CASW_Weapon_Stun_Grenades::DelayedAttack( void )
 	else
 		m_flNextPrimaryAttack = gpGlobals->curtime;
 }
-#endif

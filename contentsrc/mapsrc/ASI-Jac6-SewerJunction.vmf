@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "1268"
+	"mapversion" "1275"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -32,7 +32,7 @@ viewsettings
 world
 {
 	"id" "8147"
-	"mapversion" "1268"
+	"mapversion" "1275"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -76344,7 +76344,7 @@ entity
 	"origin" "2452 -6961 -615"
 	editor
 	{
-		"color" "0 255 0"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[16000 -10268]"
@@ -77770,7 +77770,7 @@ entity
 	"origin" "2390 -6958 -615"
 	editor
 	{
-		"color" "0 255 0"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[16000 -10768]"
@@ -97688,7 +97688,7 @@ hidden
 		"origin" "460 1843.3 -478"
 		editor
 		{
-			"color" "0 255 0"
+			"color" "220 30 220"
 			"visgroupid" "19"
 			"visgroupshown" "0"
 			"visgroupautoshown" "1"
@@ -184060,6 +184060,7 @@ entity
 	"NearDistance" "740"
 	"NumAliens" "3"
 	"sizescalesp" "1.0"
+	"SpawnerState" "1"
 	"spawnflags" "0"
 	"SpawnIfMarinesAreNear" "1"
 	"SpawnInterval" "2"
@@ -189681,6 +189682,7 @@ entity
 	"NearDistance" "740"
 	"NumAliens" "1"
 	"sizescalesp" "1.0"
+	"SpawnerState" "1"
 	"spawnflags" "0"
 	"SpawnIfMarinesAreNear" "1"
 	"SpawnInterval" "5"
@@ -206043,7 +206045,7 @@ entity
 	"teslablesp" "1"
 	"UnburrowActivity" "ACT_CLIMB_OFF_RAIL_52"
 	"UnburrowIdleActivity" "ACT_CLIMB_OFF_RAIL_IDLE"
-	"origin" "260 -2928 -552"
+	"origin" "262 -2928 -550"
 	editor
 	{
 		"color" "0 0 255"
@@ -206122,7 +206124,7 @@ entity
 	"teslablesp" "1"
 	"UnburrowActivity" "ACT_CLIMB_OFF_RAIL_52"
 	"UnburrowIdleActivity" "ACT_CLIMB_OFF_RAIL_IDLE"
-	"origin" "-224 -3113 -552"
+	"origin" "-222 -3113 -550"
 	editor
 	{
 		"color" "0 0 255"
@@ -209989,7 +209991,7 @@ entity
 	"origin" "2459 -6892 -615"
 	editor
 	{
-		"color" "0 255 0"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[16000 -9768]"
@@ -210003,7 +210005,7 @@ entity
 	"origin" "2407 -6896 -615"
 	editor
 	{
-		"color" "0 255 0"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[16000 -9268]"
@@ -210097,7 +210099,7 @@ entity
 	"origin" "2401 -6772 -615"
 	editor
 	{
-		"color" "0 255 0"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[16000 -13268]"
@@ -211622,7 +211624,7 @@ entity
 	"origin" "2396 -7014 -615"
 	editor
 	{
-		"color" "0 255 0"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[16000 -11268]"
@@ -211636,7 +211638,7 @@ entity
 	"origin" "2451 -6823 -615"
 	editor
 	{
-		"color" "0 255 0"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[16000 -12268]"
@@ -212091,7 +212093,7 @@ entity
 	"origin" "2443 -7040 -615"
 	editor
 	{
-		"color" "0 255 0"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[16000 -11768]"
@@ -227786,7 +227788,7 @@ entity
 	"speedscalesp" "1.0"
 	"targetname" "DroneSpawn14"
 	"teslablesp" "1"
-	"origin" "-2494.47 2993 -432"
+	"origin" "-2494.47 2993 -430"
 	editor
 	{
 		"color" "0 0 255"
@@ -227825,7 +227827,7 @@ entity
 	"speedscalesp" "1.0"
 	"targetname" "DroneSpawn14"
 	"teslablesp" "1"
-	"origin" "-2494 2832 -431"
+	"origin" "-2494 2832 -429"
 	editor
 	{
 		"color" "0 0 255"
@@ -272551,8 +272553,8 @@ cameras
 	"activecamera" "0"
 	camera
 	{
-		"position" "[-1153.64 2306.83 -346.393]"
-		"look" "[4456.52 2068.2 -2988.72]"
+		"position" "[-241.056 -3376.98 -214.69]"
+		"look" "[354.6 861.05 -4708.8]"
 	}
 }
 cordons

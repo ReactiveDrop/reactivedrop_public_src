@@ -20,7 +20,7 @@
 		}	
 		"East"
 		{
-			"command"	"cl_chatter 15"
+			"command"	"cl_emote 14"
 			"text"		"#asw_speech_thanks"
 		}	
 		"SouthEast"
