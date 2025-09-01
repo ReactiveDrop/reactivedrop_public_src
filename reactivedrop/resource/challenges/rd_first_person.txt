@@ -6,6 +6,5 @@
 
 	"convars" {
 		"asw_controls"	"0"
-		"rd_draw_restricted_rectangles_coop"	"0"
 	}
 }

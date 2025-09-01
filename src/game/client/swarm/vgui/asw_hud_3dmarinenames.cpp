@@ -49,6 +49,7 @@
 // restricted area variables and cvars
 extern int g_nRestrictedAreaLeft;
 extern bool g_bUltraWideScreen;
+extern ConVar _rd_traitors_challenge_enabled;
 extern ConVar rd_draw_restricted_rectangles_coop;
 extern ConVar rd_draw_restricted_rectangles_dm;
 
@@ -619,7 +620,7 @@ void CASWHud3DMarineNames::PaintMarineLabel( int iMyMarineNum, C_ASW_Marine *RES
 		bool bMarineOnScreen = (screenPos.x >= 0) && (screenPos.x <= nMaxX) &&
 			(screenPos.y >= 0) && (screenPos.y <= nMaxY);
 		int nRestrictedAreaOffset = 0;
-		if (g_bUltraWideScreen && ((rd_draw_restricted_rectangles_coop.GetBool() && !ASWDeathmatchMode()) || (rd_draw_restricted_rectangles_dm.GetBool() && ASWDeathmatchMode()))) {
+		if (g_bUltraWideScreen && _rd_traitors_challenge_enabled.GetBool() && ((rd_draw_restricted_rectangles_coop.GetBool() && !ASWDeathmatchMode()) || (rd_draw_restricted_rectangles_dm.GetBool() && ASWDeathmatchMode()))) {
 			bMarineOnScreen = (screenPos.x >= g_nRestrictedAreaLeft) && (screenPos.x <= nMaxX - g_nRestrictedAreaLeft) &&
 				(screenPos.y >= 0) && (screenPos.y <= nMaxY);
 			nRestrictedAreaOffset = g_nRestrictedAreaLeft;

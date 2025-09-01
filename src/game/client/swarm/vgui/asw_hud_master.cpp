@@ -38,6 +38,7 @@ extern ConVar rd_hud_hide_clips;
 
 extern bool g_ultra_wide_screen;
 extern Rect_t g_clamp_area;
+extern ConVar _rd_traitors_challenge_enabled;
 
 ConVar rd_draw_avatars_with_frags( "rd_draw_avatars_with_frags", "1",  FCVAR_ARCHIVE, "If 1 In PvP modes a panel with avatars and frags will be shown at top of the screen");
 ConVar rd_draw_portraits( "rd_draw_portraits", "1", FCVAR_NONE );
@@ -54,7 +55,7 @@ bool g_bUltraWideScreen;
 // restricted area cvars
 ConVar rd_draw_restricted_borders( "rd_draw_restricted_borders", "1", FCVAR_ARCHIVE, "Display the restricted cursor area when using ultra-wide resolution" );
 ConVar rd_draw_restricted_borders_color("rd_draw_restricted_borders_color", "128 128 128 128", 0, "Color of the restricted cursor area borders");
-ConVar rd_draw_restricted_rectangles_coop("rd_draw_restricted_rectangles_coop", "1", FCVAR_REPLICATED, "Fill extra side FOVs with black on ultra-wide resolution in coop mode.");
+ConVar rd_draw_restricted_rectangles_coop("rd_draw_restricted_rectangles_coop", "0", FCVAR_REPLICATED, "Fill extra side FOVs with black on ultra-wide resolution in coop mode.");
 ConVar rd_draw_restricted_rectangles_dm("rd_draw_restricted_rectangles_dm", "1", FCVAR_REPLICATED | FCVAR_CHEAT, "Fill extra side FOVs with black on ultra-wide resolution in deathmatch mode.");
 
 using namespace vgui;
@@ -516,7 +517,7 @@ void CASW_Hud_Master::Paint( void )
 	if ( m_pLocalMarineResource )
 	{
 		// Block extra side FOVs
-		if (g_bUltraWideScreen && ((rd_draw_restricted_rectangles_coop.GetBool() && !ASWDeathmatchMode()) || (rd_draw_restricted_rectangles_dm.GetBool() && ASWDeathmatchMode())) && !pPlayer->GetSpectatingNPC()) {
+		if (g_bUltraWideScreen && _rd_traitors_challenge_enabled.GetBool() && ((rd_draw_restricted_rectangles_coop.GetBool() && !ASWDeathmatchMode()) || (rd_draw_restricted_rectangles_dm.GetBool() && ASWDeathmatchMode())) && !pPlayer->GetSpectatingNPC()) {
 			//	(0,0)-----(L,0)       (R,0)-----(W,0)
 			//	  |//////////|            |/////////|
 			//	  |//////////|            |/////////|
