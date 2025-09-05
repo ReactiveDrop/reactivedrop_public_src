@@ -3,7 +3,6 @@
 #ifdef CLIENT_DLL
 #include "c_rd_infection_deathmatch_stats.h"
 #include "asw_util_shared.h"
-#include "asw_input.h"
 #endif
 #include <vgui/IScheme.h>
 #include <vgui/ISurface.h>
@@ -59,8 +58,6 @@ BEGIN_ENT_SCRIPTDESC( CRD_HUD_VScript, CBaseEntity, "Alien Swarm: Reactive Drop 
 	DEFINE_SCRIPTFUNC_NAMED( Script_PaintTexturedRectangle, "PaintTexturedRectangle", "Draw a textured rectangle on the heads-up display. Can only be called during Paint" )
 	DEFINE_SCRIPTFUNC_NAMED( Script_PaintTexturedRectangleAdvanced, "PaintTexturedRectangleAdvanced", "Draw a textured rectangle with advanced settings on the heads-up display. Can only be called during Paint" )
 	DEFINE_SCRIPTFUNC_NAMED( Script_PaintPolygon, "PaintPolygon", "Draw an arbitrary polygon on the heads-up display. Vertices must be in clockwise order; shape should be convex. Can only be called during Paint" )
-	DEFINE_SCRIPTFUNC_NAMED(Script_ClientGetEntityOrigin, "ClientGetEntityOrigin", "Returns the origin of an entity.")
-	DEFINE_SCRIPTFUNC_NAMED(Script_ClientGetEntityScreenPos, "ClientGetEntityScreenPos", "Converts a world position to screen coordinate. Z value of the returned vector denotes if it's a valid screen coordinate, 1 valid, 0 otherwise.")
 #else
 	DEFINE_SCRIPTFUNC( SetEntity, "Set the value of an entity parameter." )
 	DEFINE_SCRIPTFUNC( SetInt, "Set the value of an integer parameter." )
@@ -462,47 +459,6 @@ void CRD_HUD_VScript::Script_PaintPolygon( HSCRIPT vertices, int r, int g, int b
 	vgui::surface()->DrawSetTexture( texture );
 	vgui::surface()->DrawTexturedPolygon( nVerts, convertedVertices.Base() );
 }
-
-const Vector& CRD_HUD_VScript::Script_ClientGetEntityOrigin(int entIndex)
-{
-	C_BaseEntity* pEnt = C_BaseEntity::Instance(entIndex);
-	static Vector v;
-	if (pEnt)
-	{
-		v = pEnt->GetAbsOrigin();
-	}
-	else
-	{
-		v = vec3_origin;
-	}
-	return v;
-}
-
-const Vector& CRD_HUD_VScript::Script_ClientGetEntityScreenPos(int entIndex)
-{
-	C_BaseEntity* pEnt = C_BaseEntity::Instance(entIndex);
-	static Vector v;
-	if (!pEnt)
-	{
-		return vec3_origin;
-	}
-	Vector vecFacing;
-	AngleVectors(pEnt->GetRenderAngles(), &vecFacing);
-	vecFacing *= 5;
-	// BenLubar: Fix emotes being offset when the camera is rotated
-	float flYaw = (ASWInput() ? ASWInput()->ASW_GetCameraYaw() : 90) / 180 * M_PI;
-	Vector vecOffset(cosf(flYaw) * 40, sinf(flYaw) * 40, 70);
-	if (!debugoverlay->ScreenPosition(pEnt->GetRenderOrigin() + vecOffset + vecFacing, v))
-	{
-		v.z = 1; // valid screen position
-	}
-	else
-	{
-		v = vec3_origin; // invalid screen position
-	}
-	return v;
-}
-
 #else
 int CRD_HUD_VScript::ShouldTransmit( const CCheckTransmitInfo *pInfo )
 {

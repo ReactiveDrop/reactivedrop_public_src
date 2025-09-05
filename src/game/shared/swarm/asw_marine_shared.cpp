@@ -109,6 +109,8 @@ ConVar rd_explosive_bullets_radius( "rd_explosive_bullets_radius", "200", FCVAR_
 extern ConVar rd_sniper_scope_weapon_switch;
 #endif
 
+extern ConVar _rd_traitors_challenge_enabled;
+
 static const float ASW_MARINE_MELEE_HULL_TRACE_Z = 32.0f;
 
 bool CASW_Marine::Weapon_Switch( CBaseCombatWeapon *pWeapon, int viewmodelindex /*=0*/ )
@@ -271,6 +273,13 @@ void CASW_Marine::TickEmotes( float d )
 	TickEmote( d, 1 << 6, m_fEmoteAnimeSmileTime );
 	TickEmote( d, 1 << 7, m_fEmoteQuestionTime );
 	TickEmote( d, 1 << 14, m_fEmoteThanksTime );
+
+	if (_rd_traitors_challenge_enabled.GetBool())
+	{
+		// copy server emote bits to client emote bits (bits 8-13 are traitor emotes)
+		constexpr int bits = 0x00003F00;
+		m_iClientEmote = (m_iClientEmote & ~bits) | (m_iEmote & bits);
+	}
 }
 
 bool CASW_Marine::TickEmote( float d, int bit, float &fEmoteTime )

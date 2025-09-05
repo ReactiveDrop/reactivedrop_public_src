@@ -187,17 +187,10 @@ function DebugKillAliens(interval = 1) {
 }
 
 function SetTraitorIcon(interval = 10) {
-	if (g_int_Counter % interval != 0) {
+	if (g_int_Counter <= 20 && g_int_Counter % interval != 0) {
 		return;
 	}
-
-
-	local list = {};
-	for (local i = 6; i < 21; i++) {
-		list[i] <- 0;
-	}
-	local i = 11;
-	foreach(hMarine in g_marine_Traitor) {
+	foreach(hMarine in g_marine_Total) {
 		if (hMarine == null || !hMarine.IsValid()) {
 			continue;
 		}
@@ -212,34 +205,35 @@ function SetTraitorIcon(interval = 10) {
 			case ROLE.INFECTED_SNIPER:
 			case ROLE.INFECTED_DEMO:
 			case ROLE.INFECTED_DESERTER:
-				list[i] = hMarine.entindex();
-				i++;
+				NetProps.SetPropInt(hMarine, "m_iEmote", NetProps.GetPropInt(hMarine, "m_iEmote") | (1 << 8));
 				break;
 			case ROLE.TRAITOR_LEADER:
-				list[6] = hMarine.entindex();
+				NetProps.SetPropInt(hMarine, "m_iEmote", NetProps.GetPropInt(hMarine, "m_iEmote") | (1 << 9));
 				break;
 			case ROLE.INFECTOR:
-				list[7] = hMarine.entindex();
+				NetProps.SetPropInt(hMarine, "m_iEmote", NetProps.GetPropInt(hMarine, "m_iEmote") | (1 << 10));
 				break;
 			case ROLE.BOOMER:
-				list[8] = hMarine.entindex();
+				NetProps.SetPropInt(hMarine, "m_iEmote", NetProps.GetPropInt(hMarine, "m_iEmote") | (1 << 11));
 				break;
 			case ROLE.SILENCER:
-				list[9] = hMarine.entindex();
+				NetProps.SetPropInt(hMarine, "m_iEmote", NetProps.GetPropInt(hMarine, "m_iEmote") | (1 << 12));
 				break;
 			case ROLE.MIMIC:
-				list[10] = hMarine.entindex();
+				NetProps.SetPropInt(hMarine, "m_iEmote", NetProps.GetPropInt(hMarine, "m_iEmote") | (1 << 13));
+				break;
 		}
 	}
+	local hPlayer = null;
+	while (hPlayer = Entities.FindByClassname(hPlayer, "player")) {
+		NetProps.SetPropInt(hPlayer, "m_iChallengeScratch", 0);
+	}
+	hPlayer = null;
 	foreach(hPlayer in g_player_TraitorHistory) {
 		if (hPlayer == null || !hPlayer.IsValid()) {
 			continue;
 		}
-
-		local hHud2 = Entities.FindByName(null, hPlayer.GetScriptScope().strHudName2);
-		for (local i = 6; i < 21; i++) {
-			hHud2.SetInt(i, list[i]);
-		}
+		NetProps.SetPropInt(hPlayer, "m_iChallengeScratch", 1);
 	}
 }
 
@@ -1472,9 +1466,6 @@ function CreatePlayerHud(hPlayer) {
 	hHud1.SetEntity(0, hPlayer);
 	local strHud1 = "HUD_" + UniqueString();
 	hHud1.SetName(strHud1);
-	for (local i = 6; i < 21; i++) {
-		hHud1.SetInt(i, 0);
-	}
 
 	hPlayer.GetScriptScope().strHudName1 <- strHud1;
 	hHud1.SetInt(0, ROLE.SPECTATOR);
@@ -1502,9 +1493,6 @@ function CreatePlayerHud(hPlayer) {
 	hHud2.SetEntity(0, hPlayer);
 	local strHud2 = "HUD_" + UniqueString();
 	hHud2.SetName(strHud2);
-	for (local i = 6; i < 21; i++) {
-		hHud2.SetInt(i, 0);
-	}
 
 	hPlayer.ValidateScriptScope();
 	hPlayer.GetScriptScope().strHudName2 <- strHud2;
@@ -1533,9 +1521,6 @@ function CreatePlayerHud(hPlayer) {
 	hHud4.SetEntity(0, hPlayer);
 	local strHud4 = "HUD_" + UniqueString();
 	hHud4.SetName(strHud4);
-	for (local i = 6; i < 21; i++) {
-		hHud4.SetInt(i, 0);
-	}
 
 	hPlayer.GetScriptScope().strHudName4 <- strHud4;
 	hHud4.SetInt(0, ROLE.SPECTATOR);
@@ -1563,9 +1548,6 @@ function CreatePlayerHud(hPlayer) {
 	hHud3.SetEntity(0, hPlayer);
 	local strhHud3 = "HUD_" + UniqueString();
 	hHud3.SetName(strhHud3);
-	for (local i = 6; i < 21; i++) {
-		hHud3.SetInt(i, 0);
-	}
 
 	hPlayer.ValidateScriptScope();
 	hPlayer.GetScriptScope().strHudName3 <- strhHud3;

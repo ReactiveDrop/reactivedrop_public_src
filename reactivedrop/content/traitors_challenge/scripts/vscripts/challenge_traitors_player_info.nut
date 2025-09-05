@@ -5,15 +5,6 @@
 	int	 3  - 投降，当前人数
 	int	 4  - 投降，总人数
 
-	int  6  - TRAITOR_LEADER 对应的marine index
-	int  7  - INFECTOR 对应的marine index
-	int  8  - BOOMER 对应的marine index
-	int  9  - SILENCER 对应的marine index
-	int  10 - MIMIC 对应的marine index
-	int  11 - TRAITOR 对应的marine index
-	...
-	int  20 - TRAITOR 对应的marine index
-
 	int	 63 - 标识，1和2代表显示的是内鬼提示1和提示2。3代表显示的是内鬼开始投票，4代表投票中，5代表投票停止
 
 	float   0  - HUD信息显示的起始时间
@@ -55,33 +46,11 @@ IncludeScript("challenge_traitors_enums.nut");
 
 FONT_DEFAULTLARGE <- self.LookupFont("DefaultMedium");
 
-TEXTURE_TRAITOR <- self.LookupTexture("vgui/swarm/Emotes/EmoteTraitor");
-TEXTURE_TRAITORS <- {
-	[6] = self.LookupTexture("vgui/swarm/Emotes/EmoteTraitorLeader"),
-	[7] = self.LookupTexture("vgui/swarm/Emotes/EmoteInfector"),
-	[8] = self.LookupTexture("vgui/swarm/Emotes/EmoteBoomer"),
-	[9] = self.LookupTexture("vgui/swarm/Emotes/EmoteSilencer"),
-	[10] = self.LookupTexture("vgui/swarm/Emotes/EmoteMimic"),
-	[11] = TEXTURE_TRAITOR,
-	[12] = TEXTURE_TRAITOR,
-	[13] = TEXTURE_TRAITOR,
-	[14] = TEXTURE_TRAITOR,
-	[15] = TEXTURE_TRAITOR,
-	[16] = TEXTURE_TRAITOR,
-	[17] = TEXTURE_TRAITOR,
-	[18] = TEXTURE_TRAITOR,
-	[19] = TEXTURE_TRAITOR,
-	[20] = TEXTURE_TRAITOR,
-};
-
 xMargin <- 0;
 
 function Paint() {
 	//如果正在控制士兵，显示信息。
 	if (self.GetEntity(0) == GetLocalPlayer()) {
-		for (local i = 6; i < 21; i++) {
-			PaintTraitorIcon(i);
-		}
 		local message = self.GetString(0);
 		if (message == "") {
 			return;
@@ -126,33 +95,6 @@ function PaintMsg(point, role, font, message) {
 		self.PaintRectangle(point[0] - textHalfWidth - 20, point[1] - 5 + line * (self.GetFontTall(font) + 10), point[0] + 20 + textHalfWidth, point[1] - 5 + (line + 1) * (self.GetFontTall(font) + 10), 0, 0, 0, 150);
 	}
 
-}
-
-function PaintTraitorIcon(idx) {
-
-	if (self.GetInt(idx) <= 0 || TEXTURE_TRAITORS[idx] == -1 || self.GetInt(0) <= ROLE.MAX_IAF_TEAM || self.GetInt(0) > ROLE.MAX_TRAITOR_TEAM) {
-		return;
-	}
-	local screenPos = self.ClientGetEntityScreenPos(self.GetInt(idx));
-	if (screenPos.z < 0.5) { //无效屏幕坐标
-		return;
-	}
-
-	local xPos = screenPos.x;
-	local yPos = screenPos.y;
-
-	local fScale = (ScreenHeight() / 768.0) * 0.4;
-	local HalfW = 128.0 * fScale * 0.5;
-	local HalfH = 128.0 * fScale * 0.5;
-	yPos += 100 * (ScreenHeight() / 768.0);
-
-	local points = [
-		{x = xPos - HalfW, y = yPos - HalfH, s = 0, t = 0},
-		{x = xPos + HalfW, y = yPos - HalfH, s = 1, t = 0},
-		{x = xPos + HalfW, y = yPos + HalfH, s = 1, t = 1},
-		{x = xPos - HalfW, y = yPos + HalfH, s = 0, t = 1}
-	];
-	self.PaintPolygon(points, 255, 255, 255, 255, TEXTURE_TRAITORS[idx]);
 }
 
 function interp(i, t) {

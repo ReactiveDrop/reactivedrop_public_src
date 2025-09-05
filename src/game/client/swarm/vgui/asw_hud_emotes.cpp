@@ -57,6 +57,7 @@ public:
 	virtual void PaintEmotes();
 	virtual void PaintEmotesFor( C_ASW_Marine *pMarine );
 	virtual void PaintEmote( C_BaseEntity *pEnt, float fTime, int iTexture, float fScale = 1.0f );
+	virtual void PaintTraitorEmote(C_BaseEntity* pEnt, int iTexture, float fEmoteScale);
 	virtual bool ShouldDraw( void ) { return asw_draw_hud.GetBool() && CASW_HudElement::ShouldDraw(); }
 
 	CPanelAnimationVarAliasType( int, m_nMedicTexture, "MedicEmoteTexture", "vgui/swarm/Emotes/EmoteMedic", "textureid" );
@@ -76,6 +77,14 @@ public:
 	CPanelAnimationVarAliasType( int, m_nHackTexture, "HackTexture", "vgui/swarm/ClassIcons/HackIcon", "textureid" );
 	CPanelAnimationVarAliasType( int, m_nWeldTexture, "WeldTexture", "vgui/swarm/ClassIcons/WeldIcon", "textureid" );
 	CPanelAnimationVarAliasType( int, m_nReviveMarineTexture, "ReviveMarineTexture", "vgui/swarm/ClassIcons/revivemarine", "textureid" );
+
+	// Traitors emotes
+	CPanelAnimationVarAliasType(int, m_nTraitorEmoteTexture, "TraitorEmoteTexture", "vgui/swarm/Emotes/EmoteTraitor", "textureid");
+	CPanelAnimationVarAliasType(int, m_nTraitorLeaderEmoteTexture, "TraitorLeaderEmoteTexture", "vgui/swarm/Emotes/EmoteTraitorLeader", "textureid");
+	CPanelAnimationVarAliasType(int, m_nInfectorEmoteTexture, "InfectorEmoteTexture", "vgui/swarm/Emotes/EmoteInfector", "textureid");
+	CPanelAnimationVarAliasType(int, m_nBoomerEmoteTexture, "BoomerEmoteTexture", "vgui/swarm/Emotes/EmoteBoomer", "textureid");
+	CPanelAnimationVarAliasType(int, m_nSilencerEmoteTexture, "SilencerEmoteTexture", "vgui/swarm/Emotes/EmoteSilencer", "textureid");
+	CPanelAnimationVarAliasType(int, m_nMimicEmoteTexture, "MimicEmoteTexture", "vgui/swarm/Emotes/EmoteMimic", "textureid");
 };
 
 DECLARE_HUDELEMENT( CASWHudEmotes );
@@ -148,6 +157,27 @@ void CASWHudEmotes::PaintEmotesFor( C_ASW_Marine *pMarine )
 		PaintEmote( pMarine, pMarine->m_fEmoteQuestionTime, m_nQuestionTexture );
 	if ( pMarine->m_iClientEmote & ( 1 << 14 ) )
 		PaintEmote( pMarine, pMarine->m_fEmoteThanksTime, m_nThanksTexture );
+
+	//traitor emotes
+	if (_rd_traitors_challenge_enabled.GetBool())
+	{
+		C_ASW_Player* pLocalPlayer = C_ASW_Player::GetLocalASWPlayer();
+		if (pLocalPlayer && (pLocalPlayer->m_iChallengeScratch & 1))
+		{
+			if (pMarine->m_iClientEmote & (1 << 8))
+				PaintTraitorEmote(pMarine, m_nTraitorEmoteTexture, 0.35f);
+			if (pMarine->m_iClientEmote & (1 << 9))
+				PaintTraitorEmote(pMarine, m_nTraitorLeaderEmoteTexture, 0.35f);
+			if (pMarine->m_iClientEmote & (1 << 10))
+				PaintTraitorEmote(pMarine, m_nInfectorEmoteTexture, 0.35f);
+			if (pMarine->m_iClientEmote & (1 << 11))
+				PaintTraitorEmote(pMarine, m_nBoomerEmoteTexture, 0.35f);
+			if (pMarine->m_iClientEmote & (1 << 12))
+				PaintTraitorEmote(pMarine, m_nSilencerEmoteTexture, 0.35f);
+			if (pMarine->m_iClientEmote & (1 << 13))
+				PaintTraitorEmote(pMarine, m_nMimicEmoteTexture, 0.35f);
+		}
+	}
 
 	bool bBuildingSentry = false;
 	bool bWelding = false;
@@ -281,6 +311,45 @@ void CASWHudEmotes::PaintEmote( C_BaseEntity *pEnt, float fTime, int iTexture, f
 
 			//surface()->DrawTexturedRect(xPos - HalfW, yPos - HalfH,
 										//xPos + HalfW, yPos + HalfH);
+		}
+	}
+}
+
+void CASWHudEmotes::PaintTraitorEmote(C_BaseEntity* pEnt, int iTexture, float fEmoteScale)
+{
+	//Msg("PaintEmote scale = %f\n", fEmoteScale);
+	if (fEmoteScale < 0)
+		fEmoteScale = 0;
+	Vector screenPos;
+	Vector vecFacing;
+	AngleVectors(pEnt->GetRenderAngles(), &vecFacing);
+	vecFacing *= 5;
+	// BenLubar: Fix emotes being offset when the camera is rotated
+	float flYaw = (ASWInput() ? ASWInput()->ASW_GetCameraYaw() : 90) / 180 * M_PI;
+	Vector vecOffset(cosf(flYaw) * 40, sinf(flYaw) * 40, 70);
+	if (!debugoverlay->ScreenPosition(pEnt->GetRenderOrigin() + vecOffset + vecFacing, screenPos))
+	{
+		float xPos = screenPos[0];
+		float yPos = screenPos[1];
+
+		if (iTexture != -1)
+		{
+			float fScale = (ScreenHeight() / 768.0f) * fEmoteScale;
+			float HalfW = 128.0f * fScale * 0.5f;
+			float HalfH = 128.0f * fScale * 0.5f;
+			yPos += 100 * (ScreenHeight() / 768.0f);
+
+			surface()->DrawSetColor(Color(255, 255, 255, 255.0f));
+			surface()->DrawSetTexture(iTexture);
+
+			Vertex_t points[4] =
+			{
+			Vertex_t(Vector2D(xPos - HalfW, yPos - HalfH), Vector2D(0,0)),
+			Vertex_t(Vector2D(xPos + HalfW, yPos - HalfH), Vector2D(1,0)),
+			Vertex_t(Vector2D(xPos + HalfW, yPos + HalfH), Vector2D(1,1)),
+			Vertex_t(Vector2D(xPos - HalfW, yPos + HalfH), Vector2D(0,1))
+			};
+			surface()->DrawTexturedPolygon(4, points);
 		}
 	}
 }

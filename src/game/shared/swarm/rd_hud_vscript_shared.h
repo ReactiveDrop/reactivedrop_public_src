@@ -35,8 +35,6 @@ public:
 	void Script_PaintTexturedRectangle( int x0, int y0, int x1, int y1, int r, int g, int b, int a, int texture );
 	void Script_PaintTexturedRectangleAdvanced( HSCRIPT table );
 	void Script_PaintPolygon( HSCRIPT vertices, int r, int g, int b, int a, int texture );
-	const Vector& Script_ClientGetEntityOrigin(int entindex);
-	const Vector& Script_ClientGetEntityScreenPos(int entIndex);
 
 	CNetworkString( m_szClientVScript, 64 );
 	CScriptScope m_ScriptScope;
