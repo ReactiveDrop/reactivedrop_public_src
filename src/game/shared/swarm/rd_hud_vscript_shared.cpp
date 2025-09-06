@@ -3,6 +3,7 @@
 #ifdef CLIENT_DLL
 #include "c_rd_infection_deathmatch_stats.h"
 #include "asw_util_shared.h"
+#include "asw_input.h"
 #endif
 #include <vgui/IScheme.h>
 #include <vgui/ISurface.h>
