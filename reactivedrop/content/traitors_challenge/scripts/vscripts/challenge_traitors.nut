@@ -190,6 +190,7 @@ function SetTraitorIcon(interval = 10) {
 	if (g_int_Counter <= 20 && g_int_Counter % interval != 0) {
 		return;
 	}
+
 	foreach(hMarine in g_marine_Total) {
 		if (hMarine == null || !hMarine.IsValid()) {
 			continue;
@@ -205,6 +206,7 @@ function SetTraitorIcon(interval = 10) {
 			case ROLE.INFECTED_SNIPER:
 			case ROLE.INFECTED_DEMO:
 			case ROLE.INFECTED_DESERTER:
+
 				NetProps.SetPropInt(hMarine, "m_iEmote", NetProps.GetPropInt(hMarine, "m_iEmote") | (1 << 8));
 				break;
 			case ROLE.TRAITOR_LEADER:

@@ -32,12 +32,42 @@ BEGIN_NETWORK_TABLE( CRD_HUD_VScript, DT_RD_HUD_VScript )
 #ifdef CLIENT_DLL
 	RecvPropString( RECVINFO( m_szClientVScript ) ),
 	RecvPropEHandle( RECVINFO( m_hDataEntity ) ),
+	RecvPropEHandle( RECVINFO( m_hDataEntity1 ) ),
+	RecvPropEHandle( RECVINFO( m_hDataEntity2 ) ),
+	RecvPropEHandle( RECVINFO( m_hDataEntity3 ) ),
+	RecvPropEHandle( RECVINFO( m_hDataEntity4 ) ),
+	RecvPropEHandle( RECVINFO( m_hDataEntity5 ) ),
+	RecvPropEHandle( RECVINFO( m_hDataEntity6 ) ),
+	RecvPropEHandle( RECVINFO( m_hDataEntity7 ) ),
+	RecvPropEHandle( RECVINFO( m_hDataEntity8 ) ),
+	RecvPropEHandle( RECVINFO( m_hDataEntity9 ) ),
+	RecvPropEHandle( RECVINFO( m_hDataEntity10 ) ),
+	RecvPropEHandle( RECVINFO( m_hDataEntity11 ) ),
+	RecvPropEHandle( RECVINFO( m_hDataEntity12 ) ),
+	RecvPropEHandle( RECVINFO( m_hDataEntity13 ) ),
+	RecvPropEHandle( RECVINFO( m_hDataEntity14 ) ),
+	RecvPropEHandle( RECVINFO( m_hDataEntity15 ) ),
 	RecvPropArray3( RECVINFO_ARRAY( m_iDataInt ), RecvPropInt( RECVINFO( m_iDataInt[0] ) ) ),
 	RecvPropArray3( RECVINFO_ARRAY( m_flDataFloat ), RecvPropFloat( RECVINFO( m_flDataFloat[0] ) ) ),
 	RecvPropString( RECVINFO( m_szDataString ) ),
 #else
 	SendPropStringT( SENDINFO( m_szClientVScript ) ),
 	SendPropEHandle( SENDINFO( m_hDataEntity ) ),
+	SendPropEHandle( SENDINFO( m_hDataEntity1 ) ),
+	SendPropEHandle( SENDINFO( m_hDataEntity2 ) ),
+	SendPropEHandle( SENDINFO( m_hDataEntity3 ) ),
+	SendPropEHandle( SENDINFO( m_hDataEntity4 ) ),
+	SendPropEHandle( SENDINFO( m_hDataEntity5 ) ),
+	SendPropEHandle( SENDINFO( m_hDataEntity6 ) ),
+	SendPropEHandle( SENDINFO( m_hDataEntity7 ) ),
+	SendPropEHandle( SENDINFO( m_hDataEntity8 ) ),
+	SendPropEHandle( SENDINFO( m_hDataEntity9 ) ),
+	SendPropEHandle( SENDINFO( m_hDataEntity10 ) ),
+	SendPropEHandle( SENDINFO( m_hDataEntity11 ) ),
+	SendPropEHandle( SENDINFO( m_hDataEntity12 ) ),
+	SendPropEHandle( SENDINFO( m_hDataEntity13 ) ),
+	SendPropEHandle( SENDINFO( m_hDataEntity14 ) ),
+	SendPropEHandle( SENDINFO( m_hDataEntity15 ) ),
 	SendPropArray3( SENDINFO_ARRAY3( m_iDataInt ), SendPropInt( SENDINFO_ARRAY( m_iDataInt ) ) ),
 	SendPropArray3( SENDINFO_ARRAY3( m_flDataFloat ), SendPropFloat( SENDINFO_ARRAY( m_flDataFloat ) ) ),
 	SendPropString( SENDINFO( m_szDataString ) ),
@@ -58,6 +88,7 @@ BEGIN_ENT_SCRIPTDESC( CRD_HUD_VScript, CBaseEntity, "Alien Swarm: Reactive Drop 
 	DEFINE_SCRIPTFUNC_NAMED( Script_PaintTexturedRectangle, "PaintTexturedRectangle", "Draw a textured rectangle on the heads-up display. Can only be called during Paint" )
 	DEFINE_SCRIPTFUNC_NAMED( Script_PaintTexturedRectangleAdvanced, "PaintTexturedRectangleAdvanced", "Draw a textured rectangle with advanced settings on the heads-up display. Can only be called during Paint" )
 	DEFINE_SCRIPTFUNC_NAMED( Script_PaintPolygon, "PaintPolygon", "Draw an arbitrary polygon on the heads-up display. Vertices must be in clockwise order; shape should be convex. Can only be called during Paint" )
+	DEFINE_SCRIPTFUNC_NAMED( Script_ClientGetEntityScreenPos, "ClientGetEntityScreenPos", "Returns the screen space position of an entity. Second parameter is true if you are simulating the placement of an emote, false if you want the actual position of the entity origin. Returns null if the entity is not on-screen. Can only be called during Paint" )
 #else
 	DEFINE_SCRIPTFUNC( SetEntity, "Set the value of an entity parameter." )
 	DEFINE_SCRIPTFUNC( SetInt, "Set the value of an integer parameter." )
@@ -459,6 +490,43 @@ void CRD_HUD_VScript::Script_PaintPolygon( HSCRIPT vertices, int r, int g, int b
 	vgui::surface()->DrawSetTexture( texture );
 	vgui::surface()->DrawTexturedPolygon( nVerts, convertedVertices.Base() );
 }
+
+ScriptVariant_t CRD_HUD_VScript::Script_ClientGetEntityScreenPos( HSCRIPT hEntity, bool bOffsetForEmote )
+{
+	if ( !m_bIsPainting )
+	{
+		Warning( "%s (%s): ClientGetEntityScreenPos cannot be called outside of Paint!\n", GetDebugClassname(), m_szClientVScript.Get() );
+		return SCRIPT_VARIANT_NULL;
+	}
+
+	C_BaseEntity *pEnt = ToEnt( hEntity );
+	if ( !pEnt )
+	{
+		Warning( "%s (%s): ClientGetEntityScreenPos: invalid entity!\n", GetDebugClassname(), m_szClientVScript.Get() );
+		return SCRIPT_VARIANT_NULL;
+	}
+
+	Vector vecOrigin = pEnt->GetRenderOrigin();
+	if ( bOffsetForEmote )
+	{
+		Vector vecFacing;
+		AngleVectors( pEnt->GetRenderAngles(), &vecFacing );
+		vecFacing *= 5;
+
+		float flYaw = ( ASWInput() ? ASWInput()->ASW_GetCameraYaw() : 90 ) / 180 * M_PI;
+		Vector vecOffset( cosf( flYaw ) * 40, sinf( flYaw ) * 40, 70 );
+
+		vecOrigin += vecFacing + vecOffset;
+	}
+
+	Vector vecScreen;
+	if ( !debugoverlay->ScreenPosition( vecOrigin, vecScreen ) )
+	{
+		return ScriptVariant_t( vecScreen, true );
+	}
+
+	return SCRIPT_VARIANT_NULL;
+}
 #else
 int CRD_HUD_VScript::ShouldTransmit( const CCheckTransmitInfo *pInfo )
 {
@@ -472,13 +540,60 @@ int CRD_HUD_VScript::UpdateTransmitState()
 
 void CRD_HUD_VScript::SetEntity( int i, HSCRIPT entity )
 {
-	if ( i != 0 )
+	switch ( i )
 	{
+	case 0:
+		m_hDataEntity.Set( ToEnt( entity ) );
+		break;
+	case 1:
+		m_hDataEntity1.Set( ToEnt( entity ) );
+		break;
+	case 2:
+		m_hDataEntity2.Set( ToEnt( entity ) );
+		break;
+	case 3:
+		m_hDataEntity3.Set( ToEnt( entity ) );
+		break;
+	case 4:
+		m_hDataEntity4.Set( ToEnt( entity ) );
+		break;
+	case 5:
+		m_hDataEntity5.Set( ToEnt( entity ) );
+		break;
+	case 6:
+		m_hDataEntity6.Set( ToEnt( entity ) );
+		break;
+	case 7:
+		m_hDataEntity7.Set( ToEnt( entity ) );
+		break;
+	case 8:
+		m_hDataEntity8.Set( ToEnt( entity ) );
+		break;
+	case 9:
+		m_hDataEntity9.Set( ToEnt( entity ) );
+		break;
+	case 10:
+		m_hDataEntity10.Set( ToEnt( entity ) );
+		break;
+	case 11:
+		m_hDataEntity11.Set( ToEnt( entity ) );
+		break;
+	case 12:
+		m_hDataEntity12.Set( ToEnt( entity ) );
+		break;
+	case 13:
+		m_hDataEntity13.Set( ToEnt( entity ) );
+		break;
+	case 14:
+		m_hDataEntity14.Set( ToEnt( entity ) );
+		break;
+	case 15:
+		m_hDataEntity15.Set( ToEnt( entity ) );
+		break;
+	default:
 		Warning( "Entity index %d is not allowed for %s (%s)\n", i, GetDebugClassname(), STRING( m_szClientVScript.Get() ) );
-		return;
+		break;
 	}
-
-	m_hDataEntity.Set( ToEnt( entity ) );
 }
 
 void CRD_HUD_VScript::SetInt( int i, int value )
@@ -520,13 +635,44 @@ void CRD_HUD_VScript::SetString( int i, const char *string )
 
 HSCRIPT CRD_HUD_VScript::GetEntity( int i ) const
 {
-	if ( i != 0 )
+	switch ( i )
 	{
+	case 0:
+		return ToHScript( m_hDataEntity.Get() );
+	case 1:
+		return ToHScript( m_hDataEntity1.Get() );
+	case 2:
+		return ToHScript( m_hDataEntity2.Get() );
+	case 3:
+		return ToHScript( m_hDataEntity3.Get() );
+	case 4:
+		return ToHScript( m_hDataEntity4.Get() );
+	case 5:
+		return ToHScript( m_hDataEntity5.Get() );
+	case 6:
+		return ToHScript( m_hDataEntity6.Get() );
+	case 7:
+		return ToHScript( m_hDataEntity7.Get() );
+	case 8:
+		return ToHScript( m_hDataEntity8.Get() );
+	case 9:
+		return ToHScript( m_hDataEntity9.Get() );
+	case 10:
+		return ToHScript( m_hDataEntity10.Get() );
+	case 11:
+		return ToHScript( m_hDataEntity11.Get() );
+	case 12:
+		return ToHScript( m_hDataEntity12.Get() );
+	case 13:
+		return ToHScript( m_hDataEntity13.Get() );
+	case 14:
+		return ToHScript( m_hDataEntity14.Get() );
+	case 15:
+		return ToHScript( m_hDataEntity15.Get() );
+	default:
 		Warning( "Entity index %d is not allowed for %s (%s)\n", i, GetDebugClassname(), STRING( m_szClientVScript.Get() ) );
 		return NULL;
 	}
-
-	return ToHScript( m_hDataEntity.Get() );
 }
 
 int CRD_HUD_VScript::GetInt( int i ) const

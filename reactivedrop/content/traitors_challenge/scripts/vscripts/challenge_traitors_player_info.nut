@@ -19,6 +19,14 @@
 
 
 	entity 0 - marine
+	entity 1 - TRAITOR_LEADER 对应的marine
+	entity 2 - INFECTOR 对应的marine
+	entity 3 - BOOMER 对应的marine
+	entity 4 - SILENCER 对应的marine
+	entity 5 - MIMIC 对应的marine
+	entity 6 - TRAITOR 对应的marine
+	...
+	entity 15 - TRAITOR 对应的marine
 
 	DefaultVerySmall
 	DefaultVerySmallBlur
@@ -46,11 +54,34 @@ IncludeScript("challenge_traitors_enums.nut");
 
 FONT_DEFAULTLARGE <- self.LookupFont("DefaultMedium");
 
+/*TEXTURE_TRAITOR <- self.LookupTexture("vgui/swarm/Emotes/EmoteTraitor");
+TEXTURE_TRAITORS <- {
+	[1] = self.LookupTexture("vgui/swarm/Emotes/EmoteTraitorLeader"),
+	[2] = self.LookupTexture("vgui/swarm/Emotes/EmoteInfector"),
+	[3] = self.LookupTexture("vgui/swarm/Emotes/EmoteBoomer"),
+	[4] = self.LookupTexture("vgui/swarm/Emotes/EmoteSilencer"),
+	[5] = self.LookupTexture("vgui/swarm/Emotes/EmoteMimic"),
+	[6] = TEXTURE_TRAITOR,
+	[7] = TEXTURE_TRAITOR,
+	[8] = TEXTURE_TRAITOR,
+	[9] = TEXTURE_TRAITOR,
+	[10] = TEXTURE_TRAITOR,
+	[11] = TEXTURE_TRAITOR,
+	[12] = TEXTURE_TRAITOR,
+	[13] = TEXTURE_TRAITOR,
+	[14] = TEXTURE_TRAITOR,
+	[15] = TEXTURE_TRAITOR,
+};*/
+
 xMargin <- 0;
 
 function Paint() {
 	//如果正在控制士兵，显示信息。
 	if (self.GetEntity(0) == GetLocalPlayer()) {
+		/*for (local i = 1; i < 16; i++) {
+			PaintTraitorIcon(i);
+		}*/
+      
 		local message = self.GetString(0);
 		if (message == "") {
 			return;
@@ -95,6 +126,33 @@ function PaintMsg(point, role, font, message) {
 		self.PaintRectangle(point[0] - textHalfWidth - 20, point[1] - 5 + line * (self.GetFontTall(font) + 10), point[0] + 20 + textHalfWidth, point[1] - 5 + (line + 1) * (self.GetFontTall(font) + 10), 0, 0, 0, 150);
 	}
 
+}
+
+function PaintTraitorIcon(idx) {
+
+	if (!self.GetEntity(idx) || TEXTURE_TRAITORS[idx] == -1 || self.GetInt(0) <= ROLE.MAX_IAF_TEAM || self.GetInt(0) > ROLE.MAX_TRAITOR_TEAM) {
+		return;
+	}
+	local screenPos = self.ClientGetEntityScreenPos(self.GetEntity(idx), true);
+	if (!screenPos) {
+		return;
+	}
+
+	local xPos = screenPos.x;
+	local yPos = screenPos.y;
+
+	local fScale = (ScreenHeight() / 768.0) * 0.4;
+	local HalfW = 128.0 * fScale * 0.5;
+	local HalfH = 128.0 * fScale * 0.5;
+	yPos += 100 * (ScreenHeight() / 768.0);
+
+	local points = [
+		{x = xPos - HalfW, y = yPos - HalfH, s = 0, t = 0},
+		{x = xPos + HalfW, y = yPos - HalfH, s = 1, t = 0},
+		{x = xPos + HalfW, y = yPos + HalfH, s = 1, t = 1},
+		{x = xPos - HalfW, y = yPos + HalfH, s = 0, t = 1}
+	];
+	self.PaintPolygon(points, 255, 255, 255, 255, TEXTURE_TRAITORS[idx]);
 }
 
 function interp(i, t) {

@@ -20,11 +20,7 @@ public:
 		// videocfg.lib is statically linked, but the variable we need is marked as static, so we can't reference it using an extern.
 		// Instead, we have to do this garbage:
 		const byte *pUpdateCurrentVideoConfig = reinterpret_cast< const byte * >( &UpdateCurrentVideoConfig );
-#ifdef _DEBUG
-		// Gotta deal with thunks on debug builds.
-		Assert( *pUpdateCurrentVideoConfig == 0xE9 );
-		pUpdateCurrentVideoConfig += 5 + *reinterpret_cast< const intptr_t * >( pUpdateCurrentVideoConfig + 1 );
-#endif
+
 		struct VideoConfigSetting_t
 		{
 			const char *m_szName;
