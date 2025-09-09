@@ -302,6 +302,8 @@ private:
 
 	void CalcRenderableWorldSpaceAABB_Bloated( const RenderableInfo_t &info, Vector &absMin, Vector &absMax );
 
+	bool ShouldRenderableBeIgnored(IClientRenderable* pRenderable);
+
 	// Methods associated with the various bi-directional sets
 	static unsigned short& FirstRenderableInLeaf( int leaf ) 
 	{ 
@@ -2455,8 +2457,6 @@ void CClientLeafSystem::AddDependentRenderables( const SetupRenderInfo_t &info )
 	}
 }
 
-
-
 //-----------------------------------------------------------------------------
 // Adds renderables into their final lists
 //-----------------------------------------------------------------------------
@@ -2545,6 +2545,69 @@ void CClientLeafSystem::AddRenderablesToRenderLists( const SetupRenderInfo_t &in
 static ConVar r_drawallrenderables( "r_drawallrenderables", "0", FCVAR_CHEAT, "Draw all renderables, even ones inside solid leaves." );
 
 //-----------------------------------------------------------------------------
+// Ignore renderables based on 16:9 aspect ratio and alien entities
+//-----------------------------------------------------------------------------
+bool CClientLeafSystem::ShouldRenderableBeIgnored(IClientRenderable* pRenderable)
+{
+	// check for screen aspect ratio
+	if (((float)ScreenWidth()) / ((float)ScreenHeight()) <= 16.0f / 9.0f)
+	{
+		return false;
+	}
+
+	// check if it is an alien entity
+	IClientUnknown* pUnknown = pRenderable->GetIClientUnknown();
+	if (!pUnknown) 
+	{
+		return false;
+	}
+	C_BaseEntity* pEntity = pUnknown->GetBaseEntity();
+	if (!pEntity || !pEntity->IsAlien())
+	{
+		return false;
+	}
+
+	// calculate the left and right bounds of the 16:9 area
+	int left = (ScreenWidth() >> 1) - ((ScreenHeight() << 3) / 9);
+	int right = (ScreenWidth() >> 1) + ((ScreenHeight() << 3) / 9);
+
+	//get the world space AABB of the alien's collision box
+	Vector vecMins, vecMaxs;
+	pEntity->CollisionProp()->WorldSpaceAABB(&vecMins, &vecMaxs);
+
+	// check the 8 corners of the AABB
+	Vector corners[8] = {
+		Vector(vecMins.x, vecMins.y, vecMins.z),
+		Vector(vecMins.x, vecMins.y, vecMaxs.z),
+		Vector(vecMins.x, vecMaxs.y, vecMins.z),
+		Vector(vecMins.x, vecMaxs.y, vecMaxs.z),
+		Vector(vecMaxs.x, vecMins.y, vecMins.z),
+		Vector(vecMaxs.x, vecMins.y, vecMaxs.z),
+		Vector(vecMaxs.x, vecMaxs.y, vecMins.z),
+		Vector(vecMaxs.x, vecMaxs.y, vecMaxs.z)
+	};
+
+	// check if any of the corners are in the 16:9 area
+	for (int i = 0; i < 8; i++)
+	{
+		Vector screenPos;
+		// ScreenPosition: returns 0 if the point is on screen, 1 if off screen
+		if (debugoverlay->ScreenPosition(corners[i], screenPos) == 0)
+		{
+			// if the screen x pos is in the 16:9 area
+			if (screenPos.x >= left && screenPos.x <= right)
+			{
+				// return the base result
+				return false;
+			}
+		}
+	}
+
+	// none of the corners are in the 16:9 area, so don't draw
+	return true;
+}
+
+//-----------------------------------------------------------------------------
 // Main entry point to build renderable lists
 //-----------------------------------------------------------------------------
 void CClientLeafSystem::BuildRenderablesList( const SetupRenderInfo_t &info )
@@ -2569,6 +2632,12 @@ void CClientLeafSystem::BuildRenderablesList( const SetupRenderInfo_t &info )
 
 		for ( int i = m_Renderables.Head(); i != m_Renderables.InvalidIndex(); i = m_Renderables.Next( i ) )
 		{
+			RenderableInfo_t& renderableInfo = m_Renderables[i];
+			// ignore aliens outside 16:9 area - only for main view
+			if (info.m_nViewID == VIEW_MAIN && ShouldRenderableBeIgnored(renderableInfo.m_pRenderable))
+			{
+				continue; // skip this renderable
+			}
 			orderedList.AddToTail( &m_Renderables[ i ] );
 		}
 	}
@@ -2584,6 +2653,12 @@ void CClientLeafSystem::BuildRenderablesList( const SetupRenderInfo_t &info )
 			unsigned short idx = m_RenderablesInLeaf.FirstElement(leaf);
 			for ( ; idx != m_RenderablesInLeaf.InvalidIndex(); idx = m_RenderablesInLeaf.NextElement( idx ) )
 			{
+				RenderableInfo_t& renderableInfo = m_Renderables[m_RenderablesInLeaf.Element(idx)];
+				// ignore aliens outside 16:9 area - only for main view
+				if (info.m_nViewID == VIEW_MAIN && ShouldRenderableBeIgnored(renderableInfo.m_pRenderable))
+				{
+					continue; // skip this renderable
+				}
 				orderedList.AddToTail( &m_Renderables[ m_RenderablesInLeaf.Element(idx) ] );
 			}
 		}
