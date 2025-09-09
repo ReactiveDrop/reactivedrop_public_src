@@ -583,3 +583,55 @@ float C_ASW_Alien::GetInterpolationAmount( int flags )
 {
 	return BaseClass::GetInterpolationAmount( flags ) + cl_alien_extra_interp.GetFloat();
 }
+
+bool C_ASW_Alien::ShouldDraw()
+{
+	// get the base class result
+	bool bBaseShouldDraw = BaseClass::ShouldDraw();
+
+	// use the base result if we are not in a 16:9 or wider aspect ratio
+	float screenAspectRatio = ((float)ScreenWidth()) / ((float)ScreenHeight());
+	if (screenAspectRatio <= 16.0f / 9.0f)
+	{
+		return bBaseShouldDraw;
+	}
+
+	// calculate the left and right bounds of the 16:9 area
+	int left = (ScreenWidth() >> 1) - ((ScreenHeight() << 3) / 9);
+	int right = (ScreenWidth() >> 1) + ((ScreenHeight() << 3) / 9);
+
+	// get the world space AABB of the alien's collision box
+	Vector vecMins, vecMaxs;
+	CollisionProp()->WorldSpaceAABB(&vecMins, &vecMaxs);
+
+	// check the 8 corners of the AABB
+	Vector corners[8] = {
+		Vector(vecMins.x, vecMins.y, vecMins.z),
+		Vector(vecMins.x, vecMins.y, vecMaxs.z),
+		Vector(vecMins.x, vecMaxs.y, vecMins.z),
+		Vector(vecMins.x, vecMaxs.y, vecMaxs.z),
+		Vector(vecMaxs.x, vecMins.y, vecMins.z),
+		Vector(vecMaxs.x, vecMins.y, vecMaxs.z),
+		Vector(vecMaxs.x, vecMaxs.y, vecMins.z),
+		Vector(vecMaxs.x, vecMaxs.y, vecMaxs.z)
+	};
+
+	// check if any of the corners are in the 16:9 area
+	for (int i = 0; i < 8; i++)
+	{
+		Vector screenPos;
+		// ScreenPosition: returns 0 if the point is on screen, 1 if off screen
+		if (debugoverlay->ScreenPosition(corners[i], screenPos) == 0)
+		{
+			// if the screen x pos is in the 16:9 area
+			if (screenPos.x >= left && screenPos.x <= right)
+			{
+				// return the base result
+				return bBaseShouldDraw;
+			}
+		}
+	}
+
+	// none of the corners are in the 16:9 area, so don't draw
+	return false;
+}

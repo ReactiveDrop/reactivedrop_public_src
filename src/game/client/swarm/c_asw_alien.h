@@ -19,6 +19,7 @@ public:
 
 	virtual bool IsAlien( void ) const { return true; }
 	virtual bool IsAlienClassType( void ) const { return true; }
+	virtual bool ShouldDraw();
 
 	// death;
 	virtual void TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr );
