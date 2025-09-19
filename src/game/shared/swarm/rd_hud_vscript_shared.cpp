@@ -89,6 +89,7 @@ BEGIN_ENT_SCRIPTDESC( CRD_HUD_VScript, CBaseEntity, "Alien Swarm: Reactive Drop 
 	DEFINE_SCRIPTFUNC_NAMED( Script_PaintTexturedRectangle, "PaintTexturedRectangle", "Draw a textured rectangle on the heads-up display. Can only be called during Paint" )
 	DEFINE_SCRIPTFUNC_NAMED( Script_PaintTexturedRectangleAdvanced, "PaintTexturedRectangleAdvanced", "Draw a textured rectangle with advanced settings on the heads-up display. Can only be called during Paint" )
 	DEFINE_SCRIPTFUNC_NAMED( Script_PaintPolygon, "PaintPolygon", "Draw an arbitrary polygon on the heads-up display. Vertices must be in clockwise order; shape should be convex. Can only be called during Paint" )
+	DEFINE_SCRIPTFUNC_NAMED( Script_PaintQuad, "PaintQuad", "Draw a tetragon on the heads-up display. Vertices must be in clockwise order; shape should be convex. Can only be called during Paint" )
 	DEFINE_SCRIPTFUNC_NAMED( Script_ClientGetEntityScreenPos, "ClientGetEntityScreenPos", "Returns the screen space position of an entity. Second parameter is true if you are simulating the placement of an emote, false if you want the actual position of the entity origin. Returns null if the entity is not on-screen. Can only be called during Paint" )
 #else
 	DEFINE_SCRIPTFUNC( SetEntity, "Set the value of an entity parameter." )
@@ -490,6 +491,29 @@ void CRD_HUD_VScript::Script_PaintPolygon( HSCRIPT vertices, int r, int g, int b
 	vgui::surface()->DrawSetColor( r, g, b, a );
 	vgui::surface()->DrawSetTexture( texture );
 	vgui::surface()->DrawTexturedPolygon( nVerts, convertedVertices.Base() );
+}
+
+void CRD_HUD_VScript::Script_PaintQuad(int x0, int y0, int x1, int y1, int r, int g, int b, int a, int texture)
+{
+	if (!m_bIsPainting)
+	{
+		Warning("%s (%s): PaintQuad cannot be called outside of Paint!\n", GetDebugClassname(), m_szClientVScript.Get());
+		return;
+	}
+
+	vgui::Vertex_t quad[4];
+	quad[0].m_Position.Init(x0, y0);
+	quad[0].m_TexCoord.Init(0, 0);
+	quad[1].m_Position.Init(x1, y0);
+	quad[1].m_TexCoord.Init(1, 0);
+	quad[2].m_Position.Init(x1, y1);
+	quad[2].m_TexCoord.Init(1, 1);
+	quad[3].m_Position.Init(x0, y1);
+	quad[3].m_TexCoord.Init(0, 1);
+
+	vgui::surface()->DrawSetColor(r, g, b, a);
+	vgui::surface()->DrawSetTexture(texture);
+	vgui::surface()->DrawTexturedPolygon(4, quad);
 }
 
 ScriptVariant_t CRD_HUD_VScript::Script_ClientGetEntityScreenPos( HSCRIPT hEntity, bool bOffsetForEmote )

@@ -54,7 +54,7 @@ IncludeScript("challenge_traitors_enums.nut");
 
 FONT_DEFAULTLARGE <- self.LookupFont("DefaultMedium");
 
-/*TEXTURE_TRAITOR <- self.LookupTexture("vgui/swarm/Emotes/EmoteTraitor");
+TEXTURE_TRAITOR <- self.LookupTexture("vgui/swarm/Emotes/EmoteTraitor");
 TEXTURE_TRAITORS <- {
 	[1] = self.LookupTexture("vgui/swarm/Emotes/EmoteTraitorLeader"),
 	[2] = self.LookupTexture("vgui/swarm/Emotes/EmoteInfector"),
@@ -71,16 +71,16 @@ TEXTURE_TRAITORS <- {
 	[13] = TEXTURE_TRAITOR,
 	[14] = TEXTURE_TRAITOR,
 	[15] = TEXTURE_TRAITOR,
-};*/
+};
 
 xMargin <- 0;
 
 function Paint() {
 	//如果正在控制士兵，显示信息。
 	if (self.GetEntity(0) == GetLocalPlayer()) {
-		/*for (local i = 1; i < 16; i++) {
+		for (local i = 1; i < 16; i++) {
 			PaintTraitorIcon(i);
-		}*/
+		}
       
 		local message = self.GetString(0);
 		if (message == "") {
@@ -146,13 +146,7 @@ function PaintTraitorIcon(idx) {
 	local HalfH = 128.0 * fScale * 0.5;
 	yPos += 100 * (ScreenHeight() / 768.0);
 
-	local points = [
-		{x = xPos - HalfW, y = yPos - HalfH, s = 0, t = 0},
-		{x = xPos + HalfW, y = yPos - HalfH, s = 1, t = 0},
-		{x = xPos + HalfW, y = yPos + HalfH, s = 1, t = 1},
-		{x = xPos - HalfW, y = yPos + HalfH, s = 0, t = 1}
-	];
-	self.PaintPolygon(points, 255, 255, 255, 255, TEXTURE_TRAITORS[idx]);
+	self.PaintQuad( xPos - HalfW, yPos - HalfH, xPos + HalfW, yPos + HalfH, 255, 255, 255, 255, TEXTURE_TRAITORS[idx] );
 }
 
 function interp(i, t) {

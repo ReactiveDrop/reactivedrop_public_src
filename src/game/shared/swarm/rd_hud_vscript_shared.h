@@ -35,7 +35,8 @@ public:
 	void Script_PaintTexturedRectangle( int x0, int y0, int x1, int y1, int r, int g, int b, int a, int texture );
 	void Script_PaintTexturedRectangleAdvanced( HSCRIPT table );
 	void Script_PaintPolygon( HSCRIPT vertices, int r, int g, int b, int a, int texture );
-	ScriptVariant_t Script_ClientGetEntityScreenPos( HSCRIPT hEntity, bool bOffsetForEmote );
+	void Script_PaintQuad(int x0, int y0, int x1, int y1, int r, int g, int b, int a, int texture);
+	ScriptVariant_t Script_ClientGetEntityScreenPos( HSCRIPT hEntity, bool bOffsetForEmote);
 
 	CNetworkString( m_szClientVScript, 64 );
 	CScriptScope m_ScriptScope;
