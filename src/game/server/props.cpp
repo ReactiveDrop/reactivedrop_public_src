@@ -43,6 +43,11 @@
 #include "GameStats.h"
 #include "vehicle_base.h"
 #include "tier0/icommandline.h"
+//includes used for improved autoclose
+#include "asw_gameresource.h"
+#include "asw_marine_resource.h"
+#include "asw_marine.h"
+
 
 
 
@@ -4690,28 +4695,55 @@ void CBasePropDoor::DoorOpenMoveDone(void)
 //-----------------------------------------------------------------------------
 // Purpose: Think function that tries to close the door. Used for autoreturn.
 //-----------------------------------------------------------------------------
-void CBasePropDoor::DoorAutoCloseThink(void)
+void CASW_Door::DoorAutoCloseThink()
 {
-	// When autoclosing, we check both sides so that we don't close in the player's
-	// face, or in an NPC's face for that matter, because they might be shooting
-	// through the doorway.
-	if ( !DoorCanClose( true ) )
-	{
-		if (m_flAutoReturnDelay == -1)
-		{
-			SetNextThink( TICK_NEVER_THINK );
-		}
-		else
-		{
-			// In flWait seconds, DoorClose will fire, unless wait is -1, then door stays open
-			SetMoveDoneTime(m_flAutoReturnDelay + 0.1);
-			SetMoveDone(&CBasePropDoor::DoorAutoCloseThink);
-		}
+    //aprox distance of bigger then jags ff with gl plus a safety marign
+    const float CLOSE_DIST = 350.0f;
+    bool bMarineNearby = false;
 
-		return;
-	}
+    if (ASWGameResource())
+    {
+        for (int i = 0; i < ASWGameResource()->GetMaxMarineResources(); i++)
+        {
+            CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource(i);
+            CASW_Marine *pMarine = pMR ? pMR->GetMarineEntity() : NULL;
+            if (pMarine && pMarine->GetHealth() > 0)
+            {
+                float dist = (pMarine->GetAbsOrigin() - GetAbsOrigin()).Length();
+                if (dist < CLOSE_DIST)
+                {
+                    bMarineNearby = true;
+                    break;
+                }
+            }
+        }
+    }
 
-	DoorClose();
+    if (bMarineNearby)
+    {
+        // Don't auto-close if a marine is nearby. Try again soon.
+        SetNextThink(gpGlobals->curtime + 0.1);
+        return;
+    }
+    
+    if ( !DoorCanClose( true ) )
+    {
+        if (m_flAutoReturnDelay == -1)
+        {
+            SetNextThink( TICK_NEVER_THINK );
+        }
+        else
+        {
+            // In flWait seconds, DoorClose will fire, unless wait is -1, then door stays open
+            SetMoveDoneTime(m_flAutoReturnDelay + 0.1);
+            SetMoveDone(&CBasePropDoor::DoorAutoCloseThink);
+        }
+
+        return;
+    }
+
+    DoorClose();
+
 }
 
 
