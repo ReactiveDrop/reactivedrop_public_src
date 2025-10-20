@@ -18,6 +18,7 @@
 #include "cvisibilitymonitor.h"
 #include "soundent.h"
 #include "asw_util_shared.h"
+#include "asw_gameresource.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -436,6 +437,57 @@ void CASW_Door::OnDoorClosed( void )
 	}
 }
 
+// Purpose: Check if a marine is close to a door and if so prevent it from closing
+void CASW_Door::DoorAutoCloseThink()
+{
+    
+    const float CLOSE_DIST = 350.0f;
+    bool bMarineNearby = false;
+
+    if (ASWGameResource())
+    {
+        for (int i = 0; i < ASWGameResource()->GetMaxMarineResources(); i++)
+        {
+            CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource(i);
+            CASW_Marine *pMarine = pMR ? pMR->GetMarineEntity() : NULL;
+            if (pMarine && pMarine->GetHealth() > 0)
+            {
+                float dist = (pMarine->GetAbsOrigin() - GetAbsOrigin()).Length();
+                if (dist < CLOSE_DIST)
+                {
+                    bMarineNearby = true;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (bMarineNearby)
+    {
+        // Don't auto-close if a marine is nearby. Try again soon.
+        SetNextThink(gpGlobals->curtime + 0.1);
+        return;
+    }
+    
+    if ( !DoorCanClose( true ) )
+    {
+        if (m_flAutoReturnDelay == -1)
+        {
+            SetNextThink( TICK_NEVER_THINK );
+        }
+        else
+        {
+            // In flWait seconds, DoorClose will fire, unless wait is -1, then door stays open
+            SetMoveDoneTime(m_flAutoReturnDelay + 0.1);
+            SetMoveDone(&CBasePropDoor::DoorAutoCloseThink);
+        }
+
+        return;
+    }
+
+    DoorClose();
+
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: Returns whether the way is clear for the door to close.
