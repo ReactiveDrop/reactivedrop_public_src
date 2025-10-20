@@ -18,7 +18,7 @@
 #include "cvisibilitymonitor.h"
 #include "soundent.h"
 #include "asw_util_shared.h"
-#include "asw_gameresource.h"
+#include "asw_game_resource.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
