@@ -59,7 +59,7 @@ public:
 
 	void	GetNPCOpenData(CAI_BaseNPC *pNPC, opendata_t &opendata);
 
-	void	DoorClose( void );
+	
 	bool	DoorCanClose( bool bAutoClose );
 	void	DoorOpen( CBaseEntity *pOpenAwayFrom );
 
