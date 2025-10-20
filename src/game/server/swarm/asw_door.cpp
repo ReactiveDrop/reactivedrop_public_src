@@ -441,7 +441,7 @@ void CASW_Door::OnDoorClosed( void )
 void CASW_Door::DoorAutoCloseThink()
 {
     
-    const float CLOSE_DIST = 350.0f;
+    const float CLOSE_DIST = 450.0f;
     bool bMarineNearby = false;
 
     if (ASWGameResource())
