@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright Â© 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: A base class for model-based doors. The exact movement required to
 //			open or close the door is not dictated by this class, only that
@@ -154,7 +154,7 @@ private:
 
 	void DoorOpenMoveDone();
 	void DoorCloseMoveDone();
-	void DoorAutoCloseThink();
+	virtual void DoorAutoCloseThink();
 
 	void Lock();
 	void Unlock();
