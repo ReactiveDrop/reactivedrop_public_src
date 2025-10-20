@@ -44,8 +44,6 @@
 #include "vehicle_base.h"
 #include "tier0/icommandline.h"
 //includes used for improved autoclose
-#include "asw_gameresource.h"
-#include "asw_marine_resource.h"
 #include "asw_marine.h"
 
 
