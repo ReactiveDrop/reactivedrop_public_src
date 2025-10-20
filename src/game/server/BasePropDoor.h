@@ -154,6 +154,7 @@ private:
 
 	void DoorOpenMoveDone();
 	void DoorCloseMoveDone();
+	protected:
 	virtual void DoorAutoCloseThink();
 
 	void Lock();
