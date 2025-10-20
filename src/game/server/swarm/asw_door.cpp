@@ -479,7 +479,7 @@ void CASW_Door::DoorAutoCloseThink()
         {
             // In flWait seconds, DoorClose will fire, unless wait is -1, then door stays open
             SetMoveDoneTime(m_flAutoReturnDelay + 0.1);
-            SetMoveDone(&CBasePropDoor::DoorAutoCloseThink);
+            SetMoveDone(&CASW_Door::DoorAutoCloseThink);
         }
 
         return;
