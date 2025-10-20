@@ -155,7 +155,7 @@ public:
 private:
 
 	float m_fLastFullyWeldedSound;
-
+	void DoorAutoCloseThink();
 	void	SlideMove(const Vector &vecDestPosition, float flSpeed);
 	void	CalculateDoorVolume( Vector OpenPosition, Vector ClosedPosition, Vector *destMins, Vector *destMaxs );
 
