@@ -14,12 +14,14 @@
     <VCProjectVersion>17.0</VCProjectVersion>
     <ProjectName>shaderlib</ProjectName>
     <ProjectGuid>{1A1149D9-CB1B-BF85-19CA-C9C2996BFDE8}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
@@ -45,6 +47,7 @@
     <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
     <PreLinkEventUseInBuild>true</PreLinkEventUseInBuild>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
+    <TargetName>shaderlib</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>.\Release\.\</OutDir>
@@ -52,6 +55,7 @@
     <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
     <PreLinkEventUseInBuild>true</PreLinkEventUseInBuild>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
+    <TargetName>shaderlib</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <PreBuildEvent>
@@ -89,11 +93,11 @@
       <ErrorReporting>Prompt</ErrorReporting>
     </ClCompile>
     <PreLinkEvent>
-      <Command>if exist ..\..\lib\public\shaderlib.lib attrib -r ..\..\lib\public\shaderlib.lib</Command>
+      <Command>if exist "$(TargetPath)" attrib -R "$(TargetPath)"</Command>
     </PreLinkEvent>
     <Lib>
       <UseUnicodeResponseFiles>false</UseUnicodeResponseFiles>
-      <OutputFile>..\..\lib\public\.\shaderlib.lib</OutputFile>
+      <OutputFile>$(TargetPath)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
     </Lib>
     <Xdcmake>
@@ -103,13 +107,25 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <OutputFile>$(OutDir)shaderlib.bsc</OutputFile>
     </Bscmake>
+    <PostBuildEvent>
+      <Command>setlocal enabledelayedexpansion
+
+set DestDir=..\..\lib\public
+
+if not exist !DestDir! mkdir !DestDir!
+if exist !DestDir!\$(TargetFileName) attrib -R !DestDir!\$(TargetFileName)
+copy /Y $(TargetPath) !DestDir!\
+
+
+</Command>
+      <Message>Publishing to target directory (..\..\lib\public\)...</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PreBuildEvent>
       <Command />
     </PreBuildEvent>
     <ClCompile>
-      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -140,13 +156,16 @@
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <CompileAs>CompileAsCpp</CompileAs>
       <ErrorReporting>Prompt</ErrorReporting>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <OmitFramePointers>true</OmitFramePointers>
     </ClCompile>
     <PreLinkEvent>
-      <Command>if exist ..\..\lib\public\shaderlib.lib attrib -r ..\..\lib\public\shaderlib.lib</Command>
+      <Command>if exist "$(TargetPath)" attrib -R "$(TargetPath)"
+</Command>
     </PreLinkEvent>
     <Lib>
       <UseUnicodeResponseFiles>false</UseUnicodeResponseFiles>
-      <OutputFile>..\..\lib\public\.\shaderlib.lib</OutputFile>
+      <OutputFile>$(TargetPath)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
     </Lib>
     <Xdcmake>
@@ -156,6 +175,27 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <OutputFile>$(OutDir)shaderlib.bsc</OutputFile>
     </Bscmake>
+    <CustomBuildStep>
+      <Outputs>
+      </Outputs>
+      <Message>
+      </Message>
+      <Command>
+      </Command>
+    </CustomBuildStep>
+    <PostBuildEvent>
+      <Command>setlocal enabledelayedexpansion
+
+set DestDir=..\..\lib\public
+
+if not exist !DestDir! mkdir !DestDir!
+if exist !DestDir!\$(TargetFileName) attrib -R !DestDir!\$(TargetFileName)
+copy /Y $(TargetPath) !DestDir!\
+
+
+</Command>
+      <Message>Publishing to target directory (..\..\lib\public\)...</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="..\..\vpc_scripts\source_lib_base.vpc" />

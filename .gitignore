@@ -47,6 +47,9 @@ src/game/missionchooser/Release/
 src/game/server/Debug_swarm/
 src/game/server/Release_swarm/
 src/ipch
+src/materialsystem/shaderlib/Debug/
+src/materialsystem/shaderlib/Release/
+src/materialsystem/stdshaders/.vs/
 src/materialsystem/stdshaders/Debug_dx9/
 src/materialsystem/stdshaders/Release_dx9/
 src/materialsystem/stdshaders/shaders/

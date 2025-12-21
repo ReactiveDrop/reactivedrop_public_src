@@ -3,31 +3,22 @@ param (
     [Parameter(Mandatory=$true, ValueFromPipeline=$true)][System.IO.FileInfo]$File,
     [Parameter(Mandatory=$true)][string]$Version,
     [Parameter(Mandatory=$false)][switch]$Dynamic,
-    [Parameter(Mandatory=$false)][System.UInt32]$Threads
+    [Parameter(Mandatory=$false)][int]$Threads = 0,
+    [Parameter(Mandatory=$false)][int]$Optimize = 3
 )
 
-$Optimize = 3
+if ($Version -notin @("20b","30","40","41","50","51")) { return }
 
-if ($Version -notin @("20b", "30", "40", "41", "50", "51")) {
-	return
+foreach ($line in Get-Content $File) {
+    if ($line -match '^\s*$' -or $line -match '^\s*//') { continue }
+
+    $args = @()
+    if ($Dynamic) { $args += "-dynamic" }
+    if ($Threads -gt 0) { $args += "-threads"; $args += $Threads }
+    $args += "-ver"; $args += $Version
+    $args += "-shaderpath"; $args += $File.DirectoryName
+    if (-not $Dynamic) { $args += "-optimize"; $args += $Optimize }
+    $args += $line
+
+    & "$PSScriptRoot\ShaderCompile" $args
 }
-
-$fileList = $File.OpenText()
-while ($null -ne ($line = $fileList.ReadLine())) {
-	if ($line -match '^\s*$' -or $line -match '^\s*//') {
-		continue
-	}
-
-	if ($Dynamic) {
-		& "$PSScriptRoot\ShaderCompile" "-dynamic" "-ver" $Version "-shaderpath" $File.DirectoryName $line
-		continue
-	}
-
-	if ($Threads -ne 0) {
-		& "$PSScriptRoot\ShaderCompile" "-threads" $Threads "-ver" $Version "-shaderpath" $File.DirectoryName "-optimize" $Optimize $line
-		continue
-	}
-
-	& "$PSScriptRoot\ShaderCompile" "-ver" $Version "-shaderpath" $File.DirectoryName "-optimize" $Optimize $line
-}
-$fileList.Close()
