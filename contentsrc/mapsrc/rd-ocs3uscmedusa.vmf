@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "109"
+	"mapversion" "115"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -20,7 +20,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "109"
+	"mapversion" "115"
 	"classname" "worldspawn"
 	"comment" "Decompiled by BSPSource v1.3.6 from ocs_3.bsp"
 	"detailmaterial" "detail/detailsprites"
@@ -29333,6 +29333,13 @@ entity
 	"startsound" "ASW_Door.BulkheadMoving"
 	"stopsound" "ASW_Door.BulkheadStop"
 	"targetname" "elevator02"
+	connections
+	{
+		"OnFullyClosed" "leftliftdoor_innerOpen0-1"
+		"OnFullyClosed" "rightliftdoorinnerOpen0-1"
+		"OnFullyClosed" "leftliftdoor_upstairsOpen0-1"
+		"OnFullyClosed" "rightliftdoor_upstairsOpen0-1"
+	}
 	solid
 	{
 		"id" "165"
@@ -35629,11 +35636,11 @@ entity
 	"wirerows" "2"
 	connections
 	{
-		"OnButtonActivated" "leftliftdoorOpen21-1"
-		"OnButtonActivated" "rightliftdoorOpen21-1"
+		"OnButtonActivated" "leftliftdoorOpen211"
+		"OnButtonActivated" "rightliftdoorOpen211"
 		"OnButtonActivated" "elevator02Open0-1"
-		"OnButtonActivated" "leftliftdoor_innerOpen20.5-1"
-		"OnButtonActivated" "rightliftdoorinnerOpen20.5-1"
+		"OnButtonActivated" "leftliftdoor_innerOpen20.51"
+		"OnButtonActivated" "rightliftdoorinnerOpen20.51"
 		"OnButtonActivated" "elevatortrapStartSpawning11"
 	}
 	solid
@@ -37140,7 +37147,7 @@ entity
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
 	"skin" "0"
-	"solid" "2"
+	"solid" "6"
 	"origin" "352 2444 864"
 	editor
 	{
@@ -37164,7 +37171,7 @@ entity
 	"renderamt" "255"
 	"rendercolor" "255 255 255"
 	"skin" "0"
-	"solid" "2"
+	"solid" "6"
 	"origin" "352 2444 864"
 	editor
 	{
@@ -37188,7 +37195,7 @@ entity
 	"rendercolor" "255 255 255"
 	"renderfx" "0"
 	"rendermode" "0"
-	"spawnflags" "0"
+	"spawnflags" "8"
 	"speed" "100"
 	"startposition" "0"
 	"startsound" "ASW_Door.Door1Open"
@@ -37292,7 +37299,7 @@ entity
 	"rendercolor" "255 255 255"
 	"renderfx" "0"
 	"rendermode" "0"
-	"spawnflags" "0"
+	"spawnflags" "8"
 	"speed" "100"
 	"startposition" "0"
 	"startsound" "ASW_Door.Door1Open"
@@ -37540,105 +37547,6 @@ entity
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[2000 10500]"
-	}
-}
-entity
-{
-	"id" "446"
-	"classname" "trigger_multiple"
-	"origin" "354 2520 932"
-	"spawnflags" "16"
-	"StartDisabled" "0"
-	"wait" "1"
-	connections
-	{
-		"OnTrigger" "rightliftdoor_upstairsOpen31"
-		"OnTrigger" "leftliftdoor_upstairsOpen31"
-		"OnTrigger" "rightliftdoorinnerOpen3.51"
-		"OnTrigger" "leftliftdoor_innerOpen3.51"
-	}
-	solid
-	{
-		"id" "447"
-		side
-		{
-			"id" "982"
-			"plane" "(276 2448 988) (276 2448 876) (276 2592 876)"
-			"material" "TOOLS/TOOLSTRIGGER"
-			"uaxis" "[0 1 0 0] 0.25"
-			"vaxis" "[0 0 -1 0] 0.25"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		side
-		{
-			"id" "983"
-			"plane" "(432 2592 988) (432 2592 876) (432 2448 876)"
-			"material" "TOOLS/TOOLSTRIGGER"
-			"uaxis" "[0 1 0 0] 0.25"
-			"vaxis" "[0 0 -1 0] 0.25"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		side
-		{
-			"id" "984"
-			"plane" "(432 2448 988) (432 2448 876) (276 2448 876)"
-			"material" "TOOLS/TOOLSTRIGGER"
-			"uaxis" "[1 0 0 0] 0.25"
-			"vaxis" "[0 0 -1 0] 0.25"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		side
-		{
-			"id" "985"
-			"plane" "(276 2592 988) (276 2592 876) (432 2592 876)"
-			"material" "TOOLS/TOOLSTRIGGER"
-			"uaxis" "[1 0 0 0] 0.25"
-			"vaxis" "[0 0 -1 0] 0.25"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		side
-		{
-			"id" "986"
-			"plane" "(276 2592 876) (276 2448 876) (432 2448 876)"
-			"material" "TOOLS/TOOLSTRIGGER"
-			"uaxis" "[1 0 0 0] 0.25"
-			"vaxis" "[0 -1 0 0] 0.25"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		side
-		{
-			"id" "987"
-			"plane" "(276 2448 988) (276 2592 988) (432 2592 988)"
-			"material" "TOOLS/TOOLSTRIGGER"
-			"uaxis" "[1 0 0 0] 0.25"
-			"vaxis" "[0 -1 0 0] 0.25"
-			"rotation" "0"
-			"lightmapscale" "16"
-			"smoothing_groups" "0"
-		}
-		editor
-		{
-			"color" "220 30 220"
-			"visgroupshown" "1"
-			"visgroupautoshown" "1"
-		}
-	}
-	editor
-	{
-		"color" "220 30 220"
-		"visgroupshown" "1"
-		"visgroupautoshown" "1"
-		"logicalpos" "[2000 11000]"
 	}
 }
 entity
@@ -39630,7 +39538,7 @@ entity
 	"origin" "-304 -4756 -48"
 	editor
 	{
-		"color" "0 255 0"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[2000 -1768]"
@@ -49417,7 +49325,7 @@ entity
 	"origin" "-242 -4764 -48"
 	editor
 	{
-		"color" "0 255 0"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[6000 7000]"
@@ -49431,7 +49339,7 @@ entity
 	"origin" "-270 -4724 -48"
 	editor
 	{
-		"color" "0 255 0"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[6000 7500]"
@@ -49445,7 +49353,7 @@ entity
 	"origin" "-218 -4806 -48"
 	editor
 	{
-		"color" "0 255 0"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[6000 8000]"
@@ -49459,7 +49367,7 @@ entity
 	"origin" "-280 -4796 -48"
 	editor
 	{
-		"color" "0 255 0"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[6000 8500]"
@@ -49473,7 +49381,7 @@ entity
 	"origin" "-188 -4764 -48"
 	editor
 	{
-		"color" "0 255 0"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[6000 9000]"
@@ -49487,7 +49395,7 @@ entity
 	"origin" "-216 -4722 -48"
 	editor
 	{
-		"color" "0 255 0"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[6000 9500]"
@@ -49501,7 +49409,7 @@ entity
 	"origin" "-306 -4700 -48"
 	editor
 	{
-		"color" "0 255 0"
+		"color" "220 30 220"
 		"visgroupshown" "1"
 		"visgroupautoshown" "1"
 		"logicalpos" "[6000 10000]"
@@ -168201,8 +168109,8 @@ cameras
 	"activecamera" "0"
 	camera
 	{
-		"position" "[331.988 2439.14 939.497]"
-		"look" "[215.336 2552.31 728.457]"
+		"position" "[390.94 2342.43 294.745]"
+		"look" "[295.776 2557.5 169.692]"
 	}
 	camera
 	{
