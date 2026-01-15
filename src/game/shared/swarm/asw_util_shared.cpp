@@ -738,7 +738,8 @@ void UTIL_RD_HitConfirm( CBaseEntity *pTarget, int iHealthBefore, const CTakeDam
 	bool bDamageOverTime = info.GetDamageType() & DMG_DIRECT;
 	bool bBlastDamage = info.GetDamageType() & DMG_BLAST;
 	Disposition_t iDisposition = pInhabitableAttacker && pTarget ? pInhabitableAttacker->IRelationType( pTarget ) : D_HT;
-	float flDamage = MIN( info.GetDamage(), iHealthBefore );
+	int iHealth = pTarget ? pTarget->GetHealth() : 0;
+	float flDamage = MIN( iHealthBefore - iHealth, iHealthBefore );
 
 	UserMessageBegin( filter, "RDHitConfirm" );
 		WRITE_ENTITY( pAttacker ? pAttacker->entindex() : -1 );

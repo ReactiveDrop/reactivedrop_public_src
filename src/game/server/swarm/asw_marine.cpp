@@ -391,7 +391,7 @@ BEGIN_ENT_SCRIPTDESC( CASW_Marine, CASW_Inhabitable_NPC, "Marine" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptBecomeInfested, "BecomeInfested", "Infests the marine." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptCureInfestation, "CureInfestation", "Cures an infestation." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGiveAmmo, "GiveAmmo", "Gives the marine ammo for the specified ammo index." )
-	DEFINE_SCRIPTFUNC_NAMED( ScriptGiveWeapon, "GiveWeapon", "Gives the marine a weapon." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGiveWeapon, "GiveWeapon", "Gives the marine a weapon. Returns the weapon's handle." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptDropWeapon, "DropWeapon", "Makes the marine drop a weapon." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptRemoveWeapon, "RemoveWeapon", "Removes a weapon from the marine." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptSwitchWeapon, "SwitchWeapon", "Make the marine switch to a weapon" )
@@ -3476,13 +3476,13 @@ void CASW_Marine::ScriptGiveAmmo( int iCount, int iAmmoIndex )
 	GiveAmmo( iCount, iAmmoIndex, false );
 }
 
-void CASW_Marine::ScriptGiveWeapon( const char *pszName, int slot )
+HSCRIPT CASW_Marine::ScriptGiveWeapon( const char *pszName, int slot )
 {
 	CASW_Weapon* pWeapon = dynamic_cast<CASW_Weapon*>(Weapon_Create(pszName));
 	if ( !pWeapon )
 	{
 		Msg( "NULL Ent in GiveWeapon!\n" );
-		return;
+		return NULL;
 	}
 
 	int weaponIndex = GetWeaponPositionForPickup( pWeapon->GetClassname(), pWeapon->m_bIsTemporaryPickup );
@@ -3505,6 +3505,8 @@ void CASW_Marine::ScriptGiveWeapon( const char *pszName, int slot )
 		int iClips = GetAmmoDef()->MaxCarry( pWeapon->GetPrimaryAmmoType(), this );
 		GiveAmmo( iClips, pWeapon->GetPrimaryAmmoType(), true );
 	}
+
+	return ToHScript( pWeapon );
 }
 
 bool CASW_Marine::ScriptDropWeapon( int iWeaponIndex )

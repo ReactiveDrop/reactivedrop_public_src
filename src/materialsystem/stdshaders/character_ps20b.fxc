@@ -211,6 +211,9 @@ float4 main( PS_INPUT i ) : COLOR
 	baseColor.xyz = lerp(baseColor.xyz, hsv2rgb(baseColorHSV), saturate(baseColor.a + g_fInverseBlendTintByBaseAlpha));
 #endif
 	
+	// Optionally use basealpha to blend in the diffuse modulation (saturated add of g_fInverseBlendTintByBaseAlpha turns this on/off)
+    baseColor.rgb *= lerp(float3(1.0f, 1.0f, 1.0f), g_DiffuseModulation.rgb, saturate(baseColor.a + g_fInverseBlendTintByBaseAlpha));
+
 	float flWrinkleAmount, flStretchAmount, flTextureAmount;
 	#if ( WRINKLEMAP )
 	{
@@ -326,7 +329,6 @@ float4 main( PS_INPUT i ) : COLOR
 	}		
 	#endif	
 
-	float3 albedo = baseColor.rgb;
 
 	float3 specularLighting = float3( 0.0f, 0.0f, 0.0f );
 	float3 rimLighting = float3( 0.0f, 0.0f, 0.0f );
@@ -383,10 +385,7 @@ float4 main( PS_INPUT i ) : COLOR
 	}
 	#endif	
 
-	// Optionally use basealpha to blend in the diffuse modulation (saturated add of g_fInverseBlendTintByBaseAlpha turns this on/off)
-	diffuseLighting *= lerp( float3( 1.0f, 1.0f, 1.0f ), g_DiffuseModulation.rgb, saturate( baseColor.a + g_fInverseBlendTintByBaseAlpha ) );
-
-	float3 diffuseComponent = albedo * diffuseLighting;
+    float3 diffuseComponent = baseColor.rgb * diffuseLighting;
 
 	#if ( SELFILLUM && !FLASHLIGHT )
 	{
@@ -397,13 +396,13 @@ float4 main( PS_INPUT i ) : COLOR
 			float3 vSelfIllumMask = tex2D( SelfIllumMaskSampler, i.baseTexCoordDetailTexCoord.xy );
 			vSelfIllumMask = lerp( baseColor.aaa, vSelfIllumMask, g_SelfIllumMaskControl );
 			float flSelfIllumFresnel = ( pow( saturate( dot( vVertexNormal.xyz, vEyeDir.xyz ) ), g_SelfIllumScaleBiasExpBrightness.z ) * g_SelfIllumScaleBiasExpBrightness.x ) + g_SelfIllumScaleBiasExpBrightness.y;
-			diffuseComponent = lerp( diffuseComponent, g_SelfIllumTint_and_DetailBlendFactor.rgb * albedo * g_SelfIllumScaleBiasExpBrightness.w, vSelfIllumMask.rgb * saturate( flSelfIllumFresnel ) );
+			diffuseComponent = lerp( diffuseComponent, g_SelfIllumTint_and_DetailBlendFactor.rgb * baseColor.rgb * g_SelfIllumScaleBiasExpBrightness.w, vSelfIllumMask.rgb * saturate( flSelfIllumFresnel ) );
 		}
 		#else
 		{
 			float3 vSelfIllumMask = tex2D( SelfIllumMaskSampler, i.baseTexCoordDetailTexCoord.xy );
 			vSelfIllumMask = lerp( baseColor.aaa, vSelfIllumMask, g_SelfIllumMaskControl );
-			diffuseComponent = lerp( diffuseComponent, g_SelfIllumTint_and_DetailBlendFactor.rgb * albedo, vSelfIllumMask );
+			diffuseComponent = lerp( diffuseComponent, g_SelfIllumTint_and_DetailBlendFactor.rgb * baseColor.rgb, vSelfIllumMask );
 		}
 		#endif
 
@@ -415,11 +414,11 @@ float4 main( PS_INPUT i ) : COLOR
 	{
 		if ( g_fNightVisionAmount < 1.0 )
 		{
-			diffuseComponent = lerp( diffuseComponent, albedo, g_fNightVisionAmount );
+			diffuseComponent = lerp( diffuseComponent, baseColor.rgb, g_fNightVisionAmount );
 		}
 		else
 		{
-			diffuseComponent = albedo * g_fNightVisionAmount;
+			diffuseComponent = baseColor.rgb * g_fNightVisionAmount;
 		}
 	}
 	#endif

@@ -549,7 +549,7 @@ public:
 	int m_nIndexActWeapBeforeTempPickup;
 
 	void ScriptGiveAmmo( int iCount, int iAmmoIndex );
-	void ScriptGiveWeapon( const char *pszName, int slot );
+	HSCRIPT ScriptGiveWeapon( const char *pszName, int slot );
 	bool ScriptDropWeapon( int iWeaponIndex );
 	bool ScriptRemoveWeapon( int iWeaponIndex );
 	bool ScriptSwitchWeapon( int iWeaponIndex );

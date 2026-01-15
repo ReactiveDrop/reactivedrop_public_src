@@ -190,3 +190,195 @@ public:
 		pConVar->SetValue( szNewDefault );
 	}
 } s_RD_Convar_Hacks;
+
+
+
+
+static bool ConCommandBaseSortFunc( const ConCommandBase* const &hLeftCMD, const ConCommandBase* const &hRightCMD )
+{ 
+	const char* szLeftCMDName = hLeftCMD->GetName();
+	const char* szRightCMDName = hRightCMD->GetName();
+
+	if ( *szLeftCMDName == '-' || *szLeftCMDName == '+' )
+		szLeftCMDName++;
+	if ( *szRightCMDName == '-' || *szRightCMDName == '+' )
+		szRightCMDName++;
+
+	return ( Q_stricmp( szLeftCMDName, szRightCMDName ) < 0 );
+}
+
+static char *StripTabsAndReturns( const char *inbuffer, char *outbuffer, int outbufferSize )
+{
+	char *out = outbuffer;
+	const char *i = inbuffer;
+	char *o = out;
+
+	out[ 0 ] = 0;
+
+	while ( *i && o - out < outbufferSize - 1 )
+	{
+		if ( *i == '\n' ||
+			*i == '\r' ||
+			*i == '\t' )
+		{
+			*o++ = ' ';
+			i++;
+			continue;
+		}
+		if ( *i == '\"' )
+		{
+			*o++ = '\'';
+			i++;
+			continue;
+		}
+
+		*o++ = *i++;
+	}
+
+	*o = '\0';
+
+	return out;
+}
+
+CON_COMMAND( cvarlist_rd, "Prints a list of all cvars, with correct values (unlike normal cvarlist). No argument - current values, arg being 1 - default values, arg being 2 - current values in csv format, arg being 3 - default values in csv format" )
+{
+	bool bDefault = false;
+	bool bCSV = false;
+	int nArgs = args.ArgC();
+	if ( nArgs >= 2 )
+	{
+		int nArg1 = atoi( args[1] );
+		
+		bDefault = nArg1 == 1 || nArg1 == 3;
+		bCSV = nArg1 >= 2;
+	}
+
+	if ( !bCSV )
+		ConMsg( "cvar list\n--------------\n" );
+	else
+		ConMsg( "\"Name\",\"Value\",\"GAMEDLL\",\"CLIENTDLL\",\"PROTECTED\",\"SPONLY\",\"ARCHIVE\",\"NOTIFY\",\"USERINFO\",\"PRINTABLEONLY\",\"UNLOGGED\",\"NEVER_AS_STRING\",\"REPLICATED\",\"CHEAT\",\"SS\",\"DEMO\",\"DONTRECORD\",\"SS_ADDED\",,\"Help Text\"\n" );
+
+	const ConCommandBase* pCMD;
+	ICvar::Iterator cvariterator( g_pCVar );
+	CUtlRBTree< const ConCommandBase* > cvarsorted( 0, 0, ConCommandBaseSortFunc );
+
+	for ( cvariterator.SetFirst(); cvariterator.IsValid(); cvariterator.Next() )
+	{  
+		pCMD = cvariterator.Get();
+
+		if ( pCMD->IsFlagSet( FCVAR_HIDDEN ) || pCMD->IsFlagSet( FCVAR_DEVELOPMENTONLY ) )
+			continue;
+
+		cvarsorted.Insert( pCMD );
+	}
+
+	for ( int i = cvarsorted.FirstInorder(); i != cvarsorted.InvalidIndex(); i = cvarsorted.NextInorder( i ) )
+    {
+        pCMD = cvarsorted[ i ];
+        if ( pCMD->IsCommand() )
+        {
+			if ( !bCSV )   // unchanged cvarlist console output format
+			{
+				char tempbuff[512]{};
+				ConMsg( "%-40s : %-8s : %-16s : %s\n", pCMD->GetName(), "cmd", "", StripTabsAndReturns( pCMD->GetHelpText(), tempbuff, sizeof( tempbuff ) ) );
+			}
+			else   // CSV format
+			{
+				char tempbuff[512]{};
+				ConMsg( "\"%s\",\"%s\",%s,\"%s\"\n", pCMD->GetName(), "cmd", ",,,,,,,,,,,,,,,,", StripTabsAndReturns( pCMD->GetHelpText(), tempbuff, sizeof( tempbuff ) ) );
+			}
+        }
+		else
+		{
+			char szFullFlags[256]{};
+
+			if ( !bCSV )   // unchanged cvarlist console output format
+			{
+				constexpr static const char* s_szFlagDesc[] =
+				{
+					"",
+					"",
+					"sv",
+					"cl",
+					"",
+					"prot",
+					"sp",
+					"a",
+					"nf",
+					"user",
+					"print",
+					"log",
+					"numeric",
+					"rep",
+					"cheat",
+					"",
+					"demo",
+					"norecord",
+				};
+				
+				for ( int c = 2; c < ARRAYSIZE( s_szFlagDesc ); ++c )
+				{
+					char szFlag[32]{};
+
+					if ( pCMD->IsFlagSet( 1 << c ) && sizeof( s_szFlagDesc[c] ) != sizeof( "" ) )
+					{
+						Q_snprintf( szFlag, sizeof( szFlag ), ", %s", s_szFlagDesc[c] );
+						Q_strncat( szFullFlags, szFlag, sizeof( szFullFlags ), COPY_ALL_CHARACTERS );
+					}
+				}
+				char tempbuff[512]{};
+				ConMsg( "%-40s : %-8s : %-16s : %s\n", pCMD->GetName(), bDefault ? static_cast< const ConVar* >( pCMD )->GetDefault() : static_cast< const ConVar* >( pCMD )->GetString(), szFullFlags, StripTabsAndReturns( pCMD->GetHelpText(), tempbuff, sizeof(tempbuff) ) );
+			}
+			else   // CSV format
+			{
+				constexpr static const char* s_szFlagDesc[] =
+				{
+					"",
+					"",
+					"GAMEDLL",
+					"CLIENTDLL",
+					"",
+					"PROTECTED",
+					"SPONLY",
+					"ARCHIVE",
+					"NOTIFY",
+					"USERINFO",
+					"PRINTABLEONLY",
+					"UNLOGGED",
+					"NEVER_AS_STRING",
+					"REPLICATED",
+					"CHEAT",
+					"SS",
+					"DEMO",
+					"DONTRECORD",
+					"SS_ADDED",
+				};
+
+				for ( int c = 2; c < ARRAYSIZE( s_szFlagDesc ); ++c )
+				{
+					if ( c == 4 )	// FCVAR_HIDDEN, we filter those out anyway
+						continue;
+					
+					char szFlag[32]{};
+
+					if ( pCMD->IsFlagSet( 1 << c ) && sizeof( s_szFlagDesc[c] ) != sizeof( "" ) )
+					{
+						Q_snprintf( szFlag, sizeof( szFlag ), "\"%s\",", s_szFlagDesc[c] );
+						Q_strncat( szFullFlags, szFlag, sizeof( szFullFlags ), COPY_ALL_CHARACTERS );
+					}
+					else
+					{
+						Q_snprintf( szFlag, sizeof( szFlag ), "," );
+						Q_strncat( szFullFlags, szFlag, sizeof( szFullFlags ), COPY_ALL_CHARACTERS );
+					}
+				}
+
+				char tempbuff[512]{};
+				ConMsg( "\"%s\",\"%s\",%s,\"%s\"\n", pCMD->GetName(), bDefault ? static_cast< const ConVar* >( pCMD )->GetDefault() : static_cast< const ConVar* >( pCMD )->GetString(), szFullFlags, StripTabsAndReturns( pCMD->GetHelpText(), tempbuff, sizeof(tempbuff) ) );
+			}
+        }
+    }
+
+	if ( !bCSV )
+		ConMsg("--------------\n%3i total convars/concommands\n", cvarsorted.Count() );
+}

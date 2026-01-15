@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "888"
+	"mapversion" "889"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -278,7 +278,7 @@ viewsettings
 world
 {
 	"id" "1"
-	"mapversion" "888"
+	"mapversion" "889"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -269893,6 +269893,7 @@ entity
 	"damagescale" "1.0"
 	"fireattack" "4"
 	"firesize" "96"
+	"health" "30"
 	"IgniteSound" "ASW_Flare.IgniteFlare"
 	"ignitionpoint" "10"
 	"LightBrightness" "1"
@@ -269902,7 +269903,6 @@ entity
 	"spawnflags" "529"
 	"StartDisabled" "1"
 	"targetname" "SewerFire08"
-	"health" "30"
 	connections
 	{
 		"OnIgnited" "SewerFire08aStartFire21"
@@ -329591,7 +329591,7 @@ entity
 	"screenspacefade" "0"
 	"skin" "0"
 	"solid" "6"
-	"origin" "796.167 -1013.16 20.25"
+	"origin" "828 -1026 20.25"
 	editor
 	{
 		"color" "255 255 0"
@@ -329613,7 +329613,7 @@ entity
 	"rendercolor" "255 255 255"
 	"skin" "0"
 	"solid" "6"
-	"origin" "745.106 -1032.84 0.250008"
+	"origin" "826 -1000 0.250008"
 	editor
 	{
 		"color" "255 255 0"
@@ -329626,7 +329626,7 @@ entity
 {
 	"id" "641494"
 	"classname" "prop_static"
-	"angles" "0 102 0"
+	"angles" "0 327 0"
 	"disableselfshadowing" "0"
 	"disablevertexlighting" "0"
 	"fademaxdist" "0"
@@ -329639,7 +329639,7 @@ entity
 	"screenspacefade" "0"
 	"skin" "0"
 	"solid" "6"
-	"origin" "747.095 -1064.59 20.25"
+	"origin" "796 -1004 20.25"
 	editor
 	{
 		"color" "255 255 0"
@@ -329665,7 +329665,7 @@ entity
 	"screenspacefade" "0"
 	"skin" "0"
 	"solid" "6"
-	"origin" "703.798 -1026.55 11.2708"
+	"origin" "817 -975 11.2708"
 	editor
 	{
 		"color" "255 255 0"
