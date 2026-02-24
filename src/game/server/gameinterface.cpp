@@ -613,6 +613,15 @@ static bool InitGameSystems( CreateInterfaceFn appSystemFactory )
 
 CServerGameDLL g_ServerGameDLL;
 EXPOSE_SINGLE_INTERFACE_GLOBALVAR(CServerGameDLL, IServerGameDLL, INTERFACEVERSION_SERVERGAMEDLL, g_ServerGameDLL);
+// Crash fix/hardening: the engine can call into game code during lobby soft-close -> restart
+// before Steam is fully activated for the new session. Track activation so code can safely
+// skip Steam calls until the engine signals readiness.
+static bool g_bRDSteamAPIActivated = false;
+
+bool RD_IsSteamAPIActivated()
+{
+	return g_bRDSteamAPIActivated;
+}
 
 bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory, 
 		CreateInterfaceFn physicsFactory, CreateInterfaceFn fileSystemFactory, 
@@ -1064,6 +1073,7 @@ bool CServerGameDLL::SupportsSaveRestore()
 bool CServerGameDLL::LevelInit( const char *pMapName, char const *pMapEntities, char const *pOldLevel, char const *pLandmarkName, bool loadGame, bool background )
 {
 	VPROF("CServerGameDLL::LevelInit");
+	g_bRDSteamAPIActivated = false;
 	ResetWindspeed();
 	UpdateChapterRestrictions( pMapName );
 
@@ -1266,6 +1276,8 @@ void CServerGameDLL::ServerActivate( edict_t *pEdictList, int edictCount, int cl
 void CServerGameDLL::GameServerSteamAPIActivated( void )
 {
 	// the Steam API pointers used to be initialized here, but that happens automatically now.
+	// Crash fix/hardening: mark Steam as activated so code can safely call Steam APIs.
+	g_bRDSteamAPIActivated = true;
 }
 
 //-----------------------------------------------------------------------------
@@ -1518,6 +1530,7 @@ void CServerGameDLL::LevelShutdown( void )
 	MDLCACHE_CRITICAL_SECTION();
 	IGameSystem::LevelShutdownPreEntityAllSystems();
 
+	g_bRDSteamAPIActivated = false;
 	// YWB:
 	// This entity pointer is going away now and is corrupting memory on level transitions/restarts
 	CSoundEnt::ShutdownSoundEnt();

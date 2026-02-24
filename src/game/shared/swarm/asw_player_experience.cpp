@@ -467,6 +467,12 @@ void CASW_Player::RequestExperience()
 #else
 	if ( engine->IsDedicatedServer() )
 	{
+		// Crash fix/hardening: during lobby soft-close -> restart, PlayerSpawn can run before
+		// Steam is activated for the new session. Avoid calling RequestUserStats until the
+		// engine signals Steam readiness (GameServerSteamAPIActivated).
+		if ( !RD_IsSteamAPIActivated() )
+			return;
+
 		Assert( SteamGameServerStats() );
 		if ( SteamGameServerStats() )
 		{
