@@ -111,6 +111,7 @@
 #include "missionchooser/iasw_mission_chooser_source.h"
 #include "matchmaking/swarm/imatchext_swarm.h"
 #include "asw_gamerules.h"
+#include "asw_player.h"
 #include "asw_util_shared.h"
 #include "iconsistency.h"
 #endif
@@ -617,6 +618,7 @@ EXPOSE_SINGLE_INTERFACE_GLOBALVAR(CServerGameDLL, IServerGameDLL, INTERFACEVERSI
 // before Steam is fully activated for the new session. Track activation so code can safely
 // skip Steam calls until the engine signals readiness.
 static bool g_bRDSteamAPIActivated = false;
+static float g_flNextDeferredSteamStatsRequestTime = 0.0f;
 
 bool RD_IsSteamAPIActivated()
 {
@@ -1278,6 +1280,9 @@ void CServerGameDLL::GameServerSteamAPIActivated( void )
 	// the Steam API pointers used to be initialized here, but that happens automatically now.
 	// Crash fix/hardening: mark Steam as activated so code can safely call Steam APIs.
 	g_bRDSteamAPIActivated = true;
+
+	// If any players tried to request XP before Steam activation (restart/join window), retry now.
+	g_flNextDeferredSteamStatsRequestTime = 0.0f;
 }
 
 //-----------------------------------------------------------------------------
@@ -1292,6 +1297,28 @@ void CServerGameDLL::GameFrame( bool simulating )
 	// Don't run frames until fully restored
 	if ( g_InRestore )
 		return;
+
+	// Crash fix/hardening: if we deferred any Steam stats requests because Steam wasn't activated
+	// yet (e.g. lobby soft-close -> restart), retry them once Steam is ready.
+	if ( g_bRDSteamAPIActivated && gpGlobals && gpGlobals->curtime >= g_flNextDeferredSteamStatsRequestTime )
+	{
+		g_flNextDeferredSteamStatsRequestTime = gpGlobals->curtime + 1.0f;
+		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+		{
+			CASW_Player *pPlayer = ToASW_Player( UTIL_PlayerByIndex( i ) );
+			if ( !pPlayer )
+				continue;
+
+			if ( pPlayer->m_bDeferredSteamStatsRequest && !pPlayer->m_bPendingSteamStats )
+			{
+				pPlayer->RequestExperience();
+				if ( pPlayer->m_bPendingSteamStats )
+				{
+					pPlayer->m_bDeferredSteamStatsRequest = false;
+				}
+			}
+		}
+	}
 
 #ifndef NO_STEAM
 	// All the calls to us from the engine prior to gameframe (like LevelInit & ServerActivate)
