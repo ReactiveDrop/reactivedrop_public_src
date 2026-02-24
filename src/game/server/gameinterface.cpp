@@ -1300,6 +1300,7 @@ void CServerGameDLL::GameFrame( bool simulating )
 
 	// Crash fix/hardening: if we deferred any Steam stats requests because Steam wasn't activated
 	// yet (e.g. lobby soft-close -> restart), retry them once Steam is ready.
+	static const float k_flDeferredSteamStatsRequestTimeout = 30.0f;
 	if ( g_bRDSteamAPIActivated && gpGlobals && gpGlobals->curtime >= g_flNextDeferredSteamStatsRequestTime )
 	{
 		g_flNextDeferredSteamStatsRequestTime = gpGlobals->curtime + 1.0f;
@@ -1311,10 +1312,23 @@ void CServerGameDLL::GameFrame( bool simulating )
 
 			if ( pPlayer->m_bDeferredSteamStatsRequest && !pPlayer->m_bPendingSteamStats )
 			{
+				if ( pPlayer->m_flDeferredSteamStatsRequestStart < 0.0f )
+				{
+					pPlayer->m_flDeferredSteamStatsRequestStart = gpGlobals->curtime;
+				}
+
+				if ( ( gpGlobals->curtime - pPlayer->m_flDeferredSteamStatsRequestStart ) > k_flDeferredSteamStatsRequestTimeout )
+				{
+					pPlayer->m_bDeferredSteamStatsRequest = false;
+					pPlayer->m_flDeferredSteamStatsRequestStart = -1.0f;
+					continue;
+				}
+
 				pPlayer->RequestExperience();
 				if ( pPlayer->m_bPendingSteamStats )
 				{
 					pPlayer->m_bDeferredSteamStatsRequest = false;
+					pPlayer->m_flDeferredSteamStatsRequestStart = -1.0f;
 				}
 			}
 		}
