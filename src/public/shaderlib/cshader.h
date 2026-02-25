@@ -184,7 +184,7 @@ inline bool CShader_IsFlag2Set( IMaterialVar **params, MaterialVarFlags2_t _flag
 	// which in turn tries to ask the compiler to instantiate an object like so:
 	// 		static CShaderParam COLOR( (ShaderMaterialVars_t)COLOR, SHADER_PARAM_TYPE_COLOR, "{255 255 255}", "unused", SHADER_PARAM_NOT_EDITABLE )
 	// and GCC thinks that the reference to COLOR in the arg list is actually a reference to the object we're in the middle of making.
-	// and you get --> error: invalid cast from type ‘Cloak_DX90::CShaderParam’ to type ‘ShaderMaterialVars_t’
+	// and you get --> error: invalid cast from type 'Cloak_DX90::CShaderParam' to type 'ShaderMaterialVars_t'
 	// Resolved: add the "::" so compiler knows that reference is to the enum, not to the name of the object being made.
 	
 	

@@ -1,4 +1,4 @@
-﻿//====== Copyright Valve Corporation, All rights reserved. ====================
+//====== Copyright Valve Corporation, All rights reserved. ====================
 //
 // Internal low-level access to Steamworks interfaces.
 //
@@ -177,3 +177,4 @@ inline ISteamClient *SteamGameServerClient() { return SteamClient(); }
 #endif
 
 #endif // ISTEAMCLIENT_H
+
