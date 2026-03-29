@@ -14,12 +14,14 @@
     <VCProjectVersion>17.0</VCProjectVersion>
     <ProjectName>stdshader_dx9</ProjectName>
     <ProjectGuid>{C8D2DC83-E117-7576-7B43-10C844264C51}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -46,7 +48,8 @@
     <PreLinkEventUseInBuild>true</PreLinkEventUseInBuild>
     <LinkIncremental>true</LinkIncremental>
     <GenerateManifest>false</GenerateManifest>
-    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
+    <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
+    <TargetName>game_shader_dx9</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>Release_dx9\</OutDir>
@@ -55,17 +58,20 @@
     <PreLinkEventUseInBuild>true</PreLinkEventUseInBuild>
     <LinkIncremental>false</LinkIncremental>
     <GenerateManifest>false</GenerateManifest>
-    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
+    <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
+    <TargetName>game_shader_dx9</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <PreBuildEvent>
       <Command />
     </PreBuildEvent>
     <CustomBuildStep>
-      <Message>Publishing to target directory (..\..\game\swarm\bin\)...</Message>
-      <Command>if exist "..\..\game\swarm\bin\game_shader_dx9.dll" attrib -r "..\..\game\swarm\bin\game_shader_dx9.dll"
-</Command>
-      <Outputs>..\..\game\swarm\bin\game_shader_dx9.dll;%(Outputs)</Outputs>
+      <Message>
+      </Message>
+      <Command>
+      </Command>
+      <Outputs>
+      </Outputs>
     </CustomBuildStep>
     <ClCompile>
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
@@ -101,7 +107,7 @@
     <Link>
       <AdditionalDependencies>version.lib;winmm.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ShowProgress>NotSet</ShowProgress>
-      <OutputFile>$(OutDir)game_shader_dx9.dll</OutputFile>
+      <OutputFile>$(TargetPath)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\lib\common\.;..\..\lib\public\.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libc;libcd;libcmtd;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -124,21 +130,33 @@
       <OutputFile>$(OutDir)stdshader_dx9.bsc</OutputFile>
     </Bscmake>
     <PostBuildEvent>
-      <Command />
+      <Command>setlocal enabledelayedexpansion
+
+set DestDir=..\..\game\swarm\bin
+
+if not exist !DestDir! mkdir !DestDir!
+if exist !DestDir!\$(TargetFileName) attrib -R !DestDir!\$(TargetFileName)
+copy /Y $(TargetPath) !DestDir!\
+</Command>
+      <Message>Publishing to target directory (..\..\game\swarm\bin)...</Message>
     </PostBuildEvent>
+    <PreLinkEvent>
+      <Command>if exist "$(TargetPath)" attrib -R "$(TargetPath)"</Command>
+    </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PreBuildEvent>
       <Command />
     </PreBuildEvent>
     <CustomBuildStep>
-      <Message>Publishing to target directory (..\..\game\swarm\bin\)...</Message>
-      <Command>if exist "..\..\game\swarm\bin\game_shader_dx9.dll" attrib -r "..\..\game\swarm\bin\game_shader_dx9.dll"
-</Command>
-      <Outputs>..\..\game\swarm\bin\game_shader_dx9.dll;%(Outputs)</Outputs>
+      <Message>
+      </Message>
+      <Command>
+      </Command>
+      <Outputs>
+      </Outputs>
     </CustomBuildStep>
     <ClCompile>
-      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -165,6 +183,8 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>CompileAsCpp</CompileAs>
       <ErrorReporting>Prompt</ErrorReporting>
+      <OmitFramePointers>true</OmitFramePointers>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -173,7 +193,7 @@
     <Link>
       <AdditionalDependencies>version.lib;winmm.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ShowProgress>NotSet</ShowProgress>
-      <OutputFile>$(OutDir)game_shader_dx9.dll</OutputFile>
+      <OutputFile>$(TargetPath)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\lib\common\.;..\..\lib\public\.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libc;libcd;libcmtd;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -188,6 +208,7 @@
       </BaseAddress>
       <TargetMachine>MachineX86</TargetMachine>
       <LinkErrorReporting>PromptImmediately</LinkErrorReporting>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
     <Xdcmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -197,8 +218,19 @@
       <OutputFile>$(OutDir)stdshader_dx9.bsc</OutputFile>
     </Bscmake>
     <PostBuildEvent>
-      <Command />
+      <Command>setlocal enabledelayedexpansion
+
+set DestDir=..\..\game\swarm\bin
+
+if not exist !DestDir! mkdir !DestDir!
+if exist !DestDir!\$(TargetFileName) attrib -R !DestDir!\$(TargetFileName)
+copy /Y $(TargetPath) !DestDir!\
+</Command>
+      <Message>Publishing to target directory (..\..\game\swarm\bin)...</Message>
     </PostBuildEvent>
+    <PreLinkEvent>
+      <Command>if exist "$(TargetPath)" attrib -R "$(TargetPath)"</Command>
+    </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="..\..\vpc_scripts\loadaddress.vpc" />
