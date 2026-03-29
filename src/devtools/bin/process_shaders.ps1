@@ -8,43 +8,65 @@ param (
     [Parameter(Mandatory=$false)][int]$Optimize = 3
 )
 
-if ($Version -notin @("20b","30","40","41","50","51")) { return }
+# =====================================
+# Validate input
+# =====================================
+if ($Version -notin @("20b","30","40","41","50","51")) {
+    return
+}
 
+# =====================================
+# Resolve compilation parameters
+# =====================================
+$argsBase = @()
+if ($Force) { $argsBase += "-force" }
+
+if ($Threads -is [int] -and $Threads -gt 0) {
+    $ThreadsToUse = [Math]::Min($Threads, [int]$env:NUMBER_OF_PROCESSORS)
+    $argsBase += "-threads", $ThreadsToUse
+}
+
+$argsBase += "-ver", $Version
+$argsBase += "-shaderpath", $File.DirectoryName
+
+if ($Dynamic) {
+    $argsBase += "-dynamic"
+} elseif ($Optimize -is [int]) {
+    $optVal = [Math]::Min([Math]::Max($Optimize, 0), 3)
+    $argsBase += "-optimize", $optVal
+}
+
+# =====================================
+# Logging 1
+# =====================================
+$modeParts = @()
+if ($Force) { $modeParts += "FORCE" }
+if ($Dynamic) { $modeParts += "DYNAMIC" }
+if (-not $Force -and -not $Dynamic) { $modeParts += "ON-DEMAND" }
+
+$modeText  = $modeParts -join " + "
+$modeColor = if ($Force -or $Dynamic) { "Magenta" } else { "White" }
+
+Write-Host "`nMode: $modeText`n" -ForegroundColor $modeColor
+
+# =====================================
+# Main shader compilation loop
+# =====================================
 $ShaderStart = Get-Date
 foreach ($line in Get-Content $File) {
     if ($line -match '^\s*$' -or $line -match '^\s*//') { continue }
 
-    $args = @()
-
-    if ($Force)   { $args += "-force" }
-    $args += "-force"
-
-    if ($Threads -gt 0) { $args += "-threads", $Threads }
-
-    $args += "-ver", $Version
-    $args += "-shaderpath", $File.DirectoryName
-
-    if ($Dynamic) {
-        $args += "-dynamic"
-    } else {
-        $args += "-optimize", $Optimize
-    }
-
+    # Build full args for this shader line
+    $args = @($argsBase)
     $args += $line
-    $ShaderStart = Get-Date
+
+    # Invoke ShaderCompile
     & "$PSScriptRoot\ShaderCompile" $args
 }
 $TotalTime = (Get-Date) - $ShaderStart
 
-if ($Force) {
-    $modeText  = "FORCE (full recompilation)"
-    $modeColor = "Magenta"
-} else {
-    $modeText  = "ON-DEMAND (recompile changed shaders only)"
-    $modeColor = "Cyan"
-}
-Write-Host ""
-Write-Host "Shader compilation pass for '$($File.Name)' finished." -ForegroundColor Green
-Write-Host "Mode: $modeText" -ForegroundColor $modeColor
-Write-Host ("Time elapsed: {0}h:{1:mm}m:{1:ss}s:{1:ff}ms" -f [int]$TotalTime.TotalHours, $TotalTime) -ForegroundColor Cyan
-Write-Host ""
+# =====================================
+# Logging 2
+# =====================================
+Write-Host "`nShader compilation pass for $($File.Name) finished."
+Write-Host ("Time elapsed: {0}h:{1:mm}m:{1:ss}s:{1:ff}ms`n" -f [int]$TotalTime.TotalHours, $TotalTime) -ForegroundColor Cyan
