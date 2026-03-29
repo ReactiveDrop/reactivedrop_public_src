@@ -9,7 +9,9 @@ set TTEXE=time /t
 :no_ttexe_end
 
 echo.
-echo ==================== buildshaders %* ==================
+echo ======================================
+echo buildshaders.bat %*
+echo.
 %TTEXE% -cur-Q
 set tt_start=%ERRORLEVEL%
 set tt_chkpt=%tt_start%
@@ -48,7 +50,7 @@ REM USAGE
 REM ****************
 :usage
 echo.
-echo "usage: buildshaders <shaderProjectName> [-game] [gameDir if -game was specified] [-source sourceDir]"
+echo "usage: buildshaders <shaderProjectName> [-game gameDir] [-source sourceDir]"
 echo "       gameDir is where gameinfo.txt is (where it will store the compiled shaders)."
 echo "       sourceDir is where the source code is (where it will find scripts and compilers)."
 echo "ex   : buildshaders myshaders"
@@ -120,9 +122,26 @@ title %1 %SHVER%
 
 echo Building inc files and worklist for %inputbase%...
 
-set DYNAMIC=
-if "%dynamic_shaders%" == "1" set DYNAMIC=-Dynamic
-powershell -NoLogo -ExecutionPolicy Bypass -Command "%SrcDirBase%\devtools\bin\process_shaders.ps1 %DYNAMIC% -Version %SHVER% '%inputbase%.txt'"
+
+set PS_EXTRA_ARGS=
+
+if defined FORCE (
+    set PS_EXTRA_ARGS=%PS_EXTRA_ARGS% -Force
+)
+
+if defined dynamic_shaders (
+    set PS_EXTRA_ARGS=%PS_EXTRA_ARGS% -Dynamic
+)
+
+if defined THREADS (
+    set PS_EXTRA_ARGS=%PS_EXTRA_ARGS% -Threads %THREADS%
+)
+
+if defined OPTIMIZE (
+    set PS_EXTRA_ARGS=%PS_EXTRA_ARGS% -Optimize %OPTIMIZE%
+)
+
+powershell -NoLogo -ExecutionPolicy Bypass -Command "%SrcDirBase%\devtools\bin\process_shaders.ps1 %PS_EXTRA_ARGS% -Version %SHVER% '%inputbase%.txt'"
 
 REM ****************
 REM PC Shader copy
@@ -131,8 +150,9 @@ REM This batch file may have been invoked standalone or slaved (master does fina
 REM ****************
 :DoXCopy
 if not "%dynamic_shaders%" == "1" (
-if not exist "%targetdir%" md "%targetdir%"
-if not "%targetdir%"=="%shaderDir%" xcopy %shaderDir%\*.* "%targetdir%" /e /y
+    echo Coping compiled shaders..
+    if not exist "%targetdir%" md "%targetdir%"
+    if not "%targetdir%"=="%shaderDir%" xcopy %shaderDir%\*.* "%targetdir%" /e /y
 )
 goto end
 
