@@ -349,7 +349,7 @@ static void DebugSpewLobby( CSteamID lobby )
 #define LOBBY_SEARCH_INTERVAL 30.0f
 
 ConVar rd_lobby_search_debug( "rd_lobby_search_debug", "0" );
-ConVar rd_lobby_query_servers( "rd_lobby_query_servers", "0" );
+ConVar rd_lobby_query_servers( "rd_lobby_query_servers", "1" );
 
 CReactiveDropLobbySearch::CReactiveDropLobbySearch( const char *pszDebugName ) :
 	m_DistanceFilter{ k_ELobbyDistanceFilterWorldwide },

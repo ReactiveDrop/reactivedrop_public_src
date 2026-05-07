@@ -1,4 +1,4 @@
-//========= Copyright ï¿½ 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: Expose things from GameInterface.cpp. Mostly the engine interfaces.
 //
@@ -210,11 +210,6 @@ public:
 };
 
 bool IsEngineThreaded();
-
-// Crash fix support: during lobby soft-close -> restart, the engine can call into game code
-// (including PlayerSpawn) before Steam is fully activated for the new session.
-// This helper lets server-side code skip Steam calls until GameServerSteamAPIActivated fires.
-bool RD_IsSteamAPIActivated();
 
 class CServerGameTags : public IServerGameTags
 {

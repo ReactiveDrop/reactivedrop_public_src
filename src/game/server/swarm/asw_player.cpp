@@ -407,8 +407,6 @@ CASW_Player::CASW_Player()
 
 	m_bPendingSteamStats = false;
 	m_flPendingSteamStatsStart = 0.0f;
-	m_bDeferredSteamStatsRequest = false;
-	m_flDeferredSteamStatsRequestStart = -1.0f;
 
 	m_bWelcomed = false;
 

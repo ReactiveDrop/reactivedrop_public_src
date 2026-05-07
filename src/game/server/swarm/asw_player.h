@@ -278,8 +278,6 @@ public:
 	bool m_bHasAwardedXP;
 	bool m_bPendingSteamStats;
 	float m_flPendingSteamStatsStart;
-	bool m_bDeferredSteamStatsRequest;
-	float m_flDeferredSteamStatsRequestStart;
 	bool m_bSentPromotedMessage;
 
 	// static inventory (medals)

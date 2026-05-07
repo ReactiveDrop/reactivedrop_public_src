@@ -613,7 +613,9 @@ ConVar asw_marine_ff_absorption( "asw_marine_ff_absorption", "1", FCVAR_REPLICAT
 ConVar asw_horde_override( "asw_horde_override", "0", FCVAR_REPLICATED, "Forces hordes to spawn", UpdateMatchmakingTagsCallback );
 ConVar asw_wanderer_override( "asw_wanderer_override", "0", FCVAR_REPLICATED, "Forces wanderers to spawn", UpdateMatchmakingTagsCallback );
 ConVar rd_challenge( "rd_challenge", "0", FCVAR_REPLICATED | FCVAR_DEMO, "Activates a challenge by ID", UpdateMatchmakingTagsCallback );
-ConVar rd_challenge_changing( "rd_challenge_changing", "0", FCVAR_GAMEDLL | FCVAR_CHEAT | FCVAR_HIDDEN, "Internally used for diagnostics during challenge transitions" );
+#ifdef GAME_DLL
+ConVar rd_challenge_changing( "rd_challenge_changing", "0", FCVAR_CHEAT | FCVAR_HIDDEN, "Internally used for diagnostics during challenge transitions" );
+#endif
 ConVar rd_lock_difficulty( "rd_lock_difficulty", "0", FCVAR_REPLICATED, "If 1, the lobby leader cannot change the difficulty level." );
 ConVar rd_lock_onslaught( "rd_lock_onslaught", "0", FCVAR_REPLICATED, "If 1, the lobby leader cannot change the onslaught setting." );
 ConVar rd_lock_hardcoreff( "rd_lock_hardcoreff", "0", FCVAR_REPLICATED, "If 1, the lobby leader cannot change the hardcore friendly fire setting." );

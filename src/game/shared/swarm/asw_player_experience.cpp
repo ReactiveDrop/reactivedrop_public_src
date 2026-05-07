@@ -467,16 +467,6 @@ void CASW_Player::RequestExperience()
 #else
 	if ( engine->IsDedicatedServer() )
 	{
-		// Crash fix/hardening: during lobby soft-close -> restart, PlayerSpawn can run before
-		// Steam is activated for the new session. Avoid calling RequestUserStats until the
-		// engine signals Steam readiness (GameServerSteamAPIActivated).
-		if ( !RD_IsSteamAPIActivated() )
-		{
-			// Defer rather than skip: once Steam is activated, game code will retry this request.
-			m_bDeferredSteamStatsRequest = true;
-			return;
-		}
-
 		Assert( SteamGameServerStats() );
 		if ( SteamGameServerStats() )
 		{
