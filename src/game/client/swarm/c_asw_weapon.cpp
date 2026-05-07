@@ -125,6 +125,7 @@ ConVar rd_drop_magazine_force_up( "rd_drop_magazine_force_up", "50", FCVAR_NONE,
 ConVar rd_drop_magazine_spin( "rd_drop_magazine_spin", "1000", FCVAR_NONE, "Amount of random angular velocity to apply to dropped magazine" );
 ConVar rd_drop_magazine_lifetime( "rd_drop_magazine_lifetime", "4", FCVAR_NONE, "Time before a dropped magazine fades" );
 ConVar rd_strange_device_model( "rd_strange_device_model", "0", FCVAR_NONE, "Should items with strange devices attached display them in the world?" );
+ConVar rd_weapon_autoaim( "rd_weapon_autoaim", "1", FCVAR_NONE,  "Enable or disable weapon auto-aim if available." );
 
 extern ConVar asw_use_particle_tracers;
 extern ConVar muzzleflash_light;

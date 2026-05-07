@@ -22,8 +22,27 @@ public:
 	virtual ~CASW_Weapon_PRifle();
 	void Precache();
 
-	virtual const float GetAutoAimAmount() { return 0.26f; }
-	virtual const float GetAutoAimRadiusScale() { return 1.5f; }
+	#ifdef CLIENT_DLL
+		virtual const float GetAutoAimAmount()
+		{
+			extern ConVar rd_weapon_autoaim;
+			return rd_weapon_autoaim.GetBool() ? 0.26f : 0.0f;
+		}
+		virtual const float GetAutoAimRadiusScale()
+		{
+			extern ConVar rd_weapon_autoaim;
+			return rd_weapon_autoaim.GetBool() ? 1.5f : 0.0f;
+		}
+	#else
+		virtual const float GetAutoAimAmount()
+		{
+			return 0.26f;
+		}
+		virtual const float GetAutoAimRadiusScale()
+		{
+			return 1.5f;
+		}
+	#endif
 	virtual float GetFireRate();
 	virtual float GetWeaponBaseDamageOverride();
 	virtual int GetWeaponSkillId();
