@@ -23,6 +23,8 @@ public:
 
 	CASW_Weapon_Hornet_Barrage();
 
+	virtual bool Reload() { return false; }
+
 	virtual void PrimaryAttack();
 	virtual void ItemPostFrame();
 	virtual void Precache();

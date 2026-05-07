@@ -64,6 +64,7 @@ BEGIN_NETWORK_TABLE( CASW_Weapon, DT_ASW_Weapon )
 	RecvPropBool		( RECVINFO( m_bIsTemporaryPickup ) ),
 	RecvPropEHandle( RECVINFO( m_hOriginalOwnerMR ) ),
 	RecvPropInt( RECVINFO( m_iInventoryEquipSlot ) ),
+	RecvPropInt( RECVINFO( m_iClassRequirementOverride ) ),
 END_NETWORK_TABLE()
 
 BEGIN_PREDICTION_DATA( C_ASW_Weapon )
@@ -169,6 +170,7 @@ m_GlowObject( this, glow_outline_color_weapon.GetColorAsVector(), 1.0f, false, t
 
 	m_bPoweredUp = false;
 	m_bIsTemporaryPickup = false;
+	m_iClassRequirementOverride = -1;
 }
 
 

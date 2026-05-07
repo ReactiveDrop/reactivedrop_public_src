@@ -59,6 +59,7 @@ IMPLEMENT_SERVERCLASS_ST( CASW_Weapon, DT_ASW_Weapon )
 	SendPropBool( SENDINFO( m_bIsTemporaryPickup ) ),
 	SendPropEHandle( SENDINFO( m_hOriginalOwnerMR ) ),
 	SendPropInt( SENDINFO( m_iInventoryEquipSlot ), 2, SPROP_UNSIGNED ),
+	SendPropInt( SENDINFO( m_iClassRequirementOverride ) ),
 END_SEND_TABLE()
 
 //---------------------------------------------------------
@@ -72,6 +73,7 @@ BEGIN_DATADESC( CASW_Weapon )
 	DEFINE_FIELD( m_fFastReloadStart, FIELD_TIME ),
 	DEFINE_FIELD( m_fFastReloadEnd, FIELD_TIME ),
 	DEFINE_KEYFIELD( m_bIsTemporaryPickup, FIELD_BOOLEAN, "IsTemporaryPickup" ),
+	DEFINE_KEYFIELD( m_iClassRequirementOverride, FIELD_INTEGER, "ClassRequirementOverride" ),
 	DEFINE_INPUTFUNC( FIELD_EHANDLE, "ForcePickUp", InputForcePickUp ),
 	DEFINE_INPUTFUNC( FIELD_VOID, "ForceDrop", InputForceDrop ),
 	DEFINE_OUTPUT( m_OnPickedUp, "OnPickedUp" ),
@@ -79,6 +81,7 @@ BEGIN_DATADESC( CASW_Weapon )
 END_DATADESC()
 
 BEGIN_ENT_SCRIPTDESC( CASW_Weapon, CBaseCombatWeapon, "Alien Swarm weapon" )
+	DEFINE_SCRIPTFUNC( SetMarineClassRequirement, "-1 = default behaviour, 0 = officer, 1 = SW, 2 = medic, 3 = tech" )
 END_SCRIPTDESC()
 
 ConVar asw_weapon_safety_hull("asw_weapon_safety_hull", "0", FCVAR_CHEAT, "Size of hull used to check for AI shots going too near a friendly");
@@ -109,6 +112,7 @@ CASW_Weapon::CASW_Weapon()
 	m_bIsTemporaryPickup = false;
 	m_hOriginalOwnerMR = NULL;
 	m_iInventoryEquipSlot = 0;
+	m_iClassRequirementOverride = -1;
 }
 
 
@@ -451,4 +455,9 @@ void CASW_Weapon::InputForceDrop( inputdata_t &data )
 	}
 
 	pMarine->DropWeapon( this, false );
+}
+
+void CASW_Weapon::SetMarineClassRequirement( int nClass )
+{
+	m_iClassRequirementOverride = nClass;
 }

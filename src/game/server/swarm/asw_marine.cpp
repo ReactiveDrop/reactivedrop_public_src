@@ -504,6 +504,8 @@ void CASW_Marine::DoAnimationEvent( PlayerAnimEvent_t event )
 {
 	if (gpGlobals->maxClients > 1 && 
 				(event == PLAYERANIMEVENT_RELOAD || event == PLAYERANIMEVENT_JUMP || event == PLAYERANIMEVENT_WEAPON_SWITCH
+				|| event == PLAYERANIMEVENT_RELOAD_SUCCEED
+				|| event == PLAYERANIMEVENT_RELOAD_FAIL
 				|| event == PLAYERANIMEVENT_HEAL || event == PLAYERANIMEVENT_KICK || event == PLAYERANIMEVENT_THROW_GRENADE
 				|| event == PLAYERANIMEVENT_BAYONET || event == PLAYERANIMEVENT_PICKUP
 				|| ( event >= PLAYERANIMEVENT_MELEE && event <= PLAYERANIMEVENT_MELEE_LAST )
@@ -3000,9 +3002,9 @@ bool CASW_Marine::TakeWeaponPickup( CASW_Weapon *pWeapon )
 	// check we're allowed to take this item
 	bool bAllowed = true;
 	if (pOldWeapon)	// we're swapping with an existing weapon
-		bAllowed = ASWGameRules()->MarineCanPickup(GetMarineResource(), pWeapon->GetClassname(), pOldWeapon->GetClassname());
+		bAllowed = ASWGameRules()->MarineCanPickup(GetMarineResource(), pWeapon->GetClassname(), pOldWeapon->GetClassname(), pWeapon->m_iClassRequirementOverride);
 	else	// we're putting it into an empty slot
-		bAllowed = ASWGameRules()->MarineCanPickup(GetMarineResource(), pWeapon->GetClassname());
+		bAllowed = ASWGameRules()->MarineCanPickup(GetMarineResource(), pWeapon->GetClassname(), NULL, pWeapon->m_iClassRequirementOverride);
 	if (!bAllowed)
 		return false;
 
@@ -3096,11 +3098,11 @@ bool CASW_Marine::TakeWeaponPickup(CASW_Pickup_Weapon* pPickup)
 	bool bAllowed = true;
 	if ( pWeapon )	// we're swapping with an existing weapon
 	{
-		bAllowed = ASWGameRules()->MarineCanPickup( GetMarineResource(), pPickup->GetWeaponClass(), pWeapon->GetClassname() );
+		bAllowed = ASWGameRules()->MarineCanPickup( GetMarineResource(), pPickup->GetWeaponClass(), pWeapon->GetClassname(), pPickup->m_iClassRequirementOverride );
 	}
 	else	// we're putting it into an empty slot
 	{
-		bAllowed = ASWGameRules()->MarineCanPickup( GetMarineResource(), pPickup->GetWeaponClass() );
+		bAllowed = ASWGameRules()->MarineCanPickup( GetMarineResource(), pPickup->GetWeaponClass(), NULL, pPickup->m_iClassRequirementOverride );
 	}
 
 	if ( !bAllowed )

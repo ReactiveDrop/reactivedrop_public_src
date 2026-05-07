@@ -324,6 +324,8 @@ class CBaseHudChatEntry : public vgui::TextEntry
 {
 	typedef vgui::TextEntry BaseClass;
 public:
+	int m_iMaxByteCount = -1; // utf-8 string length
+
 	CBaseHudChatEntry( vgui::Panel *parent, char const *panelName, CBaseHudChat *pChat )
 		: BaseClass( parent, panelName )
 	{
@@ -339,6 +341,8 @@ public:
 
 		SetPaintBorderEnabled( false );
 	}
+
+	virtual	void InsertChar(wchar_t ch);
 
 	virtual void OnKeyCodeTyped(vgui::KeyCode code)
 	{
@@ -371,6 +375,7 @@ public:
 
 private:
 	CBaseHudChat *m_pHudChat;
+	CUtlMemory<char> m_szCharBuf{ 0, 64 }; // tmp buffer
 };
 
 //-----------------------------------------------------------------------------

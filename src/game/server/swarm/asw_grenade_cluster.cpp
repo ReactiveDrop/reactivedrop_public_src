@@ -132,7 +132,6 @@ void CASW_Grenade_Cluster::Spawn( void )
 		SetThink( &CASW_Grenade_Cluster::CheckNearbyDrones );
 		SetNextThink( gpGlobals->curtime + asw_cluster_grenade_radius_check_interval.GetFloat() );
 	}
-	m_CreatorWeaponClass = (Class_T)CLASS_ASW_UNKNOWN;
 
 	m_bTeslaAmped = false;
 
@@ -226,6 +225,10 @@ CASW_Grenade_Cluster* CASW_Grenade_Cluster::Cluster_Grenade_Create( float flDama
 	pGrenade->SetAbsAngles( angles );
 	UTIL_SetOrigin( pGrenade, position );
 	pGrenade->m_vecInitPos = position;
+	if ( pCreatorWeapon )
+	{
+		pGrenade->m_CreatorWeaponClass = pCreatorWeapon->Classify();
+	}
 	pGrenade->Spawn();
 	pGrenade->m_flDamage = flDamage;
 	pGrenade->m_DmgRadius = fRadius;
@@ -236,7 +239,6 @@ CASW_Grenade_Cluster* CASW_Grenade_Cluster::Cluster_Grenade_Create( float flDama
 	pGrenade->m_hCreatorWeapon = pCreatorWeapon;
 	if ( pCreatorWeapon )
 	{
-		pGrenade->m_CreatorWeaponClass = pCreatorWeapon->Classify();
 		pGrenade->m_ProjectileData.GetForModify().SetFromWeapon( pCreatorWeapon );
 	}
 

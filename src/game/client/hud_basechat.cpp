@@ -466,6 +466,8 @@ CBaseHudChatInputLine::CBaseHudChatInputLine( CBaseHudChat *parent, char const *
 	m_pPrompt = new vgui::Label( this, "ChatInputPrompt", L"Enter text:" );
 	m_pInput = new CBaseHudChatEntry( this, "ChatInput", parent );	
 	m_pInput->SetMaximumCharCount( 127 );
+	// Send converts text to utf-8
+	m_pInput->m_iMaxByteCount = 127;
 }
 
 void CBaseHudChatInputLine::ApplySchemeSettings(vgui::IScheme *pScheme)
@@ -2518,4 +2520,60 @@ void CBaseHudChat::FireGameEvent( IGameEvent *event )
 		
 		ChatPrintf( player->entindex(), CHAT_FILTER_NONE, "(SourceTV) %s", event->GetString( "text" ) );
 	}
+}
+
+// Prevent player from inserting text over utf-8 byte limit
+void CBaseHudChatEntry::InsertChar(wchar_t ch)
+{
+	if ( m_iMaxByteCount == -1 )
+	{
+		BaseClass::InsertChar(ch);
+		return;
+	}
+
+	// single utf-16 char converted to utf-8 is 3 byte long in worst case
+	const int iBufLen = BaseClass::GetTextLength() * 3;
+
+	// Shortcut: fitting max byte count even in worst case
+	if ( iBufLen + 4 <= m_iMaxByteCount )
+	{
+		BaseClass::InsertChar(ch);
+		return;
+	}
+
+	// Count bytes of converted utf-8 str
+	m_szCharBuf.EnsureCapacity( iBufLen );
+	BaseClass::GetText( m_szCharBuf.Base(), m_szCharBuf.Count() );
+	const int iCurrentByteLen = Q_strlen( m_szCharBuf.Base() );
+
+	// Shortcut: average case
+	if ( iCurrentByteLen + 4 <= m_iMaxByteCount )
+	{
+		BaseClass::InsertChar(ch);
+		return;
+	}
+
+	// Edge case: check if current wchar_t will cause Send to truncate message
+	int iCharByteLen; // utf-8
+	if ( ch < 0x80 ) iCharByteLen = 1;
+	else if ( ch < 0x800 ) iCharByteLen = 2;
+	else if ( ch >= 0xD800 && ch <= 0xDBFF ) iCharByteLen = 4; // high surrogate, assume pair
+	else if ( ch >= 0xDC00 && ch <= 0xDFFF ) // low surrogate
+	{
+		// Check if previous wchar was a high surrogate
+		wchar_t wszHigh[2];
+		const int iLast = BaseClass::GetTextLength() - 1;
+		BaseClass::GetTextRange( wszHigh, iLast, 1 );
+		if ( wszHigh[0] >= 0xD800 && wszHigh[0] <= 0xDBFF ) { BaseClass::InsertChar(ch); return; }
+		else return; // it was not a hight surrogate, reject
+	}
+	else iCharByteLen = 3;
+
+	if ( iCurrentByteLen + iCharByteLen <= m_iMaxByteCount )
+	{
+		BaseClass::InsertChar(ch);
+		return;
+	}
+
+	return; // do not insert anything
 }

@@ -2995,6 +2995,15 @@
 		0 : "No"
 		1 : "Yes"
 	]
+	ClassRequirementOverride(choices) : "Class Requirement Override" : -1 : "Change which marine class can pickup this item" =
+	[
+		-1 : "No Change"
+		0 : "Officer"
+		1 : "Special Weapons"
+		2 : "Medic"
+		3 : "Tech"
+		999 : "Any"
+	]
 ]
 
 @PointClass base(Targetname, Parentname, Angles) studio("models/items/Ammobag/AmmoBag.mdl") = asw_ammo_drop : "Generic ammo stash"

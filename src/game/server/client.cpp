@@ -73,7 +73,12 @@ char * CheckChatText( CBasePlayer *pPlayer, char *text )
 
 	// cut off after P_MAX_LEN chars
 	if ( length > P_MAX_LEN )
-		p[P_MAX_LEN] = 0;
+	{
+		// don't split utf-8 code point
+		size_t i = P_MAX_LEN;
+		while( i > 0 && ( static_cast<uint8_t>(p[i]) & 0b1100'0000 ) == 0b1000'0000 ) --i;
+		p[i] = '\0';
+	}
 
 	GameRules()->CheckChatText( pPlayer, p );
 

@@ -22,7 +22,8 @@ IMPLEMENT_CLIENTCLASS_DT( C_ASW_Pickup_Weapon, DT_ASW_Pickup_Weapon, CASW_Pickup
 	RecvPropInt		(RECVINFO(m_iBulletsInGun)),
 	RecvPropInt		(RECVINFO(m_iClips)),
 	RecvPropInt		(RECVINFO(m_iSecondary)),
-	RecvPropBool		(RECVINFO(m_bIsTemporaryPickup)),
+	RecvPropBool	(RECVINFO(m_bIsTemporaryPickup)),
+	RecvPropInt		(RECVINFO(m_iClassRequirementOverride)),
 END_RECV_TABLE()
 
 C_ASW_Pickup_Weapon::C_ASW_Pickup_Weapon()

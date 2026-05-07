@@ -29,7 +29,7 @@ public:
 
 	float m_fDetonateTime;
 	float m_fEarliestAOEDetonationTime;
-	Class_T m_CreatorWeaponClass;
+	Class_T m_CreatorWeaponClass = (Class_T)CLASS_ASW_UNKNOWN;
 
 	void SetAdvancedRicochet(bool bRicochet) { m_bAdvancedRicochet = bRicochet; }		// if set, grenade will ricochet with increaced velocity if no world contact explosion specified.
 	bool m_bAdvancedRicochet;

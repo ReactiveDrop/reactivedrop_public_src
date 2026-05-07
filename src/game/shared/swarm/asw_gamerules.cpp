@@ -6284,7 +6284,7 @@ int CAlienSwarm::GetRandomValidWeaponSelectionExtra( CASW_Marine_Resource *pMari
 
 #endif // CLIENT_DLL
 
-bool CAlienSwarm::MarineCanPickup( CASW_Marine_Resource *pMarineResource, const char *szWeaponClass, const char *szSwappingClass )
+bool CAlienSwarm::MarineCanPickup( CASW_Marine_Resource *pMarineResource, const char *szWeaponClass, const char *szSwappingClass, const int iRequiredClassOverride )
 {
 	if ( !pMarineResource )
 		return false;
@@ -6312,26 +6312,28 @@ bool CAlienSwarm::MarineCanPickup( CASW_Marine_Resource *pMarineResource, const 
 
 	if ( bCheckRestriction )
 	{
+		const int iRequiredClass = iRequiredClassOverride != -1 ? iRequiredClassOverride : pItem->m_iRequiredClass;
+		
 		// check various class skills
-		if ( pItem->m_iRequiredClass == MARINE_CLASS_TECH && !pProfile->CanUseTechWeapons() )
+		if ( iRequiredClass == MARINE_CLASS_TECH && !pProfile->CanUseTechWeapons() )
 		{
 			V_strncpy( m_szPickupDenial, "#asw_requires_tech", sizeof( m_szPickupDenial ) );
 			return false;
 		}
 
-		if ( pItem->m_iRequiredClass == MARINE_CLASS_MEDIC && !pProfile->CanUseFirstAid() )
+		if ( iRequiredClass == MARINE_CLASS_MEDIC && !pProfile->CanUseFirstAid() )
 		{
 			V_strncpy( m_szPickupDenial, "#asw_requires_medic", sizeof( m_szPickupDenial ) );
 			return false;
 		}
 
-		if ( pItem->m_iRequiredClass == MARINE_CLASS_SPECIAL_WEAPONS && pProfile->GetMarineClass() != MARINE_CLASS_SPECIAL_WEAPONS )
+		if ( iRequiredClass == MARINE_CLASS_SPECIAL_WEAPONS && pProfile->GetMarineClass() != MARINE_CLASS_SPECIAL_WEAPONS )
 		{
 			V_strncpy( m_szPickupDenial, "#asw_requires_sw", sizeof( m_szPickupDenial ) );
 			return false;
 		}
 
-		if ( pItem->m_iRequiredClass == MARINE_CLASS_NCO && pProfile->GetMarineClass() != MARINE_CLASS_NCO )
+		if ( iRequiredClass == MARINE_CLASS_NCO && pProfile->GetMarineClass() != MARINE_CLASS_NCO )
 		{
 			V_strncpy( m_szPickupDenial, "#asw_requires_nco", sizeof( m_szPickupDenial ) );
 			return false;

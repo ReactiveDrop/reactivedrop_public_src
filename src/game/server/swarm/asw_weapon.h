@@ -157,6 +157,7 @@ public:
 	IMPLEMENT_NETWORK_VAR_FOR_DERIVED( m_flTimeWeaponIdle );
 
 	CNetworkVar(bool, m_bIsTemporaryPickup);
+	CNetworkVar(int, m_iClassRequirementOverride);
 
 	// effects
 	virtual const char* GetUTracerType();
@@ -170,6 +171,7 @@ public:
 	bool IsBeingCarried() const;
 	bool IsCarriedByLocalPlayer();
 	virtual void FallInit();
+	void SetMarineClassRequirement( int nClass );
 
 	// check if this weapon wants to perform a sync kill
 	virtual bool CheckSyncKill( byte &forced_action, short &sync_kill_ent ) { return false; }

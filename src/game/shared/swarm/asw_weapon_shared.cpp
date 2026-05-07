@@ -178,11 +178,9 @@ void CASW_Weapon::ItemBusyFrame( void )
 				pOwner->SetNextAttack( flSucceedDelay );
 				m_flNextPrimaryAttack = m_flNextSecondaryAttack = flSucceedDelay;
 
-				// TODO: hook up anim
-				//pMarine->DoAnimationEvent( PLAYERANIMEVENT_RELOAD_SUCCEED );
+				pMarine->DoAnimationEvent( PLAYERANIMEVENT_RELOAD_SUCCEED );
 
 				DispatchParticleEffect( "fast_reload", PATTACH_POINT_FOLLOW, this, "muzzle" );
-				pMarine->m_flPreventLaserSightTime = gpGlobals->curtime + 2.5f;
 
 #ifdef GAME_DLL
 				pMarine->m_nFastReloadsInARow++;
@@ -267,8 +265,7 @@ void CASW_Weapon::ItemBusyFrame( void )
 					m_flReloadFailTime = m_flNextPrimaryAttack - gpGlobals->curtime;
 				}
 
-				// TODO: hook up anim
-				//pMarine->DoAnimationEvent( PLAYERANIMEVENT_RELOAD_FAIL );
+				pMarine->DoAnimationEvent( PLAYERANIMEVENT_RELOAD_FAIL );
 
 #ifdef GAME_DLL
 				IGameEvent *event = gameeventmanager->CreateEvent( "fast_reload_fail" );
@@ -1703,7 +1700,7 @@ bool CASW_Weapon::AllowedToPickup( CASW_Inhabitable_NPC *pNPC )
 	const char *szSwappingClass = pWeapon ? pWeapon->GetClassname() : "";
 
 	// first check if the gamerules will allow it
-	bool bAllowed = ASWGameRules()->MarineCanPickup( pMarine->GetMarineResource(), GetClassname(), szSwappingClass );
+	bool bAllowed = ASWGameRules()->MarineCanPickup( pMarine->GetMarineResource(), GetClassname(), szSwappingClass, m_iClassRequirementOverride );
 #ifdef CLIENT_DLL
 	m_bSwappingWeapon = ( pWeapon != NULL );
 #endif

@@ -202,6 +202,7 @@ public:
 	virtual bool AllowedToPickup( C_ASW_Inhabitable_NPC *pNPC );
 	bool m_bSwappingWeapon;
 	bool m_bIsTemporaryPickup;
+	int m_iClassRequirementOverride;
 
 	// check if this weapon wants to perform a sync kill
 	virtual bool CheckSyncKill( byte &forced_action, short &sync_kill_ent ) { return false; }

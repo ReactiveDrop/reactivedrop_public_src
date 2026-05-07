@@ -23,6 +23,7 @@ public:
 	CNetworkVar(int, m_iClips);
 	CNetworkVar(int, m_iSecondary);
 	CNetworkVar(bool, m_bIsTemporaryPickup);
+	CNetworkVar(int, m_iClassRequirementOverride);
 
 	int m_nUseIconTextureID;
 	bool m_bWideIcon;

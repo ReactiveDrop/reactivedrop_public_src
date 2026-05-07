@@ -16,7 +16,8 @@ IMPLEMENT_SERVERCLASS_ST(CASW_Pickup_Weapon, DT_ASW_Pickup_Weapon)
 	SendPropInt		(SENDINFO(m_iBulletsInGun), 16 ),
 	SendPropInt		(SENDINFO(m_iClips), 10 ),
 	SendPropInt		(SENDINFO(m_iSecondary), 10 ),
-	SendPropBool		(SENDINFO(m_bIsTemporaryPickup) ),
+	SendPropBool	(SENDINFO(m_bIsTemporaryPickup) ),
+	SendPropInt		(SENDINFO(m_iClassRequirementOverride) ),
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CASW_Pickup_Weapon )
@@ -24,11 +25,13 @@ BEGIN_DATADESC( CASW_Pickup_Weapon )
 	DEFINE_KEYFIELD( m_iClips, FIELD_INTEGER, "Clips"),
 	DEFINE_KEYFIELD( m_iSecondary, FIELD_INTEGER, "SecondaryBullets"),
 	DEFINE_KEYFIELD( m_bIsTemporaryPickup, FIELD_BOOLEAN, "IsTemporaryPickup"),
+	DEFINE_KEYFIELD( m_iClassRequirementOverride, FIELD_INTEGER, "ClassRequirementOverride" ),
 END_DATADESC()
 
 CASW_Pickup_Weapon::CASW_Pickup_Weapon()
 {
 	m_bIsTemporaryPickup = false;
+	m_iClassRequirementOverride = -1;
 }
 
 //---------------------------------------------------------
@@ -79,6 +82,7 @@ void CASW_Pickup_Weapon::InitFrom(CASW_Marine* pMarine, CASW_Weapon* pWeapon)
 	m_iClips = bullets_on_player / pWeapon->GetMaxClip1();
 	m_iSecondary = pWeapon->Clip2();
 	m_bIsTemporaryPickup = pWeapon->m_bIsTemporaryPickup;
+	m_iClassRequirementOverride = pWeapon->m_iClassRequirementOverride;
 
 	if (pMarine->GetNumberOfWeaponsUsingAmmo(iAmmoIndex) > 1)
 	{
@@ -107,6 +111,7 @@ void CASW_Pickup_Weapon::InitWeapon(CASW_Marine* pMarine, CASW_Weapon* pWeapon)
 		pMarine->GiveAmmo(GetNumClips() * pWeapon->GetMaxClip1(), pWeapon->GetPrimaryAmmoType());
 
 	pWeapon->m_bIsTemporaryPickup = m_bIsTemporaryPickup;
+	pWeapon->m_iClassRequirementOverride = m_iClassRequirementOverride;
 }
 
 // player has used this item

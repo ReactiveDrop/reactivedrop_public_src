@@ -33,6 +33,7 @@ public:
 	CNetworkVar(int, m_iClips);
 	CNetworkVar(int, m_iSecondary);
 	CNetworkVar(bool, m_bIsTemporaryPickup);
+	CNetworkVar(int, m_iClassRequirementOverride);
 };
 
 class CASW_Pickup_Weapon_Rifle : public CASW_Pickup_Weapon

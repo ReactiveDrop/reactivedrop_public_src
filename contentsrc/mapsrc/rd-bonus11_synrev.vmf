@@ -2,7 +2,7 @@ versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "7397"
-	"mapversion" "3039"
+	"mapversion" "3040"
 	"formatversion" "100"
 	"prefab" "0"
 }
@@ -50,7 +50,7 @@ viewsettings
 world
 {
 	"id" "394754"
-	"mapversion" "3039"
+	"mapversion" "3040"
 	"classname" "worldspawn"
 	"detailmaterial" "detail/detailsprites"
 	"detailvbsp" "detail.vbsp"
@@ -124298,10 +124298,10 @@ entity
 {
 	"id" "583660"
 	"classname" "asw_objective_escape"
-	"objectivedescription1" "Proceed to the Rydberg Reactor"
+	"objectivedescription1" "#asw_ob_office_rev1b"
 	"objectiveimage" "obresidentialexit"
 	"objectiveinfoicon1" "OIconPlanet"
-	"objectivetitle" "Escape using south door"
+	"objectivetitle" "#asw_ob_office_rev1"
 	"targetname" "Objective_Escape"
 	"Visible" "1"
 	"origin" "-160 -3112 161"
@@ -197531,7 +197531,7 @@ hidden
 				editor
 				{
 					"color" "0 180 0"
-					"visgroupshown" "0"
+					"visgroupshown" "1"
 					"visgroupautoshown" "1"
 				}
 			}

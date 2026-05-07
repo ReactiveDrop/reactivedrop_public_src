@@ -212,6 +212,7 @@ void CASW_Pickup_Weapon_Ammo_Bag::InitFrom(CASW_Marine* pMarine, CASW_Weapon* pW
 	m_iClips = 0;
 	m_iSecondary = 0;
 	m_bIsTemporaryPickup = pWeapon->m_bIsTemporaryPickup;
+	m_iClassRequirementOverride = pWeapon->m_iClassRequirementOverride;
 
 	for (int i=0;i<ASW_AMMO_BAG_SLOTS;i++)
 	{
@@ -232,6 +233,7 @@ void CASW_Pickup_Weapon_Ammo_Bag::InitWeapon(CASW_Marine* pMarine, CASW_Weapon* 
 	pWeapon->SetClip1( 0 );
 	pWeapon->SetClip2( 0 );
 	pWeapon->m_bIsTemporaryPickup = m_bIsTemporaryPickup;
+	pWeapon->m_iClassRequirementOverride = m_iClassRequirementOverride;
 
 	// equip the weapon
 	pMarine->Weapon_Equip_In_Index( pWeapon, pMarine->GetWeaponPositionForPickup( GetWeaponClass(), m_bIsTemporaryPickup ) );
@@ -287,6 +289,7 @@ void CASW_Pickup_Weapon_Ammo_Satchel::InitFrom(CASW_Marine* pMarine, CASW_Weapon
 
 	//m_nAmmoDrops = pSatchel->m_nAmmoDrops;
 	m_bIsTemporaryPickup = pWeapon->m_bIsTemporaryPickup;
+	m_iClassRequirementOverride = pWeapon->m_iClassRequirementOverride;
 }
 
 void CASW_Pickup_Weapon_Ammo_Satchel::InitWeapon(CASW_Marine* pMarine, CASW_Weapon* pWeapon)
@@ -301,6 +304,7 @@ void CASW_Pickup_Weapon_Ammo_Satchel::InitWeapon(CASW_Marine* pMarine, CASW_Weap
 	//pWeapon->SetClip1( 0 );
 	//pWeapon->SetClip2( 0 );
 	pWeapon->m_bIsTemporaryPickup = m_bIsTemporaryPickup;
+	m_iClassRequirementOverride = pWeapon->m_iClassRequirementOverride;
 
 	// equip the weapon
 	pMarine->Weapon_Equip_In_Index( pWeapon, pMarine->GetWeaponPositionForPickup( GetWeaponClass(), m_bIsTemporaryPickup ) );
