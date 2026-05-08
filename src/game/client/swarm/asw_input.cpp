@@ -457,6 +457,19 @@ C_BaseEntity* HUDToWorld(float screenx, float screeny,
 	if (asw_DebugAutoAim.GetBool())
 		ASW_StoreClearAll();
 
+	// Check bad aim angles
+	if ( pPlayer->GetASWControls() == ASWC_TOPDOWN &&
+			!ASWInput()->ControllerModeActiveMouse() && pBestAlien )
+	{
+		Vector vecAlienPos = pBestAlien->GetAimTargetRadiusPos( vecWeaponPos );
+
+		// Don't aim at stuff a bit below camera and higher
+		if ( vecAlienPos.z > vCameraLocation.z - 60.0f )
+		{
+			pBestAlien = NULL;
+		}
+	}
+
 	// if we have our cursor over a target (and not using the controller), make sure we have LOS to him before we continue
 	if ( !ASWInput()->ControllerModeActiveMouse() && pBestAlien )
 	{
@@ -503,6 +516,10 @@ C_BaseEntity* HUDToWorld(float screenx, float screeny,
 			// check he's in range
 			Vector vecAlienPos = pAimTarget->GetAimTargetRadiusPos(vecWeaponPos); //pEnt->WorldSpaceCenter();
 			if ( vecAlienPos.DistToSqr(vecWeaponPos) > ASW_MAX_AUTO_AIM_RANGE )
+				continue;
+
+			// Don't aim at stuff a bit below camera and higher
+			if ( pPlayer->GetASWControls() == ASWC_TOPDOWN && vecAlienPos.z > vCameraLocation.z - 60.0f )
 				continue;
 
 			Vector vDirection = vecAlienPos - vecWeaponPos;
