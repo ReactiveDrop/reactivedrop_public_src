@@ -55,6 +55,8 @@ ConVar joy_disable_movement_in_ui( "joy_disable_movement_in_ui", "1", FCVAR_NONE
 ConVar rd_input_controller_mode_mouse( "rd_input_controller_mode_mouse", "-1", FCVAR_NONE );
 ConVar rd_input_controller_mode_keyboard( "rd_input_controller_mode_keyboard", "-1", FCVAR_NONE );
 
+ConVar rd_aim_ignore_above_camera_z( "rd_aim_ignore_above_camera_z", "-60", FCVAR_NONE, "Targets above the camera by this Z distance are ignored in top-down mode" );
+
 extern kbutton_t in_attack;
 extern kbutton_t in_walk;
 extern int g_asw_iPlayerListOpen;
@@ -464,7 +466,7 @@ C_BaseEntity* HUDToWorld(float screenx, float screeny,
 		Vector vecAlienPos = pBestAlien->GetAimTargetRadiusPos( vecWeaponPos );
 
 		// Don't aim at stuff a bit below camera and higher
-		if ( vecAlienPos.z > vCameraLocation.z - 60.0f )
+		if ( vecAlienPos.z > vCameraLocation.z + rd_aim_ignore_above_camera_z.GetFloat() )
 		{
 			pBestAlien = NULL;
 		}
@@ -519,7 +521,8 @@ C_BaseEntity* HUDToWorld(float screenx, float screeny,
 				continue;
 
 			// Don't aim at stuff a bit below camera and higher
-			if ( pPlayer->GetASWControls() == ASWC_TOPDOWN && vecAlienPos.z > vCameraLocation.z - 60.0f )
+			if ( pPlayer->GetASWControls() == ASWC_TOPDOWN &&
+					vecAlienPos.z > vCameraLocation.z + rd_aim_ignore_above_camera_z.GetFloat() )
 				continue;
 
 			Vector vDirection = vecAlienPos - vecWeaponPos;
