@@ -2605,7 +2605,7 @@ void CASW_Player::ChangeName( const char *pszNewName )
 	if (rd_add_index_to_name.GetBool())
 	{
 		char tempName[MAX_PLAYER_NAME_LENGTH];
-		int n = V_snprintf(tempName, sizeof(tempName) - 1, "%d-%s", ENTINDEX(edict()), pszNewName);
+		V_snprintf(tempName, sizeof(tempName) - 1, "%d-%s", ENTINDEX(edict()), pszNewName);
 		UTIL_SafeUtf8Truncate(tempName, sizeof(tempName));
 		if (V_strncmp(pszOldName, tempName, sizeof(tempName)) == 0)
 		{

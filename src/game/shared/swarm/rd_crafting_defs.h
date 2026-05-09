@@ -100,6 +100,7 @@ struct RD_Crafting_Recipe_Input
 {
 	CCopyableUtlVector<SteamItemDef_t> m_AllowedItem;
 	uint32_t m_iFlags = 0;
+	uint32_t m_iQuantity = 1;
 };
 
 struct RD_Crafting_Recipe_Variant

@@ -136,6 +136,8 @@ void CRD_Crafting_Panel::OnCommand( const char *szCommand )
 			// (this assumption allows us to use a greedy algorithm)
 			FOR_EACH_VEC( variant.m_Inputs, j )
 			{
+				Assert( variant.m_Inputs[j].m_iQuantity == 1 );
+
 				FOR_EACH_VEC( variant.m_Inputs[j].m_AllowedItem, k )
 				{
 					CUtlVector<ReactiveDropInventory::ItemInstance_t> instances;

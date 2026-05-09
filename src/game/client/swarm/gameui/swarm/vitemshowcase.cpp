@@ -473,17 +473,17 @@ void ItemShowcase::ShowItems( SteamInventoryResult_t hResult, int iStart, int iC
 		{
 			// replace previous versions of this item's state in the queue
 			bool bFound = false;
-			FOR_EACH_VEC( pItemShowcase->m_Queue, i )
+			FOR_EACH_VEC( pItemShowcase->m_Queue, j )
 			{
-				if ( pItemShowcase->m_QueueExtra[i] != 0 || pItemShowcase->m_QueueType[i] != mode )
+				if ( pItemShowcase->m_QueueExtra[j] != 0 || pItemShowcase->m_QueueType[j] != mode )
 				{
 					continue;
 				}
 
-				if ( pItemShowcase->m_Queue[i]->ItemID == pInstance->ItemID )
+				if ( pItemShowcase->m_Queue[j]->ItemID == pInstance->ItemID )
 				{
-					delete pItemShowcase->m_Queue[i];
-					pItemShowcase->m_Queue[i] = pInstance;
+					delete pItemShowcase->m_Queue[j];
+					pItemShowcase->m_Queue[j] = pInstance;
 					bFound = true;
 					break;
 				}

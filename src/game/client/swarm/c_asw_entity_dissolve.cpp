@@ -206,7 +206,6 @@ void C_ASW_Entity_Dissolve::BuildTeslaEffect( mstudiobbox_t *pHitBox, const matr
 
 			// Move it towards the camera
 			Vector vecFlash = tr.endpos;
-			Vector vecForward;
 			AngleVectors( MainViewAngles(nSlot), &vecForward );
 			vecFlash -= (vecForward * 8);
 

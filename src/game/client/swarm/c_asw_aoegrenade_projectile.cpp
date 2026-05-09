@@ -204,11 +204,11 @@ void C_ASW_AOEGrenade_Projectile::UpdateTargetAOEEffects( void )
 		{
 			bool bHaveEffect = false;
 
-			for ( AOEGrenTargetFXList_t::IndexLocalType_t i = m_hAOETargetEffects.Head() ;
-				  m_hAOETargetEffects.IsValidIndex(i) ;
-				  i = m_hAOETargetEffects.Next(i) )
+			for ( AOEGrenTargetFXList_t::IndexLocalType_t j = m_hAOETargetEffects.Head() ;
+				  m_hAOETargetEffects.IsValidIndex(j) ;
+				  j = m_hAOETargetEffects.Next(j) )
 			{
-				if ( m_hAOETargetEffects[i].hTarget.Get() == pTarget )
+				if ( m_hAOETargetEffects[j].hTarget.Get() == pTarget )
 				{
 					bHaveEffect = true;
 					break;

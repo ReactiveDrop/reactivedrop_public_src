@@ -16,7 +16,7 @@ public:
 	virtual const char* GetStartSoundName( void ) override { return "ASW_BuffGrenade.StartBuff"; }
 	virtual const char* GetActivateSoundName( void ) override { return "ASW_BuffGrenade.GrenadeActivate"; }
 	virtual const char* GetPingEffectName( void ) override { return "buffgrenade_pulse"; }
-	virtual const char* GetArcEffectName( int index ) override { return index == 1 ? "buffgrenade_noconnect" : "buffgrenade_attach_arc"; }
+	virtual const char* GetArcEffectName( int i ) override { return i == 1 ? "buffgrenade_noconnect" : "buffgrenade_attach_arc"; }
 	virtual const char* GetArcAttachmentName( void ) override { return "beam_attach"; }
 	virtual int GetArcEffectIndex( C_BaseEntity *pEnt ) override;
 	virtual bool ShouldAttachEffectToWeapon( void ) override { return true; }

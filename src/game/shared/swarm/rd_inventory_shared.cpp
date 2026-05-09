@@ -281,13 +281,24 @@ public:
 
 		m_HighOwnedInventoryDefIDs.Purge();
 
+		CUtlMap<SteamItemDef_t, CCopyableUtlVector<SteamItemInstanceID_t>> autoStackDefs( DefLessFunc( SteamItemDef_t ) );
 		for ( uint32 i = 0; i < nItems; i++ )
 		{
 			ReactiveDropInventory::ItemInstance_t instance{ hResult, i };
 			m_LocalInventoryCache.AddToTail( instance );
 
-			// precache item def + icon
-			( void )ReactiveDropInventory::GetItemDef( instance.ItemDefID );
+			// precache item def + icon and check for auto-stack flag
+			const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( instance.ItemDefID );
+			if ( pDef && pDef->AutoStack )
+			{
+				unsigned short index = autoStackDefs.Find( instance.ItemDefID );
+				if ( !autoStackDefs.IsValidIndex( index ) )
+				{
+					index = autoStackDefs.Insert( instance.ItemDefID );
+				}
+
+				autoStackDefs[index].AddToTail( instance.ItemID );
+			}
 
 			// The Steam inventory API doesn't list item def IDs that are between 1 million and 1 billion unless we ask about them specifically.
 			// If we own any items with def IDs in this range, remember that and re-write the schema cache to include them.
@@ -295,7 +306,9 @@ public:
 			if ( instance.ItemDefID >= 1000000 )
 			{
 				if ( !m_HighOwnedInventoryDefIDs.IsValidIndex( m_HighOwnedInventoryDefIDs.Find( instance.ItemDefID ) ) )
+				{
 					m_HighOwnedInventoryDefIDs.AddToTail( instance.ItemDefID );
+				}
 			}
 		}
 
@@ -317,6 +330,33 @@ public:
 				}
 
 				break;
+			}
+		}
+
+		if ( rd_debug_inventory.GetBool() )
+		{
+			DevMsg( 3, "Verifying %d auto-stack defs...\n", autoStackDefs.Count() );
+		}
+		FOR_EACH_MAP_FAST( autoStackDefs, i )
+		{
+			if ( autoStackDefs[i].Count() == 1 )
+			{
+				continue;
+			}
+
+			Assert( autoStackDefs[i].Count() != 0 );
+
+			if ( rd_debug_inventory.GetBool() )
+			{
+				Msg( "Have %d stacks of auto-stack item %d; merging\n", autoStackDefs[i].Count(), autoStackDefs.Key( i ) );
+			}
+
+			pInventory->TransferItemQuantity( AddCraftItemTask( CRAFT_AUTO_STACK, autoStackDefs.Key( i ) ), autoStackDefs[i][1], GetLocalItemCache( autoStackDefs[i][1] )->Quantity, autoStackDefs[i][0] );
+			if ( autoStackDefs[i].Count() > 2 )
+			{
+				m_CraftingQueue.Tail()->m_RetryItemList.AddVectorToTail( autoStackDefs[i] );
+				m_CraftingQueue.Tail()->m_RetryItemList.FastRemove( 1 );
+				m_CraftingQueue.Tail()->m_RetryItemList.FastRemove( 0 );
 			}
 		}
 
@@ -1277,6 +1317,7 @@ public:
 			case CRAFT_DELETE_SILENT:
 			case CRAFT_NOTIFICATION_DYNAMIC_PROPERTY_UPDATE:
 			case CRAFT_AUTO_BACKGROUND:
+			case CRAFT_AUTO_STACK:
 				break;
 			default:
 				Assert( !"unhandled crafting task type" );
@@ -1313,6 +1354,7 @@ public:
 		case CRAFT_DELETE_SILENT:
 		case CRAFT_NOTIFICATION_DYNAMIC_PROPERTY_UPDATE:
 		case CRAFT_AUTO_BACKGROUND:
+		case CRAFT_AUTO_STACK:
 			break;
 		default:
 			Assert( !"unhandled crafting task type" );
@@ -1457,14 +1499,22 @@ public:
 						continue;
 					}
 
+					char buf[12]{};
+					uint32 len = sizeof( buf );
+					int32 quantity = 0;
+					if ( pInventory->GetResultItemProperty( pTask->m_hResult, i, "quantity", buf, &len ) )
+					{
+						quantity = strtol( buf, NULL, 10 );
+					}
+
 					if ( const ItemInstance_t *pCached = GetLocalItemCache( diff[i].m_itemId ) )
 					{
-						diff[i].m_unQuantity = MAX( 0, int( diff[i].m_unQuantity ) - pCached->Quantity );
+						quantity = MAX( 0, quantity - pCached->Quantity );
 					}
 
 					if ( diff[i].m_iDefinition == g_RD_Crafting_Material_Info[eMaterialType].m_iItemDef )
 					{
-						added = diff[i].m_unQuantity;
+						added += quantity;
 					}
 				}
 
@@ -1526,6 +1576,53 @@ public:
 			m_InFlightNotificationSeen.Purge();
 			break;
 		case CRAFT_AUTO_BACKGROUND:
+			break;
+		case CRAFT_AUTO_STACK:
+			if ( pTask->m_RetryItemList.Count() != 0 )
+			{
+				uint32 nCount{};
+				pInventory->GetResultItems( pTask->m_hResult, NULL, &nCount );
+				CUtlVector<SteamItemDetails_t> items;
+				items.AddMultipleToTail( nCount );
+				pInventory->GetResultItems( pTask->m_hResult, items.Base(), &nCount );
+
+				SteamItemInstanceID_t iStacked = k_SteamItemInstanceIDInvalid;
+				FOR_EACH_VEC( items, i )
+				{
+					if ( items[i].m_unFlags & ( k_ESteamItemConsumed | k_ESteamItemRemoved ) )
+					{
+						continue;
+					}
+
+					char buf[12]{};
+					uint32 len = sizeof( buf );
+					int32 quantity = 0;
+					if ( pInventory->GetResultItemProperty( pTask->m_hResult, i, "quantity", buf, &len ) )
+					{
+						quantity = strtol( buf, NULL, 10 );
+					}
+
+					if ( quantity > 0 )
+					{
+						Assert( items[i].m_iDefinition == pTask->m_iAccessoryDef );
+						Assert( iStacked == k_SteamItemInstanceIDInvalid );
+						iStacked = items[i].m_itemId;
+					}
+				}
+
+				Assert( iStacked != k_SteamItemInstanceIDInvalid );
+				if ( iStacked != k_SteamItemInstanceIDInvalid )
+				{
+					if ( rd_debug_inventory.GetBool() )
+					{
+						Msg( "Have %d remaining stacks of auto-stack item %d; merging\n", pTask->m_RetryItemList.Count() + 1, pTask->m_iAccessoryDef );
+					}
+
+					pInventory->TransferItemQuantity( AddCraftItemTask( CRAFT_AUTO_STACK, pTask->m_iAccessoryDef ), pTask->m_RetryItemList[0], GetLocalItemCache( pTask->m_RetryItemList[0] )->Quantity, iStacked );
+					m_CraftingQueue.Tail()->m_RetryItemList.AddVectorToTail( pTask->m_RetryItemList );
+					m_CraftingQueue.Tail()->m_RetryItemList.FastRemove( 0 );
+				}
+			}
 			break;
 		default:
 			Assert( !"unhandled crafting task type" );

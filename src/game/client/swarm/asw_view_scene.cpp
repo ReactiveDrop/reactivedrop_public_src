@@ -566,7 +566,7 @@ void CASWNightVisionSelfIllumProxy::OnBind( void *pC_BaseEntity )
 EXPOSE_MATERIAL_PROXY( CASWNightVisionSelfIllumProxy, NightVisionSelfIllum );
 
 
-void CASWViewRender::PerformNightVisionEffect( const CViewSetup &view )
+void CASWViewRender::PerformNightVisionEffect( const CViewSetup &setup )
 {
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	if ( !pPlayer )
@@ -587,7 +587,7 @@ void CASWViewRender::PerformNightVisionEffect( const CViewSetup &view )
 		{
 			byte overlaycolor[4] = { 0, 255, 0, 255 };
 
-			UpdateScreenEffectTexture( 0, view.x, view.y, view.width, view.height );
+			UpdateScreenEffectTexture( 0, setup.x, setup.y, setup.width, setup.height );
 
 			overlaycolor[3] = flVisionAlpha;
 

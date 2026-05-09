@@ -226,7 +226,6 @@ void CASW_Weapon_Cryo_Cannon::PrimaryAttack()
 		return;
 	}
 
-	CASW_Player *pPlayer = GetCommander();
 	CASW_Marine *pMarine = GetMarine();
 	if ( !pMarine )
 		return;
@@ -290,6 +289,7 @@ void CASW_Weapon_Cryo_Cannon::PrimaryAttack()
 
 	Vector vecSrc = pMarine->Weapon_ShootPosition();
 	Vector vecAiming = vec3_origin;
+	CASW_Player *pPlayer = GetCommander();
 	if ( pPlayer && pMarine->IsInhabited() )
 	{
 		vecAiming = pPlayer->GetAutoaimVectorForMarine( pMarine, GetAutoAimAmount(), GetVerticalAdjustOnlyAutoAimAmount() );

@@ -233,9 +233,7 @@ void CASW_Weapon_Flamer::PrimaryAttack( void )
 		return;
 	}
 
-	CASW_Player *pPlayer = GetCommander();
 	CASW_Marine *pMarine = GetMarine();
-
 	if (pMarine)		// firing from a marine
 	{
 		// MUST call sound before removing a round from the clip of a CMachineGun
@@ -253,6 +251,7 @@ void CASW_Weapon_Flamer::PrimaryAttack( void )
 #ifndef CLIENT_DLL
 		Vector vecSrc = pMarine->Weapon_ShootPosition( );
 		Vector vecAiming = vec3_origin;
+		CASW_Player *pPlayer = GetCommander();
 		if ( pPlayer && pMarine->IsInhabited() )
 		{
 			vecAiming = pPlayer->GetAutoaimVectorForMarine(pMarine, GetAutoAimAmount(), GetVerticalAdjustOnlyAutoAimAmount());	// 45 degrees = 0.707106781187
