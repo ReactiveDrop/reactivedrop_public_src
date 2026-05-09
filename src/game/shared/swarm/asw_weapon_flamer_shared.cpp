@@ -407,6 +407,7 @@ void CASW_Weapon_Flamer::SecondaryAttack( void )
 		{
 			// decrement ammo
 			m_iClip1 -= 2;
+			NotifyIfNoneClip1Ammo( pMarine );
 		}
 	}
 	if (!rd_flamer_infinite_extinguisher.GetBool() || m_iClip1 > 0)		// only force the fire wait time if we have ammo for another shot
