@@ -105,6 +105,7 @@ public:
 	virtual void WeaponSound( WeaponSound_t sound_type, float soundtime = 0.0f );
 	virtual bool HasAmmo();
 	virtual bool PrimaryAmmoLoaded( void );
+	virtual void NotifyIfNoneClip1Ammo( C_ASW_Marine *pMarine );
 	virtual float GetReloadTime();
 	virtual float GetReloadFailTime();
 	virtual bool Reload();

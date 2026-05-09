@@ -655,6 +655,32 @@ bool CASW_Weapon::PrimaryAmmoLoaded( void )
 	return (m_iClip1 > 0);
 }
 
+// if marine doesn't have ammo in an ammo bay
+// call pMarine->OnWeaponOutOfAmmo( true )
+//
+// `#ifdef GAME_DLL` in the body of this method
+void CASW_Weapon::NotifyIfNoneClip1Ammo( CASW_Marine *pMarine )
+{
+#ifdef GAME_DLL
+	if ( m_iClip1 <= 0 && pMarine && pMarine->GetAmmoCount( m_iPrimaryAmmoType ) <= 0 )
+	{
+		// check he doesn't have ammo in an ammo bay
+		CASW_Weapon_Ammo_Bag *pAmmoBag = NULL;
+		CASW_Weapon *pWeapon = pMarine->GetASWWeapon( 0 );
+		if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
+			pAmmoBag = assert_cast< CASW_Weapon_Ammo_Bag * >( pWeapon );
+
+		if ( !pAmmoBag )
+		{
+			pWeapon = pMarine->GetASWWeapon( 1 );
+			if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
+				pAmmoBag = assert_cast< CASW_Weapon_Ammo_Bag * >( pWeapon );
+		}
+		if ( !pAmmoBag || !pAmmoBag->CanGiveAmmoToWeapon( this ) )
+			pMarine->OnWeaponOutOfAmmo( true );
+	}
+#endif // GAME_DLL
+}
 
 void CASW_Weapon::PrimaryAttack( void )
 {
