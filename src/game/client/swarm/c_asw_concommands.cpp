@@ -862,7 +862,7 @@ void rd_reset_level_and_promotion_f()
 
 	Msg( "All done, your level and promotion have been reset!\n" );
 }
-ConCommand rd_reset_level_and_promotion( "rd_reset_level_and_promotion", rd_reset_level_and_promotion_f, "Resets promotion (rank, level etc.)", FCVAR_NOT_CONNECTED );
+ConCommand rd_reset_level_and_promotion( "rd_reset_level_and_promotion", rd_reset_level_and_promotion_f, "Resets promotion (rank, level etc.)", FCVAR_CHEAT | FCVAR_NOT_CONNECTED );
 
 void asw_show_xp_f()
 {
