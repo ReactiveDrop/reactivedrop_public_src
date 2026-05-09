@@ -263,13 +263,7 @@ void CASW_Weapon_Cryo_Cannon::PrimaryAttack()
 	{
 		iShots = MIN( iShots, m_iClip1 );
 		m_iClip1 -= iShots;
-
-#ifdef GAME_DLL
-		if ( m_iClip1 <= 0 && pMarine && pMarine->GetAmmoCount( m_iPrimaryAmmoType ) <= 0 )
-		{
-			pMarine->OnWeaponOutOfAmmo( true );
-		}
-#endif
+		NotifyIfNoneClip1Ammo( pMarine );
 	}
 	else
 	{

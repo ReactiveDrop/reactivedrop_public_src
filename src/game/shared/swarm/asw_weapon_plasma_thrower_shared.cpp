@@ -324,13 +324,7 @@ void CASW_Weapon_Plasma_Thrower::PrimaryAttack()
 	{
 		info.m_iShots = MIN( info.m_iShots, m_iClip1 );
 		m_iClip1 -= info.m_iShots;
-
-#ifdef GAME_DLL
-		if ( m_iClip1 <= 0 && pMarine && pMarine->GetAmmoCount( m_iPrimaryAmmoType ) <= 0 )
-		{
-			pMarine->OnWeaponOutOfAmmo( true );
-		}
-#endif
+		NotifyIfNoneClip1Ammo( pMarine );
 	}
 	else
 	{
@@ -491,12 +485,7 @@ void CASW_Weapon_Plasma_Thrower::SecondaryAttack()
 	}
 
 	m_iClip1 -= rd_plasma_thrower_airblast_ammo.GetInt();
-#ifdef GAME_DLL
-	if ( m_iClip1 <= 0 && pMarine && pMarine->GetAmmoCount( m_iPrimaryAmmoType ) <= 0 )
-	{
-		pMarine->OnWeaponOutOfAmmo( true );
-	}
-#endif
+	NotifyIfNoneClip1Ammo( pMarine );
 
 	SendWeaponAnim( GetSecondaryAttackActivity() );
 	if ( pMarine )
