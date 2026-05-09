@@ -200,6 +200,7 @@ void CASW_Weapon_Tesla_Gun::PrimaryAttack( void )
 			{
 				m_iClip1 = MAX( 0, m_iClip1 - 1 );
 				m_flLastDischargeTime = gpGlobals->curtime;
+				NotifyIfNoneClip1Ammo( pMarine );
 			}
 
 			m_flNextPrimaryAttack = gpGlobals->curtime;
@@ -325,6 +326,7 @@ void CASW_Weapon_Tesla_Gun::ShockEntity()
 
 	// decrement ammo
 	m_iClip1 = MAX( 0, m_iClip1 - 1 );
+	NotifyIfNoneClip1Ammo( pMarine );
 
 	CPASFilter filter( pShockBaseEntity->GetAbsOrigin() );
 	CBaseEntity::EmitSound( filter, SOUND_FROM_WORLD, "ASW_Tesla_Laser.Damage", &pShockBaseEntity->GetAbsOrigin() );
@@ -488,8 +490,6 @@ void CASW_Weapon_Tesla_Gun::Fire( const Vector &vecOrigSrc, const Vector &vecDir
 		// If we fail to hit something, and we're not shocking someone, we're just discharging onto the ground
 		SetFiringState( ASW_TG_FIRE_DISCHARGE );
 	}
-
-	NotifyIfNoneClip1Ammo( pMarine );
 
 	if ( tr.DidHit() )
 	{
