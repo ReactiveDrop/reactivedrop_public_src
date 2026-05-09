@@ -41,7 +41,7 @@ public:
 	#else
 		virtual const float GetAutoAimAmount()
 		{
-			return 0.26f;
+			return 0.36f;
 		}
 		virtual const float GetAutoAimRadiusScale()
 		{
