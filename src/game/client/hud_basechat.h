@@ -276,23 +276,7 @@ public:
 	bool			IsVoiceSubtitle( void ) { return m_bEnteringVoice; }
 	void			SetVoiceSubtitleState( bool bState ) { m_bEnteringVoice = bState; }
 	
-	virtual void OnKeyCodeTyped(vgui::KeyCode code)
-	{
-		if (code == KEY_ENTER || code == KEY_PAD_ENTER || code == KEY_ESCAPE)
-		{
-			if (code != KEY_ESCAPE)
-			{
-				Send();
-			}
-
-			// End message mode.
-			StopMessageMode();
-		}
-		else
-		{
-			BaseClass::OnKeyCodeTyped(code);
-		}
-	}
+	virtual void OnKeyCodeTyped(vgui::KeyCode code);
 
 protected:
 	CBaseHudChatLine		*FindUnusedChatLine( void );
@@ -326,52 +310,12 @@ class CBaseHudChatEntry : public vgui::TextEntry
 public:
 	int m_iMaxByteCount = -1; // utf-8 string length
 
-	CBaseHudChatEntry( vgui::Panel *parent, char const *panelName, CBaseHudChat *pChat )
-		: BaseClass( parent, panelName )
-	{
-		SetCatchEnterKey( true );
-		SetAllowNonAsciiCharacters( true );
-		SetDrawLanguageIDAtLeft( true );
-		m_pHudChat = pChat;
-	}
+	CBaseHudChatEntry( vgui::Panel *parent, char const *panelName, CBaseHudChat *pChat );
 
-	virtual void ApplySchemeSettings( vgui::IScheme *pScheme )
-	{
-		BaseClass::ApplySchemeSettings(pScheme);
-
-		SetPaintBorderEnabled( false );
-	}
+	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
 
 	virtual	void InsertChar(wchar_t ch);
-
-	virtual void OnKeyCodeTyped(vgui::KeyCode code)
-	{
-		if ( code == KEY_ENTER || code == KEY_PAD_ENTER || code == KEY_ESCAPE )
-		{
-			if ( code != KEY_ESCAPE )
-			{
-				if ( m_pHudChat )
-				{
-					m_pHudChat->Send();
-				}
-			}
-		
-			// End message mode.
-			if ( m_pHudChat )
-			{
-				m_pHudChat->StopMessageMode();
-			}
-		}
-		else if ( code == KEY_TAB )
-		{
-			// Ignore tab, otherwise vgui will screw up the focus.
-			return;
-		}
-		else
-		{
-			BaseClass::OnKeyCodeTyped( code );
-		}
-	}
+	virtual void OnKeyCodeTyped(vgui::KeyCode code);
 
 private:
 	CBaseHudChat *m_pHudChat;
@@ -417,7 +361,6 @@ class CHudChatFilterPanel : public vgui::EditablePanel
 	DECLARE_CLASS_SIMPLE( CHudChatFilterPanel, vgui::EditablePanel );
 
 public:
-
 	CHudChatFilterPanel(  vgui::Panel *pParent, const char *pName );
 
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );

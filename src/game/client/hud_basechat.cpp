@@ -2522,6 +2522,40 @@ void CBaseHudChat::FireGameEvent( IGameEvent *event )
 	}
 }
 
+void CBaseHudChat::OnKeyCodeTyped(vgui::KeyCode code)
+{
+	if (code == KEY_ENTER || code == KEY_PAD_ENTER || code == KEY_ESCAPE)
+	{
+		if (code != KEY_ESCAPE)
+		{
+			Send();
+		}
+
+		// End message mode.
+		StopMessageMode();
+	}
+	else
+	{
+		BaseClass::OnKeyCodeTyped(code);
+	}
+}
+
+CBaseHudChatEntry::CBaseHudChatEntry( vgui::Panel *parent, char const *panelName, CBaseHudChat *pChat )
+	: BaseClass( parent, panelName )
+{
+	SetCatchEnterKey( true );
+	SetAllowNonAsciiCharacters( true );
+	SetDrawLanguageIDAtLeft( true );
+	m_pHudChat = pChat;
+}
+
+void CBaseHudChatEntry::ApplySchemeSettings( vgui::IScheme *pScheme )
+{
+	BaseClass::ApplySchemeSettings(pScheme);
+
+	SetPaintBorderEnabled( false );
+}
+
 // Prevent player from inserting text over utf-8 byte limit
 void CBaseHudChatEntry::InsertChar(wchar_t ch)
 {
@@ -2576,4 +2610,33 @@ void CBaseHudChatEntry::InsertChar(wchar_t ch)
 	}
 
 	return; // do not insert anything
+}
+
+void CBaseHudChatEntry::OnKeyCodeTyped(vgui::KeyCode code)
+{
+	if ( code == KEY_ENTER || code == KEY_PAD_ENTER || code == KEY_ESCAPE )
+	{
+		if ( code != KEY_ESCAPE )
+		{
+			if ( m_pHudChat )
+			{
+				m_pHudChat->Send();
+			}
+		}
+
+		// End message mode.
+		if ( m_pHudChat )
+		{
+			m_pHudChat->StopMessageMode();
+		}
+	}
+	else if ( code == KEY_TAB )
+	{
+		// Ignore tab, otherwise vgui will screw up the focus.
+		return;
+	}
+	else
+	{
+		BaseClass::OnKeyCodeTyped( code );
+	}
 }
