@@ -33,6 +33,7 @@ public:
 
 	virtual const float GetAutoAimAmount() { return 0.0f; }
 	virtual const float GetAutoAimRadiusScale() { return 1.0f; }
+	virtual int AmmoClickPoint() { return 8; } // displayed ammo is double of that
 	virtual const Vector& GetBulletSpread( void );
 	virtual void ItemPostFrame();
 	virtual void ItemBusyFrame();
