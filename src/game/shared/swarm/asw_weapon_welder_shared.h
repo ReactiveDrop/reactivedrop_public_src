@@ -5,6 +5,7 @@
 #ifdef CLIENT_DLL
 	#define CASW_Weapon_Welder C_ASW_Weapon_Welder
 	#define CASW_Weapon C_ASW_Weapon
+	#define CASW_Marine C_ASW_Marine
 	#include "c_asw_weapon.h"
 #else
 	#include "asw_weapon.h"
@@ -29,6 +30,7 @@ public:
 	virtual void PrimaryAttack();
 	virtual void SecondaryAttack();
 	virtual void WeldDoor(bool bSeal);
+	virtual void FinishWeld( CASW_Marine* pMarine, bool bKeepWeldDirection = false );
 
 	#ifndef CLIENT_DLL
 		DECLARE_DATADESC();

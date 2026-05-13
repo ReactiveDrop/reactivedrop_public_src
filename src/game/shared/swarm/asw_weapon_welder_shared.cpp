@@ -214,19 +214,7 @@ void CASW_Weapon_Welder::WeldDoor(bool bSeal)
 
 	if ( !bWelding )
 	{
-		m_iAutomaticWeldDirection = 0;
-		m_bShotDelayed = false;
-#ifdef GAME_DLL
-		if ( pMarine->GetMarineResource() )
-		{
-			pMarine->GetMarineResource()->m_hWeldingDoor = NULL;
-		}
-
-		m_pWeldDoor = NULL;
-
-		pMarine->OnWeldFinished();
-#endif
-		m_bIsFiring = false;
+		FinishWeld( pMarine, false );
 	}
 	else
 	{
@@ -241,29 +229,41 @@ void CASW_Weapon_Welder::WeldDoor(bool bSeal)
 	}
 }
 
+void CASW_Weapon_Welder::FinishWeld( CASW_Marine* pMarine, bool bKeepWeldDirection )
+{
+	m_bShotDelayed = false;
+#ifdef GAME_DLL
+	if ( pMarine )
+	{
+		if ( pMarine->GetMarineResource() )
+		{
+			pMarine->GetMarineResource()->m_hWeldingDoor = NULL;
+		}
+		pMarine->OnWeldFinished();
+	}
+#endif // GAME_DLL
+#ifndef CLIENT_DLL
+	m_pWeldDoor = NULL;
+#endif // !CLIENT_DLL
+	if ( !bKeepWeldDirection )
+	{
+		m_iAutomaticWeldDirection = 0;
+	}
+	m_bIsFiring = false;
+}
+
 // make the weapon weld if needed
 
 void CASW_Weapon_Welder::ItemPostFrame()
 {
+	CASW_Marine *pMarine = NULL;
 #ifndef CLIENT_DLL
-	CASW_Marine *pMarine = GetMarine();
+	pMarine = GetMarine();
 	if ( !pMarine || !pMarine->GetCommander() )
 	{
 		if ( m_bPlayingWelderSound )
 		{
-			m_bIsFiring = false;
-
-			m_pWeldDoor = NULL;
-
-			if (pMarine)
-			{
-				if (pMarine->GetMarineResource())
-				{
-					pMarine->GetMarineResource()->m_hWeldingDoor = NULL;
-				}
-
-				pMarine->OnWeldFinished();
-			}
+			FinishWeld( pMarine, true );
 			//Msg( "Clearing weld door as no marine\n" );
 		}
 		return BaseItemPostFrame();
@@ -328,32 +328,14 @@ void CASW_Weapon_Welder::ItemPostFrame()
 			if ( ( m_iAutomaticWeldDirection > 0 && m_pWeldDoor->GetSealAmount() >= 1.0f ) ||
 				 ( m_iAutomaticWeldDirection < 0 && m_pWeldDoor->GetSealAmount() <= 0.0f ) )
 			{
-				m_bShotDelayed = false;
-#ifdef GAME_DLL
-				if ( pMarine->GetMarineResource() )
-				{
-					pMarine->GetMarineResource()->m_hWeldingDoor = NULL;
-				}
-				m_pWeldDoor = NULL;
-				pMarine->OnWeldFinished();
-#endif
-				m_bIsFiring = false;
+				FinishWeld( pMarine, false );
 			}
 		}
 		else
 		{
 			if ( !FindDoor() )
 			{
-				m_bShotDelayed = false;
-#ifdef GAME_DLL
-				if ( pMarine->GetMarineResource() )
-				{
-					pMarine->GetMarineResource()->m_hWeldingDoor = NULL;
-				}
-				m_pWeldDoor = NULL;
-				pMarine->OnWeldFinished();
-#endif
-				m_bIsFiring = false;
+				FinishWeld( pMarine, true );
 			}
 		}
 	}
