@@ -150,6 +150,10 @@ void CASW_Weapon_Welder::WeldDoor(bool bSeal)
 				pMarine->DoMuzzleFlash();
 				m_bIsFiring = true;
 			}					
+			else
+			{
+				bWelding = false;
+			}
 		}
 #ifdef CLIENT_DLL
 		pMarine->SetFacingPoint(vecFacingPoint, GetFireRate()*2.0f);
