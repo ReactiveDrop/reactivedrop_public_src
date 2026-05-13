@@ -95,6 +95,7 @@ public:
 	Vector GetWeldFacingPoint(CBaseEntity* pOther); // the point a marine should look to weld this door
 
 	bool CloseForWeld(CASW_Marine* PMarine);		// player requests the door to shut so he can weld it
+	bool StopCloseForWeld(CASW_Marine *pMarine);	// open the door
 	bool IsRecommendedSeal( void ) { return m_bRecommendedSeal; }
 	bool CanWeld( void ) { return m_bCanCloseToWeld; }
 	float m_fClosingToWeldTime;	// door won't autoopen before this curtime

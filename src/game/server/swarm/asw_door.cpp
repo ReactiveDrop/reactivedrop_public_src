@@ -1082,6 +1082,18 @@ bool CASW_Door::CloseForWeld( CASW_Marine *pMarine )
 	return false;
 }
 
+bool CASW_Door::StopCloseForWeld( CASW_Marine *pMarine )
+{
+	if ( m_bCanCloseToWeld )
+	{
+		variant_t emptyVariant;
+		AcceptInput( "Open", pMarine, this, emptyVariant, 0 );
+		m_fClosingToWeldTime = gpGlobals->curtime;
+		return true;
+	}
+	return false;
+}
+
 void CASW_Door::AutoOpen( CBaseEntity *pOther )
 {
 	if ( gpGlobals->curtime > m_fClosingToWeldTime )

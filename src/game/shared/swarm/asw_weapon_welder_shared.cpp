@@ -167,12 +167,19 @@ void CASW_Weapon_Welder::WeldDoor(bool bSeal)
 		{
 			if ( pDoor->IsOpen() )
 			{
-#ifndef CLIENT_DLL
 				if ( bSeal )
 				{
+#ifndef CLIENT_DLL
 					pDoor->CloseForWeld( pMarine );	// shut the door first, so we can start welding it
-				}
 #endif
+				}
+				else
+				{
+#ifndef CLIENT_DLL
+					pDoor->StopCloseForWeld( pMarine );
+#endif
+					bWelding = false;
+				}
 			}
 			else
 			{
