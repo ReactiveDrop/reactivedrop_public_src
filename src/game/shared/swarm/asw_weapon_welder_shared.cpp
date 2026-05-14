@@ -243,6 +243,11 @@ void CASW_Weapon_Welder::FinishWeld( CASW_Marine* pMarine, bool bKeepWeldDirecti
 	}
 #endif // GAME_DLL
 #ifndef CLIENT_DLL
+	if ( m_iAutomaticWeldDirection < 0 && m_pWeldDoor && m_pWeldDoor->GetSealAmount() <= 0.0f )
+	{
+		// Open ASAP
+		m_pWeldDoor->StopCloseForWeld( pMarine );
+	}
 	m_pWeldDoor = NULL;
 #endif // !CLIENT_DLL
 	if ( !bKeepWeldDirection )
