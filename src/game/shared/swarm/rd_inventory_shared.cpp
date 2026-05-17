@@ -6,6 +6,7 @@
 #include "asw_equipment_list.h"
 #include "asw_deathmatch_mode_light.h"
 #include "asw_gamerules.h"
+#include "asw_weapon_sniper_rifle.h"
 #include "GameEventListener.h"
 #include "fmtstr.h"
 #include "jsmn.h"
@@ -168,6 +169,7 @@ public:
 		ListenForGameEvent( "marine_infested_cured" );
 		ListenForGameEvent( "marine_extinguished" );
 		ListenForGameEvent( "marine_healed" );
+		ListenForGameEvent( "rd_increment_strange_property" );
 
 #ifdef CLIENT_DLL
 		pInventory->GetAllItems( &m_GetFullInventoryForCacheResult );
@@ -853,7 +855,7 @@ public:
 				s_RD_Inventory_Manager.IncrementStrangePropertyOnWeaponAndGlobals( pNPC, pData, iAccessoryID, iAmount, iPropertyIndex, bRelative );
 			}
 		}
-		else if ( pWeapon && pWeapon->IsInhabitableNPC() )
+		else if ( pWeapon && pWeapon->IsInhabitableNPC() && pNPC == pWeapon )
 		{
 			// unarmed melee
 			s_RD_Inventory_Manager.IncrementStrangePropertyOnWeaponAndGlobals< CASW_Weapon >( pNPC, NULL, iAccessoryID, iAmount, iPropertyIndex, bRelative );
@@ -864,6 +866,56 @@ public:
 			Assert( !"Unhandled weapon type" );
 		}
 #endif
+	}
+
+	void IncrementStrangePropertiesForWeaponUntrusted( CASW_Inhabitable_NPC *pNPC, CBaseEntity *pWeapon, SteamItemDef_t iAccessoryID, int64_t iAmount, int iPropertyIndex = 0 )
+	{
+#ifdef CLIENT_DLL
+		if ( engine->IsPlayingDemo() )
+		{
+			return;
+		}
+#endif
+
+		if ( !pNPC || !pNPC->IsInhabited() || !pWeapon )
+		{
+			return;
+		}
+
+		bool bAllowed = false;
+		if ( iAccessoryID == 5012 )
+		{
+			// Deployments
+			bAllowed = iAmount == 1 && iPropertyIndex == 0;
+		}
+		else if ( iAccessoryID == 5013 )
+		{
+			// Time Spun Up
+			bAllowed = iAmount >= 1 && iAmount <= 5 && iPropertyIndex == 0;
+		}
+		else if ( iAccessoryID == 5015 )
+		{
+			// Explosive Rescues
+			bAllowed = iAmount == 1 && iPropertyIndex == 0;
+		}
+		else if ( iAccessoryID == 5016 )
+		{
+			// Electrical Assists
+			bAllowed = iAmount == 1 && iPropertyIndex == 0;
+		}
+		else if ( iAccessoryID == 5017 )
+		{
+			// Doors Welded / Doors Cut
+			bAllowed = iAmount == 1 && ( iPropertyIndex == 0 || iPropertyIndex == 1 );
+		}
+
+		Assert( bAllowed );
+		if ( !bAllowed )
+		{
+			return;
+		}
+
+		IncrementStrangePropertiesForWeapon( pNPC, pWeapon, iAccessoryID, iAmount, iPropertyIndex );
 	}
 
 	bool ModifyAccessoryDynamicPropValue( CASW_Inhabitable_NPC *pNPC, CASW_Player *pOwner, CRD_ItemInstance &instance, SteamItemDef_t iAccessoryID, int iPropertyIndex, int64_t iAmount, bool bRelative = true, bool bAllowCheating = false )
@@ -1101,7 +1153,7 @@ public:
 
 		if ( iTierBefore < iTierAfter && pNPC && pOwner )
 		{
-			const int64_t iCountForTierAfter = pAccessoryDef->CountForStrangeTier(iTierAfter);
+			const int64_t iCountForTierAfter = pAccessoryDef->CountForStrangeTier( iTierAfter );
 #ifdef CLIENT_DLL
 			if ( CASWHud3DMarineNames *pMarineNames = assert_cast< CASWHud3DMarineNames * >( GetHud().FindElement( "ASWHud3DMarineNames" ) ) )
 			{
@@ -1219,6 +1271,20 @@ public:
 				}
 
 				return;
+			}
+		}
+
+		if ( FStrEq( event->GetName(), "rd_increment_strange_property" ) )
+		{
+			CBaseEntity *pNPC = Ent( event->GetInt( "entindex" ) );
+			CBaseEntity *pWeapon = Ent( event->GetInt( "weapon" ) );
+			SteamItemDef_t iAccessoryID = event->GetInt( "accessory" );
+			int iPropertyIndex = event->GetInt( "property" );
+			int64_t iAmount = event->GetInt( "amount" );
+
+			if ( pNPC && pNPC->IsInhabitableNPC() && pWeapon )
+			{
+				s_RD_Inventory_Manager.IncrementStrangePropertiesForWeaponUntrusted( assert_cast<CASW_Inhabitable_NPC *>( pNPC ), pWeapon, iAccessoryID, iPropertyIndex, iAmount );
 			}
 		}
 
@@ -1721,7 +1787,7 @@ public:
 
 			bool bHeldBack = false;
 
-			if ( !pDef->IsTagTool )
+			if ( pDef->Type != ItemDef_t::TYPE_TAG_TOOL )
 			{
 				FOR_EACH_VEC( pDef->CompressedDynamicProps, j )
 				{
@@ -3291,12 +3357,39 @@ namespace ReactiveDropInventory
 		Assert( !V_strcmp( szValue, "" ) || !V_strcmp( szValue, "1" ) || !V_strcmp( szValue, "0" ) );
 		pItemDef->AutoStack = !V_strcmp( szValue, "1" );
 
-		pItemDef->IsTagTool = szType == "tag_tool";
+		if ( szType == "bundle" )
+		{
+			pItemDef->Type = ItemDef_t::TYPE_BUNDLE;
+		}
+		else if ( szType == "generator" )
+		{
+			pItemDef->Type = ItemDef_t::TYPE_GENERATOR;
+		}
+		else if ( szType == "playtimegenerator" )
+		{
+			pItemDef->Type = ItemDef_t::TYPE_PLAYTIME_GENERATOR;
+		}
+		else if ( szType == "tag_generator" )
+		{
+			pItemDef->Type = ItemDef_t::TYPE_TAG_GENERATOR;
+		}
+		else if ( szType == "tag_tool" )
+		{
+			pItemDef->Type = ItemDef_t::TYPE_TAG_TOOL;
+		}
+		else
+		{
+			Assert( szType == "item" );
+			pItemDef->Type = ItemDef_t::TYPE_ITEM;
+		}
+
+		FETCH_PROPERTY( "bundle" );
+		pItemDef->Bundle = szValue;
 
 #ifdef CLIENT_DLL
 		pItemDef->Icon = NULL;
 		pItemDef->AccessoryImage = NULL;
-		if ( pItemDef->IsTagTool )
+		if ( pItemDef->Type == ItemDef_t::TYPE_TAG_TOOL )
 		{
 			FETCH_PROPERTY( "icon_url" );
 			if ( *szValue )
@@ -3930,6 +4023,24 @@ namespace ReactiveDropInventory
 					s_RD_Inventory_Manager.IncrementStrangePropertiesForWeapon( pInhabitableAttacker, pWeapon, 5002, 1 ); // Aliens Killed
 					s_RD_Inventory_Manager.IncrementStrangePropertiesForWeapon( pInhabitableAttacker, pWeapon, 5007, 1 ); // Alien Kill Streak
 					s_RD_Inventory_Manager.IncrementStrangePropertiesForWeapon( pInhabitableAttacker, pWeapon, 5010, 1 ); // Aliens Killed (Twitch)
+					if ( pWeapon->Classify() == CLASS_ASW_SNIPER_RIFLE && assert_cast<CASW_Weapon_Sniper_Rifle *>( pWeapon )->IsZoomed() )
+					{
+						s_RD_Inventory_Manager.IncrementStrangePropertiesForWeapon( pInhabitableAttacker, pWeapon, 5014, 1 ); // Scoped Kills
+					}
+					if ( pTarget->Classify() == CLASS_ASW_SHIELDBUG )
+					{
+						s_RD_Inventory_Manager.IncrementStrangePropertiesForWeapon( pInhabitableAttacker, pWeapon, 5019, 1 ); // Shieldbugs Slain
+					}
+				}
+			}
+
+			if ( bKilled && pWeapon && pTarget->Classify() == CLASS_ASW_DOOR && pAttacker->IsInhabitableNPC() )
+			{
+				CASW_Inhabitable_NPC *pInhabitableAttacker = assert_cast<CASW_Inhabitable_NPC *>( pAttacker );
+				// only for player-controlled characters
+				if ( pInhabitableAttacker->IsInhabited() )
+				{
+					s_RD_Inventory_Manager.IncrementStrangePropertiesForWeapon( pInhabitableAttacker, pWeapon, 5018, 1 ); // Doors Destroyed
 				}
 			}
 
@@ -3973,6 +4084,27 @@ namespace ReactiveDropInventory
 			}
 		}
 	}
+
+#ifdef GAME_DLL
+	void ServerIncrementStrangePropertiesForWeapon( CASW_Inhabitable_NPC *pNPC, CBaseEntity *pWeapon, SteamItemDef_t iAccessoryID, int64_t iAmount, int iPropertyIndex )
+	{
+		if ( !pNPC || !pNPC->IsInhabited() || !pWeapon )
+		{
+			return;
+		}
+
+		IGameEvent *pEvent = gameeventmanager->CreateEvent( "rd_increment_strange_property" );
+		if ( pEvent )
+		{
+			pEvent->SetInt( "entindex", pNPC->entindex() );
+			pEvent->SetInt( "weapon", pWeapon->entindex() );
+			pEvent->SetInt( "accessory", iAccessoryID );
+			pEvent->SetInt( "property", iPropertyIndex );
+			pEvent->SetInt( "amount", iAmount );
+			gameeventmanager->FireEvent( pEvent );
+		}
+	}
+#endif
 }
 
 BEGIN_NETWORK_TABLE_NOBASE( CRD_ItemInstance, DT_RD_ItemInstance )

@@ -31,7 +31,7 @@ public:
 	// this means the spawnable is blocking a spawn point and should try to move out of the way
 	virtual void MoveAside() = 0;
 	virtual void ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon, CBaseEntity *pInflictor ) = 0;
-	virtual void ElectroStun( float flStuntime ) = 0;
+	virtual void ElectroStun( float flStuntime, CBaseEntity *pAttacker, CBaseEntity *pWeapon, CBaseEntity *pInflictor ) = 0;
 	virtual void OnSwarmSensed(int iDistance) = 0;
 	virtual void OnSwarmSenseEntity( CBaseEntity *pEnt ) = 0;
 	// sets the alien's health to its default 

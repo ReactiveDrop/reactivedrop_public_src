@@ -3005,7 +3005,7 @@ void CAlienSwarm::UpdateLaunching()
 		CBaseEntity *pEntity = NULL;
 		while ( ( pEntity = gEntList.FindEntityByClassname( pEntity, "asw_spawner" ) ) != NULL )
 		{
-			CASW_Spawner *spawner = dynamic_cast< CASW_Spawner * >( pEntity );
+			CASW_Spawner *spawner = assert_cast< CASW_Spawner * >( pEntity );
 			spawner->MissionStart();
 		}
 
@@ -6536,6 +6536,11 @@ void CAlienSwarm::RadiusDamage( const CTakeDamageInfo &info, const Vector &vecSr
 	float flHalfRadiusSqr = Square( flRadius / 2.0f );
 	//float flMarineHalfRadiusSqr = flHalfRadiusSqr * asw_marine_explosion_protection.GetFloat();
 
+#ifdef GAME_DLL
+	bool bKilledEnemy = false;
+	bool bAvoidedAlly = false;
+#endif
+
 	// iterate on all entities in the vicinity.
 	for ( CEntitySphereQuery sphere( vecSrc, flRadius ); ( pEntity = sphere.GetCurrentEntity() ) != NULL; sphere.NextEntity() )
 	{
@@ -6558,7 +6563,15 @@ void CAlienSwarm::RadiusDamage( const CTakeDamageInfo &info, const Vector &vecSr
 		if ( pEntity->MyCombatCharacterPointer() && pEntity->MyCombatCharacterPointer()->GetFaction() == FACTION_MARINES )
 		{
 			if ( ( vecSrc - pEntity->WorldSpaceCenter() ).Length() > fMarineRadius )
+			{
+#ifdef GAME_DLL
+				if ( info.GetAttacker() && info.GetAttacker()->MyCombatCharacterPointer() && info.GetAttacker()->MyCombatCharacterPointer()->IRelationType( pEntity ) == D_LI )
+				{
+					bAvoidedAlly = true;
+				}
+#endif
 				continue;
+			}
 		}
 
 		// Check that the explosion can 'see' this entity.
@@ -6740,6 +6753,8 @@ void CAlienSwarm::RadiusDamage( const CTakeDamageInfo &info, const Vector &vecSr
 			adjustedInfo.SetDamagePosition( vecSrc );
 		}
 
+		bool bWasAlive = pEntity->m_lifeState == LIFE_ALIVE;
+
 		if ( tr.fraction != 1.0 && pEntity == tr.m_pEnt )
 		{
 			ClearMultiDamage();
@@ -6751,6 +6766,13 @@ void CAlienSwarm::RadiusDamage( const CTakeDamageInfo &info, const Vector &vecSr
 			pEntity->TakeDamage( adjustedInfo );
 		}
 
+#ifdef GAME_DLL
+		if ( bWasAlive && pEntity->m_lifeState != LIFE_ALIVE && info.GetAttacker() && info.GetAttacker()->MyCombatCharacterPointer() && info.GetAttacker()->MyCombatCharacterPointer()->IRelationType( pEntity ) == D_HT )
+		{
+			bKilledEnemy = true;
+		}
+#endif
+
 		if ( asw_debug_alien_damage.GetBool() )
 		{
 			Msg( "Explosion did %f damage to %d:%s\n", adjustedInfo.GetDamage(), pEntity->entindex(), pEntity->GetClassname() );
@@ -6761,6 +6783,13 @@ void CAlienSwarm::RadiusDamage( const CTakeDamageInfo &info, const Vector &vecSr
 		// Now hit all triggers along the way that respond to damage... 
 		pEntity->TraceAttackToTriggers( adjustedInfo, vecSrc, tr.endpos, dir );
 	}
+
+#ifdef GAME_DLL
+	if ( !ASWDeathmatchMode() && bAvoidedAlly && bKilledEnemy && info.GetAttacker() && info.GetAttacker()->IsInhabitableNPC() )
+	{
+		ReactiveDropInventory::ServerIncrementStrangePropertiesForWeapon( assert_cast<CASW_Inhabitable_NPC *>( info.GetAttacker() ), info.GetWeapon(), 5015, 1 ); // Explosive Rescues
+	}
+#endif
 }
 
 bool CAlienSwarm::ShouldUseRobustRadiusDamage( CBaseEntity *pEntity )

@@ -55,13 +55,15 @@ END_DATADESC()
 
 CASW_Weapon_Cryo_Cannon::CASW_Weapon_Cryo_Cannon()
 {
+	m_flSpinRate = 0.0f;
 #ifdef CLIENT_DLL
 	m_pBarrelSpinSound = NULL;
 	m_pFireSound = NULL;
 	m_hEffect = NULL;
 	m_bShouldUpdateActivityClient = false;
+#else
+	m_flSpinTime = 0.0f;
 #endif
-	m_flSpinRate = 0.0f;
 }
 
 void CASW_Weapon_Cryo_Cannon::Precache()
@@ -376,6 +378,26 @@ void CASW_Weapon_Cryo_Cannon::UpdateSpinRate()
 	{
 		m_flSpinRate = MAX( 0.0f, GetSpinRate() - gpGlobals->frametime * asw_cryo_cannon_spin_down_rate.GetFloat() * ( ( m_bInReload || bMeleeing ) ? 3.0f : 1.0f ) );
 	}
+
+#ifdef GAME_DLL
+	if ( pMarine && pMarine->IsInhabited() )
+	{
+		if ( m_flSpinRate >= asw_cryo_cannon_spin_rate_threshold.GetFloat() )
+		{
+			m_flSpinTime += gpGlobals->frametime;
+		}
+
+		if ( m_flSpinTime >= ( m_flSpinRate >= asw_cryo_cannon_spin_rate_threshold.GetFloat() ? 5.0f : 1.0f ) )
+		{
+			int iSeconds = MIN( Floor2Int( m_flSpinTime ), 5 );
+			if ( iSeconds > 0 )
+			{
+				ReactiveDropInventory::ServerIncrementStrangePropertiesForWeapon( pMarine, this, 5013, iSeconds ); // Time Spun Up
+				m_flSpinTime -= iSeconds;
+			}
+		}
+	}
+#endif
 }
 
 bool CASW_Weapon_Cryo_Cannon::Holster( CBaseCombatWeapon *pSwitchingTo )

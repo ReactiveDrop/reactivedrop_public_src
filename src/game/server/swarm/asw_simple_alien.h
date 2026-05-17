@@ -143,7 +143,7 @@ public:
 	virtual void SetUnburrowIdleActivity( string_t iszActivityName ) override { }
 	virtual void MoveAside() override { }
 	virtual void ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon, CBaseEntity *pInflictor ) override;
-	virtual void ElectroStun( float flStunTime ) override { }
+	virtual void ElectroStun( float flStunTime, CBaseEntity *pAttacker, CBaseEntity *pWeapon, CBaseEntity *pInflictor ) override { }
 	virtual void OnSwarmSensed(int iDistance) override { }
 	virtual void OnSwarmSenseEntity(CBaseEntity* pEnt) override { }
 	virtual bool AllowedToIgnite( CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon, CBaseEntity *pInflictor ) { return true; }

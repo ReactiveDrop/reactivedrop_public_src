@@ -309,6 +309,8 @@ void CASW_Weapon_Laser_Mines::DelayedAttack( void )
 
 #ifndef CLIENT_DLL	
 	pMarine->GetMarineSpeech()->Chatter(CHATTER_MINE_DEPLOYED);
+
+	ReactiveDropInventory::ServerIncrementStrangePropertiesForWeapon( pMarine, this, 5012, 1 ); // Deployments
 #endif
 
 	// sets the animation on the weapon model itself

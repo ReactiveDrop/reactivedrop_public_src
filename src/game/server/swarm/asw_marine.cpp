@@ -1767,7 +1767,7 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		}
 		if ( ( ASWDeathmatchMode() || !bFriendlyFire ) && ( info.GetDamageType() & DMG_SHOCK ) && m_bTeslable )
 		{
-			ElectroStun( asw_stun_grenade_time.GetFloat() );
+			ElectroStun( asw_stun_grenade_time.GetFloat(), info.GetAttacker(), info.GetWeapon(), info.GetInflictor() );
 
 			m_fNoDamageDecal = true;
 		}
@@ -2220,6 +2220,8 @@ void CASW_Marine::PostThink()
 		if ( m_flElectroStunSlowMoveTime < gpGlobals->curtime )
 		{
 			m_bElectroStunned = false;
+			m_hElectroStunAttacker = NULL;
+			m_hElectroStunWeapon = NULL;
 		}
 		else
 		{

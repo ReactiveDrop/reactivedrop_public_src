@@ -153,6 +153,8 @@ void CASW_Weapon_Bait::DelayedAttack()
 		pEnt->SetDuration( flDuration );
 		pEnt->SetGravity( GetThrowGravity() );
 	}
+
+	ReactiveDropInventory::ServerIncrementStrangePropertiesForWeapon( pMarine, this, 5012, 1 ); // Deployments
 #endif
 	// decrement ammo
 	m_iClip1 -= 1;

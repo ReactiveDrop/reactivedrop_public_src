@@ -431,6 +431,8 @@ void CASW_Weapon_Sentry::DeploySentry()
 	// auto start setting it up
 	pBase->ActivateUseIcon( pMarine, ASW_USE_RELEASE_QUICK );
 
+	ReactiveDropInventory::ServerIncrementStrangePropertiesForWeapon( pMarine, this, 5012, 1 ); // Deployments
+
 	pMarine->Weapon_Detach( this );
 	pMarine->OnWeaponFired( this, 1 );
 	Kill();

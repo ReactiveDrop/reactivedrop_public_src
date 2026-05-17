@@ -14,6 +14,7 @@
 #include "asw_util_shared.h"
 #include "ilagcompensationmanager.h"
 #include "asw_marine_resource.h"
+#include "asw_deathmatch_mode_light.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -260,6 +261,8 @@ void CASW_Inhabitable_NPC::NPCThink()
 		if ( m_flElectroStunSlowMoveTime < gpGlobals->curtime )
 		{
 			m_bElectroStunned = false;
+			m_hElectroStunAttacker = NULL;
+			m_hElectroStunWeapon = NULL;
 		}
 		else
 		{
@@ -739,7 +742,7 @@ int CASW_Inhabitable_NPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		// make the alien move slower for 0.5 seconds
 		if ( ( newInfo.GetDamageType() & DMG_SHOCK ) && m_bTeslable )
 		{
-			ElectroStun( asw_stun_grenade_time.GetFloat() );
+			ElectroStun( asw_stun_grenade_time.GetFloat(), newInfo.GetAttacker(), newInfo.GetWeapon(), newInfo.GetInflictor() );
 
 			m_fNoDamageDecal = true;
 		}
@@ -783,6 +786,11 @@ void CASW_Inhabitable_NPC::Event_Killed( const CTakeDamageInfo &info )
 		{
 			m_hSpawner->AlienKilled( this );
 		}
+	}
+
+	if ( !ASWDeathmatchMode() && m_bElectroStunned && m_hElectroStunAttacker.IsValid() && m_hElectroStunAttacker.Get() != info.GetAttacker() && m_hElectroStunWeapon.IsValid() )
+	{
+		ReactiveDropInventory::ServerIncrementStrangePropertiesForWeapon( m_hElectroStunAttacker, m_hElectroStunWeapon, 5016, 1 ); // Electrical Assists
 	}
 
 	if ( m_flFrozen >= 0.1f )
@@ -835,7 +843,7 @@ void CASW_Inhabitable_NPC::Extinguish()
 	RemoveFlag( FL_ONFIRE );
 }
 
-void CASW_Inhabitable_NPC::ElectroStun( float flStunTime )
+void CASW_Inhabitable_NPC::ElectroStun( float flStunTime, CBaseEntity *pAttacker, CBaseEntity *pWeapon, CBaseEntity *pInflictor )
 {
 	if ( m_fHurtSlowMoveTime < gpGlobals->curtime + flStunTime )
 		m_fHurtSlowMoveTime = gpGlobals->curtime + flStunTime;
@@ -843,6 +851,8 @@ void CASW_Inhabitable_NPC::ElectroStun( float flStunTime )
 		m_flElectroStunSlowMoveTime = gpGlobals->curtime + flStunTime;
 
 	m_bElectroStunned = true;
+	m_hElectroStunAttacker = pAttacker && pAttacker->IsInhabitableNPC() ? assert_cast<CASW_Inhabitable_NPC *>( pAttacker ) : NULL;
+	m_hElectroStunWeapon = pWeapon;
 
 	if ( ASWGameResource() && Classify() != CLASS_ASW_MARINE )
 	{
@@ -855,7 +865,7 @@ void CASW_Inhabitable_NPC::ElectroStun( float flStunTime )
 
 void CASW_Inhabitable_NPC::ScriptElectroStun( float flStunTime )
 {
-	ElectroStun( flStunTime );
+	ElectroStun( flStunTime, NULL, NULL, NULL );
 }
 
 //-----------------------------------------------------------------------------

@@ -186,6 +186,8 @@ void CASW_Weapon_Ammo_Satchel::DeployAmmoDrop()
 
 		gameeventmanager->FireEvent( event );
 	}
+
+	ReactiveDropInventory::ServerIncrementStrangePropertiesForWeapon( pMarine, this, 5012, 1 ); // Deployments
 #endif
 
 	m_iClip1--;

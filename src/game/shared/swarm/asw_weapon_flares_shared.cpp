@@ -167,6 +167,8 @@ void CASW_Weapon_Flares::DelayedAttack()
 			gameeventmanager->FireEvent( event );
 		}
 	}
+
+	ReactiveDropInventory::ServerIncrementStrangePropertiesForWeapon( pMarine, this, 5012, 1 ); // Deployments
 #endif
 	// decrement ammo
 	m_iClip1 -= 1;

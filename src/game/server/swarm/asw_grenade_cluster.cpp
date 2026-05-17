@@ -63,7 +63,7 @@ BEGIN_DATADESC( CASW_Grenade_Cluster )
 	DEFINE_INPUTFUNC(FIELD_VOID, "Enable", InputEnable),
 	DEFINE_INPUTFUNC(FIELD_VOID, "EnableWithReset", InputEnableWithReset),
 	DEFINE_INPUTFUNC(FIELD_VOID, "ReflectBack", InputReflectBack),
-	DEFINE_INPUTFUNC(FIELD_VOID, "ReflectBackSimple", InputReflectBack),
+	DEFINE_INPUTFUNC(FIELD_VOID, "ReflectBackSimple", InputReflectBackSimple),
 	DEFINE_INPUTFUNC(FIELD_VOID, "ReflectRandomly", InputReflectRandomly),
 END_DATADESC()
 
@@ -337,7 +337,7 @@ void CASW_Grenade_Cluster::DoExplosion()
 		float duration = rda_grenade_electrostun_duration.GetFloat();
 		for (int i = 0; i < picked.Count(); i++)
 		{
-			picked[i]->ElectroStun(duration);
+			picked[i]->ElectroStun( duration, m_hFirer, m_hCreatorWeapon, this );
 		}
 	}
 }

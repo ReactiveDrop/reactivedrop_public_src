@@ -90,6 +90,9 @@ public:
 
 	CNetworkVar( bool, m_bHalfShot );
 	CNetworkVar( float, m_flSpinRate );		// barrel spin speed
+#ifdef GAME_DLL
+	float m_flSpinTime;
+#endif
 
 	// Classification
 	virtual Class_T		Classify( void ) { return (Class_T) CLASS_ASW_MINIGUN; }

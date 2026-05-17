@@ -1,5 +1,10 @@
 #include "cbase.h"
 #include "asw_weapon_shield_bubble_shared.h"
+#include "rd_inventory_shared.h"
+
+#ifdef GAME_DLL
+#include "asw_marine.h"
+#endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -41,6 +46,7 @@ bool CASW_Weapon_Shield_Bubble::OffhandActivate()
 	pProp->Spawn();
 	pProp->SetMoveType( MOVETYPE_NONE );
 	pProp->AddEffects( EF_NOSHADOW );
+
 	CBaseEntity *pProp2 = CreateEntityByName( "prop_dynamic" );
 	pProp2->SetModelName( AllocPooledString( "models/items/shield_bubble/shield_bubble_arena.mdl" ) );
 	pProp2->Precache();
@@ -48,6 +54,9 @@ bool CASW_Weapon_Shield_Bubble::OffhandActivate()
 	pProp2->Spawn();
 	pProp2->SetMoveType( MOVETYPE_NONE );
 	pProp2->AddEffects( EF_NOSHADOW );
+
+	ReactiveDropInventory::ServerIncrementStrangePropertiesForWeapon( GetMarine(), this, 5012, 1 ); // Deployments
+
 	UTIL_Remove( this );
 #endif
 	return true;

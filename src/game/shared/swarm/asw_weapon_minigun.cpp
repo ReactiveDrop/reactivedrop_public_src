@@ -118,6 +118,8 @@ CASW_Weapon_Minigun::CASW_Weapon_Minigun()
 	m_pBarrelSpinSound = NULL;
 	m_flLastMuzzleFlashTime = 0;
 	m_bShouldUpdateActivityClient = false;
+#else
+	m_flSpinTime = 0.0f;
 #endif
 	m_flTimeFireStarted = 0;
 	m_bHalfShot = false;
@@ -336,6 +338,26 @@ void CASW_Weapon_Minigun::UpdateSpinRate()
 	{
 		m_flSpinRate = MAX( 0.0f, GetSpinRate() - gpGlobals->frametime * asw_minigun_spin_down_rate.GetFloat() * ( ( m_bInReload || bMeleeing ) ? 3.0f : 1.0f ) );
 	}
+
+#ifdef GAME_DLL
+	if ( pMarine && pMarine->IsInhabited() )
+	{
+		if ( m_flSpinRate >= asw_minigun_spin_rate_threshold.GetFloat() )
+		{
+			m_flSpinTime += gpGlobals->frametime;
+		}
+
+		if ( m_flSpinTime >= ( m_flSpinRate >= asw_minigun_spin_rate_threshold.GetFloat() ? 5.0f : 1.0f ) )
+		{
+			int iSeconds = MIN( Floor2Int( m_flSpinTime ), 5 );
+			if ( iSeconds > 0 )
+			{
+				ReactiveDropInventory::ServerIncrementStrangePropertiesForWeapon( pMarine, this, 5013, iSeconds ); // Time Spun Up
+				m_flSpinTime -= iSeconds;
+			}
+		}
+	}
+#endif
 }
 
 #ifdef CLIENT_DLL

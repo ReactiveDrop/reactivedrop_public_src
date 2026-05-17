@@ -173,6 +173,8 @@ void CASW_Weapon_Buff_Grenade::PrimaryAttack( void )
 	{
 		pBuff->AttachToMarine( pMarine );
 	}
+
+	ReactiveDropInventory::ServerIncrementStrangePropertiesForWeapon( pMarine, this, 5012, 1 ); // Deployments
 #endif
 	// decrement ammo
 	m_iClip1 -= 1;

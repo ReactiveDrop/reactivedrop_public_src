@@ -144,12 +144,14 @@ public:
 	virtual void Extinguish() override;
 
 	// electro stun
-	virtual void ElectroStun( float flStunTime ) override;
+	virtual void ElectroStun( float flStunTime, CBaseEntity *pAttacker, CBaseEntity *pWeapon, CBaseEntity *pInflictor ) override;
 	virtual void ScriptElectroStun( float flStunTime );
 	bool IsElectroStunned() { return m_bElectroStunned.Get(); }
 	float m_fNextStunSound;
 	CNetworkVar( float, m_fHurtSlowMoveTime );
 	float m_flElectroStunSlowMoveTime;
+	CHandle<CASW_Inhabitable_NPC> m_hElectroStunAttacker;
+	EHANDLE m_hElectroStunWeapon;
 
 	// freezeing
 	virtual void Freeze( float flFreezeAmount, CBaseEntity *pFreezer, Ray_t *pFreezeRay ) override;

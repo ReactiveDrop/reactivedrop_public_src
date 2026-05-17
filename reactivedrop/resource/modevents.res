@@ -204,6 +204,7 @@
 	"door_unwelded"
 	{
 		"userid"	"short"		// user ID on server
+		"marine"	"long"   	// marine entindex
 		"entindex"	"long"		// door entindex
 	}
 	
@@ -215,6 +216,7 @@
 	"door_welded"
 	{
 		"userid"	"short"		// user ID on server
+		"marine"	"long"   	// marine entindex
 		"entindex"	"long"		// door entindex
 		"inhabited" "bool"		// is the marine inhabited
 	}
@@ -488,6 +490,15 @@
 		"entindex"		"short"		// entindex of frozen entity
 		"attacker"		"short"		// entindex of attacker
 		"weapon"		"short"		// entindex of weapon (grenade or sentry base)
+	}
+
+	"rd_increment_strange_property"
+	{
+		"entindex"		"short"		// entindex of inhabitable npc
+		"weapon"		"short"		// entindex of weapon
+		"accessory"		"long"		// strange device def ID
+		"property		"short"		// strange property index
+		"amount"		"long"		// amount to increment by
 	}
 
 // CLIENTSIDE

@@ -296,10 +296,23 @@ void CASW_Door::Spawn()
 		m_iHealth = 1;
 	}
 
-	// if this door isn't sealed, we don't do cut shouting
 	if ( m_flCurrentSealTime <= 0 )
 	{
+		// if this door isn't sealed, we don't do cut shouting
 		m_bDoCutShout = false;
+		m_bCountCutForStats = false;
+		m_bCountWeldForStats = true;
+	}
+	else if ( m_flCurrentSealTime < m_flTotalSealTime )
+	{
+		// if the door is partially welded, count either a cut or a weld for stats
+		m_bCountCutForStats = true;
+		m_bCountWeldForStats = true;
+	}
+	else
+	{
+		m_bCountCutForStats = true;
+		m_bCountWeldForStats = false;
 	}
 
 	m_fLastFullyWeldedSound = 0;
@@ -996,6 +1009,13 @@ void CASW_Door::WeldDoor( bool bSeal, float fAmount, CASW_Marine *pMarine )
 	{
 		if ( fCurrentSealTime > 0 )
 		{
+			if ( m_bCountCutForStats )
+			{
+				ReactiveDropInventory::ServerIncrementStrangePropertiesForWeapon( pMarine, pMarine->GetASWWeapon( ASW_INVENTORY_SLOT_EXTRA ), 5017, 1, 1 );
+			}
+			m_bCountWeldForStats = true;
+			m_bCountCutForStats = false;
+
 			m_OnFullyCut.FireOutput( pMarine, this );
 			// door completely opened
 			if ( IsAutoOpen() )
@@ -1009,6 +1029,13 @@ void CASW_Door::WeldDoor( bool bSeal, float fAmount, CASW_Marine *pMarine )
 
 	if ( fNewTime >= GetTotalSealTime() )
 	{
+		if ( m_bCountWeldForStats )
+		{
+			ReactiveDropInventory::ServerIncrementStrangePropertiesForWeapon( pMarine, pMarine->GetASWWeapon( ASW_INVENTORY_SLOT_EXTRA ), 5017, 1, 0 );
+		}
+		m_bCountWeldForStats = false;
+		m_bCountCutForStats = true;
+
 		if ( fCurrentSealTime < fNewTime )
 		{
 			// door is completely sealed	
@@ -1040,6 +1067,7 @@ void CASW_Door::WeldDoor( bool bSeal, float fAmount, CASW_Marine *pMarine )
 				pPlayer = pMarine->GetCommander();
 
 				event->SetInt( "userid", ( pPlayer ? pPlayer->GetUserID() : 0 ) );
+				event->SetInt( "marine", pMarine->entindex() );
 				event->SetInt( "entindex", entindex() );
 				gameeventmanager->FireEvent( event );
 			}
@@ -1054,6 +1082,7 @@ void CASW_Door::WeldDoor( bool bSeal, float fAmount, CASW_Marine *pMarine )
 				pPlayer = pMarine->GetCommander();
 
 				event->SetInt( "userid", ( pPlayer ? pPlayer->GetUserID() : 0 ) );
+				event->SetInt( "marine", pMarine->entindex() );
 				event->SetInt( "entindex", entindex() );
 				event->SetInt( "inhabited", pMarine->IsInhabited() );
 				gameeventmanager->FireEvent( event );

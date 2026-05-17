@@ -11,6 +11,7 @@ namespace vgui
 }
 
 #define CASW_Player C_ASW_Player
+#define CASW_Inhabitable_NPC C_ASW_Inhabitable_NPC
 #define CASW_Marine_Resource C_ASW_Marine_Resource
 #define CRD_ItemInstance C_RD_ItemInstance
 #define CRD_ItemInstances_Player C_RD_ItemInstances_Player
@@ -26,6 +27,7 @@ enum RD_Crafting_Material_t;
 #endif
 
 class CASW_Player;
+class CASW_Inhabitable_NPC;
 class CASW_Marine_Resource;
 
 #define RD_ITEM_MAX_ACCESSORIES 4
@@ -118,7 +120,19 @@ namespace ReactiveDropInventory
 		bool IsBasic : 1;
 		bool GameOnly : 1;
 		bool AutoStack : 1;
-		bool IsTagTool : 1;
+
+		// enum indices aren't meaningful outside of this class
+		enum Type_t {
+			TYPE_ITEM,
+			TYPE_BUNDLE,
+			TYPE_GENERATOR,
+			TYPE_PLAYTIME_GENERATOR,
+			TYPE_TAG_GENERATOR,
+			TYPE_TAG_TOOL,
+		};
+		Type_t Type = TYPE_ITEM;
+
+		CUtlString Bundle;
 #ifdef CLIENT_DLL
 		vgui::IImage *Icon{};
 		CUtlVector<vgui::IImage *> StyleIcons{};
@@ -243,6 +257,9 @@ namespace ReactiveDropInventory
 	void RequestFullInventoryRefresh();
 #endif
 	void OnHitConfirm( CBaseEntity *pAttacker, CBaseEntity *pTarget, Vector vecDamagePosition, bool bKilled, bool bDamageOverTime, bool bBlastDamage, int iDisposition, float flDamage, CBaseEntity *pWeapon );
+#ifdef GAME_DLL
+	void ServerIncrementStrangePropertiesForWeapon( CASW_Inhabitable_NPC *pNPC, CBaseEntity *pWeapon, SteamItemDef_t iAccessoryID, int64_t iAmount, int iPropertyIndex = 0 );
+#endif
 }
 
 #define RD_ITEM_ID_BITS 30

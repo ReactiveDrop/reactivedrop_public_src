@@ -142,6 +142,8 @@ void CASW_Weapon_T75::PrimaryAttack( void )
 	}
 
 	//pMarine->GetMarineSpeech()->Chatter(CHATTER_MINE_DEPLOYED);
+
+	ReactiveDropInventory::ServerIncrementStrangePropertiesForWeapon( pMarine, this, 5012, 1 ); // Deployments
 #endif
 	// decrement ammo
 	m_iClip1 -= 1;

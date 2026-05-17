@@ -71,6 +71,8 @@ public:
 	CSoundPatch *m_pFireSound;
 	bool m_bShouldUpdateActivityClient;
 	CUtlReference<CNewParticleEffect> m_hEffect;
+#else
+	float m_flSpinTime;
 #endif
 };
 #endif
