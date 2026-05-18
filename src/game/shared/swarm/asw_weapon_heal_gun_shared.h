@@ -52,6 +52,7 @@ public:
 	virtual void	HealAttack() { PrimaryAttack(); }
 	virtual bool	HasMedicalAmmo() { return HasPrimaryAmmo(); }
 	virtual bool	SecondaryAttackUsesPrimaryAmmo() { return true; }
+	virtual bool	UsesClipsForAmmo1() const override { return false; }
 	virtual bool	Reload( void );
 	virtual bool	HasAmmo();
 	virtual void	WeaponIdle( void );
