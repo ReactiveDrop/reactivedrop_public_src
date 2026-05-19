@@ -260,7 +260,7 @@ asw_pickup_railgun : "Railgun"
 
 asw_pickup_heal_gun : "Heal Gun"
 [
-	BulletsInGun(integer) : "Bullets In Gun" : 100
+	BulletsInGun(integer) : "Bullets In Gun" : 90
 ]
 // PDW //
 @PointClass base(ASWPickup) studio("models/weapons/pdw/pdw.mdl")= asw_pickup_pdw : 
