@@ -39,7 +39,6 @@ public:
 	virtual void SecondaryAttack();
 	virtual void HealAttack() { SecondaryAttack(); }
 	virtual bool HasMedicalAmmo() { return HasSecondaryAmmo(); }
-	virtual bool UsesClipsForAmmo2() const override { return false; }
 	virtual void WeaponIdle( void );
 	virtual const Vector& GetBulletSpread( void );
 	virtual void ItemPostFrame();
