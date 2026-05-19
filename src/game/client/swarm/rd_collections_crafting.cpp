@@ -2,6 +2,10 @@
 #include "rd_collections_crafting.h"
 #include "rd_crafting_defs.h"
 #include "rd_inventory_shared.h"
+#include "rd_hoiaf_utils.h"
+#include "asw_util_shared.h"
+#include <vgui_controls/ImagePanel.h>
+#include <vgui_controls/ScrollBar.h>
 #include "nb_button.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -18,6 +22,323 @@ vgui::Panel *CRD_Collection_Tab_Crafting::CreatePanel()
 	return new CRD_Crafting_Panel( this );
 }
 
+CRD_Crafting_Item_Grid_Item::CRD_Crafting_Item_Grid_Item( vgui::Panel *pParent, const char *szPanelName )
+	: BaseClass( pParent, szPanelName )
+{
+	m_pIcon = new vgui::ImagePanel( this, "Icon" );
+	m_pLblName = new vgui::Label( this, "LblName", "" );
+	m_pLblDisambiguator = new vgui::Label( this, "LblDisambiguator", "" );
+	m_pLblQuantity = new vgui::Label( this, "LblQuantity", "" );
+
+	SetConsoleStylePanel( true );
+}
+
+void CRD_Crafting_Item_Grid_Item::NavigateTo()
+{
+	BaseClass::NavigateTo();
+
+	BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_FOCUS );
+	RequestFocus();
+}
+
+void CRD_Crafting_Item_Grid_Item::OnSetFocus()
+{
+	BaseClass::OnSetFocus();
+
+	m_pIcon->SetPaintBorderEnabled( true );
+
+	if ( !m_bNoScrollOnFocus )
+	{
+		CRD_Crafting_Item_Grid *pParent = assert_cast<CRD_Crafting_Item_Grid *>( GetParent() );
+		vgui::ScrollBar *pScrollBar = pParent->m_pScrollBar;
+
+		int x, y;
+		pParent->GetPos( x, y );
+
+		int scroll = pScrollBar->GetValue();
+		y += scroll;
+
+		int minScroll = y + GetTall() * 1.5f - pScrollBar->GetRangeWindow();
+		int maxScroll = y - GetTall() * 0.5f;
+		if ( scroll < minScroll )
+		{
+			pScrollBar->SetValue( minScroll );
+		}
+		else if ( scroll > maxScroll )
+		{
+			pScrollBar->SetValue( maxScroll );
+		}
+	}
+}
+
+void CRD_Crafting_Item_Grid_Item::OnKillFocus()
+{
+	BaseClass::OnKillFocus();
+
+	m_bMousePressed = false;
+	m_bNoScrollOnFocus = false;
+
+	m_pIcon->SetPaintBorderEnabled( false );
+}
+
+void CRD_Crafting_Item_Grid_Item::OnCursorMoved( int x, int y )
+{
+	m_bNoScrollOnFocus = true;
+
+	if ( GetParent() )
+		GetParent()->NavigateToChild( this );
+	else
+		NavigateTo();
+}
+
+void CRD_Crafting_Item_Grid_Item::OnMousePressed( vgui::MouseCode code )
+{
+	if ( code == MOUSE_LEFT && HasFocus() )
+	{
+		m_bMousePressed = true;
+		return;
+	}
+
+	BaseClass::OnMousePressed( code );
+}
+
+void CRD_Crafting_Item_Grid_Item::OnMouseReleased( vgui::MouseCode code )
+{
+	if ( code == MOUSE_LEFT && m_bMousePressed )
+	{
+		m_bMousePressed = false;
+		CRD_Crafting_Item_Grid *pParent = assert_cast<CRD_Crafting_Item_Grid *>( GetParent() );
+		Assert( 0 ); // TODO
+		return;
+	}
+
+	BaseClass::OnMouseReleased( code );
+}
+
+void CRD_Crafting_Item_Grid_Item::OnKeyCodePressed( vgui::KeyCode code )
+{
+	if ( code == KEY_ENTER || code == KEY_SPACE )
+	{
+		CRD_Crafting_Item_Grid *pParent = assert_cast<CRD_Crafting_Item_Grid *>( GetParent() );
+		Assert( 0 ); // TODO
+		return;
+	}
+
+	BaseClass::OnKeyCodePressed( code );
+}
+
+void CRD_Crafting_Item_Grid_Item::ApplySchemeSettings( vgui::IScheme *pScheme )
+{
+	LoadControlSettings( CFmtStr( "Resource/UI/%s.res", GetName() ) );
+
+	BaseClass::ApplySchemeSettings( pScheme );
+
+	m_pIcon->SetPaintBorderEnabled( HasFocus() );
+
+	m_pIcon->SetMouseInputEnabled( false );
+	m_pLblName->SetMouseInputEnabled( false );
+	m_pLblDisambiguator->SetMouseInputEnabled( false );
+	m_pLblQuantity->SetMouseInputEnabled( false );
+}
+
+void CRD_Crafting_Item_Grid_Item::Setup( const ReactiveDropInventory::ItemDef_t *pDef, const ReactiveDropInventory::ItemInstance_t *pInstance )
+{
+	Assert( pDef );
+	if ( !pDef )
+	{
+		return;
+	}
+
+	MakeReadyForUse();
+
+	wchar_t wszText[255];
+	V_UTF8ToUnicode( pDef->BriefingName, wszText, sizeof( wszText ) );
+	m_pLblName->SetText( wszText );
+	m_pLblName->SetFgColor( pDef->NameColor );
+
+	if ( pInstance )
+	{
+		if ( pDef->Disambiguator.IsEmpty() )
+		{
+			// TODO: list accessories
+			m_pLblDisambiguator->SetText( L"" );
+		}
+		else
+		{
+			pInstance->FormatDescription( wszText, sizeof( wszText ), pDef->Disambiguator, false );
+			m_pLblDisambiguator->SetText( wszText );
+		}
+	}
+	else
+	{
+		m_pLblDisambiguator->SetText( L"" );
+	}
+
+	if ( m_nQuantity == 0 )
+	{
+		m_pLblQuantity->SetText( L"" );
+	}
+	else
+	{
+		m_pLblQuantity->SetText( UTIL_RD_CommaNumber( m_nQuantity ) );
+	}
+
+	m_pIcon->SetImage( pDef->Icon );
+
+	if ( pDef->StyleIcons.Count() != 0 && pInstance )
+	{
+		const UtlSymId_t iStyle = pInstance->DynamicProps.Find( "style" );
+		if ( iStyle != UTL_INVAL_SYMBOL )
+		{
+			int iStyleIndex = strtol( pInstance->DynamicProps[iStyle], nullptr, 10 );
+			if ( iStyleIndex >= 0 && iStyleIndex < pDef->StyleIcons.Count() )
+			{
+				m_pIcon->SetImage( pDef->StyleIcons[iStyleIndex] );
+			}
+		}
+	}
+
+	Repaint();
+}
+
+CRD_Crafting_Item_Grid::CRD_Crafting_Item_Grid( vgui::Panel *pParent, const char *szPanelName )
+	: BaseClass( pParent, szPanelName )
+{
+	m_pScrollBar = new vgui::ScrollBar( this, "ScrollBar", true );
+	m_pScrollBar->AddActionSignalTarget( this );
+}
+
+CRD_Crafting_Item_Grid::~CRD_Crafting_Item_Grid()
+{
+}
+
+void CRD_Crafting_Item_Grid::ApplySchemeSettings( vgui::IScheme *pScheme )
+{
+	LoadControlSettings( V_stristr( GetName(), "Tall" ) ? "Resource/UI/CraftingGridTall.res" : "Resource/UI/CraftingGrid.res" );
+
+	BaseClass::ApplySchemeSettings( pScheme );
+
+	m_pScrollBar->UseImages( "scroll_up", "scroll_down", "scroll_line", "scroll_box" );
+}
+
+void CRD_Crafting_Item_Grid::PerformLayout()
+{
+	BaseClass::PerformLayout();
+
+	if ( m_Items.Count() == 0 )
+	{
+		m_pScrollBar->SetVisible( false );
+		return;
+	}
+
+
+	int totalWide = GetWide() - m_pScrollBar->GetWide();
+	int totalTall = GetTall();
+
+	int eachWide, eachTall;
+	m_Items[0]->MakeReadyForUse();
+	m_Items[0]->GetSize( eachWide, eachTall );
+
+	int perRow = MAX( totalWide / eachWide, 1 );
+
+	int totalHeight = ( m_Items.Count() + perRow - 1 ) / perRow * eachTall;
+
+	m_pScrollBar->SetVisible( totalTall < totalHeight );
+	m_pScrollBar->SetTall( totalTall );
+	m_pScrollBar->SetButtonPressedScrollValue( totalTall / 2 );
+	m_pScrollBar->SetRangeWindow( MIN( totalTall, totalHeight ) );
+	m_pScrollBar->SetRange( 0, totalHeight );
+
+	int yOffset = -m_pScrollBar->GetValue();
+
+	FOR_EACH_VEC( m_Items, i )
+	{
+		m_Items[i]->MakeReadyForUse();
+		Assert( m_Items[i]->GetWide() == eachWide );
+		Assert( m_Items[i]->GetTall() == eachTall );
+
+		int col = i % perRow;
+		int row = i / perRow;
+
+		m_Items[i]->SetPos( col * eachWide, row * eachTall + yOffset );
+
+		int up = col + ( row - 1 ) * perRow;
+		int down = col + ( row + 1 ) * perRow;
+		int left = col == 0 ? -1 : col - 1 + row * perRow;
+		int right = col == perRow - 1 ? -1 : col + 1 + row * perRow;
+
+		// TODO: set up navigation
+	}
+}
+
+void CRD_Crafting_Item_Grid::OnMouseWheeled( int delta )
+{
+	BaseClass::OnMouseWheeled( delta );
+
+	int val = m_pScrollBar->GetValue();
+	val -= ( delta * YRES( 15 ) );
+	m_pScrollBar->SetValue( val );
+}
+
+void CRD_Crafting_Item_Grid::OnSliderMoved( int position )
+{
+	InvalidateLayout();
+	Repaint();
+}
+
+void CRD_Crafting_Item_Grid::AddItem( SteamItemInstanceID_t iInstanceID, int32_t nQuantity, bool bClickable )
+{
+	const ReactiveDropInventory::ItemInstance_t *pInstance = ReactiveDropInventory::GetLocalItemCache( iInstanceID );
+	Assert( pInstance );
+	if ( !pInstance )
+	{
+		return;
+	}
+
+	const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( pInstance->ItemDefID );
+	Assert( pDef );
+	if ( !pDef )
+	{
+		return;
+	}
+
+	CRD_Crafting_Item_Grid_Item *pItem = new CRD_Crafting_Item_Grid_Item( this, "CraftingGridItemInstance" );
+	pItem->m_iInstanceID = iInstanceID;
+	pItem->m_iDef = pInstance->ItemDefID;
+	pItem->m_nQuantity = nQuantity;
+	pItem->m_bClickable = bClickable;
+	pItem->Setup( pDef, pInstance );
+	m_Items.AddToTail( pItem );
+
+	InvalidateLayout();
+}
+
+void CRD_Crafting_Item_Grid::AddItemDef( SteamItemDef_t iItemDef, int32_t nQuantity, bool bClickable )
+{
+	const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( iItemDef );
+	Assert( pDef );
+	if ( !pDef )
+	{
+		return;
+	}
+
+	CRD_Crafting_Item_Grid_Item *pItem = new CRD_Crafting_Item_Grid_Item( this, "CraftingGridItemDef" );
+	pItem->m_iDef = iItemDef;
+	pItem->m_nQuantity = nQuantity;
+	pItem->m_bClickable = bClickable;
+	pItem->Setup( pDef, nullptr );
+	m_Items.AddToTail( pItem );
+
+	InvalidateLayout();
+}
+
+void CRD_Crafting_Item_Grid::RemoveAll()
+{
+	m_Items.PurgeAndDeleteElements();
+
+	InvalidateLayout();
+}
+
 CRD_Crafting_Panel::CRD_Crafting_Panel( CRD_Collection_Tab_Crafting *pTab )
 	: BaseClass( pTab->m_pParent, "CraftingPanel" )
 {
@@ -27,6 +348,11 @@ CRD_Crafting_Panel::CRD_Crafting_Panel( CRD_Collection_Tab_Crafting *pTab )
 	m_pGplRecipes = new BaseModUI::GenericPanelList( this, "GplRecipes", BaseModUI::GenericPanelList::ISM_PERITEM );
 	m_pLblRecipeTitle = new vgui::Label( this, "LblRecipeTitle", "" );
 	m_pLblFlavor = new vgui::Label( this, "LblFlavor", "" );
+	m_pLblIngredients = new vgui::Label( this, "LblIngredients", "#rd_crafting_required_items" );
+	m_pGridIngredients = new CRD_Crafting_Item_Grid( this, "GridIngredients" );
+	m_pGridIngredientsTall = new CRD_Crafting_Item_Grid( this, "GridIngredientsTall" );
+	m_pLblOutputs = new vgui::Label( this, "LblOutputs", "#rd_crafting_output_items" );
+	m_pGridOutputs = new CRD_Crafting_Item_Grid( this, "GridOutputs" );
 	m_pLblWarning = new vgui::Label( this, "LblWarning", "" );
 	m_pBtnCraft = new CNB_Button( this, "BtnCraft", "#rd_crafting_submit_ready", this, "ConfirmCraft" );
 	m_iSelectedRecipe = -1;
@@ -51,6 +377,11 @@ void CRD_Crafting_Panel::ApplySchemeSettings( vgui::IScheme *pScheme )
 
 	m_pLblRecipeTitle->SetText( "" );
 	m_pLblFlavor->SetText( "" );
+	m_pLblIngredients->SetVisible( false );
+	m_pGridIngredients->SetVisible( false );
+	m_pGridIngredientsTall->SetVisible( false );
+	m_pLblOutputs->SetVisible( false );
+	m_pGridOutputs->SetVisible( false );
 	m_pLblWarning->SetText( "" );
 	m_pBtnCraft->SetVisible( false );
 
@@ -87,6 +418,20 @@ void CRD_Crafting_Panel::ApplySchemeSettings( vgui::IScheme *pScheme )
 			}
 		}
 		if ( bHideIfItem )
+		{
+			continue;
+		}
+
+		bool bAnyVariantVisible = false;
+		FOR_EACH_VEC( g_RD_Crafting_Recipes[i].m_Variants, j )
+		{
+			if ( !HoIAF()->IsCraftingBlueprintHidden( g_RD_Crafting_Recipes[i].m_Variants[j].m_ExchangeItem ) )
+			{
+				bAnyVariantVisible = true;
+				break;
+			}
+		}
+		if ( !bAnyVariantVisible )
 		{
 			continue;
 		}
@@ -128,7 +473,11 @@ void CRD_Crafting_Panel::OnCommand( const char *szCommand )
 			// we can take a reference (and later a pointer) because these vectors are immutable
 			const RD_Crafting_Recipe_Variant &variant = g_RD_Crafting_Recipes[iRecipeNumber].m_Variants[i];
 
-			// TODO: support recipes with ingredient quantities other than 1
+			if ( HoIAF()->IsCraftingBlueprintHidden( variant.m_ExchangeItem ) )
+			{
+				continue;
+			}
+
 			CUtlVector<SteamItemInstanceID_t> selectedItems;
 
 			// simplifying assumption: the order ingredients are selected does not matter;
@@ -136,8 +485,6 @@ void CRD_Crafting_Panel::OnCommand( const char *szCommand )
 			// (this assumption allows us to use a greedy algorithm)
 			FOR_EACH_VEC( variant.m_Inputs, j )
 			{
-				Assert( variant.m_Inputs[j].m_iQuantity == 1 );
-
 				FOR_EACH_VEC( variant.m_Inputs[j].m_AllowedItem, k )
 				{
 					CUtlVector<ReactiveDropInventory::ItemInstance_t> instances;
@@ -149,11 +496,11 @@ void CRD_Crafting_Panel::OnCommand( const char *szCommand )
 						{
 							if ( selectedItems[m] == instances[l].ItemID )
 							{
-								nQuantityUsed++;
+								nQuantityUsed += variant.m_Inputs[m].m_iQuantity;
 							}
 						}
 
-						if ( instances[l].Quantity > nQuantityUsed )
+						if ( instances[l].Quantity >= nQuantityUsed + variant.m_Inputs[j].m_iQuantity )
 						{
 							selectedItems.AddToTail( instances[l].ItemID );
 							break;
@@ -300,11 +647,11 @@ void CRD_Crafting_Panel::UpdateCraftState()
 						{
 							if ( orderedItems[m] != nullptr && orderedItems[m]->ItemID == instances[l].ItemID )
 							{
-								nQuantityUsed++;
+								nQuantityUsed += m_FilteredVariants[i]->m_Inputs[m].m_iQuantity;
 							}
 						}
 
-						if ( instances[l].Quantity > nQuantityUsed )
+						if ( instances[l].Quantity >= nQuantityUsed + m_FilteredVariants[i]->m_Inputs[j].m_iQuantity )
 						{
 							orderedItems[j] = ReactiveDropInventory::GetLocalItemCache( instances[l].ItemID );
 							autoItems.AddToTail( instances[l].ItemID );
@@ -340,11 +687,11 @@ void CRD_Crafting_Panel::UpdateCraftState()
 						{
 							if ( orderedItems[m] != nullptr && orderedItems[m]->ItemID == instances[l].ItemID )
 							{
-								nQuantityUsed++;
+								nQuantityUsed += m_FilteredVariants[i]->m_Inputs[k].m_iQuantity;
 							}
 						}
 
-						if ( instances[l].Quantity > nQuantityUsed )
+						if ( instances[l].Quantity >= nQuantityUsed + m_FilteredVariants[i]->m_Inputs[j].m_iQuantity )
 						{
 							possibleNextIngredients.Insert( instances[l].ItemID );
 						}
@@ -368,8 +715,17 @@ void CRD_Crafting_Panel::UpdateCraftState()
 		}
 	}
 
+	m_pGridIngredients->RemoveAll();
+	m_pGridIngredientsTall->RemoveAll();
+	m_pGridOutputs->RemoveAll();
+
 	if ( m_FilteredVariants.Count() == 0 )
 	{
+		m_pLblIngredients->SetVisible( false );
+		m_pGridIngredients->SetVisible( false );
+		m_pGridIngredientsTall->SetVisible( false );
+		m_pLblOutputs->SetVisible( false );
+		m_pGridOutputs->SetVisible( false );
 		m_pBtnCraft->SetText( "#rd_crafting_submit_missing_ingredients" );
 		m_pBtnCraft->SetEnabled( false );
 		m_pBtnCraft->SetVisible( true );
@@ -381,12 +737,64 @@ void CRD_Crafting_Panel::UpdateCraftState()
 
 		m_SelectedRecipeOutput = possibleAutoVariants[0]->m_ExchangeItem;
 
-		m_pBtnCraft->SetText( "#rd_crafting_submit_ready" );
-		m_pBtnCraft->SetEnabled( true );
+		m_pLblIngredients->SetText( "#rd_crafting_required_items" );
+		m_pLblIngredients->SetVisible( true );
+		m_pGridIngredients->SetVisible( true );
+		m_pGridIngredientsTall->SetVisible( false );
+		m_pLblOutputs->SetVisible( true );
+		m_pGridOutputs->SetVisible( true );
+
+		FOR_EACH_VEC( m_AutoSelectedItems, i )
+		{
+			m_pGridIngredients->AddItem( m_AutoSelectedItems[i], possibleAutoVariants[0]->m_Inputs[i].m_iQuantity, ( possibleAutoVariants[0]->m_Inputs[i].m_iFlags & RD_CRAFTING_RECIPE_AUTO_SELECT ) == 0 );
+		}
+
+		const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( m_SelectedRecipeOutput );
+		if ( pDef && pDef->Type == ReactiveDropInventory::ItemDef_t::TYPE_BUNDLE )
+		{
+			CSplitString bundleItems( pDef->Bundle.Get(), ";" );
+			FOR_EACH_VEC( bundleItems, i )
+			{
+				CSplitString itemQuantity( bundleItems[i], "x" );
+				m_pGridOutputs->AddItemDef( strtol( itemQuantity[0], nullptr, 10 ), itemQuantity.Count() > 1 ? strtol( itemQuantity[1], nullptr, 10 ) : 1, false );
+			}
+		}
+		else
+		{
+			m_pGridOutputs->AddItemDef( m_SelectedRecipeOutput, 1, false );
+		}
+
+		if ( SteamUser() && SteamUser()->BLoggedOn() )
+		{
+			m_pBtnCraft->SetText( "#rd_crafting_submit_ready" );
+			m_pBtnCraft->SetEnabled( true );
+		}
+		else
+		{
+			m_pBtnCraft->SetText( "#rd_crafting_submit_offline" );
+			m_pBtnCraft->SetEnabled( false );
+		}
 		m_pBtnCraft->SetVisible( true );
 	}
 	else
 	{
+		m_pLblIngredients->SetText( "#rd_crafting_select_items" );
+		m_pLblIngredients->SetVisible( true );
+		m_pGridIngredients->SetVisible( false );
+		m_pGridIngredientsTall->SetVisible( true );
+		m_pLblOutputs->SetVisible( false );
+		m_pGridOutputs->SetVisible( false );
+
+		CUtlVector<ReactiveDropInventory::ItemInstance_t> fullInventory;
+		ReactiveDropInventory::GetLocalItemCache( fullInventory );
+		FOR_EACH_VEC( fullInventory, i )
+		{
+			if ( possibleNextIngredients.IsValidIndex( possibleNextIngredients.Find( fullInventory[i].ItemID ) ) )
+			{
+				m_pGridIngredientsTall->AddItem( fullInventory[i].ItemID, 0, true );
+			}
+		}
+
 		m_pBtnCraft->SetText( "#rd_crafting_submit_unselected_ingredients" );
 		m_pBtnCraft->SetEnabled( false );
 		m_pBtnCraft->SetVisible( true );

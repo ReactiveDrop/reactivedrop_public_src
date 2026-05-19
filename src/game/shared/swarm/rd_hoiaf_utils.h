@@ -96,9 +96,11 @@ public:
 #ifdef CLIENT_DLL
 	bool HasActiveBountyForMission( const char *szMission, PublishedFileId_t addonID, bool bOnlyOnServer = false, bool bAllowClaimed = false );
 	void MarkBountyAsCompleted( int iBountyID );
-#endif
 
-#ifdef CLIENT_DLL
+	// Crafting
+	bool AreResearchProjectsActive() const;
+	bool IsCraftingBlueprintHidden( SteamItemDef_t iItemDef ) const;
+
 	// Notifications
 	// Elements from this array can be deleted at any time; do not store pointers.
 	CUtlVectorAutoPurge<HoIAFNotification_t *> m_Notifications;
@@ -180,6 +182,14 @@ private:
 		CUtlString AddonName;
 	};
 	CUtlVectorAutoPurge<HoIAFMissionBounty_t *> m_HoIAFMissionBounties;
+	struct HideCraftingBlueprint_t
+	{
+		SteamItemDef_t ID;
+		RTime32 Start;
+		RTime32 End;
+	};
+	CUtlVector<HideCraftingBlueprint_t> m_HideCraftingBlueprint;
+	bool m_bResearchProjectsActive = false;
 };
 
 CRD_HoIAF_System *HoIAF();

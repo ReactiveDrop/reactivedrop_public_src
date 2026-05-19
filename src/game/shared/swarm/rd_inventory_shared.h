@@ -101,6 +101,7 @@ namespace ReactiveDropInventory
 		CUtlString DisplayType;
 		CUtlString Name;
 		CUtlString BriefingName;
+		CUtlString Disambiguator;
 		CUtlStringList StyleNames;
 		CUtlString Description;
 		CUtlString BeforeDescription;

@@ -1,6 +1,7 @@
 #include "cbase.h"
 #include "rd_collections.h"
 #include "rd_collections_crafting.h"
+#include "rd_collections_crafting_research.h"
 #include "rd_swarmopedia.h"
 #include "asw_util_shared.h"
 #include <vgui/IInput.h>
@@ -10,6 +11,7 @@
 #include "rd_vgui_main_menu_top_bar.h"
 #include "convar_serverbounded.h"
 #include "rd_steam_input.h"
+#include "rd_hoiaf_utils.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -41,6 +43,10 @@ void LaunchCollectionsFrame()
 	pFrame->AddTab( pOtherTab );
 #ifdef RD_7A_CRAFTING
 	pFrame->AddTab( new CRD_Collection_Tab_Crafting( pFrame, "#rd_collection_inventory_crafting" ) );
+	if ( HoIAF()->AreResearchProjectsActive() )
+	{
+		pFrame->AddTab( new CRD_Collection_Tab_Crafting_Research( pFrame, "#rd_collection_inventory_crafting_research" ) );
+	}
 #endif
 	if ( rd_legacy_ui.GetString()[0] != '\0' )
 	{

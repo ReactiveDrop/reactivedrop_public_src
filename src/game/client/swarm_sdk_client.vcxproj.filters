@@ -1048,6 +1048,7 @@
     <ClCompile Include="videoservices\WebMDemuxer.cpp">
       <Filter>videoservices</Filter>
     </ClCompile>
+    <ClCompile Include="swarm\rd_collections_crafting_research.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\public\steam\isteamapps.h" />
@@ -2221,6 +2222,7 @@
     <ClInclude Include="videoservices\WebMDemuxer.hpp">
       <Filter>videoservices</Filter>
     </ClInclude>
+    <ClInclude Include="swarm\rd_collections_crafting_research.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\..\lib\common\jpeglib.lib" />

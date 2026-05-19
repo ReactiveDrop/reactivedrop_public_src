@@ -374,6 +374,38 @@ void CRD_HoIAF_System::MarkBountyAsCompleted( int iBountyID )
 	Warning( "[HoIAF:%c] Server said to mark mission bounty %d complete, but we don't know about that bounty!\n", IsClientDll() ? 'C' : 'S', iBountyID );
 }
 
+bool CRD_HoIAF_System::AreResearchProjectsActive() const
+{
+	return m_bResearchProjectsActive;
+}
+
+bool CRD_HoIAF_System::IsCraftingBlueprintHidden( SteamItemDef_t iItemDef ) const
+{
+	RTime32 currentTime = SteamUtils() ? SteamUtils()->GetServerRealTime() : 0;
+
+	FOR_EACH_VEC( m_HideCraftingBlueprint, i )
+	{
+		if ( m_HideCraftingBlueprint[i].ID != iItemDef )
+		{
+			continue;
+		}
+
+		if ( m_HideCraftingBlueprint[i].Start > currentTime )
+		{
+			continue;
+		}
+
+		if ( m_HideCraftingBlueprint[i].End < currentTime )
+		{
+			continue;
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
 static int __cdecl ItemInstancesInAcquisitionOrder( const ReactiveDropInventory::ItemInstance_t *a, const ReactiveDropInventory::ItemInstance_t *b )
 {
 	return int( a->Acquired ) - int( b->Acquired );
@@ -709,6 +741,7 @@ void CRD_HoIAF_System::ParseIAFIntel()
 	m_EventTimers.PurgeAndDeleteElements();
 	m_ChatAnnouncements.PurgeAndDeleteElements();
 	m_HoIAFMissionBounties.PurgeAndDeleteElements();
+	m_bResearchProjectsActive = false;
 
 	FOR_EACH_SUBKEY( m_pIAFIntel, pCommand )
 	{
@@ -822,6 +855,13 @@ void CRD_HoIAF_System::ParseIAFIntel()
 			pBounty->AddonName = pCommand->GetString( "addon_name" );
 
 			m_HoIAFMissionBounties.AddToTail( pBounty );
+		}
+		else if ( !V_stricmp( szName, "researchProjectsActive" ) )
+		{
+			Assert( pCommand->GetDataType() == KeyValues::TYPE_INT );
+			Assert( pCommand->GetInt() == 1 );
+
+			m_bResearchProjectsActive = true;
 		}
 		else
 		{

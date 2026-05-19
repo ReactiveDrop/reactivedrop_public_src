@@ -3265,6 +3265,13 @@ namespace ReactiveDropInventory
 		if ( *szValue )
 			pItemDef->BriefingName = szValue;
 
+		V_snprintf( szKey, sizeof( szKey ), "disambiguator_%s", szLang );
+		FETCH_PROPERTY( "disambiguator_english" );
+		pItemDef->Disambiguator = szValue;
+		FETCH_PROPERTY( szKey );
+		if ( *szValue )
+			pItemDef->Disambiguator = szValue;
+
 		V_snprintf( szKey, sizeof( szKey ), "before_description_%s", szLang );
 		FETCH_PROPERTY( "before_description_english" );
 		pItemDef->BeforeDescription = szValue;
