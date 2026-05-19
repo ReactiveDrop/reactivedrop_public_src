@@ -379,7 +379,7 @@ void CNPC_Zombine::DropGrenade( Vector vDir )
 		m_hGrenade->SetMoveType( MOVETYPE_VPHYSICS );
 		m_hGrenade->SetSolid( SOLID_VPHYSICS );
 		m_hGrenade->SetCollisionGroup( ASW_COLLISION_GROUP_GRENADES );
-		CFunc_ASW_Fade::ApplyGrenadeCollisionRules( m_hGrenade );
+		CFunc_ASW_Fade::ApplyAllGrenadeCollisionRules( m_hGrenade );
 
 		m_hGrenade->CreateVPhysics();
 	}

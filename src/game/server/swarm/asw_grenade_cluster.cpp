@@ -100,7 +100,7 @@ void CASW_Grenade_Cluster::Spawn( void )
 	SetFriction( asw_vindicator_grenade_friction.GetFloat() );
 	SetElasticity( asw_vindicator_grenade_elasticity.GetFloat() );
 	SetCollisionGroup( ASW_COLLISION_GROUP_GRENADES );
-	CFunc_ASW_Fade::ApplyGrenadeCollisionRules( this );
+	CFunc_ASW_Fade::ApplyAllGrenadeCollisionRules( this );
 
 	SetTouch( &CASW_Grenade_Cluster::VGrenadeTouch );
 

@@ -6,6 +6,7 @@
 
 #include "c_props.h"
 #include "iasw_fade_list.h"
+#include "asw_shareddefs.h"
 
 class C_Prop_ASW_Fade : public C_DynamicProp, public IASW_Fade_List
 {

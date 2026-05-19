@@ -49,7 +49,7 @@ void CASW_Grenade_PRifle::Spawn()
 {
 	BaseClass::Spawn();
 	SetModel( STUN_GRENADE_MODEL );
-	CFunc_ASW_Fade::ApplyGrenadeCollisionRules( this );
+	CFunc_ASW_Fade::ApplyAllGrenadeCollisionRules( this );
 }
 
 void CASW_Grenade_PRifle::Detonate()

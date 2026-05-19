@@ -95,7 +95,7 @@ void CASW_Grenade_Vindicator::Spawn( void )
 	SetFriction( asw_vindicator_grenade_friction.GetFloat() );
 	SetElasticity( asw_vindicator_grenade_elasticity.GetFloat() );
 	SetCollisionGroup( ASW_COLLISION_GROUP_GRENADES );
-	CFunc_ASW_Fade::ApplyGrenadeCollisionRules( this );
+	CFunc_ASW_Fade::ApplyAllGrenadeCollisionRules( this );
 	//CreateVPhysics();
 
 	SetTouch( &CASW_Grenade_Vindicator::VGrenadeTouch );

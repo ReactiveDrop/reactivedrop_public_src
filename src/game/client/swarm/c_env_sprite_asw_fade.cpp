@@ -9,9 +9,8 @@ IMPLEMENT_CLIENTCLASS_DT( C_Env_Sprite_ASW_Fade, DT_Env_Sprite_ASW_Fade, CEnv_Sp
 	RecvPropInt( RECVINFO( m_nFadeOpacity ) ),
 	RecvPropBool( RECVINFO( m_bAllowFade ) ),
 	RecvPropVector( RECVINFO( m_vecFadeOrigin ) ),
+	RecvPropInt( RECVINFO( m_fVisibleToMarine ), SPROP_UNSIGNED ),
 END_RECV_TABLE()
-
-extern ConVar asw_fade_duration;
 
 C_Env_Sprite_ASW_Fade::C_Env_Sprite_ASW_Fade()
 {

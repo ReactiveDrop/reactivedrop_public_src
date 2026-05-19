@@ -16,7 +16,8 @@ public:
 	C_Func_ASW_Fade();
 
 	IMPLEMENT_ASW_FADE_LIST( GetAbsOrigin() );
-	CNetworkVar( bool, m_bCollideWithMarines );
+
+	int GetMarineIndex( CBaseEntity *pEnt, const char *szContext );
 };
 
 #endif	// _INCLUDED_C_FUNC_ASW_FADE_H

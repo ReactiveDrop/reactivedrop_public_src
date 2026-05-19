@@ -4,12 +4,14 @@
 	#include "c_asw_marine.h"
 	#include "c_asw_weapon.h"
 	#include "c_func_asw_fade.h"
+	#include "c_prop_asw_fade.h"
 	#include "prediction.h"
 	#define CASW_Inhabitable_NPC C_ASW_Inhabitable_NPC
 	#define CASW_Player C_ASW_Player
 	#define CASW_Marine C_ASW_Marine
 	#define CASW_Weapon C_ASW_Weapon
 	#define CFunc_ASW_Fade C_Func_ASW_Fade
+	#define CProp_ASW_Fade C_Prop_ASW_Fade
 #else
 	#include "asw_marine.h"
 	#include "asw_player.h"
@@ -17,6 +19,7 @@
 	#include "asw_alien.h"
 	#include "asw_drone_advanced.h"
 	#include "func_asw_fade.h"
+	#include "prop_asw_fade.h"
 	#include "takedamageinfo.h"
 	#include "ndebugoverlay.h"
 	#include "world.h"
@@ -286,12 +289,23 @@ enum
 class CASW_TraceFilterMarineMovement : public CTraceFilterSkipTwoEntities
 {
 public:
+	int m_iMR = -1;
+
 	bool ShouldHitEntity( IHandleEntity *pHandleEntity, int contentsMask ) override
 	{
 		CBaseEntity *pEnt = EntityFromEntityHandle( pHandleEntity );
 		if ( CFunc_ASW_Fade *pFade = dynamic_cast< CFunc_ASW_Fade * >( pEnt ) )
 		{
 			if ( !pFade->m_bCollideWithMarines )
+				return false;
+			if ( !pFade->m_bSolidWhenInvisible && m_iMR != -1 && ( pFade->m_fVisibleToMarine & ( 1u << m_iMR ) ) == 0 )
+				return false;
+		}
+		if ( CProp_ASW_Fade *pFade = dynamic_cast<CProp_ASW_Fade *>( pEnt ) )
+		{
+			if ( !pFade->m_bCollideWithMarines )
+				return false;
+			if ( !pFade->m_bSolidWhenInvisible && m_iMR != -1 && ( pFade->m_fVisibleToMarine & ( 1u << m_iMR ) ) == 0 )
 				return false;
 		}
 
@@ -309,7 +323,8 @@ ITraceFilter *CASW_MarineGameMovement::LockTraceFilter( int collisionGroup )
 	if ( s_nTraceFilterCount >= MAX_NESTING )
 		return NULL;
 
-	CTraceFilterSkipTwoEntities *pFilter = &s_TraceFilter[s_nTraceFilterCount++];
+	CASW_TraceFilterMarineMovement *pFilter = &s_TraceFilter[s_nTraceFilterCount++];
+	pFilter->m_iMR = ( ( CFunc_ASW_Fade * )nullptr )->GetMarineIndex( marine, nullptr );
 	pFilter->SetPassEntity( marine );
 	pFilter->SetCollisionGroup( collisionGroup );
 
@@ -456,6 +471,8 @@ inline void CASW_MarineGameMovement::TraceMarineBBox( const Vector& start, const
 }
 #endif
 
+static int s_iMRForMarineStuckCheck = -1;
+
 static bool CanMarineGetStuckInEntity( IHandleEntity *pHandleEntity, int contentsMask )
 {
 	CBaseEntity *pEntity = EntityFromEntityHandle( pHandleEntity );
@@ -467,9 +484,20 @@ static bool CanMarineGetStuckInEntity( IHandleEntity *pHandleEntity, int content
 	if ( pEntity->GetCollisionGroup() == ASW_COLLISION_GROUP_EXTINGUISHER_PELLETS && !rd_marine_stuck_in_extinguisher_pellets.GetBool() )
 		return false;
 
-	CFunc_ASW_Fade *pFade = dynamic_cast< CFunc_ASW_Fade * >( pEntity );
-	if ( pFade && !pFade->m_bCollideWithMarines )
-		return false;
+	if ( CFunc_ASW_Fade *pFade = dynamic_cast<CFunc_ASW_Fade *>( pEntity ) )
+	{
+		if ( !pFade->m_bCollideWithMarines )
+			return false;
+		if ( !pFade->m_bSolidWhenInvisible && s_iMRForMarineStuckCheck != -1 && ( pFade->m_fVisibleToMarine & ( 1u << s_iMRForMarineStuckCheck ) ) == 0 )
+			return false;
+	}
+	if ( CProp_ASW_Fade *pFade = dynamic_cast<CProp_ASW_Fade *>( pEntity ) )
+	{
+		if ( !pFade->m_bCollideWithMarines )
+			return false;
+		if ( !pFade->m_bSolidWhenInvisible && s_iMRForMarineStuckCheck != -1 && ( pFade->m_fVisibleToMarine & ( 1u << s_iMRForMarineStuckCheck ) ) == 0 )
+			return false;
+	}
 
 	return true;
 }
@@ -479,6 +507,7 @@ inline CBaseHandle CASW_MarineGameMovement::TestPlayerPosition( const Vector& po
 	Ray_t ray;
 	ray.Init( pos, pos + Vector( 0, 0, 1 ), GetPlayerMins(), GetPlayerMaxs() );
 
+	s_iMRForMarineStuckCheck = ( ( CFunc_ASW_Fade * )nullptr )->GetMarineIndex( marine, nullptr );
 	CTraceFilterSimple filter( marine, collisionGroup, &CanMarineGetStuckInEntity );
 	UTIL_TraceRay( ray, MASK_PLAYERSOLID, &filter, &pm );
 

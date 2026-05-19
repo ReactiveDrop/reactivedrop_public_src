@@ -71,7 +71,7 @@ void CGrenadeSpit::Spawn( void )
 	SetFriction( 0.8f );
 
 	SetCollisionGroup( ASW_COLLISION_GROUP_NPC_GRENADES );
-	CFunc_ASW_Fade::ApplyGrenadeCollisionRules( this );
+	CFunc_ASW_Fade::ApplyAllGrenadeCollisionRules( this );
 
 	AddEFlags( EFL_FORCE_CHECK_TRANSMIT );
 

@@ -162,7 +162,7 @@ void CASW_Flare_Projectile::Spawn( void )
 	AddFlag( FL_OBJECT );
 	
 	SetCollisionGroup( ASW_COLLISION_GROUP_GRENADES );
-	CFunc_ASW_Fade::ApplyGrenadeCollisionRules( this );
+	CFunc_ASW_Fade::ApplyAllGrenadeCollisionRules( this );
 
 	// Tumble in air
 	QAngle vecAngVelocity( 0, random->RandomFloat ( -100, -500 ), 0 );

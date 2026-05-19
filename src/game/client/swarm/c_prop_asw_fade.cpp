@@ -9,6 +9,9 @@ IMPLEMENT_CLIENTCLASS_DT( C_Prop_ASW_Fade, DT_Prop_ASW_Fade, CProp_ASW_Fade )
 	RecvPropBool( RECVINFO( m_bAllowFade ) ),
 	RecvPropFloat( RECVINFO( m_flFadeOriginOffset ) ),
 	RecvPropBool( RECVINFO( m_bHasProxies ) ),
+	RecvPropBool( RECVINFO( m_bCollideWithMarines ) ),
+	RecvPropInt( RECVINFO( m_fVisibleToMarine ), SPROP_UNSIGNED ),
+	RecvPropBool( RECVINFO( m_bSolidWhenInvisible ) ),
 END_RECV_TABLE()
 
 C_Prop_ASW_Fade::C_Prop_ASW_Fade()

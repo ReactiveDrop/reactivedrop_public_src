@@ -95,7 +95,7 @@ void CASW_Missile_Round::Spawn( void )
 	SetSolid( SOLID_NONE );
 	SetGravity( m_ShotDef.m_flGravity );
 	SetCollisionGroup( ASW_COLLISION_GROUP_ALIEN_MISSILE );
-	CFunc_ASW_Fade::ApplyGrenadeCollisionRules( this );
+	CFunc_ASW_Fade::ApplyAllGrenadeCollisionRules( this );
 
 	SetTouch( &CASW_Missile_Round::Touch );
 

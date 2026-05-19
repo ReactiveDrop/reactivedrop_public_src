@@ -892,7 +892,7 @@ void CASW_Marine::Spawn( void )
 
 	UTIL_SetSize( this, GetHullMins(), GetHullMaxs() );
 
-	CFunc_ASW_Fade::ApplyMarineCollisionRules( this );
+	CFunc_ASW_Fade::ApplyAllMarineCollisionRules( this );
 }
 
 unsigned int CASW_Marine::PhysicsSolidMaskForEntity( void ) const 

@@ -104,7 +104,7 @@ void CASW_Gas_Grenade_Projectile::Spawn( void )
 	
 	SetCollisionGroup( ASW_COLLISION_GROUP_IGNORE_NPCS );
 
-	CFunc_ASW_Fade::ApplyGrenadeCollisionRules( this );
+	CFunc_ASW_Fade::ApplyAllGrenadeCollisionRules( this );
 
 	// Tumble in air
 	QAngle vecAngVelocity( 0, random->RandomFloat ( -100, -500 ), 0 );

@@ -5,6 +5,8 @@
 #include "asw_fade_proxy_shared.h"
 #include "c_asw_player.h"
 #include "c_asw_marine.h"
+#include "c_asw_marine_resource.h"
+#include "c_asw_game_resource.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -24,6 +26,9 @@ IASW_Fade_List::IASW_Fade_List() : IASW_Fade_List_( true )
 	m_flInterpStart = 0;
 	m_bFaded = false;
 	m_bHasProxies = false;
+	m_bCollideWithMarines = true;
+	m_fVisibleToMarine = UINT32_MAX;
+	m_bSolidWhenInvisible = false;
 }
 
 void IASW_Fade_List::DisableFading()
@@ -173,10 +178,25 @@ void IASW_Fade_List::ClientFadeThink()
 		return;
 	}
 
+	int iMR = -1;
+	if ( C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pNPC ) )
+	{
+		if ( C_ASW_Marine_Resource *pMR = pMarine->GetMarineResource() )
+		{
+			C_ASW_Game_Resource *pGameResource = ASWGameResource();
+			Assert( pGameResource );
+			if ( pGameResource )
+			{
+				iMR = pGameResource->GetMarineResourceIndex( pMR );
+			}
+		}
+	}
+
 	C_BaseEntity *pEnt = GetEntity();
 
-	bool bFade = ShouldFade( pNPC );
-	byte target = bFade ? m_nFadeOpacity : m_nNormalOpacity;
+	bool bVisible = iMR == -1 || ( m_fVisibleToMarine & ( 1u << iMR ) ) != 0;
+	bool bFade = !bVisible || ShouldFade( pNPC );
+	byte target = bFade ? bVisible ? m_nFadeOpacity : 0 : m_nNormalOpacity;
 	byte prev = bFade ? m_nNormalOpacity : m_nFadeOpacity;
 	if ( bFade != m_bFaded )
 	{
@@ -185,7 +205,7 @@ void IASW_Fade_List::ClientFadeThink()
 		m_flInterpStart = MAX( 0, m_flInterpStart );
 	}
 
-	if ( pPlayer->GetASWControls() != m_iLastControls || pNPC != m_hLastNPC.Get() || !m_bAllowFade )
+	if ( !bVisible || pPlayer->GetASWControls() != m_iLastControls || pNPC != m_hLastNPC.Get() || !m_bAllowFade )
 	{
 		m_iLastControls = pPlayer->GetASWControls();
 		m_hLastNPC = pNPC;

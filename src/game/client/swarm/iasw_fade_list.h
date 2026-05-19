@@ -6,6 +6,7 @@
 
 #include "util_shared.h"
 #include "asw_player_shared.h"
+#include "asw_shareddefs.h"
 
 DECLARE_AUTO_LIST( IASW_Fade_List_ );
 
@@ -25,7 +26,6 @@ public:
 
 	bool ShouldFade( C_ASW_Inhabitable_NPC *pNPC );
 
-protected:
 	ASW_Controls_t m_iLastControls;
 	CHandle<C_ASW_Inhabitable_NPC> m_hLastNPC;
 	float m_flInterpStart;
@@ -34,6 +34,11 @@ protected:
 	bool m_bFaded;
 	bool m_bAllowFade;
 	bool m_bHasProxies;
+
+	ASSERT_INVARIANT( ASW_MAX_MARINE_RESOURCES <= 32 );
+	bool m_bCollideWithMarines;
+	bool m_bSolidWhenInvisible;
+	uint32_t m_fVisibleToMarine;
 
 	void OnFadeDataChanged( DataUpdateType_t updateType );
 	void ClientFadeThink();
