@@ -103,7 +103,7 @@ ConVar asw_ammo_count_ammo_satchel( "asw_ammo_count_ammo_satchel", "3", FCVAR_CH
 ConVar asw_ammo_count_shotgun( "asw_ammo_count_shotgun", "4", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_tesla_gun( "asw_ammo_count_tesla_gun", "20", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_railgun( "asw_ammo_count_railgun", "1", FCVAR_CHEAT | FCVAR_REPLICATED );
-ConVar asw_ammo_count_heal_gun( "asw_ammo_count_heal_gun", "100", FCVAR_CHEAT | FCVAR_REPLICATED );
+ConVar asw_ammo_count_heal_gun( "asw_ammo_count_heal_gun", "90", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_pdw( "asw_ammo_count_pdw", "80", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_flamer( "asw_ammo_count_flamer", "80", FCVAR_CHEAT | FCVAR_REPLICATED );
 ConVar asw_ammo_count_sniper_rifle( "asw_ammo_count_sniper_rifle", "12", FCVAR_CHEAT | FCVAR_REPLICATED );
