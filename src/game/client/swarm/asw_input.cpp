@@ -55,6 +55,8 @@ ConVar joy_disable_movement_in_ui( "joy_disable_movement_in_ui", "1", FCVAR_NONE
 ConVar rd_input_controller_mode_mouse( "rd_input_controller_mode_mouse", "-1", FCVAR_NONE );
 ConVar rd_input_controller_mode_keyboard( "rd_input_controller_mode_keyboard", "-1", FCVAR_NONE );
 
+ConVar rd_aim_ignore_above_camera_z( "rd_aim_ignore_above_camera_z", "-60", FCVAR_NONE, "Targets above the camera by this Z distance are ignored in top-down mode" );
+
 extern kbutton_t in_attack;
 extern kbutton_t in_walk;
 extern int g_asw_iPlayerListOpen;
@@ -457,6 +459,19 @@ C_BaseEntity* HUDToWorld(float screenx, float screeny,
 	if (asw_DebugAutoAim.GetBool())
 		ASW_StoreClearAll();
 
+	// Check bad aim angles
+	if ( pPlayer->GetASWControls() == ASWC_TOPDOWN &&
+			!ASWInput()->ControllerModeActiveMouse() && pBestAlien )
+	{
+		Vector vecAlienPos = pBestAlien->GetAimTargetRadiusPos( vecWeaponPos );
+
+		// Don't aim at stuff a bit below camera and higher
+		if ( vecAlienPos.z > vCameraLocation.z + rd_aim_ignore_above_camera_z.GetFloat() )
+		{
+			pBestAlien = NULL;
+		}
+	}
+
 	// if we have our cursor over a target (and not using the controller), make sure we have LOS to him before we continue
 	if ( !ASWInput()->ControllerModeActiveMouse() && pBestAlien )
 	{
@@ -503,6 +518,11 @@ C_BaseEntity* HUDToWorld(float screenx, float screeny,
 			// check he's in range
 			Vector vecAlienPos = pAimTarget->GetAimTargetRadiusPos(vecWeaponPos); //pEnt->WorldSpaceCenter();
 			if ( vecAlienPos.DistToSqr(vecWeaponPos) > ASW_MAX_AUTO_AIM_RANGE )
+				continue;
+
+			// Don't aim at stuff a bit below camera and higher
+			if ( pPlayer->GetASWControls() == ASWC_TOPDOWN &&
+					vecAlienPos.z > vCameraLocation.z + rd_aim_ignore_above_camera_z.GetFloat() )
 				continue;
 
 			Vector vDirection = vecAlienPos - vecWeaponPos;
