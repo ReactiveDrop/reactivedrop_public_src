@@ -902,7 +902,7 @@ bool CASW_Weapon::ASWReload( int iClipSize1, int iClipSize2, int iActivity )
 	{
 		// need to reload primary clip?
 		int primary = MIN( iClipSize1 - m_iClip1, pMarine->GetAmmoCount( m_iPrimaryAmmoType ) );
-		if ( primary != 0 )
+		if ( primary > 0 )
 		{
 			bReload = true;
 		}
@@ -930,7 +930,7 @@ bool CASW_Weapon::ASWReload( int iClipSize1, int iClipSize2, int iActivity )
 
 				// now we've given a clip, check if we can reload
 				primary = MIN( iClipSize1 - m_iClip1, pMarine->GetAmmoCount( m_iPrimaryAmmoType ) );
-				if ( primary != 0 )
+				if ( primary > 0 )
 				{
 					bReload = true;
 				}
@@ -943,7 +943,7 @@ bool CASW_Weapon::ASWReload( int iClipSize1, int iClipSize2, int iActivity )
 	{
 		// need to reload secondary clip?
 		int secondary = MIN( iClipSize2 - m_iClip2, pMarine->GetAmmoCount( m_iSecondaryAmmoType ) );
-		if ( secondary != 0 )
+		if ( secondary > 0 )
 		{
 			bReload = true;
 		}
