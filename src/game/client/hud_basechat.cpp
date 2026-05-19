@@ -2587,12 +2587,15 @@ void CBaseHudChatEntry::InsertChar(wchar_t ch)
 		return;
 	}
 
+	/* Pasting strings that overflow and end with multibyte+singlebyte will truncate unintuitively ("...ABC?!!" -> "...AB?")
 	// Edge case: check if current wchar_t will cause Send to truncate message
 	int iCharByteLen; // utf-8
 	if ( ch < 0x80 ) iCharByteLen = 1;
 	else if ( ch < 0x800 ) iCharByteLen = 2;
 	else if ( ch >= 0xD800 && ch <= 0xDBFF ) iCharByteLen = 4; // high surrogate, assume pair
 	else if ( ch >= 0xDC00 && ch <= 0xDFFF ) // low surrogate
+	*/
+	if ( ch >= 0xDC00 && ch <= 0xDFFF ) // low surrogate
 	{
 		// Check if previous wchar was a high surrogate
 		wchar_t wszHigh[2];
@@ -2601,6 +2604,7 @@ void CBaseHudChatEntry::InsertChar(wchar_t ch)
 		if ( wszHigh[0] >= 0xD800 && wszHigh[0] <= 0xDBFF ) { BaseClass::InsertChar(ch); return; }
 		else return; // it was not a hight surrogate, reject
 	}
+	/*
 	else iCharByteLen = 3;
 
 	if ( iCurrentByteLen + iCharByteLen <= m_iMaxByteCount )
@@ -2608,6 +2612,7 @@ void CBaseHudChatEntry::InsertChar(wchar_t ch)
 		BaseClass::InsertChar(ch);
 		return;
 	}
+	*/
 
 	return; // do not insert anything
 }
