@@ -146,6 +146,8 @@ void CASW_VGUI_Door_Tooltip::OnThink()
 			return;
 		}
 	}
+	else if ( GetAlpha() > 0 )
+		SetDoor( NULL );
 	
 }
 
@@ -178,7 +180,7 @@ bool CASW_VGUI_Door_Tooltip::MouseClick(int x, int y, bool bRightClick, bool bDo
 
 void CASW_VGUI_Door_Tooltip::SetDoor(C_ASW_Door *pDoor)
 {
-	if (m_hDoor.Get() != pDoor && !(m_bQueuedDoor && pDoor == m_hQueuedDoor.Get()))
+	if (!m_hDoor.Get() || (m_hDoor.Get() != pDoor && !(m_bQueuedDoor && pDoor == m_hQueuedDoor.Get())))
 	{		
 		m_hQueuedDoor = pDoor;
 		m_bQueuedDoor = true;
