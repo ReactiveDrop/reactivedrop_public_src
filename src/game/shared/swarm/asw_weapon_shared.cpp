@@ -1199,8 +1199,9 @@ void CASW_Weapon::FinishReload( void )
 
 	if (pOwner)
 	{
-		// If I use primary clips, reload primary
-		if ( UsesClipsForAmmo1() )
+		// Additional checks are needed to prevent accidentally reloading ammo types that don't require reloading now.
+		// If I use primary clips, current clip not overflowing and I have spare ammo, reload primary
+		if ( UsesClipsForAmmo1() && m_iClip1 < GetMaxClip1() && pOwner->GetAmmoCount(m_iPrimaryAmmoType) > 0 )
 		{
 			// asw: throw away what's in the clip currently
 			m_iClip1 = 0;
@@ -1209,8 +1210,8 @@ void CASW_Weapon::FinishReload( void )
 			pOwner->RemoveAmmo( primary, m_iPrimaryAmmoType);
 		}
 
-		// If I use secondary clips, reload secondary
-		if ( UsesClipsForAmmo2() )
+		// If I use secondary clips, current clip not overflowing and I have spare ammo, reload secondary
+		if ( UsesClipsForAmmo2() && m_iClip2 < GetMaxClip2() && pOwner->GetAmmoCount(m_iSecondaryAmmoType) > 0 )
 		{
 			int secondary = MIN( GetMaxClip2() - m_iClip2, pOwner->GetAmmoCount(m_iSecondaryAmmoType));
 			m_iClip2 += secondary;
