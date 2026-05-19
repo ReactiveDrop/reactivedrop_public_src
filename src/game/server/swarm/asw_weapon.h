@@ -61,6 +61,7 @@ public:
 	virtual float	GetFireRate( void );
 	virtual bool HasAmmo();
 	virtual bool PrimaryAmmoLoaded( void );
+	virtual void NotifyIfNoneClip1Ammo( CASW_Marine *pMarine );
 
 	virtual int LookupAttachment( const char *pAttachmentName );
 	virtual bool ShouldMarineMoveSlow();		// is the weapon in slow mode (when firing or reloading)

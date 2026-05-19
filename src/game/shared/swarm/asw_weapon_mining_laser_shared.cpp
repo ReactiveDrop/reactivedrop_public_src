@@ -550,25 +550,8 @@ bool CASW_Weapon_Mining_Laser::Fire( const Vector &vecOrigSrc, const Vector &vec
 			// decrement ammo
 			m_iClip1 -= 1;
 			m_flAmmoUseTime = gpGlobals->curtime + 0.2;
+			NotifyIfNoneClip1Ammo( pMarine );
 #ifdef GAME_DLL
-			if ( m_iClip1 <= 0 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0 )
-			{
-				// check he doesn't have ammo in an ammo bay
-				CASW_Weapon_Ammo_Bag* pAmmoBag = NULL;
-				CASW_Weapon* pWeapon = pMarine->GetASWWeapon(0);
-				if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
-					pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
-
-				if (!pAmmoBag)
-				{
-					pWeapon = pMarine->GetASWWeapon(1);
-					if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
-						pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
-				}
-				if ( !pAmmoBag || !pAmmoBag->CanGiveAmmoToWeapon(this) )
-					pMarine->OnWeaponOutOfAmmo(true);
-			}
-
 			pMarine->OnWeaponFired(this, 1);
 #endif
 		}

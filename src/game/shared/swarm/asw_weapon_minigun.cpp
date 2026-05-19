@@ -229,26 +229,7 @@ void CASW_Weapon_Minigun::PrimaryAttack()
 		iEffectiveClip -= info.m_iShots;
 		m_iClip1 = ( iEffectiveClip + 1 ) / 2;
 		m_bHalfShot = ( iEffectiveClip & 1 ) != 0;
-
-#ifdef GAME_DLL
-		if ( m_iClip1 <= 0 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0 )
-		{
-			// check he doesn't have ammo in an ammo bay
-			CASW_Weapon_Ammo_Bag* pAmmoBag = NULL;
-			CASW_Weapon* pWeapon = pMarine->GetASWWeapon(0);
-			if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
-				pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
-			
-			if (!pAmmoBag)
-			{
-				pWeapon = pMarine->GetASWWeapon(1);
-				if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
-					pAmmoBag = assert_cast<CASW_Weapon_Ammo_Bag*>(pWeapon);
-			}
-			if ( !pAmmoBag || !pAmmoBag->CanGiveAmmoToWeapon(this) )
-				pMarine->OnWeaponOutOfAmmo(true);
-		}
-#endif
+		NotifyIfNoneClip1Ammo( pMarine );
 	}
 	else
 	{

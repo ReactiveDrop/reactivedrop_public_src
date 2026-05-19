@@ -194,13 +194,7 @@ void CASW_Weapon_Rifle_Burst::DelayedAttack()
 	{
 		info.m_iShots = MIN( info.m_iShots, m_iClip1 );
 		m_iClip1 -= info.m_iShots;
-
-#ifdef GAME_DLL
-		if ( m_iClip1 <= 0 && pMarine && pMarine->GetAmmoCount( m_iPrimaryAmmoType ) <= 0 )
-		{
-			pMarine->OnWeaponOutOfAmmo( true );
-		}
-#endif
+		NotifyIfNoneClip1Ammo( pMarine );
 	}
 	else
 	{

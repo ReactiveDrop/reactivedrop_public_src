@@ -265,25 +265,7 @@ void CASW_Weapon_PDW::PrimaryAttack()
 			for ( int k = 0; k < info.m_iShots; k++ )
 			{
 				m_iClip1 -= 1;
-#ifdef GAME_DLL
-				if ( m_iClip1 <= 0 && pMarine && pMarine->GetAmmoCount( m_iPrimaryAmmoType ) <= 0 )
-				{
-					// check he doesn't have ammo in an ammo bay
-					CASW_Weapon_Ammo_Bag *pAmmoBag = NULL;
-					CASW_Weapon *pWeapon = pMarine->GetASWWeapon( 0 );
-					if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
-						pAmmoBag = assert_cast< CASW_Weapon_Ammo_Bag * >( pWeapon );
-
-					if ( !pAmmoBag )
-					{
-						pWeapon = pMarine->GetASWWeapon( 1 );
-						if ( pWeapon && pWeapon->Classify() == CLASS_ASW_AMMO_BAG )
-							pAmmoBag = assert_cast< CASW_Weapon_Ammo_Bag * >( pWeapon );
-					}
-					if ( !pAmmoBag || !pAmmoBag->CanGiveAmmoToWeapon( this ) )
-						pMarine->OnWeaponOutOfAmmo( true );
-				}
-#endif
+				NotifyIfNoneClip1Ammo( pMarine );
 			}
 		}
 		else
