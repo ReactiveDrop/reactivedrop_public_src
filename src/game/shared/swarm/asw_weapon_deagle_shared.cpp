@@ -70,7 +70,7 @@ void CASW_Weapon_DEagle::ItemPostFrame()
 {
 	CBasePlayer *pOwner = GetCommander();
 
-	if ( !m_bCanShoot && pOwner && !( pOwner->m_afButtonReleased & IN_ATTACK ) && ( pOwner->m_nButtons & IN_ATTACK ) )
+	if ( !m_bInReload && !m_bCanShoot && pOwner && !( pOwner->m_afButtonReleased & IN_ATTACK ) && ( pOwner->m_nButtons & IN_ATTACK ) )
 	{
 		// pretend we're still on cooldown so we don't run the weapon_fire event
 		m_flNextPrimaryAttack = MAX( gpGlobals->curtime + TICK_INTERVAL, m_flNextPrimaryAttack );
