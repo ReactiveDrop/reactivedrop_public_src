@@ -901,8 +901,7 @@ bool CASW_Weapon::ASWReload( int iClipSize1, int iClipSize2, int iActivity )
 	if ( UsesClipsForAmmo1() )
 	{
 		// need to reload primary clip?
-		int primary = MIN( iClipSize1 - m_iClip1, pMarine->GetAmmoCount( m_iPrimaryAmmoType ) );
-		if ( primary != 0 )
+		if ( m_iClip1 < iClipSize1 && pMarine->GetAmmoCount( m_iPrimaryAmmoType ) > 0 )
 		{
 			bReload = true;
 		}
@@ -929,8 +928,7 @@ bool CASW_Weapon::ASWReload( int iClipSize1, int iClipSize2, int iActivity )
 				pAmmoBag->GiveClipTo( pMarine, m_iPrimaryAmmoType, true );
 
 				// now we've given a clip, check if we can reload
-				primary = MIN( iClipSize1 - m_iClip1, pMarine->GetAmmoCount( m_iPrimaryAmmoType ) );
-				if ( primary != 0 )
+				if ( m_iClip1 < iClipSize1 && pMarine->GetAmmoCount( m_iPrimaryAmmoType ) > 0 )
 				{
 					bReload = true;
 				}
@@ -942,8 +940,7 @@ bool CASW_Weapon::ASWReload( int iClipSize1, int iClipSize2, int iActivity )
 	if ( UsesClipsForAmmo2() )
 	{
 		// need to reload secondary clip?
-		int secondary = MIN( iClipSize2 - m_iClip2, pMarine->GetAmmoCount( m_iSecondaryAmmoType ) );
-		if ( secondary != 0 )
+		if ( m_iClip2 < iClipSize2 && pMarine->GetAmmoCount( m_iSecondaryAmmoType ) > 0 )
 		{
 			bReload = true;
 		}
@@ -1199,8 +1196,9 @@ void CASW_Weapon::FinishReload( void )
 
 	if (pOwner)
 	{
-		// If I use primary clips, reload primary
-		if ( UsesClipsForAmmo1() )
+		// Additional checks are needed to prevent accidentally reloading ammo types that don't require reloading now.
+		// If I use primary clips, current clip not overflowing and I have spare ammo, reload primary
+		if ( UsesClipsForAmmo1() && m_iClip1 < GetMaxClip1() && pOwner->GetAmmoCount(m_iPrimaryAmmoType) > 0 )
 		{
 			// asw: throw away what's in the clip currently
 			m_iClip1 = 0;
@@ -1209,8 +1207,8 @@ void CASW_Weapon::FinishReload( void )
 			pOwner->RemoveAmmo( primary, m_iPrimaryAmmoType);
 		}
 
-		// If I use secondary clips, reload secondary
-		if ( UsesClipsForAmmo2() )
+		// If I use secondary clips, current clip not overflowing and I have spare ammo, reload secondary
+		if ( UsesClipsForAmmo2() && m_iClip2 < GetMaxClip2() && pOwner->GetAmmoCount(m_iSecondaryAmmoType) > 0 )
 		{
 			int secondary = MIN( GetMaxClip2() - m_iClip2, pOwner->GetAmmoCount(m_iSecondaryAmmoType));
 			m_iClip2 += secondary;
