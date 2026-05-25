@@ -16,15 +16,15 @@ on:
 jobs:
   release:
     name: build release
-    runs-on: windows-2022
+    runs-on: windows-2025-vs2026
     timeout-minutes: 30
     steps:
       #checkout project
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # setup msbuild
       - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1.1
+        uses: microsoft/setup-msbuild@v2
 
       # missionchooser.dll
       - name: Build missionchooser.dll
@@ -54,15 +54,15 @@ jobs:
 
   debug:
     name: build debug
-    runs-on: windows-2022
+    runs-on: windows-2025-vs2026
     timeout-minutes: 30
     steps:
       #checkout project
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # setup msbuild
       - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1.1
+        uses: microsoft/setup-msbuild@v2
 
       # missionchooser.dll
       - name: Build missionchooser.dll
