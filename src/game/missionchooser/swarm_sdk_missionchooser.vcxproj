@@ -17,25 +17,32 @@
   <PropertyGroup Label="Globals">
     <ProjectName>missionchooser</ProjectName>
     <ProjectGuid>{38AA6D4C-4ACE-4518-BC6C-BC42482C0E65}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
+    <VCToolsVersion>
+    </VCToolsVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <VcpkgConfiguration>Release</VcpkgConfiguration>
+    <VCToolsVersion>
+    </VCToolsVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
+    <VCToolsVersion>
+    </VCToolsVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -54,46 +61,44 @@
     <_ProjectFileVersion>12.0.30501.0</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>.\Debug\.\</OutDir>
-    <IntDir>.\Debug\.\</IntDir>
+    <OutDir>Debug\</OutDir>
+    <IntDir>Debug\</IntDir>
     <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
     <PreLinkEventUseInBuild>false</PreLinkEventUseInBuild>
     <LinkIncremental>true</LinkIncremental>
     <GenerateManifest>false</GenerateManifest>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
     <CodeAnalysisRuleSet>..\..\devtools\CodeAnalysisRules.ruleset</CodeAnalysisRuleSet>
+    <TargetName>missionchooser</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>.\Release\.\</OutDir>
-    <IntDir>.\Release\.\</IntDir>
+    <OutDir>Release\</OutDir>
+    <IntDir>Release\</IntDir>
     <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
     <PreLinkEventUseInBuild>true</PreLinkEventUseInBuild>
     <LinkIncremental>false</LinkIncremental>
     <GenerateManifest>false</GenerateManifest>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
     <CodeAnalysisRuleSet>..\..\devtools\CodeAnalysisRules.ruleset</CodeAnalysisRuleSet>
+    <TargetName>missionchooser</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">
-    <OutDir>.\Release\.\</OutDir>
-    <IntDir>.\Release\.\</IntDir>
+    <OutDir>Release\</OutDir>
+    <IntDir>Release\</IntDir>
     <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
     <PreLinkEventUseInBuild>true</PreLinkEventUseInBuild>
     <LinkIncremental>false</LinkIncremental>
     <GenerateManifest>false</GenerateManifest>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
     <CodeAnalysisRuleSet>..\..\devtools\CodeAnalysisRules.ruleset</CodeAnalysisRuleSet>
+    <TargetName>missionchooser</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <PreBuildEvent>
-      <Command>if EXIST "..\..\..\reactivedrop\bin\.\$(TargetFileName)" for /f "delims=" %25%25A in (%27attrib "..\..\..\reactivedrop\bin\.\$(TargetFileName)"%27) do set valveTmpIsReadOnly="%25%25A"
-set valveTmpIsReadOnlyLetter=%25valveTmpIsReadOnly:~6,1%25
-if "%25valveTmpIsReadOnlyLetter%25"=="R" del /q "$(TargetDir)"$(TargetFileName)
-if exist ..\..\devtools\bin\vpccrccheck.exe ..\..\devtools\bin\vpccrccheck.exe -crc2 test_swarm.vcproj
-if ERRORLEVEL 1 exit 1
-</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <ClCompile>
-      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\..\common;..\..\public;..\..\public\tier0;..\..\public\tier1;.;vgui;vgui\dialogs;TileSource;keyvalues_editor;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WIN32;_DEBUG;DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;DLLNAME=missionchooser;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;COMPILER_MSVC32;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;COMPILER_MSVC;MEMOVERRIDE_MODULE=missionchooser;_DLL_EXT=.dll;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;DLLNAME=missionchooser;VPCGAME=swarm;VPCGAMECAPS=SWARM;_DLL_EXT=.dll;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -118,8 +123,11 @@ if ERRORLEVEL 1 exit 1
       <CompileAs>CompileAsCpp</CompileAs>
       <ErrorReporting>Prompt</ErrorReporting>
       <DisableSpecificWarnings>26495;26812</DisableSpecificWarnings>
-      <SDLCheck>true</SDLCheck>
-      <FloatingPointExceptions>true</FloatingPointExceptions>
+      <SDLCheck>false</SDLCheck>
+      <FloatingPointExceptions>
+      </FloatingPointExceptions>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -127,7 +135,7 @@ if ERRORLEVEL 1 exit 1
     </ResourceCompile>
     <Link>
       <ShowProgress>NotSet</ShowProgress>
-      <OutputFile>$(OutDir)missionchooser.dll</OutputFile>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\lib\common\.;..\..\lib\public\.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libc;libcd;libcmtd;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -144,6 +152,7 @@ if ERRORLEVEL 1 exit 1
       <AdditionalOptions>/Brepro %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <LargeAddressAware>true</LargeAddressAware>
+      <ManifestFile>$(IntDir)$(TargetName)$(TargetExt).intermediate.manifest</ManifestFile>
     </Link>
     <Manifest>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -153,39 +162,41 @@ if ERRORLEVEL 1 exit 1
     </Xdcmake>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>$(OutDir)missionchooser.bsc</OutputFile>
+      <OutputFile>$(OutDir)$(TargetName).bsc</OutputFile>
     </Bscmake>
     <PostBuildEvent>
-      <Message>Publishing to ..\..\..\reactivedrop\bin\.</Message>
-      <Command>if exist "..\..\..\reactivedrop\bin\." goto ValveStart
-mkdir "..\..\..\reactivedrop\bin\."
-:ValveStart
-copy "$(TargetDir)"$(TargetFileName) "..\..\..\reactivedrop\bin\.\$(TargetFileName)"
-if ERRORLEVEL 1 goto BuildEventFailed
-if exist "$(TargetDir)"$(TargetName).map copy "$(TargetDir)"$(TargetName).map "..\..\..\reactivedrop\bin\.\$(TargetName).map"
-copy "$(TargetDir)"$(TargetName).pdb "..\..\..\reactivedrop\bin\.\$(TargetName).pdb"
-if ERRORLEVEL 1 goto BuildEventFailed
-goto BuildEventOK
-:BuildEventFailed
-echo *** ERROR! PostBuildStep FAILED for $(ProjectName)! EXE or DLL is probably running. ***
-del /q "$(TargetDir)"$(TargetFileName)
-exit 1
-:BuildEventOK
-if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd missionchooser
+      <Message>Publishing to ..\..\..\reactivedrop\bin\. Calling ..\..\devtools\bin\postbuild.cmd.</Message>
+      <Command>set "DEST_DIR=..\..\..\reactivedrop\bin"
+mkdir "%25DEST_DIR%25" 2&gt;nul
+
+robocopy "$(TargetDir)\" "%25DEST_DIR%25" "$(TargetFileName)" "$(TargetName).map" "$(TargetName).pdb" /IS /IT /COPY:DAT /R:1 /W:0 /NP
+if %errorlevel% GEQ 8 exit /b %errorlevel%
+REM normalize robocopy success range (0–7) to MSBuild success (0)
+cmd /c exit /b 0
+
+if exist ..\..\devtools\bin\postbuild.cmd (
+  call ..\..\devtools\bin\postbuild.cmd $(TargetName)
+  if %errorlevel% NEQ 0 exit /b %errorlevel%
+)
+
+exit /b 0
 </Command>
     </PostBuildEvent>
     <PreLinkEvent>
-      <Command>..\..\devtools\bin\sourcelink.cmd</Command>
+      <Command>if exist ..\..\devtools\bin\sourcelink.cmd (
+  call ..\..\devtools\bin\sourcelink.cmd
+  if %errorlevel% NEQ 0 exit /b %errorlevel%
+)
+
+exit /b 0
+</Command>
+      <Message>Calling ..\..\devtools\bin\sourcelink.cmd.</Message>
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PreBuildEvent>
-      <Command>if EXIST "..\..\..\reactivedrop\bin\.\$(TargetFileName)" for /f "delims=" %25%25A in (%27attrib "..\..\..\reactivedrop\bin\.\$(TargetFileName)"%27) do set valveTmpIsReadOnly="%25%25A"
-set valveTmpIsReadOnlyLetter=%25valveTmpIsReadOnly:~6,1%25
-if "%25valveTmpIsReadOnlyLetter%25"=="R" del /q "$(TargetDir)"$(TargetFileName)
-if exist ..\..\devtools\bin\vpccrccheck.exe ..\..\devtools\bin\vpccrccheck.exe -crc2 test_swarm.vcproj
-if ERRORLEVEL 1 exit 1
-</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
@@ -197,7 +208,7 @@ if ERRORLEVEL 1 exit 1
       <StringPooling>true</StringPooling>
       <ExceptionHandling />
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
@@ -218,7 +229,8 @@ if ERRORLEVEL 1 exit 1
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <OmitFramePointers>true</OmitFramePointers>
-      <IntelJCCErratum>true</IntelJCCErratum>
+      <IntelJCCErratum>false</IntelJCCErratum>
+      <SDLCheck>false</SDLCheck>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -226,7 +238,7 @@ if ERRORLEVEL 1 exit 1
     </ResourceCompile>
     <Link>
       <ShowProgress>NotSet</ShowProgress>
-      <OutputFile>$(OutDir)missionchooser.dll</OutputFile>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\lib\common\.;..\..\lib\public\.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libc;libcd;libcmtd;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -247,6 +259,7 @@ if ERRORLEVEL 1 exit 1
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <LargeAddressAware>true</LargeAddressAware>
       <SetChecksum>true</SetChecksum>
+      <ManifestFile>$(IntDir)$(TargetName)$(TargetExt).intermediate.manifest</ManifestFile>
     </Link>
     <Manifest>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -256,42 +269,43 @@ if ERRORLEVEL 1 exit 1
     </Xdcmake>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>$(OutDir)missionchooser.bsc</OutputFile>
+      <OutputFile>$(OutDir)$(TargetName).bsc</OutputFile>
     </Bscmake>
     <PostBuildEvent>
-      <Message>Publishing to ..\..\..\reactivedrop\bin\.</Message>
-      <Command>if exist "..\..\..\reactivedrop\bin\." goto ValveStart
-mkdir "..\..\..\reactivedrop\bin\."
-:ValveStart
-copy "$(TargetDir)"$(TargetFileName) "..\..\..\reactivedrop\bin\.\$(TargetFileName)"
-if ERRORLEVEL 1 goto BuildEventFailed
-if exist "$(TargetDir)"$(TargetName).map copy "$(TargetDir)"$(TargetName).map "..\..\..\reactivedrop\bin\.\$(TargetName).map"
-if exist "$(TargetDir)"$(TargetName).pdb copy "$(TargetDir)"$(TargetName).pdb "..\..\..\reactivedrop\bin\.\$(TargetName).pdb"
-if ERRORLEVEL 1 goto BuildEventFailed
-goto BuildEventOK
-:BuildEventFailed
-echo *** ERROR! PostBuildStep FAILED for $(ProjectName)! ***
-del /q "$(TargetDir)"$(TargetFileName)
-exit 1
-:BuildEventOK
-if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd missionchooser
+      <Message>Publishing to ..\..\..\reactivedrop\bin\. Calling ..\..\devtools\bin\postbuild.cmd.</Message>
+      <Command>set "DEST_DIR=..\..\..\reactivedrop\bin"
+mkdir "%25DEST_DIR%25" 2&gt;nul
+
+robocopy "$(TargetDir)\" "%25DEST_DIR%25" "$(TargetFileName)" "$(TargetName).map" "$(TargetName).pdb" /IS /IT /COPY:DAT /R:1 /W:0 /NP
+if %errorlevel% GEQ 8 exit /b %errorlevel%
+REM normalize robocopy success range (0–7) to MSBuild success (0)
+cmd /c exit /b 0
+
+if exist ..\..\devtools\bin\postbuild.cmd (
+  call ..\..\devtools\bin\postbuild.cmd $(TargetName)
+  if %errorlevel% NEQ 0 exit /b %errorlevel%
+)
+
+exit /b 0
 </Command>
     </PostBuildEvent>
     <PreLinkEvent>
-      <Command>..\..\devtools\bin\sourcelink.cmd</Command>
+      <Command>if exist ..\..\devtools\bin\sourcelink.cmd (
+  call ..\..\devtools\bin\sourcelink.cmd
+  if %errorlevel% NEQ 0 exit /b %errorlevel%
+)
+
+exit /b 0
+</Command>
+      <Message>Calling ..\..\devtools\bin\sourcelink.cmd.</Message>
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">
     <PreBuildEvent>
-      <Command>if EXIST "..\..\..\reactivedrop\bin\.\$(TargetFileName)" for /f "delims=" %25%25A in (%27attrib "..\..\..\reactivedrop\bin\.\$(TargetFileName)"%27) do set valveTmpIsReadOnly="%25%25A"
-set valveTmpIsReadOnlyLetter=%25valveTmpIsReadOnly:~6,1%25
-if "%25valveTmpIsReadOnlyLetter%25"=="R" del /q "$(TargetDir)"$(TargetFileName)
-if exist ..\..\devtools\bin\vpccrccheck.exe ..\..\devtools\bin\vpccrccheck.exe -crc2 test_swarm.vcproj
-if ERRORLEVEL 1 exit 1
-</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <ClCompile>
-      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -302,7 +316,7 @@ if ERRORLEVEL 1 exit 1
       <ExceptionHandling>
       </ExceptionHandling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
@@ -323,6 +337,8 @@ if ERRORLEVEL 1 exit 1
       <ErrorReporting>Prompt</ErrorReporting>
       <DisableSpecificWarnings>26495;26812</DisableSpecificWarnings>
       <WholeProgramOptimization>true</WholeProgramOptimization>
+      <SDLCheck>false</SDLCheck>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -330,7 +346,7 @@ if ERRORLEVEL 1 exit 1
     </ResourceCompile>
     <Link>
       <ShowProgress>NotSet</ShowProgress>
-      <OutputFile>$(OutDir)missionchooser.dll</OutputFile>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\lib\common\.;..\..\lib\public\.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libc;libcd;libcmtd;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -352,6 +368,7 @@ if ERRORLEVEL 1 exit 1
       <LargeAddressAware>true</LargeAddressAware>
       <SetChecksum>true</SetChecksum>
       <Profile>true</Profile>
+      <ManifestFile>$(IntDir)$(TargetName)$(TargetExt).intermediate.manifest</ManifestFile>
     </Link>
     <Manifest>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -361,29 +378,35 @@ if ERRORLEVEL 1 exit 1
     </Xdcmake>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>$(OutDir)missionchooser.bsc</OutputFile>
+      <OutputFile>$(OutDir)$(TargetName).bsc</OutputFile>
     </Bscmake>
     <PostBuildEvent>
-      <Message>Publishing to ..\..\..\reactivedrop\bin\.</Message>
-      <Command>if exist "..\..\..\reactivedrop\bin\." goto ValveStart
-mkdir "..\..\..\reactivedrop\bin\."
-:ValveStart
-copy "$(TargetDir)"$(TargetFileName) "..\..\..\reactivedrop\bin\.\$(TargetFileName)"
-if ERRORLEVEL 1 goto BuildEventFailed
-if exist "$(TargetDir)"$(TargetName).map copy "$(TargetDir)"$(TargetName).map "..\..\..\reactivedrop\bin\.\$(TargetName).map"
-copy "$(TargetDir)"$(TargetName).pdb "..\..\..\reactivedrop\bin\.\$(TargetName).pdb"
-if ERRORLEVEL 1 goto BuildEventFailed
-goto BuildEventOK
-:BuildEventFailed
-echo *** ERROR! PostBuildStep FAILED for $(ProjectName)! EXE or DLL is probably running. ***
-del /q "$(TargetDir)"$(TargetFileName)
-exit 1
-:BuildEventOK
-if exist ..\..\devtools\bin\postbuild.cmd ..\..\devtools\bin\postbuild.cmd missionchooser
+      <Message>Publishing to ..\..\..\reactivedrop\bin\. Calling ..\..\devtools\bin\postbuild.cmd.</Message>
+      <Command>set "DEST_DIR=..\..\..\reactivedrop\bin"
+mkdir "%25DEST_DIR%25" 2&gt;nul
+
+robocopy "$(TargetDir)\" "%25DEST_DIR%25" "$(TargetFileName)" "$(TargetName).map" "$(TargetName).pdb" /IS /IT /COPY:DAT /R:1 /W:0 /NP
+if %errorlevel% GEQ 8 exit /b %errorlevel%
+REM normalize robocopy success range (0–7) to MSBuild success (0)
+cmd /c exit /b 0
+
+if exist ..\..\devtools\bin\postbuild.cmd (
+  call ..\..\devtools\bin\postbuild.cmd $(TargetName)
+  if %errorlevel% NEQ 0 exit /b %errorlevel%
+)
+
+exit /b 0
 </Command>
     </PostBuildEvent>
     <PreLinkEvent>
-      <Command>..\..\devtools\bin\sourcelink.cmd</Command>
+      <Command>if exist ..\..\devtools\bin\sourcelink.cmd (
+  call ..\..\devtools\bin\sourcelink.cmd
+  if %errorlevel% NEQ 0 exit /b %errorlevel%
+)
+
+exit /b 0
+</Command>
+      <Message>Calling ..\..\devtools\bin\sourcelink.cmd.</Message>
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
