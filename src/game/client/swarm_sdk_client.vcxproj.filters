@@ -2262,7 +2262,16 @@
     <Library Include="videoservices\lib\win32\vorbis.lib">
       <Filter>videoservices\lib</Filter>
     </Library>
-    <Library Include="videoservices\lib\win32\vpxmt.lib">
+    <Library Include="videoservices\lib\win32\vpx_mt.lib">
+      <Filter>videoservices\lib</Filter>
+    </Library>
+    <Library Include="videoservices\lib\win32\webm_mt.lib">
+      <Filter>videoservices\lib</Filter>
+    </Library>
+    <Library Include="videoservices\lib\win32\debug\vpx_mtd.lib">
+      <Filter>videoservices\lib</Filter>
+    </Library>
+    <Library Include="videoservices\lib\win32\debug\webm_mtd.lib">
       <Filter>videoservices\lib</Filter>
     </Library>
   </ItemGroup>
