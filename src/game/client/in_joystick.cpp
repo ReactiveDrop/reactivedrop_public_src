@@ -350,7 +350,7 @@ ConVar joy_virtual_peg("joy_virtual_peg", "0");
 static float ResponseCurveLookDefault( int nSlot, float x, int axis, float otherAxis, float dist, float frametime )
 {
 	envelope_t &envelope = controlEnvelope[ MAX( nSlot, 0 ) ];
-	float input = x;
+	float x_input = x;
 
 	bool bStickIsPhysicallyPegged = ( dist >= joy_pegged.GetFloat() );
 
@@ -418,11 +418,11 @@ static float ResponseCurveLookDefault( int nSlot, float x, int axis, float other
 		x = joy_lowmap.GetFloat() * factor;
 	}
 
-	x *= AutoAimDampening( input, axis, dist );
+	x *= AutoAimDampening( x_input, axis, dist );
 
 	if( axis == YAW && x > 0.0f && joy_display_input.GetBool() )
 	{
-		Msg("In:%f Out:%f Frametime:%f\n", input, x, frametime );
+		Msg("In:%f Out:%f Frametime:%f\n", x_input, x, frametime );
 	}
 
 	if( negative )
@@ -438,7 +438,7 @@ static float ResponseCurveLookAccelerated( int nSlot, float x, int axis, float o
 {
 	envelope_t &envelope = controlEnvelope[ MAX( nSlot, 0 ) ];
 
-	float input = x;
+	float x_input = x;
 
 	float flJoyDist = ( sqrt(x*x + otherAxis * otherAxis) );
 	bool bIsPegged = ( flJoyDist>= joy_pegged.GetFloat() );
@@ -487,11 +487,11 @@ static float ResponseCurveLookAccelerated( int nSlot, float x, int axis, float o
 		x = joy_lowmap.GetFloat() + (delta * envelope.envelopeScale[axis]);
 	}
 
-	x *= AutoAimDampening( input, axis, dist );
+	x *= AutoAimDampening( x_input, axis, dist );
 
-	if( axis == YAW && input != 0.0f && joy_display_input.GetBool() )
+	if( axis == YAW && x_input != 0.0f && joy_display_input.GetBool() )
 	{
-		Msg("In:%f Out:%f Frametime:%f\n", input, x, frametime );
+		Msg("In:%f Out:%f Frametime:%f\n", x_input, x, frametime );
 	}
 
 	if( negative )
@@ -927,7 +927,7 @@ void CInput::JoyStickTurn( CUserCmd *cmd, float &yaw, float &pitch, float framet
 	float   aspeed = lookFrametime * GetHud().GetFOVSensitivityAdjust();
 
 	// apply turn control
-	float angle = 0.f;
+	float angle_yaw = 0.f;
 
 	if ( user.m_flSpinFrameTime )
 	{
@@ -943,25 +943,25 @@ void CInput::JoyStickTurn( CUserCmd *cmd, float &yaw, float &pitch, float framet
 		{
 			user.m_flSpinFrameTime -= delta;
 		}
-		angle = user.m_flSpinRate * delta;
+		angle_yaw = user.m_flSpinRate * delta;
 	}
 	else if ( bVariableFrametime || frametime != gpGlobals->frametime )
 	{
 		if ( bAbsoluteYaw )
 		{
 			float fAxisValue = ResponseCurveLook( nSlot, joy_response_look.GetInt(), yaw, YAW, pitch, dist, lookFrametime );
-			angle = fAxisValue * s_joy_yawsensitivity.GetFloat( nSlot ) * aspeed * cl_yawspeed.GetFloat();
+			angle_yaw = fAxisValue * s_joy_yawsensitivity.GetFloat( nSlot ) * aspeed * cl_yawspeed.GetFloat();
 		}
 		else
 		{
-			angle = yaw * s_joy_yawsensitivity.GetFloat( nSlot ) * aspeed * 180.0;
+			angle_yaw = yaw * s_joy_yawsensitivity.GetFloat( nSlot ) * aspeed * 180.0;
 		}
 	}
 
-	if ( angle )
+	if ( angle_yaw )
 	{
 		// track angular direction
-		user.m_flLastYawAngle = angle;
+		user.m_flLastYawAngle = angle_yaw;
 	}
 
 	C_BasePlayer *pLocalPlayer = C_BasePlayer::GetLocalPlayer( nSlot );
@@ -981,27 +981,27 @@ void CInput::JoyStickTurn( CUserCmd *cmd, float &yaw, float &pitch, float framet
 		}
 	}
 
-	viewangles[YAW] += angle;
-	cmd->mousedx = angle;
+	viewangles[YAW] += angle_yaw;
+	cmd->mousedx = angle_yaw;
 
 	// apply look control
 	if ( in_jlook.GetPerUser( nSlot ).state & 1 )
 	{
-		float angle = 0;
+		float angle_pitch = 0;
 		if ( bVariableFrametime || frametime != gpGlobals->frametime )
 		{
 			if ( bAbsolutePitch )
 			{
 				float fAxisValue = ResponseCurveLook( nSlot, joy_response_look.GetInt(), pitch, PITCH, yaw, dist, lookFrametime );
-				angle = fAxisValue * s_joy_pitchsensitivity.GetFloat( nSlot ) * aspeed * cl_pitchspeed.GetFloat();
+				angle_pitch = fAxisValue * s_joy_pitchsensitivity.GetFloat( nSlot ) * aspeed * cl_pitchspeed.GetFloat();
 			}
 			else
 			{
-				angle = pitch * s_joy_pitchsensitivity.GetFloat( nSlot ) * aspeed * 180.0;
+				angle_pitch = pitch * s_joy_pitchsensitivity.GetFloat( nSlot ) * aspeed * 180.0;
 			}
 		}
-		viewangles[PITCH] += angle;
-		cmd->mousedy = angle;
+		viewangles[PITCH] += angle_pitch;
+		cmd->mousedy = angle_pitch;
 		view->StopPitchDrift();
 		if ( pitch == 0.f && lookspring.GetFloat() == 0.f )
 		{

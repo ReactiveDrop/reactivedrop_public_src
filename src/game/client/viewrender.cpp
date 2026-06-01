@@ -1848,11 +1848,7 @@ static void GetSkyboxFogColor( float *pColor, bool ignoreOverride, bool ignoreHD
 	{
 
 		fogparams_t *pFogParams = NULL;
-		C_BasePlayer *pbp = C_BasePlayer::GetLocalPlayer();
-		if (pbp)
-		{
-			pFogParams = pbp->GetFogParams();
-		}
+		pFogParams = pbp->GetFogParams();
 
 		if (GetFogEnable(pFogParams))
 		{

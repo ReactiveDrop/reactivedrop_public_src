@@ -649,8 +649,8 @@ void MissionCompletePanel::OnCommand( const char *command )
 	{
 		if ( m_bSuccess && m_bLastMission && !m_bCreditsSeen )
 		{
-			C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-			if ( pPlayer )
+			// C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+			// if ( pPlayer )
 			{
 				m_pStatsPanel->m_pDebrief->m_pPara[0]->SetVisible( false );
 				m_pStatsPanel->m_pDebrief->m_pPara[1]->SetVisible( false );

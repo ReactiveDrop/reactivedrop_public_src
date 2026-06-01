@@ -575,15 +575,15 @@ void CMapOverview::DrawMapPlayerTrails()
 		
 		player->trail[0] = WorldToMap ( player->position );
 
-		for ( int i=0; i<(MAX_TRAIL_LENGTH-1); i++)
+		for ( int j=0; j<(MAX_TRAIL_LENGTH-1); j++)
 		{
-			if ( player->trail[i+1].x == 0 && player->trail[i+1].y == 0 )
+			if ( player->trail[j+1].x == 0 && player->trail[j+1].y == 0 )
 				break;
 
-			Vector2D pos1 = MapToPanel( player->trail[i] );
-			Vector2D pos2 = MapToPanel( player->trail[i+1] );
+			Vector2D pos1 = MapToPanel( player->trail[j] );
+			Vector2D pos2 = MapToPanel( player->trail[j+1] );
 
-			int intensity = 255 - float(255.0f * i) / MAX_TRAIL_LENGTH;
+			int intensity = 255 - float(255.0f * j) / MAX_TRAIL_LENGTH;
 
 			Vector2D dist = pos1 - pos2;
 			

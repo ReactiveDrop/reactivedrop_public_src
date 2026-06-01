@@ -31,7 +31,7 @@ public:
 	virtual void PerformLayout();
 	void ApplySchemeSettings( vgui::IScheme *scheme );
 	void UpdateLabels();
-	void SetMarineIndex(int i);
+	void SetMarineIndex( int idx );
 	void InitFrom(C_ASW_Debrief_Stats* pStats);
 	void ShowStats();
 

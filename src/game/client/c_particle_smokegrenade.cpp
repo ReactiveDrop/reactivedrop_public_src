@@ -909,12 +909,12 @@ void C_ParticleSmokeGrenade::CleanupToolRecordingState( KeyValues *msg )
 
 		int nId = AllocateToolParticleEffectId();
 
-		KeyValues *msg = new KeyValues( "OldParticleSystem_Create" );
-		msg->SetString( "name", "C_ParticleSmokeGrenade" );
-		msg->SetInt( "id", nId );
-		msg->SetFloat( "time", gpGlobals->curtime );
+		KeyValues *kvMsg = new KeyValues( "OldParticleSystem_Create" );
+		kvMsg->SetString( "name", "C_ParticleSmokeGrenade" );
+		kvMsg->SetInt( "id", nId );
+		kvMsg->SetFloat( "time", gpGlobals->curtime );
 
-		KeyValues *pEmitter = msg->FindKey( "DmeSpriteEmitter", true );
+		KeyValues *pEmitter = kvMsg->FindKey( "DmeSpriteEmitter", true );
 		pEmitter->SetInt( "count", NUM_PARTICLES_PER_DIMENSION * NUM_PARTICLES_PER_DIMENSION * NUM_PARTICLES_PER_DIMENSION );
 		pEmitter->SetFloat( "duration", 0 );
 		pEmitter->SetString( "material", "particle/particle_smokegrenade1" );
@@ -991,8 +991,8 @@ void C_ParticleSmokeGrenade::CleanupToolRecordingState( KeyValues *msg )
 		pSmokeGrenadeUpdater->SetFloat( "radiusExpandTime", SMOKESPHERE_EXPAND_TIME );
 		pSmokeGrenadeUpdater->SetFloat( "cutoffFraction", 0.7f );
 
-		ToolFramework_PostToolMessage( HTOOLHANDLE_INVALID, msg );
-		msg->deleteThis();
+		ToolFramework_PostToolMessage( HTOOLHANDLE_INVALID, kvMsg );
+		kvMsg->deleteThis();
 	}
 }
 

@@ -752,8 +752,7 @@ void CClientLeafSystem::CreateRenderableHandle( IClientRenderable* pRenderable, 
 
 	if ( nModelType == RENDERABLE_MODEL_UNKNOWN_TYPE )
 	{
-		int nType = modelinfo->GetModelType( pRenderable->GetModel() );
-		switch( nType )
+		switch( modelinfo->GetModelType( pRenderable->GetModel() ) )
 		{
 		default: nModelType = RENDERABLE_MODEL_ENTITY; break;
 		case mod_brush: nModelType = RENDERABLE_MODEL_BRUSH; break;
@@ -1701,24 +1700,24 @@ void CClientLeafSystem::CollateViewModelRenderables( CViewModelRenderablesList *
 		// That's why we need to test RENDER_GROUP_OPAQUE_ENTITY - it may have changed in ComputeFXBlend()
 		if ( !bIsTransparent )
 		{
-			int i = opaqueList.AddToTail();
-			CViewModelRenderablesList::CEntry *pEntry = &opaqueList[i];
+			int tail = opaqueList.AddToTail();
+			CViewModelRenderablesList::CEntry *pEntry = &opaqueList[tail];
 			pEntry->m_pRenderable = renderable.m_pRenderable;
 			pEntry->m_InstanceData.m_nAlpha = 255;
 		}
 		else
 		{
-			int i = translucentList.AddToTail();
-			CViewModelRenderablesList::CEntry *pEntry = &translucentList[i];
+			int tail = translucentList.AddToTail();
+			CViewModelRenderablesList::CEntry *pEntry = &translucentList[tail];
 			pEntry->m_pRenderable = renderable.m_pRenderable;
 			pEntry->m_InstanceData.m_nAlpha = nAlpha;
 
 			if ( renderable.m_nTranslucencyType == RENDERABLE_IS_TWO_PASS )
 			{
-				int i = opaqueList.AddToTail();
-				CViewModelRenderablesList::CEntry *pEntry = &opaqueList[i];
-				pEntry->m_pRenderable = renderable.m_pRenderable;
-				pEntry->m_InstanceData.m_nAlpha = 255;
+				int tail2 = opaqueList.AddToTail();
+				CViewModelRenderablesList::CEntry *pEntry2 = &opaqueList[tail2];
+				pEntry2->m_pRenderable = renderable.m_pRenderable;
+				pEntry2->m_InstanceData.m_nAlpha = 255;
 			}
 		}
 	}

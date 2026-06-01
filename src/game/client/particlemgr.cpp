@@ -270,8 +270,8 @@ inline void CParticleEffectBinding::StartDrawMaterialParticles(
 	// Setup the ParticleDraw and bind the material.
 	if( bWireframe )
 	{
-		IMaterial *pMaterial = m_pParticleMgr->m_pMaterialSystem->FindMaterial( "debug/debugparticlewireframe", TEXTURE_GROUP_OTHER );
-		pRenderContext->Bind( pMaterial, NULL );
+		IMaterial *pMaterialWf = m_pParticleMgr->m_pMaterialSystem->FindMaterial( "debug/debugparticlewireframe", TEXTURE_GROUP_OTHER );
+		pRenderContext->Bind( pMaterialWf, NULL );
 	}
 	else
 	{

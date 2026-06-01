@@ -478,8 +478,7 @@ public:
 		Q_FixSlashes( szFilename );
 
 		// See if it's already loaded
-		int i;
-		for ( i = 0; i < m_FileList.Count(); i++ )
+		for ( int i = 0; i < m_FileList.Count(); i++ )
 		{
 			CFlexSceneFile *file = m_FileList[ i ];
 			if ( file && !V_stricmp( file->filename, szFilename ) )

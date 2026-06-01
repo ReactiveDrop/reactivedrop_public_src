@@ -2797,7 +2797,6 @@ void CTempEnts::MuzzleFlash_Shotgun_NPC( ClientEntityHandle_t hEntity, int attac
 	QAngle	angles;
 
 	Vector	forward;
-	int		i;
 
 	// Setup the origin.
 	Vector	origin;
@@ -2864,7 +2863,7 @@ void CTempEnts::MuzzleFlash_Shotgun_NPC( ClientEntityHandle_t hEntity, int attac
 
 	int	numEmbers = random->RandomInt( 4, 8 );
 
-	for ( i = 0; i < numEmbers; i++ )
+	for ( int i = 0; i < numEmbers; i++ )
 	{
 		pTrailParticle = (TrailParticle *) pTrails->AddParticle( sizeof( TrailParticle ), g_Mat_SMG_Muzzleflash[0], origin );
 			

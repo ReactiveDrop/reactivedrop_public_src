@@ -207,10 +207,10 @@ void CNB_Lobby_Row::UpdateDetails()
 	lightblue.b = 192;
 	lightblue.a = 255;
 
-	BaseModHybridButton *pButton = m_pNameDropdown->GetButton();
-	if ( pButton )
+	BaseModHybridButton *phButton = m_pNameDropdown->GetButton();
+	if ( phButton )
 	{
-		pButton->SetText( Briefing()->GetMarineOrPlayerName( m_nLobbySlot ) );
+		phButton->SetText( Briefing()->GetMarineOrPlayerName( m_nLobbySlot ) );
 	}
 	m_pNameDropdown->SetVisible( true );
 
