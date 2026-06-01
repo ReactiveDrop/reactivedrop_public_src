@@ -111,9 +111,9 @@ void C_SpotlightEnd::ClientThink(void)
 		return;
 
 	// Deal with the environment light
-	if ( !m_pDynamicLight || (m_pDynamicLight->key != index) )
+	if ( !m_pDynamicLight || (m_pDynamicLight->key != m_index) )
 	{
-		m_pDynamicLight = effects->CL_AllocDlight( index );
+		m_pDynamicLight = effects->CL_AllocDlight( m_index );
 		assert (m_pDynamicLight);
 	}
 
@@ -128,9 +128,9 @@ void C_SpotlightEnd::ClientThink(void)
 	VectorCopy (m_vSpotlightDir,  m_pDynamicLight->m_Direction);
 
 	// Deal with the model light
- 	if ( !m_pModelLight || (m_pModelLight->key != -index) )
+ 	if ( !m_pModelLight || (m_pModelLight->key != -m_index) )
 	{
-		m_pModelLight = effects->CL_AllocDlight( -index );
+		m_pModelLight = effects->CL_AllocDlight( -m_index );
 		assert (m_pModelLight);
 	}
 

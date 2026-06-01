@@ -342,7 +342,7 @@ void C_Plasma::Start( void )
 		m_entFlames[i].SetRenderColor( 255, 255, 255 );
 		m_entFlames[i].SetRenderAlpha( 255 );
 		m_entFlames[i].SetBrightness( 255 );
-		m_entFlames[i].index				= -1;
+		m_entFlames[i].m_index				= -1;
 		
 		if ( i == 0 )
 		{
@@ -364,7 +364,7 @@ void C_Plasma::Start( void )
 	m_entGlow.SetRenderColor( 255, 255, 255 );
 	m_entGlow.SetRenderAlpha( 255 );
 	m_entGlow.SetBrightness( 255 );
-	m_entGlow.index				= -1;
+	m_entGlow.m_index				= -1;
 	
 	m_flGlowScale				= m_flStartScale;
 

@@ -1128,7 +1128,7 @@ void C_ASW_Marine::ProcessMuzzleFlashEvent()
 		// If we have an attachment, then stick a light on it.
 		if ( bFoundAttachment )
 		{
-			dlight_t *el = effects->CL_AllocDlight( LIGHT_INDEX_MUZZLEFLASH + index );
+			dlight_t *el = effects->CL_AllocDlight( LIGHT_INDEX_MUZZLEFLASH + m_index );
 			el->origin = vector;
 			el->radius = 70; 
 			el->decay = el->radius / 0.05f;
@@ -1537,7 +1537,7 @@ void C_ASW_Marine::UpdateFlashlight()
 		if ( !m_pFlashlight )
 		{
 			// Turned on the headlight; create it.
-			m_pFlashlight = new CFlashlightEffect(index);
+			m_pFlashlight = new CFlashlightEffect(m_index);
 
 			if (!m_pFlashlight)
 				return;
@@ -1547,9 +1547,9 @@ void C_ASW_Marine::UpdateFlashlight()
 		//#ifdef ASW_FLASHLIGHT_DLIGHT
 		if (rd_flashlight_dlight_enable.GetBool())
 		{
-			if (!m_pFlashlightDLight || (m_pFlashlightDLight->key != index))
+			if (!m_pFlashlightDLight || (m_pFlashlightDLight->key != m_index))
 			{
-				m_pFlashlightDLight = effects->CL_AllocDlight(index);
+				m_pFlashlightDLight = effects->CL_AllocDlight(m_index);
 			}
 		}
 //#endif

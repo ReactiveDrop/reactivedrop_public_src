@@ -36,7 +36,7 @@ C_ASW_Flamer_Projectile::~C_ASW_Flamer_Projectile()
 
 void C_ASW_Flamer_Projectile::CreateLight()
 {
-	m_pDynamicLight = effects->CL_AllocDlight( index );
+	m_pDynamicLight = effects->CL_AllocDlight( m_index );
 	m_pDynamicLight->origin = GetAbsOrigin();
 	m_pDynamicLight->radius = 61.6 * asw_flamer_light_scale.GetFloat(); 
 	m_pDynamicLight->decay = 0 / 0.05f;

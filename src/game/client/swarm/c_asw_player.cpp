@@ -2704,7 +2704,7 @@ void C_ASW_Player::UpdateLocalMarineGlow()
 	{
 		if ( !m_pLocalMarineGlow )
 		{
-			m_pLocalMarineGlow = effects->CL_AllocDlight( index );
+			m_pLocalMarineGlow = effects->CL_AllocDlight( m_index );
 		}
 
 		if ( m_pLocalMarineGlow )

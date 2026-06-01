@@ -445,7 +445,7 @@ void C_ASW_Weapon::ProcessMuzzleFlashEvent()
 		if ( GetAttachment( GetMuzzleAttachment(), vAttachment, dummyAngles ) )
 		{
 			// Make an elight
-			dlight_t *el = effects->CL_AllocDlight( LIGHT_INDEX_MUZZLEFLASH + index );
+			dlight_t *el = effects->CL_AllocDlight( LIGHT_INDEX_MUZZLEFLASH + m_index );
 			el->origin = vAttachment;
 			el->radius = random->RandomFloat( asw_muzzle_light_radius_min.GetFloat(), asw_muzzle_light_radius_max.GetFloat() );
 			el->decay = el->radius / 0.05f;

@@ -1139,7 +1139,7 @@ void C_BaseEntity::Clear( void )
 	m_hThink = INVALID_THINK_HANDLE;
 	m_AimEntsListHandle = INVALID_AIMENTS_LIST_HANDLE;
 
-	index = -1;
+	m_index = -1;
 	m_Collision.Init( this );
 	CleanUpAlphaProperty();
 	m_pClientAlphaProperty = static_cast< CClientAlphaProperty * >( g_pClientAlphaPropertyMgr->CreateClientAlphaProperty( this ) );
@@ -1237,8 +1237,8 @@ bool C_BaseEntity::Init( int entnum, int iSerialNum )
 {
 	Assert( entnum >= 0 && entnum < NUM_ENT_ENTRIES );
 
-	index = entnum;
-	m_pClientAlphaProperty->SetDesyncOffset( index );
+	m_index = entnum;
+	m_pClientAlphaProperty->SetDesyncOffset( m_index );
 
 	cl_entitylist->AddNetworkableEntity( GetIClientUnknown(), entnum, iSerialNum );
 
@@ -1301,7 +1301,7 @@ bool C_BaseEntity::InitializeAsClientEntityByIndex( int iIndex, bool bRenderWith
 	// Add the client entity to the spatial partition. (Collidable)
 	CollisionProp()->CreatePartitionHandle();
 
-	index = -1;
+	m_index = -1;
 	m_pClientAlphaProperty->SetDesyncOffset( rand() % 1024 );
 
 	SpawnClientEntity();
@@ -1350,7 +1350,7 @@ void C_BaseEntity::Term()
 	CollisionProp()->DestroyPartitionHandle();
 
 	// If Client side only entity index will be -1
-	if ( index != -1 )
+	if ( m_index != -1 )
 	{
 		beams->KillDeadBeams( this );
 	}
@@ -1703,7 +1703,7 @@ bool C_BaseEntity::ShouldDraw()
 			return false;
 	}
 
-	return (model != 0) && !IsEffectActive(EF_NODRAW) && (index != 0);
+	return (model != 0) && !IsEffectActive(EF_NODRAW) && (m_index != 0);
 }
 
 bool C_BaseEntity::TestCollision( const Ray_t& ray, unsigned int mask, trace_t& trace )
@@ -1891,15 +1891,15 @@ IClientRenderable *C_BaseEntity::NextShadowPeer()
 //-----------------------------------------------------------------------------
 int	C_BaseEntity::entindex( void ) const
 {
-	return index;
+	return m_index;
 }
 
 int C_BaseEntity::GetSoundSourceIndex() const
 {
 #ifdef _DEBUG
-	if ( index != -1 )
+	if ( m_index != -1 )
 	{
-		Assert( index == GetRefEHandle().GetEntryIndex() );
+		Assert( m_index == GetRefEHandle().GetEntryIndex() );
 	}
 #endif
 	return GetRefEHandle().GetEntryIndex();
@@ -2833,7 +2833,7 @@ void C_BaseEntity::PostDataUpdate( DataUpdateType_t updateType )
 	}
 
 	// If it's the world, force solid flags
-	if ( index == 0 )
+	if ( m_index == 0 )
 	{
 		m_nModelIndex = 1;
 		SetSolid( SOLID_BSP );
@@ -3285,7 +3285,7 @@ bool C_BaseEntity::CreateLightEffects( void )
 		if (IsEffectActive(EF_BRIGHTLIGHT))
 		{
 			bHasLightEffects = true;
-			dl = effects->CL_AllocDlight ( index );
+			dl = effects->CL_AllocDlight ( m_index );
 			dl->origin = GetAbsOrigin();
 			dl->origin[2] += 16;
 			dl->color.r = dl->color.g = dl->color.b = 250;
@@ -3295,7 +3295,7 @@ bool C_BaseEntity::CreateLightEffects( void )
 		if (IsEffectActive(EF_DIMLIGHT))
 		{
 			bHasLightEffects = true;
-			dl = effects->CL_AllocDlight ( index );
+			dl = effects->CL_AllocDlight ( m_index );
 			dl->origin = GetAbsOrigin();
 			dl->color.r = dl->color.g = dl->color.b = 100;
 			dl->radius = random->RandomFloat(200,231);
@@ -3319,7 +3319,7 @@ bool C_BaseEntity::ShouldInterpolate()
 	if ( IsViewEntity() )
 		return true;
 
-	if ( index == 0 || !GetModel() )
+	if ( m_index == 0 || !GetModel() )
 		return false;
 
 	// always interpolate if visible
@@ -3607,7 +3607,7 @@ void C_BaseEntity::OnDataChanged( DataUpdateType_t type )
 
 	// These may have changed in the network update
 	AlphaProp()->SetRenderFX( GetRenderFX(), GetRenderMode() );
-	AlphaProp()->SetDesyncOffset( index );
+	AlphaProp()->SetDesyncOffset( m_index );
 
 	// Copy in fade parameters
 	AlphaProp()->SetFade( m_flFadeScale, m_fadeMinDist, m_fadeMaxDist );
@@ -3738,7 +3738,7 @@ void C_BaseEntity::AddBrushModelDecal( const Ray_t& ray, const Vector& decalCent
 		vecNormal *= -1.0f;
 	}
 
-	effects->DecalShoot( decalIndex, index, 
+	effects->DecalShoot( decalIndex, m_index,
 		model, GetAbsOrigin(), GetAbsAngles(), decalCenter, NULL, 0, &vecNormal );
 }
 
@@ -4045,7 +4045,7 @@ void C_BaseEntity::SetDormant( bool bDormant )
 	ParticleProp()->OwnerSetDormantTo( bDormant );
 
 	OnSetDormant( bDormant );
-	cl_entitylist->SetDormant(index, bDormant);
+	cl_entitylist->SetDormant(m_index, bDormant);
 }
 
 //-----------------------------------------------------------------------------

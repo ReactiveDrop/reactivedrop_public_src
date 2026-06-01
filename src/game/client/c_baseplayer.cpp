@@ -688,7 +688,7 @@ void C_BasePlayer::CheckForLocalPlayer( int nSplitScreenSlot )
 	if ( g_nKillCamMode )
 		iLocalPlayerIndex = g_nKillCamTarget1;
 
-	if ( iLocalPlayerIndex == index )
+	if ( iLocalPlayerIndex == m_index )
 	{
 		Assert( s_pLocalPlayer[ nSplitScreenSlot ] == NULL );
 		s_pLocalPlayer[ nSplitScreenSlot ] = this;
@@ -737,7 +737,7 @@ void C_BasePlayer::PostDataUpdate( DataUpdateType_t updateType )
 	FOR_EACH_VALID_SPLITSCREEN_PLAYER( i )
 	{
 		int nIndex = engine->GetSplitScreenPlayer( i );
-		if ( nIndex == index )
+		if ( nIndex == m_index )
 		{
 			nSlot = i;
 			break;
@@ -1181,7 +1181,7 @@ void C_BasePlayer::UpdateFlashlight()
 
 	if ( pFlashlightPlayer )
 	{
-		FlashlightEffectManager().SetEntityIndex( pFlashlightPlayer->index );
+		FlashlightEffectManager().SetEntityIndex( pFlashlightPlayer->m_index );
 	}
 
 	// The dim light is the flashlight.
@@ -1194,12 +1194,12 @@ void C_BasePlayer::UpdateFlashlight()
 			// Turned on the headlight; create it.
 			if ( pszTextureName )
 			{
-				FlashlightEffectManager().TurnOnFlashlight( pFlashlightPlayer->index, pszTextureName, pFlashlightPlayer->GetFlashlightFOV(),
+				FlashlightEffectManager().TurnOnFlashlight( pFlashlightPlayer->m_index, pszTextureName, pFlashlightPlayer->GetFlashlightFOV(),
 					pFlashlightPlayer->GetFlashlightFarZ(), pFlashlightPlayer->GetFlashlightLinearAtten() );
 			}
 			else
 			{
-				FlashlightEffectManager().TurnOnFlashlight( pFlashlightPlayer->index );
+				FlashlightEffectManager().TurnOnFlashlight( pFlashlightPlayer->m_index );
 			}
 			m_bFlashlightEnabled[ iSsPlayer ] = true;
 		}

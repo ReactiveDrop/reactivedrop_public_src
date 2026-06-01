@@ -313,7 +313,7 @@ void CASW_Revive_Tombstone::ClientThink()
 
 		if ( bShouldHologramsBeActive && rd_revive_tombstone_dlight.GetBool() )
 		{
-			m_pLightGlow = effects->CL_AllocDlight( index );
+			m_pLightGlow = effects->CL_AllocDlight( m_index );
 			m_pLightGlow->origin = GetAbsOrigin() + Vector( 0, 0, m_bIsReviving ? rd_revive_tombstone_dlight_active_z_offset.GetFloat() : rd_revive_tombstone_dlight_z_offset.GetFloat() );
 			Color lightColor;
 			switch ( iProfileSkinMinusOne )

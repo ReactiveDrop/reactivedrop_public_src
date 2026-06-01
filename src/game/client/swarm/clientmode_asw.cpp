@@ -806,7 +806,7 @@ void ClientModeASW::FireGameEvent( IGameEvent *event )
 
 			for ( C_BaseEntity *pEntity = ClientEntityList().FirstBaseEntity(); pEntity; pEntity = ClientEntityList().NextBaseEntity( pEntity ) )
 			{
-				if ( pEntity->index != -1 )
+				if ( pEntity->m_index != -1 )
 					continue;
 
 				if ( C_ClientRagdoll *pRagdoll = dynamic_cast<C_ClientRagdoll *>( pEntity ) )

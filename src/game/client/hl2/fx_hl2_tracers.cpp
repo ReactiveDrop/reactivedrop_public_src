@@ -269,7 +269,7 @@ void AR2TracerCallback( const CEffectData &data )
 	bool bWhiz = (data.m_fFlags & TRACER_FLAG_WHIZ);
 	int iEntIndex = data.entindex();
 
-	if ( iEntIndex && iEntIndex == player->index )
+	if ( iEntIndex && iEntIndex == player->m_index )
 	{
 		Vector	foo = data.m_vStart;
 		QAngle	vangles;

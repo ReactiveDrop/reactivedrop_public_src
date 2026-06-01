@@ -381,7 +381,7 @@ void C_ASW_AOEGrenade_Projectile::ClientThink( void )
 	{
 		if ( !m_pDLight )
 		{
-			m_pDLight = effects->CL_AllocDlight( index );
+			m_pDLight = effects->CL_AllocDlight( m_index );
 
 			Color rgbaGrenadeColor = GetGrenadeColor();
 

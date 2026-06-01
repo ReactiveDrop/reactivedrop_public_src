@@ -211,7 +211,7 @@ int C_ASW_Mesh_Emitter::InternalDrawModel( int flags, const RenderableInstance_t
 	sInfo.flags = flags;
 	sInfo.pRenderable = this;
 	sInfo.instance = GetModelInstance();
-	sInfo.entity_index = index;
+	sInfo.entity_index = m_index;
 	sInfo.pModel = GetModel();
 	sInfo.origin = GetRenderOrigin();
 	sInfo.angles = GetRenderAngles();
@@ -272,7 +272,7 @@ int C_ASW_Mesh_Emitter::DrawParticle(Vector &vecPos)
 	sInfo.flags = STUDIO_RENDER;
 	sInfo.pRenderable = this;
 	sInfo.instance = GetModelInstance();
-	sInfo.entity_index = index;
+	sInfo.entity_index = m_index;
 	sInfo.pModel = GetModel();
 	sInfo.origin = vecPos;
 	sInfo.angles = QAngle(0,0,0);

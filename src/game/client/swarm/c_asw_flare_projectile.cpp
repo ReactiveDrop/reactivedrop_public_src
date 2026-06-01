@@ -178,7 +178,7 @@ void C_ASW_Flare_Projectile::ClientThink( void )
 		}
 		if (!m_pDLight)
 		{
-			m_pDLight = effects->CL_AllocDlight( index );
+			m_pDLight = effects->CL_AllocDlight( m_index );
 			m_pDLight->color.r = asw_flare_r.GetInt();
 			m_pDLight->color.g = asw_flare_g.GetInt();
 			m_pDLight->color.b = asw_flare_b.GetInt();
