@@ -324,7 +324,7 @@ public:
 	virtual void	OnRenderStart();
 	void			DriftPitch (void);
 
-	static CViewRender *	GetMainView() { return assert_cast<CViewRender *>( view ); }
+	static CViewRender *	GetMainView() { return assert_cast<CViewRender *>( g_view ); }
 
 	void			AddViewToScene( CRendering3dView *pView ) { m_SimpleExecutor.AddView( pView ); }
 

@@ -78,7 +78,7 @@
 
 static void testfreezeframe_f( void )
 {
-	view->FreezeFrame( 3.0 );
+	g_view->FreezeFrame( 3.0 );
 }
 static ConCommand test_freezeframe( "test_freezeframe", testfreezeframe_f, "Test the freeze frame code.", FCVAR_CHEAT );
 
@@ -233,12 +233,12 @@ CON_COMMAND( r_cheapwaterstart,  "" )
 	if( args.ArgC() == 2 )
 	{
 		float dist = atof( args[ 1 ] );
-		view->SetCheapWaterStartDistance( dist );
+		g_view->SetCheapWaterStartDistance( dist );
 	}
 	else
 	{
 		float start, end;
-		view->GetWaterLODParams( start, end );
+		g_view->GetWaterLODParams( start, end );
 		Warning( "r_cheapwaterstart: %f\n", start );
 	}
 }
@@ -248,12 +248,12 @@ CON_COMMAND( r_cheapwaterend,  "" )
 	if( args.ArgC() == 2 )
 	{
 		float dist = atof( args[ 1 ] );
-		view->SetCheapWaterEndDistance( dist );
+		g_view->SetCheapWaterEndDistance( dist );
 	}
 	else
 	{
 		float start, end;
-		view->GetWaterLODParams( start, end );
+		g_view->GetWaterLODParams( start, end );
 		Warning( "r_cheapwaterend: %f\n", end );
 	}
 }
@@ -904,7 +904,7 @@ void SetupCurrentView( const Vector &vecOrigin, const QAngle &angles, view_id_t 
 
 	// Cache off fade distances
 	float flScreenFadeMinSize, flScreenFadeMaxSize;
-	view->GetScreenFadeDistances( &flScreenFadeMinSize, &flScreenFadeMaxSize );
+	g_view->GetScreenFadeDistances( &flScreenFadeMinSize, &flScreenFadeMaxSize );
 	modelinfo->SetViewScreenFadeRange( flScreenFadeMinSize, flScreenFadeMaxSize );
 
 	CMatRenderContextPtr pRenderContext( materials );
@@ -4008,7 +4008,7 @@ static inline bool BlurTest( IClientRenderable *pRenderable, int drawFlags, bool
 
 	if( pClientEntity->IsBlurred() )
 	{
-		const CViewSetup *pViewSetup = view->GetViewSetup();
+		const CViewSetup *pViewSetup = g_view->GetViewSetup();
 		if( pViewSetup )
 		{
 			BlurEntity( pRenderable, bPreDraw, drawFlags, instance, *pViewSetup, pViewSetup->x, pViewSetup->y, pViewSetup->width, pViewSetup->height );
@@ -4024,16 +4024,16 @@ static inline bool BlurTest( IClientRenderable *pRenderable, int drawFlags, bool
 //-----------------------------------------------------------------------------
 static inline void DrawRenderableEntity( IClientRenderable* pEnt, int flags, const RenderableInstance_t& instance )
 {
-	Assert( view->GetCurrentlyDrawingEntity() == NULL );
+	Assert( g_view->GetCurrentlyDrawingEntity() == NULL );
 
-	view->SetCurrentlyDrawingEntity( pEnt->GetIClientUnknown() && pEnt->GetIClientUnknown()->GetClientRenderable() ? pEnt->GetIClientUnknown()->GetBaseEntity() : NULL );
+	g_view->SetCurrentlyDrawingEntity( pEnt->GetIClientUnknown() && pEnt->GetIClientUnknown()->GetClientRenderable() ? pEnt->GetIClientUnknown()->GetBaseEntity() : NULL );
 
 	//bool bBlockNormalDraw = BlurTest( pEnt, flags, true, instance );
 	//if( !bBlockNormalDraw )
 		pEnt->DrawModel( flags, instance );
 	//BlurTest( pEnt, flags, false, instance );
 	
-	view->SetCurrentlyDrawingEntity( NULL );
+	g_view->SetCurrentlyDrawingEntity( NULL );
 }
 
 

@@ -1022,13 +1022,13 @@ bool InitGameSystems( CreateInterfaceFn appSystemFactory )
 	}	
 
 	// Each mod is required to implement this
-	view = GetViewRenderInstance();
-	if ( !view )
+	g_view = GetViewRenderInstance();
+	if ( !g_view )
 	{
 		Error( "GetViewRenderInstance() must be implemented by game." );
 	}
 
-	view->Init();
+	g_view->Init();
 	for ( int hh = 0; hh < MAX_SPLITSCREEN_PLAYERS; ++hh )
 	{
 		ACTIVE_SPLITSCREEN_PLAYER_GUARD_VGUI( hh );
@@ -1313,7 +1313,7 @@ void CHLClient::Shutdown( void )
 	input->Shutdown_All();
 	C_BaseTempEntity::ClearDynamicTempEnts();
 	TermSmokeFogOverlay();
-	view->Shutdown();
+	g_view->Shutdown();
 	g_pParticleSystemMgr->UncacheAllParticleSystems();
 	UncacheAllMaterials();
 
@@ -1602,7 +1602,7 @@ void CHLClient::View_Render( vrect_t *rect )
 	if ( rect->width == 0 || rect->height == 0 )
 		return;
 
-	view->Render( rect );
+	g_view->Render( rect );
 	UpdatePerfStats();
 }
 
@@ -1612,7 +1612,7 @@ void CHLClient::View_Render( vrect_t *rect )
 //-----------------------------------------------------------------------------
 bool CHLClient::GetPlayerView( CViewSetup &playerView )
 {
-	playerView = *view->GetPlayerViewSetup();
+	playerView = *g_view->GetPlayerViewSetup();
 	return true;
 }
 
@@ -1782,9 +1782,9 @@ void ConfigureCurrentSystemLevel()
 	}
 
 	C_BaseEntity::UpdateVisibilityAllEntities();
-	if ( view )
+	if ( g_view )
 	{
-		view->InitFadeData();
+		g_view->InitFadeData();
 	}
 }
 
@@ -1823,7 +1823,7 @@ void CHLClient::LevelInitPreEntity( char const* pMapName )
 
 	C_BaseTempEntity::ClearDynamicTempEnts();
 	clienteffects->Flush();
-	view->LevelInit();
+	g_view->LevelInit();
 	tempents->LevelInit();
 	for ( int hh = 0; hh < MAX_SPLITSCREEN_PLAYERS; ++hh )
 	{
@@ -1948,7 +1948,7 @@ void CHLClient::LevelShutdown( void )
 	// Now do the post-entity shutdown of all systems
 	IGameSystem::LevelShutdownPostEntityAllSystems();
 
-	view->LevelShutdown();
+	g_view->LevelShutdown();
 	beams->ClearBeams();
 	ParticleMgr()->RemoveAllEffects();
 	
@@ -2431,7 +2431,7 @@ void OnRenderStart()
 	// This will place the player + the view models + all parent
 	// entities	at the correct abs position so that their attachment points
 	// are at the correct location
-	view->OnRenderStart();
+	g_view->OnRenderStart();
 	partition->SuppressLists( PARTITION_ALL_CLIENT_EDICTS, false );
 
 	// Process OnDataChanged events.
@@ -2688,7 +2688,7 @@ void CHLClient::WriteSaveGameScreenshot( const char *pFilename )
 {
 	// Single player doesn't support split screen yet!!!
 	ACTIVE_SPLITSCREEN_PLAYER_GUARD( 0 );
-	view->WriteSaveGameScreenshot( pFilename );
+	g_view->WriteSaveGameScreenshot( pFilename );
 }
 
 // Given a list of "S(wavname) S(wavname2)" tokens, look up the localized text and emit
@@ -2824,14 +2824,14 @@ bool CHLClient::CacheReplayRagdolls( const char* pFilename, int nStartTick )
 // save game screenshot writing
 void CHLClient::WriteSaveGameScreenshotOfSize( const char *pFilename, int width, int height )
 {
-	view->WriteSaveGameScreenshotOfSize( pFilename, width, height );
+	g_view->WriteSaveGameScreenshotOfSize( pFilename, width, height );
 }
 
 // See RenderViewInfo_t
 void CHLClient::RenderView( const CViewSetup &setup, int nClearFlags, int whatToDraw )
 {
 	VPROF("RenderView");
-	view->RenderView( setup, setup, nClearFlags, whatToDraw );
+	g_view->RenderView( setup, setup, nClearFlags, whatToDraw );
 }
 
 bool CHLClient::ShouldHideLoadingPlaque( void )
@@ -3049,7 +3049,7 @@ bool CHLClient::SupportsRandomMaps()
 #endif
 }
 
-extern IViewRender *view;
+extern IViewRender *g_view;
 
 //-----------------------------------------------------------------------------
 // Purpose: interface from materialsystem to client, currently just for recording into tools
@@ -3064,7 +3064,7 @@ class CClientMaterialSystem : public IClientMaterialSystem
 		if ( !clienttools->IsInRecordingMode() )
 			return HTOOLHANDLE_INVALID;
 
-		C_BaseEntity *pEnt = view->GetCurrentlyDrawingEntity();
+		C_BaseEntity *pEnt = g_view->GetCurrentlyDrawingEntity();
 		if ( !pEnt || !pEnt->IsToolRecording() )
 			return HTOOLHANDLE_INVALID;
 

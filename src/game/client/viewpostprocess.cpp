@@ -2540,7 +2540,7 @@ static float GetFarBlurRadius()
 
 bool IsDepthOfFieldEnabled()
 {
-	const CViewSetup *pViewSetup = view->GetViewSetup();
+	const CViewSetup *pViewSetup = g_view->GetViewSetup();
 	if ( !pViewSetup )
 		return false;
 

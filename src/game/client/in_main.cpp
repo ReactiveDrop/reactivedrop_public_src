@@ -807,7 +807,7 @@ void CInput::AdjustPitch( int nSlot, float speed, QAngle& viewangles )
 
 		if ( in_klook.GetPerUser( nSlot ).state & 1 )
 		{
-			view->StopPitchDrift ();
+			g_view->StopPitchDrift ();
 			viewangles[PITCH] -= speed*cl_pitchspeed.GetFloat() * KeyState (&in_forward);
 			viewangles[PITCH] += speed*cl_pitchspeed.GetFloat() * KeyState (&in_back);
 		}
@@ -820,7 +820,7 @@ void CInput::AdjustPitch( int nSlot, float speed, QAngle& viewangles )
 
 		if ( up || down )
 		{
-			view->StopPitchDrift ();
+			g_view->StopPitchDrift ();
 		}
 	}	
 }

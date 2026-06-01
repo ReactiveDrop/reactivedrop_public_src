@@ -1541,7 +1541,7 @@ void CBasePlayer::CalcPlayerView( Vector& eyeOrigin, QAngle& eyeAngles, float& f
 	if ( !prediction->InPrediction() )
 	{
 		// FIXME: Move into prediction
-		view->DriftPitch();
+		g_view->DriftPitch();
 	}
 #endif
 

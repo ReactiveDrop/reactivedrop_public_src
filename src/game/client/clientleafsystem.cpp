@@ -2222,7 +2222,7 @@ int CClientLeafSystem::ComputeTranslucency( int nFrameNumber, int nViewID, int n
 			ComputeScreenFade( info, flMinLevelFadeArea, flMaxLevelFadeArea, nCount, pAlphaInfo );
 
 			float flMinViewFadeArea, flMaxViewFadeArea;
-			view->GetScreenFadeDistances( &flMinViewFadeArea, &flMaxViewFadeArea );
+			g_view->GetScreenFadeDistances( &flMinViewFadeArea, &flMaxViewFadeArea );
 			ComputeScreenFade( info, flMinViewFadeArea, flMaxViewFadeArea, nCount, pAlphaInfo );
 		}
 

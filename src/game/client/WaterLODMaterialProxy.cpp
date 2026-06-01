@@ -62,7 +62,7 @@ void CWaterLODMaterialProxy::OnBind( void *pC_BaseEntity )
 		return;
 	}
 	float start, end;
-	view->GetWaterLODParams( start, end );
+	g_view->GetWaterLODParams( start, end );
 	m_pCheapWaterStartDistanceVar->SetFloatValue( start );
 	m_pCheapWaterEndDistanceVar->SetFloatValue( end );
 }

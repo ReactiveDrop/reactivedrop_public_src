@@ -146,7 +146,7 @@ public:
 	virtual void		InitFadeData( void ) = 0;
 };
 
-extern IViewRender *view;
+extern IViewRender *g_view;
 
 extern IViewRender *GetViewRenderInstance();
 

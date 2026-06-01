@@ -825,7 +825,7 @@ void C_BasePlayer::PostDataUpdate( DataUpdateType_t updateType )
 				gameeventmanager->FireEventClientSide( pEvent );
 			}
 
-			view->FreezeFrame(0);
+			g_view->FreezeFrame(0);
 
 			ConVar *pVar = (ConVar *)cvar->FindVar( "snd_soundmixer" );
 			pVar->Revert();
@@ -1639,7 +1639,7 @@ void C_BasePlayer::CalcFreezeCamView( Vector& eyeOrigin, QAngle& eyeAngles, floa
 		}
 
 		m_bSentFreezeFrame = true;
-		view->FreezeFrame( spec_freeze_time.GetFloat() );
+		g_view->FreezeFrame( spec_freeze_time.GetFloat() );
 	}
 }
 
@@ -2002,8 +2002,8 @@ void C_BasePlayer::GetToolRecordingState( KeyValues *msg )
 	static CameraRecordingState_t state;
 	state.m_flFOV = GetFOV();
 
-	float flZNear = view->GetZNear();
-	float flZFar = view->GetZFar();
+	float flZNear = g_view->GetZNear();
+	float flZFar = g_view->GetZFar();
 	CalcView( state.m_vecEyePosition, state.m_vecEyeAngles, flZNear, flZFar, state.m_flFOV );
 	state.m_bThirdPerson = !engine->IsPaused() && ::input->CAM_IsThirdPerson();
 

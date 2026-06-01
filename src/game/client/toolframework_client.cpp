@@ -17,7 +17,7 @@
 #include "tier0/memdbgon.h"
 
 
-extern IViewRender *view;
+extern IViewRender *g_view;
 
 class CToolFrameworkClient : public CBaseGameSystemPerFrame
 {

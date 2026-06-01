@@ -87,7 +87,7 @@ void C_EnvScreenOverlay::PostDataUpdate( DataUpdateType_t updateType )
 	BaseClass::PostDataUpdate( updateType );
 
 	// If we have a start time now, start the overlays going
-	if ( m_bIsActive && m_flStartTime > 0 && view->GetScreenOverlayMaterial() == NULL )
+	if ( m_bIsActive && m_flStartTime > 0 && g_view->GetScreenOverlayMaterial() == NULL )
 	{
 		StartOverlays();
 	}
@@ -121,7 +121,7 @@ void C_EnvScreenOverlay::StopOverlays( void )
 
 	if ( m_bWasActive && !m_bIsActive )
 	{
-		view->SetScreenOverlayMaterial( NULL );
+		g_view->SetScreenOverlayMaterial( NULL );
 	}
 }
 
@@ -173,7 +173,7 @@ void C_EnvScreenOverlay::StartCurrentOverlay( void )
 	IMaterial *pMaterial = materials->FindMaterial( m_iszOverlayNames[m_iCurrentOverlay], TEXTURE_GROUP_CLIENT_EFFECTS, false );
 	if ( !IsErrorMaterial( pMaterial ) )
 	{
-		view->SetScreenOverlayMaterial( pMaterial );
+		g_view->SetScreenOverlayMaterial( pMaterial );
 	}
 	else
 	{
