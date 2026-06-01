@@ -3037,17 +3037,17 @@ void CBaseEntity::VPhysicsUpdatePusher( IPhysicsObject *pPhysics )
 	if ( !PhysIsFinalTick() )
 		return;
 
-	Vector origin;
-	QAngle angles;
+	Vector shadowOrigin;
+	QAngle shadowAngles;
 
 	// physics updated the shadow, so check to see if I got blocked
 	// NOTE: SOLID_BSP cannont compute consistent collisions wrt vphysics, so 
 	// don't allow vphysics to block.  Assume game physics has handled it.
-	if ( GetSolid() != SOLID_BSP && pPhysics->GetShadowPosition( &origin, &angles ) )
+	if ( GetSolid() != SOLID_BSP && pPhysics->GetShadowPosition( &shadowOrigin, &shadowAngles ) )
 	{
 		CUtlVector<CBaseEntity *> list;
 		GetAllInHierarchy( this, list );
-		//NDebugOverlay::BoxAngles( origin, CollisionProp()->OBBMins(), CollisionProp()->OBBMaxs(), angles, 255,0,0,0, gpGlobals->frametime);
+		//NDebugOverlay::BoxAngles( shadowOrigin, CollisionProp()->OBBMins(), CollisionProp()->OBBMaxs(), shadowAngles, 255,0,0,0, gpGlobals->frametime);
 
 		physicspushlist_t *pList = NULL;
 		if ( HasDataObjectType(PHYSICSPUSHLIST) )

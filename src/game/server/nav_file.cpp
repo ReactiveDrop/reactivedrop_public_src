@@ -283,8 +283,7 @@ void CNavArea::Save( CUtlBuffer &fileBuffer, unsigned int version ) const
 	//
 	{
 		// save number of encounter paths for this area
-		unsigned int count = m_spotEncounters.Count();
-		fileBuffer.PutUnsignedInt( count );
+		fileBuffer.PutUnsignedInt( m_spotEncounters.Count() );
 
 		SpotEncounter *e;
 		FOR_EACH_VEC( m_spotEncounters, it )
@@ -348,8 +347,7 @@ void CNavArea::Save( CUtlBuffer &fileBuffer, unsigned int version ) const
 	for ( i=0; i<CNavLadder::NUM_LADDER_DIRECTIONS; ++i )
 	{
 		// save number of encounter paths for this area
-		unsigned int count = m_ladder[i].Count();
-		fileBuffer.PutUnsignedInt( count );
+		fileBuffer.PutUnsignedInt( m_ladder[i].Count() );
 
 		NavLadderConnect ladder;
 		FOR_EACH_VEC( m_ladder[i], it )

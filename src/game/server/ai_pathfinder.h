@@ -134,7 +134,7 @@ private:
 		const CBaseEntity *pTarget, int endFlags, int nodeID, int nodeTargetType, float flYaw);
 
 	// Builds a complex route (triangulation, making way)
-	AI_Waypoint_t	*BuildComplexRoute( Navigation_t navType, const Vector &vStart, 
+	AI_Waypoint_t	*BuildComplexRoute( const Navigation_t navType, const Vector &vStart,
 		const Vector &vEnd, const CBaseEntity *pTarget, int endFlags, int nodeID, 
 		int buildFlags, float flYaw, float goalTolerance, float maxLocalNavDistance );
 

@@ -2874,11 +2874,12 @@ bool CNavMesh::TestArea( CNavNode *node, int width, int height )
 	CNavNode *vertNode, *horizNode;
 
 	vertNode = node;
-	int x,y;
+	int y;
 	for( y=0; y<height; y++ )
 	{
 		horizNode = vertNode;
 
+		int x;
 		for( x=0; x<width; x++ )
 		{
 			//
@@ -3033,6 +3034,7 @@ bool CNavMesh::TestArea( CNavNode *node, int width, int height )
 	{
 		horizNode = vertNode;
 
+		int x;
 		for( x=0; x<width; x++ )
 		{
 			if ( !CheckObstacles( horizNode, width, height, x, y ) )
@@ -3792,8 +3794,7 @@ bool CNavMesh::UpdateGeneration( float maxTime )
 				return true; // wait for eyePos to settle
 
 			// Now try to compute lighting for remaining areas
-			int sit = 0;
-			while( sit < s_unlitAreas.Count() )
+			for ( int sit = 0; sit < s_unlitAreas.Count(); ) // while( sit < s_unlitAreas.Count() )
 			{
 				CNavArea *area = s_unlitAreas[sit];
 				if ( area->ComputeLighting() )
@@ -4038,8 +4039,7 @@ CNavNode *CNavMesh::AddNode( const Vector &destPos, const Vector &normal, NavDir
 	// determine if there's a cliff nearby and set an attribute on this node
 	for ( int i = 0; i < NUM_DIRECTIONS; i++ )
 	{
-		NavDirType dir = (NavDirType) i;
-		if ( CheckCliff( node->GetPosition(), dir ) )
+		if ( CheckCliff( node->GetPosition(), static_cast<NavDirType>(i) ) )
 		{
 			node->SetAttributes( node->GetAttributes() | NAV_MESH_CLIFF );
 			break;

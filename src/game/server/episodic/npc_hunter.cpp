@@ -6029,8 +6029,8 @@ void CNPC_Hunter::GetShootDir( Vector &vecDir, const Vector &vecSrc, CBaseEntity
 
 	Vector vecTarget = vecBodyTarget;
 
-	Vector vecDelta = pTargetEntity->GetAbsOrigin() - GetAbsOrigin();
-	float flDist = vecDelta.Length();
+	Vector vecAbsDelta = pTargetEntity->GetAbsOrigin() - GetAbsOrigin();
+	float flDist = vecAbsDelta.Length();
 
 	if ( !bStriderBuster )
 	{

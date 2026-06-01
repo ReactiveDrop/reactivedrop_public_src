@@ -378,17 +378,17 @@ void CHLTVDirector::StartBestPlayerCameraShot()
 		// search for camera ranking events
 		if ( Q_strcmp( dc.m_Event->GetName(), "hltv_rank_entity") == 0 )
 		{
-			int index = dc.m_Event->GetInt("index"); 
+			int iIndex = dc.m_Event->GetInt("index"); 
 
-			if ( index < MAX_PLAYERS )
+			if ( iIndex < MAX_PLAYERS )
 			{
-				flPlayerRanking[index] += dc.m_Event->GetFloat("rank" );
+				flPlayerRanking[iIndex] += dc.m_Event->GetFloat("rank" );
 
 				// find best camera
-				if ( flPlayerRanking[index] > flBestRank )
+				if ( flPlayerRanking[iIndex] > flBestRank )
 				{
-					iBestCamera = index;
-					flBestRank = flPlayerRanking[index];
+					iBestCamera = iIndex;
+					flBestRank = flPlayerRanking[iIndex];
 					iBestTarget = dc.m_Event->GetInt("target"); 
 				}
 			}
@@ -487,14 +487,14 @@ void CHLTVDirector::StartBestFixedCameraShot( bool bForce )
 		// search for camera ranking events
 		if ( Q_strcmp( dc.m_Event->GetName(), "hltv_rank_camera") == 0 )
 		{
-			int index = dc.m_Event->GetInt("index"); 
-			flCameraRanking[index] += dc.m_Event->GetFloat("rank" );
+			int iIndex = dc.m_Event->GetInt("index"); 
+			flCameraRanking[iIndex] += dc.m_Event->GetFloat("rank" );
 
 			// find best camera
-			if ( flCameraRanking[index] > flBestRank )
+			if ( flCameraRanking[iIndex] > flBestRank )
 			{
-				iBestCamera = index;
-				flBestRank = flCameraRanking[index];
+				iBestCamera = iIndex;
+				flBestRank = flCameraRanking[iIndex];
 				iBestTarget = dc.m_Event->GetInt("target"); 
 			}
 		}
@@ -686,11 +686,11 @@ bool CHLTVDirector::SetCameraMan( int iPlayerIndex )
 
 	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 	{
-		CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
+		CBasePlayer *pPRecipient = UTIL_PlayerByIndex( i );
 
-		if ( pPlayer && pPlayer->GetTeamNumber() == TEAM_SPECTATOR && !pPlayer->IsFakeClient() )
+		if ( pPRecipient && pPRecipient->GetTeamNumber() == TEAM_SPECTATOR && !pPRecipient->IsFakeClient() )
 		{
-			filter.AddRecipient( pPlayer );
+			filter.AddRecipient( pPRecipient );
 		}
 	}
 

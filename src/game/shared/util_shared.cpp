@@ -1837,6 +1837,7 @@ int UTIL_CalcFrustumThroughConvexPolygon( const Vector *pPolyVertices, int iPoly
 			i3 = (iMinSideFirstPoint + 1)%(iOldVertCount);
 			i4 = (iMinSideFirstPoint + 2)%(iOldVertCount);
 
+#pragma warning(suppress : 4459) // declaration of 'p4' hides global declaration
 			Vector *p1, *p2, *p3, *p4;
 			p1 = &pClippedVerts[i1];
 			p2 = &pClippedVerts[i2];

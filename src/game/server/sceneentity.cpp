@@ -1850,8 +1850,7 @@ void CSceneEntity::DispatchStartSpeak( CChoreoScene *scene, CBaseFlex *actor, CC
 				if ( !event->IsSuppressingCaptionAttenuation() && 
 					( filter.GetRecipientCount() > 0 ) )
 				{
-					int c = filter.GetRecipientCount();
-					for ( int i = c - 1 ; i >= 0; --i )
+					for ( int i = filter.GetRecipientCount() - 1 ; i >= 0; --i )
 					{
 						CBasePlayer *player = UTIL_PlayerByIndex( filter.GetRecipientIndex( i ) );
 						if ( !player )
@@ -2247,8 +2246,7 @@ void CSceneEntity::InputInterjectResponse( inputdata_t &inputdata )
 	}
 
 	CUtlVector< CAI_BaseActor * >	candidates;
-	int i;
-	for ( i = 0 ; i < m_pScene->GetNumActors(); i++ )
+	for ( int i = 0 ; i < m_pScene->GetNumActors(); i++ )
 	{
 		CBaseFlex *pTestActor = FindNamedActor( i );
 		if ( !pTestActor )

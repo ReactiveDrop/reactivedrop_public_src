@@ -239,14 +239,14 @@ void Host_Say( edict_t *pEdict, const CCommand &args, bool teamonly )
 #ifdef INFESTED_DLL
 		if ( CAlienSwarm *pAlienSwarm = ASWGameRules() )
 		{
-			ScriptVariant_t args[3];
-			args[0] = ToHScript( client );
-			args[1] = ToHScript( pPlayer );
-			args[2] = ScriptVariant_t( newText );
+			ScriptVariant_t scriptArgs[3];
+			scriptArgs[0] = ToHScript( client );
+			scriptArgs[1] = ToHScript( pPlayer );
+			scriptArgs[2] = ScriptVariant_t( newText );
 			
-			pAlienSwarm->RunScriptFunctionInListenerScopes( "OnReceivedTextMessage", &args[2], NELEMS(args), args );
+			pAlienSwarm->RunScriptFunctionInListenerScopes( "OnReceivedTextMessage", &scriptArgs[2], NELEMS(scriptArgs), scriptArgs );
 
-			ScriptVariant_t result = args[2];
+			ScriptVariant_t result = scriptArgs[2];
 			if ( result.m_type != FIELD_CSTRING )
 					continue;
 				
