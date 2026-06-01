@@ -1395,7 +1395,7 @@ public:
 private:
 	
 	// Model for rendering
-	const model_t					*model;	
+	const model_t					*m_model;	
 	CNetworkColor32( m_clrRender );
 
 public:
