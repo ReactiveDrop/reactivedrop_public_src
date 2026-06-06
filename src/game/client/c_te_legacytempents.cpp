@@ -109,7 +109,7 @@ void C_LocalTempEntity::Prepare( model_t *pmodel, float time )
 	Clear();
 
 	// Use these to set per-frame and termination conditions / actions
-	flags = FTENT_NONE;		
+	m_flags = FTENT_NONE;		
 	die = time + 0.75;
 	SetModelPointer( pmodel );
 	SetRenderMode( kRenderNormal );
@@ -192,7 +192,7 @@ int	C_LocalTempEntity::DrawModel( int flags, const RenderableInstance_t &instanc
 		return drawn;
 	}
 
-	if ( this->flags & FTENT_BEOCCLUDED )
+	if ( this->m_flags & FTENT_BEOCCLUDED )
 	{
 		int nSlot = GET_ACTIVE_SPLITSCREEN_SLOT();
 		// Check normal
@@ -249,7 +249,7 @@ bool C_LocalTempEntity::IsActive( void )
 	
 	if ( life < 0 )
 	{
-		if ( flags & FTENT_FADEOUT )
+		if ( m_flags & FTENT_FADEOUT )
 		{
 			int alpha;
 			if (GetRenderMode() == kRenderNormal)
@@ -274,7 +274,7 @@ bool C_LocalTempEntity::IsActive( void )
 	}
 
 	// Never die tempents only die when their die is cleared
-	if ( flags & FTENT_NEVERDIE )
+	if ( m_flags & FTENT_NEVERDIE )
 	{
 		active = (die != 0);
 	}
@@ -295,14 +295,14 @@ bool C_LocalTempEntity::Frame( float frametime, int framenumber )
 
 	m_vecTempEntVelocity = m_vecTempEntVelocity + ( m_vecTempEntAcceleration * frametime );
 
-	if ( flags & FTENT_PLYRATTACHMENT )
+	if ( m_flags & FTENT_PLYRATTACHMENT )
 	{
 		if ( IClientEntity *pClient = cl_entitylist->GetClientEntity( clientIndex ) )
 		{
 			SetLocalOrigin( pClient->GetAbsOrigin() + tentOffset );
 		}
 	}
-	else if ( flags & FTENT_SINEWAVE )
+	else if ( m_flags & FTENT_SINEWAVE )
 	{
 		x += m_vecTempEntVelocity[0] * frametime;
 		y += m_vecTempEntVelocity[1] * frametime;
@@ -312,7 +312,7 @@ bool C_LocalTempEntity::Frame( float frametime, int framenumber )
 			y + sin( m_vecTempEntVelocity[2] + fastFreq + 0.7 ) * (8*m_flSpriteScale),
 			GetLocalOriginDim( Z_INDEX ) + m_vecTempEntVelocity[2] * frametime ) );
 	}
-	else if ( flags & FTENT_SPIRAL )
+	else if ( m_flags & FTENT_SPIRAL )
 	{
 		float s, c;
 		SinCos( m_vecTempEntVelocity[2] + fastFreq, &s, &c );
@@ -327,14 +327,14 @@ bool C_LocalTempEntity::Frame( float frametime, int framenumber )
 		SetLocalOrigin( GetLocalOrigin() + m_vecTempEntVelocity * frametime );
 	}
 	
-	if ( flags & FTENT_SPRANIMATE )
+	if ( m_flags & FTENT_SPRANIMATE )
 	{
 		m_flFrame += frametime * m_flFrameRate;
 		if ( m_flFrame >= m_flFrameMax )
 		{
 			m_flFrame = m_flFrame - (int)(m_flFrame);
 
-			if ( !(flags & FTENT_SPRANIMATELOOP) )
+			if ( !(m_flags & FTENT_SPRANIMATELOOP) )
 			{
 				// this animating sprite isn't set to loop, so destroy it.
 				die = 0.0f;
@@ -342,7 +342,7 @@ bool C_LocalTempEntity::Frame( float frametime, int framenumber )
 			}
 		}
 	}
-	else if ( flags & FTENT_SPRCYCLE )
+	else if ( m_flags & FTENT_SPRCYCLE )
 	{
 		m_flFrame += frametime * 10;
 		if ( m_flFrame >= m_flFrameMax )
@@ -351,17 +351,17 @@ bool C_LocalTempEntity::Frame( float frametime, int framenumber )
 		}
 	}
 
-	if ( flags & FTENT_SMOKEGROWANDFADE )
+	if ( m_flags & FTENT_SMOKEGROWANDFADE )
 	{
 		m_flSpriteScale += frametime * 0.5f;
 		//m_clrRender.a -= frametime * 1500;
 	}
 
-	if ( flags & FTENT_ROTATE )
+	if ( m_flags & FTENT_ROTATE )
 	{
 		SetLocalAngles( GetLocalAngles() + m_vecTempEntAngVelocity * frametime );
 	}
-	else if ( flags & FTENT_ALIGNTOMOTION )
+	else if ( m_flags & FTENT_ALIGNTOMOTION )
 	{
 		if ( m_vecTempEntVelocity.Length() > 0.0f )
 		{
@@ -371,7 +371,7 @@ bool C_LocalTempEntity::Frame( float frametime, int framenumber )
 		}
 	}
 
-	if ( flags & (FTENT_COLLIDEALL | FTENT_COLLIDEWORLD) )
+	if ( m_flags & (FTENT_COLLIDEALL | FTENT_COLLIDEWORLD) )
 	{
 		Vector	traceNormal;
 		traceNormal.Init();
@@ -379,11 +379,11 @@ bool C_LocalTempEntity::Frame( float frametime, int framenumber )
 
 		trace_t trace;
 
-		if ( flags & FTENT_COLLIDEALL )
+		if ( m_flags & FTENT_COLLIDEALL )
 		{
 			Vector vPrevOrigin = m_vecPrevLocalOrigin;
 
-			if ( cl_fasttempentcollision.GetInt() > 0 && flags & FTENT_USEFASTCOLLISIONS )
+			if ( cl_fasttempentcollision.GetInt() > 0 && m_flags & FTENT_USEFASTCOLLISIONS )
 			{
 				if ( m_iLastCollisionFrame + cl_fasttempentcollision.GetInt() > gpGlobals->framecount )
 				{
@@ -405,7 +405,7 @@ bool C_LocalTempEntity::Frame( float frametime, int framenumber )
 			{
 				// If the FTENT_COLLISIONGROUP flag is set, use the entity's collision group
 				int collisionGroup = COLLISION_GROUP_NONE;
-				if ( flags & FTENT_COLLISIONGROUP )
+				if ( m_flags & FTENT_COLLISIONGROUP )
 				{
 					collisionGroup = GetCollisionGroup();
 				}
@@ -426,7 +426,7 @@ bool C_LocalTempEntity::Frame( float frametime, int framenumber )
 				m_vLastCollisionOrigin = trace.endpos;
 			}
 		}
-		else if ( flags & FTENT_COLLIDEWORLD )
+		else if ( m_flags & FTENT_COLLIDEWORLD )
 		{
 			CTraceFilterWorldOnly traceFilter;
 			UTIL_TraceLine( m_vecPrevLocalOrigin, GetLocalOrigin(), MASK_SOLID, &traceFilter, &trace );
@@ -444,7 +444,7 @@ bool C_LocalTempEntity::Frame( float frametime, int framenumber )
 			
 			// Damp velocity
 			damp = bounceFactor;
-			if ( flags & (FTENT_GRAVITY|FTENT_SLOWGRAVITY) )
+			if ( m_flags & (FTENT_GRAVITY|FTENT_SLOWGRAVITY) )
 			{
 				damp *= 0.5;
 				if ( traceNormal[2] > 0.9 )		// Hit floor?
@@ -452,17 +452,17 @@ bool C_LocalTempEntity::Frame( float frametime, int framenumber )
 					if ( m_vecTempEntVelocity[2] <= 0 && m_vecTempEntVelocity[2] >= gravity*3 )
 					{
 						damp = 0;		// Stop
-						flags &= ~(FTENT_ROTATE|FTENT_GRAVITY|FTENT_SLOWGRAVITY|FTENT_COLLIDEWORLD|FTENT_SMOKETRAIL);
+						m_flags &= ~(FTENT_ROTATE|FTENT_GRAVITY|FTENT_SLOWGRAVITY|FTENT_COLLIDEWORLD|FTENT_SMOKETRAIL);
 						SetLocalAnglesDim( X_INDEX, 0 );
 						SetLocalAnglesDim( Z_INDEX, 0 );
 					}
 				}
 			}
 
-			if ( flags & (FTENT_CHANGERENDERONCOLLIDE) )
+			if ( m_flags & (FTENT_CHANGERENDERONCOLLIDE) )
 			{
 				OnTranslucencyTypeChanged();
-				flags &= ~FTENT_CHANGERENDERONCOLLIDE;
+				m_flags &= ~FTENT_CHANGERENDERONCOLLIDE;
 			}	
 
 			if (hitSound)
@@ -500,20 +500,20 @@ bool C_LocalTempEntity::Frame( float frametime, int framenumber )
 			}
 
 			// Check for a collision and stop the particle system.
-			if ( flags & FTENT_CLIENTSIDEPARTICLES )
+			if ( m_flags & FTENT_CLIENTSIDEPARTICLES )
 			{
 				// Stop the emission of particles on collision - removed from the ClientEntityList on removal from the tempent pool.
 				ParticleProp()->StopEmission();
 				m_bParticleCollision = true;
 			}
 
-			if (flags & FTENT_COLLIDEKILL)
+			if (m_flags & FTENT_COLLIDEKILL)
 			{
 				// die on impact
-				flags &= ~FTENT_FADEOUT;	
+				m_flags &= ~FTENT_FADEOUT;	
 				die = gpGlobals->curtime;			
 			}
-			else if ( flags & FTENT_ATTACHTOTARGET)
+			else if ( m_flags & FTENT_ATTACHTOTARGET)
 			{
 				// If we've hit the world, just stop moving
 				if ( trace.DidHitWorld() && !( trace.surface.flags & SURF_SKY ) )
@@ -522,12 +522,12 @@ bool C_LocalTempEntity::Frame( float frametime, int framenumber )
 					m_vecTempEntAcceleration = vec3_origin;
 
 					// Remove movement flags so we don't keep tracing
-					flags &= ~(FTENT_COLLIDEALL | FTENT_COLLIDEWORLD);
+					m_flags &= ~(FTENT_COLLIDEALL | FTENT_COLLIDEWORLD);
 				}
 				else
 				{
 					// Couldn't attach to this entity. Die.
-					flags &= ~FTENT_FADEOUT;
+					m_flags &= ~FTENT_FADEOUT;
 					die = gpGlobals->curtime;
 				}
 			}
@@ -552,7 +552,7 @@ bool C_LocalTempEntity::Frame( float frametime, int framenumber )
 	}
 
 
-	if ( (flags & FTENT_FLICKER) && framenumber == m_nFlickerFrame )
+	if ( (m_flags & FTENT_FLICKER) && framenumber == m_nFlickerFrame )
 	{
 		dlight_t *dl = effects->CL_AllocDlight (LIGHT_INDEX_TE_DYNAMIC);
 		VectorCopy (GetLocalOrigin(), dl->origin);
@@ -563,7 +563,7 @@ bool C_LocalTempEntity::Frame( float frametime, int framenumber )
 		dl->die = gpGlobals->curtime + 0.01;
 	}
 
-	if ( flags & FTENT_SMOKETRAIL )
+	if ( m_flags & FTENT_SMOKETRAIL )
 	{
 		 Assert( !"FIXME:  Rework smoketrail to be client side\n" );
 	}
@@ -571,13 +571,13 @@ bool C_LocalTempEntity::Frame( float frametime, int framenumber )
 	// add gravity if we didn't collide in this frame
 	if ( traceFraction == 1 )
 	{
-		if ( flags & FTENT_GRAVITY )
+		if ( m_flags & FTENT_GRAVITY )
 			m_vecTempEntVelocity[2] += gravity;
-		else if ( flags & FTENT_SLOWGRAVITY )
+		else if ( m_flags & FTENT_SLOWGRAVITY )
 			m_vecTempEntVelocity[2] += gravitySlow;
 	}
 
-	if ( flags & FTENT_WINDBLOWN )
+	if ( m_flags & FTENT_WINDBLOWN )
 	{
 		Vector vecWind;
 		GetWindspeedAtTime( gpGlobals->curtime, vecWind );
@@ -616,7 +616,7 @@ void C_LocalTempEntity::AddParticleEffect( const char *pszParticleEffect )
 		return;
 
 	// Check to see that we don't already have a particle effect.
-	if ( ( flags & FTENT_CLIENTSIDEPARTICLES ) != 0 )
+	if ( ( m_flags & FTENT_CLIENTSIDEPARTICLES ) != 0 )
 		return;
 
 	// Add the entity to the ClientEntityList and create the particle system.
@@ -624,7 +624,7 @@ void C_LocalTempEntity::AddParticleEffect( const char *pszParticleEffect )
 	ParticleProp()->Create( pszParticleEffect, PATTACH_ABSORIGIN_FOLLOW );
 
 	// Set the particle flag on the temp entity and save the name of the particle effect.
-	flags |= FTENT_CLIENTSIDEPARTICLES;
+	m_flags |= FTENT_CLIENTSIDEPARTICLES;
 	SetParticleEffect( pszParticleEffect );
 }
 
@@ -808,7 +808,7 @@ void CTempEnts::FizzEffect( C_BaseEntity *pent, int modelIndex, int density, int
 		if (!pTemp)
 			return;
 
-		pTemp->flags |= FTENT_SINEWAVE;
+		pTemp->m_flags |= FTENT_SINEWAVE;
 
 		pTemp->x = origin[0];
 		pTemp->y = origin[1];
@@ -859,7 +859,7 @@ void CTempEnts::Bubbles( const Vector &mins, const Vector &maxs, float height, i
 		if (!pTemp)
 			return;
 
-		pTemp->flags |= FTENT_SINEWAVE;
+		pTemp->m_flags |= FTENT_SINEWAVE;
 
 		pTemp->x = origin[0];
 		pTemp->y = origin[1];
@@ -913,7 +913,7 @@ void CTempEnts::BubbleTrail( const Vector &start, const Vector &end, float flWat
 		if (!pTemp)
 			return;
 
-		pTemp->flags |= FTENT_SINEWAVE;
+		pTemp->m_flags |= FTENT_SINEWAVE;
 
 		pTemp->x = origin[0];
 		pTemp->y = origin[1];
@@ -1037,11 +1037,11 @@ void CTempEnts::BreakModel( const Vector &pos, const QAngle &angles, const Vecto
 			pTemp->SetBody( random->RandomInt(0,frameCount-1) );
 		}
 
-		pTemp->flags |= FTENT_COLLIDEWORLD | FTENT_FADEOUT | FTENT_SLOWGRAVITY;
+		pTemp->m_flags |= FTENT_COLLIDEWORLD | FTENT_FADEOUT | FTENT_SLOWGRAVITY;
 
 		if ( random->RandomInt(0,255) < 200 ) 
 		{
-			pTemp->flags |= FTENT_ROTATE;
+			pTemp->m_flags |= FTENT_ROTATE;
 			pTemp->m_vecTempEntAngVelocity[0] = random->RandomFloat(-256,255);
 			pTemp->m_vecTempEntAngVelocity[1] = random->RandomFloat(-256,255);
 			pTemp->m_vecTempEntAngVelocity[2] = random->RandomFloat(-256,255);
@@ -1049,7 +1049,7 @@ void CTempEnts::BreakModel( const Vector &pos, const QAngle &angles, const Vecto
 
 		if ( (random->RandomInt(0,255) < 100 ) && (flags & BREAK_SMOKE) )
 		{
-			pTemp->flags |= FTENT_SMOKETRAIL;
+			pTemp->m_flags |= FTENT_SMOKETRAIL;
 		}
 
 		if ((flags & BREAK_GLASS) || (flags & BREAK_TRANS))
@@ -1172,7 +1172,7 @@ C_LocalTempEntity *CTempEnts::ClientProjectile( const Vector& vecOrigin, const V
 	pTemp->SetAbsAngles( angles );
 	pTemp->SetAbsOrigin( vecOrigin );
 	pTemp->die = gpGlobals->curtime + lifetime;
-	pTemp->flags = FTENT_COLLIDEALL | FTENT_ATTACHTOTARGET | FTENT_ALIGNTOMOTION;
+	pTemp->m_flags = FTENT_COLLIDEALL | FTENT_ATTACHTOTARGET | FTENT_ALIGNTOMOTION;
 	pTemp->clientIndex = ( pOwner != NULL ) ? pOwner->entindex() : 0; 
 	pTemp->SetOwnerEntity( pOwner );
 	pTemp->SetImpactEffect( pszImpactEffect );
@@ -1183,7 +1183,7 @@ C_LocalTempEntity *CTempEnts::ClientProjectile( const Vector& vecOrigin, const V
 		pTemp->ParticleProp()->Create( pszParticleEffect, PATTACH_ABSORIGIN_FOLLOW );
 
 		// Set the particle flag on the temp entity and save the name of the particle effect.
-		pTemp->flags |= FTENT_CLIENTSIDEPARTICLES;
+		pTemp->m_flags |= FTENT_CLIENTSIDEPARTICLES;
 	 	pTemp->SetParticleEffect( pszParticleEffect );
 	}
 	return pTemp;
@@ -1234,7 +1234,7 @@ C_LocalTempEntity *CTempEnts::TempSprite( const Vector &pos, const Vector &dir, 
 	pTemp->SetRenderColor( 255, 255, 255 );
 	pTemp->SetRenderAlpha( a * 255 );
 
-	pTemp->flags |= flags;
+	pTemp->m_flags |= flags;
 
 	pTemp->SetVelocity( dir );
 	pTemp->SetLocalOrigin( pos );
@@ -1298,7 +1298,7 @@ void CTempEnts::Sprite_Spray( const Vector &pos, const Vector &dir, int modelInd
 		pTemp->SetRenderFX( kRenderFxNoDissipation );
 		//pTemp->scale = random->RandomFloat( 0.1, 0.25 );
 		pTemp->m_flSpriteScale = 0.5;
-		pTemp->flags |= FTENT_FADEOUT | FTENT_SLOWGRAVITY;
+		pTemp->m_flags |= FTENT_FADEOUT | FTENT_SLOWGRAVITY;
 		pTemp->fadeSpeed = 2.0;
 
 		// make the spittle fly the direction indicated, but mix in some noise.
@@ -1360,7 +1360,7 @@ void CTempEnts::Sprite_Trail( const Vector &vecStart, const Vector &vecEnd, int 
 		if (!pTemp)
 			return;
 
-		pTemp->flags |= FTENT_COLLIDEWORLD | FTENT_SPRCYCLE | FTENT_FADEOUT | FTENT_SLOWGRAVITY;
+		pTemp->m_flags |= FTENT_COLLIDEWORLD | FTENT_SPRCYCLE | FTENT_FADEOUT | FTENT_SLOWGRAVITY;
 
 		Vector vecVel = vecDir * flSpeed;
 		vecVel.x += random->RandomInt( -127,128 ) * flAmplitude;
@@ -1436,14 +1436,14 @@ void CTempEnts::AttachTentToPlayer( int client, int modelIndex, float zoffset, f
 	pTemp->tentOffset[ 1 ] = 0;
 	pTemp->tentOffset[ 2 ] = zoffset;
 	pTemp->die = gpGlobals->curtime + life;
-	pTemp->flags |= FTENT_PLYRATTACHMENT | FTENT_PERSIST;
+	pTemp->m_flags |= FTENT_PLYRATTACHMENT | FTENT_PERSIST;
 
 	// is the model a sprite?
 	if ( modelinfo->GetModelType( pTemp->GetModel() ) == mod_sprite )
 	{
 		frameCount = modelinfo->GetModelFrameCount( pModel );
 		pTemp->m_flFrameMax = frameCount - 1;
-		pTemp->flags |= FTENT_SPRANIMATE | FTENT_SPRANIMATELOOP;
+		pTemp->m_flags |= FTENT_SPRANIMATE | FTENT_SPRANIMATELOOP;
 		pTemp->m_flFrameRate = 10;
 	}
 	else
@@ -1470,7 +1470,7 @@ void CTempEnts::KillAttachedTents( int client )
 	{
 		C_LocalTempEntity *pTemp = m_TempEnts[ i ];
 
-		if ( pTemp->flags & FTENT_PLYRATTACHMENT )
+		if ( pTemp->m_flags & FTENT_PLYRATTACHMENT )
 		{
 			// this TENT is player attached.
 			// if it is attached to this client, set it to die instantly.
@@ -1504,7 +1504,7 @@ void CTempEnts::RicochetSprite( const Vector &pos, model_t *pmodel, float durati
 	pTemp->SetRenderAlpha( 200 );
 	pTemp->tempent_renderamt = 200;
 	pTemp->m_flSpriteScale = scale;
-	pTemp->flags = FTENT_FADEOUT;
+	pTemp->m_flags = FTENT_FADEOUT;
 
 	pTemp->SetVelocity( vec3_origin );
 
@@ -1541,7 +1541,7 @@ void CTempEnts::BloodSprite( const Vector &org, int r, int g, int b, int a, int 
 			pTemp->SetRenderMode( kRenderTransTexture );
 			pTemp->SetRenderFX( kRenderFxNone );
 			pTemp->m_flSpriteScale	= random->RandomFloat( size / 25, size / 35);
-			pTemp->flags			= FTENT_SPRANIMATE;
+			pTemp->m_flags			= FTENT_SPRANIMATE;
  
 			pTemp->SetRenderColor( r, g, b );
 			pTemp->SetRenderAlpha( a );
@@ -1592,7 +1592,7 @@ C_LocalTempEntity *CTempEnts::DefaultSprite( const Vector &pos, int spriteIndex,
 
 	pTemp->m_flFrameMax = frameCount - 1;
 	pTemp->m_flSpriteScale = 1.0;
-	pTemp->flags |= FTENT_SPRANIMATE;
+	pTemp->m_flags |= FTENT_SPRANIMATE;
 	if ( framerate == 0 )
 		framerate = 10;
 
@@ -1622,7 +1622,7 @@ void CTempEnts::Sprite_Smoke( C_LocalTempEntity *pTemp, float scale )
 	pTemp->SetRenderAlpha( 255 );
 	pTemp->SetLocalOriginDim( Z_INDEX, pTemp->GetLocalOriginDim( Z_INDEX ) + 20 );
 	pTemp->m_flSpriteScale = scale;
-	pTemp->flags = FTENT_WINDBLOWN;
+	pTemp->m_flags = FTENT_WINDBLOWN;
 
 }
 
@@ -1641,7 +1641,7 @@ C_LocalTempEntity * CTempEnts::SpawnTempModel( model_t *pModel, const Vector &ve
 
 	pTemp->SetAbsAngles( vecAngles );
 	pTemp->SetBody( 0 );
-	pTemp->flags |= iFlags;
+	pTemp->m_flags |= iFlags;
 	pTemp->m_vecTempEntAngVelocity[0] = random->RandomFloat(-255,255);
 	pTemp->m_vecTempEntAngVelocity[1] = random->RandomFloat(-255,255);
 	pTemp->m_vecTempEntAngVelocity[2] = random->RandomFloat(-255,255);
@@ -1943,7 +1943,7 @@ void CTempEnts::TempEntFree( int index )
 		pTemp->RemoveFromLeafSystem();
 
 		// Remove the tempent from the ClientEntityList before removing it from the pool.
-		if ( ( pTemp->flags & FTENT_CLIENTSIDEPARTICLES ) )
+		if ( ( pTemp->m_flags & FTENT_CLIENTSIDEPARTICLES ) )
 		{			
 			// Stop the particle emission if this hasn't happened already - collision or system timing out on its own.
 			if ( !pTemp->m_bParticleCollision )
@@ -2252,12 +2252,12 @@ void CTempEnts::Update(void)
 				// Cull to PVS (not frustum cull, just PVS)
 				if ( !AddVisibleTempEntity( current ) )
 				{
-					if ( !( current->flags & FTENT_PERSIST ) ) 
+					if ( !( current->m_flags & FTENT_PERSIST ) ) 
 					{
 						// If we can't draw it this frame, just dump it.
 						current->die = gpGlobals->curtime;
 						// Don't fade out, just die
-						current->flags &= ~FTENT_FADEOUT;
+						current->m_flags &= ~FTENT_FADEOUT;
 
 						TempEntFree( i );
 					}
