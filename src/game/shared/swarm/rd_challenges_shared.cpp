@@ -106,14 +106,20 @@ void ReactiveDropChallenges::ClearServerCache()
 	}
 
 	// add some challenges to the top of the list (will be filled in during the loop)
+	char szKVFileName[MAX_PATH];
 	for ( int i = 0; i < NELEMS( s_szOfficialChallengesFirst ); i++ )
 	{
 		Assert( IsOfficial( s_szOfficialChallengesFirst[i] ) );
-		g_StringTableReactiveDropChallenges->AddString( true, s_szOfficialChallengesFirst[i] );
+		Q_snprintf( szKVFileName, sizeof( szKVFileName ), "resource/challenges/%s.txt", s_szOfficialChallengesFirst[i] );
+
+		// make sure we don't crash by saying we have a challenge but not actually having it
+		if ( filesystem->FileExists( szKVFileName, "GAME" ) )
+		{
+			g_StringTableReactiveDropChallenges->AddString( true, s_szOfficialChallengesFirst[i] );
+		}
 	}
 
 	RD_Challenge_t summary;
-	char szKVFileName[MAX_PATH];
 	char szChallengeName[MAX_PATH];
 	FileFindHandle_t hFind;
 	for ( const char *pszChallenge = filesystem->FindFirstEx( "resource/challenges/*.txt", "GAME", &hFind ); pszChallenge; pszChallenge = filesystem->FindNext( hFind ) )
