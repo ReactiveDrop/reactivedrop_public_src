@@ -2654,6 +2654,19 @@
 	[
 		1: "Master (Has priority if multiple info_player_starts exist)" : 0
 	]
+	
+	marineprofile(choices) : "Marine" : -1 =
+	[
+		-1 : "Default"
+		0 : "Sarge"
+		1 : "Wildcat"
+		2 : "Faith"
+		3 : "Crash"
+		4 : "Jaeger"
+		5 : "Wolfe"
+		6 : "Bastille"
+		7 : "Vegas"
+	]
 ]
 
 @PointClass base(Targetname) size(-1 -1 0, 1 1 1) color(80 150 225) studio("models/editor/overlay_helper.mdl") sphere(fademindist) sphere(fademaxdist) overlay() = info_overlay : 

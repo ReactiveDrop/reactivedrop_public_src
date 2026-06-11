@@ -4,9 +4,9 @@
 #pragma once
 #endif
 
+#include "info_player_start.h"
 
-
-class CASW_TutorialStartPoint : public CPointEntity
+class CASW_TutorialStartPoint : public CBaseStart
 {
 public:
 	DECLARE_DATADESC();

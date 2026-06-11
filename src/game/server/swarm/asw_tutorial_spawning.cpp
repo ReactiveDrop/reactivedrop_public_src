@@ -18,12 +18,12 @@ CASW_TutorialStartPoint *CASW_TutorialStartPoint::GetTutorialStartPoint( int iMa
 	if ( iMarineSlot < 0 || iMarineSlot >= 8 )
 		return NULL;
 
-	CASW_TutorialStartPoint *pStartEntity = assert_cast<CASW_TutorialStartPoint *>( gEntList.FindEntityByClassname( NULL, "info_tutorial_start" ) );
+	CASW_TutorialStartPoint *pStartEntity = dynamic_cast<CASW_TutorialStartPoint *>( gEntList.FindEntityByClassname( NULL, "info_tutorial_start" ) );
 	while ( pStartEntity != NULL )
 	{
 		if ( pStartEntity->m_iMarineSlot == iMarineSlot && pStartEntity->m_iSaveStage == GetTutorialSaveStage() )
 			return pStartEntity;
-		pStartEntity = assert_cast<CASW_TutorialStartPoint *>( gEntList.FindEntityByClassname( pStartEntity, "info_tutorial_start" ) );
+		pStartEntity = dynamic_cast<CASW_TutorialStartPoint *>( gEntList.FindEntityByClassname( dynamic_cast<CBaseEntity*>(pStartEntity), "info_tutorial_start" ) );
 	}
 
 	return NULL;

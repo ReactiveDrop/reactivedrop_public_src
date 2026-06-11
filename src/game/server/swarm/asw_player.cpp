@@ -372,7 +372,7 @@ void ASW_DrawAwakeAI()
 }
 ConVar asw_draw_awake_ai( "asw_draw_awake_ai", "0", FCVAR_CHEAT, "Lists how many of each AI are awake");
 
-CBaseEntity *CASW_Player::spawn_point = NULL;
+CBaseStart *CASW_Player::spawn_point = NULL;
 
 CASW_Player::CASW_Player()
 {

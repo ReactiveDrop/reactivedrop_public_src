@@ -14,6 +14,7 @@
 #include "asw_info_message_shared.h"
 #include "basemultiplayerplayer.h"
 #include "rd_inventory_shared.h"
+#include "info_player_start.h"
 
 class CASW_Inhabitable_NPC;
 class CASW_Marine;
@@ -306,7 +307,7 @@ public:
 	};
 	CUtlVectorAutoPurge<InventoryCommandData_t *> m_InventoryCommands;
 
-	static CBaseEntity *spawn_point;
+	static CBaseStart *spawn_point;
 	bool m_bWelcomed;
 	float m_fLastFragTime;
 	int   m_iKillingSpree;
