@@ -606,7 +606,7 @@ void CRD_Crafting_Research_Component::OnCommand( const char *szCommand )
 			}
 		}
 
-		m_pParent->m_pParent->m_flNextUpdateTime = Plat_FloatTime() + 5.0;
+		m_pParent->m_pParent->m_flNextUpdateTime = Plat_FloatTime() + 1.0;
 
 		m_pParent->m_pParent->m_pBackdrop->SetVisible( false );
 	}
@@ -743,6 +743,7 @@ void CRD_Crafting_Research_Donate_Modal::OnCommand( const char *szCommand )
 		if ( !pSteamUser )
 		{
 			Warning( "Missing ISteamUser! Cannot donate to crafting research.\n" );
+			m_pParent->m_pBackdrop->SetVisible( true );
 			m_pParent->ShowError( "#rd_crafting_research_error_steam" );
 			MarkForDeletion();
 			return;
@@ -758,6 +759,7 @@ void CRD_Crafting_Research_Donate_Modal::OnCommand( const char *szCommand )
 	}
 	else if ( !V_stricmp( szCommand, "Back" ) )
 	{
+		m_pParent->m_pBackdrop->SetVisible( true );
 		MarkForDeletion();
 		BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_BACK );
 	}
@@ -810,6 +812,7 @@ void CRD_Crafting_Research_Donate_Modal::OnDonateRequestCompleted( HTTPRequestCo
 {
 	BaseModUI::CUIGameData::Get()->CloseWaitScreen( NULL, NULL );
 	BaseModUI::CBaseModPanel::GetSingleton().GetWindow( BaseModUI::WT_COLLECTIONS )->SetVisible( true );
+	m_pParent->m_pBackdrop->SetVisible( true );
 
 	if ( bIOFailure )
 	{

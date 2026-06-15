@@ -1564,21 +1564,7 @@ void CRD_VGUI_Option::SetCurrentSliderValue( float flValue )
 
 	if ( m_flSliderSnap != 0.0f )
 	{
-		if ( m_bHaveCurrent )
-		{
-			if ( flValue < m_Current.m_flValue )
-			{
-				flValue = floorf( flValue / m_flSliderSnap ) * m_flSliderSnap;
-			}
-			else
-			{
-				flValue = ceilf( flValue / m_flSliderSnap ) * m_flSliderSnap;
-			}
-		}
-		else
-		{
-			flValue = roundf( flValue / m_flSliderSnap ) * m_flSliderSnap;
-		}
+		flValue = roundf( flValue / m_flSliderSnap ) * m_flSliderSnap;
 	}
 
 	m_bHaveCurrent = true;
