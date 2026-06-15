@@ -195,9 +195,9 @@ void C_ASW_AOEGrenade_Projectile::UpdateTargetAOEEffects( void )
 	}
 
 	// Now add any new targets
-	for ( int i = 0; i < m_hAOETargets.Count(); i++ )
+	for ( int t = 0; t < m_hAOETargets.Count(); t++ )
 	{
-		C_BaseEntity *pTarget = m_hAOETargets[i].Get();
+		C_BaseEntity *pTarget = m_hAOETargets[t].Get();
 
 		// Loops through the aoe targets, and make sure we have an effect for each of them
 		if ( pTarget )

@@ -185,8 +185,8 @@ void CAmbientGeneric::ComputeMaxAudibleDistance( )
 
 	// Sadly, there's no direct way of getting at this. 
 	// We have to do an interative computation.
-	float flGain = enginesound->GetDistGainFromSoundLevel( m_iSoundLevel, m_radius );
-	if ( flGain <= MIN_AUDIBLE_VOLUME )
+	const float flGainMRadius = enginesound->GetDistGainFromSoundLevel( m_iSoundLevel, m_radius );
+	if ( flGainMRadius <= MIN_AUDIBLE_VOLUME )
 	{
 		m_flMaxRadius = m_radius;
 		return;
@@ -197,8 +197,8 @@ void CAmbientGeneric::ComputeMaxAudibleDistance( )
 	while ( true )
 	{
 		// First, find a min + max range surrounding the desired distance gain
-		float flGain = enginesound->GetDistGainFromSoundLevel( m_iSoundLevel, flMaxRadius );
-		if ( flGain <= MIN_AUDIBLE_VOLUME )
+		const float flGainMaxRadius = enginesound->GetDistGainFromSoundLevel( m_iSoundLevel, flMaxRadius );
+		if ( flGainMaxRadius <= MIN_AUDIBLE_VOLUME )
 			break;
 
 		// Always audible.
@@ -216,9 +216,9 @@ void CAmbientGeneric::ComputeMaxAudibleDistance( )
 	int nInterations = 4;
 	while ( --nInterations >= 0 )
 	{
-		float flTestRadius = (flMinRadius + flMaxRadius) * 0.5f;
-		float flGain = enginesound->GetDistGainFromSoundLevel( m_iSoundLevel, flTestRadius );
-		if ( flGain <= MIN_AUDIBLE_VOLUME )
+		const float flTestRadius = (flMinRadius + flMaxRadius) * 0.5f;
+		const float flGainTestRadius = enginesound->GetDistGainFromSoundLevel( m_iSoundLevel, flTestRadius );
+		if ( flGainTestRadius <= MIN_AUDIBLE_VOLUME )
 		{
 			flMaxRadius = flTestRadius;
 		}

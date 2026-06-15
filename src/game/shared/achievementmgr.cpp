@@ -1605,8 +1605,7 @@ void CAchievementMgr::Steam_OnUserStatsReceived( UserStatsReceived_t *pUserStats
 			int iValue;
 			char pszProgressName[1024];
 			Q_snprintf( pszProgressName, 1024, "%s_STAT", pAchievement->GetName() );
-			bool bRet = SteamUserStats()->GetStat( pszProgressName, &iValue );
-			if ( bRet )
+			if ( SteamUserStats()->GetStat( pszProgressName, &iValue ) )
 			{
 				pAchievement->SetCount( iValue );
 			}
@@ -1618,8 +1617,7 @@ void CAchievementMgr::Steam_OnUserStatsReceived( UserStatsReceived_t *pUserStats
 			if ( pAchievement->HasComponents() )
 			{
 				Q_snprintf( pszProgressName, 1024, "%s_COMP", pAchievement->GetName() );
-				bool bRet = SteamUserStats()->GetStat( pszProgressName, &iValue );
-				if ( bRet )
+				if ( SteamUserStats()->GetStat( pszProgressName, &iValue ) )
 				{
 					pAchievement->SetComponentBits( iValue );
 				}

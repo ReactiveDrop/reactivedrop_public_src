@@ -106,8 +106,8 @@ void CNB_Select_Marine_Entry::OnThink()
 		}
 		else
 		{
-			CASW_Marine_Profile *pProfile = Briefing()->GetMarineProfile( m_nPreferredLobbySlot );
-			if ( !pProfile || pProfile->m_ProfileIndex != m_nProfileIndex )
+			CASW_Marine_Profile *pProfilePref = Briefing()->GetMarineProfile( m_nPreferredLobbySlot );
+			if ( !pProfilePref || pProfilePref->m_ProfileIndex != m_nProfileIndex )
 			{
 				bEnabled = false;
 			}

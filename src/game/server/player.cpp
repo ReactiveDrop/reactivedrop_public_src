@@ -8789,7 +8789,7 @@ void CBasePlayer::SetPlayerName( const char *name )
 
 		if(rd_add_index_to_name.GetBool())
 		{
-			int n = V_snprintf(m_szNetname, sizeof(m_szNetname) - 1, "%d-%s", ENTINDEX(edict()), name);
+			V_snprintf(m_szNetname, sizeof(m_szNetname) - 1, "%d-%s", ENTINDEX(edict()), name);
 			UTIL_SafeUtf8Truncate(m_szNetname, sizeof(m_szNetname));
 		}
 		else

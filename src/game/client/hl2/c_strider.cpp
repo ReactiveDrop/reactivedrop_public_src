@@ -130,8 +130,8 @@ public:
 
 			for ( int i = 0; i < NUM_STRIDER_IK_TARGETS; i++ )
 			{
-				CIKTarget &target = m_pIk->m_target[i];
-				target.SetPos( m_vecIKTarget[i] );
+				CIKTarget &targetI = m_pIk->m_target[i];
+				targetI.SetPos( m_vecIKTarget[i] );
 #if 0
 				debugoverlay->AddBoxOverlay( m_vecIKTarget[i], Vector( -2, -2, -2 ), Vector( 2, 2, 2), QAngle( 0, 0, 0 ), (int)255*m_pIk->m_target[i].est.latched, 0, 0, 0, 0 );
 #endif

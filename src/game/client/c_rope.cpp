@@ -234,9 +234,9 @@ void CRopeManager::AddToRenderCache( C_RopeKeyframe *pRope )
 	// If we didn't find one, then allocate the mofo.
 	if ( iRenderCache == nRenderCacheCount )
 	{
-		int iRenderCache = m_aRenderCache.AddToTail();
-		m_aRenderCache[iRenderCache].m_pSolidMaterial = pRope->GetSolidMaterial();
-		m_aRenderCache[iRenderCache].m_nCacheCount = 0;
+		int tail = m_aRenderCache.AddToTail();
+		m_aRenderCache[tail].m_pSolidMaterial = pRope->GetSolidMaterial();
+		m_aRenderCache[tail].m_nCacheCount = 0;
 	}
 
 	if ( m_aRenderCache[iRenderCache].m_nCacheCount >= MAX_ROPE_RENDERCACHE )
@@ -1506,6 +1506,7 @@ struct catmull_t
 };
 
 // bake out the terms of the catmull rom spline
+#pragma warning(suppress : 4459) // declaration of 'p4' hides global declaration
 void Catmull_Rom_Spline_Matrix( const Vector &p1, const Vector &p2, const Vector &p3, const Vector &p4, catmull_t &output )
 {
 	output.t3 = 0.5f * ((-1*p1) + (3*p2) + (-3*p3) + p4);	// 0.5 t^3 * [ (-1*p1) + ( 3*p2) + (-3*p3) + p4 ]
@@ -1618,10 +1619,10 @@ bool C_RopeKeyframe::CalculateEndPointAttachment( C_BaseEntity *pEnt, int iAttac
 			if ( !pModel )
 				return false;
 
-			int iAttachment = pModel->LookupAttachment( "buff_attach" );
+			int iBuffAttachment = pModel->LookupAttachment( "buff_attach" );
 			if ( pAngles )
-				return pModel->GetAttachment( iAttachment, vPos, *pAngles );
-			return pModel->GetAttachment( iAttachment, vPos );
+				return pModel->GetAttachment( iBuffAttachment, vPos, *pAngles );
+			return pModel->GetAttachment( iBuffAttachment, vPos );
 		}
 	}
 

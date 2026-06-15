@@ -988,8 +988,8 @@ void CASWGenericEmitter::SetDieTime(float fTime)
 // load our emitter settings from a particular template
 void CASWGenericEmitter::UseTemplate(const char* templatename, bool bReset, bool bLoadFromCache)
 {	
-	char buf[MAX_PATH];
-	Q_snprintf(buf, sizeof(buf), "resource/particletemplates/%s.ptm", templatename);
+	char pathBuf[MAX_PATH];
+	Q_snprintf(pathBuf, sizeof(pathBuf), "resource/particletemplates/%s.ptm", templatename);
 
 	KeyValues* kv = NULL;
 	if (bLoadFromCache)	
@@ -1000,10 +1000,10 @@ void CASWGenericEmitter::UseTemplate(const char* templatename, bool bReset, bool
 		kv = new KeyValues("UncachedParticleEmitter");
 		if (kv)
 		{
-			if (!kv->LoadFromFile(filesystem, buf, "GAME"))
+			if (!kv->LoadFromFile(filesystem, pathBuf, "GAME"))
 			{
 				kv->deleteThis();
-				DevMsg(1, "C_ASW_Emitter::UseTemplate: couldn't load file: %s\n", buf);
+				DevMsg(1, "C_ASW_Emitter::UseTemplate: couldn't load file: %s\n", pathBuf);
 				return;
 			}
 		}
@@ -1014,7 +1014,7 @@ void CASWGenericEmitter::UseTemplate(const char* templatename, bool bReset, bool
 	// couldn't find the template
 	if ( !kv )
 	{
-		DevMsg( 1, "Couldn't load emitter template from cache. %s\n", buf );
+		DevMsg( 1, "Couldn't load emitter template from cache. %s\n", pathBuf );
 		return;
 	}
 

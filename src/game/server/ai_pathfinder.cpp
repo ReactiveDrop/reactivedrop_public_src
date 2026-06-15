@@ -929,13 +929,13 @@ AI_Waypoint_t *CAI_Pathfinder::BuildSimpleRoute( Navigation_t navType, const Vec
 //-----------------------------------------------------------------------------
 // Builds a complex route (triangulation, making way)
 //-----------------------------------------------------------------------------
-AI_Waypoint_t *CAI_Pathfinder::BuildComplexRoute( Navigation_t navType, const Vector &vStart, 
+AI_Waypoint_t *CAI_Pathfinder::BuildComplexRoute( const Navigation_t navType, const Vector &vStart,
 	const Vector &vEnd, const CBaseEntity *pTarget, int endFlags, int nodeID, 
 	int buildFlags, float flYaw, float goalTolerance, float maxLocalNavDistance )
 {
 	AI_PROFILE_SCOPE( CAI_Pathfinder_BuildComplexRoute );
 	
-	float flTotalDist = ComputePathDistance( navType, vStart, vEnd );
+	const float flTotalDist = ComputePathDistance( navType, vStart, vEnd );
 	if ( flTotalDist < 0.0625 )
 	{
 		return new AI_Waypoint_t( vEnd, flYaw, navType, endFlags, nodeID );
@@ -980,7 +980,7 @@ AI_Waypoint_t *CAI_Pathfinder::BuildComplexRoute( Navigation_t navType, const Ve
 		{
 			if ( !UseStrongOptimizations() || ( GetOuter()->GetState() == NPC_STATE_SCRIPT || GetOuter()->IsCurSchedule( SCHED_SCENE_GENERIC, false ) ) )
 			{
-				float flTotalDist = ComputePathDistance( navType, vStart, vEnd );
+				// float flTotalDist = ComputePathDistance( navType, vStart, vEnd ); // already calculated above
 
 				AI_Waypoint_t *triangRoute = BuildTriangulationRoute(vStart, vEnd, pTarget, 
 					endFlags, nodeID, flYaw, flTotalDist - moveTrace.flDistObstructed, navType);

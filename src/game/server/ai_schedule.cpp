@@ -287,8 +287,8 @@ bool CAI_SchedulesManager::LoadSchedulesFromBuffer( const char *prefix, char *pS
 				pfile = engine->ParseFile(pfile, token, sizeof( token ) );
 
 				// Convert generic ID to sub-class specific enum
-				int taskID = CAI_BaseNPC::GetTaskID(token);
-				tempTask[taskNum].flTaskData = (pIdSpace) ? pIdSpace->TaskGlobalToLocal(taskID) : AI_RemapFromGlobal( taskID );
+				int taskID2 = CAI_BaseNPC::GetTaskID(token);
+				tempTask[taskNum].flTaskData = (pIdSpace) ? pIdSpace->TaskGlobalToLocal(taskID2) : AI_RemapFromGlobal( taskID2 );
 
 				if (tempTask[taskNum].flTaskData == -1)
 				{

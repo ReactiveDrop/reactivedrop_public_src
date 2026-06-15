@@ -226,10 +226,10 @@ void CSpectatorMenu::FireGameEvent( IGameEvent * event )
 
 		const char *selectedPlayerName = gr->GetPlayerName( playernum );
 		const char *currentPlayerName = "";
-		KeyValues *kv = m_pPlayerList->GetActiveItemUserData();
-		if ( kv )
+		KeyValues *kvActive = m_pPlayerList->GetActiveItemUserData();
+		if ( kvActive )
 		{
-			currentPlayerName = kv->GetString( "player" );
+			currentPlayerName = kvActive->GetString( "player" );
 		}
 		if ( !FStrEq( currentPlayerName, selectedPlayerName ) )
 		{

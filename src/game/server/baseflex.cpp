@@ -576,8 +576,7 @@ bool CBaseFlex::HandleStartGestureSceneEvent( CSceneEventInfo *info, CChoreoScen
 		char szEndLoop[CEventAbsoluteTag::MAX_EVENTTAG_LENGTH] = { "end" };
 
 		// check in the tag indexes
-		KeyValues *pkvFaceposer;
-		for ( pkvFaceposer = pkvAllFaceposer->GetFirstSubKey(); pkvFaceposer; pkvFaceposer = pkvFaceposer->GetNextKey() )
+		for ( KeyValues *pkvFaceposer = pkvAllFaceposer->GetFirstSubKey(); pkvFaceposer; pkvFaceposer = pkvFaceposer->GetNextKey() )
 		{
 			if (!stricmp( pkvFaceposer->GetName(), "startloop" ))
 			{
@@ -619,8 +618,7 @@ bool CBaseFlex::HandleStartGestureSceneEvent( CSceneEventInfo *info, CChoreoScen
 			mstudioanimdesc_t &animdesc = pstudiohdr->pAnimdesc( pstudiohdr->iRelativeAnim( info->m_nSequence, seqdesc.anim(0,0) ) );
 
 			// check in the tag indexes
-			KeyValues *pkvFaceposer;
-			for ( pkvFaceposer = pkvAllFaceposer->GetFirstSubKey(); pkvFaceposer; pkvFaceposer = pkvFaceposer->GetNextKey() )
+			for ( KeyValues *pkvFaceposer = pkvAllFaceposer->GetFirstSubKey(); pkvFaceposer; pkvFaceposer = pkvFaceposer->GetNextKey() )
 			{
 				if (!stricmp( pkvFaceposer->GetName(), "tags" ))
 				{
@@ -633,14 +631,14 @@ bool CBaseFlex::HandleStartGestureSceneEvent( CSceneEventInfo *info, CChoreoScen
 						{
 							float percentage = (float)pkvTags->GetInt() / maxFrame;
 
-							CEventAbsoluteTag *ptag = event->FindAbsoluteTag( CChoreoEvent::ORIGINAL, pkvTags->GetName() );
-							if (ptag)
+							CEventAbsoluteTag *ptagOriginal = event->FindAbsoluteTag( CChoreoEvent::ORIGINAL, pkvTags->GetName() );
+							if (ptagOriginal)
 							{
-								if (fabs(ptag->GetPercentage() - percentage) > 0.05)
+								if (fabs(ptagOriginal->GetPercentage() - percentage) > 0.05)
 								{
-									DevWarning("%s repositioned tag: %s : %.3f -> %.3f (%s:%s:%s)\n", scene->GetFilename(), pkvTags->GetName(), ptag->GetPercentage(), percentage, scene->GetFilename(), actor->GetName(), event->GetParameters() );
+									DevWarning("%s repositioned tag: %s : %.3f -> %.3f (%s:%s:%s)\n", scene->GetFilename(), pkvTags->GetName(), ptagOriginal->GetPercentage(), percentage, scene->GetFilename(), actor->GetName(), event->GetParameters() );
 									// reposition tag
-									ptag->SetPercentage( percentage );
+									ptagOriginal->SetPercentage( percentage );
 								}
 							}
 						}
@@ -1062,8 +1060,7 @@ public:
 		Q_FixSlashes( szFilename );
 
 		// See if it's already loaded
-		int i;
-		for ( i = 0; i < m_FileList.Count(); i++ )
+		for ( int i = 0; i < m_FileList.Count(); i++ )
 		{
 			CFlexSceneFile *file = m_FileList[ i ];
 			if ( file && !V_stricmp( file->filename, szFilename ) )

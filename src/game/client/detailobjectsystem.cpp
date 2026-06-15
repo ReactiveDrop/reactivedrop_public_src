@@ -2922,12 +2922,12 @@ void CDetailObjectSystem::BuildRenderingData( DetailRenderableList_t &list, cons
 
 			// FIXME: Should we return a center + radius so culling can happen?
 			// right now, detail objects are not even frustum culled
-			int d = list.AddToTail();
-			DetailRenderableInfo_t &info = list[d];
-			info.m_pRenderable = &model;
-			info.m_InstanceData.m_nAlpha = nAlpha;
-			info.m_nRenderGroup = ( ( nAlpha != 255 ) || model.IsTranslucent() ) ? RENDER_GROUP_TRANSLUCENT : RENDER_GROUP_OPAQUE;
-			info.m_nLeafIndex = nListLeafIndex;
+			const int d = list.AddToTail();
+			DetailRenderableInfo_t &infoNew = list[d];
+			infoNew.m_pRenderable = &model;
+			infoNew.m_InstanceData.m_nAlpha = nAlpha;
+			infoNew.m_nRenderGroup = ( ( nAlpha != 255 ) || model.IsTranslucent() ) ? RENDER_GROUP_TRANSLUCENT : RENDER_GROUP_OPAQUE;
+			infoNew.m_nLeafIndex = nListLeafIndex;
 
 			// FIXME: Inherently not threadsafe, not to mention not easily SIMDable
 			// move this to happen in DrawModel()

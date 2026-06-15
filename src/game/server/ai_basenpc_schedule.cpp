@@ -2146,8 +2146,8 @@ void CAI_BaseNPC::StartTask( const Task_t *pTask )
 
 					if ( GetTacticalServices()->FindLateralCover( pEntity->EyePosition(), 0, &coverPos ) )
 					{
-						AI_NavGoal_t goal( coverPos, ACT_RUN );
-						GetNavigator()->SetGoal( goal, AIN_CLEAR_PREVIOUS_STATE );
+						AI_NavGoal_t lateralCoverGoal( coverPos, ACT_RUN );
+						GetNavigator()->SetGoal( lateralCoverGoal, AIN_CLEAR_PREVIOUS_STATE );
 						
  						//FIXME: What exactly is this doing internally?
 						m_flMoveWaitFinished = gpGlobals->curtime + pTask->flTaskData;
@@ -2166,7 +2166,8 @@ void CAI_BaseNPC::StartTask( const Task_t *pTask )
 													AIN_HULL_TOLERANCE,
 													AIN_DEF_FLAGS,
 													m_hStoredPathTarget );
-							
+
+							// TODO: is this a bug? why goal and not coverGoal?
 							foundPath = GetNavigator()->SetGoal( goal );
 
 							m_flMoveWaitFinished = gpGlobals->curtime + pTask->flTaskData;

@@ -451,9 +451,6 @@ void CASW_VGUI_Hack_Wire_Tile::Paint()
 {
 	BaseClass::Paint();
 
-	int x,y,w,t;
-	GetBounds(x,y,w,t);
-
 	if (!m_hHack.Get())
 		return;
 

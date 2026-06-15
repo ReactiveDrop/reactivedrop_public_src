@@ -1451,7 +1451,6 @@ CClientShadowMgr::CClientShadowMgr() :
 //-----------------------------------------------------------------------------
 CON_COMMAND_F( r_shadowdir, "Set shadow direction", FCVAR_CHEAT )
 {
-	Vector dir;
 	if ( args.ArgC() == 1 )
 	{
 		Vector dir = s_ClientShadowMgr.GetShadowDirection();
@@ -1461,6 +1460,7 @@ CON_COMMAND_F( r_shadowdir, "Set shadow direction", FCVAR_CHEAT )
 
 	if ( args.ArgC() == 4 )
 	{
+		Vector dir;
 		dir.x = atof( args[1] );
 		dir.y = atof( args[2] );
 		dir.z = atof( args[3] );
@@ -1470,8 +1470,6 @@ CON_COMMAND_F( r_shadowdir, "Set shadow direction", FCVAR_CHEAT )
 
 CON_COMMAND_F( r_shadowangles, "Set shadow angles", FCVAR_CHEAT )
 {
-	Vector dir;
-	QAngle angles;
 	if (args.ArgC() == 1)
 	{
 		Vector dir = s_ClientShadowMgr.GetShadowDirection();
@@ -1483,6 +1481,8 @@ CON_COMMAND_F( r_shadowangles, "Set shadow angles", FCVAR_CHEAT )
 
 	if (args.ArgC() == 4)
 	{
+		Vector dir;
+		QAngle angles;
 		angles.x = atof( args[1] );
 		angles.y = atof( args[2] );
 		angles.z = atof( args[3] );
@@ -4336,9 +4336,9 @@ void CClientShadowMgr::UpdateDirtyShadows()
 
 	// Transparent shadows must remain dirty, since they were not re-projected
 	int nCount = m_TransparentShadows.Count();
-	for ( int i = 0; i < nCount; ++i )
+	for ( int j = 0; j < nCount; ++j )
 	{
-		m_DirtyShadows.Insert( m_TransparentShadows[i] );
+		m_DirtyShadows.Insert( m_TransparentShadows[j] );
 	}
 	m_TransparentShadows.RemoveAll();
 }
@@ -4403,9 +4403,9 @@ void CClientShadowMgr::UpdateDirtyShadowsHalfRate()
 
 	// Transparent shadows must remain dirty, since they were not re-projected
 	int nCount = m_TransparentShadows.Count();
-	for ( int i = 0; i < nCount; ++i )
+	for ( int j = 0; j < nCount; ++j )
 	{
-		m_DirtyShadows.Insert( m_TransparentShadows[i] );
+		m_DirtyShadows.Insert( m_TransparentShadows[j] );
 	}
 	m_TransparentShadows.RemoveAll();
 }
@@ -6460,7 +6460,8 @@ void CClientShadowMgr::DrawDeferredShadows( const CViewSetup &view, int leafCoun
 	}
 
 	// draw deferred blobby shadow volumes
-	if ( s_VisibleShadowList.GetVisibleBlobbyShadowCount() > 0 )
+	const int nNumBlobbyShadows = s_VisibleShadowList.GetVisibleBlobbyShadowCount();
+	if ( nNumBlobbyShadows > 0 )
 	{
 		pRenderContext->Bind( m_RenderDeferredSimpleShadowMat );
 		pTextureVar = m_RenderDeferredSimpleShadowMat->FindVar( "$depthtexture", NULL, false );
@@ -6469,10 +6470,9 @@ void CClientShadowMgr::DrawDeferredShadows( const CViewSetup &view, int leafCoun
 			pTextureVar->SetTextureValue( GetFullFrameDepthTexture() );
 		}
 
-		int nNumShadows = s_VisibleShadowList.GetVisibleBlobbyShadowCount();
 		meshBuilder.Begin( pMesh, MATERIAL_TRIANGLES, nMaxShadowsPerBatch * ARRAYSIZE( pShadowBoundVerts ) / 4, nMaxShadowsPerBatch * ARRAYSIZE( pShadowBoundIndices ) );
 
-		for ( int i = 0; i < nNumShadows; ++i )
+		for ( int i = 0; i < nNumBlobbyShadows; ++i )
 		{
 			const VisibleShadowInfo_t& vsi = s_VisibleShadowList.GetVisibleBlobbyShadow( i );
 			ClientShadow_t& shadow = m_Shadows[vsi.m_hShadow];

@@ -1368,15 +1368,15 @@ void CAlienSwarm::RunScriptFunctionInListenerScopes( const char *szFunctionName,
 		CASW_Challenge_Thinker *pThinker = CASW_Challenge_Thinker::s_Thinkers[i];
 		if ( HSCRIPT hScope = pThinker->GetScriptScope() )
 		{
-			if ( HSCRIPT hFunc = g_pScriptVM->LookupFunction( szFunctionName, hScope ) )
+			if ( HSCRIPT hScopedFunc = g_pScriptVM->LookupFunction( szFunctionName, hScope ) )
 			{
-				ScriptStatus_t nStatus = g_pScriptVM->ExecuteFunction( hFunc, pArgs, nArgs, pReturn, hScope, false );
+				ScriptStatus_t nStatus = g_pScriptVM->ExecuteFunction( hScopedFunc, pArgs, nArgs, pReturn, hScope, false );
 				if ( nStatus != SCRIPT_DONE )
 				{
 					DevWarning( "%s VScript function for thinker #%d:%s did not finish!\n", szFunctionName, pThinker->entindex(), pThinker->GetDebugName() );
 				}
 
-				g_pScriptVM->ReleaseFunction( hFunc );
+				g_pScriptVM->ReleaseFunction( hScopedFunc );
 			}
 		}
 	}

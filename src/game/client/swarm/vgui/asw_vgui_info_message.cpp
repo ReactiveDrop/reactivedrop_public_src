@@ -74,9 +74,9 @@ CASW_VGUI_Info_Message::CASW_VGUI_Info_Message( vgui::Panel *pParent, const char
 	{
 		m_pLogButton = new ImageButton( this, "LogButton", "#asw_message_log" );
 		m_pLogButton->AddActionSignalTarget( this );
-		KeyValues *msg = new KeyValues( "Command" );
-		msg->SetString( "command", "MessageLog" );
-		m_pLogButton->SetCommand( msg );
+		KeyValues *kvMsg = new KeyValues( "Command" );
+		kvMsg->SetString( "command", "MessageLog" );
+		m_pLogButton->SetCommand( kvMsg );
 	}
 	else
 	{
@@ -218,15 +218,15 @@ void CASW_VGUI_Info_Message::PerformLayout()
 		{
 			int linew = GetWide()- (ScreenWidth() * TEXT_BORDER_X * 2);
 			m_pLine[i]->SetWide(linew);
-			int w, h;
-			m_pLine[i]->GetTextImage()->GetContentSize(w, h);
-			m_pLine[i]->SetTall(h);
-			//Msg("setting line %d to %d %d\n", i, linew,  h);			
+			int text_w, text_h;
+			m_pLine[i]->GetTextImage()->GetContentSize(text_w, text_h);
+			m_pLine[i]->SetTall(text_h);
+			//Msg("setting line %d to %d %d\n", i, linew,  text_h);			
 			int posx = ScreenWidth() * TEXT_BORDER_X;
 			int posy = panel_y;
 			//Msg(" and pos %d %d\n", posx, posy);
 			m_pLine[i]->SetPos(posx, posy);
-			panel_y += h + ScreenHeight() * 0.015f;
+			panel_y += text_h + ScreenHeight() * 0.015f;
 		}
 	}
 
@@ -287,12 +287,13 @@ void CASW_VGUI_Info_Message::ApplySchemeSettings(vgui::IScheme *pScheme)
 		m_pLine[i]->SetFgColor(Color(255,255,255,255));
 	}
 
+	Color white(255,255,255,255);
+	Color blue(19,20,40, 255);
+
 	m_pOkayButton->SetAlpha(255);
 	m_pOkayButton->SetPaintBackgroundEnabled(true);
 	m_pOkayButton->SetContentAlignment(vgui::Label::a_center);
 	m_pOkayButton->SetBorders("TitleButtonBorder", "TitleButtonBorder");
-	Color white(255,255,255,255);
-	Color blue(19,20,40, 255);
 	m_pOkayButton->SetColors(white, white, white, white, blue);
 	m_pOkayButton->SetPaintBackgroundType(2);
 
@@ -302,8 +303,6 @@ void CASW_VGUI_Info_Message::ApplySchemeSettings(vgui::IScheme *pScheme)
 		m_pLogButton->SetPaintBackgroundEnabled(true);
 		m_pLogButton->SetContentAlignment(vgui::Label::a_center);
 		m_pLogButton->SetBorders("TitleButtonBorder", "TitleButtonBorder");
-		Color white(255,255,255,255);
-		Color blue(19,20,40, 255);
 		m_pLogButton->SetColors(white, white, white, white, blue);
 		m_pLogButton->SetPaintBackgroundType(2);
 	}

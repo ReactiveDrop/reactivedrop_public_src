@@ -326,9 +326,8 @@ void CTonemapSystem::IssueAndReceiveBucketQueries()
 	int nQueriesIssuedThisFrame = 0;
 	m_nCurrentQueryFrame++;
 
-	int nNumHistogramBuckets = NUM_HISTOGRAM_BUCKETS;
-	if ( mat_tonemap_algorithm.GetInt() == 1 )
-		nNumHistogramBuckets = NUM_HISTOGRAM_BUCKETS_NEW;
+	const int nNumHistogramBuckets =  mat_tonemap_algorithm.GetInt() == 1 ?
+		NUM_HISTOGRAM_BUCKETS_NEW : NUM_HISTOGRAM_BUCKETS;
 
 	for ( int i = 0; i < nNumHistogramBuckets; i++ )
 	{
@@ -362,10 +361,6 @@ void CTonemapSystem::IssueAndReceiveBucketQueries()
 	// Now, issue queries for the oldest finished queries we have
 	while ( nQueriesIssuedThisFrame < MAX_QUERIES_PER_FRAME )
 	{
-		int nNumHistogramBuckets = NUM_HISTOGRAM_BUCKETS;
-		if ( mat_tonemap_algorithm.GetInt() == 1 )
-			nNumHistogramBuckets = NUM_HISTOGRAM_BUCKETS_NEW;
-
 		int nOldestSoFar = -1;
 		for ( int i = 0; i < nNumHistogramBuckets; i++ )
 		{
@@ -1913,9 +1908,9 @@ void DoEnginePostProcessing( int x, int y, int w, int h, bool bFlashlightIsOn, b
 			partialViewportPostDestRect.height	-= 0.50f*fullViewportPostDestRect.height;
 
 			// This math interprets texel coords as being at corner pixel centers (*not* at corner vertices):
-			Vector2D uvScale(	1.0f - ( (w / 2) / (float)(w - 1) ),
+			Vector2D uvScale2(	1.0f - ( (w / 2) / (float)(w - 1) ),
 								1.0f - ( (h / 2) / (float)(h - 1) ) );
-			CenterScaleQuadUVs( partialViewportPostSrcCorners, uvScale );
+			CenterScaleQuadUVs( partialViewportPostSrcCorners, uvScale2 );
 		}
 
 		// Temporary hack... Color correction was crashing on the first frame 

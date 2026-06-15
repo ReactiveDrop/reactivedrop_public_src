@@ -173,18 +173,18 @@ void TE_BloodStream( IRecipientFilter& filter, float delay,
 			// 'chunkier' appearance.
 			for (count2 = 0; count2 < 2; count2++)
 			{
-				StandardParticle_t *p = pRen->AddParticle();
-				if(p)
+				StandardParticle_t *p2 = pRen->AddParticle();
+				if(p2)
 				{
-					pRen->SetParticleLifetime(p, 3);
-					p->SetColor(random->RandomFloat(0.7, 1.0), g, b);
-					p->SetAlpha(a);
-					p->m_Pos.Init(
+					pRen->SetParticleLifetime(p2, 3);
+					p2->SetColor(random->RandomFloat(0.7, 1.0), g, b);
+					p2->SetAlpha(a);
+					p2->m_Pos.Init(
 						(*org)[0] + random->RandomFloat(-1,1),
 						(*org)[1] + random->RandomFloat(-1,1),
 						(*org)[2] + random->RandomFloat(-1,1));
 					
-					pRen->SetParticleType(p, pt_vox_slowgrav);
+					pRen->SetParticleType(p2, pt_vox_slowgrav);
 					
 					VectorCopy (dir, dirCopy);
 					
@@ -192,7 +192,7 @@ void TE_BloodStream( IRecipientFilter& filter, float delay,
 					
 					VectorScale (dirCopy, num, dirCopy);// randomize a bit
 					
-					p->m_Velocity = dirCopy * speedCopy;
+					p2->m_Velocity = dirCopy * speedCopy;
 				}
 			}
 		}

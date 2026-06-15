@@ -700,7 +700,7 @@ void CampaignPanel::SetStage( int i )
 	int bracketx, brackety, bracketw, brackett;
 	float fFadeTime = 0.1f;
 	float fMediumFadeTime = 0.5f;
-	float fBracketTime = 0.4f;
+	const float fBracketTime = 0.4f;
 	float fInitialMapLabelDelay = 2.5f;
 	float fMapLabelInterval = 0.05f;
 	GetMapBounds( iMapX, iMapY, iMapW, iMapT );
@@ -726,13 +726,13 @@ void CampaignPanel::SetStage( int i )
 			vgui::GetAnimationController()->RunAnimationCommand( m_pGalaxyEdges, "alpha", 128, 0, fMediumFadeTime, vgui::AnimationController::INTERPOLATOR_LINEAR );
 
 			// fade in all the galactic map labels
-			for ( int i = 0; i < ASW_NUM_CAMPAIGN_LABELS; i++ )
+			for ( int j = 0; j < ASW_NUM_CAMPAIGN_LABELS; j++ )
 			{
-				float fLabelDelay = fInitialMapLabelDelay + ( i * fMapLabelInterval );
-				vgui::GetAnimationController()->RunAnimationCommand( m_pMapLabels[i], "alpha", 255, fLabelDelay, fMediumFadeTime, vgui::AnimationController::INTERPOLATOR_LINEAR );
+				float fLabelDelay = fInitialMapLabelDelay + ( j * fMapLabelInterval );
+				vgui::GetAnimationController()->RunAnimationCommand( m_pMapLabels[j], "alpha", 255, fLabelDelay, fMediumFadeTime, vgui::AnimationController::INTERPOLATOR_LINEAR );
 
-				m_pMapLabels[i]->SizeToContents();
-				m_pMapLabels[i]->SetSize( m_pMapLabels[i]->GetWide() + 6, m_pMapLabels[i]->GetTall() + 2 );
+				m_pMapLabels[j]->SizeToContents();
+				m_pMapLabels[j]->SetSize( m_pMapLabels[j]->GetWide() + 6, m_pMapLabels[j]->GetTall() + 2 );
 			}
 			// update right side messages
 			vgui::GetAnimationController()->RunAnimationCommand( m_pMissionDetails, "alpha", 255, 0, 0.3f, vgui::AnimationController::INTERPOLATOR_LINEAR );
@@ -777,7 +777,6 @@ void CampaignPanel::SetStage( int i )
 	{
 		//Msg("CMP_BRACKETING_CONSTELLATION\n");
 		vgui::GetAnimationController()->RunAnimationCommand( m_pBracket, "alpha", 255, 0, fFadeTime, vgui::AnimationController::INTERPOLATOR_LINEAR );
-		float fBracketTime = 0.4f;
 		GetConstellationBracket( bracketx, brackety, bracketw, brackett );
 		vgui::GetAnimationController()->RunAnimationCommand( m_pBracket, "xpos", bracketx, 0, fBracketTime, vgui::AnimationController::INTERPOLATOR_LINEAR );
 		vgui::GetAnimationController()->RunAnimationCommand( m_pBracket, "ypos", brackety, 0, fBracketTime, vgui::AnimationController::INTERPOLATOR_LINEAR );

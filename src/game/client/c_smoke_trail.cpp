@@ -396,12 +396,12 @@ void C_SmokeTrail::CleanupToolRecordingState( KeyValues *msg )
 	{
 		int nId = m_pSmokeEmitter->AllocateToolParticleEffectId();
 
-		KeyValues *msg = new KeyValues( "OldParticleSystem_Create" );
-		msg->SetString( "name", "C_SmokeTrail" );
-		msg->SetInt( "id", nId );
-		msg->SetFloat( "time", gpGlobals->curtime );
+		KeyValues *kvMsg = new KeyValues( "OldParticleSystem_Create" );
+		kvMsg->SetString( "name", "C_SmokeTrail" );
+		kvMsg->SetInt( "id", nId );
+		kvMsg->SetFloat( "time", gpGlobals->curtime );
 
-		KeyValues *pRandomEmitter = msg->FindKey( "DmeRandomEmitter", true );
+		KeyValues *pRandomEmitter = kvMsg->FindKey( "DmeRandomEmitter", true );
 		pRandomEmitter->SetInt( "count", m_SpawnRate );	// particles per second, when duration is < 0
 		pRandomEmitter->SetFloat( "duration", -1 );
 		pRandomEmitter->SetInt( "active", bEmitterActive );
@@ -486,18 +486,18 @@ void C_SmokeTrail::CleanupToolRecordingState( KeyValues *msg )
 		pEmitter2->SetString( "material", "particle/particle_noisesphere" );
 		pEmitterParent2->AddSubKey( pEmitter2 );
 
-		ToolFramework_PostToolMessage( HTOOLHANDLE_INVALID, msg );
-		msg->deleteThis();
+		ToolFramework_PostToolMessage( HTOOLHANDLE_INVALID, kvMsg );
+		kvMsg->deleteThis();
 	}
 	else 
 	{
-		KeyValues *msg = new KeyValues( "OldParticleSystem_ActivateEmitter" );
-		msg->SetInt( "id", m_pSmokeEmitter->GetToolParticleEffectId() );
-		msg->SetInt( "emitter", 0 );
-		msg->SetInt( "active", bEmitterActive );
-		msg->SetFloat( "time", gpGlobals->curtime );
-		ToolFramework_PostToolMessage( HTOOLHANDLE_INVALID, msg );
-		msg->deleteThis();
+		KeyValues *kvMsg = new KeyValues( "OldParticleSystem_ActivateEmitter" );
+		kvMsg->SetInt( "id", m_pSmokeEmitter->GetToolParticleEffectId() );
+		kvMsg->SetInt( "emitter", 0 );
+		kvMsg->SetInt( "active", bEmitterActive );
+		kvMsg->SetFloat( "time", gpGlobals->curtime );
+		ToolFramework_PostToolMessage( HTOOLHANDLE_INVALID, kvMsg );
+		kvMsg->deleteThis();
 	}
 }
 
@@ -770,8 +770,8 @@ void C_RocketTrail::Update( float fTimeDelta )
 	
 	if ( m_bDamaged )
 	{
-		SimpleParticle	*pParticle;
-		Vector			offset;
+		SimpleParticle	*pFlameParticle;
+		Vector			randomOffset;
 		Vector			offsetColor;
 
 		CSmartPtr<CEmberEffect>	pEmitter = CEmberEffect::Create("C_RocketTrail::damaged");
@@ -783,36 +783,36 @@ void C_RocketTrail::Update( float fTimeDelta )
 		// Flames from the rocket
 		for ( i = 0; i < 8; i++ )
 		{
-			offset = RandomVector( -8, 8 ) + GetAbsOrigin();
+			randomOffset = RandomVector( -8, 8 ) + GetAbsOrigin();
 
-			pParticle = (SimpleParticle *) pEmitter->AddParticle( sizeof( SimpleParticle ), flameMaterial, offset );
+			pFlameParticle = (SimpleParticle *) pEmitter->AddParticle( sizeof( SimpleParticle ), flameMaterial, randomOffset );
 
-			if ( pParticle != NULL )
+			if ( pFlameParticle != NULL )
 			{
-				pParticle->m_flLifetime		= 0.0f;
-				pParticle->m_flDieTime		= 0.25f;
+				pFlameParticle->m_flLifetime	= 0.0f;
+				pFlameParticle->m_flDieTime		= 0.25f;
 
-				pParticle->m_vecVelocity.Random( -1.0f, 1.0f );
-				pParticle->m_vecVelocity *= random->RandomFloat( 32, 128 );
-				
+				pFlameParticle->m_vecVelocity.Random( -1.0f, 1.0f );
+				pFlameParticle->m_vecVelocity *= random->RandomFloat( 32, 128 );
+
 				offsetColor = m_StartColor * random->RandomFloat( 0.75f, 1.25f );
 
 				offsetColor[0] = clamp( offsetColor[0], 0.0f, 1.0f );
 				offsetColor[1] = clamp( offsetColor[1], 0.0f, 1.0f );
 				offsetColor[2] = clamp( offsetColor[2], 0.0f, 1.0f );
 
-				pParticle->m_uchColor[0]	= offsetColor[0]*255.0f;
-				pParticle->m_uchColor[1]	= offsetColor[1]*255.0f;
-				pParticle->m_uchColor[2]	= offsetColor[2]*255.0f;
-				
-				pParticle->m_uchStartSize	= 8.0f;
-				pParticle->m_uchEndSize		= 32.0f;
-				
-				pParticle->m_uchStartAlpha	= 255;
-				pParticle->m_uchEndAlpha	= 0;
-				
-				pParticle->m_flRoll			= random->RandomInt( 0, 360 );
-				pParticle->m_flRollDelta	= random->RandomFloat( -8.0f, 8.0f );
+				pFlameParticle->m_uchColor[0]	= offsetColor[0]*255.0f;
+				pFlameParticle->m_uchColor[1]	= offsetColor[1]*255.0f;
+				pFlameParticle->m_uchColor[2]	= offsetColor[2]*255.0f;
+
+				pFlameParticle->m_uchStartSize	= 8.0f;
+				pFlameParticle->m_uchEndSize	= 32.0f;
+
+				pFlameParticle->m_uchStartAlpha	= 255;
+				pFlameParticle->m_uchEndAlpha	= 0;
+
+				pFlameParticle->m_flRoll		= random->RandomInt( 0, 360 );
+				pFlameParticle->m_flRollDelta	= random->RandomFloat( -8.0f, 8.0f );
 			}
 		}
 	}
@@ -1490,8 +1490,6 @@ void C_FireTrail::Update( float fTimeDelta )
 
 	CSmartPtr<CSimpleEmitter> pSimple = CSimpleEmitter::Create( "FireTrail" );
 	pSimple->SetSortOrigin( GetAbsOrigin() );
-	
-	Vector			offset;
 
 #define	STARTSIZE			8
 #define	ENDSIZE				16
@@ -1880,12 +1878,12 @@ void C_DustTrail::CleanupToolRecordingState( KeyValues *msg )
 	{
 		int nId = m_pDustEmitter->AllocateToolParticleEffectId();
 
-		KeyValues *msg = new KeyValues( "OldParticleSystem_Create" );
-		msg->SetString( "name", "C_DustTrail" );
-		msg->SetInt( "id", nId );
-		msg->SetFloat( "time", gpGlobals->curtime );
+		KeyValues *kvMsg = new KeyValues( "OldParticleSystem_Create" );
+		kvMsg->SetString( "name", "C_DustTrail" );
+		kvMsg->SetInt( "id", nId );
+		kvMsg->SetFloat( "time", gpGlobals->curtime );
 
-		KeyValues *pEmitter = msg->FindKey( "DmeSpriteEmitter", true );
+		KeyValues *pEmitter = kvMsg->FindKey( "DmeSpriteEmitter", true );
 		pEmitter->SetString( "material", "particle/smokesprites_0001" );
 		pEmitter->SetInt( "count", m_SpawnRate );	// particles per second, when duration is < 0
 		pEmitter->SetFloat( "duration", -1 ); // FIXME
@@ -1958,17 +1956,17 @@ void C_DustTrail::CleanupToolRecordingState( KeyValues *msg )
 		pUpdaters->FindKey( "DmeColorUpdater", true );
 		pUpdaters->FindKey( "DmeSizeUpdater", true );
 
-		ToolFramework_PostToolMessage( HTOOLHANDLE_INVALID, msg );
-		msg->deleteThis();
+		ToolFramework_PostToolMessage( HTOOLHANDLE_INVALID, kvMsg );
+		kvMsg->deleteThis();
 	}
 	else 
 	{
-		KeyValues *msg = new KeyValues( "OldParticleSystem_ActivateEmitter" );
-		msg->SetInt( "id", m_pDustEmitter->GetToolParticleEffectId() );
-		msg->SetInt( "emitter", 0 );
-		msg->SetInt( "active", bEmitterActive );
-		msg->SetFloat( "time", gpGlobals->curtime );
-		ToolFramework_PostToolMessage( HTOOLHANDLE_INVALID, msg );
-		msg->deleteThis();
+		KeyValues *kvMsg = new KeyValues( "OldParticleSystem_ActivateEmitter" );
+		kvMsg->SetInt( "id", m_pDustEmitter->GetToolParticleEffectId() );
+		kvMsg->SetInt( "emitter", 0 );
+		kvMsg->SetInt( "active", bEmitterActive );
+		kvMsg->SetFloat( "time", gpGlobals->curtime );
+		ToolFramework_PostToolMessage( HTOOLHANDLE_INVALID, kvMsg );
+		kvMsg->deleteThis();
 	}
 }

@@ -457,8 +457,7 @@ void C_BasePlayer::Spawn( void )
 	ClearFlags();
 	AddFlag( FL_CLIENT );
 
-	int effects = GetEffects() & EF_NOSHADOW;
-	SetEffects( effects );
+	SetEffects( GetEffects() & EF_NOSHADOW );
 
 	m_iFOV	= 0;	// init field of view.
 
@@ -1526,17 +1525,17 @@ void C_BasePlayer::CalcChaseCamView(Vector& eyeOrigin, QAngle& eyeAngles, float&
 
 void C_BasePlayer::CalcRoamingView(Vector& eyeOrigin, QAngle& eyeAngles, float& fov)
 {
-	C_BaseEntity *target = GetObserverTarget();
-	
-	if ( !target ) 
+	C_BaseEntity *observerTarget = GetObserverTarget();
+
+	if ( !observerTarget )
 	{
-		target = this;
+		observerTarget = this;
 	}
 
 	m_flObserverChaseDistance = 0.0;
 
-	eyeOrigin = target->EyePosition();
-	eyeAngles = target->EyeAngles();
+	eyeOrigin = observerTarget->EyePosition();
+	eyeAngles = observerTarget->EyeAngles();
 
 	if ( spec_track.GetInt() > 0 )
 	{

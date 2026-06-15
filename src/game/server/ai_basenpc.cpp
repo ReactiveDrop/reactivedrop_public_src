@@ -12158,9 +12158,9 @@ bool CAI_BaseNPC::CineCleanup()
 				}
 				else if ( drop == 0 ) // Hanging in air?
 				{
-					Vector origin = GetLocalOrigin();
-					origin.z = new_origin.z;
-					SetLocalOrigin( origin );
+					Vector hanging_origin = GetLocalOrigin();
+					hanging_origin.z = new_origin.z;
+					SetLocalOrigin( hanging_origin );
 					SetGroundEntity( NULL );
 				}
 			}

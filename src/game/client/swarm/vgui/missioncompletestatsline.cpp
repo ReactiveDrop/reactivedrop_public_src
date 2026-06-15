@@ -229,7 +229,7 @@ void MissionCompleteStatsLine::InitFrom(C_ASW_Debrief_Stats *pDebriefStats)
 	int iHighestDamage = pDebriefStats->GetHighestDamageTaken();
 	int iHighestShotsFired = pDebriefStats->GetHighestShotsFired();
 
-	float fDelay = 1.0f;	// roughly how many seconds we want it to take for the bars to fill
+	const float fDelay = 1.0f;	// roughly how many seconds we want it to take for the bars to fill
 	float fKillRate = float(iHighestKills) / fDelay;
 	float fAccRate = fHighestAccuracy / fDelay;
 	float fFFRate = float(iHighestFF) / fDelay;
@@ -310,7 +310,6 @@ void MissionCompleteStatsLine::InitFrom(C_ASW_Debrief_Stats *pDebriefStats)
 		m_pBarIcons[6]->SetVisible(true);
 
 		int iHighestSkillPointsAwarded = pDebriefStats->GetHighestSkillPointsAwarded();
-		float fDelay = 1.0f;	// roughly how many seconds we want it to take for the bars to fill
 		float fSkillPointsRate = float(iHighestSkillPointsAwarded) / fDelay;
 		m_pStats[6]->Init(0, pDebriefStats->GetSkillPointsAwarded(m_iMarineIndex), fSkillPointsRate, true, false);
 		m_pStats[6]->AddMinMax( 0, iHighestSkillPointsAwarded );
@@ -347,11 +346,11 @@ void MissionCompleteStatsLine::ShowStats()
 	m_pMedalArea->StartShowingMedals(gpGlobals->curtime + fProp * 0.9f + 5.0f);
 }
 
-void MissionCompleteStatsLine::SetMarineIndex(int i)
+void MissionCompleteStatsLine::SetMarineIndex( int idx )
 {
-	if (m_iMarineIndex != i)
+	if ( m_iMarineIndex != idx )
 	{
-		m_iMarineIndex = i;
+		m_iMarineIndex = idx;
 
 		UpdateLabels();
 

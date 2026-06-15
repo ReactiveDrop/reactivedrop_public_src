@@ -2549,14 +2549,14 @@ void CHudCloseCaption::ProcessSentenceCaptionStream( const char *tokenstream )
 		}
 		else
 		{
-			CaptionRepeat &entry = m_CloseCaptionRepeats[ idx ];
-			if ( gpGlobals->curtime < ( entry.m_flLastEmitTime + entry.m_flInterval ) )
+			CaptionRepeat &repeatEntry = m_CloseCaptionRepeats[ idx ];
+			if ( gpGlobals->curtime < ( repeatEntry.m_flLastEmitTime + repeatEntry.m_flInterval ) )
 			{
 				return;
 			}
 
-			entry.m_flLastEmitTime = gpGlobals->curtime;
-			entry.m_nLastEmitTick = gpGlobals->tickcount;
+			repeatEntry.m_flLastEmitTime = gpGlobals->curtime;
+			repeatEntry.m_nLastEmitTick = gpGlobals->tickcount;
 		}
 	}
 
@@ -2600,26 +2600,26 @@ void CHudCloseCaption::_ProcessCaption( const wchar_t *caption, unsigned int has
 	}
 	else
 	{
-		CaptionRepeat &entry = m_CloseCaptionRepeats[ idx ];
+		CaptionRepeat &repeatEntry = m_CloseCaptionRepeats[ idx ];
 
 		// Interval of 0.0 means just don't double emit on same tick #
-		if ( entry.m_flInterval <= 0.0f )
+		if ( repeatEntry.m_flInterval <= 0.0f )
 		{
-			if ( gpGlobals->tickcount <= entry.m_nLastEmitTick )
+			if ( gpGlobals->tickcount <= repeatEntry.m_nLastEmitTick )
 			{
 				return;
 			}
 		}
 		else if ( hasnorepeat )
 		{
-			if ( gpGlobals->curtime < ( entry.m_flLastEmitTime + entry.m_flInterval ) )
+			if ( gpGlobals->curtime < ( repeatEntry.m_flLastEmitTime + repeatEntry.m_flInterval ) )
 			{
 				return;
 			}
 		}
 
-		entry.m_flLastEmitTime = gpGlobals->curtime;
-		entry.m_nLastEmitTick = gpGlobals->tickcount;
+		repeatEntry.m_flLastEmitTime = gpGlobals->curtime;
+		repeatEntry.m_nLastEmitTick = gpGlobals->tickcount;
 	}
 
 	Process( caption, duration, fromplayer, direct );
@@ -2883,7 +2883,9 @@ void OnCaptionLanguageChanged( IConVar *pConVar, const char *pOldString, float f
 	char uilanguage[ 64 ];
 	engine->GetUILanguage( uilanguage, sizeof( uilanguage ) );
 
+#ifndef INFESTED_DLL
 	CHudCloseCaption *hudCloseCaption = GET_FULLSCREEN_HUDELEMENT( CHudCloseCaption );
+#endif
 
 	// If it's not the default, load the language on top of the user's default language
 	if ( Q_strlen( var.GetString() ) > 0 && Q_stricmp( var.GetString(), uilanguage ) )

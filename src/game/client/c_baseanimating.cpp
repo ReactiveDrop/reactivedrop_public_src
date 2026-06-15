@@ -1204,43 +1204,43 @@ void C_BaseAnimating::ParseModelEffects( KeyValues *modelKeyValues )
 		for ( KeyValues *pSingleEffect = pkvAllParticleEffects->GetFirstSubKey(); pSingleEffect; pSingleEffect = pSingleEffect->GetNextKey() )
 		{
 			const char *pszParticleEffect = pSingleEffect->GetString( "name", "" );
-			const char *pszAttachment = pSingleEffect->GetString( "attachment_point", "" );
-			const char *pszAttachType = pSingleEffect->GetString( "attachment_type", "" );
-			const char *pszAttachOffset = pSingleEffect->GetString( "attachment_offset", "" );
+			const char *pszPEAttachment = pSingleEffect->GetString( "attachment_point", "" );
+			const char *pszPEAttachType = pSingleEffect->GetString( "attachment_type", "" );
+			const char *pszPEAttachOffset = pSingleEffect->GetString( "attachment_offset", "" );
 
 			// Convert attach type
-			int iAttachType = GetAttachTypeFromString( pszAttachType );
-			if ( iAttachType == -1 )
+			int iPEAttachType = GetAttachTypeFromString( pszPEAttachType );
+			if ( iPEAttachType == -1 )
 			{
-				Warning("Invalid attach type specified for particle effect in model '%s' keyvalues section. Trying to spawn effect '%s' with attach type of '%s'\n", GetModelName(), pszParticleEffect, pszAttachType );
+				Warning("Invalid attach type specified for particle effect in model '%s' keyvalues section. Trying to spawn effect '%s' with attach type of '%s'\n", GetModelName(), pszParticleEffect, pszPEAttachType );
 				return;
 			}
 
 			// Convert attachment point
-			int iAttachment = atoi(pszAttachment);
+			int iAttachment = atoi(pszPEAttachment);
 			// See if we can find any attachment points matching the name
-			if ( pszAttachment[0] != '0' && iAttachment == 0 )
+			if ( pszPEAttachment[0] != '0' && iAttachment == 0 )
 			{
-				iAttachment = LookupAttachment( pszAttachment );
+				iAttachment = LookupAttachment( pszPEAttachment );
 				if ( iAttachment == -1 )
 				{
-					Warning("Failed to find attachment point specified for particle effect in model '%s' keyvalues section. Trying to spawn effect '%s' on attachment named '%s'\n", GetModelName(), pszParticleEffect, pszAttachment );
+					Warning("Failed to find attachment point specified for particle effect in model '%s' keyvalues section. Trying to spawn effect '%s' on attachment named '%s'\n", GetModelName(), pszParticleEffect, pszPEAttachment );
 					return;
 				}
 			}
 
-			Vector vecOffset = vec3_origin;
+			Vector vecOffsetPE = vec3_origin;
 
-			if ( pszAttachOffset )
+			if ( pszPEAttachOffset )
 			{
 				float flVec[3];
-				UTIL_StringToVector( flVec, pszAttachOffset );
-				vecOffset = Vector( flVec[0], flVec[1], flVec[2] );
+				UTIL_StringToVector( flVec, pszPEAttachOffset );
+				vecOffsetPE = Vector( flVec[0], flVec[1], flVec[2] );
 			}
 
 			CUtlReference<CNewParticleEffect> hModelEffect;
 			// Spawn the particle effectw
-			hModelEffect = ParticleProp()->Create( pszParticleEffect, (ParticleAttachment_t)iAttachType, iAttachment, vecOffset );
+			hModelEffect = ParticleProp()->Create( pszParticleEffect, (ParticleAttachment_t)iPEAttachType, iAttachment, vecOffsetPE );
 
 			KeyValues *pkvAllControlPoints = pSingleEffect->FindKey("ControlPoints");
 			if ( pkvAllControlPoints )
@@ -1249,37 +1249,37 @@ void C_BaseAnimating::ParseModelEffects( KeyValues *modelKeyValues )
 				for ( KeyValues *pSingleCP = pkvAllControlPoints->GetFirstSubKey(); pSingleCP; pSingleCP = pSingleCP->GetNextKey() )
 				{
 					const char *pszControlPoint = pSingleCP->GetString( "cp_number", "" );
-					const char *pszAttachment = pSingleCP->GetString( "attachment_point", "" );
-					const char *pszAttachType = pSingleCP->GetString( "attachment_type", "" );
-					const char *pszAttachOffset = pSingleCP->GetString( "attachment_offset", "" );
+					const char *pszCPAttachment = pSingleCP->GetString( "attachment_point", "" );
+					const char *pszCPAttachType = pSingleCP->GetString( "attachment_type", "" );
+					const char *pszCPAttachOffset = pSingleCP->GetString( "attachment_offset", "" );
 
 					// Convert control point
 					int iControlPoint = atoi(pszControlPoint);
 
 					// Convert attach type
-					int iAttachType = GetAttachTypeFromString( pszAttachType );
-					if ( iAttachType == -1 )
+					int iCPAttachType = GetAttachTypeFromString( pszCPAttachType );
+					if ( iCPAttachType == -1 )
 					{
-						Warning("Invalid attach type specified for particle effect in model '%s' keyvalues section. Trying to spawn effect '%s' with attach type of '%s'\n", GetModelName(), pszParticleEffect, pszAttachType );
+						Warning("Invalid attach type specified for particle effect in model '%s' keyvalues section. Trying to spawn effect '%s' with attach type of '%s'\n", GetModelName(), pszParticleEffect, pszCPAttachType );
 						return;
 					}
 
-					Vector vecOffset = vec3_origin;
+					Vector vecOffsetCP = vec3_origin;
 
-					if ( pszAttachOffset )
+					if ( pszCPAttachOffset )
 					{
 						float flVec[3];
-						UTIL_StringToVector( flVec, pszAttachOffset );
-						vecOffset = Vector( flVec[0], flVec[1], flVec[2] );
+						UTIL_StringToVector( flVec, pszCPAttachOffset );
+						vecOffsetCP = Vector( flVec[0], flVec[1], flVec[2] );
 					}
 
 					// Add the control point if we already have the effect
 					if ( hModelEffect )
 					{
-						if ( iAttachType == PATTACH_WORLDORIGIN )
-							ParticleProp()->AddControlPoint( hModelEffect, iControlPoint, NULL, (ParticleAttachment_t)iAttachType, NULL, vecOffset );
+						if ( iCPAttachType == PATTACH_WORLDORIGIN )
+							ParticleProp()->AddControlPoint( hModelEffect, iControlPoint, NULL, (ParticleAttachment_t)iCPAttachType, NULL, vecOffsetCP );
 						else
-							ParticleProp()->AddControlPoint( hModelEffect, iControlPoint, this, (ParticleAttachment_t)iAttachType, pszAttachment, vecOffset );
+							ParticleProp()->AddControlPoint( hModelEffect, iControlPoint, this, (ParticleAttachment_t)iCPAttachType, pszCPAttachment, vecOffsetCP );
 					}
 
 				}
@@ -3403,9 +3403,9 @@ void C_BaseAnimating::DoInternalDrawModel( ClientModelRenderInfo_t *pInfo, DrawM
 				if ( VPhysicsGetObject() )
 				{
 					static color32 debugColorPhys = {255,0,0,0};
-					matrix3x4_t matrix;
-					VPhysicsGetObject()->GetPositionMatrix( &matrix );
-					engine->DebugDrawPhysCollide( pCollide->solids[0], NULL, matrix, debugColorPhys );
+					matrix3x4_t matrix2;
+					VPhysicsGetObject()->GetPositionMatrix( &matrix2 );
+					engine->DebugDrawPhysCollide( pCollide->solids[0], NULL, matrix2, debugColorPhys );
 				}
 			}
 		}

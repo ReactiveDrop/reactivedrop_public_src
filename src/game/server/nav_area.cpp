@@ -1326,25 +1326,25 @@ void CNavArea::FinishSplitEdit( CNavArea *newArea, NavDirType ignoreEdge )
 					break;
 			}
 
-			for ( int a = 0; a < m_incomingConnect[d].Count(); a++ )
-			{			
-				CNavArea *adj = m_incomingConnect[d][a].area;
+			for ( int ia = 0; ia < m_incomingConnect[d].Count(); ia++ )
+			{
+				CNavArea *incAdj = m_incomingConnect[d][ia].area;
 
 				switch( d )
 				{
 				case NORTH:
 				case SOUTH:
-					if (newArea->IsOverlappingX( adj ))
+					if (newArea->IsOverlappingX( incAdj ))
 					{
-						adj->ConnectTo( newArea, OppositeDirection( (NavDirType)d ) );
+						incAdj->ConnectTo( newArea, OppositeDirection( (NavDirType)d ) );
 					}
 					break;
 
 				case EAST:
 				case WEST:
-					if (newArea->IsOverlappingY( adj ))
+					if (newArea->IsOverlappingY( incAdj ))
 					{
-						adj->ConnectTo( newArea, OppositeDirection( (NavDirType)d ) );
+						incAdj->ConnectTo( newArea, OppositeDirection( (NavDirType)d ) );
 					}
 					break;
 				}
@@ -2973,7 +2973,7 @@ void CNavArea::Draw( void ) const
 
 	if ( IsBlocked( TEAM_ANY ) || HasAvoidanceObstacle() || IsDamaging() )
 	{
-		NavEditColor color = (IsBlocked( TEAM_ANY ) && ( m_attributeFlags & NAV_MESH_NAV_BLOCKER ) ) ? NavBlockedByFuncNavBlockerColor : NavBlockedByDoorColor;
+		NavEditColor blockedColor = (IsBlocked( TEAM_ANY ) && ( m_attributeFlags & NAV_MESH_NAV_BLOCKER ) ) ? NavBlockedByFuncNavBlockerColor : NavBlockedByDoorColor;
 		const float blockedInset = 4.0f;
 		nw.x += blockedInset;
 		nw.y += blockedInset;
@@ -2983,10 +2983,10 @@ void CNavArea::Draw( void ) const
 		sw.y -= blockedInset;
 		se.x -= blockedInset;
 		se.y -= blockedInset;
-		NavDrawLine( nw, ne, color );
-		NavDrawLine( ne, se, color );
-		NavDrawLine( se, sw, color );
-		NavDrawLine( sw, nw, color );
+		NavDrawLine( nw, ne, blockedColor );
+		NavDrawLine( ne, se, blockedColor );
+		NavDrawLine( se, sw, blockedColor );
+		NavDrawLine( sw, nw, blockedColor );
 	}
 }
 

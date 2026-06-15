@@ -80,8 +80,8 @@ int CBaseViewModel::ShouldTransmit( const CCheckTransmitInfo *pInfo )
 	}
 
 	// check if recipient (or one of his splitscreen parasites) is spectating the owner of this viewmodel
-	CBasePlayer *pPlayer = ToBasePlayer( CBaseEntity::Instance( pInfo->m_pClientEnt ) );
-	if ( pPlayer)
+	CBasePlayer *pPClient = ToBasePlayer( CBaseEntity::Instance( pInfo->m_pClientEnt ) );
+	if ( pPClient)
 	{
 		// Bug 28591:  In splitscreen, when the second slot is the one in spectator mode, it wouldn't
 		//  get the viewmodel for the spectatee.
@@ -93,8 +93,8 @@ int CBaseViewModel::ShouldTransmit( const CCheckTransmitInfo *pInfo )
 		// This container was the source of most of the allocation cost in CS:GO so using a CUtlVectorFixed to avoid
 		// allocations is important.
 		CUtlVectorFixedGrowable< CBasePlayer *, MAX_SPLITSCREEN_CLIENTS > checkList;
-		checkList.AddToTail( pPlayer );
-		CUtlVector< CHandle< CBasePlayer > > &vecParasites = pPlayer->GetSplitScreenPlayers();
+		checkList.AddToTail( pPClient );
+		CUtlVector< CHandle< CBasePlayer > > &vecParasites = pPClient->GetSplitScreenPlayers();
 		for ( int i = 0; i < vecParasites.Count(); ++i )
 		{
 			checkList.AddToTail( vecParasites[ i ] );

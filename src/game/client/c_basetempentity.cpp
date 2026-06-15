@@ -92,11 +92,11 @@ void C_BaseTempEntity::Precache( void )
 //-----------------------------------------------------------------------------
 void C_BaseTempEntity::PrecacheTempEnts( void )
 {
-	C_BaseTempEntity *te = GetList();
-	while ( te )
+	C_BaseTempEntity *tempEntity = GetList();
+	while ( tempEntity )
 	{
-		te->Precache();
-		te = te->GetNext();
+		tempEntity->Precache();
+		tempEntity = tempEntity->GetNext();
 	}
 }
 
@@ -106,12 +106,12 @@ void C_BaseTempEntity::PrecacheTempEnts( void )
 void C_BaseTempEntity::ClearDynamicTempEnts( void )
 {
 	C_BaseTempEntity *next;
-	C_BaseTempEntity *te = s_pDynamicEntities;
-	while ( te )
+	C_BaseTempEntity *tempEntity = s_pDynamicEntities;
+	while ( tempEntity )
 	{
-		next = te->GetNextDynamic();
-		delete te;
-		te = next;
+		next = tempEntity->GetNextDynamic();
+		delete tempEntity;
+		tempEntity = next;
 	}
 
 	s_pDynamicEntities = NULL;
@@ -123,20 +123,20 @@ void C_BaseTempEntity::ClearDynamicTempEnts( void )
 void C_BaseTempEntity::CheckDynamicTempEnts( void )
 {
 	C_BaseTempEntity *next, *newlist = NULL;
-	C_BaseTempEntity *te = s_pDynamicEntities;
-	while ( te )
+	C_BaseTempEntity *tempEntity = s_pDynamicEntities;
+	while ( tempEntity )
 	{
-		next = te->GetNextDynamic();
-		if ( te->ShouldDestroy() )
+		next = tempEntity->GetNextDynamic();
+		if ( tempEntity->ShouldDestroy() )
 		{
-			delete te;
+			delete tempEntity;
 		}
 		else
 		{
-			te->m_pNextDynamic = newlist;
-			newlist = te;
+			tempEntity->m_pNextDynamic = newlist;
+			newlist = tempEntity;
 		}
-		te = next;
+		tempEntity = next;
 	}
 
 	s_pDynamicEntities = newlist;
