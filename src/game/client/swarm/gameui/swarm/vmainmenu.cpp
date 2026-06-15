@@ -97,9 +97,6 @@ ConVar rd_last_game_onslaught( "rd_last_game_onslaught", "0", FCVAR_ARCHIVE, "Re
 ConVar rd_last_game_hardcoreff( "rd_last_game_hardcoreff", "0", FCVAR_ARCHIVE, "Remembers the last game hardcore friendly fire setting for a lobby created from the main menu." );
 ConVar rd_last_game_maxplayers( "rd_last_game_maxplayers", "4", FCVAR_ARCHIVE, "Remembers the last game max players setting for a lobby created from the main menu." );
 ConVar rd_revert_convars( "rd_revert_convars", "1", FCVAR_ARCHIVE, "Resets FCVAR_REPLICATED variables to their default values when opening the main menu." );
-#ifdef RD_7A_DROPS
-ConVar rd_crafting_material_beta_phase2_show_promo( "rd_crafting_material_beta_phase2_show_promo", "1", FCVAR_ARCHIVE );
-#endif
 
 static void OnLegacyUIChanged( IConVar *var, const char *pOldValue, float flOldValue )
 {
@@ -130,85 +127,6 @@ static LeaderboardScoreDetails_Points_t s_HoIAFLeaderboardDetailsCache[10];
 
 int g_iSetUnlockedChaptersToValue = 0;
 
-#ifdef RD_7A_DROPS
-class CRD_VGUI_Main_Menu_Promo_Model_Viewer : public CRD_Swarmopedia_Model_Panel
-{
-	DECLARE_CLASS_SIMPLE( CRD_VGUI_Main_Menu_Promo_Model_Viewer, CRD_Swarmopedia_Model_Panel );
-public:
-	CRD_VGUI_Main_Menu_Promo_Model_Viewer( vgui::Panel *parent, const char *panelName ) : BaseClass{ parent, panelName }
-	{
-		m_eMode = MODE_FULLSCREEN_MOUSE;
-		m_flPitchIntensity = -5.0f;
-		m_flYawIntensity = 5.0f;
-		m_flPanSpeed = 2.5f;
-		m_angPanOrigin.Init( 40.0f, -15.0f, 0.0f );
-		m_bShouldDrawGrid = false;
-
-		RD_Swarmopedia::Display display;
-		display.Models.SetCount( 1 );
-		display.Models[0] = new RD_Swarmopedia::Model;
-		display.Models[0]->ModelName = "models/swarm/crafting/ocm_floppy.mdl";
-		display.LightingState = SwarmopediaDefaultLightingState();
-
-		SetDisplay( &display );
-	}
-
-	void PerformLayout() override
-	{
-		// hard-coded position. sorry.
-		SetBounds( ScreenWidth() - YRES( 315 ), YRES( 355 ), YRES( 100 ), YRES( 100 ) );
-		SetZPos( 99 );
-
-		BaseClass::PerformLayout();
-
-		SetVisible( rd_crafting_material_beta_phase2_show_promo.GetBool() );
-	}
-
-	void OnCursorEntered()
-	{
-		for ( int i = 0; i < NELEMS( m_LightingState.m_vecAmbientCube ); i++ )
-		{
-			m_LightingState.m_vecAmbientCube[i].Init( 0.0f, 5.0f, 6.0f );
-		}
-
-		RequestFocus();
-	}
-
-	void OnCursorExited()
-	{
-		for ( int i = 0; i < NELEMS( m_LightingState.m_vecAmbientCube ); i++ )
-		{
-			m_LightingState.m_vecAmbientCube[i].Init( 24.0f / 255.0f, 24.0f / 255.0f, 24.0f / 255.0f );
-		}
-
-		m_bLeftMousePressed = false;
-	}
-
-	void OnMousePressed( vgui::MouseCode code ) override
-	{
-		BaseClass::OnMousePressed( code );
-
-		if ( code == MOUSE_LEFT )
-		{
-			m_bLeftMousePressed = true;
-		}
-	}
-
-	void OnMouseReleased( vgui::MouseCode code ) override
-	{
-		BaseClass::OnMouseReleased( code );
-
-		if ( code == MOUSE_LEFT && m_bLeftMousePressed )
-		{
-			OnCursorExited();
-
-			CBaseModPanel::GetSingleton().OpenWindow( WT_PROMOOPTIN, CBaseModPanel::GetSingleton().GetWindow( WT_MAINMENU ), true );
-		}
-	}
-
-	bool m_bLeftMousePressed{};
-};
-#endif
 
 //=============================================================================
 MainMenu::MainMenu( Panel *parent, const char *panelName ):
@@ -254,9 +172,6 @@ MainMenu::MainMenu( Panel *parent, const char *panelName ):
 	m_pBtnEventTimer[2] = new BaseModHybridButton( this, "BtnEventTimer3", "", this, "EventTimer3" );
 	m_pBtnNewsShowcase = new BaseModHybridButton( this, "BtnNewsShowcase", "", this, "NewsShowcase" );
 	m_pBtnUpdateNotes = new BaseModHybridButton( this, "BtnUpdateNotes", "", this, "UpdateNotes" );
-#ifdef RD_7A_DROPS
-	m_pCraftingMaterialsBetaPromoButton = new CRD_VGUI_Main_Menu_Promo_Model_Viewer( this, "CraftingMaterialsBetaPromoButton" );
-#endif
 }
 
 MainMenu::~MainMenu()
@@ -1553,9 +1468,6 @@ void MainMenu::OnThink()
 			m_pBtnEventTimer[i]->GetPos( m_iTargetXEventTimer[i], discard );
 		m_pBtnNewsShowcase->GetPos( m_iTargetXNewsShowcase, discard );
 		m_pBtnUpdateNotes->GetPos( m_iTargetXUpdateNotes, discard );
-#ifdef RD_7A_DROPS
-		m_pCraftingMaterialsBetaPromoButton->GetPos( m_iTargetXCraftingMaterialsBetaPromo, discard );
-#endif
 
 		// bottom
 		m_pStockTickerHelper->GetPos( discard, m_iTargetYStockTicker );
@@ -1573,6 +1485,10 @@ void MainMenu::OnThink()
 		if ( m_pTopBar->m_pBtnNotifications->m_hListPopOut && m_pTopBar->m_pBtnNotifications->m_hListPopOut->IsVisible() )
 		{
 			bMenuActive = true;
+		}
+		if ( CBaseModPanel::GetSingleton().GetActiveWindowType() != WT_MAINMENU )
+		{
+			bMenuActive = false;
 		}
 		if ( rd_reduce_motion.GetBool() )
 		{
@@ -1630,9 +1546,6 @@ void MainMenu::OnThink()
 				UPDATE_PANEL_SLIDE( m_pBtnEventTimer[i], m_iTargetXEventTimer[i], x, +, 0.1f + 0.1f * i, 0.7f + 0.1f * i );
 			UPDATE_PANEL_SLIDE( m_pBtnNewsShowcase, m_iTargetXNewsShowcase, x, +, 0.1f, 0.7f );
 			UPDATE_PANEL_SLIDE( m_pBtnUpdateNotes, m_iTargetXUpdateNotes, x, +, 0.1f, 0.7f );
-#ifdef RD_7A_DROPS
-			UPDATE_PANEL_SLIDE( m_pCraftingMaterialsBetaPromoButton, m_iTargetXCraftingMaterialsBetaPromo, x, +, 0.1f, 0.7f );
-#endif
 			UPDATE_PANEL_SLIDE( m_pStockTickerHelper, m_iTargetYStockTicker, y, +, 0.0f, 0.6f );
 		}
 
@@ -1661,7 +1574,10 @@ void MainMenu::OnThink()
 		MaybeShowTooltip( m_pTopBar->m_pTopButton[CRD_VGUI_Main_Menu_Top_Bar::BTN_RECORDINGS], "#rd_main_menu_tip_recordings_title", "#rd_main_menu_tip_recordings", 0.5f, 1.0f, vgui::Label::a_north );
 		MaybeShowTooltip( m_pTopBar->m_pTopButton[CRD_VGUI_Main_Menu_Top_Bar::BTN_SWARMOPEDIA], "#rd_main_menu_tip_swarmopedia_title", "#rd_main_menu_tip_swarmopedia", 0.5f, 1.0f, vgui::Label::a_north );
 		MaybeShowTooltip( m_pTopBar->m_pTopButton[CRD_VGUI_Main_Menu_Top_Bar::BTN_WORKSHOP], "#rd_main_menu_tip_workshop_title", "#rd_main_menu_tip_workshop", 0.5f, 1.0f, vgui::Label::a_north );
-		MaybeShowTooltip( m_pTopBar->m_pTopButton[CRD_VGUI_Main_Menu_Top_Bar::BTN_INVENTORY], "#rd_main_menu_tip_inventory_title", "#rd_main_menu_tip_inventory", 0.5f, 1.0f, vgui::Label::a_north );
+		if ( HoIAF()->AreResearchProjectsActive() )
+			MaybeShowTooltip( m_pTopBar->m_pTopButton[CRD_VGUI_Main_Menu_Top_Bar::BTN_INVENTORY], "#rd_main_menu_tip_inventory_title_2027", "#rd_main_menu_tip_inventory_2027", 0.5f, 1.0f, vgui::Label::a_north );
+		else
+			MaybeShowTooltip( m_pTopBar->m_pTopButton[CRD_VGUI_Main_Menu_Top_Bar::BTN_INVENTORY], "#rd_main_menu_tip_inventory_title", "#rd_main_menu_tip_inventory", 0.5f, 1.0f, vgui::Label::a_north );
 		MaybeShowTooltip( m_pTopBar->m_pBtnNotifications, "#rd_main_menu_tip_notifications_title", "#rd_main_menu_tip_notifications", 1.0f, 1.0f, vgui::Label::a_northeast );
 		MaybeShowTooltip( m_pTopBar->m_pBtnQuit, "#rd_main_menu_tip_quit_title", "#rd_main_menu_tip_quit", 1.0f, 1.0f, vgui::Label::a_northeast );
 #ifdef RD_7A_QUESTS
@@ -1680,9 +1596,6 @@ void MainMenu::OnThink()
 			MaybeShowTooltip( m_pBtnEventTimer[i], "#rd_main_menu_tip_event_timer_title", "#rd_main_menu_tip_event_timer", 0.0f, 0.5f, vgui::Label::a_east );
 		MaybeShowTooltip( m_pBtnNewsShowcase, "#rd_main_menu_tip_news_showcase_title", "#rd_main_menu_tip_news_showcase", 0.0f, 0.5f, vgui::Label::a_east );
 		MaybeShowTooltip( m_pBtnUpdateNotes, "#rd_main_menu_tip_update_notes_title", "#rd_main_menu_tip_update_notes", 0.0f, 0.5f, vgui::Label::a_east );
-#ifdef RD_7A_DROPS
-		MaybeShowTooltip( m_pCraftingMaterialsBetaPromoButton, "vi'ecpe do", "ti xatra do la briju voi'e tugygau\n.i la SENARIOS noi qocre fizde lo nu do spuda", 0.0f, 0.5f, vgui::Label::a_east, true );
-#endif
 	}
 
 	BaseClass::OnThink();

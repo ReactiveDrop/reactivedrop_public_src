@@ -44,7 +44,7 @@
 		"wide"				"170"
 		"tall"				"170"
 		"ControlName"		"Label"
-		"text"				"#rd_so_display_no_model"
+		"labelText"			"#rd_so_display_no_model"
 		"textAlignment"		"center"
 		"font"				"DefaultLarge"
 		"fgcolor_override"	"255 155 0 255"

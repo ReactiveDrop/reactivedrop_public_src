@@ -69,6 +69,9 @@
 #include "vgui/ILocalize.h"
 #include "iregistry.h"
 #include <ctime>
+#ifdef WIN32
+#include "winlite.h"
+#endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -3520,6 +3523,37 @@ int UTIL_RD_BitToIndex( unsigned bits, int n )
 	return UTIL_CountNumBitsSet( bits & ( ( 1 << n ) - 1 ) );
 }
 
+// V_binarytohex is O(n^2); we can do it in O(n)
+void UTIL_RD_BinToHex( const byte *in, int inputbytes, char *out, int outsize )
+{
+	static constexpr const char s_szHexDigits[] = "0123456789abcdef";
+
+	Assert( outsize >= inputbytes * 2 + 1 );
+
+	int i = 0, j = 0;
+	while ( i < inputbytes && j < outsize - 3 )
+	{
+		out[j++] = s_szHexDigits[in[i] >> 4];
+		out[j++] = s_szHexDigits[in[i] & 0xf];
+		i++;
+	}
+
+	if ( i == inputbytes )
+	{
+		// we wrote the whole string (and have space for the terminator)
+		Assert( j < outsize );
+		out[j] = 0;
+		return;
+	}
+
+	// we ran out of space; just write the null terminator
+	Assert( j < outsize );
+	if ( j < outsize )
+	{
+		out[j] = 0;
+	}
+}
+
 int UTIL_RD_GetCurrentHoIAFSeason( int *pDaysRemaining, int *pHoursRemaining )
 {
 	struct tm tm;
@@ -3712,4 +3746,123 @@ float CDynamicPolynomial::operator()( float x ) const
 	}
 
 	return flTotal;
+}
+
+CUtlWString::CUtlWString()
+{
+	m_wszText = nullptr;
+}
+CUtlWString::CUtlWString( const char *szUTF8 )
+{
+	m_wszText = nullptr;
+	*this = szUTF8;
+}
+CUtlWString::CUtlWString( const wchar_t *wszText )
+{
+	m_wszText = nullptr;
+	*this = wszText;
+}
+CUtlWString::CUtlWString( const CUtlWString &other )
+{
+	m_wszText = nullptr;
+	*this = other;
+}
+CUtlWString::CUtlWString( CUtlWString &&other )
+{
+	m_wszText = other.m_wszText;
+	other.m_wszText = nullptr;
+}
+CUtlWString::~CUtlWString()
+{
+	if ( m_wszText )
+	{
+		delete[] m_wszText;
+		m_wszText = nullptr;
+	}
+}
+
+CUtlWString &CUtlWString::operator=( const char *szUTF8 )
+{
+	if ( m_wszText )
+	{
+		delete[] m_wszText;
+		m_wszText = nullptr;
+	}
+
+	if ( szUTF8 )
+	{
+		// can't use V_UTF8ToUnicode here because this version of the engine dereferences a null pointer if we try.
+#ifdef WIN32
+		int length = MultiByteToWideChar( CP_UTF8, 0, szUTF8, -1, nullptr, 0 );
+		m_wszText = new wchar_t[length];
+		MultiByteToWideChar( CP_UTF8, 0, szUTF8, -1, m_wszText, length );
+#else
+#error Need MultiByteToWideChar for this platform
+#endif
+	}
+
+	return *this;
+}
+CUtlWString &CUtlWString::operator=( const wchar_t *wszText )
+{
+	if ( wszText == m_wszText )
+	{
+		return *this;
+	}
+
+	if ( m_wszText )
+	{
+		delete[] m_wszText;
+		m_wszText = nullptr;
+	}
+
+	if ( wszText )
+	{
+		int length = V_wcslen( wszText ) + 1;
+		m_wszText = new wchar_t[length];
+		V_memcpy( m_wszText, wszText, length * sizeof( wchar_t ) );
+	}
+
+	return *this;
+}
+CUtlWString &CUtlWString::operator=( std::nullptr_t blank )
+{
+	if ( m_wszText )
+	{
+		delete[] m_wszText;
+		m_wszText = nullptr;
+	}
+
+	return *this;
+}
+CUtlWString &CUtlWString::operator=( const CUtlWString &other )
+{
+	return ( *this = other.m_wszText );
+}
+CUtlWString &CUtlWString::operator=( CUtlWString &&other )
+{
+	if ( m_wszText == other.m_wszText )
+	{
+		return *this;
+	}
+
+	if ( m_wszText )
+	{
+		delete[] m_wszText;
+	}
+
+	m_wszText = other.m_wszText;
+	other.m_wszText = nullptr;
+
+	return *this;
+}
+
+CUtlWString::operator const wchar_t *( ) const
+{
+	if ( m_wszText )
+	{
+		return m_wszText;
+	}
+
+	return L"";
 }

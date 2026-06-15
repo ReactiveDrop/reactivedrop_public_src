@@ -235,6 +235,15 @@ void CRD_VGUI_Main_Menu_Top_Bar::PaintBackground()
 	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnLogo, MainMenuAdditive, UV_logo_settings_hover, m_GlowSettings.Get() );
 	HUD_SHEET_DRAW_PANEL_ALPHA( m_pBtnLogo, MainMenuAdditive, UV_logo_hover, m_GlowLogo.Get() );
 
+	if ( HoIAF()->AreResearchProjectsActive() )
+	{
+		int x, y, wide, tall;
+		m_pTopButton[BTN_INVENTORY]->GetBounds( x, y, wide, tall );
+		vgui::surface()->DrawSetColor( Color( 255, 255, 255, 255 ) );
+		vgui::surface()->DrawSetTexture( m_nFlaskTextureId );
+		vgui::surface()->DrawTexturedRect( x + wide + tall * 0.1f, y + tall * 0.05f, x + wide + tall, y + tall * 0.9f );
+	}
+
 	for ( int i = 0; i < NELEMS( m_pTopButton ); i++ )
 	{
 		HUD_SHEET_DRAW_PANEL_ALPHA( m_pTopButton[i], MainMenuAdditive, UV_top_button_hover, m_GlowTopButton[i].Get() );

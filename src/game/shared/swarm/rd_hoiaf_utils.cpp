@@ -741,6 +741,7 @@ void CRD_HoIAF_System::ParseIAFIntel()
 	m_EventTimers.PurgeAndDeleteElements();
 	m_ChatAnnouncements.PurgeAndDeleteElements();
 	m_HoIAFMissionBounties.PurgeAndDeleteElements();
+	m_HideCraftingBlueprint.Purge();
 	m_bResearchProjectsActive = false;
 
 	FOR_EACH_SUBKEY( m_pIAFIntel, pCommand )
@@ -855,6 +856,15 @@ void CRD_HoIAF_System::ParseIAFIntel()
 			pBounty->AddonName = pCommand->GetString( "addon_name" );
 
 			m_HoIAFMissionBounties.AddToTail( pBounty );
+		}
+		else if ( !V_stricmp( szName, "hideBlueprint" ) )
+		{
+			Assert( pCommand->GetDataType() == KeyValues::TYPE_NONE );
+
+			int i = m_HideCraftingBlueprint.AddToTail();
+			m_HideCraftingBlueprint[i].ID = SteamItemDef_t( pCommand->GetInt( "item" ) );
+			m_HideCraftingBlueprint[i].Start = RTime32( pCommand->GetInt( "start" ) );
+			m_HideCraftingBlueprint[i].End = RTime32( pCommand->GetInt( "end" ) );
 		}
 		else if ( !V_stricmp( szName, "researchProjectsActive" ) )
 		{

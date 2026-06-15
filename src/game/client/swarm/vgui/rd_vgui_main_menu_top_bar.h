@@ -50,4 +50,6 @@ public:
 
 	uint8_t m_iLeftGlow;
 	uint8_t m_iRightGlow;
+
+	CPanelAnimationVarAliasType( int, m_nFlaskTextureId, "flask_texture", "vgui/swarm/swarmopedia/flask", "textureid" );
 };

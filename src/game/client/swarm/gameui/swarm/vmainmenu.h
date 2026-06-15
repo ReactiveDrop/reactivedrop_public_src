@@ -82,10 +82,6 @@ public:
 	BaseModHybridButton *m_pBtnNewsShowcase;
 	BaseModHybridButton *m_pBtnUpdateNotes;
 	vgui::Label *m_pBranchDisclaimer{};
-#ifdef RD_7A_DROPS
-	CRD_VGUI_Main_Menu_Promo_Model_Viewer *m_pCraftingMaterialsBetaPromoButton;
-	int m_iTargetXCraftingMaterialsBetaPromo{};
-#endif
 	bool m_bIsStub{};
 	bool m_bIsLegacy{};
 	bool m_bGrabPanelLocations{};

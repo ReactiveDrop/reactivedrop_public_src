@@ -20,10 +20,7 @@ using namespace vgui;
 using namespace BaseModUI;
 
 extern ConVar ui_gameui_modal;
-#ifdef RD_7A_DROPS
-extern ConVar rd_crafting_material_beta_phase2_show_promo;
-ConVar rd_crafting_material_beta_phase2_ignore_already_in( "rd_crafting_material_beta_phase2_ignore_already_in", "0" );
-
+#if 0
 static class CRD_PromoOptIn
 {
 public:
@@ -80,8 +77,7 @@ public:
 		}
 
 		char szHexTicket[sizeof( pParam->m_rgubTicket ) * 2 + 1];
-		// this sucks for performance (O(n^2)) but we're already on a wait screen so whatever
-		V_binarytohex( pParam->m_rgubTicket, pParam->m_cubTicket, szHexTicket, sizeof( szHexTicket ) );
+		UTIL_RD_BinToHex( pParam->m_rgubTicket, pParam->m_cubTicket, szHexTicket, sizeof( szHexTicket ) );
 
 		ISteamHTTP *pHTTP = SteamHTTP();
 		Assert( pHTTP );
@@ -186,7 +182,7 @@ PromoOptIn::PromoOptIn( Panel *parent, const char *panelName ) :
 	SetDeleteSelfOnClose( true );
 	SetConsoleStylePanel( true );
 
-#ifdef RD_7A_DROPS
+#if 0
 	wchar_t wszPlayerName[k_cwchPersonaNameMax + 1];
 	V_UTF8ToUnicode( SteamFriends() ? SteamFriends()->GetPersonaName() : "", wszPlayerName, sizeof( wszPlayerName ) );
 	wchar_t wszFlavor[4096];
@@ -234,7 +230,7 @@ void PromoOptIn::Activate()
 	m_pLblFlavor->SetCursor( dc_arrow );
 	m_pLblFlavor->SetVerticalScrollbar( false );
 
-#ifdef RD_7A_DROPS
+#if 0
 	CSoundParameters params;
 	if ( g_pSoundEmitterSystem->GetParametersForSound( "swarm.gameeffects.bigelevatorstop", params, GENDER_NONE, true ) )
 	{
@@ -284,7 +280,7 @@ void PromoOptIn::OnCommand( const char *command )
 	{
 		OnKeyCodePressed( ButtonCodeToJoystickButtonCode( KEY_XBUTTON_B, CBaseModPanel::GetSingleton().GetLastActiveUserId() ) );
 	}
-#ifdef RD_7A_DROPS
+#if 0
 	else if ( FStrEq( command, "Decline" ) )
 	{
 		rd_crafting_material_beta_phase2_show_promo.SetValue( false );
@@ -313,7 +309,7 @@ void PromoOptIn::OnKeyCodePressed( KeyCode keycode )
 	{
 		Close();
 
-#ifdef RD_7A_DROPS
+#if 0
 		s_RD_PromoOptIn.BeginRequest();
 #endif
 	}

@@ -1358,11 +1358,15 @@ void CRD_VGUI_Option::OnTextChanged()
 	float flNewValue = m_pTextEntry->GetValueAsFloat();
 	flNewValue /= m_flDisplayMultiplier;
 	flNewValue = clamp( flNewValue, m_flMinValue, m_flMaxValue );
+	if ( m_flSliderSnap != 0.0f )
+	{
+		flNewValue = roundf( flNewValue / m_flSliderSnap ) * m_flSliderSnap;
+	}
 
 	s_bSuppressTextEntryChange = true;
 	SetCurrentSliderValue( flNewValue );
 
-	Assert( m_bHaveCurrent && m_pSliderLink );
+	Assert( m_bHaveCurrent );
 	if ( m_bHaveCurrent && m_pSliderLink )
 	{
 		m_pSliderLink->SetValue( flNewValue );
@@ -1533,6 +1537,14 @@ void CRD_VGUI_Option::SetSliderMinMax( float flMin, float flMax )
 	m_flMaxValue = flMax;
 }
 
+void CRD_VGUI_Option::SetSliderSnap( float flValue )
+{
+	Assert( m_eMode == MODE_SLIDER );
+	Assert( flValue >= 0.0f );
+
+	m_flSliderSnap = MAX( flValue, 0.0f );
+}
+
 void CRD_VGUI_Option::SetCurrentSliderValue( float flValue )
 {
 #ifdef DBGFLAG_ASSERT
@@ -1549,6 +1561,25 @@ void CRD_VGUI_Option::SetCurrentSliderValue( float flValue )
 	Assert( m_eMode != MODE_SLIDER || ( m_flMinValue <= flValue && flValue <= m_flMaxValue ) || bMatchesOption );
 	Assert( m_eMode != MODE_CHECKBOX || m_flMinValue == flValue || m_flMaxValue == flValue );
 #endif
+
+	if ( m_flSliderSnap != 0.0f )
+	{
+		if ( m_bHaveCurrent )
+		{
+			if ( flValue < m_Current.m_flValue )
+			{
+				flValue = floorf( flValue / m_flSliderSnap ) * m_flSliderSnap;
+			}
+			else
+			{
+				flValue = ceilf( flValue / m_flSliderSnap ) * m_flSliderSnap;
+			}
+		}
+		else
+		{
+			flValue = roundf( flValue / m_flSliderSnap ) * m_flSliderSnap;
+		}
+	}
 
 	m_bHaveCurrent = true;
 	m_Current.m_flValue = flValue;
@@ -2056,7 +2087,7 @@ bool CRD_VGUI_Option::OnMovementButton( int iDirection, bool bVertical )
 		SetCurrentSliderValue( flNewValue );
 		m_bStartedSliderActiveAtRecommended = m_bHaveRecommended && flNewValue == m_Recommended.m_flValue;
 
-		Assert( m_bHaveCurrent && m_pSliderLink );
+		Assert( m_bHaveCurrent );
 		if ( m_bHaveCurrent && m_pSliderLink )
 		{
 			m_pSliderLink->SetValue( flNewValue );

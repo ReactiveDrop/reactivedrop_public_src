@@ -159,6 +159,8 @@ void UTIL_RD_LatinToZbalermorna( wchar_t *wszBuf );
 int UTIL_RD_IndexToBit( unsigned bits, int n );
 int UTIL_RD_BitToIndex( unsigned bits, int n );
 
+void UTIL_RD_BinToHex( const byte *in, int inputbytes, char *out, int outsize );
+
 int UTIL_RD_GetCurrentHoIAFSeason( int *pDaysRemaining = NULL, int *pHoursRemaining = NULL );
 
 void CmdMsg( _Printf_format_string_ const char *pszFormat, ... );
@@ -194,6 +196,26 @@ public:
 
 private:
 	CUtlVector<float> m_Coefficients;
+};
+
+class CUtlWString
+{
+	wchar_t *m_wszText;
+public:
+	CUtlWString();
+	CUtlWString( const char *szUTF8 );
+	CUtlWString( const wchar_t *wszText );
+	CUtlWString( const CUtlWString &other );
+	CUtlWString( CUtlWString &&other );
+	~CUtlWString();
+
+	CUtlWString &operator=( const char *szUTF8 );
+	CUtlWString &operator=( const wchar_t *wszText );
+	CUtlWString &operator=( std::nullptr_t blank );
+	CUtlWString &operator=( const CUtlWString &other );
+	CUtlWString &operator=( CUtlWString &&other );
+
+	operator const wchar_t *() const;
 };
 
 #endif // _INCLUDE_ASW_UTIL_SHARED_H

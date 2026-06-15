@@ -9,6 +9,7 @@
 #include "asw_weapon_sniper_rifle.h"
 #include "GameEventListener.h"
 #include "fmtstr.h"
+#define JSMN_STATIC
 #include "jsmn.h"
 #include <ctime>
 

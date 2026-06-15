@@ -126,6 +126,7 @@ public:
 
 	// for MODE_SLIDER
 	void SetSliderMinMax( float flMin, float flMax );
+	void SetSliderSnap( float flValue );
 	void SetCurrentSliderValue( float flValue );
 	void SetRecommendedSliderValue( float flValue );
 	void ClearRecommendedSliderValue();
@@ -172,6 +173,7 @@ private:
 		float m_flValue;
 	} m_Recommended;
 	float m_flMinValue{ 0.0f }, m_flMaxValue{ 1.0f };
+	float m_flSliderSnap{ 0.0f };
 
 	struct ConVarLink_t
 	{
