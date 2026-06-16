@@ -3820,8 +3820,10 @@ bool CAlienSwarm::SpawnMarineAt( CASW_Marine_Resource * RESTRICT pMR, const Vect
 
 CBaseStart* CAlienSwarm::GetMarineSpawnPoint(int nMarineProfile /* = -1 */)
 {	
+	CBaseStart* pStartEntityCandidate = NULL;
+	
 	CBaseStart* pStartEntity = NULL;
-	while ( pStartEntity = dynamic_cast< CBaseStart* >( gEntList.FindEntityByClassname( pStartEntity, "info_player_start" ) ) )
+	while ( pStartEntity = assert_cast< CBaseStart* >( gEntList.FindEntityByClassname( pStartEntity, "info_player_start" ) ) )
 	{
 		if ( pStartEntity->m_bUsed )
 			continue;
@@ -3829,12 +3831,17 @@ CBaseStart* CAlienSwarm::GetMarineSpawnPoint(int nMarineProfile /* = -1 */)
 		if ( pStartEntity->m_nMarineProfile != -1 && nMarineProfile != pStartEntity->m_nMarineProfile )
 			continue;
 
-		pStartEntity->m_bUsed = true;
-		
-		return pStartEntity;
+		if ( !pStartEntityCandidate )
+			pStartEntityCandidate = pStartEntity;
+
+		if ( pStartEntity->m_nMarineProfile == nMarineProfile )
+			pStartEntityCandidate = pStartEntity;
 	}
 
-	return NULL;
+	if ( pStartEntityCandidate )
+		pStartEntityCandidate->m_bUsed = true;
+
+	return pStartEntityCandidate;
 }
 
 CBaseStart* CAlienSwarm::GetMarineSpawnPointDM(CBaseStart* pStartEntity)

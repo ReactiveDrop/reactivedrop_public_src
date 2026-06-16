@@ -2657,7 +2657,7 @@
 	
 	marineprofile(choices) : "Marine" : -1 =
 	[
-		-1 : "Default"
+		-1 : "Any"
 		0 : "Sarge"
 		1 : "Wildcat"
 		2 : "Faith"
