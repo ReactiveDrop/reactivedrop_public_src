@@ -876,11 +876,13 @@ bool CAchievementMgr::CheckAchievementsEnabled( )
 	if ( cc_achievement_disable.GetBool() )
 		return false;
 
+#if 0
 	if ( IsPC() && !LoggedIntoSteam() )
 	{
 		//Msg( "Achievements disabled: Steam not running.\n" );
 		return false;
 	}
+#endif
 
 	//No achievements in demo version.
 #ifdef _DEMO
