@@ -336,7 +336,6 @@ void TabbedGridDetails::ShowFullScreen()
 	SetVisible( true );
 	SetMouseInputEnabled( true );
 	SetKeyBoardInputEnabled( true );
-	SetZPos( 500 );
 }
 
 void TabbedGridDetails::UseMainMenuLayout( int iTopButtonIndex )

@@ -2,8 +2,8 @@
 	"CraftingGridItemInstance" {
 		"ControlName"		"CRD_Crafting_Grid_Item"
 		"fieldName"			"CraftingGridItemInstance"
-		"wide"				"84"
-		"tall"				"104"
+		"wide"				"69"
+		"tall"				"89"
 	}
 
 	"Icon" {
@@ -11,8 +11,8 @@
 		"fieldName"			"Icon"
 		"xpos"				"2"
 		"ypos"				"2"
-		"wide"				"80"
-		"tall"				"80"
+		"wide"				"65"
+		"tall"				"65"
 		"scaleImage"		"1"
 		"border"			"ASWBriefingButtonBorder"
 	}
@@ -21,8 +21,8 @@
 		"ControlName"		"Label"
 		"fieldName"			"LblName"
 		"xpos"				"2"
-		"ypos"				"82"
-		"wide"				"80"
+		"ypos"				"67"
+		"wide"				"65"
 		"tall"				"10"
 		"textAlignment"		"north-west"
 	}
@@ -31,8 +31,8 @@
 		"ControlName"		"Label"
 		"fieldName"			"LblDisambiguator"
 		"xpos"				"2"
-		"ypos"				"92"
-		"wide"				"80"
+		"ypos"				"77"
+		"wide"				"65"
 		"tall"				"10"
 		"textAlignment"		"north-west"
 	}
@@ -40,9 +40,9 @@
 	"LblQuantity" {
 		"ControlName"		"Label"
 		"fieldName"			"LblQuantity"
-		"xpos"				"72"
-		"ypos"				"72"
-		"wide"				"10"
+		"xpos"				"27"
+		"ypos"				"57"
+		"wide"				"40"
 		"tall"				"10"
 		"textAlignment"		"south-east"
 	}

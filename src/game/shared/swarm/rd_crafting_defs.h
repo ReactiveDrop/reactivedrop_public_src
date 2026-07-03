@@ -109,6 +109,11 @@ struct RD_Crafting_Recipe_Variant
 	CCopyableUtlVector<RD_Crafting_Recipe_Input> m_Inputs;
 };
 
+enum RD_Crafting_Recipe_Flags
+{
+	RD_CRAFTING_RECIPE_QUICK_CONFIRM = 0x00000001,
+};
+
 struct RD_Crafting_Recipe
 {
 	const char *m_szDisplayName;
@@ -117,6 +122,7 @@ struct RD_Crafting_Recipe
 	CCopyableUtlVector<RD_Crafting_Recipe_Variant> m_Variants;
 	CCopyableUtlVector<SteamItemDef_t> m_HideIfItem;
 	CCopyableUtlVector<SteamItemDef_t> m_HideUnlessItem;
+	uint32_t m_iFlags = 0;
 };
 
 extern const RD_Crafting_Material_Info g_RD_Crafting_Material_Info[NUM_RD_CRAFTING_MATERIAL_TYPES];

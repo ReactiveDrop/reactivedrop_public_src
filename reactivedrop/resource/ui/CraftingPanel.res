@@ -9,8 +9,7 @@
 		"tall"				"390"
 	}
 
-	"Backdrop"
-	{
+	"Backdrop" {
 		"ControlName"		"Panel"
 		"fieldName"			"Backdrop"
 		"xpos"				"0"
@@ -65,6 +64,7 @@
 		"tall"				"60"
 		"wrap"				"1"
 		"labelText"			""
+		"textAlignment"		"north-west"
 		"fgcolor_override"	"224 224 224 255"
 	}
 
@@ -72,11 +72,12 @@
 		"ControlName"		"Label"
 		"fieldName"			"LblWarning"
 		"xpos"				"220"
-		"ypos"				"280"
+		"ypos"				"320"
 		"wide"				"410"
-		"tall"				"60"
+		"tall"				"30"
 		"wrap"				"1"
 		"labelText"			""
+		"textAlignment"		"north-west"
 		"fgcolor_override"	"255 255 0 255"
 	}
 
@@ -117,14 +118,14 @@
 		"xpos"				"220"
 		"ypos"				"105"
 		"wide"				"410"
-		"tall"				"175"
+		"tall"				"200"
 	}
 
 	"LblOutputs" {
 		"ControlName"		"Label"
 		"fieldName"			"LblOutputs"
 		"xpos"				"220"
-		"ypos"				"175"
+		"ypos"				"200"
 		"wide"				"410"
 		"tall"				"15"
 		"labelText"			"#rd_crafting_output_items"
@@ -134,7 +135,7 @@
 		"ControlName"		"CRD_Crafting_Item_Grid"
 		"fieldName"			"GridOutputs"
 		"xpos"				"220"
-		"ypos"				"190"
+		"ypos"				"215"
 		"wide"				"410"
 		"tall"				"90"
 	}

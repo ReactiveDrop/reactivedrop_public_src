@@ -219,6 +219,12 @@ const CUtlVector<RD_Crafting_Recipe> g_RD_Crafting_Recipes
 		{108, {{{{{38}}}, {{{99, 107}}, RD_CRAFTING_RECIPE_AUTO_SELECT}}}}, // sapphire+emerald/ruby/topaz
 		{108, {{{{{15}}}, {{{79, 81, 83, 85, 87, 89, 91, 93, 95, 97, 99, 101, 103, 105, 107}}, RD_CRAFTING_RECIPE_AUTO_SELECT}}}}, // original+...
 	}}, {}, {{79, 81, 83, 85, 87, 89, 91, 93, 95, 97, 99, 101, 103, 105, 107}} },
+	{ "#rd_crafting_recipe_refinement_wires", "#rd_crafting_recipe_refinement_wires_flavor", nullptr, {{
+		{4031, {{{{{4009}}, RD_CRAFTING_RECIPE_AUTO_SELECT, 300}}}},
+	}}, {}, {}, RD_CRAFTING_RECIPE_QUICK_CONFIRM },
+	{ "#rd_crafting_recipe_refinement_carbon", "#rd_crafting_recipe_refinement_carbon_flavor", nullptr, {{
+		{4032, {{{{{4010}}, RD_CRAFTING_RECIPE_AUTO_SELECT, 2500}}}},
+	}}, {}, {}, RD_CRAFTING_RECIPE_QUICK_CONFIRM },
 }};
 
 const CUtlVector<RD_Crafting_Recipe_Variant> g_RD_Crafting_Recipes_Auto

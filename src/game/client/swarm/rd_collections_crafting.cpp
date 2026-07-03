@@ -107,8 +107,20 @@ void CRD_Crafting_Item_Grid_Item::OnMouseReleased( vgui::MouseCode code )
 	if ( code == MOUSE_LEFT && m_bMousePressed )
 	{
 		m_bMousePressed = false;
-		CRD_Crafting_Item_Grid *pParent = assert_cast<CRD_Crafting_Item_Grid *>( GetParent() );
-		Assert( 0 ); // TODO
+
+		if ( !m_bClickable )
+		{
+			return;
+		}
+
+		CRD_Crafting_Item_Grid *pGrid = assert_cast< CRD_Crafting_Item_Grid * >( GetParent() );
+		CRD_Crafting_Panel *pPanel = assert_cast< CRD_Crafting_Panel * >( pGrid->GetParent() );
+		if ( !pPanel->m_SelectedItems.FindAndRemove( m_iInstanceID ) )
+		{
+			pPanel->m_SelectedItems.AddToTail( m_iInstanceID );
+		}
+		pPanel->UpdateCraftState();
+		BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_ACCEPT );
 		return;
 	}
 
@@ -119,8 +131,19 @@ void CRD_Crafting_Item_Grid_Item::OnKeyCodePressed( vgui::KeyCode code )
 {
 	if ( code == KEY_ENTER || code == KEY_SPACE )
 	{
-		CRD_Crafting_Item_Grid *pParent = assert_cast<CRD_Crafting_Item_Grid *>( GetParent() );
-		Assert( 0 ); // TODO
+		if ( !m_bClickable )
+		{
+			return;
+		}
+
+		CRD_Crafting_Item_Grid *pGrid = assert_cast<CRD_Crafting_Item_Grid *>( GetParent() );
+		CRD_Crafting_Panel *pPanel = assert_cast<CRD_Crafting_Panel *>( pGrid->GetParent() );
+		if ( !pPanel->m_SelectedItems.FindAndRemove( m_iInstanceID ) )
+		{
+			pPanel->m_SelectedItems.AddToTail( m_iInstanceID );
+		}
+		pPanel->UpdateCraftState();
+		BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_ACCEPT );
 		return;
 	}
 
@@ -552,6 +575,29 @@ void CRD_Crafting_Panel::OnCommand( const char *szCommand )
 		m_SelectedItems.Purge();
 
 		UpdateCraftState();
+
+		BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_ACCEPT );
+	}
+	else if ( !V_stricmp( szCommand, "ConfirmCraft" ) )
+	{
+		Assert( m_FilteredVariants.Count() == 1 );
+		Assert( m_AutoSelectedItems.Count() == m_FilteredVariants[0]->m_Inputs.Count() );
+
+		if ( ( g_RD_Crafting_Recipes[m_iSelectedRecipe].m_iFlags & RD_CRAFTING_RECIPE_QUICK_CONFIRM ) != 0 )
+		{
+			// This is a simple recipe that's always okay to craft. Start the crafting now.
+
+			CUtlMemory<uint32> itemQuantities{ 0, m_FilteredVariants[0]->m_Inputs.Count() };
+			FOR_EACH_VEC( itemQuantities, i )
+			{
+				itemQuantities[i] = m_FilteredVariants[0]->m_Inputs[i].m_iQuantity;
+			}
+
+			ReactiveDropInventory::PerformCraftingAction( ReactiveDropInventory::CRAFT_RECIPE, m_FilteredVariants[0]->m_ExchangeItem, std::initializer_list<SteamItemInstanceID_t>( m_AutoSelectedItems.Base(), m_AutoSelectedItems.Base() + m_AutoSelectedItems.Count() ), std::initializer_list<uint32>( itemQuantities.Base(), itemQuantities.Base() + itemQuantities.Count() ) );
+			return;
+		}
+
+		Assert( 0 ); // TODO
 	}
 	else
 	{
@@ -630,6 +676,7 @@ void CRD_Crafting_Panel::UpdateCraftState()
 		{
 			if ( orderedItems[j] != nullptr )
 			{
+				autoItems.AddToTail( orderedItems[j]->ItemID );
 				continue;
 			}
 
