@@ -1,12 +1,15 @@
 #include "cbase.h"
+#include "rd_collections.h"
 #include "rd_collections_crafting.h"
 #include "rd_crafting_defs.h"
 #include "rd_inventory_shared.h"
 #include "rd_hoiaf_utils.h"
 #include "asw_util_shared.h"
+#include <vgui/ILocalize.h>
 #include <vgui_controls/ImagePanel.h>
 #include <vgui_controls/ScrollBar.h>
 #include "nb_button.h"
+#include "gameui/swarm/vgenericconfirmation.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -583,21 +586,61 @@ void CRD_Crafting_Panel::OnCommand( const char *szCommand )
 		Assert( m_FilteredVariants.Count() == 1 );
 		Assert( m_AutoSelectedItems.Count() == m_FilteredVariants[0]->m_Inputs.Count() );
 
+		CUtlMemory<uint32> itemQuantities{ 0, m_FilteredVariants[0]->m_Inputs.Count() };
+		FOR_EACH_VEC( itemQuantities, i )
+		{
+			itemQuantities[i] = m_FilteredVariants[0]->m_Inputs[i].m_iQuantity;
+		}
+
 		if ( ( g_RD_Crafting_Recipes[m_iSelectedRecipe].m_iFlags & RD_CRAFTING_RECIPE_QUICK_CONFIRM ) != 0 )
 		{
 			// This is a simple recipe that's always okay to craft. Start the crafting now.
 
-			CUtlMemory<uint32> itemQuantities{ 0, m_FilteredVariants[0]->m_Inputs.Count() };
-			FOR_EACH_VEC( itemQuantities, i )
-			{
-				itemQuantities[i] = m_FilteredVariants[0]->m_Inputs[i].m_iQuantity;
-			}
-
-			ReactiveDropInventory::PerformCraftingAction( ReactiveDropInventory::CRAFT_RECIPE, m_FilteredVariants[0]->m_ExchangeItem, std::initializer_list<SteamItemInstanceID_t>( m_AutoSelectedItems.Base(), m_AutoSelectedItems.Base() + m_AutoSelectedItems.Count() ), std::initializer_list<uint32>( itemQuantities.Base(), itemQuantities.Base() + itemQuantities.Count() ) );
+			ReactiveDropInventory::PerformCraftingAction( ReactiveDropInventory::CRAFT_RECIPE, m_FilteredVariants[0]->m_ExchangeItem,
+				std::initializer_list<SteamItemInstanceID_t>( m_AutoSelectedItems.Base(), m_AutoSelectedItems.Base() + m_AutoSelectedItems.Count() ),
+				std::initializer_list<uint32>( itemQuantities.Base(), itemQuantities.Base() + itemQuantities.Count() ) );
 			return;
 		}
 
-		Assert( 0 ); // TODO
+		CUtlWString wszConfirmationMessage;
+		wchar_t wszLine[4096]{};
+		wchar_t wszName[1024]{};
+		wchar_t wszDisambiguator[1024]{};
+
+		g_pVGuiLocalize->ConstructString( wszLine, sizeof( wszLine ), g_pVGuiLocalize->Find( "#rd_crafting_confirm_blueprint" ), 1, g_pVGuiLocalize->Find( g_RD_Crafting_Recipes[m_iSelectedRecipe].m_szDisplayName ) );
+		wszConfirmationMessage += wszLine;
+		wszConfirmationMessage += L"\n\n";
+
+		FOR_EACH_VEC( m_AutoSelectedItems, i )
+		{
+			const ReactiveDropInventory::ItemInstance_t *pInstance = ReactiveDropInventory::GetLocalItemCache( m_AutoSelectedItems[i] );
+			Assert( pInstance );
+			const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( pInstance->ItemDefID );
+			Assert( pInstance );
+
+			V_UTF8ToUnicode( pDef->Name, wszName, sizeof( wszName ) );
+
+			if ( pDef->Disambiguator.IsEmpty() )
+			{
+				g_pVGuiLocalize->ConstructString( wszLine, sizeof( wszLine ), g_pVGuiLocalize->Find( "#rd_crafting_confirm_ingredient" ), 2, UTIL_RD_CommaNumber( itemQuantities[i] ), wszName );
+			}
+			else
+			{
+				pInstance->FormatDescription( wszDisambiguator, sizeof( wszDisambiguator ), pDef->Disambiguator, false );
+				g_pVGuiLocalize->ConstructString( wszLine, sizeof( wszLine ), g_pVGuiLocalize->Find( "#rd_crafting_confirm_ingredient_disambiguator" ), 3, UTIL_RD_CommaNumber( itemQuantities[i] ), wszName, wszDisambiguator );
+			}
+
+			wszConfirmationMessage += wszLine;
+			wszConfirmationMessage += L"\n";
+		}
+
+		wszConfirmationMessage += L"\n";
+		wszConfirmationMessage += g_pVGuiLocalize->Find( "#rd_crafting_confirm_ending" );
+
+		DeferredCraft( ReactiveDropInventory::CRAFT_RECIPE, m_FilteredVariants[0]->m_ExchangeItem, 
+			std::initializer_list<SteamItemInstanceID_t>( m_AutoSelectedItems.Base(), m_AutoSelectedItems.Base() + m_AutoSelectedItems.Count() ),
+			std::initializer_list<uint32>( itemQuantities.Base(), itemQuantities.Base() + itemQuantities.Count() ),
+			"#rd_crafting_confirm_title", wszConfirmationMessage );
 	}
 	else
 	{

@@ -201,6 +201,7 @@ private:
 class CUtlWString
 {
 	wchar_t *m_wszText;
+	size_t m_nLength;
 public:
 	CUtlWString();
 	CUtlWString( const char *szUTF8 );
@@ -214,6 +215,9 @@ public:
 	CUtlWString &operator=( std::nullptr_t blank );
 	CUtlWString &operator=( const CUtlWString &other );
 	CUtlWString &operator=( CUtlWString &&other );
+
+	CUtlWString &operator+=( const CUtlWString &other );
+	CUtlWString &operator+=( const wchar_t *wszOther );
 
 	operator const wchar_t *() const;
 };

@@ -56,7 +56,22 @@ static void DeferredCraftingCancel()
 	s_iDeferredCraftingAccessoryDef = 0;
 	s_iDeferredCraftingReplaceItemInstance = k_SteamItemInstanceIDInvalid;
 }
-static void DeferredCraft( ReactiveDropInventory::CraftItemType_t eCraftType, SteamItemDef_t iRecipe, std::initializer_list<SteamItemInstanceID_t> ingredients, std::initializer_list<uint32> quantities, const char *szTitle, const char *szMessage, int nParams = 0, const wchar_t *wszParam1 = NULL, const wchar_t *wszParam2 = NULL, const wchar_t *wszParam3 = NULL, const wchar_t *wszParam4 = NULL )
+void DeferredCraft( ReactiveDropInventory::CraftItemType_t eCraftType, SteamItemDef_t iRecipe, std::initializer_list<SteamItemInstanceID_t> ingredients, std::initializer_list<uint32> quantities, const char *szTitle, const char *szMessage, int nParams, const wchar_t *wszParam1, const wchar_t *wszParam2, const wchar_t *wszParam3, const wchar_t *wszParam4 )
+{
+	wchar_t wszMessage[4096];
+	const wchar_t *wszMessageTemplate = g_pVGuiLocalize->Find( szMessage );
+	if ( wszMessageTemplate )
+	{
+		g_pVGuiLocalize->ConstructString( wszMessage, sizeof( wszMessage ), wszMessageTemplate, nParams, wszParam1, wszParam2, wszParam3, wszParam4 );
+	}
+	else
+	{
+		V_UTF8ToUnicode( szMessage, wszMessage, sizeof( wszMessage ) );
+	}
+
+	DeferredCraft( eCraftType, iRecipe, ingredients, quantities, szTitle, wszMessage );
+}
+void DeferredCraft( ReactiveDropInventory::CraftItemType_t eCraftType, SteamItemDef_t iRecipe, std::initializer_list<SteamItemInstanceID_t> ingredients, std::initializer_list<uint32> quantities, const char *szTitle, const wchar_t *wszMessage )
 {
 	Assert( s_eDeferredCraftType == ReactiveDropInventory::CRAFT_RECIPE );
 	Assert( s_iDeferredCraftingRecipe == 0 );
@@ -71,16 +86,6 @@ static void DeferredCraft( ReactiveDropInventory::CraftItemType_t eCraftType, St
 
 	BaseModUI::GenericConfirmation::Data_t data;
 	data.pWindowTitle = szTitle;
-	wchar_t wszMessage[4096];
-	const wchar_t *wszMessageTemplate = g_pVGuiLocalize->Find( szMessage );
-	if ( wszMessageTemplate )
-	{
-		g_pVGuiLocalize->ConstructString( wszMessage, sizeof( wszMessage ), wszMessageTemplate, nParams, wszParam1, wszParam2, wszParam3, wszParam4 );
-	}
-	else
-	{
-		V_UTF8ToUnicode( szMessage, wszMessage, sizeof( wszMessage ) );
-	}
 	data.pMessageTextW = wszMessage;
 	data.bOkButtonEnabled = true;
 	data.bCancelButtonEnabled = true;

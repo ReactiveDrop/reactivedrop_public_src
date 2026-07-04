@@ -27,6 +27,8 @@ namespace vgui
 }
 
 void LaunchCollectionsFrame();
+void DeferredCraft( ReactiveDropInventory::CraftItemType_t eCraftType, SteamItemDef_t iRecipe, std::initializer_list<SteamItemInstanceID_t> ingredients, std::initializer_list<uint32> quantities, const char *szTitle, const char *szMessage, int nParams = 0, const wchar_t *wszParam1 = NULL, const wchar_t *wszParam2 = NULL, const wchar_t *wszParam3 = NULL, const wchar_t *wszParam4 = NULL );
+void DeferredCraft( ReactiveDropInventory::CraftItemType_t eCraftType, SteamItemDef_t iRecipe, std::initializer_list<SteamItemInstanceID_t> ingredients, std::initializer_list<uint32> quantities, const char *szTitle, const wchar_t *wszMessage );
 
 class CRD_Collection_StatLine : public vgui::EditablePanel
 {

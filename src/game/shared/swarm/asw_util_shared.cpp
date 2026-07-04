@@ -3751,26 +3751,26 @@ float CDynamicPolynomial::operator()( float x ) const
 CUtlWString::CUtlWString()
 {
 	m_wszText = nullptr;
+	m_nLength = 0;
 }
-CUtlWString::CUtlWString( const char *szUTF8 )
+CUtlWString::CUtlWString( const char *szUTF8 ) : CUtlWString()
 {
-	m_wszText = nullptr;
 	*this = szUTF8;
 }
-CUtlWString::CUtlWString( const wchar_t *wszText )
+CUtlWString::CUtlWString( const wchar_t *wszText ) : CUtlWString()
 {
-	m_wszText = nullptr;
 	*this = wszText;
 }
-CUtlWString::CUtlWString( const CUtlWString &other )
+CUtlWString::CUtlWString( const CUtlWString &other ) : CUtlWString()
 {
-	m_wszText = nullptr;
 	*this = other;
 }
-CUtlWString::CUtlWString( CUtlWString &&other )
+CUtlWString::CUtlWString( CUtlWString &&other ) : CUtlWString()
 {
 	m_wszText = other.m_wszText;
+	m_nLength = other.m_nLength;
 	other.m_wszText = nullptr;
+	other.m_nLength = 0;
 }
 CUtlWString::~CUtlWString()
 {
@@ -3787,6 +3787,7 @@ CUtlWString &CUtlWString::operator=( const char *szUTF8 )
 	{
 		delete[] m_wszText;
 		m_wszText = nullptr;
+		m_nLength = 0;
 	}
 
 	if ( szUTF8 )
@@ -3796,6 +3797,7 @@ CUtlWString &CUtlWString::operator=( const char *szUTF8 )
 		int length = MultiByteToWideChar( CP_UTF8, 0, szUTF8, -1, nullptr, 0 );
 		m_wszText = new wchar_t[length];
 		MultiByteToWideChar( CP_UTF8, 0, szUTF8, -1, m_wszText, length );
+		m_nLength = length - 1;
 #else
 #error Need MultiByteToWideChar for this platform
 #endif
@@ -3814,6 +3816,7 @@ CUtlWString &CUtlWString::operator=( const wchar_t *wszText )
 	{
 		delete[] m_wszText;
 		m_wszText = nullptr;
+		m_nLength = 0;
 	}
 
 	if ( wszText )
@@ -3821,6 +3824,7 @@ CUtlWString &CUtlWString::operator=( const wchar_t *wszText )
 		int length = V_wcslen( wszText ) + 1;
 		m_wszText = new wchar_t[length];
 		V_memcpy( m_wszText, wszText, length * sizeof( wchar_t ) );
+		m_nLength = length - 1;
 	}
 
 	return *this;
@@ -3831,6 +3835,7 @@ CUtlWString &CUtlWString::operator=( std::nullptr_t blank )
 	{
 		delete[] m_wszText;
 		m_wszText = nullptr;
+		m_nLength = 0;
 	}
 
 	return *this;
@@ -3852,7 +3857,63 @@ CUtlWString &CUtlWString::operator=( CUtlWString &&other )
 	}
 
 	m_wszText = other.m_wszText;
+	m_nLength = other.m_nLength;
 	other.m_wszText = nullptr;
+	other.m_nLength = 0;
+
+	return *this;
+}
+
+CUtlWString &CUtlWString::operator+=( const CUtlWString &other )
+{
+	if ( other.m_wszText == nullptr )
+	{
+		return *this;
+	}
+
+	wchar_t *wszConcatenated = new wchar_t[m_nLength + other.m_nLength + 1];
+	if ( m_wszText != nullptr )
+	{
+		V_memcpy( wszConcatenated, m_wszText, sizeof( wchar_t ) * m_nLength );
+	}
+	V_memcpy( wszConcatenated + m_nLength, other.m_wszText, sizeof( wchar_t ) * other.m_nLength );
+	wszConcatenated[m_nLength + other.m_nLength] = L'\0';
+
+	if ( m_wszText != nullptr )
+	{
+		delete[] m_wszText;
+	}
+
+	m_wszText = wszConcatenated;
+	m_nLength += other.m_nLength;
+
+	return *this;
+}
+// specialization to save an allocation
+CUtlWString &CUtlWString::operator+=( const wchar_t *wszOther )
+{
+	if ( wszOther == nullptr )
+	{
+		return *this;
+	}
+
+	int nLength = V_wcslen( wszOther );
+
+	wchar_t *wszConcatenated = new wchar_t[m_nLength + nLength + 1];
+	if ( m_wszText != nullptr )
+	{
+		V_memcpy( wszConcatenated, m_wszText, sizeof( wchar_t ) * m_nLength );
+	}
+	V_memcpy( wszConcatenated + m_nLength, wszOther, sizeof( wchar_t ) * nLength );
+	wszConcatenated[m_nLength + nLength] = L'\0';
+
+	if ( m_wszText != nullptr )
+	{
+		delete[] m_wszText;
+	}
+
+	m_wszText = wszConcatenated;
+	m_nLength += nLength;
 
 	return *this;
 }
