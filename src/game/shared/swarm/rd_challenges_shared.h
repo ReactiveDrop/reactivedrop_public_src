@@ -5,6 +5,7 @@
 class KeyValues;
 
 #define RD_MAX_CHALLENGES 1024
+#define RD_CHALLENGE_TITLE_LEN 255
 
 #pragma pack(push, 1)
 struct RD_Challenge_t
@@ -19,7 +20,7 @@ struct RD_Challenge_t
 	bool RequiredOnClient : 1;
 	bool _Reserved1 : 1;
 	// Title must be last in this struct
-	char Title[255];
+	char Title[RD_CHALLENGE_TITLE_LEN];
 };
 #pragma pack(pop)
 
