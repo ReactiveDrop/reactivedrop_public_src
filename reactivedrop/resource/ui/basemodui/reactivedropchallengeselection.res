@@ -50,6 +50,18 @@
 		"scaleImage"			"1"
 	}
 
+	"TxtSearch"
+	{
+		"ControlName"			"ReactiveDropChallengeSelectionSearch"
+		"fieldName"				"TxtSearch"
+		"xpos"					"c-226"
+		"ypos"					"88"
+		"wide"					"160"
+		"tall"					"15"
+		"visible"				"1"
+		"enabled"				"1"
+	}
+
 	"GplChallenges"
 	{
 		"ControlName"			"GenericPanelList"
