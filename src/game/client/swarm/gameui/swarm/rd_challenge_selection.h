@@ -5,6 +5,7 @@
 #include "basemodui.h"
 #include "vgenericpanellist.h"
 #include "vgui_controls/TextEntry.h"
+#include "rd_challenges_shared.h"
 #include "rd_workshop.h"
 
 class CNB_Header_Footer;
@@ -74,7 +75,7 @@ namespace BaseModUI
 		virtual void OnMessage( const KeyValues *params, vgui::VPANEL ifromPanel );
 
 		void UpdateFooter();
-		void PopulateChallenges( const char* szSearch = NULL );
+		void PopulateChallenges( const char* szSearch = NULL, bool bIncrSearch = false );
 		void SetDetailsForChallenge( ReactiveDropChallengeSelectionListItem *pChallenge );
 
 		CNB_Header_Footer *m_pHeaderFooter;
@@ -90,6 +91,10 @@ namespace BaseModUI
 
 		bool m_bIgnoreSelectionChange;
 		bool m_bDeathmatch;
+
+	private:
+		const char* m_szChallengesPrev[RD_MAX_CHALLENGES];
+		int m_nChallengesPrev = 0;
 	};
 }
 

@@ -46,12 +46,16 @@ BaseModUI::ReactiveDropChallengeSelectionSearch::ReactiveDropChallengeSelectionS
 
 void BaseModUI::ReactiveDropChallengeSelectionSearch::OnKeyTyped( wchar_t unichar )
 {
+	const int nBefore = GetTextLength();
 	BaseClass::OnKeyTyped( unichar );
+	const int nAfter = GetTextLength();
 
 	char szSearchText[RD_CHALLENGE_TITLE_LEN];
 	GetText( szSearchText, RD_CHALLENGE_TITLE_LEN );
 
-	m_pSelection->PopulateChallenges( szSearchText );
+	const bool bIncrSearch = nBefore != 0 && nAfter > nBefore;
+
+	m_pSelection->PopulateChallenges( szSearchText, bIncrSearch );
 }
 
 BaseModUI::ReactiveDropChallengeSelectionListItem::ReactiveDropChallengeSelectionListItem( vgui::Panel *parent, const char *panelName ) : BaseClass( parent, panelName )
@@ -358,7 +362,7 @@ void BaseModUI::ReactiveDropChallengeSelection::OnMessage( const KeyValues *para
 	}
 }
 
-void BaseModUI::ReactiveDropChallengeSelection::PopulateChallenges( const char* szSearch )
+void BaseModUI::ReactiveDropChallengeSelection::PopulateChallenges( const char* szSearch, bool bIncrSearch )
 {
 	m_gplChallenges->RemoveAllPanelItems();
 	ReactiveDropChallengeSelectionListItem *pDisabled = m_gplChallenges->AddPanelItem<ReactiveDropChallengeSelectionListItem>( "ReactiveDropChallengeSelectionListItem" );
@@ -372,6 +376,23 @@ void BaseModUI::ReactiveDropChallengeSelection::PopulateChallenges( const char* 
 	int nChallenges = 0;
 
 	// Find valid challenges
+	if ( bIncrSearch )
+	{
+		for ( int i = 0; i < m_nChallengesPrev; i++ )
+		{
+			const char *pChallengeName = m_szChallengesPrev[i];
+			const char *szTitle = ReactiveDropChallenges::DisplayName(pChallengeName);
+
+			if ( NameHasSearch(szTitle, szSearch) )
+			{
+				szChallenges[nChallenges] = pChallengeName;
+				m_szChallengesPrev[nChallenges] = pChallengeName;
+				nChallenges++;
+			}
+		}
+		m_nChallengesPrev = nChallenges;
+	}
+	else
 	{
 		const int nRDChallenges = ReactiveDropChallenges::Count();
 		Assert( nRDChallenges <= RD_MAX_CHALLENGES );
@@ -386,10 +407,12 @@ void BaseModUI::ReactiveDropChallengeSelection::PopulateChallenges( const char* 
 				if ( !szSearch || NameHasSearch(szTitle, szSearch) )
 				{
 					szChallenges[nChallenges] = pChallengeName;
+					m_szChallengesPrev[nChallenges] = pChallengeName;
 					nChallenges++;
 				}
 			}
 		}
+		m_nChallengesPrev = nChallenges;
 	}
 
 	// Add valid challenges to the panel list
