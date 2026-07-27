@@ -326,16 +326,34 @@ void BaseModUI::ReactiveDropChallengeSelection::PopulateChallenges()
 	Assert( g_ReactiveDropWorkshop.m_bStartingUp == false );
 	g_ReactiveDropWorkshop.m_bStartingUp = true;
 
-	int iCount = ReactiveDropChallenges::Count();
-	for ( int i = 0; i < iCount; i++ )
+	const char* szChallenges[RD_MAX_CHALLENGES];
+	int nChallenges = 0;
+
+	// Find valid challenges
 	{
-		const RD_Challenge_t *pChallenge = ReactiveDropChallenges::GetSummary( i );
-		if ( m_bDeathmatch ? pChallenge->AllowDeathmatch : pChallenge->AllowCoop )
+		const int nRDChallenges = ReactiveDropChallenges::Count();
+		Assert( nRDChallenges <= RD_MAX_CHALLENGES );
+		for ( int i = 0; i < nRDChallenges; i++ )
 		{
-			ReactiveDropChallengeSelectionListItem *pItem = m_gplChallenges->AddPanelItem<ReactiveDropChallengeSelectionListItem>( "ReactiveDropChallengeSelectionListItem" );
-			pItem->PopulateChallenge( ReactiveDropChallenges::Name( i ) );
-			GetControllerFocus()->AddToFocusList( pItem, true, true );
+			const RD_Challenge_t *pChallenge = ReactiveDropChallenges::GetSummary( i );
+			if ( m_bDeathmatch ? pChallenge->AllowDeathmatch : pChallenge->AllowCoop )
+			{
+				const char *pChallengeName = ReactiveDropChallenges::Name( i );
+
+				{
+					szChallenges[nChallenges] = pChallengeName;
+					nChallenges++;
+				}
+			}
 		}
+	}
+
+	// Add valid challenges to the panel list
+	for ( int j = 0; j < nChallenges; j++ )
+	{
+		ReactiveDropChallengeSelectionListItem *pItem = m_gplChallenges->AddPanelItem<ReactiveDropChallengeSelectionListItem>( "ReactiveDropChallengeSelectionListItem" );
+		pItem->PopulateChallenge( szChallenges[j] );
+		GetControllerFocus()->AddToFocusList( pItem, true, true );
 	}
 
 	g_ReactiveDropWorkshop.m_bStartingUp = false;
