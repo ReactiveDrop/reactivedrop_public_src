@@ -219,6 +219,13 @@ const CReactiveDropWorkshop::WorkshopItem_t &BaseModUI::ReactiveDropChallengeSel
 BaseModUI::ReactiveDropChallengeSelection::ReactiveDropChallengeSelection( vgui::Panel *parent, const char *panelName, bool bDeathmatch ) : BaseClass( parent, panelName )
 {
 	SetProportional( true );
+	SetMouseInputEnabled( true );
+	SetKeyBoardInputEnabled( true );
+
+	if ( engine->IsConnected() )
+	{
+		MakePopup( false );
+	}
 
 	m_pHeaderFooter = new CNB_Header_Footer( this, "HeaderFooter" );
 	m_pHeaderFooter->SetTitle( "" );
