@@ -2175,6 +2175,12 @@ HSCRIPT CASW_Player::ScriptGetNPC() const
 
 void CASW_Player::SpectateNextMarine()
 {
+	if ( m_bSpectatingInOrder )
+	{
+		SpectateNextMarineInOrder();
+		return;
+	}
+
 	CASW_Game_Resource* pGameResource = ASWGameResource();
 	if (!pGameResource)
 		return;
@@ -2218,6 +2224,119 @@ void CASW_Player::SpectateNextMarine()
 		//Msg("  but we're still not speccing anyone and we have a first set, so speccing that dude\n");
 		SetSpectatingNPC(pFirst);
 	}
+}
+
+void CASW_Player::SpectateNextMarineInOrder()
+{
+	CASW_Game_Resource* pGameResource = ASWGameResource();
+	if (!pGameResource)
+		return;
+	//Msg("CASW_Player::SpectateNextMarineInOrder\n");
+
+	CASW_Marine *pFirst = NULL; // First with best priority or first and only seen
+	CASW_Marine *pBefore = CASW_Marine::AsMarine(GetSpectatingNPC()); // currently spectating
+	const int iBeforePrio = pBefore ? GetSpectatingPriority(pBefore) : 0; // when start (or when current died), go with first best
+	CASW_Marine *pNextBest = NULL; // Next in order after the one we just spectated
+
+	// loop through all valid marines
+	for (int i=0;i<pGameResource->GetMaxMarineResources();i++)
+	{
+		//Msg("Checking pMR %d\n", i);
+		CASW_Marine_Resource* pMR = pGameResource->GetMarineResource(i);
+		CASW_Marine *pMarine = pMR ? pMR->GetMarineEntity() : NULL;
+		const int iMarinePrio = GetSpectatingPriority(pMarine);
+
+		if (!pMarine || !pMarine->IsAlive() || pMarine->GetHealth() <= 0)
+		{
+			//Msg(" but he's dead\n");
+			continue;
+		}
+
+		// there can be multiple unprioritized marines, or multiple players can have same marine character
+		if (GetSpectatingNPC() == NULL && iMarinePrio == iBeforePrio)
+		{
+			//Msg("  We're not spectating anyone and this dude has same priority as current spectator, so we're gonna spec this dude\n");
+			SetSpectatingNPC(pMarine);
+			break;
+		}
+
+		// try to find marine with best priority for fallback
+		if (!pFirst || iMarinePrio < GetSpectatingPriority(pFirst))
+		{
+			//Msg("  set this (better) guy as our first\n");
+			pFirst = pMarine;
+		}
+
+		if (GetSpectatingNPC() == pMarine)	// if we're spectating this one, then clear it, so the next one we find will get set
+		{
+			//Msg("  we're spectating this dude, so clearing our current spectator\n");
+			SetSpectatingNPC(NULL);
+			continue;
+		}
+
+		// Next perfect (iBeforePrio+1) can be dead, so check everyone after iBeforePrio
+		if (iMarinePrio > iBeforePrio && (!pNextBest || iMarinePrio < GetSpectatingPriority(pNextBest)))
+		{
+			//Msg("  remember this guy as next best choice in order\n");
+			pNextBest = pMarine;
+		}
+	}
+	//Msg("end\n");
+	// haven't found next marine with same priority, so try to set next best
+	if (GetSpectatingNPC() == NULL && pNextBest)
+	{
+		//Msg("  and spectate next best marine\n");
+		SetSpectatingNPC(pNextBest);
+	}
+	// if we're still not spectating anything but we found at least marine, then that means we were spectating the last one in the list and need to set this
+	if (GetSpectatingNPC() == NULL && pFirst)
+	{
+		//Msg("  but we're still not speccing anyone and we have a first set, so speccing that dude\n");
+		SetSpectatingNPC(pFirst);
+	}
+}
+
+// Can have some marine profiles; rest will have worst priority
+void CASW_Player::SetSpectatingOrder( const int* iProfiles, int nProfiles )
+{
+	if ( nProfiles < 0 )
+	{
+		Warning( "set spectating order: bad parsing?\n" );
+		return;
+	}
+
+	if ( nProfiles == 0 )
+	{
+		UnsetSpectatingOrder();
+		return;
+	}
+
+	nProfiles = MIN( nProfiles, ASW_NUM_MARINE_PROFILES );
+	m_iWorstPriority = nProfiles;
+
+	// Prefill with worst priority in case a profile is not in the list or is invalid
+	for ( int i = 0; i < ASW_NUM_MARINE_PROFILES; i++ )
+	{
+		m_iProfileToSpectatingPriority[i] = m_iWorstPriority;
+	}
+
+	for ( int i = 0; i < nProfiles; i++ )
+	{
+		const int iProfile = iProfiles[i];
+		if ( iProfile >= 0 && iProfile < ASW_NUM_MARINE_PROFILES )
+		{
+			m_iProfileToSpectatingPriority[iProfile] = i;
+		}
+	}
+
+	m_bSpectatingInOrder = true;
+}
+
+int CASW_Player::GetSpectatingPriority( CASW_Marine* pMarine ) const
+{
+	const int iProfile = pMarine ? pMarine->GetMarineProfile()->m_ProfileIndex : -1;
+	return ( iProfile >= 0 && iProfile < ASW_NUM_MARINE_PROFILES )
+		? m_iProfileToSpectatingPriority[iProfile] : m_iWorstPriority;
 }
 
 void CASW_Player::SetSpectatingNPC( CASW_Inhabitable_NPC *pSpectating )

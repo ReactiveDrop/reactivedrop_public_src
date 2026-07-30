@@ -87,7 +87,16 @@ public:
 	virtual bool ASWAnim_CanMove();
 
 	// spectating
+private:
+	bool m_bSpectatingInOrder = false;
+	int m_iWorstPriority = ASW_NUM_MARINE_PROFILES; // "unreachable" priority
+	int m_iProfileToSpectatingPriority[ASW_NUM_MARINE_PROFILES]; // smaller number is higher priority
+public:
 	void SpectateNextMarine();
+	void SpectateNextMarineInOrder();
+	void SetSpectatingOrder( const int* iProfiles, int nProfiles );
+	void UnsetSpectatingOrder() { m_bSpectatingInOrder = false; }
+	int GetSpectatingPriority( CASW_Marine* pMarine ) const; // returns worst priority if no marine or no profile index
 	void SetSpectatingNPC( CASW_Inhabitable_NPC *pSpectating );
 	CASW_Inhabitable_NPC *GetSpectatingNPC() const;
 	HSCRIPT ScriptGetSpectatingNPC() const;
