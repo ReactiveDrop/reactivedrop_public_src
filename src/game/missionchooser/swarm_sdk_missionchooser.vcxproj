@@ -229,7 +229,7 @@ exit /b 0
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <OmitFramePointers>true</OmitFramePointers>
-      <IntelJCCErratum>false</IntelJCCErratum>
+      <IntelJCCErratum>true</IntelJCCErratum>
       <SDLCheck>false</SDLCheck>
     </ClCompile>
     <ResourceCompile>
@@ -339,6 +339,7 @@ exit /b 0
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <SDLCheck>false</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <IntelJCCErratum>true</IntelJCCErratum>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
