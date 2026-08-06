@@ -2174,6 +2174,40 @@ HSCRIPT CASW_Player::ScriptGetNPC() const
 	return ToHScript( GetNPC() );
 }
 
+CON_COMMAND_F( rd_spectate_order_set, "Prioritize this marines in spectate order. Example: \"4 1 7 3 0\". \"\" for unset.", FCVAR_HIDDEN )
+{
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
+	if ( !pPlayer )
+	{
+		Warning( "%s: Not a Player (not connected to a server?)\n", args[0] );
+		return;
+	}
+
+	if ( args.ArgC() != 2 )
+	{
+		Warning( "%s: Expected quoted space separated list. Example: \"4 1 7 3 0\". \"\" for unset.\n", args[0] );
+		return;
+	}
+
+	int iProfiles[ASW_NUM_MARINE_PROFILES];
+	const int nProfiles = parseSpectateOrder( args[1], iProfiles );
+
+	// Failed parsing
+	if ( nProfiles == -1 )
+	{
+		return;
+	}
+
+	pPlayer->SetSpectatingOrder( iProfiles, nProfiles );
+
+	// Start spectating "best" marine
+	if ( ASWGameRules()->GetGameState() == ASW_GS_INGAME )
+	{
+		pPlayer->SetSpectatingNPC( NULL );
+		pPlayer->SpectateNextMarine();
+	}
+}
+
 // Can have some marine profiles; rest will have worst priority
 void CASW_Player::SetSpectatingOrder( const int* iProfiles, int nProfiles )
 {
