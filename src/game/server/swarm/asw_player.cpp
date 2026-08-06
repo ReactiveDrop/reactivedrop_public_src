@@ -2339,6 +2339,40 @@ int CASW_Player::GetSpectatingPriority( CASW_Marine* pMarine ) const
 		? m_iProfileToSpectatingPriority[iProfile] : m_iWorstPriority;
 }
 
+CON_COMMAND_F( rd_spectate_order_set, "Prioritize this marine profiles for spectate order. Example: \"4 1 7 3 0\". \"\" for unset.", FCVAR_HIDDEN )
+{
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
+	if ( !pPlayer )
+	{
+		Warning( "%s: Not a Player (not connected to a server?)\n", args[0] );
+		return;
+	}
+
+	if ( args.ArgC() != 2 )
+	{
+		Warning( "%s: Expected quoted space separated list. Example: \"4 1 7 3 0\". \"\" for unset.\n", args[0] );
+		return;
+	}
+
+	int iProfiles[ASW_NUM_MARINE_PROFILES];
+	const int nProfiles = parseSpectateOrder( args[1], iProfiles );
+
+	// Failed parsing
+	if ( nProfiles == -1 )
+	{
+		return;
+	}
+
+	pPlayer->SetSpectatingOrder( iProfiles, nProfiles );
+
+	// Start spectating "best" marine if we are spectating
+	if ( ASWGameRules()->GetGameState() == ASW_GS_INGAME && pPlayer->GetSpectatingNPC() != NULL )
+	{
+		pPlayer->SetSpectatingNPC( NULL );
+		pPlayer->SpectateNextMarine();
+	}
+}
+
 void CASW_Player::SetSpectatingNPC( CASW_Inhabitable_NPC *pSpectating )
 {
 	unsigned int nOwnIndex = 1u << ( GetClientIndex() + 1 );

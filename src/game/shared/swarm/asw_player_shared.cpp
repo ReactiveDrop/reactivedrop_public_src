@@ -1452,3 +1452,52 @@ DLL_EXPORT ASW_Controls_t GetASWControlsForPlayer( CASW_Player *pPlayer )
 
 	return pPlayer->GetASWControls();
 }
+
+int parseSpectateOrder( const char *szInput, int *iProfiles, const int nProfilesMax )
+{
+	Assert( nProfilesMax > 0 && nProfilesMax <= ASW_NUM_MARINE_PROFILES );
+
+	if ( Q_strlen( szInput ) == 0 )
+	{
+		return 0;
+	}
+
+	CSplitString szProfiles( szInput, " " );
+	const int nProfiles = szProfiles.Count();
+
+	if ( nProfiles > nProfilesMax )
+	{
+		Warning( "parse specate order: Too many profiles (%d > %d)\n", nProfiles, nProfilesMax );
+		return -1;
+	}
+
+	for ( int i = 0; i < nProfiles; i++ )
+	{
+		const int iProfile = atoi( szProfiles[i] );
+
+		if ( iProfile == 0 && szProfiles[i][0] != '0' )
+		{
+			Warning( "parse specate order: Not a number (#%d: %s)\n", i + 1, szProfiles[i] );
+			return -1;
+		}
+
+		if ( iProfile < 0 || iProfile >= nProfilesMax )
+		{
+			Warning( "parse specate order: Incorrect profile number (#%d: %s)\n", i + 1, szProfiles[i] );
+			return -1;
+		}
+
+		for ( int j = 0; j < i; j++ )
+		{
+			if ( iProfiles[j] == iProfile )
+			{
+				Warning( "parse specate order: Duplicate profile number (#%d: %d)\n", i + 1, iProfile );
+				return -1;
+			}
+		}
+
+		iProfiles[i] = iProfile;
+	}
+
+	return nProfiles;
+}
