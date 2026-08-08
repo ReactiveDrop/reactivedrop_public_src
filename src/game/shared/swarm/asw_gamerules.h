@@ -85,6 +85,7 @@ class CASW_Player;
 class CASW_Marine;
 class CASW_Pickup;
 class CASW_Powerup;
+class CBaseStart;
 
 // Faction defines
 #define FACTION_MARINES				( LAST_SHARED_FACTION + 1 )
@@ -153,8 +154,8 @@ public:
 	void AddBonusChargesToPickups();
 	
 	// spawning/connecting
-	CBaseEntity* GetMarineSpawnPoint(CBaseEntity *pStartEntity);	
-	bool IsValidMarineStart(CBaseEntity *pSpot);
+	CBaseStart* GetMarineSpawnPoint(int nMarineProfile = -1);
+	CBaseStart* GetMarineSpawnPointDM(CBaseStart* pStartEntity);
 	//virtual bool			ClientCommand( const char *pcmd, CBaseEntity *pEdict );
 	virtual void PlayerThink( CBasePlayer *pPlayer );
 	virtual void			PlayerSpawn( CBasePlayer *pPlayer );
@@ -355,7 +356,7 @@ public:
 	virtual void VerifySpawnLocation( CASW_Marine *pMarine );
 	int m_iMarinesSpawned;
 	float m_fNextLaunchingStep;
-	CBaseEntity* m_pSpawningSpot;
+	CBaseStart* m_pSpawningSpot;
 
 	// misc
 	void ExplodedLevel( CBaseEntity *pExploder );

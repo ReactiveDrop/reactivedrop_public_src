@@ -8,6 +8,7 @@
 #include "asw_weapon.h"
 #include "ai_network.h"
 #include "ai_networkmanager.h"
+#include "info_player_start.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -240,7 +241,7 @@ void CASW_Arena::TeleportPlayersToSpawn()
 	if ( !ASWGameRules() )
 		return;
 
-	CBaseEntity *pSpot = NULL;
+	CBaseStart *pSpot = NULL;
 	CASW_Game_Resource *pGameResource = ASWGameResource();
 	for (int i=0;i<pGameResource->GetMaxMarineResources();i++)
 	{
@@ -249,7 +250,7 @@ void CASW_Arena::TeleportPlayersToSpawn()
 			CASW_Marine *pMarine = pGameResource->GetMarineResource(i)->GetMarineEntity();
 			if ( pMarine->GetHealth() > 0 )
 			{
-				pSpot = ASWGameRules()->GetMarineSpawnPoint( pSpot );
+				pSpot = ASWGameRules()->GetMarineSpawnPointDM( pSpot );
 				if ( pSpot )
 				{
 					pMarine->Teleport( &pSpot->GetAbsOrigin(), &pSpot->GetAbsAngles(), &vec3_origin );

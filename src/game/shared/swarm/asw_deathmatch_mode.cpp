@@ -708,9 +708,9 @@ void CASW_Deathmatch_Mode::SpawnMarine( CASW_Player *player )
 		}
 		else
 		{
-			CASW_Player::spawn_point = ASWGameRules()->GetMarineSpawnPoint( CASW_Player::spawn_point );
+			CASW_Player::spawn_point = ASWGameRules()->GetMarineSpawnPointDM( CASW_Player::spawn_point );
 			if ( !CASW_Player::spawn_point )
-				CASW_Player::spawn_point = ASWGameRules()->GetMarineSpawnPoint( NULL );
+				CASW_Player::spawn_point = ASWGameRules()->GetMarineSpawnPointDM( NULL );
 			if ( CASW_Player::spawn_point )
 			{
 				ASWGameRules()->SpawnMarineAt( pMR, CASW_Player::spawn_point->GetAbsOrigin(), CASW_Player::spawn_point->GetAbsAngles(), false );
@@ -826,10 +826,10 @@ void CASW_Deathmatch_Mode::PrepareMarinesForGunGameOrInstagib( int iWeaponID/* =
 			pMarine->AddSlowHeal( pMarine->GetMaxHealth() - pMarine->GetHealth(), 3, NULL );
 
 			// move to spawnpoint
-			CBaseEntity *( &pSpawnPoint ) = CASW_Player::spawn_point;
-			pSpawnPoint = ASWGameRules()->GetMarineSpawnPoint( pSpawnPoint );
+			CBaseStart *( &pSpawnPoint ) = CASW_Player::spawn_point;
+			pSpawnPoint = ASWGameRules()->GetMarineSpawnPointDM( pSpawnPoint );
 			if ( !pSpawnPoint )
-				pSpawnPoint = ASWGameRules()->GetMarineSpawnPoint( NULL );
+				pSpawnPoint = ASWGameRules()->GetMarineSpawnPointDM( NULL );
 			if ( pSpawnPoint )
 				pMarine->Teleport( &pSpawnPoint->GetAbsOrigin(), &pSpawnPoint->GetAbsAngles(), &vec3_origin );
 		}
@@ -1112,10 +1112,10 @@ void CASW_Deathmatch_Mode::DeathmatchThink()
 				continue;
 			}
 
-			CASW_Player::spawn_point = ASWGameRules()->GetMarineSpawnPoint( CASW_Player::spawn_point );
+			CASW_Player::spawn_point = ASWGameRules()->GetMarineSpawnPointDM( CASW_Player::spawn_point );
 			if ( !CASW_Player::spawn_point )
 			{
-				CASW_Player::spawn_point = ASWGameRules()->GetMarineSpawnPoint( NULL );
+				CASW_Player::spawn_point = ASWGameRules()->GetMarineSpawnPointDM( NULL );
 			}
 
 			if ( CASW_Player::spawn_point )

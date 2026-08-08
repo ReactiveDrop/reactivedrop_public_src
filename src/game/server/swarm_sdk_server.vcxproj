@@ -1077,6 +1077,7 @@ exit /b 0
     <ClCompile Include="inforemarkable.cpp" />
     <ClCompile Include="info_camera_link.cpp" />
     <ClCompile Include="info_overlay_accessor.cpp" />
+	<ClCompile Include="info_player_start.cpp" />
     <ClCompile Include="init_factory.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
@@ -2065,6 +2066,7 @@ exit /b 0
     <ClInclude Include="ilagcompensationmanager.h" />
     <ClInclude Include="inforemarkable.h" />
     <ClInclude Include="info_camera_link.h" />
+	<ClInclude Include="info_player_start.h" />
     <ClInclude Include="init_factory.h" />
     <ClInclude Include="iservervehicle.h" />
     <ClInclude Include="items.h" />

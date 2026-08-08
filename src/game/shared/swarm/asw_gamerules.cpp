@@ -110,6 +110,7 @@
 	#include "cdll_int.h"
 	#include "iconsistency.h"
 	#include "rd_crafting_defs.h"
+	#include "info_player_start.h"
 #endif
 #include "fmtstr.h"
 #include "game_timescale_shared.h"
@@ -3647,20 +3648,6 @@ bool CAlienSwarm::SpawnNextMarine()
 {
 	if (!ASWGameResource())
 		return false;
-	
-	if (m_iMarinesSpawned == 0)
-	{
-		if (IsTutorialMap())
-			m_pSpawningSpot = CASW_TutorialStartPoint::GetTutorialStartPoint(0);
-		else
-			m_pSpawningSpot = GetMarineSpawnPoint(NULL);
-	}
-
-	if (!m_pSpawningSpot)
-	{
-		Msg("Failed to spawn a marine! No more spawn points could be found.\n");
-		return false;
-	}	
 
 	// reactivedrop: security measure, in case players were able to hack and 
 	// select more marines than it is allowed by current challenge
@@ -3670,28 +3657,23 @@ bool CAlienSwarm::SpawnNextMarine()
 		return false;
 	}
 
-	for (int i=m_iMarinesSpawned;i<ASWGameResource()->GetMaxMarineResources() && m_pSpawningSpot;i++)
+	for (int i=m_iMarinesSpawned;i<ASWGameResource()->GetMaxMarineResources();i++)
 	{
 		CASW_Marine_Resource* pMR = ASWGameResource()->GetMarineResource(i);
 		if (!pMR)
 			continue;
-		
-		if ( !SpawnMarineAt( pMR, m_pSpawningSpot->GetAbsOrigin(), m_pSpawningSpot->GetAbsAngles(), false ) )
-			return false;
-
-		m_iMarinesSpawned++;
 
 		// grab the next spawn spot
 		if (IsTutorialMap())
 		{
-			m_pSpawningSpot = CASW_TutorialStartPoint::GetTutorialStartPoint(i+1);
+			m_pSpawningSpot = dynamic_cast< CBaseStart* >( CASW_TutorialStartPoint::GetTutorialStartPoint(i+1) );
 		}
 		else
 		{
 			
 			// reactivedrop: if we don't find next spawn point then use the 
 			// last one 
-			CBaseEntity *spawn_pt =	GetMarineSpawnPoint(m_pSpawningSpot);
+			CBaseStart* spawn_pt = GetMarineSpawnPoint( pMR->GetProfileIndex() );
 			if (!spawn_pt)
 			{
 				Warning("Failed to find a pMarine spawn point.  Map must "
@@ -3702,6 +3684,11 @@ bool CAlienSwarm::SpawnNextMarine()
 				m_pSpawningSpot = spawn_pt;
 			}
 		}
+
+		if ( !SpawnMarineAt( pMR, m_pSpawningSpot->GetAbsOrigin(), m_pSpawningSpot->GetAbsAngles(), false ) )
+			return false;
+
+		m_iMarinesSpawned++;
 	}
 
 	return true;
@@ -3831,36 +3818,42 @@ bool CAlienSwarm::SpawnMarineAt( CASW_Marine_Resource * RESTRICT pMR, const Vect
 	return true;
 }
 
-CBaseEntity* CAlienSwarm::GetMarineSpawnPoint(CBaseEntity *pStartEntity)
+CBaseStart* CAlienSwarm::GetMarineSpawnPoint(int nMarineProfile /* = -1 */)
 {	
-	do
+	CBaseStart* pStartEntityCandidate = NULL;
+	
+	CBaseStart* pStartEntity = NULL;
+	while ( pStartEntity = assert_cast< CBaseStart* >( gEntList.FindEntityByClassname( pStartEntity, "info_player_start" ) ) )
 	{
-		pStartEntity = gEntList.FindEntityByClassname( pStartEntity, "info_player_start");
-		if (pStartEntity && IsValidMarineStart(pStartEntity))
-			return pStartEntity;
-	} while (pStartEntity!=NULL);
+		if ( pStartEntity->m_bUsed )
+			continue;
 
-	return NULL;
+		if ( pStartEntity->m_nMarineProfile != -1 && nMarineProfile != pStartEntity->m_nMarineProfile )
+			continue;
+
+		if ( !pStartEntityCandidate )
+			pStartEntityCandidate = pStartEntity;
+
+		if ( pStartEntity->m_nMarineProfile == nMarineProfile )
+			pStartEntityCandidate = pStartEntity;
+	}
+
+	if ( pStartEntityCandidate )
+		pStartEntityCandidate->m_bUsed = true;
+
+	return pStartEntityCandidate;
 }
 
-// make sure this spot doesn't have a marine on it already
-bool CAlienSwarm::IsValidMarineStart(CBaseEntity *pSpot)
+CBaseStart* CAlienSwarm::GetMarineSpawnPointDM(CBaseStart* pStartEntity)
 {
-	//CBaseEntity *ent = NULL;
-/*
-	for ( CEntitySphereQuery sphere( pSpot->GetAbsOrigin(), 128 ); ent = sphere.GetCurrentEntity(); sphere.NextEntity() )
+	do
 	{
-		CASW_Marine* marine;
-		marine = CASW_Marine::AsMarine( ent );
-		if (marine!=NULL)
-		{
-			Msg("rejecting this start spot as a marine is nearby\n");
-			return false;
-		}
-	}*/
+		pStartEntity = dynamic_cast<CBaseStart*>(gEntList.FindEntityByClassname(pStartEntity, "info_player_start"));
+		if (pStartEntity)
+			return pStartEntity;
+	} while (pStartEntity != NULL);
 
-	//Msg("this start spot is good\n");
-	return true;
+	return NULL;
 }
 
 void CAlienSwarm::StartStim( float duration, CBaseEntity *pSource )
@@ -4300,11 +4293,11 @@ void CAlienSwarm::Resurrect( CASW_Marine_Resource * RESTRICT pMR, CASW_Marine *p
 // Respawn a dead marine. DEPRECATED, UNUSED
 void CAlienSwarm::Resurrect( CASW_Marine_Resource * RESTRICT pMR )  
 {
-	static CBaseEntity *spawn_spot = NULL;
+	static CBaseStart *spawn_spot = NULL;
 
-	spawn_spot = ASWGameRules()->GetMarineSpawnPoint(spawn_spot);
+	spawn_spot = ASWGameRules()->GetMarineSpawnPointDM(spawn_spot);
 	if (!spawn_spot)
-		spawn_spot = ASWGameRules()->GetMarineSpawnPoint(NULL);
+		spawn_spot = ASWGameRules()->GetMarineSpawnPointDM(NULL);
 
 	if (!spawn_spot) {
 		Msg( "Failed to find spawn spot" );
