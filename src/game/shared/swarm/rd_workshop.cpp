@@ -1145,12 +1145,22 @@ void CReactiveDropWorkshop::UnloadTemporaryAddons()
 
 void CReactiveDropWorkshop::RerunAutoExecScripts()
 {
+	// Only queue an exec for addons that actually ship an autoexec_<id>.cfg
+	// file. Queueing one command per subscribed addon floods the engine's small
+	// console command buffer: with 150+ subscribed addons the pending commands
+	// alone exceed the buffer size, and later commands (such as "quit") get
+	// dropped with "Cbuf_AddText: buffer overflow". File existence is checked
+	// above, so a plain "exec" is enough (no need for execifexists).
 	FOR_EACH_VEC( m_LoadedAddonPaths, i )
 	{
-		if ( IsSubscribedToFile( m_LoadedAddonPaths[i].ID, false ) )
-		{
-			engine->ClientCmd_Unrestricted( VarArgs( "execifexists autoexec_%llu\n", m_LoadedAddonPaths[i].ID ) );
-		}
+		if ( !IsSubscribedToFile( m_LoadedAddonPaths[i].ID, false ) )
+			continue;
+
+		CFmtStr szAutoExecFile{ "cfg/autoexec_%llu.cfg", m_LoadedAddonPaths[i].ID };
+		if ( !g_pFullFileSystem->FileExists( szAutoExecFile, "GAME" ) )
+			continue;
+
+		engine->ClientCmd_Unrestricted( VarArgs( "exec autoexec_%llu\n", m_LoadedAddonPaths[i].ID ) );
 	}
 }
 #endif
@@ -2233,7 +2243,13 @@ void CReactiveDropWorkshop::RealLoadAddon( PublishedFileId_t id )
 		ASWGameRules()->m_iMissionWorkshopID = g_ReactiveDropWorkshop.FindAddonProvidingFile( szOverview );
 	}
 #else
-	engine->ClientCmd_Unrestricted( VarArgs( "execifexists autoexec_%llu\n", id ) );
+	// Don't queue an exec command for every addon - see RerunAutoExecScripts
+	// for why. Only addons that actually contain the file are exec'd.
+	CFmtStr szAutoExecFile{ "cfg/autoexec_%llu.cfg", id };
+	if ( g_pFullFileSystem->FileExists( szAutoExecFile, "GAME" ) )
+	{
+		engine->ClientCmd_Unrestricted( VarArgs( "exec autoexec_%llu\n", id ) );
+	}
 #endif
 }
 
