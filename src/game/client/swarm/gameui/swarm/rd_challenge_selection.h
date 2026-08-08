@@ -4,6 +4,8 @@
 
 #include "basemodui.h"
 #include "vgenericpanellist.h"
+#include "vgui_controls/TextEntry.h"
+#include "rd_challenges_shared.h"
 #include "rd_workshop.h"
 
 class CNB_Header_Footer;
@@ -11,6 +13,18 @@ class CNB_Button;
 
 namespace BaseModUI
 {
+	class ReactiveDropChallengeSelectionSearch : public vgui::TextEntry
+	{
+		DECLARE_CLASS_SIMPLE( ReactiveDropChallengeSelectionSearch, vgui::TextEntry );
+	public:
+		ReactiveDropChallengeSelectionSearch( vgui::Panel *parent, const char *panelName, ReactiveDropChallengeSelection *pSelection );
+
+		virtual void OnKeyTyped( wchar_t unichar );
+
+	protected:
+		ReactiveDropChallengeSelection *m_pSelection;
+	};
+
 	class ReactiveDropChallengeSelectionListItem : public vgui::EditablePanel, IGenericPanelListItem
 	{
 		DECLARE_CLASS_SIMPLE( ReactiveDropChallengeSelectionListItem, vgui::EditablePanel );
@@ -61,7 +75,7 @@ namespace BaseModUI
 		virtual void OnMessage( const KeyValues *params, vgui::VPANEL ifromPanel );
 
 		void UpdateFooter();
-		void PopulateChallenges();
+		void PopulateChallenges( const char* szSearch = NULL, bool bIncrSearch = false );
 		void SetDetailsForChallenge( ReactiveDropChallengeSelectionListItem *pChallenge );
 
 		CNB_Header_Footer *m_pHeaderFooter;
@@ -73,8 +87,14 @@ namespace BaseModUI
 		vgui::Label *m_lblDescription;
 		vgui::Label *m_lblAuthor;
 
+		ReactiveDropChallengeSelectionSearch *m_pTxtSearch;
+
 		bool m_bIgnoreSelectionChange;
 		bool m_bDeathmatch;
+
+	private:
+		const char* m_szChallengesPrev[RD_MAX_CHALLENGES];
+		int m_nChallengesPrev = 0;
 	};
 }
 

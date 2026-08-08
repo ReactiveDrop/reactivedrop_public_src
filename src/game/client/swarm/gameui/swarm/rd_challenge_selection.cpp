@@ -1,4 +1,6 @@
 #include "cbase.h"
+
+#include "asw_util_shared.h"
 #include "rd_challenge_selection.h"
 #include "rd_challenges_shared.h"
 #include <vgui_controls/ImagePanel.h>
@@ -6,6 +8,7 @@
 #include <vgui/ISurface.h>
 #include "nb_header_footer.h"
 #include "nb_button.h"
+#include "strtools.h"
 #include "vfooterpanel.h"
 #include "rd_workshop.h"
 #include "filesystem.h"
@@ -13,6 +16,47 @@
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
+bool NameHasSearch( const char *szTitle, const char *szSearch )
+{
+	if ( szSearch[0] == '\0' )
+	{
+		return true;
+	}
+
+	if ( szTitle[0] == '#' )
+	{
+		wchar_t wszLocalized[RD_CHALLENGE_TITLE_LEN];
+		char szLocalized[RD_CHALLENGE_TITLE_LEN];
+
+		TryLocalize( szTitle, wszLocalized, RD_CHALLENGE_TITLE_LEN );
+		V_UnicodeToUTF8( wszLocalized, szLocalized, RD_CHALLENGE_TITLE_LEN );
+
+		return Q_stristr( szLocalized, szSearch ) != NULL;
+	}
+
+	return Q_stristr( szTitle, szSearch ) != NULL;
+}
+
+BaseModUI::ReactiveDropChallengeSelectionSearch::ReactiveDropChallengeSelectionSearch( vgui::Panel *parent, const char *panelName, ReactiveDropChallengeSelection *pSelection ) : BaseClass( parent, panelName )
+{
+	SetMaximumCharCount( RD_CHALLENGE_TITLE_LEN );
+	m_pSelection = pSelection;
+}
+
+void BaseModUI::ReactiveDropChallengeSelectionSearch::OnKeyTyped( wchar_t unichar )
+{
+	const int nBefore = GetTextLength();
+	BaseClass::OnKeyTyped( unichar );
+	const int nAfter = GetTextLength();
+
+	char szSearchText[RD_CHALLENGE_TITLE_LEN];
+	GetText( szSearchText, RD_CHALLENGE_TITLE_LEN );
+
+	const bool bIncrSearch = nBefore != 0 && nAfter > nBefore;
+
+	m_pSelection->PopulateChallenges( szSearchText, bIncrSearch );
+}
 
 BaseModUI::ReactiveDropChallengeSelectionListItem::ReactiveDropChallengeSelectionListItem( vgui::Panel *parent, const char *panelName ) : BaseClass( parent, panelName )
 {
@@ -219,6 +263,13 @@ const CReactiveDropWorkshop::WorkshopItem_t &BaseModUI::ReactiveDropChallengeSel
 BaseModUI::ReactiveDropChallengeSelection::ReactiveDropChallengeSelection( vgui::Panel *parent, const char *panelName, bool bDeathmatch ) : BaseClass( parent, panelName )
 {
 	SetProportional( true );
+	SetMouseInputEnabled( true );
+	SetKeyBoardInputEnabled( true );
+
+	if ( engine->IsConnected() )
+	{
+		MakePopup( false );
+	}
 
 	m_pHeaderFooter = new CNB_Header_Footer( this, "HeaderFooter" );
 	m_pHeaderFooter->SetTitle( "" );
@@ -236,6 +287,8 @@ BaseModUI::ReactiveDropChallengeSelection::ReactiveDropChallengeSelection( vgui:
 	m_imgIcon = new vgui::ImagePanel( this, "ImgIcon" );
 	m_lblDescription = new vgui::Label( this, "LblDescription", "" );
 	m_lblAuthor = new vgui::Label( this, "LblAuthor", "" );
+
+	m_pTxtSearch = new ReactiveDropChallengeSelectionSearch( this, "TxtSearch", this );
 
 	m_bIgnoreSelectionChange = false;
 
@@ -309,7 +362,7 @@ void BaseModUI::ReactiveDropChallengeSelection::OnMessage( const KeyValues *para
 	}
 }
 
-void BaseModUI::ReactiveDropChallengeSelection::PopulateChallenges()
+void BaseModUI::ReactiveDropChallengeSelection::PopulateChallenges( const char* szSearch, bool bIncrSearch )
 {
 	m_gplChallenges->RemoveAllPanelItems();
 	ReactiveDropChallengeSelectionListItem *pDisabled = m_gplChallenges->AddPanelItem<ReactiveDropChallengeSelectionListItem>( "ReactiveDropChallengeSelectionListItem" );
@@ -319,16 +372,55 @@ void BaseModUI::ReactiveDropChallengeSelection::PopulateChallenges()
 	Assert( g_ReactiveDropWorkshop.m_bStartingUp == false );
 	g_ReactiveDropWorkshop.m_bStartingUp = true;
 
-	int iCount = ReactiveDropChallenges::Count();
-	for ( int i = 0; i < iCount; i++ )
+	const char* szChallenges[RD_MAX_CHALLENGES];
+	int nChallenges = 0;
+
+	// Find valid challenges
+	if ( bIncrSearch )
 	{
-		const RD_Challenge_t *pChallenge = ReactiveDropChallenges::GetSummary( i );
-		if ( m_bDeathmatch ? pChallenge->AllowDeathmatch : pChallenge->AllowCoop )
+		for ( int i = 0; i < m_nChallengesPrev; i++ )
 		{
-			ReactiveDropChallengeSelectionListItem *pItem = m_gplChallenges->AddPanelItem<ReactiveDropChallengeSelectionListItem>( "ReactiveDropChallengeSelectionListItem" );
-			pItem->PopulateChallenge( ReactiveDropChallenges::Name( i ) );
-			GetControllerFocus()->AddToFocusList( pItem, true, true );
+			const char *pChallengeName = m_szChallengesPrev[i];
+			const char *szTitle = ReactiveDropChallenges::DisplayName(pChallengeName);
+
+			if ( NameHasSearch(szTitle, szSearch) )
+			{
+				szChallenges[nChallenges] = pChallengeName;
+				m_szChallengesPrev[nChallenges] = pChallengeName;
+				nChallenges++;
+			}
 		}
+		m_nChallengesPrev = nChallenges;
+	}
+	else
+	{
+		const int nRDChallenges = ReactiveDropChallenges::Count();
+		Assert( nRDChallenges <= RD_MAX_CHALLENGES );
+		for ( int i = 0; i < nRDChallenges; i++ )
+		{
+			const RD_Challenge_t *pChallenge = ReactiveDropChallenges::GetSummary( i );
+			if ( m_bDeathmatch ? pChallenge->AllowDeathmatch : pChallenge->AllowCoop )
+			{
+				const char *pChallengeName = ReactiveDropChallenges::Name( i );
+				const char *szTitle = pChallenge->Title;
+
+				if ( !szSearch || NameHasSearch(szTitle, szSearch) )
+				{
+					szChallenges[nChallenges] = pChallengeName;
+					m_szChallengesPrev[nChallenges] = pChallengeName;
+					nChallenges++;
+				}
+			}
+		}
+		m_nChallengesPrev = nChallenges;
+	}
+
+	// Add valid challenges to the panel list
+	for ( int j = 0; j < nChallenges; j++ )
+	{
+		ReactiveDropChallengeSelectionListItem *pItem = m_gplChallenges->AddPanelItem<ReactiveDropChallengeSelectionListItem>( "ReactiveDropChallengeSelectionListItem" );
+		pItem->PopulateChallenge( szChallenges[j] );
+		GetControllerFocus()->AddToFocusList( pItem, true, true );
 	}
 
 	g_ReactiveDropWorkshop.m_bStartingUp = false;
