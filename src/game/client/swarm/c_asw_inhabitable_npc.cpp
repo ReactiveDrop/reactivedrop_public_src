@@ -17,6 +17,7 @@ extern ConVar rd_highlight_active_character;
 extern ConVar glow_outline_color_alien;
 extern ConVar asw_controls;
 
+#undef CASW_Inhabitable_NPC
 IMPLEMENT_CLIENTCLASS_DT( C_ASW_Inhabitable_NPC, DT_ASW_Inhabitable_NPC, CASW_Inhabitable_NPC )
 	RecvPropEHandle( RECVINFO( m_Commander ) ),
 	RecvPropEHandle( RECVINFO( m_hUsingEntity ) ),
