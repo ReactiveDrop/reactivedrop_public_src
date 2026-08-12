@@ -497,7 +497,7 @@
 		"entindex"		"short"		// entindex of inhabitable npc
 		"weapon"		"short"		// entindex of weapon
 		"accessory"		"long"		// strange device def ID
-		"property		"short"		// strange property index
+		"property"		"short"		// strange property index
 		"amount"		"long"		// amount to increment by
 	}
 
