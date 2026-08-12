@@ -533,12 +533,22 @@ void CAchievementMgr::UserConnected( int nUserSlot )
 	if ( IsPC() )
 	{
 		// ASSERT( STEAM_PLAYER_SLOT == nUserSlot )
+
+
 		if ( SteamUserStats() )
 		{
 			// request stat download; will get called back at OnUserStatsReceived when complete
-			SteamUserStats()->RequestCurrentStats();
-		}
 
+		// Valve:
+		// This call is no longer required as it is managed by the Steam client. The game stats and achievements
+		// will be synchronized with Steam before the game process begins.
+		// [Obsolete("No longer required. Automatically handled by the Steam client.", false)]
+#if defined(STEAMAPPS_INTERFACE_VERSION008)
+			SteamUserStats()->RequestCurrentStats();
+#else
+			SteamUserStats()->RequestUserStats(SteamUser()->GetSteamID());
+#endif
+		}
 		m_bUserSlotActive[STEAM_PLAYER_SLOT] = true;
 
 	}
