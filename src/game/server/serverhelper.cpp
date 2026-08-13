@@ -33,8 +33,3 @@ unsigned int CServerHelper::GetDataMapOffsetForEdict( edict_t* pEdict, const cha
 	CBaseEntity* pEntity = pUnknown->GetBaseEntity();
 	return FindPropertyOffsetInDataMap( pEntity->GetDataDescMap(), className, property );
 }
-
-unsigned int CServerHelper::ConvertStringToAddress(const char* address)
-{
-	return inet_addr(address);
-}

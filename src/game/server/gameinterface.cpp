@@ -623,40 +623,8 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 #ifndef CLIENT_DLL
 
 	// initialize a game server. this call was in engine before, but not anymore. we need to call it from somewhere
-	// collect the information needed, to spawn such gameserver
-	const char* pszAddress = "255.255.255.255";
-	const char* pszPort = "27015";
-	const char* pszQPort = "27017";
-
-	// get ip
-	if (CommandLine()->FindParm("-ip")) {
-		pszAddress = CommandLine()->ParmValue("-ip", "0.0.0.0");
-	}
-	else {
-		pszAddress = "0.0.0.0";
-	}
-
-	// get port
-	if (CommandLine()->FindParm("-port")) {
-		pszPort = CommandLine()->ParmValue("-queryport", "27015");
-	}
-
-	// get query port
-	if (CommandLine()->FindParm("-queryport")) {
-		pszQPort = CommandLine()->ParmValue("-queryport", "27017");
-	}
-
-	// store numeric
-	const uint32 ip = g_ServerHelper.ConvertStringToAddress(pszAddress);
-	uint16 port = atoi(pszPort);
-	uint16 queryPort = atoi(pszQPort);
-
-	// some sane checks, don't bind to privileged ports
-	if (port < 1024) port = 27015;
-	if (queryPort < 1024) queryPort = 27017;
-
-	// initialize the gameserver
-	bool r = SteamGameServer_Init(ip, port, queryPort, eServerModeAuthenticationAndSecure, "7149");
+	// initialize the gameserver, srcds already binds to the correct ip and ports, so we can just pass 0 here to all parameters
+	bool r = SteamGameServer_Init(0, 0, 0, eServerModeAuthenticationAndSecure, "7149");
 	ConMsg("StartGameServer_Init resulted in %d\n", r);
 #endif
 #endif
