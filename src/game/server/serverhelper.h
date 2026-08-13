@@ -15,6 +15,7 @@ public:
 class CServerHelper : public IServerHelper {
 public:
 	unsigned int	GetDataMapOffsetForEdict( edict_t* pEdict, const char* className, const char* property );
+	unsigned int	ConvertStringToAddress(const char* address);
 };
 
 #endif

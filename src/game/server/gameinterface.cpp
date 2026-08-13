@@ -619,6 +619,48 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 		CGlobalVars *pGlobals)
 {
 
+#ifndef STEAMAPPS_INTERFACE_VERSION008
+#ifndef CLIENT_DLL
+
+	// initialize a game server. this call was in engine before, but not anymore. we need to call it from somewhere
+	// collect the information needed, to spawn such gameserver
+	const char* pszAddress = "255.255.255.255";
+	const char* pszPort = "27015";
+	const char* pszQPort = "27017";
+
+	// get ip
+	if (CommandLine()->FindParm("-ip")) {
+		pszAddress = CommandLine()->ParmValue("-ip", "0.0.0.0");
+	}
+	else {
+		pszAddress = "0.0.0.0";
+	}
+
+	// get port
+	if (CommandLine()->FindParm("-port")) {
+		pszPort = CommandLine()->ParmValue("-queryport", "27015");
+	}
+
+	// get query port
+	if (CommandLine()->FindParm("-queryport")) {
+		pszQPort = CommandLine()->ParmValue("-queryport", "27017");
+	}
+
+	// store numeric
+	const uint32 ip = g_ServerHelper.ConvertStringToAddress(pszAddress);
+	uint16 port = atoi(pszPort);
+	uint16 queryPort = atoi(pszQPort);
+
+	// some sane checks, don't bind to privileged ports
+	if (port < 1024) port = 27015;
+	if (queryPort < 1024) queryPort = 27017;
+
+	// initialize the gameserver
+	bool r = SteamGameServer_Init(ip, port, queryPort, eServerModeAuthenticationAndSecure, "7149");
+	ConMsg("StartGameServer_Init resulted in %d\n", r);
+#endif
+#endif
+
 	COM_TimestampedLog( "ConnectTier1/2/3Libraries - Start" );
 
 	ConnectTier1Libraries( &appSystemFactory, 1 );
@@ -1457,6 +1499,28 @@ static void OnServerUpdateRequested()
 
 void CServerGameDLL::Think( bool finalTick )
 {
+	// this is normally done in engine, but not anymore
+	// we need to put this here
+	if (SteamGameServer()) {
+		bool bLoggedIn = SteamGameServer()->BLoggedOn();
+		if (!bLoggedIn) {
+			SteamGameServer()->LogOnAnonymous();
+		}
+	}
+
+	SteamGameServer_RunCallbacks();
+
+	// because steam_api and engine are disagreeing, sv_lan is set to 1
+	// this is not because they are incompatible, but because the init in engine is gone
+	// as workaround, we simply set sv_lan back to 0, and send a heartbeat
+	ConVarRef sv_lan("sv_lan");
+	if (sv_lan.GetBool()) {
+		sv_lan.SetValue(0);
+		ConMsg("************************************************\n*  Steam API connection restored               *\n************************************************\n");
+		engine->ServerCommand("heartbeat\n");
+		engine->ServerExecute();
+	}
+
 	static bool s_bUpdateCheckInit = engine->IsDedicatedServer();
 	if ( s_bUpdateCheckInit )
 	{

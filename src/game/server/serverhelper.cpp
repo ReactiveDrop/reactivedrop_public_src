@@ -1,5 +1,6 @@
 #include "cbase.h"
 #include "serverhelper.h"
+#include <winsock.h>
 
 // helper class to find the offset of a datamap for a specific edict
 inline unsigned int FindPropertyOffsetInDataMap( datamap_t* pMap, const char* className, const char* property )
@@ -31,4 +32,9 @@ unsigned int CServerHelper::GetDataMapOffsetForEdict( edict_t* pEdict, const cha
 
 	CBaseEntity* pEntity = pUnknown->GetBaseEntity();
 	return FindPropertyOffsetInDataMap( pEntity->GetDataDescMap(), className, property );
+}
+
+unsigned int CServerHelper::ConvertStringToAddress(const char* address)
+{
+	return inet_addr(address);
 }
