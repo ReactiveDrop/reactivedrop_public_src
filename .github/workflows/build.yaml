@@ -1,4 +1,6 @@
 name: Continuous integration
+run-name: ${{ inputs.title }}
+
 on:
   push:
     branches:
@@ -8,6 +10,20 @@ on:
     branches:
       - reactivedrop_public
       - reactivedrop_beta
+  workflow_dispatch:
+    inputs:
+      title:
+        type: string
+        default: Workflow dispatch
+      configuration:
+        description: "Configuration to build"
+        required: true
+        type: choice
+        options:
+          - Release
+          - Debug
+          - All
+        default: All
 
 # GitHub Actions usage is FREE for both public repositories and self-hosted runners.
 # We can use it to build our project and do some automated builds and in future quality tests.
@@ -20,7 +36,11 @@ jobs:
     timeout-minutes: 30
     strategy:
       matrix:
-        configuration: [Release, Debug]
+        configuration: ${{ fromJSON(
+          (github.event_name != 'workflow_dispatch' || inputs.configuration == 'All')
+            && '["Release","Debug"]'
+            || format('["{0}"]', inputs.configuration)
+          ) }}
 
     steps:
       - uses: actions/checkout@v4
