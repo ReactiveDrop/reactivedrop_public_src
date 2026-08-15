@@ -14,78 +14,38 @@ on:
 # https://docs.github.com/en/billing/managing-billing-for-github-actions/about-billing-for-github-actions
 
 jobs:
-  release:
-    name: build release
+  build:
+    name: build ${{ matrix.configuration }}
     runs-on: windows-2025-vs2026
     timeout-minutes: 30
+    strategy:
+      matrix:
+        configuration: [Release, Debug]
+
     steps:
-      #checkout project
       - uses: actions/checkout@v4
 
-      # setup msbuild
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
 
-      # missionchooser.dll
-      - name: Build missionchooser.dll
-        working-directory: src/game/missionchooser
-        run: MSBuild.exe swarm_sdk_missionchooser.vcxproj -property:Configuration=Release -property:Platform=Win32
-
-      # server.dll
       - name: Build server.dll
         working-directory: src/game/server
-        run: MSBuild.exe swarm_sdk_server.vcxproj -property:Configuration=Release -property:Platform=Win32
+        run: MSBuild.exe swarm_sdk_server.vcxproj -property:Configuration=${{ matrix.configuration }} -property:Platform=Win32
 
-      # client.dll
       - name: Build client.dll
         working-directory: src/game/client
-        run: MSBuild.exe swarm_sdk_client.vcxproj -property:Configuration=Release -property:Platform=Win32
+        run: MSBuild.exe swarm_sdk_client.vcxproj -property:Configuration=${{ matrix.configuration }} -property:Platform=Win32
 
-      # store artifacts
+      - name: Build missionchooser.dll
+        working-directory: src/game/missionchooser
+        run: MSBuild.exe swarm_sdk_missionchooser.vcxproj -property:Configuration=${{ matrix.configuration }} -property:Platform=Win32
+
       # make sure retention is low, this can become huge otherwise
       - name: Store build
         uses: actions/upload-artifact@v4
         with:
-          name: Release
+          name: ${{ matrix.configuration }}
           path: |
-            reactivedrop/bin/missionchooser.dll
             reactivedrop/bin/server.dll
             reactivedrop/bin/client.dll
-
-  debug:
-    name: build debug
-    runs-on: windows-2025-vs2026
-    timeout-minutes: 30
-    steps:
-      #checkout project
-      - uses: actions/checkout@v4
-
-      # setup msbuild
-      - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v2
-
-      # missionchooser.dll
-      - name: Build missionchooser.dll
-        working-directory: src/game/missionchooser
-        run: MSBuild.exe swarm_sdk_missionchooser.vcxproj -property:Configuration=Debug -property:Platform=Win32
-
-      # server.dll
-      - name: Build server.dll
-        working-directory: src/game/server
-        run: MSBuild.exe swarm_sdk_server.vcxproj -property:Configuration=Debug -property:Platform=Win32
-
-      # client.dll
-      - name: Build client.dll
-        working-directory: src/game/client
-        run: MSBuild.exe swarm_sdk_client.vcxproj -property:Configuration=Debug -property:Platform=Win32
-
-      # store artifacts
-      # make sure retention is low, this can become huge otherwise
-      - name: Store build
-        uses: actions/upload-artifact@v4
-        with:
-          name: Debug
-          path: |
             reactivedrop/bin/missionchooser.dll
-            reactivedrop/bin/server.dll
-            reactivedrop/bin/client.dll
