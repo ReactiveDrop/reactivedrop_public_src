@@ -522,7 +522,7 @@
 		"wide"				"176"
 		"tall"				"12"
 		"navLeft"			"BindRotateCameraLeft"
-		"navRight"			"BindWheelEquipment2"
+		"navRight"			"BindCustomInput0"
 		"navUp"				"BindPlayerList"
 		"navDown"			"BindRotateCameraRight"
 	}
@@ -536,7 +536,7 @@
 		"wide"				"176"
 		"tall"				"12"
 		"navLeft"			"BindRotateCameraRight"
-		"navRight"			"BindWheelEquipment2"
+		"navRight"			"BindCustomInput1"
 		"navUp"				"BindRotateCameraLeft"
 		"navDown"			"BindSecondaryAttackAlt"
 	}
@@ -550,7 +550,7 @@
 		"wide"				"176"
 		"tall"				"12"
 		"navLeft"			"BindSecondaryAttackAlt"
-		"navRight"			"BindWheelEquipment2"
+		"navRight"			"BindCustomInput2"
 		"navUp"				"BindRotateCameraRight"
 		"navDown"			"BindChooseMarine"
 	}
@@ -564,7 +564,7 @@
 		"wide"				"176"
 		"tall"				"12"
 		"navLeft"			"BindChooseMarine"
-		"navRight"			"BindWheelEquipment2"
+		"navRight"			"BindCustomInput3"
 		"navUp"				"BindSecondaryAttackAlt"
 		"navDown"			"BtnResetDefaults"
 	}
@@ -761,7 +761,67 @@
 		"navLeft"			"BindMissionOverview"
 		"navRight"			"BtnCustomWheels"
 		"navUp"				"BindWheelEquipment1"
-		"navDown"			"BindWheelEquipment2"
+		"navDown"			"BindCustomInput0"
+	}
+
+	"BindCustomInput0"
+	{
+		"ControlName"		"CRD_VGUI_KeyboardBind"
+		"fieldName"			"BindCustomInput0"
+		"xpos"				"202"	[!$WIN32WIDE]
+		"xpos"				"217"	[$WIN32WIDE]
+		"ypos"				"316"
+		"wide"				"176"
+		"tall"				"12"
+		"navLeft"			"BindRotateCameraLeft"
+		"navRight"			"BindWheelMarine"
+		"navUp"				"BindWheelEquipment2"
+		"navDown"			"BindCustomInput1"
+	}
+
+	"BindCustomInput1"
+	{
+		"ControlName"		"CRD_VGUI_KeyboardBind"
+		"fieldName"			"BindCustomInput1"
+		"xpos"				"202"	[!$WIN32WIDE]
+		"xpos"				"217"	[$WIN32WIDE]
+		"ypos"				"328"
+		"wide"				"176"
+		"tall"				"12"
+		"navLeft"			"BindRotateCameraRight"
+		"navRight"			"BindWheelMarine"
+		"navUp"				"BindCustomInput0"
+		"navDown"			"BindCustomInput2"
+	}
+
+	"BindCustomInput2"
+	{
+		"ControlName"		"CRD_VGUI_KeyboardBind"
+		"fieldName"			"BindCustomInput2"
+		"xpos"				"202"	[!$WIN32WIDE]
+		"xpos"				"217"	[$WIN32WIDE]
+		"ypos"				"340"
+		"wide"				"176"
+		"tall"				"12"
+		"navLeft"			"BindSecondaryAttackAlt"
+		"navRight"			"BindWheelMarine"
+		"navUp"				"BindCustomInput1"
+		"navDown"			"BindCustomInput3"
+	}
+
+	"BindCustomInput3"
+	{
+		"ControlName"		"CRD_VGUI_KeyboardBind"
+		"fieldName"			"BindCustomInput3"
+		"xpos"				"202"	[!$WIN32WIDE]
+		"xpos"				"217"	[$WIN32WIDE]
+		"ypos"				"352"
+		"wide"				"176"
+		"tall"				"12"
+		"navLeft"			"BindChooseMarine"
+		"navRight"			"BindWheelMarine"
+		"navUp"				"BindCustomInput2"
+		"navDown"			"BtnResetDefaults"
 	}
 
 	"BindSelectMarine0"
@@ -929,7 +989,7 @@
 		"command"			"ResetDefaults"
 		"navLeft"			"BtnResetDefaults"
 		"navRight"			"SettingDeveloperConsole"
-		"navUp"				"BindChooseMarine"
+		"navUp"				"BindCustomInput3"
 		"navDown"			"BtnResetDefaults"
 	}
 
@@ -1019,6 +1079,21 @@
 		"tall"				"180"
 		"textAlignment"		"north-west"
 		"labelText"			"#rd_controls_category_use_equipment"
+		"font"				"DefaultMedium"
+	}
+
+	"LblCustomFunctions"
+	{
+		"ControlName"		"Label"
+		"fieldName"			"LblCustomFunctions"
+		"xpos"				"194"	[!$WIN32WIDE]
+		"xpos"				"209"	[$WIN32WIDE]
+		"ypos"				"304"
+		"zpos"				"-1"
+		"wide"				"192"
+		"tall"				"12"
+		"textAlignment"		"north-west"
+		"labelText"			"Custom Functions"
 		"font"				"DefaultMedium"
 	}
 

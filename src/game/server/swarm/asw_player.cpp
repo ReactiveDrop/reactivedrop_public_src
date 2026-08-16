@@ -430,6 +430,8 @@ CASW_Player::CASW_Player()
 
 	m_flLastActiveTime = 0.0f;
 	m_flInactiveKickWarning = 0.0f;
+	m_flCustomInputRateWindowStart = 0.0f;
+	m_iCustomInputRateCount = 0;
 
 	m_flNextItemCounterCommit = -1;
 
@@ -768,6 +770,48 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 	const char *pcmd = args[0];
 
 	m_flLastActiveTime = gpGlobals->curtime;
+
+	int iCustomInput = -1;
+	if ( FStrEq( pcmd, "rd_custom_input_0" ) )
+		iCustomInput = 0;
+	else if ( FStrEq( pcmd, "rd_custom_input_1" ) )
+		iCustomInput = 1;
+	else if ( FStrEq( pcmd, "rd_custom_input_2" ) )
+		iCustomInput = 2;
+	else if ( FStrEq( pcmd, "rd_custom_input_3" ) )
+		iCustomInput = 3;
+
+	if ( iCustomInput >= 0 )
+	{
+		// These commands are always consumed once recognized.  Only an exact,
+		// argument-free command received during a mission can reach the script.
+		if ( ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME && args.ArgC() == 1 )
+		{
+			const float flNow = gpGlobals->curtime;
+			const int nCustomInputRateLimit = 20;
+
+			if ( flNow < m_flCustomInputRateWindowStart || flNow - m_flCustomInputRateWindowStart >= 1.0f )
+			{
+				m_flCustomInputRateWindowStart = flNow;
+				m_iCustomInputRateCount = 0;
+			}
+
+			if ( m_iCustomInputRateCount < nCustomInputRateLimit )
+			{
+				++m_iCustomInputRateCount;
+
+				if ( g_pScriptVM )
+				{
+					ScriptVariant_t scriptArgs[2];
+					scriptArgs[0] = iCustomInput;
+					scriptArgs[1] = ToHScript( this );
+					ASWGameRules()->RunScriptFunctionInListenerScopes( "OnCustomInput", NULL, NELEMS( scriptArgs ), scriptArgs );
+				}
+			}
+		}
+
+		return true;
+	}
 
 	switch ( ASWGameRules()->GetGameState() )
 	{

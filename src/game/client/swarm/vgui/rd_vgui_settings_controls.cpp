@@ -4,6 +4,7 @@
 #include <vgui/ILocalize.h>
 #include <vgui/ISurface.h>
 #include <vgui_controls/ImagePanel.h>
+#include <vgui_controls/EditablePanel.h>
 #include <vgui_controls/Label.h>
 #include "gameui/swarm/vgenericconfirmation.h"
 #include "gameui/swarm/vhybridbutton.h"
@@ -28,6 +29,288 @@ static void ResetControlsToDefaults()
 // When the binding capture state ends, we release the mouse pointer and move it back to where it was to avoid confusing the player.
 int CRD_VGUI_Bind::s_iCursorX;
 int CRD_VGUI_Bind::s_iCursorY;
+
+// Custom input commands are keyboard-only until their Steam Input actions and
+// localized manifest entries are available.  Keep this control separate from
+// CRD_VGUI_Bind so its general Steam Input action assertion remains intact.
+class CRD_VGUI_KeyboardBind final : public vgui::EditablePanel
+{
+	DECLARE_CLASS_SIMPLE( CRD_VGUI_KeyboardBind, vgui::EditablePanel );
+public:
+	CRD_VGUI_KeyboardBind( vgui::Panel *parent, const char *panelName, const char *szLabel, const char *szBind, bool bUseRowLayout );
+
+	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
+	void OnKeyCodePressed( vgui::KeyCode keycode ) override;
+	void OnKeyCodeTyped( vgui::KeyCode keycode ) override;
+	void OnMouseReleased( vgui::MouseCode code ) override;
+	void OnCursorEntered() override;
+	void NavigateTo() override;
+	void OnThink() override;
+	void Paint() override;
+
+private:
+	void StartKeyboardCapture();
+	void ClearKeyboardBind();
+	const char *LookupKeyboardBind() const;
+
+	vgui::Label *m_pLblKeyboardIcon;
+	vgui::Label *m_pLblKeyboardIconLong;
+	vgui::Panel *m_pPnlControllerIcon;
+	vgui::ImagePanel *m_pImgClearBind;
+	vgui::Label *m_pLblDescription;
+	vgui::Label *m_pLblNotBound;
+	char m_szLabel[256];
+	char m_szBind[64];
+	bool m_bUseRowLayout;
+	bool m_bCapturing;
+	static int s_iCursorX;
+	static int s_iCursorY;
+};
+
+int CRD_VGUI_KeyboardBind::s_iCursorX;
+int CRD_VGUI_KeyboardBind::s_iCursorY;
+
+CRD_VGUI_KeyboardBind::CRD_VGUI_KeyboardBind( vgui::Panel *parent, const char *panelName, const char *szLabel, const char *szBind, bool bUseRowLayout ) :
+	BaseClass( parent, panelName )
+{
+	SetConsoleStylePanel( true );
+
+	V_strncpy( m_szLabel, szLabel, sizeof( m_szLabel ) );
+	V_strncpy( m_szBind, szBind, sizeof( m_szBind ) );
+	m_bUseRowLayout = bUseRowLayout;
+	m_bCapturing = false;
+
+	m_pLblKeyboardIcon = new vgui::Label( this, "LblKeyboardIcon", "" );
+	m_pLblKeyboardIconLong = new vgui::Label( this, "LblKeyboardIconLong", "" );
+	m_pPnlControllerIcon = new vgui::Panel( this, "PnlControllerIcon" );
+	m_pImgClearBind = new vgui::ImagePanel( this, "ImgClearBind" );
+	m_pLblDescription = new vgui::Label( this, "LblDescription", szLabel );
+	m_pLblNotBound = new vgui::Label( this, "LblNotBound", "" );
+}
+
+void CRD_VGUI_KeyboardBind::ApplySchemeSettings( vgui::IScheme *pScheme )
+{
+	BaseClass::ApplySchemeSettings( pScheme );
+
+	LoadControlSettings( m_bUseRowLayout ? "Resource/UI/BaseModUI/CRD_VGUI_Bind_Row.res" : "Resource/UI/BaseModUI/CRD_VGUI_Bind_Box.res" );
+
+	m_pLblDescription->SetText( m_szLabel );
+	m_pPnlControllerIcon->SetVisible( false );
+
+	m_pLblKeyboardIcon->SetMouseInputEnabled( false );
+	m_pLblKeyboardIconLong->SetMouseInputEnabled( false );
+	m_pPnlControllerIcon->SetMouseInputEnabled( false );
+	m_pImgClearBind->SetMouseInputEnabled( false );
+	m_pLblDescription->SetMouseInputEnabled( false );
+	m_pLblNotBound->SetMouseInputEnabled( false );
+}
+
+void CRD_VGUI_KeyboardBind::OnKeyCodePressed( vgui::KeyCode keycode )
+{
+	int lastUser = GetJoystickForCode( keycode );
+	CBaseModPanel::GetSingleton().SetLastActiveUserId( lastUser );
+
+	vgui::KeyCode code = GetBaseButtonCode( keycode );
+
+	switch ( code )
+	{
+	case KEY_DELETE:
+		if ( m_pImgClearBind->IsVisible() )
+		{
+			ClearKeyboardBind();
+			break;
+		}
+
+		break;
+	case KEY_SPACE:
+	case KEY_ENTER:
+	case KEY_PAD_ENTER:
+		StartKeyboardCapture();
+
+		break;
+	default:
+		BaseClass::OnKeyCodePressed( keycode );
+		break;
+	}
+}
+
+void CRD_VGUI_KeyboardBind::OnKeyCodeTyped( vgui::KeyCode keycode )
+{
+	int lastUser = GetJoystickForCode( keycode );
+	CBaseModPanel::GetSingleton().SetLastActiveUserId( lastUser );
+
+	// This control deliberately has no Steam Input action.  Keep the normal
+	// controller navigation path, but never try to open a controller binding
+	// panel for the custom command.
+	if ( GetBaseButtonCode( keycode ) == KEY_XBUTTON_A )
+	{
+		CBaseModPanel::GetSingleton().PlayUISound( UISOUND_INVALID );
+		return;
+	}
+
+	BaseClass::OnKeyCodePressed( keycode );
+}
+
+void CRD_VGUI_KeyboardBind::OnMouseReleased( vgui::MouseCode code )
+{
+	if ( code == MOUSE_LEFT )
+	{
+		if ( m_pImgClearBind->IsVisible() && m_pImgClearBind->IsCursorOver() )
+		{
+			ClearKeyboardBind();
+			return;
+		}
+
+		StartKeyboardCapture();
+		return;
+	}
+
+	BaseClass::OnMouseReleased( code );
+}
+
+void CRD_VGUI_KeyboardBind::OnCursorEntered()
+{
+	BaseClass::OnCursorEntered();
+
+	if ( GetParent() )
+		NavigateToChild( this );
+}
+
+void CRD_VGUI_KeyboardBind::NavigateTo()
+{
+	BaseClass::NavigateTo();
+	RequestFocus();
+}
+
+const char *CRD_VGUI_KeyboardBind::LookupKeyboardBind() const
+{
+	return engine->Key_LookupBindingEx( m_szBind, -1, 0, 0 );
+}
+
+void CRD_VGUI_KeyboardBind::OnThink()
+{
+	BaseClass::OnThink();
+
+	const char *szKeyBind = LookupKeyboardBind();
+
+	if ( m_bCapturing )
+	{
+		m_pLblKeyboardIcon->SetText( "" );
+		m_pLblKeyboardIconLong->SetText( "" );
+		m_pLblNotBound->SetVisible( false );
+		m_pImgClearBind->SetVisible( false );
+
+		ButtonCode_t code = BUTTON_CODE_INVALID;
+		if ( engine->CheckDoneKeyTrapping( code ) )
+		{
+			m_bCapturing = false;
+			vgui::input()->SetMouseCapture( NULL );
+			vgui::input()->SetCursorPos( s_iCursorX, s_iCursorY );
+
+			if ( code != BUTTON_CODE_NONE && code != BUTTON_CODE_INVALID && code != KEY_ESCAPE )
+			{
+				if ( szKeyBind )
+					ClearKeyboardBind();
+
+				int iSlot = GET_ACTIVE_SPLITSCREEN_SLOT();
+				engine->ClientCmd_Unrestricted( VarArgs( "cmd%d bind \"%s\" \"%s\"", iSlot + 1, g_pInputSystem->ButtonCodeToString( code ), m_szBind ) );
+				CRD_VGUI_Settings::s_bWantSave = true;
+			}
+
+			RequestFocus();
+		}
+
+		return;
+	}
+
+	m_pImgClearBind->SetVisible( HasFocus() && szKeyBind );
+
+	if ( szKeyBind )
+	{
+		if ( const wchar_t *wszTranslation = g_pVGuiLocalize->Find( szKeyBind ) )
+		{
+			if ( V_wcslen( wszTranslation ) > 1 )
+			{
+				m_pLblKeyboardIcon->SetText( "" );
+				m_pLblKeyboardIconLong->SetText( wszTranslation );
+			}
+			else
+			{
+				m_pLblKeyboardIcon->SetText( wszTranslation );
+				m_pLblKeyboardIconLong->SetText( "" );
+			}
+		}
+		else
+		{
+			if ( V_strlen( szKeyBind ) > 2 )
+			{
+				m_pLblKeyboardIcon->SetText( "" );
+				m_pLblKeyboardIconLong->SetText( szKeyBind );
+			}
+			else
+			{
+				m_pLblKeyboardIcon->SetText( szKeyBind );
+				m_pLblKeyboardIconLong->SetText( "" );
+			}
+		}
+		m_pLblNotBound->SetVisible( false );
+	}
+	else
+	{
+		m_pLblKeyboardIcon->SetText( "" );
+		m_pLblKeyboardIconLong->SetText( "" );
+		m_pLblNotBound->SetVisible( true );
+	}
+}
+
+void CRD_VGUI_KeyboardBind::Paint()
+{
+	BaseClass::Paint();
+
+	if ( !m_bUseRowLayout )
+		return;
+
+	int x, y, w, t;
+	const int nHighlight = 24;
+
+	Color c = m_pLblKeyboardIcon->GetBgColor();
+	if ( m_bCapturing )
+		c.SetColor( c.r() + nHighlight * 2, c.g() + nHighlight * 2, c.b() + nHighlight * 2, c.a() );
+	else if ( HasFocus() )
+		c.SetColor( c.r() + nHighlight, c.g() + nHighlight, c.b() + nHighlight, c.a() );
+	m_pLblKeyboardIcon->GetBounds( x, y, w, t );
+	vgui::surface()->DrawSetColor( c );
+	vgui::surface()->DrawFilledRect( YRES( 1 ), y - YRES( 1 ), x + w + YRES( 1 ), y + t + YRES( 1 ) );
+
+	c = m_pLblDescription->GetBgColor();
+	if ( HasFocus() && !m_bCapturing )
+		c.SetColor( c.r() + nHighlight, c.g() + nHighlight, c.b() + nHighlight, c.a() );
+	m_pLblDescription->GetBounds( x, y, w, t );
+	vgui::surface()->DrawSetColor( c );
+	vgui::surface()->DrawFilledRect( x - YRES( 1 ), y - YRES( 1 ), x + w - YRES( 3 ), y + t + YRES( 1 ) );
+	vgui::surface()->DrawFilledRectFade( x + w - YRES( 3 ), y - YRES( 1 ), x + w + YRES( 1 ), y + t + YRES( 1 ), 255, 0, true );
+}
+
+void CRD_VGUI_KeyboardBind::StartKeyboardCapture()
+{
+	m_bCapturing = true;
+	vgui::input()->GetCursorPos( s_iCursorX, s_iCursorY );
+	vgui::input()->SetMouseFocus( GetVPanel() );
+	vgui::input()->SetMouseCapture( GetVPanel() );
+	engine->StartKeyTrapMode();
+}
+
+void CRD_VGUI_KeyboardBind::ClearKeyboardBind()
+{
+	const char *szKeyBind = LookupKeyboardBind();
+	Assert( szKeyBind && *szKeyBind );
+	if ( !szKeyBind )
+		return;
+
+	int iSlot = CBaseModPanel::GetSingleton().GetLastActiveUserId();
+	engine->ClientCmd_Unrestricted( VarArgs( "cmd%d unbind \"%s\"", iSlot + 1, szKeyBind ) );
+	CRD_VGUI_Settings::s_bWantSave = true;
+}
 
 CRD_VGUI_Bind::CRD_VGUI_Bind( vgui::Panel *parent, const char *panelName, const char *szLabel, const char *szBind, bool bUseRowLayout ) :
 	BaseClass( parent, panelName )
@@ -379,6 +662,12 @@ CRD_VGUI_Settings_Controls::CRD_VGUI_Settings_Controls( vgui::Panel *parent, con
 	m_pBindRotateCameraRight = new CRD_VGUI_Bind( this, "BindRotateCameraRight", "#rd_str_rotatecameraright", "rotatecameraright", true );
 	m_pBindSecondaryAttackAlt = new CRD_VGUI_Bind( this, "BindSecondaryAttackAlt", "#Valve_Secondary_Attack", "+secondary", true );
 	m_pBindChooseMarine = new CRD_VGUI_Bind( this, "BindChooseMarine", "#rd_str_selectloadout", "cl_select_loadout", true );
+
+	// Custom functions
+	for ( int i = 0; i < NELEMS( m_pBindCustomInput ); i++ )
+	{
+		m_pBindCustomInput[i] = new CRD_VGUI_KeyboardBind( this, CFmtStr{ "BindCustomInput%d", i }, CFmtStr{ "Custom Function %d", i + 1 }, CFmtStr{ "rd_custom_input_%d", i }, true );
+	}
 
 	// Use Equipment
 	m_pBindActivatePrimary = new CRD_VGUI_Bind( this, "BindActivatePrimary", "#rd_bind_ActivatePrimary", "ASW_ActivatePrimary", true );

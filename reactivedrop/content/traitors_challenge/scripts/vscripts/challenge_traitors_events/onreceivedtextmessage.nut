@@ -1,5 +1,26 @@
 g_bool_BombActivited <- false;
 
+// Custom input 0 is the bindable replacement for the legacy chat menu trigger.
+// This script is included by challenge_traitors.nut in the challenge thinker
+// scope, so the listener is only visible to this challenge's listener scope.
+function OnCustomInput(cmd_index, player) {
+	if (cmd_index != 0 || player == null || !player.IsValid() || !g_bool_ClhallengeEnable || !g_bool_Initialized || g_bool_IafWin || g_bool_TraitorWin) {
+		return;
+	}
+
+	if (g_marine_Silencer != null && g_marine_Silencer.IsValid() && player == g_marine_Silencer.GetCommander() && player.GetMarine() == g_marine_Silencer) {
+		ToggleVGuiMenu(player, g_marine_Silencer);
+	} else if (g_marine_Infector != null && g_marine_Infector.IsValid() && player == g_marine_Infector.GetCommander() && player.GetMarine() == g_marine_Infector) {
+		ToggleVGuiMenu(player, g_marine_Infector);
+	} else if (g_marine_Scanner != null && g_marine_Scanner.IsValid() && player == g_marine_Scanner.GetCommander() && player.GetMarine() == g_marine_Scanner) {
+		ToggleVGuiMenu(player, g_marine_Scanner);
+	} else if (g_marine_Biochemist != null && g_marine_Biochemist.IsValid() && player == g_marine_Biochemist.GetCommander() && player.GetMarine() == g_marine_Biochemist) {
+		ToggleVGuiMenu(player, g_marine_Biochemist);
+	} else if (g_marine_Shield != null && g_marine_Shield.IsValid() && player == g_marine_Shield.GetCommander() && player.GetMarine() == g_marine_Shield) {
+		ToggleVGuiMenu(player, g_marine_Shield);
+	}
+}
+
 function OnReceivedTextMessage(recipient, sender, message) {
 	// 这个函数会在服务端为所有玩家执行一次，因此需要通过这个判断避免重复执行
 	if (sender != recipient) {

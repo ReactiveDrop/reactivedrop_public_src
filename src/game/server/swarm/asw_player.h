@@ -220,6 +220,10 @@ public:
 	float m_flLastActiveTime;
 	CNetworkVar( float, m_flInactiveKickWarning );
 
+	// Aggregate rate-limit state for client custom-input commands.
+	float m_flCustomInputRateWindowStart;
+	int m_iCustomInputRateCount;
+
 	// client stat counts (these are numbers each client stores and provides to the server on player creation, so server can decide to award medals)
 	int m_iClientKills;
 	int m_iClientMissionsCompleted;

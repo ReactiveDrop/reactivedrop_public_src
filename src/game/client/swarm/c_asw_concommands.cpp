@@ -268,6 +268,36 @@ CON_COMMAND( ASW_SelectSecondary, "Select secondary weapon" )
 	asw_slot_select_f( ASW_INVENTORY_SLOT_SECONDARY );
 }
 
+static void SendCustomInputCommand( const CCommand &args, const char *pszCommand )
+{
+	// These commands are intentionally argument-free.  Do not forward locally
+	// supplied arguments to the server command channel.
+	if ( args.ArgC() != 1 )
+		return;
+
+	engine->ServerCmd( pszCommand, true );
+}
+
+CON_COMMAND( rd_custom_input_0, "Sends custom input event 0 to the server" )
+{
+	SendCustomInputCommand( args, "rd_custom_input_0\n" );
+}
+
+CON_COMMAND( rd_custom_input_1, "Sends custom input event 1 to the server" )
+{
+	SendCustomInputCommand( args, "rd_custom_input_1\n" );
+}
+
+CON_COMMAND( rd_custom_input_2, "Sends custom input event 2 to the server" )
+{
+	SendCustomInputCommand( args, "rd_custom_input_2\n" );
+}
+
+CON_COMMAND( rd_custom_input_3, "Sends custom input event 3 to the server" )
+{
+	SendCustomInputCommand( args, "rd_custom_input_3\n" );
+}
+
 // Binds for activating primary/secondary/extra items
 
 void ASW_ActivatePrimary_f()

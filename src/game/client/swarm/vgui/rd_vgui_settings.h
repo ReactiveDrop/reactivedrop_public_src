@@ -327,6 +327,7 @@ public:
 	CRD_VGUI_Bind *m_pBindRotateCameraRight;
 	CRD_VGUI_Bind *m_pBindSecondaryAttackAlt;
 	CRD_VGUI_Bind *m_pBindChooseMarine;
+	vgui::EditablePanel *m_pBindCustomInput[4];
 
 	CRD_VGUI_Bind *m_pBindActivatePrimary;
 	CRD_VGUI_Bind *m_pBindActivateSecondary;
