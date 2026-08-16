@@ -666,7 +666,7 @@ CRD_VGUI_Settings_Controls::CRD_VGUI_Settings_Controls( vgui::Panel *parent, con
 	// Custom functions
 	for ( int i = 0; i < NELEMS( m_pBindCustomInput ); i++ )
 	{
-		m_pBindCustomInput[i] = new CRD_VGUI_KeyboardBind( this, CFmtStr{ "BindCustomInput%d", i }, CFmtStr{ "Custom Function %d", i + 1 }, CFmtStr{ "rd_custom_input_%d", i }, true );
+		m_pBindCustomInput[i] = new CRD_VGUI_KeyboardBind( this, CFmtStr{ "BindCustomInput%d", i }, CFmtStr{ "#rd_custom_function_%d", i + 1 }, CFmtStr{ "rd_custom_input_%d", i }, true );
 	}
 
 	// Use Equipment

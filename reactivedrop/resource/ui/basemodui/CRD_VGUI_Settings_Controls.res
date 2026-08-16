@@ -1093,7 +1093,7 @@
 		"wide"				"192"
 		"tall"				"12"
 		"textAlignment"		"north-west"
-		"labelText"			"Custom Functions"
+		"labelText"			"#rd_controls_category_custom_functions"
 		"font"				"DefaultMedium"
 	}
 

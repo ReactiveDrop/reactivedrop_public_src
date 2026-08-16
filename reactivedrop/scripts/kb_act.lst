@@ -65,12 +65,12 @@
 "+selectmarine7"		"#asw_select_marine_7"
 "+selectmarine8"		"#asw_select_marine_8"
 
-"blank"			"Custom Functions"
+"blank"			"#rd_controls_category_custom_functions"
 "blank"			"=========================="
-"rd_custom_input_0"		"Custom Function 1"
-"rd_custom_input_1"		"Custom Function 2"
-"rd_custom_input_2"		"Custom Function 3"
-"rd_custom_input_3"		"Custom Function 4"
+"rd_custom_input_0"		"#rd_custom_function_1"
+"rd_custom_input_1"		"#rd_custom_function_2"
+"rd_custom_input_2"		"#rd_custom_function_3"
+"rd_custom_input_3"		"#rd_custom_function_4"
 
 "blank"			"=========================="
 "blank"			"#Valve_Miscellaneous_Title"
