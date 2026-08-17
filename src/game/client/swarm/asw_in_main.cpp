@@ -309,6 +309,8 @@ Return 1 to allow engine to process the key, otherwise, act on it as needed
 */
 int CASWInput::KeyEvent( int down, ButtonCode_t code, const char *pszCurrentBinding )
 {
+	const bool bGameplayInfoBinding = pszCurrentBinding && Q_strcmp( pszCurrentBinding, "scripted_user_func traitors_gameplay_info" ) == 0;
+
 	if ( code >= KEY_FIRST && code <= KEY_LAST )
 	{
 		SetControllerModeKeyboard( false );
@@ -320,7 +322,7 @@ int CASWInput::KeyEvent( int down, ButtonCode_t code, const char *pszCurrentBind
 
 	// JOYPAD ADDED
 	// asw - grab joypad presses here
-	if ( code >= JOYSTICK_FIRST && code <= KEY_XSTICK2_UP && GetControllerFocus() && !g_RD_Steam_Input.m_bInitialized )
+	if ( !bGameplayInfoBinding && code >= JOYSTICK_FIRST && code <= KEY_XSTICK2_UP && GetControllerFocus() && !g_RD_Steam_Input.m_bInitialized )
 	{
 		if ( down == 1 )
 		{
@@ -339,30 +341,30 @@ int CASWInput::KeyEvent( int down, ButtonCode_t code, const char *pszCurrentBind
 	}
 
 	// notify ingame VGUI panels of mouse clicks
-	if ( code == MOUSE_LEFT )
+	if ( !bGameplayInfoBinding && code == MOUSE_LEFT )
 	{
 		if ( g_IngamePanelManager.SendMouseClick( false, down ? true : false ) )
 			return false;
 	}
-	else if ( code == MOUSE_RIGHT )
+	else if ( !bGameplayInfoBinding && code == MOUSE_RIGHT )
 	{
 		if ( g_IngamePanelManager.SendMouseClick( true, down ? true : false ) )
 			return false;
 	}
 
 	// use key: if we have any info messages up, close them and leave as that's our keypress used
-	if ( down == 1 && pszCurrentBinding && Q_strcmp( pszCurrentBinding, "+use" ) == 0 && CASW_VGUI_Info_Message::CloseInfoMessage() )
+	if ( !bGameplayInfoBinding && down == 1 && pszCurrentBinding && Q_strcmp( pszCurrentBinding, "+use" ) == 0 && CASW_VGUI_Info_Message::CloseInfoMessage() )
 		return false;
 
 	CHudMenu *pMenu = GET_FULLSCREEN_HUDELEMENT( CHudMenu );
-	if ( pMenu && pMenu->IsMenuOpen() && code >= KEY_F1 && code <= KEY_F10 )
+	if ( !bGameplayInfoBinding && pMenu && pMenu->IsMenuOpen() && code >= KEY_F1 && code <= KEY_F10 )
 	{
 		if ( down == 1 )
 			pMenu->SelectMenuItem( code - KEY_F1 + 1 );
 		return false;
 	}
 
-	if ( down == 1 )
+	if ( !bGameplayInfoBinding && down == 1 )
 	{
 		FOR_EACH_VEC( CRD_VGui_VScript::s_InteractiveHUDEntities, i )
 		{

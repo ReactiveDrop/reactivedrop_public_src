@@ -64,6 +64,12 @@
 "+selectmarine6"		"#asw_select_marine_6"
 "+selectmarine7"		"#asw_select_marine_7"
 "+selectmarine8"		"#asw_select_marine_8"
+
+"blank"			"#rd_controls_category_custom_functions"
+"blank"			"=========================="
+"scripted_user_func traitors_use_skill"	"#rd_traitors_use_skill"
+"scripted_user_func traitors_gameplay_info"	"#rd_traitors_gameplay_info"
+
 "blank"			"=========================="
 "blank"			"#Valve_Miscellaneous_Title"
 "blank"			"=========================="
