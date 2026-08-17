@@ -273,8 +273,11 @@ void CNB_Weapon_Detail::UpdateLabels( CASW_EquipItem *pItem, CASW_WeaponInfo *pW
 	{
 		int iClipValue = pItem->MaxAmmo1();
 		int nMaxBulletsPerGun = GetAmmoDef()->MaxCarry( pItem->m_iAmmo1, NULL );
-		Assert( nMaxBulletsPerGun % iClipValue == 0 );
-		int iNumClips = ( nMaxBulletsPerGun / iClipValue ) + 1;
+		// MaxCarry is reserve ammo; challenge configs may leave a partial
+		// reserve clip, so do not assert that it divides evenly. Keep the original
+		// integer-floor count and include the loaded clip.
+		//Assert( nMaxBulletsPerGun % iClipValue == 0 );
+		int iNumClips = iClipValue > 0 ? ( nMaxBulletsPerGun / iClipValue ) + 1 : 0;
 
 		if ( pWeaponData->m_iDisplayClipSize >= 0 )
 			iClipValue = pWeaponData->m_iDisplayClipSize;
@@ -285,6 +288,10 @@ void CNB_Weapon_Detail::UpdateLabels( CASW_EquipItem *pItem, CASW_WeaponInfo *pW
 			// this displays an "infinity" symbol in the neosans font
 			V_snwprintf( wszClipValue, ARRAYSIZE( wszClipValue ), L"\u221E" );
 		}
+		else if ( iClipValue <= 0 )
+		{
+			V_snwprintf( wszClipValue, ARRAYSIZE( wszClipValue ), L"%s", g_pVGuiLocalize->Find( "#asw_weapon_altfire_NA" ) );
+		}
 		else if ( pWeaponData->m_bShowClipsInWeaponDetail )
 		{
 			V_snwprintf( wszClipValue, ARRAYSIZE( wszClipValue ), L"%d \u00d7 %d", iClipValue, iNumClips );
@@ -293,12 +300,19 @@ void CNB_Weapon_Detail::UpdateLabels( CASW_EquipItem *pItem, CASW_WeaponInfo *pW
 		{
 			V_snwprintf( wszClipValue, ARRAYSIZE( wszClipValue ), L"%d", iClipValue );
 		}
-		float flCurrent = MIN( ( float )iClipValue / 200.0f, 1.0f );
+		float flCurrent = iClipValue > 0 ? MIN( ( float )iClipValue / 200.0f, 1.0f ) : 0.0f;
 
 		m_pValueLabel->SetVisible( true );
 		m_pValueLabel->SetText( wszClipValue );
-		m_pStatsBar->SetVisible( true );
-		m_pStatsBar->Init( flCurrent, flCurrent, 0.1f, false, false );
+		if ( iClipValue > 0 )
+		{
+			m_pStatsBar->SetVisible( true );
+			m_pStatsBar->Init( flCurrent, flCurrent, 0.1f, false, false );
+		}
+		else
+		{
+			m_pStatsBar->SetVisible( false );
+		}
 	}
 	else if ( m_eWeaponFactType == RD_Swarmopedia::WeaponFact::Type_T::Secondary )
 	{
