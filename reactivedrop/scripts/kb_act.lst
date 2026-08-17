@@ -64,6 +64,12 @@
 "+selectmarine6"		"#asw_select_marine_6"
 "+selectmarine7"		"#asw_select_marine_7"
 "+selectmarine8"		"#asw_select_marine_8"
+
+"blank"			"#rd_controls_category_custom_functions"
+"blank"			"=========================="
+"scripted_user_func custom_function_1"	"#rd_custom_function_1"
+"scripted_user_func custom_function_2"	"#rd_custom_function_2"
+
 "blank"			"=========================="
 "blank"			"#Valve_Miscellaneous_Title"
 "blank"			"=========================="

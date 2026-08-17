@@ -522,7 +522,7 @@
 		"wide"				"176"
 		"tall"				"12"
 		"navLeft"			"BindRotateCameraLeft"
-		"navRight"			"BindWheelEquipment2"
+		"navRight"			"BindCustomFunction1"
 		"navUp"				"BindPlayerList"
 		"navDown"			"BindRotateCameraRight"
 	}
@@ -536,7 +536,7 @@
 		"wide"				"176"
 		"tall"				"12"
 		"navLeft"			"BindRotateCameraRight"
-		"navRight"			"BindWheelEquipment2"
+		"navRight"			"BindCustomFunction2"
 		"navUp"				"BindRotateCameraLeft"
 		"navDown"			"BindSecondaryAttackAlt"
 	}
@@ -550,7 +550,7 @@
 		"wide"				"176"
 		"tall"				"12"
 		"navLeft"			"BindSecondaryAttackAlt"
-		"navRight"			"BindWheelEquipment2"
+		"navRight"			"BindCustomFunction2"
 		"navUp"				"BindRotateCameraRight"
 		"navDown"			"BindChooseMarine"
 	}
@@ -564,7 +564,7 @@
 		"wide"				"176"
 		"tall"				"12"
 		"navLeft"			"BindChooseMarine"
-		"navRight"			"BindWheelEquipment2"
+		"navRight"			"BindCustomFunction2"
 		"navUp"				"BindSecondaryAttackAlt"
 		"navDown"			"BtnResetDefaults"
 	}
@@ -761,7 +761,37 @@
 		"navLeft"			"BindMissionOverview"
 		"navRight"			"BtnCustomWheels"
 		"navUp"				"BindWheelEquipment1"
-		"navDown"			"BindWheelEquipment2"
+		"navDown"			"BindCustomFunction1"
+	}
+
+	"BindCustomFunction1"
+	{
+		"ControlName"		"CRD_VGUI_Bind"
+		"fieldName"			"BindCustomFunction1"
+		"xpos"				"202"	[!$WIN32WIDE]
+		"xpos"				"217"	[$WIN32WIDE]
+		"ypos"				"316"
+		"wide"				"176"
+		"tall"				"12"
+		"navLeft"			"BindRotateCameraLeft"
+		"navRight"			"BindWheelMarine"
+		"navUp"				"BindWheelEquipment2"
+		"navDown"			"BindCustomFunction2"
+	}
+
+	"BindCustomFunction2"
+	{
+		"ControlName"		"CRD_VGUI_Bind"
+		"fieldName"			"BindCustomFunction2"
+		"xpos"				"202"	[!$WIN32WIDE]
+		"xpos"				"217"	[$WIN32WIDE]
+		"ypos"				"328"
+		"wide"				"176"
+		"tall"				"12"
+		"navLeft"			"BindRotateCameraRight"
+		"navRight"			"BindWheelMarine"
+		"navUp"				"BindCustomFunction1"
+		"navDown"			"BtnResetDefaults"
 	}
 
 	"BindSelectMarine0"
@@ -929,7 +959,7 @@
 		"command"			"ResetDefaults"
 		"navLeft"			"BtnResetDefaults"
 		"navRight"			"SettingDeveloperConsole"
-		"navUp"				"BindChooseMarine"
+		"navUp"				"BindCustomFunction2"
 		"navDown"			"BtnResetDefaults"
 	}
 
@@ -1019,6 +1049,21 @@
 		"tall"				"180"
 		"textAlignment"		"north-west"
 		"labelText"			"#rd_controls_category_use_equipment"
+		"font"				"DefaultMedium"
+	}
+
+	"LblCustomFunctions"
+	{
+		"ControlName"		"Label"
+		"fieldName"			"LblCustomFunctions"
+		"xpos"				"194"	[!$WIN32WIDE]
+		"xpos"				"209"	[$WIN32WIDE]
+		"ypos"				"304"
+		"zpos"				"-1"
+		"wide"				"192"
+		"tall"				"12"
+		"textAlignment"		"north-west"
+		"labelText"			"#rd_controls_category_custom_functions"
 		"font"				"DefaultMedium"
 	}
 
