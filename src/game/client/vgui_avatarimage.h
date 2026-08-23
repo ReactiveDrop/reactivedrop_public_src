@@ -121,7 +121,11 @@ private:
 	CSteamID	m_SteamID;
 	EAvatarSize m_SourceArtSize;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	STEAM_CALLBACK( CAvatarImage, OnPersonaStateChange, PersonaStateChange_t );
+#else
+	STEAM_CALLBACK( CAvatarImage, OnPersonaStateChange, PersonaStateChange_t );
+#endif
 };
 
 //-----------------------------------------------------------------------------

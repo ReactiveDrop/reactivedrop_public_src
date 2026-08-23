@@ -37,13 +37,21 @@ public:
 
 	void ShowError( const char *szError );
 	void RequestResearchState();
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	STEAM_CALLBACK( CRD_Crafting_Research_Panel, OnGetTicketForWebApiResponse, GetTicketForWebApiResponse_t );
+#else
+	STEAM_CALLBACK( CRD_Crafting_Research_Panel, OnGetTicketForWebApiResponse, GetTicketForWebApiResponse_t );
+#endif
 	void OnGetStateRequestCompleted( HTTPRequestCompleted_t *pParam, bool bIOFailure );
 
 	CRD_Collection_Tab_Crafting_Research *m_pParent = nullptr;
 	HAuthTicket m_hGetStateAuth = k_HAuthTicketInvalid;
 	HTTPRequestHandle m_hGetStateRequest = INVALID_HTTPREQUEST_HANDLE;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CCallResult<CRD_Crafting_Research_Panel, HTTPRequestCompleted_t> m_OnGetStateRequestCompleted;
+#else
+	CCallResult<CRD_Crafting_Research_Panel, HTTPRequestCompleted_t> m_OnGetStateRequestCompleted;
+#endif
 
 	vgui::DHANDLE<CRD_Crafting_Research_Donate_Modal> m_hDonateModal;
 	vgui::Label *m_pLblUpdateTimer;
@@ -141,14 +149,22 @@ public:
 	void ApplySchemeSettings( vgui::IScheme *pScheme ) override;
 	void OnCommand( const char *szCommand ) override;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	STEAM_CALLBACK( CRD_Crafting_Research_Donate_Modal, OnGetTicketForWebApiResponse, GetTicketForWebApiResponse_t );
+#else
+	STEAM_CALLBACK( CRD_Crafting_Research_Donate_Modal, OnGetTicketForWebApiResponse, GetTicketForWebApiResponse_t );
+#endif
 	void OnDonateRequestCompleted( HTTPRequestCompleted_t *pParam, bool bIOFailure );
 	MESSAGE_FUNC_PTR( OnCurrentOptionChanged, "CurrentOptionChanged", panel );
 
 	CRD_Crafting_Research_Panel *m_pParent = nullptr;
 	HAuthTicket m_hDonateAuth = k_HAuthTicketInvalid;
 	HTTPRequestHandle m_hDonateRequest = INVALID_HTTPREQUEST_HANDLE;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CCallResult<CRD_Crafting_Research_Donate_Modal, HTTPRequestCompleted_t> m_OnDonateRequestCompleted;
+#else
+	CCallResult<CRD_Crafting_Research_Donate_Modal, HTTPRequestCompleted_t> m_OnDonateRequestCompleted;
+#endif
 
 	int m_iSelectedProjectID = 0;
 	int m_iDonateComponentID = 0;

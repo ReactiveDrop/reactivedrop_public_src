@@ -325,7 +325,11 @@ void CRD_VGUI_Notifications_List::OnThink()
 {
 	BaseClass::OnThink();
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	int64_t iNow = SteamUtils() ? SteamUtils()->GetServerRealTime() : 0;
+#else
+	int64_t iNow = SteamUtils() ? SteamUtils()->GetServerRealTime() : 0;
+#endif
 	if ( iNow == m_iLastTimerUpdate )
 	{
 		// only update timers once per second to save some CPU cycles

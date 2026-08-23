@@ -276,7 +276,11 @@ public:
 		if ( engine->IsPlayingDemo() || !pMarine || !pMarine->IsInhabited() || !pMarine->GetCommander() || !pMarine->GetCommander()->IsLocalPlayer() || !ASWGameRules() || ASWGameRules()->m_bCheated )
 			return false;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamInventory *pSteamInventory = SteamInventory();
+#else
+		ISteamInventory *pSteamInventory = SteamInventory();
+#endif
 		if ( !pSteamInventory )
 			return false;
 
@@ -284,9 +288,17 @@ public:
 		if ( pMarine->m_bOnFire && pMarine->IsInfested() )
 		{
 			SteamInventoryResult_t hResult;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			if ( pSteamInventory->AddPromoItem( &hResult, 28 ) )
+#else
+			if ( pSteamInventory->AddPromoItem( &hResult, 28 ) )
+#endif
 			{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				pSteamInventory->DestroyResult( hResult );
+#else
+				pSteamInventory->DestroyResult( hResult );
+#endif
 			}
 		}
 
@@ -333,5 +345,4 @@ BEGIN_NETWORK_TABLE( CPointToiletFlushable, DT_PointToiletFlushable )
 	RecvPropTime( RECVINFO( m_flNextUse ) ),
 #endif
 END_NETWORK_TABLE()
-
 

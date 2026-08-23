@@ -59,12 +59,24 @@ void CommanderProfile::SetDataSettings( KeyValues *pSettings )
 
 void CommanderProfile::InitForLocalPlayer()
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	Assert( SteamUser() );
+#else
+	Assert( SteamUser() );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !SteamUser() )
+#else
+	if ( !SteamUser() )
+#endif
 		return;
 
 	m_Mode = MODE_LOCAL_PLAYER;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	m_SteamID = SteamUser()->GetSteamID();
+#else
+	m_SteamID = SteamUser()->GetSteamID();
+#endif
 
 	C_ASW_Medal_Store *pMedalStore = GetMedalStore();
 	Assert( pMedalStore );
@@ -114,7 +126,11 @@ void CommanderProfile::TempOpenStatsWebsiteAndClose()
 {
 	// TODO FIXME: until the actual page is implemented, open the stats website in the Steam Overlay
 	char szStatsWeb[256];
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	V_snprintf( szStatsWeb, sizeof( szStatsWeb ), "https://stats.reactivedrop.com/profiles/%I64u?lang=%s&utm_source=profilewip", m_SteamID.ConvertToUint64(), SteamApps()->GetCurrentGameLanguage() );
+	#else
+	V_snprintf( szStatsWeb, sizeof( szStatsWeb ), "https://stats.reactivedrop.com/profiles/%I64u?lang=%s&utm_source=profilewip", m_SteamID.ConvertToUint64(), SteamApps()->GetCurrentGameLanguage() );
+	#endif
 	BaseModUI::CUIGameData::Get()->ExecuteOverlayUrl( szStatsWeb );
 
 	m_iTempCloseAfter = 5;
@@ -144,7 +160,11 @@ void CommanderProfile::FetchSteamIDMedalsAndExperience()
 {
 	Assert( m_SteamID.IsValid() && m_SteamID.BIndividualAccount() );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamHTTP *pHTTP = SteamHTTP();
+#else
+	ISteamHTTP *pHTTP = SteamHTTP();
+#endif
 	Assert( pHTTP );
 	if ( !pHTTP )
 	{
@@ -152,14 +172,34 @@ void CommanderProfile::FetchSteamIDMedalsAndExperience()
 		return;
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	m_hHTTPRequest = pHTTP->CreateHTTPRequest( k_EHTTPMethodGET, "https://stats.reactivedrop.com/api/get_equipped_medals" );
+#else
+	m_hHTTPRequest = pHTTP->CreateHTTPRequest( k_EHTTPMethodGET, "https://stats.reactivedrop.com/api/get_equipped_medals" );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pHTTP->SetHTTPRequestGetOrPostParameter( m_hHTTPRequest, "steamid", CFmtStr{ "%llu", m_SteamID.ConvertToUint64() } );
+#else
+	pHTTP->SetHTTPRequestGetOrPostParameter( m_hHTTPRequest, "steamid", CFmtStr{ "%llu", m_SteamID.ConvertToUint64() } );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pHTTP->SetHTTPRequestUserAgentInfo( m_hHTTPRequest, "CommanderProfileFetch" );
+#else
+	pHTTP->SetHTTPRequestUserAgentInfo( m_hHTTPRequest, "CommanderProfileFetch" );
+#endif
 
 	SteamAPICall_t hCall = k_uAPICallInvalid;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pHTTP->SendHTTPRequest( m_hHTTPRequest, &hCall );
+#else
+	pHTTP->SendHTTPRequest( m_hHTTPRequest, &hCall );
+#endif
 	// user is looking, so try to be quick
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pHTTP->PrioritizeHTTPRequest( m_hHTTPRequest );
+#else
+	pHTTP->PrioritizeHTTPRequest( m_hHTTPRequest );
+#endif
 
 	m_SteamIDProfileDataFetched.Set( hCall, this, &CommanderProfile::OnSteamIDProfileDataFetched );
 }
@@ -168,7 +208,11 @@ void CommanderProfile::FetchHoIAFSeasonStats()
 {
 	Assert( m_SteamID.IsValid() && m_SteamID.BIndividualAccount() );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamUserStats *pUserStats = SteamUserStats();
+#else
+	ISteamUserStats *pUserStats = SteamUserStats();
+#endif
 	Assert( pUserStats );
 	if ( !pUserStats )
 	{
@@ -176,13 +220,21 @@ void CommanderProfile::FetchHoIAFSeasonStats()
 		return;
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamAPICall_t hCall = pUserStats->DownloadLeaderboardEntriesForUsers( STEAM_LEADERBOARD_HOIAF_CURRENT_SEASON, &m_SteamID, 1 );
+#else
+	SteamAPICall_t hCall = pUserStats->DownloadLeaderboardEntriesForUsers( STEAM_LEADERBOARD_HOIAF_CURRENT_SEASON, &m_SteamID, 1 );
+#endif
 	m_HoIAFSeasonStatsFetched.Set( hCall, this, &CommanderProfile::OnHoIAFSeasonStatsFetched );
 }
 
 void CommanderProfile::OnHoIAFSeasonStatsFetched( LeaderboardScoresDownloaded_t *pParam, bool bIOFailure )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamUserStats *pUserStats = SteamUserStats();
+#else
+	ISteamUserStats *pUserStats = SteamUserStats();
+#endif
 	Assert( pUserStats );
 
 	if ( bIOFailure )
@@ -197,7 +249,11 @@ void CommanderProfile::OnHoIAFSeasonStatsFetched( LeaderboardScoresDownloaded_t 
 		return;
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	bool bOK = pUserStats->GetDownloadedLeaderboardEntry( pParam->m_hSteamLeaderboardEntries, 0, &m_HoIAFLeaderboardEntry, reinterpret_cast< int32 * >( &m_HoIAFDetails ), sizeof( m_HoIAFDetails ) / sizeof( int32 ) );
+#else
+	bool bOK = pUserStats->GetDownloadedLeaderboardEntry( pParam->m_hSteamLeaderboardEntries, 0, &m_HoIAFLeaderboardEntry, reinterpret_cast< int32 * >( &m_HoIAFDetails ), sizeof( m_HoIAFDetails ) / sizeof( int32 ) );
+#endif
 	Assert( bOK ); ( void )bOK;
 	Assert( m_HoIAFLeaderboardEntry.m_cDetails == sizeof( m_HoIAFDetails ) / sizeof( int32 ) );
 
@@ -206,14 +262,22 @@ void CommanderProfile::OnHoIAFSeasonStatsFetched( LeaderboardScoresDownloaded_t 
 
 void CommanderProfile::OnSteamIDProfileDataFetched( HTTPRequestCompleted_t *pParam, bool bIOFailure )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamHTTP *pHTTP = SteamHTTP();
+#else
+	ISteamHTTP *pHTTP = SteamHTTP();
+#endif
 	Assert( pHTTP );
 
 	Assert( bIOFailure || ( pParam && pParam->m_hRequest == m_hHTTPRequest ) );
 	if ( bIOFailure || !pParam->m_bRequestSuccessful )
 	{
 		Assert( !"TODO: failed to send request at all" );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pHTTP->ReleaseHTTPRequest( m_hHTTPRequest );
+#else
+		pHTTP->ReleaseHTTPRequest( m_hHTTPRequest );
+#endif
 		m_hHTTPRequest = INVALID_HTTPREQUEST_HANDLE;
 		return;
 	}
@@ -221,19 +285,35 @@ void CommanderProfile::OnSteamIDProfileDataFetched( HTTPRequestCompleted_t *pPar
 	if ( pParam->m_eStatusCode != k_EHTTPStatusCode200OK )
 	{
 		Assert( !"TODO: error returned by server" );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pHTTP->ReleaseHTTPRequest( m_hHTTPRequest);
+#else
+		pHTTP->ReleaseHTTPRequest( m_hHTTPRequest);
+#endif
 		m_hHTTPRequest = INVALID_HTTPREQUEST_HANDLE;
 		return;
 	}
 
 	uint32 nDataSize{};
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pHTTP->GetHTTPResponseBodySize( m_hHTTPRequest, &nDataSize );
+#else
+	pHTTP->GetHTTPResponseBodySize( m_hHTTPRequest, &nDataSize );
+#endif
 	CUtlBuffer buf;
 	buf.EnsureCapacity( nDataSize );
 	buf.SeekPut( CUtlBuffer::SEEK_HEAD, nDataSize );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pHTTP->GetHTTPResponseBodyData( m_hHTTPRequest, static_cast< uint8 * >( buf.Base() ), nDataSize );
+#else
+	pHTTP->GetHTTPResponseBodyData( m_hHTTPRequest, static_cast< uint8 * >( buf.Base() ), nDataSize );
+#endif
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pHTTP->ReleaseHTTPRequest( m_hHTTPRequest );
+#else
+	pHTTP->ReleaseHTTPRequest( m_hHTTPRequest );
+#endif
 	m_hHTTPRequest = INVALID_HTTPREQUEST_HANDLE;
 
 	KeyValues::AutoDelete pKV{ "EM" };

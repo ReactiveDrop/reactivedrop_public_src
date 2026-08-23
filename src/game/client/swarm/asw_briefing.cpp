@@ -467,7 +467,11 @@ CSteamID CASW_Briefing::GetCommanderSteamID( int nLobbySlot )
 	{
 		if ( pi.friendsID )
 		{
+			#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			CSteamID steamIDForPlayer( pi.friendsID, 1, SteamUtils()->GetConnectedUniverse(), k_EAccountTypeIndividual );
+			#else
+			CSteamID steamIDForPlayer( pi.friendsID, 1, SteamUtils()->GetConnectedUniverse(), k_EAccountTypeIndividual );
+			#endif
 			return steamIDForPlayer;
 		}
 	}

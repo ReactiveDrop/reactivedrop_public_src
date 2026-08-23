@@ -241,7 +241,11 @@ void CBaseAchievement::IncrementCount()
 
 #if !defined( NO_STEAM )
 		// if this achievement's progress should be stored in Steam, set the steam stat for it
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( StoreProgressInSteam() && SteamUserStats() )
+#else
+		if ( StoreProgressInSteam() && SteamUserStats() )
+#endif
 		{
 			// Set the Steam stat with the same name as the achievement.  Only cached locally until we upload it.
 			char pszProgressName[1024];
@@ -249,7 +253,11 @@ void CBaseAchievement::IncrementCount()
 #if defined( INFESTED_DLL ) && defined( CLIENT_DLL )
 			RD_Swarmopedia::CheckArticleUnlock( pszProgressName, m_iCount - 1, m_iCount );
 #endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			bool bRet = SteamUserStats()->SetStat( pszProgressName, m_iCount );
+#else
+			bool bRet = SteamUserStats()->SetStat( pszProgressName, m_iCount );
+#endif
 			if ( !bRet )
 			{
 				DevMsg( "ISteamUserStats::GetStat failed to set progress value in Steam for achievement %s\n", pszProgressName );
@@ -259,7 +267,11 @@ void CBaseAchievement::IncrementCount()
 			{
 				Q_snprintf( pszProgressName, 1024, "%s_COMP", GetName() );
 				int32 bits = (int32) GetComponentBits();
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				bRet = SteamUserStats()->SetStat( pszProgressName, bits );
+#else
+				bRet = SteamUserStats()->SetStat( pszProgressName, bits );
+#endif
 				if ( !bRet )
 				{
 					DevMsg( "ISteamUserStats::GetStat failed to set component value in Steam for achievement %s\n", pszProgressName );
@@ -468,12 +480,20 @@ void CBaseAchievement::EnsureComponentBitSetAndEvaluate( int iBitNumber )
 
 #if !defined( NO_STEAM )
 		// if this achievement's progress should be stored in Steam, set the steam stat for it
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( StoreProgressInSteam() && SteamUserStats() )
+#else
+		if ( StoreProgressInSteam() && SteamUserStats() )
+#endif
 		{
 			// Set the Steam stat with the same name as the achievement.  Only cached locally until we upload it.
 			char pszProgressName[1024];
 			Q_snprintf( pszProgressName, 1024, "%s_STAT", GetName() );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			bool bRet = SteamUserStats()->SetStat( pszProgressName, m_iCount );
+#else
+			bool bRet = SteamUserStats()->SetStat( pszProgressName, m_iCount );
+#endif
 			if ( !bRet )
 			{
 				DevMsg( "ISteamUserStats::GetStat failed to set progress value in Steam for achievement %s\n", pszProgressName );
@@ -483,7 +503,11 @@ void CBaseAchievement::EnsureComponentBitSetAndEvaluate( int iBitNumber )
 			{
 				Q_snprintf( pszProgressName, 1024, "%s_COMP", GetName() );
 				int32 bits = (int32) GetComponentBits();
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				bRet = SteamUserStats()->SetStat( pszProgressName, bits );
+#else
+				bRet = SteamUserStats()->SetStat( pszProgressName, bits );
+#endif
 				if ( !bRet )
 				{
 					DevMsg( "ISteamUserStats::GetStat failed to set component value in Steam for achievement %s\n", pszProgressName );

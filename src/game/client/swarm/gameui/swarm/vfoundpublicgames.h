@@ -66,7 +66,11 @@ namespace BaseModUI {
 		bool CanCreateGame();
 
 #if !defined( _X360 ) && !defined( NO_STEAM )
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		CCallResult<FoundPublicGames, NumberOfCurrentPlayers_t> m_callbackNumberOfCurrentPlayers;
+#else
+		CCallResult<FoundPublicGames, NumberOfCurrentPlayers_t> m_callbackNumberOfCurrentPlayers;
+#endif
 		void Steam_OnNumberOfCurrentPlayers( NumberOfCurrentPlayers_t *pResult, bool bError );
 #endif
 

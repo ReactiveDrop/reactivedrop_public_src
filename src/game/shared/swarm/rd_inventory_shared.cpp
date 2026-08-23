@@ -67,22 +67,38 @@ COMPILE_TIME_ASSERT( ReactiveDropInventory::g_PlayerInventorySlotNames[RD_STEAM_
 
 #ifdef CLIENT_DLL
 ConVar rd_debug_inventory( "cl_debug_inventory", "0", FCVAR_NONE, "print debugging messages about inventory service calls" );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 #define GET_INVENTORY_OR_BAIL \
 	ISteamInventory *pInventory = SteamInventory(); \
 	Assert( pInventory ); \
 	if ( !pInventory ) \
 		return
+#else
+#define GET_INVENTORY_OR_BAIL \
+	ISteamInventory *pInventory = SteamInventory(); \
+	Assert( pInventory ); \
+	if ( !pInventory ) \
+		return
+#endif
 
 extern ConVar rd_strange_device_tier_notifications;
 extern ConVar rd_equipped_medal[RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS];
 ConVar rd_crafting_material_pickups( "rd_crafting_material_pickups", "1", FCVAR_ARCHIVE, "if set to 0, the game will pretend that no crafting material locations are available" );
 #else
 ConVar rd_debug_inventory( "sv_debug_inventory", "0", FCVAR_NONE, "print debugging messages about inventory service calls" );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 #define GET_INVENTORY_OR_BAIL \
 	ISteamInventory *pInventory = engine->IsDedicatedServer() ? SteamGameServerInventory() : SteamInventory(); \
 	Assert( pInventory ); \
 	if ( !pInventory ) \
 		return
+#else
+#define GET_INVENTORY_OR_BAIL \
+	ISteamInventory *pInventory = engine->IsDedicatedServer() ? SteamGameServerInventory() : SteamInventory(); \
+	Assert( pInventory ); \
+	if ( !pInventory ) \
+		return
+#endif
 
 extern ConVar rd_dedicated_server_language;
 #endif
@@ -119,9 +135,17 @@ public:
 	void PostInit() override
 	{
 #ifdef CLIENT_DLL
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( SteamUser() )
+#else
+		if ( SteamUser() )
+#endif
 		{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			CFmtStr szCacheFileName{ "cfg/clienti_%llu.dat", SteamUser()->GetSteamID().ConvertToUint64() };
+#else
+			CFmtStr szCacheFileName{ "cfg/clienti_%llu.dat", SteamUser()->GetSteamID().ConvertToUint64() };
+#endif
 			CUtlBuffer buf;
 			if ( g_pFullFileSystem->ReadFile( szCacheFileName, "MOD", buf ) )
 			{
@@ -144,11 +168,19 @@ public:
 		}
 #endif
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamInventory *pInventory = SteamInventory();
+#else
+		ISteamInventory *pInventory = SteamInventory();
+#endif
 #ifdef GAME_DLL
 		if ( engine->IsDedicatedServer() )
 		{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pInventory = SteamGameServerInventory();
+#else
+			pInventory = SteamGameServerInventory();
+#endif
 		}
 #endif
 		if ( !pInventory )
@@ -157,7 +189,11 @@ public:
 			return;
 		}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !pInventory->LoadItemDefinitions() )
+#else
+		if ( !pInventory->LoadItemDefinitions() )
+#endif
 		{
 			Warning( "Failed to load inventory item definitions!\n" );
 		}
@@ -173,7 +209,11 @@ public:
 		ListenForGameEvent( "rd_increment_strange_property" );
 
 #ifdef CLIENT_DLL
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pInventory->GetAllItems( &m_GetFullInventoryForCacheResult );
+#else
+		pInventory->GetAllItems( &m_GetFullInventoryForCacheResult );
+#endif
 
 		materials->AddReleaseFunc( &ResetAccessoryIconsOnMaterialsReleased );
 
@@ -183,11 +223,19 @@ public:
 
 	void LevelInitPreEntity() override
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamInventory *pInventory = SteamInventory();
+#else
+		ISteamInventory *pInventory = SteamInventory();
+#endif
 #ifdef GAME_DLL
 		if ( engine->IsDedicatedServer() )
 		{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pInventory = SteamGameServerInventory();
+#else
+			pInventory = SteamGameServerInventory();
+#endif
 		}
 #endif
 		if ( !pInventory )
@@ -200,7 +248,11 @@ public:
 		{
 			m_flDefsUpdateTime = Plat_FloatTime();
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			if ( !pInventory->LoadItemDefinitions() )
+#else
+			if ( !pInventory->LoadItemDefinitions() )
+#endif
 			{
 				Warning( "Failed to load inventory item definitions!\n" );
 			}
@@ -235,11 +287,19 @@ public:
 
 	void LevelShutdownPreEntity() override
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamInventory *pInventory = SteamInventory();
+#else
+		ISteamInventory *pInventory = SteamInventory();
+#endif
 #ifdef GAME_DLL
 		if ( engine->IsDedicatedServer() )
 		{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pInventory = SteamGameServerInventory();
+#else
+			pInventory = SteamGameServerInventory();
+#endif
 		}
 #endif
 		if ( !pInventory )
@@ -257,15 +317,27 @@ public:
 #ifdef CLIENT_DLL
 	void CacheUserInventory( SteamInventoryResult_t hResult )
 	{
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamUtils *pUtils = SteamUtils();
+		#else
+		ISteamUtils *pUtils = SteamUtils();
+		#endif
 		Assert( pUtils );
 		// If we're not running as Alien Swarm: Reactive Drop (for example, if we're a mod or running through the SDK), don't update caches.
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !pUtils || pUtils->GetAppID() != 563560 )
+		#else
+		if ( !pUtils || pUtils->GetAppID() != 563560 )
+		#endif
 		{
 			return;
 		}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamInventory *pInventory = SteamInventory();
+#else
+		ISteamInventory *pInventory = SteamInventory();
+#endif
 		if ( !pInventory )
 		{
 			Warning( "Failed to cache user inventory for offline play: no ISteamInventory\n" );
@@ -273,7 +345,11 @@ public:
 		}
 
 		uint32 nItems{};
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !pInventory->GetResultItems( hResult, NULL, &nItems ) )
+#else
+		if ( !pInventory->GetResultItems( hResult, NULL, &nItems ) )
+#endif
 		{
 			Warning( "Failed to retrieve item count from inventory result for cache\n" );
 			return;
@@ -354,7 +430,11 @@ public:
 				Msg( "Have %d stacks of auto-stack item %d; merging\n", autoStackDefs[i].Count(), autoStackDefs.Key( i ) );
 			}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pInventory->TransferItemQuantity( AddCraftItemTask( CRAFT_AUTO_STACK, autoStackDefs.Key( i ) ), autoStackDefs[i][1], GetLocalItemCache( autoStackDefs[i][1] )->Quantity, autoStackDefs[i][0] );
+#else
+			pInventory->TransferItemQuantity( AddCraftItemTask( CRAFT_AUTO_STACK, autoStackDefs.Key( i ) ), autoStackDefs[i][1], GetLocalItemCache( autoStackDefs[i][1] )->Quantity, autoStackDefs[i][0] );
+#endif
 			if ( autoStackDefs[i].Count() > 2 )
 			{
 				m_CraftingQueue.Tail()->m_RetryItemList.AddVectorToTail( autoStackDefs[i] );
@@ -419,17 +499,29 @@ public:
 			}
 		}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pInventory->ExchangeItems( AddCraftItemTask( CRAFT_AUTO_BACKGROUND ), output, outputqty, NELEMS( output ), input.Base(), inputqty.Base(), input.Count() );
+#else
+		pInventory->ExchangeItems( AddCraftItemTask( CRAFT_AUTO_BACKGROUND ), output, outputqty, NELEMS( output ), input.Base(), inputqty.Base(), input.Count() );
+#endif
 
 		return true;
 	}
 
 	void WriteInventoryCache()
 	{
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamUtils *pUtils = SteamUtils();
+	#else
+		ISteamUtils *pUtils = SteamUtils();
+	#endif
 		Assert( pUtils );
 		// If we're not running as Alien Swarm: Reactive Drop (for example, if we're a mod or running through the SDK), don't update caches.
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !pUtils || pUtils->GetAppID() != 563560 )
+		#else
+		if ( !pUtils || pUtils->GetAppID() != 563560 )
+		#endif
 		{
 			return;
 		}
@@ -450,14 +542,22 @@ public:
 			return;
 		}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamUser *pUser = SteamUser();
+#else
+		ISteamUser *pUser = SteamUser();
+#endif
 		if ( !pUser )
 		{
 			Warning( "Failed to cache user inventory for offline play: no ISteamUser\n" );
 			return;
 		}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		CFmtStr szCacheFileName{ "cfg/clienti_%llu.dat", pUser->GetSteamID().ConvertToUint64() };
+#else
+		CFmtStr szCacheFileName{ "cfg/clienti_%llu.dat", pUser->GetSteamID().ConvertToUint64() };
+#endif
 		if ( !g_pFullFileSystem->WriteFile( szCacheFileName, "MOD", buf ) )
 		{
 			Warning( "Failed to write inventory cache\n" );
@@ -481,7 +581,11 @@ public:
 		ISteamUtils *pUtils = SteamUtils();
 		Assert( pUtils );
 		// If we're not running as Alien Swarm: Reactive Drop (for example, if we're a mod or running through the SDK), don't update caches.
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !pUtils || pUtils->GetAppID() != 563560 )
+		#else
+		if ( !pUtils || pUtils->GetAppID() != 563560 )
+		#endif
 		{
 			return;
 		}
@@ -489,7 +593,11 @@ public:
 		CFastTimer timer;
 		timer.Start();
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamInventory *pInventory = SteamInventory();
+#else
+		ISteamInventory *pInventory = SteamInventory();
+#endif
 		if ( !pInventory )
 		{
 			Warning( "Failed to cache item schema for offline play: no ISteamInventory\n" );
@@ -499,10 +607,18 @@ public:
 		KeyValues::AutoDelete pCache{ "IS" };
 
 		uint32 nItemDefs{};
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pInventory->GetItemDefinitionIDs( NULL, &nItemDefs );
+#else
+		pInventory->GetItemDefinitionIDs( NULL, &nItemDefs );
+#endif
 		CUtlVector<SteamItemDef_t> ItemDefIDs;
 		ItemDefIDs.AddMultipleToTail( nItemDefs );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pInventory->GetItemDefinitionIDs( ItemDefIDs.Base(), &nItemDefs );
+#else
+		pInventory->GetItemDefinitionIDs( ItemDefIDs.Base(), &nItemDefs );
+#endif
 
 		ItemDefIDs.AddVectorToTail( m_HighOwnedInventoryDefIDs );
 
@@ -510,12 +626,20 @@ public:
 		uint32 size{};
 
 		uint32 nSkippedDefs = 0;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		const char *szUserLanguage = SteamApps()->GetCurrentGameLanguage();
+#else
+		const char *szUserLanguage = SteamApps()->GetCurrentGameLanguage();
+#endif
 
 		FOR_EACH_VEC( ItemDefIDs, i )
 		{
 			size = szStringBuf.Count();
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pInventory->GetItemDefinitionProperty( ItemDefIDs[i], "type", szStringBuf.Base(), &size );
+#else
+			pInventory->GetItemDefinitionProperty( ItemDefIDs[i], "type", szStringBuf.Base(), &size );
+#endif
 			if ( !V_strcmp( szStringBuf.Base(), "bundle" ) ||
 				!V_strcmp( szStringBuf.Base(), "generator" ) ||
 				!V_strcmp( szStringBuf.Base(), "playtimegenerator" ) )
@@ -527,10 +651,18 @@ public:
 
 			KeyValues *pDef = new KeyValues{ "d" };
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pInventory->GetItemDefinitionProperty( ItemDefIDs[i], NULL, NULL, &size );
+#else
+			pInventory->GetItemDefinitionProperty( ItemDefIDs[i], NULL, NULL, &size );
+#endif
 			szStringBuf.EnsureCapacity( size );
 			size = szStringBuf.Count();
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pInventory->GetItemDefinitionProperty( ItemDefIDs[i], NULL, szStringBuf.Base(), &size );
+#else
+			pInventory->GetItemDefinitionProperty( ItemDefIDs[i], NULL, szStringBuf.Base(), &size );
+#endif
 
 			CSplitString PropertyNames{ szStringBuf.Base(), "," };
 			FOR_EACH_VEC( PropertyNames, j )
@@ -578,10 +710,18 @@ public:
 
 #undef CHECK_LANGUAGE_PREFIX
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				pInventory->GetItemDefinitionProperty( ItemDefIDs[i], PropertyNames[j], NULL, &size );
+#else
+				pInventory->GetItemDefinitionProperty( ItemDefIDs[i], PropertyNames[j], NULL, &size );
+#endif
 				szStringBuf.EnsureCapacity( size );
 				size = szStringBuf.Count();
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				pInventory->GetItemDefinitionProperty( ItemDefIDs[i], PropertyNames[j], szStringBuf.Base(), &size );
+#else
+				pInventory->GetItemDefinitionProperty( ItemDefIDs[i], PropertyNames[j], szStringBuf.Base(), &size );
+#endif
 
 				if ( szStringBuf.Base()[0] == '\0' )
 				{
@@ -657,7 +797,11 @@ public:
 			return;
 		}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamInventory *pInventory = SteamInventory();
+#else
+		ISteamInventory *pInventory = SteamInventory();
+#endif
 		Assert( pInventory );
 		if ( !pInventory )
 		{
@@ -665,7 +809,11 @@ public:
 			return;
 		}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		SteamInventoryUpdateHandle_t hUpdate = pInventory->StartUpdateProperties();
+#else
+		SteamInventoryUpdateHandle_t hUpdate = pInventory->StartUpdateProperties();
+#endif
 
 		if ( rd_debug_inventory.GetBool() )
 		{
@@ -682,7 +830,11 @@ public:
 					m_PendingDynamicPropertyUpdates[i]->PropertyIndex, szProperty, m_PendingDynamicPropertyUpdates[i]->NewValue );
 			}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			bool ok = pInventory->SetProperty( hUpdate, m_PendingDynamicPropertyUpdates[i]->ItemInstanceID, szProperty, m_PendingDynamicPropertyUpdates[i]->NewValue );
+#else
+			bool ok = pInventory->SetProperty( hUpdate, m_PendingDynamicPropertyUpdates[i]->ItemInstanceID, szProperty, m_PendingDynamicPropertyUpdates[i]->NewValue );
+#endif
 			Assert( ok );
 			if ( !ok )
 			{
@@ -690,7 +842,11 @@ public:
 			}
 		}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		bool ok = pInventory->SubmitUpdateProperties( hUpdate, &m_DynamicPropertyUpdateResult );
+#else
+		bool ok = pInventory->SubmitUpdateProperties( hUpdate, &m_DynamicPropertyUpdateResult );
+#endif
 		Assert( ok );
 		if ( !ok )
 		{
@@ -1319,11 +1475,19 @@ public:
 	{
 		~CraftItemTask_t()
 		{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			ISteamInventory *pInventory = SteamInventory();
+#else
+			ISteamInventory *pInventory = SteamInventory();
+#endif
 			Assert( pInventory );
 			if ( pInventory )
 			{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				pInventory->DestroyResult( m_hResult );
+#else
+				pInventory->DestroyResult( m_hResult );
+#endif
 			}
 		}
 
@@ -1440,7 +1604,11 @@ public:
 			DebugPrintResult( pTask->m_hResult );
 		}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		EResult eResult = pInventory->GetResultStatus( pTask->m_hResult );
+#else
+		EResult eResult = pInventory->GetResultStatus( pTask->m_hResult );
+#endif
 		if ( eResult != k_EResultOK )
 		{
 			Warning( "Crafting task (type %d) failed with EResult %d %s\n", pTask->m_Type, eResult, UTIL_RD_EResultToString( eResult ) );
@@ -1449,7 +1617,11 @@ public:
 			if ( pTask->m_Type == CRAFT_DYNAMIC_PROPERTY_INIT && pTask->m_RetryItemList.Count() )
 			{
 				// silently retry the init after re-obtaining a snapshot of the items
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				pInventory->GetItemsByID( AddCraftItemTask( CRAFT_DYNAMIC_PROPERTY_INIT_RETRY, pTask->m_iAccessoryDef, pTask->m_iReplaceItemInstance ), pTask->m_RetryItemList.Base(), pTask->m_RetryItemList.Count() );
+#else
+				pInventory->GetItemsByID( AddCraftItemTask( CRAFT_DYNAMIC_PROPERTY_INIT_RETRY, pTask->m_iAccessoryDef, pTask->m_iReplaceItemInstance ), pTask->m_RetryItemList.Base(), pTask->m_RetryItemList.Count() );
+#endif
 				return;
 			}
 
@@ -1553,10 +1725,18 @@ public:
 				}
 
 				uint32 nCount{};
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				pInventory->GetResultItems( pTask->m_hResult, NULL, &nCount );
+#else
+				pInventory->GetResultItems( pTask->m_hResult, NULL, &nCount );
+#endif
 				CUtlVector<SteamItemDetails_t> diff;
 				diff.AddMultipleToTail( nCount );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				pInventory->GetResultItems( pTask->m_hResult, diff.Base(), &nCount );
+#else
+				pInventory->GetResultItems( pTask->m_hResult, diff.Base(), &nCount );
+#endif
 
 				int added = 0;
 				FOR_EACH_VEC( diff, i )
@@ -1569,7 +1749,11 @@ public:
 					char buf[12]{};
 					uint32 len = sizeof( buf );
 					int32 quantity = 0;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 					if ( pInventory->GetResultItemProperty( pTask->m_hResult, i, "quantity", buf, &len ) )
+#else
+					if ( pInventory->GetResultItemProperty( pTask->m_hResult, i, "quantity", buf, &len ) )
+#endif
 					{
 						quantity = strtol( buf, NULL, 10 );
 					}
@@ -1607,13 +1791,21 @@ public:
 			if ( engine->IsInGame() )
 			{
 				uint32_t nItems = 0;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				pInventory->GetResultItems( pTask->m_hResult, NULL, &nItems );
+#else
+				pInventory->GetResultItems( pTask->m_hResult, NULL, &nItems );
+#endif
 				if ( nItems > 0 )
 				{
 					// make sure the first item is real and not a "no new items granted" error message
 					char szOrigin[128]{};
 					uint32_t nOriginSize = sizeof( szOrigin );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 					pInventory->GetResultItemProperty( pTask->m_hResult, 0, "origin", szOrigin, &nOriginSize );
+#else
+					pInventory->GetResultItemProperty( pTask->m_hResult, 0, "origin", szOrigin, &nOriginSize );
+#endif
 
 					if ( !V_strcmp( szOrigin, "promo" ) )
 					{
@@ -1648,10 +1840,18 @@ public:
 			if ( pTask->m_RetryItemList.Count() != 0 )
 			{
 				uint32 nCount{};
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				pInventory->GetResultItems( pTask->m_hResult, NULL, &nCount );
+#else
+				pInventory->GetResultItems( pTask->m_hResult, NULL, &nCount );
+#endif
 				CUtlVector<SteamItemDetails_t> items;
 				items.AddMultipleToTail( nCount );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				pInventory->GetResultItems( pTask->m_hResult, items.Base(), &nCount );
+#else
+				pInventory->GetResultItems( pTask->m_hResult, items.Base(), &nCount );
+#endif
 
 				SteamItemInstanceID_t iStacked = k_SteamItemInstanceIDInvalid;
 				FOR_EACH_VEC( items, i )
@@ -1664,7 +1864,11 @@ public:
 					char buf[12]{};
 					uint32 len = sizeof( buf );
 					int32 quantity = 0;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 					if ( pInventory->GetResultItemProperty( pTask->m_hResult, i, "quantity", buf, &len ) )
+#else
+					if ( pInventory->GetResultItemProperty( pTask->m_hResult, i, "quantity", buf, &len ) )
+#endif
 					{
 						quantity = strtol( buf, NULL, 10 );
 					}
@@ -1685,7 +1889,11 @@ public:
 						Msg( "Have %d remaining stacks of auto-stack item %d; merging\n", pTask->m_RetryItemList.Count() + 1, pTask->m_iAccessoryDef );
 					}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 					pInventory->TransferItemQuantity( AddCraftItemTask( CRAFT_AUTO_STACK, pTask->m_iAccessoryDef ), pTask->m_RetryItemList[0], GetLocalItemCache( pTask->m_RetryItemList[0] )->Quantity, iStacked );
+#else
+					pInventory->TransferItemQuantity( AddCraftItemTask( CRAFT_AUTO_STACK, pTask->m_iAccessoryDef ), pTask->m_RetryItemList[0], GetLocalItemCache( pTask->m_RetryItemList[0] )->Quantity, iStacked );
+#endif
 					m_CraftingQueue.Tail()->m_RetryItemList.AddVectorToTail( pTask->m_RetryItemList );
 					m_CraftingQueue.Tail()->m_RetryItemList.FastRemove( 0 );
 				}
@@ -1696,11 +1904,23 @@ public:
 			break;
 		}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamUser *pUser = SteamUser();
+#else
+		ISteamUser *pUser = SteamUser();
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( pUser && pInventory->CheckResultSteamID( pTask->m_hResult, pUser->GetSteamID() ) )
+#else
+		if ( pUser && pInventory->CheckResultSteamID( pTask->m_hResult, pUser->GetSteamID() ) )
+#endif
 		{
 			uint32 nCount{ 0 };
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pInventory->GetResultItems( pTask->m_hResult, NULL, &nCount );
+#else
+			pInventory->GetResultItems( pTask->m_hResult, NULL, &nCount );
+#endif
 			if ( nCount > 0 )
 			{
 				m_bWantFullInventoryRefresh = true;
@@ -1715,10 +1935,18 @@ public:
 
 		if ( m_bWantFullInventoryRefresh && m_CraftingQueue.Count() == 0 && ( !ASWGameRules() || ASWGameRules()->GetGameState() != ASW_GS_INGAME ) )
 		{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pInventory->DestroyResult( m_GetFullInventoryForCacheResult );
+#else
+			pInventory->DestroyResult( m_GetFullInventoryForCacheResult );
+#endif
 			m_GetFullInventoryForCacheResult = k_SteamInventoryResultInvalid;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pInventory->GetAllItems( &m_GetFullInventoryForCacheResult );
+#else
+			pInventory->GetAllItems( &m_GetFullInventoryForCacheResult );
+#endif
 
 			if ( ValidatePlayerEquipmentResult() )
 			{
@@ -1733,13 +1961,21 @@ public:
 		GET_INVENTORY_OR_BAIL;
 
 		uint32_t nItems = 0;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !pInventory->GetResultItems( hResult, NULL, &nItems ) )
+#else
+		if ( !pInventory->GetResultItems( hResult, NULL, &nItems ) )
+#endif
 		{
 			return;
 		}
 
 		SteamItemDetails_t *pItems = ( SteamItemDetails_t * )stackalloc( nItems * sizeof( SteamItemDetails_t ) );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !pInventory->GetResultItems( hResult, pItems, &nItems ) )
+#else
+		if ( !pInventory->GetResultItems( hResult, pItems, &nItems ) )
+#endif
 		{
 			return;
 		}
@@ -1769,10 +2005,18 @@ public:
 		SteamInventoryUpdateHandle_t hUpdate = k_SteamInventoryUpdateHandleInvalid;
 
 		uint32 nCount{};
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pInventory->GetResultItems( pTask->m_hResult, NULL, &nCount );
+#else
+		pInventory->GetResultItems( pTask->m_hResult, NULL, &nCount );
+#endif
 		CUtlVector<SteamItemDetails_t> items;
 		items.AddMultipleToTail( nCount );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pInventory->GetResultItems( pTask->m_hResult, items.Base(), &nCount );
+#else
+		pInventory->GetResultItems( pTask->m_hResult, items.Base(), &nCount );
+#endif
 		CUtlVector<SteamItemInstanceID_t> itemsForInit;
 
 		FOR_EACH_VEC( items, i )
@@ -1797,7 +2041,11 @@ public:
 						Assert( ReactiveDropInventory::DynamicPropertyDataType( pDef->CompressedDynamicProps[j] ) == FIELD_INTEGER64 );
 						if ( hUpdate == k_SteamInventoryUpdateHandleInvalid )
 						{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 							hUpdate = pInventory->StartUpdateProperties();
+#else
+							hUpdate = pInventory->StartUpdateProperties();
+#endif
 							Assert( hUpdate != k_SteamInventoryUpdateHandleInvalid );
 						}
 
@@ -1819,7 +2067,11 @@ public:
 							Msg( "[C] Initializing missing dynamic property '%s' on item %llu (%d %s) to %lld.\n", pDef->CompressedDynamicProps[j], instance.ItemID, instance.ItemDefID, pDef->Name.Get(), iDefaultValue );
 
 						bHeldBack = true;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 						pInventory->SetProperty( hUpdate, instance.ItemID, pDef->CompressedDynamicProps[j], iDefaultValue );
+#else
+						pInventory->SetProperty( hUpdate, instance.ItemID, pDef->CompressedDynamicProps[j], iDefaultValue );
+#endif
 					}
 				}
 
@@ -1850,7 +2102,11 @@ public:
 									Msg( "[C] Initializing missing dynamic property '%s' on item %llu (%d %s) (from accessory %d %s) to 0.\n", pAccessoryDef->CompressedDynamicProps[k], instance.ItemID, instance.ItemDefID, pDef->Name.Get(), accessoryID, pAccessoryDef->Name.Get() );
 
 								bHeldBack = true;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 								pInventory->SetProperty( hUpdate, instance.ItemID, pAccessoryDef->CompressedDynamicProps[k], 0ll );
+#else
+								pInventory->SetProperty( hUpdate, instance.ItemID, pAccessoryDef->CompressedDynamicProps[k], 0ll );
+#endif
 							}
 						}
 					}
@@ -1873,7 +2129,11 @@ public:
 
 		if ( hUpdate != k_SteamInventoryUpdateHandleInvalid )
 		{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pInventory->SubmitUpdateProperties( hUpdate, AddCraftItemTask( bSilenceNotification ? CRAFT_DYNAMIC_PROPERTY_UPDATE : CRAFT_DYNAMIC_PROPERTY_INIT, SteamItemDef_t( iMode ) ) );
+#else
+			pInventory->SubmitUpdateProperties( hUpdate, AddCraftItemTask( bSilenceNotification ? CRAFT_DYNAMIC_PROPERTY_UPDATE : CRAFT_DYNAMIC_PROPERTY_INIT, SteamItemDef_t( iMode ) ) );
+#endif
 			if ( !bIsRetry )
 			{
 				m_CraftingQueue.Tail()->m_RetryItemList.AddVectorToTail( itemsForInit );
@@ -1905,7 +2165,11 @@ public:
 
 	void DebugPrintResult( SteamInventoryResult_t hResult )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamInventory *pInventory = SteamInventory();
+#else
+		ISteamInventory *pInventory = SteamInventory();
+#endif
 		Assert( pInventory );
 		if ( !pInventory )
 		{
@@ -1914,16 +2178,33 @@ public:
 		}
 
 		uint32_t count{};
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( pInventory->GetResultItems( hResult, NULL, &count ) )
 			Msg( "Result %08x (%s, age %d sec) has %d items:\n", hResult, UTIL_RD_EResultToString( pInventory->GetResultStatus( hResult ) ), SteamUtils()->GetServerRealTime() - pInventory->GetResultTimestamp( hResult ), count );
+#else
+		if ( pInventory->GetResultItems( hResult, NULL, &count ) )
+			Msg( "Result %08x (%s, age %d sec) has %d items:\n", hResult, UTIL_RD_EResultToString( pInventory->GetResultStatus( hResult ) ), SteamUtils()->GetServerRealTime() - pInventory->GetResultTimestamp( hResult ), count );
+#endif
 		else
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			Msg( "Result %08x (%s, age %d sec) has ERR items:\n", hResult, UTIL_RD_EResultToString( pInventory->GetResultStatus( hResult ) ), SteamUtils()->GetServerRealTime() - pInventory->GetResultTimestamp( hResult ) );
+#else
+			Msg( "Result %08x (%s, age %d sec) has ERR items:\n", hResult, UTIL_RD_EResultToString( pInventory->GetResultStatus( hResult ) ), SteamUtils()->GetServerRealTime() - pInventory->GetResultTimestamp( hResult ) );
+#endif
 
 		uint32 nSerializedBufferSize{};
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( pInventory->SerializeResult( hResult, NULL, &nSerializedBufferSize ) )
+#else
+		if ( pInventory->SerializeResult( hResult, NULL, &nSerializedBufferSize ) )
+#endif
 		{
 			byte *pSerialized = ( byte * )stackalloc( nSerializedBufferSize );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pInventory->SerializeResult( hResult, pSerialized, &nSerializedBufferSize );
+#else
+			pInventory->SerializeResult( hResult, pSerialized, &nSerializedBufferSize );
+#endif
 			char *szSerialized = ( char * )stackalloc( nSerializedBufferSize * 2 + 1 );
 
 			// V_binarytohex is O(n^2); use an O(n) algorithm instead.
@@ -1938,7 +2219,11 @@ public:
 		}
 
 		CUtlMemory<SteamItemDetails_t> itemDetails( 0, count );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !pInventory->GetResultItems( hResult, itemDetails.Base(), &count ) )
+#else
+		if ( !pInventory->GetResultItems( hResult, itemDetails.Base(), &count ) )
+#endif
 		{
 			Warning( "Failed to get item details for result.\n" );
 			count = 0;
@@ -1954,18 +2239,34 @@ public:
 			szStringBuf[0] = '\0';
 
 			{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				pInventory->GetResultItemProperty( hResult, i, NULL, NULL, &size );
+#else
+				pInventory->GetResultItemProperty( hResult, i, NULL, NULL, &size );
+#endif
 				szStringBuf.EnsureCapacity( size + 1 );
 				size = szStringBuf.Count();
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				pInventory->GetResultItemProperty( hResult, i, NULL, szStringBuf.Base(), &size );
+#else
+				pInventory->GetResultItemProperty( hResult, i, NULL, szStringBuf.Base(), &size );
+#endif
 				Msg( "ResultProperties: %s\n", szStringBuf.Base() );
 				CSplitString propertyNames( szStringBuf.Base(), "," );
 				FOR_EACH_VEC( propertyNames, j )
 				{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 					pInventory->GetResultItemProperty( hResult, i, propertyNames[j], NULL, &size );
+#else
+					pInventory->GetResultItemProperty( hResult, i, propertyNames[j], NULL, &size );
+#endif
 					szStringBuf.EnsureCapacity( size + 1 );
 					size = szStringBuf.Count();
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 					pInventory->GetResultItemProperty( hResult, i, propertyNames[j], szStringBuf.Base(), &size );
+#else
+					pInventory->GetResultItemProperty( hResult, i, propertyNames[j], szStringBuf.Base(), &size );
+#endif
 					Msg( "ResultProperties[%s] = %s\n", propertyNames[j], szStringBuf.Base() );
 				}
 			}
@@ -1981,21 +2282,37 @@ public:
 	}
 #endif
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	STEAM_CALLBACK( CRD_Inventory_Manager, OnSteamInventoryResultReady, SteamInventoryResultReady_t )
+#else
+	STEAM_CALLBACK( CRD_Inventory_Manager, OnSteamInventoryResultReady, SteamInventoryResultReady_t )
+#endif
 	{
 		DevMsg( 2, "[%c] Steam Inventory result for %08x received: EResult %d (%s)\n", IsClientDll() ? 'C' : 'S', pParam->m_handle, pParam->m_result, UTIL_RD_EResultToString( pParam->m_result ) );
 
 #ifdef CLIENT_DLL
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamInventory *pInventory = SteamInventory();
 #else
+		ISteamInventory *pInventory = SteamInventory();
+#endif
+#else
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamInventory *pInventory = engine->IsDedicatedServer() ? SteamGameServerInventory() : SteamInventory();
+#else
+		ISteamInventory *pInventory = engine->IsDedicatedServer() ? SteamGameServerInventory() : SteamInventory();
+#endif
 #endif
 		Assert( pInventory );
 
 		if ( pParam->m_handle == m_DebugPrintInventoryResult )
 		{
 			DebugPrintResult( m_DebugPrintInventoryResult );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pInventory->DestroyResult( m_DebugPrintInventoryResult );
+#else
+			pInventory->DestroyResult( m_DebugPrintInventoryResult );
+#endif
 			m_DebugPrintInventoryResult = k_SteamInventoryResultInvalid;
 
 			return;
@@ -2011,7 +2328,11 @@ public:
 		{
 			CacheUserInventory( m_GetFullInventoryForCacheResult );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pInventory->DestroyResult( m_GetFullInventoryForCacheResult );
+#else
+			pInventory->DestroyResult( m_GetFullInventoryForCacheResult );
+#endif
 			m_GetFullInventoryForCacheResult = k_SteamInventoryResultInvalid;
 
 			return;
@@ -2022,9 +2343,17 @@ public:
 			bool bAnyPlayerEquipChanged = false;
 
 			uint32_t nItems = 0;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pInventory->GetResultItems( pParam->m_handle, NULL, &nItems );
+#else
+			pInventory->GetResultItems( pParam->m_handle, NULL, &nItems );
+#endif
 			SteamItemDetails_t *pDetails = ( SteamItemDetails_t * )stackalloc( sizeof( SteamItemDetails_t ) * nItems );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pInventory->GetResultItems( pParam->m_handle, pDetails, &nItems );
+#else
+			pInventory->GetResultItems( pParam->m_handle, pDetails, &nItems );
+#endif
 
 			for ( int i = 0; i < NELEMS( ReactiveDropInventory::g_PlayerInventorySlotNames ); i++ )
 			{
@@ -2046,7 +2375,11 @@ public:
 					break;
 			}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pInventory->DestroyResult( m_DynamicPropertyUpdateResult );
+#else
+			pInventory->DestroyResult( m_DynamicPropertyUpdateResult );
+#endif
 			m_DynamicPropertyUpdateResult = k_SteamInventoryResultInvalid;
 
 			if ( m_bWantExtraDynamicPropertyCommit )
@@ -2058,8 +2391,16 @@ public:
 			{
 				// TODO: can we just slot in the updated items?
 				if ( m_GetFullInventoryForCacheResult != k_SteamInventoryResultInvalid )
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 					pInventory->DestroyResult( m_GetFullInventoryForCacheResult );
+#else
+					pInventory->DestroyResult( m_GetFullInventoryForCacheResult );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				pInventory->GetAllItems( &m_GetFullInventoryForCacheResult );
+#else
+				pInventory->GetAllItems( &m_GetFullInventoryForCacheResult );
+#endif
 
 				ValidatePlayerEquipmentResult( bAnyPlayerEquipChanged );
 			}
@@ -2082,7 +2423,11 @@ public:
 			{
 				m_iCraftingMaterialSpawnCommand = UTIL_RD_SendInventoryCommand( INVCMD_MATERIAL_SPAWN, m_CraftingMaterialSpawnArgs, m_CraftingMaterialLocationsResult );
 			}
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pInventory->DestroyResult( m_CraftingMaterialLocationsResult );
+#else
+			pInventory->DestroyResult( m_CraftingMaterialLocationsResult );
+#endif
 			m_CraftingMaterialLocationsResult = k_SteamInventoryResultInvalid;
 			return;
 		}
@@ -2142,7 +2487,11 @@ public:
 		GET_INVENTORY_OR_BAIL( false );
 
 		// we need SteamUtils so we can check the server time to see if our result is near the 1 hour expiration time.
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamUtils *pUtils = SteamUtils();
+		#else
+		ISteamUtils *pUtils = SteamUtils();
+		#endif
 		Assert( pUtils );
 		if ( !pUtils )
 			return false;
@@ -2171,7 +2520,11 @@ public:
 
 		if ( m_PlayerEquipmentResult != k_SteamInventoryResultInvalid && !bForceReset )
 		{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			EResult eResult = pInventory->GetResultStatus( m_PlayerEquipmentResult );
+#else
+			EResult eResult = pInventory->GetResultStatus( m_PlayerEquipmentResult );
+#endif
 
 			// if the result is pending, don't touch it.
 			if ( eResult == k_EResultPending )
@@ -2181,7 +2534,11 @@ public:
 			if ( eResult == k_EResultOK )
 			{
 				// result expires 60 minutes after being created; catch it 5 minutes early and fetch a new one.
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				int iAge = pUtils->GetServerRealTime() - pInventory->GetResultTimestamp( m_PlayerEquipmentResult );
+#else
+				int iAge = pUtils->GetServerRealTime() - pInventory->GetResultTimestamp( m_PlayerEquipmentResult );
+#endif
 				if ( iAge < 55 * 60 )
 					return true;
 			}
@@ -2213,7 +2570,11 @@ public:
 
 		if ( m_PlayerEquipmentResult != k_SteamInventoryResultInvalid )
 		{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pInventory->DestroyResult( m_PlayerEquipmentResult );
+#else
+			pInventory->DestroyResult( m_PlayerEquipmentResult );
+#endif
 			m_PlayerEquipmentResult = k_SteamInventoryResultInvalid;
 		}
 
@@ -2223,7 +2584,11 @@ public:
 			return true;
 		}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pInventory->GetItemsByID( &m_PlayerEquipmentResult, items.Base(), items.Count() );
+#else
+		pInventory->GetItemsByID( &m_PlayerEquipmentResult, items.Base(), items.Count() );
+#endif
 		Assert( m_PlayerEquipmentResult != k_SteamInventoryResultInvalid );
 
 		return false;
@@ -2252,9 +2617,17 @@ public:
 		GET_INVENTORY_OR_BAIL;
 
 		uint32_t nItems = 0;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pInventory->GetResultItems( m_PlayerEquipmentResult, NULL, &nItems );
+#else
+		pInventory->GetResultItems( m_PlayerEquipmentResult, NULL, &nItems );
+#endif
 		SteamItemDetails_t *pDetails = ( SteamItemDetails_t * )stackalloc( sizeof( SteamItemDetails_t ) * nItems );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pInventory->GetResultItems( m_PlayerEquipmentResult, pDetails, &nItems );
+#else
+		pInventory->GetResultItems( m_PlayerEquipmentResult, pDetails, &nItems );
+#endif
 
 		for ( int i = 0; i < RD_NUM_STEAM_INVENTORY_EQUIP_SLOTS_PLAYER; i++ )
 		{
@@ -2443,7 +2816,11 @@ public:
 
 		if ( m_CraftingMaterialLocationsResult != k_SteamInventoryResultInvalid )
 		{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pInventory->DestroyResult( m_CraftingMaterialLocationsResult );
+#else
+			pInventory->DestroyResult( m_CraftingMaterialLocationsResult );
+#endif
 			m_CraftingMaterialLocationsResult = k_SteamInventoryResultInvalid;
 		}
 
@@ -2456,7 +2833,11 @@ public:
 		else
 		{
 			m_iCraftingMaterialSpawnCommand = 0;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pInventory->GetItemsByID( &m_CraftingMaterialLocationsResult, toSend.Base(), toSend.Count() );
+#else
+			pInventory->GetItemsByID( &m_CraftingMaterialLocationsResult, toSend.Base(), toSend.Count() );
+#endif
 		}
 
 		if ( rd_debug_inventory.GetBool() )
@@ -2503,7 +2884,11 @@ public:
 		uint32 one[1] = { 1 };
 
 		SteamInventoryResult_t *pResult = AddCraftItemTask( CRAFT_PICKUP_MATERIAL, iLocation, m_CraftingMaterialToken[iLocation] );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pInventory->ExchangeItems( pResult, generate, one, 1, consume, one, 1 );
+#else
+		pInventory->ExchangeItems( pResult, generate, one, 1, consume, one, 1 );
+#endif
 
 		if ( rd_debug_inventory.GetBool() )
 		{
@@ -2572,7 +2957,11 @@ public:
 		}
 
 		SteamInventoryResult_t *pResult = AddCraftItemTask( CRAFT_PICKUP_MATERIAL_ASSIST, eMaterial, consume[0] );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pInventory->ExchangeItems( pResult, generate, one, 1, consume, one, 1 );
+#else
+		pInventory->ExchangeItems( pResult, generate, one, 1, consume, one, 1 );
+#endif
 
 		if ( rd_debug_inventory.GetBool() )
 		{
@@ -2594,7 +2983,11 @@ public:
 	CUtlVector<NotificationSeenUpdate_t> m_QueuedNotificationSeen;
 	CUtlVector<NotificationSeenUpdate_t> m_InFlightNotificationSeen;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	STEAM_CALLBACK( CRD_Inventory_Manager, OnSteamInventoryFullUpdate, SteamInventoryFullUpdate_t )
+#else
+	STEAM_CALLBACK( CRD_Inventory_Manager, OnSteamInventoryFullUpdate, SteamInventoryFullUpdate_t )
+#endif
 	{
 		// don't write the same cache twice in a row
 		if ( pParam->m_handle == m_GetFullInventoryForCacheResult )
@@ -2609,7 +3002,11 @@ public:
 	}
 #endif
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	STEAM_CALLBACK( CRD_Inventory_Manager, OnSteamInventoryDefinitionUpdate, SteamInventoryDefinitionUpdate_t )
+#else
+	STEAM_CALLBACK( CRD_Inventory_Manager, OnSteamInventoryDefinitionUpdate, SteamInventoryDefinitionUpdate_t )
+#endif
 	{
 		s_bLoadedItemDefs = true;
 		if ( s_pItemDefCache )
@@ -2641,11 +3038,19 @@ static void RD_Equipped_Item_Changed( IConVar *var, const char *pOldValue, float
 
 	if ( ReactiveDropInventory::CheckMedalEquipCache() )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamUserStats *pUserStats = SteamUserStats();
+#else
+		ISteamUserStats *pUserStats = SteamUserStats();
+#endif
 		Assert( pUserStats );
 		if ( pUserStats )
 		{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			bool bOK = pUserStats->StoreStats();
+#else
+			bool bOK = pUserStats->StoreStats();
+#endif
 			Assert( bOK );
 			( void )bOK;
 		}
@@ -2660,12 +3065,20 @@ ConVar rd_equipped_medal[RD_STEAM_INVENTORY_NUM_MEDAL_SLOTS]
 
 CON_COMMAND( rd_debug_print_inventory, "" )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamInventory()->GetAllItems( &s_RD_Inventory_Manager.m_DebugPrintInventoryResult );
+#else
+	SteamInventory()->GetAllItems( &s_RD_Inventory_Manager.m_DebugPrintInventoryResult );
+#endif
 }
 
 CON_COMMAND( rd_debug_inspect_entire_inventory, "inspect every item in your inventory" )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamInventory()->GetAllItems( s_RD_Inventory_Manager.AddCraftItemTask( CRAFT_INSPECT ) );
+#else
+	SteamInventory()->GetAllItems( s_RD_Inventory_Manager.AddCraftItemTask( CRAFT_INSPECT ) );
+#endif
 }
 
 CON_COMMAND( rd_debug_inspect_own_item, "inspect an item you own by ID" )
@@ -2677,7 +3090,11 @@ CON_COMMAND( rd_debug_inspect_own_item, "inspect an item you own by ID" )
 		return;
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamInventory()->GetItemsByID( s_RD_Inventory_Manager.AddCraftItemTask( CRAFT_INSPECT ), &id, 1 );
+#else
+	SteamInventory()->GetItemsByID( s_RD_Inventory_Manager.AddCraftItemTask( CRAFT_INSPECT ), &id, 1 );
+#endif
 }
 
 CON_COMMAND( rd_econ_item_preview, "inspect an item using a code from the Steam Community backpack" )
@@ -2688,7 +3105,11 @@ CON_COMMAND( rd_econ_item_preview, "inspect an item using a code from the Steam 
 		return;
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamInventory()->InspectItem( s_RD_Inventory_Manager.AddCraftItemTask( CRAFT_INSPECT ), args.Arg( 1 ) );
+#else
+	SteamInventory()->InspectItem( s_RD_Inventory_Manager.AddCraftItemTask( CRAFT_INSPECT ), args.Arg( 1 ) );
+#endif
 }
 #endif
 
@@ -2854,57 +3275,101 @@ namespace ReactiveDropInventory
 
 		char buf[1536]{};
 		uint32 len = sizeof( buf );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( pInventory->GetResultItemProperty( hResult, index, "accountid", buf, &len ) )
+#else
+		if ( pInventory->GetResultItemProperty( hResult, index, "accountid", buf, &len ) )
+#endif
 		{
 			AccountID.SetFromUint64( strtoull( buf, NULL, 10 ) );
 		}
 		len = sizeof( buf );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( pInventory->GetResultItemProperty( hResult, index, "itemid", buf, &len ) )
+#else
+		if ( pInventory->GetResultItemProperty( hResult, index, "itemid", buf, &len ) )
+#endif
 		{
 			ItemID = strtoull( buf, NULL, 10 );
 		}
 		len = sizeof( buf );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( pInventory->GetResultItemProperty( hResult, index, "originalitemid", buf, &len ) )
+#else
+		if ( pInventory->GetResultItemProperty( hResult, index, "originalitemid", buf, &len ) )
+#endif
 		{
 			OriginalItemID = strtoull( buf, NULL, 10 );
 		}
 		len = sizeof( buf );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( pInventory->GetResultItemProperty( hResult, index, "itemdefid", buf, &len ) )
+#else
+		if ( pInventory->GetResultItemProperty( hResult, index, "itemdefid", buf, &len ) )
+#endif
 		{
 			ItemDefID = strtol( buf, NULL, 10 );
 		}
 		len = sizeof( buf );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( pInventory->GetResultItemProperty( hResult, index, "quantity", buf, &len ) )
+#else
+		if ( pInventory->GetResultItemProperty( hResult, index, "quantity", buf, &len ) )
+#endif
 		{
 			Quantity = strtol( buf, NULL, 10 );
 		}
 		len = sizeof( buf );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( pInventory->GetResultItemProperty( hResult, index, "acquired", buf, &len ) )
+#else
+		if ( pInventory->GetResultItemProperty( hResult, index, "acquired", buf, &len ) )
+#endif
 		{
 			Acquired = ParseTimestamp( buf );
 		}
 		len = sizeof( buf );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( pInventory->GetResultItemProperty( hResult, index, "state_changed_timestamp", buf, &len ) )
+#else
+		if ( pInventory->GetResultItemProperty( hResult, index, "state_changed_timestamp", buf, &len ) )
+#endif
 		{
 			StateChangedTimestamp = ParseTimestamp( buf );
 		}
 		len = sizeof( buf );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( pInventory->GetResultItemProperty( hResult, index, "state", buf, &len ) )
+#else
+		if ( pInventory->GetResultItemProperty( hResult, index, "state", buf, &len ) )
+#endif
 		{
 			State = buf;
 		}
 		len = sizeof( buf );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( pInventory->GetResultItemProperty( hResult, index, "origin", buf, &len ) )
+#else
+		if ( pInventory->GetResultItemProperty( hResult, index, "origin", buf, &len ) )
+#endif
 		{
 			Origin = buf;
 		}
 		len = sizeof( buf );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( pInventory->GetResultItemProperty( hResult, index, "dynamic_props", buf, &len ) )
+#else
+		if ( pInventory->GetResultItemProperty( hResult, index, "dynamic_props", buf, &len ) )
+#endif
 		{
 			ParseDynamicProps( DynamicProps, buf );
 		}
 		len = sizeof( buf );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( pInventory->GetResultItemProperty( hResult, index, "tags", buf, &len ) )
+#else
+		if ( pInventory->GetResultItemProperty( hResult, index, "tags", buf, &len ) )
+#endif
 		{
 			ParseTags( Tags, buf );
 		}
@@ -3057,11 +3522,19 @@ namespace ReactiveDropInventory
 			return s_ItemDefs[index];
 		}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamInventory *pInventory = SteamInventory();
+#else
+		ISteamInventory *pInventory = SteamInventory();
+#endif
 #ifdef GAME_DLL
 		if ( engine->IsDedicatedServer() )
 		{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pInventory = SteamGameServerInventory();
+#else
+			pInventory = SteamGameServerInventory();
+#endif
 		}
 #endif
 		KeyValues *pCachedDef = NULL;
@@ -3113,7 +3586,11 @@ namespace ReactiveDropInventory
 			}
 		}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		const char *szLang = SteamApps() ? SteamApps()->GetCurrentGameLanguage() : "english";
+#else
+		const char *szLang = SteamApps() ? SteamApps()->GetCurrentGameLanguage() : "english";
+#endif
 #ifdef GAME_DLL
 		if ( engine->IsDedicatedServer() )
 		{
@@ -3124,7 +3601,11 @@ namespace ReactiveDropInventory
 		uint32_t count{};
 		if ( s_bLoadedItemDefs )
 		{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pInventory->GetItemDefinitionProperty( id, NULL, NULL, &count );
+#else
+			pInventory->GetItemDefinitionProperty( id, NULL, NULL, &count );
+#endif
 			Assert( count );
 			if ( !count )
 			{
@@ -3139,6 +3620,16 @@ namespace ReactiveDropInventory
 		CUtlMemory<char> szBuf( 0, 1024 );
 		const char *szValue;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
+#define RD_FETCH_PROPERTY_ITEM_DEF_SIZE( szPropertyName ) pInventory->GetItemDefinitionProperty( id, szPropertyName, NULL, &count )
+#else
+#define RD_FETCH_PROPERTY_ITEM_DEF_SIZE( szPropertyName ) pInventory->GetItemDefinitionProperty( id, szPropertyName, NULL, &count )
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
+#define RD_FETCH_PROPERTY_ITEM_DEF_VALUE( szPropertyName ) pInventory->GetItemDefinitionProperty( id, szPropertyName, szBuf.Base(), &count )
+#else
+#define RD_FETCH_PROPERTY_ITEM_DEF_VALUE( szPropertyName ) pInventory->GetItemDefinitionProperty( id, szPropertyName, szBuf.Base(), &count )
+#endif
 #define FETCH_PROPERTY( szPropertyName ) \
 		if ( pCachedDef ) \
 		{ \
@@ -3146,10 +3637,10 @@ namespace ReactiveDropInventory
 		} \
 		else \
 		{ \
-			pInventory->GetItemDefinitionProperty( id, szPropertyName, NULL, &count ); \
+			RD_FETCH_PROPERTY_ITEM_DEF_SIZE( szPropertyName ); \
 			szBuf.EnsureCapacity( count + 1 ); \
 			count = szBuf.Count(); \
-			pInventory->GetItemDefinitionProperty( id, szPropertyName, szBuf.Base(), &count ); \
+			RD_FETCH_PROPERTY_ITEM_DEF_VALUE( szPropertyName ); \
 			szValue = szBuf.Base(); \
 		}
 
@@ -3440,6 +3931,8 @@ namespace ReactiveDropInventory
 		}
 #endif
 #undef FETCH_PROPERTY
+#undef RD_FETCH_PROPERTY_ITEM_DEF_VALUE
+#undef RD_FETCH_PROPERTY_ITEM_DEF_SIZE
 
 		s_ItemDefs.Insert( id, pItemDef );
 
@@ -3450,7 +3943,11 @@ namespace ReactiveDropInventory
 	{
 		GET_INVENTORY_OR_BAIL( false );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pInventory->DestroyResult( hResult );
+#else
+		pInventory->DestroyResult( hResult );
+#endif
 		hResult = k_SteamInventoryResultInvalid;
 
 		size_t nEncodedChars = V_strlen( szEncodedData );
@@ -3462,7 +3959,11 @@ namespace ReactiveDropInventory
 		CUtlMemory<byte> decodedData{ 0, int( nEncodedChars / 2 ) };
 		V_hextobinary( szEncodedData, nEncodedChars, decodedData.Base(), decodedData.Count() );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !pInventory->DeserializeResult( &hResult, decodedData.Base(), decodedData.Count() ) )
+#else
+		if ( !pInventory->DeserializeResult( &hResult, decodedData.Base(), decodedData.Count() ) )
+#endif
 		{
 			Warning( "ISteamInventory::DeserializeResult failed to create a result.\n" );
 			return false;
@@ -3475,7 +3976,11 @@ namespace ReactiveDropInventory
 	{
 		GET_INVENTORY_OR_BAIL( false );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		EResult eResultStatus = pInventory->GetResultStatus( hResult );
+#else
+		EResult eResultStatus = pInventory->GetResultStatus( hResult );
+#endif
 		if ( eResultStatus == k_EResultPending )
 		{
 			return false;
@@ -3489,7 +3994,11 @@ namespace ReactiveDropInventory
 			return true;
 		}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( requiredSteamID.IsValid() && !pInventory->CheckResultSteamID( hResult, requiredSteamID ) )
+#else
+		if ( requiredSteamID.IsValid() && !pInventory->CheckResultSteamID( hResult, requiredSteamID ) )
+#endif
 		{
 			Warning( "ReactiveDropInventory::ValidateItemData: not from SteamID %llu\n", requiredSteamID.ConvertToUint64() );
 
@@ -3519,14 +4028,22 @@ namespace ReactiveDropInventory
 	{
 		GET_INVENTORY_OR_BAIL;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pInventory->AddPromoItem( s_RD_Inventory_Manager.AddCraftItemTask( CRAFT_PROMO ), id );
+#else
+		pInventory->AddPromoItem( s_RD_Inventory_Manager.AddCraftItemTask( CRAFT_PROMO ), id );
+#endif
 	}
 
 	void RequestGenericPromoItems()
 	{
 		GET_INVENTORY_OR_BAIL;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pInventory->GrantPromoItems( s_RD_Inventory_Manager.AddCraftItemTask( CRAFT_PROMO ) );
+#else
+		pInventory->GrantPromoItems( s_RD_Inventory_Manager.AddCraftItemTask( CRAFT_PROMO ) );
+#endif
 	}
 
 	void CheckPlaytimeItemGenerators()
@@ -3534,8 +4051,16 @@ namespace ReactiveDropInventory
 #if defined( RD_7A_DROPS ) || defined( RD_7A_DROPS_PRE )
 		GET_INVENTORY_OR_BAIL;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pInventory->TriggerItemDrop( s_RD_Inventory_Manager.AddCraftItemTask( CRAFT_DROP ), 7000 ); // Playtime Random Material Tokens Weekly
+#else
+		pInventory->TriggerItemDrop( s_RD_Inventory_Manager.AddCraftItemTask( CRAFT_DROP ), 7000 ); // Playtime Random Material Tokens Weekly
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pInventory->TriggerItemDrop( s_RD_Inventory_Manager.AddCraftItemTask( CRAFT_DROP ), 7002 ); // Playtime Random Material Tokens Extended
+#else
+		pInventory->TriggerItemDrop( s_RD_Inventory_Manager.AddCraftItemTask( CRAFT_DROP ), 7002 ); // Playtime Random Material Tokens Extended
+#endif
 #endif
 	}
 
@@ -3677,13 +4202,25 @@ namespace ReactiveDropInventory
 
 	bool CheckMedalEquipCache()
 	{
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamUtils *pUtils = SteamUtils();
+		#else
+		ISteamUtils *pUtils = SteamUtils();
+		#endif
 		Assert( pUtils );
 		// If we're not running as Alien Swarm: Reactive Drop (for example, if we're a mod or running through the SDK), don't check the medal cache because we'll fail.
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !pUtils || pUtils->GetAppID() != 563560 )
+		#else
+		if ( !pUtils || pUtils->GetAppID() != 563560 )
+		#endif
 			return false;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamUserStats *pUserStats = SteamUserStats();
+#else
+		ISteamUserStats *pUserStats = SteamUserStats();
+#endif
 		Assert( pUserStats );
 		if ( !pUserStats )
 			return false;
@@ -3704,7 +4241,11 @@ namespace ReactiveDropInventory
 		{
 			CFmtStr szLowBitsStatName{ "equipped_medal_%da", i + 1 };
 			CFmtStr szHighBitsStatName{ "equipped_medal_%db", i + 1 };
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			bool bGotEquippedMedal = pUserStats->GetStat( szLowBitsStatName, &MedalID.Bits.iLowBits ) && pUserStats->GetStat( szHighBitsStatName, &MedalID.Bits.iHighBits );
+#else
+			bool bGotEquippedMedal = pUserStats->GetStat( szLowBitsStatName, &MedalID.Bits.iLowBits ) && pUserStats->GetStat( szHighBitsStatName, &MedalID.Bits.iHighBits );
+#endif
 			Assert( bGotEquippedMedal );
 			if ( bGotEquippedMedal )
 			{
@@ -3718,9 +4259,17 @@ namespace ReactiveDropInventory
 				{
 					bAnyChanged = true;
 					MedalID.iItemInstance = iCurrentInstance;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 					bool bSetEquippedMedal = pUserStats->SetStat( szLowBitsStatName, MedalID.Bits.iLowBits );
+#else
+					bool bSetEquippedMedal = pUserStats->SetStat( szLowBitsStatName, MedalID.Bits.iLowBits );
+#endif
 					Assert( bSetEquippedMedal ); ( void )bSetEquippedMedal;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 					bSetEquippedMedal = pUserStats->SetStat( szHighBitsStatName, MedalID.Bits.iHighBits );
+#else
+					bSetEquippedMedal = pUserStats->SetStat( szHighBitsStatName, MedalID.Bits.iHighBits );
+#endif
 					Assert( bSetEquippedMedal ); ( void )bSetEquippedMedal;
 				}
 			}
@@ -3733,15 +4282,27 @@ namespace ReactiveDropInventory
 	{
 		GET_INVENTORY_OR_BAIL;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		SteamInventoryUpdateHandle_t hUpdate = pInventory->StartUpdateProperties();
+#else
+		SteamInventoryUpdateHandle_t hUpdate = pInventory->StartUpdateProperties();
+#endif
 		Assert( hUpdate != k_SteamInventoryUpdateHandleInvalid );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		bool bOK = pInventory->SetProperty( hUpdate, id, "style", int64( iStyle ) );
+#else
+		bool bOK = pInventory->SetProperty( hUpdate, id, "style", int64( iStyle ) );
+#endif
 		Assert( bOK );
 		if ( !bOK )
 			Warning( "Inventory item style property update failed!\n" );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		bOK = pInventory->SubmitUpdateProperties( hUpdate, s_RD_Inventory_Manager.AddCraftItemTask( CRAFT_USER_DYNAMIC_PROPERTY_UPDATE ) );
+#else
+		bOK = pInventory->SubmitUpdateProperties( hUpdate, s_RD_Inventory_Manager.AddCraftItemTask( CRAFT_USER_DYNAMIC_PROPERTY_UPDATE ) );
+#endif
 		Assert( bOK );
 		if ( !bOK )
 			Warning( "Inventory item style update submit failed!\n" );
@@ -3804,7 +4365,11 @@ namespace ReactiveDropInventory
 		if ( hResult )
 		{
 			// we're likely going to fail due to an update conflict, but we need to move the queue
-			pInventory->DestroyResult( *hResult );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
+		pInventory->DestroyResult( *hResult );
+#else
+		pInventory->DestroyResult( *hResult );
+#endif
 			*hResult = k_SteamInventoryResultInvalid;
 		}
 
@@ -3842,12 +4407,24 @@ namespace ReactiveDropInventory
 			s_RD_Inventory_Manager.m_InFlightNotificationSeen.RemoveMultipleFromHead( s_RD_Inventory_Manager.m_InFlightNotificationSeen.Count() - 100 );
 		}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		SteamInventoryUpdateHandle_t hUpdate = pInventory->StartUpdateProperties();
+#else
+		SteamInventoryUpdateHandle_t hUpdate = pInventory->StartUpdateProperties();
+#endif
 		FOR_EACH_VEC( s_RD_Inventory_Manager.m_InFlightNotificationSeen, i )
 		{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pInventory->SetProperty( hUpdate, s_RD_Inventory_Manager.m_InFlightNotificationSeen[i].NotificationID, "notification_seen", int64_t( s_RD_Inventory_Manager.m_InFlightNotificationSeen[i].Seen ) );
+#else
+			pInventory->SetProperty( hUpdate, s_RD_Inventory_Manager.m_InFlightNotificationSeen[i].NotificationID, "notification_seen", int64_t( s_RD_Inventory_Manager.m_InFlightNotificationSeen[i].Seen ) );
+#endif
 		}
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pInventory->SubmitUpdateProperties( hUpdate, hResult );
+#else
+		pInventory->SubmitUpdateProperties( hUpdate, hResult );
+#endif
 	}
 
 	void DeleteNotificationItem( SteamItemInstanceID_t id )
@@ -3906,7 +4483,11 @@ namespace ReactiveDropInventory
 			}
 		}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pInventory->ConsumeItem( s_RD_Inventory_Manager.AddCraftItemTask( CRAFT_DELETE_SILENT, 0, id ), id, 1 );
+#else
+		pInventory->ConsumeItem( s_RD_Inventory_Manager.AddCraftItemTask( CRAFT_DELETE_SILENT, 0, id ), id, 1 );
+#endif
 	}
 
 #ifdef RD_7A_DROPS
@@ -3966,8 +4547,13 @@ namespace ReactiveDropInventory
 		GET_INVENTORY_OR_BAIL;
 
 		const uint32 one = 1;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pInventory->ExchangeItems( s_RD_Inventory_Manager.AddCraftItemTask( eCraftType, iAccessoryDef, iReplaceItemInstance ),
 			&recipe, &one, 1, ingredient.begin(), quantity.begin(), ingredient.size() );
+#else
+		pInventory->ExchangeItems( s_RD_Inventory_Manager.AddCraftItemTask( eCraftType, iAccessoryDef, iReplaceItemInstance ),
+			&recipe, &one, 1, ingredient.begin(), quantity.begin(), ingredient.size() );
+#endif
 	}
 	void RequestFullInventoryRefresh()
 	{
@@ -3977,7 +4563,11 @@ namespace ReactiveDropInventory
 		{
 			if ( s_RD_Inventory_Manager.m_GetFullInventoryForCacheResult != k_SteamInventoryResultInvalid )
 			{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				pInventory->DestroyResult( s_RD_Inventory_Manager.m_GetFullInventoryForCacheResult );
+#else
+				pInventory->DestroyResult( s_RD_Inventory_Manager.m_GetFullInventoryForCacheResult );
+#endif
 				s_RD_Inventory_Manager.m_GetFullInventoryForCacheResult = k_SteamInventoryResultInvalid;
 			}
 
@@ -3987,7 +4577,11 @@ namespace ReactiveDropInventory
 		{
 			s_RD_Inventory_Manager.m_bWantFullInventoryRefresh = false;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pInventory->GetAllItems( &s_RD_Inventory_Manager.m_GetFullInventoryForCacheResult );
+#else
+			pInventory->GetAllItems( &s_RD_Inventory_Manager.m_GetFullInventoryForCacheResult );
+#endif
 		}
 	}
 #endif

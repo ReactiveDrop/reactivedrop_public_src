@@ -91,25 +91,41 @@ bool CReactiveDropWorkshop::Init()
 
 	InitNonWorkshopAddons();
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamUGC *pSteamUGC = SteamUGC();
+#else
+	ISteamUGC *pSteamUGC = SteamUGC();
+#endif
 	if ( !pSteamUGC )
 	{
 		Warning( "No Steam connection. Skipping workshop.\n" );
 		return true;
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	uint32 nSubscribed = pSteamUGC->GetNumSubscribedItems();
+#else
+	uint32 nSubscribed = pSteamUGC->GetNumSubscribedItems();
+#endif
 	if ( nSubscribed != 0 && !CommandLine()->FindParm( "-skiploadingworkshopaddons" ) )
 	{
 		int iStart = m_EnabledAddonsForQuery.AddMultipleToTail( nSubscribed );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		nSubscribed = pSteamUGC->GetSubscribedItems( m_EnabledAddonsForQuery.Base() + iStart, nSubscribed );
+#else
+		nSubscribed = pSteamUGC->GetSubscribedItems( m_EnabledAddonsForQuery.Base() + iStart, nSubscribed );
+#endif
 		m_EnabledAddonsForQuery.SetCountNonDestructively( iStart + nSubscribed );
 
 #ifdef DBGFLAG_ASSERT
 		for ( uint32 i = 0; i < nSubscribed; i++ )
 		{
+			#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			uint32 iState = pSteamUGC->GetItemState( m_EnabledAddonsForQuery[i + iStart] );
+			#else
+			uint32 iState = pSteamUGC->GetItemState( m_EnabledAddonsForQuery[i + iStart] );
+			#endif
 			Assert( iState & k_EItemStateSubscribed );
 		}
 #endif
@@ -117,13 +133,29 @@ bool CReactiveDropWorkshop::Init()
 		KeyValues::AutoDelete pKV( "WorkshopAddons" );
 		ConVarRef cl_cloud_settings( "cl_cloud_settings" );
 		bool bLoaded = false;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamRemoteStorage *pSteamRemoteStorage = SteamRemoteStorage();
+#else
+		ISteamRemoteStorage *pSteamRemoteStorage = SteamRemoteStorage();
+#endif
 		Assert( pSteamRemoteStorage );
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( ( cl_cloud_settings.GetInt() & STEAMREMOTESTORAGE_CLOUD_DISABLED_WORKSHOP_ITEMS ) && pSteamRemoteStorage && pSteamRemoteStorage->FileExists( WORKSHOP_DISABLED_ADDONS_FILENAME ) )
+		#else
+		if ( ( cl_cloud_settings.GetInt() & STEAMREMOTESTORAGE_CLOUD_DISABLED_WORKSHOP_ITEMS ) && pSteamRemoteStorage && pSteamRemoteStorage->FileExists( WORKSHOP_DISABLED_ADDONS_FILENAME ) )
+		#endif
 		{
 			CUtlBuffer buf;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			int32 iSize = pSteamRemoteStorage->GetFileSize( WORKSHOP_DISABLED_ADDONS_FILENAME );
+#else
+			int32 iSize = pSteamRemoteStorage->GetFileSize( WORKSHOP_DISABLED_ADDONS_FILENAME );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pSteamRemoteStorage->FileRead( WORKSHOP_DISABLED_ADDONS_FILENAME, buf.AccessForDirectRead( iSize ), iSize );
+#else
+			pSteamRemoteStorage->FileRead( WORKSHOP_DISABLED_ADDONS_FILENAME, buf.AccessForDirectRead( iSize ), iSize );
+#endif
 			buf.SeekPut( CUtlBuffer::SEEK_HEAD, iSize );
 			filesystem->WriteFile( WORKSHOP_DISABLED_ADDONS_FILENAME, "MOD", buf );
 			buf.SetBufferType( true, true );
@@ -232,6 +264,7 @@ void CReactiveDropWorkshop::SaveDisabledAddons()
 	}
 
 	ConVarRef cl_cloud_settings( "cl_cloud_settings" );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( ( cl_cloud_settings.GetInt() & STEAMREMOTESTORAGE_CLOUD_DISABLED_WORKSHOP_ITEMS ) && SteamRemoteStorage() )
 	{
 		CUtlBuffer buf;
@@ -246,6 +279,22 @@ void CReactiveDropWorkshop::SaveDisabledAddons()
 			return;
 		}
 	}
+#else
+	if ( ( cl_cloud_settings.GetInt() & STEAMREMOTESTORAGE_CLOUD_DISABLED_WORKSHOP_ITEMS ) && SteamRemoteStorage() )
+	{
+		CUtlBuffer buf;
+		if ( !filesystem->ReadFile( WORKSHOP_DISABLED_ADDONS_FILENAME, "MOD", buf ) )
+		{
+			Warning( "Could not load disabled workshop addons list!\n" );
+			return;
+		}
+		if ( !SteamRemoteStorage()->FileWrite( WORKSHOP_DISABLED_ADDONS_FILENAME, buf.Base(), buf.TellMaxPut() ) )
+		{
+			Warning( "Could not write disabled workshop addons list to Steam Cloud!\n" );
+			return;
+		}
+	}
+#endif
 
 	if ( rd_workshop_debug.GetBool() )
 	{
@@ -263,7 +312,11 @@ public:
 		m_QueryCompletedCall.Set( hCall, this, &LoadWorkshopCollection_t::QueryCompletedCall );
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CCallResult<LoadWorkshopCollection_t, SteamUGCQueryCompleted_t> m_QueryCompletedCall;
+#else
+	CCallResult<LoadWorkshopCollection_t, SteamUGCQueryCompleted_t> m_QueryCompletedCall;
+#endif
 	void QueryCompletedCall( SteamUGCQueryCompleted_t *pResult, bool bIOFailure )
 	{
 		delete this;
@@ -274,36 +327,64 @@ public:
 			return;
 		}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamUGC *pWorkshop = SteamGameServerUGC();
+#else
+		ISteamUGC *pWorkshop = SteamGameServerUGC();
+#endif
 		Assert( pWorkshop );
 
 		if ( pResult->m_eResult != k_EResultOK )
 		{
 			Warning( "Workshop collection query failed: EResult %d (%s)\n", pResult->m_eResult, UTIL_RD_EResultToString( pResult->m_eResult ) );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pWorkshop->ReleaseQueryUGCRequest( pResult->m_handle );
+#else
+			pWorkshop->ReleaseQueryUGCRequest( pResult->m_handle );
+#endif
 			return;
 		}
 
 		if ( !pResult->m_unNumResultsReturned )
 		{
 			Warning( "Workshop collection query failed. (no results)\n" );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pWorkshop->ReleaseQueryUGCRequest( pResult->m_handle );
+#else
+			pWorkshop->ReleaseQueryUGCRequest( pResult->m_handle );
+#endif
 			return;
 		}
 
 		SteamUGCDetails_t details;
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !pWorkshop->GetQueryUGCResult( pResult->m_handle, 0, &details ) )
+		#else
+		if ( !pWorkshop->GetQueryUGCResult( pResult->m_handle, 0, &details ) )
+		#endif
 		{
 			Warning( "Workshop collection query failed. (failed to get result)\n" );
+			#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pWorkshop->ReleaseQueryUGCRequest( pResult->m_handle );
+			#else
+			pWorkshop->ReleaseQueryUGCRequest( pResult->m_handle );
+			#endif
 			return;
 		}
 
 		PublishedFileId_t *children = ( PublishedFileId_t * )stackalloc( sizeof( PublishedFileId_t ) * details.m_unNumChildren );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !pWorkshop->GetQueryUGCChildren( pResult->m_handle, 0, children, details.m_unNumChildren ) )
+#else
+		if ( !pWorkshop->GetQueryUGCChildren( pResult->m_handle, 0, children, details.m_unNumChildren ) )
+#endif
 		{
 			Warning( "Workshop collection query failed. (failed to get children)\n" );
+			#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pWorkshop->ReleaseQueryUGCRequest( pResult->m_handle );
+			#else
+			pWorkshop->ReleaseQueryUGCRequest( pResult->m_handle );
+			#endif
 			return;
 		}
 
@@ -313,18 +394,33 @@ public:
 			g_ReactiveDropWorkshop.EnableServerWorkshopItem( children[i] );
 		}
 
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pWorkshop->ReleaseQueryUGCRequest( pResult->m_handle );
+		#else
+		pWorkshop->ReleaseQueryUGCRequest( pResult->m_handle );
+		#endif
 	}
 };
 
 bool CReactiveDropWorkshop::DedicatedServerWorkshopSetup()
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !SteamGameServer() || !SteamGameServer()->BLoggedOn() )
 	{
 		return false;
 	}
+#else
+	if ( !SteamGameServer() || !SteamGameServer()->BLoggedOn() )
+	{
+		return false;
+	}
+#endif
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamUGC *pWorkshop = SteamGameServerUGC();
+#else
+	ISteamUGC *pWorkshop = SteamGameServerUGC();
+#endif
 	if ( !pWorkshop )
 	{
 		Warning( "No Steam connection. Skipping workshop.\n" );
@@ -338,7 +434,11 @@ bool CReactiveDropWorkshop::DedicatedServerWorkshopSetup()
 		char szWorkshopDir[MAX_PATH];
 		V_ComposeFileName( szDir, "workshop", szWorkshopDir, sizeof( szWorkshopDir ) );
 
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		bool bInit = pWorkshop->BInitWorkshopForGameServer( 563560, szWorkshopDir );
+		#else
+		bool bInit = pWorkshop->BInitWorkshopForGameServer( 563560, szWorkshopDir );
+		#endif
 		if ( !bInit )
 		{
 			DevWarning( "Workshop init failed! Trying to continue anyway...\n" );
@@ -468,10 +568,18 @@ void CReactiveDropWorkshop::RestartEnabledAddonsQuery()
 		return;
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamUGC *pUGC = SteamUGC();
+#else
+	ISteamUGC *pUGC = SteamUGC();
+#endif
 #ifdef GAME_DLL
 	if ( !pUGC )
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pUGC = SteamGameServerUGC();
+#else
+		pUGC = SteamGameServerUGC();
+#endif
 #endif
 	if ( !pUGC )
 	{
@@ -486,7 +594,11 @@ void CReactiveDropWorkshop::RestartEnabledAddonsQuery()
 			DevMsg( "Clearing previous Workshop metadata request\n" );
 		}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pUGC->ReleaseQueryUGCRequest( m_hEnabledAddonsQuery );
+#else
+		pUGC->ReleaseQueryUGCRequest( m_hEnabledAddonsQuery );
+#endif
 	}
 
 	if ( rd_workshop_debug.GetBool() )
@@ -494,11 +606,27 @@ void CReactiveDropWorkshop::RestartEnabledAddonsQuery()
 		DevMsg( "Sending Workshop metadata request\n" );
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	UGCQueryHandle_t hQuery = pUGC->CreateQueryUGCDetailsRequest( m_EnabledAddonsForQuery.Base(), m_EnabledAddonsForQuery.Count() );
+#else
+	UGCQueryHandle_t hQuery = pUGC->CreateQueryUGCDetailsRequest( m_EnabledAddonsForQuery.Base(), m_EnabledAddonsForQuery.Count() );
+#endif
 	m_hEnabledAddonsQuery = hQuery;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pUGC->SetReturnLongDescription( hQuery, true );
+#else
+	pUGC->SetReturnLongDescription( hQuery, true );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pUGC->SetReturnKeyValueTags( hQuery, true );
+#else
+	pUGC->SetReturnKeyValueTags( hQuery, true );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamAPICall_t hAPICall = pUGC->SendQueryUGCRequest( hQuery );
+#else
+	SteamAPICall_t hAPICall = pUGC->SendQueryUGCRequest( hQuery );
+#endif
 	m_SteamUGCQueryCompleted.Set( hAPICall, this, &CReactiveDropWorkshop::SteamUGCQueryCompletedCallback );
 }
 
@@ -514,23 +642,55 @@ void CReactiveDropWorkshop::RequestNextPublishedAddonsPage()
 
 	if ( m_hPublishedAddonsQuery != k_UGCQueryHandleInvalid )
 	{
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pUGC->ReleaseQueryUGCRequest( m_hPublishedAddonsQuery );
+		#else
+		pUGC->ReleaseQueryUGCRequest( m_hPublishedAddonsQuery );
+		#endif
 	}
 
 	m_iPublishedAddonsPage++;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	AccountID_t iAccount = SteamUser()->GetSteamID().GetAccountID();
+#else
+	AccountID_t iAccount = SteamUser()->GetSteamID().GetAccountID();
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	AppId_t iApp = SteamUtils()->GetAppID();
+#else
+	AppId_t iApp = SteamUtils()->GetAppID();
+#endif
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	m_hPublishedAddonsQuery = pUGC->CreateQueryUserUGCRequest( iAccount, k_EUserUGCList_Published, k_EUGCMatchingUGCType_Items_ReadyToUse, k_EUserUGCListSortOrder_CreationOrderAsc, iApp, iApp, m_iPublishedAddonsPage );
+	#else
+	m_hPublishedAddonsQuery = pUGC->CreateQueryUserUGCRequest( iAccount, k_EUserUGCList_Published, k_EUGCMatchingUGCType_Items_ReadyToUse, k_EUserUGCListSortOrder_CreationOrderAsc, iApp, iApp, m_iPublishedAddonsPage );
+	#endif
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pUGC->SetReturnLongDescription( m_hPublishedAddonsQuery, true );
+	#else
+	pUGC->SetReturnLongDescription( m_hPublishedAddonsQuery, true );
+	#endif
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pUGC->SetReturnKeyValueTags( m_hPublishedAddonsQuery, true );
+	#else
+	pUGC->SetReturnKeyValueTags( m_hPublishedAddonsQuery, true );
+	#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamAPICall_t hAPICall = pUGC->SendQueryUGCRequest( m_hPublishedAddonsQuery );
+#else
+	SteamAPICall_t hAPICall = pUGC->SendQueryUGCRequest( m_hPublishedAddonsQuery );
+#endif
 	m_SteamPublishedAddonsRequestCompleted.Set( hAPICall, this, &CReactiveDropWorkshop::SteamPublishedAddonsRequestCompleted );
 }
 #endif
 
 void CReactiveDropWorkshop::OnSubscribed( RemoteStoragePublishedFileSubscribed_t *pSubscribed )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( pSubscribed->m_nAppID != SteamUtils()->GetAppID() )
+#else
+	if ( pSubscribed->m_nAppID != SteamUtils()->GetAppID() )
+#endif
 	{
 		return;
 	}
@@ -550,7 +710,11 @@ void CReactiveDropWorkshop::OnSubscribed( RemoteStoragePublishedFileSubscribed_t
 
 void CReactiveDropWorkshop::OnUnsubscribed( RemoteStoragePublishedFileUnsubscribed_t *pUnsubscribed )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( pUnsubscribed->m_nAppID != SteamUtils()->GetAppID() )
+#else
+	if ( pUnsubscribed->m_nAppID != SteamUtils()->GetAppID() )
+#endif
 	{
 		return;
 	}
@@ -575,7 +739,11 @@ void CReactiveDropWorkshop::OnUnsubscribed( RemoteStoragePublishedFileUnsubscrib
 void CReactiveDropWorkshop::OnMissionStart()
 {
 #ifdef CLIENT_DLL
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !SteamUGC() )
+#else
+	if ( !SteamUGC() )
+#endif
 	{
 		return;
 	}
@@ -588,7 +756,11 @@ void CReactiveDropWorkshop::OnMissionStart()
 		return;
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamUGC()->StartPlaytimeTracking( active.Base(), active.Count() );
+#else
+	SteamUGC()->StartPlaytimeTracking( active.Base(), active.Count() );
+#endif
 #endif
 }
 
@@ -605,12 +777,20 @@ void CReactiveDropWorkshop::LevelInitPostEntity()
 void CReactiveDropWorkshop::LevelShutdownPreEntity()
 {
 #ifdef CLIENT_DLL
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !SteamUGC() )
+#else
+	if ( !SteamUGC() )
+#endif
 	{
 		return;
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamUGC()->StopPlaytimeTrackingForAllItems();
+#else
+	SteamUGC()->StopPlaytimeTrackingForAllItems();
+#endif
 
 	ClearOldPreviewRequests();
 
@@ -653,7 +833,11 @@ void CReactiveDropWorkshop::SetupThink()
 		g_ReactiveDropWorkshop.RestartEnabledAddonsQuery();
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !m_bWorkshopSetupCompleted || !SteamGameServerUGC() || Plat_FloatTime() < s_flNextDownloadStatusMessage )
+#else
+	if ( !m_bWorkshopSetupCompleted || !SteamGameServerUGC() || Plat_FloatTime() < s_flNextDownloadStatusMessage )
+#endif
 	{
 		return;
 	}
@@ -665,11 +849,19 @@ void CReactiveDropWorkshop::SetupThink()
 	FOR_EACH_VEC( m_ServerWorkshopAddons, i )
 	{
 		PublishedFileId_t id = m_ServerWorkshopAddons[i];
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		uint32 iItemState = SteamGameServerUGC()->GetItemState( id );
+#else
+		uint32 iItemState = SteamGameServerUGC()->GetItemState( id );
+#endif
 		if ( iItemState & k_EItemStateDownloading )
 		{
 			uint64 nBytesDownloaded, nBytesTotal;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			if ( SteamGameServerUGC()->GetItemDownloadInfo( id, &nBytesDownloaded, &nBytesTotal ) )
+#else
+			if ( SteamGameServerUGC()->GetItemDownloadInfo( id, &nBytesDownloaded, &nBytesTotal ) )
+#endif
 			{
 				Msg( "Downloading workshop item %llu: %llu / %llu bytes\n", id, nBytesDownloaded, nBytesTotal );
 			}
@@ -687,7 +879,11 @@ void CReactiveDropWorkshop::SetupThink()
 		else if ( iItemState & k_EItemStateNeedsUpdate )
 		{
 			Msg( "Workshop item %llu needs update\n", id );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			SteamGameServerUGC()->DownloadItem( id, false );
+#else
+			SteamGameServerUGC()->DownloadItem( id, false );
+#endif
 			bWaitingForAny = true;
 		}
 		else if ( !( iItemState & k_EItemStateInstalled ) )
@@ -717,7 +913,11 @@ void WorkshopSetupThink()
 #ifdef CLIENT_DLL
 void CReactiveDropWorkshop::ScreenshotReadyCallback( ScreenshotReady_t *pReady )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamScreenshots *pScreenshots = SteamScreenshots();
+#else
+	ISteamScreenshots *pScreenshots = SteamScreenshots();
+#endif
 	Assert( pScreenshots );
 	if ( !engine->IsInGame() || !ASWGameRules() || !pScreenshots )
 	{
@@ -777,7 +977,11 @@ void CReactiveDropWorkshop::ScreenshotReadyCallback( ScreenshotReady_t *pReady )
 		V_snprintf( szName, sizeof( szName ), "%s%s (%s)", szCampaign, szMission, szChallenge );
 	}
 
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pScreenshots->SetLocation( pReady->m_hLocal, szName );
+	#else
+	pScreenshots->SetLocation( pReady->m_hLocal, szName );
+	#endif
 
 	if ( ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME && ASWGameResource() )
 	{
@@ -787,7 +991,11 @@ void CReactiveDropWorkshop::ScreenshotReadyCallback( ScreenshotReady_t *pReady )
 			C_ASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( ASWGameRules()->m_nMarineForDeathCam );
 			if ( pMR && pMR->IsInhabited() && pMR->GetCommander() )
 			{
+				#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				pScreenshots->TagUser( pReady->m_hLocal, pMR->GetCommander()->GetSteamID() );
+				#else
+				pScreenshots->TagUser( pReady->m_hLocal, pMR->GetCommander()->GetSteamID() );
+				#endif
 			}
 		}
 
@@ -800,7 +1008,11 @@ void CReactiveDropWorkshop::ScreenshotReadyCallback( ScreenshotReady_t *pReady )
 				Vector screenPos;
 				if ( !debugoverlay->ScreenPosition( pMR->GetMarineEntity()->WorldSpaceCenter(), screenPos ) )
 				{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 					pScreenshots->TagUser( pReady->m_hLocal, pMR->GetCommander()->GetSteamID() );
+#else
+					pScreenshots->TagUser( pReady->m_hLocal, pMR->GetCommander()->GetSteamID() );
+#endif
 				}
 			}
 		}
@@ -810,7 +1022,11 @@ void CReactiveDropWorkshop::ScreenshotReadyCallback( ScreenshotReady_t *pReady )
 	GetActiveAddons( active );
 	FOR_EACH_VEC( active, i )
 	{
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pScreenshots->TagPublishedFile( pReady->m_hLocal, active[i] );
+		#else
+		pScreenshots->TagPublishedFile( pReady->m_hLocal, active[i] );
+		#endif
 	}
 }
 #endif
@@ -837,18 +1053,30 @@ bool CReactiveDropWorkshop::IsSubscribedToFile( PublishedFileId_t nPublishedFile
 		return false;
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	return ( SteamUGC()->GetItemState( nPublishedFileId ) & k_EItemStateSubscribed ) != 0;
+#else
+	return ( SteamUGC()->GetItemState( nPublishedFileId ) & k_EItemStateSubscribed ) != 0;
+#endif
 }
 
 void CReactiveDropWorkshop::SetSubscribedToFile( PublishedFileId_t nPublishedFileId, bool bSubscribe )
 {
 	if ( bSubscribe )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		SteamUGC()->SubscribeItem( nPublishedFileId );
+#else
+		SteamUGC()->SubscribeItem( nPublishedFileId );
+#endif
 	}
 	else
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		SteamUGC()->UnsubscribeItem( nPublishedFileId );
+#else
+		SteamUGC()->UnsubscribeItem( nPublishedFileId );
+#endif
 	}
 }
 
@@ -1226,9 +1454,17 @@ const wchar_t *CReactiveDropWorkshop::AddonName( PublishedFileId_t nPublishedFil
 
 void CReactiveDropWorkshop::DownloadItemResultCallback( DownloadItemResult_t *pResult )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( pResult->m_unAppID != SteamUtils()->GetAppID() )
+#else
+	if ( pResult->m_unAppID != SteamUtils()->GetAppID() )
+#endif
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		DevMsg( "DownloadItemResult_t for %llu has AppID %u, but we are %u!\n", pResult->m_nPublishedFileId, pResult->m_unAppID, SteamUtils()->GetAppID() );
+#else
+		DevMsg( "DownloadItemResult_t for %llu has AppID %u, but we are %u!\n", pResult->m_nPublishedFileId, pResult->m_unAppID, SteamUtils()->GetAppID() );
+#endif
 		return;
 	}
 
@@ -1280,10 +1516,18 @@ void CReactiveDropWorkshop::AddAddonsToCache( SteamUGCQueryCompleted_t *pResult,
 		return;
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamUGC *pUGC = SteamUGC();
+#else
+	ISteamUGC *pUGC = SteamUGC();
+#endif
 #ifdef GAME_DLL
 	if ( !pUGC )
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pUGC = SteamGameServerUGC();
+#else
+		pUGC = SteamGameServerUGC();
+#endif
 #endif
 	if ( !pUGC )
 	{
@@ -1300,7 +1544,11 @@ void CReactiveDropWorkshop::AddAddonsToCache( SteamUGCQueryCompleted_t *pResult,
 
 	for ( uint32 i = 0; i < pResult->m_unNumResultsReturned; i++ )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		bool bOK = pUGC->GetQueryUGCResult( hQuery, i, &m_EnabledAddons[nextIndex].details );
+#else
+		bool bOK = pUGC->GetQueryUGCResult( hQuery, i, &m_EnabledAddons[nextIndex].details );
+#endif
 		if ( !bOK )
 		{
 			m_EnabledAddons.Remove( m_EnabledAddons.Count() - 1 );
@@ -1324,11 +1572,19 @@ void CReactiveDropWorkshop::AddAddonsToCache( SteamUGCQueryCompleted_t *pResult,
 		{
 			nextIndex++;
 		}
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		uint32 nTags = pUGC->GetQueryUGCNumTags( hQuery, i );
+#else
+		uint32 nTags = pUGC->GetQueryUGCNumTags( hQuery, i );
+#endif
 		for ( uint32 j = 0; j < nTags; j++ )
 		{
 			char szTag[1024];
+			#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			if ( pUGC->GetQueryUGCTag( hQuery, i, j, szTag, sizeof( szTag ) ) )
+			#else
+			if ( pUGC->GetQueryUGCTag( hQuery, i, j, szTag, sizeof( szTag ) ) )
+			#endif
 			{
 				if ( FStrEq( szTag, "adminoverride_Bonus" ) )
 				{
@@ -1340,29 +1596,81 @@ void CReactiveDropWorkshop::AddAddonsToCache( SteamUGCQueryCompleted_t *pResult,
 				}
 			}
 		}
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pUGC->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumSubscriptions, &m_EnabledAddons[index].nSubscriptions );
+#else
+		pUGC->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumSubscriptions, &m_EnabledAddons[index].nSubscriptions );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pUGC->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumFavorites, &m_EnabledAddons[index].nFavorites );
+#else
+		pUGC->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumFavorites, &m_EnabledAddons[index].nFavorites );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pUGC->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumFollowers, &m_EnabledAddons[index].nFollowers );
+#else
+		pUGC->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumFollowers, &m_EnabledAddons[index].nFollowers );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pUGC->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumUniqueSubscriptions, &m_EnabledAddons[index].nUniqueSubscriptions );
+#else
+		pUGC->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumUniqueSubscriptions, &m_EnabledAddons[index].nUniqueSubscriptions );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pUGC->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumUniqueFavorites, &m_EnabledAddons[index].nUniqueFavorites );
+#else
+		pUGC->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumUniqueFavorites, &m_EnabledAddons[index].nUniqueFavorites );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pUGC->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumUniqueFollowers, &m_EnabledAddons[index].nUniqueFollowers );
+#else
+		pUGC->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumUniqueFollowers, &m_EnabledAddons[index].nUniqueFollowers );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pUGC->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumUniqueWebsiteViews, &m_EnabledAddons[index].nUniqueWebsiteViews );
+#else
+		pUGC->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumUniqueWebsiteViews, &m_EnabledAddons[index].nUniqueWebsiteViews );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pUGC->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumSecondsPlayed, &m_EnabledAddons[index].nSecondsPlayed );
+#else
+		pUGC->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumSecondsPlayed, &m_EnabledAddons[index].nSecondsPlayed );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pUGC->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumPlaytimeSessions, &m_EnabledAddons[index].nPlaytimeSessions );
+#else
+		pUGC->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumPlaytimeSessions, &m_EnabledAddons[index].nPlaytimeSessions );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pUGC->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumComments, &m_EnabledAddons[index].nComments );
+#else
+		pUGC->GetQueryUGCStatistic( hQuery, i, k_EItemStatistic_NumComments, &m_EnabledAddons[index].nComments );
+#endif
 		m_EnabledAddons[index].kvTags.Purge();
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		uint32 nKeyValueTags = pUGC->GetQueryUGCNumKeyValueTags( hQuery, i );
+#else
+		uint32 nKeyValueTags = pUGC->GetQueryUGCNumKeyValueTags( hQuery, i );
+#endif
 		for ( uint32 j = 0; j < nKeyValueTags; j++ )
 		{
 			char szKey[1024];
 			char szValue[1024];
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			if ( pUGC->GetQueryUGCKeyValueTag( hQuery, i, j, szKey, sizeof( szKey ), szValue, sizeof( szValue ) ) )
+#else
+			if ( pUGC->GetQueryUGCKeyValueTag( hQuery, i, j, szKey, sizeof( szKey ), szValue, sizeof( szValue ) ) )
+#endif
 			{
 				m_EnabledAddons[index].kvTags[szKey].CopyAndAddToTail( szValue );
 			}
 		}
 #ifdef CLIENT_DLL
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		SteamFriends()->RequestUserInformation( CSteamID( m_EnabledAddons[index].details.m_ulSteamIDOwner ), true );
+#else
+		SteamFriends()->RequestUserInformation( CSteamID( m_EnabledAddons[index].details.m_ulSteamIDOwner ), true );
+#endif
 		if ( bExists )
 		{
 			FOR_EACH_VEC( m_PreviewRequests, j )
@@ -1382,7 +1690,11 @@ void CReactiveDropWorkshop::AddAddonsToCache( SteamUGCQueryCompleted_t *pResult,
 #endif
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pUGC->ReleaseQueryUGCRequest( hQuery );
+#else
+	pUGC->ReleaseQueryUGCRequest( hQuery );
+#endif
 	hQuery = k_UGCQueryHandleInvalid;
 
 #ifdef CLIENT_DLL
@@ -1435,7 +1747,11 @@ CReactiveDropWorkshop::WorkshopPreviewRequest_t::WorkshopPreviewRequest_t( const
 	m_bCancelled = false;
 	m_nFileID = details.m_nPublishedFileId;
 	m_nPreviewImage = details.m_hPreviewFile;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamAPICall_t hAPICall = SteamRemoteStorage()->UGCDownload( details.m_hPreviewFile, WORKSHOP_PREVIEW_IMAGE_PRIORITY );
+#else
+	SteamAPICall_t hAPICall = SteamRemoteStorage()->UGCDownload( details.m_hPreviewFile, WORKSHOP_PREVIEW_IMAGE_PRIORITY );
+#endif
 	m_hCall.Set( hAPICall, this, &CReactiveDropWorkshop::WorkshopPreviewRequest_t::Callback );
 }
 
@@ -1468,7 +1784,11 @@ void CReactiveDropWorkshop::WorkshopPreviewRequest_t::Callback( RemoteStorageDow
 			}
 
 			CUtlBuffer buf;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			int nRead = SteamRemoteStorage()->UGCRead( m_nPreviewImage, buf.AccessForDirectRead( pResult->m_nSizeInBytes ), pResult->m_nSizeInBytes, 0, k_EUGCRead_Close );
+#else
+			int nRead = SteamRemoteStorage()->UGCRead( m_nPreviewImage, buf.AccessForDirectRead( pResult->m_nSizeInBytes ), pResult->m_nSizeInBytes, 0, k_EUGCRead_Close );
+#endif
 			buf.SeekPut( CUtlBuffer::SEEK_HEAD, nRead );
 			g_ReactiveDropWorkshop.m_EnabledAddons[i].pPreviewImage = new CReactiveDropWorkshopPreviewImage( buf );
 			if ( g_ReactiveDropWorkshop.m_EnabledAddons[i].pPreviewImage->GetID() == -1 )
@@ -1500,7 +1820,11 @@ void CReactiveDropWorkshop::WorkshopPreviewRequest_t::Callback( RemoteStorageDow
 	}
 
 	Warning( "Completed preview request for addon %llu (preview file %llu, size %d bytes), but there is no addon metadata that matches! Discarding.\n", m_nFileID, m_nPreviewImage, pResult->m_nSizeInBytes );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamRemoteStorage()->UGCRead( pResult->m_hFile, NULL, 0, 0, k_EUGCRead_Close );
+#else
+	SteamRemoteStorage()->UGCRead( pResult->m_hFile, NULL, 0, 0, k_EUGCRead_Close );
+#endif
 }
 #endif
 
@@ -1968,7 +2292,11 @@ void CReactiveDropWorkshop::DoClearCaches()
 	missionchooser->LocalMissionSource()->ClearCache();
 
 #ifdef GAME_DLL
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamUGC *pUGC = SteamGameServerUGC();
+#else
+	ISteamUGC *pUGC = SteamGameServerUGC();
+#endif
 	Assert( pUGC );
 	extern CServerGameDLL g_ServerGameDLL;
 	if ( engine->IsDedicatedServer() && g_ServerGameDLL.m_bIsHibernating && pUGC )
@@ -1976,7 +2304,11 @@ void CReactiveDropWorkshop::DoClearCaches()
 		bool bCanReload = true;
 		FOR_EACH_VEC( m_ServerWorkshopAddons, i )
 		{
+			#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			uint32 iItemState = pUGC->GetItemState( m_ServerWorkshopAddons[i] );
+			#else
+			uint32 iItemState = pUGC->GetItemState( m_ServerWorkshopAddons[i] );
+			#endif
 			if ( iItemState & k_EItemStateDownloadPending )
 			{
 				Msg( "Not restarting server: waiting for download of addon %llu\n", m_ServerWorkshopAddons[i] );
@@ -2027,11 +2359,19 @@ static bool ShouldUnconditionalDownload( PublishedFileId_t id )
 
 bool CReactiveDropWorkshop::UpdateAndLoadAddon( PublishedFileId_t id, bool bHighPriority, bool bUnload )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamUGC *pWorkshop = SteamUGC();
+#else
+	ISteamUGC *pWorkshop = SteamUGC();
+#endif
 #ifdef GAME_DLL
 	if ( engine->IsDedicatedServer() )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pWorkshop = SteamGameServerUGC();
+#else
+		pWorkshop = SteamGameServerUGC();
+#endif
 	}
 #endif
 	if ( !pWorkshop )
@@ -2043,7 +2383,11 @@ bool CReactiveDropWorkshop::UpdateAndLoadAddon( PublishedFileId_t id, bool bHigh
 	// make sure we know the metadata (for admin override tags, mostly)
 	g_ReactiveDropWorkshop.TryQueryAddon( id );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	uint32 iState = pWorkshop->GetItemState( id );
+#else
+	uint32 iState = pWorkshop->GetItemState( id );
+#endif
 	if ( !ShouldUnconditionalDownload( id ) && ( iState & k_EItemStateInstalled ) && !( iState & k_EItemStateNeedsUpdate ) )
 	{
 		if ( rd_workshop_debug.GetBool() )
@@ -2053,7 +2397,11 @@ bool CReactiveDropWorkshop::UpdateAndLoadAddon( PublishedFileId_t id, bool bHigh
 			uint64 sizeOnDisk;
 			char szFolder[MAX_PATH];
 			uint32 timeStamp;
+			#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			if ( pWorkshop->GetItemInstallInfo( id, &sizeOnDisk, szFolder, sizeof( szFolder ), &timeStamp ) )
+			#else
+			if ( pWorkshop->GetItemInstallInfo( id, &sizeOnDisk, szFolder, sizeof( szFolder ), &timeStamp ) )
+			#endif
 			{
 				Msg( "  size: %llu bytes; timestamp: %u; folder: %s\n", sizeOnDisk, timeStamp, szFolder );
 			}
@@ -2064,7 +2412,11 @@ bool CReactiveDropWorkshop::UpdateAndLoadAddon( PublishedFileId_t id, bool bHigh
 	{
 		UnloadAddon( id );
 	}
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( pWorkshop->DownloadItem( id, bHighPriority ) )
+	#else
+	if ( pWorkshop->DownloadItem( id, bHighPriority ) )
+	#endif
 	{
 		Msg( "Downloading addon %llu as it is %s.\n", id, ( iState & k_EItemStateInstalled ) ? ( iState & k_EItemStateNeedsUpdate ) ? "out of date" : "(reportedly) up-to-date" : "not installed" );
 	}
@@ -2127,11 +2479,19 @@ void CReactiveDropWorkshop::RealLoadAddon( PublishedFileId_t id )
 		return;
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamUGC *pWorkshop = SteamUGC();
+#else
+	ISteamUGC *pWorkshop = SteamUGC();
+#endif
 #ifdef GAME_DLL
 	if ( engine->IsDedicatedServer() )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pWorkshop = SteamGameServerUGC();
+#else
+		pWorkshop = SteamGameServerUGC();
+#endif
 	}
 #endif
 	if ( !pWorkshop )
@@ -2143,13 +2503,21 @@ void CReactiveDropWorkshop::RealLoadAddon( PublishedFileId_t id )
 	char szFolderName[MAX_PATH];
 	uint64 nSizeOnDisk;
 	uint32 nTimeStamp;
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !pWorkshop->GetItemInstallInfo( id, &nSizeOnDisk, szFolderName, sizeof( szFolderName ), &nTimeStamp ) )
+	#else
+	if ( !pWorkshop->GetItemInstallInfo( id, &nSizeOnDisk, szFolderName, sizeof( szFolderName ), &nTimeStamp ) )
+	#endif
 	{
 		Warning( "Could not get install location for UGC item %llu\n", id );
 		return;
 	}
 
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( pWorkshop->GetItemState( id ) & k_EItemStateLegacyItem )
+	#else
+	if ( pWorkshop->GetItemState( id ) & k_EItemStateLegacyItem )
+	#endif
 	{
 		if ( char cGuideType = IsIntegratedGuide( szFolderName ) )
 		{
@@ -2178,14 +2546,35 @@ void CReactiveDropWorkshop::RealLoadAddon( PublishedFileId_t id )
 #ifdef GAME_DLL
 		if ( engine->IsDedicatedServer() )
 		{
+			#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			UGCQueryHandle_t hQuery = pWorkshop->CreateQueryUGCDetailsRequest( &id, 1 );
+			#else
+			UGCQueryHandle_t hQuery = pWorkshop->CreateQueryUGCDetailsRequest( &id, 1 );
+			#endif
+			#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pWorkshop->SetReturnOnlyIDs( hQuery, true );
+			#else
+			pWorkshop->SetReturnOnlyIDs( hQuery, true );
+			#endif
+			#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pWorkshop->SetReturnChildren( hQuery, true );
+			#else
+			pWorkshop->SetReturnChildren( hQuery, true );
+			#endif
 
+			#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			if ( rd_workshop_query_cache.GetInt() > 0 )
 				pWorkshop->SetAllowCachedResponse( hQuery, rd_workshop_query_cache.GetInt());
+			#else
+			if ( rd_workshop_query_cache.GetInt() > 0 )
+				pWorkshop->SetAllowCachedResponse( hQuery, rd_workshop_query_cache.GetInt());
+			#endif
 
+			#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			new LoadWorkshopCollection_t( pWorkshop->SendQueryUGCRequest( hQuery ) );
+			#else
+			new LoadWorkshopCollection_t( pWorkshop->SendQueryUGCRequest( hQuery ) );
+			#endif
 		}
 		else
 #endif
@@ -2666,7 +3055,11 @@ bool CReactiveDropWorkshop::PrepareWorkshopVPK( PublishedFileId_t nFileID, const
 		return false;
 	}
 	char szPath[MAX_PATH];
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	V_ComposeFileName( szModDir, VarArgs( "steam_ugc_temp_%llu", SteamUser()->GetSteamID().ConvertToUint64() ), szPath, sizeof( szPath ) );
+#else
+	V_ComposeFileName( szModDir, VarArgs( "steam_ugc_temp_%llu", SteamUser()->GetSteamID().ConvertToUint64() ), szPath, sizeof( szPath ) );
+#endif
 	if ( filesystem->FileExists( szPath ) )
 	{
 		filesystem->RemoveFile( CUtlString::PathJoin( szPath, "addon.vpk" ) );
@@ -2737,7 +3130,11 @@ void CReactiveDropWorkshop::UploadWorkshopItem( const char *pszContentPath, cons
 	}
 	RemoveDuplicateTags();
 	Msg( "Sent request to Steam Workshop server...\n" );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamAPICall_t hAPICall = SteamUGC()->CreateItem( SteamUtils()->GetAppID(), k_EWorkshopFileTypeCommunity );
+#else
+	SteamAPICall_t hAPICall = SteamUGC()->CreateItem( SteamUtils()->GetAppID(), k_EWorkshopFileTypeCommunity );
+#endif
 	m_CreateItemResultCallback.Set( hAPICall, this, &CReactiveDropWorkshop::CreateItemResultCallback );
 }
 
@@ -2759,24 +3156,64 @@ void CReactiveDropWorkshop::RemoveDuplicateTags()
 
 void CReactiveDropWorkshop::SetWorkshopKeyValues( UGCUpdateHandle_t hUpdate )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamUGC *pUGC = SteamUGC();
+#else
+	ISteamUGC *pUGC = SteamUGC();
+#endif
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pUGC->RemoveItemKeyValueTags( hUpdate, "campaigns" );
+	#else
+	pUGC->RemoveItemKeyValueTags( hUpdate, "campaigns" );
+	#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pUGC->RemoveItemKeyValueTags( hUpdate, "missions" );
+#else
+	pUGC->RemoveItemKeyValueTags( hUpdate, "missions" );
+#endif
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pUGC->RemoveItemKeyValueTags( hUpdate, "challenges" );
+	#else
+	pUGC->RemoveItemKeyValueTags( hUpdate, "challenges" );
+	#endif
 
 	for ( int i = 0; i < NELEMS( s_RDWorkshopMissionTags ); i++ )
 	{
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pUGC->RemoveItemKeyValueTags( hUpdate, s_RDWorkshopMissionTags[i] );
+		#else
+		pUGC->RemoveItemKeyValueTags( hUpdate, s_RDWorkshopMissionTags[i] );
+		#endif
 	}
 
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pUGC->RemoveItemKeyValueTags( hUpdate, "campaign_name" );
+	#else
+	pUGC->RemoveItemKeyValueTags( hUpdate, "campaign_name" );
+	#endif
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pUGC->RemoveItemKeyValueTags( hUpdate, "campaign_mission" );
+	#else
+	pUGC->RemoveItemKeyValueTags( hUpdate, "campaign_mission" );
+	#endif
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pUGC->RemoveItemKeyValueTags( hUpdate, "mission_name" );
+	#else
+	pUGC->RemoveItemKeyValueTags( hUpdate, "mission_name" );
+	#endif
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pUGC->RemoveItemKeyValueTags( hUpdate, "challenge_name" );
+	#else
+	pUGC->RemoveItemKeyValueTags( hUpdate, "challenge_name" );
+	#endif
 
 	FOR_EACH_VEC( m_aszIncludedCampaigns, i )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !pUGC->AddItemKeyValueTag( hUpdate, "campaigns", m_aszIncludedCampaigns[i] ) )
+#else
+		if ( !pUGC->AddItemKeyValueTag( hUpdate, "campaigns", m_aszIncludedCampaigns[i] ) )
+#endif
 		{
 			Warning( "Adding campaign %s failed!\n", m_aszIncludedCampaigns[i] );
 		}
@@ -2784,7 +3221,11 @@ void CReactiveDropWorkshop::SetWorkshopKeyValues( UGCUpdateHandle_t hUpdate )
 
 	FOR_EACH_VEC( m_aszIncludedMissions, i )
 	{
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !pUGC->AddItemKeyValueTag( hUpdate, "missions", m_aszIncludedMissions[i] ) )
+		#else
+		if ( !pUGC->AddItemKeyValueTag( hUpdate, "missions", m_aszIncludedMissions[i] ) )
+		#endif
 		{
 			Warning( "Adding mission %s failed!\n", m_aszIncludedMissions[i] );
 		}
@@ -2792,7 +3233,11 @@ void CReactiveDropWorkshop::SetWorkshopKeyValues( UGCUpdateHandle_t hUpdate )
 
 	FOR_EACH_VEC( m_aszIncludedChallenges, i )
 	{
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !pUGC->AddItemKeyValueTag( hUpdate, "challenges", m_aszIncludedChallenges[i] ) )
+		#else
+		if ( !pUGC->AddItemKeyValueTag( hUpdate, "challenges", m_aszIncludedChallenges[i] ) )
+		#endif
 		{
 			Warning( "Adding challenge %s failed!\n", m_aszIncludedChallenges[i] );
 		}
@@ -2803,7 +3248,11 @@ void CReactiveDropWorkshop::SetWorkshopKeyValues( UGCUpdateHandle_t hUpdate )
 	{
 		FOR_EACH_VEC( m_aszIncludedTaggedCampaigns[i], j )
 		{
+			#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			if ( !pUGC->AddItemKeyValueTag( hUpdate, g_RDWorkshopCampaignTags[i], m_aszIncludedTaggedCampaigns[i][j] ) )
+			#else
+			if ( !pUGC->AddItemKeyValueTag( hUpdate, g_RDWorkshopCampaignTags[i], m_aszIncludedTaggedCampaigns[i][j] ) )
+			#endif
 			{
 				Warning( "Adding %s %s failed!\n", g_RDWorkshopCampaignTags[i], m_aszIncludedTaggedCampaigns[i][j] );
 			}
@@ -2815,7 +3264,11 @@ void CReactiveDropWorkshop::SetWorkshopKeyValues( UGCUpdateHandle_t hUpdate )
 	{
 		FOR_EACH_VEC( m_aszIncludedTaggedMissions[i], j )
 		{
+			#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			if ( !pUGC->AddItemKeyValueTag( hUpdate, s_RDWorkshopMissionTags[i], m_aszIncludedTaggedMissions[i][j] ) )
+			#else
+			if ( !pUGC->AddItemKeyValueTag( hUpdate, s_RDWorkshopMissionTags[i], m_aszIncludedTaggedMissions[i][j] ) )
+			#endif
 			{
 				Warning( "Adding %s %s failed!\n", s_RDWorkshopMissionTags[i], m_aszIncludedTaggedMissions[i][j] );
 			}
@@ -2824,7 +3277,11 @@ void CReactiveDropWorkshop::SetWorkshopKeyValues( UGCUpdateHandle_t hUpdate )
 
 	for ( int i = 0; i < m_IncludedCampaignNames.GetNumStrings(); i++ )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !pUGC->AddItemKeyValueTag( hUpdate, "campaign_name", CUtlString( m_IncludedCampaignNames.String( i ) ) + "/" + m_IncludedCampaignNames[i] ) )
+#else
+		if ( !pUGC->AddItemKeyValueTag( hUpdate, "campaign_name", CUtlString( m_IncludedCampaignNames.String( i ) ) + "/" + m_IncludedCampaignNames[i] ) )
+#endif
 		{
 			Warning( "Adding campaign name: %s -> %s failed!\n", m_IncludedCampaignNames.String( i ), m_IncludedCampaignNames[i].Get() );
 		}
@@ -2836,7 +3293,11 @@ void CReactiveDropWorkshop::SetWorkshopKeyValues( UGCUpdateHandle_t hUpdate )
 		FOR_EACH_VEC( m_IncludedCampaignMissions[i], j )
 		{
 			szCampaignMission.Format( "%s/%d/%s", m_IncludedCampaignMissions.String( i ), j, m_IncludedCampaignMissions[i][j] );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			if ( !pUGC->AddItemKeyValueTag( hUpdate, "campaign_mission",  szCampaignMission ) )
+#else
+			if ( !pUGC->AddItemKeyValueTag( hUpdate, "campaign_mission",  szCampaignMission ) )
+#endif
 			{
 				Warning( "Adding campaign mission: %s -> %d -> %s failed!\n", m_IncludedCampaignMissions.String( i ), j, m_IncludedCampaignMissions[i][j] );
 			}
@@ -2845,7 +3306,11 @@ void CReactiveDropWorkshop::SetWorkshopKeyValues( UGCUpdateHandle_t hUpdate )
 
 	for ( int i = 0; i < m_IncludedMissionNames.GetNumStrings(); i++ )
 	{
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !pUGC->AddItemKeyValueTag( hUpdate, "mission_name", CUtlString( m_IncludedMissionNames.String( i ) ) + "/" + m_IncludedMissionNames[i] ) )
+		#else
+		if ( !pUGC->AddItemKeyValueTag( hUpdate, "mission_name", CUtlString( m_IncludedMissionNames.String( i ) ) + "/" + m_IncludedMissionNames[i] ) )
+		#endif
 		{
 			Warning( "Adding mission name: %s -> %s failed!\n", m_IncludedMissionNames.String( i ), m_IncludedMissionNames[i].Get() );
 		}
@@ -2853,7 +3318,11 @@ void CReactiveDropWorkshop::SetWorkshopKeyValues( UGCUpdateHandle_t hUpdate )
 	
 	for ( int i = 0; i < m_IncludedChallengeNames.GetNumStrings(); i++ )
 	{
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !pUGC->AddItemKeyValueTag( hUpdate, "challenge_name", CUtlString( m_IncludedChallengeNames.String( i ) ) + "/" + m_IncludedChallengeNames[i] ) )
+		#else
+		if ( !pUGC->AddItemKeyValueTag( hUpdate, "challenge_name", CUtlString( m_IncludedChallengeNames.String( i ) ) + "/" + m_IncludedChallengeNames[i] ) )
+		#endif
 		{
 			Warning( "Adding challenge name: %s -> %s failed!\n", m_IncludedChallengeNames.String( i ), m_IncludedChallengeNames[i].Get() );
 		}
@@ -2862,7 +3331,11 @@ void CReactiveDropWorkshop::SetWorkshopKeyValues( UGCUpdateHandle_t hUpdate )
 
 CON_COMMAND_F( ugc_create, "Usage: ugc_create \"C:\\Path\\to\\content.vpk\" \"C:\\Path\\to\\preview\\image.jpeg\" \"Title\" \"Description\" \"Tag1\" \"Tag2\" ...\nCampaign, Challenge, and Deathmatch will automatically be added as tags if applicable.", FCVAR_NOT_CONNECTED )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !SteamUGC() )
+#else
+	if ( !SteamUGC() )
+#endif
 	{
 		Warning( "No Steam connection. Cannot interact with workshop.\n" );
 		return;
@@ -2896,7 +3369,11 @@ CON_COMMAND_F( ugc_create, "Usage: ugc_create \"C:\\Path\\to\\content.vpk\" \"C:
 
 CON_COMMAND_F( ugc_curated_create, "", FCVAR_HIDDEN | FCVAR_NOT_CONNECTED )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamUGC *pUGC = SteamUGC();
+#else
+	ISteamUGC *pUGC = SteamUGC();
+#endif
 	if ( !pUGC )
 	{
 		Warning( "Could not obtain SteamUGC interface!\n" );
@@ -2909,7 +3386,11 @@ CON_COMMAND_F( ugc_curated_create, "", FCVAR_HIDDEN | FCVAR_NOT_CONNECTED )
 		return;
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamAPICall_t hCall = pUGC->CreateItem( SteamUtils()->GetAppID(), k_EWorkshopFileTypeMicrotransaction );
+#else
+	SteamAPICall_t hCall = pUGC->CreateItem( SteamUtils()->GetAppID(), k_EWorkshopFileTypeMicrotransaction );
+#endif
 	g_ReactiveDropWorkshop.m_CreateItemResultCallbackCurated.Set( hCall, &g_ReactiveDropWorkshop, &CReactiveDropWorkshop::CreateItemResultCallbackCurated );
 }
 
@@ -2965,12 +3446,24 @@ void CReactiveDropWorkshop::CreateItemResultCallback( CreateItemResult_t *pResul
 
 	m_nLastPublishedFileID = pResult->m_nPublishedFileId;
 	Msg( "Workshop assigned published file ID: %llu\n", pResult->m_nPublishedFileId );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	UGCUpdateHandle_t hUpdate = SteamUGC()->StartItemUpdate( SteamUtils()->GetAppID(), pResult->m_nPublishedFileId );
+#else
+	UGCUpdateHandle_t hUpdate = SteamUGC()->StartItemUpdate( SteamUtils()->GetAppID(), pResult->m_nPublishedFileId );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !SteamUGC()->SetItemTitle( hUpdate, m_szTitle ) )
+#else
+	if ( !SteamUGC()->SetItemTitle( hUpdate, m_szTitle ) )
+#endif
 	{
 		Warning( "Setting title failed!\n" );
 	}
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !SteamUGC()->SetItemDescription( hUpdate, m_szDescription ) )
+#else
+	if ( !SteamUGC()->SetItemDescription( hUpdate, m_szDescription ) )
+#endif
 	{
 		Warning( "Setting description failed!\n" );
 	}
@@ -2979,22 +3472,38 @@ void CReactiveDropWorkshop::CreateItemResultCallback( CreateItemResult_t *pResul
 		SteamParamStringArray_t tags;
 		tags.m_nNumStrings = m_aszTags.Count();
 		tags.m_ppStrings = const_cast<const char **>( m_aszTags.Base() );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !SteamUGC()->SetItemTags( hUpdate, &tags ) )
+#else
+		if ( !SteamUGC()->SetItemTags( hUpdate, &tags ) )
+#endif
 		{
 			Warning( "Setting tags failed!\n" );
 		}
 	}
 	SetWorkshopKeyValues( hUpdate );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !SteamUGC()->SetItemPreview( hUpdate, m_szPreviewImagePath ) )
+#else
+	if ( !SteamUGC()->SetItemPreview( hUpdate, m_szPreviewImagePath ) )
+#endif
 	{
 		Warning( "Setting preview image failed!\n" );
 	}
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !SteamUGC()->SetItemContent( hUpdate, m_szContentPath ) )
+#else
+	if ( !SteamUGC()->SetItemContent( hUpdate, m_szContentPath ) )
+#endif
 	{
 		Warning( "Setting addon VPK failed!\n" );
 	}
 	m_hUpdate = hUpdate;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamAPICall_t hAPICall = SteamUGC()->SubmitItemUpdate( hUpdate, "" );
+#else
+	SteamAPICall_t hAPICall = SteamUGC()->SubmitItemUpdate( hUpdate, "" );
+#endif
 	m_SubmitItemUpdateResultCallback.Set( hAPICall, this, &CReactiveDropWorkshop::SubmitItemUpdateResultCallback );
 	engine->ClientCmd_Unrestricted( "_ugc_update_progress\n" );
 }
@@ -3040,11 +3549,19 @@ void CReactiveDropWorkshop::SubmitItemUpdateResultCallback( SubmitItemUpdateResu
 
 bool CReactiveDropWorkshop::OpenWorkshopPageForFile( PublishedFileId_t nPublishedFileID )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( SteamFriends() && SteamUtils() && SteamUtils()->IsOverlayEnabled() )
 	{
 		SteamFriends()->ActivateGameOverlayToWebPage( VarArgs( "https://steamcommunity.com/sharedfiles/filedetails/?id=%llu", nPublishedFileID ), k_EActivateGameOverlayToWebPageMode_Modal );
 		return true;
 	}
+#else
+	if ( SteamFriends() && SteamUtils() && SteamUtils()->IsOverlayEnabled() )
+	{
+		SteamFriends()->ActivateGameOverlayToWebPage( VarArgs( "https://steamcommunity.com/sharedfiles/filedetails/?id=%llu", nPublishedFileID ), k_EActivateGameOverlayToWebPageMode_Modal );
+		return true;
+	}
+#endif
 
 	vgui::system()->ShellExecute( "open", VarArgs( "steam://url/CommunityFilePage/%llu", nPublishedFileID ) );
 	return false;
@@ -3052,7 +3569,11 @@ bool CReactiveDropWorkshop::OpenWorkshopPageForFile( PublishedFileId_t nPublishe
 
 CON_COMMAND_F( _ugc_update_progress, "", FCVAR_HIDDEN )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !SteamUGC() )
+#else
+	if ( !SteamUGC() )
+#endif
 	{
 		return;
 	}
@@ -3063,7 +3584,11 @@ CON_COMMAND_F( _ugc_update_progress, "", FCVAR_HIDDEN )
 	}
 
 	uint64 nBytesProcessed, nBytesTotal;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	EItemUpdateStatus status = SteamUGC()->GetItemUpdateProgress( g_ReactiveDropWorkshop.m_hUpdate, &nBytesProcessed, &nBytesTotal );
+#else
+	EItemUpdateStatus status = SteamUGC()->GetItemUpdateProgress( g_ReactiveDropWorkshop.m_hUpdate, &nBytesProcessed, &nBytesTotal );
+#endif
 	Msg( "Uploading addon to Steam Workshop..." );
 	if ( nBytesTotal != 0 )
 	{
@@ -3102,21 +3627,41 @@ void CReactiveDropWorkshop::UpdateWorkshopItem( PublishedFileId_t nFileID, const
 	}
 
 	m_nLastPublishedFileID = nFileID;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	UGCUpdateHandle_t hUpdate = SteamUGC()->StartItemUpdate( SteamUtils()->GetAppID(), nFileID );
+#else
+	UGCUpdateHandle_t hUpdate = SteamUGC()->StartItemUpdate( SteamUtils()->GetAppID(), nFileID );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !SteamUGC()->SetItemContent( hUpdate, m_szContentPath ) )
+#else
+	if ( !SteamUGC()->SetItemContent( hUpdate, m_szContentPath ) )
+#endif
 	{
 		Warning( "Setting addon VPK failed!\n" );
 	}
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( *pszPreviewImagePath && !SteamUGC()->SetItemPreview( hUpdate, pszPreviewImagePath ) )
+#else
+	if ( *pszPreviewImagePath && !SteamUGC()->SetItemPreview( hUpdate, pszPreviewImagePath ) )
+#endif
 	{
 		Warning( "Setting preview image failed!\n" );
 	}
 	SetWorkshopKeyValues( hUpdate );
 	m_hUpdate = hUpdate;
 	m_szUpdateChangeDescription = pszChangeDescription;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	m_hUpdateWorkshopItemQuery = SteamUGC()->CreateQueryUGCDetailsRequest( &nFileID, 1 );
+#else
+	m_hUpdateWorkshopItemQuery = SteamUGC()->CreateQueryUGCDetailsRequest( &nFileID, 1 );
+#endif
 	m_bWantAutoTags = false;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamAPICall_t hAPICall = SteamUGC()->SendQueryUGCRequest( m_hUpdateWorkshopItemQuery );
+#else
+	SteamAPICall_t hAPICall = SteamUGC()->SendQueryUGCRequest( m_hUpdateWorkshopItemQuery );
+#endif
 	m_UpdateWorkshopItemQueryResultCallback.Set( hAPICall, this, &CReactiveDropWorkshop::UpdateWorkshopItemQueryResultCallback );
 }
 
@@ -3149,7 +3694,11 @@ void CReactiveDropWorkshop::UpdateWorkshopItemQueryResultCallback( SteamUGCQuery
 	}
 
 	SteamUGCDetails_t details;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !SteamUGC()->GetQueryUGCResult( pResult->m_handle, 0, &details ) )
+#else
+	if ( !SteamUGC()->GetQueryUGCResult( pResult->m_handle, 0, &details ) )
+#endif
 	{
 		Warning( "Failed to retrieve tags! Manually specified tags may be lost in this update.\n" );
 	}
@@ -3168,12 +3717,20 @@ void CReactiveDropWorkshop::UpdateWorkshopItemQueryResultCallback( SteamUGCQuery
 	SteamParamStringArray_t tags;
 	tags.m_nNumStrings = m_aszTags.Count();
 	tags.m_ppStrings = const_cast<const char **>( m_aszTags.Base() );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !SteamUGC()->SetItemTags( m_hUpdate, &tags ) )
+#else
+	if ( !SteamUGC()->SetItemTags( m_hUpdate, &tags ) )
+#endif
 	{
 		Warning( "Setting tags failed!\n" );
 	}
 	Msg( "Sending update to workshop for addon ID %llu...\n", m_nLastPublishedFileID );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamAPICall_t hAPICall = SteamUGC()->SubmitItemUpdate( m_hUpdate, m_szUpdateChangeDescription );
+#else
+	SteamAPICall_t hAPICall = SteamUGC()->SubmitItemUpdate( m_hUpdate, m_szUpdateChangeDescription );
+#endif
 	m_SubmitItemUpdateResultCallback.Set( hAPICall, this, &CReactiveDropWorkshop::SubmitItemUpdateResultCallback );
 	engine->ClientCmd_Unrestricted( "_ugc_update_progress\n" );
 	m_szUpdateChangeDescription.Purge();
@@ -3181,7 +3738,11 @@ void CReactiveDropWorkshop::UpdateWorkshopItemQueryResultCallback( SteamUGCQuery
 
 CON_COMMAND_F( ugc_update, "Usage: ugc_update 826481632 \"C:\\Path\\to\\content.vpk\" \"C:\\Path\\to\\preview.jpg\" \"Description of changes line 1\" \"Description of changes line 2\" ...\n(the number should be the number in the address of your workshop item after http://steamcommunity.com/sharedfiles/filedetails/?id=)\nIf the preview image should not be updated, use \"\" instead of a path.", FCVAR_NOT_CONNECTED )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !SteamUGC() )
+#else
+	if ( !SteamUGC() )
+#endif
 	{
 		Warning( "No Steam connection. Cannot interact with workshop.\n" );
 		return;
@@ -3282,18 +3843,34 @@ void CReactiveDropWorkshop::SetWorkshopItemTags( PublishedFileId_t nFileID, cons
 	RemoveDuplicateTags();
 
 	m_nLastPublishedFileID = nFileID;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	UGCUpdateHandle_t hUpdate = SteamUGC()->StartItemUpdate( SteamUtils()->GetAppID(), nFileID );
+#else
+	UGCUpdateHandle_t hUpdate = SteamUGC()->StartItemUpdate( SteamUtils()->GetAppID(), nFileID );
+#endif
 	m_hUpdate = hUpdate;
 	m_szUpdateChangeDescription = "";
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	m_hUpdateWorkshopItemQuery = SteamUGC()->CreateQueryUGCDetailsRequest( &nFileID, 1 );
+#else
+	m_hUpdateWorkshopItemQuery = SteamUGC()->CreateQueryUGCDetailsRequest( &nFileID, 1 );
+#endif
 	m_bWantAutoTags = true;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamAPICall_t hAPICall = SteamUGC()->SendQueryUGCRequest( m_hUpdateWorkshopItemQuery );
+#else
+	SteamAPICall_t hAPICall = SteamUGC()->SendQueryUGCRequest( m_hUpdateWorkshopItemQuery );
+#endif
 	m_UpdateWorkshopItemQueryResultCallback.Set( hAPICall, this, &CReactiveDropWorkshop::UpdateWorkshopItemQueryResultCallback );
 }
 
 CON_COMMAND_F( ugc_updatetags, "Usage: ugc_updatetags 826481632 \"Tag1\" \"Tag2\" ...\n(the number should be the number in the address of your workshop item after http://steamcommunity.com/sharedfiles/filedetails/?id=)\nSome tags are automatically determined from the contents of your addon and cannot be added or removed using this command.", FCVAR_NOT_CONNECTED )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !SteamUGC() )
+#else
+	if ( !SteamUGC() )
+#endif
 	{
 		Warning( "No Steam connection. Cannot interact with workshop.\n" );
 		return;
@@ -3341,18 +3918,30 @@ public:
 		m_nFile = nFile;
 		Msg( "Initializing fix for workshop display names for addon %llu\n", nFile );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( SteamUGC()->GetItemState( nFile ) & k_EItemStateDownloadPending )
+#else
+		if ( SteamUGC()->GetItemState( nFile ) & k_EItemStateDownloadPending )
+#endif
 		{
 			return;
 		}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( SteamUGC()->GetItemState( nFile ) & k_EItemStateInstalled )
+#else
+		if ( SteamUGC()->GetItemState( nFile ) & k_EItemStateInstalled )
+#endif
 		{
 			PerformFix();
 			return;
 		}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !SteamUGC()->DownloadItem( nFile, false ) )
+#else
+		if ( !SteamUGC()->DownloadItem( nFile, false ) )
+#endif
 		{
 			Warning( "Failed to apply fix: DownloadItem returned false for %llu\n", nFile );
 			delete this;
@@ -3364,7 +3953,11 @@ public:
 		uint64 nSizeOnDisk;
 		uint32 nTimeStamp;
 		char szFolder[MAX_PATH];
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !SteamUGC()->GetItemInstallInfo( m_nFile, &nSizeOnDisk, szFolder, sizeof( szFolder ), &nTimeStamp ) )
+#else
+		if ( !SteamUGC()->GetItemInstallInfo( m_nFile, &nSizeOnDisk, szFolder, sizeof( szFolder ), &nTimeStamp ) )
+#endif
 		{
 			Warning( "Failed to apply fix: GetItemInstallInfo returned false for %llu\n", m_nFile );
 			delete this;
@@ -3382,9 +3975,17 @@ public:
 			return;
 		}
 
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		UGCUpdateHandle_t hUpdate = SteamUGC()->StartItemUpdate( SteamUtils()->GetAppID(), m_nFile );
+	#else
+		UGCUpdateHandle_t hUpdate = SteamUGC()->StartItemUpdate( SteamUtils()->GetAppID(), m_nFile );
+		#endif
 		g_ReactiveDropWorkshop.SetWorkshopKeyValues( hUpdate );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		SteamAPICall_t hCall = SteamUGC()->SubmitItemUpdate( hUpdate, "[automated update to fix display names on leaderboards]" );
+#else
+		SteamAPICall_t hCall = SteamUGC()->SubmitItemUpdate( hUpdate, "[automated update to fix display names on leaderboards]" );
+#endif
 		m_SubmitCall.Set( hCall, this, &CFixWorkshopKeyValueNames::SubmitCompleted );
 	}
 
@@ -3408,15 +4009,27 @@ public:
 		delete this;
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	STEAM_CALLBACK( CFixWorkshopKeyValueNames, Steam_DownloadItemResult, DownloadItemResult_t );
+#else
+	STEAM_CALLBACK( CFixWorkshopKeyValueNames, Steam_DownloadItemResult, DownloadItemResult_t );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CCallResult<CFixWorkshopKeyValueNames, SubmitItemUpdateResult_t> m_SubmitCall;
+#else
+	CCallResult<CFixWorkshopKeyValueNames, SubmitItemUpdateResult_t> m_SubmitCall;
+#endif
 
 	PublishedFileId_t m_nFile;
 };
 
 void CFixWorkshopKeyValueNames::Steam_DownloadItemResult( DownloadItemResult_t *pResult )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( pResult->m_unAppID != SteamUtils()->GetAppID() || pResult->m_nPublishedFileId != m_nFile )
+#else
+	if ( pResult->m_unAppID != SteamUtils()->GetAppID() || pResult->m_nPublishedFileId != m_nFile )
+#endif
 	{
 		return;
 	}
@@ -3435,7 +4048,11 @@ void CReactiveDropWorkshop::CheckPublishedAddonConsistency()
 {
 	FOR_EACH_VEC( m_EnabledAddons, i )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( SteamUser()->GetSteamID() != m_EnabledAddons[i].details.m_ulSteamIDOwner )
+#else
+		if ( SteamUser()->GetSteamID() != m_EnabledAddons[i].details.m_ulSteamIDOwner )
+#endif
 		{
 			continue;
 		}

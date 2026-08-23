@@ -107,10 +107,18 @@ bool RD_Rich_Presence::Init()
 
 void RD_Rich_Presence::Shutdown()
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamFriends *pSteamFriends = SteamFriends();
+#else
+	ISteamFriends *pSteamFriends = SteamFriends();
+#endif
 	if ( pSteamFriends )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pSteamFriends->ClearRichPresence();
+#else
+		pSteamFriends->ClearRichPresence();
+#endif
 	}
 
 #ifdef DISCORD_RICH_PRESENCE_ENABLED
@@ -134,7 +142,11 @@ void RD_Rich_Presence::Update( float frametime )
 
 void RD_Rich_Presence::UpdatePresence()
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamFriends *pSteamFriends = SteamFriends();
+#else
+	ISteamFriends *pSteamFriends = SteamFriends();
+#endif
 	if ( !pSteamFriends )
 		return;					// no friends, no fun
 
@@ -145,11 +157,31 @@ void RD_Rich_Presence::UpdatePresence()
 
 	if ( !engine->IsConnected() )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pSteamFriends->SetRichPresence( "status", "Main Menu" );
+#else
+		pSteamFriends->SetRichPresence( "status", "Main Menu" );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pSteamFriends->SetRichPresence( "connect", NULL );
+#else
+		pSteamFriends->SetRichPresence( "connect", NULL );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pSteamFriends->SetRichPresence( "steam_display", "#Main_Menu" );
+#else
+		pSteamFriends->SetRichPresence( "steam_display", "#Main_Menu" );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pSteamFriends->SetRichPresence( "steam_player_group", NULL );
+#else
+		pSteamFriends->SetRichPresence( "steam_player_group", NULL );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pSteamFriends->SetRichPresence( "steam_player_group_size", NULL );
+#else
+		pSteamFriends->SetRichPresence( "steam_player_group_size", NULL );
+#endif
 
 #ifdef DISCORD_RICH_PRESENCE_ENABLED
 		discordPresence.largeImageKey = "default";
@@ -161,11 +193,31 @@ void RD_Rich_Presence::UpdatePresence()
 	}
 	else if ( engine->IsPlayingDemo() )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pSteamFriends->SetRichPresence( "status", "Watching a Demo" );
+#else
+		pSteamFriends->SetRichPresence( "status", "Watching a Demo" );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pSteamFriends->SetRichPresence( "connect", NULL );
+#else
+		pSteamFriends->SetRichPresence( "connect", NULL );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pSteamFriends->SetRichPresence( "steam_display", "#Watching_a_Demo" );
+#else
+		pSteamFriends->SetRichPresence( "steam_display", "#Watching_a_Demo" );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pSteamFriends->SetRichPresence( "steam_player_group", NULL );
+#else
+		pSteamFriends->SetRichPresence( "steam_player_group", NULL );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pSteamFriends->SetRichPresence( "steam_player_group_size", NULL );
+#else
+		pSteamFriends->SetRichPresence( "steam_player_group_size", NULL );
+#endif
 
 #ifdef DISCORD_RICH_PRESENCE_ENABLED
 		discordPresence.largeImageKey = "default";
@@ -191,25 +243,53 @@ void RD_Rich_Presence::UpdatePresence()
 
 			static char szConnectString[40];
 			V_snprintf( szConnectString, sizeof( szConnectString ), "+connect_lobby %llu", currentLobby.ConvertToUint64() );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pSteamFriends->SetRichPresence( "steam_player_group", szCurrentLobbyID );
+#else
+			pSteamFriends->SetRichPresence( "steam_player_group", szCurrentLobbyID );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pSteamFriends->SetRichPresence( "connect", szConnectString );
+#else
+			pSteamFriends->SetRichPresence( "connect", szConnectString );
+#endif
 #ifdef DISCORD_RICH_PRESENCE_ENABLED
 			discordPresence.partyId = szCurrentLobbyID;
 #endif
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			ISteamMatchmaking *pSteamMatchmaking = SteamMatchmaking();
+#else
+			ISteamMatchmaking *pSteamMatchmaking = SteamMatchmaking();
+#endif
 			if ( pSteamMatchmaking )
 			{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				int memberCount = pSteamMatchmaking->GetNumLobbyMembers( currentLobby );
+#else
+				int memberCount = pSteamMatchmaking->GetNumLobbyMembers( currentLobby );
+#endif
 				if ( pSteamFriends )
 				{
 					static char szGroupSize[4];
 					V_snprintf( szGroupSize, sizeof( szGroupSize ), "%d", memberCount );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 					pSteamFriends->SetRichPresence( "steam_player_group_size", szGroupSize );
+#else
+					pSteamFriends->SetRichPresence( "steam_player_group_size", szGroupSize );
+#endif
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 					pSteamFriends->SetRichPresence( "num_players", szGroupSize );
+#else
+					pSteamFriends->SetRichPresence( "num_players", szGroupSize );
+#endif
 					V_snprintf( szGroupSize, sizeof( szGroupSize ), "%d", gpGlobals->maxClients );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 					pSteamFriends->SetRichPresence( "max_players", szGroupSize );
+#else
+					pSteamFriends->SetRichPresence( "max_players", szGroupSize );
+#endif
 				}
 #ifdef DISCORD_RICH_PRESENCE_ENABLED
 				discordPresence.partySize = memberCount;
@@ -224,7 +304,11 @@ void RD_Rich_Presence::UpdatePresence()
 			}
 			else if ( pSteamFriends )
 			{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				pSteamFriends->SetRichPresence( "steam_player_group_size", NULL );
+#else
+				pSteamFriends->SetRichPresence( "steam_player_group_size", NULL );
+#endif
 			}
 		}
 		else if ( engine->IsConnected() && ASWGameResource() && ASWGameResource()->IsOfflineGame() )
@@ -239,11 +323,31 @@ void RD_Rich_Presence::UpdatePresence()
 
 			if ( pSteamFriends )
 			{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				pSteamFriends->SetRichPresence( "connect", NULL );
+#else
+				pSteamFriends->SetRichPresence( "connect", NULL );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				pSteamFriends->SetRichPresence( "steam_player_group", NULL );
+#else
+				pSteamFriends->SetRichPresence( "steam_player_group", NULL );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				pSteamFriends->SetRichPresence( "steam_player_group_size", NULL );
+#else
+				pSteamFriends->SetRichPresence( "steam_player_group_size", NULL );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				pSteamFriends->SetRichPresence( "num_players", "1" );
+#else
+				pSteamFriends->SetRichPresence( "num_players", "1" );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				pSteamFriends->SetRichPresence( "max_players", "1" );
+#else
+				pSteamFriends->SetRichPresence( "max_players", "1" );
+#endif
 			}
 		}
 		else if ( engine->IsConnected() )
@@ -265,24 +369,44 @@ void RD_Rich_Presence::UpdatePresence()
 						static char szHostAdress[32];
 						V_strncpy( szHostAdress, pAddr, sizeof( szHostAdress ) );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 						pSteamFriends->SetRichPresence( "steam_player_group", szHostAdress );
+#else
+						pSteamFriends->SetRichPresence( "steam_player_group", szHostAdress );
+#endif
 #ifdef DISCORD_RICH_PRESENCE_ENABLED
 						discordPresence.partyId = szHostAdress;
 #endif 
 
 						static char szConnectString[40];
 						V_snprintf( szConnectString, sizeof( szConnectString ), "+connect %s", pAddr );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 						pSteamFriends->SetRichPresence( "connect", szConnectString );
+#else
+						pSteamFriends->SetRichPresence( "connect", szConnectString );
+#endif
 					}
 				}
 
 				static char szGroupSize[4];
 				V_snprintf( szGroupSize, sizeof( szGroupSize ), "%d", UTIL_ASW_GetNumPlayers() );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				pSteamFriends->SetRichPresence( "steam_player_group_size", szGroupSize );
+#else
+				pSteamFriends->SetRichPresence( "steam_player_group_size", szGroupSize );
+#endif
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				pSteamFriends->SetRichPresence( "num_players", szGroupSize );
+#else
+				pSteamFriends->SetRichPresence( "num_players", szGroupSize );
+#endif
 				V_snprintf( szGroupSize, sizeof( szGroupSize ), "%d", gpGlobals->maxClients );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				pSteamFriends->SetRichPresence( "max_players", szGroupSize );
+#else
+				pSteamFriends->SetRichPresence( "max_players", szGroupSize );
+#endif
 			}
 		}
 
@@ -359,7 +483,11 @@ void RD_Rich_Presence::UpdatePresence()
 				{
 					V_strncpy( szMissionTranslationKey, "community_mission", sizeof( szMissionTranslationKey ) );
 				}
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				pSteamFriends->SetRichPresence( "rd_mission_key", szMissionTranslationKey );
+#else
+				pSteamFriends->SetRichPresence( "rd_mission_key", szMissionTranslationKey );
+#endif
 
 				static char szMissionName[128];
 				if ( wchar_t *pwszTranslatedMissionName = g_pLocalize->Find( STRING( pMission->MissionTitle ) ) )
@@ -370,7 +498,11 @@ void RD_Rich_Presence::UpdatePresence()
 				{
 					V_strncpy( szMissionName, STRING( pMission->MissionTitle ), sizeof( szMissionName ) );
 				}
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				pSteamFriends->SetRichPresence( "rd_mission", szMissionName );
+#else
+				pSteamFriends->SetRichPresence( "rd_mission", szMissionName );
+#endif
 				V_strncpy( szLargeImageText, szMissionName, sizeof( szLargeImageText ) );
 
 				if ( !ASWDeathmatchMode() )
@@ -387,7 +519,11 @@ void RD_Rich_Presence::UpdatePresence()
 					case 4: szDifficulty = "Insane"; break;
 					case 5: szDifficulty = "Brutal"; break;
 					}
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 					pSteamFriends->SetRichPresence( "rd_difficulty", szDifficulty );
+#else
+					pSteamFriends->SetRichPresence( "rd_difficulty", szDifficulty );
+#endif
 
 					// set challenge
 					if ( V_strcmp( rd_challenge.GetString(), "0" ) )
@@ -402,7 +538,11 @@ void RD_Rich_Presence::UpdatePresence()
 						{
 							V_strncpy( szChallengeTranslationKey, "community_challenge", sizeof( szChallengeTranslationKey ) );
 						}
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 						pSteamFriends->SetRichPresence( "rd_challenge_key", szChallengeTranslationKey );
+#else
+						pSteamFriends->SetRichPresence( "rd_challenge_key", szChallengeTranslationKey );
+#endif
 
 						static char szChallengeName[128];
 						if ( wchar_t *pwszTranslatedChallengeName = g_pLocalize->Find( pszDisplayName ) )
@@ -413,7 +553,11 @@ void RD_Rich_Presence::UpdatePresence()
 						{
 							V_strncpy( szChallengeName, pszDisplayName, sizeof( szChallengeName ) );
 						}
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 						pSteamFriends->SetRichPresence( "rd_challenge", szChallengeName );
+#else
+						pSteamFriends->SetRichPresence( "rd_challenge", szChallengeName );
+#endif
 						V_strncpy( szDetails, szChallengeName, sizeof( szDetails ) );
 						V_strcat( szDetails, " (", sizeof( szDetails ) );
 						V_strcat( szDetails, szDifficulty, sizeof( szDetails ) );
@@ -483,8 +627,16 @@ void RD_Rich_Presence::UpdatePresence()
 				discordPresence.largeImageKey = "default";
 			}
 #endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pSteamFriends->SetRichPresence( "status", szDetails );
+#else
+			pSteamFriends->SetRichPresence( "status", szDetails );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pSteamFriends->SetRichPresence( "steam_display", szSteamDisplay );
+#else
+			pSteamFriends->SetRichPresence( "steam_display", szSteamDisplay );
+#endif
 
 			CASW_Marine_Profile *pProfile = NULL;
 			if ( C_ASW_Marine *pMarine = C_ASW_Marine::AsMarine( pPlayer->GetNPC() ) )

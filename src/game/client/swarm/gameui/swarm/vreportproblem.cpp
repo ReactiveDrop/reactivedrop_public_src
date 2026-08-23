@@ -472,9 +472,17 @@ public:
 
 		m_pImgAvatar->SetAvatarBySteamID( &steamID );
 		wchar_t wszPlayerName[k_cwchPersonaNameMax + 1];
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( ISteamFriends *pFriends = SteamFriends() )
+#else
+		if ( ISteamFriends *pFriends = SteamFriends() )
+#endif
 		{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			V_UTF8ToUnicode( pFriends->GetFriendPersonaName( steamID ), wszPlayerName, sizeof( wszPlayerName ) );
+#else
+			V_UTF8ToUnicode( pFriends->GetFriendPersonaName( steamID ), wszPlayerName, sizeof( wszPlayerName ) );
+#endif
 		}
 		else
 		{
@@ -534,9 +542,17 @@ void ReportProblem::ResumeInProgressReport()
 
 		m_pImgPlayerAvatar->SetAvatarBySteamID( &s_RD_Current_Report.Player );
 		wchar_t wszPlayerName[k_cwchPersonaNameMax + 1];
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( ISteamFriends *pFriends = SteamFriends() )
+#else
+		if ( ISteamFriends *pFriends = SteamFriends() )
+#endif
 		{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			V_UTF8ToUnicode( pFriends->GetFriendPersonaName( s_RD_Current_Report.Player ), wszPlayerName, sizeof( wszPlayerName ) );
+#else
+			V_UTF8ToUnicode( pFriends->GetFriendPersonaName( s_RD_Current_Report.Player ), wszPlayerName, sizeof( wszPlayerName ) );
+#endif
 		}
 		else
 		{

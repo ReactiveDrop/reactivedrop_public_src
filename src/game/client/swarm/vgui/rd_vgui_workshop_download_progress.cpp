@@ -58,7 +58,11 @@ void CRD_VGUI_Workshop_Download_Progress::OnThink()
 
 	BaseClass::OnThink();
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamUGC *pUGC = SteamUGC();
+#else
+	ISteamUGC *pUGC = SteamUGC();
+#endif
 	AssertOnce( pUGC );
 	if ( !pUGC )
 	{
@@ -81,7 +85,11 @@ void CRD_VGUI_Workshop_Download_Progress::OnThink()
 		{
 			const auto &addon = g_ReactiveDropWorkshop.m_EnabledAddons[i];
 			PublishedFileId_t nPublishedFileID = addon.details.m_nPublishedFileId;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			uint32 itemState = pUGC->GetItemState( nPublishedFileID );
+#else
+			uint32 itemState = pUGC->GetItemState( nPublishedFileID );
+#endif
 
 			if ( itemState & k_EItemStateDownloadPending )
 			{
@@ -92,7 +100,11 @@ void CRD_VGUI_Workshop_Download_Progress::OnThink()
 			if ( !s_bFoundDownloadWithProgress && ( itemState & k_EItemStateDownloading ) )
 			{
 				uint64 nBytesDownloaded, nBytesTotal;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				if ( pUGC->GetItemDownloadInfo( nPublishedFileID, &nBytesDownloaded, &nBytesTotal ) && nBytesDownloaded > 0 )
+#else
+				if ( pUGC->GetItemDownloadInfo( nPublishedFileID, &nBytesDownloaded, &nBytesTotal ) && nBytesDownloaded > 0 )
+#endif
 				{
 					s_iBestAddonIndex = i;
 					s_nBestBytesDownloaded = nBytesDownloaded;
@@ -155,7 +167,11 @@ void CRD_VGUI_Workshop_Download_Progress::OnThink()
 	if ( !s_bFoundDownloadWithProgress )
 	{
 		// Only query if not already found in the loop
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pUGC->GetItemDownloadInfo( nPublishedFileID, &nBytesDownloaded, &nBytesTotal );
+#else
+		pUGC->GetItemDownloadInfo( nPublishedFileID, &nBytesDownloaded, &nBytesTotal );
+#endif
 
 		// We are busy, reset s_nLastAddonCount to force a re-scan
 		s_nLastAddonCount = -1;

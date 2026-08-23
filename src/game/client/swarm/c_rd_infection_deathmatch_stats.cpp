@@ -36,13 +36,17 @@ void CRD_Infection_Deathmatch_Stats::OnUpdate( C_RD_HUD_VScript *pHUD )
 	if ( !pLocalPlayer || pHUD->m_hDataEntity.Get() != pLocalPlayer )
 		return;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !m_bStatsRequested && SteamUserStats() )
+#else
+	if ( !m_bStatsRequested && SteamUserStats() )
+#endif
 	{
 		// Valve:
 		// This call is no longer required as it is managed by the Steam client. The game stats and achievements
 		// will be synchronized with Steam before the game process begins.
 		// [Obsolete("No longer required. Automatically handled by the Steam client.", false)]
-#if defined(STEAMAPPS_INTERFACE_VERSION008)
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		SteamUserStats()->RequestCurrentStats();
 #else
 		SteamUserStats()->RequestUserStats(SteamUser()->GetSteamID());
@@ -128,10 +132,15 @@ void CRD_Infection_Deathmatch_Stats::OnUpdate( C_RD_HUD_VScript *pHUD )
 				ReactiveDropInventory::CommitDynamicProperties();
 
 				// store any pending stats before we clear them
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				ISteamUserStats *pUserStats = SteamUserStats();
+#else
+				ISteamUserStats *pUserStats = SteamUserStats();
+#endif
 				if ( pUserStats && m_bStatsLoaded )
 				{
 					bool bAnyStatChanged = false;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 #define SAVE_PER_PLAYER_TYPE_STAT( statname, playertypename, statvar, playertypeid ) \
 					if ( statvar##Pending[playertypeid - 1] != 0 ) \
 					{ \
@@ -139,6 +148,15 @@ void CRD_Infection_Deathmatch_Stats::OnUpdate( C_RD_HUD_VScript *pHUD )
 						pUserStats->SetStat( "infectiondm." statname "." playertypename, statvar##Saved[playertypeid - 1] ); \
 						bAnyStatChanged = true; \
 					}
+#else
+#define SAVE_PER_PLAYER_TYPE_STAT( statname, playertypename, statvar, playertypeid ) \
+					if ( statvar##Pending[playertypeid - 1] != 0 ) \
+					{ \
+						statvar##Saved[playertypeid - 1] += statvar##Pending[playertypeid - 1]; \
+						pUserStats->SetStat( "infectiondm." statname "." playertypename, statvar##Saved[playertypeid - 1] ); \
+						bAnyStatChanged = true; \
+					}
+#endif
 #define SAVE_PER_PLAYER_TYPE_STATS( statname, statvar ) \
 					SAVE_PER_PLAYER_TYPE_STAT( statname, "prime", statvar, IPT_ZOMBIE_PRIME ) \
 					SAVE_PER_PLAYER_TYPE_STAT( statname, "zombie", statvar, IPT_ZOMBIE_CONVERTED ) \
@@ -152,7 +170,11 @@ void CRD_Infection_Deathmatch_Stats::OnUpdate( C_RD_HUD_VScript *pHUD )
 
 					if ( bAnyStatChanged )
 					{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 						pUserStats->StoreStats();
+#else
+						pUserStats->StoreStats();
+#endif
 					}
 				}
 			}
@@ -229,16 +251,37 @@ void CRD_Infection_Deathmatch_Stats::OnUpdate( C_RD_HUD_VScript *pHUD )
 
 void CRD_Infection_Deathmatch_Stats::OnStatsLoaded( UserStatsReceived_t *pParam )
 {
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	Assert( pParam->m_nGameID == SteamUtils()->GetAppID() );
+	#else
+	Assert( pParam->m_nGameID == SteamUtils()->GetAppID() );
+	#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( pParam->m_nGameID == SteamUtils()->GetAppID() && pParam->m_steamIDUser == SteamUser()->GetSteamID() && pParam->m_eResult == k_EResultOK )
+#else
+	if ( pParam->m_nGameID == SteamUtils()->GetAppID() && pParam->m_steamIDUser == SteamUser()->GetSteamID() && pParam->m_eResult == k_EResultOK )
+#endif
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamUserStats *pUserStats = SteamUserStats();
+#else
+		ISteamUserStats *pUserStats = SteamUserStats();
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 #define INIT_PER_PLAYER_TYPE_STAT( statname, playertypename, statvar, playertypeid ) \
 		if ( !pUserStats->GetStat( "infectiondm." statname "." playertypename, &statvar##Saved[playertypeid - 1] ) ) \
 		{ \
 			Warning( "Failed to load Steam user stat infectiondm." statname "." playertypename "; setting to 0\n" ); \
 			statvar##Saved[playertypeid - 1] = 0; \
 		}
+#else
+#define INIT_PER_PLAYER_TYPE_STAT( statname, playertypename, statvar, playertypeid ) \
+		if ( !pUserStats->GetStat( "infectiondm." statname "." playertypename, &statvar##Saved[playertypeid - 1] ) ) \
+		{ \
+			Warning( "Failed to load Steam user stat infectiondm." statname "." playertypename "; setting to 0\n" ); \
+			statvar##Saved[playertypeid - 1] = 0; \
+		}
+#endif
 #define INIT_PER_PLAYER_TYPE_STATS( statname, statvar ) \
 		INIT_PER_PLAYER_TYPE_STAT( statname, "prime", statvar, IPT_ZOMBIE_PRIME ) \
 		INIT_PER_PLAYER_TYPE_STAT( statname, "zombie", statvar, IPT_ZOMBIE_CONVERTED ) \

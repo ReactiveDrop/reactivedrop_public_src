@@ -137,7 +137,11 @@ int CRD_HoIAF_System::CountEventTimers() const
 
 bool CRD_HoIAF_System::IsEventTimerActive( int index ) const
 {
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	int64_t iCurrentTime = SteamUtils() ? SteamUtils()->GetServerRealTime() : 0;
+	#else
+	int64_t iCurrentTime = SteamUtils() ? SteamUtils()->GetServerRealTime() : 0;
+	#endif
 	return GetEventStartTime( index ) <= iCurrentTime && GetEventEndTime( index ) >= iCurrentTime;
 }
 
@@ -176,7 +180,11 @@ int64_t CRD_HoIAF_System::GetEventEndTime( int index ) const
 #ifdef CLIENT_DLL
 void CRD_HoIAF_System::InsertChatMessages( CBaseHudChat *pChat )
 {
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	int64_t iCurrentTime = SteamUtils() ? SteamUtils()->GetServerRealTime() : 0;
+	#else
+	int64_t iCurrentTime = SteamUtils() ? SteamUtils()->GetServerRealTime() : 0;
+	#endif
 	FOR_EACH_VEC( m_ChatAnnouncements, i )
 	{
 		if ( m_ChatAnnouncements[i]->NotBefore > iCurrentTime )
@@ -381,7 +389,11 @@ bool CRD_HoIAF_System::AreResearchProjectsActive() const
 
 bool CRD_HoIAF_System::IsCraftingBlueprintHidden( SteamItemDef_t iItemDef ) const
 {
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	RTime32 currentTime = SteamUtils() ? SteamUtils()->GetServerRealTime() : 0;
+	#else
+	RTime32 currentTime = SteamUtils() ? SteamUtils()->GetServerRealTime() : 0;
+	#endif
 
 	FOR_EACH_VEC( m_HideCraftingBlueprint, i )
 	{
@@ -792,13 +804,29 @@ void CRD_HoIAF_System::ParseIAFIntel()
 				pNews->TextureHandle = vgui::surface()->CreateNewTextureID();
 				vgui::surface()->DrawSetTextureFile( pNews->TextureHandle, &szTextureName[strlen( "materials/" )], 1, false );
 			}
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			else if ( ISteamHTTP *pHTTP = SteamHTTP() )
+#else
+			else if ( ISteamHTTP *pHTTP = SteamHTTP() )
+#endif
 			{
+				#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				pNews->m_hTextureRequest = pHTTP->CreateHTTPRequest( k_EHTTPMethodGET, szTextureURL );
+				#else
+				pNews->m_hTextureRequest = pHTTP->CreateHTTPRequest( k_EHTTPMethodGET, szTextureURL );
+				#endif
+				#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				pHTTP->SetHTTPRequestUserAgentInfo( pNews->m_hTextureRequest, "Reactive Drop News Showcase Icon Fetch" );
+				#else
+				pHTTP->SetHTTPRequestUserAgentInfo( pNews->m_hTextureRequest, "Reactive Drop News Showcase Icon Fetch" );
+				#endif
 
 				SteamAPICall_t hCall = k_uAPICallInvalid;
+				#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				if ( pHTTP->SendHTTPRequest( pNews->m_hTextureRequest, &hCall ) )
+				#else
+				if ( pHTTP->SendHTTPRequest( pNews->m_hTextureRequest, &hCall ) )
+				#endif
 				{
 					pNews->m_TextureRequestFinished.Set( hCall, pNews, &CRD_HoIAF_System::FeaturedNews_t::OnHTTPRequestCompleted );
 				}
@@ -916,11 +944,27 @@ void CRD_HoIAF_System::LoadCachedIAFIntel()
 bool CRD_HoIAF_System::RefreshIAFIntel( bool bOnlyIfExpired, bool bForceNewRequest )
 {
 #ifdef CLIENT_DLL
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamUtils *pUtils = SteamUtils();
+#else
+	ISteamUtils *pUtils = SteamUtils();
+#endif
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamHTTP *pHTTP = SteamHTTP();
+	#else
+	ISteamHTTP *pHTTP = SteamHTTP();
+	#endif
+#else
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
+	ISteamUtils *pUtils = engine->IsDedicatedServer() ? SteamGameServerUtils() : SteamUtils();
 #else
 	ISteamUtils *pUtils = engine->IsDedicatedServer() ? SteamGameServerUtils() : SteamUtils();
+#endif
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamHTTP *pHTTP = engine->IsDedicatedServer() ? SteamGameServerHTTP() : SteamHTTP();
+	#else
+	ISteamHTTP *pHTTP = engine->IsDedicatedServer() ? SteamGameServerHTTP() : SteamHTTP();
+	#endif
 #endif
 	Assert( pUtils );
 	Assert( pHTTP );
@@ -929,14 +973,22 @@ bool CRD_HoIAF_System::RefreshIAFIntel( bool bOnlyIfExpired, bool bForceNewReque
 		return false;
 	}
 
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	int64_t iNow = pUtils->GetServerRealTime();
+	#else
+	int64_t iNow = pUtils->GetServerRealTime();
+	#endif
 	if ( bOnlyIfExpired && iNow < m_iExpireAt )
 	{
 		return true;
 	}
 
 	// Call PrioritizeHTTPRequest again to check if the request still exists and didn't magically disappear.
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !bForceNewRequest && m_hIAFIntelRefreshRequest != INVALID_HTTPREQUEST_HANDLE && pHTTP->PrioritizeHTTPRequest( m_hIAFIntelRefreshRequest ) )
+	#else
+	if ( !bForceNewRequest && m_hIAFIntelRefreshRequest != INVALID_HTTPREQUEST_HANDLE && pHTTP->PrioritizeHTTPRequest( m_hIAFIntelRefreshRequest ) )
+	#endif
 	{
 		return false;
 	}
@@ -951,26 +1003,46 @@ bool CRD_HoIAF_System::RefreshIAFIntel( bool bOnlyIfExpired, bool bForceNewReque
 
 	if ( m_hIAFIntelRefreshRequest != INVALID_HTTPREQUEST_HANDLE )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pHTTP->ReleaseHTTPRequest( m_hIAFIntelRefreshRequest );
+#else
+		pHTTP->ReleaseHTTPRequest( m_hIAFIntelRefreshRequest );
+#endif
 	}
 
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	m_hIAFIntelRefreshRequest = pHTTP->CreateHTTPRequest( k_EHTTPMethodGET, "https://stats.reactivedrop.com/game_dynamic_state.bin" );
+	#else
+	m_hIAFIntelRefreshRequest = pHTTP->CreateHTTPRequest( k_EHTTPMethodGET, "https://stats.reactivedrop.com/game_dynamic_state.bin" );
+	#endif
 	if ( m_hIAFIntelRefreshRequest == INVALID_HTTPREQUEST_HANDLE )
 	{
 		Warning( "[HoIAF:%c] Game global state update request: CreateHTTPRequest failed!\n", IsClientDll() ? 'C' : 'S' );
 		return false;
 	}
 
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pHTTP->SetHTTPRequestUserAgentInfo( m_hIAFIntelRefreshRequest, IsClientDll() ? "Reactive Drop Client" : "Reactive Drop Server" );
+	#else
+	pHTTP->SetHTTPRequestUserAgentInfo( m_hIAFIntelRefreshRequest, IsClientDll() ? "Reactive Drop Client" : "Reactive Drop Server" );
+	#endif
 	SteamAPICall_t hCall = k_uAPICallInvalid;
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !pHTTP->SendHTTPRequest( m_hIAFIntelRefreshRequest, &hCall ) )
+	#else
+	if ( !pHTTP->SendHTTPRequest( m_hIAFIntelRefreshRequest, &hCall ) )
+	#endif
 	{
 		Warning( "[HoIAF:%c] Game global state update request: SendHTTPRequest failed!\n", IsClientDll() ? 'C' : 'S' );
 		return false;
 	}
 
 	// We want this before any of the optional things we might be downloading.
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pHTTP->PrioritizeHTTPRequest( m_hIAFIntelRefreshRequest );
+	#else
+	pHTTP->PrioritizeHTTPRequest( m_hIAFIntelRefreshRequest );
+	#endif
 
 	m_IAFIntelRefresh.Set( hCall, this, &CRD_HoIAF_System::OnHTTPRequestCompleted );
 
@@ -990,11 +1062,27 @@ void CRD_HoIAF_System::OnHTTPRequestCompleted( HTTPRequestCompleted_t *pParam, b
 	Assert( pParam && pParam->m_hRequest == m_hIAFIntelRefreshRequest );
 
 #ifdef CLIENT_DLL
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamUtils *pUtils = SteamUtils();
+#else
+	ISteamUtils *pUtils = SteamUtils();
+#endif
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamHTTP *pHTTP = SteamHTTP();
+	#else
+	ISteamHTTP *pHTTP = SteamHTTP();
+	#endif
+#else
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
+	ISteamUtils *pUtils = engine->IsDedicatedServer() ? SteamGameServerUtils() : SteamUtils();
 #else
 	ISteamUtils *pUtils = engine->IsDedicatedServer() ? SteamGameServerUtils() : SteamUtils();
+#endif
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamHTTP *pHTTP = engine->IsDedicatedServer() ? SteamGameServerHTTP() : SteamHTTP();
+	#else
+	ISteamHTTP *pHTTP = engine->IsDedicatedServer() ? SteamGameServerHTTP() : SteamHTTP();
+	#endif
 #endif
 	Assert( pUtils );
 	Assert( pHTTP );
@@ -1017,7 +1105,11 @@ void CRD_HoIAF_System::OnHTTPRequestCompleted( HTTPRequestCompleted_t *pParam, b
 	{
 		CUtlBuffer body{ 0, int( pParam->m_unBodySize ) };
 		body.SeekPut( CUtlBuffer::SEEK_HEAD, pParam->m_unBodySize );
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !pHTTP->GetHTTPResponseBodyData( pParam->m_hRequest, ( uint8 * )body.Base(), pParam->m_unBodySize ) )
+		#else
+		if ( !pHTTP->GetHTTPResponseBodyData( pParam->m_hRequest, ( uint8 * )body.Base(), pParam->m_unBodySize ) )
+		#endif
 		{
 			Warning( "[HoIAF:%c] Game global state update request: GetHTTPResponseBodyData failed!\n", IsClientDll() ? 'C' : 'S' );
 			OnRequestFailed();
@@ -1051,7 +1143,11 @@ void CRD_HoIAF_System::OnHTTPRequestCompleted( HTTPRequestCompleted_t *pParam, b
 
 		ParseIAFIntel();
 
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		int64_t iNow = pUtils ? pUtils->GetServerRealTime() : 0;
+		#else
+		int64_t iNow = pUtils ? pUtils->GetServerRealTime() : 0;
+		#endif
 		Assert( m_iExpireAt > iNow );
 		if ( m_iExpireAt > iNow )
 		{
@@ -1066,16 +1162,28 @@ void CRD_HoIAF_System::OnHTTPRequestCompleted( HTTPRequestCompleted_t *pParam, b
 	}
 
 cleanup:
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pHTTP->ReleaseHTTPRequest( pParam->m_hRequest );
+	#else
+	pHTTP->ReleaseHTTPRequest( pParam->m_hRequest );
+	#endif
 	m_hIAFIntelRefreshRequest = INVALID_HTTPREQUEST_HANDLE;
 }
 
 void CRD_HoIAF_System::OnRequestFailed()
 {
 #ifdef CLIENT_DLL
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamUtils *pUtils = SteamUtils();
+	#else
+	ISteamUtils *pUtils = SteamUtils();
+	#endif
 #else
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamUtils *pUtils = engine->IsDedicatedServer() ? SteamGameServerUtils() : SteamUtils();
+	#else
+	ISteamUtils *pUtils = engine->IsDedicatedServer() ? SteamGameServerUtils() : SteamUtils();
+	#endif
 #endif
 	Assert( pUtils );
 
@@ -1084,7 +1192,11 @@ void CRD_HoIAF_System::OnRequestFailed()
 		m_iExponentialBackoff = 12; // cap at just over an hour
 
 	// if we can't get the current time, give up until the game is restarted
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	m_iBackoffUntil = pUtils ? ( pUtils->GetServerRealTime() + ( 1 << m_iExponentialBackoff ) ) : ~0u;
+	#else
+	m_iBackoffUntil = pUtils ? ( pUtils->GetServerRealTime() + ( 1 << m_iExponentialBackoff ) ) : ~0u;
+	#endif
 }
 
 void CRD_HoIAF_System::OnNewIntelReceived()
@@ -1112,7 +1224,11 @@ void CRD_HoIAF_System::OnNewIntelReceived()
 void CRD_HoIAF_System::LoadTranslatedString( CUtlString &str, KeyValues *pKV, const char *szTemplate )
 {
 	char szLocalized[256], szEnglish[256];
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	V_snprintf( szLocalized, sizeof( szLocalized ), szTemplate, SteamApps() ? SteamApps()->GetCurrentGameLanguage() : "" );
+	#else
+	V_snprintf( szLocalized, sizeof( szLocalized ), szTemplate, SteamApps() ? SteamApps()->GetCurrentGameLanguage() : "" );
+	#endif
 	V_snprintf( szEnglish, sizeof( szEnglish ), szTemplate, "english" );
 	str = pKV->GetString( szLocalized, pKV->GetString( szEnglish ) );
 }
@@ -1127,9 +1243,17 @@ CRD_HoIAF_System::FeaturedNews_t::~FeaturedNews_t()
 		TextureHandle = NULL;
 	}
 
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( m_hTextureRequest != INVALID_HTTPREQUEST_HANDLE && SteamHTTP() )
+	#else
+	if ( m_hTextureRequest != INVALID_HTTPREQUEST_HANDLE && SteamHTTP() )
+	#endif
 	{
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		SteamHTTP()->ReleaseHTTPRequest( m_hTextureRequest );
+		#else
+		SteamHTTP()->ReleaseHTTPRequest( m_hTextureRequest );
+		#endif
 		m_hTextureRequest = INVALID_HTTPREQUEST_HANDLE;
 	}
 #endif
@@ -1147,7 +1271,11 @@ void CRD_HoIAF_System::FeaturedNews_t::OnHTTPRequestCompleted( HTTPRequestComple
 
 	Assert( m_hTextureRequest == pParam->m_hRequest );
 
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamHTTP *pHTTP = SteamHTTP();
+	#else
+	ISteamHTTP *pHTTP = SteamHTTP();
+	#endif
 	Assert( pHTTP );
 	if ( !pHTTP )
 	{
@@ -1166,7 +1294,11 @@ void CRD_HoIAF_System::FeaturedNews_t::OnHTTPRequestCompleted( HTTPRequestComple
 	{
 		CUtlBuffer body{ 0, int( pParam->m_unBodySize ) };
 		body.SeekPut( CUtlBuffer::SEEK_HEAD, pParam->m_unBodySize );
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !pHTTP->GetHTTPResponseBodyData( m_hTextureRequest, ( uint8 * )body.Base(), pParam->m_unBodySize ) )
+		#else
+		if ( !pHTTP->GetHTTPResponseBodyData( m_hTextureRequest, ( uint8 * )body.Base(), pParam->m_unBodySize ) )
+		#endif
 		{
 			Warning( "[HoIAF:%c] Failed to download icon for featured news item with URL %s (GetHTTPResponseBodyData failed)\n", IsClientDll() ? 'C' : 'S', URL.Get() );
 			goto cleanup;
@@ -1190,7 +1322,11 @@ void CRD_HoIAF_System::FeaturedNews_t::OnHTTPRequestCompleted( HTTPRequestComple
 	}
 
 cleanup:
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pHTTP->ReleaseHTTPRequest( m_hTextureRequest );
+	#else
+	pHTTP->ReleaseHTTPRequest( m_hTextureRequest );
+	#endif
 	m_hTextureRequest = INVALID_HTTPREQUEST_HANDLE;
 }
 #endif

@@ -37,9 +37,17 @@ CreditsPanel::CreditsPanel(vgui::Panel *parent, const char *name) : vgui::Panel(
 		szCreditsPrefix = STRING( pMission->CustomCreditsFile );
 
 	char szCreditsPath[512];
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( SteamApps() )
+	#else
+	if ( SteamApps() )
+	#endif
 	{
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		V_snprintf( szCreditsPath, sizeof( szCreditsPath ), "%s_%s.txt", szCreditsPrefix, SteamApps()->GetCurrentGameLanguage() );
+	#else
+		V_snprintf( szCreditsPath, sizeof( szCreditsPath ), "%s_%s.txt", szCreditsPrefix, SteamApps()->GetCurrentGameLanguage() );
+	#endif
 
 		if ( !filesystem->FileExists( szCreditsPath, "GAME" ) )
 		{

@@ -47,11 +47,19 @@ public:
 
 	LeaderboardEntry_t m_HoIAFLeaderboardEntry;
 	LeaderboardScoreDetails_Points_t m_HoIAFDetails;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CCallResult<CommanderProfile, LeaderboardScoresDownloaded_t> m_HoIAFSeasonStatsFetched;
+#else
+	CCallResult<CommanderProfile, LeaderboardScoresDownloaded_t> m_HoIAFSeasonStatsFetched;
+#endif
 	void OnHoIAFSeasonStatsFetched( LeaderboardScoresDownloaded_t *pParam, bool bIOFailure );
 
 	HTTPRequestHandle m_hHTTPRequest{ INVALID_HTTPREQUEST_HANDLE };
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CCallResult<CommanderProfile, HTTPRequestCompleted_t> m_SteamIDProfileDataFetched;
+#else
+	CCallResult<CommanderProfile, HTTPRequestCompleted_t> m_SteamIDProfileDataFetched;
+#endif
 	void OnSteamIDProfileDataFetched( HTTPRequestCompleted_t *pParam, bool bIOFailure );
 };
 

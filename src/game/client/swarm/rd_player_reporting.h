@@ -67,8 +67,16 @@ private:
 	HAuthTicket m_hTicket{ k_HAuthTicketInvalid };
 	friend class BaseModUI::ReportProblem;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	STEAM_CALLBACK( CRD_Player_Reporting, OnGetTicketForWebApiResponse, GetTicketForWebApiResponse_t );
+#else
+	STEAM_CALLBACK( CRD_Player_Reporting, OnGetTicketForWebApiResponse, GetTicketForWebApiResponse_t );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CCallResult<CRD_Player_Reporting, HTTPRequestCompleted_t> m_HTTPRequestCompleted;
+#else
+	CCallResult<CRD_Player_Reporting, HTTPRequestCompleted_t> m_HTTPRequestCompleted;
+#endif
 	void OnHTTPRequestCompleted( HTTPRequestCompleted_t *pParam, bool bIOFailure );
 
 	void LogProgressMessage();

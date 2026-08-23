@@ -71,7 +71,11 @@ public:
 	virtual void OnEvent( KeyValues *pEvent );
 
 #ifdef CLIENT_DLL
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	bool LoggedIntoSteam() { return ( SteamUser() && SteamUserStats() && SteamUser()->BLoggedOn() ); }
+#else
+	bool LoggedIntoSteam() { return ( SteamUser() && SteamUserStats() && SteamUser()->BLoggedOn() ); }
+#endif
 #else
 	bool LoggedIntoSteam() { return false; }
 #endif
@@ -80,8 +84,16 @@ public:
 	bool WereCheatsEverOn( void ) { return m_bCheatsEverOn; }
 
 #if !defined(NO_STEAM)
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	STEAM_CALLBACK( CAchievementMgr, Steam_OnUserStatsReceived, UserStatsReceived_t );
+#else
+	STEAM_CALLBACK( CAchievementMgr, Steam_OnUserStatsReceived, UserStatsReceived_t );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	STEAM_CALLBACK( CAchievementMgr, Steam_OnUserStatsStored, UserStatsStored_t );
+#else
+	STEAM_CALLBACK( CAchievementMgr, Steam_OnUserStatsStored, UserStatsStored_t );
+#endif
 #endif
 	const CUtlVector<int>& GetAchievedDuringCurrentGame( int nPlayerSlot );
 	void ResetAchievedDuringCurrentGame( int nPlayerSlot );

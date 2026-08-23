@@ -10,7 +10,11 @@ public:
 	CRD_Infection_Deathmatch_Stats() {}
 
 	void OnUpdate( C_RD_HUD_VScript *pHUD );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	STEAM_CALLBACK( CRD_Infection_Deathmatch_Stats, OnStatsLoaded, UserStatsReceived_t );
+#else
+	STEAM_CALLBACK( CRD_Infection_Deathmatch_Stats, OnStatsLoaded, UserStatsReceived_t );
+#endif
 
 	static bool ShouldInit( C_RD_HUD_VScript *pHUD );
 

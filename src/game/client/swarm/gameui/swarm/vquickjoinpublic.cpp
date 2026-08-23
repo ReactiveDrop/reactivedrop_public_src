@@ -81,16 +81,27 @@ void QuickJoinPublicPanel::AddServersToList( void )
 		V_UTF8ToUnicode( g_ReactiveDropServerList.m_PublicServers.GetName( iServer ), m_FriendInfo[iInfo].m_wszName, sizeof( m_FriendInfo[iInfo].m_wszName ) );
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( ISteamMatchmaking *pMatchmaking = SteamMatchmaking() )
+#else
+	if ( ISteamMatchmaking *pMatchmaking = SteamMatchmaking() )
+#endif
 	{
 		int nLobbies = 0;
 		FOR_EACH_VEC( g_ReactiveDropServerList.m_PublicLobbies.m_MatchingLobbies, i )
 		{
 			// skip lobbies on dedicated servers in the count
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			if ( !V_strcmp( pMatchmaking->GetLobbyData( g_ReactiveDropServerList.m_PublicLobbies.m_MatchingLobbies[i], "options:server" ), "listen" ) )
 			{
 				nLobbies++;
 			}
+#else
+			if ( !V_strcmp( pMatchmaking->GetLobbyData( g_ReactiveDropServerList.m_PublicLobbies.m_MatchingLobbies[i], "options:server" ), "listen" ) )
+			{
+				nLobbies++;
+			}
+#endif
 		}
 
 		if ( nLobbies > 0 )

@@ -49,13 +49,25 @@ void C_ASW_Medal_Store::LoadMedalStore()
 #if defined(NO_STEAM)
 	AssertMsg( false, "SteamCloud not available." );
 #else
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamRemoteStorage *pRemoteStorage = SteamRemoteStorage();
+	#else
+	ISteamRemoteStorage *pRemoteStorage = SteamRemoteStorage();
+	#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamUser *pSteamUser = SteamUser();
+#else
+	ISteamUser *pSteamUser = SteamUser();
+#endif
 	if ( !pSteamUser )
 		return;
 
 	char szMedalFile[256];
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	Q_snprintf( szMedalFile, sizeof( szMedalFile ), "cfg/clientc_%I64u.dat", pSteamUser->GetSteamID().ConvertToUint64() );
+#else
+	Q_snprintf( szMedalFile, sizeof( szMedalFile ), "cfg/clientc_%I64u.dat", pSteamUser->GetSteamID().ConvertToUint64() );
+#endif
 	int len = Q_strlen( szMedalFile );
 	for ( int i = 0; i < len; i++ )
 	{
@@ -347,12 +359,20 @@ bool C_ASW_Medal_Store::SaveMedalStore()
 	}
 	UTIL_EncodeICE( ( unsigned char * )buf.Base(), buf.TellPut(), g_ucMedalStoreEncryptionKey );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamUser *pSteamUser = SteamUser();
+#else
+	ISteamUser *pSteamUser = SteamUser();
+#endif
 	if ( !pSteamUser )
 		return false;
 
 	char szMedalFile[256];
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	Q_snprintf( szMedalFile, sizeof( szMedalFile ), "cfg/clientc_%I64u.dat", pSteamUser->GetSteamID().ConvertToUint64() );
+#else
+	Q_snprintf( szMedalFile, sizeof( szMedalFile ), "cfg/clientc_%I64u.dat", pSteamUser->GetSteamID().ConvertToUint64() );
+#endif
 	int len = Q_strlen( szMedalFile );
 	for ( int i = 0; i < len; i++ )
 	{
@@ -365,8 +385,12 @@ bool C_ASW_Medal_Store::SaveMedalStore()
 	{
 #if defined(NO_STEAM)
 		AssertMsg( false, "SteamCloud not available." );
-#else
+	#else
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamRemoteStorage *pRemoteStorage = SteamRemoteStorage();
+		#else
+		ISteamRemoteStorage *pRemoteStorage = SteamRemoteStorage();
+		#endif
 
 		if ( asw_steam_cloud.GetBool() && pRemoteStorage )
 		{
@@ -894,4 +918,3 @@ int C_ASW_Medal_Store::GetPromotion()
 	}
 	return m_iPromotion;
 }
-

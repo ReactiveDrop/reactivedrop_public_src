@@ -854,7 +854,11 @@ void CRD_Crafting_Panel::UpdateCraftState()
 			m_pGridOutputs->AddItemDef( m_SelectedRecipeOutput, 1, false );
 		}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( SteamUser() && SteamUser()->BLoggedOn() )
+#else
+		if ( SteamUser() && SteamUser()->BLoggedOn() )
+#endif
 		{
 			m_pBtnCraft->SetText( "#rd_crafting_submit_ready" );
 			m_pBtnCraft->SetEnabled( true );

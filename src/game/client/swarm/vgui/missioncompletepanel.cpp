@@ -216,7 +216,11 @@ MissionCompletePanel::~MissionCompletePanel()
 static void CheckPvPFest2026()
 {
 	// during Steam PvP Fest 2026
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !SteamUtils() || !SteamUser() || SteamUtils()->GetServerRealTime() < 1770660000u || SteamUtils()->GetServerRealTime() > 1771264800u )
+	#else
+	if ( !SteamUtils() || !SteamUser() || SteamUtils()->GetServerRealTime() < 1770660000u || SteamUtils()->GetServerRealTime() > 1771264800u )
+	#endif
 		return;
 
 	if ( engine->IsPlayingDemo() || !C_ASW_Player::GetLocalASWPlayer() )
@@ -763,11 +767,19 @@ void MissionCompletePanel::OnSuggestDifficulty( bool bIncrease )
 void MissionCompletePanel::OnLeaderboardFound( SteamLeaderboard_t id )
 {
 	m_hLeaderboard = id;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	m_pExperienceReport->m_pLeaderboard->SetDisplayType( SteamUserStats()->GetLeaderboardDisplayType( id ) );
+#else
+	m_pExperienceReport->m_pLeaderboard->SetDisplayType( SteamUserStats()->GetLeaderboardDisplayType( id ) );
+#endif
 
 	if ( m_bLeaderboardReady )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		SteamAPICall_t hAPICall = SteamUserStats()->DownloadLeaderboardEntries( id, k_ELeaderboardDataRequestFriends, 0, 0 );
+#else
+		SteamAPICall_t hAPICall = SteamUserStats()->DownloadLeaderboardEntries( id, k_ELeaderboardDataRequestFriends, 0, 0 );
+#endif
 		m_LeaderboardDownloadedCallback.Set( hAPICall, this, &MissionCompletePanel::LeaderboardDownloadedCallback );
 	}
 }
@@ -782,7 +794,11 @@ void MissionCompletePanel::LeaderboardReady()
 	m_bLeaderboardReady = true;
 	if ( m_hLeaderboard != 0 )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		SteamAPICall_t hAPICall = SteamUserStats()->DownloadLeaderboardEntries( m_hLeaderboard, k_ELeaderboardDataRequestFriends, 0, 0 );
+#else
+		SteamAPICall_t hAPICall = SteamUserStats()->DownloadLeaderboardEntries( m_hLeaderboard, k_ELeaderboardDataRequestFriends, 0, 0 );
+#endif
 		m_LeaderboardDownloadedCallback.Set( hAPICall, this, &MissionCompletePanel::LeaderboardDownloadedCallback );
 	}
 }

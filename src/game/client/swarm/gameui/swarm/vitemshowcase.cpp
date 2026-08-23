@@ -414,7 +414,11 @@ void ItemShowcase::ShowItems( SteamInventoryResult_t hResult, int iStart, int iC
 {
 	SteamItemDetails_t itemDetails{};
 	uint32 nItemCount{ 1 };
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( SteamInventory()->GetResultItems( hResult, &itemDetails, &nItemCount ) && nItemCount == 1 && itemDetails.m_itemId == 0 )
+#else
+	if ( SteamInventory()->GetResultItems( hResult, &itemDetails, &nItemCount ) && nItemCount == 1 && itemDetails.m_itemId == 0 )
+#endif
 	{
 		nItemCount = 0;
 	}

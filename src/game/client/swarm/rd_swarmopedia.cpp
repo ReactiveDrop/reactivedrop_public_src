@@ -363,7 +363,11 @@ float Requirement::GetProgress() const
 		FOR_EACH_VEC( StatNames, i )
 		{
 			int iStat{};
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			if ( !SteamUserStats() || !SteamUserStats()->GetStat( StatNames[i], &iStat ) )
+#else
+			if ( !SteamUserStats() || !SteamUserStats()->GetStat( StatNames[i], &iStat ) )
+#endif
 			{
 				DevWarning( "Failed to retrieve stat '%s' for Swarmopedia\n", StatNames[i] );
 			}
@@ -1575,7 +1579,11 @@ void WeaponFact::Merge( const WeaponFact *pWeaponFact )
 
 void RD_Swarmopedia::CheckArticleUnlock( const char *szStatName, int iStatBefore, int iStatAfter )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamUserStats *pStats = SteamUserStats();
+#else
+	ISteamUserStats *pStats = SteamUserStats();
+#endif
 	Assert( pStats );
 	if ( !pStats )
 	{
@@ -1613,7 +1621,11 @@ void RD_Swarmopedia::CheckArticleUnlock( const char *szStatName, int iStatBefore
 				if ( V_stricmp( pReq->StatNames[k], szStatName ) )
 				{
 					int32 iStat;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 					if ( pStats->GetStat( pReq->StatNames[k], &iStat ) )
+#else
+					if ( pStats->GetStat( pReq->StatNames[k], &iStat ) )
+#endif
 					{
 						iProgressExceptStat -= iStat;
 					}

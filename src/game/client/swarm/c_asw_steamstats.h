@@ -253,19 +253,39 @@ private:
 	float GetFavoriteMarineClassPercent( void );
 	float GetFavoriteDifficultyPercent( void );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CCallResult<CASW_Steamstats, LeaderboardFindResult_t> m_LeaderboardFindResultCallback;
+#else
+	CCallResult<CASW_Steamstats, LeaderboardFindResult_t> m_LeaderboardFindResultCallback;
+#endif
 	void LeaderboardFindResultCallback( LeaderboardFindResult_t *pResult, bool bIOFailure );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CCallResult<CASW_Steamstats, LeaderboardFindResult_t> m_LeaderboardDifficultyFindResultCallback;
+#else
+	CCallResult<CASW_Steamstats, LeaderboardFindResult_t> m_LeaderboardDifficultyFindResultCallback;
+#endif
 	void LeaderboardDifficultyFindResultCallback( LeaderboardFindResult_t *pResult, bool bIOFailure );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CCallResult<CASW_Steamstats, LeaderboardScoreUploaded_t> m_LeaderboardScoreUploadedCallback;
+#else
+	CCallResult<CASW_Steamstats, LeaderboardScoreUploaded_t> m_LeaderboardScoreUploadedCallback;
+#endif
 	void LeaderboardScoreUploadedCallback( LeaderboardScoreUploaded_t *pResult, bool bIOFailure );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CCallResult<CASW_Steamstats, LeaderboardScoreUploaded_t> m_LeaderboardDifficultyScoreUploadedCallback;
+#else
+	CCallResult<CASW_Steamstats, LeaderboardScoreUploaded_t> m_LeaderboardDifficultyScoreUploadedCallback;
+#endif
 	void LeaderboardDifficultyScoreUploadedCallback( LeaderboardScoreUploaded_t *pResult, bool bIOFailure );
 
 	int32 m_iLeaderboardScore;
 	LeaderboardScoreDetails_v2_t m_LeaderboardScoreDetails;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CCallResult<CASW_Steamstats, GlobalStatsReceived_t> m_GlobalStatsReceivedCallback;
+#else
+	CCallResult<CASW_Steamstats, GlobalStatsReceived_t> m_GlobalStatsReceivedCallback;
+#endif
 	void GlobalStatsReceivedCallback( GlobalStatsReceived_t *pResult, bool bIOFailure );
 	RTime32 m_iNextGlobalStatsRefresh{};
 	int m_iGlobalStatsReceived{};

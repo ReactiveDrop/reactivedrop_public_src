@@ -187,7 +187,11 @@ public:
 	char const * GetPlayerName( XUID playerID, char const *szPlayerNameSpeculative );
 
 #if !defined( _X360 ) && !defined( NO_STEAM )
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	STEAM_CALLBACK( CUIGameData, Steam_OnPersonaStateChanged, PersonaStateChange_t );
+#else
+	STEAM_CALLBACK( CUIGameData, Steam_OnPersonaStateChanged, PersonaStateChange_t );
+#endif
 #endif
 
 	void ReloadScheme();

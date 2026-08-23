@@ -106,12 +106,24 @@ namespace BaseModUI
 		template<typename Result_t>
 		bool OnAPIResult( const Result_t *pResult, bool bIOFailure, const char *szCallName );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		CCallResult<ReactiveDropWorkshop, SteamUGCQueryCompleted_t> m_RequestSingleItemCall;
+#else
+		CCallResult<ReactiveDropWorkshop, SteamUGCQueryCompleted_t> m_RequestSingleItemCall;
+#endif
 		void RequestSingleItemCall( SteamUGCQueryCompleted_t *pResult, bool bIOFailure );
 		UGCQueryHandle_t m_hSingleItemQuery;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		CCallResult<ReactiveDropWorkshop, CreateItemResult_t> m_CreateItemCall;
+#else
+		CCallResult<ReactiveDropWorkshop, CreateItemResult_t> m_CreateItemCall;
+#endif
 		void CreateItemCall( CreateItemResult_t *pResult, bool bIOFailure );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		CCallResult<ReactiveDropWorkshop, SubmitItemUpdateResult_t> m_SubmitItemUpdateCall;
+#else
+		CCallResult<ReactiveDropWorkshop, SubmitItemUpdateResult_t> m_SubmitItemUpdateCall;
+#endif
 		void SubmitItemUpdateCall( SubmitItemUpdateResult_t *pResult, bool bIOFailure );
 	};
 }

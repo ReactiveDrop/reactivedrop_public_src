@@ -60,27 +60,47 @@ bool CAvatarImage::SetAvatarSteamID( CSteamID steamIDUser, bool bFetch )
 	ClearAvatarSteamID();
 	m_steamIDUser = steamIDUser;
 
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( SteamFriends() && SteamUtils() )
+#else
+	if ( SteamFriends() && SteamUtils() )
+#endif
 	{
 		m_SteamID = steamIDUser;
 
 		// if this goes through we'll get a callback
 		if ( bFetch )
+			#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			SteamFriends()->RequestUserInformation( m_SteamID, false );
+#else
+			SteamFriends()->RequestUserInformation( m_SteamID, false );
+#endif
 
 		int iAvatar;
 
 		switch ( m_SourceArtSize )
 		{
 		case k_EAvatarSize32x32:
+			#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			iAvatar = SteamFriends()->GetSmallFriendAvatar( steamIDUser );
+#else
+			iAvatar = SteamFriends()->GetSmallFriendAvatar( steamIDUser );
+#endif
 			break;
 		case k_EAvatarSize64x64:
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			iAvatar = SteamFriends()->GetMediumFriendAvatar( steamIDUser );
+#else
+			iAvatar = SteamFriends()->GetMediumFriendAvatar( steamIDUser );
+#endif
 			break;
 		case k_EAvatarSize184x184:
 		default:
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			iAvatar = SteamFriends()->GetLargeFriendAvatar( steamIDUser );
+#else
+			iAvatar = SteamFriends()->GetLargeFriendAvatar( steamIDUser );
+#endif
 			break;
 		}
 
@@ -89,11 +109,19 @@ bool CAvatarImage::SetAvatarSteamID( CSteamID steamIDUser, bool bFetch )
 		*/
 
 		uint32 wide, tall;
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( SteamUtils()->GetImageSize( iAvatar, &wide, &tall ) )
+		#else
+		if ( SteamUtils()->GetImageSize( iAvatar, &wide, &tall ) )
+		#endif
 		{
 			int cubImage = wide * tall * 4;
 			byte *rgubDest = new byte[cubImage];
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			SteamUtils()->GetImageRGBA( iAvatar, rgubDest, cubImage );
+#else
+			SteamUtils()->GetImageRGBA( iAvatar, rgubDest, cubImage );
+#endif
 			InitFromRGBA( rgubDest, wide, tall );
 			delete[] rgubDest;
 		}
@@ -112,9 +140,17 @@ void CAvatarImage::UpdateFriendStatus( void )
 	if ( !m_SteamID.IsValid() )
 		return;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( SteamFriends() && SteamUtils() )
+#else
+	if ( SteamFriends() && SteamUtils() )
+#endif
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		m_bFriend = SteamFriends()->HasFriend( m_SteamID, k_EFriendFlagImmediate );
+#else
+		m_bFriend = SteamFriends()->HasFriend( m_SteamID, k_EFriendFlagImmediate );
+#endif
 		if ( m_bFriend && !m_pFriendIcon )
 		{
 			m_pFriendIcon = HudIcons().GetIcon( "ico_friend_indicator_avatar" );
@@ -217,14 +253,22 @@ void CAvatarImagePanel::SetPlayer( C_BasePlayer *pPlayer )
 //-----------------------------------------------------------------------------
 void CAvatarImagePanel::SetPlayerByIndex( int iIndex )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( iIndex && SteamUtils() )
+#else
+	if ( iIndex && SteamUtils() )
+#endif
 	{
 		player_info_t pi;
 		if ( engine->GetPlayerInfo(iIndex, &pi) )
 		{
 			if ( pi.friendsID )
 			{
+				#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				CSteamID steamIDForPlayer( pi.friendsID, 1, SteamUtils()->GetConnectedUniverse(), k_EAccountTypeIndividual );
+				#else
+				CSteamID steamIDForPlayer( pi.friendsID, 1, SteamUtils()->GetConnectedUniverse(), k_EAccountTypeIndividual );
+				#endif
 				SetAvatarBySteamID( &steamIDForPlayer );
 			}
 		}

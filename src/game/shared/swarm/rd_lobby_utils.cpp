@@ -23,10 +23,18 @@ static void SDRDebugCallback( ESteamNetworkingSocketsDebugOutputType nType, cons
 
 void SDRSpewLevelChanged( IConVar *var, const char *pOldValue, float flOldValue )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( ISteamNetworkingUtils *pUtils = SteamNetworkingUtils() )
+#else
+	if ( ISteamNetworkingUtils *pUtils = SteamNetworkingUtils() )
+#endif
 	{
 		ESteamNetworkingSocketsDebugOutputType level = ESteamNetworkingSocketsDebugOutputType( ConVarRef( var ).GetInt() );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pUtils->SetDebugOutputFunction( level, &SDRDebugCallback );
+#else
+		pUtils->SetDebugOutputFunction( level, &SDRDebugCallback );
+#endif
 	}
 }
 
@@ -34,14 +42,26 @@ ConVar sdr_spew_level( IsServerDll() ? "sdr_spew_level_server" : "sdr_spew_level
 
 void UTIL_RD_InitSteamNetworking()
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamNetworkingUtils *pUtils = SteamNetworkingUtils();
+#else
+	ISteamNetworkingUtils *pUtils = SteamNetworkingUtils();
+#endif
 	Assert( pUtils );
 	if ( !pUtils )
 		return;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pUtils->InitRelayNetworkAccess();
+#else
+	pUtils->InitRelayNetworkAccess();
+#endif
 	ESteamNetworkingSocketsDebugOutputType level = ESteamNetworkingSocketsDebugOutputType( sdr_spew_level.GetInt() );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pUtils->SetDebugOutputFunction( level, &SDRDebugCallback );
+#else
+	pUtils->SetDebugOutputFunction( level, &SDRDebugCallback );
+#endif
 }
 
 CSteamID UTIL_RD_GetCurrentLobbyID()
@@ -81,13 +101,25 @@ void UTIL_RD_JoinByLobbyID( CSteamID lobby )
 bool UTIL_RD_IsLobbyOwner()
 {
 	CSteamID lobby = UTIL_RD_GetCurrentLobbyID();
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !lobby.IsValid() || !SteamMatchmaking() || !SteamUser() )
+#else
+	if ( !lobby.IsValid() || !SteamMatchmaking() || !SteamUser() )
+#endif
 	{
 		return false;
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CSteamID owner = SteamMatchmaking()->GetLobbyOwner( lobby );
+#else
+	CSteamID owner = SteamMatchmaking()->GetLobbyOwner( lobby );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	return owner == SteamUser()->GetSteamID();
+#else
+	return owner == SteamUser()->GetSteamID();
+#endif
 }
 
 KeyValues *UTIL_RD_LobbyToLegacyKeyValues( CSteamID lobby )
@@ -102,12 +134,20 @@ KeyValues *UTIL_RD_LobbyToLegacyKeyValues( CSteamID lobby )
 	KeyValues *pGameKey = pKV->FindKey( "game", true );
 	if (pGameKey)
 		pGameKey->Clear();
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	int nCount = SteamMatchmaking()->GetLobbyDataCount( lobby );
+#else
+	int nCount = SteamMatchmaking()->GetLobbyDataCount( lobby );
+#endif
 	for ( int i = 0; i < nCount; i++ )
 	{
 		char szKey[256];
 		char szValue[1024];
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( SteamMatchmaking()->GetLobbyDataByIndex( lobby, i, szKey, sizeof( szKey ), szValue, sizeof( szValue ) ) )
+#else
+		if ( SteamMatchmaking()->GetLobbyDataByIndex( lobby, i, szKey, sizeof( szKey ), szValue, sizeof( szValue ) ) )
+#endif
 		{
 			if ( StringHasPrefix( szKey, "game:" ) || StringHasPrefix( szKey, "system:" ) )
 			{
@@ -136,7 +176,11 @@ const char *UTIL_RD_GetCurrentLobbyData( const char *pszKey, const char *pszDefa
 		return pszDefaultValue;
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	const char *pszValue = SteamMatchmaking()->GetLobbyData( lobby, pszKey );
+#else
+	const char *pszValue = SteamMatchmaking()->GetLobbyData( lobby, pszKey );
+#endif
 	if ( *pszValue )
 	{
 		return pszValue;
@@ -153,7 +197,11 @@ void UTIL_RD_UpdateCurrentLobbyData( const char *pszKey, const char *pszValue )
 		return;
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamMatchmaking()->SetLobbyData( lobby, pszKey, pszValue );
+#else
+	SteamMatchmaking()->SetLobbyData( lobby, pszKey, pszValue );
+#endif
 }
 
 void UTIL_RD_UpdateCurrentLobbyData( const char *pszKey, int iValue )
@@ -179,16 +227,32 @@ void UTIL_RD_RemoveCurrentLobbyData( const char *pszKey )
 		return;
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamMatchmaking()->DeleteLobbyData( lobby, pszKey );
+#else
+	SteamMatchmaking()->DeleteLobbyData( lobby, pszKey );
+#endif
 }
 
 int UTIL_RD_PingLobby( CSteamID lobby )
 {
 	SteamNetworkPingLocation_t location;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	const char *szLocation = SteamMatchmaking()->GetLobbyData( lobby, "system:rd_lobby_location" );
+#else
+	const char *szLocation = SteamMatchmaking()->GetLobbyData( lobby, "system:rd_lobby_location" );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( SteamNetworkingUtils() && SteamNetworkingUtils()->ParsePingLocationString( szLocation, location ) )
+#else
+	if ( SteamNetworkingUtils() && SteamNetworkingUtils()->ParsePingLocationString( szLocation, location ) )
+#endif
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		int iPing = SteamNetworkingUtils()->EstimatePingTimeFromLocalHost( location );
+#else
+		int iPing = SteamNetworkingUtils()->EstimatePingTimeFromLocalHost( location );
+#endif
 		return MAX( iPing, 0 );
 	}
 
@@ -224,7 +288,11 @@ static int __cdecl SortScoreboardPlayersByTime( const RD_Lobby_Scoreboard_Entry_
 
 void UTIL_RD_ReadLobbyScoreboard( CSteamID lobby, CUtlVector<RD_Lobby_Scoreboard_Entry_t> &scoreboard, bool bSortPlayersByTime )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	const char *szScoreboard = SteamMatchmaking()->GetLobbyData( lobby, "system:rd_players" );
+#else
+	const char *szScoreboard = SteamMatchmaking()->GetLobbyData( lobby, "system:rd_players" );
+#endif
 	if ( !szScoreboard || *szScoreboard == '\0' )
 		return;
 
@@ -272,12 +340,20 @@ void UTIL_RD_ReadLobbyScoreboard( CSteamID lobby, CUtlVector<RD_Lobby_Scoreboard
 
 static void DebugSpewLobby( CSteamID lobby )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamMatchmaking *pMatchmaking = SteamMatchmaking();
+#else
+	ISteamMatchmaking *pMatchmaking = SteamMatchmaking();
+#endif
 	Assert( pMatchmaking );
 	if ( !pMatchmaking )
 		return;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamFriends *pFriends = SteamFriends();
+#else
+	ISteamFriends *pFriends = SteamFriends();
+#endif
 	Assert( pFriends );
 	if ( !pFriends )
 		return;
@@ -294,7 +370,11 @@ static void DebugSpewLobby( CSteamID lobby )
 		uint32 serverIP;
 		uint16 serverPort;
 		CSteamID serverID;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( pMatchmaking->GetLobbyGameServer( lobby, &serverIP, &serverPort, &serverID ) )
+#else
+		if ( pMatchmaking->GetLobbyGameServer( lobby, &serverIP, &serverPort, &serverID ) )
+#endif
 		{
 			netadr_t serverAddr( serverIP, serverPort );
 			DevMsg( 3, "server: %s (%llu)\n", serverAddr.ToString(), serverID.ConvertToUint64() );
@@ -309,17 +389,37 @@ static void DebugSpewLobby( CSteamID lobby )
 			DevMsg( 3, "estimated ping: %dms\n", iPing );
 		}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		int iMembers = pMatchmaking->GetNumLobbyMembers( lobby );
+#else
+		int iMembers = pMatchmaking->GetNumLobbyMembers( lobby );
+#endif
 		DevMsg( 3, "members: %d\n", iMembers );
 		if ( lobby == UTIL_RD_GetCurrentLobbyID() )
 		{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			CSteamID owner = pMatchmaking->GetLobbyOwner( lobby );
+#else
+			CSteamID owner = pMatchmaking->GetLobbyOwner( lobby );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			DevMsg( 3, "owner: %llu \"%s\"\n", owner.ConvertToUint64(), owner.IsValid() ? pFriends->GetFriendPersonaName( owner ) : "(invalid)" );
+#else
+			DevMsg( 3, "owner: %llu \"%s\"\n", owner.ConvertToUint64(), owner.IsValid() ? pFriends->GetFriendPersonaName( owner ) : "(invalid)" );
+#endif
 
 			for ( int i = 0; i < iMembers; i++ )
 			{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				CSteamID member = pMatchmaking->GetLobbyMemberByIndex( lobby, i );
+#else
+				CSteamID member = pMatchmaking->GetLobbyMemberByIndex( lobby, i );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				DevMsg( 3, "member %d: %llu \"%s\"\n", i, member.ConvertToUint64(), pFriends->GetFriendPersonaName( member ) );
+#else
+				DevMsg( 3, "member %d: %llu \"%s\"\n", i, member.ConvertToUint64(), pFriends->GetFriendPersonaName( member ) );
+#endif
 			}
 		}
 
@@ -332,13 +432,25 @@ static void DebugSpewLobby( CSteamID lobby )
 			DevMsg( 3, "player %d: \"%s\" | score: %d | connected for %d:%05.3f\n", i, szName, scoreboard[i].Score, int( scoreboard[i].Connected / 60 ), fmodf( scoreboard[i].Connected, 60.0f ) );
 		}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		int iCount = pMatchmaking->GetLobbyDataCount( lobby );
+#else
+		int iCount = pMatchmaking->GetLobbyDataCount( lobby );
+#endif
 		for ( int i = 0; i < iCount; i++ )
 		{
 			char szKey[k_nMaxLobbyKeyLength];
 			char szValue[1]; // only big enough to hold the null terminator
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pMatchmaking->GetLobbyDataByIndex( lobby, i, szKey, sizeof( szKey ), szValue, sizeof( szValue ) );
+#else
+			pMatchmaking->GetLobbyDataByIndex( lobby, i, szKey, sizeof( szKey ), szValue, sizeof( szValue ) );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			const char *pszValue = pMatchmaking->GetLobbyData( lobby, szKey );
+#else
+			const char *pszValue = pMatchmaking->GetLobbyData( lobby, szKey );
+#endif
 
 			DevMsg( 3, "\"%s\" \"%s\"\n", szKey, pszValue );
 		}
@@ -368,8 +480,16 @@ void CReactiveDropLobbySearch::WantUpdatedLobbyList( bool bForce )
 		return;
 
 	// we need relay network access initialized to estimate lobby pings
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( ISteamNetworkingUtils *pUtils = SteamNetworkingUtils() )
+#else
+	if ( ISteamNetworkingUtils *pUtils = SteamNetworkingUtils() )
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pUtils->InitRelayNetworkAccess();
+#else
+		pUtils->InitRelayNetworkAccess();
+#endif
 
 	m_flNextUpdate = Plat_FloatTime() + LOBBY_SEARCH_INTERVAL;
 
@@ -416,7 +536,11 @@ static const char *LobbyDistanceFilterName( ELobbyDistanceFilter distance )
 
 void CReactiveDropLobbySearch::UpdateSearch()
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamMatchmaking *pMatchmaking = SteamMatchmaking();
+#else
+	ISteamMatchmaking *pMatchmaking = SteamMatchmaking();
+#endif
 	if ( !pMatchmaking )
 	{
 		AssertOnce( !"Missing Steam Matchmaking context" );
@@ -435,21 +559,37 @@ void CReactiveDropLobbySearch::UpdateSearch()
 
 	FOR_EACH_VEC( m_StringFilters, i )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pMatchmaking->AddRequestLobbyListStringFilter( m_StringFilters[i].m_Name, m_StringFilters[i].m_Value, m_StringFilters[i].m_Compare );
+#else
+		pMatchmaking->AddRequestLobbyListStringFilter( m_StringFilters[i].m_Name, m_StringFilters[i].m_Value, m_StringFilters[i].m_Compare );
+#endif
 		if ( rd_lobby_search_debug.GetBool() )
 			DevMsg( 3, "%s: filter: \"%s\" %s \"%s\"\n", m_pszDebugName, m_StringFilters[i].m_Name.Get(), LobbyComparisonName( m_StringFilters[i].m_Compare ), m_StringFilters[i].m_Value.Get() );
 	}
 	FOR_EACH_VEC( m_NumericalFilters, i )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pMatchmaking->AddRequestLobbyListNumericalFilter( m_NumericalFilters[i].m_Name, m_NumericalFilters[i].m_Value, m_NumericalFilters[i].m_Compare );
+#else
+		pMatchmaking->AddRequestLobbyListNumericalFilter( m_NumericalFilters[i].m_Name, m_NumericalFilters[i].m_Value, m_NumericalFilters[i].m_Compare );
+#endif
 		if ( rd_lobby_search_debug.GetBool() )
 			DevMsg( 3, "%s: filter: \"%s\" %s %d\n", m_pszDebugName, m_NumericalFilters[i].m_Name.Get(), LobbyComparisonName( m_NumericalFilters[i].m_Compare ), m_NumericalFilters[i].m_Value );
 	}
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pMatchmaking->AddRequestLobbyListDistanceFilter( m_DistanceFilter );
+#else
+	pMatchmaking->AddRequestLobbyListDistanceFilter( m_DistanceFilter );
+#endif
 	if ( rd_lobby_search_debug.GetBool() )
 		DevMsg( 3, "%s: distance filter: %s\n", m_pszDebugName, LobbyDistanceFilterName( m_DistanceFilter ) );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamAPICall_t hAPICall = pMatchmaking->RequestLobbyList();
+#else
+	SteamAPICall_t hAPICall = pMatchmaking->RequestLobbyList();
+#endif
 	m_LobbyMatchListResult.Set( hAPICall, this, &CReactiveDropLobbySearch::LobbyMatchListResult );
 }
 
@@ -470,13 +610,21 @@ void CReactiveDropLobbySearch::LobbyMatchListResult( LobbyMatchList_t *pResult, 
 		return;
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamMatchmaking *pMatchmaking = SteamMatchmaking();
+#else
+	ISteamMatchmaking *pMatchmaking = SteamMatchmaking();
+#endif
 	Assert( pMatchmaking );
 
 	m_MatchingLobbies.SetCount( pResult->m_nLobbiesMatching );
 	for ( uint32 i = 0; i < pResult->m_nLobbiesMatching; i++ )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		m_MatchingLobbies[i] = pMatchmaking->GetLobbyByIndex( i );
+#else
+		m_MatchingLobbies[i] = pMatchmaking->GetLobbyByIndex( i );
+#endif
 	}
 
 	if ( rd_lobby_search_debug.GetBool() )
@@ -591,15 +739,27 @@ CReactiveDropServerListHelper::CReactiveDropServerListHelper( const char *szDebu
 
 CReactiveDropServerListHelper::~CReactiveDropServerListHelper()
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamMatchmakingServers *pServers = SteamMatchmakingServers();
+#else
+	ISteamMatchmakingServers *pServers = SteamMatchmakingServers();
+#endif
 	if ( pServers && m_hServerListRequest )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pServers->ReleaseRequest( m_hServerListRequest );
+#else
+		pServers->ReleaseRequest( m_hServerListRequest );
+#endif
 		m_hServerListRequest = NULL;
 	}
 	if ( pServers && m_hServerListRequestNext )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pServers->ReleaseRequest( m_hServerListRequestNext );
+#else
+		pServers->ReleaseRequest( m_hServerListRequestNext );
+#endif
 		m_hServerListRequestNext = NULL;
 	}
 }
@@ -612,32 +772,64 @@ void CReactiveDropServerListHelper::WantUpdatedServerList()
 	if ( m_hServerListRequestNext || m_flSoonestServerListRequest > Plat_FloatTime() )
 		return;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamMatchmakingServers *pServers = SteamMatchmakingServers();
+#else
+	ISteamMatchmakingServers *pServers = SteamMatchmakingServers();
+#endif
 	Assert( pServers );
 	if ( !pServers )
 		return;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	static const AppId_t iAppID = SteamUtils()->GetAppID();
+#else
+	static const AppId_t iAppID = SteamUtils()->GetAppID();
+#endif
 
 	switch ( m_eMode )
 	{
 	case MODE_INTERNET:
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		m_hServerListRequestNext = pServers->RequestInternetServerList( iAppID, m_Filters.Base(), m_Filters.Count(), this );
+#else
+		m_hServerListRequestNext = pServers->RequestInternetServerList( iAppID, m_Filters.Base(), m_Filters.Count(), this );
+#endif
 		break;
 	case MODE_LAN:
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		m_hServerListRequestNext = pServers->RequestLANServerList( iAppID, this );
+#else
+		m_hServerListRequestNext = pServers->RequestLANServerList( iAppID, this );
+#endif
 		break;
 	case MODE_FRIENDS:
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		m_hServerListRequestNext = pServers->RequestFriendsServerList( iAppID, m_Filters.Base(), m_Filters.Count(), this );
+#else
+		m_hServerListRequestNext = pServers->RequestFriendsServerList( iAppID, m_Filters.Base(), m_Filters.Count(), this );
+#endif
 		break;
 	case MODE_FAVORITES:
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		m_hServerListRequestNext = pServers->RequestFavoritesServerList( iAppID, m_Filters.Base(), m_Filters.Count(), this );
+#else
+		m_hServerListRequestNext = pServers->RequestFavoritesServerList( iAppID, m_Filters.Base(), m_Filters.Count(), this );
+#endif
 		break;
 	case MODE_HISTORY:
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		m_hServerListRequestNext = pServers->RequestHistoryServerList( iAppID, m_Filters.Base(), m_Filters.Count(), this );
+#else
+		m_hServerListRequestNext = pServers->RequestHistoryServerList( iAppID, m_Filters.Base(), m_Filters.Count(), this );
+#endif
 		break;
 	case MODE_SPECTATOR:
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		m_hServerListRequestNext = pServers->RequestSpectatorServerList( iAppID, m_Filters.Base(), m_Filters.Count(), this );
+#else
+		m_hServerListRequestNext = pServers->RequestSpectatorServerList( iAppID, m_Filters.Base(), m_Filters.Count(), this );
+#endif
 		break;
 	default:
 		Assert( 0 );
@@ -649,27 +841,51 @@ void CReactiveDropServerListHelper::WantUpdatedServerList()
 
 int CReactiveDropServerListHelper::Count() const
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamMatchmakingServers *pServers = SteamMatchmakingServers();
+#else
+	ISteamMatchmakingServers *pServers = SteamMatchmakingServers();
+#endif
 	Assert( pServers );
 	if ( !pServers || !m_hServerListRequest )
 		return 0;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	return pServers->GetServerCount( m_hServerListRequest );
+#else
+	return pServers->GetServerCount( m_hServerListRequest );
+#endif
 }
 
 gameserveritem_t *CReactiveDropServerListHelper::GetDetails( int iServer ) const
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamMatchmakingServers *pServers = SteamMatchmakingServers();
+#else
+	ISteamMatchmakingServers *pServers = SteamMatchmakingServers();
+#endif
 	Assert( pServers );
 	if ( !pServers || !m_hServerListRequest )
 		return NULL;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	gameserveritem_t *pDetails = pServers->GetServerDetails( m_hServerListRequest, iServer );
+#else
+	gameserveritem_t *pDetails = pServers->GetServerDetails( m_hServerListRequest, iServer );
+#endif
 	Assert( pDetails );
 
 	// favorite servers aren't filtering (bug in Steam API)
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	Assert( SteamUtils() && pDetails->m_nAppID == SteamUtils()->GetAppID() );
+#else
+	Assert( SteamUtils() && pDetails->m_nAppID == SteamUtils()->GetAppID() );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( SteamUtils() && pDetails->m_nAppID != SteamUtils()->GetAppID() )
+#else
+	if ( SteamUtils() && pDetails->m_nAppID != SteamUtils()->GetAppID() )
+#endif
 		return NULL;
 
 	return pDetails;
@@ -753,7 +969,11 @@ void CReactiveDropServerListHelper::RefreshComplete( HServerListRequest hRequest
 	Assert( m_hServerListRequestNext == hRequest );
 
 	if ( m_hServerListRequest )
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		SteamMatchmakingServers()->ReleaseRequest( m_hServerListRequest );
+	#else
+		SteamMatchmakingServers()->ReleaseRequest( m_hServerListRequest );
+	#endif
 
 	m_hServerListRequest = m_hServerListRequestNext;
 	m_hServerListRequestNext = NULL;

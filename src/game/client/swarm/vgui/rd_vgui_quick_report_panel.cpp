@@ -91,10 +91,18 @@ void CRD_VGUI_Quick_Report_Panel::ApplySchemeSettings( vgui::IScheme *pScheme )
 
 	m_pImgPlayerAvatar->SetAvatarBySteamID( &m_PlayerID );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( ISteamFriends *pFriends = SteamFriends() )
+#else
+	if ( ISteamFriends *pFriends = SteamFriends() )
+#endif
 	{
 		wchar_t wszPlayerName[k_cwchPersonaNameMax];
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		V_UTF8ToUnicode( pFriends->GetFriendPersonaName( m_PlayerID ), wszPlayerName, sizeof( wszPlayerName ) );
+#else
+		V_UTF8ToUnicode( pFriends->GetFriendPersonaName( m_PlayerID ), wszPlayerName, sizeof( wszPlayerName ) );
+#endif
 		m_pLblPlayerName->SetText( wszPlayerName );
 	}
 }
@@ -180,9 +188,17 @@ void CRD_VGUI_Quick_Report_Panel::ConfirmAndSendQuickReport( const char *szTitle
 
 	static wchar_t s_wszMessage[1024];
 	wchar_t wszPlayerName[k_cwchPersonaNameMax];
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( ISteamFriends *pFriends = SteamFriends() )
+#else
+	if ( ISteamFriends *pFriends = SteamFriends() )
+#endif
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		V_UTF8ToUnicode( pFriends->GetFriendPersonaName( player ), wszPlayerName, sizeof( wszPlayerName ) );
+#else
+		V_UTF8ToUnicode( pFriends->GetFriendPersonaName( player ), wszPlayerName, sizeof( wszPlayerName ) );
+#endif
 	}
 	else
 	{

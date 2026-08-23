@@ -56,10 +56,17 @@ static CDllDemandLoader g_GameUI( "gameui" );	// FIXME: This is duplicated!
 
 #ifdef DEDICATED
 // Hack this for now until we get steam_api recompiling in the Steam codebase.
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 ISteamUserStats *SteamUserStats()
 {
 	return NULL;
 }
+#else
+ISteamUserStats *SteamUserStats()
+{
+	return NULL;
+}
+#endif
 #endif
 
 #if defined( XBX_GetPrimaryUserId )
@@ -535,7 +542,11 @@ void CAchievementMgr::UserConnected( int nUserSlot )
 		// ASSERT( STEAM_PLAYER_SLOT == nUserSlot )
 
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( SteamUserStats() )
+#else
+		if ( SteamUserStats() )
+#endif
 		{
 			// request stat download; will get called back at OnUserStatsReceived when complete
 
@@ -543,7 +554,7 @@ void CAchievementMgr::UserConnected( int nUserSlot )
 		// This call is no longer required as it is managed by the Steam client. The game stats and achievements
 		// will be synchronized with Steam before the game process begins.
 		// [Obsolete("No longer required. Automatically handled by the Steam client.", false)]
-#if defined(STEAMAPPS_INTERFACE_VERSION008)
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			SteamUserStats()->RequestCurrentStats();
 #else
 			SteamUserStats()->RequestUserStats(SteamUser()->GetSteamID());
@@ -645,7 +656,11 @@ void CAchievementMgr::UploadUserData( int nUserSlot )
 #ifdef CLIENT_DLL
 	if ( IsPC() && ( nUserSlot == STEAM_PLAYER_SLOT ) )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( SteamUserStats() )
+#else
+		if ( SteamUserStats() )
+#endif
 		{
 			if ( m_flWaitingForStoreStatsCallback > 0.0f )
 			{
@@ -654,7 +669,11 @@ void CAchievementMgr::UploadUserData( int nUserSlot )
 			}
 			// Upload current Steam client achievements & stats state to Steam.  Will get called back at OnUserStatsStored when complete.
 			// Only values previously set via SteamUserStats() get uploaded
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			if ( SteamUserStats()->StoreStats() )
+#else
+			if ( SteamUserStats()->StoreStats() )
+#endif
 			{
 				m_flWaitingForStoreStatsCallback = gpGlobals->curtime;
 			}
@@ -780,11 +799,19 @@ void CAchievementMgr::AwardAchievement( int iAchievementID, int nUserSlot )
 
 	if ( IsPC() )
 	{		
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( SteamUserStats() )
+#else
+		if ( SteamUserStats() )
+#endif
 		{
 			VPROF_BUDGET( "AwardAchievement", VPROF_BUDGETGROUP_STEAM );
 			// set this achieved in the Steam client
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			bool bRet = SteamUserStats()->SetAchievement( pAchievement->GetName() );
+#else
+			bool bRet = SteamUserStats()->SetAchievement( pAchievement->GetName() );
+#endif
 			//		Assert( bRet );
 			if ( bRet )
 			{
@@ -938,7 +965,11 @@ bool CAchievementMgr::CheckAchievementsEnabled( )
 			// Cheats get turned on automatically if you run with -dev which many people do internally, so allow cheats if developer is turned on and we're not running
 			// on Steam public
 #ifdef CLIENT_DLL
+			#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			if ( ( developer.GetInt() == 0 ) || !SteamUtils() || ( k_EUniversePublic == SteamUtils()->GetConnectedUniverse() ) )
+			#else
+			if ( ( developer.GetInt() == 0 ) || !SteamUtils() || ( k_EUniversePublic == SteamUtils()->GetConnectedUniverse() ) )
+			#endif
 #else
 			if ( developer.GetInt() == 0 )
 #endif
@@ -992,7 +1023,11 @@ bool CalcPlayersOnFriendsList( int iMinFriends )
 
 	if ( IsPC() )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !SteamFriends() || !SteamUtils() || !g_pGameRules->IsMultiplayer() )
+#else
+		if ( !SteamFriends() || !SteamUtils() || !g_pGameRules->IsMultiplayer() )
+#endif
 			return false;
 	}
 	else if ( IsX360() )
@@ -1023,8 +1058,16 @@ bool CalcPlayersOnFriendsList( int iMinFriends )
 					continue;
 
 				// check and see if they're on the local player's friends list
+				#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				CSteamID steamID( pi.friendsID, 1, SteamUtils()->GetConnectedUniverse(), k_EAccountTypeIndividual );
+				#else
+				CSteamID steamID( pi.friendsID, 1, SteamUtils()->GetConnectedUniverse(), k_EAccountTypeIndividual );
+				#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				if ( !SteamFriends()->HasFriend( steamID, /*k_EFriendFlagImmediate*/ 0x04 ) )
+#else
+				if ( !SteamFriends()->HasFriend( steamID, /*k_EFriendFlagImmediate*/ 0x04 ) )
+#endif
 					continue;
 			}
 			else if ( IsX360() )
@@ -1065,16 +1108,28 @@ bool CalcHasNumClanPlayers( int iClanTeammates )
 		if ( CalcPlayerCount()-1 < iClanTeammates )
 			return false;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !SteamFriends() || !SteamUtils() || !g_pGameRules->IsMultiplayer() )
+#else
+		if ( !SteamFriends() || !SteamUtils() || !g_pGameRules->IsMultiplayer() )
+#endif
 			return false;
 
 		// determine local player team
 		int iLocalPlayerIndex =  GetLocalPlayerIndex();
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		for ( int iClan = 0; iClan < SteamFriends()->GetClanCount(); iClan++ )
+#else
+		for ( int iClan = 0; iClan < SteamFriends()->GetClanCount(); iClan++ )
+#endif
 		{
 			int iClanMembersOnTeam = 0;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			CSteamID clanID = SteamFriends()->GetClanByIndex( iClan );
+#else
+			CSteamID clanID = SteamFriends()->GetClanByIndex( iClan );
+#endif
 			// enumerate all players
 			for( int iPlayerIndex = 1 ; iPlayerIndex <= MAX_PLAYERS; iPlayerIndex++ )
 			{
@@ -1084,8 +1139,16 @@ bool CalcHasNumClanPlayers( int iClanTeammates )
 					if ( engine->GetPlayerInfo( iPlayerIndex, &pi ) && ( pi.friendsID ) )
 					{	
 						// check and see if they're on the local player's friends list
+						#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 						CSteamID steamID( pi.friendsID, 1, SteamUtils()->GetConnectedUniverse(), k_EAccountTypeIndividual );
+						#else
+						CSteamID steamID( pi.friendsID, 1, SteamUtils()->GetConnectedUniverse(), k_EAccountTypeIndividual );
+						#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 						if ( SteamFriends()->IsUserInSource( steamID, clanID ) )
+#else
+						if ( SteamFriends()->IsUserInSource( steamID, clanID ) )
+#endif
 						{
 							iClanMembersOnTeam++;
 							if ( iClanMembersOnTeam == iClanTeammates )
@@ -1561,8 +1624,16 @@ void CAchievementMgr::OnEvent( KeyValues *pEvent )
 void CAchievementMgr::Steam_OnUserStatsReceived( UserStatsReceived_t *pUserStatsReceived )
 {
 #ifdef CLIENT_DLL
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	Assert( SteamUserStats() );
+#else
+	Assert( SteamUserStats() );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !SteamUserStats() )
+#else
+	if ( !SteamUserStats() )
+#endif
 		return;
 
 	if ( pUserStatsReceived->m_eResult != k_EResultOK )
@@ -1581,17 +1652,29 @@ void CAchievementMgr::Steam_OnUserStatsReceived( UserStatsReceived_t *pUserStats
 		int nCount = 0;
 		int nComponentBits = 0;
 		bool bAchieved = false;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		bool bRet1 = SteamUserStats()->GetAchievement( pAchievement->GetName(), &bAchieved );
+#else
+		bool bRet1 = SteamUserStats()->GetAchievement( pAchievement->GetName(), &bAchieved );
+#endif
 
 #ifdef INFESTED_DLL
 		if ( bRet1 )
 #else
 		// TODO: these look hardcoded for L4D2 - remove?
 		Q_snprintf( szFieldName, sizeof( szFieldName ), "TD2.Achievements.Count.%02d", i );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		bool bRet2 = SteamUserStats()->GetStat( szFieldName, &nCount );
+#else
+		bool bRet2 = SteamUserStats()->GetStat( szFieldName, &nCount );
+#endif
 
 		Q_snprintf( szFieldName, sizeof( szFieldName ), "TD2.Achievements.Comp.%02d", i );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		bool bRet3 = SteamUserStats()->GetStat( szFieldName, &nComponentBits );
+#else
+		bool bRet3 = SteamUserStats()->GetStat( szFieldName, &nComponentBits );
+#endif
 
 		if ( bRet1 && bRet2 && bRet3 )
 #endif
@@ -1617,7 +1700,11 @@ void CAchievementMgr::Steam_OnUserStatsReceived( UserStatsReceived_t *pUserStats
 			int iValue;
 			char pszProgressName[1024];
 			Q_snprintf( pszProgressName, 1024, "%s_STAT", pAchievement->GetName() );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			if ( SteamUserStats()->GetStat( pszProgressName, &iValue ) )
+#else
+			if ( SteamUserStats()->GetStat( pszProgressName, &iValue ) )
+#endif
 			{
 				pAchievement->SetCount( iValue );
 			}
@@ -1629,7 +1716,11 @@ void CAchievementMgr::Steam_OnUserStatsReceived( UserStatsReceived_t *pUserStats
 			if ( pAchievement->HasComponents() )
 			{
 				Q_snprintf( pszProgressName, 1024, "%s_COMP", pAchievement->GetName() );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				if ( SteamUserStats()->GetStat( pszProgressName, &iValue ) )
+#else
+				if ( SteamUserStats()->GetStat( pszProgressName, &iValue ) )
+#endif
 				{
 					pAchievement->SetComponentBits( iValue );
 				}
@@ -1717,9 +1808,17 @@ void CAchievementMgr::ResetAchievement_Internal( CBaseAchievement *pAchievement 
 #ifdef CLIENT_DLL
 	Assert( pAchievement );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( SteamUserStats() )
+#else
+	if ( SteamUserStats() )
+#endif
 	{
-		SteamUserStats()->ClearAchievement( pAchievement->GetName() );		
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
+		SteamUserStats()->ClearAchievement( pAchievement->GetName() );
+#else
+		SteamUserStats()->ClearAchievement( pAchievement->GetName() );
+#endif
 	}
 
 	pAchievement->SetAchieved( false );
@@ -1935,4 +2034,3 @@ void CAchievementMgr::ClearAchievementData( int nUserSlot )
 		m_mapAchievement[nUserSlot][i]->ClearAchievementData();
 	}
 }
-

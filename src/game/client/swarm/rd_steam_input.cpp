@@ -82,12 +82,20 @@ void CRD_Steam_Input::PostInit()
 		return;
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamInput *pSteamInput = SteamInput();
+#else
+	ISteamInput *pSteamInput = SteamInput();
+#endif
 	Assert( pSteamInput );
 	if ( !pSteamInput )
 		return;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	bool bSuccess = pSteamInput->Init( true );
+#else
+	bool bSuccess = pSteamInput->Init( true );
+#endif
 	Assert( bSuccess );
 	if ( !bSuccess )
 		Warning( "ISteamInput::Init returned failure status\n" );
@@ -96,17 +104,41 @@ void CRD_Steam_Input::PostInit()
 	char szCWD[MAX_PATH];
 	V_GetCurrentDirectory( szCWD, sizeof( szCWD ) );
 	CUtlString szInputActionManifest = CUtlString::PathJoin( szCWD, "steam_input/steam_input_manifest.vdf" );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	bSuccess = pSteamInput->SetInputActionManifestFilePath( szInputActionManifest );
+#else
+	bSuccess = pSteamInput->SetInputActionManifestFilePath( szInputActionManifest );
+#endif
 	if ( !bSuccess )
 		Warning( "ISteamInput::SetInputActionManifestFilePath returned failure status\n" );
 #endif
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pSteamInput->EnableDeviceCallbacks();
+#else
+	pSteamInput->EnableDeviceCallbacks();
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pSteamInput->EnableActionEventCallbacks( &OnActionEvent );
+#else
+	pSteamInput->EnableActionEventCallbacks( &OnActionEvent );
+#endif
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 #define INIT_ACTION_SET( name ) { m_ActionSets.name = pSteamInput->GetActionSetHandle( #name ); Assert( !m_Controllers.Count() || m_ActionSets.name ); if ( m_Controllers.Count() && !m_ActionSets.name ) Warning( "Could not find Steam Input action set '%s'\n", #name ); }
+#else
+#define INIT_ACTION_SET( name ) { m_ActionSets.name = pSteamInput->GetActionSetHandle( #name ); Assert( !m_Controllers.Count() || m_ActionSets.name ); if ( m_Controllers.Count() && !m_ActionSets.name ) Warning( "Could not find Steam Input action set '%s'\n", #name ); }
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 #define INIT_ACTION_SET_LAYER( name ) { m_ActionSetLayers.name = pSteamInput->GetActionSetHandle( #name ); Assert( !m_Controllers.Count() || m_ActionSetLayers.name ); if ( m_Controllers.Count() && !m_ActionSetLayers.name ) Warning( "Could not find Steam Input action layer '%s'\n", #name ); }
+#else
+#define INIT_ACTION_SET_LAYER( name ) { m_ActionSetLayers.name = pSteamInput->GetActionSetHandle( #name ); Assert( !m_Controllers.Count() || m_ActionSetLayers.name ); if ( m_Controllers.Count() && !m_ActionSetLayers.name ) Warning( "Could not find Steam Input action layer '%s'\n", #name ); }
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 #define INIT_ANALOG_ACTION( name ) { m_AnalogActions.name = pSteamInput->GetAnalogActionHandle( #name ); Assert( !m_Controllers.Count() || m_AnalogActions.name ); if ( m_Controllers.Count() && !m_AnalogActions.name ) Warning( "Could not find Steam Input analog action '%s'\n", #name ); }
+#else
+#define INIT_ANALOG_ACTION( name ) { m_AnalogActions.name = pSteamInput->GetAnalogActionHandle( #name ); Assert( !m_Controllers.Count() || m_AnalogActions.name ); if ( m_Controllers.Count() && !m_AnalogActions.name ) Warning( "Could not find Steam Input analog action '%s'\n", #name ); }
+#endif
 
 	// Action Sets
 	INIT_ACTION_SET( InGame );
@@ -118,7 +150,11 @@ void CRD_Steam_Input::PostInit()
 	// Digital Actions
 	for ( CRD_Steam_Input_Bind *pBind = CRD_Steam_Input_Bind::s_pBinds; pBind; pBind = pBind->m_pNext )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pBind->m_hAction = pSteamInput->GetDigitalActionHandle( pBind->m_szActionName );
+#else
+		pBind->m_hAction = pSteamInput->GetDigitalActionHandle( pBind->m_szActionName );
+#endif
 		AssertMsg1( !m_Controllers.Count() || pBind->m_hAction, "could not find digital action '%s'", pBind->m_szActionName );
 		if ( m_Controllers.Count() && !pBind->m_hAction )
 			Warning( "Could not find Steam Input digital action '%s'\n", pBind->m_szActionName );
@@ -126,7 +162,11 @@ void CRD_Steam_Input::PostInit()
 		pBind->m_hForceActionSet = NULL;
 		if ( pBind->m_szForceActionSet )
 		{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pBind->m_hForceActionSet = pSteamInput->GetActionSetHandle( pBind->m_szForceActionSet );
+#else
+			pBind->m_hForceActionSet = pSteamInput->GetActionSetHandle( pBind->m_szForceActionSet );
+#endif
 			AssertMsg2( !m_Controllers.Count() || pBind->m_hForceActionSet, "could not find action set '%s' for digital action '%s'", pBind->m_szForceActionSet, pBind->m_szActionName );
 		}
 	}
@@ -146,12 +186,20 @@ void CRD_Steam_Input::Shutdown()
 	if ( !m_bInitialized )
 		return;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamInput *pSteamInput = SteamInput();
+#else
+	ISteamInput *pSteamInput = SteamInput();
+#endif
 	Assert( pSteamInput );
 	if ( !pSteamInput )
 		return;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	bool bSuccess = pSteamInput->Shutdown();
+#else
+	bool bSuccess = pSteamInput->Shutdown();
+#endif
 	Assert( bSuccess );
 	if ( !bSuccess )
 		Warning( "ISteamInput::Shutdown returned failure status\n" );
@@ -188,7 +236,11 @@ void CRD_Steam_Input::Update( float frametime )
 		{
 			s_hTextEntryFocus = pTextEntry;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			ISteamUtils *pSteamUtils = SteamUtils();
+#else
+			ISteamUtils *pSteamUtils = SteamUtils();
+#endif
 			Assert( pSteamUtils );
 			if ( pSteamUtils )
 			{
@@ -197,11 +249,19 @@ void CRD_Steam_Input::Update( float frametime )
 					int x, y, w, t;
 					vgui::ipanel()->GetAbsPos( pTextEntry->GetVPanel(), x, y );
 					pTextEntry->GetSize( w, t );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 					pSteamUtils->ShowFloatingGamepadTextInput( pTextEntry->IsMultiline() ? k_EFloatingGamepadTextInputModeModeMultipleLines : k_EFloatingGamepadTextInputModeModeSingleLine, x, y, w, t );
+#else
+					pSteamUtils->ShowFloatingGamepadTextInput( pTextEntry->IsMultiline() ? k_EFloatingGamepadTextInputModeModeMultipleLines : k_EFloatingGamepadTextInputModeModeSingleLine, x, y, w, t );
+#endif
 				}
 				else
 				{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 					pSteamUtils->DismissFloatingGamepadTextInput();
+#else
+					pSteamUtils->DismissFloatingGamepadTextInput();
+#endif
 				}
 			}
 		}
@@ -210,12 +270,20 @@ void CRD_Steam_Input::Update( float frametime )
 	if ( !m_bInitialized )
 		return;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamInput *pSteamInput = SteamInput();
+#else
+	ISteamInput *pSteamInput = SteamInput();
+#endif
 	Assert( pSteamInput );
 	if ( !pSteamInput )
 		return;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pSteamInput->RunFrame();
+#else
+	pSteamInput->RunFrame();
+#endif
 
 	FOR_EACH_VEC( m_Controllers, i )
 	{
@@ -305,7 +373,11 @@ public:
 		char szDebugName[256];
 		V_snprintf( szDebugName, sizeof( szDebugName ), "steam input glyph for action origin %d", eOrigin );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamInput *pSteamInput = SteamInput();
+#else
+		ISteamInput *pSteamInput = SteamInput();
+#endif
 		Assert( pSteamInput );
 		if ( !pSteamInput )
 		{
@@ -313,10 +385,19 @@ public:
 			return;
 		}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( const char *szOrigin = pSteamInput->GetStringForActionOrigin( eOrigin ) )
 			V_snprintf( szDebugName, sizeof( szDebugName ), "steam input glyph for %d %s", eOrigin, szOrigin );
+#else
+		if ( const char *szOrigin = pSteamInput->GetStringForActionOrigin( eOrigin ) )
+			V_snprintf( szDebugName, sizeof( szDebugName ), "steam input glyph for %d %s", eOrigin, szOrigin );
+#endif
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		const char *szGlyphPath = pSteamInput->GetGlyphPNGForActionOrigin( eOrigin, RD_INPUT_GLYPH_SIZE, RD_INPUT_GLYPH_STYLE );
+#else
+		const char *szGlyphPath = pSteamInput->GetGlyphPNGForActionOrigin( eOrigin, RD_INPUT_GLYPH_SIZE, RD_INPUT_GLYPH_STYLE );
+#endif
 		Assert( szGlyphPath );
 		if ( !szGlyphPath )
 		{
@@ -337,14 +418,22 @@ public:
 
 vgui::IImage *CRD_Steam_Input::GlyphImageForOrigin( EInputActionOrigin eOrigin )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamInput *pSteamInput = SteamInput();
+#else
+	ISteamInput *pSteamInput = SteamInput();
+#endif
 	Assert( pSteamInput );
 	if ( !pSteamInput )
 		return NULL;
 
 	if ( rd_force_controller_glyph_set.GetInt() >= 0 )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		eOrigin = pSteamInput->TranslateActionOrigin( static_cast< ESteamInputType >( rd_force_controller_glyph_set.GetInt() ), eOrigin );
+#else
+		eOrigin = pSteamInput->TranslateActionOrigin( static_cast< ESteamInputType >( rd_force_controller_glyph_set.GetInt() ), eOrigin );
+#endif
 	}
 
 	ushort index = m_GlyphTextures.Find( eOrigin );
@@ -384,7 +473,11 @@ const char *CRD_Steam_Input::Key_LookupBindingEx( const char *pBinding, int iUse
 {
 	int iRealUserId = iUserId == -1 ? GET_ACTIVE_SPLITSCREEN_SLOT() : iUserId;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamInput *pSteamInput = SteamInput();
+#else
+	ISteamInput *pSteamInput = SteamInput();
+#endif
 	Assert( pSteamInput );
 	if ( iAllowJoystick != 0 && pSteamInput )
 	{
@@ -410,7 +503,11 @@ const char *CRD_Steam_Input::Key_LookupBindingEx( const char *pBinding, int iUse
 				bAny = true;
 
 				EInputActionOrigin origins[STEAM_INPUT_MAX_ORIGINS]{};
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				int count = pSteamInput->GetAnalogActionOrigins( m_Controllers[i]->m_hController, m_ActionSets.InGame, hAnalogAction, origins );
+#else
+				int count = pSteamInput->GetAnalogActionOrigins( m_Controllers[i]->m_hController, m_ActionSets.InGame, hAnalogAction, origins );
+#endif
 				if ( count > iStartCount )
 				{
 					return OriginPlaceholderString( origins[iStartCount] );
@@ -434,8 +531,16 @@ const char *CRD_Steam_Input::Key_LookupBindingEx( const char *pBinding, int iUse
 					bAny = true;
 
 					EInputActionOrigin origins[STEAM_INPUT_MAX_ORIGINS]{};
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 					InputActionSetHandle_t hActionSet = pBind->m_hForceActionSet ? pBind->m_hForceActionSet : pSteamInput->GetCurrentActionSet( m_Controllers[i]->m_hController );
+#else
+					InputActionSetHandle_t hActionSet = pBind->m_hForceActionSet ? pBind->m_hForceActionSet : pSteamInput->GetCurrentActionSet( m_Controllers[i]->m_hController );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 					int count = pSteamInput->GetDigitalActionOrigins( m_Controllers[i]->m_hController, hActionSet, pBind->m_hAction, origins );
+#else
+					int count = pSteamInput->GetDigitalActionOrigins( m_Controllers[i]->m_hController, hActionSet, pBind->m_hAction, origins );
+#endif
 					if ( count > iStartCount )
 					{
 						return OriginPlaceholderString( origins[iStartCount] );
@@ -482,7 +587,11 @@ const char *CRD_Steam_Input::Key_LookupBindingEx( const char *pBinding, int iUse
 				if ( !m_Controllers[j]->m_bConnected || m_Controllers[j]->m_SplitScreenPlayerIndex != iRealUserId )
 					continue;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				return OriginPlaceholderString( pSteamInput->GetActionOriginFromXboxOrigin( m_Controllers[j]->m_hController, s_XInputTable[i].XBoxOrigin ) );
+#else
+				return OriginPlaceholderString( pSteamInput->GetActionOriginFromXboxOrigin( m_Controllers[j]->m_hController, s_XInputTable[i].XBoxOrigin ) );
+#endif
 			}
 		}
 	}
@@ -510,9 +619,17 @@ bool CRD_Steam_Input::IsOriginPlaceholderString( const char *szKey )
 
 const char *CRD_Steam_Input::NameForOrigin( EInputActionOrigin eOrigin )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamInput *pSteamInput = SteamInput();
+#else
+	ISteamInput *pSteamInput = SteamInput();
+#endif
 	Assert( pSteamInput );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	return pSteamInput ? pSteamInput->GetStringForActionOrigin( eOrigin ) : NULL;
+#else
+	return pSteamInput ? pSteamInput->GetStringForActionOrigin( eOrigin ) : NULL;
+#endif
 }
 
 const char *CRD_Steam_Input::NameForOrigin( const char *szKey )
@@ -544,7 +661,11 @@ void CRD_Steam_Input::DrawLegacyControllerGlyph( const char *szKey, int x, int y
 	if ( iCenterY )
 		y -= tall * iCenterY / 2;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamInput *pSteamInput = SteamInput();
+#else
+	ISteamInput *pSteamInput = SteamInput();
+#endif
 	Assert( pSteamInput );
 	if ( pSteamInput && eOrigin != k_EInputActionOrigin_None )
 	{
@@ -569,7 +690,11 @@ void CRD_Steam_Input::DrawLegacyControllerGlyph( const char *szKey, int x, int y
 				continue;
 			}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			eOrigin = pSteamInput->GetActionOriginFromXboxOrigin( m_Controllers[i]->m_hController, eXboxOrigin );
+#else
+			eOrigin = pSteamInput->GetActionOriginFromXboxOrigin( m_Controllers[i]->m_hController, eXboxOrigin );
+#endif
 			vgui::HTexture hTexture = GlyphForOrigin( eOrigin );
 			if ( hTexture )
 			{
@@ -590,7 +715,11 @@ void CRD_Steam_Input::DrawLegacyControllerGlyph( const char *szKey, int x, int y
 
 bool CRD_Steam_Input::GetGameAxes( int nSlot, float *flMoveX, float *flMoveY, float *flLookX, float *flLookY )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamInput *pSteamInput = SteamInput();
+#else
+	ISteamInput *pSteamInput = SteamInput();
+#endif
 	Assert( pSteamInput );
 	if ( !pSteamInput )
 		return false;
@@ -604,7 +733,11 @@ bool CRD_Steam_Input::GetGameAxes( int nSlot, float *flMoveX, float *flMoveY, fl
 			continue;
 		}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		InputAnalogActionData_t data = pSteamInput->GetAnalogActionData( m_Controllers[i]->m_hController, m_AnalogActions.Move );
+#else
+		InputAnalogActionData_t data = pSteamInput->GetAnalogActionData( m_Controllers[i]->m_hController, m_AnalogActions.Move );
+#endif
 		if ( data.bActive )
 		{
 			if ( !bFoundMove )
@@ -618,7 +751,11 @@ bool CRD_Steam_Input::GetGameAxes( int nSlot, float *flMoveX, float *flMoveY, fl
 			*flMoveY -= data.y * MAX_BUTTONSAMPLE;
 		}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		data = pSteamInput->GetAnalogActionData( m_Controllers[i]->m_hController, m_AnalogActions.Look );
+#else
+		data = pSteamInput->GetAnalogActionData( m_Controllers[i]->m_hController, m_AnalogActions.Look );
+#endif
 		if ( data.bActive )
 		{
 			if ( !bFoundLook )
@@ -651,7 +788,11 @@ bool CRD_Steam_Input::GetGameAxes( int nSlot, float *flMoveX, float *flMoveY, fl
 
 bool CRD_Steam_Input::GetMenuNavigateOffset( int nSlot, float *flMenuNavigateX, float *flMenuNavigateY )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamInput *pSteamInput = SteamInput();
+#else
+	ISteamInput *pSteamInput = SteamInput();
+#endif
 	Assert( pSteamInput );
 	if ( !pSteamInput )
 		return false;
@@ -665,7 +806,11 @@ bool CRD_Steam_Input::GetMenuNavigateOffset( int nSlot, float *flMenuNavigateX, 
 			continue;
 		}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		InputAnalogActionData_t data = pSteamInput->GetAnalogActionData( m_Controllers[i]->m_hController, m_AnalogActions.MenuNavigate );
+#else
+		InputAnalogActionData_t data = pSteamInput->GetAnalogActionData( m_Controllers[i]->m_hController, m_AnalogActions.MenuNavigate );
+#endif
 		if ( data.bActive )
 		{
 			if ( !bFoundMenuNavigate )
@@ -708,7 +853,11 @@ InputActionSetHandle_t CRD_Steam_Input::DetermineActionSet( CUtlVector<InputActi
 
 void CRD_Steam_Input::SetRumble( float fLeftMotor, float fRightMotor, int userId )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamInput *pSteamInput = SteamInput();
+#else
+	ISteamInput *pSteamInput = SteamInput();
+#endif
 	Assert( pSteamInput );
 	if ( !pSteamInput )
 		return;
@@ -717,7 +866,11 @@ void CRD_Steam_Input::SetRumble( float fLeftMotor, float fRightMotor, int userId
 	{
 		if ( m_Controllers[i]->m_bConnected && m_Controllers[i]->m_SplitScreenPlayerIndex == userId )
 		{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pSteamInput->TriggerVibration( m_Controllers[i]->m_hController, clamp( fLeftMotor, 0.0f, 1.0f ) * UINT16_MAX, clamp( fRightMotor, 0.0f, 1.0f ) * UINT16_MAX );
+#else
+			pSteamInput->TriggerVibration( m_Controllers[i]->m_hController, clamp( fLeftMotor, 0.0f, 1.0f ) * UINT16_MAX, clamp( fRightMotor, 0.0f, 1.0f ) * UINT16_MAX );
+#endif
 		}
 	}
 }
@@ -856,9 +1009,17 @@ void CRD_Steam_Controller::OnFrame( ISteamInput *pSteamInput )
 
 	C_ASW_Player *pPlayer = m_SplitScreenPlayerIndex == -1 ? NULL : C_ASW_Player::GetLocalASWPlayer( m_SplitScreenPlayerIndex );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	InputActionSetHandle_t hLastActionSet = pSteamInput->GetCurrentActionSet( m_hController );
+#else
+	InputActionSetHandle_t hLastActionSet = pSteamInput->GetCurrentActionSet( m_hController );
+#endif
 	InputActionSetHandle_t ActiveLayers[STEAM_INPUT_MAX_ACTIVE_LAYERS];
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	int nActiveLayers = pSteamInput->GetActiveActionSetLayers( m_hController, ActiveLayers );
+#else
+	int nActiveLayers = pSteamInput->GetActiveActionSetLayers( m_hController, ActiveLayers );
+#endif
 
 	CUtlVector<InputActionSetHandle_t> RequestedLayers;
 	InputActionSetHandle_t hSet = g_RD_Steam_Input.DetermineActionSet( &RequestedLayers, m_SplitScreenPlayerIndex );
@@ -866,11 +1027,23 @@ void CRD_Steam_Controller::OnFrame( ISteamInput *pSteamInput )
 
 	if ( m_bJustChangedActionSet || RequestedLayers.Count() != nActiveLayers || V_memcmp( RequestedLayers.Base(), ActiveLayers, nActiveLayers * sizeof( ActiveLayers[0] ) ) )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pSteamInput->DeactivateAllActionSetLayers( m_hController );
+#else
+		pSteamInput->DeactivateAllActionSetLayers( m_hController );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pSteamInput->ActivateActionSet( m_hController, hSet );
+#else
+		pSteamInput->ActivateActionSet( m_hController, hSet );
+#endif
 		FOR_EACH_VEC( RequestedLayers, i )
 		{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pSteamInput->ActivateActionSetLayer( m_hController, RequestedLayers[i] );
+#else
+			pSteamInput->ActivateActionSetLayer( m_hController, RequestedLayers[i] );
+#endif
 		}
 	}
 
@@ -885,7 +1058,11 @@ void CRD_Steam_Controller::OnFrame( ISteamInput *pSteamInput )
 		if ( PlayerColor != m_LastPlayerColor )
 		{
 			m_LastPlayerColor = PlayerColor;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pSteamInput->SetLEDColor( m_hController, PlayerColor.r(), PlayerColor.g(), PlayerColor.b(), PlayerColor == Color{} ? k_ESteamInputLEDFlag_RestoreUserDefault : k_ESteamInputLEDFlag_SetColor );
+#else
+			pSteamInput->SetLEDColor( m_hController, PlayerColor.r(), PlayerColor.g(), PlayerColor.b(), PlayerColor == Color{} ? k_ESteamInputLEDFlag_RestoreUserDefault : k_ESteamInputLEDFlag_SetColor );
+#endif
 		}
 	}
 }

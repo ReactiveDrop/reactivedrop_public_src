@@ -57,11 +57,19 @@ public:
 
 		m_PayloadChunks.Purge();
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( ISteamInventory *pInventory = SteamInventory())
+#else
+		if ( ISteamInventory *pInventory = SteamInventory())
+#endif
 		{
 			FOR_EACH_VEC( m_ItemIDQueue, i )
 			{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				pInventory->DestroyResult( m_ItemIDQueue[i].m_hResult );
+#else
+				pInventory->DestroyResult( m_ItemIDQueue[i].m_hResult );
+#endif
 			}
 		}
 
@@ -193,7 +201,11 @@ int UTIL_RD_SendInventoryCommand( EInventoryCommand eCmd, const CUtlVector<int> 
 
 	if ( hResult != k_SteamInventoryResultInvalid )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamInventory *pInventory = SteamInventory();
+#else
+		ISteamInventory *pInventory = SteamInventory();
+#endif
 		Assert( pInventory );
 		if ( !pInventory )
 		{
@@ -201,7 +213,11 @@ int UTIL_RD_SendInventoryCommand( EInventoryCommand eCmd, const CUtlVector<int> 
 			return 0;
 		}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		bool bOK = pInventory->SerializeResult( hResult, NULL, &nSize );
+#else
+		bool bOK = pInventory->SerializeResult( hResult, NULL, &nSize );
+#endif
 		Assert( bOK );
 		if ( !bOK )
 		{
@@ -210,7 +226,11 @@ int UTIL_RD_SendInventoryCommand( EInventoryCommand eCmd, const CUtlVector<int> 
 		}
 
 		buf.Init( 0, nSize );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		bOK = pInventory->SerializeResult( hResult, buf.Base(), &nSize );
+#else
+		bOK = pInventory->SerializeResult( hResult, buf.Base(), &nSize );
+#endif
 		Assert( bOK );
 		if ( !bOK )
 		{
@@ -247,7 +267,11 @@ void UTIL_RD_SendInventoryCommandByIDs( EInventoryCommand eCmd, const CUtlVector
 		return;
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamInventory *pInventory = SteamInventory();
+#else
+	ISteamInventory *pInventory = SteamInventory();
+#endif
 	if ( !pInventory )
 	{
 		Warning( "Cannot send inventory command %d: no ISteamInventory\n", eCmd );
@@ -258,7 +282,11 @@ void UTIL_RD_SendInventoryCommandByIDs( EInventoryCommand eCmd, const CUtlVector
 	s_RD_Inventory_Command_Queue.m_ItemIDQueue[i].m_eCmd = eCmd;
 	s_RD_Inventory_Command_Queue.m_ItemIDQueue[i].m_Args.AddVectorToTail( args );
 	s_RD_Inventory_Command_Queue.m_ItemIDQueue[i].m_IDs.AddVectorToTail( ids );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pInventory->GetItemsByID( &s_RD_Inventory_Command_Queue.m_ItemIDQueue[i].m_hResult, realIDs.Base(), realIDs.Count() );
+#else
+	pInventory->GetItemsByID( &s_RD_Inventory_Command_Queue.m_ItemIDQueue[i].m_hResult, realIDs.Base(), realIDs.Count() );
+#endif
 }
 
 bool RDCheckForInventoryCommandResult( ISteamInventory *pInventory, SteamInventoryResult_t hResult )
@@ -277,9 +305,17 @@ bool RDCheckForInventoryCommandResult( ISteamInventory *pInventory, SteamInvento
 		}
 
 		uint32 nItems{};
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pInventory->GetResultItems( hResult, NULL, &nItems );
+#else
+		pInventory->GetResultItems( hResult, NULL, &nItems );
+#endif
 		CUtlMemory<SteamItemDetails_t> items{ 0, int( nItems ) };
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pInventory->GetResultItems( hResult, items.Base(), &nItems );
+#else
+		pInventory->GetResultItems( hResult, items.Base(), &nItems );
+#endif
 
 		FOR_EACH_VEC( cmd.m_IDs, j )
 		{
@@ -294,7 +330,11 @@ bool RDCheckForInventoryCommandResult( ISteamInventory *pInventory, SteamInvento
 		}
 
 		UTIL_RD_SendInventoryCommand( cmd.m_eCmd, args, hResult );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pInventory->DestroyResult( hResult );
+#else
+		pInventory->DestroyResult( hResult );
+#endif
 
 		s_RD_Inventory_Command_Queue.m_ItemIDQueue.Remove( i );
 		return true;
@@ -359,16 +399,28 @@ CASW_Player::InventoryCommandData_t::~InventoryCommandData_t()
 {
 	if ( m_hResult != k_SteamInventoryResultInvalid )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamInventory *pInventory = SteamInventory();
+#else
+		ISteamInventory *pInventory = SteamInventory();
+#endif
 		if ( !pInventory )
 		{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pInventory = SteamGameServerInventory();
+#else
+			pInventory = SteamGameServerInventory();
+#endif
 		}
 		Assert( pInventory );
 
 		if ( pInventory )
 		{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pInventory->DestroyResult( m_hResult );
+#else
+			pInventory->DestroyResult( m_hResult );
+#endif
 		}
 	}
 }
@@ -561,13 +613,25 @@ static void UpdateAllEquipmentItemInstances( const ReactiveDropInventory::ItemIn
 
 static void ExecuteInventoryCommand( CASW_Player *pPlayer, EInventoryCommand eCmd, const CUtlVector<int> &args, const CUtlVector<ReactiveDropInventory::ItemInstance_t> &items )
 {
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamUtils *pUtils = SteamUtils();
+	#else
+	ISteamUtils *pUtils = SteamUtils();
+	#endif
 #ifdef GAME_DLL
 	if ( engine->IsDedicatedServer() )
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pUtils = SteamGameServerUtils();
+	#else
+		pUtils = SteamGameServerUtils();
+	#endif
 #endif
 	Assert( pUtils );
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	RTime32 iNow = pUtils ? pUtils->GetServerRealTime() : std::time( NULL );
+	#else
+	RTime32 iNow = pUtils ? pUtils->GetServerRealTime() : std::time( NULL );
+	#endif
 	RTime32 iFiveMinutesAgo = iNow - 300;
 
 	switch ( eCmd )
@@ -1113,10 +1177,18 @@ void CASW_Player::HandleInventoryCommand( KeyValues *pKeyValues )
 					return;
 				}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				ISteamInventory *pInventory = SteamInventory();
+#else
+				ISteamInventory *pInventory = SteamInventory();
+#endif
 				if ( !pInventory )
 				{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 					pInventory = SteamGameServerInventory();
+#else
+					pInventory = SteamGameServerInventory();
+#endif
 				}
 
 				Assert( pInventory );
@@ -1129,7 +1201,11 @@ void CASW_Player::HandleInventoryCommand( KeyValues *pKeyValues )
 				}
 
 				// send the serialized result off to be validated.
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				pInventory->DeserializeResult( &m_InventoryCommands[i]->m_hResult, m_InventoryCommands[i]->m_Data.Base(), m_InventoryCommands[i]->m_Data.Count() );
+#else
+				pInventory->DeserializeResult( &m_InventoryCommands[i]->m_hResult, m_InventoryCommands[i]->m_Data.Base(), m_InventoryCommands[i]->m_Data.Count() );
+#endif
 				Assert( m_InventoryCommands[i]->m_hResult != k_SteamInventoryResultInvalid );
 				// throw away the serialized payload; we no longer need it in memory.
 				m_InventoryCommands[i]->m_Data.Purge();
@@ -1163,13 +1239,25 @@ void CASW_Player::HandleOfflineInventoryCommand( KeyValues *pKeyValues )
 {
 	Assert( !engine->IsDedicatedServer() );
 	Assert( gpGlobals->maxClients == 1 );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	Assert( SteamUser() );
+#else
+	Assert( SteamUser() );
+#endif
 
 	// This only works in singleplayer, and we need access to our own Steam ID.
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( engine->IsDedicatedServer() || gpGlobals->maxClients != 1 || !SteamUser() )
+#else
+	if ( engine->IsDedicatedServer() || gpGlobals->maxClients != 1 || !SteamUser() )
+#endif
 		return;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CFmtStr szCacheFileName{ "cfg/clienti_%llu.dat", SteamUser()->GetSteamID().ConvertToUint64() };
+#else
+	CFmtStr szCacheFileName{ "cfg/clienti_%llu.dat", SteamUser()->GetSteamID().ConvertToUint64() };
+#endif
 	CUtlBuffer buf;
 
 	if ( !g_pFullFileSystem->ReadFile( szCacheFileName, "MOD", buf ) )
@@ -1233,10 +1321,18 @@ bool CASW_Player::OnSteamInventoryResultReady( SteamInventoryResultReady_t *pPar
 		return false;
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamInventory *pInventory = SteamInventory();
+#else
+	ISteamInventory *pInventory = SteamInventory();
+#endif
 	if ( !pInventory )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pInventory = SteamGameServerInventory();
+#else
+		pInventory = SteamGameServerInventory();
+#endif
 	}
 	Assert( pInventory );
 	if ( !pInventory )
@@ -1252,14 +1348,22 @@ bool CASW_Player::OnSteamInventoryResultReady( SteamInventoryResultReady_t *pPar
 			{
 				Warning( "Failure handling InvCmd from player %s: inventory result is %d (%s)\n", GetASWNetworkID(), pParam->m_result, UTIL_RD_EResultToString( pParam->m_result ) );
 			}
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			else if ( !pInventory->CheckResultSteamID( m_InventoryCommands[i]->m_hResult, GetSteamID() ) )
+#else
+			else if ( !pInventory->CheckResultSteamID( m_InventoryCommands[i]->m_hResult, GetSteamID() ) )
+#endif
 			{
 				Warning( "Failure handling InvCmd from player %s: inventory result does not belong to Steam ID %llu\n", GetASWNetworkID(), GetSteamID().ConvertToUint64() );
 			}
 			else
 			{
 				uint32_t nItems = 0;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				pInventory->GetResultItems( m_InventoryCommands[i]->m_hResult, NULL, &nItems );
+#else
+				pInventory->GetResultItems( m_InventoryCommands[i]->m_hResult, NULL, &nItems );
+#endif
 
 				CUtlVector<ReactiveDropInventory::ItemInstance_t> items;
 				items.SetCount( nItems );

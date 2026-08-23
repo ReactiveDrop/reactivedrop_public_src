@@ -27,8 +27,16 @@ public:
 	vgui::Label *m_pErrorLabel;
 	vgui::Label *m_pNotFoundLabel;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CCallResult<CNB_Leaderboard_Panel, LeaderboardFindResult_t> m_LeaderboardFind;
+#else
+	CCallResult<CNB_Leaderboard_Panel, LeaderboardFindResult_t> m_LeaderboardFind;
+#endif
 	void LeaderboardFind( LeaderboardFindResult_t *pResult, bool bIOError );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CCallResult<CNB_Leaderboard_Panel, LeaderboardScoresDownloaded_t> m_LeaderboardDownload;
+#else
+	CCallResult<CNB_Leaderboard_Panel, LeaderboardScoresDownloaded_t> m_LeaderboardDownload;
+#endif
 	void LeaderboardDownload( LeaderboardScoresDownloaded_t *pResult, bool bIOError );
 };

@@ -313,7 +313,11 @@ public:
 	int   m_iKillingSpree;
 
 #if !defined(NO_STEAM)
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CCallResult< CASW_Player, UserStatsReceived_t > m_CallbackUserStatsReceived;
+#else
+	CCallResult< CASW_Player, UserStatsReceived_t > m_CallbackUserStatsReceived;
+#endif
 	void Steam_OnUserStatsReceived( UserStatsReceived_t *pUserStatsReceived, bool bError );
 #endif
 	CNetworkVar( unsigned, m_iScreenWidthHeight );

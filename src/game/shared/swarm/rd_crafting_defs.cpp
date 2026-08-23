@@ -783,10 +783,18 @@ static int __cdecl CompareItemIDs( const SteamItemDef_t *a, const SteamItemDef_t
 
 void ValidateCraftingDefs( const CUtlVector<SteamItemDef_t> &AllItemDefs )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamInventory *pInventory = SteamInventory();
+#else
+	ISteamInventory *pInventory = SteamInventory();
+#endif
 #ifdef GAME_DLL
 	if ( engine->IsDedicatedServer() )
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pInventory = SteamGameServerInventory();
+#else
+		pInventory = SteamGameServerInventory();
+#endif
 #endif
 	Assert( pInventory );
 	if ( !pInventory )
@@ -800,7 +808,11 @@ void ValidateCraftingDefs( const CUtlVector<SteamItemDef_t> &AllItemDefs )
 	FOR_EACH_VEC( AllItemDefs, i )
 	{
 		uint32 nExchangeSize = sizeof( szExchange );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !pInventory->GetItemDefinitionProperty( AllItemDefs[i], "exchange", szExchange, &nExchangeSize ) )
+#else
+		if ( !pInventory->GetItemDefinitionProperty( AllItemDefs[i], "exchange", szExchange, &nExchangeSize ) )
+#endif
 			continue;
 
 		// this code assumes that each item is in at most one contains_any list and isn't exchangable from anything else

@@ -566,32 +566,54 @@ void Loadouts::StartPublishingLoadouts( const char *szTitle, const char *szDescr
 	CUtlBuffer buf;
 	ReactiveDropLoadout::WriteLoadoutsForSharing( buf, loadouts );
 
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamRemoteStorage *pRemoteStorage = SteamRemoteStorage();
+	#else
+	ISteamRemoteStorage *pRemoteStorage = SteamRemoteStorage();
+	#endif
 	Assert( pRemoteStorage );
 	if ( !pRemoteStorage )
 	{
 		DisplayPublishingError( "#rd_loadout_share_failed_api" );
 		return;
 	}
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pRemoteStorage->FileWrite( "integrated_guide.bin", buf.Base(), buf.TellMaxPut() );
+#else
+	pRemoteStorage->FileWrite( "integrated_guide.bin", buf.Base(), buf.TellMaxPut() );
+#endif
 
 	buf.Purge();
 	if ( !g_pFullFileSystem->ReadFile( szPreviewFile, NULL, buf ) )
 	{
 		DisplayPublishingError( "#rd_loadout_share_failed_preview_image" );
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pRemoteStorage->FileDelete( "integrated_guide.bin" );
+	#else
+		pRemoteStorage->FileDelete( "integrated_guide.bin" );
+	#endif
 		return;
 	}
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pRemoteStorage->FileWrite( "integrated_guide_preview.jpeg", buf.Base(), buf.TellMaxPut() );
+#else
+	pRemoteStorage->FileWrite( "integrated_guide_preview.jpeg", buf.Base(), buf.TellMaxPut() );
+#endif
 
 	const char *szLoadoutTag = "Loadouts";
 	SteamParamStringArray_t tags;
 	tags.m_ppStrings = &szLoadoutTag;
 	tags.m_nNumStrings = 1;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamAPICall_t hCall = pRemoteStorage->PublishWorkshopFile( "integrated_guide.bin", "integrated_guide_preview.jpeg",
 		SteamUtils()->GetAppID(), szTitle, szDescription,
 		k_ERemoteStoragePublishedFileVisibilityPublic, &tags, k_EWorkshopFileTypeIntegratedGuide );
+#else
+	SteamAPICall_t hCall = pRemoteStorage->PublishWorkshopFile( "integrated_guide.bin", "integrated_guide_preview.jpeg",
+		SteamUtils()->GetAppID(), szTitle, szDescription,
+		k_ERemoteStoragePublishedFileVisibilityPublic, &tags, k_EWorkshopFileTypeIntegratedGuide );
+#endif
 	m_RemoteStoragePublishFileResult.Set( hCall, this, &Loadouts::OnRemoteStoragePublishFileResult );
 
 	GenericWaitScreen *pWait = assert_cast< GenericWaitScreen * >( CBaseModPanel::GetSingleton().OpenWindow( WT_GENERICWAITSCREEN, this, false ) );
@@ -619,8 +641,16 @@ void Loadouts::OnRemoteStoragePublishFileResult( RemoteStoragePublishFileResult_
 		return;
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pRemoteStorage->FileDelete( "integrated_guide.bin" );
+#else
+	pRemoteStorage->FileDelete( "integrated_guide.bin" );
+#endif
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pRemoteStorage->FileDelete( "integrated_guide_preview.jpeg" );
+	#else
+	pRemoteStorage->FileDelete( "integrated_guide_preview.jpeg" );
+	#endif
 
 	if ( pParam->m_eResult != k_EResultOK )
 	{
@@ -1044,8 +1074,13 @@ bool CRD_VGUI_Loadout_List_Item::SetMarineForSlot( int iSlot, SteamItemInstanceI
 		ReactiveDropLoadout::Loadouts[iLoadoutIndex].MarineIncluded[iSlot] = true;
 		ReactiveDropLoadout::Loadouts[iLoadoutIndex].Marines[iSlot].Suit = iItemInstance;
 		ReactiveDropLoadout::Loadouts[iLoadoutIndex].Marines[iSlot].SuitDef = iItemDef;
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( ISteamUtils *pUtils = SteamUtils() )
 			ReactiveDropLoadout::Loadouts[iLoadoutIndex].LastModified = pUtils->GetServerRealTime();
+		#else
+		if ( ISteamUtils *pUtils = SteamUtils() )
+			ReactiveDropLoadout::Loadouts[iLoadoutIndex].LastModified = pUtils->GetServerRealTime();
+		#endif
 		ReactiveDropLoadout::WriteLoadouts();
 
 		m_Loadout = ReactiveDropLoadout::Loadouts[iLoadoutIndex];
@@ -1147,8 +1182,13 @@ bool CRD_VGUI_Loadout_List_Item::SetWeaponForSlot( int iSlot, ASW_Inventory_slot
 			ReactiveDropLoadout::Loadouts[iLoadoutIndex].Marines[iSlot].ExtraItem = iItemInstance;
 			ReactiveDropLoadout::Loadouts[iLoadoutIndex].Marines[iSlot].ExtraDef = iItemDef;
 		}
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( ISteamUtils *pUtils = SteamUtils() )
 			ReactiveDropLoadout::Loadouts[iLoadoutIndex].LastModified = pUtils->GetServerRealTime();
+		#else
+		if ( ISteamUtils *pUtils = SteamUtils() )
+			ReactiveDropLoadout::Loadouts[iLoadoutIndex].LastModified = pUtils->GetServerRealTime();
+		#endif
 		ReactiveDropLoadout::WriteLoadouts();
 
 		m_Loadout = ReactiveDropLoadout::Loadouts[iLoadoutIndex];
@@ -1198,7 +1238,11 @@ void CRD_VGUI_Loadout_List_Addon_Header::OnThink()
 	if ( m_bLoadedAddonDetails )
 		return;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamFriends *pFriends = SteamFriends();
+#else
+	ISteamFriends *pFriends = SteamFriends();
+#endif
 	Assert( pFriends );
 	if ( !pFriends )
 		return;
@@ -1220,14 +1264,22 @@ void CRD_VGUI_Loadout_List_Addon_Header::OnThink()
 		m_pImgAuthorAvatar->SetAvatarBySteamID( &authorID );
 
 		wchar_t wszPersonaName[k_cwchPersonaNameMax];
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		V_UTF8ToUnicode( pFriends->GetFriendPersonaName( authorID ), wszPersonaName, sizeof( wszPersonaName ) );
+#else
+		V_UTF8ToUnicode( pFriends->GetFriendPersonaName( authorID ), wszPersonaName, sizeof( wszPersonaName ) );
+#endif
 		m_pLblAuthorName->SetText( wszPersonaName );
 	}
 }
 
 void CRD_VGUI_Loadout_List_Addon_Header::OnPersonaStateChange( PersonaStateChange_t *pParam )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamFriends *pFriends = SteamFriends();
+#else
+	ISteamFriends *pFriends = SteamFriends();
+#endif
 	Assert( pFriends );
 	if ( !pFriends )
 		return;
@@ -1239,7 +1291,11 @@ void CRD_VGUI_Loadout_List_Addon_Header::OnPersonaStateChange( PersonaStateChang
 		return;
 
 	wchar_t wszPersonaName[k_cwchPersonaNameMax];
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	V_UTF8ToUnicode( pFriends->GetFriendPersonaName( pParam->m_ulSteamID ), wszPersonaName, sizeof( wszPersonaName ) );
+#else
+	V_UTF8ToUnicode( pFriends->GetFriendPersonaName( pParam->m_ulSteamID ), wszPersonaName, sizeof( wszPersonaName ) );
+#endif
 	m_pLblAuthorName->SetText( wszPersonaName );
 }
 

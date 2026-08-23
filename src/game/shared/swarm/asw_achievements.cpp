@@ -1187,7 +1187,11 @@ class CAchievement_Die_In_Many_Ways : public CASW_Achievement
 
 	void CheckDeathTypeCount()
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamUserStats *pSteamUserStats = SteamUserStats();
+#else
+		ISteamUserStats *pSteamUserStats = SteamUserStats();
+#endif
 		if ( !pSteamUserStats )
 			return;
 
@@ -1195,6 +1199,7 @@ class CAchievement_Die_In_Many_Ways : public CASW_Achievement
 		int nDeathTypes = 0;
 		for ( int i = 0; i < DEATHCAUSE_COUNT && !IsAchieved(); i++ )
 		{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			if ( pSteamUserStats->GetStat( g_szDeathCauseStatName[i], &nCount ) && nCount )
 			{
 				nDeathTypes++;
@@ -1203,6 +1208,16 @@ class CAchievement_Die_In_Many_Ways : public CASW_Achievement
 					IncrementCount();
 				}
 			}
+#else
+			if ( pSteamUserStats->GetStat( g_szDeathCauseStatName[i], &nCount ) && nCount )
+			{
+				nDeathTypes++;
+				if ( nDeathTypes > GetCount() )
+				{
+					IncrementCount();
+				}
+			}
+#endif
 		}
 	}
 

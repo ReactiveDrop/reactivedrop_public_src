@@ -492,7 +492,11 @@ void CRD_VGUI_Stock_Ticker::GenerateTickerText( KeyValues *pDef, wchar_t *&wszTe
 		int iDays = pDef->GetInt( "days", 30 );
 		Assert( iDays <= 60 );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamUserStats *pUserStats = SteamUserStats();
+#else
+		ISteamUserStats *pUserStats = SteamUserStats();
+#endif
 		if ( !pUserStats )
 		{
 			delete[] wszText;
@@ -508,7 +512,11 @@ void CRD_VGUI_Stock_Ticker::GenerateTickerText( KeyValues *pDef, wchar_t *&wszTe
 				continue;
 
 			int64 iStatHistory[60];
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			int iDaysRetrieved = pUserStats->GetGlobalStatHistory( pValue->GetString(), iStatHistory, sizeof( iStatHistory ) );
+#else
+			int iDaysRetrieved = pUserStats->GetGlobalStatHistory( pValue->GetString(), iStatHistory, sizeof( iStatHistory ) );
+#endif
 			if ( iDaysRetrieved < iDays )
 			{
 				// failed to retrieve stats; will try again next time this comes up

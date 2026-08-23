@@ -973,8 +973,18 @@ bool InitGameSystems( CreateInterfaceFn appSystemFactory )
 
 	// SteamUtils wasn't ready yet when we initialized the ConVar, so check it again
 	extern ConVar rd_represented_country;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( SteamUtils() && rd_represented_country.GetString()[0] == '\0' )
+#else
+	if ( SteamUtils() && rd_represented_country.GetString()[0] == '\0' )
+#endif
+	{
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		rd_represented_country.SetValue( SteamUtils()->GetIPCountry() );
+	#else
+		rd_represented_country.SetValue( SteamUtils()->GetIPCountry() );
+	#endif
+	}
 
 	// Load the ClientScheme just once
 	vgui::scheme()->LoadSchemeFromFileEx( VGui_GetFullscreenRootVPANEL(), "resource/ClientScheme.res", "ClientScheme");
@@ -3075,4 +3085,3 @@ class CClientMaterialSystem : public IClientMaterialSystem
 static CClientMaterialSystem s_ClientMaterialSystem;
 IClientMaterialSystem *g_pClientMaterialSystem = &s_ClientMaterialSystem;
 EXPOSE_SINGLE_INTERFACE_GLOBALVAR( CClientMaterialSystem, IClientMaterialSystem, VCLIENTMATERIALSYSTEM_INTERFACE_VERSION, s_ClientMaterialSystem );
-

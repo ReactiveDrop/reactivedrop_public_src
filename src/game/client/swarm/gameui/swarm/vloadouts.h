@@ -64,7 +64,11 @@ public:
 	void DisplayPublishingError( const char *szMessage, int nArgs = 0, const wchar_t *wszArg1 = NULL, const wchar_t *wszArg2 = NULL, const wchar_t *wszArg3 = NULL, const wchar_t *wszArg4 = NULL );
 	void StartPublishingLoadouts( const char *szTitle, const char *szDescription, const char *szPreviewFile, const CUtlDict<ReactiveDropLoadout::LoadoutData_t> &loadouts );
 	void OnRemoteStoragePublishFileResult( RemoteStoragePublishFileResult_t *pParam, bool bIOFailure );
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CCallResult<Loadouts, RemoteStoragePublishFileResult_t> m_RemoteStoragePublishFileResult;
+	#else
+	CCallResult<Loadouts, RemoteStoragePublishFileResult_t> m_RemoteStoragePublishFileResult;
+	#endif
 
 	// IBriefing implementation
 	const char *GetLeaderName() override { return ""; }
@@ -175,7 +179,11 @@ public:
 	vgui::Label *m_pLblAuthorName;
 	bool m_bLoadedAddonDetails;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	STEAM_CALLBACK( CRD_VGUI_Loadout_List_Addon_Header, OnPersonaStateChange, PersonaStateChange_t );
+#else
+	STEAM_CALLBACK( CRD_VGUI_Loadout_List_Addon_Header, OnPersonaStateChange, PersonaStateChange_t );
+#endif
 };
 
 class CRD_VGUI_Loadout_Marine : public vgui::EditablePanel

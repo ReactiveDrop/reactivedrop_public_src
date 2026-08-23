@@ -261,7 +261,11 @@ void MainMenu::Activate()
 	if ( HoIAF()->GetLastUpdateDate( iPatchYear, iPatchMonth, iPatchDay ) )
 	{
 		char szBranchName[64]{};
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( SteamApps() && SteamApps()->GetCurrentBetaName( szBranchName, sizeof(szBranchName) ) && szBranchName[0] != '\0' )
+		#else
+		if ( SteamApps() && SteamApps()->GetCurrentBetaName( szBranchName, sizeof(szBranchName) ) && szBranchName[0] != '\0' )
+		#endif
 		{
 			// we are on a branch. doesn't matter if it's beta, releasecandidate,
 			// bugtest, or something else. show the beta notes message.
@@ -291,7 +295,11 @@ void MainMenu::Activate()
 		m_iLastTimerUpdate = 0;
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamUserStats *pUserStats = SteamUserStats();
+#else
+	ISteamUserStats *pUserStats = SteamUserStats();
+#endif
 	if ( pUserStats && !m_bIsLegacy && rd_hoiaf_leaderboard_on_main_menu.GetBool() )
 	{
 		for ( int i = 0; i < s_nHoIAFCachedEntries; i++ )
@@ -305,23 +313,55 @@ void MainMenu::Activate()
 			m_pTopLeaderboardEntries[i]->SetVisible( false );
 		}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		SteamAPICall_t hCall = pUserStats->DownloadLeaderboardEntries( STEAM_LEADERBOARD_HOIAF_CURRENT_SEASON, rd_hoiaf_leaderboard_friends_only.GetBool() ? k_ELeaderboardDataRequestFriends : k_ELeaderboardDataRequestGlobal, 1, 10 );
+#else
+		SteamAPICall_t hCall = pUserStats->DownloadLeaderboardEntries( STEAM_LEADERBOARD_HOIAF_CURRENT_SEASON, rd_hoiaf_leaderboard_friends_only.GetBool() ? k_ELeaderboardDataRequestFriends : k_ELeaderboardDataRequestGlobal, 1, 10 );
+#endif
 		m_HoIAFTop10Callback.Set( hCall, this, &MainMenu::OnHoIAFTop10ScoresDownloaded );
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamUGC *pUGC = SteamUGC();
+#else
+	ISteamUGC *pUGC = SteamUGC();
+#endif
 	if ( pUGC && rd_trending_workshop_tags.GetString()[0] != '\0' )
 	{
 		CSplitString AllowedTags( rd_trending_workshop_tags.GetString(), "," );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		UGCQueryHandle_t hQuery = pUGC->CreateQueryAllUGCRequest( k_EUGCQuery_RankedByTrend, k_EUGCMatchingUGCType_Items_ReadyToUse, 563560, 563560 );
+#else
+		UGCQueryHandle_t hQuery = pUGC->CreateQueryAllUGCRequest( k_EUGCQuery_RankedByTrend, k_EUGCMatchingUGCType_Items_ReadyToUse, 563560, 563560 );
+#endif
 		SteamParamStringArray_t RequiredTags;
 		RequiredTags.m_ppStrings = const_cast< const char ** >( AllowedTags.Base() );
 		RequiredTags.m_nNumStrings = AllowedTags.Count();
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pUGC->AddRequiredTagGroup( hQuery, &RequiredTags );
+#else
+		pUGC->AddRequiredTagGroup( hQuery, &RequiredTags );
+#endif
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( ISteamApps *pApps = SteamApps() )
+	#else
+		if ( ISteamApps *pApps = SteamApps() )
+	#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pUGC->SetLanguage( hQuery, pApps->GetCurrentGameLanguage() );
+#else
+			pUGC->SetLanguage( hQuery, pApps->GetCurrentGameLanguage() );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pUGC->SetAllowCachedResponse( hQuery, 3600 );
+#else
+		pUGC->SetAllowCachedResponse( hQuery, 3600 );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		SteamAPICall_t hCall = pUGC->SendQueryUGCRequest( hQuery );
+#else
+		SteamAPICall_t hCall = pUGC->SendQueryUGCRequest( hQuery );
+#endif
 		m_WorkshopTrendingItemsCallback.Set( hCall, this, &MainMenu::OnWorkshopTrendingItems );
 	}
 
@@ -347,7 +387,11 @@ void MainMenu::LoadLayout()
 		m_bIsLegacy = true;
 	}
 
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( CommandLine()->FindParm( "-teststeamapiloadfail" ) || !g_pMatchFramework || !g_pMatchFramework->GetMatchSystem() || !g_pMatchFramework->GetMatchSystem()->GetPlayerManager() || !g_pMatchFramework->GetMatchSystem()->GetPlayerManager()->GetLocalPlayer(0) || !SteamApps() || !SteamFriends() || !SteamHTTP() || !SteamInput() || !SteamMatchmaking() || !SteamMatchmakingServers() || !SteamRemoteStorage() || !SteamUGC() || !SteamUser() || !SteamUserStats() || !SteamUtils())
+	#else
+	if ( CommandLine()->FindParm( "-teststeamapiloadfail" ) || !g_pMatchFramework || !g_pMatchFramework->GetMatchSystem() || !g_pMatchFramework->GetMatchSystem()->GetPlayerManager() || !g_pMatchFramework->GetMatchSystem()->GetPlayerManager()->GetLocalPlayer(0) || !SteamApps() || !SteamFriends() || !SteamHTTP() || !SteamInput() || !SteamMatchmaking() || !SteamMatchmakingServers() || !SteamRemoteStorage() || !SteamUGC() || !SteamUser() || !SteamUserStats() || !SteamUtils())
+	#endif
 	{
 		pSettings = "Resource/UI/BaseModUI/MainMenuStub.res";
 		m_bIsStub = true;
@@ -460,14 +504,22 @@ void MainMenu::ApplySchemeSettings( IScheme *pScheme )
 			bool bUsesCloud = false;
 
 #ifdef IS_WINDOWS_PC
+			#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			ISteamRemoteStorage *pRemoteStorage = SteamRemoteStorage();
+			#else
+			ISteamRemoteStorage *pRemoteStorage = SteamRemoteStorage();
+			#endif
 #else
 			ISteamRemoteStorage *pRemoteStorage =  NULL; 
 			AssertMsg( false, "This branch run on a PC build without IS_WINDOWS_PC defined." );
 #endif
 
 			uint64 availableBytes, totalBytes = 0;
+			#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			if ( pRemoteStorage && pRemoteStorage->GetQuota( &totalBytes, &availableBytes ) )
+			#else
+			if ( pRemoteStorage && pRemoteStorage->GetQuota( &totalBytes, &availableBytes ) )
+			#endif
 			{
 				if ( totalBytes > 0 )
 				{
@@ -516,11 +568,19 @@ void MainMenu::ApplySchemeSettings( IScheme *pScheme )
 #endif
 
 	m_pBranchDisclaimer = dynamic_cast< vgui::Label * >( FindChildByName( "LblBranchDisclaimer" ) );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamApps *pApps = SteamApps();
+#else
+	ISteamApps *pApps = SteamApps();
+#endif
 	if ( m_pBranchDisclaimer && pApps )
 	{
 		char szBranch[256]{};
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !pApps->GetCurrentBetaName( szBranch, sizeof( szBranch ) ) )
+		#else
+		if ( !pApps->GetCurrentBetaName( szBranch, sizeof( szBranch ) ) )
+		#endif
 		{
 			m_pBranchDisclaimer->SetVisible( false );
 		}
@@ -684,17 +744,29 @@ void MainMenu::OnCommand( const char *command )
 		data.pWindowTitle = "#rd_no_steam_service";
 		data.pMessageText = "#rd_no_steam_solutions";
 
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !CommandLine()->FindParm( "-teststeamapiloadfail" ) && SteamApps() && SteamFriends() && SteamHTTP() && SteamInput() && SteamMatchmaking() && SteamMatchmakingServers() && SteamRemoteStorage() && SteamUGC() && SteamUser() && SteamUserStats() && SteamUtils() )
+		#else
+		if ( !CommandLine()->FindParm( "-teststeamapiloadfail" ) && SteamApps() && SteamFriends() && SteamHTTP() && SteamInput() && SteamMatchmaking() && SteamMatchmakingServers() && SteamRemoteStorage() && SteamUGC() && SteamUser() && SteamUserStats() && SteamUtils() )
+		#endif
 		{
 			// The NO STEAM main menu is active, but the Steam API is available. This should never happen. Please contact https://reactivedrop.com/feedback
 			data.pMessageText = "#rd_no_steam_solutions_api";
 		}
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		else if ( !SteamAPI_IsSteamRunning() )
+#else
+		else if ( !SteamAPI_IsSteamRunning() )
+#endif
 		{
 			// Did not detect an instance of the Steam Client. If the Steam Client is running, try selecting Steam->Exit and then restarting Steam.
 			data.pMessageText = "#rd_no_steam_solutions_client";
 		}
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		else if ( !SteamAPI_GetSteamInstallPath() )
+#else
+		else if ( !SteamAPI_GetSteamInstallPath() )
+#endif
 		{
 			// Could not determine the location of the Steam Client through the registry. Try restarting Steam.
 			data.pMessageText = "#rd_no_steam_solutions_path";
@@ -1194,7 +1266,11 @@ void MainMenu::OnCommand( const char *command )
 	else if ( !V_stricmp( command, "UpdateNotes" ) )
 	{
 		char szBranchName[64]{};
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( SteamApps() && SteamApps()->GetCurrentBetaName( szBranchName, sizeof( szBranchName ) ) && szBranchName[0] != '\0' )
+#else
+		if ( SteamApps() && SteamApps()->GetCurrentBetaName( szBranchName, sizeof( szBranchName ) ) && szBranchName[0] != '\0' )
+#endif
 		{
 			OpenNewsURL( "https://reactivedrop.com/beta-updates/" );
 		}
@@ -1383,7 +1459,11 @@ void MainMenu::OnThink()
 		return;
 	}
 
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	uint32 iCurrentTime = SteamUtils() ? SteamUtils()->GetServerRealTime() : std::time( NULL );
+	#else
+	uint32 iCurrentTime = SteamUtils() ? SteamUtils()->GetServerRealTime() : std::time( NULL );
+	#endif
 	uint32 iCurrentMinute = iCurrentTime / 60;
 	if ( m_iLastTimerUpdate != iCurrentMinute )
 	{
@@ -1739,7 +1819,11 @@ void MainMenu::PaintBackground()
 	HUD_SHEET_DRAW_PANEL( m_pBtnNewsShowcase, MainMenuSheet, UV_news );
 	HUD_SHEET_DRAW_PANEL( m_pBtnUpdateNotes, MainMenuSheet, UV_update );
 
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	int iCurrentMinute = ( ( SteamUtils() ? SteamUtils()->GetServerRealTime() : std::time( NULL ) ) / 60 );
+	#else
+	int iCurrentMinute = ( ( SteamUtils() ? SteamUtils()->GetServerRealTime() : std::time( NULL ) ) / 60 );
+	#endif
 
 	int iNumNewsShowcases = HoIAF()->CountFeaturedNews();
 	if ( iNumNewsShowcases && m_pBtnNewsShowcase->IsVisible() )
@@ -1962,7 +2046,11 @@ void MainMenu::OpenNewsURL( const char *szURL )
 		return;
 
 	char szFormattedURL[1024];
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	V_snprintf( szFormattedURL, sizeof( szFormattedURL ), szURL, SteamApps() ? SteamApps()->GetCurrentGameLanguage() : "" );
+	#else
+	V_snprintf( szFormattedURL, sizeof( szFormattedURL ), szURL, SteamApps() ? SteamApps()->GetCurrentGameLanguage() : "" );
+	#endif
 	CUIGameData::Get()->ExecuteOverlayUrl( szFormattedURL );
 }
 
@@ -2046,7 +2134,11 @@ void MainMenu::OnHoIAFTop10ScoresDownloaded( LeaderboardScoresDownloaded_t *pPar
 		s_nHoIAFCachedEntries = MIN( pParam->m_cEntryCount, NELEMS( m_pTopLeaderboardEntries ) );
 		for ( int i = 0; i < pParam->m_cEntryCount && i < NELEMS( m_pTopLeaderboardEntries ); i++ )
 		{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			bool bOK = SteamUserStats()->GetDownloadedLeaderboardEntry( pParam->m_hSteamLeaderboardEntries, i, &s_HoIAFLeaderboardEntryCache[i], reinterpret_cast< int32 * >( &s_HoIAFLeaderboardDetailsCache[i] ), sizeof( s_HoIAFLeaderboardDetailsCache[i] ) / sizeof( int32 ) );
+#else
+			bool bOK = SteamUserStats()->GetDownloadedLeaderboardEntry( pParam->m_hSteamLeaderboardEntries, i, &s_HoIAFLeaderboardEntryCache[i], reinterpret_cast< int32 * >( &s_HoIAFLeaderboardDetailsCache[i] ), sizeof( s_HoIAFLeaderboardDetailsCache[i] ) / sizeof( int32 ) );
+#endif
 			Assert( bOK );
 			Assert( s_HoIAFLeaderboardEntryCache[i].m_cDetails == sizeof( s_HoIAFLeaderboardDetailsCache[i] ) / sizeof( int32 ) );
 
@@ -2082,7 +2174,11 @@ void MainMenu::OnWorkshopTrendingItems( SteamUGCQueryCompleted_t *pParam, bool b
 	for ( uint32 i = 0; i < pParam->m_unNumResultsReturned && i < NELEMS( m_iWorkshopTrendingFileID ); i++ )
 	{
 		SteamUGCDetails_t details;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		bool bOK = SteamUGC()->GetQueryUGCResult( pParam->m_handle, i, &details );
+#else
+		bool bOK = SteamUGC()->GetQueryUGCResult( pParam->m_handle, i, &details );
+#endif
 		Assert( bOK );
 		if ( bOK )
 		{
@@ -2090,7 +2186,11 @@ void MainMenu::OnWorkshopTrendingItems( SteamUGCQueryCompleted_t *pParam, bool b
 			V_UTF8ToUnicode( details.m_rgchTitle, m_wszWorkshopTrendingTitle[i], sizeof( m_wszWorkshopTrendingTitle[i] ) );
 			m_hWorkshopTrendingPreview[i] = details.m_hPreviewFile;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			SteamAPICall_t hCall = SteamRemoteStorage()->UGCDownload( details.m_hPreviewFile, 0 );
+#else
+			SteamAPICall_t hCall = SteamRemoteStorage()->UGCDownload( details.m_hPreviewFile, 0 );
+#endif
 			m_WorkshopPreviewImageCallback[i].Set( hCall, this, &MainMenu::OnWorkshopPreviewImage );
 
 			if ( iCurrentWorkshopShowcase == i )
@@ -2106,7 +2206,11 @@ void MainMenu::OnWorkshopPreviewImage( RemoteStorageDownloadUGCResult_t *pParam,
 	if ( bIOFailure || pParam->m_eResult != k_EResultOK )
 		return;
 
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	Assert( pParam->m_nAppID == SteamUtils()->GetAppID() );
+	#else
+	Assert( pParam->m_nAppID == SteamUtils()->GetAppID() );
+	#endif
 
 	for ( int i = 0; i < NELEMS( m_hWorkshopTrendingPreview ); i++ )
 	{
@@ -2114,7 +2218,11 @@ void MainMenu::OnWorkshopPreviewImage( RemoteStorageDownloadUGCResult_t *pParam,
 			continue;
 
 		CUtlBuffer buf;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		int32 nBytesRead = SteamRemoteStorage()->UGCRead( pParam->m_hFile, buf.AccessForDirectRead( pParam->m_nSizeInBytes ), pParam->m_nSizeInBytes, 0, k_EUGCRead_Close );
+#else
+		int32 nBytesRead = SteamRemoteStorage()->UGCRead( pParam->m_hFile, buf.AccessForDirectRead( pParam->m_nSizeInBytes ), pParam->m_nSizeInBytes, 0, k_EUGCRead_Close );
+#endif
 		Assert( nBytesRead == pParam->m_nSizeInBytes );
 		buf.SeekPut( CUtlBuffer::SEEK_HEAD, nBytesRead );
 
@@ -2127,13 +2235,21 @@ void MainMenu::OnWorkshopPreviewImage( RemoteStorageDownloadUGCResult_t *pParam,
 	Assert( !"unexpected workshop preview image handle on main menu" );
 
 	// kill the file handle anyway
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamRemoteStorage()->UGCRead( pParam->m_hFile, NULL, 0, 0, k_EUGCRead_Close );
+#else
+	SteamRemoteStorage()->UGCRead( pParam->m_hFile, NULL, 0, 0, k_EUGCRead_Close );
+#endif
 }
 
 #ifndef _X360
 CON_COMMAND_F( openserverbrowser, "Opens server browser", 0 )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	bool isSteam = IsPC() && SteamFriends() && SteamUtils();
+#else
+	bool isSteam = IsPC() && SteamFriends() && SteamUtils();
+#endif
 	if ( isSteam )
 	{
 		if ( !ui_old_server_browser.GetBool() )

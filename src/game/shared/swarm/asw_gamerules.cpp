@@ -381,7 +381,11 @@ static void UpdateMatchmakingTagsCallback( IConVar *pConVar, const char *pOldVal
 	}
 
 	// mm_max_players gets updated after it's read for the lobby, so we need to update the slot count here as well.
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamMatchmaking()->SetLobbyMemberLimit( UTIL_RD_GetCurrentLobbyID(), gpGlobals->maxClients );
+#else
+	SteamMatchmaking()->SetLobbyMemberLimit( UTIL_RD_GetCurrentLobbyID(), gpGlobals->maxClients );
+#endif
 	UTIL_RD_UpdateCurrentLobbyData( "members:numSlots", gpGlobals->maxClients );
 
 	{
@@ -419,17 +423,34 @@ static void UpdateMatchmakingTagsCallback( IConVar *pConVar, const char *pOldVal
 	UTIL_RD_UpdateCurrentLobbyData( "system:map_version", GetClientWorldEntity()->m_nMapVersion );
 	UTIL_RD_UpdateCurrentLobbyData( "system:server_version", uint64_t( pAlienSwarm->m_iServerVersion ) );
 	UTIL_RD_UpdateCurrentLobbyData( "system:pure", sv_consistency.GetInt() );
-	if ( ISteamApps *pSteamApps = SteamApps() )
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
+	ISteamApps *pSteamApps = SteamApps();
+	#else
+	ISteamApps *pSteamApps = SteamApps();
+	#endif
+	if ( pSteamApps )
 	{
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		UTIL_RD_UpdateCurrentLobbyData( "system:game_build", pSteamApps->GetAppBuildId() );
+		#else
+		UTIL_RD_UpdateCurrentLobbyData( "system:game_build", pSteamApps->GetAppBuildId() );
+		#endif
 		char szBranch[256]{};
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pSteamApps->GetCurrentBetaName( szBranch, sizeof( szBranch ) );
+		#else
+		pSteamApps->GetCurrentBetaName( szBranch, sizeof( szBranch ) );
+		#endif
 		UTIL_RD_UpdateCurrentLobbyData( "system:game_branch", szBranch );
 
 		KeyValues::AutoDelete pUpdate( "update" );
 		pUpdate->SetString( "update/system/game_version", engine->GetProductVersionString() );
 		pUpdate->SetInt( "update/system/map_version", GetClientWorldEntity()->m_nMapVersion );
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pUpdate->SetInt( "update/system/game_build", pSteamApps->GetAppBuildId() );
+		#else
+		pUpdate->SetInt( "update/system/game_build", pSteamApps->GetAppBuildId() );
+		#endif
 		pUpdate->SetString( "update/system/game_branch", szBranch );
 		g_pMatchFramework->GetMatchSession()->UpdateSessionSettings( pUpdate );
 	}
@@ -3947,7 +3968,11 @@ void CAlienSwarm::OnSteamRelayNetworkStatusChanged( SteamRelayNetworkStatus_t *p
 	if ( !pParam->m_bPingMeasurementInProgress )
 	{
 		SteamNetworkPingLocation_t location;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		float flAge = SteamNetworkingUtils()->GetLocalPingLocation( location );
+#else
+		float flAge = SteamNetworkingUtils()->GetLocalPingLocation( location );
+#endif
 		if ( flAge >= 0 )
 		{
 			DevMsg( 2, "Updated server ping location. New age: %f\n", flAge );
@@ -3960,10 +3985,18 @@ void CAlienSwarm::Think()
 {
 	if ( m_bShuttingDown ) return;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !m_bObtainedPingLocation && SteamNetworkingUtils() )
+#else
+	if ( !m_bObtainedPingLocation && SteamNetworkingUtils() )
+#endif
 	{
 		SteamNetworkPingLocation_t location;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		float flAge = SteamNetworkingUtils()->GetLocalPingLocation( location );
+#else
+		float flAge = SteamNetworkingUtils()->GetLocalPingLocation( location );
+#endif
 		if ( flAge >= 0 )
 		{
 			SetPingLocation( location );
@@ -8990,10 +9023,18 @@ bool CAlienSwarm::IsOfflineGame()
 
 bool CAlienSwarm::IsAnniversaryWeek()
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamUtils *pUtils = SteamUtils();
+#else
+	ISteamUtils *pUtils = SteamUtils();
+#endif
 #ifdef GAME_DLL
 	if ( !pUtils )
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pUtils = SteamGameServerUtils();
+	#else
+		pUtils = SteamGameServerUtils();
+	#endif
 #endif
 	Assert( pUtils );
 	if ( !pUtils )
@@ -9011,7 +9052,11 @@ bool CAlienSwarm::IsAnniversaryWeek()
 	// Therefore, we are moving it to GMT and extending the week by 1 day to compensate.
 	// The anniversary week now takes place from the 20th to the 27th.
 	tm curtime;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	Plat_gmtime( pUtils->GetServerRealTime(), &curtime );
+#else
+	Plat_gmtime( pUtils->GetServerRealTime(), &curtime );
+#endif
 	return ( curtime.tm_mday >= 20 && curtime.tm_mday <= 27 ) && curtime.tm_mon == 3;
 }
 
@@ -10389,7 +10434,11 @@ bool CAlienSwarm::ShouldAllowMarineStrafePush(void)
 void CAlienSwarm::SetPingLocation( const SteamNetworkPingLocation_t & location )
 {
 	char szLocation[k_cchMaxSteamNetworkingPingLocationString];
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamNetworkingUtils()->ConvertPingLocationToString( location, szLocation, sizeof( szLocation ) );
+#else
+	SteamNetworkingUtils()->ConvertPingLocationToString( location, szLocation, sizeof( szLocation ) );
+#endif
 	m_bObtainedPingLocation = true;
 	Assert( V_strlen( szLocation ) < sizeof( m_szApproximatePingLocation ) );
 	if ( V_strlen( szLocation ) < sizeof( m_szApproximatePingLocation ) )

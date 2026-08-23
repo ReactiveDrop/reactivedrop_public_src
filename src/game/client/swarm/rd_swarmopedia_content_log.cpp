@@ -16,12 +16,28 @@ static void LoadSeenContent()
 	if ( s_bLoadedSeenContent )
 		return;
 
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamRemoteStorage *pRemoteStorage = SteamRemoteStorage();
+	#else
+	ISteamRemoteStorage *pRemoteStorage = SteamRemoteStorage();
+	#endif
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( pRemoteStorage && pRemoteStorage->IsCloudEnabledForApp() && pRemoteStorage->FileExists( "reactivedrop/cfg/swarmopedia_found.txt" ) )
+	#else
+	if ( pRemoteStorage && pRemoteStorage->IsCloudEnabledForApp() && pRemoteStorage->FileExists( "reactivedrop/cfg/swarmopedia_found.txt" ) )
+	#endif
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		int nSize = pRemoteStorage->GetFileSize( "reactivedrop/cfg/swarmopedia_found.txt" );
+#else
+		int nSize = pRemoteStorage->GetFileSize( "reactivedrop/cfg/swarmopedia_found.txt" );
+#endif
 		CUtlBuffer buf;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pRemoteStorage->FileRead( "reactivedrop/cfg/swarmopedia_found.txt", buf.AccessForDirectRead( nSize ), nSize );
+#else
+		pRemoteStorage->FileRead( "reactivedrop/cfg/swarmopedia_found.txt", buf.AccessForDirectRead( nSize ), nSize );
+#endif
 		g_pFullFileSystem->WriteFile( "cfg/swarmopedia_found.txt", "MOD", buf );
 	}
 
@@ -34,12 +50,24 @@ static void SaveSeenContent()
 {
 	s_pSwarmopediaSeenContent->SaveToFile( g_pFullFileSystem, "cfg/swarmopedia_found.txt", "MOD" );
 
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamRemoteStorage *pRemoteStorage = SteamRemoteStorage();
+	#else
+	ISteamRemoteStorage *pRemoteStorage = SteamRemoteStorage();
+	#endif
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( pRemoteStorage && pRemoteStorage->IsCloudEnabledForApp() )
+	#else
+	if ( pRemoteStorage && pRemoteStorage->IsCloudEnabledForApp() )
+	#endif
 	{
 		CUtlBuffer buf;
 		g_pFullFileSystem->ReadFile( "cfg/swarmopedia_found.txt", "MOD", buf );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pRemoteStorage->FileWrite( "reactivedrop/cfg/swarmopedia_found.txt", buf.Base(), buf.TellMaxPut() );
+#else
+		pRemoteStorage->FileWrite( "reactivedrop/cfg/swarmopedia_found.txt", buf.Base(), buf.TellMaxPut() );
+#endif
 
 		DevMsg( "Saved reactivedrop/cfg/swarmopedia_found.txt to cloud.\n" );
 	}

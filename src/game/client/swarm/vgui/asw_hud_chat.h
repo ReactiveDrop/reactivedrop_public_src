@@ -53,7 +53,11 @@ public:
 	vgui::Panel *m_pSwarmBackground;
 	vgui::Panel *m_pSwarmBackgroundInner;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	STEAM_CALLBACK( CHudChat, OnFloatingGamepadTextInputDismissed, FloatingGamepadTextInputDismissed_t )
+#else
+	STEAM_CALLBACK( CHudChat, OnFloatingGamepadTextInputDismissed, FloatingGamepadTextInputDismissed_t )
+#endif
 	{
 		StopMessageMode();
 	}

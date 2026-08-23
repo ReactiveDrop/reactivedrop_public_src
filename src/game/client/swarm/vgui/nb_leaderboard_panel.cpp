@@ -74,7 +74,11 @@ CNB_Leaderboard_Panel::CNB_Leaderboard_Panel( vgui::Panel *parent, const char *n
 		m_pLeaderboard->SetTitle( UTIL_RD_GetCurrentLobbyData( "game:missioninfo:displaytitle" ) );
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamAPICall_t hCall = SteamUserStats()->FindLeaderboard( szLeaderboardName );
+#else
+	SteamAPICall_t hCall = SteamUserStats()->FindLeaderboard( szLeaderboardName );
+#endif
 	m_LeaderboardFind.Set( hCall, this, &CNB_Leaderboard_Panel::LeaderboardFind );
 }
 
@@ -113,9 +117,17 @@ void CNB_Leaderboard_Panel::LeaderboardFind( LeaderboardFindResult_t *pResult, b
 		return;
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	m_pLeaderboard->SetDisplayType( SteamUserStats()->GetLeaderboardDisplayType( pResult->m_hSteamLeaderboard ) );
+#else
+	m_pLeaderboard->SetDisplayType( SteamUserStats()->GetLeaderboardDisplayType( pResult->m_hSteamLeaderboard ) );
+#endif
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamAPICall_t hCall = SteamUserStats()->DownloadLeaderboardEntries( pResult->m_hSteamLeaderboard, k_ELeaderboardDataRequestFriends, 0, 0 );
+#else
+	SteamAPICall_t hCall = SteamUserStats()->DownloadLeaderboardEntries( pResult->m_hSteamLeaderboard, k_ELeaderboardDataRequestFriends, 0, 0 );
+#endif
 	m_LeaderboardDownload.Set( hCall, this, &CNB_Leaderboard_Panel::LeaderboardDownload );
 }
 

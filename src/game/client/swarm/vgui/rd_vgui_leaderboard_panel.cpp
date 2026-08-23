@@ -44,7 +44,11 @@ void CReactiveDrop_VGUI_Leaderboard_Panel::SetTitle( const wchar_t *wszTitle )
 
 void CReactiveDrop_VGUI_Leaderboard_Panel::SetEntries( const CUtlVector<RD_LeaderboardEntry_t> & entries )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CSteamID localUserID = SteamUser()->GetSteamID();
+#else
+	CSteamID localUserID = SteamUser()->GetSteamID();
+#endif
 
 	m_gplLeaderboard->RemoveAllPanelItems();
 
@@ -174,7 +178,11 @@ void CReactiveDrop_VGUI_Leaderboard_Entry::SetEntry( const RD_LeaderboardEntry_t
 	m_imgAvatar->SetAvatarBySteamID( &steamIDCopy );
 
 	wchar_t wszName[k_cwchPersonaNameMax];
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	Q_UTF8ToUnicode( SteamFriends()->GetFriendPersonaName( entry.entry.m_steamIDUser ), wszName, sizeof( wszName ) );
+#else
+	Q_UTF8ToUnicode( SteamFriends()->GetFriendPersonaName( entry.entry.m_steamIDUser ), wszName, sizeof( wszName ) );
+#endif
 	g_RDTextFiltering.FilterTextName( wszName, entry.entry.m_steamIDUser );
 	m_lblName->SetText( wszName );
 

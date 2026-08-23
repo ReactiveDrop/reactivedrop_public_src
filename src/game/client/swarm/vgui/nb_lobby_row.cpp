@@ -505,17 +505,31 @@ void CNB_Lobby_Row::OnCommand( const char *command )
 	else if ( !Q_stricmp( command, "#L4D360UI_ViewSteamStats" ) )
 	{
 #if !defined( _X360 ) && !defined( NO_STEAM )
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( SteamUser() )
+#else
+		if ( SteamUser() )
+#endif
 		{
 			if ( developer.GetBool() )
 			{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				Msg( "Local player SteamID = %I64u\n", SteamUser()->GetSteamID().ConvertToUint64() );
+#else
+				Msg( "Local player SteamID = %I64u\n", SteamUser()->GetSteamID().ConvertToUint64() );
+#endif
 				Msg( "Activating stats for SteamID = %I64u\n", Briefing()->GetCommanderSteamID( m_nLobbySlot ).ConvertToUint64() );
 			}
 			char statsWeb[256];
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			Q_snprintf( statsWeb, sizeof( statsWeb ), "https://stats.reactivedrop.com/profiles/%I64u?lang=%s&utm_source=briefing",
 				Briefing()->GetCommanderSteamID( m_nLobbySlot ).ConvertToUint64(),
 				SteamApps()->GetCurrentGameLanguage() );
+#else
+			Q_snprintf( statsWeb, sizeof( statsWeb ), "https://stats.reactivedrop.com/profiles/%I64u?lang=%s&utm_source=briefing",
+				Briefing()->GetCommanderSteamID( m_nLobbySlot ).ConvertToUint64(),
+				SteamApps()->GetCurrentGameLanguage() );
+#endif
 			BaseModUI::CUIGameData::Get()->ExecuteOverlayUrl( statsWeb );
 		}
 #endif

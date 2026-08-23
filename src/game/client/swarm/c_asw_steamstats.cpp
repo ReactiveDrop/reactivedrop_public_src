@@ -35,9 +35,17 @@ static void ValidateRDRepresentedCountry( IConVar *var, const char *pOldValue, f
 	switch ( V_strlen( ref.GetString() ) )
 	{
 	case 0:
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( SteamUtils() )
+		#else
+		if ( SteamUtils() )
+		#endif
 		{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			const char *szCountry = SteamUtils()->GetIPCountry();
+#else
+			const char *szCountry = SteamUtils()->GetIPCountry();
+#endif
 			if ( V_strlen( szCountry ) == 2 )
 			{
 				ref.SetValue( szCountry );
@@ -58,6 +66,7 @@ ConVar rd_represented_country( "rd_represented_country", "", FCVAR_USERINFO, "If
 
 namespace 
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 #define FETCH_STEAM_STATS( apiname, membername ) \
 	{ const char * szApiName = apiname; \
 	if( !SteamUserStats()->GetUserStat( playerSteamID, szApiName, &membername ) ) \
@@ -65,10 +74,25 @@ namespace
 		bOK = false; \
 		DevMsg( "STEAMSTATS: Failed to retrieve stat %s.\n", szApiName ); \
 } }
+#else
+#define FETCH_STEAM_STATS( apiname, membername ) \
+	{ const char * szApiName = apiname; \
+	if( !SteamUserStats()->GetUserStat( playerSteamID, szApiName, &membername ) ) \
+	{ \
+		bOK = false; \
+		DevMsg( "STEAMSTATS: Failed to retrieve stat %s.\n", szApiName ); \
+} }
+#endif
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 #define SEND_STEAM_STATS( apiname, membername ) \
 	{ const char * szApiName = apiname; \
 	SteamUserStats()->SetStat( szApiName, membername ); }
+#else
+#define SEND_STEAM_STATS( apiname, membername ) \
+	{ const char * szApiName = apiname; \
+	SteamUserStats()->SetStat( szApiName, membername ); }
+#endif
 
 	// Define some strings used by the stats API
 	const char* szGamesTotal = ".games.total";
@@ -539,10 +563,18 @@ static void __MsgFunc_RDAlienKillStat( bf_read &msg )
 	}
 
 	int32_t nCount = 0;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( SteamUserStats() && SteamUserStats()->GetStat( szApiName, &nCount ) )
+#else
+	if ( SteamUserStats() && SteamUserStats()->GetStat( szApiName, &nCount ) )
+#endif
 	{
 		RD_Swarmopedia::CheckArticleUnlock( szApiName, nCount, nCount + 1 );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		SteamUserStats()->SetStat( szApiName, nCount + 1 );
+#else
+		SteamUserStats()->SetStat( szApiName, nCount + 1 );
+#endif
 	}
 	else
 	{
@@ -563,9 +595,17 @@ static void __MsgFunc_RDCauseOfDeath( bf_read &msg )
 	const char *szApiName = g_szDeathCauseStatName[iCause];
 
 	int32_t nCount = 0;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( SteamUserStats() && SteamUserStats()->GetStat( szApiName, &nCount ) )
+#else
+	if ( SteamUserStats() && SteamUserStats()->GetStat( szApiName, &nCount ) )
+#endif
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		SteamUserStats()->SetStat( szApiName, nCount + 1 );
+#else
+		SteamUserStats()->SetStat( szApiName, nCount + 1 );
+#endif
 	}
 	else
 	{
@@ -790,7 +830,11 @@ bool CASW_Steamstats::FetchStats( CSteamID playerSteamID, CASW_Player *pPlayer )
 
 void CASW_Steamstats::PrepStatsForSend( CASW_Player *pPlayer )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if( !SteamUserStats() )
+#else
+	if( !SteamUserStats() )
+#endif
 		return;
 
 	if ( !GetDebriefStats() || !ASWGameResource() || !ASWGameRules() )
@@ -1047,16 +1091,36 @@ void CASW_Steamstats::PrepStatsForSend( CASW_Player *pPlayer )
 
 	// Check whether this is the first time we've played today.
 	int32_t iLastPlayedDay = 0;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( SteamUserStats()->GetStat( "last_played_day", &iLastPlayedDay ) )
+#else
+	if ( SteamUserStats()->GetStat( "last_played_day", &iLastPlayedDay ) )
+#endif
 	{
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		int32_t iToday = SteamUtils()->GetServerRealTime() / 86400u;
+	#else
+		int32_t iToday = SteamUtils()->GetServerRealTime() / 86400u;
+	#endif
 		if ( iLastPlayedDay < iToday )
 		{
 			int32_t iTotalDaysPlayed = 0;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			if ( SteamUserStats()->GetStat( "played_on_days", &iTotalDaysPlayed ) )
+#else
+			if ( SteamUserStats()->GetStat( "played_on_days", &iTotalDaysPlayed ) )
+#endif
 			{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				SteamUserStats()->SetStat( "last_played_day", iToday );
+#else
+				SteamUserStats()->SetStat( "last_played_day", iToday );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				SteamUserStats()->SetStat( "played_on_days", iTotalDaysPlayed + 1 );
+#else
+				SteamUserStats()->SetStat( "played_on_days", iTotalDaysPlayed + 1 );
+#endif
 			}
 		}
 	}
@@ -1065,7 +1129,11 @@ void CASW_Steamstats::PrepStatsForSend( CASW_Player *pPlayer )
 	ReactiveDropInventory::CheckPlaytimeItemGenerators();
 
 	char szBetaBranch[256]{};
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( SteamInventory() && SteamApps()->GetCurrentBetaName( szBetaBranch, sizeof( szBetaBranch ) ) && !V_stricmp( szBetaBranch, "beta" ) )
+#else
+	if ( SteamInventory() && SteamApps()->GetCurrentBetaName( szBetaBranch, sizeof( szBetaBranch ) ) && !V_stricmp( szBetaBranch, "beta" ) )
+#endif
 	{
 		// beta tester medal
 		ReactiveDropInventory::AddPromoItem( 13 );
@@ -1248,7 +1316,11 @@ bool DifficultyStats_t::FetchDifficultyStats( CSteamID playerSteamID, int iDiffi
 
 void DifficultyStats_t::PrepStatsForSend( CASW_Player *pPlayer )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if( !SteamUserStats() )
+#else
+	if( !SteamUserStats() )
+#endif
 		return;
 
 	// Update stats from the briefing screen
@@ -1532,7 +1604,11 @@ static uint32 GetGameVersion()
 
 void CASW_Steamstats::PrepStatsForSend_Leaderboard( CASW_Player *pPlayer, bool bUnofficial )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !SteamUserStats() || ASWDeathmatchMode() || !ASWGameRules() || !ASWGameResource() || !GetDebriefStats() || engine->IsPlayingDemo() || ASWGameRules()->m_bCheated )
+#else
+	if ( !SteamUserStats() || ASWDeathmatchMode() || !ASWGameRules() || !ASWGameResource() || !GetDebriefStats() || engine->IsPlayingDemo() || ASWGameRules()->m_bCheated )
+#endif
 	{
 		return;
 	}
@@ -1671,7 +1747,11 @@ void CASW_Steamstats::PrepStatsForSend_Leaderboard( CASW_Player *pPlayer, bool b
 		m_LeaderboardScoreDetails.m_iSquadSecondaryWeapon[i] = 0;
 		m_LeaderboardScoreDetails.m_iSquadExtraWeapon[i] = 0;
 	}
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	m_LeaderboardScoreDetails.m_iTimestamp = SteamUtils()->GetServerRealTime();
+	#else
+	m_LeaderboardScoreDetails.m_iTimestamp = SteamUtils()->GetServerRealTime();
+	#endif
 	const char *pszCountry = rd_represented_country.GetString();
 	m_LeaderboardScoreDetails.m_CountryCode[0] = pszCountry[0];
 	m_LeaderboardScoreDetails.m_CountryCode[1] = pszCountry[1];
@@ -1692,7 +1772,11 @@ void CASW_Steamstats::PrepStatsForSend_Leaderboard( CASW_Player *pPlayer, bool b
 
 	if ( IsLBWhitelisted( szLeaderboardName ) )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		SteamAPICall_t hAPICall = SteamUserStats()->FindOrCreateLeaderboard( szLeaderboardName, eSortMethod, eDisplayType );
+#else
+		SteamAPICall_t hAPICall = SteamUserStats()->FindOrCreateLeaderboard( szLeaderboardName, eSortMethod, eDisplayType );
+#endif
 		m_LeaderboardFindResultCallback.Set( hAPICall, this, &CASW_Steamstats::LeaderboardFindResultCallback );
 	}
 	else if ( asw_stats_leaderboard_debug.GetBool() )
@@ -1702,7 +1786,11 @@ void CASW_Steamstats::PrepStatsForSend_Leaderboard( CASW_Player *pPlayer, bool b
 
 	if ( IsLBWhitelisted( szDifficultyLeaderboardName ) )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		SteamAPICall_t hAPICall = SteamUserStats()->FindOrCreateLeaderboard( szDifficultyLeaderboardName, eSortMethod, eDisplayType );
+#else
+		SteamAPICall_t hAPICall = SteamUserStats()->FindOrCreateLeaderboard( szDifficultyLeaderboardName, eSortMethod, eDisplayType );
+#endif
 		m_LeaderboardDifficultyFindResultCallback.Set( hAPICall, this, &CASW_Steamstats::LeaderboardDifficultyFindResultCallback );
 	}
 	else if ( asw_stats_leaderboard_debug.GetBool() )
@@ -1737,8 +1825,13 @@ void CASW_Steamstats::LeaderboardFindResultCallback( LeaderboardFindResult_t *pR
 		pMissionCompletePanel->OnLeaderboardFound( pResult->m_hSteamLeaderboard );
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamAPICall_t hAPICall = SteamUserStats()->UploadLeaderboardScore( pResult->m_hSteamLeaderboard, k_ELeaderboardUploadScoreMethodKeepBest,
 		m_iLeaderboardScore, reinterpret_cast<const int32 *>( &m_LeaderboardScoreDetails ), sizeof( m_LeaderboardScoreDetails ) / sizeof( int32 ) );
+#else
+	SteamAPICall_t hAPICall = SteamUserStats()->UploadLeaderboardScore( pResult->m_hSteamLeaderboard, k_ELeaderboardUploadScoreMethodKeepBest,
+		m_iLeaderboardScore, reinterpret_cast<const int32 *>( &m_LeaderboardScoreDetails ), sizeof( m_LeaderboardScoreDetails ) / sizeof( int32 ) );
+#endif
 	m_LeaderboardScoreUploadedCallback.Set( hAPICall, this, &CASW_Steamstats::LeaderboardScoreUploadedCallback );
 }
 
@@ -1758,8 +1851,13 @@ void CASW_Steamstats::LeaderboardDifficultyFindResultCallback( LeaderboardFindRe
 		DevMsg( "Sending leaderboard entry to (difficulty) leaderboard ID: %llu\n", pResult->m_hSteamLeaderboard );
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamAPICall_t hAPICall = SteamUserStats()->UploadLeaderboardScore( pResult->m_hSteamLeaderboard, k_ELeaderboardUploadScoreMethodKeepBest,
 		m_iLeaderboardScore, reinterpret_cast<const int32 *>( &m_LeaderboardScoreDetails ), sizeof( m_LeaderboardScoreDetails ) / sizeof( int32 ) );
+#else
+	SteamAPICall_t hAPICall = SteamUserStats()->UploadLeaderboardScore( pResult->m_hSteamLeaderboard, k_ELeaderboardUploadScoreMethodKeepBest,
+		m_iLeaderboardScore, reinterpret_cast<const int32 *>( &m_LeaderboardScoreDetails ), sizeof( m_LeaderboardScoreDetails ) / sizeof( int32 ) );
+#endif
 	m_LeaderboardDifficultyScoreUploadedCallback.Set( hAPICall, this, &CASW_Steamstats::LeaderboardDifficultyScoreUploadedCallback );
 }
 
@@ -1782,7 +1880,11 @@ void CASW_Steamstats::LeaderboardScoreUploadedCallback( LeaderboardScoreUploaded
 	if ( pMissionCompletePanel && pResult->m_bScoreChanged )
 	{
 		RD_LeaderboardEntry_t entry;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		entry.entry.m_steamIDUser = SteamUser()->GetSteamID();
+#else
+		entry.entry.m_steamIDUser = SteamUser()->GetSteamID();
+#endif
 		entry.entry.m_nGlobalRank = pResult->m_nGlobalRankNew;
 		entry.entry.m_nScore = pResult->m_nScore;
 		entry.entry.m_cDetails = sizeof( LeaderboardScoreDetails_v2_t ) / sizeof( int32 );
@@ -1883,7 +1985,11 @@ void CASW_Steamstats::ReadDownloadedLeaderboard( CUtlVector<RD_LeaderboardEntry_
 
 	for ( int i = 0; i < nCount; i++ )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		SteamUserStats()->GetDownloadedLeaderboardEntry( hEntries, i, &entries[i].entry, reinterpret_cast<int32 *>( &entries[i].details ), sizeof( entries[i].details ) / sizeof( int32 ) );
+#else
+		SteamUserStats()->GetDownloadedLeaderboardEntry( hEntries, i, &entries[i].entry, reinterpret_cast<int32 *>( &entries[i].details ), sizeof( entries[i].details ) / sizeof( int32 ) );
+#endif
 	}
 }
 
@@ -1899,19 +2005,39 @@ void CASW_Steamstats::ReadDownloadedLeaderboard( CUtlVector<RD_LeaderboardEntry_
 
 bool CASW_Steamstats::AreGlobalStatsReady()
 {
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamUtils *pUtils = SteamUtils();
+	#else
+	ISteamUtils *pUtils = SteamUtils();
+	#endif
 	Assert( pUtils );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamUserStats *pUserStats = SteamUserStats();
+#else
+	ISteamUserStats *pUserStats = SteamUserStats();
+#endif
 	Assert( pUserStats );
 
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !m_GlobalStatsReceivedCallback.IsActive() && pUtils && pUserStats && pUtils->GetServerRealTime() >= m_iNextGlobalStatsRefresh )
+	#else
+	if ( !m_GlobalStatsReceivedCallback.IsActive() && pUtils && pUserStats && pUtils->GetServerRealTime() >= m_iNextGlobalStatsRefresh )
+	#endif
 	{
 		// main menu ticker feed requires 60 days, so no point in requesting a variable amount
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		SteamAPICall_t hCall = pUserStats->RequestGlobalStats( 60 );
+#else
+		SteamAPICall_t hCall = pUserStats->RequestGlobalStats( 60 );
+#endif
 		m_GlobalStatsReceivedCallback.Set( hCall, this, &CASW_Steamstats::GlobalStatsReceivedCallback );
 		// if our request fails for some reason, don't request again for 15 minutes
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		m_iNextGlobalStatsRefresh = pUtils->GetServerRealTime() + 900;
+	#else
+		m_iNextGlobalStatsRefresh = pUtils->GetServerRealTime() + 900;
+	#endif
 	}
 
 	return m_iGlobalStatsReceived != 0;
@@ -2083,7 +2209,11 @@ void CASW_Steamstats::GlobalStatsReceivedCallback( GlobalStatsReceived_t *pResul
 	if ( !bIOFailure && pResult->m_eResult == k_EResultOK )
 	{
 		// if we successfully retrieve stats, allow refreshing after a minute.
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		m_iNextGlobalStatsRefresh = SteamUtils()->GetServerRealTime() + 60;
+	#else
+		m_iNextGlobalStatsRefresh = SteamUtils()->GetServerRealTime() + 60;
+	#endif
 		m_iGlobalStatsReceived++;
 	}
 	else

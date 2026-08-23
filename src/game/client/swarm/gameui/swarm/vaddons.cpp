@@ -272,7 +272,11 @@ void AddonListItem::ShowWorkshopStatistic()
 		}
 		case 1:
 		{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			V_UTF8ToUnicode( SteamFriends() ? SteamFriends()->GetFriendPersonaName( item.details.m_ulSteamIDOwner ) : "?", wszParameter1, sizeof( wszParameter1 ) );
+#else
+			V_UTF8ToUnicode( SteamFriends() ? SteamFriends()->GetFriendPersonaName( item.details.m_ulSteamIDOwner ) : "?", wszParameter1, sizeof( wszParameter1 ) );
+#endif
 			pszTranslationKey = "#workshop_stat_author";
 			break;
 		}
@@ -367,11 +371,19 @@ void AddonListItem::Paint()
 		int nPanelWide, nPanelTall;
 		GetSize( nPanelWide, nPanelTall );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		uint32 nState = SteamUGC()->GetItemState( m_nPublishedFileId );
+#else
+		uint32 nState = SteamUGC()->GetItemState( m_nPublishedFileId );
+#endif
 		if ( nState & k_EItemStateDownloading )
 		{
 			uint64 nBytesDownloaded, nBytesTotal;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			if ( SteamUGC()->GetItemDownloadInfo( m_nPublishedFileId, &nBytesDownloaded, &nBytesTotal ) )
+#else
+			if ( SteamUGC()->GetItemDownloadInfo( m_nPublishedFileId, &nBytesDownloaded, &nBytesTotal ) )
+#endif
 			{
 				surface()->DrawSetColor( Color( 169, 213, 255, 128 ) );
 				surface()->DrawFilledRect( 0, 0, 10 + ( nPanelWide - 10 ) * nBytesDownloaded / nBytesTotal, nPanelTall );
@@ -945,7 +957,11 @@ void Addons::SetDetailsUIForWorkshopItem( PublishedFileId_t id )
 void Addons::SetDetailsUIForWorkshopItem( const CReactiveDropWorkshop::WorkshopItem_t &item )
 {
 	wchar_t wsAuthorName[k_cwchPersonaNameMax];
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	V_UTF8ToUnicode( SteamFriends()->GetFriendPersonaName( item.details.m_ulSteamIDOwner ), wsAuthorName, sizeof( wsAuthorName ) );
+	#else
+	V_UTF8ToUnicode( SteamFriends()->GetFriendPersonaName( item.details.m_ulSteamIDOwner ), wsAuthorName, sizeof( wsAuthorName ) );
+	#endif
 
 	wchar_t wsAuthorLabel[130];
 	V_snwprintf( wsAuthorLabel, ARRAYSIZE( wsAuthorLabel ), L"%s%s", g_pVGuiLocalize->Find( "#L4D360UI_Addon_By" ), wsAuthorName );

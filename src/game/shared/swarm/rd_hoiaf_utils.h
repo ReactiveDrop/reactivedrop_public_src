@@ -121,7 +121,11 @@ private:
 
 	KeyValues::AutoDelete m_pIAFIntel;
 	HTTPRequestHandle m_hIAFIntelRefreshRequest{ INVALID_HTTPREQUEST_HANDLE };
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CCallResult<CRD_HoIAF_System, HTTPRequestCompleted_t> m_IAFIntelRefresh;
+#else
+	CCallResult<CRD_HoIAF_System, HTTPRequestCompleted_t> m_IAFIntelRefresh;
+#endif
 	int m_iExponentialBackoff{};
 	uint32_t m_iBackoffUntil{};
 
@@ -143,7 +147,11 @@ private:
 		HTTPRequestHandle m_hTextureRequest{ INVALID_HTTPREQUEST_HANDLE };
 		void OnHTTPRequestCompleted( HTTPRequestCompleted_t *pParam, bool bIOFailure );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		CCallResult<FeaturedNews_t, HTTPRequestCompleted_t> m_TextureRequestFinished;
+#else
+		CCallResult<FeaturedNews_t, HTTPRequestCompleted_t> m_TextureRequestFinished;
+#endif
 #endif
 	};
 	CUtlVectorAutoPurge<FeaturedNews_t *> m_FeaturedNews;

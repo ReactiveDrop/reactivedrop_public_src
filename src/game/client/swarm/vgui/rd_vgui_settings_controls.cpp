@@ -104,7 +104,11 @@ void CRD_VGUI_Bind::OnKeyCodeTyped( vgui::KeyCode keycode )
 	switch ( code )
 	{
 	case KEY_XBUTTON_A:
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !SteamInput() || !SteamInput()->ShowBindingPanel( g_RD_Steam_Input.m_hLastControllerWithEvent ) )
+#else
+		if ( !SteamInput() || !SteamInput()->ShowBindingPanel( g_RD_Steam_Input.m_hLastControllerWithEvent ) )
+#endif
 		{
 			CBaseModPanel::GetSingleton().PlayUISound( UISOUND_INVALID );
 		}
@@ -129,7 +133,11 @@ void CRD_VGUI_Bind::OnMouseReleased( vgui::MouseCode code )
 
 		if ( m_pPnlControllerIcon->IsCursorOver() && g_RD_Steam_Input.Key_LookupBindingEx( m_szBind, -1, 0, 1 ) )
 		{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			if ( !SteamInput() || !SteamInput()->ShowBindingPanel( g_RD_Steam_Input.m_hLastControllerWithEvent ) )
+#else
+			if ( !SteamInput() || !SteamInput()->ShowBindingPanel( g_RD_Steam_Input.m_hLastControllerWithEvent ) )
+#endif
 			{
 				CBaseModPanel::GetSingleton().PlayUISound( UISOUND_INVALID );
 			}
@@ -423,15 +431,27 @@ void CRD_VGUI_Settings_Controls::OnThink()
 	EInputActionOrigin eMove = g_RD_Steam_Input.OriginFromPlaceholderString( g_RD_Steam_Input.Key_LookupBindingEx( "xmove", -1, 0, 1 ) );
 	EInputActionOrigin eLook = g_RD_Steam_Input.OriginFromPlaceholderString( g_RD_Steam_Input.Key_LookupBindingEx( "xlook", -1, 0, 1 ) );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !SteamInput() || ( eMove == k_EInputActionOrigin_None && eLook == k_EInputActionOrigin_None ) )
+#else
+	if ( !SteamInput() || ( eMove == k_EInputActionOrigin_None && eLook == k_EInputActionOrigin_None ) )
+#endif
 	{
 		m_pLblLeftStickAction->SetVisible( false );
 		m_pLblRightStickAction->SetVisible( false );
 	}
 	else
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		EInputActionOrigin eDeckMove = SteamInput()->TranslateActionOrigin( k_ESteamInputType_SteamDeckController, eMove );
+#else
+		EInputActionOrigin eDeckMove = SteamInput()->TranslateActionOrigin( k_ESteamInputType_SteamDeckController, eMove );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		EInputActionOrigin eDeckLook = SteamInput()->TranslateActionOrigin( k_ESteamInputType_SteamDeckController, eLook );
+#else
+		EInputActionOrigin eDeckLook = SteamInput()->TranslateActionOrigin( k_ESteamInputType_SteamDeckController, eLook );
+#endif
 
 		m_bMoveStickLeft = eDeckMove == k_EInputActionOrigin_SteamDeck_LeftStick_Move || eDeckMove == k_EInputActionOrigin_SteamDeck_LeftPad_Swipe;
 		m_bMoveStickRight = eDeckMove == k_EInputActionOrigin_SteamDeck_RightStick_Move || eDeckMove == k_EInputActionOrigin_SteamDeck_RightPad_Swipe;

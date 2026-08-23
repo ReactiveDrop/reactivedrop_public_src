@@ -136,14 +136,26 @@ void CRD_VGUI_Settings_Options_2::Activate()
 
 	m_pSettingSpeedTimerColor->SetEnabled( rd_draw_timer.GetBool() );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamUserStats *pUserStats = SteamUserStats();
+#else
+	ISteamUserStats *pUserStats = SteamUserStats();
+#endif
 	Assert( pUserStats );
 	int32_t iStatsOptOut = 0;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !m_pSettingLeaderboardPrivateStats->IsEnabled() && pUserStats && pUserStats->GetStat( "stats_display_opt_out", &iStatsOptOut ) )
 	{
 		m_pSettingLeaderboardPrivateStats->SetCurrentSliderValue( iStatsOptOut );
 		m_pSettingLeaderboardPrivateStats->SetEnabled( true );
 	}
+#else
+	if ( !m_pSettingLeaderboardPrivateStats->IsEnabled() && pUserStats && pUserStats->GetStat( "stats_display_opt_out", &iStatsOptOut ) )
+	{
+		m_pSettingLeaderboardPrivateStats->SetCurrentSliderValue( iStatsOptOut );
+		m_pSettingLeaderboardPrivateStats->SetEnabled( true );
+	}
+#endif
 
 	// not ready yet
 	m_pSettingStrangeRankUp->SetVisible( false );
@@ -153,12 +165,17 @@ void CRD_VGUI_Settings_Options_2::OnCurrentOptionChanged( vgui::Panel *panel )
 {
 	if ( panel == m_pSettingLeaderboardPrivateStats )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamUserStats *pUserStats = SteamUserStats();
+#else
+		ISteamUserStats *pUserStats = SteamUserStats();
+#endif
 		Assert( pUserStats );
 		if ( pUserStats )
 		{
 			int32_t iStatsOptOutNew = int32_t( m_pSettingLeaderboardPrivateStats->GetCurrentSliderValue() );
 			int32_t iStatsOptOutOld = 0;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			if ( pUserStats->GetStat( "stats_display_opt_out", &iStatsOptOutOld ) && iStatsOptOutOld != iStatsOptOutNew )
 			{
 				Msg( "Setting stats_display_opt_out to %d\n", iStatsOptOutNew );
@@ -166,6 +183,15 @@ void CRD_VGUI_Settings_Options_2::OnCurrentOptionChanged( vgui::Panel *panel )
 				pUserStats->StoreStats();
 				m_pSettingLeaderboardPrivateStats->SetEnabled( false );
 			}
+#else
+			if ( pUserStats->GetStat( "stats_display_opt_out", &iStatsOptOutOld ) && iStatsOptOutOld != iStatsOptOutNew )
+			{
+				Msg( "Setting stats_display_opt_out to %d\n", iStatsOptOutNew );
+				pUserStats->SetStat( "stats_display_opt_out", iStatsOptOutNew );
+				pUserStats->StoreStats();
+				m_pSettingLeaderboardPrivateStats->SetEnabled( false );
+			}
+#endif
 		}
 	}
 

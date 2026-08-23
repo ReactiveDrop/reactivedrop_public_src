@@ -220,9 +220,17 @@ void CASW_VGUI_Computer_Mail::SetLabelsFromMailFile()
 	if ( pArea->m_MailFile == NULL_STRING )
 		return;
 	engine->GetUILanguage( uilanguage, sizeof( uilanguage ) );
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( SteamApps() )
+	#else
+	if ( SteamApps() )
+	#endif
 	{
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		V_strncpy( uilanguage, SteamApps()->GetCurrentGameLanguage(), sizeof( uilanguage ) );
+	#else
+		V_strncpy( uilanguage, SteamApps()->GetCurrentGameLanguage(), sizeof( uilanguage ) );
+	#endif
 	}
 
 	V_snprintf( buffer, sizeof( buffer ), "resource/mail/%s_%s.txt", pszMailFile, uilanguage );

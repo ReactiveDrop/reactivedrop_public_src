@@ -327,8 +327,16 @@ void CampaignPanel::OnThink()
 	if ( !Briefing() )
 		return;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamFriends *pSteamFriends = SteamFriends();
+#else
+	ISteamFriends *pSteamFriends = SteamFriends();
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	m_pFriendsButton->SetVisible( ( pSteamFriends && pSteamFriends->GetFriendCount( k_EFriendFlagImmediate ) > 0 ) && !( ASWGameResource() && ASWGameResource()->IsOfflineGame() ) );
+#else
+	m_pFriendsButton->SetVisible( ( pSteamFriends && pSteamFriends->GetFriendCount( k_EFriendFlagImmediate ) > 0 ) && !( ASWGameResource() && ASWGameResource()->IsOfflineGame() ) );
+#endif
 	m_pChangeMissionButton->SetVisible( Briefing()->IsLocalPlayerLeader() || gpGlobals->maxClients == 1 );
 
 	const char *pszLeaderName = Briefing()->GetLeaderName();

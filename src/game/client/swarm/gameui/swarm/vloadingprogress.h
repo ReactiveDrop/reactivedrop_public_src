@@ -79,9 +79,17 @@ private:
 
 	bool				m_bFullscreenPoster;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CCallResult<LoadingProgress, LeaderboardFindResult_t> m_LeaderboardFind;
+#else
+	CCallResult<LoadingProgress, LeaderboardFindResult_t> m_LeaderboardFind;
+#endif
 	void LeaderboardFind( LeaderboardFindResult_t *pResult, bool bIOError );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CCallResult<LoadingProgress, LeaderboardScoresDownloaded_t> m_LeaderboardDownloaded;
+#else
+	CCallResult<LoadingProgress, LeaderboardScoresDownloaded_t> m_LeaderboardDownloaded;
+#endif
 	void LeaderboardDownloaded( LeaderboardScoresDownloaded_t *pResult, bool bIOError );
 
 	// Poster Data

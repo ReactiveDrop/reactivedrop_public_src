@@ -355,8 +355,16 @@ public:
 	CUtlVector<int> m_aNonLocalPlayerAchievementsEarned;	// list of achievements earned by this non-local player
 
 #if !defined(NO_STEAM)
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	STEAM_CALLBACK( C_ASW_Player, Steam_OnUserStatsReceived, UserStatsReceived_t );
+#else
+	STEAM_CALLBACK( C_ASW_Player, Steam_OnUserStatsReceived, UserStatsReceived_t );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	STEAM_CALLBACK( C_ASW_Player, Steam_OnUserStatsStored, UserStatsStored_t );
+#else
+	STEAM_CALLBACK( C_ASW_Player, Steam_OnUserStatsStored, UserStatsStored_t );
+#endif
 #endif
 
 	int m_iChallengeScratch;

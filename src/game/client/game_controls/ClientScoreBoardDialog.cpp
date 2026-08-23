@@ -551,17 +551,29 @@ bool CClientScoreBoardDialog::GetPlayerScoreInfo(int playerIndex, KeyValues *kv)
 void CClientScoreBoardDialog::UpdatePlayerAvatar( int playerIndex, KeyValues *kv )
 {
 	// Update their avatar
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( kv && ShowAvatars() && SteamFriends() && SteamUtils() )
+#else
+	if ( kv && ShowAvatars() && SteamFriends() && SteamUtils() )
+#endif
 	{
 		player_info_t pi;
 		if ( engine->GetPlayerInfo( playerIndex, &pi ) )
 		{
 			if ( pi.friendsID )
 			{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				CSteamID steamIDForPlayer( pi.friendsID, 1, SteamUtils()->GetConnectedUniverse(), k_EAccountTypeIndividual );
+#else
+				CSteamID steamIDForPlayer( pi.friendsID, 1, SteamUtils()->GetConnectedUniverse(), k_EAccountTypeIndividual );
+#endif
 
 				// See if the avatar's changed
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				int iAvatar = SteamFriends()->GetSmallFriendAvatar( steamIDForPlayer );
+#else
+				int iAvatar = SteamFriends()->GetSmallFriendAvatar( steamIDForPlayer );
+#endif
 				if ( m_iImageAvatars[playerIndex] != iAvatar )
 				{
 					m_iImageAvatars[playerIndex] = iAvatar;

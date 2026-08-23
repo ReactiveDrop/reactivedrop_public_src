@@ -18,7 +18,11 @@ void ReactiveDropInventory::ItemInstance_t::FormatDescription( wchar_t *wszBuf, 
 	if ( bIsSteamCommunityDesc && DynamicProps.GetNumStrings() == 0 )
 		return;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamInventory *pInventory = SteamInventory();
+#else
+	ISteamInventory *pInventory = SteamInventory();
+#endif
 	Assert( pInventory );
 	if ( !pInventory )
 		return;

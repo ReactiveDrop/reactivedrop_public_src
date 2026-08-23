@@ -100,11 +100,19 @@ public:
 	int m_iSelectedRecipe;
 	int m_iLastFullInventoryUpdates;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	STEAM_CALLBACK( CRD_Crafting_Panel, OnSteamServersConnected, SteamServersConnected_t )
 	{
 		// Automatically transition from "you can't craft because you're offline" to "crafting is ready", but don't care about the other way around (the crafting attempt will simply result in an error).
 		UpdateCraftState();
 	}
+#else
+	STEAM_CALLBACK( CRD_Crafting_Panel, OnSteamServersConnected, SteamServersConnected_t )
+	{
+		// Automatically transition from "you can't craft because you're offline" to "crafting is ready", but don't care about the other way around (the crafting attempt will simply result in an error).
+		UpdateCraftState();
+	}
+#endif
 };
 
 namespace BaseModUI

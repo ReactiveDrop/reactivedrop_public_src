@@ -150,9 +150,17 @@ CBaseModPanel::CBaseModPanel(): BaseClass(0, "CBaseModPanel"),
 {
 #if !defined( _X360 ) && !defined( NOSTEAM )
 	// Set Steam overlay position
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( SteamUtils() )
+	#else
+	if ( SteamUtils() )
+	#endif
 	{
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		SteamUtils()->SetOverlayNotificationPosition( k_EPositionTopRight );
+	#else
+		SteamUtils()->SetOverlayNotificationPosition( k_EPositionTopRight );
+	#endif
 	}
 #endif
 

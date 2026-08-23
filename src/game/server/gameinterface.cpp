@@ -614,6 +614,12 @@ static bool InitGameSystems( CreateInterfaceFn appSystemFactory )
 CServerGameDLL g_ServerGameDLL;
 EXPOSE_SINGLE_INTERFACE_GLOBALVAR(CServerGameDLL, IServerGameDLL, INTERFACEVERSION_SERVERGAMEDLL, g_ServerGameDLL);
 
+#ifndef STEAMAPPS_INTERFACE_VERSION008
+#ifndef CLIENT_DLL
+static bool s_bSteamGameServerInitialized = false;
+#endif
+#endif
+
 bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory, 
 		CreateInterfaceFn physicsFactory, CreateInterfaceFn fileSystemFactory, 
 		CGlobalVars *pGlobals)
@@ -624,8 +630,15 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 
 	// initialize a game server. this call was in engine before, but not anymore. we need to call it from somewhere
 	// initialize the gameserver, srcds already binds to the correct ip and ports, so we can just pass 0 here to all parameters
-	bool r = SteamGameServer_Init(0, 0, 0, eServerModeAuthenticationAndSecure, "7149");
-	ConMsg("StartGameServer_Init resulted in %d\n", r);
+	if ( !s_bSteamGameServerInitialized )
+	{
+		bool r = SteamGameServer_Init(0, 0, 0, eServerModeAuthenticationAndSecure, "7149");
+		ConMsg("StartGameServer_Init resulted in %d\n", r);
+		if ( !r )
+			return false;
+
+		s_bSteamGameServerInitialized = true;
+	}
 #endif
 #endif
 
@@ -900,6 +913,16 @@ void CServerGameDLL::DLLShutdown( void )
 		delete TheNavMesh;
 		TheNavMesh = NULL;
 	}
+
+#ifndef STEAMAPPS_INTERFACE_VERSION008
+#ifndef CLIENT_DLL
+	if ( s_bSteamGameServerInitialized )
+	{
+		SteamGameServer_Shutdown();
+		s_bSteamGameServerInitialized = false;
+	}
+#endif
+#endif
 
 	DisconnectTier3Libraries();
 	DisconnectTier2Libraries();
@@ -1294,7 +1317,11 @@ void CServerGameDLL::GameFrame( bool simulating )
 #ifndef NO_STEAM
 	// All the calls to us from the engine prior to gameframe (like LevelInit & ServerActivate)
 	// are done before the engine has got the Steam API connected, so we have to wait until now to connect ourselves.
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( SteamGameServerStats() )
+#else
+	if ( SteamGameServerStats() )
+#endif
 	{
 		GameRules()->UpdateGameplayStatsFromSteam();
 	}
@@ -1469,6 +1496,7 @@ void CServerGameDLL::Think( bool finalTick )
 {
 	// this is normally done in engine, but not anymore
 	// we need to put this here
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if (SteamGameServer()) {
 		bool bLoggedIn = SteamGameServer()->BLoggedOn();
 		if (!bLoggedIn) {
@@ -1477,6 +1505,16 @@ void CServerGameDLL::Think( bool finalTick )
 	}
 
 	SteamGameServer_RunCallbacks();
+#else
+	if (SteamGameServer()) {
+		bool bLoggedIn = SteamGameServer()->BLoggedOn();
+		if (!bLoggedIn) {
+			SteamGameServer()->LogOnAnonymous();
+		}
+	}
+
+	SteamGameServer_RunCallbacks();
+#endif
 
 	// because steam_api and engine are disagreeing, sv_lan is set to 1
 	// this is not because they are incompatible, but because the init in engine is gone

@@ -774,10 +774,18 @@ bool C_ASW_Weapon::GetUseAction( ASWUseAction &action, C_ASW_Inhabitable_NPC *pU
 		wchar_t wszWeaponShortName[128];
 		TryLocalize( pItem->m_szShortName, wszWeaponShortName, sizeof( wszWeaponShortName ) );
 		wchar_t wszWeaponName[128];
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( IsInventoryEquipSlotValid() && SteamFriends() )
+#else
+		if ( IsInventoryEquipSlotValid() && SteamFriends() )
+#endif
 		{
 			wchar_t wszPlayerName[128];
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			V_UTF8ToUnicode( SteamFriends()->GetFriendPersonaName( m_hOriginalOwnerMR->m_OriginalCommander->GetSteamID() ), wszPlayerName, sizeof( wszPlayerName ) );
+#else
+			V_UTF8ToUnicode( SteamFriends()->GetFriendPersonaName( m_hOriginalOwnerMR->m_OriginalCommander->GetSteamID() ), wszPlayerName, sizeof( wszPlayerName ) );
+#endif
 			g_pVGuiLocalize->ConstructString( wszWeaponName, sizeof( wszWeaponName ), g_pVGuiLocalize->Find( "#asw_owned_weapon_format" ), 2, wszPlayerName, wszWeaponShortName );
 		}
 		else

@@ -49,11 +49,19 @@ CRD_Crafting_Research_Panel::~CRD_Crafting_Research_Panel()
 
 	if ( m_hGetStateRequest != INVALID_HTTPREQUEST_HANDLE )
 	{
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamHTTP *pSteamHTTP = SteamHTTP();
+		#else
+		ISteamHTTP *pSteamHTTP = SteamHTTP();
+		#endif
 		Assert( pSteamHTTP );
 		if ( pSteamHTTP )
 		{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pSteamHTTP->ReleaseHTTPRequest( m_hGetStateRequest );
+#else
+			pSteamHTTP->ReleaseHTTPRequest( m_hGetStateRequest );
+#endif
 		}
 	}
 }
@@ -171,7 +179,11 @@ void CRD_Crafting_Research_Panel::ShowError( const char *szError )
 
 void CRD_Crafting_Research_Panel::RequestResearchState()
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamUser *pSteamUser = SteamUser();
+#else
+	ISteamUser *pSteamUser = SteamUser();
+#endif
 	Assert( pSteamUser );
 	if ( !pSteamUser )
 	{
@@ -181,7 +193,11 @@ void CRD_Crafting_Research_Panel::RequestResearchState()
 	}
 
 	// prove our identity to the server to get our personal contribution to the crafting project (this isn't stored or used for any other purpose)
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	m_hGetStateAuth = pSteamUser->GetAuthTicketForWebApi( "ocm_research_get_state" );
+#else
+	m_hGetStateAuth = pSteamUser->GetAuthTicketForWebApi( "ocm_research_get_state" );
+#endif
 }
 
 void CRD_Crafting_Research_Panel::OnGetTicketForWebApiResponse( GetTicketForWebApiResponse_t *pParam )
@@ -198,7 +214,11 @@ void CRD_Crafting_Research_Panel::OnGetTicketForWebApiResponse( GetTicketForWebA
 			return;
 		}
 
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamHTTP *pSteamHTTP = SteamHTTP();
+		#else
+		ISteamHTTP *pSteamHTTP = SteamHTTP();
+		#endif
 		Assert( pSteamHTTP );
 		if ( !pSteamHTTP )
 		{
@@ -210,12 +230,32 @@ void CRD_Crafting_Research_Panel::OnGetTicketForWebApiResponse( GetTicketForWebA
 		char szHexTicket[sizeof( pParam->m_rgubTicket ) * 2 + 1];
 		UTIL_RD_BinToHex( pParam->m_rgubTicket, pParam->m_cubTicket, szHexTicket, sizeof( szHexTicket ) );
 
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		m_hGetStateRequest = pSteamHTTP->CreateHTTPRequest( k_EHTTPMethodPOST, "https://stats.reactivedrop.com/api/ocm-research/state.bin" );
+		#else
+		m_hGetStateRequest = pSteamHTTP->CreateHTTPRequest( k_EHTTPMethodPOST, "https://stats.reactivedrop.com/api/ocm-research/state.bin" );
+		#endif
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pSteamHTTP->SetHTTPRequestGetOrPostParameter( m_hGetStateRequest, "lang", SteamApps() ? SteamApps()->GetCurrentGameLanguage() : "" );
+		#else
+		pSteamHTTP->SetHTTPRequestGetOrPostParameter( m_hGetStateRequest, "lang", SteamApps() ? SteamApps()->GetCurrentGameLanguage() : "" );
+		#endif
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pSteamHTTP->SetHTTPRequestGetOrPostParameter( m_hGetStateRequest, "ticket", szHexTicket );
+		#else
+		pSteamHTTP->SetHTTPRequestGetOrPostParameter( m_hGetStateRequest, "ticket", szHexTicket );
+		#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pSteamHTTP->SetHTTPRequestUserAgentInfo( m_hGetStateRequest, "CRD_Crafting_Research_Panel" );
+#else
+		pSteamHTTP->SetHTTPRequestUserAgentInfo( m_hGetStateRequest, "CRD_Crafting_Research_Panel" );
+#endif
 		SteamAPICall_t hAPICall = k_uAPICallInvalid;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pSteamHTTP->SendHTTPRequest( m_hGetStateRequest, &hAPICall );
+#else
+		pSteamHTTP->SendHTTPRequest( m_hGetStateRequest, &hAPICall );
+#endif
 
 		m_OnGetStateRequestCompleted.Set( hAPICall, this, &CRD_Crafting_Research_Panel::OnGetStateRequestCompleted );
 
@@ -233,11 +273,19 @@ void CRD_Crafting_Research_Panel::OnGetStateRequestCompleted( HTTPRequestComplet
 		// don't refresh while the donate modal is open
 		m_flNextUpdateTime = Plat_FloatTime() + 60.0;
 
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !bIOFailure && SteamHTTP() )
+		#else
+		if ( !bIOFailure && SteamHTTP() )
+		#endif
 		{
 			Assert( m_hGetStateRequest == pParam->m_hRequest );
 			m_hGetStateRequest = INVALID_HTTPREQUEST_HANDLE;
+			#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			SteamHTTP()->ReleaseHTTPRequest( pParam->m_hRequest );
+			#else
+			SteamHTTP()->ReleaseHTTPRequest( pParam->m_hRequest );
+			#endif
 		}
 
 		return;
@@ -250,7 +298,11 @@ void CRD_Crafting_Research_Panel::OnGetStateRequestCompleted( HTTPRequestComplet
 		return;
 	}
 
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamHTTP *pSteamHTTP = SteamHTTP();
+	#else
+	ISteamHTTP *pSteamHTTP = SteamHTTP();
+	#endif
 	Assert( pSteamHTTP );
 	if ( !pSteamHTTP )
 	{
@@ -266,7 +318,11 @@ void CRD_Crafting_Research_Panel::OnGetStateRequestCompleted( HTTPRequestComplet
 	{
 		Warning( "Could not connect to server! Cannot parse research state response.\n" );
 		ShowError( "#rd_crafting_research_error_connection" );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pSteamHTTP->ReleaseHTTPRequest( pParam->m_hRequest );
+#else
+		pSteamHTTP->ReleaseHTTPRequest( pParam->m_hRequest );
+#endif
 		return;
 	}
 
@@ -274,21 +330,37 @@ void CRD_Crafting_Research_Panel::OnGetStateRequestCompleted( HTTPRequestComplet
 	{
 		Warning( "Server returned error (%d)! Cannot parse research state response.\n", pParam->m_eStatusCode );
 		ShowError( "#rd_crafting_research_error_unknown" );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pSteamHTTP->ReleaseHTTPRequest( pParam->m_hRequest );
+#else
+		pSteamHTTP->ReleaseHTTPRequest( pParam->m_hRequest );
+#endif
 		return;
 	}
 
 	CUtlBuffer body{ 0, int( pParam->m_unBodySize ) };
 	body.SeekPut( CUtlBuffer::SEEK_HEAD, pParam->m_unBodySize );
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !pSteamHTTP->GetHTTPResponseBodyData( pParam->m_hRequest, ( uint8 * )body.Base(), pParam->m_unBodySize ) )
+	#else
+	if ( !pSteamHTTP->GetHTTPResponseBodyData( pParam->m_hRequest, ( uint8 * )body.Base(), pParam->m_unBodySize ) )
+	#endif
 	{
 		Warning( "Failed to get response body. Cannot parse research state response.\n" );
 		ShowError( "#rd_crafting_research_error_connection" );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pSteamHTTP->ReleaseHTTPRequest( pParam->m_hRequest );
+#else
+		pSteamHTTP->ReleaseHTTPRequest( pParam->m_hRequest );
+#endif
 		return;
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pSteamHTTP->ReleaseHTTPRequest( pParam->m_hRequest );
+#else
+	pSteamHTTP->ReleaseHTTPRequest( pParam->m_hRequest );
+#endif
 
 	KeyValues::AutoDelete pKV( "RDRD" );
 	if ( !pKV->ReadAsBinary( body ) )
@@ -427,7 +499,11 @@ void CRD_Crafting_Research_Slot::UpdateTimer()
 	if ( !pSlot )
 		return;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	RTime32 now = SteamUtils() ? SteamUtils()->GetServerRealTime() : std::time( nullptr );
+#else
+	RTime32 now = SteamUtils() ? SteamUtils()->GetServerRealTime() : std::time( nullptr );
+#endif
 
 	if ( pSlot->WaitUntil == 0 || pSlot->WaitUntil < now )
 	{
@@ -697,11 +773,19 @@ CRD_Crafting_Research_Donate_Modal::~CRD_Crafting_Research_Donate_Modal()
 {
 	if ( m_hDonateRequest != INVALID_HTTPREQUEST_HANDLE )
 	{
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamHTTP *pSteamHTTP = SteamHTTP();
+		#else
+		ISteamHTTP *pSteamHTTP = SteamHTTP();
+		#endif
 		Assert( pSteamHTTP );
 		if ( pSteamHTTP )
 		{
+			#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pSteamHTTP->ReleaseHTTPRequest( m_hDonateRequest );
+			#else
+			pSteamHTTP->ReleaseHTTPRequest( m_hDonateRequest );
+			#endif
 		}
 	}
 }
@@ -738,7 +822,11 @@ void CRD_Crafting_Research_Donate_Modal::OnCommand( const char *szCommand )
 {
 	if ( !V_stricmp( szCommand, "ConfirmDonation" ) )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamUser *pSteamUser = SteamUser();
+#else
+		ISteamUser *pSteamUser = SteamUser();
+#endif
 		Assert( pSteamUser );
 		if ( !pSteamUser )
 		{
@@ -750,7 +838,11 @@ void CRD_Crafting_Research_Donate_Modal::OnCommand( const char *szCommand )
 		}
 
 		// prove our identity to the server because we're going to edit our inventory (our Steam ID gets stored in the database in the record of the donation)
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		m_hDonateAuth = pSteamUser->GetAuthTicketForWebApi( CFmtStr( "don8_%d_%d_%u_%d", m_iSelectedProjectID, m_iDonateComponentID, uint32_t( m_iDonateItemInstance ), m_iDonatedQuantity ) );
+#else
+		m_hDonateAuth = pSteamUser->GetAuthTicketForWebApi( CFmtStr( "don8_%d_%d_%u_%d", m_iSelectedProjectID, m_iDonateComponentID, uint32_t( m_iDonateItemInstance ), m_iDonatedQuantity ) );
+#endif
 		BaseModUI::CBaseModPanel::GetSingleton().PlayUISound( BaseModUI::UISOUND_ACCEPT );
 
 		m_pQuantitySlider->SetEnabled( false );
@@ -775,7 +867,11 @@ void CRD_Crafting_Research_Donate_Modal::OnGetTicketForWebApiResponse( GetTicket
 	{
 		m_hDonateAuth = k_HAuthTicketInvalid;
 
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamHTTP *pSteamHTTP = SteamHTTP();
+		#else
+		ISteamHTTP *pSteamHTTP = SteamHTTP();
+		#endif
 		Assert( pSteamHTTP );
 		if ( !pSteamHTTP )
 		{
@@ -789,15 +885,47 @@ void CRD_Crafting_Research_Donate_Modal::OnGetTicketForWebApiResponse( GetTicket
 		UTIL_RD_BinToHex( pParam->m_rgubTicket, pParam->m_cubTicket, szHexTicket, sizeof( szHexTicket ) );
 
 		Assert( m_hDonateRequest == INVALID_HTTPREQUEST_HANDLE );
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		m_hDonateRequest = pSteamHTTP->CreateHTTPRequest( k_EHTTPMethodPOST, "https://stats.reactivedrop.com/api/ocm-research/donate" );
+		#else
+		m_hDonateRequest = pSteamHTTP->CreateHTTPRequest( k_EHTTPMethodPOST, "https://stats.reactivedrop.com/api/ocm-research/donate" );
+		#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pSteamHTTP->SetHTTPRequestGetOrPostParameter( m_hDonateRequest, "project", CFmtStr( "%d", m_iSelectedProjectID ) );
+#else
+		pSteamHTTP->SetHTTPRequestGetOrPostParameter( m_hDonateRequest, "project", CFmtStr( "%d", m_iSelectedProjectID ) );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pSteamHTTP->SetHTTPRequestGetOrPostParameter( m_hDonateRequest, "order", CFmtStr( "%d", m_iDonateComponentID ) );
+#else
+		pSteamHTTP->SetHTTPRequestGetOrPostParameter( m_hDonateRequest, "order", CFmtStr( "%d", m_iDonateComponentID ) );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pSteamHTTP->SetHTTPRequestGetOrPostParameter( m_hDonateRequest, "instance", CFmtStr( "%llu", m_iDonateItemInstance ) );
+#else
+		pSteamHTTP->SetHTTPRequestGetOrPostParameter( m_hDonateRequest, "instance", CFmtStr( "%llu", m_iDonateItemInstance ) );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pSteamHTTP->SetHTTPRequestGetOrPostParameter( m_hDonateRequest, "quantity", CFmtStr( "%d", m_iDonatedQuantity ) );
+#else
+		pSteamHTTP->SetHTTPRequestGetOrPostParameter( m_hDonateRequest, "quantity", CFmtStr( "%d", m_iDonatedQuantity ) );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pSteamHTTP->SetHTTPRequestGetOrPostParameter( m_hDonateRequest, "ticket", szHexTicket );
+#else
+		pSteamHTTP->SetHTTPRequestGetOrPostParameter( m_hDonateRequest, "ticket", szHexTicket );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pSteamHTTP->SetHTTPRequestUserAgentInfo( m_hDonateRequest, "CRD_Crafting_Research_Donate_Modal" );
+#else
+		pSteamHTTP->SetHTTPRequestUserAgentInfo( m_hDonateRequest, "CRD_Crafting_Research_Donate_Modal" );
+#endif
 		SteamAPICall_t hAPICall = k_uAPICallInvalid;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pSteamHTTP->SendHTTPRequest( m_hDonateRequest, &hAPICall );
+#else
+		pSteamHTTP->SendHTTPRequest( m_hDonateRequest, &hAPICall );
+#endif
 
 		m_OnDonateRequestCompleted.Set( hAPICall, this, &CRD_Crafting_Research_Donate_Modal::OnDonateRequestCompleted );
 
@@ -822,7 +950,11 @@ void CRD_Crafting_Research_Donate_Modal::OnDonateRequestCompleted( HTTPRequestCo
 		return;
 	}
 
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamHTTP *pSteamHTTP = SteamHTTP();
+	#else
+	ISteamHTTP *pSteamHTTP = SteamHTTP();
+	#endif
 	Assert( pSteamHTTP );
 	if ( !pSteamHTTP )
 	{
@@ -838,7 +970,11 @@ void CRD_Crafting_Research_Donate_Modal::OnDonateRequestCompleted( HTTPRequestCo
 	if ( !pParam->m_bRequestSuccessful )
 	{
 		Warning( "Could not connect to server! Cannot check donation result.\n" );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pSteamHTTP->ReleaseHTTPRequest( pParam->m_hRequest );
+#else
+		pSteamHTTP->ReleaseHTTPRequest( pParam->m_hRequest );
+#endif
 		m_pParent->ShowError( "#rd_crafting_research_error_connection" );
 		MarkForDeletion();
 		return;
@@ -846,7 +982,11 @@ void CRD_Crafting_Research_Donate_Modal::OnDonateRequestCompleted( HTTPRequestCo
 
 	if ( pParam->m_eStatusCode == k_EHTTPStatusCode202Accepted )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pSteamHTTP->ReleaseHTTPRequest( pParam->m_hRequest );
+#else
+		pSteamHTTP->ReleaseHTTPRequest( pParam->m_hRequest );
+#endif
 		m_pParent->ShowError( "#rd_crafting_research_donation_success" );
 		ReactiveDropInventory::RequestFullInventoryRefresh();
 		MarkForDeletion();
@@ -857,16 +997,28 @@ void CRD_Crafting_Research_Donate_Modal::OnDonateRequestCompleted( HTTPRequestCo
 	{
 		CUtlBuffer body{ 0, int( pParam->m_unBodySize ) };
 		body.SeekPut( CUtlBuffer::SEEK_HEAD, pParam->m_unBodySize );
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !pSteamHTTP->GetHTTPResponseBodyData( pParam->m_hRequest, ( uint8 * )body.Base(), pParam->m_unBodySize ) )
+		#else
+		if ( !pSteamHTTP->GetHTTPResponseBodyData( pParam->m_hRequest, ( uint8 * )body.Base(), pParam->m_unBodySize ) )
+		#endif
 		{
 			Warning( "Failed to get response body. Cannot check donation result.\n" );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pSteamHTTP->ReleaseHTTPRequest( pParam->m_hRequest );
+#else
+			pSteamHTTP->ReleaseHTTPRequest( pParam->m_hRequest );
+#endif
 			m_pParent->ShowError( "#rd_crafting_research_error_connection" );
 			MarkForDeletion();
 			return;
 		}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pSteamHTTP->ReleaseHTTPRequest( pParam->m_hRequest );
+#else
+		pSteamHTTP->ReleaseHTTPRequest( pParam->m_hRequest );
+#endif
 
 		if ( !V_strnicmp( ( char * )body.Base(), "INVENTORY\n", pParam->m_unBodySize ) )
 		{
@@ -885,7 +1037,11 @@ void CRD_Crafting_Research_Donate_Modal::OnDonateRequestCompleted( HTTPRequestCo
 	}
 	else
 	{
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pSteamHTTP->ReleaseHTTPRequest( pParam->m_hRequest );
+		#else
+		pSteamHTTP->ReleaseHTTPRequest( pParam->m_hRequest );
+		#endif
 	}
 
 	Warning( "Donation request returned HTTP status code %d.\n", pParam->m_eStatusCode );

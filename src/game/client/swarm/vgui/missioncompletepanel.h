@@ -51,7 +51,11 @@ public:
 	void OnLeaderboardScoreUploaded( const RD_LeaderboardEntry_t & entry, int nGlobalRankPrevious );
 	void LeaderboardReady();
 	void LeaderboardDownloadedCallback( LeaderboardScoresDownloaded_t *pResult, bool bIOFailure );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CCallResult<MissionCompletePanel, LeaderboardScoresDownloaded_t> m_LeaderboardDownloadedCallback;
+#else
+	CCallResult<MissionCompletePanel, LeaderboardScoresDownloaded_t> m_LeaderboardDownloadedCallback;
+#endif
 	SteamLeaderboard_t m_hLeaderboard;
 	bool m_bLeaderboardReady;
 

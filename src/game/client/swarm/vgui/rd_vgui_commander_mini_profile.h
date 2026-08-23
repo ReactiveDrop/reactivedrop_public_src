@@ -53,7 +53,15 @@ public:
 	bool m_bEmbedded{ false };
 	bool m_bHoIAFError{ false };
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	STEAM_CALLBACK( CRD_VGUI_Commander_Mini_Profile, OnPersonaStateChange, PersonaStateChange_t );
+#else
+	STEAM_CALLBACK( CRD_VGUI_Commander_Mini_Profile, OnPersonaStateChange, PersonaStateChange_t );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CCallResult<CRD_VGUI_Commander_Mini_Profile, LeaderboardScoresDownloaded_t> m_LeaderboardScoresDownloaded;
+#else
+	CCallResult<CRD_VGUI_Commander_Mini_Profile, LeaderboardScoresDownloaded_t> m_LeaderboardScoresDownloaded;
+#endif
 	void OnLeaderboardScoresDownloaded( LeaderboardScoresDownloaded_t *pParam, bool bIOFailure );
 };

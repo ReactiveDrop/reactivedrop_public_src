@@ -371,7 +371,11 @@ void GameSettings::Activate()
 		m_pHeaderFooter->SetGradientBarPos( 110, 240 );
 
 		wchar_t wszPlayerName[k_cwchPersonaNameMax];
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		V_UTF8ToUnicode( SteamFriends() ? SteamFriends()->GetPersonaName() : "", wszPlayerName, sizeof( wszPlayerName ) );
+#else
+		V_UTF8ToUnicode( SteamFriends() ? SteamFriends()->GetPersonaName() : "", wszPlayerName, sizeof( wszPlayerName ) );
+#endif
 		m_pLobbyNamePlaceholder->SetText( wszPlayerName );
 	}
 	else
@@ -665,8 +669,16 @@ void GameSettings::OnCommand(const char *command)
 		static ConVarRef hostname{ "hostname" };
 		if ( rd_lobby_hostname.GetString()[0] != '\0' )
 			hostname.SetValue( rd_lobby_hostname.GetString() );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		else if ( SteamFriends() )
+#else
+		else if ( SteamFriends() )
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			hostname.SetValue( SteamFriends()->GetPersonaName() );
+#else
+			hostname.SetValue( SteamFriends()->GetPersonaName() );
+#endif
 
 		char const *szNetwork = m_pSettings->GetString( "system/network", "offline" );
 		if ( !Q_stricmp( szNetwork, "offline" ) )

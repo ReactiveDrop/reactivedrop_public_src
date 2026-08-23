@@ -39,9 +39,21 @@ public:
 	void SetRumble( float fLeftMotor, float fRightMotor, int userId = INVALID_USER_ID );
 	void StopRumble( int userId = INVALID_USER_ID );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	STEAM_CALLBACK( CRD_Steam_Input, OnSteamInputDeviceConnected, SteamInputDeviceConnected_t );
+#else
+	STEAM_CALLBACK( CRD_Steam_Input, OnSteamInputDeviceConnected, SteamInputDeviceConnected_t );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	STEAM_CALLBACK( CRD_Steam_Input, OnSteamInputDeviceDisconnected, SteamInputDeviceDisconnected_t );
+#else
+	STEAM_CALLBACK( CRD_Steam_Input, OnSteamInputDeviceDisconnected, SteamInputDeviceDisconnected_t );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	STEAM_CALLBACK( CRD_Steam_Input, OnSteamInputConfigurationLoaded, SteamInputConfigurationLoaded_t );
+#else
+	STEAM_CALLBACK( CRD_Steam_Input, OnSteamInputConfigurationLoaded, SteamInputConfigurationLoaded_t );
+#endif
 	static void OnActionEvent( SteamInputActionEvent_t *pEvent );
 
 	bool m_bInitialized;

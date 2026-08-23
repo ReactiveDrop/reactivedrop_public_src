@@ -110,10 +110,17 @@ void CASW_VGUI_Computer_News::SetLabelsFromFile()
 		return;
 
 	engine->GetUILanguage( uilanguage, sizeof( uilanguage ) );
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( SteamApps() )
 	{
 		V_strncpy( uilanguage, SteamApps()->GetCurrentGameLanguage(), sizeof( uilanguage ) );
 	}
+	#else
+	if ( SteamApps() )
+	{
+		V_strncpy( uilanguage, SteamApps()->GetCurrentGameLanguage(), sizeof( uilanguage ) );
+	}
+	#endif
 
 	V_snprintf( buffer, sizeof( buffer ), "resource/news/%s_%s.txt", pszNewsFile, uilanguage );
 	if ( m_pKeyValues )

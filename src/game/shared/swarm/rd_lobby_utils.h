@@ -97,7 +97,11 @@ public:
 
 private:
 	void UpdateSearch();
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CCallResult<CReactiveDropLobbySearch, LobbyMatchList_t> m_LobbyMatchListResult;
+#else
+	CCallResult<CReactiveDropLobbySearch, LobbyMatchList_t> m_LobbyMatchListResult;
+#endif
 	void LobbyMatchListResult( LobbyMatchList_t *pResult, bool bIOFailure );
 
 	const char *m_pszDebugName;

@@ -270,7 +270,11 @@ void ReactiveDropWorkshop::OnCommand( const char *command )
 		if ( rd_workshop_allow_item_creation.GetBool() )
 		{
 			CUIGameData::Get()->OpenWaitScreen( "#rd_workshop_creating_item", 0 );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			SteamAPICall_t hAPICall = SteamUGC()->CreateItem( SteamUtils()->GetAppID(), k_EWorkshopFileTypeCommunity );
+#else
+			SteamAPICall_t hAPICall = SteamUGC()->CreateItem( SteamUtils()->GetAppID(), k_EWorkshopFileTypeCommunity );
+#endif
 			m_CreateItemCall.Set( hAPICall, this, &ReactiveDropWorkshop::CreateItemCall );
 		}
 		else
@@ -331,11 +335,19 @@ void ReactiveDropWorkshop::OnCommand( const char *command )
 	}
 	else if ( !V_strcmp( command, "SubmitEdit" ) )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		m_hUpdate = SteamUGC()->StartItemUpdate( SteamUtils()->GetAppID(), m_nEditingWorkshopID );
+#else
+		m_hUpdate = SteamUGC()->StartItemUpdate( SteamUtils()->GetAppID(), m_nEditingWorkshopID );
+#endif
 
 		if ( !m_szPreviewImage.IsEmpty() )
 		{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			if ( !SteamUGC()->SetItemPreview( m_hUpdate, m_szPreviewImage ) )
+#else
+			if ( !SteamUGC()->SetItemPreview( m_hUpdate, m_szPreviewImage ) )
+#endif
 			{
 				CUIGameData::Get()->DisplayOkOnlyMsgBox( this, "#rd_workshop_error_title", "#rd_workshop_error_update_preview" );
 				return;
@@ -344,7 +356,11 @@ void ReactiveDropWorkshop::OnCommand( const char *command )
 
 		if ( !g_ReactiveDropWorkshop.m_szContentPath.IsEmpty() )
 		{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			if ( !SteamUGC()->SetItemContent( m_hUpdate, g_ReactiveDropWorkshop.m_szContentPath ) )
+#else
+			if ( !SteamUGC()->SetItemContent( m_hUpdate, g_ReactiveDropWorkshop.m_szContentPath ) )
+#endif
 			{
 				CUIGameData::Get()->DisplayOkOnlyMsgBox( this, "#rd_workshop_error_title", "#rd_workshop_error_update_content" );
 				return;
@@ -386,7 +402,11 @@ void ReactiveDropWorkshop::OnCommand( const char *command )
 		SteamParamStringArray_t tags;
 		tags.m_nNumStrings = g_ReactiveDropWorkshop.m_aszTags.Count();
 		tags.m_ppStrings = const_cast<const char **>( g_ReactiveDropWorkshop.m_aszTags.Base() );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !SteamUGC()->SetItemTags( m_hUpdate, &tags ) )
+#else
+		if ( !SteamUGC()->SetItemTags( m_hUpdate, &tags ) )
+#endif
 		{
 			CUIGameData::Get()->DisplayOkOnlyMsgBox( this, "#rd_workshop_error_title", "#rd_workshop_error_update_tags" );
 			return;
@@ -398,7 +418,11 @@ void ReactiveDropWorkshop::OnCommand( const char *command )
 		{
 			V_strncpy( szTitle, "Untitled Addon", sizeof(szTitle) );
 		}
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !SteamUGC()->SetItemTitle( m_hUpdate, szTitle ) )
+#else
+		if ( !SteamUGC()->SetItemTitle( m_hUpdate, szTitle ) )
+#endif
 		{
 			CUIGameData::Get()->DisplayOkOnlyMsgBox( this, "#rd_workshop_error_title", "#rd_workshop_error_update_title" );
 			return;
@@ -406,7 +430,11 @@ void ReactiveDropWorkshop::OnCommand( const char *command )
 
 		char szDescription[k_cchPublishedDocumentDescriptionMax];
 		m_pTxtEditingDescription->GetText( szDescription, sizeof( szDescription ) );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !SteamUGC()->SetItemDescription( m_hUpdate, szDescription ) )
+#else
+		if ( !SteamUGC()->SetItemDescription( m_hUpdate, szDescription ) )
+#endif
 		{
 			CUIGameData::Get()->DisplayOkOnlyMsgBox( this, "#rd_workshop_error_title", "#rd_workshop_error_update_description" );
 			return;
@@ -417,7 +445,11 @@ void ReactiveDropWorkshop::OnCommand( const char *command )
 
 		char szChangeDescription[k_cchPublishedDocumentChangeDescriptionMax];
 		m_pTxtEditingChangeDescription->GetText( szChangeDescription, sizeof( szChangeDescription ) );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		SteamAPICall_t hAPICall = SteamUGC()->SubmitItemUpdate( m_hUpdate, szChangeDescription );
+#else
+		SteamAPICall_t hAPICall = SteamUGC()->SubmitItemUpdate( m_hUpdate, szChangeDescription );
+#endif
 		m_SubmitItemUpdateCall.Set( hAPICall, this, &ReactiveDropWorkshop::SubmitItemUpdateCall );
 
 		InitWait();
@@ -455,7 +487,11 @@ void ReactiveDropWorkshop::OnThink()
 	if ( m_SubmitItemUpdateCall.IsActive() )
 	{
 		uint64 nBytesProcessed, nBytesTotal;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		EItemUpdateStatus status = SteamUGC()->GetItemUpdateProgress( m_hUpdate, &nBytesProcessed, &nBytesTotal );
+#else
+		EItemUpdateStatus status = SteamUGC()->GetItemUpdateProgress( m_hUpdate, &nBytesProcessed, &nBytesTotal );
+#endif
 
 		switch ( status )
 		{
@@ -621,7 +657,11 @@ void ReactiveDropWorkshop::InitReady()
 
 	PublishedFileId_t nDummyItem = k_PublishedFileIdInvalid;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CSteamID currentUser = SteamUser()->GetSteamID();
+#else
+	CSteamID currentUser = SteamUser()->GetSteamID();
+#endif
 	FOR_EACH_VEC( g_ReactiveDropWorkshop.m_EnabledAddons, i )
 	{
 		if ( currentUser == g_ReactiveDropWorkshop.m_EnabledAddons[i].details.m_ulSteamIDOwner )
@@ -756,10 +796,26 @@ void ReactiveDropWorkshop::RequestSingleItem( PublishedFileId_t nPublishedFileID
 
 	CUIGameData::Get()->OpenWaitScreen( "#rd_workshop_retrieving_item_details", 0 );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	m_hSingleItemQuery = SteamUGC()->CreateQueryUGCDetailsRequest( &nPublishedFileID, 1 );
+#else
+	m_hSingleItemQuery = SteamUGC()->CreateQueryUGCDetailsRequest( &nPublishedFileID, 1 );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamUGC()->SetReturnLongDescription( m_hSingleItemQuery, true );
+#else
+	SteamUGC()->SetReturnLongDescription( m_hSingleItemQuery, true );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamUGC()->SetReturnKeyValueTags( m_hSingleItemQuery, true );
+#else
+	SteamUGC()->SetReturnKeyValueTags( m_hSingleItemQuery, true );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamAPICall_t hAPICall = SteamUGC()->SendQueryUGCRequest( m_hSingleItemQuery );
+#else
+	SteamAPICall_t hAPICall = SteamUGC()->SendQueryUGCRequest( m_hSingleItemQuery );
+#endif
 	m_RequestSingleItemCall.Set( hAPICall, this, &ReactiveDropWorkshop::RequestSingleItemCall );
 }
 
@@ -814,7 +870,11 @@ void ReactiveDropWorkshop::RequestSingleItemCall( SteamUGCQueryCompleted_t *pRes
 	}
 
 	SteamUGCDetails_t details;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamUGC()->GetQueryUGCResult( m_hSingleItemQuery, 0, &details );
+#else
+	SteamUGC()->GetQueryUGCResult( m_hSingleItemQuery, 0, &details );
+#endif
 
 	g_ReactiveDropWorkshop.AddAddonsToCache( pResult, bIOFailure, m_hSingleItemQuery );
 

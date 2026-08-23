@@ -26,7 +26,11 @@ static class CRD_PromoOptIn
 public:
 	void BeginRequest()
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamUser *pUser = SteamUser();
+#else
+		ISteamUser *pUser = SteamUser();
+#endif
 		Assert( pUser );
 		if ( !pUser )
 		{
@@ -37,7 +41,11 @@ public:
 
 		CUIGameData::Get()->OpenWaitScreen( "#rd_redeem_special_waiting_steam" );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		m_hAuthTicket = pUser->GetAuthTicketForWebApi( "redeem_special_4034" );
+#else
+		m_hAuthTicket = pUser->GetAuthTicketForWebApi( "redeem_special_4034" );
+#endif
 	}
 
 	void ShowMessage( const char *szMessage )
@@ -62,7 +70,11 @@ public:
 		pConfirmation->SetUsageData( data );
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	STEAM_CALLBACK( CRD_PromoOptIn, OnTicket, GetTicketForWebApiResponse_t )
+#else
+	STEAM_CALLBACK( CRD_PromoOptIn, OnTicket, GetTicketForWebApiResponse_t )
+#endif
 	{
 		if ( pParam->m_hAuthTicket != m_hAuthTicket )
 			return;
@@ -79,7 +91,11 @@ public:
 		char szHexTicket[sizeof( pParam->m_rgubTicket ) * 2 + 1];
 		UTIL_RD_BinToHex( pParam->m_rgubTicket, pParam->m_cubTicket, szHexTicket, sizeof( szHexTicket ) );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamHTTP *pHTTP = SteamHTTP();
+#else
+		ISteamHTTP *pHTTP = SteamHTTP();
+#endif
 		Assert( pHTTP );
 		if ( !pHTTP )
 		{
@@ -88,12 +104,32 @@ public:
 			return;
 		}
 
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		HTTPRequestHandle hRequest = pHTTP->CreateHTTPRequest( k_EHTTPMethodPOST, "https://stats.reactivedrop.com/api/redeem_special" );
+		#else
+		HTTPRequestHandle hRequest = pHTTP->CreateHTTPRequest( k_EHTTPMethodPOST, "https://stats.reactivedrop.com/api/redeem_special" );
+		#endif
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pHTTP->SetHTTPRequestUserAgentInfo( hRequest, "RDPromoOptIn" );
+		#else
+		pHTTP->SetHTTPRequestUserAgentInfo( hRequest, "RDPromoOptIn" );
+		#endif
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pHTTP->SetHTTPRequestGetOrPostParameter( hRequest, "itemid", "4034" );
+		#else
+		pHTTP->SetHTTPRequestGetOrPostParameter( hRequest, "itemid", "4034" );
+		#endif
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pHTTP->SetHTTPRequestGetOrPostParameter( hRequest, "ticket", szHexTicket );
+		#else
+		pHTTP->SetHTTPRequestGetOrPostParameter( hRequest, "ticket", szHexTicket );
+		#endif
 		SteamAPICall_t hCall = k_uAPICallInvalid;
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( pHTTP->SendHTTPRequest( hRequest, &hCall ) )
+		#else
+		if ( pHTTP->SendHTTPRequest( hRequest, &hCall ) )
+		#endif
 		{
 			m_HTTPComplete.Set( hCall, this, &CRD_PromoOptIn::OnHTTPComplete );
 
@@ -115,7 +151,11 @@ public:
 			return;
 		}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamHTTP *pHTTP = SteamHTTP();
+#else
+		ISteamHTTP *pHTTP = SteamHTTP();
+#endif
 		Assert( pHTTP );
 		if ( !pHTTP )
 		{
@@ -128,7 +168,11 @@ public:
 		{
 			Warning( "Network failure! Cannot request opt-in!\n" );
 			ShowMessage( "#rd_redeem_special_error" );
+			#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pHTTP->ReleaseHTTPRequest( pParam->m_hRequest );
+			#else
+			pHTTP->ReleaseHTTPRequest( pParam->m_hRequest );
+			#endif
 			return;
 		}
 
@@ -136,7 +180,11 @@ public:
 		{
 			Warning( "Server returned wrong status code %d! Cannot request opt-in!\n", pParam->m_eStatusCode );
 			ShowMessage( "#rd_redeem_special_error" );
+			#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pHTTP->ReleaseHTTPRequest( pParam->m_hRequest );
+			#else
+			pHTTP->ReleaseHTTPRequest( pParam->m_hRequest );
+			#endif
 			return;
 		}
 
@@ -145,12 +193,24 @@ public:
 		{
 			Warning( "Body size (%d) too big! Cannot request opt-in!\n", pParam->m_unBodySize );
 			ShowMessage( "#rd_redeem_special_error" );
+			#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pHTTP->ReleaseHTTPRequest( pParam->m_hRequest );
+			#else
+			pHTTP->ReleaseHTTPRequest( pParam->m_hRequest );
+			#endif
 			return;
 		}
 
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pHTTP->GetHTTPResponseBodyData( pParam->m_hRequest, ( uint8 * )szMessage, pParam->m_unBodySize );
+		#else
+		pHTTP->GetHTTPResponseBodyData( pParam->m_hRequest, ( uint8 * )szMessage, pParam->m_unBodySize );
+		#endif
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pHTTP->ReleaseHTTPRequest( pParam->m_hRequest );
+		#else
+		pHTTP->ReleaseHTTPRequest( pParam->m_hRequest );
+		#endif
 
 		szMessage[pParam->m_unBodySize] = '\0';
 		if ( pParam->m_unBodySize && szMessage[pParam->m_unBodySize - 1] == '\n' )
@@ -163,7 +223,11 @@ public:
 	}
 
 	HAuthTicket m_hAuthTicket{ k_HAuthTicketInvalid };
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CCallResult<CRD_PromoOptIn, HTTPRequestCompleted_t> m_HTTPComplete;
+#else
+	CCallResult<CRD_PromoOptIn, HTTPRequestCompleted_t> m_HTTPComplete;
+#endif
 } s_RD_PromoOptIn;
 #endif
 
@@ -184,7 +248,11 @@ PromoOptIn::PromoOptIn( Panel *parent, const char *panelName ) :
 
 #if 0
 	wchar_t wszPlayerName[k_cwchPersonaNameMax + 1];
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	V_UTF8ToUnicode( SteamFriends() ? SteamFriends()->GetPersonaName() : "", wszPlayerName, sizeof( wszPlayerName ) );
+#else
+	V_UTF8ToUnicode( SteamFriends() ? SteamFriends()->GetPersonaName() : "", wszPlayerName, sizeof( wszPlayerName ) );
+#endif
 	wchar_t wszFlavor[4096];
 	g_pVGuiLocalize->ConstructString( wszFlavor, sizeof( wszFlavor ), g_pVGuiLocalize->Find( "#rd_crafting_beta2_signup_flavor" ), 1, wszPlayerName );
 	m_pLblFlavor = new MultiFontRichText( this, "LblFlavor" );
@@ -193,7 +261,11 @@ PromoOptIn::PromoOptIn( Panel *parent, const char *panelName ) :
 	m_pLblFlavor->InsertString( wszFlavor );
 
 	m_pLblFlavor->InsertZbalermornaString( "\ndoi li'ai " );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	AccountID_t iAccount = SteamUser() ? SteamUser()->GetSteamID().GetAccountID() : 0;
+#else
+	AccountID_t iAccount = SteamUser() ? SteamUser()->GetSteamID().GetAccountID() : 0;
+#endif
 	m_pLblFlavor->InsertString( UTIL_RD_ZbalermornaNumberHex( iAccount ) );
 	m_pLblFlavor->InsertZbalermornaString( " jatna i xu do sidju i do ba penmi lo derxi" );
 

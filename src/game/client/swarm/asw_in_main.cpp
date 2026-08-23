@@ -735,7 +735,11 @@ void CASWInput::Init_All( void )
 	CInput::Init_All();
 	m_iOrderingMarine = 0;
 
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( IsX360() || ( SteamUtils() && SteamUtils()->IsSteamInBigPictureMode() ) )
+	#else
+	if ( IsX360() || ( SteamUtils() && SteamUtils()->IsSteamInBigPictureMode() ) )
+	#endif
 	{
 		EngageControllerMode();
 		SetControllerModeMouse( true );

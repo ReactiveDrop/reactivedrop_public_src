@@ -613,7 +613,11 @@ private:
 
 #ifndef CLIENT_DLL
 	IASW_Map_Builder *m_pMapBuilder;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	STEAM_CALLBACK( CAlienSwarm, OnSteamRelayNetworkStatusChanged, SteamRelayNetworkStatus_t );
+#else
+	STEAM_CALLBACK( CAlienSwarm, OnSteamRelayNetworkStatusChanged, SteamRelayNetworkStatus_t );
+#endif
 #endif
 };
 

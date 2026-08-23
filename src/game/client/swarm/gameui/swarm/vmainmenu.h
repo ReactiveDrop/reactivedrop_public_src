@@ -120,9 +120,21 @@ public:
 	HUDGlowHelper_t m_InactiveHideQuickJoinFriends;
 	float m_flLastActiveTime;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CCallResult<MainMenu, LeaderboardScoresDownloaded_t> m_HoIAFTop10Callback;
+#else
+	CCallResult<MainMenu, LeaderboardScoresDownloaded_t> m_HoIAFTop10Callback;
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CCallResult<MainMenu, SteamUGCQueryCompleted_t> m_WorkshopTrendingItemsCallback;
+#else
+	CCallResult<MainMenu, SteamUGCQueryCompleted_t> m_WorkshopTrendingItemsCallback;
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CCallResult<MainMenu, RemoteStorageDownloadUGCResult_t> m_WorkshopPreviewImageCallback[5];
+#else
+	CCallResult<MainMenu, RemoteStorageDownloadUGCResult_t> m_WorkshopPreviewImageCallback[5];
+#endif
 
 	void OnHoIAFTop10ScoresDownloaded( LeaderboardScoresDownloaded_t *pParam, bool bIOFailure );
 	void OnWorkshopTrendingItems( SteamUGCQueryCompleted_t *pParam, bool bIOFailure );

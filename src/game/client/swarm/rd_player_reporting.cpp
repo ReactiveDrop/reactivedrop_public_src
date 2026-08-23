@@ -243,10 +243,18 @@ bool CRD_Player_Reporting::RecentlyReportedPlayer( const char *szCategory, CStea
 {
 	if ( m_pRecentReports == NULL )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !SteamUser() )
+#else
+		if ( !SteamUser() )
+#endif
 			return false;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		CFmtStr szFileName{ "cfg/clientrqpr_%llu.dat", SteamUser()->GetSteamID().ConvertToUint64() };
+#else
+		CFmtStr szFileName{ "cfg/clientrqpr_%llu.dat", SteamUser()->GetSteamID().ConvertToUint64() };
+#endif
 		CUtlBuffer buf;
 
 		m_pRecentReports.Assign( new KeyValues{ "RQPR" } );
@@ -257,12 +265,20 @@ bool CRD_Player_Reporting::RecentlyReportedPlayer( const char *szCategory, CStea
 	}
 
 	CFmtStr szKey{ "%s/%llu", szCategory, player.ConvertToUint64() };
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	return SteamUtils() && uint64_t( SteamUtils()->GetServerRealTime() ) - REPORTING_QUICK_TIMEOUT < m_pRecentReports->GetUint64( szKey );
+#else
+	return SteamUtils() && uint64_t( SteamUtils()->GetServerRealTime() ) - REPORTING_QUICK_TIMEOUT < m_pRecentReports->GetUint64( szKey );
+#endif
 }
 
 void CRD_Player_Reporting::GetRecentlyPlayedWith( CUtlVector<CSteamID> &players ) const
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CSteamID self = SteamUser() ? SteamUser()->GetSteamID() : k_steamIDNil;
+#else
+	CSteamID self = SteamUser() ? SteamUser()->GetSteamID() : k_steamIDNil;
+#endif
 	float flExpireTime = Plat_FloatTime() - REPORTING_SNAPSHOT_LIFETIME;
 
 	FOR_EACH_VEC_BACK( m_RecentData, i )
@@ -386,12 +402,24 @@ bool CRD_Player_Reporting::PrepareReportForSend( const char *szCategory, const c
 
 	V_strncpy( m_szLastCategory, szCategory, sizeof( m_szLastCategory ) );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamUser *pSteamUser = SteamUser();
+#else
+	ISteamUser *pSteamUser = SteamUser();
+#endif
 	Assert( pSteamUser );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	Assert( SteamHTTP() );
+#else
+	Assert( SteamHTTP() );
+#endif
 
 	// we need to be connected to a game and also Steam in order to send a player report.
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !pSteamUser || !SteamHTTP() )
+#else
+	if ( !pSteamUser || !SteamHTTP() )
+#endif
 	{
 		TryLocalize( "#rd_reporting_error_not_connected", m_wszLastMessage, sizeof( m_wszLastMessage ) );
 		LogProgressMessage();
@@ -408,7 +436,11 @@ bool CRD_Player_Reporting::PrepareReportForSend( const char *szCategory, const c
 		Assert( m_szQuickReport[0] == '\0' );
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	m_hTicket = pSteamUser->GetAuthTicketForWebApi( "playerreport" );
+#else
+	m_hTicket = pSteamUser->GetAuthTicketForWebApi( "playerreport" );
+#endif
 	TryLocalize( "#rd_reporting_wait_requesting_ticket", m_wszLastMessage, sizeof( m_wszLastMessage ) );
 	LogProgressMessage();
 
@@ -563,16 +595,33 @@ void CRD_Player_Reporting::OnGetTicketForWebApiResponse( GetTicketForWebApiRespo
 		WriteJSONHex( m_Buffer, CUtlBuffer{ pParam->m_rgubTicket, pParam->m_cubTicket, CUtlBuffer::READ_ONLY } );
 		WriteJSONRaw( m_Buffer, "}" );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamHTTP *pSteamHTTP = SteamHTTP();
+#else
+		ISteamHTTP *pSteamHTTP = SteamHTTP();
+#endif
 		Assert( pSteamHTTP );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		HTTPRequestHandle hRequest = pSteamHTTP->CreateHTTPRequest( k_EHTTPMethodPOST, "https://gamereport.reactivedrop.com/playerreport" );
+#else
+		HTTPRequestHandle hRequest = pSteamHTTP->CreateHTTPRequest( k_EHTTPMethodPOST, "https://gamereport.reactivedrop.com/playerreport" );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pSteamHTTP->SetHTTPRequestUserAgentInfo( hRequest, "RDPlayerReporting" );
+#else
+		pSteamHTTP->SetHTTPRequestUserAgentInfo( hRequest, "RDPlayerReporting" );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pSteamHTTP->SetHTTPRequestRawPostBody( hRequest, "application/json", static_cast< uint8 * >( m_Buffer.Base() ), m_Buffer.TellPut() );
+#else
+		pSteamHTTP->SetHTTPRequestRawPostBody( hRequest, "application/json", static_cast< uint8 * >( m_Buffer.Base() ), m_Buffer.TellPut() );
+#endif
 
 		m_Buffer.Purge();
 
 		SteamAPICall_t hCall = k_uAPICallInvalid;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !pSteamHTTP->SendHTTPRequest( hRequest, &hCall ) )
 		{
 			// if we didn't get a valid request handle somehow, we'll end up here.
@@ -580,6 +629,15 @@ void CRD_Player_Reporting::OnGetTicketForWebApiResponse( GetTicketForWebApiRespo
 			LogProgressMessage();
 			return;
 		}
+#else
+		if ( !pSteamHTTP->SendHTTPRequest( hRequest, &hCall ) )
+		{
+			// if we didn't get a valid request handle somehow, we'll end up here.
+			TryLocalize( "#rd_reporting_error_sending_unknown", m_wszLastMessage, sizeof( m_wszLastMessage ) );
+			LogProgressMessage();
+			return;
+		}
+#endif
 
 		TryLocalize( "#rd_reporting_sending_report_to_server", m_wszLastMessage, sizeof( m_wszLastMessage ) );
 		m_HTTPRequestCompleted.Set( hCall, this, &CRD_Player_Reporting::OnHTTPRequestCompleted );
@@ -611,16 +669,28 @@ void CRD_Player_Reporting::OnHTTPRequestCompleted( HTTPRequestCompleted_t *pPara
 
 	if ( !pParam->m_bRequestSuccessful )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		SteamHTTP()->ReleaseHTTPRequest( pParam->m_hRequest );
+#else
+		SteamHTTP()->ReleaseHTTPRequest( pParam->m_hRequest );
+#endif
 		TryLocalize( "#rd_reporting_error_sending_network", m_wszLastMessage, sizeof( m_wszLastMessage ) );
 		LogProgressMessage();
 		return;
 	}
 
 	CUtlMemory<char> body{ 0, int( pParam->m_unBodySize ) + 1 };
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamHTTP()->GetHTTPResponseBodyData( pParam->m_hRequest, reinterpret_cast< uint8 * >( body.Base() ), body.Count() - 1 );
+#else
+	SteamHTTP()->GetHTTPResponseBodyData( pParam->m_hRequest, reinterpret_cast< uint8 * >( body.Base() ), body.Count() - 1 );
+#endif
 	body[pParam->m_unBodySize] = '\0';
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamHTTP()->ReleaseHTTPRequest( pParam->m_hRequest );
+#else
+	SteamHTTP()->ReleaseHTTPRequest( pParam->m_hRequest );
+#endif
 
 	Assert( pParam->m_eStatusCode == k_EHTTPStatusCode200OK );
 	( void )body; // potentially useful for debugging, not currently shown to user.
@@ -632,10 +702,22 @@ void CRD_Player_Reporting::OnHTTPRequestCompleted( HTTPRequestCompleted_t *pPara
 		{
 			RecentlyReportedPlayer( "", k_steamIDNil ); // call for side effect of initializing m_pRecentReports
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			Assert( SteamUtils() );
+#else
+			Assert( SteamUtils() );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			if ( m_pRecentReports != NULL && SteamUtils() )
+#else
+			if ( m_pRecentReports != NULL && SteamUtils() )
+#endif
 			{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				uint64_t iNow = SteamUtils()->GetServerRealTime();
+#else
+				uint64_t iNow = SteamUtils()->GetServerRealTime();
+#endif
 				uint64_t iExpireBefore = iNow - REPORTING_QUICK_TIMEOUT;
 
 				FOR_EACH_SUBKEY( m_pRecentReports, pCategory )
@@ -657,7 +739,11 @@ void CRD_Player_Reporting::OnHTTPRequestCompleted( HTTPRequestCompleted_t *pPara
 				m_pRecentReports->SetUint64( m_szQuickReport, iNow );
 
 				CUtlBuffer buf;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				CFmtStr szFileName{ "cfg/clientrqpr_%llu.dat", SteamUser()->GetSteamID().ConvertToUint64() };
+#else
+				CFmtStr szFileName{ "cfg/clientrqpr_%llu.dat", SteamUser()->GetSteamID().ConvertToUint64() };
+#endif
 				if ( !m_pRecentReports->WriteAsBinary( buf ) )
 				{
 					Warning( "Failed to encode quick report cache\n" );
@@ -713,7 +799,11 @@ ReportingServerSnapshot_t *CRD_Player_Reporting::NewSnapshot() const
 	ReportingServerSnapshot_t *pSnapshot = new ReportingServerSnapshot_t();
 
 	pSnapshot->RecordedAt = Plat_FloatTime();
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pSnapshot->SnapshotTaken = SteamUtils() ? SteamUtils()->GetServerRealTime() : 0;
+#else
+	pSnapshot->SnapshotTaken = SteamUtils() ? SteamUtils()->GetServerRealTime() : 0;
+#endif
 
 	extern ConVar rd_challenge;
 	char szChallengeFileName[MAX_PATH];

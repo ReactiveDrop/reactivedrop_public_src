@@ -2485,9 +2485,17 @@ bool UTIL_RD_AddLocalizeFile( const char *fileName, const char *pPathID, bool bI
 		{
 			pszLanguageReplacement = CommandLine()->ParmValue( "-language", "english" );
 		}
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		else if ( SteamApps() )
+		#else
+		else if ( SteamApps() )
+		#endif
 		{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pszLanguageReplacement = SteamApps()->GetCurrentGameLanguage();
+#else
+			pszLanguageReplacement = SteamApps()->GetCurrentGameLanguage();
+#endif
 		}
 #ifdef GAME_DLL
 		else if ( engine->IsDedicatedServer() )
@@ -3557,7 +3565,11 @@ void UTIL_RD_BinToHex( const byte *in, int inputbytes, char *out, int outsize )
 int UTIL_RD_GetCurrentHoIAFSeason( int *pDaysRemaining, int *pHoursRemaining )
 {
 	struct tm tm;
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	Plat_gmtime( SteamUtils() ? SteamUtils()->GetServerRealTime() : std::time( NULL ), &tm );
+	#else
+	Plat_gmtime( SteamUtils() ? SteamUtils()->GetServerRealTime() : std::time( NULL ), &tm );
+	#endif
 
 	if ( pHoursRemaining )
 		*pHoursRemaining = 23 - tm.tm_hour;

@@ -300,12 +300,28 @@ namespace ReactiveDropLoadout
 		KeyValues::AutoDelete pKV{ "SavedLoadouts" };
 		bool bLoaded;
 		ConVarRef cl_cloud_settings{ "cl_cloud_settings" };
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamRemoteStorage *pSteamRemoteStorage = SteamRemoteStorage();
+		#else
+		ISteamRemoteStorage *pSteamRemoteStorage = SteamRemoteStorage();
+		#endif
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( ( cl_cloud_settings.GetInt() & STEAMREMOTESTORAGE_CLOUD_SAVED_LOADOUTS ) && pSteamRemoteStorage && pSteamRemoteStorage->FileExists( "reactivedrop/cfg/saved_loadouts.txt" ) )
+		#else
+		if ( ( cl_cloud_settings.GetInt() & STEAMREMOTESTORAGE_CLOUD_SAVED_LOADOUTS ) && pSteamRemoteStorage && pSteamRemoteStorage->FileExists( "reactivedrop/cfg/saved_loadouts.txt" ) )
+		#endif
 		{
 			CUtlBuffer buf;
+			#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			int32 iSize = pSteamRemoteStorage->GetFileSize( "reactivedrop/cfg/saved_loadouts.txt" );
+			#else
+			int32 iSize = pSteamRemoteStorage->GetFileSize( "reactivedrop/cfg/saved_loadouts.txt" );
+			#endif
+			#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pSteamRemoteStorage->FileRead( "reactivedrop/cfg/saved_loadouts.txt", buf.AccessForDirectRead( iSize ), iSize );
+			#else
+			pSteamRemoteStorage->FileRead( "reactivedrop/cfg/saved_loadouts.txt", buf.AccessForDirectRead( iSize ), iSize );
+			#endif
 			buf.SeekPut( CUtlBuffer::SEEK_HEAD, iSize );
 			filesystem->WriteFile( "cfg/saved_loadouts.txt", "MOD", buf );
 			buf.SetBufferType( true, true );
@@ -350,12 +366,20 @@ namespace ReactiveDropLoadout
 		pKV->SaveToFile( g_pFullFileSystem, "cfg/saved_loadouts.txt", "MOD" );
 
 		ConVarRef cl_cloud_settings{ "cl_cloud_settings" };
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamRemoteStorage *pSteamRemoteStorage = SteamRemoteStorage();
+		#else
+		ISteamRemoteStorage *pSteamRemoteStorage = SteamRemoteStorage();
+		#endif
 		if ( ( cl_cloud_settings.GetInt() & STEAMREMOTESTORAGE_CLOUD_SAVED_LOADOUTS ) && pSteamRemoteStorage )
 		{
 			CUtlBuffer buf;
 			pKV->RecursiveSaveToFile( buf, 0 );
+			#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pSteamRemoteStorage->FileWrite( "reactivedrop/cfg/saved_loadouts.txt", buf.Base(), buf.TellPut() );
+			#else
+			pSteamRemoteStorage->FileWrite( "reactivedrop/cfg/saved_loadouts.txt", buf.Base(), buf.TellPut() );
+			#endif
 		}
 	}
 	void WriteLoadoutsForSharing( CUtlBuffer &buf, const CUtlDict<ReactiveDropLoadout::LoadoutData_t> &loadouts )
@@ -458,9 +482,18 @@ namespace ReactiveDropLoadout
 			MarineIncluded[i] = true;
 		}
 
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamUtils *pUtils = SteamUtils();
+		#else
+		ISteamUtils *pUtils = SteamUtils();
+		#endif
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( pUtils )
 			LastModified = pUtils->GetServerRealTime();
+		#else
+		if ( pUtils )
+			LastModified = pUtils->GetServerRealTime();
+		#endif
 	}
 	bool LoadoutData_t::ReplaceItemID( SteamItemInstanceID_t oldID, SteamItemInstanceID_t newID, const char *szDebugLoadoutName )
 	{
@@ -627,12 +660,20 @@ namespace ReactiveDropLoadout
 
 	void MarkIntegratedGuideAsUsed( PublishedFileId_t id )
 	{
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamRemoteStorage *pRemoteStorage = SteamRemoteStorage();
+		#else
+		ISteamRemoteStorage *pRemoteStorage = SteamRemoteStorage();
+		#endif
 		Assert( pRemoteStorage );
 		if ( pRemoteStorage )
 		{
 			// we don't really care about the result of this call because we can't do anything either way
+			#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			pRemoteStorage->SetUserPublishedFileAction( id, k_EWorkshopFileActionPlayed );
+			#else
+			pRemoteStorage->SetUserPublishedFileAction( id, k_EWorkshopFileActionPlayed );
+			#endif
 		}
 	}
 #endif

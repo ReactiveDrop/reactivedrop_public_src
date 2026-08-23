@@ -386,7 +386,11 @@ bool FoundGameListItem::Info::SetFromFriend( CSteamID friendID, const FriendGame
 	if ( info.m_steamIDLobby.IsLobby() )
 	{
 		// ask for the lobby; maybe we'll have it next time
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		SteamMatchmaking()->RequestLobbyData( info.m_steamIDLobby );
+#else
+		SteamMatchmaking()->RequestLobbyData( info.m_steamIDLobby );
+#endif
 
 		return false;
 	}
@@ -404,12 +408,20 @@ bool FoundGameListItem::Info::SetFromLobby( CSteamID lobby )
 {
 	Assert( lobby.IsLobby() );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamMatchmaking *pMatchmaking = SteamMatchmaking();
+#else
+	ISteamMatchmaking *pMatchmaking = SteamMatchmaking();
+#endif
 	Assert( pMatchmaking );
 	if ( !pMatchmaking )
 		return false;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 #define LOBBY_DATA( key ) pMatchmaking->GetLobbyData( lobby, key )
+#else
+#define LOBBY_DATA( key ) pMatchmaking->GetLobbyData( lobby, key )
+#endif
 
 #ifndef _DEBUG
 	if ( V_strcmp( LOBBY_DATA( "game:dlcrequired" ), "0" ) || V_strcmp( LOBBY_DATA( "game:state" ), "game" ) || V_strcmp( LOBBY_DATA( "system:lock" ), "" ) || V_strcmp( LOBBY_DATA( "system:network" ), "LIVE" ) )
@@ -485,12 +497,23 @@ bool FoundGameListItem::Info::SetFromLobby( CSteamID lobby )
 	m_iCurPlayers = V_atoi( LOBBY_DATA( "members:numPlayers" ) );
 	m_iMaxPlayers = V_atoi( LOBBY_DATA( "members:numSlots" ) );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( ISteamNetworkingUtils *pNetworkingUtils = SteamNetworkingUtils() )
+#else
+	if ( ISteamNetworkingUtils *pNetworkingUtils = SteamNetworkingUtils() )
+#endif
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( pNetworkingUtils->ParsePingLocationString( LOBBY_DATA( "system:rd_lobby_location" ), m_PingLocation ) )
 		{
 			m_iPingMS = pNetworkingUtils->EstimatePingTimeFromLocalHost( m_PingLocation );
 		}
+#else
+		if ( pNetworkingUtils->ParsePingLocationString( LOBBY_DATA( "system:rd_lobby_location" ), m_PingLocation ) )
+		{
+			m_iPingMS = pNetworkingUtils->EstimatePingTimeFromLocalHost( m_PingLocation );
+		}
+#endif
 	}
 
 	m_ePingCategory = GetPingCategory( m_iPingMS );
@@ -1236,7 +1259,11 @@ void FoundGameListItem::PostChildPaint()
 		int iFriendLabelXOffset, discard;
 		m_pLblPlayerGamerTag->GetPos( iFriendLabelXOffset, discard );
 		Color FriendColor = HasFocus() || HasMouseover() || IsSelected() ? Color( 255, 255, 255, 255 ) : Color( 100, 100, 100, 255 );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( ISteamFriends *pSteamFriends = SteamFriends() )
+#else
+		if ( ISteamFriends *pSteamFriends = SteamFriends() )
+#endif
 		{
 			vgui::surface()->DrawSetTextFont( m_hTextFont );
 			vgui::surface()->DrawSetTextColor( FriendColor );
@@ -1244,7 +1271,11 @@ void FoundGameListItem::PostChildPaint()
 			FOR_EACH_VEC( m_FullInfo.m_Friends, i )
 			{
 				wchar_t wszFriendName[k_cwchPersonaNameMax];
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				V_UTF8ToUnicode( pSteamFriends->GetFriendPersonaName( m_FullInfo.m_Friends[i] ), wszFriendName, sizeof( wszFriendName ) );
+#else
+				V_UTF8ToUnicode( pSteamFriends->GetFriendPersonaName( m_FullInfo.m_Friends[i] ), wszFriendName, sizeof( wszFriendName ) );
+#endif
 				g_RDTextFiltering.FilterTextName( wszFriendName, m_FullInfo.m_Friends[i] );
 
 				int w, t;
@@ -1520,12 +1551,20 @@ void FoundGameListItem::PerformLayout()
 		int iFriendLabelXOffset, discard;
 		m_pLblPlayerGamerTag->GetPos( iFriendLabelXOffset, discard );
 		iAdditionalTall = YRES( 2 );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( ISteamFriends *pSteamFriends = SteamFriends() )
+#else
+		if ( ISteamFriends *pSteamFriends = SteamFriends() )
+#endif
 		{
 			FOR_EACH_VEC( m_FullInfo.m_Friends, i )
 			{
 				wchar_t wszFriendName[k_cwchPersonaNameMax];
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				V_UTF8ToUnicode( pSteamFriends->GetFriendPersonaName( m_FullInfo.m_Friends[i] ), wszFriendName, sizeof( wszFriendName ) );
+#else
+				V_UTF8ToUnicode( pSteamFriends->GetFriendPersonaName( m_FullInfo.m_Friends[i] ), wszFriendName, sizeof( wszFriendName ) );
+#endif
 
 				int w, t;
 				vgui::surface()->GetTextSize( m_hTextFont, wszFriendName, w, t );
@@ -1836,7 +1875,11 @@ void FoundGames::OpenPlayerFlyout( BaseModHybridButton *button, uint64 playerId,
 	{
 		flyout = dynamic_cast< FlyoutMenu * >( FindChildByName( "FlmPlayerFlyout_SteamGroup" ) );
 	}
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	else if ( SteamFriends()->GetFriendRelationship( playerId ) == k_EFriendRelationshipFriend )
+#else
+	else if ( SteamFriends()->GetFriendRelationship( playerId ) == k_EFriendRelationshipFriend )
+#endif
 	{
 		flyout = dynamic_cast< FlyoutMenu * >( FindChildByName( "FlmPlayerFlyout" ) );
 	}
@@ -2138,20 +2181,41 @@ void FoundGames::AddServersToList()
 
 void FoundGames::AddFriendGamesToList( bool bMergeOnly )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamFriends *pFriends = SteamFriends();
+#else
+	ISteamFriends *pFriends = SteamFriends();
+#endif
 	Assert( pFriends );
 	if ( !pFriends )
 		return;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	const static AppId_t s_iAppID = SteamUtils()->GetAppID();
+#else
+	const static AppId_t s_iAppID = SteamUtils()->GetAppID();
+#endif
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	int count = pFriends->GetFriendCount( k_EFriendFlagImmediate );
+#else
+	int count = pFriends->GetFriendCount( k_EFriendFlagImmediate );
+#endif
 	for ( int i = 0; i < count; i++ )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		CSteamID friendID = pFriends->GetFriendByIndex( i, k_EFriendFlagImmediate );
+#else
+		CSteamID friendID = pFriends->GetFriendByIndex( i, k_EFriendFlagImmediate );
+#endif
 		FriendGameInfo_t gameInfo;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !pFriends->GetFriendGamePlayed( friendID, &gameInfo ) )
 			continue; // not playing a game
+#else
+		if ( !pFriends->GetFriendGamePlayed( friendID, &gameInfo ) )
+			continue; // not playing a game
+#endif
 		if ( !gameInfo.m_gameID.IsSteamApp() || gameInfo.m_gameID.AppID() != s_iAppID )
 			continue; // not playing AS:RD
 
@@ -2633,7 +2697,11 @@ void FoundGames::OnItemSelected( const char *panelName )
 		}
 
 		btnWebsite->SetText( finalString );
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		btnWebsite->SetVisible( finalString[0] != 0 && ( gameListItem->GetFullInfo().m_iMissionWorkshopID == k_PublishedFileIdInvalid || !SteamUtils() || !SteamUtils()->IsOverlayEnabled() ) );
+		#else
+		btnWebsite->SetVisible( finalString[0] != 0 && ( gameListItem->GetFullInfo().m_iMissionWorkshopID == k_PublishedFileIdInvalid || !SteamUtils() || !SteamUtils()->IsOverlayEnabled() ) );
+		#endif
 	}
 
 	vgui::Label *lblAccess = dynamic_cast< vgui::Label * >( FindChildByName( "LblPlayerAccess" ) );

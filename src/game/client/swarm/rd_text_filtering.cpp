@@ -18,13 +18,21 @@ CRD_Text_Filtering::CRD_Text_Filtering() : CAutoGameSystem( "CRD_Text_Filtering"
 
 void CRD_Text_Filtering::PostInit()
 {
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !SteamUtils() )
+	#else
+	if ( !SteamUtils() )
+	#endif
 	{
 		Warning( "RD_Text_Filtering: SteamUtils() returned NULL!\n" );
 		return;
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !SteamUtils()->InitFilterText() )
+#else
+	if ( !SteamUtils()->InitFilterText() )
+#endif
 	{
 		DevMsg( "RD_Text_Filtering: filtering unavailable for this language.\n" );
 	}
@@ -32,7 +40,11 @@ void CRD_Text_Filtering::PostInit()
 
 CSteamID CRD_Text_Filtering::GetClientSteamID( int client )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !SteamUtils() )
+#else
+	if ( !SteamUtils() )
+#endif
 	{
 		return k_steamIDNil;
 	}
@@ -43,19 +55,31 @@ CSteamID CRD_Text_Filtering::GetClientSteamID( int client )
 		return k_steamIDNil;
 	}
 
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	return CSteamID( playerInfo.friendsID, SteamUtils()->GetConnectedUniverse(), k_EAccountTypeIndividual );
+	#else
+	return CSteamID( playerInfo.friendsID, SteamUtils()->GetConnectedUniverse(), k_EAccountTypeIndividual );
+	#endif
 }
 
 static void DoFilterText( ETextFilteringContext eContext, CSteamID sourceSteamID, char *szText, size_t bufSizeInBytes )
 {
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !rd_text_filtering.GetBool() || !SteamUtils() )
+	#else
+	if ( !rd_text_filtering.GetBool() || !SteamUtils() )
+	#endif
 		return;
 
 	if ( rd_text_filtering_debug_no_steamid.GetBool() )
 		sourceSteamID = k_steamIDNil;
 
 	char *szDest = (char *)stackalloc( bufSizeInBytes );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamUtils()->FilterText( eContext, sourceSteamID, szText, szDest, bufSizeInBytes );
+#else
+	SteamUtils()->FilterText( eContext, sourceSteamID, szText, szDest, bufSizeInBytes );
+#endif
 	V_strncpy( szText, szDest, bufSizeInBytes );
 }
 

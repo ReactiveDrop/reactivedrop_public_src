@@ -225,7 +225,11 @@ void BaseModUI::ReactiveDropChallengeSelectionListItem::PopulateChallenge( const
 		m_imgIcon->SetVisible( false );
 	}
 	m_szChallengeDescription = pKV->GetString( "description", item.details.m_rgchDescription[0] ? item.details.m_rgchDescription : "#rd_challenge_selection_no_description" );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	m_szChallengeAuthor = pKV->GetString( "author", item.details.m_ulSteamIDOwner ? SteamFriends()->GetFriendPersonaName( item.details.m_ulSteamIDOwner ) : "" );
+#else
+	m_szChallengeAuthor = pKV->GetString( "author", item.details.m_ulSteamIDOwner ? SteamFriends()->GetFriendPersonaName( item.details.m_ulSteamIDOwner ) : "" );
+#endif
 
 	if ( m_nWorkshopID == k_PublishedFileIdInvalid )
 	{
@@ -461,7 +465,11 @@ void BaseModUI::ReactiveDropChallengeSelection::SetDetailsForChallenge( Reactive
 	const CReactiveDropWorkshop::WorkshopItem_t &item = pChallenge->GetWorkshopItem();
 	if ( item.details.m_nPublishedFileId )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		const char *szName = SteamFriends()->GetFriendPersonaName( item.details.m_ulSteamIDOwner );
+#else
+		const char *szName = SteamFriends()->GetFriendPersonaName( item.details.m_ulSteamIDOwner );
+#endif
 		wchar_t wszAuthorName[k_cwchPersonaNameMax];
 		Q_UTF8ToUnicode( szName, wszAuthorName, sizeof( wszAuthorName ) );
 

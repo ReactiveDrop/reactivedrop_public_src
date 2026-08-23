@@ -1,4 +1,4 @@
-﻿#include "cbase.h"
+#include "cbase.h"
 #include <vgui_controls/Panel.h>
 #include "asw_scalable_text.h"
 #include <vgui/isurface.h>
@@ -14,14 +14,26 @@ static bool IsAlphabet( char category )
 	if ( !s_chAlphabet )
 	{
 		// Only compute this once. If the user changes their language during a game session, we might precache the wrong materials, but otherwise no issue.
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		Assert( SteamApps() );
+		#else
+		Assert( SteamApps() );
+		#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !SteamApps() )
+#else
+		if ( !SteamApps() )
+#endif
 		{
 			s_chAlphabet = 'e'; // error
 			return false;
 		}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		const char *szLang = SteamApps()->GetCurrentGameLanguage();
+#else
+		const char *szLang = SteamApps()->GetCurrentGameLanguage();
+#endif
 		if ( !V_strcmp( szLang, "english" ) || !V_strcmp( szLang, "german" ) || !V_strcmp( szLang, "italian" ) || !V_strcmp( szLang, "vietnamese" ) )
 		{
 			s_chAlphabet = 'L'; // Latin

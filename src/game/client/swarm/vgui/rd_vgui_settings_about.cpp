@@ -46,7 +46,11 @@ CRD_VGUI_Settings_About::CRD_VGUI_Settings_About( vgui::Panel *parent, const cha
 
 void CRD_VGUI_Settings_About::Activate()
 {
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamApps *pApps = SteamApps();
+	#else
+	ISteamApps *pApps = SteamApps();
+	#endif
 	Assert( pApps );
 
 	wchar_t wszBuf[256];
@@ -58,7 +62,11 @@ void CRD_VGUI_Settings_About::Activate()
 	}
 	else
 	{
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		V_snwprintf( wszParam, NELEMS( wszParam ), L"%d", pApps->GetAppBuildId() );
+	#else
+		V_snwprintf( wszParam, NELEMS( wszParam ), L"%d", pApps->GetAppBuildId() );
+	#endif
 	}
 	g_pVGuiLocalize->ConstructString( wszBuf, sizeof( wszBuf ), g_pVGuiLocalize->Find( "#rd_about_build_id" ), 1, wszParam );
 	m_pLblBuildID->SetText( wszBuf );
@@ -72,7 +80,11 @@ void CRD_VGUI_Settings_About::Activate()
 	{
 		V_wcsncpy( wszParam, L"?", sizeof( wszParam ) );
 	}
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	else if ( pApps->GetCurrentBetaName( szBranch, sizeof( szBranch ) ) || szBranch[0] != '\0' )
+	#else
+	else if ( pApps->GetCurrentBetaName( szBranch, sizeof( szBranch ) ) || szBranch[0] != '\0' )
+	#endif
 	{
 		V_UTF8ToUnicode( szBranch, wszParam, sizeof( wszParam ) );
 	}

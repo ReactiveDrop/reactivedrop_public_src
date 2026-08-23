@@ -541,7 +541,11 @@ void LoadingProgress::SetPosterData( KeyValues *pMissionInfo, KeyValues *pChapte
 
 void LoadingProgress::SetLeaderboardData( const char *pszLevelName, PublishedFileId_t nLevelAddon, const char *pszLevelDisplayName, const char *pszChallengeName, PublishedFileId_t nChallengeAddon, const char *pszChallengeDisplayName )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !rd_show_leaderboard_loading.GetBool() || !SteamUserStats() || !SteamFriends() )
+#else
+	if ( !rd_show_leaderboard_loading.GetBool() || !SteamUserStats() || !SteamFriends() )
+#endif
 	{
 		return;
 	}
@@ -583,7 +587,11 @@ void LoadingProgress::SetLeaderboardData( const char *pszLevelName, PublishedFil
 		Q_snwprintf( m_wszLeaderboardTitle, ARRAYSIZE( m_wszLeaderboardTitle ), L"%s", wszLevelDisplayName );
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamAPICall_t hCall = SteamUserStats()->FindLeaderboard( szLeaderboardName );
+#else
+	SteamAPICall_t hCall = SteamUserStats()->FindLeaderboard( szLeaderboardName );
+#endif
 	m_LeaderboardFind.Set( hCall, this, &LoadingProgress::LeaderboardFind );
 }
 
@@ -594,9 +602,17 @@ void LoadingProgress::LeaderboardFind( LeaderboardFindResult_t *pResult, bool bI
 		return;
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	m_pLeaderboardPanel->SetDisplayType( SteamUserStats()->GetLeaderboardDisplayType( pResult->m_hSteamLeaderboard ) );
+#else
+	m_pLeaderboardPanel->SetDisplayType( SteamUserStats()->GetLeaderboardDisplayType( pResult->m_hSteamLeaderboard ) );
+#endif
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamAPICall_t hCall = SteamUserStats()->DownloadLeaderboardEntries( pResult->m_hSteamLeaderboard, k_ELeaderboardDataRequestFriends, 0, 0 );
+#else
+	SteamAPICall_t hCall = SteamUserStats()->DownloadLeaderboardEntries( pResult->m_hSteamLeaderboard, k_ELeaderboardDataRequestFriends, 0, 0 );
+#endif
 	m_LeaderboardDownloaded.Set( hCall, this, &LoadingProgress::LeaderboardDownloaded );
 }
 

@@ -78,12 +78,20 @@ void CRD_VGUI_Main_Menu_HoIAF_Leaderboard_Entry::SetFromEntry( const Leaderboard
 {
 	m_SteamID = entry.m_steamIDUser;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamFriends *pFriends = SteamFriends();
+#else
+	ISteamFriends *pFriends = SteamFriends();
+#endif
 	Assert( pFriends );
 	if ( pFriends )
 	{
 		wchar_t wszName[k_cwchPersonaNameMax];
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		V_UTF8ToUnicode( pFriends->GetFriendPersonaName( m_SteamID ), wszName, sizeof( wszName ) );
+#else
+		V_UTF8ToUnicode( pFriends->GetFriendPersonaName( m_SteamID ), wszName, sizeof( wszName ) );
+#endif
 		SetText( wszName );
 	}
 

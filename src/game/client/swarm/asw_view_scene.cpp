@@ -365,10 +365,17 @@ bool CLanguagePreferenceProxy::Init( IMaterial *pMaterial, KeyValues *pKeyValues
 	}
 
 	const char *szTextureName = pKeyValues->GetString( "default", NULL );
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( SteamApps() )
 	{
 		szTextureName = pKeyValues->GetString( SteamApps()->GetCurrentGameLanguage(), szTextureName);
 	}
+	#else
+	if ( SteamApps() )
+	{
+		szTextureName = pKeyValues->GetString( SteamApps()->GetCurrentGameLanguage(), szTextureName);
+	}
+	#endif
 
 	if ( !szTextureName )
 	{

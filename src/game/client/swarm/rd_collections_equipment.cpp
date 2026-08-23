@@ -370,7 +370,11 @@ void CRD_Collection_Details_Equipment::DisplayEntry( TGD_Entry *pEntry )
 
 		if ( rd_swarmopedia_global_stat_window_days.GetInt() >= 0 && g_ASW_Steamstats.AreGlobalStatsReady() )
 		{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			Assert( SteamUserStats() );
+#else
+			Assert( SteamUserStats() );
+#endif
 
 			wchar_t wszDays[4]{};
 			V_snwprintf( wszDays, ARRAYSIZE( wszDays ), L"%d", rd_swarmopedia_global_stat_window_days.GetInt() );
@@ -388,11 +392,19 @@ void CRD_Collection_Details_Equipment::DisplayEntry( TGD_Entry *pEntry )
 				int64 nStat[61]{};
 				if ( rd_swarmopedia_global_stat_window_days.GetInt() == 0 )
 				{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 					nOK = SteamUserStats()->GetGlobalStat( pWeapon->GlobalStats[i]->StatName, &nStat[1] ) ? 1 : 0;
+#else
+					nOK = SteamUserStats()->GetGlobalStat( pWeapon->GlobalStats[i]->StatName, &nStat[1] ) ? 1 : 0;
+#endif
 				}
 				else
 				{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 					nOK = SteamUserStats()->GetGlobalStatHistory( pWeapon->GlobalStats[i]->StatName, &nStat[1], sizeof( nStat ) - sizeof( nStat[0] ) );
+#else
+					nOK = SteamUserStats()->GetGlobalStatHistory( pWeapon->GlobalStats[i]->StatName, &nStat[1], sizeof( nStat ) - sizeof( nStat[0] ) );
+#endif
 				}
 
 				for ( int j = 1; j <= nOK; j++ )

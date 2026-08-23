@@ -811,11 +811,23 @@ ConCommand asw_debug_spectator( "asw_debug_spectator", asw_debug_spectator_f, "P
 // TODO: Remove this before ship?
 void reset_steam_stats_f()
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	Assert( SteamUserStats() );
+#else
+	Assert( SteamUserStats() );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !SteamUserStats() )
+#else
+	if ( !SteamUserStats() )
+#endif
 		return;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamUserStats()->ResetAllStats( false );
+#else
+	SteamUserStats()->ResetAllStats( false );
+#endif
 
 	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
 	if ( pPlayer )
@@ -829,8 +841,16 @@ void rd_reset_level_and_promotion_f()
 {
 	Msg( "Resetting your level and promotion...\n" );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	Assert( SteamUserStats() );
+#else
+	Assert( SteamUserStats() );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !SteamUserStats() )
+#else
+	if ( !SteamUserStats() )
+#endif
 	{
 		Msg( "Error. Cannot access SteamUserStats()\n" );
 		return;
@@ -838,11 +858,31 @@ void rd_reset_level_and_promotion_f()
 
 	int32 m_iExperience = 0, m_iPromotion = 0;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamUserStats()->SetStat( "experience", m_iExperience );
+#else
+	SteamUserStats()->SetStat( "experience", m_iExperience );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamUserStats()->SetStat( "promotion", m_iPromotion );
+#else
+	SteamUserStats()->SetStat( "promotion", m_iPromotion );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamUserStats()->SetStat( "level", 1 );
+#else
+	SteamUserStats()->SetStat( "level", 1 );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamUserStats()->SetStat( "level.xprequired", 0 );
+#else
+	SteamUserStats()->SetStat( "level.xprequired", 0 );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamUserStats()->StoreStats();
+#else
+	SteamUserStats()->StoreStats();
+#endif
 
 	C_ASW_Medal_Store *pStore = GetMedalStore();
 

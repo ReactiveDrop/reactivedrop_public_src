@@ -151,7 +151,11 @@ private:
 		bool m_bCancelled;
 		PublishedFileId_t m_nFileID;
 		UGCHandle_t m_nPreviewImage;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		CCallResult<CReactiveDropWorkshop::WorkshopPreviewRequest_t, RemoteStorageDownloadUGCResult_t> m_hCall;
+#else
+		CCallResult<CReactiveDropWorkshop::WorkshopPreviewRequest_t, RemoteStorageDownloadUGCResult_t> m_hCall;
+#endif
 	};
 	CUtlVectorAutoPurge<WorkshopPreviewRequest_t *> m_PreviewRequests;
 	void ClearOldPreviewRequests();
@@ -247,24 +251,52 @@ private:
 	CUtlVector<PublishedFileId_t> m_DisabledAddons;
 
 #ifdef CLIENT_DLL
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
+	STEAM_CALLBACK( CReactiveDropWorkshop, ScreenshotReadyCallback, ScreenshotReady_t );
+#else
 	STEAM_CALLBACK( CReactiveDropWorkshop, ScreenshotReadyCallback, ScreenshotReady_t );
 #endif
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	STEAM_CALLBACK( CReactiveDropWorkshop, DownloadItemResultCallback, DownloadItemResult_t );
+#else
+	STEAM_CALLBACK( CReactiveDropWorkshop, DownloadItemResultCallback, DownloadItemResult_t );
+#endif
 #ifdef GAME_DLL
 	STEAM_GAMESERVER_CALLBACK( CReactiveDropWorkshop, DownloadItemResultCallback_Server, DownloadItemResult_t );
 #endif
 	void AddAddonsToCache( SteamUGCQueryCompleted_t *pResult, bool bIOFailure, UGCQueryHandle_t & hQuery );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CCallResult<CReactiveDropWorkshop, SteamUGCQueryCompleted_t> m_SteamUGCQueryCompleted;
+#else
+	CCallResult<CReactiveDropWorkshop, SteamUGCQueryCompleted_t> m_SteamUGCQueryCompleted;
+#endif
 	void SteamUGCQueryCompletedCallback( SteamUGCQueryCompleted_t *pResult, bool bIOFailure );
 #ifdef CLIENT_DLL
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CCallResult<CReactiveDropWorkshop, SteamUGCQueryCompleted_t> m_SteamPublishedAddonsRequestCompleted;
+#else
+	CCallResult<CReactiveDropWorkshop, SteamUGCQueryCompleted_t> m_SteamPublishedAddonsRequestCompleted;
+#endif
 	void SteamPublishedAddonsRequestCompleted( SteamUGCQueryCompleted_t *pResult, bool bIOFailure );
 #endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CCallResult<CReactiveDropWorkshop, SteamUGCQueryCompleted_t> m_SteamFavoritedAddonsRequestCompleted;
+#else
+	CCallResult<CReactiveDropWorkshop, SteamUGCQueryCompleted_t> m_SteamFavoritedAddonsRequestCompleted;
+#endif
 	void SteamFavoritedAddonsRequestCompleted( SteamUGCQueryCompleted_t *pResult, bool bIOFailure );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	STEAM_CALLBACK( CReactiveDropWorkshop, OnSubscribed, RemoteStoragePublishedFileSubscribed_t );
+#else
+	STEAM_CALLBACK( CReactiveDropWorkshop, OnSubscribed, RemoteStoragePublishedFileSubscribed_t );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	STEAM_CALLBACK( CReactiveDropWorkshop, OnUnsubscribed, RemoteStoragePublishedFileUnsubscribed_t );
+#else
+	STEAM_CALLBACK( CReactiveDropWorkshop, OnUnsubscribed, RemoteStoragePublishedFileUnsubscribed_t );
+#endif
 
 #ifdef CLIENT_DLL
 	void UploadWorkshopItem( const char *pszContentPath, const char *pszPreviewImagePath, const char *pszTitle, const char *pszDescription, const CUtlVector<const char *> & tags );
@@ -299,13 +331,29 @@ private:
 	UGCUpdateHandle_t m_hUpdate;
 	PublishedFileId_t m_nLastPublishedFileID;
 	bool m_bWantAutoTags;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CCallResult<CReactiveDropWorkshop, CreateItemResult_t> m_CreateItemResultCallback;
+#else
+	CCallResult<CReactiveDropWorkshop, CreateItemResult_t> m_CreateItemResultCallback;
+#endif
 	void CreateItemResultCallback( CreateItemResult_t *pResult, bool bIOFailure );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CCallResult<CReactiveDropWorkshop, SubmitItemUpdateResult_t> m_SubmitItemUpdateResultCallback;
+#else
+	CCallResult<CReactiveDropWorkshop, SubmitItemUpdateResult_t> m_SubmitItemUpdateResultCallback;
+#endif
 	void SubmitItemUpdateResultCallback( SubmitItemUpdateResult_t *pResult, bool bIOFailure );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CCallResult<CReactiveDropWorkshop, SteamUGCQueryCompleted_t> m_UpdateWorkshopItemQueryResultCallback;
+#else
+	CCallResult<CReactiveDropWorkshop, SteamUGCQueryCompleted_t> m_UpdateWorkshopItemQueryResultCallback;
+#endif
 	void UpdateWorkshopItemQueryResultCallback( SteamUGCQueryCompleted_t *pResult, bool bIOFailure );
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CCallResult<CReactiveDropWorkshop, CreateItemResult_t> m_CreateItemResultCallbackCurated;
+#else
+	CCallResult<CReactiveDropWorkshop, CreateItemResult_t> m_CreateItemResultCallbackCurated;
+#endif
 	void CreateItemResultCallbackCurated( CreateItemResult_t *pResult, bool bIOFailure );
 	friend static void ugc_create(const CCommand & args);
 	friend static void ugc_curated_create(const CCommand & args);

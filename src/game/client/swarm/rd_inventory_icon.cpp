@@ -20,15 +20,27 @@ public:
 		char szDebugName[512];
 		V_snprintf( szDebugName, sizeof( szDebugName ), "inventory item icon %s", szURL );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamHTTP *pHTTP = SteamHTTP();
+#else
+		ISteamHTTP *pHTTP = SteamHTTP();
+#endif
 		Assert( pHTTP );
 		if ( pHTTP )
 		{
 			// The medal images send a Cache-Control header of "public, max-age=315569520" (1 decade).
 			// The Steam API will automatically cache stuff for us, so we don't have to manage cache ourselves.
+			#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			HTTPRequestHandle hRequest = pHTTP->CreateHTTPRequest( k_EHTTPMethodGET, szURL );
+			#else
+			HTTPRequestHandle hRequest = pHTTP->CreateHTTPRequest( k_EHTTPMethodGET, szURL );
+			#endif
 			SteamAPICall_t hAPICall;
+			#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			if ( pHTTP->SendHTTPRequest( hRequest, &hAPICall ) )
+			#else
+			if ( pHTTP->SendHTTPRequest( hRequest, &hAPICall ) )
+			#endif
 			{
 				m_szDebugName = strdup( szDebugName );
 				m_HTTPRequestCompleted.Set( hAPICall, this, &CSteamItemIcon::OnRequestCompleted );
@@ -66,7 +78,11 @@ private:
 			return;
 		}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		ISteamHTTP *pHTTP = SteamHTTP();
+#else
+		ISteamHTTP *pHTTP = SteamHTTP();
+#endif
 		Assert( pHTTP );
 		if ( !pHTTP )
 		{
@@ -82,19 +98,31 @@ private:
 		}
 
 		CUtlMemory<uint8_t> data( 0, pParam->m_unBodySize );
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( !pHTTP->GetHTTPResponseBodyData( pParam->m_hRequest, data.Base(), pParam->m_unBodySize ) )
+		#else
+		if ( !pHTTP->GetHTTPResponseBodyData( pParam->m_hRequest, data.Base(), pParam->m_unBodySize ) )
+		#endif
 		{
 			Warning( "Failed to get inventory item icon from successful request. Programmer error?\n" );
 		}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pHTTP->ReleaseHTTPRequest( pParam->m_hRequest );
+#else
+		pHTTP->ReleaseHTTPRequest( pParam->m_hRequest );
+#endif
 
 		OnPNGDataReady( data.Base(), pParam->m_unBodySize, m_szDebugName );
 		free( m_szDebugName );
 		m_szDebugName = NULL;
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CCallResult<CSteamItemIcon, HTTPRequestCompleted_t> m_HTTPRequestCompleted;
+#else
+	CCallResult<CSteamItemIcon, HTTPRequestCompleted_t> m_HTTPRequestCompleted;
+#endif
 };
 
 vgui::IImage *GetSteamItemIcon( const char *szURL, bool bForceLoadRemote )
@@ -170,7 +198,11 @@ CON_COMMAND_F( rd_load_all_inventory_defs, "load data and icons for all defined 
 	// 900000000 <= id <= 999999999 - "unique" items; one copy of each exists (this is an AS:RD restriction, not an inventory service one). IDs are consecutive.
 	// 1000000000 <= id - Steam internal reserved ID range.
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamInventory *pInventory = SteamInventory();
+#else
+	ISteamInventory *pInventory = SteamInventory();
+#endif
 	Assert( pInventory );
 	if ( !pInventory )
 	{
@@ -179,9 +211,17 @@ CON_COMMAND_F( rd_load_all_inventory_defs, "load data and icons for all defined 
 	}
 
 	uint32_t nItemDefCount{};
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pInventory->GetItemDefinitionIDs( NULL, &nItemDefCount );
+#else
+	pInventory->GetItemDefinitionIDs( NULL, &nItemDefCount );
+#endif
 	CUtlMemory<SteamItemDef_t> DefIDs{ 0, int( nItemDefCount ) };
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	bool bOK = pInventory->GetItemDefinitionIDs( DefIDs.Base(), &nItemDefCount );
+#else
+	bool bOK = pInventory->GetItemDefinitionIDs( DefIDs.Base(), &nItemDefCount );
+#endif
 	Assert( bOK ); ( void )bOK;
 
 	Msg( "Checking %d item defs...\n", nItemDefCount );
@@ -207,14 +247,26 @@ CON_COMMAND_F( rd_load_all_inventory_defs, "load data and icons for all defined 
 		}
 	}
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	SteamAPICall_t hCall = pInventory->RequestPrices();
+#else
+	SteamAPICall_t hCall = pInventory->RequestPrices();
+#endif
 	bool bFailed{};
 	SteamInventoryRequestPricesResult_t param{};
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	while ( !SteamUtils()->GetAPICallResult( hCall, &param, sizeof( param ), param.k_iCallback, &bFailed ) )
 	{
 		ThreadSleep( 10 );
 		SteamAPI_RunCallbacks();
 	}
+	#else
+	while ( !SteamUtils()->GetAPICallResult( hCall, &param, sizeof( param ), param.k_iCallback, &bFailed ) )
+	{
+		ThreadSleep( 10 );
+		SteamAPI_RunCallbacks();
+	}
+	#endif
 
 	if ( bFailed )
 	{
@@ -223,12 +275,32 @@ CON_COMMAND_F( rd_load_all_inventory_defs, "load data and icons for all defined 
 	}
 
 	DefIDs.Purge();
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	DefIDs.EnsureCapacity( pInventory->GetNumItemsWithPrices() );
+#else
+	DefIDs.EnsureCapacity( pInventory->GetNumItemsWithPrices() );
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CUtlMemory<uint64_t> CurrentPrices{ 0, int( pInventory->GetNumItemsWithPrices() ) };
+#else
+	CUtlMemory<uint64_t> CurrentPrices{ 0, int( pInventory->GetNumItemsWithPrices() ) };
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CUtlMemory<uint64_t> BasePrices{ 0, int( pInventory->GetNumItemsWithPrices() ) };
+#else
+	CUtlMemory<uint64_t> BasePrices{ 0, int( pInventory->GetNumItemsWithPrices() ) };
+#endif
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	pInventory->GetItemsWithPrices( DefIDs.Base(), CurrentPrices.Base(), BasePrices.Base(), pInventory->GetNumItemsWithPrices() );
+#else
+	pInventory->GetItemsWithPrices( DefIDs.Base(), CurrentPrices.Base(), BasePrices.Base(), pInventory->GetNumItemsWithPrices() );
+#endif
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	Msg( "Checking %d store item defs...\n", pInventory->GetNumItemsWithPrices() );
+#else
+	Msg( "Checking %d store item defs...\n", pInventory->GetNumItemsWithPrices() );
+#endif
 	FOR_EACH_VEC( DefIDs, i )
 	{
 		const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( DefIDs[i] );
@@ -253,7 +325,11 @@ CON_COMMAND_F( rd_load_all_inventory_defs, "load data and icons for all defined 
 	for ( SteamItemDef_t id = 900000000; ; id++ )
 	{
 		uint32_t count{};
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		pInventory->GetItemDefinitionProperty( id, NULL, NULL, &count );
+#else
+		pInventory->GetItemDefinitionProperty( id, NULL, NULL, &count );
+#endif
 		if ( !count )
 		{
 			Msg( "Number of unique item defs: %d\n", id - 900000000 );

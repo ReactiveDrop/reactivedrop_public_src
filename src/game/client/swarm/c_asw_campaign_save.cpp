@@ -78,12 +78,20 @@ bool GetFileFromRemoteStorage( ISteamRemoteStorage *pRemoteStorage, const char *
 	bool bSuccess = false;
 
 	// check if file exists in Steam Cloud first
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	int32 nFileSize = pRemoteStorage->GetFileSize( pszRemoteFileName );
+#else
+	int32 nFileSize = pRemoteStorage->GetFileSize( pszRemoteFileName );
+#endif
 
 	if ( nFileSize > 0 )
 	{
 		CUtlMemory<char> buf( 0, nFileSize );
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( pRemoteStorage->FileRead( pszRemoteFileName, buf.Base(), nFileSize ) == nFileSize )
+	#else
+		if ( pRemoteStorage->FileRead( pszRemoteFileName, buf.Base(), nFileSize ) == nFileSize )
+	#endif
 		{
 			FileHandle_t hFile = g_pFullFileSystem->Open( pszLocalFileName, "wb", "MOD" );
 			if( hFile )
@@ -123,7 +131,11 @@ bool WriteFileToRemoteStorage( ISteamRemoteStorage *pRemoteStorage, const char *
 			byte *pBuffer = (byte*) malloc( unSize );
 			if ( g_pFullFileSystem->Read( pBuffer, unSize, hFile ) == (int) unSize )
 			{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 				bSuccess = pRemoteStorage->FileWrite( pszRemoteFileName, pBuffer, unSize );
+#else
+				bSuccess = pRemoteStorage->FileWrite( pszRemoteFileName, pBuffer, unSize );
+#endif
 			}
 			free( pBuffer );
 			g_pFullFileSystem->Close( hFile );

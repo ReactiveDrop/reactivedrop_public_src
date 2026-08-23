@@ -38,10 +38,17 @@ CRD_VGUI_Main_Menu_Top_Bar::CRD_VGUI_Main_Menu_Top_Bar( vgui::Panel *parent, con
 
 	g_RD_HUD_Sheets.VidInit();
 
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !s_nMainMenuTopBarCount && SteamUtils() )
 	{
 		SteamUtils()->SetOverlayNotificationInset( 0, YRES( 24 ) );
 	}
+	#else
+	if ( !s_nMainMenuTopBarCount && SteamUtils() )
+	{
+		SteamUtils()->SetOverlayNotificationInset( 0, YRES( 24 ) );
+	}
+	#endif
 	s_nMainMenuTopBarCount++;
 }
 
@@ -49,9 +56,17 @@ CRD_VGUI_Main_Menu_Top_Bar::~CRD_VGUI_Main_Menu_Top_Bar()
 {
 	Assert( s_nMainMenuTopBarCount > 0 );
 	s_nMainMenuTopBarCount--;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( !s_nMainMenuTopBarCount && SteamUtils() )
+#else
+	if ( !s_nMainMenuTopBarCount && SteamUtils() )
+#endif
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		SteamUtils()->SetOverlayNotificationInset( 0, 0 );
+#else
+		SteamUtils()->SetOverlayNotificationInset( 0, 0 );
+#endif
 	}
 }
 

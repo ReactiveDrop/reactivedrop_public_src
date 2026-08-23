@@ -377,9 +377,17 @@ void FoundPublicGames::Activate()
 	m_bShowHardcoreDifficulties = UTIL_ASW_CommanderLevelAtLeast( NULL, 15 );
 
 #if !defined( _X360 ) && !defined( NO_STEAM )
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( ISteamUserStats *pSteamUserStats = SteamUserStats() )
+#else
+	if ( ISteamUserStats *pSteamUserStats = SteamUserStats() )
+#endif
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		SteamAPICall_t hSteamAPICall = pSteamUserStats->GetNumberOfCurrentPlayers();
+#else
+		SteamAPICall_t hSteamAPICall = pSteamUserStats->GetNumberOfCurrentPlayers();
+#endif
 		m_callbackNumberOfCurrentPlayers.Set( hSteamAPICall, this, &FoundPublicGames::Steam_OnNumberOfCurrentPlayers );
 	}
 #endif

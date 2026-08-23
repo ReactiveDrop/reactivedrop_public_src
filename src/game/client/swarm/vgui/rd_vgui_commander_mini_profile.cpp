@@ -162,12 +162,20 @@ void CRD_VGUI_Commander_Mini_Profile::OnKeyCodePressed( vgui::KeyCode code )
 
 void CRD_VGUI_Commander_Mini_Profile::InitForLocalPlayer()
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamUser *pSteamUser = SteamUser();
+#else
+	ISteamUser *pSteamUser = SteamUser();
+#endif
 	Assert( pSteamUser );
 	if ( !pSteamUser )
 		return;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	CSteamID localPlayerID = pSteamUser->GetSteamID();
+#else
+	CSteamID localPlayerID = pSteamUser->GetSteamID();
+#endif
 
 	InitShared( localPlayerID );
 
@@ -209,7 +217,11 @@ void CRD_VGUI_Commander_Mini_Profile::InitShared( CSteamID steamID )
 
 	m_SteamID = steamID;
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamFriends *pSteamFriends = SteamFriends();
+#else
+	ISteamFriends *pSteamFriends = SteamFriends();
+#endif
 	Assert( pSteamFriends );
 	if ( !pSteamFriends )
 		return;
@@ -217,14 +229,26 @@ void CRD_VGUI_Commander_Mini_Profile::InitShared( CSteamID steamID )
 	m_pImgAvatar->SetAvatarBySteamID( &steamID );
 
 	wchar_t wszName[k_cwchPersonaNameMax + 1];
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	V_UTF8ToUnicode( pSteamFriends->GetFriendPersonaName( steamID ), wszName, sizeof( wszName ) );
+#else
+	V_UTF8ToUnicode( pSteamFriends->GetFriendPersonaName( steamID ), wszName, sizeof( wszName ) );
+#endif
 	m_pLblPlayerName->SetText( wszName );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamUserStats *pUserStats = SteamUserStats();
+#else
+	ISteamUserStats *pUserStats = SteamUserStats();
+#endif
 	Assert( pUserStats );
 	if ( pUserStats )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		SteamAPICall_t hCall = pUserStats->DownloadLeaderboardEntriesForUsers( STEAM_LEADERBOARD_HOIAF_CURRENT_SEASON, &steamID, 1 );
+#else
+		SteamAPICall_t hCall = pUserStats->DownloadLeaderboardEntriesForUsers( STEAM_LEADERBOARD_HOIAF_CURRENT_SEASON, &steamID, 1 );
+#endif
 		m_LeaderboardScoresDownloaded.Set( hCall, this, &CRD_VGUI_Commander_Mini_Profile::OnLeaderboardScoresDownloaded );
 	}
 	else
@@ -344,12 +368,20 @@ void CRD_VGUI_Commander_Mini_Profile::ClearHoIAFData()
 
 void CRD_VGUI_Commander_Mini_Profile::OnPersonaStateChange( PersonaStateChange_t *pParam )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamFriends *pSteamFriends = SteamFriends();
+#else
+	ISteamFriends *pSteamFriends = SteamFriends();
+#endif
 	Assert( pSteamFriends );
 	if ( pSteamFriends && m_SteamID.ConvertToUint64() == pParam->m_ulSteamID )
 	{
 		wchar_t wszName[k_cwchPersonaNameMax + 1];
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		V_UTF8ToUnicode( pSteamFriends->GetFriendPersonaName( m_SteamID ), wszName, sizeof( wszName ) );
+#else
+		V_UTF8ToUnicode( pSteamFriends->GetFriendPersonaName( m_SteamID ), wszName, sizeof( wszName ) );
+#endif
 		m_pLblPlayerName->SetText( wszName );
 	}
 }
@@ -367,7 +399,11 @@ void CRD_VGUI_Commander_Mini_Profile::OnLeaderboardScoresDownloaded( Leaderboard
 		Assert( pParam->m_cEntryCount == 1 );
 		LeaderboardEntry_t entry;
 		LeaderboardScoreDetails_Points_t details;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		bool bOK = SteamUserStats()->GetDownloadedLeaderboardEntry( pParam->m_hSteamLeaderboardEntries, 0, &entry, reinterpret_cast< int32 * >( &details ), sizeof( details ) / sizeof( int32 ) );
+#else
+		bool bOK = SteamUserStats()->GetDownloadedLeaderboardEntry( pParam->m_hSteamLeaderboardEntries, 0, &entry, reinterpret_cast< int32 * >( &details ), sizeof( details ) / sizeof( int32 ) );
+#endif
 		Assert( bOK );
 		if ( bOK )
 		{

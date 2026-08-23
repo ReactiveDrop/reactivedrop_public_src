@@ -67,16 +67,28 @@ void FoundGroupGames::OnEvent( KeyValues *pEvent )
 //=============================================================================
 void FoundGroupGames::AddServersToList( void )
 {
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	ISteamFriends *pFriends = SteamFriends();
+#else
+	ISteamFriends *pFriends = SteamFriends();
+#endif
 	Assert( pFriends );
 	if ( !pFriends )
 		return;
 
 	CUtlVector<CSteamID> GroupIDs;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	GroupIDs.SetCount( pFriends->GetClanCount() );
+#else
+	GroupIDs.SetCount( pFriends->GetClanCount() );
+#endif
 	FOR_EACH_VEC( GroupIDs, i )
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		GroupIDs[i] = pFriends->GetClanByIndex( i );
+#else
+		GroupIDs[i] = pFriends->GetClanByIndex( i );
+#endif
 	}
 
 	g_ReactiveDropServerList.m_InternetServers.WantUpdatedServerList();

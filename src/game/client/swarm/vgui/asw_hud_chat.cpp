@@ -568,21 +568,38 @@ void CHudChat::StartMessageMode( int iMessageModeType )
 {
 	BaseClass::StartMessageMode( iMessageModeType );
 
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( SteamUtils() )
 	{
 		int x, y, w, t;
 		GetBounds( x, y, w, t );
 		SteamUtils()->ShowFloatingGamepadTextInput( k_EFloatingGamepadTextInputModeModeSingleLine, x, y, w, t );
 	}
+	#else
+	if ( SteamUtils() )
+	{
+		int x, y, w, t;
+		GetBounds( x, y, w, t );
+		SteamUtils()->ShowFloatingGamepadTextInput( k_EFloatingGamepadTextInputModeModeSingleLine, x, y, w, t );
+	}
+	#endif
 }
 
 void CHudChat::StopMessageMode( bool bFade )
 {
 	BaseClass::StopMessageMode( bFade );
 
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( SteamUtils() )
+#else
+	if ( SteamUtils() )
+#endif
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		SteamUtils()->DismissFloatingGamepadTextInput();
+#else
+		SteamUtils()->DismissFloatingGamepadTextInput();
+#endif
 	}
 }
 

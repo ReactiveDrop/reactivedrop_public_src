@@ -156,6 +156,7 @@ static void GoToMarketplaceForOffer()
 #endif
 }
 
+
 static void ShowMarketplaceUiForOffer()
 {
 #ifdef _X360
@@ -427,9 +428,17 @@ void CUIGameData::OpenInviteUI( char const *szInviteUiType )
 		Assert( 0 );
 	}
 #else
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( SteamFriends() && SteamUtils() && SteamUtils()->IsOverlayEnabled() )
+#else
+	if ( SteamFriends() && SteamUtils() && SteamUtils()->IsOverlayEnabled() )
+#endif
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		SteamFriends()->ActivateGameOverlayInviteDialog( UTIL_RD_GetCurrentLobbyID() );
+#else
+		SteamFriends()->ActivateGameOverlayInviteDialog( UTIL_RD_GetCurrentLobbyID() );
+#endif
 	}
 	else
 	{
@@ -441,8 +450,18 @@ void CUIGameData::OpenInviteUI( char const *szInviteUiType )
 void CUIGameData::ExecuteOverlayCommand( char const *szCommand )
 {
 	CSteamID steamID;
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( SteamUser() )
+#else
+	if ( SteamUser() )
+#endif
+	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		steamID = SteamUser()->GetSteamID();
+#else
+		steamID = SteamUser()->GetSteamID();
+#endif
+	}
 
 	ExecuteOverlayCommand( szCommand, steamID );
 }
@@ -450,9 +469,17 @@ void CUIGameData::ExecuteOverlayCommand( char const *szCommand )
 void CUIGameData::ExecuteOverlayCommand( char const *szCommand, CSteamID steamID )
 {
 #if !defined( _X360 ) && !defined( NO_STEAM )
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( SteamFriends() && SteamUtils() && SteamUtils()->IsOverlayEnabled() )
+#else
+	if ( SteamFriends() && SteamUtils() && SteamUtils()->IsOverlayEnabled() )
+#endif
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		SteamFriends()->ActivateGameOverlayToUser( szCommand, steamID );
+#else
+		SteamFriends()->ActivateGameOverlayToUser( szCommand, steamID );
+#endif
 	}
 	else
 	{
@@ -467,9 +494,17 @@ void CUIGameData::ExecuteOverlayCommand( char const *szCommand, CSteamID steamID
 void CUIGameData::ExecuteOverlayUrl( char const *szUrl, bool bModal, bool bOpenInBrowserIfOverlayDisabled )
 {
 #if !defined( _X360 ) && !defined( NO_STEAM )
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( SteamFriends() && SteamUtils() && SteamUtils()->IsOverlayEnabled() )
+#else
+	if ( SteamFriends() && SteamUtils() && SteamUtils()->IsOverlayEnabled() )
+#endif
 	{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		SteamFriends()->ActivateGameOverlayToWebPage( szUrl, bModal ? k_EActivateGameOverlayToWebPageMode_Modal : k_EActivateGameOverlayToWebPageMode_Default );
+#else
+		SteamFriends()->ActivateGameOverlayToWebPage( szUrl, bModal ? k_EActivateGameOverlayToWebPageMode_Modal : k_EActivateGameOverlayToWebPageMode_Default );
+#endif
 	}
 	else if ( bOpenInBrowserIfOverlayDisabled )
 	{
@@ -849,12 +884,20 @@ char const * CUIGameData::GetPlayerName( XUID playerID, char const *szPlayerName
 		return "WWWWWWWWWWWWWWW";
 
 #if !defined( _X360 ) && !defined( NO_STEAM )
+	#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 	if ( SteamUtils() && SteamFriends() && SteamUser() )
+	#else
+	if ( SteamUtils() && SteamFriends() && SteamUser() )
+	#endif
 	{
 		int iIndex = m_mapUserXuidToName.Find( playerID );
 		if ( iIndex == m_mapUserXuidToName.InvalidIndex() )
 		{
+#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 			char const *szName = SteamFriends()->GetFriendPersonaName( playerID );
+#else
+			char const *szName = SteamFriends()->GetFriendPersonaName( playerID );
+#endif
 			if ( szName && *szName )
 			{
 				CUtlString szNameFiltered( szName );

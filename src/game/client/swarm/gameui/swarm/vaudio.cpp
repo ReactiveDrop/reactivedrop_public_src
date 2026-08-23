@@ -238,11 +238,19 @@ void Audio::Activate()
 		// In a Steam environment we get the current language 
 #if !defined( NO_STEAM )
 		// When Steam isn't running we can't get the language info... 
+		#if defined( STEAMAPPS_INTERFACE_VERSION008 )
 		if ( SteamApps() )
 		{
 			Q_strncpy( szCurrentLanguage, SteamApps()->GetCurrentGameLanguage(), sizeof(szCurrentLanguage) );
 			Q_strncpy( szAvailableLanguages, SteamApps()->GetAvailableGameLanguages(), sizeof(szAvailableLanguages) );
 		}
+		#else
+		if ( SteamApps() )
+		{
+			Q_strncpy( szCurrentLanguage, SteamApps()->GetCurrentGameLanguage(), sizeof(szCurrentLanguage) );
+			Q_strncpy( szAvailableLanguages, SteamApps()->GetAvailableGameLanguages(), sizeof(szAvailableLanguages) );
+		}
+		#endif
 #endif
 
 		// Get the spoken language and store it for comparison purposes
