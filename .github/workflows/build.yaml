@@ -24,6 +24,18 @@ on:
           - Debug
           - All
         default: All
+      server:
+        description: server.dll
+        type: boolean
+        default: true
+      client:
+        description: client.dll
+        type: boolean
+        default: true
+      missionchooser:
+        description: missionchooser.dll
+        type: boolean
+        default: true
 
 # GitHub Actions usage is FREE for both public repositories and self-hosted runners.
 # We can use it to build our project and do some automated builds and in future quality tests.
@@ -43,20 +55,30 @@ jobs:
           ) }}
 
     steps:
+      - name: Validate workflow dispatch dll selection
+        if: ${{ github.event_name == 'workflow_dispatch' && !inputs.server && !inputs.client && !inputs.missionchooser }}
+        shell: bash
+        run: |
+          echo "::error::Select at least one dll to build."
+          exit 1
+
       - uses: actions/checkout@v4
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
 
       - name: Build server.dll
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.server }}
         working-directory: src/game/server
         run: MSBuild.exe swarm_sdk_server.vcxproj -property:Configuration=${{ matrix.configuration }} -property:Platform=Win32
 
       - name: Build client.dll
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.client }}
         working-directory: src/game/client
         run: MSBuild.exe swarm_sdk_client.vcxproj -property:Configuration=${{ matrix.configuration }} -property:Platform=Win32
 
       - name: Build missionchooser.dll
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.missionchooser }}
         working-directory: src/game/missionchooser
         run: MSBuild.exe swarm_sdk_missionchooser.vcxproj -property:Configuration=${{ matrix.configuration }} -property:Platform=Win32
 
