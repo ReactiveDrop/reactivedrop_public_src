@@ -44,7 +44,7 @@ on:
 jobs:
   build:
     name: build ${{ matrix.configuration }}
-    runs-on: windows-2025-vs2026
+    runs-on: windows-2025
     timeout-minutes: 30
     strategy:
       matrix:
@@ -62,10 +62,10 @@ jobs:
           echo "::error::Select at least one dll to build."
           exit 1
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v2
+        uses: microsoft/setup-msbuild@v3
 
       - name: Build server.dll
         if: ${{ github.event_name != 'workflow_dispatch' || inputs.server }}
@@ -84,7 +84,7 @@ jobs:
 
       # make sure retention is low, this can become huge otherwise
       - name: Store build
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.configuration }}
           path: |
