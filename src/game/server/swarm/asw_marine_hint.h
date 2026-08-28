@@ -25,6 +25,7 @@ public:
 		HINT_DELETED = 0x00000001, // hint is unusable
 		HINT_NODE    = 0x00000002, // hint was created by the nodegraph
 		HINT_DYNAMIC = 0x00000004, // hint is (or was) tied to an active entity
+		HINT_NODROPS = 0x00000008, // hint is excluded from crafting material drops
 	};
 	int m_Flags;
 	Vector m_vecPosition;
@@ -41,6 +42,8 @@ public:
 	DECLARE_DATADESC();
 
 	virtual void Spawn();
+
+	bool m_bNoCraftingMaterialDrops = false;
 };
 
 class CASW_Marine_Hint_Dynamic : public CServerOnlyPointEntity
@@ -53,6 +56,7 @@ public:
 	virtual void PhysicsSimulate();
 	virtual void UpdateOnRemove();
 
+	bool m_bNoCraftingMaterialDrops = true;
 	HintData_t *m_pHintData{};
 };
 
@@ -63,6 +67,8 @@ public:
 	DECLARE_DATADESC();
 
 	virtual void UpdateOnRemove();
+
+	bool m_bNoCraftingMaterialDrops = false;
 };
 
 //-----------------------------------------------------------------------------
@@ -79,8 +85,8 @@ public:
 	virtual void LevelInitPreEntity();
 	virtual void LevelShutdownPostEntity();
 
-	HintData_t *AddHint( CBaseEntity *pEnt );
-	HintData_t *AddInfoNode( CAI_Node *pNode );
+	HintData_t *AddHint( CBaseEntity *pEnt, int iFlags = 0 );
+	HintData_t *AddInfoNode( CAI_Node *pNode, int iFlags = HintData_t::HINT_NODE );
 	int FindHints( const Vector &position, const float flMinDistance, const float flMaxDistance, CUtlVector<HintData_t *> *pResult );
 	// finds hints inside a volume
 	int FindHints( const CBaseTrigger &volume, CUtlVector<HintData_t *> *pResult );

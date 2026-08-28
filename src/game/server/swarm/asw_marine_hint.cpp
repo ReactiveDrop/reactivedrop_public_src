@@ -17,13 +17,18 @@
 LINK_ENTITY_TO_CLASS( info_marine_hint, CASW_Marine_Hint_Ent );
 
 BEGIN_DATADESC( CASW_Marine_Hint_Ent )
-
+	DEFINE_KEYFIELD( m_bNoCraftingMaterialDrops, FIELD_BOOLEAN, "no_crafting_material_drops" ),
 END_DATADESC();
 
 void CASW_Marine_Hint_Ent::Spawn()
 {
 	Assert( MarineHintManager() );
-	MarineHintManager()->AddHint( this );
+
+	int iFlags = 0;
+	if ( m_bNoCraftingMaterialDrops )
+		iFlags |= HintData_t::HINT_NODROPS;
+
+	MarineHintManager()->AddHint( this, iFlags );
 
 	BaseClass::Spawn();
 
@@ -35,17 +40,19 @@ void CASW_Marine_Hint_Ent::Spawn()
 LINK_ENTITY_TO_CLASS( info_marine_hint_dynamic, CASW_Marine_Hint_Dynamic );
 
 BEGIN_DATADESC( CASW_Marine_Hint_Dynamic )
-
+	DEFINE_KEYFIELD( m_bNoCraftingMaterialDrops, FIELD_BOOLEAN, "no_crafting_material_drops" ),
 END_DATADESC();
 
 void CASW_Marine_Hint_Dynamic::Spawn()
 {
 	Assert( MarineHintManager() );
-	m_pHintData = MarineHintManager()->AddHint( this );
 
+	int iFlags = HintData_t::HINT_DYNAMIC;
+	if ( m_bNoCraftingMaterialDrops )
+		iFlags |= HintData_t::HINT_NODROPS;
+
+	m_pHintData = MarineHintManager()->AddHint( this );
 	Assert( m_pHintData );
-	if ( m_pHintData )
-		m_pHintData->m_Flags |= HintData_t::HINT_DYNAMIC;
 
 	BaseClass::Spawn();
 }
@@ -76,18 +83,19 @@ void CASW_Marine_Hint_Dynamic::UpdateOnRemove()
 LINK_ENTITY_TO_CLASS( info_node_marine_hint, CASW_Marine_Hint_Node_Ent );
 
 BEGIN_DATADESC( CASW_Marine_Hint_Node_Ent )
-
+	DEFINE_KEYFIELD( m_bNoCraftingMaterialDrops, FIELD_BOOLEAN, "no_crafting_material_drops" ),
 END_DATADESC();
 
 // info_nodes are automatically removed when the map loads, store position/direction in our hint list
 void CASW_Marine_Hint_Node_Ent::UpdateOnRemove()
 {
 	Assert( MarineHintManager() );
-	HintData_t *pHintData = MarineHintManager()->AddHint( this );
 
-	Assert( pHintData );
-	if ( pHintData )
-		pHintData->m_Flags |= HintData_t::HINT_NODE;
+	int iFlags = HintData_t::HINT_NODE;
+	if ( m_bNoCraftingMaterialDrops )
+		iFlags |= HintData_t::HINT_NODROPS;
+
+	MarineHintManager()->AddHint( this, iFlags );
 
 	BaseClass::UpdateOnRemove();
 }
@@ -160,10 +168,10 @@ int CASW_Marine_Hint_Manager::FindHints( const CBaseTrigger &volume, CUtlVector<
 	return pResult->Count();
 }
 
-HintData_t *CASW_Marine_Hint_Manager::AddHint( CBaseEntity *pEnt )
+HintData_t *CASW_Marine_Hint_Manager::AddHint( CBaseEntity *pEnt, int iFlags )
 {
 	HintData_t *pHintData = new HintData_t;
-	pHintData->m_Flags = 0;
+	pHintData->m_Flags = iFlags;
 	pHintData->m_vecPosition = pEnt->GetAbsOrigin();
 	pHintData->m_flYaw = pEnt->GetAbsAngles()[YAW];
 	pHintData->m_nHintIndex = m_Hints.AddToTail( pHintData );
@@ -172,7 +180,7 @@ HintData_t *CASW_Marine_Hint_Manager::AddHint( CBaseEntity *pEnt )
 	return pHintData;
 }
 
-HintData_t *CASW_Marine_Hint_Manager::AddInfoNode( CAI_Node *pNode )
+HintData_t *CASW_Marine_Hint_Manager::AddInfoNode( CAI_Node *pNode, int iFlags )
 {
 	if ( !pNode )
 		return NULL;

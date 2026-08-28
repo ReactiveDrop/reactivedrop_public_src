@@ -877,6 +877,7 @@ asw_pickup_50calmg : "50cal Machine Gun"
 @PointClass base(Targetname, Parentname, Angles) studio("models/editor/marine_hint_dynamic.mdl") color(8 64 232) = info_marine_hint_dynamic :
 	"Movable follow hint node for marines"
 [
+	no_crafting_material_drops(boolean) : "Block crafting material drops" : "Marks this marine hint as ignored for crafting material spawning." = 1
 ]
 
 @PointClass base(Targetname, EnableDisable) = rd_hud_counter : "Heads-Up Display Counter"

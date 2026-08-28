@@ -374,8 +374,8 @@ void GenerateCraftingMaterialSpawnLocations( CUtlVector<Vector> &spawnLocations 
 			break;
 
 		int iHint = HintOrder[iHintOrder];
-		// ignore hints that can move or hints that no longer exist
-		if ( pMarineHintManager->GetHintFlags( iHint ) & ( HintData_t::HINT_DELETED | HintData_t::HINT_DYNAMIC ) )
+		// ignore hints that are excluded or hints that no longer exist
+		if ( pMarineHintManager->GetHintFlags( iHint ) & ( HintData_t::HINT_DELETED | HintData_t::HINT_NODROPS ) )
 			continue;
 
 		Vector vecHintOrigin = pMarineHintManager->GetHintPosition( iHint );

@@ -4177,6 +4177,7 @@
 @PointClass base(Angles) studio("models/editor/marine_hint.mdl") color(8 64 232) = info_marine_hint :
 	"Follow hint node for marines"
 [
+	no_crafting_material_drops(boolean) : "Block crafting material drops" : "Marks this marine hint as ignored for crafting material spawning." = 0
 ]
 
 @PointClass base(Node, Angles) studio("models/editor/node_marine_hint.mdl") color(8 64 232) = info_node_marine_hint :
@@ -4200,6 +4201,7 @@
 		4096 : "Force medium big (Drone, Ranger) permission" : 0
 		8192 : "Force huge (Queen) permission" : 0
 	]
+	no_crafting_material_drops(boolean) : "Block crafting material drops" : "Marks this marine hint as ignored for crafting material spawning." = 0
 ]
 
 @PointClass base(Targetname, Parentname, Angles) iconsprite("editor/env_spark.vmt") = asw_env_spark : 
