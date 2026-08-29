@@ -898,8 +898,11 @@ enum Class_T
 };
 
 // Factions
-#define FACTION_NONE				0					// Not assigned a faction.  Entities not assigned a faction will not do faction tests.
-#define LAST_SHARED_FACTION			(FACTION_NONE)
-#define NUM_SHARED_FACTIONS			(FACTION_NONE + 1)
+enum
+{
+	FACTION_NONE = 0,		// Not assigned a faction. Entities not assigned a faction will not do faction tests.
+
+	NUM_SHARED_FACTIONS,
+};
 
 #endif // SHAREDDEFS_H
