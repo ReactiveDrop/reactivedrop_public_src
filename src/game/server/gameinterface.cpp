@@ -93,6 +93,9 @@
 #include "querycache.h"
 #include "particle_parse.h"
 #include "steam/steam_gameserver.h"
+#include "asrd_gns_runtime_hook.h"
+#include "asrd_gns_server_lifecycle.h"
+#include "asrd_gns_message_bridge.h"
 #include "tier3/tier3.h"
 #include "serverbenchmark_base.h"
 #include "vscript/ivscript.h"
@@ -819,6 +822,45 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 	// init the gamestatsupload connection
 	gamestatsuploader->InitConnection();
 
+	// server.dll is also loaded by the game client.  Its presence is not a
+	// server identity signal; only the engine's dedicated-server query permits
+	// the dedicated listener to be activated here.
+	ASRD_GNS_EnsureRuntimeHookInstalled();
+	const bool dedicatedServer = engine->IsDedicatedServer();
+	if ( dedicatedServer )
+	{
+		if ( !ASRD_GNS_SetDedicatedServerRuntimeRole( true ) )
+		{
+			Warning( "[ASRD-GNS-SERVER] init skipped: dedicated runtime role rejected\n" );
+			return false;
+		}
+		if ( !ASRD_GNS_EnsureServerWakeHookInstalled() )
+		{
+			Warning( "[ASRD-GNS-SERVER] init failed: hibernation wake hook unavailable\n" );
+			return false;
+		}
+
+		const bool hasExplicitGnsPort = CommandLine()->CheckParm( "-gns-port" ) != 0;
+		const int requestedGnsPort = hasExplicitGnsPort
+			? CommandLine()->ParmValue( "-gns-port", 0 ) : 27016;
+		if ( requestedGnsPort <= 0 || requestedGnsPort > 65535 )
+		{
+			Warning( "[ASRD-GNS-SERVER] init skipped invalid requested port=%d\n",
+				requestedGnsPort );
+			return false;
+		}
+		if ( !ASRD_GNS_ServerInit( (uint16_t)requestedGnsPort ) )
+		{
+			Warning( "[ASRD-GNS-SERVER] init failed: dedicated listener unavailable requested port=%d\n",
+				requestedGnsPort );
+			return false;
+		}
+	}
+	else
+	{
+		Warning( "[ASRD-GNS-SERVER] non-dedicated server.dll load: listener not activated\n" );
+	}
+
 
 	return true;
 }
@@ -848,6 +890,10 @@ void CServerGameDLL::PostToolsInit()
 
 void CServerGameDLL::DLLShutdown( void )
 {
+	ASRD_GNS_ServerTraceLifecycle( "dll_shutdown_begin", NULL, true );
+	ASRD_GNS_RuntimeHookShutdown();
+	ASRD_GNS_ServerShutdown();
+	ASRD_GNS_ServerTraceLifecycle( "dll_shutdown_after_gns", NULL, true );
 
 	// Due to dependencies, these are not autogamesystems
 	ModelSoundsCacheShutdown();
@@ -942,6 +988,11 @@ bool CServerGameDLL::IsFramerateOk( )
 // This is called when a new game is started. (restart, map)
 bool CServerGameDLL::GameInit( void )
 {
+	if ( !engine->IsDedicatedServer() &&
+		!ASRD_GNS_ActivateListenServerRuntimeRole() )
+	{
+		Warning( "[ASRD-GNS-SERVER] listen-server runtime role activation rejected\n" );
+	}
 	ResetGlobalState();
 	engine->ServerCommand( "exec game.cfg\n" );
 	engine->ServerExecute( );
@@ -960,6 +1011,12 @@ bool CServerGameDLL::GameInit( void )
 // NOT on level transitions within a game
 void CServerGameDLL::GameShutdown( void )
 {
+	if ( !engine->IsDedicatedServer() &&
+		!ASRD_GNS_DeactivateListenServerRuntimeRole() )
+	{
+		Warning( "[ASRD-GNS-SERVER] listen-server runtime role deactivation rejected\n" );
+	}
+	ASRD_GNS_ServerTraceLifecycle( "game_shutdown", NULL, false );
 	ResetGlobalState();
 
 #ifdef INFESTED_DLL
@@ -1064,6 +1121,7 @@ bool CServerGameDLL::SupportsSaveRestore()
 bool CServerGameDLL::LevelInit( const char *pMapName, char const *pMapEntities, char const *pOldLevel, char const *pLandmarkName, bool loadGame, bool background )
 {
 	VPROF("CServerGameDLL::LevelInit");
+	ASRD_GNS_ServerTraceLifecycle( "level_init_begin", pMapName, false );
 	ResetWindspeed();
 	UpdateChapterRestrictions( pMapName );
 
@@ -1190,6 +1248,7 @@ bool CServerGameDLL::LevelInit( const char *pMapName, char const *pMapEntities, 
 			fps_max.SetValue( 0 );
 		}
 	}
+	ASRD_GNS_ServerTraceLifecycle( "level_init_end", pMapName, false );
 	return true;
 }
 
@@ -1280,6 +1339,11 @@ void CServerGameDLL::GameFrame( bool simulating )
 	// Don't run frames until fully restored
 	if ( g_InRestore )
 		return;
+
+	ASRD_GNS_ServerFrame();
+	ASRD_GNS_ServerFinalizeSourceSignon();
+	if ( ASRD_GNS_ServerMessageBridgeReady() )
+		ASRD_GNS_MessageBridgeFrame( true );
 
 #ifndef NO_STEAM
 	// All the calls to us from the engine prior to gameframe (like LevelInit & ServerActivate)
@@ -1440,6 +1504,9 @@ void CServerGameDLL::PreClientUpdate( bool simulating )
 
 static void OnServerUpdateRequested()
 {
+	ASRD_GNS_ServerTraceLifecycle( "server_update_requested", NULL, true );
+	Warning( "[ASRD-GNS-SERVER-LIFECYCLE] exit_trigger=server_update_requested restart_on_update=%u\n",
+		rd_server_restart_on_update.GetBool() ? 1U : 0U );
 	Assert( engine->IsDedicatedServer() );
 	if ( !CommandLine()->FindParm( "-console" ) )
 	{
@@ -1448,7 +1515,10 @@ static void OnServerUpdateRequested()
 	}
 
 	if ( !rd_server_restart_on_update.GetBool() )
+	{
+		Warning( "[ASRD-GNS-SERVER-LIFECYCLE] exit_trigger=server_update_requested action=ignored reason=restart_disabled\n" );
 		return;
+	}
 
 	Msg( "Your server is out of date and will be shutdown during hibernation or changelevel, whichever comes first.\n" );
 
@@ -1515,6 +1585,7 @@ void CServerGameDLL::OnQueryCvarValueFinished( QueryCvarCookie_t iCookie, edict_
 // Called when a level is shutdown (including changing levels)
 void CServerGameDLL::LevelShutdown( void )
 {
+	ASRD_GNS_ServerTraceLifecycle( "level_shutdown_begin", NULL, false );
 	MDLCACHE_CRITICAL_SECTION();
 	IGameSystem::LevelShutdownPreEntityAllSystems();
 
@@ -1538,6 +1609,7 @@ void CServerGameDLL::LevelShutdown( void )
 
 	g_nCurrentChapterIndex = -1;
 	CStudioHdr::CActivityToSequenceMapping::ResetMappings();
+	ASRD_GNS_ServerTraceLifecycle( "level_shutdown_end", NULL, false );
 }
 
 //-----------------------------------------------------------------------------
@@ -2099,7 +2171,17 @@ void CServerGameDLL::GetMatchmakingGameData( char *buf, size_t bufSize )
 
 void CServerGameDLL::ServerHibernationUpdate( bool bHibernating )
 {
+	static int s_lastHibernating = -1;
 	m_bIsHibernating = bHibernating;
+	if ( s_lastHibernating != ( bHibernating ? 1 : 0 ) )
+	{
+		ASRD_GNS_ServerTraceLifecycle( bHibernating ? "server_hibernation_begin" : "server_hibernation_end",
+			NULL, false );
+		Warning( "[ASRD-GNS-SERVER-LIFECYCLE] hibernation_update hibernating=%u dedicated=%u\n",
+			bHibernating ? 1U : 0U,
+			engine && engine->IsDedicatedServer() ? 1U : 0U );
+		s_lastHibernating = bHibernating ? 1 : 0;
+	}
 
 #ifdef INFESTED_DLL
 	if ( engine && engine->IsDedicatedServer() && m_bIsHibernating && ASWGameRules() )
@@ -2756,6 +2838,7 @@ void CServerGameClients::ClientActive( edict_t *pEdict, bool bLoadGame )
 	MDLCACHE_CRITICAL_SECTION();
 	
 	::ClientActive( pEdict, bLoadGame );
+	ASRD_GNS_ServerRealPlayerEntered( pEdict );
 
 	// If we just loaded from a save file, call OnRestore on valid entities
 	EndRestoreEntities();

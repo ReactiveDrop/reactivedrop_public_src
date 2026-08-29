@@ -131,6 +131,7 @@
 #include "rd_workshop.h"
 #include "rd_lobby_utils.h"
 #include "rd_loadout.h"
+#include "asrd_gns_server_lifecycle.h"
 #include "matchmaking/imatchframework.h"
 #include <ctime>
 
@@ -4124,10 +4125,13 @@ void CAlienSwarm::Think()
 inline unsigned int ThreadShutdown(void* pParam)
 {
 	const float delay = gpGlobals->interval_per_tick * 1000;
-	DevMsg("Shutdown delayed: %f ms\n", delay);
+	Warning( "[ASRD-GNS-SERVER-LIFECYCLE] final_quit_thread delay_ms=%.2f map=%s gns_connections=%u\n",
+		delay, gpGlobals && gpGlobals->mapname != NULL_STRING ? STRING( gpGlobals->mapname ) : "",
+		ASRD_GNS_ServerConnectionCount() );
 	ThreadSleep(delay);
 
 	// send quit and execute command within the same frame
+	Warning( "[ASRD-GNS-SERVER-LIFECYCLE] final_quit_thread action=server_command_quit\n" );
 	engine->ServerCommand("quit\n");
 	engine->ServerExecute();
 
@@ -4136,12 +4140,28 @@ inline unsigned int ThreadShutdown(void* pParam)
 
 void CAlienSwarm::Shutdown() 
 {
+	const unsigned int gnsConnections = ASRD_GNS_ServerConnectionCount();
+	Warning( "[ASRD-GNS-SERVER-LIFECYCLE] game_rules_shutdown_request map=%s gns_connections=%u\n",
+		gpGlobals && gpGlobals->mapname != NULL_STRING ? STRING( gpGlobals->mapname ) : "",
+		gnsConnections );
+	if ( gnsConnections > 0 )
+	{
+		Warning( "[ASRD-GNS-SERVER-LIFECYCLE] game_rules_shutdown_suppressed map=%s gns_connections=%u reason=active_gns_gameplay_identity\n",
+			gpGlobals && gpGlobals->mapname != NULL_STRING ? STRING( gpGlobals->mapname ) : "",
+			gnsConnections );
+		ASRD_GNS_ServerTraceLifecycle( "game_rules_shutdown_suppressed", NULL, false );
+		return;
+	}
+	ASRD_GNS_ServerTraceLifecycle( "game_rules_shutdown_request", NULL, true );
 	m_bShuttingDown = true;
 	CreateSimpleThread(ThreadShutdown, engine);
 }
 
 void CAlienSwarm::OnServerHibernating()
 {
+	static bool s_bLoggedEmptyGnsSuppression = false;
+	static int s_iLastEmptyAction = -1;
+	static char s_szLastEmptyActionMap[MAX_PATH]{};
 	int iPlayers = 0;
 	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 	{
@@ -4152,9 +4172,26 @@ void CAlienSwarm::OnServerHibernating()
 			iPlayers++;
 		}
 	}
+	const unsigned int gnsConnections = ASRD_GNS_ServerConnectionCount();
+	const char *mapName = gpGlobals && gpGlobals->mapname != NULL_STRING
+		? STRING( gpGlobals->mapname ) : "";
 
 	if ( iPlayers <= 0 )
 	{
+		if ( gnsConnections > 0 )
+		{
+			if ( !s_bLoggedEmptyGnsSuppression )
+			{
+				Warning( "[ASRD-GNS-SERVER-LIFECYCLE] hibernating_empty_suppressed map=%s source_players=%d gns_connections=%u reason=gns_gameplay_identity\n",
+					mapName, iPlayers, gnsConnections );
+				s_bLoggedEmptyGnsSuppression = true;
+			}
+			s_iLastEmptyAction = -1;
+			s_szLastEmptyActionMap[0] = '\0';
+			return;
+		}
+		s_bLoggedEmptyGnsSuppression = false;
+
 		// when server has no players, switch to the default campaign
 
 		IASW_Mission_Chooser_Source *pSource = missionchooser ? missionchooser->LocalMissionSource() : NULL;
@@ -4184,10 +4221,35 @@ void CAlienSwarm::OnServerHibernating()
 			return;
 		}
 
+		const bool bShutdownWhenEmpty = !IsLobbyMap() && rd_server_shutdown_when_empty.GetBool();
+		const int iEmptyAction = bShutdownWhenEmpty ? 1 : 0;
+		const bool bEmptyActionChanged = s_iLastEmptyAction != iEmptyAction
+			|| V_strcmp( s_szLastEmptyActionMap, mapName );
+
 		// quit server
-		if ( !IsLobbyMap() && rd_server_shutdown_when_empty.GetBool() )
+		if ( bShutdownWhenEmpty )
 		{
+			if ( bEmptyActionChanged )
+			{
+				Warning( "[ASRD-GNS-SERVER-LIFECYCLE] exit_trigger=server_hibernating_empty map=%s source_players=%d gns_connections=%u action=game_rules_shutdown\n",
+					mapName, iPlayers, gnsConnections );
+				ASRD_GNS_ServerTraceLifecycle( "server_hibernating_empty_shutdown", mapName, true );
+			}
 			Shutdown();
+		}
+		else
+		{
+			if ( bEmptyActionChanged )
+			{
+				Warning( "[ASRD-GNS-SERVER-LIFECYCLE] hibernating_empty map=%s source_players=%d gns_connections=%u action=changelevel_only\n",
+					mapName, iPlayers, gnsConnections );
+			}
+		}
+
+		if ( bEmptyActionChanged )
+		{
+			s_iLastEmptyAction = iEmptyAction;
+			V_strncpy( s_szLastEmptyActionMap, mapName, sizeof( s_szLastEmptyActionMap ) );
 		}
 
 		// reset difficulty and challenge
@@ -4199,6 +4261,12 @@ void CAlienSwarm::OnServerHibernating()
 			"changelevel",
 			szMissionName,
 			szSaveFilename ) );
+	}
+	else
+	{
+		s_bLoggedEmptyGnsSuppression = false;
+		s_iLastEmptyAction = -1;
+		s_szLastEmptyActionMap[0] = '\0';
 	}
 }
 

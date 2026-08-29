@@ -27,3 +27,7 @@
 
 *.ttf filter=lfs diff=lfs merge=lfs -text
 *.ttc filter=lfs diff=lfs merge=lfs -text
+
+# The vendored x86 GNS static archives exceed ordinary Git hosting file limits.
+# Keep them as reproducible Git LFS payloads; wrapper sources and headers remain normal Git files.
+/src/thirdparty/gamenetworkingsockets/lib/**/*.lib filter=lfs diff=lfs merge=lfs -text

@@ -33,7 +33,6 @@
     <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <VcpkgConfiguration>Release</VcpkgConfiguration>
     <VCToolsVersion>
     </VCToolsVersion>
   </PropertyGroup>
@@ -169,7 +168,7 @@
       <Command>set "DEST_DIR=..\..\..\reactivedrop\bin"
 mkdir "%25DEST_DIR%25" 2&gt;nul
 
-robocopy "$(TargetDir)\" "%25DEST_DIR%25" "$(TargetFileName)" "$(TargetName).map" "$(TargetName).pdb" /IS /IT /COPY:DAT /R:1 /W:0 /NP
+robocopy "$(TargetDir)\" "%25DEST_DIR%25" "$(TargetFileName)" /IS /IT /COPY:DAT /R:1 /W:0 /NP
 if %errorlevel% GEQ 8 exit /b %errorlevel%
 REM normalize robocopy success range (0–7) to MSBuild success (0)
 cmd /c exit /b 0
@@ -276,7 +275,7 @@ exit /b 0
       <Command>set "DEST_DIR=..\..\..\reactivedrop\bin"
 mkdir "%25DEST_DIR%25" 2&gt;nul
 
-robocopy "$(TargetDir)\" "%25DEST_DIR%25" "$(TargetFileName)" "$(TargetName).map" "$(TargetName).pdb" /IS /IT /COPY:DAT /R:1 /W:0 /NP
+robocopy "$(TargetDir)\" "%25DEST_DIR%25" "$(TargetFileName)" /IS /IT /COPY:DAT /R:1 /W:0 /NP
 if %errorlevel% GEQ 8 exit /b %errorlevel%
 REM normalize robocopy success range (0–7) to MSBuild success (0)
 cmd /c exit /b 0
@@ -386,7 +385,7 @@ exit /b 0
       <Command>set "DEST_DIR=..\..\..\reactivedrop\bin"
 mkdir "%25DEST_DIR%25" 2&gt;nul
 
-robocopy "$(TargetDir)\" "%25DEST_DIR%25" "$(TargetFileName)" "$(TargetName).map" "$(TargetName).pdb" /IS /IT /COPY:DAT /R:1 /W:0 /NP
+robocopy "$(TargetDir)\" "%25DEST_DIR%25" "$(TargetFileName)" /IS /IT /COPY:DAT /R:1 /W:0 /NP
 if %errorlevel% GEQ 8 exit /b %errorlevel%
 REM normalize robocopy success range (0–7) to MSBuild success (0)
 cmd /c exit /b 0

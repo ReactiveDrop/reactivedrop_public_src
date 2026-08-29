@@ -33,7 +33,6 @@
     <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <VcpkgConfiguration>Release</VcpkgConfiguration>
     <VCToolsVersion>
     </VCToolsVersion>
   </PropertyGroup>
@@ -136,7 +135,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>winmm.lib;ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>asrd_gns_wrapper.lib;winmm.lib;ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ShowProgress>NotSet</ShowProgress>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -171,7 +170,7 @@
       <Command>set "DEST_DIR=..\..\..\reactivedrop\bin"
 mkdir "%25DEST_DIR%25" 2&gt;nul
 
-robocopy "$(TargetDir)\" "%25DEST_DIR%25" "$(TargetFileName)" "$(TargetName).map" "$(TargetName).pdb" /IS /IT /COPY:DAT /R:1 /W:0 /NP
+robocopy "$(TargetDir)\" "%25DEST_DIR%25" "$(TargetFileName)" /IS /IT /COPY:DAT /R:1 /W:0 /NP
 if %errorlevel% GEQ 8 exit /b %errorlevel%
 REM normalize robocopy success range (0–7) to MSBuild success (0)
 cmd /c exit /b 0
@@ -240,7 +239,7 @@ exit /b 0
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>winmm.lib;ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>asrd_gns_wrapper.lib;winmm.lib;ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ShowProgress>NotSet</ShowProgress>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -279,7 +278,7 @@ exit /b 0
       <Command>set "DEST_DIR=..\..\..\reactivedrop\bin"
 mkdir "%25DEST_DIR%25" 2&gt;nul
 
-robocopy "$(TargetDir)\" "%25DEST_DIR%25" "$(TargetFileName)" "$(TargetName).map" "$(TargetName).pdb" /IS /IT /COPY:DAT /R:1 /W:0 /NP
+robocopy "$(TargetDir)\" "%25DEST_DIR%25" "$(TargetFileName)" /IS /IT /COPY:DAT /R:1 /W:0 /NP
 if %errorlevel% GEQ 8 exit /b %errorlevel%
 REM normalize robocopy success range (0–7) to MSBuild success (0)
 cmd /c exit /b 0
@@ -349,7 +348,7 @@ exit /b 0
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>winmm.lib;ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>asrd_gns_wrapper.lib;winmm.lib;ws2_32.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ShowProgress>NotSet</ShowProgress>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -389,7 +388,7 @@ exit /b 0
       <Command>set "DEST_DIR=..\..\..\reactivedrop\bin"
 mkdir "%25DEST_DIR%25" 2&gt;nul
 
-robocopy "$(TargetDir)\" "%25DEST_DIR%25" "$(TargetFileName)" "$(TargetName).map" "$(TargetName).pdb" /IS /IT /COPY:DAT /R:1 /W:0 /NP
+robocopy "$(TargetDir)\" "%25DEST_DIR%25" "$(TargetFileName)" /IS /IT /COPY:DAT /R:1 /W:0 /NP
 if %errorlevel% GEQ 8 exit /b %errorlevel%
 REM normalize robocopy success range (0–7) to MSBuild success (0)
 cmd /c exit /b 0
@@ -2373,6 +2372,21 @@ exit /b 0
     <Library Include="..\..\lib\public\vgui_controls.lib" />
     <Library Include="..\..\lib\public\vpklib.lib" />
     <Library Include="..\..\lib\public\vstdlib.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\shared\asrd_gns_runtime_hook.cpp" />
+    <ClInclude Include="..\shared\asrd_gns_runtime_hook.h" />
+    <ClCompile Include="..\shared\asrd_gns_client_lifecycle.cpp" />
+    <ClInclude Include="..\shared\asrd_gns_client_lifecycle.h" />
+    <ClCompile Include="..\shared\asrd_gns_message_registry.cpp" />
+    <ClInclude Include="..\shared\asrd_gns_message_registry.h" />
+    <ClCompile Include="..\shared\asrd_gns_message_bridge.cpp" />
+    <ClInclude Include="..\shared\asrd_gns_message_bridge.h" />
+    <ClCompile Include="..\shared\asrd_gns_move_compat.cpp" />
+    <ClInclude Include="..\shared\asrd_gns_move_compat.h" />
+    <ClCompile Include="..\shared\asrd_gns_server_lifecycle.cpp" />
+    <ClInclude Include="..\shared\asrd_gns_server_lifecycle.h" />
+    <ClInclude Include="..\..\public\asrd_gns_wrapper.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

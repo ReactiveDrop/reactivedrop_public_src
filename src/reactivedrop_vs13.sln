@@ -7,9 +7,15 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Client (Swarm)", "game\clie
 	ProjectSection(ProjectDependencies) = postProject
 		{38AA6D4C-4ACE-4518-BC6C-BC42482C0E65} = {38AA6D4C-4ACE-4518-BC6C-BC42482C0E65}
 		{EE8FAD9C-DFAF-414B-A11D-7697E1A28A27} = {EE8FAD9C-DFAF-414B-A11D-7697E1A28A27}
+		{D8B8E0D8-7C26-4B0A-9E1D-4A5F0E3C1B72} = {D8B8E0D8-7C26-4B0A-9E1D-4A5F0E3C1B72}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Server (Swarm)", "game\server\swarm_sdk_server.vcxproj", "{EE8FAD9C-DFAF-414B-A11D-7697E1A28A27}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D8B8E0D8-7C26-4B0A-9E1D-4A5F0E3C1B72} = {D8B8E0D8-7C26-4B0A-9E1D-4A5F0E3C1B72}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASRD GNS Wrapper", "game\gns_wrapper\asrd_gns_wrapper.vcxproj", "{D8B8E0D8-7C26-4B0A-9E1D-4A5F0E3C1B72}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "missionchooser", "game\missionchooser\swarm_sdk_missionchooser.vcxproj", "{38AA6D4C-4ACE-4518-BC6C-BC42482C0E65}"
 EndProject
@@ -32,6 +38,12 @@ Global
 		{EE8FAD9C-DFAF-414B-A11D-7697E1A28A27}.Profile|Win32.Build.0 = Profile|Win32
 		{EE8FAD9C-DFAF-414B-A11D-7697E1A28A27}.Release|Win32.ActiveCfg = Release|Win32
 		{EE8FAD9C-DFAF-414B-A11D-7697E1A28A27}.Release|Win32.Build.0 = Release|Win32
+		{D8B8E0D8-7C26-4B0A-9E1D-4A5F0E3C1B72}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D8B8E0D8-7C26-4B0A-9E1D-4A5F0E3C1B72}.Debug|Win32.Build.0 = Debug|Win32
+		{D8B8E0D8-7C26-4B0A-9E1D-4A5F0E3C1B72}.Profile|Win32.ActiveCfg = Profile|Win32
+		{D8B8E0D8-7C26-4B0A-9E1D-4A5F0E3C1B72}.Profile|Win32.Build.0 = Profile|Win32
+		{D8B8E0D8-7C26-4B0A-9E1D-4A5F0E3C1B72}.Release|Win32.ActiveCfg = Release|Win32
+		{D8B8E0D8-7C26-4B0A-9E1D-4A5F0E3C1B72}.Release|Win32.Build.0 = Release|Win32
 		{38AA6D4C-4ACE-4518-BC6C-BC42482C0E65}.Debug|Win32.ActiveCfg = Debug|Win32
 		{38AA6D4C-4ACE-4518-BC6C-BC42482C0E65}.Debug|Win32.Build.0 = Debug|Win32
 		{38AA6D4C-4ACE-4518-BC6C-BC42482C0E65}.Profile|Win32.ActiveCfg = Profile|Win32

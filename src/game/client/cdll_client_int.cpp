@@ -15,6 +15,9 @@
 #include "clientsideeffects.h"
 #include "particlemgr.h"
 #include "steam/steam_api.h"
+#include "asrd_gns_runtime_hook.h"
+#include "asrd_gns_client_lifecycle.h"
+#include "asrd_gns_message_bridge.h"
 #include "smoke_fog_overlay.h"
 #include "view.h"
 #include "ienginevgui.h"
@@ -347,6 +350,17 @@ CON_COMMAND( cl_dumpsplithacks, "Dump split screen workarounds." )
 	{
 		Msg( "%s\n", g_Hacks[ i ] );
 	}
+}
+
+CON_COMMAND( asrd_gns_disconnect, "Close the active ASRD GNS connection and disconnect Source upper layers." )
+{
+	ASRD_GNS_ClientRequestDisconnect();
+}
+
+CON_COMMAND( asrd_gns_disconnect_after, "Schedule an ASRD GNS disconnect after the connected state (seconds)." )
+{
+	const float delaySeconds = args.ArgC() > 1 ? (float)atof( args[ 1 ] ) : 0.0f;
+	ASRD_GNS_ClientScheduleDisconnect( delaySeconds );
 }
 
 CHackForGetLocalPlayerAccessAllowedGuard::CHackForGetLocalPlayerAccessAllowedGuard( char const *pszContext, bool bOldState )
@@ -1251,6 +1265,19 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CGlobalVarsBase *pGloba
 
 	// This is a fullscreen element, so only lives on slot 0!!!
 	m_pHudCloseCaption = GET_FULLSCREEN_HUDELEMENT( CHudCloseCaption );
+	if ( !ASRD_GNS_RuntimeHookRegisterClientConnectHandler(
+		&ASRD_GNS_ClientConnectIntent ) )
+	{
+		Warning( "[ASRD-GNS-CLIENT] connect callback registration failed\n" );
+	}
+	if ( !ASRD_GNS_EnsureRuntimeHookInstalled() )
+	{
+		Warning( "[ASRD-GNS-CLIENT] runtime hook installation failed\n" );
+	}
+	if ( !ASRD_GNS_SetClientRuntimeRole() )
+	{
+		Warning( "[ASRD-GNS-CLIENT] client runtime role rejected\n" );
+	}
 
 	COM_TimestampedLog( "ClientDLL Init - Finish" );
 	return true;
@@ -1271,6 +1298,10 @@ void CHLClient::PostInit()
 //-----------------------------------------------------------------------------
 void CHLClient::Shutdown( void )
 {
+	ASRD_GNS_RuntimeHookUnregisterClientConnectHandler(
+		&ASRD_GNS_ClientConnectIntent );
+	ASRD_GNS_RuntimeHookShutdown();
+	ASRD_GNS_ClientShutdown();
 
 
 	ActivityList_Free();
@@ -2592,6 +2623,10 @@ void CHLClient::FrameStageNotify( ClientFrameStage_t curStage )
 		break;
 	case FRAME_START:
 		{
+			// Process GNS at the start of the client frame.
+			ASRD_GNS_ClientFrame();
+			ASRD_GNS_MessageBridgeFrame( false );
+
 			// Mark the frame as open for client fx additions
 			SetFXCreationAllowed( true );
 			SetBeamCreationAllowed( true );

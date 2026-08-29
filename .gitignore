@@ -25,6 +25,10 @@ reactivedrop/addonlist_workshop.txt
 reactivedrop/bin/client.dll
 reactivedrop/bin/missionchooser.dll
 reactivedrop/bin/server.dll
+reactivedrop/bin/asrd_gns_wrapper.*
+reactivedrop/bin/Debug/
+reactivedrop/bin/Profile/
+reactivedrop/bin/Release/
 reactivedrop/cfg/*.dat
 reactivedrop/cfg/build_all_maps.cfg
 reactivedrop/cfg/config.cfg
@@ -42,6 +46,9 @@ reactivedrop/tilegen_log.txt
 reactivedrop/voice_ban.dt
 src/game/client/Debug_swarm/
 src/game/client/Release_swarm/
+src/game/gns_wrapper/Debug/
+src/game/gns_wrapper/Profile/
+src/game/gns_wrapper/Release/
 src/game/missionchooser/Debug/
 src/game/missionchooser/Release/
 src/game/server/Debug_swarm/
@@ -59,3 +66,6 @@ src/sourcelink.json
 src/utils/*/Debug/
 src/utils/*/Release/
 /.vs
+
+# Local temporary worker/check-out snapshots are not project submodules.
+/TEMP/
