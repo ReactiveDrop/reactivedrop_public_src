@@ -44,6 +44,9 @@ namespace
 	// SetSignonState reads its channel pointer from this byte offset in the
 	// verified client-state object layout. The adapter is bound only to that slot.
 	static const size_t kClientStateNetChannelOffset = 0x10;
+	// The verified SetSignonState entry reads the previous signon state from
+	// this offset. It distinguishes an in-place changelevel from disconnect.
+	static const size_t kClientStateSignonStateOffset = 0x68;
 	// Slot 15 targets the verified signon method. Its `ret 0xC` requires the
 	// explicit third stack argument after state and count.
 	static const unsigned int kClientSetSignonStateSlot = 15;
@@ -75,6 +78,14 @@ namespace
 	static bool s_dispatchNetChannelBound = false;
 	static bool s_sourceChannelPersistent = false;
 	static bool s_clientShutdownInProgress = false;
+	enum SourceLifecyclePhase
+	{
+		SOURCE_LIFECYCLE_RUNNING = 0,
+		SOURCE_LIFECYCLE_CHANGELEVEL,
+	};
+	static SourceLifecyclePhase s_sourceLifecyclePhase =
+		SOURCE_LIFECYCLE_RUNNING;
+	static bool s_sourceReattachPending = false;
 	static bool s_disconnectRequested = false;
 	static float s_disconnectAfterSeconds = -1.0f;
 	static double s_disconnectDeadline = 0.0;
@@ -93,6 +104,8 @@ namespace
 	static bool s_packetStarted = false;
 	static uint32_t s_currentServerUpdateSeq = 0;
 	static int s_currentClientCommandAck = 0;
+	static bool s_hasLastDeliveredClientCommandAck = false;
+	static int s_lastDeliveredClientCommandAck = 0;
 	static bool s_has_last_outgoing_command_number = false;
 	static int s_last_outgoing_command_number = 0;
 	static netadr_t s_registrationRemoteAddress;
@@ -129,6 +142,8 @@ namespace
 		s_packetStarted = false;
 		s_currentServerUpdateSeq = 0;
 		s_currentClientCommandAck = 0;
+		s_hasLastDeliveredClientCommandAck = false;
+		s_lastDeliveredClientCommandAck = 0;
 		s_has_last_outgoing_command_number = false;
 		s_last_outgoing_command_number = 0;
 	}
@@ -483,6 +498,107 @@ namespace
 		return value >= base && value <= end && bytes <= (size_t)( end - value );
 	}
 
+	static bool IsExpectedSourceContext( void )
+	{
+		if ( sizeof( void * ) != 4 || !s_sourceContextBound || !s_sourceContext )
+			return false;
+
+		HMODULE engineModule = GetModuleHandleA( "engine.dll" );
+		if ( !IsExpectedEngineImage( engineModule ) )
+			return false;
+		return *(void ***)s_sourceContext ==
+			(void *)( (BYTE *)engineModule + kClientStateVtableRva );
+	}
+
+	static bool ReadSourceSignonState( int *state )
+	{
+		if ( !state || !IsExpectedSourceContext() )
+			return false;
+		*state = *(int *)( (BYTE *)s_sourceContext +
+			kClientStateSignonStateOffset );
+		return *state >= SIGNONSTATE_NONE &&
+			*state <= SIGNONSTATE_CHANGELEVEL;
+	}
+
+	static bool SourceAdapterSlotMatches( void )
+	{
+		if ( !IsExpectedSourceContext() || !s_registrationAdapterReady ||
+			s_registrationAdapter.vtable != s_registrationVtable )
+			return false;
+		void **netChannelSlot = (void **)( (BYTE *)s_sourceContext +
+			kClientStateNetChannelOffset );
+		return *netChannelSlot == &s_registrationAdapter;
+	}
+
+	static bool RestoreChangelevelSourceAdapter( void )
+	{
+		if ( !IsExpectedSourceContext() || !s_registrationAdapterReady ||
+			s_registrationAdapter.vtable != s_registrationVtable )
+			return false;
+
+		void **netChannelSlot = (void **)( (BYTE *)s_sourceContext +
+			kClientStateNetChannelOffset );
+		if ( *netChannelSlot != &s_registrationAdapter )
+		{
+			LogContextf( "changelevel adapter restore slot=%p previous=%p adapter=%p handle=%lu",
+				netChannelSlot, *netChannelSlot, &s_registrationAdapter,
+				(unsigned long)ASRD_GNS_ClientConnection() );
+			*netChannelSlot = &s_registrationAdapter;
+		}
+		s_sourceChannelPersistent = true;
+		s_dispatchPreviousNetChannel = NULL;
+		s_dispatchNetChannelBound = false;
+		s_sourceReattachPending = false;
+		return true;
+	}
+
+	static bool RefreshSourceLifecyclePhase( void )
+	{
+		int signonState = SIGNONSTATE_NONE;
+		if ( !ReadSourceSignonState( &signonState ) )
+			return true;
+
+		if ( signonState == SIGNONSTATE_CHANGELEVEL )
+		{
+			if ( s_sourceLifecyclePhase != SOURCE_LIFECYCLE_CHANGELEVEL )
+			{
+				s_sourceLifecyclePhase = SOURCE_LIFECYCLE_CHANGELEVEL;
+				LogContextf( "source lifecycle phase=changelevel handle=%lu adapter=%p context=%p",
+					(unsigned long)ASRD_GNS_ClientConnection(),
+					&s_registrationAdapter, s_sourceContext );
+			}
+			if ( s_sourceReattachPending || !SourceAdapterSlotMatches() )
+				return RestoreChangelevelSourceAdapter();
+			return true;
+		}
+
+		if ( s_sourceLifecyclePhase != SOURCE_LIFECYCLE_CHANGELEVEL )
+			return true;
+
+		if ( signonState == SIGNONSTATE_NONE )
+		{
+			// Source may temporarily drop its upper channel while rebinding the
+			// same server. Keep GNS alive but leave dispatch gated until a same-
+			// endpoint intent or signon progression restores this adapter.
+			s_sourceReattachPending = true;
+			return true;
+		}
+
+		if ( s_sourceReattachPending || !SourceAdapterSlotMatches() )
+		{
+			if ( !RestoreChangelevelSourceAdapter() )
+				return false;
+		}
+		if ( signonState >= SIGNONSTATE_CONNECTED )
+		{
+			s_sourceLifecyclePhase = SOURCE_LIFECYCLE_RUNNING;
+			LogContextf( "source lifecycle phase=running signon=%d handle=%lu adapter=%p context=%p",
+				signonState, (unsigned long)ASRD_GNS_ClientConnection(),
+				&s_registrationAdapter, s_sourceContext );
+		}
+		return true;
+	}
+
 	static bool ResolveClientSetSignonState( ClientSetSignonStateFn *out )
 	{
 		if ( out )
@@ -830,6 +946,19 @@ namespace
 		{
 			LogContextf( "adapter Shutdown reentrant reason=%s action=ignore",
 				reason ? reason : "<null>" );
+			return;
+		}
+
+		int signonState = SIGNONSTATE_NONE;
+		const bool hasSignonState = ReadSourceSignonState( &signonState );
+		if ( ( hasSignonState && signonState == SIGNONSTATE_CHANGELEVEL ) ||
+			s_sourceLifecyclePhase == SOURCE_LIFECYCLE_CHANGELEVEL )
+		{
+			s_sourceLifecyclePhase = SOURCE_LIFECYCLE_CHANGELEVEL;
+			s_sourceReattachPending = true;
+			LogContextf( "adapter Shutdown deferred reason=%s signon=%d handle=%lu action=preserve_changelevel_transport",
+				reason ? reason : "<null>", hasSignonState ? signonState : -1,
+				(unsigned long)ASRD_GNS_ClientConnection() );
 			return;
 		}
 
@@ -1499,9 +1628,24 @@ bool ASRD_GNS_ClientPacketStart( uint32_t serverUpdateSeq,
 
 	ClientPacketStartFn packetStart =
 		(ClientPacketStartFn)(uintptr_t)packetStartAddress;
-	packetStart( s_sourceContext, (int)serverUpdateSeq, clientCommandAck );
+	int deliveredClientCommandAck = clientCommandAck;
+	if ( s_hasLastDeliveredClientCommandAck &&
+		deliveredClientCommandAck < s_lastDeliveredClientCommandAck )
+	{
+		// Reliable and unreliable GNS lanes are ordered independently. An older
+		// block can therefore arrive after a newer update and must not move the
+		// Source packet ACK baseline backwards. PacketEnd converts this absolute
+		// value into an acknowledged-command delta; a regression would accumulate
+		// a negative delta in prediction state.
+		LogContextf( "PacketStart command ack clamped update=%u received=%d delivered=%d reason=cross_lane_regression",
+			(unsigned)serverUpdateSeq, clientCommandAck,
+			s_lastDeliveredClientCommandAck );
+		deliveredClientCommandAck = s_lastDeliveredClientCommandAck;
+	}
+	packetStart( s_sourceContext, (int)serverUpdateSeq,
+		deliveredClientCommandAck );
 	s_currentServerUpdateSeq = serverUpdateSeq;
-	s_currentClientCommandAck = clientCommandAck;
+	s_currentClientCommandAck = deliveredClientCommandAck;
 	s_packetStarted = true;
 	return true;
 }
@@ -1532,6 +1676,8 @@ bool ASRD_GNS_ClientPacketEnd( void )
 	ClientPacketEndFn packetEnd =
 		(ClientPacketEndFn)(uintptr_t)packetEndAddress;
 	packetEnd( s_sourceContext );
+	s_lastDeliveredClientCommandAck = s_currentClientCommandAck;
+	s_hasLastDeliveredClientCommandAck = true;
 	s_packetStarted = false;
 	s_currentServerUpdateSeq = 0;
 	s_currentClientCommandAck = 0;
@@ -1602,6 +1748,27 @@ bool ASRD_GNS_ClientConnectIntent( void *clientState, const char *endpoint,
 		GetConnection( &existingWrapperInitialized );
 	const bool existingGeneration = HasExistingClientGeneration() ||
 		existingWrapperInitialized || existingConnection != ASRD_GNS_CONNECTION_INVALID;
+	const bool sameEndpoint = existingConnection != ASRD_GNS_CONNECTION_INVALID &&
+		existingWrapperInitialized && candidateRemoteAddress == s_registrationRemoteAddress;
+	if ( sameEndpoint && s_sourceContextBound && s_sourceContext == clientState &&
+		ASRD_GNS_ClientState() == ASRD_GNS_CLIENT_CONNECTED )
+	{
+		int signonState = SIGNONSTATE_NONE;
+		(void)ReadSourceSignonState( &signonState );
+		if ( s_sourceLifecyclePhase == SOURCE_LIFECYCLE_CHANGELEVEL ||
+			signonState == SIGNONSTATE_CHANGELEVEL )
+		{
+			s_sourceLifecyclePhase = SOURCE_LIFECYCLE_CHANGELEVEL;
+			if ( !SourceAdapterSlotMatches() && !RestoreChangelevelSourceAdapter() )
+			{
+				LogClient( "connect intent reuse failed reason=source_adapter_restore" );
+				return false;
+			}
+			LogClientf( "connect intent reuse=connected handle=%lu action=preserve_changelevel_transport",
+				(unsigned long)existingConnection );
+			return true;
+		}
+	}
 
 	// A connect intent starts a new Source/GNS generation.  Retire any stale
 	// adapter or wrapper state before resetting the generation-local primes.
@@ -1662,6 +1829,8 @@ bool ASRD_GNS_ClientConnectIntent( void *clientState, const char *endpoint,
 void ASRD_GNS_ClientFrame( void )
 {
 	if ( !OpenClientState() )
+		return;
+	if ( !RefreshSourceLifecyclePhase() )
 		return;
 
 	// This is the engine-thread boundary.  The wrapper's callback only writes
@@ -1804,7 +1973,7 @@ void ASRD_GNS_ClientShutdown( void )
 	if ( connection != ASRD_GNS_CONNECTION_INVALID )
 	{
 		ASRD_GNS_Close( connection );
-		SetState( ASRD_GNS_CLIENT_CLOSED, connection, 0, true );
+		SetState( ASRD_GNS_CLIENT_CLOSED, ASRD_GNS_CONNECTION_INVALID, 0, true );
 	}
 	if ( wrapperInitialized )
 	{
@@ -1819,6 +1988,8 @@ void ASRD_GNS_ClientShutdown( void )
 	s_sourceContext = NULL;
 	s_dispatchPreviousNetChannel = NULL;
 	s_dispatchNetChannelBound = false;
+	s_sourceLifecyclePhase = SOURCE_LIFECYCLE_RUNNING;
+	s_sourceReattachPending = false;
 	s_disconnectRequested = false;
 	s_disconnectAfterSeconds = -1.0f;
 	s_disconnectDeadline = 0.0;
@@ -1832,7 +2003,7 @@ void ASRD_GNS_ClientShutdown( void )
 bool ASRD_GNS_ClientBridgeReady( void )
 {
 	return s_sourceContextBound && s_sourceContext && s_connectedPrimed &&
-		!s_compatibilityFatal &&
+		!s_compatibilityFatal && SourceAdapterSlotMatches() &&
 		ASRD_GNS_ClientState() == ASRD_GNS_CLIENT_CONNECTED;
 }
 

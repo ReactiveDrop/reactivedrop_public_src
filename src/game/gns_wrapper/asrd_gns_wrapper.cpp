@@ -42,6 +42,26 @@ namespace
 	static std::atomic<uint64_t> s_laneSendBytes[ 3 ];
 	static std::atomic<uint64_t> s_laneSendFailures[ 3 ];
 	static ASRD_GNS_Connection s_nextConnectionToken = 2;
+	// The vendored static library is built without
+	// STEAMNETWORKINGSOCKETS_OPENSOURCE, so its IP_AllowWithoutAuth default is
+	// disabled.  GNS also defaults the initial handshake timeout to 10 seconds.
+	// The ASRD transport is intentionally direct-IP and usable without a Steam
+	// identity, so make both settings explicit instead of depending on library
+	// build-flavor defaults.
+	static const int kGnsInitialConnectionTimeoutMs = 60000;
+	static const int kGnsAllowWithoutAuth = 2;
+	static const int kGnsConnectionOptionCount = 2;
+
+	static void SetGnsConnectionOptions( SteamNetworkingConfigValue_t *options )
+	{
+		options[ 0 ].SetInt32(
+			k_ESteamNetworkingConfig_TimeoutInitial,
+			kGnsInitialConnectionTimeoutMs );
+		options[ 1 ].SetInt32(
+			k_ESteamNetworkingConfig_IP_AllowWithoutAuth,
+			kGnsAllowWithoutAuth );
+	}
+
 	// ACTIVE resolves through s_activeConnectionToken and is not stored in a
 	// connection slot.  It is retained as a compatibility alias for the
 	// existing smoke probe; new client/server code uses the per-connection token.
@@ -446,14 +466,18 @@ extern "C" ASRD_GNS_WRAPPER_API int ASRD_GNS_Listen( uint16_t port )
 	SteamNetworkingIPAddr address;
 	address.Clear();
 	address.SetIPv4( 0, port );
-	s_listenSocket = s_sockets->CreateListenSocketIP( address, 0, NULL );
+	SteamNetworkingConfigValue_t options[ kGnsConnectionOptionCount ];
+	SetGnsConnectionOptions( options );
+	s_listenSocket = s_sockets->CreateListenSocketIP(
+		address, kGnsConnectionOptionCount, options );
 	if ( s_listenSocket == k_HSteamListenSocket_Invalid )
 	{
 		Log( "[ASRD-GNS] server listen failed port=%u\n", (unsigned)port );
 		return ASRD_GNS_CONNECTION_INVALID;
 	}
 
-	Log( "[ASRD-GNS] server ready listen=0.0.0.0:%u\n", (unsigned)port );
+	Log( "[ASRD-GNS] server ready listen=0.0.0.0:%u timeout_initial_ms=%d allow_without_auth=%d\n",
+		(unsigned)port, kGnsInitialConnectionTimeoutMs, kGnsAllowWithoutAuth );
 	return ASRD_GNS_CONNECTION_ACTIVE;
 }
 
@@ -486,7 +510,10 @@ extern "C" ASRD_GNS_WRAPPER_API ASRD_GNS_Connection ASRD_GNS_Connect( const char
 	SteamNetworkingIPAddr address;
 	address.Clear();
 	address.SetIPv4( hostAddress, port );
-	const HSteamNetConnection native = s_sockets->ConnectByIPAddress( address, 0, NULL );
+	SteamNetworkingConfigValue_t options[ kGnsConnectionOptionCount ];
+	SetGnsConnectionOptions( options );
+	const HSteamNetConnection native = s_sockets->ConnectByIPAddress(
+		address, kGnsConnectionOptionCount, options );
 	if ( native == k_HSteamNetConnection_Invalid )
 	{
 		Log( "[ASRD-GNS] client connect failed target=%s:%u\n", target, (unsigned)port );
@@ -500,8 +527,9 @@ extern "C" ASRD_GNS_WRAPPER_API ASRD_GNS_Connection ASRD_GNS_Connect( const char
 		return ASRD_GNS_CONNECTION_INVALID;
 	}
 	SetActiveConnectionToken( token );
-	Log( "[ASRD-GNS] client connecting target=%s:%u token=%lu\n",
-		target, (unsigned)port, (unsigned long)token );
+	Log( "[ASRD-GNS] client connecting target=%s:%u timeout_initial_ms=%d allow_without_auth=%d token=%lu\n",
+		target, (unsigned)port, kGnsInitialConnectionTimeoutMs,
+		kGnsAllowWithoutAuth, (unsigned long)token );
 	return token;
 }
 
@@ -672,19 +700,10 @@ extern "C" ASRD_GNS_WRAPPER_API int ASRD_GNS_SendLane(
 	s_sockets->SendMessages( 1, messages, &messageResult );
 	const int result = messageResult < 0
 		? (int)( -messageResult ) : (int)k_EResultOK;
-	const uint64_t laneAttempts =
-		s_laneSendAttempts[ lane ].fetch_add( 1 ) + 1;
-	const uint64_t laneBytes =
-		s_laneSendBytes[ lane ].fetch_add( size ) + size;
-	uint64_t laneFailures = s_laneSendFailures[ lane ].load();
+	s_laneSendAttempts[ lane ].fetch_add( 1 );
+	s_laneSendBytes[ lane ].fetch_add( size );
 	if ( result != (int)k_EResultOK )
-	{
-		laneFailures = s_laneSendFailures[ lane ].fetch_add( 1 ) + 1;
-	}
-	Log( "[ASRD-GNS] SendMessages token=%lu bytes=%lu lane=%u flags=%d result=%d laneAttempts=%llu laneBytes=%llu laneFailures=%llu\n",
-			(unsigned long)connection, (unsigned long)size, (unsigned)lane,
-			flags, result, (unsigned long long)laneAttempts,
-			(unsigned long long)laneBytes, (unsigned long long)laneFailures );
+		s_laneSendFailures[ lane ].fetch_add( 1 );
 	return result;
 }
 
