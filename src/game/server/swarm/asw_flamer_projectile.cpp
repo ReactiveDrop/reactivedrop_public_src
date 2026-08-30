@@ -24,6 +24,8 @@ extern ConVar sk_npc_dmg_asw_f;
 ConVar asw_flamer_force("asw_flamer_force", "0.7f", FCVAR_CHEAT, "Force imparted by the flamer projectiles");
 ConVar asw_flamer_size("asw_flamer_size", "40", FCVAR_CHEAT, "Radius at which flamer projectiles set aliens on fire");
 ConVar asw_flamer_debug("asw_flamer_debug", "0", FCVAR_CHEAT, "Visualize flamer projectile collision");
+ConVar asw_flamer_debug_hit("asw_flamer_debug_hit", "0", FCVAR_CHEAT, "Visualize flamer projectile hit");
+ConVar asw_flamer_debug_touch("asw_flamer_debug_touch", "0", FCVAR_CHEAT, "Visualize flamer projectile touch");
 
 #define ASW_FLAMER_HULL_MINS Vector(-asw_flamer_size.GetFloat(), -asw_flamer_size.GetFloat(), -asw_flamer_size.GetFloat() * 2.0f)
 #define ASW_FLAMER_HULL_MAXS Vector(asw_flamer_size.GetFloat(), asw_flamer_size.GetFloat(), asw_flamer_size.GetFloat() * 2.0f)
@@ -208,6 +210,12 @@ void CASW_Flamer_Projectile::FlameHit( CBaseEntity *pOther, const Vector &vecHit
 
 			ApplyMultiDamage();
 
+			if (asw_flamer_debug_hit.GetBool())
+			{
+				Msg("Flamer projectile hit %s\n", pOther->GetClassname() );
+				NDebugOverlay::Cross3D(GetAbsOrigin(), 6, 255, 100, 170, true, 2.0f);
+			}
+
 			// keep going through normal entities?
 			m_pLastHitEnt = pOther;
 		}
@@ -283,10 +291,13 @@ void CASW_Flamer_Projectile::ProjectileTouch( CBaseEntity *pOther )
 	if ( !pOther->IsSolid() || pOther->IsSolidFlagSet(FSOLID_VOLUME_CONTENTS) )
 		return;
 
-	//if (pOther)
-		//Msg("Flamer projectile touched %s\n", pOther->GetClassname());
+	if (asw_flamer_debug_touch.GetBool())
+	{
+		Msg("Flamer projectile touched %s\n", pOther->GetClassname());
+		NDebugOverlay::Cross3D(GetAbsOrigin(), 10, 255, 255, 0, true, 0.5f);
+	}
+
 	FlameHit(pOther, GetAbsOrigin(), false);
-	//NDebugOverlay::Cross3D(GetAbsOrigin(), 10, 255, 255, 0, true, 10.0f);
 }
 
 CASW_Flamer_Projectile * CASW_Flamer_Projectile::Flamer_Projectile_Create( float flDamage, const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner, CBaseEntity *pEntityToCreditForTheDamage /*= NULL*/, CBaseEntity *pCreatorWeapon /*= NULL */ )
