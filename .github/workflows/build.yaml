@@ -1,4 +1,6 @@
 name: Continuous integration
+run-name: ${{ inputs.title }}
+
 on:
   push:
     branches:
@@ -8,84 +10,84 @@ on:
     branches:
       - reactivedrop_public
       - reactivedrop_beta
+  workflow_dispatch:
+    inputs:
+      title:
+        type: string
+        default: Workflow dispatch
+      configuration:
+        description: "Configuration to build"
+        required: true
+        type: choice
+        options:
+          - Release
+          - Debug
+          - All
+        default: All
+      server:
+        description: server.dll
+        type: boolean
+        default: true
+      client:
+        description: client.dll
+        type: boolean
+        default: true
+      missionchooser:
+        description: missionchooser.dll
+        type: boolean
+        default: true
 
 # GitHub Actions usage is FREE for both public repositories and self-hosted runners.
 # We can use it to build our project and do some automated builds and in future quality tests.
 # https://docs.github.com/en/billing/managing-billing-for-github-actions/about-billing-for-github-actions
 
 jobs:
-  release:
-    name: build release
-    runs-on: windows-2025-vs2026
+  build:
+    name: build ${{ matrix.configuration }}
+    runs-on: windows-2025
     timeout-minutes: 30
+    strategy:
+      matrix:
+        configuration: ${{ fromJSON(
+          (github.event_name != 'workflow_dispatch' || inputs.configuration == 'All')
+            && '["Release","Debug"]'
+            || format('["{0}"]', inputs.configuration)
+          ) }}
+
     steps:
-      #checkout project
-      - uses: actions/checkout@v4
+      - name: Validate workflow dispatch dll selection
+        if: ${{ github.event_name == 'workflow_dispatch' && !inputs.server && !inputs.client && !inputs.missionchooser }}
+        shell: bash
+        run: |
+          echo "::error::Select at least one dll to build."
+          exit 1
 
-      # setup msbuild
+      - uses: actions/checkout@v7
+
       - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v2
+        uses: microsoft/setup-msbuild@v3
 
-      # missionchooser.dll
-      - name: Build missionchooser.dll
-        working-directory: src/game/missionchooser
-        run: MSBuild.exe swarm_sdk_missionchooser.vcxproj -property:Configuration=Release -property:Platform=Win32
-
-      # server.dll
       - name: Build server.dll
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.server }}
         working-directory: src/game/server
-        run: MSBuild.exe swarm_sdk_server.vcxproj -property:Configuration=Release -property:Platform=Win32
+        run: MSBuild.exe swarm_sdk_server.vcxproj -property:Configuration=${{ matrix.configuration }} -property:Platform=Win32
 
-      # client.dll
       - name: Build client.dll
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.client }}
         working-directory: src/game/client
-        run: MSBuild.exe swarm_sdk_client.vcxproj -property:Configuration=Release -property:Platform=Win32
+        run: MSBuild.exe swarm_sdk_client.vcxproj -property:Configuration=${{ matrix.configuration }} -property:Platform=Win32
 
-      # store artifacts
+      - name: Build missionchooser.dll
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.missionchooser }}
+        working-directory: src/game/missionchooser
+        run: MSBuild.exe swarm_sdk_missionchooser.vcxproj -property:Configuration=${{ matrix.configuration }} -property:Platform=Win32
+
       # make sure retention is low, this can become huge otherwise
       - name: Store build
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
-          name: Release
+          name: ${{ matrix.configuration }}
           path: |
-            reactivedrop/bin/missionchooser.dll
             reactivedrop/bin/server.dll
             reactivedrop/bin/client.dll
-
-  debug:
-    name: build debug
-    runs-on: windows-2025-vs2026
-    timeout-minutes: 30
-    steps:
-      #checkout project
-      - uses: actions/checkout@v4
-
-      # setup msbuild
-      - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v2
-
-      # missionchooser.dll
-      - name: Build missionchooser.dll
-        working-directory: src/game/missionchooser
-        run: MSBuild.exe swarm_sdk_missionchooser.vcxproj -property:Configuration=Debug -property:Platform=Win32
-
-      # server.dll
-      - name: Build server.dll
-        working-directory: src/game/server
-        run: MSBuild.exe swarm_sdk_server.vcxproj -property:Configuration=Debug -property:Platform=Win32
-
-      # client.dll
-      - name: Build client.dll
-        working-directory: src/game/client
-        run: MSBuild.exe swarm_sdk_client.vcxproj -property:Configuration=Debug -property:Platform=Win32
-
-      # store artifacts
-      # make sure retention is low, this can become huge otherwise
-      - name: Store build
-        uses: actions/upload-artifact@v4
-        with:
-          name: Debug
-          path: |
             reactivedrop/bin/missionchooser.dll
-            reactivedrop/bin/server.dll
-            reactivedrop/bin/client.dll
