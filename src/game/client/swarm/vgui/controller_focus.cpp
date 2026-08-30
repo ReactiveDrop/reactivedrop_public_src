@@ -77,11 +77,11 @@ void CControllerFocus::AddToFocusList( vgui::Panel *pPanel, bool bClickOnFocus, 
 	if ( !pPanel )
 		return;
 
+	if ( !IsInGame() )
+		return;
 	Assert( bModal || !m_iModalScope );
 
 	Assert( IsInGame() );
-	if ( !IsInGame() )
-		return;
 
 	FocusArea Focus;
 	Focus.hPanel = pPanel;
