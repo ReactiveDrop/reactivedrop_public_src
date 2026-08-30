@@ -316,7 +316,7 @@ public:
 	virtual void			InitDefaultAIRelationships( void ) { return; }
 	virtual const char*		AIClassText(int classType) { return NULL; }
 	virtual int				NumEntityClasses() const	{ return LAST_SHARED_ENTITY_CLASS; }
-	virtual int				NumFactions() const	{ return LAST_SHARED_FACTION; }
+	virtual int				NumFactions() const	{ return NUM_SHARED_FACTIONS; }
 
 // Healthcharger respawn control
 	virtual float FlHealthChargerRechargeTime( void ) = 0;// how long until a depleted HealthCharger recharges itself?
