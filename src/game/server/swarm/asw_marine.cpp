@@ -4781,7 +4781,7 @@ void CASW_Marine::SetKnockedOut(bool bKnockedOut)
 		// reactivedrop: setting it to no solid still collides it with aliens 
 		// will try changing collision group
 		SetCollisionGroup( ASW_COLLISION_GROUP_BOTS );
-		ChangeFaction( FACTION_NEUTRAL );
+		ChangeFaction( FACTION_INCAPACITATED );
 		CTakeDamageInfo	info;
 		info.SetDamageType( DMG_GENERIC );
 		info.SetDamageForce( vec3_origin );

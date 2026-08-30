@@ -4604,40 +4604,54 @@ void CAlienSwarm::InitDefaultAIRelationships()
 	CBaseCombatCharacter::AllocateDefaultRelationships();
 
 	// set up faction relationships
-	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_MARINES, FACTION_ALIENS, D_HATE, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_MARINES, FACTION_MARINES, D_LIKE, 0 );
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_MARINES, FACTION_ALIENS, D_HATE, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_MARINES, FACTION_BAIT, D_NEUTRAL, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_MARINES, FACTION_NEUTRAL, D_NEUTRAL, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_MARINES, FACTION_COMBINE, D_HATE, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_MARINES, FACTION_ROBOTS, D_HATE, 0 );
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_MARINES, FACTION_INCAPACITATED, D_LIKE, 0 );
 
-	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_ALIENS, FACTION_ALIENS, D_LIKE, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_ALIENS, FACTION_MARINES, D_HATE, 0 );
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_ALIENS, FACTION_ALIENS, D_LIKE, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_ALIENS, FACTION_BAIT, D_HATE, 999 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_ALIENS, FACTION_NEUTRAL, D_NEUTRAL, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_ALIENS, FACTION_COMBINE, D_HATE, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_ALIENS, FACTION_ROBOTS, D_HATE, 0 );
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_ALIENS, FACTION_INCAPACITATED, D_NEUTRAL, 0 );
 
-	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_NEUTRAL, FACTION_NEUTRAL, D_NEUTRAL, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_NEUTRAL, FACTION_MARINES, D_NEUTRAL, 0 );
-	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_NEUTRAL, FACTION_BAIT, D_NEUTRAL, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_NEUTRAL, FACTION_ALIENS, D_NEUTRAL, 0 );
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_NEUTRAL, FACTION_BAIT, D_NEUTRAL, 0 );
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_NEUTRAL, FACTION_NEUTRAL, D_NEUTRAL, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_NEUTRAL, FACTION_COMBINE, D_NEUTRAL, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_NEUTRAL, FACTION_ROBOTS, D_NEUTRAL, 0 );
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_NEUTRAL, FACTION_INCAPACITATED, D_NEUTRAL, 0 );
 
-	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_COMBINE, FACTION_COMBINE, D_LIKE, 0 );
-	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_COMBINE, FACTION_NEUTRAL, D_NEUTRAL, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_COMBINE, FACTION_MARINES, D_HATE, 0 );
-	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_COMBINE, FACTION_BAIT, D_NEUTRAL, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_COMBINE, FACTION_ALIENS, D_HATE, 0 );
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_COMBINE, FACTION_BAIT, D_NEUTRAL, 0 );
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_COMBINE, FACTION_NEUTRAL, D_NEUTRAL, 0 );
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_COMBINE, FACTION_COMBINE, D_LIKE, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_COMBINE, FACTION_ROBOTS, D_HATE, 0 );
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_COMBINE, FACTION_INCAPACITATED, D_NEUTRAL, 0 );
 
-	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_ROBOTS, FACTION_ROBOTS, D_LIKE, 0 );
-	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_ROBOTS, FACTION_NEUTRAL, D_NEUTRAL, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_ROBOTS, FACTION_MARINES, D_HATE, 0 );
-	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_ROBOTS, FACTION_BAIT, D_NEUTRAL, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_ROBOTS, FACTION_ALIENS, D_HATE, 0 );
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_ROBOTS, FACTION_BAIT, D_NEUTRAL, 0 );
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_ROBOTS, FACTION_NEUTRAL, D_NEUTRAL, 0 );
 	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_ROBOTS, FACTION_COMBINE, D_HATE, 0 );
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_ROBOTS, FACTION_ROBOTS, D_LIKE, 0 );
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_ROBOTS, FACTION_INCAPACITATED, D_NEUTRAL, 0 );
+
+	// Just like Marines. But Hostiles should be neutral towards undead marines or else they will crowd dead bodies when `rd_allow_revive 1`
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_INCAPACITATED, FACTION_MARINES, D_LIKE, 0 );
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_INCAPACITATED, FACTION_ALIENS, D_HATE, 0 );
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_INCAPACITATED, FACTION_BAIT, D_NEUTRAL, 0 );
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_INCAPACITATED, FACTION_NEUTRAL, D_NEUTRAL, 0 );
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_INCAPACITATED, FACTION_COMBINE, D_HATE, 0 );
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_INCAPACITATED, FACTION_ROBOTS, D_HATE, 0 );
+	CAI_BaseNPC::SetDefaultFactionRelationship(FACTION_INCAPACITATED, FACTION_INCAPACITATED, D_LIKE, 0 );
 
 	// Matching HL2 defaults: Wildlife is scared of everything except other wildlife, barnacles (if we ever add them), and invisible NPCs.
 	for ( int nClass = CLASS_NONE; nClass < LAST_ASW_ENTITY_CLASS; nClass++ )
