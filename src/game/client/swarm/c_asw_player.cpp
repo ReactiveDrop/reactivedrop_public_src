@@ -149,6 +149,9 @@ ConVar asw_turret_fog_end( "asw_turret_fog_end", "1200", 0, "Fog end distance fo
 
 ConVar rd_force_spectate_marine( "rd_force_spectate_marine", "-1", FCVAR_DONTRECORD, "spectate this marine resource index if it exists", true, -1, true, ASW_MAX_MARINE_RESOURCES );
 
+static void set_rd_spectate_order( IConVar *pConVar = NULL, const char *pOldValue = NULL, float flOldValue = 0.0f );
+ConVar rd_spectate_order( "rd_spectate_order", "", FCVAR_ARCHIVE, "Prioritize this marines in spectate order. Space separated list. Example: \"4 1 7 3 0\".", set_rd_spectate_order );
+
 extern ConVar asw_allow_detach;
 extern ConVar asw_stim_cam_time;
 extern ConVar asw_rts_controls;
@@ -1514,6 +1517,12 @@ void C_ASW_Player::OnDataChanged( DataUpdateType_t updateType )
 					CSoundEnvelopeController::GetController().Play( pLateJoinMusic, 1.0f, 100 );
 					CSoundEnvelopeController::GetController().SoundFadeOut( pLateJoinMusic, 5.0f, true );
 				}
+			}
+
+			// send our rd_spectate_order to the server
+			if ( Q_strlen( rd_spectate_order.GetString() ) > 0 )
+			{
+				set_rd_spectate_order();
 			}
 
 			// tell other players that we're fully connected
@@ -2998,4 +3007,30 @@ CSteamID C_ASW_Player::GetSteamID()
 	}
 	CSteamID invalid;
 	return invalid;
+}
+
+static void set_rd_spectate_order( IConVar *pConVar, const char *pOldValue, float flOldValue )
+{
+	const char *pNewValue = pConVar ? ConVarRef( pConVar ).GetString() : rd_spectate_order.GetString();
+
+	int iProfiles[ASW_NUM_MARINE_PROFILES];
+	const int nProfiles = parseSpectateOrder( pNewValue, iProfiles );
+
+	// Failed parsing
+	if ( nProfiles == -1 )
+	{
+		if ( pConVar )
+		{
+			ConVarRef( pConVar ).SetValue( pOldValue );
+		}
+		return;
+	}
+
+	if ( engine->IsInGame() )
+	{
+		const int iBufLen = 30 + ASW_NUM_MARINE_PROFILES * 3;
+		char szbuf[iBufLen];
+		Q_snprintf( szbuf, iBufLen, "rd_spectate_order_set \"%s\"\n", pNewValue );
+		engine->ClientCmd( szbuf );
+	}
 }

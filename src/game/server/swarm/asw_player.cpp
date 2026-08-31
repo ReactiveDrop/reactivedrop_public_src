@@ -57,6 +57,7 @@
 #include "missionchooser/iasw_mission_chooser_source.h"
 #include "rd_vgui_vscript_shared.h"
 #include "rd_crafting_defs.h"
+#include <algorithm>
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -2173,8 +2174,163 @@ HSCRIPT CASW_Player::ScriptGetNPC() const
 	return ToHScript( GetNPC() );
 }
 
+CON_COMMAND_F( rd_spectate_order_set, "Prioritize this marines in spectate order. Example: \"4 1 7 3 0\". \"\" for unset.", FCVAR_HIDDEN )
+{
+	CASW_Player *pPlayer = ToASW_Player( UTIL_GetCommandClient() );
+	if ( !pPlayer )
+	{
+		Warning( "%s: Not a Player (not connected to a server?)\n", args[0] );
+		return;
+	}
+
+	if ( args.ArgC() != 2 )
+	{
+		Warning( "%s: Expected quoted space separated list. Example: \"4 1 7 3 0\". \"\" for unset.\n", args[0] );
+		return;
+	}
+
+	int iProfiles[ASW_NUM_MARINE_PROFILES];
+	const int nProfiles = parseSpectateOrder( args[1], iProfiles );
+
+	// Failed parsing
+	if ( nProfiles == -1 )
+	{
+		return;
+	}
+
+	pPlayer->SetSpectatingOrder( iProfiles, nProfiles );
+
+	// Start spectating "best" marine
+	if ( ASWGameRules()->GetGameState() == ASW_GS_INGAME )
+	{
+		pPlayer->SetSpectatingNPC( NULL );
+		pPlayer->SpectateNextMarine();
+	}
+}
+
+// Can have some marine profiles; rest will have worst priority
+void CASW_Player::SetSpectatingOrder( const int* iProfiles, int nProfiles )
+{
+	if ( nProfiles < 0 )
+	{
+		Warning( "set spectating order: bad parsing?\n" );
+		return;
+	}
+
+	if ( nProfiles == 0 )
+	{
+		UnsetSpectatingOrder();
+		return;
+	}
+
+	// Prefill with worst priority in case a profile is not in the list or is invalid
+	for ( int i = 0; i < ASW_NUM_MARINE_PROFILES; i++ )
+	{
+		m_iSpectatingPrioMapping[i] = INT_MAX;
+	}
+
+	nProfiles = MIN( nProfiles, ASW_NUM_MARINE_PROFILES );
+	for ( int i = 0; i < nProfiles; i++ )
+	{
+		const int iProfile = iProfiles[i];
+		if ( iProfile >= 0 && iProfile < ASW_NUM_MARINE_PROFILES )
+		{
+			m_iSpectatingPrioMapping[iProfile] = i;
+		}
+	}
+
+	m_bSpectatingInOrder = true;
+}
+
+bool CASW_Player::CompareSpectatingPriority( CASW_Marine* pM1, CASW_Marine* pM2 ) const
+{
+	// Assign worst priority if no marine or no profile index
+	const int iProfile1 = pM1 ? pM1->GetMarineProfile()->m_ProfileIndex : INT_MAX;
+	const int iProfile2 = pM2 ? pM2->GetMarineProfile()->m_ProfileIndex : INT_MAX;
+
+	const int iPriority1 = ( iProfile1 >= 0 && iProfile1 < ASW_NUM_MARINE_PROFILES ) ?
+		m_iSpectatingPrioMapping[iProfile1] : INT_MAX;
+	const int iPriority2 = ( iProfile2 >= 0 && iProfile2 < ASW_NUM_MARINE_PROFILES ) ?
+		m_iSpectatingPrioMapping[iProfile2] : INT_MAX;
+
+	return iPriority1 < iPriority2;
+}
+
+void CASW_Player::SpectateNextMarineInOrder()
+{
+	CASW_Game_Resource* pGameResource = ASWGameResource();
+	if (!pGameResource)
+		return;
+
+	int nMarines = 0;
+	CASW_Marine* pMarines[ASW_MAX_MARINE_RESOURCES] = { NULL };
+
+	// Gather all valid marines
+	for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
+	{
+		//Msg("Checking pMR %d\n", i);
+		CASW_Marine_Resource* pMR = pGameResource->GetMarineResource(i);
+		CASW_Marine *pMarine = pMR ? pMR->GetMarineEntity() : NULL;
+
+		if (!pMarine || !pMarine->IsAlive() || pMarine->GetHealth() <= 0)
+		{
+			//Msg(" but he's dead\n");
+			continue;
+		}
+
+		pMarines[nMarines] = pMarine;
+		nMarines++;
+	}
+
+	{
+		std::sort(
+			pMarines,
+			pMarines + nMarines,
+			[this](CASW_Marine* a, CASW_Marine* b)
+			{
+				return CompareSpectatingPriority(a, b);
+			}
+		);
+	}
+
+	//Msg("  set first guy as our first\n");
+	CASW_Marine *pFirst = pMarines[0];
+
+	// loop through all valid marines
+	for ( int i = 0; i < nMarines; i++ )
+	{
+		//Msg("Checking pMR %d\n", i);
+		CASW_Marine *pMarine = pMarines[i]; // Alive marine
+
+		if (GetSpectatingNPC() == NULL)		// if we're not spectating anything yet, then spectate the first one we find
+		{
+			//Msg("  We're not spectating anyone, so we're gonna spec this dude\n");
+			SetSpectatingNPC(pMarine);
+			break;
+		}
+		if (GetSpectatingNPC() == pMarine)	// if we're spectating this one, then clear it, so the next one we find will get set
+		{
+			//Msg("  we're spectating this dude, so clearing our current spectator\n");
+			SetSpectatingNPC(NULL);
+		}
+	}
+	//Msg("end\n");
+	// if we're still not spectating anything but we found at least marine, then that means we were spectating the last one in the list and need to set this
+	if (GetSpectatingNPC() == NULL && pFirst)
+	{
+		//Msg("  but we're still not speccing anyone and we have a first set, so speccing that dude\n");
+		SetSpectatingNPC(pFirst);
+	}
+}
+
 void CASW_Player::SpectateNextMarine()
 {
+	if ( m_bSpectatingInOrder )
+	{
+		SpectateNextMarineInOrder();
+		return;
+	}
+
 	CASW_Game_Resource* pGameResource = ASWGameResource();
 	if (!pGameResource)
 		return;
@@ -2209,7 +2365,7 @@ void CASW_Player::SpectateNextMarine()
 		{
 			//Msg("  we're spectating this dude, so clearing our current spectator\n");
 			SetSpectatingNPC(NULL);
-		}				
+		}
 	}
 	//Msg("end\n");
 	// if we're still not spectating anything but we found at least marine, then that means we were spectating the last one in the list and need to set this

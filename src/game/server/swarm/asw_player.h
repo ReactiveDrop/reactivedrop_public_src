@@ -87,6 +87,14 @@ public:
 	virtual bool ASWAnim_CanMove();
 
 	// spectating
+private:
+	bool m_bSpectatingInOrder = false;
+	int m_iSpectatingPrioMapping[ASW_NUM_MARINE_PROFILES]; // profile -> priority; smaller number is higher priority
+public:
+	void UnsetSpectatingOrder() { m_bSpectatingInOrder = false; }
+	void SetSpectatingOrder( const int* iProfiles, int nProfiles );
+	bool CompareSpectatingPriority( CASW_Marine* pM1, CASW_Marine* pM2 ) const;
+	void SpectateNextMarineInOrder();
 	void SpectateNextMarine();
 	void SetSpectatingNPC( CASW_Inhabitable_NPC *pSpectating );
 	CASW_Inhabitable_NPC *GetSpectatingNPC() const;
