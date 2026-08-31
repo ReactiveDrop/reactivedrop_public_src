@@ -1077,7 +1077,7 @@ exit /b 0
     <ClCompile Include="inforemarkable.cpp" />
     <ClCompile Include="info_camera_link.cpp" />
     <ClCompile Include="info_overlay_accessor.cpp" />
-	<ClCompile Include="info_player_start.cpp" />
+    <ClCompile Include="info_player_start.cpp" />
     <ClCompile Include="init_factory.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
@@ -1394,6 +1394,7 @@ exit /b 0
     <ClCompile Include="swarm\rd_boss_bar.cpp" />
     <ClCompile Include="swarm\asw_trigger_marine_melee.cpp" />
     <ClCompile Include="swarm\rd_func_jumpjet.cpp" />
+    <ClCompile Include="swarm\rd_gameserver.cpp" />
     <ClCompile Include="swarm\rd_memlimit.cpp" />
     <ClCompile Include="tanktrain.cpp" />
     <ClCompile Include="te.cpp" />
@@ -2066,7 +2067,7 @@ exit /b 0
     <ClInclude Include="ilagcompensationmanager.h" />
     <ClInclude Include="inforemarkable.h" />
     <ClInclude Include="info_camera_link.h" />
-	<ClInclude Include="info_player_start.h" />
+    <ClInclude Include="info_player_start.h" />
     <ClInclude Include="init_factory.h" />
     <ClInclude Include="iservervehicle.h" />
     <ClInclude Include="items.h" />
@@ -2331,6 +2332,7 @@ exit /b 0
     <ClInclude Include="swarm\rd_boss_bar.h" />
     <ClInclude Include="swarm\asw_trigger_marine_melee.h" />
     <ClInclude Include="swarm\rd_func_jumpjet.h" />
+    <ClInclude Include="swarm\rd_gameserver.h" />
     <ClInclude Include="te.h" />
     <ClInclude Include="team.h" />
     <ClInclude Include="TemplateEntities.h" />

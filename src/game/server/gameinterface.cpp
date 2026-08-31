@@ -123,6 +123,9 @@
 #undef CreateEvent
 
 #ifndef CLIENT_DLL
+// include gameserver interface
+#include "rd_gameserver.h"
+
 // expose server helper interface
 #include "serverhelper.h"
 static CServerHelper g_ServerHelper;
@@ -621,10 +624,7 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 
 #ifndef STEAMAPPS_INTERFACE_VERSION008
 #ifndef CLIENT_DLL
-
-	// initialize a game server. this call was in engine before, but not anymore. we need to call it from somewhere
-	// initialize the gameserver, srcds already binds to the correct ip and ports, so we can just pass 0 here to all parameters
-	bool r = SteamGameServer_Init(0, 0, 0, eServerModeAuthenticationAndSecure, "7149");
+	const bool r = GameServerInit();
 	ConMsg("StartGameServer_Init resulted in %d\n", r);
 #endif
 #endif
