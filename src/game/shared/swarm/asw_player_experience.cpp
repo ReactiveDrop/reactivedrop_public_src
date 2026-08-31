@@ -449,10 +449,6 @@ void CASW_Player::RequestExperience()
 	{
 		if ( IsLocalPlayer( this ) )
 		{
-			// Valve:
-			// This call is no longer required as it is managed by the Steam client. The game stats and achievements
-			// will be synchronized with Steam before the game process begins.
-			// [Obsolete("No longer required. Automatically handled by the Steam client.", false)]
 #if defined(STEAMAPPS_INTERFACE_VERSION008)
 			SteamUserStats()->RequestCurrentStats();
 #else

@@ -38,10 +38,6 @@ void CRD_Infection_Deathmatch_Stats::OnUpdate( C_RD_HUD_VScript *pHUD )
 
 	if ( !m_bStatsRequested && SteamUserStats() )
 	{
-		// Valve:
-		// This call is no longer required as it is managed by the Steam client. The game stats and achievements
-		// will be synchronized with Steam before the game process begins.
-		// [Obsolete("No longer required. Automatically handled by the Steam client.", false)]
 #if defined(STEAMAPPS_INTERFACE_VERSION008)
 		SteamUserStats()->RequestCurrentStats();
 #else
