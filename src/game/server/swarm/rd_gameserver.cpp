@@ -65,5 +65,9 @@ bool GameServerInit()
 	ConMsg("Using ip: %s:%d (%u) [%s]\n", ip > 0 ? ipStr : "0.0.0.0", gamePort, ip, version);
 
 
-	return SteamGameServer_Init(ip, gamePort, clientPort, eServerModeAuthenticationAndSecure, version);
+	const bool result = SteamGameServer_Init(ip, gamePort, clientPort, eServerModeAuthenticationAndSecure, version);
+
+	ConMsg("StartGameServer_Init resulted in %s\n", result ? "success" : "failure");
+
+	return result;
 }

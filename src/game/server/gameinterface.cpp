@@ -624,8 +624,7 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 
 #ifndef STEAMAPPS_INTERFACE_VERSION008
 #ifndef CLIENT_DLL
-	const bool r = GameServerInit();
-	ConMsg("StartGameServer_Init resulted in %d\n", r);
+	GameServerInit();
 #endif
 #endif
 
