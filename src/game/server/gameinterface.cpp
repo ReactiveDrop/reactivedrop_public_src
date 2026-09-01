@@ -625,6 +625,7 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 #ifndef STEAMAPPS_INTERFACE_VERSION008
 #ifndef CLIENT_DLL
 	GameServerInit();
+
 #endif
 #endif
 
@@ -1466,27 +1467,8 @@ static void OnServerUpdateRequested()
 
 void CServerGameDLL::Think( bool finalTick )
 {
-	// this is normally done in engine, but not anymore
-	// we need to put this here
-	if (SteamGameServer()) {
-		bool bLoggedIn = SteamGameServer()->BLoggedOn();
-		if (!bLoggedIn) {
-			SteamGameServer()->LogOnAnonymous();
-		}
-	}
-
-	SteamGameServer_RunCallbacks();
-
-	// because steam_api and engine are disagreeing, sv_lan is set to 1
-	// this is not because they are incompatible, but because the init in engine is gone
-	// as workaround, we simply set sv_lan back to 0, and send a heartbeat
-	ConVarRef sv_lan("sv_lan");
-	if (sv_lan.GetBool()) {
-		sv_lan.SetValue(0);
-		ConMsg("************************************************\n*  Steam API connection restored               *\n************************************************\n");
-		engine->ServerCommand("heartbeat\n");
-		engine->ServerExecute();
-	}
+	// run callbacks on every frame
+	GameServerCallbacks();
 
 	static bool s_bUpdateCheckInit = engine->IsDedicatedServer();
 	if ( s_bUpdateCheckInit )

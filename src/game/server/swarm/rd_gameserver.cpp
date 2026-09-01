@@ -57,17 +57,37 @@ bool GameServerInit()
 	}
 
 	// get ports
-	uint16 gamePort = GetCommandLinePort("-port");
-	uint16 clientPort = GetCommandLinePort("-clientport");
+	uint16 gamePort = GetCommandLinePort("-port", 0);
+	uint16 clientPort = GetCommandLinePort("-clientport", 0);
 
 	// get version
 	const char* version = GetGameVersion();
+
+	// show some debug
 	ConMsg("Using ip: %s:%d (%u) [%s]\n", ip > 0 ? ipStr : "0.0.0.0", gamePort, ip, version);
 
+	// load steam api
+	// this is done in engine, but needs to be redone at exactly this timing, to reconnect all steam interfaces
+	SteamAPI_Init();
 
+	// we can spawn a gameserver immediately
 	const bool result = SteamGameServer_Init(ip, gamePort, clientPort, eServerModeAuthenticationAndSecure, version);
-
 	ConMsg("StartGameServer_Init resulted in %s\n", result ? "success" : "failure");
-
 	return result;
 }
+
+void GameServerCallbacks()
+{
+	// steam callbacks
+	SteamGameServer_RunCallbacks();
+
+	// this is normally done in engine, but not anymore
+	// we need to put this here
+	if (SteamGameServer()) {
+		bool bLoggedIn = SteamGameServer()->BLoggedOn();
+		if (!bLoggedIn) {
+			SteamGameServer()->LogOnAnonymous();
+		}
+	}
+}
+
