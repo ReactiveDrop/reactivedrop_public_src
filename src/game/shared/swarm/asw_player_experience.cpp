@@ -447,15 +447,7 @@ void CASW_Player::RequestExperience()
 	Assert( SteamUserStats() );
 	if ( SteamUserStats() )
 	{
-		if ( IsLocalPlayer( this ) )
-		{
-#if defined(STEAMAPPS_INTERFACE_VERSION008)
-			SteamUserStats()->RequestCurrentStats();
-#else
-			SteamUserStats()->RequestUserStats(SteamUser()->GetSteamID());
-#endif
-		}
-		else
+		if ( ! IsLocalPlayer( this ) )
 		{
 			player_info_t pi;
 			if ( engine->GetPlayerInfo( entindex(), &pi ) && pi.friendsID )

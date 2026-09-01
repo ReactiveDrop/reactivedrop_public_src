@@ -38,11 +38,6 @@ void CRD_Infection_Deathmatch_Stats::OnUpdate( C_RD_HUD_VScript *pHUD )
 
 	if ( !m_bStatsRequested && SteamUserStats() )
 	{
-#if defined(STEAMAPPS_INTERFACE_VERSION008)
-		SteamUserStats()->RequestCurrentStats();
-#else
-		SteamUserStats()->RequestUserStats(SteamUser()->GetSteamID());
-#endif
 		m_bStatsRequested = true;
 	}
 

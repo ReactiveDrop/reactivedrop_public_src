@@ -622,11 +622,8 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 		CGlobalVars *pGlobals)
 {
 
-#ifndef STEAMAPPS_INTERFACE_VERSION008
 #ifndef CLIENT_DLL
 	GameServerInit();
-
-#endif
 #endif
 
 	COM_TimestampedLog( "ConnectTier1/2/3Libraries - Start" );

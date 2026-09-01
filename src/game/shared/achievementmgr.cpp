@@ -534,15 +534,6 @@ void CAchievementMgr::UserConnected( int nUserSlot )
 	{
 		// ASSERT( STEAM_PLAYER_SLOT == nUserSlot )
 
-
-		if ( SteamUserStats() )
-		{
-#if defined(STEAMAPPS_INTERFACE_VERSION008)
-			SteamUserStats()->RequestCurrentStats();
-#else
-			SteamUserStats()->RequestUserStats(SteamUser()->GetSteamID());
-#endif
-		}
 		m_bUserSlotActive[STEAM_PLAYER_SLOT] = true;
 
 	}
