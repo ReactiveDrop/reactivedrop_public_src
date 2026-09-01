@@ -198,7 +198,8 @@ void CASW_Weapon_Sniper_Rifle::PrimaryAttack( void )
 	{
 		iPenetration += 2;
 	}
-	pMarine->FirePenetratingBullets( info, iPenetration, 3.5f, 0, true, NULL, false  );
+	int iWallPenetration = 1 + iPenetration;
+	pMarine->FirePenetratingBullets( info, iPenetration, iWallPenetration + 0.5f, 0, true, NULL, false  );
 
 	// increment shooting stats
 #ifndef CLIENT_DLL
