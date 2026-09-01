@@ -1467,7 +1467,7 @@ static void OnServerUpdateRequested()
 
 void CServerGameDLL::Think( bool finalTick )
 {
-	// run callbacks on every frame
+	// run callbacks on every tick
 	GameServerCallbacks();
 
 	static bool s_bUpdateCheckInit = engine->IsDedicatedServer();

@@ -10,7 +10,6 @@ inline uint16 GetCommandLinePort(const char* type, uint16 defaultPort = 0)
 
 	if (CommandLine()->CheckParm(type)) {
 		const char* sPortStr = CommandLine()->ParmValue(type, nullptr);
-		ConMsg("sPort: %s\n", sPortStr);
 		port = atoi(sPortStr);
 	}
 
