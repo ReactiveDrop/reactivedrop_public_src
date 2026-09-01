@@ -192,11 +192,11 @@ void CASW_Weapon_Sniper_Rifle::PrimaryAttack( void )
 	int iPenetration = 1;
 	if ( IsZoomed() )
 	{
-		iPenetration = 2;
+		iPenetration += 1;
 	}
 	if ( pMarine->GetDamageBuffEndTime() > gpGlobals->curtime )		// sniper rifle penetrates more targets when marine is in a damage amp
 	{
-		iPenetration = 3;
+		iPenetration += 2;
 	}
 	pMarine->FirePenetratingBullets( info, iPenetration, 3.5f, 0, true, NULL, false  );
 
