@@ -1465,9 +1465,11 @@ void CASW_Marine::FirePenetratingBullets( const FireBulletsInfo_t &info, int iMa
 			{
 				if ( tr.m_pEnt->Classify() == CLASS_ASW_SHIELDBUG )		// don't let bullets pass through shieldbugs
 				{
-					bPierce = false;
+					bool bShieldbugBlocked = false;
+					bShieldbugBlocked = ( tr.hitgroup == HITGROUP_BONE_SHIELD || tr.hitbox == 1 ); // see CASW_Shieldbug::BlockedDamage
+					bPierce = !bShieldbugBlocked; // allow piercing vulnerable body parts
 				}
-				else if ( ( info.m_nFlags & FIRE_BULLETS_NO_PIERCING_SPARK ) == 0 )
+				if ( bPierce && !( info.m_nFlags & FIRE_BULLETS_NO_PIERCING_SPARK ) )
 				{
 					CEffectData	data;
 					data.m_vOrigin = tr.endpos;
@@ -1483,7 +1485,8 @@ void CASW_Marine::FirePenetratingBullets( const FireBulletsInfo_t &info, int iMa
 			}
 		}
 
-		if ( ( tr.m_pEnt != NULL ) && fPenetrateChance > 1.0f )
+		if ( ( tr.m_pEnt != NULL ) && fPenetrateChance > 1.0f &&
+				( tr.m_pEnt->Classify() != CLASS_ASW_SHIELDBUG || bPierce ) )
 		{
 			// We can only penetrate a few walls
 			fPenetrateChance -= 1.0f;
