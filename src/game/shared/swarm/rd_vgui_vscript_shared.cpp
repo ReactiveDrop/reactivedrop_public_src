@@ -20,6 +20,18 @@
 #include "tier0/memdbgon.h"
 
 #ifdef CLIENT_DLL
+namespace
+{
+// An rd_vgui_vscript that uses data entity 0 as a local-player owner must
+// explicitly opt in to the local-menu ownership path.  Keep this marker in
+// the highest integer slot so it is out of the way of ordinary HUD data.  The
+// value is a positive, Squirrel-safe 32-bit magic number (ASCII "RDVM").
+// Server VScript contract: set Int( 63, 0x5244564D ) on each local menu
+// entity; Int( 0 ) remains that entity's open/closed visibility bit.
+constexpr int RD_VGUI_VSCRIPT_LOCAL_MENU_MODE_SLOT = 63;
+constexpr int RD_VGUI_VSCRIPT_LOCAL_MENU_MODE_SENTINEL = 0x5244564D;
+}
+
 CUtlVector<CRD_VGui_VScript *> CRD_VGui_VScript::s_InteractiveHUDEntities;
 #else
 LINK_ENTITY_TO_CLASS( rd_vgui_vscript, CRD_VGui_VScript );
@@ -427,6 +439,19 @@ void CRD_VGui_VScript::OnDataChanged( DataUpdateType_t type )
 
 C_BasePlayer *CRD_VGui_VScript::GetPredictionOwner()
 {
+	// A client-only VGUI screen uses data entity 0 as its local player owner.
+	// Data integer 0 is the server-synchronised visibility bit.  If the entity
+	// is a player but the bit is clear, return no owner instead of falling
+	// through to a stale marine interacter and consuming normal input.
+	C_BasePlayer *pDataPlayer = ToBasePlayer( m_hDataEntity.Get() );
+	if ( pDataPlayer )
+	{
+		const bool bLocalMenu = pDataPlayer == C_BasePlayer::GetLocalPlayer() &&
+			m_iDataInt.Get( 0 ) != 0 &&
+			m_iDataInt.Get( RD_VGUI_VSCRIPT_LOCAL_MENU_MODE_SLOT ) == RD_VGUI_VSCRIPT_LOCAL_MENU_MODE_SENTINEL;
+		return bLocalMenu ? pDataPlayer : NULL;
+	}
+
 	CASW_Inhabitable_NPC *pInteracter = m_hInteracter;
 	if ( !pInteracter || !pInteracter->IsInhabited() )
 		return NULL;
