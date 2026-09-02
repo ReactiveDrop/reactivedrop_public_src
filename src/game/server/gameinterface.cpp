@@ -123,6 +123,9 @@
 #undef CreateEvent
 
 #ifndef CLIENT_DLL
+// include gameserver interface
+#include "rd_gameserver.h"
+
 // expose server helper interface
 #include "serverhelper.h"
 static CServerHelper g_ServerHelper;
@@ -618,6 +621,10 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 		CreateInterfaceFn physicsFactory, CreateInterfaceFn fileSystemFactory, 
 		CGlobalVars *pGlobals)
 {
+
+#ifndef CLIENT_DLL
+	GameServerInit();
+#endif
 
 	COM_TimestampedLog( "ConnectTier1/2/3Libraries - Start" );
 
@@ -1457,6 +1464,9 @@ static void OnServerUpdateRequested()
 
 void CServerGameDLL::Think( bool finalTick )
 {
+	// run callbacks on every tick
+	GameServerCallbacks();
+
 	static bool s_bUpdateCheckInit = engine->IsDedicatedServer();
 	if ( s_bUpdateCheckInit )
 	{

@@ -353,6 +353,7 @@ bool CReactiveDropWorkshop::DedicatedServerWorkshopSetup()
 		engine->ServerCommand( "exec workshop.cfg\n" );
 		engine->ServerExecute();
 	}
+
 	m_bStartingUp = false;
 	if ( m_bAnyServerUpdates )
 	{
@@ -498,6 +499,11 @@ void CReactiveDropWorkshop::RestartEnabledAddonsQuery()
 	m_hEnabledAddonsQuery = hQuery;
 	pUGC->SetReturnLongDescription( hQuery, true );
 	pUGC->SetReturnKeyValueTags( hQuery, true );
+
+#ifndef CLIENT_DLL
+	pUGC->SetAllowCachedResponse(hQuery, rd_workshop_query_cache.GetInt());	
+#endif
+
 	SteamAPICall_t hAPICall = pUGC->SendQueryUGCRequest( hQuery );
 	m_SteamUGCQueryCompleted.Set( hAPICall, this, &CReactiveDropWorkshop::SteamUGCQueryCompletedCallback );
 }
@@ -2021,11 +2027,51 @@ static bool ShouldUnconditionalDownload( PublishedFileId_t id )
 		cooldown--;
 	}
 #endif
-
 	return false;
 }
 
-bool CReactiveDropWorkshop::UpdateAndLoadAddon( PublishedFileId_t id, bool bHighPriority, bool bUnload )
+
+#ifndef CLIENT_DLL
+void CReactiveDropWorkshop::OnPublishedFileDetails(RemoteStorageGetPublishedFileDetailsResult_t* pResult, bool bIOFailure)
+{
+	if (bIOFailure)
+	{
+		Warning("Steam Workshop PublishedFile API call failed! (IO Failure)\n");
+		return;
+	}
+	if (pResult->m_eResult != k_EResultOK)
+	{
+		Warning("Steam Workshop PublishedFile API call failed! EResult: %d (%s)\n", pResult->m_eResult, UTIL_RD_EResultToString(pResult->m_eResult));
+		return;
+	}
+
+	// find the original id and ugc timestamp
+	PublishedFileId_t id = pResult->m_nPublishedFileId;
+	uint32 publishedTimestamp = pResult->m_rtimeUpdated;
+
+	if (sv_workshop_debug.GetBool()) {
+		Msg("Remote storage answer for item %llu with timestamp %d\n", id, publishedTimestamp);
+	}
+
+	unsigned short index = s_SteamRemoteStorageChecked.Find(id);
+	if (s_SteamRemoteStorageChecked.IsValidIndex(index)) {
+		uint32 timestamp = s_SteamRemoteStorageChecked.Element(index);
+
+		if (timestamp != publishedTimestamp) {
+			if (sv_workshop_debug.GetBool()) {
+				Msg("Workshop item %llu seems outdated [%d / %d], forcing update..\n", id, publishedTimestamp, timestamp);
+			}
+
+			UpdateAndLoadAddon(id, true, false, true);
+		}
+	}
+	else if (sv_workshop_debug.GetBool()) {
+		Msg("Remote storage check cannot find workshop %llu\n", id);
+	}
+}
+#endif
+
+bool CReactiveDropWorkshop::UpdateAndLoadAddon( PublishedFileId_t id, bool bHighPriority, bool bUnload, bool forceUpdate )
 {
 	ISteamUGC *pWorkshop = SteamUGC();
 #ifdef GAME_DLL
@@ -2044,20 +2090,42 @@ bool CReactiveDropWorkshop::UpdateAndLoadAddon( PublishedFileId_t id, bool bHigh
 	g_ReactiveDropWorkshop.TryQueryAddon( id );
 
 	uint32 iState = pWorkshop->GetItemState( id );
-	if ( !ShouldUnconditionalDownload( id ) && ( iState & k_EItemStateInstalled ) && !( iState & k_EItemStateNeedsUpdate ) )
+	if (!forceUpdate && !ShouldUnconditionalDownload(id) && (iState & k_EItemStateInstalled) && !(iState & k_EItemStateNeedsUpdate))
 	{
-		if ( rd_workshop_debug.GetBool() )
+		if (rd_workshop_debug.GetBool()) 
 		{
-			Msg( "Addon %llu is installed and does not need an update.\n", id );
+			Msg("Addon %llu is installed and does not need an update.\n", id);
+		}
 
-			uint64 sizeOnDisk;
-			char szFolder[MAX_PATH];
-			uint32 timeStamp;
-			if ( pWorkshop->GetItemInstallInfo( id, &sizeOnDisk, szFolder, sizeof( szFolder ), &timeStamp ) )
+		uint64 sizeOnDisk;
+		char szFolder[MAX_PATH];
+		uint32 timeStamp;
+		if (pWorkshop->GetItemInstallInfo(id, &sizeOnDisk, szFolder, sizeof(szFolder), &timeStamp))
+		{
+			if (rd_workshop_debug.GetBool())
 			{
-				Msg( "  size: %llu bytes; timestamp: %u; folder: %s\n", sizeOnDisk, timeStamp, szFolder );
+				Msg("  size: %llu bytes; timestamp: %u; folder: %s\n", sizeOnDisk, timeStamp, szFolder);
 			}
 		}
+
+#ifndef CLIENT_DLL
+		// the item is reported up-to-date, however steam ugc doesn't report updates correctly
+		// load the addon as normal for now, but chain an additional check
+		unsigned short index = s_SteamRemoteStorageChecked.Find(id);
+		if (!s_SteamRemoteStorageChecked.IsValidIndex(index))
+		{
+			// we have not checked this addon, store the ugc timestamp and check it
+			s_SteamRemoteStorageChecked.Insert(id, timeStamp);
+
+			SteamAPICall_t hCall = SteamRemoteStorage()->GetPublishedFileDetails(id, 0);
+			m_PublishedFileDetailsCallResult.Set(hCall, this, &CReactiveDropWorkshop::OnPublishedFileDetails);
+
+			if (sv_workshop_debug.GetBool()) {
+				Msg("Remote storage check started for item %llu with timestamp %u..\n", id, timeStamp);
+			}
+		}
+#endif
+
 		return LoadAddon( id, false );
 	}
 	if ( bUnload )

@@ -38,7 +38,6 @@ void CRD_Infection_Deathmatch_Stats::OnUpdate( C_RD_HUD_VScript *pHUD )
 
 	if ( !m_bStatsRequested && SteamUserStats() )
 	{
-		SteamUserStats()->RequestCurrentStats();
 		m_bStatsRequested = true;
 	}
 

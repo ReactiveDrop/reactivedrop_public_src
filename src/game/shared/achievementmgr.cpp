@@ -533,11 +533,6 @@ void CAchievementMgr::UserConnected( int nUserSlot )
 	if ( IsPC() )
 	{
 		// ASSERT( STEAM_PLAYER_SLOT == nUserSlot )
-		if ( SteamUserStats() )
-		{
-			// request stat download; will get called back at OnUserStatsReceived when complete
-			SteamUserStats()->RequestCurrentStats();
-		}
 
 		m_bUserSlotActive[STEAM_PLAYER_SLOT] = true;
 

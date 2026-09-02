@@ -64,7 +64,7 @@ public:
 	void ClearCaches( const char *szReason );
 	void DoClearCaches();
 	void GetActiveAddons( CUtlVector<PublishedFileId_t> &active );
-	bool UpdateAndLoadAddon( PublishedFileId_t id, bool bHighPriority = false, bool bUnload = false );
+	bool UpdateAndLoadAddon( PublishedFileId_t id, bool bHighPriority = false, bool bUnload = false, bool forceUpdate = false );
 	void RealLoadAddon( PublishedFileId_t id );
 	bool LoadAddon( PublishedFileId_t id, bool bFromDownload );
 	void RealUnloadAddon( PublishedFileId_t id );
@@ -81,7 +81,9 @@ public:
 	void SetupThink();
 	bool DedicatedServerWorkshopSetup();
 	void EnableServerWorkshopItem( PublishedFileId_t id );
+	void OnPublishedFileDetails(RemoteStorageGetPublishedFileDetailsResult_t* pResult, bool bIOFailure);
 	bool m_bWorkshopSetupCompleted;
+	CUtlMap<PublishedFileId_t, int> s_SteamRemoteStorageChecked{DefLessFunc(PublishedFileId_t)};
 #endif
 
 	PublishedFileId_t FindAddonProvidingFile( const char *pszFileName );
@@ -139,6 +141,8 @@ public:
 	const WorkshopItem_t & TryQueryAddon( PublishedFileId_t nPublishedFileID );
 #ifdef CLIENT_DLL
 	bool LoadAddonEarly( PublishedFileId_t nPublishedFileID );
+#else
+	CCallResult<CReactiveDropWorkshop, RemoteStorageGetPublishedFileDetailsResult_t> m_PublishedFileDetailsCallResult;
 #endif
 
 private:
@@ -306,7 +310,7 @@ private:
 	CCallResult<CReactiveDropWorkshop, SteamUGCQueryCompleted_t> m_UpdateWorkshopItemQueryResultCallback;
 	void UpdateWorkshopItemQueryResultCallback( SteamUGCQueryCompleted_t *pResult, bool bIOFailure );
 	CCallResult<CReactiveDropWorkshop, CreateItemResult_t> m_CreateItemResultCallbackCurated;
-	void CreateItemResultCallbackCurated( CreateItemResult_t *pResult, bool bIOFailure );
+	void CreateItemResultCallbackCurated( CreateItemResult_t *pResult, bool bIOFailure );	
 	friend static void ugc_create(const CCommand & args);
 	friend static void ugc_curated_create(const CCommand & args);
 	friend static void ugc_update(const CCommand & args);
