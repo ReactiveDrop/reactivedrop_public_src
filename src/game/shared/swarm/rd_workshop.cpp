@@ -2034,6 +2034,17 @@ static bool ShouldUnconditionalDownload( PublishedFileId_t id )
 #ifndef CLIENT_DLL
 void CReactiveDropWorkshop::OnPublishedFileDetails(RemoteStorageGetPublishedFileDetailsResult_t* pResult, bool bIOFailure)
 {
+	if (bIOFailure)
+	{
+		Warning("Steam Workshop PublishedFile API call failed! (IO Failure)\n");
+		return;
+	}
+	if (pResult->m_eResult != k_EResultOK)
+	{
+		Warning("Steam Workshop PublishedFile API call failed! EResult: %d (%s)\n", pResult->m_eResult, UTIL_RD_EResultToString(pResult->m_eResult));
+		return;
+	}
+
 	// find the original id and ugc timestamp
 	PublishedFileId_t id = pResult->m_nPublishedFileId;
 	uint32 publishedTimestamp = pResult->m_rtimeUpdated;
