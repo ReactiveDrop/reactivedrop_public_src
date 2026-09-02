@@ -499,7 +499,11 @@ void CReactiveDropWorkshop::RestartEnabledAddonsQuery()
 	m_hEnabledAddonsQuery = hQuery;
 	pUGC->SetReturnLongDescription( hQuery, true );
 	pUGC->SetReturnKeyValueTags( hQuery, true );
+
+#ifndef CLIENT_DLL
 	pUGC->SetAllowCachedResponse(hQuery, rd_workshop_query_cache.GetInt());	
+#endif
+
 	SteamAPICall_t hAPICall = pUGC->SendQueryUGCRequest( hQuery );
 	m_SteamUGCQueryCompleted.Set( hAPICall, this, &CReactiveDropWorkshop::SteamUGCQueryCompletedCallback );
 }
@@ -2027,6 +2031,7 @@ static bool ShouldUnconditionalDownload( PublishedFileId_t id )
 }
 
 
+#ifndef CLIENT_DLL
 void CReactiveDropWorkshop::OnPublishedFileDetails(RemoteStorageGetPublishedFileDetailsResult_t* pResult, bool bIOFailure)
 {
 	// find the original id and ugc timestamp
@@ -2053,6 +2058,7 @@ void CReactiveDropWorkshop::OnPublishedFileDetails(RemoteStorageGetPublishedFile
 		Msg("Remote storage check cannot find workshop %llu\n", id);
 	}
 }
+#endif
 
 bool CReactiveDropWorkshop::UpdateAndLoadAddon( PublishedFileId_t id, bool bHighPriority, bool bUnload, bool forceUpdate )
 {
