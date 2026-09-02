@@ -2049,8 +2049,8 @@ void CReactiveDropWorkshop::OnPublishedFileDetails(RemoteStorageGetPublishedFile
 			UpdateAndLoadAddon(id, true, false, true);
 		}
 	}
-	else {
-		Msg("Index note found for %llu\n", id);
+	else if (sv_workshop_debug.GetBool()) {
+		Msg("Remote storage check cannot find workshop %llu\n", id);
 	}
 }
 
