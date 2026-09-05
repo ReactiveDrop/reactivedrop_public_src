@@ -92,6 +92,8 @@ ConVar rd_difficulty_tier( "rd_difficulty_tier", "0", FCVAR_REPLICATED | FCVAR_C
 ConVar sv_showimpacts( "sv_showimpacts", "0", FCVAR_REPLICATED, "Shows client (red) and server (blue) bullet impact point (1=both, 2=client-only, 3=server-only)" );
 ConVar rd_shoot_from_face( "rd_shoot_from_face", "1", FCVAR_REPLICATED | FCVAR_CHEAT, "In first person, the gun fires out of our eyes instead of from where the gun is being held." );
 
+ConVar rd_shieldbug_pierce( "rd_shieldbug_pierce", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Penetration force needed to pierce the Shieldbug's shield. \"0\" for no piercing." );
+
 #ifdef GAME_DLL
 extern ConVar ai_show_hull_attacks;
 ConVar asw_melee_knockback_up_force( "asw_melee_knockback_up_force", "1.0", FCVAR_CHEAT );
@@ -1263,6 +1265,21 @@ void CASW_Marine::FirePenetratingBullets( const FireBulletsInfo_t &info, int iMa
 		}
 		VectorNormalize( vecFinalDir );
 
+		// if ( tr.startsolid )
+		// 	Msg( ">> startsolid fraction left:%f full:%f %s\n", tr.fractionleftsolid, tr.fraction, tr.m_pEnt ? tr.m_pEnt->GetClassname() : "" );
+		// started trace inside a cursed solid? // Fix sniper rifle world penetration #241
+		if ( tr.startsolid && tr.fraction != 0.0f && tr.DidHitWorld() )
+		{
+			// Could calculate new start point here with tr.fractionleftsolid,
+			// but the code down below already handles next penetration.
+			// Just prevent bad TraceLine escaping the solid causing seemingly
+			// infitite tracer with tr.m_Ent = solid it started in.
+			AI_TraceLine(info.m_vecSrc, info.m_vecSrc, MASK_SHOT, &traceFilter, &tr);
+			vecEnd = tr.endpos;
+		}
+		// else if ( tr.startsolid )
+		// 	Msg( "  ... but it was ok I guess\n" );
+
 #ifdef GAME_DLL
 		if ( ai_debug_shoot_positions.GetBool() )
 		{
@@ -1412,6 +1429,12 @@ void CASW_Marine::FirePenetratingBullets( const FireBulletsInfo_t &info, int iMa
 			}
 		}
 
+		if ( bShowHitboxes && IsInhabited() && tr.DidHit() )
+		{
+			CFmtStr text( "%.2f %d", fPenetrateChance, iMaxPenetrate );
+			NDebugOverlay::Text( tr.endpos, text, false, 4 );
+		}
+
 		// See if we hit glass
 		if ( tr.m_pEnt != NULL )
 		{
@@ -1434,6 +1457,7 @@ void CASW_Marine::FirePenetratingBullets( const FireBulletsInfo_t &info, int iMa
 			fDiceRoll = RandomFloat( 0.0f, 1.0f );
 		}
 
+		bool bShieldbugBlocked = false;
 		bool bPierce = ( tr.m_pEnt != NULL ) && ( fDiceRoll < fPenetrateChance) && !bHitGlass && !tr.DidHitWorld();
 		if (bPierce)
 		{
@@ -1444,9 +1468,17 @@ void CASW_Marine::FirePenetratingBullets( const FireBulletsInfo_t &info, int iMa
 			{
 				if ( tr.m_pEnt->Classify() == CLASS_ASW_SHIELDBUG )		// don't let bullets pass through shieldbugs
 				{
-					bPierce = false;
+					bShieldbugBlocked = ( tr.hitgroup == HITGROUP_BONE_SHIELD || tr.hitbox == 1 ); // see CASW_Shieldbug::BlockedDamage
+					bPierce = !bShieldbugBlocked; // allow piercing vulnerable body parts
+
+					if ( bShieldbugBlocked && rd_shieldbug_pierce.GetInt() > 0 && iMaxPenetrate >= rd_shieldbug_pierce.GetInt() )
+					{
+						bPierce = true;
+						// shields are tougher than flesh, so the bullet should lose more force
+						iMaxPenetrate -= rd_shieldbug_pierce.GetInt() - 1; // "-1": keep extra penetration for flashy tracer effect
+					}
 				}
-				else if ( ( info.m_nFlags & FIRE_BULLETS_NO_PIERCING_SPARK ) == 0 )
+				if ( bPierce && !( info.m_nFlags & FIRE_BULLETS_NO_PIERCING_SPARK ) )
 				{
 					CEffectData	data;
 					data.m_vOrigin = tr.endpos;
@@ -1462,7 +1494,8 @@ void CASW_Marine::FirePenetratingBullets( const FireBulletsInfo_t &info, int iMa
 			}
 		}
 
-		if ( ( tr.m_pEnt != NULL ) && fPenetrateChance > 1.0f )
+		if ( ( tr.m_pEnt != NULL ) && fPenetrateChance > 1.0f &&
+				( tr.m_pEnt->Classify() != CLASS_ASW_SHIELDBUG || bPierce ) )
 		{
 			// We can only penetrate a few walls
 			fPenetrateChance -= 1.0f;
@@ -1513,13 +1546,15 @@ void CASW_Marine::FirePenetratingBullets( const FireBulletsInfo_t &info, int iMa
 					}
 
 					int iNextMaxPenetrate = iMaxPenetrate;
-					if ( !tr.DidHitWorld() )
+					if ( !tr.DidHitWorld() && !bShieldbugBlocked )
 					{
+						// Msg ( "Penetrate %.2f %d entity %s\n", fPenetrateChance, iMaxPenetrate, tr.m_pEnt->GetClassname() );
 						behindNPCInfo.m_pAdditionalIgnoreEnt = tr.m_pEnt;
 						iNextMaxPenetrate--;
 					}
 					else
 					{
+						// Msg ( "Penetrate %.2f %d world entity %s\n", fPenetrateChance, iMaxPenetrate, tr.m_pEnt->GetClassname() );
 						// Penetrate past the solid
 						behindNPCInfo.m_vecSrc = behindNPCInfo.m_vecSrc + behindNPCInfo.m_vecDirShooting * 28.0f;
 						behindNPCInfo.m_pAdditionalIgnoreEnt = NULL;
