@@ -42,6 +42,29 @@ inline const char* GetGameVersion()
 	return version;
 }
 
+inline void DisplaySteamError(const SteamErrMsg& err)
+{
+	const char* raw = err;                     // SteamErrMsg is a char buffer
+	size_t len = strnlen(raw, sizeof(err));    // stop at first '\0'
+
+	char clean[1024];
+	size_t o = 0;
+
+	for (size_t i = 0; i < len && o + 1 < sizeof(clean); ++i)
+	{
+		unsigned char c = raw[i];
+
+		if (c >= 32 && c <= 126)               // printable ASCII only
+			clean[o++] = c;
+		else
+			clean[o++] = ' ';                  // replace garbage
+	}
+
+	clean[o] = '\0';
+
+	ConMsg("Steam error: %s\n", clean);
+}
+
 bool GameServerInit()
 {
 	// initialize the gameserver, srcds already binds to the correct ip and ports, so we can just pass the same parameters here
@@ -66,13 +89,16 @@ bool GameServerInit()
 	// show some debug
 	ConMsg("Host IP: %s:%d (%u) [%s]\n", ip > 0 ? ipStr : "0.0.0.0", gamePort, ip, version);
 
-	// load steam api
-	// this is done in engine, but needs to be redone at exactly this timing, to reconnect all steam interfaces
-	SteamAPI_Init();
-
 	// we can spawn a gameserver immediately
-	const bool result = SteamGameServer_Init(ip, gamePort, clientPort, eServerModeAuthenticationAndSecure, version);
-	ConMsg("StartGameServer_Init resulted in %s\n", result ? "success" : "failure");
+	SteamErrMsg err;
+	const ESteamAPIInitResult result = SteamGameServer_InitEx(ip, gamePort, clientPort, eServerModeAuthenticationAndSecure, version, &err);
+	if (result != k_ESteamAPIInitResult_OK) {
+		DisplaySteamError(err);
+	}
+	else {
+		ConMsg("SteamGameServerInit resulted in success\n");
+	}
+
 	return result;
 }
 
@@ -81,12 +107,36 @@ void GameServerCallbacks()
 	// steam callbacks
 	SteamGameServer_RunCallbacks();
 
-	// this is normally done in engine, but not anymore
-	// we need to put this here
 	if (SteamGameServer()) {
+
+		// login
+		static bool m_bSteamApiInited = false;
+
 		bool bLoggedIn = SteamGameServer()->BLoggedOn();
 		if (!bLoggedIn) {
 			SteamGameServer()->LogOnAnonymous();
+		}
+		else if (!m_bSteamApiInited) {
+
+			// engine toggles this wrongfully at some point
+			// because it believes the connection failed
+			ConVarRef sv_lan("sv_lan");
+			
+			if (sv_lan.GetBool())
+			{
+				// only thing we need to do, is toggle it back
+				// engine won't touch it anymore after the initial load
+				// and the game implementation of GameServerInit handles everything else
+				sv_lan.SetValue(0);
+
+				if (SteamGameServer()->BSecure()) {
+					ConMsg("************************************************\n");
+					ConMsg("* Connection to Steam restored                 *\n");
+					ConMsg("************************************************\n");
+				}
+
+				m_bSteamApiInited = true;
+			}
 		}
 	}
 }
