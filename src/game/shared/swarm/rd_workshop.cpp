@@ -31,6 +31,7 @@
 #endif
 #else
 #include "gameinterface.h"
+#include "json.hpp"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -159,6 +160,7 @@ bool CReactiveDropWorkshop::Init()
 		{
 			UpdateAndLoadAddon( m_EnabledAddonsForQuery[i] );
 		}
+
 		m_bStartingUp = false;
 
 		RestartEnabledAddonsQuery();
@@ -458,11 +460,83 @@ void CReactiveDropWorkshop::ClearOldPreviewRequests()
 }
 #endif
 
+
 void CReactiveDropWorkshop::RestartEnabledAddonsQuery()
 {
 #ifdef CLIENT_DLL
 	ClearOldPreviewRequests();
 #endif
+
+#ifndef CLIENT_DLL
+	// check if we can do query the remote storage api
+	// 
+	// we should do this after workshop setup is completed
+	// this way existing items are checked, while items not downloaded are not checked
+	// this is exactly the behavior we want
+	if (m_bWorkshopSetupCompleted && !m_bPublishedStorageCheckCompleted) {
+
+		// mark it as completed, so it doesn't run twice
+		m_bPublishedStorageCheckCompleted = true;
+
+		if (sv_workshop_debug.GetBool()) {
+			ConMsg("Checking for workshop items using Steam RemoteStorage API..\n");
+		}
+
+		// check if we have addons queued to check
+		if (SteamRemoteStorageChecked.Count() > 0) {
+
+			// http
+			ISteamHTTP* http = SteamGameServerHTTP();
+			if (http) {
+				// create http request, combine all published file checks into one request
+				HTTPRequestHandle hRequest = http->CreateHTTPRequest(k_EHTTPMethodPOST, "https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/");
+
+				unsigned int j = 0;
+
+				for (unsigned int i = SteamRemoteStorageChecked.FirstInorder();
+					SteamRemoteStorageChecked.IsValidIndex(i);
+					i = SteamRemoteStorageChecked.NextInorder(i))
+				{
+					PublishedFileId_t id = SteamRemoteStorageChecked.Key(i);
+
+					// id
+					char sid[32];
+					Q_snprintf(sid, sizeof(sid), "%llu", (unsigned long long)id);
+
+					// key
+					char key[64];
+					Q_snprintf(key, sizeof(key), "publishedfileids[%d]", i);
+
+					http->SetHTTPRequestGetOrPostParameter(hRequest, key, sid);
+					j++;
+				}
+
+				// add number of items to expect
+				char num[32];
+				Q_snprintf(num, sizeof(num), "%llu", j);
+				http->SetHTTPRequestGetOrPostParameter(hRequest, "itemcount", num);
+
+				// fire away
+				SteamAPICall_t hCall;
+				bool success = http->SendHTTPRequest(hRequest, &hCall);
+
+				if (success)
+				{
+					m_PublishedFileDetailsCallResult.Set(
+						hCall,
+						this,
+						&CReactiveDropWorkshop::OnPublishedFileDetails
+					);
+				}
+				else
+				{
+					ConMsg("Steam RemoteStorage API HTTP request failed to send\n");
+				}
+			}
+		}
+	}
+#endif
+
 
 	if ( m_bStartingUp || m_EnabledAddonsForQuery.Count() == 0 )
 	{
@@ -2032,42 +2106,106 @@ static bool ShouldUnconditionalDownload( PublishedFileId_t id )
 
 
 #ifndef CLIENT_DLL
-void CReactiveDropWorkshop::OnPublishedFileDetails(RemoteStorageGetPublishedFileDetailsResult_t* pResult, bool bIOFailure)
+
+// very short parser, that can only parse Steam RemoteStorage responses
+inline uint64 ParseJsonStringNumber(const nlohmann::json& j)
+{
+	std::string s = j.dump();
+	if (s.size() >= 2 && s.front() == '"' && s.back() == '"')
+		s = s.substr(1, s.size() - 2);
+	return strtoull(s.c_str(), nullptr, 10);
+}
+
+void CReactiveDropWorkshop::ForEachPublishedFileResponse(const char* json)
+{
+	if (sv_workshop_debug.GetBool()) {
+		ConMsg("remote storage api response:\n");
+		ConMsg(json);
+		ConMsg(" \n");
+	}
+
+	// parse the json response
+	nlohmann::json j = nlohmann::json::parse(json, nullptr, false);
+
+	if (j.is_discarded())
+	{
+		ConMsg("Error: RemoteStorage API: response parsing failed!\n");
+		return;
+	}
+
+	auto& details = j["response"]["publishedfiledetails"];
+
+	if (!details.is_array())
+	{
+		ConMsg("Error: RemoteStorage API: publishedfiledetails is not an array\n");
+		return;
+	}
+
+	for (auto& item : details)
+	{
+		if (item.contains("publishedfileid") && item.contains("time_updated")) {
+
+			// directly fetching the value causes a segfault, but 'dump' seems to work fine
+			PublishedFileId_t id = ParseJsonStringNumber(item["publishedfileid"]);
+			uint32 updated = ParseJsonStringNumber(item["time_updated"]);
+
+			// find the original workshop item
+			unsigned short index = SteamRemoteStorageChecked.Find(id);
+
+			if (SteamRemoteStorageChecked.IsValidIndex(index)) {
+				uint32 timestamp = SteamRemoteStorageChecked.Element(index);
+
+				// if timestamps differ
+				if (timestamp != updated) {
+					if (sv_workshop_debug.GetBool()) {
+						ConMsg("Workshop item %llu seems outdated [%d / %d], forcing update..\n", id, updated, timestamp);
+					}
+
+					// force download
+					UpdateAndLoadAddon(id, true, false, true);
+				}
+				else if (sv_workshop_debug.GetBool()) {
+					ConMsg("Workshop item %llu already up-to-date [%d, %d]..\n", id, updated, timestamp);
+				}
+			}
+			else if (sv_workshop_debug.GetBool()) {
+				ConMsg("Remote storage check cannot find workshop %llu\n", id);
+			}
+		}
+	}
+}
+
+
+
+
+void CReactiveDropWorkshop::OnPublishedFileDetails(HTTPRequestCompleted_t* pResult, bool bIOFailure)
 {
 	if (bIOFailure)
 	{
-		Warning("Steam Workshop PublishedFile API call failed! (IO Failure)\n");
+		Warning("Steam Workshop PublishedFile HTTP API call failed! (IO Failure)\n");
 		return;
 	}
-	if (pResult->m_eResult != k_EResultOK)
+	if (pResult->m_bRequestSuccessful != k_EResultOK)
 	{
-		Warning("Steam Workshop PublishedFile API call failed! EResult: %d (%s)\n", pResult->m_eResult, UTIL_RD_EResultToString(pResult->m_eResult));
+		Warning("Steam Workshop PublishedFile HTTP API call failed! Result: %d (%s)\n", pResult->m_bRequestSuccessful);
 		return;
 	}
 
-	// find the original id and ugc timestamp
-	PublishedFileId_t id = pResult->m_nPublishedFileId;
-	uint32 publishedTimestamp = pResult->m_rtimeUpdated;
+	// steam server http
+	ISteamHTTP* http = SteamGameServerHTTP();
+	
+	// get body
+	uint32 bodySize = 0;
+	http->GetHTTPResponseBodySize(pResult->m_hRequest, &bodySize);
 
-	if (sv_workshop_debug.GetBool()) {
-		Msg("Remote storage answer for item %llu with timestamp %d\n", id, publishedTimestamp);
-	}
+	CUtlBuffer buf(0, bodySize, CUtlBuffer::TEXT_BUFFER);
+	http->GetHTTPResponseBodyData(pResult->m_hRequest, (uint8*)buf.Base(), bodySize);
 
-	unsigned short index = SteamRemoteStorageChecked.Find(id);
-	if (SteamRemoteStorageChecked.IsValidIndex(index)) {
-		uint32 timestamp = SteamRemoteStorageChecked.Element(index);
+	static char json[65536];
+	Q_memcpy(json, buf.Base(), bodySize);
+	json[bodySize] = '\0';
 
-		if (timestamp != publishedTimestamp) {
-			if (sv_workshop_debug.GetBool()) {
-				Msg("Workshop item %llu seems outdated [%d / %d], forcing update..\n", id, publishedTimestamp, timestamp);
-			}
-
-			UpdateAndLoadAddon(id, true, false, true);
-		}
-	}
-	else if (sv_workshop_debug.GetBool()) {
-		Msg("Remote storage check cannot find workshop %llu\n", id);
-	}
+	ForEachPublishedFileResponse(json);
 }
 #endif
 
@@ -2109,7 +2247,6 @@ bool CReactiveDropWorkshop::UpdateAndLoadAddon( PublishedFileId_t id, bool bHigh
 		}
 
 #ifndef CLIENT_DLL
-
 #ifdef RD_NEW_STEAMAPI
 		// only run this on newer steamapi, on older ones, it won't work!
 		
@@ -2118,19 +2255,15 @@ bool CReactiveDropWorkshop::UpdateAndLoadAddon( PublishedFileId_t id, bool bHigh
 		unsigned short index = SteamRemoteStorageChecked.Find(id);
 		if (!SteamRemoteStorageChecked.IsValidIndex(index))
 		{
-			// we have not checked this addon, store the ugc timestamp and check it
+			// we have not checked this addon, store the ugc timestamp and schedule it for check
 			SteamRemoteStorageChecked.Insert(id, timeStamp);
 
-			SteamAPICall_t hCall = SteamRemoteStorage()->GetPublishedFileDetails(id, 0);
-			m_PublishedFileDetailsCallResult.Set(hCall, this, &CReactiveDropWorkshop::OnPublishedFileDetails);
-
 			if (sv_workshop_debug.GetBool()) {
-				Msg("Remote storage check started for item %llu with timestamp %u..\n", id, timeStamp);
+				Msg("Remote storage check scheduled for item %llu with timestamp %u..\n", id, timeStamp);
 			}
 		}
 
 #endif
-
 #endif
 
 		return LoadAddon( id, false );

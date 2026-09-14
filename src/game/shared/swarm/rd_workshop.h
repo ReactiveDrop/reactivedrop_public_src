@@ -44,6 +44,7 @@ public:
 		m_bHaveAllPublishedAddons( false ),
 #else
 		m_bWorkshopSetupCompleted( false ),
+		m_bPublishedStorageCheckCompleted( false ),
 #endif
 		m_hEnabledAddonsQuery( k_UGCQueryHandleInvalid )
 	{
@@ -81,8 +82,10 @@ public:
 	void SetupThink();
 	bool DedicatedServerWorkshopSetup();
 	void EnableServerWorkshopItem( PublishedFileId_t id );
-	void OnPublishedFileDetails(RemoteStorageGetPublishedFileDetailsResult_t* pResult, bool bIOFailure);
+	void OnPublishedFileDetails(HTTPRequestCompleted_t* pResult, bool bIOFailure);
+	void ForEachPublishedFileResponse(const char* json);
 	bool m_bWorkshopSetupCompleted;
+	bool m_bPublishedStorageCheckCompleted;
 	CUtlMap<PublishedFileId_t, int> SteamRemoteStorageChecked{DefLessFunc(PublishedFileId_t)};
 #endif
 
@@ -142,7 +145,7 @@ public:
 #ifdef CLIENT_DLL
 	bool LoadAddonEarly( PublishedFileId_t nPublishedFileID );
 #else
-	CCallResult<CReactiveDropWorkshop, RemoteStorageGetPublishedFileDetailsResult_t> m_PublishedFileDetailsCallResult;
+	CCallResult<CReactiveDropWorkshop, HTTPRequestCompleted_t> m_PublishedFileDetailsCallResult;
 #endif
 
 private:
