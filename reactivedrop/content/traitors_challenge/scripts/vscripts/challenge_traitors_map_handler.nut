@@ -1,5 +1,6 @@
 g_int_MapKillCounter <- array(64, INT_MAX);
 g_vec_Jac2Offset <- Vector(0, 0, 0);
+g_flg_KillMultiplierInitialized <- false;
 function SetMapHandler() {
 	switch (g_enum_CurrentMap) {
 		case MAP._9800_1:
@@ -983,6 +984,15 @@ function SetMapHandler() {
 		case MAP.TILA_5: // 防止上墙
 			ProcessMapSpecialCases = function() {
 				local idx_end = g_int_Counter % 10;
+				if (!g_flg_KillMultiplierInitialized) {
+					for (local i = 0; i < g_int_MarineCount; i++) {
+						local hMarine = g_marine_Total[i];
+						if (hMarine != null && hMarine.IsValid()) {
+							hMarine.GetScriptScope().KillMultiplier <- 1;
+						}
+					}
+					g_flg_KillMultiplierInitialized = true;
+				}
 				for (local i = 0; i * 10 + idx_end < g_int_MarineCount; i++) {
 					local hMarine = g_marine_Total[i * 10 + idx_end];
 					if (hMarine == null || !hMarine.IsValid()) {
@@ -990,7 +1000,12 @@ function SetMapHandler() {
 					}
 					local temp = hMarine.GetOrigin();
 					if (temp.z > 270) {
-						hMarine.TakeDamage(4, DAMAGE_TYPE.DMG_FALL, null);
+						hMarine.TakeDamage( 2 * hMarine.GetScriptScope().KillMultiplier, DAMAGE_TYPE.DMG_FALL, null);
+						hMarine.GetScriptScope().KillMultiplier = hMarine.GetScriptScope().KillMultiplier * 4;
+					}
+					else
+					{
+						hMarine.GetScriptScope().KillMultiplier <- 1;
 					}
 
 					//-2200  -3000 -280
