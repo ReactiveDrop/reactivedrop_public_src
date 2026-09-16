@@ -135,6 +135,7 @@ void GameServerCallbacks()
 				if (SteamGameServer()->BSecure()) {
 					ConMsg("************************************************\n");
 					ConMsg("* Connection to Steam restored                 *\n");
+					ConMsg("* Server is operating in normal mode           *\n");
 					ConMsg("************************************************\n");
 				}
 
