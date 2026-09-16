@@ -122,9 +122,9 @@ void GameServerCallbacks()
 			// because it believes the connection failed
 			ConVarRef sv_lan("sv_lan");
 			
-			if (sv_lan.GetBool())
+			if (sv_lan.GetBool() && SteamGameServer()->BSecure())
 			{
-				// only thing we need to do, is toggle it back
+				// bSecure is set, so the only thing we need to do, is toggle sv lan back
 				// engine won't touch it anymore after the initial load
 				// and the game implementation of GameServerInit handles everything else
 				sv_lan.SetValue(0);
@@ -132,12 +132,10 @@ void GameServerCallbacks()
 				engine->ServerCommand("heartbeat\n");
 				engine->ServerExecute();
 
-				if (SteamGameServer()->BSecure()) {
-					ConMsg("************************************************\n");
-					ConMsg("* Connection to Steam restored.                *\n");
-					ConMsg("* Server is operating in normal mode.          *\n");
-					ConMsg("************************************************\n");
-				}
+				ConMsg("************************************************\n");
+				ConMsg("* Connection to Steam restored.                *\n");
+				ConMsg("* Server is operating in normal mode.          *\n");
+				ConMsg("************************************************\n");
 
 				m_bSteamApiInited = true;
 			}
