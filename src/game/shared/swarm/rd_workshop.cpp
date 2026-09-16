@@ -2206,6 +2206,8 @@ void CReactiveDropWorkshop::OnPublishedFileDetails(HTTPRequestCompleted_t* pResu
 	json[bodySize] = '\0';
 
 	ForEachPublishedFileResponse(json);
+
+	http->ReleaseHTTPRequest(pResult->m_hRequest);
 }
 #endif
 
