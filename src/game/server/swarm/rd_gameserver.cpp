@@ -129,6 +129,9 @@ void GameServerCallbacks()
 				// and the game implementation of GameServerInit handles everything else
 				sv_lan.SetValue(0);
 
+				engine->ServerCommand("heartbeat\n");
+				engine->ServerExecute();
+
 				if (SteamGameServer()->BSecure()) {
 					ConMsg("************************************************\n");
 					ConMsg("* Connection to Steam restored                 *\n");
