@@ -7,6 +7,8 @@
 #include "cbase.h"
 
 #include "c_spatialentity.h"
+#include "c_asw_player.h"
+#include "c_asw_inhabitable_npc.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -64,17 +66,17 @@ void C_SpatialEntity::ClientThink()
 		return;
 	}
 
-	CBaseEntity *pPlayer = C_BasePlayer::GetLocalPlayer( 0 );
-	if( !pPlayer )
+	C_ASW_Inhabitable_NPC* pViewNPC = C_ASW_Player::GetLocalASWPlayer()->GetViewNPC();
+	if( !pViewNPC )
 		return;
 
-	Vector playerOrigin = pPlayer->GetAbsOrigin();
+	Vector viewNPCOrigin = pViewNPC->GetAbsOrigin();
 
 	m_flWeight = 0.0f;
 
 	if ( ( m_minFalloff != -1 ) && ( m_maxFalloff != -1 ) && m_minFalloff != m_maxFalloff )
 	{
-		float dist = (playerOrigin - m_vecOrigin).Length();
+		float dist = (viewNPCOrigin - m_vecOrigin).Length();
 		m_flWeight = (dist-m_minFalloff) / (m_maxFalloff-m_minFalloff);
 		m_flWeight = fpmax( 0.0f, m_flWeight );
 		m_flWeight = fpmin( 1.0f, m_flWeight );
