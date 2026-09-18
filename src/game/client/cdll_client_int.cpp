@@ -2592,6 +2592,13 @@ void CHLClient::FrameStageNotify( ClientFrameStage_t curStage )
 		break;
 	case FRAME_START:
 		{
+
+#ifdef RD_NEW_STEAMAPI
+			// need to run callbacks on every frame
+			// only FRAME_START, FRAME_RENDER_START and FRAME_RENDER_END are called in menu's
+			SteamAPI_RunCallbacks();
+#endif
+
 			// Mark the frame as open for client fx additions
 			SetFXCreationAllowed( true );
 			SetBeamCreationAllowed( true );

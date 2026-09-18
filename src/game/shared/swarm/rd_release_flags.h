@@ -25,6 +25,11 @@
 //#define RD_SPLITSCREEN_ENABLED
 //#define RD_FADE_SINGLE_EDICT
 
+// newer steam api
+// this check ensures we can easily switch back to older ones if the feature
+// is not ready for release because we find unexpected issues
+#define RD_NEW_STEAMAPI
+
 #define RD_IS_RELEASE 0
 #else
 // new campaigns sort at the start of the list until some time has passed,
@@ -35,6 +40,8 @@
 #define RD_7A_DROPS_PRE
 // testing in production, starting december 1st 2024
 #define RD_7A_DROPS
+
+#define RD_NEW_STEAMAPI
 
 #define RD_IS_RELEASE 1
 #endif

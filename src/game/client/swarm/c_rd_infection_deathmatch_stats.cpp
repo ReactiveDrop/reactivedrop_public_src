@@ -36,12 +36,6 @@ void CRD_Infection_Deathmatch_Stats::OnUpdate( C_RD_HUD_VScript *pHUD )
 	if ( !pLocalPlayer || pHUD->m_hDataEntity.Get() != pLocalPlayer )
 		return;
 
-	if ( !m_bStatsRequested && SteamUserStats() )
-	{
-		SteamUserStats()->RequestCurrentStats();
-		m_bStatsRequested = true;
-	}
-
 	int iWinState = pHUD->GetInt( 2 );
 	int iStartingCountdown = pHUD->GetInt( 5 );
 	int iKillCountZombie = pHUD->GetInt( 8 );
