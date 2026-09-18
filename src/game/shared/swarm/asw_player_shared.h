@@ -12,6 +12,8 @@
 #pragma once
 #endif
 
+#include "asw_shareddefs.h"
+
 // Shared header file for players
 #if defined( CLIENT_DLL )
 	#define CASW_Player C_ASW_Player
@@ -56,5 +58,10 @@ enum CASW_Earned_XP_t
 
 	ASW_NUM_XP_TYPES
 };
+
+// Parse space separated profile numbers into iProfiles
+// @returns Number of parsed profiles
+// @returns -1 if parsing failed
+int parseSpectateOrder( const char *szInput, int *iProfiles, const int nProfilesMax = ASW_NUM_MARINE_PROFILES );
 
 #endif // ASW_PLAYER_SHARED_H
