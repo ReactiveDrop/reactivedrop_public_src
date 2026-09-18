@@ -72,7 +72,7 @@
 #define MAX_MAP_AREA_BYTES				(MAX_MAP_AREAS/8)
 #define	MAX_MAP_AREAPORTALS				1024
 // Planes come in pairs, thus an even number.
-#define	MAX_MAP_PLANES					65536
+#define	MAX_MAP_PLANES					262144
 #define	MAX_MAP_NODES					65536
 #define	MAX_MAP_BRUSHSIDES				65536
 #define	MAX_MAP_LEAFS					65536
