@@ -1421,11 +1421,14 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 				Msg( "  but all ignored, since it's from a team mate\n" );
 			return 0;
 		}
-		//make hornet and smart bomb no longer friendlyfire	
-		else if (!ASWDeathmatchMode() && pWeapon && (pWeapon->Classify() == CLASS_ASW_HORNET_BARRAGE || pWeapon->Classify() == CLASS_ASW_SMART_BOMB))
-			{
-    			return 0;
-			}			
+		else if ( !ASWDeathmatchMode() && info.GetInflictor() &&
+					info.GetInflictor()->Classify() == CLASS_MISSILE )
+		{
+			// prevent hornets and smart bomb friendly fire
+			if ( asw_debug_marine_damage.GetBool() )
+				Msg( "  but all ignored, since it's from a missile\n" );
+			return 0;
+		}
 		else
 		{
 			if ( newInfo.GetDamageType() & DMG_CLUB )
