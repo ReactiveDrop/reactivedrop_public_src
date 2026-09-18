@@ -34,6 +34,8 @@ inline bool IsAffectedByAmdShadowBug()
 			// navi 48 pro
 			if (strstr(driverName, "R9600")) return true;
 			if (strstr(driverName, "R9700")) return true;
+			// asus rog ally z1 extreme
+			if (strstr(driverName, "780M")) return true;
 		}
 
 		return false;
