@@ -90,9 +90,9 @@ function OnTakeDamage_Alive_Any(victim, inflictor, attacker, weapon, damage, dam
 					factor3 = 0.57;
 					break;
 				case "asw_weapon_pistol": //双手枪
-					factor1 = 0.40;
-					factor2 = 0.35;
-					factor3 = 0.45;
+					factor1 = 0.30;
+					factor2 = 0.25;
+					factor3 = 0.35;
 					break;
 				case "asw_weapon_shotgun": //泵动式霰弹枪
 					factor1 = 0.60;

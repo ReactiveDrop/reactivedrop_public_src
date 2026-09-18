@@ -72,7 +72,7 @@ function ApplyExplosionDamageToMarines(hAttacker, explosionPos, radius, damageRa
 		if (hMarine.IsValid() && hMarine != hAttacker && hMarine.GetHealth() > 0) {
 			local targetPos = hMarine.GetOrigin();
 			local hitCount = GetHitCount(explosionPos, targetPos);
-			if (hitCount <= 5) {
+			if (hitCount >= 115) {
 				continue;
 			}
 			local distance = (targetPos - explosionPos).Length();
