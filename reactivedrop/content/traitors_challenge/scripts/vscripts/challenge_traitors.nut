@@ -142,6 +142,21 @@ g_bool_TraitorWinDelyFlag <- false; //Delay displaying winner msg
 
 g_ent_HudAndVGui <- []; // Entindex of all UI elements that have ever been created, used to release them at end of each mission. 存储所有挑战使用到的UI实体索引，用于游戏结束时释放资源
 
+// The gameplay guide is a player-owned VGUI screen.  Unlike the role skill
+// menus it is deliberately attached to the player entity instead of a marine:
+// spectators, dead players, and players who have not selected a marine yet can
+// all read it.  The client script resolves the guide tokens from the challenge
+// translation table; this entity only carries the client's language and the
+// open/closed state.
+g_str_GameplayGuideVGuiScript <- "challenge_traitors_client_gameplay_guide.nut";
+g_str_GameplayGuidePlayerField <- "strGameplayGuideVGuiName";
+g_str_GameplayGuideGenerationField <- "intGameplayGuideGeneration";
+// rd_vgui_vscript's local-player input path is opt-in.  Int0 is the replicated
+// open bit and Int1 is the local page-generation counter; Int63 is reserved by
+// the client implementation for this ownership marker.
+g_int_GameplayGuideLocalMenuModeSlot <- 63;
+g_int_GameplayGuideLocalMenuModeSentinel <- 0x5244564D;
+
 function Update() {
 	if (!g_bool_ClhallengeEnable) { //挑战没有启用，无限期等待(65535秒)
 		return 65535;
@@ -934,11 +949,30 @@ function ShowSpeciallRolesList() {
 }
 
 function DestroyHudAndVGui() {
+	// A fully-joined event can arrive after the mission has already ended.
+	// Mark initialization closed before destroying anything so no callback can
+	// recreate HUD/VGUI entities for a finished challenge.
+	g_bool_Initialized = false;
 	foreach(entity in g_ent_HudAndVGui) {
 		if (entity != null && entity.IsValid()) {
 			entity.Destroy();
 		}
 	}
+	local hPlayer = null;
+	while (hPlayer = Entities.FindByClassname(hPlayer, "player")) {
+		if (hPlayer == null || !hPlayer.IsValid()) {
+			continue;
+		}
+		hPlayer.ValidateScriptScope();
+		local playerScope = hPlayer.GetScriptScope();
+		if (g_str_GameplayGuidePlayerField in playerScope) {
+			delete playerScope[g_str_GameplayGuidePlayerField];
+		}
+		if (g_str_GameplayGuideGenerationField in playerScope) {
+			delete playerScope[g_str_GameplayGuideGenerationField];
+		}
+	}
+	g_ent_HudAndVGui.clear();
 }
 
 function PlayMissionEndSound(strWinner) {
@@ -996,6 +1030,10 @@ function OnGameplayStart() {
 	DisplayGameInstructions(); //显示游戏指引
 
 	g_bool_Initialized = true; //设置初始化完成标识
+	// The fully-joined event can run while the setup above is still in
+	// progress.  Reconcile after publishing initialized so every current
+	// player has exactly one idempotently-created guide entity.
+	EnsurePlayerGameplayGuides();
 
 	SetInitialAmmo(); //设置初始弹药量
 
@@ -1406,6 +1444,7 @@ function CreatePlayerHudAndVGuiEntities() {
 	local hPlayer = null;
 	while (hPlayer = Entities.FindByClassname(hPlayer, "player")) {
 		CreatePlayerHud(hPlayer);
+		CreatePlayerGameplayGuide(hPlayer);
 	}
 	//根据角色设置hud文本
 	//1.设置IAF队员
@@ -1421,6 +1460,16 @@ function CreatePlayerHudAndVGuiEntities() {
 			continue;
 		}
 		SetHudForTraitorPlayer(hMarine, hMarine.GetScriptScope().Role);
+	}
+}
+
+function EnsurePlayerGameplayGuides() {
+	if (!g_bool_ClhallengeEnable || g_bool_IafWin || g_bool_TraitorWin) {
+		return;
+	}
+	local hPlayer = null;
+	while (hPlayer = Entities.FindByClassname(hPlayer, "player")) {
+		CreatePlayerGameplayGuide(hPlayer);
 	}
 }
 
@@ -1469,6 +1518,102 @@ function SetHudForTraitorPlayer(hMarine, role, timeOffset = 2.0) {
 	hHud4.SetInt(0, role);
 	hHud4.SetFloat(30, Time() + timeOffset);
 	hHud4.SetString(0, GenerateTraitorListHUD(strLanguage));
+}
+
+function NormalizeGameplayGuideLanguage(strLanguage) {
+	// The guide currently ships only English and Simplified Chinese.  Do not
+	// expose a server-side "[language] token missing" diagnostic to clients
+	// using another language; use English as the safe fallback instead.
+	if (strLanguage == "schinese" || strLanguage == "english") {
+		return strLanguage;
+	}
+	return "english";
+}
+
+function GetGameplayGuideEntity(hPlayer) {
+	if (hPlayer == null || !hPlayer.IsValid()) {
+		return null;
+	}
+	hPlayer.ValidateScriptScope();
+	local playerScope = hPlayer.GetScriptScope();
+	if (!(g_str_GameplayGuidePlayerField in playerScope)) {
+		return null;
+	}
+	local strName = playerScope[g_str_GameplayGuidePlayerField];
+	if (strName == null || strName == "") {
+		return null;
+	}
+	local hGuide = Entities.FindByName(null, strName);
+	if (hGuide == null || !hGuide.IsValid()) {
+		return null;
+	}
+	return hGuide;
+}
+
+function UpdateGameplayGuideData(hPlayer, hGuide) {
+	if (hPlayer == null || !hPlayer.IsValid() || hGuide == null || !hGuide.IsValid()) {
+		return;
+	}
+	local strLanguage = NormalizeGameplayGuideLanguage(GetClientLanguage(hPlayer.entindex()));
+	// CRD_VGui_VScript has one network string slot (256 bytes).  Only the
+	// language is sent; the client loads challenge_traitors_translations_all.nut
+	// and resolves all eleven guide keys locally, so long role text is never
+	// truncated by the VGUI network field.
+	hGuide.SetString(0, strLanguage);
+	// Slot 0 is the replicated visibility gate.  The server owns this bit;
+	// the client only observes it and never sends a VGUI input back.
+	hGuide.SetInt(0, 0);
+	hGuide.SetInt(g_int_GameplayGuideLocalMenuModeSlot, g_int_GameplayGuideLocalMenuModeSentinel);
+	local generation = 0;
+	hPlayer.ValidateScriptScope();
+	local playerScope = hPlayer.GetScriptScope();
+	if (g_str_GameplayGuideGenerationField in playerScope) {
+		generation = playerScope[g_str_GameplayGuideGenerationField];
+	}
+	hGuide.SetInt(1, generation);
+}
+
+function CreatePlayerGameplayGuide(hPlayer) {
+	if (hPlayer == null || !hPlayer.IsValid() || !g_bool_ClhallengeEnable) {
+		return null;
+	}
+	hPlayer.ValidateScriptScope();
+	local playerScope = hPlayer.GetScriptScope();
+	if (!(g_str_GameplayGuideGenerationField in playerScope)) {
+		playerScope[g_str_GameplayGuideGenerationField] <- 0;
+	}
+	local hGuide = GetGameplayGuideEntity(hPlayer);
+	if (hGuide == null) {
+		hGuide = Entities.CreateByClassname("rd_vgui_vscript");
+		if (hGuide == null || !hGuide.IsValid()) {
+			return null;
+		}
+		g_ent_HudAndVGui.append(hGuide);
+		hGuide.__KeyValueFromString("client_vscript", g_str_GameplayGuideVGuiScript);
+		hGuide.SetInt(g_int_GameplayGuideLocalMenuModeSlot, g_int_GameplayGuideLocalMenuModeSentinel);
+		hGuide.Spawn();
+		hGuide.Activate();
+		hGuide.SetEntity(0, hPlayer);
+		local strName = "VGuiGameplayGuide_" + UniqueString();
+		hGuide.SetName(strName);
+		if (g_str_GameplayGuidePlayerField in playerScope) {
+			playerScope[g_str_GameplayGuidePlayerField] = strName;
+		} else {
+			playerScope[g_str_GameplayGuidePlayerField] <- strName;
+		}
+	}
+
+	// Keep this function idempotent.  It is called at game start and again by
+	// player_fullyjoined for late joiners, and a player must never get duplicate
+	// interactive screens.
+	hGuide.SetEntity(0, hPlayer);
+	// Every player-owned guide starts hidden.  Keep this assignment here as
+	// well as in UpdateGameplayGuideData so a newly spawned entity cannot paint
+	// during the spawn/activation window before its other slots are populated.
+	hGuide.SetInt(0, 0);
+	hGuide.SetInt(g_int_GameplayGuideLocalMenuModeSlot, g_int_GameplayGuideLocalMenuModeSentinel);
+	UpdateGameplayGuideData(hPlayer, hGuide);
+	return hGuide;
 }
 
 function CreatePlayerHud(hPlayer) {

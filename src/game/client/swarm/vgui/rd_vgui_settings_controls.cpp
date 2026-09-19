@@ -380,6 +380,10 @@ CRD_VGUI_Settings_Controls::CRD_VGUI_Settings_Controls( vgui::Panel *parent, con
 	m_pBindSecondaryAttackAlt = new CRD_VGUI_Bind( this, "BindSecondaryAttackAlt", "#Valve_Secondary_Attack", "+secondary", true );
 	m_pBindChooseMarine = new CRD_VGUI_Bind( this, "BindChooseMarine", "#rd_str_selectloadout", "cl_select_loadout", true );
 
+	// Custom functions
+	m_pBindCustomFunction1 = new CRD_VGUI_Bind( this, "BindCustomFunction1", "#rd_custom_function_1", "scripted_user_func custom_function_1", true );
+	m_pBindCustomFunction2 = new CRD_VGUI_Bind( this, "BindCustomFunction2", "#rd_custom_function_2", "scripted_user_func custom_function_2", true );
+
 	// Use Equipment
 	m_pBindActivatePrimary = new CRD_VGUI_Bind( this, "BindActivatePrimary", "#rd_bind_ActivatePrimary", "ASW_ActivatePrimary", true );
 	m_pBindActivateSecondary = new CRD_VGUI_Bind( this, "BindActivateSecondary", "#rd_bind_ActivateSecondary", "ASW_ActivateSecondary", true );
