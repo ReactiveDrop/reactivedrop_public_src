@@ -58,6 +58,8 @@ r1 <- 0;
 getconsttable()["infector_next_active_time"] <- 0.0;
 getconsttable()["infector_is_skill_used"] <- false;
 getconsttable()["infector_is_skill_active"] <- false;
+// 点击后的短暂视觉反馈，不参与服务端技能状态判定。
+getconsttable()["infector_click_feedback_until"] <- 0.0;
 activeTime <- 0.0;
 isSkillUsed <- false;
 isSkillActive <- false;
@@ -80,8 +82,8 @@ function Paint() {
 
 function Control(tbl) {
 	activeTime = getconsttable()["infector_next_active_time"];
-	isSkillUsed = isSkillUsed ? true : getconsttable()["infector_is_skill_used"];
-	isSkillActive = isSkillActive ? true : getconsttable()["infector_is_skill_active"];
+	isSkillUsed = getconsttable()["infector_is_skill_used"];
+	isSkillActive = getconsttable()["infector_is_skill_active"];
 
 	str0 = "";
 	if (isSkillUsed == false) {

@@ -60,6 +60,7 @@ isMouseDown <- false;
 isSkillUsed <- false;
 isAlive <- true;
 isSkillActive <- false;
+INFECTOR_CLICK_FEEDBACK_DURATION <- 0.5;
 
 function Paint() {
 	local hMarine = self.GetEntity(0);
@@ -93,13 +94,15 @@ function Control(tbl) {
 		r1 = 255;
 	}
 
-	if (Time() > activeTime && isSkillActive && !isSkillUsed) {
+	local isShowingClickFeedback = Time() < getconsttable()["infector_click_feedback_until"];
+	if (isShowingClickFeedback) {
+		isMouseDown = false;
+	} else if (Time() > activeTime && isSkillActive && !isSkillUsed) {
 		if (tbl.mouse_left) {
 			isMouseDown = true;
 		} else if (isMouseDown == true) {
 			if (tbl.mouse_x > x0 && tbl.mouse_x < x1 && tbl.mouse_y > y0 && tbl.mouse_y < y1) {
-				getconsttable()["marine_info"][self.GetInt(0)].infectorIsAbeted = true;
-				getconsttable()["infector_is_skill_used"] = true;
+				getconsttable()["infector_click_feedback_until"] = Time() + INFECTOR_CLICK_FEEDBACK_DURATION;
 				self.SendInput(VGUI_ACTION.INFECTOR_ABET | self.GetInt(1));
 			}
 			isMouseDown = false;
@@ -113,7 +116,7 @@ function Control(tbl) {
 		g1 = 0;
 		r1 = 0;
 	} else {
-		if (Time() > activeTime && isSkillActive && !isSkillUsed && tbl.mouse_x > x0 && tbl.mouse_x < x1 && tbl.mouse_y > y0 && tbl.mouse_y < y1) {
+		if (Time() > activeTime && isSkillActive && !isSkillUsed && !isShowingClickFeedback && tbl.mouse_x > x0 && tbl.mouse_x < x1 && tbl.mouse_y > y0 && tbl.mouse_y < y1) {
 			b0 = 255;
 			g0 = 255;
 			r0 = 255;
@@ -146,8 +149,8 @@ function OnUpdate() {
 function UpdateButton() {
 	local idx = self.GetInt(0);
 	activeTime = getconsttable()["infector_next_active_time"];
-	isSkillUsed = isSkillUsed ? true : getconsttable()["infector_is_skill_used"];
-	isSkillActive = isSkillActive ? true : getconsttable()["infector_is_skill_active"];
+	isSkillUsed = getconsttable()["infector_is_skill_used"];
+	isSkillActive = getconsttable()["infector_is_skill_active"];
 
 	text = self.GetString(0);
 	isAlive = true;
