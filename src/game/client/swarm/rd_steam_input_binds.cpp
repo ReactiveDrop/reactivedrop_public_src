@@ -70,6 +70,10 @@ RD_STEAM_INPUT_BIND( RotateCameraLeft, "rotatecameraleft", "InGame" );
 RD_STEAM_INPUT_BIND( RotateCameraRight, "rotatecameraright", "InGame" );
 RD_STEAM_INPUT_BIND( SelectMarineDeathmatch, "cl_select_loadout", "InGame" );
 
+// Custom functions
+RD_STEAM_INPUT_BIND( CustomFunction1, "scripted_user_func custom_function_1", "InGame" );
+RD_STEAM_INPUT_BIND( CustomFunction2, "scripted_user_func custom_function_2", "InGame" );
+
 // per-marine
 RD_STEAM_INPUT_BIND( SquadOffhand2, "asw_squad_hotbar 1", "InGame" );
 RD_STEAM_INPUT_BIND( SquadOffhand3, "asw_squad_hotbar 2", "InGame" );
