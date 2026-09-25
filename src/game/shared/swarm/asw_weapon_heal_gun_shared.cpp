@@ -564,7 +564,7 @@ void CASW_Weapon_Heal_Gun::HealEntity( void )
 				}
 			}
 		}
-		else if ( DestroyIfEmpty( true ) )
+		else // if ( DestroyIfEmpty( true ) )
 		{
 			CASW_Marine_Resource *pMR = pMarine->GetMarineResource();
 			if ( pMR )
