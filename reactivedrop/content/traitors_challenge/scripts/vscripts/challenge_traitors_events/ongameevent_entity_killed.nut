@@ -66,10 +66,10 @@ function OnGameEvent_entity_killed(params) {
 function ApplyExplosionDamageToMarines(hAttacker, explosionPos, radius, damageRatio) {
 	// 查找所有类名为 asw_marine 的实体
 	local hMarine = null
-	local ratio = 1.0;
 	while (hMarine = Entities.FindByClassnameWithin(hMarine, "asw_marine", explosionPos, 4 * radius)) {
 		// 检查实体是否有效且存活
 		if (hMarine.IsValid() && hMarine != hAttacker && hMarine.GetHealth() > 0) {
+			local ratio = 1.0;
 			local targetPos = hMarine.GetOrigin();
 			local hitCount = GetHitCount(explosionPos, targetPos);
 			if (hitCount >= 115) {

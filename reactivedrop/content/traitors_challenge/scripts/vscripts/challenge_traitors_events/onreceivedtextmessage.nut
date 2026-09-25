@@ -81,7 +81,7 @@ function OnReceivedTextMessage(recipient, sender, message) {
 		if (g_marine_Silencer != null && g_marine_Silencer.IsValid() && sender == g_marine_Silencer.GetCommander() && sender.GetMarine() == g_marine_Silencer) {
 			ToggleVGuiMenu(sender, g_marine_Silencer);
 		} else if (g_marine_Boomer != null && g_marine_Boomer.IsValid() && sender == g_marine_Boomer.GetCommander() && sender.GetMarine() == g_marine_Boomer) {
-			SetBomb();
+			SetBomb(sender);
 		} else if (g_marine_Infector != null && g_marine_Infector.IsValid() && sender == g_marine_Infector.GetCommander() && sender.GetMarine() == g_marine_Infector) {
 			ToggleVGuiMenu(sender, g_marine_Infector);
 		} else if (g_marine_Scanner != null && g_marine_Scanner.IsValid() && sender == g_marine_Scanner.GetCommander() && sender.GetMarine() == g_marine_Scanner) {
@@ -164,7 +164,7 @@ function ToggleVGuiMenu(hSender, hMarine) {
 	}
 }
 
-function SetBomb() {
+function SetBomb(hSender = null) {
 	if (g_bool_BombActivited || g_marine_Boomer == null || !g_marine_Boomer.IsValid()) {
 		return;
 	}
@@ -177,7 +177,9 @@ function SetBomb() {
 		g_marine_Boomer.EmitSound(BOOMER_SOUND.COUNT_DOWN[delay]);
 		DelayFunctionCall("BoomerSelfExplode", "", 5.0); // 5秒后自爆
 	} else {
-		LocalizedClientPrint(hSender, 3, TextColor(250, 250, 250) + "%s1", "#challenge_traitors_marine_silenced_notify");
+		if (hSender != null && hSender.IsValid()) {
+			LocalizedClientPrint(hSender, 3, TextColor(250, 250, 250) + "%s1", "#challenge_traitors_marine_silenced_notify");
+		}
 	}
 }
 
@@ -194,7 +196,6 @@ function BoomerSelfExplode() {
 	}
 	// 查找所有类名为 asw_marine 的实体
 	local hMarine = null
-	local ratio = 1.0;
 	local radius = 150;
 	local hAttacker = g_marine_Boomer;
 	local explosionPos = hAttacker.GetOrigin() + Vector(0, 0, 60);
@@ -205,6 +206,7 @@ function BoomerSelfExplode() {
 			local targetPos = hMarine.GetOrigin();
 			local hitCount = GetHitCount(explosionPos, targetPos);
 			if (hitCount < 110) {
+				local ratio = 1.0;
 				local distance = (targetPos - explosionPos).Length();
 				local maxHealth = hMarine.GetMaxHealth();
 				local currentHealth = hMarine.GetHealth();

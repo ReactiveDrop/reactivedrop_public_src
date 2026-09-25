@@ -462,7 +462,7 @@ function RefreshSkillMenu(interval = 1) {
 	}
 }
 
-g_float_AbetRatio <- 1.6;
+g_float_AbetRatio <- 1.75;
 function RefreshMenu(hMarine) {
 	local i = -1;
 
