@@ -239,7 +239,7 @@ void CASW_Weapon_HealAmp_Gun::HealEntity( void )
 			m_iClip1--;
 
 #ifdef GAME_DLL
-		DestroyIfEmpty( true, true );
+		// DestroyIfEmpty( true, true );
 #endif
 	}
 
