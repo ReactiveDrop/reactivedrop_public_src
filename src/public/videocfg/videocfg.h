@@ -31,7 +31,7 @@ struct VidMatConfigData_t
 	bool bIsVideo;
 };
 
-enum CPULevel_t
+enum CPULevel_t : int
 {
 	CPU_LEVEL_UNKNOWN = -1,
 
@@ -46,7 +46,7 @@ enum CPULevel_t
 	CPU_LEVEL_BIT_COUNT = 2,
 };
 
-enum GPULevel_t
+enum GPULevel_t : int
 {
 	GPU_LEVEL_UNKNOWN = -1,
 
@@ -62,7 +62,7 @@ enum GPULevel_t
 	GPU_LEVEL_BIT_COUNT = 3,
 };
 
-enum MemLevel_t
+enum MemLevel_t : int
 {
 	MEM_LEVEL_UNKNOWN = -1,
 
@@ -77,7 +77,7 @@ enum MemLevel_t
 	MEM_LEVEL_BIT_COUNT = 2,
 };
 
-enum GPUMemLevel_t
+enum GPUMemLevel_t : int
 {
 	GPU_MEM_LEVEL_UNKNOWN = -1,
 

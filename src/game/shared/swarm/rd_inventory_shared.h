@@ -23,7 +23,7 @@ extern ConVar rd_briefing_item_details_color2;
 
 class CSteamItemIcon;
 vgui::IImage *GetSteamItemIcon( const char *szURL, bool bForceLoadRemote = false );
-enum RD_Crafting_Material_t;
+enum RD_Crafting_Material_t : int;
 #endif
 
 class CASW_Player;

@@ -12,7 +12,7 @@
 #define RD_MAX_CRAFTING_MATERIAL_SPAWN_LOCATIONS 5
 
 #ifdef RD_7A_DROPS
-enum RD_Crafting_Material_t
+enum RD_Crafting_Material_t : int
 {
 	RD_CRAFTING_MATERIAL_NONE,
 

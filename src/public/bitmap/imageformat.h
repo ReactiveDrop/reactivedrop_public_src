@@ -24,8 +24,8 @@ enum NormalDecodeMode_t
 
 // Forward declaration
 #ifdef _WIN32
-typedef enum _D3DFORMAT D3DFORMAT;
-enum DXGI_FORMAT;
+typedef enum _D3DFORMAT : int D3DFORMAT;
+enum DXGI_FORMAT : int;
 #endif
 
 //-----------------------------------------------------------------------------

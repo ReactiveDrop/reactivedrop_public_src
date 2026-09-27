@@ -14,7 +14,7 @@ struct RD_Campaign_Mission_t;
 struct RD_Mission_t;
 struct RD_Mission_MinimapSlice_t;
 #ifdef RD_7A_DROPS
-enum RD_Crafting_Material_t;
+enum RD_Crafting_Material_t : int;
 #endif
 
 namespace ReactiveDropMissions

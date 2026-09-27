@@ -25,7 +25,7 @@
 
 // Be sure to expose these to vscript in 
 //		void CASW_Alien::LinkEnumsToScope( CScriptScope &hScope )
-enum BehaviorEvent_t
+enum BehaviorEvent_t : int
 {
 	BEHAVIOR_EVENT_START_HEAL = 0,
 	BEHAVIOR_EVENT_FINISH_HEAL,
