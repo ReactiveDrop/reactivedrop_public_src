@@ -72,7 +72,7 @@ private:
 		memset( m_pServerTimes, 0, sizeof(m_pServerTimes) );
 	}
 
-	enum { SERVER_TIME_HISTORY = 32 };
+	static constexpr int SERVER_TIME_HISTORY = 32;
 
 	vgui::HFont		m_hFont;
 	float			m_AverageFPS;

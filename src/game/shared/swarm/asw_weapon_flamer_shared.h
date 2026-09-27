@@ -71,11 +71,8 @@ public:
 	float m_flLastFireTime;
 	CNetworkVar(bool, m_bIsSecondaryFiring);
 
-	enum 
-	{	// namespaced immediate constant:
-		FLAMER_PROJECTILE_AIR_VELOCITY = 600,
-		EXTINGUISHER_PROJECTILE_AIR_VELOCITY = 400,
-	};
+	static constexpr int FLAMER_PROJECTILE_AIR_VELOCITY = 600;
+	static constexpr int EXTINGUISHER_PROJECTILE_AIR_VELOCITY = 400;
 
 #ifdef CLIENT_DLL
 	CUtlReference<CNewParticleEffect> pEffect;	

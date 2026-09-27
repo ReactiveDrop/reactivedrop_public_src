@@ -122,11 +122,8 @@ public:
 	Vector GetMarkPos() { return m_vMark; }
 	
 private:
-	enum
-	{
-		NO_MARK = -1
-	};
-	
+	static constexpr int NO_MARK = -1;
+
 	Vector			   m_vMark;
 	float			   m_flMarkTolerance;
 

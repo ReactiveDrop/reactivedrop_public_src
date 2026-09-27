@@ -52,19 +52,13 @@ struct ShaderStencilState_t;
 //-----------------------------------------------------------------------------
 // The Vertex Buffer interface
 //-----------------------------------------------------------------------------
-enum
-{
-	VERTEX_MAX_TEXTURE_COORDINATES = 8,
-	BONE_MATRIX_INDEX_INVALID = 255
-};
+#define VERTEX_MAX_TEXTURE_COORDINATES 8
+#define BONE_MATRIX_INDEX_INVALID 255
 
 // Internal maximums for sizes. Don't use directly, use IMaterialSystem::GetMaxToRender()
-enum
-{
-	INDEX_BUFFER_SIZE  = 32768,
-	DYNAMIC_VERTEX_BUFFER_MEMORY = ( 1024 + 512 ) * 1024,
-	DYNAMIC_VERTEX_BUFFER_MEMORY_SMALL = 384 * 1024, // Only allocate this much during map transitions
-};
+#define INDEX_BUFFER_SIZE 32768
+#define DYNAMIC_VERTEX_BUFFER_MEMORY ( ( 1024 + 512 ) * 1024 )
+#define DYNAMIC_VERTEX_BUFFER_MEMORY_SMALL ( 384 * 1024 ) // Only allocate this much during map transitions
 
 // Vertex fields must be written in well-defined order to achieve write combining, 
 // which is a perf booster

@@ -167,11 +167,8 @@ private:
 
 	//---------------------------------
 
-	enum
-	{
-		NEARNODE_CACHE_SIZE = 32,
-		NEARNODE_CACHE_LIFE = 10,
-	};
+	static constexpr int NEARNODE_CACHE_SIZE = 32;
+	static constexpr int NEARNODE_CACHE_LIFE = 10;
 
 	struct NearNodeCache_T
 	{
