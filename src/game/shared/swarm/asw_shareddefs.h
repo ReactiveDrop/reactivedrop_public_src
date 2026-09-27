@@ -7,6 +7,16 @@
 #include "const.h"
 #include "rd_gamerules_convar.h"
 
+// Use when you extend an enum to allow warning free comparation
+#define OVERLOAD_ENUM_COMPARISON(A, B) \
+    constexpr bool operator==(A a, B b) { return a == static_cast<A>(b); } \
+    constexpr bool operator==(B b, A a) { return a == b; } \
+    constexpr bool operator!=(A a, B b) { return a != static_cast<A>(b); } \
+    constexpr bool operator!=(B b, A a) { return a != b; } \
+    constexpr bool operator<=(A a, B b) { return a <= static_cast<A>(b); } \
+    constexpr bool operator<=(B b, A a) { return b <= static_cast<B>(a); } \
+// OVERLOAD_ENUM_COMPARISON
+
 enum ASW_Inventory_slot_t
 {
 	ASW_INVENTORY_SLOT_PRIMARY = 0,
@@ -283,7 +293,7 @@ enum {
 
 #define ASW_NUM_FIRE_EMITTERS 4
 
-enum
+enum ASW_Collision_Group_t
 {
 	ASW_COLLISION_GROUP_GRUBS = LAST_SHARED_COLLISION_GROUP,
 	ASW_COLLISION_GROUP_PARASITE,
@@ -316,6 +326,7 @@ enum
 	ASW_COLLISION_GROUP_SHIELD,			// collides with projectiles and NPCs
 	ASW_COLLISION_GROUP_PASSABLE,		// asw (stuff you can walk through) NOTE: Has to be LAST!
 };
+OVERLOAD_ENUM_COMPARISON(Collision_Group_t, ASW_Collision_Group_t);
 
 
 enum FailAdviceMessage
@@ -477,7 +488,7 @@ public:
 };
 
 // For CLASSIFY
-enum
+enum ASW_Class_T
 {
 	// Alien Swarm AI
 	// Be sure to add appropriate checks in IsAlienClass() in asw_shareddefs.cpp
@@ -656,6 +667,7 @@ enum
 
 	LAST_ASW_ENTITY_CLASS,
 };
+OVERLOAD_ENUM_COMPARISON(Class_T, ASW_Class_T);
 
 
 // Alien Swarm specific hitgroups
