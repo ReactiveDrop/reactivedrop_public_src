@@ -710,7 +710,7 @@ void CASWHudMinimap::Init()
 	for ( int i = 0; i < ASW_MAX_MAP_VERTICAL_SECTIONS; i++ )
 	{
 		m_nMapTextureID[i] = -1;
-		m_flMapMinZ[i] = HUGE_VAL;
+		m_flMapMinZ[i] = FLT_MAX;
 	}
 	m_bHasOverview = false;
 	m_szLastLevelName.Clear();
@@ -1805,11 +1805,11 @@ void CASWHudMinimap::SetMap( const char *levelname )
 		}
 
 		m_nMapTextureID[i] = -1;
-		m_flMapMinZ[i] = HUGE_VAL;
+		m_flMapMinZ[i] = FLT_MAX;
 	}
 
 	m_nMapTextureID[0] = surface()->CreateNewTextureID();
-	m_flMapMinZ[0] = -HUGE_VAL;
+	m_flMapMinZ[0] = -FLT_MAX;
 
 	const RD_Mission_t *pOverview = ReactiveDropMissions::GetMission( levelname );
 	if ( !pOverview )
@@ -1875,7 +1875,7 @@ void CASWHudMinimap::SetMap( const char *levelname )
 				m_nMapTextureID[j] = m_nMapTextureID[j - 1];
 			}
 
-			m_flMapMinZ[iMinIndex + 1] = MIN( iMinIndex + 2 < ASW_MAX_MAP_VERTICAL_SECTIONS ? m_flMapMinZ[iMinIndex + 2] : HUGE_VAL, flMax );
+			m_flMapMinZ[iMinIndex + 1] = MIN( iMinIndex + 2 < ASW_MAX_MAP_VERTICAL_SECTIONS ? m_flMapMinZ[iMinIndex + 2] : FLT_MAX, flMax );
 		}
 		else if ( iMinIndex > 0 && iBlankIndex != iMinIndex && iBlankIndex + 1 < ASW_MAX_MAP_VERTICAL_SECTIONS && m_flMapMinZ[iMinIndex + 1] > flMax )
 		{
