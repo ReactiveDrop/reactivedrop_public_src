@@ -314,11 +314,11 @@ private:
 	void UpdateWorkshopItemQueryResultCallback( SteamUGCQueryCompleted_t *pResult, bool bIOFailure );
 	CCallResult<CReactiveDropWorkshop, CreateItemResult_t> m_CreateItemResultCallbackCurated;
 	void CreateItemResultCallbackCurated( CreateItemResult_t *pResult, bool bIOFailure );	
-	friend static void ugc_create(const CCommand & args);
-	friend static void ugc_curated_create(const CCommand & args);
-	friend static void ugc_update(const CCommand & args);
-	friend static void ugc_updatetags(const CCommand & args);
-	friend static void _ugc_update_progress(const CCommand & args);
+	friend void ugc_create(const CCommand & args);
+	friend void ugc_curated_create(const CCommand & args);
+	friend void ugc_update(const CCommand & args);
+	friend void ugc_updatetags(const CCommand & args);
+	friend void _ugc_update_progress(const CCommand & args);
 
 	void CheckPublishedAddonConsistency();
 	friend class CFixWorkshopKeyValueNames;

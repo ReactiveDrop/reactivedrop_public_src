@@ -278,7 +278,7 @@ void CNPC_Bullseye::DecalTrace( trace_t *pOldTrace, char const *decalName )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CNPC_Bullseye::ImpactTrace( trace_t *pTrace, int iDamageType, char *pCustomImpactName )
+void CNPC_Bullseye::ImpactTrace( trace_t *pTrace, int iDamageType, const char *pCustomImpactName )
 {
 	// Get direction of original trace
 	Vector vTraceDir = pTrace->endpos - pTrace->startpos;

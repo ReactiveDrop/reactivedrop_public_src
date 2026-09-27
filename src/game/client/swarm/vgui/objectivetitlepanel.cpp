@@ -31,7 +31,7 @@ ObjectiveTitlePanel::ObjectiveTitlePanel( Panel *parent, const char *name ) : Pa
 	m_ObjectiveImagePanel->SetMouseInputEnabled( false );
 
 	// create the blank objective text - note, label isn't actually a child of this class!
-	wchar_t *text = L"<objectivetitle>";
+	const wchar_t *text = L"<objectivetitle>";
 	m_ObjectiveLabel = new vgui::Label( this, "ObjectiveTitlePanelLabel", text );
 	m_ObjectiveLabel->SetContentAlignment( vgui::Label::a_northwest );
 	m_ObjectiveLabel->SetMouseInputEnabled( false );
@@ -145,7 +145,7 @@ void ObjectiveTitlePanel::UpdateElements()
 
 		wchar_t *pLocal = g_pVGuiLocalize->Find( "#asw_objective_titlef" );
 		if ( !pLocal )
-			pLocal = L"";
+			pLocal = (wchar_t *)L"";
 		g_pVGuiLocalize->ConstructString( buffer2, sizeof( buffer2 ),
 			pLocal, 1,
 			m_hObjective->GetObjectiveTitle() );

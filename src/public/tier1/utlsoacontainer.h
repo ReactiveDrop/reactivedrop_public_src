@@ -447,11 +447,7 @@ public:
 	CSOAAttributeReference m_opA;
 	CSOAAttributeReference m_opB;
 
-	CSOAAttributeReferenceBinaryOp( CSOAAttributeReference const &a, CSOAAttributeReference const & b )
-	{
-		a.CopyTo( m_opA );
-		b.CopyTo( m_opB );
-	}
+	CSOAAttributeReferenceBinaryOp( CSOAAttributeReference const &a, CSOAAttributeReference const & b );
 
 };
 
@@ -529,6 +525,13 @@ FORCEINLINE void CSOAAttributeReference::CopyTo( CSOAAttributeReference &other )
 {
 	other.m_pContainer = m_pContainer;
 	other.m_nAttributeID = m_nAttributeID;
+}
+
+template<BINARYSIMDFUNCTION fn>
+CSOAAttributeReferenceBinaryOp<fn>::CSOAAttributeReferenceBinaryOp( CSOAAttributeReference const &a, CSOAAttributeReference const &b )
+{
+	a.CopyTo( m_opA );
+	b.CopyTo( m_opB );
 }
 
 

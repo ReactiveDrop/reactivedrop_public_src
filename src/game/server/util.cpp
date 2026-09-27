@@ -1474,7 +1474,7 @@ Vector UTIL_RandomBloodVector( void )
 // Input   :
 // Output  :
 //------------------------------------------------------------------------------
-void UTIL_ImpactTrace( trace_t *pTrace, int iDamageType, char *pCustomImpactName )
+void UTIL_ImpactTrace( trace_t *pTrace, int iDamageType, const char *pCustomImpactName )
 {
 	CBaseEntity *pEntity = pTrace->m_pEnt;
 
@@ -1853,7 +1853,7 @@ void UTIL_PrecacheOther( const char *szClassname, const char *modelName )
 // UTIL_LogPrintf - Prints a logged message to console.
 // Preceded by LOG: ( timestamp ) < message >
 //=========================================================
-void UTIL_LogPrintf( char *fmt, ... )
+void UTIL_LogPrintf( const char *fmt, ... )
 {
 	if ( !g_bIsLogging )
 		return;

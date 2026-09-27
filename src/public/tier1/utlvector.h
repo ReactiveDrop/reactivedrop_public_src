@@ -523,7 +523,7 @@ public:
 	CCopyableUtlVector( T* pMemory, int numElements ) : BaseClass( pMemory, numElements ) {}
 	CCopyableUtlVector( std::initializer_list<T> init ) : BaseClass( init ) {}
 	virtual ~CCopyableUtlVector() {}
-	CCopyableUtlVector( CCopyableUtlVector const& vec ) { CopyArray( vec.Base(), vec.Count() ); }
+	CCopyableUtlVector( CCopyableUtlVector const& vec ) { this->CopyArray( vec.Base(), vec.Count() ); }
 };
 
 // TODO (Ilya): It seems like all the functions in CUtlVector are simple enough that they should be inlined.

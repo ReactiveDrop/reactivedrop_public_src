@@ -986,7 +986,7 @@ void CClient_Precipitation::CreateParticlePrecip( void )
 	{	
 		FOR_EACH_VALID_SPLITSCREEN_PLAYER( hh )
 		{
-			if ( m_pParticlePrecipOuter[hh] != NULL )
+			if ( m_pParticlePrecipOuter[hh].IsValid() )
 			{
 				DestroyInnerParticlePrecip( hh );
 				DestroyOuterParticlePrecip( hh );
@@ -1106,7 +1106,7 @@ void CClient_Precipitation::UpdateParticlePrecip( C_BasePlayer *pPlayer, int nSl
 			//debugoverlay->AddBoxOverlay(vOffsetPosFar, Vector( -5, -5, -5 ), Vector( 5, 5, 5 ), QAngle( 0, 0, 0 ), 0, 0, 255, 32, 0.2f );
 
 			// Update if we've already got systems, otherwise, create them.
-			if ( m_pParticlePrecipInnerNear[nSlot] != NULL  && m_pParticlePrecipInnerFar[nSlot] != NULL  &&  m_pParticlePrecipOuter[nSlot] != NULL )
+			if ( m_pParticlePrecipInnerNear[nSlot].IsValid()  && m_pParticlePrecipInnerFar[nSlot].IsValid()  &&  m_pParticlePrecipOuter[nSlot].IsValid() )
 			{
 				m_pParticlePrecipOuter[nSlot]->SetControlPoint( 1, vOffsetPos );
 				m_pParticlePrecipInnerNear[nSlot]->SetControlPoint( 1, vOffsetPosNear );
@@ -1124,12 +1124,12 @@ void CClient_Precipitation::UpdateParticlePrecip( C_BasePlayer *pPlayer, int nSl
 			if ( !bInside && SubFloat( FindLowestSIMD3( Result.HitDistance ), 0 ) >= m_flParticleInnerDist )
 			{
 				// Kill the inner rain if it's previously been in use
-				if ( m_pParticlePrecipInnerNear[nSlot] != NULL )
+				if ( m_pParticlePrecipInnerNear[nSlot].IsValid() )
 				{
 					DestroyInnerParticlePrecip( nSlot );
 				}
 				// Update if we've already got systems, otherwise, create them.
-				if ( m_pParticlePrecipOuter[nSlot] != NULL )
+				if ( m_pParticlePrecipOuter[nSlot].IsValid() )
 				{
 					m_pParticlePrecipOuter[nSlot]->SetControlPoint( 1,  vOffsetPos );
 					m_pParticlePrecipOuter[nSlot]->SetControlPoint( 3, vDensity );
@@ -1142,7 +1142,7 @@ void CClient_Precipitation::UpdateParticlePrecip( C_BasePlayer *pPlayer, int nSl
 			else   //We're close enough to use the near effect.
 			{
 				// Update if we've already got systems, otherwise, create them.
-				if ( m_pParticlePrecipInnerNear[nSlot] != NULL  && m_pParticlePrecipInnerFar[nSlot] != NULL  &&  m_pParticlePrecipOuter[nSlot] != NULL )
+				if ( m_pParticlePrecipInnerNear[nSlot].IsValid()  && m_pParticlePrecipInnerFar[nSlot].IsValid()  &&  m_pParticlePrecipOuter[nSlot].IsValid() )
 				{
 					m_pParticlePrecipOuter[nSlot]->SetControlPoint( 1, vOffsetPos );
 					m_pParticlePrecipInnerNear[nSlot]->SetControlPoint( 1, vOffsetPosNear );
@@ -1274,12 +1274,12 @@ void CClient_Precipitation::InitializeParticlePrecip( void )
 
 void CClient_Precipitation::DestroyInnerParticlePrecip( int nSlot )
 {
-	if ( m_pParticlePrecipInnerFar[nSlot] != NULL )
+	if ( m_pParticlePrecipInnerFar[nSlot].IsValid() )
 	{
 		m_pParticlePrecipInnerFar[nSlot]->StopEmission();
 		m_pParticlePrecipInnerFar[nSlot] = NULL;
 	}
-	if ( m_pParticlePrecipInnerNear[nSlot] != NULL )
+	if ( m_pParticlePrecipInnerNear[nSlot].IsValid() )
 	{
 		m_pParticlePrecipInnerNear[nSlot]->StopEmission();
 		m_pParticlePrecipInnerNear[nSlot] = NULL;
@@ -1288,7 +1288,7 @@ void CClient_Precipitation::DestroyInnerParticlePrecip( int nSlot )
 
 void CClient_Precipitation::DestroyOuterParticlePrecip( int nSlot )
 {
-	if ( m_pParticlePrecipOuter[nSlot] != NULL )
+	if ( m_pParticlePrecipOuter[nSlot].IsValid() )
 	{
 		m_pParticlePrecipOuter[nSlot]->StopEmission();
 		m_pParticlePrecipOuter[nSlot] = NULL;
@@ -2361,7 +2361,8 @@ void CSnowFallManager::CreateSnowFall( void )
 			}
 		}
 
-		FindSnowVolumes( m_vecSnowFallEmitOrigin, flRadius, pPlayer->EyePosition(), vecForward );
+		Vector vecEyePos = pPlayer->EyePosition();
+		FindSnowVolumes( m_vecSnowFallEmitOrigin, flRadius, vecEyePos, vecForward );
 		if ( m_nActiveSnowCount != 0 && m_iSnowFallArea != SNOWFALL_AROUND_PLAYER )
 		{
 			// We found an active snow emitter.

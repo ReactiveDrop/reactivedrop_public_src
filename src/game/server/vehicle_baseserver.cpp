@@ -2591,7 +2591,7 @@ vehiclesound g_iSoundsToStopOnExit[] =
 	VS_ENGINE2_STOP,
 };
 
-char *vehiclesound_parsenames[VS_NUM_SOUNDS] =
+const char *vehiclesound_parsenames[VS_NUM_SOUNDS] =
 {
 	"skid_lowfriction",
 	"skid_normalfriction",

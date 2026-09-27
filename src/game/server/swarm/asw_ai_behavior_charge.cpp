@@ -255,7 +255,7 @@ void CAI_ASW_ChargeBehavior::StartTask( const Task_t *pTask )
 					MovementActivity = ACT_RUN_AGITATED;
 				}
 
-				if ( m_IsCrouched != UTL_INVAL_SYMBOL )
+				if ( m_IsCrouched.IsValid() )
 				{
 					if ( GetBehaviorParam( m_IsCrouched ) != 0 )
 					{

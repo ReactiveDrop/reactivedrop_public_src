@@ -705,7 +705,7 @@ const char *GetMassEquivalent(float flMass)
 	static struct
 	{
 		float flMass;
-		char *sz;
+		const char *sz;
 	} masstext[] =
 	{
 		{ 5e-6,		"snowflake" },

@@ -51,7 +51,7 @@ void SendProxy_ShortAddOne( const SendProp *pProp, const void *pStruct, const vo
 }
 
 SendProp SendPropBool(
-	char *pVarName,
+	const char *pVarName,
 	int offset,
 	int sizeofVar )
 {
@@ -61,7 +61,7 @@ SendProp SendPropBool(
 
 
 SendProp SendPropEHandle(
-	char *pVarName,
+	const char *pVarName,
 	int offset,
 	int flags,
 	int sizeofVar,
@@ -70,7 +70,7 @@ SendProp SendPropEHandle(
 	return SendPropInt( pVarName, offset, sizeofVar, NUM_NETWORKED_EHANDLE_BITS, SPROP_UNSIGNED|flags, proxyFn );
 }
 
-SendProp SendPropIntWithMinusOneFlag( char *pVarName, int offset, int sizeofVar, int nBits, SendVarProxyFn proxyFn )
+SendProp SendPropIntWithMinusOneFlag( const char *pVarName, int offset, int sizeofVar, int nBits, SendVarProxyFn proxyFn )
 {
 	return SendPropInt( pVarName, offset, sizeofVar, nBits, SPROP_UNSIGNED, proxyFn );
 }
@@ -129,7 +129,7 @@ static void SendProxy_Time( const SendProp *pProp, const void *pStruct, const vo
 // Output : SendProp
 //-----------------------------------------------------------------------------
 SendProp SendPropTime(
-	char *pVarName,
+	const char *pVarName,
 	int offset,
 	int sizeofVar )
 {
@@ -171,7 +171,7 @@ static void SendProxy_PredictableIdToInt( const SendProp *pProp, const void *pSt
 // Output : SendProp
 //-----------------------------------------------------------------------------
 SendProp SendPropPredictableId(
-	char *pVarName,
+	const char *pVarName,
 	int offset,
 	int sizeofVar )
 {
@@ -187,7 +187,7 @@ void SendProxy_StringT_To_String( const SendProp *pProp, const void *pStruct, co
 }
 
 
-SendProp SendPropStringT( char *pVarName, int offset, int sizeofVar )
+SendProp SendPropStringT( const char *pVarName, int offset, int sizeofVar )
 {
 	// Make sure it's the right type.
 	Assert( sizeofVar == sizeof( string_t ) );

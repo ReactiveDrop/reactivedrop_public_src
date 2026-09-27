@@ -520,7 +520,7 @@ void Multiplayer::OnCommand(const char *command)
 		}
 		else
 		{
-			char *pchCustomPath = ( ( m_nSpraypaint[ iLogo ].m_bCustom ) ? ( MULTIPLAYER_CUSTOM_SPRAY_FOLDER ) : ( "" ) );
+			const char *pchCustomPath = ( ( m_nSpraypaint[ iLogo ].m_bCustom ) ? ( MULTIPLAYER_CUSTOM_SPRAY_FOLDER ) : ( "" ) );
 
 			char rootFilename[MAX_PATH];
 			Q_snprintf( rootFilename, sizeof(rootFilename), MULTIPLAYER_SPRAY_FOLDER "%s%s.vtf", pchCustomPath, m_nSpraypaint[ iLogo ].m_szFilename );

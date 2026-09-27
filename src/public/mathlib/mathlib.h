@@ -632,7 +632,17 @@ template <class T> FORCEINLINE T AVG(T a, T b)
 //
 // Returns a clamped value in the range [min, max].
 //
+#ifdef __cplusplus
+//
+// NOTE: clamp() is already provided as an inline template function by
+// tier0/basetypes.h. Do NOT define a function-like macro with this name:
+// since C++17 the standard library declares std::clamp() in <algorithm>,
+// and a clamp() macro corrupts that declaration in every translation unit
+// that includes an algorithm header. (This breaks C++20/VS2022 builds.)
+//
+#else
 #define clamp(val, min, max) (((val) > (max)) ? (max) : (((val) < (min)) ? (min) : (val)))
+#endif
 
 inline float Sign( float x )
 {

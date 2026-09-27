@@ -343,6 +343,8 @@ namespace ResponseRules
 	};
 #pragma pack(pop)
 
+extern const char *ResponseCopyString( const char *in );
+
 	template <typename T, typename I = unsigned short>
 	class CResponseDict : public CUtlMap<unsigned int, T, I>
 	{

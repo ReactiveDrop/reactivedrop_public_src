@@ -77,14 +77,14 @@ public:
 
 	// Some drawing methods that cannot be accomplished under Win32
 	virtual void DrawColoredCircle( int centerx, int centery, float radius, int r, int g, int b, int a ) = 0;
-	virtual void DrawColoredText( vgui::HFont font, int x, int y, int r, int g, int b, int a, char *fmt, ... ) = 0;
+	virtual void DrawColoredText( vgui::HFont font, int x, int y, int r, int g, int b, int a, const char *fmt, ... ) = 0;
 
 	// Draws text with current font at position and wordwrapped to the rect using color values specified
-	virtual void DrawColoredTextRect( vgui::HFont font, int x, int y, int w, int h, int r, int g, int b, int a, char *fmt, ... ) = 0;
-	virtual void DrawTextHeight( vgui::HFont font, int w, int& h, char *fmt, ... ) = 0;
+	virtual void DrawColoredTextRect( vgui::HFont font, int x, int y, int w, int h, int r, int g, int b, int a, const char *fmt, ... ) = 0;
+	virtual void DrawTextHeight( vgui::HFont font, int w, int& h, const char *fmt, ... ) = 0;
 
 	// Returns the length of the text string in pixels
-	virtual int	DrawTextLen( vgui::HFont font, char *fmt, ... ) = 0;
+	virtual int	DrawTextLen( vgui::HFont font, const char *fmt, ... ) = 0;
 
 	// Draws a panel in 3D space. Assumes view + projection are already set up
 	// Also assumes the (x,y) coordinates of the panels are defined in 640xN coords

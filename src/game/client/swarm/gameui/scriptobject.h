@@ -90,7 +90,7 @@ public:
 	virtual ~CDescription();
 
 	bool ReadFromBuffer( const char **pBuffer );
-	bool InitFromFile( char *pszFileName );
+	bool InitFromFile( const char *pszFileName );
 	void TransferCurrentValues( const char *pszConfigFile );
 
 	void AddObject( CScriptObject *pItem );

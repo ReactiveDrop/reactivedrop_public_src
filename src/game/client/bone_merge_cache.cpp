@@ -96,7 +96,7 @@ void CBoneMergeCache::UpdateCache()
 							m_pFollowHdr->pBone( parentBoneIndex )->pszName(), m_pFollowHdr->pszName() ); 
 
 						static CUtlSymbolTableMT s_FollowerWarnings;
-						if ( UTL_INVAL_SYMBOL == s_FollowerWarnings.Find( sz )  )
+						if ( !s_FollowerWarnings.Find( sz ).IsValid() )
 						{
 							s_FollowerWarnings.AddString( sz );
 							Warning( "%s", sz );

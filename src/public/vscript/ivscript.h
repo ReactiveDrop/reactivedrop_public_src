@@ -435,7 +435,7 @@ struct ScriptVariant_t
 	{
 		DevWarning( "No free conversion of string or vector script variant right now\n" );
 		// If want to support this, probably need to malloc string and require free on other side [3/24/2008 tom]
-		*pDest = "";
+		*pDest = const_cast<char *>( "" );
 		return false;
 	}
 
@@ -996,9 +996,10 @@ public:
 
 	bool FunctionExists( const char *pszFunction )
 	{
+		HSCRIPT hFunction = NULL;
 		if ( GetVM() )
 		{
-			HSCRIPT hFunction = GetVM()->LookupFunction( pszFunction, m_hScope );
+			hFunction = GetVM()->LookupFunction( pszFunction, m_hScope );
 			GetVM()->ReleaseFunction( hFunction );
 		}
 		return ( hFunction != NULL ) ;

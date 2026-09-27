@@ -1875,13 +1875,13 @@ void CASWHud3DMarineNames::PaintFontTest()
 	{
 		vgui::HFont hFont = pScheme->GetFont(s_FontTestNames[i], false);
 		g_pMatSystemSurface->DrawColoredText(hFont, x, y, 255, 255, 
-					255, 255, "%s Bastille", s_FontTestNames[i]);
+					255, 255, (char *)"%s Bastille", s_FontTestNames[i]);
 		y += vgui::surface()->GetFontTall(hFont);
 	}
 
 	vgui::HFont hFont = pScheme->GetFont( "Default", IsProportional() );
 	g_pMatSystemSurface->DrawColoredText(hFont, x, y, 255, 255, 
-				255, 255, "Default Bastille");
+				255, 255, (char *)"Default Bastille");
 	y += vgui::surface()->GetFontTall(hFont);
 }
 

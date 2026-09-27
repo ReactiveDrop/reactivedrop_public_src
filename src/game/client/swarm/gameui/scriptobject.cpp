@@ -860,7 +860,7 @@ bool CDescription::ReadFromBuffer( const char **pBuffer )
 	return true;
 }
 
-bool CDescription::InitFromFile( char *pszFileName )
+bool CDescription::InitFromFile( const char *pszFileName )
 {
 
 	// Load file into memory

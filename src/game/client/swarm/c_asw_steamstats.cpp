@@ -1214,7 +1214,7 @@ bool DifficultyStats_t::FetchDifficultyStats( CSteamID playerSteamID, int iDiffi
 		return false;
 
 	bool bOK = true;
-	char* szDifficulty = NULL;
+	const char* szDifficulty = NULL;
 
 	switch( iDifficulty )
 	{
@@ -1273,7 +1273,7 @@ void DifficultyStats_t::PrepStatsForSend( CASW_Player *pPlayer )
 			m_fGamesSuccessPercent = m_iGamesSuccess / (float)m_iGamesTotal * 100.0f;
 		}
 	}
-	char* szDifficulty = NULL;
+	const char* szDifficulty = NULL;
 	int iDifficulty = ASWGameRules()->GetSkillLevel();
 
 	switch( iDifficulty )

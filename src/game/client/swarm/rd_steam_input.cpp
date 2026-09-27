@@ -184,7 +184,7 @@ void CRD_Steam_Input::Update( float frametime )
 		// Check for text input focus even if we're not using Steam Input.
 		static vgui::DHANDLE<vgui::TextEntry> s_hTextEntryFocus;
 		vgui::TextEntry *pTextEntry = dynamic_cast< vgui::TextEntry * >( vgui::ipanel()->GetPanel( vgui::input()->GetFocus(), vgui::GetControlsModuleName() ) );
-		if ( s_hTextEntryFocus != pTextEntry )
+		if ( s_hTextEntryFocus.Get() != pTextEntry )
 		{
 			s_hTextEntryFocus = pTextEntry;
 

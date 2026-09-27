@@ -3644,8 +3644,8 @@ void CASW_Marine::Script_Speak( const char *pszConcept, float delay, const char 
 		criteria.Merge( pszCriteria );
 	}
 
-	AIConcept_t concept( pszConcept );
-	QueueSpeak( concept, this, delay, criteria );
+	AIConcept_t conceptName( pszConcept );
+	QueueSpeak( conceptName, this, delay, criteria );
 }
 
 void CASW_Marine::SetMarineRolls( bool bRolls )

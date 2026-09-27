@@ -1973,7 +1973,7 @@ char *CBaseCombatWeapon::GetDeathNoticeName( void )
 #if !defined( CLIENT_DLL )
 	return (char*)STRING( m_iszName );
 #else
-	return "GetDeathNoticeName not implemented on client yet";
+	return (char *)"GetDeathNoticeName not implemented on client yet";
 #endif
 }
 

@@ -11,7 +11,7 @@
 #include "tier0/memdbgon.h"
 
 
-extern char *s_ClientElementNames[MAX_ARRAY_ELEMENTS];
+extern const char *s_ClientElementNames[MAX_ARRAY_ELEMENTS];
 
 
 class CRecvPropExtra_UtlVector
@@ -78,7 +78,7 @@ void DataTableRecvProxy_LengthProxy( const RecvProp *pProp, void **pOut, void *p
 
 
 RecvProp RecvPropUtlVector(
-	char *pVarName,		// Use RECVINFO_UTLVECTOR to generate these 4.
+	const char *pVarName,		// Use RECVINFO_UTLVECTOR to generate these 4.
 	int offset,			// Used to generate pData in the function specified in varProxy.
 	int sizeofVar,		// The size of each element in the utlvector.
 	ResizeUtlVectorFn fn,

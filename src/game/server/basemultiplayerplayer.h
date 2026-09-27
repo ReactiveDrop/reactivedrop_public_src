@@ -33,7 +33,7 @@ public:
 	virtual void		PostConstructor( const char *szClassname );
 	virtual void		ModifyOrAppendCriteria( AI_CriteriaSet& criteriaSet );
 
-	virtual bool		SpeakIfAllowed( AIConcept_t concept, SpeechPriorityType priority, const char *modifiers = NULL, char *pszOutResponseChosen = NULL, size_t bufsize = 0, IRecipientFilter *filter = NULL );
+	virtual bool		SpeakIfAllowed( AIConcept_t conceptName, SpeechPriorityType priority, const char *modifiers = NULL, char *pszOutResponseChosen = NULL, size_t bufsize = 0, IRecipientFilter *filter = NULL );
 	void				SpeakConcept( AI_Response &outresponse, int iConcept );
 	virtual bool		SpeakConceptIfAllowed( int iConcept, const char *modifiers = NULL, char *pszOutResponseChosen = NULL, size_t bufsize = 0, IRecipientFilter *filter = NULL );
 

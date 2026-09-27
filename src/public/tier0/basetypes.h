@@ -113,13 +113,13 @@ FORCEINLINE float fpmax( float a, float b )
 
 #ifdef __cplusplus
 
-template< class T, class Y >
-inline T clamp( T const &val, Y const &minVal, Y const &maxVal )
+template< class T, class MIN, class MAX >
+inline T clamp( T const &val, MIN const &minVal, MAX const &maxVal )
 {
 	if( val < minVal )
-		return minVal;
+		return T( minVal );
 	else if( val > maxVal )
-		return maxVal;
+		return T( maxVal );
 	else
 		return val;
 }

@@ -71,13 +71,13 @@ void CBaseMultiplayerPlayer::ModifyOrAppendCriteria( AI_CriteriaSet& criteriaSet
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-bool CBaseMultiplayerPlayer::SpeakIfAllowed( AIConcept_t concept, SpeechPriorityType priority, const char *modifiers, char *pszOutResponseChosen, size_t bufsize, IRecipientFilter *filter ) 
+bool CBaseMultiplayerPlayer::SpeakIfAllowed( AIConcept_t conceptName, SpeechPriorityType priority, const char *modifiers, char *pszOutResponseChosen, size_t bufsize, IRecipientFilter *filter ) 
 { 
 	if ( !IsAlive() )
 		return false;
 
 	//if ( IsAllowedToSpeak( concept, bRespondingToPlayer ) )
-	return Speak( concept, modifiers, pszOutResponseChosen, bufsize, filter );
+	return Speak( conceptName, modifiers, pszOutResponseChosen, bufsize, filter );
 }
 
 //-----------------------------------------------------------------------------
@@ -86,8 +86,8 @@ bool CBaseMultiplayerPlayer::SpeakIfAllowed( AIConcept_t concept, SpeechPriority
 void CBaseMultiplayerPlayer::SpeakConcept( AI_Response &outResponse, int iConcept )
 {
 	m_iCurrentConcept = iConcept;
-	AIConcept_t concept( g_pszMPConcepts[iConcept] );
-	FindResponse( outResponse, concept );
+	AIConcept_t conceptName( g_pszMPConcepts[iConcept] );
+	FindResponse( outResponse, conceptName );
 }
 
 

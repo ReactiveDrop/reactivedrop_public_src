@@ -382,7 +382,7 @@ public:
 
 	const Type& operator=( const Type &val ) 
 	{ 
-		return Set( val ); 
+		return base::Set( val ); 
 	}
 
 	const Type& operator=( const CNetworkColor32Base<Type,Changer> &val ) 

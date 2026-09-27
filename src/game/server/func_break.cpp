@@ -435,7 +435,7 @@ void CBreakable::DamageSound( void )
 {
 	int pitch;
 	float fvol;
-	char *soundname = NULL;
+	const char *soundname = NULL;
 	int material = m_Material;
 
 	if (random->RandomInt(0,2))

@@ -24,30 +24,30 @@ void RecvProxy_ShortSubOne( const CRecvProxyData *pData, void *pStruct, void *pO
 void RecvProxy_InterpolationAmountChanged( const CRecvProxyData *pData, void *pStruct, void *pOut );
 
 RecvProp RecvPropTime(
-	char *pVarName, 
+	const char *pVarName, 
 	int offset, 
 	int sizeofVar=SIZEOF_IGNORE );
 
 #if !defined( NO_ENTITY_PREDICTION ) && defined( USE_PREDICTABLEID )
 RecvProp RecvPropPredictableId(
-	char *pVarName, 
+	const char *pVarName, 
 	int offset, 
 	int sizeofVar=SIZEOF_IGNORE );
 #endif
 
 RecvProp RecvPropEHandle(
-	char *pVarName, 
+	const char *pVarName, 
 	int offset, 
 	int sizeofVar=SIZEOF_IGNORE,
 	RecvVarProxyFn proxyFn=RecvProxy_IntToEHandle );
 
 RecvProp RecvPropBool(
-	char *pVarName, 
+	const char *pVarName, 
 	int offset, 
 	int sizeofVar );
 
 RecvProp RecvPropIntWithMinusOneFlag(
-	char *pVarName, 
+	const char *pVarName, 
 	int offset, 
 	int sizeofVar=SIZEOF_IGNORE,
 	RecvVarProxyFn proxyFn=RecvProxy_IntSubOne );

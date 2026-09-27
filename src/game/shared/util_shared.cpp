@@ -1353,7 +1353,7 @@ char* ReadAndAllocStringValue( KeyValues *pSub, const char *pName, const char *p
 		{
 			DevWarning( "Can't get key value	'%s' from file '%s'.\n", pName, pFilename );
 		}
-		return "";
+		return (char *)"";
 	}
 
 	int len = Q_strlen( pValue ) + 1;

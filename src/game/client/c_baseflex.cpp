@@ -1384,7 +1384,7 @@ int C_BaseFlex::g_numflexcontrollers;
 char * C_BaseFlex::g_flexcontroller[MAXSTUDIOFLEXCTRL*4];
 float C_BaseFlex::s_pGlobalFlexWeight[MAXSTUDIOFLEXCTRL*4];
 
-int C_BaseFlex::AddGlobalFlexController( char *szName )
+int C_BaseFlex::AddGlobalFlexController( const char *szName )
 {
 	int i;
 	for (i = 0; i < g_numflexcontrollers; i++)

@@ -200,9 +200,9 @@ class CUtlReferenceVector : public CUtlBlockVector< CUtlReference< T > >
 public:
 	void RemoveAll()
 	{
-		for ( int i = 0; i < Count(); i++ )
+		for ( int i = 0; i < this->Count(); i++ )
 		{
-			Element( i ).KillRef();
+			this->Element( i ).KillRef();
 		}
 
 		CUtlBlockVector::RemoveAll(); 
@@ -210,16 +210,16 @@ public:
 
 	void FastRemove( int elem )
 	{
-		Assert( IsValidIndex(elem) );
+		Assert( this->IsValidIndex(elem) );
 
-		if (m_Size > 0)
+		if (this->m_Size > 0)
 		{
-			if ( elem != m_Size -1 )
+			if ( elem != this->m_Size -1 )
 			{
-				Element(elem).Set( Element(m_Size-1).GetObject() );
+				this->Element(elem).Set( this->Element(this->m_Size-1).GetObject() );
 			}
-			Destruct( &Element(m_Size-1) );
-			--m_Size;
+			Destruct( &this->Element(this->m_Size-1) );
+			--this->m_Size;
 		}
 	}
 
@@ -236,17 +236,17 @@ public:
 
 	void Remove( int elem )
 	{
-		Assert( IsValidIndex(elem) );
+		Assert( this->IsValidIndex(elem) );
 
-		if (m_Size > 0)
+		if (this->m_Size > 0)
 		{
-			for ( int i = elem; i < ( m_Size - 1 ); i++ )
+			for ( int i = elem; i < ( this->m_Size - 1 ); i++ )
 			{
-				Element( i ).Set( Element( i + 1 ).GetObject() );
+				this->Element( i ).Set( this->Element( i + 1 ).GetObject() );
 			}
 
-			Destruct( &Element(m_Size-1) );
-			--m_Size;
+			Destruct( &this->Element(this->m_Size-1) );
+			--this->m_Size;
 		}
 	}
 

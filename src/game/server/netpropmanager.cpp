@@ -17,7 +17,7 @@
 
 
 extern void SendProxy_StringT_To_String( const SendProp *pProp, const void *pStruct, const void *pVarData, DVariant *pOut, int iElement, int objectID );
-extern char *s_ElementNames[MAX_ARRAY_ELEMENTS];
+extern const char *s_ElementNames[MAX_ARRAY_ELEMENTS];
 extern ISaveRestoreOps* ActivityDataOps();
 
 //-----------------------------------------------------------------------------

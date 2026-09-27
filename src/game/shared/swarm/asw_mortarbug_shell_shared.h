@@ -36,7 +36,7 @@ public:
 	virtual void	SetFuseLength(float fSeconds);
 	virtual void	Detonate();
 
-	static CASW_Mortarbug_Shell *CASW_Mortarbug_Shell::CreateShell( const Vector &vecOrigin, const Vector &vecForward, CBaseEntity *pOwner );
+	static CASW_Mortarbug_Shell *CreateShell( const Vector &vecOrigin, const Vector &vecForward, CBaseEntity *pOwner );
 
 	bool m_bDoScreenShake;
 

@@ -92,7 +92,7 @@ public:
 
 	int				m_blinktoggle;
 
-	static int		AddGlobalFlexController( char *szName );
+	static int		AddGlobalFlexController( const char *szName );
 	static char const *GetGlobalFlexControllerName( int idx );
 
 	// bah, this should be unified with all prev/current stuff.

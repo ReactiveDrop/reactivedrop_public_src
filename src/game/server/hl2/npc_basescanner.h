@@ -97,7 +97,7 @@ public:
 	void			DeathSound( const CTakeDamageInfo &info );
 	void			AlertSound( void );
 	void			PainSound( const CTakeDamageInfo &info );
-	virtual char	*GetScannerSoundPrefix( void ) { return ""; }
+	virtual char	*GetScannerSoundPrefix( void ) { return (char *)""; }
 	void			ScannerEmitSound( const char *pszSoundName );
 
 	int				MeleeAttack1Conditions ( float flDot, float flDist );

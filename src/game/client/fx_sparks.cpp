@@ -239,7 +239,8 @@ void CTrailParticles::RenderParticles( CParticleRenderIterator *pIterator )
 		float	flWidth	 = ( flLength < pParticle->m_flWidth ) ? flLength : pParticle->m_flWidth;
 
 		//See if we should fade
-		Tracer_Draw( pIterator->GetParticleDraw(), start, (delta*scale), flWidth, color );
+		Vector vecTracerDelta = delta*scale;
+		Tracer_Draw( pIterator->GetParticleDraw(), start, vecTracerDelta, flWidth, color );
 		
 		pParticle = (const TrailParticle*)pIterator->GetNext( sortKey );
 	}

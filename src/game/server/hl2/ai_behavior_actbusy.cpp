@@ -1649,12 +1649,12 @@ void CAI_ActBusyBehavior::PlaySoundForActBusy( busyanimparts_t AnimPart )
 			CAI_Expresser *pExpresser = GetOuter()->GetExpresser();
 			if ( pExpresser )
 			{
-				AIConcept_t concept(STRING(pBusyAnim->iszSounds[AnimPart]));
+				AIConcept_t conceptName(STRING(pBusyAnim->iszSounds[AnimPart]));
 
 				// Must be able to speak the concept
-				if ( !pExpresser->IsSpeaking() && pExpresser->CanSpeakConcept( concept ) )
+				if ( !pExpresser->IsSpeaking() && pExpresser->CanSpeakConcept( conceptName ) )
 				{
-					pExpresser->Speak( concept );
+					pExpresser->Speak( conceptName );
 				}
 			}
 		}

@@ -133,7 +133,7 @@ template <class T>
 float C_SpatialEntityTemplate<T>::m_ForcedInfluence;
 
 template <>
-void C_SpatialEntityTemplate<Vector>::ResetAccumulation( void )
+inline void C_SpatialEntityTemplate<Vector>::ResetAccumulation( void )
 {
 	m_AccumulatedValue.Init();
 	m_ForcedValue.Init();

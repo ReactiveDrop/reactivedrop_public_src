@@ -40,7 +40,7 @@
 	{
 		if ( iIn == INVALID_NETWORKED_EHANDLE_VALUE )
 		{
-			return INVALID_EHANDLE_INDEX;
+			return EHANDLE( INVALID_EHANDLE_INDEX );
 		}
 		else
 		{
