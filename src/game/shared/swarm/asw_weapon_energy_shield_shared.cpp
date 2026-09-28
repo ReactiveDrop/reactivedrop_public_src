@@ -514,7 +514,7 @@ void CASW_Energy_Shield::ClientThink()
 
 	if ( !m_pDLight || m_pDLight->key != entindex() )
 	{
-		m_pDLight = effects->CL_AllocDlight( entindex() );
+		m_pDLight = g_effects->CL_AllocDlight( entindex() );
 	}
 	m_pDLight->origin = GetAbsOrigin() + Vector( 0, 0, 16 ) - Forward() * 16;
 	m_pDLight->color.r = 220;

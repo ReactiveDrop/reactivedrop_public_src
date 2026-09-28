@@ -517,7 +517,7 @@ void CClient_Precipitation::Render()
 	if ( CurrentViewID() == VIEW_MONITOR )
 		return;
 
-	if ( view->GetDrawFlags() & (DF_RENDER_REFLECTION | DF_RENDER_REFRACTION) )
+	if ( g_view->GetDrawFlags() & (DF_RENDER_REFLECTION | DF_RENDER_REFRACTION) )
 		return;
 
 	if ( m_nPrecipType == PRECIPITATION_TYPE_ASH )

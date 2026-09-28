@@ -83,7 +83,7 @@ C_TEDynamicLight::~C_TEDynamicLight( void )
 void TE_DynamicLight( IRecipientFilter& filter, float delay,
 	const Vector* org, int r, int g, int b, int exponent, float radius, float time, float decay, int nLightIndex )
 {
-	dlight_t *dl = effects->CL_AllocDlight( nLightIndex );
+	dlight_t *dl = g_effects->CL_AllocDlight( nLightIndex );
 	if ( !dl )
 		return;
 

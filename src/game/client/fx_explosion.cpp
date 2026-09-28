@@ -728,7 +728,7 @@ void C_BaseExplosionEffect::CreateDynamicLight( void )
 {
 	if ( m_fFlags & TE_EXPLFLAG_DLIGHT )
 	{
-		dlight_t *dl = effects->CL_AllocDlight( 0 );
+		dlight_t *dl = g_effects->CL_AllocDlight( 0 );
 		
 		VectorCopy (m_vecOrigin, dl->origin);
 		

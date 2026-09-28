@@ -108,7 +108,7 @@ static inline void RecordDecal( const Vector &pos, const Vector &start,
 		msg->SetFloat( "starty", start.y );
 		msg->SetFloat( "startz", start.z );
 		msg->SetInt( "hitbox", hitbox );
-		msg->SetString( "decalname", effects->Draw_DecalNameFromIndex( index ) );
+		msg->SetString( "decalname", g_effects->Draw_DecalNameFromIndex( index ) );
 
 		ToolFramework_PostToolMessage( HTOOLHANDLE_INVALID, msg );
 		
@@ -175,5 +175,5 @@ void TE_Decal( IRecipientFilter& filter, float delay, KeyValues *pKeyValues )
 	int nHitbox = pKeyValues->GetInt( "hitbox" );
 	const char *pDecalName = pKeyValues->GetString( "decalname" );
 
-	TE_Decal( filter, 0.0f, &vecOrigin, &vecStart, 0, nHitbox, effects->Draw_DecalIndexFromName( (char*)pDecalName ) );
+	TE_Decal( filter, 0.0f, &vecOrigin, &vecStart, 0, nHitbox, g_effects->Draw_DecalIndexFromName( (char*)pDecalName ) );
 }

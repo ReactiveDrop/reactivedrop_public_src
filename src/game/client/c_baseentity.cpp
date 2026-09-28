@@ -1139,13 +1139,13 @@ void C_BaseEntity::Clear( void )
 	m_hThink = INVALID_THINK_HANDLE;
 	m_AimEntsListHandle = INVALID_AIMENTS_LIST_HANDLE;
 
-	index = -1;
+	m_index = -1;
 	m_Collision.Init( this );
 	CleanUpAlphaProperty();
 	m_pClientAlphaProperty = static_cast< CClientAlphaProperty * >( g_pClientAlphaPropertyMgr->CreateClientAlphaProperty( this ) );
 	SetLocalOrigin( vec3_origin );
 	SetLocalAngles( vec3_angle );
-	model = NULL;
+	m_model = NULL;
 	m_vecAbsOrigin.Init();
 	m_angAbsRotation.Init();
 	m_vecVelocity.Init();
@@ -1237,8 +1237,8 @@ bool C_BaseEntity::Init( int entnum, int iSerialNum )
 {
 	Assert( entnum >= 0 && entnum < NUM_ENT_ENTRIES );
 
-	index = entnum;
-	m_pClientAlphaProperty->SetDesyncOffset( index );
+	m_index = entnum;
+	m_pClientAlphaProperty->SetDesyncOffset( m_index );
 
 	cl_entitylist->AddNetworkableEntity( GetIClientUnknown(), entnum, iSerialNum );
 
@@ -1301,7 +1301,7 @@ bool C_BaseEntity::InitializeAsClientEntityByIndex( int iIndex, bool bRenderWith
 	// Add the client entity to the spatial partition. (Collidable)
 	CollisionProp()->CreatePartitionHandle();
 
-	index = -1;
+	m_index = -1;
 	m_pClientAlphaProperty->SetDesyncOffset( rand() % 1024 );
 
 	SpawnClientEntity();
@@ -1350,7 +1350,7 @@ void C_BaseEntity::Term()
 	CollisionProp()->DestroyPartitionHandle();
 
 	// If Client side only entity index will be -1
-	if ( index != -1 )
+	if ( m_index != -1 )
 	{
 		beams->KillDeadBeams( this );
 	}
@@ -1488,11 +1488,11 @@ void C_BaseEntity::SetDistanceFade( float flMinDist, float flMaxDist )
 void C_BaseEntity::SetGlobalFadeScale( float flFadeScale )
 {
 	m_flFadeScale = flFadeScale;
-	int modelType = modelinfo->GetModelType( model );
+	int modelType = modelinfo->GetModelType( m_model );
 	if ( modelType == mod_studio )
 	{
 		MDLCACHE_CRITICAL_SECTION();
-		MDLHandle_t hStudioHdr = modelinfo->GetCacheHandle( model );
+		MDLHandle_t hStudioHdr = modelinfo->GetCacheHandle( m_model );
 		if ( hStudioHdr != MDLHANDLE_INVALID )
 		{
 			const studiohdr_t *pStudioHdr = mdlcache->LockStudioHdr( hStudioHdr );
@@ -1703,7 +1703,7 @@ bool C_BaseEntity::ShouldDraw()
 			return false;
 	}
 
-	return (model != 0) && !IsEffectActive(EF_NODRAW) && (index != 0);
+	return (m_model != 0) && !IsEffectActive(EF_NODRAW) && (m_index != 0);
 }
 
 bool C_BaseEntity::TestCollision( const Ray_t& ray, unsigned int mask, trace_t& trace )
@@ -1760,7 +1760,7 @@ ShadowType_t C_BaseEntity::ShadowCastType()
 	if (IsEffectActive(EF_NODRAW | EF_NOSHADOW))
 		return SHADOWS_NONE;
 
-	int modelType = modelinfo->GetModelType( model );
+	int modelType = modelinfo->GetModelType( m_model );
 	return (modelType == mod_studio) ? SHADOWS_RENDER_TO_TEXTURE : SHADOWS_NONE;
 }
 
@@ -1839,7 +1839,7 @@ bool C_BaseEntity::ShouldReceiveProjectedTextures( int flags )
 	if ( IsEffectActive( EF_NORECEIVESHADOW ) )
 		 return false;
 
-	if (modelinfo->GetModelType( model ) == mod_studio)
+	if (modelinfo->GetModelType( m_model ) == mod_studio)
 		return false;
 
 	return true;
@@ -1891,15 +1891,15 @@ IClientRenderable *C_BaseEntity::NextShadowPeer()
 //-----------------------------------------------------------------------------
 int	C_BaseEntity::entindex( void ) const
 {
-	return index;
+	return m_index;
 }
 
 int C_BaseEntity::GetSoundSourceIndex() const
 {
 #ifdef _DEBUG
-	if ( index != -1 )
+	if ( m_index != -1 )
 	{
-		Assert( index == GetRefEHandle().GetEntryIndex() );
+		Assert( m_index == GetRefEHandle().GetEntryIndex() );
 	}
 #endif
 	return GetRefEHandle().GetEntryIndex();
@@ -1935,7 +1935,7 @@ IPVSNotify* C_BaseEntity::GetPVSNotifyInterface()
 //-----------------------------------------------------------------------------
 void C_BaseEntity::GetRenderBounds( Vector& theMins, Vector& theMaxs )
 {
-	int nModelType = modelinfo->GetModelType( model );
+	int nModelType = modelinfo->GetModelType( m_model );
 	if (nModelType == mod_studio || nModelType == mod_brush)
 	{
 		modelinfo->GetModelRenderBounds( GetModel(), theMins, theMaxs );
@@ -2050,7 +2050,7 @@ const QAngle& C_BaseEntity::GetNetworkAngles() const
 //-----------------------------------------------------------------------------
 const model_t *C_BaseEntity::GetModel( void ) const
 {
-	return model;
+	return m_model;
 }
 
 
@@ -2077,10 +2077,10 @@ void C_BaseEntity::SetModelIndex( int index )
 
 void C_BaseEntity::SetModelPointer( const model_t *pModel )
 {
-	if ( pModel != model )
+	if ( pModel != m_model )
 	{
 		DestroyModelInstance();
-		model = pModel;
+		m_model = pModel;
 		OnNewModel();
 		UpdateVisibility();
 	}
@@ -2118,7 +2118,7 @@ RenderableTranslucencyType_t C_BaseEntity::ComputeTranslucencyType()
 {
 	if ( m_bIsBlurred )
 		return RENDERABLE_IS_TRANSLUCENT;
-	return modelinfo->ComputeTranslucencyType( model, GetSkin(), GetBody() );
+	return modelinfo->ComputeTranslucencyType( m_model, GetSkin(), GetBody() );
 }
 
 
@@ -2266,15 +2266,15 @@ int C_BaseEntity::DrawBrushModel( bool bSort, bool bShadowDepth )
 {
 	VPROF_BUDGET( "C_BaseEntity::DrawBrushModel", VPROF_BUDGETGROUP_BRUSHMODEL_RENDERING );
 	// Identity brushes are drawn in view->DrawWorld as an optimization
-	Assert ( modelinfo->GetModelType( model ) == mod_brush );
+	Assert ( modelinfo->GetModelType( m_model ) == mod_brush );
 
 	if ( bShadowDepth )
 	{
-		render->DrawBrushModelShadowDepth( this, (model_t *)model, GetAbsOrigin(), GetAbsAngles(), bSort );
+		render->DrawBrushModelShadowDepth( this, (model_t *)m_model, GetAbsOrigin(), GetAbsAngles(), bSort );
 	}
 	else
 	{
-		render->DrawBrushModel( this, (model_t *)model, GetAbsOrigin(), GetAbsAngles(), bSort );
+		render->DrawBrushModel( this, (model_t *)m_model, GetAbsOrigin(), GetAbsAngles(), bSort );
 	}
 
 	return 1;
@@ -2290,12 +2290,12 @@ int C_BaseEntity::DrawModel( int flags, const RenderableInstance_t &instance )
 		return 0;
 
 	int drawn = 0;
-	if ( !model )
+	if ( !m_model )
 	{
 		return drawn;
 	}
 
-	int modelType = modelinfo->GetModelType( model );
+	int modelType = modelinfo->GetModelType( m_model );
 	switch ( modelType )
 	{
 	case mod_brush:
@@ -2305,7 +2305,7 @@ int C_BaseEntity::DrawModel( int flags, const RenderableInstance_t &instance )
 	case mod_studio:
 		// All studio models must be derived from C_BaseAnimating.  Issue warning.
 		Warning( "ERROR:  Can't draw studio model %s because %s is not derived from C_BaseAnimating\n",
-			modelinfo->GetModelName( model ), GetClientClass()->m_pNetworkName ? GetClientClass()->m_pNetworkName : "unknown" );
+			modelinfo->GetModelName( m_model ), GetClientClass()->m_pNetworkName ? GetClientClass()->m_pNetworkName : "unknown" );
 		break;
 	case mod_sprite:
 		//drawn = DrawSprite();
@@ -2833,7 +2833,7 @@ void C_BaseEntity::PostDataUpdate( DataUpdateType_t updateType )
 	}
 
 	// If it's the world, force solid flags
-	if ( index == 0 )
+	if ( m_index == 0 )
 	{
 		m_nModelIndex = 1;
 		SetSolid( SOLID_BSP );
@@ -3261,9 +3261,9 @@ bool C_BaseEntity::Teleported( void )
 //-----------------------------------------------------------------------------
 bool C_BaseEntity::IsSubModel( void )
 {
-	if ( model &&
-		modelinfo->GetModelType( model ) == mod_brush &&
-		modelinfo->GetModelName( model )[0] == '*' )
+	if ( m_model &&
+		modelinfo->GetModelType( m_model ) == mod_brush &&
+		modelinfo->GetModelName( m_model )[0] == '*' )
 	{
 		return true;
 	}
@@ -3285,7 +3285,7 @@ bool C_BaseEntity::CreateLightEffects( void )
 		if (IsEffectActive(EF_BRIGHTLIGHT))
 		{
 			bHasLightEffects = true;
-			dl = effects->CL_AllocDlight ( index );
+			dl = g_effects->CL_AllocDlight ( m_index );
 			dl->origin = GetAbsOrigin();
 			dl->origin[2] += 16;
 			dl->color.r = dl->color.g = dl->color.b = 250;
@@ -3295,7 +3295,7 @@ bool C_BaseEntity::CreateLightEffects( void )
 		if (IsEffectActive(EF_DIMLIGHT))
 		{
 			bHasLightEffects = true;
-			dl = effects->CL_AllocDlight ( index );
+			dl = g_effects->CL_AllocDlight ( m_index );
 			dl->origin = GetAbsOrigin();
 			dl->color.r = dl->color.g = dl->color.b = 100;
 			dl->radius = random->RandomFloat(200,231);
@@ -3319,7 +3319,7 @@ bool C_BaseEntity::ShouldInterpolate()
 	if ( IsViewEntity() )
 		return true;
 
-	if ( index == 0 || !GetModel() )
+	if ( m_index == 0 || !GetModel() )
 		return false;
 
 	// always interpolate if visible
@@ -3607,7 +3607,7 @@ void C_BaseEntity::OnDataChanged( DataUpdateType_t type )
 
 	// These may have changed in the network update
 	AlphaProp()->SetRenderFX( GetRenderFX(), GetRenderMode() );
-	AlphaProp()->SetDesyncOffset( index );
+	AlphaProp()->SetDesyncOffset( m_index );
 
 	// Copy in fade parameters
 	AlphaProp()->SetFade( m_flFadeScale, m_fadeMinDist, m_fadeMaxDist );
@@ -3641,14 +3641,14 @@ void C_BaseEntity::GetColorModulation( float* color )
 //-----------------------------------------------------------------------------
 CollideType_t C_BaseEntity::GetCollideType( void )
 {
-	if ( !m_nModelIndex || !model )
+	if ( !m_nModelIndex || !m_model )
 		return ENTITY_SHOULD_NOT_COLLIDE;
 
 	if ( !IsSolid( ) )
 		return ENTITY_SHOULD_NOT_COLLIDE;
 
 	// If the model is a bsp or studio (i.e. it can collide with the player
-	if ( ( modelinfo->GetModelType( model ) != mod_brush ) && ( modelinfo->GetModelType( model ) != mod_studio ) )
+	if ( ( modelinfo->GetModelType( m_model ) != mod_brush ) && ( modelinfo->GetModelType( m_model ) != mod_studio ) )
 		return ENTITY_SHOULD_NOT_COLLIDE;
 
 	// Don't get stuck on point sized entities ( world doesn't count )
@@ -3667,7 +3667,7 @@ CollideType_t C_BaseEntity::GetCollideType( void )
 //-----------------------------------------------------------------------------
 bool C_BaseEntity::IsBrushModel() const
 {
-	int modelType = modelinfo->GetModelType( model );
+	int modelType = modelinfo->GetModelType( m_model );
 	return (modelType == mod_brush);
 }
 
@@ -3738,8 +3738,8 @@ void C_BaseEntity::AddBrushModelDecal( const Ray_t& ray, const Vector& decalCent
 		vecNormal *= -1.0f;
 	}
 
-	effects->DecalShoot( decalIndex, index, 
-		model, GetAbsOrigin(), GetAbsAngles(), decalCenter, NULL, 0, &vecNormal );
+	g_effects->DecalShoot( decalIndex, m_index,
+		m_model, GetAbsOrigin(), GetAbsAngles(), decalCenter, NULL, 0, &vecNormal );
 }
 
 
@@ -3756,7 +3756,7 @@ void C_BaseEntity::AddDecal( const Vector& rayStart, const Vector& rayEnd,
 	// Bloat a little bit so we get the intersection
 	ray.m_Delta *= 1.1f;
 
-	int modelType = modelinfo->GetModelType( model );
+	int modelType = modelinfo->GetModelType( m_model );
 	switch ( modelType )
 	{
 	case mod_studio:
@@ -3780,7 +3780,7 @@ void C_BaseEntity::AddDecal( const Vector& rayStart, const Vector& rayEnd,
 void C_BaseEntity::RemoveAllDecals( void )
 {
 	// For now, we only handle removing decals from studiomodels
-	if ( modelinfo->GetModelType( model ) == mod_studio )
+	if ( modelinfo->GetModelType( m_model ) == mod_studio )
 	{
 		CreateModelInstance();
 		modelrender->RemoveAllDecals( m_ModelInstance );
@@ -4045,7 +4045,7 @@ void C_BaseEntity::SetDormant( bool bDormant )
 	ParticleProp()->OwnerSetDormantTo( bDormant );
 
 	OnSetDormant( bDormant );
-	cl_entitylist->SetDormant(index, bDormant);
+	cl_entitylist->SetDormant(m_index, bDormant);
 }
 
 //-----------------------------------------------------------------------------
@@ -4891,7 +4891,7 @@ CON_COMMAND( cl_sizeof, "Determines the size of the specified client class." )
 
 CON_COMMAND_F( dlight_debug, "Creates a dlight in front of the player", FCVAR_CHEAT )
 {
-	dlight_t *el = effects->CL_AllocDlight( 1 );
+	dlight_t *el = g_effects->CL_AllocDlight( 1 );
 	C_BasePlayer *player = C_BasePlayer::GetLocalPlayer();
 	if ( !player )
 		return;

@@ -95,7 +95,7 @@ void C_RecipientFilter::AddRecipient( C_BasePlayer *player )
 	if ( !player )
 		return;
 
-	int index = player->index;
+	int index = player->m_index;
 
 	// If we're predicting and this is not the first time we've predicted this sound
 	//  then don't send it to the local player again.
@@ -127,7 +127,7 @@ void C_RecipientFilter::RemoveRecipient( C_BasePlayer *player )
 	if ( !player )
 		return;
 
-	int index = player->index;
+	int index = player->m_index;
 
 	// Remove it if it's in the list
 	m_Recipients.FindAndRemove( index );
@@ -153,7 +153,7 @@ void C_RecipientFilter::AddPlayersFromBitMask( CPlayerBitVec& playerbits )
 			continue;
 
 		// only add the local player on client side
-		if ( !playerbits[ pPlayer->index ] )
+		if ( !playerbits[ pPlayer->m_index ] )
 			continue;
 
 		AddRecipient( pPlayer );

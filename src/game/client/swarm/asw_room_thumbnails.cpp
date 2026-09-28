@@ -66,7 +66,7 @@ static void TakeRoomThumbnailSnapshot( CRoomThumbnail *pRoom )
 	CViewSetup	setup;
 	SetupThumbnailView( setup, pRoom );
 
-	view->RenderView( setup, setup, VIEW_CLEAR_COLOR | VIEW_CLEAR_DEPTH | VIEW_CLEAR_FULL_TARGET, 0 );
+	g_view->RenderView( setup, setup, VIEW_CLEAR_COLOR | VIEW_CLEAR_DEPTH | VIEW_CLEAR_FULL_TARGET, 0 );
 
 	unsigned char *pImage = ( unsigned char * )malloc( setup.width * 3 * setup.height );
 

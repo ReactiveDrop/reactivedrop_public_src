@@ -371,7 +371,7 @@ void UTIL_ImpactTrace( trace_t *pTrace, int iDamageType, char *pCustomImpactName
 //-----------------------------------------------------------------------------
 int UTIL_PrecacheDecal( const char *name, bool preload )
 {
-	return effects->Draw_DecalIndexFromName( (char*)name );
+	return g_effects->Draw_DecalIndexFromName( (char*)name );
 }
 
 extern int g_sModelIndexSmoke;

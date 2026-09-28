@@ -598,7 +598,7 @@ int	C_StriderFX::DrawModel( int )
 		pRenderContext->Bind( pMat, (IClientRenderable*)this );
 		Strider_DrawSprite( m_worldPosition, size, color );
 
-		dlight_t *dl = effects->CL_AllocDlight( m_entityIndex );
+		dlight_t *dl = g_effects->CL_AllocDlight( m_entityIndex );
 		dl->origin = m_worldPosition;
 		dl->color.r = 40;
 		dl->color.g = 60;
@@ -926,7 +926,7 @@ void MuzzleFlash_Strider( ClientEntityHandle_t hEntity, int attachmentIndex )
 	int entityIndex = ClientEntityList().HandleToEntIndex( hEntity );
 	if ( entityIndex >= 0 )
 	{
-		dlight_t *el = effects->CL_AllocElight( LIGHT_INDEX_MUZZLEFLASH + entityIndex );
+		dlight_t *el = g_effects->CL_AllocElight( LIGHT_INDEX_MUZZLEFLASH + entityIndex );
 
 		el->origin	= origin;
 

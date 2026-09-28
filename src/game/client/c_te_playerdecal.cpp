@@ -225,7 +225,7 @@ void TE_PlayerDecal( IRecipientFilter& filter, float delay,
 	}
 
 	color32 rgbaColor = { 255, 255, 255, 255 };
-	effects->PlayerDecalShoot( 
+	g_effects->PlayerDecalShoot( 
 		logo, 
 		(void *)player,
 		entity, 

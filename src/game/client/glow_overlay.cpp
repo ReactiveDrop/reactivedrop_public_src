@@ -201,7 +201,7 @@ void CGlowOverlay::UpdateGlowObstruction( const Vector &vToGlow, bool bCacheFull
 	{
 		if ( m_bInSky )
 		{
-			const CViewSetup *pViewSetup = view->GetViewSetup();
+			const CViewSetup *pViewSetup = g_view->GetViewSetup();
 			Vector pos = CurrentViewOrigin() + m_vDirection * (pViewSetup->zFar * 0.999f);
 			pixelvis_queryparams_t params;
 			params.Init( pos, m_flProxyRadius, CalcGlowAspect() );
@@ -383,7 +383,7 @@ void CGlowOverlay::Draw( bool bCacheFullSceneState )
 
 		//Get our diagonal radius
 		float radius = (vRight+vUp).Length();
-		if ( R_CullSphere( view->GetFrustum(), 5, &vBasePt, radius ) )
+		if ( R_CullSphere( g_view->GetFrustum(), 5, &vBasePt, radius ) )
 			continue;
 
 		// Get our material (deferred default load)

@@ -1387,7 +1387,7 @@ public:
 public:	
 
 	// Determine what entity this corresponds to
-	int								index;	
+	int								m_index;
 
 	// Entity flags that are only for the client (ENTCLIENTFLAG_ defines).
 	unsigned short					m_EntClientFlags;
@@ -1395,7 +1395,7 @@ public:
 private:
 	
 	// Model for rendering
-	const model_t					*model;	
+	const model_t					*m_model;	
 	CNetworkColor32( m_clrRender );
 
 public:
@@ -1908,7 +1908,7 @@ inline const CParticleProperty *C_BaseEntity::ParticleProp() const
 //-----------------------------------------------------------------------------
 inline bool C_BaseEntity::IsServerEntity( void )
 {
-	return index != -1;
+	return m_index != -1;
 }
 
 //-----------------------------------------------------------------------------

@@ -1657,7 +1657,7 @@ bool CParticleMgr::EarlyRetireParticleSystems( int nCount, CNewParticleEffect **
 	VMatrix worldToScreen[ MAX_SPLITSCREEN_PLAYERS ];
 	FOR_EACH_VALID_SPLITSCREEN_PLAYER( hh )
 	{
-		pViewSetup[ hh ] = view->GetPlayerViewSetup( hh );
+		pViewSetup[ hh ] = g_view->GetPlayerViewSetup( hh );
 		if ( pViewSetup[ hh ]->width == 0 || pViewSetup[ hh ]->height == 0 )
 			return false;
 	}

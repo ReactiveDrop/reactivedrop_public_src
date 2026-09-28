@@ -1193,7 +1193,7 @@ int CASW_Deathmatch_Mode::GetFragCount( CASW_Marine_Resource *pMR )
 #ifdef GAME_DLL
 			return pPlayer->FragCount();
 #else
-			return g_PR->GetPlayerScore( pPlayer->index );
+			return g_PR->GetPlayerScore( pPlayer->m_index );
 #endif
 		}
 		return 0;
@@ -1211,7 +1211,7 @@ int CASW_Deathmatch_Mode::GetDeathCount( CASW_Marine_Resource *pMR )
 #ifdef GAME_DLL
 			return pPlayer->DeathCount();
 #else
-			return g_PR->GetDeaths( pPlayer->index );
+			return g_PR->GetDeaths( pPlayer->m_index );
 #endif
 		}
 		return 0;
