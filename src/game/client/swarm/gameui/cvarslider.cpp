@@ -262,7 +262,7 @@ void CCvarSlider::Reset()
 	    m_iLastSliderValue = m_iStartValue;
 		return;
 	}
-	float m_fStartValue = var.GetFloat();
+	m_fStartValue = var.GetFloat();
     m_fCurrentValue = m_fStartValue;
 
     int value = (int)( CVARSLIDER_SCALE_FACTOR * m_fStartValue );
