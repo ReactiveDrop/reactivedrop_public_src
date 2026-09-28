@@ -15,6 +15,7 @@
 
 #include "tier0/platform.h"
 
+// TODO: replace this enum with something better and remove all instances of it being casted
 enum LocalFlexController_t
 {
 	// this isn't really an enum - its just a typed int. gcc will not accept it as a fwd decl, so we'll define one value
