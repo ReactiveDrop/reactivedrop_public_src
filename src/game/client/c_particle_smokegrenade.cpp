@@ -605,7 +605,7 @@ void C_ParticleSmokeGrenade::Update(float fTimeDelta)
 void C_ParticleSmokeGrenade::UpdateDynamicLightList( const Vector &vMins, const Vector &vMaxs )
 {
 	dlight_t *lights[MAX_DLIGHTS];
-	int nLights = effects->CL_GetActiveDLights( lights );
+	int nLights = g_effects->CL_GetActiveDLights( lights );
 	m_nActiveLights = 0;
 	for ( int i=0; i < nLights; i++ )
 	{

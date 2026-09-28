@@ -1223,7 +1223,7 @@ void FX_BuildTeslaHitbox(
 	// Create an elight to illuminate the target
 	if ( pEntity != NULL )
 	{
-		dlight_t *el = effects->CL_AllocElight( LIGHT_INDEX_TE_DYNAMIC + pEntity->entindex() );
+		dlight_t *el = g_effects->CL_AllocElight( LIGHT_INDEX_TE_DYNAMIC + pEntity->entindex() );
 
 		// Randomly place it
 		el->origin	= pEntity->WorldSpaceCenter() + RandomVector( -32, 32 );

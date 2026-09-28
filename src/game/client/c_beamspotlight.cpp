@@ -339,7 +339,7 @@ void C_BeamSpotLight::ComputeRenderInfo()
 			// Deal with the environment light
 			if ( !m_pDynamicLight || (m_pDynamicLight->key != m_index) )
 			{
-				m_pDynamicLight = effects->CL_AllocDlight( m_index );
+				m_pDynamicLight = g_effects->CL_AllocDlight( m_index );
 				assert (m_pDynamicLight);
 			}
 		

@@ -104,7 +104,7 @@ static inline void RecordProjectDecal( const Vector &pos, const QAngle &angles,
 		msg->SetFloat( "anglesy", angles.y );
 		msg->SetFloat( "anglesz", angles.z );
 		msg->SetFloat( "distance", flDistance );
-		msg->SetString( "decalname", effects->Draw_DecalNameFromIndex( index ) );
+		msg->SetString( "decalname", g_effects->Draw_DecalNameFromIndex( index ) );
 
 		ToolFramework_PostToolMessage( HTOOLHANDLE_INVALID, msg );
 		msg->deleteThis();
@@ -177,6 +177,6 @@ void TE_ProjectDecal( IRecipientFilter& filter, float delay, KeyValues *pKeyValu
 	float flDistance = pKeyValues->GetFloat( "distance" );
 	const char *pDecalName = pKeyValues->GetString( "decalname" );
 
-	TE_ProjectDecal( filter, 0.0f, &vecOrigin, &angles, flDistance, effects->Draw_DecalIndexFromName( (char*)pDecalName ) );
+	TE_ProjectDecal( filter, 0.0f, &vecOrigin, &angles, flDistance, g_effects->Draw_DecalIndexFromName( (char*)pDecalName ) );
 }
 

@@ -86,7 +86,7 @@ static inline void RecordWorldDecal( const Vector *pos, int index )
 		msg->SetFloat( "originx", pos->x );
 		msg->SetFloat( "originy", pos->y );
 		msg->SetFloat( "originz", pos->z );
-		msg->SetString( "decalname", effects->Draw_DecalNameFromIndex( index ) );
+		msg->SetString( "decalname", g_effects->Draw_DecalNameFromIndex( index ) );
 
 		ToolFramework_PostToolMessage( HTOOLHANDLE_INVALID, msg );
 		msg->deleteThis();
@@ -106,7 +106,7 @@ void C_TEWorldDecal::PostDataUpdate( DataUpdateType_t updateType )
 		C_BaseEntity *ent = cl_entitylist->GetEnt( 0 );
 		if ( ent )
 		{
-			effects->DecalShoot( m_nIndex, 0, ent->GetModel(), ent->GetAbsOrigin(), ent->GetAbsAngles(), m_vecOrigin, 0, 0 );
+			g_effects->DecalShoot( m_nIndex, 0, ent->GetModel(), ent->GetAbsOrigin(), ent->GetAbsAngles(), m_vecOrigin, 0, 0 );
 		}
 	}
 	RecordWorldDecal( &m_vecOrigin, m_nIndex );
@@ -123,7 +123,7 @@ void TE_WorldDecal( IRecipientFilter& filter, float delay, const Vector* pos, in
 		C_BaseEntity *ent = cl_entitylist->GetEnt( 0 );
 		if ( ent )
 		{
-			effects->DecalShoot( index, 0, ent->GetModel(), ent->GetAbsOrigin(), ent->GetAbsAngles(), *pos, 0, 0 );
+			g_effects->DecalShoot( index, 0, ent->GetModel(), ent->GetAbsOrigin(), ent->GetAbsAngles(), *pos, 0, 0 );
 		}
 	}
 	RecordWorldDecal( pos, index );
@@ -138,5 +138,5 @@ void TE_WorldDecal( IRecipientFilter& filter, float delay, KeyValues *pKeyValues
 	vecOrigin.z = pKeyValues->GetFloat( "originz" );
 	const char *pDecalName = pKeyValues->GetString( "decalname" );
 
-	TE_WorldDecal( filter, 0.0f, &vecOrigin, effects->Draw_DecalIndexFromName( (char*)pDecalName ) );
+	TE_WorldDecal( filter, 0.0f, &vecOrigin, g_effects->Draw_DecalIndexFromName( (char*)pDecalName ) );
 }

@@ -411,7 +411,7 @@ void CreateMuzzleflashELight( const Vector &origin, int exponent, int nMinRadius
 		int entityIndex = ClientEntityList().HandleToEntIndex( hEntity );
 		if ( entityIndex >= 0 )
 		{
-			dlight_t *el = effects->CL_AllocElight( LIGHT_INDEX_MUZZLEFLASH + entityIndex );
+			dlight_t *el = g_effects->CL_AllocElight( LIGHT_INDEX_MUZZLEFLASH + entityIndex );
 
 			el->origin	= origin;
 
@@ -669,7 +669,7 @@ void MuzzleFlash_Hunter( ClientEntityHandle_t hEntity, int attachmentIndex )
 	Vector		origin;
 	MatrixGetColumn( matAttachment, 3, &origin );	
 	
-	dlight_t *el = effects->CL_AllocElight( LIGHT_INDEX_MUZZLEFLASH );
+	dlight_t *el = g_effects->CL_AllocElight( LIGHT_INDEX_MUZZLEFLASH );
 	el->origin = origin;// + Vector( 12.0f, 0, 0 );
 
 	el->color.r = 50;

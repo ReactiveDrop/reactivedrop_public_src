@@ -90,7 +90,7 @@ void C_TEFootprintDecal::PostDataUpdate( DataUpdateType_t updateType )
 		C_BaseEntity *ent = cl_entitylist->GetEnt( m_nEntity );
 		if ( ent )
 		{
-			effects->DecalShoot( m_nIndex, 
+			g_effects->DecalShoot( m_nIndex, 
 				m_nEntity, ent->GetModel(), ent->GetAbsOrigin(), ent->GetAbsAngles(), m_vecOrigin, &m_vecDirection, 0 );
 		}
 	}
@@ -104,7 +104,7 @@ void TE_FootprintDecal( IRecipientFilter& filter, float delay, const Vector *ori
 		C_BaseEntity *ent = cl_entitylist->GetEnt( entity );
 		if ( ent )
 		{
-			effects->DecalShoot( index, entity, ent->GetModel(), ent->GetAbsOrigin(), ent->GetAbsAngles(), *origin, right, 0 );
+			g_effects->DecalShoot( index, entity, ent->GetModel(), ent->GetAbsOrigin(), ent->GetAbsAngles(), *origin, right, 0 );
 		}
 	}
 }

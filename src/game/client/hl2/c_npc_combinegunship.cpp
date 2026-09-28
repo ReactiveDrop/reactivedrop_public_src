@@ -321,7 +321,7 @@ int	C_GunshipFX::DrawModel( int, const RenderableInstance_t &instance )
 	if ( hasParam[GUNSHIPFX_AFTERGLOW_COLOR] )
 	{
 		// Muzzle effect
-		dlight_t *dl = effects->CL_AllocDlight( m_entityIndex );
+		dlight_t *dl = g_effects->CL_AllocDlight( m_entityIndex );
 		dl->origin = m_worldPosition;
 		dl->color.r = 40*params[GUNSHIPFX_AFTERGLOW_COLOR].x;
 		dl->color.g = 60*params[GUNSHIPFX_AFTERGLOW_COLOR].x;

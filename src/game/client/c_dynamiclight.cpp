@@ -138,8 +138,8 @@ void C_DynamicLight::ClientThink(void)
 		{
 #if DLIGHT_NO_WORLD_USES_ELIGHT
 			m_pDynamicLight = ShouldBeElight() != 0
-				? effects->CL_AllocElight( m_index )
-				: effects->CL_AllocDlight( m_index );
+				? g_effects->CL_AllocElight( m_index )
+				: g_effects->CL_AllocDlight( m_index );
 #else
 			m_pDynamicLight = effects->CL_AllocDlight( m_index );
 #endif
@@ -183,7 +183,7 @@ void C_DynamicLight::ClientThink(void)
 		// Deal with the environment light
 		if ( !m_pSpotlightEnd || (m_pSpotlightEnd->key != -m_index) )
 		{
-			m_pSpotlightEnd = effects->CL_AllocDlight( -m_index );
+			m_pSpotlightEnd = g_effects->CL_AllocDlight( -m_index );
 			Assert (m_pSpotlightEnd);
 		}
 				  

@@ -3285,7 +3285,7 @@ bool C_BaseEntity::CreateLightEffects( void )
 		if (IsEffectActive(EF_BRIGHTLIGHT))
 		{
 			bHasLightEffects = true;
-			dl = effects->CL_AllocDlight ( m_index );
+			dl = g_effects->CL_AllocDlight ( m_index );
 			dl->origin = GetAbsOrigin();
 			dl->origin[2] += 16;
 			dl->color.r = dl->color.g = dl->color.b = 250;
@@ -3295,7 +3295,7 @@ bool C_BaseEntity::CreateLightEffects( void )
 		if (IsEffectActive(EF_DIMLIGHT))
 		{
 			bHasLightEffects = true;
-			dl = effects->CL_AllocDlight ( m_index );
+			dl = g_effects->CL_AllocDlight ( m_index );
 			dl->origin = GetAbsOrigin();
 			dl->color.r = dl->color.g = dl->color.b = 100;
 			dl->radius = random->RandomFloat(200,231);
@@ -3738,7 +3738,7 @@ void C_BaseEntity::AddBrushModelDecal( const Ray_t& ray, const Vector& decalCent
 		vecNormal *= -1.0f;
 	}
 
-	effects->DecalShoot( decalIndex, m_index,
+	g_effects->DecalShoot( decalIndex, m_index,
 		m_model, GetAbsOrigin(), GetAbsAngles(), decalCenter, NULL, 0, &vecNormal );
 }
 
@@ -4891,7 +4891,7 @@ CON_COMMAND( cl_sizeof, "Determines the size of the specified client class." )
 
 CON_COMMAND_F( dlight_debug, "Creates a dlight in front of the player", FCVAR_CHEAT )
 {
-	dlight_t *el = effects->CL_AllocDlight( 1 );
+	dlight_t *el = g_effects->CL_AllocDlight( 1 );
 	C_BasePlayer *player = C_BasePlayer::GetLocalPlayer();
 	if ( !player )
 		return;

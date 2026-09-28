@@ -48,7 +48,7 @@ void C_ASW_DynamicLight::ClientThink( void )
 	{
 		if ( !m_pDynamicLight || m_pDynamicLight->key != ASW_LIGHT_INDEX_FIRES + m_index )
 		{
-			m_pDynamicLight = effects->CL_AllocDlight( ASW_LIGHT_INDEX_FIRES + m_index );
+			m_pDynamicLight = g_effects->CL_AllocDlight( ASW_LIGHT_INDEX_FIRES + m_index );
 		}
 		m_pDynamicLight->color.b = GetRenderColorB();
 		m_pDynamicLight->color.g = GetRenderColorG();

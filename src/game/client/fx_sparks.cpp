@@ -1369,7 +1369,7 @@ void FX_ConcussiveExplosion( Vector &origin, Vector &normal )
 	// Dlight
 	//
 
-	dlight_t *dl= effects->CL_AllocDlight ( 0 );
+	dlight_t *dl= g_effects->CL_AllocDlight ( 0 );
 
 	dl->origin	= offset;
 	dl->color.r = dl->color.g = dl->color.b = 64;

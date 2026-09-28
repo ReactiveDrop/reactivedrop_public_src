@@ -1549,7 +1549,7 @@ void C_ASW_Marine::UpdateFlashlight()
 		{
 			if (!m_pFlashlightDLight || (m_pFlashlightDLight->key != m_index))
 			{
-				m_pFlashlightDLight = effects->CL_AllocDlight(m_index);
+				m_pFlashlightDLight = g_effects->CL_AllocDlight(m_index);
 			}
 		}
 //#endif

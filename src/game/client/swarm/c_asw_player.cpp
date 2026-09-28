@@ -1271,7 +1271,7 @@ void C_ASW_Player::ClientThink()
 	if ( asw_dlight_list.GetBool() )
 	{
 		dlight_t *lights[MAX_DLIGHTS];
-		int nLights = effects->CL_GetActiveDLights( lights );
+		int nLights = g_effects->CL_GetActiveDLights( lights );
 		for ( int i = 0; i < MAX_DLIGHTS; i++ )
 		{
 			if ( i >= nLights )
@@ -2704,7 +2704,7 @@ void C_ASW_Player::UpdateLocalMarineGlow()
 	{
 		if ( !m_pLocalMarineGlow )
 		{
-			m_pLocalMarineGlow = effects->CL_AllocDlight( m_index );
+			m_pLocalMarineGlow = g_effects->CL_AllocDlight( m_index );
 		}
 
 		if ( m_pLocalMarineGlow )

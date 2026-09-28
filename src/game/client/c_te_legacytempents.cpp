@@ -554,7 +554,7 @@ bool C_LocalTempEntity::Frame( float frametime, int framenumber )
 
 	if ( (m_flags & FTENT_FLICKER) && framenumber == m_nFlickerFrame )
 	{
-		dlight_t *dl = effects->CL_AllocDlight (LIGHT_INDEX_TE_DYNAMIC);
+		dlight_t *dl = g_effects->CL_AllocDlight (LIGHT_INDEX_TE_DYNAMIC);
 		VectorCopy (GetLocalOrigin(), dl->origin);
 		dl->radius = 60;
 		dl->color.r = 255;
@@ -2643,7 +2643,7 @@ void CTempEnts::MuzzleFlash_Combine_NPC( ClientEntityHandle_t hEntity, int attac
 		C_BaseEntity *pEnt = ClientEntityList().GetBaseEntityFromHandle( hEntity );
 		if ( pEnt )
 		{
-			dlight_t *el = effects->CL_AllocElight( LIGHT_INDEX_MUZZLEFLASH + pEnt->entindex() );
+			dlight_t *el = g_effects->CL_AllocElight( LIGHT_INDEX_MUZZLEFLASH + pEnt->entindex() );
 
 			el->origin	= origin;
 
