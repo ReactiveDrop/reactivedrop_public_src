@@ -1133,7 +1133,7 @@ void BuildTeslaCallback( const CEffectData &data )
 	teslaInfo.m_flTimeVisible = 0.3;
 	teslaInfo.m_flRadius = 192;
 	teslaInfo.m_nBeams = 6;
-	teslaInfo.m_pszSpriteName = (char *)"sprites/physbeam.vmt";
+	teslaInfo.m_pszSpriteName = "sprites/physbeam.vmt";
 
 	FX_Tesla( teslaInfo );
 }

@@ -143,9 +143,9 @@ void ObjectiveTitlePanel::UpdateElements()
 		wchar_t wnumber[8];
 		g_pVGuiLocalize->ConvertANSIToUnicode( buffer, wnumber, sizeof( wnumber ) );
 
-		wchar_t *pLocal = g_pVGuiLocalize->Find( "#asw_objective_titlef" );
+		const wchar_t *pLocal = g_pVGuiLocalize->Find( "#asw_objective_titlef" );
 		if ( !pLocal )
-			pLocal = (wchar_t *)L"";
+			pLocal = L"";
 		g_pVGuiLocalize->ConstructString( buffer2, sizeof( buffer2 ),
 			pLocal, 1,
 			m_hObjective->GetObjectiveTitle() );

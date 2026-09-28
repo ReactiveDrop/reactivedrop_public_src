@@ -45,9 +45,9 @@ void Demo_DisableButton( Button *pButton )
 		pHybridButton->SetEnabled( false );
 
 		char szTooltip[512];
-		wchar_t *wUnicode = g_pVGuiLocalize->Find( "#L4D360UI_MainMenu_DemoVersion" );
+		const wchar_t *wUnicode = g_pVGuiLocalize->Find( "#L4D360UI_MainMenu_DemoVersion" );
 		if ( !wUnicode )
-			wUnicode = (wchar_t *)L"";
+			wUnicode = L"";
 
 		g_pVGuiLocalize->ConvertUnicodeToANSI( wUnicode, szTooltip, sizeof( szTooltip ) );
 
@@ -64,10 +64,10 @@ void Dlc1_DisableButton( Button *pButton )
 		pHybridButton->SetEnabled( false );
 
 		char szTooltip[512];
-		wchar_t *wUnicode = g_pVGuiLocalize->Find( "#L4D360UI_DLC1_NotInstalled" );
+		const wchar_t *wUnicode = g_pVGuiLocalize->Find( "#L4D360UI_DLC1_NotInstalled" );
 
 		if ( !wUnicode )
-			wUnicode = (wchar_t *)L"";
+			wUnicode = L"";
 
 		g_pVGuiLocalize->ConvertUnicodeToANSI( wUnicode, szTooltip, sizeof( szTooltip ) );
 

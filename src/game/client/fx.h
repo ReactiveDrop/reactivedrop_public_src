@@ -84,7 +84,7 @@ public:
 	Vector			m_vPos;
 	QAngle			m_vAngles;
 	int				m_nEntIndex;
-	char			*m_pszSpriteName;
+	const char			*m_pszSpriteName;
 	float			m_flBeamWidth;
 	int				m_nBeams;
 	Vector			m_vColor;
