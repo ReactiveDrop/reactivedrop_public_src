@@ -144,7 +144,7 @@ void CASW_Weapon_Sentry::ClientThink( void )
 {
 	BaseClass::ClientThink();
 
-	CASW_Marine *pMarine;
+	CASW_Marine *pOwningMarine;
 	if ( m_hOwningMarine.Get() )
 	{
 		// this means it's been removed or dropped, so destroy the display
@@ -156,14 +156,14 @@ void CASW_Weapon_Sentry::ClientThink( void )
 			return;
 		}
 
-		pMarine = static_cast<CASW_Marine*>(m_hOwningMarine.Get());
+		pOwningMarine = static_cast<CASW_Marine*>(m_hOwningMarine.Get());
 	}
 	else
-		pMarine = GetMarine();
+		pOwningMarine = GetMarine();
 
-	if ( pMarine )
+	if ( pOwningMarine )
 	{
-		bool bSentryActive = ( pMarine->GetActiveASWWeapon() == this );
+		bool bSentryActive = ( pOwningMarine->GetActiveASWWeapon() == this );
 		if ( bSentryActive && m_flNextDeployCheckThink < gpGlobals->curtime )
 		{
 			CASW_Marine *pMarine = GetMarine();

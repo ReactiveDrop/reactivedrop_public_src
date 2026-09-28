@@ -1021,10 +1021,10 @@ COptionsSubVideo::COptionsSubVideo(vgui::Panel *parent) : PropertyPage(parent, N
 void COptionsSubVideo::PrepareResolutionList()
 {
 	// get the currently selected resolution
-	char sz[256];
-	m_pMode->GetText(sz, 256);
+	char current[256];
+	m_pMode->GetText(current, 256);
 	int currentWidth = 0, currentHeight = 0;
-	sscanf( sz, "%i x %i", &currentWidth, &currentHeight );
+	sscanf( current, "%i x %i", &currentWidth, &currentHeight );
 
 	// Clean up before filling the info again.
 	m_pMode->DeleteAllItems();

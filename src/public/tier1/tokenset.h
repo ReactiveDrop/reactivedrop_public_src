@@ -33,55 +33,55 @@
 template <class _T>
 struct tokenset_t
 {
-	const char *name;
-	_T token;
+	const char *m_name;
+	_T m_token;
 
-	_T GetToken( const char *s ) const;
-	_T GetTokenI( const char *s ) const;
+	_T GetToken( const char *name ) const;
+	_T GetTokenI( const char *name ) const;
 	const char *GetNameByToken( _T token ) const;
 	const char *GetNameByToken( _T token, const char *szMismatchResult ) const;
 };
 
 template <class _T>
-inline _T tokenset_t< _T >::GetToken( const char *s ) const
+inline _T tokenset_t< _T >::GetToken( const char *name ) const
 {
 	const tokenset_t< _T > *c;
 
-	for ( c = this; c->name; ++c )
+	for ( c = this; c->m_name; ++c )
 	{
-		if ( !s )
+		if ( !name )
 		{
 			continue; // Loop to the last NULL value
 		}
 
-		if ( Q_strcmp( s, c->name ) == 0 )
+		if ( Q_strcmp( name, c->m_name ) == 0 )
 		{
-			return c->token;
+			return c->m_token;
 		}
 	}
 
-	return c->token; // c points to the last NULL value
+	return c->m_token; // c points to the last NULL value
 }
 
 template <class _T>
-inline _T tokenset_t< _T >::GetTokenI( const char *s ) const
+inline _T tokenset_t< _T >::GetTokenI( const char *name ) const
 {
 	const tokenset_t< _T > *c;
 
-	for ( c = this; c->name; ++c )
+	for ( c = this; c->m_name; ++c )
 	{
-		if ( !s )
+		if ( !name )
 		{
 			continue; // Loop to the last NULL value
 		}
 
-		if ( Q_stricmp( s, c->name ) == 0 )
+		if ( Q_stricmp( name, c->m_name ) == 0 )
 		{
-			return c->token;
+			return c->m_token;
 		}
 	}
 
-	return c->token; // c points to the last NULL value
+	return c->m_token; // c points to the last NULL value
 }
 
 template <class _T>
@@ -91,11 +91,11 @@ inline const char *tokenset_t< _T >::GetNameByToken( _T token ) const
 
 	const tokenset_t< _T > *c;
 
-	for ( c = this; c->name; ++c )
+	for ( c = this; c->m_name; ++c )
 	{
-		if ( c->token == token )
+		if ( c->m_token == token )
 		{
-			return c->name;
+			return c->m_name;
 		}
 	}
 
@@ -107,11 +107,11 @@ inline const char *tokenset_t< _T >::GetNameByToken( _T token, char const *szMis
 {
 	const tokenset_t< _T > *c;
 
-	for ( c = this; c->name; ++c )
+	for ( c = this; c->m_name; ++c )
 	{
-		if ( c->token == token )
+		if ( c->m_token == token )
 		{
-			return c->name;
+			return c->m_name;
 		}
 	}
 

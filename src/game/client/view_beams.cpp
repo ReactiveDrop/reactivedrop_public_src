@@ -422,7 +422,8 @@ bool Beam_t::ShouldDraw( void )
 extern bool g_bRenderingScreenshot;
 extern ConVar r_drawviewmodel;
 
-int Beam_t::DrawModel( int flags, const RenderableInstance_t &instance )
+// TODO: actually implement use of passed flags inside this method?
+int Beam_t::DrawModel( int iFlags, const RenderableInstance_t &instance )
 {
 
 

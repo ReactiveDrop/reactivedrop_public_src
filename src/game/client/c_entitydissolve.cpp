@@ -200,7 +200,7 @@ void C_EntityDissolve::BuildTeslaEffect( mstudiobbox_t *pHitBox, const matrix3x4
 
 	// Make a couple of tries at it
 	int iTries = -1;
-	Vector vecForward;
+	Vector vecRandForward;
 	trace_t tr;
 	do
 	{
@@ -211,20 +211,20 @@ void C_EntityDissolve::BuildTeslaEffect( mstudiobbox_t *pHitBox, const matrix3x4
 		{
 			QAngle vecTemp = vecAngles;
 			vecTemp[YAW] += flYawOffset;
-			AngleVectors( vecTemp, &vecForward );
+			AngleVectors( vecTemp, &vecRandForward );
 
 			// Randomly angle it up or down
-			vecForward.z = RandomFloat( -1, 1 );
+			vecRandForward.z = RandomFloat( -1, 1 );
 		}
 		else
 		{
-			vecForward = RandomVector( -1, 1 );
+			vecRandForward = RandomVector( -1, 1 );
 		}
 
-		UTIL_TraceLine( vecOrigin, vecOrigin + (vecForward * 192), MASK_SHOT, pEntity, COLLISION_GROUP_NONE, &tr );
+		UTIL_TraceLine( vecOrigin, vecOrigin + (vecRandForward * 192), MASK_SHOT, pEntity, COLLISION_GROUP_NONE, &tr );
 	} while ( tr.fraction >= 1.0 && iTries < 3 );
 
-	Vector vecEnd = tr.endpos - (vecForward * 8);
+	Vector vecRandEnd = tr.endpos - (vecRandForward * 8);
 
 	// Only spark & glow if we hit something
 	if ( tr.fraction < 1.0 )
