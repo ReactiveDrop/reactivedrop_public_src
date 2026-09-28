@@ -24,8 +24,13 @@ enum NormalDecodeMode_t
 
 // Forward declaration
 #ifdef _WIN32
-typedef enum _D3DFORMAT D3DFORMAT;
-enum DXGI_FORMAT;
+// C++20 requires an opaque enumeration declaration to name an underlying type.
+// _D3DFORMAT is defined by the Direct3D headers as an unscoped enum whose values
+// all fit in an int. DXGI_FORMAT is not used anywhere in this code base and the
+// DXGI headers define it without an explicit underlying type, so it is no longer
+// forward declared here.
+enum _D3DFORMAT : int;
+typedef _D3DFORMAT D3DFORMAT;
 #endif
 
 //-----------------------------------------------------------------------------

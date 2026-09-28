@@ -406,7 +406,7 @@ void C_BaseEntity::RecvProxy_CellOrigin( const CRecvProxyData *pData, void *pStr
 
 	if ( pEnt->ShouldRegenerateOriginFromCellBits() )
 	{
-		register int const cellwidth = pEnt->m_cellwidth; // Load it into a register
+		int const cellwidth = pEnt->m_cellwidth; // Load it into a register
 		vecNetworkOrigin->x = CoordFromCell( cellwidth, pEnt->m_cellX, pData->m_Value.m_Vector[0] );
 		vecNetworkOrigin->y = CoordFromCell( cellwidth, pEnt->m_cellY, pData->m_Value.m_Vector[1] );
 		vecNetworkOrigin->z = CoordFromCell( cellwidth, pEnt->m_cellZ, pData->m_Value.m_Vector[2] );
@@ -424,7 +424,7 @@ void C_BaseEntity::RecvProxy_CellOriginXY( const CRecvProxyData *pData, void *pS
 	pEnt->m_vecCellOrigin.x = pData->m_Value.m_Vector[0];
 	pEnt->m_vecCellOrigin.y = pData->m_Value.m_Vector[1];
 
-	register int const cellwidth = pEnt->m_cellwidth; // Load it into a register
+	int const cellwidth = pEnt->m_cellwidth; // Load it into a register
 
 	if ( pEnt->ShouldRegenerateOriginFromCellBits() )
 	{
@@ -443,7 +443,7 @@ void C_BaseEntity::RecvProxy_CellOriginZ( const CRecvProxyData *pData, void *pSt
 
 	pEnt->m_vecCellOrigin.z = pData->m_Value.m_Float;
 
-	register int const cellwidth = pEnt->m_cellwidth; // Load it into a register
+	int const cellwidth = pEnt->m_cellwidth; // Load it into a register
 
 	if ( pEnt->ShouldRegenerateOriginFromCellBits() )
 	{
@@ -2068,9 +2068,9 @@ int C_BaseEntity::GetModelIndex( void ) const
 // Purpose: 
 // Input  : index - 
 //-----------------------------------------------------------------------------
-void C_BaseEntity::SetModelIndex( int index )
+void C_BaseEntity::SetModelIndex( int iIndex )
 {
-	m_nModelIndex = index;
+	m_nModelIndex = iIndex;
 	const model_t *pModel = modelinfo->GetModel( m_nModelIndex );
 	SetModelPointer( pModel );
 }

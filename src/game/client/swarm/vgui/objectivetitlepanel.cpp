@@ -137,11 +137,11 @@ void ObjectiveTitlePanel::UpdateElements()
 		pTitle = m_hObjective->GetObjectiveTitle();
 	else
 	{
-		char buffer[8];
-		Q_snprintf( buffer, sizeof( buffer ), "%d", m_Index );
+		char pBuffer[8];
+		Q_snprintf( pBuffer, sizeof( pBuffer ), "%d", m_Index );
 
 		wchar_t wnumber[8];
-		g_pVGuiLocalize->ConvertANSIToUnicode( buffer, wnumber, sizeof( wnumber ) );
+		g_pVGuiLocalize->ConvertANSIToUnicode( pBuffer, wnumber, sizeof( wnumber ) );
 
 		const wchar_t *pLocal = g_pVGuiLocalize->Find( "#asw_objective_titlef" );
 		if ( !pLocal )

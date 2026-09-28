@@ -698,9 +698,6 @@ int CASW_Inhabitable_NPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	}
 	else
 	{
-		CASW_Burning *pBurning = NULL;
-		CBaseEntity *pInflictor = info.GetInflictor();
-
 		if ( ( info.GetDamageType() & DMG_DIRECT ) && ( IsFrozen() || IsOnFire() ) )
 		{
 			bool bIsMelee = ( newInfo.GetDamageType() & DMG_SLASH ) || ( newInfo.GetDamageType() & DMG_CLUB );

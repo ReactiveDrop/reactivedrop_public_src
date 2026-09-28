@@ -180,7 +180,7 @@ void CASW_VGUI_Computer_Frame::RecordComputerContents()
 		COMPILE_TIME_ASSERT( COMPUTER_LOCKED_MAIL_2 + 1 == COMPUTER_LOCKED_MAIL_3 );
 		COMPILE_TIME_ASSERT( COMPUTER_LOCKED_MAIL_3 + 1 == COMPUTER_LOCKED_MAIL_4 );
 
-		int iLockedEntries = ( pArea->m_iLockedScreens >> COMPUTER_LOCKED_MAIL_1 ) & ( 1 << 4 - 1 );
+		int iLockedEntries = ( pArea->m_iLockedScreens >> COMPUTER_LOCKED_MAIL_1 ) & ( 1 << ( 4 - 1 ) );
 
 		if ( pArea->IsPDA() )
 			SwarmopediaRecordSeenContent( "PDA", pArea->m_MailFile.Get(), pArea->GetAbsOrigin(), pMR->GetProfileIndex(), pArea->m_PDAName.Get(), iLockedEntries );

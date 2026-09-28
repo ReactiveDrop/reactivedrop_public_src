@@ -536,7 +536,7 @@ void CASW_Sentry_Top::CheckFiring()
 		float flDist = fabs( m_fGoalYaw - m_fCurrentYaw );
 		flDist = fsel( flDist - 180, 360 - flDist, flDist );
 
-		if ( ( flDist < ASW_SENTRY_FIRE_ANGLE_THRESHOLD ) || ( HasHysteresis() && !m_hEnemy ) )
+		if ( ( flDist < (float)ASW_SENTRY_FIRE_ANGLE_THRESHOLD ) || ( HasHysteresis() && !m_hEnemy ) )
 		{
 			Fire();
 		}

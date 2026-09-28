@@ -145,7 +145,7 @@ void C_LocalTempEntity::SetAcceleration( const Vector &vecVelocity )
 // Purpose: 
 // Output : int
 //-----------------------------------------------------------------------------
-int C_LocalTempEntity::DrawStudioModel( int flags )
+int C_LocalTempEntity::DrawStudioModel( int nFlags )
 {
 	VPROF_BUDGET( "C_LocalTempEntity::DrawStudioModel", VPROF_BUDGETGROUP_MODEL_RENDERING );
 	int drawn = 0;
@@ -160,12 +160,12 @@ int C_LocalTempEntity::DrawStudioModel( int flags )
 
 	if ( m_pfnDrawHelper )
 	{
-		drawn = ( *m_pfnDrawHelper )( this, flags );
+		drawn = ( *m_pfnDrawHelper )( this, nFlags );
 	}
 	else
 	{
 		drawn = modelrender->DrawModel( 
-			flags, 
+			nFlags, 
 			this,
 			MODEL_INSTANCE_INVALID,
 			index, 
@@ -183,7 +183,7 @@ int C_LocalTempEntity::DrawStudioModel( int flags )
 // Purpose: 
 // Input  : flags - 
 //-----------------------------------------------------------------------------
-int	C_LocalTempEntity::DrawModel( int flags, const RenderableInstance_t &instance )
+int	C_LocalTempEntity::DrawModel( int nFlags, const RenderableInstance_t &instance )
 {
 	int drawn = 0;
 
@@ -228,7 +228,7 @@ int	C_LocalTempEntity::DrawModel( int flags, const RenderableInstance_t &instanc
 			);
 		break;
 	case mod_studio:
-		drawn = DrawStudioModel( flags );
+		drawn = DrawStudioModel( nFlags );
 		break;
 	default:
 		break;
@@ -1079,7 +1079,7 @@ void CTempEnts::BreakModel( const Vector &pos, const QAngle &angles, const Vecto
 	}
 }
 
-void CTempEnts::PhysicsProp( int modelindex, int skin, const Vector& pos, const QAngle &angles, const Vector& vel, int flags, int effects )
+void CTempEnts::PhysicsProp( int modelindex, int skin, const Vector& pos, const QAngle &angles, const Vector& vel, int flags, int nEffects )
 {
 	C_PhysPropClientside *pEntity = C_PhysPropClientside::CreateNew();
 	
@@ -1099,7 +1099,7 @@ void CTempEnts::PhysicsProp( int modelindex, int skin, const Vector& pos, const 
 	pEntity->SetAbsOrigin( pos );
 	pEntity->SetAbsAngles( angles );
 	pEntity->SetPhysicsMode( PHYSICS_MULTIPLAYER_CLIENTSIDE );
-	pEntity->SetEffects( effects );
+	pEntity->SetEffects( nEffects );
 
 	if ( flags & 1 )
 	{

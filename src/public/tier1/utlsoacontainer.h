@@ -504,8 +504,8 @@ template<BINARYSIMDFUNCTION fn> FORCEINLINE void CSOAAttributeReference::operato
 {
 	m_pContainer->AssertDataType( m_nAttributeID, ATTRDATATYPE_FLOAT );
 	fltx4 *pOut = m_pContainer->RowPtr<fltx4>( m_nAttributeID, 0 );
-	fltx4 *pInA = op.m_opA.m_pContainer->RowPtr<fltx4>( op.m_opA.m_nAttributeID, 0 );
-	fltx4 *pInB = op.m_opB.m_pContainer->RowPtr<fltx4>( op.m_opB.m_nAttributeID, 0 );
+	fltx4 *pInA = op.m_opA.m_pContainer->template RowPtr<fltx4>( op.m_opA.m_nAttributeID, 0 );
+	fltx4 *pInB = op.m_opB.m_pContainer->template RowPtr<fltx4>( op.m_opB.m_nAttributeID, 0 );
 	size_t nRowToRowStride = m_pContainer->RowToRowStep( m_nAttributeID ) / sizeof( fltx4 );
 	int nRowCtr = m_pContainer->NumRows() * m_pContainer->NumSlices();
 	do

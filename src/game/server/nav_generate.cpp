@@ -759,10 +759,10 @@ void CNavMesh::RaiseAreasWithInternalObstacles()
 						// yes, this edge is blocked
 						iEdgesBlocked++;
 						// keep track of obstacle height and start and end distance for this edge
-						float obstacleZ = nodeFrom->GetPosition()->z + obstacleHeight;
-						if ( obstacleZ > obstacleZThisDir[iEdge] )
+						float flObstacleZ = nodeFrom->GetPosition()->z + obstacleHeight;
+						if ( flObstacleZ > obstacleZThisDir[iEdge] )
 						{							
-							obstacleZThisDir[iEdge] = obstacleZ;
+							obstacleZThisDir[iEdge] = flObstacleZ;
 						}
 						obstacleStartDistThisDir = MIN( nodeFrom->m_obstacleStartDist[dir], obstacleStartDistThisDir );
 						obstacleEndDistThisDir = MAX( nodeFrom->m_obstacleEndDist[dir], obstacleEndDistThisDir );
@@ -987,8 +987,8 @@ bool CNavMesh::CreateObstacleTopAreaIfNecessary( CNavArea *area, CNavArea *areaO
 								if ( areaOther->Contains( *nodeTowardOtherArea->GetPosition() ) )
 								{
 									float z = areaOther->GetZ( nodeTowardOtherArea->GetPosition()->x, nodeTowardOtherArea->GetPosition()->y );
-									float deltaZ = fabs( nodeTowardOtherArea->GetPosition()->z - z );
-									if ( deltaZ < 2.0f )
+									float flDeltaZ = fabs( nodeTowardOtherArea->GetPosition()->z - z );
+									if ( flDeltaZ < 2.0f )
 									{
 										bInOtherArea = true;
 									}
@@ -1596,7 +1596,7 @@ static bool testStitchConnection( CNavArea *source, CNavArea *target, const Vect
 	else
 	{
 		// test going up ClimbUpHeight
-		bool success = false;
+		bool bSuccess = false;
 		for ( float height = StepHeight; height <= ClimbUpHeight; height += 1.0f )
 		{
 			trace_t tr;
@@ -1623,7 +1623,7 @@ static bool testStitchConnection( CNavArea *source, CNavArea *target, const Vect
 					break;
 				}
 
-				success = true;
+				bSuccess = true;
 				break;
 			}
 		}
@@ -3087,7 +3087,7 @@ bool CNavMesh::TestArea( CNavNode *node, int width, int height )
 		const Vector *nw = node->GetPosition();
 
 		vertNode = node;
-		for( int y=0; y<height; ++y )
+		for( int iY=0; iY<height; ++iY )
 		{
 			vertNode = vertNode->GetConnectedNode( SOUTH );
 		}
@@ -3101,7 +3101,7 @@ bool CNavMesh::TestArea( CNavNode *node, int width, int height )
 		const Vector *ne = horizNode->GetPosition();
 
 		vertNode = horizNode;
-		for( int y=0; y<height; ++y )
+		for( int iY=0; iY<height; ++iY )
 		{
 			vertNode = vertNode->GetConnectedNode( SOUTH );
 		}

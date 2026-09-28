@@ -282,7 +282,7 @@ void CASW_Extinguisher_Projectile::PhysicsSimulate()
 		return;
 
 	// slow down the projectile's velocity	
-	SetAbsVelocity( GetAbsVelocity() * ( 1 - gpGlobals->frametime * ASW_EXTINGUISHER_PROJECTILE_ACCN / CASW_Weapon_Flamer::EXTINGUISHER_PROJECTILE_AIR_VELOCITY ) );
+	SetAbsVelocity( GetAbsVelocity() * ( 1 - gpGlobals->frametime * ASW_EXTINGUISHER_PROJECTILE_ACCN / (float)CASW_Weapon_Flamer::EXTINGUISHER_PROJECTILE_AIR_VELOCITY ) );
 
 	if ( asw_flamer_debug.GetBool() )
 	{

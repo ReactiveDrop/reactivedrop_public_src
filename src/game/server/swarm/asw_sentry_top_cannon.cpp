@@ -189,7 +189,7 @@ CAI_BaseNPC *CASW_Sentry_Top_Cannon::SelectOptimalEnemy()
 		// the angle between my current yaw and what's needed to hit the target
 		float flSwivelNeeded = fabs( UTIL_AngleDiff(  // i wish we weren't storing euler angles
 			UTIL_VecToYaw( vMeToTarget ), m_fDeployYaw ) );
-		flSwivelNeeded /= ASW_SENTRY_ANGLE; // normalize to 0..2
+		flSwivelNeeded /= (float)ASW_SENTRY_ANGLE; // normalize to 0..2
 
 		float fBigness = 0.0f;
 

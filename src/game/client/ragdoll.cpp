@@ -628,20 +628,20 @@ void C_ServerRagdoll::BuildTransformations( CStudioHdr *hdr, Vector *pos, Quater
 	int i;
 	for ( i = 0; i < m_elementCount; i++ )
 	{
-		int index = m_boneIndex[i];
-		if ( index >= 0 )
+		int iIndex = m_boneIndex[i];
+		if ( iIndex >= 0 )
 		{
-			if ( hdr->boneFlags(index) & boneMask )
+			if ( hdr->boneFlags(iIndex) & boneMask )
 			{
-				boneSimulated[index] = true;
-				matrix3x4_t &matrix = GetBoneForWrite( index );
+				boneSimulated[iIndex] = true;
+				matrix3x4_t &matrix = GetBoneForWrite( iIndex );
 
 				if ( m_flBlendWeightCurrent != 0.0f && pSeqDesc && 
 					 // FIXME: this bone access is illegal
-					 pSeqDesc->weight( index ) != 0.0f )
+					 pSeqDesc->weight( iIndex ) != 0.0f )
 				{
 					// Use the animated bone position instead
-					boneSimulated[index] = false;
+					boneSimulated[iIndex] = false;
 				}
 				else
 				{	
@@ -737,8 +737,8 @@ public:
 		if ( GetMoveParent() )
 		{
 			// HACKHACK: Force the attached bone to be set up
-			int index = m_boneIndex[m_ragdollAttachedObjectIndex];
-			int boneFlags = GetModelPtr()->boneFlags(index);
+			int iIndex = m_boneIndex[m_ragdollAttachedObjectIndex];
+			int boneFlags = GetModelPtr()->boneFlags(iIndex);
 			if ( !(boneFlags & boneMask) )
 			{
 				// BUGBUG: The attached bone is required and this call is going to skip it, so force it
@@ -779,8 +779,8 @@ public:
 
 		if ( parent )
 		{
-			int index = m_boneIndex[m_ragdollAttachedObjectIndex];
-			const matrix3x4_t &matrix = GetBone( index );
+			int iIndex = m_boneIndex[m_ragdollAttachedObjectIndex];
+			const matrix3x4_t &matrix = GetBone( iIndex );
 			Vector ragOrigin;
 			VectorTransform( m_attachmentPointRagdollSpace, matrix, ragOrigin );
 			offset = worldOrigin - ragOrigin;
@@ -794,11 +794,11 @@ public:
 			if ( !( hdr->boneFlags( i ) & boneMask ) )
 				continue;
 
-			Vector pos;
+			Vector vecPos;
 			matrix3x4_t &matrix = GetBoneForWrite( i );
-			MatrixGetColumn( matrix, 3, pos );
-			pos += offset;
-			MatrixSetColumn( pos, 3, matrix );
+			MatrixGetColumn( matrix, 3, vecPos );
+			vecPos += offset;
+			MatrixSetColumn( vecPos, 3, matrix );
 		}
 	}
 	void OnDataChanged( DataUpdateType_t updateType );

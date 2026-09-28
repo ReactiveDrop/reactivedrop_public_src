@@ -3070,7 +3070,7 @@ void CReactiveDropWorkshop::SetWorkshopKeyValues( UGCUpdateHandle_t hUpdate )
 	}
 }
 
-CON_COMMAND_F( ugc_create, "Usage: ugc_create \"C:\\Path\\to\\content.vpk\" \"C:\\Path\\to\\preview\\image.jpeg\" \"Title\" \"Description\" \"Tag1\" \"Tag2\" ...\nCampaign, Challenge, and Deathmatch will automatically be added as tags if applicable.", FCVAR_NOT_CONNECTED )
+CON_COMMAND_EXTERN_F( ugc_create, ugc_create, "Usage: ugc_create \"C:\\Path\\to\\content.vpk\" \"C:\\Path\\to\\preview\\image.jpeg\" \"Title\" \"Description\" \"Tag1\" \"Tag2\" ...\nCampaign, Challenge, and Deathmatch will automatically be added as tags if applicable.", FCVAR_NOT_CONNECTED )
 {
 	if ( !SteamUGC() )
 	{
@@ -3104,7 +3104,7 @@ CON_COMMAND_F( ugc_create, "Usage: ugc_create \"C:\\Path\\to\\content.vpk\" \"C:
 	g_ReactiveDropWorkshop.UploadWorkshopItem( args[1], args[2], args[3], args[4], tags );
 }
 
-CON_COMMAND_F( ugc_curated_create, "", FCVAR_HIDDEN | FCVAR_NOT_CONNECTED )
+CON_COMMAND_EXTERN_F( ugc_curated_create, ugc_curated_create, "", FCVAR_HIDDEN | FCVAR_NOT_CONNECTED )
 {
 	ISteamUGC *pUGC = SteamUGC();
 	if ( !pUGC )
@@ -3260,7 +3260,7 @@ bool CReactiveDropWorkshop::OpenWorkshopPageForFile( PublishedFileId_t nPublishe
 	return false;
 }
 
-CON_COMMAND_F( _ugc_update_progress, "", FCVAR_HIDDEN )
+CON_COMMAND_EXTERN_F( _ugc_update_progress, _ugc_update_progress, "", FCVAR_HIDDEN )
 {
 	if ( !SteamUGC() )
 	{
@@ -3389,7 +3389,7 @@ void CReactiveDropWorkshop::UpdateWorkshopItemQueryResultCallback( SteamUGCQuery
 	m_szUpdateChangeDescription.Purge();
 }
 
-CON_COMMAND_F( ugc_update, "Usage: ugc_update 826481632 \"C:\\Path\\to\\content.vpk\" \"C:\\Path\\to\\preview.jpg\" \"Description of changes line 1\" \"Description of changes line 2\" ...\n(the number should be the number in the address of your workshop item after http://steamcommunity.com/sharedfiles/filedetails/?id=)\nIf the preview image should not be updated, use \"\" instead of a path.", FCVAR_NOT_CONNECTED )
+CON_COMMAND_EXTERN_F( ugc_update, ugc_update, "Usage: ugc_update 826481632 \"C:\\Path\\to\\content.vpk\" \"C:\\Path\\to\\preview.jpg\" \"Description of changes line 1\" \"Description of changes line 2\" ...\n(the number should be the number in the address of your workshop item after http://steamcommunity.com/sharedfiles/filedetails/?id=)\nIf the preview image should not be updated, use \"\" instead of a path.", FCVAR_NOT_CONNECTED )
 {
 	if ( !SteamUGC() )
 	{
@@ -3501,7 +3501,7 @@ void CReactiveDropWorkshop::SetWorkshopItemTags( PublishedFileId_t nFileID, cons
 	m_UpdateWorkshopItemQueryResultCallback.Set( hAPICall, this, &CReactiveDropWorkshop::UpdateWorkshopItemQueryResultCallback );
 }
 
-CON_COMMAND_F( ugc_updatetags, "Usage: ugc_updatetags 826481632 \"Tag1\" \"Tag2\" ...\n(the number should be the number in the address of your workshop item after http://steamcommunity.com/sharedfiles/filedetails/?id=)\nSome tags are automatically determined from the contents of your addon and cannot be added or removed using this command.", FCVAR_NOT_CONNECTED )
+CON_COMMAND_EXTERN_F( ugc_updatetags, ugc_updatetags, "Usage: ugc_updatetags 826481632 \"Tag1\" \"Tag2\" ...\n(the number should be the number in the address of your workshop item after http://steamcommunity.com/sharedfiles/filedetails/?id=)\nSome tags are automatically determined from the contents of your addon and cannot be added or removed using this command.", FCVAR_NOT_CONNECTED )
 {
 	if ( !SteamUGC() )
 	{

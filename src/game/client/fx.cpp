@@ -1078,11 +1078,11 @@ void FX_Tesla( const CTeslaInfo &teslaInfo )
 				int nSlot = GET_ACTIVE_SPLITSCREEN_SLOT();
 				// Move it towards the camera
 				Vector vecFlash = tr.endpos;
-				Vector vecForward;
-				AngleVectors( MainViewAngles(nSlot), &vecForward );
-				vecFlash -= (vecForward * 8);
+				Vector vecFwd;
+				AngleVectors( MainViewAngles(nSlot), &vecFwd );
+				vecFlash -= (vecFwd * 8);
 
-				g_pEffects->EnergySplash( vecFlash, -vecForward, false );
+				g_pEffects->EnergySplash( vecFlash, -vecFwd, false );
 
 				// End glow
 				CSmartPtr<CSimpleEmitter> pSimple = CSimpleEmitter::Create( "dust" );

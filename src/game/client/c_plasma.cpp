@@ -475,10 +475,10 @@ void C_Plasma::Update( void )
 			C_BaseEntity *ent = cl_entitylist->GetEnt( 0 );
 			if ( ent )
 			{
-				int index = decalsystem->GetDecalIndexForName( "PlasmaGlowFade" );
-				if ( index >= 0 )
+				int iIndex = decalsystem->GetDecalIndexForName( "PlasmaGlowFade" );
+				if ( iIndex >= 0 )
 				{
-					effects->DecalShoot( index, 0, ent->GetModel(), ent->GetAbsOrigin(), ent->GetAbsAngles(), GetAbsOrigin(), 0, 0 );
+					effects->DecalShoot( iIndex, 0, ent->GetModel(), ent->GetAbsOrigin(), ent->GetAbsAngles(), GetAbsOrigin(), 0, 0 );
 				}
 			}
 		}

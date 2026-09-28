@@ -1790,7 +1790,7 @@ void CNPC_Strider::RunTask( const Task_t *pTask )
    		break;
 
 	case TASK_PLAY_SEQUENCE:
-		if( m_bFastCrouch && pTask->flTaskData == ACT_CROUCH )
+		if( m_bFastCrouch && pTask->flTaskData == (float)ACT_CROUCH )
 		{
 			SetPlaybackRate( 10.0f );
 			if( IsSequenceFinished() )

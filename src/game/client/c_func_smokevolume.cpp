@@ -95,14 +95,14 @@ private:
 		return &m_pSmokeParticleInfos[GetSmokeParticleIndex(x,y,z)];
 	}
 
-	inline void	GetParticleInfoXYZ(int index, int &x, int &y, int &z)
+	inline void	GetParticleInfoXYZ(int iIndex, int &x, int &y, int &z)
 	{
-		Assert( index >= 0 && index < m_xCount * m_yCount * m_zCount );
-		z = index / (m_xCount*m_yCount);
+		Assert( iIndex >= 0 && iIndex < m_xCount * m_yCount * m_zCount );
+		z = iIndex / (m_xCount*m_yCount);
 		int zIndex = z*m_xCount*m_yCount;
-		y = (index - zIndex) / m_xCount;
+		y = (iIndex - zIndex) / m_xCount;
 		int yIndex = y*m_xCount;
-		x = index - zIndex - yIndex;
+		x = iIndex - zIndex - yIndex;
 		Assert( IsValidXYZCoords( x, y, z ) );
 	}
 
@@ -119,10 +119,10 @@ private:
 				    z * m_SpacingRadius * 2 + m_SpacingRadius );
 	}
 
-	inline Vector GetSmokeParticlePosIndex(int index)
+	inline Vector GetSmokeParticlePosIndex(int iIndex)
 	{
 		int x, y, z;
-		GetParticleInfoXYZ(index, x, y, z);
+		GetParticleInfoXYZ(iIndex, x, y, z);
 		return GetSmokeParticlePos(x, y, z);
 	}
 
@@ -601,8 +601,8 @@ void C_FuncSmokeVolume::FillVolume()
 
 #ifdef _DEBUG
 						int testX, testY, testZ;
-						int index = GetSmokeParticleIndex(x,y,z);
-						GetParticleInfoXYZ(index, testX, testY, testZ);
+						int iIndex = GetSmokeParticleIndex(x,y,z);
+						GetParticleInfoXYZ(iIndex, testX, testY, testZ);
 						assert(testX == x && testY == y && testZ == z);
 #endif
 

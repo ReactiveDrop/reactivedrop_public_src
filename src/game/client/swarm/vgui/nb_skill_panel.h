@@ -16,7 +16,7 @@ class StatsBar;
 // == MANAGED_CLASS_DECLARATIONS_END ==
 class CBitmapButton;
 class BriefingTooltip;
-enum ASW_Skill;
+enum ASW_Skill : int;
 
 class CNB_Skill_Panel : public vgui::EditablePanel
 {

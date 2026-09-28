@@ -282,9 +282,9 @@ int C_PlayerResource::GetTeam(int iIndex )
 	}
 }
 
-const char * C_PlayerResource::GetTeamName(int index)
+const char * C_PlayerResource::GetTeamName(int iIndex)
 {
-	C_Team *team = GetGlobalTeam( index );
+	C_Team *team = GetGlobalTeam( iIndex );
 
 	if ( !team )
 		return "Unknown";
@@ -292,9 +292,9 @@ const char * C_PlayerResource::GetTeamName(int index)
 	return team->Get_Name();
 }
 
-int C_PlayerResource::GetTeamScore(int index)
+int C_PlayerResource::GetTeamScore(int iIndex)
 {
-	C_Team *team = GetGlobalTeam( index );
+	C_Team *team = GetGlobalTeam( iIndex );
 
 	if ( !team )
 		return 0;
@@ -302,30 +302,30 @@ int C_PlayerResource::GetTeamScore(int index)
 	return team->Get_Score();
 }
 
-int C_PlayerResource::GetFrags(int index )
+int C_PlayerResource::GetFrags(int iIndex )
 {
 	return 666;
 }
 
-bool C_PlayerResource::IsLocalPlayer(int index)
+bool C_PlayerResource::IsLocalPlayer(int iIndex)
 {
 	C_BasePlayer *pPlayer =	C_BasePlayer::GetLocalPlayer();
 
 	if ( !pPlayer )
 		return false;
 
-	return ( index == pPlayer->entindex() );
+	return ( iIndex == pPlayer->entindex() );
 }
 
 
-bool C_PlayerResource::IsHLTV(int index)
+bool C_PlayerResource::IsHLTV(int iIndex)
 {
-	if ( !IsConnected( index ) )
+	if ( !IsConnected( iIndex ) )
 		return false;
 
 	player_info_t sPlayerInfo;
 	
-	if ( engine->GetPlayerInfo( index, &sPlayerInfo ) )
+	if ( engine->GetPlayerInfo( iIndex, &sPlayerInfo ) )
 	{
 		return sPlayerInfo.ishltv;
 	}
@@ -333,14 +333,14 @@ bool C_PlayerResource::IsHLTV(int index)
 	return false;
 }
 
-bool C_PlayerResource::IsReplay(int index)
+bool C_PlayerResource::IsReplay(int iIndex)
 {
-	if ( !IsConnected( index ) )
+	if ( !IsConnected( iIndex ) )
 		return false;
 
 	player_info_t sPlayerInfo;
 
-	if ( engine->GetPlayerInfo( index, &sPlayerInfo ) )
+	if ( engine->GetPlayerInfo( iIndex, &sPlayerInfo ) )
 	{
 		return sPlayerInfo.isreplay;
 	}
@@ -421,9 +421,9 @@ int	C_PlayerResource::GetHealth( int iIndex )
 	return m_iHealth[iIndex];
 }
 
-const Color &C_PlayerResource::GetTeamColor(int index )
+const Color &C_PlayerResource::GetTeamColor(int iIndex )
 {
-	if ( index < 0 || index >= MAX_TEAMS )
+	if ( iIndex < 0 || iIndex >= MAX_TEAMS )
 	{
 		Assert( false );
 		static Color blah;
@@ -431,7 +431,7 @@ const Color &C_PlayerResource::GetTeamColor(int index )
 	}
 	else
 	{
-		return m_Colors[index];
+		return m_Colors[iIndex];
 	}
 }
 

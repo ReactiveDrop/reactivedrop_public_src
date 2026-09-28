@@ -450,7 +450,7 @@ void CBaseEntity::SendProxy_CellOrigin( const SendProp *pProp, const void *pStru
 		cell[2] = entity->m_cellZ;
 	}
 
-	register int const cellwidth = entity->m_cellwidth; // Load it into a register
+	int const cellwidth = entity->m_cellwidth; // Load it into a register
 
 	Assert( cell[0] == CellFromCoord( cellwidth, v->x ) );
 	Assert( cell[1] == CellFromCoord( cellwidth, v->y ) );
@@ -487,7 +487,7 @@ void CBaseEntity::SendProxy_CellOriginXY( const SendProp *pProp, const void *pSt
 		cell[1] = entity->m_cellY;
 	}
 
-	register int const cellwidth = entity->m_cellwidth; // Load it into a register
+	int const cellwidth = entity->m_cellwidth; // Load it into a register
 
 	Assert( cell[0] == CellFromCoord( cellwidth, v->x ) );
 	Assert( cell[1] == CellFromCoord( cellwidth, v->y ) );
@@ -518,7 +518,7 @@ void CBaseEntity::SendProxy_CellOriginZ( const SendProp *pProp, const void *pStr
 		cell[2] = entity->m_cellZ;
 	}
 
-	register int const cellwidth = entity->m_cellwidth; // Load it into a register
+	int const cellwidth = entity->m_cellwidth; // Load it into a register
 
 	Assert( cell[2] == CellFromCoord( cellwidth, v->z ) );
 
@@ -1387,7 +1387,7 @@ int CBaseEntity::DrawDebugTextOverlays(void)
 			EntityText( offset, tempstr, 0 );
 			offset++;
 
-			register int const cellwidth = m_cellwidth; // Load it into a register
+			int const cellwidth = m_cellwidth; // Load it into a register
 			Vector cellOrigin;
 			cellOrigin.x = CellInCoord( cellwidth, m_cellX, m_vecOrigin->x );
 			cellOrigin.y = CellInCoord( cellwidth, m_cellY, m_vecOrigin->y );
@@ -6943,7 +6943,7 @@ void CBaseEntity::SetCellBits( int cellbits )
 //-----------------------------------------------------------------------------
 void CBaseEntity::UpdateCell()
 {
-	register int const cellwidth = m_cellwidth; // Load it into a register
+	int const cellwidth = m_cellwidth; // Load it into a register
 
 	m_cellX = CellFromCoord( cellwidth, m_vecOrigin.GetX() );
 	m_cellY = CellFromCoord( cellwidth, m_vecOrigin.GetY() );
@@ -7923,7 +7923,7 @@ void CBaseEntity::ComputeStepSimulationNetwork( StepSimulationData *step )
 			}
 
 			// Calculate the cell of this origin
-			register int const cellwidth = m_cellwidth; // Load it into a register
+			int const cellwidth = m_cellwidth; // Load it into a register
 			step->m_networkCell[0] = CellFromCoord( cellwidth, step->m_vecNetworkOrigin[0] );
 			step->m_networkCell[1] = CellFromCoord( cellwidth, step->m_vecNetworkOrigin[1] );
 			step->m_networkCell[2] = CellFromCoord( cellwidth, step->m_vecNetworkOrigin[2] );

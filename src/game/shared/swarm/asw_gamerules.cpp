@@ -3823,7 +3823,7 @@ CBaseStart* CAlienSwarm::GetMarineSpawnPoint(int nMarineProfile /* = -1 */)
 	CBaseStart* pStartEntityCandidate = NULL;
 	
 	CBaseStart* pStartEntity = NULL;
-	while ( pStartEntity = assert_cast< CBaseStart* >( gEntList.FindEntityByClassname( pStartEntity, "info_player_start" ) ) )
+	while ( ( pStartEntity = assert_cast< CBaseStart* >( gEntList.FindEntityByClassname( pStartEntity, "info_player_start" ) ) ) )
 	{
 		if ( pStartEntity->m_bUsed )
 			continue;
@@ -5908,7 +5908,7 @@ bool CAlienSwarm::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 	}
 
 #define SHOULD_COLLIDE( group0, group1, should ) \
-	ASSERT_INVARIANT( group0 <= group1 ); \
+	ASSERT_INVARIANT( ( int )( group0 ) <= ( int )( group1 ) ); \
 	if ( collisionGroup0 == group0 && collisionGroup1 == group1 ) \
 		return should
 #define ALWAYS_COLLIDE( group, should ) \
@@ -6121,7 +6121,7 @@ bool CAlienSwarm::ShouldCollide( int collisionGroup0, int collisionGroup1 )
 	SHOULD_COLLIDE( ASW_COLLISION_GROUP_PARASITE, ASW_COLLISION_GROUP_PARASITE, false );
 
 	// weapons and NPCs don't collide
-	ASSERT_INVARIANT( COLLISION_GROUP_WEAPON <= HL2COLLISION_GROUP_FIRST_NPC && HL2COLLISION_GROUP_FIRST_NPC <= HL2COLLISION_GROUP_LAST_NPC );
+	ASSERT_INVARIANT( ( int )COLLISION_GROUP_WEAPON <= ( int )HL2COLLISION_GROUP_FIRST_NPC && ( int )HL2COLLISION_GROUP_FIRST_NPC <= ( int )HL2COLLISION_GROUP_LAST_NPC );
 	if ( collisionGroup0 == COLLISION_GROUP_WEAPON && (collisionGroup1 >= HL2COLLISION_GROUP_FIRST_NPC && collisionGroup1 <= HL2COLLISION_GROUP_LAST_NPC ) )
 		return false;
 

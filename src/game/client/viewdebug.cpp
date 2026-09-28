@@ -519,7 +519,7 @@ static void OverlayColorRamp( bool bHalfSpace )
 //-----------------------------------------------------------------------------
 // Draws all the debugging info
 //-----------------------------------------------------------------------------
-void CDebugViewRender::Draw3DDebuggingInfo( const CViewSetup &view )
+void CDebugViewRender::Draw3DDebuggingInfo( const CViewSetup &viewSetup )
 {
 	VPROF("CViewRender::Draw3DDebuggingInfo");
 
@@ -537,7 +537,7 @@ void CDebugViewRender::Draw3DDebuggingInfo( const CViewSetup &view )
 //-----------------------------------------------------------------------------
 // Draws all the debugging info
 //-----------------------------------------------------------------------------
-void CDebugViewRender::Draw2DDebuggingInfo( const CViewSetup &view )
+void CDebugViewRender::Draw2DDebuggingInfo( const CViewSetup &viewSetup )
 {
 	// HDRFIXME: Assert NULL rendertarget
 	if ( mat_yuv.GetInt() )
@@ -546,7 +546,7 @@ void CDebugViewRender::Draw2DDebuggingInfo( const CViewSetup &view )
 		pMaterial = materials->FindMaterial( "debug/yuv", TEXTURE_GROUP_OTHER, true );
 		if( !IsErrorMaterial( pMaterial ) )
 		{
-			DrawScreenEffectMaterial( pMaterial, view.x, view.y, view.width, view.height );
+			DrawScreenEffectMaterial( pMaterial, viewSetup.x, viewSetup.y, viewSetup.width, viewSetup.height );
 		}
 	}
 
@@ -556,7 +556,7 @@ void CDebugViewRender::Draw2DDebuggingInfo( const CViewSetup &view )
 		pMaterial = materials->FindMaterial( "debug/hsv", TEXTURE_GROUP_OTHER, true );
 		if( !IsErrorMaterial( pMaterial ) )
 		{
-			DrawScreenEffectMaterial( pMaterial, view.x, view.y, view.width, view.height );
+			DrawScreenEffectMaterial( pMaterial, viewSetup.x, viewSetup.y, viewSetup.width, viewSetup.height );
 		}
 	}
 
@@ -564,7 +564,7 @@ void CDebugViewRender::Draw2DDebuggingInfo( const CViewSetup &view )
 	if ( mat_showlightmappage.GetInt() != -1 )
 	{
 		CLightmapDebugView clientView( assert_cast<CViewRender *>( ::view ) );
-		clientView.Setup( view );
+		clientView.Setup( viewSetup );
 		clientView.Draw();
 	}
 

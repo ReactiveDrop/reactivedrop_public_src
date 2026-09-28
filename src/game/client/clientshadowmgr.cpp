@@ -1173,7 +1173,7 @@ private:
 static CClientShadowMgr s_ClientShadowMgr;
 IClientShadowMgr* g_pClientShadowMgr = &s_ClientShadowMgr;
 
-static void RDMaxDepthTextureShadowsChanged( IConVar *var, const char *pOldValue, float flOldValue )
+void RDMaxDepthTextureShadowsChanged( IConVar *var, const char *pOldValue, float flOldValue )
 {
 	const char *pNewValue = ConVarRef{ var }.GetString();
 	DevMsg( "RE-INITIALIZING SHADOW DEPTH TEXTURES! (%s changed from %s to %s)\n", var->GetName(), pOldValue, pNewValue );
@@ -2420,7 +2420,7 @@ ClientShadowHandle_t CClientShadowMgr::CreateFlashlight( const FlashlightState_t
 	// We don't really need a model entity handle for a projective light source, so use an invalid one.
 	static ClientEntityHandle_t invalidHandle = INVALID_CLIENTENTITY_HANDLE;
 
-	int shadowFlags = SHADOW_FLAGS_FLASHLIGHT | SHADOW_FLAGS_LIGHT_WORLD;
+	int shadowFlags = ( int )SHADOW_FLAGS_FLASHLIGHT | ( int )SHADOW_FLAGS_LIGHT_WORLD;
 	if( lightState.m_bEnableShadows && r_flashlightdepthtexture.GetBool() )
 	{
 		shadowFlags |= SHADOW_FLAGS_USE_DEPTH_TEXTURE;
@@ -2437,7 +2437,7 @@ ClientShadowHandle_t CClientShadowMgr::CreateShadow( ClientEntityHandle_t entity
 {
 	// We don't really need a model entity handle for a projective light source, so use an invalid one.
 	flags &= ~SHADOW_FLAGS_PROJECTED_TEXTURE_TYPE_MASK;
-	flags |= SHADOW_FLAGS_SHADOW | SHADOW_FLAGS_TEXTURE_DIRTY;
+	flags |= ( int )SHADOW_FLAGS_SHADOW | ( int )SHADOW_FLAGS_TEXTURE_DIRTY;
 	ClientShadowHandle_t shadowHandle = CreateProjectedTexture( entity, nEntIndex, flags, pSplitScreenBits );
 
 	IClientRenderable *pRenderable = ClientEntityList().GetClientRenderableFromHandle( entity );
@@ -4695,9 +4695,9 @@ void CClientShadowMgr::UpdateProjectedTextureInternal( ClientShadowHandle_t hand
 		VPROF_BUDGET( "CClientShadowMgr::UpdateProjectedTextureInternal", VPROF_BUDGETGROUP_SHADOW_DEPTH_TEXTURING );
 
 		Assert( ( shadow.m_Flags & SHADOW_FLAGS_SHADOW ) == 0 );
-		ClientShadow_t& shadow = m_Shadows[handle];
+		ClientShadow_t& shadow2 = m_Shadows[handle];
 
-		shadowmgr->EnableShadow( shadow.m_ShadowHandle, true );
+		shadowmgr->EnableShadow( shadow2.m_ShadowHandle, true );
 
 		// FIXME: What's the difference between brush and model shadows for light projectors? Answer: nothing.
 		UpdateBrushShadow( NULL, handle );
@@ -5762,8 +5762,8 @@ void CClientShadowMgr::ComputeShadowDepthTextures( const CViewSetup &viewSetup )
 		}
 
 		// Set depth bias factors specific to this flashlight
-		CMatRenderContextPtr pRenderContext( materials );
-		pRenderContext->SetShadowDepthBiasFactors( flashlightState.m_flShadowSlopeScaleDepthBias, flashlightState.m_flShadowDepthBias );
+		CMatRenderContextPtr pRenderCtx( materials );
+		pRenderCtx->SetShadowDepthBiasFactors( flashlightState.m_flShadowSlopeScaleDepthBias, flashlightState.m_flShadowDepthBias );
 
 		shadowView.m_bRenderFlashlightDepthTranslucents = flashlightState.m_bGlobalLight;
 
@@ -5787,7 +5787,7 @@ static void SetupBonesOnBaseAnimating( C_BaseAnimating *&pBaseAnimating )
 }
 
 
-void CClientShadowMgr::ComputeShadowTextures( const CViewSetup &view, int leafCount, WorldListLeafData_t* pLeafList )
+void CClientShadowMgr::ComputeShadowTextures( const CViewSetup &viewSetup, int leafCount, WorldListLeafData_t* pLeafList )
 {
 	ASSERT_LOCAL_PLAYER_RESOLVABLE();
 	int nSlot = GET_ACTIVE_SPLITSCREEN_SLOT();
@@ -5799,7 +5799,7 @@ void CClientShadowMgr::ComputeShadowTextures( const CViewSetup &view, int leafCo
 
 	MDLCACHE_CRITICAL_SECTION();
 	// First grab all shadow textures we may want to render
-	int nCount = s_VisibleShadowList.FindShadows( &view, leafCount, pLeafList );
+	int nCount = s_VisibleShadowList.FindShadows( &viewSetup, leafCount, pLeafList );
 	if ( nCount == 0 )
 		return;
 
@@ -6308,7 +6308,7 @@ void CClientShadowMgr::ComputeFalloffInfo( const ClientShadow_t& shadow, Vector*
 	pShadowFalloffParams->z = 1.0f/255.0f * shadow.m_FalloffBias;
 }
 
-void CClientShadowMgr::DrawDeferredShadows( const CViewSetup &view, int leafCount, WorldListLeafData_t* pLeafList )
+void CClientShadowMgr::DrawDeferredShadows( const CViewSetup &viewSetup, int leafCount, WorldListLeafData_t* pLeafList )
 {
 	VPROF_BUDGET( __FUNCTION__, VPROF_BUDGETGROUP_SHADOW_RENDERING );
 

@@ -85,7 +85,7 @@ inline _T tokenset_t< _T >::GetTokenI( const char *s ) const
 }
 
 template <class _T>
-inline const char *tokenset_t< _T >::GetNameByToken( _T token ) const
+inline const char *tokenset_t< _T >::GetNameByToken( _T nToken ) const
 {
 	static const char *unknown = "__UNKNOWN__";
 
@@ -93,7 +93,7 @@ inline const char *tokenset_t< _T >::GetNameByToken( _T token ) const
 
 	for ( c = this; c->name; ++c )
 	{
-		if ( c->token == token )
+		if ( c->token == nToken )
 		{
 			return c->name;
 		}

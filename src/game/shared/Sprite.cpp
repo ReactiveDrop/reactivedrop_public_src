@@ -279,9 +279,9 @@ void CSprite::ComputeWorldSpaceSurroundingBox( Vector *pVecWorldMins, Vector *pV
 //-----------------------------------------------------------------------------
 void CSprite::SetModel( const char *szModelName )
 {
-	int index = modelinfo->GetModelIndex( szModelName );
-	const model_t *model = modelinfo->GetModel( index );
-	if ( model && modelinfo->GetModelType( model ) != mod_sprite )
+	int iIndex = modelinfo->GetModelIndex( szModelName );
+	const model_t *pModel = modelinfo->GetModel( iIndex );
+	if ( pModel && modelinfo->GetModelType( pModel ) != mod_sprite )
 	{
 		Msg( "Setting CSprite to non-sprite model %s\n", szModelName?szModelName:"NULL" );
 	}

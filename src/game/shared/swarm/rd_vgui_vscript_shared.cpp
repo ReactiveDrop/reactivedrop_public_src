@@ -632,6 +632,7 @@ HSCRIPT CRD_VGui_VScript::CreateButton()
 	{
 		int j = m_ButtonPanels.AddToTail();
 		Assert( i == j );
+		( void )i;
 		m_ButtonPanels[j] = new CRD_VGui_VScript_Button_Panel( m_hButtonPanelParent, "VScriptButtonPanel", pButton );
 	}
 

@@ -289,7 +289,7 @@ void CFPSPanel::Paint()
 				flPeakTime = m_pServerTimes[j];
 			}
 		}
-		flTotalTime /= SERVER_TIME_HISTORY;
+		flTotalTime /= (float)SERVER_TIME_HISTORY;
 
 		unsigned char ucColor[3];
 		int nFps = static_cast<int>( 1.0f / ( flServerTime * 0.001f ) );

@@ -1066,10 +1066,10 @@ int CBaseCombatWeapon::UpdateClientData( CBasePlayer *pPlayer )
 // Purpose: 
 // Input  : index - 
 //-----------------------------------------------------------------------------
-void CBaseCombatWeapon::SetViewModelIndex( int index )
+void CBaseCombatWeapon::SetViewModelIndex( int iIndex )
 {
-	Assert( index >= 0 && index < MAX_VIEWMODELS );
-	m_nViewModelIndex = index;
+	Assert( iIndex >= 0 && iIndex < MAX_VIEWMODELS );
+	m_nViewModelIndex = iIndex;
 }
 
 //-----------------------------------------------------------------------------

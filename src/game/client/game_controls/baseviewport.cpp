@@ -856,9 +856,9 @@ void CBaseViewport::LoadHudLayout( void )
 		{
 			AddSubKeyNamed( pConditions, "if_split_screen_active" );
 
-			ConVarRef ss_verticalsplit( "ss_verticalsplit" );
+			ConVarRef ssVerticalSplitRef( "ss_verticalsplit" );
 			
-			if ( ss_verticalsplit.IsValid() && ss_verticalsplit.GetBool() )
+			if ( ssVerticalSplitRef.IsValid() && ssVerticalSplitRef.GetBool() )
 			{
 				AddSubKeyNamed( pConditions, "if_split_screen_vertical" );
 

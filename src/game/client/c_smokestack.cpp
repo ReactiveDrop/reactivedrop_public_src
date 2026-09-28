@@ -363,7 +363,7 @@ void C_SmokeStack::Update(float fTimeDelta)
 
 	// Setup the twist matrix.
 	float flTwist = (m_flTwist * (M_PI_F * 2.f) / 360.0f) * Helper_GetFrameTime();
-	if( m_bTwist = !!flTwist )
+	if( ( m_bTwist = !!flTwist ) )
 	{
 		m_TwistMat[0][0] =  cos(flTwist);
 		m_TwistMat[0][1] =  sin(flTwist);

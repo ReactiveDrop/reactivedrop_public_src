@@ -147,28 +147,31 @@
 #define VPROF_LEVEL 0
 #endif
 
-#define	VPROF_0(name,group,assertAccounted,budgetFlags)	CVProfScope VProf_(name, 0, group, assertAccounted, budgetFlags);
+// The scope object needs a unique name per expansion: nesting a budget inside the
+// braces of an enclosing budget is a common idiom in this code base and would
+// otherwise shadow the outer scope object.
+#define	VPROF_0(name,group,assertAccounted,budgetFlags)	CVProfScope UNIQUE_ID(name, 0, group, assertAccounted, budgetFlags);
 
 #if VPROF_LEVEL > 0 
-#define	VPROF_1(name,group,assertAccounted,budgetFlags)	CVProfScope VProf_(name, 1, group, assertAccounted, budgetFlags);
+#define	VPROF_1(name,group,assertAccounted,budgetFlags)	CVProfScope UNIQUE_ID(name, 1, group, assertAccounted, budgetFlags);
 #else
 #define	VPROF_1(name,group,assertAccounted,budgetFlags)	((void)0)
 #endif
 
 #if VPROF_LEVEL > 1 
-#define	VPROF_2(name,group,assertAccounted,budgetFlags)	CVProfScope VProf_(name, 2, group, assertAccounted, budgetFlags);
+#define	VPROF_2(name,group,assertAccounted,budgetFlags)	CVProfScope UNIQUE_ID(name, 2, group, assertAccounted, budgetFlags);
 #else
 #define	VPROF_2(name,group,assertAccounted,budgetFlags)	((void)0)
 #endif
 
 #if VPROF_LEVEL > 2 
-#define	VPROF_3(name,group,assertAccounted,budgetFlags)	CVProfScope VProf_(name, 3, group, assertAccounted, budgetFlags);
+#define	VPROF_3(name,group,assertAccounted,budgetFlags)	CVProfScope UNIQUE_ID(name, 3, group, assertAccounted, budgetFlags);
 #else
 #define	VPROF_3(name,group,assertAccounted,budgetFlags)	((void)0)
 #endif
 
 #if VPROF_LEVEL > 3 
-#define	VPROF_4(name,group,assertAccounted,budgetFlags)	CVProfScope VProf_(name, 4, group, assertAccounted, budgetFlags);
+#define	VPROF_4(name,group,assertAccounted,budgetFlags)	CVProfScope UNIQUE_ID(name, 4, group, assertAccounted, budgetFlags);
 #else
 #define	VPROF_4(name,group,assertAccounted,budgetFlags)	((void)0)
 #endif

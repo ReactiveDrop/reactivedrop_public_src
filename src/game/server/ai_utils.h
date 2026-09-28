@@ -76,7 +76,7 @@ public:
 
 	bool IsMarkSet()
 	{
-		return ( m_flMarkTolerance != NO_MARK );
+		return ( m_flMarkTolerance != (float)NO_MARK );
 	}
 
 	bool TargetMoved( const Vector &v )

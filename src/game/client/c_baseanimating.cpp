@@ -2501,15 +2501,15 @@ void C_BaseAnimating::CalculateIKLocks( float currentTime )
 	partition->SuppressLists( curSuppressed, true );
 }
 
-bool C_BaseAnimating::GetPoseParameterRange( int index, float &minValue, float &maxValue )
+bool C_BaseAnimating::GetPoseParameterRange( int iIndex, float &minValue, float &maxValue )
 {
 	CStudioHdr *pStudioHdr = GetModelPtr();
 
 	if (pStudioHdr)
 	{
-		if (index >= 0 && index < pStudioHdr->GetNumPoseParameters())
+		if (iIndex >= 0 && iIndex < pStudioHdr->GetNumPoseParameters())
 		{
-			const mstudioposeparamdesc_t &pose = pStudioHdr->pPoseParameter( index );
+			const mstudioposeparamdesc_t &pose = pStudioHdr->pPoseParameter( iIndex );
 			minValue = pose.start;
 			maxValue = pose.end;
 			return true;
@@ -2532,9 +2532,9 @@ void C_BaseAnimating::ControlMouth( CStudioHdr *pstudiohdr )
 	if ( !pstudiohdr )
 		  return;
 
-	int index = LookupPoseParameter( pstudiohdr, LIPSYNC_POSEPARAM_NAME );
+	int iIndex = LookupPoseParameter( pstudiohdr, LIPSYNC_POSEPARAM_NAME );
 
-	if ( index != -1 )
+	if ( iIndex != -1 )
 	{
 		float value = GetMouth()->mouthopen / 64.0;
 
@@ -2544,15 +2544,15 @@ void C_BaseAnimating::ControlMouth( CStudioHdr *pstudiohdr )
 			 value = 1.0;
 
 		float start, end;
-		GetPoseParameterRange( index, start, end );
+		GetPoseParameterRange( iIndex, start, end );
 
 		value = (1.0 - value) * start + value * end;
 
 		//Adrian - Set the pose parameter value. 
 		//It has to be called "mouth".
-		SetPoseParameter( pstudiohdr, index, value ); 
+		SetPoseParameter( pstudiohdr, iIndex, value ); 
 		// Reset interpolation here since the client is controlling this rather than the server...
-		m_iv_flPoseParameter.SetHistoryValuesForItem( index, raw );
+		m_iv_flPoseParameter.SetHistoryValuesForItem( iIndex, raw );
 	}
 }
 
@@ -4256,20 +4256,20 @@ void C_BaseAnimating::FireEvent( const Vector& origin, const QAngle& angles, int
 
 	case AE_CL_ENABLE_BODYGROUP:
 		{
-			int index = FindBodygroupByName( options );
-			if ( index >= 0 )
+			int iIndex = FindBodygroupByName( options );
+			if ( iIndex >= 0 )
 			{
-				SetBodygroup( index, 1 );
+				SetBodygroup( iIndex, 1 );
 			}
 		}
 		break;
 
 	case AE_CL_DISABLE_BODYGROUP:
 		{
-			int index = FindBodygroupByName( options );
-			if ( index >= 0 )
+			int iIndex = FindBodygroupByName( options );
+			if ( iIndex >= 0 )
 			{
-				SetBodygroup( index, 0 );
+				SetBodygroup( iIndex, 0 );
 			}
 		}
 		break;
@@ -4299,10 +4299,10 @@ void C_BaseAnimating::FireEvent( const Vector& origin, const QAngle& angles, int
 				value = atoi( token );
 			}
 
-			int index = FindBodygroupByName( szBodygroupName );
-			if ( index >= 0 )
+			int iIndex = FindBodygroupByName( szBodygroupName );
+			if ( iIndex >= 0 )
 			{
-				SetBodygroup( index, value );
+				SetBodygroup( iIndex, value );
 			}
 		}
 		break;
@@ -4963,8 +4963,8 @@ C_BaseAnimating *C_BaseAnimating::CreateRagdollCopy()
 
 	TermRopes();
 
-	const model_t *model = GetModel();
-	const char *pModelName = modelinfo->GetModelName( model );
+	const model_t *pModel = GetModel();
+	const char *pModelName = modelinfo->GetModelName( pModel );
 
 	if ( pRagdoll->InitializeAsClientEntity( pModelName, false ) == false )
 	{

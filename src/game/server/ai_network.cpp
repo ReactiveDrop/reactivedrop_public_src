@@ -292,7 +292,7 @@ int	CAI_Network::NearestNodeToPoint( CAI_BaseNPC *pNPC, const Vector &vecOrigin,
 
 		if ( cachedNode != NO_NODE && ( !pFilter || pFilter->IsValid( m_pAInode[cachedNode] ) ) )
 		{
-			m_NearestCache[cachePos].expiration	= gpGlobals->curtime + NEARNODE_CACHE_LIFE;
+			m_NearestCache[cachePos].expiration	= gpGlobals->curtime + (float)NEARNODE_CACHE_LIFE;
 			return cachedNode;
 		}
 	}
@@ -522,7 +522,7 @@ void CAI_Network::SetCachedNearestNode(const Vector &checkPos, int nodeID, Hull_
 	m_NearestCache[m_iNearestCacheNext].vTestPosition	= checkPos;
 	m_NearestCache[m_iNearestCacheNext].node			= nodeID;
 	m_NearestCache[m_iNearestCacheNext].hull			= nHull;
-	m_NearestCache[m_iNearestCacheNext].expiration		= gpGlobals->curtime + NEARNODE_CACHE_LIFE;
+	m_NearestCache[m_iNearestCacheNext].expiration		= gpGlobals->curtime + (float)NEARNODE_CACHE_LIFE;
 
 	m_iNearestCacheNext--;
 	if ( m_iNearestCacheNext < 0 )

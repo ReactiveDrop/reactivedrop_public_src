@@ -446,13 +446,13 @@ void CampaignPanel::OnThink()
 		int x, y;
 		m_pCurrentLocationImage->GetPos( x, y );		// location of red arrows
 
-		C_ASW_Campaign_Save *pSave = pGameResource->GetCampaignSave();
-		if ( pSave )
+		C_ASW_Campaign_Save *pCampaignSave = pGameResource->GetCampaignSave();
+		if ( pCampaignSave )
 		{
 			// check if there's a timer on
-			if ( pSave->m_fVoteEndTime != 0 )
+			if ( pCampaignSave->m_fVoteEndTime != 0 )
 			{
-				int iTimeLeft = pSave->m_fVoteEndTime - gpGlobals->curtime;
+				int iTimeLeft = pCampaignSave->m_fVoteEndTime - gpGlobals->curtime;
 				if ( iTimeLeft > 0 )
 				{
 					char buffer[8];
@@ -472,7 +472,7 @@ void CampaignPanel::OnThink()
 			}
 			if ( GetCampaignInfo() )
 			{
-				const RD_Campaign_Mission_t *pMission = GetCampaignInfo()->GetMission( pSave->m_iCurrentPosition );
+				const RD_Campaign_Mission_t *pMission = GetCampaignInfo()->GetMission( pCampaignSave->m_iCurrentPosition );
 				if ( pMission )
 				{
 					int iMapX, iMapY, iMapW, iMapT;
@@ -554,12 +554,12 @@ void CampaignPanel::OnThink()
 				if ( !pMission )
 					return;
 
-				CASW_Campaign_Save *pSave = ASWGameRules()->GetCampaignSave();
-				if ( !pSave )
+				CASW_Campaign_Save *pCampaignSave = ASWGameRules()->GetCampaignSave();
+				if ( !pCampaignSave )
 					return;
 
 				// if mission is already completed, just show it as a grey label
-				bool bComplete = ( pSave->m_MissionComplete[i] != 0 ) || i <= 0;
+				bool bComplete = ( pCampaignSave->m_MissionComplete[i] != 0 ) || i <= 0;
 
 				if ( !bComplete )
 					m_pMouseOverGlowLabel->SetVisible( true );

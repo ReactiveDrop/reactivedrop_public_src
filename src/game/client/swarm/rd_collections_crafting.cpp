@@ -288,11 +288,6 @@ void CRD_Crafting_Item_Grid::PerformLayout()
 
 		m_Items[i]->SetPos( col * eachWide, row * eachTall + yOffset );
 
-		int up = col + ( row - 1 ) * perRow;
-		int down = col + ( row + 1 ) * perRow;
-		int left = col == 0 ? -1 : col - 1 + row * perRow;
-		int right = col == perRow - 1 ? -1 : col + 1 + row * perRow;
-
 		// TODO: set up navigation
 	}
 }

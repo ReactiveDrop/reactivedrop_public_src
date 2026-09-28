@@ -1677,15 +1677,15 @@ bool C_BaseFlex::CheckSceneEventCompletion( CSceneEventInfo *info, float current
 	return true;
 }
 
-void C_BaseFlex::SetFlexWeight( LocalFlexController_t index, float value )
+void C_BaseFlex::SetFlexWeight( LocalFlexController_t iIndex, float value )
 {
-	if (index >= 0 && index < GetNumFlexControllers())
+	if (iIndex >= 0 && iIndex < GetNumFlexControllers())
 	{
 		CStudioHdr *pstudiohdr = GetModelPtr( );
 		if (! pstudiohdr)
 			return;
 
-		mstudioflexcontroller_t *pflexcontroller = pstudiohdr->pFlexcontroller( index );
+		mstudioflexcontroller_t *pflexcontroller = pstudiohdr->pFlexcontroller( iIndex );
 
 		if (pflexcontroller->max != pflexcontroller->min)
 		{
@@ -1694,26 +1694,26 @@ void C_BaseFlex::SetFlexWeight( LocalFlexController_t index, float value )
 		}
 
 		Assert( IsFinite( value ) );
-		m_flexWeight[ index ] = value;
+		m_flexWeight[ iIndex ] = value;
 	}
 }
 
-float C_BaseFlex::GetFlexWeight( LocalFlexController_t index )
+float C_BaseFlex::GetFlexWeight( LocalFlexController_t iIndex )
 {
-	if (index >= 0 && index < GetNumFlexControllers())
+	if (iIndex >= 0 && iIndex < GetNumFlexControllers())
 	{
 		CStudioHdr *pstudiohdr = GetModelPtr( );
 		if (! pstudiohdr)
 			return 0;
 
-		mstudioflexcontroller_t *pflexcontroller = pstudiohdr->pFlexcontroller( index );
+		mstudioflexcontroller_t *pflexcontroller = pstudiohdr->pFlexcontroller( iIndex );
 
 		if (pflexcontroller->max != pflexcontroller->min)
 		{
-			return m_flexWeight[index] * (pflexcontroller->max - pflexcontroller->min) + pflexcontroller->min;
+			return m_flexWeight[iIndex] * (pflexcontroller->max - pflexcontroller->min) + pflexcontroller->min;
 		}
 				
-		return m_flexWeight[index];
+		return m_flexWeight[iIndex];
 	}
 	return 0.0;
 }
@@ -1882,8 +1882,8 @@ int C_BaseFlex::FlexControllerLocalToGlobal( const flexsettinghdr_t *pSettinghdr
 	FS_LocalToGlobal_t& result = m_LocalToGlobal[ idx ];
 	// Validate lookup
 	Assert( result.m_nCount != 0 && key < result.m_nCount );
-	int index = result.m_Mapping[ key ];
-	return index;
+	int iIndex = result.m_Mapping[ key ];
+	return iIndex;
 }
 
 //-----------------------------------------------------------------------------
@@ -1924,11 +1924,11 @@ void C_BaseFlex::AddFlexSetting( float *pGlobalFlexWeight, const char *expr, flo
 	{
 		// Translate to local flex controller
 		// this is translating from the settings's local index to the models local index
-		int index = FlexControllerLocalToGlobal( pSettinghdr, pWeights->key );
+		int iIndex = FlexControllerLocalToGlobal( pSettinghdr, pWeights->key );
 
 		// blend scaled weighting in to total
 		float s = clamp( scale * pWeights->influence, 0.0f, 1.0f );
-		pGlobalFlexWeight[index] = pGlobalFlexWeight[index] * (1.0f - s) + pWeights->weight * s;
+		pGlobalFlexWeight[iIndex] = pGlobalFlexWeight[iIndex] * (1.0f - s) + pWeights->weight * s;
 	}
 }
 

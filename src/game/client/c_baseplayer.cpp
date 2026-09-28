@@ -2071,11 +2071,11 @@ bool C_BasePlayer::Simulate()
 // Purpose: 
 // Output : CBaseViewModel
 //-----------------------------------------------------------------------------
-C_BaseViewModel *C_BasePlayer::GetViewModel( int index /*= 0*/ )
+C_BaseViewModel *C_BasePlayer::GetViewModel( int iIndex /*= 0*/ )
 {
-	Assert( index >= 0 && index < MAX_VIEWMODELS );
+	Assert( iIndex >= 0 && iIndex < MAX_VIEWMODELS );
 
-	C_BaseViewModel *vm = m_hViewModel[ index ];
+	C_BaseViewModel *vm = m_hViewModel[ iIndex ];
 	
 	if ( GetObserverMode() == OBS_MODE_IN_EYE )
 	{
@@ -2084,7 +2084,7 @@ C_BaseViewModel *C_BasePlayer::GetViewModel( int index /*= 0*/ )
 		// get the targets viewmodel unless the target is an observer itself
 		if ( target && target != this && !target->IsObserver() )
 		{
-			vm = target->GetViewModel( index );
+			vm = target->GetViewModel( iIndex );
 		}
 	}
 
@@ -2493,7 +2493,7 @@ void C_BasePlayer::RecvProxy_NonLocalCellOriginXY( const CRecvProxyData *pData, 
 	player->m_vecCellOrigin.x = pData->m_Value.m_Vector[0];
 	player->m_vecCellOrigin.y = pData->m_Value.m_Vector[1];
 
-	register int const cellwidth = player->m_cellwidth; // Load it into a register
+	int const cellwidth = player->m_cellwidth; // Load it into a register
 	((float*)pOut)[0] = CoordFromCell( cellwidth, player->m_cellX, pData->m_Value.m_Vector[0] );
 	((float*)pOut)[1] = CoordFromCell( cellwidth, player->m_cellY, pData->m_Value.m_Vector[1] );
 }
@@ -2504,7 +2504,7 @@ void C_BasePlayer::RecvProxy_NonLocalCellOriginZ( const CRecvProxyData *pData, v
 
 	player->m_vecCellOrigin.z = pData->m_Value.m_Float;
 
-	register int const cellwidth = player->m_cellwidth; // Load it into a register
+	int const cellwidth = player->m_cellwidth; // Load it into a register
 	*((float*)pOut) = CoordFromCell( cellwidth, player->m_cellZ, pData->m_Value.m_Float );
 }
 

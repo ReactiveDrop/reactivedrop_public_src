@@ -70,13 +70,13 @@ void C_TestTraceline::DrawCube( Vector& center, unsigned char* pColor )
 	Vector facePoints[8];
 	Vector bmins, bmaxs;
 
-	bmins[0] = center[0] - CUBE_SIZE;
-	bmins[1] = center[1] - CUBE_SIZE;
-	bmins[2] = center[2] - CUBE_SIZE;
+	bmins[0] = center[0] - (float)CUBE_SIZE;
+	bmins[1] = center[1] - (float)CUBE_SIZE;
+	bmins[2] = center[2] - (float)CUBE_SIZE;
 
-	bmaxs[0] = center[0] + CUBE_SIZE;
-	bmaxs[1] = center[1] + CUBE_SIZE;
-	bmaxs[2] = center[2] + CUBE_SIZE;
+	bmaxs[0] = center[0] + (float)CUBE_SIZE;
+	bmaxs[1] = center[1] + (float)CUBE_SIZE;
+	bmaxs[2] = center[2] + (float)CUBE_SIZE;
 
 	facePoints[0][0] = bmins[0];
 	facePoints[0][1] = bmins[1];

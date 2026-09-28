@@ -2048,6 +2048,7 @@ void MainMenu::OnHoIAFTop10ScoresDownloaded( LeaderboardScoresDownloaded_t *pPar
 		{
 			bool bOK = SteamUserStats()->GetDownloadedLeaderboardEntry( pParam->m_hSteamLeaderboardEntries, i, &s_HoIAFLeaderboardEntryCache[i], reinterpret_cast< int32 * >( &s_HoIAFLeaderboardDetailsCache[i] ), sizeof( s_HoIAFLeaderboardDetailsCache[i] ) / sizeof( int32 ) );
 			Assert( bOK );
+			( void )bOK;
 			Assert( s_HoIAFLeaderboardEntryCache[i].m_cDetails == sizeof( s_HoIAFLeaderboardDetailsCache[i] ) / sizeof( int32 ) );
 
 			m_pTopLeaderboardEntries[i]->SetFromEntry( s_HoIAFLeaderboardEntryCache[i], s_HoIAFLeaderboardDetailsCache[i] );

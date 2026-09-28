@@ -422,7 +422,7 @@ bool Beam_t::ShouldDraw( void )
 extern bool g_bRenderingScreenshot;
 extern ConVar r_drawviewmodel;
 
-int Beam_t::DrawModel( int flags, const RenderableInstance_t &instance )
+int Beam_t::DrawModel( int nFlags, const RenderableInstance_t &instance )
 {
 
 

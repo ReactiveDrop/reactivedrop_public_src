@@ -35,7 +35,7 @@
 	ENUM_ITEM( SPARE, "swarm/SkillButtons/Spare", "#asw_points", "#asw_points_desc", 99 )
 
 // skills
-enum ASW_Skill
+enum ASW_Skill : int
 {
 	ASW_MARINE_SKILL_INVALID = -1,
 

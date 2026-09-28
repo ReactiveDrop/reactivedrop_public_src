@@ -166,11 +166,11 @@ void CASW_Weapon_Sentry::ClientThink( void )
 		bool bSentryActive = ( pMarine->GetActiveASWWeapon() == this );
 		if ( bSentryActive && m_flNextDeployCheckThink < gpGlobals->curtime )
 		{
-			CASW_Marine *pMarine = GetMarine();
-			if (pMarine && pMarine->GetActiveASWWeapon() == this )
+			CASW_Marine *pMarine2 = GetMarine();
+			if (pMarine2 && pMarine2->GetActiveASWWeapon() == this )
 			{
 				m_bDisplayValid = FindValidSentrySpot();
-				pMarine->SetSentryBuildDisplayEnabled( m_bDisplayValid );
+				pMarine2->SetSentryBuildDisplayEnabled( m_bDisplayValid );
 			}
 
 			m_flNextDeployCheckThink = gpGlobals->curtime + 0.2;

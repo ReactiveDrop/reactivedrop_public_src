@@ -1812,7 +1812,7 @@ public:
 		m_bAvoidObstacles( bAvoidObstacles ),
 		m_pRoute( NULL )
 	{
-		COMPILE_TIME_ASSERT( bits_BUILD_GROUND == bits_CAP_MOVE_GROUND && bits_BUILD_FLY == bits_CAP_MOVE_FLY && bits_BUILD_JUMP == bits_CAP_MOVE_JUMP && bits_BUILD_CLIMB == bits_CAP_MOVE_CLIMB && bits_BUILD_CRAWL == bits_CAP_MOVE_CRAWL );
+		COMPILE_TIME_ASSERT( ( int )bits_BUILD_GROUND == bits_CAP_MOVE_GROUND && ( int )bits_BUILD_FLY == bits_CAP_MOVE_FLY && ( int )bits_BUILD_JUMP == bits_CAP_MOVE_JUMP && ( int )bits_BUILD_CLIMB == bits_CAP_MOVE_CLIMB && ( int )bits_BUILD_CRAWL == bits_CAP_MOVE_CRAWL );
 	}
 
 	bool IsValid( CAI_Node *pNode )

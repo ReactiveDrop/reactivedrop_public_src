@@ -14,6 +14,7 @@
 #include "asw_info_message_shared.h"
 #include "basemultiplayerplayer.h"
 #include "rd_inventory_shared.h"
+#include "rd_inventory_command.h"
 #include "info_player_start.h"
 
 class CASW_Inhabitable_NPC;

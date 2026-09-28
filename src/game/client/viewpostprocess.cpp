@@ -2093,19 +2093,19 @@ struct MotionBlurHistory_t
 	float m_flNoRotationalMotionBlurUntil;
 };
 
-void DoImageSpaceMotionBlur( const CViewSetup &view )
+void DoImageSpaceMotionBlur( const CViewSetup &viewSetup )
 {
-	if ( ( !mat_motion_blur_enabled.GetInt() ) || ( view.m_nMotionBlurMode == MOTION_BLUR_DISABLE ) )
+	if ( ( !mat_motion_blur_enabled.GetInt() ) || ( viewSetup.m_nMotionBlurMode == MOTION_BLUR_DISABLE ) )
 	{
 		return;
 	}
 
-	int x = view.x;
-	int y = view.y;
-	int w = view.width;
-	int h = view.height;
+	int x = viewSetup.x;
+	int y = viewSetup.y;
+	int w = viewSetup.width;
+	int h = viewSetup.height;
 
-	bool bSFMBlur = ( view.m_nMotionBlurMode == MOTION_BLUR_SFM );
+	bool bSFMBlur = ( viewSetup.m_nMotionBlurMode == MOTION_BLUR_SFM );
 
 	//======================================================================================================//
 	// Get these convars here to make it easier to remove them later and to default each client differently //
@@ -2142,20 +2142,20 @@ void DoImageSpaceMotionBlur( const CViewSetup &view )
 			history.m_flLastTimeUpdate = 0.0f;											// Don't care about these, but zero them out
 			history.m_flNoRotationalMotionBlurUntil = 0.0f;								//
 
-			flTimeElapsed = view.m_flShutterTime;
+			flTimeElapsed = viewSetup.m_flShutterTime;
 
-			history.m_vPreviousPositon[0] = view.m_vShutterOpenPosition.x;				//
-			history.m_vPreviousPositon[1] = view.m_vShutterOpenPosition.y;				// Slam "previous" values to shutter open values
-			history.m_vPreviousPositon[2] = view.m_vShutterOpenPosition.z;				//
-			AngleMatrix( view.m_shutterOpenAngles, history.m_mPreviousFrameBasisVectors );//
+			history.m_vPreviousPositon[0] = viewSetup.m_vShutterOpenPosition.x;				//
+			history.m_vPreviousPositon[1] = viewSetup.m_vShutterOpenPosition.y;				// Slam "previous" values to shutter open values
+			history.m_vPreviousPositon[2] = viewSetup.m_vShutterOpenPosition.z;				//
+			AngleMatrix( viewSetup.m_shutterOpenAngles, history.m_mPreviousFrameBasisVectors );//
 
-			history.m_flPreviousPitch = view.m_shutterOpenAngles[PITCH];					// Get "previous" pitch & wrap to +-180
+			history.m_flPreviousPitch = viewSetup.m_shutterOpenAngles[PITCH];					// Get "previous" pitch & wrap to +-180
 			while ( history.m_flPreviousPitch > 180.0f )
 				history.m_flPreviousPitch -= 360.0f;
 			while ( history.m_flPreviousPitch < -180.0f )
 				history.m_flPreviousPitch += 360.0f;
 
-			history.m_flPreviousYaw = view.m_shutterOpenAngles[YAW];						// Get "previous" yaw & wrap to +-180
+			history.m_flPreviousYaw = viewSetup.m_shutterOpenAngles[YAW];						// Get "previous" yaw & wrap to +-180
 			while ( history.m_flPreviousYaw > 180.0f )
 				history.m_flPreviousYaw -= 360.0f;
 			while ( history.m_flPreviousYaw < -180.0f )
@@ -2170,9 +2170,9 @@ void DoImageSpaceMotionBlur( const CViewSetup &view )
 		//===================================//
 		// Get current pitch & wrap to +-180 //
 		//===================================//
-		float flCurrentPitch = view.angles[PITCH];
+		float flCurrentPitch = viewSetup.angles[PITCH];
 		if ( bSFMBlur )
-			flCurrentPitch = view.m_shutterCloseAngles[PITCH];
+			flCurrentPitch = viewSetup.m_shutterCloseAngles[PITCH];
 		while ( flCurrentPitch > 180.0f )
 			flCurrentPitch -= 360.0f;
 		while ( flCurrentPitch < -180.0f )
@@ -2181,9 +2181,9 @@ void DoImageSpaceMotionBlur( const CViewSetup &view )
 		//=================================//
 		// Get current yaw & wrap to +-180 //
 		//=================================//
-		float flCurrentYaw = view.angles[YAW];
+		float flCurrentYaw = viewSetup.angles[YAW];
 		if ( bSFMBlur )
-			flCurrentYaw = view.m_shutterCloseAngles[YAW];
+			flCurrentYaw = viewSetup.m_shutterCloseAngles[YAW];
 		while ( flCurrentYaw > 180.0f )
 			flCurrentYaw -= 360.0f;
 		while ( flCurrentYaw < -180.0f )
@@ -2202,11 +2202,11 @@ void DoImageSpaceMotionBlur( const CViewSetup &view )
 
 		if ( bSFMBlur )
 		{
-			AngleMatrix( view.m_shutterCloseAngles, mCurrentBasisVectors );
+			AngleMatrix( viewSetup.m_shutterCloseAngles, mCurrentBasisVectors );
 		}
 		else
 		{
-			AngleMatrix( view.angles, mCurrentBasisVectors );
+			AngleMatrix( viewSetup.angles, mCurrentBasisVectors );
 		}
 
 
@@ -2217,13 +2217,13 @@ void DoImageSpaceMotionBlur( const CViewSetup &view )
 		//===========================================================================//
 		// Get current position (shutter close time when SFM is driving motion blur) //
 		//===========================================================================//
-		Vector vCurrentPosition = view.origin;
+		Vector vCurrentPosition = viewSetup.origin;
 
 		if ( bSFMBlur )
 		{
-			vCurrentPosition[0] = view.m_vShutterClosePosition.x;
-			vCurrentPosition[1] = view.m_vShutterClosePosition.y;
-			vCurrentPosition[2] = view.m_vShutterClosePosition.z;
+			vCurrentPosition[0] = viewSetup.m_vShutterClosePosition.x;
+			vCurrentPosition[1] = viewSetup.m_vShutterClosePosition.y;
+			vCurrentPosition[2] = viewSetup.m_vShutterClosePosition.z;
 		}
 
 		//===============================================================//
@@ -2270,8 +2270,8 @@ void DoImageSpaceMotionBlur( const CViewSetup &view )
 			// Normal update path //
 			//====================//
 			// Compute horizontal and vertical fov
-			float flHorizontalFov = view.fov;
-			float flVerticalFov = ( view.m_flAspectRatio <= 0.0f ) ? ( view.fov ) : ( view.fov  / view.m_flAspectRatio );
+			float flHorizontalFov = viewSetup.fov;
+			float flVerticalFov = ( viewSetup.m_flAspectRatio <= 0.0f ) ? ( viewSetup.fov ) : ( viewSetup.fov  / viewSetup.m_flAspectRatio );
 			//engine->Con_NPrintf( 2, "Horizontal Fov: %6.2f   Vertical Fov: %6.2f", flHorizontalFov, flVerticalFov );
 
 			//=====================//
@@ -2606,7 +2606,7 @@ static inline bool SetMaterialVarInt( IMaterial* pMat, const char* pVarName, int
 	return bFound;
 }
 
-void DoDepthOfField( const CViewSetup &view )
+void DoDepthOfField( const CViewSetup &viewSetup )
 {
 	if ( !IsDepthOfFieldEnabled() )
 	{
@@ -2614,7 +2614,7 @@ void DoDepthOfField( const CViewSetup &view )
 	}
 
 	// Copy from backbuffer to _rt_FullFrameFB
-	UpdateScreenEffectTexture( 0, view.x, view.y, view.width, view.height, false ); // Do we need to check if we already did this?
+	UpdateScreenEffectTexture( 0, viewSetup.x, viewSetup.y, viewSetup.width, viewSetup.height, false ); // Do we need to check if we already did this?
 
 	CMatRenderContextPtr pRenderContext( materials );
 
@@ -2681,19 +2681,19 @@ void DoDepthOfField( const CViewSetup &view )
 	if ( pMatDOF == NULL )
 		return;
 
-	SetMaterialVarFloat( pMatDOF, "$nearPlane", view.zNear );
-	SetMaterialVarFloat( pMatDOF, "$farPlane", view.zFar );
+	SetMaterialVarFloat( pMatDOF, "$nearPlane", viewSetup.zNear );
+	SetMaterialVarFloat( pMatDOF, "$farPlane", viewSetup.zFar );
 
 	// Only SFM drives this bool at the moment...
-	if ( view.m_bDoDepthOfField )
+	if ( viewSetup.m_bDoDepthOfField )
 	{
-		SetMaterialVarFloat( pMatDOF, "$nearBlurDepth", view.m_flNearBlurDepth );
-		SetMaterialVarFloat( pMatDOF, "$nearFocusDepth", view.m_flNearFocusDepth );
-		SetMaterialVarFloat( pMatDOF, "$farFocusDepth", view.m_flFarFocusDepth );
-		SetMaterialVarFloat( pMatDOF, "$farBlurDepth", view.m_flFarBlurDepth );
-		SetMaterialVarFloat( pMatDOF, "$nearBlurRadius", view.m_flNearBlurRadius );
-		SetMaterialVarFloat( pMatDOF, "$farBlurRadius", view.m_flFarBlurRadius );
-		SetMaterialVarInt( pMatDOF, "$quality", view.m_nDoFQuality );
+		SetMaterialVarFloat( pMatDOF, "$nearBlurDepth", viewSetup.m_flNearBlurDepth );
+		SetMaterialVarFloat( pMatDOF, "$nearFocusDepth", viewSetup.m_flNearFocusDepth );
+		SetMaterialVarFloat( pMatDOF, "$farFocusDepth", viewSetup.m_flFarFocusDepth );
+		SetMaterialVarFloat( pMatDOF, "$farBlurDepth", viewSetup.m_flFarBlurDepth );
+		SetMaterialVarFloat( pMatDOF, "$nearBlurRadius", viewSetup.m_flNearBlurRadius );
+		SetMaterialVarFloat( pMatDOF, "$farBlurRadius", viewSetup.m_flFarBlurRadius );
+		SetMaterialVarInt( pMatDOF, "$quality", viewSetup.m_nDoFQuality );
 	}
 	else // pull from convars/globals
 	{
@@ -2809,7 +2809,7 @@ ConVar cl_blurDebug( "cl_blurDebug", "0" );
 ConVar cl_blurTapSize( "cl_blurTapSize", "0.5" );
 ConVar cl_blurPasses( "cl_blurPasses", "1" );
 
-void BlurEntity( IClientRenderable *pRenderable, bool bPreDraw, int drawFlags, const RenderableInstance_t &instance, const CViewSetup &view, int x, int y, int w, int h )
+void BlurEntity( IClientRenderable *pRenderable, bool bPreDraw, int drawFlags, const RenderableInstance_t &instance, const CViewSetup &viewSetup, int x, int y, int w, int h )
 {
 	ITexture *pFullFrameFB = materials->FindTexture( "_rt_FullFrameFB", TEXTURE_GROUP_RENDER_TARGET );
 	ITexture *dest_rt[2];

@@ -417,7 +417,7 @@ const Vector &CASW_Weapon_Energy_Shield::GetBulletSpread()
 		VECTOR_CONE_20DEGREES,
 	};
 
-	return cones[clamp( m_iConsecutiveBurstPenalty, 0, NELEMS( cones ) - 1 )];
+	return cones[clamp( m_iConsecutiveBurstPenalty, 0, (int)NELEMS( cones ) - 1 )];
 }
 
 const char *CASW_Weapon_Energy_Shield::GetASWShootSound( int iIndex, int &iPitch )

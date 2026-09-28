@@ -1047,8 +1047,8 @@ void COptionsSubVideo::PrepareResolutionList()
 	int selectedItemID = -1;
 	for (int i = 0; i < count; i++, plist++)
 	{
-		char sz[ 256 ];
-		GetResolutionName( plist, sz, sizeof( sz ) );
+		char szValue[ 256 ];
+		GetResolutionName( plist, szValue, sizeof( szValue ) );
 
 		// don't show modes bigger than the desktop for windowed mode
 		if ( bWindowed && (plist->width > desktopWidth || plist->height > desktopHeight) )
@@ -1065,7 +1065,7 @@ void COptionsSubVideo::PrepareResolutionList()
 		// filter the list for those matching the current aspect
 		if ( iAspectMode == m_pAspectRatio->GetActiveItem() )
 		{
-			itemID = m_pMode->AddItem( sz, NULL);
+			itemID = m_pMode->AddItem( szValue, NULL);
 		}
 
 		// try and find the best match for the resolution to be selected
@@ -1090,9 +1090,9 @@ void COptionsSubVideo::PrepareResolutionList()
 	}
 	else
 	{
-		char sz[256];
-		sprintf( sz, "%d x %d", config.m_VideoMode.m_Width, config.m_VideoMode.m_Height );
-		m_pMode->SetText( sz );
+		char szValue[256];
+		sprintf( szValue, "%d x %d", config.m_VideoMode.m_Width, config.m_VideoMode.m_Height );
+		m_pMode->SetText( szValue );
 	}
 }
 

@@ -509,7 +509,7 @@ void CSentence::ParseWords( CUtlBuffer& buf )
 			// Parse phoneme
 			int code;
 			char phonemename[ 256 ];
-			float start, end;
+			float iStart, iEnd;
 			float volume;
 
 			code = atoi( token );
@@ -517,9 +517,9 @@ void CSentence::ParseWords( CUtlBuffer& buf )
 			buf.GetString( token );
 			Q_strncpy( phonemename, token, sizeof( phonemename ) );
 			buf.GetString( token );
-			start = atof( token );
+			iStart = atof( token );
 			buf.GetString( token );
-			end = atof( token );
+			iEnd = atof( token );
 			buf.GetString( token );
 			volume = atof( token );
 
@@ -527,8 +527,8 @@ void CSentence::ParseWords( CUtlBuffer& buf )
 			Assert( pt );
 			pt->SetPhonemeCode( code );
 			pt->SetTag( phonemename );
-			pt->SetStartTime( start );
-			pt->SetEndTime( end );
+			pt->SetStartTime( iStart );
+			pt->SetEndTime( iEnd );
 
 			AddPhonemeTag( wt, pt );
 		}

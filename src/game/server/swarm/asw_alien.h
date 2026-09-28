@@ -19,7 +19,7 @@ class TakeDamageInfo;
 class CASW_Spawner;
 class CAI_ASW_FlinchBehavior;
 class CAI_ASW_Behavior;
-enum BehaviorEvent_t;
+enum BehaviorEvent_t : int;
 
 // Keep track of recent damage events for use in asw_ai_behavior_combat_stun.cpp
 static const int ASW_NUM_RECENT_DAMAGE = 8;

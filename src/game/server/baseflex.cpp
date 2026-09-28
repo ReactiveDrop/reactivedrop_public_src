@@ -2583,7 +2583,7 @@ void CFlexCycler::Think( void )
 			for ( LocalFlexController_t i = LocalFlexController_t(0); i < GetNumFlexControllers(); i++ )
 			{
 				// Throw a differently offset sine wave on all of the flex controllers
-				float fFlexTime = i * (1.0f / (float)GetNumFlexControllers()) + gpGlobals->curtime;
+				float fFlexTime = (float)i * (1.0f / (float)GetNumFlexControllers()) + gpGlobals->curtime;
 				m_flextarget[i] = sinf( fFlexTime ) * 0.5f + 0.5f;
 				SetFlexWeight( i, m_flextarget[i] );
 			}
@@ -2594,30 +2594,30 @@ void CFlexCycler::Think( void )
 			char szTemp[32];
 
 			Q_strncpy( szExpression, pszExpression ,sizeof(szExpression));
-			char *pszExpression = szExpression;
+			char *pszExpr = szExpression;
 
-			while (*pszExpression != '\0')
+			while (*pszExpr != '\0')
 			{
-				if (*pszExpression == '+')
-					*pszExpression = ' ';
+				if (*pszExpr == '+')
+					*pszExpr = ' ';
 				
-				pszExpression++;
+				pszExpr++;
 			}
 
-			pszExpression = szExpression;
+			pszExpr = szExpression;
 
-			while (*pszExpression)
+			while (*pszExpr)
 			{
-				if (*pszExpression != ' ')
+				if (*pszExpr != ' ')
 				{
-					if (*pszExpression == '-')
+					if (*pszExpr == '-')
 					{
 						for (LocalFlexController_t i = LocalFlexController_t(0); i < GetNumFlexControllers(); i++)
 						{
 							m_flextarget[i] = 0;
 						}
 					}
-					else if (*pszExpression == '?')
+					else if (*pszExpr == '?')
 					{
 						for (LocalFlexController_t i = LocalFlexController_t(0); i < GetNumFlexControllers(); i++)
 						{
@@ -2628,7 +2628,7 @@ void CFlexCycler::Think( void )
 					}
 					else
 					{
-						if (sscanf( pszExpression, "%31s", szTemp ) == 1)
+						if (sscanf( pszExpr, "%31s", szTemp ) == 1)
 						{
 							m_flexnum = LookupFlex( szTemp );
 
@@ -2637,17 +2637,17 @@ void CFlexCycler::Think( void )
 								m_flextarget[m_flexnum] = 1.0;
 								// SetFlexTarget( m_flexnum );
 							}
-							pszExpression += strlen( szTemp ) - 1;
+							pszExpr += strlen( szTemp ) - 1;
 						}
 					}
 				}
-				pszExpression++;
+				pszExpr++;
 			}
 		}
 		else if (m_flextime < gpGlobals->curtime)
 		{
 			// m_flextime = gpGlobals->curtime + 1.0; // RandomFloat( 0.1, 0.5 );
-			m_flextime = gpGlobals->curtime + random->RandomFloat( 0.3, 0.5 ) * (30.0 / GetNumFlexControllers());
+			m_flextime = gpGlobals->curtime + random->RandomFloat( 0.3, 0.5 ) * (30.0 / (float)GetNumFlexControllers());
 			m_flexnum = (LocalFlexController_t)random->RandomInt( 0, GetNumFlexControllers() - 1 );
 
 			// m_flexnum = (pflex->num + 1) % r_psubmodel->numflexes;

@@ -56,10 +56,10 @@ class IAvi;
 class IBik;
 class IReplayHistoryManager;
 class ISoundEmitterSystemBase;
-enum CPULevel_t;
-enum GPULevel_t;
-enum MemLevel_t;
-enum GPUMemLevel_t;
+enum CPULevel_t : int;
+enum GPULevel_t : int;
+enum MemLevel_t : int;
+enum GPUMemLevel_t : int;
 
 extern IVModelRender *modelrender;
 extern IVEngineClient	*engine;

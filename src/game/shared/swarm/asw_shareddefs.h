@@ -477,7 +477,13 @@ public:
 };
 
 // For CLASSIFY
-enum
+//
+// The entity classes of this mod continue the Class_T numbering (they start at
+// LAST_SHARED_ENTITY_CLASS), but in C++ they are a separate enumeration while
+// Classify() returns Class_T. Comparing the two is intentional and done all over
+// the code base, and C++20 deprecates comparisons between two different
+// enumeration types (C5054), so the comparison is spelled out once here.
+enum ASW_Class_T
 {
 	// Alien Swarm AI
 	// Be sure to add appropriate checks in IsAlienClass() in asw_shareddefs.cpp
@@ -656,6 +662,11 @@ enum
 
 	LAST_ASW_ENTITY_CLASS,
 };
+
+inline bool operator==( Class_T lhs, ASW_Class_T rhs ) { return ( int )lhs == ( int )rhs; }
+inline bool operator==( ASW_Class_T lhs, Class_T rhs ) { return ( int )lhs == ( int )rhs; }
+inline bool operator!=( Class_T lhs, ASW_Class_T rhs ) { return ( int )lhs != ( int )rhs; }
+inline bool operator!=( ASW_Class_T lhs, Class_T rhs ) { return ( int )lhs != ( int )rhs; }
 
 
 // Alien Swarm specific hitgroups

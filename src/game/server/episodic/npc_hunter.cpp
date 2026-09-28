@@ -5659,10 +5659,10 @@ int CNPC_Hunter::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		}
 		else
 		{
-			CBaseEntity *pInflictor = info.GetInflictor();
+			CBaseEntity *pInflictor2 = info.GetInflictor();
 			if ( ( info.GetDamageType() & DMG_VEHICLE ) || 
-				 ( pInflictor && pInflictor->GetServerVehicle() && 
-				   ( ( bHitByUnoccupiedCar = ( dynamic_cast<CPropVehicleDriveable *>(pInflictor) && static_cast<CPropVehicleDriveable *>(pInflictor)->GetDriver() == NULL ) )  == false ) ) )
+				 ( pInflictor2 && pInflictor2->GetServerVehicle() && 
+				   ( ( bHitByUnoccupiedCar = ( dynamic_cast<CPropVehicleDriveable *>(pInflictor2) && static_cast<CPropVehicleDriveable *>(pInflictor2)->GetDriver() == NULL ) )  == false ) ) )
 			{
 				// Adjust the damage from vehicles.
 				flDamage *= sk_hunter_vehicle_damage_scale.GetFloat();
@@ -5670,11 +5670,11 @@ int CNPC_Hunter::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 
 				// Apply a force to jostle the vehicle that hit us.
 				// Pick a force direction based on which side we're on relative to the vehicle's motion.
-				Vector vecVelDir = pInflictor->GetSmoothedVelocity();
+				Vector vecVelDir = pInflictor2->GetSmoothedVelocity();
 				if ( vecVelDir.Length() >= hunter_jostle_car_min_speed.GetFloat() )
 				{
 					EmitSound( "NPC_Hunter.HitByVehicle" );
-					m_hHitByVehicle = pInflictor;
+					m_hHitByVehicle = pInflictor2;
 					SetContextThink( &CNPC_Hunter::JostleVehicleThink, gpGlobals->curtime, HUNTER_JOSTLE_VEHICLE_THINK );
 				}
 			}

@@ -1540,7 +1540,7 @@ static void ProcessNonDrawingSystem( CParticleCollection *&pNonDrawingEffect )
 
 
 int CParticleMgr::ComputeParticleDefScreenArea( int nInfoCount, RetireInfo_t *pInfo, float *pTotalArea, CParticleSystemDefinition* pDef, 
-	const CViewSetup& view, const VMatrix &worldToPixels, float flFocalDist )
+	const CViewSetup& viewSetup, const VMatrix &worldToPixels, float flFocalDist )
 {
 	int nCollection = 0;
 	float flCullCost = pDef->GetCullFillCost();
@@ -1549,7 +1549,7 @@ int CParticleMgr::ComputeParticleDefScreenArea( int nInfoCount, RetireInfo_t *pI
 	*pTotalArea = 0.0f;
 
 #ifdef DBGFLAG_ASSERT
-	float flMaxPixels = view.width * view.height;
+	float flMaxPixels = viewSetup.width * viewSetup.height;
 #endif
 
 	CParticleCollection *pCollection = pDef->FirstCollection();
@@ -1571,22 +1571,22 @@ int CParticleMgr::ComputeParticleDefScreenArea( int nInfoCount, RetireInfo_t *pI
 		vecCenter = pCollection->GetControlPointAtCurrentTime( pDef->GetCullControlPoint() );
 
 		Vector3DMultiplyPositionProjective( worldToPixels, vecCenter, vecScreenCenter );
-		float lSqr = vecCenter.DistToSqr( view.origin );
+		float lSqr = vecCenter.DistToSqr( viewSetup.origin );
 
 		float flProjRadius = ( lSqr > flCullRadiusSqr ) ? 0.5f * flFocalDist * flCullRadius / sqrt( lSqr - flCullRadiusSqr ) : 1.0f;
-		flProjRadius *= view.width;
+		flProjRadius *= viewSetup.width;
 
-		float flMinX = MAX( view.x, vecScreenCenter.x - flProjRadius );
-		float flMaxX = MIN( view.x + view.width, vecScreenCenter.x + flProjRadius );
+		float flMinX = MAX( viewSetup.x, vecScreenCenter.x - flProjRadius );
+		float flMaxX = MIN( viewSetup.x + viewSetup.width, vecScreenCenter.x + flProjRadius );
 
-		float flMinY = MAX( view.y, vecScreenCenter.y - flProjRadius );
-		float flMaxY = MIN( view.y + view.height, vecScreenCenter.y + flProjRadius );
+		float flMinY = MAX( viewSetup.y, vecScreenCenter.y - flProjRadius );
+		float flMaxY = MIN( viewSetup.y + viewSetup.height, vecScreenCenter.y + flProjRadius );
 
 		// Clamp the min/max values to the screen so that particles particle systems outside of the view don't cause early retirement.
-		flMinX = clamp( flMinX, view.x, view.width );
-		flMaxX = clamp( flMaxX, view.x, view.width );
-		flMinY = clamp( flMinY, view.y, view.height );
-		flMaxY = clamp( flMaxY, view.y, view.height );
+		flMinX = clamp( flMinX, viewSetup.x, viewSetup.width );
+		flMaxX = clamp( flMaxX, viewSetup.x, viewSetup.width );
+		flMinY = clamp( flMinY, viewSetup.y, viewSetup.height );
+		flMaxY = clamp( flMaxY, viewSetup.y, viewSetup.height );
 
 		float flArea = ( flMaxX - flMinX ) * ( flMaxY - flMinY );
 		Assert( flArea <= flMaxPixels );
