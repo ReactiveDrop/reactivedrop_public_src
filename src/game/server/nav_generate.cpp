@@ -1596,7 +1596,6 @@ static bool testStitchConnection( CNavArea *source, CNavArea *target, const Vect
 	else
 	{
 		// test going up ClimbUpHeight
-		bool success = false;
 		for ( float height = StepHeight; height <= ClimbUpHeight; height += 1.0f )
 		{
 			trace_t tr;
