@@ -494,9 +494,9 @@ void CTimerEntity::InputAddToTimer( inputdata_t &inputdata )
 	// don't add time if the timer isn't enabled
 	if ( m_iDisabled )
 		return;
-	
+
 	// Add time to timer
- 	float flNextThink = GetNextThink();	
+	float flNextThink = GetNextThink();
 	SetNextThink( flNextThink += inputdata.value.Float() );
 }
 
