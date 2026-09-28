@@ -1303,9 +1303,9 @@ void CMultiSource::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 	if ( IsTriggered( pActivator ) )
 	{
 		DevMsg( 2, "Multisource %s enabled (%d inputs)\n", GetDebugName(), m_iTotal );
-		USE_TYPE useType = USE_TOGGLE;
-		if ( m_globalstate != NULL_STRING )
-			useType = USE_ON;
+		// USE_TYPE useType = USE_TOGGLE;
+		// if ( m_globalstate != NULL_STRING )
+		// 	useType = USE_ON;
 
 		m_OnTrigger.FireOutput(pActivator, this);
 	}
