@@ -5612,9 +5612,8 @@ int CNPC_Hunter::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 
 	// don't take damage from my own weapons!!!
 	// Exception: I "own" a magnade if it's glued to me.
-	CBaseEntity *pInflictor = info.GetInflictor();
 	CBaseEntity *pAttacker = info.GetAttacker();
-	if ( pInflictor )
+	if ( CBaseEntity *pInflictor = info.GetInflictor() )
 	{
 		if ( IsStriderBuster( pInflictor ) )
 		{
