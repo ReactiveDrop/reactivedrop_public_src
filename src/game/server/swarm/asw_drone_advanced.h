@@ -28,7 +28,7 @@ public:
 
 	virtual int			MeleeAttack1Conditions( float flDot, float flDist );	
 	virtual int			MeleeAttack2Conditions( float flDot, float flDist );
-	void MeleeAttack( float distance, float damage, QAngle &viewPunch, Vector &shove );
+	void MeleeAttack( float distance, float damage, const QAngle &viewPunch, const Vector &shove );
 
 	virtual bool MovementCost( int moveType, const Vector &vecStart, const Vector &vecEnd, float *pCost );
 	

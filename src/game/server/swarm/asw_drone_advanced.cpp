@@ -862,18 +862,14 @@ void CASW_Drone_Advanced::HandleAnimEvent( animevent_t *pEvent )
 	if ( nEvent == AE_DRONE_MELEE_HIT1 )
 	{
 		float fDamage = MAX(3.0f, ASWGameRules()->ModifyAlienDamageBySkillLevel(sk_asw_drone_damage.GetFloat()));
-		QAngle angMelee( 20.0f, 0.0f, -12.0f );
-		Vector vecMelee( -250.0f, 1.0f, 1.0f );
-		MeleeAttack( ASW_DRONE_MELEE1_RANGE, fDamage, angMelee, vecMelee );
+		MeleeAttack( ASW_DRONE_MELEE1_RANGE, fDamage, QAngle( 20.0f, 0.0f, -12.0f ), Vector( -250.0f, 1.0f, 1.0f ) );
 		return;
 	}
 
 	if ( nEvent == AE_DRONE_MELEE_HIT2 )
 	{
 		float fDamage = MAX(3.0f, ASWGameRules()->ModifyAlienDamageBySkillLevel(sk_asw_drone_damage.GetFloat()));
-		QAngle angMelee( 20.0f, 0.0f, 0.0f );
-		Vector vecMelee( -350.0f, 1.0f, 1.0f );
-		MeleeAttack( ASW_DRONE_MELEE1_RANGE, fDamage, angMelee, vecMelee );
+		MeleeAttack( ASW_DRONE_MELEE1_RANGE, fDamage, QAngle( 20.0f, 0.0f, 0.0f ), Vector( -350.0f, 1.0f, 1.0f ) );
 		return;
 	}	
 	
@@ -958,7 +954,7 @@ void CASW_Drone_Advanced::StartTouch( CBaseEntity *pOther )
 	}
 }
 
-void CASW_Drone_Advanced::MeleeAttack( float distance, float damage, QAngle &viewPunch, Vector &shove )
+void CASW_Drone_Advanced::MeleeAttack( float distance, float damage, const QAngle &viewPunch, const Vector &shove )
 {
 	Vector vecForceDir;
 

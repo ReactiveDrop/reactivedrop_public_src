@@ -2020,7 +2020,7 @@ private:
 	void CreateSnowFallParticle( const Vector &vecParticleSpawn, int iBBox, C_BasePlayer *pLocalPlayer );
 
 	int StandingInSnowVolume( Vector &vecPoint );
-	void FindSnowVolumes( Vector &vecCenter, float flRadius, Vector &vecEyePos, Vector &vecForward );
+	void FindSnowVolumes( Vector &vecCenter, float flRadius, const Vector &vecEyePos, Vector &vecForward );
 
 	void UpdateBounds( const Vector &vecSnowMin, const Vector &vecSnowMax );
 
@@ -2225,7 +2225,7 @@ int CSnowFallManager::StandingInSnowVolume( Vector &vecPoint )
 // Input  : &vecCenter - 
 //			flRadius - 
 //-----------------------------------------------------------------------------
-void CSnowFallManager::FindSnowVolumes( Vector &vecCenter, float flRadius, Vector &vecEyePos, Vector &vecForward )
+void CSnowFallManager::FindSnowVolumes( Vector &vecCenter, float flRadius, const Vector &vecEyePos, Vector &vecForward )
 {
 	// Reset.
 	m_nActiveSnowCount = 0;
@@ -2361,8 +2361,7 @@ void CSnowFallManager::CreateSnowFall( void )
 			}
 		}
 
-		Vector vecEyePos = pPlayer->EyePosition();
-		FindSnowVolumes( m_vecSnowFallEmitOrigin, flRadius, vecEyePos, vecForward );
+		FindSnowVolumes( m_vecSnowFallEmitOrigin, flRadius, pPlayer->EyePosition(), vecForward );
 		if ( m_nActiveSnowCount != 0 && m_iSnowFallArea != SNOWFALL_AROUND_PLAYER )
 		{
 			// We found an active snow emitter.

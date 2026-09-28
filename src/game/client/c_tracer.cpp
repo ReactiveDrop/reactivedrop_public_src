@@ -89,7 +89,7 @@ bool Tracer_ComputeVerts( const Vector &start, const Vector &delta, float width,
 }
 
 
-void Tracer_Draw( CMeshBuilder *pMeshBuilder, Vector& start, Vector& delta, float width, float* color, float startV, float endV )
+void Tracer_Draw( CMeshBuilder *pMeshBuilder, const Vector& start, const Vector& delta, float width, float* color, float startV, float endV )
 {
 	// Clip the tracer
 	Vector verts[4];
@@ -143,7 +143,7 @@ void Tracer_Draw( CMeshBuilder *pMeshBuilder, Vector& start, Vector& delta, floa
 //-----------------------------------------------------------------------------
 // draw a tracer.
 //-----------------------------------------------------------------------------
-void Tracer_Draw( ParticleDraw* pDraw, Vector& start, Vector& delta, float width, float* color, float startV, float endV )
+void Tracer_Draw( ParticleDraw* pDraw, const Vector& start, const Vector& delta, float width, float* color, float startV, float endV )
 {
 	if( !pDraw->GetMeshBuilder() )
 		return;

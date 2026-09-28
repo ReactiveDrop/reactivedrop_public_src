@@ -274,7 +274,7 @@ void CASW_Simple_Alien::SetState( int iNewState )
 // Movement
 // =========================================
 
-void CASW_Simple_Alien::SetMoveTarget( Vector &vecTarget )
+void CASW_Simple_Alien::SetMoveTarget( const Vector &vecTarget )
 {
 	m_vecMoveTarget = vecTarget;
 	m_hMoveTarget = NULL;
@@ -522,8 +522,7 @@ bool CASW_Simple_Alien::FailedMove()
 		// if we have no enemy, just randomly move away from the wall
 		if ( !GetEnemy() )
 		{
-			Vector vecMoveTarget = PickRandomDestination( 32.0f, 16.0f * vecNormal );
-			SetMoveTarget( vecMoveTarget );
+			SetMoveTarget( PickRandomDestination( 32.0f, 16.0f * vecNormal ) );
 			return true;
 		}
 
@@ -547,16 +546,14 @@ bool CASW_Simple_Alien::FailedMove()
 			// go left
 			Vector vecLeft;
 			AngleVectors( QAngle( 0, wall_yaw_left, 0 ), &vecLeft );
-			Vector vecMoveTarget = GetAbsOrigin() + vecLeft * fDist;
-			SetMoveTarget( vecMoveTarget );
+			SetMoveTarget( GetAbsOrigin() + vecLeft * fDist );
 		}
 		else
 		{
 			// go right
 			Vector vecRight;
 			AngleVectors( QAngle( 0, wall_yaw_right, 0 ), &vecRight );
-			Vector vecMoveTarget = GetAbsOrigin() + vecRight * fDist;
-			SetMoveTarget( vecMoveTarget );
+			SetMoveTarget( GetAbsOrigin() + vecRight * fDist );
 		}
 		return true;
 	}
@@ -687,7 +684,7 @@ bool CASW_Simple_Alien::ShouldAttack()
 	return ( dist < 100.0f );
 }
 
-void CASW_Simple_Alien::MeleeAttack( float distance, float damage, QAngle &viewPunch, Vector &shove )
+void CASW_Simple_Alien::MeleeAttack( float distance, float damage, const QAngle &viewPunch, const Vector &shove )
 {
 	Vector vecForceDir;
 
@@ -1311,17 +1308,13 @@ void CASW_Simple_Alien::HandleAnimEvent( animevent_t *pEvent )
 
 	if ( nEvent == AE_DRONE_MELEE_HIT1 )
 	{
-		QAngle angMelee( 20.0f, 0.0f, -12.0f );
-		Vector vecMelee( -250.0f, 1.0f, 1.0f );
-		MeleeAttack( ASW_DRONE_MELEE1_RANGE, ASWGameRules()->ModifyAlienDamageBySkillLevel( sk_asw_drone_damage.GetFloat() ), angMelee, vecMelee );
+		MeleeAttack( ASW_DRONE_MELEE1_RANGE, ASWGameRules()->ModifyAlienDamageBySkillLevel( sk_asw_drone_damage.GetFloat() ), QAngle( 20.0f, 0.0f, -12.0f ), Vector( -250.0f, 1.0f, 1.0f ) );
 		return;
 	}
 
 	if ( nEvent == AE_DRONE_MELEE_HIT2 )
 	{
-		QAngle angMelee( 20.0f, 0.0f, 0.0f );
-		Vector vecMelee( -350.0f, 1.0f, 1.0f );
-		MeleeAttack( ASW_DRONE_MELEE1_RANGE, ASWGameRules()->ModifyAlienDamageBySkillLevel( sk_asw_drone_damage.GetFloat() ), angMelee, vecMelee );
+		MeleeAttack( ASW_DRONE_MELEE1_RANGE, ASWGameRules()->ModifyAlienDamageBySkillLevel( sk_asw_drone_damage.GetFloat() ), QAngle( 20.0f, 0.0f, 0.0f ), Vector( -350.0f, 1.0f, 1.0f ) );
 		return;
 	}
 

@@ -239,8 +239,7 @@ void CTrailParticles::RenderParticles( CParticleRenderIterator *pIterator )
 		float	flWidth	 = ( flLength < pParticle->m_flWidth ) ? flLength : pParticle->m_flWidth;
 
 		//See if we should fade
-		Vector vecTracerDelta = delta*scale;
-		Tracer_Draw( pIterator->GetParticleDraw(), start, vecTracerDelta, flWidth, color );
+		Tracer_Draw( pIterator->GetParticleDraw(), start, (delta*scale), flWidth, color );
 		
 		pParticle = (const TrailParticle*)pIterator->GetNext( sortKey );
 	}
@@ -951,7 +950,7 @@ void FX_EnergySplash( const Vector &pos, const Vector &normal, int nFlags )
 #define MICRO_EXPLOSION_GRAVITY		0.0f
 #define MICRO_EXPLOSION_DAMPEN		0.4f
 
-void FX_MicroExplosion( Vector &position, Vector &normal )
+void FX_MicroExplosion( const Vector &position, const Vector &normal )
 {
 	VPROF_BUDGET( "FX_MicroExplosion", VPROF_BUDGETGROUP_PARTICLE_RENDERING );
 	Vector	offset = position + ( normal * 2.0f );

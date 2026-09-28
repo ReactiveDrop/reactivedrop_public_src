@@ -526,8 +526,7 @@ void CASW_Broadcast_Camera::Move()
 
 	// Subtract movement from the previous frame
 	//m_moveDistance -= m_flSpeed * gpGlobals->frametime;
-	Vector vecMoveDelta = GetAbsOrigin() - m_vecLastPos;
-	m_moveDistance -= VectorNormalize( vecMoveDelta );
+	m_moveDistance -= VectorLength( GetAbsOrigin() - m_vecLastPos );
 
 	// Have we moved enough to reach the target?
 	if ( m_moveDistance <= 0 )

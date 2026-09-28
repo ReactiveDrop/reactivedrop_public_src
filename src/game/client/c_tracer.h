@@ -23,10 +23,10 @@ class CMeshBuilder;
 //		[in] float  : The tracer width (CAMERA space)
 //		[in] float* : r, g, b, a (0 - 1)
 //-----------------------------------------------------------------------------
-void Tracer_Draw( ParticleDraw* pDraw, Vector& start, Vector& delta, 
+void Tracer_Draw( ParticleDraw* pDraw, const Vector& start, const Vector& delta, 
 				 float width, float* color, float startV = 0.0, float endV = 1.0 );
 
-void Tracer_Draw( CMeshBuilder *pMeshBuilder, Vector& start, Vector& delta, float width, float* color, float startV = 0.0, float endV = 1.0 );
+void Tracer_Draw( CMeshBuilder *pMeshBuilder, const Vector& start, const Vector& delta, float width, float* color, float startV = 0.0, float endV = 1.0 );
 
 
 //-----------------------------------------------------------------------------

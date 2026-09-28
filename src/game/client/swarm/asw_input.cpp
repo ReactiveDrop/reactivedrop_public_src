@@ -941,9 +941,8 @@ void CASWInput::ComputeNewMarineFacing( C_ASW_Player *pPlayer, const Vector &Hit
 
 		if ( fabsf( vApproximateMarineFacingVector.z ) > 1e-3f )
 		{
-			Vector vecExplosionNormal( 0, 0, 1 );
 			if ( asw_DebugAutoAim.GetInt() == 3 )
-				FX_MicroExplosion( vecHitPos, vecExplosionNormal );
+				FX_MicroExplosion( vecHitPos, Vector( 0, 0, 1 ) );
 
 			*pPitch = UTIL_VecToPitch( vApproximateMarineFacingVector );
 			if ( !IsFinite( *pPitch ) )

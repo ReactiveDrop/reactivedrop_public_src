@@ -325,9 +325,7 @@ void CASW_Shieldbug::HandleAnimEvent( animevent_t *pEvent )
 
 	if ( nEvent == AE_SHIELDBUG_MELEE_HIT1 )
 	{
-		QAngle angMelee( 20.0f, 0.0f, -12.0f );
-		Vector vecMelee( -250.0f, 1.0f, 1.0f );
-		MeleeAttack( ASW_SHIELDBUG_MELEE1_RANGE, ASWGameRules()->ModifyAlienDamageBySkillLevel(sk_asw_shieldbug_damage.GetFloat()), angMelee, vecMelee );
+		MeleeAttack( ASW_SHIELDBUG_MELEE1_RANGE, ASWGameRules()->ModifyAlienDamageBySkillLevel(sk_asw_shieldbug_damage.GetFloat()), QAngle( 20.0f, 0.0f, -12.0f ), Vector( -250.0f, 1.0f, 1.0f ) );
 		return;
 	}
 
@@ -346,9 +344,7 @@ void CASW_Shieldbug::HandleAnimEvent( animevent_t *pEvent )
 
 	if ( nEvent == AE_SHIELDBUG_MELEE_HIT2 )
 	{
-		QAngle angMelee( 20.0f, 0.0f, 0.0f );
-		Vector vecMelee( -350.0f, 1.0f, 1.0f );
-		MeleeAttack( ASW_SHIELDBUG_MELEE1_RANGE, ASWGameRules()->ModifyAlienDamageBySkillLevel(sk_asw_shieldbug_damage.GetFloat()), angMelee, vecMelee );
+		MeleeAttack( ASW_SHIELDBUG_MELEE1_RANGE, ASWGameRules()->ModifyAlienDamageBySkillLevel(sk_asw_shieldbug_damage.GetFloat()), QAngle( 20.0f, 0.0f, 0.0f ), Vector( -350.0f, 1.0f, 1.0f ) );
 		return;
 	}	
 	
@@ -661,7 +657,7 @@ int CASW_Shieldbug::MeleeAttack1Conditions( float flDot, float flDist )
 	return COND_CAN_MELEE_ATTACK1;
 }
 
-void CASW_Shieldbug::MeleeAttack( float distance, float damage, QAngle &viewPunch, Vector &shove )
+void CASW_Shieldbug::MeleeAttack( float distance, float damage, const QAngle &viewPunch, const Vector &shove )
 {
 	Vector vecForceDir;
 

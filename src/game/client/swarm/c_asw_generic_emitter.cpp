@@ -951,8 +951,7 @@ void CASWGenericEmitter::RenderParticles( CParticleRenderIterator *pIterator )
 			{
 				tPos += (delta*scale)*m_fBeamLength*0.5f;
 			}			
-	Vector vecTracerDelta = -(delta*scale)*m_fBeamLength;
-			Tracer_Draw( pIterator->GetParticleDraw(), tPos, vecTracerDelta, flWidth, color );
+			Tracer_Draw( pIterator->GetParticleDraw(), tPos, -(delta*scale)*m_fBeamLength, flWidth, color );
 		}
 
 		pParticle = (const ASWParticle *)pIterator->GetNext( sortKey );
