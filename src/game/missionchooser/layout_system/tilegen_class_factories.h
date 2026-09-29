@@ -64,22 +64,22 @@ ITilegenExpression< const char * > *ReadLiteralStringValue( KeyValues *pKeyValue
 
 // Class factory specializations to handle parsing literal values...
 
-ITilegenExpression< int > *ITilegenClassFactory< ITilegenExpression< int > >::ReadLiteralValue( KeyValues *pKeyValues )
+inline ITilegenExpression< int > *ITilegenClassFactory< ITilegenExpression< int > >::ReadLiteralValue( KeyValues *pKeyValues )
 {
 	return ReadLiteralIntValue( pKeyValues );
 }
 
-ITilegenExpression< bool > *ITilegenClassFactory< ITilegenExpression< bool > >::ReadLiteralValue( KeyValues *pKeyValues )
+inline ITilegenExpression< bool > *ITilegenClassFactory< ITilegenExpression< bool > >::ReadLiteralValue( KeyValues *pKeyValues )
 {
 	return ReadLiteralBoolValue( pKeyValues );
 }
 
-ITilegenExpression< float > *ITilegenClassFactory< ITilegenExpression< float > >::ReadLiteralValue( KeyValues *pKeyValues )
+inline ITilegenExpression< float > *ITilegenClassFactory< ITilegenExpression< float > >::ReadLiteralValue( KeyValues *pKeyValues )
 {
 	return ReadLiteralFloatValue( pKeyValues );
 }
 
-ITilegenExpression< char const * > *ITilegenClassFactory< ITilegenExpression< char const * > >::ReadLiteralValue( KeyValues *pKeyValues )
+inline ITilegenExpression< char const * > *ITilegenClassFactory< ITilegenExpression< char const * > >::ReadLiteralValue( KeyValues *pKeyValues )
 {
 	return ReadLiteralStringValue( pKeyValues );
 }
