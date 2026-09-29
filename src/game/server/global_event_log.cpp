@@ -64,7 +64,7 @@ void CGlobalEventLine::Clear( )
 
 bool CGlobalEventLine::SetStaticText( const char *pszValue )
 {
-	if ( m_ValueSymbol != UTL_INVAL_SYMBOL && m_ValueSymbol == EventSymbols.Find( pszValue ) )
+	if ( m_ValueSymbol.IsValid() && m_ValueSymbol == EventSymbols.Find( pszValue ) )
 	{
 		return false;
 	}

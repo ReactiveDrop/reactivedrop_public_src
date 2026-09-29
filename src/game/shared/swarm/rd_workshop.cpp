@@ -2957,7 +2957,7 @@ void CReactiveDropWorkshop::RemoveDuplicateTags()
 
 	FOR_EACH_VEC_BACK( m_aszTags, i )
 	{
-		if ( existing.Find( m_aszTags[i] ) != UTL_INVAL_SYMBOL )
+		if ( existing.Find( m_aszTags[i] ).IsValid() )
 		{
 			delete m_aszTags[i];
 			m_aszTags.Remove( i );

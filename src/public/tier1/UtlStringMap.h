@@ -1,4 +1,4 @@
-//===== Copyright © 1996-2005, Valve Corporation, All rights reserved. ======//
+//===== Copyright Â© 1996-2005, Valve Corporation, All rights reserved. ======//
 //
 // Purpose: 
 //
@@ -47,7 +47,7 @@ public:
 
 	bool Defined( const char *pString ) const
 	{
-		return m_SymbolTable.Find( pString ) != UTL_INVAL_SYMBOL;
+		return m_SymbolTable.Find( pString ).IsValid();
 	}
 
 	UtlSymId_t Find( const char *pString ) const

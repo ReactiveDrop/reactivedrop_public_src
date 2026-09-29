@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright Â© 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: NPC does a melee attack against his enemy when close enough.  Uses MeleeAttack1Conditions.
 //
@@ -371,7 +371,7 @@ void CAI_ASW_MeleeBehavior::HullAttack( float flDistance, float flDamage, float 
 	{
 		SetBehaviorParam( m_StatusParm, 1 );
 		// Play a random attack hit sound
-		if ( AttackHitSound != UTL_INVAL_SYMBOL )
+		if ( AttackHitSound.IsValid() )
 		{
 			GetOuter()->EmitSound( GetSymbolText( AttackHitSound ) );
 		}
