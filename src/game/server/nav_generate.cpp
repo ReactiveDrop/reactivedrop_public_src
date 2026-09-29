@@ -759,10 +759,10 @@ void CNavMesh::RaiseAreasWithInternalObstacles()
 						// yes, this edge is blocked
 						iEdgesBlocked++;
 						// keep track of obstacle height and start and end distance for this edge
-						float obstacleZ = nodeFrom->GetPosition()->z + obstacleHeight;
-						if ( obstacleZ > obstacleZThisDir[iEdge] )
-						{							
-							obstacleZThisDir[iEdge] = obstacleZ;
+						float flObstacleZ = nodeFrom->GetPosition()->z + obstacleHeight;
+						if ( flObstacleZ > obstacleZThisDir[iEdge] )
+						{
+							obstacleZThisDir[iEdge] = flObstacleZ;
 						}
 						obstacleStartDistThisDir = MIN( nodeFrom->m_obstacleStartDist[dir], obstacleStartDistThisDir );
 						obstacleEndDistThisDir = MAX( nodeFrom->m_obstacleEndDist[dir], obstacleEndDistThisDir );
@@ -987,8 +987,8 @@ bool CNavMesh::CreateObstacleTopAreaIfNecessary( CNavArea *area, CNavArea *areaO
 								if ( areaOther->Contains( *nodeTowardOtherArea->GetPosition() ) )
 								{
 									float z = areaOther->GetZ( nodeTowardOtherArea->GetPosition()->x, nodeTowardOtherArea->GetPosition()->y );
-									float deltaZ = fabs( nodeTowardOtherArea->GetPosition()->z - z );
-									if ( deltaZ < 2.0f )
+									float flDeltaZ = fabs( nodeTowardOtherArea->GetPosition()->z - z );
+									if ( flDeltaZ < 2.0f )
 									{
 										bInOtherArea = true;
 									}
@@ -2874,8 +2874,8 @@ bool CNavMesh::TestArea( CNavNode *node, int width, int height )
 	CNavNode *vertNode, *horizNode;
 
 	vertNode = node;
-	int y;
-	for( y=0; y<height; y++ )
+	int y_last = 0;
+	for( int y=0; y<height; y++, y_last++ )
 	{
 		horizNode = vertNode;
 
@@ -3037,7 +3037,7 @@ bool CNavMesh::TestArea( CNavNode *node, int width, int height )
 		int x;
 		for( x=0; x<width; x++ )
 		{
-			if ( !CheckObstacles( horizNode, width, height, x, y ) )
+			if ( !CheckObstacles( horizNode, width, height, x, y_last ) )
 				return false;
 
 			horizNode = horizNode->GetConnectedNode( EAST );
@@ -3051,12 +3051,12 @@ bool CNavMesh::TestArea( CNavNode *node, int width, int height )
 		}
 
 		// Check the final (x=width) node, the above only checks thru x=width-1
-		if ( !CheckObstacles( horizNode, width, height, x, y ) )
+		if ( !CheckObstacles( horizNode, width, height, x, y_last ) )
 			return false;
 	}
 
 	vertNode = node;
-	for( y=0; y<height; ++y )
+	for( int y=0; y<height; ++y )
 	{
 		horizNode = vertNode;
 

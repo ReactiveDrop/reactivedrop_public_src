@@ -1043,7 +1043,7 @@ void FX_Tesla( const CTeslaInfo &teslaInfo )
 	{
 		// Make a couple of tries at it
 		int iTries = -1;
-		Vector vecForward;
+		Vector vecRandForward;
 		trace_t tr;
 		do
 		{
@@ -1054,21 +1054,21 @@ void FX_Tesla( const CTeslaInfo &teslaInfo )
 			{
 				QAngle vecTemp = teslaInfo.m_vAngles;
 				vecTemp[YAW] += anglemod( flYawOffset + ((360 / iTotalBeams) * i) );
-				AngleVectors( vecTemp, &vecForward );
+				AngleVectors( vecTemp, &vecRandForward );
 
 				// Randomly angle it up or down
-				vecForward.z = RandomFloat( -1, 1 );
+				vecRandForward.z = RandomFloat( -1, 1 );
 			}
 			else
 			{
-				vecForward = RandomVector( -1, 1 );
+				vecRandForward = RandomVector( -1, 1 );
 			}
-			VectorNormalize( vecForward );
+			VectorNormalize( vecRandForward );
 
-			UTIL_TraceLine( teslaInfo.m_vPos, teslaInfo.m_vPos + (vecForward * teslaInfo.m_flRadius), MASK_SHOT, pEntity, COLLISION_GROUP_NONE, &tr );
+			UTIL_TraceLine( teslaInfo.m_vPos, teslaInfo.m_vPos + (vecRandForward * teslaInfo.m_flRadius), MASK_SHOT, pEntity, COLLISION_GROUP_NONE, &tr );
 		} while ( tr.fraction >= 1.0 && iTries < 3 );
 
-		Vector vecEnd = tr.endpos - (vecForward * 8);
+		Vector vecRandEnd = tr.endpos - (vecRandForward * 8);
 
 		// Only spark & glow if we hit something
 		if ( tr.fraction < 1.0 )

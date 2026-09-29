@@ -79,10 +79,10 @@ void Holdout_Hud_Wave_Panel::OnThink()
 		m_pCountdownTimeLabel->SetVisible( true );
 		m_pCountdownLabel->SetVisible( true );
 
-		wchar_t wzValue[15];
-		V_snwprintf( wzValue, ARRAYSIZE( wzValue ), L"%d", (int) flTimeLeft );
+		wchar_t wzTime[15];
+		V_snwprintf( wzTime, ARRAYSIZE( wzTime ), L"%d", (int) flTimeLeft );
 
-		m_pCountdownTimeLabel->SetText( wzValue );
+		m_pCountdownTimeLabel->SetText( wzTime );
 	}
 
 	UpdateWaveProgressBar();

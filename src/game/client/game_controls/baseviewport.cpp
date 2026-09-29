@@ -831,8 +831,6 @@ void CBaseViewport::ReloadScheme(const char *fromFile)
 	GetHud().ResetHUD();
 }
 
-extern ConVar ss_verticalsplit;
-
 void AddSubKeyNamed( KeyValues *pKeys, const char *pszName )
 {
 	KeyValues *pNewKey = new KeyValues( pszName );

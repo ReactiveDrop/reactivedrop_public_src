@@ -3743,7 +3743,6 @@ void CNPC_AttackHelicopter::Event_Killed( const CTakeDamageInfo &info )
 			SetDesiredPosition( pCrashPoint->GetAbsOrigin() );
 
 			// Start the failing engine sound
-			CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
 			controller.SoundDestroy( m_pRotorSound );
 
 			CPASAttenuationFilter filter( this );

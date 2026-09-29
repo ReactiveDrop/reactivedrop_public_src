@@ -25,7 +25,7 @@ enum EffectType
 
 
 bool			g_bUnget = false;
-unsigned char	*buffer;
+// unsigned char	*buffer;
 char			name[ 256 ];
 const char		*currenttoken;
 int				tokencount;

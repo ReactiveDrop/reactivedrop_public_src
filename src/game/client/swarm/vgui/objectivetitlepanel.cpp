@@ -137,11 +137,12 @@ void ObjectiveTitlePanel::UpdateElements()
 		pTitle = m_hObjective->GetObjectiveTitle();
 	else
 	{
-		char buffer[8];
-		Q_snprintf( buffer, sizeof( buffer ), "%d", m_Index );
+		// TODO: why is is unused?
+		char snumber[8];
+		Q_snprintf( snumber, sizeof( snumber ), "%d", m_Index );
 
 		wchar_t wnumber[8];
-		g_pVGuiLocalize->ConvertANSIToUnicode( buffer, wnumber, sizeof( wnumber ) );
+		g_pVGuiLocalize->ConvertANSIToUnicode( snumber, wnumber, sizeof( wnumber ) );
 
 		wchar_t *pLocal = g_pVGuiLocalize->Find( "#asw_objective_titlef" );
 		if ( !pLocal )

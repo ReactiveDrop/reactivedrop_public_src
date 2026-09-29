@@ -1271,7 +1271,6 @@ void CViewRender::DrawUnderwaterOverlay( void )
 			UpdateRefractTexture( x, y, w, h, true );
 
 			// Now draw the entire screen using the material...
-			CMatRenderContextPtr pRenderContext( materials );
 			ITexture *pTexture = GetPowerOfTwoFrameBufferTexture( );
 			int sw = pTexture->GetActualWidth();
 			int sh = pTexture->GetActualHeight();

@@ -446,7 +446,7 @@ void CampaignPanel::OnThink()
 		int x, y;
 		m_pCurrentLocationImage->GetPos( x, y );		// location of red arrows
 
-		C_ASW_Campaign_Save *pSave = pGameResource->GetCampaignSave();
+		// C_ASW_Campaign_Save *pSave = pGameResource->GetCampaignSave();
 		if ( pSave )
 		{
 			// check if there's a timer on
@@ -554,7 +554,7 @@ void CampaignPanel::OnThink()
 				if ( !pMission )
 					return;
 
-				CASW_Campaign_Save *pSave = ASWGameRules()->GetCampaignSave();
+				// CASW_Campaign_Save *pSave = ASWGameRules()->GetCampaignSave();
 				if ( !pSave )
 					return;
 

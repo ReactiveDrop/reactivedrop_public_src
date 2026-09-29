@@ -309,7 +309,6 @@ void CVideoMaterial::CreateVideoMaterial( const char *pMaterialName )
 	const int tex_flags = TEXTUREFLAGS_PROCEDURAL | TEXTUREFLAGS_CLAMPS | TEXTUREFLAGS_CLAMPT |
 		TEXTUREFLAGS_NOMIP | TEXTUREFLAGS_NOLOD | TEXTUREFLAGS_SINGLECOPY;
 
-#define ALIGN_VALUE( val, alignment ) ( ( val + alignment - 1 ) & ~( alignment - 1 ) );
 	m_textureWidth = ALIGN_VALUE( m_videoWidth, 8 );
 	m_textureHeight = ALIGN_VALUE( m_videoHeight, 8 );
 

@@ -470,7 +470,6 @@ void CSentence::ParseWords( CUtlBuffer& buf )
 {
 	char token[ 4096 ];
 	char word[ 256 ];
-	float start, end;
 
 	while ( 1 )
 	{
@@ -481,18 +480,20 @@ void CSentence::ParseWords( CUtlBuffer& buf )
 		if ( stricmp( token, "WORD" ) )
 			break;
 
+		float wordStart, wordEnd;
+
 		buf.GetString( token );
 		Q_strncpy( word, token, sizeof( word ) );
 
 		buf.GetString( token );
-		start = atof( token );
+		wordStart = atof( token );
 		buf.GetString( token );
-		end = atof( token );
+		wordEnd = atof( token );
 
 		CWordTag *wt = new CWordTag( word );
 		Assert( wt );
-		wt->m_flStartTime = start;
-		wt->m_flEndTime = end;
+		wt->m_flStartTime = wordStart;
+		wt->m_flEndTime = wordEnd;
 
 		AddWordTag( wt );
 
