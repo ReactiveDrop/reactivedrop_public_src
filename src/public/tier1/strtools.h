@@ -10,6 +10,7 @@
 #define TIER1_STRTOOLS_H
 
 #include "tier0/basetypes.h"
+#include <math.h>
 
 #ifdef _WIN32
 #pragma once

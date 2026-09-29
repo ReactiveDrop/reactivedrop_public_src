@@ -744,7 +744,7 @@ inline void CBitVecT<BASE_OPS>::Xor(const CBitVecT &xorStr, CBitVecT *out) const
 template <class BASE_OPS>
 inline void CBitVecT<BASE_OPS>::Not(CBitVecT *out) const
 {
-	ValidateOperand( *out );
+	this->ValidateOperand( *out );
 
 	uint32 *	   pDest	= out->Base();
 	const uint32 *pOperand	= this->Base();
@@ -852,7 +852,7 @@ inline void CBitVecT<BASE_OPS>::Copy( const CBitVecT<BASE_OPS> &other, int nBits
 
 	this->Resize( nBits );
 
-	ValidateOperand( other );
+	this->ValidateOperand( other );
 	Assert( &other != this );
 
 	memcpy( this->Base(), other.Base(), this->GetNumDWords() * sizeof( uint32 ) );

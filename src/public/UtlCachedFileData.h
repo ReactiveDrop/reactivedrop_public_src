@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright Â© 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -670,6 +670,22 @@ bool CUtlCachedFileData<T>::Init()
 	return true;
 }
 
+class CSortedCacheFile
+{
+public:
+	FileNameHandle_t	handle;
+	int					index;
+
+	 bool Less( const CSortedCacheFile &file0, const CSortedCacheFile &file1, void * )
+	 {
+		 char name0[ 512 ];
+		 char name1[ 512 ];
+		 g_pFullFileSystem->String( file0.handle, name0, sizeof( name0 ) );
+		 g_pFullFileSystem->String( file1.handle, name1, sizeof( name1 ) );
+		 return Q_stricmp( name0, name1 ) < 0 ? true : false;
+	 }
+};
+
 template <class T>
 void CUtlCachedFileData<T>::Save()
 {
@@ -962,21 +978,6 @@ void CUtlCachedFileData<T>::ForceRecheckDiskInfo()
 	}
 }
 
-class CSortedCacheFile
-{
-public:
-	FileNameHandle_t	handle;
-	int					index;
-
-	 bool Less( const CSortedCacheFile &file0, const CSortedCacheFile &file1, void * )
-	 {
-		 char name0[ 512 ];
-		 char name1[ 512 ];
-		 g_pFullFileSystem->String( file0.handle, name0, sizeof( name0 ) );
-		 g_pFullFileSystem->String( file1.handle, name1, sizeof( name1 ) );
-		 return Q_stricmp( name0, name1 ) < 0 ? true : false;
-	 }
-};
 
 // Iterates all entries and causes rebuild on any existing items which are out of date
 template <class T>

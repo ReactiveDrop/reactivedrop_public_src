@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright Â© 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: Core types for the response rules -- criteria, responses, rules, and matchers.
 //
@@ -342,6 +342,8 @@ namespace ResponseRules
 	    const Criteria *RecursiveGetPointerForRuleCriterionByName( CResponseSystem *pSystem, const Criteria *pCrit, const CUtlSymbol &pCritNameSym );
 	};
 #pragma pack(pop)
+
+extern const char *ResponseCopyString( const char *in );
 
 	template <typename T, typename I = unsigned short>
 	class CResponseDict : public CUtlMap<unsigned int, T, I>
