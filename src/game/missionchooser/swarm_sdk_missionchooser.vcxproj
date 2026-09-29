@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -124,6 +124,7 @@
       <ErrorReporting>Prompt</ErrorReporting>
       <DisableSpecificWarnings>26495;26812</DisableSpecificWarnings>
       <SDLCheck>false</SDLCheck>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <FloatingPointExceptions>
       </FloatingPointExceptions>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -231,6 +232,7 @@ exit /b 0
       <OmitFramePointers>true</OmitFramePointers>
       <IntelJCCErratum>true</IntelJCCErratum>
       <SDLCheck>false</SDLCheck>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -338,6 +340,7 @@ exit /b 0
       <DisableSpecificWarnings>26495;26812</DisableSpecificWarnings>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <SDLCheck>false</SDLCheck>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <IntelJCCErratum>true</IntelJCCErratum>
     </ClCompile>
