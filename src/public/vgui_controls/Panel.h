@@ -26,6 +26,7 @@
 #include "vgui_controls/PanelAnimationVar.h"
 #include "Color.h"
 #include "vstdlib/IKeyValuesSystem.h"
+#include "tier1/KeyValues.h"
 #include "tier1/utlsymbol.h"
 #include "vgui_controls/BuildGroup.h"
 #include "dmxloader/dmxelement.h"
