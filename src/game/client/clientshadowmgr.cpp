@@ -903,13 +903,14 @@ public:
 	virtual void UpdateSplitscreenLocalPlayerShadowSkip();
 
 private:
-	enum
+	enum CClientShadowMgrFlags_t
 	{
 		SHADOW_FLAGS_TEXTURE_DIRTY =	(CLIENT_SHADOW_FLAGS_LAST_FLAG << 1),
 		SHADOW_FLAGS_BRUSH_MODEL =		(CLIENT_SHADOW_FLAGS_LAST_FLAG << 2), 
 		SHADOW_FLAGS_USING_LOD_SHADOW = (CLIENT_SHADOW_FLAGS_LAST_FLAG << 3),
 		SHADOW_FLAGS_LIGHT_WORLD =		(CLIENT_SHADOW_FLAGS_LAST_FLAG << 4),
 	};
+    friend constexpr auto operator|(ShadowFlags_t a, CClientShadowMgrFlags_t b) { return a | static_cast<ShadowFlags_t>(b); };
 
 	struct ClientShadow_t
 	{

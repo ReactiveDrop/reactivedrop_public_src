@@ -1796,6 +1796,10 @@ bool CAI_Pathfinder::CheckStaleRoute(const Vector &vStart, const Vector &vEnd, i
 
 //-----------------------------------------------------------------------------
 
+#ifdef DEBUG
+OVERLOAD_ENUM_COMPARISON(RouteBuildFlags_e, Capability_t);
+#endif
+
 #define MAX_NODE_TRIES 4
 #define MAX_TRIANGULATIONS 2
 

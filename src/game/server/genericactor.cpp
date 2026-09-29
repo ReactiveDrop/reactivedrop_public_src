@@ -386,7 +386,7 @@ void CFlextalkActor::ProcessSceneEvents( void )
 		} 
 		else if (m_flextime < gpGlobals->curtime)
 		{
-			m_flextime = gpGlobals->curtime + random->RandomFloat( 0.3, 0.5 ) * (30.0 / GetNumFlexControllers());
+			m_flextime = gpGlobals->curtime + random->RandomFloat( 0.3, 0.5 ) * (30.0 / (int)GetNumFlexControllers());
 			m_flexnum = (LocalFlexController_t)random->RandomInt( 0, GetNumFlexControllers() - 1 );
 
 			if (m_flextarget[m_flexnum] == 1)

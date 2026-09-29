@@ -20,6 +20,8 @@ class CASW_Inhabitable_NPC;
 class CASW_Marine;
 class CRagdollProp;
 
+enum EInventoryCommand : int;
+
 //=============================================================================
 // >> Swarm player
 //=============================================================================

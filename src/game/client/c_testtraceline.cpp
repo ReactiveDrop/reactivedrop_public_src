@@ -60,10 +60,7 @@ C_TestTraceline::~C_TestTraceline()
 }
 
 
-enum
-{
-	CUBE_SIZE = 5
-};
+#define CUBE_SIZE 5
 
 void C_TestTraceline::DrawCube( Vector& center, unsigned char* pColor )
 {

@@ -96,14 +96,11 @@ public:
 	CNetworkHandle( CASW_Sentry_Base, m_hSentryBase );
 
 	// Constants:
-	enum
-	{
-		ASW_SENTRY_TURNRATE = 150, // angles per second
-		ASW_SENTRY_ANGLE = 60, // spread on each side
-		ASW_SENTRY_FIRING_HEIGHT = 50,
-		ASW_SENTRY_FIRE_ANGLE_THRESHOLD = 3,
-		ASW_SENTRY_RANGE = 525, // just the default
-	};
+	static constexpr int ASW_SENTRY_TURNRATE = 150; // angles per second
+	static constexpr int ASW_SENTRY_ANGLE = 60; // spread on each side
+	static constexpr int ASW_SENTRY_FIRING_HEIGHT = 50;
+	static constexpr int ASW_SENTRY_FIRE_ANGLE_THRESHOLD = 3;
+	static constexpr int ASW_SENTRY_RANGE = 525; // just the default
 
 protected:
 	// helper function used by FindEnemy

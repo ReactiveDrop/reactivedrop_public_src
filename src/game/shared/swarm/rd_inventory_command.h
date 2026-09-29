@@ -2,7 +2,7 @@
 
 #include "steam/isteaminventory.h"
 
-enum EInventoryCommand
+enum EInventoryCommand : int
 {
 	INVCMD_PLAYER_EQUIPS,
 	INVCMD_MARINE_RESOURCE_EQUIPS,

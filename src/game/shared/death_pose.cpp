@@ -38,7 +38,7 @@ void GetRagdollCurSequenceWithDeathPose( C_BaseAnimating *entity, matrix3x4a_t *
 
 		entity->SetSequence( activity );
 
-		entity->SetCycle( (float)frame / MAX_DEATHPOSE_FRAMES );
+		entity->SetCycle( (float)frame / (float)MAX_DEATHPOSE_FRAMES );
 
 		entity->SetAbsOrigin( vAdjustedOrigin );
 
