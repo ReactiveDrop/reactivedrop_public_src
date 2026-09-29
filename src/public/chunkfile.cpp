@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright Â© 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: Implements an interface for reading and writing heirarchical
 //			text files of key value pairs. The format of the file is as follows:
@@ -151,7 +151,7 @@ ChunkHandler_t CChunkHandlerMap::GetHandler(const char *pszChunkName, void **ppD
 		pNode = pNode->pNext;
 	}
 
-	return(false);
+	return(NULL);
 }
 
 
