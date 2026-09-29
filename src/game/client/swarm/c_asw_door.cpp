@@ -280,7 +280,7 @@ void C_ASW_Door::OnDataChanged( DataUpdateType_t type )
 	}
 }
 
-void C_ASW_Door::ImpactTrace( trace_t *pTrace, int iDamageType, char *pCustomImpactName )
+void C_ASW_Door::ImpactTrace( trace_t *pTrace, int iDamageType, const char *pCustomImpactName )
 {
 	Assert( pTrace->m_pEnt );
 

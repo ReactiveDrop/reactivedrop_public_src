@@ -54,7 +54,7 @@ class CClassInputOutputBase
 
 	protected:
 
-		static char *g_pszEmpty;
+		static const char *g_pszEmpty;
 
 		char m_szName[MAX_IO_NAME_LEN];
 		InputOutputType_t m_eType;

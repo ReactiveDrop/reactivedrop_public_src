@@ -47,7 +47,7 @@ extern ScriptClassDesc_t * GetScriptDesc( CBaseEntity * );
 #endif // VMPROFILE
 
 static ConVar sv_mapspawn_nut_exec( "sv_mapspawn_nut_exec", "0", FCVAR_NONE, "If set to 1, server will execute scripts/vscripts/mapspawn.nut file" );
-extern char *s_ElementNames[MAX_ARRAY_ELEMENTS];
+extern const char *s_ElementNames[MAX_ARRAY_ELEMENTS];
 
 constexpr int CLAMP_COLOR(int value)
 {

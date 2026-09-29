@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright Â© 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -121,7 +121,7 @@ char *CHudTextMessage::BufferedLocaliseTextString( const char *msg )
 char *CHudTextMessage::LookupString( const char *msg, int *msg_dest )
 {
 	if ( !msg )
-		return "";
+		return (char *)"";
 
 	// '#' character indicates this is a reference to a string in titles.txt, and not the string itself
 	if ( msg[0] == '#' ) 

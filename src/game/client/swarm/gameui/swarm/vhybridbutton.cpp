@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2008, Valve Corporation, All rights reserved. ============//
+//========= Copyright Â© 1996-2008, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -45,7 +45,7 @@ void Demo_DisableButton( Button *pButton )
 		pHybridButton->SetEnabled( false );
 
 		char szTooltip[512];
-		wchar_t *wUnicode = g_pVGuiLocalize->Find( "#L4D360UI_MainMenu_DemoVersion" );
+		const wchar_t *wUnicode = g_pVGuiLocalize->Find( "#L4D360UI_MainMenu_DemoVersion" );
 		if ( !wUnicode )
 			wUnicode = L"";
 
@@ -64,7 +64,7 @@ void Dlc1_DisableButton( Button *pButton )
 		pHybridButton->SetEnabled( false );
 
 		char szTooltip[512];
-		wchar_t *wUnicode = g_pVGuiLocalize->Find( "#L4D360UI_DLC1_NotInstalled" );
+		const wchar_t *wUnicode = g_pVGuiLocalize->Find( "#L4D360UI_DLC1_NotInstalled" );
 
 		if ( !wUnicode )
 			wUnicode = L"";

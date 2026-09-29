@@ -2536,7 +2536,7 @@ void C_ASW_Marine::RemoveBackpack()
 	}
 }
 
-void C_ASW_Marine::ImpactTrace( trace_t *pTrace, int iDamageType, char *pCustomImpactName )
+void C_ASW_Marine::ImpactTrace( trace_t *pTrace, int iDamageType, const char *pCustomImpactName )
 {
 	// do nothing
 	// effects re handled in TraceAttack in the shared file

@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright Â© 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: Bullseyes act as targets for other NPC's to attack and to trigger
 //			events 
@@ -278,7 +278,7 @@ void CNPC_Bullseye::DecalTrace( trace_t *pOldTrace, char const *decalName )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CNPC_Bullseye::ImpactTrace( trace_t *pTrace, int iDamageType, char *pCustomImpactName )
+void CNPC_Bullseye::ImpactTrace( trace_t *pTrace, int iDamageType, const char *pCustomImpactName )
 {
 	// Get direction of original trace
 	Vector vTraceDir = pTrace->endpos - pTrace->startpos;

@@ -630,7 +630,7 @@ public:
 
 	// ID Target handling
 	virtual bool					IsValidIDTarget( void ) { return false; }
-	virtual char					*GetIDString( void ) { return ""; };
+	virtual const char					*GetIDString( void ) { return ""; };
 
 	// See CSoundEmitterSystem
 	void	EmitSound( const char *soundname, float soundtime = 0.0f, float *duration = NULL );  // Override for doing the general case of CPASAttenuationFilter( this ), and EmitSound( filter, entindex(), etc. );
@@ -899,7 +899,7 @@ public:
 
 	virtual char const *			DamageDecal( int bitsDamageType, int gameMaterial );
 	virtual void					DecalTrace( trace_t *pTrace, char const *decalName );
-	virtual void					ImpactTrace( trace_t *pTrace, int iDamageType, char *pCustomImpactName );
+	virtual void					ImpactTrace( trace_t *pTrace, int iDamageType, const char *pCustomImpactName );
 
 	virtual bool					ShouldPredict( void ) { return false; };
 	// interface function pointers
@@ -1255,7 +1255,7 @@ public:
 #ifdef _DEBUG
 	void FunctionCheck( void *pFunction, const char *name );
 
-	ENTITYFUNCPTR TouchSet( ENTITYFUNCPTR func, char *name ) 
+	ENTITYFUNCPTR TouchSet( ENTITYFUNCPTR func, const char *name ) 
 	{ 
 		//COMPILE_TIME_ASSERT( sizeof(func) == 4 );
 		m_pfnTouch = func; 

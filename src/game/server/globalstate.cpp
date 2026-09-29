@@ -235,7 +235,7 @@ CON_COMMAND_F(dump_globals, "Dump all global entities/states", FCVAR_CHEAT)
 //#ifdef _DEBUG
 void CGlobalState::DumpGlobals( void )
 {
-	static char *estates[] = { "Off", "On", "Dead" };
+	static const char *estates[] = { "Off", "On", "Dead" };
 
 	Msg( "-- Globals --\n" );
 	for ( int i = 0; i < m_list.Count(); i++ )
